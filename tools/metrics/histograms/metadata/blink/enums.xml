@@ -26,19 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AutomaticLazyFrameLoadReason">
-  <int value="0" label="Not eligible"/>
-  <int value="1" label="Eligible for LazyEmbeds"/>
-  <int value="2" label="Eligible for LazyAds"/>
-  <int value="3" label="Eligible for both"/>
-</enum>
-
-<enum name="AutomaticLazyLoadFrameState">
-  <int value="0" label="Feature is not enabled"/>
-  <int value="1" label="Target frames not found"/>
-  <int value="2" label="Target frames found"/>
-</enum>
-
 <enum name="AVIFCleanApertureType">
   <int value="0" label="kInvalid"/>
   <int value="1" label="kNonzeroOrigin"/>
@@ -198,7 +185,7 @@ chromium-metrics-reviews@google.com.
       label="Custom property contains different value types in keyframe
              animation"/>
   <int value="17" label="Scroll timeline source is not composited"/>
-  <int value="18" label="Compositor property animations have no effect"/>
+  <int value="18" label="Animation has no visible change"/>
   <int value="19" label="Animation affects an !important property"/>
   <int value="20"
       label="Target SVG element uses an individual transform property"/>
@@ -230,6 +217,31 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="(obsolete) kImageJXL"/>
 </enum>
 
+<enum name="DigitalIdentityInterstitialClosedReason">
+  <int value="0" label="kOther"/>
+  <int value="1" label="kOkButton"/>
+  <int value="2" label="kCancelButton"/>
+  <int value="3" label="kPageNavigated"/>
+</enum>
+
+<enum name="DigitalIdentityRequestStatus">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kErrorOther"/>
+  <int value="2" label="kErrorNoCredential"/>
+  <int value="3" label="kErrorUserDeclined"/>
+  <int value="4" label="kErrorAborted"/>
+</enum>
+
+<enum name="FedCmAccountChooserResult">
+  <int value="0" label="Account row clicked"/>
+  <int value="1" label="Cancel button clicked"/>
+  <int value="2" label="Use other account button clicked"/>
+  <int value="3" label="Tab or window is closed or refreshed"/>
+  <int value="4" label="Bottom sheet swiped down on Android"/>
+  <int value="5" label="Bottom sheet swiped back on Android"/>
+  <int value="6" label="Tap scrim on Android"/>
+</enum>
+
 <enum name="FedCmAccountsResponseInvalidReason">
   <int value="0" label="Response is not JSON or dict"/>
   <int value="1" label="No accounts key"/>
@@ -257,6 +269,17 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Success"/>
   <int value="1" label="FailedPathButPassedOrigin"/>
   <int value="2" label="FailedOrigin"/>
+</enum>
+
+<enum name="FedCmDialogType">
+  <int value="0" label="None"/>
+  <int value="1" label="SelectAccount"/>
+  <int value="2" label="AutoReauth"/>
+  <int value="3" label="ConfirmIdpLogin"/>
+  <int value="4" label="Error"/>
+  <int value="5" label="LoginToIdpPopup"/>
+  <int value="6" label="ContinueOnPopup"/>
+  <int value="7" label="ErrorUrlPopup"/>
 </enum>
 
 <enum name="FedCmIdpSigninMatchStatus">
@@ -307,6 +330,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="First mismatch of the request, with hints"/>
   <int value="2" label="Repeated mismatch in a request, without hints"/>
   <int value="3" label="Repeated mismatch in a request, with hints"/>
+</enum>
+
+<enum name="FedCmPopupInteraction">
+  <int value="0" label="User loses focus of pop-up and pop-up closed by IDP"/>
+  <int value="1"
+      label="User loses focus of pop-up and pop-up not closed by IDP"/>
+  <int value="2"
+      label="User never loses focus of pop-up and pop-up closed by IDP"/>
+  <int value="3"
+      label="User never loses focus of pop-up and pop-up not closed by IDP"/>
 </enum>
 
 <enum name="FedCmPopupWindowResult">
@@ -384,33 +417,15 @@ chromium-metrics-reviews@google.com.
              opted-in"/>
 </enum>
 
-<enum name="Gamma">
-  <int value="0" label="GammaLinear"/>
-  <int value="1" label="GammaSRGB"/>
-  <int value="2" label="Gamma2Dot2"/>
-  <int value="3" label="GammaNonStandard"/>
-  <int value="4" label="GammaNull"/>
-  <int value="5" label="GammaFail"/>
-  <int value="6" label="GammaInvalid"/>
-  <int value="7" label="GammaExponent"/>
-  <int value="8" label="GammaTable"/>
-  <int value="9" label="GammaParametric"/>
-  <int value="10" label="GammaNamed"/>
+<!-- LINT.IfChange(FirstCookieRequest) -->
+
+<enum name="FirstCookieRequest">
+  <int value="0" label="First operation was SET"/>
+  <int value="1" label="First operation was GET"/>
+  <int value="2" label="First operation was CookiesEnabled"/>
 </enum>
 
-<enum name="Gamut">
-  <int value="0" label="GamutUnknown"/>
-  <int value="1" label="GamutLessThanNTSC"/>
-  <int value="2" label="GamutNTSC"/>
-  <int value="3" label="GamutSRGB"/>
-  <int value="4" label="GamutAlmostP3"/>
-  <int value="5" label="GamutP3"/>
-  <int value="6" label="GamutAdobeRGB"/>
-  <int value="7" label="GamutWide"/>
-  <int value="8" label="GamutBT2020"/>
-  <int value="9" label="GamutProPhoto"/>
-  <int value="10" label="GamutUltraWide"/>
-</enum>
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/loader/cookie_jar.h:FirstCookieRequest) -->
 
 <enum name="IdleTaskStatus">
   <int value="0" label="IdleTaskNotStarted"/>
@@ -497,21 +512,47 @@ chromium-metrics-reviews@google.com.
              encountered"/>
 </enum>
 
+<enum name="IntersectionObservationUpdateType">
+  <int value="0" label="No update"/>
+  <int value="1" label="Scroll only"/>
+  <int value="2" label="CachedRectInvalid"/>
+  <int value="3" label="Full update"/>
+</enum>
+
 <enum name="KeyboardLockMethods">
   <int value="0" label="keyboardLock() requested for all keys"/>
   <int value="1" label="keyboardLock() requested for a subset of keys"/>
   <int value="2" label="keyboardUnlock()"/>
 </enum>
 
-<enum name="NQEEffectiveConnectionType">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Offline"/>
-  <int value="2" label="Slow 2G"/>
-  <int value="3" label="2G"/>
-  <int value="4" label="3G"/>
-  <int value="5" label="4G"/>
-  <int value="6" label="(Obsolete) Broadband. Deprecated as of 01/2017."/>
+<!-- LINT.IfChange(PermissionElementInvalidStyleReason) -->
+
+<enum name="PermissionElementInvalidStyleReason">
+  <int value="0" label="No computed style"/>
+  <int value="1" label="Non opaque color or background color"/>
+  <int value="2" label="Low constrast between color and background color"/>
+  <int value="3" label="Too small font size"/>
+  <int value="4" label="Too large font size"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_permission_element.h:InvalidStyleReason) -->
+
+<!-- LINT.IfChange(PermissionElementUserInteractionDeniedReason) -->
+
+<enum name="PermissionElementUserInteractionDeniedReason">
+  <int value="0" label="Invalid type"/>
+  <int value="1" label="Failed or has not been registered"/>
+  <int value="2" label="Recently attached to layout tree"/>
+  <int value="3"
+      label="Intersection visibility has recently become fully visible"/>
+  <int value="4" label="Invalid style"/>
+  <int value="5" label="Untrusted event"/>
+  <int value="6" label="Intersection with viewport changed"/>
+  <int value="7" label="Intersection visiblity out of viewport or clipped"/>
+  <int value="8" label="Intersection visiblity occluded or distorted"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_permission_element.h:UserInteractionDeniedReason) -->
 
 <enum name="RaceTaskPriority">
   <int value="0" label="LowerPriority"/>
@@ -546,7 +587,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="InOrder"/>
   <int value="5" label="Async"/>
   <int value="6" label="Immediate"/>
-  <int value="7" label="ForceDefer"/>
+  <int value="7" label="ForceDefer (Deprecated 2023)"/>
 </enum>
 
 <enum name="SpeculationRulesLoadOutcome">

@@ -1,0 +1,72 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("hats") {
+  sources = [
+    "hats_config.cc",
+    "hats_config.h",
+    "hats_dialog.cc",
+    "hats_dialog.h",
+    "hats_finch_helper.cc",
+    "hats_finch_helper.h",
+    "hats_notification_controller.cc",
+    "hats_notification_controller.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles",
+    "//chrome/common",
+    "//chromeos/ash/components/network",
+    "//chromeos/version",
+    "//components/language/core/browser",
+    "//components/language/core/common",
+    "//components/prefs",
+    "//content/public/browser",
+    "//google_apis",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/message_center",
+    "//ui/strings:ui_strings_grit",
+    "//ui/web_dialogs",
+
+    # TODO: Use //chrome/browser/ui instead after fixing cyclic dependency.
+    "//components/compose/core/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "hats_dialog_unittest.cc",
+    "hats_finch_helper_unittest.cc",
+    "hats_notification_controller_unittest.cc",
+  ]
+
+  deps = [
+    ":hats",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//components/image_fetcher/core",
+    "//components/prefs",
+    "//testing/gtest",
+  ]
+}

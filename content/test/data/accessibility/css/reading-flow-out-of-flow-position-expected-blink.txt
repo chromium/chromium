@@ -1,0 +1,35 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored
+++++++++genericContainer
+++++++++++button name='C'
+++++++++++++staticText name='C'
+++++++++++++++inlineTextBox name='C'
+++++++++genericContainer
+++++++++++button name='B'
+++++++++++++staticText name='B'
+++++++++++++++inlineTextBox name='B'
+++++++++genericContainer
+++++++++++button name='A1'
+++++++++++++staticText name='A1'
+++++++++++++++inlineTextBox name='A1'
+++++++++++button name='A2'
+++++++++++++staticText name='A2'
+++++++++++++++inlineTextBox name='A2'
+++++++genericContainer
+++++++++button name='1'
+++++++++++staticText name='1'
+++++++++++++inlineTextBox name='1'
+++++++++button name='2'
+++++++++++staticText name='2'
+++++++++++++inlineTextBox name='2'
+++++++++button name='4'
+++++++++++staticText name='4'
+++++++++++++inlineTextBox name='4'
+++++++++button name='fixed 1'
+++++++++++staticText name='fixed 1'
+++++++++++++inlineTextBox name='fixed 1'
+++++++++button name='fixed 2'
+++++++++++staticText name='fixed 2'
+++++++++++++inlineTextBox name='fixed 2'

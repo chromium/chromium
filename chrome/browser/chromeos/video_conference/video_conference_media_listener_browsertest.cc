@@ -104,10 +104,8 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kVideoConference,
-         ash::features::kCameraEffectsSupportedByHardware},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kFeatureManagementVideoConference);
 
     InProcessBrowserTest::SetUp();
   }
@@ -170,7 +168,7 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
     } else if (blink::IsVideoInputMediaType(stream_type)) {
       fake_devices.video_device = device;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     return fake_devices;

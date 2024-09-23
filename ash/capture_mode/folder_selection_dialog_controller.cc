@@ -27,16 +27,6 @@ namespace ash {
 
 namespace {
 
-class NullSelectFolderPolicy : public ui::SelectFilePolicy {
- public:
-  NullSelectFolderPolicy() = default;
-  ~NullSelectFolderPolicy() override = default;
-
-  // ui::SelectFileDialog:
-  bool CanOpenSelectFileDialog() override { return true; }
-  void SelectFileDenied() override {}
-};
-
 // Returns true if |event| is targeting a window in the subtree rooted at
 // |window|.
 bool IsEventTargetingWindowInSubtree(const ui::Event* event,
@@ -60,7 +50,7 @@ FolderSelectionDialogController::FolderSelectionDialogController(
           root->GetChildById(kShellWindowId_SettingBubbleContainer)),
       select_folder_dialog_(ui::SelectFileDialog::Create(
           /*listener=*/this,
-          std::make_unique<NullSelectFolderPolicy>())) {
+          /*policy=*/nullptr)) {
   DCHECK(delegate_);
   DCHECK(root);
   DCHECK(root->IsRootWindow());
@@ -79,8 +69,7 @@ FolderSelectionDialogController::FolderSelectionDialogController(
       /*file_types=*/nullptr,
       /*file_type_index=*/0,
       /*default_extension=*/base::FilePath::StringType(),
-      /*owning_window=*/owner,
-      /*params=*/nullptr);
+      /*owning_window=*/owner);
 }
 
 FolderSelectionDialogController::~FolderSelectionDialogController() {
@@ -115,13 +104,10 @@ bool FolderSelectionDialogController::ShouldConsumeEvent(
 
 void FolderSelectionDialogController::FileSelected(
     const ui::SelectedFileInfo& file,
-    int index,
-    void* params) {
+    int index) {
   did_user_select_a_folder_ = true;
   delegate_->OnFolderSelected(file.path());
 }
-
-void FolderSelectionDialogController::FileSelectionCanceled(void* params) {}
 
 void FolderSelectionDialogController::OnTransientChildAdded(
     aura::Window* window,

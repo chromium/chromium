@@ -27,6 +27,9 @@ const DELEGATE: ClientApiDelegate = {
         await parentMessagePipe.sendMessage(Message.OPEN_FEEDBACK_DIALOG);
     return response['errorMessage'] as string;
   },
+  showOnDeviceAppControls() {
+    return parentMessagePipe.sendMessage(Message.SHOW_ON_DEVICE_APP_CONTROLS);
+  },
   showParentalControls() {
     return parentMessagePipe.sendMessage(Message.SHOW_PARENTAL_CONTROLS);
   },
@@ -54,10 +57,6 @@ const DELEGATE: ClientApiDelegate = {
   },
   launchMicrosoft365Setup() {
     return parentMessagePipe.sendMessage(Message.LAUNCH_MICROSOFT_365_SETUP);
-  },
-  maybeShowDiscoverNotification() {
-    return parentMessagePipe.sendMessage(
-        Message.MAYBE_SHOW_DISCOVER_NOTIFICATION);
   },
   maybeShowReleaseNotesNotification() {
     return parentMessagePipe.sendMessage(

@@ -229,7 +229,7 @@ TEST_F(UserDemographicsPrefsTest, ReadAndClearDeprecatedOffsetPref) {
   // Offset if migrated to new pref.
   EXPECT_EQ(
       2, GetLocalState()->GetInteger(kUserDemographicsBirthYearOffsetPrefName));
-  // TODO(crbug/1367338): clear/remove deprecated pref after 2023/09
+  // TODO(crbug.com/40240008): clear/remove deprecated pref after 2023/09
   EXPECT_TRUE(GetProfilePrefs()->HasPrefPath(
       kDeprecatedDemographicsBirthYearOffsetPrefName));
 }

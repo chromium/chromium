@@ -1,0 +1,22 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "page_image_service_factory.h",
+    "page_image_service_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/page_image_service",
+    "//ios/chrome/browser/autocomplete/model",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/sync/model",
+  ]
+}

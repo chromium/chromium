@@ -1,0 +1,21 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'SearchContextProto';
+
+package omnibox;
+
+// Carries all the information to contextualize the search results page. It
+// should be serialized, web-safe base64-encoded, and passed via the "mactx" url
+// param in the search request.
+message SearchContext {
+  // URL of the current page.
+  optional string webpage_url = 1;
+  // Title of the current page.
+  optional string webpage_title = 2;
+}

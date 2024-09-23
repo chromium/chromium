@@ -66,6 +66,7 @@ class FastPairPresenterImpl : public FastPairPresenter {
                                CompanionAppCallback callback) override;
   void ShowLaunchCompanionApp(scoped_refptr<Device> device,
                               CompanionAppCallback callback) override;
+  void ShowPasskey(std::u16string device_name, uint32_t passkey) override;
   void RemoveNotifications() override;
   void ExtendNotification() override;
 

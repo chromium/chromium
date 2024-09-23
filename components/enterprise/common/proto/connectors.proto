@@ -106,11 +106,14 @@ message ClientMetadata {
     optional string profile_path = 3;
     optional string profile_name = 4;
     optional string client_id = 5;
-    // True if the request comes from a Managed Guest Session on ChromeOS. False
-    // in all other cases.
-    optional bool is_chrome_os_managed_guest_session = 6;
+
+    reserved 6;
   };
   optional Profile profile = 3;
+
+  // True if the request comes from a Managed Guest Session on ChromeOS. False
+  // in all other cases.
+  optional bool is_chrome_os_managed_guest_session = 4;
 };
 
 // Analysis request sent from chrome to backend.
@@ -185,6 +188,17 @@ message ContentAnalysisRequest {
     SAVE_AS_DOWNLOAD = 7;
   }
   optional Reason reason = 19;
+
+  // Indicates whether request is blocking until verdict given.
+  optional bool blocking = 20;
+
+  // Indicates whether the request requires a metadata verdict (applicable to
+  // resumable metadata request only).
+  //
+  // The field is set to true when Chrome sends the metadata of files larger
+  // than 50MB or encrypted, because it expects a block or allow verdict from
+  // WebProtect right away, and cannot upload full content.
+  optional bool require_metadata_verdict = 21;
 
   // Reserved to make sure there is no overlap with DeepScanningClientRequest.
   reserved 3, 4, 6 to 8;
@@ -269,11 +283,7 @@ message ContentAnalysisResponse {
     }
     repeated TriggeredRule triggered_rules = 3;
 
-    // TODO(crbug.com/1147036): Remove fields 4-6 once a definitive approach is
-    // agreed upon.
-    optional string malware_family = 4;
-    optional string malware_category = 5;
-    optional string evidence_locker_filepath = 6;
+    reserved 4, 5, 6;
 
     // This field is meant to override the OU-based custom messages set in the
     // client-side policies. When the result requires a

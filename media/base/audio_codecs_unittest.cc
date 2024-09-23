@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/base/audio_codecs.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/stringprintf.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

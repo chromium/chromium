@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] hint is not closed by pre-existing auto
+  assert_equals: Error, index 2 (<div popover="">popover 3</div>) expected false but got true
+Harness: the test ran to completion.
+

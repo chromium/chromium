@@ -42,9 +42,6 @@ char kTSanDefaultSuppressions[] =
     // http://crbug.com/476529
     "deadlock:cc::VideoLayerImpl::WillDraw\n"
 
-    // http://crbug.com/328826
-    "race:skia::(anonymous namespace)::g_pixel_geometry\n"
-
     // http://crbug.com/328868
     "race:PR_Lock\n"
 
@@ -87,10 +84,18 @@ char kTSanDefaultSuppressions[] =
     "race:perfetto::DataSource*::static_state_\n"
     "race:perfetto::*::ResetForTesting\n"
 
+    // https://crbug.com/327473683
+    "race:SetCoveredByBucketing\n"
+
     // In V8 each global safepoint might lock isolate mutexes in a different
     // order. This is allowed in this context as it is always guarded by a
     // single global mutex.
     "deadlock:GlobalSafepoint::EnterGlobalSafepointScope\n"
+
+    // Logging crash keys is inherently unsafe. We suppress this rather than fix
+    // it because OutputCrashKeysToStream is only enabled in non-official builds
+    // and the race is therefore not present in released builds.
+    "race:crash_reporter::*::OutputCrashKeysToStream\n"
 
     // End of suppressions.
     ;  // Please keep this semicolon.

@@ -57,6 +57,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/contextual_search/core/proto:client_discourse_context_proto",
     "//components/search_engines",
+    "//components/search_engines:test_support",
     "//components/variations:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",

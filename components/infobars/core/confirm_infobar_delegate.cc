@@ -19,13 +19,14 @@ bool ConfirmInfoBarDelegate::EqualsDelegate(
          (confirm_delegate->GetMessageText() == GetMessageText());
 }
 
-ConfirmInfoBarDelegate* ConfirmInfoBarDelegate::AsConfirmInfoBarDelegate() {
-  return this;
+void ConfirmInfoBarDelegate::InfoBarDismissed() {
+  for (auto& observer : observers_) {
+    observer.OnDismiss();
+  }
 }
 
-infobars::InfoBarDelegate::InfoBarAutomationType
-ConfirmInfoBarDelegate::GetInfoBarAutomationType() const {
-  return CONFIRM_INFOBAR;
+ConfirmInfoBarDelegate* ConfirmInfoBarDelegate::AsConfirmInfoBarDelegate() {
+  return this;
 }
 
 std::u16string ConfirmInfoBarDelegate::GetTitleText() const {
@@ -68,6 +69,9 @@ bool ConfirmInfoBarDelegate::UseIconBackgroundTint() const {
 #endif
 
 bool ConfirmInfoBarDelegate::Accept() {
+  for (auto& observer : observers_) {
+    observer.OnAccept();
+  }
   return true;
 }
 
@@ -75,9 +79,12 @@ bool ConfirmInfoBarDelegate::Cancel() {
   return true;
 }
 
-bool ConfirmInfoBarDelegate::ExtraButtonPressed() {
-  NOTREACHED() << "Method must be overridden.";
-  return true;
+void ConfirmInfoBarDelegate::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ConfirmInfoBarDelegate::RemoveObserver(const Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 ConfirmInfoBarDelegate::ConfirmInfoBarDelegate() = default;

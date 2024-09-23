@@ -200,6 +200,9 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // audio_power_monitor.h for usage.  This may be called on any thread.
   std::pair<float, bool> ReadCurrentPowerAndClip();
 
+  // Recreates the output stream to play audio to specified device.
+  void SwitchAudioOutputDeviceId(const std::string& new_output_device_id);
+
  protected:
   // Time constant for AudioPowerMonitor.  See AudioPowerMonitor ctor comments
   // for semantics.  This value was arbitrarily chosen, but seems to work well.
@@ -282,7 +285,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   void StopCloseAndClearStream();
 
   // Helper method which delivers a log string to the event handler.
-  void SendLogMessage(const char* fmt, ...) PRINTF_FORMAT(2, 3);
+  PRINTF_FORMAT(2, 3) void SendLogMessage(const char* fmt, ...);
 
   // Log the current average power level measured by power_monitor_.
   void LogAudioPowerLevel(const char* call_name);
@@ -318,8 +321,9 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   const base::TimeTicks construction_time_;
 
   // Specifies the device id of the output device to open or empty for the
-  // default output device.
-  const std::string output_device_id_;
+  // default output device. The device id can be updated by the
+  // `SwitchAudioOutputDeviceId()`, which will recreate the stream.
+  std::string output_device_id_;
 
   raw_ptr<media::AudioOutputStream, DanglingUntriaged> stream_;
 
@@ -330,7 +334,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // The snoopers examining or grabbing a copy of the audio data from the
   // OnMoreData() calls.
   base::Lock snooper_lock_;
-  std::vector<raw_ptr<Snooper, VectorExperimental>> snoopers_;
+  std::vector<raw_ptr<Snooper>> snoopers_;
 
   // The current volume of the audio stream.
   double volume_;

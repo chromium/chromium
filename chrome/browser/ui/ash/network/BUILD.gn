@@ -1,0 +1,140 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("network") {
+  sources = [
+    "enrollment_dialog_view.cc",
+    "enrollment_dialog_view.h",
+    "mobile_data_notifications.cc",
+    "mobile_data_notifications.h",
+    "network_connect_delegate.cc",
+    "network_connect_delegate.h",
+    "network_portal_notification_controller.cc",
+    "network_portal_notification_controller.h",
+    "network_portal_signin_controller.cc",
+    "network_portal_signin_controller.h",
+    "network_state_notifier.cc",
+    "network_state_notifier.h",
+    "tether_notification_presenter.cc",
+    "tether_notification_presenter.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/webui/settings/public/constants:mojom",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/lock",
+    "//chrome/browser/ash/mobile",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/profiles:signin_profile_handler",
+    "//chrome/browser/chromeos/network",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/ash/system",
+    "//chrome/browser/ui/webui/ash/cellular_setup",
+    "//chrome/common",
+    "//chromeos/ash/components/carrier_lock",
+    "//chromeos/ash/components/dbus/hermes",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network/portal_detector",
+    "//chromeos/ash/components/tether",
+    "//chromeos/constants",
+    "//components/account_id",
+    "//components/captive_portal/core",
+    "//components/policy/core/common",
+    "//components/session_manager/core",
+    "//components/strings:components_strings_grit",
+    "//extensions/browser",
+    "//extensions/common",
+    "//ui/chromeos",
+    "//ui/chromeos/strings",
+    "//ui/message_center/public/cpp",
+    "//ui/web_dialogs",
+  ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ui/webui/ash/cellular_setup" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "mobile_data_notifications_unittest.cc",
+    "network_portal_notification_controller_unittest.cc",
+    "network_portal_signin_controller_unittest.cc",
+    "network_state_notifier_unittest.cc",
+    "tether_notification_presenter_unittest.cc",
+  ]
+
+  deps = [
+    ":network",
+    "//ash/constants",
+    "//ash/strings",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/carrier_lock",
+    "//chromeos/ash/components/dbus/hermes",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/tether",
+    "//chromeos/constants",
+    "//components/account_id",
+    "//components/captive_portal/core",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/proxy_config",
+    "//components/session_manager:base",
+    "//components/session_manager/core",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/chromeos/strings",
+    "//ui/message_center/public/cpp",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "network_portal_signin_controller_browsertest.cc" ]
+
+  deps = [
+    ":network",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/chromeos/network",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/constants",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

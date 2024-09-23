@@ -46,6 +46,20 @@ build_webui("build") {
     ]
   }
 
+  if (is_mac || is_win || is_chromeos) {
+    if (is_chrome_branded) {
+      static_files += [
+        "images/screenlock_reauth_promo.svg",
+        "images/screenlock_reauth_promo_dark.svg",
+      ]
+    } else {
+      static_files += [
+        "images/screenlock_reauth_promo_non_branded.svg",
+        "images/screenlock_reauth_promo_dark_non_branded.svg",
+      ]
+    }
+  }
+
   web_component_files = [
     "checkup_section.ts",
     "checkup_details_section.ts",
@@ -54,6 +68,7 @@ build_webui("build") {
     "dialogs/auth_timed_out_dialog.ts",
     "dialogs/delete_password_disclaimer_dialog.ts",
     "dialogs/delete_passkey_dialog.ts",
+    "dialogs/disconnect_cloud_authenticator_dialog.ts",
     "dialogs/edit_passkey_dialog.ts",
     "dialogs/edit_password_dialog.ts",
     "dialogs/edit_password_disclaimer_dialog.ts",
@@ -61,6 +76,7 @@ build_webui("build") {
     "dialogs/move_passwords_dialog.ts",
     "dialogs/move_single_password_dialog.ts",
     "dialogs/password_preview_item.ts",
+    "full_data_reset.ts",
     "credential_details/credential_note.ts",
     "credential_details/credential_field.ts",
     "credential_details/passkey_details_card.ts",
@@ -111,6 +127,7 @@ build_webui("build") {
   ]
 
   icons_html_files = [ "icons.html" ]
+  html_to_wrapper_template = "detect"
 
   ts_composite = true
 
@@ -128,7 +145,6 @@ build_webui("build") {
     "//chrome/browser/resources/settings_shared:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
-    "//ui/webui/resources/cr_components/settings_prefs:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
@@ -138,6 +154,7 @@ build_webui("build") {
             "$root_gen_dir/chrome/browser/resources/settings_shared/tsc/*",
             target_gen_dir) ]
 
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "password-manager"

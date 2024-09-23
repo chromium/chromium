@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # TODO(crbug.com/1340013): Have a linux section for the toolchain for
-# goma/reclient. It likely just needs to download the .tgz on swift.org and
+# reclient. It likely just needs to download the .tgz on swift.org and
 # unpack it.
 
 # IMPORTANT: When changing the download URL, also be sure to update the install
@@ -17,13 +17,13 @@ create {
   platform_re: "mac-.*"
   source {
     url {
-      download_url: "https://download.swift.org/swift-5.8-release/xcode/swift-5.8-RELEASE/swift-5.8-RELEASE-osx.pkg"
-      version: "5.8-release"
+      download_url: "https://download.swift.org/swift-5.10.1-release/xcode/swift-5.10.1-RELEASE/swift-5.10.1-RELEASE-osx.pkg"
+      version: "5.10.1-release"
     }
   }
   build {
     install: "install-mac.sh"
-    install: "swift-5.8-RELEASE-osx"
+    install: "swift-5.10.1-RELEASE-osx"
   }
 }
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 
 #include "cc/layers/layer.h"
@@ -29,8 +34,8 @@ Vector<const cc::Layer*> CcLayersByName(const cc::Layer* root,
   Vector<cc::Layer*> non_const_result =
       CcLayersByName(const_cast<cc::Layer*>(root), name_regex);
   Vector<const cc::Layer*> result(non_const_result.size());
-  auto** it = non_const_result.begin();
-  auto** end = non_const_result.end();
+  auto it = non_const_result.begin();
+  auto end = non_const_result.end();
   for (unsigned i = 0; it != end; ++it, ++i)
     result[i] = *it;
   return result;
@@ -46,8 +51,8 @@ Vector<const cc::Layer*> CcLayersByDOMElementId(const cc::Layer* root,
   Vector<cc::Layer*> non_const_result =
       CcLayersByDOMElementId(const_cast<cc::Layer*>(root), dom_id);
   Vector<const cc::Layer*> result(non_const_result.size());
-  auto** it = non_const_result.begin();
-  auto** end = non_const_result.end();
+  auto it = non_const_result.begin();
+  auto end = non_const_result.end();
   for (unsigned i = 0; it != end; ++it, ++i)
     result[i] = *it;
   return result;

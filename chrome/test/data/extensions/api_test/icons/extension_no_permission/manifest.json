@@ -3,7 +3,7 @@
   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCk/WWuKvmfJx/Q0ldDrtXsP7JbFOPtP7rfasiAlmQoJpW4ECHpqTqj/i/E68MVLzAagp790vUeSgyJF4U0P3eHf8e6pskyrEz0+UYt6PElEIjyOnMu5JY3c6l7NdeJK5DVI0SIsspeA1HmxUQ+7CCv7A4fTCwwp1UNjQsG56feeQIDAQAB",
   "name": "test",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "permissions": [],
   "incognito": "split",
   "icons": {

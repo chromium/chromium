@@ -1,0 +1,92 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("storage") {
+  sources = [
+    "device_storage_handler.cc",
+    "device_storage_handler.h",
+    "device_storage_util.cc",
+    "device_storage_util.h",
+    "storage_section.cc",
+    "storage_section.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ui/webui/ash/settings/calculator",
+    "//chromeos/ash/components/disks",
+    "//third_party/re2",
+  ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ui/webui/ash/settings/pages/device",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/common",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ui/webui/ash/settings/pages/device" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "device_storage_handler_unittest.cc" ]
+
+  deps = [
+    ":storage",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc/session",
+    "//ash/constants",
+    "//ash/public/cpp:test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/ash/borealis",
+    "//chrome/browser/ash/borealis/testing:test_support",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ui/webui/ash/settings/calculator:test_support",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
+    "//chromeos/ash/components/dbus/spaced",
+    "//chromeos/ash/components/dbus/userdataauth:test_support",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/disks:test_support",
+    "//components/account_id",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//storage/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

@@ -151,7 +151,7 @@ class AudioInputTest : public testing::TestWithParam<bool> {
     }
     return true;
 #elif BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-    // TODO(crbug.com/1128458): macOS on ARM64 says it has devices, but won't
+    // TODO(crbug.com/40719640): macOS on ARM64 says it has devices, but won't
     // let any of them be opened or listed.
     return false;
 #else
@@ -273,7 +273,7 @@ TEST_P(AudioInputTest, CreateAndClose) {
 }
 
 // Test create, open and close of an AudioInputStream without recording audio.
-// TODO(crbug.com/1429490): This test is failing on ios-blink-dbg-fyi bot.
+// TODO(crbug.com/40262701): This test is failing on ios-blink-dbg-fyi bot.
 #if BUILDFLAG(IS_IOS)
 #define MAYBE_OpenAndClose DISABLED_OpenAndClose
 #else
@@ -290,7 +290,7 @@ TEST_P(AudioInputTest, MAYBE_OpenAndClose) {
 }
 
 // Test create, open, stop and close of an AudioInputStream without recording.
-// TODO(crbug.com/1429490): This test is failing on ios-blink-dbg-fyi bot.
+// TODO(crbug.com/40262701): This test is failing on ios-blink-dbg-fyi bot.
 #if BUILDFLAG(IS_IOS)
 #define MAYBE_OpenStopAndClose DISABLED_OpenStopAndClose
 #else
@@ -308,7 +308,7 @@ TEST_P(AudioInputTest, MAYBE_OpenStopAndClose) {
 
 // Test a normal recording sequence using an AudioInputStream.
 // Very simple test which starts capturing and verifies that recording starts.
-// TODO(crbug.com/1429490): This test is failing on ios-blink-dbg-fyi bot.
+// TODO(crbug.com/40262701): This test is failing on ios-blink-dbg-fyi bot.
 #if BUILDFLAG(IS_IOS)
 #define MAYBE_Record DISABLED_Record
 #else

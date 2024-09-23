@@ -23,9 +23,6 @@ extern const CGFloat kAuthenticationSeparatorColorAlpha;
 // Height of the separator.
 extern const CGFloat kAuthenticationSeparatorHeight;
 
-// Header image name.
-extern NSString* const kAuthenticationHeaderImageName;
-
 // Accessibility identifier for the Signin/Sync screen.
 extern NSString* const kSigninSyncScreenAccessibilityIdentifier;
 

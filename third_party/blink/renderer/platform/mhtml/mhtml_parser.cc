@@ -52,21 +52,20 @@ namespace blink {
 
 namespace {
 
-void QuotedPrintableDecode(const char* data,
-                           size_t data_length,
-                           Vector<char>& out) {
+void QuotedPrintableDecode(base::span<const char> data, Vector<char>& out) {
   out.clear();
-  if (!data_length)
+  if (data.empty()) {
     return;
+  }
 
-  for (size_t i = 0; i < data_length; ++i) {
+  for (size_t i = 0; i < data.size(); ++i) {
     char current_character = data[i];
     if (current_character != '=') {
       out.push_back(current_character);
       continue;
     }
     // We are dealing with a '=xx' sequence.
-    if (data_length - i < 3) {
+    if (data.size() - i < 3) {
       // Unfinished = sequence, append as is.
       out.push_back(current_character);
       continue;
@@ -369,7 +368,7 @@ ArchiveResource* MHTMLParser::ParseNextPart(
     // read the part content till reaching the boundary without CRLF. So the
     // part content may contain CRLF at the end, which will be stripped off
     // later.
-    line_reader_.SetSeparator(end_of_part_boundary.Utf8().c_str());
+    line_reader_.SetSeparator(end_of_part_boundary.Utf8());
     if (!line_reader_.NextChunk(content)) {
       DVLOG(1) << "Binary contents requires end of part";
       return nullptr;
@@ -418,12 +417,12 @@ ArchiveResource* MHTMLParser::ParseNextPart(
       }
       // Note that we use line.utf8() and not line.ascii() as ascii turns
       // special characters (such as tab, line-feed...) into '?'.
-      content.Append(line.Utf8().c_str(), line.length());
+      content.AppendSpan(base::span(line.Utf8()));
       if (content_transfer_encoding == MIMEHeader::Encoding::kQuotedPrintable) {
         // The line reader removes the \r\n, but we need them for the content in
         // this case as the QuotedPrintable decoder expects CR-LF terminated
         // lines.
-        content.Append("\r\n", 2u);
+        content.AppendSpan(base::span_from_cstring("\r\n"));
       }
     }
   }
@@ -441,18 +440,19 @@ ArchiveResource* MHTMLParser::ParseNextPart(
       }
       break;
     case MIMEHeader::Encoding::kQuotedPrintable:
-      QuotedPrintableDecode(content.data(), content.size(), data);
+      QuotedPrintableDecode(content, data);
       break;
     case MIMEHeader::Encoding::kEightBit:
     case MIMEHeader::Encoding::kSevenBit:
     case MIMEHeader::Encoding::kBinary:
-      data.Append(content.data(), content.size());
+      data.AppendVector(content);
       break;
     default:
       DVLOG(1) << "Invalid encoding for MHTML part.";
       return nullptr;
   }
-  scoped_refptr<SharedBuffer> content_buffer = SharedBuffer::AdoptVector(data);
+  scoped_refptr<SharedBuffer> content_buffer =
+      SharedBuffer::Create(std::move(data));
   // FIXME: the URL in the MIME header could be relative, we should resolve it
   // if it is.  The specs mentions 5 ways to resolve a URL:
   // http://tools.ietf.org/html/rfc2557#section-5

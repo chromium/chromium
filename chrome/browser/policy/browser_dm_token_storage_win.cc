@@ -4,18 +4,19 @@
 
 #include "chrome/browser/policy/browser_dm_token_storage_win.h"
 
-// Must be first.
+#include <objbase.h>
+
+#include <unknwn.h>
 #include <windows.h>
 
 #include <comutil.h>
-#include <objbase.h>
 #include <oleauto.h>
-#include <unknwn.h>
 #include <winerror.h>
 #include <wrl/client.h>
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -25,7 +26,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -160,7 +160,7 @@ bool StoreDMTokenInRegistry(const std::string& token) {
                                   var)))
     return false;
 
-  // TODO(crbug.com/823515): Get the status of the app command execution and
+  // TODO(crbug.com/41377531): Get the status of the app command execution and
   // return a corresponding value for |success|. For now, assume that the call
   // to setup.exe succeeds.
   return true;
@@ -181,7 +181,7 @@ bool DeleteDMTokenFromRegistry() {
   if (FAILED(app_command->execute(var, var, var, var, var, var, var, var, var)))
     return false;
 
-  // TODO(crbug.com/823515): Get the status of the app command execution and
+  // TODO(crbug.com/41377531): Get the status of the app command execution and
   // return a corresponding value for |success|. For now, assume that the call
   // to setup.exe succeeds.
   return true;
@@ -250,7 +250,7 @@ std::string BrowserDMTokenStorageWin::InitDMToken() {
 
     DCHECK_LE(size, installer::kMaxDMTokenLength);
     return std::string(base::TrimWhitespaceASCII(
-        base::StringPiece(raw_value.data(), size), base::TRIM_ALL));
+        std::string_view(raw_value.data(), size), base::TRIM_ALL));
   }
 
   DVLOG(1) << "Failed to get DMToken from Registry.";

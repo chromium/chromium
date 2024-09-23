@@ -86,9 +86,11 @@ public class ThrottlingNotificationScheduler {
                         taskId,
                         PendingNotificationTask.Priority.HIGH,
                         () -> {
-                            new NotificationManagerProxyImpl(ContextUtils.getApplicationContext())
+                            BaseNotificationManagerProxyFactory.create(
+                                            ContextUtils.getApplicationContext())
                                     .notify(notificationWrapper);
                         });
+        addPendingNotificationTask(task);
     }
 
     /**
@@ -107,7 +109,8 @@ public class ThrottlingNotificationScheduler {
     public void cancelPendingNotification(String tag, int id) {
         Pair<String, Integer> taskId = Pair.create(tag, Integer.valueOf(id));
         removePendingNotificationTask(taskId);
-        new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()).cancel(tag, id);
+        BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext())
+                .cancel(tag, id);
     }
 
     /** Clear the pending task queue. */

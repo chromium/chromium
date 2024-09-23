@@ -7,10 +7,41 @@ found in the LICENSE file.
 <org.chromium.chrome.browser.hub.HubToolbarView
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/hub_toolbar"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:orientation="vertical">
+
+  <!-- Hub search is selectively hidden based on the feature flag. -->
+  <view
+    class="org.chromium.chrome.browser.ntp.search.SearchBoxContainerView"
+    android:id="@+id/search_box"
+    android:visibility="gone"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/hub_search_box_height"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="12dp"
+    android:paddingStart="24dp"
+    android:paddingEnd="12dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/hub_search_box_background">
+
+    <EditText
+      tools:ignore="Autofill,LabelFor"
+      style="@style/TextAppearance.FakeSearchBoxText"
+      android:id="@+id/search_box_text"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@null"
+      android:ellipsize="end"
+      android:focusableInTouchMode="false"
+      android:focusable="false"
+      android:inputType="text"
+      android:singleLine="true"
+      android:hint="@string/hub_search_empty_hint" />
+  </view>
 
   <FrameLayout
     android:layout_width="match_parent"
@@ -36,11 +67,13 @@ found in the LICENSE file.
       style="@style/ToolbarButton"
       android:layout_width="wrap_content"
       android:layout_height="match_parent"
-      android:layout_gravity="center"
+      android:layout_gravity="center_horizontal|bottom"
       android:visibility="gone"
-      android:layout_marginBottom="3dp"/>
+      app:tabIndicator="@drawable/m3_tabs_line_indicator"
+      app:tabIndicatorFullWidth="true"/>
 
     <FrameLayout
+      android:id="@+id/menu_button_container"
       android:layout_width="wrap_content"
       android:layout_height="match_parent"
       android:layout_gravity="end" >

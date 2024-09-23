@@ -37,10 +37,28 @@ BASE_FEATURE(kWaylandFractionalScaleV1,
 #endif
 );
 
+// Controls whether support for the xdg-toplevel-drag protocol should be
+// enabled. On Lacros it will then be used even if the Exo-only extended-drag
+// protocol is supported.
+BASE_FEATURE(kWaylandXdgToplevelDrag,
+             "WaylandXdgToplevelDrag",
+#if BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // This debug/dev flag pretty-prints DRM modeset configuration logs for ease
 // of reading. For more information, see: http://b/233006802
 BASE_FEATURE(kPrettyPrintDrmModesetConfigLogs,
              "PrettyPrintDrmModesetConfigLogs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, Chromium will try to use the smallest valid size for the cursor
+// plane that fits the cursor bitmap.
+BASE_FEATURE(kUseDynamicCursorSize,
+             "UseDynamicCursorSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() {
@@ -56,8 +74,16 @@ bool IsWaylandFractionalScaleV1Enabled() {
   return base::FeatureList::IsEnabled(kWaylandFractionalScaleV1);
 }
 
+bool IsWaylandXdgToplevelDragEnabled() {
+  return base::FeatureList::IsEnabled(kWaylandXdgToplevelDrag);
+}
+
 bool IsPrettyPrintDrmModesetConfigLogsEnabled() {
   return base::FeatureList::IsEnabled(kPrettyPrintDrmModesetConfigLogs);
+}
+
+bool IsUseDynamicCursorSizeEnabled() {
+  return base::FeatureList::IsEnabled(kUseDynamicCursorSize);
 }
 
 }  // namespace ui

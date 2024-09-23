@@ -120,6 +120,19 @@ export class SettingsAppearanceFontsPageElement extends PolymerElement {
   private onMinimumSizeChange_() {
     this.$.minimumSizeFontPreview.hidden = this.computeMinimumFontSize_() <= 0;
   }
+
+  private fontFamilyValueForFixed_(prefValue: string) {
+    // <if expr="is_macosx">
+    // Osaka font family, which is bundled with macOS, contains a proportional
+    // and a fixed-width fonts. The CSS `font-family` property distinguishes
+    // them by assuming 'Osaka' for the proportional font and 'Osaka-Mono' for
+    // the fixed-width font. See crbug.com/40535332.
+    if (prefValue === 'Osaka') {
+      return 'Osaka-Mono';
+    }
+    // </if>
+    return prefValue;
+  }
 }
 
 declare global {

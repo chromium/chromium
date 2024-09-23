@@ -14,55 +14,56 @@ found in the LICENSE file.
 </head>
 <body>
 <header>
-In this browser:
-<ul>
-<li>Attribution Reporting is <b id="feature-status" class="disabled">disabled</b>.
-<li><code>Attribution-Reporting-Support</code> is <b id="attribution-support">web</b>.
-<li>Report delays are <b id="report-delays">enabled</b>.
-<li>Noise is <b id="noise">enabled</b>.
-</ul>
 <button id="refresh">Refresh all page data</button>
 <button id="clear-data">Clear all attribution data</button>
 </header>
 <cr-tab-box hidden>
-  <div id="sources-tab" slot="tab">Active Sources</div>
-  <div id="source-registrations-tab" slot="tab">Source Registrations</div>
-  <div id="triggers-tab" slot="tab">Trigger Registrations</div>
-  <div id="event-level-reports-tab" slot="tab">Event-Level Reports</div>
-  <div id="aggregatable-reports-tab" slot="tab">Aggregatable Reports</div>
-  <div id="debug-reports-tab" slot="tab">Debug Reports</div>
-  <div id="os-tab" slot="tab">OS Registrations</div>
-  <div slot="panel">
-    <attribution-internals-table id="sourceTable">
-    </attribution-internals-table>
+  <div slot="tab" role=tab id=tab-api-state aria-controls=api-state-panel>API State</div>
+  <div slot="tab" role=tab id=tab-active-sources aria-controls=active-source-panel>Active Sources</div>
+  <div slot="tab" role=tab id=tab-source-registrations aria-controls=source-registration-panel>Source Registrations</div>
+  <div slot="tab" role=tab id=tab-trigger-registrations aria-controls=trigger-registration-panel>Trigger Registrations</div>
+  <div slot="tab" role=tab id=tab-event-level-reports aria-controls=event-level-report-panel>Event-Level Reports</div>
+  <div slot="tab" role=tab id=tab-aggregatable-reports aria-controls=aggregatable-report-panel>Aggregatable Reports</div>
+  <div slot="tab" role=tab id=tab-debug-reports aria-controls=debug-report-panel>Debug Reports</div>
+  <div slot="tab" role=tab id=tab-os-registrations aria-controls=os-registration-panel>OS Registrations</div>
+  <div slot="panel" role=tabpanel aria-labelledby=tab-api-state id=api-state-panel>
+    In this browser:
+    <ul>
+    <li>Attribution Reporting is <b id="feature-status">disabled</b>.
+    <li><code>Attribution-Reporting-Support</code> is <b id="attribution-support">web</b>.
+    <li>Report delays are <b id="report-delays">enabled</b>.
+    <li>Noise is <b id="noise">enabled</b>.
+    </ul>
   </div>
-  <div slot="panel">
-    <attribution-internals-table id="sourceRegistrationTable">
-    </attribution-internals-table>
+  <div slot="panel" role=tabpanel aria-labelledby=tab-active-sources id=active-source-panel>
+    <attribution-internals-table></attribution-internals-table>
+    <attribution-detail-table></attribution-detail-table>
   </div>
-  <div slot="panel">
-    <attribution-internals-table id="triggerTable">
-    </attribution-internals-table>
+  <div slot="panel" role=tabpanel aria-labelledby=tab-source-registrations id=source-registration-panel>
+    <attribution-internals-table></attribution-internals-table>
+    <attribution-detail-table></attribution-detail-table>
   </div>
-  <div slot="panel">
-    <div id="event-level-report-controls" class="controls">
-      <button disabled>Send Selected Pending Event-Level Reports</button>
-    </div>
-    <attribution-internals-table id="reportTable">
-    </attribution-internals-table>
+  <div slot="panel" role=tabpanel aria-labelledby=tab-trigger-registrations id=trigger-registration-panel>
+    <attribution-internals-table></attribution-internals-table>
+    <attribution-detail-table></attribution-detail-table>
   </div>
-  <div slot="panel">
-    <div id="aggregatable-report-controls" class="controls">
-      <button disabled>Send Selected Pending Aggregatable Reports</button>
-    </div>
-    <attribution-internals-table id="aggregatableReportTable">
-    </attribution-internals-table>
+  <div slot="panel" role=tabpanel aria-labelledby=tab-event-level-reports id="event-level-report-panel">
+    <attribution-internals-table></attribution-internals-table>
+    <attribution-detail-table>
+      <button slot=button>Send</button>
+    </attribution-detail-table>
   </div>
-  <div slot="panel">
-    <attribution-internals-table id="debugReportTable">
-    </attribution-internals-table>
+  <div slot="panel" role=tabpanel aria-labelledby=tab-aggregatable-reports id="aggregatable-report-panel">
+    <attribution-internals-table></attribution-internals-table>
+    <attribution-detail-table>
+      <button slot=button>Send</button>
+    </attribution-detail-table>
   </div>
-  <div slot="panel">
+  <div slot="panel" role=tabpanel aria-labelledby=tab-debug-reports id=debug-report-panel>
+    <attribution-internals-table></attribution-internals-table>
+    <attribution-detail-table></attribution-detail-table>
+  </div>
+  <div slot="panel" role=tabpanel aria-labelledby=tab-os-registrations id=os-registration-panel>
     <attribution-internals-table id="osRegistrationTable">
     </attribution-internals-table>
   </div>

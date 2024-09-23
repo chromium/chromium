@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import java.io.ByteArrayOutputStream;
@@ -23,7 +24,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
 
@@ -72,26 +72,8 @@ public class FileUtils {
     }
 
     /**
-     * Delete the given files or directories by calling {@link #recursivelyDeleteFile(File)}. This
-     * supports deletion of content URIs.
-     * @param filePaths The file paths or content URIs to delete.
-     * @param canDelete the {@link Function} function used to check if the file can be deleted.
-     */
-    public static void batchDeleteFiles(
-            List<String> filePaths, Function<String, Boolean> canDelete) {
-        for (String filePath : filePaths) {
-            if (canDelete != null && !canDelete.apply(filePath)) continue;
-            if (ContentUriUtils.isContentUri(filePath)) {
-                ContentUriUtils.delete(filePath);
-            } else {
-                File file = new File(filePath);
-                if (file.exists()) recursivelyDeleteFile(file, canDelete);
-            }
-        }
-    }
-
-    /**
      * Get file size. If it is a directory, recursively get the size of all files within it.
+     *
      * @param file The file or directory.
      * @return The size in bytes.
      */
@@ -149,18 +131,19 @@ public class FileUtils {
 
     /**
      * Returns a URI that points at the file.
+     *
      * @param file File to get a URI for.
      * @return URI that points at that file, either as a content:// URI or a file:// URI.
      */
     public static Uri getUriForFile(File file) {
-        // TODO(crbug/709584): Uncomment this when http://crbug.com/709584 has been fixed.
+        // TODO(crbug.com/40514633): Uncomment this when http://crbug.com/709584 has been fixed.
         // assert !ThreadUtils.runningOnUiThread();
         Uri uri = null;
 
         try {
             // Try to obtain a content:// URI, which is preferred to a file:// URI so that
             // receiving apps don't attempt to determine the file's mime type (which often fails).
-            uri = ContentUriUtils.getContentUriFromFile(file);
+            uri = FileProviderUtils.getContentUriFromFile(file);
         } catch (IllegalArgumentException e) {
             Log.e(TAG, "Could not create content uri: " + e);
         }
@@ -221,6 +204,7 @@ public class FileUtils {
     @NativeMethods
     public interface Natives {
         /** Returns the canonicalised absolute pathname for |filePath|. */
-        String getAbsoluteFilePath(String filePath);
+        @JniType("std::string")
+        String getAbsoluteFilePath(@JniType("std::string") String filePath);
     }
 }

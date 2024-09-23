@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/channel_info.h"
-
 #include <stdlib.h>
 
 #include <string>
+#include <string_view>
 
-#include "base/environment.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/common/channel_info.h"
 #include "components/version_info/version_info.h"
 
 namespace chrome {
@@ -33,8 +31,8 @@ struct ChannelState {
 ChannelState GetChannelImpl() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const char* const env = getenv("CHROME_VERSION_EXTRA");
-  const base::StringPiece env_str =
-      env ? base::StringPiece(env) : base::StringPiece();
+  const std::string_view env_str =
+      env ? std::string_view(env) : std::string_view();
 
   // Ordered by decreasing expected population size.
   if (env_str == "stable")
@@ -73,40 +71,8 @@ std::string GetChannelName(WithExtendedStable with_extended_stable) {
   }
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const char* const env = getenv("CHROME_VERSION_EXTRA");
-  return env ? std::string(base::StringPiece(env)) : std::string();
+  return env ? std::string(std::string_view(env)) : std::string();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
-std::string GetDesktopName(base::Environment* env) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Google Chrome packaged as a snap is a special case: the application name
-  // is always "google-chrome", regardless of the channel (channels are built
-  // in to snapd, switching between them or doing parallel installs does not
-  // require distinct application names).
-  std::string snap_name;
-  if (env->GetVar("SNAP_NAME", &snap_name) && snap_name == "google-chrome")
-    return "google-chrome.desktop";
-  version_info::Channel product_channel(GetChannel());
-  switch (product_channel) {
-    case version_info::Channel::DEV:
-      return "google-chrome-dev.desktop";
-    case version_info::Channel::CANARY:
-      return "google-chrome-canary.desktop";
-    case version_info::Channel::BETA:
-      return "google-chrome-beta.desktop";
-    default:
-      // Extended stable is not differentiated from regular stable.
-      return "google-chrome.desktop";
-  }
-#else  // BUILDFLAG(CHROMIUM_BRANDING)
-  // Allow $CHROME_DESKTOP to override the built-in value, so that development
-  // versions can set themselves as the default without interfering with
-  // non-official, packaged versions using the built-in value.
-  std::string name;
-  if (env->GetVar("CHROME_DESKTOP", &name) && !name.empty())
-    return name;
-  return "chromium-browser.desktop";
-#endif
 }
 
 version_info::Channel GetChannel() {

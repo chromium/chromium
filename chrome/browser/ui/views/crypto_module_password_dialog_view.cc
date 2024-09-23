@@ -10,7 +10,10 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
@@ -27,7 +30,7 @@ CryptoModulePasswordDialogView::CryptoModulePasswordDialogView(
     CryptoModulePasswordCallback callback)
     : callback_(std::move(callback)) {
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_CRYPTO_MODULE_AUTH_DIALOG_OK_BUTTON_LABEL));
   constexpr bool kAccepted = true;
   constexpr bool kCancelled = false;
@@ -40,7 +43,7 @@ CryptoModulePasswordDialogView::CryptoModulePasswordDialogView(
   SetCloseCallback(
       base::BindOnce(&CryptoModulePasswordDialogView::DialogAcceptedOrCancelled,
                      base::Unretained(this), kCancelled));
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kControl));
   Init(hostname, slot_name, reason);
@@ -101,7 +104,7 @@ void CryptoModulePasswordDialogView::Init(const std::string& hostname,
           IDS_CRYPTO_MODULE_AUTH_DIALOG_TEXT_CERT_EXPORT, slot16);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
@@ -125,7 +128,7 @@ void CryptoModulePasswordDialogView::Init(const std::string& hostname,
       password_container->AddChildView(std::make_unique<views::Textfield>());
   password_entry_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   password_entry_->set_controller(this);
-  password_entry_->SetAccessibleName(password_label_);
+  password_entry_->GetViewAccessibility().SetName(*password_label_);
   password_container->SetFlexForView(password_entry_, 1);
 }
 

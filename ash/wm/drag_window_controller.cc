@@ -5,6 +5,7 @@
 #include "ash/wm/drag_window_controller.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/window_mirror_view.h"
 #include "base/memory/raw_ptr.h"
@@ -106,16 +107,17 @@ class DragWindowController::DragWindowDetails {
   void CreateDragWindow(aura::Window* original_window,
                         const std::optional<gfx::Rect>& shadow_bounds) {
     DCHECK(!widget_);
-    views::Widget::InitParams params;
-    params.type = views::Widget::InitParams::TYPE_POPUP;
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_POPUP);
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.layer_type = ui::LAYER_NOT_DRAWN;
     params.name = "DragWindow";
     params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.accept_events = false;
-    const int parent_id = original_window->parent()->GetId();
-    params.parent = root_window_->GetChildById(parent_id);
+    params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
+    params.parent =
+        root_window_->GetChildById(original_window->parent()->GetId());
 
     widget_ = std::make_unique<views::Widget>();
     widget_->set_focus_on_creation(false);

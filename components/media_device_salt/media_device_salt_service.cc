@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/system/system_monitor.h"

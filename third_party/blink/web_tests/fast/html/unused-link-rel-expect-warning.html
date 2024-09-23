@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <script src="../../resources/js-test.js"></script>
+  <link rel="expect" href="#non-existent" blocking="render">
+</head>
+<script>
+  window.jsTestIsAsync = true;
+  description("Unused <link rel=expect> should generate a console warning");
+  setTimeout(() => {
+    if (window.testRunner) {
+      testRunner.dumpAsText();
+    }
+    finishJSTest();
+  });
+</script>
+
+</html>

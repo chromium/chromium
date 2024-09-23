@@ -8,18 +8,17 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/draw_mode.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/trees/occlusion.h"
 #include "cc/trees/property_tree.h"
-#include "cc/view_transition/view_transition_element_id.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
@@ -267,8 +266,6 @@ class CC_EXPORT RenderSurfaceImpl {
 
   const EffectNode* OwningEffectNode() const;
   EffectNode* OwningEffectNodeMutableForTest() const;
-
-  const ViewTransitionElementId& GetViewTransitionElementId() const;
 
  private:
   void SetContentRect(const gfx::Rect& content_rect);

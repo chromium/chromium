@@ -15,7 +15,7 @@ struct ResolutionBitrateLimit {
   int32 max_bitrate_bps;
 };
 
-// TODO(crbug.com/657632): Remove |has_*| values and use nullable types.
+// TODO(crbug.com/40489779): Remove |has_*| values and use nullable types.
 struct VideoEncoderInfo {
   string implementation_name;
 

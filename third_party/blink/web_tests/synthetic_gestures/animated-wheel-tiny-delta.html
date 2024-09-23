@@ -2,7 +2,7 @@
 <script src='../resources/testharness.js'></script>
 <script src='../resources/testharnessreport.js'></script>
 <script src='../resources/gesture-util.js'></script>
-<script src="../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
+<script src="../resources/percent-based-util.js"></script>
 
 <style>
   body, html {
@@ -31,7 +31,7 @@
                          SPEED_INSTANT,
                          precise_deltas);
 
-      
+
 
       await waitFor(() => { return window.scrollY - scrollYBefore >= expectedScrollY; },
                     "Didn't scroll by expected amount: " + expectedScrollY);
@@ -42,7 +42,7 @@
     const source_type = GestureSourceType.MOUSE_INPUT;
 
     promise_test(async () => {
-      const expectedScrollY = 
+      const expectedScrollY =
               calculateExpectedScroll(document.scrollingElement, 0, 1).y;
       assert_equals(window.scrollY, 0);
       await tryScroll(1, source_type, expectedScrollY);
@@ -52,7 +52,7 @@
 
     promise_test(async () => {
       const scrollYBefore = window.scrollY;
-      const expectedScrollY = 
+      const expectedScrollY =
               calculateExpectedScroll(document.scrollingElement, 0, 2).y;
       await tryScroll(2, source_type, expectedScrollY);
       assert_approx_equals(window.scrollY, scrollYBefore + expectedScrollY, 0.00001);

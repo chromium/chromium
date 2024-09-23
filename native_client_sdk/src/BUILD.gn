@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/toolchain/toolchain.gni")
 import("//components/nacl/features.gni")
 
 declare_args() {
@@ -10,7 +11,7 @@ declare_args() {
   enable_cross_trusted = is_linux || is_chromeos
 
   # Build the nacl SDK untrusted components.  This is disabled by default since
-  # not all NaCl untrusted compilers are in goma (e.g arm-nacl-glibc)
+  # not all NaCl untrusted compilers are in RBE (e.g arm-nacl-glibc)
   nacl_sdk_untrusted = false
 }
 
@@ -53,9 +54,9 @@ if (enable_nacl) {
     # http://crbug.com/245456
     if (!is_win && target_cpu == "x64") {
       deps += [
-        "//third_party/breakpad:dump_syms($host_toolchain)",
-        "//third_party/breakpad:minidump_dump($host_toolchain)",
-        "//third_party/breakpad:minidump_stackwalk($host_toolchain)",
+        "//third_party/breakpad:dump_syms($host_system_allocator_toolchain)",
+        "//third_party/breakpad:minidump_dump($host_system_allocator_toolchain)",
+        "//third_party/breakpad:minidump_stackwalk($host_system_allocator_toolchain)",
       ]
     }
   }

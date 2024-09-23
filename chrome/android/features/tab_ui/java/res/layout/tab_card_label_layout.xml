@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.tasks.tab_management.TabCardLabelView
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="wrap_content"
+  android:layout_height="@dimen/tab_card_label_height"
+  android:padding="4dp"
+  android:elevation="@dimen/default_elevation_3"
+  android:clipToOutline="true"
+  android:background="@drawable/tab_label_background"
+  android:orientation="horizontal">
+
+  <org.chromium.components.browser_ui.widget.async_image.AsyncImageView
+    android:id="@+id/tab_label_icon"
+    android:layout_width="@dimen/tab_card_label_icon_size"
+    android:layout_height="@dimen/tab_card_label_icon_size"
+    android:layout_gravity="center_vertical"
+    android:visibility="gone"
+    android:clipToOutline="true"
+    android:background="@drawable/tab_label_icon_background"
+    android:importantForAccessibility="no"
+    app:cornerRadiusTopStart="@dimen/tab_card_label_icon_radius"
+    app:cornerRadiusTopEnd="@dimen/tab_card_label_icon_radius"
+    app:cornerRadiusBottomStart="@dimen/tab_card_label_icon_radius"
+    app:cornerRadiusBottomEnd="@dimen/tab_card_label_icon_radius" />
+
+  <TextView
+    android:id="@+id/tab_label_text"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:layout_marginHorizontal="4dp"
+    android:singleLine="true"
+    android:ellipsize="end"
+    style="@style/TextAppearance.TextSmall"/>
+</org.chromium.chrome.browser.tasks.tab_management.TabCardLabelView>

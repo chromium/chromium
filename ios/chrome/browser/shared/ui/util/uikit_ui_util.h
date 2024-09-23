@@ -38,6 +38,9 @@ void MaybeSetUITextFieldScaledFont(BOOL maybe,
                                    UIFont* font);
 // Creates a dynamically scablable custom font based on the given parameters.
 UIFont* CreateDynamicFont(UIFontTextStyle style, UIFontWeight weight);
+UIFont* CreateDynamicFont(UIFontTextStyle style,
+                          UIFontWeight weight,
+                          id<UITraitEnvironment> environment);
 
 enum CaptureViewOption {
   kNoCaptureOption,      // Equivalent to calling CaptureView without options.
@@ -135,13 +138,6 @@ bool ShouldShowCompactToolbar(id<UITraitEnvironment> environment);
 // Whether toolbar should be shown in compact mode in `traitCollection`.
 bool ShouldShowCompactToolbar(UITraitCollection* traitCollection);
 
-// Whether the `environment` has a regular vertical and regular horizontal
-// size class.
-bool IsRegularXRegularSizeClass(id<UITraitEnvironment> environment);
-// Whether the `traitCollection` has a regular vertical and regular horizontal
-// size class.
-bool IsRegularXRegularSizeClass(UITraitCollection* traitCollection);
-
 // Returns whether the `environment`'s toolbar is split between top and bottom
 // toolbar or if it is displayed as only one toolbar.
 bool IsSplitToolbarMode(id<UITraitEnvironment> environment);
@@ -200,5 +196,14 @@ bool IsScrollViewScrolledToBottom(UIScrollView* scroll_view);
 
 // Returns the approximate corner radius of the current device.
 CGFloat DeviceCornerRadius();
+
+// Returns whether bottom omnibox is an available option.
+bool IsBottomOmniboxAvailable();
+
+// Returns the `traits` array provided in the function's parameter if the
+// feature flag for the 'traitCollectionDidChange' refactor work is enabled.
+// Otherwise, return an array containing every iOS UITrait.
+NSArray<UITrait>* TraitCollectionSetForTraits(NSArray<UITrait>* traits)
+    API_AVAILABLE(ios(17.0));
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_UIKIT_UI_UTIL_H_

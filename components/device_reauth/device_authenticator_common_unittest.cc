@@ -33,6 +33,10 @@ class FakeDeviceAuthenticatorCommon : public DeviceAuthenticatorCommon {
   void AuthenticateWithMessage(const std::u16string& message,
                                AuthenticateCallback callback) override;
 
+#if BUILDFLAG(IS_ANDROID)
+  device_reauth::BiometricStatus GetBiometricAvailabilityStatus() override;
+#endif
+
   void Cancel() override;
 };
 
@@ -62,6 +66,14 @@ void FakeDeviceAuthenticatorCommon::AuthenticateWithMessage(
     AuthenticateCallback callback) {
   NOTIMPLEMENTED();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+device_reauth::BiometricStatus
+FakeDeviceAuthenticatorCommon::GetBiometricAvailabilityStatus() {
+  NOTIMPLEMENTED();
+  return device_reauth::BiometricStatus::kUnavailable;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 constexpr base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
 

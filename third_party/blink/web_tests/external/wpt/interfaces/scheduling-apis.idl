@@ -21,6 +21,7 @@ callback SchedulerPostTaskCallback = any ();
 interface Scheduler {
   Promise<any> postTask(SchedulerPostTaskCallback callback,
                         optional SchedulerPostTaskOptions options = {});
+  Promise<undefined> yield();
 };
 
 [Exposed=(Window, Worker)]

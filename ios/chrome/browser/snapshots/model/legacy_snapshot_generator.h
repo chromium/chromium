@@ -15,7 +15,7 @@ class WebState;
 
 // A class that generates snapshot images for the WebState associated with this
 // class. This lives on the UI thread.
-// TODO(crbug.com/1502841): Remove this class once the new implementation
+// TODO(crbug.com/40943236): Remove this class once the new implementation
 // written in Swift is used by default.
 @interface LegacySnapshotGenerator : NSObject
 

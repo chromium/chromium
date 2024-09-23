@@ -11,16 +11,26 @@ build_webui("build") {
 
   static_files = [ "index.html" ]
 
-  web_component_files = [
+  non_web_component_files = [
+    "user_education_internals.html.ts",
     "user_education_internals.ts",
+    "user_education_internals_card.html.ts",
     "user_education_internals_card.ts",
+    "user_education_whats_new_internals_card.html.ts",
+    "user_education_whats_new_internals_card.ts",
+  ]
+
+  css_files = [
+    "user_education_internals.css",
+    "user_education_internals_card.css",
+    "user_education_whats_new_internals_card.css",
   ]
 
   mojo_files_deps = [ "//chrome/browser/ui/webui/internals/user_education:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom-webui.ts" ]
 
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
@@ -30,4 +40,5 @@ build_webui("build") {
 
   generate_grdp = true
   grd_resource_path_prefix = "user-education"
+  webui_context_type = "trusted"
 }

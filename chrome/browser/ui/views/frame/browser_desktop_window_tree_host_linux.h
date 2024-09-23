@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/linux/device_scale_factor_observer.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"  // nogncheck
 
@@ -56,9 +57,8 @@ class BrowserDesktopWindowTreeHostLinux
   // setting is enabled, or when the window is maximized/fullscreen.
   bool SupportsClientFrameShadow() const;
 
-  // Sets hints for the WM/compositor that reflect the extents of the
-  // client-drawn shadow.
-  void UpdateFrameHints();
+  // views::DesktopWindowTreeHostLinux:
+  void UpdateFrameHints() override;
 
  private:
   // DesktopWindowTreeHostPlatform:
@@ -74,11 +74,11 @@ class BrowserDesktopWindowTreeHostLinux
   // BrowserWindowTreeHostPlatform:
   void FrameTypeChanged() override;
 
-  // views::DesktopWindowTreeHostLinuxImpl:
+  // views::DesktopWindowTreeHostLinux:
   void Init(const views::Widget::InitParams& params) override;
   void OnWidgetInitDone() override;
   void CloseNow() override;
-  void Show(ui::WindowShowState show_state,
+  void Show(ui::mojom::WindowShowState show_state,
             const gfx::Rect& restore_bounds) override;
   bool SupportsMouseLock() override;
   void LockMouse(aura::Window* window) override;
@@ -88,7 +88,8 @@ class BrowserDesktopWindowTreeHostLinux
   bool IsOverrideRedirect() const override;
 
   // ui::PlatformWindowDelegate
-  void OnBoundsChanged(const BoundsChange& change) override;
+  gfx::Insets CalculateInsetsInDIP(
+      ui::PlatformWindowState window_state) const override;
   void OnWindowStateChanged(ui::PlatformWindowState old_state,
                             ui::PlatformWindowState new_state) override;
   void OnWindowTiledStateChanged(ui::WindowTiledEdges new_tiled_edges) override;

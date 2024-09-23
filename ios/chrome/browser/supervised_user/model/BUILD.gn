@@ -27,27 +27,55 @@ source_set("model") {
   ]
 
   deps = [
+    ":capabilities",
     ":sync_settings_factory",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/prefs",
     "//components/security_interstitials/core",
+    "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser",
-    "//components/supervised_user/core/browser:list_family_members_service",
     "//components/supervised_user/core/common",
     "//components/variations/service",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/common",
     "//ios/components/security_interstitials",
     "//ios/net",
     "//ios/web/public/js_messaging:js_messaging",
     "//net",
     "//services/network/public/cpp",
+  ]
+
+  public_deps = [ "//ios/web/public" ]
+}
+
+source_set("capabilities") {
+  sources = [
+    "supervised_user_capabilities.h",
+    "supervised_user_capabilities.mm",
+    "supervised_user_capabilities_observer_bridge.h",
+    "supervised_user_capabilities_observer_bridge.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
+    "//components/supervised_user/core/common:features",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/web/public",
   ]
 }
 
@@ -60,6 +88,7 @@ source_set("sync_settings_factory") {
     "//components/keyed_service/ios",
     "//components/supervised_user/core/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
   ]
 }
 
@@ -74,6 +103,7 @@ source_set("unit_tests") {
     "supervised_user_url_filter_tab_helper_unittest.mm",
   ]
   deps = [
+    ":capabilities",
     ":model",
     ":sync_settings_factory",
     "//base/test:test_support",
@@ -81,14 +111,13 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/supervised_user/core/browser",
-    "//components/supervised_user/core/browser:list_family_members_service",
     "//components/supervised_user/core/common",
     "//components/supervised_user/test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/first_run/model",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/test:test_support",
@@ -110,6 +139,7 @@ source_set("eg2_tests") {
     "//base",
     "//components/policy:policy_code_generate",
     "//components/signin/internal/identity_manager",
+    "//components/strings",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//ios/chrome/app/strings",
@@ -117,12 +147,15 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:policy_earl_grey_matchers",
     "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:capabilities_types",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/clear_browsing_data:features",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/toolbar/public:constants",

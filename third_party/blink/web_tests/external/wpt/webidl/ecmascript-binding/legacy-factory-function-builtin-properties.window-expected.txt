@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Legacy factory function property enumeration order of "length", "name", and "prototype"
+  assert_array_equals: expected property 2 to be "prototype" but got "arguments" (expected array ["length", "name", "prototype"] got ["length", "name", "arguments"])
+Harness: the test ran to completion.
+

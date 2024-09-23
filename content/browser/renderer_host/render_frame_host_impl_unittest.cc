@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+
 #include <memory>
 
 #include "base/memory/ptr_util.h"
@@ -9,14 +11,14 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
+#include "components/input/timeout_monitor.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
-#include "content/common/input/timeout_monitor.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/fake_local_frame.h"
 #include "content/public/test/test_utils.h"
@@ -74,7 +76,7 @@ class RenderFrameHostImplTest : public RenderViewHostImplTestHarness {
   }
 };
 
-// TODO(https://crbug.com/1425337): This set-up is temporary. Eventually, all
+// TODO(crbug.com/40260854): This set-up is temporary. Eventually, all
 // tests that reference extensions will be moved to chrome/browser/ and this
 // class can be deleted.
 class FirstPartyOverrideContentBrowserClient : public ContentBrowserClient {
@@ -88,7 +90,25 @@ class FirstPartyOverrideContentBrowserClient : public ContentBrowserClient {
   }
 };
 
-TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
+// A test class that forces kOriginKeyedProcessesByDefault off for tests that
+// require that same-site cross-origin navigations don't trigger a RFH swap.
+class RenderFrameHostImplTest_NoOriginKeyedProcessesByDefault
+    : public RenderFrameHostImplTest {
+ public:
+  RenderFrameHostImplTest_NoOriginKeyedProcessesByDefault() {
+    feature_list_.InitAndDisableFeature(
+        features::kOriginKeyedProcessesByDefault);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Note: Since this test is predicate on not having a RFH swap for a
+// cross-origin, same-site navigation, it only makes sense to run it with
+// kOriginKeyedProcessesByDefault disabled.
+TEST_F(RenderFrameHostImplTest_NoOriginKeyedProcessesByDefault,
+       ExpectedMainWorldOrigin) {
   GURL initial_url = GURL("https://initial.example.test/");
   GURL final_url = GURL("https://final.example.test/");
 
@@ -237,7 +257,11 @@ TEST_F(RenderFrameHostImplTest, CrossSiteAncestorInFrameTree) {
 // Test the IsolationInfo and related fields of a request during the various
 // phases of a commit, when a RenderFrameHost is reused. Once RenderDocument
 // ships, this test may no longer be needed.
-TEST_F(RenderFrameHostImplTest, IsolationInfoDuringCommit) {
+// Note: Since this test is predicate on not having a RFH swap for a
+// cross-origin, same-site navigation, it only makes sense to run it with
+// kOriginKeyedProcessesByDefault disabled.
+TEST_F(RenderFrameHostImplTest_NoOriginKeyedProcessesByDefault,
+       IsolationInfoDuringCommit) {
   GURL initial_url = GURL("https://initial.example.test/");
   url::Origin expected_initial_origin = url::Origin::Create(initial_url);
   const blink::StorageKey expected_initial_storage_key =
@@ -640,7 +664,7 @@ TEST_F(RenderFrameHostImplTest, NavigationApiInterceptBrowserInitiated) {
   EXPECT_TRUE(contents()->ShouldShowLoadingUI());
 }
 
-// TODO(crbug.com/1425337): This test should be migrated to //chrome.
+// TODO(crbug.com/40260854): This test should be migrated to //chrome.
 TEST_F(RenderFrameHostImplTest, CalculateStorageKey) {
   // Register extension scheme for testing.
   url::ScopedSchemeRegistryForTests scoped_registry;
@@ -719,7 +743,7 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKey) {
                 grandchild_frame->GetLastCommittedOrigin(), nullptr));
 }
 
-// TODO(https://crbug.com/1510555): Flaky on Linux.
+// TODO(crbug.com/41483148): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_CalculateStorageKeyFirstPartyOverride \
   DISABLED_CalculateStorageKeyFirstPartyOverride
@@ -728,7 +752,7 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKey) {
   CalculateStorageKeyFirstPartyOverride
 #endif
 
-// TODO(https://crbug.com/1425337): Eventually, this test will be moved to
+// TODO(crbug.com/40260854): Eventually, this test will be moved to
 // chrome/browser/ so that we no longer need to override the
 // ContentBrowserClient, and we can test using real extension URLs.
 TEST_F(RenderFrameHostImplTest, MAYBE_CalculateStorageKeyFirstPartyOverride) {
@@ -759,7 +783,7 @@ TEST_F(RenderFrameHostImplTest, MAYBE_CalculateStorageKeyFirstPartyOverride) {
       content::RenderFrameHostTester::For(main_test_rfh())
           ->AppendChild("child"));
 
-  // TODO(https://crbug.com/1425337): once this test is moved to chrome/browser/
+  // TODO(crbug.com/40260854): once this test is moved to chrome/browser/
   // replace with a legitimate chrome-extension URL. But for the purposes of
   // this test, it is sufficient to check that it has a chrome-extension scheme.
   GURL child_url = GURL("chrome-extension://childframeid");
@@ -831,7 +855,7 @@ TEST_F(RenderFrameHostImplTest,
 
 // Test that the correct StorageKey is calculated when a RFH takes its document
 // properties from a navigation.
-// TODO(https://crbug.com/888079): Once we are able to compute the origin to
+// TODO(crbug.com/40092527): Once we are able to compute the origin to
 // commit in the browser, `navigation_request->commit_params().storage_key`
 // will contain the correct origin and it won't be necessary to override it
 // with `param.origin` anymore. Meaning this test may be removed because we
@@ -858,7 +882,7 @@ TEST_F(RenderFrameHostImplTest,
           NavigationRequest::From(navigation->GetNavigationHandle());
       // Disable Storage Partitioning by enabling the deprecation trial.
       request->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioningEnabled(true);
+          .SetDisableThirdPartyStoragePartitioning2Enabled(true);
     }
 
     navigation->Commit();
@@ -974,7 +998,7 @@ TEST_F(RenderFrameHostImplTest,
 // Tests that the StorageKey calculated for a frame under an extension main
 // frame has storage partitioning enabled/disabled as expected via the
 // RuntimeFeatureStateReadContext when the extension has host permissions.
-// TODO(crbug.com/1425337): This test should be migrated to //chrome.
+// TODO(crbug.com/40260854): This test should be migrated to //chrome.
 TEST_F(RenderFrameHostImplTest,
        CalculateStorageKeyStoragePartitioningCorrectFrameWithExtension) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1014,7 +1038,7 @@ TEST_F(RenderFrameHostImplTest,
       NavigationRequest* request =
           NavigationRequest::From(navigation->GetNavigationHandle());
       request->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioningEnabled(true);
+          .SetDisableThirdPartyStoragePartitioning2Enabled(true);
     }
 
     navigation->Commit();
@@ -1093,13 +1117,13 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKeyOfUnnavigatedFrame) {
 
   // Disable Storage Partitioning by enabling the deprecation trial.
   request->GetMutableRuntimeFeatureStateContext()
-      .SetDisableThirdPartyStoragePartitioningEnabled(true);
+      .SetDisableThirdPartyStoragePartitioning2Enabled(true);
 
   navigation->Commit();
 
   EXPECT_TRUE(RuntimeFeatureStateDocumentData::GetForCurrentDocument(main_rfh())
                   ->runtime_feature_state_read_context()
-                  .IsDisableThirdPartyStoragePartitioningEnabled());
+                  .IsDisableThirdPartyStoragePartitioning2Enabled());
 
   // Create a child frame and navigate to `child_url`.
   auto* child_frame = main_test_rfh()->AppendChild("child");
@@ -1240,7 +1264,9 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
       "doofenshmirtz.evil", url::Origin::Create(url),
       /*is_payment_credential_creation=*/false,
       base::BindLambdaForTesting(
-          [&status](blink::mojom::AuthenticatorStatus s) { status = s; }));
+          [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
+            status = s;
+          }));
   EXPECT_EQ(status.value(),
             blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
 }
@@ -1275,7 +1301,9 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
       "owca.org", url::Origin::Create(url),
       /*is_payment_credential_creation=*/false,
       base::BindLambdaForTesting(
-          [&status](blink::mojom::AuthenticatorStatus s) { status = s; }));
+          [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
+            status = s;
+          }));
   EXPECT_EQ(status.value(), blink::mojom::AuthenticatorStatus::SUCCESS);
 }
 
@@ -1405,6 +1433,9 @@ namespace {
 class MockWebContentsDelegate : public WebContentsDelegate {
  public:
   MOCK_METHOD(void, CloseContents, (WebContents*));
+  MOCK_METHOD(void,
+              OnTextCopiedToClipboard,
+              (RenderFrameHost*, std::u16string));
 };
 
 }  // namespace
@@ -1466,6 +1497,30 @@ TEST_F(RenderFrameHostImplTest,
   // The page should close regardless of it not being primary since the browser
   // requested it.
   testing::Mock::VerifyAndClearExpectations(&delegate);
+}
+
+// A mock WebContentsObserver for listening to text copy events.
+class TextCopiedEventObserver : public WebContentsObserver {
+ public:
+  explicit TextCopiedEventObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  MOCK_METHOD(void,
+              OnTextCopiedToClipboard,
+              (RenderFrameHost*, const std::u16string&),
+              (override));
+};
+
+// Test that the WebContentObserver is notified when text is copied to the
+// clipboard for a RenderFrameHost.
+TEST_F(RenderFrameHostImplTest, OnTextCopiedToClipboard) {
+  testing::StrictMock<TextCopiedEventObserver> observer(contents());
+  std::u16string copied_text = u"copied_text";
+
+  RenderFrameHostImpl* rfh = main_test_rfh();
+  EXPECT_CALL(observer, OnTextCopiedToClipboard(rfh, copied_text));
+
+  rfh->OnTextCopiedToClipboard(copied_text);
 }
 
 // Test if `LoadedWithCacheControlNoStoreHeader()` behaves

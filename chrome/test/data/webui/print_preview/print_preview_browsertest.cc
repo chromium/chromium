@@ -18,77 +18,84 @@ class PrintPreviewBrowserTest : public WebUIMochaBrowserTest {
 using PrintPreviewTest = PrintPreviewBrowserTest;
 
 // Note: Keep tests below in alphabetical ordering.
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ColorSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ColorSettings) {
   RunTest("print_preview/color_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, CopiesSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, CopiesSettings) {
   RunTest("print_preview/copies_settings_test.js", "mocha.run()");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DestinationSelectTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DestinationSelect) {
   RunTest("print_preview/destination_select_test.js", "mocha.run()");
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DpiSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DpiSettings) {
   RunTest("print_preview/dpi_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DuplexSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, DuplexSettings) {
   RunTest("print_preview/duplex_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, InvalidSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, InvalidSettings) {
   RunTest("print_preview/invalid_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, LayoutSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, LayoutSettings) {
   RunTest("print_preview/layout_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, MarginsSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, MarginsSettings) {
   RunTest("print_preview/margins_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, MediaSizeSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, MediaSizeSettings) {
   RunTest("print_preview/media_size_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, MediaTypeSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, MediaTypeSettings) {
   RunTest("print_preview/media_type_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ModelSettingsAvailabilityTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ModelSettingsAvailability) {
   RunTest("print_preview/model_settings_availability_test.js", "mocha.run()");
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ModelSettingsPolicyTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, ModelSettingsPolicy) {
   RunTest("print_preview/model_settings_policy_test.js", "mocha.run()");
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, OtherOptionsSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, OtherOptionsSettings) {
   RunTest("print_preview/other_options_settings_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, PagesPerSheetSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, PagesPerSheetSettings) {
   RunTest("print_preview/pages_per_sheet_settings_test.js", "mocha.run()");
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, PinSettingsTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, PinSettings) {
   RunTest("print_preview/pin_settings_test.js", "mocha.run()");
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SelectMixinTest) {
+// Test is flaky on LaCros, see crbug.com/328690296
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SearchableDropDownCros) {
+  RunTest("print_preview/searchable_drop_down_cros_test.js", "mocha.run()");
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SelectMixin) {
   RunTest("print_preview/select_mixin_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SettingsSelectTest) {
+IN_PROC_BROWSER_TEST_F(PrintPreviewTest, SettingsSelect) {
   RunTest("print_preview/settings_select_test.js", "mocha.run()");
 }
 
@@ -664,6 +671,11 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterSetupInfoCrosTest,
   RunTestCase("DoNotShowManagePrinters");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterSetupInfoCrosTest,
+                       HideIllustrationForSmallWindow) {
+  RunTestCase("HideIllustrationForSmallWindow");
+}
+
 class PrintPreviewPrintServerStoreTest : public PrintPreviewBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {
@@ -763,8 +775,9 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
   RunTestCase("ManagePrintersMetrics_HasNoDestinations");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogCrosTest,
-                       ElementsDisplayedWithShowManagePrintersFalse) {
+IN_PROC_BROWSER_TEST_F(
+    PrintPreviewDestinationDialogCrosTest,
+    PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse) {
   RunTestCase("PrinterSetupAssistanceHasDestinations_ShowManagedPrintersFalse");
 }
 
@@ -826,9 +839,11 @@ class PrintPreviewPreviewAreaTest : public PrintPreviewBrowserTest {
   }
 };
 
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest, StateChanges) {
   RunTestCase("StateChanges");
 }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintPreviewPreviewAreaTest,
@@ -1046,23 +1061,13 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
-                       PrinterIconMapsToPrinterStatus_FlagOff) {
-  RunTestCase("PrinterIconMapsToPrinterStatus_FlagOff");
+                       PrinterIconMapsToPrinterStatus) {
+  RunTestCase("PrinterIconMapsToPrinterStatus");
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
-                       PrinterIconMapsToPrinterStatus_FlagOn) {
-  RunTestCase("PrinterIconMapsToPrinterStatus_FlagOn");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
-                       PrinterConnectionStatusClass_FlagOff) {
-  RunTestCase("PrinterConnectionStatusClass_FlagOff");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationItemTestCros,
-                       PrinterConnectionStatusClass_FlagOn) {
-  RunTestCase("PrinterConnectionStatusClass_FlagOn");
+                       PrinterConnectionStatusClass) {
+  RunTestCase("PrinterConnectionStatusClass");
 }
 #endif
 
@@ -1098,6 +1103,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedItemTest, QueryName) {
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedItemTest, QueryOption) {
   RunTestCase("QueryOption");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewAdvancedItemTest, QueryJapaneseCharacters) {
+  RunTestCase("QueryJapaneseCharacters");
 }
 
 class PrintPreviewDestinationListTest : public PrintPreviewBrowserTest {
@@ -1203,13 +1212,8 @@ class PrintPreviewPrinterStatusTest : public PrintPreviewBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest,
-                       PrinterStatusUpdatesColor_FlagOff) {
-  RunTestCase("PrinterStatusUpdatesColor_FlagOff");
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest,
-                       PrinterStatusUpdatesColor_FlagOn) {
-  RunTestCase("PrinterStatusUpdatesColor_FlagOn");
+                       PrinterStatusUpdatesColor) {
+  RunTestCase("PrinterStatusUpdatesColor");
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest, SendStatusRequestOnce) {
@@ -1229,12 +1233,13 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest,
   RunTestCase("SuccessfulPrinterStatusAfterRetry");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest, StatusTextClass_FlagOff) {
-  RunTestCase("StatusTextClass_FlagOff");
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest, StatusTextClass) {
+  RunTestCase("StatusTextClass");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest, StatusTextClass_FlagOn) {
-  RunTestCase("StatusTextClass_FlagOn");
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterStatusTest,
+                       OverrideStatusForPrinterSetupInfo) {
+  RunTestCase("OverrideStatusForPrinterSetupInfo");
 }
 
 class PrintPreviewDestinationDropdownCrosTest : public PrintPreviewBrowserTest {

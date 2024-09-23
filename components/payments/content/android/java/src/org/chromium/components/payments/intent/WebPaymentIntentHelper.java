@@ -54,7 +54,7 @@ public class WebPaymentIntentHelper {
     public static final String EXTRA_SHIPPING_OPTIONS = "shippingOptions";
 
     // Deprecated parameters sent to the payment app for backward compatibility.
-    // TODO(crbug.com/1338538): Remove these parameters.
+    // TODO(crbug.com/40849135): Remove these parameters.
     public static final String EXTRA_DEPRECATED_CERTIFICATE_CHAIN = "certificateChain";
     public static final String EXTRA_DEPRECATED_DATA = "data";
     public static final String EXTRA_DEPRECATED_DATA_MAP = "dataMap";
@@ -443,7 +443,7 @@ public class WebPaymentIntentHelper {
                 extras);
     }
 
-    // TODO(crbug.com/1338538): Remove this method.
+    // TODO(crbug.com/40849135): Remove this method.
     private static Bundle addDeprecatedCommonExtrasWithIdentity(
             String schemelessOrigin,
             String schemelessIframeOrigin,
@@ -473,7 +473,7 @@ public class WebPaymentIntentHelper {
         return extras;
     }
 
-    // TODO(crbug.com/1338538): Remove this method.
+    // TODO(crbug.com/40849135): Remove this method.
     private static Bundle addDeprecatedPayIntentExtras(
             String id, PaymentItem total, @Nullable List<PaymentItem> displayItems, Bundle extras) {
         extras.putString(EXTRA_DEPRECATED_ID, id);

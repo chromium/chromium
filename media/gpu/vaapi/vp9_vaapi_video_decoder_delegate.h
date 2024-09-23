@@ -8,9 +8,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "media/filters/vp9_parser.h"
 #include "media/gpu/vaapi/vaapi_video_decoder_delegate.h"
 #include "media/gpu/vp9_decoder.h"
+#include "media/parsers/vp9_parser.h"
 
 namespace media {
 
@@ -21,7 +21,7 @@ class VP9VaapiVideoDecoderDelegate : public VP9Decoder::VP9Accelerator,
                                      public VaapiVideoDecoderDelegate {
  public:
   VP9VaapiVideoDecoderDelegate(
-      DecodeSurfaceHandler<VASurface>* const vaapi_dec,
+      VaapiDecodeSurfaceHandler* const vaapi_dec,
       scoped_refptr<VaapiWrapper> vaapi_wrapper,
       ProtectedSessionUpdateCB on_protected_session_update_cb =
           base::DoNothing(),

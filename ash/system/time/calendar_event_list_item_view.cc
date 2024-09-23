@@ -79,6 +79,22 @@ constexpr auto kEventHexColorCodes =
          {"10", "5B9157"},
          {"11", "D45D5D"}});
 
+// In Multi-Calendar, events without a custom color are injected with the color
+// ID of the calendar they belong to in order to maintain a visible distinction
+// between calendars when viewing events.
+// Modified events have been prepended with a marker (`kInjectedColorIdPrefix`)
+// to indicate that the calendar color map should be used to decode the color.
+constexpr auto kCalendarHexColorCodes =
+    base::MakeFixedFlatMap<std::string_view, std::string_view>(
+        {{"c1", "ac725e"},  {"c2", "d06b64"},  {"c3", "f83a22"},
+         {"c4", "fa573c"},  {"c5", "ff7537"},  {"c6", "ffad46"},
+         {"c7", "42d692"},  {"c8", "16a765"},  {"c9", "7bd148"},
+         {"c10", "b3dc6c"}, {"c11", "fbe983"}, {"c12", "fad165"},
+         {"c13", "92e1c0"}, {"c14", "9fe1e7"}, {"c15", "9fc6e7"},
+         {"c16", "4986e7"}, {"c17", "9a9cff"}, {"c18", "b99aff"},
+         {"c19", "c2c2c2"}, {"c20", "cabdbf"}, {"c21", "cca6ac"},
+         {"c22", "f691b2"}, {"c23", "cd74e6"}, {"c24", "a47ae2"}});
+
 constexpr SkAlpha SK_Alpha38Opacity = 0x61;
 constexpr SkAlpha SK_Alpha50Opacity = 0x80;
 
@@ -90,7 +106,8 @@ class CalendarEventListItemDot : public views::View {
   explicit CalendarEventListItemDot(std::string color_id)
       : alpha_(color_id == kPastEventsColorId ? SK_Alpha38Opacity
                                               : SK_AlphaOPAQUE) {
-    DCHECK(color_id.empty() || kEventHexColorCodes.count(color_id));
+    CHECK(color_id.empty() || kEventHexColorCodes.count(color_id) ||
+          kCalendarHexColorCodes.count(color_id));
 
     std::string_view hex_code = LookupColorId(color_id);
     base::HexStringToInt(hex_code, &color_);
@@ -115,11 +132,17 @@ class CalendarEventListItemDot : public views::View {
 
  private:
   std::string_view LookupColorId(std::string color_id) {
-    const auto* iter = kEventHexColorCodes.find(color_id);
-    if (iter == kEventHexColorCodes.end()) {
-      return kEventHexColorCodes.at(kDefaultColorId);
+    const auto event_color_iter = kEventHexColorCodes.find(color_id);
+    if (event_color_iter != kEventHexColorCodes.end()) {
+      return event_color_iter->second;
     }
-    return iter->second;
+    if (calendar_utils::IsMultiCalendarEnabled()) {
+      const auto cal_color_iter = kCalendarHexColorCodes.find(color_id);
+      if (cal_color_iter != kCalendarHexColorCodes.end()) {
+        return cal_color_iter->second;
+      }
+    }
+    return kEventHexColorCodes.at(kDefaultColorId);
   }
 
   // The color value and the opacity of the dot.
@@ -219,13 +242,13 @@ CalendarEventListItemView::CalendarEventListItemView(
   const auto [start_time_accessible_name, end_time_accessible_name] =
       event_date_formatter_util::GetStartAndEndTimeAccessibleNames(start_time,
                                                                    end_time);
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
   const std::u16string event_item_index_in_list_string =
       l10n_util::GetStringFUTF16(
           IDS_ASH_CALENDAR_EVENT_POSITION_ACCESSIBLE_DESCRIPTION,
           base::NumberToString16(event_list_item_index.item_index),
           base::NumberToString16(event_list_item_index.total_count_of_events));
-  SetAccessibleName(l10n_util::GetStringFUTF16(
+  GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION,
       event_item_index_in_list_string, base::UTF8ToUTF16(event.summary()),
       start_time_accessible_name, end_time_accessible_name,
@@ -270,6 +293,9 @@ CalendarEventListItemView::CalendarEventListItemView(
   auto horizontal_layout_manager = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kEventListItemInsets,
       kEventListItemHorizontalChildSpacing);
+  horizontal_layout_manager->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
   views::View* horizontal_container =
       AddChildView(std::make_unique<views::View>());
   auto* horizontal_container_layout_manager =
@@ -285,6 +311,10 @@ CalendarEventListItemView::CalendarEventListItemView(
             views::BoxLayout::Orientation::kVertical));
     layout_vertical_start->set_main_axis_alignment(
         views::BoxLayout::MainAxisAlignment::kStart);
+
+    // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+    event_list_dot_container->SetLayoutManagerUseConstrainedSpace(false);
+
     event_list_dot_container
         ->AddChildView(std::make_unique<CalendarEventListItemDot>(
             is_past_event_ ? kPastEventsColorId : event.color_id()))
@@ -304,27 +334,24 @@ CalendarEventListItemView::CalendarEventListItemView(
       CreateTimeLabel(formatted_time_text, tooltip_text, is_past_event_)
           .Build());
   horizontal_container_layout_manager->SetFlexForView(vertical_container, 1);
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  // `vertical_container` has 1 flex. This causes the passed constraint space to
+  // be fully occupied. Thus causing the view to become larger.
+  horizontal_container->SetLayoutManagerUseConstrainedSpace(false);
 
   // Join button. Only shows it if the event is not the past event.
   if (!video_conference_url_.is_empty() && !is_past_event_) {
-    views::View* join_button_container =
-        horizontal_container->AddChildView(std::make_unique<views::View>());
-    auto* layout_vertical_center = join_button_container->SetLayoutManager(
-        std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kVertical));
-    layout_vertical_center->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kCenter);
     auto join_button = std::make_unique<PillButton>(
         base::BindRepeating(
             &CalendarEventListItemView::OnJoinMeetingButtonPressed,
             weak_ptr_factory_.GetWeakPtr()),
         l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_JOIN_BUTTON),
         PillButton::Type::kDefaultWithoutIcon);
-    join_button->SetAccessibleName(
+    join_button->GetViewAccessibility().SetName(
         l10n_util::GetStringFUTF16(IDS_ASH_CALENDAR_JOIN_BUTTON_ACCESSIBLE_NAME,
                                    base::UTF8ToUTF16(event.summary())));
     join_button->SetID(kJoinButtonID);
-    join_button_container->AddChildView(std::move(join_button));
+    horizontal_container->AddChildView(std::move(join_button));
   }
 }
 

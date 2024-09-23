@@ -1,8 +1,8 @@
 Document
-++Separator Name='<newline>'
+++Text Name='<newline>'
 ++Text Name='Text line 1'
 ++Group IsControlElement=false
 ++++Text Name='Text line 2'
-++++Separator Name='<newline>'
+++++Text Name='<newline>'
 ++++Text Name='Text line 3'
-++Separator Name='<newline>'
+++Text Name='<newline>'

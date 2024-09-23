@@ -32,7 +32,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_WIN)
 #include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #include "chrome/browser/sharing/sharing_notification_handler.h"
 #endif
@@ -153,7 +153,7 @@ void NotificationDisplayServiceImpl::ProcessNotificationOperation(
     return;
   }
 
-  // TODO(crbug.com/766854): Plumb this through from the notification platform
+  // TODO(crbug.com/40540804): Plumb this through from the notification platform
   // bridges so they can report completion of the operation as needed.
   base::OnceClosure completed_closure = base::BindOnce(&OperationCompleted);
 

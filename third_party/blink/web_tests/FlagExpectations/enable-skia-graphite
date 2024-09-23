@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac11 Mac12 Mac13 Mac13-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
+# tags: [ Android Fuchsia Linux Mac Mac11 Mac12 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
@@ -6,19 +6,18 @@
 # on automated CI bots.
 # finder:disable-general
 
-# ==== Tests failed due to Graphite rendering zero length gradient incorrectly =====
-crbug.com/1517553 virtual/gpu/fast/canvas/canvas-fillRect-zeroSizeGradient.html [ Failure ]
-crbug.com/1517553 virtual/gpu/fast/canvas/canvas-stroke-zeroSizeGradient.html [ Failure ]
-crbug.com/1517553 virtual/gpu/fast/canvas/canvas-strokeRect-zeroSizeGradient.html [ Failure ]
-crbug.com/1517553 virtual/oopr-canvas2d/fast/canvas/canvas-fillRect-zeroSizeGradient.html [ Failure ]
-crbug.com/1517553 virtual/oopr-canvas2d/fast/canvas/canvas-stroke-zeroSizeGradient.html [ Failure ]
-crbug.com/1517553 virtual/oopr-canvas2d/fast/canvas/canvas-strokeRect-zeroSizeGradient.html [ Failure ]
-
 # === Tests failed due to reference mismatches ==========
 crbug.com/1517878 compositing/scrollbars/overlay-scrollbar-paint-phase-order.html [ Failure ]
 crbug.com/1517878 virtual/off-main-thread-css-paint/http/tests/csspaint/paint2d-zoom.html [ Failure ]
 crbug.com/1517878 virtual/off-main-thread-css-paint/http/tests/csspaint/shadow-scale-with-page-zoom.html [ Failure ]
 crbug.com/1517878 virtual/off-main-thread-css-paint/http/tests/csspaint/transform-with-page-zoom-003.html [ Failure ]
+crbug.com/1517878 external/wpt/css/filter-effects/backdrop-filter-clip-rect-2.html [ Failure ]
+
+# ==== Expectation filename too long ======
+virtual/disable-raster-inducing-scroll/fast/events/touch/compositor-touch-hit-rects-non-composited-scroll-overflow-with-handler.html [ Skip ]
+
+# YUV edge sampling bug in Graphite
+b/329041548 media/video-colorspace-yuv422.html [ Failure ]
 
 # ==== Timeouts =======
 crbug.com/1517847 virtual/scalefactor200/css3/filters/effect-reference-composite-hw.html [ Pass Timeout ]
@@ -31,15 +30,84 @@ crbug.com/1517847 virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-filter.html 
 crbug.com/1517847 virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Pass Timeout ]
 crbug.com/1517847 virtual/oopr-canvas2d/fast/canvas/canvas-composite-transformclip.html [ Pass Timeout ]
 crbug.com/1517847 virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.html [ Pass Timeout ]
+b/325323464 http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
 
 # WPT failures
 crbug.com/1518086 external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure ]
+crbug.com/dawn/2456 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-video.html [ Crash Failure ]
+crbug.com/dawn/2456 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Crash Failure ]
+crbug.com/dawn/2456 external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Crash ]
+crbug.com/dawn/2456 external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Crash ]
+b/328789624 external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Crash Pass ]
+b/328789624 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Crash Pass ]
+crbug.com/40937352 external/wpt/css/css-color/parsing/color-valid-relative-color.html [ Failure ]
+crbug.com/40937352 external/wpt/css/css-color/parsing/color-computed-relative-color.html [ Failure ]
+external/wpt/html/links/stylesheet/quirk-origin-check-recursive-import.html [ Crash Timeout ]
+
+# Text output contains:
+#   Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+#
+# with what appears to be a memory address, so not rebaselined.
+printing/offscreencanvas-webgl-printing.html [ Failure Pass ]
+virtual/oopr-canvas2d/fast/canvas/webgl/create-query-crash.html [ Failure Pass ]
+virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-webgl-main.html [ Failure Pass ]
+virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-webgl-worker.html [ Failure Pass ]
+virtual/threaded/printing/offscreencanvas-webgl-printing.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 virtual/view-transition/external/wpt/css/css-view-transitions/pseudo-with-classes-new-with-class-old-without.html [ Failure ]
-crbug.com/626703 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-view-transition-group.html [ Failure ]
-crbug.com/626703 virtual/view-transition/external/wpt/css/css-view-transitions/pseudo-with-classes-view-transition-group.html [ Failure ]
-crbug.com/626703 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/pseudo-with-classes-match-multiple.html [ Failure ]
+external/wpt/css/filter-effects/drop-shadow-currentcolor-dynamic-003.html [ Failure ]
+crbug.com/360246808 virtual/force-renderer-accessibility/external/wpt/accessibility/crashtests/slot-assignment-lockup.html [ Crash ]
+crbug.com/359618513 virtual/threaded/external/wpt/css/css-view-transitions/nested/nearest-ignores-nearest-name.tentative.html [ Failure ]
+crbug.com/359696068 virtual/threaded/external/wpt/css/css-view-transitions/nested/normal-goes-up.tentative.html [ Failure ]
+crbug.com/359696068 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/contain-direct.tentative.html [ Failure ]
+crbug.com/359702852 virtual/threaded/external/wpt/css/css-view-transitions/nested/contain-on-self.tentative.html [ Failure ]
+crbug.com/358461186 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/nearest-direct.tentative.html [ Failure ]
+crbug.com/358461186 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/nearest-ignores-nearest-name.tentative.html [ Failure ]
+crbug.com/358461186 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/normal-goes-up.tentative.html [ Failure ]
+crbug.com/358461184 virtual/threaded/external/wpt/css/css-view-transitions/nested/nearest-nested.tentative.html [ Failure ]
+crbug.com/358461184 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/compute-explicit-name-non-existent.tentative.html [ Failure ]
+crbug.com/358399788 virtual/threaded/external/wpt/css/css-view-transitions/nested/contain-nested.tentative.html [ Failure ]
+crbug.com/358399788 virtual/threaded/external/wpt/css/css-view-transitions/nested/nearest-direct.tentative.html [ Failure ]
+crbug.com/358399788 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/compute-explicit-name-non-ancestor.tentative.html [ Failure ]
+crbug.com/358399788 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/compute-explicit-name-non-existent.tentative.html [ Failure ]
+crbug.com/358399788 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/contain-on-self.tentative.html [ Failure ]
+crbug.com/358399788 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/compute-explicit-name-direct.tentative.html [ Failure ]
+crbug.com/358399788 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nearest-direct.tentative.html [ Failure ]
+crbug.com/358455227 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/compute-explicit-name-nested.tentative.html [ Failure ]
+crbug.com/358399782 virtual/threaded/external/wpt/css/css-view-transitions/nested/nested-group-in-pseudo-basic.tentative.html [ Failure ]
+crbug.com/358399782 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/nested-group-in-pseudo-basic.tentative.html [ Failure ]
+crbug.com/358399782 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/contain-nested.tentative.html [ Failure ]
+crbug.com/358399782 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nearest-nested.tentative.html [ Failure ]
+crbug.com/358455222 virtual/threaded/external/wpt/css/css-view-transitions/nested/contain-direct.tentative.html [ Failure ]
+crbug.com/358455222 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/contain-on-self.tentative.html [ Failure ]
+crbug.com/358455222 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nearest-ignores-nearest-name.tentative.html [ Failure ]
+crbug.com/358192562 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/compute-explicit-name-direct.tentative.html [ Failure ]
+crbug.com/358192562 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/compute-explicit-name-nested-vt-names.tentative.html [ Failure ]
+crbug.com/358192562 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nested/nearest-nested.tentative.html [ Failure ]
+crbug.com/358192562 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/compute-explicit-name-nested-vt-names.tentative.html [ Failure ]
+crbug.com/358192562 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/compute-explicit-name-self.tentative.html [ Failure ]
+crbug.com/358192562 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nested-group-in-pseudo-basic.tentative.html [ Failure ]
+crbug.com/358192562 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/normal-goes-up.tentative.html [ Failure ]
+crbug.com/358192560 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/compute-explicit-name-non-existent.html [ Failure ]
+crbug.com/358192560 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/nearest-nested.html [ Failure ]
+crbug.com/358192560 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nested/normal-goes-up.html [ Failure ]
+crbug.com/356913289 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-loading-lazy-reload-navigation-reload.html [ Crash ]
+crbug.com/355484322 external/wpt/css/filter-effects/backdrop-filter-boundary.html [ Failure ]
+crbug.com/355484322 external/wpt/css/filter-effects/backdrop-filter-edge-mirror.html [ Failure ]
+crbug.com/343515409 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pad.https.any.worker.html?gpu [ Timeout ]
+crbug.com/343515409 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pooling.https.any.worker.html?gpu [ Timeout ]
+crbug.com/343515409 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/prelu.https.any.worker.html?gpu [ Timeout ]
+crbug.com/338342080 external/wpt/css/filter-effects/backdrop-filter-backdrop-root-opacity.html [ Failure ]
+crbug.com/338122791 external/wpt/css/css-masking/clip-path/clip-path-rotated-will-change-transform.html [ Failure ]
+crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Crash ]
+crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Crash ]
+crbug.com/626703 external/wpt/webnn/conformance_tests/expand.https.any.html?gpu [ Crash ]
+crbug.com/626703 external/wpt/webnn/conformance_tests/pad.https.any.worker.html?gpu [ Crash ]
+crbug.com/626703 external/wpt/webnn/conformance_tests/pooling.https.any.worker.html?gpu [ Crash Failure ]
+crbug.com/626703 external/wpt/webnn/conformance_tests/prelu.https.any.worker.html?gpu [ Crash Failure ]
+crbug.com/626703 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-fixed-position.html [ Failure ]
+crbug.com/626703 virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-range-visual-test.html [ Failure ]
+crbug.com/626703 virtual/threaded/external/wpt/scroll-animations/css/animation-range-visual-test.html [ Failure ]
 crbug.com/626703 virtual/force-eager/external/wpt/measure-memory/redirect.client.https.window.html [ Timeout ]
 crbug.com/626703 virtual/force-eager/external/wpt/measure-memory/redirect.server.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-masking/mask-image/mask-opacity-1e.html [ Failure ]

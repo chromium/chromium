@@ -6,11 +6,12 @@
 
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/proto/device_management_backend.pb.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/common/channel_info.h"
 
 namespace em = ::enterprise_management;
@@ -33,17 +34,14 @@ version_info::Channel BrowserReportGeneratorIOS::GetChannel() {
 std::vector<BrowserReportGenerator::ReportedProfileData>
 BrowserReportGeneratorIOS::GetReportedProfiles() {
   std::vector<BrowserReportGenerator::ReportedProfileData> reportedProfileData;
-  for (const auto* entry : GetApplicationContext()
-                               ->GetChromeBrowserStateManager()
-                               ->GetLoadedBrowserStates()) {
-    // Skip off-the-record profile.
-    if (entry->IsOffTheRecord()) {
-      continue;
-    }
-
-    reportedProfileData.push_back(
-        {entry->GetStatePath().AsUTF8Unsafe(),
-         entry->GetStatePath().BaseName().AsUTF8Unsafe()});
+  for (const auto* browser_state :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    // ProfileManager should not return off-the-record BrowserStates.
+    CHECK(!browser_state->IsOffTheRecord());
+    reportedProfileData.push_back({
+        browser_state->GetStatePath().AsUTF8Unsafe(),
+        browser_state->GetProfileName(),
+    });
   }
 
   return reportedProfileData;

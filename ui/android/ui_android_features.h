@@ -13,7 +13,7 @@ namespace ui {
 // Keep sorted!
 
 // Feature controlling whether or not HDR is enabled on Android.
-// TODO(https://crbug.com/1430768): Leave this as a kill switch until Android U
+// TODO(crbug.com/40263227): Leave this as a kill switch until Android U
 // ships.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidHDR);
 
@@ -25,13 +25,29 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kConvertTrackpadEventsToMouse);
 // Use the old-style opening of an External Picker when uploading files.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDeprecatedExternalPickerFunction);
 
+// Flip the back/forward direction of navigation gestures when the UI language
+// is an RTL language.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kMirrorBackForwardGesturesInRTL);
+
 // Reports all of the available pointer types (i.e. coarse, fine) to content
 // rather than just the first one detected.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kReportAllAvailablePointerTypes);
 
+// Reports bottom overscrolls on the web page.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kReportBottomOverscrolls);
+
 // Kill switch to turn off validation in TextViewWithLeading that requires a
 // leading value to be configured.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kRequireLeadingInTextViewWithLeading);
+
+// Use ACTION_OPEN_DOCUMENT rather than ACTION_GET_CONTENT when selecting a
+// file.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kSelectFileOpenDocument);
+
+// TODO(b/328601354): Cleanup flag after investigating nothing is broken after
+// changing the default behavior for EventForwarder observers.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
+    kSendTouchMovesToEventForwarderObservers);
 
 }  // namespace ui
 

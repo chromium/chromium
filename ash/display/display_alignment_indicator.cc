@@ -11,6 +11,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/gfx/color_palette.h"
@@ -137,15 +139,15 @@ gfx::Point GetPillOrigin(const gfx::Size& pill_size,
 
 views::Widget::InitParams CreateInitParams(int64_t display_id,
                                            const std::string& target_name) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
 
   aura::Window* root =
       Shell::GetRootWindowControllerWithDisplayId(display_id)->GetRootWindow();
 
   params.parent = Shell::GetContainer(root, kShellWindowId_OverlayContainer);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership =
-      views::Widget::InitParams::Ownership::WIDGET_OWNS_NATIVE_WIDGET;
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.accept_events = false;
   params.name = target_name;
@@ -160,6 +162,7 @@ views::Widget::InitParams CreateInitParams(int64_t display_id,
 // View for the indicator highlight that renders on a shared edge of a given
 // display.
 class IndicatorHighlightView : public views::View {
+  METADATA_HEADER(IndicatorHighlightView, views::View)
  public:
   explicit IndicatorHighlightView(const display::Display& display)
       // Corner radius is the same as edge thickness.
@@ -198,20 +201,21 @@ class IndicatorHighlightView : public views::View {
     layer()->SetRoundedCornerRadius(corners);
   }
 
-  // views::View:
-  const char* GetClassName() const override { return "IndicatorHighlightView"; }
-
  private:
   // Radius for the rounded rectangle highlight. Determined by display
   // resolution.
   float corner_radius_;
 };
 
+BEGIN_METADATA(IndicatorHighlightView)
+END_METADATA
+
 // -----------------------------------------------------------------------------
 // IndicatorPillView:
 // View for the pill with an arrow pointing to an indicator highlight and name
 // of the target display.
 class IndicatorPillView : public views::View {
+  METADATA_HEADER(IndicatorPillView, views::View)
  public:
   explicit IndicatorPillView(const std::u16string& text)
       :  // TODO(1070352): Replace current placeholder arrow in
@@ -246,12 +250,13 @@ class IndicatorPillView : public views::View {
   ~IndicatorPillView() override = default;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     // Pill is laid out as:
     // ( | | text )
     // Has max width of kMaxPillWidth.
 
-    const int text_width = text_label_->CalculatePreferredSize().width();
+    const int text_width = text_label_->CalculatePreferredSize({}).width();
     const int width = kArrowAllocatedWidth + text_width + kTextMarginNormal;
 
     return gfx::Size(std::min(width, kMaxPillWidth), kPillHeight);
@@ -274,7 +279,7 @@ class IndicatorPillView : public views::View {
 
     // If width of the pill is equal or greater than the max pill width, then
     // text is elided and thus side margin must be reduced.
-    const int side_margin = CalculatePreferredSize().width() >= kMaxPillWidth
+    const int side_margin = CalculatePreferredSize({}).width() >= kMaxPillWidth
                                 ? kTextMarginElided
                                 : kTextMarginNormal;
 
@@ -288,9 +293,6 @@ class IndicatorPillView : public views::View {
     text_label_->SetBoundsRect(
         gfx::Rect(text_label_x, 0, text_label_width, kPillHeight));
   }
-
-  // views::View:
-  const char* GetClassName() const override { return "IndicatorPillView"; }
 
   // Rotates the arrow depending on indicator highlight's position on-screen.
   void SetPosition(IndicatorPosition position) {
@@ -329,6 +331,9 @@ class IndicatorPillView : public views::View {
   // direction and placement.
   IndicatorPosition position_ = IndicatorPosition::kRight;
 };
+
+BEGIN_METADATA(IndicatorPillView)
+END_METADATA
 
 // -----------------------------------------------------------------------------
 // DisplayAlignmentIndicator:

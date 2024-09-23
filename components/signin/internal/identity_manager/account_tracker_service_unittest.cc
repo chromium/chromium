@@ -156,10 +156,7 @@ class TrackingEvent {
         gaia_id_(gaia_id),
         email_(email) {}
 
-  bool operator==(const TrackingEvent& event) const {
-    return type_ == event.type_ && account_id_ == event.account_id_ &&
-           gaia_id_ == event.gaia_id_ && email_ == event.email_;
-  }
+  bool operator==(const TrackingEvent& event) const = default;
 
   std::string ToString() const {
     const char* typestr = "INVALID";
@@ -351,7 +348,6 @@ class AccountTrackerServiceTest : public testing::Test {
       AccountKey account_key,
       bool is_subject_to_parental_controls);
   void TestAccountCapabilitiesSubjectToParentalSupervision(
-      bool enable_supervision_on_desktop,
       bool capability_value,
       signin::Tribool expected_is_child_account);
 #endif
@@ -412,7 +408,6 @@ class AccountTrackerServiceTest : public testing::Test {
     if (network_enabled) {
       account_fetcher_->EnableNetworkFetchesForTest();
     }
-    account_fetcher_->EnableAccountCapabilitiesFetcherForTest(true);
   }
 
   void DeleteAccountTracker() {
@@ -507,23 +502,8 @@ void AccountTrackerServiceTest::
 
 void AccountTrackerServiceTest::
     TestAccountCapabilitiesSubjectToParentalSupervision(
-        bool enable_supervision_on_desktop,
         bool capability_value,
         signin::Tribool expected_is_child_account) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  if (enable_supervision_on_desktop) {
-    scoped_feature_list.InitWithFeatures(
-        {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
-         supervised_user::kSupervisedPrefsControlledBySupervisedStore,
-         supervised_user::kEnableManagedByParentUi},
-        {});
-  } else {
-    scoped_feature_list.InitWithFeatures(
-        {}, {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
-             supervised_user::kSupervisedPrefsControlledBySupervisedStore,
-             supervised_user::kEnableManagedByParentUi});
-  }
-
   SimulateTokenAvailable(kAccountKeyChild);
   AccountInfo account_info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
@@ -679,70 +659,16 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesSuccess) {
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-TEST_F(
-    AccountTrackerServiceTest,
-    TokenAvailable_AccountCapabilitiesSubjectToParentalSupervisionDisabledForDesktop) {
-  TestAccountCapabilitiesSubjectToParentalSupervision(
-      false, true, signin::Tribool::kUnknown);
-}
-
-TEST_F(
-    AccountTrackerServiceTest,
-    TokenAvailable_AccountCapabilitiesSubjectToParentalSupervisionEnabledForDesktop) {
-  TestAccountCapabilitiesSubjectToParentalSupervision(true, true,
+TEST_F(AccountTrackerServiceTest,
+       TokenAvailable_AccountCapabilitiesSubjectToParentalSupervision) {
+  TestAccountCapabilitiesSubjectToParentalSupervision(true,
                                                       signin::Tribool::kTrue);
 }
 
-TEST_F(
-    AccountTrackerServiceTest,
-    TokenAvailable_AccountCapabilitiesNotSubjectToParentalSupervisionDisabledForDesktop) {
-  TestAccountCapabilitiesSubjectToParentalSupervision(
-      false, false, signin::Tribool::kUnknown);
-}
-
-TEST_F(
-    AccountTrackerServiceTest,
-    TokenAvailable_AccountCapabilitiesNotSubjectToParentalSupervisionEnabledForDesktop) {
-  TestAccountCapabilitiesSubjectToParentalSupervision(true, false,
-                                                      signin::Tribool::kFalse);
-}
-
 TEST_F(AccountTrackerServiceTest,
-       AccountCapabilitiesSubjectToParentalSupervisionThenEnableDesktopFlag) {
-  // This tests the case where the destkop supervision flag is enabled for an
-  // existing account that has the SubjectToParentalSupervision capability set.
-  // Validate that the child status is updated even though the account
-  // capabilities are unchanged.
-
-  // First, run through the a capabilities fetch where the feature flag is
-  // disabled and the parental controls capability is enabled.
-  //
-  // At this point, the child status is unknown, and the account capabilities
-  // are set on the account.
-  TestAccountCapabilitiesSubjectToParentalSupervision(
-      false, true, signin::Tribool::kUnknown);
-
-  // Now enable the flag, and repeat the fetch.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-
-  ResetAccountTracker();
-
-  // Prior to the new fetch, the account capabilities say subject to parental
-  // controls, but the account state is not child.
-  AccountInfo account_info = account_tracker()->GetAccountInfo(
-      AccountKeyToAccountId(kAccountKeyChild));
-  EXPECT_EQ(account_info.capabilities.is_subject_to_parental_controls(),
-            signin::Tribool::kTrue);
-  EXPECT_EQ(account_info.is_child_account, signin::Tribool::kUnknown);
-
-  // After the new fetch, the account state is updated to child.
-  ReturnAccountCapabilitiesFetchIsSubjectToParentalSupervision(kAccountKeyChild,
-                                                               true);
-  account_info = account_tracker()->GetAccountInfo(
-      AccountKeyToAccountId(kAccountKeyChild));
-  EXPECT_EQ(account_info.is_child_account, signin::Tribool::kTrue);
+       TokenAvailable_AccountCapabilitiesNotSubjectToParentalSupervision) {
+  TestAccountCapabilitiesSubjectToParentalSupervision(false,
+                                                      signin::Tribool::kFalse);
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
@@ -788,29 +714,7 @@ TEST_F(AccountTrackerServiceTest,
 }
 
 TEST_F(AccountTrackerServiceTest,
-       TokenAvailable_AccountCapabilitiesFetcherDisabled) {
-  account_fetcher()->EnableAccountCapabilitiesFetcherForTest(false);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      switches::kEnableFetchingAccountCapabilities);
-  SimulateTokenAvailable(kAccountKeyAlpha);
-  EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
-  EXPECT_TRUE(CheckAccountTrackerEvents({}));
-  AccountInfo account_info = account_tracker()->GetAccountInfo(
-      AccountKeyToAccountId(kAccountKeyAlpha));
-  EXPECT_FALSE(account_info.capabilities.AreAllCapabilitiesKnown());
-}
-
-// iOS doesn't support the kEnableFetchingAccountCapabilities feature.
-// TODO(https://crbug.com/1305191): enable these tests on iOS once the feature
-// is supported.
-#if !BUILDFLAG(IS_IOS)
-TEST_F(AccountTrackerServiceTest,
        TokenAvailable_AccountCapabilitiesFetcherEnabled) {
-  account_fetcher()->EnableAccountCapabilitiesFetcherForTest(false);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      switches::kEnableFetchingAccountCapabilities);
   SimulateTokenAvailable(kAccountKeyAlpha);
   EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
 
@@ -820,7 +724,6 @@ TEST_F(AccountTrackerServiceTest,
   ReturnAccountCapabilitiesFetchSuccess(kAccountKeyAlpha);
   EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
 }
-#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(AccountTrackerServiceTest, TokenAvailableTwice_UserInfoOnce) {
   SimulateTokenAvailable(kAccountKeyAlpha);
@@ -1097,55 +1000,6 @@ TEST_F(AccountTrackerServiceTest, Persistence) {
   // that all in-use files are closed.
   ResetAccountTracker();
   ASSERT_TRUE(scoped_user_data_dir.Delete());
-}
-
-TEST_F(AccountTrackerServiceTest, ChildStatusMigration) {
-  base::ScopedTempDir scoped_user_data_dir;
-  ASSERT_TRUE(scoped_user_data_dir.CreateUniqueTempDir());
-
-  // Create a tracker and add an account. This should cause the account to be
-  // saved to persistence.
-  ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
-  SimulateTokenAvailable(kAccountKeyAlpha);
-  ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
-
-  // The child status is unknown, and none of the child-related keys should be
-  // set.
-  EXPECT_EQ(signin::Tribool::kUnknown,
-            account_tracker()
-                ->GetAccountInfo(AccountKeyToAccountId(kAccountKeyAlpha))
-                .is_child_account);
-  ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
-  ASSERT_FALSE(update->empty());
-  base::Value::Dict* dict = (*update)[0].GetIfDict();
-  ASSERT_TRUE(dict);
-  const char kDeprecatedChildKey[] = "is_child_account";
-  const char kNewChildKey[] = "is_supervised_child";
-  // The deprecated key is not set.
-  EXPECT_FALSE(dict->FindBool(kDeprecatedChildKey));
-
-  // Set the child status using the deprecated key, and reload the account.
-  dict->Set(kDeprecatedChildKey, true);
-  dict->Remove(kNewChildKey);
-  ClearAccountTrackerEvents();
-  ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
-  EXPECT_TRUE(CheckAccountTrackerEvents(
-      {TrackingEvent(UPDATED, AccountKeyToAccountId(kAccountKeyAlpha),
-                     AccountKeyToGaiaId(kAccountKeyAlpha),
-                     AccountKeyToEmail(kAccountKeyAlpha))}));
-
-  // Check that the migration happened.
-  std::vector<AccountInfo> infos = account_tracker()->GetAccounts();
-  ASSERT_EQ(1u, infos.size());
-  CheckAccountDetails(kAccountKeyAlpha, infos[0]);
-  // The deprecated key has been read.
-  EXPECT_EQ(signin::Tribool::kTrue, infos[0].is_child_account);
-  // The deprecated key has been removed.
-  EXPECT_FALSE(dict->FindBool(kDeprecatedChildKey));
-  // The new key has been written.
-  std::optional<int> new_key = dict->FindInt(kNewChildKey);
-  ASSERT_TRUE(new_key.has_value());
-  EXPECT_EQ(static_cast<int>(signin::Tribool::kTrue), new_key.value());
 }
 
 TEST_F(AccountTrackerServiceTest, Persistence_DeleteEmpty) {

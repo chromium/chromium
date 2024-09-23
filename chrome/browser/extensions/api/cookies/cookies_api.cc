@@ -15,16 +15,14 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/time/time.h"
-#include "chrome/browser/extensions/api/cookies/cookies_api_constants.h"
 #include "chrome/browser/extensions/api/cookies/cookies_helpers.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/extensions/api/cookies.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_context.h"
@@ -35,6 +33,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/stack_frame.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -45,6 +44,26 @@ namespace extensions {
 
 namespace {
 
+// Keys
+constexpr char kCauseKey[] = "cause";
+constexpr char kCookieKey[] = "cookie";
+constexpr char kRemovedKey[] = "removed";
+
+// Cause Constants
+constexpr char kEvictedChangeCause[] = "evicted";
+constexpr char kExpiredChangeCause[] = "expired";
+constexpr char kExpiredOverwriteChangeCause[] = "expired_overwrite";
+constexpr char kExplicitChangeCause[] = "explicit";
+constexpr char kOverwriteChangeCause[] = "overwrite";
+
+// Errors
+constexpr char kCookieSetFailedError[] =
+    "Failed to parse or set cookie named \"*\".";
+constexpr char kInvalidStoreIdError[] = "Invalid cookie store id: \"*\".";
+constexpr char kInvalidUrlError[] = "Invalid url: \"*\".";
+constexpr char kNoHostPermissionsError[] =
+    "No host permissions for cookies at url: \"*\".";
+
 bool ParseUrl(const Extension* extension,
               const std::string& url_string,
               GURL* url,
@@ -52,15 +71,14 @@ bool ParseUrl(const Extension* extension,
               std::string* error) {
   *url = GURL(url_string);
   if (!url->is_valid()) {
-    *error = ErrorUtils::FormatErrorMessage(
-        cookies_api_constants::kInvalidUrlError, url_string);
+    *error = ErrorUtils::FormatErrorMessage(kInvalidUrlError, url_string);
     return false;
   }
   // Check against host permissions if needed.
   if (check_host_permissions &&
       !extension->permissions_data()->HasHostPermission(*url)) {
-    *error = ErrorUtils::FormatErrorMessage(
-        cookies_api_constants::kNoHostPermissionsError, url->spec());
+    *error =
+        ErrorUtils::FormatErrorMessage(kNoHostPermissionsError, url->spec());
     return false;
   }
   return true;
@@ -77,8 +95,7 @@ network::mojom::CookieManager* ParseStoreCookieManager(
     store_profile = cookies_helpers::ChooseProfileFromStoreId(
         *store_id, function_profile, include_incognito);
     if (!store_profile) {
-      *error = ErrorUtils::FormatErrorMessage(
-          cookies_api_constants::kInvalidStoreIdError, *store_id);
+      *error = ErrorUtils::FormatErrorMessage(kInvalidStoreIdError, *store_id);
       return nullptr;
     }
   } else {
@@ -104,14 +121,13 @@ void CookiesEventRouter::CookieChangeListener::OnCookieChange(
 }
 
 CookiesEventRouter::CookiesEventRouter(content::BrowserContext* context)
-    : profile_(Profile::FromBrowserContext(context)) {
+    : profile_(Profile::FromBrowserContext(context)),
+      profile_observation_(this) {
   MaybeStartListening();
-  BrowserList::AddObserver(this);
+  profile_observation_.Observe(profile_);
 }
 
-CookiesEventRouter::~CookiesEventRouter() {
-  BrowserList::RemoveObserver(this);
-}
+CookiesEventRouter::~CookiesEventRouter() = default;
 
 void CookiesEventRouter::OnCookieChange(bool otr,
                                         const net::CookieChangeInfo& change) {
@@ -124,15 +140,14 @@ void CookiesEventRouter::OnCookieChange(bool otr,
   }
   base::Value::List args;
   base::Value::Dict dict;
-  dict.Set(cookies_api_constants::kRemovedKey,
-           change.cause != net::CookieChangeCause::INSERTED);
+  dict.Set(kRemovedKey, change.cause != net::CookieChangeCause::INSERTED);
 
   Profile* profile =
       otr ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
           : profile_->GetOriginalProfile();
   api::cookies::Cookie cookie = cookies_helpers::CreateCookie(
       change.cookie, cookies_helpers::GetStoreIdFromProfile(profile));
-  dict.Set(cookies_api_constants::kCookieKey, cookie.ToValue());
+  dict.Set(kCookieKey, cookie.ToValue());
 
   // Map the internal cause to an external string.
   std::string cause_dict_entry;
@@ -141,29 +156,29 @@ void CookiesEventRouter::OnCookieChange(bool otr,
     // only make sense for deletions.
     case net::CookieChangeCause::INSERTED:
     case net::CookieChangeCause::EXPLICIT:
-      cause_dict_entry = cookies_api_constants::kExplicitChangeCause;
+      cause_dict_entry = kExplicitChangeCause;
       break;
 
     case net::CookieChangeCause::OVERWRITE:
-      cause_dict_entry = cookies_api_constants::kOverwriteChangeCause;
+      cause_dict_entry = kOverwriteChangeCause;
       break;
 
     case net::CookieChangeCause::EXPIRED:
-      cause_dict_entry = cookies_api_constants::kExpiredChangeCause;
+      cause_dict_entry = kExpiredChangeCause;
       break;
 
     case net::CookieChangeCause::EVICTED:
-      cause_dict_entry = cookies_api_constants::kEvictedChangeCause;
+      cause_dict_entry = kEvictedChangeCause;
       break;
 
     case net::CookieChangeCause::EXPIRED_OVERWRITE:
-      cause_dict_entry = cookies_api_constants::kExpiredOverwriteChangeCause;
+      cause_dict_entry = kExpiredOverwriteChangeCause;
       break;
 
     case net::CookieChangeCause::UNKNOWN_DELETION:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  dict.Set(cookies_api_constants::kCauseKey, cause_dict_entry);
+  dict.Set(kCauseKey, cause_dict_entry);
 
   args.Append(std::move(dict));
 
@@ -172,12 +187,13 @@ void CookiesEventRouter::OnCookieChange(bool otr,
                 cookies_helpers::GetURLFromCanonicalCookie(change.cookie));
 }
 
-void CookiesEventRouter::OnBrowserAdded(Browser* browser) {
-  // The new browser may be associated with a profile that is the OTR spinoff
-  // of |profile_|, in which case we need to start listening to cookie changes
-  // there. If this is any other kind of new browser, MaybeStartListening() will
-  // be a no op.
-  MaybeStartListening();
+void CookiesEventRouter::OnOffTheRecordProfileCreated(Profile* off_the_record) {
+  // When an off-the-record spinoff of |profile_| is created, start listening
+  // for cookie changes there. The OTR receiver should never be bound, since
+  // there wasn't previously an OTR profile.
+  if (!otr_receiver_.is_bound()) {
+    BindToCookieManager(&otr_receiver_, off_the_record);
+  }
 }
 
 void CookiesEventRouter::MaybeStartListening() {
@@ -251,10 +267,25 @@ ExtensionFunction::ResponseAction CookiesGetFunction::Run() {
   if (!cookie_manager)
     return RespondNow(Error(std::move(error)));
 
-  std::optional<net::CookiePartitionKey> partition_key;
-  if (!cookies_helpers::ValidateCookieApiPartitionKey(
-          parsed_args_->details.partition_key, partition_key, error)) {
-    return RespondNow(Error(std::move(error)));
+  if (parsed_args_->details.partition_key.has_value() &&
+      !parsed_args_->details.partition_key->has_cross_site_ancestor
+           .has_value() &&
+      parsed_args_->details.partition_key->top_level_site.has_value()) {
+    base::expected<bool, std::string> cross_site_ancestor =
+        cookies_helpers::CalculateHasCrossSiteAncestor(
+            parsed_args_->details.url, parsed_args_->details.partition_key);
+    if (!cross_site_ancestor.has_value()) {
+      return RespondNow(Error(std::move(cross_site_ancestor.error())));
+    }
+    parsed_args_->details.partition_key->has_cross_site_ancestor =
+        cross_site_ancestor.value();
+  }
+
+  base::expected<std::optional<net::CookiePartitionKey>, std::string>
+      partition_key = cookies_helpers::ToNetCookiePartitionKey(
+          parsed_args_->details.partition_key);
+  if (!partition_key.has_value()) {
+    return RespondNow(Error(std::move(partition_key.error())));
   }
 
   if (!parsed_args_->details.store_id)
@@ -263,7 +294,7 @@ ExtensionFunction::ResponseAction CookiesGetFunction::Run() {
   DCHECK(!url_.is_empty() && url_.is_valid());
   cookies_helpers::GetCookieListFromManager(
       cookie_manager, url_,
-      net::CookiePartitionKeyCollection::FromOptional(partition_key),
+      net::CookiePartitionKeyCollection::FromOptional(partition_key.value()),
       base::BindOnce(&CookiesGetFunction::GetCookieListCallback, this));
 
   // Extension telemetry signal intercept
@@ -313,7 +344,7 @@ void CookiesGetFunction::NotifyExtensionTelemetry() {
   auto cookies_get_signal = std::make_unique<safe_browsing::CookiesGetSignal>(
       extension_id(), parsed_args_->details.name,
       parsed_args_->details.store_id.value_or(std::string()),
-      parsed_args_->details.url);
+      parsed_args_->details.url, js_callstack().value_or(StackTrace()));
   telemetry_service->AddSignal(std::move(cookies_get_signal));
 }
 
@@ -341,10 +372,11 @@ ExtensionFunction::ResponseAction CookiesGetAllFunction::Run() {
     return RespondNow(Error(std::move(error)));
 
   // make sure user input is valid
-  std::optional<net::CookiePartitionKey> partition_key;
-  if (!cookies_helpers::ValidateCookieApiPartitionKey(
-          parsed_args_->details.partition_key, partition_key, error)) {
-    return RespondNow(Error(std::move(error)));
+  base::expected<std::optional<net::CookiePartitionKey>, std::string>
+      partition_key = cookies_helpers::ToNetCookiePartitionKey(
+          parsed_args_->details.partition_key);
+  if (!partition_key.has_value()) {
+    return RespondNow(Error(std::move(partition_key.error())));
   }
 
   if (!parsed_args_->details.store_id)
@@ -423,7 +455,7 @@ void CookiesGetAllFunction::NotifyExtensionTelemetry() {
           parsed_args_->details.secure,
           parsed_args_->details.store_id.value_or(std::string()),
           parsed_args_->details.url.value_or(std::string()),
-          parsed_args_->details.session);
+          parsed_args_->details.session, js_callstack().value_or(StackTrace()));
   telemetry_service->AddSignal(std::move(cookies_get_all_signal));
 }
 
@@ -448,10 +480,34 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
   if (!cookie_manager)
     return RespondNow(Error(std::move(error)));
 
-  std::optional<net::CookiePartitionKey> partition_key;
-  if (!cookies_helpers::ValidateCookieApiPartitionKey(
-          parsed_args_->details.partition_key, partition_key, error)) {
+  // cookies.set api allows for an partitionKey with a `top_level_site` present
+  // but no value for `has_cross_site_ancestor`. If that is the case, the
+  // browser will calculate the value for `has_cross_site_ancestor`.
+  std::optional<extensions::api::cookies::CookiePartitionKey> api_partition_key;
+  if (parsed_args_->details.partition_key.has_value()) {
+    api_partition_key = parsed_args_->details.partition_key->Clone();
+    if (!api_partition_key->has_cross_site_ancestor.has_value() &&
+        api_partition_key->top_level_site.has_value()) {
+      base::expected<bool, std::string> cross_site_ancestor =
+          cookies_helpers::CalculateHasCrossSiteAncestor(
+              parsed_args_->details.url, api_partition_key);
+      if (!cross_site_ancestor.has_value()) {
+        return RespondNow(Error(std::move(cross_site_ancestor.error())));
+      }
+      api_partition_key->has_cross_site_ancestor = cross_site_ancestor.value();
+    }
+  }
+
+  if (!cookies_helpers::ValidateCrossSiteAncestor(parsed_args_->details.url,
+                                                  api_partition_key, &error)) {
     return RespondNow(Error(std::move(error)));
+  }
+
+  base::expected<std::optional<net::CookiePartitionKey>, std::string>
+      net_partition_key =
+          cookies_helpers::ToNetCookiePartitionKey(api_partition_key);
+  if (!net_partition_key.has_value()) {
+    return RespondNow(Error(std::move(net_partition_key.error())));
   }
 
   if (!parsed_args_->details.store_id)
@@ -494,14 +550,15 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
           parsed_args_->details.value.value_or(std::string()),   //
           parsed_args_->details.domain.value_or(std::string()),  //
           parsed_args_->details.path.value_or(std::string()),    //
-          base::Time(),                                          //
+          /*creation_time=*/base::Time(),                        //
           expiration_time,                                       //
-          base::Time(),                                          //
+          /*last_access_time=*/base::Time(),                     //
           parsed_args_->details.secure.value_or(false),          //
           parsed_args_->details.http_only.value_or(false),       //
           same_site,                                             //
           net::COOKIE_PRIORITY_DEFAULT,                          //
-          partition_key));
+          net_partition_key.value(),                             //
+          /*status=*/nullptr));
   if (!cc) {
     // Return error through callbacks so that the proper error message
     // is generated.
@@ -525,7 +582,8 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
       base::BindOnce(&CookiesSetFunction::SetCanonicalCookieCallback, this));
   cookies_helpers::GetCookieListFromManager(
       cookie_manager, url_,
-      net::CookiePartitionKeyCollection::FromOptional(partition_key),
+      net::CookiePartitionKeyCollection::FromOptional(
+          net_partition_key.value()),
       base::BindOnce(&CookiesSetFunction::GetCookieListCallback, this));
 
   // Will finish asynchronously.
@@ -549,8 +607,7 @@ void CookiesSetFunction::GetCookieListCallback(
 
   if (!success_) {
     std::string name = parsed_args_->details.name.value_or(std::string());
-    Respond(Error(ErrorUtils::FormatErrorMessage(
-        cookies_api_constants::kCookieSetFailedError, name)));
+    Respond(Error(ErrorUtils::FormatErrorMessage(kCookieSetFailedError, name)));
     return;
   }
 
@@ -603,10 +660,11 @@ ExtensionFunction::ResponseAction CookiesRemoveFunction::Run() {
   if (!cookie_manager)
     return RespondNow(Error(std::move(error)));
 
-  std::optional<net::CookiePartitionKey> partition_key;
-  if (!cookies_helpers::ValidateCookieApiPartitionKey(
-          parsed_args_->details.partition_key, partition_key, error)) {
-    return RespondNow(Error(std::move(error)));
+  base::expected<std::optional<net::CookiePartitionKey>, std::string>
+      partition_key = cookies_helpers::ToNetCookiePartitionKey(
+          parsed_args_->details.partition_key);
+  if (!partition_key.has_value()) {
+    return RespondNow(Error(std::move(partition_key.error())));
   }
 
   if (!parsed_args_->details.store_id)
@@ -616,8 +674,7 @@ ExtensionFunction::ResponseAction CookiesRemoveFunction::Run() {
       network::mojom::CookieDeletionFilter::New());
 
   filter->cookie_partition_key_collection =
-      cookies_helpers::CookiePartitionKeyCollectionFromApiPartitionKey(
-          parsed_args_->details.partition_key);
+      net::CookiePartitionKeyCollection::FromOptional(partition_key.value());
   filter->url = url_;
   filter->cookie_name = parsed_args_->details.name;
   cookie_manager->DeleteCookies(
@@ -659,11 +716,11 @@ ExtensionFunction::ResponseAction CookiesGetAllCookieStoresFunction::Run() {
   // Iterate through all browser instances, and for each browser,
   // add its tab IDs to either the regular or incognito tab ID list depending
   // whether the browser is regular or incognito.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() == original_profile) {
-      cookies_helpers::AppendToTabIdList(browser, original_tab_ids);
-    } else if (browser->profile() == incognito_profile) {
-      cookies_helpers::AppendToTabIdList(browser, incognito_tab_ids);
+  for (WindowController* window : *WindowControllerList::GetInstance()) {
+    if (window->profile() == original_profile) {
+      cookies_helpers::AppendToTabIdList(window, original_tab_ids);
+    } else if (window->profile() == incognito_profile) {
+      cookies_helpers::AppendToTabIdList(window, incognito_tab_ids);
     }
   }
   // Return a list of all cookie stores with at least one open tab.

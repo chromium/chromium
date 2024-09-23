@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,31 +18,34 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
-#include "chrome/browser/extensions/permissions_updater.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/install_index_helper.h"
-#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/install_flag.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/path_util.h"
 #include "extensions/browser/policy_check.h"
 #include "extensions/browser/preload_check_group.h"
 #include "extensions/browser/requirements_checker.h"
+#include "extensions/browser/ruleset_parse_result.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_l10n_util.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 using content::BrowserThread;
@@ -158,7 +162,7 @@ void UnpackedInstaller::StartInstallChecks() {
   if (!service)
     return;
 
-  // TODO(crbug.com/421128): Enable these checks all the time.  The reason
+  // TODO(crbug.com/40388034): Enable these checks all the time.  The reason
   // they are disabled for extensions loaded from the command-line is that
   // installing unpacked extensions is asynchronous, but there can be
   // dependencies between the extensions loaded by the command line.
@@ -167,7 +171,7 @@ void UnpackedInstaller::StartInstallChecks() {
     if (service->browser_terminating())
       return;
 
-    // TODO(crbug.com/420147): Move this code to a utility class to avoid
+    // TODO(crbug.com/40387578): Move this code to a utility class to avoid
     // duplication of SharedModuleService::CheckImports code.
     if (SharedModuleInfo::ImportsModules(extension())) {
       const std::vector<SharedModuleInfo::ImportInfo>& imports =
@@ -280,30 +284,16 @@ bool UnpackedInstaller::LoadExtension(mojom::ManifestLocation location,
 bool UnpackedInstaller::IndexAndPersistRulesIfNeeded(std::string* error) {
   DCHECK(extension());
 
-  // Index all static rulesets and therefore parse all static rules at
-  // installation time for unpacked extensions. Throw an error for invalid rules
-  // where possible so that the extension developer is immediately notified.
-  auto ruleset_filter = declarative_net_request::FileBackedRulesetSource::
-      RulesetFilter::kIncludeAll;
-  auto parse_flags =
-      declarative_net_request::RulesetSource::kRaiseErrorOnInvalidRules |
-      declarative_net_request::RulesetSource::kRaiseWarningOnLargeRegexRules;
+  base::expected<base::Value::Dict, std::string> index_result =
+      declarative_net_request::InstallIndexHelper::
+          IndexAndPersistRulesOnInstall(*extension_);
 
-  // TODO(crbug.com/761107): IndexStaticRulesetsUnsafe will read and parse JSON
-  // synchronously. Change this so that we don't need to parse JSON in the
-  // browser process.
-  declarative_net_request::InstallIndexHelper::Result result =
-      declarative_net_request::InstallIndexHelper::IndexStaticRulesetsUnsafe(
-          *extension(), ruleset_filter, parse_flags);
-  if (result.error) {
-    *error = std::move(*result.error);
+  if (!index_result.has_value()) {
+    *error = std::move(index_result.error());
     return false;
   }
 
-  ruleset_install_prefs_ = std::move(result.ruleset_install_prefs);
-  if (!result.warnings.empty())
-    extension_->AddInstallWarnings(std::move(result.warnings));
-
+  ruleset_install_prefs_ = std::move(index_result.value());
   return true;
 }
 
@@ -389,7 +379,7 @@ void UnpackedInstaller::InstallExtension() {
     prefs->SetIsIncognitoEnabled(extension()->id(), *allow_incognito_access_);
   }
   if (install_param_.has_value()) {
-    prefs->SetInstallParam(extension()->id(), *install_param_);
+    SetInstallParam(prefs, extension()->id(), *install_param_);
   }
 
   PermissionsUpdater perms_updater(service_weak_->profile());
@@ -398,10 +388,44 @@ void UnpackedInstaller::InstallExtension() {
 
   service_weak_->OnExtensionInstalled(extension(), syncer::StringOrdinal(),
                                       kInstallFlagInstallImmediately,
-                                      ruleset_install_prefs_);
+                                      std::move(ruleset_install_prefs_));
+
+  // Record metrics here since the registry would contain the extension by now.
+  RecordCommandLineDeveloperModeMetrics();
 
   if (!callback_.is_null())
     std::move(callback_).Run(extension(), extension_path_, std::string());
+}
+
+void UnpackedInstaller::RecordCommandLineDeveloperModeMetrics() {
+  if (!extension()->is_extension() ||
+      extension()->location() != mojom::ManifestLocation::kCommandLine) {
+    return;
+  }
+
+  bool dev_mode_enabled =
+      GetCurrentDeveloperMode(util::GetBrowserContextId(profile_));
+
+  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
+  if (extension_registry->enabled_extensions().Contains(extension()->id())) {
+    if (dev_mode_enabled) {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOn.Enabled", 1);
+    } else {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOff.Enabled", 1);
+    }
+  }
+
+  if (extension_registry->disabled_extensions().Contains(extension()->id())) {
+    if (dev_mode_enabled) {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOn.Disabled", 1);
+    } else {
+      base::UmaHistogramCounts100(
+          "Extensions.CommandLineWithDeveloperModeOff.Disabled", 1);
+    }
+  }
 }
 
 }  // namespace extensions

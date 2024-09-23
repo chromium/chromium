@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/mediastream/web_media_player_ms_compositor.h"
 
 #include <stdint.h>
@@ -11,6 +16,7 @@
 
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
@@ -109,41 +115,42 @@ scoped_refptr<media::VideoFrame> CopyFrame(
     }
 
     if (frame->format() == media::PIXEL_FORMAT_NV12) {
-      libyuv::NV12Copy(frame->data(media::VideoFrame::kYPlane),
-                       frame->stride(media::VideoFrame::kYPlane),
-                       frame->data(media::VideoFrame::kUVPlane),
-                       frame->stride(media::VideoFrame::kUVPlane),
-                       new_frame->writable_data(media::VideoFrame::kYPlane),
-                       new_frame->stride(media::VideoFrame::kYPlane),
-                       new_frame->writable_data(media::VideoFrame::kUVPlane),
-                       new_frame->stride(media::VideoFrame::kUVPlane),
+      libyuv::NV12Copy(frame->data(media::VideoFrame::Plane::kY),
+                       frame->stride(media::VideoFrame::Plane::kY),
+                       frame->data(media::VideoFrame::Plane::kUV),
+                       frame->stride(media::VideoFrame::Plane::kUV),
+                       new_frame->writable_data(media::VideoFrame::Plane::kY),
+                       new_frame->stride(media::VideoFrame::Plane::kY),
+                       new_frame->writable_data(media::VideoFrame::Plane::kUV),
+                       new_frame->stride(media::VideoFrame::Plane::kUV),
                        coded_size.width(), coded_size.height());
     } else if (frame->format() == media::PIXEL_FORMAT_ARGB) {
-      libyuv::ARGBCopy(frame->data(media::VideoFrame::kARGBPlane),
-                       frame->stride(media::VideoFrame::kARGBPlane),
-                       new_frame->writable_data(media::VideoFrame::kARGBPlane),
-                       new_frame->stride(media::VideoFrame::kARGBPlane),
-                       coded_size.width(), coded_size.height());
+      libyuv::ARGBCopy(
+          frame->data(media::VideoFrame::Plane::kARGB),
+          frame->stride(media::VideoFrame::Plane::kARGB),
+          new_frame->writable_data(media::VideoFrame::Plane::kARGB),
+          new_frame->stride(media::VideoFrame::Plane::kARGB),
+          coded_size.width(), coded_size.height());
     } else {
-      libyuv::I420Copy(frame->data(media::VideoFrame::kYPlane),
-                       frame->stride(media::VideoFrame::kYPlane),
-                       frame->data(media::VideoFrame::kUPlane),
-                       frame->stride(media::VideoFrame::kUPlane),
-                       frame->data(media::VideoFrame::kVPlane),
-                       frame->stride(media::VideoFrame::kVPlane),
-                       new_frame->writable_data(media::VideoFrame::kYPlane),
-                       new_frame->stride(media::VideoFrame::kYPlane),
-                       new_frame->writable_data(media::VideoFrame::kUPlane),
-                       new_frame->stride(media::VideoFrame::kUPlane),
-                       new_frame->writable_data(media::VideoFrame::kVPlane),
-                       new_frame->stride(media::VideoFrame::kVPlane),
+      libyuv::I420Copy(frame->data(media::VideoFrame::Plane::kY),
+                       frame->stride(media::VideoFrame::Plane::kY),
+                       frame->data(media::VideoFrame::Plane::kU),
+                       frame->stride(media::VideoFrame::Plane::kU),
+                       frame->data(media::VideoFrame::Plane::kV),
+                       frame->stride(media::VideoFrame::Plane::kV),
+                       new_frame->writable_data(media::VideoFrame::Plane::kY),
+                       new_frame->stride(media::VideoFrame::Plane::kY),
+                       new_frame->writable_data(media::VideoFrame::Plane::kU),
+                       new_frame->stride(media::VideoFrame::Plane::kU),
+                       new_frame->writable_data(media::VideoFrame::Plane::kV),
+                       new_frame->stride(media::VideoFrame::Plane::kV),
                        coded_size.width(), coded_size.height());
     }
     if (frame->format() == media::PIXEL_FORMAT_I420A) {
-      libyuv::CopyPlane(frame->data(media::VideoFrame::kAPlane),
-                        frame->stride(media::VideoFrame::kAPlane),
-                        new_frame->writable_data(media::VideoFrame::kAPlane),
-                        new_frame->stride(media::VideoFrame::kAPlane),
+      libyuv::CopyPlane(frame->data(media::VideoFrame::Plane::kA),
+                        frame->stride(media::VideoFrame::Plane::kA),
+                        new_frame->writable_data(media::VideoFrame::Plane::kA),
+                        new_frame->stride(media::VideoFrame::Plane::kA),
                         coded_size.width(), coded_size.height());
     }
   }
@@ -411,26 +418,33 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
     return;
   }
 
-  // If we detect a bad frame without |reference_time|, we switch off algorithm,
-  // because without |reference_time|, algorithm cannot work.
+  const bool is_out_of_order =
+      pending_frames_info_.empty()
+          ? false
+          : frame->timestamp() < pending_frames_info_.back().timestamp;
+
+  // If we detect a bad frame (out of order or without |reference_time|), we
+  // switch off algorithm. Without |reference_time|, algorithm cannot work and
+  // if frames are out of order the frame source is unusual.
+  //
   // |reference_time| is not set for low-latency video streams and are therefore
   // rendered without algorithm, unless |maximum_composition_delay_in_frames| is
   // set in which case a dedicated low-latency algorithm is switched on. Please
   // note that this is an experimental feature that is only active if certain
   // experimental parameters are specified in WebRTC. See crbug.com/1138888 for
   // more information.
-  if (!frame->metadata().reference_time.has_value() &&
+  if ((!frame->metadata().reference_time.has_value() || is_out_of_order) &&
       !frame->metadata().maximum_composition_delay_in_frames) {
     DLOG(WARNING)
-        << "Incoming VideoFrames have no reference_time, switching off super "
-           "sophisticated rendering algorithm";
+        << "Incoming VideoFrames have no reference_time or are out of order, "
+           "switching off super sophisticated rendering algorithm";
     rendering_frame_buffer_.reset();
+    pending_frames_info_.clear();
     RenderWithoutAlgorithm(std::move(frame), is_copy);
     return;
   }
-  base::TimeTicks render_time = frame->metadata().reference_time
-                                    ? *frame->metadata().reference_time
-                                    : base::TimeTicks();
+  base::TimeTicks render_time =
+      frame->metadata().reference_time.value_or(base::TimeTicks());
 
   // The code below handles the case where UpdateCurrentFrame() callbacks stop.
   // These callbacks can stop when the tab is hidden or the page area containing
@@ -439,12 +453,14 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
   // we must aggressively release frames in this case.
   const base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeDelta vsync_delay = now - last_deadline_max_;
-  base::TimeDelta maximum_vsync_delay_for_renderer_reset;
-  if (frame->metadata().maximum_composition_delay_in_frames) {
-    maximum_vsync_delay_for_renderer_reset =
-        kMaximumVsyncDelayForLowLatencyRenderer;
-  }
-  if (vsync_delay > maximum_vsync_delay_for_renderer_reset) {
+
+  // TODO(crbug.com/353554171): This is incorrect. It's using a delay value of
+  // zero which means the algorithm is always overridden.
+  auto max_delay = maximum_vsync_delay_for_renderer_reset_.value_or(
+      frame->metadata().maximum_composition_delay_in_frames
+          ? kMaximumVsyncDelayForLowLatencyRenderer
+          : base::TimeDelta());
+  if (vsync_delay > max_delay) {
     // Note: the frame in |rendering_frame_buffer_| with lowest index is the
     // same as |current_frame_|. Function SetCurrentFrame() handles whether
     // to increase |dropped_frame_count_| for that frame, so here we should
@@ -455,9 +471,18 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
     RenderWithoutAlgorithm(frame, is_copy);
   }
 
-  pending_frames_info_.push_back(PendingFrameInfo{
-      frame->unique_id(), frame->timestamp(), render_time, is_copy});
+  pending_frames_info_.emplace_back(frame->unique_id(), frame->timestamp(),
+                                    render_time, is_copy);
   rendering_frame_buffer_->EnqueueFrame(std::move(frame));
+
+  // Note 2: `EnqueueFrame` may drop the frame instead of enqueuing it for many
+  // reasons, so if this happens drop our info entry. These dropped frames will
+  // be accounted for during the next Render() call.
+  if (pending_frames_info_.size() != rendering_frame_buffer_->frames_queued()) {
+    pending_frames_info_.pop_back();
+    DCHECK_EQ(pending_frames_info_.size(),
+              rendering_frame_buffer_->frames_queued());
+  }
 }
 
 bool WebMediaPlayerMSCompositor::UpdateCurrentFrame(
@@ -472,6 +497,10 @@ bool WebMediaPlayerMSCompositor::UpdateCurrentFrame(
     return false;
 
   base::AutoLock auto_lock(current_frame_lock_);
+
+  last_deadline_max_ = deadline_max;
+  last_deadline_min_ = deadline_min;
+  last_render_length_ = deadline_max - deadline_min;
 
   if (rendering_frame_buffer_)
     RenderUsingAlgorithm(deadline_min, deadline_max);
@@ -572,7 +601,7 @@ void WebMediaPlayerMSCompositor::OnContextLost() {
   // has no concept of resetting current_frame_, so a black frame is set.
   base::AutoLock auto_lock(current_frame_lock_);
   if (!current_frame_ || (!current_frame_->HasTextures() &&
-                          !current_frame_->HasGpuMemoryBuffer())) {
+                          !current_frame_->HasMappableGpuBuffer())) {
     return;
   }
   scoped_refptr<media::VideoFrame> black_frame =
@@ -608,11 +637,37 @@ bool WebMediaPlayerMSCompositor::MapTimestampsToRenderTimeTicks(
          thread_checker_.CalledOnValidThread() ||
          video_task_runner_->RunsTasksInCurrentSequence());
 #endif
+  // Note: The mapping code below is not ideal, but WebRTC doesn't expose the
+  // audio clock in a way we can map timestamps continuously.
   for (const base::TimeDelta& timestamp : timestamps) {
-    auto* it = base::ranges::find(pending_frames_info_, timestamp,
-                                  &PendingFrameInfo::timestamp);
-    DCHECK(it != pending_frames_info_.end());
-    wall_clock_times->push_back(it->reference_time);
+    base::TimeTicks reference_time;
+    base::TimeDelta min_delta = base::TimeDelta::Max();
+    for (const auto& pf : pending_frames_info_) {
+      if (pf.timestamp == timestamp) {
+        reference_time = pf.reference_time;
+        min_delta = base::TimeDelta();
+        break;
+      }
+      auto delta = timestamp - pf.timestamp;
+      if (delta.is_positive() && delta < min_delta) {
+        min_delta = delta;
+        reference_time = pf.reference_time;
+      }
+    }
+
+    // If we don't have a reference time a different algorithm should have been
+    // used by this point.
+    DCHECK(!reference_time.is_null());
+
+    // No exact reference time was found, so calculate an estimated one using
+    // the nearest known timestamp.
+    if (min_delta.is_positive()) {
+      reference_time =
+          reference_time + (min_delta / (timestamp + min_delta)) *
+                               (reference_time - base::TimeTicks());
+    }
+
+    wall_clock_times->push_back(reference_time);
   }
   return true;
 }
@@ -622,8 +677,6 @@ void WebMediaPlayerMSCompositor::RenderUsingAlgorithm(
     base::TimeTicks deadline_max) {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   current_frame_lock_.AssertAcquired();
-  last_deadline_max_ = deadline_max;
-  last_render_length_ = deadline_max - deadline_min;
 
   size_t frames_dropped = 0;
   scoped_refptr<media::VideoFrame> frame = rendering_frame_buffer_->Render(
@@ -637,20 +690,20 @@ void WebMediaPlayerMSCompositor::RenderUsingAlgorithm(
   if (!frame || frame == current_frame_)
     return;
 
-  // Walk |pending_frames_info_| to find |is_copy| value for the frame, while
-  // also erasing old elements.
+  // Walk |pending_frames_info_| to find |is_copy| value for the frame.
   bool is_copy = false;
-  for (auto* it = pending_frames_info_.begin();
-       it != pending_frames_info_.end();) {
-    if (it->unique_id == frame->unique_id())
-      is_copy = it->is_copy;
-
-    // Erase info for the older frames.
-    if (it->timestamp < frame->timestamp()) {
-      it = pending_frames_info_.erase(it);
-    } else {
-      ++it;
+  for (const auto& pf : pending_frames_info_) {
+    if (pf.unique_id == frame->unique_id()) {
+      is_copy = pf.is_copy;
+      break;
     }
+  }
+
+  // Erase frames no longer held by the rendering buffer. Note: The algorithm
+  // will continue to hold the current rendered frame until the next Render().
+  while (pending_frames_info_.size() !=
+         rendering_frame_buffer_->frames_queued()) {
+    pending_frames_info_.pop_front();
   }
 
   SetCurrentFrame(std::move(frame), is_copy, deadline_min);
@@ -678,7 +731,17 @@ void WebMediaPlayerMSCompositor::RenderWithoutAlgorithmOnCompositor(
         frame->timestamp() > current_frame_->timestamp()) {
       last_render_length_ = frame->timestamp() - current_frame_->timestamp();
     }
-    SetCurrentFrame(std::move(frame), is_copy, std::nullopt);
+
+    // Trace events to help with debugging frame presentation times.
+    const base::TimeTicks now = base::TimeTicks::Now();
+    base::TimeDelta diff_from_deadline_min = now - last_deadline_min_;
+    base::TimeDelta diff_from_deadline_max = now - last_deadline_max_;
+    TRACE_EVENT_INSTANT2("media",
+                         "RenderWithoutAlgorithm Difference From Deadline",
+                         TRACE_EVENT_SCOPE_THREAD, "diff_from_deadline_min",
+                         diff_from_deadline_min, "diff_from_deadline_max",
+                         diff_from_deadline_max);
+    SetCurrentFrame(std::move(frame), is_copy, last_deadline_max_);
   }
   if (video_frame_provider_client_)
     video_frame_provider_client_->DidReceiveFrame();
@@ -745,9 +808,17 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
   // we only use RenderWithoutAlgorithm.
   base::TimeTicks now = base::TimeTicks::Now();
   last_presentation_time_ = now;
-  last_expected_display_time_ = expected_display_time.value_or(now);
+  last_expected_display_time_ =
+      (expected_display_time.has_value() && !expected_display_time->is_null())
+          ? *expected_display_time
+          : now;
   last_preferred_render_interval_ = GetPreferredRenderInterval();
   ++presented_frames_;
+
+  TRACE_EVENT_INSTANT2("media", "SetCurrentFrame Timestamps",
+                       TRACE_EVENT_SCOPE_THREAD, "presentation_time",
+                       (last_presentation_time_), "last_expected_display_time",
+                       (last_expected_display_time_));
 
   OnNewFramePresentedCB presented_frame_cb;
   {

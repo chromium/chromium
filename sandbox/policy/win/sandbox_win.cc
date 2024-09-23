@@ -4,18 +4,19 @@
 
 #include "sandbox/policy/win/sandbox_win.h"
 
-#include <stddef.h>
 #include <windows.h>
+
+#include <stddef.h>
 #include <winternl.h>
 
 #include <map>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -27,6 +28,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -50,7 +52,6 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/features.h"
@@ -63,6 +64,7 @@
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 
 namespace sandbox {
 namespace policy {
@@ -79,91 +81,18 @@ BrokerServices* g_broker_services = NULL;
 // of it, see:
 // https://sites.google.com/a/chromium.org/dev/Home/third-party-developers
 const wchar_t* const kTroublesomeDlls[] = {
-    L"adialhk.dll",                // Kaspersky Internet Security.
-    L"acpiz.dll",                  // Unknown.
-    L"activedetect32.dll",         // Lenovo One Key Theater (crbug.com/536056).
-    L"activedetect64.dll",         // Lenovo One Key Theater (crbug.com/536056).
-    L"airfoilinject3.dll",         // Airfoil.
-    L"akinsofthook32.dll",         // Akinsoft Software Engineering.
-    L"assistant_x64.dll",          // Unknown.
-    L"atcuf64.dll",                // Bit Defender Internet Security x64.
-    L"avcuf64.dll",                // Bit Defender Internet Security x64.
-    L"avgrsstx.dll",               // AVG 8.
-    L"babylonchromepi.dll",        // Babylon translator.
     L"btkeyind.dll",               // Widcomm Bluetooth.
-    L"cmcsyshk.dll",               // CMC Internet Security.
-    L"cmsetac.dll",                // Unknown (suspected malware).
-    L"cooliris.dll",               // CoolIris.
-    L"cplushook.dll",              // Unknown (suspected malware).
     L"dockshellhook.dll",          // Stardock Objectdock.
     L"easyhook32.dll",             // GDIPP and others.
     L"easyhook64.dll",             // Symantec BlueCoat and others.
-    L"esspd.dll",                  // Samsung Smart Security ESCORT.
-    L"googledesktopnetwork3.dll",  // Google Desktop Search v5.
-    L"fwhook.dll",                 // PC Tools Firewall Plus.
     L"guard64.dll",                // Comodo Internet Security x64.
-    L"hookprocesscreation.dll",    // Blumentals Program protector.
-    L"hookterminateapis.dll",      // Blumentals and Cyberprinter.
-    L"hookprintapis.dll",          // Cyberprinter.
-    L"imon.dll",                   // NOD32 Antivirus.
-    L"icatcdll.dll",               // Samsung Smart Security ESCORT.
-    L"icdcnl.dll",                 // Samsung Smart Security ESCORT.
-    L"ioloHL.dll",                 // Iolo (System Mechanic).
-    L"kloehk.dll",                 // Kaspersky Internet Security.
-    L"lawenforcer.dll",            // Spyware-Browser AntiSpyware (Spybro).
-    L"libdivx.dll",                // DivX.
-    L"lvprcinj01.dll",             // Logitech QuickCam.
-    L"madchook.dll",               // Madshi (generic hooking library).
     L"mdnsnsp.dll",                // Bonjour.
-    L"moonsysh.dll",               // Moon Secure Antivirus.
-    L"mpk.dll",                    // KGB Spy.
     L"n64hooks.dll",               // Neilsen//NetRatings NetSight.
-    L"npdivx32.dll",               // DivX.
-    L"npggNT.des",                 // GameGuard 2008.
-    L"npggNT.dll",                 // GameGuard (older).
-    L"nphooks.dll",                // Neilsen//NetRatings NetSight.
-    L"oawatch.dll",                // Online Armor.
-    L"opls64.dll",                 // PremierOpinion and Relevant-Knowledge.
-    L"pastali32.dll",              // PastaLeads.
-    L"pavhook.dll",                // Panda Internet Security.
-    L"pavlsphook.dll",             // Panda Antivirus.
-    L"pavshook.dll",               // Panda Antivirus.
-    L"pavshookwow.dll",            // Panda Antivirus.
-    L"pctavhook.dll",              // PC Tools Antivirus.
-    L"pctgmhk.dll",                // PC Tools Spyware Doctor.
-    L"picrmi32.dll",               // PicRec.
-    L"picrmi64.dll",               // PicRec.
     L"pmls64.dll",                 // PremierOpinion and Relevant-Knowledge.
-    L"prls64.dll",                 // PremierOpinion and Relevant-Knowledge.
-    L"prntrack.dll",               // Pharos Systems.
     L"prochook.dll",               // Unknown (GBill-Tools?) (crbug.com/974722).
-    L"protector.dll",              // Unknown (suspected malware).
-    L"radhslib.dll",               // Radiant Naomi Internet Filter.
-    L"radprlib.dll",               // Radiant Naomi Internet Filter.
-    L"rapportnikko.dll",           // Trustware Rapport.
-    L"rlhook.dll",                 // Trustware Bufferzone.
     L"rlls.dll",                   // PremierOpinion and Relevant-Knowledge.
     L"rlls64.dll",                 // PremierOpinion and Relevant-Knowledge.
-    L"rooksdol.dll",               // Trustware Rapport.
-    L"rndlpepperbrowserrecordhelper.dll",  // RealPlayer.
     L"rpchromebrowserrecordhelper.dll",    // RealPlayer.
-    L"r3hook.dll",                         // Kaspersky Internet Security.
-    L"sahook.dll",                         // McAfee Site Advisor.
-    L"sbrige.dll",                         // Unknown.
-    L"sc2hook.dll",                        // Supercopier 2.
-    L"sdhook32.dll",             // Spybot - Search & Destroy Live Protection.
-    L"sguard.dll",               // Iolo (System Guard).
-    L"smum32.dll",               // Spyware Doctor version 6.
-    L"smumhook.dll",             // Spyware Doctor version 5.
-    L"ssldivx.dll",              // DivX.
-    L"syncor11.dll",             // SynthCore Midi interface.
-    L"systools.dll",             // Panda Antivirus.
-    L"tfwah.dll",                // Threatfire (PC tools).
-    L"wblind.dll",               // Stardock Object desktop.
-    L"wbhelp.dll",               // Stardock Object desktop.
-    L"windowsapihookdll32.dll",  // Lenovo One Key Theater (crbug.com/536056).
-    L"windowsapihookdll64.dll",  // Lenovo One Key Theater (crbug.com/536056).
-    L"winstylerthemehelper.dll"  // Tuneup utilities 2006.
 };
 
 // This is for finch. See also crbug.com/464430 for details.
@@ -279,21 +208,25 @@ std::map<std::wstring, std::wstring> GetShortNameModules() {
 // passed as |module_name|. The DLL must be loaded in the current process. A
 // mapping from long names to short names should also be passed in |modules| to
 // attempt to map a long name to the actual loaded name, this can be initialized
-// with a call to GetShortNameModules.
-void BlocklistAddOneDll(const wchar_t* module_name,
+// with a call to GetShortNameModules. Returns true if the DLL is loaded and
+// will be blocked in the child.
+bool BlocklistAddOneDll(const wchar_t* module_name,
                         const std::map<std::wstring, std::wstring>& modules,
                         TargetConfig* config) {
   DCHECK(!config->IsConfigured());
   if (::GetModuleHandleW(module_name) != nullptr) {
     config->AddDllToUnload(module_name);
     DVLOG(1) << "dll to unload found: " << module_name;
+    return true;
   } else {
     auto short_name = modules.find(base::ToLowerASCII(module_name));
     if (short_name != modules.end()) {
       config->AddDllToUnload(short_name->second.c_str());
       config->AddDllToUnload(module_name);
+      return true;
     }
   }
+  return false;
 }
 
 // Adds the generic config rules to a sandbox TargetConfig.
@@ -343,8 +276,14 @@ ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
   // Adds policy rules for unloading the known dlls that cause Chrome to crash.
   // Eviction of injected DLLs is done by the sandbox so that the injected
   // module does not get a chance to execute any code.
-  for (int ix = 0; ix != std::size(kTroublesomeDlls); ++ix)
-    BlocklistAddOneDll(kTroublesomeDlls[ix], modules, config);
+  for (const wchar_t* blocklist_dll : kTroublesomeDlls) {
+    if (BlocklistAddOneDll(blocklist_dll, modules, config)) {
+      // Log the module to help with list cleanup.
+      base::UmaHistogramSparse("Process.Sandbox.DllBlocked",
+                               static_cast<int32_t>(base::HashMetricName(
+                                   base::WideToASCII(blocklist_dll))));
+    }
+  }
 
   return SBOX_ALL_OK;
 }
@@ -364,11 +303,6 @@ ResultCode AddDefaultConfigForSandboxedProcess(TargetConfig* config) {
   config->SetLockdownDefaultDacl();
   config->AddKernelObjectToClose(HandleToClose::kDeviceApi);
   config->SetDesktop(Desktop::kAlternateWinstation);
-
-  if (base::FeatureList::IsEnabled(
-          sandbox::policy::features::kWinSboxZeroAppShim)) {
-    config->SetZeroAppShim();
-  }
 
   return SBOX_ALL_OK;
 }
@@ -495,6 +429,11 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
     case Sandbox::kOnDeviceModelExecution:
       sandbox_base_name = std::string("cr.sb.odm");
       break;
+#if BUILDFLAG(ENABLE_PRINTING)
+    case Sandbox::kPrintCompositor:
+      sandbox_base_name = std::string("cr.sb.prnc");
+      break;
+#endif
     case Sandbox::kWindowsSystemProxyResolver:
       sandbox_base_name = std::string("cr.sb.pxy");
       break;
@@ -529,6 +468,11 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
       sandbox_type != Sandbox::kMediaFoundationCdm &&
       sandbox_type != Sandbox::kNetwork &&
       sandbox_type != Sandbox::kOnDeviceModelExecution &&
+#if BUILDFLAG(ENABLE_PRINTING)
+      !(sandbox_type == Sandbox::kPrintCompositor &&
+        base::FeatureList::IsEnabled(
+            sandbox::policy::features::kPrintCompositorLPAC)) &&
+#endif
       sandbox_type != Sandbox::kWindowsSystemProxyResolver) {
     return SBOX_ERROR_UNSUPPORTED;
   }
@@ -593,6 +537,14 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     container->SetEnableLowPrivilegeAppContainer(true);
   }
 
+#if BUILDFLAG(ENABLE_PRINTING)
+  if (sandbox_type == Sandbox::kPrintCompositor) {
+    container->AddCapability(kLpacCom);
+    container->AddCapability(L"lpacPrinting");
+    container->SetEnableLowPrivilegeAppContainer(true);
+  }
+#endif
+
   if (sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
     container->AddCapability(base::win::WellKnownCapability::kInternetClient);
     container->AddCapability(kLpacServicesManagement);
@@ -604,7 +556,6 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
 }
 
 ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
-                                             const std::string& process_type,
                                              SandboxDelegate* delegate,
                                              TargetConfig* config) {
   DCHECK(!config->IsConfigured());
@@ -623,11 +574,18 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
   if (!delegate->CetCompatible())
     mitigations |= MITIGATION_CET_DISABLED;
 
+  const Sandbox sandbox_type = delegate->GetSandboxType();
+
+  if (sandbox_type == Sandbox::kRenderer &&
+      base::FeatureList::IsEnabled(
+          sandbox::policy::features::kWinSboxRestrictCoreSharingOnRenderer)) {
+    mitigations |= MITIGATION_RESTRICT_CORE_SHARING;
+  }
+
   ResultCode result = config->SetProcessMitigations(mitigations);
   if (result != SBOX_ALL_OK)
     return result;
 
-  Sandbox sandbox_type = delegate->GetSandboxType();
   // Post-startup mitigations.
   mitigations = MITIGATION_DLL_SEARCH_ORDER;
   if (!cmd_line.HasSwitch(switches::kAllowThirdPartyModules) &&
@@ -648,8 +606,9 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
   if (result != SBOX_ALL_OK)
     return result;
 
-  if (process_type == switches::kRendererProcess) {
-    // TODO(crbug.com/74242) Remove if we can reliably not load cryptbase.dll.
+  if (sandbox_type == Sandbox::kRenderer) {
+    // TODO(crbug.com/40088338) Remove if we can reliably not load
+    // cryptbase.dll.
     config->AddKernelObjectToClose(HandleToClose::kKsecDD);
     result = SandboxWin::AddWin32kLockdownPolicy(config);
     if (result != SBOX_ALL_OK) {
@@ -663,14 +622,23 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
       return result;
   }
 
+  // Disable apphelp for tightly sandboxed processes that are not running
+  // in WoW or ARM64 emulated modes.
+  if (sandbox_type == Sandbox::kRenderer || sandbox_type == Sandbox::kService) {
+    if (base::FeatureList::IsEnabled(
+            sandbox::policy::features::kWinSboxZeroAppShim) &&
+        base::win::OSInfo::GetInstance()->IsWowDisabled() &&
+        !base::win::OSInfo::IsRunningEmulatedOnArm64()) {
+      config->SetZeroAppShim();
+    }
+  }
+
   result =
       SandboxWin::SetJobLevel(sandbox_type, JobLevel::kLockdown, 0, config);
   if (result != SBOX_ALL_OK)
     return result;
 
-  if (process_type == switches::kGpuProcess &&
-      base::FeatureList::IsEnabled(
-          {"GpuLockdownDefaultDacl", base::FEATURE_ENABLED_BY_DEFAULT})) {
+  if (sandbox_type == Sandbox::kGpu) {
     config->SetLockdownDefaultDacl();
     config->AddRestrictingRandomSid();
   }
@@ -681,7 +649,7 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
 
   result = AddGenericConfig(config);
   if (result != SBOX_ALL_OK) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return result;
   }
 
@@ -693,21 +661,6 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     DCHECK_EQ(result, SBOX_ALL_OK);
     if (result != SBOX_ALL_OK)
       return result;
-  }
-
-  // Allow the renderer, gpu and utility processes to access the log file.
-  if (process_type == switches::kRendererProcess ||
-      process_type == switches::kGpuProcess ||
-      process_type == switches::kUtilityProcess) {
-    if (logging::IsLoggingToFileEnabled()) {
-      auto log_path = logging::GetLogFileFullPath();
-      DCHECK(base::FilePath(log_path).IsAbsolute());
-      result =
-          config->AllowFileAccess(FileSemantics::kAllowAny, log_path.c_str());
-      if (result != SBOX_ALL_OK) {
-        return result;
-      }
-    }
   }
 
   if (sandbox_type == Sandbox::kMediaFoundationCdm) {
@@ -854,7 +807,12 @@ ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetConfig* config) {
   if (result != SBOX_ALL_OK)
     return result;
 
-  return config->SetFakeGdiInit();
+  // winmm.dll, used by timeGetTime, depends on user32 and gdi32 until RS1.
+  if (base::win::GetVersion() <= base::win::Version::WIN10_TH2 ||
+      !base::FeatureList::IsEnabled(features::kWinSboxNoFakeGdiInit)) {
+    return config->SetFakeGdiInit();
+  }
+  return SBOX_ALL_OK;
 }
 
 // static
@@ -868,24 +826,23 @@ ResultCode SandboxWin::AddAppContainerProfileToConfig(
     return SBOX_ALL_OK;
   std::wstring profile_name =
       GetAppContainerProfileName(appcontainer_id, sandbox_type);
-  ResultCode result =
-      config->AddAppContainerProfile(profile_name.c_str(), true);
+
+  ResultCode result = config->AddAppContainerProfile(profile_name.c_str());
   if (result != SBOX_ALL_OK)
     return result;
 
-  scoped_refptr<AppContainer> container = config->GetAppContainer();
-  result =
-      SetupAppContainerProfile(container.get(), command_line, sandbox_type);
+  result = SetupAppContainerProfile(config->GetAppContainer(), command_line,
+                                    sandbox_type);
   if (result != SBOX_ALL_OK)
     return result;
 
   DWORD granted_access;
   BOOL granted_access_status;
   bool access_check =
-      container->AccessCheck(command_line.GetProgram().value().c_str(),
-                             base::win::SecurityObjectType::kFile,
-                             GENERIC_READ | GENERIC_EXECUTE, &granted_access,
-                             &granted_access_status) &&
+      config->GetAppContainer()->AccessCheck(
+          command_line.GetProgram().value().c_str(),
+          base::win::SecurityObjectType::kFile, GENERIC_READ | GENERIC_EXECUTE,
+          &granted_access, &granted_access_status) &&
       granted_access_status;
   if (!access_check) {
     PLOG(ERROR) << "Sandbox cannot access executable. Check filesystem "
@@ -916,6 +873,13 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
   if (sandbox_type == Sandbox::kOnDeviceModelExecution) {
     return true;
   }
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  if (sandbox_type == Sandbox::kPrintCompositor) {
+    return base::FeatureList::IsEnabled(
+        sandbox::policy::features::kPrintCompositorLPAC);
+  }
+#endif
 
   if (sandbox_type == Sandbox::kWindowsSystemProxyResolver)
     return true;
@@ -970,7 +934,6 @@ bool SandboxWin::InitTargetServices(TargetServices* target_services) {
 // static
 ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
     const base::CommandLine& cmd_line,
-    const std::string& process_type,
     const base::HandlesToInheritVector& handles_to_inherit,
     SandboxDelegate* delegate,
     TargetPolicy* policy) {
@@ -989,8 +952,8 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
     policy->AddHandleToShare(handle);
 
   if (!policy->GetConfig()->IsConfigured()) {
-    ResultCode result = GenerateConfigForSandboxedProcess(
-        cmd_line, process_type, delegate, policy->GetConfig());
+    ResultCode result = GenerateConfigForSandboxedProcess(cmd_line, delegate,
+                                                          policy->GetConfig());
     if (result != SBOX_ALL_OK)
       return result;
   }
@@ -1011,7 +974,6 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
 // static
 ResultCode SandboxWin::StartSandboxedProcess(
     const base::CommandLine& cmd_line,
-    const std::string& process_type,
     const base::HandlesToInheritVector& handles_to_inherit,
     SandboxDelegate* delegate,
     base::Process* process) {
@@ -1028,7 +990,7 @@ ResultCode SandboxWin::StartSandboxedProcess(
   timer.OnPolicyCreated();
 
   ResultCode result = GeneratePolicyForSandboxedProcess(
-      cmd_line, process_type, handles_to_inherit, delegate, policy.get());
+      cmd_line, handles_to_inherit, delegate, policy.get());
   if (SBOX_ALL_OK != result)
     return result;
   timer.OnPolicyGenerated();

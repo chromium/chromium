@@ -4,13 +4,15 @@
 
 package org.chromium.chrome.browser.rlz;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -24,7 +26,11 @@ public class RevenueStats {
     public static RevenueStats getInstance() {
         assert ThreadUtils.runningOnUiThread();
         if (sInstance == null) {
-            sInstance = AppHooks.get().createRevenueStatsInstance();
+            RevenueStats instance = ServiceLoaderUtil.maybeCreate(RevenueStats.class);
+            if (instance == null) {
+                instance = new RevenueStats();
+            }
+            sInstance = instance;
         }
 
         return sInstance;
@@ -57,10 +63,25 @@ public class RevenueStats {
         RevenueStatsJni.get().setRlzParameterValue(rlz);
     }
 
+    /**
+     * Specify SearchClient to use within the Chrome Custom Tab session.
+     *
+     * <p>A non-null value will override any value specified by {@link setSearchClient(String)}, so
+     * this should only be called when initiating a search from a Custom Tab instance.
+     *
+     * @param client the client value to use, or null to reset.
+     */
+    public static void setCustomTabSearchClient(@Nullable String client) {
+        RevenueStatsJni.get().setCustomTabSearchClient(client);
+    }
+
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
-        void setSearchClient(String client);
-        void setRlzParameterValue(String rlz);
+        void setSearchClient(@JniType("std::string") String client);
+
+        void setCustomTabSearchClient(String client);
+
+        void setRlzParameterValue(@JniType("std::u16string") String rlz);
     }
 }

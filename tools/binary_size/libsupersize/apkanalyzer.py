@@ -26,7 +26,6 @@ import parallel
 import string_extract
 
 _TOTAL_NODE_NAME = '<TOTAL>'
-_OUTLINED_PREFIX = '$$Outlined$'
 
 # A limit on the number of symbols a DEX string literal can have, before these
 # symbols are compacted into shared symbols. Increasing this value causes more
@@ -46,6 +45,14 @@ _OUTLINED_PREFIX = '$$Outlined$'
 # shared symbol. So 46315 - 40597 = 5718, or ~12% of original syms are removed,
 # at the cost leaving ~5100 byte in binary sizes unresolved into aliases).
 _DEX_STRING_MAX_SAME_NAME_ALIAS_COUNT = 6
+
+# Synthetics that map 1:1 with the class they are a suffix on.
+_CLASS_SPECIFIC_SYNTHETICS = (
+    'ExternalSyntheticLambda',
+    'ExternalSyntheticApiModelOutline',
+    'ExternalSyntheticServiceLoad',
+    'Lambda',
+)
 
 
 def _ParseJarInfoFile(file_name):
@@ -183,127 +190,74 @@ def _TruncateFrom(value, delimiter, rfind=False):
   return value
 
 
-# Visible for testing.
-class LambdaNormalizer:
-  def __init__(self):
-    self._lambda_by_class_counter = collections.defaultdict(int)
-    self._lambda_name_to_nested_number = {}
+def _NormalizeName(orig_name):
+  """Extracts outer class name and normalizes names with hashes in them.
 
-  def _GetLambdaName(self, class_path, base_name, prefix=''):
-    lambda_number = self._lambda_name_to_nested_number.get(class_path)
-    if lambda_number is None:
-      # First time we've seen this lambda, increment nested class count.
-      lambda_number = self._lambda_by_class_counter[base_name]
-      self._lambda_name_to_nested_number[class_path] = lambda_number
-      self._lambda_by_class_counter[base_name] = lambda_number + 1
-    return prefix + base_name + '$$Lambda$' + str(lambda_number)
+  Returns:
+    outer_class: The outer class. Example: package.Class
+      Returns None for classes that are outlines.
+    new_name: Normalized name.
+  """
+  # May be reassigned by one of the cases below.
+  outer_class = _TruncateFrom(orig_name, '$')
+
+  # $$ is the convention for a synthetic class and all known desugared lambda
+  synthetic_marker_idx = orig_name.find('$$')
+  if synthetic_marker_idx == -1:
+    return outer_class, orig_name
+
+  synthetic_part = orig_name[synthetic_marker_idx + 2:]
+
+  # Example: package.Cls$$InternalSyntheticLambda$0$81073ff6$0
+  if synthetic_part.startswith('InternalSyntheticLambda$'):
+    next_dollar_idx = orig_name.index('$',
+        synthetic_marker_idx + len('$$InternalSyntheticLambda$'))
+    return outer_class, orig_name[:next_dollar_idx]
+
+  # Ensure we notice if a new type of InternalSythetic pops up.
+  # E.g. to see if it follows the same naming scheme.
+  assert not synthetic_part.startswith('Internal'), f'Unrecognized: {orig_name}'
+
+  if synthetic_part.startswith(_CLASS_SPECIFIC_SYNTHETICS):
+    return outer_class, orig_name
+
+  return None, orig_name
 
 
-  def ExtractOuterClassAndDesugarLambda(self, class_path):
-    """Extracts outer class name and converts Lambda to Desugar format.
-
-    Args:
-      class_path: Class path as d8 desugared name, possibly including inner
-      classes and Lambda parts. Example:
-      package.Class$$Lambda$2$$InternalSyntheticOutline$8$cbe941dd782$0
-
-    Returns:
-      outer_class: The outer class. Example: package.Class
-      new_name: |class_path| converted to Desugar format, or None if it is not a
-        Lambda. Example: package.Class$$Lambda$0
-    """
-    # May be reassigned by one of the cases below.
-    outer_class = _TruncateFrom(class_path, '$')
-
-    # $$ is the convention for a synthetic class and all known desugared lambda
-    # classes have 'Lambda' in the synthetic part of its name. If it doesn't
-    # then it's almost certainly not a desugared lambda class.
-    if 'Lambda' not in class_path[class_path.find('$$'):]:
-      return outer_class, None
-
-    # Example: package.AnimatedProgressBar$$InternalSyntheticLambda$3$81073ff6$0
-    # Example: package.Class$$Lambda$2$$InternalSyntheticOutline$8$cbe941dd782$0
-    match = re.fullmatch(
-        # The base_name group needs to be non-greedy/minimal (using +?) since we
-        # want it to not include $$Lambda$28 when present.
-        r'(?P<base_name>.+?)(\$\$Lambda\$\d+)?'
-        r'\$\$InternalSynthetic[a-zA-Z0-9_]+'
-        r'\$\d+\$[0-9a-f]+\$\d+',
-        class_path)
-    if match:
-      new_name = self._GetLambdaName(class_path=class_path,
-                                     base_name=match.group('base_name'))
-      return outer_class, new_name
-    # Example: AnimatedProgressBar$$ExternalSyntheticLambda0
-    # Example: AutofillAssistant$$Lambda$2$$ExternalSyntheticOutline0
-    # Example: ContextMenuCoord$$Lambda$2$$ExternalSyntheticThrowCCEIfNotNull0
-    match = re.fullmatch(
-        r'(?P<base_name>.+?)(\$\$Lambda\$\d+)?'
-        r'\$\$ExternalSynthetic[a-zA-Z0-9_]+', class_path)
-    if match:
-      new_name = self._GetLambdaName(class_path=class_path,
-                                     base_name=match.group('base_name'),
-                                     prefix=_OUTLINED_PREFIX)
-      return outer_class, new_name
-    # Example: package.FirebaseInstallationsRegistrar$$Lambda$1
-    match = re.fullmatch(r'(?P<base_name>.+)\$\$Lambda\$\d+', class_path)
-    if match:
-      # Although these are already valid names, re-number them to avoid name
-      # collisions with renamed InternalSyntheticLambdas.
-      new_name = self._GetLambdaName(class_path=class_path,
-                                     base_name=match.group('base_name'))
-      return outer_class, new_name
-    # Example: org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk
-    # Assume that the last portion of the name after $ is the hash identifier.
-    match = re.fullmatch(
-        r'(?P<package>.+)-\$\$Lambda\$(?P<class>[^$]+)(?P<nested>.*)\$[^$]+',
-        class_path)
-    if match:
-      package_name = match.group('package')
-      class_name = match.group('class')
-      nested_classes = match.group('nested')
-      base_name = package_name + class_name + nested_classes
-      new_name = self._GetLambdaName(class_path=class_path, base_name=base_name)
-      outer_class = package_name + class_name
-      return outer_class, new_name
-    assert False, (
-        'No valid match for new lambda name format: ' + class_path + '\n'
-        'Please update https://crbug.com/1208385 with this error so we can '
-        'update the lambda normalization code.')
-    return None
-
-  def Normalize(self, class_path, full_name):
-    """Make d8 desugared lambdas look the same as Desugar ones."""
-    # Desugar lambda: org.Promise$Nested1$$Lambda$0
-    # 1) Need to prefix with proper class name so that they will show as nested.
-    # 2) Need to suffix with number so that they diff better.
-    # Original name will be kept as "object_path".
-    # See tests for a more comprehensive list of what d8 currently generates.
-    outer_class, new_name = self.ExtractOuterClassAndDesugarLambda(class_path)
-    if new_name:
-      full_name = full_name.replace(class_path, new_name)
-    return outer_class, full_name
+def NormalizeLine(orig_name, full_name):
+  """Normalizes a line from apkanalyzer output.
+  Args:
+    orig_name: The original name from apkanalyzer output.
+    full_name: The full name of the symbol.
+  Returns:
+    outer_class: The outer class. Example: package.Class
+      Returns None for classes that are outlines.
+    new_full_name: Normalized full name.
+  """
+  # See tests for a more comprehensive list of what d8 currently generates.
+  outer_class, new_name = _NormalizeName(orig_name)
+  if new_name is not orig_name:
+    full_name = full_name.replace(orig_name, new_name)
+  return outer_class, full_name
 
 
 def _MakeDexObjectPath(package_name, is_outlined):
   if is_outlined:
     # Create a special meta-directory for outlined lambdas to easily monitor
     # their total size and spot regressions.
-    return posixpath.join(models.APK_PREFIX_PATH, 'Outlined',
-                          *package_name.split('.'))
+    return posixpath.join(models.OUTLINES_PREFIX_PATH, *package_name.split('.'))
   return posixpath.join(models.APK_PREFIX_PATH, *package_name.split('.'))
 
 
 # Visible for testing.
-def CreateDexSymbol(name, size, source_map, lambda_normalizer):
+def CreateDexSymbol(name, size, source_map):
   parts = name.split(' ')  # (class_name, return_type, method_name)
   new_package = parts[0]
 
   if new_package == _TOTAL_NODE_NAME:
     return None
 
-  # Make d8 desugared lambdas look the same as Desugar ones.
-  outer_class, name = lambda_normalizer.Normalize(new_package, name)
+  outer_class, name = NormalizeLine(new_package, name)
 
   # Look for class merging.
   old_package = new_package
@@ -315,16 +269,28 @@ def CreateDexSymbol(name, size, source_map, lambda_normalizer):
     last_idx = method.rfind('.', 0, last_idx)
     if last_idx != -1:
       old_package = method[:last_idx]
-      outer_class, name = lambda_normalizer.Normalize(old_package, name)
 
-  source_path = source_map.get(outer_class, '')
-  object_path = _MakeDexObjectPath(old_package,
-                                   name.startswith(_OUTLINED_PREFIX))
+      # TODO(b/333617478): Delete this work-around when R8 mapping files no
+      #     longer output this pattern.
+      suspect_class_name = old_package
+      if suspect_class_name.startswith('WV.'):
+        suspect_class_name = suspect_class_name[3:]
+      if ('.' not in suspect_class_name
+          and new_package.endswith(f'.{suspect_class_name}')):
+        name = name.replace(f' {old_package}.', ' ')
+        old_package = new_package
+      else:
+        # Non-workaround case:
+        outer_class, name = NormalizeLine(old_package, name)
+
+  is_outlined = outer_class == None
+  object_path = _MakeDexObjectPath(old_package, is_outlined)
   if name.endswith(')'):
     section_name = models.SECTION_DEX_METHOD
   else:
     section_name = models.SECTION_DEX
 
+  source_path = source_map.get(outer_class, '')
   return models.Symbol(section_name,
                        size,
                        full_name=name,
@@ -335,9 +301,8 @@ def CreateDexSymbol(name, size, source_map, lambda_normalizer):
 def _SymbolsFromNodes(nodes, source_map):
   # Use (DEX_METHODS, DEX) buckets to speed up sorting.
   symbol_buckets = ([], [])
-  lambda_normalizer = LambdaNormalizer()
   for _, name, node_size in nodes:
-    symbol = CreateDexSymbol(name, node_size, source_map, lambda_normalizer)
+    symbol = CreateDexSymbol(name, node_size, source_map)
     if symbol:
       bucket_index = int(symbol.section_name is models.SECTION_DEX)
       symbol_buckets[bucket_index].append(symbol)
@@ -435,7 +400,6 @@ def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
   # Code strings: Strings accessed via class -> method -> code -> string.
   # These are extracted into separate symbols ,aliases among referring classes.
   fresh_string_idx_set = set(range(len(dexfile.string_data_item_list)))
-  lambda_normalizer = LambdaNormalizer()
   object_path = str(apk_path)
   dex_string_symbols = []
   string_iter = _GenDexStringsUsedByClasses(dexfile, class_deobfuscation_map)
@@ -444,8 +408,7 @@ def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
     num_aliases = len(string_user_class_names)
     aliases = []
     for class_name in string_user_class_names:
-      outer_class, _ = lambda_normalizer.ExtractOuterClassAndDesugarLambda(
-          class_name)
+      outer_class, class_name = _NormalizeName(class_name)
       full_name = string_extract.GetNameOfStringLiteralBytes(
           decoded_string.encode('utf-8', errors='surrogatepass'))
       source_path = (source_map.get(outer_class, '')

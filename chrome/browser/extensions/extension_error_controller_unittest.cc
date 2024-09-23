@@ -129,7 +129,7 @@ void ExtensionErrorControllerUnitTest::SetUp() {
   // for new profiles.
   ExtensionServiceInitParams params;
   params.is_first_run = false;
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
 }
 
 testing::AssertionResult

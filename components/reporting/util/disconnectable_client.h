@@ -18,6 +18,10 @@
 
 namespace reporting {
 
+namespace disconnectable_client {
+constexpr char kErrorServiceUnavailable[] = "Service is unavailable";
+}
+
 // Client connection class that handles possible disconnections.
 // When the service is not available, calls are immediately responded with
 // failure, including those started beforewhen the connection was available.

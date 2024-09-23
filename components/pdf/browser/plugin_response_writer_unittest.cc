@@ -10,13 +10,13 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "components/pdf/browser/mock_url_loader_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
@@ -24,6 +24,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/test/mock_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -31,6 +32,8 @@
 namespace pdf {
 
 namespace {
+
+using ::network::MockURLLoaderClient;
 
 using ::testing::HasSubstr;
 using ::testing::NiceMock;
@@ -57,8 +60,8 @@ class BodyDrainer {
 
  private:
   struct DrainerClient : public mojo::DataPipeDrainer::Client {
-    void OnDataAvailable(const void* data, size_t num_bytes) override {
-      content.append(reinterpret_cast<const char*>(data), num_bytes);
+    void OnDataAvailable(base::span<const uint8_t> data) override {
+      content.append(base::as_string_view(data));
     }
 
     void OnDataComplete() override {

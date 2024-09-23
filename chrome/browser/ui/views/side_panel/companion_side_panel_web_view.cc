@@ -30,7 +30,6 @@ CompanionSidePanelWebView::CompanionSidePanelWebView(Profile* profile)
               GURL(chrome::kChromeUIUntrustedCompanionSidePanelURL),
               profile,
               /*task_manager_string_id=*/IDS_SIDE_PANEL_COMPANION_TITLE,
-              /*webui_resizes_host=*/false,
               /*esc_closes_ui=*/false)) {}
 
 bool CompanionSidePanelWebView::HandleContextMenu(
@@ -41,12 +40,15 @@ bool CompanionSidePanelWebView::HandleContextMenu(
 
 content::WebContents* CompanionSidePanelWebView::OpenURLFromTab(
     content::WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   BrowserWindow* window =
       BrowserWindow::FindBrowserWindowWithWebContents(web_contents());
   auto* browser_view = static_cast<BrowserView*>(window);
   if (browser_view && browser_view->browser()) {
-    browser_view->browser()->OpenURL(params);
+    browser_view->browser()->OpenURL(params,
+                                     std::move(navigation_handle_callback));
   }
   return nullptr;
 }

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_POPOVER_DATA_H_
 
 #include "base/check_op.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/html/closewatcher/close_watcher.h"
@@ -111,11 +112,11 @@ class PopoverData final : public GarbageCollected<PopoverData>,
     hover_hide_task_ = std::move(task);
   }
 
-  HTMLSelectListElement* ownerSelectListElement() const {
-    return owner_select_list_element_.Get();
+  HTMLElement* internalImplicitAnchor() const {
+    return internal_implicit_anchor_.Get();
   }
-  void setOwnerSelectListElement(HTMLSelectListElement* element) {
-    owner_select_list_element_ = element;
+  void setInternalImplicitAnchor(HTMLElement* element) {
+    internal_implicit_anchor_ = element;
   }
 
   CloseWatcher* closeWatcher() { return close_watcher_.Get(); }
@@ -127,7 +128,7 @@ class PopoverData final : public GarbageCollected<PopoverData>,
     visitor->Trace(invoker_);
     visitor->Trace(previously_focused_element_);
     visitor->Trace(hover_show_tasks_);
-    visitor->Trace(owner_select_list_element_);
+    visitor->Trace(internal_implicit_anchor_);
     visitor->Trace(close_watcher_);
     ElementRareDataField::Trace(visitor);
   }
@@ -153,7 +154,9 @@ class PopoverData final : public GarbageCollected<PopoverData>,
   // A task that hides the popover after a delay.
   TaskHandle hover_hide_task_;
 
-  WeakMember<HTMLSelectListElement> owner_select_list_element_;
+  // Used for builtin elements which want to set up an anchor relationship in
+  // C++ instead of CSS.
+  WeakMember<HTMLElement> internal_implicit_anchor_;
 
   Member<CloseWatcher> close_watcher_;
 };

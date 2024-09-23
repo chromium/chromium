@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<meta name="timeout" content="long">
+
+<link rel="help" href="http://crbug.com/40960275">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body></body>
+
+<script>
+// test_case(keyPress, expectedOption, optionsList, description)
+test_case('l', 'l', ['', 'l'], 'lower-matches-lower');
+test_case('g', 'G', ['', 'G'], 'lower-matches-upper');
+test_case('Y', 'y', ['', 'y'], 'upper-matches-lower');
+test_case('U', 'U', ['', 'U'], 'upper-matches-upper');
+test_case('pup', 'puppy', ['', 'puppy'], 'match-word');
+test_case('dog', 'doggy', ['', 'dock', 'doggy'], 'match-word-from-multiple-options');
+
+test_case('5', '5', ['', '5'], 'match-digit');
+test_case('17', '1776', ['', '1776'], 'match-number');
+
+test_case('$', '$', ['', '$'], 'match-symbol');
+
+test_case('a', 'a', ['', 'a', 'm', 'z'], 'match-first');
+test_case('m', 'm', ['', 'a', 'm', 'z'], 'match-middle');
+test_case('z', 'z', ['', 'a', 'm', 'z'], 'match-last');
+test_case('x', '', ['', 'a', 'm', 'z'], 'no-match');
+
+test_case('t', 'ţ', ['', 'ţ'], 'match-accented-lower');
+test_case('o', 'Ö', ['', 'Ö'], 'match-accented-upper');
+test_case('egalite', 'Égalité', ['', 'Égalité'], 'match-accented-word');
+
+test_case('strass', 'Straße', ['', 'Straße'], 'match-expanded');
+test_case('straß', 'STRASSE', ['', 'STRASSE'], 'match-expanded-2');
+
+function test_case(keyPress, expectedOption, optionsList, description) {
+  promise_test(async (t) => {
+    const target = document.createElement('select');
+    document.body.appendChild(target);
+
+    t.add_cleanup(() => target.remove());
+
+    for(const optionText of optionsList) {
+      const option = document.createElement('option');
+      option.textContent = optionText;
+      target.appendChild(option);
+    }
+
+    await run_test(target, keyPress, expectedOption);
+  }, description);
+}
+
+async function run_test(target, keyPress, expectedOption) {
+  prep_for_test(target);
+
+  for(const k of keyPress) {
+    await press_key(target, k);
+  }
+
+  assert_equals(
+    target.value,
+    expectedOption,
+    `pressing [${keyPress}] should select "${expectedOption}"`
+  );
+}
+
+function prep_for_test(target) {
+  target.focus();
+  assert_equals(
+    document.activeElement,
+    target,
+    'target should be active'
+  );
+
+  assert_equals(
+    target.value,
+   '',
+   'initial value should be empty'
+  );
+}
+
+async function press_key(target, key) {
+  return test_driver.send_keys(target, key);
+}
+</script>

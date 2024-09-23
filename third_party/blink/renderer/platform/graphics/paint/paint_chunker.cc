@@ -10,51 +10,24 @@
 
 namespace blink {
 
-void PaintChunker::ResetChunks(Vector<PaintChunk>* chunks) {
-  if (chunks_) {
-    FinalizeLastChunkProperties();
-    SetWillForceNewChunk(true);
-    current_properties_ = PropertyTreeState::Uninitialized();
-  }
-  chunks_ = chunks;
+void PaintChunker::Finish() {
+  FinalizeLastChunkProperties();
 #if DCHECK_IS_ON()
-  DCHECK(!chunks || chunks->empty());
-  DCHECK(IsInInitialState());
+  finished_ = true;
 #endif
-}
-
-#if DCHECK_IS_ON()
-bool PaintChunker::IsInInitialState() const {
-  if (current_properties_ != PropertyTreeState::Uninitialized())
-    return false;
-  DCHECK(will_force_new_chunk_);
-  DCHECK(!chunks_ || chunks_->empty());
-  return true;
-}
-#endif
-
-void PaintChunker::StartMarkingClientsForValidation(
-    HeapVector<Member<const DisplayItemClient>>& clients_to_validate) {
-#if DCHECK_IS_ON()
-  DCHECK(IsInInitialState());
-#endif
-  DCHECK(!clients_to_validate_);
-  clients_to_validate_ = &clients_to_validate;
 }
 
 void PaintChunker::MarkClientForValidation(const DisplayItemClient& client) {
+  CheckNotFinished();
   if (clients_to_validate_ && !client.IsMarkedForValidation()) {
     clients_to_validate_->push_back(&client);
     client.MarkForValidation();
   }
 }
 
-void PaintChunker::StopMarkingClientsForValidation() {
-  clients_to_validate_ = nullptr;
-}
-
 void PaintChunker::UpdateCurrentPaintChunkProperties(
     const PropertyTreeStateOrAlias& properties) {
+  CheckNotFinished();
   if (current_properties_ != properties) {
     next_chunk_id_ = std::nullopt;
     current_properties_ = properties;
@@ -65,6 +38,7 @@ void PaintChunker::UpdateCurrentPaintChunkProperties(
     const PaintChunk::Id& chunk_id,
     const DisplayItemClient& client,
     const PropertyTreeStateOrAlias& properties) {
+  CheckNotFinished();
   // If properties are the same, continue to use the previously set
   // |next_chunk_id_| because the id of the outer painting is likely to be
   // more stable to reduce invalidation because of chunk id changes.
@@ -74,25 +48,23 @@ void PaintChunker::UpdateCurrentPaintChunkProperties(
 }
 
 void PaintChunker::AppendByMoving(PaintChunk&& chunk) {
-  DCHECK(chunks_);
   FinalizeLastChunkProperties();
   wtf_size_t next_chunk_begin_index =
-      chunks_->empty() ? 0 : chunks_->back().end_index;
-  chunks_->emplace_back(next_chunk_begin_index, std::move(chunk));
+      chunks_.empty() ? 0 : chunks_.back().end_index;
+  chunks_.emplace_back(next_chunk_begin_index, std::move(chunk));
 }
 
 bool PaintChunker::WillCreateNewChunk() const {
   return will_force_new_chunk_ ||
-         current_properties_ != chunks_->back().properties;
+         current_properties_ != chunks_.back().properties;
 }
 
 bool PaintChunker::EnsureCurrentChunk(const PaintChunk::Id& id,
                                       const DisplayItemClient& client) {
 #if DCHECK_IS_ON()
-  DCHECK(chunks_);
-  // If this DCHECKs are hit we are missing a call to update the properties.
+  CheckNotFinished();
+  // If this DCHECK is hit we are missing a call to update the properties.
   // See: ScopedPaintChunkProperties.
-  DCHECK(!IsInInitialState());
   // At this point we should have all of the properties given to us.
   DCHECK(current_properties_.IsInitialized());
 #endif
@@ -102,11 +74,11 @@ bool PaintChunker::EnsureCurrentChunk(const PaintChunk::Id& id,
       next_chunk_id_.emplace(id, client);
     }
     FinalizeLastChunkProperties();
-    wtf_size_t begin = chunks_->empty() ? 0 : chunks_->back().end_index;
+    wtf_size_t begin = chunks_.empty() ? 0 : chunks_.back().end_index;
     MarkClientForValidation(next_chunk_id_->second);
-    chunks_->emplace_back(begin, begin, next_chunk_id_->second,
-                          next_chunk_id_->first, current_properties_,
-                          current_effectively_invisible_);
+    chunks_.emplace_back(begin, begin, next_chunk_id_->second,
+                         next_chunk_id_->first, current_properties_,
+                         current_effectively_invisible_);
     next_chunk_id_ = std::nullopt;
     will_force_new_chunk_ = false;
     return true;
@@ -116,14 +88,13 @@ bool PaintChunker::EnsureCurrentChunk(const PaintChunk::Id& id,
 
 bool PaintChunker::IncrementDisplayItemIndex(const DisplayItemClient& client,
                                              const DisplayItem& item) {
-  DCHECK(chunks_);
-
+  CheckNotFinished();
   bool item_forces_new_chunk = item.IsForeignLayer() || item.IsScrollbar();
-  if (item_forces_new_chunk)
-    SetWillForceNewChunk(true);
-
+  if (item_forces_new_chunk) {
+    SetWillForceNewChunk();
+  }
   bool created_new_chunk = EnsureCurrentChunk(item.GetId(), client);
-  auto& chunk = chunks_->back();
+  auto& chunk = chunks_.back();
   chunk.end_index++;
 
   // Normally the display item's visual rect should be covered by previous
@@ -161,7 +132,7 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItemClient& client,
   DCHECK(!will_force_new_chunk_);
   if (item_forces_new_chunk) {
     DCHECK(created_new_chunk);
-    SetWillForceNewChunk(true);
+    SetWillForceNewChunk();
   }
 
   return created_new_chunk;
@@ -174,9 +145,10 @@ bool PaintChunker::AddHitTestDataToCurrentChunk(
     TouchAction touch_action,
     bool blocking_wheel,
     cc::HitTestOpaqueness hit_test_opaqueness) {
+  CheckNotFinished();
   bool created_new_chunk = EnsureCurrentChunk(id, client);
   UnionBounds(rect, hit_test_opaqueness);
-  auto& chunk = chunks_->back();
+  auto& chunk = chunks_.back();
   if (touch_action != TouchAction::kAuto) {
     auto& touch_action_rects = chunk.EnsureHitTestData().touch_action_rects;
     if (touch_action_rects.empty() ||
@@ -195,10 +167,11 @@ bool PaintChunker::AddHitTestDataToCurrentChunk(
 }
 
 bool PaintChunker::CurrentChunkIsNonEmptyAndTransparentToHitTest() const {
+  CheckNotFinished();
   if (WillCreateNewChunk()) {
     return false;
   }
-  const auto& chunk = chunks_->back();
+  const auto& chunk = chunks_.back();
   return !chunk.bounds.IsEmpty() &&
          chunk.hit_test_opaqueness == cc::HitTestOpaqueness::kTransparent;
 }
@@ -208,13 +181,14 @@ bool PaintChunker::AddRegionCaptureDataToCurrentChunk(
     const DisplayItemClient& client,
     const RegionCaptureCropId& crop_id,
     const gfx::Rect& rect) {
+  CheckNotFinished();
   DCHECK(!crop_id->is_zero());
   bool created_new_chunk = EnsureCurrentChunk(id, client);
-  auto& chunk = chunks_->back();
+  auto& chunk = chunks_.back();
   if (!chunk.region_capture_data) {
-    chunk.region_capture_data = std::make_unique<RegionCaptureData>();
+    chunk.region_capture_data = MakeGarbageCollected<RegionCaptureData>();
   }
-  chunk.region_capture_data->insert_or_assign(crop_id, std::move(rect));
+  chunk.region_capture_data->map.insert_or_assign(crop_id, std::move(rect));
   return created_new_chunk;
 }
 
@@ -223,10 +197,10 @@ void PaintChunker::AddSelectionToCurrentChunk(
     std::optional<PaintedSelectionBound> end,
     String debug_info) {
   // We should have painted the selection when calling this method.
-  DCHECK(chunks_);
-  DCHECK(!chunks_->empty());
+  CheckNotFinished();
+  DCHECK(!chunks_.empty());
 
-  auto& chunk = chunks_->back();
+  auto& chunk = chunks_.back();
 
 #if DCHECK_IS_ON()
   gfx::Rect bounds_rect = chunk.bounds;
@@ -264,10 +238,10 @@ void PaintChunker::AddSelectionToCurrentChunk(
 }
 
 void PaintChunker::RecordAnySelectionWasPainted() {
-  DCHECK(chunks_);
-  DCHECK(!chunks_->empty());
+  CheckNotFinished();
+  DCHECK(!chunks_.empty());
 
-  auto& chunk = chunks_->back();
+  auto& chunk = chunks_.back();
   LayerSelectionData& selection_data = chunk.EnsureLayerSelectionData();
   selection_data.any_selection_was_painted = true;
 }
@@ -276,11 +250,13 @@ void PaintChunker::CreateScrollHitTestChunk(
     const PaintChunk::Id& id,
     const DisplayItemClient& client,
     const TransformPaintPropertyNode* scroll_translation,
-    const gfx::Rect& rect,
-    cc::HitTestOpaqueness hit_test_opaqueness) {
+    const gfx::Rect& scroll_hit_test_rect,
+    cc::HitTestOpaqueness hit_test_opaqueness,
+    const gfx::Rect& scrolling_contents_cull_rect) {
 #if DCHECK_IS_ON()
+  CheckNotFinished();
   if (id.type == DisplayItem::Type::kResizerScrollHitTest ||
-      id.type == DisplayItem::Type::kPluginScrollHitTest ||
+      id.type == DisplayItem::Type::kWebPluginHitTest ||
       id.type == DisplayItem::Type::kScrollbarHitTest) {
     // Resizer, plugin, and scrollbar hit tests are only used to prevent
     // composited scrolling and should not have a scroll offset node.
@@ -294,34 +270,37 @@ void PaintChunker::CreateScrollHitTestChunk(
       DCHECK(scroll_translation->ScrollNode());
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 #endif
 
-  SetWillForceNewChunk(true);
+  SetWillForceNewChunk();
   bool created_new_chunk = EnsureCurrentChunk(id, client);
   DCHECK(created_new_chunk);
 
-  auto& chunk = chunks_->back();
-  UnionBounds(rect, hit_test_opaqueness);
+  auto& chunk = chunks_.back();
+  UnionBounds(scroll_hit_test_rect, hit_test_opaqueness);
   auto& hit_test_data = chunk.EnsureHitTestData();
   hit_test_data.scroll_translation = scroll_translation;
-  hit_test_data.scroll_hit_test_rect = rect;
-  SetWillForceNewChunk(true);
+  hit_test_data.scroll_hit_test_rect = scroll_hit_test_rect;
+  hit_test_data.scrolling_contents_cull_rect = scrolling_contents_cull_rect;
+  SetWillForceNewChunk();
 }
 
 void PaintChunker::UnionBounds(const gfx::Rect& rect,
                                cc::HitTestOpaqueness hit_test_opaqueness) {
-  auto& chunk = chunks_->back();
+  CheckNotFinished();
+  auto& chunk = chunks_.back();
   chunk.hit_test_opaqueness = cc::UnionHitTestOpaqueness(
       chunk.bounds, chunk.hit_test_opaqueness, rect, hit_test_opaqueness);
   chunk.bounds.Union(rect);
 }
 
 void PaintChunker::ProcessBackgroundColorCandidate(const DisplayItem& item) {
+  CheckNotFinished();
   // If this paints the background and it's larger than our current candidate,
   // set the candidate to be this item.
-  auto& chunk = chunks_->back();
+  auto& chunk = chunks_.back();
   if (item.IsDrawing() && item.DrawsContent()) {
     PaintChunk::BackgroundColorInfo item_background_color =
         To<DrawingDisplayItem>(item).BackgroundColor();
@@ -344,11 +323,12 @@ void PaintChunker::ProcessBackgroundColorCandidate(const DisplayItem& item) {
 }
 
 void PaintChunker::FinalizeLastChunkProperties() {
-  DCHECK(chunks_);
-  if (chunks_->empty() || chunks_->back().is_moved_from_cached_subsequence)
+  CheckNotFinished();
+  if (chunks_.empty() || chunks_.back().is_moved_from_cached_subsequence) {
     return;
+  }
 
-  auto& chunk = chunks_->back();
+  auto& chunk = chunks_.back();
   if (chunk.size() > 1 ||
       chunk.background_color.area !=
           static_cast<float>(chunk.bounds.width()) * chunk.bounds.height()) {

@@ -3,24 +3,24 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator+Testing.h"
 
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
+#import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator+Testing.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -68,7 +68,7 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 // consumer methods are called correctly.
 @interface FakePasswordDetailsConsumer : NSObject <PasswordDetailsConsumer>
 
-@property(nonatomic, strong) NSArray<PasswordDetails*>* passwords;
+@property(nonatomic, strong) NSArray<CredentialDetails*>* credentials;
 
 @property(nonatomic, copy) NSString* title;
 
@@ -76,9 +76,9 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 
 @implementation FakePasswordDetailsConsumer
 
-- (void)setPasswords:(NSArray<PasswordDetails*>*)passwords
-            andTitle:(NSString*)title {
-  _passwords = passwords;
+- (void)setCredentials:(NSArray<CredentialDetails*>*)credentials
+              andTitle:(NSString*)title {
+  _credentials = credentials;
   _title = title;
 }
 
@@ -88,7 +88,7 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 - (void)setUserEmail:(NSString*)userEmail {
 }
 
-- (void)setupRightShareButton:(BOOL)enabled {
+- (void)setupRightShareButton:(BOOL)policyEnabled {
 }
 
 @end
@@ -112,10 +112,10 @@ class PasswordDetailsMediatorTest : public PlatformTest {
         IOSChromeAffiliationServiceFactory::GetInstance(),
         base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
           return std::unique_ptr<KeyedService>(
-              std::make_unique<password_manager::FakeAffiliationService>());
+              std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     password_check_manager_ =
         IOSChromePasswordCheckManagerFactory::GetForBrowserState(
@@ -213,10 +213,10 @@ class PasswordDetailsMediatorTest : public PlatformTest {
 
   // Verifies that the passwords sent by the mediator to the consumer are as
   // expected.
-  void CheckConsumerPasswords(NSArray<PasswordDetails*>* expected_passwords) {
-    EXPECT_EQ(consumer().passwords.count, expected_passwords.count);
-    for (NSUInteger i = 0; i < consumer().passwords.count; i++) {
-      CheckPasswordDetails(consumer().passwords[i], expected_passwords[i]);
+  void CheckConsumerPasswords(NSArray<CredentialDetails*>* expected_passwords) {
+    EXPECT_EQ(consumer().credentials.count, expected_passwords.count);
+    for (NSUInteger i = 0; i < consumer().credentials.count; i++) {
+      CheckPasswordDetails(consumer().credentials[i], expected_passwords[i]);
     }
   }
 
@@ -246,8 +246,8 @@ class PasswordDetailsMediatorTest : public PlatformTest {
   }
 
   // Checks if the provided password details are equal.
-  void CheckPasswordDetails(PasswordDetails* password1,
-                            PasswordDetails* password2) {
+  void CheckPasswordDetails(CredentialDetails* password1,
+                            CredentialDetails* password2) {
     EXPECT_EQ(password1.credentialType, password2.credentialType);
     EXPECT_NSEQ(password1.signonRealm, password2.signonRealm);
     EXPECT_NSEQ(password1.origins, password2.origins);
@@ -285,7 +285,7 @@ TEST_F(PasswordDetailsMediatorTest, NotifiesConsumerOnInsecurePasswordChange) {
   AddInsecurePasswordForm(/*url=*/kExampleURL1, /*password*/ kExamplePassword1,
                           /*insecure_type=*/InsecureType::kLeaked);
 
-  PasswordDetails* expected_password_details = [[PasswordDetails alloc]
+  CredentialDetails* expected_password_details = [[CredentialDetails alloc]
       initWithCredential:GetAffiliatedGroupCredentials()[0]];
   expected_password_details.compromised = YES;
 
@@ -318,9 +318,9 @@ TEST_F(PasswordDetailsMediatorTest, RemoveCredential) {
                           }));
 
   // Remove credential with password "password2".
-  PasswordDetails* password_details =
-      [[PasswordDetails alloc] initWithCredential:credentials[1]];
-  [mediator() removeCredential:password_details];
+  CredentialDetails* credential_details =
+      [[CredentialDetails alloc] initWithCredential:credentials[1]];
+  [mediator() removeCredential:credential_details];
   RunUntilIdle();
 
   // Check that there is only one password left in the mediator's credential
@@ -336,8 +336,8 @@ TEST_F(PasswordDetailsMediatorTest, RemoveCredential) {
                              return credential.password == kExamplePassword2;
                            }));
 
-  PasswordDetails* remaining_password_details =
-      [[PasswordDetails alloc] initWithCredential:credentials[0]];
+  CredentialDetails* remaining_password_details =
+      [[CredentialDetails alloc] initWithCredential:credentials[0]];
 
   // Verify information sent to consumer.
   CheckConsumerPasswords(
@@ -365,9 +365,9 @@ TEST_F(PasswordDetailsMediatorTest, MoveCredentialToAccountStore) {
   EXPECT_THAT(GetTestAccountStore().stored_passwords(), IsEmpty());
 
   // Move the credential to the account password store.
-  PasswordDetails* password_details = [[PasswordDetails alloc]
+  CredentialDetails* credential_details = [[CredentialDetails alloc]
       initWithCredential:GetAffiliatedGroupCredentials()[0]];
-  [mediator() moveCredentialToAccountStore:password_details];
+  [mediator() moveCredentialToAccountStore:credential_details];
   RunUntilIdle();
 
   expected_form.in_store = PasswordForm::Store::kAccountStore;
@@ -375,14 +375,13 @@ TEST_F(PasswordDetailsMediatorTest, MoveCredentialToAccountStore) {
   // Verify that the credential is now stored in the account password store.
   EXPECT_EQ(*mediator().credentials[0].stored_in.begin(),
             PasswordForm::Store::kAccountStore);
-  EXPECT_THAT(GetTestProfileStore().stored_passwords(),
-              ElementsAre(Pair(kExampleSignonRealm, IsEmpty())));
+  EXPECT_THAT(GetTestProfileStore().stored_passwords(), IsEmpty());
   EXPECT_THAT(
       GetTestAccountStore().stored_passwords(),
       ElementsAre(Pair(kExampleSignonRealm, ElementsAre(expected_form))));
 
   // Verify information sent to consumer.
-  CheckConsumerPasswords(/*expected_passwords=*/@[ password_details ]);
+  CheckConsumerPasswords(/*expected_passwords=*/@[ credential_details ]);
   CheckConsumerTitle();
 }
 
@@ -432,9 +431,9 @@ TEST_F(PasswordDetailsMediatorTest, MoveCredentialToAccountStoreWithConflict) {
       ElementsAre(Pair(kExampleSignonRealm, ElementsAre(profile_store_form))));
 
   // Move the profile credential to the account password store.
-  PasswordDetails* password_details =
-      [[PasswordDetails alloc] initWithCredential:mediator().credentials[1]];
-  [mediator() moveCredentialToAccountStoreWithConflict:password_details];
+  CredentialDetails* credential_details =
+      [[CredentialDetails alloc] initWithCredential:mediator().credentials[1]];
+  [mediator() moveCredentialToAccountStoreWithConflict:credential_details];
   RunUntilIdle();
 
   // The profile credential should now be in the account store.
@@ -451,14 +450,13 @@ TEST_F(PasswordDetailsMediatorTest, MoveCredentialToAccountStoreWithConflict) {
   // Check that the profile password store is now empty and that the account
   // store only has the updated version (i.e., version with password
   // "password2") of the credential previously saved.
-  EXPECT_THAT(GetTestProfileStore().stored_passwords(),
-              ElementsAre(Pair(kExampleSignonRealm, IsEmpty())));
+  EXPECT_THAT(GetTestProfileStore().stored_passwords(), IsEmpty());
   EXPECT_THAT(
       GetTestAccountStore().stored_passwords(),
       ElementsAre(Pair(kExampleSignonRealm, ElementsAre(expected_form))));
 
   // Verify information sent to consumer.
-  CheckConsumerPasswords(/*expected_passwords=*/@[ password_details ]);
+  CheckConsumerPasswords(/*expected_passwords=*/@[ credential_details ]);
   CheckConsumerTitle();
 }
 
@@ -512,7 +510,7 @@ TEST_F(PasswordDetailsMediatorTest,
   // Move the profile credential to the account password store to resolve the
   // conflict.
   [mediator() moveCredentialToAccountStoreWithConflict:
-                  [[PasswordDetails alloc]
+                  [[CredentialDetails alloc]
                       initWithCredential:mediator().credentials[0]]];
   RunUntilIdle();
 
@@ -531,14 +529,13 @@ TEST_F(PasswordDetailsMediatorTest,
   // Check that the profile password store is now empty and that the account
   // store only has the updated version (i.e., version with password
   // "password2") of the credential previously saved.
-  EXPECT_THAT(GetTestProfileStore().stored_passwords(),
-              ElementsAre(Pair(kExampleSignonRealm, IsEmpty())));
+  EXPECT_THAT(GetTestProfileStore().stored_passwords(), IsEmpty());
   EXPECT_THAT(
       GetTestAccountStore().stored_passwords(),
       ElementsAre(Pair(kExampleSignonRealm, ElementsAre(expected_form))));
 
   // Verify information sent to consumer.
-  CheckConsumerPasswords(/*expected_passwords=*/@[ [[PasswordDetails alloc]
+  CheckConsumerPasswords(/*expected_passwords=*/@[ [[CredentialDetails alloc]
       initWithCredential:mediator().credentials[0]] ]);
   CheckConsumerTitle();
 }
@@ -547,16 +544,17 @@ TEST_F(PasswordDetailsMediatorTest,
 // SavedPasswordsPresenter's credentials. Also tests that the consumer is
 // notified with the expected information following the edit.
 TEST_F(PasswordDetailsMediatorTest, EditCredential) {
-  PasswordDetails* old_password_details =
-      [[PasswordDetails alloc] initWithCredential:mediator().credentials[0]];
-  PasswordDetails* new_password_details =
-      [[PasswordDetails alloc] initWithCredential:mediator().credentials[0]];
+  CredentialDetails* old_password_details =
+      [[CredentialDetails alloc] initWithCredential:mediator().credentials[0]];
+  CredentialDetails* new_password_details =
+      [[CredentialDetails alloc] initWithCredential:mediator().credentials[0]];
   new_password_details.password = @"new password";
 
   // Edit the credential. Change password from "password1" to "new password".
   [mediator() passwordDetailsViewController:nullptr
-                     didEditPasswordDetails:new_password_details
+                   didEditCredentialDetails:new_password_details
                             withOldUsername:old_password_details.username
+                         oldUserDisplayName:old_password_details.userDisplayName
                                 oldPassword:old_password_details.password
                                     oldNote:old_password_details.note];
   RunUntilIdle();
@@ -599,10 +597,10 @@ TEST_F(PasswordDetailsMediatorTest, DidConfirmWarningDismissalForPassword) {
   EXPECT_FALSE(credentials[0].IsMuted());
   EXPECT_FALSE(credentials[1].IsMuted());
 
-  PasswordDetails* password_details1 =
-      [[PasswordDetails alloc] initWithCredential:credentials[0]];
-  PasswordDetails* password_details2 =
-      [[PasswordDetails alloc] initWithCredential:credentials[1]];
+  CredentialDetails* password_details1 =
+      [[CredentialDetails alloc] initWithCredential:credentials[0]];
+  CredentialDetails* password_details2 =
+      [[CredentialDetails alloc] initWithCredential:credentials[1]];
 
   // Mute the credential.
   [mediator() didConfirmWarningDismissalForPassword:password_details2];
@@ -616,7 +614,7 @@ TEST_F(PasswordDetailsMediatorTest, DidConfirmWarningDismissalForPassword) {
   EXPECT_TRUE(credentials[1].IsMuted());
 
   // Muting a password in the kPasswordSettings context removes the
-  // `compromised` flag of the PasswordDetails object.
+  // `compromised` flag of the CredentialDetails object.
   password_details2.compromised = NO;
 
   // Verify information sent to consumer.
@@ -656,7 +654,7 @@ TEST_F(PasswordDetailsMediatorTest, RestoreWarningForCurrentPassword) {
 
   // The credential list should now be empty since restoring a compromised
   // warning removes the credential from the list.
-  EXPECT_EQ(consumer().passwords.count, 0u);
+  EXPECT_EQ(consumer().credentials.count, 0u);
 
   // Verify information sent to consumer.
   CheckConsumerPasswords(/*expected_passwords=*/@[]);

@@ -1,17 +1,15 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_COMMANDS_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_COMMANDS_H_
 
-// Commands protocol allowing the ContentSuggestions ViewControllers to interact
-// with the coordinator layer, and from there to the rest of the application.
+// Commands related to Content Suggestions.
 @protocol ContentSuggestionsCommands
 
-// Handles the actions tapping the "Return to Recent Tab" item that returns the
-// user to the last opened tab.
-- (void)openMostRecentTab;
+// Show the "See More" Set Up List view, which shows all items in the list.
+- (void)showSetUpListSeeMoreMenu;
 
 @end
 

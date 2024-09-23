@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/display/win/screen_win.h"
 
 #include <windows.h>
+
 #include <inttypes.h>
 #include <stddef.h>
 
@@ -68,7 +74,7 @@ class TestScreenWin : public ScreenWin {
       if (gfx::Rect(monitor_info.rcMonitor).Contains(screen_point))
         return monitor_info;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return monitor_infos_[0];
   }
 
@@ -113,7 +119,7 @@ class TestScreenWin : public ScreenWin {
         return monitor_info;
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return monitor_infos_[0];
   }
 
@@ -3753,6 +3759,37 @@ TEST_F(ScreenWinTestTwoDisplaysOneInternal, InternalDisplayIdSet) {
   ASSERT_EQ(2u, displays.size());
   EXPECT_EQ(Display::InternalDisplayId(), displays[0].id());
   EXPECT_NE(Display::InternalDisplayId(), displays[1].id());
+}
+
+namespace {
+
+// One display with a max-length |szDevice| value.
+class ScreenWinTestOneDisplayLongName : public ScreenWinTest {
+ public:
+  ScreenWinTestOneDisplayLongName() = default;
+
+  ScreenWinTestOneDisplayLongName(const ScreenWinTestOneDisplayLongName&) =
+      delete;
+  ScreenWinTestOneDisplayLongName& operator=(
+      const ScreenWinTestOneDisplayLongName&) = delete;
+
+  void SetUpScreen(TestScreenWinInitializer* initializer) override {
+    const wchar_t* device_name = L"ThisDeviceNameIs32CharactersLong";
+    EXPECT_EQ(::wcslen(device_name),
+              static_cast<size_t>(ARRAYSIZE(MONITORINFOEX::szDevice)));
+    initializer->AddMonitor(gfx::Rect(0, 0, 1920, 1200),
+                            gfx::Rect(0, 0, 1920, 1100), device_name, 1.0);
+  }
+};
+
+}  // namespace
+
+TEST_F(ScreenWinTestOneDisplayLongName, CheckIdStability) {
+  // Callers may use the display ID as a way to persist data like window
+  // coordinates across runs. As a result, the IDs must remain stable.
+  Screen* screen = GetScreen();
+  ASSERT_EQ(1, screen->GetNumDisplays());
+  EXPECT_EQ(1875308985, screen->GetAllDisplays()[0].id());
 }
 
 namespace {

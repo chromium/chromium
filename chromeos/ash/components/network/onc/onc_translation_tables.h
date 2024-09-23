@@ -48,6 +48,10 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const StringTranslationEntry kApnAuthenticationTranslationTable[];
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const StringTranslationEntry kApnIpTypeTranslationTable[];
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+extern const StringTranslationEntry kApnSourceTranslationTable[];
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+extern const StringTranslationEntry kCheckCaptivePortalTranslationTable[];
 
 // A separate translation table for cellular properties that are stored in a
 // Shill Device instead of a Service. The |shill_property_name| entries

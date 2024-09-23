@@ -23,10 +23,12 @@ function runTest() {
     PerfTestRunner.addRunTestStartMarker();
     startTime = PerfTestRunner.now();
 
+    document.documentElement.className = 'ax-trace-off';  // Pause a11y tracing.
     document.body.innerHTML = '';
-    appendManyElements(document.body, 6);
+    appendManyElements(document.body, 6);  // Create tree 6 levels deep.
+    document.documentElement.className = '';  // Begin tracing after next a11y update.
 
-    setTimeout(changeLeafText, 250);
+    changeLeafText();
 
     // Re-run the same test.
     // Wait to allow the asynchronous accessibility code that's
@@ -52,28 +54,31 @@ function appendManyElements(start, depth) {
 function changeLeafText(text) {
   let elements = document.querySelectorAll('leaf');
   for (let count = 0; count < elements.length; count ++)
-    elements[count].textContent = 'B';
+    elements[count].textContent = elements[count].textContent == 'A' ? 'B' : 'A';
 }
 
 
 PerfTestRunner.startMeasureValuesAsync({
-    description: 'Test accessibility performance when changing text inside a hidden subtree.',
-    unit: 'ms',
-    done: function () {
-      isDone = true;
-    },
-    run: function() {
-      runTest();
-    },
-    iterationCount: 6,
-    tracingCategories: 'accessibility',
-    traceEventsToMeasure: [
-      // Measuring 'AXObjectCacheImpl::ChildrenChanged(LayoutObject)'
-      // can lead to this test timing out.
-      'BrowserAccessibilityManager::OnAccessibilityEvents',
-      'ProcessDeferredAccessibilityEvents',
-      'RenderAccessibilityImpl::SendPendingAccessibilityEvents'
-    ]
+  description: 'Test accessibility performance when changing text inside a hidden subtree.',
+  unit: 'ms',
+  done: function () {
+    isDone = true;
+  },
+  run: function() {
+    runTest();
+  },
+  iterationCount: 6,
+  tracingCategories: 'accessibility',
+  traceEventsToMeasure: [
+    'TotalAccessibilityCleanLayoutLifecycleStages',
+    'ProcessDeferredUpdatesLifecycleStage',
+    'FinalizingTreeLifecycleStage',
+    'SerializeLifecycleStage',
+    'RenderAccessibilityImpl::SendPendingAccessibilityEvents',
+    'BrowserAccessibilityManager::OnAccessibilityEvents',
+    'SerializeLocationChanges',
+    "BrowserAccessibilityManager::OnLocationChanges"
+  ]
 });
 </script>
 

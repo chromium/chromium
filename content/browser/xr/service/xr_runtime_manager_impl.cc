@@ -14,6 +14,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -165,7 +166,8 @@ void XRRuntimeManager::ExitImmersivePresentation() {
 
 // Static
 scoped_refptr<XRRuntimeManagerImpl>
-XRRuntimeManagerImpl::GetOrCreateInstance() {
+XRRuntimeManagerImpl::GetOrCreateRuntimeManagerInternal(
+    WebContents* web_contents) {
   if (g_xr_runtime_manager) {
     return base::WrapRefCounted(g_xr_runtime_manager);
   }
@@ -203,7 +205,17 @@ XRRuntimeManagerImpl::GetOrCreateInstance() {
         std::make_unique<device::VROrientationDeviceProvider>(
             std::move(sensor_provider)));
   }
-  return CreateInstance(std::move(providers));
+  return CreateInstance(std::move(providers), web_contents);
+}
+
+scoped_refptr<XRRuntimeManagerImpl> XRRuntimeManagerImpl::GetOrCreateInstance(
+    WebContents& web_contents) {
+  return GetOrCreateRuntimeManagerInternal(&web_contents);
+}
+
+scoped_refptr<XRRuntimeManagerImpl>
+XRRuntimeManagerImpl::GetOrCreateInstanceForTesting() {
+  return GetOrCreateRuntimeManagerInternal(nullptr);
 }
 
 // static
@@ -222,11 +234,6 @@ content::WebContents* XRRuntimeManagerImpl::GetImmersiveSessionWebContents() {
 void XRRuntimeManagerImpl::AddService(VRServiceImpl* service) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(2) << __func__;
-
-  // Loop through any currently active runtimes and send Connected messages to
-  // the service. Future runtimes that come online will send a Connected message
-  // when they are created.
-  InitializeProviders(service);
 
   if (AreAllProvidersInitialized())
     service->InitializationComplete();
@@ -317,8 +324,7 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveArRuntime() {
 #if BUILDFLAG(ENABLE_OPENXR)
   // If OpenXR is available and the runtime supports an AR blend mode, prefer
   // it over ARCore to unify VR/AR rendering paths.
-  if (base::FeatureList::IsEnabled(
-          device::features::kOpenXrExtendedFeatureSupport)) {
+  if (device::features::IsOpenXrArEnabled()) {
     auto* openxr = GetRuntime(device::mojom::XRDeviceId::OPENXR_DEVICE_ID);
     if (openxr && openxr->SupportsArBlendMode())
       return openxr;
@@ -449,7 +455,7 @@ void XRRuntimeManagerImpl::MakeXrCompatible() {
 #else
     // MakeXrCompatible is not yet supported on other platforms so
     // IsInitializedOnCompatibleAdapter should have returned true.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   }
 
@@ -496,11 +502,13 @@ void XRRuntimeManagerImpl::OnGpuInfoUpdate() {
     service->OnMakeXrCompatibleComplete(xr_compatible_result);
 }
 
-XRRuntimeManagerImpl::XRRuntimeManagerImpl(XRProviderList providers)
+XRRuntimeManagerImpl::XRRuntimeManagerImpl(XRProviderList providers,
+                                           WebContents* web_contents)
     : providers_(std::move(providers)) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(!g_xr_runtime_manager);
   g_xr_runtime_manager = this;
+  InitializeProviders(web_contents);
 }
 
 XRRuntimeManagerImpl::~XRRuntimeManagerImpl() {
@@ -531,8 +539,9 @@ XRRuntimeManagerImpl::~XRRuntimeManagerImpl() {
 }
 
 scoped_refptr<XRRuntimeManagerImpl> XRRuntimeManagerImpl::CreateInstance(
-    XRProviderList providers) {
-  auto* ptr = new XRRuntimeManagerImpl(std::move(providers));
+    XRProviderList providers,
+    WebContents* contents) {
+  auto* ptr = new XRRuntimeManagerImpl(std::move(providers), contents);
   CHECK_EQ(ptr, g_xr_runtime_manager);
   return base::AdoptRef(ptr);
 }
@@ -556,14 +565,13 @@ size_t XRRuntimeManagerImpl::NumberOfConnectedServices() {
 // some aspect of the service, such as the WebContents, to perform
 // initialization can do so, but the providers should be initialized in such a
 // way that they are not explicitly tied to this service.
-void XRRuntimeManagerImpl::InitializeProviders(
-    VRServiceImpl* initializing_service) {
+void XRRuntimeManagerImpl::InitializeProviders(WebContents* web_contents) {
   if (providers_initialized_)
     return;
 
   for (const auto& provider : providers_) {
     if (!provider) {
-      // TODO(crbug.com/1050470): Remove this logging after investigation.
+      // TODO(crbug.com/40673158): Remove this logging after investigation.
       LOG(ERROR) << __func__ << " got null XR provider";
       continue;
     }
@@ -572,7 +580,7 @@ void XRRuntimeManagerImpl::InitializeProviders(
     // to ourselves here, since we own the providers and can guarantee that they
     // will not outlive us. Providers should not take a long-term reference to
     // the WebContents.
-    provider->Initialize(this, initializing_service->GetWebContents());
+    provider->Initialize(this, web_contents);
   }
 
   providers_initialized_ = true;
@@ -630,7 +638,7 @@ void XRRuntimeManagerImpl::RemoveRuntime(device::mojom::XRDeviceId id) {
 
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = runtimes_.find(id);
-  DCHECK(it != runtimes_.end());
+  CHECK(it != runtimes_.end(), base::NotFatalUntil::M130);
 
   GetLoggerManager().RecordRuntimeRemoved(id);
 

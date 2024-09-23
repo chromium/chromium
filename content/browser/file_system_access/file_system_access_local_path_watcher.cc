@@ -5,9 +5,9 @@
 #include "content/browser/file_system_access/file_system_access_local_path_watcher.h"
 
 #include "base/files/file_path.h"
-#include "base/files/file_path_watcher.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -48,33 +48,34 @@ void FileSystemAccessLocalPathWatcher::Initialize(
         on_source_initialized) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (scope().IsRecursive() &&
-      !base::FilePathWatcher::RecursiveWatchAvailable()) {
+  if (scope().IsRecursive() && !FilePathWatcher::RecursiveWatchAvailable()) {
     std::move(on_source_initialized)
         .Run(file_system_access_error::FromStatus(
             blink::mojom::FileSystemAccessStatus::kNotSupportedError));
     return;
   }
 
-  base::FilePathWatcher::CallbackWithChangeInfo on_change_callback =
+  FilePathWatcher::CallbackWithChangeInfo on_change_callback =
       base::BindRepeating(&FileSystemAccessLocalPathWatcher::OnFilePathChanged,
                           weak_factory_.GetWeakPtr());
 
-  base::FilePathWatcher::WatchOptions watch_options {
-    .type = scope().IsRecursive() ? base::FilePathWatcher::Type::kRecursive
-                                  : base::FilePathWatcher::Type::kNonRecursive,
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    // Note: `report_modified_path` is also present on Android
-    // and Fuchsia. Update this switch if support for watching
-    // the local file system is added on those platforms.
-    //
-    // TODO(https://crbug.com/1425601): Report the affected
-    // path on more platforms.
-        .report_modified_path = true,
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  FilePathWatcher::WatchOptions watch_options{
+      .type = scope().IsRecursive() ? FilePathWatcher::Type::kRecursive
+                                    : FilePathWatcher::Type::kNonRecursive,
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+      // Note: `report_modified_path` is also present on Android
+      // and Fuchsia. Update this switch if support for watching
+      // the local file system is added on those platforms.
+      //
+      // TODO(crbug.com/40260973): Report the affected
+      // path on more platforms.
+      .report_modified_path = true,
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_MAC)
   };
 
-  watcher_.AsyncCall(&base::FilePathWatcher::WatchWithChangeInfo)
+  watcher_.AsyncCall(&FilePathWatcher::WatchWithChangeInfo)
       .WithArgs(
           scope().root_url().path(), std::move(watch_options),
           base::BindPostTaskToCurrentDefault(std::move(on_change_callback)))
@@ -92,7 +93,7 @@ void FileSystemAccessLocalPathWatcher::Initialize(
 }
 
 void FileSystemAccessLocalPathWatcher::OnFilePathChanged(
-    const base::FilePathWatcher::ChangeInfo& change_info,
+    const FilePathWatcher::ChangeInfo& change_info,
     const base::FilePath& changed_path,
     bool error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

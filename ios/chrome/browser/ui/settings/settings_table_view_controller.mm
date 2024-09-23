@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
@@ -24,33 +24,41 @@
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/plus_addresses/features.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/util.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
+#import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
+#import "ios/chrome/browser/profile/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -60,14 +68,19 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
-#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
@@ -93,19 +106,16 @@
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
-#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
-#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/about_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/bandwidth/bandwidth_management_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/cells/account_sign_in_item.h"
+#import "ios/chrome/browser/ui/settings/cells/enhanced_safe_browsing_inline_promo_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
@@ -114,15 +124,17 @@
 #import "ios/chrome/browser/ui/settings/downloads/downloads_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/multi_identity/switch_profile_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_coordinator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_coordinator.h"
+#import "ios/chrome/browser/ui/settings/privacy/safe_browsing/enhanced_safe_browsing_inline_promo_delegate.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_utils.h"
@@ -150,11 +162,6 @@ const NSInteger kMaxShowCountNewIPHBadge = 3;
 // IPH badge on fresh installs.
 const base::TimeDelta kFreshInstallTimeDelta = base::Days(1);
 
-// Key used for storing NSUserDefault entry to keep track of the last timestamp
-// we've shown the default browser blue dot promo.
-NSString* const kMostRecentTimestampBlueDotPromoShownInSettingsMenu =
-    @"MostRecentTimestampBlueDotPromoShownInSettingsMenu";
-
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
 NSString* kDevViewSourceKey = @"DevViewSource";
 #endif  // BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
@@ -168,6 +175,18 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 #endif
 }
 
+// Struct used to count and store the number of active Enhanced Safe Browsing
+// promos, as the FET does not support showing multiple badges for the same FET
+// feature at the same time.
+struct EnhancedSafeBrowsingActivePromoData
+    : public base::SupportsUserData::Data {
+  // The number of active menus.
+  int active_promos = 0;
+
+  // Key to use for this type in SupportsUserData
+  static constexpr char key[] = "EnhancedSafeBrowsingActivePromoData";
+};
+
 }  // namespace
 
 #pragma mark - SettingsTableViewController
@@ -176,6 +195,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     BooleanObserver,
     ChromeAccountManagerServiceObserver,
     DownloadsSettingsCoordinatorDelegate,
+    EnhancedSafeBrowsingInlinePromoDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
     IdentityManagerObserverBridgeDelegate,
     ManageSyncSettingsCoordinatorDelegate,
@@ -187,7 +207,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     NotificationsCoordinatorDelegate,
     PrivacyCoordinatorDelegate,
     SafetyCheckCoordinatorDelegate,
-    SettingsControllerProtocol,
     SearchEngineObserving,
     SyncObserverModelBridge> {
   // The browser where the settings are being displayed.
@@ -239,6 +258,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // Passwords coordinator.
   PasswordsCoordinator* _passwordsCoordinator;
 
+  // Accounts coordinator.
+  AccountsCoordinator* _accountsCoordinator;
+
   // Feature engagement tracker for the signin IPH.
   raw_ptr<feature_engagement::Tracker> _featureEngagementTracker;
   // Presenter for the signin IPH.
@@ -253,7 +275,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   StringPrefMember _voiceLocaleCode;
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
-  // TODO(crbug.com/662435): Refactor PrefObserverBridge so it owns the
+  // TODO(crbug.com/40492152): Refactor PrefObserverBridge so it owns the
   // PrefChangeRegistrar.
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
@@ -267,6 +289,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   TableViewDetailIconItem* _autoFillProfileDetailItem;
   TableViewDetailIconItem* _autoFillCreditCardDetailItem;
   TableViewDetailIconItem* _notificationsItem;
+  TableViewDetailIconItem* _plusAddressesItem;
+  TableViewDetailIconItem* _defaultBrowserCellItem;
   TableViewItem* _syncItem;
 
   // Whether Settings have been dismissed.
@@ -274,6 +298,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   // Tabs settings coordinator.
   TabsSettingsCoordinator* _tabsCoordinator;
+
+  // Switch profile coordinator.
+  SwitchProfileSettingsCoordinator* _switchProfileCoordinator;
 
   // Address bar setting coordinator.
   AddressBarPreferenceCoordinator* _addressBarPreferenceCoordinator;
@@ -287,10 +314,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 // The item related to the enterprise managed show feed settings.
 @property(nonatomic, strong, readonly)
     TableViewInfoButtonItem* managedFeedSettingsItem;
-
-@property(nonatomic, readonly, weak)
-    id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>
-        dispatcher;
 
 // YES if the default browser settings row is currently showing the notification
 // dot.
@@ -315,7 +338,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 #pragma mark Initialization
 
-- (instancetype)initWithBrowser:(Browser*)browser {
+- (instancetype)initWithBrowser:(Browser*)browser
+       hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot {
   DCHECK(browser);
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
 
@@ -323,12 +347,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   if (self) {
     _browser = browser;
     _browserState = _browser->GetBrowserState();
+    self.showingDefaultBrowserNotificationDot = hasDefaultBrowserBlueDot;
     self.title = l10n_util::GetNSStringWithFixup(IDS_IOS_SETTINGS_TITLE);
     _searchEngineObserverBridge.reset(new SearchEngineObserverBridge(
         self,
         ios::TemplateURLServiceFactory::GetForBrowserState(_browserState)));
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForBrowserState(_browserState);
+        IdentityManagerFactory::GetForProfile(_browserState);
     _accountManagerService =
         ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState);
     // It is expected that `identityManager` should never be nil except in
@@ -340,8 +365,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         SyncServiceFactory::GetForBrowserState(_browserState);
     _syncObserverBridge.reset(new SyncObserverBridge(self, syncService));
 
+    PrefService* localState = GetApplicationContext()->GetLocalState();
     _showMemoryDebugToolsEnabled = [[PrefBackedBoolean alloc]
-        initWithPrefService:GetApplicationContext()->GetLocalState()
+        initWithPrefService:localState
                    prefName:prefs::kShowMemoryDebuggingTools];
     [_showMemoryDebugToolsEnabled setObserver:self];
 
@@ -372,7 +398,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     [_articlesEnabled setObserver:self];
 
     _bottomOmniboxEnabled =
-        [[PrefBackedBoolean alloc] initWithPrefService:prefService
+        [[PrefBackedBoolean alloc] initWithPrefService:localState
                                               prefName:prefs::kBottomOmnibox];
     [_bottomOmniboxEnabled setObserver:self];
 
@@ -408,10 +434,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     _prefObserverBridge->ObserveChangesForPreference(prefs::kSigninAllowed,
                                                      &_prefChangeRegistrar);
     _notificationsObserver =
-        [[NotificationsSettingsObserver alloc] initWithPrefService:prefService];
+        [[NotificationsSettingsObserver alloc] initWithPrefService:prefService
+                                                        localState:localState];
     _notificationsObserver.delegate = self;
 
-    // TODO(crbug.com/764578): -loadModel should not be called from
+    // TODO(crbug.com/41344225): -loadModel should not be called from
     // initializer. A possible fix is to move this call to -viewDidLoad.
     [self loadModel];
   }
@@ -443,7 +470,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [super viewWillAppear:animated];
   // Update the `_safetyCheckItem` icon when returning to this view controller.
   [self updateSafetyCheckItemTrailingIcon];
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     // Update the address bar new IPH badge here as it depends on the number of
     // time it's shown.
     [self updateAddressBarNewIPHBadge];
@@ -478,7 +505,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
   }
 
-  if (IsBottomOmniboxSteadyStateEnabled()) {
+  if (IsBottomOmniboxAvailable()) {
     [model addItem:[self addressBarPreferenceItem]
         toSectionWithIdentifier:SettingsSectionIdentifierDefaults];
   }
@@ -491,11 +518,16 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       toSectionWithIdentifier:SettingsSectionIdentifierBasics];
   [model addItem:[self autoFillProfileDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressesEnabled)) {
+    _plusAddressesItem = [self plusAddressesItem];
+    [model addItem:_plusAddressesItem
+        toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+  }
 
   // Advanced Section
   [model addSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  if (base::FeatureList::IsEnabled(kNotificationSettingsMenuItem) &&
-      IsPriceNotificationsEnabled()) {
+  if ([self shouldShowNotificationsSettings]) {
     _notificationsItem = [self notificationsItem];
     [self updateNotificationsDetailText];
     [model addItem:_notificationsItem
@@ -531,7 +563,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       PhotosServiceFactory::GetForBrowserState(_browserState);
   bool shouldShowDownloadsSettings =
       photosService && photosService->IsSupported();
-  if (IsInactiveTabsAvailable() || IsTabPickupEnabled()) {
+  if (IsInactiveTabsAvailable()) {
     [model addItem:[self tabsSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 
@@ -574,6 +606,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     _showMemoryDebugToolsItem = [self showMemoryDebugSwitchItem];
     [model addItem:_showMemoryDebugToolsItem
         toSectionWithIdentifier:SettingsSectionIdentifierDebug];
+
+    if (experimental_flags::DisplaySwitchProfile().has_value()) {
+      [model addItem:[self switchProfileItem]
+          toSectionWithIdentifier:SettingsSectionIdentifierDebug];
+    }
   }
 
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
@@ -602,6 +639,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // index 0.
   [model insertSectionWithIdentifier:SettingsSectionIdentifierSignIn atIndex:0];
   [self addPromoToSigninSection];
+  [self addPromoToEnhancedSafeBrowsingSection];
 }
 
 // Adds the identity promo to promote the sign-in or sync state.
@@ -615,16 +653,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // If sign-in is disabled by policy there should not be a sign-in promo.
   if ((authServiceStatus ==
        AuthenticationService::ServiceStatus::SigninDisabledByPolicy)) {
-    item = [self signinDisabledByPolicyTextItem];
-  } else if ([self isSyncDisabledByPolicy] &&
-             !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
-             !base::FeatureList::IsEnabled(
-                 syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // When kReplaceSyncPromosWithSignInPromos is disabled, the normal item
-    // opens the sync screen, and that shouldn't happen with the SyncDisabled
-    // policy. Show the "disabled by enterprise" item instead.
-    // Note when the same flag is enabled, the normal item leads to the sign-in
-    // screen, which is allowed with SyncDisabled.
     item = [self signinDisabledByPolicyTextItem];
   } else if ((authServiceStatus ==
                   AuthenticationService::ServiceStatus::SigninForcedByPolicy ||
@@ -676,27 +704,43 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       toSectionWithIdentifier:SettingsSectionIdentifierAccount];
 }
 
+// Adds the Enhanced Safe Browsing inline promo to promote ESB.
+- (void)addPromoToEnhancedSafeBrowsingSection {
+  if (!base::FeatureList::IsEnabled(
+          feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature) ||
+      ![self shouldShowEnhancedSafeBrowsingPromo]) {
+    return;
+  }
+
+  if ([self.tableViewModel
+          hasSectionForSectionIdentifier:SettingsSectionIdentifierESBPromo]) {
+    [self.tableViewModel
+        removeSectionWithIdentifier:SettingsSectionIdentifierESBPromo];
+  }
+  [self.tableViewModel
+      insertSectionWithIdentifier:SettingsSectionIdentifierESBPromo
+                          atIndex:0];
+
+  if (![self.tableViewModel
+          hasItemForItemType:SettingsItemTypeESBPromo
+           sectionIdentifier:SettingsSectionIdentifierESBPromo]) {
+    [self.tableViewModel addItem:[self enhancedSafeBrowsingInlinePromoItem]
+         toSectionWithIdentifier:SettingsSectionIdentifierESBPromo];
+  }
+
+  [self maybeRecordEnhancedSafeBrowsingImpressionLimitReached];
+}
+
 #pragma mark - Model Items
 
 - (TableViewItem*)accountSignInItem {
   AccountSignInItem* signInTextItem =
       [[AccountSignInItem alloc] initWithType:SettingsItemTypeSignInButton];
   signInTextItem.accessibilityIdentifier = kSettingsSignInCellId;
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(_browserState);
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // TODO(crbug.com/1447010): Make detailText private when the feature is
-    // launched.
-    signInTextItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
-  } else if (!HasManagedSyncDataType(syncService)) {
-    signInTextItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE);
-  } else {
-    signInTextItem.detailText = l10n_util::GetNSString(
-        IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE_SYNC_MANAGED);
-  }
+  // TODO(crbug.com/40064662): Make detailText private when the feature is
+  // launched.
+  signInTextItem.detailText =
+      l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
   return signInTextItem;
 }
 
@@ -760,20 +804,24 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (TableViewItem*)defaultBrowserCellItem {
-  TableViewDetailIconItem* defaultBrowser = [[TableViewDetailIconItem alloc]
+  _defaultBrowserCellItem = [[TableViewDetailIconItem alloc]
       initWithType:SettingsItemTypeDefaultBrowser];
-  defaultBrowser.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  defaultBrowser.text =
+  _defaultBrowserCellItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  _defaultBrowserCellItem.text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
 
-  defaultBrowser.iconImage = DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
-  defaultBrowser.iconBackgroundColor = [UIColor colorNamed:kPurple500Color];
-  defaultBrowser.iconTintColor = UIColor.whiteColor;
-  defaultBrowser.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
+  _defaultBrowserCellItem.iconImage =
+      DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
+  _defaultBrowserCellItem.iconBackgroundColor =
+      [UIColor colorNamed:kPurple500Color];
+  _defaultBrowserCellItem.iconTintColor = UIColor.whiteColor;
+  _defaultBrowserCellItem.iconCornerRadius =
+      kColorfulBackgroundSymbolCornerRadius;
 
-  [self maybeActivateDefaultBrowserBlueDotPromo:defaultBrowser];
+  [self updateDefaultBrowserSettingsBlueDot];
 
-  return defaultBrowser;
+  return _defaultBrowserCellItem;
 }
 
 - (TableViewItem*)accountCellItem {
@@ -952,6 +1000,22 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           accessibilityIdentifier:kSettingsNotificationsId];
 }
 
+- (TableViewDetailIconItem*)plusAddressesItem {
+  NSString* title = l10n_util::GetNSString(IDS_PLUS_ADDRESS_SETTINGS_LABEL);
+
+  return [self
+           detailItemWithType:SettingsItemTypePlusAddresses
+                         text:title
+                   detailText:nil
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+                       symbol:CustomSettingsRootSymbol(kGooglePlusAddressSymbol)
+#else
+                       symbol:nil
+#endif
+        symbolBackgroundColor:[UIColor colorNamed:kYellow500Color]
+      accessibilityIdentifier:kSettingsPlusAddressesId];
+}
+
 - (TableViewItem*)privacyDetailItem {
   NSString* title = nil;
   title = l10n_util::GetNSString(IDS_IOS_SETTINGS_PRIVACY_TITLE);
@@ -1066,6 +1130,34 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   showMemoryDebugSwitchItem.on = [_showMemoryDebugToolsEnabled value];
 
   return showMemoryDebugSwitchItem;
+}
+
+- (TableViewItem*)switchProfileItem {
+  NSString* detailText = nil;
+  std::string profileName = _browserState->GetProfileName();
+  // TODO(crbug.com/331783685): Remove assumption that "Default" is the
+  // personal profile.
+  if (profileName == kIOSChromeInitialBrowserState) {
+    detailText = @"Personal";
+  } else {
+    detailText = base::SysUTF8ToNSString(profileName);
+  }
+  return [self
+           detailItemWithType:SettingsItemTypeSwitchProfile
+                         text:l10n_util::GetNSString(
+                                  IDS_IOS_SWITCH_PROFILE_MANAGEMENT_SETTINGS)
+                   detailText:detailText
+                       symbol:DefaultSettingsRootSymbol(kMultiIdentitySymbol)
+        symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+      accessibilityIdentifier:nil];
+}
+
+- (TableViewItem*)enhancedSafeBrowsingInlinePromoItem {
+  EnhancedSafeBrowsingInlinePromoItem* item =
+      [[EnhancedSafeBrowsingInlinePromoItem alloc]
+          initWithType:SettingsItemTypeESBPromo];
+  item.delegate = self;
+  return item;
 }
 
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
@@ -1200,7 +1292,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                                 action:@selector(viewSourceSwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
       break;
     }
@@ -1284,12 +1376,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         break;
       }
       base::RecordAction(base::UserMetricsAction("Settings.MyAccount"));
-      AccountsTableViewController* accountsTableViewController =
-          [[AccountsTableViewController alloc] initWithBrowser:_browser
-                                     closeSettingsOnAddAccount:NO];
-      accountsTableViewController.applicationCommandsHandler =
-          self.applicationHandler;
-      controller = accountsTableViewController;
+
+      AccountsCoordinator* accountsCoordinator = [[AccountsCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:_browser
+                 closeSettingsOnAddAccount:NO];
+      _accountsCoordinator = accountsCoordinator;
+      [accountsCoordinator start];
       break;
     }
     case SettingsItemTypeGoogleServices:
@@ -1330,6 +1423,12 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         if (tracker) {
           tracker->NotifyEvent(
               feature_engagement::events::kBlueDotPromoSettingsDismissed);
+          id<PopupMenuCommands> popupMenuHandler = HandlerForProtocol(
+              _browser->GetCommandDispatcher(), PopupMenuCommands);
+          [popupMenuHandler updateToolsMenuBlueDotVisibility];
+          self.showingDefaultBrowserNotificationDot =
+              [popupMenuHandler hasBlueDotForOverflowMenu];
+          [self updateDefaultBrowserSettingsBlueDot];
         }
         [self reloadData];
       }
@@ -1368,8 +1467,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           [[AutofillProfileTableViewController alloc] initWithBrowser:_browser];
       break;
     case SettingsItemTypeNotifications:
-      DCHECK(IsPriceNotificationsEnabled() ||
-             IsContentPushNotificationsEnabled());
+      CHECK([self shouldShowNotificationsSettings]);
+      base::RecordAction(base::UserMetricsAction("Settings.Notifications"));
       [self showNotifications];
       break;
     case SettingsItemTypeVoiceSearch:
@@ -1378,6 +1477,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           initWithPrefs:_browserState->GetPrefs()];
       break;
     case SettingsItemTypeSafetyCheck:
+      base::RecordAction(base::UserMetricsAction("Settings.SafetyCheck"));
       [self showSafetyCheck];
       break;
     case SettingsItemTypePrivacy:
@@ -1433,6 +1533,19 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       [self.navigationController
           pushViewController:[[TableCellCatalogViewController alloc] init]
                     animated:YES];
+      break;
+    case SettingsItemTypePlusAddresses: {
+      base::RecordAction(base::UserMetricsAction("Settings.PlusAddresses"));
+      OpenNewTabCommand* command = [OpenNewTabCommand
+          commandWithURLFromChrome:
+              GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
+      id<ApplicationCommands> handler = HandlerForProtocol(
+          _browser->GetCommandDispatcher(), ApplicationCommands);
+      [handler closeSettingsUIAndOpenURL:command];
+      break;
+    }
+    case SettingsItemTypeSwitchProfile:
+      [self showSwitchProfileSettings];
       break;
     default:
       break;
@@ -1519,6 +1632,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (void)articlesForYouSwitchToggled:(UISwitch*)sender {
+  base::RecordAction(base::UserMetricsAction("Settings.ArticlesForYouToggled"));
+
   NSIndexPath* switchPath = [self.tableViewModel
       indexPathForItemType:SettingsItemTypeArticlesForYou
          sectionIdentifier:SettingsSectionIdentifierAdvanced];
@@ -1557,7 +1672,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (void)showGoogleServices {
-  DCHECK(!_googleServicesSettingsCoordinator);
+  if (_googleServicesSettingsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _googleServicesSettingsCoordinator =
       [[GoogleServicesSettingsCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
@@ -1567,13 +1686,34 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (void)showTabsSettings {
+  if (_tabsCoordinator && self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _tabsCoordinator = [[TabsSettingsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
   [_tabsCoordinator start];
 }
 
+- (void)showSwitchProfileSettings {
+  if (_switchProfileCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
+  _switchProfileCoordinator = [[SwitchProfileSettingsCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser];
+  [_switchProfileCoordinator start];
+}
+
 - (void)showAddressBarPreferenceSetting {
+  if (_addressBarPreferenceCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _addressBarPreferenceCoordinator = [[AddressBarPreferenceCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1584,16 +1724,16 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   // TODO(crbug.com/40066949): Remove usage of HasSyncConsent() after kSync
   // users migrated to kSignin in phase 3. See ConsentLevel::kSync
   // documentation for details.
-  return base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos) &&
-         !SyncServiceFactory::GetForBrowserState(_browserState)
+  return !SyncServiceFactory::GetForBrowserState(_browserState)
               ->HasSyncConsent();
 }
 
 - (void)showGoogleSync {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_manageSyncSettingsCoordinator);
+  if (_manageSyncSettingsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   SyncSettingsAccountState accountState =
       [self shouldReplaceSyncSettingsWithAccountSettings]
           ? SyncSettingsAccountState::kSignedIn
@@ -1607,9 +1747,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (void)showPasswords {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_passwordsCoordinator);
+  if (_passwordsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _passwordsCoordinator = [[PasswordsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1619,9 +1761,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 // Shows the Safety Check screen.
 - (void)showSafetyCheck {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_safetyCheckCoordinator);
+  if (_safetyCheckCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   _safetyCheckCoordinator = [[SafetyCheckCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
@@ -1675,8 +1818,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 // Shows Notifications screen.
 - (void)showNotifications {
-  DCHECK(!_notificationsCoordinator);
-  DCHECK(self.navigationController);
+  if (_notificationsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _notificationsCoordinator = [[NotificationsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1686,9 +1832,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 // Shows Privacy screen.
 - (void)showPrivacy {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_privacyCoordinator);
+  if (_privacyCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
+  }
+
   _privacyCoordinator = [[PrivacyCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
@@ -1811,7 +1959,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           feature_engagement::kIPHiOSReplaceSyncPromosWithSignInPromos);
   if (canShowSigninIPH) {
     [_bubblePresenter presentInViewController:self
-                                         view:self.view
                                   anchorPoint:anchorPointInWindow];
   } else {
     _bubblePresenter = nil;
@@ -1918,50 +2065,18 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 // Decides whether the default browser blue dot promo should be active, and adds
 // the blue dot badge to the right settings row if it is.
-- (void)maybeActivateDefaultBrowserBlueDotPromo:
-    (TableViewDetailIconItem*)defaultBrowserCellItem {
-  self.showingDefaultBrowserNotificationDot = NO;
-
-  if (!_browserState) {
-    return;
-  }
-
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
-  if (!tracker) {
-    return;
-  }
-
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(_browserState);
-  if (!syncService) {
-    return;
-  }
-
-  if (ShouldTriggerDefaultBrowserHighlightFeature(
-          feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature,
-          tracker, syncService)) {
-    // Add the blue dot promo badge to the default browser row.
-    defaultBrowserCellItem.badgeType = BadgeType::kNotificationDot;
-    self.showingDefaultBrowserNotificationDot = YES;
-
-    // If we've only started showing the blue dot recently (<6 hours), don't
-    // notify the FET again that the promo is being shown, since we're not in a
-    // new user session. We record the badge being shown per user session,
-    // instead of per time it is shown since the badge needs to be shown accross
-    // 3 user sessions.
-    if (!HasRecentTimestampForKey(
-            kMostRecentTimestampBlueDotPromoShownInSettingsMenu)) {
-      tracker->NotifyEvent(
-          feature_engagement::events::kBlueDotPromoSettingsShownNewSession);
-    }
+- (void)updateDefaultBrowserSettingsBlueDot {
+  // Add or remove the blue dot promo badge for the default browser row.
+  if (self.showingDefaultBrowserNotificationDot) {
+    _defaultBrowserCellItem.badgeType = BadgeType::kNotificationDot;
+  } else {
+    _defaultBrowserCellItem.badgeType = BadgeType::kNone;
   }
 }
 
 // Add or remove the "new" IPH badge from the address bar settings row. The
 // badge is shown a maximum of `kMaxShowCountNewIPHBadge` times.
 - (void)updateAddressBarNewIPHBadge {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
   CHECK(_addressBarPreferenceItem);
 
   if (!_browserState) {
@@ -1986,6 +2101,21 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     _addressBarPreferenceItem.badgeType = badgeType;
     [self reconfigureCellsForItems:@[ _addressBarPreferenceItem ]];
   }
+}
+
+// Updates the state of the Safety Check notifications button based on whether
+// the user has Safety Check notifications enabled.
+- (void)updateSafetyCheckNotificationsButtonState {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  // Safety Check notifications are controlled by app-wide notification
+  // settings, not profile-specific ones. No Gaia ID is required below in
+  // `GetMobileNotificationPermissionStatusForClient()`.
+  BOOL enabled = push_notification_settings::
+      GetMobileNotificationPermissionStatusForClient(
+          PushNotificationClientId::kSafetyCheck, "");
+
+  [_safetyCheckCoordinator updateNotificationsButton:enabled];
 }
 
 // Updates the string indicating the push notification state.
@@ -2017,9 +2147,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (void)showDownloadsSettings {
-  if (_downloadsSettingsCoordinator) {
-    [_downloadsSettingsCoordinator stop];
-    _downloadsSettingsCoordinator = nil;
+  if (_downloadsSettingsCoordinator &&
+      self.navigationController.topViewController != self) {
+    base::debug::DumpWithoutCrashing();
   }
 
   _downloadsSettingsCoordinator = [[DownloadsSettingsCoordinator alloc]
@@ -2027,6 +2157,112 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                                browser:_browser];
   _downloadsSettingsCoordinator.delegate = self;
   [_downloadsSettingsCoordinator start];
+}
+
+// Returns YES if the Notifications settings should show.
+- (BOOL)shouldShowNotificationsSettings {
+  return base::FeatureList::IsEnabled(kNotificationSettingsMenuItem) &&
+         (IsPriceNotificationsEnabled() ||
+          IsContentNotificationEnabled(_browserState) ||
+          IsIOSTipsNotificationsEnabled() ||
+          base::FeatureList::IsEnabled(
+              send_tab_to_self::kSendTabToSelfIOSPushNotifications));
+}
+
+// Records that the user has reached the impression limit for the enhanced safe
+// browsing inline promo.
+- (void)maybeRecordEnhancedSafeBrowsingImpressionLimitReached {
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
+  std::vector<std::pair<feature_engagement::EventConfig, int>> events =
+      tracker->ListEvents(
+          feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
+  for (const auto& event : events) {
+    if (event.first.name == "inline_enhanced_safe_browsing_promo_trigger") {
+      unsigned int impressionLimit = event.first.comparator.value;
+      unsigned int numberOfImpressions = event.second;
+      if (impressionLimit == numberOfImpressions) {
+        base::RecordAction(base::UserMetricsAction(
+            "MobileSettingsEnhancedSafeBrowsingInlineProm"
+            "oImpressionLimitReached"));
+      }
+    }
+  }
+}
+
+// Returns YES if the Enhanced Safe Browsing inline promo should show.
+- (BOOL)shouldShowEnhancedSafeBrowsingPromo {
+  // First check if another active settings page (e.g. in another
+  // window) has an active promo. If so, just return that the promo should be
+  // shown here without querying the FET. Only query the FET if there is no
+  // currently active promo.
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
+  EnhancedSafeBrowsingActivePromoData* data =
+      static_cast<EnhancedSafeBrowsingActivePromoData*>(
+          tracker->GetUserData(EnhancedSafeBrowsingActivePromoData::key));
+  if (data) {
+    data->active_promos++;
+    return YES;
+  }
+
+  // The user must be:
+  //   1.) Signed-in
+  //   2.) Have Chrome set to default browser.
+  //   3.) Have Safe Browsing standard protection enabled.
+  //   4.) One of the trigerring criteria has been met.
+  //   5.) Not have their Safe Browsing preferences enterprise-managed.
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(_browserState);
+  bool isSignedInAndSynced =
+      authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+  bool isDefaultBrowser = IsChromeLikelyDefaultBrowser();
+  bool isStandardProtectionEnabled =
+      safe_browsing::GetSafeBrowsingState(*_browserState->GetPrefs()) ==
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION;
+  bool triggerCriteriaMet = tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
+  bool isEnterpriseManaged =
+      safe_browsing::IsSafeBrowsingPolicyManaged(*_browserState->GetPrefs());
+
+  if (!isSignedInAndSynced || !isDefaultBrowser ||
+      !isStandardProtectionEnabled || !triggerCriteriaMet ||
+      isEnterpriseManaged) {
+    return NO;
+  }
+
+  bool promoIsTriggered = tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
+  CHECK(promoIsTriggered, base::NotFatalUntil::M131);
+
+  std::unique_ptr<EnhancedSafeBrowsingActivePromoData> new_data =
+      std::make_unique<EnhancedSafeBrowsingActivePromoData>();
+  new_data->active_promos++;
+  tracker->SetUserData(EnhancedSafeBrowsingActivePromoData::key,
+                       std::move(new_data));
+
+  return YES;
+}
+
+// Check if this is the last active Enhanced Safe Browsing promo shown and
+// dismisses the FET if so.
+- (void)removeEnhancedSafeBrowsingPromoFETDataIfNeeded {
+  CHECK(_browserState, base::NotFatalUntil::M131);
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
+  EnhancedSafeBrowsingActivePromoData* data =
+      static_cast<EnhancedSafeBrowsingActivePromoData*>(
+          tracker->GetUserData(EnhancedSafeBrowsingActivePromoData::key));
+  if (!data) {
+    return;
+  }
+
+  data->active_promos--;
+  if (data->active_promos <= 0) {
+    tracker->RemoveUserData(EnhancedSafeBrowsingActivePromoData::key);
+    tracker->Dismissed(
+        feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
+  }
 }
 
 #pragma mark - Sign in
@@ -2040,12 +2276,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   }
   self.isSigninInProgress = YES;
   __weak __typeof(self) weakSelf = self;
-  AuthenticationOperation operation =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? AuthenticationOperation::kSheetSigninAndHistorySync
-          : AuthenticationOperation::kSigninAndSync;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:operation
+      initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync
                identity:nil
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
             promoAction:signin_metrics::PromoAction::
@@ -2086,11 +2318,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 - (void)reportBackUserAction {
   // Not called for root settings controller.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (void)settingsWillBeDismissed {
   DCHECK(!_settingsAreDismissed);
+
+  // Remove Enhanced Safe Browsing Promo.
+  [self removeEnhancedSafeBrowsingPromoFETDataIfNeeded];
 
   // Stop children coordinators.
   [_googleServicesSettingsCoordinator stop];
@@ -2104,6 +2339,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   _passwordsCoordinator.delegate = nil;
   _passwordsCoordinator = nil;
 
+  [_accountsCoordinator stop];
+  _accountsCoordinator = nil;
+
   [_notificationsCoordinator stop];
   _notificationsCoordinator = nil;
 
@@ -2115,6 +2353,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   [_tabsCoordinator stop];
   _tabsCoordinator = nil;
+
+  [_switchProfileCoordinator stop];
+  _switchProfileCoordinator = nil;
 
   [_addressBarPreferenceCoordinator stop];
   _addressBarPreferenceCoordinator = nil;
@@ -2160,6 +2401,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   // Remove PrefObserverDelegates.
   _notificationsObserver.delegate = nil;
+  [_notificationsObserver disconnect];
   _notificationsObserver = nil;
 
   // Clear C++ ivars.
@@ -2205,6 +2447,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   if ([_identity isEqual:identity]) {
     [self reloadAccountCell];
   }
+}
+
+- (void)onChromeAccountManagerServiceShutdown:
+    (ChromeAccountManagerService*)accountManagerService {
+  // TODO(crbug.com/40926211): settingsWillBeDismissed must be called before the
+  // AccountManagerService is destroyed. Switch to DCHECK if the number of
+  // reports is low.
+  DUMP_WILL_BE_CHECK(!_accountManagerServiceObserver.get());
 }
 
 #pragma mark - BooleanObserver
@@ -2278,7 +2528,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
             : l10n_util::GetNSString(IDS_IOS_TOP_ADDRESS_BAR_OPTION);
     [self reconfigureCellsForItems:@[ _addressBarPreferenceItem ]];
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -2290,6 +2540,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 - (void)insecureCredentialsDidChange {
   [self updateSafetyCheckItemTrailingIcon];
+}
+
+- (void)passwordCheckManagerWillShutdown {
+  _passwordCheckObserver.reset();
 }
 
 #pragma mark - PrefObserverDelegate
@@ -2465,6 +2719,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 - (void)notificationsSettingsDidChangeForClient:
     (PushNotificationClientId)clientID {
   [self updateNotificationsDetailText];
+
+  if (IsSafetyCheckNotificationsEnabled() &&
+      clientID == PushNotificationClientId::kSafetyCheck) {
+    [self updateSafetyCheckNotificationsButtonState];
+  }
 }
 
 #pragma mark - DownloadsSettingsCoordinatorDelegate
@@ -2473,6 +2732,39 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     (DownloadsSettingsCoordinator*)coordinator {
   [_downloadsSettingsCoordinator stop];
   _downloadsSettingsCoordinator = nil;
+}
+
+#pragma mark - EnhancedSafeBrowsingInlinePromoDelegate
+
+- (void)dismissEnhancedSafeBrowsingInlinePromo {
+  SettingsSectionIdentifier sectionID = SettingsSectionIdentifierESBPromo;
+  if (![self.tableViewModel hasSectionForSectionIdentifier:sectionID]) {
+    return;
+  }
+
+  NSUInteger index =
+      [self.tableViewModel sectionForSectionIdentifier:sectionID];
+  [self.tableViewModel removeItemWithType:SettingsItemTypeESBPromo
+                fromSectionWithIdentifier:sectionID
+                                  atIndex:0];
+  [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
+                withRowAnimation:UITableViewRowAnimationFade];
+
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
+  tracker->NotifyEvent(
+      feature_engagement::events::kInlineEnhancedSafeBrowsingPromoClosed);
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSettingsEnhancedSafeBrowsingInlinePromoDismiss"));
+  [self removeEnhancedSafeBrowsingPromoFETDataIfNeeded];
+}
+
+- (void)showSafeBrowsingSettingsMenu {
+  id<SettingsCommands> handler =
+      HandlerForProtocol(_browser->GetCommandDispatcher(), SettingsCommands);
+  [handler showSafeBrowsingSettingsFromPromoInteraction];
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSettingsEnhancedSafeBrowsingInlinePromoProceed"));
 }
 
 @end

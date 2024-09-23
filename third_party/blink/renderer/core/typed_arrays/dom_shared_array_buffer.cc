@@ -24,6 +24,8 @@ const WrapperTypeInfo DOMSharedArrayBuffer::wrapper_type_info_body_{
     nullptr,
     "SharedArrayBuffer",
     nullptr,
+    kDOMWrappersTag,
+    kDOMWrappersTag,
     WrapperTypeInfo::kWrapperTypeObjectPrototype,
     WrapperTypeInfo::kObjectClassId,
     WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,

@@ -69,19 +69,22 @@ suite('settings-edit-dictionary-page', function() {
 
     // Prefs would normally be data-bound to settings-languages.
     document.body.appendChild(editDictPage);
+    return languageSettingsPrivate.whenCalled('getSpellcheckWords');
   });
 
   teardown(function() {
     editDictPage.remove();
   });
 
-  test('add word validation', function() {
+  test('add word validation', async () => {
     // Check addWord enable/disable logic
     const addWordButton = editDictPage.$.addWord;
     assertTrue(!!addWordButton);
     editDictPage.$.newWord.value = '';
+    await editDictPage.$.newWord.updateComplete;
     assertTrue(addWordButton.disabled);
     editDictPage.$.newWord.value = 'valid word';
+    await editDictPage.$.newWord.updateComplete;
     assertFalse(addWordButton.disabled);
     assertFalse(
         window.getComputedStyle(addWordButton)
@@ -89,14 +92,16 @@ suite('settings-edit-dictionary-page', function() {
         'none');  // Make sure add-word button actually clickable.
   });
 
-  test('add duplicate word', function() {
+  test('add duplicate word', async () => {
     const WORD = 'unique';
     languageSettingsPrivate.onCustomDictionaryChanged.callListeners([WORD], []);
     editDictPage.$.newWord.value = `${WORD} ${WORD}`;
+    await editDictPage.$.newWord.updateComplete;
     flush();
     assertFalse(editDictPage.$.addWord.disabled);
 
     editDictPage.$.newWord.value = WORD;
+    await editDictPage.$.newWord.updateComplete;
     flush();
     assertTrue(editDictPage.$.addWord.disabled);
 
@@ -115,11 +120,13 @@ suite('settings-edit-dictionary-page', function() {
     assertFalse(!!editDictPage.shadowRoot!.querySelector('iron-list'));
   });
 
-  test('spellcheck edit dictionary page list has words', function() {
+  test('spellcheck edit dictionary page list has words', async () => {
     const addWordButton = editDictPage.$.addWord;
     editDictPage.$.newWord.value = 'valid word';
+    await editDictPage.$.newWord.updateComplete;
     addWordButton.click();
     editDictPage.$.newWord.value = 'valid word2';
+    await editDictPage.$.newWord.updateComplete;
     addWordButton.click();
     flush();
 
@@ -129,9 +136,10 @@ suite('settings-edit-dictionary-page', function() {
         2, editDictPage.shadowRoot!.querySelector('iron-list')!.items!.length);
   });
 
-  test('spellcheck edit dictionary page remove is in tab order', function() {
+  test('spellcheck edit dictionary page remove is in tab order', async () => {
     const addWordButton = editDictPage.$.addWord;
     editDictPage.$.newWord.value = 'valid word';
+    await editDictPage.$.newWord.updateComplete;
     addWordButton.click();
     flush();
 
@@ -150,6 +158,7 @@ suite('settings-edit-dictionary-page', function() {
     assertFalse(editDictPage.$.noWordsLabel.hidden);
 
     editDictPage.$.newWord.value = 'valid word2';
+    await editDictPage.$.newWord.updateComplete;
     addWordButton.click();
     flush();
 

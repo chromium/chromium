@@ -40,8 +40,8 @@ using VaapiImageDecoderMap =
 class VaapiImageDecodeAcceleratorWorker
     : public gpu::ImageDecodeAcceleratorWorker {
  public:
-  // Creates a VaapiImageDecodeAcceleratorWorker and attempts to initialize the
-  // internal state. Returns nullptr if initialization fails.
+  // Creates a VaapiImageDecodeAcceleratorWorker. Returns nullptr if no image
+  // decode profiles are supported.
   static std::unique_ptr<VaapiImageDecodeAcceleratorWorker> Create();
 
   VaapiImageDecodeAcceleratorWorker(const VaapiImageDecodeAcceleratorWorker&) =
@@ -58,23 +58,64 @@ class VaapiImageDecodeAcceleratorWorker
               CompletedDecodeCB decode_cb) override;
 
  private:
+  friend struct std::default_delete<VaapiImageDecodeAcceleratorWorker>;
+
   friend class VaapiImageDecodeAcceleratorWorkerTest;
 
-  explicit VaapiImageDecodeAcceleratorWorker(VaapiImageDecoderVector decoders);
+  VaapiImageDecodeAcceleratorWorker(
+      VaapiImageDecoderVector decoders,
+      gpu::ImageDecodeAcceleratorSupportedProfiles supported_profiles);
 
-  VaapiImageDecoder* GetDecoderForImage(
+  // Calls the destructor of the VaapiImageDecodeAcceleratorWorker instance from
+  // the |decoder_task_runner_|.
+  void Destroy();
+
+  // Returns a pointer to an Initialize()d VaapiImageDecoder that can be used to
+  // decode |encoded_data|. If no suitable VaapiImageDecoder can be
+  // Initialize()d, this method returns nullptr. Must be called on the
+  // |decoder_task_runner_|.
+  VaapiImageDecoder* GetInitializedDecoder(
       const std::vector<uint8_t>& encoded_data);
+
+  // Tries to decode the image corresponding to |encoded_data| initializing the
+  // appropriate VaapiImageDecoder instance in |decoders_| as needed. We defer
+  // the initialization of the decoder until DecodeTask() so that initialization
+  // occurs on the same sequence as decoding (the VaapiWrapper must be created
+  // and used on the same sequence). |decode_cb| is called when finished or when
+  // an error is encountered. |output_size_for_tracing| is only used for tracing
+  // because we don't support decoding to scale. Must be called on the
+  // |decoder_task_runner_|.
+  void DecodeTask(
+      std::vector<uint8_t> encoded_data,
+      const gfx::Size& output_size_for_tracing,
+      gpu::ImageDecodeAcceleratorWorker::CompletedDecodeCB decode_cb);
 
   // We delegate the decoding to the appropriate decoder in |decoders_| which
   // are used and destroyed on |decoder_task_runner_|.
-  VaapiImageDecoderMap decoders_;
-  gpu::ImageDecodeAcceleratorSupportedProfiles supported_profiles_;
+  VaapiImageDecoderMap decoders_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
+  const gpu::ImageDecodeAcceleratorSupportedProfiles supported_profiles_;
+
   scoped_refptr<base::SequencedTaskRunner> decoder_task_runner_;
+  SEQUENCE_CHECKER(decoder_sequence_checker_);
 
   SEQUENCE_CHECKER(main_sequence_checker_);
   SEQUENCE_CHECKER(io_sequence_checker_);
+
+  // WeakPtr factory for *|this| to post tasks to |decoder_task_runner_|.
+  base::WeakPtrFactory<VaapiImageDecodeAcceleratorWorker>
+      decoder_weak_this_factory_{this};
 };
 
 }  // namespace media
+
+namespace std {
+
+// Specializes std::default_delete to call Destroy().
+template <>
+struct default_delete<media::VaapiImageDecodeAcceleratorWorker> {
+  void operator()(media::VaapiImageDecodeAcceleratorWorker* ptr) const;
+};
+
+}  // namespace std
 
 #endif  // MEDIA_GPU_VAAPI_VAAPI_IMAGE_DECODE_ACCELERATOR_WORKER_H_

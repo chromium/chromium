@@ -59,7 +59,6 @@ class ASH_EXPORT LoginRemoveAccountDialog : public LoginBaseBubbleView,
   // views::View:
   void RequestFocus() override;
   bool HasFocus() const override;
-  const char* GetClassName() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
 
@@ -70,6 +69,8 @@ class ASH_EXPORT LoginRemoveAccountDialog : public LoginBaseBubbleView,
 
  private:
   void RemoveUserButtonPressed();
+  void UpdateAccessibleDescription();
+  void UpdateAccessibleName();
 
   raw_ptr<LoginButton, DanglingUntriaged> bubble_opener_ = nullptr;
   base::RepeatingClosure on_remove_user_warning_shown_;

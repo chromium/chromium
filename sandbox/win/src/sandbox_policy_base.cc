@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "sandbox/win/src/sandbox_policy_base.h"
 
 #include <stddef.h>
@@ -162,7 +167,7 @@ bool ConfigBase::IsOnCreatingThread() const {
 #if DCHECK_IS_ON()
   return GetCurrentThreadId() == creating_thread_id_;
 #else  // DCHECK_IS_ON()
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 #endif
 }
@@ -200,6 +205,22 @@ std::optional<base::span<const uint8_t>> ConfigBase::policy_span() {
   return std::nullopt;
 }
 
+bool ConfigBase::NeedsIpc(IpcTag service) const {
+  // Some IPCs are always needed.
+  if (service == IpcTag::PING1 || service == IpcTag::PING1 ||
+      service == IpcTag::NTOPENTHREAD ||
+      service == IpcTag::NTOPENPROCESSTOKENEX ||
+      service == IpcTag::CREATETHREAD) {
+    return true;
+  }
+
+  // Otherwise we only need the IPC dispatcher if a rule is setup.
+  if (policy_) {
+    return policy_->NeedsIpc(service);
+  }
+  return false;
+}
+
 std::vector<std::wstring>& ConfigBase::blocklisted_dlls() {
   DCHECK(configured_);
   return blocklisted_dlls_;
@@ -231,7 +252,7 @@ sandbox::LowLevelPolicy* ConfigBase::PolicyMaker() {
 ResultCode ConfigBase::AllowFileAccess(FileSemantics semantics,
                                        const wchar_t* pattern) {
   if (!FileSystemPolicy::GenerateRules(pattern, semantics, PolicyMaker())) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return SBOX_ERROR_BAD_PARAMS;
   }
   return SBOX_ALL_OK;
@@ -242,7 +263,7 @@ ResultCode ConfigBase::SetFakeGdiInit() {
       << "Enable MITIGATION_WIN32K_DISABLE before adding win32k policy "
          "rules.";
   if (!ProcessMitigationsWin32KLockdownPolicy::GenerateRules(PolicyMaker())) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return SBOX_ERROR_BAD_PARAMS;
   }
   return SBOX_ALL_OK;
@@ -258,7 +279,7 @@ ResultCode ConfigBase::AllowExtraDlls(const wchar_t* pattern) {
         << "Enable MITIGATION_FORCE_MS_SIGNED_BINS before adding signed "
            "policy rules.";
     if (!SignedPolicy::GenerateRules(pattern, PolicyMaker())) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SBOX_ERROR_BAD_PARAMS;
     }
   }
@@ -336,8 +357,7 @@ void ConfigBase::SetLockdownDefaultDacl() {
   lockdown_default_dacl_ = true;
 }
 
-ResultCode ConfigBase::AddAppContainerProfile(const wchar_t* package_name,
-                                              bool create_profile) {
+ResultCode ConfigBase::AddAppContainerProfile(const wchar_t* package_name) {
   if (!features::IsAppContainerSandboxSupported())
     return SBOX_ERROR_UNSUPPORTED;
 
@@ -346,13 +366,9 @@ ResultCode ConfigBase::AddAppContainerProfile(const wchar_t* package_name,
   if (app_container_ || integrity_level_ != INTEGRITY_LEVEL_LAST) {
     return SBOX_ERROR_BAD_PARAMS;
   }
+  app_container_ =
+      AppContainerBase::CreateProfile(package_name, L"Chrome Sandbox");
 
-  if (create_profile) {
-    app_container_ = AppContainerBase::CreateProfile(
-        package_name, L"Chrome Sandbox", L"Profile for Chrome Sandbox");
-  } else {
-    app_container_ = AppContainerBase::Open(package_name);
-  }
   if (!app_container_)
     return SBOX_ERROR_CREATE_APPCONTAINER;
 
@@ -372,8 +388,8 @@ ResultCode ConfigBase::AddAppContainerProfile(const wchar_t* package_name,
   return SBOX_ALL_OK;
 }
 
-scoped_refptr<AppContainer> ConfigBase::GetAppContainer() {
-  return app_container_;
+AppContainer* ConfigBase::GetAppContainer() {
+  return app_container_.get();
 }
 
 ResultCode ConfigBase::SetTokenLevel(TokenLevel initial, TokenLevel lockdown) {
@@ -460,9 +476,8 @@ PolicyBase::PolicyBase(std::string_view tag)
       stdout_handle_(INVALID_HANDLE_VALUE),
       stderr_handle_(INVALID_HANDLE_VALUE),
       delegate_data_(nullptr),
-      job_() {
-  dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
-}
+      dispatcher_(nullptr),
+      job_() {}
 
 PolicyBase::~PolicyBase() {
   // Ensure this is cleared before other members - this terminates the process
@@ -640,6 +655,7 @@ ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
     return SBOX_ERROR_APPLY_ASLR_MITIGATIONS;
   }
 
+  dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
   ResultCode ret = SetupAllInterceptions(*target);
 
   if (ret != SBOX_ALL_OK)
@@ -707,7 +723,7 @@ EvalResult PolicyBase::EvalPolicy(IpcTag service,
     }
     for (size_t i = 0; i < params->count; i++) {
       if (!params->parameters[i].IsValid()) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return SIGNAL_ALARM;
       }
     }
@@ -735,7 +751,7 @@ ResultCode PolicyBase::SetupAllInterceptions(TargetProcess& target) {
   InterceptionManager manager(target);
   PolicyGlobal* policy = config()->policy();
   if (policy) {
-    for (size_t i = 0; i < kMaxIpcTag; i++) {
+    for (size_t i = 0; i < kSandboxIpcCount; i++) {
       if (policy->entry[i] &&
           !dispatcher_->SetupService(&manager, static_cast<IpcTag>(i)))
         return SBOX_ERROR_SETUP_INTERCEPTION_SERVICE;

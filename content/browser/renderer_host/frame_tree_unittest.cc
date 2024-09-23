@@ -503,7 +503,7 @@ TEST_F(FrameTreeTest, FindFrames) {
   EXPECT_EQ(child1, frame_tree.FindByID(child1->frame_tree_node_id()));
   EXPECT_EQ(child2, frame_tree.FindByID(child2->frame_tree_node_id()));
   EXPECT_EQ(grandchild, frame_tree.FindByID(grandchild->frame_tree_node_id()));
-  EXPECT_EQ(nullptr, frame_tree.FindByID(-1));
+  EXPECT_EQ(nullptr, frame_tree.FindByID(FrameTreeNodeId()));
 
   // Ensure they can be found by routing id.
   int process_id = main_test_rfh()->GetProcess()->GetID();
@@ -734,9 +734,9 @@ TEST_F(FrameTreeTest, ProcessCrashClearsGlobalMap) {
       blink::mojom::FrameOwnerProperties(), kOwnerType, ukm::kInvalidSourceId);
 
   // Ensure they can be found by id.
-  int id1 = root->child_at(0)->frame_tree_node_id();
-  int id2 = root->child_at(1)->frame_tree_node_id();
-  int id3 = root->child_at(0)->child_at(0)->frame_tree_node_id();
+  FrameTreeNodeId id1 = root->child_at(0)->frame_tree_node_id();
+  FrameTreeNodeId id2 = root->child_at(1)->frame_tree_node_id();
+  FrameTreeNodeId id3 = root->child_at(0)->child_at(0)->frame_tree_node_id();
   EXPECT_TRUE(FrameTreeNode::GloballyFindByID(id1));
   EXPECT_TRUE(FrameTreeNode::GloballyFindByID(id2));
   EXPECT_TRUE(FrameTreeNode::GloballyFindByID(id3));

@@ -57,8 +57,15 @@ void InertEffect::Sample(HeapVector<Member<Interpolation>>& result) const {
   std::optional<double> iteration = CurrentIteration();
   DCHECK(iteration);
   DCHECK_GE(iteration.value(), 0);
+
+  TimingFunction::LimitDirection limit_direction =
+      (GetPhase() == Timing::kPhaseBefore)
+          ? TimingFunction::LimitDirection::LEFT
+          : TimingFunction::LimitDirection::RIGHT;
+
   model_->Sample(ClampTo<int>(iteration.value(), 0), Progress().value(),
-                 NormalizedTiming().iteration_duration, result);
+                 limit_direction, NormalizedTiming().iteration_duration,
+                 result);
 }
 
 bool InertEffect::Affects(const PropertyHandle& property) const {

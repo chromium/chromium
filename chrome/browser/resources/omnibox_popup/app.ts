@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_components/omnibox/realbox_dropdown.js';
+import '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import './strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter} from '//resources/cr_components/omnibox/omnibox.mojom-webui.js';
-import {RealboxBrowserProxy} from '//resources/cr_components/omnibox/realbox_browser_proxy.js';
-import type {RealboxDropdownElement} from '//resources/cr_components/omnibox/realbox_dropdown.js';
+import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter} from '//resources/cr_components/searchbox/searchbox.mojom-webui.js';
+import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import {assert} from '//resources/js/assert.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 
-// 675px ~= 449px (--ntp-realbox-primary-side-min-width) * 1.5 + some margin.
+// 675px ~= 449px (--cr-realbox-primary-side-min-width) * 1.5 + some margin.
 const canShowSecondarySideMediaQueryList =
     window.matchMedia('(min-width: 675px)');
 
 export interface OmniboxPopupAppElement {
   $: {
-    matches: RealboxDropdownElement,
+    matches: SearchboxDropdownElement,
   };
 }
 
@@ -69,7 +69,7 @@ export class OmniboxPopupAppElement extends PolymerElement {
 
   constructor() {
     super();
-    this.callbackRouter_ = RealboxBrowserProxy.getInstance().callbackRouter;
+    this.callbackRouter_ = SearchboxBrowserProxy.getInstance().callbackRouter;
     ColorChangeUpdater.forDocument().start();
   }
 

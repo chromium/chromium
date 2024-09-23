@@ -139,7 +139,10 @@ class CORE_EXPORT SelectorChecker {
     // https://crrev.com/c/3362008
     const CSSSelector* selector = nullptr;
 
-    // Used to match the :scope pseudo-class.
+    // TODO(dbaron): I'm suspicious of how accurate the comments describing
+    // the following three members are.  We should review them for accuracy.
+    // Used to match the :scope pseudo-class.  It also tells us which
+    // TreeScope the selectors are associated with.
     const ContainerNode* scope = nullptr;
     // If `style_scope` is specified, that is used to match the :scope
     // pseudo-class instead (and `scope` is ignored).
@@ -153,13 +156,18 @@ class CORE_EXPORT SelectorChecker {
     ContainerNode* relative_anchor_element = nullptr;
 
     AtomicString* pseudo_argument = nullptr;
+    // The pseudo element type of pseudo element we are matching styles for.
     PseudoId pseudo_id = kPseudoIdNone;
+    // The last pseudo element selector we saw. This is not necessarily the
+    // pseudo_id above since we may have nested pseudo elements. Also, this may
+    // be the pseudo element selector we are looking at while matching styles
+    // for the originating element.
+    PseudoId previously_matched_pseudo_element = kPseudoIdNone;
     Impact impact = Impact::kSubject;
 
     bool is_sub_selector = false;
     bool in_rightmost_compound = true;
     bool has_scrollbar_pseudo = false;
-    bool has_selection_pseudo = false;
     bool treat_shadow_host_as_normal_scope = false;
     bool in_nested_complex_selector = false;
     // If true, elements that are links will match :visited. Otherwise,
@@ -174,6 +182,8 @@ class CORE_EXPORT SelectorChecker {
     bool had_match_visited = false;
     bool pseudo_has_in_rightmost_compound = true;
     bool is_inside_has_pseudo_class = false;
+    // Affects whether or not :current matches after a ::search-text.
+    bool search_text_request_is_current = false;
   };
 
   struct MatchResult {
@@ -283,7 +293,8 @@ class CORE_EXPORT SelectorChecker {
     return Match(context, ignore_result);
   }
 
-  static bool MatchesFocusPseudoClass(const Element&);
+  static bool MatchesFocusPseudoClass(const Element&,
+                                      PseudoId matching_for_pseudo_element);
   static bool MatchesFocusVisiblePseudoClass(const Element&);
   static bool MatchesSelectorFragmentAnchorPseudoClass(const Element&);
 
@@ -321,6 +332,8 @@ class CORE_EXPORT SelectorChecker {
   MatchStatus MatchSelector(const SelectorCheckingContext&, MatchResult&) const;
   MatchStatus MatchForSubSelector(const SelectorCheckingContext&,
                                   MatchResult&) const;
+  MatchStatus MatchForScopeActivation(const SelectorCheckingContext&,
+                                      MatchResult&) const;
   MatchStatus MatchForRelation(const SelectorCheckingContext&,
                                MatchResult&) const;
   MatchStatus MatchForPseudoContent(const SelectorCheckingContext&,

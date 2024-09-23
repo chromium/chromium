@@ -53,7 +53,7 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
     case translate::TranslateErrors::SCRIPT_LOAD_ERROR:
       return CWVTranslationErrorScriptLoadError;
     case translate::TranslateErrors::TRANSLATE_ERROR_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CWVTranslationErrorNone;
   }
 }
@@ -197,8 +197,7 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
   switch (policy.type) {
     case CWVTranslationPolicyAsk: {
       _translatePrefs->UnblockLanguage(languageCode);
-      _translatePrefs->RemoveLanguagePairFromAlwaysTranslateList(languageCode,
-                                                                 std::string());
+      _translatePrefs->RemoveLanguagePairFromAlwaysTranslateList(languageCode);
       break;
     }
     case CWVTranslationPolicyNever: {
@@ -250,15 +249,16 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
       break;
     }
     case CWVTranslationPolicyAuto: {
-      // TODO(crbug.com/706289): Support auto translation policies for websites.
-      NOTREACHED();
+      // TODO(crbug.com/41310094): Support auto translation policies for
+      // websites.
+      NOTREACHED_IN_MIGRATION();
       break;
     }
   }
 }
 
 - (CWVTranslationPolicy*)translationPolicyForPageHost:(NSString*)pageHost {
-  // TODO(crbug.com/706289): Return translationPolicyAuto when implemented.
+  // TODO(crbug.com/41310094): Return translationPolicyAuto when implemented.
   bool isSiteOnNeverPromptList = _translatePrefs->IsSiteOnNeverPromptList(
       base::SysNSStringToUTF8(pageHost));
   if (isSiteOnNeverPromptList) {

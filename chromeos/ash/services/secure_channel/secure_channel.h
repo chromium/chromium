@@ -192,7 +192,7 @@ class SecureChannel : public ConnectionObserver,
   base::queue<std::unique_ptr<PendingMessage>> queued_messages_;
   std::unique_ptr<PendingMessage> pending_message_;
   int next_sequence_number_ = 0;
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observer_list_;
   base::WeakPtrFactory<SecureChannel> weak_ptr_factory_{this};
 };
 

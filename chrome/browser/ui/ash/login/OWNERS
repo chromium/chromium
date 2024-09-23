@@ -1,0 +1,5 @@
+file://ash/login/OWNERS
+
+per-file kiosk_app*=file://chromeos/components/kiosk/OWNERS
+per-file login_display_host*.*=set noparent
+per-file login_display_host*.*=file://ash/login/LOGIN_LOCK_OWNERS

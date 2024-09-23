@@ -8,6 +8,7 @@
 
 #include "ash/components/arc/test/arc_task_window_builder.h"
 #include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
@@ -29,11 +30,12 @@
 #include "components/exo/surface.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/widget/widget.h"
-
 #include "ui/display/display.h"
+#include "ui/display/display_observer.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/widget/widget.h"
 
 namespace arc {
 
@@ -169,6 +171,8 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
         GetStatisticName("RenderQuality2", category));
     base::StatisticsRecorder::ForgetHistogramForTesting(
         GetStatisticName("JanksPerMinute2", category));
+    base::StatisticsRecorder::ForgetHistogramForTesting(
+        GetStatisticName("JanksPercentage2", category));
   }
 
   // Ensures that tracing is ready to begin, which means up to the point that
@@ -215,11 +219,12 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{SyncServiceFactory::GetInstance(),
-             base::BindRepeating(
-                 [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-                   return std::make_unique<syncer::TestSyncService>();
-                 })}};
+    return {TestingProfile::TestingFactory{
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            })}};
   }
 
  private:
@@ -386,6 +391,7 @@ TEST_F(ArcAppPerformanceTracingTest, StatisticsReported) {
   EXPECT_EQ(216L, ReadFocusStatistics("PresentDeviation2"));
   EXPECT_EQ(48L, ReadFocusStatistics("RenderQuality2"));
   EXPECT_EQ(0L, ReadFocusStatistics("JanksPerMinute2"));
+  EXPECT_EQ(0L, ReadFocusStatistics("JanksPercentage2"));
   arc_widget->Close();
 
   arc_widget = PrepareArcFocusAppTracing();
@@ -430,6 +436,7 @@ TEST_F(ArcAppPerformanceTracingTest, ApplicationStatisticsReported) {
     EXPECT_EQ(216L, ReadStatistics("PresentDeviation2", application.name));
     EXPECT_EQ(48L, ReadStatistics("RenderQuality2", application.name));
     EXPECT_EQ(0L, ReadStatistics("JanksPerMinute2", application.name));
+    EXPECT_EQ(0L, ReadStatistics("JanksPercentage2", application.name));
     arc_widget->Close();
   }
 }
@@ -528,6 +535,26 @@ TEST_F(ArcAppPerformanceTracingTest, DestroySurface) {
   arc_widget->Close();
 }
 
+TEST_F(ArcAppPerformanceTracingTest, DetachDisplayDuringTrace) {
+  views::Widget* const arc_widget = PrepareArcFocusAppTracing();
+  tracing_helper().GetTracingSession()->FireTimerForTesting();
+
+  ASSERT_TRUE(tracing_helper().GetTracingSession());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->HasPresentFrames());
+
+  auto* dm = ash::Shell::Get()->display_manager();
+  display::test::DisplayManagerTestApi display_manager(dm);
+  auto prim_info = dm->GetDisplayInfo(dm->first_display_id());
+  display_manager.UpdateDisplayWithDisplayInfoList({});
+
+  EXPECT_FALSE(tracing_helper().GetTracingSession());
+
+  display_manager.UpdateDisplayWithDisplayInfoList({prim_info});
+  EXPECT_TRUE(tracing_helper().GetTracingSession());
+  arc_widget->Close();
+}
+
 TEST_F(ArcAppPerformanceTracingTest, NoTracingForArcGhostWindow) {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(
@@ -597,6 +624,8 @@ TEST_F(ArcAppPerformanceTracingTest, GhostWindowTurnsIntoTaskWindow) {
   exo::SetShellApplicationId(widget->GetNativeWindow(), kAppId);
 
   ASSERT_TRUE(tracing_helper().GetTracingSession());
+
+  widget->Close();
 }
 
 }  // namespace arc

@@ -10,8 +10,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
-#include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
@@ -62,7 +62,10 @@ class BinaryUploadService : public KeyedService {
     // being sent.
     TOO_MANY_REQUESTS = 9,
 
-    kMaxValue = TOO_MANY_REQUESTS,
+    // The server did not return all the results for the synchronous requests
+    INCOMPLETE_RESPONSE = 10,
+
+    kMaxValue = INCOMPLETE_RESPONSE,
   };
 
   static std::string ResultToString(Result result);
@@ -183,6 +186,8 @@ class BinaryUploadService : public KeyedService {
     void set_password(const std::string& password);
     void set_reason(
         enterprise_connectors::ContentAnalysisRequest::Reason reason);
+    void set_require_metadata_verdict(bool require_metadata_verdict);
+    void set_blocking(bool blocking);
 
     std::string SetRandomRequestToken();
 
@@ -201,6 +206,7 @@ class BinaryUploadService : public KeyedService {
     GURL tab_url() const;
     base::optional_ref<const std::string> password() const;
     enterprise_connectors::ContentAnalysisRequest::Reason reason() const;
+    bool blocking() const;
 
     // Called when beginning to try upload.
     void StartRequest();

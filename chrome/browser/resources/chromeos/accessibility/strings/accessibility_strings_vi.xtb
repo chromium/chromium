@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Màu nâu ánh hồng</translation>
 <translation id="249330843868392562">Mở tùy chọn cài đặt chuyển văn bản sang lời nói</translation>
 <translation id="2497706219848005458">Màu vàng lục</translation>
+<translation id="2512979179176933762">hiện các cửa sổ</translation>
 <translation id="2523609930580546572">Hướng dẫn về ChromeVox</translation>
 <translation id="2525706221823668172">Phím tắt Chromebook</translation>
 <translation id="2553108862507765288">lỗi ngữ pháp</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{Hơn # mục}other{Hơn # mục}}</translation>
 <translation id="2792200646155001340">Bạn cũng có thể vuốt bằng một ngón tay từ bên phải sang bên trái để chuyển đến mục trước. Hãy thử ngay.</translation>
 <translation id="280499067616661124">ChromeVox tìm trong trang</translation>
-<translation id="2811019999044652585">Để chuyển tới các phần khác của màn hình, như thanh công cụ hoặc khay hệ thống, nhấn phím Control+Forward. Trên Chromebook, phím Forward ở ngay phía trên phím số 2.</translation>
 <translation id="2811204574343810641">Hàng</translation>
 <translation id="2816868829355607410">Khu vực thực hành: Các lệnh chuyển</translation>
 <translation id="2841013758207633010">Thời gian</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Màu xanh thép</translation>
 <translation id="4253168017788158739">Lưu ý</translation>
 <translation id="4254798249533888099">Cây</translation>
+<translation id="4259220820964911921">Bật tính năng điều khiển bằng khuôn mặt?</translation>
 <translation id="4271220233568730077">Biểu thức toán tiếp theo</translation>
 <translation id="4275397969489577657">Bật ghi nhật ký luồng sự kiện</translation>
 <translation id="4278486392851938658">Không có đường liên kết đã truy cập nào trước đó</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Màu đỏ Ấn Độ</translation>
 <translation id="4432896207833262240">Nội dung được đánh dấu</translation>
 <translation id="4437615272777527928">Nhập để tìm kiếm trong trình đơn. Sử dụng các mũi tên lên và xuống để chuyển qua kết quả. Sử dụng các mũi tên trái và phải để điều chỉnh điểm chèn văn bản và di chuyển giữa các trình đơn.</translation>
+<translation id="4453530046591759283">Để chuyển đến các phần khác của màn hình, như thanh công cụ hoặc khay hệ thống, hãy nhấn tổ hợp phím Control + F1. F1 là phím đầu tiên ở bên phải phím Escape.</translation>
 <translation id="4457472090507035117">Chọn giọng nói hiện tại:</translation>
 <translation id="4476183483923481720">dòng mới</translation>
 <translation id="4479068155583208887">Màu gạch lửa</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Phụ lục</translation>
 <translation id="5761219715606611783">Rất tốt! Bạn đã tìm hiểu xong những thông tin cơ bản về tính năng chạm của ChromeVox. Bạn có thể xem lại hoặc thoát khỏi tài liệu hướng dẫn này bằng các nút ở bên dưới.</translation>
 <translation id="5776001898637896684">Tiện ích chuyển văn bản sang lời nói trên Mạng nâng cao của Google</translation>
+<translation id="5783252477644995371">Tính năng điều khiển bằng khuôn mặt cho phép bạn điều khiển con trỏ theo hướng của khuôn mặt và thực hiện các thao tác bằng nét mặt như cười để nhấp chuột trái</translation>
 <translation id="5805940204952508776">Nhấn bằng hai ngón tay</translation>
 <translation id="5819072574982403430">Mục cây</translation>
 <translation id="5822819874379903994">Màu ngọc lam đậm</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Màu trắng Navajo</translation>
 <translation id="7095834689119144465">Chỉnh sửa văn bản chỉ dành cho số</translation>
 <translation id="7096001299300236431">Phương tiện trước</translation>
+<translation id="7096668131290451939">Nhấn phím Escape lần nữa để thoát chế độ Học tập</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">nói từ</translation>
 <translation id="7137397390322864165">Màu hồng cam</translation>
@@ -1070,9 +1074,8 @@
 <translation id="8463645336674919227">Rời khỏi lỗi ngữ pháp</translation>
 <translation id="8465573210279050749">xoá từ đứng trước</translation>
 <translation id="847040613207937740">Không có hộp đánh dấu nào tiếp theo</translation>
-<translation id="8473540203671727883">Đọc văn bản bên dưới con trỏ chuột</translation>
+<translation id="8473540203671727883">Đọc to văn bản bên dưới con trỏ chuột</translation>
 <translation id="8476408756881832830">Tạm dừng phát lại khi ChromeVox đang nói</translation>
-<translation id="8476508772960940536">tổng quan về cửa sổ</translation>
 <translation id="8480873377842220259">Bây giờ, bạn sẽ học một số thao tác cơ bản. Bạn có thể giữ phím Tìm kiếm và nhấn các phím mũi tên để di chuyển xung quanh màn hình. Để tiếp tục, hãy nhấn tổ hợp phím Tìm kiếm + Mũi tên phải.</translation>
 <translation id="8503360654911991865">Giảm mức độ chi tiết của điều hướng</translation>
 <translation id="8520472399088452386">Nút quay tròn</translation>

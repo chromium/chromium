@@ -12,6 +12,7 @@
 @BLINK-ALLOW:className*
 @MAC-ALLOW:AXDOMClassList=*
 @MAC-DENY:AXDOMClassList=[]
+@EXECUTE-AND-WAIT-FOR:changeClass()
 -->
 <!DOCTYPE html>
 <html>
@@ -19,4 +20,11 @@
     <h1 id="headerID" class="headerClass">Image</h1>
     <img id="imageID" class="imageClass" src="greenbox.png" alt="ImageAlt" height="100" width="200">
   </body>
+<script>
+function changeClass() {
+  document.querySelector('h1').className = 'newClass';
+  document.title = 'changed-class';
+  return 'changed-class';
+}
+</script>
 </html>

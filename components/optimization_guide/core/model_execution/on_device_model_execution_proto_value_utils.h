@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/descriptors.pb.h"
 
 namespace optimization_guide {
 

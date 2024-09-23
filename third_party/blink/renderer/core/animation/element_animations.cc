@@ -40,9 +40,9 @@ namespace blink {
 ElementAnimations::ElementAnimations()
     : animation_style_change_(false),
       composited_background_color_status_(static_cast<unsigned>(
-          CompositedPaintStatus::kNeedsRepaintOrNoAnimation)),
+          CompositedPaintStatus::kNoAnimation)),
       composited_clip_path_status_(static_cast<unsigned>(
-          CompositedPaintStatus::kNeedsRepaintOrNoAnimation)) {}
+          CompositedPaintStatus::kNoAnimation)) {}
 
 ElementAnimations::~ElementAnimations() = default;
 
@@ -86,26 +86,91 @@ bool ElementAnimations::IsIdentityOrTranslation() const {
   return true;
 }
 
-void ElementAnimations::SetCompositedBackgroundColorStatus(
-    CompositedPaintStatus status) {
-  if (composited_background_color_status_ == static_cast<unsigned>(status))
-    return;
+bool ElementAnimations::HasCompositedPaintWorkletAnimation() {
+  return CompositedBackgroundColorStatus() ==
+             ElementAnimations::CompositedPaintStatus::kComposited ||
+         CompositedClipPathStatus() ==
+             ElementAnimations::CompositedPaintStatus::kComposited;
+}
 
-  if (status == CompositedPaintStatus::kNotComposited) {
-    // Ensure that animation is cancelled on the compositor. We do this ahead
-    // of updating the status since the act of cancelling a background color
-    // animation forces it back into the kNeedsRepaintOrNoAnimation state,
-    // which we then need to stomp with a kNotComposited decision.
-    PropertyHandle background_color_property =
-        PropertyHandle(GetCSSPropertyBackgroundColor());
-    for (auto& entry : Animations()) {
-      KeyframeEffect* effect = DynamicTo<KeyframeEffect>(entry.key->effect());
-      if (effect && effect->Affects(background_color_property)) {
-        entry.key->CancelAnimationOnCompositor();
-      }
+void ElementAnimations::RecalcCompositedStatusForKeyframeChange(
+    Element& element,
+    AnimationEffect* effect) {
+  if (KeyframeEffect* keyframe_effect = DynamicTo<KeyframeEffect>(effect)) {
+    if (CompositedBackgroundColorStatus() ==
+            ElementAnimations::CompositedPaintStatus::kComposited &&
+        keyframe_effect->Affects(
+            PropertyHandle(GetCSSPropertyBackgroundColor())) &&
+        element.GetLayoutObject()) {
+      SetCompositedBackgroundColorStatus(
+          ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+      element.GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+    }
+
+    if (CompositedClipPathStatus() ==
+            ElementAnimations::CompositedPaintStatus::kComposited &&
+        keyframe_effect->Affects(PropertyHandle(GetCSSPropertyClipPath())) &&
+        element.GetLayoutObject()) {
+      SetCompositedClipPathStatus(
+          ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
+      element.GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+      // For clip paths, we also need to update the paint properties to switch
+      // from path based to mask based clip.
+      element.GetLayoutObject()->SetNeedsPaintPropertyUpdate();
     }
   }
-  composited_background_color_status_ = static_cast<unsigned>(status);
+}
+
+void ElementAnimations::RecalcCompositedStatus(Element* element,
+                                               const CSSProperty& property) {
+  ElementAnimations::CompositedPaintStatus status =
+      HasAnimationForProperty(property)
+          ? ElementAnimations::CompositedPaintStatus::kNeedsRepaint
+          : ElementAnimations::CompositedPaintStatus::kNoAnimation;
+
+  if (property.PropertyID() == CSSPropertyID::kBackgroundColor) {
+    if (SetCompositedBackgroundColorStatus(status) &&
+        element->GetLayoutObject()) {
+      element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+    }
+  } else if (property.PropertyID() == CSSPropertyID::kClipPath) {
+    if (SetCompositedClipPathStatus(status) && element->GetLayoutObject()) {
+      element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+      // For clip paths, we also need to update the paint properties to switch
+      // from path based to mask based clip.
+      element->GetLayoutObject()->SetNeedsPaintPropertyUpdate();
+    }
+  }
+}
+
+bool ElementAnimations::SetCompositedClipPathStatus(
+    CompositedPaintStatus status) {
+  if (static_cast<unsigned>(status) != composited_clip_path_status_) {
+    composited_clip_path_status_ = static_cast<unsigned>(status);
+    return true;
+  }
+  return false;
+}
+
+bool ElementAnimations::SetCompositedBackgroundColorStatus(
+    CompositedPaintStatus status) {
+  if (static_cast<unsigned>(status) != composited_background_color_status_) {
+    composited_background_color_status_ = static_cast<unsigned>(status);
+    return true;
+  }
+  return false;
+}
+
+bool ElementAnimations::HasAnimationForProperty(const CSSProperty& property) {
+  for (auto& entry : Animations()) {
+    KeyframeEffect* effect = DynamicTo<KeyframeEffect>(entry.key->effect());
+    if (effect && effect->Affects(PropertyHandle(property)) &&
+        (entry.key->CalculateAnimationPlayState() !=
+         Animation::AnimationPlayState::kIdle)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace blink

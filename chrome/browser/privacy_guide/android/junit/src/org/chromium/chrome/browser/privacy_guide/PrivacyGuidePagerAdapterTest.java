@@ -14,18 +14,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,33 +35,36 @@ import java.util.Set;
     ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID
 })
 public class PrivacyGuidePagerAdapterTest {
+    public static Collection<Object[]> generateBooleanCombinations(int nElements) {
+        Collection<Object[]> result = new ArrayList<>();
+        generate(result, new Boolean[nElements], 0);
+        return result;
+    }
+
+    private static void generate(Collection<Object[]> result, Boolean[] current, int index) {
+        // Base case
+        if (index == current.length) {
+            // Row is filled so add the current combination to the result and return
+            result.add(current.clone());
+            return;
+        }
+
+        // Set current index to false and recurse
+        current[index] = false;
+        generate(result, current, index + 1);
+        // Set current index to true and recurse
+        current[index] = true;
+        generate(result, current, index + 1);
+    }
+
     @Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(
-                new Object[][] {
-                    {false, false, false, false},
-                    {false, false, false, true},
-                    {false, false, true, false},
-                    {false, false, true, true},
-                    {false, true, false, false},
-                    {false, true, false, true},
-                    {false, true, true, false},
-                    {false, true, true, true},
-                    {true, false, false, false},
-                    {true, false, false, true},
-                    {true, false, true, false},
-                    {true, false, true, true},
-                    {true, true, false, false},
-                    {true, true, false, true},
-                    {true, true, true, false},
-                    {true, true, true, true}
-                });
+        int nElements = 5; // Number of elements in each combination
+        return generateBooleanCombinations(nElements);
     }
 
     @Rule(order = -2)
     public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Parameter(0)
     public boolean mShouldDisplayHistorySync;
@@ -76,6 +77,9 @@ public class PrivacyGuidePagerAdapterTest {
 
     @Parameter(3)
     public boolean mShouldDisplayPreload;
+
+    @Parameter(4)
+    public boolean mShouldDisplayAdTopics;
 
     private StepDisplayHandler mStepDisplayHandler;
     private FragmentScenario mScenario;
@@ -118,6 +122,11 @@ public class PrivacyGuidePagerAdapterTest {
                     public boolean shouldDisplayPreload() {
                         return mShouldDisplayPreload;
                     }
+
+                    @Override
+                    public boolean shouldDisplayAdTopics() {
+                        return mShouldDisplayAdTopics;
+                    }
                 };
         mPagerAdapter =
                 new PrivacyGuidePagerAdapter(
@@ -155,5 +164,9 @@ public class PrivacyGuidePagerAdapterTest {
                 "Preload step displayed incorrectly",
                 mShouldDisplayPreload,
                 fragmentClassSet.contains(PreloadFragment.class));
+        Assert.assertEquals(
+                "Ad Topics step displayed incorrectly",
+                mShouldDisplayAdTopics,
+                fragmentClassSet.contains(AdTopicsFragment.class));
     }
 }

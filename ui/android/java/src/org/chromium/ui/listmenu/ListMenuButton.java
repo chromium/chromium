@@ -152,7 +152,7 @@ public class ListMenuButton extends ChromeImageButton
 
         final View contentView = menu.getContentView();
         ViewParent viewParent = contentView.getParent();
-        // TODO(crbug.com/1323202): figure out why contentView is not removed from popup menu.
+        // TODO(crbug.com/40838478): figure out why contentView is not removed from popup menu.
         if (viewParent instanceof ViewGroup) {
             ((ViewGroup) viewParent).removeView(contentView);
         }

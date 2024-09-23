@@ -9,6 +9,8 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -45,7 +47,10 @@ void OnInitDone(base::OnceClosure quit_closure,
 void OnOutputComplete(scoped_refptr<media::VideoFrame> frame) {}
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
+  // SAFETY: LibFuzzer must pass a valid `data_ptr` and `size`.
+  auto data = UNSAFE_BUFFERS(base::span(data_ptr, size));
+
   // Create Env on the first run of LLVMFuzzerTestOneInput otherwise
   // message_loop will be created before this process forks when used with AFL,
   // causing hangs.
@@ -53,7 +58,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::mt19937_64 rng;
 
   {  // Seed rng from data.
-    std::string str = std::string(reinterpret_cast<const char*>(data), size);
+    std::string str(base::as_string_view(data));
     std::size_t data_hash = std::hash<std::string>()(str);
     rng.seed(data_hash);
   }
@@ -112,7 +117,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   {
     base::RunLoop run_loop;
-    auto buffer = media::DecoderBuffer::CopyFrom(data, size);
+    auto buffer = media::DecoderBuffer::CopyFrom(data);
     decoder.Decode(buffer,
                    base::BindOnce(&OnDecodeComplete, run_loop.QuitClosure()));
     run_loop.Run();

@@ -104,8 +104,9 @@ void RestoreTab(Browser* browser) {
 
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser->profile());
-  if (!service)
+  if (!service) {
     return;
+  }
 
   if (service->IsLoaded()) {
     service->RestoreMostRecentEntry(browser->live_tab_context());

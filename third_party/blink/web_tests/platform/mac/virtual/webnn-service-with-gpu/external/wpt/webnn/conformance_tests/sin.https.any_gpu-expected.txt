@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] sin float32 0D scalar
+  assert_array_approx_equals: test sin float32 property 0, expected -0.946033775806427 +/- 0.0009765625, expected -0.946033775806427 but got -0.935546875
+[FAIL] sin float32 1D constant tensor
+  assert_array_approx_equals: test sin float32 property 0, expected -0.946033775806427 +/- 0.0009765625, expected -0.946033775806427 but got -0.935546875
+[FAIL] sin float32 1D tensor
+  assert_array_approx_equals: test sin float32 property 0, expected -0.946033775806427 +/- 0.0009765625, expected -0.946033775806427 but got -0.935546875
+[FAIL] sin float32 2D tensor
+  assert_array_approx_equals: test sin float32 property 0, expected -0.946033775806427 +/- 0.0009765625, expected -0.946033775806427 but got -0.935546875
+[FAIL] sin float32 3D tensor
+  assert_array_approx_equals: test sin float32 property 0, expected -0.946033775806427 +/- 0.0009765625, expected -0.946033775806427 but got -0.935546875
+[FAIL] sin float32 4D tensor
+  assert_array_approx_equals: test sin float32 property 0, expected -0.946033775806427 +/- 0.0009765625, expected -0.946033775806427 but got -0.935546875
+[FAIL] sin float32 5D tensor
+  assert_array_approx_equals: test sin float32 property 0, expected -0.946033775806427 +/- 0.0009765625, expected -0.946033775806427 but got -0.935546875
+Harness: the test ran to completion.
+

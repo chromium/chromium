@@ -147,7 +147,7 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
 
   // Called when the corresponding renderer process notifies that the main
   // thread debugger is paused or resumed.
-  // TODO(https://crbug.com/1449114): Remove this method when we collect enough
+  // TODO(crbug.com/40269649): Remove this method when we collect enough
   // data to understand how likely that situation could happen.
   virtual void MainThreadDebuggerPaused();
   virtual void MainThreadDebuggerResumed();

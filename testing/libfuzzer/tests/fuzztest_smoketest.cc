@@ -11,3 +11,8 @@ static void StringsAlwaysOccupyPositiveSpace(std::string input) {
 }
 
 FUZZ_TEST(FuzzTestSmokeTest, StringsAlwaysOccupyPositiveSpace);
+
+// Define an empty test so that on platforms where `FUZZ_TEST` is compiled away,
+// there exists at least one test to run. Otherwise, testing infrastructure
+// may complain that there are no tests to run in the binary.
+TEST(FuzzTestSmokeTest, Nop) {}

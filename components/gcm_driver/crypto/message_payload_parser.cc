@@ -4,8 +4,10 @@
 
 #include "components/gcm_driver/crypto/message_payload_parser.h"
 
-#include "base/big_endian.h"
-#include "base/strings/string_piece.h"
+#include <string_view>
+
+#include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"
 
 namespace gcm {
@@ -28,7 +30,7 @@ constexpr size_t kMinimumMessageSize =
 
 }  // namespace
 
-MessagePayloadParser::MessagePayloadParser(base::StringPiece message) {
+MessagePayloadParser::MessagePayloadParser(std::string_view message) {
   if (message.size() < kMinimumMessageSize) {
     failure_reason_ = GCMDecryptionResult::INVALID_BINARY_HEADER_PAYLOAD_LENGTH;
     return;
@@ -37,8 +39,7 @@ MessagePayloadParser::MessagePayloadParser(base::StringPiece message) {
   salt_ = std::string(message.substr(0, kSaltSize));
   message.remove_prefix(kSaltSize);
 
-  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(message.data()),
-                      &record_size_);
+  record_size_ = base::U32FromBigEndian(base::as_byte_span(message).first<4>());
   message.remove_prefix(sizeof(record_size_));
 
   if (record_size_ < kMinimumRecordSize) {
@@ -46,9 +47,8 @@ MessagePayloadParser::MessagePayloadParser(base::StringPiece message) {
     return;
   }
 
-  uint8_t public_key_length;
-  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(message.data()),
-                      &public_key_length);
+  uint8_t public_key_length =
+      base::U8FromBigEndian(base::as_byte_span(message).first<1>());
   message.remove_prefix(sizeof(public_key_length));
 
   if (public_key_length != kUncompressedPointSize) {

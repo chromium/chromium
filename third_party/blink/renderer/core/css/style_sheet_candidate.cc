@@ -86,7 +86,7 @@ StyleSheetCandidate::Type StyleSheetCandidate::TypeOf(Node& node) {
       return kHTMLStyle;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return kInvalid;
   }
 
@@ -94,7 +94,7 @@ StyleSheetCandidate::Type StyleSheetCandidate::TypeOf(Node& node) {
     return kSVGStyle;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kInvalid;
 }
 
@@ -109,7 +109,7 @@ StyleSheet* StyleSheetCandidate::Sheet() const {
     case kPi:
       return To<ProcessingInstruction>(GetNode()).sheet();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

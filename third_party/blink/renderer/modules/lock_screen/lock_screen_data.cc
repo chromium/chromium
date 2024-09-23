@@ -18,30 +18,22 @@ LockScreenData::LockScreenData(LocalDOMWindow& window)
 
 LockScreenData::~LockScreenData() = default;
 
-ScriptPromise LockScreenData::getLockScreenData(ScriptState* script_state,
-                                                LocalDOMWindow& window) {
+ScriptPromise<LockScreenData> LockScreenData::getLockScreenData(
+    ScriptState* script_state,
+    LocalDOMWindow& window) {
   LockScreenData* supplement =
       Supplement<LocalDOMWindow>::From<LockScreenData>(window);
   if (!supplement) {
     supplement = MakeGarbageCollected<LockScreenData>(window);
     ProvideTo(window, supplement);
   }
-  return supplement->GetLockScreenData(script_state);
+  return ToResolvedPromise<LockScreenData>(script_state, supplement);
 }
 
-ScriptPromise LockScreenData::GetLockScreenData(ScriptState* script_state) {
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-
-  resolver->Resolve(this);
-  return promise;
-}
-
-ScriptPromiseTyped<IDLSequence<IDLString>> LockScreenData::getKeys(
+ScriptPromise<IDLSequence<IDLString>> LockScreenData::getKeys(
     ScriptState* script_state) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<IDLString>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<IDLString>>>(
           script_state);
   auto promise = resolver->Promise();
 
@@ -55,36 +47,38 @@ ScriptPromiseTyped<IDLSequence<IDLString>> LockScreenData::getKeys(
   return promise;
 }
 
-ScriptPromise LockScreenData::getData(ScriptState* script_state,
-                                      const String& key) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromise<IDLAny> LockScreenData::getData(ScriptState* script_state,
+                                              const String& key) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+  auto promise = resolver->Promise();
 
   // TODO(crbug.com/1006642): This should call out to a mojo service instead.
   auto it = fake_data_store_.find(key);
   if (it == fake_data_store_.end()) {
     resolver->Resolve();
   } else {
-    resolver->Resolve(it->value);
+    resolver->Resolve(V8String(script_state->GetIsolate(), it->value));
   }
   return promise;
 }
 
-ScriptPromise LockScreenData::setData(ScriptState* script_state,
-                                      const String& key,
-                                      const String& data) {
+ScriptPromise<IDLUndefined> LockScreenData::setData(ScriptState* script_state,
+                                                    const String& key,
+                                                    const String& data) {
   // TODO(crbug.com/1006642): This should call out to a mojo service instead.
   fake_data_store_.Set(key, data);
 
-  return ScriptPromise::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromise LockScreenData::deleteData(ScriptState* script_state,
-                                         const String& key) {
+ScriptPromise<IDLUndefined> LockScreenData::deleteData(
+    ScriptState* script_state,
+    const String& key) {
   // TODO(crbug.com/1006642): This should call out to a mojo service instead.
   fake_data_store_.erase(key);
 
-  return ScriptPromise::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 void LockScreenData::Trace(Visitor* visitor) const {

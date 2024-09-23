@@ -8,35 +8,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "disable_3d_apis": {
-            "default_value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "Disable3DAPIs": false
-        },
-        "prefs": {
-          "disable_3d_apis": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "Disable3DAPIs": true
-        },
-        "prefs": {
-          "disable_3d_apis": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "disable_3d_apis",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

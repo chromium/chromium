@@ -82,6 +82,7 @@ cast_source_set("runtime_service_impl") {
     ":metrics_recorder",
     "//base",
     "//chromecast:chromecast_buildflags",
+    "//chromecast/base:cast_version",
     "//chromecast/browser",
     "//chromecast/cast_core:cast_core_switches",
     "//chromecast/cast_core/runtime/browser/url_rewrite",
@@ -147,6 +148,27 @@ cast_source_set("browser_simple") {
   deps = [
     ":browser",
     "//chromecast/common:cors_exempt_headers",
+  ]
+}
+
+cast_source_set("browser_starboard") {
+  sources = [
+    "cast_runtime_content_browser_client_starboard.cc",
+    "cast_runtime_content_browser_client_starboard.h",
+    "cast_runtime_content_browser_client_starboard_factory.cc",
+  ]
+  deps = [
+    ":browser",
+    "//base",
+    "//chromecast/common:cors_exempt_headers",
+    "//chromecast/media/cdm",
+    "//chromecast/media/cdm:cdm_origin_provider",
+    "//chromecast/media/common:media_resource_tracker",
+    "//chromecast/service",
+    "//chromecast/starboard/media/cdm:starboard_decryptor_cast",
+    "//media",
+    "//media/mojo/mojom",
+    "//media/mojo/services",
   ]
 }
 

@@ -7,6 +7,8 @@
 #include <surface-augmenter-client-protocol.h>
 #include <wayland-util.h>
 
+#include <cstdint>
+
 #include "base/logging.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -16,11 +18,16 @@ namespace ui {
 namespace {
 constexpr uint32_t kMinVersion = 1;
 constexpr uint32_t kMaxVersion =
-    AUGMENTED_SURFACE_SET_FRAME_TRACE_ID_SINCE_VERSION;
+    AUGMENTED_SURFACE_SET_FRAME_TRACE_ID_SINCE_VERSION + 1;
 
 // The minimum version for `augmented_surface_set_rounded_corners_clip_bounds`
 // with a local coordinates bounds.
 constexpr uint32_t kRoundedClipBoundsInLocalSurfaceCoordinatesSinceVersion = 9;
+// The minimum version for augmented_surface to be compositing-only is 1 above
+// the version that introduced SET_FRAME_TRACE_ID because there was no new
+// interface added in that version uprev.
+constexpr uint32_t kAugmentedSurfaceIsCompositingOnly =
+    AUGMENTED_SURFACE_SET_FRAME_TRACE_ID_SINCE_VERSION + 1;
 }
 
 // static
@@ -61,11 +68,6 @@ bool SurfaceAugmenter::SupportsSubpixelAccuratePosition() const {
          SURFACE_AUGMENTER_GET_AUGMENTED_SUBSURFACE_SINCE_VERSION;
 }
 
-bool SurfaceAugmenter::SupportsClipRect() const {
-  return GetSurfaceAugmentorVersion() >=
-         AUGMENTED_SUB_SURFACE_SET_CLIP_RECT_SINCE_VERSION;
-}
-
 bool SurfaceAugmenter::SupportsClipRectOnAugmentedSurface() const {
   return GetSurfaceAugmentorVersion() >=
          AUGMENTED_SURFACE_SET_CLIP_RECT_SINCE_VERSION;
@@ -79,6 +81,10 @@ bool SurfaceAugmenter::SupportsTransform() const {
 bool SurfaceAugmenter::NeedsRoundedClipBoundsInLocalSurfaceCoordinates() const {
   return GetSurfaceAugmentorVersion() >=
          kRoundedClipBoundsInLocalSurfaceCoordinatesSinceVersion;
+}
+
+bool SurfaceAugmenter::SupportsCompositingOnlySurface() const {
+  return GetSurfaceAugmentorVersion() >= kAugmentedSurfaceIsCompositingOnly;
 }
 
 uint32_t SurfaceAugmenter::GetSurfaceAugmentorVersion() const {

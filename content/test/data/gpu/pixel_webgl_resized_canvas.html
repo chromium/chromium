@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1">
+<title>WebGL Canvas Resize Test</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+}
+</style>
+<script>
+let g_swapsBeforeAck = 15;
+
+function sendResult(status) {
+  if (window.domAutomationController) {
+    window.domAutomationController.send(status);
+  } else {
+    console.log(status);
+  }
+}
+
+function waitForFinish() {
+  if (g_swapsBeforeAck == 0) {
+    sendResult("SUCCESS");
+  } else {
+    g_swapsBeforeAck--;
+    window.requestAnimationFrame(waitForFinish);
+  }
+}
+
+function main() {
+  let canvas = document.getElementById("c");
+  let gl = canvas.getContext("webgl", {preserveDrawingBuffer: true});
+  gl.enable(gl.SCISSOR_TEST);
+  gl.scissor(0, 0, 50, 50);
+  gl.clearColor(0, 0, 1, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  setTimeout(() => {
+    canvas.width = 150;
+    waitForFinish();
+  }, 10);
+}
+</script>
+</head>
+<body onload="main()" class="nomargin">
+<canvas id="c" width="300" height="300" class="nomargin" style="background-color:red"></canvas>
+</body>
+</html>

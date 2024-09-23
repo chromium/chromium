@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/bluetooth_delegate.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -33,10 +34,11 @@ class BluetoothDeviceCredentialsView : public views::DialogDelegateView,
   void InitControls(const std::u16string& device_identifier);
 
   // View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // DialogDelegateView:
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   std::u16string GetWindowTitle() const override;
 
   // WidgetDelegate:

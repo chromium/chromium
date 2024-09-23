@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Kiosk.AppService.Launch.AppReadiness" enum="AppReadiness"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.AppService.WebApp.InstallResult"
-    enum="WebAppInstallResultCode" expires_after="2024-08-01">
+    enum="WebAppInstallResultCode" expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.AppService.WebApp.IsPlaceholder" enum="BooleanYesNo"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.ChromeApp.ExtensionUpdateDuration.{Result}" units="ms"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.ChromeApp.ExtensionUpdateError"
-    enum="ExtensionInstallationFailureReason" expires_after="2024-08-01">
+    enum="ExtensionInstallationFailureReason" expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.ChromeApp.ExternalUpdateSuccess" enum="BooleanYesNo"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -88,7 +88,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.ChromeApp.PrimaryAppInSessionUpdate" units="times"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.ChromeApp.PrimaryAppInstallError"
-    enum="KioskPrimaryAppDownloadResult" expires_after="2024-08-01">
+    enum="KioskPrimaryAppDownloadResult" expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.ChromeApp.PrimaryAppUpdateResult"
-    enum="KioskPrimaryAppDownloadResult" expires_after="2024-08-01">
+    enum="KioskPrimaryAppDownloadResult" expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -118,7 +118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.ChromeProcessCount" units="processes"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>vkovalova@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -127,8 +127,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Kiosk.DeprecatedArcKioskUsers"
+    enum="DeprecatedArcKioskUserStatus" expires_after="2025-09-01">
+  <owner>pbond@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    Reports &quot;hidden&quot; when the login screen hides a ARC kiosk user.
+    Reports &quot;deleted&quot; when the login screen attempts to delete an ARC
+    kiosk user. Recorded on startup.
+  </summary>
+</histogram>
+
 <histogram name="Kiosk.DiskUsagePercentage" units="%"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>vkovalova@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -138,7 +149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Extensions.InstallDuration" units="ms"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -148,7 +159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Extensions.InstallError.{InstallSource}"
-    enum="ExtensionInstallationFailureReason" expires_after="2024-08-01">
+    enum="ExtensionInstallationFailureReason" expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -162,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Extensions.InstallTimedOut" enum="BooleanYesNo"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -173,14 +184,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Launch.CryptohomeFailure" enum="LoginFailureReason"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>xiyuan@chromium.org</owner>
   <owner>apotapchuk@chromium.org</owner>
   <summary>Tracks cryptohome failure during kiosk launch.</summary>
 </histogram>
 
 <histogram name="Kiosk.Launch.Error" enum="KioskLaunchError"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>xiyuan@chromium.org</owner>
   <owner>apotapchuk@chromium.org</owner>
   <summary>
@@ -190,19 +201,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.LaunchDuration.{KioskType}" units="ms"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>Records the total duration it takes to launch a kiosk app.</summary>
   <token key="KioskType">
-    <variant name="Arc"/>
     <variant name="ChromeApp"/>
     <variant name="Web"/>
   </token>
 </histogram>
 
 <histogram name="Kiosk.LaunchType" enum="KioskLaunchType"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>xiyuan@chromium.org</owner>
   <owner>aghuie@chromium.org</owner>
   <summary>
@@ -212,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.NewBrowserWindow" enum="KioskBrowserWindowType"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -223,7 +233,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Kiosk.RamUsagePercentage" units="%" expires_after="2024-08-01">
+<histogram name="Kiosk.RamUsagePercentage" units="%" expires_after="2025-06-15">
   <owner>vkovalova@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -233,7 +243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SecondaryApps.InstallSuccessful" enum="BooleanYesNo"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -243,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Session.CountPerDay" units="sessions"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
@@ -253,7 +263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Session.LowDiskHighestSeverity"
-    enum="KioskLowDiskSeverity" expires_after="2024-08-01">
+    enum="KioskLowDiskSeverity" expires_after="2025-06-15">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
@@ -264,7 +274,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Session.LowDiskSeverity" enum="KioskLowDiskSeverity"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
@@ -274,7 +284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.Session.NetworkDrops" units="network drops"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
@@ -284,7 +294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SessionDuration.Crashed" units="ms"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
@@ -301,7 +311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SessionDuration.Normal" units="ms"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
@@ -313,7 +323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SessionDurationInDays.Crashed" units="days"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
@@ -328,7 +338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SessionDurationInDays.Normal" units="days"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
@@ -338,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SessionRestart.InternetAccess"
-    enum="KioskInternetAccessInfo" expires_after="2024-08-01">
+    enum="KioskInternetAccessInfo" expires_after="2025-06-15">
   <owner>irfedorova@google.com</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -350,7 +360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SessionRestart.Reason" enum="KioskSessionRestartReason"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>irfedorova@google.com</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -361,7 +371,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SessionRestart.UserActivity" enum="KioskUserActivity"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>irfedorova@google.com</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -373,7 +383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SessionState" enum="KioskSessionState"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>
@@ -384,7 +394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SwapUsagePercentage" units="%"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>vkovalova@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -394,7 +404,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.WebApp.InstallError" enum="WebAppInstallResultCode"
-    expires_after="2024-08-01">
+    expires_after="2025-06-15">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>

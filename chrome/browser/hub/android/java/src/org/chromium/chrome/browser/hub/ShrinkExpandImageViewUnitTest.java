@@ -43,7 +43,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 
 /** Tests for {@link RunOnNextLayoutDelegate}. */
-// TODO(crbug/1495731): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
+// TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(Mode.PAUSED)
 public class ShrinkExpandImageViewUnitTest {

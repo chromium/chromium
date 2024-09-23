@@ -37,7 +37,7 @@ class AssistivePrefsTest : public ::testing::Test {
 };
 
 TEST_F(AssistivePrefsTest, PredictiveWritingIsEnabledByDefault) {
-  EXPECT_TRUE(IsPredictiveWritingPrefEnabled(profile_.GetPrefs(), kUsEnglish));
+  EXPECT_TRUE(IsPredictiveWritingPrefEnabled(*profile_.GetPrefs(), kUsEnglish));
 }
 
 TEST_F(AssistivePrefsTest,
@@ -45,14 +45,15 @@ TEST_F(AssistivePrefsTest,
   SetPredictiveWritingEnabled(profile_, true);
   SetManagedPkPredictiveWritingAllowed(profile_, false);
 
-  EXPECT_FALSE(IsPredictiveWritingPrefEnabled(profile_.GetPrefs(), kUsEnglish));
+  EXPECT_FALSE(
+      IsPredictiveWritingPrefEnabled(*profile_.GetPrefs(), kUsEnglish));
 }
 
 TEST_F(AssistivePrefsTest, WhenAdminAllowsPredictiveWritingItCanBeEnabled) {
   SetPredictiveWritingEnabled(profile_, true);
   SetManagedPkPredictiveWritingAllowed(profile_, true);
 
-  EXPECT_TRUE(IsPredictiveWritingPrefEnabled(profile_.GetPrefs(), kUsEnglish));
+  EXPECT_TRUE(IsPredictiveWritingPrefEnabled(*profile_.GetPrefs(), kUsEnglish));
 }
 
 }  // namespace

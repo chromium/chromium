@@ -11,8 +11,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.site_settings.CookieControlsServiceBridge;
 import org.chromium.chrome.browser.site_settings.CookieControlsServiceBridge.CookieControlsServiceObserver;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -53,11 +53,19 @@ public class IncognitoCookieControlsManager
             CookieControlsEnforcement.NO_ENFORCEMENT;
 
     /** Initializes the IncognitoCookieControlsManager explicitly. */
-    public void initialize() {
+    public void initialize(Profile profile) {
         if (mIsInitialized) return;
 
-        mServiceBridge = new CookieControlsServiceBridge(this);
+        mServiceBridge = new CookieControlsServiceBridge(profile, this);
         mIsInitialized = true;
+    }
+
+    /** Cleans up this class and any dependencies. */
+    public void destroy() {
+        if (mServiceBridge != null) {
+            mServiceBridge.destroy();
+            mServiceBridge = null;
+        }
     }
 
     /**
@@ -102,10 +110,7 @@ public class IncognitoCookieControlsManager
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        boolean isCookieToggle =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP)
-                        ? buttonView.getId() == R.id.revamped_cookie_controls_card_toggle
-                        : buttonView.getId() == R.id.cookie_controls_card_toggle;
+        boolean isCookieToggle = buttonView.getId() == R.id.cookie_controls_card_toggle;
         if (isChecked != mChecked && isCookieToggle) {
             mServiceBridge.handleCookieControlsToggleChanged(isChecked);
         }
@@ -119,7 +124,7 @@ public class IncognitoCookieControlsManager
                     SingleCategorySettings.EXTRA_CATEGORY,
                     SiteSettingsCategory.preferenceKey(
                             SiteSettingsCategory.Type.THIRD_PARTY_COOKIES));
-            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+            SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
             settingsLauncher.launchSettingsActivity(
                     v.getContext(), SingleCategorySettings.class, fragmentArguments);
         }

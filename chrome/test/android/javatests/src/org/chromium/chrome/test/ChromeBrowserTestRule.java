@@ -41,6 +41,11 @@ public class ChromeBrowserTestRule implements TestRule {
         return mSigninTestRule.addAccount(accountName);
     }
 
+    /** Adds and signs in an account with the default name without sync consent. */
+    public CoreAccountInfo addTestAccountThenSignin() {
+        return mSigninTestRule.addTestAccountThenSignin();
+    }
+
     /** Add and sign in an account with the default name. */
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync() {
         return mSigninTestRule.addTestAccountThenSigninAndEnableSync();

@@ -1,0 +1,54 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("branding") {
+  sources = [
+    "branding_coordinator.h",
+    "branding_coordinator.mm",
+    "branding_mediator.h",
+    "branding_mediator.mm",
+  ]
+  deps = [
+    ":branding_ui",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+  ]
+}
+
+source_set("branding_ui") {
+  sources = [
+    "branding_consumer.h",
+    "branding_view_controller.h",
+    "branding_view_controller.mm",
+    "branding_view_controller_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "branding_view_controller_egtest.mm" ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/ui_bundled/manual_fill:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+}

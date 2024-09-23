@@ -36,8 +36,9 @@ TEST(HttpBasicStateTest, ReleaseConnectionWorks) {
   ClientSocketHandle* const handle_ptr = handle.get();
   // Ownership of |handle| is passed to |state|.
   HttpBasicState state(std::move(handle), false);
-  const std::unique_ptr<ClientSocketHandle> released_connection(
+  const std::unique_ptr<StreamSocketHandle> released_connection(
       state.ReleaseConnection());
+  EXPECT_EQ(nullptr, state.parser());
   EXPECT_EQ(nullptr, state.connection());
   EXPECT_EQ(handle_ptr, released_connection.get());
 }
@@ -57,15 +58,6 @@ TEST(HttpBasicStateTest, TrafficAnnotationStored) {
   state.Initialize(&request_info, LOW, NetLogWithSource());
   EXPECT_EQ(TRAFFIC_ANNOTATION_FOR_TESTS,
             NetworkTrafficAnnotationTag(state.traffic_annotation()));
-}
-
-TEST(HttpBasicStateTest, DeleteParser) {
-  HttpBasicState state(std::make_unique<ClientSocketHandle>(), false);
-  const HttpRequestInfo request_info;
-  state.Initialize(&request_info, LOW, NetLogWithSource());
-  EXPECT_TRUE(state.parser());
-  state.DeleteParser();
-  EXPECT_EQ(nullptr, state.parser());
 }
 
 TEST(HttpBasicStateTest, GenerateRequestLineNoProxy) {

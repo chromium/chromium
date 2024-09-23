@@ -12,7 +12,6 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/view_observer.h"
 
 namespace views {
 class BoxLayoutView;
@@ -21,7 +20,12 @@ class Label;
 
 namespace ash {
 
+namespace {
+class PanelRowAnimator;
+}
+
 class FocusModeCountdownView;
+class FocusModeSoundsView;
 class FocusModeTaskView;
 class HoverHighlightView;
 class IconButton;
@@ -32,18 +36,24 @@ class SystemTextfield;
 // This view displays the focus panel settings that a user can set.
 class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
                                          public FocusModeController::Observer,
-                                         public views::ViewObserver,
                                          public ClockObserver {
   METADATA_HEADER(FocusModeDetailedView, TrayDetailedView)
 
  public:
+  // Ids to easily find child views in `FocusModeDetailedView`. Unique only
+  // within the `FocusModeDetailedView`.
+  enum ViewId {
+    kTimerView = 1000,
+    kTaskView,
+    kSoundView,
+    kTimerTextfield,
+    kToggleFocusButton
+  };
+
   explicit FocusModeDetailedView(DetailedViewDelegate* delegate);
   FocusModeDetailedView(const FocusModeDetailedView&) = delete;
   FocusModeDetailedView& operator=(const FocusModeDetailedView&) = delete;
   ~FocusModeDetailedView() override;
-
-  // views::ViewObserver:
-  void OnViewBoundsChanged(View* observed_view) override;
 
   // ClockObserver:
   void OnDateFormatChanged() override;
@@ -61,7 +71,7 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   void AddedToWidget() override;
 
   // FocusModeController::Observer:
-  void OnFocusModeChanged(bool in_focus_session) override;
+  void OnFocusModeChanged(FocusModeSession::State session_state) override;
   void OnTimerTick(const FocusModeSession::Snapshot& session_snapshot) override;
   void OnActiveSessionDurationChanged(
       const FocusModeSession::Snapshot& session_snapshot) override;
@@ -72,6 +82,9 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   // Updates the accessibility text of the toggle button based on whether focus
   // is in session and the current session duration.
   void UpdateToggleButtonAccessibility(bool in_focus_session);
+
+  // Updates the accessibility text of the timer adjustment buttons.
+  void UpdateTimerAdjustmentButtonAccessibility();
 
   // Creates the row with the timer and functionality to add time to the focus
   // session.
@@ -90,11 +103,12 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   // allow the user to select a task. Once the user enters a task in the
   // textfield or selects a task from the list, this view only shows the
   // selected saved task item view and the header.
-  void CreateTaskView();
+  void CreateTaskView(bool is_network_connected);
 
-  // Performs an animation to shift the visible container views below
-  // `task_view_container_`.
-  void OnTaskViewAnimate(const int shift_height);
+  // Creates the container `focus_mode_sounds_view_`.
+  void CreateSoundsView(
+      const base::flat_set<focus_mode_util::SoundType>& sound_sections,
+      bool is_network_connected);
 
   // Creates the DND rounded container. This view will be visible only when
   // there is no active focus session. The toggle button in this view will
@@ -104,15 +118,6 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
 
   // Handles clicks on the do not disturb toggle button.
   void OnDoNotDisturbToggleClicked();
-
-  // Creates a feedback button that is added to the bottom of the scrollable
-  // content.
-  // TODO(b/311035012): This is used for dogfooding and will be removed in
-  // M124/launch.
-  void CreateFeedbackButton();
-
-  // Opens the feedback form with preset information for focus mode.
-  void OnFeedbackButtonPressed();
 
   // Called whenever `clock_timer_` finishes running to update the subheading
   // and reset the clock timer for the next minute.
@@ -155,15 +160,19 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   // The decrement and increment buttons in the `timer_setting_view_`.
   raw_ptr<IconButton> timer_decrement_button_ = nullptr;
   raw_ptr<IconButton> timer_increment_button_ = nullptr;
+  // The visual "minutes" label that pairs with the `timer_textfield_` timer
+  // duration.
+  raw_ptr<views::Label> minutes_label_ = nullptr;
   // A label that displays the end time of the focus session when focus is
   // not active.
   raw_ptr<views::Label> end_time_label_ = nullptr;
 
-  // Records the height of the `task_view_container_`.
-  int task_view_container_height_ = 0;
   // The view contains a header view and a `focus_mode_task_view_`.
   raw_ptr<RoundedContainer> task_view_container_ = nullptr;
+  std::unique_ptr<PanelRowAnimator> task_view_animator_;
   raw_ptr<FocusModeTaskView> focus_mode_task_view_ = nullptr;
+  raw_ptr<FocusModeSoundsView> focus_mode_sounds_view_ = nullptr;
+  std::unique_ptr<PanelRowAnimator> sounds_view_animator_;
 
   // This view contains a toggle for turning on/off DND.
   raw_ptr<RoundedContainer> do_not_disturb_view_ = nullptr;

@@ -45,7 +45,7 @@ std::unique_ptr<MultiplexedChannel> MultiplexedChannelImpl::Factory::Create(
     if (!success) {
       PA_LOG(ERROR) << "MultiplexedChannelImpl::Factory::Create(): "
                     << "Failed to add initial client.";
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -145,7 +145,7 @@ void MultiplexedChannelImpl::OnClientDisconnected(
   if (num_entries_deleted != 1u) {
     PA_LOG(ERROR) << "MultiplexedChannelImpl::OnClientDisconnected(): Client "
                   << "disconnected, but no entry in the map existed.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (!id_to_proxy_map_.empty())

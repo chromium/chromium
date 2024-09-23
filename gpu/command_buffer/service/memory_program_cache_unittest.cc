@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/service/memory_program_cache.h"
 
 #include <stddef.h>
@@ -9,6 +14,7 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -108,13 +114,15 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
   void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override {}
   void ScheduleGrContextCleanup() override {}
   void HandleReturnData(base::span<const uint8_t> data) override {}
+  bool ShouldYield() override { return false; }
 
   int32_t shader_cache_count() { return shader_cache_count_; }
   const std::string& shader_cache_shader() { return shader_cache_shader_; }
 
  protected:
   void SetUp() override {
-    GpuServiceTest::SetUpWithGLVersion("3.0", "GL_ARB_get_program_binary");
+    GpuServiceTest::SetUpWithGLVersion("OpenGL ES 3.0",
+                                       "GL_OES_get_program_binary");
 
     vertex_shader_ = shader_manager_.CreateShader(kVertexShaderClientId,
                                                   kVertexShaderServiceId,
@@ -542,14 +550,12 @@ TEST_F(MemoryProgramCacheTest, MemoryProgramCacheEviction) {
   fragment_shader_->set_source("al sdfkjdk");
   TestHelper::SetShaderStates(gl_.get(), fragment_shader_, true);
 
-  std::unique_ptr<char[]> bigTestBinary =
-      std::unique_ptr<char[]>(new char[kEvictingBinaryLength]);
+  auto bigTestBinary = base::HeapArray<char>::Uninit(kEvictingBinaryLength);
   for (size_t i = 0; i < kEvictingBinaryLength; ++i) {
     bigTestBinary[i] = i % 250;
   }
-  ProgramBinaryEmulator emulator2(kEvictingBinaryLength,
-                                  kFormat,
-                                  bigTestBinary.get());
+  ProgramBinaryEmulator emulator2(kEvictingBinaryLength, kFormat,
+                                  bigTestBinary.data());
 
   SetExpectationsForSaveLinkedProgram(kEvictingProgramId, &emulator2);
   cache_->SaveLinkedProgram(kEvictingProgramId, vertex_shader_,

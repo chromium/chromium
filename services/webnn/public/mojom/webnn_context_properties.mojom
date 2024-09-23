@@ -1,0 +1,178 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn.mojom;
+
+// Represents the `MLInputOperandLayout` that specifies the layout format of
+// the input tensor. `kChannelsFirst` means `nchw` (batches, channels, height,
+// width), `kChannelsLast` means `nhwc` (batches, height, width, channels).
+// The type is used to get the spatial dimension from input tensor, thus safe to
+// represent as enum.
+enum InputOperandLayout {
+  kChannelsFirst,
+  kChannelsLast,
+};
+
+// Represents supported resample2d axes for this context.
+// kChannelsFirst means axes = [2,3], kChannelsLast means axes = [1,2],
+// kAny means any arbitrary axes.
+enum Resample2DAxes {
+  kAny,
+  kChannelsFirst,
+  kChannelsLast,
+};
+
+struct SupportedDataTypes {
+  bool float32;
+  bool float16;
+  bool int32;
+  bool uint32;
+  bool int64;
+  bool uint64;
+  bool int8;
+  bool uint8;
+};
+
+// Represents the data type limits exposed through
+// `MLContext::opSupportLimits()`.
+// Keep the order as the same as build methods of `MLGraphBuilder`, for
+// operator with multiple parameters, maintain the parameter positions order.
+struct DataTypeLimits {
+  SupportedDataTypes input;
+  SupportedDataTypes constant;
+
+  // ArgMin/Max.
+  SupportedDataTypes arg_min_max_input;
+  SupportedDataTypes arg_min_max_output;
+
+  SupportedDataTypes batch_normalization_input;
+  SupportedDataTypes cast_input;
+  SupportedDataTypes clamp_input;
+  SupportedDataTypes concat_inputs;
+  SupportedDataTypes conv2d_input;
+  SupportedDataTypes conv_transpose2d_input;
+  SupportedDataTypes cumulative_sum_input;
+
+  // DequantizeLinear.
+  SupportedDataTypes dequantize_linear_input;
+  SupportedDataTypes dequantize_linear_scale;
+
+  // Element-wise binary ops.
+  SupportedDataTypes add_input;
+  SupportedDataTypes sub_input;
+  SupportedDataTypes mul_input;
+  SupportedDataTypes div_input;
+  SupportedDataTypes max_input;
+  SupportedDataTypes min_input;
+  SupportedDataTypes pow_input;
+
+  // Element-wise logical ops.
+  SupportedDataTypes equal_input;
+  SupportedDataTypes greater_input;
+  SupportedDataTypes greater_or_equal_input;
+  SupportedDataTypes lesser_input;
+  SupportedDataTypes lesser_or_equal_input;
+  SupportedDataTypes logical_not_input;
+  SupportedDataTypes logical_output;
+
+  // Element-wise unary ops.
+  SupportedDataTypes abs_input;
+  SupportedDataTypes ceil_input;
+  SupportedDataTypes cos_input;
+  SupportedDataTypes erf_input;
+  SupportedDataTypes exp_input;
+  SupportedDataTypes floor_input;
+  SupportedDataTypes identity_input;
+  SupportedDataTypes log_input;
+  SupportedDataTypes neg_input;
+  SupportedDataTypes reciprocal_input;
+  SupportedDataTypes sign_input;
+  SupportedDataTypes sin_input;
+  SupportedDataTypes sqrt_input;
+  SupportedDataTypes tan_input;
+
+  SupportedDataTypes elu_input;
+  SupportedDataTypes expand_input;
+
+  // Gather.
+  SupportedDataTypes gather_input;
+  SupportedDataTypes gather_indices;
+
+  // GatherElements.
+  SupportedDataTypes gather_elements_input;
+  SupportedDataTypes gather_elements_indices;
+
+  // GatherND.
+  SupportedDataTypes gather_nd_input;
+  SupportedDataTypes gather_nd_indices;
+
+  SupportedDataTypes gelu_input;
+  SupportedDataTypes gemm_input;
+  SupportedDataTypes gru_input;
+  SupportedDataTypes gru_cell_input;
+  SupportedDataTypes hard_sigmoid_input;
+  SupportedDataTypes hard_swish_input;
+  SupportedDataTypes instance_normalization_input;
+  SupportedDataTypes layer_normalization_input;
+  SupportedDataTypes leaky_relu_input;
+  SupportedDataTypes linear_input;
+  SupportedDataTypes lstm_input;
+  SupportedDataTypes lstm_cell_input;
+  SupportedDataTypes matmul_input;
+  SupportedDataTypes pad_input;
+
+  // Pool2d.
+  SupportedDataTypes average_pool2d_input;
+  SupportedDataTypes l2_pool2d_input;
+  SupportedDataTypes max_pool2d_input;
+
+  SupportedDataTypes prelu_input;
+
+  // QuantizeLinear.
+  SupportedDataTypes quantize_linear_input;
+  SupportedDataTypes quantize_linear_zero_point;
+
+  // Reduction ops.
+  SupportedDataTypes reduce_l1_input;
+  SupportedDataTypes reduce_l2_input;
+  SupportedDataTypes reduce_log_sum_input;
+  SupportedDataTypes reduce_log_sum_exp_input;
+  SupportedDataTypes reduce_max_input;
+  SupportedDataTypes reduce_mean_input;
+  SupportedDataTypes reduce_min_input;
+  SupportedDataTypes reduce_product_input;
+  SupportedDataTypes reduce_sum_input;
+  SupportedDataTypes reduce_sum_square_input;
+
+  SupportedDataTypes relu_input;
+  SupportedDataTypes resample2d_input;
+  SupportedDataTypes reshape_input;
+
+  // ScatterND.
+  SupportedDataTypes scatter_nd_input;
+  SupportedDataTypes scatter_nd_indices;
+
+  SupportedDataTypes sigmoid_input;
+  SupportedDataTypes slice_input;
+  SupportedDataTypes softmax_input;
+  SupportedDataTypes softplus_input;
+  SupportedDataTypes softsign_input;
+  SupportedDataTypes split_input;
+  SupportedDataTypes tanh_input;
+  SupportedDataTypes tile_input;
+  SupportedDataTypes transpose_input;
+  SupportedDataTypes triangular_input;
+
+  // Where.
+  SupportedDataTypes where_condition;
+  SupportedDataTypes where_value;
+};
+
+// Represents properties of the `WebNNContext` implementation that has been
+// provided.
+struct ContextProperties {
+  InputOperandLayout input_operand_layout;
+  Resample2DAxes resample_2d_axes;
+  DataTypeLimits data_type_limits;
+};

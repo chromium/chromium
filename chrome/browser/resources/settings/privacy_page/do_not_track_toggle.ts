@@ -11,7 +11,6 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 
 import {getTemplate} from './do_not_track_toggle.html.js';
@@ -45,19 +44,11 @@ export class SettingsDoNotTrackToggleElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
-
-      isCookiesUiV2_: {
-        type: Boolean,
-        value: () =>
-            (loadTimeData.getBoolean('isCookieSettingsUiAlignmentEnabled') ||
-             loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')),
-      },
     };
   }
 
   prefs: {enable_do_not_track: chrome.settingsPrivate.PrefObject};
   private showDialog_: boolean;
-  private isCookiesUiV2_: boolean;
 
   private onDomChange_() {
     if (this.showDialog_) {

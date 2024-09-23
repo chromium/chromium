@@ -2,7 +2,20 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
-INCLUDE PERFETTO MODULE common.slices;
+-- Checks if slice has an ancestor with provided name.
+CREATE PERFETTO FUNCTION _has_parent_slice_with_name(
+  -- Id of the slice to check parents of.
+  id INT,
+  -- Name of potential ancestor slice.
+  parent_name STRING)
+-- Whether `parent_name` is a name of an ancestor slice.
+RETURNS BOOL AS
+SELECT EXISTS(
+  SELECT 1
+  FROM ancestor_slice($id)
+  WHERE name = $parent_name
+  LIMIT 1
+);
 
 -- Returns the mojo ipc hash for a given task, looking it up from the
 -- argument of descendant ScopedSetIpcHash slice.
@@ -92,7 +105,7 @@ SELECT
 --
 -- Note: this might include messages received within a sync mojo call.
 -- TODO(altimin): This should use EXTEND_TABLE when it becomes available.
-CREATE TABLE _chrome_mojo_slices AS
+CREATE PERFETTO TABLE _chrome_mojo_slices AS
 WITH
 -- Select all new-style (post crrev.com/c/3270337) mojo slices and
 -- generate |task_name| for them.
@@ -140,17 +153,16 @@ old_non_associated_mojo_slices AS (
   FROM slice
   WHERE
     category GLOB "*toplevel*" AND name = "Connector::DispatchMessage"
-)
+),
+merged AS (
 -- Merge all mojo slices.
 SELECT * FROM new_mojo_slices
 UNION ALL
 SELECT * FROM old_associated_mojo_slices
 UNION ALL
-SELECT * FROM old_non_associated_mojo_slices;
-
--- As we lookup by ID on |_chrome_mojo_slices| table, add an index on
--- id to make lookups fast.
-CREATE INDEX _chrome_mojo_slices_idx ON _chrome_mojo_slices(id);
+SELECT * FROM old_non_associated_mojo_slices
+)
+SELECT * FROM merged ORDER BY id;
 
 -- This table contains a list of slices corresponding to the _representative_
 -- Chrome Java view operations.
@@ -165,7 +177,7 @@ CREATE INDEX _chrome_mojo_slices_idx ON _chrome_mojo_slices(id);
 --                                      capture toolbar screenshot.
 -- @column is_hardware_screenshot BOOL  Whether this slice is a part of accelerated
 --                                      capture toolbar screenshot.
-CREATE TABLE _chrome_java_views AS
+CREATE PERFETTO TABLE _chrome_java_views AS
 WITH
 -- .draw, .onLayout and .onMeasure parts of the java view names don't add much, strip them.
 java_slices_with_trimmed_names AS (
@@ -229,11 +241,11 @@ SELECT
   s1.*,
   -- While the parent slices are too generic to be used by themselves,
   -- they can provide some useful metadata.
-  has_parent_slice_with_name(
+  _has_parent_slice_with_name(
     s1.id,
     "ViewResourceAdapter:captureWithSoftwareDraw"
   ) AS is_software_screenshot,
-  has_parent_slice_with_name(
+  _has_parent_slice_with_name(
     s1.id,
     "ViewResourceAdapter:captureWithHardwareDraw"
   ) AS is_hardware_screenshot
@@ -350,7 +362,7 @@ LEFT JOIN root_slice_and_java_view_not_grouped java_view USING (id)
 GROUP BY root.id;
 
 -- A list of tasks executed by Chrome scheduler.
-CREATE TABLE _chrome_scheduler_tasks AS
+CREATE PERFETTO TABLE _chrome_scheduler_tasks AS
 SELECT
   id
 FROM slice
@@ -463,7 +475,7 @@ WHERE task.id = $slice_id;
 -- @column task_name STRING  Name for the given task.
 -- @column task_type STRING  Type of the task (e.g. "scheduler").
 -- @column scheduling_delay INT
-CREATE TABLE _chrome_tasks AS
+CREATE PERFETTO TABLE _chrome_tasks AS
 WITH
 -- Select slices from "toplevel" category which do not have another
 -- "toplevel" slice as ancestor. The possible cases include sync mojo messages
@@ -601,7 +613,7 @@ CREATE PERFETTO VIEW chrome_tasks(
   -- Alias of |slice.track_id|.
   track_id INT,
   -- Alias of |slice.category|.
-  category INT,
+  category STRING,
   -- Alias of |slice.arg_set_id|.
   arg_set_id INT,
   -- Alias of |slice.thread_ts|.

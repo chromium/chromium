@@ -87,6 +87,16 @@ static NSDateFormatter* CreateDateTimeFormatter(
   return formatter;
 }
 
+static inline String NormalizeWhitespace(const String& date_time_format) {
+  String normalized_date_time_format = date_time_format;
+  // Revert ICU 72 change that introduced U+202F instead of U+0020
+  // to separate time from AM/PM.
+  //
+  // TODO(https://crbug.com/1453047): Move this normalization to
+  // `//third_party/icu/` or `//third_party/icu/patches/`.
+  return normalized_date_time_format.Replace(0x202f, 0x20);
+}
+
 LocaleMac::LocaleMac(NSLocale* locale)
     : locale_(locale),
       gregorian_calendar_([[NSCalendar alloc]
@@ -219,21 +229,23 @@ String LocaleMac::ShortMonthFormat() {
 String LocaleMac::TimeFormat() {
   if (!time_format_with_seconds_.IsNull())
     return time_format_with_seconds_;
-  time_format_with_seconds_ = TimeFormatter().dateFormat;
+  time_format_with_seconds_ = NormalizeWhitespace(TimeFormatter().dateFormat);
   return time_format_with_seconds_;
 }
 
 String LocaleMac::ShortTimeFormat() {
   if (!time_format_without_seconds_.IsNull())
     return time_format_without_seconds_;
-  time_format_without_seconds_ = ShortTimeFormatter().dateFormat;
+  time_format_without_seconds_ =
+      NormalizeWhitespace(ShortTimeFormatter().dateFormat);
   return time_format_without_seconds_;
 }
 
 String LocaleMac::DateTimeFormatWithSeconds() {
   if (!date_time_format_with_seconds_.IsNull())
     return date_time_format_with_seconds_;
-  date_time_format_with_seconds_ = DateTimeFormatterWithSeconds().dateFormat;
+  date_time_format_with_seconds_ =
+      NormalizeWhitespace(DateTimeFormatterWithSeconds().dateFormat);
   return date_time_format_with_seconds_;
 }
 
@@ -241,7 +253,7 @@ String LocaleMac::DateTimeFormatWithoutSeconds() {
   if (!date_time_format_without_seconds_.IsNull())
     return date_time_format_without_seconds_;
   date_time_format_without_seconds_ =
-      DateTimeFormatterWithoutSeconds().dateFormat;
+      NormalizeWhitespace(DateTimeFormatterWithoutSeconds().dateFormat);
   return date_time_format_without_seconds_;
 }
 

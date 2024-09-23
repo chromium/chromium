@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
 import("//components/optimization_guide/features.gni")
+import("//device/vr/buildflags/buildflags.gni")
+import("//services/device/public/cpp/geolocation/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 source_set("permissions") {
@@ -54,21 +57,33 @@ source_set("permissions") {
     "quiet_notification_permission_ui_state.h",
   ]
 
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/permissions/system",
+    "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+  ]
+
   deps = [
     ":permissions_proto",
     "//chrome/browser:browser_process",
     "//chrome/browser/favicon",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profiles",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/search_engines",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/top_level_storage_access_api:permissions",
+    "//chrome/browser/ui/hats",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//components/background_sync",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/embedder_support:browser_util",
     "//components/google/core/common",
     "//components/infobars/content",
@@ -94,14 +109,12 @@ source_set("permissions") {
 
   if (is_android) {
     sources += [
-      "notification_blocked_dialog_controller_android.cc",
-      "notification_blocked_dialog_controller_android.h",
-      "notification_blocked_message_delegate_android.cc",
-      "notification_blocked_message_delegate_android.h",
+      "permission_blocked_dialog_controller_android.cc",
+      "permission_blocked_dialog_controller_android.h",
+      "permission_blocked_message_delegate_android.cc",
+      "permission_blocked_message_delegate_android.h",
       "permission_infobar_delegate_android.cc",
       "permission_infobar_delegate_android.h",
-      "permission_update_infobar_delegate_android.cc",
-      "permission_update_infobar_delegate_android.h",
       "permission_update_message_controller_android.cc",
       "permission_update_message_controller_android.h",
       "permission_update_message_delegate_android.cc",
@@ -119,10 +132,24 @@ source_set("permissions") {
       "//components/messages/android:feature_flags",
       "//ui/android",
     ]
+
+    if (enable_openxr) {
+      deps += [ "//device/vr/public/cpp:features" ]
+    }
   }
+  allow_circular_includes_from = []
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash" ]
+    deps += [
+      "//chrome/browser/ash/app_mode/web_app",
+      "//chrome/browser/ash/privacy_hub",
+      "//chrome/browser/ash/shimless_rma",
+      "//chromeos/ash/components/browser_context_helper",
+    ]
+    allow_circular_includes_from += [
+      "//chrome/browser/ash/app_mode/web_app",
+      "//chrome/browser/ash/shimless_rma",
+    ]
   }
 
   if (build_with_tflite_lib) {
@@ -135,6 +162,10 @@ source_set("permissions") {
     }
     deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
   }
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/permission_bubble" ]
+  }
 }
 
 proto_library("permissions_proto") {
@@ -143,6 +174,7 @@ proto_library("permissions_proto") {
 
 source_set("unit_tests") {
   testonly = true
+
   sources = [
     "adaptive_quiet_notification_permission_ui_enabler_unittest.cc",
     "chrome_permission_manager_unittest.cc",
@@ -153,13 +185,18 @@ source_set("unit_tests") {
     "notifications_engagement_service_unittest.cc",
     "permission_context_base_permissions_policy_unittest.cc",
     "permission_revocation_request_unittests.cc",
+    "permission_subscription_unittest.cc",
     "prediction_based_permission_ui_selector_unittest.cc",
     "pref_based_quiet_permission_ui_selector_unittest.cc",
+    "system/mock_platform_handle.cc",
+    "system/mock_platform_handle.h",
   ]
 
   deps = [
     ":permissions",
     ":permissions_proto",
+    "//chrome/browser/permissions/system",
+    "//chrome/browser/search_engines",
     "//chrome/test:test_support",
     "//components/site_engagement/content",
     "//components/ukm/content",
@@ -170,7 +207,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [
-      "notification_blocked_message_delegate_android_unittest.cc",
+      "permission_blocked_message_delegate_android_unittest.cc",
       "permission_prompt_android_unittest.cc",
       "permission_update_message_controller_android_unittest.cc",
     ]
@@ -181,10 +218,14 @@ source_set("unit_tests") {
     ]
   } else {
     sources += [ "permission_hats_trigger_unittest.cc" ]
+    deps += [ "//chrome/browser/ui/hats" ]
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash:test_support" ]
+    deps += [
+      "//chrome/browser/ash/app_mode/web_app",
+      "//chrome/browser/ash/login/users:test_support",
+    ]
   }
 }
 
@@ -197,17 +238,29 @@ if (!is_android) {
     sources = [
       "permission_delegation_browsertest.cc",
       "permission_element_browsertest.cc",
+      "permission_element_origin_trial_browsertest.cc",
       "permission_manager_browsertest.cc",
       "permission_request_manager_browsertest.cc",
       "permission_settings_page_browsertest.cc",
     ]
+
     deps = [
       ":permissions",
+      "//chrome/browser/media/webrtc",
+      "//chrome/browser/optimization_guide",
       "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/permissions/system",
+      "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/test:test_support",
       "//components/back_forward_cache",
       "//components/optimization_guide/core:test_support",
     ]
+
+    if (is_chromeos_ash) {
+      sources += [ "system/system_permission_settings_chromeos_unittest.cc" ]
+      deps += [ "//chrome/browser/ash/privacy_hub" ]
+    }
+
     if (build_with_tflite_lib) {
       sources += [ "prediction_service_browsertest.cc" ]
       deps += [ "//components/permissions/prediction_service" ]
@@ -225,6 +278,7 @@ if (!is_android && !is_chromeos_device) {
 
     deps = [
       ":permissions",
+      "//chrome/browser/permissions/system",
       "//chrome/test:test_support",
       "//components/content_settings/browser",
       "//components/embedder_support",

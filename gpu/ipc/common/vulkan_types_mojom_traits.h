@@ -11,8 +11,9 @@
 #ifndef GPU_IPC_COMMON_VULKAN_TYPES_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_VULKAN_TYPES_MOJOM_TRAITS_H_
 
+#include <string_view>
+
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "gpu/ipc/common/vulkan_types.h"
 #include "gpu/ipc/common/vulkan_types.mojom-shared.h"
 
@@ -21,7 +22,7 @@ namespace mojo {
 template <>
 struct StructTraits<gpu::mojom::VkExtensionPropertiesDataView,
                     VkExtensionProperties> {
-  static base::StringPiece extensionName(const VkExtensionProperties& input) {
+  static std::string_view extensionName(const VkExtensionProperties& input) {
     return input.extensionName;
   }
 
@@ -35,7 +36,7 @@ struct StructTraits<gpu::mojom::VkExtensionPropertiesDataView,
 
 template <>
 struct StructTraits<gpu::mojom::VkLayerPropertiesDataView, VkLayerProperties> {
-  static base::StringPiece layerName(const VkLayerProperties& input) {
+  static std::string_view layerName(const VkLayerProperties& input) {
     return input.layerName;
   }
 
@@ -47,7 +48,7 @@ struct StructTraits<gpu::mojom::VkLayerPropertiesDataView, VkLayerProperties> {
     return input.implementationVersion;
   }
 
-  static base::StringPiece description(const VkLayerProperties& input) {
+  static std::string_view description(const VkLayerProperties& input) {
     return input.description;
   }
 
@@ -79,7 +80,7 @@ struct StructTraits<gpu::mojom::VkPhysicalDevicePropertiesDataView,
     return input.deviceType;
   }
 
-  static base::StringPiece deviceName(const VkPhysicalDeviceProperties& input) {
+  static std::string_view deviceName(const VkPhysicalDeviceProperties& input) {
     return input.deviceName;
   }
 
@@ -117,7 +118,7 @@ struct EnumTraits<gpu::mojom::VkPhysicalDeviceType, VkPhysicalDeviceType> {
       case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_CPU:
         return gpu::mojom::VkPhysicalDeviceType::CPU;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return gpu::mojom::VkPhysicalDeviceType::INVALID_VALUE;
     }
   }
@@ -141,10 +142,10 @@ struct EnumTraits<gpu::mojom::VkPhysicalDeviceType, VkPhysicalDeviceType> {
         *out = VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_CPU;
         return true;
       case gpu::mojom::VkPhysicalDeviceType::INVALID_VALUE:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };

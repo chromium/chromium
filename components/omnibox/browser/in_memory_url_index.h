@@ -19,7 +19,6 @@
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/threading/thread_checker.h"
-#include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
@@ -140,9 +139,6 @@ class InMemoryURLIndex : public KeyedService,
     SchemeSet scheme_allowlist_;  // Schemes to be indexed.
     bool succeeded_ = false;      // Indicates if the rebuild was successful.
     scoped_refptr<URLIndexPrivateData> data_;  // The rebuilt private data.
-    // When the task was first requested from the main thread. This is the same
-    // time as when this task object is constructed.
-    const base::TimeTicks task_creation_time_;
   };
 
   // Clears the in-memory cache entirely. Called when History is cleared.
@@ -170,8 +166,8 @@ class InMemoryURLIndex : public KeyedService,
                     const history::VisitRow& new_visit) override;
   void OnURLsModified(history::HistoryService* history_service,
                       const history::URLRows& changed_urls) override;
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
   // MemoryDumpProvider:
   bool OnMemoryDump(

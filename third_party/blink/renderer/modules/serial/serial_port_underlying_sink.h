@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/device/public/mojom/serial.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
@@ -15,7 +16,6 @@
 namespace blink {
 
 class ExceptionState;
-class ScriptPromiseResolver;
 class SerialPort;
 class WritableStreamDefaultController;
 
@@ -24,17 +24,17 @@ class SerialPortUnderlyingSink final : public UnderlyingSinkBase {
   SerialPortUnderlyingSink(SerialPort*, mojo::ScopedDataPipeProducerHandle);
 
   // UnderlyingSinkBase
-  ScriptPromise start(ScriptState*,
-                      WritableStreamDefaultController*,
-                      ExceptionState&) override;
-  ScriptPromise write(ScriptState*,
-                      ScriptValue chunk,
-                      WritableStreamDefaultController*,
-                      ExceptionState&) override;
-  ScriptPromise close(ScriptState*, ExceptionState&) override;
-  ScriptPromise abort(ScriptState*,
-                      ScriptValue reason,
-                      ExceptionState&) override;
+  ScriptPromise<IDLUndefined> start(ScriptState*,
+                                    WritableStreamDefaultController*,
+                                    ExceptionState&) override;
+  ScriptPromise<IDLUndefined> write(ScriptState*,
+                                    ScriptValue chunk,
+                                    WritableStreamDefaultController*,
+                                    ExceptionState&) override;
+  ScriptPromise<IDLUndefined> close(ScriptState*, ExceptionState&) override;
+  ScriptPromise<IDLUndefined> abort(ScriptState*,
+                                    ScriptValue reason,
+                                    ExceptionState&) override;
 
   void SignalError(device::mojom::blink::SerialSendError);
 
@@ -58,9 +58,9 @@ class SerialPortUnderlyingSink final : public UnderlyingSinkBase {
   size_t offset_ = 0;
 
   // Only one outstanding call to write(), close() or abort() is allowed at a
-  // time. This holds the ScriptPromiseResolver for the Promise returned by any
+  // time. This holds the resolver for the Promise returned by any
   // of these functions.
-  Member<ScriptPromiseResolver> pending_operation_;
+  Member<ScriptPromiseResolver<IDLUndefined>> pending_operation_;
 };
 
 }  // namespace blink

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/socket/transport_client_socket_pool.h"
 
 #include <memory>
@@ -1770,7 +1775,8 @@ TEST_F(TransportClientSocketPoolTest, HttpTunnelSetupRedirect) {
           MockWrite(ASYNC, 0,
                     "CONNECT host.test:443 HTTP/1.1\r\n"
                     "Host: host.test:443\r\n"
-                    "Proxy-Connection: keep-alive\r\n\r\n"),
+                    "Proxy-Connection: keep-alive\r\n"
+                    "User-Agent: test-ua\r\n\r\n"),
       };
       MockRead reads[] = {
           MockRead(ASYNC, 1, kResponseText.c_str()),
@@ -1813,12 +1819,8 @@ TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKey) {
   const char kHost[] = "bar.test";
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionConnectionsByNetworkIsolationKey,
-       features::kSplitHostCacheByNetworkIsolationKey},
-      // disabled_features
-      {});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   session_deps_.host_resolver->set_ondemand_mode(true);
 
@@ -1850,12 +1852,8 @@ TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeySsl) {
   const char kHost[] = "bar.test";
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionConnectionsByNetworkIsolationKey,
-       features::kSplitHostCacheByNetworkIsolationKey},
-      // disabled_features
-      {});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   session_deps_.host_resolver->set_ondemand_mode(true);
 
@@ -1897,12 +1895,8 @@ TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeyHttpProxy) {
       "http://proxy.test", /*default_scheme=*/ProxyServer::SCHEME_HTTP);
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionConnectionsByNetworkIsolationKey,
-       features::kSplitHostCacheByNetworkIsolationKey},
-      // disabled_features
-      {});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   session_deps_.host_resolver->set_ondemand_mode(true);
 
@@ -1941,12 +1935,10 @@ TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeyHttpProxy) {
       IsError(ERR_IO_PENDING));
 
   ASSERT_EQ(2u, session_deps_.host_resolver->last_id());
-  EXPECT_EQ(
-      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
-      session_deps_.host_resolver->request_host(1));
-  EXPECT_EQ(
-      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
-      session_deps_.host_resolver->request_host(2));
+  EXPECT_EQ(kProxyChain.First().host_port_pair().host(),
+            session_deps_.host_resolver->request_host(1));
+  EXPECT_EQ(kProxyChain.First().host_port_pair().host(),
+            session_deps_.host_resolver->request_host(2));
   EXPECT_TRUE(session_deps_.host_resolver->request_network_anonymization_key(1)
                   .IsTransient());
   EXPECT_EQ(session_deps_.host_resolver->request_network_anonymization_key(1),
@@ -1968,12 +1960,8 @@ TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeyHttpsProxy) {
       "https://proxy.test", /*default_scheme=*/ProxyServer::SCHEME_HTTP);
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionConnectionsByNetworkIsolationKey,
-       features::kSplitHostCacheByNetworkIsolationKey},
-      // disabled_features
-      {});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   session_deps_.host_resolver->set_ondemand_mode(true);
 
@@ -2012,12 +2000,10 @@ TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeyHttpsProxy) {
       IsError(ERR_IO_PENDING));
 
   ASSERT_EQ(2u, session_deps_.host_resolver->last_id());
-  EXPECT_EQ(
-      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
-      session_deps_.host_resolver->request_host(1));
-  EXPECT_EQ(
-      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
-      session_deps_.host_resolver->request_host(2));
+  EXPECT_EQ(kProxyChain.First().host_port_pair().host(),
+            session_deps_.host_resolver->request_host(1));
+  EXPECT_EQ(kProxyChain.First().host_port_pair().host(),
+            session_deps_.host_resolver->request_host(2));
   EXPECT_TRUE(session_deps_.host_resolver->request_network_anonymization_key(1)
                   .IsTransient());
   EXPECT_EQ(session_deps_.host_resolver->request_network_anonymization_key(1),
@@ -2040,12 +2026,8 @@ TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeySocks4Proxy) {
       "socks4://proxy.test", /*default_scheme=*/ProxyServer::SCHEME_HTTP);
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionConnectionsByNetworkIsolationKey,
-       features::kSplitHostCacheByNetworkIsolationKey},
-      // disabled_features
-      {});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   session_deps_.host_resolver->set_ondemand_mode(true);
 
@@ -2095,12 +2077,10 @@ TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeySocks4Proxy) {
   // First two lookups are for the proxy's hostname, and should use the same
   // transient NAK.
   ASSERT_EQ(2u, session_deps_.host_resolver->last_id());
-  EXPECT_EQ(
-      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
-      session_deps_.host_resolver->request_host(1));
-  EXPECT_EQ(
-      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
-      session_deps_.host_resolver->request_host(2));
+  EXPECT_EQ(kProxyChain.First().host_port_pair().host(),
+            session_deps_.host_resolver->request_host(1));
+  EXPECT_EQ(kProxyChain.First().host_port_pair().host(),
+            session_deps_.host_resolver->request_host(2));
   EXPECT_TRUE(session_deps_.host_resolver->request_network_anonymization_key(1)
                   .IsTransient());
   EXPECT_EQ(session_deps_.host_resolver->request_network_anonymization_key(1),
@@ -2134,12 +2114,8 @@ TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeySocks5Proxy) {
       "socks5://proxy.test", /*default_scheme=*/ProxyServer::SCHEME_HTTP);
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionConnectionsByNetworkIsolationKey,
-       features::kSplitHostCacheByNetworkIsolationKey},
-      // disabled_features
-      {});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   session_deps_.host_resolver->set_ondemand_mode(true);
 
@@ -2178,12 +2154,10 @@ TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeySocks5Proxy) {
       IsError(ERR_IO_PENDING));
 
   ASSERT_EQ(2u, session_deps_.host_resolver->last_id());
-  EXPECT_EQ(
-      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
-      session_deps_.host_resolver->request_host(1));
-  EXPECT_EQ(
-      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
-      session_deps_.host_resolver->request_host(2));
+  EXPECT_EQ(kProxyChain.First().host_port_pair().host(),
+            session_deps_.host_resolver->request_host(1));
+  EXPECT_EQ(kProxyChain.First().host_port_pair().host(),
+            session_deps_.host_resolver->request_host(2));
   EXPECT_TRUE(session_deps_.host_resolver->request_network_anonymization_key(1)
                   .IsTransient());
   EXPECT_EQ(session_deps_.host_resolver->request_network_anonymization_key(1),
@@ -2768,7 +2742,8 @@ TEST_F(TransportClientSocketPoolTest, TagHttpProxyTunnel) {
   std::string request =
       "CONNECT www.google.com:443 HTTP/1.1\r\n"
       "Host: www.google.com:443\r\n"
-      "Proxy-Connection: keep-alive\r\n\r\n";
+      "Proxy-Connection: keep-alive\r\n"
+      "User-Agent: test-ua\r\n\r\n";
   MockWrite writes[] = {
       MockWrite(SYNCHRONOUS, 0, request.c_str()),
   };

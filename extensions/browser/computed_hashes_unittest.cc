@@ -30,8 +30,9 @@ testing::AssertionResult WriteThenReadComputedHashes(
     const std::vector<HashInfo>& hash_infos,
     extensions::ComputedHashes* result) {
   base::ScopedTempDir scoped_dir;
-  if (!scoped_dir.CreateUniqueTempDir())
+  if (!scoped_dir.CreateUniqueTempDir()) {
     return testing::AssertionFailure() << "Failed to create temp dir.";
+  }
 
   base::FilePath computed_hashes_path =
       scoped_dir.GetPath().AppendASCII("computed_hashes.json");
@@ -48,10 +49,11 @@ testing::AssertionResult WriteThenReadComputedHashes(
   std::optional<extensions::ComputedHashes> computed_hashes =
       extensions::ComputedHashes::CreateFromFile(computed_hashes_path,
                                                  &computed_hashes_status);
-  if (!computed_hashes)
+  if (!computed_hashes) {
     return testing::AssertionFailure()
            << "Failed to read computed_hashes.json (status: "
            << static_cast<int>(computed_hashes_status) << ")";
+  }
   *result = std::move(computed_hashes.value());
 
   return testing::AssertionSuccess();

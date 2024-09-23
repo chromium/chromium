@@ -20,8 +20,6 @@ class OmniboxTextChangeDelegate {
   // Called after the Omnibox text field changes. `processing_user_input` holds
   // whether the change was user-initiated or programmatic.
   virtual void OnDidChange(bool processing_user_input) = 0;
-  // Called before the Omnibox text field finishes editing.
-  virtual void OnWillEndEditing() = 0;
   // Hide keyboard and call OnDidEndEditing.  This dismisses the keyboard and
   // also finalizes the editing state of the omnibox.
   virtual void EndEditing() = 0;
@@ -33,6 +31,14 @@ class OmniboxTextChangeDelegate {
   virtual void WillPaste() = 0;
   // Called when the backspace button is pressed in the Omnibox text field.
   virtual void OnDeleteBackward() = 0;
+  /// Called when autocomplete text is accepted. (e.g. tap on autocomplete text,
+  /// tap on left/right arrow key).
+  virtual void OnAcceptAutocomplete() = 0;
+  /// Called when additional text is removed. (e.g. tap on delete, tap on
+  /// left/right arrow key).
+  virtual void OnRemoveAdditionalText() = 0;
+  /// Removes the thumbnail image during omnibox edit.
+  virtual void RemoveThumbnail() = 0;
 };
 
 // The delegate that is notified of the return key being pressed in the omnibox

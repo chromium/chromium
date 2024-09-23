@@ -25,9 +25,9 @@ static constexpr char kPipeEnd = '\xff';
 
 CaptureStdStream::CaptureStdStream(FILE* stream) : stream_(stream) {
 #if BUILDFLAG(IS_WIN)
-  CHECK_EQ(_pipe(pipes_, 4096, O_BINARY), 0);
+  CHECK_EQ(_pipe(pipes_.data(), 4096, O_BINARY), 0);
 #else
-  CHECK_EQ(pipe(pipes_), 0);
+  CHECK_EQ(pipe(pipes_.data()), 0);
 #endif
   fileno_ = dup(fileno(stream_));
   CHECK_NE(fileno_, -1);
@@ -71,13 +71,15 @@ std::string CaptureStdStream::TakeCapturedData() {
   std::string captured_data;
   for (;;) {
     constexpr size_t kChunkSize = 256;
-    char buffer[kChunkSize];
-    int bytes_read = read(pipes_[kReadPipe], buffer, kChunkSize);
+    std::array<char, kChunkSize> buffer;
+    int bytes_read = read(pipes_[kReadPipe], buffer.data(), kChunkSize);
     CHECK_GT(bytes_read, 0);
-    if (buffer[bytes_read - 1] != kPipeEnd) {
-      captured_data.append(buffer, bytes_read);
+    std::string_view data(buffer.data(), bytes_read);
+    if (data.back() != kPipeEnd) {
+      captured_data.append(data);
     } else {
-      captured_data.append(buffer, bytes_read - 1);
+      data.remove_suffix(1);
+      captured_data.append(data);
       break;
     }
   }

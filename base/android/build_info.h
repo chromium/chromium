@@ -37,6 +37,7 @@ enum SdkVersion {
   SDK_VERSION_Sv2 = 32,
   SDK_VERSION_T = 33,
   SDK_VERSION_U = 34,
+  SDK_VERSION_V = 35,
 };
 
 // BuildInfo is a singleton class that stores android build and device
@@ -47,7 +48,7 @@ class BASE_EXPORT BuildInfo {
   BuildInfo(const BuildInfo&) = delete;
   BuildInfo& operator=(const BuildInfo&) = delete;
 
-  ~BuildInfo() {}
+  ~BuildInfo();
 
   // Static factory method for getting the singleton BuildInfo instance.
   // Note that ownership is not conferred on the caller and the BuildInfo in
@@ -87,6 +88,8 @@ class BASE_EXPORT BuildInfo {
     return gms_version_code_;
   }
 
+  void set_gms_version_code_for_test(const std::string& gms_version_code);
+
   // The package name of the host app which has loaded WebView, retrieved from
   // the application context. In the context of the SDK Runtime, the package
   // name of the app that owns this particular instance of the SDK Runtime will
@@ -103,6 +106,10 @@ class BASE_EXPORT BuildInfo {
   // app. In the context of the SDK Runtime, this is the versionCode of the app
   // that owns this particular instance of the SDK Runtime.
   const char* host_package_label() const { return host_package_label_; }
+
+  // The SHA256 of the public certificate used to sign the host application.
+  // This will default to an empty string if we were unable to retrieve it.
+  std::string host_signing_cert_sha256();
 
   const char* package_version_code() const {
     return package_version_code_;
@@ -165,6 +172,11 @@ class BASE_EXPORT BuildInfo {
   // Available only on Android T+.
   int32_t vulkan_deqp_level() const { return vulkan_deqp_level_; }
 
+  // Available only on android S+. For S-, this method returns empty string.
+  const char* soc_manufacturer() const { return soc_manufacturer_; }
+
+  bool is_debug_app() const { return is_debug_app_; }
+
  private:
   friend struct BuildInfoSingletonTraits;
 
@@ -189,7 +201,8 @@ class BASE_EXPORT BuildInfo {
   const char* const package_version_code_;
   const char* const package_version_name_;
   const char* const android_build_fp_;
-  const char* const gms_version_code_;
+  // Can be overridden in tests.
+  const char* gms_version_code_ = nullptr;
   const char* const installer_package_name_;
   const char* const abi_name_;
   const char* const custom_themes_;
@@ -207,6 +220,8 @@ class BASE_EXPORT BuildInfo {
   const char* const codename_;
   const int32_t vulkan_deqp_level_;
   const bool is_foldable_;
+  const char* const soc_manufacturer_;
+  const bool is_debug_app_;
 };
 
 }  // namespace base::android

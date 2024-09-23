@@ -28,9 +28,7 @@ class TimeZoneMonitorAsh : public TimeZoneMonitor,
 
   // ash::system::TimezoneSettings::Observer implementation.
   void TimezoneChanged(const icu::TimeZone& time_zone) override {
-    // ICU's default time zone is already set to a new zone. No need to redetect
-    // it with detectHostTimeZone() or to update ICU.
-    NotifyClients(GetTimeZoneId(time_zone));
+    UpdateIcuAndNotifyClients(base::WrapUnique(time_zone.clone()));
   }
 };
 

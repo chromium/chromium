@@ -44,8 +44,7 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool UseCustomFrame() const override { return true; }
   bool IsFrameCondensed() const override { return false; }
   bool EverHasVisibleBackgroundTabShapes() const override { return false; }
-  void UpdateWindowControlsOverlay(
-      const gfx::Rect& bounding_rect) const override {}
+  void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override {}
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
 #if BUILDFLAG(IS_LINUX)
   bool IsTiled() const override { return tiled_; }
@@ -68,7 +67,7 @@ TEST_F(BrowserFrameViewLayoutLinuxTest, FrameInsets) {
 
   for (const bool tiled : {false, true}) {
     delegate.tiled_ = tiled;
-    const auto normal_insets = layout.MirroredFrameBorderInsets();
+    const auto normal_insets = layout.RestoredMirroredFrameBorderInsets();
     if (tiled) {
       EXPECT_EQ(normal_insets.left(), input_insets.left());
       EXPECT_EQ(normal_insets.right(), input_insets.right());

@@ -30,11 +30,16 @@ class AXTreeSourceAndroidTest;
 
 using AXTreeAndroidSerializer = ui::AXTreeSerializer<
     AccessibilityInfoDataWrapper*,
-    std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>>;
+    std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>,
+    ui::AXTreeUpdate*,
+    ui::AXTreeData*,
+    ui::AXNodeData>;
 
 // This class represents the accessibility tree from the focused ARC window.
 class AXTreeSourceAndroid
-    : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
+    : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
+                              ui::AXTreeData*,
+                              ui::AXNodeData>,
       public ui::AXActionHandler {
  public:
   class Delegate {
@@ -84,6 +89,8 @@ class AXTreeSourceAndroid
     // To ensure the node re-serialized, the class must return |true| on
     // PreDispatchEvent() if the event is NOT coming from its ancestry.
     virtual void PostSerializeNode(ui::AXNodeData* out_data) const = 0;
+
+    virtual bool ShouldDestroy(AXTreeSourceAndroid* tree_source) const = 0;
   };
 
   AXTreeSourceAndroid(
@@ -120,6 +127,14 @@ class AXTreeSourceAndroid
   // parent window).
   // virtual for testing.
   virtual bool IsRootOfNodeTree(int32_t id) const;
+
+  // Sets a virtual node, i.e., node that doesn't exist in source Android tree.
+  // This set is only effective on the current event serialization.
+  // Usually setting a node is always needed by using a Hook.
+  // Note that currently panret node should be an instance of
+  // AccessibilityWindowInfoDataWrapper.
+  void SetVirtualNode(int32_t parent_id,
+                      std::unique_ptr<AccessibilityInfoDataWrapper> child);
 
   AccessibilityInfoDataWrapper* GetFirstImportantAncestor(
       AccessibilityInfoDataWrapper* info_data) const;
@@ -274,4 +289,4 @@ class AXTreeSourceAndroid
 
 }  // namespace ax::android
 
-#endif
+#endif  // SERVICES_ACCESSIBILITY_ANDROID_AX_TREE_SOURCE_ANDROID_H_

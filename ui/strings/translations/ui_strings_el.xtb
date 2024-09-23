@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Έρευνα</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">Έλεγχος της σύνδεσής σας στο διαδίκτυο</translation>
+<translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2388990488038464401">Θέλετε να καλέσετε αυτόν τον αριθμό στο τηλέφωνό σας;</translation>
 <translation id="2435457462613246316">Εμφάνιση κωδικού πρόσβασης</translation>
 <translation id="24452542372838207">Ανάπτυξη ειδοποίησης</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">ΝΕΟ</translation>
 <translation id="2666092431469916601">Κορυφή</translation>
 <translation id="2701330563083355633">Κοινοποιήθηκε από <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Νέο</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Πριν από 1 χρόνο}other{Πριν από # χρόνια}}</translation>
 <translation id="2878511608894704031">Διαγραφή όλων</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{σε 1 η.}other{σε # η.}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">Σύστημα <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Πλήκτρο Backspace</translation>
 <translation id="5613020302032141669">Αριστερό βέλος</translation>
+<translation id="5633029987065897167">Κενό</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 λεπτό}other{# λεπτά}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Ενεργή σήμερα}=1{Ενεργή 1 ημέρα πριν}other{Ενεργή # ημέρες πριν}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ημέρα και }other{# ημέρες και }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">Περιεχόμενο RTF</translation>
 <translation id="6539092367496845964">Παρουσιάστηκε κάποιο πρόβλημα. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="654149438358937226">Αποκλεισμός όλων των ειδοποιήσεων</translation>
-<translation id="6612467943526193239">Για να εξέλθετε από τη βαθμονόμηση, πατήστε Esc.</translation>
 <translation id="6620110761915583480">Αποθήκευση Αρχείου</translation>
 <translation id="6699343763173986273">Επόμενο κομμάτι πολυμέσων</translation>
 <translation id="6808150112686056157">Διακοπή πολυμέσων</translation>

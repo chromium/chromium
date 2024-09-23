@@ -17,14 +17,16 @@ CookiesGetAllSignal::CookiesGetAllSignal(
     std::optional<bool> secure,
     const std::string& store_id,
     const std::string& url,
-    std::optional<bool> is_session)
+    std::optional<bool> is_session,
+    extensions::StackTrace js_callstack)
     : ExtensionSignal(extension_id),
       domain_(domain),
       name_(name),
       path_(path),
       secure_(secure),
       store_id_(store_id),
-      is_session_(is_session) {
+      is_session_(is_session),
+      js_callstack_(std::move(js_callstack)) {
   url_ = SanitizeURLWithoutFilename(url);
 }
 

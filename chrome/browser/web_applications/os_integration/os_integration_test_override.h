@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -17,6 +18,10 @@
 #if BUILDFLAG(IS_WIN)
 class ShellLinkItem;
 #endif
+
+namespace base {
+class Environment;
+}
 
 namespace web_app {
 
@@ -61,10 +66,12 @@ class OsIntegrationTestOverrideImpl;
 class OsIntegrationTestOverride
     : public base::RefCountedThreadSafe<OsIntegrationTestOverride> {
  public:
+  static void CheckOsIntegrationAllowed();
+
   // This will return a nullptr in production code or tests that have not
   // created a `OsIntegrationTestOverrideImpl::BlockingRegistration` through
   // `OsIntegrationTestOverrideImpl::OverrideForTesting`.
-  static const scoped_refptr<OsIntegrationTestOverride>& Get();
+  static scoped_refptr<OsIntegrationTestOverride> Get();
 
   OsIntegrationTestOverride(OsIntegrationTestOverride&&) = delete;
   OsIntegrationTestOverride(const OsIntegrationTestOverride&) = delete;
@@ -83,19 +90,17 @@ class OsIntegrationTestOverride
   virtual void DeleteShortcutsMenuJumpListEntryForApp(
       const std::wstring& app_user_model_id) = 0;
 
-  virtual const base::FilePath& desktop() = 0;
-  virtual const base::FilePath& application_menu() = 0;
-  virtual const base::FilePath& quick_launch() = 0;
-  virtual const base::FilePath& startup() = 0;
+  virtual base::FilePath desktop() = 0;
+  virtual base::FilePath application_menu() = 0;
+  virtual base::FilePath quick_launch() = 0;
+  virtual base::FilePath startup() = 0;
 #elif BUILDFLAG(IS_MAC)
   virtual bool IsChromeAppsValid() = 0;
-  virtual const base::FilePath& chrome_apps_folder() = 0;
+  virtual base::FilePath chrome_apps_folder() = 0;
   virtual void EnableOrDisablePathOnLogin(const base::FilePath& file_path,
                                           bool enable_on_login) = 0;
 #elif BUILDFLAG(IS_LINUX)
-  virtual const base::FilePath& desktop() = 0;
-  virtual const base::FilePath& startup() = 0;
-  virtual const base::FilePath& applications_dir() = 0;
+  virtual base::Environment* environment() = 0;
 #endif
 
   // Creates a tuple of app_id to protocols and adds it to the vector
@@ -104,16 +109,30 @@ class OsIntegrationTestOverride
   virtual void RegisterProtocolSchemes(const webapps::AppId& app_id,
                                        std::vector<std::string> protocols) = 0;
 
- protected:
+ private:
   friend class base::RefCountedThreadSafe<OsIntegrationTestOverride>;
   friend class OsIntegrationTestOverrideImpl;
+  friend class OsIntegrationTestOverrideBlockingRegistration;
 
-  static void SetForTesting(scoped_refptr<OsIntegrationTestOverride> override);
+  // Gets or creates a new OsIntegrationTestOverride globally. Creation is done
+  // using the `creation_function`. Used by blocking registrations, and
+  // increases the blocking registration count.
+  static scoped_refptr<OsIntegrationTestOverride>
+  GetOrCreateForBlockingRegistration(
+      base::FunctionRef<scoped_refptr<OsIntegrationTestOverride>()>
+          creation_function);
+
+  // Decreases the blocking registration in the global struct. If there are no
+  // more registrations, the global value is reset and returns `true`.
+  static bool DecreaseBlockingRegistrationCountMaybeReset();
 
   OsIntegrationTestOverride();
   virtual ~OsIntegrationTestOverride() = 0;
 };
 
 }  // namespace web_app
+
+#define CHECK_OS_INTEGRATION_ALLOWED() \
+  OsIntegrationTestOverride::CheckOsIntegrationAllowed()
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_OS_INTEGRATION_TEST_OVERRIDE_H_

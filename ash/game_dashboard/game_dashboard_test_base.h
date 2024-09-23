@@ -17,7 +17,7 @@ namespace ash {
 class GameDashboardTestBase : public AshTestBase {
  public:
   // The bounds for the screen that will contain app windows.
-  static constexpr gfx::Rect kScreenBounds = gfx::Rect(10, 10, 1000, 750);
+  static constexpr gfx::Rect kScreenBounds = gfx::Rect(10, 10, 2000, 1500);
 
   GameDashboardTestBase();
   GameDashboardTestBase(const GameDashboardTestBase&) = delete;
@@ -37,7 +37,7 @@ class GameDashboardTestBase : public AshTestBase {
   // bounds.
   std::unique_ptr<aura::Window> CreateAppWindow(
       const std::string& app_id,
-      AppType app_type = AppType::NON_APP,
+      chromeos::AppType app_type = chromeos::AppType::NON_APP,
       const gfx::Rect& bounds_in_screen = gfx::Rect());
 
  private:

@@ -78,16 +78,11 @@ TEST_F(AnimationUtilsTest, ForEachInterpolatedPropertyValue) {
   HashMap<String, String> map;
   ActiveInterpolationsMap interpolations_map;
 
-  base::RepeatingCallback<void(PropertyHandle, const CSSValue*)> callback =
-      WTF::BindRepeating(
-          [](HashMap<String, String>* map, PropertyHandle property,
-             const CSSValue* value) {
-            String property_name =
-                AnimationInputHelpers::PropertyHandleToKeyframeAttribute(
-                    property);
-            map->Set(property_name, value->CssText());
-          },
-          WTF::Unretained(&map));
+  auto callback = [&map](PropertyHandle property, const CSSValue* value) {
+    String property_name =
+        AnimationInputHelpers::PropertyHandleToKeyframeAttribute(property);
+    map.Set(property_name, value->CssText());
+  };
 
   AnimationUtils::ForEachInterpolatedPropertyValue(
       target, properties, interpolations_map, callback);
@@ -141,16 +136,11 @@ TEST_F(AnimationUtilsTest, ForEachInterpolatedPropertyValueWithContainerQuery) {
   HashMap<String, String> map;
   ActiveInterpolationsMap interpolations_map;
 
-  base::RepeatingCallback<void(PropertyHandle, const CSSValue*)> callback =
-      WTF::BindRepeating(
-          [](HashMap<String, String>* map, PropertyHandle property,
-             const CSSValue* value) {
-            String property_name =
-                AnimationInputHelpers::PropertyHandleToKeyframeAttribute(
-                    property);
-            map->Set(property_name, value->CssText());
-          },
-          WTF::Unretained(&map));
+  auto callback = [&map](PropertyHandle property, const CSSValue* value) {
+    String property_name =
+        AnimationInputHelpers::PropertyHandleToKeyframeAttribute(property);
+    map.Set(property_name, value->CssText());
+  };
 
   AnimationUtils::ForEachInterpolatedPropertyValue(
       target, properties, interpolations_map, callback);

@@ -6,12 +6,13 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_INPUT_METHOD_CONTEXT_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
+#include "base/nix/xdg_util.h"
 #include "ui/base/ime/character_composer.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/surrounding_text_tracker.h"
@@ -25,7 +26,6 @@
 namespace ui {
 
 class WaylandConnection;
-class ZWPTextInputWrapper;
 
 class WaylandInputMethodContext : public LinuxInputMethodContext,
                                   public VirtualKeyboardController,
@@ -42,7 +42,10 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
       delete;
   ~WaylandInputMethodContext() override;
 
-  void Init(bool initialize_for_testing = false);
+  void Init(bool initialize_for_testing = false,
+            std::unique_ptr<ZWPTextInputWrapper> wrapper_for_testing = nullptr,
+            std::optional<base::nix::DesktopEnvironment> desktop_for_testing =
+                std::nullopt);
 
   // LinuxInputMethodContext overrides:
   bool DispatchKeyEvent(const KeyEvent& key_event) override;
@@ -53,6 +56,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void SetSurroundingText(
       const std::u16string& text,
       const gfx::Range& text_range,
+      const gfx::Range& composition_range,
       const gfx::Range& selection_range,
       const std::optional<GrammarFragment>& fragment,
       const std::optional<AutocorrectInfo>& autocorrect) override;
@@ -76,10 +80,10 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void OnKeyboardFocusedWindowChanged() override;
 
   // ZWPTextInputWrapperClient overrides:
-  void OnPreeditString(base::StringPiece text,
+  void OnPreeditString(std::string_view text,
                        const std::vector<SpanStyle>& spans,
-                       int32_t preedit_cursor) override;
-  void OnCommitString(base::StringPiece text) override;
+                       const gfx::Range& preedit_cursor) override;
+  void OnCommitString(std::string_view text) override;
   void OnCursorPosition(int32_t index, int32_t anchor) override;
   void OnDeleteSurroundingText(int32_t index, uint32_t length) override;
   void OnKeysym(uint32_t keysym,
@@ -104,6 +108,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   }
 
  private:
+  void CreateTextInputWrapper();
   void Focus(bool skip_virtual_keyboard_update,
              TextInputClient::FocusReason reason);
   void Blur(bool skip_virtual_keyboard_update);
@@ -159,6 +164,13 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
 
   // Caches VirtualKeyboard visibility.
   bool virtual_keyboard_visible_ = false;
+
+  // Cached desktop environment obtained from env.
+  base::nix::DesktopEnvironment desktop_environment_;
+
+  // Stores whether an invalid cursor end is sent by compositor, in which
+  // case cursor end values should be ignored in preedit string.
+  bool compositor_sends_invalid_cursor_end_ = false;
 
   // Keeps track of past text input clients to forward virtual keyboard changes
   // to, since unfocusing text inputs will detach clients immediately, but the

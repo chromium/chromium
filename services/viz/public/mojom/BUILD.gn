@@ -21,24 +21,29 @@ mojom("mojom") {
     "compositing/filter_operation.mojom",
     "compositing/filter_operations.mojom",
     "compositing/frame_deadline.mojom",
+    "compositing/frame_interval_inputs.mojom",
     "compositing/frame_sink_bundle.mojom",
     "compositing/frame_sink_bundle_id.mojom",
     "compositing/frame_sink_id.mojom",
     "compositing/frame_timing_details.mojom",
+    "compositing/layer.mojom",
     "compositing/layer_context.mojom",
     "compositing/local_surface_id.mojom",
+    "compositing/offset_tag.mojom",
     "compositing/paint_filter.mojom",
     "compositing/quads.mojom",
     "compositing/region_capture_bounds.mojom",
     "compositing/resource_id.mojom",
     "compositing/returned_resource.mojom",
     "compositing/selection.mojom",
+    "compositing/shared_bitmap_id.mojom",
     "compositing/shared_quad_state.mojom",
     "compositing/subtree_capture_id.mojom",
     "compositing/surface_id.mojom",
     "compositing/surface_info.mojom",
     "compositing/surface_range.mojom",
     "compositing/texture_releaser.mojom",
+    "compositing/tiling.mojom",
     "compositing/transferable_resource.mojom",
     "compositing/vertical_scroll_direction.mojom",
     "compositing/video_detector_observer.mojom",
@@ -54,10 +59,13 @@ mojom("mojom") {
   public_deps = [
     ":shared_image_format",
     ":singleplanar_format",
+    "//cc/mojom:element_id",
+    "//cc/mojom:layer_type",
     "//gpu/ipc/common:interfaces",
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",
     "//skia/public/mojom",
+    "//third_party/blink/public/mojom/tokens:tokens",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
     "//ui/gfx/mojom:hdr_metadata",
@@ -207,6 +215,17 @@ mojom("mojom") {
         "//ui/gfx/geometry/mojom",
       ]
     },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.SharedBitmapId"
+          cpp = "::viz::SharedBitmapId"
+        },
+      ]
+      traits_headers = [
+        "//services/viz/public/cpp/compositing/shared_bitmap_id_mojom_traits.h",
+      ]
+    },
   ]
   cpp_typemaps = shared_cpp_typemaps
   cpp_typemaps += [
@@ -317,6 +336,27 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "viz.mojom.OffsetTag"
+          cpp = "::viz::OffsetTag"
+        },
+        {
+          mojom = "viz.mojom.OffsetTagValue"
+          cpp = "::viz::OffsetTagValue"
+        },
+        {
+          mojom = "viz.mojom.OffsetTagDefinitoin"
+          cpp = "::viz::OffsetTagDefintion"
+        },
+      ]
+      traits_sources =
+          [ "//services/viz/public/cpp/compositing/offset_tag_mojom_traits.cc" ]
+      traits_headers =
+          [ "//services/viz/public/cpp/compositing/offset_tag_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
           mojom = "viz.mojom.FilterOperation"
           cpp = "::cc::FilterOperation"
         },
@@ -351,6 +391,21 @@ mojom("mojom") {
       traits_headers = [
         "//services/viz/public/cpp/compositing/frame_deadline_mojom_traits.h",
       ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.FrameIntervalInputs"
+          cpp = "::viz::FrameIntervalInputs"
+        },
+        {
+          mojom = "viz.mojom.ContentFrameIntervalInfo"
+          cpp = "::viz::ContentFrameIntervalInfo"
+        },
+      ]
+      traits_sources = [ "//services/viz/public/cpp/compositing/frame_interval_inputs_mojom_traits.cc" ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/frame_interval_inputs_mojom_traits.h" ]
       traits_public_deps = [ "//components/viz/common" ]
     },
     {
@@ -428,8 +483,8 @@ mojom("mojom") {
         "//services/viz/public/cpp/compositing/quads_mojom_traits.cc",
       ]
       traits_headers = [
-        "//services/viz/public/cpp/compositing/quads_mojom_traits.h",
         "//services/viz/public/cpp/compositing/compositor_render_pass_mojom_traits.h",
+        "//services/viz/public/cpp/compositing/quads_mojom_traits.h",
       ]
       traits_public_deps = [ "//ui/gl" ]
     },
@@ -465,6 +520,7 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "//services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
     },
     {
       types = [
@@ -568,13 +624,13 @@ mojom("mojom") {
         "//gpu/ipc/common/mailbox_mojom_traits.h",
         "//gpu/ipc/common/sync_token_mojom_traits.h",
         "//ipc/ipc_message_utils.h",
-        "//services/viz/public/cpp/compositing/compositor_frame_mojom_traits.h",
         "//services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h",
+        "//services/viz/public/cpp/compositing/compositor_frame_mojom_traits.h",
+        "//services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h",
+        "//services/viz/public/cpp/compositing/compositor_render_pass_mojom_traits.h",
         "//services/viz/public/cpp/compositing/filter_operation_mojom_traits.h",
         "//services/viz/public/cpp/compositing/filter_operations_mojom_traits.h",
         "//services/viz/public/cpp/compositing/quads_mojom_traits.h",
-        "//services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h",
-        "//services/viz/public/cpp/compositing/compositor_render_pass_mojom_traits.h",
         "//services/viz/public/cpp/compositing/selection_mojom_traits.h",
         "//services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h",
         "//services/viz/public/cpp/compositing/transferable_resource_mojom_traits.h",
@@ -631,6 +687,6 @@ mojom("shared_image_format") {
     },
   ]
 
-  # TODO(crbug.com/1378708): Does this need to be public_deps vs. deps?
+  # TODO(crbug.com/40244048): Does this need to be public_deps vs. deps?
   public_deps = [ ":singleplanar_format" ]
 }

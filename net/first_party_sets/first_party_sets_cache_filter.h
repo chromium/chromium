@@ -70,7 +70,7 @@ class NET_EXPORT FirstPartySetsCacheFilter {
 
   // The id of the current browser run, to mark the cache entry when persisting.
   // The cache filter should be no-op if this is 0.
-  // TODO(crbug.com/657632): Make this optional.
+  // TODO(crbug.com/40489779): Make this optional.
   int64_t browser_run_id_ = 0;
 };
 

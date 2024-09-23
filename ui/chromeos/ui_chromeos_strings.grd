@@ -1397,9 +1397,21 @@
       </message>
       <message name="IDS_CHROMEOS_NETWORK_ERROR_NOT_REGISTERED" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails because the modem is not registered.">
         Modem not registered
+        </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_SUSPECT_INACTIVE_SIM" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails due to inactive SIM.">
+        Your SIM card or eSIM profile may be deactivated. Try replacing your SIM card or switching eSIM profiles.
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_SUSPECT_SUBSCRIPTION_ERROR" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails due to subscription error.">
+        Your mobile data plan may be expired. Contact your carrier for support.
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_SUSPECT_MODEM_DISALLOWED" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails because the modem is not allowed by carrier.">
+        Your modem isn’t allowed to connect by your carrier. Contact your carrier for more details.
       </message>
       <message name="IDS_CHROMEOS_NETWORK_ERROR_WRONG_STATE" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails because the modem is in a busy state.">
         Device is busy
+      </message>
+      <message name="IDS_CHROMEOS_NETWORK_ERROR_INVALID_APN" desc="Network error details in notifications: NOT_REGISTERED. Error when a connect attempt fails because of invalid APN.">
+        Check your APN configuration
       </message>
       <message name="IDS_CHROMEOS_NETWORK_ERROR_WEP_NOT_SUPPORTED" desc="Network error details in notifications: WEP_NOT_SUPPORTED. Error when a connect attempt fails because WEP networks are not supported.">
         WEP networks are not supported
@@ -1422,8 +1434,8 @@
       <message name="IDS_STATUSBAR_NETWORK_DEVICE_SIGNIN" desc="Settings > Network, text in network page when in captive portal state or proxy auth state.">
         Sign in to network
       </message>
-      <message name="IDS_STATUSBAR_NETWORK_DEVICE_CONNECTED_LIMITED" desc="The network device is connected but in a portal-suspected portal state. A portal is suspected but no redirect was found, therefore, there may be limited connectivity.">
-        Connected, limited connectivity
+      <message name="IDS_STATUSBAR_NETWORK_DEVICE_CELLULAR_SIGNIN" desc="Settings > Network, text in network page when in captive portal state or proxy auth state for cellular network.">
+        Sign in to your mobile network and confirm your mobile data plan is active
       </message>
       <message name="IDS_STATUSBAR_NETWORK_DEVICE_CONNECTED_NO_CONNECTIVITY" desc="The network device is connected but in a no-connectivity portal state, therefore, there is no connection to the internet.">
         Connected, no internet
@@ -1437,7 +1449,7 @@
         Locked
       </message>
       <message name="IDS_NETWORK_LIST_UPDATED_CELLULAR_SIM_CARD_CARRIER_LOCKED" desc="Text in the network list element when a Cellular network's SIM card is locked to a specific carrier. Used when updated cellular activation flag in on.">
-        Locked by provider
+        Locked by another mobile provider
       </message>
       <message name="IDS_NETWORK_LIST_NOT_CONNECTED" desc="Text in the network list element when there is a network for the type, but it is not connected or connecting.">
         Not connected
@@ -1828,6 +1840,9 @@
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCK_POLICY_ADMIN_SUBTITLE" desc="Settings > Internet > Network details > Unlock SIM card: Title for unlocking SIM locked dialog when restrict SIM PIN lock policy is on.">
         Your administrator has requested you to turn off the "Lock SIM" setting
+      </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_PIN_SUBTITLE" desc="Settings > Internet > Network details > Unlock SIM card: Subtitle for unlocking SIM locked SIM.">
+        Enter your SIM card PIN or the default PIN provided by your carrier. Contact your carrier for support.
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_PUK_SUBTITLE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Title informing the user to enter a PIN provided by the carrier in order unlock network.">
         An incorrect PIN was entered too many times. To set up a new PIN, enter the 8-digit Personal Unblocking Key (PUK) provided by your carrier.

@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "base/base_export.h"
-#include "base/strings/string_piece.h"
 #include "base/types/always_false.h"
 #include "build/build_config.h"
 
@@ -28,7 +27,7 @@ BASE_EXPORT bool WideToUTF8(const wchar_t* src, size_t src_len,
 [[nodiscard]] BASE_EXPORT std::string WideToUTF8(std::wstring_view wide);
 BASE_EXPORT bool UTF8ToWide(const char* src, size_t src_len,
                             std::wstring* output);
-[[nodiscard]] BASE_EXPORT std::wstring UTF8ToWide(StringPiece utf8);
+[[nodiscard]] BASE_EXPORT std::wstring UTF8ToWide(std::string_view utf8);
 
 BASE_EXPORT bool WideToUTF16(const wchar_t* src,
                              size_t src_len,
@@ -37,29 +36,29 @@ BASE_EXPORT bool WideToUTF16(const wchar_t* src,
 BASE_EXPORT bool UTF16ToWide(const char16_t* src,
                              size_t src_len,
                              std::wstring* output);
-[[nodiscard]] BASE_EXPORT std::wstring UTF16ToWide(StringPiece16 utf16);
+[[nodiscard]] BASE_EXPORT std::wstring UTF16ToWide(std::u16string_view utf16);
 
 BASE_EXPORT bool UTF8ToUTF16(const char* src,
                              size_t src_len,
                              std::u16string* output);
-[[nodiscard]] BASE_EXPORT std::u16string UTF8ToUTF16(StringPiece utf8);
+[[nodiscard]] BASE_EXPORT std::u16string UTF8ToUTF16(std::string_view utf8);
 BASE_EXPORT bool UTF16ToUTF8(const char16_t* src,
                              size_t src_len,
                              std::string* output);
-[[nodiscard]] BASE_EXPORT std::string UTF16ToUTF8(StringPiece16 utf16);
+[[nodiscard]] BASE_EXPORT std::string UTF16ToUTF8(std::u16string_view utf16);
 
 // This converts an ASCII string, typically a hardcoded constant, to a UTF16
 // string.
-[[nodiscard]] BASE_EXPORT std::u16string ASCIIToUTF16(StringPiece ascii);
+[[nodiscard]] BASE_EXPORT std::u16string ASCIIToUTF16(std::string_view ascii);
 
 // Converts to 7-bit ASCII by truncating. The result must be known to be ASCII
 // beforehand.
-[[nodiscard]] BASE_EXPORT std::string UTF16ToASCII(StringPiece16 utf16);
+[[nodiscard]] BASE_EXPORT std::string UTF16ToASCII(std::u16string_view utf16);
 
 #if defined(WCHAR_T_IS_16_BIT)
 // This converts an ASCII string, typically a hardcoded constant, to a wide
 // string.
-[[nodiscard]] BASE_EXPORT std::wstring ASCIIToWide(StringPiece ascii);
+[[nodiscard]] BASE_EXPORT std::wstring ASCIIToWide(std::string_view ascii);
 
 // Converts to 7-bit ASCII by truncating. The result must be known to be ASCII
 // beforehand.
@@ -92,7 +91,7 @@ template <size_t N>
 // to allow this conversion.
 template <size_t N>
 std::u16string ASCIIToUTF16(char (&str)[N]) {
-  return ASCIIToUTF16(StringPiece(str));
+  return ASCIIToUTF16(std::string_view(str));
 }
 
 }  // namespace base

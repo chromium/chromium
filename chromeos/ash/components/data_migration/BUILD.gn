@@ -1,0 +1,148 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("constants") {
+  sources = [ "constants.h" ]
+
+  deps = [ "//base" ]
+}
+
+source_set("data_migration") {
+  sources = [
+    "data_migration.cc",
+    "data_migration.h",
+  ]
+
+  deps = [
+    ":device",
+    "//base",
+    "//chrome/browser/nearby_sharing/common",
+    "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
+    "//components/keyed_service/core",
+    "//third_party/nearby:platform_base_util",
+  ]
+}
+
+source_set("device") {
+  sources = [
+    "device.cc",
+    "device.h",
+  ]
+
+  deps = [
+    ":file_transfer",
+    ":pending_file_transfer_queue",
+    ":rts_receiver",
+    "//base",
+    "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
+  ]
+}
+
+source_set("file_receiver") {
+  sources = [
+    "file_receiver.cc",
+    "file_receiver.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
+    "//chromeos/ash/services/nearby/public/mojom",
+  ]
+}
+
+source_set("file_transfer") {
+  sources = [
+    "file_transfer.cc",
+    "file_transfer.h",
+  ]
+
+  deps = [
+    ":constants",
+    ":file_receiver",
+    ":pending_file_transfer_queue",
+    "//base",
+    "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
+  ]
+}
+
+source_set("pending_file_transfer_queue") {
+  sources = [
+    "pending_file_transfer_queue.cc",
+    "pending_file_transfer_queue.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("rts_receiver") {
+  sources = [
+    "rts_receiver.cc",
+    "rts_receiver.h",
+  ]
+
+  deps = [
+    ":pending_file_transfer_queue",
+    "//base",
+    "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "testing/connection_barrier.cc",
+    "testing/connection_barrier.h",
+    "testing/fake_nearby_connections.cc",
+    "testing/fake_nearby_connections.h",
+    "testing/fake_nearby_process_manager.cc",
+    "testing/fake_nearby_process_manager.h",
+  ]
+
+  deps = [
+    ":constants",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/nearby/common/connections_manager",
+    "//chromeos/ash/services/nearby/public/cpp",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//mojo",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "data_migration_unittest.cc",
+    "device_unittest.cc",
+    "file_receiver_unittest.cc",
+    "file_transfer_unittest.cc",
+    "pending_file_transfer_queue_unittest.cc",
+    "rts_receiver_unittest.cc",
+  ]
+
+  deps = [
+    ":constants",
+    ":data_migration",
+    ":device",
+    ":file_receiver",
+    ":file_transfer",
+    ":pending_file_transfer_queue",
+    ":rts_receiver",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chromeos/ash/components/nearby/common/connections_manager",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

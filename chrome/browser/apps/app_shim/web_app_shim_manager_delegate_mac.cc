@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -168,7 +167,7 @@ void WebAppShimManagerDelegate::CloseAppWindows(Profile* profile,
     return;
   }
   // This is only used by legacy apps.
-  // TODO(https://crbug.com/1431891): This seems to happen in the wild although
+  // TODO(crbug.com/40902596): This seems to happen in the wild although
   // though shouldn't be possible. Once legacy apps are no longer supported all
   // this legacy app specific code should get deleted entirely.
   // NOTREACHED();
@@ -378,7 +377,7 @@ void WebAppShimManagerDelegate::LaunchShim(
   }
   WebAppProvider::GetForWebApps(profile)
       ->os_integration_manager()
-      .GetShortcutInfoForApp(
+      .GetShortcutInfoForAppFromRegistrar(
           app_id, base::BindOnce(&web_app::LaunchShim, update_behavior,
                                  launch_mode, std::move(launched_callback),
                                  std::move(terminated_callback)));

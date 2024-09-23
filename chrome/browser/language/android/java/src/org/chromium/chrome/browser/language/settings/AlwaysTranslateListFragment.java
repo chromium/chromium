@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.language.settings;
 import android.content.Context;
 
 import org.chromium.chrome.browser.language.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 
 import java.util.Collection;
@@ -18,7 +19,7 @@ import java.util.Collection;
 public class AlwaysTranslateListFragment extends LanguageItemListFragment {
     @Override
     protected LanguageItemListFragment.ListDelegate makeFragmentListDelegate() {
-        return new ListDelegate();
+        return new ListDelegate(getProfile());
     }
 
     @Override
@@ -57,12 +58,12 @@ public class AlwaysTranslateListFragment extends LanguageItemListFragment {
 
     @Override
     protected void onLanguageAdded(String code) {
-        TranslateBridge.setLanguageAlwaysTranslateState(code, true);
+        TranslateBridge.setLanguageAlwaysTranslateState(getProfile(), code, true);
     }
 
     @Override
     protected void onLanguageRemoved(String code) {
-        TranslateBridge.setLanguageAlwaysTranslateState(code, false);
+        TranslateBridge.setLanguageAlwaysTranslateState(getProfile(), code, false);
     }
 
     /**
@@ -70,14 +71,20 @@ public class AlwaysTranslateListFragment extends LanguageItemListFragment {
      * to make the summary text and launch an Intent to this Fragment.
      */
     public static class ListDelegate implements LanguageItemListFragment.ListDelegate {
-        @Override
-        public Collection<LanguageItem> getLanguageItems() {
-            return LanguagesManager.getInstance().getAlwaysTranslateLanguageItems();
+        private final Profile mProfile;
+
+        public ListDelegate(Profile profile) {
+            mProfile = profile;
         }
 
         @Override
-        public String getFragmentClassName() {
-            return AlwaysTranslateListFragment.class.getName();
+        public Collection<LanguageItem> getLanguageItems() {
+            return LanguagesManager.getForProfile(mProfile).getAlwaysTranslateLanguageItems();
+        }
+
+        @Override
+        public Class<AlwaysTranslateListFragment> getFragmentClass() {
+            return AlwaysTranslateListFragment.class;
         }
     }
 }

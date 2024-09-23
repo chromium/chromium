@@ -45,7 +45,7 @@ gcc_toolchain("arm64") {
     current_cpu = "arm64"
     current_os = "linux"
 
-    # reclient does not support gcc.
+    # remote execution does not support gcc.
     use_remoteexec = false
     is_clang = false
   }
@@ -66,7 +66,7 @@ gcc_toolchain("arm") {
     current_cpu = "arm"
     current_os = "linux"
 
-    # reclient does not support gcc.
+    # remote execution does not support gcc.
     use_remoteexec = false
     is_clang = false
   }
@@ -98,7 +98,7 @@ gcc_toolchain("x86") {
     current_cpu = "x86"
     current_os = "linux"
 
-    # reclient does not support gcc.
+    # remote execution does not support gcc.
     use_remoteexec = false
     is_clang = false
   }
@@ -234,7 +234,7 @@ gcc_toolchain("x64") {
     current_cpu = "x64"
     current_os = "linux"
 
-    # reclient does not support gcc.
+    # remote execution does not support gcc.
     use_remoteexec = false
     is_clang = false
   }
@@ -269,10 +269,9 @@ gcc_toolchain("mipsel") {
     current_cpu = "mipsel"
     current_os = "linux"
 
-    # reclient does not support gcc.
+    # remote execution does not support gcc.
     use_remoteexec = false
     is_clang = false
-    use_goma = false
   }
 }
 
@@ -291,10 +290,9 @@ gcc_toolchain("mips64el") {
     current_cpu = "mips64el"
     current_os = "linux"
 
-    # reclient does not support gcc.
+    # remote execution does not support gcc.
     use_remoteexec = false
     is_clang = false
-    use_goma = false
   }
 }
 
@@ -346,7 +344,7 @@ gcc_toolchain("s390x") {
     current_cpu = "s390x"
     current_os = "linux"
 
-    # reclient does not support gcc.
+    # remote execution does not support gcc.
     use_remoteexec = false
     is_clang = false
   }
@@ -365,7 +363,7 @@ gcc_toolchain("ppc64") {
     current_cpu = "ppc64"
     current_os = "linux"
 
-    # reclient does not support gcc.
+    # remote execution does not support gcc.
     use_remoteexec = false
     is_clang = false
   }
@@ -386,7 +384,7 @@ gcc_toolchain("mips") {
     current_cpu = "mips"
     current_os = "linux"
 
-    # reclient does not support gcc.
+    # remote execution does not support gcc.
     use_remoteexec = false
     is_clang = false
   }
@@ -407,7 +405,7 @@ gcc_toolchain("mips64") {
     current_cpu = "mips64"
     current_os = "linux"
 
-    # reclient does not support gcc.
+    # remote execution does not support gcc.
     use_remoteexec = false
     is_clang = false
   }

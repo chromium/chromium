@@ -28,19 +28,19 @@ import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
-import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +90,7 @@ public class StylusGestureEndToEndTest {
                         .setFallbackText(FALLBACK_TEXT)
                         .build();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWrappedInputConnection.performHandwritingGesture(
                             mHandwritingGesture, null, null);
@@ -118,7 +118,7 @@ public class StylusGestureEndToEndTest {
                         .setFallbackText(FALLBACK_TEXT)
                         .build();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWrappedInputConnection.performHandwritingGesture(
                             mHandwritingGesture, null, null);
@@ -145,7 +145,7 @@ public class StylusGestureEndToEndTest {
                         .setFallbackText(FALLBACK_TEXT)
                         .build();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWrappedInputConnection.performHandwritingGesture(
                             mHandwritingGesture, null, null);
@@ -175,7 +175,7 @@ public class StylusGestureEndToEndTest {
                         .setFallbackText(FALLBACK_TEXT)
                         .build();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWrappedInputConnection.performHandwritingGesture(
                             mHandwritingGesture, null, null);
@@ -200,7 +200,7 @@ public class StylusGestureEndToEndTest {
                         .setFallbackText(FALLBACK_TEXT)
                         .build();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWrappedInputConnection.performHandwritingGesture(
                             mHandwritingGesture, null, null);
@@ -218,7 +218,7 @@ public class StylusGestureEndToEndTest {
                         .setFallbackText(FALLBACK_TEXT)
                         .build();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWrappedInputConnection.performHandwritingGesture(
                             mHandwritingGesture, null, null);
@@ -251,7 +251,7 @@ public class StylusGestureEndToEndTest {
                         .setFallbackText(FALLBACK_TEXT)
                         .build();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWrappedInputConnection.performHandwritingGesture(
                             mHandwritingGesture, null, null);
@@ -286,7 +286,7 @@ public class StylusGestureEndToEndTest {
                         .setFallbackText(FALLBACK_TEXT)
                         .build();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWrappedInputConnection.performHandwritingGesture(
                             mHandwritingGesture, null, null);

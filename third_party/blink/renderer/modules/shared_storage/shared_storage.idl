@@ -33,7 +33,6 @@
   ] Promise<any> clear();
 
   [
-    Exposed=SharedStorageWorklet,
     CallWith=ScriptState,
     RaisesException
   ] Promise<DOMString> get(DOMString key);
@@ -62,7 +61,7 @@
     RaisesException,
     MeasureAs=SharedStorageAPI_SelectURL_Method
   ] Promise<SharedStorageResponse> selectURL(DOMString name,
-                                 FrozenArray<SharedStorageUrlWithMetadata> urls,
+                                 sequence<SharedStorageUrlWithMetadata> urls,
                                  optional SharedStorageRunOperationMethodOptions options);
 
   [
@@ -73,12 +72,13 @@
   ] Promise<any> run(DOMString name, optional SharedStorageRunOperationMethodOptions options);
 
   [
-    RuntimeEnabled=SharedStorageAPIM123,
+    RuntimeEnabled=SharedStorageAPIM125,
+    Exposed=Window,
     CallWith=ScriptState,
     RaisesException,
     MeasureAs=SharedStorageAPI_CreateWorklet_Method
   ] Promise<SharedStorageWorklet> createWorklet(USVString moduleURL,
-                                                optional WorkletOptions options = {});
+                                                optional SharedStorageWorkletOptions options = {});
 
   [
     Exposed=Window,

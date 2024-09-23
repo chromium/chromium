@@ -27,7 +27,8 @@ class PowerMonitorDeviceSourceLinux : public base::PowerMonitorSource {
   ~PowerMonitorDeviceSourceLinux() override;
 
   // base::PowerMonitorSource:
-  bool IsOnBatteryPower() override;
+  base::PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus()
+      const override;
 
  private:
   void ShutdownBus();

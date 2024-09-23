@@ -105,7 +105,7 @@ ScreenOrientationController::ComputeOrientation(const gfx::Rect& rect,
                  ? display::mojom::blink::ScreenOrientation::kLandscapeSecondary
                  : display::mojom::blink::ScreenOrientation::kPortraitPrimary;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return display::mojom::blink::ScreenOrientation::kPortraitPrimary;
   }
 }
@@ -263,6 +263,7 @@ bool ScreenOrientationController::MaybeHasActiveLock() const {
 }
 
 void ScreenOrientationController::ContextDestroyed() {
+  pending_callback_.reset();
   active_lock_ = false;
 }
 
@@ -314,7 +315,7 @@ void ScreenOrientationController::OnLockOrientationResult(
       pending_callback_->OnError(kWebLockOrientationErrorCanceled);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

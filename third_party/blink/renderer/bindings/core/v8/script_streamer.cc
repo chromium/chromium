@@ -4,16 +4,30 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 
+#include <atomic>
 #include <memory>
 #include <utility>
 
+#include "base/check_op.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/sequence_checker.h"
+#include "base/state_transitions.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/pass_key.h"
+#include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/wait.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/v8_compile_hints_histograms.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
@@ -21,14 +35,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_for_streaming.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_producer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_consumer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/crypto.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -39,157 +55,52 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
-namespace blink {
+namespace WTF {
 
-bool DecodingEnabled() {
-  return base::FeatureList::IsEnabled(features::kDecodeScriptSourceOffThread);
-}
-
-// ScriptDecoder decodes and hashes the script source on a worker thread, and
-// then forwards the data to the client on the loader thread.
-class ResourceScriptStreamer::ScriptDecoder {
- public:
-  ScriptDecoder(ResponseBodyLoaderClient* response_body_loader_client,
-                std::unique_ptr<TextResourceDecoder> decoder,
-                scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner)
-      : decoding_enabled_(DecodingEnabled()),
-        decoder_(std::move(decoder)),
-        response_body_loader_client_(response_body_loader_client),
-        loading_task_runner_(std::move(loading_task_runner)),
-        decoding_task_runner_(decoding_enabled_
-                                  ? worker_pool::CreateSequencedTaskRunner(
-                                        {base::TaskPriority::USER_BLOCKING})
-                                  : nullptr) {}
-
-  void DidReceiveData(std::unique_ptr<char[]> data,
-                      size_t data_size,
-                      bool send_to_client) {
-    if (ShouldPostToDecodingThread()) {
-      PostCrossThreadTask(
-          *decoding_task_runner_, FROM_HERE,
-          CrossThreadBindOnce(&ScriptDecoder::DidReceiveData,
-                              CrossThreadUnretained(this), std::move(data),
-                              data_size, send_to_client));
-      return;
-    }
-
-    if (decoding_enabled_)
-      AppendData(decoder_->Decode(data.get(), data_size));
-
-    if (send_to_client) {
-      RunOrPostToLoadingThread(FROM_HERE,
-                               CrossThreadBindOnce(NotifyClientDidReceiveData,
-                                                   response_body_loader_client_,
-                                                   std::move(data), data_size));
-    }
-  }
-
-  void FinishDecode(CrossThreadOnceClosure main_thread_continuation) {
-    if (ShouldPostToDecodingThread()) {
-      PostCrossThreadTask(
-          *decoding_task_runner_, FROM_HERE,
-          CrossThreadBindOnce(&ScriptDecoder::FinishDecode,
-                              CrossThreadUnretained(this),
-                              std::move(main_thread_continuation)));
-      return;
-    }
-
-    if (decoding_enabled_) {
-      AppendData(decoder_->Flush());
-
-      DigestValue digest_value;
-      digestor_.Finish(digest_value);
-
-      RunOrPostToLoadingThread(
-          FROM_HERE,
-          CrossThreadBindOnce(
-              NotifyClientDidFinishLoading, response_body_loader_client_,
-              builder_.ReleaseString(),
-              std::make_unique<ParkableStringImpl::SecureDigest>(digest_value),
-              std::move(main_thread_continuation)));
-    } else {
-      RunOrPostToLoadingThread(FROM_HERE, std::move(main_thread_continuation));
-    }
-  }
-
-  void Delete() const {
-    if (decoding_task_runner_)
-      decoding_task_runner_->DeleteSoon(FROM_HERE, this);
-    else
-      delete this;
-  }
-
- private:
-  void RunOrPostToLoadingThread(const base::Location& from_here,
-                                CrossThreadOnceClosure closure) {
-    if (loading_task_runner_->RunsTasksInCurrentSequence()) {
-      std::move(closure).Run();
-      return;
-    }
-
-    PostCrossThreadTask(*loading_task_runner_, from_here, std::move(closure));
-  }
-
-  bool ShouldPostToDecodingThread() {
-    return decoding_task_runner_ &&
-           !decoding_task_runner_->RunsTasksInCurrentSequence();
-  }
-
-  void AppendData(const String& data) {
-    digestor_.Update(base::as_bytes(base::make_span(
-        static_cast<const char*>(data.Bytes()), data.CharactersSizeInBytes())));
-    builder_.Append(data);
-  }
-
-  static void NotifyClientDidReceiveData(
-      ResponseBodyLoaderClient* response_body_loader_client,
-      std::unique_ptr<char[]> data,
-      size_t data_size) {
-    // The response_body_loader_client is held weakly, so it may be dead by the
-    // time this callback is called. If so, we can simply drop this chunk.
-    if (!response_body_loader_client)
-      return;
-
-    response_body_loader_client->DidReceiveData(
-        base::make_span(data.get(), data_size));
-  }
-
-  static void NotifyClientDidFinishLoading(
-      ResponseBodyLoaderClient* response_body_loader_client,
-      const String& decoded_data,
-      std::unique_ptr<ParkableStringImpl::SecureDigest> digest,
-      CrossThreadOnceClosure main_thread_continuation) {
-    if (response_body_loader_client) {
-      response_body_loader_client->DidReceiveDecodedData(decoded_data,
-                                                         std::move(digest));
-    }
-
-    std::move(main_thread_continuation).Run();
-  }
-
-  const bool decoding_enabled_;
-  StringBuilder builder_;
-  std::unique_ptr<TextResourceDecoder> decoder_;
-  Digestor digestor_{kHashAlgorithmSha256};
-
-  CrossThreadWeakPersistent<ResponseBodyLoaderClient>
-      response_body_loader_client_;
-  scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> decoding_task_runner_;
+template <>
+struct CrossThreadCopier<mojo_base::BigBuffer> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = mojo_base::BigBuffer;
+  static Type Copy(Type&& value) { return std::move(value); }
 };
 
-void ResourceScriptStreamer::ScriptDecoderDeleter::operator()(
-    const ScriptDecoder* ptr) {
-  if (ptr)
-    ptr->Delete();
+}  // namespace WTF
+
+namespace blink {
+namespace {
+
+v8::ScriptType ScriptTypeForStreamingTask(ScriptResource* script_resource) {
+  switch (script_resource->GetInitialRequestScriptType()) {
+    case mojom::blink::ScriptType::kModule:
+      return v8::ScriptType::kModule;
+    case mojom::blink::ScriptType::kClassic: {
+      // <link rel=preload as=script ref=module.mjs> is a common pattern instead
+      // of <link rel=modulepreload>. Try streaming parsing as module instead in
+      // these cases (https://crbug.com/1178198).
+      if (script_resource->IsUnusedPreload()) {
+        if (script_resource->Url().GetPath().ToString().EndsWithIgnoringCase(
+                ".mjs")) {
+          return v8::ScriptType::kModule;
+        }
+      }
+      return v8::ScriptType::kClassic;
+    }
+  }
+  NOTREACHED_IN_MIGRATION();
 }
+
+}  // namespace
 
 // SourceStream implements the streaming interface towards V8. The main
 // functionality is preparing the data to give to V8 on main thread, and
@@ -238,35 +149,41 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
 
     // Start a new two-phase read, blocking until data is available.
     while (true) {
-      const void* buffer;
-      uint32_t num_bytes;
-      MojoResult result = data_pipe_->BeginReadData(&buffer, &num_bytes,
-                                                    MOJO_READ_DATA_FLAG_NONE);
+      base::span<const uint8_t> buffer;
+      MojoResult result =
+          data_pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
 
       switch (result) {
         case MOJO_RESULT_OK: {
           // num_bytes could only be 0 if the handle was being read elsewhere.
-          CHECK_GT(num_bytes, 0u);
+          CHECK_GT(buffer.size(), 0u);
 
           if (src) {
             auto copy_for_script_stream =
-                std::make_unique<uint8_t[]>(num_bytes);
-            memcpy(copy_for_script_stream.get(), buffer, num_bytes);
-            *src = copy_for_script_stream.release();
+                base::HeapArray<uint8_t>::CopiedFrom(buffer);
+            *src = std::move(copy_for_script_stream).leak().data();
           }
 
           // TODO(leszeks): It would be nice to get rid of this second copy, and
           // either share ownership of the chunks, or only give chunks back to
           // the client once the streaming completes.
-          auto copy_for_resource = std::make_unique<char[]>(num_bytes);
-          memcpy(copy_for_resource.get(), buffer, num_bytes);
-          script_decoder_->DidReceiveData(std::move(copy_for_resource),
-                                          num_bytes, true);
+          Vector<char> copy_for_decoder;
+          copy_for_decoder.AppendSpan(base::as_chars(buffer));
+          if (absl::holds_alternative<ScriptDecoder*>(script_decoder_)) {
+            absl::get<ScriptDecoder*>(script_decoder_)
+                ->DidReceiveData(std::move(copy_for_decoder));
+          } else {
+            CHECK(absl::holds_alternative<ScriptDecoderWithClient*>(
+                script_decoder_));
+            absl::get<ScriptDecoderWithClient*>(script_decoder_)
+                ->DidReceiveData(std::move(copy_for_decoder),
+                                 /*send_to_client=*/true);
+          }
 
-          result = data_pipe_->EndReadData(num_bytes);
+          result = data_pipe_->EndReadData(buffer.size());
           CHECK_EQ(result, MOJO_RESULT_OK);
 
-          return num_bytes;
+          return buffer.size();
         }
 
         case MOJO_RESULT_SHOULD_WAIT: {
@@ -333,7 +250,6 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
   }
 
   void Cancel() {
-    DCHECK(IsMainThread());
     // The script is no longer needed by the upper layers. Stop streaming
     // it. The next time GetMoreData is called (or woken up), it will return
     // 0, which will be interpreted as EOS by V8 and the parsing will
@@ -342,11 +258,10 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
     cancelled_.Set();
   }
 
-  void TakeDataAndPipeOnMainThread(
-      ScriptResource* resource,
-      ResourceScriptStreamer* streamer,
-      mojo::ScopedDataPipeConsumerHandle data_pipe,
-      ResourceScriptStreamer::ScriptDecoder* script_decoder) {
+  void TakeDataAndPipeOnMainThread(ScriptResource* resource,
+                                   ResourceScriptStreamer* streamer,
+                                   mojo::ScopedDataPipeConsumerHandle data_pipe,
+                                   ScriptDecoderWithClient* script_decoder) {
     DCHECK(IsMainThread());
     CHECK(data_pipe);
     CHECK(!ready_to_run_.IsSet());
@@ -382,6 +297,25 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
     ready_to_run_.Set();
   }
 
+  void TakeDataAndPipeOnBackgroundThread(
+      mojo::ScopedDataPipeConsumerHandle data_pipe,
+      ScriptDecoder* script_decoder) {
+    CHECK(data_pipe);
+    CHECK(!ready_to_run_.IsSet());
+    CHECK(!cancelled_.IsSet());
+    CHECK(!initial_data_);
+    CHECK_EQ(initial_data_len_, 0u);
+    data_pipe_ = std::move(data_pipe);
+    script_decoder_ = script_decoder;
+    ready_to_run_.Set();
+  }
+
+  mojo::ScopedDataPipeConsumerHandle ReleaseDataPipe() {
+    mojo::ScopedDataPipeConsumerHandle body = std::move(data_pipe_);
+    data_pipe_.reset();
+    return body;
+  }
+
   ResourceScriptStreamer::LoadingState LoadingState() const {
     return load_state_;
   }
@@ -406,34 +340,37 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
   size_t initial_data_len_ = 0;
 
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
-  ResourceScriptStreamer::ScriptDecoder* script_decoder_;
+  absl::variant<ScriptDecoderWithClient*, ScriptDecoder*> script_decoder_;
 };
 
-std::tuple<ResourceScriptStreamer*, ScriptStreamer::NotStreamingReason>
-ResourceScriptStreamer::TakeFrom(ScriptResource* script_resource,
-                                 mojom::blink::ScriptType expected_type) {
-  ScriptStreamer::NotStreamingReason not_streamed_reason =
-      script_resource->NoStreamerReason();
-  ResourceScriptStreamer* streamer = script_resource->TakeStreamer();
+std::tuple<ScriptStreamer*, ScriptStreamer::NotStreamingReason>
+ScriptStreamer::TakeFrom(ScriptResource* script_resource,
+                         mojom::blink::ScriptType expected_type) {
+  const v8::ScriptType expected_script_type =
+      expected_type == mojom::blink::ScriptType::kClassic
+          ? v8::ScriptType::kClassic
+          : v8::ScriptType::kModule;
+  NotStreamingReason not_streamed_reason = script_resource->NoStreamerReason();
+  ScriptStreamer* streamer = script_resource->TakeStreamer();
   if (streamer) {
     if (streamer->IsStreamingSuppressed()) {
       not_streamed_reason = streamer->StreamingSuppressedReason();
       streamer = nullptr;
     } else {
-      DCHECK_EQ(not_streamed_reason,
-                ScriptStreamer::NotStreamingReason::kInvalid);
-      mojom::blink::ScriptType streamer_script_type =
-          streamer->GetScriptType() == v8::ScriptType::kClassic
-              ? mojom::blink::ScriptType::kClassic
-              : mojom::blink::ScriptType::kModule;
-      if (streamer_script_type != expected_type) {
+      // When `streamer` is a BackgroundResourceScriptStreamer,
+      // `not_streamed_reason` is kBackgroundResponseProcessorWillBeUsed`.
+      CHECK(not_streamed_reason == NotStreamingReason::kInvalid ||
+            not_streamed_reason ==
+                NotStreamingReason::kBackgroundResponseProcessorWillBeUsed);
+      not_streamed_reason = NotStreamingReason::kInvalid;
+      if (streamer->GetScriptType() != expected_script_type) {
         streamer = nullptr;
-        not_streamed_reason =
-            ScriptStreamer::NotStreamingReason::kErrorScriptTypeMismatch;
+        not_streamed_reason = NotStreamingReason::kErrorScriptTypeMismatch;
       }
     }
+    return std::make_tuple(streamer, not_streamed_reason);
   }
-  return std::make_tuple(streamer, not_streamed_reason);
+  return std::make_tuple(nullptr, not_streamed_reason);
 }
 
 namespace {
@@ -514,17 +451,16 @@ void ScriptStreamer::RecordStreamingHistogram(
 }
 
 bool ScriptStreamer::ConvertEncoding(
-    const char* encoding_name,
+    const AtomicString& encoding_name,
     v8::ScriptCompiler::StreamedSource::Encoding* encoding) {
   // Here's a list of encodings we can use for streaming. These are
   // the canonical names.
-  if (strcmp(encoding_name, "windows-1252") == 0 ||
-      strcmp(encoding_name, "ISO-8859-1") == 0 ||
-      strcmp(encoding_name, "US-ASCII") == 0) {
+  if (encoding_name == "windows-1252" || encoding_name == "ISO-8859-1" ||
+      encoding_name == "US-ASCII") {
     *encoding = v8::ScriptCompiler::StreamedSource::WINDOWS_1252;
     return true;
   }
-  if (strcmp(encoding_name, "UTF-8") == 0) {
+  if (encoding_name == "UTF-8") {
     *encoding = v8::ScriptCompiler::StreamedSource::UTF8;
     return true;
   }
@@ -533,6 +469,11 @@ bool ScriptStreamer::ConvertEncoding(
   // are Latin1 or UTF-8 anyway, so this should be enough for most
   // real world purposes.
   return false;
+}
+
+v8_compile_hints::V8LocalCompileHintsConsumer*
+ResourceScriptStreamer::GetV8LocalCompileHintsConsumerForTest() const {
+  return compile_hints_->GetV8LocalCompileHintsConsumerForTest();
 }
 
 bool ResourceScriptStreamer::IsStreamingStarted() const {
@@ -650,16 +591,6 @@ void ResourceScriptStreamer::RunScriptStreamingTask(
       "v8.parseOnBackground2");
 }
 
-bool ResourceScriptStreamer::HasEnoughDataForStreaming(
-    size_t resource_buffer_size) {
-  if (base::FeatureList::IsEnabled(features::kSmallScriptStreaming)) {
-    return resource_buffer_size >= kMaximumLengthOfBOM;
-  } else {
-    // Only stream larger scripts.
-    return resource_buffer_size >= kSmallScriptThreshold;
-  }
-}
-
 // Try to start a task streaming the script from the datapipe, with the task
 // taking ownership of the datapipe and weak ownership of the client. Returns
 // true if streaming succeeded and false otherwise.
@@ -667,7 +598,7 @@ bool ResourceScriptStreamer::HasEnoughDataForStreaming(
 // Streaming may fail to start because:
 //
 //   * The encoding is invalid (not UTF-8 or one-byte data)
-//   * The script is too small (see HasEnoughDataForStreaming)
+//   * The script is too small to check for a byte-order marker
 //   * There is a code cache for this script already
 //   * V8 failed to create a script streamer
 //
@@ -693,7 +624,7 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   // wait until the next data chunk comes before deciding whether to start the
   // streaming.
   if (!script_resource_->ResourceBuffer() ||
-      !HasEnoughDataForStreaming(script_resource_->ResourceBuffer()->size())) {
+      script_resource_->ResourceBuffer()->size() < kMaximumLengthOfBOM) {
     CHECK(!IsLoaded());
     return false;
   }
@@ -704,7 +635,7 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
     char maybe_bom[kMaximumLengthOfBOM] = {};
     if (!script_resource_->ResourceBuffer()->GetBytes(maybe_bom,
                                                       kMaximumLengthOfBOM)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
 
@@ -712,18 +643,20 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
         std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
             TextResourceDecoderOptions::kPlainTextContent,
             WTF::TextEncoding(script_resource_->Encoding()))));
-    decoder->CheckForBOM(maybe_bom, kMaximumLengthOfBOM);
+    decoder->CheckForBOM(maybe_bom);
 
     // The encoding may change when we see the BOM. Check for BOM now
     // and update the encoding from the decoder when necessary. Suppress
     // streaming if the encoding is unsupported.
-    //
-    // Also note that have at least s_smallScriptThreshold worth of
-    // data, which is more than enough for detecting a BOM.
     if (!ConvertEncoding(decoder->Encoding().GetName(), &encoding_)) {
       SuppressStreaming(NotStreamingReason::kEncodingNotSupported);
       return false;
     }
+  }
+
+  if (script_resource_->CacheHandler()) {
+    // Exclude scripts for which we're not going to generate metadata.
+    V8CodeCache::RecordCacheGetStatistics(script_resource_->CacheHandler());
   }
 
   // Here we can't call Check on the cache handler because it requires the
@@ -753,79 +686,25 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   source_ = std::make_unique<v8::ScriptCompiler::StreamedSource>(
       std::move(stream_ptr), encoding_);
 
-  v8::ScriptCompiler::CompileOptions compile_options =
-      v8::ScriptCompiler::kNoCompileOptions;
-  v8::CompileHintCallback compile_hint_callback = nullptr;
-  void* compile_hint_callback_data = nullptr;
-
-  v8_compile_hints::V8CrowdsourcedCompileHintsProducer* compile_hints_producer =
-      script_resource_->GetV8CrowdsourcedCompileHintsProducer();
-  v8_compile_hints::V8CrowdsourcedCompileHintsConsumer* compile_hints_consumer =
-      script_resource_->GetV8CrowdsourcedCompileHintsConsumer();
-
-  bool local_compile_hints_enabled =
-      base::FeatureList::IsEnabled(features::kLocalCompileHints);
-
-  if (compile_hints_producer && compile_hints_producer->MightGenerateData()) {
-    DCHECK(base::FeatureList::IsEnabled(features::kProduceCompileHints2));
-    compile_options = v8::ScriptCompiler::kProduceCompileHints;
-    base::UmaHistogramEnumeration(
-        v8_compile_hints::kStatusHistogram,
-        v8_compile_hints::Status::kProduceCompileHintsStreaming);
-  } else if (local_compile_hints_enabled &&
-             V8CodeCache::HasCompileHints(
-                 script_resource_->CacheHandler(),
-                 CachedMetadataHandler::kAllowUnchecked) &&
-             V8CodeCache::HasHotTimestamp(script_resource_->CacheHandler())) {
-    // For now, we can only consume local or crowdsourced compile hints, but
-    // not both at the same time.
-    // TODO(chromium:1495723): Enable consuming both at the same time.
-
-    // TODO(1495723): It's not clear what we should do if the resource is not
-    // hot but we have compile hints. 1) Consume compile hints and produce new
-    // ones (currently not possible in the API) and combine both compile hints.
-    // 2) Ignore existing compile hints (we're anyway not creating the
-    // code cache yet) and produce new ones.
-    CachedMetadataHandler* cache_handler = script_resource_->CacheHandler();
-    scoped_refptr<CachedMetadata> cached_metadata =
-        V8CodeCache::GetCachedMetadataForCompileHints(
-            cache_handler, CachedMetadataHandler::kAllowUnchecked);
-    local_compile_hints_consumer_ =
-        std::make_unique<v8_compile_hints::V8LocalCompileHintsConsumer>(
-            cached_metadata.get());
-    if (!local_compile_hints_consumer_->IsRejected()) {
-      compile_hint_callback_data = local_compile_hints_consumer_.get();
-      compile_hint_callback =
-          v8_compile_hints::V8LocalCompileHintsConsumer::GetCompileHint;
-      compile_options = v8::ScriptCompiler::kConsumeCompileHints;
-      base::UmaHistogramEnumeration(
-          v8_compile_hints::kStatusHistogram,
-          v8_compile_hints::Status::kConsumeLocalCompileHintsStreaming);
-    }
-  } else if (compile_hints_consumer && compile_hints_consumer->HasData()) {
-    // This doesn't need to be gated behind a runtime flag, because there won't
-    // be any data unless the v8_compile_hints::kConsumeCompileHints
-    // flag is on.
-    crowdsourced_compile_hint_callback_data_ =
-        compile_hints_consumer->GetDataWithScriptNameHash(
-            v8_compile_hints::ScriptNameHash(script_resource_->Url()));
-    compile_hint_callback_data = crowdsourced_compile_hint_callback_data_.get();
-    compile_hint_callback =
-        &v8_compile_hints::V8CrowdsourcedCompileHintsConsumer::
-            CompileHintCallback;
-    compile_options = v8::ScriptCompiler::kConsumeCompileHints;
-    base::UmaHistogramEnumeration(
-        v8_compile_hints::kStatusHistogram,
-        v8_compile_hints::Status::kConsumeCrowdsourcedCompileHintsStreaming);
-  } else if (local_compile_hints_enabled) {
-    // Produce local compile hints. TODO(chromium:1495723): If we later find out
-    // there were local compile hints (but the cache arrived late), we'll need
-    // to use them.
-    compile_options = v8::ScriptCompiler::kProduceCompileHints;
-    base::UmaHistogramEnumeration(
-        v8_compile_hints::kStatusHistogram,
-        v8_compile_hints::Status::kProduceCompileHintsStreaming);
-  }
+  const bool has_hot_timestamp =
+      V8CodeCache::HasHotTimestamp(script_resource_->CacheHandler());
+  compile_hints_ =
+      v8_compile_hints::CompileHintsForStreaming::Builder(
+          script_resource_->GetV8CrowdsourcedCompileHintsProducer(),
+          script_resource_->GetV8CrowdsourcedCompileHintsConsumer(),
+          script_resource_->Url(),
+          script_resource_
+              ->GetV8CompileHintsMagicCommentRuntimeFeatureEnabled())
+          .Build((V8CodeCache::HasCompileHints(
+                      script_resource_->CacheHandler(),
+                      CachedMetadataHandler::kAllowUnchecked) &&
+                  has_hot_timestamp)
+                     ? V8CodeCache::GetCachedMetadataForCompileHints(
+                           script_resource_->CacheHandler(),
+                           CachedMetadataHandler::kAllowUnchecked)
+                     : nullptr,
+                 has_hot_timestamp);
+  CHECK(compile_hints_);
 
   v8::Isolate* isolate = script_resource_->GetIsolateOrNull();
   if (!isolate) {
@@ -840,8 +719,10 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask>
       script_streaming_task =
           base::WrapUnique(v8::ScriptCompiler::StartStreaming(
-              isolate, source_.get(), script_type_, compile_options,
-              compile_hint_callback, compile_hint_callback_data));
+              isolate, source_.get(), script_type_,
+              compile_hints_->compile_options(),
+              compile_hints_->GetCompileHintCallback(),
+              compile_hints_->GetCompileHintCallbackData()));
 
   if (!script_streaming_task) {
     // V8 cannot stream the script.
@@ -879,26 +760,6 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   return true;
 }
 
-v8::ScriptType ResourceScriptStreamer::ScriptTypeForStreamingTask(
-    ScriptResource* script_resource) {
-  switch (script_resource->GetInitialRequestScriptType()) {
-    case mojom::blink::ScriptType::kModule:
-      return v8::ScriptType::kModule;
-    case mojom::blink::ScriptType::kClassic: {
-      // <link rel=preload as=script ref=module.mjs> is a common pattern instead
-      // of <link rel=modulepreload>. Try streaming parsing as module instead in
-      // these cases (https://crbug.com/1178198).
-      if (script_resource->IsUnusedPreload()) {
-        if (script_resource->Url().GetPath().EndsWithIgnoringCase(".mjs")) {
-          return v8::ScriptType::kModule;
-        }
-      }
-      return v8::ScriptType::kClassic;
-    }
-  }
-  NOTREACHED();
-}
-
 v8::ScriptType ResourceScriptStreamer::GetScriptType() const {
   return script_type_;
 }
@@ -911,9 +772,10 @@ ResourceScriptStreamer::ResourceScriptStreamer(
     scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner)
     : script_resource_(script_resource),
       response_body_loader_client_(response_body_loader_client),
-      script_decoder_(new ScriptDecoder(response_body_loader_client,
-                                        std::move(decoder),
-                                        loading_task_runner)),
+      script_decoder_(
+          ScriptDecoderWithClient::Create(response_body_loader_client,
+                                          std::move(decoder),
+                                          loading_task_runner)),
       data_pipe_(std::move(data_pipe)),
       script_url_string_(script_resource->Url().GetString()),
       script_resource_identifier_(script_resource->InspectorId()),
@@ -967,8 +829,7 @@ void ResourceScriptStreamer::OnDataPipeReadable(
       // must be because we suppressed streaming earlier, or never got enough
       // data to start streaming.
       CHECK(IsStreamingSuppressed() || !script_resource_->ResourceBuffer() ||
-            !HasEnoughDataForStreaming(
-                script_resource_->ResourceBuffer()->size()));
+            script_resource_->ResourceBuffer()->size() < kMaximumLengthOfBOM);
       watcher_.reset();
       // Pass kScriptTooSmall for the !IsStreamingSuppressed() case, it won't
       // override an existing streaming reason.
@@ -977,7 +838,7 @@ void ResourceScriptStreamer::OnDataPipeReadable(
       return;
 
     case MOJO_RESULT_SHOULD_WAIT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
 
     default:
@@ -990,24 +851,18 @@ void ResourceScriptStreamer::OnDataPipeReadable(
   CHECK(state.readable());
   CHECK(data_pipe_);
 
-  const void* data;
-  uint32_t data_size;
+  base::span<const uint8_t> data;
   MojoReadDataFlags flags_to_pass = MOJO_READ_DATA_FLAG_NONE;
-  MojoResult begin_read_result =
-      data_pipe_->BeginReadData(&data, &data_size, flags_to_pass);
+  MojoResult begin_read_result = data_pipe_->BeginReadData(flags_to_pass, data);
   // There should be data, so this read should succeed.
   CHECK_EQ(begin_read_result, MOJO_RESULT_OK);
 
-  response_body_loader_client_->DidReceiveData(
-      base::make_span(static_cast<const char*>(data), data_size));
-  if (DecodingEnabled()) {
-    auto copy_for_decoding = std::make_unique<char[]>(data_size);
-    memcpy(copy_for_decoding.get(), data, data_size);
-    script_decoder_->DidReceiveData(std::move(copy_for_decoding), data_size,
-                                    false);
-  }
+  std::string_view chars = base::as_string_view(data);
+  response_body_loader_client_->DidReceiveData(chars);
+  script_decoder_->DidReceiveData(Vector<char>(chars),
+                                  /*send_to_client=*/false);
 
-  MojoResult end_read_result = data_pipe_->EndReadData(data_size);
+  MojoResult end_read_result = data_pipe_->EndReadData(data.size());
 
   CHECK_EQ(end_read_result, MOJO_RESULT_OK);
 
@@ -1157,12 +1012,12 @@ class InlineSourceStream final
       return 0;
     }
 
-    size_t size = text_.CharactersSizeInBytes();
-    auto data_copy = std::make_unique<uint8_t[]>(size);
-    memcpy(data_copy.get(), text_.Bytes(), size);
+    auto text_bytes = text_.RawByteSpan();
+    size_t size = text_bytes.size();
+    auto data_copy = base::HeapArray<uint8_t>::CopiedFrom(text_bytes);
     text_ = String();
 
-    *src = data_copy.release();
+    *src = std::move(data_copy).leak().data();
     return size;
   }
 
@@ -1180,6 +1035,10 @@ BackgroundInlineScriptStreamer::BackgroundInlineScriptStreamer(
                              ? v8::ScriptCompiler::StreamedSource::ONE_BYTE
                              : v8::ScriptCompiler::StreamedSource::TWO_BYTE);
 
+  // We don't generate code caches for inline scripts, so we never pass the
+  // kFollowCompileHintsMagicComment compile option.
+  CHECK((compile_options &
+         v8::ScriptCompiler::kFollowCompileHintsMagicComment) == 0);
   task_ = base::WrapUnique(v8::ScriptCompiler::StartStreaming(
       isolate, source_.get(), v8::ScriptType::kClassic, compile_options));
 }
@@ -1211,7 +1070,7 @@ v8::ScriptCompiler::StreamedSource* BackgroundInlineScriptStreamer::Source(
   DCHECK_EQ(expected_type, v8::ScriptType::kClassic);
   static const base::FeatureParam<base::TimeDelta> kWaitTimeoutParam{
       &features::kPrecompileInlineScripts, "inline-script-timeout",
-      base::Milliseconds(20)};
+      base::Milliseconds(0)};
   // Make sure the script has finished compiling in the background. See comment
   // above in Run().
   bool signaled = event_.TimedWait(kWaitTimeoutParam.Get());
@@ -1226,6 +1085,830 @@ v8::ScriptCompiler::StreamedSource* BackgroundInlineScriptStreamer::Source(
 InlineScriptStreamer* InlineScriptStreamer::From(
     scoped_refptr<BackgroundInlineScriptStreamer> streamer) {
   return MakeGarbageCollected<InlineScriptStreamer>(std::move(streamer));
+}
+
+namespace {
+
+enum class BackgroundProcessorState {
+  kWaitingForResponse = 0,
+  kResponseReceived,
+  kCheckingEncoding,
+  kWaitingForDataPipeReadable,
+  kWaitingForParseResult,
+  kWaitingForConsumeCodeCacheResultAndDecodedScript,
+  kWaitingForConsumeCodeCacheResult,
+  kWaitingForDecodedScript,
+  kStreamingSupressed,
+  kFinished,
+};
+
+#if DCHECK_IS_ON()
+std::ostream& operator<<(std::ostream& o, const BackgroundProcessorState& s) {
+  return o << static_cast<unsigned>(s);
+}
+#endif  // DCHECK_IS_ON()
+
+std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+MaybeCreateConsumeCodeCacheTask(std::optional<mojo_base::BigBuffer>& big_buffer,
+                                const String& encoding,
+                                v8::Isolate* isolate,
+                                bool& has_code_cache,
+                                v8::ScriptType script_type) {
+  CHECK(!has_code_cache);
+  if (script_type == v8::ScriptType::kModule) {
+    // Currently ModuleScript doesn't support off-thread cache consumption.
+    return nullptr;
+  }
+  if (!big_buffer) {
+    return nullptr;
+  }
+  scoped_refptr<CachedMetadata> metadata =
+      CachedMetadata::CreateFromSerializedData(*big_buffer);
+  if (!metadata) {
+    return nullptr;
+  }
+  std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask> task;
+  if (V8CodeCache::HasCodeCache(*metadata, encoding)) {
+    has_code_cache = true;
+    if (features::kBackgroundCodeCacheDecoderStart.Get()) {
+      task.reset(v8::ScriptCompiler::StartConsumingCodeCacheOnBackground(
+          isolate, V8CodeCache::CreateCachedData(metadata)));
+    }
+  }
+  absl::variant<Vector<uint8_t>, mojo_base::BigBuffer> drained_data =
+      std::move(*metadata).DrainSerializedData();
+  CHECK(absl::holds_alternative<mojo_base::BigBuffer>(drained_data));
+  big_buffer = std::move(absl::get<mojo_base::BigBuffer>(drained_data));
+  return task;
+}
+
+std::unique_ptr<v8_compile_hints::CompileHintsForStreaming>
+BuildCompileHintsForStreaming(
+    v8_compile_hints::CompileHintsForStreaming::Builder& builder,
+    std::optional<mojo_base::BigBuffer>& big_buffer,
+    const String& encoding) {
+  // Same as the HasCodeCache() method above, this method creates a
+  // CachedMetadata from the the passed BigBuffer and passes it to
+  // V8CodeCache::HasHotCompileHints(). And then takes the BigBuffer from the
+  // CachedMetadata and set it back to the input argument `big_buffer`.
+  scoped_refptr<CachedMetadata> metadata =
+      big_buffer ? CachedMetadata::CreateFromSerializedData(*big_buffer)
+                 : nullptr;
+
+  V8CodeCache::RecordCacheGetStatistics(metadata.get(), encoding);
+  std::unique_ptr<v8_compile_hints::CompileHintsForStreaming> result =
+      std::move(builder).Build(
+          (metadata && V8CodeCache::HasHotCompileHints(*metadata, encoding))
+              ? metadata
+              : nullptr,
+          metadata && V8CodeCache::HasHotTimestamp(*metadata, encoding));
+  if (metadata) {
+    absl::variant<Vector<uint8_t>, mojo_base::BigBuffer> drained_data =
+        std::move(*metadata).DrainSerializedData();
+    CHECK(absl::holds_alternative<mojo_base::BigBuffer>(drained_data));
+    big_buffer = std::move(absl::get<mojo_base::BigBuffer>(drained_data));
+  }
+  return result;
+}
+
+}  // namespace
+
+BackgroundResourceScriptStreamer::Result::Result(
+    String decoded_data,
+    std::unique_ptr<ParkableStringImpl::SecureDigest> digest,
+    std::unique_ptr<v8::ScriptCompiler::StreamedSource> streamed_source)
+    : decoded_data(std::move(decoded_data)),
+      digest(std::move(digest)),
+      streamed_source(std::move(streamed_source)) {}
+
+BackgroundResourceScriptStreamer::Result::Result(
+    String decoded_data,
+    std::unique_ptr<ParkableStringImpl::SecureDigest> digest,
+    std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+        consume_code_cache_task)
+    : decoded_data(std::move(decoded_data)),
+      digest(std::move(digest)),
+      consume_code_cache_task(std::move(consume_code_cache_task)) {}
+
+class BackgroundResourceScriptStreamer::BackgroundProcessor final
+    : public BackgroundResponseProcessor {
+ public:
+  BackgroundProcessor(
+      v8::ScriptType script_type,
+      const String script_url_string,
+      uint64_t script_resource_identifier,
+      v8::Isolate* isolate,
+      WTF::TextEncoding encoding,
+      std::unique_ptr<v8_compile_hints::CompileHintsForStreaming::Builder>
+          compile_hints_builder,
+      CrossThreadWeakHandle<BackgroundResourceScriptStreamer> streamer_handle);
+  BackgroundProcessor(const BackgroundProcessor&) = delete;
+  BackgroundProcessor& operator=(const BackgroundProcessor&) = delete;
+  ~BackgroundProcessor() override;
+
+  bool MaybeStartProcessingResponse(
+      network::mojom::URLResponseHeadPtr& head,
+      mojo::ScopedDataPipeConsumerHandle& body,
+      std::optional<mojo_base::BigBuffer>& cached_metadata_buffer,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      Client* client) override;
+
+  v8::ScriptType script_type() const { return script_type_; }
+  bool IsStreamingSuppressed();
+
+ private:
+  static void RunScriptStreamingTask(
+      const String script_url_string,
+      uint64_t script_resource_identifier,
+      std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask>
+          script_streaming_task,
+      std::unique_ptr<v8::ScriptCompiler::StreamedSource> streamed_source,
+      SourceStream* source_stream_ptr,
+      ScriptDecoderPtr script_decoder,
+      std::unique_ptr<v8_compile_hints::CompileHintsForStreaming> compile_hints,
+      base::WeakPtr<BackgroundProcessor> background_processor_weak_ptr);
+  static void RunConsumingCodeCacheTask(
+      const String script_url_string,
+      uint64_t script_resource_identifier,
+      std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+          consume_code_cache_task,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      mojo_base::BigBuffer cached_metadata,
+      base::WeakPtr<BackgroundProcessor> background_processor_weak_ptr,
+      const uint64_t trace_id);
+
+  void SetState(BackgroundProcessorState state);
+
+  void OnDataPipeReadable(MojoResult ready_result,
+                          const mojo::HandleSignalsState& ready_state);
+  bool TryStartStreamingTask(MojoResult result,
+                             const mojo::HandleSignalsState& state);
+
+  void OnFinishStreaming(
+      std::unique_ptr<v8::ScriptCompiler::StreamedSource> streamed_source,
+      ScriptDecoderPtr script_decoder,
+      ScriptDecoder::Result result);
+
+  void OnFinishCodeCacheConsumer(
+      std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+          consume_code_cache_task,
+      mojo_base::BigBuffer cached_metadata);
+  void OnFinishScriptDecode(ScriptDecoder::Result result);
+  void OnFinishCodeCacheConsumerScriptDecode();
+
+  void SuppressStreaming(NotStreamingReason reason);
+
+  const v8::ScriptType script_type_;
+  // Keep the script URL string for event tracing.
+  const String script_url_string_;
+  // Keep the script resource identifier for event tracing.
+  const uint64_t script_resource_identifier_;
+
+  v8::Isolate* isolate_;
+  WTF::TextEncoding encoding_;
+
+  SourceStream* source_stream_ptr_ = nullptr;
+
+  // For CompileHints
+  std::unique_ptr<v8_compile_hints::CompileHintsForStreaming::Builder>
+      compile_hints_builder_;
+  std::unique_ptr<v8_compile_hints::CompileHintsForStreaming> compile_hints_;
+
+  CrossThreadWeakHandle<BackgroundResourceScriptStreamer> streamer_handle_;
+
+  // Used for reading first few bytes of the body to detecting BOM.
+  std::unique_ptr<mojo::SimpleWatcher> watcher_;
+
+  network::mojom::URLResponseHeadPtr head_;
+  mojo::ScopedDataPipeConsumerHandle body_;
+  std::optional<mojo_base::BigBuffer> cached_metadata_;
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+  DataPipeScriptDecoderPtr data_pipe_script_decoder_;
+
+  std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+      consume_code_cache_task_;
+  std::optional<ScriptDecoder::Result> decoder_result_;
+
+  Client* client_;
+
+  NotStreamingReason suppressed_reason_ = NotStreamingReason::kInvalid;
+
+  BackgroundProcessorState state_ =
+      BackgroundProcessorState::kWaitingForResponse;
+
+  SEQUENCE_CHECKER(background_sequence_checker_);
+  base::WeakPtrFactory<BackgroundProcessor> weak_factory_{this};
+};
+
+class BackgroundResourceScriptStreamer::BackgroundProcessorFactory final
+    : public BackgroundResponseProcessorFactory {
+ public:
+  BackgroundProcessorFactory(
+      ScriptResource* script_resource,
+      CrossThreadWeakHandle<BackgroundResourceScriptStreamer> streamer_handle)
+      : script_type_(ScriptTypeForStreamingTask(script_resource)),
+        script_url_string_(script_resource->Url().GetString()),
+        script_resource_identifier_(script_resource->InspectorId()),
+        isolate_(script_resource->GetIsolateOrNull()),
+        encoding_(script_resource->Encoding()),
+        compile_hints_builder_(
+            std::make_unique<
+                v8_compile_hints::CompileHintsForStreaming::Builder>(
+                script_resource->GetV8CrowdsourcedCompileHintsProducer(),
+                script_resource->GetV8CrowdsourcedCompileHintsConsumer(),
+                script_resource->Url(),
+                script_resource
+                    ->GetV8CompileHintsMagicCommentRuntimeFeatureEnabled())),
+        streamer_handle_(std::move(streamer_handle)) {}
+  BackgroundProcessorFactory(const BackgroundProcessorFactory&) = delete;
+  BackgroundProcessorFactory& operator=(const BackgroundProcessorFactory&) =
+      delete;
+  ~BackgroundProcessorFactory() override = default;
+
+  std::unique_ptr<BackgroundResponseProcessor> Create() && override {
+    return std::make_unique<BackgroundProcessor>(
+        script_type_, script_url_string_, script_resource_identifier_, isolate_,
+        encoding_, std::move(compile_hints_builder_),
+        std::move(streamer_handle_));
+  }
+
+  const v8::ScriptType script_type_;
+  const String script_url_string_;
+  const uint64_t script_resource_identifier_;
+  v8::Isolate* isolate_;
+  const WTF::TextEncoding encoding_;
+  std::unique_ptr<v8_compile_hints::CompileHintsForStreaming::Builder>
+      compile_hints_builder_;
+  CrossThreadWeakHandle<BackgroundResourceScriptStreamer> streamer_handle_;
+};
+
+BackgroundResourceScriptStreamer::BackgroundProcessor::BackgroundProcessor(
+    v8::ScriptType script_type,
+    const String script_url_string,
+    uint64_t script_resource_identifier,
+    v8::Isolate* isolate,
+    WTF::TextEncoding encoding,
+    std::unique_ptr<v8_compile_hints::CompileHintsForStreaming::Builder>
+        compile_hints_builder,
+    CrossThreadWeakHandle<BackgroundResourceScriptStreamer> streamer_handle)
+    : script_type_(script_type),
+      script_url_string_(script_url_string),
+      script_resource_identifier_(script_resource_identifier),
+      isolate_(isolate),
+      encoding_(encoding),
+      compile_hints_builder_(std::move(compile_hints_builder)),
+      streamer_handle_(std::move(streamer_handle)) {}
+
+BackgroundResourceScriptStreamer::BackgroundProcessor::~BackgroundProcessor() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
+  watcher_.reset();
+  if (source_stream_ptr_) {
+    source_stream_ptr_->Cancel();
+  }
+}
+
+void BackgroundResourceScriptStreamer::BackgroundProcessor::SetState(
+    BackgroundProcessorState state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
+#if DCHECK_IS_ON()
+  using S = BackgroundProcessorState;
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      base::StateTransitions<S>, transitions,
+      ({
+          {S::kWaitingForResponse,
+           {// The BackgroundProcessor receives the response.
+            S::kResponseReceived}},
+          {S::kResponseReceived,
+           {// The mime type of the response is not supported, or the received
+            // metadata contains code cache.
+            S::kStreamingSupressed,
+            // There is no data in the data pipe that can be read synchronously.
+            S::kWaitingForDataPipeReadable,
+            // There is some data in the data pipe, so let's try to check the
+            // encoding.
+            S::kCheckingEncoding,
+            // There is a code cache metadata, so start to consume the
+            // code cache. This state is used only when
+            // BackgroundCodeCacheDecoderStart is enabled.
+            S::kWaitingForConsumeCodeCacheResultAndDecodedScript}},
+          {S::kCheckingEncoding,
+           {// Finished loading all body data which is smaller than
+            // kMaximumLengthOfBOM, or error occurred while reading the data
+            // pipe, or the detected encoding is not supported.
+            S::kStreamingSupressed,
+            // The data in the passed data pipe is too small to detect the
+            // encoding.
+            S::kWaitingForDataPipeReadable,
+            // Started the parser on another thread.
+            S::kWaitingForParseResult}},
+          {S::kWaitingForDataPipeReadable,
+           {// There is some data in the data pipe, so let's try to check the
+            // encoding.
+            S::kCheckingEncoding}},
+          {S::kWaitingForParseResult,
+           {// The background parser finished.
+            S::kFinished}},
+          {S::kWaitingForConsumeCodeCacheResultAndDecodedScript,
+           {// Received the result from the script decoder.
+            S::kWaitingForConsumeCodeCacheResult,
+            // Received the result from the code cache consumer.
+            S::kWaitingForDecodedScript}},
+          {S::kWaitingForConsumeCodeCacheResult,
+           {// Received the result from the code cache consumer.
+            S::kFinished}},
+          {S::kWaitingForDecodedScript,
+           {// Received the result from the script decoder.
+            S::kFinished}},
+      }));
+  DCHECK_STATE_TRANSITION(&transitions, state_, state);
+#endif  // DCHECK_IS_ON()
+  state_ = state;
+}
+
+bool BackgroundResourceScriptStreamer::BackgroundProcessor::
+    MaybeStartProcessingResponse(
+        network::mojom::URLResponseHeadPtr& head,
+        mojo::ScopedDataPipeConsumerHandle& body,
+        std::optional<mojo_base::BigBuffer>& cached_metadata,
+        scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+        Client* client) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
+  CHECK(background_task_runner->RunsTasksInCurrentSequence());
+  TRACE_EVENT1("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+               "BackgroundProcessor::MaybeStartProcessingResponse", "url",
+               script_url_string_.Utf8());
+  CHECK(body);
+  CHECK(head);
+  SetState(BackgroundProcessorState::kResponseReceived);
+
+  client_ = client;
+
+  if (script_type_ == v8::ScriptType::kModule) {
+    std::string mime_type;
+    if (!head->headers->GetMimeType(&mime_type) ||
+        !MIMETypeRegistry::IsSupportedJavaScriptMIMEType(String(mime_type))) {
+      SuppressStreaming(NotStreamingReason::kNonJavascriptModuleBackground);
+      return false;
+    }
+  }
+  if (!head->charset.empty()) {
+    WTF::TextEncoding new_encoding = WTF::TextEncoding(String(head->charset));
+    if (new_encoding.IsValid()) {
+      encoding_ = new_encoding;
+    }
+  }
+
+  head_ = std::move(head);
+  body_ = std::move(body);
+  cached_metadata_ = std::move(cached_metadata);
+  background_task_runner_ = background_task_runner;
+
+  bool has_code_cache = false;
+  if (auto consume_code_cache_task = MaybeCreateConsumeCodeCacheTask(
+          cached_metadata_, encoding_.GetName(), isolate_, has_code_cache,
+          script_type())) {
+    const uint64_t trace_id =
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this));
+    TRACE_EVENT_WITH_FLOW1(
+        "v8," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+        "v8.deserializeOnBackground.start", TRACE_ID_LOCAL(trace_id),
+        TRACE_EVENT_FLAG_FLOW_OUT, "data", [&](perfetto::TracedValue context) {
+          inspector_deserialize_script_event::Data(std::move(context),
+                                                   script_resource_identifier_,
+                                                   script_url_string_);
+        });
+    CHECK(features::kBackgroundCodeCacheDecoderStart.Get());
+    V8CodeCache::RecordCacheGetStatistics(
+        V8CodeCache::GetMetadataType::kCodeCache);
+    SetState(BackgroundProcessorState::
+                 kWaitingForConsumeCodeCacheResultAndDecodedScript);
+    data_pipe_script_decoder_ = DataPipeScriptDecoder::Create(
+        std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
+            TextResourceDecoderOptions::kPlainTextContent, encoding_)),
+        background_task_runner_,
+        CrossThreadBindOnce(&BackgroundProcessor::OnFinishScriptDecode,
+                            weak_factory_.GetWeakPtr()));
+    data_pipe_script_decoder_->Start(std::move(body_));
+    // The cached metadata must be passed to the worker thread to avoid UAF,
+    // because `this` is deleted when the request is canceled.
+    worker_pool::PostTask(
+        FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+        CrossThreadBindOnce(
+            &BackgroundProcessor::RunConsumingCodeCacheTask, script_url_string_,
+            script_resource_identifier_, std::move(consume_code_cache_task),
+            background_task_runner_, std::move(*cached_metadata_),
+            weak_factory_.GetWeakPtr(), trace_id));
+    return true;
+  }
+
+  // TODO(40244488): Remove this when BackgroundCodeCacheDecoderStart feature
+  // is removed.
+  if (has_code_cache) {
+    // There is a code cache, but the BackgroundCodeCacheDecoderStart feature is
+    // disabled.
+    CHECK(!features::kBackgroundCodeCacheDecoderStart.Get());
+    head = std::move(head_);
+    body = std::move(body_);
+    cached_metadata = std::move(cached_metadata_);
+    SuppressStreaming(NotStreamingReason::kHasCodeCacheBackground);
+    V8CodeCache::RecordCacheGetStatistics(
+        V8CodeCache::GetMetadataType::kCodeCache);
+    return false;
+  }
+
+  compile_hints_ = BuildCompileHintsForStreaming(
+      *compile_hints_builder_, cached_metadata_, encoding_.GetName());
+  CHECK(compile_hints_);
+
+  watcher_ = std::make_unique<mojo::SimpleWatcher>(
+      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL);
+  watcher_->Watch(body_.get(), MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE,
+                  MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                  WTF::BindRepeating(&BackgroundProcessor::OnDataPipeReadable,
+                                     weak_factory_.GetWeakPtr()));
+  MojoResult ready_result;
+  mojo::HandleSignalsState ready_state;
+  MojoResult rv = watcher_->Arm(&ready_result, &ready_state);
+  if (rv == MOJO_RESULT_OK) {
+    // There is no data in the data pipe, so let's wait until new data is
+    // available to read. BackgroundProcessor::OnDataPipeReadable() will be
+    // called when new data is available or the data pipe is closed.
+    SetState(BackgroundProcessorState::kWaitingForDataPipeReadable);
+    return true;
+  }
+  // The following code is executed when there is some data in the data pipe or
+  // the data pipe is closed. To reduce the cost of PostTask, we check the data
+  // pipe synchronously here.
+  DCHECK_EQ(MOJO_RESULT_FAILED_PRECONDITION, rv);
+  if (TryStartStreamingTask(ready_result, ready_state)) {
+    CHECK_EQ(state_, BackgroundProcessorState::kWaitingForParseResult);
+    // Trere is enough data in the data pipe to detect the encoding, and
+    // ScriptStreamingTask has been started on the background thread.
+    return true;
+  }
+  if (watcher_) {
+    CHECK(!IsStreamingSuppressed());
+    CHECK_EQ(state_, BackgroundProcessorState::kWaitingForDataPipeReadable);
+    // The data in the data pipe is too small to detect the encoding. So call
+    // ArmOrNotify() and let's wait until new data is available to read.
+    watcher_->ArmOrNotify();
+    return true;
+  }
+  CHECK(IsStreamingSuppressed());
+  CHECK_EQ(state_, BackgroundProcessorState::kStreamingSupressed);
+  // We checked the data in the data pipe synchronously, and the detected
+  // encoding is not supported. So reset `head`, `body`, `cached_metadata` and
+  // return false here.
+  head = std::move(head_);
+  body = std::move(body_);
+  cached_metadata = std::move(cached_metadata_);
+  return false;
+}
+
+void BackgroundResourceScriptStreamer::BackgroundProcessor::OnDataPipeReadable(
+    MojoResult ready_result,
+    const mojo::HandleSignalsState& ready_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
+  TRACE_EVENT0("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+               "BackgroundProcessor::OnDataPipeReadable");
+  CHECK_EQ(state_, BackgroundProcessorState::kWaitingForDataPipeReadable);
+  if (TryStartStreamingTask(ready_result, ready_state)) {
+    CHECK_EQ(state_, BackgroundProcessorState::kWaitingForParseResult);
+    return;
+  }
+  if (watcher_) {
+    CHECK(!IsStreamingSuppressed());
+    CHECK_EQ(state_, BackgroundProcessorState::kWaitingForDataPipeReadable);
+    // The data in the data pipe is  too small to detect the encoding. So call
+    // ArmOrNotify().
+    watcher_->ArmOrNotify();
+    return;
+  }
+  CHECK(IsStreamingSuppressed());
+  CHECK_EQ(state_, BackgroundProcessorState::kStreamingSupressed);
+  // We checked the data in the data pipe asynchronously, and the detected
+  // encoding is not supported or some error occurred while reading the data
+  // pipe or the data was too small. So call
+  // DidFinishBackgroundResponseProcessor() with `head_`, `body_`,
+  // `cached_metadata_` which were passed at MaybeStartProcessingResponse().
+  client_->DidFinishBackgroundResponseProcessor(
+      std::move(head_), std::move(body_), std::move(cached_metadata_));
+}
+
+bool BackgroundResourceScriptStreamer::BackgroundProcessor::
+    TryStartStreamingTask(MojoResult result,
+                          const mojo::HandleSignalsState& state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
+  TRACE_EVENT0("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+               "BackgroundProcessor::TryStartStreamingTask");
+  SetState(BackgroundProcessorState::kCheckingEncoding);
+  switch (result) {
+    case MOJO_RESULT_OK:
+      break;
+    case MOJO_RESULT_FAILED_PRECONDITION:
+      // The data is smaller than kMaximumLengthOfBOM.
+      watcher_.reset();
+      SuppressStreaming(NotStreamingReason::kScriptTooSmallBackground);
+      return false;
+    case MOJO_RESULT_SHOULD_WAIT:
+      NOTREACHED();
+    default:
+      // Some other error occurred.
+      watcher_.reset();
+      SuppressStreaming(NotStreamingReason::kErrorOccurredBackground);
+      return false;
+  }
+  CHECK(state.readable());
+  base::span<const uint8_t> data;
+  constexpr uint32_t kMaximumLengthOfBOM = 4;
+  MojoResult begin_read_result =
+      body_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, data);
+  CHECK_EQ(begin_read_result, MOJO_RESULT_OK);
+  CHECK_GT(data.size(), 0u);
+  if (data.size() < kMaximumLengthOfBOM) {
+    MojoResult end_read_result = body_->EndReadData(0);
+    CHECK_EQ(end_read_result, MOJO_RESULT_OK);
+    // We keep `watcher_` to read more data.
+    CHECK(watcher_);
+    SetState(BackgroundProcessorState::kWaitingForDataPipeReadable);
+    return false;
+  }
+  watcher_.reset();
+
+  std::unique_ptr<TextResourceDecoder> decoder(
+      std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
+          TextResourceDecoderOptions::kPlainTextContent, encoding_)));
+  decoder->CheckForBOM(base::as_chars(data.first(kMaximumLengthOfBOM)));
+  MojoResult end_read_result = body_->EndReadData(0);
+  CHECK_EQ(end_read_result, MOJO_RESULT_OK);
+  v8::ScriptCompiler::StreamedSource::Encoding script_source_encoding =
+      v8::ScriptCompiler::StreamedSource::UTF8;
+  if (!ScriptStreamer::ConvertEncoding(decoder->Encoding().GetName(),
+                                       &script_source_encoding)) {
+    SuppressStreaming(NotStreamingReason::kEncodingNotSupportedBackground);
+    return false;
+  }
+
+  ScriptDecoderPtr script_decoder = ScriptDecoder::Create(
+      std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
+          TextResourceDecoderOptions::kPlainTextContent, encoding_)),
+      background_task_runner_);
+  auto source_stream = std::make_unique<SourceStream>();
+  source_stream_ptr_ = source_stream.get();
+  source_stream->TakeDataAndPipeOnBackgroundThread(std::move(body_),
+                                                   script_decoder.get());
+  std::unique_ptr<v8::ScriptCompiler::StreamedSource> streamed_source =
+      std::make_unique<v8::ScriptCompiler::StreamedSource>(
+          std::move(source_stream), script_source_encoding);
+
+  CHECK(compile_hints_);
+  std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask>
+      script_streaming_task =
+          base::WrapUnique(v8::ScriptCompiler::StartStreaming(
+              isolate_, streamed_source.get(), script_type_,
+              compile_hints_->compile_options(),
+              compile_hints_->GetCompileHintCallback(),
+              compile_hints_->GetCompileHintCallbackData()));
+  if (!script_streaming_task) {
+    // V8 can't stream the script.
+    body_ = source_stream_ptr_->ReleaseDataPipe();
+    source_stream_ptr_ = nullptr;
+    SuppressStreaming(NotStreamingReason::kV8CannotStream);
+    return false;
+  }
+  SetState(BackgroundProcessorState::kWaitingForParseResult);
+  worker_pool::PostTask(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+      CrossThreadBindOnce(
+          &BackgroundProcessor::RunScriptStreamingTask, script_url_string_,
+          script_resource_identifier_, std::move(script_streaming_task),
+          std::move(streamed_source), CrossThreadUnretained(source_stream_ptr_),
+          std::move(script_decoder), std::move(compile_hints_),
+          weak_factory_.GetWeakPtr()));
+  return true;
+}
+
+// static
+void BackgroundResourceScriptStreamer::BackgroundProcessor::
+    RunScriptStreamingTask(
+        const String script_url_string,
+        uint64_t script_resource_identifier,
+        std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask>
+            script_streaming_task,
+        std::unique_ptr<v8::ScriptCompiler::StreamedSource> streamed_source,
+        SourceStream* source_stream_ptr,
+        ScriptDecoderPtr script_decoder,
+        std::unique_ptr<v8_compile_hints::CompileHintsForStreaming>
+            compile_hints,
+        base::WeakPtr<BackgroundProcessor> background_processor_weak_ptr) {
+  TRACE_EVENT1("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+               "BackgroundProcessor::RunScriptStreamingTask", "url",
+               script_url_string.Utf8());
+  TRACE_EVENT_BEGIN1(
+      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+      "v8.parseOnBackground", "data", [&](perfetto::TracedValue context) {
+        inspector_parse_script_event::Data(
+            std::move(context), script_resource_identifier, script_url_string);
+      });
+  TRACE_EVENT_BEGIN0(
+      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+      "v8.parseOnBackgroundParsing");
+  CHECK(script_streaming_task) << "BackgroundProcessor::RunScriptStreamingTask";
+  script_streaming_task->Run();
+  source_stream_ptr->DrainRemainingDataWithoutStreaming();
+  TRACE_EVENT_END0(
+      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+      "v8.parseOnBackgroundParsing");
+  TRACE_EVENT_END0(
+      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+      "v8.parseOnBackground");
+
+  ScriptDecoder* decoder = script_decoder.get();
+  decoder->FinishDecode(CrossThreadBindOnce(
+      &BackgroundProcessor::OnFinishStreaming,
+      std::move(background_processor_weak_ptr), std::move(streamed_source),
+      std::move(script_decoder)));
+}
+
+void BackgroundResourceScriptStreamer::BackgroundProcessor::OnFinishStreaming(
+    std::unique_ptr<v8::ScriptCompiler::StreamedSource> streamed_source,
+    ScriptDecoderPtr script_decoder,
+    ScriptDecoder::Result result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
+  TRACE_EVENT1("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+               "BackgroundProcessor::OnFinishStreaming", "url",
+               script_url_string_.Utf8());
+  source_stream_ptr_ = nullptr;
+  CHECK_EQ(state_, BackgroundProcessorState::kWaitingForParseResult);
+  SetState(BackgroundProcessorState::kFinished);
+  client_->PostTaskToMainThread(CrossThreadBindOnce(
+      &BackgroundResourceScriptStreamer::OnResult,
+      MakeUnwrappingCrossThreadWeakHandle(std::move(streamer_handle_)),
+      std::make_unique<Result>(std::move(result.decoded_data),
+                               std::move(result.digest),
+                               std::move(streamed_source)),
+      suppressed_reason_));
+  client_->DidFinishBackgroundResponseProcessor(std::move(head_),
+                                                std::move(result.raw_data),
+                                                std::move(cached_metadata_));
+}
+
+// static
+void BackgroundResourceScriptStreamer::BackgroundProcessor::
+    RunConsumingCodeCacheTask(
+        const String script_url_string,
+        uint64_t script_resource_identifier,
+        std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+            consume_code_cache_task,
+        scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+        mojo_base::BigBuffer cached_metadata,
+        base::WeakPtr<BackgroundProcessor> background_processor_weak_ptr,
+        const uint64_t trace_id) {
+  TRACE_EVENT_WITH_FLOW1(
+      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+      "v8.deserializeOnBackground", TRACE_ID_LOCAL(trace_id),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "data",
+      [&](perfetto::TracedValue context) {
+        inspector_deserialize_script_event::Data(
+            std::move(context), script_resource_identifier, script_url_string);
+      });
+  // Run the cache consumption task.
+  consume_code_cache_task->Run();
+  PostCrossThreadTask(
+      *background_task_runner, FROM_HERE,
+      CrossThreadBindOnce(&BackgroundProcessor::OnFinishCodeCacheConsumer,
+                          std::move(background_processor_weak_ptr),
+                          std::move(consume_code_cache_task),
+                          std::move(cached_metadata)));
+}
+
+void BackgroundResourceScriptStreamer::BackgroundProcessor::
+    OnFinishCodeCacheConsumer(
+        std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+            consume_code_cache_task,
+        mojo_base::BigBuffer cached_metadata) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
+  consume_code_cache_task_ = std::move(consume_code_cache_task);
+  cached_metadata_ = std::move(cached_metadata);
+  if (state_ == BackgroundProcessorState::kWaitingForConsumeCodeCacheResult) {
+    OnFinishCodeCacheConsumerScriptDecode();
+    return;
+  }
+  CHECK_EQ(state_, BackgroundProcessorState::
+                       kWaitingForConsumeCodeCacheResultAndDecodedScript);
+  CHECK(features::kBackgroundCodeCacheDecoderStart.Get());
+  SetState(BackgroundProcessorState::kWaitingForDecodedScript);
+}
+
+void BackgroundResourceScriptStreamer::BackgroundProcessor::
+    OnFinishScriptDecode(ScriptDecoder::Result result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
+  decoder_result_ = std::move(result);
+  if (state_ == BackgroundProcessorState::kWaitingForDecodedScript) {
+    OnFinishCodeCacheConsumerScriptDecode();
+    return;
+  }
+  CHECK_EQ(state_, BackgroundProcessorState::
+                       kWaitingForConsumeCodeCacheResultAndDecodedScript);
+  CHECK(features::kBackgroundCodeCacheDecoderStart.Get());
+  SetState(BackgroundProcessorState::kWaitingForConsumeCodeCacheResult);
+}
+
+void BackgroundResourceScriptStreamer::BackgroundProcessor::
+    OnFinishCodeCacheConsumerScriptDecode() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
+  TRACE_EVENT1("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+               "BackgroundProcessor::OnFinishCodeCacheConsumerScriptDecode",
+               "url", script_url_string_.Utf8());
+  CHECK(features::kBackgroundCodeCacheDecoderStart.Get());
+  CHECK(consume_code_cache_task_);
+  CHECK(decoder_result_);
+  SetState(BackgroundProcessorState::kFinished);
+  client_->PostTaskToMainThread(CrossThreadBindOnce(
+      &BackgroundResourceScriptStreamer::OnResult,
+      MakeUnwrappingCrossThreadWeakHandle(std::move(streamer_handle_)),
+      std::make_unique<Result>(std::move(decoder_result_->decoded_data),
+                               std::move(decoder_result_->digest),
+                               std::move(consume_code_cache_task_)),
+      NotStreamingReason::kHasCodeCacheBackground));
+  client_->DidFinishBackgroundResponseProcessor(
+      std::move(head_), std::move(decoder_result_->raw_data),
+      std::move(cached_metadata_));
+}
+
+bool BackgroundResourceScriptStreamer::BackgroundProcessor::
+    IsStreamingSuppressed() {
+  return suppressed_reason_ != NotStreamingReason::kInvalid;
+}
+
+void BackgroundResourceScriptStreamer::BackgroundProcessor::SuppressStreaming(
+    NotStreamingReason reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
+  CHECK_EQ(suppressed_reason_, NotStreamingReason::kInvalid);
+  CHECK_NE(reason, NotStreamingReason::kInvalid);
+  SetState(BackgroundProcessorState::kStreamingSupressed);
+  suppressed_reason_ = reason;
+
+  client_->PostTaskToMainThread(CrossThreadBindOnce(
+      &BackgroundResourceScriptStreamer::OnResult,
+      MakeUnwrappingCrossThreadWeakHandle(std::move(streamer_handle_)),
+      /*result=*/nullptr, suppressed_reason_));
+}
+
+BackgroundResourceScriptStreamer::BackgroundResourceScriptStreamer(
+    ScriptResource* script_resource)
+    : script_resource_(script_resource),
+      script_type_(ScriptTypeForStreamingTask(script_resource)) {}
+
+BackgroundResourceScriptStreamer::~BackgroundResourceScriptStreamer() = default;
+
+void BackgroundResourceScriptStreamer::Trace(Visitor* visitor) const {
+  visitor->Trace(script_resource_);
+  ScriptStreamer::Trace(visitor);
+}
+
+v8::ScriptCompiler::StreamedSource* BackgroundResourceScriptStreamer::Source(
+    v8::ScriptType expected_type) {
+  CHECK(result_);
+  CHECK(!IsStreamingSuppressed());
+  CHECK_EQ(expected_type, script_type_);
+  return result_->streamed_source.get();
+}
+
+std::unique_ptr<BackgroundResponseProcessorFactory>
+BackgroundResourceScriptStreamer::CreateBackgroundResponseProcessorFactory() {
+  return std::make_unique<BackgroundProcessorFactory>(
+      script_resource_, MakeCrossThreadWeakHandle(this));
+}
+
+ParkableString BackgroundResourceScriptStreamer::TakeDecodedData() {
+  CHECK(result_);
+  CHECK(suppressed_reason_ == NotStreamingReason::kInvalid ||
+        suppressed_reason_ == NotStreamingReason::kHasCodeCacheBackground);
+  return ParkableString(result_->decoded_data.Impl(),
+                        std::move(result_->digest));
+}
+
+std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+BackgroundResourceScriptStreamer::TakeConsumeCodeCacheTask() {
+  CHECK(result_);
+  CHECK_EQ(suppressed_reason_, NotStreamingReason::kHasCodeCacheBackground);
+  return std::move(result_->consume_code_cache_task);
+}
+
+v8::ScriptType BackgroundResourceScriptStreamer::GetScriptType() const {
+  return script_type_;
+}
+
+void BackgroundResourceScriptStreamer::OnResult(
+    std::unique_ptr<Result> result,
+    NotStreamingReason suppressed_reason) {
+  result_ = std::move(result);
+  suppressed_reason_ = suppressed_reason;
+  CHECK_EQ(!!result_, suppressed_reason_ == NotStreamingReason::kInvalid ||
+                          (features::kBackgroundCodeCacheDecoderStart.Get() &&
+                           suppressed_reason_ ==
+                               NotStreamingReason::kHasCodeCacheBackground));
 }
 
 }  // namespace blink

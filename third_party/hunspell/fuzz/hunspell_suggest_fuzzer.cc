@@ -6,8 +6,6 @@
 #include <stdint.h>
 #include <string>
 
-#include <fuzzer/FuzzedDataProvider.h>
-
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/hunspell/fuzz/hunspell_fuzzer_hunspell_dictionary.h"
 #include "third_party/hunspell/src/hunspell/hunspell.hxx"
@@ -17,14 +15,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (!size)
     return 0;
 
-  // Generate and use a range of dictionary sizes. Large dictionaries might have
-  // more coverage and uncover more interesting code paths, however, it is
-  // extremely slow. Smaller dictionaries are _much_ faster, but may result in
-  // less coverage.
-  FuzzedDataProvider data_provider(data, size);
-  size_t shift = data_provider.ConsumeIntegralInRange(0, 16);
-  static Hunspell* hunspell =
-      new Hunspell(kHunspellDictionary, sizeof(kHunspellDictionary) >> shift);
+  static Hunspell* hunspell = new Hunspell(kHunspellDictionary);
 
   std::string data_string(reinterpret_cast<const char*>(data), size);
 

@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserListForceCloseWithBeforeUnload) {
 
 // Tests closing the browser by BrowserList::CloseAllBrowsersWithProfile, with a
 // beforeunload handler and clicking Stay in the beforeunload confirm dialog.
-// TODO(crbug.com/1372484): Flaky on Mac.
+// TODO(crbug.com/40241736): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_BrowserListCloseBeforeUnloadCancel \
   DISABLED_BrowserListCloseBeforeUnloadCancel
@@ -930,7 +930,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest,
 
 // Tests closing the browser with addEventListener('beforeunload') handler and
 // having return value will _not_ prompt confirmation dialog
-// TODO(crbug/809277) Change this test if spec changes
+// TODO(crbug.com/41368941) Change this test if spec changes
 IN_PROC_BROWSER_TEST_F(UnloadTest, BeforeUnloadListenerCancelByReturn) {
   std::string html =
       GenerateDataURL("return 'hello world'", /*is_onbeforeunload=*/false);
@@ -949,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BeforeUnloadListenerCancelByReturnEmpty) {
   CloseBrowsersVerifyUnloadSuccess(false);
 }
 
-// TODO(crbug/866818): Remove below test when feature
+// TODO(crbug.com/40586353): Remove below test when feature
 // BeforeunloadEventCancelByPreventDefault is fully stable.
 class UnloadTestCancelByPreventDefaultDisabled : public UnloadTest {
  public:

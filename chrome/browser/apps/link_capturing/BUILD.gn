@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 assert(!is_android)
 
@@ -12,8 +13,6 @@ source_set("link_capturing") {
     "apps_intent_picker_delegate.h",
     "intent_picker_info.cc",
     "intent_picker_info.h",
-    "link_capturing_features.cc",
-    "link_capturing_features.h",
     "link_capturing_navigation_throttle.cc",
     "link_capturing_navigation_throttle.h",
     "link_capturing_tab_data.cc",
@@ -28,6 +27,7 @@ source_set("link_capturing") {
   }
 
   deps = [
+    ":features",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
@@ -36,10 +36,12 @@ source_set("link_capturing") {
     "//components/page_load_metrics/browser",
     "//components/webapps/common:common",
     "//content/public/browser",
-    "//extensions/common",
     "//third_party/abseil-cpp:absl",
     "//url",
   ]
+  if (enable_extensions) {
+    deps += [ "//extensions/common" ]
+  }
 
   if (is_chromeos) {
     sources += [
@@ -54,6 +56,11 @@ source_set("link_capturing") {
       "//ash/webui/projector_app/public/cpp",
       "//chrome/browser/apps/app_service",
     ]
+
+    # Needed only to allow circular includes.
+    deps += [ "//chrome/browser/chromeos/arc" ]
+
+    allow_circular_includes_from = [ "//chrome/browser/chromeos/arc" ]
   } else {
     sources += [
       "enable_link_capturing_infobar_delegate.cc",
@@ -77,6 +84,18 @@ source_set("link_capturing") {
   }
 }
 
+source_set("features") {
+  sources = [
+    "link_capturing_features.cc",
+    "link_capturing_features.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//chrome/common:chrome_features",
+    "//content/public/common",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -87,6 +106,7 @@ source_set("test_support") {
     ":link_capturing",
     "//base/test:test_support",
     "//chrome/browser:test_support",
+    "//chrome/browser/apps/link_capturing:features",
     "//chrome/browser/web_applications:web_applications",
     "//chrome/common:chrome_features",
     "//components/webapps/common",
@@ -97,8 +117,10 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "link_capturing_navigation_throttle_unittest.cc" ]
   deps = [
+    ":features",
     ":link_capturing",
     "//base/test:test_support",
+    "//chrome/browser/ui/views/toolbar",
     "//testing/gtest",
     "//ui/base:base",
     "//ui/display:test_support",
@@ -120,18 +142,22 @@ source_set("unit_tests") {
 }
 
 # Browser tests which require an Ash process with App Service to be running.
-if (is_chromeos) {
-  source_set("app_service_browser_tests") {
-    testonly = true
+source_set("app_service_browser_tests") {
+  testonly = true
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "chromeos_link_capturing_delegate_browsertest.cc" ]
+  sources = [ "link_capturing_navigation_throttle_browsertest.cc" ]
 
-    deps = [
-      ":link_capturing",
-      "//chrome/browser/ui",
-      "//chrome/test:test_support_ui",
-    ]
-  }
+  deps = [
+    ":link_capturing",
+    ":test_support",
+    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+  ]
 }

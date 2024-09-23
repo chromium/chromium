@@ -1,0 +1,127 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --calendar-event-group-gutter-size: 8px;
+  display: block;
+  padding: 0 8px;
+}
+
+.row,
+.divider {
+  background-color: var(--color-new-tab-page-module-item-background);
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+}
+
+.row:first-child,
+.row[expanded] + .row:not([double-booked]),
+.row[double-booked] + .row:not([double-booked]),
+.row[expanded] {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  margin-top: 8px;
+  padding-top: var(--calendar-event-group-gutter-size);
+}
+
+.row:last-child,
+.row[double-booked]:has(+ .row:not([double-booked])),
+.row[expanded]:has(+ .row),
+.row:has(+ .row[expanded]) {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  margin-bottom: 8px;
+  padding-bottom: var(--calendar-event-group-gutter-size);
+}
+
+.row[expanded] {
+  padding-bottom: var(--calendar-event-group-gutter-size);
+}
+
+.divider + .row[double-booked] {
+  padding-top: var(--calendar-event-group-gutter-size);
+}
+
+.divider {
+  padding: 0 16px;
+}
+
+hr {
+  background: var(--color-side-panel-divider);
+  border: none;
+  height: 1px;
+  margin: 0;
+}
+
+#seeMore a {
+  box-sizing: border-box;
+  color: var(--color-new-tab-page-link);
+  display: block;
+  font-size: var(--ntp-module-text-size);
+  font-weight: var(--ntp-module-see-more-font-weight);
+  line-height: var(--ntp-module-line-height);
+  overflow: hidden;
+  padding: 4px 16px;
+  position: relative;
+  text-decoration: none;
+  width: 100%;
+}
+
+#seeMore #hoverContainer {
+  background: var(--color-new-tab-page-module-item-background-hovered);
+  display: none;
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+}
+
+#seeMore:hover #hoverContainer {
+  display: block;
+}
+
+:host-context(.focus-outline-visible) a:focus,
+a:focus-visible {
+  box-shadow: var(--ntp-focus-shadow);
+  outline: none;
+}
+
+@media (forced-colors: active) {
+  /* Set outline on focus since box-shadow isn't visible in hcm. */
+  :host-context(.focus-outline-visible) a:focus,
+  a:focus-visible {
+    outline: var(--cr-border-hcm);
+  }
+
+  /* Create a border around groups of events, since background color
+  isn't visible in hcm.*/
+  .row {
+    border-color: var(--cr-border-hcm);
+    border-style: none solid;
+    border-width: 2px;
+  }
+
+  ntp-calendar-event:first-of-type,
+  .row[double-booked] + .row,
+  .row[expanded] + .row {
+    border-style: solid solid none;
+  }
+
+  .row:last-child,
+  .row:has(+ .row[double-booked]),
+  .row:has(+ .row[expanded]) {
+    border-style: none solid solid;
+  }
+
+  .row[double-booked],
+  .row[expanded] {
+    border-style: solid;
+  }
+}

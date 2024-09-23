@@ -18,6 +18,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/notifications/notification_constants.h"
@@ -32,9 +34,20 @@
 
 namespace {
 
+void DisplayWebAppSettings(const webapps::AppId& web_app_id, Profile* profile) {
+  if (!profile) {
+    LOG(WARNING) << "Profile not loaded correctly";
+    return;
+  }
+  chrome::ShowWebAppSettings(
+      profile, web_app_id,
+      web_app::AppSettingsPageEntryPoint::kNotificationSettingsButton);
+}
+
 // Loads the profile and process the Notification response
 void DoProcessMacNotificationResponse(
-    mac_notifications::mojom::NotificationActionInfoPtr info) {
+    mac_notifications::mojom::NotificationActionInfoPtr info,
+    std::optional<webapps::AppId> web_app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -44,16 +57,21 @@ void DoProcessMacNotificationResponse(
   if (info->button_index != kNotificationInvalidButtonIndex)
     action_index = info->button_index;
 
+  auto operation = static_cast<NotificationOperation>(info->operation);
+  ProfileManager::ProfileLoadedCallback callback =
+      (operation == NotificationOperation::kSettings && web_app_id.has_value())
+          ? base::BindOnce(&DisplayWebAppSettings, *web_app_id)
+          : base::BindOnce(
+                &NotificationDisplayServiceImpl::ProfileLoadedCallback,
+                operation,
+                static_cast<NotificationHandler::Type>(info->meta->type),
+                std::move(info->meta->origin_url),
+                std::move(info->meta->id->id), std::move(action_index),
+                std::move(info->reply), /*by_user=*/true);
   profile_manager->LoadProfile(
       NotificationPlatformBridge::GetProfileBaseNameFromProfileId(
           info->meta->id->profile->id),
-      info->meta->id->profile->incognito,
-      base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
-                     static_cast<NotificationOperation>(info->operation),
-                     static_cast<NotificationHandler::Type>(info->meta->type),
-                     std::move(info->meta->origin_url),
-                     std::move(info->meta->id->id), std::move(action_index),
-                     std::move(info->reply), true /* by_user */));
+      info->meta->id->profile->incognito, std::move(callback));
 }
 
 // Get the user data directory.
@@ -161,7 +179,8 @@ bool VerifyMacNotificationData(
 
 void ProcessMacNotificationResponse(
     mac_notifications::NotificationStyle notification_style,
-    mac_notifications::mojom::NotificationActionInfoPtr info) {
+    mac_notifications::mojom::NotificationActionInfoPtr info,
+    std::optional<webapps::AppId> web_app_id) {
   bool is_valid = VerifyMacNotificationData(info);
   if (!is_valid)
     return;
@@ -171,8 +190,8 @@ void ProcessMacNotificationResponse(
     actionIndex = info->button_index;
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(DoProcessMacNotificationResponse, std::move(info)));
+      FROM_HERE, base::BindOnce(DoProcessMacNotificationResponse,
+                                std::move(info), web_app_id));
 }
 
 bool IsAlertNotificationMac(const message_center::Notification& notification) {

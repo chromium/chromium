@@ -1,0 +1,155 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  color: var(--cr-primary-text-color);
+  line-height: 154%;
+  overflow: hidden;
+  user-select: text;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+table {
+  border-collapse: collapse;
+  font-family: monospace;
+}
+
+pre,
+table {
+  font-size: 1.25em;
+}
+
+th {
+  background: var(--cr-card-background-color);
+  color: var(--cr-primary-text-color);
+}
+
+th,
+td {
+  border: 1px solid var(--cr-primary-text-color);
+  padding: 6px 10px;
+  text-align: center;
+}
+
+label {
+  margin: 10px 0;
+}
+
+h2 {
+  width: max-content;
+}
+
+a[href] {
+  color: var(--cr-link-color);
+}
+
+.url {
+  text-align: start;
+}
+
+#url-checker-input {
+  display: block;
+  margin: 1em 0;
+  width: 400px;
+}
+
+#xml-not-fetched-yet,
+#xml-last-fetch {
+  display: none;
+}
+
+.policy-prop {
+  background-color: var(--mwb-background-color);
+  color: rgb(36, 41, 47);
+}
+
+.tooltip {
+  border-bottom: 1px dotted #666;
+  display: inline-block;
+  position: relative;
+}
+
+.tooltip .right {
+  background-color: #eee;
+  border-radius: 8px;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  color: #444;
+  font-size: 0.8rem;
+  font-weight: normal;
+  left: 100%;
+  margin-inline-start: 20px;
+  min-width: 200px;
+  padding: 10px 20px;
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  visibility: hidden;
+}
+
+.tooltip:hover .right {
+  visibility: visible;
+}
+
+.container {
+  margin: 24px;
+}
+
+.row-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.url-card-container, .cr-left-card-container, .card {
+  box-shadow: var(--cr-card-shadow);
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  display: flex;
+  flex-direction: column;
+  padding: var(--cr-section-padding);
+  margin-bottom: 24px;
+  margin-right: 5px;
+}
+
+.url-card-container {
+  flex-basis: calc(276px / var(--cr-centered-card-width-percentage));
+  max-width: 276px;
+}
+
+.cr-left-card-container {
+  flex-basis: calc(500px / var(--cr-centered-card-width-percentage));
+  min-width: 300px;
+  max-width: 476px;
+}
+
+.card {
+  flex-basis: calc(var(--cr-centered-card-max-width)
+  / var(--cr-centered-card-width-percentage));
+  justify-content: center;
+  align-items: center;
+}
+
+.card-text {
+  margin-inline-end: 24px;
+  margin-inline-start: 24px;
+}

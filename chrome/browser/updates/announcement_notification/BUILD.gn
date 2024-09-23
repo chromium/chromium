@@ -54,6 +54,7 @@ source_set("announcement_notification") {
 
     deps += [
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_navigator_params_headers",
       "//ui/message_center/public/cpp",
     ]
   }

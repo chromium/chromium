@@ -15,7 +15,9 @@
           "SuppressDifferentOriginSubframeDialogs": true
         },
         "prefs": {
-          "suppress_different_origin_subframe_js_dialogs": {}
+          "suppress_different_origin_subframe_js_dialogs": {
+            "value": true
+          }
         }
       }
     ]

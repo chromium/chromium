@@ -9,13 +9,11 @@
 
 #import "base/ios/block_types.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 class Browser;
-@protocol BrowsingDataCommands;
-class ChromeBrowserState;
-class PrefService;
 @protocol SystemIdentity;
 
 // Performs the sign-in steps and user interactions as part of the sign-in flow.
@@ -34,53 +32,35 @@ class PrefService;
                  completion:(ProceduralBlock)completion;
 
 // Fetches the managed status for `identity`.
-- (void)fetchManagedStatus:(ChromeBrowserState*)browserState
+- (void)fetchManagedStatus:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity;
 
 // Signs `identity` with `hostedDomain` into `browserState`.
 - (void)signInIdentity:(id<SystemIdentity>)identity
          atAccessPoint:(signin_metrics::AccessPoint)accessPoint
       withHostedDomain:(NSString*)hostedDomain
-        toBrowserState:(ChromeBrowserState*)browserState;
+             toProfile:(ProfileIOS*)profile;
 
-// Signs out of `browserState` and sends `didSignOut` to the delegate when
+// Signs out of `profile` and sends `didSignOut` to the delegate when
 // complete.
-- (void)signOutBrowserState:(ChromeBrowserState*)browserState;
+- (void)signOutProfile:(ProfileIOS*)profile;
 
-// Immediately signs out `browserState` without waiting for dependent services.
-- (void)signOutImmediatelyFromBrowserState:(ChromeBrowserState*)browserState;
-
-// Asks the user whether to clear or merge their previous identity's data with
-// that of `identity` or cancel sign-in, sending `didChooseClearDataPolicy:`
-// or `didChooseCancel` to the delegate when complete according to the user
-// action.
-- (void)promptMergeCaseForIdentity:(id<SystemIdentity>)identity
-                           browser:(Browser*)browser
-                    viewController:(UIViewController*)viewController;
-
-// Clears browsing data from the bowser state assoiciated with `browser`, using
-// `handler` to perform the removal. When removal is comeplete, the delegate is
-// informed (via -didClearData).
-- (void)clearDataFromBrowser:(Browser*)browser
-              commandHandler:(id<BrowsingDataCommands>)handler;
-
-// Determines whether the user must decide what to do with `identity`'s browsing
-// data before signing in.
-- (BOOL)shouldHandleMergeCaseForIdentity:(id<SystemIdentity>)identity
-                       browserStatePrefs:(PrefService*)prefs;
+// Immediately signs out `profile` without waiting for dependent services.
+- (void)signOutImmediatelyFromProfile:(ProfileIOS*)profile;
 
 // Shows a confirmation dialog for signing in to an account managed by
 // `hostedDomain`. The confirmation dialog's content will be different depending
-// on the status of User Policy and the `syncConsent`.
+// on the status of User Policy.
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
                                 viewController:(UIViewController*)viewController
-                                       browser:(Browser*)browser
-                                   syncConsent:(BOOL)syncConsent;
+                                       browser:(Browser*)browser;
 
-// Shows a snackbar confirming sign-in with `identity` and an undo button to
-// sign out the user.
-- (void)showSnackbarWithSignInIdentity:(id<SystemIdentity>)identity
-                               browser:(Browser*)browser;
+// Completes the post-signin actions. In most cases the action is showing a
+// snackbar confirming sign-in with `identity` and an undo button to sign out
+// the user.
+- (void)completePostSignInActions:(PostSignInActionSet)postSignInActions
+                     withIdentity:(id<SystemIdentity>)identity
+                          browser:(Browser*)browser;
 
 // Shows `error` to the user and calls `callback` on dismiss.
 - (void)showAuthenticationError:(NSError*)error
@@ -88,10 +68,10 @@ class PrefService;
                  viewController:(UIViewController*)viewController
                         browser:(Browser*)browser;
 
-- (void)registerUserPolicy:(ChromeBrowserState*)browserState
+- (void)registerUserPolicy:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity;
 
-- (void)fetchUserPolicy:(ChromeBrowserState*)browserState
+- (void)fetchUserPolicy:(ProfileIOS*)profile
             withDmToken:(NSString*)dmToken
                clientID:(NSString*)clientID
      userAffiliationIDs:(NSArray<NSString*>*)userAffiliationIDs

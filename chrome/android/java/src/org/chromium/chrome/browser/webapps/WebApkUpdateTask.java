@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.webapps;
 
 import android.content.Context;
 
-import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabLocator;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
@@ -33,9 +32,7 @@ public class WebApkUpdateTask extends NativeBackgroundTask {
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
         assert taskParameters.getTaskId() == TaskIds.WEBAPK_UPDATE_JOB_ID;
 
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            WebappRegistry.warmUpSharedPrefs();
-        }
+        WebappRegistry.warmUpSharedPrefs();
 
         WebappsUtils.prepareIsRequestPinShortcutSupported();
 

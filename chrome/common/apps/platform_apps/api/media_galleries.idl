@@ -144,7 +144,7 @@ namespace mediaGalleries {
   interface Functions {
     // Get the media galleries configured in this user agent. If none are
     // configured or available, the callback will receive an empty array.
-    [supportsPromises] static void getMediaFileSystems(
+    static void getMediaFileSystems(
         optional MediaFileSystemsDetails details,
         MediaFileSystemsCallback callback);
 
@@ -162,14 +162,14 @@ namespace mediaGalleries {
 
     // Gets the media-specific metadata for a media file. This should work
     // for files in media galleries as well as other DOM filesystems.
-    [supportsPromises] static void getMetadata(
+    static void getMetadata(
         [instanceOf=Blob] object mediaFile,
         optional MediaMetadataOptions options,
         MediaMetadataCallback callback);
 
     // Adds a gallery watch for the gallery with the specified gallery ID.
     // The given callback is then fired with a success or failure result.
-    [supportsPromises] static void addGalleryWatch(
+    static void addGalleryWatch(
         DOMString galleryId,
         AddGalleryWatchCallback callback);
 

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <unordered_set>
-
 #include "components/shared_highlighting/core/common/disabled_sites.h"
+
+#include <string_view>
+#include <unordered_set>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
@@ -31,9 +32,9 @@ bool ShouldOfferLinkToText(const GURL& url) {
   // against the RE stored in the value. For example, {"foo.com", ".*"} means
   // any page on the foo.com domain.
   static constexpr auto kBlocklist =
-      base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
+      base::MakeFixedFlatMap<std::string_view, std::string_view>(
           {{"facebook.com", ".*"},
-           // TODO(crbug.com/1157981): special case this to cover other Google
+           // TODO(crbug.com/40736718): special case this to cover other Google
            // TLDs
            {"google.com", "^\\/amp\\/.*"},
            {"instagram.com", ".*"},
@@ -57,7 +58,7 @@ bool ShouldOfferLinkToText(const GURL& url) {
     return true;
   }
 
-  auto* block_list_it = kBlocklist.find(domain);
+  auto block_list_it = kBlocklist.find(domain);
   if (block_list_it != kBlocklist.end()) {
     if (re2::RE2::FullMatch(url.path(), block_list_it->second.data())) {
       return false;

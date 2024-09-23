@@ -86,8 +86,9 @@ void IsDirectoryCollector::CollectForEntriesPaths(
 
 void IsDirectoryCollector::OnIsDirectoryCollected(size_t index,
                                                   bool is_directory) {
-  if (is_directory)
+  if (is_directory) {
     result_->insert(paths_[index]);
+  }
   if (!--left_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_), std::move(result_)));

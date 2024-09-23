@@ -1,9 +1,19 @@
+function makeSharedBuffer(size) {
+  // SharedArrayBuffer constructor is hidden in some origins, but it's still
+  // available via WebAssembly.Memory.
+  const kPageSize = 65536;
+  const sizeInPages = Math.floor((size + kPageSize - 1) / kPageSize);
+  const memory = new WebAssembly.Memory(
+      {initial: sizeInPages, maximum: sizeInPages, shared: true});
+  return memory.buffer;
+}
+
 function runCopyToTest(frame, desc) {
   let isDone = false;
 
   function runTest() {
     let size = frame.allocationSize();
-    let buf = new ArrayBuffer(size);
+    let buf = new makeSharedBuffer(size);
     let startTime = PerfTestRunner.now();
     PerfTestRunner.addRunTestStartMarker();
     frame.copyTo(buf)
@@ -40,7 +50,7 @@ function runBatchCopyToTest(frames, desc) {
 
     let frames_and_buffers = frames.map(frame => {
       let size = frame.allocationSize();
-      let buf = new ArrayBuffer(size);
+      let buf = new makeSharedBuffer(size);
       return [frame, buf];
     });
     let readback_promises = frames_and_buffers.map(([frame, buf]) => {

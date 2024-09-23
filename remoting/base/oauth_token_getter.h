@@ -27,12 +27,9 @@ class OAuthTokenGetter {
 
   typedef base::OnceCallback<void(Status status,
                                   const std::string& user_email,
-                                  const std::string& access_token)>
+                                  const std::string& access_token,
+                                  const std::string& scopes)>
       TokenCallback;
-
-  typedef base::RepeatingCallback<void(const std::string& user_email,
-                                       const std::string& refresh_token)>
-      CredentialsUpdatedCallback;
 
   // This structure contains information required to perform authorization
   // with the authorization server.

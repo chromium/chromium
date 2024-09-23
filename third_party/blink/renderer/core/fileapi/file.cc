@@ -190,8 +190,8 @@ File* File::CreateForFileSystemFile(ExecutionContext& context,
                                     const KURL& url,
                                     const FileMetadata& metadata,
                                     UserVisibility user_visibility) {
-  String content_type =
-      GetContentTypeFromFileName(url.GetPath(), File::kWellKnownContentTypes);
+  String content_type = GetContentTypeFromFileName(
+      url.GetPath().ToString(), File::kWellKnownContentTypes);
   // RegisterBlob doesn't take nullable strings.
   if (content_type.IsNull()) {
     content_type = g_empty_string;

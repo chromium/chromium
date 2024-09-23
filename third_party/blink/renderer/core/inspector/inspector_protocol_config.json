@@ -52,6 +52,12 @@
                 "domain": "Storage"
             },
             {
+              "domain": "FileSystem",
+              "async": [
+                "getDirectory"
+              ]
+            },
+            {
                 "domain": "IndexedDB",
                 "async": ["requestDatabaseNames", "requestDatabase", "requestData", "getMetadata", "deleteObjectStoreEntries", "clearObjectStore", "deleteDatabase"]
             },

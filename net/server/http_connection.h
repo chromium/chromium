@@ -11,6 +11,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/io_buffer.h"
+#include "net/base/net_export.h"
 
 namespace net {
 
@@ -19,12 +20,12 @@ class WebSocket;
 
 // A container which has all information of an http connection. It includes
 // id, underlying socket, and pending read/write data.
-class HttpConnection {
+class NET_EXPORT HttpConnection {
  public:
   // IOBuffer for data read.  It's a wrapper around GrowableIOBuffer, with more
   // functions for buffer management.  It moves unconsumed data to the start of
   // buffer.
-  class ReadIOBuffer : public IOBuffer {
+  class NET_EXPORT ReadIOBuffer : public IOBuffer {
    public:
     static const int kInitialBufSize = 1024;
     static const int kMinimumBufSize = 128;
@@ -70,7 +71,7 @@ class HttpConnection {
   // IOBuffer of pending data to write which has a queue of pending data. Each
   // pending data is stored in std::string.  data() is the data of first
   // std::string stored.
-  class QueuedWriteIOBuffer : public IOBuffer {
+  class NET_EXPORT QueuedWriteIOBuffer : public IOBuffer {
    public:
     static const int kDefaultMaxBufferSize = 1 * 1024 * 1024;  // 1 Mbytes.
 

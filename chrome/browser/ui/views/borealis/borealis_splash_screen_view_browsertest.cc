@@ -12,7 +12,9 @@
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager_mock.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
+#include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_task.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
@@ -99,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(BorealisSplashScreenViewBrowserTest,
   EXPECT_NE(nullptr, BorealisSplashScreenView::GetActiveViewForTesting());
   MakeAndTrackWindow(
       "org.chromium.guest_os.borealis.foobarbaz",
-      &borealis::BorealisService::GetForProfile(browser()->profile())
+      &borealis::BorealisServiceFactory::GetForProfile(browser()->profile())
            ->WindowManager());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(VerifyUi());
@@ -115,7 +117,8 @@ IN_PROC_BROWSER_TEST_F(BorealisSplashScreenViewBrowserTest,
   CallbackFactory callback_check;
   EXPECT_CALL(callback_check, Call(BorealisAppLauncher::LaunchResult::kError));
   BorealisAppLauncherImpl launcher(browser()->profile());
-  launcher.Launch("foo.desktop", callback_check.BindOnce());
+  launcher.Launch("foo.desktop", BorealisLaunchSource::kUnknown,
+                  callback_check.BindOnce());
   base::RunLoop().RunUntilIdle();
 
   // The splash screen should have disappeared.

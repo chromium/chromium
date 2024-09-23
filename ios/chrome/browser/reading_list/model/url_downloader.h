@@ -5,15 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_READING_LIST_MODEL_URL_DOWNLOADER_H_
 #define IOS_CHROME_BROWSER_READING_LIST_MODEL_URL_DOWNLOADER_H_
 
-#include <string>
+#import <string>
 
-#include "base/containers/circular_deque.h"
-#include "base/files/file_path.h"
-#include "base/functional/callback.h"
+#import "base/containers/circular_deque.h"
+#import "base/files/file_path.h"
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
-#include "base/task/cancelable_task_tracker.h"
-#include "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
-#include "ios/chrome/browser/reading_list/model/reading_list_distiller_page.h"
+#import "base/task/cancelable_task_tracker.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
+#import "ios/chrome/browser/reading_list/model/reading_list_distiller_page.h"
 
 class PrefService;
 class GURL;
@@ -122,18 +122,27 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   // Handles the next task in the queue, if no task is currently being handled.
   void HandleNextTask();
   // Callback for completed (or failed) download, handles calling
+  // downloadCompletion on a PDF or an HTML file. Unwind result and calls
+  // DownloadCompletionHandler.
+  void DownloadPDFOrHTMLCompletionHandler(
+      const GURL& url,
+      const std::string& title,
+      const base::FilePath& offline_path,
+      std::pair<SuccessState, int64_t> result);
+  // Callback for completed (or failed) download, handles calling
   // downloadCompletion and starting the next task.
   void DownloadCompletionHandler(const GURL& url,
                                  const std::string& title,
                                  const base::FilePath& path,
                                  SuccessState success);
+  // Callback for completed (or failed) deletion.
+  void PostDelete(const GURL& url,
+                  const std::string& title,
+                  const base::FilePath& offline_path,
+                  SuccessState success);
   // Callback for completed (or failed) deletion, handles calling
   // deleteCompletion and starting the next task.
   void DeleteCompletionHandler(const GURL& url, bool success);
-
-  // Creates the offline directory for `url`. Returns true if successful or if
-  // the directory already exists.
-  bool CreateOfflineURLDirectory(const GURL& url);
 
   // Downloads `url`, depending on `offlineURLExists` state.
   virtual void DownloadURL(const GURL& url, bool offlineURLExists);
@@ -144,40 +153,20 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   void DistilledPageHasMimeType(const GURL& original_url,
                                 const std::string& mime_type) override;
 
-  // HTML processing methods.
-
-  // Injects script to replace images in `images` array with a data-uri
-  // of their contents. If the data does not represent an image, it is
-  // skipped.
-  std::string ReplaceImagesInHTML(
-      const GURL& url,
-      const std::string& html,
-      const std::vector<dom_distiller::DistillerViewerInterface::ImageInfo>&
-          images);
-  // Saves `html` to disk in the correct location for `url`; returns success.
-  bool SaveHTMLForURL(std::string html, const GURL& url);
-  // Saves distilled html to disk, including saving images and main file.
-  SuccessState SaveDistilledHTML(
-      const GURL& url,
-      const std::vector<dom_distiller::DistillerViewerInterface::ImageInfo>&
-          images,
-      const std::string& html);
   // Callback for distillation completion.
   void DistillerCallback(
       const GURL& pageURL,
       const std::string& html,
       const std::vector<dom_distiller::DistillerViewerInterface::ImageInfo>&
           images,
-      const std::string& title);
+      const std::string& title,
+      const std::string& csp_nonce);
 
   // PDF processing methods
 
   // Starts fetching the PDF file. If `original_url_` triggered a redirection,
   // directly save `distilled_url_`.
   virtual void FetchPDFFile();
-  // Saves the file downloaded by `url_loader_`. Creates the directory if
-  // needed.
-  SuccessState SavePDFFile(const base::FilePath& temporary_path);
 
   raw_ptr<reading_list::ReadingListDistillerPageFactory>
       distiller_page_factory_;
@@ -200,6 +189,8 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   std::unique_ptr<dom_distiller::DistillerViewerInterface> distiller_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::CancelableTaskTracker task_tracker_;
+
+  base::WeakPtrFactory<URLDownloader> weak_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_MODEL_URL_DOWNLOADER_H_

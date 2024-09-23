@@ -13,8 +13,14 @@ component("standalone_browser") {
   sources = [
     "browser_support.cc",
     "browser_support.h",
+    "channel_util.cc",
+    "channel_util.h",
     "lacros_availability.cc",
     "lacros_availability.h",
+    "lacros_selection.cc",
+    "lacros_selection.h",
+    "migration_progress_tracker.cc",
+    "migration_progress_tracker.h",
     "migrator_util.cc",
     "migrator_util.h",
     "standalone_browser_features.cc",
@@ -24,7 +30,10 @@ component("standalone_browser") {
   deps = [
     "//ash/constants:constants",
     "//base",
+    "//base/version_info",
+    "//chromeos/ash/components/channel",
     "//components/account_id",
+    "//components/component_updater",
     "//components/policy:generated",
     "//components/policy/core/common",
     "//components/prefs",
@@ -37,7 +46,9 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "channel_util_unittest.cc",
     "lacros_availability_unittest.cc",
+    "lacros_selection_unittest.cc",
     "migrator_util_unittest.cc",
     "test_util_unittest.cc",
   ]
@@ -47,8 +58,12 @@ source_set("unit_tests") {
     ":test_support",
     "//ash/constants:constants",
     "//base/test:test_support",
+    "//components/account_id",
+    "//components/policy:generated",
+    "//components/policy/core/common",
     "//components/prefs:test_support",
     "//components/user_manager:test_support",
+    "//content/test:test_support",
     "//testing/gtest:gtest",
   ]
 }
@@ -57,6 +72,7 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "fake_migration_progress_tracker.h",
     "feature_refs.cc",
     "test_util.cc",
     "test_util.h",

@@ -22,6 +22,8 @@ class VIZ_SERVICE_EXPORT GpuMemoryBufferVideoFramePool : public VideoFramePool {
   // The |context_provider| must outlive this instance.
   explicit GpuMemoryBufferVideoFramePool(
       int capacity,
+      media::VideoPixelFormat format,
+      const gfx::ColorSpace& color_space,
       GmbVideoFramePoolContextProvider* context_provider);
   ~GpuMemoryBufferVideoFramePool() override;
 
@@ -47,6 +49,10 @@ class VIZ_SERVICE_EXPORT GpuMemoryBufferVideoFramePool : public VideoFramePool {
   // destroyed. If the generation matches the current pool generation, the
   // number of reserved frames will be decremented.
   void OnVideoFrameDestroyed(uint32_t frame_pool_generation);
+
+  // Support multiple format & color space
+  const media::VideoPixelFormat format_;
+  const gfx::ColorSpace color_space_;
 
   raw_ptr<GmbVideoFramePoolContextProvider> context_provider_
       GUARDED_BY_CONTEXT(sequence_checker_);

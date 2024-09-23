@@ -23,7 +23,7 @@ bool GLSurfaceStub::Resize(const gfx::Size& size,
 }
 
 bool GLSurfaceStub::IsOffscreen() {
-  return false;
+  return true;
 }
 
 gfx::SwapResult GLSurfaceStub::SwapBuffers(PresentationCallback callback,
@@ -49,14 +49,6 @@ bool GLSurfaceStub::BuffersFlipped() const {
 
 GLSurfaceFormat GLSurfaceStub::GetFormat() {
   return GLSurfaceFormat();
-}
-
-bool GLSurfaceStub::SupportsDCLayers() const {
-  return supports_draw_rectangle_;
-}
-
-gfx::Vector2d GLSurfaceStub::GetDrawOffset() const {
-  return supports_draw_rectangle_ ? gfx::Vector2d(100, 200) : gfx::Vector2d();
 }
 
 GLSurfaceStub::~GLSurfaceStub() {}

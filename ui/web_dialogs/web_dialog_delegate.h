@@ -11,6 +11,8 @@
 
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/web_dialogs/web_dialogs_export.h"
@@ -46,8 +48,10 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // Returns the modal type for this dialog. Only called once, during
   // WebDialogView creation. If you can, prefer using set_modal_type() to
   // overriding GetDialogModalType().
-  virtual ModalType GetDialogModalType() const;
-  void set_dialog_modal_type(ModalType modal_type) { modal_type_ = modal_type; }
+  virtual mojom::ModalType GetDialogModalType() const;
+  void set_dialog_modal_type(mojom::ModalType modal_type) {
+    modal_type_ = modal_type;
+  }
 
   // Returns the title of the dialog. If you can, prefer to use set_title()
   // rather than overriding GetDialogTitle().
@@ -110,6 +114,16 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // Returns true if the dialog can ever be minimized.
   bool can_minimize() const { return can_minimize_; }
   void set_can_minimize(bool can_minimize) { can_minimize_ = can_minimize; }
+
+  // Gets the element identifier that should be used for the web view that
+  // `this` is a delegate of.
+  ui::ElementIdentifier web_view_element_id() const {
+    return web_view_element_id_;
+  }
+  void set_web_view_element_id(
+      const ui::ElementIdentifier web_view_element_id) {
+    web_view_element_id_ = web_view_element_id;
+  }
 
   // A callback to notify the delegate that |source|'s loading state has
   // changed.
@@ -214,9 +228,17 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // A callback to allow the delegate to open a new URL inside |source|.
   // On return |out_new_contents| should contain the WebContents the URL
   // is opened in. Return false to use the default handler.
-  virtual bool HandleOpenURLFromTab(content::WebContents* source,
-                                    const content::OpenURLParams& params,
-                                    content::WebContents** out_new_contents);
+  // If a `navigation_handle_callback` function is provided, it should be called
+  // with the pending navigation (if any) when the navigation handle become
+  // available. This allows callers to observe or attach their specific data.
+  // `navigation_handle_callback` may not be called if the navigation fails for
+  // any reason.
+  virtual bool HandleOpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback,
+      content::WebContents** out_new_contents);
 
   // A callback to control whether a WebContents will be created. Returns
   // true to disallow the creation. Return false to use the default handler.
@@ -274,12 +296,15 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   bool delete_on_close_ = true;
   FrameKind frame_kind_ = FrameKind::kNonClient;
   std::optional<gfx::Size> minimum_size_;
-  ModalType modal_type_ = ui::MODAL_TYPE_NONE;
+  mojom::ModalType modal_type_ = mojom::ModalType::kNone;
   std::string name_;
   bool show_close_button_ = true;
   bool show_title_ = true;
   gfx::Size size_;
   std::u16string title_;
+  // The value that should be used for the element ID of the web view that this
+  // is a delegate for.
+  ui::ElementIdentifier web_view_element_id_;
 
   OnDialogClosedCallback closed_callback_;
 

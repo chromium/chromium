@@ -17,9 +17,18 @@ class CrosapiTrustedVaultClient
     : public trusted_vault::TrustedVaultClient,
       public crosapi::mojom::TrustedVaultBackendObserver {
  public:
+  // `remote` must be bound.
+  explicit CrosapiTrustedVaultClient(
+      mojo::Remote<crosapi::mojom::TrustedVaultBackend> remote);
+
   // `remote` must not be null and must be bound.
+  // TODO: crbug.com/342239249 - This constructor should be deleted once the
+  // LacrosService-owned `TrustedVaultBackend` fallback instance is removed. The
+  // constructor above is used when binding `TrustedVaultBackend` via
+  // `TrustedVaultBackendService`.
   explicit CrosapiTrustedVaultClient(
       mojo::Remote<crosapi::mojom::TrustedVaultBackend>* remote);
+
   CrosapiTrustedVaultClient(const CrosapiTrustedVaultClient& other) = delete;
   CrosapiTrustedVaultClient& operator=(const CrosapiTrustedVaultClient& other) =
       delete;
@@ -57,6 +66,8 @@ class CrosapiTrustedVaultClient
   // message handling on a partially destroyed object.
   mojo::Receiver<crosapi::mojom::TrustedVaultBackendObserver> receiver_{this};
   raw_ptr<mojo::Remote<crosapi::mojom::TrustedVaultBackend>> remote_;
+  std::optional<mojo::Remote<crosapi::mojom::TrustedVaultBackend>>
+      owned_remote_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_TRUSTED_VAULT_CROSAPI_TRUSTED_VAULT_CLIENT_H_

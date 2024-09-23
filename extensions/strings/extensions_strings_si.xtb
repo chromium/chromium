@@ -19,7 +19,6 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> වෙතින් නොදන්නා නිෂ්පාදනය <ph name="PRODUCT_ID" /> (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ගොනුව යළි පිහිටුවිය නොහැකි විය. මෙම ගොනුව භාවිතයේදැයි පිරික්සන්න.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> වෙතින් නොදන්නා නිෂ්පාදනය <ph name="PRODUCT_ID" /></translation>
-<translation id="3369521687965833290">දිගුව ඇසුරුම් ඉවත් කළ නොහැක.  දිගුවක් ආරක්ෂිතව ඇසුරුම් ඉවත් කිරීමට, ඔබගේ පැතිකඩ ඩිරෙක්ටරිය වෙත ධාවක අකුරකින් ආරම්භ වන සහ ජන්ක්ෂන්, මවුන්ට් පොයින්ට්, හෝ සිම්ලින්ක් අඩංගු නොවන පෙතක් තිබිය යුතුය. ඔබගේ පැතිකඩ සඳහා එවැනි පෙතක් නැත.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> වෙතින් <ph name="PRODUCT_NAME" />  (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">පුද්ගලික යතුර සඳහා යෙදවුම් යතුර වලංගු මාර්ගයක් විය යුතුය.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">මෙම යන්ත්‍රයේ පාලකයාට <ph name="EXTENSION_NAME" /> ස්ථාපනය කිරීමට අවශ්‍යයි. එය අස්ථාපනය කළ නොහැක.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> වෙතින් නොදන්නා නිෂ්පාදනය <ph name="PRODUCT_ID" /> (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> වෙතින් <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">දිගුවේ ඇසුරුම් ඉවත් කළ නොහැක.  දිගුවේ ආරක්ෂිතව ඇසුරුම් ඉවත් කිරීමට, symlink අඩංගු නොවන ඔබේ පැතිකඩ නාමාවලිය වෙත මාර්ගයක් තිබිය යුතුය. ඔබේ පැතිකඩ සඳහා එවැනි මාර්ගයක් නොමැත.</translation>
 <translation id="6322279351188361895">පුද්ගලික යතුර කියවීම අසාර්ථක විය.</translation>
 <translation id="6391538222494443604">ආදාන නාමාවලිය පැවතිය යුතුය.</translation>
 <translation id="641087317769093025">දිගුව දිගහැරිය නොහැක</translation>

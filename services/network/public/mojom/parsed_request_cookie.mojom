@@ -1,0 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// Represents the key and value of a cookie as written into a request (as
+// opposed to CanonicalCookie, which has more information).
+// Corresponds to `net::cookie_util::ParsedRequestCookie`.
+struct ParsedRequestCookie {
+  string name;
+  string value;
+};

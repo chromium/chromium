@@ -51,9 +51,12 @@ ContactCenterInsightsExtensionManagerFactory::
           "ContactCenterInsightsExtensionManager",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {}
 
 ContactCenterInsightsExtensionManagerFactory::
@@ -94,7 +97,7 @@ void ContactCenterInsightsExtensionManager::Delegate::UninstallExtension(
 
 bool ContactCenterInsightsExtensionManager::Delegate::IsProfileAffiliated(
     Profile* profile) const {
-  return ::chrome::enterprise_util::IsProfileAffiliated(profile);
+  return ::enterprise_util::IsProfileAffiliated(profile);
 }
 
 bool ContactCenterInsightsExtensionManager::Delegate::IsExtensionInstalled(

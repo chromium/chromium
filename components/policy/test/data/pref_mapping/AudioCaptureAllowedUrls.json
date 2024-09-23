@@ -8,29 +8,14 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "hardware.audio_capture_allowed_urls": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "policies": {
-          "AudioCaptureAllowedUrls": [
-            "[*.]google.com"
-          ]
-        },
-        "prefs": {
-          "hardware.audio_capture_allowed_urls": {
-            "value": [
-              "[*.]google.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "hardware.audio_capture_allowed_urls",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "[*.]google.com"
+        ]
+      ]
+    }
   }
 ]

@@ -7,9 +7,9 @@
 #include <cmath>
 
 #include "base/check.h"
+#include "base/numerics/angle_conversions.h"
 #include "services/device/generic_sensor/generic_sensor_consts.h"
 #include "services/device/generic_sensor/platform_sensor_fusion.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 
 namespace device {
 
@@ -31,9 +31,9 @@ void ComputeQuaternionFromEulerAngles(double alpha_in_degrees,
     // an arbitrary fixed orientation around the z-axis.
     alpha_in_degrees = 0.0;
   }
-  double alpha_in_radians = gfx::DegToRad(alpha_in_degrees);
-  double beta_in_radians = gfx::DegToRad(beta_in_degrees);
-  double gamma_in_radians = gfx::DegToRad(gamma_in_degrees);
+  double alpha_in_radians = base::DegToRad(alpha_in_degrees);
+  double beta_in_radians = base::DegToRad(beta_in_degrees);
+  double gamma_in_radians = base::DegToRad(gamma_in_degrees);
 
   double cx = std::cos(beta_in_radians / 2);
   double cy = std::cos(gamma_in_radians / 2);

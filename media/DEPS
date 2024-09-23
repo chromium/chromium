@@ -12,6 +12,7 @@ include_rules = [
   "+mojo/public/cpp/bindings/callback_helpers.h",
   "+mojo/public/cpp/system/platform_handle.h",
   "+net/cookies/site_for_cookies.h",
+  "+net/storage_access_api/status.h",
   "+services/device/public",
   "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",
   "+skia/ext",
@@ -53,6 +54,12 @@ specific_include_rules = {
     "+components/viz/test/test_context_support.h",
   ],
   "gpu_memory_buffer_video_frame_pool_unittest.cc": [
+    "+components/viz/test/test_context_provider.h",
+  ],
+  "video_encode_accelerator_adapter_test.cc": [
+    "+components/viz/test/test_context_provider.h"
+  ],
+  "renderable_gpu_memory_buffer_video_frame_pool_unittest.cc": [
     "+components/viz/test/test_context_provider.h",
   ],
   "null_video_sink_unittest.cc": [

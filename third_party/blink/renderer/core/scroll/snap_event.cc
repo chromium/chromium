@@ -11,13 +11,19 @@
 namespace blink {
 
 SnapEvent* SnapEvent::Create(const AtomicString& type,
-                             HeapVector<Member<Node>>& targets) {
-  return MakeGarbageCollected<SnapEvent>(type, targets);
+                             Bubbles bubbles,
+                             Member<Node>& block_target,
+                             Member<Node>& inline_target) {
+  return MakeGarbageCollected<SnapEvent>(type, bubbles, block_target,
+                                         inline_target);
 }
 
 SnapEvent::SnapEvent(const AtomicString& type,
-                     HeapVector<Member<Node>>& targets)
-    : Event(type, Bubbles::kNo, Cancelable::kNo),
-      snap_targets_(StaticNodeList::Adopt(targets)) {}
+                     Bubbles bubbles,
+                     Member<Node>& block_target,
+                     Member<Node>& inline_target)
+    : Event(type, bubbles, Cancelable::kNo),
+      snap_target_block_(block_target),
+      snap_target_inline_(inline_target) {}
 
 }  // namespace blink

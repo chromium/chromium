@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -40,66 +41,36 @@ void InstallAppLocallyCommand::StartWithLock(
     std::unique_ptr<AppLock> app_lock) {
   app_lock_ = std::move(app_lock);
 
-  if (!app_lock_->registrar().IsInstalled(app_id_)) {
+  if (app_lock_->registrar().IsNotInRegistrar(app_id_)) {
     GetMutableDebugValue().Set("command_result", "app_not_in_registry");
     CompleteAndSelfDestruct(CommandResult::kSuccess);
     return;
   }
 
-  // Setting app to be locally installed before calling Synchronize() helps
-  // trigger the OS integration.
-  if (!app_lock_->registrar().IsLocallyInstalled(app_id_)) {
+  // Setting app to be installed with OS integration before calling
+  // Synchronize() helps trigger the OS integration.
+  if (!app_lock_->registrar().IsInstallState(
+          app_id_, {proto::INSTALLED_WITH_OS_INTEGRATION})) {
     ScopedRegistryUpdate update = app_lock_->sync_bridge().BeginUpdate();
     WebApp* web_app_to_update = update->UpdateApp(app_id_);
     if (web_app_to_update) {
-      web_app_to_update->SetIsLocallyInstalled(/*is_locally_installed=*/true);
+      web_app_to_update->SetInstallState(
+          proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
     }
   }
 
-  // Install OS hooks first.
-  InstallOsHooksOptions options;
-  options.add_to_desktop = true;
-  options.add_to_quick_launch_bar = false;
-  options.os_hooks[OsHookType::kShortcuts] = true;
-  options.os_hooks[OsHookType::kShortcutsMenu] = true;
-  options.os_hooks[OsHookType::kFileHandlers] = true;
-  options.os_hooks[OsHookType::kProtocolHandlers] = true;
-  options.os_hooks[OsHookType::kRunOnOsLogin] =
-      (app_lock_->registrar().GetAppRunOnOsLoginMode(app_id_).value ==
-       RunOnOsLoginMode::kWindowed);
-
-  // Installed WebApp here is user uninstallable app, but it needs to
-  // check user uninstall-ability if there are apps with different source types.
-  // WebApp::CanUserUninstallApp will handles it.
-  const web_app::WebApp* web_app = app_lock_->registrar().GetAppById(app_id_);
-  options.os_hooks[OsHookType::kUninstallationViaOsSettings] =
-      web_app->CanUserUninstallWebApp();
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-  options.os_hooks[web_app::OsHookType::kUrlHandlers] = true;
-#else
-  options.os_hooks[web_app::OsHookType::kUrlHandlers] = false;
-#endif
-
-  auto os_hooks_barrier = OsIntegrationManager::GetBarrierForSynchronize(
-      base::BindOnce(&InstallAppLocallyCommand::OnOsHooksInstalled,
-                     weak_factory_.GetWeakPtr()));
-
-  app_lock_->os_integration_manager().InstallOsHooks(
-      app_id_, os_hooks_barrier, /*web_app_info=*/nullptr, options);
-
   SynchronizeOsOptions synchronize_options;
-  synchronize_options.add_shortcut_to_desktop = options.add_to_desktop;
-  synchronize_options.add_to_quick_launch_bar = options.add_to_quick_launch_bar;
-  synchronize_options.reason = options.reason;
+  synchronize_options.add_shortcut_to_desktop = true;
+  synchronize_options.add_to_quick_launch_bar = false;
+  synchronize_options.reason = SHORTCUT_CREATION_BY_USER;
   app_lock_->os_integration_manager().Synchronize(
-      app_id_, base::BindOnce(os_hooks_barrier, OsHooksErrors()),
+      app_id_,
+      base::BindOnce(&InstallAppLocallyCommand::OnOsIntegrationSynchronized,
+                     weak_factory_.GetWeakPtr()),
       synchronize_options);
 }
 
-void InstallAppLocallyCommand::OnOsHooksInstalled(
-    const OsHooksErrors os_hooks_errors) {
+void InstallAppLocallyCommand::OnOsIntegrationSynchronized() {
   const base::Time& install_time = base::Time::Now();
   {
     // Updating install time on app.

@@ -38,7 +38,8 @@ class VIEWS_EXPORT TooltipViewAura : public views::View {
 
   // views:View:
   void OnPaint(gfx::Canvas* canvas) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
   void OnThemeChanged() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 

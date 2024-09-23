@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -29,7 +30,6 @@
 #include "net/spdy/spdy_http_utils.h"
 #include "net/spdy/spdy_log_util.h"
 #include "net/ssl/ssl_cert_request_info.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
@@ -37,10 +37,10 @@ namespace net {
 
 namespace {
 
-base::Value::Dict NetLogHeadersParams(const spdy::Http2HeaderBlock* headers,
+base::Value::Dict NetLogHeadersParams(const quiche::HttpHeaderBlock* headers,
                                       NetLogCaptureMode capture_mode) {
   base::Value::Dict dict;
-  dict.Set("headers", ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
+  dict.Set("headers", ElideHttpHeaderBlockForNetLog(*headers, capture_mode));
   return dict;
 }
 
@@ -232,7 +232,7 @@ void BidirectionalStream::OnStreamReady(bool request_headers_sent) {
 }
 
 void BidirectionalStream::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers) {
+    const quiche::HttpHeaderBlock& response_headers) {
   HttpResponseInfo response_info;
   if (SpdyHeadersToHttpResponse(response_headers, &response_info) != OK) {
     DLOG(WARNING) << "Invalid headers";
@@ -258,7 +258,7 @@ void BidirectionalStream::OnHeadersReceived(
   load_timing_info_.receive_headers_end = base::TimeTicks::Now();
   read_end_time_ = load_timing_info_.receive_headers_end;
   session_->http_stream_factory()->ProcessAlternativeServices(
-      session_, net::NetworkAnonymizationKey(), response_info.headers.get(),
+      session_, NetworkAnonymizationKey(), response_info.headers.get(),
       url::SchemeHostPort(request_info_->url));
   delegate_->OnHeadersReceived(response_headers);
 }
@@ -305,7 +305,7 @@ void BidirectionalStream::OnDataSent() {
 }
 
 void BidirectionalStream::OnTrailersReceived(
-    const spdy::Http2HeaderBlock& trailers) {
+    const quiche::HttpHeaderBlock& trailers) {
   if (net_log_.IsCapturing()) {
     net_log_.AddEvent(NetLogEventType::BIDIRECTIONAL_STREAM_RECV_TRAILERS,
                       [&](NetLogCaptureMode capture_mode) {
@@ -326,7 +326,7 @@ void BidirectionalStream::OnFailed(int status) {
 
 void BidirectionalStream::OnStreamReady(const ProxyInfo& used_proxy_info,
                                         std::unique_ptr<HttpStream> stream) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BidirectionalStream::OnBidirectionalStreamImplReady(
@@ -334,8 +334,8 @@ void BidirectionalStream::OnBidirectionalStreamImplReady(
     std::unique_ptr<BidirectionalStreamImpl> stream) {
   DCHECK(!stream_impl_);
 
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("bidirectional_stream", R"(
+  NetworkTrafficAnnotationTag traffic_annotation =
+      DefineNetworkTrafficAnnotation("bidirectional_stream", R"(
         semantics {
           sender: "Bidirectional Stream"
           description:
@@ -367,7 +367,7 @@ void BidirectionalStream::OnBidirectionalStreamImplReady(
 void BidirectionalStream::OnWebSocketHandshakeStreamReady(
     const ProxyInfo& used_proxy_info,
     std::unique_ptr<WebSocketHandshakeStreamBase> stream) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BidirectionalStream::OnStreamFailed(
@@ -412,6 +412,11 @@ void BidirectionalStream::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
 }
 
 void BidirectionalStream::OnQuicBroken() {}
+
+void BidirectionalStream::OnSwitchesToHttpStreamPool(
+    HttpStreamPoolSwitchingInfo switching_info) {
+  NOTREACHED();
+}
 
 void BidirectionalStream::NotifyFailed(int error) {
   delegate_->OnFailed(error);

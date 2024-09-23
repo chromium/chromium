@@ -9,7 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/webui/web_ui_ios_message_handler.h"
 
 namespace autofill {
@@ -31,8 +31,7 @@ web::WebUIIOSDataSource* CreateInternalsHTMLSource(
 class InternalsUIHandler : public web::WebUIIOSMessageHandler,
                            public autofill::LogReceiver {
  public:
-  using GetLogRouterFunction =
-      base::RepeatingCallback<LogRouter*(ChromeBrowserState*)>;
+  using GetLogRouterFunction = base::RepeatingCallback<LogRouter*(ProfileIOS*)>;
 
   explicit InternalsUIHandler(std::string call_on_load,
                               GetLogRouterFunction get_log_router_function);

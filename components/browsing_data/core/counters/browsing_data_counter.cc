@@ -43,6 +43,22 @@ void BrowsingDataCounter::Init(PrefService* pref_service,
   OnInitialized();
 }
 
+void BrowsingDataCounter::InitWithoutPeriodPref(
+    PrefService* pref_service,
+    ClearBrowsingDataTab clear_browsing_data_tab,
+    base::Time begin_time,
+    ResultCallback callback) {
+  DCHECK(!initialized_);
+  callback_ = std::move(callback);
+  clear_browsing_data_tab_ = clear_browsing_data_tab;
+  pref_.Init(GetPrefName(), pref_service,
+             base::BindRepeating(&BrowsingDataCounter::Restart,
+                                 base::Unretained(this)));
+  begin_time_ = begin_time;
+  initialized_ = true;
+  OnInitialized();
+}
+
 void BrowsingDataCounter::InitWithoutPref(base::Time begin_time,
                                           ResultCallback callback) {
   DCHECK(!initialized_);
@@ -95,6 +111,12 @@ void BrowsingDataCounter::Restart() {
   Count();
 }
 
+void BrowsingDataCounter::SetBeginTime(base::Time begin_time) {
+  DCHECK(period_.GetPrefName().empty());
+  begin_time_ = begin_time;
+  Restart();
+}
+
 void BrowsingDataCounter::ReportResult(ResultInt value) {
   ReportResult(std::make_unique<FinishedResult>(this, value));
 }
@@ -114,10 +136,10 @@ void BrowsingDataCounter::ReportResult(std::unique_ptr<Result> result) {
       staged_result_ = std::move(result);
       return;
     case State::IDLE:
-      NOTREACHED() << "State::IDLE";
+      DUMP_WILL_BE_NOTREACHED() << "State::IDLE";
       return;
     case State::REPORT_STAGED_RESULT:
-      NOTREACHED() << "State::REPORT_STAGED_RESULT";
+      NOTREACHED_IN_MIGRATION() << "State::REPORT_STAGED_RESULT";
       return;
   }
 }

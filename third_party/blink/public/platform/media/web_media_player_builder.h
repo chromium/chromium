@@ -39,6 +39,8 @@ class RasterContextProvider;
 }
 
 namespace blink {
+
+class ResourceFetchContext;
 class ThreadSafeBrowserInterfaceBrokerProxy;
 class UrlIndex;
 class VideoFrameCompositor;
@@ -60,20 +62,19 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerBuilder {
   // Returns true if load will deferred. False if it will run immediately.
   using DeferLoadCB = base::RepeatingCallback<bool(base::OnceClosure)>;
 
-  // Callback to tell V8 about the amount of memory used by the WebMediaPlayer
-  // instance.  The input parameter is the delta in bytes since the last call to
-  // AdjustAllocatedMemoryCB and the return value is the total number of bytes
-  // used by objects external to V8.  Note: this value includes things that are
-  // not the WebMediaPlayer!
-  using AdjustAllocatedMemoryCB = base::RepeatingCallback<int64_t(int64_t)>;
+  WebMediaPlayerBuilder(
+      WebLocalFrame& frame,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  WebMediaPlayerBuilder(const WebMediaPlayerBuilder&) = delete;
+  WebMediaPlayerBuilder& operator=(const WebMediaPlayerBuilder&) = delete;
+  ~WebMediaPlayerBuilder();
 
-  static WebMediaPlayer* Build(
+  std::unique_ptr<WebMediaPlayer> Build(
       WebLocalFrame* frame,
       WebMediaPlayerClient* client,
       WebMediaPlayerEncryptedMediaClient* encrypted_client,
       WebMediaPlayerDelegate* delegate,
       std::unique_ptr<media::RendererFactorySelector> renderer_factory_selector,
-      UrlIndex* url_index,
       std::unique_ptr<VideoFrameCompositor> compositor,
       std::unique_ptr<media::MediaLog> media_log,
       media::MediaPlayerLoggingID player_id,
@@ -84,7 +85,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerBuilder {
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner>
           video_frame_compositor_task_runner,
-      AdjustAllocatedMemoryCB adjust_allocated_memory_cb,
       WebContentDecryptionModule* initial_cdm,
       media::RequestRoutingTokenCallback request_routing_token_cb,
       base::WeakPtr<media::MediaObserver> media_observer,
@@ -99,6 +99,11 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerBuilder {
       bool is_background_video_track_optimization_supported,
       std::unique_ptr<media::Demuxer> demuxer_override,
       scoped_refptr<ThreadSafeBrowserInterfaceBrokerProxy> remote_interfaces);
+
+ private:
+  // Media resource cache.
+  std::unique_ptr<ResourceFetchContext> fetch_context_;
+  std::unique_ptr<UrlIndex> url_index_;
 };
 
 }  // namespace blink

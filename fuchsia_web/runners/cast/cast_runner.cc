@@ -6,6 +6,7 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fit/function.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -19,6 +20,7 @@
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -44,7 +46,7 @@ constexpr char kCdmDataSubdirectoryName[] = "cdm_data";
 constexpr char kProfileSubdirectoryName[] = "web_profile";
 
 // Name of the file used to detect cache erasure.
-// TODO(crbug.com/1188780): Remove once an explicit cache flush signal exists.
+// TODO(crbug.com/40755074): Remove once an explicit cache flush signal exists.
 constexpr char kSentinelFileName[] = ".sentinel";
 
 // Ephemeral remote debugging port used by child contexts.
@@ -61,7 +63,7 @@ base::FilePath GetStagedForDeletionDirectoryPath() {
 
 // Deletes files/directories staged for deletion during the previous run.
 // We delete synchronously on main thread for simplicity. Note that this
-// overall mechanism is a temporary solution. TODO(crbug.com/1146480): migrate
+// overall mechanism is a temporary solution. TODO(crbug.com/40730097): migrate
 // to the framework mechanism of clearing session data when available.
 void DeleteStagedForDeletionDirectoryIfExists() {
   const base::FilePath staged_for_deletion_directory =
@@ -82,7 +84,7 @@ void DeleteStagedForDeletionDirectoryIfExists() {
                << " ms";
 }
 
-// TODO(crbug.com/1134719): Consider removing this flag once Media Capabilities
+// TODO(crbug.com/40151573): Consider removing this flag once Media Capabilities
 // is supported.
 void EnsureSoftwareVideoDecodersAreDisabled(
     ::fuchsia::web::ContextFeatureFlags* features) {
@@ -109,7 +111,7 @@ void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
     return;
 
   // Allow best-effort persistent of Cast application data.
-  // TODO(crbug.com/1148334): Remove the need for an explicit quota to be
+  // TODO(crbug.com/42050202): Remove the need for an explicit quota to be
   // configured, once the platform provides storage quotas.
   const auto profile_path = base::FilePath(base::kPersistedCacheDirectoryPath)
                                 .Append(kProfileSubdirectoryName);
@@ -255,7 +257,7 @@ void CastRunner::LaunchPendingComponent(PendingCastComponent* pending_component,
                                         CastComponent::Params params) {
   DCHECK(cors_exempt_headers_);
 
-  // TODO(crbug.com/1082821): Remove |web_content_url| once the Cast Streaming
+  // TODO(crbug.com/40131115): Remove |web_content_url| once the Cast Streaming
   // Receiver component has been implemented.
   GURL web_content_url(params.application_config.web_url());
   if (IsAppConfigForCastStreaming(params.application_config))
@@ -357,7 +359,7 @@ WebContentRunner::WebInstanceConfig CastRunner::GetMainWebInstanceConfig() {
   // The fuchsia.media.Audio implementation provided to the Runner in existing
   // integrations always supports echo cancellation.
   //
-  // TODO(crbug.com/852834): Remove once AudioManagerFuchsia is updated to
+  // TODO(crbug.com/42050621): Remove once AudioManagerFuchsia is updated to
   // get this information from AudioCapturerFactory.
   config.extra_args.AppendSwitch(kAudioCapturerWithEchoCancellationSwitch);
 
@@ -379,10 +381,11 @@ WebContentRunner::WebInstanceConfig CastRunner::GetMainWebInstanceConfig() {
   SetDataParamsForMainContext(&config.params);
 
   // Create a sentinel file to detect if the cache is erased.
-  // TODO(crbug.com/1188780): Remove once an explicit cache flush signal exists.
+  // TODO(crbug.com/40755074): Remove once an explicit cache flush signal
+  // exists.
   CreatePersistedCacheSentinel();
 
-  // TODO(crbug.com/1023514): Remove this switch when it is no longer
+  // TODO(crbug.com/40050660): Remove this switch when it is no longer
   // necessary.
   config.params.set_unsafely_treat_insecure_origins_as_secure(
       {"allow-running-insecure-content", "disable-mixed-content-autoupgrade"});
@@ -418,7 +421,7 @@ std::optional<WebContentRunner::WebInstanceConfig>
 CastRunner::GetWebInstanceConfigForAppConfig(
     chromium::cast::ApplicationConfig* app_config) {
   if (IsAppConfigForCastStreaming(*app_config)) {
-    // TODO(crbug.com/1082821): Remove this once the CastStreamingReceiver
+    // TODO(crbug.com/40131115): Remove this once the CastStreamingReceiver
     // Component has been implemented.
     return std::make_optional(GetIsolatedWebInstanceConfigForCastStreaming());
   }
@@ -454,7 +457,7 @@ WebContentRunner* CastRunner::CreateIsolatedRunner(
 
 void CastRunner::OnIsolatedContextEmpty(WebContentRunner* context) {
   auto it = isolated_contexts_.find(context);
-  DCHECK(it != isolated_contexts_.end());
+  CHECK(it != isolated_contexts_.end(), base::NotFatalUntil::M130);
   isolated_contexts_.erase(it);
 }
 

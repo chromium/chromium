@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/net_log/net_export_file_writer.h"
 
 #include <stdint.h>
@@ -754,7 +759,7 @@ TEST_F(NetExportFileWriterTest, StartWithNetworkContextActive) {
   auto url_loader_factory_params =
       network::mojom::URLLoaderFactoryParams::New();
   url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
-  url_loader_factory_params->is_corb_enabled = false;
+  url_loader_factory_params->is_orb_enabled = false;
   network_context()->CreateURLLoaderFactory(
       url_loader_factory.BindNewPipeAndPassReceiver(),
       std::move(url_loader_factory_params));

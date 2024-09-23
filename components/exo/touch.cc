@@ -4,8 +4,6 @@
 
 #include "components/exo/touch.h"
 
-#include <optional>
-
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "components/exo/input_trace.h"
@@ -74,20 +72,20 @@ void Touch::OnTouchEvent(ui::TouchEvent* event) {
     return;
   }
 
-  // TODO(1371493): Investigate if we need to do something similar to the filter
-  // in `Pointer::OnMouseEvent` when dragging. (not sending touch events during
-  // drag)
+  // TODO(crbug.com/40061238): Investigate if we need to do something similar to
+  // the filter in `Pointer::OnMouseEvent` when dragging. (not sending touch
+  // events during drag)
 
   bool send_details = false;
 
   auto event_type = event->type();
   if ((event->flags() & ui::EF_RESERVED_FOR_GESTURE) != 0) {
-    event_type = ui::ET_TOUCH_CANCELLED;
+    event_type = ui::EventType::kTouchCancelled;
   }
 
   const int touch_pointer_id = event->pointer_details().id;
   switch (event_type) {
-    case ui::ET_TOUCH_PRESSED: {
+    case ui::EventType::kTouchPressed: {
       // Early out if event doesn't contain a valid target for touch device.
       // TODO(b/147848270): Verify GetEffectiveTargetForEvent gets the correct
       // surface when input is captured.
@@ -124,7 +122,7 @@ void Touch::OnTouchEvent(ui::TouchEvent* event) {
       }
       send_details = true;
     } break;
-    case ui::ET_TOUCH_RELEASED: {
+    case ui::EventType::kTouchReleased: {
       auto it = touch_points_surface_map_.find(touch_pointer_id);
       if (it == touch_points_surface_map_.end())
         return;
@@ -148,7 +146,7 @@ void Touch::OnTouchEvent(ui::TouchEvent* event) {
       delegate_->OnTouchUp(event->time_stamp(), touch_pointer_id);
       seat_->AbortPendingDragOperation();
     } break;
-    case ui::ET_TOUCH_MOVED: {
+    case ui::EventType::kTouchMoved: {
       auto it = touch_points_surface_map_.find(touch_pointer_id);
       if (it == touch_points_surface_map_.end())
         return;
@@ -163,7 +161,7 @@ void Touch::OnTouchEvent(ui::TouchEvent* event) {
       delegate_->OnTouchMotion(event->time_stamp(), touch_pointer_id, location);
       send_details = true;
     } break;
-    case ui::ET_TOUCH_CANCELLED: {
+    case ui::EventType::kTouchCancelled: {
       TRACE_EXO_INPUT_EVENT(event);
       // Cancel the full set of touch sequences as soon as one is canceled.
       CancelAllTouches();
@@ -172,7 +170,7 @@ void Touch::OnTouchEvent(ui::TouchEvent* event) {
       seat_->AbortPendingDragOperation();
     } break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   if (send_details) {

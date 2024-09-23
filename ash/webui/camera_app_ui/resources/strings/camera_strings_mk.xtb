@@ -32,20 +32,28 @@
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2244252133441425811">Овозможете избирач на FPS за видео</translation>
 <translation id="2271433936731426666">Овозможете слика на состојбата на видеото со целосна големина</translation>
+<translation id="2281736597583450397">Добивајте појасни детали со подобрениот зум</translation>
 <translation id="2320741269052147773">Движење надесно</translation>
+<translation id="2360840973209616515">Администраторот управува со апликацијата за камера.
+        За детали, контактирајте со администраторот.</translation>
+<translation id="2442754296994859145">Копирајте за да се потврдат содржините или проширете за да се сопре скенирањето.</translation>
+<translation id="2486151619109781620">Собери го дијалогот и започни со скенирање</translation>
 <translation id="2501278716633472235">Врати се</translation>
 <translation id="2501853267655415902">Снимањето е запрено</translation>
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2549985041256363841">Започни со снимање</translation>
 <translation id="2577915835281444458">Снимањето наскоро ќе запре. Одете на капацитетот на уредот за да ослободите простор.</translation>
 <translation id="2599796128805996109">Задна камера</translation>
+<translation id="2654491636277477479">Копирај го откриениот текст</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> сек.</translation>
 <translation id="2761536921376153655">Тип скенирање</translation>
 <translation id="28682968802727151">Преглед на отсликување</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> е приклучена.</translation>
 <translation id="3067436040345934772">Движење надесно</translation>
 <translation id="3081586908890909590">Префрли на снимање видео</translation>
+<translation id="3091480460059548935">Преглед на откривање текст</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3157038259444425153">Отсега може да копирате текст директно во вашата фотографија</translation>
 <translation id="3158534262962737808">Придружете се на „<ph name="WIFINAME" />“</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3240426699337459095">Врската е копирана</translation>
@@ -65,9 +73,7 @@
 <translation id="4118525110028899586">Паузирај го снимањето</translation>
 <translation id="4121305183798804752">Откриен е документ</translation>
 <translation id="414641094616694804">Камерава не може да ја промени резолуцијата</translation>
-<translation id="4176463684765177261">Оневозможено</translation>
 <translation id="428234092390943511">Сликичка на страница</translation>
-<translation id="4349714250734879769">Скалирање рамки од Chrome</translation>
 <translation id="4383571725254449280">Евиденција за изведба на печатењето</translation>
 <translation id="4445542136948522167">Сопри го фотографирањето</translation>
 <translation id="4570032796877367747">Предна камера</translation>
@@ -80,7 +86,6 @@
 <translation id="4864143361253542638">Список со скенирани страници</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">Копирај ја адресата на линкот <ph name="URL" /></translation>
-<translation id="491895758387112773">Видеоснимање за мултипреноси</translation>
 <translation id="495170559598752135">Дејства</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Сооднос на фотографија</translation>
@@ -93,6 +98,7 @@
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5320594929574852403">Се преместува налево</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5634947914995388399">Прошири го дијалогот и сопри со скенирање</translation>
 <translation id="5662366948659129155">Се скенира страницата <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="574392208103952083">Медиум</translation>
@@ -106,6 +112,7 @@
 <translation id="5975083100439434680">Одзумирај</translation>
 <translation id="5976160379964388480">Други</translation>
 <translation id="6073451960410192870">Сопри со снимање</translation>
+<translation id="6165508094623778733">Дознајте повеќе</translation>
 <translation id="6197807149213783179">Зачувувај метаподатоци</translation>
 <translation id="6233780560267770709">3 на 3</translation>
 <translation id="6243827288366940320">Златен сооднос</translation>
@@ -115,11 +122,14 @@
 Ако повратните информации се за квалитетот на сликата или видеото, прикачете пример од фотографија или видео и опишете што не е во ред. (На пример, фотографијата е претемна или предметот не е во фокус.)</translation>
 <translation id="6519884562954018934">Придружете се на <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Сподели</translation>
+<translation id="6586509689874700895">Прво, притиснете <ph name="BUTTON_NAME" /> за да зумирате. Потоа, откако ќе фотографирате, ќе видите подобрени детали.</translation>
+<translation id="659539649712855529">Копирано: <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Прикажи ги сите резолуции</translation>
 <translation id="6631515515009660915">Исклучено е отсликување</translation>
 <translation id="6652737148136672975">Поместете ја положбата на аголот со копчињата со стрелки</translation>
 <translation id="667999046851023355">Документ</translation>
 <translation id="6681668084120808868">Фотографирај</translation>
+<translation id="6692092766759105707">Копирајте за да се потврдат содржините.</translation>
 <translation id="6778482348691154169">Не може да се фотографира</translation>
 <translation id="6888362557094394345">Се преместува надолу</translation>
 <translation id="695140971690006676">Ресетирај ги сите</translation>
@@ -132,8 +142,8 @@
 <translation id="7337660886763914220">Грешки во системот со датотеки.</translation>
 <translation id="7450541714075000668">Текстот е копиран</translation>
 <translation id="7488619942230388918">Снимете GIF-видео</translation>
+<translation id="7527714402753141485">Прикажува текст и копче за копирање</translation>
 <translation id="7557677699350329807">Префрли на следната камера</translation>
-<translation id="7562584071994185503">Копирај го текстот <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Паузирано</translation>
 <translation id="7608223098072244877">4 на 4</translation>
 <translation id="761421184377987513">Се преместува долу лево</translation>
@@ -153,12 +163,12 @@
 <translation id="8145038249676204903">Префрли на фотографирање</translation>
 <translation id="8167081290930651932">Зачувај како фотографија</translation>
 <translation id="8239780215768881278">Создајте слика од видеото</translation>
-<translation id="8346544573713510785">Скалирање рамки од Camera HAL</translation>
 <translation id="8425673304802773841">Навалете надолу</translation>
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8609951387004618906">Отвори <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Исклучете го звукот на микрофонот. Копчето за исклучување звук е вклучено</translation>
+<translation id="8712637175834984815">Сфатив</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8732462232047530626">Прегледувај метаподатоци</translation>
 <translation id="874854738381978209">Откриена е Wi-Fi мрежа.</translation>

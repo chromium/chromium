@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value.h"
+
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -13,18 +15,25 @@ bool CSSColorMixValue::NormalizePercentages(
     const CSSPrimitiveValue* percentage1,
     const CSSPrimitiveValue* percentage2,
     double& mix_amount,
-    double& alpha_multiplier) {
+    double& alpha_multiplier,
+    const CSSLengthResolver& length_resolver) {
   double p1 = 0.5;
+  if (percentage1) {
+    p1 = ClampTo<double>(percentage1->ComputePercentage(length_resolver), 0.0,
+                         100.0) /
+         100.0;
+  }
   double p2 = 0.5;
+  if (percentage2) {
+    p2 = ClampTo<double>(percentage2->ComputePercentage(length_resolver), 0.0,
+                         100.0) /
+         100.0;
+  }
+
   if (percentage1 && !percentage2) {
-    p1 = ClampTo<double>(percentage1->GetDoubleValue(), 0.0, 100.0) / 100.0;
     p2 = 1.0 - p1;
   } else if (percentage2 && !percentage1) {
-    p2 = ClampTo<double>(percentage2->GetDoubleValue(), 0.0, 100.0) / 100.0;
     p1 = 1.0 - p2;
-  } else if (percentage1 && percentage2) {
-    p1 = ClampTo<double>(percentage1->GetDoubleValue(), 0.0, 100.0) / 100.0;
-    p2 = ClampTo<double>(percentage2->GetDoubleValue(), 0.0, 100.0) / 100.0;
   }
 
   if (p1 == 0.0 && p2 == 0.0) {
@@ -50,6 +59,19 @@ bool CSSColorMixValue::NormalizePercentages(
   return true;
 }
 
+Color CSSColorMixValue::Mix(const Color& color1,
+                            const Color& color2,
+                            const CSSLengthResolver& length_resolver) const {
+  double alpha_multiplier;
+  double mix_amount;
+  if (!NormalizePercentages(mix_amount, alpha_multiplier, length_resolver)) {
+    return Color();
+  }
+  return Color::FromColorMix(ColorInterpolationSpace(),
+                             HueInterpolationMethod(), color1, color2,
+                             mix_amount, alpha_multiplier);
+}
+
 bool CSSColorMixValue::Equals(const CSSColorMixValue& other) const {
   return color1_ == other.color1_ && color2_ == other.color2_ &&
          percentage1_ == other.percentage1_ &&
@@ -67,20 +89,28 @@ String CSSColorMixValue::CustomCSSText() const {
   result.Append(", ");
   result.Append(color1_->CssText());
   bool percentagesNormalized = true;
-  if (percentage1_ && percentage2_ &&
-      (percentage1_->GetDoubleValue() + percentage2_->GetDoubleValue() !=
+  if (percentage1_ && percentage2_ && percentage1_->IsNumericLiteralValue() &&
+      percentage2_->IsNumericLiteralValue() &&
+      (To<CSSNumericLiteralValue>(*percentage1_).ComputePercentage() +
+           To<CSSNumericLiteralValue>(*percentage2_).ComputePercentage() !=
        100.0)) {
     percentagesNormalized = false;
   }
   if (percentage1_ &&
-      (percentage1_->GetDoubleValue() != 50.0 || !percentagesNormalized)) {
+      (!percentage1_->IsNumericLiteralValue() ||
+       To<CSSNumericLiteralValue>(*percentage1_).ComputePercentage() != 50.0 ||
+       !percentagesNormalized)) {
     result.Append(" ");
     result.Append(percentage1_->CssText());
   }
-  if (!percentage1_ && percentage2_ && percentage2_->GetDoubleValue() != 50.0) {
+  if (!percentage1_ && percentage2_ &&
+      (!percentage2_->IsNumericLiteralValue() ||
+       To<CSSNumericLiteralValue>(*percentage2_).ComputePercentage() != 50.0)) {
     result.Append(" ");
-    result.AppendNumber(100.0 - percentage2_->GetDoubleValue());
-    result.Append("%");
+    result.Append(
+        percentage2_
+            ->SubtractFrom(100.0, CSSPrimitiveValue::UnitType::kPercentage)
+            ->CustomCSSText());
   }
   result.Append(", ");
   result.Append(color2_->CssText());

@@ -24,7 +24,6 @@ UserSettings* UserSettings::GetInstance() {
   return instance.get();
 #else
   NOTREACHED();
-  return nullptr;
 #endif
 }
 

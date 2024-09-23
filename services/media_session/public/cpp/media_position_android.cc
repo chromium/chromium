@@ -4,6 +4,7 @@
 
 #include "services/media_session/public/cpp/media_position.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "services/media_session/public/cpp/android/media_session_jni_headers/MediaPosition_jni.h"
 
 using base::android::ScopedJavaLocalRef;

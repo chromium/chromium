@@ -19,35 +19,42 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public class DefaultBrowserPromoManager {
     private final Activity mActivity;
-    private final @DefaultBrowserState int mCurrentState;
     private final WindowAndroid mWindowAndroid;
+    private final DefaultBrowserPromoImpressionCounter mImpressionCounter;
+    private final DefaultBrowserStateProvider mStateProvider;
 
     /**
      * @param activity Activity to show promo dialogs.
      * @param windowAndroid The {@link WindowAndroid} for sending an intent.
-     * @param currentState The current {@link DefaultBrowserState} in the system.
+     * @param impressionCounter The {@link DefaultBrowserPromoImpressionCounter}
+     * @param stateProvider The {@link DefaultBrowserStateProvider}
      */
     public DefaultBrowserPromoManager(
-            Activity activity, WindowAndroid windowAndroid, @DefaultBrowserState int currentState) {
+            Activity activity,
+            WindowAndroid windowAndroid,
+            DefaultBrowserPromoImpressionCounter impressionCounter,
+            DefaultBrowserStateProvider stateProvider) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
-        mCurrentState = currentState;
+        mImpressionCounter = impressionCounter;
+        mStateProvider = stateProvider;
     }
 
     @SuppressLint({"WrongConstant", "NewApi"})
     void promoByRoleManager() {
         RoleManager roleManager = (RoleManager) mActivity.getSystemService(Context.ROLE_SERVICE);
 
-        DefaultBrowserPromoMetrics.recordRoleManagerShow(mCurrentState);
+        @DefaultBrowserState int currentState = mStateProvider.getCurrentDefaultBrowserState();
+        DefaultBrowserPromoMetrics.recordRoleManagerShow(currentState);
 
         Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_BROWSER);
         mWindowAndroid.showCancelableIntent(
                 intent,
                 (resultCode, data) -> {
                     DefaultBrowserPromoMetrics.recordOutcome(
-                            mCurrentState,
-                            DefaultBrowserPromoDeps.getInstance().getCurrentDefaultBrowserState(),
-                            DefaultBrowserPromoDeps.getInstance().getPromoCount());
+                            currentState,
+                            mStateProvider.getCurrentDefaultBrowserState(),
+                            mImpressionCounter.getPromoCount());
                 },
                 null);
     }

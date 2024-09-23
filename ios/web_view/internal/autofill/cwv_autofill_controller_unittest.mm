@@ -22,7 +22,6 @@
 #include "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
-#include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -61,9 +60,9 @@ namespace {
 
 const char kApplicationLocale[] = "en-US";
 NSString* const kTestFormName = @"FormName";
-FormRendererId kTestUniqueFormID = FormRendererId(0);
+FormRendererId kTestFormRendererID = FormRendererId(0);
 NSString* const kTestFieldIdentifier = @"FieldIdentifier";
-FieldRendererId kTestUniqueFieldID = FieldRendererId(1);
+FieldRendererId kTestFieldRendererID = FieldRendererId(1);
 NSString* const kTestFieldValue = @"FieldValue";
 NSString* const kTestDisplayDescription = @"DisplayDescription";
 
@@ -78,8 +77,6 @@ class CWVAutofillControllerTest : public web::WebTest {
         autofill::prefs::kAutofillProfileEnabled, true);
 
     web_state_.SetBrowserState(&browser_state_);
-
-    UniqueIDDataTabHelper::CreateForWebState(&web_state_);
 
     frame_id_ = base::SysUTF8ToNSString(web::kMainFakeFrameId);
 
@@ -109,7 +106,7 @@ class CWVAutofillControllerTest : public web::WebTest {
     password_manager_client_ = password_manager_client.get();
 
     auto autofill_client = std::make_unique<autofill::WebViewAutofillClientIOS>(
-        kApplicationLocale, &pref_service_, &personal_data_manager_,
+        &pref_service_, &personal_data_manager_,
         /*autocomplete_history_manager=*/nullptr, &web_state_,
         /*identity_manager=*/nullptr, &strike_database_, &sync_service_,
         std::make_unique<autofill::StubLogManager>());
@@ -138,10 +135,10 @@ class CWVAutofillControllerTest : public web::WebTest {
 
   TestingPrefServiceSimple pref_service_;
   web::FakeBrowserState browser_state_;
-  web::FakeWebState web_state_;
   autofill::TestPersonalDataManager personal_data_manager_;
   autofill::TestStrikeDatabase strike_database_;
   syncer::TestSyncService sync_service_;
+  web::FakeWebState web_state_;
   NSString* frame_id_;
   web::FakeWebFramesManager* web_frames_manager_;
   CWVAutofillController* autofill_controller_;
@@ -158,7 +155,7 @@ TEST_F(CWVAutofillControllerTest, FetchProfileSuggestions) {
       suggestionWithValue:kTestFieldValue
        displayDescription:kTestDisplayDescription
                      icon:nil
-              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+                     type:autofill::SuggestionType::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
   [autofill_agent_ addSuggestion:suggestion
@@ -205,7 +202,7 @@ TEST_F(CWVAutofillControllerTest, FetchPasswordSuggestions) {
       suggestionWithValue:kTestFieldValue
        displayDescription:nil
                      icon:nil
-              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+                     type:autofill::SuggestionType::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
   OCMExpect([password_controller_
@@ -255,7 +252,7 @@ TEST_F(CWVAutofillControllerTest, AcceptSuggestion) {
       suggestionWithValue:kTestFieldValue
        displayDescription:nil
                      icon:nil
-              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+                     type:autofill::SuggestionType::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
   CWVAutofillSuggestion* suggestion =
@@ -266,6 +263,7 @@ TEST_F(CWVAutofillControllerTest, AcceptSuggestion) {
                                        isPasswordSuggestion:NO];
   __block BOOL accept_completion_was_called = NO;
   [autofill_controller_ acceptSuggestion:suggestion
+                                 atIndex:0
                        completionHandler:^{
                          accept_completion_was_called = YES;
                        }];
@@ -296,9 +294,9 @@ TEST_F(CWVAutofillControllerTest, FocusCallback) {
 
     autofill::FormActivityParams params;
     params.form_name = base::SysNSStringToUTF8(kTestFormName);
-    params.unique_form_id = kTestUniqueFormID;
+    params.form_renderer_id = kTestFormRendererID;
     params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
-    params.unique_field_id = kTestUniqueFieldID;
+    params.field_renderer_id = kTestFieldRendererID;
     params.value = base::SysNSStringToUTF8(kTestFieldValue);
     params.frame_id = web::kMainFakeFrameId;
     params.has_user_gesture = true;
@@ -456,6 +454,7 @@ TEST_F(CWVAutofillControllerTest, SuggestPasswordCallback) {
   __block BOOL decision_handler_called = NO;
   [autofill_controller_ sharedPasswordController:password_controller_
                   showGeneratedPotentialPassword:fake_generated_password
+                                       proactive:NO
                                  decisionHandler:^(BOOL accept) {
                                    decision_handler_called = YES;
                                    EXPECT_TRUE(accept);
@@ -471,11 +470,11 @@ TEST_F(CWVAutofillControllerTest, AutoSaveNewAutofillProfile) {
   auto new_profile = autofill::test::GetFullProfile();
   __block BOOL decision_handler_called = NO;
   auto callback = base::BindOnce(
-      ^(autofill::AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      ^(autofill::AutofillClient::AddressPromptUserDecision decision,
         base::optional_ref<const autofill::AutofillProfile> profile) {
-        EXPECT_EQ(autofill::AutofillClient::
-                      SaveAddressProfileOfferUserDecision::kUserNotAsked,
-                  decision);
+        EXPECT_EQ(
+            autofill::AutofillClient::AddressPromptUserDecision::kUserNotAsked,
+            decision);
         EXPECT_EQ(new_profile, profile.value());
         decision_handler_called = YES;
       });
@@ -507,15 +506,14 @@ TEST_F(CWVAutofillControllerTest, SaveNewAutofillProfile) {
                            return YES;
                          }]]);
   __block BOOL decision_handler_called = NO;
-  auto callback = base::BindOnce(
-      ^(autofill::AutofillClient::SaveAddressProfileOfferUserDecision decision,
-        base::optional_ref<const autofill::AutofillProfile> profile) {
-        EXPECT_EQ(autofill::AutofillClient::
-                      SaveAddressProfileOfferUserDecision::kAccepted,
-                  decision);
-        EXPECT_EQ(new_profile, profile.value());
-        decision_handler_called = YES;
-      });
+  auto callback = base::BindOnce(^(
+      autofill::AutofillClient::AddressPromptUserDecision decision,
+      base::optional_ref<const autofill::AutofillProfile> profile) {
+    EXPECT_EQ(autofill::AutofillClient::AddressPromptUserDecision::kAccepted,
+              decision);
+    EXPECT_EQ(new_profile, profile.value());
+    decision_handler_called = YES;
+  });
   [autofill_controller_ confirmSaveAddressProfile:new_profile
                                   originalProfile:nil
                                          callback:std::move(callback)];

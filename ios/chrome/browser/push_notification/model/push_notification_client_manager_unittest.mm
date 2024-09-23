@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
+
 #import <UserNotifications/UserNotifications.h>
 
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/test_push_notification_client.h"
 #import "testing/platform_test.h"
 
@@ -37,7 +38,7 @@ class PushNotificationClientManagerTest : public PlatformTest {
 
     for (size_t i = 0; i < number_of_clients; i++) {
       manager_->RemovePushNotificationClient(
-          GetClient(manager_, i)->GetClientId());
+          GetClient(manager_, 0)->GetClientId());
     }
   }
   std::unique_ptr<PushNotificationClientManager> manager_ =

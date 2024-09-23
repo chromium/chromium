@@ -85,7 +85,6 @@ std::string TestResult::StatusAsString() const {
   }
 
   NOTREACHED();
-  return std::string();
 }
 
 std::string TestResult::GetTestName() const {

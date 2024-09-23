@@ -9,15 +9,16 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_page_metadata.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -65,8 +66,8 @@ class FakeWebContentsManager : public WebContentsManager {
     // will be given as the result. Otherwise,`kRedirectedUrlLoaded` is
     // returned.
     std::optional<GURL> redirection_url = std::nullopt;
-    WebAppUrlLoaderResult url_load_result =
-        WebAppUrlLoaderResult::kFailedErrorPageLoaded;
+    webapps::WebAppUrlLoaderResult url_load_result =
+        webapps::WebAppUrlLoaderResult::kFailedErrorPageLoaded;
 
     // `WebAppDataRetriever::GetWebAppInstallInfo`:
     bool return_null_info = false;
@@ -80,7 +81,13 @@ class FakeWebContentsManager : public WebContentsManager {
     // An empty url is considered an absent url.
     GURL manifest_url;
     bool valid_manifest_for_web_app = false;
-    blink::mojom::ManifestPtr opt_manifest;
+    // Manifests always go through default processing (e.g. start_url defaulting
+    // to the document_url, and manifest_id defaulting to start_url). This fake
+    // system will ensure that `CheckInstallabilityAndRetrieveManifest` this
+    // behavior is replicated before the manifest is returned for
+    // `CheckInstallabilityAndRetrieveManifest`.
+    blink::mojom::ManifestPtr manifest_before_default_processing;
+
     webapps::InstallableStatusCode error_code =
         webapps::InstallableStatusCode::NO_ERROR_DETECTED;
     GURL favicon_url;
@@ -105,7 +112,7 @@ class FakeWebContentsManager : public WebContentsManager {
 
   void SetUrlLoaded(content::WebContents* web_contents, const GURL& url);
 
-  std::unique_ptr<WebAppUrlLoader> CreateUrlLoader() override;
+  std::unique_ptr<webapps::WebAppUrlLoader> CreateUrlLoader() override;
   std::unique_ptr<WebAppDataRetriever> CreateDataRetriever() override;
   std::unique_ptr<WebAppIconDownloader> CreateIconDownloader() override;
 
@@ -122,15 +129,16 @@ class FakeWebContentsManager : public WebContentsManager {
       const GURL& install_url,
       const GURL& manifest_url,
       const GURL& start_url,
-      base::StringPiece16 name = u"Basic app name");
+      std::u16string_view name = u"Basic app name");
   void SetPageState(const GURL& gurl, FakePageState page_state);
   FakePageState& GetOrCreatePageState(const GURL& gurl);
   void DeletePageState(const GURL& gurl);
+  bool HasPageState(const GURL& gurl);
 
   using LoadUrlTracker = base::RepeatingCallback<void(
       content::NavigationController::LoadURLParams& load_url_params,
       content::WebContents* web_contents,
-      WebAppUrlLoader::UrlComparison url_comparison)>;
+      webapps::WebAppUrlLoader::UrlComparison url_comparison)>;
 
   // Specify a `base::RepeatingCallback` that is invoked with the arguments
   // passed to `WebAppUrlLoader::LoadUrl` whenever it is called on one of the

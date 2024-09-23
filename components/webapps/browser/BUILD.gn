@@ -17,6 +17,19 @@ source_set("constants") {
   ]
 }
 
+source_set("webapps_client") {
+  sources = [
+    "webapps_client.cc",
+    "webapps_client.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/security_state/core",
+    "//components/webapps/common",
+  ]
+  deps = [ "//components/segmentation_platform/public:public" ]
+}
+
 source_set("browser") {
   sources = [
     "banners/app_banner_manager.cc",
@@ -27,6 +40,7 @@ source_set("browser") {
     "banners/app_banner_settings_helper.h",
     "banners/install_banner_config.cc",
     "banners/install_banner_config.h",
+    "banners/installable_web_app_check_result.h",
     "banners/native_app_banner_data.cc",
     "banners/native_app_banner_data.h",
     "banners/web_app_banner_data.cc",
@@ -67,11 +81,12 @@ source_set("browser") {
     "installable/ml_installability_promoter.h",
     "pwa_install_path_tracker.cc",
     "pwa_install_path_tracker.h",
-    "webapps_client.cc",
-    "webapps_client.h",
+    "web_contents/web_app_url_loader.cc",
+    "web_contents/web_app_url_loader.h",
   ]
   deps = [
     "//base",
+    "//build:android_buildflags",
     "//components/back_forward_cache",
     "//components/content_settings/core/browser",
     "//components/favicon/content",
@@ -96,7 +111,10 @@ source_set("browser") {
     "//url",
   ]
 
-  public_deps = [ ":constants" ]
+  public_deps = [
+    ":constants",
+    ":webapps_client",
+  ]
 
   if (is_android) {
     sources += [
@@ -112,8 +130,6 @@ source_set("browser") {
       "android/add_to_homescreen_params.h",
       "android/ambient_badge_manager.cc",
       "android/ambient_badge_manager.h",
-      "android/ambient_badge_metrics.cc",
-      "android/ambient_badge_metrics.h",
       "android/app_banner_manager_android.cc",
       "android/app_banner_manager_android.h",
       "android/bottomsheet/pwa_bottom_sheet_controller.cc",
@@ -123,12 +139,15 @@ source_set("browser") {
       "android/installable/installable_ambient_badge_client.h",
       "android/installable/installable_ambient_badge_message_controller.cc",
       "android/installable/installable_ambient_badge_message_controller.h",
+      "android/pwa_universal_install_bottom_sheet_coordinator.cc",
       "android/shortcut_info.cc",
       "android/shortcut_info.h",
-      "android/webapk/webapk_icon_hasher.cc",
-      "android/webapk/webapk_icon_hasher.h",
+      "android/webapk/webapk_icons_hasher.cc",
+      "android/webapk/webapk_icons_hasher.h",
       "android/webapk/webapk_proto_builder.cc",
       "android/webapk/webapk_proto_builder.h",
+      "android/webapk/webapk_single_icon_hasher.cc",
+      "android/webapk/webapk_single_icon_hasher.h",
       "android/webapk/webapk_types.h",
       "android/webapp_icon.cc",
       "android/webapp_icon.h",
@@ -190,6 +209,7 @@ source_set("unit_tests") {
     "installable/installable_evaluator_unittest.cc",
     "installable/installable_task_queue_unittest.cc",
     "pwa_install_path_tracker_unittest.cc",
+    "web_contents/web_app_url_loader_unittest.cc",
   ]
   deps = [
     ":browser",

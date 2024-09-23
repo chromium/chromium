@@ -7,13 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell.h"
-
 @protocol AutocompleteSuggestion;
 @protocol FaviconRetriever;
 @protocol ImageRetriever;
 @protocol OmniboxIcon;
 @protocol OmniboxPopupRowDelegate;
+@protocol OmniboxPopupActionsRowDelegate;
+
+extern NSString* const OmniboxPopupRowCellReuseIdentifier;
+/// This minimum height causes most of the rows to be the same height. Some have
+/// multiline answers, so those heights may be taller than this minimum.
+extern const CGFloat kOmniboxPopupCellMinimumHeight;
 
 /// Content configuration of the omnibox popup row, contains the logic of the
 /// row UI.
@@ -23,7 +27,9 @@
 /// Autocomplete suggestion.
 @property(nonatomic, strong) id<AutocompleteSuggestion> suggestion;
 /// Delegate for events in OmniboxPopupRow.
-@property(nonatomic, weak) id<OmniboxPopupRowDelegate> delegate;
+@property(nonatomic, weak)
+    id<OmniboxPopupRowDelegate, OmniboxPopupActionsRowDelegate>
+        delegate;
 /// Index path of the row.
 @property(nonatomic, strong) NSIndexPath* indexPath;
 /// Whether the bottom cell separator should be shown.
@@ -31,8 +37,6 @@
 /// Forced semantic content attribute.
 @property(nonatomic, assign)
     UISemanticContentAttribute semanticContentAttribute;
-/// Omnibox textfield layout guide from  `OmniboxPopupViewController`.
-@property(nonatomic, weak) UILayoutGuide* omniboxLayoutGuide;
 /// Favicon retriever for `OmniboxIconView`.
 @property(nonatomic, weak) id<FaviconRetriever> faviconRetriever;
 /// Image retriever for `OmniboxIconView`.
@@ -41,12 +45,17 @@
 /// Returns the default configuration for a list cell.
 + (instancetype)cellConfiguration;
 
+/// Returns the input string but painted white when the blue and white
+/// highlighting is enabled in pedals. Returns the original string otherwise.
++ (NSAttributedString*)highlightedAttributedStringWithString:
+    (NSAttributedString*)string;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 #pragma mark - Content View interface
 
 // Background.
-@property(nonatomic, assign, readonly) BOOL showSelectedBackgroundView;
+@property(nonatomic, assign, readonly) BOOL isBackgroundHighlighted;
 
 // Leading Icon.
 @property(nonatomic, strong, readonly) id<OmniboxIcon> leadingIcon;

@@ -5,11 +5,11 @@
 #include "components/omnibox/browser/titled_url_match_utils.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/titled_url_match.h"
@@ -40,12 +40,12 @@ class MockTitledUrlNode : public bookmarks::TitledUrlNode {
     return title_;
   }
   const GURL& GetTitledUrlNodeUrl() const override { return url_; }
-  std::vector<base::StringPiece16> GetTitledUrlNodeAncestorTitles()
+  std::vector<std::u16string_view> GetTitledUrlNodeAncestorTitles()
       const override {
-    std::vector<base::StringPiece16> ancestors;
+    std::vector<std::u16string_view> ancestors;
     base::ranges::transform(
         ancestors_, std::back_inserter(ancestors),
-        [](auto& ancestor) { return base::StringPiece16(ancestor); });
+        [](auto& ancestor) { return std::u16string_view(ancestor); });
     return ancestors;
   }
 

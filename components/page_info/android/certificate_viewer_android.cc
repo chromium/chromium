@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
-#include "components/page_info/android/jni_headers/CertificateViewer_jni.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/page_info/android/jni_headers/CertificateViewer_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;

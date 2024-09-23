@@ -19,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
@@ -260,9 +261,9 @@ TEST_F(TransportSecurityPersisterTest, DeserializeLegacyExpectCTData) {
       R"("expect_ct_observed": 0.0, "expect_ct_expiry": 4825336765.0, )"
       R"("expect_ct_enforce": true, "expect_ct_report_uri": ""}]})";
   LOG(ERROR) << kInput;
-  constexpr auto kDefaultFileWriterCommitInterval = base::Seconds(10);
   persister_->LoadEntries(kInput);
-  FastForwardBy(kDefaultFileWriterCommitInterval + base::Seconds(1));
+  FastForwardBy(TransportSecurityPersister::GetCommitInterval() +
+                base::Seconds(1));
   EXPECT_EQ(1u, state_->num_sts_entries());
   // Now read the data and check that there are no Expect-CT entries.
   std::string persisted;
@@ -272,6 +273,110 @@ TEST_F(TransportSecurityPersisterTest, DeserializeLegacyExpectCTData) {
   ASSERT_NE(std::string::npos, persisted.find(kHost));
   // But it shouldn't contain any Expect-CT data.
   EXPECT_EQ(std::string::npos, persisted.find("expect_ct"));
+}
+
+class TransportSecurityPersisterCommitTest
+    : public TransportSecurityPersisterTest,
+      public ::testing::WithParamInterface<std::string> {
+ public:
+  TransportSecurityPersisterCommitTest() {
+    if (GetParam().empty()) {
+      feature_list_.InitAndDisableFeature(kTransportSecurityFileWriterSchedule);
+    } else {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          kTransportSecurityFileWriterSchedule,
+          {{"commit_interval", GetParam()}});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TransportSecurityPersisterCommitTest,
+    ::testing::Values(
+        // The ImportantFileWriter default.
+        "10s",
+        // Anything less should use the default.
+        "9s",
+        "0",
+        "-10s",
+        "-inf",
+        // Valid values.
+        "1m",
+        "10m",
+        // Anything greater should use the max.
+        "11m",
+        "+inf",
+        // Disable the feature. Should use the default interval.
+        ""));
+
+TEST_P(TransportSecurityPersisterCommitTest, CommitIntervalIsValid) {
+  EXPECT_GE(TransportSecurityPersister::GetCommitInterval(), base::Seconds(10));
+  EXPECT_LE(TransportSecurityPersister::GetCommitInterval(), base::Minutes(10));
+}
+
+TEST_P(TransportSecurityPersisterCommitTest, WriteAtCommitInterval) {
+  const auto kLongExpiry = base::Time::Now() + base::Days(10);
+  const bool kIncludeSubdomains = false;
+
+  // Make sure the file starts empty.
+  ASSERT_TRUE(base::WriteFile(transport_security_file_path_, ""));
+
+  // Add an entry. Expect the persister NOT to write before the commit interval,
+  // for performance.
+  state_->AddHSTS("www.example.com", kLongExpiry, kIncludeSubdomains);
+  FastForwardBy(TransportSecurityPersister::GetCommitInterval() / 2);
+  std::string persisted;
+  EXPECT_TRUE(
+      base::ReadFileToString(transport_security_file_path_, &persisted));
+  EXPECT_TRUE(persisted.empty());
+
+  // Add another entry. After the commit interval passes, both should be
+  // written.
+  state_->AddHSTS("www.example.net", kLongExpiry, kIncludeSubdomains);
+  FastForwardBy(TransportSecurityPersister::GetCommitInterval() / 2);
+  EXPECT_TRUE(
+      base::ReadFileToString(transport_security_file_path_, &persisted));
+  EXPECT_FALSE(persisted.empty());
+
+  // Ensure that state comes from the persisted file.
+  persister_->LoadEntries("");
+  TransportSecurityState::STSState dummy_state;
+  ASSERT_FALSE(state_->GetDynamicSTSState("www.example.com", &dummy_state));
+  ASSERT_FALSE(state_->GetDynamicSTSState("www.example.net", &dummy_state));
+
+  // Check that both entries were persisted.
+  persister_->LoadEntries(persisted);
+  EXPECT_TRUE(state_->GetDynamicSTSState("www.example.com", &dummy_state));
+  EXPECT_TRUE(state_->GetDynamicSTSState("www.example.net", &dummy_state));
+
+  // Add a third entry and force a write before the commit interval
+  state_->AddHSTS("www.example.org", kLongExpiry, kIncludeSubdomains);
+
+  const auto time_before_write = base::TimeTicks::Now();
+  base::RunLoop run_loop;
+  persister_->WriteNow(state_.get(), run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_LT(base::TimeTicks::Now() - time_before_write,
+            TransportSecurityPersister::GetCommitInterval());
+  EXPECT_TRUE(
+      base::ReadFileToString(transport_security_file_path_, &persisted));
+  EXPECT_FALSE(persisted.empty());
+
+  // Ensure that state comes from the persisted file.
+  persister_->LoadEntries("");
+  ASSERT_FALSE(state_->GetDynamicSTSState("www.example.com", &dummy_state));
+  ASSERT_FALSE(state_->GetDynamicSTSState("www.example.net", &dummy_state));
+  ASSERT_FALSE(state_->GetDynamicSTSState("www.example.org", &dummy_state));
+
+  // Check that all entries were persisted.
+  persister_->LoadEntries(persisted);
+  EXPECT_TRUE(state_->GetDynamicSTSState("www.example.com", &dummy_state));
+  EXPECT_TRUE(state_->GetDynamicSTSState("www.example.net", &dummy_state));
+  EXPECT_TRUE(state_->GetDynamicSTSState("www.example.org", &dummy_state));
 }
 
 }  // namespace

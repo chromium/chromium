@@ -33,18 +33,12 @@ namespace blink {
 class PLATFORM_EXPORT ScaleTransformOperation final
     : public TransformOperation {
  public:
-  static scoped_refptr<ScaleTransformOperation> Create(double sx,
-                                                       double sy,
-                                                       OperationType type) {
-    return base::AdoptRef(new ScaleTransformOperation(sx, sy, 1, type));
+  ScaleTransformOperation(double sx, double sy, double sz, OperationType type)
+      : x_(sx), y_(sy), z_(sz), type_(type) {
+    DCHECK(IsMatchingOperationType(type));
   }
-
-  static scoped_refptr<ScaleTransformOperation> Create(double sx,
-                                                       double sy,
-                                                       double sz,
-                                                       OperationType type) {
-    return base::AdoptRef(new ScaleTransformOperation(sx, sy, sz, type));
-  }
+  ScaleTransformOperation(double sx, double sy, OperationType type)
+      : ScaleTransformOperation(sx, sy, 1, type) {}
 
   double X() const { return x_; }
   double Y() const { return y_; }
@@ -53,12 +47,10 @@ class PLATFORM_EXPORT ScaleTransformOperation final
   void Apply(gfx::Transform& transform, const gfx::SizeF&) const override {
     transform.Scale3d(x_, y_, z_);
   }
-  scoped_refptr<TransformOperation> Accumulate(
-      const TransformOperation& other) override;
-  scoped_refptr<TransformOperation> Blend(
-      const TransformOperation* from,
-      double progress,
-      bool blend_to_identity = false) override;
+  TransformOperation* Accumulate(const TransformOperation& other) override;
+  TransformOperation* Blend(const TransformOperation* from,
+                            double progress,
+                            bool blend_to_identity = false) override;
 
   static bool IsMatchingOperationType(OperationType type) {
     return type == kScale || type == kScaleX || type == kScaleY ||
@@ -82,16 +74,11 @@ class PLATFORM_EXPORT ScaleTransformOperation final
       const TransformOperation* from,
       TransformOperation::OperationType& common_type) const;
 
-  scoped_refptr<TransformOperation> Zoom(double factor) final { return this; }
+  TransformOperation* Zoom(double factor) final { return this; }
 
   bool PreservesAxisAlignment() const final { return true; }
   bool IsIdentityOrTranslation() const final {
     return x_ == 1.0 && y_ == 1.0 && z_ == 1.0;
-  }
-
-  ScaleTransformOperation(double sx, double sy, double sz, OperationType type)
-      : x_(sx), y_(sy), z_(sz), type_(type) {
-    DCHECK(IsMatchingOperationType(type));
   }
 
   double x_;

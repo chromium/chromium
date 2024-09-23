@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -20,7 +21,7 @@ class SequencedTaskRunner;
 namespace unexportable_keys {
 
 // Interface for tasks scheduled on `BackgroundLongTaskScheduler`.
-class BackgroundTask {
+class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) BackgroundTask {
  public:
   // Different statuses that the task can have.
   enum class Status {

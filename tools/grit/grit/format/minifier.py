@@ -10,6 +10,12 @@ import sys
 __js_minifier = None
 __css_minifier = None
 
+js_minifier_ignore_list = [
+    # TODO(crbug.com/339686362): Excluded because Terser throws an error.
+    'gen/chrome/browser/resources/omnibox/tsc/',
+]
+
+
 def SetJsMinifier(minifier):
   global __js_minifier
   __js_minifier = minifier.split()
@@ -23,6 +29,9 @@ def Minify(source, filename):
   file_type = path.splitext(filename)[1]
   minifier = None
   if file_type == '.js':
+    for f in js_minifier_ignore_list:
+      if f in filename:
+        return source
     minifier = __js_minifier
   elif file_type == '.css':
     minifier = __css_minifier

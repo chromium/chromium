@@ -11,6 +11,8 @@
 
 namespace ash {
 
+class SystemShadow;
+
 // `GameDashboardWelcomeDialog` is a View displayed for a set duration of time
 // when first opening any game. It can be disabled via the Game Dashboard
 // Settings.
@@ -28,6 +30,10 @@ class ASH_EXPORT GameDashboardWelcomeDialog : public views::FlexLayoutView {
   // specified by `kDialogDuration` has elapsed.
   void StartTimer(base::OnceClosure on_complete);
 
+  // Sends an accessibility specific announcement for the screen reader. If the
+  // screen reader isn't enabled, the announcement is automatically ignored.
+  void AnnounceForAccessibility();
+
  private:
   // Adds a stacked title/sub-label and an icon as a row to the welcome dialog.
   void AddTitleAndIconRow();
@@ -37,6 +43,8 @@ class ASH_EXPORT GameDashboardWelcomeDialog : public views::FlexLayoutView {
 
   // Timer for how long to show the welcome dialog.
   base::OneShotTimer timer_;
+
+  std::unique_ptr<SystemShadow> shadow_;
 };
 
 }  // namespace ash

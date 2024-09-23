@@ -9,6 +9,7 @@ import {BrowserServiceImpl} from 'chrome://history/history.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 import {createHistoryEntry, createSearchEntry} from './test_util.js';
@@ -40,7 +41,7 @@ suite('<history-item> unit test', function() {
     document.body.appendChild(item);
   });
 
-  test('click targets for selection', function() {
+  test('click targets for selection', async function() {
     let selectionCount = 0;
     item.addEventListener('history-checkbox-select', function() {
       selectionCount++;
@@ -48,6 +49,7 @@ suite('<history-item> unit test', function() {
 
     // Checkbox should trigger selection.
     item.$.checkbox.click();
+    await microtasksFinished();
     assertEquals(1, selectionCount);
 
     // Non-interactive text should trigger selection.

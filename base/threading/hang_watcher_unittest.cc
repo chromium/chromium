@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/threading/hang_watcher.h"
+
 #include <atomic>
 #include <memory>
+#include <optional>
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
@@ -31,7 +33,6 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using testing::ElementsAre;
 using testing::IsEmpty;
@@ -473,7 +474,7 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedOnHang) {
   // First monitoring catches the hang and emits the histogram.
   MonitorHangs();
   EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "BrowserProcess.UIThread"),
+                                             "BrowserProcess.UIThread.Normal"),
               ElementsAre(base::Bucket(true, /*count=*/1)));
 
   // Reset to attempt capture again.
@@ -483,13 +484,22 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedOnHang) {
   // Hang is logged again even if it would not trigger a crash dump.
   MonitorHangs();
   EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "BrowserProcess.UIThread"),
+                                             "BrowserProcess.UIThread.Normal"),
               ElementsAre(base::Bucket(true, /*count=*/2)));
 
   // Thread types that are not monitored should not get any samples.
   EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "BrowserProcess.IOThread"),
+                                             "BrowserProcess.IOThread.Normal"),
               IsEmpty());
+
+  // No shutdown hangs, either.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "HangWatcher.IsThreadHung.BrowserProcess.UIThread.Shutdown"),
+              IsEmpty());
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "HangWatcher.IsThreadHung.BrowserProcess.IOThread.Shutdown"),
+              IsEmpty());
+
   JoinThread();
 }
 
@@ -504,13 +514,55 @@ TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithoutHangs) {
   // A thread of type ThreadForTesting was monitored but didn't hang. This is
   // logged.
   EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "BrowserProcess.UIThread"),
+                                             "BrowserProcess.UIThread.Normal"),
               ElementsAre(base::Bucket(false, /*count=*/1)));
 
   // Thread types that are not monitored should not get any samples.
   EXPECT_THAT(histogram_tester.GetAllSamples("HangWatcher.IsThreadHung."
-                                             "BrowserProcess.IOThread"),
+                                             "BrowserProcess.IOThread.Normal"),
               IsEmpty());
+  JoinThread();
+}
+
+TEST_F(HangWatcherBlockingThreadTest, HistogramsLoggedWithShutdownFlag) {
+  base::HistogramTester histogram_tester;
+  StartBlockedThread();
+
+  // Simulate hang.
+  task_environment_.FastForwardBy(kHangTime);
+
+  // Make this process emit *.Shutdown instead of *.Normal histograms.
+  base::HangWatcher::SetShuttingDown();
+
+  // First monitoring catches the hang and emits the histogram.
+  MonitorHangs();
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "HangWatcher.IsThreadHung.BrowserProcess.UIThread.Shutdown"),
+              ElementsAre(base::Bucket(true, /*count=*/1)));
+
+  // Reset to attempt capture again.
+  hang_event_.Reset();
+  monitor_event_.Reset();
+
+  // Hang is logged again even if it would not trigger a crash dump.
+  MonitorHangs();
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "HangWatcher.IsThreadHung.BrowserProcess.UIThread.Shutdown"),
+              ElementsAre(base::Bucket(true, /*count=*/2)));
+
+  // Thread types that are not monitored should not get any samples.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "HangWatcher.IsThreadHung.BrowserProcess.IOThread.Shutdown"),
+              IsEmpty());
+
+  // No normal hangs.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "HangWatcher.IsThreadHung.BrowserProcess.UIThread.Normal"),
+              IsEmpty());
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "HangWatcher.IsThreadHung.BrowserProcess.IOThread.Normal"),
+              IsEmpty());
+
   JoinThread();
 }
 
@@ -690,7 +742,7 @@ TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
   }
 }
 
-// TODO(crbug.com/1223033): On MAC, the base::PlatformThread::CurrentId(...)
+// TODO(crbug.com/40187449): On MAC, the base::PlatformThread::CurrentId(...)
 // should return the system wide IDs. The HungThreadIDs test fails because the
 // reported process ids do not match.
 #if BUILDFLAG(IS_MAC)

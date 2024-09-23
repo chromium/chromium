@@ -12,11 +12,7 @@
 
 namespace exo::test {
 
-enum class FrameSubmissionType {
-  kNoReactive = 0,
-  kReactive_NoAutoNeedsBeginFrame = 1,
-  kReactive_AutoNeedsBeginFrame = 2
-};
+enum class FrameSubmissionType { kNoReactive = 0, kReactive = 1 };
 
 void SetFrameSubmissionFeatureFlags(base::test::ScopedFeatureList* feature_list,
                                     FrameSubmissionType frame_submission);

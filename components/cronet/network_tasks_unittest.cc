@@ -135,7 +135,7 @@ class NetworkTasksTest : public testing::Test {
   }
 
   void SpawnNetworkBoundURLRequestContext(net::handles::NetworkHandle network) {
-    PostToNetworkThreadSync(base::BindLambdaForTesting([=]() {
+    PostToNetworkThreadSync(base::BindLambdaForTesting([=, this]() {
       network_tasks_->SpawnNetworkBoundURLRequestContextForTesting(network);
     }));
   }

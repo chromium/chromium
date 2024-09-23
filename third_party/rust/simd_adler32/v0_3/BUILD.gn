@@ -1,0 +1,52 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "simd_adler32"
+  epoch = "0.3"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/hash.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/avx2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/avx512.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/neon.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/scalar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/sse2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/ssse3.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/imp/wasm.rs",
+    "//third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/src/lib.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2018"
+  cargo_pkg_version = "0.3.7"
+  cargo_pkg_authors = "Marvin Countryman <me@maar.vin>"
+  cargo_pkg_name = "simd-adler32"
+  cargo_pkg_description =
+      "A SIMD-accelerated Adler-32 hash algorithm implementation."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  features = [
+    "const-generics",
+    "std",
+  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+}

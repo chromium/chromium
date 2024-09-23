@@ -23,11 +23,11 @@ BASE_FEATURE(kSegmentationPlatformUkmEngine,
 
 BASE_FEATURE(kSegmentationPlatformUserVisibleTaskRunner,
              "SegmentationPlatformUserVisibleTaskRunner",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSegmentationPlatformAdaptiveToolbarV2Feature,
              "SegmentationPlatformAdaptiveToolbarV2Feature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSegmentationPlatformLowEngagementFeature,
              "SegmentationPlatformLowEngagementFeature",
@@ -69,14 +69,6 @@ BASE_FEATURE(kContextualPageActions,
              "ContextualPageActions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kContextualPageActionPriceTracking,
-             "ContextualPageActionPriceTracking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kContextualPageActionReaderMode,
-             "ContextualPageActionReaderMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kContextualPageActionShareModel,
              "ContextualPageActionShareModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -116,13 +108,17 @@ BASE_FEATURE(kSegmentationPlatformTabResumptionRanker,
 BASE_FEATURE(kSegmentationPlatformIosModuleRanker,
              "SegmentationPlatformIosModuleRanker",
 #if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kSegmentationPlatformAndroidHomeModuleRanker,
              "SegmentationPlatformAndroidHomeModuleRanker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSegmentationPlatformAndroidHomeModuleRankerV2,
+             "SegmentationPlatformAndroidHomeModuleRankerV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSegmentationPlatformTimeDelaySampling,
@@ -136,5 +132,56 @@ BASE_FEATURE(kSegmentationPlatformCollectTabRankData,
 BASE_FEATURE(kSegmentationPlatformModelInitializationDelay,
              "SegmentationPlatformModelInitializationDelay",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enabled only on iOS to improve startup performance of the module ranker.
+BASE_FEATURE(kSegmentationPlatformSignalDbCache,
+             "SegmentationPlatformSignalDbCache",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+BASE_FEATURE(kSegmentationPlatformComposePromotion,
+             "SegmentationPlatformComposePromotion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSegmentationPlatformUmaFromSqlDb,
+             "SegmentationPlatformUmaFromSqlDb",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSegmentationPlatformIosModuleRankerSplitBySurface,
+             "SegmentationPlatformIosModuleRankerSplitBySurface",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+BASE_FEATURE(kSegmentationPlatformURLVisitResumptionRanker,
+             "SegmentationPlatformURLVisitResumptionRanker",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const char kEphemeralCardRankerForceShowCardParam[] =
+    "EphemeralCardRankerForceShowCardParam";
+const char kEphemeralCardRankerForceHideCardParam[] =
+    "EphemeralCardRankerForceHideCardParam";
+const char kPriceTrackingPromoForceOverride[] = "price-tracking-promo";
+
+// Feature flag for enabling the Emphemeral Card ranker.
+BASE_FEATURE(kSegmentationPlatformEphemeralCardRanker,
+             "SegmentationPlatformEphemeralCardRanker",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+BASE_FEATURE(kSegmentationSurveyPage,
+             "SegmentationSurveyPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<bool> kSegmentationSurveyInternalsPage{
+    &kSegmentationSurveyPage, "survey_internals_page", /*default_value=*/true};
 
 }  // namespace segmentation_platform::features

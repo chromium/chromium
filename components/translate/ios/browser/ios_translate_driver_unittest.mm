@@ -35,9 +35,7 @@ namespace translate {
 class IOSTranslateDriverTest : public PlatformTest {
  protected:
   IOSTranslateDriverTest()
-      : task_environment_(web::WebTaskEnvironment::Options::DEFAULT,
-                          base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        fake_browser_state_(std::make_unique<web::FakeBrowserState>()),
+      : fake_browser_state_(std::make_unique<web::FakeBrowserState>()),
         fake_web_state_(std::make_unique<web::FakeWebState>()) {
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -65,7 +63,8 @@ class IOSTranslateDriverTest : public PlatformTest {
   }
 
  protected:
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<web::FakeBrowserState> fake_browser_state_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;

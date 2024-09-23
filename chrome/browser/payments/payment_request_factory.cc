@@ -9,7 +9,10 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/payments/chrome_payment_request_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/payments/content/payment_request.h"
+#include "components/payments/core/payment_request_metrics.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
@@ -25,6 +28,33 @@ using PaymentRequestFactoryCallback = base::RepeatingCallback<void(
 PaymentRequestFactoryCallback& GetTestingFactoryCallback() {
   static base::NoDestructor<PaymentRequestFactoryCallback> callback;
   return *callback;
+}
+
+// Measures whether users have the "Allow sites to check if you have payment
+// methods saved" toggle enabled or disabled.
+//
+// This is recorded only once per BrowserContext, when the first PaymentRequest
+// object is created in that browsing session. The goal is to sub-select the
+// metric to users who are in a payments context, as opposed to the general
+// population that is measured by the
+// PaymentRequest.IsCanMakePaymentAllowedByPref.Startup histogram.
+void RecordCanMakePaymentAllowedHistogram(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!profile || !profile->GetPrefs()) {
+    return;
+  }
+
+  // The Profile pointers in this set are only used to avoid duplicate-counting,
+  // and may no longer be live - they should NEVER be dereferenced!
+  static base::NoDestructor<base::flat_set<Profile*>> recorded_profiles;
+  if (recorded_profiles->contains(profile)) {
+    return;
+  }
+  recorded_profiles->insert(profile);
+
+  RecordCanMakePaymentPrefMetrics(*profile->GetPrefs(),
+                                  "PaymentRequestConstruction.Once");
 }
 
 }  // namespace
@@ -46,6 +76,8 @@ void CreatePaymentRequest(
     mojo::ReportBadMessage("Permissions policy blocks Payment");
     return;
   }
+
+  RecordCanMakePaymentAllowedHistogram(render_frame_host->GetBrowserContext());
 
   if (GetTestingFactoryCallback()) {
     return GetTestingFactoryCallback().Run(std::move(receiver),

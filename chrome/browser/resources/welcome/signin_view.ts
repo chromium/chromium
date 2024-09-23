@@ -3,18 +3,15 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
-import './shared/action_link_style.css.js';
-import './shared/animations.css.js';
 import './shared/onboarding_background.js';
-import './shared/splash_pages_shared.css.js';
 import '../strings.m.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {NavigationMixin} from './navigation_mixin.js';
 import type {OnboardingBackgroundElement} from './shared/onboarding_background.js';
-import {getTemplate} from './signin_view.html.js';
+import {getCss} from './signin_view.css.js';
+import {getHtml} from './signin_view.html.js';
 import type {SigninViewProxy} from './signin_view_proxy.js';
 import {SigninViewProxyImpl} from './signin_view_proxy.js';
 import type {WelcomeBrowserProxy} from './welcome_browser_proxy.js';
@@ -26,15 +23,19 @@ export interface SigninViewElement {
   };
 }
 
-const SigninViewElementBase = NavigationMixin(PolymerElement);
+const SigninViewElementBase = NavigationMixin(CrLitElement);
 
 export class SigninViewElement extends SigninViewElementBase {
   static get is() {
     return 'signin-view';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   private finalized_: boolean = false;
@@ -72,13 +73,13 @@ export class SigninViewElement extends SigninViewElementBase {
     this.signinViewProxy_.recordNavigatedAway();
   }
 
-  private onSignInClick_() {
+  protected onSignInClick_() {
     this.finalized_ = true;
     this.signinViewProxy_.recordSignIn();
     this.welcomeBrowserProxy_.handleActivateSignIn(null);
   }
 
-  private onNoThanksClick_() {
+  protected onNoThanksClick_() {
     this.finalized_ = true;
     this.signinViewProxy_.recordSkip();
     this.welcomeBrowserProxy_.handleUserDecline();

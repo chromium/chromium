@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/accessibility/ax_tree_fuzzer_util.h"
 
-#include "base/containers/cxx20_erase_vector.h"
+#include <vector>
+
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -163,7 +169,7 @@ void AXTreeFuzzerGenerator::RecursiveGenerateUpdate(
       // To delete a node, just find the parent and update the child list to
       // no longer include this node.
       ui::AXNodeData parent_update = parent->data();
-      base::Erase(parent_update.child_ids, node->id());
+      std::erase(parent_update.child_ids, node->id());
       tree_update.nodes.push_back(parent_update);
       updated_nodes.emplace(parent_update.id);
 

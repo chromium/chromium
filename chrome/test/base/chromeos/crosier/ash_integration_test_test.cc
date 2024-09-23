@@ -3,18 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
+
 #include "url/gurl.h"
 
 namespace ash {
 namespace {
 
-class AshIntegrationTestTest : public AshIntegrationTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    AshIntegrationTest::SetUpCommandLine(command_line);
-    SetUpCommandLineForLacros(command_line);
-  }
-};
+using AshIntegrationTestTest = AshIntegrationTest;
 
 IN_PROC_BROWSER_TEST_F(AshIntegrationTestTest, Basics) {
   SetupContextWidget();

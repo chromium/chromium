@@ -13,7 +13,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 
 import {AmbientModeAlbum, TopicSource} from '../../personalization_app.mojom-webui.js';
-import {isAmbientModeAllowed, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
+import {isAmbientModeAllowed} from '../load_time_booleans.js';
 import {setErrorAction} from '../personalization_actions.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -58,12 +58,6 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
         type: Array,
         value: null,
       },
-      isPersonalizationJellyEnabled_: {
-        type: Boolean,
-        value() {
-          return isPersonalizationJellyEnabled();
-        },
-      },
       isAmbientModeAllowed_: {
         type: Boolean,
         value() {
@@ -75,7 +69,6 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
 
   protected ambientModeEnabled_: boolean|null;
   protected previewImages_: Url[]|null;
-  protected isPersonalizationJellyEnabled_: boolean;
   protected previewAlbums_: AmbientModeAlbum[]|null;
   protected topicSource_: TopicSource|null;
 

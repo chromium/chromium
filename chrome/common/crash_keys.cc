@@ -2,15 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/common/crash_keys.h"
 
 #include <deque>
+#include <string_view>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -31,6 +37,8 @@
 namespace crash_keys {
 namespace {
 
+constexpr std::string_view kStringAnnotationsSwitch = "string-annotations";
+
 // A convenient wrapper around a crash key and its name.
 //
 // The CrashKey contract requires that CrashKeyStrings are never
@@ -47,8 +55,10 @@ class CrashKeyWithName {
   CrashKeyWithName& operator=(CrashKeyWithName&&) = delete;
   ~CrashKeyWithName() = delete;
 
+  std::string_view Name() const { return name_; }
+  std::string_view Value() const { return crash_key_.value(); }
   void Clear() { crash_key_.Clear(); }
-  void Set(base::StringPiece value) { crash_key_.Set(value); }
+  void Set(std::string_view value) { crash_key_.Set(value); }
 
  private:
   std::string name_;
@@ -56,7 +66,7 @@ class CrashKeyWithName {
 };
 
 void SplitAndPopulateCrashKeys(std::deque<CrashKeyWithName>& crash_keys,
-                               base::StringPiece comma_separated_feature_list,
+                               std::string_view comma_separated_feature_list,
                                std::string crash_key_name_prefix) {
   // Crash keys are indestructable so we can not simply empty the deque.
   // Instead we must keep the previous crash keys alive and clear their values.
@@ -102,7 +112,8 @@ void HandleEnableDisableFeatures(const base::CommandLine& command_line) {
 
 // Return true if we DON'T want to upload this flag to the crash server.
 bool IsBoringSwitch(const std::string& flag) {
-  static const char* const kIgnoreSwitches[] = {
+  static const std::string_view kIgnoreSwitches[] = {
+    kStringAnnotationsSwitch,
     switches::kEnableLogging,
     switches::kFlagSwitchesBegin,
     switches::kFlagSwitchesEnd,
@@ -160,40 +171,52 @@ bool IsBoringSwitch(const std::string& flag) {
   return false;
 }
 
-}  // namespace
-
-void SetCrashKeysFromCommandLine(const base::CommandLine& command_line) {
-  HandleEnableDisableFeatures(command_line);
-  SetSwitchesFromCommandLine(command_line, &IsBoringSwitch);
+std::deque<CrashKeyWithName>& GetCommandLineStringAnnotations() {
+  static base::NoDestructor<std::deque<CrashKeyWithName>>
+      command_line_string_annotations;
+  return *command_line_string_annotations;
 }
 
-void SetActiveExtensions(const std::set<std::string>& extensions) {
-  static crash_reporter::CrashKeyString<4> num_extensions("num-extensions");
-  num_extensions.Set(base::NumberToString(extensions.size()));
-
-  using ExtensionIDKey = crash_reporter::CrashKeyString<64>;
-  static ExtensionIDKey extension_ids[] = {
-      {"extension-1", ExtensionIDKey::Tag::kArray},
-      {"extension-2", ExtensionIDKey::Tag::kArray},
-      {"extension-3", ExtensionIDKey::Tag::kArray},
-      {"extension-4", ExtensionIDKey::Tag::kArray},
-      {"extension-5", ExtensionIDKey::Tag::kArray},
-      {"extension-6", ExtensionIDKey::Tag::kArray},
-      {"extension-7", ExtensionIDKey::Tag::kArray},
-      {"extension-8", ExtensionIDKey::Tag::kArray},
-      {"extension-9", ExtensionIDKey::Tag::kArray},
-      {"extension-10", ExtensionIDKey::Tag::kArray},
-  };
-
-  auto it = extensions.begin();
-  for (size_t i = 0; i < std::size(extension_ids); ++i) {
-    if (it == extensions.end()) {
-      extension_ids[i].Clear();
-    } else {
-      extension_ids[i].Set(*it);
-      ++it;
-    }
+void SetStringAnnotations(const base::CommandLine& command_line) {
+  // This is only meant to be used to pass annotations from the browser to
+  // children and not to be used on the browser command line.
+  if (!command_line.HasSwitch(switches::kProcessType)) {
+    return;
   }
+  base::StringPairs annotations;
+  if (!base::SplitStringIntoKeyValuePairs(
+          command_line.GetSwitchValueASCII(kStringAnnotationsSwitch), '=', ',',
+          &annotations)) {
+    return;
+  }
+  for (const auto& [key, value] : annotations) {
+    GetCommandLineStringAnnotations().emplace_back(key).Set(value);
+  }
+}
+
+}  // namespace
+
+void AllocateCrashKeyInBrowserAndChildren(std::string_view key,
+                                          std::string_view value) {
+  GetCommandLineStringAnnotations().emplace_back(std::string(key)).Set(value);
+}
+
+void AppendStringAnnotationsCommandLineSwitch(base::CommandLine* command_line) {
+  std::string string_annotations;
+  for (const auto& crash_key : GetCommandLineStringAnnotations()) {
+    if (!string_annotations.empty()) {
+      string_annotations.push_back(',');
+    }
+    string_annotations = base::StrCat(
+        {string_annotations, crash_key.Name(), "=", crash_key.Value()});
+  }
+  command_line->AppendSwitchASCII(kStringAnnotationsSwitch, string_annotations);
+}
+
+void SetCrashKeysFromCommandLine(const base::CommandLine& command_line) {
+  SetStringAnnotations(command_line);
+  HandleEnableDisableFeatures(command_line);
+  SetSwitchesFromCommandLine(command_line, &IsBoringSwitch);
 }
 
 }  // namespace crash_keys

@@ -159,11 +159,11 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
             PropertyModel.Builder builder,
             Context context) {
         if (useCustomTitleView) {
-            TextView titleView = (TextView) mDialogView.findViewById(R.id.title);
+            TextView titleView = mDialogView.findViewById(R.id.title);
             titleView.setText(title);
 
             if (titleIcon != Resources.ID_NULL) {
-                ImageView iconView = (ImageView) mDialogView.findViewById(R.id.title_icon);
+                ImageView iconView = mDialogView.findViewById(R.id.title_icon);
                 iconView.setImageResource(titleIcon);
             } else {
                 mDialogView.findViewById(R.id.title_icon).setVisibility(View.GONE);

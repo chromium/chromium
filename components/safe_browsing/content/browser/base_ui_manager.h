@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_BASE_UI_MANAGER_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_BASE_UI_MANAGER_H_
 
+#include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -47,9 +49,9 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   // Called on the UI thread to display an interstitial page.
   // |resource| is the unsafe resource that triggered the interstitial.
   // With committed interstitials:
-  // -For main frame navigations this will only cancel the load, the
+  // -For pre-commit navigations this will only cancel the load, the
   // interstitial will then be shown from a navigation throttle.
-  // -For subresources this will cancel the load, then call
+  // -For post-commit navigations this will cancel the load, then call
   // LoadPostCommitErrorPage, which will show the interstitial.
   virtual void DisplayBlockingPage(const UnsafeResource& resource);
 
@@ -78,8 +80,11 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
       content::BrowserContext* browser_context,
       std::unique_ptr<ClientSafeBrowsingReportRequest> report);
 
-  // Updates the allowlist URL set for |web_contents|. Called on the UI thread.
+  // Updates the allowlist URL set for |web_contents|. |navigation_id| is used
+  // to ensure the |allowlist_url| for same navigation is only added once.
+  // Called on the UI thread.
   void AddToAllowlistUrlSet(const GURL& allowlist_url,
+                            const std::optional<int64_t> navigation_id,
                             content::WebContents* web_contents,
                             bool is_pending,
                             SBThreatType threat_type);
@@ -104,10 +109,10 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   virtual bool IsAllowlisted(const UnsafeResource& resource);
 
   // Checks if we already displayed or are displaying an interstitial
-  // for the top-level site |url| in a given WebContents. If
-  // |allowlist_only|, it returns true only if the user chose to ignore
-  // the interstitial. Otherwise, it returns true if an interstitial for
-  // |url| is already displaying *or* if the user has seen an
+  // for the top-level site |url| or any URLs in the redirect chain of |entry|
+  // in a given WebContents. If |allowlist_only|, it returns true only if the
+  // user chose to ignore the interstitial. Otherwise, it returns true if an
+  // interstitial for |url| is already displaying *or* if the user has seen an
   // interstitial for |url| before in this WebContents and proceeded
   // through it. Called on the UI thread.
   //
@@ -116,7 +121,6 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   // the URL was first allowlisted.
   virtual bool IsUrlAllowlistedOrPendingForWebContents(
       const GURL& url,
-      bool is_subresource,
       content::NavigationEntry* entry,
       content::WebContents* web_contents,
       bool allowlist_only,
@@ -178,19 +182,15 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   friend class ChromePasswordProtectionService;
   virtual ~BaseUIManager();
 
-  // Removes |allowlist_url| from the allowlist for |web_contents|.
-  // Called on the UI thread.
+  // Removes |allowlist_url| associated with the |navigation_id| from the
+  // allowlist for |web_contents|. Called on the UI thread.
   void RemoveAllowlistUrlSet(const GURL& allowlist_url,
+                             const std::optional<int64_t> navigation_id,
                              content::WebContents* web_contents,
                              bool from_pending_only);
 
   // Ensures that |web_contents| has its allowlist set in its userdata
   static void EnsureAllowlistCreated(content::WebContents* web_contents);
-
-  // Returns the URL that should be used in a AllowlistUrlSet for the given
-  // |resource|.
-  static GURL GetMainFrameAllowlistUrlForResource(
-      const security_interstitials::UnsafeResource& resource);
 
   // BaseUIManager does not send SafeBrowsingHitReport. Subclasses should
   // implement the reporting logic themselves if needed.
@@ -209,6 +209,11 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   // most of the time it will be empty or contain a single element.
   std::vector<std::pair<GURL, security_interstitials::UnsafeResource>>
       unsafe_resources_;
+
+  // Tracks the navigation IDs that have already had Safe Browsing telemetry
+  // reports sent. Used to ensure duplicate reports aren't sent for the same
+  // navigation.
+  std::set<int64_t> report_sent_navigation_ids_;
 };
 
 }  // namespace safe_browsing

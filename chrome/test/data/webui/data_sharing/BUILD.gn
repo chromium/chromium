@@ -1,0 +1,20 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  is_chrome_untrusted = true
+  files = [ "mojom_conversion_utils_test.ts" ]
+
+  if (!is_chrome_branded) {
+    files += [ "data_sharing_test.ts" ]
+  }
+
+  ts_path_mappings =
+      [ "chrome-untrusted://data-sharing/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/data_sharing/tsc/*",
+                    target_gen_dir) ]
+  ts_deps = [ "//chrome/browser/resources/data_sharing:build_ts" ]
+}

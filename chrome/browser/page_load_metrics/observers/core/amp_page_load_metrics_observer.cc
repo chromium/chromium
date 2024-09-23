@@ -7,10 +7,10 @@
 #include <algorithm>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
@@ -87,7 +87,7 @@ GURL GetViewerUrlFromCacheUrl(const GURL& url) {
   // (&viewerURL=<URL>). net::QueryIterator only operates on the query string,
   // so we copy the fragment into the query string, then iterate over the
   // parameters below.
-  base::StringPiece ref = url.ref_piece();
+  std::string_view ref = url.ref_piece();
   GURL::Replacements replacements;
   replacements.SetQueryStr(ref);
   GURL modified_url = url.ReplaceComponents(replacements);

@@ -17,7 +17,6 @@
 #include "base/time/default_clock.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
-#include "chromeos/ash/components/cryptohome/cryptohome_util.h"
 #include "chromeos/ash/components/cryptohome/error_types.h"
 #include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -53,6 +52,7 @@ AuthSessionAuthenticator::AuthSessionAuthenticator(
     AuthStatusConsumer* consumer,
     std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
     base::RepeatingCallback<void(const AccountId&)> user_recorder,
+    bool new_user_can_become_owner,
     PrefService* local_state)
     : Authenticator(consumer),
       user_recorder_(std::move(user_recorder)),
@@ -63,7 +63,8 @@ AuthSessionAuthenticator::AuthSessionAuthenticator(
           std::make_unique<AuthPerformer>(UserDataAuthClient::Get(),
                                           base::DefaultClock::GetInstance())),
       mount_performer_(std::make_unique<MountPerformer>()),
-      local_state_(local_state) {
+      local_state_(local_state),
+      new_user_can_become_owner_(new_user_can_become_owner) {
   DCHECK(safe_mode_delegate_);
   DCHECK(!user_recorder_.is_null());
 }
@@ -83,7 +84,7 @@ void AuthSessionAuthenticator::CompleteLogin(
   CompleteLoginImpl(ephemeral, std::move(user_context));
 }
 
-// Implementation part, shared by CompleteLogin and ResyncEncryptedData.
+// Implementation part, called by CompleteLogin.
 void AuthSessionAuthenticator::CompleteLoginImpl(
     bool ephemeral,
     std::unique_ptr<UserContext> context) {
@@ -95,7 +96,7 @@ void AuthSessionAuthenticator::CompleteLoginImpl(
     bool has_knowledge_factor = !context->GetKey()->GetSecret().empty();
     bool challenge_response_auth = !context->GetChallengeResponseKeys().empty();
     if (!has_knowledge_factor && !challenge_response_auth) {
-      // TODO(crbug.com/1325411): Restore non-empty password check.
+      // TODO(crbug.com/40225479): Restore non-empty password check.
       LOGIN_LOG(ERROR) << "Empty password used in AuthenticateToLogin";
     }
   }
@@ -151,7 +152,7 @@ void AuthSessionAuthenticator::RemoveStaleUserForEphemeral(
     AuthSessionIntent intent,
     StartAuthSessionCallback callback) {
   if (auth_session_id.empty()) {
-    NOTREACHED() << "Auth session should exist";
+    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
   }
   LOGIN_LOG(EVENT) << "Deleting stale ephemeral user";
   user_data_auth::RemoveRequest remove_request;
@@ -214,10 +215,11 @@ void AuthSessionAuthenticator::StartAuthSessionForLoggedIn(
 }
 
 void AuthSessionAuthenticator::RecordCreatingNewUser(
+    user_manager::UserDirectoryIntegrityManager::CleanupStrategy strategy,
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   user_manager::UserDirectoryIntegrityManager integrity_manager(local_state_);
-  integrity_manager.RecordCreatingNewUser(context->GetAccountId());
+  integrity_manager.RecordCreatingNewUser(context->GetAccountId(), strategy);
   std::move(callback).Run(std::move(context),
                           /*authentication_error=*/std::nullopt);
 }
@@ -243,7 +245,7 @@ void AuthSessionAuthenticator::DoCompleteLogin(
                                : AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Error starting authsession for Regular user "
-                     << error.value().get_cryptohome_code();
+                     << error.value().get_cryptohome_error();
     std::move(error_callback).Run(std::move(context), error.value());
     return;
   }
@@ -264,9 +266,24 @@ void AuthSessionAuthenticator::DoCompleteLogin(
       steps.push_back(base::BindOnce(&MountPerformer::MountEphemeralDirectory,
                                      mount_performer_->AsWeakPtr()));
     } else {  // New persistent user
+      using CleanupStrategy =
+          user_manager::UserDirectoryIntegrityManager::CleanupStrategy;
+      CleanupStrategy strategy = new_user_can_become_owner_
+                                     ? CleanupStrategy::kSilentPowerwash
+                                     : CleanupStrategy::kRemoveUser;
+      bool ignore_owner_in_tests =
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              ash::switches::kCryptohomeIgnoreCleanupOwnershipForTesting);
+
+      if (ignore_owner_in_tests &&
+          strategy == CleanupStrategy::kSilentPowerwash) {
+        LOG(WARNING) << "Overriding cleanup strategy due to testing";
+        strategy = CleanupStrategy::kRemoveUser;
+      }
+
       steps.push_back(
           base::BindOnce(&AuthSessionAuthenticator::RecordCreatingNewUser,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr(), strategy));
       // We need to store a user information as it would be used by
       // CryptohomeKeyDelegateServiceProvider and MisconfiguredUserCleaner
       // If the user creation process is interrupted, the known user record
@@ -303,38 +320,32 @@ void AuthSessionAuthenticator::DoCompleteLogin(
         steps.push_back(base::BindOnce(
             &AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
             weak_factory_.GetWeakPtr()));
-      } else if (!ash::features::AreLocalPasswordsEnabledForConsumers()) {
-        CHECK(has_password)
-            << "Empty passwords are not supported during user creation";
-        steps.push_back(
-            base::BindOnce(&AuthFactorEditor::AddContextKnowledgeKey,
-                           auth_factor_editor_->AsWeakPtr()));
-        steps.push_back(base::BindOnce(
-            &AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
-            weak_factory_.GetWeakPtr()));
+      } else if (ephemeral) {
+        // Short-terms fix for b/344603210:
+        // Ephemeral users don't have active authsession in onboarding
+        // flow, so we need to set up their password here, if they have one.
+        if (has_password) {
+          steps.push_back(
+              base::BindOnce(&AuthFactorEditor::AddContextKnowledgeKey,
+                             auth_factor_editor_->AsWeakPtr()));
+        }
       } else {
         // If Local passwords are enabled, password setup would
         // happen later in OOBE flow.
       }
-    }       // challenge-response
-    // In addition to factors suitable for authentication, fetch a set of
-    // supported factor types for new users.
-    steps.push_back(
-        base::BindOnce(&AuthFactorEditor::GetAuthFactorsConfiguration,
-                       auth_factor_editor_->AsWeakPtr()));
+    }  // challenge-response
   } else {  // existing user
     if (!challenge_response_auth) {
       // Password-based login
-      if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
-        const auto& factors = context->GetAuthFactorsData();
-        if (!factors.FindOnlinePasswordFactor()) {
-          // User has knowledge factor other than online password need
-          // to go through custom flow.
-          NotifyOnlinePasswordUnusable(std::move(context),
-                                       /*online_password_mismatch=*/false);
-          return;
-        }
+      const auto& factors = context->GetAuthFactorsData();
+      if (!factors.FindOnlinePasswordFactor()) {
+        // User has knowledge factor other than online password need
+        // to go through custom flow.
+        NotifyOnlinePasswordUnusable(std::move(context),
+                                     /*online_password_mismatch=*/false);
+        return;
       }
+
       // We are sure that password is correct, so intercept authentication
       // failure events and treat them as password change signals.
       error_callback = base::BindOnce(
@@ -364,6 +375,10 @@ void AuthSessionAuthenticator::DoCompleteLogin(
                          weak_factory_.GetWeakPtr()));
     }
   }
+  // In addition to factors suitable for authentication, fetch a set of
+  // supported factor for users.
+  steps.push_back(base::BindOnce(&AuthFactorEditor::GetAuthFactorsConfiguration,
+                                 auth_factor_editor_->AsWeakPtr()));
   AuthSuccessCallback success_callback = base::BindOnce(
       &AuthSessionAuthenticator::NotifyAuthSuccess, weak_factory_.GetWeakPtr());
 
@@ -388,7 +403,7 @@ void AuthSessionAuthenticator::AuthenticateToLogin(
   // For now we don't support empty passwords:
   if (context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
     if (context->GetKey()->GetSecret().empty() && !challenge_response_auth) {
-      // TODO(crbug.com/1325411): Restore non-empty password check.
+      // TODO(crbug.com/40225479): Restore non-empty password check.
       LOGIN_LOG(ERROR) << "Empty password used in AuthenticateToLogin";
     }
   }
@@ -414,21 +429,12 @@ void AuthSessionAuthenticator::AuthenticateToUnlock(
   if (user_context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
     if (user_context->GetKey()->GetSecret().empty() &&
         !challenge_response_auth) {
-      // TODO(crbug.com/1325411): Restore non-empty password check.
+      // TODO(crbug.com/40225479): Restore non-empty password check.
       LOGIN_LOG(ERROR) << "Empty password used in AuthenticateToLogin";
     }
   }
 
   AuthSessionIntent intent = AuthSessionIntent::kVerifyOnly;
-
-  // Full authentication is needed to restore keyset. It is only for
-  // non-ephemeral user sessions.
-  if (switches::ShouldRestoreKeyOnLockScreen() && !ephemeral) {
-    LOGIN_LOG(EVENT)
-        << "AuthenticateToUnlock starts AuthSession for decrypt to "
-           "restore keyset.";
-    intent = AuthSessionIntent::kDecrypt;
-  }
 
   StartAuthSessionForLoggedIn(
       ephemeral, std::move(user_context), intent,
@@ -448,7 +454,7 @@ void AuthSessionAuthenticator::DoLoginAsExistingUser(
                                : AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Error starting authsession for Regular user "
-                     << error.value().get_cryptohome_code();
+                     << error.value().get_cryptohome_error();
     std::move(error_callback).Run(std::move(context), error.value());
     return;
   }
@@ -511,7 +517,7 @@ void AuthSessionAuthenticator::DoUnlock(
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Error starting authsession for Regular user for "
                         "verification intent "
-                     << error.value().get_cryptohome_code();
+                     << error.value().get_cryptohome_error();
     std::move(error_callback).Run(std::move(context), error.value());
     return;
   }
@@ -544,10 +550,6 @@ void AuthSessionAuthenticator::DoUnlock(
     steps.push_back(
         base::BindOnce(&AuthPerformer::AuthenticateUsingKnowledgeKey,
                        auth_performer_->AsWeakPtr()));
-  }
-  if (switches::ShouldRestoreKeyOnLockScreen() && !ephemeral) {
-    steps.push_back(base::BindOnce(&MountPerformer::RestoreEvictedVaultKey,
-                                   mount_performer_->AsWeakPtr()));
   }
 
   RunOperationChain(std::move(context), std::move(steps),
@@ -616,7 +618,7 @@ void AuthSessionAuthenticator::DoLoginAsPublicSession(
 
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Error starting authsession for MGS "
-                     << error.value().get_cryptohome_code();
+                     << error.value().get_cryptohome_error();
     std::move(error_callback).Run(std::move(context), error.value());
     return;
   }
@@ -646,13 +648,6 @@ void AuthSessionAuthenticator::LoginAsKioskAccount(
     bool ephemeral) {
   LoginAsKioskImpl(app_account_id, user_manager::UserType::kKioskApp,
                    /*force_dircrypto=*/false, /*ephemeral=*/ephemeral);
-}
-
-void AuthSessionAuthenticator::LoginAsArcKioskAccount(
-    const AccountId& app_account_id,
-    bool ephemeral) {
-  LoginAsKioskImpl(app_account_id, user_manager::UserType::kArcKioskApp,
-                   /*force_dircrypto=*/true, /*ephemeral=*/ephemeral);
 }
 
 void AuthSessionAuthenticator::LoginAsWebKioskAccount(
@@ -697,7 +692,7 @@ void AuthSessionAuthenticator::DoLoginAsKiosk(
                                : AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Error starting authsession for Kiosk "
-                     << error.value().get_cryptohome_code();
+                     << error.value().get_cryptohome_error();
     std::move(error_callback).Run(std::move(context), error.value());
     return;
   }
@@ -724,7 +719,9 @@ void AuthSessionAuthenticator::DoLoginAsKiosk(
   } else {
     steps.push_back(
         base::BindOnce(&AuthSessionAuthenticator::RecordCreatingNewUser,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(),
+                       user_manager::UserDirectoryIntegrityManager::
+                           CleanupStrategy::kRemoveUser));
     steps.push_back(base::BindOnce(&MountPerformer::CreateNewUser,
                                    mount_performer_->AsWeakPtr()));
     steps.push_back(base::BindOnce(&MountPerformer::MountPersistentDirectory,
@@ -761,85 +758,6 @@ void AuthSessionAuthenticator::OnAuthSuccess() {
 
 void AuthSessionAuthenticator::OnAuthFailure(const AuthFailure& error) {
   NOTIMPLEMENTED();
-}
-
-void AuthSessionAuthenticator::RecoverEncryptedData(
-    std::unique_ptr<UserContext> context,
-    const std::string& old_password) {
-  DCHECK(context);
-  DCHECK(!context->GetAuthSessionId().empty());
-  LOGIN_LOG(USER) << "Attempting to update user password";
-
-  auto* password_factor =
-      context->GetAuthFactorsData().FindOnlinePasswordFactor();
-  DCHECK(password_factor);
-  std::string key_label = password_factor->ref().label().value();
-
-  if (!context->HasReplacementKey()) {
-    // Assume that there was an attempt to use the key, so it is was already
-    // hashed.
-    DCHECK(context->GetKey()->GetKeyType() != Key::KEY_TYPE_PASSWORD_PLAIN);
-    // Make sure that the key has correct label.
-    context->GetKey()->SetLabel(key_label);
-    context->SaveKeyForReplacement();
-  }
-
-  Key auth_key(old_password);
-  auth_key.SetLabel(key_label);
-  context->SetKey(auth_key);
-
-  AuthErrorCallback error_callback = base::BindOnce(
-      &AuthSessionAuthenticator::ProcessCryptohomeError,
-      weak_factory_.GetWeakPtr(), AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
-
-  // Existing users might require encryption migration: intercept related
-  // error codes.
-  error_callback =
-      base::BindOnce(&AuthSessionAuthenticator::HandleMigrationRequired,
-                     weak_factory_.GetWeakPtr(), std::move(error_callback));
-  // As we are in password change flow, all auth failures should be handled
-  // as password changed errors to be redirected correctly.
-  error_callback =
-      base::BindOnce(&AuthSessionAuthenticator::HandlePasswordChangeDetected,
-                     weak_factory_.GetWeakPtr(), std::move(error_callback));
-
-  AuthSuccessCallback success_callback = base::BindOnce(
-      &AuthSessionAuthenticator::NotifyAuthSuccess, weak_factory_.GetWeakPtr());
-
-  std::vector<AuthOperation> steps;
-  steps.push_back(base::BindOnce(&AuthPerformer::AuthenticateUsingKnowledgeKey,
-                                 auth_performer_->AsWeakPtr()));
-  steps.push_back(base::BindOnce(&AuthFactorEditor::ReplaceContextKey,
-                                 auth_factor_editor_->AsWeakPtr()));
-  steps.push_back(base::BindOnce(&MountPerformer::MountPersistentDirectory,
-                                 mount_performer_->AsWeakPtr()));
-  if (safe_mode_delegate_->IsSafeMode()) {
-    steps.push_back(
-        base::BindOnce(&AuthSessionAuthenticator::CheckOwnershipOperation,
-                       weak_factory_.GetWeakPtr()));
-  }
-  RunOperationChain(std::move(context), std::move(steps),
-                    std::move(success_callback), std::move(error_callback));
-}
-
-void AuthSessionAuthenticator::ResyncEncryptedData(
-    bool ephemeral,
-    std::unique_ptr<UserContext> context) {
-  LOGIN_LOG(USER) << "Re-create cryptohome";
-
-  AuthErrorCallback error_callback = base::BindOnce(
-      &AuthSessionAuthenticator::ProcessCryptohomeError,
-      weak_factory_.GetWeakPtr(), AuthFailure::DATA_REMOVAL_FAILED);
-
-  AuthSuccessCallback success_callback =
-      base::BindOnce(&AuthSessionAuthenticator::CompleteLoginImpl,
-                     weak_factory_.GetWeakPtr(), ephemeral);
-
-  std::vector<AuthOperation> steps;
-  steps.push_back(base::BindOnce(&MountPerformer::RemoveUserDirectory,
-                                 mount_performer_->AsWeakPtr()));
-  RunOperationChain(std::move(context), std::move(steps),
-                    std::move(success_callback), std::move(error_callback));
 }
 
 void AuthSessionAuthenticator::PrepareForNewAttempt(
@@ -1084,14 +1002,15 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
     return true;
   }
 
-      // We need the default case here so that it is possible to add new
-      // CryptohomeErrorCode, because CryptohomeErrorCode is defined in another
-      // repo.
-      // However, we should seek to handle all CryptohomeErrorCode and not let
-      // any of them hit the default block.
-  NOTREACHED() << "Unhandled CryptohomeError in ProcessCryptohomeError"
-                  ": "
-               << error.get_cryptohome_error();
+  // We need the default case here so that it is possible to add new
+  // CryptohomeErrorCode, because CryptohomeErrorCode is defined in another
+  // repo.
+  // However, we should seek to handle all CryptohomeErrorCode and not let
+  // any of them hit the default block.
+  NOTREACHED_IN_MIGRATION()
+      << "Unhandled CryptohomeError in ProcessCryptohomeError"
+         ": "
+      << error.get_cryptohome_error();
   return false;
 }
 
@@ -1115,10 +1034,10 @@ void AuthSessionAuthenticator::ProcessCryptohomeError(
   }
   bool handled = ResolveCryptohomeError(default_error, error);
   if (!handled) {
-    NOTREACHED() << "Unhandled cryptohome error: "
-                 << error.get_cryptohome_code();
+    NOTREACHED_IN_MIGRATION()
+        << "Unhandled cryptohome error: " << error.get_cryptohome_error();
     SCOPED_CRASH_KEY_NUMBER("Cryptohome", "error_code",
-                            error.get_cryptohome_code());
+                            error.get_cryptohome_error().code());
     base::debug::DumpWithoutCrashing();
     error.ResolveToFailure(default_error);
   }
@@ -1177,13 +1096,6 @@ void AuthSessionAuthenticator::HandleMigrationRequired(
 void AuthSessionAuthenticator::NotifyAuthSuccess(
     std::unique_ptr<UserContext> context) {
   LOGIN_LOG(EVENT) << "Logged in successfully";
-
-  if (HibernateManager::IsHibernateSupported()) {
-    // Pass the AccountID and AuthSessionID to HibernateManager so once the
-    // user's profile is created we can notify hiberman.
-    HibernateManager::Get()->SetAuthInfo(context->GetAccountId().GetUserEmail(),
-                                         context->GetAuthSessionId());
-  }
 
   if (consumer_) {
     consumer_->OnAuthSuccess(*context);
@@ -1249,7 +1161,7 @@ void AuthSessionAuthenticator::OnUnmountForNonOwner(
     // Crash if could not unmount home directory, and let session_manager
     // handle it.
     LOG(FATAL) << "Failed to unmount non-owner home directory "
-               << error->get_cryptohome_code();
+               << error->get_cryptohome_error();
   } else {
     NotifyFailure(AuthFailure::OWNER_REQUIRED, std::move(context));
   }

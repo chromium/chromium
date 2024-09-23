@@ -163,17 +163,32 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
     OnDeviceUpdated(DeviceType::kMic, active);
 
     if (features::IsVideoConferenceEnabled()) {
-      VideoConferenceAshFeatureClient::Get()->OnVmDeviceUpdated(
-          vm_type_, DeviceType::kMic, active);
+      VideoConferenceAshFeatureClient* vc_ash_feature_client =
+          VideoConferenceAshFeatureClient::Get();
+      // Only calls `OnVmDeviceUpdated()` if `VideoConferenceAshFeatureClient`
+      // has initialized, otherwise it will be handled at
+      // `VideoConferenceAshFeatureClient` initialization.
+      if (vc_ash_feature_client) {
+        vc_ash_feature_client->OnVmDeviceUpdated(vm_type_, DeviceType::kMic,
+                                                 active);
+      }
     }
   }
 
   void SetCameraAccessing(bool accessing) {
     camera_accessing_ = accessing;
     OnCameraUpdated();
+
     if (features::IsVideoConferenceEnabled()) {
-      VideoConferenceAshFeatureClient::Get()->OnVmDeviceUpdated(
-          vm_type_, DeviceType::kCamera, accessing);
+      VideoConferenceAshFeatureClient* vc_ash_feature_client =
+          VideoConferenceAshFeatureClient::Get();
+      // Only calls `OnVmDeviceUpdated()` if `VideoConferenceAshFeatureClient`
+      // has initialized, otherwise it will be handled at
+      // `VideoConferenceAshFeatureClient` initialization.
+      if (vc_ash_feature_client) {
+        vc_ash_feature_client->OnVmDeviceUpdated(vm_type_, DeviceType::kCamera,
+                                                 accessing);
+      }
     }
   }
   void SetCameraPrivacyIsOn(bool on) {
@@ -222,13 +237,15 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
 
     auto app_name = l10n_util::GetStringUTF16(name_id_);
     auto delegate = base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>(
-        /*launch_app=*/std::nullopt,
         /*launch_settings=*/base::BindRepeating(
             &VmCameraMicManager::VmInfo::OpenSettings,
             weak_ptr_factory_.GetWeakPtr()));
 
+    // Privacy indicators is only enabled when Video Conference is disabled.
+    bool privacy_indicators_enabled = !features::IsVideoConferenceEnabled();
+
     if (notifications_.active != kNoNotification) {
-      if (features::IsPrivacyIndicatorsEnabled()) {
+      if (privacy_indicators_enabled) {
         PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
             /*app_id=*/GetNotificationId(vm_type_, notifications_.active),
             app_name, /*is_camera_used=*/false, /*is_microphone_used=*/false,
@@ -239,7 +256,8 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
     }
 
     if (new_notification != kNoNotification) {
-      if (features::IsPrivacyIndicatorsEnabled()) {
+      // Privacy indicator is only enabled when Video Conference is disabled.
+      if (privacy_indicators_enabled) {
         PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
             /*app_id=*/GetNotificationId(vm_type_, new_notification), app_name,
             /*is_camera_used=*/
@@ -280,7 +298,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
   }
 
   void OpenNotification(NotificationType type) const {
-    CHECK(!features::IsPrivacyIndicatorsEnabled());
+    CHECK(features::IsVideoConferenceEnabled());
     CHECK_NE(type, kNoNotification);
 
     const gfx::VectorIcon* source_icon = nullptr;
@@ -330,7 +348,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
   }
 
   void CloseNotification(NotificationType type) const {
-    CHECK(!features::IsPrivacyIndicatorsEnabled());
+    CHECK(features::IsVideoConferenceEnabled());
     CHECK_NE(type, kNoNotification);
 
     NotificationDisplayService::GetForProfile(profile_)->Close(
@@ -431,8 +449,8 @@ void VmCameraMicManager::OnPrimaryUserSessionStarted(Profile* primary_profile) {
   }
 }
 
-// The class is supposed to be used as a singleton with `base::NoDestructor`, so
-// we do not do clean up (e.g. deregister as observers) here.
+// The class is supposed to be used as a singleton with `base::NoDestructor`,
+// so we do not do clean up (e.g. deregister as observers) here.
 VmCameraMicManager::~VmCameraMicManager() = default;
 
 void VmCameraMicManager::MaybeSubscribeToCameraService(
@@ -450,7 +468,8 @@ void VmCameraMicManager::MaybeSubscribeToCameraService(
   auto privacy_switch_state = cros::mojom::CameraPrivacySwitchState::UNKNOWN;
   auto device_id_to_privacy_switch_state =
       camera->AddCameraPrivacySwitchObserver(this);
-  // TODO(b/255249223): Handle multiple cameras with privacy controls properly.
+  // TODO(b/255249223): Handle multiple cameras with privacy controls
+  // properly.
   for (const auto& it : device_id_to_privacy_switch_state) {
     cros::mojom::CameraPrivacySwitchState state = it.second;
     if (state == cros::mojom::CameraPrivacySwitchState::ON) {
@@ -481,6 +500,18 @@ bool VmCameraMicManager::IsDeviceActive(DeviceType device) const {
     if (notification_type[static_cast<size_t>(device)]) {
       return true;
     }
+  }
+  return false;
+}
+
+bool VmCameraMicManager::IsDeviceActive(VmType vm, DeviceType device) const {
+  auto it = vm_info_map_.find(vm);
+  if (it == vm_info_map_.end()) {
+    return false;
+  }
+  const NotificationType& notification_type = it->second.notification_type();
+  if (notification_type[static_cast<size_t>(device)]) {
+    return true;
   }
   return false;
 }

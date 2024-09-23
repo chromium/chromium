@@ -229,4 +229,4 @@ class ASH_EXPORT PrivacyHubNotification
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_SYSTEM_PRIVACY_HUB_PRIVACY_HUB_NOTIFICATION_H_

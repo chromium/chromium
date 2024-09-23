@@ -159,7 +159,7 @@ class NonPersistentExtensionTabsTest
 #endif
 
 // Tests chrome.windows.create and chrome.windows.getCurrent.
-// TODO(crbug.com/984350): Expand the test to verify that setSelfAsOpener
+// TODO(crbug.com/40636155): Expand the test to verify that setSelfAsOpener
 // param is ignored from Service Worker extension scripts.
 IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, MAYBE_TabCurrentWindow) {
   ASSERT_TRUE(RunExtensionTest("tabs/current_window")) << message_;
@@ -284,11 +284,13 @@ Browser* ExtensionWindowLastFocusedTest::CreateBrowserWithEmptyTab(
 int ExtensionWindowLastFocusedTest::GetTabId(
     const base::Value::Dict& dict) const {
   const base::Value::List* tabs = dict.FindList(keys::kTabsKey);
-  if (!tabs || tabs->empty())
+  if (!tabs || tabs->empty()) {
     return -2;
+  }
   const base::Value::Dict* tab_dict = (*tabs)[0].GetIfDict();
-  if (!tab_dict)
+  if (!tab_dict) {
     return -2;
+  }
   return tab_dict->FindInt(keys::kIdKey).value_or(-2);
 }
 
@@ -516,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(TabsApiInteractiveTest,
   // This currently fails because WidgetTest::IsWindowStackedAbove() doesn't
   // work for different BrowserViews. While the functionality is currently
   // correct, this means we don't have a good regression test for it.
-  // TODO(https://crbug.com/1302159): Fix this.
+  // TODO(crbug.com/40058935): Fix this.
   // EXPECT_TRUE(views::test::WidgetTest::IsWindowStackedAbove(
   //     BrowserView::GetBrowserViewForBrowser(browser())->frame(),
   //     BrowserView::GetBrowserViewForBrowser(new_browser)->frame()));

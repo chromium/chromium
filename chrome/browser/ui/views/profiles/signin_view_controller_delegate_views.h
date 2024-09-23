@@ -17,12 +17,14 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/window/dialog_delegate.h"
 
+struct AccountInfo;
 class Browser;
 class GURL;
-struct AccountInfo;
+enum class SyncConfirmationStyle;
 
 namespace content {
 class WebContents;
@@ -56,7 +58,8 @@ class SigninViewControllerDelegateViews
 
   static std::unique_ptr<views::WebView> CreateSyncConfirmationWebView(
       Browser* browser,
-      bool is_signin_intercept = false);
+      SyncConfirmationStyle style,
+      bool is_sync_promo);
 
   static std::unique_ptr<views::WebView> CreateSigninErrorWebView(
       Browser* browser);
@@ -78,9 +81,11 @@ class SigninViewControllerDelegateViews
   CreateManagedUserNoticeConfirmationWebView(
       Browser* browser,
       const AccountInfo& account_info,
+      bool is_oidc_account,
       bool profile_creation_required_by_policy,
       bool show_link_data_option,
-      signin::SigninChoiceCallback callback);
+      signin::SigninChoiceCallbackVariant process_user_choice_callback,
+      base::OnceClosure done_callback);
 #endif
 
   // views::DialogDelegateView:
@@ -95,16 +100,16 @@ class SigninViewControllerDelegateViews
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
-  bool HandleKeyboardEvent(
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
+  content::WebContents* AddNewContents(
       content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
-  void AddNewContents(content::WebContents* source,
-                      std::unique_ptr<content::WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& window_features,
-                      bool user_gesture,
-                      bool* was_blocked) override;
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override;
 
   // ChromeWebModalDialogManagerDelegate:
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
@@ -123,7 +128,7 @@ class SigninViewControllerDelegateViews
   SigninViewControllerDelegateViews(
       std::unique_ptr<views::WebView> content_view,
       Browser* browser,
-      ui::ModalType dialog_modal_type,
+      ui::mojom::ModalType dialog_modal_type,
       bool wait_for_size,
       bool should_show_close_button,
       bool delete_profile_on_cancel = false);

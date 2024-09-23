@@ -13,12 +13,12 @@
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 
@@ -40,10 +40,8 @@ OfferNotificationIconView::OfferNotificationIconView(
                          "PaymentsOfferNotification") {
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kOfferNotificationChipElementId);
-  SetAccessibilityProperties(
-      /*role*/ std::nullopt,
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
 }
 
 OfferNotificationIconView::~OfferNotificationIconView() = default;
@@ -89,13 +87,11 @@ void OfferNotificationIconView::MaybeShowPageActionLabel() {
     return;
   }
   should_extend_label_shown_duration_ = true;
-  SetPaintLabelOverSolidBackground(true);
-  AnimateIn(IDS_DISCOUNT_ICON_EXPANDED_TEXT);
+  SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
+  AnimateIn(IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT);
   controller->OnIconExpanded();
-  SetAccessibilityProperties(
-      /*role*/ std::nullopt,
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
 }
 
 void OfferNotificationIconView::HidePageActionLabel() {
@@ -115,9 +111,10 @@ void OfferNotificationIconView::AnimationProgressed(
   // kLabelPersistDuration before resuming the animation and allowing the label
   // to animate out. This is currently set to show for 12s including the in/out
   // animation.
-  // TODO(crbug.com/1314206): This approach of inspecting the animation progress
-  // to extend the animation duration is quite hacky. This should be removed and
-  // the IconLabelBubbleView API expanded to support a finer level of control.
+  // TODO(crbug.com/40832707): This approach of inspecting the animation
+  // progress to extend the animation duration is quite hacky. This should be
+  // removed and the IconLabelBubbleView API expanded to support a finer level
+  // of control.
   if (should_extend_label_shown_duration_ &&
       GetAnimationValue() >= kAnimationValueWhenLabelFullyShown) {
     should_extend_label_shown_duration_ = false;
@@ -159,9 +156,7 @@ void OfferNotificationIconView::DidExecute(ExecuteSource execute_source) {
 }
 
 const gfx::VectorIcon& OfferNotificationIconView::GetVectorIcon() const {
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? kLocalOfferFlippedRefreshIcon
-             : kLocalOfferFlippedIcon;
+  return kLocalOfferFlippedRefreshIcon;
 }
 
 const std::u16string& OfferNotificationIconView::GetIconLabelForTesting()

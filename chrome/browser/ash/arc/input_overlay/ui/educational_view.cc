@@ -163,7 +163,7 @@ void EducationalView::Init(const gfx::Size& parent_size) {
 
     if (portrait_mode_) {
       // Resize the banner image size proportionally.
-      const auto size = banner->CalculatePreferredSize();
+      const auto size = banner->CalculatePreferredSize({});
       const int width =
           GetDialogWidth(parent_width) - GetBorderSides(portrait_mode_) * 2;
       const float ratio = 1.0 * width / size.width();
@@ -273,7 +273,7 @@ void EducationalView::Init(const gfx::Size& parent_size) {
 
 void EducationalView::AddShadow() {
   view_shadow_ =
-      std::make_unique<ash::ViewShadow>(this, kDialogShadowElevation);
+      std::make_unique<views::ViewShadow>(this, kDialogShadowElevation);
   view_shadow_->SetRoundedCornerRadius(kDialogCornerRadius);
 }
 

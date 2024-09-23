@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_BASE_OSAUTH_SETUP_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_BASE_OSAUTH_SETUP_SCREEN_H_
 
+#include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
@@ -66,7 +68,6 @@ class BaseOSAuthSetupScreen : public BaseScreen {
   void CheckForKnowledgeFactorPresence(base::OnceClosure continuation,
                                        UserContext* context);
 
-  std::optional<std::string> quick_unlock_token_;
   std::unique_ptr<ScopedSessionRefresher> session_refresher_;
 
   base::WeakPtrFactory<BaseOSAuthSetupScreen> weak_ptr_factory_{this};

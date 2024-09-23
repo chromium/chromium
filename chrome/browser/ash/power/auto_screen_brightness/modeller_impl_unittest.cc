@@ -208,7 +208,7 @@ class ModellerImplTest : public testing::Test {
                      double curve_error) {
     modeller_ = ModellerImpl::CreateForTesting(
         profile_.get(), als_reader_.get(), &fake_brightness_monitor_,
-        &fake_model_config_loader_, &user_activity_detector_,
+        &fake_model_config_loader_, ui::UserActivityDetector::Get(),
         std::make_unique<FakeTrainer>(is_trainer_configured,
                                       is_personal_curve_valid, return_new_curve,
                                       curve_error),
@@ -273,8 +273,6 @@ class ModellerImplTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-
-  ui::UserActivityDetector user_activity_detector_;
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> profile_;
@@ -610,8 +608,9 @@ TEST_F(ModellerImplTest, MultipleUserActivities) {
 
   task_environment_.FastForwardBy(modeller_->GetTrainingDelayForTesting() / 2);
   // A user activity is received, timer should be reset.
-  const ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(0, 0),
-                                   gfx::Point(0, 0), base::TimeTicks(), 0, 0);
+  const ui::MouseEvent mouse_event(ui::EventType::kMouseExited,
+                                   gfx::Point(0, 0), gfx::Point(0, 0),
+                                   base::TimeTicks(), 0, 0);
   modeller_->OnUserActivity(&mouse_event);
 
   task_environment_.FastForwardBy(modeller_->GetTrainingDelayForTesting() / 3);
@@ -654,8 +653,9 @@ TEST_F(ModellerImplTest, ZeroTrainingDelay) {
   test_observer_->CheckStatus(true /* is_model_initialized */, expected_model);
 
   fake_light_provider_->ReportAmbientLightUpdate(30);
-  const ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(0, 0),
-                                   gfx::Point(0, 0), base::TimeTicks(), 0, 0);
+  const ui::MouseEvent mouse_event(ui::EventType::kMouseExited,
+                                   gfx::Point(0, 0), gfx::Point(0, 0),
+                                   base::TimeTicks(), 0, 0);
   modeller_->OnUserActivity(&mouse_event);
 
   modeller_->OnUserBrightnessChanged(10, 20);

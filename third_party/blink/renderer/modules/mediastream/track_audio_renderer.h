@@ -16,8 +16,8 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "media/base/audio_renderer_sink.h"
-#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_audio_renderer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
@@ -34,7 +34,7 @@ namespace blink {
 
 class LocalFrame;
 
-// TrackAudioRenderer is a WebMediaStreamAudioRenderer for plumbing audio
+// TrackAudioRenderer is a MediaStreamAudioRenderer for plumbing audio
 // data generated from either local or remote (but not
 // PeerConnection/WebRTC-sourced) MediaStreamAudioTracks to an audio output
 // device, reconciling differences in the rates of production and consumption of
@@ -54,7 +54,7 @@ class LocalFrame;
 // and skip audio to maintain time synchronization between the producer and
 // consumer.
 class MODULES_EXPORT TrackAudioRenderer
-    : public WebMediaStreamAudioRenderer,
+    : public MediaStreamAudioRenderer,
       public WebMediaStreamAudioSink,
       public media::AudioRendererSink::RenderCallback {
  public:
@@ -73,7 +73,7 @@ class MODULES_EXPORT TrackAudioRenderer
   TrackAudioRenderer(const TrackAudioRenderer&) = delete;
   TrackAudioRenderer& operator=(const TrackAudioRenderer&) = delete;
 
-  // WebMediaStreamAudioRenderer implementation.
+  // MediaStreamAudioRenderer implementation.
   // Called on the main thread.
   void Start() override;
   void Stop() override;

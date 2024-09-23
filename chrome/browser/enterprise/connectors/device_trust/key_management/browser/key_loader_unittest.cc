@@ -12,9 +12,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_loader_impl.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
@@ -25,6 +27,8 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/enterprise/client_certificates/core/cloud_management_delegate.h"
+#include "components/enterprise/client_certificates/core/mock_cloud_management_delegate.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -75,23 +79,43 @@ scoped_refptr<SigningKeyPair> CreateFakeKeyPair() {
 
 }  // namespace
 
-class KeyLoaderTest : public testing::Test {
+class KeyLoaderTest : public testing::Test,
+                      public testing::WithParamInterface<bool> {
  protected:
   KeyLoaderTest() {
+    feature_list_.InitWithFeatureState(
+        enterprise_connectors::kDTCKeyUploadedBySharedAPIEnabled,
+        is_key_uploaded_by_shared_api());
+
     test_key_pair_ = CreateFakeKeyPair();
 
-    auto mock_network_delegate =
-        std::make_unique<StrictMock<MockKeyNetworkDelegate>>();
-    mock_network_delegate_ = mock_network_delegate.get();
-    loader_ = std::make_unique<KeyLoaderImpl>(&fake_dm_token_storage_,
-                                              &fake_device_management_service_,
-                                              std::move(mock_network_delegate));
+    if (is_key_uploaded_by_shared_api()) {
+      // TODO(b/351201459): Ideally, we will call KeyLoader::Create directly, to
+      // test the entire path. For that, we would need two sets of tests, one
+      // for KeyLoader and one for the implementation.
+      auto mock_management_delegate = std::make_unique<
+          StrictMock<enterprise_attestation::MockCloudManagementDelegate>>();
+      mock_management_delegate_ = mock_management_delegate.get();
+      loader_ =
+          std::make_unique<KeyLoaderImpl>(std::move(mock_management_delegate));
+    } else {
+      auto mock_network_delegate =
+          std::make_unique<StrictMock<MockKeyNetworkDelegate>>();
+      mock_network_delegate_ = mock_network_delegate.get();
+      loader_ = std::make_unique<KeyLoaderImpl>(
+          &fake_dm_token_storage_, &fake_device_management_service_,
+          std::move(mock_network_delegate));
+    }
   }
 
-  void SetDMToken() {
-    // Set valid values.
-    fake_dm_token_storage_.SetDMToken(kFakeDMToken);
-    fake_dm_token_storage_.SetClientId(kFakeClientId);
+  void SetDMToken(std::optional<std::string> dm_token = kFakeDMToken) {
+    if (is_key_uploaded_by_shared_api()) {
+      EXPECT_CALL(*mock_management_delegate_, GetDMToken())
+          .WillRepeatedly(Return(dm_token));
+    } else {
+      fake_dm_token_storage_.SetDMToken(dm_token.value());
+      fake_dm_token_storage_.SetClientId(kFakeClientId);
+    }
   }
 
   void SetPersistedKey(bool has_key = true) {
@@ -113,15 +137,26 @@ class KeyLoaderTest : public testing::Test {
   }
 
   void SetUploadCode(HttpResponseCode response_code = kSuccessCode) {
-    EXPECT_CALL(
-        *mock_network_delegate_,
-        SendPublicKeyToDmServer(GURL(kExpectedDmServerUrl), kFakeDMToken, _, _))
-        .WillOnce(Invoke(
-            [&, response_code](const GURL& url, const std::string& dm_token,
-                               const std::string& body,
-                               base::OnceCallback<void(int)> callback) {
-              std::move(callback).Run(response_code);
-            }));
+    if (is_key_uploaded_by_shared_api()) {
+      policy::DMServerJobResult result;
+      result.response_code = response_code;
+      EXPECT_CALL(*mock_management_delegate_, UploadBrowserPublicKey(_, _))
+          .WillOnce(Invoke(
+              [&, result](
+                  const enterprise_management::DeviceManagementRequest& request,
+                  base::OnceCallback<void(policy::DMServerJobResult)>
+                      callback) { std::move(callback).Run(result); }));
+    } else {
+      EXPECT_CALL(*mock_network_delegate_,
+                  SendPublicKeyToDmServer(GURL(kExpectedDmServerUrl),
+                                          kFakeDMToken, _, _))
+          .WillOnce(Invoke(
+              [&, response_code](const GURL& url, const std::string& dm_token,
+                                 const std::string& body,
+                                 base::OnceCallback<void(int)> callback) {
+                std::move(callback).Run(response_code);
+              }));
+    }
   }
 
   void RunAndValidateLoadKey(DTCLoadKeyResult expected_result) {
@@ -134,7 +169,10 @@ class KeyLoaderTest : public testing::Test {
     EXPECT_EQ(loaded_key_result.result, expected_result.result);
   }
 
+  bool is_key_uploaded_by_shared_api() { return GetParam(); }
+
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
   StrictMock<policy::MockJobCreationHandler> job_creation_handler_;
   policy::FakeDeviceManagementService fake_device_management_service_{
@@ -147,22 +185,24 @@ class KeyLoaderTest : public testing::Test {
           &test_url_loader_factory_);
   std::unique_ptr<KeyLoader> loader_;
   raw_ptr<StrictMock<MockKeyNetworkDelegate>> mock_network_delegate_;
+  raw_ptr<StrictMock<enterprise_attestation::MockCloudManagementDelegate>>
+      mock_management_delegate_;
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(KeyLoaderTest, CreateKeyLoader_Success) {
+TEST_P(KeyLoaderTest, CreateKeyLoader_Success) {
   EXPECT_TRUE(KeyLoader::Create(&fake_dm_token_storage_,
                                 &fake_device_management_service_,
                                 test_shared_loader_factory_));
 }
 
-TEST_F(KeyLoaderTest, CreateKeyLoader_InvalidURLLoaderFactory) {
+TEST_P(KeyLoaderTest, CreateKeyLoader_InvalidURLLoaderFactory) {
   auto loader = KeyLoader::Create(&fake_dm_token_storage_,
                                   &fake_device_management_service_, nullptr);
   EXPECT_FALSE(loader);
 }
 
-TEST_F(KeyLoaderTest, LoadKey_Success) {
+TEST_P(KeyLoaderTest, LoadKey_Success) {
   SetDMToken();
   SetPersistedKey();
   SetUploadCode();
@@ -174,8 +214,8 @@ TEST_F(KeyLoaderTest, LoadKey_Success) {
   histogram_tester_.ExpectTotalCount(kSynchronizationErrorHistogram, 0);
 }
 
-TEST_F(KeyLoaderTest, LoadKey_InvalidDMToken) {
-  fake_dm_token_storage_.SetDMToken("");
+TEST_P(KeyLoaderTest, LoadKey_InvalidDMToken) {
+  SetDMToken("");
   SetPersistedKey();
 
   RunAndValidateLoadKey(DTCLoadKeyResult(test_key_pair_));
@@ -186,7 +226,7 @@ TEST_F(KeyLoaderTest, LoadKey_InvalidDMToken) {
   histogram_tester_.ExpectTotalCount(kSynchronizationUploadHistogram, 0);
 }
 
-TEST_F(KeyLoaderTest, LoadKey_MissingKeyPair) {
+TEST_P(KeyLoaderTest, LoadKey_MissingKeyPair) {
   SetDMToken();
   SetPersistedKey(/*has_key=*/false);
 
@@ -198,7 +238,7 @@ TEST_F(KeyLoaderTest, LoadKey_MissingKeyPair) {
   histogram_tester_.ExpectTotalCount(kSynchronizationUploadHistogram, 0);
 }
 
-TEST_F(KeyLoaderTest, LoadKey_KeyUploadFailed) {
+TEST_P(KeyLoaderTest, LoadKey_KeyUploadFailed) {
   SetDMToken();
   SetPersistedKey();
   SetUploadCode(kHardFailure);
@@ -209,5 +249,7 @@ TEST_F(KeyLoaderTest, LoadKey_KeyUploadFailed) {
                                        kHardFailure, 1);
   histogram_tester_.ExpectTotalCount(kSynchronizationErrorHistogram, 0);
 }
+
+INSTANTIATE_TEST_SUITE_P(, KeyLoaderTest, testing::Bool());
 
 }  // namespace enterprise_connectors

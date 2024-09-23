@@ -26,6 +26,7 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kUseGles2ForOopR);
 #if BUILDFLAG(IS_ANDROID)
 GPU_EXPORT BASE_DECLARE_FEATURE(kAndroidSurfaceControl);
 GPU_EXPORT BASE_DECLARE_FEATURE(kWebViewSurfaceControl);
+GPU_EXPORT BASE_DECLARE_FEATURE(kWebViewSurfaceControlForTV);
 GPU_EXPORT BASE_DECLARE_FEATURE(kAImageReader);
 GPU_EXPORT BASE_DECLARE_FEATURE(kLimitAImageReaderMaxSizeToOne);
 GPU_EXPORT BASE_DECLARE_FEATURE(kWebViewThreadSafeMediaDefault);
@@ -38,33 +39,19 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kDefaultEnableGpuRasterization);
 GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopRasterization);
 #endif
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopWithoutGpuTileRaster);
-
-#if BUILDFLAG(IS_OZONE)
-GPU_EXPORT BASE_DECLARE_FEATURE(kEnablePerContextGLTextureCache);
-GPU_EXPORT BASE_DECLARE_FEATURE(kOzoneFrontBufferUsage);
-#endif
-
 GPU_EXPORT BASE_DECLARE_FEATURE(kEnableMSAAOnNewIntelGPUs);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kDefaultEnableANGLEValidation);
-
-GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasContextLostInBackground);
+GPU_EXPORT BASE_DECLARE_FEATURE(kDawnSIRepsUseClientProvidedInternalUsages);
 
 #if BUILDFLAG(IS_WIN)
-GPU_EXPORT BASE_DECLARE_FEATURE(kGpuProcessHighPriorityWin);
-
-GPU_EXPORT BASE_DECLARE_FEATURE(kDisableVideoOverlayIfMoving);
-
 GPU_EXPORT BASE_DECLARE_FEATURE(kNoUndamagedOverlayPromotion);
-
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
 GPU_EXPORT BASE_DECLARE_FEATURE(kAdjustGpuProcessPriority);
 #endif
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kGenGpuDiskCacheKeyPrefixInGpuService);
+GPU_EXPORT BASE_DECLARE_FEATURE(kClearGrShaderDiskCacheOnInvalidPrefix);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kVaapiJpegImageDecodeAcceleration);
 
@@ -77,13 +64,11 @@ GPU_EXPORT extern const base::FeatureParam<bool>
     kSkiaGraphiteDawnSkipValidation;
 GPU_EXPORT extern const base::FeatureParam<bool>
     kSkiaGraphiteDawnBackendValidation;
-GPU_EXPORT extern const base::FeatureParam<bool> kSkiaGraphiteDawnShareDevice;
 
 #if BUILDFLAG(IS_WIN)
 GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteDawnUseD3D12);
 #endif
-
-GPU_EXPORT BASE_DECLARE_FEATURE(kEnableWatchdogReportOnlyModeOnGpuInit);
+GPU_EXPORT BASE_DECLARE_FEATURE(kConditionallySkipGpuChannelFlush);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kEnableVkPipelineCache);
 
@@ -91,15 +76,7 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kNoDiscardableMemoryForGpuDecodePath);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kEnableDrDc);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kForceRestartGpuKillSwitch);
-
 GPU_EXPORT BASE_DECLARE_FEATURE(kPruneOldTransferCacheEntries);
-
-GPU_EXPORT BASE_DECLARE_FEATURE(kPurgeOldCacheEntriesOnTimer);
-
-GPU_EXPORT BASE_DECLARE_FEATURE(kUseGpuSchedulerDfs);
-
-GPU_EXPORT BASE_DECLARE_FEATURE(kUseClientGmbInterface);
 
 #if BUILDFLAG(IS_ANDROID)
 // This flag is use additionally with kEnableDrDc to enable the feature for
@@ -116,19 +93,18 @@ GPU_EXPORT extern const base::FeatureParam<std::string> kWGSLUnsafeFeatures;
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kIncreasedCmdBufferParseSlice);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kGpuCleanupInBackground);
+GPU_EXPORT BASE_DECLARE_FEATURE(kDeferredOverlaysRelease);
 
-#if BUILDFLAG(IS_ANDROID)
-GPU_EXPORT BASE_DECLARE_FEATURE(kCmdDecoderSkipGLRedMesaWorkaroundOnAndroid);
+#if BUILDFLAG(IS_WIN)
+GPU_EXPORT BASE_DECLARE_FEATURE(kD3DBackingUploadWithUpdateSubresource);
 #endif
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kDeferredOverlaysRelease);
+GPU_EXPORT BASE_DECLARE_FEATURE(kHandleOverlaysSwapFailure);
 
 GPU_EXPORT bool UseGles2ForOopR();
 GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();
 GPU_EXPORT bool NeedThreadSafeAndroidMedia();
-GPU_EXPORT bool IsANGLEValidationEnabled();
 GPU_EXPORT bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line);
 GPU_EXPORT bool EnablePurgeGpuImageDecodeCache();
 GPU_EXPORT bool EnablePruneOldTransferCacheEntries();
@@ -141,6 +117,10 @@ GPU_EXPORT bool LimitAImageReaderMaxSizeToOne();
 GPU_EXPORT bool IncreaseBufferCountForHighFrameRate();
 GPU_EXPORT bool IncreaseBufferCountForWebViewOverlays();
 #endif
+
+GPU_EXPORT BASE_DECLARE_FEATURE(kSyncPointGraphValidation);
+
+GPU_EXPORT bool IsSyncPointGraphValidationEnabled();
 
 }  // namespace features
 

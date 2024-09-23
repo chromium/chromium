@@ -35,6 +35,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace chromeos {
 
@@ -59,6 +60,9 @@ std::unique_ptr<views::View> CreateButtonContainer(
     int label_message_id,
     int label_max_width) {
   auto container = std::make_unique<views::BoxLayoutView>();
+
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  container->SetLayoutManagerUseConstrainedSpace(false);
   container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   container->SetBetweenChildSpacing(kCenterPadding);
   container->AddChildView(std::move(button_view));
@@ -100,12 +104,12 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
       return;
     }
 
-    if (event->type() == ui::ET_MOUSE_PRESSED) {
+    if (event->type() == ui::EventType::kMousePressed) {
       ProcessPressedEvent(*event);
       return;
     }
 
-    if (event->type() == ui::ET_MOUSE_MOVED && anchor_view_) {
+    if (event->type() == ui::EventType::kMouseMoved && anchor_view_) {
       const gfx::Point screen_location =
           event->target()->GetScreenLocation(*event);
       // Stop the existing timer if either the anchor or the menu contain the
@@ -127,7 +131,7 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
       return;
     }
 
-    if (event->type() == ui::ET_TOUCH_PRESSED) {
+    if (event->type() == ui::EventType::kTouchPressed) {
       ProcessPressedEvent(*event);
     }
   }
@@ -415,6 +419,7 @@ void MultitaskMenuView::SetSkipMouseOutDelayForTesting(bool val) {
 }
 
 void MultitaskMenuView::HalfButtonPressed(SnapDirection direction) {
+  wm::GetActivationClient(window_->GetRootWindow())->ActivateWindow(window_);
   SnapController::Get()->CommitSnap(
       window_, direction, kDefaultSnapRatio,
       SnapController::SnapRequestSource::kWindowLayoutMenu);
@@ -426,23 +431,28 @@ void MultitaskMenuView::HalfButtonPressed(SnapDirection direction) {
 }
 
 void MultitaskMenuView::PartialButtonPressed(SnapDirection direction) {
+  wm::GetActivationClient(window_->GetRootWindow())->ActivateWindow(window_);
+  const bool is_primary_display_layout = chromeos::IsDisplayLayoutPrimary(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window_));
+  const bool is_primary_partial_split =
+      (is_primary_display_layout && direction == SnapDirection::kPrimary) ||
+      (!is_primary_display_layout && direction == SnapDirection::kSecondary);
   SnapController::Get()->CommitSnap(
       window_, direction,
-      direction == SnapDirection::kPrimary
-          ? (is_reversed_ ? chromeos::kOneThirdSnapRatio
-                          : chromeos::kTwoThirdSnapRatio)
-          : (is_reversed_ ? chromeos::kTwoThirdSnapRatio
-                          : chromeos::kOneThirdSnapRatio),
+      is_primary_partial_split ? (is_reversed_ ? chromeos::kOneThirdSnapRatio
+                                               : chromeos::kTwoThirdSnapRatio)
+                               : (is_reversed_ ? chromeos::kTwoThirdSnapRatio
+                                               : chromeos::kOneThirdSnapRatio),
       SnapController::SnapRequestSource::kWindowLayoutMenu);
   close_callback_.Run();
-
   base::RecordAction(base::UserMetricsAction(
-      direction == SnapDirection::kPrimary ? kPartialSplitTwoThirdsUserAction
-                                           : kPartialSplitOneThirdUserAction));
+      is_primary_partial_split ? kPartialSplitTwoThirdsUserAction
+                               : kPartialSplitOneThirdUserAction));
   RecordMultitaskMenuActionType(MultitaskMenuActionType::kPartialSplitButton);
 }
 
 void MultitaskMenuView::FullScreenButtonPressed() {
+  wm::GetActivationClient(window_->GetRootWindow())->ActivateWindow(window_);
   auto* widget = views::Widget::GetWidgetForNativeWindow(window_);
   const bool is_fullscreen = widget->IsFullscreen();
   widget->SetFullscreen(!is_fullscreen);
@@ -453,6 +463,7 @@ void MultitaskMenuView::FullScreenButtonPressed() {
 }
 
 void MultitaskMenuView::FloatButtonPressed() {
+  wm::GetActivationClient(window_->GetRootWindow())->ActivateWindow(window_);
   if (window_->GetProperty(kWindowStateTypeKey) == WindowStateType::kFloated) {
     base::RecordAction(base::UserMetricsAction(kUnFloatUserAction));
     FloatControllerBase::Get()->UnsetFloat(window_);

@@ -8,8 +8,8 @@
 #include <memory>
 #include <optional>
 
-#include "media/filters/vp9_parser.h"
 #include "media/gpu/codec_picture.h"
+#include "media/parsers/vp9_parser.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {

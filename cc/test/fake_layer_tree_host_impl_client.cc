@@ -11,7 +11,7 @@ bool FakeLayerTreeHostImplClient::IsInsideDraw() {
   return false;
 }
 
-void FakeLayerTreeHostImplClient::NeedsImplSideInvalidation(
+void FakeLayerTreeHostImplClient::SetNeedsImplSideInvalidation(
     bool needs_first_draw_on_activation) {
   did_request_impl_side_invalidation_ = true;
 }

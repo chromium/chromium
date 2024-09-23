@@ -21,6 +21,8 @@
 #include <sys/types.h>
 #include <sys/utsname.h>
 
+#include <string_view>
+
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
@@ -28,7 +30,6 @@
 #include "base/mac/scoped_ioobject.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
@@ -92,7 +93,7 @@ int DarwinMajorVersion() {
 
   int darwin_major_version = 0;
   CHECK(base::StringToInt(
-      base::StringPiece(uname_info.release, dot - uname_info.release),
+      std::string_view(uname_info.release, dot - uname_info.release),
       &darwin_major_version));
 
   return darwin_major_version;
@@ -121,7 +122,7 @@ const void* TryCFDictionaryGetValue(CFDictionaryRef dictionary,
 // If |version| does not have the expected format, returns false. |version| must
 // be in the form "10.9.2" or just "10.9". In the latter case, |bugfix| will be
 // set to 0.
-bool StringToVersionNumbers(const std::string& version,
+bool StringToVersionNumbers(std::string_view version,
                             int* major,
                             int* minor,
                             int* bugfix) {
@@ -131,36 +132,29 @@ bool StringToVersionNumbers(const std::string& version,
     LOG(ERROR) << "version has unexpected format";
     return false;
   }
-  if (!base::StringToInt(base::StringPiece(&version[0], first_dot), major)) {
+  if (!base::StringToInt(version.substr(0, first_dot), major)) {
     LOG(ERROR) << "version has unexpected format";
     return false;
   }
-
   size_t second_dot = version.find_first_of('.', first_dot + 1);
   if (second_dot == version.length() - 1) {
     LOG(ERROR) << "version has unexpected format";
     return false;
-  } else if (second_dot == std::string::npos) {
+  }
+  if (second_dot == std::string::npos) {
     second_dot = version.length();
   }
-
-  if (!base::StringToInt(base::StringPiece(&version[first_dot + 1],
-                                           second_dot - first_dot - 1),
-                         minor)) {
+  if (!base::StringToInt(
+          version.substr(first_dot + 1, second_dot - first_dot - 1), minor)) {
     LOG(ERROR) << "version has unexpected format";
     return false;
   }
-
   if (second_dot == version.length()) {
     *bugfix = 0;
-  } else if (!base::StringToInt(
-                 base::StringPiece(&version[second_dot + 1],
-                                   version.length() - second_dot - 1),
-                 bugfix)) {
+  } else if (!base::StringToInt(version.substr(second_dot + 1), bugfix)) {
     LOG(ERROR) << "version has unexpected format";
     return false;
   }
-
   return true;
 }
 
@@ -208,7 +202,6 @@ int MacOSVersionNumber() {
     // On macOS 10.13.4 and later, the sysctlbyname above should have been
     // successful.
     NOTREACHED();
-    return -1;
 #else  // DT >= 10.13.4
     // The Darwin major version is always 4 greater than the macOS minor version
     // for Darwin versions beginning with 6, corresponding to Mac OS X 10.2,

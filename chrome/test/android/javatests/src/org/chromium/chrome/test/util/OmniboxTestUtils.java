@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
@@ -29,6 +30,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
@@ -46,10 +48,10 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.content_public.browser.test.util.KeyUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -156,12 +158,12 @@ public class OmniboxTestUtils {
 
     /** Disables any live autocompletion, making Omnibox behave like a standard text field. */
     public void disableLiveAutocompletion() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setUrlTextChangeListener(null));
+        ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setTextChangeListener(null));
     }
 
     /**
-     * Waits for all the animations to complete.
-     * Allows any preceding operation to kick off an animation.
+     * Waits for all the animations to complete. Allows any preceding operation to kick off an
+     * animation.
      */
     public void waitAnimationsComplete() {
         // Note: SearchActivity has no toolbar and no animations, but we still need to
@@ -174,9 +176,7 @@ public class OmniboxTestUtils {
     /**
      * Check that the Omnibox reaches the expected focus state.
      *
-     * Note: this is known to cause issues with tests that run animations.
-     * In the event you are running into flakes that concentrate around this call, please consider
-     * adding DisableAnimationsTestRule to your test suite.
+     * <p>Note: this is known to cause issues with tests that run animations.
      *
      * @param active Whether the Omnibox is expected to have focus or not.
      */
@@ -200,10 +200,11 @@ public class OmniboxTestUtils {
 
     /**
      * Determines whether the UrlBar currently has focus.
+     *
      * @return Whether the UrlBar has focus.
      */
     public boolean getFocus() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> mUrlBar.hasFocus());
+        return ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.hasFocus());
     }
 
     /** Request the Omnibox focus and wait for soft keyboard to show. */
@@ -226,7 +227,7 @@ public class OmniboxTestUtils {
      * Omnibox is already unfocused.
      */
     public void clearFocus() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (mUrlBar.hasFocus()) {
                         ((ComponentActivity) mActivity)
@@ -234,6 +235,8 @@ public class OmniboxTestUtils {
                                 .onBackPressed();
                     }
                 });
+        // Needed to complete scrolling the UrlBar to TLD.
+        mInstrumentation.waitForIdleSync();
         checkFocus(false);
     }
 
@@ -241,23 +244,25 @@ public class OmniboxTestUtils {
      * Set the suggestions to the Omnibox to display.
      *
      * @param autocompleteResult The set of suggestions will be displayed on the Omnibox dropdown
-     *         list.
-     * @param inlineAutocompleteText the inline-autocomplete text.
+     *     list.
      */
-    public void setSuggestions(
-            AutocompleteResult autocompleteResult, String inlineAutocompleteText) {
+    public void setSuggestions(AutocompleteResult autocompleteResult) {
         checkFocus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OnSuggestionsReceivedListener listener =
                             mAutocomplete.getSuggestionsReceivedListenerForTest();
-                    listener.onSuggestionsReceived(
-                            autocompleteResult, inlineAutocompleteText, true);
+                    listener.onSuggestionsReceived(autocompleteResult, true);
                 });
     }
 
-    /** Waits for a non-empty list of omnibox suggestions is shown. */
+    /** Waits for a non-empty list of omnibox suggestions to be shown. */
     public void checkSuggestionsShown() {
+        checkSuggestionsShown(true);
+    }
+
+    /** Waits for a non-empty list of omnibox suggestions to be {@link shown}. */
+    public void checkSuggestionsShown(boolean shown) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     OmniboxSuggestionsDropdown suggestionsDropdown =
@@ -268,14 +273,25 @@ public class OmniboxTestUtils {
                             "suggestion list is null",
                             suggestionsDropdown,
                             Matchers.notNullValue());
-                    Criteria.checkThat(
-                            "suggestion list is not shown",
-                            suggestionsDropdown.getViewGroup().isShown(),
-                            Matchers.is(true));
-                    Criteria.checkThat(
-                            "suggestion list has no entries",
-                            suggestionsDropdown.getDropdownItemViewCountForTest(),
-                            Matchers.greaterThan(0));
+                    if (shown) {
+                        Criteria.checkThat(
+                                "suggestion list is not shown",
+                                suggestionsDropdown.getViewGroup().isShown(),
+                                Matchers.is(true));
+                        Criteria.checkThat(
+                                "suggestion list has no entries",
+                                suggestionsDropdown.getDropdownItemViewCountForTest(),
+                                Matchers.greaterThan(0));
+                    } else {
+                        Criteria.checkThat(
+                                "suggestion list is shown",
+                                suggestionsDropdown.getViewGroup().isShown(),
+                                Matchers.is(false));
+                        Criteria.checkThat(
+                                "suggestion list has entries",
+                                suggestionsDropdown.getDropdownItemViewCountForTest(),
+                                Matchers.equalTo(0));
+                    }
                 });
     }
 
@@ -372,16 +388,16 @@ public class OmniboxTestUtils {
     }
 
     /**
-     * Retrieve the Suggestion View for specific suggestion index.
-     * Traverses the Suggestions list and skips over the Headers.
+     * Retrieve the Suggestion View for specific suggestion index. Traverses the Suggestions list
+     * and skips over the Headers.
      *
      * @param <T> The type of the expected view. Inferred from call.
      * @param indexOfSuggestion The index of the suggestion view (not including the headers).
      * @return The View corresponding to suggestion with specific index, or null if there's no such
-     *         suggestion.
+     *     suggestion.
      */
     private @Nullable <T extends View> T getSuggestionViewForIndex(int indexOfSuggestion) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OmniboxSuggestionsDropdown dropdown =
                             mLocationBar
@@ -403,47 +419,76 @@ public class OmniboxTestUtils {
     }
 
     /**
-     * Type text in the Omnibox.
-     * Requires that the Omnibox is focused ahead of call.
+     * Type text in the Omnibox. Requires that the Omnibox is focused ahead of call.
      *
      * @param text Text to be "typed" in the Omnibox.
      * @param execute Whether to perform the default action after typing text (ie. press the "go"
-     *         button/enter key).
+     *     button/enter key).
      */
     public void typeText(String text, boolean execute) {
         checkFocus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> KeyUtils.typeTextIntoView(mInstrumentation, mUrlBar, text));
 
         if (execute) sendKey(KeyEvent.KEYCODE_ENTER);
     }
 
     /**
-     * Send key event to the Omnibox.
-     * Requires that the Omnibox is focused.
+     * Send key event to the Omnibox. Requires that the Omnibox is focused.
      *
      * @param keyCode The Key code to send to the Omnibox.
      */
-    public void sendKey(final int keyCode) {
-        checkFocus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> KeyUtils.singleKeyEventView(mInstrumentation, mUrlBar, keyCode));
+    public void sendKey(int keyCode) {
+        sendKey(keyCode, 0);
     }
 
     /**
-     * Specify the text to be shown in the Omnibox. Cancels all autocompletion.
-     * Use this to initialize the state of the Omnibox, but avoid using this to validate any
-     * behavior.
+     * Send key event to the Omnibox. Requires that the Omnibox is focused.
+     *
+     * @param keyCode The Key code to send to the Omnibox.
+     * @param modifiers Additional modifiers pressed with the key (shift, alt, ...).
+     */
+    public void sendKey(int keyCode, int modifiers) {
+        checkFocus(true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var currentTime = SystemClock.uptimeMillis();
+                    var event =
+                            new KeyEvent(
+                                    /* downTime= */ currentTime,
+                                    /* eventTime= */ currentTime,
+                                    KeyEvent.ACTION_DOWN,
+                                    keyCode,
+                                    /* repeat= */ 0,
+                                    modifiers);
+                    if (!mUrlBar.dispatchKeyEventPreIme(event)) mUrlBar.dispatchKeyEvent(event);
+
+                    event =
+                            new KeyEvent(
+                                    /* downTime= */ currentTime,
+                                    /* eventTime= */ currentTime,
+                                    KeyEvent.ACTION_UP,
+                                    keyCode,
+                                    /* repeat= */ 0,
+                                    modifiers);
+
+                    if (!mUrlBar.dispatchKeyEventPreIme(event)) mUrlBar.dispatchKeyEvent(event);
+                });
+    }
+
+    /**
+     * Specify the text to be shown in the Omnibox. Cancels all autocompletion. Use this to
+     * initialize the state of the Omnibox, but avoid using this to validate any behavior.
      *
      * @param userText The text to be shown in the Omnibox.
      */
     public void setText(String userText) {
         checkFocus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUrlBar.setText(userText);
                     // Push this to the model as well.
-                    mUrlBar.setAutocompleteText(userText, "");
+                    mUrlBar.setAutocompleteText(userText, "", Optional.empty());
                 });
         checkText(Matchers.equalTo(userText), null);
     }
@@ -454,12 +499,12 @@ public class OmniboxTestUtils {
      *
      * @param textToCommit The text to supply as if it was supplied by Soft Keyboard.
      * @param commitAsAutocomplete Whether the text should be applied as autocompletion (true) or
-     *         autocorrection (false). Note that autocorrection works only if the Omnibox is
-     *         currently composing text.
+     *     autocorrection (false). Note that autocorrection works only if the Omnibox is currently
+     *     composing text.
      */
     public void commitText(@NonNull String textToCommit, boolean commitAsAutocomplete) {
         checkFocus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputConnection conn = mUrlBar.getInputConnection();
                     if (commitAsAutocomplete) conn.finishComposingText();
@@ -473,15 +518,16 @@ public class OmniboxTestUtils {
      * Specify the text to be offered as an inline autocompletion for the current user input.
      *
      * @param autocompleteText The suggested autocompletion for the text.
+     * @param additionalText The additional autocompletion for the text.
      */
-    public void setAutocompleteText(String autocompleteText) {
+    public void setAutocompleteText(String autocompleteText, Optional<String> additionalText) {
         checkFocus(true);
 
         AtomicReference<String> userText = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     userText.set(mUrlBar.getTextWithoutAutocomplete());
-                    mUrlBar.setAutocompleteText(userText.get(), autocompleteText);
+                    mUrlBar.setAutocompleteText(userText.get(), autocompleteText, additionalText);
                 });
         checkText(
                 Matchers.equalTo(userText.get()),
@@ -497,7 +543,7 @@ public class OmniboxTestUtils {
     public void checkText(
             @NonNull Matcher<String> textMatcher,
             @Nullable Matcher<String> autocompleteTextMatcher) {
-        checkText(textMatcher, autocompleteTextMatcher, null, null);
+        checkText(textMatcher, autocompleteTextMatcher, null);
     }
 
     /**
@@ -505,17 +551,34 @@ public class OmniboxTestUtils {
      *
      * @param textMatcher Matcher checking the content of the Omnibox.
      * @param autocompleteTextMatcher Optional Matcher for autocompletion.
+     * @param additionalTextMatcher Optional Matcher for additional text.
+     */
+    public void checkText(
+            @NonNull Matcher<String> textMatcher,
+            @Nullable Matcher<String> autocompleteTextMatcher,
+            @Nullable Matcher<String> additionalTextMatcher) {
+        checkText(textMatcher, autocompleteTextMatcher, additionalTextMatcher, null, null);
+    }
+
+    /**
+     * Verify the text content of the Omnibox.
+     *
+     * @param textMatcher Matcher checking the content of the Omnibox.
+     * @param autocompleteTextMatcher Optional Matcher for autocompletion.
+     * @param additionalTextMatcher Optional Matcher for additional text.
      * @param autocompleteSelectionStart Matcher for Autocomplete's start position.
      * @param autocompleteSelectionEnd Matcher for Autocomplete's end position.
      */
     public void checkText(
             @NonNull Matcher<String> textMatcher,
             @Nullable Matcher<String> autocompleteTextMatcher,
+            @Nullable Matcher<String> additionalTextMatcher,
             int autocompleteSelectionStart,
             int autocompleteSelectionEnd) {
         checkText(
                 textMatcher,
                 autocompleteTextMatcher,
+                additionalTextMatcher,
                 Matchers.is(autocompleteSelectionStart),
                 Matchers.is(autocompleteSelectionEnd));
     }
@@ -525,12 +588,14 @@ public class OmniboxTestUtils {
      *
      * @param textMatcher Matcher checking the content of the Omnibox.
      * @param autocompleteTextMatcher Optional Matcher for autocompletion.
+     * @param additionalTextMatcher Optional Matcher for additional text.
      * @param autocompleteSelectionStart Optional Matcher for Autocomplete's start position.
      * @param autocompleteSelectionEnd Optional Matcher for Autocomplete's end position.
      */
     public void checkText(
             @NonNull Matcher<String> textMatcher,
             @Nullable Matcher<String> autocompleteTextMatcher,
+            @Nullable Matcher<String> additionalTextMatcher,
             @Nullable Matcher<Integer> autocompleteSelectionStart,
             @Nullable Matcher<Integer> autocompleteSelectionEnd) {
         waitAnimationsComplete();
@@ -555,6 +620,13 @@ public class OmniboxTestUtils {
                                     autocompleteTextMatcher);
                         }
 
+                        if (additionalTextMatcher != null) {
+                            Criteria.checkThat(
+                                    "Additional Text should match",
+                                    mUrlBar.getAdditionalText().orElse(""),
+                                    additionalTextMatcher);
+                        }
+
                         if (autocompleteSelectionStart != null) {
                             Criteria.checkThat(
                                     "Autocomplete Selection start",
@@ -562,7 +634,7 @@ public class OmniboxTestUtils {
                                     autocompleteSelectionStart);
                         }
 
-                        // TODO(crbug.com/1289474): Investigate why AutocompleteSelectionEnd was
+                        // TODO(crbug.com/40211958): Investigate why AutocompleteSelectionEnd was
                         // never enforced and why it doesn't work, then possibly re-enable the
                         // logic below: if (autocompleteSelectionEnd != null) {
                         //     Criteria.checkThat("Autocomplete Selection end",
@@ -580,8 +652,7 @@ public class OmniboxTestUtils {
      * @return The text contents of the omnibox (without the Autocomplete part).
      */
     public String getText() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mUrlBar.getTextWithoutAutocomplete());
+        return ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.getTextWithoutAutocomplete());
     }
 
     /**
@@ -626,7 +697,7 @@ public class OmniboxTestUtils {
     /**
      * Set the Composing text in the Omnibox.
      *
-     * Assumes that the supplied composingRegionStart is a valid text position (does not verify
+     * <p>Assumes that the supplied composingRegionStart is a valid text position (does not verify
      * test's sanity).
      *
      * @param composingText The composing text to apply.
@@ -636,11 +707,12 @@ public class OmniboxTestUtils {
     public void setComposingText(
             @NonNull String composingText, int composingRegionStart, int composingRegionEnd) {
         checkFocus(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InputConnection conn = mUrlBar.getInputConnection();
                     conn.setComposingRegion(composingRegionStart, composingRegionEnd);
-                    conn.setComposingText(composingText, /* newCursorPosition= */ 0);
+                    conn.setComposingText(
+                            composingText, /* newCursorPosition= */ composingText.length());
                 });
     }
 

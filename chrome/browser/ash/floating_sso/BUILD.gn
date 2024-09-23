@@ -1,0 +1,95 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("floating_sso") {
+  sources = [
+    "cookie_sync_conversions.cc",
+    "cookie_sync_conversions.h",
+    "floating_sso_service.cc",
+    "floating_sso_service.h",
+    "floating_sso_service_factory.cc",
+    "floating_sso_service_factory.h",
+    "floating_sso_sync_bridge.cc",
+    "floating_sso_sync_bridge.h",
+  ]
+
+  deps = [
+    "//ash/constants:constants",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync:factories",
+    "//chrome/common",
+    "//chrome/common:channel_info",
+    "//components/google/core/common",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/sync/service",
+    "//components/url_matcher",
+    "//content/public/browser",
+    "//net",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "cookie_sync_test_util.cc",
+    "cookie_sync_test_util.h",
+  ]
+
+  deps = [
+    ":floating_sso",
+    "//base",
+    "//components/sync/protocol:protocol",
+    "//components/sync/protocol:util",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cookie_sync_conversions_unittest.cc",
+    "floating_sso_sync_bridge_unittest.cc",
+  ]
+
+  deps = [
+    ":floating_sso",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/sync:test_support",
+    "//components/sync/service",
+    "//net",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "floating_sso_browsertest.cc" ]
+
+  deps = [
+    ":floating_sso",
+    ":test_support",
+    "//base/test:test_support",
+    "//chrome/browser/policy:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync:sync",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chromeos/constants",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//content/test:test_support",
+  ]
+}

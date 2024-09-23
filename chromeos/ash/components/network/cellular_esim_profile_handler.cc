@@ -74,8 +74,6 @@ void CellularESimProfileHandler::RefreshProfileListAndRestoreSlot(
 void CellularESimProfileHandler::RequestAvailableProfiles(
     const dbus::ObjectPath& euicc_path,
     RequestAvailableProfilesCallback callback) {
-  DCHECK(ash::features::IsSmdsSupportEnabled());
-
   std::unique_ptr<RequestAvailableProfilesInfo> info =
       std::make_unique<RequestAvailableProfilesInfo>();
   info->smds_activation_codes = cellular_utils::GetSmdsActivationCodes();
@@ -254,7 +252,8 @@ void CellularESimProfileHandler::PerformRequestAvailableProfiles(
   NET_LOG(EVENT) << "Finished requesting available profiles";
 
   CellularNetworkMetricsLogger::LogSmdsScanProfileCount(
-      info->profile_paths.size());
+      info->profile_paths.size(),
+      CellularNetworkMetricsLogger::SmdsScanMethod::kViaUser);
 
   std::unique_ptr<CellularESimProfileWaiter> waiter =
       std::make_unique<CellularESimProfileWaiter>();

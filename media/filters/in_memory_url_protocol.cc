@@ -34,7 +34,7 @@ int InMemoryUrlProtocol::Read(int size, uint8_t* data) {
     size = available_bytes;
 
   if (size > 0) {
-    memcpy(data, data_ + position_, size);
+    memcpy(data, data_ + base::checked_cast<size_t>(position_), size);
     position_ += size;
   }
 

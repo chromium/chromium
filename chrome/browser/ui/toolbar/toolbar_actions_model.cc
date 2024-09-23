@@ -7,13 +7,14 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
@@ -85,11 +86,7 @@ void ToolbarActionsModel::OnExtensionActionUpdated(
     extensions::ExtensionAction* extension_action,
     content::WebContents* web_contents,
     content::BrowserContext* browser_context) {
-  // Notify observers if the extension exists and is in the model.
-  if (HasAction(extension_action->extension_id())) {
-    for (Observer& observer : observers_)
-      observer.OnToolbarActionUpdated(extension_action->extension_id());
-  }
+  NotifyToolbarActionUpdated(extension_action->extension_id());
 }
 
 void ToolbarActionsModel::OnExtensionLoaded(
@@ -131,10 +128,12 @@ void ToolbarActionsModel::OnExtensionPermissionsUpdated(
     const extensions::Extension& extension,
     const extensions::PermissionSet& permissions,
     extensions::PermissionsManager::UpdateReason reason) {
-  if (HasAction(extension.id())) {
-    for (Observer& observer : observers_)
-      observer.OnToolbarActionUpdated(extension.id());
-  }
+  NotifyToolbarActionUpdated(extension.id());
+}
+
+void ToolbarActionsModel::OnActiveTabPermissionGranted(
+    const extensions::Extension& extension) {
+  NotifyToolbarActionUpdated(extension.id());
 }
 
 void ToolbarActionsModel::Shutdown() {
@@ -234,8 +233,16 @@ bool ToolbarActionsModel::IsRestrictedUrl(const GURL& url) const {
   // saying "No extensions can run..." is inaccurate). Other extensions
   // will still be properly attributed in UI.
   return base::ranges::all_of(action_ids(), [this, url](ActionId id) {
-    return GetExtensionById(id)->permissions_data()->IsRestrictedUrl(
-        url, /*error=*/nullptr);
+    // action_ids() could include disabled extensions that haven't been removed
+    // yet from the set due to race conditions. Thus, we don't consider them in
+    // the restricted url computation.
+    auto* extension = GetExtensionById(id);
+    if (!extension) {
+      return true;
+    }
+
+    return extension->permissions_data()->IsRestrictedUrl(url,
+                                                          /*error=*/nullptr);
   });
 }
 
@@ -285,7 +292,7 @@ bool ToolbarActionsModel::IsActionForcePinned(const ActionId& action_id) const {
 
 void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
                                            size_t target_index) {
-  // TODO(crbug.com/1266952): This code assumes all actions are in
+  // TODO(crbug.com/40204281): This code assumes all actions are in
   // stored_pinned_actions, which force-pinned actions aren't; so, always keep
   // them 'to the right' of other actions. Remove this guard if we ever add
   // force-pinned actions to the pref.
@@ -300,7 +307,8 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
 
   auto current_position_on_toolbar =
       base::ranges::find(pinned_action_ids_, action_id);
-  DCHECK(current_position_on_toolbar != pinned_action_ids_.end());
+  CHECK(current_position_on_toolbar != pinned_action_ids_.end(),
+        base::NotFatalUntil::M130);
   size_t current_index_on_toolbar =
       current_position_on_toolbar - pinned_action_ids_.begin();
 
@@ -335,7 +343,7 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
   // non-force-pinned neighbor. This basically keeps force-pinned actions on the
   // right at all times.
   //
-  // TODO(crbug.com/1266952): Simplify this logic when force-pinned extensions
+  // TODO(crbug.com/40204281): Simplify this logic when force-pinned extensions
   // are saved in the pref.
   std::vector<ActionId>::iterator non_force_pinned_neighbor =
       pinned_action_ids_.end();
@@ -372,7 +380,8 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
 
   auto current_position_in_prefs =
       base::ranges::find(stored_pinned_actions, action_id);
-  DCHECK(current_position_in_prefs != stored_pinned_actions.end());
+  CHECK(current_position_in_prefs != stored_pinned_actions.end(),
+        base::NotFatalUntil::M130);
 
   // Rotate |action_id| to be in the target position.
   if (is_left_to_right_move) {
@@ -472,12 +481,14 @@ void ToolbarActionsModel::SetActionVisibility(const ActionId& action_id,
   if (is_now_visible) {
     stored_pinned_action_ids.push_back(action_id);
   } else {
-    base::Erase(stored_pinned_action_ids, action_id);
+    std::erase(stored_pinned_action_ids, action_id);
   }
   extension_prefs_->SetPinnedExtensions(stored_pinned_action_ids);
   // The |pinned_action_ids_| should be updated as a result of updating the
   // preference.
   DCHECK(pinned_action_ids_ == GetFilteredPinnedActionIds());
+
+  extension_action_api_->OnActionPinnedStateChanged(action_id, is_now_visible);
 }
 
 const extensions::Extension* ToolbarActionsModel::GetExtensionById(
@@ -518,4 +529,15 @@ ToolbarActionsModel::GetFilteredPinnedActionIds() const {
       filtered_action_ids.push_back(action_id);
   }
   return filtered_action_ids;
+}
+
+void ToolbarActionsModel::NotifyToolbarActionUpdated(
+    const ActionId& action_id) {
+  if (!HasAction(action_id)) {
+    return;
+  }
+
+  for (Observer& observer : observers_) {
+    observer.OnToolbarActionUpdated(action_id);
+  }
 }

@@ -15,7 +15,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -32,8 +33,7 @@ class NonClientFrameView;
 class View;
 
 // Handles events on Widgets in context-specific ways.
-class VIEWS_EXPORT WidgetDelegate
-    : public base::SupportsWeakPtr<WidgetDelegate> {
+class VIEWS_EXPORT WidgetDelegate {
  public:
   using ClientViewFactory =
       base::OnceCallback<std::unique_ptr<ClientView>(Widget*)>;
@@ -87,6 +87,13 @@ class VIEWS_EXPORT WidgetDelegate
     // this WidgetDelegate is used to initialize a Widget.
     std::optional<View*> initially_focused_view;
 
+    // This is used by modal dialogs to override and constrain desired bounds
+    // calculations.
+    // TODO(pbos): Consider if we could express bounds constraints in views and
+    // keep them in sync rather than constrained_window owning the calculation
+    // here. Considering this wasn't very expedient at the time.
+    base::RepeatingCallback<gfx::Rect()> desired_bounds_delegate;
+
     // The widget's internal name, used to identify it in window-state
     // restoration (if this widget participates in that) and in debugging
     // contexts. Never displayed to the user, and not translated.
@@ -94,7 +101,7 @@ class VIEWS_EXPORT WidgetDelegate
 
     // The widget's modality type. Note that MODAL_TYPE_SYSTEM does not work at
     // all on Mac.
-    ui::ModalType modal_type = ui::MODAL_TYPE_NONE;
+    ui::mojom::ModalType modal_type = ui::mojom::ModalType::kNone;
 
     // Whether to show a close button in the widget frame.
     bool show_close_button = true;
@@ -165,8 +172,8 @@ class VIEWS_EXPORT WidgetDelegate
   virtual bool CanActivate() const;
 
   // Returns the modal type that applies to the widget. Default is
-  // ui::MODAL_TYPE_NONE (not modal).
-  virtual ui::ModalType GetModalType() const;
+  // ui::mojom::ModalType::kNone (not modal).
+  virtual ui::mojom::ModalType GetModalType() const;
 
   virtual ax::mojom::Role GetAccessibleWindowRole();
 
@@ -207,13 +214,14 @@ class VIEWS_EXPORT WidgetDelegate
   // process' local state keyed by window name (See GetWindowName above). This
   // behavior can be overridden to provide additional functionality.
   virtual void SaveWindowPlacement(const gfx::Rect& bounds,
-                                   ui::WindowShowState show_state);
+                                   ui::mojom::WindowShowState show_state);
 
   // Retrieves the window's bounds and "show" states.
   // This behavior can be overridden to provide additional functionality.
-  virtual bool GetSavedWindowPlacement(const Widget* widget,
-                                       gfx::Rect* bounds,
-                                       ui::WindowShowState* show_state) const;
+  virtual bool GetSavedWindowPlacement(
+      const Widget* widget,
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const;
 
   // Hooks for the end of the Widget/Window lifecycle. As of this writing, these
   // callbacks happen like so:
@@ -246,6 +254,21 @@ class VIEWS_EXPORT WidgetDelegate
   // pre-destruction cleanup instead of using self-deleting callbacks. The
   // latter may become a DCHECK in the future.
   void DeleteDelegate();
+
+  // When the ownership of the Widget is CLIENT_OWNS_WIDGET and the client also
+  // owns the delegate, this function will be called when the Widget has
+  // transitioned to a "zombie" state. It is safe to delete the Widget from
+  // within this function.
+  //
+  // The "zombie" state is when the Widget is "alive" but the underlying
+  // NativeWidget has been destroyed. Thus the Widget instance is still valid,
+  // but it is functionally "dead", aka. "undead". The Widget (and underlying
+  // NativeWidget) have can handle being in this state. Most Widget APIs will
+  // not crash while in this state, but they may also do nothing meaningful.
+  // Call Widget::IsClosed() to determine whether the Widget is in a usable
+  // state. Widgets in the "zombie" state cannot be resurrected and must be
+  // deleted or a new instance created.
+  virtual void WidgetIsZombie(Widget* widget) {}
 
   // Called when the user begins/ends to change the bounds of the window.
   virtual void OnWindowBeginUserBoundsChange() {}
@@ -322,6 +345,11 @@ class VIEWS_EXPORT WidgetDelegate
   // be cycled through with keyboard focus.
   virtual void GetAccessiblePanes(std::vector<View*>* panes) {}
 
+  // Called when the widget wants to resize itself.
+  // Default origin is the widget origin.
+  // Default size is the ContentsView's PreferredSize.
+  gfx::Rect GetDesiredWidgetBounds();
+
   // Setters for data parameters of the WidgetDelegate. If you use these
   // setters, there is no need to override the corresponding virtual getters.
   void SetAccessibleWindowRole(ax::mojom::Role role);
@@ -335,7 +363,7 @@ class VIEWS_EXPORT WidgetDelegate
   void SetIcon(ui::ImageModel icon);
   void SetAppIcon(ui::ImageModel icon);
   void SetInitiallyFocusedView(View* initially_focused_view);
-  void SetModalType(ui::ModalType modal_type);
+  void SetModalType(ui::mojom::ModalType modal_type);
   void SetOwnedByWidget(bool delete_self);
   void SetShowCloseButton(bool show_close_button);
   void SetShowIcon(bool show_icon);
@@ -365,13 +393,6 @@ class VIEWS_EXPORT WidgetDelegate
   void SetClientViewFactory(ClientViewFactory factory);
   void SetOverlayViewFactory(OverlayViewFactory factory);
 
-  // Called to notify the WidgetDelegate of changes to the state of its Widget.
-  // It is not usually necessary to call these from client code.
-  void WidgetInitializing(Widget* widget);
-  void WidgetInitialized();
-  void WidgetDestroying();
-  void WindowWillClose();
-
   // Returns true if the title text should be centered.
   bool ShouldCenterWindowTitleText() const;
 
@@ -395,6 +416,14 @@ class VIEWS_EXPORT WidgetDelegate
   void set_internal_name(std::string name) { params_.internal_name = name; }
   std::string internal_name() const { return params_.internal_name; }
 
+  bool has_desired_bounds_delegate() const {
+    return static_cast<bool>(params_.desired_bounds_delegate);
+  }
+  void set_desired_bounds_delegate(
+      base::RepeatingCallback<gfx::Rect()> desired_bounds_delegate) {
+    params_.desired_bounds_delegate = std::move(desired_bounds_delegate);
+  }
+
  private:
   // We're using a vector of OnceClosures instead of a OnceCallbackList because
   // most of the clients of WidgetDelegate don't have a convenient place to
@@ -402,6 +431,19 @@ class VIEWS_EXPORT WidgetDelegate
   using ClosureVector = std::vector<base::OnceClosure>;
 
   friend class Widget;
+
+  // Assign the widget associated with this delegate and return a `WeakPtr`
+  // to this object. Since the delegate is not necessarily owned by
+  // `Widget` it can be destroyed and the `Widget` needs to have a `WeakPtr`
+  // to this object. This `WeakPtr` is valid until `DeleteDelegate` is called
+  // which must be called in order to destroy this delegate.
+  base::WeakPtr<WidgetDelegate> AttachWidgetAndGetHandle(Widget* widget);
+
+  // Called to notify the WidgetDelegate of changes to the state of its Widget.
+  // It is not usually necessary to call these from client code.
+  void WidgetInitialized();
+  void WidgetDestroying();
+  void WindowWillClose();
 
   void SetContentsViewImpl(std::unique_ptr<View> contents);
 
@@ -435,6 +477,8 @@ class VIEWS_EXPORT WidgetDelegate
 
   ClientViewFactory client_view_factory_;
   OverlayViewFactory overlay_view_factory_;
+
+  base::WeakPtrFactory<WidgetDelegate> weak_ptr_factory_{this};
 };
 
 // A WidgetDelegate implementation that is-a View. Used to override GetWidget()

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_LOCK_SCREEN_LOCKER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -21,6 +22,7 @@
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/security_token_pin_dialog_host_login_impl.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
@@ -224,7 +226,9 @@ class ScreenLocker
   void MaybeDisablePinAndFingerprintFromTimeout(const std::string& source,
                                                 const AccountId& account_id);
 
-  void OnPinCanAuthenticate(const AccountId& account_id, bool can_authenticate);
+  void OnPinCanAuthenticate(const AccountId& account_id,
+                            bool can_authenticate,
+                            cryptohome::PinLockAvailability available_at);
 
   void UpdateFingerprintStateForUser(const user_manager::User* user);
 

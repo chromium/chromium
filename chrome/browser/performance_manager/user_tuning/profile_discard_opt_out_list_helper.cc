@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
@@ -136,7 +137,7 @@ void ProfileDiscardOptOutListHelper::OnProfileAddedImpl(
 void ProfileDiscardOptOutListHelper::OnProfileWillBeRemovedImpl(
     const std::string& browser_context_id) {
   auto it = discard_opt_out_trackers_.find(browser_context_id);
-  DCHECK(it != discard_opt_out_trackers_.end());
+  CHECK(it != discard_opt_out_trackers_.end(), base::NotFatalUntil::M130);
   discard_opt_out_trackers_.erase(it);
 }
 

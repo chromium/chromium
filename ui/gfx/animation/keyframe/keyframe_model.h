@@ -148,8 +148,12 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
 
   // Takes the given absolute time, and using the start time and the number
   // of iterations, returns the relative time in the current iteration.
+  // The limit direction is calculated and stored if the limit_direction
+  // parameter is not null. This limit is needed when using a step timing
+  // function.
   base::TimeDelta TrimTimeToCurrentIteration(
-      base::TimeTicks monotonic_time) const;
+      base::TimeTicks monotonic_time,
+      TimingFunction::LimitDirection* limit_direction = nullptr) const;
 
   KeyframeModel::Phase CalculatePhaseForTesting(
       base::TimeDelta local_time) const;
@@ -162,6 +166,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   void ForceRunState(RunState run_state) { run_state_ = run_state; }
   std::optional<base::TimeDelta> CalculateActiveTime(
       base::TimeTicks monotonic_time) const;
+  std::optional<base::TimeDelta> CalculateActiveTime(
+      base::TimeDelta local_time,
+      KeyframeModel::Phase phase) const;
 
  private:
   KeyframeModel::Phase CalculatePhase(base::TimeDelta local_time) const;

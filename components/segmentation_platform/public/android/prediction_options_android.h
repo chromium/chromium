@@ -18,9 +18,12 @@ class PredictionOptionsAndroid {
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_prediction_options);
 
-  static void FromJavaParams(JNIEnv* env,
-                             const jlong target,
-                             const jboolean on_demand_execution);
+  static void FromJavaParams(
+      JNIEnv* env,
+      const jlong target,
+      const jboolean on_demand_execution,
+      const jboolean can_update_cache_for_future_requests,
+      const jboolean fallback_allowed);
 };
 
 }  // namespace segmentation_platform

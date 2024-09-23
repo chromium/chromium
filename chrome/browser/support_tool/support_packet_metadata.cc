@@ -5,8 +5,10 @@
 #include "chrome/browser/support_tool/support_packet_metadata.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -87,16 +89,19 @@ void WriteContentsOnFile(base::FilePath metadata_file,
 }
 }  // namespace
 
-SupportPacketMetadata::SupportPacketMetadata(std::string case_id,
-                                             std::string email_address,
-                                             std::string issue_description) {
+SupportPacketMetadata::SupportPacketMetadata(
+    std::string case_id,
+    std::string email_address,
+    std::string issue_description,
+    std::optional<std::string> upload_id) {
   metadata_[kSupportCaseIdKey] = case_id;
   metadata_[kIssueDescriptionKey] = issue_description;
   if (!email_address.empty()) {
     metadata_[kEmailAddressKey] = email_address;
     pii_[PIIType::kEmail].insert(email_address);
   }
-  metadata_[kSupportPacketGUIDKey] = GetGUIDForSupportPacket();
+  metadata_[kSupportPacketGUIDKey] =
+      upload_id.has_value() ? upload_id.value() : GetGUIDForSupportPacket();
   SetChromeMetadataFields();
 }
 
@@ -147,7 +152,7 @@ void SupportPacketMetadata::PopulateMetadataContents(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void SupportPacketMetadata::OnMachineStatisticsLoaded(
     base::OnceClosure on_metadata_contents_populated) {
-  const std::optional<base::StringPiece> machine_serial =
+  const std::optional<std::string_view> machine_serial =
       ash::system::StatisticsProvider::GetInstance()->GetMachineID();
   if (machine_serial && !machine_serial->empty()) {
     pii_[PIIType::kSerial].insert(std::string(machine_serial.value()));

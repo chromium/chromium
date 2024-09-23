@@ -1,0 +1,97 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("lock_screen_reauth") {
+  sources = [
+    "base_lock_dialog.cc",
+    "base_lock_dialog.h",
+    "lock_screen_captive_portal_dialog.cc",
+    "lock_screen_captive_portal_dialog.h",
+    "lock_screen_network_dialog.cc",
+    "lock_screen_network_dialog.h",
+    "lock_screen_network_handler.cc",
+    "lock_screen_network_handler.h",
+    "lock_screen_network_ui.cc",
+    "lock_screen_network_ui.h",
+    "lock_screen_reauth_dialogs.cc",
+    "lock_screen_reauth_dialogs.h",
+    "lock_screen_reauth_handler.cc",
+    "lock_screen_reauth_handler.h",
+    "lock_screen_start_reauth_ui.cc",
+    "lock_screen_start_reauth_ui.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:primitives",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/common",
+    "//chromeos/ash/components/http_auth_dialog",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/ash/components/network",
+    "//chromeos/services/network_config/public/mojom",
+    "//components/login",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//ui/views",
+    "//ui/web_dialogs",
+    "//ui/webui",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/common:trusted_types_util",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:resources",
+    "//chrome/browser/ash/login/lock/online_reauth",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/extensions",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/resources/chromeos/gaia_action_buttons:resources",
+    "//chrome/browser/resources/chromeos/lock_screen_reauth:resources",
+    "//chrome/browser/resources/gaia_auth_host:resources",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/ash/internet",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/components/login/auth/public:challenge_response_key",
+    "//chromeos/strings",
+    "//chromeos/version",
+    "//components/account_id",
+    "//components/captive_portal/core",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//components/version_info",
+    "//google_apis",
+    "//services/network/public/mojom",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/chromeos/strings:strings_provider",
+    "//ui/display",
+    "//ui/strings:ui_strings",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/lock/online_reauth",
+    "//chrome/browser/ui/ash/login",
+  ]
+}

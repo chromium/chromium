@@ -9,7 +9,9 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/browsing_data/core/pref_names.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/search_engines/template_url_data_util.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
@@ -26,9 +28,9 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -38,6 +40,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/fake_browsing_data_counter_wrapper_producer.h"
@@ -78,7 +81,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
@@ -92,10 +95,11 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
         browser_state_.get());
     template_url_service_->Load();
 
-    FakeSystemIdentityManager* system_identity_manager =
+    FakeSystemIdentityManager* fake_system_identity_manager =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
-    system_identity_manager->AddIdentities(@[ @"foo" ]);
+    FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+    fake_system_identity_manager->AddIdentity(fake_identity);
 
     model_ = [[TableViewModel alloc] init];
     remover_ = std::make_unique<FakeBrowsingDataRemover>();
@@ -103,7 +107,8 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
                       initWithBrowserState:browser_state_.get()
                        browsingDataRemover:remover_.get()
         browsingDataCounterWrapperProducer:
-            [[FakeBrowsingDataCounterWrapperProducer alloc] init]];
+            [[FakeBrowsingDataCounterWrapperProducer alloc]
+                initWithBrowserState:browser_state_.get()]];
     [manager_ prepare];
 
     test_sync_service_ = static_cast<syncer::TestSyncService*>(
@@ -111,6 +116,9 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
 
     time_range_pref_.Init(browsing_data::prefs::kDeleteTimePeriod,
                           browser_state_->GetPrefs());
+    scoped_feature_list_.InitWithFeatures(
+        {feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature},
+        {});
   }
 
   ~ClearBrowsingDataManagerTest() override { [manager_ disconnect]; }
@@ -163,7 +171,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   TableViewModel* model_;
   std::unique_ptr<BrowsingDataRemover> remover_;
@@ -172,6 +180,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
   IntegerPrefMember time_range_pref_;
   raw_ptr<TemplateURLService> template_url_service_;  // weak
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests model is set up with all appropriate items and sections.
@@ -193,7 +202,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestModel) {
 // but sync is off.
 TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
   // Ensure that sync is not running.
-  test_sync_service_->SetHasSyncConsent(false);
+  test_sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
       ->SignIn(fake_identity(),

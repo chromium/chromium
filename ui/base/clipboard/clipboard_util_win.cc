@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/base/clipboard/clipboard_util_win.h"
 
 #include <shellapi.h>
@@ -9,6 +14,8 @@
 #include <wrl/client.h>
 
 #include <limits>
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -214,7 +221,7 @@ base::FilePath WriteFileContentsToTempFile(const base::FilePath& suggested_name,
     // Don't write to the temp file for empty content--leave it at 0-bytes.
     if (!(data.size() == 1 && data.data()[0] == '\0')) {
       if (!base::WriteFile(temp_path,
-                           base::StringPiece(data.data(), data.size()))) {
+                           std::string_view(data.data(), data.size()))) {
         base::DeleteFile(temp_path);
         return base::FilePath();
       }
@@ -382,18 +389,21 @@ struct FileGroupDescriptorData<FILEGROUPDESCRIPTORA> {
 // Use template parameter of FILEGROUPDESCRIPTORW for retrieving Unicode data
 // and FILEGROUPDESCRIPTORA for ascii.
 template <typename FileGroupDescriptorType>
-bool GetVirtualFilenames(IDataObject* data_object,
-                         std::vector<base::FilePath>* filenames) {
+std::optional<std::vector<base::FilePath>> GetVirtualFilenames(
+    IDataObject* data_object) {
   STGMEDIUM medium;
 
   if (!FileGroupDescriptorData<FileGroupDescriptorType>::get(data_object,
-                                                             &medium))
-    return false;
+                                                             &medium)) {
+    return std::nullopt;
+  }
+
+  std::vector<base::FilePath> filenames;
 
   {
     base::win::ScopedHGlobal<FileGroupDescriptorType*> fgd(medium.hGlobal);
     if (!fgd.data()) {
-      return false;
+      return std::nullopt;
     }
 
     unsigned int num_files = fgd->cItems;
@@ -416,14 +426,14 @@ bool GetVirtualFilenames(IDataObject* data_object,
         continue;
       }
       base::FilePath display_name = GetUniqueVirtualFilename(
-          ConvertString(fgd->fgd[i].cFileName), *filenames, &uniquifier);
+          ConvertString(fgd->fgd[i].cFileName), filenames, &uniquifier);
 
-      filenames->push_back(display_name);
+      filenames.push_back(display_name);
     }
   }
 
   ReleaseStgMedium(&medium);
-  return !filenames->empty();
+  return filenames;
 }
 
 template <typename FileGroupDescriptorType>
@@ -639,26 +649,25 @@ STGMEDIUM CreateStorageForFileNames(const std::vector<FileInfo>& filenames) {
   return storage;
 }
 
-bool GetVirtualFilenames(IDataObject* data_object,
-                         std::vector<base::FilePath>* filenames) {
-  DCHECK(data_object && filenames);
+std::optional<std::vector<base::FilePath>> GetVirtualFilenames(
+    IDataObject* data_object) {
+  DCHECK(data_object);
   if (!HasVirtualFilenames(data_object))
-    return false;
+    return std::nullopt;
 
   // Nothing prevents the drag source app from using the CFSTR_FILEDESCRIPTORA
   // ANSI format (e.g., it could be that it doesn't support Unicode). So need to
   // check for both the ANSI and Unicode file group descriptors.
-  if (ui::GetVirtualFilenames<FILEGROUPDESCRIPTORW>(data_object, filenames)) {
-    // file group descriptor using Unicode.
-    return true;
+
+  // Unicode.
+  std::optional<std::vector<base::FilePath>> filenames =
+      ui::GetVirtualFilenames<FILEGROUPDESCRIPTORW>(data_object);
+  if (filenames) {
+    return filenames;
   }
 
-  if (ui::GetVirtualFilenames<FILEGROUPDESCRIPTORA>(data_object, filenames)) {
-    // file group descriptor using ascii.
-    return true;
-  }
-
-  return false;
+  // ASCII.
+  return ui::GetVirtualFilenames<FILEGROUPDESCRIPTORA>(data_object);
 }
 
 void GetVirtualFilesAsTempFiles(
@@ -668,15 +677,16 @@ void GetVirtualFilesAsTempFiles(
                                          /*display name*/ base::FilePath>>&)>
         callback) {
   // Retrieve the display names of the virtual files.
-  std::vector<base::FilePath> display_names;
-  if (!GetVirtualFilenames(data_object, &display_names)) {
+  std::optional<std::vector<base::FilePath>> display_names =
+      GetVirtualFilenames(data_object);
+  if (!display_names) {
     std::move(callback).Run({});
     return;
   }
 
   // Write the file contents to global memory.
   std::vector<HGLOBAL> memory_backed_contents;
-  for (size_t i = 0; i < display_names.size(); i++) {
+  for (size_t i = 0; i < display_names.value().size(); i++) {
     HGLOBAL hdata = CopyFileContentsToHGlobal(data_object, i);
     memory_backed_contents.push_back(hdata);
   }
@@ -684,7 +694,7 @@ void GetVirtualFilesAsTempFiles(
   // Queue a task to actually write the temp files on a worker thread.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&WriteAllFileContentsToTempFiles, display_names,
+      base::BindOnce(&WriteAllFileContentsToTempFiles, display_names.value(),
                      memory_backed_contents),
       std::move(callback));  // callback on the UI thread
 }
@@ -739,7 +749,7 @@ bool GetHtml(IDataObject* data_object,
       base::win::ScopedHGlobal<char*> data(store.hGlobal);
 
       std::string html_utf8;
-      CFHtmlToHtml(base::StringPiece(data.data(), data.size()), &html_utf8,
+      CFHtmlToHtml(std::string_view(data.data(), data.size()), &html_utf8,
                    base_url);
       html->assign(base::UTF8ToUTF16(html_utf8));
     }
@@ -799,16 +809,18 @@ bool GetFileContents(IDataObject* data_object,
   return false;
 }
 
-bool GetWebCustomData(
+bool GetDataTransferCustomData(
     IDataObject* data_object,
     std::unordered_map<std::u16string, std::u16string>* custom_data) {
   DCHECK(data_object && custom_data);
 
-  if (!HasData(data_object, ClipboardFormatType::WebCustomDataType()))
+  if (!HasData(data_object, ClipboardFormatType::DataTransferCustomType())) {
     return false;
+  }
 
   STGMEDIUM store;
-  if (GetData(data_object, ClipboardFormatType::WebCustomDataType(), &store)) {
+  if (GetData(data_object, ClipboardFormatType::DataTransferCustomType(),
+              &store)) {
     {
       base::win::ScopedHGlobal<const uint8_t*> data(store.hGlobal);
       if (std::optional<std::unordered_map<std::u16string, std::u16string>>
@@ -853,7 +865,7 @@ bool GetWebCustomData(
 // Helper method for converting from text/html to MS CF_HTML.
 // Documentation for the CF_HTML format is available at
 // http://msdn.microsoft.com/en-us/library/aa767917(VS.85).aspx
-std::string HtmlToCFHtml(base::StringPiece html, base::StringPiece base_url) {
+std::string HtmlToCFHtml(std::string_view html, std::string_view base_url) {
   if (html.empty()) {
     return std::string();
   }
@@ -973,7 +985,7 @@ std::string HtmlToCFHtml(base::StringPiece html, base::StringPiece base_url) {
 }
 
 // Helper method for converting from MS CF_HTML to text/html.
-void CFHtmlToHtml(base::StringPiece cf_html,
+void CFHtmlToHtml(std::string_view cf_html,
                   std::string* html,
                   std::string* base_url) {
   size_t fragment_start = std::string::npos;
@@ -990,7 +1002,7 @@ void CFHtmlToHtml(base::StringPiece cf_html,
   }
 }
 
-void CFHtmlExtractMetadata(base::StringPiece cf_html,
+void CFHtmlExtractMetadata(std::string_view cf_html,
                            std::string* base_url,
                            size_t* html_start,
                            size_t* fragment_start,

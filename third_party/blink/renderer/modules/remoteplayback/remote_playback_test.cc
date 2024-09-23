@@ -107,7 +107,7 @@ class RemotePlaybackTest : public testing::Test,
  private:
   test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> page_holder_;
-  raw_ptr<HTMLVideoElement> element_ = nullptr;
+  Persistent<HTMLVideoElement> element_ = nullptr;
 };
 
 TEST_F(RemotePlaybackTest, PromptCancelledRejectsWithNotAllowedError) {
@@ -244,7 +244,8 @@ TEST_F(RemotePlaybackTest, DisableRemotePlaybackCancelsAvailabilityCallbacks) {
   MockFunctionScope funcs(scope.GetScriptState());
 
   V8RemotePlaybackAvailabilityCallback* availability_callback =
-      V8RemotePlaybackAvailabilityCallback::Create(funcs.ExpectNoCall());
+      V8RemotePlaybackAvailabilityCallback::Create(
+          funcs.ExpectNoCall()->V8Function());
 
   remote_playback
       .watchAvailability(scope.GetScriptState(), availability_callback,
@@ -327,7 +328,8 @@ TEST_F(RemotePlaybackTest, WatchAvailabilityWorksWhenBackendDisabled) {
   MockFunctionScope funcs(scope.GetScriptState());
 
   V8RemotePlaybackAvailabilityCallback* availability_callback =
-      V8RemotePlaybackAvailabilityCallback::Create(funcs.ExpectNoCall());
+      V8RemotePlaybackAvailabilityCallback::Create(
+          funcs.ExpectNoCall()->V8Function());
 
   remote_playback
       .watchAvailability(scope.GetScriptState(), availability_callback,

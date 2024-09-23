@@ -14,19 +14,38 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/heuristic_source.h"
+#include "components/autofill/core/browser/ml_model/autofill_model_encoder.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_executor.h"
-#include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
 
 namespace autofill {
 
+namespace {
+
+// Creates the model metadata and specifies the model input version to
+// ensure client-server version compatibility while loading the model.
+std::optional<optimization_guide::proto::Any> CreateModelMetadata() {
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/"
+      "google.internal.chrome.optimizationguide.v1."
+      "AutofillFieldClassificationModelMetadata");
+  optimization_guide::proto::AutofillFieldClassificationModelMetadata
+      model_metadata;
+  model_metadata.set_input_version(
+      AutofillMlPredictionModelHandler::kAutofillModelInputVersion);
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+  return any_metadata;
+}
+
+}  // anonymous namespace
+
 AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider)
-    : optimization_guide::ModelHandler<
-          AutofillModelExecutor::ModelOutput,
-          const AutofillModelExecutor::ModelInput&>(
+    : optimization_guide::ModelHandler<AutofillModelEncoder::ModelOutput,
+                                       const AutofillModelEncoder::ModelInput&>(
           model_provider,
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
@@ -34,10 +53,10 @@ AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
           /*model_inference_timeout=*/std::nullopt,
           optimization_guide::proto::OptimizationTarget::
               OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
-          /*model_metadata=*/std::nullopt) {
+          CreateModelMetadata()) {
   // Store the model in memory as soon as it is available and keep it loaded for
   // the whole browser session since we query predictions very regularly.
-  // TODO(crbug.com/1465926): Maybe change both back to default behavior if we
+  // TODO(crbug.com/40276177): Maybe change both back to default behavior if we
   // see memory regressions during the rollout.
   SetShouldPreloadModel(true);
   SetShouldUnloadModelOnComplete(false);
@@ -52,15 +71,14 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
     std::move(callback).Run(std::move(form_structure));
     return;
   }
-
-  AutofillModelExecutor::ModelInput vectorized_input =
-      VectorizeForm(*form_structure);
+  AutofillModelEncoder::ModelInput encoded_input =
+      state_->encoder.EncodeForm(*form_structure);
   ExecuteModelWithInput(
       base::BindOnce(
           [](base::WeakPtr<AutofillMlPredictionModelHandler> self,
              std::unique_ptr<FormStructure> form_structure,
              base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback,
-             const std::optional<AutofillModelExecutor::ModelOutput>& output) {
+             const std::optional<AutofillModelEncoder::ModelOutput>& output) {
             if (self && output) {
               self->AssignMostLikelyTypes(*form_structure, *output);
             }
@@ -68,7 +86,7 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
           std::move(callback)),
-      std::move(vectorized_input));
+      std::move(encoded_input));
 }
 
 void AutofillMlPredictionModelHandler::GetModelPredictionsForForms(
@@ -88,8 +106,8 @@ void AutofillMlPredictionModelHandler::OnModelUpdated(
   CHECK_EQ(optimization_target,
            optimization_guide::proto::OptimizationTarget::
                OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION);
-  optimization_guide::ModelHandler<AutofillModelExecutor::ModelOutput,
-                                   const AutofillModelExecutor::ModelInput&>::
+  optimization_guide::ModelHandler<AutofillModelEncoder::ModelOutput,
+                                   const AutofillModelEncoder::ModelInput&>::
       OnModelUpdated(optimization_target, model_info);
   if (!model_info.has_value()) {
     // The model was unloaded.
@@ -105,25 +123,15 @@ void AutofillMlPredictionModelHandler::OnModelUpdated(
     // the server-side and might change in the future, it might fail.
     return;
   }
-  state.vectorizer = AutofillModelVectorizer(state.metadata.input_token());
+  state.encoder = AutofillModelEncoder(state.metadata.input_token());
   state_.emplace(std::move(state));
-}
-
-AutofillModelExecutor::ModelInput
-AutofillMlPredictionModelHandler::VectorizeForm(
-    const FormStructure& form) const {
-  CHECK(state_);
-  AutofillModelExecutor::ModelInput vectorized_form(form.fields().size());
-  for (size_t i = 0; i < form.field_count(); ++i) {
-    vectorized_form[i] = state_->vectorizer.Vectorize(form.field(i)->label);
-  }
-  return vectorized_form;
 }
 
 void AutofillMlPredictionModelHandler::AssignMostLikelyTypes(
     FormStructure& form,
-    const AutofillModelExecutor::ModelOutput& output) const {
-  // The ML model can process at most `kModelExecutorMaxNumberOfFields`.
+    const AutofillModelEncoder::ModelOutput& output) const {
+  // The ML model can process at most
+  // `AutofillModelEncoder::kModelMaxNumberOfFields`.
   size_t relevant_fields = std::min(form.field_count(), output.size());
   for (size_t i = 0; i < relevant_fields; i++) {
     form.field(i)->set_heuristic_type(HeuristicSource::kMachineLearning,

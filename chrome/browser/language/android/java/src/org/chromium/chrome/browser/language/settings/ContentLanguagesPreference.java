@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -38,8 +39,8 @@ public class ContentLanguagesPreference extends Preference {
         private final Context mContext;
         private final PrefService mPrefService;
 
-        LanguageListAdapter(Context context, PrefService prefService) {
-            super(context);
+        LanguageListAdapter(Context context, Profile profile, PrefService prefService) {
+            super(context, profile);
             mContext = context;
             mPrefService = prefService;
         }
@@ -59,7 +60,7 @@ public class ContentLanguagesPreference extends Preference {
                     && !ChromeFeatureList.isEnabled(ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS)) {
                 // Set this row checked if the language is unblocked.
                 int endIconResId =
-                        TranslateBridge.isBlockedLanguage(info.getCode())
+                        TranslateBridge.isBlockedLanguage(getProfile(), info.getCode())
                                 ? 0
                                 : R.drawable.ic_check_googblue_24dp;
                 ListItem item =
@@ -98,7 +99,8 @@ public class ContentLanguagesPreference extends Preference {
                         if (textId == R.string.languages_item_option_offer_to_translate) {
                             // Toggle current blocked state of this language.
                             boolean state = model.get(ListMenuItemProperties.END_ICON_ID) == 0;
-                            TranslateBridge.setLanguageBlockedState(info.getCode(), !state);
+                            TranslateBridge.setLanguageBlockedState(
+                                    getProfile(), info.getCode(), !state);
                             LanguagesManager.recordAction(
                                     state
                                             ? LanguagesManager.LanguageSettingsActionType
@@ -106,18 +108,18 @@ public class ContentLanguagesPreference extends Preference {
                                             : LanguagesManager.LanguageSettingsActionType
                                                     .DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE);
                         } else if (textId == R.string.remove) {
-                            LanguagesManager.getInstance()
+                            LanguagesManager.getForProfile(getProfile())
                                     .removeFromAcceptLanguages(info.getCode());
                             LanguagesManager.recordAction(
                                     LanguagesManager.LanguageSettingsActionType.LANGUAGE_REMOVED);
                         } else if (textId == R.string.menu_item_move_up) {
-                            LanguagesManager.getInstance()
+                            LanguagesManager.getForProfile(getProfile())
                                     .moveLanguagePosition(info.getCode(), -1, true);
                         } else if (textId == R.string.menu_item_move_down) {
-                            LanguagesManager.getInstance()
+                            LanguagesManager.getForProfile(getProfile())
                                     .moveLanguagePosition(info.getCode(), 1, true);
                         } else if (textId == R.string.menu_item_move_to_top) {
-                            LanguagesManager.getInstance()
+                            LanguagesManager.getForProfile(getProfile())
                                     .moveLanguagePosition(info.getCode(), -position, true);
                         }
                         // Re-generate list items.
@@ -143,7 +145,8 @@ public class ContentLanguagesPreference extends Preference {
             } else {
                 disableDrag();
             }
-            setDisplayedLanguages(LanguagesManager.getInstance().getUserAcceptLanguageItems());
+            setDisplayedLanguages(
+                    LanguagesManager.getForProfile(getProfile()).getUserAcceptLanguageItems());
         }
     }
 
@@ -151,6 +154,7 @@ public class ContentLanguagesPreference extends Preference {
     private RecyclerView mRecyclerView;
     private LanguageListAdapter mAdapter;
     private SelectLanguageFragment.Launcher mLauncher;
+    private LanguagesManager mLanguagesManager;
 
     public ContentLanguagesPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -158,15 +162,18 @@ public class ContentLanguagesPreference extends Preference {
 
     /**
      * Initialize the dependencies for the ContentLanguagesPreference.
-     * <p>
-     * Preference's host fragment should call this in its onCreate().
+     *
+     * <p>Preference's host fragment should call this in its onCreate().
      *
      * @param launcher a launcher for SelectLanguageFragment.
+     * @param profile The current {@link Profile} for this session.
      * @param prefService Allows accessing the contextually appropriate prefs.
      */
-    void initialize(SelectLanguageFragment.Launcher launcher, PrefService prefService) {
+    void initialize(
+            SelectLanguageFragment.Launcher launcher, Profile profile, PrefService prefService) {
         mLauncher = launcher;
-        mAdapter = new LanguageListAdapter(getContext(), prefService);
+        mLanguagesManager = LanguagesManager.getForProfile(profile);
+        mAdapter = new LanguageListAdapter(getContext(), profile, prefService);
     }
 
     @Override
@@ -202,7 +209,7 @@ public class ContentLanguagesPreference extends Preference {
         // the view is bound.
         if (mRecyclerView.getAdapter() != mAdapter) {
             mRecyclerView.setAdapter(mAdapter);
-            LanguagesManager.getInstance().setAcceptLanguageObserver(mAdapter);
+            mLanguagesManager.setAcceptLanguageObserver(mAdapter);
             // Initialize accept language list.
             mAdapter.onDataUpdated();
         }

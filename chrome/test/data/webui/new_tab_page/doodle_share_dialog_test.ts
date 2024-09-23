@@ -6,6 +6,7 @@ import type {DoodleShareDialogElement} from 'chrome://new-tab-page/new_tab_page.
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from './test_support.js';
 
@@ -27,10 +28,11 @@ suite('NewTabPageDoodleShareDialogTest', () => {
     assertTrue(doodleShareDialog.$.dialog.open);
   });
 
-  test('setting title, url shows title, url', () => {
+  test('setting title, url shows title, url', async () => {
     // Act.
     doodleShareDialog.title = 'foo';
     doodleShareDialog.url = {url: 'https://bar.com'};
+    await microtasksFinished();
 
     // Assert.
     assertEquals(doodleShareDialog.$.title.innerText, 'foo');

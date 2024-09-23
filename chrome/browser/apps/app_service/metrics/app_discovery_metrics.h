@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 
@@ -33,15 +34,31 @@ enum class AppStateChange {
 //
 // No metrics should be recorded if app-sync is off.
 class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
+                            public apps::AppCapabilityAccessCache::Observer,
                             InstanceRegistry::Observer {
  public:
-  AppDiscoveryMetrics(Profile* profile,
-                      const apps::AppRegistryCache& app_registry_cache,
-                      InstanceRegistry& instance_registry,
-                      AppPlatformMetrics* app_platform_metrics);
+  AppDiscoveryMetrics(
+      Profile* profile,
+      const apps::AppRegistryCache& app_registry_cache,
+      InstanceRegistry& instance_registry,
+      AppPlatformMetrics* app_platform_metrics,
+      apps::AppCapabilityAccessCache& app_capability_access_cache);
   ~AppDiscoveryMetrics() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // Returns the string identifier to be logged in app discovery metrics for the
+  // given `package_id`.
+  //
+  // This can be used for apps which aren't installed yet (but have, for
+  // example, been shown in an app discovery surface), and so aren't registered
+  // in App Service and don't have an App ID.
+  //
+  // This returns the same value as `GetAppStringToRecord(app_id, app_type)`
+  // would if the package was installed. Returns std::nullopt if metrics for
+  // this package shouldn't be recorded.
+  static std::optional<std::string> GetAppStringToRecordForPackage(
+      const PackageId& package_id);
 
   // AppPlatformMetrics::Observer
   void OnAppInstalled(const std::string& app_id,
@@ -57,14 +74,20 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
                         UninstallSource app_uninstall_source) override;
   void OnAppPlatformMetricsDestroyed() override;
 
+  // apps::AppCapabilityAccessCache::Observer
+  void OnCapabilityAccessUpdate(
+      const apps::CapabilityAccessUpdate& update) override;
+  void OnAppCapabilityAccessCacheWillBeDestroyed(
+      apps::AppCapabilityAccessCache* cache) override;
+
   // InstanceRegistry::Observer
   void OnInstanceUpdate(const InstanceUpdate& instance_update) override;
   void OnInstanceRegistryWillBeDestroyed(InstanceRegistry* cache) override;
 
  private:
   // Returns whether app sync is enabled for |profile_| and it's allowed to
-  // record UKM for |app_id|.
-  bool ShouldRecordUkmForAppId(const std::string& app_id);
+  // record AppKM for |app_id|.
+  bool ShouldRecordAppKMForAppId(const std::string& app_id);
 
   // Returns true if there is an active instance of an app other than
   // |exclude_instance_id|. If |exclude_instance_id| is nullopt, then all
@@ -151,6 +174,10 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
   std::map<std::string, std::set<base::UnguessableToken>>
       app_id_to_instance_ids_;
 
+  // Observations.
+  base::ScopedObservation<apps::AppCapabilityAccessCache,
+                          apps::AppCapabilityAccessCache::Observer>
+      app_capability_observation_{this};
   base::ScopedObservation<InstanceRegistry, InstanceRegistry::Observer>
       instance_registry_observation_{this};
 };

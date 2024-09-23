@@ -28,9 +28,20 @@ build_webui("build") {
     "system_mode.svg",
   ]
 
-  non_web_component_files = [ "browser_proxy.ts" ]
-
-  web_component_files = [ "customize_color_scheme_mode.ts" ]
+  non_web_component_files = [
+    "browser_proxy.ts",
+    "customize_color_scheme_mode.html.ts",
+    "customize_color_scheme_mode.ts",
+    "segmented_button.html.ts",
+    "segmented_button_option.html.ts",
+    "segmented_button_option.ts",
+    "segmented_button.ts",
+  ]
+  css_files = [
+    "customize_color_scheme_mode.css",
+    "segmented_button.css",
+    "segmented_button_option.css",
+  ]
 
   mojo_files_deps = [ ":mojom_ts__generator" ]
   mojo_files = [ "$target_gen_dir/customize_color_scheme_mode.mojom-webui.ts" ]
@@ -38,11 +49,12 @@ build_webui("build") {
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/customize_color_scheme_mode"
   ts_composite = true
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+  webui_context_type = "relative"
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
 }

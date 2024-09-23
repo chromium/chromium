@@ -10,17 +10,8 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/common/extensions/api/side_panel.h"
-#include "extensions/common/extension_features.h"
 
 namespace extensions {
-namespace {
-
-bool IsSidePanelApiAvailable() {
-  return base::FeatureList::IsEnabled(
-      extensions_features::kExtensionSidePanelIntegration);
-}
-
-}  // namespace
 
 SidePanelApiFunction::SidePanelApiFunction() = default;
 SidePanelApiFunction::~SidePanelApiFunction() = default;
@@ -29,8 +20,6 @@ SidePanelService* SidePanelApiFunction::GetService() {
 }
 
 ExtensionFunction::ResponseAction SidePanelApiFunction::Run() {
-  if (!IsSidePanelApiAvailable())
-    return RespondNow(Error("API Unavailable"));
   return RunFunction();
 }
 
@@ -50,7 +39,7 @@ ExtensionFunction::ResponseAction SidePanelSetOptionsFunction::RunFunction() {
   std::optional<api::side_panel::SetOptions::Params> params =
       api::side_panel::SetOptions::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  // TODO(crbug.com/1328645): Validate the relative extension path exists.
+  // TODO(crbug.com/40226489): Validate the relative extension path exists.
   GetService()->SetOptions(*extension(), std::move(params->options));
   return RespondNow(NoArguments());
 }
@@ -101,12 +90,12 @@ ExtensionFunction::ResponseAction SidePanelOpenFunction::RunFunction() {
   base::expected<bool, std::string> open_panel_result;
   if (params->options.tab_id) {
     open_panel_result = service->OpenSidePanelForTab(
-        *extension(), *params->options.tab_id, params->options.window_id,
-        include_incognito_information());
+        *extension(), browser_context(), *params->options.tab_id,
+        params->options.window_id, include_incognito_information());
   } else {
     CHECK(params->options.window_id);
     open_panel_result = service->OpenSidePanelForWindow(
-        *extension(), *params->options.window_id,
+        *extension(), browser_context(), *params->options.window_id,
         include_incognito_information());
   }
 
@@ -116,7 +105,7 @@ ExtensionFunction::ResponseAction SidePanelOpenFunction::RunFunction() {
 
   CHECK_EQ(true, open_panel_result.value());
 
-  // TODO(https://crbug.com/1446022): Should we wait for the side panel to be
+  // TODO(crbug.com/40064601): Should we wait for the side panel to be
   // created and load? That would probably be nice.
 
   return RespondNow(NoArguments());

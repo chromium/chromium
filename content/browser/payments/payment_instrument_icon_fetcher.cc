@@ -5,6 +5,7 @@
 #include "content/browser/payments/payment_instrument_icon_fetcher.h"
 
 #include <limits>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -63,7 +64,7 @@ void OnIconFetched(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
-                     base::Base64Encode(base::StringPiece(
+                     base::Base64Encode(std::string_view(
                          reinterpret_cast<const char*>(&bitmap_data[0]),
                          bitmap_data.size()))));
 }

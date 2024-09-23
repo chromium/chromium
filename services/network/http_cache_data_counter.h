@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 
@@ -57,8 +58,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HttpCacheDataCounter {
                        base::Time end_time,
                        HttpCacheDataCounterCallback callback);
 
-  void GotBackend(std::unique_ptr<disk_cache::Backend*> backend,
-                  int error_code);
+  void GotBackend(std::pair<int, raw_ptr<disk_cache::Backend>>);
   void PostResult(bool is_upper_limit, int64_t result_or_error);
 
   base::WeakPtr<HttpCacheDataCounter> GetWeakPtr() {

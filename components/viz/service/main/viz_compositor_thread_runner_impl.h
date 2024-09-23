@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/service/main/viz_compositor_thread_runner.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/java_handler_thread.h"
@@ -29,6 +30,7 @@ class HintSessionFactory;
 class InProcessGpuMemoryBufferManager;
 class OutputSurfaceProvider;
 class ServerSharedBitmapManager;
+class SharedImageInterfaceProvider;
 
 #if BUILDFLAG(IS_ANDROID)
 using VizCompositorThreadType = base::android::JavaHandlerThread;
@@ -52,8 +54,10 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
   bool CreateHintSessionFactory(
       base::flat_set<base::PlatformThreadId> thread_ids,
       base::RepeatingClosure* wake_up_closure) override;
+  void SetIOThreadId(base::PlatformThreadId io_thread_id) override {}
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params,
                               GpuServiceImpl* gpu_service) override;
+  void RequestBeginFrameForGpuService(bool toggle) override;
 
  private:
   void CreateHintSessionFactoryOnCompositorThread(
@@ -64,10 +68,17 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
   void CreateFrameSinkManagerOnCompositorThread(
       mojom::FrameSinkManagerParamsPtr params,
       GpuServiceImpl* gpu_service);
+  void RequestBeginFrameForGpuServiceOnCompositorThread(bool toggle);
   void TearDownOnCompositorThread();
 
   std::unique_ptr<VizCompositorThreadType> thread_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  // Sequence checker for tasks that run on the gpu "thread".
+  SEQUENCE_CHECKER(gpu_sequence_checker_);
+
+  std::unique_ptr<SharedImageInterfaceProvider>
+      shared_image_interface_provider_;
 
   // Start variables to be accessed only on |task_runner_|.
   std::unique_ptr<HintSessionFactory> hint_session_factory_;

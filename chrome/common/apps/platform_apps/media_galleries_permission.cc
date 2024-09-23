@@ -101,7 +101,7 @@ bool MediaGalleriesPermission::FromValue(
     // No other permissions, so reaching this means
     // MediaGalleriesPermissionData is probably out of sync in some way.
     // Fail so developers notice this.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -128,7 +128,7 @@ extensions::PermissionIDSet MediaGalleriesPermission::GetPermissions() const {
   }
 
   if (!IsValidPermissionSet(has_read, has_copy_to, has_delete, nullptr)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return result;
   }
 

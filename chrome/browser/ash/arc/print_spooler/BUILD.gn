@@ -1,0 +1,40 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("print_spooler") {
+  sources = [
+    "arc_print_spooler_bridge.cc",
+    "arc_print_spooler_bridge.h",
+    "arc_print_spooler_util.cc",
+    "arc_print_spooler_util.h",
+    "print_session_impl.cc",
+    "print_session_impl.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/arc",
+    "//base",
+    "//chrome/browser/pdf:pdf_pref_names",
+    "//chrome/browser/profiles:profile",
+    "//chrome/services/printing/public/mojom",
+    "//chromeos/crosapi/mojom",
+    "//components/arc",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//net",
+    "//printing",
+    "//ui/aura",
+    "//ui/gfx",
+    "//url",
+  ]
+}

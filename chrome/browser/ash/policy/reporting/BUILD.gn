@@ -1,0 +1,196 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash)
+
+static_library("reporting") {
+  sources = [
+    "app_install_event_log_manager_wrapper.cc",
+    "app_install_event_log_manager_wrapper.h",
+    "arc_app_install_encrypted_event_reporter.cc",
+    "arc_app_install_encrypted_event_reporter.h",
+    "arc_app_install_event_log.cc",
+    "arc_app_install_event_log.h",
+    "arc_app_install_event_log_collector.cc",
+    "arc_app_install_event_log_collector.h",
+    "arc_app_install_event_log_manager.cc",
+    "arc_app_install_event_log_manager.h",
+    "arc_app_install_event_log_uploader.cc",
+    "arc_app_install_event_log_uploader.h",
+    "arc_app_install_event_logger.cc",
+    "arc_app_install_event_logger.h",
+    "arc_app_install_policy_data.cc",
+    "arc_app_install_policy_data.h",
+    "arc_app_install_policy_data_helper.cc",
+    "arc_app_install_policy_data_helper.h",
+    "install_event_log.h",
+    "install_event_log_collector_base.cc",
+    "install_event_log_collector_base.h",
+    "install_event_log_manager.cc",
+    "install_event_log_manager.h",
+    "install_event_log_uploader_base.cc",
+    "install_event_log_uploader_base.h",
+    "install_event_log_util.cc",
+    "install_event_log_util.h",
+    "install_event_logger_base.h",
+    "remoting_host_event_reporter_delegate_impl.cc",
+    "remoting_host_event_reporter_delegate_impl.h",
+    "single_arc_app_install_event_log.cc",
+    "single_arc_app_install_event_log.h",
+    "single_extension_install_event_log.cc",
+    "single_extension_install_event_log.h",
+    "single_install_event_log.h",
+    "user_event_reporter_helper.cc",
+    "user_event_reporter_helper.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/arc:prefs",
+    "//ash/components/arc/mojom",
+    "//ash/constants",
+    "//base",
+    "//base:i18n",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/policy",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/policy/messaging_layer/proto:app_install_events_proto",
+    "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//chromeos/dbus/power",
+    "//components/policy:generated",
+    "//components/policy/core/common",
+    "//components/policy/proto:",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/reporting/client:report_queue",
+    "//components/reporting/client:report_queue_configuration",
+    "//components/reporting/client:report_queue_factory",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//extensions/common",
+    "//remoting/host/chromeos:host_event_reporter_impl",
+    "//services/network/public/cpp",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/policy/core",
+  ]
+}
+
+proto_library("user_event_reporter_testing_record_proto") {
+  sources = [ "user_event_reporter_testing_record.proto" ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "user_event_reporter_helper_testing.cc",
+    "user_event_reporter_helper_testing.h",
+  ]
+
+  deps = [
+    ":reporting",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "app_install_event_log_manager_wrapper_unittest.cc",
+    "arc_app_install_encrypted_event_reporter_unittest.cc",
+    "arc_app_install_event_log_collector_unittest.cc",
+    "arc_app_install_event_log_manager_unittest.cc",
+    "arc_app_install_event_log_unittest.cc",
+    "arc_app_install_event_log_uploader_unittest.cc",
+    "arc_app_install_event_logger_unittest.cc",
+    "arc_app_install_policy_data_helper_unittest.cc",
+    "arc_app_install_policy_data_unittest.cc",
+    "remoting_host_event_reporter_delegate_impl_unittest.cc",
+    "single_arc_app_install_event_log_unittest.cc",
+    "user_event_reporter_helper_unittest.cc",
+  ]
+
+  deps = [
+    ":reporting",
+    ":test_support",
+    ":user_event_reporter_testing_record_proto",
+    "//ash/components/arc:prefs",
+    "//ash/components/arc/mojom",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/cros_disks",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/system",
+    "//chromeos/dbus/power",
+    "//components/policy:generated",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto:",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/reporting/client:report_queue",
+    "//components/reporting/client:test_support",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/util:status",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//remoting/host/chromeos:host_event_reporter_impl",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+if (use_fuzzing_engine_with_lpm) {
+  fuzzer_test("policy_single_install_event_log_fuzzer") {
+    sources = [ "single_install_event_log_fuzzer.cc" ]
+
+    deps = [
+      ":reporting",
+      "//base",
+
+      # TODO(crbug.com/335294371): Remove dependency on //chrome/browser to
+      # implement the proper fix.
+      "//chrome/browser",
+      "//components/exo/wayland:test_controller_stub",
+      "//components/exo/wayland:ui_controls_protocol_stub",
+    ]
+  }
+}

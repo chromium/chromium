@@ -6,6 +6,9 @@
 
 #import "base/feature_list.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/safe_browsing/model/enhanced_safe_browsing_infobar_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -59,6 +62,23 @@
   [settingsHandler showSafeBrowsingSettings];
 }
 
+- (void)showEnhancedSafeBrowsingInfobar {
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  id<SettingsCommands> settingsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
+  std::unique_ptr<EnhancedSafeBrowsingInfobarDelegate> delegate =
+      std::make_unique<EnhancedSafeBrowsingInfobarDelegate>(activeWebState,
+                                                            settingsHandler);
+  delegate->RecordInteraction(EnhancedSafeBrowsingInfobarInteraction::kViewed);
+
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(activeWebState);
+
+  std::unique_ptr<infobars::InfoBar> infobar = std::make_unique<InfoBarIOS>(
+      InfobarType::kInfobarTypeEnhancedSafeBrowsing, std::move(delegate));
+  infobar_manager->AddInfoBar(std::move(infobar), /*replace_existing=*/true);
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList
@@ -92,6 +112,18 @@
           ->SetDelegate(self);
       break;
     }
+    case WebStateListChange::Type::kGroupCreate:
+      // Do nothing when a group is created.
+      break;
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+      // Do nothing when a tab group's visual data are updated.
+      break;
+    case WebStateListChange::Type::kGroupMove:
+      // Do nothing when a tab group is moved.
+      break;
+    case WebStateListChange::Type::kGroupDelete:
+      // Do nothing when a group is deleted.
+      break;
   }
 }
 

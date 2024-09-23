@@ -13,7 +13,6 @@
 
 namespace views {
 class Label;
-class ProgressBar;
 class View;
 class ImageView;
 class StyledLabel;
@@ -23,59 +22,73 @@ namespace gfx {
 class ImageSkia;
 }
 
+class SkBitmap;
+
 namespace payments {
 
 // Height of the header icons.
-constexpr int kHeaderIconHeight = 148;
-constexpr int kShoppingCartHeaderIconHeight = 114;
+inline constexpr int kHeaderIconHeight = 148;
+inline constexpr int kShoppingCartHeaderIconHeight = 114;
 
 // Padding above the header icon.
-constexpr int kHeaderIconTopPadding = 12;
-
-// Height of the progress bar at the top of the dialog.
-constexpr int kProgressBarHeight = 4;
+inline constexpr int kHeaderIconTopPadding = 16;
 
 // Line height of the title text.
-constexpr int kTitleLineHeight = 24;
+inline constexpr int kTitleLineHeight = 24;
+
+// Spacing between the icons in the inline title row.
+inline constexpr int kInlineTitleRowHorizontalSpacing = 5;
+
+// Required height of the icons in the inline title row.
+inline constexpr int kInlineTitleIconHeight = 24;
+
+// Max width of the icons in the inline title row.
+inline constexpr int kInlineTitleMaxIconWidth = 40;
+
+// Height of the separator between the icons in the inline title row.
+inline constexpr int kInlineTitleIconSeparatorHeight = 20;
 
 // Line height of the description text.
-constexpr int kDescriptionLineHeight = 20;
-
-// Insets of the body content.
-constexpr int kBodyInsets = 8;
+inline constexpr int kDescriptionLineHeight = 20;
 
 // Insets of the secondary small text, e.g., the opt-out footer.
-constexpr int kSecondarySmallTextInsets = 16;
+inline constexpr int kSecondarySmallTextInsets = 16;
 
 // Extra inset between the body content and the dialog buttons.
-constexpr int kBodyExtraInset = 16;
+inline constexpr int kBodyExtraInset = 16;
 
 // Height of each payment information row.
-constexpr int kPaymentInfoRowHeight = 48;
+inline constexpr int kPaymentInfoRowHeight = 48;
 
-// Creates the view for the SPC progress bar.
-std::unique_ptr<views::ProgressBar>
-CreateSecurePaymentConfirmationProgressBarView();
-
-// Creates the header view, which contains the icon and a progress bar. The icon
-// covers the whole header view with the progress bar at the top of the header.
-// +------------------------------------------+
-// |===============progress bar===============|
-// |                                          |
-// |                   icon                   |
-// +------------------------------------------+
-std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
-    int progress_bar_id,
+// Creates the header icon, showing either the transaction dialog logo or the no
+// matching credentials dialog logo.
+std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderIcon(
     int header_icon_id,
     bool use_cart_image = false);
+
+// Creates the 'inline' title view, where the network and issuer icons are
+// placed beside the title text. Either or both of the network and issuer icons
+// may be empty (i.e., drawsNothing returns true) in which case they are
+// omitted from the output view.
+//
+// +------------------------------------------+
+// | Title                        icon | icon |
+// +------------------------------------------+
+std::unique_ptr<views::View>
+CreateSecurePaymentConfirmationInlineImageTitleView(
+    std::unique_ptr<views::Label> title_text,
+    const SkBitmap& network_icon,
+    int network_icon_id,
+    const SkBitmap& issuer_icon,
+    int issuer_icon_id);
 
 // Creates the label view for the SPC title text.
 std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
     const std::u16string& title);
 
-/// Creates the image view for the SPC instrument icon.
-std::unique_ptr<views::ImageView>
-CreateSecurePaymentConfirmationInstrumentIconView(const gfx::ImageSkia& bitmap);
+/// Creates an image view for an icon in the SPC transactions details table.
+std::unique_ptr<views::ImageView> CreateSecurePaymentConfirmationIconView(
+    const gfx::ImageSkia& bitmap);
 
 // Formats the merchant label by combining the name and origin for display.
 std::u16string FormatMerchantLabel(

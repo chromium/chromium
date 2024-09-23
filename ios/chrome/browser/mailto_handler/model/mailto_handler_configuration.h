@@ -22,7 +22,7 @@ class PrefService;
 @property(nonatomic, assign) PrefService* localState;
 
 // SingleSignOnService used by MailtoHandlerService.
-@property(nonatomic, strong) id<SingleSignOnService> ssoService;
+@property(nonatomic, strong) id<SingleSignOnService> singleSignOnService;
 
 @end
 

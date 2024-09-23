@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/download/download_target_determiner.h"
 
 #include <stddef.h>
@@ -382,8 +387,9 @@ class DownloadTargetDeterminerTest : public ChromeRenderViewHostTestHarness {
  protected:
   // ChromeRenderViewHostTestHarness overrides.
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {{HistoryServiceFactory::GetInstance(),
-             HistoryServiceFactory::GetDefaultFactory()}};
+    return {TestingProfile::TestingFactory{
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory()}};
   }
 
  private:
@@ -2445,7 +2451,7 @@ TEST_F(DownloadTargetDeterminerTest, TransientDownload) {
 
   EXPECT_CALL(*delegate(), NotifyExtensions_(_, _, _)).Times(0);
   EXPECT_CALL(*delegate(), ReserveVirtualPath_(_, expected_path, false,
-                                               ConflictAction::OVERWRITE, _))
+                                               ConflictAction::UNIQUIFY, _))
       .Times(1);
   EXPECT_CALL(*delegate(), DetermineLocalPath_(_, expected_path, _)).Times(1);
   EXPECT_CALL(*delegate(), CheckDownloadUrl_(_, expected_path, _)).Times(1);
@@ -2498,7 +2504,7 @@ TEST_F(DownloadTargetDeterminerTest, TransientDownloadResumption) {
 
   EXPECT_CALL(*delegate(), NotifyExtensions_(_, _, _)).Times(0);
   EXPECT_CALL(*delegate(), ReserveVirtualPath_(_, expected_path, false,
-                                               ConflictAction::OVERWRITE, _))
+                                               ConflictAction::UNIQUIFY, _))
       .Times(1);
   EXPECT_CALL(*delegate(), DetermineLocalPath_(_, expected_path, _));
   EXPECT_CALL(*delegate(), CheckDownloadUrl_(_, expected_path, _)).Times(1);
@@ -2544,7 +2550,16 @@ TEST_F(DownloadTargetDeterminerTest, TestSanitizeEnvVariable) {
        DownloadItem::TARGET_DISPOSITION_PROMPT,
 
        EXPECT_CRDOWNLOAD},
-      {// 2: File name is an env var.
+      {// 2: File name falling back to dangerous extensions after removing env var.
+       SAVE_AS, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       DownloadFileType::NOT_DANGEROUS, "http://example.com/foo2.lnk.%%",
+       "application/octet-stream", FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("foo2.download"),
+       DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+       EXPECT_CRDOWNLOAD},
+      {// 3: File name is an env var.
        SAVE_AS, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
        DownloadFileType::NOT_DANGEROUS, "http://example.com/%foo.txt%",
        "text/plain", FILE_PATH_LITERAL(""),

@@ -5,13 +5,13 @@
 #ifndef GIN_OBJECT_TEMPLATE_BUILDER_H_
 #define GIN_OBJECT_TEMPLATE_BUILDER_H_
 
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "gin/converter.h"
 #include "gin/function_template.h"
 #include "gin/gin_export.h"
@@ -52,8 +52,8 @@ class GIN_EXPORT ObjectTemplateBuilder {
   // It's against Google C++ style to return a non-const ref, but we take some
   // poetic license here in order that all calls to Set() can be via the '.'
   // operator and line up nicely.
-  template<typename T>
-  ObjectTemplateBuilder& SetValue(const base::StringPiece& name, T val) {
+  template <typename T>
+  ObjectTemplateBuilder& SetValue(const std::string_view& name, T val) {
     return SetImpl(name, ConvertToV8(isolate_, val));
   }
 
@@ -61,8 +61,8 @@ class GIN_EXPORT ObjectTemplateBuilder {
   // pointer, base::RepeatingCallback, or v8::FunctionTemplate. Most clients
   // will want to use one of the first two options. Also see
   // gin::CreateFunctionTemplate() for creating raw function templates.
-  template<typename T>
-  ObjectTemplateBuilder& SetMethod(const base::StringPiece& name,
+  template <typename T>
+  ObjectTemplateBuilder& SetMethod(const std::string_view& name,
                                    const T& callback) {
     return SetImpl(
         name, internal::CreateFunctionTemplate(isolate_, callback, type_name_));
@@ -75,16 +75,17 @@ class GIN_EXPORT ObjectTemplateBuilder {
         name, internal::CreateFunctionTemplate(isolate_, callback, type_name_));
   }
 
-  template<typename T>
-  ObjectTemplateBuilder& SetProperty(const base::StringPiece& name,
+  template <typename T>
+  ObjectTemplateBuilder& SetProperty(const std::string_view& name,
                                      const T& getter) {
     return SetPropertyImpl(
         name, internal::CreateFunctionTemplate(isolate_, getter, type_name_),
         v8::Local<v8::FunctionTemplate>());
   }
-  template<typename T, typename U>
-  ObjectTemplateBuilder& SetProperty(const base::StringPiece& name,
-                                     const T& getter, const U& setter) {
+  template <typename T, typename U>
+  ObjectTemplateBuilder& SetProperty(const std::string_view& name,
+                                     const T& getter,
+                                     const U& setter) {
     return SetPropertyImpl(
         name, internal::CreateFunctionTemplate(isolate_, getter, type_name_),
         internal::CreateFunctionTemplate(isolate_, setter, type_name_));
@@ -94,7 +95,7 @@ class GIN_EXPORT ObjectTemplateBuilder {
   // to be a data property but whose value is lazily computed the first time the
   // [[Get]] operation occurs.
   template <typename T>
-  ObjectTemplateBuilder& SetLazyDataProperty(const base::StringPiece& name,
+  ObjectTemplateBuilder& SetLazyDataProperty(const std::string_view& name,
                                              const T& getter) {
     InvokerOptions options;
     if (std::is_member_function_pointer<T>::value) {
@@ -112,15 +113,16 @@ class GIN_EXPORT ObjectTemplateBuilder {
   v8::Local<v8::ObjectTemplate> Build();
 
  private:
-  ObjectTemplateBuilder& SetImpl(const base::StringPiece& name,
+  ObjectTemplateBuilder& SetImpl(const std::string_view& name,
                                  v8::Local<v8::Data> val);
   ObjectTemplateBuilder& SetImpl(v8::Local<v8::Name> name,
                                  v8::Local<v8::Data> val);
   ObjectTemplateBuilder& SetPropertyImpl(
-      const base::StringPiece& name, v8::Local<v8::FunctionTemplate> getter,
+      const std::string_view& name,
+      v8::Local<v8::FunctionTemplate> getter,
       v8::Local<v8::FunctionTemplate> setter);
   ObjectTemplateBuilder& SetLazyDataPropertyImpl(
-      const base::StringPiece& name,
+      const std::string_view& name,
       v8::AccessorNameGetterCallback callback,
       v8::Local<v8::Value> data);
 

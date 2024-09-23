@@ -15,6 +15,15 @@ option optimize_for = LITE_RUNTIME;
 package sync_pb;
 
 message ContactInfoSpecifics {
+  // Used to distinguish whether the address is the dedicated Home or Work
+  // address of the user's account.
+  // This translates into `AutofillProfile::RecordType::kAccount*`.
+  enum AddressType {
+    REGULAR = 0;
+    HOME = 1;
+    WORK = 2;
+  }
+
   // Represents the validation status of a stored value.
   enum VerificationStatus {
     // No verification status assigned.
@@ -67,21 +76,21 @@ message ContactInfoSpecifics {
     optional TokenMetadata metadata = 2;
   }
 
-  // A token with an integer interpretation of the value.
-  message IntegerToken {
-    optional int64 value = 1;
-    optional TokenMetadata metadata = 2;
-  }
-
   // A globally unique, immutable UUID represented in lowercase.
   optional string guid = 1;
   reserved 2;
   reserved "source";
+  optional AddressType address_type = 56 [default = REGULAR];
+
   // The number of time this profile has been used.
   optional int64 use_count = 3;
 
-  // The last time this profile was used.
+  // The last times this profile was used. use_date.. is the last use date of
+  // the profile, use_date2.. the second last use date, etc. If a profile hasn't
+  // been used at least that many times, the field is unset.
   optional int64 use_date_unix_epoch_seconds = 4;
+  optional int64 use_date2_unix_epoch_seconds = 54;
+  optional int64 use_date3_unix_epoch_seconds = 55;
 
   // The last time the profile was modified.
   optional int64 date_modified_unix_epoch_seconds = 37;
@@ -89,8 +98,8 @@ message ContactInfoSpecifics {
   // The BCP 47 language code used to format the address for display.
   optional string language_code = 38;
 
-  // A user chosen profile label that is used to identify the profile.
-  // The value of the label can be freely chosen by the user.
+  // A label intended to be chosen by the user. This was however never
+  // implemented and is currently unused.
   optional string profile_label = 5;
 
   // Tracks the application that initially created the profile. The integer
@@ -100,8 +109,7 @@ message ContactInfoSpecifics {
   // Tracks the application that applied the last modification to the
   // non-metadata content of the profile. It represents a value in the same
   // `BillableService` enum.
-  // All String- and IntegerToken, and the `profile_label` are considered
-  // non-metadata.
+  // All StringTokens, and the `profile_label` are considered non-metadata.
   optional int32 last_modifier_id = 40;
 
   // Contact info name fields.
@@ -200,6 +208,14 @@ message ContactInfoSpecifics {
   // address forms require the combination of both in a single field as opposed
   // to each one separately.
   optional StringToken address_overflow_and_landmark = 49;
+  // Combination of types address_street_location and
+  // address_dependent_locality. Note that some address forms require the
+  // combination of both in a single field as opposed to each one separately.
+  optional StringToken address_street_location_and_locality = 52;
+  // Combination of types address_thoroughfare_number and address_apt. Note that
+  // some address forms require the combination of both in a single field as
+  // opposed to each one separately.
+  optional StringToken address_thoroughfare_number_and_apt = 53;
 
   // Phone.
   optional StringToken phone_home_whole_number = 33;

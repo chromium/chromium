@@ -1,0 +1,264 @@
+Tests shared storage event tracking & fetching of entries/metadata.
+Metadata: {
+    bytesUsed : 244
+    creationTime : <number>
+    length : 4
+    remainingBudget : 12
+}
+Entries:[
+    [0] : {
+        key : key0-set-from-document
+        value : value0
+    }
+    [1] : {
+        key : key0-set-from-worklet
+        value : value0
+    }
+    [2] : {
+        key : key1-set-from-document
+        value : value1value1
+    }
+    [3] : {
+        key : key1-set-from-worklet
+        value : value1value1
+    }
+]
+Clear entries
+undefined
+Entries:[
+]
+Events: [
+    [0] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            ignoreIfPresent : false
+            key : key0-set-from-document
+            value : value0
+        }
+        type : documentSet
+    }
+    [1] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            ignoreIfPresent : true
+            key : key1-set-from-document
+            value : value1
+        }
+        type : documentSet
+    }
+    [2] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            key : key1-set-from-document
+            value : value1
+        }
+        type : documentAppend
+    }
+    [3] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            ignoreIfPresent : false
+            key : key2-set-from-document
+            value : value2
+        }
+        type : documentSet
+    }
+    [4] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            ignoreIfPresent : true
+            key : key2-set-from-document
+            value : value3
+        }
+        type : documentSet
+    }
+    [5] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            key : key2-set-from-document
+        }
+        type : documentDelete
+    }
+    [6] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            scriptSourceUrl : http://127.0.0.1:8000/inspector-protocol/resources/shared-storage-module.js
+        }
+        type : documentAddModule
+    }
+    [7] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            operationName : test-operation
+            serializedData : 
+        }
+        type : documentRun
+    }
+    [8] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            ignoreIfPresent : false
+            key : key0-set-from-worklet
+            value : value0
+        }
+        type : workletSet
+    }
+    [9] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            ignoreIfPresent : false
+            key : key1-set-from-worklet
+            value : value1
+        }
+        type : workletSet
+    }
+    [10] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            ignoreIfPresent : true
+            key : key2-set-from-worklet
+            value : value2
+        }
+        type : workletSet
+    }
+    [11] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            key : key1-set-from-worklet
+            value : value1
+        }
+        type : workletAppend
+    }
+    [12] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            key : key2-set-from-worklet
+        }
+        type : workletDelete
+    }
+    [13] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+        }
+        type : workletLength
+    }
+    [14] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+        }
+        type : workletRemainingBudget
+    }
+    [15] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+        }
+        type : workletKeys
+    }
+    [16] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+        }
+        type : workletEntries
+    }
+    [17] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            operationName : test-url-selection-operation
+            serializedData : 
+            urlsWithMetadata : [
+                [0] : {
+                    reportingMetadata : [
+                    ]
+                    url : https://google.com/
+                }
+                [1] : {
+                    reportingMetadata : [
+                    ]
+                    url : https://chromium.org/
+                }
+            ]
+        }
+        type : documentSelectURL
+    }
+    [18] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            key : key0-set-from-worklet
+        }
+        type : workletGet
+    }
+    [19] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            key : key0-set-from-document
+        }
+        type : workletGet
+    }
+    [20] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            operationName : clear-operation
+            serializedData : 
+        }
+        type : documentRun
+    }
+    [21] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+        }
+        type : workletClear
+    }
+    [22] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+        }
+        type : documentClear
+    }
+]
+

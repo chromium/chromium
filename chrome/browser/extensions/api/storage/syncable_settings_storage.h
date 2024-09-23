@@ -17,6 +17,7 @@
 #include "components/sync/model/syncable_service.h"
 #include "components/value_store/value_store.h"
 #include "extensions/browser/api/storage/settings_observer.h"
+#include "extensions/common/extension_id.h"
 
 namespace syncer {
 class ModelError;
@@ -30,10 +31,10 @@ class SettingsSyncProcessor;
 class SyncableSettingsStorage : public value_store::ValueStore {
  public:
   SyncableSettingsStorage(SequenceBoundSettingsChangedCallback observer,
-                          const std::string& extension_id,
+                          const ExtensionId& extension_id,
                           // Ownership taken.
                           value_store::ValueStore* delegate,
-                          syncer::ModelType sync_type,
+                          syncer::DataType sync_type,
                           const syncer::SyncableService::StartSyncFlare& flare);
 
   SyncableSettingsStorage(const SyncableSettingsStorage&) = delete;
@@ -119,7 +120,7 @@ class SyncableSettingsStorage : public value_store::ValueStore {
   SequenceBoundSettingsChangedCallback observer_;
 
   // Id of the extension these settings are for.
-  std::string const extension_id_;
+  ExtensionId const extension_id_;
 
   // Storage area to sync.
   const std::unique_ptr<value_store::ValueStore> delegate_;
@@ -127,7 +128,7 @@ class SyncableSettingsStorage : public value_store::ValueStore {
   // Object which sends changes to sync.
   std::unique_ptr<SettingsSyncProcessor> sync_processor_;
 
-  const syncer::ModelType sync_type_;
+  const syncer::DataType sync_type_;
   const syncer::SyncableService::StartSyncFlare flare_;
 };
 

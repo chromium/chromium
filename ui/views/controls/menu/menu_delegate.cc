@@ -78,8 +78,8 @@ bool MenuDelegate::ShouldExecuteCommandWithoutClosingMenu(int id,
 
 bool MenuDelegate::IsTriggerableEvent(MenuItemView* source,
                                       const ui::Event& e) {
-  return e.type() == ui::ET_GESTURE_TAP ||
-         e.type() == ui::ET_GESTURE_TAP_DOWN ||
+  return e.type() == ui::EventType::kGestureTap ||
+         e.type() == ui::EventType::kGestureTapDown ||
          (e.IsMouseEvent() &&
           (e.flags() & (ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON)));
 }
@@ -103,16 +103,14 @@ ui::mojom::DragOperation MenuDelegate::GetDropOperation(
     MenuItemView* item,
     const ui::DropTargetEvent& event,
     DropPosition* position) {
-  NOTREACHED_NORETURN()
-      << "If you override CanDrop, you must override this too";
+  NOTREACHED() << "If you override CanDrop, you must override this too";
 }
 
 views::View::DropCallback MenuDelegate::GetDropCallback(
     MenuItemView* menu,
     DropPosition position,
     const ui::DropTargetEvent& event) {
-  NOTREACHED_NORETURN()
-      << "If you override CanDrop, you must override this too";
+  NOTREACHED() << "If you override CanDrop, you must override this too";
 }
 
 bool MenuDelegate::CanDrag(MenuItemView* menu) {
@@ -120,13 +118,11 @@ bool MenuDelegate::CanDrag(MenuItemView* menu) {
 }
 
 void MenuDelegate::WriteDragData(MenuItemView* sender, OSExchangeData* data) {
-  NOTREACHED_NORETURN()
-      << "If you override CanDrag, you must override this too.";
+  NOTREACHED() << "If you override CanDrag, you must override this too.";
 }
 
 int MenuDelegate::GetDragOperations(MenuItemView* sender) {
-  NOTREACHED_NORETURN()
-      << "If you override CanDrag, you must override this too.";
+  NOTREACHED() << "If you override CanDrag, you must override this too.";
 }
 
 bool MenuDelegate::ShouldCloseOnDragComplete() {
@@ -153,6 +149,10 @@ void MenuDelegate::WillHideMenu(MenuItemView* menu) {}
 
 bool MenuDelegate::ShouldTryPositioningBesideAnchor() const {
   return true;
+}
+
+bool MenuDelegate::IsTearingDown() const {
+  return false;
 }
 
 }  // namespace views

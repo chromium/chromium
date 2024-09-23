@@ -70,7 +70,7 @@ class ReadingListDistillerPage : public dom_distiller::DistillerPageIOS {
       web::PageLoadCompletionStatus load_completion_status) override;
 
  private:
-  // Returns wether there is the loading has no error and if the distillation
+  // Returns whether there is the loading has no error and if the distillation
   // can continue.
   bool IsLoadingSuccess(web::PageLoadCompletionStatus load_completion_status);
   // Work around the fact that articles opened from Google Search page and

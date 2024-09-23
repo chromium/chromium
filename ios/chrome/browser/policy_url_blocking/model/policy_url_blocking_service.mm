@@ -7,7 +7,7 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/policy/core/common/policy_pref_names.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/browser_state.h"
 
 PolicyBlocklistService::PolicyBlocklistService(
@@ -29,10 +29,10 @@ PolicyBlocklistServiceFactory* PolicyBlocklistServiceFactory::GetInstance() {
 }
 
 // static
-PolicyBlocklistService* PolicyBlocklistServiceFactory::GetForBrowserState(
-    web::BrowserState* browser_state) {
+PolicyBlocklistService* PolicyBlocklistServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<PolicyBlocklistService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
 }
 
 PolicyBlocklistServiceFactory::PolicyBlocklistServiceFactory()
@@ -45,8 +45,7 @@ PolicyBlocklistServiceFactory::~PolicyBlocklistServiceFactory() = default;
 std::unique_ptr<KeyedService>
 PolicyBlocklistServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
-  PrefService* prefs =
-      ChromeBrowserState::FromBrowserState(browser_state)->GetPrefs();
+  PrefService* prefs = ProfileIOS::FromBrowserState(browser_state)->GetPrefs();
   auto url_blocklist_manager = std::make_unique<policy::URLBlocklistManager>(
       prefs, policy::policy_prefs::kUrlBlocklist,
       policy::policy_prefs::kUrlAllowlist);

@@ -42,6 +42,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -66,7 +67,6 @@ constexpr int kJellyDropdownIconSizeDp = 20;
 
 // Width/height of the user view. Ensures proper centering.
 constexpr int kLargeUserViewWidthDp = 306;
-constexpr int kLargeUserViewHeightDp = 346;
 constexpr int kSmallUserViewWidthDp = 304;
 constexpr int kExtraSmallUserViewWidthDp = 282;
 
@@ -111,7 +111,7 @@ class PassthroughAnimationDecoder
   AnimationFrames frames_;
 };
 
-class EnterpriseBadgeLayout : public views::LayoutManager {
+class EnterpriseBadgeLayout : public views::LayoutManagerBase {
  public:
   explicit EnterpriseBadgeLayout(int size) : size_(size) {}
 
@@ -120,18 +120,23 @@ class EnterpriseBadgeLayout : public views::LayoutManager {
 
   ~EnterpriseBadgeLayout() override = default;
 
-  // views::LayoutManager:
-  void Layout(views::View* host) override {
-    DCHECK_EQ(host->children().size(), 1U);
-    const gfx::Rect content_bounds(host->GetContentsBounds());
-    const int offset = content_bounds.width() - size_;
-    auto* child = host->children()[0].get();
-    child->SetPosition({offset, offset});
-    child->SetSize({size_, size_});
-  }
+  // views::LayoutManagerBase:
+  views::ProposedLayout CalculateProposedLayout(
+      const views::SizeBounds& size_bounds) const override {
+    DCHECK_EQ(host_view()->children().size(), 1U);
+    views::ProposedLayout layout;
+    layout.host_size = gfx::Size(size_, size_);
+    if (!size_bounds.is_fully_bounded()) {
+      return layout;
+    }
 
-  gfx::Size GetPreferredSize(const views::View* host) const override {
-    return gfx::Size(size_, size_);
+    const int offset =
+        size_bounds.width().value() - host_view()->GetInsets().width() - size_;
+    auto* child = host_view()->children()[0].get();
+    layout.child_layouts.emplace_back(child, true,
+                                      gfx::Rect(offset, offset, size_, size_));
+
+    return layout;
   }
 
  private:
@@ -266,7 +271,7 @@ class LoginUserView::UserImage : public NonAccessibleView {
   base::WeakPtrFactory<UserImage> weak_factory_{this};
 };
 
-BEGIN_METADATA(LoginUserView, UserImage, NonAccessibleView)
+BEGIN_METADATA(LoginUserView, UserImage)
 END_METADATA
 
 // Shows the user's name.
@@ -335,7 +340,7 @@ class LoginUserView::UserLabel : public NonAccessibleView {
   const int label_width_;
 };
 
-BEGIN_METADATA(LoginUserView, UserLabel, NonAccessibleView)
+BEGIN_METADATA(LoginUserView, UserLabel)
 END_METADATA
 
 // A button embedded inside of LoginUserView, which is activated whenever the
@@ -347,7 +352,11 @@ class LoginUserView::TapButton : public views::Button {
 
  public:
   TapButton(PressedCallback callback, LoginUserView* parent)
-      : views::Button(std::move(callback)), parent_(parent) {}
+      : views::Button(std::move(callback)), parent_(parent) {
+    // TODO(https://crbug.com/1065516): Define the button name.
+    GetViewAccessibility().SetName(
+        "", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
 
   TapButton(const TapButton&) = delete;
   TapButton& operator=(const TapButton&) = delete;
@@ -363,17 +372,12 @@ class LoginUserView::TapButton : public views::Button {
     views::Button::OnBlur();
     parent_->UpdateOpacity();
   }
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    // TODO(https://crbug.com/1065516): Define the button name.
-    node_data->SetNameExplicitlyEmpty();
-    Button::GetAccessibleNodeData(node_data);
-  }
 
  private:
   const raw_ptr<LoginUserView> parent_;
 };
 
-BEGIN_METADATA(LoginUserView, TapButton, views::Button)
+BEGIN_METADATA(LoginUserView, TapButton)
 END_METADATA
 
 // LoginUserView is defined after LoginUserView::UserLabel so it can access the
@@ -582,15 +586,24 @@ LoginButton* LoginUserView::GetDropdownButton() {
   return dropdown_;
 }
 
-gfx::Size LoginUserView::CalculatePreferredSize() const {
+gfx::Size LoginUserView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  int preferred_width = 0;
   switch (display_style_) {
     case LoginDisplayStyle::kLarge:
-      return gfx::Size(kLargeUserViewWidthDp, kLargeUserViewHeightDp);
+      preferred_width = kLargeUserViewWidthDp;
+      break;
     case LoginDisplayStyle::kSmall:
-      return gfx::Size(kSmallUserViewWidthDp, kSmallUserImageSizeDp);
+      preferred_width = kSmallUserViewWidthDp;
+      break;
     case LoginDisplayStyle::kExtraSmall:
-      return gfx::Size(kExtraSmallUserViewWidthDp, kExtraSmallUserImageSizeDp);
+      preferred_width = kExtraSmallUserViewWidthDp;
+      break;
   }
+
+  return gfx::Size(
+      preferred_width,
+      GetLayoutManager()->GetPreferredHeightForWidth(this, preferred_width));
 }
 
 void LoginUserView::Layout(PassKey) {
@@ -639,7 +652,7 @@ void LoginUserView::UpdateCurrentUserState() {
   } else {
     accessible_name = email;
   }
-  tap_button_->SetAccessibleName(accessible_name);
+  tap_button_->GetViewAccessibility().SetName(accessible_name);
   if (dropdown_) {
     // The accessible name for the dropdown depends on whether it also contains
     // the remove user button for the user in question.
@@ -648,7 +661,7 @@ void LoginUserView::UpdateCurrentUserState() {
             ? IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_DIALOG_BUTTON_ACCESSIBLE_NAME
             : IDS_ASH_LOGIN_POD_ACCOUNT_DIALOG_BUTTON_ACCESSIBLE_NAME,
         email);
-    dropdown_->SetAccessibleName(accessible_name);
+    dropdown_->GetViewAccessibility().SetName(accessible_name);
   }
 
   user_image_->UpdateForUser(current_user_);

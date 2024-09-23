@@ -4,6 +4,7 @@
 
 #include "ui/color/color_mixers.h"
 
+#include "third_party/material_color_utilities/src/cpp/palettes/tones.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
@@ -15,6 +16,8 @@
 
 namespace ui {
 
+// Defines mappings for colors used in Ash and Lacros. Colors that
+// are only used in Ash are defined in //ash/style.
 void AddNativeCoreColorMixer(ColorProvider* provider,
                              const ColorProviderKey& key) {
   ColorMixer& mixer = provider->AddMixer();
@@ -61,41 +64,17 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
   mixer[kColorCrosSystemHighlightBorder1] =
       ui::SetAlpha(ui::kColorRefNeutral0, dark_mode ? 0x14 : 0x0F);
 
-  // TODO(b/291622042): Delete once Jelly is fully launched.
-  if (dark_mode) {
-    const bool high_elevation =
-        key.elevation_mode == ColorProviderKey::ElevationMode::kHigh;
-    const SkColor base_color =
-        high_elevation
-            ? color_utils::AlphaBlend(SK_ColorWHITE, gfx::kGoogleGrey900, 0.08f)
-            : gfx::kGoogleGrey900;
-    mixer[kColorNativeColor1] = {gfx::kGoogleBlue400};
-    mixer[kColorNativeColor1Shade1] = {color_utils::AlphaBlend(
-        gfx::kGoogleBlue600, base_color, high_elevation ? 0.4f : 0.3f)};
-    mixer[kColorNativeColor1Shade2] = {
-        color_utils::AlphaBlend(gfx::kGoogleBlue300, base_color, 0.3f)};
-    mixer[kColorNativeColor2] = {gfx::kGoogleGreen400};
-    mixer[kColorNativeColor3] = {gfx::kGoogleYellow400};
-    mixer[kColorNativeColor4] = {gfx::kGoogleRed500};
-    mixer[kColorNativeColor5] = {gfx::kGoogleMagenta300};
-    mixer[kColorNativeColor6] = {gfx::kGoogleElectric300};
-    mixer[kColorNativeBaseColor] = {base_color};
-    mixer[kColorNativeSecondaryColor] = {
-        high_elevation
-            ? gfx::kGoogleGrey700
-            : color_utils::AlphaBlend(gfx::kGoogleGrey200, base_color, 0.3f)};
-  } else {
-    mixer[kColorNativeColor1] = {gfx::kGoogleBlue500};
-    mixer[kColorNativeColor1Shade1] = {gfx::kGoogleBlue300};
-    mixer[kColorNativeColor1Shade2] = {gfx::kGoogleBlue100};
-    mixer[kColorNativeColor2] = {gfx::kGoogleGreen500};
-    mixer[kColorNativeColor3] = {gfx::kGoogleYellow500};
-    mixer[kColorNativeColor4] = {gfx::kGoogleRed500};
-    mixer[kColorNativeColor5] = {gfx::kGoogleMagenta400};
-    mixer[kColorNativeColor6] = {gfx::kGoogleElectric400};
-    mixer[kColorNativeBaseColor] = {SK_ColorWHITE};
-    mixer[kColorNativeSecondaryColor] = {gfx::kGoogleGrey100};
-  }
+  // Seed color for cros.ref.green @ hue angle 217 i.e. Google Blue.
+  material_color_utilities::TonalPalette green_palette(
+      SkColorSetRGB(0x4F, 0xA8, 0x34));
+  mixer[kColorCrosSysPositive] = {dark_mode ? green_palette.get(80)
+                                            : green_palette.get(50)};
+
+  // cros.ref.sparkle-complement @ 217.
+  material_color_utilities::TonalPalette complement(
+      SkColorSetRGB(0x40, 0x67, 0x43));
+  mixer[kColorCrosSysComplementVariant] = {dark_mode ? complement.get(30)
+                                                     : complement.get(95)};
 }
 
 }  // namespace ui

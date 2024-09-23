@@ -1,0 +1,21 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("constants") {
+  sources = [
+    "constants_util.cc",
+    "constants_util.h",
+  ]
+
+  public_deps = [ "//ash/webui/settings/public/constants:mojom" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+  ]
+}

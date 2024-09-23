@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // StorageMonitorLinux unit tests.
 
 #include "components/storage_monitor/storage_monitor_linux.h"
@@ -327,7 +332,7 @@ class StorageMonitorLinuxTest : public testing::Test {
   std::unique_ptr<TestStorageMonitorLinux> monitor_;
 };
 
-// TODO(https://crbug.com/1297464): This test is flaky.
+// TODO(crbug.com/40822314): This test is flaky.
 // Simple test case where we attach and detach a media device.
 TEST_F(StorageMonitorLinuxTest, DISABLED_BasicAttachDetach) {
   base::FilePath test_path = CreateMountPointWithDCIMDir(kMountPointA);

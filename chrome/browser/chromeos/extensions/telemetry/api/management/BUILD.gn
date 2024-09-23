@@ -32,7 +32,7 @@ source_set("management") {
   public_deps = [ "//extensions/browser" ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/telemetry_extension/management" ]
+    deps += [ "//chromeos/ash/components/telemetry_extension/management" ]
   }
 
   if (is_chromeos_lacros) {
@@ -54,7 +54,6 @@ source_set("browser_tests") {
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
-    "//chrome/browser/chromeos/telemetry:test_support",
     "//chromeos/crosapi/mojom",
     "//content/test:test_support",
     "//extensions/common",
@@ -70,7 +69,7 @@ source_set("browser_tests") {
       "fake_telemetry_management_service_factory.h",
     ]
 
-    deps += [ "//chrome/browser/ash/telemetry_extension/management" ]
+    deps += [ "//chromeos/ash/components/telemetry_extension/management" ]
   }
 
   if (is_chromeos_lacros) {

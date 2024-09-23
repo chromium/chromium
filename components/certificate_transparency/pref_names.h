@@ -36,17 +36,6 @@ COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) extern const char kCTExcludedHosts[];
 //    ordering, number of values, and byte-for-byte equality of values.
 COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) extern const char kCTExcludedSPKIs[];
 
-// The set of subjectPublicKeyInfo hashes in the form of
-// <hash-name>"/"<base64-hash-value>. If a certificate matches this SPKI, then
-// Certificate Transparency information is allowed to be absent if:
-// 1) The SPKI listed is a known as a publicly trusted root
-//    (see //net/data/ssl/root_stores)
-// 2) The SPKI listed is not actively trusted in the current version of the
-//    ChromiumOS or Android root stores.
-//    (see '"legacy": true' in root_stores.json)
-COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY)
-extern const char kCTExcludedLegacySPKIs[];
-
 }  // namespace prefs
 }  // namespace certificate_transparency
 

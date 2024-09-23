@@ -9,10 +9,10 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
-#include "chrome/browser/ui/views/permissions/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -96,7 +96,7 @@ class PermissionDashboardUnitTest : public TestWithBrowserView {
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 };
 
-// TODO(crbug.com/1519832): Test LHS indicators animation on macOS as well.
+// TODO(crbug.com/41492809): Test LHS indicators animation on macOS as well.
 #if !BUILDFLAG(IS_MAC)
 // This test verifies:
 // 1. Camera activity indicator chip is shown in verbose form after
@@ -147,9 +147,18 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCamera) {
 
   EXPECT_FALSE(dashboard_controller->is_verbose());
 
-  pscs->OnMediaStreamPermissionSet(GURL("http://a.com"), {});
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
   base::RunLoop().RunUntilIdle();
 
+  ASSERT_TRUE(pscs->get_indicators_hiding_delay_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_CAMERA));
+  EXPECT_TRUE(pscs->get_indicators_hiding_delay_timer_for_testing()
+                  [ContentSettingsType::MEDIASTREAM_CAMERA]
+                      .IsRunning());
+
+  pscs->get_indicators_hiding_delay_timer_for_testing()
+      [ContentSettingsType::MEDIASTREAM_CAMERA]
+          .FireNow();
   EXPECT_FALSE(indicator_chip->GetVisible());
   EXPECT_FALSE(
       pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_CAMERA));
@@ -188,7 +197,20 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraMic) {
       pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_CAMERA));
   EXPECT_TRUE(pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_MIC));
 
-  pscs->OnMediaStreamPermissionSet(GURL("http://a.com"), {});
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
+
+  // Because indicator is displayed for both camera and mic, disabling only one
+  // does not trigger a delay timer.
+  EXPECT_FALSE(pscs->get_indicators_hiding_delay_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_CAMERA));
+
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_MIC, false);
+  ASSERT_TRUE(pscs->get_indicators_hiding_delay_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_MIC));
+
+  pscs->get_indicators_hiding_delay_timer_for_testing()
+      [ContentSettingsType::MEDIASTREAM_MIC]
+          .FireNow();
 
   // Wait for the collapse animation to finish.
   WaitForAnimationCompletion();
@@ -240,25 +262,23 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraAndThenMic) {
 
   EXPECT_FALSE(dashboard_controller->is_verbose());
 
-  pscs->OnMediaStreamPermissionSet(
-      GURL("http://a.com"),
-      {content_settings::PageSpecificContentSettings::kCameraAccessed,
-       content_settings::PageSpecificContentSettings::kMicrophoneAccessed});
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_MIC, true);
 
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(indicator_chip->GetVisible());
   EXPECT_FALSE(indicator_chip->is_animating());
   // The indicator stays collapsed.
   EXPECT_FALSE(dashboard_controller->is_verbose());
 
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().HasAll(
+      {content_settings::PageSpecificContentSettings::kCameraAccessed,
+       content_settings::PageSpecificContentSettings::kMicrophoneAccessed}));
+
   EXPECT_TRUE(
       pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_CAMERA));
   EXPECT_TRUE(pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_MIC));
 
-  pscs->OnMediaStreamPermissionSet(
-      GURL("http://a.com"),
-      {content_settings::PageSpecificContentSettings::kMicrophoneAccessed});
-  base::RunLoop().RunUntilIdle();
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
+
   EXPECT_TRUE(indicator_chip->GetVisible());
   EXPECT_FALSE(indicator_chip->is_animating());
   // The indicator stays collapsed.
@@ -268,8 +288,14 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraAndThenMic) {
       pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_CAMERA));
   EXPECT_TRUE(pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_MIC));
 
-  pscs->OnMediaStreamPermissionSet(GURL("http://a.com"), {});
-  base::RunLoop().RunUntilIdle();
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_MIC, false);
+  ASSERT_TRUE(pscs->get_indicators_hiding_delay_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_MIC));
+
+  pscs->get_indicators_hiding_delay_timer_for_testing()
+      [ContentSettingsType::MEDIASTREAM_MIC]
+          .FireNow();
+
   EXPECT_FALSE(indicator_chip->GetVisible());
 }
 #endif

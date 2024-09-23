@@ -4,12 +4,12 @@
 
 #include "base/json/json_reader.h"
 #include "base/value_iterators.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
+#include "chrome/browser/apps/app_service/app_icon_source.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profile_resetter/resettable_settings_snapshot.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -30,19 +31,10 @@
 namespace {
 constexpr char kTestApp[] = "https://test.test/";
 
-class ManagementUIPWATest : public web_app::WebAppControllerBrowserTest {
- public:
-  ManagementUIPWATest() { BuildAndInitFeatureList(); }
-
- protected:
-  void BuildAndInitFeatureList() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDesktopPWAsEnforceWebAppSettingsPolicy,
-                              features::kDesktopPWAsRunOnOsLogin},
-        /*disabled_features=*/{});
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
+class ManagementUIPWATest : public web_app::WebAppBrowserTestBase {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kDesktopPWAsRunOnOsLogin};
 };
 
 IN_PROC_BROWSER_TEST_F(ManagementUIPWATest, RunOnOsLoginApplicationsReported) {

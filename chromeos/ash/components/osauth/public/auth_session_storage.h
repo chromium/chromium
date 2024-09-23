@@ -6,7 +6,9 @@
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_PUBLIC_AUTH_SESSION_STORAGE_H_
 
 #include <memory>
+#include <optional>
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
@@ -32,7 +34,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) ScopedSessionRefresher {
 };
 
 // Helper class that stores and manages lifetime of authenticated UserContext.
-// Main usa cases for this class are the situations where authenticated
+// Main use cases for this class are the situations where authenticated
 // operations do not happen immediately after authentication, but require some
 // user input, e.g. setting up additional factors during user onboarding on a
 // first run, or entering authentication-related section of
@@ -46,7 +48,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) ScopedSessionRefresher {
 // returned to storage as soon as operation completes.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorage {
  public:
-  using BorrowCallback = base::OnceCallback<void(std::unique_ptr<UserContext>)>;
   using InvalidationCallback = base::OnceCallback<void(void)>;
 
   // TODO (b/271249180): Define an observer for notifications about token
@@ -79,7 +80,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorage {
   // the context would become invalid before it is returned.
   virtual void BorrowAsync(const base::Location& location,
                            const AuthProofToken& token,
-                           BorrowCallback callback) = 0;
+                           BorrowContextCallback callback) = 0;
 
   // Allows client to obtain UserContext without intent to return it back.
   // Takes precedence over Borrow requests, but not over invalidate
@@ -94,7 +95,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorage {
   // There can be only one Withdraw request at one time, requesting parallel
   // Withdraw request would result in crash.
   virtual void Withdraw(const AuthProofToken& token,
-                        BorrowCallback callback) = 0;
+                        BorrowContextCallback callback) = 0;
 
   // Allows to inspect stored UserContext. The reference is only valid within
   // same UI event, and should not be stored by caller.
@@ -119,6 +120,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorage {
   // refreshed only upon returning.
   virtual std::unique_ptr<ScopedSessionRefresher> KeepAlive(
       const AuthProofToken& token) = 0;
+
+  // Checks whether there is a keep alive for the given token. Used by tests
+  // that verify the usage of ScopedSessionRefresher on certain screens.
+  virtual bool CheckHasKeepAliveForTesting(
+      const AuthProofToken& token) const = 0;
 };
 
 }  // namespace ash

@@ -11,7 +11,6 @@
 #include "base/base64.h"
 #include "base/base_paths.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -536,6 +535,7 @@ void FakeGaia::HandleEmbeddedSetupChromeos(const HttpRequest& request,
 
   GetQueryParameter(request_url.query(), "Email", &prefilled_email_);
   GetQueryParameter(request_url.query(), "rart", &reauth_request_token_);
+  GetQueryParameter(request_url.query(), "pwl", &passwordless_support_level_);
 
   http_response->set_code(net::HTTP_OK);
   http_response->set_content(GetEmbeddedSetupChromeosResponseContent());
@@ -558,6 +558,7 @@ void FakeGaia::HandleEmbeddedReauthChromeos(const HttpRequest& request,
   GetQueryParameter(request_url.query(), "is_device_owner", &is_device_owner_);
   GetQueryParameter(request_url.query(), "Email", &prefilled_email_);
   GetQueryParameter(request_url.query(), "rart", &reauth_request_token_);
+  GetQueryParameter(request_url.query(), "pwl", &passwordless_support_level_);
 
   http_response->set_code(net::HTTP_OK);
   http_response->set_content(GetEmbeddedSetupChromeosResponseContent());
@@ -922,7 +923,7 @@ void FakeGaia::HandleFakeRemoveLocalAccount(
   std::string gaia_id;
   GetQueryParameter(request.GetURL().query(), "gaia_id", &gaia_id);
 
-  if (!base::Erase(configuration_.signed_out_gaia_ids, gaia_id)) {
+  if (!std::erase(configuration_.signed_out_gaia_ids, gaia_id)) {
     http_response->set_code(net::HTTP_BAD_REQUEST);
     return;
   }

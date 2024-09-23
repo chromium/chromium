@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_blink_mojom_traits.h"
 
 #include <utility>
@@ -105,7 +110,7 @@ UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
     case blink::mojom::IDBKeyType::Min:      // Only used in the browser.
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return blink::mojom::IDBKeyDataView::Tag::kOtherNone;
 }
 
@@ -124,8 +129,10 @@ bool UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
     case blink::mojom::IDBKeyDataView::Tag::kBinary: {
       ArrayDataView<uint8_t> bytes;
       data.GetBinaryDataView(&bytes);
-      *out = blink::IDBKey::CreateBinary(SharedBuffer::Create(
-          reinterpret_cast<const char*>(bytes.data()), bytes.size()));
+      *out = blink::IDBKey::CreateBinary(
+          base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
+              Vector<char>(base::span(
+                  reinterpret_cast<const char*>(bytes.data()), bytes.size()))));
       return true;
     }
     case blink::mojom::IDBKeyDataView::Tag::kString: {
@@ -157,17 +164,17 @@ UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
 }
 
 // static
-Vector<uint8_t>
+base::span<const uint8_t>
 UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
     binary(const std::unique_ptr<blink::IDBKey>& key) {
-  return key->Binary()->CopyAs<Vector<uint8_t>>();
+  return base::as_byte_span(key->Binary()->data);
 }
 
 // static
-Vector<uint8_t>
+base::span<const uint8_t>
 StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
     bits(const std::unique_ptr<blink::IDBValue>& input) {
-  return input->Data()->CopyAs<Vector<uint8_t>>();
+  return base::as_byte_span(input->Data());
 }
 
 // static
@@ -219,13 +226,10 @@ bool StructTraits<blink::mojom::IDBValueDataView,
   }
 
   if (value_bits.empty()) {
-    *out = std::make_unique<blink::IDBValue>(scoped_refptr<SharedBuffer>(),
+    *out = std::make_unique<blink::IDBValue>(std::move(value_bits),
                                              Vector<blink::WebBlobInfo>());
     return true;
   }
-
-  scoped_refptr<SharedBuffer> value_buffer =
-      SharedBuffer::AdoptVector(value_bits);
 
   Vector<blink::mojom::blink::IDBExternalObjectPtr> external_objects;
   if (!data.ReadExternalObjects(&external_objects))
@@ -259,7 +263,7 @@ bool StructTraits<blink::mojom::IDBValueDataView,
   }
 
   *out = std::make_unique<blink::IDBValue>(
-      std::move(value_buffer), std::move(value_blob_info),
+      std::move(value_bits), std::move(value_blob_info),
       std::move(file_system_access_tokens));
   return true;
 }
@@ -292,7 +296,7 @@ StructTraits<blink::mojom::IDBKeyPathDataView, blink::IDBKeyPath>::data(
     case blink::mojom::IDBKeyPathType::Null:
       break;  // Not used, NOTREACHED.
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

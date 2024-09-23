@@ -6,18 +6,24 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_INFOBAR_UTILS_H_
 
 #include "components/signin/public/identity_manager/account_info.h"
-#include "content/public/browser/web_contents.h"
 
-class Profile;
-namespace content {
-class WebContents;
-}
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 namespace password_manager {
 
-std::optional<AccountInfo> GetAccountInfoForPasswordMessages(Profile* profile);
+std::optional<AccountInfo> GetAccountInfoForPasswordMessages(
+    syncer::SyncService* sync_service,
+    signin::IdentityManager* identity_manager);
 
-std::string GetDisplayableAccountName(content::WebContents* web_contents);
+std::string GetDisplayableAccountName(
+    syncer::SyncService* sync_service,
+    signin::IdentityManager* identity_manager);
 
 }  // namespace password_manager
 

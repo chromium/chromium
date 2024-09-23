@@ -19,13 +19,13 @@
 #include "base/observer_list.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
-#include "content/browser/renderer_host/navigation_discard_reason.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
 #include "content/browser/renderer_host/render_frame_host_owner.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_type.h"
+#include "content/public/browser/navigation_discard_reason.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-forward.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -73,11 +73,9 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     virtual ~Observer() = default;
   };
 
-  static const int kFrameTreeNodeInvalidId;
-
   // Returns the FrameTreeNode with the given global |frame_tree_node_id|,
   // regardless of which FrameTree it is in.
-  static FrameTreeNode* GloballyFindByID(int frame_tree_node_id);
+  static FrameTreeNode* GloballyFindByID(FrameTreeNodeId frame_tree_node_id);
 
   // Returns the FrameTreeNode for the given |rfh|. Same as
   // rfh->frame_tree_node(), but also supports nullptrs.
@@ -111,14 +109,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   bool IsMainFrame() const;
   bool IsOutermostMainFrame() const;
 
-  // Clears any state in this node which was set by the document itself (CSP &
-  // UserActivationState) and notifies proxies as appropriate. Invoked after
-  // committing navigation to a new document (since the new document comes with
-  // a fresh set of CSP).
-  // TODO(arthursonzogni): Remove this function. The frame/document must not be
-  // left temporarily with lax state.
-  void ResetForNavigation();
-
   FrameTree& frame_tree() const { return frame_tree_.get(); }
   Navigator& navigator();
 
@@ -126,7 +116,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   const RenderFrameHostManager* render_manager() const {
     return &render_manager_;
   }
-  int frame_tree_node_id() const { return frame_tree_node_id_; }
+  FrameTreeNodeId frame_tree_node_id() const { return frame_tree_node_id_; }
   // This reflects window.name, which is initially set to the the "name"
   // attribute. But this won't reflect changes of 'name' attribute and instead
   // reflect changes to the Window object's name property.
@@ -357,7 +347,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
 
   // Similar to `ResetNavigationRequest()`, but keeps the state created by the
   // NavigationRequest (e.g. speculative RenderFrameHost, loading state).
-  void ResetNavigationRequestButKeepState();
+  void ResetNavigationRequestButKeepState(NavigationDiscardReason reason);
 
   // The load progress for a RenderFrameHost in this node was updated to
   // |load_progress|. This will notify the FrameTree which will in turn notify
@@ -529,7 +519,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // Set the current FencedFrameProperties to have "opaque ads mode".
   // This should only be used during tests, when the proper embedder-initiated
   // fenced frame root urn/config navigation flow isn't available.
-  // TODO(crbug.com/1347953): Refactor and expand use of test utils so there is
+  // TODO(crbug.com/40233168): Refactor and expand use of test utils so there is
   // a consistent way to do this properly everywhere. Consider removing
   // arbitrary restrictions in "default mode" so that using opaque ads mode is
   // less necessary.
@@ -561,7 +551,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // correct after the RenderFrameHost is moved between FrameTreeNodes. The
   // renderers should already have the correct value, so unlike
   // FrameTreeNode::SetFrameName, we do not notify them here.
-  // TODO(https://crbug.com/1237091): Remove this once the BrowsingContextState
+  // TODO(crbug.com/40192974): Remove this once the BrowsingContextState
   //  is implemented to utilize the new path.
   void set_frame_name_for_activation(const std::string& unique_name,
                                      const std::string& name) {
@@ -579,7 +569,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
 
   void set_fenced_frame_properties(
       const std::optional<FencedFrameProperties>& fenced_frame_properties) {
-    // TODO(crbug.com/1262022): Reenable this DCHECK once ShadowDOM and
+    // TODO(crbug.com/40202462): Reenable this DCHECK once ShadowDOM and
     // loading urns in iframes (for FLEDGE OT) are gone.
     // DCHECK_EQ(fenced_frame_status_,
     //          RenderFrameHostImpl::FencedFrameStatus::kFencedFrameRoot);
@@ -600,30 +590,20 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // frame.
   // Clients should decide which one to use depending on how the application of
   // the fenced frame properties interact with urn iframes.
-  // TODO(crbug.com/1355857): Once navigation support for urn::uuid in iframes
+  // TODO(crbug.com/40060657): Once navigation support for urn::uuid in iframes
   // is deprecated, remove the parameter `node_source`.
   std::optional<FencedFrameProperties>& GetFencedFrameProperties(
       FencedFramePropertiesNodeSource node_source =
           FencedFramePropertiesNodeSource::kClosestAncestor);
 
+  // Helper function for getting the FrameTreeNode that houses the relevant
+  // FencedFrameProperties when GetFencedFrameProperties() is called with
+  // kClosestAncestor.
+  FrameTreeNode* GetClosestAncestorWithFencedFrameProperties();
+
   bool HasFencedFrameProperties() const {
     return fenced_frame_properties_.has_value();
   }
-
-  // Called from the currently active document via the
-  // `Fence.setReportEventDataForAutomaticBeacons` JS API.
-  void SetFencedFrameAutomaticBeaconReportEventData(
-      blink::mojom::AutomaticBeaconType event_type,
-      const std::string& event_data,
-      const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      bool once,
-      bool cross_origin_exposed) override;
-
-  // Helper function to clear out automatic beacon data after one automatic
-  // beacon if `once` was set to true when calling
-  // `setReportEventDataForAutomaticBeacons()`.
-  void MaybeResetFencedFrameAutomaticBeaconReportEventData(
-      blink::mojom::AutomaticBeaconType event_type);
 
   // Returns the number of fenced frame boundaries above this frame. The
   // outermost main frame's frame tree has fenced frame depth 0, a topmost
@@ -634,7 +614,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // number of fenced frame boundaries (roots) above this frame that originate
   // from shared storage. This is used to check whether a fenced frame
   // originates from shared storage only (i.e. not from FLEDGE).
-  // TODO(crbug.com/1347953): Remove this check once we put permissions inside
+  // TODO(crbug.com/40233168): Remove this check once we put permissions inside
   // FencedFrameConfig.
   size_t GetFencedFrameDepth(size_t& shared_storage_fenced_frame_root_count);
 
@@ -730,13 +710,15 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       const GURL& original_url,
       std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
       int http_response_code) override;
-  void CancelNavigation() override;
+  void CancelNavigation(NavigationDiscardReason reason) override;
+  void ResetNavigationsForDiscard() override;
   bool Credentialless() const override;
 #if !BUILDFLAG(IS_ANDROID)
   void GetVirtualAuthenticatorManager(
       mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
           receiver) override;
 #endif
+  FrameType GetCurrentFrameType() const override;
 
   // Restart the navigation restoring the page from the back-forward cache
   // as a regular non-BFCached history navigation.
@@ -782,8 +764,13 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   class OpenerDestroyedObserver;
 
   // The |notification_type| parameter is used for histograms only.
+  // |sticky_only| is set to true when propagating sticky user activation during
+  // cross-document navigations. The transient state remains unchanged.
   bool NotifyUserActivation(
-      blink::mojom::UserActivationNotificationType notification_type);
+      blink::mojom::UserActivationNotificationType notification_type,
+      bool sticky_only = false);
+
+  bool NotifyUserActivationStickyOnly();
 
   bool ConsumeTransientUserActivation();
 
@@ -799,8 +786,8 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // See `RestartBackForwardCachedNavigationAsync()`.
   void RestartBackForwardCachedNavigationImpl(int nav_entry_id);
 
-  // The next available browser-global FrameTreeNode ID.
-  static int next_frame_tree_node_id_;
+  // The browser-global FrameTreeNodeId generator.
+  static FrameTreeNodeId::Generator frame_tree_node_id_generator_;
 
   // The FrameTree owning |this|. It can change with Prerender2 during
   // activation.
@@ -808,7 +795,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
 
   // A browser-global identifier for the frame in the page, which stays stable
   // even if the frame does a cross-process navigation.
-  const int frame_tree_node_id_;
+  const FrameTreeNodeId frame_tree_node_id_;
 
   // The RenderFrameHost owning this FrameTreeNode, which cannot change for the
   // life of this FrameTreeNode. |nullptr| if this node is the root.
@@ -942,7 +929,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
 
   // If this is a fenced frame resulting from a urn:uuid navigation, this
   // contains all the metadata specifying the resulting context.
-  // TODO(crbug.com/1262022): Move this into the FrameTree once ShadowDOM
+  // TODO(crbug.com/40202462): Move this into the FrameTree once ShadowDOM
   // and urn iframes are gone.
   std::optional<FencedFrameProperties> fenced_frame_properties_;
 

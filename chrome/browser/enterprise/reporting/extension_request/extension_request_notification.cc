@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_notification.h"
 
 #include <memory>
@@ -58,10 +63,7 @@ ExtensionRequestNotification::ExtensionRequestNotification(
 ExtensionRequestNotification::~ExtensionRequestNotification() = default;
 
 void ExtensionRequestNotification::Show(NotificationCloseCallback callback) {
-  if (extension_ids_.empty()) {
-    NOTREACHED();
-    return;
-  }
+  CHECK(!extension_ids_.empty());
 
   callback_ = std::move(callback);
 

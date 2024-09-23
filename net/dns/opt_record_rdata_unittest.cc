@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/big_endian.h"
@@ -24,9 +25,9 @@ using ::testing::IsNull;
 using ::testing::NotNull;
 using ::testing::SizeIs;
 
-base::StringPiece MakeStringPiece(const uint8_t* data, unsigned size) {
+std::string_view MakeStringPiece(const uint8_t* data, unsigned size) {
   const char* data_cc = reinterpret_cast<const char*>(data);
-  return base::StringPiece(data_cc, size);
+  return std::string_view(data_cc, size);
 }
 
 TEST(OptRecordRdataTest, ParseOptRecord) {
@@ -43,7 +44,7 @@ TEST(OptRecordRdataTest, ParseOptRecord) {
       0xDE, 0xAD, 0xBE, 0xEF  // OPT data
   };
 
-  base::StringPiece rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
+  std::string_view rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
   std::unique_ptr<OptRecordRdata> rdata_obj =
       OptRecordRdata::Create(rdata_strpiece);
 
@@ -56,7 +57,7 @@ TEST(OptRecordRdataTest, ParseOptRecord) {
 
   // Check elements
 
-  // Note: When passing string or StringPiece as argument, make sure to
+  // Note: When passing string or std::string_view as argument, make sure to
   // construct arguments with length. Otherwise, strings containing a '\0'
   // character will be truncated.
   // https://crbug.com/1348679
@@ -81,8 +82,8 @@ TEST(OptRecordRdataTest, ParseOptRecordWithShorterSizeThanData) {
       0xDE, 0xAD, 0xBE, 0xEF  // OPT data
   };
 
-  DnsRecordParser parser(rdata, sizeof(rdata), 0, /*num_records=*/0);
-  base::StringPiece rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
+  DnsRecordParser parser(rdata, 0, /*num_records=*/0);
+  std::string_view rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
 
   std::unique_ptr<OptRecordRdata> rdata_obj =
       OptRecordRdata::Create(rdata_strpiece);
@@ -98,8 +99,8 @@ TEST(OptRecordRdataTest, ParseOptRecordWithLongerSizeThanData) {
       0xDE, 0xAD   // OPT data
   };
 
-  DnsRecordParser parser(rdata, sizeof(rdata), 0, /*num_records=*/0);
-  base::StringPiece rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
+  DnsRecordParser parser(rdata, 0, /*num_records=*/0);
+  std::string_view rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
 
   std::unique_ptr<OptRecordRdata> rdata_obj =
       OptRecordRdata::Create(rdata_strpiece);
@@ -166,7 +167,7 @@ TEST(OptRecordRdataTest, ParseEdeOptRecords) {
       'M', 'B', 'T', 'A'  // UTF-8 EDE extra text ("MBTA")
   };
 
-  base::StringPiece rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
+  std::string_view rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
   std::unique_ptr<OptRecordRdata> rdata_obj =
       OptRecordRdata::Create(rdata_strpiece);
 
@@ -261,7 +262,7 @@ TEST(OptRecordRdataTest, EdeRecordTooSmall) {
       0x00         // Fragment of Info Code
   };
 
-  base::StringPiece rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
+  std::string_view rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
   std::unique_ptr<OptRecordRdata> rdata_obj =
       OptRecordRdata::Create(rdata_strpiece);
   ASSERT_THAT(rdata_obj, IsNull());
@@ -275,7 +276,7 @@ TEST(OptRecordRdataTest, EdeRecordNoExtraText) {
       0x00, 0x05   // Info Code
   };
 
-  base::StringPiece rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
+  std::string_view rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
   std::unique_ptr<OptRecordRdata> rdata_obj =
       OptRecordRdata::Create(rdata_strpiece);
   ASSERT_THAT(rdata_obj, NotNull());
@@ -296,7 +297,7 @@ TEST(OptRecordRdataTest, EdeRecordExtraTextNonUTF8) {
 
   ASSERT_FALSE(base::IsStringUTF8(std::string("\xb1\x05\xf0\x0d", 4)));
 
-  base::StringPiece rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
+  std::string_view rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
   std::unique_ptr<OptRecordRdata> rdata_obj =
       OptRecordRdata::Create(rdata_strpiece);
   ASSERT_THAT(rdata_obj, IsNull());
@@ -311,7 +312,7 @@ TEST(OptRecordRdataTest, EdeRecordUnknownInfoCode) {
       'B',  'O',  'S', 'T', 'O', 'N'  // Extra Text ("BOSTON")
   };
 
-  base::StringPiece rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
+  std::string_view rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
   std::unique_ptr<OptRecordRdata> rdata_obj =
       OptRecordRdata::Create(rdata_strpiece);
   ASSERT_THAT(rdata_obj, NotNull());
@@ -349,7 +350,7 @@ TEST(OptRecordRdataTest, ParsePaddingOpt) {
       0x0F, 0xB0, 0xBA, 0xFE, 0x77,
   };
 
-  base::StringPiece rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
+  std::string_view rdata_strpiece = MakeStringPiece(rdata, sizeof(rdata));
   std::unique_ptr<OptRecordRdata> rdata_obj =
       OptRecordRdata::Create(rdata_strpiece);
 

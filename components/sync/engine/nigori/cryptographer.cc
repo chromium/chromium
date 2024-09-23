@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "components/sync/protocol/encryption.pb.h"
 
 namespace syncer {
 

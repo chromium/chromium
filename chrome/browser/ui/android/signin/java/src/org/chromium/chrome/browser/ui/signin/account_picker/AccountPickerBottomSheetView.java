@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.Space;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -54,9 +56,9 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     /**
-     * The title id for each screen of the bottom sheet's view flipper, the position of
-     * each id corresponds to the value of {@link ViewState}. It is used to set focus
-     * on title when the view flipper moves to a new screen.
+     * The title id for each screen of the bottom sheet's view flipper, the position of each id
+     * corresponds to the value of {@link ViewState}. It is used to set focus on title when the view
+     * flipper moves to a new screen.
      */
     private static final @IdRes int[] sTitleIds =
             new int[] {
@@ -66,6 +68,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 R.id.account_picker_signin_in_progress_title,
                 R.id.account_picker_general_error_title,
                 R.id.account_picker_auth_error_title,
+                R.id.account_picker_confirm_management_title,
             };
 
     private final Activity mActivity;
@@ -74,7 +77,10 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final ViewFlipper mViewFlipper;
     private final RecyclerView mAccountListView;
     private final View mSelectedAccountView;
+    private final View mSigninInProgressView;
     private final ButtonCompat mDismissButton;
+    private final Space mDismissButtonGoneMarginSpace;
+    private @Nullable @ViewState Integer mCurrentViewState;
 
     /**
      * @param activity The activity that hosts this view. Used for inflating views.
@@ -83,9 +89,14 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     AccountPickerBottomSheetView(Activity activity, BackPressListener backPressListener) {
         mActivity = activity;
         mBackPressListener = backPressListener;
-        mContentView =
-                LayoutInflater.from(mActivity)
-                        .inflate(R.layout.account_picker_bottom_sheet_view, null);
+
+        int contentLayoutId =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        ? R.layout.account_picker_bottom_sheet_view
+                        : R.layout.account_picker_bottom_sheet_view_old;
+
+        mContentView = LayoutInflater.from(mActivity).inflate(contentLayoutId, null);
 
         mViewFlipper = mContentView.findViewById(R.id.account_picker_state_view_flipper);
         checkViewFlipperChildrenAndViewStateMatch(mViewFlipper);
@@ -100,20 +111,40 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 mViewFlipper
                         .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
                         .findViewById(R.id.account_picker_selected_account);
+        mSigninInProgressView =
+                mViewFlipper
+                        .getChildAt(ViewState.SIGNIN_IN_PROGRESS)
+                        .findViewById(R.id.account_picker_state_signin_in_progress);
         mDismissButton =
                 mViewFlipper
                         .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
                         .findViewById(R.id.account_picker_dismiss_button);
+        mDismissButtonGoneMarginSpace =
+                mViewFlipper
+                        .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
+                        .findViewById(R.id.account_picker_dismiss_button_gone_margin_space);
 
         setUpContinueButton(
                 mViewFlipper.getChildAt(ViewState.NO_ACCOUNTS),
                 R.string.signin_add_account_to_device);
+        setUpContinueButton(
+                mViewFlipper.getChildAt(ViewState.CONFIRM_MANAGEMENT), R.string.continue_button);
         setUpContinueButton(
                 mViewFlipper.getChildAt(ViewState.SIGNIN_GENERAL_ERROR),
                 R.string.signin_account_picker_general_error_button);
         setUpContinueButton(
                 mViewFlipper.getChildAt(ViewState.SIGNIN_AUTH_ERROR),
                 R.string.auth_error_card_button);
+
+        mViewFlipper
+                .getChildAt(ViewState.CONFIRM_MANAGEMENT)
+                .findViewById(R.id.confirm_management_cancel_button)
+                .setOnClickListener((View v) -> handleBackPress());
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            getAccountListView().addItemDecoration(new AccountPickerItemDecoration());
+        }
     }
 
     /** The account list view is visible when the account list is expanded. */
@@ -144,7 +175,27 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
     /** Sets the displayed view according to the given {@link ViewState}. */
     void setDisplayedView(@ViewState int state) {
+        if (mCurrentViewState != null && mCurrentViewState == state) {
+            return;
+        }
+
         mViewFlipper.setDisplayedChild(state);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                && state == ViewState.SIGNIN_IN_PROGRESS
+                && mCurrentViewState != null) {
+            // The goal here is to make the progress view take the height of the previously shown
+            // view, to prevent the bottom sheet from "jumping" visually.
+            // (See https://crbug.com/327127097)
+            //
+            // At this point, all other children of mViewFlipper are set to `GONE` by
+            // `mViewFlipper.setDisplayedChild` above.
+            // Here, the previous view's visibility is set to `INVISIBLE` instead. Since the
+            // progress view's height is `MATCH_PARENT` and it's minimal height is smaller,
+            // the bottom sheet view's height will be defined by the invisible previous view, making
+            // the progress view having the same height than the previous view in consequence.
+            mViewFlipper.getChildAt(mCurrentViewState).setVisibility(View.INVISIBLE);
+        }
+        mCurrentViewState = state;
         View titleView = mViewFlipper.getChildAt(state).findViewById(sTitleIds[state]);
         titleView.setFocusable(true);
         titleView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
@@ -153,16 +204,23 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     /**
      * Updates the views related to the selected account.
      *
-     * This method only updates the UI elements like text related to the selected account, it
+     * <p>This method only updates the UI elements like text related to the selected account, it
      * does not change the visibility.
      */
     void updateSelectedAccount(DisplayableProfileData accountProfileData) {
         View view = mViewFlipper.getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST);
-        ExistingAccountRowViewBinder.bindAccountView(accountProfileData, mSelectedAccountView);
-
+        ExistingAccountRowViewBinder.bindAccountView(
+                accountProfileData, mSelectedAccountView, /* isCurrentlySelected= */ true);
         ButtonCompat continueButton = view.findViewById(R.id.account_picker_continue_as_button);
         continueButton.setText(
                 SigninUtils.getContinueAsButtonText(view.getContext(), accountProfileData));
+    }
+
+    void updateSelectedDomain(String domain) {
+        TextViewWithLeading confirmManagementDescription =
+                mViewFlipper.findViewById(R.id.account_picker_confirm_management_description);
+        confirmManagementDescription.setText(
+                mActivity.getString(R.string.managed_signin_with_user_policy_subtitle, domain));
     }
 
     /** Sets the title, subtitle, and dismiss button text. */
@@ -174,10 +232,23 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         for (int viewState : viewStates) {
             final View view = mViewFlipper.getChildAt(viewState);
             ((TextView) view.findViewById(R.id.account_picker_header_title)).setText(title);
-            ((TextViewWithLeading) view.findViewById(R.id.account_picker_header_subtitle))
-                    .setText(subtitle);
+
+            TextViewWithLeading subtitleView =
+                    view.findViewById(R.id.account_picker_header_subtitle);
+            if (subtitle == 0) {
+                subtitleView.setVisibility(View.GONE);
+            } else {
+                subtitleView.setText(subtitle);
+                subtitleView.setVisibility(View.VISIBLE);
+            }
         }
-        mDismissButton.setText(cancelButton);
+
+        if (cancelButton == 0) {
+            showDismissButton(false);
+        } else {
+            mDismissButton.setText(cancelButton);
+            showDismissButton(true);
+        }
     }
 
     @Override
@@ -254,6 +325,11 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         return R.string.account_picker_bottom_sheet_accessibility_closed;
     }
 
+    @Override
+    public boolean shouldLongPressMoveSheet() {
+        return true;
+    }
+
     private static void setUpContinueButton(View view, @StringRes int buttonId) {
         ButtonCompat continueButton = view.findViewById(R.id.account_picker_continue_as_button);
         continueButton.setText(buttonId);
@@ -276,12 +352,26 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 R.id.account_picker_state_general_error);
         checkViewFlipperChildIdAndViewStateMatch(
                 viewFlipper, ViewState.SIGNIN_AUTH_ERROR, R.id.account_picker_state_auth_error);
+        checkViewFlipperChildIdAndViewStateMatch(
+                viewFlipper,
+                ViewState.CONFIRM_MANAGEMENT,
+                R.id.account_picker_state_confirm_management);
     }
 
     private static void checkViewFlipperChildIdAndViewStateMatch(
             ViewFlipper viewFlipper, @ViewState int viewState, @IdRes int expectedChildId) {
         if (viewFlipper.getChildAt(viewState).getId() != expectedChildId) {
             throw new IllegalArgumentException("Match failed with ViewState:" + viewState);
+        }
+    }
+
+    private void showDismissButton(boolean shouldShow) {
+        if (shouldShow) {
+            mDismissButton.setVisibility(View.VISIBLE);
+            mDismissButtonGoneMarginSpace.setVisibility(View.GONE);
+        } else {
+            mDismissButton.setVisibility(View.GONE);
+            mDismissButtonGoneMarginSpace.setVisibility(View.VISIBLE);
         }
     }
 }

@@ -28,10 +28,18 @@ class ControlledFrameExtensionsRendererAPIProvider
   ControlledFrameExtensionsRendererAPIProvider& operator=(
       const ControlledFrameExtensionsRendererAPIProvider&) = delete;
 
-  void EnableCustomElementAllowlist() override;
+  void RegisterNativeHandlers(
+      extensions::ModuleSystem* module_system,
+      extensions::NativeExtensionBindingsSystem* bindings_system,
+      extensions::V8SchemaRegistry* v8_schema_registry,
+      extensions::ScriptContext* context) const override;
+  void AddBindingsSystemHooks(extensions::Dispatcher* dispatcher,
+                              extensions::NativeExtensionBindingsSystem*
+                                  bindings_system) const override;
   void PopulateSourceMap(
-      extensions::ResourceBundleSourceMap* source_map) override;
-  bool RequireWebViewModules(extensions::ScriptContext* context) override;
+      extensions::ResourceBundleSourceMap* source_map) const override;
+  void EnableCustomElementAllowlist() const override;
+  void RequireWebViewModules(extensions::ScriptContext* context) const override;
 };
 
 }  // namespace controlled_frame

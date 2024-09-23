@@ -41,7 +41,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
@@ -53,6 +52,7 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl.DismissNotificationChromeActivity;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -70,7 +70,6 @@ import org.chromium.components.commerce.core.ShoppingService;
     "force-fieldtrials=Study/Group",
     "force-fieldtrial-params=Study.Group:user_managed_notification_max_number/2"
 })
-@DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 public class PriceDropNotificationManagerTest {
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =
             "android.settings.APP_NOTIFICATION_SETTINGS";
@@ -105,11 +104,11 @@ public class PriceDropNotificationManagerTest {
     public void setUp() {
         mMockNotificationManager = new MockNotificationManagerProxy();
         PriceDropNotificationManagerImpl.setNotificationManagerForTesting(mMockNotificationManager);
-        mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create();
+        mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create(mMockProfile);
         when(mMockBookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
-        PriceDropNotificationManagerImpl.setBookmarkModelForTesting(mMockBookmarkModel);
+        BookmarkModel.setInstanceForTesting(mMockBookmarkModel);
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
-        Profile.setLastUsedProfileForTesting(mMockProfile);
+        ProfileManager.setLastUsedProfileForTesting(mMockProfile);
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
     }
 

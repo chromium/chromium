@@ -4,11 +4,12 @@
 
 #include "gpu/command_buffer/service/shared_image/dawn_gl_texture_representation.h"
 
+#include <dawn/native/OpenGLBackend.h>
+
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
-
-#include <dawn/native/OpenGLBackend.h>
+#include "gpu/config/gpu_finch_features.h"
 
 namespace {
 GLenum ToSharedImageAccessGLMode(wgpu::TextureUsage usage) {
@@ -41,18 +42,29 @@ DawnGLTextureRepresentation::~DawnGLTextureRepresentation() {
 }
 
 wgpu::Texture DawnGLTextureRepresentation::BeginAccess(
-    wgpu::TextureUsage usage) {
-  gl_representation_->BeginAccess(ToSharedImageAccessGLMode(usage));
+    wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage) {
+  auto usage_to_check = usage;
+  if (base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+    usage_to_check |= internal_usage;
+  }
+  gl_representation_->BeginAccess(ToSharedImageAccessGLMode(usage_to_check));
   wgpu::TextureDescriptor texture_descriptor = {};
   texture_descriptor.nextInChain = nullptr;
 
-  // TODO(crbug.com/1472861): implement support for multiplanar formats.
+  // TODO(crbug.com/40278761): implement support for multiplanar formats.
   texture_descriptor.format = ToDawnFormat(format());
 
-  // Add internal TextureBinding usage for copyTextureForBrowser().
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  internalDesc.internalUsage =
-      wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::RenderAttachment;
+  if (base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+    internalDesc.internalUsage = internal_usage;
+  } else {
+    // Add internal TextureBinding usage for copyTextureForBrowser().
+    internalDesc.internalUsage = wgpu::TextureUsage::TextureBinding |
+                                 wgpu::TextureUsage::RenderAttachment;
+  }
 
   texture_descriptor.nextInChain = &internalDesc;
 
@@ -63,7 +75,7 @@ wgpu::Texture DawnGLTextureRepresentation::BeginAccess(
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
 
-  // TODO(crbug.com/1424119): once the forceReadback path is removed, determine
+  // TODO(crbug.com/40897964): once the forceReadback path is removed, determine
   // the correct set of internal usages to apply and add
   // DawnTextureInternalUsageDescriptor to the descriptor chain.
 

@@ -1,0 +1,180 @@
+{
+	"archive_datas": [
+        {
+            "files": [
+                "chrome.exe",
+                "chrome.dll",
+                "chrome_100_percent.pak",
+                "chrome_200_percent.pak",
+                "chrome_elf.dll",
+                "chrome_proxy.exe",
+                "chrome_pwa_launcher.exe",
+                "chrome_wer.dll",
+                "D3DCompiler_47.dll",
+                "dxcompiler.dll",
+                "dxil.dll",
+                "elevation_service.exe",
+                "eventlog_provider.dll",
+                "First Run",
+                "icudtl.dat",
+                "interactive_ui_tests.exe",
+                "libEGL.dll",
+                "libGLESv2.dll",
+                "MEIPreload\\manifest.json",
+                "MEIPreload\\preloaded_data.pb",
+                "notification_helper.exe",
+                "PrivacySandboxAttestationsPreloaded\\manifest.json",
+                "PrivacySandboxAttestationsPreloaded\\privacy-sandbox-attestations.dat",
+                "resources.pak",
+                "setup.exe",
+                "v8_context_snapshot.bin",
+                "vk_swiftshader.dll",
+                "vk_swiftshader_icd.json",
+                "vulkan-1.dll"
+            ],
+            "file_globs": [
+                "locales\\*.pak",
+                "*.manifest"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chrome-win"}
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Win_Arm64/{%position%}/chrome-win.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP",
+            "latest_upload": {
+                "gcs_path": "Win_Arm64/LAST_CHANGE",
+                "gcs_file_content": "{%position%}"
+            },
+            "revisions_file": {
+                "gcs_path": "Win_Arm64/{%position%}/REVISIONS"
+            }
+        },
+        {
+            "files": [
+                "chrome.dll.pdb",
+                "chrome.exe.pdb",
+                "chrome_elf.dll.pdb",
+                "chrome_proxy.exe.pdb",
+                "chrome_pwa_launcher.exe.pdb",
+                "chrome_wer.dll.pdb",
+                "elevation_service.exe.pdb",
+                "eventlog_provider.dll.pdb",
+                "gaia1_0.dll.pdb",
+                "gcapi_dll.dll.pdb",
+                "gcp_setup.exe.pdb",
+                "libEGL.dll.pdb",
+                "libGLESv2.dll.pdb",
+                "mini_installer.exe.pdb",
+                "notification_helper.exe.pdb",
+                "setup.exe.pdb",
+                "vk_swiftshader.dll.pdb",
+                "vulkan-1.dll.pdb"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chrome-win64-syms"}
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Win_Arm64/{%position%}/chrome-win64-syms.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "files": [
+                "chromedriver.exe.pdb"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chromedriver_win64-syms"}
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Win_Arm64/{%position%}/chromedriver_win64-syms.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "files": [
+                "chromedriver.exe",
+                "LICENSE.chromedriver"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chromedriver_win64"}
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Win_Arm64/{%position%}/chromedriver_win64.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "files": [
+                "content_shell.exe",
+                "content_shell.pak",
+                "icudtl.dat",
+                "v8_context_snapshot.bin"
+            ],
+            "dirs": ["resources"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "content-shell"}
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Win_Arm64/{%position%}/content-shell.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "dirs": ["gen\\third_party\\devtools-frontend\\src\\front_end"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "devtools-frontend"}
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Win_Arm64/{%position%}/devtools-frontend.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "files": [
+                "gcapi.h",
+                "gcapi_dll.dll",
+                "gcapi_dll.dll.lib"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "gcapi"}
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Win_Arm64/{%position%}/gcapi.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "files": [
+                "actions.xml",
+                "histograms.xml",
+                "ukm.xml"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "metrics-metadata"}
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Win_Arm64/{%position%}/metrics-metadata.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "files": [
+                "mini_installer.exe"
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Win_Arm64/{%position%}",
+            "archive_type": "ARCHIVE_TYPE_FILES"
+        },
+        {
+            "files": [
+                "updater.zip"
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Win_Arm64/{%position%}",
+            "archive_type": "ARCHIVE_TYPE_FILES"
+        },
+        {
+            "files": [
+                "updater.exe.pdb",
+                "UpdaterSetup.exe.pdb"
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Win_Arm64/{%position%}/updater-syms.zip",
+            "archive_type":"ARCHIVE_TYPE_ZIP"
+        }
+    ]
+}

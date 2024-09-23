@@ -2,17 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/public/browser/back_forward_cache.h"
+
 #include <string>
+#include <string_view>
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -205,6 +209,8 @@ class ExtensionBackForwardCacheBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// These tests use chrome.tabs.executeScript, so the SW versions of the tests
+// must still be run with MV2. See crbug.com/332328868.
 INSTANTIATE_TEST_SUITE_P(EventPageAndFalse,
                          ExtensionBackForwardCacheBrowserTest,
                          ::testing::Values(TestParams{
@@ -214,7 +220,7 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndFalse,
                          ExtensionBackForwardCacheBrowserTest,
                          ::testing::Values(TestParams{
                              .enable_disconnect_message_port_on_bfcache = false,
-                             .context_type = ContextType::kServiceWorker}));
+                             .context_type = ContextType::kServiceWorkerMV2}));
 INSTANTIATE_TEST_SUITE_P(EventPageAndTrue,
                          ExtensionBackForwardCacheBrowserTest,
                          ::testing::Values(TestParams{
@@ -224,7 +230,7 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorkerAndTrue,
                          ExtensionBackForwardCacheBrowserTest,
                          ::testing::Values(TestParams{
                              .enable_disconnect_message_port_on_bfcache = true,
-                             .context_type = ContextType::kServiceWorker}));
+                             .context_type = ContextType::kServiceWorkerMV2}));
 
 IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest, ScriptAllowed) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
@@ -953,7 +959,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
   ASSERT_TRUE(iframe.get());
 
   // Cache the iframe's frame tree node id to send it a message later.
-  int iframe_frame_tree_node_id = iframe->GetFrameTreeNodeId();
+  content::FrameTreeNodeId iframe_frame_tree_node_id =
+      iframe->GetFrameTreeNodeId();
 
   // 2) Navigate to B.
   content::RenderFrameHostWrapper render_frame_host_b(
@@ -978,10 +985,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
           chrome.test.sendScriptResult(chrome.runtime.lastError ? 'false'
         : 'true')});
       )HTML";
-  EXPECT_EQ("false",
-            ExecuteScriptInBackgroundPage(
-                extension->id(),
-                base::StringPrintf(kScript, iframe_frame_tree_node_id)));
+  EXPECT_EQ("false", ExecuteScriptInBackgroundPage(
+                         extension->id(),
+                         base::StringPrintf(
+                             kScript, iframe_frame_tree_node_id.value())));
   // Go back to A.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -989,22 +996,16 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents));
 
   // Re-execute the script.
-  EXPECT_EQ("true",
-            ExecuteScriptInBackgroundPage(
-                extension->id(),
-                base::StringPrintf(kScript, iframe_frame_tree_node_id)));
+  EXPECT_EQ("true", ExecuteScriptInBackgroundPage(
+                        extension->id(),
+                        base::StringPrintf(kScript,
+                                           iframe_frame_tree_node_id.value())));
 }
 
-// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_StorageCallbackEvicts DISABLED_StorageCallbackEvicts
-#else
-#define MAYBE_StorageCallbackEvicts StorageCallbackEvicts
-#endif
 // Test that running extensions message dispatching via a ScriptContext::ForEach
 // for back forward cached pages causes eviction of that RenderFrameHost.
 IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
-                       MAYBE_StorageCallbackEvicts) {
+                       StorageCallbackEvicts) {
   const Extension* extension = extension =
       LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
                         .AppendASCII("content_script_storage"));
@@ -1195,7 +1196,7 @@ class ExtensionBackForwardCacheMetricsBrowserTest
     // Enable extension sync, otherwise the new source url entry will be
     // dropped.
     test_ukm_recorder_->SetIsWebstoreExtensionCallback(
-        base::BindRepeating([](base::StringPiece) { return true; }));
+        base::BindRepeating([](std::string_view) { return true; }));
   }
 
  protected:
@@ -1306,7 +1307,7 @@ IN_PROC_BROWSER_TEST_P(
     // extension URL.
     ASSERT_EQ(2u, entries.size());
 
-    std::vector<const GURL> entry_urls;
+    std::vector<GURL> entry_urls;
     for (const ukm::mojom::UkmEntry* const entry : entries) {
       auto* src = test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
       EXPECT_TRUE(src)
@@ -1364,7 +1365,7 @@ IN_PROC_BROWSER_TEST_P(
         << "Another 2 UKM metrics with different source ID should be recorded "
            "from the second navigation";
 
-    std::vector<const GURL> entry_urls;
+    std::vector<GURL> entry_urls;
     for (const ukm::mojom::UkmEntry* const entry : entries) {
       auto* src = test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
       ASSERT_TRUE(src)

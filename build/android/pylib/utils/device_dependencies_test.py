@@ -48,5 +48,32 @@ class DevicePathComponentsForTest(unittest.TestCase):
                          test_path, output_directory))
 
 
+class SubstituteDeviceRootTest(unittest.TestCase):
+
+  def testNoneDevicePath(self):
+    self.assertEqual(
+        '/fake/device/root',
+        device_dependencies.SubstituteDeviceRootSingle(None,
+                                                       '/fake/device/root'))
+
+  def testStringDevicePath(self):
+    self.assertEqual(
+        '/another/fake/device/path',
+        device_dependencies.SubstituteDeviceRootSingle(
+            '/another/fake/device/path', '/fake/device/root'))
+
+  def testListWithNoneDevicePath(self):
+    self.assertEqual(
+        '/fake/device/root/subpath',
+        device_dependencies.SubstituteDeviceRootSingle([None, 'subpath'],
+                                                       '/fake/device/root'))
+
+  def testListWithoutNoneDevicePath(self):
+    self.assertEqual(
+        '/another/fake/device/path',
+        device_dependencies.SubstituteDeviceRootSingle(
+            ['/', 'another', 'fake', 'device', 'path'], '/fake/device/root'))
+
+
 if __name__ == '__main__':
   unittest.main()

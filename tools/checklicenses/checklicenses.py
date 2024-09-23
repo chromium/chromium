@@ -527,9 +527,6 @@ PATH_SPECIFIC_ALLOWLISTED_LICENSES = {
     'tools/python/google/__init__.py': [
         'UNKNOWN',
     ],
-    'tools/stats_viewer/Properties/AssemblyInfo.cs': [
-        'UNKNOWN',
-    ],
     'tools/symsrc/pefile.py': [
         'UNKNOWN',
     ],
@@ -569,9 +566,6 @@ PATH_SPECIFIC_ALLOWLISTED_LICENSES = {
 EXCLUDED_PATHS = [
     # Don't check generated files
     re.compile('^out/'),
-
-    # Don't check downloaded goma client binaries
-    re.compile('^build/goma/client/'),
 
     # Don't check sysroot directories
     re.compile('^build/linux/.+-sysroot/'),

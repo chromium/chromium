@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.pwd_migration;
 
 import android.content.Context;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -16,8 +17,9 @@ public class PostPasswordMigrationSheetCoordinator {
             new PostPasswordMigrationSheetMediator();
 
     public PostPasswordMigrationSheetCoordinator(
-            Context context, BottomSheetController sheetController) {
+            Context context, BottomSheetController sheetController, Profile profile) {
         mMediator.initialize(
+                profile,
                 PostPasswordMigrationSheetProperties.createDefaultModel(mMediator::onDismissed));
         setUpModelChangeProcessors(
                 mMediator.getModel(), new PostPasswordMigrationSheetView(context, sheetController));

@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+[FAIL] Property box-shadow-color value 'currentcolor'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value 'transparent'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value 'red'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value 'magenta'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value '#234'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value '#FEDCBA'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value 'rgb(2, 3, 4)'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value 'rgb(100%, 0%, 0%)'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value 'rgba(2, 3, 4, 0.5)'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value 'rgba(2, 3, 4, 50%)'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value 'hsl(120, 100%, 50%)'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value 'hsla(120, 100%, 50%, 0.25)'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value 'rgb(-2, 3, 4)'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value 'rgb(100, 200, 300)'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value 'rgb(20, 10, 0, -10)'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value 'rgb(100%, 200%, 300%)'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-color value 'red, blue'
+  assert_true: box-shadow-color doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

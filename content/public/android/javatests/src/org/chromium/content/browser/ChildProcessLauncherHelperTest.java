@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BaseSwitches;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
@@ -37,9 +38,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.ChildProcessAllocatorSettings;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ChildProcessLauncherTestHelperService;
 import org.chromium.content_shell_apk.ChildProcessLauncherTestUtils;
 import org.chromium.content_shell_apk.ContentShellActivity;
@@ -81,11 +80,10 @@ public class ChildProcessLauncherHelperTest {
     @Test
     @MediumTest
     @Feature({"ProcessManagement"})
-    @ChildProcessAllocatorSettings(
-            sandboxedServiceCount = 2,
-            sandboxedServiceName = DEFAULT_SANDBOXED_PROCESS_SERVICE)
     @DisabledTest(message = "Flaky - crbug.com/752691")
     public void testBindServiceFromMultipleProcesses() throws RemoteException {
+        ChildProcessLauncherHelperImpl.setSandboxServicesSettingsForTesting(
+                /* factory= */ null, 2, DEFAULT_SANDBOXED_PROCESS_SERVICE);
         final Context context = InstrumentationRegistry.getTargetContext();
 
         // Start the Helper service.
@@ -235,9 +233,9 @@ public class ChildProcessLauncherHelperTest {
     }
 
     private static void warmUpOnUiThreadBlocking(final Context context, boolean sandboxed) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ChildProcessLauncherHelperImpl.warmUp(context, sandboxed);
+                    ChildProcessLauncherHelperImpl.warmUpOnAnyThread(context, sandboxed);
                 });
         ChildProcessConnection connection = getWarmUpConnection(sandboxed);
         Assert.assertNotNull(connection);
@@ -415,7 +413,7 @@ public class ChildProcessLauncherHelperTest {
                 ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
                         () -> connection.isStrongBindingBound()));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> ApplicationStatus.onStateChangeForTesting(activity, ActivityState.STOPPED));
         Assert.assertFalse(ApplicationStatus.hasVisibleActivities());
         Assert.assertFalse(
@@ -432,7 +430,7 @@ public class ChildProcessLauncherHelperTest {
         final ContentShellActivity activity =
                 mActivityTestRule.launchContentShellWithUrl("about:blank");
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> ApplicationStatus.onStateChangeForTesting(activity, ActivityState.STOPPED));
         Assert.assertFalse(ApplicationStatus.hasVisibleActivities());
 

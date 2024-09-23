@@ -11,27 +11,22 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
-import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/buttons/oobe_text_button.js';
 
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './factor_setup_success.html.js';
 
 const FactorSetupSuccessBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
-    };
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
 // LINT.IfChange
 /**
@@ -113,8 +108,8 @@ export class FactorSetupSuccessScreen extends FactorSetupSuccessBase {
 
   /** Initial UI State for screen */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): OOBE_UI_STATE {
-    return OOBE_UI_STATE.BLOCKING;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.BLOCKING;
   }
 
   /** Returns a control which should receive an initial focus. */
@@ -128,6 +123,7 @@ export class FactorSetupSuccessScreen extends FactorSetupSuccessBase {
    * Invoked just before being shown. Contains all the data for the screen.
    */
   override onBeforeShow(data: FactorSetupSuccessScreenData): void {
+    super.onBeforeShow(data);
     this.factors = data['modifiedFactors'];
     this.changeMode = data['changeMode'];
     this.hasNextStep = this.changeMode === ChangeMode.INITIAL_SETUP;

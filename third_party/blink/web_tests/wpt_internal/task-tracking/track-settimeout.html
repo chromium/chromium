@@ -5,16 +5,17 @@
 <title>Verify that setTimeout tasks can be properly tracked.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/task-ids.js"></script>
 </head>
 <body>
 <script>
 promise_test(() => {
   return new Promise(async (resolve, reject) => {
-    const initialId = scheduler.taskId;
+    const initialId = initializeTaskId();
     await new Promise(resolve => setTimeout(resolve, 0));
     queueMicrotask(() => {
       try {
-        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        assert_equals(scheduler.taskId, initialId);
         resolve();
       } catch {
         reject("Not an ancestor");
@@ -25,14 +26,14 @@ promise_test(() => {
 
 promise_test(() => {
   return new Promise(async (resolve, reject) => {
-    const initialId = scheduler.taskId;
+    const initialId = initializeTaskId();
     await new Promise(internal_resolve => {
       window.resolve = internal_resolve;
       setTimeout("resolve()", 100);
     });
     queueMicrotask(() => {
       try {
-        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        assert_equals(scheduler.taskId, initialId);
         resolve();
       } catch {
         reject("Not an ancestor");
@@ -49,7 +50,7 @@ promise_test(async () => {
     window.reject = reject;
     setTimeout(`
      try {
-       assert_equals(scheduler.isAncestor(initialId), "ancestor");
+       assert_equals(scheduler.taskId, initialId);
        resolve();
      } catch {
        reject("Not an ancestor");
@@ -59,11 +60,11 @@ promise_test(async () => {
 
 promise_test(() => {
   return new Promise(async (resolve, reject) => {
-    const initialId = scheduler.taskId;
+    const initialId = initializeTaskId();
     await new Promise(resolve => setTimeout(resolve, 100));
     queueMicrotask(() => {
       try {
-        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        assert_equals(scheduler.taskId, initialId);
         resolve();
       } catch {
         reject("Not an ancestor");
@@ -73,10 +74,10 @@ promise_test(() => {
 }, "A long setTimeout microtask is a descendant of the dispatching task");
 
 promise_test(async () => {
-  const initialId = scheduler.taskId;
+  const initialId = initializeTaskId();
   await new Promise((resolve, reject) => setTimeout(() => {
     try {
-      assert_equals(scheduler.isAncestor(initialId), "ancestor");
+      assert_equals(scheduler.taskId, initialId);
       resolve();
     } catch {
       reject("Initial task not identified as ancestor of first setTimeout");
@@ -85,7 +86,7 @@ promise_test(async () => {
   }, 10));
   await new Promise((resolve, reject) => setTimeout(() => {
     try {
-      assert_equals(scheduler.isAncestor(initialId), "ancestor");
+      assert_equals(scheduler.taskId, initialId);
       resolve();
     } catch {
       reject("Initial task not identified as ancestor of second setTimeout");
@@ -94,10 +95,10 @@ promise_test(async () => {
 }, "An async chain of setTimeouts task properly track their ancestors");
 
 promise_test(async () => {
-  const initialId = scheduler.taskId;
+  const initialId = initializeTaskId();
   return new Promise((resolve, reject) => {
     try {
-      assert_equals(scheduler.isAncestor(initialId), "ancestor");
+      assert_equals(scheduler.taskId, initialId);
       resolve();
     } catch {
       reject("The task is not its own ancestor");
@@ -108,31 +109,31 @@ promise_test(async () => {
 promise_test(async t => {
   let firstTaskParent;
   let firstTaskDescendent;
-  let secondTaskParent;
 
-  const initialId = scheduler.taskId;
+  const initialId = initializeTaskId();
 
   const first = new Promise((resolve, reject) => setTimeout(t.step_func(() => {
-    firstTaskParent = scheduler.taskId;
+    assert_equals(scheduler.taskId, initialId);
+    firstTaskParent = initializeTaskId();
     setTimeout(t.step_func(() => {
       firstTaskDescendent = scheduler.taskId;
-      assert_not_equals(firstTaskDescendent, firstTaskParent);
-      assert_equals(scheduler.isAncestor(firstTaskParent), "ancestor");
-      assert_equals(scheduler.isAncestor(initialId), "ancestor");
+      assert_equals(firstTaskDescendent, firstTaskParent);
+      assert_not_equals(firstTaskDescendent, initialId);
       resolve();
     }), 0);
   }), 15));
+
   const second = new Promise((resolve, reject) => setTimeout(t.step_func(() => {
-    secondTaskParent = scheduler.taskId;
+    assert_equals(scheduler.taskId, initialId);
+    const secondTaskParent = initializeTaskId();
     setTimeout(t.step_func(() => {
       try {
-        assert_not_equals(scheduler.taskId, secondTaskParent);
+        assert_equals(scheduler.taskId, secondTaskParent);
         assert_not_equals(scheduler.taskId, firstTaskDescendent);
-        assert_equals(scheduler.isAncestor(secondTaskParent), "ancestor");
-        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        assert_not_equals(scheduler.taskId, initialId);
         resolve();
-      } catch {
-        reject("Initial task not identified as ancestor of second setTimeout");
+      } catch (e) {
+        reject(e);
       }
     }), 0);
   }), 30));
@@ -140,19 +141,18 @@ promise_test(async t => {
 }, "Two unrelated setTimeout tasks properly track their ancestors");
 
 promise_test(async t => {
-
-  window.initialId = scheduler.taskId;
+  window.initialId = initializeTaskId();
 
   const first = new Promise((resolve, reject) => setTimeout(t.step_func(() => {
-    window.firstTaskParent = scheduler.taskId;
+    assert_equals(scheduler.taskId, initialId);
+    window.firstTaskParent = initializeTaskId();
     window.resolve1 = resolve;
     window.reject1 = reject;
     setTimeout(`
       try {
         window.firstTaskDescendent = scheduler.taskId;
-        assert_not_equals(window.firstTaskDescendent, window.firstTaskParent);
-        assert_equals(scheduler.isAncestor(window.firstTaskParent), "ancestor");
-        assert_equals(scheduler.isAncestor(window.initialId), "ancestor");
+        assert_equals(window.firstTaskDescendent, firstTaskParent);
+        assert_not_equals(window.firstTaskDescendent, initialId);
         resolve1();
       } catch {
         reject1("Initial task not identified as ancestor of first setTimeout");
@@ -162,13 +162,13 @@ promise_test(async t => {
   const second = new Promise((resolve, reject) => setTimeout(t.step_func(() => {
     window.resolve2 = resolve;
     window.reject2 = reject;
-    secondTaskParent = scheduler.taskId;
+    assert_equals(scheduler.taskId, initialId);
+    window.secondTaskParent = initializeTaskId();
     setTimeout(`
       try {
-        assert_not_equals(scheduler.taskId, window.secondTaskParent);
+        assert_equals(scheduler.taskId, window.secondTaskParent);
         assert_not_equals(scheduler.taskId, window.firstTaskDescendent);
-        assert_equals(scheduler.isAncestor(window.secondTaskParent), "ancestor");
-        assert_equals(scheduler.isAncestor(window.initialId), "ancestor");
+        assert_not_equals(scheduler.taskId, window.initialId);
         resolve2();
       } catch {
         reject2("Initial task not identified as ancestor of second setTimeout");
@@ -179,29 +179,14 @@ promise_test(async t => {
 }, "Two unrelated setTimeout tasks (delivered as strings) properly track their ancestors");
 
 promise_test(async t => {
-
-  window.initialId = scheduler.taskId;
+  const initialId = initializeTaskId();
   let times = 0;
-  const test_times = 15;
-  // This value is 8 because the script execution itself is one parent task,
-  // and then test running is another. That leaves us with 8 timeouts before
-  // exhausting the max dependency chain link.
-  const non_equal_times = 8;
+  const ITERATIONS = 15;
 
   await new Promise((resolve, reject) => setTimeout(t.step_func(() => {
-    const parent = scheduler.taskId;
-    let last_parent_id = parent;
     const timeout = () => {
-      assert_not_equals(scheduler.taskId, parent);
-      if (times < non_equal_times) {
-        assert_not_equals(scheduler.taskId, last_parent_id);
-      } else {
-        assert_equals(scheduler.taskId, last_parent_id);
-      }
-      assert_equals(scheduler.isAncestor(parent), "ancestor");
-      assert_equals(scheduler.isAncestor(initialId), "ancestor");
-      if (++times < test_times) {
-        last_parent_id = scheduler.taskId;
+      assert_equals(scheduler.taskId, initialId);
+      if (++times < ITERATIONS) {
         setTimeout(t.step_func(timeout), 0);
       } else {
         resolve();
@@ -210,6 +195,7 @@ promise_test(async t => {
     setTimeout(t.step_func(timeout), 0);
   }), 0));
 }, "Recursive setTimeout");
+
 </script>
 </body>
 </html>

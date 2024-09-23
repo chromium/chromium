@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {isBrowserSigninAllowed, isForceSigninEnabled, isSignInProfileCreationSupported} from './policy_helper.js';
 
@@ -204,8 +203,8 @@ export function navigateToStep(route: Routes, step: string) {
 
 type Constructor<T> = new (...args: any[]) => T;
 
-export const NavigationMixin = dedupingMixin(
-    <T extends Constructor<PolymerElement>>(superClass: T): T&
+export const NavigationMixin =
+    <T extends Constructor<CrLitElement>>(superClass: T): T&
     Constructor<NavigationMixinInterface> => {
       class NavigationMixin extends superClass {
         override connectedCallback() {
@@ -232,7 +231,7 @@ export const NavigationMixin = dedupingMixin(
       }
 
       return NavigationMixin;
-    });
+    };
 
 export interface NavigationMixinInterface {
   onRouteChange(route: Routes, step: string): void;

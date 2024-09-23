@@ -4,6 +4,10 @@
 
 #include "cc/trees/layer_tree_settings.h"
 
+#include <string>
+
+#include "base/feature_list.h"
+#include "cc/base/features.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "third_party/khronos/GLES2/gl2.h"
 
@@ -20,6 +24,11 @@ LayerTreeSettings::LayerTreeSettings()
 LayerTreeSettings::LayerTreeSettings(const LayerTreeSettings& other) = default;
 LayerTreeSettings::~LayerTreeSettings() = default;
 
+bool LayerTreeSettings::UseLayerContextForDisplay() const {
+  return use_layer_lists && !is_display_tree &&
+         base::FeatureList::IsEnabled(features::kVizLayers);
+}
+
 SchedulerSettings LayerTreeSettings::ToSchedulerSettings() const {
   SchedulerSettings scheduler_settings;
   scheduler_settings.main_frame_before_activation_enabled =
@@ -29,6 +38,28 @@ SchedulerSettings LayerTreeSettings::ToSchedulerSettings() const {
   scheduler_settings.wait_for_all_pipeline_stages_before_draw =
       wait_for_all_pipeline_stages_before_draw;
   scheduler_settings.disable_frame_rate_limit = disable_frame_rate_limit;
+  scheduler_settings.use_layer_context_for_display =
+      UseLayerContextForDisplay();
+
+  if (base::FeatureList::IsEnabled(::features::kDeferImplInvalidation)) {
+    scheduler_settings.delay_impl_invalidation_frames =
+        ::features::kDeferImplInvalidationFrames.Get();
+  }
+
+  if (!single_thread_proxy_scheduler) {
+    const std::string mode_name = ::features::kScrollEventDispatchMode.Get();
+    scheduler_settings.scroll_deadline_mode_enabled =
+        base::FeatureList::IsEnabled(::features::kWaitForLateScrollEvents) &&
+        (mode_name ==
+             ::features::
+                 kScrollEventDispatchModeDispatchScrollEventsImmediately ||
+         mode_name ==
+             ::features::kScrollEventDispatchModeUseScrollPredictorForDeadline);
+    if (scheduler_settings.scroll_deadline_mode_enabled) {
+      scheduler_settings.scroll_deadline_ratio =
+          ::features::kWaitForLateScrollEventsDeadlineRatio.Get();
+    }
+  }
   return scheduler_settings;
 }
 

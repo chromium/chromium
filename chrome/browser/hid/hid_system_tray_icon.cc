@@ -16,9 +16,8 @@
 #include "ui/gfx/paint_vector_icon.h"
 
 // static
-gfx::ImageSkia HidSystemTrayIcon::GetIcon() {
-  return gfx::CreateVectorIcon(vector_icons::kVideogameAssetIcon,
-                               gfx::kGoogleGrey300);
+const gfx::VectorIcon& HidSystemTrayIcon::GetIcon() {
+  return vector_icons::kVideogameAssetIcon;
 }
 
 // static
@@ -27,8 +26,9 @@ std::u16string HidSystemTrayIcon::GetTitleLabel(size_t num_origins,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   return l10n_util::GetPluralStringFUTF16(IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE,
                                           static_cast<int>(num_connections));
+#else
+  NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  NOTREACHED_NORETURN();
 }
 
 // static

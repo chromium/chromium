@@ -13,6 +13,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
 
@@ -29,6 +30,10 @@ const CGFloat kContentOptimalWidth = 327;
 
 // The size of the symbol image.
 const CGFloat kSymbolBadgeImagePointSize = 13;
+
+// The size of the checkmark symbol in the confirmation state on the primary
+// button.
+const CGFloat kSymbolConfirmationCheckmarkPointSize = 17;
 
 // The name of the checkmark symbol in filled circle.
 NSString* const kCheckmarkSymbol = @"checkmark.circle.fill";
@@ -49,6 +54,57 @@ const CGFloat kFaviconSideLength = 30;
 
 // Length of each side of the favicon badge.
 const CGFloat kFaviconBadgeSideLength = 24;
+
+// Sets the activity indicator of the button in the button configuration.
+void SetConfigurationActivityIndicator(UIButton* button,
+                                       BOOL shows_activity_indicator,
+                                       UIColor* activity_indicator_color) {
+  UIButtonConfiguration* button_configuration = button.configuration;
+  button_configuration.showsActivityIndicator = shows_activity_indicator;
+  button_configuration.activityIndicatorColorTransformer =
+      ^UIColor*(UIColor* _) {
+        return activity_indicator_color;
+      };
+  button.configuration = button_configuration;
+}
+
+// Sets the image in the button's configuration and the accessiblitityIdentifier
+// on the button's image.
+void SetConfigurationImage(UIButton* button,
+                           UIImage* image,
+                           UIColor* image_color) {
+  UIButtonConfiguration* button_configuration = button.configuration;
+  button_configuration.image = image;
+  button_configuration.imageColorTransformer = ^UIColor*(UIColor* input_color) {
+    return image_color ? image_color : input_color;
+  };
+  button.configuration = button_configuration;
+  button.imageView.accessibilityIdentifier = image.accessibilityIdentifier;
+}
+
+// Sets the color of the button's background in the button configuration's
+// background configuration.
+void SetButtonColor(UIButton* button, UIColor* color) {
+  UIButtonConfiguration* configuration = button.configuration;
+  configuration.background.backgroundColor = color;
+  button.configuration = configuration;
+}
+
+// Gets the default checkmark circle fill symbol with default configuration of
+// the given point size.
+//
+// Since this code is in ios/chrome/common we cannot include the standard
+// symbol helpers from ios/chrome/browser/shared/ui/symbols.
+UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
+  UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:point_size
+                          weight:UIImageSymbolWeightMedium
+                           scale:UIImageSymbolScaleMedium];
+  UIImage* image = [UIImage systemImageNamed:kCheckmarkSymbol
+                           withConfiguration:configuration];
+  image.accessibilityIdentifier = kConfirmationAlertCheckmarkSymbolIdentifier;
+  return image;
+}
 
 }  // namespace
 
@@ -86,6 +142,9 @@ const CGFloat kFaviconBadgeSideLength = 24;
     _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
     _shouldFillInformationStack = NO;
     _actionStackBottomMargin = kDefaultActionsBottomMargin;
+    _activityIndicatorColor = [UIColor colorNamed:kSolidWhiteColor];
+    _confirmationButtonColor = [UIColor colorNamed:kBlue100Color];
+    _confirmationCheckmarkColor = [UIColor colorNamed:kBlue700Color];
   }
   return self;
 }
@@ -322,6 +381,34 @@ const CGFloat kFaviconBadgeSideLength = 24;
                      multiplier:imageAspectRatio];
     self.imageViewAspectRatioConstraint.active = YES;
   }
+  [self updateButtonState];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = @[
+      UITraitPreferredContentSizeCategory.self, UITraitHorizontalSizeClass.self,
+      UITraitVerticalSizeClass.self
+    ];
+    auto* __weak weakSelf = self;
+    id handler = ^(id<UITraitEnvironment> traitEnvironment,
+                   UITraitCollection* previousCollection) {
+      [weakSelf updateRegisteredTraits:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
+  }
+}
+
+- (void)setIsLoading:(BOOL)isLoading {
+  if (_isLoading != isLoading) {
+    _isLoading = isLoading;
+    [self updateButtonState];
+  }
+}
+
+- (void)setIsConfirmed:(BOOL)isConfirmed {
+  if (_isConfirmed != isConfirmed) {
+    _isConfirmed = isConfirmed;
+    [self updateButtonState];
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -331,38 +418,16 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [self.scrollView flashScrollIndicators];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-
-  // Update fonts for specific content sizes.
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    SetConfigurationFont(self.primaryActionButton,
-                         PreferredFontForTextStyleWithMaxCategory(
-                             UIFontTextStyleHeadline,
-                             self.traitCollection.preferredContentSizeCategory,
-                             UIContentSizeCategoryExtraExtraExtraLarge));
-
-    UIFont* newFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    if (self.secondaryActionString) {
-      SetConfigurationFont(self.secondaryActionButton, newFont);
-    }
-    if (self.tertiaryActionString) {
-      SetConfigurationFont(self.tertiaryActionButton, newFont);
-    }
+  if (@available(iOS 17, *)) {
+    return;
   }
 
-  // Update constraints for different size classes.
-  BOOL hasNewHorizontalSizeClass =
-      previousTraitCollection.horizontalSizeClass !=
-      self.traitCollection.horizontalSizeClass;
-  BOOL hasNewVerticalSizeClass = previousTraitCollection.verticalSizeClass !=
-                                 self.traitCollection.verticalSizeClass;
-
-  if (hasNewHorizontalSizeClass || hasNewVerticalSizeClass) {
-    [self.view setNeedsUpdateConstraints];
-  }
+  [self updateRegisteredTraits:previousTraitCollection];
 }
+#endif
 
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
@@ -435,16 +500,23 @@ const CGFloat kFaviconBadgeSideLength = 24;
   CGSize fittingSize =
       CGSizeMake(fittingWidth, UILayoutFittingCompressedSize.height);
   CGFloat height = [self.view systemLayoutSizeFittingSize:fittingSize].height;
-  height -= containerView.safeAreaInsets.bottom;
 
-  // Replace bottom margin calculated based on view's own safe area with bottom
-  // margin calculated based on the safe area of the container view it will
-  // eventually live in. This is needed in case the detent value is requested
-  // before the view has been added to its superview.
-  height -= MAX(self.actionStackBottomMargin, self.view.safeAreaInsets.bottom);
-  height +=
-      MAX(self.actionStackBottomMargin, containerView.safeAreaInsets.bottom);
+  // These adjustments are necessary for devices in a non regular x regular size
+  // class with home indicators in their displays, as they have a non zero safe
+  // area inset at their bottom edge and a bottom sheet that attaches to it.
+  if (!IsRegularXRegularSizeClass(containerView.traitCollection) &&
+      containerView.safeAreaInsets.bottom != 0) {
+    height -= containerView.safeAreaInsets.bottom;
 
+    // Replace bottom margin calculated based on view's own safe area with
+    // bottom margin calculated based on the safe area of the container view
+    // it will eventually live in. This is needed in case the detent value
+    // is requested before the view has been added to its superview.
+    height -=
+        MAX(self.actionStackBottomMargin, self.view.safeAreaInsets.bottom);
+    height +=
+        MAX(self.actionStackBottomMargin, containerView.safeAreaInsets.bottom);
+  }
   return height;
 }
 
@@ -595,12 +667,8 @@ const CGFloat kFaviconBadgeSideLength = 24;
 - (UIView*)createImageContainerViewWithShadowAndBadge {
   UIImageView* faviconBadgeView = [[UIImageView alloc] init];
   faviconBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
-  UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kSymbolBadgeImagePointSize
-                          weight:UIImageSymbolWeightMedium
-                           scale:UIImageSymbolScaleMedium];
-  faviconBadgeView.image = [UIImage systemImageNamed:kCheckmarkSymbol
-                                   withConfiguration:configuration];
+  faviconBadgeView.image =
+      DefaultCheckmarkCircleFillSymbol(kSymbolBadgeImagePointSize);
   faviconBadgeView.tintColor = [UIColor colorNamed:kGreenColor];
 
   UIImageView* faviconView = [[UIImageView alloc] initWithImage:self.image];
@@ -891,6 +959,63 @@ const CGFloat kFaviconBadgeSideLength = 24;
       CreateOpaqueButtonPointerStyleProvider();
 
   return tertiaryActionButton;
+}
+
+// Applies an activity indicator to the primary button and disables buttons when
+// loading is true; otherwise, applies button labels and enables buttons.
+- (void)updateButtonState {
+  const BOOL showingProgressState = _isLoading || _isConfirmed;
+  _primaryActionButton.enabled = !showingProgressState;
+  if (_isConfirmed) {
+    SetButtonColor(_primaryActionButton, _confirmationButtonColor);
+    SetConfigurationImage(
+        _primaryActionButton,
+        DefaultCheckmarkCircleFillSymbol(kSymbolConfirmationCheckmarkPointSize),
+        _confirmationCheckmarkColor);
+  } else {
+    UpdateButtonColorOnEnableDisable(_primaryActionButton);
+    SetConfigurationImage(_primaryActionButton, /*image=*/nil, /*color=*/nil);
+  }
+  SetConfigurationActivityIndicator(_primaryActionButton, _isLoading,
+                                    _activityIndicatorColor);
+  SetConfigurationTitle(_primaryActionButton,
+                        showingProgressState ? @"" : _primaryActionString);
+
+  _secondaryActionButton.enabled = !showingProgressState;
+  _tertiaryActionButton.enabled = !showingProgressState;
+}
+
+// Checks which trait has been changed and adapts the UI to reflect this new
+// environment.
+- (void)updateRegisteredTraits:(UITraitCollection*)previousTraitCollection {
+  // Update fonts for specific content sizes.
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    SetConfigurationFont(self.primaryActionButton,
+                         PreferredFontForTextStyleWithMaxCategory(
+                             UIFontTextStyleHeadline,
+                             self.traitCollection.preferredContentSizeCategory,
+                             UIContentSizeCategoryExtraExtraExtraLarge));
+
+    UIFont* newFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    if (self.secondaryActionString) {
+      SetConfigurationFont(self.secondaryActionButton, newFont);
+    }
+    if (self.tertiaryActionString) {
+      SetConfigurationFont(self.tertiaryActionButton, newFont);
+    }
+  }
+
+  // Update constraints for different size classes.
+  BOOL hasNewHorizontalSizeClass =
+      previousTraitCollection.horizontalSizeClass !=
+      self.traitCollection.horizontalSizeClass;
+  BOOL hasNewVerticalSizeClass = previousTraitCollection.verticalSizeClass !=
+                                 self.traitCollection.verticalSizeClass;
+
+  if (hasNewHorizontalSizeClass || hasNewVerticalSizeClass) {
+    [self.view setNeedsUpdateConstraints];
+  }
 }
 
 @end

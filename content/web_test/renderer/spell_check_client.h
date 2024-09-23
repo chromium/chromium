@@ -57,7 +57,7 @@ class SpellCheckClient : public blink::WebTextCheckClient {
 
   void RequestResolved();
 
-  const raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> frame_;
+  const raw_ptr<blink::WebLocalFrame> frame_;
 
   // Do not perform any checking when |enabled_ == false|.
   // Tests related to spell checking should enable it manually.

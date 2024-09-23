@@ -69,6 +69,12 @@ class NetworkTestHelperBase {
   std::string GetServiceStringProperty(const std::string& service_path,
                                        const std::string& key);
 
+  // Returns a base::Value::List for property |key| associated with
+  // |service_path|.
+  std::optional<base::Value::List> GetServiceListProperty(
+      const std::string& service_path,
+      const std::string& key);
+
   void SetServiceProperty(const std::string& service_path,
                           const std::string& key,
                           const base::Value& value);

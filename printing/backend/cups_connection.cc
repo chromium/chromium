@@ -196,9 +196,9 @@ class CupsConnectionImpl : public CupsConnection {
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    cups_http_.reset(httpConnect2(cupsServer(), ippPort(), nullptr, AF_UNSPEC,
-                                  HTTP_ENCRYPT_NEVER, /*blocking=*/0,
-                                  kCupsTimeoutMs, nullptr));
+    cups_http_ = HttpConnect2(cupsServer(), ippPort(), nullptr, AF_UNSPEC,
+                              HTTP_ENCRYPT_NEVER, /*blocking=*/0,
+                              kCupsTimeoutMs, nullptr);
     return !!cups_http_;
   }
 

@@ -58,7 +58,7 @@ std::string CdmKeyInformation::KeyStatusToString(KeyStatus key_status) {
       return "RELEASED";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::ostream& operator<<(std::ostream& os,

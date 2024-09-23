@@ -13,17 +13,34 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 namespace {
 
-using test::CreateTestFormField;
-using test::CreateTestSelectOrSelectListField;
+using ::autofill::test::CreateTestFormField;
+using ::autofill::test::CreateTestSelectOrSelectListField;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Not;
+
+// Fakes that a `form` has been seen (without its field value) and parsed and
+// then values have been entered. Returns the resulting FormStructure.
+std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
+    const FormData& form) {
+  auto cached_form_structure =
+      std::make_unique<FormStructure>(test::WithoutValues(form));
+  cached_form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                                 nullptr);
+
+  auto form_structure = std::make_unique<FormStructure>(form);
+  form_structure->RetrieveFromCache(
+      *cached_form_structure,
+      FormStructure::RetrieveFromCacheReason::kFormImport);
+  return form_structure;
+}
 
 void CheckThatOnlyFieldByIndexHasThisPossibleType(
     const FormStructure& form_structure,
@@ -35,7 +52,7 @@ void CheckThatOnlyFieldByIndexHasThisPossibleType(
   for (size_t i = 0; i < form_structure.field_count(); i++) {
     if (i == field_index) {
       EXPECT_THAT(form_structure.field(i)->possible_types(), ElementsAre(type));
-      EXPECT_EQ(mask, form_structure.field(i)->properties_mask);
+      EXPECT_EQ(mask, form_structure.field(i)->properties_mask());
     } else {
       EXPECT_THAT(form_structure.field(i)->possible_types(),
                   Not(Contains(type)));
@@ -94,22 +111,10 @@ struct TestAddressFillData {
 };
 
 TestAddressFillData GetElvisAddressFillData() {
-  return {
-      "Elvis",
-      "Aaron",
-      "Presley",
-      "3734 Elvis Presley Blvd.",
-      "Apt. 10",
-      "Memphis",
-      "Tennessee",
-      "38116",
-      "United States",
-      "US",
-      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
-          ? "2345678901"
-          : "12345678901",
-      "theking@gmail.com",
-      "RCA"};
+  return {"Elvis",        "Aaron",   "Presley",    "3734 Elvis Presley Blvd.",
+          "Apt. 10",      "Memphis", "Tennessee",  "38116",
+          "South Africa", "ZA",      "2345678901", "theking@gmail.com",
+          "RCA"};
 }
 
 AutofillProfile FillDataToAutofillProfile(const TestAddressFillData& data) {
@@ -127,18 +132,6 @@ std::string MakeGuid(size_t last_digit) {
   return base::StringPrintf("00000000-0000-0000-0000-%012zu", last_digit);
 }
 
-// For tests, the observed_submission is hardcoded to true.
-void DeterminePossibleFieldTypesForUpload(
-    const std::vector<AutofillProfile>& profiles,
-    const std::vector<CreditCard>& credit_cards,
-    const std::u16string& last_unlocked_credit_card_cvc,
-    const std::string& app_locale,
-    FormStructure* form) {
-  DeterminePossibleFieldTypesForUpload(
-      profiles, credit_cards, last_unlocked_credit_card_cvc, app_locale,
-      /*observed_submission=*/true, form);
-}
-
 struct ProfileMatchingTypesTestCase {
   const char* input_value;   // The value to input in the field.
   FieldTypeSet field_types;  // The expected field types to be determined.
@@ -147,7 +140,16 @@ struct ProfileMatchingTypesTestCase {
 class ProfileMatchingTypesTest
     : public ::testing::Test,
       public ::testing::WithParamInterface<ProfileMatchingTypesTestCase> {
+ public:
+  ProfileMatchingTypesTest() {
+    features_.InitWithFeatures({features::kAutofillUseCAAddressModel,
+                                features::kAutofillUseFRAddressModel,
+                                features::kAutofillUseITAddressModel},
+                               {});
+  }
+
  protected:
+  base::test::ScopedFeatureList features_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
@@ -168,14 +170,28 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"Memphis", {ADDRESS_HOME_CITY}},
     {"Tennessee", {ADDRESS_HOME_STATE}},
     {"38116", {ADDRESS_HOME_ZIP}},
-    {"USA", {ADDRESS_HOME_COUNTRY}},
-    {"United States", {ADDRESS_HOME_COUNTRY}},
+    {"ZA", {ADDRESS_HOME_COUNTRY}},
+    {"South Africa", {ADDRESS_HOME_COUNTRY}},
     {"12345678901", {PHONE_HOME_WHOLE_NUMBER}},
     {"+1 (234) 567-8901", {PHONE_HOME_WHOLE_NUMBER}},
-    {"(234)567-8901", {PHONE_HOME_CITY_AND_NUMBER}},
-    {"2345678901", {PHONE_HOME_CITY_AND_NUMBER}},
+    {"(234)567-8901",
+     base::FeatureList::IsEnabled(
+         features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
+         ? FieldTypeSet{PHONE_HOME_CITY_AND_NUMBER,
+                        PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}
+         : FieldTypeSet{PHONE_HOME_CITY_AND_NUMBER}},
+    {"2345678901",
+     base::FeatureList::IsEnabled(
+         features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
+         ? FieldTypeSet{PHONE_HOME_CITY_AND_NUMBER,
+                        PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}
+         : FieldTypeSet{PHONE_HOME_CITY_AND_NUMBER}},
     {"1", {PHONE_HOME_COUNTRY_CODE}},
-    {"234", {PHONE_HOME_CITY_CODE}},
+    {"234", base::FeatureList::IsEnabled(
+                features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
+                ? FieldTypeSet{PHONE_HOME_CITY_CODE,
+                               PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX}
+                : FieldTypeSet{PHONE_HOME_CITY_CODE}},
     {"5678901", {PHONE_HOME_NUMBER}},
     {"567", {PHONE_HOME_NUMBER_PREFIX}},
     {"8901", {PHONE_HOME_NUMBER_SUFFIX}},
@@ -216,7 +232,7 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
 
     // Make sure fields that differ by case match.
     {"elvis ", {NAME_FIRST}},
-    {"UnItEd StAtEs", {ADDRESS_HOME_COUNTRY}},
+    {"SoUTh AfRiCa", {ADDRESS_HOME_COUNTRY}},
 
     // Make sure fields that differ by punctuation match.
     {"3734 Elvis Presley Blvd",
@@ -230,7 +246,12 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
 
     // Special phone number case. A profile with no country code should
     // only match PHONE_HOME_CITY_AND_NUMBER.
-    {"5142821292", {PHONE_HOME_CITY_AND_NUMBER}},
+    {"5142821292",
+     base::FeatureList::IsEnabled(
+         features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
+         ? FieldTypeSet{PHONE_HOME_CITY_AND_NUMBER,
+                        PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}
+         : FieldTypeSet{PHONE_HOME_CITY_AND_NUMBER}},
 
     // Make sure unsupported variants do not match.
     {"Elvis Aaron", {UNKNOWN_TYPE}},
@@ -287,20 +308,21 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   credit_cards.push_back(credit_card);
 
   FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  form.fields.push_back(CreateTestFormField("", "1", test_case.input_value,
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  test_api(form).Append(CreateTestFormField("", "1", test_case.input_value,
                                             FormControlType::kInputText));
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
+                                       "en-us", &*form_structure);
 
-  ASSERT_EQ(1U, form_structure.field_count());
+  ASSERT_EQ(1U, form_structure->field_count());
 
-  FieldTypeSet possible_types = form_structure.field(0)->possible_types();
+  FieldTypeSet possible_types = form_structure->field(0)->possible_types();
   EXPECT_EQ(possible_types, expected_possible_types);
 }
 
@@ -308,298 +330,10 @@ INSTANTIATE_TEST_SUITE_P(DeterminePossibleFieldTypesForUploadTest,
                          ProfileMatchingTypesTest,
                          testing::ValuesIn(kProfileMatchingTypesTestCases));
 
-// TODO(crbug.com/1395740). Remove parameter, once
-// kAutofillVoteForSelectOptionValues has settled on stable.
-class DeterminePossibleFieldTypesForUploadOfSelectTest
-    : public ::testing::Test,
-      public ::testing::WithParamInterface<bool> {
- protected:
-  test::AutofillUnitTestEnvironment autofill_test_environment_;
-};
-
-void DoTestDeterminePossibleFieldTypesForUploadOfSelect(
-    bool enable_autofill_vote_for_select_option_values,
-    FormControlType field_type) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatureState(features::kAutofillVoteForSelectOptionValues,
-                                enable_autofill_vote_for_select_option_values);
-
-  // Set up a profile and no credit cards.
-  std::vector<AutofillProfile> profiles = {
-      AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode)};
-  TestAddressFillData profile_info_data = GetElvisAddressFillData();
-  profile_info_data.phone = "+1 (234) 567-8901";
-  profiles[0] = FillDataToAutofillProfile(profile_info_data);
-  profiles[0].set_guid(MakeGuid(1));
-  std::vector<CreditCard> credit_cards;
-
-  // Set up the form to be tested.
-  FormData form;
-  form.name = u"MyForm";
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-
-  // We want the "Memphis" in <option value="2">Memphis</option> to be
-  // recognized.
-  FormFieldData city_field = CreateTestSelectOrSelectListField(
-      "label", "name", /*value=*/"2", /*autocomplete=*/"",
-      /*values=*/{"1", "2", "3"},
-      /*contents=*/{"New York", "Memphis", "Gotham City"}, field_type);
-
-  // We want the +1 in <option value="US">USA (+1)</option> to be recognized
-  // as a phone country code. Despite the value "US", we don't want this to be
-  // recognized as a country field.
-  FormFieldData phone_country_code_field = CreateTestSelectOrSelectListField(
-      "label", "name", /*value=*/"US", /*autocomplete=*/"",
-      /*values=*/{"US", "DE"}, /*contents=*/{"USA (+1)", "Germany (+49)"},
-      field_type);
-
-  form.fields = {city_field, phone_country_code_field};
-
-  FormStructure form_structure(form);
-
-  // Validate expectations.
-  DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
-
-  ASSERT_EQ(2U, form_structure.field_count());
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillVoteForSelectOptionValues)) {
-    EXPECT_EQ(form_structure.field(0)->possible_types(),
-              FieldTypeSet({ADDRESS_HOME_CITY}));
-    EXPECT_EQ(form_structure.field(1)->possible_types(),
-              FieldTypeSet({PHONE_HOME_COUNTRY_CODE}));
-  } else {
-    EXPECT_EQ(form_structure.field(0)->possible_types(),
-              FieldTypeSet({UNKNOWN_TYPE}));
-    EXPECT_EQ(form_structure.field(1)->possible_types(),
-              FieldTypeSet({ADDRESS_HOME_COUNTRY}));
-  }
-}
-
-// Tests that DeterminePossibleFieldTypesForUpload considers both the value
-// and the human readable part of an <option> element in a <select> element:
-// <option value="this is the value">this is the human readable part</option>
-//
-// In particular <option value="US">USA (+1)</option> is probably part of a
-// phone number country code.
-TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
-       DeterminePossibleFieldTypesForUploadOfSelect) {
-  DoTestDeterminePossibleFieldTypesForUploadOfSelect(
-      /*enable_autofill_vote_for_select_option_values=*/GetParam(),
-      FormControlType::kSelectOne);
-}
-
-// Tests that DeterminePossibleFieldTypesForUpload considers both the value
-// and the human readable part of an <option> element in a <selectlist> element:
-// <option value="this is the value">this is the human readable part</option>
-//
-// In particular <option value="US">USA (+1)</option> is probably part of a
-// phone number country code.
-TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
-       DeterminePossibleFieldTypesForUploadOfSelectList) {
-  DoTestDeterminePossibleFieldTypesForUploadOfSelect(
-      /*enable_autofill_vote_for_select_option_values=*/GetParam(),
-      FormControlType::kSelectList);
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         DeterminePossibleFieldTypesForUploadOfSelectTest,
-                         testing::Bool());
-
 class DeterminePossibleFieldTypesForUploadTest : public ::testing::Test {
  protected:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
-
-// Tests that DisambiguateUploadTypes makes the correct choices.
-TEST_F(DeterminePossibleFieldTypesForUploadTest, DisambiguateUploadTypes) {
-  // Set up the test profile.
-  std::vector<AutofillProfile> profiles;
-  TestAddressFillData profile_info_data = GetElvisAddressFillData();
-  profile_info_data.address2 = "";
-  profile_info_data.phone = "(234) 567-8901";
-  AutofillProfile profile = FillDataToAutofillProfile(profile_info_data);
-
-  profile.set_guid(MakeGuid(1));
-  profiles.push_back(profile);
-
-  // Set up the test credit card.
-  std::vector<CreditCard> credit_cards;
-  CreditCard credit_card;
-  test::SetCreditCardInfo(&credit_card, "Elvis Presley", "4234-5678-9012-3456",
-                          "04", "2999", "1");
-  credit_card.set_guid(MakeGuid(3));
-  credit_cards.push_back(credit_card);
-
-  struct TestFieldData {
-    std::string input_value;
-    FieldType predicted_type;
-    bool expect_disambiguation;
-    FieldType expected_upload_type;
-  };
-  using TestCase = std::vector<TestFieldData>;
-
-  std::vector<TestCase> test_cases;
-
-  // Address disambiguation.
-  // An ambiguous address line followed by a field predicted as a line 2 and
-  // that is empty should be disambiguated as an ADDRESS_HOME_LINE1.
-  test_cases.push_back({{"3734 Elvis Presley Blvd.", ADDRESS_HOME_LINE1, true,
-                         ADDRESS_HOME_LINE1},
-                        {"", ADDRESS_HOME_LINE2, true, EMPTY_TYPE}});
-
-  // An ambiguous address line followed by a field predicted as a line 2 but
-  // filled with another know profile value should be disambiguated as an
-  // ADDRESS_HOME_STREET_ADDRESS.
-  test_cases.push_back(
-      {{"3734 Elvis Presley Blvd.", ADDRESS_HOME_STREET_ADDRESS, true,
-        ADDRESS_HOME_STREET_ADDRESS},
-       {"38116", ADDRESS_HOME_LINE2, true, ADDRESS_HOME_ZIP}});
-
-  // An ambiguous address line followed by an empty field predicted as
-  // something other than a line 2 should be disambiguated as an
-  // ADDRESS_HOME_STREET_ADDRESS.
-  test_cases.push_back(
-      {{"3734 Elvis Presley Blvd.", ADDRESS_HOME_STREET_ADDRESS, true,
-        ADDRESS_HOME_STREET_ADDRESS},
-       {"", ADDRESS_HOME_ZIP, true, EMPTY_TYPE}});
-
-  // An ambiguous address line followed by no other field should be
-  // disambiguated as an ADDRESS_HOME_STREET_ADDRESS.
-  test_cases.push_back(
-      {{"3734 Elvis Presley Blvd.", ADDRESS_HOME_STREET_ADDRESS, true,
-        ADDRESS_HOME_STREET_ADDRESS}});
-
-  // Name disambiguation.
-  // An ambiguous name field that has no next field and that is preceded by
-  // a non credit card field should be disambiguated as a non credit card
-  // name.
-  test_cases.push_back({{"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY},
-                        {"Elvis", CREDIT_CARD_NAME_FIRST, true, NAME_FIRST},
-                        {"Presley", CREDIT_CARD_NAME_LAST, true, NAME_LAST}});
-
-  // An ambiguous name field that has no next field and that is preceded by
-  // a credit card field should be disambiguated as a credit card name.
-  test_cases.push_back(
-      {{"4234-5678-9012-3456", CREDIT_CARD_NUMBER, true, CREDIT_CARD_NUMBER},
-       {"Elvis", NAME_FIRST, true, CREDIT_CARD_NAME_FIRST},
-       {"Presley", NAME_LAST, true, CREDIT_CARD_NAME_LAST}});
-
-  // An ambiguous name field that has no previous field and that is
-  // followed by a non credit card field should be disambiguated as a non
-  // credit card name.
-  test_cases.push_back(
-      {{"Elvis", CREDIT_CARD_NAME_FIRST, true, NAME_FIRST},
-       {"Presley", CREDIT_CARD_NAME_LAST, true, NAME_LAST},
-
-       {"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY}});
-
-  // An ambiguous name field that has no previous field and that is followed
-  // by a credit card field should be disambiguated as a credit card name.
-  test_cases.push_back(
-      {{"Elvis", NAME_FIRST, true, CREDIT_CARD_NAME_FIRST},
-       {"Presley", NAME_LAST, true, CREDIT_CARD_NAME_LAST},
-       {"4234-5678-9012-3456", CREDIT_CARD_NUMBER, true, CREDIT_CARD_NUMBER}});
-
-  // An ambiguous name field that is preceded and followed by non credit
-  // card fields should be disambiguated as a non credit card name.
-  test_cases.push_back(
-      {{"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY},
-       {"Elvis", CREDIT_CARD_NAME_FIRST, true, NAME_FIRST},
-       {"Presley", CREDIT_CARD_NAME_LAST, true, NAME_LAST},
-       {"Tennessee", ADDRESS_HOME_STATE, true, ADDRESS_HOME_STATE}});
-
-  // An ambiguous name field that is preceded and followed by credit card
-  // fields should be disambiguated as a credit card name.
-  test_cases.push_back(
-      {{"4234-5678-9012-3456", CREDIT_CARD_NUMBER, true, CREDIT_CARD_NUMBER},
-       {"Elvis", NAME_FIRST, true, CREDIT_CARD_NAME_FIRST},
-       {"Presley", NAME_LAST, true, CREDIT_CARD_NAME_LAST},
-       {"2999", CREDIT_CARD_EXP_4_DIGIT_YEAR, true,
-        CREDIT_CARD_EXP_4_DIGIT_YEAR}});
-
-  // An ambiguous name field that is preceded by a non credit card field and
-  // followed by a credit card field should not be disambiguated.
-  test_cases.push_back({{"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY},
-                        {"Elvis", NAME_FIRST, false, CREDIT_CARD_NAME_FIRST},
-                        {"Presley", NAME_LAST, false, CREDIT_CARD_NAME_LAST},
-                        {"2999", CREDIT_CARD_EXP_4_DIGIT_YEAR, true,
-                         CREDIT_CARD_EXP_4_DIGIT_YEAR}});
-
-  // An ambiguous name field that is preceded by a credit card field and
-  // followed by a non credit card field should not be disambiguated.
-  test_cases.push_back(
-      {{"2999", CREDIT_CARD_EXP_4_DIGIT_YEAR, true,
-        CREDIT_CARD_EXP_4_DIGIT_YEAR},
-       {"Elvis", NAME_FIRST, false, CREDIT_CARD_NAME_FIRST},
-       {"Presley", NAME_LAST, false, CREDIT_CARD_NAME_LAST},
-       {"Memphis", ADDRESS_HOME_CITY, true, ADDRESS_HOME_CITY}});
-
-  for (const TestCase& test_fields : test_cases) {
-    FormData form;
-    form.name = u"MyForm";
-    form.url = GURL("https://myform.com/form.html");
-    form.action = GURL("https://myform.com/submit.html");
-
-    // Create the form fields specified in the test case.
-    for (const TestFieldData& test_field : test_fields) {
-      form.fields.push_back(CreateTestFormField("", "1", test_field.input_value,
-                                                FormControlType::kInputText));
-    }
-
-    // Assign the specified predicted type for each field in the test case.
-    FormStructure form_structure(form);
-    for (size_t i = 0; i < test_fields.size(); ++i) {
-      form_structure.field(i)->set_server_predictions(
-          {::autofill::test::CreateFieldPrediction(
-              test_fields[i].predicted_type)});
-    }
-
-    DeterminePossibleFieldTypesForUpload(
-        profiles, credit_cards, std::u16string(), "en-us", &form_structure);
-    ASSERT_EQ(test_fields.size(), form_structure.field_count());
-
-    // Make sure the disambiguation method selects the expected upload type.
-    FieldTypeSet possible_types;
-    for (size_t i = 0; i < test_fields.size(); ++i) {
-      possible_types = form_structure.field(i)->possible_types();
-      if (test_fields[i].expect_disambiguation) {
-        // It is possible that a field as two out of three
-        // possible classifications: NAME_FULL, NAME_LAST,
-        // NAME_LAST_FIRST/SECOND. Note, all cases contain NAME_LAST.
-        // Alternatively, if the street address contains only one line, the
-        // street address and the address line1 are identical resulting in a
-        // vote for each.
-        if (possible_types.size() == 2) {
-          EXPECT_TRUE((possible_types.contains(NAME_LAST) &&
-                       (possible_types.contains(NAME_LAST_SECOND) ||
-                        possible_types.contains(NAME_LAST_FIRST) ||
-                        possible_types.contains(NAME_FULL))) ||
-                      (possible_types.contains(ADDRESS_HOME_LINE1) &&
-                       possible_types.contains(ADDRESS_HOME_STREET_ADDRESS)));
-        } else if (possible_types.size() == 3) {
-          // Or even all three.
-          EXPECT_TRUE((possible_types.contains(NAME_FULL) &&
-                       possible_types.contains(NAME_LAST) &&
-                       (possible_types.contains(NAME_LAST_SECOND) ||
-                        possible_types.contains(NAME_LAST_FIRST))) ||
-                      (possible_types.contains(ADDRESS_HOME_LINE1) &&
-                       possible_types.contains(ADDRESS_HOME_STREET_ADDRESS) &&
-                       possible_types.contains(ADDRESS_HOME_STREET_LOCATION)));
-        } else {
-          EXPECT_EQ(1U, possible_types.size());
-        }
-        EXPECT_NE(possible_types.end(),
-                  possible_types.find(test_fields[i].expected_upload_type));
-      } else {
-        // In the context of those tests, it is expected that the type is
-        // ambiguous.
-        EXPECT_NE(1U, possible_types.size());
-      }
-    }
-  }
-}
 
 // If a server-side credit card is unmasked by entering the CVC, the
 // BrowserAutofillManager reuses the CVC value to identify a potentially
@@ -614,25 +348,27 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceCVCFieldByValue) {
   constexpr char kCreditCardNumber[] = "4234-5678-9012-3456";
 
   FormData form;
-  form.fields = {
-      CreateTestFormField("number", "number", kCreditCardNumber,
-                          FormControlType::kInputText),
-      // This field would not be detected as CVC heuristically if the CVC value
-      // wouldn't be known.
-      CreateTestFormField("not_cvc", "not_cvc", kFourDigitButNotCvc,
-                          FormControlType::kInputText),
-      // This field has the CVC value used to unlock the card and should be
-      // detected as the CVC field.
-      CreateTestFormField("c_v_c", "c_v_c", kCvc, FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("number", "number", kCreditCardNumber,
+                           FormControlType::kInputText),
+       // This field would not be detected as CVC heuristically if the CVC value
+       // wouldn't be known.
+       CreateTestFormField("not_cvc", "not_cvc", kFourDigitButNotCvc,
+                           FormControlType::kInputText),
+       // This field has the CVC value used to unlock the card and should be
+       // detected as the CVC field.
+       CreateTestFormField("c_v_c", "c_v_c", kCvc,
+                           FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
-  form_structure.field(0)->set_possible_types({CREDIT_CARD_NUMBER});
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, kCvc16, "en-us",
-                                       &form_structure);
+                                       &*form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(
-      form_structure, 2, CREDIT_CARD_VERIFICATION_CODE,
+      *form_structure, 2, CREDIT_CARD_VERIFICATION_CODE,
       FieldPropertiesFlags::kKnownValue);
 }
 
@@ -646,23 +382,24 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   constexpr char cvc[] = "1234";
 
   FormData form;
-  form.fields = {CreateTestFormField("number", "number", credit_card_number,
-                                     FormControlType::kInputText),
-                 // Expiration date, but is not the expiration date of the used
-                 // credit card.
-                 CreateTestFormField("exp_year", "exp_year",
-                                     user_entered_credit_card_exp_year,
-                                     FormControlType::kInputText),
-                 // Must be CVC since expiration date was already identified.
-                 CreateTestFormField("cvc_number", "cvc_number", cvc,
-                                     FormControlType::kInputText)};
+  form.set_fields({CreateTestFormField("number", "number", credit_card_number,
+                                       FormControlType::kInputText),
+                   // Expiration date, but is not the expiration date of the
+                   // used credit card.
+                   CreateTestFormField("exp_year", "exp_year",
+                                       user_entered_credit_card_exp_year,
+                                       FormControlType::kInputText),
+                   // Must be CVC since expiration date was already identified.
+                   CreateTestFormField("cvc_number", "cvc_number", cvc,
+                                       FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   // Set the field types.
-  form_structure.field(0)->set_possible_types({CREDIT_CARD_NUMBER});
-  form_structure.field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure.field(2)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
+  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
+  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -676,9 +413,9 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
+                                       "en-us", &*form_structure);
 
-  CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 2,
+  CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
                                                FieldPropertiesFlags::kNoFlags);
 }
@@ -693,23 +430,24 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   constexpr char cvc[] = "1234";
 
   FormData form;
-  form.fields = {
-      CreateTestFormField("number", "number", credit_card_number,
-                          FormControlType::kInputText),
-      // Expiration date, that is the expiration date of the used credit card.
-      CreateTestFormField("date_or_cvc1", "date_or_cvc1",
-                          actual_credit_card_exp_year,
-                          FormControlType::kInputText),
-      // Must be CVC since expiration date was already identified.
-      CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc,
-                          FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("number", "number", credit_card_number,
+                           FormControlType::kInputText),
+       // Expiration date, that is the expiration date of the used credit card.
+       CreateTestFormField("date_or_cvc1", "date_or_cvc1",
+                           actual_credit_card_exp_year,
+                           FormControlType::kInputText),
+       // Must be CVC since expiration date was already identified.
+       CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc,
+                           FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   // Set the field types.
-  form_structure.field(0)->set_possible_types({CREDIT_CARD_NUMBER});
-  form_structure.field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure.field(2)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
+  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
+  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -723,9 +461,9 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
+                                       "en-us", &*form_structure);
 
-  CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 2,
+  CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
                                                FieldPropertiesFlags::kNoFlags);
 }
@@ -739,23 +477,24 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   constexpr char user_entered_credit_card_exp_year[] = "2031";
 
   FormData form;
-  form.fields = {CreateTestFormField("number", "number", credit_card_number,
-                                     FormControlType::kInputText),
-                 // Must be CVC since it is an implausible expiration date.
-                 CreateTestFormField("date_or_cvc2", "date_or_cvc2", "2130",
-                                     FormControlType::kInputText),
-                 // A field which is filled with a plausible expiration date
-                 // which is not the date of the credit card.
-                 CreateTestFormField("date_or_cvc1", "date_or_cvc1",
-                                     user_entered_credit_card_exp_year,
-                                     FormControlType::kInputText)};
+  form.set_fields({CreateTestFormField("number", "number", credit_card_number,
+                                       FormControlType::kInputText),
+                   // Must be CVC since it is an implausible expiration date.
+                   CreateTestFormField("date_or_cvc2", "date_or_cvc2", "2130",
+                                       FormControlType::kInputText),
+                   // A field which is filled with a plausible expiration date
+                   // which is not the date of the credit card.
+                   CreateTestFormField("date_or_cvc1", "date_or_cvc1",
+                                       user_entered_credit_card_exp_year,
+                                       FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   // Set the field types.
-  form_structure.field(0)->set_possible_types({CREDIT_CARD_NUMBER});
-  form_structure.field(1)->set_possible_types({UNKNOWN_TYPE});
-  form_structure.field(2)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
+  form_structure->field(1)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -769,9 +508,9 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
+                                       "en-us", &*form_structure);
 
-  CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 1,
+  CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 1,
                                                CREDIT_CARD_VERIFICATION_CODE,
                                                FieldPropertiesFlags::kNoFlags);
 }
@@ -786,22 +525,23 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   constexpr char cvc[] = "2031";
 
   FormData form;
-  form.fields = {CreateTestFormField("number", "number", credit_card_number,
-                                     FormControlType::kInputText),
-                 // Server predicted as expiration year.
-                 CreateTestFormField("date_or_cvc1", "date_or_cvc1",
-                                     user_entered_credit_card_exp_year,
-                                     FormControlType::kInputText),
-                 // Must be CVC since expiration date was already identified.
-                 CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc,
-                                     FormControlType::kInputText)};
+  form.set_fields({CreateTestFormField("number", "number", credit_card_number,
+                                       FormControlType::kInputText),
+                   // Server predicted as expiration year.
+                   CreateTestFormField("date_or_cvc1", "date_or_cvc1",
+                                       user_entered_credit_card_exp_year,
+                                       FormControlType::kInputText),
+                   // Must be CVC since expiration date was already identified.
+                   CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc,
+                                       FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   // Set the field types.
-  form_structure.field(0)->set_possible_types({UNKNOWN_TYPE});
-  form_structure.field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure.field(2)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(0)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
+  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -815,8 +555,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
-  CheckThatNoFieldHasThisPossibleType(form_structure,
+                                       "en-us", &*form_structure);
+  CheckThatNoFieldHasThisPossibleType(*form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
 }
 
@@ -828,23 +568,24 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   constexpr char cvc[] = "12";
 
   FormData form;
-  form.fields = {
-      CreateTestFormField("number", "number", credit_card_number,
-                          FormControlType::kInputText),
-      // Server predicted as expiration year.
-      CreateTestFormField("date_or_cvc1", "date_or_cvc1", credit_card_exp_year,
-                          FormControlType::kInputText),
-      // Must be CVC since expiration date was already identified.
-      CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc,
-                          FormControlType::kInputText)};
+  form.set_fields(
+      {CreateTestFormField("number", "number", credit_card_number,
+                           FormControlType::kInputText),
+       // Server predicted as expiration year.
+       CreateTestFormField("date_or_cvc1", "date_or_cvc1", credit_card_exp_year,
+                           FormControlType::kInputText),
+       // Must be CVC since expiration date was already identified.
+       CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc,
+                           FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   // Set the field types.
-  form_structure.field(0)->set_possible_types(
+  form_structure->field(0)->set_possible_types(
       {CREDIT_CARD_NUMBER, UNKNOWN_TYPE});
-  form_structure.field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure.field(2)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
+  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -858,43 +599,10 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
+                                       "en-us", &*form_structure);
 
-  CheckThatNoFieldHasThisPossibleType(form_structure,
+  CheckThatNoFieldHasThisPossibleType(*form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
-}
-
-// Tests that email field is detected if the field value matches a valid email
-// format.
-TEST_F(DeterminePossibleFieldTypesForUploadTest,
-       CrowdsourceEmailFieldsByValue) {
-  base::test::ScopedFeatureList features{
-      features::kAutofillUploadVotesForFieldsWithEmail};
-
-  std::vector<AutofillProfile> profiles;
-  AutofillProfile profile =
-      FillDataToAutofillProfile(GetElvisAddressFillData());
-  profile.set_guid(MakeGuid(1));
-  profiles.push_back(profile);
-
-  FormData form;
-  form.fields.push_back(CreateTestFormField("foo", "foo", "invalidemail",
-                                            FormControlType::kInputText));
-  // The email value is different from the stored profile's email. The
-  // classification is then extracted from matching the value and not the
-  // profile's email.
-  form.fields.push_back(CreateTestFormField("foo", "foo", "myemail@gmail.com",
-                                            FormControlType::kInputText));
-
-  FormStructure form_structure(form);
-  DeterminePossibleFieldTypesForUpload(profiles, {}, std::u16string(), "en-us",
-                                       &form_structure);
-
-  ASSERT_EQ(2U, form_structure.field_count());
-  EXPECT_EQ(form_structure.field(0)->possible_types(),
-            FieldTypeSet({UNKNOWN_TYPE}));
-  EXPECT_EQ(form_structure.field(1)->possible_types(),
-            FieldTypeSet({EMAIL_ADDRESS}));
 }
 
 }  // namespace

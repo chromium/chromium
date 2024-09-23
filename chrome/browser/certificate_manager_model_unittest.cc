@@ -22,10 +22,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "chromeos/components/onc/certificate_scope.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/kcer/extra_instances.h"
+#endif
 
 namespace {
 
@@ -233,7 +239,7 @@ class FakePolicyCertificateProvider : public ash::PolicyCertificateProvider {
   net::CertificateList GetAllAuthorityCertificates(
       const chromeos::onc::CertificateScope& scope) const override {
     // This function is not called by CertificateManagerModel.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::CertificateList();
   }
 
@@ -256,7 +262,7 @@ class FakePolicyCertificateProvider : public ash::PolicyCertificateProvider {
   const std::set<std::string>& GetExtensionIdsWithPolicyCertificates()
       const override {
     // This function is not called by CertificateManagerModel.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return kNoExtensions;
   }
 
@@ -330,6 +336,9 @@ class CertificateManagerModelChromeOSTest : public CertificateManagerModelTest {
     params->extension_certificate_provider =
         std::make_unique<FakeExtensionCertificateProvider>(
             &extension_client_certs_, &extensions_hang_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    params->kcer = kcer::ExtraInstances::GetEmptyKcer();
+#endif
     return params;
   }
 
@@ -672,5 +681,61 @@ TEST_F(CertificateManagerModelChromeOSTest,
     EXPECT_FALSE(extension_cert_info->hardware_backed());
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Test that CertificateManagerModel handles PKCS#12 import correctly.
+// The test doesn't simulate a valid certificate, actual handling of PKCS#12
+// data is covered by the tests for NSSCertDatabase and/or Kcer, but it tests
+// that a meaningful result is returned to the caller.
+// TODO(miersh): When kEnablePkcs12ToChapsDualWrite is enabled and
+// is_extractable is true, PKCS#12 data is imported both into NSS and Kcer. That
+// is difficult to verify at the moment. Soon UMA counters should be added and
+// can be both tested here and used for the verification. And much later the
+// import into NSS will be removed and the result code will come from Kcer.
+TEST_F(CertificateManagerModelChromeOSTest, ImportFromPKCS12) {
+  std::string kInvalidPkcs12Data = "111";
+  std::u16string kPassword = u"222";
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      chromeos::features::kEnablePkcs12ToChapsDualWrite);
+
+  {
+    base::test::TestFuture<int> import_waiter;
+    certificate_manager_model_->ImportFromPKCS12(
+        test_nssdb_.slot(), kInvalidPkcs12Data, kPassword,
+        /*is_extractable=*/false, import_waiter.GetCallback());
+    EXPECT_EQ(import_waiter.Get(), net::ERR_PKCS12_IMPORT_INVALID_FILE);
+  }
+
+  {
+    base::test::TestFuture<int> import_waiter;
+    certificate_manager_model_->ImportFromPKCS12(
+        test_nssdb_.slot(), kInvalidPkcs12Data, kPassword,
+        /*is_extractable=*/true, import_waiter.GetCallback());
+    EXPECT_EQ(import_waiter.Get(), net::ERR_PKCS12_IMPORT_INVALID_FILE);
+  }
+
+  feature_list.Reset();
+  feature_list.InitAndEnableFeature(
+      chromeos::features::kEnablePkcs12ToChapsDualWrite);
+
+  {
+    base::test::TestFuture<int> import_waiter;
+    certificate_manager_model_->ImportFromPKCS12(
+        test_nssdb_.slot(), kInvalidPkcs12Data, kPassword,
+        /*is_extractable=*/false, import_waiter.GetCallback());
+    EXPECT_EQ(import_waiter.Get(), net::ERR_PKCS12_IMPORT_INVALID_FILE);
+  }
+
+  {
+    base::test::TestFuture<int> import_waiter;
+    certificate_manager_model_->ImportFromPKCS12(
+        test_nssdb_.slot(), kInvalidPkcs12Data, kPassword,
+        /*is_extractable=*/true, import_waiter.GetCallback());
+    EXPECT_EQ(import_waiter.Get(), net::ERR_PKCS12_IMPORT_INVALID_FILE);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -54,8 +54,8 @@ const auto kDigitToDomCode = base::MakeFixedFlatMap<int, ui::DomCode>({
 });
 
 ui::KeyEvent CreateKeyEventFromCode(const ui::DomCode& code) {
-  return ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code, ui::EF_NONE,
-                      ui::DomKey::NONE, ui::EventTimeForNow());
+  return ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_UNKNOWN, code,
+                      ui::EF_NONE, ui::DomKey::NONE, ui::EventTimeForNow());
 }
 
 ui::KeyEvent CreateRepeatKeyEventFromCode(const ui::DomCode& code,
@@ -64,7 +64,7 @@ ui::KeyEvent CreateRepeatKeyEventFromCode(const ui::DomCode& code,
   if (shifted) {
     flags |= ui::EF_SHIFT_DOWN;
   }
-  return ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code, flags,
+  return ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_UNKNOWN, code, flags,
                       ui::DomKey::NONE, ui::EventTimeForNow());
 }
 
@@ -80,7 +80,7 @@ AssistiveWindowButton CreateDiacriticsButtonFor(
       .id = ui::ime::ButtonId::kSuggestion,
       .window_type =
           ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion,
-      .index = index,
+      .suggestion_index = index,
       .announce_string = announce_string,
   };
   return button;

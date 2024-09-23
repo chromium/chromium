@@ -1,7 +1,9 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include <optional>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 
@@ -20,6 +22,15 @@ typedef SomeClass& SomeClassRefTypedef;
 
 // No rewrite.
 using SomeClassRefTypeAlias = SomeClass&;
+
+// No rewrite.
+using IntSpan = base::span<int>;
+
+// No rewrite.
+using SomeClassSpan = base::span<SomeClass>;
+
+// No rewrite.
+using OptionalSpan = std::optional<base::span<SomeClass>>;
 
 struct MyStruct {
   // No rewrite expected here.
@@ -41,4 +52,13 @@ struct MyStruct {
   const raw_ref<SomeClass> ref_field3;
   // Expected rewrite: const raw_ref<SomeClass> ref_field4;
   const raw_ref<SomeClass> ref_field4;
+
+  // No rewrite expected here.
+  IntSpan span_field1;
+  // No rewrite expected here.
+  SomeClassSpan span_field2;
+  // No rewrite expected here.
+  OptionalSpan span_field3;
+  // No rewrite expected here.
+  std::optional<SomeClassSpan> span_field4;
 };

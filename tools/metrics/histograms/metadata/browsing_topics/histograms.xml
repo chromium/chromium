@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="BrowsingTopics.ApiActionType"
-    enum="BrowsingTopicsApiActionType" expires_after="2024-07-21">
+    enum="BrowsingTopicsApiActionType" expires_after="2025-01-26">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowsingTopics.BrowsingTopicsState.LoadFinishStatus"
-    enum="BooleanSuccess" expires_after="2024-07-28">
+    enum="BooleanSuccess" expires_after="2025-02-10">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -43,19 +43,73 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus"
-    enum="BrowsingTopicsCalculatorResultStatus" expires_after="2024-07-28">
+<histogram
+    name="BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime.CalculationTimerIsRunning"
+    enum="Boolean" expires_after="2025-02-02">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
-    Records the browsing topics calculation result status (i.e. success, or the
-    failure reason). Recored at the end of each (weekly) topics calculation.
+    If the scheduled topics calculation fails to run on time, records whether
+    the calculation scheduling timer is running. This check occurs each time a
+    new tab is created. The metric is recorded at most once per browser session.
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime.DaysSinceSessionStart"
+    units="days" expires_after="2025-02-02">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    If the scheduled topics calculation fails to run on time, records the
+    elapsed time (in days) since the profile session start. This check occurs
+    each time a new tab is created. The metric is recorded at most once per
+    browser session.
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime.HoursSinceScheduledTime"
+    units="hours" expires_after="2025-02-02">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    If the scheduled topics calculation fails to run on time, records the
+    elapsed time (in hours) from the scheduled time to the time of detection.
+    This check occurs each time a new tab is created. The metric is recorded at
+    most once per browser session.
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime.RemainingDaysInCalculationTimer"
+    units="days" expires_after="2024-11-30">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    If the scheduled topics calculation fails to run on time, records the
+    remaining time (in days) in the calculation scheduling timer. This check
+    occurs each time a new tab is created. The metric is recorded only when the
+    number is positive, and is recorded at most once per browser session.
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime.RemainingTimeInCalculationTimerIsPositive"
+    enum="Boolean" expires_after="2025-02-02">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    If the scheduled topics calculation fails to run on time, records whether
+    records whether remaining time in the calculation scheduling timer is
+    positive. This check occurs at the end of each navigation. The metric is
+    recorded at most once per browser session.
   </summary>
 </histogram>
 
 <histogram
     name="BrowsingTopics.EpochTopicsCalculation.EligibleDistinctHistoryHostsCount"
-    units="hosts" expires_after="2024-07-28">
+    units="hosts" expires_after="2025-02-10">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -66,8 +120,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus"
+    enum="BrowsingTopicsCalculatorResultStatus" expires_after="2025-02-16">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the browsing topics calculation result status (i.e. success, or the
+    failure reason). Topics calculations can typically occur weekly, but can
+    also be manually triggered from the topics-internals page, or can be retries
+    of a previously failed calculation (due to hanging or data race). Recorded
+    for the first try of a calculation (i.e. separated from the timeout retry)
+    after the calculation completes, or when it's detected to be hanging, or
+    when it's canceled due to data races or browser shutdown.
+  </summary>
+</histogram>
+
+<histogram name="BrowsingTopics.EpochTopicsCalculation.Hanging.RetryNumber"
+    units="retry number" expires_after="2025-02-23">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the number of consecutive retries for a topic calculation (initial
+    attempt = 0). Recorded when a topic calculation times out.
+  </summary>
+</histogram>
+
 <histogram name="BrowsingTopics.EpochTopicsCalculation.HistoryTopicsCount"
-    units="topics" expires_after="2024-06-30">
+    units="topics" expires_after="2025-03-09">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -80,7 +160,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowsingTopics.EpochTopicsCalculation.ObservationContextDomainsCountPerTopTopic"
-    units="context domains" expires_after="2024-07-28">
+    units="context domains" expires_after="2025-02-10">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -94,8 +174,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowsingTopics.EpochTopicsCalculation.Started.RetryNumber"
+    units="retry number" expires_after="2025-02-23">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the number of consecutive retries for a topic calculation (initial
+    attempt = 0). Recorded when a topic calculation starts.
+  </summary>
+</histogram>
+
 <histogram name="BrowsingTopics.EpochTopicsCalculation.TimeBetweenCalculations"
-    units="ms" expires_after="2024-06-30">
+    units="ms" expires_after="2025-03-09">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
@@ -108,8 +198,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="BrowsingTopics.EpochTopicsCalculation.TimeoutRetry.CalculatorResultStatus"
+    enum="BrowsingTopicsCalculatorResultStatus" expires_after="2025-02-10">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the browsing topics calculation result status (i.e. success, or the
+    failure reason), for those that are triggered due to the previous
+    calculation timed out. Topics calculations can typically occur weekly, but
+    can also be manually triggered from the topics-internals page, or can be
+    retries of a previously failed calculation (due to hanging or data race).
+    Recorded when the timeout-retried topics calculation completes, or when it's
+    detected to be hanging (again), or when it's canceled due to data races or
+    browser shutdown.
+  </summary>
+</histogram>
+
+<histogram
     name="BrowsingTopics.EpochTopicsCalculation.TopTopicsCountBeforePadding"
-    units="topics" expires_after="2024-07-21">
+    units="topics" expires_after="2025-02-10">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -122,7 +229,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="BrowsingTopics.Fetch.InitialUrlRequest.Result"
     enum="BrowsingTopicsFetchRequestOrRedirectResult"
-    expires_after="2024-07-28">
+    expires_after="2025-02-10">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -134,7 +241,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="BrowsingTopics.Fetch.RedirectedUrlRequest.Result"
     enum="BrowsingTopicsFetchRequestOrRedirectResult"
-    expires_after="2024-07-28">
+    expires_after="2025-02-10">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -145,7 +252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowsingTopics.JavaScriptAPI.TimeToResolve" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2025-02-10">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -155,7 +262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowsingTopics.OverrideList.FileLoadResult"
-    enum="BrowsingTopicsOverrideListFileLoadResult" expires_after="2024-06-23">
+    enum="BrowsingTopicsOverrideListFileLoadResult" expires_after="2025-03-02">
   <owner>robertogden@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
@@ -169,7 +276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowsingTopics.OverrideList.UsedOverride" enum="Boolean"
-    expires_after="2024-06-23">
+    expires_after="2024-10-27">
   <owner>robertogden@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
@@ -178,8 +285,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowsingTopics.Result.FakeTopicCount" units="topics"
-    expires_after="2024-07-07">
+<histogram name="BrowsingTopics.PageLoad.OnTopicsFirstInvoked.RedirectCount"
+    units="count" expires_after="2025-01-12">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    When Topics API is invoked on a page load for the first time, records the
+    number of previous pages that were loaded via client-side redirects (without
+    user activation).
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowsingTopics.PageLoad.OnTopicsFirstInvoked.RedirectWithTopicsInvokedCount"
+    units="count" expires_after="2025-01-12">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    When Topics API is invoked on a page load for the first time, records the
+    number of previous pages that were loaded via client-side redirects (without
+    user activation) that also invoked the Topics API.
+  </summary>
+</histogram>
+
+<histogram name="BrowsingTopics.Result.FakeTopicCount"
+    enum="BrowsingTopicsNumberOfTopics" expires_after="2025-01-26">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -188,8 +318,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowsingTopics.Result.FilteredTopicCount" units="topics"
-    expires_after="2024-07-07">
+<histogram name="BrowsingTopics.Result.FilteredTopicCount"
+    enum="BrowsingTopicsNumberOfTopics" expires_after="2025-01-26">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -199,8 +329,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowsingTopics.Result.RealTopicCount" units="topics"
-    expires_after="2024-07-07">
+<histogram name="BrowsingTopics.Result.RealTopicCount"
+    enum="BrowsingTopicsNumberOfTopics" expires_after="2025-01-19">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -210,7 +340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowsingTopics.Result.Status"
-    enum="BrowsingTopicsApiAccessResult" expires_after="2024-07-07">
+    enum="BrowsingTopicsApiAccessResult" expires_after="2025-01-19">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -219,13 +349,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowsingTopics.SiteDataStorage.FileSize.KB" units="KB"
+    expires_after="2025-02-16">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    The size in kilobytes of the `BrowsingTopics` SQL database file. Recorded
+    when the database is lazily and successfully initialized.
+  </summary>
+</histogram>
+
 <histogram name="BrowsingTopics.SiteDataStorage.InitStatus"
-    enum="BooleanSuccess" expires_after="2024-07-21">
+    enum="BooleanSuccess" expires_after="2025-02-10">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
     Records initialization status of BrowsingTopics SiteDataStorage database.
-    Recored when the database is lazily initialised when the first operation is
+    Recorded when the database is lazily initialised when the first operation is
     encountered.
   </summary>
 </histogram>

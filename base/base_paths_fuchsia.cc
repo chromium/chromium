@@ -24,7 +24,7 @@ bool PathProviderFuchsia(int key, FilePath* result) {
       *result = base::FilePath(base::kPackageRootDirectoryPath);
       return true;
 
-    // TODO(crbug.com/1459692): Align with other platforms and remove this
+    // TODO(crbug.com/40274404): Align with other platforms and remove this
     // specialization.
     case DIR_GEN_TEST_DATA_ROOT:
       [[fallthrough]];
@@ -36,11 +36,11 @@ bool PathProviderFuchsia(int key, FilePath* result) {
       *result = base::FilePath(base::kPackageRootDirectoryPath);
       return true;
     case DIR_USER_DESKTOP:
-      // TODO(crbug.com/1231928): Implement this case for DIR_USER_DESKTOP.
+      // TODO(crbug.com/42050322): Implement this case for DIR_USER_DESKTOP.
       NOTIMPLEMENTED_LOG_ONCE();
       return false;
     case DIR_HOME:
-      // TODO(crbug.com/1231928) Provide a proper base::GetHomeDir()
+      // TODO(crbug.com/42050322) Provide a proper base::GetHomeDir()
       // implementation for Fuchsia and remove this case statement. See also
       // crbug.com/1261284. For now, log, return false, and let the base
       // implementation handle it. This will end up returning a temporary

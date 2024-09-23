@@ -5,13 +5,13 @@
 // NOTE: This file is only compiled when Crashpad is not used as the crash
 // reproter.
 
-#include "components/crash/core/common/crash_key.h"
+#include <string_view>
 
 #include "base/debug/crash_logging.h"
 #include "base/format_macros.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_key_base_support.h"
 #include "components/crash/core/common/crash_key_internal.h"
 
@@ -49,7 +49,7 @@ void ResetCrashKeyStorageForTesting() {
   delete storage;
 }
 
-void CrashKeyStringImpl::Set(base::StringPiece value) {
+void CrashKeyStringImpl::Set(std::string_view value) {
   // This check cannot be in the constructor because it is constexpr. Use _LT
   // rather than _LE to account for the terminating \0.
   DCHECK_LT(strlen(name_), kCrashKeyStorageKeySize);
@@ -102,8 +102,8 @@ void CrashKeyStringImpl::Set(base::StringPiece value) {
   for (size_t i = 0; i < index_array_count_; ++i) {
     if (offset < value.length()) {
       // The storage NUL-terminates the value, so ensure that a byte is
-      // not lost when setting individaul chunks.
-      base::StringPiece chunk =
+      // not lost when setting individual chunks.
+      std::string_view chunk =
           value.substr(offset, kCrashKeyStorageValueSize - 1);
       offset += chunk.length();
 

@@ -23,14 +23,11 @@ namespace media {
 // static
 std::unique_ptr<VideoFrameMapper> VideoFrameMapperFactory::CreateMapper(
     VideoPixelFormat format,
-    VideoFrame::StorageType storage_type,
-    bool must_support_intel_media_compressed_buffers) {
+    VideoFrame::StorageType storage_type) {
 #if BUILDFLAG(USE_VAAPI)
-  return CreateMapper(format, storage_type, false,
-                      must_support_intel_media_compressed_buffers);
+  return CreateMapper(format, storage_type, false);
 #else
-  return CreateMapper(format, storage_type, true,
-                      must_support_intel_media_compressed_buffers);
+  return CreateMapper(format, storage_type, true);
 #endif  // BUILDFLAG(USE_VAAPI)
 }
 
@@ -38,22 +35,13 @@ std::unique_ptr<VideoFrameMapper> VideoFrameMapperFactory::CreateMapper(
 std::unique_ptr<VideoFrameMapper> VideoFrameMapperFactory::CreateMapper(
     VideoPixelFormat format,
     VideoFrame::StorageType storage_type,
-    bool force_linear_buffer_mapper,
-    bool must_support_intel_media_compressed_buffers) {
-  if (!must_support_intel_media_compressed_buffers) {
-    if (storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-      return GpuMemoryBufferVideoFrameMapper::Create(format);
-    }
+    bool force_linear_buffer_mapper) {
+  if (storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+    return GpuMemoryBufferVideoFrameMapper::Create(format);
+  }
 
-    if (force_linear_buffer_mapper) {
-      return GenericDmaBufVideoFrameMapper::Create(format);
-    }
-  } else if (force_linear_buffer_mapper ||
-             storage_type != VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    // We currently only support Intel media compressed VideoFrames if they are
-    // backed by a GpuMemoryBuffer. Additionally, we don't currently support
-    // mapping Intel media compressed buffers without linearizing them.
-    return nullptr;
+  if (force_linear_buffer_mapper) {
+    return GenericDmaBufVideoFrameMapper::Create(format);
   }
 
 #if BUILDFLAG(USE_VAAPI)

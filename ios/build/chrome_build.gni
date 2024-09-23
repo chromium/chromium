@@ -4,6 +4,7 @@
 
 import("//build/config/apple/symbols.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/features.gni")
 import("//build/config/ios/ios_sdk.gni")
 
 # Xcode 13.1 or higher is required to build Chromium on iOS. This file should
@@ -12,9 +13,9 @@ import("//build/config/ios/ios_sdk.gni")
 assert(xcode_version_int >= 1310, "Xcode 13.1 or higher is required.")
 
 declare_args() {
-  # Enable notification center widget extensions.
-  ios_enable_content_widget_extension = true
-  ios_enable_search_widget_extension = true
+  # Disable notification center widget extensions.
+  ios_enable_content_widget_extension = false
+  ios_enable_search_widget_extension = false
 
   # Enable share extension.
   ios_enable_share_extension = true
@@ -23,7 +24,9 @@ declare_args() {
   ios_enable_open_extension = true
 
   # Enable credential provider extension.
-  ios_enable_credential_provider_extension = true
+  # TODO(crbug.com/356196908): The iOS for Blink should be built without
+  # //components/keyed_service/core dependency.
+  ios_enable_credential_provider_extension = !use_blink
 
   # Enable intents extension.
   ios_enable_intents_extension = true
@@ -37,12 +40,23 @@ declare_args() {
   # Enable iOS shortcut widget in WidgetKit extension.
   ios_enable_shortcuts_widget = true
 
-  # Enable iOS search passwords widget in WidgetKit extension.
-  ios_enable_search_passwords_widget = true
+  # Enable iOS Push Notification Service extension.
+  ios_enable_push_notification_service_extension = true
 
   # Label of the target providing implementation for AccountVerificationProvider.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_account_verification_provider_target = "//ios/chrome/credential_provider_extension:account_verification_provider_implementation"
+
+  # Label of the target providing implementation for PasskeyKeychainProvider.
+  # Overridden when using the Google-internal repository to build Chrome on iOS.
+  ios_passkey_keychain_provider_target = "//ios/chrome/credential_provider_extension:passkey_keychain_provider_implementation"
+
+  # Enable passkey capabilities in the Credential Provider Extension (CPE).
+  ios_cpe_enable_passkey_capabilities = false
+
+  # Label of the target providing implementation for the PushNotificationServiceExtension.
+  # Overridden when using the Google-internal repository to build Chrome on iOS.
+  ios_push_notification_service_extension_target = "//ios/chrome/push_notification_service_extension:push_notification_service_extension_implementation"
 
   # The API key to query Google services in the Credential Provider Extension.
   ios_credential_provider_extension_api_key = ""
@@ -50,12 +64,13 @@ declare_args() {
   # Controls whether ScreenTime API is used.
   ios_enable_screen_time = false
 
-  # Enable background fetch mode for feed refresh.
+  # Enable background fetch mode for app refresh.
   ios_enable_background_mode = true
 
   # Value of the encryption export compliance code. See "Cryptography and
   # U.S. Export Compliance" in "Submitting the App to App Review" in the
-  # Apple developer documentation (https://goo.gl/yv1xEF).
+  # Apple developer documentation
+  # (https://developer.apple.com/documentation/security/complying_with_encryption_export_regulations).
   ios_encryption_export_compliance_code = ""
 
   # List of plist templates to merge when generating chrome Info.plist.
@@ -84,6 +99,12 @@ declare_args() {
 
   # Enable memory debugging.
   ios_enable_memory_debugging = !is_chrome_branded
+
+  # The iOS app bundle id.
+  ios_chromium_bundle_id = "$ios_app_bundle_id_prefix.chrome.ios.dev"
+
+  # Path to a PrivacyInfo.xcprivacy file to be included in app extensions.
+  ios_app_extension_privacy_manifest = ""
 }
 
 if (target_environment == "catalyst") {
@@ -94,10 +115,29 @@ if (target_environment == "catalyst") {
   ios_enable_widget_kit_extension = false
   ios_enable_prebuilt_widget_kit_extension = false
   ios_enable_open_extension = false
+  ios_enable_push_notification_service_extension = false
 
   # ScreenTime framework is not available in the iOS support libraries provided
   # by "catalyst" environment.
   ios_enable_screen_time = false
+}
+
+if (ios_chrome_generate_order_file) {
+  assert(
+      !enable_stripping && !is_debug,
+      "An orderfile should only be generated if enable_stripping is false and is_debug is false to ensure all function calls are included.")
+
+  # Disable all extensions as the order file is only generated based on running
+  # the primary application.
+  ios_enable_content_widget_extension = false
+  ios_enable_search_widget_extension = false
+  ios_enable_credential_provider_extension = false
+  ios_enable_widget_kit_extension = false
+  ios_enable_prebuilt_widget_kit_extension = false
+  ios_enable_push_notification_service_extension = false
+  ios_enable_share_extension = false
+  ios_enable_open_extension = false
+  ios_enable_intents_extension = false
 }
 
 # Configure is_official_release.
@@ -108,7 +148,6 @@ if (is_official_build && is_chrome_branded) {
   is_official_release = false
 }
 
-chromium_bundle_id = "$ios_app_bundle_id_prefix.chrome.ios.dev"
 chromium_handoff_id = "$ios_app_bundle_id_prefix.chrome.handoff"
 ios_move_tab_activity_type = "$ios_app_bundle_id_prefix.chrome.move-tab"
 

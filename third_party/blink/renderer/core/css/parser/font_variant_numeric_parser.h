@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_FONT_VARIANT_NUMERIC_PARSER_H_
 
 #include "third_party/blink/renderer/core/css/css_value_list.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 
 namespace blink {
@@ -19,8 +18,8 @@ class FontVariantNumericParser {
 
   enum class ParseResult { kConsumedValue, kDisallowedValue, kUnknownValue };
 
-  ParseResult ConsumeNumeric(CSSParserTokenRange& range) {
-    CSSValueID value_id = range.Peek().Id();
+  ParseResult ConsumeNumeric(CSSParserTokenStream& stream) {
+    CSSValueID value_id = stream.Peek().Id();
     switch (value_id) {
       case CSSValueID::kLiningNums:
       case CSSValueID::kOldstyleNums:
@@ -59,7 +58,7 @@ class FontVariantNumericParser {
         return ParseResult::kUnknownValue;
     }
 
-    result_->Append(*css_parsing_utils::ConsumeIdent(range));
+    result_->Append(*css_parsing_utils::ConsumeIdent(stream));
     return ParseResult::kConsumedValue;
   }
 

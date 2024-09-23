@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningCoordin
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningTriggers;
 import org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetCoordinator;
 import org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetCoordinatorFactory;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -63,22 +62,23 @@ class PasswordMigrationWarningBridge {
                         profile,
                         bottomSheetController,
                         SyncConsentActivityLauncherImpl.get(),
-                        new SettingsLauncherImpl(),
                         ManageSyncSettings.class,
                         new ExportFlow(),
                         (PasswordListObserver observer) ->
-                                PasswordManagerHandlerProvider.getInstance().addObserver(observer),
-                        new PasswordStoreBridge(),
+                                PasswordManagerHandlerProvider.getForProfile(profile)
+                                        .addObserver(observer),
+                        new PasswordStoreBridge(profile),
                         referrer,
                         ChromePureJavaExceptionReporter::reportJavaException);
         passwordMigrationWarningCoordinator.showWarning();
     }
 
-    // TODO(321218513): Use this method to trigger showing the sheet from cpp.
-    static void maybeShowPostMigrationSheet(WindowAndroid windowAndroid) {
+    @CalledByNative
+    static void maybeShowPostMigrationSheet(WindowAndroid windowAndroid, Profile profile) {
         PostPasswordMigrationSheetCoordinator postMigrationSheet =
                 PostPasswordMigrationSheetCoordinatorFactory
-                        .maybeGetOrCreatePostPasswordMigrationSheetCoordinator(windowAndroid);
+                        .maybeGetOrCreatePostPasswordMigrationSheetCoordinator(
+                                windowAndroid, profile);
         if (postMigrationSheet == null) return;
         postMigrationSheet.showSheet();
     }

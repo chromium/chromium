@@ -68,26 +68,21 @@ class FakePrintPreviewUI : public PrintPreviewUI {
 };
 
 // Hands out `FakePrintPreviewUI` instances instead of real ones.
-class TestPrintPreviewUIConfig : public content::WebUIConfig {
+class TestPrintPreviewUIConfig
+    : public content::DefaultWebUIConfig<FakePrintPreviewUI> {
  public:
   TestPrintPreviewUIConfig()
-      : content::WebUIConfig(content::kChromeUIScheme,
-                             chrome::kChromeUIPrintHost) {}
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIPrintHost) {}
   TestPrintPreviewUIConfig(const TestPrintPreviewUIConfig&) = delete;
   TestPrintPreviewUIConfig& operator=(const TestPrintPreviewUIConfig&) = delete;
   ~TestPrintPreviewUIConfig() override = default;
 
-  // content::WebUIConfig:
+  // content::DefaultWebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override {
     return true;
   }
   bool ShouldHandleURL(const GURL& url) override { return url.path() == "/"; }
-
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override {
-    return std::make_unique<FakePrintPreviewUI>(web_ui);
-  }
 };
 
 }  // namespace

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.build.annotations.MockedInTests;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -25,6 +27,7 @@ public interface DropdownItemProcessor {
      *
      * @return A newly created model.
      */
+    @NonNull
     PropertyModel createModel();
 
     /** Signals that the omnibox session has been activated or deactivated. */
@@ -35,9 +38,4 @@ public interface DropdownItemProcessor {
 
     /** Signals that the dropdown list is about to be populated with new content. */
     default void onSuggestionsReceived() {}
-
-    /** Return if the suggestion view can have background rounding. */
-    default boolean allowBackgroundRounding() {
-        return false;
-    }
 }

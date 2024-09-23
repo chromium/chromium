@@ -131,37 +131,37 @@ std::ostream& operator<<(std::ostream& out,
 
 bool operator==(const std::optional<WebExposedIsolationInfo>& a,
                 const std::optional<WebExposedIsolationInfo>& b) {
-  NOTREACHED() << kComparisonErrorMessage;
+  NOTREACHED_IN_MIGRATION() << kComparisonErrorMessage;
   return false;
 }
 
 bool operator==(const WebExposedIsolationInfo& a,
                 const std::optional<WebExposedIsolationInfo>& b) {
-  NOTREACHED() << kComparisonErrorMessage;
+  NOTREACHED_IN_MIGRATION() << kComparisonErrorMessage;
   return false;
 }
 
 bool operator==(const std::optional<WebExposedIsolationInfo>& a,
                 const WebExposedIsolationInfo& b) {
-  NOTREACHED() << kComparisonErrorMessage;
+  NOTREACHED_IN_MIGRATION() << kComparisonErrorMessage;
   return false;
 }
 
 bool operator!=(const std::optional<WebExposedIsolationInfo>& a,
                 const std::optional<WebExposedIsolationInfo>& b) {
-  NOTREACHED() << kComparisonErrorMessage;
+  NOTREACHED_IN_MIGRATION() << kComparisonErrorMessage;
   return false;
 }
 
 bool operator!=(const WebExposedIsolationInfo& a,
                 const std::optional<WebExposedIsolationInfo>& b) {
-  NOTREACHED() << kComparisonErrorMessage;
+  NOTREACHED_IN_MIGRATION() << kComparisonErrorMessage;
   return false;
 }
 
 bool operator!=(const std::optional<WebExposedIsolationInfo>& a,
                 const WebExposedIsolationInfo& b) {
-  NOTREACHED() << kComparisonErrorMessage;
+  NOTREACHED_IN_MIGRATION() << kComparisonErrorMessage;
   return false;
 }
 

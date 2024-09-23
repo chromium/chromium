@@ -55,11 +55,11 @@ if (_build_ios_webkit || _build_mac_webkit) {
         # here, use the top-50 most frequently-changed files (excluding
         # ChangeLogs, which are now deprecated) as a proxy to determine whether or
         # not source files have changed.
-        # TODO(crbug.com/934252): This will not pick up local edits to source
+        # TODO(crbug.com/40614900): This will not pick up local edits to source
         # files, so find a way to properly rebuild when those change.
         "src/LayoutTests/TestExpectations",
         "src/Source/WebCore/WebCore.xcodeproj/project.pbxproj",
-        "src/LayoutTests/platform/ios-wk2/TestExpectations",
+        "src/LayoutTests/platform/ipad/TestExpectations",
         "src/LayoutTests/platform/mac-wk2/TestExpectations",
         "src/Source/WebKit/WebKit.xcodeproj/project.pbxproj",
         "src/LayoutTests/platform/mac-wk1/TestExpectations",
@@ -71,7 +71,7 @@ if (_build_ios_webkit || _build_mac_webkit) {
         "src/Source/WebKit/WebProcess/WebPage/WebPage.cpp",
         "src/Source/WebCore/Headers.cmake",
         "src/Source/WebKit/UIProcess/WebPageProxy.h",
-        "src/LayoutTests/platform/wincairo/TestExpectations",
+        "src/LayoutTests/platform/win/TestExpectations",
         "src/Source/WebCore/dom/Document.cpp",
         "src/Source/WTF/Scripts/Preferences/UnifiedWebPreferences.yaml",
         "src/Source/WebKit/UIProcess/ios/WKContentViewInteraction.mm",
@@ -113,7 +113,7 @@ if (_build_ios_webkit || _build_mac_webkit) {
 
       args = invoker.args
 
-      # TODO(crbug.com/1329824): "-j 8" restricts xcodebuild to eight simultaneous
+      # TODO(crbug.com/40842823): "-j 8" restricts xcodebuild to eight simultaneous
       # jobs. This is intended to prevent overloading the machine, because ninja
       # will already be spawning a large number of jobs in parallel with
       # xcodebuild, but it causes the webkit build to run very slowly. Find a way
@@ -183,14 +183,14 @@ if (_build_mac_webkit) {
       "--output_dir",
       rebase_path("$_webkit_mac_out_base_dir"),
 
-      # The arguments below allow building with Xcode 14.2 (with the macOS 13.1
-      # SDK) on macOS 13.4.
-      "MACOSX_DEPLOYMENT_TARGET=13.1",
-      "TARGET_MAC_OS_X_VERSION_MAJOR=130000",
-      "MAC_OS_X_VERSION_ACTUAL=130400",
-      "MAC_OS_X_VERSION_MAJOR=130000",
-      "MAC_OS_X_VERSION_MINOR=130400",
-      "MAC_OS_X_PRODUCT_BUILD_VERSION=22C55",
+      # The arguments below allow building with Xcode 15.4 (with the macOS 14.5
+      # SDK) on macOS 14.4.
+      "MACOSX_DEPLOYMENT_TARGET=14.5",
+      "TARGET_MAC_OS_X_VERSION_MAJOR=140000",
+      "MAC_OS_X_VERSION_ACTUAL=140400",
+      "MAC_OS_X_VERSION_MAJOR=140000",
+      "MAC_OS_X_VERSION_MINOR=140400",
+      "MAC_OS_X_PRODUCT_BUILD_VERSION=23F73",
     ]
   }
 

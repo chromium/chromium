@@ -10,20 +10,21 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggestion_provider.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 
 class Profile;
-
-namespace drive {
-class DriveIntegrationService;
-}
 
 namespace ash {
 class FileSuggestKeyedService;
 
 // A suggestion provider for most recently used drive files.
-class DriveRecentFileSuggestionProvider : public FileSuggestionProvider {
+class DriveRecentFileSuggestionProvider
+    : public FileSuggestionProvider,
+      public drive::DriveIntegrationService::Observer,
+      public drivefs::DriveFsHost::Observer {
  public:
   DriveRecentFileSuggestionProvider(
       Profile* profile,
@@ -38,6 +39,16 @@ class DriveRecentFileSuggestionProvider : public FileSuggestionProvider {
   void GetSuggestFileData(GetSuggestFileDataCallback callback) override;
   void MaybeUpdateItemSuggestCache(
       base::PassKey<FileSuggestKeyedService>) override;
+
+  // drive::DriveIntegrationService::Observer:
+  void OnDriveIntegrationServiceDestroyed() override;
+  void OnFileSystemMounted() override;
+
+  // drivefs::DriveFsHost::Observer:
+  void OnHostDestroyed() override;
+  void OnUnmounted() override;
+  void OnFilesChanged(
+      const std::vector<drivefs::mojom::FileChange>& changes) override;
 
  private:
   enum class SearchType {
@@ -58,6 +69,10 @@ class DriveRecentFileSuggestionProvider : public FileSuggestionProvider {
                      drive::DriveIntegrationService* drive_service,
                      base::RepeatingClosure callback);
 
+  // Converts items from `query_result_files_by_path_` to a sorted list of file
+  // suggestions.
+  std::vector<FileSuggestData> GetSuggestionsFromLatestQueryResults();
+
   // Run upon completion of all Drive FS searches - includes searched for
   // recently modified files, and files recently viewd by the user. It
   // aggregates results, and runs callbacks waiting for file suggestions.
@@ -72,6 +87,14 @@ class DriveRecentFileSuggestionProvider : public FileSuggestionProvider {
       std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
   const raw_ptr<Profile> profile_;
+
+  // The time delta within which a valid file suggestion needs to be viewed or
+  // modified.
+  const base::TimeDelta max_recency_;
+
+  // Whether request for file suggest data can generate results from the latest
+  // cached query results.
+  bool can_use_cache_ = false;
 
   // The callbacks that run when the drive results are ready.
   // Using a callback list to handle the edge case that multiple data consumers

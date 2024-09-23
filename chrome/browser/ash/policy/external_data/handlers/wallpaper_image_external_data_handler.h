@@ -8,42 +8,28 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/ash/policy/external_data/handlers/cloud_external_data_policy_handler.h"
-
-namespace ash {
-class CrosSettings;
-}  // namespace ash
+#include "chrome/browser/ash/policy/external_data/cloud_external_data_policy_observer.h"
 
 namespace policy {
 
-class DeviceLocalAccountPolicyService;
-
 class WallpaperImageExternalDataHandler
-    : public CloudExternalDataPolicyHandler {
+    : public CloudExternalDataPolicyObserver::Delegate {
  public:
-  WallpaperImageExternalDataHandler(
-      ash::CrosSettings* cros_settings,
-      DeviceLocalAccountPolicyService* policy_service);
-
+  WallpaperImageExternalDataHandler();
   WallpaperImageExternalDataHandler(const WallpaperImageExternalDataHandler&) =
       delete;
   WallpaperImageExternalDataHandler& operator=(
       const WallpaperImageExternalDataHandler&) = delete;
-
   ~WallpaperImageExternalDataHandler() override;
 
-  // CloudExternalDataPolicyHandler:
+  // CloudExternalDataPolicyObserver::Delegate:
   void OnExternalDataCleared(const std::string& policy,
                              const std::string& user_id) override;
   void OnExternalDataFetched(const std::string& policy,
                              const std::string& user_id,
                              std::unique_ptr<std::string> data,
                              const base::FilePath& file_path) override;
-  void RemoveForAccountId(const AccountId& account_id,
-                          base::OnceClosure on_removed) override;
-
- private:
-  CloudExternalDataPolicyObserver wallpaper_image_observer_;
+  void RemoveForAccountId(const AccountId& account_id) override;
 };
 
 }  // namespace policy

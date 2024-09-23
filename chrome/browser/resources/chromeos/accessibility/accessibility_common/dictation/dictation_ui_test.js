@@ -5,14 +5,7 @@
 GEN_INCLUDE(['dictation_test_base.js']);
 
 /** UI tests for Dictation. */
-DictationUIE2ETest = class extends DictationE2ETestBase {
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await importModule(
-        'UIController', '/accessibility_common/dictation/ui_controller.js');
-  }
-};
+DictationUIE2ETest = class extends DictationE2ETestBase {};
 
 AX_TEST_F(
     'DictationUIE2ETest', 'ShownWhenSpeechRecognitionStarts', async function() {
@@ -212,7 +205,7 @@ AX_TEST_F(
       });
     });
 
-// TODO(crbug.com/1510428): This test is flaky.
+// TODO(crbug.com/41483025): This test is flaky.
 AX_TEST_F(
     'DictationUIE2ETest', 'DISABLED_HintsTimeoutWithChromeVox',
     async function() {

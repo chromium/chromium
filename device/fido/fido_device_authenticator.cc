@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <numeric>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -29,6 +29,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/get_assertion_task.h"
 #include "device/fido/large_blob.h"
@@ -68,6 +69,82 @@ CredentialManagementRequest::Version GetCredentialManagementRequestVersion(
   return options.supports_credential_management
              ? CredentialManagementRequest::kDefault
              : CredentialManagementRequest::kPreview;
+}
+
+GetAssertionStatus ConvertDeviceResponseCodeToGetAssertionStatus(
+    CtapDeviceResponseCode device_response_code) {
+  switch (device_response_code) {
+    case CtapDeviceResponseCode::kSuccess:
+      return GetAssertionStatus::kSuccess;
+
+    // Only returned after the user interacted with the
+    // authenticator.
+    case CtapDeviceResponseCode::kCtap2ErrNoCredentials:
+      return GetAssertionStatus::kUserConsentButCredentialNotRecognized;
+
+    // The user explicitly denied the operation. External authenticators may
+    // return it e.g. after the user fails fingerprint verification.
+    case CtapDeviceResponseCode::kCtap2ErrOperationDenied:
+      return GetAssertionStatus::kUserConsentDenied;
+
+    // External authenticators may return this error if internal user
+    // verification fails or if the pin token is not valid.
+    case CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid:
+      return GetAssertionStatus::kUserConsentDenied;
+
+    case CtapDeviceResponseCode::kCtap2ErrPinRequired:
+      return GetAssertionStatus::kUserConsentDenied;
+
+    // This error is returned by some authenticators (e.g. the "Yubico FIDO
+    // 2" CTAP2 USB keys) during GetAssertion **before the user interacted
+    // with the device**. The authenticator does this to avoid blinking (and
+    // possibly asking the user for their PIN) for requests it knows
+    // beforehand it cannot handle.
+    //
+    // Ignore this error to avoid canceling the request without user
+    // interaction.
+    case CtapDeviceResponseCode::kCtap2ErrInvalidCredential:
+      return GetAssertionStatus::kAuthenticatorResponseInvalid;
+
+    // For all other errors, the authenticator will be dropped, and other
+    // authenticators may continue.
+    default:
+      return GetAssertionStatus::kAuthenticatorResponseInvalid;
+  }
+}
+
+MakeCredentialStatus ConvertDeviceResponseCodeToMakeCredentialStatus(
+    CtapDeviceResponseCode device_response_code) {
+  switch (device_response_code) {
+    case CtapDeviceResponseCode::kSuccess:
+      return MakeCredentialStatus::kSuccess;
+
+    // Only returned after the user interacted with the authenticator.
+    case CtapDeviceResponseCode::kCtap2ErrCredentialExcluded:
+      return MakeCredentialStatus::kUserConsentButCredentialExcluded;
+
+    // The user explicitly denied the operation. External authenticators may
+    // return it e.g. after the user fails fingerprint verification.
+    case CtapDeviceResponseCode::kCtap2ErrOperationDenied:
+      return MakeCredentialStatus::kUserConsentDenied;
+
+    // External authenticators may return this error if internal user
+    // verification fails for a make credential request or if the pin token is
+    // not valid.
+    case CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid:
+      return MakeCredentialStatus::kUserConsentDenied;
+
+    case CtapDeviceResponseCode::kCtap2ErrKeyStoreFull:
+      return MakeCredentialStatus::kStorageFull;
+
+    case CtapDeviceResponseCode::kCtap2ErrUnsupportedAlgorithm:
+      return MakeCredentialStatus::kNoCommonAlgorithms;
+
+    // For all other errors, the authenticator may be dropped, and other
+    // authenticators may continue.
+    default:
+      return MakeCredentialStatus::kAuthenticatorResponseInvalid;
+  }
 }
 
 }  // namespace
@@ -113,7 +190,7 @@ void FidoDeviceAuthenticator::InitializeAuthenticatorDone(
       options_.supports_hmac_secret &= chosen_pin_uv_auth_protocol_.has_value();
       break;
     case ProtocolVersion::kUnknown:
-      NOTREACHED() << "uninitialized device";
+      NOTREACHED_IN_MIGRATION() << "uninitialized device";
   }
   std::move(callback).Run();
 }
@@ -149,6 +226,17 @@ void FidoDeviceAuthenticator::MakeCredential(
     CtapMakeCredentialRequest request,
     MakeCredentialOptions request_options,
     MakeCredentialCallback callback) {
+  CtapMakeCredentialCallback ctap_callback =
+      base::BindOnce(&FidoDeviceAuthenticator::OnMakeCredentialResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
+  MakeCredentialInternal(std::move(request), std::move(request_options),
+                         std::move(ctap_callback));
+}
+
+void FidoDeviceAuthenticator::MakeCredentialInternal(
+    CtapMakeCredentialRequest request,
+    MakeCredentialOptions request_options,
+    CtapMakeCredentialCallback callback) {
   // If the authenticator has UV configured then UV will be required in
   // order to create a credential (as specified by CTAP 2.0), even if
   // user-verification is "discouraged".
@@ -159,6 +247,12 @@ void FidoDeviceAuthenticator::MakeCredential(
     request.user_verification = UserVerificationRequirement::kRequired;
   } else {
     request.user_verification = UserVerificationRequirement::kDiscouraged;
+  }
+
+  if (AuthenticatorTransport() == FidoTransportProtocol::kHybrid) {
+    // iPhones will refuse to make a passkey through hybrid if they do not
+    // receive an empty display name.
+    request.user.serialization_options.include_empty_display_name = true;
   }
 
   RunTask<MakeCredentialTask,
@@ -187,6 +281,10 @@ void FidoDeviceAuthenticator::GetAssertion(CtapGetAssertionRequest request,
     large_blob_read_ = options.large_blob_read;
   }
 
+  CtapGetAssertionCallback ctap_callback =
+      base::BindOnce(&FidoDeviceAuthenticator::OnGetAssertionResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
+
   if (options.large_blob_write) {
     // This copy is done because `options` is also moved in this call. While
     // moving the object would hopefully not reallocate member buffers, that's
@@ -197,17 +295,17 @@ void FidoDeviceAuthenticator::GetAssertion(CtapGetAssertionRequest request,
         base::BindOnce(
             &FidoDeviceAuthenticator::OnHaveCompressedLargeBlobForGetAssertion,
             weak_factory_.GetWeakPtr(), std::move(request), std::move(options),
-            std::move(callback), large_blob_data.size()));
+            std::move(ctap_callback), large_blob_data.size()));
   } else {
     MaybeGetEphemeralKeyForGetAssertion(std::move(request), std::move(options),
-                                        std::move(callback));
+                                        std::move(ctap_callback));
   }
 }
 
 void FidoDeviceAuthenticator::OnHaveCompressedLargeBlobForGetAssertion(
     CtapGetAssertionRequest request,
     CtapGetAssertionOptions options,
-    GetAssertionCallback callback,
+    CtapGetAssertionCallback callback,
     size_t original_size,
     base::expected<mojo_base::BigBuffer, std::string> result) {
   if (!result.has_value()) {
@@ -235,7 +333,7 @@ void FidoDeviceAuthenticator::OnHaveCompressedLargeBlobForGetAssertion(
 void FidoDeviceAuthenticator::MaybeGetEphemeralKeyForGetAssertion(
     CtapGetAssertionRequest request,
     CtapGetAssertionOptions options,
-    GetAssertionCallback callback) {
+    CtapGetAssertionCallback callback) {
   if (!options.prf_inputs.empty()) {
     GetEphemeralKey(base::BindOnce(
         &FidoDeviceAuthenticator::OnHaveEphemeralKeyForGetAssertion,
@@ -250,7 +348,7 @@ void FidoDeviceAuthenticator::MaybeGetEphemeralKeyForGetAssertion(
 void FidoDeviceAuthenticator::OnHaveEphemeralKeyForGetAssertion(
     CtapGetAssertionRequest request,
     CtapGetAssertionOptions options,
-    GetAssertionCallback callback,
+    CtapGetAssertionCallback callback,
     CtapDeviceResponseCode status,
     std::optional<pin::KeyAgreementResponse> key) {
   if (status != CtapDeviceResponseCode::kSuccess) {
@@ -267,9 +365,10 @@ void FidoDeviceAuthenticator::OnHaveEphemeralKeyForGetAssertion(
   DoGetAssertion(std::move(request), std::move(options), std::move(callback));
 }
 
-void FidoDeviceAuthenticator::DoGetAssertion(CtapGetAssertionRequest request,
-                                             CtapGetAssertionOptions options,
-                                             GetAssertionCallback callback) {
+void FidoDeviceAuthenticator::DoGetAssertion(
+    CtapGetAssertionRequest request,
+    CtapGetAssertionOptions options,
+    CtapGetAssertionCallback callback) {
   if (!request.pin_auth &&
       options_.user_verification_availability ==
           UserVerificationAvailability::kSupportedAndConfigured &&
@@ -292,7 +391,7 @@ void FidoDeviceAuthenticator::DoGetAssertion(CtapGetAssertionRequest request,
 void FidoDeviceAuthenticator::OnHaveAssertion(
     CtapGetAssertionRequest request,
     CtapGetAssertionOptions options,
-    GetAssertionCallback callback,
+    CtapGetAssertionCallback callback,
     CtapDeviceResponseCode status,
     std::vector<AuthenticatorGetAssertionResponse> responses) {
   if (status != CtapDeviceResponseCode::kSuccess) {
@@ -309,7 +408,7 @@ void FidoDeviceAuthenticator::PerformGetAssertionLargeBlobOperation(
     CtapGetAssertionRequest request,
     CtapGetAssertionOptions options,
     std::vector<AuthenticatorGetAssertionResponse> responses,
-    GetAssertionCallback callback) {
+    CtapGetAssertionCallback callback) {
   // Only a single response is supported when using the largeBlob extension
   // because we assume that only large authenticators will implement largeBlobs
   // that way and they do internal account selection.
@@ -398,7 +497,7 @@ void FidoDeviceAuthenticator::GetTouch(base::OnceClosure callback) {
         base::BindOnce(&pin::EmptyResponse::Parse));
     return;
   }
-  MakeCredential(
+  MakeCredentialInternal(
       MakeCredentialTask::GetTouchRequest(device()), MakeCredentialOptions(),
       base::BindOnce(
           [](std::string authenticator_id, base::OnceCallback<void()> callback,
@@ -622,7 +721,7 @@ FidoAuthenticator::PINUVDisposition
 FidoDeviceAuthenticator::PINUVDispositionForGetAssertion(
     const CtapGetAssertionRequest& request,
     const FidoRequestHandlerBase::Observer* observer) {
-  // TODO(crbug.com/1149405): GetAssertion requests don't allow in-line UV
+  // TODO(crbug.com/40731828): GetAssertion requests don't allow in-line UV
   // enrollment. Perhaps we should change this and align with MakeCredential
   // behavior.
   const bool can_collect_pin = observer && observer->SupportsPIN();
@@ -996,7 +1095,7 @@ void FidoDeviceAuthenticator::BioEnrollEnumerate(
 
 void FidoDeviceAuthenticator::OnWroteLargeBlobForGetAssertion(
     std::vector<AuthenticatorGetAssertionResponse> responses,
-    GetAssertionCallback callback,
+    CtapGetAssertionCallback callback,
     CtapDeviceResponseCode status) {
   responses.at(0).large_blob_written =
       status == CtapDeviceResponseCode::kSuccess;
@@ -1006,7 +1105,7 @@ void FidoDeviceAuthenticator::OnWroteLargeBlobForGetAssertion(
 
 void FidoDeviceAuthenticator::OnReadLargeBlobForGetAssertion(
     std::vector<AuthenticatorGetAssertionResponse> responses,
-    GetAssertionCallback callback,
+    CtapGetAssertionCallback callback,
     CtapDeviceResponseCode status,
     std::optional<std::vector<std::pair<LargeBlobKey, LargeBlob>>> blobs) {
   if (status != CtapDeviceResponseCode::kSuccess) {
@@ -1037,7 +1136,7 @@ void FidoDeviceAuthenticator::OnBlobUncompressed(
     std::vector<AuthenticatorGetAssertionResponse> responses,
     std::vector<std::pair<LargeBlobKey, LargeBlob>> blobs,
     LargeBlobKey uncompressed_key,
-    GetAssertionCallback callback,
+    CtapGetAssertionCallback callback,
     base::expected<mojo_base::BigBuffer, std::string> result) {
   if (result.has_value()) {
     bool set_blob = false;
@@ -1069,7 +1168,7 @@ void FidoDeviceAuthenticator::OnBlobUncompressed(
 
 void FidoDeviceAuthenticator::OnLargeBlobExtensionUncompressed(
     std::vector<AuthenticatorGetAssertionResponse> responses,
-    GetAssertionCallback callback,
+    CtapGetAssertionCallback callback,
     base::expected<mojo_base::BigBuffer, std::string> result) {
   DCHECK_EQ(responses.size(), 1u);
   if (result.has_value()) {
@@ -1318,7 +1417,7 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForGarbageCollect(
       }
     }
   }
-  bool did_erase = base::EraseIf(
+  bool did_erase = std::erase_if(
       *large_blob_array, [&large_blob_keys](const cbor::Value& blob_cbor) {
         std::optional<LargeBlobData> blob = LargeBlobData::Parse(blob_cbor);
         return blob &&
@@ -1342,6 +1441,31 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForGarbageCollect(
                 kMinLargeBlobSize));
   WriteLargeBlobArray(std::move(pin_uv_auth_token), std::move(writer),
                       std::move(callback));
+}
+
+void FidoDeviceAuthenticator::OnGetAssertionResponse(
+    GetAssertionCallback callback,
+    CtapDeviceResponseCode status,
+    std::vector<AuthenticatorGetAssertionResponse> responses) {
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    FIDO_LOG(ERROR) << "CTAP error response code " << static_cast<int>(status)
+                    << " received from " << GetDisplayName();
+  }
+  std::move(callback).Run(ConvertDeviceResponseCodeToGetAssertionStatus(status),
+                          std::move(responses));
+}
+
+void FidoDeviceAuthenticator::OnMakeCredentialResponse(
+    MakeCredentialCallback callback,
+    CtapDeviceResponseCode status,
+    std::optional<AuthenticatorMakeCredentialResponse> response) {
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    FIDO_LOG(ERROR) << "CTAP error response code " << static_cast<int>(status)
+                    << " received from " << GetDisplayName();
+  }
+  std::move(callback).Run(
+      ConvertDeviceResponseCodeToMakeCredentialStatus(status),
+      std::move(response));
 }
 
 std::optional<base::span<const int32_t>>
@@ -1385,6 +1509,10 @@ AuthenticatorType FidoDeviceAuthenticator::GetType() const {
     return AuthenticatorType::kPhone;
   }
   return AuthenticatorType::kOther;
+}
+
+cablev2::FidoTunnelDevice* FidoDeviceAuthenticator::GetTunnelDevice() {
+  return device_->GetTunnelDevice();
 }
 
 std::string FidoDeviceAuthenticator::GetId() const {

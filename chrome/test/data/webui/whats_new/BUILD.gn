@@ -9,12 +9,30 @@ assert(!is_android)
 build_webui_tests("build") {
   files = [
     "whats_new_app_test.ts",
-    "test_with_command_3.ts",
+    "whats_new_v2_app_test.ts",
+    "test_whats_new_browser_proxy.ts",
+    "test_with_legacy_command_3.ts",
+    "test_with_command_4.ts",
+    "test_with_metrics_page_loaded.ts",
+    "test_with_metrics_module_impression.ts",
+    "test_with_metrics_module_impression_v2.ts",
+    "test_with_metrics_explore_more_toggled.ts",
+    "test_with_metrics_scroll_depth.ts",
+    "test_with_metrics_time_on_page.ts",
+    "test_with_metrics_module_click.ts",
   ]
 
   static_files = [
     "test.html",
-    "test_with_command_3.html",
+    "test_with_legacy_command_3.html",
+    "test_with_command_4.html",
+    "test_with_metrics_page_loaded.html",
+    "test_with_metrics_module_impression.html",
+    "test_with_metrics_module_impression_v2.html",
+    "test_with_metrics_explore_more_toggled.html",
+    "test_with_metrics_scroll_depth.html",
+    "test_with_metrics_time_on_page.html",
+    "test_with_metrics_module_click.html",
   ]
 
   ts_path_mappings =
@@ -24,5 +42,6 @@ build_webui_tests("build") {
   ts_deps = [
     "//chrome/browser/resources/whats_new:build_ts",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 }

@@ -1,0 +1,25 @@
+<!--
+@WAIT-FOR:Done
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:language*
+-->
+<html lang="en">
+<body>
+  <div role="group" id="test-status" aria-label="running"></div>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        // After the page finishes loading...
+        //
+        // Change the language attribute on <html>. We expect the language
+        // attribute to be changed in the accessibility tree.
+
+        document.querySelector('html').setAttribute('lang', 'vi');
+        document.getElementById('test-status').setAttribute('aria-label', 'Done');
+      });
+    });
+  });
+  </script>
+</body>
+</html>

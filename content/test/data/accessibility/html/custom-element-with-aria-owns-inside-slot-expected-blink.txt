@@ -9,8 +9,7 @@ rootWebArea
 ++++++++++docEndnote
 ++++++++++++staticText name='Endnote 2'
 ++++++++++++++inlineTextBox name='Endnote 2'
-++++++++++genericContainer ignored
-++++++++++++group
+++++++++++group
 ++++++++button name='1'
 ++++++++++staticText name='1'
 ++++++++++++inlineTextBox name='1'

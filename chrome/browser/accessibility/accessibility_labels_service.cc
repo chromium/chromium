@@ -11,12 +11,14 @@
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
+#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/language/core/browser/language_usage_metrics.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/browser/url_language_histogram.h"
+#include "components/manta/manta_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -40,13 +42,6 @@
 using LanguageInfo = language::UrlLanguageHistogram::LanguageInfo;
 
 namespace {
-
-// Returns the Chrome Google API key for the channel of this build.
-std::string APIKeyForChannel() {
-  if (chrome::GetChannel() == version_info::Channel::STABLE)
-    return google_apis::GetAPIKey();
-  return google_apis::GetNonStableAPIKey();
-}
 
 AccessibilityLabelsService::ImageAnnotatorBinder&
 GetImageAnnotatorBinderOverride() {
@@ -99,8 +94,9 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
     std::vector<LanguageInfo> language_infos =
         url_language_histogram->GetTopLanguages();
     for (const LanguageInfo& info : language_infos) {
-      if (info.frequency >= kMinTopLanguageFrequency)
+      if (info.frequency >= kMinTopLanguageFrequency) {
         top_languages.push_back(info.language_code);
+      }
     }
     return top_languages;
   }
@@ -178,6 +174,9 @@ void AccessibilityLabelsService::Init() {
           &AccessibilityLabelsService::OnImageLabelsEnabledChanged,
           weak_factory_.GetWeakPtr()));
 
+  // This ensures prefs refresh the label images AXMode on startup.
+  OnImageLabelsEnabledChanged();
+
   // Log whether the feature is enabled after startup. This must be run on the
   // UI thread because it accesses prefs.
   content::BrowserAccessibilityState::GetInstance()
@@ -227,9 +226,13 @@ void AccessibilityLabelsService::BindImageAnnotator(
     if (binder) {
       binder.Run(std::move(service_receiver));
     } else {
+      auto* manta_service = manta::MantaServiceFactory::GetForProfile(profile_);
+      CHECK(manta_service);
       service_ = std::make_unique<image_annotation::ImageAnnotationService>(
-          std::move(service_receiver), APIKeyForChannel(),
+          std::move(service_receiver),
+          google_apis::GetAPIKey(chrome::GetChannel()),
           profile_->GetURLLoaderFactory(),
+          manta_service->CreateAnchovyProvider(),
           std::make_unique<ImageAnnotatorClient>(profile_));
     }
   }
@@ -254,8 +257,9 @@ void AccessibilityLabelsService::OnImageLabelsEnabledChanged() {
 }
 
 void AccessibilityLabelsService::UpdateAccessibilityLabelsHistograms() {
-  if (!profile_ || !profile_->GetPrefs())
+  if (!profile_ || !profile_->GetPrefs()) {
     return;
+  }
 
   base::UmaHistogramBoolean("Accessibility.ImageLabels2",
                             profile_->GetPrefs()->GetBoolean(
@@ -305,8 +309,9 @@ void JNI_ImageDescriptionsController_GetImageDescriptionsOnce(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
 
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   // We only need to fire this event for the active page.
   ui::AXActionData action_data;

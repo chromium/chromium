@@ -77,8 +77,9 @@ void CreateNoteAction::OnKeyEvent(ui::KeyEvent* event) {
   // special bluetooth buttons.
   if (!(event->flags() & ui::EF_IS_STYLUS_BUTTON))
     return;
-  if (event->type() == ui::ET_KEY_PRESSED)
+  if (event->type() == ui::EventType::kKeyPressed) {
     OnEnable();
+  }
 
   // This event shouldn't be handled as a regular key event, so consume it.
   event->StopPropagation();

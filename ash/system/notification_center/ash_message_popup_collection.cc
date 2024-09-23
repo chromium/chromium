@@ -11,6 +11,7 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
+#include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
@@ -467,15 +468,15 @@ message_center::MessagePopupView* AshMessagePopupCollection::CreatePopup(
           .release(),
       this, a11_feedback_on_init);
 
-  // Custom notifications handle their own styling and background.
-  if (notification.type() != message_center::NOTIFICATION_TYPE_CUSTOM) {
+  // Custom arc notifications handle their own styling and background.
+  if (notification.custom_view_type() != kArcNotificationCustomViewType) {
     notification_style_utils::StyleNotificationPopup(
         popup_view->message_view());
   }
   return popup_view;
 }
 
-void AshMessagePopupCollection::ClosePopupItem(const PopupItem& item) {
+void AshMessagePopupCollection::ClosePopupItem(PopupItem& item) {
   // We lock closing tray bubble here to prevent a bubble close when popup item
   // is removed (b/291988617).
   auto lock = TrayBackgroundView::DisableCloseBubbleOnWindowActivated();

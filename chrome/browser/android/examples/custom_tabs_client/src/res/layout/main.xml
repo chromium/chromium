@@ -53,7 +53,7 @@
                 android:layout_gravity="center_horizontal" />
         </LinearLayout>
 
-        <!-- TODO(crbug/1369793) TextView and Spinner are not aligned -->
+        <!-- TODO(crbug.com/40869334) TextView and Spinner are not aligned -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -72,6 +72,25 @@
                 android:id="@+id/cct_spinner"
                 android:layout_margin="3dp"
                 android:layout_gravity="center_horizontal" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/custom_scheme_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:text="@string/custom_scheme"/>
+	    <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:inputType="text"
+                android:singleLine="true"
+                android:id="@+id/custom_scheme"/>
         </LinearLayout>
 
         <LinearLayout
@@ -190,7 +209,7 @@
             android:layout_margin="8dp"
             style="?attr/textAppearanceTitleMedium" />
 
-        <!-- TODO(crbug/1369793) TextView and Spinner are not aligned -->
+        <!-- TODO(crbug.com/40869334) TextView and Spinner are not aligned -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -615,5 +634,25 @@
             android:checked = "false"
             android:text="@string/content_scroll_text" />
 
+        <CheckBox
+            android:id="@+id/search_in_cct_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/search_in_cct_text" />
+
+        <CheckBox
+            android:id="@+id/send_to_external_app_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/send_to_external_app_text" />
+
+        <CheckBox
+            android:id="@+id/share_identity_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/share_identity_text" />
     </LinearLayout>
 </ScrollView>

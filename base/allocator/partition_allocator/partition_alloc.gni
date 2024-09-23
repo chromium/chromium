@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/cronet/config.gni")
-import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/partition_alloc.gni")
 
 # PartitionAlloc have limited support for MSVC's cl.exe compiler. It can only
@@ -29,12 +27,15 @@ if (is_nacl) {
   assert(false, "Unknown CPU: $current_cpu")
 }
 
+# Increases the size of the empty slot span ring.
+use_large_empty_slot_span_ring = is_mac
+
 has_memory_tagging =
     current_cpu == "arm64" && is_clang && !is_asan && (is_linux || is_android)
 
 declare_args() {
   # Causes all the allocations to be routed via allocator_shim.cc. Usually,
-  # the allocator shim will, in turn, route them to Partition Alloc, but
+  # the allocator shim will, in turn, route them to PartitionAlloc, but
   # other allocators are also supported by the allocator shim.
   use_allocator_shim = use_allocator_shim_default && is_clang_or_gcc
 
@@ -70,33 +71,50 @@ if (is_nacl) {
 }
 
 declare_args() {
-  # Turns on compiler optimizations in PartitionAlloc in Debug build.
-  # If enabling PartitionAlloc-Everywhere in Debug build for tests in Debug
-  # build, since all memory allocations and deallocations are executed by
-  # non-optimized PartitionAlloc, chrome (including tests) will be much
-  # slower. This will cause debug trybots' timeouts. If we want to debug
-  # PartitionAlloc itself, use partition_alloc_optimized_debug=false.
-  # Otherwise, use partition_alloc_optimized_debug=true to enable optimized
-  # PartitionAlloc.
-  partition_alloc_optimized_debug = true
-
   # PartitionAlloc-Everywhere (PA-E). Causes allocator_shim.cc to route
   # calls to PartitionAlloc, rather than some other platform allocator.
   use_partition_alloc_as_malloc = use_partition_alloc && use_allocator_shim &&
                                   use_partition_alloc_as_malloc_default
 }
 
-assert(!use_allocator_shim || (is_android || is_apple || is_chromeos ||
-                                   is_fuchsia || is_linux || is_win),
-       "The allocator shim does not (yet) support the platform.")
+declare_args() {
+  # Whether PartitionAlloc dispatch can be replaced with another dispatch with
+  # some more safety checks at runtime or not.  When true, the allocator shim
+  # provides an extended API to swap PartitionAlloc.
+  # TODO(https://crbug.com/351974425): Enable this when `use_partition_alloc_as_malloc` is true.
+  enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support =
+      false
+}
+
+assert(
+    !enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support || use_partition_alloc_as_malloc,
+    "PartitionAlloc with advanced checks requires PartitionAlloc itself.")
+
+assert(!use_allocator_shim || !is_nacl,
+       "The allocator shim supports every platform, except nacl")
 
 if (use_allocator_shim && is_win) {
   # It's hard to override CRT's malloc family in every case in the component
   # build, and it's very easy to override it partially and to be inconsistent
   # among allocations and deallocations. Then, we'll crash when PA deallocates
   # a memory region allocated by the CRT's malloc or vice versa.
-  assert(!is_component_build,
-         "The allocator shim doesn't work for the component build on Windows.")
+  # Since PartitionAlloc depends on libc++, it is difficult to link libc++.dll
+  # with PartitionAlloc to replace its allocator with PartitionAlloc.
+  # If using libcxx_is_shared=true,
+  # a. since inline methods or inline functions defined in some libc++ headers,
+  #    e.g. vector, use new, malloc(), and so on, the memory allocation will
+  #    be done inside a client code.
+  # b. on the other hand, libc++.dll deallocates the memory allocated by the
+  #    inline methods or inline functions. It will not be run inside the client
+  #    code.
+  # So a.'s allocation is done by PartitionAlloc, but b.'s deallocation is
+  # done by system allocator. This will cause heap check failure (WinHeap
+  # doesn't know PartitionAlloc) and crash.
+  # If libcxx_is_shared=false, libc++ is a static library. All libc++ code
+  # will be run inside the client. The above issue will disappear.
+  assert(
+      !is_component_build || (!libcxx_is_shared && !is_debug),
+      "The allocator shim for the Windows component build needs !libcxx_is_shared && !is_debug.")
 }
 
 declare_args() {
@@ -104,7 +122,8 @@ declare_args() {
 
   # Puts the regular and BRP pools right next to each other, so that we can
   # check "belongs to one of the two pools" with a single bitmask operation.
-  glue_core_pools = false
+  # TODO(crbug.com/350104111): Fix ios-simulator failures to remove `!is_ios`.
+  glue_core_pools = use_partition_alloc_as_malloc && !is_ios
 
   # Introduces pointer compression support in PA. These are 4-byte
   # pointers that can point within the core pools (regular and BRP).
@@ -152,6 +171,14 @@ assert(!enable_pointer_compression_support || glue_core_pools,
        "Pointer compression relies on core pools being contiguous.")
 
 declare_args() {
+  # We want to use RawPtrBackupRefImpl as the raw_ptr<> implementation
+  # iff BRP support is enabled. However, for purpose of performance
+  # investigations we want to be able to control each separately.
+  #
+  # TEST ONLY! Don't touch unless you think you know what you're doing. Play
+  # with enable_backup_ref_ptr_support instead.
+  use_raw_ptr_backup_ref_impl = enable_backup_ref_ptr_support
+
   # Make explicit calls to ASAN at runtime, e.g. to mark quarrantined memory
   # as poisoned. Allows ASAN to tell if a particular memory error is protected
   # by BRP in its reports.
@@ -164,12 +191,12 @@ declare_args() {
       (is_win || is_android || is_linux || is_mac || is_chromeos)
 
   # Use probe-on-destruct unowned ptr detection with ASAN.
-  use_asan_unowned_ptr = false
+  use_raw_ptr_asan_unowned_impl = false
 }
 
 # Use the version of raw_ptr<T> that allows the embedder to implement custom
 # logic.
-use_hookable_raw_ptr = use_asan_backup_ref_ptr
+use_raw_ptr_hookable_impl = use_asan_backup_ref_ptr
 
 declare_args() {
   # - enable_backup_ref_ptr_slow_checks: enable additional safety checks that
@@ -188,53 +215,64 @@ declare_args() {
   # Enable the feature flag required to activate backup ref pointers. That is to
   # say `PartitionAllocBackupRefPtr`.
   #
-  # This is meant to be used primarily on bots. It is much easier to override
-  # the feature flags using a binary flag instead of updating multiple bots's
-  # scripts to pass command line arguments.
-  enable_backup_ref_ptr_feature_flag = false
+  # This is meant to be modified primarily on bots. It is much easier to
+  # override the feature flags using a binary flag instead of updating multiple
+  # bots's scripts to pass command line arguments.
+  #
+  # TODO(328104161): Remove this flag.
+  enable_backup_ref_ptr_feature_flag =
+      enable_backup_ref_ptr_support && use_raw_ptr_backup_ref_impl &&
+      # Platforms where BackupRefPtr hasn't shipped yet:
+      !is_castos && !is_ios
 
   # Build support for Dangling Ptr Detection (DPD) via BackupRefPtr (BRP),
   # making the raw_ptr<T> implementation to RawPtrBackupRefImpl if active.
   enable_dangling_raw_ptr_checks =
-      enable_dangling_raw_ptr_checks_default && enable_backup_ref_ptr_support
+      enable_dangling_raw_ptr_checks_default && enable_backup_ref_ptr_support &&
+      use_raw_ptr_backup_ref_impl
 
+  enable_backup_ref_ptr_instance_tracer = false
+
+  backup_ref_ptr_extra_oob_checks =
+      enable_backup_ref_ptr_support && use_raw_ptr_backup_ref_impl
+}
+
+declare_args() {
   # Enable the feature flag required to check for dangling pointers. That is to
   # say `PartitionAllocDanglingPtr`.
   #
-  # This is meant to be used primarily on bots. It is much easier to override
-  # the feature flags using a binary flag instead of updating multiple bots's
-  # scripts to pass command line arguments.
-  enable_dangling_raw_ptr_feature_flag = false
-
-  # Enables the dangling raw_ptr checks feature for the performance experiment.
-  # Not every dangling pointers have been fixed or annotated yet. To avoid
-  # accounting for the cost of calling the PA's embedder's callbacks when a
-  # dangling pointer has been detected, this simulates the raw_ptr to be
-  # allowed to dangle.
+  # This is meant to be modified primarily on bots. It is much easier to
+  # override the feature flags using a binary flag instead of updating multiple
+  # bots's scripts to pass command line arguments.
   #
-  # This flag is temporary, and isn't used by PA embedders, so it doesn't need
-  # to go through build_overrides
-  enable_dangling_raw_ptr_perf_experiment = false
+  # TODO(328104161): Remove this flag.
+  enable_dangling_raw_ptr_feature_flag = enable_dangling_raw_ptr_checks
+}
 
-  # Set to `enable_backup_ref_ptr_support && has_64_bit_pointers` when enabling.
-  backup_ref_ptr_poison_oob_ptr = false
-
-  enable_backup_ref_ptr_instance_tracer = false
+declare_args() {
+  backup_ref_ptr_poison_oob_ptr =
+      false && backup_ref_ptr_extra_oob_checks && has_64_bit_pointers
 }
 
 declare_args() {
   # Shadow metadata is still under development and only supports Linux
   # for now.
-  enable_shadow_metadata = false
+  enable_shadow_metadata = is_linux && has_64_bit_pointers
 }
 
-# *Scan is currently only used by Chromium, and supports only 64-bit.
-use_starscan = build_with_chromium && has_64_bit_pointers
+declare_args() {
+  # Use full MTE protection available by changing the feature flag default
+  # values. So sync mode on all processes. Also disables permissive MTE.
+  #
+  # This is meant to be used primarily on bots. It is much easier to override
+  # the feature flags using a binary flag instead of updating multiple bots's
+  # scripts to pass command line arguments.
+  use_full_mte = false
+}
 
-pcscan_stack_supported =
-    use_starscan &&
-    (current_cpu == "x64" || current_cpu == "x86" || current_cpu == "arm" ||
-     current_cpu == "arm64" || current_cpu == "riscv64")
+stack_scan_supported =
+    current_cpu == "x64" || current_cpu == "x86" || current_cpu == "arm" ||
+    current_cpu == "arm64" || current_cpu == "riscv64"
 
 # We want to provide assertions that guard against inconsistent build
 # args, but there is no point in having them fire if we're not building
@@ -244,57 +282,70 @@ pcscan_stack_supported =
 # Do not clear the following, as they can function outside of PartitionAlloc
 # - has_64_bit_pointers
 # - has_memory_tagging
-if (!use_partition_alloc) {
+if (!use_partition_alloc ||
+    (defined(toolchain_allows_use_partition_alloc_as_malloc) &&
+     !toolchain_allows_use_partition_alloc_as_malloc)) {
   use_partition_alloc_as_malloc = false
+  glue_core_pools = false
   enable_backup_ref_ptr_support = false
+  use_raw_ptr_backup_ref_impl = false
   use_asan_backup_ref_ptr = false
-  use_asan_unowned_ptr = false
-  use_hookable_raw_ptr = false
+  use_raw_ptr_asan_unowned_impl = false
+  use_raw_ptr_hookable_impl = false
   enable_backup_ref_ptr_slow_checks = false
   enable_dangling_raw_ptr_checks = false
   enable_dangling_raw_ptr_feature_flag = false
-  enable_dangling_raw_ptr_perf_experiment = false
   enable_pointer_subtraction_check = false
   backup_ref_ptr_poison_oob_ptr = false
+  backup_ref_ptr_extra_oob_checks = false
   enable_backup_ref_ptr_instance_tracer = false
-  use_starscan = false
+  use_full_mte = false
 }
+
+# Disable |use_full_mte| if memory tagging is not available. This is for targets that run as part the build process.
+if (!has_memory_tagging) {
+  use_full_mte = false
+}
+
+# use_raw_ptr_backup_ref_impl can only be used if
+# enable_backup_ref_ptr_support is true.
+assert(enable_backup_ref_ptr_support || !use_raw_ptr_backup_ref_impl,
+       "Can't use RawPtrBackupRefImpl if BRP isn't enabled at all")
 
 # enable_backup_ref_ptr_slow_checks can only be used if
 # enable_backup_ref_ptr_support is true.
 assert(enable_backup_ref_ptr_support || !enable_backup_ref_ptr_slow_checks,
-       "Can't enable additional BackupRefPtr checks if it isn't enabled at all")
+       "Can't enable additional BRP checks if it isn't enabled at all")
 
 # enable_dangling_raw_ptr_checks can only be used if
-# enable_backup_ref_ptr_support is true.
-assert(
-    enable_backup_ref_ptr_support || !enable_dangling_raw_ptr_checks,
-    "Can't enable dangling raw_ptr checks if BackupRefPtr isn't enabled at all")
+# enable_backup_ref_ptr_support & use_raw_ptr_backup_ref_impl are true.
+assert((enable_backup_ref_ptr_support && use_raw_ptr_backup_ref_impl) ||
+           !enable_dangling_raw_ptr_checks,
+       "Can't enable dangling raw_ptr checks if BRP isn't enabled and used")
 
 # It's meaningless to force on DPD (e.g. on bots) if the support isn't compiled
 # in.
 assert(enable_dangling_raw_ptr_checks || !enable_dangling_raw_ptr_feature_flag,
        "Meaningless to enable DPD without it compiled.")
 
-# To run the dangling raw_ptr detector experiment, the underlying feature must
-# be enabled too.
-assert(
-    enable_dangling_raw_ptr_checks || !enable_dangling_raw_ptr_perf_experiment,
-    "Missing dangling pointer checks feature for its performance experiment")
-
-# To poison OOB pointers for BackupRefPtr, the underlying feature must be
+# To enable extra OOB checks for BRP, the underlying feature must be
 # enabled, too.
-assert(
-    enable_backup_ref_ptr_support || !backup_ref_ptr_poison_oob_ptr,
-    "Can't enable poisoning for OOB pointers if BackupRefPtr isn't enabled " +
-        "at all")
+assert((enable_backup_ref_ptr_support && use_raw_ptr_backup_ref_impl) ||
+           !backup_ref_ptr_extra_oob_checks,
+       "Can't enable extra OOB checks if BRP isn't enabled and used")
+
+# To poison OOB pointers for BRP, the underlying feature must be
+# enabled, too.
+assert(backup_ref_ptr_extra_oob_checks || !backup_ref_ptr_poison_oob_ptr,
+       "Can't enable poisoning for OOB pointers if OOB checks aren't enabled " +
+           "at all")
 assert(has_64_bit_pointers || !backup_ref_ptr_poison_oob_ptr,
        "Can't enable poisoning for OOB pointers if pointers are only 32-bit")
 
 # AsanBackupRefPtr and AsanUnownedPtr are mutually exclusive variants of
 # raw_ptr.
 assert(
-    !use_asan_unowned_ptr || !use_asan_backup_ref_ptr,
+    !use_raw_ptr_asan_unowned_impl || !use_asan_backup_ref_ptr,
     "Both AsanUnownedPtr and AsanBackupRefPtr can't be enabled at the same " +
         "time")
 
@@ -304,27 +355,27 @@ assert(
     "Both BackupRefPtr and AsanBackupRefPtr can't be enabled at the same time")
 
 # BackupRefPtr and AsanUnownedPtr are mutually exclusive variants of raw_ptr.
-assert(!enable_backup_ref_ptr_support || !use_asan_unowned_ptr,
+assert(!enable_backup_ref_ptr_support || !use_raw_ptr_asan_unowned_impl,
        "Both BackupRefPtr and AsanUnownedPtr can't be enabled at the same time")
 
 # RawPtrHookableImpl and BackupRefPtr are mutually exclusive variants of
 # raw_ptr.
 assert(
-    !use_hookable_raw_ptr || !enable_backup_ref_ptr_support,
+    !use_raw_ptr_hookable_impl || !enable_backup_ref_ptr_support,
     "Both RawPtrHookableImpl and BackupRefPtr can't be enabled at the same " +
         "time")
 
 # RawPtrHookableImpl and AsanUnownedPtr are mutually exclusive variants of
 # raw_ptr.
 assert(
-    !use_hookable_raw_ptr || !use_asan_unowned_ptr,
+    !use_raw_ptr_hookable_impl || !use_raw_ptr_asan_unowned_impl,
     "Both RawPtrHookableImpl and AsanUnownedPtr can't be enabled at the same " +
         "time")
 
 assert(!use_asan_backup_ref_ptr || is_asan,
        "AsanBackupRefPtr requires AddressSanitizer")
 
-assert(!use_asan_unowned_ptr || is_asan,
+assert(!use_raw_ptr_asan_unowned_impl || is_asan,
        "AsanUnownedPtr requires AddressSanitizer")
 
 # AsanBackupRefPtr is not supported outside Chromium. The implementation is
@@ -333,17 +384,18 @@ assert(!use_asan_unowned_ptr || is_asan,
 assert(build_with_chromium || !use_asan_backup_ref_ptr,
        "AsanBackupRefPtr is not supported outside Chromium")
 
-assert(!use_asan_backup_ref_ptr || use_hookable_raw_ptr,
+assert(!use_asan_backup_ref_ptr || use_raw_ptr_hookable_impl,
        "AsanBackupRefPtr requires RawPtrHookableImpl")
 
+# pkeys support is explicitly disabled in all Cronet builds, as some test
+# dependencies that use partition_allocator are compiled in AOSP against a
+# version of glibc that does not include pkeys syscall numbers.
+is_pkeys_available =
+    (is_linux || is_chromeos) && current_cpu == "x64" && !is_cronet_build
 declare_args() {
-  # pkeys support is explicitly disabled in all Cronet builds, as some test
-  # dependencies that use partition_allocator are compiled in AOSP against a
-  # version of glibc that does not include pkeys syscall numbers.
-  enable_pkeys =
-      (is_linux || is_chromeos) && target_cpu == "x64" && !is_cronet_build
+  enable_pkeys = is_pkeys_available
 }
-assert(!enable_pkeys || ((is_linux || is_chromeos) && target_cpu == "x64"),
+assert(!enable_pkeys || is_pkeys_available,
        "Pkeys are only supported on x64 linux and ChromeOS")
 
 # Some implementations of raw_ptr<>, like BackupRefPtr, require zeroing when
@@ -375,4 +427,10 @@ declare_args() {
   raw_ptr_zero_on_construct = raw_ptr_zero_on_construct_default
   raw_ptr_zero_on_move = raw_ptr_zero_on_move_default
   raw_ptr_zero_on_destruct = raw_ptr_zero_on_destruct_default
+}
+
+declare_args() {
+  # Assert that PartitionAlloc and MiraclePtr run on C++20 when set to true.
+  # Embedders may opt-out of using C++ 20 build.
+  assert_cpp20 = assert_cpp20_default
 }

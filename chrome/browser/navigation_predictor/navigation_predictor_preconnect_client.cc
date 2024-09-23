@@ -208,8 +208,8 @@ void NavigationPredictorPreconnectClient::MaybePreconnectNow(
     return;
 
   loading_predictor->PrepareForPageLoad(
-      preconnect_url_serialized, predictors::HintOrigin::NAVIGATION_PREDICTOR,
-      true);
+      preconnect_origin, preconnect_url_serialized,
+      predictors::HintOrigin::NAVIGATION_PREDICTOR, true);
 
   // The delay beyond the idle socket timeout that net uses when
   // re-preconnecting. If negative, no retries occur.

@@ -1,0 +1,63 @@
+{
+  "description": "Invalid header combinations are rejected",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://destination.test",
+          "Attribution-Reporting-Eligible": "event-source, trigger"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              //  Source and trigger in same response
+              "Attribution-Reporting-Register-Source": {
+                "debug_reporting": true,
+                "destination": "https://destination.test"
+              },
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [{}]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              // This should match nothing since the source above should have been rejected.
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [{}]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [{
+      "payload": [ {
+         "body": {
+            "attribution_destination": "https://destination.test"
+         },
+         "type": "trigger-no-matching-source"
+      } ],
+      "report_time": "1",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+    }]
+  }
+}

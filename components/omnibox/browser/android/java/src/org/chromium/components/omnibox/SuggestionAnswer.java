@@ -11,26 +11,27 @@ import androidx.core.util.ObjectsCompat;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /** Contains the data needed to renderer a answer in the Omnibox suggestions. */
 public class SuggestionAnswer {
-    @AnswerType private final int mType;
+    private final AnswerType mType;
     private final ImageLine mFirstLine;
     private final ImageLine mSecondLine;
 
     @VisibleForTesting
-    public SuggestionAnswer(@AnswerType int type, ImageLine firstLine, ImageLine secondLine) {
+    public SuggestionAnswer(AnswerType type, ImageLine firstLine, ImageLine secondLine) {
         mType = type;
         mFirstLine = firstLine;
         mSecondLine = secondLine;
     }
 
     /** Return the type of Answer being shown. */
-    @AnswerType
-    public int getType() {
+    public AnswerType getType() {
         return mType;
     }
 
@@ -196,8 +197,8 @@ public class SuggestionAnswer {
 
     @CalledByNative
     private static SuggestionAnswer createSuggestionAnswer(
-            @AnswerType int type, ImageLine firstLine, ImageLine secondLine) {
-        return new SuggestionAnswer(type, firstLine, secondLine);
+            int type, ImageLine firstLine, ImageLine secondLine) {
+        return new SuggestionAnswer(AnswerType.forNumber(type), firstLine, secondLine);
     }
 
     @CalledByNative

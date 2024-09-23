@@ -1,0 +1,67 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/toolchain/apple/toolchain.gni")
+
+# Defines a template for Swift source files. The default module_name
+# of the target is the entire target label (without the leading //)
+# with all "/" and ":" replaced with "_".
+#
+# Arguments
+#
+#   generate_intents
+#       (optional) boolean, if true, intents definition in the source code
+#       will be parsed when generating the final application (if it enable
+#       the extraction of intents metadata), defaults to false.
+#
+template("swift_source_set") {
+  _generate_intents = false
+  if (defined(invoker.generate_intents)) {
+    _generate_intents = invoker.generate_intents
+  }
+
+  _target_name = target_name
+  not_needed([ "_target_name" ])
+  source_set(target_name) {
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    if (!defined(module_name)) {
+      _target_label = get_label_info(":$_target_name", "label_no_toolchain")
+
+      # Strip the // from the beginning of the label.
+      _target_label = string_replace(_target_label, "//", "", 1)
+      module_name =
+          string_replace(string_replace(_target_label, "/", "_"), ":", "_")
+    }
+
+    # If generate_intents is true, write file $target_name.module_info.json
+    # with information about the module used by extract_metadata.py script.
+    if (_generate_intents) {
+      _output_path = "$target_out_dir/$target_name"
+      _swift_files = sources
+      _const_files = []
+      if (swift_whole_module_optimization) {
+        _const_files += [ "$_output_path/$module_name.swiftconstvalues" ]
+      } else {
+        foreach(_source, sources) {
+          _const_files += [ "$_output_path/" + get_path_info(_source, "name") +
+                            ".swiftconstvalues" ]
+        }
+      }
+
+      _module_info = {
+        module_name = module_name
+        swift_files = rebase_path(_swift_files, root_build_dir)
+        const_files = rebase_path(_const_files, root_build_dir)
+      }
+
+      # Write the information for the module using `write_file(...)`.
+      write_file("$_output_path.module_info.json", _module_info, "json")
+    }
+  }
+}
+
+set_defaults("swift_source_set") {
+  configs = default_compiler_configs
+}

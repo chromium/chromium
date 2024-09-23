@@ -4,24 +4,47 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 
+#include "base/strings/string_util.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_turn_sync_on_delegate.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
+#include "ui/base/window_open_disposition.h"
+
+namespace {
+// Returns  true if the url is a url that should be opened after a browser is
+// created following a profile profile creation. Now only the two factor
+// intersitial url is supported since that url is bypassed while in the profile
+// picker.
+bool ShouldOpenUrlAfterBrowserCreation(const GURL& url) {
+  return base::StartsWith(url.spec(), chrome::kGoogleTwoFactorIntersitialURL);
+}
+
+// Opens a new tab with `url` in `browser`. Tabs opened using this function will
+// not replace existing tabs.
+void OpenNewTabInBrowser(const GURL& url, Browser* browser) {
+  if (browser) {
+    browser->OpenGURL(url, WindowOpenDisposition::SINGLETON_TAB);
+  }
+}
+
+}  //  namespace
 
 ProfilePickerSignedInFlowController::ProfilePickerSignedInFlowController(
     ProfilePickerWebContentsHost* host,
@@ -38,15 +61,19 @@ ProfilePickerSignedInFlowController::ProfilePickerSignedInFlowController(
       profile_color_(profile_color) {
   DCHECK(profile_);
   DCHECK(contents_);
-  // TODO(crbug.com/1300109): Consider renaming the enum entry -- this does not
+  // TODO(crbug.com/40216113): Consider renaming the enum entry -- this does not
   // have to be profile creation flow, it can be profile onboarding.
   profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
       profile_, ProfileKeepAliveOrigin::kProfileCreationFlow);
+  if (ShouldOpenUrlAfterBrowserCreation(contents_->GetVisibleURL())) {
+    url_to_open_ = contents_->GetVisibleURL();
+  }
 }
 
 ProfilePickerSignedInFlowController::~ProfilePickerSignedInFlowController() {
-  if (contents())
+  if (contents()) {
     contents()->SetDelegate(nullptr);
+  }
 }
 
 void ProfilePickerSignedInFlowController::Init() {
@@ -78,6 +105,26 @@ void ProfilePickerSignedInFlowController::Init() {
 
 void ProfilePickerSignedInFlowController::Cancel() {}
 
+void ProfilePickerSignedInFlowController::FinishAndOpenBrowser(
+    PostHostClearedCallback callback) {
+  bool is_continue_callback = !callback->is_null();
+  if (url_to_open_.is_valid()) {
+    auto open_url_callback = PostHostClearedCallback(
+        base::BindOnce(&OpenNewTabInBrowser, url_to_open_));
+    callback = is_continue_callback
+                   ? PostHostClearedCallback(base::BindOnce(
+                         [](PostHostClearedCallback cb1,
+                            PostHostClearedCallback cb2, Browser* browser) {
+                           std::move(*cb1).Run(browser);
+                           std::move(*cb2).Run(browser);
+                         },
+                         std::move(open_url_callback), std::move(callback)))
+                   : PostHostClearedCallback(std::move(open_url_callback));
+  }
+
+  FinishAndOpenBrowserInternal(std::move(callback), is_continue_callback);
+}
+
 void ProfilePickerSignedInFlowController::SwitchToSyncConfirmation() {
   DCHECK(IsInitialized());
   host_->ShowScreen(contents(), GetSyncConfirmationURL(/*loading=*/false),
@@ -91,7 +138,7 @@ void ProfilePickerSignedInFlowController::SwitchToSyncConfirmation() {
 
 void ProfilePickerSignedInFlowController::SwitchToManagedUserProfileNotice(
     ManagedUserProfileNoticeUI::ScreenType type,
-    signin::SigninChoiceCallback proceed_callback) {
+    signin::SigninChoiceCallback process_user_choice_callback) {
   DCHECK(IsInitialized());
   host_->ShowScreen(contents(),
                     GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
@@ -101,13 +148,13 @@ void ProfilePickerSignedInFlowController::SwitchToManagedUserProfileNotice(
                                    // Unretained is enough as the callback is
                                    // called by the owner of this instance.
                                    base::Unretained(this), type,
-                                   std::move(proceed_callback)));
+                                   std::move(process_user_choice_callback)));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void ProfilePickerSignedInFlowController::SwitchToLacrosIntro(
     signin::SigninChoiceCallback proceed_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif
 
@@ -122,13 +169,24 @@ void ProfilePickerSignedInFlowController::SwitchToProfileSwitch(
       GURL(chrome::kChromeUIProfilePickerUrl).Resolve("profile-switch"));
 }
 
+void ProfilePickerSignedInFlowController::ResetHostAndShowErrorDialog(
+    const ForceSigninUIError& error) {
+  CHECK(IsInitialized());
+
+  Cancel();
+  host_->Reset(
+      base::BindOnce(&ProfilePickerWebContentsHost::ShowForceSigninErrorDialog,
+                     base::Unretained(host_), error));
+}
+
 std::optional<SkColor> ProfilePickerSignedInFlowController::GetProfileColor()
     const {
   // The new profile theme may be overridden by an existing policy theme. This
   // check ensures the correct theme is applied to the sync confirmation window.
   auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
-  if (theme_service->UsingPolicyTheme())
+  if (theme_service->UsingPolicyTheme()) {
     return theme_service->GetPolicyThemeColor();
+  }
   return profile_color_;
 }
 
@@ -136,7 +194,7 @@ GURL ProfilePickerSignedInFlowController::GetSyncConfirmationURL(bool loading) {
   GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
   return AppendSyncConfirmationQueryParams(
       loading ? url.Resolve(chrome::kChromeUISyncConfirmationLoadingPath) : url,
-      SyncConfirmationStyle::kWindow);
+      SyncConfirmationStyle::kWindow, /*is_sync_promo=*/true);
 }
 
 std::unique_ptr<content::WebContents>
@@ -153,7 +211,7 @@ bool ProfilePickerSignedInFlowController::HandleContextMenu(
 
 bool ProfilePickerSignedInFlowController::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return host_->GetWebContentsDelegate()->HandleKeyboardEvent(source, event);
 }
 
@@ -169,7 +227,7 @@ void ProfilePickerSignedInFlowController::SwitchToSyncConfirmationFinished() {
 void ProfilePickerSignedInFlowController::
     SwitchToManagedUserProfileNoticeFinished(
         ManagedUserProfileNoticeUI::ScreenType type,
-        signin::SigninChoiceCallback proceed_callback) {
+        signin::SigninChoiceCallback process_user_choice_callback) {
   DCHECK(IsInitialized());
   // Initialize the WebUI page once we know it's committed.
   ManagedUserProfileNoticeUI* managed_user_profile_notice_ui =
@@ -178,12 +236,15 @@ void ProfilePickerSignedInFlowController::
           ->GetController()
           ->GetAs<ManagedUserProfileNoticeUI>();
 
+  // Here `done_callback` does nothing because lifecycle of
+  // `managed_user_profile_notice_ui` is controlled by this class.
   managed_user_profile_notice_ui->Initialize(
       /*browser=*/nullptr, type,
       IdentityManagerFactory::GetForProfile(profile_)
           ->FindExtendedAccountInfoByEmailAddress(email_),
       /*profile_creation_required_by_policy=*/false,
-      /*show_link_data_option=*/false, std::move(proceed_callback));
+      /*show_link_data_option=*/false, std::move(process_user_choice_callback),
+      /*done_callback=*/base::OnceClosure());
 }
 
 bool ProfilePickerSignedInFlowController::IsInitialized() const {

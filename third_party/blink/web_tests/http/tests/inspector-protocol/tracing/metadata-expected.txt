@@ -9,6 +9,8 @@ Object: {
 			frames: [
 				{
 					frame: string
+					isInPrimaryMainFrame: boolean
+					isOutermostMainFrame: boolean
 					name: string
 					processId: number
 					url: string
@@ -108,6 +110,7 @@ Got Viewport event:
 Object: {
 	args: {
 		data: {
+			dpr: number
 			viewport_rect: [
 				number,
 				number,

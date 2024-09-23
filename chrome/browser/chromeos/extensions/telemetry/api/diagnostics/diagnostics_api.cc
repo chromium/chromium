@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -16,6 +17,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_converters.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_metrics.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/remote_diagnostics_service_strategy.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_manager.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
@@ -23,6 +25,7 @@
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -58,7 +61,12 @@ ParseRoutineArgumentSupportResult(
       return base::ok(std::move(info));
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
+}
+
+bool IsPendingApprovalRoutine(
+    const crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr& arg) {
+  return false;
 }
 
 }  // namespace
@@ -432,18 +440,6 @@ void OsDiagnosticsRunNvmeSelfTestRoutineFunction::RunIfAllowed() {
       GetOnResult());
 }
 
-// OsDiagnosticsRunNvmeWearLevelRoutineFunction --------------------------------
-
-void OsDiagnosticsRunNvmeWearLevelRoutineFunction::RunIfAllowed() {
-  const auto params = GetParams<cx_diag::RunNvmeWearLevelRoutine::Params>();
-  if (!params) {
-    return;
-  }
-
-  GetRemoteService()->RunNvmeWearLevelRoutine(
-      params->request.wear_level_threshold, GetOnResult());
-}
-
 // OsDiagnosticsRunSensitiveSensorRoutineFunction -----------------------------
 
 void OsDiagnosticsRunSensitiveSensorRoutineFunction::RunIfAllowed() {
@@ -503,6 +499,67 @@ void OsDiagnosticsRunAudioDriverRoutineFunction::RunIfAllowed() {
 
 void OsDiagnosticsRunFanRoutineFunction::RunIfAllowed() {
   GetRemoteService()->RunFanRoutine(GetOnResult());
+}
+
+// OsDiagnosticsCreateRoutineFunction ------------------------------------
+
+void OsDiagnosticsCreateRoutineFunction::RunIfAllowed() {
+  std::optional<cx_diag::CreateRoutine::Params> params(
+      cx_diag::CreateRoutine::Params::Create(args()));
+  if (!params.has_value()) {
+    Respond(BadMessage());
+    return;
+  }
+
+  std::optional<crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr>
+      mojo_arg = converters::diagnostics::ConvertRoutineArgumentsUnion(
+          std::move(params->args));
+  if (!mojo_arg.has_value()) {
+    RespondWithError("Routine arguments are invalid.");
+    return;
+  }
+
+  // Block unreleased features behind the feature flag.
+  if (IsPendingApprovalRoutine(mojo_arg.value()) &&
+      !base::FeatureList::IsEnabled(
+          extensions_features::kTelemetryExtensionPendingApprovalApi)) {
+    mojo_arg = crosapi::mojom::TelemetryDiagnosticRoutineArgument::
+        NewUnrecognizedArgument(false);
+  }
+
+  RecordRoutineCreation(mojo_arg.value()->which());
+
+  // Network bandwidth routine is guarded by `os.diagnostics.network_info_mlab`
+  // permission.
+  if (mojo_arg.value()->is_network_bandwidth() &&
+      !extension()->permissions_data()->HasAPIPermission(
+          extensions::mojom::APIPermissionID::
+              kChromeOSDiagnosticsNetworkInfoForMlab)) {
+    RespondWithError(
+        "Unauthorized access to chrome.os.diagnostics.CreateRoutine with "
+        "networkBandwidth argument. Extension doesn't have the permission.");
+    return;
+  }
+
+  auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
+  auto result = routines_manager->CreateRoutine(extension_id(),
+                                                std::move(mojo_arg.value()));
+
+  if (!result.has_value()) {
+    switch (result.error()) {
+      case DiagnosticRoutineManager::kAppUiClosed:
+        Respond(Error("Companion app UI is not open."));
+        break;
+      case DiagnosticRoutineManager::kExtensionUnloaded:
+        Respond(Error("Extension has been unloaded."));
+        break;
+    }
+    return;
+  }
+
+  cx_diag::CreateRoutineResponse response;
+  response.uuid = result->AsLowercaseString();
+  Respond(ArgumentList(cx_diag::CreateRoutine::Results::Create(response)));
 }
 
 // OsDiagnosticsCreateMemoryRoutineFunction ------------------------------------
@@ -665,6 +722,100 @@ void OsDiagnosticsCancelRoutineFunction::RunIfAllowed() {
       extension_id(), base::Uuid::ParseLowercase(params.value().request.uuid));
 
   Respond(NoArguments());
+}
+
+// OsDiagnosticsReplyToRoutineInquiryFunction ----------------------------------
+
+void OsDiagnosticsReplyToRoutineInquiryFunction::RunIfAllowed() {
+  auto params = cx_diag::ReplyToRoutineInquiry::Params::Create(args());
+  if (!params.has_value()) {
+    Respond(BadMessage());
+    return;
+  }
+
+  std::optional<crosapi::mojom::TelemetryDiagnosticRoutineInquiryReplyPtr>
+      mojo_reply = converters::diagnostics::ConvertRoutineInquiryReplyUnion(
+          std::move(params->request.reply));
+  if (!mojo_reply.has_value()) {
+    RespondWithError("Inquiry reply is invalid.");
+    return;
+  }
+
+  auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
+  bool result = routines_manager->ReplyToRoutineInquiryForExtension(
+      extension_id(), base::Uuid::ParseLowercase(params.value().request.uuid),
+      std::move(mojo_reply.value()));
+
+  if (!result) {
+    RespondWithError("Unknown routine id.");
+    return;
+  }
+
+  Respond(NoArguments());
+}
+
+// OsDiagnosticsIsRoutineArgumentSupportedFunction -----------------------
+
+void OsDiagnosticsIsRoutineArgumentSupportedFunction::RunIfAllowed() {
+  auto params = GetParams<cx_diag::IsRoutineArgumentSupported::Params>();
+  if (!params.has_value()) {
+    return;
+  }
+
+  std::optional<crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr>
+      mojo_arg = converters::diagnostics::ConvertRoutineArgumentsUnion(
+          std::move(params->args));
+  if (!mojo_arg.has_value()) {
+    RespondWithError("Routine arguments are invalid.");
+    return;
+  }
+
+  // Block unreleased features behind the feature flag.
+  if (IsPendingApprovalRoutine(mojo_arg.value()) &&
+      !base::FeatureList::IsEnabled(
+          extensions_features::kTelemetryExtensionPendingApprovalApi)) {
+    mojo_arg = crosapi::mojom::TelemetryDiagnosticRoutineArgument::
+        NewUnrecognizedArgument(false);
+  }
+
+  RecordRoutineSupportedStatusQuery(mojo_arg.value()->which());
+
+  // Network bandwidth routine is guarded by `os.diagnostics.network_info_mlab`
+  // permission.
+  if (mojo_arg.value()->is_network_bandwidth() &&
+      !extension()->permissions_data()->HasAPIPermission(
+          extensions::mojom::APIPermissionID::
+              kChromeOSDiagnosticsNetworkInfoForMlab)) {
+    RespondWithError(
+        "Unauthorized access to "
+        "chrome.os.diagnostics.isRoutineArgumentSupported with "
+        "networkBandwidth argument. Extension doesn't have the permission.");
+    return;
+  }
+
+  auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
+  routines_manager->IsRoutineArgumentSupported(
+      std::move(mojo_arg.value()),
+      base::BindOnce(&OsDiagnosticsIsRoutineArgumentSupportedFunction::OnResult,
+                     this));
+}
+
+void OsDiagnosticsIsRoutineArgumentSupportedFunction::OnResult(
+    crosapi::mojom::TelemetryExtensionSupportStatusPtr result) {
+  if (result.is_null()) {
+    RespondWithError("API internal error.");
+    return;
+  }
+
+  auto response = ParseRoutineArgumentSupportResult(std::move(result));
+
+  if (!response.has_value()) {
+    RespondWithError(response.error());
+    return;
+  }
+
+  Respond(ArgumentList(
+      cx_diag::IsRoutineArgumentSupported::Results::Create(response.value())));
 }
 
 // OsDiagnosticsIsMemoryRoutineArgumentSupportedFunction -----------------------

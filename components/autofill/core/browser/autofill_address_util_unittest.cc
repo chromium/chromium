@@ -50,7 +50,7 @@ TEST_F(AddressFormattingTest, GetAddressComponentsSkipsEmptyLines) {
                                  &lines, &components_language_code);
 
   EXPECT_FALSE(
-      base::ranges::any_of(lines, [](auto line) { return line.empty(); }));
+      std::ranges::any_of(lines, [](auto line) { return line.empty(); }));
 }
 
 // Tests that address field extensions are applied to `GetAddressComponents()`,

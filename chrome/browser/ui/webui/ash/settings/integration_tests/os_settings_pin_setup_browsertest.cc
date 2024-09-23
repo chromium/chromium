@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -13,8 +16,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_lock_screen_browser_test_base.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/data/webui/settings/chromeos/os_people_page/pin_settings_api.test-mojom-test-utils.h"
-#include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom-test-utils.h"
+#include "chrome/test/data/webui/chromeos/settings/os_people_page/pin_settings_api.test-mojom-test-utils.h"
+#include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom-test-utils.h"
+#include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
+#include "chromeos/ash/components/osauth/impl/auth_surface_registry.h"
+#include "chromeos/ash/components/osauth/public/auth_engine_api.h"
+#include "chromeos/ash/components/osauth/public/auth_parts.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -65,10 +72,10 @@ class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
   OSSettingsPinSetupTest() : pin_type_(GetParam()) {
     switch (pin_type_) {
       case PinType::kPrefs:
-        cryptohome_.set_supports_low_entropy_credentials(false);
+        cryptohome_->set_supports_low_entropy_credentials(false);
         break;
       case PinType::kCryptohome:
-        cryptohome_.set_supports_low_entropy_credentials(true);
+        cryptohome_->set_supports_low_entropy_credentials(true);
         break;
     }
   }
@@ -104,7 +111,7 @@ class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
         return !Prefs().GetString(prefs::kQuickUnlockPinSecret).empty() &&
                !Prefs().GetString(prefs::kQuickUnlockPinSalt).empty();
       case PinType::kCryptohome:
-        return cryptohome_.HasPinFactor(GetAccountId());
+        return cryptohome_->HasPinFactor(GetAccountId());
     }
   }
 
@@ -125,7 +132,7 @@ class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
         break;
       }
       case PinType::kCryptohome: {
-        cryptohome_.SetPinLocked(GetAccountId(), true);
+        cryptohome_->SetPinLocked(GetAccountId(), true);
         break;
       }
     }
@@ -274,7 +281,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupCryptohomeOnlyTest,
   pin_settings.AssertHasPin(false);
   EXPECT_EQ(false, IsPinConfigured());
 
-  cryptohome_.SetNextOperationError(
+  cryptohome_->SetNextOperationError(
       FakeUserDataAuthClient::Operation::kAddAuthFactor,
       cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
           ::user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED));
@@ -497,7 +504,19 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, MaximumLengthAutosubmit) {
 // Tests that the user is asked to reauthenticate when trying to enable PIN
 // autosubmit but with a locked-out PIN.
 IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AutosubmitWithLockedPin) {
-  auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto go_to_lock_screen_settings_and_authenticate = [&]() {
+    if (ash::features::IsUseAuthPanelInSessionEnabled()) {
+      OpenLockScreenSettings();
+      AuthenticateUsingPassword();
+      return mojom::LockScreenSettingsAsyncWaiter{
+          lock_screen_settings_remote_.get()};
+    } else {
+      return OpenLockScreenSettingsAndAuthenticate();
+    }
+  };
+
+  auto lock_screen_settings = go_to_lock_screen_settings_and_authenticate();
+
   auto pin_settings = GoToPinSettings(lock_screen_settings);
   pin_settings.SetPin(kFirstPin);
   // We disable autosubmit so that we can try to reenable.
@@ -506,12 +525,31 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AutosubmitWithLockedPin) {
 
   pin_settings.TryEnablePinAutosubmit(kFirstPin);
 
-  lock_screen_settings.AssertAuthenticated(false);
+  if (ash::features::IsUseAuthPanelInSessionEnabled()) {
+    base::test::TestFuture<AuthSurfaceRegistry::AuthSurface> future;
+    auto subscription =
+        ash::AuthParts::Get()->GetAuthSurfaceRegistry()->RegisterShownCallback(
+            future.GetCallback());
 
-  lock_screen_settings.Authenticate(
-      OSSettingsLockScreenBrowserTestBase::kPassword);
-  EXPECT_EQ(false, GetPinAutoSubmitState());
-  pin_settings.AssertPinAutosubmitEnabled(false);
+    auto surface = future.Get();
+    ASSERT_EQ(surface, AuthSurfaceRegistry::AuthSurface::kInSession);
+
+    base::RunLoop().RunUntilIdle();
+
+    AuthenticateUsingPassword();
+
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_EQ(false, GetPinAutoSubmitState());
+    pin_settings.AssertPinAutosubmitEnabled(false);
+  } else {
+    lock_screen_settings.AssertAuthenticated(false);
+
+    lock_screen_settings.Authenticate(
+        OSSettingsLockScreenBrowserTestBase::kPassword);
+    EXPECT_EQ(false, GetPinAutoSubmitState());
+    pin_settings.AssertPinAutosubmitEnabled(false);
+  }
 }
 
 }  // namespace ash::settings

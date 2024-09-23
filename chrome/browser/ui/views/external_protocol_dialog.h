@@ -40,12 +40,8 @@ class ExternalProtocolDialog : public views::DialogDelegateView {
   ~ExternalProtocolDialog() override;
 
   // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
   bool ShouldShowCloseButton() const override;
   std::u16string GetWindowTitle() const override;
-  views::View* GetContentsView() override;
-  views::Widget* GetWidget() override;
-  const views::Widget* GetWidget() const override;
 
  private:
   friend class test::ExternalProtocolDialogTestApi;

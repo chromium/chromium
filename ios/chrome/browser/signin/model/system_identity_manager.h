@@ -47,6 +47,27 @@ class SystemIdentityManager {
     base::Time expiration_time;
   };
 
+  // Struct to hold all the parameters needed to present a dialog like
+  // WebAndAppSettingDetails, AccountDetails or LinkedServicesSettingsDetails.
+  struct PresentDialogConfiguration {
+   public:
+    // Identity to use for the dialog to present.
+    id<SystemIdentity> identity;
+    // View controller who present the dialog.
+    UIViewController* view_controller;
+    // Whether the presentation should be animated or not.
+    bool animated;
+    // Completion block that will be called once the dialog is dismissed.
+    base::OnceClosure dismissal_completion;
+
+    PresentDialogConfiguration();
+    ~PresentDialogConfiguration();
+    PresentDialogConfiguration(PresentDialogConfiguration&&);
+    PresentDialogConfiguration(const PresentDialogConfiguration&) = delete;
+    PresentDialogConfiguration& operator=(const PresentDialogConfiguration&) =
+        delete;
+  };
+
   // Callback invoked for each id<SystemIdentity> when iterating over them
   // with `IterateOverIdentities()`. The returned value can be used to stop
   // the iteration prematurely.
@@ -110,6 +131,42 @@ class SystemIdentityManager {
   void AddObserver(SystemIdentityManagerObserver* observer);
   void RemoveObserver(SystemIdentityManagerObserver* observer);
 
+  // Presents a new Account Details view and returns a callback that can be
+  // used to dismiss the view (can be ignored if not needed).
+  // * `identity` is the identity used to present the view.
+  // * `view_controller` is the view used to present the details.
+  // * `animated` controls whether the view is presented with an animation.
+  // * `dismissal_completion` is called once the dialog is dismissed.
+  DismissViewCallback PresentAccountDetailsController(
+      id<SystemIdentity> identity,
+      UIViewController* view_controller,
+      bool animated,
+      base::OnceClosure dismissal_completion);
+
+  // Presents a new Web and App Setting Details view and returns a callback
+  // that can be used to dismiss the view (can be ignore if not needed).
+  // * `identity` is the identity used to present the view.
+  // * `view_controller` is the view used to present the details.
+  // * `animated` controls whether the view is presented with an animation.
+  // * `dismissal_completion` is called once the dialog is dismissed.
+  DismissViewCallback PresentWebAndAppSettingDetailsController(
+      id<SystemIdentity> identity,
+      UIViewController* view_controller,
+      bool animated,
+      base::OnceClosure dismissal_completion);
+
+  // Presents a new Linked Services Settings Details view and returns a callback
+  // that can be used to dismiss the view (can be ignore if not needed).
+  // * `identity` is the identity used to present the view.
+  // * `view_controller` is the view used to present the details.
+  // * `animated` controls whether the view is presented with an animation.
+  // * `dismissal_completion` is called once the dialog is dismissed.
+  DismissViewCallback PresentLinkedServicesSettingsDetailsController(
+      id<SystemIdentity> identity,
+      UIViewController* view_controller,
+      bool animated,
+      base::OnceClosure dismissal_completion);
+
   // Returns whether signin is supported by the provider.
   virtual bool IsSigninSupported() = 0;
 
@@ -128,26 +185,6 @@ class SystemIdentityManager {
   // Dismisses all the dialogs created by the abstracted flows.
   virtual void DismissDialogs() = 0;
 
-  // Presents a new Account Details view and returns a callback that can be
-  // used to dismiss the view (can be ignore if not needed). `identity` is the
-  // identity used to present the view, `view_controller` is the view used to
-  // present the details, `animated` controls whether the view is presented
-  // with an animation
-  virtual DismissViewCallback PresentAccountDetailsController(
-      id<SystemIdentity> identity,
-      UIViewController* view_controller,
-      bool animated) = 0;
-
-  // Presents a new Web and App Setting Details view and returns a callback
-  // that can be used to dismiss the view (can be ignore if not needed).
-  // `identity` is the identity used to present the view, `view_controller`
-  // is the view used to present the details, `animated` controls whether the
-  // view is presented with an animation.
-  virtual DismissViewCallback PresentWebAndAppSettingDetailsController(
-      id<SystemIdentity> identity,
-      UIViewController* view_controller,
-      bool animated) = 0;
-
   // Creates a new SystemIdentityInteractionManager instance.
   virtual id<SystemIdentityInteractionManager> CreateInteractionManager() = 0;
 
@@ -160,6 +197,10 @@ class SystemIdentityManager {
   // is invoked on the calling sequence when the operation completes.
   virtual void ForgetIdentity(id<SystemIdentity> identity,
                               ForgetIdentityCallback callback) = 0;
+  // Returns true if the identity was removed by calling `ForgetIdentity()`.
+  // Returns false If the identity was not removed or disappeared without
+  // calling `ForgetIdentity()`.
+  virtual bool IdentityRemovedByUser(NSString* gaia_id) = 0;
 
   // Asynchronously retrieves access tokens for `identity` with `scopes`. The
   // callback is invoked on the calling sequence when the operation completes.
@@ -205,9 +246,12 @@ class SystemIdentityManager {
   // Asynchronously handles a potential MDM (Mobile Device Management) event.
   // The callback is invoked on the calling sequence when the operation
   // completes.
-  virtual bool HandleMDMNotification(id<SystemIdentity> identity,
-                                     id<RefreshAccessTokenError> error,
-                                     HandleMDMCallback callback) = 0;
+  // Returns YES if the device status is blocked.
+  virtual bool HandleMDMNotification(
+      id<SystemIdentity> identity,
+      NSArray<id<SystemIdentity>>* active_identities,
+      id<RefreshAccessTokenError> error,
+      HandleMDMCallback callback) = 0;
 
   // Returns whether the `error` associated with `identity` is due to MDM
   // (Mobile Device Management) or not.
@@ -215,7 +259,7 @@ class SystemIdentityManager {
 
  protected:
   // Invokes `OnIdentityListChanged(...)` for all observers.
-  void FireIdentityListChanged(bool notify_user);
+  void FireIdentityListChanged();
 
   // Invokes `OnIdentityUpdated(...)` for all observers.
   void FireIdentityUpdated(id<SystemIdentity> identity);
@@ -223,6 +267,19 @@ class SystemIdentityManager {
   // Invokes OnIdentityAccessTokenRefreshFailed(...)` for all observers.
   void FireIdentityAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                             id<RefreshAccessTokenError> error);
+
+  // Presents a new Account Details view and returns a callback that can be
+  // used to dismiss the view (can be ignore if not needed).
+  virtual DismissViewCallback PresentAccountDetailsController(
+      PresentDialogConfiguration configuration) = 0;
+  // Presents a new Web and App Setting Details view and returns a callback
+  // that can be used to dismiss the view (can be ignore if not needed).
+  virtual DismissViewCallback PresentWebAndAppSettingDetailsController(
+      PresentDialogConfiguration configuration) = 0;
+  // Presents a new Linked Services Settings Details view and returns a callback
+  // that can be used to dismiss the view (can be ignore if not needed).
+  virtual DismissViewCallback PresentLinkedServicesSettingsDetailsController(
+      PresentDialogConfiguration configuration) = 0;
 
   // The SystemIdentityManager is sequence-affine. This is protected to
   // allow sub-classes access to the member field for use in DCHECK().

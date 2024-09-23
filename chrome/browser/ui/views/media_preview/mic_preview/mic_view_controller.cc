@@ -15,27 +15,19 @@
 #include "media/audio/audio_device_description.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_combobox_model.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace {
 
 const ui::ImageModel GetMicImageModel() {
-  const int icon_size = features::IsChromeRefresh2023() ? 20 : 18;
-  const auto& icon = features::IsChromeRefresh2023()
-                         ? vector_icons::kMicChromeRefreshIcon
-                         : vector_icons::kMicIcon;
+  const int icon_size = 20;
+  const auto& icon = vector_icons::kMicChromeRefreshIcon;
   return ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, icon_size);
 }
 
 std::vector<ui::SimpleComboboxModel::Item> GetComboboxItems(
     const std::vector<media::AudioDeviceDescription>& audio_source_infos) {
-  if (audio_source_infos.empty()) {
-    return {ui::SimpleComboboxModel::Item{
-        l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_NO_MICS_FOUND_COMBOBOX)}};
-  }
-
   std::vector<ui::SimpleComboboxModel::Item> items;
   items.reserve(audio_source_infos.size());
   for (const auto& info : audio_source_infos) {
@@ -63,19 +55,21 @@ MicViewController::MicViewController(
     MediaView& base_view,
     bool needs_borders,
     ui::SimpleComboboxModel& combobox_model,
-    MediaViewControllerBase::SourceChangeCallback callback)
+    bool allow_device_selection,
+    MediaViewControllerBase::SourceChangeCallback callback,
+    media_preview_metrics::Context metrics_context)
     : combobox_model_(combobox_model) {
-  // Initialize the combobox model.
-  combobox_model_->UpdateItemList(GetComboboxItems({}));
-
   const auto& combobox_accessible_name =
       l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_MIC_ACCESSIBLE_NAME);
-  const auto& no_device_connected_label_text =
+  const auto& no_devices_found_combobox_text =
+      l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_NO_MICS_FOUND_COMBOBOX);
+  const auto& no_devices_found_label_text =
       l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_NO_MICS_FOUND);
 
   base_controller_ = std::make_unique<MediaViewControllerBase>(
       base_view, needs_borders, &combobox_model, std::move(callback),
-      combobox_accessible_name, no_device_connected_label_text);
+      combobox_accessible_name, no_devices_found_combobox_text,
+      no_devices_found_label_text, allow_device_selection, metrics_context);
 
   auto& container = GetLiveFeedContainer();
   container.SetOrientation(views::BoxLayout::Orientation::kHorizontal);

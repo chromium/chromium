@@ -5,42 +5,41 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
 
 #import "base/debug/dump_without_crashing.h"
-#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
+#import "base/timer/timer.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_sessions/synced_session.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_consumer.h"
 #import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_holder.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_observing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "url/gurl.h"
 
@@ -49,13 +48,7 @@ namespace {
 // Returns whether the user needs to enter a passphrase or enable sync to make
 // tab sync work.
 bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
-  if (!sync_service->GetDisableReasons().Empty()) {
-    return true;
-  }
-
-  if (!sync_service->IsSyncFeatureEnabled() &&
-      !base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (!sync_service->GetDisableReasons().empty()) {
     return true;
   }
 
@@ -72,7 +65,6 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
     // These errors effectively amount to disabled sync or effectively paused.
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
-    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForEverything:
       return true;
@@ -90,25 +82,21 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
       return false;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
 
 @interface RecentTabsMediator () <IdentityManagerObserverBridgeDelegate,
                                   SyncedSessionsObserver,
-                                  TabGridToolbarsGridDelegate,
-                                  WebStateListObserving> {
-  std::unique_ptr<AllWebStateListObservationRegistrar> _registrar;
+                                  TabGridModeObserving,
+                                  TabGridToolbarsGridDelegate> {
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
       _syncedSessionsObserver;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   std::unique_ptr<recent_tabs::ClosedTabsObserverBridge> _closedTabsObserver;
   SessionsSyncUserState _userState;
-  // The list of web state list currently processing batch operations (e.g.
-  // Closing All, or Undoing a Close All).
-  std::set<WebStateList*> _webStateListsWithBatchOperations;
   // Current scene state.
   SceneState* _sceneState;
   // YES if remote grid is disabled by policy.
@@ -117,8 +105,13 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   TabGridPage _lastActivePage;
   // Whether this screen is selected in the TabGrid.
   BOOL _selectedGrid;
-  // The mode of the TabGrid.
-  TabGridMode _currentMode;
+  // Feature engagement tracker for notifying promo events.
+  feature_engagement::Tracker* _engagementTracker;
+  // Time to ensure that the updates to the consumer are only happening once all
+  // the updates are complete.
+  std::unique_ptr<base::RetainingOneShotTimer> _timer;
+  // Holder for the current mode of the tab grid.
+  TabGridModeHolder* _modeHolder;
 }
 
 // Return the user's current sign-in and chrome-sync state.
@@ -132,7 +125,6 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 @property(nonatomic, assign) FaviconLoader* faviconLoader;
 @property(nonatomic, assign) syncer::SyncService* syncService;
 @property(nonatomic, assign) BrowserList* browserList;
-
 @end
 
 @implementation RecentTabsMediator
@@ -146,7 +138,9 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
                    syncService:(syncer::SyncService*)syncService
                    browserList:(BrowserList*)browserList
                     sceneState:(SceneState*)sceneState
-              disabledByPolicy:(BOOL)disabled {
+              disabledByPolicy:(BOOL)disabled
+             engagementTracker:(feature_engagement::Tracker*)engagementTracker
+                    modeHolder:(TabGridModeHolder*)modeHolder {
   self = [super init];
   if (self) {
     _sessionSyncService = sessionSyncService;
@@ -157,6 +151,14 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
     _browserList = browserList;
     _sceneState = sceneState;
     _isDisabled = disabled;
+    _engagementTracker = engagementTracker;
+    __weak __typeof(self) weakSelf = self;
+    _timer = std::make_unique<base::RetainingOneShotTimer>(
+        FROM_HERE, base::Milliseconds(100), base::BindRepeating(^{
+          [weakSelf updateConsumerTabs];
+        }));
+    _modeHolder = modeHolder;
+    [_modeHolder addObserver:self];
   }
   return self;
 }
@@ -164,11 +166,6 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 #pragma mark - Public Interface
 
 - (void)initObservers {
-  if (!_registrar) {
-    _registrar = std::make_unique<AllWebStateListObservationRegistrar>(
-        _browserList, std::make_unique<WebStateListObserverBridge>(self),
-        AllWebStateListObservationRegistrar::Mode::REGULAR);
-  }
   if (!_syncedSessionsObserver) {
     _syncedSessionsObserver =
         std::make_unique<synced_sessions::SyncedSessionsObserverBridge>(
@@ -190,7 +187,6 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 }
 
 - (void)disconnect {
-  _registrar.reset();
   _syncedSessionsObserver.reset();
   _identityManagerObserver.reset();
 
@@ -207,6 +203,9 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   }
 
   _sceneState = nil;
+
+  [_modeHolder removeObserver:self];
+  _modeHolder = nil;
 }
 
 - (void)configureConsumer {
@@ -228,11 +227,10 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
       break;
     case signin::PrimaryAccountChangeEvent::Type::kSet:
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      // Sign-in could happen without onForeignSessionsChanged (e.g. if
-      // kReplaceSyncPromosWithSignInPromos is enabled and the user signed-in
-      // without opting in to history sync; maybe also if sync ran into an
-      // encryption error). The sign-in promo must still be updated in that
-      // case, so handle it here.
+      // Sign-in could happen without onForeignSessionsChanged (e.g. if the user
+      // signed-in without opting in to history sync; maybe also if sync ran
+      // into an encryption error). The sign-in promo must still be updated in
+      // that case, so handle it here.
       [self refreshSessionsView];
       break;
   }
@@ -241,55 +239,11 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 #pragma mark - ClosedTabsObserving
 
 - (void)tabRestoreServiceChanged:(sessions::TabRestoreService*)service {
-  self.restoreService->LoadTabsFromLastSession();
-  // A WebStateList batch operation can result in batch changes to the
-  // TabRestoreService (e.g., closing or restoring all tabs). To properly batch
-  // process TabRestoreService changes, those changes must be executed after the
-  // WebStateList batch operation ended. This allows RecentTabs to ignore
-  // individual tabRestoreServiceChanged calls that correspond to a WebStateList
-  // batch operation. The consumer is updated once after all batch operations
-  // have completed.
-  if (_webStateListsWithBatchOperations.empty()) {
-    [self.consumer refreshRecentlyClosedTabs];
-  }
+  _timer->Reset();
 }
 
 - (void)tabRestoreServiceDestroyed:(sessions::TabRestoreService*)service {
   [self.consumer setTabRestoreService:nullptr];
-}
-
-#pragma mark - WebStateListObserving
-
-- (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
-  _webStateListsWithBatchOperations.insert(webStateList);
-}
-
-- (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
-  _webStateListsWithBatchOperations.erase(webStateList);
-  // A WebStateList batch operation can result in batch changes to the
-  // TabRestoreService (e.g., closing or restoring all tabs). Individual
-  // TabRestoreService updates are ignored between
-  // `-webStateListWillBeginBatchOperation:` and
-  // `-webStateListBatchOperationEnded:` for all observed WebStateLists. The
-  // consumer is updated once after all batch operations have completed.
-  if (_webStateListsWithBatchOperations.empty()) {
-    [self.consumer refreshRecentlyClosedTabs];
-  }
-}
-
-- (void)webStateListDestroyed:(WebStateList*)webStateList {
-  if (_webStateListsWithBatchOperations.contains(webStateList)) {
-    // This means a WebStateList was in a batch operation (received
-    // `-webStateListWillBeginBatchOperation:`) that didn't finish (didn't
-    // receive `-webStateListBatchOperationEnded:`). This is not supposed to
-    // happen, but if it did, handle it by removing the web state list from the
-    // set and dump without crashing.
-    base::debug::DumpWithoutCrashing();
-    _webStateListsWithBatchOperations.erase(webStateList);
-    if (_webStateListsWithBatchOperations.empty()) {
-      [self.consumer refreshRecentlyClosedTabs];
-    }
-  }
 }
 
 #pragma mark - TableViewFaviconDataSource
@@ -307,13 +261,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
 // Returns whether this profile has any foreign sessions to sync.
 - (SessionsSyncUserState)userSignedInState {
-  const auto requiredConsent =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync;
-  if (!_identityManager->HasPrimaryAccount(requiredConsent)) {
-    // This returns "signed out" when the user is signed-in non-syncing and
-    // kReplaceSyncPromosWithSignInPromos is off. That's a pre-existing issue.
+  if (!_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return SessionsSyncUserState::USER_SIGNED_OUT;
   }
 
@@ -370,10 +318,15 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] initWithPage:TabGridPageRemoteTabs];
-  toolbarsConfiguration.mode = _currentMode;
   toolbarsConfiguration.doneButton = tabsInOtherGrid;
   toolbarsConfiguration.searchButton = YES;
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
+}
+
+// Update consumer tabs.
+- (void)updateConsumerTabs {
+  self.restoreService->LoadTabsFromLastSession();
+  [self.consumer refreshRecentlyClosedTabs];
 }
 
 #pragma mark - RecentTabsTableViewControllerDelegate
@@ -388,6 +341,12 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   [self.consumer refreshUserState:[self userSignedInState]];
 }
 
+#pragma mark - TabGridModeObserving
+
+- (void)tabGridModeDidChange:(TabGridModeHolder*)modeHolder {
+  [self configureToolbarsButtons];
+}
+
 #pragma mark - TabGridPageMutator
 
 - (void)currentlySelectedGrid:(BOOL)selected {
@@ -396,58 +355,55 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   if (selected) {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridSelectRemotePanel"));
-    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+    default_browser::NotifyRemoteTabsGridViewed(_engagementTracker);
 
     [self configureToolbarsButtons];
   }
-  // TODO(crbug.com/1457146): Implement.
 }
 
-- (void)switchToMode:(TabGridMode)mode {
-  CHECK(mode == TabGridModeNormal || mode == TabGridModeSearch)
-      << "remote tabs should only support normal and search modes.";
-  _currentMode = mode;
-  [self configureToolbarsButtons];
+- (void)setPageAsActive {
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 #pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 - (void)doneButtonTapped:(id)sender {
-  [self.toolbarTabGridDelegate doneButtonTapped:sender];
+  base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));
+  [self.tabGridHandler exitTabGrid];
 }
 
 - (void)newTabButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 - (void)selectAllButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 - (void)searchButtonTapped:(id)sender {
-  [self.gridConsumer setPageMode:TabGridModeSearch];
   base::RecordAction(base::UserMetricsAction("MobileTabGridSearchTabs"));
+  _modeHolder.mode = TabGridMode::kSearch;
 }
 
 - (void)cancelSearchButtonTapped:(id)sender {
   base::RecordAction(base::UserMetricsAction("MobileTabGridCancelSearchTabs"));
-  [self.gridConsumer setPageMode:TabGridModeNormal];
+  _modeHolder.mode = TabGridMode::kNormal;
 }
 
 - (void)closeSelectedTabs:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 - (void)shareSelectedTabs:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 - (void)selectTabsButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 #pragma mark - TabGridActivityObserver

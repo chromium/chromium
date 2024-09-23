@@ -1,0 +1,18 @@
+android.webkit.WebView focusable focused
+++android.widget.EditText clickable editable_text has_non_empty_value name='Foo<newline>Bar<newline>Bar<newline>Baz<newline>Baz' hint='not editable' text_change_added_count=19
+++++android.widget.TextView name='Foo'
+++++android.widget.EditText clickable editable_text has_non_empty_value name='Bar' hint='nested, not editable, rich' text_change_added_count=3
+++++++android.widget.TextView name='Bar'
+++++android.widget.EditText clickable editable_text has_non_empty_value name='Bar' hint='nested, not editable, plain' text_change_added_count=3
+++++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='Baz' hint='nested, editable, rich' text_change_added_count=3
+++++++android.widget.TextView name='Baz'
+++++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='Baz' hint='nested, editable, plain' text_change_added_count=3
+++++++android.widget.TextView name='Baz'
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='Foo<newline>Bar<newline>Bar<newline>Baz<newline>Baz' hint='editable' text_change_added_count=19
+++++android.widget.TextView name='Foo'
+++++android.widget.EditText clickable editable_text has_non_empty_value name='Bar' hint='nested, not editable, rich' text_change_added_count=3
+++++++android.widget.TextView name='Bar'
+++++android.widget.EditText clickable editable_text has_non_empty_value name='Bar' hint='nested, not editable, plain' text_change_added_count=3
+++++android.widget.EditText clickable editable_text has_non_empty_value multiline name='Baz' hint='nested, editable, rich' text_change_added_count=3
+++++++android.widget.TextView name='Baz'
+++++android.widget.EditText clickable editable_text has_non_empty_value multiline name='Baz' hint='nested, editable, plain' text_change_added_count=3

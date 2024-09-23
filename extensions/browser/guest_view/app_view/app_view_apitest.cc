@@ -36,13 +36,15 @@ class MockShellAppDelegate : public extensions::ShellAppDelegate {
       content::MediaResponseCallback callback,
       const extensions::Extension* extension) override {
     media_access_requested_ = true;
-    if (media_access_request_quit_closure_)
+    if (media_access_request_quit_closure_) {
       std::move(media_access_request_quit_closure_).Run();
+    }
   }
 
   void WaitForRequestMediaPermission() {
-    if (media_access_requested_)
+    if (media_access_requested_) {
       return;
+    }
     base::RunLoop run_loop;
     media_access_request_quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();

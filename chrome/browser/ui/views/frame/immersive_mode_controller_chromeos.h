@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -81,11 +82,6 @@ class ImmersiveModeControllerChromeos
   // The current visible bounds of the find bar, in screen coordinates. This is
   // an empty rect if the find bar is not visible.
   gfx::Rect find_bar_visible_bounds_in_screen_;
-
-  // Records the previous immersive state requested from SetEnabled. This state
-  // is not always the same as `controller_.IsEnabled()` since the state
-  // transition happesn asynchronously on Lacros.
-  bool previous_request_enabled_ = false;
 
   // The fraction of the TopContainerView's height which is visible. Zero when
   // the top-of-window views are not revealed.

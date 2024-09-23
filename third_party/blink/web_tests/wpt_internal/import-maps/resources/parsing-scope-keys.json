@@ -11,7 +11,8 @@
         "imports": {},
         "scopes": {
           "https://base.example/path1/path2/foo": {}
-        }
+        },
+        "integrity": {}
       }
     },
     "Relative URL scope keys should work with ./, ../, and / prefixes": {
@@ -28,7 +29,8 @@
           "https://base.example/path1/path2/foo": {},
           "https://base.example/path1/foo": {},
           "https://base.example/foo": {}
-        }
+        },
+        "integrity": {}
       }
     },
     "Absolute URL scope keys should ignore relative URL scope keys when the base URL is a data: URL": {
@@ -42,7 +44,8 @@
       "importMapBaseURL": "data:text/html,test",
       "expectedParsedImportMap": {
         "imports": {},
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     },
     "Relative URL scope keys should work with ./, ../, or / with no suffix": {
@@ -59,7 +62,8 @@
           "https://base.example/path1/path2/": {},
           "https://base.example/path1/": {},
           "https://base.example/": {}
-        }
+        },
+        "integrity": {}
       }
     },
     "Relative URL scope keys should work with /s, ?s, and #s": {
@@ -72,7 +76,8 @@
         "imports": {},
         "scopes": {
           "https://base.example/path1/path2/foo/bar?baz#qux": {}
-        }
+        },
+        "integrity": {}
       }
     },
     "Relative URL scope keys should work with an empty string scope key": {
@@ -85,7 +90,8 @@
         "imports": {},
         "scopes": {
           "https://base.example/path1/path2/path3": {}
-        }
+        },
+        "integrity": {}
       }
     },
     "Relative URL scope keys should work with / suffixes": {
@@ -105,7 +111,8 @@
           "https://base.example/path1/foo/": {},
           "https://base.example/foo/": {},
           "https://base.example/foo//": {}
-        }
+        },
+        "integrity": {}
       }
     },
     "Relative URL scope keys should deduplicate based on URL parsing rules": {
@@ -128,7 +135,8 @@
           "https://base.example/path1/path2/foo//": {
             "3": "https://base.example/path1/path2/c"
           }
-        }
+        },
+        "integrity": {}
       }
     },
     "Absolute URL scope keys should accept all absolute URL scope keys, with or without fetch schemes": {
@@ -163,7 +171,8 @@
           "mailto:bad": {},
           "javascript:bad": {},
           "wss://ba/": {}
-        }
+        },
+        "integrity": {}
       }
     },
     "Absolute URL scope keys should parse absolute URL scope keys, ignoring unparseable ones": {
@@ -184,7 +193,8 @@
           "https://example.com///": {},
           "https://example.net/": {},
           "https://example.com/foo/": {}
-        }
+        },
+        "integrity": {}
       }
     }
   }

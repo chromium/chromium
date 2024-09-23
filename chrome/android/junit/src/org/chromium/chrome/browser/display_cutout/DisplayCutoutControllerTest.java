@@ -36,10 +36,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
-import org.chromium.components.browser_ui.widget.InsetObserver;
-import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -82,8 +81,8 @@ public class DisplayCutoutControllerTest {
         when(mTab.getUserDataHost()).thenReturn(mTabDataHost);
         when(mWebContents.isFullscreenForCurrentTab()).thenReturn(true);
         when(mWindowAndroid.getActivity()).thenReturn(mActivityRef);
+        when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
 
-        InsetObserverSupplier.setInstanceForTesting(mInsetObserver);
         ActivityDisplayCutoutModeSupplier.setInstanceForTesting(0);
 
         mDisplayCutoutTabHelper = spy(new DisplayCutoutTabHelper(mTab));
@@ -269,7 +268,7 @@ public class DisplayCutoutControllerTest {
         when(mTab.getUserDataHost()).thenReturn(tabDataHost);
         DisplayCutoutTabHelper tabHelper = DisplayCutoutTabHelper.from(mTab);
 
-        // TODO(https://crbug.com/1475820) Fix: We cannot access DisplayCutoutController#from(Tab)
+        // TODO(crbug.com/40279791) Fix: We cannot access DisplayCutoutController#from(Tab)
         // because it's in a different package from this test. Code copied here.
         UserDataHost host = mTab.getUserDataHost();
         DisplayCutoutController liveController = host.getUserData(DisplayCutoutController.class);

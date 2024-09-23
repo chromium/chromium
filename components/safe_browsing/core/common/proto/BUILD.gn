@@ -27,7 +27,10 @@ proto_library("webui_proto") {
 fuzzable_proto_library("realtimeapi_proto") {
   proto_in_dir = "//"
   sources = [ "realtimeapi.proto" ]
-  deps = [ ":csd_proto" ]
+  deps = [
+    ":csd_proto",
+    "//components/enterprise/common/proto:connectors_proto",
+  ]
 }
 
 fuzzable_proto_library("client_model_proto") {

@@ -7,6 +7,7 @@
 #include <wrl/client.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/debug/alias.h"
 #include "base/metrics/histogram_macros.h"
@@ -112,7 +113,7 @@ std::optional<std::string> RetrieveLocalizedString(
 }
 
 std::optional<std::string> RetrieveLocalizedFontName(
-    base::StringPiece font_name,
+    std::string_view font_name,
     const std::string& locale) {
   Microsoft::WRL::ComPtr<IDWriteFactory> factory;
   CreateDWriteFactory(&factory);

@@ -9,7 +9,8 @@
 {
   "type_name": "PrepopulatedEngine",
   "headers": [
-    "components/search_engines/search_engine_type.h"
+    "components/search_engines/search_engine_type.h",
+    "components/search_engines/regulatory_extension_type.h"
   ],
   "schema": [
     { "field": "name", "type": "string16" },
@@ -102,9 +103,7 @@
     {
       "field": "type",
       "type": "enum",
-      "ctype": "SearchEngineType",
-      "default": "SEARCH_ENGINE_OTHER",
-      "optional": true
+      "ctype": "SearchEngineType"
     },
     // Whether a connection to search_url should regularly be established when
     // the engine is set as the "default search engine". "ALLOWED" is the only
@@ -131,6 +130,30 @@
     // keywords).
     //
     // See prepopulated_engines.json for the list of available IDs.
-    { "field": "id", "type": "int" }
+    { "field": "id", "type": "int" },
+
+    // Regulatory specific extensions associated with this search engine.
+    // Used to expand the {regulatory_extensions} keyword with parameters
+    // appropriate for the regulatory program that triggered instantiation of
+    // this definition.
+    // Known options:
+    // - "default" - the parameters to be used if the template url was not
+    //   instantiated for any regulatory program.
+    // - "android_eea" - the parameters to be used by TemplateUrl definitions
+    //   instantiated in accordance with the EEA DMA.
+    {
+      "field": "regulatory_extensions",
+      "type": "array",
+      "contents": {
+        "type": "struct",
+        "type_name": "RegulatoryExtension",
+        "fields": [
+          { "field": "variant", "type": "enum", "ctype": "RegulatoryExtensionType" },
+          { "field": "search_params", "type": "string" },
+          { "field": "suggest_params", "type": "string" }
+        ]
+      },
+      "optional": true
+    }
   ]
 }

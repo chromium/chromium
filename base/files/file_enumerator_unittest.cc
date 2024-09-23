@@ -97,7 +97,7 @@ circular_deque<FilePath> RunEnumerator(
 }
 
 bool CreateDummyFile(const FilePath& path) {
-  return WriteFile(path, "42", sizeof("42")) == sizeof("42");
+  return WriteFile(path, byte_span_from_cstring("42"));
 }
 
 bool GetFileInfo(const FilePath& file_path, File::Info& info) {

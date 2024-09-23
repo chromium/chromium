@@ -1,0 +1,39 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/version.gni")
+
+source_set("icon_transcoder") {
+  sources = [
+    "svg_icon_transcoder.cc",
+    "svg_icon_transcoder.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//skia",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [
+    "HAS_OUT_OF_PROC_TEST_RUNNER",
+  ]
+
+  sources = [
+    "svg_icon_transcoder_browsertest.cc",
+  ]
+
+  deps = [
+    ":icon_transcoder",
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+  ]
+}

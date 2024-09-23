@@ -17,7 +17,7 @@ class PageActionIconView;
 
 // The view that contains a throbber animation. It is shown when the action
 // related to the page action icon is in progress.
-// TODO(crbug.com/1061635): Investigate the possibility of making this a layer
+// TODO(crbug.com/40679716): Investigate the possibility of making this a layer
 // instead of a view.
 class PageActionIconLoadingIndicatorView : public views::View,
                                            public views::ViewObserver,

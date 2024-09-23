@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
@@ -23,7 +23,7 @@ class OptChangeRequest : public PaymentsRequest {
   OptChangeRequest(
       const PaymentsNetworkInterface::OptChangeRequestDetails& request_details,
       base::OnceCallback<
-          void(AutofillClient::PaymentsRpcResult,
+          void(PaymentsAutofillClient::PaymentsRpcResult,
                PaymentsNetworkInterface::OptChangeResponseDetails&)> callback,
       const bool full_sync_enabled);
   OptChangeRequest(const OptChangeRequest&) = delete;
@@ -36,11 +36,12 @@ class OptChangeRequest : public PaymentsRequest {
   std::string GetRequestContent() override;
   void ParseResponse(const base::Value::Dict& response) override;
   bool IsResponseComplete() override;
-  void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override;
+  void RespondToDelegate(
+      PaymentsAutofillClient::PaymentsRpcResult result) override;
 
  private:
   PaymentsNetworkInterface::OptChangeRequestDetails request_details_;
-  base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+  base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                           PaymentsNetworkInterface::OptChangeResponseDetails&)>
       callback_;
   const bool full_sync_enabled_;

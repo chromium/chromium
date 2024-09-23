@@ -6,6 +6,7 @@
 
 #include <lib/sys/cpp/component_context.h>
 #include <lib/zx/event.h>
+
 #include <memory>
 
 #include "base/containers/contains.h"
@@ -13,6 +14,7 @@
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "third_party/angle/src/common/fuchsia_egl/fuchsia_egl.h"
@@ -48,7 +50,7 @@ class GLOzoneEGLFlatland : public GLOzoneEGL {
       gfx::AcceleratedWidget window) override {
     // GL rendering to Flatland views is not supported. This function is
     // used only for unittests. Return an off-screen surface, so the tests pass.
-    // TODO(crbug.com/1271760): Use Vulkan in unittests and remove this hack.
+    // TODO(crbug.com/40205840): Use Vulkan in unittests and remove this hack.
     return gl::InitializeGLSurface(base::MakeRefCounted<gl::SurfacelessEGL>(
         display->GetAs<gl::GLDisplayEGL>(), gfx::Size(100, 100)));
   }
@@ -72,8 +74,8 @@ class GLOzoneEGLFlatland : public GLOzoneEGL {
   }
 };
 
-fuchsia::sysmem::AllocatorHandle ConnectSysmemAllocator() {
-  fuchsia::sysmem::AllocatorHandle allocator;
+fuchsia::sysmem2::AllocatorHandle ConnectSysmemAllocator() {
+  fuchsia::sysmem2::AllocatorHandle allocator;
   base::ComponentContextForProcess()->svc()->Connect(allocator.NewRequest());
   return allocator;
 }
@@ -124,7 +126,6 @@ std::vector<gl::GLImplementationParts>
 FlatlandSurfaceFactory::GetAllowedGLImplementations() {
   return std::vector<gl::GLImplementationParts>{
       gl::GLImplementationParts(gl::kGLImplementationEGLANGLE),
-      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
       gl::GLImplementationParts(gl::kGLImplementationStubGL),
   };
 }
@@ -132,7 +133,6 @@ FlatlandSurfaceFactory::GetAllowedGLImplementations() {
 GLOzone* FlatlandSurfaceFactory::GetGLOzone(
     const gl::GLImplementationParts& implementation) {
   switch (implementation.gl) {
-    case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationEGLANGLE:
       return egl_implementation_.get();
     default:
@@ -237,7 +237,7 @@ void FlatlandSurfaceFactory::AddSurface(gfx::AcceleratedWidget widget,
 void FlatlandSurfaceFactory::RemoveSurface(gfx::AcceleratedWidget widget) {
   base::AutoLock lock(surface_lock_);
   auto it = surface_map_.find(widget);
-  DCHECK(it != surface_map_.end());
+  CHECK(it != surface_map_.end(), base::NotFatalUntil::M130);
   FlatlandSurface* surface = it->second;
   surface->AssertBelongsToCurrentThread();
   surface_map_.erase(it);

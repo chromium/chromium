@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/affiliations",
+  "+components/sync",
+  "+sql",
+]

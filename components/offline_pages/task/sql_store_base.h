@@ -46,7 +46,7 @@ class SqlStoreBase {
   using ResultCallback = base::OnceCallback<void(T)>;
 
   // Defines inactivity time of DB after which it is going to be closed.
-  // TODO(crbug.com/933369): Derive appropriate value in a scientific way.
+  // TODO(crbug.com/40614502): Derive appropriate value in a scientific way.
   static constexpr base::TimeDelta kClosingDelay = base::Seconds(20);
 
   // If |file_path| is empty, this constructs an in-memory database.

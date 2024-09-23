@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/content_settings/core/common",
+  "+components/pref_registry",
+  "+components/prefs",
+  "+net",
+  "+testing",
+  "+third_party/zlib/google",
+]

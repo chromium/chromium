@@ -13,9 +13,10 @@ import os
 import re
 import sys
 
-import utils
+import flags_utils
 
-DEPOT_TOOLS_PATH = os.path.join(utils.ROOT_PATH, 'third_party', 'depot_tools')
+DEPOT_TOOLS_PATH = os.path.join(flags_utils.ROOT_PATH, 'third_party',
+                                'depot_tools')
 
 sys.path.append(DEPOT_TOOLS_PATH)
 
@@ -164,9 +165,9 @@ def main():
   if args.testonly:
     return
 
-  flags = utils.load_metadata()
+  flags = flags_utils.load_metadata()
   if args.expired_by:
-    flags = utils.keep_expired_by(flags, args.expired_by)
+    flags = flags_utils.keep_expired_by(flags, args.expired_by)
   if args.never_expires:
     flags = keep_never_expires(flags)
   if args.find_unused:

@@ -134,8 +134,11 @@ TEST(MediaRouterMetricsTest, RecordMediaRouterDialogActivationLocation) {
 
 TEST(MediaRouterMetricsTest, RecordMediaRouterDialogLoaded) {
   TestRecordTimeDeltaMetric(
-      base::BindRepeating(&MediaRouterMetrics::RecordMediaRouterDialogLoaded),
-      MediaRouterMetrics::kHistogramUiDialogLoadedWithData);
+      base::BindRepeating(&MediaRouterMetrics::RecordCastDialogLoaded),
+      MediaRouterMetrics::kHistogramUiCastDialogLoadedWithData);
+  TestRecordTimeDeltaMetric(
+      base::BindRepeating(&MediaRouterMetrics::RecordGmcDialogLoaded),
+      MediaRouterMetrics::kHistogramUiGmcDialogLoadedWithData);
 }
 
 TEST(MediaRouterMetricsTest, RecordPresentationUrlType) {

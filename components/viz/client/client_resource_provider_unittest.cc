@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/viz/client/client_resource_provider.h"
 
 #include <algorithm>
@@ -81,10 +86,10 @@ class ClientResourceProviderTest : public testing::TestWithParam<bool> {
     r.id = ResourceId(mailbox_char);
     r.is_software = !gpu;
     r.size = gfx::Size(10, 11);
-    r.mailbox_holder.mailbox = MailboxFromChar(mailbox_char);
+    r.set_mailbox(MailboxFromChar(mailbox_char));
     if (gpu) {
-      r.mailbox_holder.sync_token = SyncTokenFromUInt(sync_token_value);
-      r.mailbox_holder.texture_target = 6;
+      r.set_sync_token(SyncTokenFromUInt(sync_token_value));
+      r.set_texture_target(6);
     }
     return r;
   }
@@ -135,7 +140,7 @@ TEST_P(ClientResourceProviderTest, TransferableResourceReleased) {
   // The same SyncToken that was sent is returned when the resource was never
   // exported. The SyncToken may be from any context, and the ReleaseCallback
   // may need to wait on it before interacting with the resource on its context.
-  EXPECT_CALL(release, Released(tran.mailbox_holder.sync_token, false));
+  EXPECT_CALL(release, Released(tran.sync_token(), false));
   provider().RemoveImportedResource(id);
 }
 
@@ -155,16 +160,15 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParent) {
   // Exported resource matches except for the id which was mapped
   // to the local ResourceProvider, and the sync token should be
   // verified if it's a gpu resource.
-  gpu::SyncToken verified_sync_token = tran.mailbox_holder.sync_token;
+  gpu::SyncToken verified_sync_token = tran.sync_token();
   if (!tran.is_software)
     verified_sync_token.SetVerifyFlush();
   EXPECT_EQ(exported[0].id, id);
   EXPECT_EQ(exported[0].is_software, tran.is_software);
   EXPECT_EQ(exported[0].size, tran.size);
-  EXPECT_EQ(exported[0].mailbox_holder.mailbox, tran.mailbox_holder.mailbox);
-  EXPECT_EQ(exported[0].mailbox_holder.sync_token, verified_sync_token);
-  EXPECT_EQ(exported[0].mailbox_holder.texture_target,
-            tran.mailbox_holder.texture_target);
+  EXPECT_EQ(exported[0].mailbox(), tran.mailbox());
+  EXPECT_EQ(exported[0].sync_token(), verified_sync_token);
+  EXPECT_EQ(exported[0].texture_target(), tran.texture_target());
 
   // Exported resources are not released when removed, until the export returns.
   EXPECT_CALL(release, Released(_, _)).Times(0);
@@ -200,17 +204,15 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendTwoToParent) {
   // to the local ResourceProvider, and the sync token should be
   // verified if it's a gpu resource.
   for (int i = 0; i < 2; ++i) {
-    gpu::SyncToken verified_sync_token = tran[i].mailbox_holder.sync_token;
+    gpu::SyncToken verified_sync_token = tran[i].sync_token();
     if (!tran[i].is_software)
       verified_sync_token.SetVerifyFlush();
     EXPECT_EQ(exported[i].id, to_send[i]);
     EXPECT_EQ(exported[i].is_software, tran[i].is_software);
     EXPECT_EQ(exported[i].size, tran[i].size);
-    EXPECT_EQ(exported[i].mailbox_holder.mailbox,
-              tran[i].mailbox_holder.mailbox);
-    EXPECT_EQ(exported[i].mailbox_holder.sync_token, verified_sync_token);
-    EXPECT_EQ(exported[i].mailbox_holder.texture_target,
-              tran[i].mailbox_holder.texture_target);
+    EXPECT_EQ(exported[i].mailbox(), tran[i].mailbox());
+    EXPECT_EQ(exported[i].sync_token(), verified_sync_token);
+    EXPECT_EQ(exported[i].texture_target(), tran[i].texture_target());
   }
 
   provider().RemoveImportedResource(id1);
@@ -298,7 +300,7 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParentManyUnsent) {
   // Exported resource matches except for the id which was mapped
   // to the local ResourceProvider, and the sync token should be
   // verified if it's a gpu resource.
-  gpu::SyncToken verified_sync_token = data[2].tran.mailbox_holder.sync_token;
+  gpu::SyncToken verified_sync_token = data[2].tran.sync_token();
   if (!data[2].tran.is_software)
     verified_sync_token.SetVerifyFlush();
 
@@ -544,12 +546,12 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
   // to match a use case that would actually be put into a TransferableResource
   // in production.
   gpu::Mailbox mailbox =
-      sii->CreateSharedImage(SinglePlaneFormat::kRGBA_8888, gfx::Size(1, 1),
-                             gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-                             kPremul_SkAlphaType,
-                                 gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                 gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-                             "TestLabel", gpu::kNullSurfaceHandle)
+      sii->CreateSharedImage(
+             {SinglePlaneFormat::kRGBA_8888, gfx::Size(1, 1), gfx::ColorSpace(),
+              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                  gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+              "TestLabel"},
+             gpu::kNullSurfaceHandle)
           ->mailbox();
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
@@ -561,25 +563,24 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
       tran, base::BindOnce(&MockReleaseCallback::Released,
                            base::Unretained(&release)));
 
-  EXPECT_TRUE(tran.mailbox_holder.sync_token.HasData());
+  EXPECT_TRUE(tran.sync_token().HasData());
   // All the logic below assumes that the sync token releases are all positive.
-  EXPECT_LT(0u, tran.mailbox_holder.sync_token.release_count());
+  EXPECT_LT(0u, tran.sync_token().release_count());
 
   // Transfer the resource, expect the sync points to be consistent.
   std::vector<TransferableResource> list;
   provider().PrepareSendToParent({resource}, &list, context_provider());
   ASSERT_EQ(1u, list.size());
-  EXPECT_LE(sync_token.release_count(),
-            list[0].mailbox_holder.sync_token.release_count());
-  EXPECT_EQ(0, memcmp(mailbox.name, list[0].mailbox_holder.mailbox.name,
-                      sizeof(mailbox.name)));
+  EXPECT_LE(sync_token.release_count(), list[0].sync_token().release_count());
+  EXPECT_EQ(0,
+            memcmp(mailbox.name, list[0].mailbox().name, sizeof(mailbox.name)));
 
   // Make a new texture id from the mailbox.
   context_provider()->RasterInterface()->WaitSyncTokenCHROMIUM(
-      list[0].mailbox_holder.sync_token.GetConstData());
+      list[0].sync_token().GetConstData());
   context_provider()->RasterInterface()->GenSyncTokenCHROMIUM(
-      list[0].mailbox_holder.sync_token.GetData());
-  EXPECT_TRUE(list[0].mailbox_holder.sync_token.HasData());
+      list[0].mutable_sync_token().GetData());
+  EXPECT_TRUE(list[0].sync_token().HasData());
 
   // Receive the resource, then delete it, expect the SyncTokens to be
   // consistent.
@@ -591,7 +592,7 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
       .WillOnce(testing::SaveArg<0>(&returned_sync_token));
   provider().RemoveImportedResource(resource);
   EXPECT_GE(returned_sync_token.release_count(),
-            list[0].mailbox_holder.sync_token.release_count());
+            list[0].sync_token().release_count());
 }
 
 TEST_P(ClientResourceProviderTest, LostResourcesAreReturnedLost) {
@@ -1091,6 +1092,83 @@ TEST_P(ClientResourceProviderTest, EvictionNotifiesMainAndFlushes) {
 
   // The enqueued Released callback should be invoked, along with the Flush.
   EXPECT_CALL(release, Released(_, false));
+  ExpectFlush();
+  VizTestSuite::RunUntilIdle();
+}
+
+// Tests that when we are using
+// `ClientResourceProvider::ScopedBatchResourcesRelease` that callbacks are not
+// immediately ran when we remove resources. Confirming that they are ran once
+// the scope is exited.
+TEST_P(ClientResourceProviderTest, BatchedCallbacksDoNotFireImmediately) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kBatchResourceRelease}, {});
+  // Mark visible so eviction path is not inadvertently triggered.
+  provider().SetVisible(true);
+
+  // We only import the resource and do not `PrepareSendToParent`. As `exported`
+  // resources are not removed by `RemoveImportedResource`.
+  MockReleaseCallback release;
+  const uint32_t sync_token_value = 1u;
+  TransferableResource resource =
+      MakeTransferableResource(use_gpu(), 'a', sync_token_value);
+  ResourceId id =
+      provider().ImportResource(resource, ReleaseCallback(),
+                                base::BindOnce(&MockReleaseCallback::Released,
+                                               base::Unretained(&release)),
+                                base::BindOnce(&MockReleaseCallback::Evicted,
+                                               base::Unretained(&release)));
+
+  {
+    // We use `ScopedBatchResourcesRelease` to prevent the immediate callbacks.
+    ClientResourceProvider::ScopedBatchResourcesRelease batch =
+        provider().CreateScopedBatchResourcesRelease();
+    // Zero callbacks for the removal, they should run when `batch` leaves
+    // scoped.
+    EXPECT_CALL(release, Released(_, _)).Times(0);
+    provider().RemoveImportedResource(id);
+    // Leaving scope should lead to `batch` triggering the callback
+    EXPECT_CALL(release, Released(_, _));
+  }
+
+  ExpectFlush();
+  VizTestSuite::RunUntilIdle();
+}
+
+// Ensures that while batching callbacks, that `ClientResourceProvider` being
+// destroyed before the `ClientResourceProvider::ScopedBatchResourcesRelease`
+// ensures the callbacks are ran.
+TEST_P(ClientResourceProviderTest,
+       BatchedCallbacksFireUponProviderDestruction) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kBatchResourceRelease}, {});
+  // Mark visible so eviction path is not inadvertently triggered.
+  provider().SetVisible(true);
+
+  // We only import the resource and do not `PrepareSendToParent`. As `exported`
+  // resources are not removed by `RemoveImportedResource`.
+  MockReleaseCallback release;
+  const uint32_t sync_token_value = 1u;
+  TransferableResource resource =
+      MakeTransferableResource(use_gpu(), 'a', sync_token_value);
+  ResourceId id =
+      provider().ImportResource(resource, ReleaseCallback(),
+                                base::BindOnce(&MockReleaseCallback::Released,
+                                               base::Unretained(&release)),
+                                base::BindOnce(&MockReleaseCallback::Evicted,
+                                               base::Unretained(&release)));
+
+  // We use `ScopedBatchResourcesRelease` to prevent the immediate callbacks.
+  ClientResourceProvider::ScopedBatchResourcesRelease batch =
+      provider().CreateScopedBatchResourcesRelease();
+  // Zero callbacks for the removal, they should run when `batch` leaves
+  // scoped.
+  EXPECT_CALL(release, Released(_, _)).Times(0);
+  provider().RemoveImportedResource(id);
+
+  // Destroying `provider` should run the callback.
+  EXPECT_CALL(release, Released(_, _));
+  DestroyProvider();
   ExpectFlush();
   VizTestSuite::RunUntilIdle();
 }

@@ -119,6 +119,11 @@ public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
         }
 
         @Override
+        public int getLastFrameViewportWidthPixInt() {
+            return mViewport.getWidth();
+        }
+
+        @Override
         public int getLastFrameViewportHeightPixInt() {
             return mViewport.getHeight();
         }

@@ -156,11 +156,6 @@ bool BrowserGpuVideoAcceleratorFactories::
   return false;
 }
 
-unsigned BrowserGpuVideoAcceleratorFactories::ImageTextureTarget(
-    gfx::BufferFormat format) {
-  return -1;
-}
-
 media::GpuVideoAcceleratorFactories::OutputFormat
 BrowserGpuVideoAcceleratorFactories::VideoFrameOutputFormat(
     media::VideoPixelFormat pixel_format) {
@@ -169,12 +164,12 @@ BrowserGpuVideoAcceleratorFactories::VideoFrameOutputFormat(
 
 gpu::SharedImageInterface*
 BrowserGpuVideoAcceleratorFactories::SharedImageInterface() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 gpu::GpuMemoryBufferManager*
 BrowserGpuVideoAcceleratorFactories::GpuMemoryBufferManager() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 base::UnsafeSharedMemoryRegion

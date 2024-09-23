@@ -10,26 +10,19 @@
     padding: 0;
   }
 
-  #onOff {
-    font-weight: 500;
-  }
-
-  #onOff[on] {
-    color: var(--cros-text-color-prominent);
-  }
-
   .device-list {
     margin-inline-start: 32px;
   }
 </style>
 <div class="settings-box first">
-  <div id="onOff" class="start" on$="[[isBluetoothToggleOn_]]"
+  <div class="primary-toggle start" on$="[[isBluetoothToggleOn_]]"
       aria-hidden="true">
     [[getOnOffString_(isBluetoothToggleOn_,
         '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]
   </div>
   <cr-toggle id="enableBluetoothToggle"
       checked="{{isBluetoothToggleOn_}}"
+      on-change="onBluetoothToggleChange_"
       disabled="[[isToggleDisabled_(systemProperties.systemState)]]"
       aria-label="$i18n{bluetoothToggleA11yLabel}"
       deep-link-focus-id$="[[Setting.kBluetoothOnOff]]">
@@ -86,8 +79,8 @@
     if="[[isFastPairToggleVisible_(isFastPairSupportedByDevice_)]]">
   <div class="device-lists-separator"></div>
   <settings-fast-pair-toggle prefs="{{prefs}}"
-      id="enableFastPairToggle"
-      deep-link-focus-id$="[[Setting.kFastPairOnOff]]"
-      bluetooth-toggle-on-off="[[isBluetoothToggleOn_]]">
+    id="enableFastPairToggle"
+    deep-link-focus-id$="[[Setting.kFastPairOnOff]]"
+    bluetooth-toggle-on-off="[[isBluetoothToggleOn_]]">
   </settings-fast-pair-toggle>
 </template>

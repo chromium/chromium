@@ -100,7 +100,7 @@ PrivacyHubNotificationDescriptor::PrivacyHubNotificationDescriptor(
       message_ids_(message_ids),
       delegate_(delegate) {
   DCHECK(!message_ids.empty());
-  DCHECK(message_ids.size() < 2u || !sensors.Empty())
+  DCHECK(message_ids.size() < 2u || !sensors.empty())
       << "Specify at least one sensor when providing more than one message ID";
   DCHECK_LE(button_ids.size(), 2u) << "Privacy hub notifications are not "
                                       "supposed to have more than two buttons.";

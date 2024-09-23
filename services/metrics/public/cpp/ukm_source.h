@@ -49,7 +49,7 @@ class METRICS_EXPORT UkmSource {
     // - For navigation sources, this will only contain at most two elements,
     //   one for the first URL in the redirect chain and one for the final URL
     //   that committed.
-    // TODO(crbug.com/869123): This may end up containing all the URLs in the
+    // TODO(crbug.com/40587196): This may end up containing all the URLs in the
     // redirect chain for navigation sources.
     std::vector<GURL> urls;
 

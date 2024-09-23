@@ -16,18 +16,21 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/prefs",
     "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/upgrade/model:public",
   ]
   deps = [
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/leak_detection:leak_detection",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/version_info",
+    "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
     "//ios/chrome/browser/omaha/model",
+    "//ios/chrome/browser/passwords/model:password_checkup_utils",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/content_suggestions:constants",
-    "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
-    "//ios/chrome/browser/upgrade/model",
-    "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/common",
   ]
   frameworks = [ "Foundation.framework" ]
@@ -49,6 +52,7 @@ source_set("factory") {
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
   ]
 }
@@ -72,6 +76,7 @@ source_set("utils") {
     "//base",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
   ]
 }
 
@@ -80,6 +85,7 @@ source_set("unit_tests") {
   sources = [ "ios_chrome_safety_check_manager_unittest.mm" ]
   deps = [
     ":constants",
+    ":factory",
     ":model",
     ":utils",
     "//base",
@@ -90,12 +96,12 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//ios/chrome/browser/passwords/model",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
-    "//ios/chrome/browser/upgrade/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

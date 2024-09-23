@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/hints_manager.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -218,12 +219,13 @@ class TestHintsFetcher : public HintsFetcher {
       const std::string& access_token,
       bool skip_cache,
       HintsFetchedCallback hints_fetched_callback,
-      proto::RequestContextMetadata* request_context_metadata) override {
+      std::optional<proto::RequestContextMetadata> request_context_metadata)
+      override {
     HintsFetcherEndState fetch_state =
         num_fetches_requested_ < static_cast<int>(fetch_states_.size())
             ? fetch_states_[num_fetches_requested_]
             : fetch_states_.back();
-    if (request_context_metadata) {
+    if (request_context_metadata.has_value()) {
       is_request_context_metadata_filled = true;
     }
     num_fetches_requested_++;
@@ -3184,7 +3186,7 @@ TEST_F(HintsManagerFetchingTest,
             run_loop->Quit();
           },
           run_loop.get()),
-      nullptr);
+      std::nullopt);
   run_loop->Run();
 
   histogram_tester.ExpectUniqueSample(
@@ -3209,7 +3211,7 @@ TEST_F(HintsManagerFetchingTest, BatchUpdateCalledMoreThanMaxConcurrent) {
           const GURL&,
           const base::flat_map<proto::OptimizationType,
                                OptimizationGuideDecisionWithMetadata>&)>(),
-      nullptr);
+      std::nullopt);
   hints_manager()->CanApplyOptimizationOnDemand(
       {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
       proto::RequestContext::CONTEXT_BOOKMARKS,
@@ -3217,7 +3219,7 @@ TEST_F(HintsManagerFetchingTest, BatchUpdateCalledMoreThanMaxConcurrent) {
           const GURL&,
           const base::flat_map<proto::OptimizationType,
                                OptimizationGuideDecisionWithMetadata>&)>(),
-      nullptr);
+      std::nullopt);
   hints_manager()->CanApplyOptimizationOnDemand(
       {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
       proto::RequestContext::CONTEXT_BOOKMARKS,
@@ -3225,7 +3227,7 @@ TEST_F(HintsManagerFetchingTest, BatchUpdateCalledMoreThanMaxConcurrent) {
           const GURL&,
           const base::flat_map<proto::OptimizationType,
                                OptimizationGuideDecisionWithMetadata>&)>(),
-      nullptr);
+      std::nullopt);
 
   // The third one is over the max and should evict another one.
   histogram_tester.ExpectTotalCount(
@@ -3268,7 +3270,7 @@ TEST_F(HintsManagerFetchingTest,
             run_loop->Quit();
           },
           run_loop.get()),
-      nullptr);
+      std::nullopt);
   run_loop->Run();
 
   histogram_tester.ExpectTotalCount(
@@ -3300,7 +3302,7 @@ TEST_F(HintsManagerFetchingTest,
             run_loop->Quit();
           },
           run_loop.get()),
-      nullptr);
+      std::nullopt);
   run_loop->Run();
 
   histogram_tester.ExpectTotalCount(
@@ -3349,7 +3351,7 @@ TEST_F(HintsManagerFetchingTest,
             run_loop->Quit();
           },
           run_loop.get()),
-      nullptr);
+      std::nullopt);
   run_loop->Run();
 
   histogram_tester.ExpectTotalCount(
@@ -3398,7 +3400,7 @@ TEST_F(
             run_loop->Quit();
           },
           run_loop.get()),
-      nullptr);
+      std::nullopt);
   run_loop->Run();
 }
 
@@ -3434,7 +3436,7 @@ TEST_F(HintsManagerFetchingTest,
             run_loop->Quit();
           },
           run_loop.get()),
-      nullptr);
+      std::nullopt);
   run_loop->Run();
 
   histogram_tester.ExpectUniqueSample(
@@ -3451,7 +3453,7 @@ TEST_F(HintsManagerFetchingTest,
        PageInsightsHubContextRequestContextMetadataPihSentGetHintsRequest) {
   base::HistogramTester histogram_tester;
 
-  hints_manager()->RegisterOptimizationTypes({proto::PAGE_INSIGHTS});
+  hints_manager()->RegisterOptimizationTypes({proto::TYPE_UNSPECIFIED});
   InitializeWithDefaultConfig("1.0.0.0");
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
@@ -3464,10 +3466,10 @@ TEST_F(HintsManagerFetchingTest,
   proto::RequestContextMetadata request_context_metadata_var;
   *request_context_metadata_var.mutable_page_insights_hub_metadata() =
       page_insights_hub_request_context_metadata;
-  proto::RequestContextMetadata* request_context_metadata =
-      &request_context_metadata_var;
+  std::optional<proto::RequestContextMetadata> request_context_metadata =
+      std::make_optional(request_context_metadata_var);
   hints_manager()->CanApplyOptimizationOnDemand(
-      {url_with_url_keyed_hint()}, {proto::PAGE_INSIGHTS},
+      {url_with_url_keyed_hint()}, {proto::TYPE_UNSPECIFIED},
       proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB,
       base::BindRepeating(
           [](base::RunLoop* run_loop, const GURL& url,
@@ -3475,7 +3477,7 @@ TEST_F(HintsManagerFetchingTest,
                                   OptimizationGuideDecisionWithMetadata>&
                  decisions) {
             EXPECT_EQ(decisions.size(), 1u);
-            auto it = decisions.find(proto::PAGE_INSIGHTS);
+            auto it = decisions.find(proto::TYPE_UNSPECIFIED);
             EXPECT_TRUE(it != decisions.end());
 
             run_loop->Quit();
@@ -3496,7 +3498,7 @@ TEST_F(
     PageInsightsHubContextNotSentRequestContextMetadataPihSentGetHintsRequest) {
   base::HistogramTester histogram_tester;
 
-  hints_manager()->RegisterOptimizationTypes({proto::PAGE_INSIGHTS});
+  hints_manager()->RegisterOptimizationTypes({proto::TYPE_UNSPECIFIED});
   InitializeWithDefaultConfig("1.0.0.0");
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
@@ -3509,10 +3511,10 @@ TEST_F(
   proto::RequestContextMetadata request_context_metadata_var;
   *request_context_metadata_var.mutable_page_insights_hub_metadata() =
       page_insights_hub_request_context_metadata;
-  proto::RequestContextMetadata* request_context_metadata =
-      &request_context_metadata_var;
+  std::optional<proto::RequestContextMetadata> request_context_metadata =
+      std::make_optional(request_context_metadata_var);
   hints_manager()->CanApplyOptimizationOnDemand(
-      {url_with_url_keyed_hint()}, {proto::PAGE_INSIGHTS},
+      {url_with_url_keyed_hint()}, {proto::TYPE_UNSPECIFIED},
       proto::RequestContext::CONTEXT_BOOKMARKS,
       base::BindRepeating(
           [](base::RunLoop* run_loop, const GURL& url,
@@ -3520,7 +3522,7 @@ TEST_F(
                                   OptimizationGuideDecisionWithMetadata>&
                  decisions) {
             EXPECT_EQ(decisions.size(), 1u);
-            auto it = decisions.find(proto::PAGE_INSIGHTS);
+            auto it = decisions.find(proto::TYPE_UNSPECIFIED);
             EXPECT_TRUE(it != decisions.end());
 
             run_loop->Quit();
@@ -3539,7 +3541,7 @@ TEST_F(HintsManagerFetchingTest,
        PageInsightsHubContextRequestContextMetadataPihNotSentGetHintsRequest) {
   base::HistogramTester histogram_tester;
 
-  hints_manager()->RegisterOptimizationTypes({proto::PAGE_INSIGHTS});
+  hints_manager()->RegisterOptimizationTypes({proto::TYPE_UNSPECIFIED});
   InitializeWithDefaultConfig("1.0.0.0");
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
@@ -3547,7 +3549,7 @@ TEST_F(HintsManagerFetchingTest,
           {HintsFetcherEndState::kFetchSuccessWithURLHints}));
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   hints_manager()->CanApplyOptimizationOnDemand(
-      {url_with_url_keyed_hint()}, {proto::PAGE_INSIGHTS},
+      {url_with_url_keyed_hint()}, {proto::TYPE_UNSPECIFIED},
       proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB,
       base::BindRepeating(
           [](base::RunLoop* run_loop, const GURL& url,
@@ -3555,13 +3557,13 @@ TEST_F(HintsManagerFetchingTest,
                                   OptimizationGuideDecisionWithMetadata>&
                  decisions) {
             EXPECT_EQ(decisions.size(), 1u);
-            auto it = decisions.find(proto::PAGE_INSIGHTS);
+            auto it = decisions.find(proto::TYPE_UNSPECIFIED);
             EXPECT_TRUE(it != decisions.end());
 
             run_loop->Quit();
           },
           run_loop.get()),
-      nullptr);
+      std::nullopt);
   HintsFetcher* it =
       hints_manager_->batch_update_hints_fetchers_.Peek(0)->second.get();
   TestHintsFetcher* it2 = static_cast<TestHintsFetcher*>(it);
@@ -3671,7 +3673,7 @@ class HintsManagerPersonalizedFetchingTest : public HintsManagerFetchingTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1509873): test is failing on iPhone device.
+// TODO(crbug.com/41482478): test is failing on iPhone device.
 #if TARGET_OS_IOS && !TARGET_IPHONE_SIMULATOR
 #define MAYBE_SuccessfulPersonalizedHintsFetching \
   DISABLED_SuccessfulPersonalizedHintsFetching
@@ -3711,7 +3713,7 @@ TEST_F(HintsManagerPersonalizedFetchingTest,
             run_loop->Quit();
           },
           run_loop.get()),
-      nullptr);
+      std::nullopt);
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
   run_loop->Run();
@@ -3753,7 +3755,7 @@ TEST_F(HintsManagerPersonalizedFetchingTest, TokenFailure) {
             run_loop->Quit();
           },
           run_loop.get()),
-      nullptr);
+      std::nullopt);
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
   run_loop->Run();
@@ -3793,7 +3795,7 @@ TEST_F(HintsManagerPersonalizedFetchingTest, NoUserSignIn) {
             run_loop->Quit();
           },
           run_loop.get()),
-      nullptr);
+      std::nullopt);
   run_loop->Run();
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 1, 1);

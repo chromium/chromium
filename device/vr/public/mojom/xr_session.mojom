@@ -6,6 +6,7 @@ module device.mojom;
 
 import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 // Used primarily in logging to indicate why a session was rejecting to aid
 // developer debuggability. To this end, rather than re-using an existing enum
@@ -87,6 +88,7 @@ enum XRDepthUsage {
 enum XRDepthDataFormat {
   kLuminanceAlpha = 1,
   kFloat32 = 2,
+  kUnsignedShort = 3,
 };
 
 // Structure used to configure depth sensing API at session creation.
@@ -96,15 +98,15 @@ enum XRDepthDataFormat {
 struct XRDepthOptions {
   // Ordered array of depth sensing usage preferences. At session creation,
   // the device will pick the depth sensing usage value that it supports,
-  /// starting from the lowest-indexed one. `kNone` entry is not allowed to
-  // appear in this array, and the array should not be empty.
+  // starting from the lowest-indexed one. If the array is empty, then we are
+  // allowed to select the optimal XRDepthUsage ourselves (this will usually
+  // match whatever the backing device's APIs support by default).
   array<XRDepthUsage> usage_preferences;
   // Ordered array of depth sensing data format preferences. At session
   // creation, the device will pick the depth sensing data format value that it
-  // supports, starting from the lowest-indexed one. `kNone` entry is not
-  // allowed to appear in this array, and the array should not be empty.
-  // The data format selection happens after the device has selected depth
-  // sensing usage.
+  // supports, starting from the lowest-indexed one. If the array is empty, then
+  // we are allowed to select the optimal XRDepthDataFormat ourselves (this will
+  // usually match whatever the backing device's APIs support by default).
   array<XRDepthDataFormat> data_format_preferences;
 };
 
@@ -130,4 +132,34 @@ struct XRSessionOptions {
 
   // ID of this request, used for tracing.
   uint64 trace_id;
+};
+
+// WebXR logging frame that is sent periodically to measure the
+// performance of the WebXR session.
+struct XrFrameStatistics {
+    // The trace_id is used to correlate the frame statistics with the
+    // session creation request. Check same trace_id in XRSessionOptions.
+    uint64 trace_id;
+    // The time span for which these reported statistics are reported.
+    mojo_base.mojom.TimeDelta duration;
+    // The number of frames that were sent to the device in the
+    // specified duration.
+    uint64 num_frames;
+    // The number of frames that were dropped by the device.
+    uint64 dropped_frames;
+    // The duration between requesting a frame and receiving the frame
+    // data back from the device.
+    mojo_base.mojom.TimeDelta frame_data_time;
+    // The duration for animation frame callback execution.
+    mojo_base.mojom.TimeDelta page_animation_frame_time;
+    // The duration for rendering the frame.
+    mojo_base.mojom.TimeDelta submit_frame_time;
+};
+
+struct XrLogMessage {
+    // The trace_id is used to correlate the frame statistics with the
+    // session creation request. Check same trace_id in XRSessionOptions.
+    uint64 trace_id;
+    // The console message to be logged.
+    string message;
 };

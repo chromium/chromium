@@ -10,11 +10,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.gms.shadows.ShadowChromiumPlayServicesAvailability;
 
 import java.util.concurrent.TimeUnit;
@@ -44,7 +44,7 @@ public class BackgroundTaskSchedulerImplWithMockTest {
                         .build();
         TaskInfo oneOffTask = TaskInfo.createTask(TaskIds.TEST, timingInfo).build();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(mTaskScheduler.schedule(null, oneOffTask));
                 });
@@ -61,7 +61,7 @@ public class BackgroundTaskSchedulerImplWithMockTest {
                         .build();
         TaskInfo periodicTask = TaskInfo.createTask(TaskIds.TEST, timingInfo).build();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(mTaskScheduler.schedule(null, periodicTask));
                 });
@@ -78,7 +78,7 @@ public class BackgroundTaskSchedulerImplWithMockTest {
                         .build();
         TaskInfo oneOffTask = TaskInfo.createTask(TaskIds.TEST, timingInfo).build();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(mTaskScheduler.schedule(null, oneOffTask));
                     mTaskScheduler.cancel(null, TaskIds.TEST);

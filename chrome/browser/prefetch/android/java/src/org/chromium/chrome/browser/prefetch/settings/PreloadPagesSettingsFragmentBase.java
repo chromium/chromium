@@ -9,20 +9,29 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 /** The base fragment class for Preload Pages settings fragments. */
 public abstract class PreloadPagesSettingsFragmentBase extends ChromeBaseSettingsFragment {
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         SettingsUtils.addPreferencesFromResource(this, getPreferenceResource());
-        getActivity().setTitle(R.string.prefs_section_preload_pages_title);
+        mPageTitle.set(getString(R.string.prefs_section_preload_pages_title));
 
         onCreatePreferencesInternal(bundle, s);
 
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

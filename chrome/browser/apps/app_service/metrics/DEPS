@@ -7,6 +7,7 @@ specific_include_rules = {
     "+ash/test/ash_test_helper.h",
   ],
   "app_service_metrics\.cc": [
+    "+ash/user_education/user_education_util.h",
     "+ash/user_education/welcome_tour/welcome_tour_metrics.h",
   ],
 }

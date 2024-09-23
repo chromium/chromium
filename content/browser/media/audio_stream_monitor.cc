@@ -4,7 +4,6 @@
 
 #include "content/browser/media/audio_stream_monitor.h"
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"

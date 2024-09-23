@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/extensions/activity_log/activity_database.h"
 
 #include <string>
@@ -19,8 +24,8 @@
 #include "chrome/common/chrome_switches.h"
 #include "sql/error_delegate_util.h"
 #include "sql/init_status.h"
+#include "sql/sqlite_result_code_values.h"
 #include "sql/transaction.h"
-#include "third_party/sqlite/sqlite3.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/backup_util.h"
@@ -192,7 +197,7 @@ void ActivityDatabase::DatabaseErrorCallback(int error, sql::Statement* stmt) {
   if (sql::IsErrorCatastrophic(error)) {
     LOG(ERROR) << "Killing the ActivityDatabase due to catastrophic error.";
     HardFailureClose();
-  } else if (error != SQLITE_BUSY) {
+  } else if (error != static_cast<int>(sql::SqliteResultCode::kBusy)) {
     // We ignore SQLITE_BUSY errors because they are presumably transient.
     LOG(ERROR) << "Closing the ActivityDatabase due to error.";
     SoftFailureClose();
@@ -214,13 +219,13 @@ void ActivityDatabase::SetTimerForTesting(int ms) {
 
 // static
 bool ActivityDatabase::InitializeTable(sql::Database* db,
-                                       const char* table_name,
+                                       base::cstring_view table_name,
                                        const char* const content_fields[],
                                        const char* const field_types[],
                                        const int num_content_fields) {
   if (!db->DoesTableExist(table_name)) {
     std::string table_creator =
-        base::StringPrintf("CREATE TABLE %s (", table_name);
+        base::StringPrintf("CREATE TABLE %s (", table_name.c_str());
     for (int i = 0; i < num_content_fields; i++) {
       table_creator += base::StringPrintf("%s%s %s",
                                           i == 0 ? "" : ", ",
@@ -228,20 +233,20 @@ bool ActivityDatabase::InitializeTable(sql::Database* db,
                                           field_types[i]);
     }
     table_creator += ")";
-    if (!db->Execute(table_creator.c_str()))
-      return false;
-  } else {
-    // In case we ever want to add new fields, this initializes them to be
-    // empty strings.
-    for (int i = 0; i < num_content_fields; i++) {
-      if (!db->DoesColumnExist(table_name, content_fields[i])) {
-        std::string table_updater = base::StringPrintf(
-            "ALTER TABLE %s ADD COLUMN %s %s; ",
-             table_name,
-             content_fields[i],
-             field_types[i]);
-        if (!db->Execute(table_updater.c_str()))
-          return false;
+    return db->Execute(table_creator);
+  }
+
+  // In case we ever want to add new fields, this initializes them to be
+  // empty strings.
+  for (int i = 0; i < num_content_fields; i++) {
+    if (!db->DoesColumnExist(
+            table_name,
+            base::cstring_view(content_fields[i], strlen(content_fields[i])))) {
+      std::string table_updater = base::StringPrintf(
+          "ALTER TABLE %s ADD COLUMN %s %s; ", table_name.c_str(),
+          content_fields[i], field_types[i]);
+      if (!db->Execute(table_updater)) {
+        return false;
       }
     }
   }

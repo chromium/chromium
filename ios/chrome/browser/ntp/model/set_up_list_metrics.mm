@@ -25,4 +25,8 @@ void RecordItemCompleted(SetUpListItemType type) {
   base::UmaHistogramEnumeration("IOS.SetUpList.ItemCompleted", type);
 }
 
+void RecordAllItemsCompleted() {
+  base::UmaHistogramBoolean("IOS.SetUpList.AllItemsCompleted", true);
+}
+
 }  // namespace set_up_list_metrics

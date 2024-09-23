@@ -76,11 +76,12 @@ TEST(AXNodeDataTest, TextAttributes) {
                             "different font");
   EXPECT_TRUE(node_1.GetTextAttributes() != node_2.GetTextAttributes());
 
-  std::string tooltip;
   node_2.AddStringAttribute(ax::mojom::StringAttribute::kTooltip,
                             "test tooltip");
-  EXPECT_TRUE(node_2.GetStringAttribute(ax::mojom::StringAttribute::kTooltip,
-                                        &tooltip));
+  EXPECT_TRUE(node_2.HasStringAttribute(ax::mojom::StringAttribute::kTooltip));
+  const std::string& tooltip =
+      node_2.GetStringAttribute(ax::mojom::StringAttribute::kTooltip);
+
   EXPECT_EQ(tooltip, "test tooltip");
 
   AXTextAttributes node1_attributes = node_1.GetTextAttributes();
@@ -187,7 +188,6 @@ TEST(AXNodeDataTest, IsClickable) {
       ax::mojom::Role::kMenuListOption,
       ax::mojom::Role::kPdfActionableHighlight,
       ax::mojom::Role::kPopUpButton,
-      ax::mojom::Role::kPortal,
       ax::mojom::Role::kRadioButton,
       ax::mojom::Role::kSearchBox,
       ax::mojom::Role::kSpinButton,
@@ -225,7 +225,7 @@ TEST(AXNodeDataTest, IsInvocable) {
     data.role = static_cast<ax::mojom::Role>(role_idx);
     bool is_activatable = data.IsActivatable();
     const bool supports_expand_collapse = data.SupportsExpandCollapse();
-    const bool supports_toggle = ui::SupportsToggle(data.role);
+    const bool supports_toggle = SupportsToggle(data.role);
     const bool is_clickable = data.IsClickable();
     const bool is_invocable = data.IsInvocable();
 
@@ -237,9 +237,8 @@ TEST(AXNodeDataTest, IsInvocable) {
                  << ", Actual: isInvocable=" << is_invocable
                  << ", Expected: isInvocable=" << !is_invocable);
 
-    if (ui::IsLink(data.role) ||
-        (is_clickable && !is_activatable && !supports_toggle &&
-         !supports_expand_collapse)) {
+    if (IsLink(data.role) || (is_clickable && !is_activatable &&
+                              !supports_toggle && !supports_expand_collapse)) {
       EXPECT_TRUE(is_invocable);
     } else {
       EXPECT_FALSE(is_invocable);

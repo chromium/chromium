@@ -34,7 +34,7 @@ BluetoothHelper::IdentifyRemoteDevice(
 
   PA_LOG(ERROR) << "BluetoothHelper::IdentifyRemoteDevice(): Identified "
                    "device was not present in the provided DeviceIdPairSet.";
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

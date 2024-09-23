@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/password_manager/core/browser/password_manager_client.h"
+
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -10,7 +12,6 @@
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
-#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/version_info/channel.h"
 #include "url/origin.h"
@@ -34,13 +35,19 @@ void PasswordManagerClient::ShowPasswordManagerErrorMessage(
     ErrorMessageFlowType flow_type,
     password_manager::PasswordStoreBackendErrorType error_type) {}
 
-bool PasswordManagerClient::ShowKeyboardReplacingSurface(
+void PasswordManagerClient::ShowKeyboardReplacingSurface(
     PasswordManagerDriver* driver,
-    const SubmissionReadinessParams& submission_readiness_params,
-    bool is_webauthn_form) {
-  return false;
+    const PasswordFillingParams& password_filling_params,
+    bool is_webauthn_form,
+    base::OnceCallback<void(bool)> shown_cb) {
+  std::move(shown_cb).Run(false);
 }
 #endif
+
+bool PasswordManagerClient::IsReauthBeforeFillingRequired(
+    device_reauth::DeviceAuthenticator*) {
+  return false;
+}
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>
 PasswordManagerClient::GetDeviceAuthenticator() {
@@ -52,16 +59,13 @@ void PasswordManagerClient::GeneratePassword(
 
 void PasswordManagerClient::UpdateCredentialCache(
     const url::Origin& origin,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        best_matches,
+    base::span<const PasswordForm> best_matches,
     bool is_blocklisted) {}
 
 void PasswordManagerClient::PasswordWasAutofilled(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        best_matches,
+    base::span<const PasswordForm> best_matches,
     const url::Origin& origin,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
-        federated_matches,
+    base::span<const PasswordForm> federated_matches,
     bool was_autofilled_on_pageload) {}
 
 void PasswordManagerClient::AutofillHttpAuth(
@@ -103,12 +107,13 @@ profile_metrics::BrowserProfileType PasswordManagerClient::GetProfileType()
   return profile_metrics::BrowserProfileType::kRegular;
 }
 
-const PasswordManager* PasswordManagerClient::GetPasswordManager() const {
+const PasswordManagerInterface* PasswordManagerClient::GetPasswordManager()
+    const {
   return nullptr;
 }
 
-PasswordManager* PasswordManagerClient::GetPasswordManager() {
-  return const_cast<PasswordManager*>(
+PasswordManagerInterface* PasswordManagerClient::GetPasswordManager() {
+  return const_cast<PasswordManagerInterface*>(
       static_cast<const PasswordManagerClient*>(this)->GetPasswordManager());
 }
 
@@ -173,6 +178,9 @@ PasswordManagerClient::GetWebAuthnCredentialsDelegateForDriver(
   return nullptr;
 }
 
+void PasswordManagerClient::TriggerUserPerceptionOfPasswordManagerSurvey(
+    const std::string& filling_assistance) {}
+
 #if BUILDFLAG(IS_ANDROID)
 webauthn::WebAuthnCredManDelegate*
 PasswordManagerClient::GetWebAuthnCredManDelegateForDriver(
@@ -190,6 +198,13 @@ version_info::Channel PasswordManagerClient::GetChannel() const {
 
 void PasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded() const {
   // For most implementations settings do not need to be refreshed.
+}
+
+void PasswordManagerClient::ShowCredentialsInAmbientBubble(
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
+    int credential_type_flags,
+    CredentialsCallback callback) {
+  std::move(callback).Run(nullptr);
 }
 
 }  // namespace password_manager

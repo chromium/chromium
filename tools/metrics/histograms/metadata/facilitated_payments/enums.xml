@@ -1,0 +1,42 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="FacilitatedPayments.PaymentNotOfferedReason">
+  <int value="0" label="Api not available"/>
+  <int value="1" label="Risk data empty"/>
+  <int value="2" label="Code validtor failed"/>
+  <int value="3" label="Invalid code"/>
+  <int value="4" label="Landscape screen orientation"/>
+</enum>
+
+<enum name="FacilitatedPayments.TransactionResult">
+  <int value="0" label="Failed"/>
+  <int value="1" label="Succeeded"/>
+  <int value="2" label="Abandoned"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

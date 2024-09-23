@@ -65,7 +65,8 @@
 // Stops the spinner on top of the primary button, and enables all buttons.
 - (void)stopSignInSpinner;
 
-// Configures primary button using UIButtonConfiguration.
+// Configures primary button using UIButtonConfiguration. `title` should not be
+// empty or nil.
 - (void)configurePrimaryButtonWithTitle:(NSString*)title;
 
 @end

@@ -80,7 +80,7 @@ AccessCodeCastCastMode CastModeMetricsHelper(MediaCastMode mode) {
     case MediaCastMode::REMOTE_PLAYBACK:
       return AccessCodeCastCastMode::kRemotePlayback;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return AccessCodeCastCastMode::kPresentation;
   }
 }
@@ -333,6 +333,17 @@ void AccessCodeCastHandler::CastToSink(CastToSinkCallback callback) {
       cast_mode, params->request->id, *sink_id_, std::move(callback)));
 
   media_route_starter_->StartRoute(std::move(params));
+}
+
+void AccessCodeCastHandler::OnSinkAddedResultForTesting(
+    access_code_cast::mojom::AddSinkResultCode add_sink_result,
+    std::optional<MediaSink::Id> sink_id) {
+  OnSinkAddedResult(add_sink_result, sink_id);
+}
+
+void AccessCodeCastHandler::OnSinksUpdatedForTesting(
+    const std::vector<MediaSinkWithCastModes>& sinks) {
+  OnSinksUpdated(sinks);
 }
 
 // MediaRouter::CreateRoute callback handler - log the success / failure of the

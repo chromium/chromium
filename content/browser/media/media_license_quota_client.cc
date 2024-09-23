@@ -22,7 +22,7 @@ void MediaLicenseQuotaClient::GetBucketUsage(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Media license data does not count against quota.
-  // TODO(crbug.com/1305441): Consider counting this data against quota.
+  // TODO(crbug.com/40218094): Consider counting this data against quota.
   std::move(callback).Run(0);
 }
 

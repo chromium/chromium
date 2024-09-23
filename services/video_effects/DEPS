@@ -1,0 +1,31 @@
+include_rules = [
+  "+components/viz/common/gpu",
+  "+content/public/common",
+  "+gpu/command_buffer/client",
+  "+gpu/command_buffer/common",
+  "+gpu/GLES2/gl2extchromium.h",
+  "+gpu/ipc/client",
+  "+gpu/webgpu",
+  "+media/base",
+  "+media/capture/mojom",
+  "+services/viz/public/cpp/gpu",
+  "+services/viz/public/mojom",
+  "+services/video_effects/public/mojom",
+  "+third_party/dawn/include/dawn",
+  "+third_party/khronos/GLES2/gl2.h",
+]
+
+specific_include_rules = {
+  "test_gpu_channel_host_provider\.[cc|h]": [
+    "+gpu/config",
+    "+gpu/ipc/common",
+  ],
+  ".*_unittest\.cc": [
+    "+gpu/ipc/common",
+  ],
+  "video_effects_processor_webgpu.cc": [
+    # Included within #if MEDIAPIPE_USE_WEBGPU.
+    "+third_party/mediapipe/src/mediapipe/gpu/webgpu/webgpu_device_registration.h"
+  ],
+
+}

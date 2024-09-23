@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
@@ -28,7 +29,35 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
 namespace {
+
+// Quick Settings `FeatureTile` size constants.
+constexpr gfx::Size kQSPrimaryTileSize =
+    gfx::Size(kPrimaryFeatureTileWidth, kFeatureTileHeight);
+constexpr gfx::Size kQSCompactTileSize =
+    gfx::Size(kCompactFeatureTileWidth, kFeatureTileHeight);
+
+// Creates a `Feature Tile` base that follows Quick Settings sizing standards.
+FeatureTile* CreateQSFeatureTileBase(views::Widget* widget,
+                                     bool is_compact = false) {
+  auto tile = std::make_unique<FeatureTile>(
+      views::Button::PressedCallback(), /*is_togglable=*/true,
+      is_compact ? FeatureTile::TileType::kCompact
+                 : FeatureTile::TileType::kPrimary);
+
+  // Quick Settings Feature Tiles set a fixed size for their feature tiles.
+  tile->SetPreferredSize(is_compact ? kQSCompactTileSize : kQSPrimaryTileSize);
+  tile->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred,
+                               /*adjust_height_for_width=*/false));
+
+  return widget->GetContentsView()->AddChildView(std::move(tile));
+}
+
+}  // namespace
 
 // Pixel tests for the quick settings feature tile view.
 class FeatureTilePixelTest : public AshTestBase {
@@ -76,10 +105,7 @@ class FeatureTilePixelTest : public AshTestBase {
 };
 
 TEST_F(FeatureTilePixelTest, PrimaryTile) {
-  auto* tile =
-      widget_->GetContentsView()->AddChildView(std::make_unique<FeatureTile>(
-          views::Button::PressedCallback(), /*is_togglable=*/true,
-          FeatureTile::TileType::kPrimary));
+  auto* tile = CreateQSFeatureTileBase(widget_.get());
   tile->SetVectorIcon(vector_icons::kDogfoodIcon);
   tile->SetLabel(u"Label");
   tile->SetSubLabel(u"Sub-label");
@@ -110,10 +136,7 @@ TEST_F(FeatureTilePixelTest, PrimaryTile) {
 }
 
 TEST_F(FeatureTilePixelTest, PrimaryTileWithoutDiveInButton) {
-  auto* tile =
-      widget_->GetContentsView()->AddChildView(std::make_unique<FeatureTile>(
-          views::Button::PressedCallback(), /*is_togglable=*/true,
-          FeatureTile::TileType::kPrimary));
+  auto* tile = CreateQSFeatureTileBase(widget_.get());
   tile->SetVectorIcon(vector_icons::kDogfoodIcon);
   tile->SetLabel(u"Label");
   tile->SetSubLabel(u"Sub-label");
@@ -148,10 +171,7 @@ TEST_F(FeatureTilePixelTest, PrimaryTile_RTL) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(base::i18n::IsRTL());
 
-  auto* tile =
-      widget_->GetContentsView()->AddChildView(std::make_unique<FeatureTile>(
-          views::Button::PressedCallback(), /*is_togglable=*/true,
-          FeatureTile::TileType::kPrimary));
+  auto* tile = CreateQSFeatureTileBase(widget_.get());
   tile->SetVectorIcon(vector_icons::kDogfoodIcon);
   tile->SetLabel(u"Label");
   tile->SetSubLabel(u"Sub-label");
@@ -166,10 +186,7 @@ TEST_F(FeatureTilePixelTest, PrimaryTile_RTL) {
 }
 
 TEST_F(FeatureTilePixelTest, CompactTile) {
-  auto* tile =
-      widget_->GetContentsView()->AddChildView(std::make_unique<FeatureTile>(
-          views::Button::PressedCallback(), /*is_togglable=*/true,
-          FeatureTile::TileType::kCompact));
+  auto* tile = CreateQSFeatureTileBase(widget_.get(), /*is_compact=*/true);
   tile->SetVectorIcon(vector_icons::kDogfoodIcon);
   tile->SetLabel(u"Multi-line label");
   // Needed for accessibility paint checks.
@@ -237,8 +254,7 @@ class FeatureTileVcDlcUiEnabledPixelTest : public FeatureTilePixelTest {
   void SetUp() override {
     scoped_feature_list_
         .InitWithFeatures(/*enabled_features=*/
-                          {features::kVideoConference,
-                           features::kCameraEffectsSupportedByHardware,
+                          {features::kFeatureManagementVideoConference,
                            features::kVcDlcUi},
                           /*disabled_features=*/{});
     // Need to create a fake VC tray controller if VcDlcUi is enabled because
@@ -295,21 +311,21 @@ TEST_F(FeatureTileVcDlcUiEnabledPixelTest, CompactTileCanFillContainer) {
   // Use the default, one-line compact tile that is created during test set-up.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "basic",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
 
   // Focus the tile (and reset the focus after the screenshot is taken).
   auto* previous_focused_view = widget_->GetFocusManager()->GetFocusedView();
   widget_->GetFocusManager()->SetFocusedView(tile());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focused",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
   widget_->GetFocusManager()->SetFocusedView(previous_focused_view);
 
   // Toggle the tile (and reset the toggle state after the screenshot is taken).
   tile()->SetToggled(true);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "toggled",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
   tile()->SetToggled(false);
 }
 
@@ -320,32 +336,47 @@ TEST_F(FeatureTileVcDlcUiEnabledPixelTest, DownloadInProgress) {
   SetDownloadProgress(tile(), 0);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "0_percent",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
 
   // Set the tile's download to be 1% complete.
   SetDownloadProgress(tile(), 1);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "1_percent",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
 
   // Set the tile's download to be 50% complete.
   SetDownloadProgress(tile(), 50);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "50_percent",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
 
   // Set the tile's download to be 99% complete.
   SetDownloadProgress(tile(), 99);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "99_percent",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
 
   // Set the tile's download to be 100% complete.
   SetDownloadProgress(tile(), 100);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "100_percent",
+      /*revision_number=*/1, widget_.get()));
+}
+
+// Tests the UI of a compact tile that has an error during download.
+TEST_F(FeatureTileVcDlcUiEnabledPixelTest, ErrorInDlcDownload) {
+  tile()->SetDownloadState(FeatureTile::DownloadState::kError, 0);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "error",
+      /*revision_number=*/1, widget_.get()));
+}
+
+// Tests the UI of a compact tile that has a pending download.
+TEST_F(FeatureTileVcDlcUiEnabledPixelTest, PendingDownload) {
+  tile()->SetDownloadState(FeatureTile::DownloadState::kPending, 0);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "pending",
       /*revision_number=*/0, widget_.get()));
 }
 
-}  // namespace
 }  // namespace ash

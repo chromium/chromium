@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<style>
+  @page second {
+    size: 6in;
+    margin: 1in;
+    border: 20px solid;
+    padding: 30px;
+  }
+  body {
+    margin: 0
+  }
+</style>
+This page should have default page settings (size / margins), and no
+border/padding.
+<div style="page:second;">
+  This page should be 6 by 6 inches large, with a 1 inch margin on every side,
+  and also, if @page properties are fully supported, a black border, and some
+  padding.
+</div>

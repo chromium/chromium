@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ElementObject} from '../prod/file_manager/shared_types.js';
 import {ENTRIES, getCaller, pending, repeatUntil, RootPath, wait} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 const tooltipQuery = 'files-tooltip';
@@ -29,8 +30,8 @@ const tooltipShowTimeout = 500;  // ms
 function getActiveElementById(appId: string, id: string): Promise<void> {
   const caller = getCaller();
   return repeatUntil(async () => {
-    const element =
-        await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
+    const element = await remoteCall.callRemoteTestUtil<ElementObject|null>(
+        'getActiveElement', appId, []);
     if (!element || element.attributes['id'] !== id) {
       return pending(caller, 'Waiting for active element by id #%s.', id);
     }
@@ -42,8 +43,8 @@ function getActiveElementById(appId: string, id: string): Promise<void> {
  * Tests that tooltip is displayed when focusing an element with tooltip.
  */
 export async function filesTooltipFocus() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
   await remoteCall.waitForElement(appId, tooltipQueryHidden);
@@ -82,8 +83,8 @@ export async function filesTooltipFocus() {
  * Tests that tooltip is displayed when focusing an element with tooltip.
  */
 export async function filesTooltipLabelChange() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
   await remoteCall.waitForElement(appId, tooltipQueryHidden);
@@ -113,8 +114,8 @@ export async function filesTooltipLabelChange() {
  * Tests that tooltips display when hovering an element that has a tooltip.
  */
 export async function filesTooltipMouseOver() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
   await remoteCall.waitForElement(appId, tooltipQueryHidden);
@@ -149,8 +150,8 @@ export async function filesTooltipMouseOver() {
  * Tests that tooltips stay open when hovering over the tooltip.
  */
 export async function filesTooltipMouseOverStaysOpen() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
   await remoteCall.waitForElement(appId, tooltipQueryHidden);
@@ -185,8 +186,8 @@ export async function filesTooltipMouseOverStaysOpen() {
  * Tests that tooltip is hidden when clicking on body (or anything else).
  */
 export async function filesTooltipClickHides() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
   await remoteCall.waitForElement(appId, tooltipQueryHidden);
@@ -212,11 +213,11 @@ export async function filesTooltipClickHides() {
  * Tests that card tooltip is hidden when clicking on body (or anything else).
  */
 export async function filesCardTooltipClickHides() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Click the 'Android files' volume tab in the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType('android_files');
 
   // Wait for the read-only bubble to appear in the files app tool bar.
@@ -252,8 +253,8 @@ export async function filesCardTooltipClickHides() {
  * Tests that the tooltip should hide when the window resizes.
  */
 export async function filesTooltipHidesOnWindowResize() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Check: initially the tooltip should be hidden.
   await remoteCall.waitForElement(appId, tooltipQueryHidden);
@@ -279,7 +280,7 @@ export async function filesTooltipHidesOnWindowResize() {
  * Tests that the tooltip is hidden after the delete confirm dialog closes.
  */
 export async function filesTooltipHidesOnDeleteDialogClosed() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.beautiful, ENTRIES.photos]);
 
   const fileListItemQuery = '#file-list li[file-name="Beautiful Song.ogg"]';

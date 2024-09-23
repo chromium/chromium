@@ -4,8 +4,9 @@
 
 #include "tools/win/chromeexts/commands/crash_info_command.h"
 
-#include <dbgeng.h>
 #include <windows.h>
+
+#include <dbgeng.h>
 
 #include <cstring>
 #include <ctime>

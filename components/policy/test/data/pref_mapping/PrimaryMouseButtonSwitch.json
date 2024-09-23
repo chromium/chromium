@@ -9,7 +9,9 @@
           "PrimaryMouseButtonSwitch": true
         },
         "prefs": {
-          "settings.mouse.primary_right": {}
+          "settings.mouse.primary_right": {
+            "value": true
+          }
         }
       }
     ]

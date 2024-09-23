@@ -39,6 +39,18 @@ NET_EXPORT_PRIVATE bool GetClientCertInfo(const X509Certificate* certificate,
                                           int* out_type,
                                           size_t* out_max_length);
 
+// Parses a DER-encoded SPKI buffer and returns the public key as an |EVP_PKEY|,
+// or nullptr on error.
+NET_EXPORT_PRIVATE bssl::UniquePtr<EVP_PKEY> ParseSpki(
+    base::span<const uint8_t> spki);
+
+// Determines the key type and maximum signature length of the public key
+// encoded in |spki|. |*out_type| will be set to one of the |EVP_PKEY_*|
+// values from BoringSSL.
+NET_EXPORT_PRIVATE bool GetPublicKeyInfo(base::span<const uint8_t> spki,
+                                         int* out_type,
+                                         size_t* out_max_length);
+
 // Returns the encoded form of |digest| for use with RSA-PSS with |pubkey|,
 // using |md| as the hash function and MGF-1 function, and the digest size of
 // |md| as the salt length.

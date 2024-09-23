@@ -34,7 +34,7 @@ class PLATFORM_EXPORT NullResourceFetcherProperties final
     return ControllerServiceWorkerMode::kNoController;
   }
   int64_t ServiceWorkerId() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
   bool IsPaused() const override { return false; }

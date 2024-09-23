@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/paint/image_painter.h"
 
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -13,6 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -30,45 +29,11 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
-#include "third_party/blink/renderer/platform/graphics/placeholder_image.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_image_rendering_settings.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 namespace {
-
-// TODO(loonybear): Currently oversized-images policy is only reinforced on
-// HTMLImageElement. Use data from |layout_image|, |content_rect| and/or
-// Document to support this policy on other image types (crbug.com/930281).
-bool CheckForOversizedImagesPolicy(const LayoutImage& layout_image,
-                                   scoped_refptr<Image> image) {
-  DCHECK(image);
-  if (!RuntimeEnabledFeatures::ExperimentalPoliciesEnabled(
-          layout_image.GetDocument().GetExecutionContext()))
-    return false;
-
-  const PhysicalSize layout_size = layout_image.PhysicalContentBoxSize();
-  const gfx::Size image_size = image->Size();
-  if (layout_size.IsEmpty() || image_size.IsEmpty())
-    return false;
-
-  const double downscale_ratio_width =
-      image_size.width() / layout_size.width.ToDouble();
-  const double downscale_ratio_height =
-      image_size.height() / layout_size.height.ToDouble();
-
-  const LayoutImageResource* image_resource = layout_image.ImageResource();
-  const ImageResourceContent* cached_image =
-      image_resource ? image_resource->CachedImage() : nullptr;
-  const String& image_url =
-      cached_image ? cached_image->Url().GetString() : g_empty_string;
-
-  return !layout_image.GetDocument().domWindow()->IsFeatureEnabled(
-      mojom::blink::DocumentPolicyFeature::kOversizedImages,
-      blink::PolicyValue::CreateDecDouble(
-          std::max(downscale_ratio_width, downscale_ratio_height)),
-      ReportOptions::kReportOnFailure, g_empty_string, image_url);
-}
 
 ImagePaintTimingInfo ComputeImagePaintTimingInfo(
     const LayoutImage& layout_image,
@@ -213,11 +178,11 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
     // Draw an outline rect where the image should be.
     BoxDrawingRecorder recorder(context, layout_image_, paint_info.phase,
                                 paint_offset);
-    context.SetStrokeStyle(kSolidStroke);
     context.SetStrokeColor(Color::kLightGray);
+    context.SetStrokeThickness(1);
     gfx::RectF outline_rect(ToPixelSnappedRect(content_rect));
     outline_rect.Inset(0.5f);
-    context.StrokeRect(outline_rect, 1,
+    context.StrokeRect(outline_rect,
                        PaintAutoDarkMode(layout_image_.StyleRef(),
                                          DarkModeFilter::ElementRole::kBorder));
     return;
@@ -286,21 +251,6 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
       image_element
           ? image_element->GetDecodingModeForPainting(image->paint_image_id())
           : Image::kUnspecifiedDecode;
-
-  // TODO(loonybear): Support image policies on other image types in addition to
-  // HTMLImageElement.
-  if (image_element) {
-    if (CheckForOversizedImagesPolicy(layout_image_, image) ||
-        image_element->IsImagePolicyViolated()) {
-      // Does not set an observer for the placeholder image, setting it to null.
-      scoped_refptr<PlaceholderImage> placeholder_image =
-          PlaceholderImage::Create(nullptr, image->Size(),
-                                   image->HasData() ? image->DataSize() : 0);
-      placeholder_image->SetIconAndTextScaleFactor(
-          layout_image_.GetFrame()->PageZoomFactor());
-      image = std::move(placeholder_image);
-    }
-  }
 
   auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(
       *layout_image_.GetFrame(), layout_image_.StyleRef(),

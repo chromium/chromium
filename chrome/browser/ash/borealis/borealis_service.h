@@ -7,8 +7,6 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 
-class Profile;
-
 namespace borealis {
 
 class BorealisAppLauncher;
@@ -25,9 +23,6 @@ class BorealisSurveyHandler;
 // A common location for all the interdependant components of borealis.
 class BorealisService : public KeyedService {
  public:
-  // Helper method to get the service instance for the given profile.
-  static BorealisService* GetForProfile(Profile* profile);
-
   ~BorealisService() override = default;
 
   virtual BorealisAppLauncher& AppLauncher() = 0;

@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "components/session_manager/session_manager_types.h"
@@ -62,8 +61,7 @@ UserActivityController::UserActivityController() {
   user_activity_manager_ = std::make_unique<UserActivityManager>(
       &user_activity_ukm_logger_, detector, power_manager_client,
       session_manager,
-      video_observer_user_logger.InitWithNewPipeAndPassReceiver(),
-      ChromeUserManager::Get());
+      video_observer_user_logger.InitWithNewPipeAndPassReceiver());
   aura::Env::GetInstance()
       ->context_factory()
       ->GetHostFrameSinkManager()

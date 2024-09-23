@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
@@ -47,6 +48,8 @@ constexpr char kFunctionCallAfterKeyedServiceShutdown[] =
 constexpr auto kIphTriggeringEvents =
     base::MakeFixedFlatSet<ScalableIph::Event>(
         {ScalableIph::Event::kFiveMinTick, ScalableIph::Event::kUnlocked});
+
+bool force_enable_iph_feature_for_testing = false;
 
 std::string GetHelpAppIphEventName(ActionType action_type) {
   switch (action_type) {
@@ -147,6 +150,8 @@ const base::flat_map<std::string, ActionType>& GetActionTypesMap() {
            ActionType::kOpenChromebookPerksGfnPriority2022},
           {kActionTypeOpenChromebookPerksMinecraft2023,
            ActionType::kOpenChromebookPerksMinecraft2023},
+          {kActionTypeOpenChromebookPerksMinecraftRealms2023,
+           ActionType::kOpenChromebookPerksMinecraftRealms2023},
       });
   return *action_types_map;
 }
@@ -303,6 +308,7 @@ ActionType ParseActionType(const std::string& action_type_string) {
     // kInvalid as the parsed result.
     return ActionType::kInvalid;
   }
+
   return it->second;
 }
 
@@ -553,6 +559,31 @@ bool ValidateVersionNumber(const base::Feature& feature) {
 
 }  // namespace
 
+// static
+bool ScalableIph::IsAnyIphFeatureEnabled() {
+  if (force_enable_iph_feature_for_testing) {
+    return true;
+  }
+
+  const std::vector<raw_ptr<const base::Feature, VectorExperimental>>&
+      feature_list = GetFeatureListConstant();
+  for (auto feature : feature_list) {
+    if (base::FeatureList::IsEnabled(*feature)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// static
+void ScalableIph::ForceEnableIphFeatureForTesting() {
+  CHECK_IS_TEST();
+  CHECK(!force_enable_iph_feature_for_testing)
+      << "Iph feature is already force enabled";
+
+  force_enable_iph_feature_for_testing = true;
+}
+
 ScalableIph::ScalableIph(feature_engagement::Tracker* tracker,
                          std::unique_ptr<ScalableIphDelegate> delegate,
                          std::unique_ptr<Logger> logger)
@@ -693,7 +724,7 @@ void ScalableIph::PerformActionForIphSession(ActionType action_type) {
 }
 
 void ScalableIph::MaybeRecordAppListItemActivation(const std::string& id) {
-  auto* it = kAppListItemActivationEventsMap.find(id);
+  auto it = kAppListItemActivationEventsMap.find(id);
   if (it == kAppListItemActivationEventsMap.end()) {
     SCALABLE_IPH_LOG(GetLogger())
         << "Observed an app list item activation. But not recording an app "
@@ -710,7 +741,7 @@ void ScalableIph::MaybeRecordAppListItemActivation(const std::string& id) {
 }
 
 void ScalableIph::MaybeRecordShelfItemActivationById(const std::string& id) {
-  auto* it = kShelfItemActivationEventsMap.find(id);
+  auto it = kShelfItemActivationEventsMap.find(id);
   if (it == kShelfItemActivationEventsMap.end()) {
     SCALABLE_IPH_LOG(GetLogger())
         << "Observed a shelf item activation. But not recording a shelf item "
@@ -740,6 +771,12 @@ void ScalableIph::OverrideTaskRunnerForTesting(
   timer_.Stop();
   timer_.SetTaskRunner(task_runner);
   EnsureTimerStarted();
+}
+
+const std::vector<raw_ptr<const base::Feature, VectorExperimental>>&
+ScalableIph::GetFeatureListConstantForTesting() {
+  CHECK_IS_TEST();
+  return GetFeatureListConstant();
 }
 
 bool ScalableIph::ShouldPinHelpAppToShelf() {
@@ -920,10 +957,22 @@ void ScalableIph::CheckTriggerConditions(
           continue;
         }
         SCALABLE_IPH_LOG(GetLogger()) << "Triggering a notification.";
-        delegate_->ShowNotification(
-            *notification_params.get(),
-            std::make_unique<IphSession>(*feature, tracker_, this));
-        return;
+
+        if (delegate_->ShowNotification(
+                *notification_params.get(),
+                std::make_unique<IphSession>(*feature, tracker_, this))) {
+          SCALABLE_IPH_LOG(GetLogger())
+              << "Requested the UI framework to show a notification. Request "
+                 "status: success. -> Do not check other trigger conditions to "
+                 "avoid triggering multiple IPHs at the same time.";
+          return;
+        }
+
+        SCALABLE_IPH_LOG(GetLogger())
+            << "Requested the UI framework to show a notification. Request "
+               "status: failure. -> Keep checking other trigger conditions as "
+               "this IPH should not be shown.";
+        continue;
       }
       case UiType::kBubble: {
         std::unique_ptr<BubbleParams> bubble_params =
@@ -935,10 +984,21 @@ void ScalableIph::CheckTriggerConditions(
           continue;
         }
         SCALABLE_IPH_LOG(GetLogger()) << "Triggering a bubble.";
-        delegate_->ShowBubble(
-            *bubble_params.get(),
-            std::make_unique<IphSession>(*feature, tracker_, this));
-        return;
+        if (delegate_->ShowBubble(
+                *bubble_params.get(),
+                std::make_unique<IphSession>(*feature, tracker_, this))) {
+          SCALABLE_IPH_LOG(GetLogger())
+              << "Requested the UI framework to show a bubble. Request status: "
+                 "success. -> Do not check other trigger conditions to avoid "
+                 "triggering multiple IPHs at the same time.";
+          return;
+        }
+
+        SCALABLE_IPH_LOG(GetLogger())
+            << "Requested the UI framework to show a bubble. Request status: "
+               "failure. -> Keep checking other trigger conditions as this IPH "
+               "should not be shown.";
+        continue;
       }
       case UiType::kNone:
         SCALABLE_IPH_LOG(GetLogger())

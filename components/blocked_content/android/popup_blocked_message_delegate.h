@@ -45,7 +45,7 @@ class PopupBlockedMessageDelegate
 
   raw_ptr<HostContentSettingsMap> map_ = nullptr;
 
-  // TODO(crbug.com/1179462): considering grouping the following members into a
+  // TODO(crbug.com/40749729): considering grouping the following members into a
   // struct because they all logically match the lifetime of a single Message.
   GURL url_;
   bool allow_settings_changes_ = false;

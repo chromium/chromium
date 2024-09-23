@@ -1,0 +1,75 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("quick_answers_stage_button") {
+  sources = [
+    "quick_answers_stage_button.cc",
+    "quick_answers_stage_button.h",
+  ]
+  deps = [
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
+source_set("loading_view") {
+  sources = [
+    "loading_view.cc",
+    "loading_view.h",
+  ]
+  deps = [
+    ":typography",
+    "//chromeos/components/quick_answers/public/cpp:constants",
+    "//chromeos/strings:strings_grit",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
+source_set("result_view") {
+  sources = [
+    "result_view.cc",
+    "result_view.h",
+  ]
+  deps = [
+    ":typography",
+    "//chromeos/components/quick_answers",
+    "//chromeos/components/quick_answers/public/cpp:constants",
+    "//chromeos/strings:strings_grit",
+    "//ui/base/metadata",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+}
+
+source_set("retry_view") {
+  sources = [
+    "retry_view.cc",
+    "retry_view.h",
+  ]
+  deps = [
+    ":typography",
+    "//chromeos/components/quick_answers",
+    "//chromeos/components/quick_answers/public/cpp:constants",
+    "//chromeos/strings:strings_grit",
+    "//ui/base/metadata",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+}
+
+source_set("typography") {
+  sources = [
+    "typography.cc",
+    "typography.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/components/quick_answers/public/cpp:constants",
+    "//ui/gfx",
+  ]
+}

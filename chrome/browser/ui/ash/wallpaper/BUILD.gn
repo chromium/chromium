@@ -1,0 +1,101 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("wallpaper") {
+  sources = [
+    "wallpaper_controller_client_impl.cc",
+    "wallpaper_controller_client_impl.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/personalization_app",
+    "//ash/webui/personalization_app/mojom",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/arc/wallpaper",
+    "//chrome/browser/ash/customization",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/lock",
+    "//chrome/browser/ash/policy/external_data/handlers",
+    "//chrome/browser/ash/system_web_apps/apps/personalization_app",
+    "//chrome/browser/ash/wallpaper",
+    "//chrome/browser/ash/wallpaper_handlers",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/common",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ui/base",
+    "//components/account_id",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/sync",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//ui/display",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/arc/wallpaper",
+    "//chrome/browser/ash/login/lock",
+    "//chrome/browser/ash/policy/external_data/handlers",
+    "//chrome/browser/ash/system_web_apps/apps/personalization_app",
+    "//chrome/browser/ui/ash/login",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "test_wallpaper_controller.cc",
+    "test_wallpaper_controller.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//ash/webui/common/mojom",
+    "//base",
+    "//components/account_id",
+    "//components/user_manager",
+    "//ui/gfx",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "wallpaper_controller_client_impl_unittest.cc" ]
+
+  deps = [
+    ":test_support",
+    ":wallpaper",
+    "//ash/webui/personalization_app/mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/ash/wallpaper_handlers:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/cryptohome",
+    "//components/user_manager",
+    "//components/value_store:test_support",
+    "//testing/gtest",
+  ]
+}

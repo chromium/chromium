@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
+
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -12,9 +13,9 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
+#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -31,8 +32,7 @@ class MockSupervisedUserURLFilter
   explicit MockSupervisedUserURLFilter(PrefService& prefs)
       : supervised_user::SupervisedUserURLFilter(
             prefs,
-            std::make_unique<safe_search_api::FakeURLCheckerClient>(),
-            base::BindRepeating([](const GURL& url) { return false; })) {}
+            std::make_unique<FakeURLFilterDelegate>()) {}
 
   MOCK_METHOD(FilteringBehavior,
               GetFilteringBehaviorForURL,
@@ -45,15 +45,6 @@ class MockSupervisedUserURLFilter
 class SupervisedUserNavigationThrottleTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  SupervisedUserNavigationThrottleTest() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS},
-        /*disabled_features=*/{});
-#endif
-  }
-
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     profile()->SetIsSupervisedProfile();
@@ -78,7 +69,6 @@ class SupervisedUserNavigationThrottleTest
 
  private:
   std::unique_ptr<content::MockNavigationHandle> navigation_handle_;
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 };
 

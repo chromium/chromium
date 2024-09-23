@@ -103,6 +103,10 @@ class GURL;
 // Boolean to track whether the app was opened via a custom scheme from another
 // first-party app.
 @property(nonatomic, readwrite, assign) BOOL openedViaFirstPartyScheme;
+// Boolean to track whether the app was opened via widget.
+@property(nonatomic, readwrite, assign) BOOL openedViaWidgetScheme;
+// Boolean to track whether the app was opened via URL.
+@property(nonatomic, readwrite, assign) BOOL openedWithURL;
 
 - (instancetype)init NS_UNAVAILABLE;
 

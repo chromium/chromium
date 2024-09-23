@@ -1,0 +1,21 @@
+<ntp-module-header-v2
+    id="moduleHeaderElementV2"
+    header-text="$i18n{modulesGoogleCalendarTitle}"
+    .menuItemGroups="${this.getMenuItemGroups_()}"
+    more-actions-text="$i18n{modulesGoogleCalendarMoreActions}"
+    @disable-button-click="${this.onDisableButtonClick_}"
+    @dismiss-button-click="${this.onDismissButtonClick_}"
+    @info-button-click="${this.onInfoButtonClick_}"
+    @menu-button-click="${this.onMenuButtonClick_}">
+</ntp-module-header-v2>
+<ntp-calendar id="calendar"
+    .events="${this.events_}"
+    calendar-link="https://calendar.google.com"
+    module-name="GoogleCalendar">
+</ntp-calendar>
+${this.showInfoDialog_ ? html`
+  <ntp-info-dialog show-on-attach
+      .innerHTML="${this.i18nAdvanced('moduleGoogleCalendarInfo')}"
+      @close="${this.onInfoDialogClose_}">
+  </ntp-info-dialog>
+` : ''}

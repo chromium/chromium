@@ -16,7 +16,7 @@
 #include "base/notreached.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/feed/android/jni_headers/WebFeedBridge_jni.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/feed/web_feed_page_information_fetcher.h"
 #include "chrome/browser/feed/web_feed_util.h"
@@ -33,7 +33,12 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/variations/service/variations_service.h"
 #include "url/android/gurl_android.h"
+#include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/feed/android/jni_headers/WebFeedBridge_jni.h"
 
 class Profile;
 
@@ -51,12 +56,10 @@ base::CancelableTaskTracker& TaskTracker() {
 PageInformation ToNativePageInformation(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& pageInfo) {
-  std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(
-      env, Java_WebFeedPageInformation_getUrl(env, pageInfo));
 
   PageInformation result;
-  if (gurl)
-    result.url = *gurl;
+  result.url = url::GURLAndroid::ToNativeGURL(
+      env, Java_WebFeedPageInformation_getUrl(env, pageInfo));
   TabAndroid* tab = TabAndroid::GetNativeTab(
       env, Java_WebFeedPageInformation_getTab(env, pageInfo));
   result.web_contents = tab ? tab->web_contents() : nullptr;
@@ -224,8 +227,11 @@ static void JNI_WebFeedBridge_FollowWebFeed(
 }
 
 static jboolean JNI_WebFeedBridge_IsCormorantEnabledForLocale(JNIEnv* env) {
-  return feed::IsCormorantEnabledForLocale(
-      country_codes::GetCurrentCountryCode());
+  return JNI_WebFeedBridge_IsWebFeedEnabled(env);
+}
+
+static jboolean JNI_WebFeedBridge_IsWebFeedEnabled(JNIEnv* env) {
+  return feed::IsWebFeedEnabledForLocale(FeedServiceFactory::GetCountry());
 }
 
 static void JNI_WebFeedBridge_FollowWebFeedById(
@@ -366,9 +372,9 @@ static void JNI_WebFeedBridge_GetRecentVisitCountsToHost(
   auto begin_time =
       base::Time::Now() -
       base::Days(GetFeedConfig().webfeed_accelerator_recent_visit_history_days);
-  history_service->GetDailyVisitsToHost(
-      *url::GURLAndroid::ToNativeGURL(env, j_url), begin_time, end_time,
-      std::move(callback), &TaskTracker());
+  history_service->GetDailyVisitsToOrigin(
+      url::Origin::Create(url::GURLAndroid::ToNativeGURL(env, j_url)),
+      begin_time, end_time, std::move(callback), &TaskTracker());
 }
 
 static void JNI_WebFeedBridge_IncrementFollowedFromWebPageMenuCount(

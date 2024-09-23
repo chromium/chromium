@@ -23,6 +23,7 @@ namespace image_util {
 struct AnimationFrame;
 }  // namespace image_util
 
+// TODO: b/349891147 - This is unused and should be removed.
 class ASH_EXPORT PickerGifView : public views::ImageView {
   METADATA_HEADER(PickerGifView, views::ImageView)
 
@@ -31,20 +32,30 @@ class ASH_EXPORT PickerGifView : public views::ImageView {
       base::OnceCallback<void(std::vector<image_util::AnimationFrame>)>;
   using FramesFetcher = base::OnceCallback<void(FramesFetchedCallback)>;
 
+  using PreviewImageFetchedCallback =
+      base::OnceCallback<void(const gfx::ImageSkia&)>;
+  using PreviewImageFetcher =
+      base::OnceCallback<void(PreviewImageFetchedCallback)>;
+
   PickerGifView(FramesFetcher frames_fetcher,
-                const gfx::Size& original_dimensions,
-                std::u16string accessible_name);
+                PreviewImageFetcher preview_image_fetcher,
+                const gfx::Size& original_dimensions);
   PickerGifView(const PickerGifView&) = delete;
   PickerGifView& operator=(const PickerGifView&) = delete;
   ~PickerGifView() override;
 
   // views::ImageViewBase:
-  int GetHeightForWidth(int width) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
   void UpdateFrame();
   void OnFramesFetched(std::vector<image_util::AnimationFrame> frames);
+
+  void OnPreviewImageFetched(const gfx::ImageSkia& preview_image);
+
+  void RecordFetchFramesTime();
 
   // Original dimensions of the gif, used to preserve aspect ratio when
   // resizing.
@@ -58,6 +69,8 @@ class ASH_EXPORT PickerGifView : public views::ImageView {
 
   // Index of the frame to show on the next call to `UpdateFrame`.
   size_t next_frame_index_ = 0;
+
+  std::optional<base::TimeTicks> fetch_frames_start_time_;
 
   base::WeakPtrFactory<PickerGifView> weak_factory_{this};
 };

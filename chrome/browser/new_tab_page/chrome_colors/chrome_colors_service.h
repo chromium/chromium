@@ -17,13 +17,6 @@ class TestChromeColorsService;
 
 namespace chrome_colors {
 
-// These constants have to match the values of ChromeColorsInfo and
-// DynamicChromeColorsInfo in enums.xml.
-constexpr int kDefaultColorId = -1;
-constexpr int kOtherColorId = 0;
-constexpr int kOtherDynamicColorId = 0;
-constexpr int kGrayscaleDynamicColorId = 1;
-
 // Supports theme changes originating from the NTP customization menu. Users can
 // apply a Chrome color or the default theme, which will then either be reverted
 // or confirmed and made permanent. If third party themes are present, users
@@ -37,17 +30,6 @@ class ChromeColorsService : public KeyedService {
   ChromeColorsService& operator=(const ChromeColorsService&) = delete;
 
   ~ChromeColorsService() override;
-
-  // Returns id for the given |color| if it is in the predefined set, and
-  // |kOtherColorId| otherwise.
-  static int GetColorId(const SkColor color);
-
-  // Record installed color id to UMA histograms.
-  static void RecordColorOnLoadHistogram(SkColor color);
-  static void RecordDynamicColorOnLoadHistogramForGrayscale();
-  static void RecordDynamicColorOnLoadHistogram(
-      SkColor color,
-      ui::mojom::BrowserColorVariant variant);
 
   // Applies a theme that can be reverted by saving the previous theme state and
   // the |tab| that changes are made from.

@@ -1,0 +1,46 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+#hoverButton {
+  box-sizing: border-box;
+  color: var(--cr-primary-text-color);
+  cursor: pointer;
+  display: flex;
+  font-size: 13px;
+  font-weight: 400;
+  justify-content: space-between;
+  line-height: 16px;
+  margin-top: 8px;
+  padding: 8px 16px;
+  width: 100%;
+}
+
+#hoverButton:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+#hoverButton:focus {
+  background-color: var(--cr-menu-background-focus-color);
+  outline: none;
+}
+
+#icon {
+  --cr-icon-color: var(--cr-primary-text-color);
+  --cr-icon-size: 20px;
+  height: 20px;
+  margin: 0;
+  width: 20px;
+}
+
+customize-chrome-button-label {
+  align-self: center;
+}

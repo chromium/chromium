@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/renderer/pepper/ppb_var_deprecated_impl.h"
 
 #include <stddef.h>
@@ -73,8 +78,8 @@ class ObjectAccessor {
   V8VarConverter* converter() { return converter_.get(); }
 
  private:
-  raw_ptr<V8ObjectVar, ExperimentalRenderer> object_var_;
-  raw_ptr<PepperPluginInstanceImpl, ExperimentalRenderer> instance_;
+  raw_ptr<V8ObjectVar> object_var_;
+  raw_ptr<PepperPluginInstanceImpl> instance_;
   std::unique_ptr<V8VarConverter> converter_;
 };
 
@@ -344,7 +349,7 @@ PP_Var CallDeprecated(PP_Var var,
 
 PP_Var Construct(PP_Var var, uint32_t argc, PP_Var* argv, PP_Var* exception) {
   // Deprecated.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PP_MakeUndefined();
 }
 

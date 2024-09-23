@@ -20,7 +20,8 @@ InputMethodMinimal::~InputMethodMinimal() {}
 
 ui::EventDispatchDetails InputMethodMinimal::DispatchKeyEvent(
     ui::KeyEvent* event) {
-  DCHECK(event->type() == ET_KEY_PRESSED || event->type() == ET_KEY_RELEASED);
+  DCHECK(event->type() == EventType::kKeyPressed ||
+         event->type() == EventType::kKeyReleased);
 
   // If no text input client, do nothing.
   if (!GetTextInputClient())
@@ -29,7 +30,7 @@ ui::EventDispatchDetails InputMethodMinimal::DispatchKeyEvent(
   // Insert the character.
   ui::EventDispatchDetails dispatch_details = DispatchKeyEventPostIME(event);
   if (!event->stopped_propagation() && !dispatch_details.dispatcher_destroyed &&
-      event->type() == ET_KEY_PRESSED && GetTextInputClient()) {
+      event->type() == EventType::kKeyPressed && GetTextInputClient()) {
     const uint16_t ch = event->GetCharacter();
     if (ch) {
       GetTextInputClient()->InsertChar(*event);

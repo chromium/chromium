@@ -1,0 +1,22 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package history_embeddings.proto;
+
+message PassageEmbeddingsModelMetadata {
+  // The size of the input window expected by the model.
+  uint32 input_window_size = 1;
+
+  // The size (length) of the output embeddings.
+  uint32 output_size = 2;
+
+  // The similarity score threshold that two embeddings must exceed to be
+  // considered a match. Must be within [0.0, 1.0] since that is the range of
+  // all passage embeddings similarity scores.
+  double score_threshold = 3;
+}

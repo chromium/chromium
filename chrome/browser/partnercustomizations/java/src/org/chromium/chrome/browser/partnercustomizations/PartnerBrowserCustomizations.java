@@ -256,9 +256,6 @@ public class PartnerBrowserCustomizations {
                         assert !mIsInitialized;
 
                         mIsInitialized = true;
-                        PartnerCustomizationsUma.logPartnerBrowserCustomizationInitDuration(
-                                mStartTime, SystemClock.elapsedRealtime());
-
                         for (Runnable callback : mInitializeAsyncCallbacks) {
                             callback.run();
                         }
@@ -267,8 +264,7 @@ public class PartnerBrowserCustomizations {
                         if (mHomepageUriChanged && mListener != null) {
                             mListener.onHomepageUpdate();
                         }
-                        partnerCustomizationsUma.logAsyncInitFinalized(
-                                mStartTime, SystemClock.elapsedRealtime(), mHomepageUriChanged);
+                        partnerCustomizationsUma.logAsyncInitFinalized(mHomepageUriChanged);
                     }
                 };
 
@@ -281,38 +277,23 @@ public class PartnerBrowserCustomizations {
     }
 
     /**
-     * Logs whether we failed to create an initial tab due to the app finishing or being destroyed.
-     * @param isActivityFinishingOrDestroyed Whether the Activity is going away.
-     */
-    public static void logActivityFinishingOrDestroyed(boolean isActivityFinishingOrDestroyed) {
-        PartnerCustomizationsUma.logActivityFinishingOrDestroyed(isActivityFinishingOrDestroyed);
-    }
-
-    /**
-     * Called when Chrome creates an initial tab.
-     * This notifies the UMA instance so it tracks how much initialization progresses relative to
-     * initial Tab creation.
+     * Called when Chrome creates an initial tab. This notifies the UMA instance so it tracks how
+     * much initialization progresses relative to initial Tab creation.
+     *
      * @param homepageUrlCreated The URL of the initial Tab that was created or {@code null} if
-     *         something other than a Homepage was used for an initial Tab.
-     * @param createInitialTabTime The timestamp when we started to create an initial tab.
-     * @param isOverviewPageOrStartSurface indicates that there was no created Homepage because some
-     *         kind of overview page or Start Surface was presented in place of the initial Tab.
+     *     something other than a Homepage was used for an initial Tab.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} to use to wait for
-     *         native initialization.
+     *     native initialization.
      * @param homepageCharacterizationHelper A supplier to characterize a Homepage.
      */
     public void onCreateInitialTab(
             @Nullable String homepageUrlCreated,
-            long createInitialTabTime,
-            boolean isOverviewPageOrStartSurface,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<HomepageCharacterizationHelper> homepageCharacterizationHelper) {
         if (mPartnerCustomizationsUma != null) {
             mPartnerCustomizationsUma.onCreateInitialTab(
                     isInitialized(),
                     homepageUrlCreated,
-                    createInitialTabTime,
-                    isOverviewPageOrStartSurface,
                     activityLifecycleDispatcher,
                     homepageCharacterizationHelper);
         }

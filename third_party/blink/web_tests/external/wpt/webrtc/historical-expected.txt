@@ -17,5 +17,9 @@ This is a testharness.js-based test.
   assert_false: expected false got true
 [FAIL] webkitRTCPeerConnection interface should not exist
   assert_false: expected false got true
+[FAIL] new RTCPeerConnection(config) - with url field should throw TypeError
+  assert_throws_js: function "() =>\n    makePc({ iceServers: [{\n      url: 'stun:stun1.example.net'\n    }] })" did not throw
+[FAIL] setConfiguration(config) - with url field should throw TypeError
+  assert_throws_js: function "() =>\n    makePc({ iceServers: [{\n      url: 'stun:stun1.example.net'\n    }] })" did not throw
 Harness: the test ran to completion.
 

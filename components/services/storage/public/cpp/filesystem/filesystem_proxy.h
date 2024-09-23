@@ -127,11 +127,12 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
     // no-op.
     virtual base::File::Error Release() = 0;
   };
+  // `same_process_failure`, if non-null, will be set to true iff acquiring the
+  // lock failed due to the lookup in `LockTable()`. TODO(crbug.com/340398745):
+  // remove this parameter.
   base::FileErrorOr<std::unique_ptr<FileLock>> LockFile(
-      const base::FilePath& path);
-
-  // Sets the length of the given file to |length| bytes.
-  bool SetOpenedFileLength(base::File* file, uint64_t length);
+      const base::FilePath& path,
+      bool* same_process_failure = nullptr);
 
  private:
   // For restricted FilesystemProxy instances, this returns a FilePath
@@ -150,7 +151,6 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
   base::FilePath MaybeMakeAbsolute(const base::FilePath& path) const;
 
   const base::FilePath root_;
-  const size_t num_root_components_ = 0;
 
   // If |remote_directory_| is set this is a restricted proxy, otherwise
   // it is unrestricted and will perform filesystem operations directly.

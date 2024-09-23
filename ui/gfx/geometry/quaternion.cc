@@ -6,8 +6,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <numbers>
 
-#include "base/numerics/math_constants.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
@@ -126,7 +126,7 @@ std::string Quaternion::ToString() const {
   v.Scale(scale);
   return base::StringPrintf("[%f %f %f %f], v:", x_, y_, z_, w_) +
          v.ToString() +
-         base::StringPrintf(", θ:%fπ", abs_theta / base::kPiFloat);
+         base::StringPrintf(", θ:%fπ", abs_theta / std::numbers::pi_v<float>);
 }
 
 }  // namespace gfx

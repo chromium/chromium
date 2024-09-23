@@ -31,20 +31,27 @@ using ime::AssistiveSuggestionType;
 constexpr size_t kMaxNumberCharsSent = 100;
 
 MultiWordExperimentGroup GetExperimentGroup(const std::string& finch_trial) {
-  if (finch_trial == "gboard")
+  if (finch_trial == "gboard") {
     return MultiWordExperimentGroup::kGboard;
-  if (finch_trial == "gboard_relaxed_a")
+  }
+  if (finch_trial == "gboard_relaxed_a") {
     return MultiWordExperimentGroup::kGboardRelaxedA;
-  if (finch_trial == "gboard_relaxed_b")
+  }
+  if (finch_trial == "gboard_relaxed_b") {
     return MultiWordExperimentGroup::kGboardRelaxedB;
-  if (finch_trial == "gboard_relaxed_c")
+  }
+  if (finch_trial == "gboard_relaxed_c") {
     return MultiWordExperimentGroup::kGboardRelaxedC;
-  if (finch_trial == "gboard_d")
+  }
+  if (finch_trial == "gboard_d") {
     return MultiWordExperimentGroup::kGboardD;
-  if (finch_trial == "gboard_e")
+  }
+  if (finch_trial == "gboard_e") {
     return MultiWordExperimentGroup::kGboardE;
-  if (finch_trial == "gboard_f")
+  }
+  if (finch_trial == "gboard_f") {
     return MultiWordExperimentGroup::kGboardF;
+  }
   return MultiWordExperimentGroup::kGboardE;
 }
 
@@ -182,8 +189,9 @@ void SuggestionsServiceClient::OnSuggestionsReturned(
     chromeos::machine_learning::mojom::TextSuggesterResultPtr result) {
   std::vector<AssistiveSuggestion> suggestions;
 
-  if (result->candidates.size() > 0)
+  if (result->candidates.size() > 0) {
     RecordCandidatesGenerated(suggestion_mode_requested);
+  }
 
   for (const auto& candidate : result->candidates) {
     auto suggestion =

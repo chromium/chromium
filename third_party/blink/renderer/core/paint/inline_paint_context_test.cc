@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -19,10 +20,9 @@ String StringFromTextItem(const InlineCursor& cursor) {
 
 }  // namespace
 
-class InlinePaintContextTest : public RenderingTest,
-                               private ScopedTextDecoratingBoxForTest {
+class InlinePaintContextTest : public RenderingTest {
  public:
-  InlinePaintContextTest() : ScopedTextDecoratingBoxForTest(true) {}
+  InlinePaintContextTest() {}
 
   Vector<float> GetFontSizes(
       const InlinePaintContext::DecoratingBoxList& boxes) {

@@ -2,15 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("prefs") {
-  sources = [
-    "storage_prefs.cc",
-    "storage_prefs.h",
-  ]
-
-  deps = [ "//components/prefs:prefs" ]
-}
-
 component("cpp") {
   output_name = "storage_service_public"
 

@@ -77,7 +77,7 @@ AggregatableReportAssembler::PendingRequest::PendingRequest(
     : report_request(std::move(report_request)),
       callback(std::move(callback)),
       processing_url_keys(num_processing_urls) {
-  DCHECK(this->callback);
+  CHECK(this->callback);
 }
 
 AggregatableReportAssembler::PendingRequest::PendingRequest(
@@ -111,17 +111,17 @@ AggregatableReportAssembler::CreateForTesting(
 void AggregatableReportAssembler::AssembleReport(
     AggregatableReportRequest report_request,
     AssemblyCallback callback) {
-  DCHECK(base::ranges::is_sorted(report_request.processing_urls()));
+  CHECK(base::ranges::is_sorted(report_request.processing_urls()));
   const size_t num_processing_urls = report_request.processing_urls().size();
-  DCHECK(AggregatableReport::IsNumberOfProcessingUrlsValid(
+  CHECK(AggregatableReport::IsNumberOfProcessingUrlsValid(
       num_processing_urls, report_request.payload_contents().aggregation_mode));
 
   const AggregationServicePayloadContents& contents =
       report_request.payload_contents();
 
   // Currently, this is the only supported operation.
-  DCHECK_EQ(contents.operation,
-            AggregationServicePayloadContents::Operation::kHistogram);
+  CHECK_EQ(contents.operation,
+           AggregationServicePayloadContents::Operation::kHistogram);
 
   if (pending_requests_.size() >= kMaxSimultaneousRequests) {
     RecordAssemblyStatus(AssemblyStatus::kTooManySimultaneousRequests);
@@ -132,7 +132,7 @@ void AggregatableReportAssembler::AssembleReport(
   }
 
   int64_t id = unique_id_counter_++;
-  DCHECK(!base::Contains(pending_requests_, id));
+  CHECK(!base::Contains(pending_requests_, id));
 
   const PendingRequest& pending_request =
       pending_requests_
@@ -155,14 +155,14 @@ void AggregatableReportAssembler::OnPublicKeyFetched(
     size_t processing_url_index,
     std::optional<PublicKey> key,
     AggregationServiceKeyFetcher::PublicKeyFetchStatus status) {
-  DCHECK_EQ(key.has_value(),
-            status == AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk);
+  CHECK_EQ(key.has_value(),
+           status == AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk);
   auto pending_request_it = pending_requests_.find(report_id);
-  DCHECK(pending_request_it != pending_requests_.end());
+  CHECK(pending_request_it != pending_requests_.end());
 
   PendingRequest& pending_request = pending_request_it->second;
 
-  // TODO(crbug.com/1254792): Consider implementing some retry logic.
+  // TODO(crbug.com/40199738): Consider implementing some retry logic.
 
   ++pending_request.num_returned_key_fetches;
   pending_request.processing_url_keys[processing_url_index] = std::move(key);

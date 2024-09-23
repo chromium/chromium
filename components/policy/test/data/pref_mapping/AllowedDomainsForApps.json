@@ -9,25 +9,12 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "AllowedDomainsForApps": "google.com,mit.edu"
-        },
-        "prefs": {
-          "settings.allowed_domains_for_apps": {
-            "value": "google.com,mit.edu"
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "settings.allowed_domains_for_apps": {
-            "default_value": ""
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.allowed_domains_for_apps",
+      "default_value": "",
+      "values_to_test": [
+        "google.com,mit.edu"
+      ]
+    }
   }
 ]

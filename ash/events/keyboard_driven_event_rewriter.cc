@@ -7,6 +7,7 @@
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -42,9 +43,9 @@ ui::EventDispatchDetails KeyboardDrivenEventRewriter::Rewrite(
   if ((flags & kModifierMask) != kModifierMask)
     return SendEvent(continuation, &event);
 
-  DCHECK(event.type() == ui::ET_KEY_PRESSED ||
-         event.type() == ui::ET_KEY_RELEASED)
-      << "Unexpected event type " << event.type();
+  DCHECK(event.type() == ui::EventType::kKeyPressed ||
+         event.type() == ui::EventType::kKeyReleased)
+      << "Unexpected event type " << base::to_underlying(event.type());
   const ui::KeyEvent& key_event = static_cast<const ui::KeyEvent&>(event);
   ui::KeyboardCode key_code = key_event.key_code();
 
@@ -59,7 +60,7 @@ ui::EventDispatchDetails KeyboardDrivenEventRewriter::Rewrite(
 
   if (arrow_to_tab_rewriting_enabled_) {
     if (keyboard_util::IsArrowKeyCode(key_code)) {
-      const ui::KeyEvent tab_event(ui::ET_KEY_PRESSED, ui::VKEY_TAB,
+      const ui::KeyEvent tab_event(ui::EventType::kKeyPressed, ui::VKEY_TAB,
                                    ui::EF_NONE);
       state.code = tab_event.code();
       state.key = tab_event.GetDomKey();

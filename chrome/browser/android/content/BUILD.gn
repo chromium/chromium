@@ -16,6 +16,7 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//content/public/android:content_java",
+    "//net/android:net_java",
     "//third_party/android_deps:dagger_java",
     "//third_party/android_deps:javax_inject_javax_inject_java",
     "//third_party/jni_zero:jni_zero_java",

@@ -10,11 +10,11 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "content/public/test/browser_test.h"
@@ -29,8 +29,8 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
  protected:
   class TestAutofillManager : public BrowserAutofillManager {
    public:
-    TestAutofillManager(ContentAutofillDriver* driver, AutofillClient* client)
-        : BrowserAutofillManager(driver, client, "en-US") {}
+    explicit TestAutofillManager(ContentAutofillDriver* driver)
+        : BrowserAutofillManager(driver, "en-US") {}
 
     testing::AssertionResult WaitForFormsSeen(int min_num_awaited_calls) {
       return forms_seen_waiter_.Wait(min_num_awaited_calls);
@@ -68,23 +68,11 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
 
   CreditCardAccessManager& GetCreditCardAccessManager() {
     ContentAutofillDriver* autofill_driver =
-        ContentAutofillDriverFactory::FromWebContents(web_contents())
-            ->DriverForFrame(web_contents()->GetPrimaryMainFrame());
+        ContentAutofillDriver::GetForRenderFrameHost(
+            web_contents()->GetPrimaryMainFrame());
     return static_cast<BrowserAutofillManager&>(
                autofill_driver->GetAutofillManager())
         .GetCreditCardAccessManager();
-  }
-
-  CreditCard SaveServerCard(std::string card_number) {
-    CreditCard server_card;
-    test::SetCreditCardInfo(&server_card, "John Smith", card_number.c_str(),
-                            "12", test::NextYear().c_str(), "1");
-    server_card.set_guid("00000000-0000-0000-0000-" +
-                         card_number.substr(0, 12));
-    server_card.set_record_type(CreditCard::RecordType::kFullServerCard);
-    server_card.set_server_id("full_id_" + card_number);
-    AddTestServerCreditCard(browser()->profile(), server_card);
-    return server_card;
   }
 
  private:
@@ -94,18 +82,20 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(CreditCardAccessManagerBrowserTest,
                        NavigateFromPage_UnmaskedCardCacheResets) {
-  CreditCard card = SaveServerCard("1223122348859229");
-
   // CreditCardAccessManager is completely recreated on page navigation, so to
   // ensure we're not using stale pointers, always re-fetch it on use.
-  EXPECT_TRUE(GetCreditCardAccessManager().UnmaskedCardCacheIsEmpty());
+  EXPECT_TRUE(
+      test_api(GetCreditCardAccessManager()).UnmaskedCardCacheIsEmpty());
+  CreditCard card = test::GetFullServerCard();
   GetCreditCardAccessManager().CacheUnmaskedCardInfo(card, u"123");
-  EXPECT_FALSE(GetCreditCardAccessManager().UnmaskedCardCacheIsEmpty());
+  EXPECT_FALSE(
+      test_api(GetCreditCardAccessManager()).UnmaskedCardCacheIsEmpty());
 
   // Cache should reset upon navigation.
   NavigateToAndWaitForForm(
       embedded_test_server()->GetURL("/credit_card_upload_form_cc.html"));
-  EXPECT_TRUE(GetCreditCardAccessManager().UnmaskedCardCacheIsEmpty());
+  EXPECT_TRUE(
+      test_api(GetCreditCardAccessManager()).UnmaskedCardCacheIsEmpty());
 }
 
 }  // namespace autofill

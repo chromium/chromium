@@ -125,9 +125,9 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   void SetOnFramePresentedCallback(OnNewFramePresentedCB presented_cb);
 
   // Gets the metadata for the last frame that was presented to the compositor.
-  // Used to populate the VideoFrameMetadata of video.requestVideoFrameCallback
-  // callbacks. See https://wicg.github.io/video-rvfc/.
-  // Can be called on any thread.
+  // Used to populate the VideoFrameCallbackMetadata of
+  // video.requestVideoFrameCallback callbacks. See
+  // https://wicg.github.io/video-rvfc/. Can be called on any thread.
   std::unique_ptr<WebMediaPlayer::VideoFramePresentationMetadata>
   GetLastPresentedFrameMetadata();
 
@@ -260,6 +260,7 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   // which case we need to do background rendering.
   base::TimeTicks last_deadline_max_;
   base::TimeDelta last_render_length_;
+  base::TimeTicks last_deadline_min_;
 
   size_t total_frame_count_;
   size_t dropped_frame_count_;
@@ -301,13 +302,16 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   std::unique_ptr<WebVideoFrameSubmitter> submitter_;
 
   // Extra information about the frames pending in |rendering_frame_buffer_|.
-  WTF::Vector<PendingFrameInfo> pending_frames_info_;
+  base::circular_deque<PendingFrameInfo> pending_frames_info_;
 
   cc::UpdateSubmissionStateCB update_submission_state_callback_;
 
   // |current_frame_lock_| protects |current_frame_|, |rendering_frame_buffer_|,
   // |dropped_frame_count_|, |current_metadata_| and |render_started_|.
   base::Lock current_frame_lock_;
+
+  // TODO(crbug.com/353554171): Remove this once the mechanism is fixed.
+  std::optional<base::TimeDelta> maximum_vsync_delay_for_renderer_reset_;
 
   base::WeakPtr<WebMediaPlayerMSCompositor> weak_this_;
   base::WeakPtrFactory<WebMediaPlayerMSCompositor> weak_ptr_factory_{this};

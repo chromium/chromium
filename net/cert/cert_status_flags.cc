@@ -33,8 +33,6 @@ int MapCertStatusToNetError(CertStatus cert_status) {
     return ERR_CERTIFICATE_TRANSPARENCY_REQUIRED;
   if (cert_status & CERT_STATUS_SYMANTEC_LEGACY)
     return ERR_CERT_SYMANTEC_LEGACY;
-  // CERT_STATUS_NON_UNIQUE_NAME is intentionally not mapped to an error.
-  // It is treated as just a warning and used to degrade the SSL UI.
   if (cert_status & CERT_STATUS_NAME_CONSTRAINT_VIOLATION)
     return ERR_CERT_NAME_CONSTRAINT_VIOLATION;
   if (cert_status & CERT_STATUS_WEAK_SIGNATURE_ALGORITHM)
@@ -45,13 +43,16 @@ int MapCertStatusToNetError(CertStatus cert_status) {
     return ERR_CERT_DATE_INVALID;
   if (cert_status & CERT_STATUS_VALIDITY_TOO_LONG)
     return ERR_CERT_VALIDITY_TOO_LONG;
+  if (cert_status & CERT_STATUS_NON_UNIQUE_NAME) {
+    return ERR_CERT_NON_UNIQUE_NAME;
+  }
   if (cert_status & CERT_STATUS_UNABLE_TO_CHECK_REVOCATION)
     return ERR_CERT_UNABLE_TO_CHECK_REVOCATION;
   if (cert_status & CERT_STATUS_NO_REVOCATION_MECHANISM)
     return ERR_CERT_NO_REVOCATION_MECHANISM;
 
   // Unknown status. The assumption is 0 (an OK status) won't be used here.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ERR_UNEXPECTED;
 }
 

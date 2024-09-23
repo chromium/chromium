@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Verwyder</translation>
 <translation id="1192844206376121885">Dit sal alle data en webkoekies uitvee wat deur <ph name="ORIGIN" /> geberg is.</translation>
 <translation id="1201402288615127009">Volgende</translation>
+<translation id="1240190568154816272">Chrome-wenke</translation>
 <translation id="1242008676835033345">Ingebed op <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1289742167380433257">Hierdie bladsy se prente is geoptimeer om vir jou data te bespaar.</translation>
@@ -21,9 +22,9 @@
 <translation id="1383876407941801731">Soek</translation>
 <translation id="1384959399684842514">Aflaai is onderbreek</translation>
 <translation id="1415402041810619267">URL is afgekap</translation>
-<translation id="1434873037477293673">prysverlagingkaart</translation>
 <translation id="1448064542941920355">Verklein zoem</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> werf}other{<ph name="SITE_COUNT" /> werwe}}</translation>
+<translation id="1500473259453106018">Versteek Prysdalings op oortjies-kaart</translation>
 <translation id="1510341833810331442">Werwe word nie toegelaat om data op jou toestel te stoor nie</translation>
 <translation id="1547123415014299762">Derdepartywebkoekies word toegelaat</translation>
 <translation id="1568470248891039841">Werwe wat jy tans bekyk, kan inhoud van ander werwe af inbed, byvoorbeeld prente, advertensies en teks. Hierdie ander werwe kan toestemming vra om inligting wat hulle oor jou gestoor het te gebruik terwyl jy deur die webwerf blaai. <ph name="BEGIN_LINK" />Kom meer te wete oor ingebedde inhoud<ph name="END_LINK" /></translation>
@@ -31,7 +32,6 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Verwante werwe</translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
-<translation id="1647582022260550163">Is jy seker jy wil toestemmings terugstel en webkoekies en werfdata uitvee?</translation>
 <translation id="1652197001188145583">Wanneer dit aan is, kan werwe vra om NFC-toestelle te gebruik. Wanneer dit af is, kan werwe nie NFC-toestelle gebruik nie.</translation>
 <translation id="1660204651932907780">Laat werwe toe om klank te speel (aanbeveel)</translation>
 <translation id="1677097821151855053">Webkoekies en ander werfdata word gebruik om jou te onthou, byvoorbeeld om jou aan te meld of om advertensies te personaliseer. Sien <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> om webkoekies vir alle werwe te bestuur.</translation>
@@ -40,6 +40,7 @@
 <translation id="1743802530341753419">Vra voordat werwe toegelaat word om aan 'n toestel te koppel (aanbeveel)</translation>
 <translation id="1779089405699405702">Prentdekodeerder</translation>
 <translation id="1785415724048343560">Aanbeveel vir beste ervaring</translation>
+<translation id="1799920918471566157">Chrome-wenke</translation>
 <translation id="1818308510395330587">Om <ph name="APP_NAME" /> AR te laat gebruik, moet jy kamera ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="1887786770086287077">Liggingtoegang is af vir hierdie toestel. Skakel dit in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="1915307458270490472">Sit neer</translation>
@@ -69,7 +70,6 @@
 <translation id="2241587408274973373">Nuwe oortjiebladsykaarte</translation>
 <translation id="2241634353105152135">Net een keer</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Verwyder</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 werf word geblokkeer}other{# werwe word geblokkeer}}</translation>
 <translation id="228293613124499805">Die meeste werwe wat jy besoek, stoor waarskynlik data op jou toestel – dikwels om jou ervaring te verbeter deur jou voorkeure of inligting wat jy met die werf deel, te stoor. Ons beveel aan dat hierdie instelling aan bly.</translation>
 <translation id="2289270750774289114">Vra wanneer 'n werf Bluetooth-toestelle in die omtrek wil ontdek (aanbeveel)</translation>
 <translation id="2315043854645842844">Bedryfstelsel steun nie die sertifikaat wat die kliënt gekies het nie.</translation>
@@ -93,10 +93,10 @@
 <translation id="2498359688066513246">Hulp en terugvoer</translation>
 <translation id="2501278716633472235">Gaan terug</translation>
 <translation id="2546283357679194313">Webkoekies en werfdata</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 webkoekie word geblokkeer}other{# webkoekies word geblokkeer}}</translation>
 <translation id="2570922361219980984">Liggingtoegang is ook af vir hierdie toestel. Skakel dit in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="257931822824936280">Uitgevou – klik om in te vou.</translation>
 <translation id="2586657967955657006">Knipbord</translation>
+<translation id="2588271083332682494">Hou alles georganiseerd met oortjiegroepe</translation>
 <translation id="2597457036804169544">Moenie donkertema op werwe toepas nie</translation>
 <translation id="2606760465469169465">Outoverifieer</translation>
 <translation id="2621115761605608342">Laat JavaScript vir 'n spesifieke werf toe.</translation>
@@ -115,15 +115,14 @@
 <translation id="2891975107962658722">Keer ’n werf om data op jou toestel te stoor</translation>
 <translation id="2903493209154104877">Adresse</translation>
 <translation id="2910701580606108292">Vra voordat werwe toegelaat word om beskermde inhoud te speel</translation>
+<translation id="2918484639460781603">Gaan na instellings</translation>
 <translation id="2932883381142163287">Gee misbruik aan</translation>
 <translation id="2939338015096024043">Wanneer dit aan is, kan werwe vra om jou kameraposisie na te spoor en meer te leer oor jou omgewing. Wanneer dit af is, kan werwe nie jou kameraposisie naspoor of meer oor jou omgewing leer nie.</translation>
 <translation id="2968755619301702150">Sertifikaatbekyker</translation>
 <translation id="2979365474350987274">Derdepartywebkoekies is beperk</translation>
 <translation id="3008272652534848354">Stel toestemmings terug</translation>
 <translation id="301521992641321250">Outomaties geblokkeer</translation>
-<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Laat aanmelding deur derde partye vir ’n spesifieke werf toe.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Verval môre}other{Verval oor # dae}}</translation>
 <translation id="310297983047869047">Vorige skyfie</translation>
 <translation id="3109724472072898302">Ingevou</translation>
 <translation id="3114012059975132928">Videospeler</translation>
@@ -135,7 +134,9 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> gestoorde data</translation>
 <translation id="321187648315454507">Om <ph name="APP_NAME" /> vir jou kennisgewings te laat stuur, moet jy kennisgewings ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="3227137524299004712">Mikrofoon</translation>
+<translation id="3232293466644486101">Vee blaaierdata uit …</translation>
 <translation id="3242646949159196181">Wanneer dit aan is, kan werwe klank speel. Wanneer dit af is, kan werwe nie klank speel nie.</translation>
+<translation id="3273479183583863618">Prysdalings op oortjies</translation>
 <translation id="3277252321222022663">Laat werwe toegang tot sensors toe (aanbeveel)</translation>
 <translation id="3285500645985761267">Laat verwante werwe toe om jou aktiwiteit in die groep te sien</translation>
 <translation id="3295019059349372795">Hoofstuk 11: Die Wonderlike Smaragstad van Oz</translation>
@@ -149,6 +150,7 @@
 <translation id="3448554387819310837">Wanneer dit aan is, kan werwe vra om jou kamera te gebruik. Wanneer dit af is, kan werwe nie jou kamera gebruik nie.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome sal more weer webkoekies blokkeer}other{# dae totdat Chrome webkoekies weer blokkeer}}</translation>
 <translation id="3521663503435878242">Werwe onder <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Moenie werwe toelaat om jou hande na te spoor nie</translation>
 <translation id="3536227077203206203">Hierdie keer toegelaat</translation>
 <translation id="3538390592868664640">Verhoed werwe om 'n 3D-kaart van jou omgewing te skep of kameraposisie na te spoor</translation>
 <translation id="3544058026430919413">’n Maatskappy kan ’n groep werwe definieer wat webkoekies kan gebruik om jou aktiwiteit in die groep te deel. Dit is af in Incognito.</translation>
@@ -159,11 +161,13 @@
 <translation id="3600792891314830896">Demp werwe wat klank speel</translation>
 <translation id="3602290021589620013">Voorskou</translation>
 <translation id="3628308229821498208">Voorgestelde soektogte</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> werf in <ph name="RWS_OWNER" /> se groep werwe wat jou aktiwiteit in die groep kan sien}other{<ph name="RWS_MEMBERS_COUNT" /> werwe in <ph name="RWS_OWNER" /> se groep werwe wat jou aktiwiteit in die groep kan sien}}</translation>
 <translation id="3697164069658504920">Wanneer dit aan is, kan werwe vra om USB-toestelle te gebruik. Wanneer dit af is, kan werwe nie USB-toestelle gebruik nie.</translation>
 <translation id="3707034683772193706">’n Werf wat jy besoek, kan ’n klein hoeveelheid inligting met Chrome deel, hoofsaaklik om te bekragtig dat jy nie ’n bot is nie</translation>
 <translation id="3721953990244350188">Maak toe en wys volgende beskikbare handeling</translation>
 <translation id="3744111561329211289">Agtergrondsinkronisering</translation>
 <translation id="3763247130972274048">Dubbeltik links of regs op video om 10 s. oor te slaan</translation>
+<translation id="3779154269823594982">Verander wagwoorde</translation>
 <translation id="3797520601150691162">Moenie donkertema vir 'n spesifieke werf toepas nie</translation>
 <translation id="3803367742635802571">Werwe wat jy besoek, sal dalk nie meer werk soos ontwerp nie</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -174,8 +178,11 @@
 <translation id="385051799172605136">Terug</translation>
 <translation id="3859306556332390985">Soek vorentoe</translation>
 <translation id="3895926599014793903">Dwing aktivering van zoem</translation>
+<translation id="3905475044299942653">Stop baie kennisgewings</translation>
 <translation id="3908288065506437185">Blokkeer derdepartywebkoekies in Incognitomodus</translation>
+<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Sommige kenmerke sal dalk nie werk nie. Verwante werwe kan steeds derdepartywebkoekies gebruik.</translation>
+<translation id="3933121352599513978">Vou ongewenste versoeke in (aanbeveel)</translation>
 <translation id="3955193568934677022">Laat werwe toe om beskermde inhoud te speel (aanbeveel)</translation>
 <translation id="3967822245660637423">Aflaai is voltooi</translation>
 <translation id="3974105241379491420">Werwe kan vra om inligting te gebruik wat hulle oor jou gestoor het</translation>
@@ -188,16 +195,15 @@
 <translation id="4149994727733219643">Vereenvoudigde aansig vir webbladsye</translation>
 <translation id="4151930093518524179">Verstekzoem</translation>
 <translation id="4165986682804962316">Werfinstellings</translation>
-<translation id="4169019654293892025">Versteek <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Aan ’n USB-toestel gekoppel</translation>
 <translation id="4194328954146351878">Vra voor werwe toegelaat word om inligting op NFC-toestelle te sien en te verander (aanbeveel)</translation>
 <translation id="4200726100658658164">Maak ligginginstellings oop</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Vanaf <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Kennisgewings kan die toestel laat vibreer</translation>
 <translation id="4259722352634471385">Navigasie is geblokkeer: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Toegelaat</translation>
 <translation id="429312253194641664">'n Werf speel tans media</translation>
 <translation id="42981349822642051">Vou uit</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Verval môre}other{Verval oor # dae}}</translation>
 <translation id="4336566011000459927">Chrome sal vandag weer webkoekies beperk</translation>
 <translation id="4338831206024587507">Alle werwe onder <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Keer dat werwe weet wanneer jy hierdie toestel aktief gebruik</translation>
@@ -213,17 +219,21 @@
 <translation id="4566417217121906555">Demp mikrofoon</translation>
 <translation id="4570913071927164677">Besonderhede</translation>
 <translation id="4598549027014564149">Terwyl jy in Incognitomodus is, kan werwe nie jou webkoekies gebruik om jou blaai-aktiwiteit op werwe, selfs verwante werwe, te sien nie. Jou blaai-aktiwiteit word nie gebruik vir dinge soos om advertensies te personaliseer nie. Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
+<translation id="4619615317237390068">Oortjies van ander toestelle af</translation>
 <translation id="4644713492825682049">Vee uit en stel terug</translation>
 <translation id="4645575059429386691">Deur jou ouer bestuur</translation>
 <translation id="4670064810192446073">Virtuele realiteit</translation>
+<translation id="4676059169848868271">Om <ph name="APP_NAME" /> toe te laat om handnasporing te gebruik, moet jy ook handnasporing in <ph name="BEGIN_LINK" />stelselinstellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="4751476147751820511">Beweging- of ligsensors</translation>
 <translation id="4755971844837804407">Wanneer dit aan is, kan werwe enige advertensie vir jou wys. Wanneer dit af is, kan werwe nie indringerige of misleidende advertensies wys nie.</translation>
 <translation id="4779083564647765204">Zoem</translation>
+<translation id="4807122856660838973">Skakel Veiligblaai aan</translation>
 <translation id="4811450222531576619">Kom meer te wete oor bron en onderwerp</translation>
 <translation id="4836046166855586901">Vra as 'n werf wil weet wanneer jy hierdie toestel aktief gebruik</translation>
 <translation id="483914009762354899">Sluit alle werwe in hierdie domein in</translation>
 <translation id="4883854917563148705">Bestuurde instellings kan nie teruggestel word nie</translation>
 <translation id="4887024562049524730">Vra voordat werwe toegelaat word om jou virtuelerealiteittoestel en -data te gebruik (aanbeveel)</translation>
+<translation id="4936863036653376783">Jy sal jou groepe in die oortjiegroep-afdeling op al jou toestelle kry</translation>
 <translation id="4953688446973710931">Wanneer dit aan is, kan werwe vra om outomaties veelvuldige lêers af te laai. Wanneer dit af is, kan werwe nie outomaties veelvuldige lêers aflaai nie.</translation>
 <translation id="4962975101802056554">Herroep alle toestemmings vir toestel</translation>
 <translation id="497421865427891073">Gaan vorentoe</translation>
@@ -232,8 +242,11 @@
 <translation id="4994033804516042629">Geen kontakte gevind nie</translation>
 <translation id="4996978546172906250">Deel via</translation>
 <translation id="5001526427543320409">Derdepartywebkoekies</translation>
+<translation id="5007392906805964215">Gaan na</translation>
+<translation id="5014182796621173645">Jy het dit <ph name="RECENCY" /> besoek</translation>
 <translation id="5039804452771397117">Laat toe</translation>
 <translation id="5048398596102334565">Laat werwe toegang tot bewegingsensors toe (aanbeveel)</translation>
+<translation id="5048841907079026162">Bestuur jou blaaierdata</translation>
 <translation id="5050380848339752099">Hierdie werf is op die punt om inligting met 'n program buite Incognitomodus te deel.</translation>
 <translation id="5063480226653192405">Gebruik</translation>
 <translation id="5091013926750941408">Mobiele werf</translation>
@@ -241,6 +254,7 @@
 <translation id="5091663350197390230">Wanneer dit aan is, kan werwe JavaScript gebruik. Wanneer dit af is, kan werwe nie JavaScript gebruik nie.</translation>
 <translation id="5099358668261120049">Dit sal alle data en webkoekies uitvee wat deur <ph name="ORIGIN" /> of deur sy app op jou tuisskerm geberg is.</translation>
 <translation id="5100237604440890931">Ingevou – klik om uit te vou.</translation>
+<translation id="5116239826668864748">Jy kan Chrome enige tyd gebruik wanneer jy tik op skakels in boodskappe, dokumente en ander apps.</translation>
 <translation id="5123685120097942451">Incognito-oortjie</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Prysdaling op jou oop oortjies}other{Prys daal op jou oop oortjies}}</translation>
 <translation id="5186036860380548585">Opsie is naby die bokant van die skerm beskikbaar</translation>
@@ -258,6 +272,7 @@
 <translation id="5335288049665977812">Laat werwe toe om JavaScript te gebruik (aanbeveel)</translation>
 <translation id="534295439873310000">NFC-toestelle</translation>
 <translation id="5344522958567249764">Bestuur advertensieprivaatheid</translation>
+<translation id="5373874281522292782">Jou oortjiegroepe is gestoor</translation>
 <translation id="5389626883706033615">Werwe word geblokkeer om jou te vra om inligting te gebruik wat hulle oor jou gestoor het</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ nog 1)}other{(+ nog #)}}</translation>
 <translation id="5403592356182871684">Name</translation>
@@ -272,6 +287,7 @@
 <translation id="5553374991681107062">Jongste</translation>
 <translation id="5556459405103347317">Herlaai</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> geblokkeer</translation>
+<translation id="5632485077360054581">Wys my hoe</translation>
 <translation id="5649053991847567735">Outomatiese aflaaie</translation>
 <translation id="5668404140385795438">Ignoreer 'n webwerf se versoek om inzoem te verhoed</translation>
 <translation id="5677928146339483299">Geblokkeer</translation>
@@ -282,12 +298,14 @@
 <translation id="5706552988683188916">Dit vee webkoekies en ander werfdata vir <ph name="WEBSITE" /> uit</translation>
 <translation id="5723967018671998714">Derdepartywebkoekies word in incognitomodus geblokkeer</translation>
 <translation id="5740126560802162366">Werwe kan data op jou toestel stoor</translation>
+<translation id="5750869797196646528">Handnasporing</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> word geblokkeer</translation>
 <translation id="5804241973901381774">Toestemmings</translation>
 <translation id="5844448279347999754">Wanneer dit aan is, kan werwe vra om teks en prente wat op jou knipbord gestoor is, te sien. As dit af is, kan werwe nie teks of prente wat op jou knipbord gestoor is, sien nie.</translation>
 <translation id="5853982612236235577">Wanneer dit aan is, kan werwe vra om kennisgewings te stuur. Wanneer dit af is, kan werwe nie kennisgewings stuur nie.</translation>
 <translation id="5860033963881614850">Af</translation>
 <translation id="5876056640971328065">Onderbreek video</translation>
+<translation id="5877248419911025165">Vou alle versoeke in</translation>
 <translation id="5884085660368669834">Werfvoorkeur</translation>
 <translation id="5887687176710214216">Gister laas besoek</translation>
 <translation id="5916664084637901428">Aan</translation>
@@ -305,6 +323,7 @@
 <translation id="6064125863973209585">Voltooide aflaaie</translation>
 <translation id="6071501408666570960">Jy kan dalk by hierdie werf afgemeld word</translation>
 <translation id="6120483543004435978">Wanneer dit aan is, kan werwe vra om te weet wanneer jy jou toestel aktief gebruik. Wanneer dit af is, kan werwe nie weet wanneer jy jou toestel aktief gebruik nie.</translation>
+<translation id="6140839633433422817">Is jy seker jy wil toestemmings terugstel en webkoekies en werfdata uitvee?</translation>
 <translation id="6165508094623778733">Kom meer te wete</translation>
 <translation id="6171020522141473435">Wanneer dit aan is, kan werwe vra om Bluetooth-toestelle te gebruik. Wanneer dit af is, kan werwe nie Bluetooth-toestelle gebruik nie.</translation>
 <translation id="6177111841848151710">Geblokkeer vir huidige soekenjin</translation>
@@ -338,14 +357,18 @@
 <translation id="6545864417968258051">Bluetooth-opsporing</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, en nog <ph name="NUM_MORE" /> word geblokkeer}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, en nog <ph name="NUM_MORE" /> word geblokkeer}}</translation>
 <translation id="6554732001434021288">Laas <ph name="NUM_DAYS" /> dae gelede besoek</translation>
+<translation id="656065428026159829">Sien meer</translation>
 <translation id="6561560012278703671">Gebruik stiller boodskappe (keer dat kennisgewingporboodskappe jou onderbreek)</translation>
 <translation id="6593061639179217415">Werkskermwerf</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Webkoekies word toegelaat vir <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-werf}other{Webkoekies word toegelaat vir <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-werwe}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beskermde inhoud</translation>
 <translation id="662080504995468778">Bly</translation>
 <translation id="6653342741369270081">Druk die terugknoppie om volskerm te verlaat.</translation>
+<translation id="6683865262523156564">Hierdie werf is in ’n groep wat jou aktiwiteit kan sien. Die groep word gedefinieer deur <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profielfoto's</translation>
 <translation id="6697925417670533197">Aktiewe aflaaie</translation>
+<translation id="6709432001666529933">Vra voordat werwe toegelaat word om jou hande na te spoor (word aanbeveel)</translation>
 <translation id="6722828510648505498">Blokkeer aanmeldporboodskappe van identiteitsdienste af.</translation>
 <translation id="6746124502594467657">Skuif af</translation>
 <translation id="6749077623962119521">Stel toestemmings terug?</translation>
@@ -353,12 +376,16 @@
 <translation id="6787751205395685251">Kies ’n opsie vir <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6818926723028410516">Kies items</translation>
+<translation id="6838525730752203626">Gebruik Chrome by verstek</translation>
+<translation id="6840760312327750441">Raak en hou 'n oortjie om oortjies te groepeer. Sleep dit dan op 'n ander oortjie.</translation>
 <translation id="6864395892908308021">Hierdie toestel kan nie NFC lees nie</translation>
-<translation id="6867014948848323204">Vanaf <ph name="FROM_DEVICE" /></translation>
+<translation id="6870169401250095575">Versteek Veiligheidskontrole-kaart</translation>
+<translation id="6900883974539674431">Skep oortjiegroepe wat outomaties op al jou toestelle stoor en opdateer</translation>
 <translation id="6912998170423641340">Blokkeer werwe om teks en prente van die knipbord af te lees</translation>
 <translation id="6945221475159498467">Kies</translation>
 <translation id="6950072572526089586">’n Werf wat jy besoek, kan inligting stoor oor wat jy besig is om te doen sodat dit kan werk soos verwag – byvoorbeeld, om jou by ’n werf aangemeld te hou of items in jou inkopiemandjie te stoor. Werwe stoor hierdie inligting dikwels tydelik op jou toestel.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980861169612950611">Vee werfdata uit? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Toeganklikheid</translation>
 <translation id="6992289844737586249">Vra eers voordat werwe toegelaat word om jou mikrofoon te gebruik (aanbeveel)</translation>
 <translation id="7000754031042624318">Afgeskakel in Android-instellings</translation>
@@ -366,6 +393,7 @@
 <translation id="702275896380648118">Hierdie werf bepaal van watter dinge jy hou, en stel dan advertensies aan ander werwe voor. Hierdie werf kry ook jou advertensieonderwerpe van Chrome af om vir jou relevanter advertensies te wys.</translation>
 <translation id="7053983685419859001">Blokkeer</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 gekies}other{# gekies}}</translation>
+<translation id="708014373017851679">“<ph name="APP_NAME" />” is verouderd. Dateer asseblief die app op.</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> gekies. Opsies is naby aan die bokant van die skerm beskikbaar</translation>
 <translation id="7141896414559753902">Verhinder werwe om opspringers en herleidings te wys (aanbeveel)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
@@ -385,6 +413,7 @@
 <translation id="7366415735885268578">Voeg 'n werf by</translation>
 <translation id="7368695150573390554">Enige vanlyn data sal uitgevee word</translation>
 <translation id="7383715096023715447">Instellings vir <ph name="DOMAIN" /></translation>
+<translation id="7399802613464275309">Veiligheidskontrole</translation>
 <translation id="7406113532070524618">Hierdie instelling werk sonder om jou te identifiseer of werwe toe te laat om jou blaaigeskiedenis te sien, hoewel werwe ’n klein hoeveelheid inligting as deel van die verifikasie kan stoor</translation>
 <translation id="7423098979219808738">Vra eers</translation>
 <translation id="7423538860840206698">Geblokkeer om knipbord te lees</translation>
@@ -396,12 +425,14 @@
 <translation id="7561196759112975576">Altyd</translation>
 <translation id="757524316907819857">Blokkeer werwe om beskermde inhoud te speel</translation>
 <translation id="7594634374516752650">Aan ’n Bluetooth-toestel gekoppel</translation>
-<translation id="7641339528570811325">Maak blaaidata skoon …</translation>
+<translation id="7617547684249261169">Jy kan sommige of al jou geskiedenis, webkoekies, werfdata en meer uitvee</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7667547420449112975">Die Wonderlike Towenaar van Oz</translation>
 <translation id="7684642910516280563">Moenie ’n werf toelaat om derdepartywebkoekies te gebruik nie</translation>
+<translation id="7688240020069572972">Versteek Chrome-wenkekaart</translation>
 <translation id="7719367874908701697">Bladsyzoem:</translation>
+<translation id="7759147511335618829">MIDI-toestelkontrole en herprogrammering</translation>
 <translation id="7781829728241885113">Gister</translation>
 <translation id="7791543448312431591">Voeg by</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{Gaan voort met hierdie oortjie}other{Gaan voort met hierdie oortjies}}</translation>
@@ -415,10 +446,10 @@
 <translation id="7882806643839505685">Laat klank toe vir 'n spesifieke werf.</translation>
 <translation id="789180354981963912">Blokkeer derdepartywebkoekies in Incognito:</translation>
 <translation id="7940722705963108451">Herinner my</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> werf in <ph name="FPS_OWNER" /> se groep werwe wat jou aktiwiteit in die groep kan sien}other{<ph name="FPS_MEMBERS_COUNT" /> werwe in <ph name="FPS_OWNER" /> se groep werwe wat jou aktiwiteit in die groep kan sien}}</translation>
 <translation id="7986741934819883144">Kies 'n kontak</translation>
 <translation id="7990211076305263060">Wanneer dit aan is, kan werwe vra om jou mikrofoon te gebruik. Wanneer dit af is, kan werwe nie jou mikrofoon gebruik nie.</translation>
 <translation id="8007176423574883786">Afgeskakel vir hierdie toestel</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Versteek Gaan voort met hierdie oortjie-kaart}other{Versteek Gaan voort met hierdie oortjies-kaart}}</translation>
 <translation id="802154636333426148">Kon nie aflaai nie</translation>
 <translation id="8042586301629853791">Rangskik volgens:</translation>
 <translation id="8067883171444229417">Speel video</translation>
@@ -453,7 +484,7 @@
 <translation id="8441146129660941386">Soek agtertoe</translation>
 <translation id="8444433999583714703">Om <ph name="APP_NAME" /> toegang tot jou ligging te gee, moet jy ligging ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="8447861592752582886">Herroep toesteltoestemming</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 webkoekie word tans gebruik}other{# webkoekies word tans gebruik}}</translation>
+<translation id="8473055640493819707">“<ph name="APP_NAME" />” is verouderd. Herinstalleer die app.</translation>
 <translation id="8487700953926739672">Vanlyn beskikbaar</translation>
 <translation id="848952951823693243">Versoek altyd mobiele werf</translation>
 <translation id="8499083585497694743">Ontdemp mikrofoon</translation>
@@ -461,20 +492,20 @@
 <translation id="851751545965956758">Keer dat werwe aan toestelle koppel</translation>
 <translation id="8525306231823319788">Volskerm</translation>
 <translation id="8541410041357371550">Hierdie werf kry jou advertensie-onderwerpe van Chrome af om vir jou relevanter advertensies te wys</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Webkoekies word toegelaat vir <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-werf}other{Webkoekies word toegelaat vir <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-werwe}}</translation>
 <translation id="857943718398505171">Toegelaat (aanbeveel)</translation>
 <translation id="8609465669617005112">Skuif op</translation>
 <translation id="8617611086246832542">Wanneer dit aan is, word die lessenaaraansig van webwerwe gewys. Wanneer dit af is, word die mobielaansig van webwerwe gewys.</translation>
 <translation id="8649036394979866943">Chrome beperk die meeste werwe om derdepartywebkoekies te gebruik om jou blaai-aktiwiteit na te spoor. Besoek instellings om <ph name="BEGIN_LINK" />jou nasporingbeskerming te bestuur<ph name="END_LINK" /></translation>
+<translation id="8676316391139423634">Wanneer dit aan is, kan werwe vra om jou hande na te spoor. Wanneer dit af is, kan werwe nie jou hande naspoor nie.</translation>
 <translation id="8676374126336081632">Vee invoer uit</translation>
 <translation id="8681886425883659911">Advertensies word geblokkeer op werwe wat bekend is daarvoor dat hulle indringerige of misleidende advertensies wys</translation>
 <translation id="868929229000858085">Deursoek jou kontakte</translation>
 <translation id="8712637175834984815">Het dit</translation>
+<translation id="8715862698998036666">Sleep van bo af en swiep van die linker- of regterrand af om volskerm te verlaat.</translation>
 <translation id="8719283222052720129">Skakel toestemming vir <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="8721719390026067591">Wanneer dit aan is, kan werwe vra om Bluetooth-toestelle te soek. Wanneer dit af is, kan werwe nie Bluetooth-toestelle soek nie.</translation>
 <translation id="8725066075913043281">Probeer weer</translation>
 <translation id="8730621377337864115">Gedoen</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 werf word toegelaat}other{# werwe word toegelaat}}</translation>
 <translation id="8751914237388039244">Kies 'n prent</translation>
 <translation id="8800034312320686233">Werk werf nie?</translation>
 <translation id="8801436777607969138">Blokkeer JavaScript vir 'n spesifieke werf.</translation>
@@ -493,12 +524,12 @@
 <translation id="8959122750345127698">Navigasie is onbereikbaar: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Vergeet</translation>
 <translation id="8990043154272859344">Jy sal op alle werwe afgemeld word</translation>
+<translation id="8993853206419610596">Vou alle versoeke uit</translation>
 <translation id="9002538116239926534">Wanneer dit aan is, kan werwe data op jou toestel stoor. Wanneer dit af is, kan werwe nie data op jou toestel stoor nie.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> word toegelaat</translation>
 <translation id="9019902583201351841">Deur jou ouers bestuur</translation>
 <translation id="9039697262778250930">Jy sal dalk by hierdie werwe afgemeld word</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Hierdie werf is in ’n groep wat jou aktiwiteit kan sien. Die groep word gedefinieer deur <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Vee webkoekies uit?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Skakel toestemmings vir <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
@@ -506,5 +537,6 @@
 <translation id="9162462602695099906">Hierdie bladsy is gevaarlik</translation>
 <translation id="930525582205581608">Vergeet hierdie werf?</translation>
 <translation id="947156494302904893">Werwe wat jy besoek, kan verifieer dat jy ’n regte persoon is en nie ’n bot nie</translation>
+<translation id="959682366969460160">Raak georganiseerd</translation>
 <translation id="967624055006145463">Data geberg</translation>
 </translationbundle>

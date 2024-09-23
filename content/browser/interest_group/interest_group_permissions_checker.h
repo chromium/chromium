@@ -33,7 +33,7 @@ namespace content {
 // Groups permissions checks that can be handled by the same .well-known fetch,
 // to avoid redundant fetches.
 //
-// TODO(https://crbug.com/1315805):
+// TODO(crbug.com/40221941):
 // * Consider adding a per-NIK / per-page / per-frame LRU cache. Roundtrip to
 //   the HTTP cache are slow, and we'll likely want to limit the number of
 //   pending operations the renderer sends to the browser process at a time.

@@ -17,6 +17,7 @@
 #include "sandbox/win/src/policy_params.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
+#include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
 
@@ -82,6 +83,15 @@ bool FilesystemDispatcher::SetupService(InterceptionManager* manager,
   }
 }
 
+bool ValidateFileOptions(uint32_t options) {
+  // Validate file options passed to NtCreateFile or NtOpenFile. Blocks use of
+  // rare options. This includes blocking calls with special information in
+  // NtCreateFile()'s ea_buffer (FILE_CONTAINS_EXTENDED_CREATE_INFORMATION).
+  const uint32_t kFileValidOptionFlags =
+      FILE_VALID_OPTION_FLAGS & ~FILE_OPEN_BY_FILE_ID;
+  return (options & kFileValidOptionFlags) == options;
+}
+
 bool FilesystemDispatcher::NtCreateFile(IPCInfo* ipc,
                                         std::wstring* name,
                                         uint32_t attributes,
@@ -90,14 +100,7 @@ bool FilesystemDispatcher::NtCreateFile(IPCInfo* ipc,
                                         uint32_t share_access,
                                         uint32_t create_disposition,
                                         uint32_t create_options) {
-  if ((create_options & FILE_VALID_OPTION_FLAGS) != create_options) {
-    // Do not support brokering calls with special information in
-    // NtCreateFile()'s ea_buffer (FILE_CONTAINS_EXTENDED_CREATE_INFORMATION).
-    ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
-    return false;
-  }
-  if (!PreProcessName(name)) {
-    // The path requested might contain a reparse point.
+  if (!ValidateFileOptions(create_options) || ContainsNulCharacter(*name)) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
@@ -127,8 +130,7 @@ bool FilesystemDispatcher::NtOpenFile(IPCInfo* ipc,
                                       uint32_t desired_access,
                                       uint32_t share_access,
                                       uint32_t open_options) {
-  if (!PreProcessName(name)) {
-    // The path requested might contain a reparse point.
+  if (!ValidateFileOptions(open_options) || ContainsNulCharacter(*name)) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
@@ -158,8 +160,7 @@ bool FilesystemDispatcher::NtQueryAttributesFile(IPCInfo* ipc,
   if (sizeof(FILE_BASIC_INFORMATION) != info->Size())
     return false;
 
-  if (!PreProcessName(name)) {
-    // The path requested might contain a reparse point.
+  if (ContainsNulCharacter(*name)) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
@@ -188,8 +189,7 @@ bool FilesystemDispatcher::NtQueryFullAttributesFile(IPCInfo* ipc,
   if (sizeof(FILE_NETWORK_OPEN_INFORMATION) != info->Size())
     return false;
 
-  if (!PreProcessName(name)) {
-    // The path requested might contain a reparse point.
+  if (ContainsNulCharacter(*name)) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
@@ -231,8 +231,7 @@ bool FilesystemDispatcher::NtSetInformationFile(IPCInfo* ipc,
   std::wstring name;
   name.assign(rename_info->FileName,
               rename_info->FileNameLength / sizeof(rename_info->FileName[0]));
-  if (!PreProcessName(&name)) {
-    // The path requested might contain a reparse point.
+  if (ContainsNulCharacter(name)) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }

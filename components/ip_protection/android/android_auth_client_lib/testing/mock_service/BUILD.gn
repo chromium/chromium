@@ -1,0 +1,32 @@
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("ip_protection_auth_service_mock_java") {
+  sources = [
+    "java/src/org/chromium/components/ip_protection_auth/mock_service/ConstantResponseService.java",
+    "java/src/org/chromium/components/ip_protection_auth/mock_service/CrashingService.java",
+    "java/src/org/chromium/components/ip_protection_auth/mock_service/IpProtectionAuthServiceMock.java",
+    "java/src/org/chromium/components/ip_protection_auth/mock_service/NullBindingService.java",
+  ]
+
+  deps = [
+    "//base:log_java",
+    "//base:tasks_java",
+    "//components/ip_protection:get_proxy_config_proto_java",
+    "//components/ip_protection/android/android_auth_client_lib/common/aidl:ip_protection_aidl_java",
+    "//net/third_party/quiche:blind_sign_auth_proto_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+android_apk("ip_protection_auth_test_service_apk") {
+  testonly = true
+
+  # Used as an additional_apk in test scripts.
+  never_incremental = true
+  apk_name = "IpProtectionAuth"
+  testonly = true
+  android_manifest = "AndroidManifest.xml"
+  deps = [ ":ip_protection_auth_service_mock_java" ]
+}

@@ -11,9 +11,12 @@ import android.view.ViewGroup;
 import androidx.annotation.Px;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -23,11 +26,14 @@ import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.List;
+import java.util.function.BooleanSupplier;
+
 /** This component handles the new, non-popup filling UI. */
 public interface ManualFillingComponent extends BackPressHandler {
     /**
-     * Observers are added with {@link #addObserver} and removed with {@link #removeObserver}.
-     * They are notified when the {@link ManualFillingComponent} is destroyed.
+     * Observers are added with {@link #addObserver} and removed with {@link #removeObserver}. They
+     * are notified when the {@link ManualFillingComponent} is destroyed.
      */
     interface Observer {
         /** Called if the ManualFillingComponent is destroyed. */
@@ -85,20 +91,26 @@ public interface ManualFillingComponent extends BackPressHandler {
     }
 
     /**
-     * Initializes the manual filling component. Calls to this class are NoOps until this method
-     * is called.
-     * @param windowAndroid The window needed to listen to the keyboard and to connect to
-     *         activity.
+     * Initializes the manual filling component. Calls to this class are NoOps until this method is
+     * called.
+     *
+     * @param windowAndroid The window needed to listen to the keyboard and to connect to activity.
+     * @param profile The {@link Profile} associated with the data.
      * @param sheetController A {@link BottomSheetController} to show the UI in.
+     * @param isContextualSearchOpened Whether contextual search panel is opened.
      * @param keyboardDelegate A {@link SoftKeyboardDelegate} to control only the system keyboard.
      * @param backPressManager A {@link BackPressManager} to register {@link BackPressHandler}.
+     * @param edgeToEdgeControllerSupplier A {@link Supplier<EdgeToEdgeController>}.
      * @param barStub The {@link AsyncViewStub} used to inflate the keyboard accessory bar.
      */
     void initialize(
             WindowAndroid windowAndroid,
+            Profile profile,
             BottomSheetController sheetController,
+            BooleanSupplier isContextualSearchOpened,
             SoftKeyboardDelegate keyboardDelegate,
             BackPressManager backPressManager,
+            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             AsyncViewStub sheetStub,
             AsyncViewStub barStub);
 
@@ -153,14 +165,16 @@ public interface ManualFillingComponent extends BackPressHandler {
     /**
      * Registers a provider, to provide autofill suggestions for the keyboard accessory bar. Call
      * {@link PropertyProvider#notifyObservers(Object)} to fill or update the suggestions.
+     *
      * @param autofillProvider The {@link PropertyProvider} providing autofill suggestions.
      * @param delegate The {@link AutofillDelegate} to call for interaction with the suggestions.
      */
     void registerAutofillProvider(
-            PropertyProvider<AutofillSuggestion[]> autofillProvider, AutofillDelegate delegate);
+            PropertyProvider<List<AutofillSuggestion>> autofillProvider, AutofillDelegate delegate);
 
     /**
      * Signals that the accessory has permission to show.
+     *
      * @param waitForKeyboard signals if the keyboard is requested.
      */
     void show(boolean waitForKeyboard);
@@ -234,9 +248,14 @@ public interface ManualFillingComponent extends BackPressHandler {
     int getKeyboardExtensionHeight();
 
     /**
-     * Will force the accessory to show when the keyboard is shown.
-     * TODO(crbug.com/1385400): Ideally this would live in a test utility like
-     * ManualFillingTestHelper.
+     * Will force the accessory to show when the keyboard is shown. TODO(crbug.com/40879203):
+     * Ideally this would live in a test utility like ManualFillingTestHelper.
      */
     void forceShowForTesting();
+
+    /**
+     * Returns a supplier for {@link AccessorySheetVisualStateProvider} that can be observed to be
+     * notified of changes to the visual state of the accessory sheel.
+     */
+    ObservableSupplier<AccessorySheetVisualStateProvider> getAccessorySheetVisualStateProvider();
 }

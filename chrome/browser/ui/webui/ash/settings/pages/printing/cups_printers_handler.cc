@@ -211,7 +211,7 @@ void SetPpdReference(const Printer::PpdReference& ppd_ref,
   } else if (!ppd_ref.effective_make_and_model.empty()) {
     info->Set("ppdRefEffectiveMakeAndModel", ppd_ref.effective_make_and_model);
   } else {  // Must be autoconf, shouldn't be possible
-    NOTREACHED() << "Succeeded in PPD matching without emm";
+    NOTREACHED_IN_MIGRATION() << "Succeeded in PPD matching without emm";
   }
 }
 
@@ -372,17 +372,13 @@ void CupsPrintersHandler::RegisterMessages() {
 void CupsPrintersHandler::OnJavascriptAllowed() {
   DCHECK(!printers_manager_observation_.IsObserving());
   printers_manager_observation_.Observe(printers_manager_.get());
-  if (base::FeatureList::IsEnabled(::features::kLocalPrinterObserving)) {
-    DCHECK(!local_printers_observation_.IsObserving());
-    local_printers_observation_.Observe(printers_manager_.get());
-  }
+  DCHECK(!local_printers_observation_.IsObserving());
+  local_printers_observation_.Observe(printers_manager_.get());
 }
 
 void CupsPrintersHandler::OnJavascriptDisallowed() {
   printers_manager_observation_.Reset();
-  if (base::FeatureList::IsEnabled(::features::kLocalPrinterObserving)) {
-    local_printers_observation_.Reset();
-  }
+  local_printers_observation_.Reset();
 }
 
 void CupsPrintersHandler::SetWebUIForTest(content::WebUI* web_ui) {
@@ -576,8 +572,11 @@ void CupsPrintersHandler::WriteAndDisplayPpdFile(
   const base::FilePath downloads_path =
       DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
           ->DownloadPath();
+  // To make sure an appropriate filename is created, remove any dir separators.
+  std::string sanitized_name = printer_name;
+  base::ReplaceChars(sanitized_name, "/", "_", &sanitized_name);
   const base::FilePath ppd_file_path_base =
-      downloads_path.Append(printer_name).AddExtension("ppd");
+      downloads_path.Append(sanitized_name).AddExtension("ppd");
 
   // Use USER_BLOCKING here since the user is expecting a new web page to load
   // after clicking the View PPD link.
@@ -620,19 +619,19 @@ void CupsPrintersHandler::HandleRemoveCupsPrinter(
 
 void CupsPrintersHandler::HandleGetPrinterInfo(const base::Value::List& args) {
   if (args.empty() || !args[0].is_string()) {
-    NOTREACHED() << "Expected request for a promise";
+    NOTREACHED_IN_MIGRATION() << "Expected request for a promise";
     return;
   }
   const std::string& callback_id = args[0].GetString();
 
   if (args.size() < 2u) {
-    NOTREACHED() << "Dictionary missing";
+    NOTREACHED_IN_MIGRATION() << "Dictionary missing";
     return;
   }
 
   const base::Value& printer_value = args[1];
   if (!printer_value.is_dict()) {
-    NOTREACHED() << "Dictionary missing";
+    NOTREACHED_IN_MIGRATION() << "Dictionary missing";
     return;
   }
   const base::Value::Dict& printer_dict = printer_value.GetDict();
@@ -642,7 +641,7 @@ void CupsPrintersHandler::HandleGetPrinterInfo(const base::Value::List& args) {
   const std::string* printer_address =
       printer_dict.FindString("printerAddress");
   if (!printer_address) {
-    NOTREACHED() << "Address missing";
+    NOTREACHED_IN_MIGRATION() << "Address missing";
     return;
   }
 
@@ -658,7 +657,7 @@ void CupsPrintersHandler::HandleGetPrinterInfo(const base::Value::List& args) {
   const std::string* printer_protocol =
       printer_dict.FindString("printerProtocol");
   if (!printer_protocol) {
-    NOTREACHED() << "Protocol missing";
+    NOTREACHED_IN_MIGRATION() << "Protocol missing";
     return;
   }
 
@@ -902,7 +901,7 @@ void CupsPrintersHandler::AddOrReconfigurePrinter(const base::Value::List& args,
   } else {
     // TODO(https://crbug.com/738514): Support PPD guessing for non-autoconf
     // printers. i.e. !autoconf && !manufacturer.empty() && !model.empty()
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "A configuration option must have been selected to add a printer";
   }
 
@@ -962,7 +961,7 @@ void CupsPrintersHandler::OnAddedOrEditedPrinterCommon(
       PRINTER_LOG(ERROR) << ResultCodeToMessage(result_code);
       break;
     case PrinterSetupResult::kComponentUnavailable:
-      NOTREACHED() << ResultCodeToMessage(result_code);
+      NOTREACHED_IN_MIGRATION() << ResultCodeToMessage(result_code);
       break;
   }
   // Log an event that tells us this printer setup failed, so we can get
@@ -1080,7 +1079,7 @@ void CupsPrintersHandler::HandleSelectPPDFile(const base::Value::List& args) {
   file_type_info.extensions.push_back({"ppd.gz"});
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(), downloads_path,
-      &file_type_info, 0, FILE_PATH_LITERAL(""), owning_window, nullptr);
+      &file_type_info, 0, FILE_PATH_LITERAL(""), owning_window);
 }
 
 void CupsPrintersHandler::ResolveManufacturersDone(
@@ -1118,8 +1117,7 @@ void CupsPrintersHandler::ResolvePrintersDone(
 }
 
 void CupsPrintersHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                       int index,
-                                       void* params) {
+                                       int index) {
   DCHECK(!webui_callback_id_.empty());
 
   select_file_dialog_ = nullptr;
@@ -1136,7 +1134,7 @@ void CupsPrintersHandler::FileSelected(const ui::SelectedFileInfo& file,
                      weak_factory_.GetWeakPtr(), file.path()));
 }
 
-void CupsPrintersHandler::FileSelectionCanceled(void* params) {
+void CupsPrintersHandler::FileSelectionCanceled() {
   select_file_dialog_ = nullptr;
 }
 
@@ -1221,8 +1219,6 @@ void CupsPrintersHandler::OnPrintersChanged(
 }
 
 void CupsPrintersHandler::OnLocalPrintersUpdated() {
-  CHECK(base::FeatureList::IsEnabled(::features::kLocalPrinterObserving));
-
   const std::vector<chromeos::Printer> printers =
       printers_manager_->GetPrinters(PrinterClass::kSaved);
   base::Value::List printers_as_values =
@@ -1529,7 +1525,6 @@ void CupsPrintersHandler::HandleOpenScanningApp(const base::Value::List& args) {
 
 void CupsPrintersHandler::HandleRequestPrinterStatus(
     const base::Value::List& args) {
-  CHECK(features::IsPrinterSettingsPrinterStatusEnabled());
   AllowJavascript();
   CHECK_EQ(2U, args.size());
   const std::string& callback_id = args[0].GetString();

@@ -14,7 +14,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/pickle.h"
 #include "build/build_config.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/encrypt_decrypt_intrface.h"
 #include "components/password_manager/core/browser/password_store/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_store/password_notes_table.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
@@ -22,7 +24,7 @@
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/browser/password_store/statistics_table.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 
@@ -30,13 +32,15 @@
 #include "base/gtest_prod_util.h"
 #endif
 
+namespace affiliations {
+class SQLTableBuilder;
+}  // namespace affiliations
+
 namespace syncer {
 class MetadataBatch;
 }
 
 namespace password_manager {
-
-class SQLTableBuilder;
 
 extern const int kCurrentVersionNumber;
 extern const int kCompatibleVersionNumber;
@@ -44,17 +48,32 @@ extern const int kCompatibleVersionNumber;
 // Interface to the database storage of login information, intended as a helper
 // for PasswordStore on platforms that need internal storage of some or all of
 // the login information.
-class LoginDatabase {
+class LoginDatabase : public EncryptDecryptInterface {
  public:
-  // If a non-null `is_empty_cb` is passed, it's called to signal whether the
-  // database is empty, i.e. without any logins *or* blocklists. The call
-  // happens when initializing the database and when adding/removing entries,
-  // regardless of success.
+  struct LoginDatabaseEmptinessState {
+    // True if the login database has 0 passwords stored.
+    bool no_login_found = true;
+    // True if the database has autofillable credentials. Used to decide whether
+    // password suggestions can be displayed via manual fallbacks. Not
+    // autofillable entries are: blocklisted entries, federated credentials and
+    // username-only credentials.
+    bool autofillable_credentials_exist = false;
+
+    friend bool operator==(const LoginDatabaseEmptinessState&,
+                           const LoginDatabaseEmptinessState&) = default;
+  };
+
+  using IsEmptyCallback =
+      base::RepeatingCallback<void(LoginDatabaseEmptinessState)>;
+  using DeletingUndecryptablePasswordsEnabled =
+      base::StrongAlias<class DeletingUndecryptablePasswordsEnabledTag, bool>;
+  using OnUndecryptablePasswordsRemoved =
+      base::RepeatingCallback<void(password_manager::IsAccountStore)>;
+
   LoginDatabase(const base::FilePath& db_path,
                 IsAccountStore is_account_store,
-                const base::RepeatingCallback<void(bool)>& is_empty_cb =
-                    base::NullCallback());
-
+                DeletingUndecryptablePasswordsEnabled can_delete =
+                    DeletingUndecryptablePasswordsEnabled(true));
   LoginDatabase(const LoginDatabase&) = delete;
   LoginDatabase& operator=(const LoginDatabase&) = delete;
 
@@ -69,7 +88,9 @@ class LoginDatabase {
 
   // Actually creates/opens the database. If false is returned, no other method
   // should be called.
-  virtual bool Init();
+  virtual bool Init(
+      OnUndecryptablePasswordsRemoved on_undecryptable_passwords_removed,
+      std::unique_ptr<os_crypt_async::Encryptor> encryptor);
 
   // Reports metrics regarding inaccessible passwords and bubble usages to UMA.
   void ReportMetrics();
@@ -160,7 +181,7 @@ class LoginDatabase {
   // whether further use of this login database will succeed is unspecified.
   bool DeleteAndRecreateDatabaseFile();
 
-  bool IsEmpty();
+  LoginDatabaseEmptinessState IsEmpty();
 
   // On MacOS, it deletes all logins from the database that cannot be decrypted
   // when encryption key from Keychain is available. If the Keychain is locked,
@@ -179,6 +200,18 @@ class LoginDatabase {
   void RollbackTransaction();
   bool CommitTransaction();
 
+  // `is_empty_cb`is called to signal whether the database is empty (i.e.
+  // without any logins *or* blocklists) and whether there are any autofillable
+  // logins. The call happens when initializing the database and when
+  // adding/removing entries, regardless of success.
+  void SetIsEmptyCb(IsEmptyCallback is_empty_cb);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  void SetIsUserDataDirPolicySet(bool is_set) {
+    is_user_data_dir_policy_set_ = is_set;
+  }
+#endif
+
   StatisticsTable& stats_table() { return stats_table_; }
   InsecureCredentialsTable& insecure_credentials_table() {
     return insecure_credentials_table_;
@@ -189,37 +222,27 @@ class LoginDatabase {
     return password_sync_metadata_store_;
   }
 
-  // Result values for encryption/decryption actions.
-  enum EncryptionResult {
-    // Success.
-    ENCRYPTION_RESULT_SUCCESS,
-    // Failure for a specific item (e.g., the encrypted value was manually
-    // moved from another machine, and can't be decrypted on this machine).
-    // This is presumed to be a permanent failure.
-    ENCRYPTION_RESULT_ITEM_FAILURE,
-    // A service-level failure (e.g., on a platform using a keyring, the keyring
-    // is temporarily unavailable).
-    // This is presumed to be a temporary failure.
-    ENCRYPTION_RESULT_SERVICE_FAILURE,
-  };
+  // After `were_undecryptable_logins_deleted_` is used by the
+  // `PasswordSyncBridge` it should be cleared to avoid unnecessary sync calls.
+  void clear_were_undecryptable_logins_deleted() {
+    were_undecryptable_logins_deleted_ = false;
+  }
 
-  // Encrypts plain_text, setting the value of cipher_text and returning true if
-  // successful, or returning false and leaving cipher_text unchanged if
-  // encryption fails (e.g., if the underlying OS encryption system is
-  // temporarily unavailable).
-  [[nodiscard]] static EncryptionResult EncryptedString(
-      const std::u16string& plain_text,
-      std::string* cipher_text);
-
-  // Decrypts cipher_text, setting the value of plain_text and returning true if
-  // successful, or returning false and leaving plain_text unchanged if
-  // decryption fails (e.g., if the underlying OS encryption system is
-  // temporarily unavailable).
-  [[nodiscard]] static EncryptionResult DecryptedString(
-      const std::string& cipher_text,
-      std::u16string* plain_text);
+  // Returns whether there were undecryptable logins present in the login db and
+  // if they were successfully removed.
+  std::optional<bool> were_undecryptable_logins_deleted() const {
+    return were_undecryptable_logins_deleted_;
+  }
 
  private:
+  // EncryptDecryptInterface implementation.
+  [[nodiscard]] EncryptionResult EncryptedString(
+      const std::u16string& plain_text,
+      std::string* cipher_text) const override;
+  [[nodiscard]] EncryptionResult DecryptedString(
+      const std::string& cipher_text,
+      std::u16string* plain_text) const override;
+
   struct PrimaryKeyAndPassword;
   class SyncMetadataStore : public PasswordStoreSync::MetadataStore {
    public:
@@ -231,42 +254,42 @@ class LoginDatabase {
 
     // Test-only variant of the private function with a similar name.
     std::unique_ptr<sync_pb::EntityMetadata>
-    GetSyncEntityMetadataForStorageKeyForTest(syncer::ModelType model_type,
+    GetSyncEntityMetadataForStorageKeyForTest(syncer::DataType data_type,
                                               const std::string& storage_key);
 
    private:
-    // Reads all the stored sync entities metadata for |model_type| in a
+    // Reads all the stored sync entities metadata for |data_type| in a
     // MetadataBatch. Returns nullptr in case of failure. This is currently used
     // only for passwords.
     std::unique_ptr<syncer::MetadataBatch> GetAllSyncEntityMetadata(
-        syncer::ModelType model_type);
+        syncer::DataType data_type);
 
-    // Reads sync entity data for an individual |model_type| and entity
+    // Reads sync entity data for an individual |data_type| and entity
     // identified by |storage_key|. Returns null if no entry is found or an
     // error occurred.
     std::unique_ptr<sync_pb::EntityMetadata> GetSyncEntityMetadataForStorageKey(
-        syncer::ModelType model_type,
+        syncer::DataType data_type,
         const std::string& storage_key);
 
-    // Reads the stored ModelTypeState for |model_type|. Returns nullptr in case
+    // Reads the stored DataTypeState for |data_type|. Returns nullptr in case
     // of failure. This is currently used only for passwords.
-    std::unique_ptr<sync_pb::ModelTypeState> GetModelTypeState(
-        syncer::ModelType model_type);
+    std::unique_ptr<sync_pb::DataTypeState> GetDataTypeState(
+        syncer::DataType data_type);
 
     // PasswordStoreSync::MetadataStore implementation.
     std::unique_ptr<syncer::MetadataBatch> GetAllSyncMetadata(
-        syncer::ModelType model_type) override;
-    void DeleteAllSyncMetadata(syncer::ModelType model_type) override;
-    bool UpdateEntityMetadata(syncer::ModelType model_type,
+        syncer::DataType data_type) override;
+    void DeleteAllSyncMetadata(syncer::DataType data_type) override;
+    bool UpdateEntityMetadata(syncer::DataType data_type,
                               const std::string& storage_key,
                               const sync_pb::EntityMetadata& metadata) override;
-    bool ClearEntityMetadata(syncer::ModelType model_type,
+    bool ClearEntityMetadata(syncer::DataType data_type,
                              const std::string& storage_key) override;
-    bool UpdateModelTypeState(
-        syncer::ModelType model_type,
-        const sync_pb::ModelTypeState& model_type_state) override;
+    bool UpdateDataTypeState(
+        syncer::DataType data_type,
+        const sync_pb::DataTypeState& data_type_state) override;
 
-    bool ClearModelTypeState(syncer::ModelType model_type) override;
+    bool ClearDataTypeState(syncer::DataType data_type) override;
     void SetPasswordDeletionsHaveSyncedCallback(
         base::RepeatingCallback<void(bool)> callback) override;
     bool HasUnsyncedPasswordDeletions() override;
@@ -325,7 +348,7 @@ class LoginDatabase {
 
   // Initializes all the *_statement_ data members with appropriate SQL
   // fragments based on |builder|.
-  void InitializeStatementStrings(const SQLTableBuilder& builder);
+  void InitializeStatementStrings(const affiliations::SQLTableBuilder& builder);
 
   // Returns either kProfileStore or kAccountStore depending on the value of
   // `is_account_store_`.
@@ -355,7 +378,15 @@ class LoginDatabase {
 
   const base::FilePath db_path_;
   const IsAccountStore is_account_store_;
-  const base::RepeatingCallback<void(bool)> is_empty_cb_;
+  IsEmptyCallback is_empty_cb_ = base::NullCallback();
+
+  // `on_undecryptable_passwords_removed_`is called to signal whether user
+  // interacted with the kClearUndecryptablePasswords experiment. It is needed
+  // to ensure that experiment groups stay balanced. This callback will be
+  // deleted after a successful rollout.
+  // TODO(b/40286735): Remove after this feature is launched.
+  OnUndecryptablePasswordsRemoved on_undecryptable_passwords_removed_ =
+      base::NullCallback();
 
   mutable sql::Database db_;
   sql::MetaTable meta_table_;
@@ -363,6 +394,12 @@ class LoginDatabase {
   InsecureCredentialsTable insecure_credentials_table_;
   PasswordNotesTable password_notes_table_;
   SyncMetadataStore password_sync_metadata_store_{&db_};
+  std::unique_ptr<os_crypt_async::Encryptor> encryptor_;
+
+  std::optional<bool> were_undecryptable_logins_deleted_;
+  bool is_user_data_dir_policy_set_ = false;
+  DeletingUndecryptablePasswordsEnabled
+      is_deleting_undecryptable_logins_enabled_by_policy_;
 
   // These cached strings are used to build SQL statements.
   std::string add_statement_;

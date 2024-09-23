@@ -22,6 +22,7 @@
 #include "cc/paint/skottie_mru_resource_provider.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/modules/skottie/include/Skottie.h"
 #include "third_party/skia/modules/skottie/include/SkottieProperty.h"
@@ -346,7 +347,8 @@ class SkottieWrapperImpl : public SkottieWrapper {
                 .setPropertyObserver(property_manager_)
                 .setFontManager(skia::DefaultFontMgr())
                 .setResourceProvider(skresources::CachingResourceProvider::Make(
-                    mru_resource_provider))
+                    skresources::DataURIResourceProviderProxy::Make(
+                        mru_resource_provider)))
                 .setMarkerObserver(marker_store_)
                 .make(reinterpret_cast<const char*>(data.data()), data.size())),
         raw_data_(std::move(raw_data)),
@@ -391,7 +393,7 @@ class SkottieWrapperImpl : public SkottieWrapper {
 }  // namespace
 
 // static
-scoped_refptr<SkottieWrapper> SkottieWrapper::CreateSerializable(
+scoped_refptr<SkottieWrapper> SkottieWrapper::UnsafeCreateSerializable(
     std::vector<uint8_t> data) {
   base::span<const uint8_t> data_span(data);
   return base::WrapRefCounted(
@@ -399,7 +401,7 @@ scoped_refptr<SkottieWrapper> SkottieWrapper::CreateSerializable(
 }
 
 // static
-scoped_refptr<SkottieWrapper> SkottieWrapper::CreateNonSerializable(
+scoped_refptr<SkottieWrapper> SkottieWrapper::UnsafeCreateNonSerializable(
     base::span<const uint8_t> data) {
   return base::WrapRefCounted(
       new SkottieWrapperImpl(data,

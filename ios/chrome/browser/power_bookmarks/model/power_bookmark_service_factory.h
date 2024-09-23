@@ -7,16 +7,20 @@
 
 #import "base/memory/singleton.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace power_bookmarks {
 class PowerBookmarkService;
 }
 
-// Factory to create one PowerBookmarkService per browser state.
+// Factory to create one PowerBookmarkService per profile.
 class PowerBookmarkServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  static power_bookmarks::PowerBookmarkService* GetForProfile(
+      ProfileIOS* profile);
+  // Deprecated: use GetForProfile(...).
   static power_bookmarks::PowerBookmarkService* GetForBrowserState(
-      web::BrowserState* state);
+      ProfileIOS* profile);
   static PowerBookmarkServiceFactory* GetInstance();
 
   PowerBookmarkServiceFactory(const PowerBookmarkServiceFactory&) = delete;
@@ -38,4 +42,4 @@ class PowerBookmarkServiceFactory : public BrowserStateKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
 };
 
-#endif  // CHROME_BROWSER_POWER_BOOKMARKS_POWER_BOOKMARK_SERVICE_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_POWER_BOOKMARKS_MODEL_POWER_BOOKMARK_SERVICE_FACTORY_H_

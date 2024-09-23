@@ -8,6 +8,11 @@
 // correct rate.  We always pass in a very large destination buffer with the
 // expectation that FillBuffer() will fill as much as it can but no more.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/audio_renderer_algorithm.h"
 
 #include <stddef.h>
@@ -171,7 +176,7 @@ class AudioRendererAlgorithmTest : public testing::Test {
             1, 1, frame_size, kFrameSize, kNoTimestamp);
         break;
       default:
-        NOTREACHED() << "Unrecognized format " << sample_format_;
+        NOTREACHED_IN_MIGRATION() << "Unrecognized format " << sample_format_;
     }
     return buffer;
   }
@@ -859,7 +864,7 @@ TEST_F(AudioRendererAlgorithmTest, WsolaSpeedup) {
 
 TEST_F(AudioRendererAlgorithmTest, FillBufferOffset) {
   Initialize();
-  // Pad the queue capacity so fill requests for all rates bellow can be fully
+  // Pad the queue capacity so fill requests for all rates below can be fully
   // satisfied.
   algorithm_.IncreasePlaybackThreshold();
 
@@ -1124,7 +1129,7 @@ TEST_F(AudioRendererAlgorithmTest, ClampLatencyHint) {
 
   const base::TimeDelta kDefaultMax = base::Seconds(3);
   // Verify "full" and "adequate" thresholds increased, but to a known max well
-  // bellow the hinted value.
+  // below the hinted value.
   EXPECT_GT(algorithm_.QueueCapacity(), default_capacity);
   FillAlgorithmQueueUntilAdequate();
   EXPECT_EQ(BufferedTime(), kDefaultMax);

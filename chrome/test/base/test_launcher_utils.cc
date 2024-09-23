@@ -19,6 +19,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "components/os_crypt/sync/os_crypt_switches.h"
+#include "components/password_manager/core/browser/password_manager_switches.h"
 #include "content/public/common/content_switches.h"
 #include "ui/display/display_switches.h"
 
@@ -55,13 +56,14 @@ void PrepareBrowserCommandLineForTests(base::CommandLine* command_line) {
       wm::switches::kWindowAnimationsDisabled);
 #endif
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX)
   // Don't use the native password stores on Linux since they may
   // prompt for additional UI during tests and cause test failures or
   // timeouts.  Win, Mac and ChromeOS don't look at the kPasswordStore
   // switch.
-  if (!command_line->HasSwitch(switches::kPasswordStore))
-    command_line->AppendSwitchASCII(switches::kPasswordStore, "basic");
+  if (!command_line->HasSwitch(password_manager::kPasswordStore)) {
+    command_line->AppendSwitchASCII(password_manager::kPasswordStore, "basic");
+  }
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -88,20 +90,6 @@ void PrepareBrowserCommandLineForBrowserTests(base::CommandLine* command_line,
 
   if (open_about_blank_on_launch && command_line->GetArgs().empty())
     command_line->AppendArg(url::kAboutBlankURL);
-}
-
-void RemoveCommandLineSwitch(const base::CommandLine& in_command_line,
-                             const std::string& switch_to_remove,
-                             base::CommandLine* out_command_line) {
-  const base::CommandLine::SwitchMap& switch_map =
-      in_command_line.GetSwitches();
-  for (auto i = switch_map.begin(); i != switch_map.end(); ++i) {
-    const std::string& switch_name = i->first;
-    if (switch_name == switch_to_remove)
-      continue;
-
-    out_command_line->AppendSwitchNative(switch_name, i->second);
-  }
 }
 
 bool CreateUserDataDir(base::ScopedTempDir* temp_dir) {

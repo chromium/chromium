@@ -136,7 +136,7 @@ class BufferRequester
   std::unique_ptr<DecoderBufferProviderImpl<ConfigType>> buffer_provider_;
   BufferProviderRequestCB buffer_request_cb_;
 
-  const raw_ptr<Client, ExperimentalRenderer> client_;
+  const raw_ptr<Client> client_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   mojo::Remote<TMojoRemoteType> remote_;

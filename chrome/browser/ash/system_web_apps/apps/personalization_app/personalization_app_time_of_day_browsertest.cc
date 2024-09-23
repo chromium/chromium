@@ -40,12 +40,13 @@
 #include "chrome/browser/ash/wallpaper_handlers/mock_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 
@@ -112,11 +113,8 @@ class PersonalizationAppTimeOfDayBrowserTest
       public testing::WithParamInterface<TimeOfDayTestParams> {
  public:
   PersonalizationAppTimeOfDayBrowserTest() {
-    std::vector<base::test::FeatureRef> enabled_features =
-        personalization_app::GetTimeOfDayEnabledFeatures();
-    enabled_features.emplace_back(
-        features::kTimeOfDayWallpaperForcedAutoSchedule);
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
+    scoped_feature_list_.InitWithFeatures(
+        personalization_app::GetTimeOfDayEnabledFeatures(), {});
     base::Time start_time = StartTime();
     clock_.SetNow(start_time);
     tick_clock_.SetNowTicks(base::TimeTicks() + (start_time - base::Time()));
@@ -314,7 +312,7 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppTimeOfDayBrowserTest,
     WallpaperChangedWaiter waiter(loop.QuitClosure());
     web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"personalizationTestApi.selectTimeOfDayWallpaper();",
-        base::DoNothing());
+        base::DoNothing(), content::ISOLATED_WORLD_ID_GLOBAL);
     loop.Run();
   }
 

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<script type="module">
+import { check_digital_credential_api_availability } from './helper.js';
+
+async function test() {
+  const request_succeeded = await check_digital_credential_api_availability();
+  window.parent.postMessage({ type: 'availability-result', enabled: request_succeeded }, '*');
+}
+
+test();
+</script>

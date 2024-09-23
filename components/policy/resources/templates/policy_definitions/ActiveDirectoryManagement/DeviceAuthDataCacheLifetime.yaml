@@ -15,7 +15,6 @@ features:
   dynamic_refresh: true
 owners:
 - fsandrade@chromium.org
-- file://chrome/browser/ash/authpolicy/OWNERS
 schema:
   maximum: 9999
   minimum: 0
@@ -25,3 +24,4 @@ supported_on:
 tags:
 - admin-sharing
 type: int
+generate_device_proto: False

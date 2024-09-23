@@ -27,6 +27,8 @@ class NearbyShareLogger : public NearbySharingService::Observer {
                          float progress_complete) override;
   void OnTransferCompleted(const ShareTarget& share_target,
                            TransferMetadata::Status status) override;
+  void OnInitialMedium(const ShareTarget& share_target,
+                       nearby::connections::mojom::Medium medium) override;
   void OnBandwidthUpgrade(const ShareTarget& share_target,
                           nearby::connections::mojom::Medium medium) override;
 };

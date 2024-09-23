@@ -36,17 +36,6 @@ settings-collapse-radio-button:not(:first-of-type) {
   --settings-collapse-separator-line: var(--cr-separator-line);
 }
 
-.header {
-  align-items: center;
-  column-gap: 16px;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  outline: none;
-  padding: 24px 0 16px 0;
-}
-
 .header-phase2 {
   align-items: center;
   display: flex;
@@ -55,17 +44,8 @@ settings-collapse-radio-button:not(:first-of-type) {
   padding: 24px 0 16px 0;
 }
 
-.header-label {
-  align-self: normal;
-  color: var(--cr-primary-text-color);
-  flex: 1;
-  font-size: 123%;  /* Should be 16px when 100% is 13px. */
-  font-weight: 400;
-  padding-bottom: 0;
-  padding-top: 0;
-}
-
 .header-label-phase2 {
+  animation: fade-in var(--privacy-guide-animation-duration);
   align-self: center;
   color: var(--cr-primary-text-color);
   font-size: 138%;  /* Should be 18px when 100% is 13px. */
@@ -89,16 +69,12 @@ settings-collapse-radio-button:not(:first-of-type) {
   }
 }
 
-:host-context([is-privacy-guide-v2]) .headline,
-:host-context([is-privacy-guide-v2]) .cr-secondary-text,
-:host-context([is-privacy-guide-v2]) .header-phase2 picture,
-:host-context([is-privacy-guide-v2]) .fragment-content {
+.headline,
+.cr-secondary-text,
+.header-phase2 picture,
+.fragment-content {
   animation: fade-in var(--privacy-guide-animation-duration),
       slide-in 450ms;
-}
-
-:host-context([is-privacy-guide-v2]) .header-label-phase2 {
-  animation: fade-in var(--privacy-guide-animation-duration);
 }
 
 @media (prefers-color-scheme: dark) {

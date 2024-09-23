@@ -9,11 +9,13 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
-#include "chrome/android/chrome_jni_headers/ChildAccountService_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/ChildAccountService_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -41,7 +43,7 @@ void ReauthenticateChildAccount(
 
   JNIEnv* env = AttachCurrentThread();
   Java_ChildAccountService_reauthenticateChildAccount(
-      env, window_android->GetJavaObject(), ConvertUTF8ToJavaString(env, email),
+      env, window_android->GetJavaObject(), email,
       reinterpret_cast<jlong>(callback_copy.release()));
 }
 

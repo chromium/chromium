@@ -15,12 +15,14 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
-#include "components/aggregation_service/features.h"
-#include "components/aggregation_service/parsing_utils.h"
+#include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
+#include "components/attribution_reporting/attribution_scopes_set.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
@@ -34,41 +36,6 @@ namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
-constexpr char kAggregationCoordinatorOrigin[] =
-    "aggregation_coordinator_origin";
-constexpr char kAggregatableDeduplicationKeys[] =
-    "aggregatable_deduplication_keys";
-constexpr char kAggregatableTriggerData[] = "aggregatable_trigger_data";
-constexpr char kAggregatableValues[] = "aggregatable_values";
-constexpr char kEventTriggerData[] = "event_trigger_data";
-
-base::expected<std::optional<SuitableOrigin>, TriggerRegistrationError>
-ParseAggregationCoordinator(const base::Value* value) {
-  // The default value is used for backward compatibility prior to this
-  // attribute being added, but ideally this would invalidate the registration
-  // if other aggregatable fields were present.
-  if (!value) {
-    return std::nullopt;
-  }
-
-  const std::string* str = value->GetIfString();
-  if (!str) {
-    return base::unexpected(
-        TriggerRegistrationError::kAggregationCoordinatorWrongType);
-  }
-
-  std::optional<url::Origin> aggregation_coordinator =
-      aggregation_service::ParseAggregationCoordinator(*str);
-  if (!aggregation_coordinator.has_value()) {
-    return base::unexpected(
-        TriggerRegistrationError::kAggregationCoordinatorUnknownValue);
-  }
-  auto aggregation_coordinator_origin =
-      SuitableOrigin::Create(*aggregation_coordinator);
-  DCHECK(aggregation_coordinator_origin.has_value());
-  return *aggregation_coordinator_origin;
-}
-
 template <typename T>
 void SerializeListIfNotEmpty(base::Value::Dict& dict,
                              std::string_view key,
@@ -77,7 +44,7 @@ void SerializeListIfNotEmpty(base::Value::Dict& dict,
     return;
   }
 
-  base::Value::List list;
+  auto list = base::Value::List::with_capacity(vec.size());
   for (const auto& value : vec) {
     list.Append(value.ToJson());
   }
@@ -110,62 +77,111 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
   return vec;
 }
 
+bool ContributionsFilteringIdsFitWithinMaxBytes(
+    const std::vector<AggregatableValues>& aggregatable_values,
+    AggregatableFilteringIdsMaxBytes max_bytes) {
+  for (const AggregatableValues& values : aggregatable_values) {
+    for (const std::pair<std::string, AggregatableValuesValue>& value :
+         values.values()) {
+      if (!max_bytes.CanEncompass(value.second.filtering_id())) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 void RecordTriggerRegistrationError(TriggerRegistrationError error) {
-  static_assert(
-      TriggerRegistrationError::kMaxValue ==
-          TriggerRegistrationError::
-              kTriggerContextIdInvalidSourceRegistrationTimeConfig,
-      "Bump version of Conversions.TriggerRegistrationError9 histogram.");
-  base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError9", error);
+  base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError11",
+                                error);
 }
 
-// static
-base::expected<TriggerRegistration, TriggerRegistrationError>
-TriggerRegistration::Parse(base::Value::Dict dict) {
+namespace {
+
+base::expected<TriggerRegistration, TriggerRegistrationError> ParseDict(
+    base::Value::Dict dict) {
   TriggerRegistration registration;
+
+  ASSIGN_OR_RETURN(
+      registration.aggregation_coordinator_origin,
+      ParseAggregationCoordinator(dict).transform_error([](ParseError) {
+        return TriggerRegistrationError::kAggregationCoordinatorValueInvalid;
+      }));
+
+  ASSIGN_OR_RETURN(registration.aggregatable_trigger_config,
+                   AggregatableTriggerConfig::Parse(dict));
 
   ASSIGN_OR_RETURN(registration.filters, FilterPair::FromJSON(dict));
 
-  ASSIGN_OR_RETURN(
-      registration.aggregatable_dedup_keys,
-      ParseList<AggregatableDedupKey>(
-          dict.Find(kAggregatableDeduplicationKeys),
-          TriggerRegistrationError::kAggregatableDedupKeyListWrongType,
-          &AggregatableDedupKey::FromJSON));
+  ASSIGN_OR_RETURN(registration.aggregatable_dedup_keys,
+                   ParseList<AggregatableDedupKey>(
+                       dict.Find(kAggregatableDeduplicationKeys),
+                       TriggerRegistrationError::kAggregatableDedupKeyWrongType,
+                       &AggregatableDedupKey::FromJSON));
 
   ASSIGN_OR_RETURN(registration.event_triggers,
                    ParseList<EventTriggerData>(
                        dict.Find(kEventTriggerData),
-                       TriggerRegistrationError::kEventTriggerDataListWrongType,
+                       TriggerRegistrationError::kEventTriggerDataWrongType,
                        &EventTriggerData::FromJSON));
 
   ASSIGN_OR_RETURN(
       registration.aggregatable_trigger_data,
       ParseList<AggregatableTriggerData>(
           dict.Find(kAggregatableTriggerData),
-          TriggerRegistrationError::kAggregatableTriggerDataListWrongType,
+          TriggerRegistrationError::kAggregatableTriggerDataWrongType,
           &AggregatableTriggerData::FromJSON));
 
   ASSIGN_OR_RETURN(
       registration.aggregatable_values,
       AggregatableValues::FromJSON(dict.Find(kAggregatableValues)));
 
-  if (base::FeatureList::IsEnabled(
-          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
-    ASSIGN_OR_RETURN(
-        registration.aggregation_coordinator_origin,
-        ParseAggregationCoordinator(dict.Find(kAggregationCoordinatorOrigin)));
+  if (base::FeatureList::IsEnabled(features::kAttributionScopes)) {
+    ASSIGN_OR_RETURN(registration.attribution_scopes,
+                     AttributionScopesSet::FromJSON(dict));
   }
 
   registration.debug_key = ParseDebugKey(dict);
   registration.debug_reporting = ParseDebugReporting(dict);
 
-  ASSIGN_OR_RETURN(registration.aggregatable_trigger_config,
-                   AggregatableTriggerConfig::Parse(dict));
+  // Deliberately ignoring errors for now to avoid dropping the registration
+  // from the optional debug reporting feature.
+  if (auto aggregatable_debug_reporting_config =
+          AggregatableDebugReportingConfig::Parse(dict);
+      aggregatable_debug_reporting_config.has_value()) {
+    registration.aggregatable_debug_reporting_config =
+        *std::move(aggregatable_debug_reporting_config);
+  }
+
+  if (!ContributionsFilteringIdsFitWithinMaxBytes(
+          registration.aggregatable_values,
+          registration.aggregatable_trigger_config
+              .aggregatable_filtering_id_max_bytes())) {
+    return base::unexpected(
+        dict.FindList(kAggregatableValues)
+            ? TriggerRegistrationError::kAggregatableValuesListValueInvalid
+            : TriggerRegistrationError::kAggregatableValuesValueInvalid);
+  }
+
+  base::UmaHistogramCounts100("Conversions.ScopesPerTriggerRegistration",
+                              registration.attribution_scopes.scopes().size());
 
   return registration;
+}
+
+}  // namespace
+
+// static
+base::expected<TriggerRegistration, TriggerRegistrationError>
+TriggerRegistration::Parse(base::Value value) {
+  if (base::Value::Dict* dict = value.GetIfDict()) {
+    return ParseDict(std::move(*dict));
+  } else {
+    return base::unexpected(TriggerRegistrationError::kRootWrongType);
+  }
 }
 
 // static
@@ -174,15 +190,9 @@ TriggerRegistration::Parse(std::string_view json) {
   base::expected<TriggerRegistration, TriggerRegistrationError> trigger =
       base::unexpected(TriggerRegistrationError::kInvalidJson);
 
-  std::optional<base::Value> value =
-      base::JSONReader::Read(json, base::JSON_PARSE_RFC);
-
-  if (value) {
-    if (value->is_dict()) {
-      trigger = Parse(std::move(*value).TakeDict());
-    } else {
-      trigger = base::unexpected(TriggerRegistrationError::kRootWrongType);
-    }
+  if (std::optional<base::Value> value =
+          base::JSONReader::Read(json, base::JSON_PARSE_RFC)) {
+    trigger = Parse(*std::move(value));
   }
 
   if (!trigger.has_value()) {
@@ -217,24 +227,31 @@ base::Value::Dict TriggerRegistration::ToJson() const {
   SerializeListIfNotEmpty(dict, kAggregatableTriggerData,
                           aggregatable_trigger_data);
 
-  if (!aggregatable_values.values().empty()) {
-    dict.Set(kAggregatableValues, aggregatable_values.ToJson());
-  }
+  SerializeListIfNotEmpty(dict, kAggregatableValues, aggregatable_values);
 
   SerializeDebugKey(dict, debug_key);
 
   SerializeDebugReporting(dict, debug_reporting);
 
-  if (base::FeatureList::IsEnabled(
-          aggregation_service::kAggregationServiceMultipleCloudProviders) &&
-      aggregation_coordinator_origin.has_value()) {
+  if (aggregation_coordinator_origin.has_value()) {
     dict.Set(kAggregationCoordinatorOrigin,
              aggregation_coordinator_origin->Serialize());
   }
 
   aggregatable_trigger_config.Serialize(dict);
 
+  aggregatable_debug_reporting_config.Serialize(dict);
+
+  if (base::FeatureList::IsEnabled(features::kAttributionScopes)) {
+    attribution_scopes.SerializeForTrigger(dict);
+  }
   return dict;
+}
+
+bool TriggerRegistration::IsValid() const {
+  return ContributionsFilteringIdsFitWithinMaxBytes(
+      aggregatable_values,
+      aggregatable_trigger_config.aggregatable_filtering_id_max_bytes());
 }
 
 }  // namespace attribution_reporting

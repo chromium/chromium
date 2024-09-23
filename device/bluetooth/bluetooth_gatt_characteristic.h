@@ -79,7 +79,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristic {
   typedef uint32_t Permissions;
 
   // Bluetooth Spec Vol 3, Part G, 3.3.3.3 Client Characteristic Configuration.
-  enum class NotificationType { kNotification = 1, kIndication };
+  enum class NotificationType : uint16_t { kNone, kNotification, kIndication };
 
   // The ErrorCallback is used by methods to asynchronously report errors.
   using ErrorCallback =

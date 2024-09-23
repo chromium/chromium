@@ -105,17 +105,6 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
       globalPolicy_: Object,
 
       /**
-       * Return true if hotspot feature flag is enabled.
-       */
-      isHotspotFeatureEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isHotspotEnabled') &&
-              loadTimeData.getBoolean('isHotspotEnabled');
-        },
-      },
-
-      /**
        * Return true if instant hotspot rebrand feature flag is enabled
        */
       isInstantHotspotRebrandEnabled_: {
@@ -136,7 +125,6 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
   private crosHotspotConfig_: CrosHotspotConfigInterface;
   private crosHotspotConfigObserverReceiver_: CrosHotspotConfigObserverReceiver;
   private globalPolicy_: GlobalPolicy|undefined;
-  private isHotspotFeatureEnabled_: boolean;
   private isInstantHotspotRebrandEnabled_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
   private networkStateLists_:
@@ -152,21 +140,16 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
 
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
-
-    if (this.isHotspotFeatureEnabled_) {
-      this.crosHotspotConfig_ = getHotspotConfig();
-      this.crosHotspotConfigObserverReceiver_ =
-          new CrosHotspotConfigObserverReceiver(this);
-    }
+    this.crosHotspotConfig_ = getHotspotConfig();
+    this.crosHotspotConfigObserverReceiver_ =
+        new CrosHotspotConfigObserverReceiver(this);
   }
 
   override ready(): void {
     super.ready();
 
-    if (this.isHotspotFeatureEnabled_) {
-      this.crosHotspotConfig_.addObserver(
-          this.crosHotspotConfigObserverReceiver_.$.bindNewPipeAndPassRemote());
-    }
+    this.crosHotspotConfig_.addObserver(
+        this.crosHotspotConfigObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
   override connectedCallback(): void {
@@ -176,10 +159,7 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
 
     // Fetch global policies.
     this.onPoliciesApplied(/*userhash=*/ '');
-
-    if (this.isHotspotFeatureEnabled_) {
-      this.onHotspotInfoChanged();
-    }
+    this.onHotspotInfoChanged();
   }
 
   async onHotspotInfoChanged(): Promise<void> {
@@ -394,7 +374,7 @@ export class NetworkSummaryElement extends NetworkSummaryElementBase {
    * Return whether hotspot row should be shown in network summary.
    */
   private shouldShowHotspotSummary_(): boolean {
-    if (!this.isHotspotFeatureEnabled_ || !this.hotspotInfo) {
+    if (!this.hotspotInfo) {
       return false;
     }
     // Hide the hotspot summary row if the device doesn't support hotspot.

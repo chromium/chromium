@@ -7,6 +7,7 @@
 #include <string_view>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
@@ -34,13 +35,17 @@ crosapi::mojom::EditorPanelPresetQueryCategory ToEditorPanelQueryCategory(
       return crosapi::mojom::EditorPanelPresetQueryCategory::kFormalize;
     case orca::mojom::PresetTextQueryType::kEmojify:
       return crosapi::mojom::EditorPanelPresetQueryCategory::kEmojify;
+    case orca::mojom::PresetTextQueryType::kProofread:
+      return crosapi::mojom::EditorPanelPresetQueryCategory::kProofread;
   }
 }
 
 crosapi::mojom::EditorPanelMode GetEditorPanelMode(EditorMode editor_mode) {
   switch (editor_mode) {
-    case EditorMode::kBlocked:
-      return crosapi::mojom::EditorPanelMode::kBlocked;
+    case EditorMode::kHardBlocked:
+      return crosapi::mojom::EditorPanelMode::kHardBlocked;
+    case EditorMode::kSoftBlocked:
+      return crosapi::mojom::EditorPanelMode::kSoftBlocked;
     case EditorMode::kConsentNeeded:
       return crosapi::mojom::EditorPanelMode::kPromoCard;
     case EditorMode::kRewrite:
@@ -74,44 +79,48 @@ void EditorPanelManager::BindReceiver(
 }
 
 void EditorPanelManager::BindEditorClient() {
-  if (!editor_client_remote_.is_bound()) {
-    delegate_->BindEditorClient(
-      editor_client_remote_.BindNewPipeAndPassReceiver());
-
-    editor_client_remote_.reset_on_disconnect();
+  if (editor_client_remote_.is_bound() &&
+      !base::FeatureList::IsEnabled(ash::features::kOrcaServiceConnection)) {
+    return;
   }
+
+  editor_client_remote_.reset();
+  delegate_->BindEditorClient(
+      editor_client_remote_.BindNewPipeAndPassReceiver());
+  editor_client_remote_.reset_on_disconnect();
 }
 
 void EditorPanelManager::GetEditorPanelContext(
     GetEditorPanelContextCallback callback) {
-  // Cache the current text context, so that any input fields that are part of
-  // the editor panel do not interfere with the context.
-  delegate_->CacheContext();
-
-  // TODO(b/295059934): Get the panel mode from the editor mediator.
   const auto editor_panel_mode = GetEditorPanelMode(delegate_->GetEditorMode());
 
-  // TODO(b/295059934): Bind the editor client before getting the preset text
-  // queries.
-  if (editor_panel_mode == crosapi::mojom::EditorPanelMode::kRewrite &&
+  if (editor_panel_mode != crosapi::mojom::EditorPanelMode::kSoftBlocked &&
+      editor_panel_mode != crosapi::mojom::EditorPanelMode::kHardBlocked &&
       editor_client_remote_.is_bound()) {
     editor_client_remote_->GetPresetTextQueries(
         base::BindOnce(&EditorPanelManager::OnGetPresetTextQueriesResult,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  } else {
-    auto context = crosapi::mojom::EditorPanelContext::New();
-    context->editor_panel_mode = editor_panel_mode;
-    std::move(callback).Run(std::move(context));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       editor_panel_mode));
+    return;
   }
+
+  auto context = crosapi::mojom::EditorPanelContext::New();
+  context->editor_panel_mode = editor_panel_mode;
+  context->consent_status_settled =
+      delegate_->GetConsentStatus() != ConsentStatus::kUnset;
+  std::move(callback).Run(std::move(context));
 }
 
-void EditorPanelManager::OnPromoCardDismissed() {
-}
+void EditorPanelManager::OnPromoCardDismissed() {}
 
 void EditorPanelManager::OnPromoCardDeclined() {
   delegate_->OnPromoCardDeclined();
   delegate_->GetMetricsRecorder()->LogEditorState(
       EditorStates::kPromoCardExplicitDismissal);
+}
+
+void EditorPanelManager::OnConsentRejected() {
+  delegate_->ProcessConsentAction(ConsentAction::kDecline);
 }
 
 void EditorPanelManager::StartEditingFlow() {
@@ -132,9 +141,12 @@ void EditorPanelManager::StartEditingFlowWithFreeform(const std::string& text) {
 
 void EditorPanelManager::OnGetPresetTextQueriesResult(
     GetEditorPanelContextCallback callback,
+    crosapi::mojom::EditorPanelMode panel_mode,
     std::vector<orca::mojom::PresetTextQueryPtr> queries) {
   auto context = crosapi::mojom::EditorPanelContext::New();
-  context->editor_panel_mode = crosapi::mojom::EditorPanelMode::kRewrite;
+  context->editor_panel_mode = panel_mode;
+  context->consent_status_settled =
+      delegate_->GetConsentStatus() != ConsentStatus::kUnset;
   for (const auto& query : queries) {
     context->preset_text_queries.push_back(ToEditorPanelQuery(query));
   }
@@ -149,8 +161,7 @@ bool EditorPanelManager::IsEditorMenuVisible() const {
   return is_editor_menu_visible_;
 }
 
-void EditorPanelManager::LogEditorMode(
-    crosapi::mojom::EditorPanelMode mode) {
+void EditorPanelManager::LogEditorMode(crosapi::mojom::EditorPanelMode mode) {
   EditorOpportunityMode opportunity_mode =
       delegate_->GetEditorOpportunityMode();
   EditorMetricsRecorder* logger = delegate_->GetMetricsRecorder();
@@ -166,7 +177,8 @@ void EditorPanelManager::LogEditorMode(
     logger->LogEditorState(EditorStates::kNativeUIShown);
   }
 
-  if (mode == crosapi::mojom::EditorPanelMode::kBlocked) {
+  if (mode == crosapi::mojom::EditorPanelMode::kHardBlocked ||
+      mode == crosapi::mojom::EditorPanelMode::kSoftBlocked) {
     logger->LogEditorState(EditorStates::kBlocked);
     for (EditorBlockedReason blocked_reason : delegate_->GetBlockedReasons()) {
       logger->LogEditorState(ToEditorStatesMetric(blocked_reason));
@@ -176,6 +188,51 @@ void EditorPanelManager::LogEditorMode(
   if (mode == crosapi::mojom::EditorPanelMode::kPromoCard) {
     logger->LogEditorState(EditorStates::kPromoCardImpression);
   }
+}
+
+void EditorPanelManager::BindEditorObserver(
+    mojo::PendingRemote<crosapi::mojom::EditorObserver>
+        pending_observer_remote) {
+  observer_remotes_.Add(std::move(pending_observer_remote));
+}
+
+void EditorPanelManager::AddObserver(EditorPanelManager::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void EditorPanelManager::RemoveObserver(
+    EditorPanelManager::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void EditorPanelManager::NotifyEditorModeChanged(const EditorMode& mode) {
+  for (const mojo::Remote<crosapi::mojom::EditorObserver>& obs :
+       observer_remotes_) {
+    obs->OnEditorPanelModeChanged(GetEditorPanelMode(mode));
+  }
+  for (EditorPanelManager::Observer& obs : observers_) {
+    obs.OnEditorModeChanged(mode);
+  }
+}
+
+void EditorPanelManager::RequestCacheContext() {
+  delegate_->CacheContext();
+}
+
+void EditorPanelManager::OnConsentApproved() {
+  delegate_->ProcessConsentAction(ConsentAction::kApprove);
+}
+
+void EditorPanelManager::OnMagicBoostPromoCardDeclined() {
+  // Reject consent and follow the normal workflow similar to when Orca's promo
+  // card is declined.
+  OnConsentRejected();
+  OnPromoCardDeclined();
+}
+
+void EditorPanelManager::SetEditorClientForTesting(
+    mojo::PendingRemote<orca::mojom::EditorClient> client_for_testing) {
+  editor_client_remote_.Bind(std::move(client_for_testing));
 }
 
 }  // namespace ash::input_method

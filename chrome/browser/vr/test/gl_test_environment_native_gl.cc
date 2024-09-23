@@ -7,7 +7,6 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
-#include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_test_helper.h"
 
@@ -20,12 +19,6 @@ GlTestEnvironment::GlTestEnvironment(const gfx::Size frame_buffer_size) {
   context_ = gl::init::CreateGLContext(nullptr, surface_.get(),
                                        gl::GLContextAttribs());
   context_->MakeCurrent(surface_.get());
-
-  if (gl::GLContext::GetCurrent()->GetVersionInfo()->IsAtLeastGL(3, 3)) {
-    // To avoid glGetVertexAttribiv(0, ...) failing.
-    glGenVertexArraysOES(1, &vao_);
-    glBindVertexArrayOES(vao_);
-  }
 
   frame_buffer_ = gl::GLTestHelper::SetupFramebuffer(
       frame_buffer_size.width(), frame_buffer_size.height());

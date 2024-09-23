@@ -55,6 +55,13 @@ TEST(TrustedVaultServerConstantsTest, GetSecurityDomainByName) {
   EXPECT_THAT(GetSecurityDomainByName(""), Eq(std::nullopt));
 }
 
+TEST(TrustedVaultServerConstantsTest, GetSecurityDomainName) {
+  EXPECT_THAT(GetSecurityDomainName(SecurityDomainId::kChromeSync),
+              Eq("chromesync"));
+  EXPECT_THAT(GetSecurityDomainName(SecurityDomainId::kPasskeys),
+              Eq("hw_protected"));
+}
+
 }  // namespace
 
 }  // namespace trusted_vault

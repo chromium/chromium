@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -47,62 +50,51 @@ public class BaseCarouselSuggestionViewUnitTest {
     @Before
     public void setUp() {
         mView.setSelectionControllerForTesting(mController);
-        mView.setItemDecorationForTesting(mDecoration);
-
-        assertEquals(mDecoration, mView.getItemDecoration());
+        mView.setItemDecoration(mDecoration);
         clearInvocations(mView, mAdapter, mController, mChild);
     }
 
     @Test
-    public void onKeyDown_selectNextItem_ltr() {
-        doReturn(View.LAYOUT_DIRECTION_LTR).when(mView).getLayoutDirection();
+    public void onKeyDown_selectNextItem() {
+        var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB);
 
-        var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT);
-        assertTrue(event.dispatch(mView));
+        doReturn(true).when(mController).selectNextItem();
+        assertTrue(event.dispatch(mView, null, null));
 
-        verify(mView).onKeyDown(event.getKeyCode(), event);
-        verify(mController).selectNextItem();
-
-        verifyNoMoreInteractions(mController);
+        doReturn(false).when(mController).selectNextItem();
+        assertFalse(event.dispatch(mView, null, null));
     }
 
     @Test
-    public void onKeyDown_selectNextItem_rtl() {
-        doReturn(View.LAYOUT_DIRECTION_RTL).when(mView).getLayoutDirection();
+    public void setItemDecoration_nullDecorations() {
+        // One decoration installed by the setUp routine.
+        assertEquals(1, mView.getItemDecorationCount());
 
-        var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_LEFT);
-        assertTrue(event.dispatch(mView));
+        // Reset current decoration to null.
+        mView.setItemDecoration(null);
+        assertEquals(0, mView.getItemDecorationCount());
 
-        verify(mView).onKeyDown(event.getKeyCode(), event);
-        verify(mController).selectNextItem();
-
-        verifyNoMoreInteractions(mController);
+        // One decoration re-installed.
+        mView.setItemDecoration(mDecoration);
+        assertEquals(1, mView.getItemDecorationCount());
     }
 
     @Test
-    public void onKeyDown_selectPrevItem_ltr() {
-        doReturn(View.LAYOUT_DIRECTION_LTR).when(mView).getLayoutDirection();
+    public void onKeyDown_selectPrevItem() {
+        var event =
+                new KeyEvent(
+                        0,
+                        0,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_TAB,
+                        0,
+                        KeyEvent.META_SHIFT_ON);
 
-        var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_LEFT);
-        assertTrue(event.dispatch(mView));
+        doReturn(true).when(mController).selectPreviousItem();
+        assertTrue(event.dispatch(mView, null, null));
 
-        verify(mView).onKeyDown(event.getKeyCode(), event);
-        verify(mController).selectPreviousItem();
-
-        verifyNoMoreInteractions(mController);
-    }
-
-    @Test
-    public void onKeyDown_selectPrevItem_rtl() {
-        doReturn(View.LAYOUT_DIRECTION_RTL).when(mView).getLayoutDirection();
-
-        var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT);
-        assertTrue(event.dispatch(mView));
-
-        verify(mView).onKeyDown(event.getKeyCode(), event);
-        verify(mController).selectPreviousItem();
-
-        verifyNoMoreInteractions(mController);
+        doReturn(false).when(mController).selectPreviousItem();
+        assertFalse(event.dispatch(mView, null, null));
     }
 
     @Test
@@ -160,8 +152,18 @@ public class BaseCarouselSuggestionViewUnitTest {
     }
 
     @Test
-    public void onMeasure_updatesElementSpacingWhenSizeChanges() {
+    public void onMeasure_invalidateItemDecorationsWhenTheyChange() {
+        doReturn(true).when(mDecoration).notifyViewSizeChanged(anyBoolean(), anyInt(), anyInt());
         mView.onMeasure(0, 0);
-        verify(mDecoration).notifyViewMeasuredSizeChanged();
+        // Must be called if the decorations report changes.
+        verify(mView).invalidateItemDecorations();
+    }
+
+    @Test
+    public void onMeasure_dontInvalidateItemDecorationsWhenTheyDontChange() {
+        doReturn(false).when(mDecoration).notifyViewSizeChanged(anyBoolean(), anyInt(), anyInt());
+        mView.onMeasure(0, 0);
+        // Must be called if the decorations report changes.
+        verify(mView, never()).invalidateItemDecorations();
     }
 }

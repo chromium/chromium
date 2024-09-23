@@ -9,7 +9,9 @@
           "ShowLogoutButtonInTray": true
         },
         "prefs": {
-          "show_logout_button_in_tray": {}
+          "show_logout_button_in_tray": {
+            "value": true
+          }
         }
       }
     ]

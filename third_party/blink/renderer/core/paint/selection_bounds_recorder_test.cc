@@ -43,14 +43,15 @@ TEST_F(SelectionBoundsRecorderTest, SelectMultiline) {
   LocalFrame* local_frame = GetDocument().GetFrame();
   LoadAhem(*local_frame);
 
-  local_frame->Selection().SetSelectionAndEndTyping(
+  local_frame->Selection().SetSelection(
       SelectionSample::SetSelectionText(GetDocument().body(),
                                         R"HTML(
           <style>
             div { white-space:pre; font-family: Ahem; }
           </style>
           <div>f^oo\nbar\nb|az</div>
-      )HTML"));
+      )HTML"),
+      SetSelectionOptions());
 
   local_frame->Selection().SetHandleVisibleForTesting();
   local_frame->GetPage()->GetFocusController().SetFocusedFrame(local_frame);
@@ -74,7 +75,7 @@ TEST_F(SelectionBoundsRecorderTest, SelectMultiline) {
 TEST_F(SelectionBoundsRecorderTest, SelectMultilineEmptyStartEnd) {
   LocalFrame* local_frame = GetDocument().GetFrame();
   LoadAhem(*local_frame);
-  local_frame->Selection().SetSelectionAndEndTyping(
+  local_frame->Selection().SetSelection(
       SelectionSample::SetSelectionText(GetDocument().body(),
                                         R"HTML(
           <style>
@@ -82,7 +83,8 @@ TEST_F(SelectionBoundsRecorderTest, SelectMultilineEmptyStartEnd) {
             * { font: 10px/1 Ahem; }
           </style>
           <div>foo^<br>bar<br>|baz</div>
-      )HTML"));
+      )HTML"),
+      SetSelectionOptions());
   local_frame->Selection().SetHandleVisibleForTesting();
   local_frame->GetPage()->GetFocusController().SetFocusedFrame(local_frame);
   UpdateAllLifecyclePhasesForTest();
@@ -109,7 +111,7 @@ TEST_F(SelectionBoundsRecorderTest, InvalidationForEmptyBounds) {
   // Set a selection that has empty start and end in separate paint chunks.
   // We'll move these empty endpoints into the middle div and make sure
   // everything is invalidated/re-painted/recorded correctly.
-  local_frame->Selection().SetSelectionAndEndTyping(
+  local_frame->Selection().SetSelection(
       SelectionSample::SetSelectionText(GetDocument().body(),
                                         R"HTML(
           <style>
@@ -118,7 +120,8 @@ TEST_F(SelectionBoundsRecorderTest, InvalidationForEmptyBounds) {
             * { font: 10px/1 Ahem; }
           </style>
           <div>foo^</div><div id=target>bar</div><div>|baz</div>
-      )HTML"));
+      )HTML"),
+      SetSelectionOptions());
   local_frame->Selection().SetHandleVisibleForTesting();
   local_frame->GetPage()->GetFocusController().SetFocusedFrame(local_frame);
   UpdateAllLifecyclePhasesForTest();
@@ -143,14 +146,15 @@ TEST_F(SelectionBoundsRecorderTest, InvalidationForEmptyBounds) {
   EXPECT_EQ(end.edge_end, gfx::Point(0, 10));
 
   // Move the selection around the start and end of the second div.
-  local_frame->Selection().SetSelectionAndEndTyping(
+  local_frame->Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .Collapse(Position(GetElementById("target")->firstChild(), 0))
           .Extend(Position(GetElementById("target")->firstChild(), 3))
-          .Build());
+          .Build(),
+      SetSelectionOptions());
 
   // Ensure the handle will be visible for the next paint (previous call to
-  // SetSelectionAndEndTyping will clear the bit).
+  // SetSelection will clear the bit).
   local_frame->Selection().SetHandleVisibleForTesting();
 
   UpdateAllLifecyclePhasesForTest();

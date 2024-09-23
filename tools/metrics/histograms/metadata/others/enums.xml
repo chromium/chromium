@@ -1,0 +1,249 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AuctionReportingIdField">
+  <int value="0" label="None"/>
+  <int value="1" label="InterestGroupName"/>
+  <int value="2" label="BuyerReportingId"/>
+  <int value="3" label="BuyerAndSellerReportingId"/>
+</enum>
+
+<enum name="HappinessTrackingSurvey">
+  <summary>Possible survey states and answers for each question.</summary>
+  <int value="1" label="Survey Triggered"/>
+  <int value="2" label="Survey Loaded"/>
+  <int value="3" label="Survey Completed"/>
+  <int value="8" label="Survey Question Answer Parse Error"/>
+  <int value="9" label="Survey Unknown State"/>
+  <int value="101" label="Question 1 - Answer 1"/>
+  <int value="102" label="Question 1 - Answer 2"/>
+  <int value="103" label="Question 1 - Answer 3"/>
+  <int value="104" label="Question 1 - Answer 4"/>
+  <int value="105" label="Question 1 - Answer 5"/>
+  <int value="106" label="Question 1 - Answer 6"/>
+  <int value="107" label="Question 1 - Answer 7"/>
+  <int value="108" label="Question 1 - Answer 8"/>
+  <int value="109" label="Question 1 - Answer 9"/>
+  <int value="110" label="Question 1 - Answer 10"/>
+  <int value="201" label="Question 2 - Answer 1"/>
+  <int value="202" label="Question 2 - Answer 2"/>
+  <int value="203" label="Question 2 - Answer 3"/>
+  <int value="204" label="Question 2 - Answer 4"/>
+  <int value="205" label="Question 2 - Answer 5"/>
+  <int value="206" label="Question 2 - Answer 6"/>
+  <int value="207" label="Question 2 - Answer 7"/>
+  <int value="208" label="Question 2 - Answer 8"/>
+  <int value="209" label="Question 2 - Answer 9"/>
+  <int value="210" label="Question 2 - Answer 10"/>
+  <int value="301" label="Question 3 - Answer 1"/>
+  <int value="302" label="Question 3 - Answer 2"/>
+  <int value="303" label="Question 3 - Answer 3"/>
+  <int value="304" label="Question 3 - Answer 4"/>
+  <int value="305" label="Question 3 - Answer 5"/>
+  <int value="306" label="Question 3 - Answer 6"/>
+  <int value="307" label="Question 3 - Answer 7"/>
+  <int value="308" label="Question 3 - Answer 8"/>
+  <int value="309" label="Question 3 - Answer 9"/>
+  <int value="310" label="Question 3 - Answer 10"/>
+  <int value="401" label="Question 4 - Answer 1"/>
+  <int value="402" label="Question 4 - Answer 2"/>
+  <int value="403" label="Question 4 - Answer 3"/>
+  <int value="404" label="Question 4 - Answer 4"/>
+  <int value="405" label="Question 4 - Answer 5"/>
+  <int value="406" label="Question 4 - Answer 6"/>
+  <int value="407" label="Question 4 - Answer 7"/>
+  <int value="408" label="Question 4 - Answer 8"/>
+  <int value="409" label="Question 4 - Answer 9"/>
+  <int value="410" label="Question 4 - Answer 10"/>
+  <int value="501" label="Question 5 - Answer 1"/>
+  <int value="502" label="Question 5 - Answer 2"/>
+  <int value="503" label="Question 5 - Answer 3"/>
+  <int value="504" label="Question 5 - Answer 4"/>
+  <int value="505" label="Question 5 - Answer 5"/>
+  <int value="506" label="Question 5 - Answer 6"/>
+  <int value="507" label="Question 5 - Answer 7"/>
+  <int value="508" label="Question 5 - Answer 8"/>
+  <int value="509" label="Question 5 - Answer 9"/>
+  <int value="510" label="Question 5 - Answer 10"/>
+</enum>
+
+<enum name="RedactionToolCaller">
+  <summary>The caller of the redaction tool.</summary>
+  <int value="1" label="System Logs Uploader"/>
+  <int value="2" label="System Logs Fetcher"/>
+  <int value="3" label="Support Tool"/>
+  <int value="4" label="Error Reporting"/>
+  <int value="5" label="(Obsolete) Feedback Tool. Removed on 5/2024"/>
+  <int value="6" label="(Obsolete) Browser System Logs. Removed on 5/2024"/>
+  <int value="7" label="Unit Tests"/>
+  <int value="8" label="Undetermined"/>
+  <int value="9" label="Unknown"/>
+  <int value="10" label="Crash Tool"/>
+  <int value="11" label="Crash Tool Javascript Errors"/>
+  <int value="12" label="Feedback Tool Hot Rod"/>
+  <int value="13" label="Feedback Tool User Descriptions"/>
+  <int value="14" label="Feedback Tool System Logs"/>
+</enum>
+
+<enum name="RequestWorkletServiceOutcome">
+  <summary>
+    The outcome of AuctionProcessManager::RequestWorkletService().
+  </summary>
+  <int value="0" label="Hit process limit"/>
+  <int value="1" label="Used shared process"/>
+  <int value="2" label="Used existing dedicated process"/>
+  <int value="3" label="Created new dedicated process"/>
+</enum>
+
+<enum name="SalientImageUrlFetchResult">
+  <int value="0" label="Failed to fetch salient image url from network."/>
+  <int value="1" label="A previous network request failed."/>
+  <int value="2" label="Successfully fetched salient image url from network."/>
+  <int value="3" label="Succeessfully got salient image url from local cache."/>
+</enum>
+
+<enum name="SecretPortalKeyProviderInitStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="NoService"/>
+  <int value="2" label="PipeFailed"/>
+  <int value="3" label="InvalidResponseFormat"/>
+  <int value="4" label="ResponsePathMismatch"/>
+  <int value="5" label="PipeReadFailed"/>
+  <int value="6" label="EmptySecret"/>
+  <int value="7" label="NoResponse"/>
+  <int value="8" label="SignalReadFailed"/>
+  <int value="9" label="UserCancelledUnlock"/>
+  <int value="10" label="(Obsolete) DestructedBeforeComplete"/>
+  <int value="11" label="SignalConnectFailed"/>
+  <int value="12" label="SignalParseFailed"/>
+</enum>
+
+<enum name="SilentPushEvent">
+  <int value="0" label="New Silent Push request"/>
+  <int value="1" label="Notification enforcement skipped"/>
+  <int value="2" label="Silent push without notification"/>
+  <int value="3" label="Silent push with generic notification"/>
+</enum>
+
+<!--
+  Names are converted to ASCII before hashing - generate new hashes with:
+  cpp: static_cast<int32_t>(base::HashMetricName(base::WideToASCII(name)))
+  py3: struct.unpack('>i', hashlib.md5(name.encode('utf-8')).digest()[4:8])[0]
+-->
+
+<enum name="WinTroublesomeDllName">
+  <int value="-2136060246" label="ssldivx.dll"/>
+  <int value="-2126469685" label="protector.dll"/>
+  <int value="-2106419917" label="madchook.dll"/>
+  <int value="-2040788942" label="moonsysh.dll"/>
+  <int value="-1914344523" label="babylonchromepi.dll"/>
+  <int value="-1902674913" label="btkeyind.dll"/>
+  <int value="-1831476411" label="imon.dll"/>
+  <int value="-1767746938" label="npggNT.dll"/>
+  <int value="-1755907375" label="prls64.dll"/>
+  <int value="-1654699686" label="mpk.dll"/>
+  <int value="-1605880474" label="acpiz.dll"/>
+  <int value="-1603105999" label="opls64.dll"/>
+  <int value="-1577789031" label="rndlpepperbrowserrecordhelper.dll"/>
+  <int value="-1483143647" label="sahook.dll"/>
+  <int value="-1390739352" label="winstylerthemehelper.dll"/>
+  <int value="-1305539158" label="cooliris.dll"/>
+  <int value="-1228730188" label="wbhelp.dll"/>
+  <int value="-1215828013" label="npdivx32.dll"/>
+  <int value="-1109670284" label="atcuf64.dll"/>
+  <int value="-1093067714" label="pctgmhk.dll"/>
+  <int value="-1081403800" label="esspd.dll"/>
+  <int value="-1029559747" label="akinsofthook32.dll"/>
+  <int value="-996492407" label="wblind.dll"/>
+  <int value="-956625413" label="picrmi64.dll"/>
+  <int value="-851687289" label="pmls64.dll"/>
+  <int value="-775479020" label="sbrige.dll"/>
+  <int value="-714136468" label="rapportnikko.dll"/>
+  <int value="-685636232" label="icdcnl.dll"/>
+  <int value="-629812910" label="fwhook.dll"/>
+  <int value="-570442231" label="npggNT.des"/>
+  <int value="-534417221" label="mdnsnsp.dll"/>
+  <int value="-434631356" label="cmsetac.dll"/>
+  <int value="-432495155" label="radhslib.dll"/>
+  <int value="-287676129" label="guard64.dll"/>
+  <int value="-125421553" label="syncor11.dll"/>
+  <int value="-124260377" label="rlls.dll"/>
+  <int value="-79559580" label="kloehk.dll"/>
+  <int value="-78325637" label="hookprintapis.dll"/>
+  <int value="-52533834" label="rlhook.dll"/>
+  <int value="2882390" label="avcuf64.dll"/>
+  <int value="39638237" label="sdhook32.dll"/>
+  <int value="97128692" label="prntrack.dll"/>
+  <int value="126542371" label="pavhook.dll"/>
+  <int value="175146990" label="dockshellhook.dll"/>
+  <int value="206501686" label="pavshookwow.dll"/>
+  <int value="252722056" label="lawenforcer.dll"/>
+  <int value="575528993" label="icatcdll.dll"/>
+  <int value="617473348" label="radprlib.dll"/>
+  <int value="715053861" label="sguard.dll"/>
+  <int value="722284901" label="ioloHL.dll"/>
+  <int value="783638774" label="pavlsphook.dll"/>
+  <int value="812345817" label="easyhook32.dll"/>
+  <int value="819514643" label="windowsapihookdll32.dll"/>
+  <int value="822115018" label="pctavhook.dll"/>
+  <int value="864947373" label="picrmi32.dll"/>
+  <int value="884293529" label="oawatch.dll"/>
+  <int value="894321503" label="prochook.dll"/>
+  <int value="903913585" label="easyhook64.dll"/>
+  <int value="925866871" label="activedetect64.dll"/>
+  <int value="951683420" label="cplushook.dll"/>
+  <int value="952330710" label="rlls64.dll"/>
+  <int value="965468547" label="systools.dll"/>
+  <int value="1071142858" label="pavshook.dll"/>
+  <int value="1137605502" label="adialhk.dll"/>
+  <int value="1159731816" label="nphooks.dll"/>
+  <int value="1192118800" label="sc2hook.dll"/>
+  <int value="1215761196" label="tfwah.dll"/>
+  <int value="1267111211" label="assistant_x64.dll"/>
+  <int value="1294418200" label="smumhook.dll"/>
+  <int value="1306386228" label="windowsapihookdll64.dll"/>
+  <int value="1326886646" label="smum32.dll"/>
+  <int value="1339459563" label="lvprcinj01.dll"/>
+  <int value="1429888422" label="n64hooks.dll"/>
+  <int value="1485244555" label="pastali32.dll"/>
+  <int value="1495379146" label="avgrsstx.dll"/>
+  <int value="1575369430" label="cmcsyshk.dll"/>
+  <int value="1621941361" label="rooksdol.dll"/>
+  <int value="1648869474" label="hookterminateapis.dll"/>
+  <int value="1650495634" label="activedetect32.dll"/>
+  <int value="1685086961" label="rpchromebrowserrecordhelper.dll"/>
+  <int value="1848200256" label="airfoilinject3.dll"/>
+  <int value="1933769896" label="googledesktopnetwork3.dll"/>
+  <int value="1999347514" label="r3hook.dll"/>
+  <int value="2042034656" label="hookprocesscreation.dll"/>
+  <int value="2068928877" label="libdivx.dll"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

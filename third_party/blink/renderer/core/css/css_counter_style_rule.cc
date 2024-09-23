@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
 
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -27,7 +28,7 @@ CSSCounterStyleRule::~CSSCounterStyleRule() = default;
 String CSSCounterStyleRule::cssText() const {
   StringBuilder result;
   result.Append("@counter-style ");
-  result.Append(name());
+  SerializeIdentifier(name(), result);
   result.Append(" {");
 
   // Note: The exact serialization isn't well specified.
@@ -191,11 +192,9 @@ void CSSCounterStyleRule::SetterInternal(
   CSSStyleSheet* style_sheet = parentStyleSheet();
   auto& context = *MakeGarbageCollected<CSSParserContext>(
       ParserContext(execution_context->GetSecureContextMode()), style_sheet);
-  CSSTokenizer tokenizer(text);
-  auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange token_range(tokens);
+  CSSParserTokenStream stream(text);
   CSSValue* new_value = AtRuleDescriptorParser::ParseAtCounterStyleDescriptor(
-      descriptor_id, token_range, context);
+      descriptor_id, stream, context);
   if (!new_value ||
       !counter_style_rule_->NewValueInvalidOrEqual(descriptor_id, new_value)) {
     return;
@@ -217,12 +216,10 @@ void CSSCounterStyleRule::setName(const ExecutionContext* execution_context,
   CSSStyleSheet* style_sheet = parentStyleSheet();
   auto& context = *MakeGarbageCollected<CSSParserContext>(
       ParserContext(execution_context->GetSecureContextMode()), style_sheet);
-  CSSTokenizer tokenizer(text);
-  auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange token_range(tokens);
+  CSSParserTokenStream stream(text);
   AtomicString name =
-      css_parsing_utils::ConsumeCounterStyleNameInPrelude(token_range, context);
-  if (!name || name == counter_style_rule_->GetName()) {
+      css_parsing_utils::ConsumeCounterStyleNameInPrelude(stream, context);
+  if (!name || name == counter_style_rule_->GetName() || !stream.AtEnd()) {
     return;
   }
 

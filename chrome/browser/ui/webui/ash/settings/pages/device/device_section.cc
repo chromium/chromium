@@ -17,6 +17,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_display_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_keyboard_handler.h"
@@ -30,10 +31,12 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "media/base/media_switches.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
@@ -41,6 +44,10 @@
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/devices/device_data_manager.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash::settings {
 
@@ -704,6 +711,10 @@ bool IsUnifiedDesktopAvailable() {
       ::switches::kEnableUnifiedDesktop);
 }
 
+bool IsDisplayPerformanceSupported() {
+  return ash::features::IsDisplayPerformanceModeEnabled();
+}
+
 bool DoesDeviceSupportAmbientColor() {
   return ash::features::IsAllowAmbientEQEnabled();
 }
@@ -714,8 +725,17 @@ bool IsTouchCalibrationAvailable() {
          display::HasExternalTouchscreenDevice();
 }
 
+bool IsTouchscreenRemappingExperienceAvailable() {
+  return features::IsTouchscreenMappingExperienceEnabled() &&
+         display::HasExternalTouchscreenDevice();
+}
+
 bool IsListAllDisplayModesEnabled() {
   return display::features::IsListAllDisplayModesEnabled();
+}
+
+bool IsExcludeDisplayInMirrorModeEnabled() {
+  return display::features::IsExcludeDisplayInMirrorModeEnabled();
 }
 
 bool IsShowForceRespectUiGainsToggleEnabled() {
@@ -760,6 +780,12 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"fKeyShiftOption", IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION},
       {"fKeyCtrlShiftOption", IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION},
       {"fKeyAltOption", IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION},
+      {"keyboardEnableAutoBrightnessLabel",
+       IDS_SETTINGS_KEYBOARD_AUTO_BRIGHNTESS_ENABLE_LABEL},
+      {"keyboardEnableAutoBrightnessSubLabel",
+       IDS_SETTINGS_KEYBOARD_AUTO_BRIGHNTESS_ENABLE_SUB_LABEL},
+      {"keyboardBrightnessLabel", IDS_SETTINGS_KEYBOARD_BRIGHTNESS_LABEL},
+      {"keyboardColors", IDS_SETTINGS_KEYBOARD_COLORS},
       {"keyboardEnableAutoRepeat", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE},
       {"keyboardEnableAutoRepeatSubLabel",
        IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE_SUB_LABEL},
@@ -781,6 +807,8 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS},
       {"keyboardSendInvertedFunctionKeysDescription",
        IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS_DESCRIPTION},
+      {"splitModifierKeyboardSendInvertedFunctionKeysDescription",
+       IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS_DESCRIPTION},
       {"keyboardShowInputSettings",
        kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_KEYBOARD_SHOW_INPUT_SETTINGS
                         : IDS_SETTINGS_KEYBOARD_SHOW_INPUT_SETTINGS},
@@ -799,7 +827,7 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"remapKeyboardKeysRowLabel", IDS_SETTINGS_KEYBOARD_REMAP_KEYS_ROW_LABEL},
       {"remapKeyboardKeysDescription",
        IDS_SETTINGS_KEYBOARD_REMAP_KEYS_DESCRIPTION},
-      {"showKeyboardShortcutViewer",
+      {"showShortcutCustomizationApp",
        IDS_SETTINGS_KEYBOARD_SHOW_SHORTCUT_VIEWER},
       {"viewAndCustomizeKeyboardShortcut",
        IDS_SETTINGS_KEYBOARD_VIEW_AND_CUSTOMIZE_SHORTCUTS},
@@ -829,8 +857,36 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"perDeviceKeyboardKeyEscape",
        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_ESCAPE},
       {"perDeviceKeyboardKeyMeta", IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_META},
+      {"perDeviceKeyboardKeyFunction",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_FUNCTION},
+      {"openAppLabel", IDS_SETTINGS_PER_DEVICE_OPEN_APP_LABEL},
+      {"installAppLabel", IDS_SETTINGS_PER_DEVICE_INSTALL_APP_LABEL},
+      {"installAppButton", IDS_SETTINGS_PER_DEVICE_INSTALL_APP_BUTTON},
+      {"deviceNameLabel", IDS_SETTINGS_PER_DEVICE_NAME},
+      {"deviceBatteryLabel",
+       IDS_SETTINGS_PER_DEVICE_BATTERY_PERCENTAGE_A11Y_LABEL},
   };
   html_source->AddLocalizedStrings(keyboard_strings);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // For official builds, only add the real string if the feature is enabled.
+  if (Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
+    html_source->AddLocalizedString("perDeviceKeyboardKeyRightAlt",
+                                    IDS_KEYBOARD_RIGHT_ALT_LABEL);
+  } else {
+    html_source->AddLocalizedString(
+        "perDeviceKeyboardKeyRightAlt",
+        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_RIGHT_ALT);
+  }
+#else
+  html_source->AddLocalizedString(
+      "perDeviceKeyboardKeyRightAlt",
+      IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_RIGHT_ALT);
+#endif
+
+  html_source->AddBoolean(
+      "enableModifierSplit",
+      Shell::Get()->keyboard_capability()->IsModifierSplitEnabled());
 
   if (Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()) {
     html_source->AddLocalizedString(
@@ -847,6 +903,9 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
     html_source->AddLocalizedString(
         "keyboardSendFunctionKeysDescription",
         IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT2_DESCRIPTION);
+    html_source->AddLocalizedString(
+        "splitModifierKeyboardSendFunctionKeysDescription",
+        IDS_SETTINGS_SPLIT_MODIFIER_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT_DESCRIPTION);
     html_source->AddLocalizedString("sixPackKeyDeleteSearch",
                                     IDS_SETTINGS_SIX_PACK_KEY_DELETE_LAUNCHER);
     html_source->AddLocalizedString("sixPackKeyHomeSearch",
@@ -953,6 +1012,8 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
       {"audioDeviceUsbLabel", IDS_SETTINGS_AUDIO_DEVICE_USB_LABEL},
       {"audioInputDeviceTitle", IDS_SETTINGS_AUDIO_INPUT_DEVICE_TITLE},
       {"audioInputAllowAGCTitle", IDS_SETTINGS_AUDIO_INPUT_ALLOW_AGC_TITLE},
+      {"audioHfpMicSrTitle", IDS_SETTINGS_AUDIO_HFP_MIC_SR_TITLE},
+      {"audioHfpMicSrDescription", IDS_SETTINGS_AUDIO_HFP_MIC_SR_DESCRIPTION},
       {"audioInputGainTitle", IDS_SETTINGS_AUDIO_INPUT_GAIN_TITLE},
       {"audioInputMuteButtonAriaLabelMuted",
        IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_MUTED},
@@ -962,6 +1023,8 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_NOT_MUTED},
       {"audioInputNoiseCancellationTitle",
        IDS_SETTINGS_AUDIO_INPUT_NOISE_CANCELLATION_TITLE},
+      {"audioInputStyleTransferTitle",
+       IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_TITLE},
       {"audioInputTitle", IDS_SETTINGS_AUDIO_INPUT_TITLE},
       {"audioMutedByPolicyTooltip", IDS_SETTINGS_AUDIO_MUTED_BY_POLICY_TOOLTIP},
       {"audioMutedExternallyTooltip",
@@ -987,6 +1050,11 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
   };
 
   html_source->AddLocalizedStrings(kAudioStrings);
+  html_source->AddString(
+      "audioInputStyleTransferDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_DESCRIPTION,
+          DeviceSection::GetHelpUrlWithBoard(chrome::kVcLearnMoreURL)));
 }
 
 // Mirrors enum of the same name in enums.xml.
@@ -1009,9 +1077,14 @@ DeviceSection::DeviceSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry),
       inputs_subsection_(
           ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? std::make_optional<InputsSection>(profile,
-                                                  search_tag_registry,
-                                                  pref_service)
+              ? std::make_optional<InputsSection>(
+                    profile,
+                    search_tag_registry,
+                    pref_service,
+                    chromeos::features::IsOrcaEnabled()
+                        ? input_method::EditorMediatorFactory::GetInstance()
+                              ->GetForProfile(profile)
+                        : nullptr)
               : std::nullopt),
       power_subsection_(
           !ash::features::IsOsSettingsRevampWayfindingEnabled()
@@ -1128,8 +1201,15 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       ash::features::IsAltClickAndSixPackCustomizationEnabled());
 
   html_source->AddBoolean(
+      "enableKeyboardBacklightControlInSettings",
+      ash::features::IsKeyboardBacklightControlInSettingsEnabled());
+
+  html_source->AddBoolean(
       "enableF11AndF12KeyShortcuts",
       base::FeatureList::IsEnabled(::features::kSupportF11AndF12KeyShortcuts));
+
+  html_source->AddBoolean("enableWelcomeExperience",
+                          ash::features::IsWelcomeExperienceEnabled());
 
   AddDevicePointersStrings(html_source);
   AddDeviceGraphicsTabletStrings(html_source);
@@ -1649,9 +1729,7 @@ void DeviceSection::AddDevicePointersStrings(
       {"mouseSpeed", IDS_SETTINGS_MOUSE_SPEED_LABEL},
       {"cursorSpeed", IDS_SETTINGS_CURSOR_SPEED_LABEL},
       {"pointingStickSpeed", IDS_SETTINGS_POINTING_STICK_SPEED_LABEL},
-      {"mouseSwapButtonsLabel",
-       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_MOUSE_SWAP_BUTTONS_LABEL
-                        : IDS_SETTINGS_MOUSE_SWAP_BUTTONS_LABEL},
+      {"mouseSwapButtonsLabel", IDS_SETTINGS_MOUSE_SWAP_BUTTONS_LABEL},
       {"mouseCursor", IDS_SETTINGS_MOUSE_CURSOR_LABEL},
       {"mouseScrolling", IDS_SETTINGS_MOUSE_SCROLLING_LABEL},
       {"pointingStickPrimaryButton",
@@ -1763,22 +1841,36 @@ void DeviceSection::AddCustomizeButtonsPageStrings(
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_INPUT_CHARACTER_COUNT},
       {"buttonRenamingDialogTitle",
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_TITLE},
+      {"buttonReorderingAriaLabel",
+       IDS_SETTINGS_CUSTOMIZE_BUTTONS_REORDER_ARIA_LABEL},
+      {"buttonReorderingAriaAnnouncement",
+       IDS_SETTINGS_CUSTOMIZE_BUTTONS_REORDER_ARIA_ANNOUNCEMENT},
       {"customizeButtonSubpageDescription",
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_SUBPAGE_DESCRIPTION},
       {"customizeTabletButtonSubpageDescription",
        IDS_SETTINGS_CUSTOMIZE_TABLET_BUTTONS_SUBPAGE_DESCRIPTION},
-      {"customizeMouseButtonsNudgeHeader",
-       IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_NUDGE_HEADER},
-      {"customizeTabletButtonsNudgeHeader",
-       IDS_SETTINGS_CUSTOMIZE_TABLET_BUTTONS_NUDGE_HEADER},
-      {"customizePenButtonsNudgeHeader",
-       IDS_SETTINGS_CUSTOMIZE_PEN_BUTTONS_NUDGE_HEADER},
+      {"customizeMouseButtonsNudgeHeaderWithoutMetadata",
+       IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_NUDGE_HEADER_WITHOUT_METADATA},
+      {"customizeMouseButtonsNudgeHeaderWithMetadata",
+       IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_NUDGE_HEADER_WITH_METADATA},
+      {"customizeTabletButtonsNudgeHeaderWithoutMetadata",
+       IDS_SETTINGS_CUSTOMIZE_TABLET_BUTTONS_NUDGE_HEADER_WITHOUT_METADATA},
+      {"customizeTabletButtonsNudgeHeaderWithMetadata",
+       IDS_SETTINGS_CUSTOMIZE_TABLET_BUTTONS_NUDGE_HEADER_WITH_METADATA},
+      {"customizePenButtonsNudgeHeaderWithoutMetadata",
+       IDS_SETTINGS_CUSTOMIZE_PEN_BUTTONS_NUDGE_HEADER_WITHOUT_METADATA},
+      {"customizePenButtonsNudgeHeaderWithMetadata",
+       IDS_SETTINGS_CUSTOMIZE_PEN_BUTTONS_NUDGE_HEADER_WITH_METADATA},
       {"customizeMouseButtonsTitle",
        IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_TITLE},
       {"disbableOptionLabel", IDS_SETTINGS_DISABLE_OPTION_LABEL},
       {"keyCombinationDialogTitle", IDS_SETTINGS_KEY_COMBINATION_DIALOG_TITLE},
       {"keyCombinationOptionLabel", IDS_SETTINGS_KEY_COMBINATION_OPTION_LABEL},
       {"noRemappingOptionLabel", IDS_SETTINGS_NO_REMAPPING_OPTION_LABEL},
+      {"renameIconLabel", IDS_SETTINGS_CUSTOMIZATION_RENAME_ICON_LABEL},
+      {"buttonRemappingRenamingDialogInputDescription",
+       IDS_SETTINGS_RENAMING_DIALOG_INPUT_DESCRIPTION},
+
   };
   html_source->AddLocalizedStrings(kCustomizeButtonsPageStrings);
   ash::common::AddShortcutInputKeyStrings(html_source);
@@ -1794,6 +1886,15 @@ void DeviceSection::AddDeviceDisplayStrings(
       {"displayAmbientColorSubtitle",
        IDS_SETTINGS_DISPLAY_AMBIENT_COLOR_SUBTITLE},
       {"displayArrangementTitle", IDS_SETTINGS_DISPLAY_ARRANGEMENT_TITLE},
+      {"displayBrightnessLabel", IDS_SETTINGS_DISPLAY_BRIGHTNESS_LABEL},
+      {"displayAutoBrightnessToggleLabel",
+       IDS_SETTINGS_DISPLAY_AUTO_BRIGHTNESS_TOGGLE_LABEL},
+      {"displayAutoBrightnessToggleSubtitle",
+       IDS_SETTINGS_DISPLAY_AUTO_BRIGHTNESS_TOGGLE_SUBTITLE},
+      {"displayExcludeInMirrorModeLabel",
+       IDS_SETTINGS_DISPLAY_EXCLUDE_IN_MIRROR_LABEL},
+      {"displayExcludeInMirrorModeSublabel",
+       IDS_SETTINGS_DISPLAY_EXCLUDE_IN_MIRROR_SUBLABEL},
       {"displayMirror", IDS_SETTINGS_DISPLAY_MIRROR},
       {"displayMirrorDisplayName", IDS_SETTINGS_DISPLAY_MIRROR_DISPLAY_NAME},
       {"displayNightLightLabel", IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_LABEL},
@@ -1811,6 +1912,8 @@ void DeviceSection::AddDeviceDisplayStrings(
        IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_SUNSET_TO_SUNRISE},
       {"displayNightLightGeolocationWarningText",
        IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_GEOLOCATION_WARNING_TEXT},
+      {"displayNightLightGeolocationManagedWarningText",
+       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_GEOLOCATION_MANAGED_WARNING_TEXT},
       {"displayNightLightTemperatureLabel",
        IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEMPERATURE_LABEL},
       {"displayNightLightTempSliderMaxLabel",
@@ -1834,6 +1937,18 @@ void DeviceSection::AddDeviceDisplayStrings(
       {"displayOverscanSubtitle",
        kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_DISPLAY_BOUNDARIES_DESCRIPTION
                         : IDS_SETTINGS_DISPLAY_OVERSCAN_SUBTITLE},
+      {"displayPositionDown", IDS_SETTINGS_DISPLAY_LAYOUT_DONW_A11Y_LABEL},
+      {"displayPositionDownAndLeft",
+       IDS_SETTINGS_DISPLAY_LAYOUT_DONW_AND_LEFT_A11Y_LABEL},
+      {"displayPositionDownAndRight",
+       IDS_SETTINGS_DISPLAY_LAYOUT_DONW_AND_RIGHT_A11Y_LABEL},
+      {"displayPositionLeft", IDS_SETTINGS_DISPLAY_LAYOUT_LEFT_A11Y_LABEL},
+      {"displayPositionRight", IDS_SETTINGS_DISPLAY_LAYOUT_RIGHT_A11Y_LABEL},
+      {"displayPositionUp", IDS_SETTINGS_DISPLAY_LAYOUT_UP_A11Y_LABEL},
+      {"displayPositionUpAndLeft",
+       IDS_SETTINGS_DISPLAY_LAYOUT_UP_AND_LEFT_A11Y_LABEL},
+      {"displayPositionUpAndRight",
+       IDS_SETTINGS_DISPLAY_LAYOUT_UP_AND_RIGHT_A11Y_LABEL},
       {"displayRefreshRateInterlacedMenuItem",
        IDS_SETTINGS_DISPLAY_REFRESH_RATE_INTERLACED_MENU_ITEM},
       {"displayRefreshRateMenuItem",
@@ -1859,6 +1974,8 @@ void DeviceSection::AddDeviceDisplayStrings(
       {"displayScreenExtended", IDS_SETTINGS_DISPLAY_SCREEN_EXTENDED},
       {"displayScreenPrimary", IDS_SETTINGS_DISPLAY_SCREEN_PRIMARY},
       {"displayScreenTitle", IDS_SETTINGS_DISPLAY_SCREEN},
+      {"displayShinyPerformanceLabel",
+       IDS_SETTINGS_DISPLAY_SHINY_PERFORMANCE_LABEL},
       {"displaySizeSliderMaxLabel", IDS_SETTINGS_DISPLAY_ZOOM_SLIDER_MAXIMUM},
       {"displaySizeSliderMinLabel", IDS_SETTINGS_DISPLAY_ZOOM_SLIDER_MINIMUM},
       {"displayTitle", kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_DISPLAY_TITLE
@@ -1867,6 +1984,8 @@ void DeviceSection::AddDeviceDisplayStrings(
        IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TEXT},
       {"displayTouchCalibrationTitle",
        IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TITLE},
+      {"displayTouchMappingText", IDS_SETTINGS_DISPLAY_TOUCH_MAPPING_TEXT},
+      {"displayTouchMappingTitle", IDS_SETTINGS_DISPLAY_TOUCH_MAPPING_TITLE},
       {"displayUnifiedDesktop", IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP},
       {"displayUnifiedDesktopOff", IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP_OFF},
       {"displayUnifiedDesktopOn", IDS_SETTINGS_DISPLAY_UNIFIED_DESKTOP_ON},
@@ -1906,8 +2025,14 @@ void DeviceSection::AddDeviceDisplayStrings(
   html_source->AddBoolean("enableForceRespectUiGainsToggle",
                           IsShowForceRespectUiGainsToggleEnabled());
 
+  html_source->AddBoolean("enableAudioHfpMicSRToggle",
+                          features::IsAudioHFPMicSRToggleEnabled());
+
   html_source->AddBoolean("enableTouchCalibrationSetting",
                           IsTouchCalibrationAvailable());
+
+  html_source->AddBoolean("enableTouchscreenMappingExperience",
+                          IsTouchscreenRemappingExperienceAvailable());
 
   html_source->AddString("invalidDisplayId",
                          base::NumberToString(display::kInvalidDisplayId));
@@ -1919,6 +2044,15 @@ void DeviceSection::AddDeviceDisplayStrings(
   html_source->AddBoolean(
       "allowDisplayAlignmentApi",
       base::FeatureList::IsEnabled(ash::features::kDisplayAlignAssist));
+
+  html_source->AddBoolean("isDisplayPerformanceSupported",
+                          IsDisplayPerformanceSupported());
+
+  html_source->AddBoolean("enableDisplayBrightnessControlInSettings",
+                          features::IsBrightnessControlInSettingsEnabled());
+
+  html_source->AddBoolean("excludeDisplayInMirrorModeEnabled",
+                          IsExcludeDisplayInMirrorModeEnabled());
 }
 
 }  // namespace ash::settings

@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_reporting_settings.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/chromeos/reporting/local_state_reporting_settings.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_delegate_base.h"
 #include "chrome/browser/chromeos/reporting/user_reporting_settings.h"
 #include "chrome/browser/chromeos/reporting/websites/website_usage_observer.h"
@@ -37,10 +38,14 @@ class MetricEventObserverManager;
 class MetricReportQueue;
 class CollectorBase;
 class Sampler;
+class FatalCrashEventsObserver;
+class ChromeFatalCrashEventsObserver;
 
 BASE_DECLARE_FEATURE(kEnableAppEventsObserver);
 BASE_DECLARE_FEATURE(kEnableFatalCrashEventsObserver);
+BASE_DECLARE_FEATURE(kEnableChromeFatalCrashEventsObserver);
 BASE_DECLARE_FEATURE(kEnableRuntimeCountersTelemetry);
+BASE_DECLARE_FEATURE(kEnableKioskVisionTelemetry);
 
 // Class to initialize and start info, event, and telemetry collection and
 // reporting.
@@ -90,6 +95,9 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   // EventDrivenTelemetryCollectorPool:
   std::vector<raw_ptr<CollectorBase, VectorExperimental>>
   GetTelemetryCollectors(MetricEventType event_type) override;
+
+  // Can be nullptr of the feature flag is not enabled.
+  FatalCrashEventsObserver* fatal_crash_events_observer();
 
  private:
   MetricReportingManager(
@@ -286,12 +294,17 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   // Initializes a periodic collector that sends out heartbeat signals.
   void InitKioskHeartbeatTelemetryCollector();
 
+  // Initializes a periodic collector that sends the audience telemetry data
+  // from the Kiosk vision framework.
+  void InitKioskVisionTelemetryCollector();
+
   base::TimeDelta GetUploadDelay() const;
 
   std::vector<raw_ptr<CollectorBase, VectorExperimental>>
   GetTelemetryCollectorsFromSetting(std::string_view setting_name);
 
   CrosReportingSettings reporting_settings_;
+  LocalStateReportingSettings local_state_reporting_settings_;
   std::unique_ptr<UserReportingSettings> user_reporting_settings_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -310,6 +323,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   std::unique_ptr<MetricReportQueue> user_telemetry_report_queue_;
   std::unique_ptr<MetricReportQueue> event_report_queue_;
   std::unique_ptr<MetricReportQueue> crash_event_report_queue_;
+  std::unique_ptr<MetricReportQueue> chrome_crash_event_report_queue_;
   std::unique_ptr<MetricReportQueue> user_event_report_queue_;
   std::unique_ptr<MetricReportQueue> app_event_report_queue_;
   std::unique_ptr<MetricReportQueue> website_event_report_queue_;
@@ -340,6 +354,15 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   std::vector<std::unique_ptr<MetricEventObserverManager>>
       event_observer_managers_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Fatal crash event observer. Life time of this object is owned by
+  // `event_observer_managers_`.
+  raw_ptr<FatalCrashEventsObserver> fatal_crash_events_observer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Chrome fatal crash event observer. Life time of this object is owned by
+  // `event_observer_managers_`.
+  raw_ptr<ChromeFatalCrashEventsObserver> chrome_fatal_crash_events_observer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // App usage observer used to observe and collect app usage reports from the
   // `AppPlatformMetrics` component.

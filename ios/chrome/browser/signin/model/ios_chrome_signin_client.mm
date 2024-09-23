@@ -9,9 +9,7 @@
 #import "components/signin/core/browser/cookie_settings_util.h"
 #import "components/signin/ios/browser/wait_for_network_callback_helper_ios.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/gaia_auth_fetcher_ios.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
@@ -90,7 +88,5 @@ version_info::Channel IOSChromeSigninClient::GetClientChannel() {
   return GetChannel();
 }
 
-void IOSChromeSigninClient::OnPrimaryAccountChangedWithEventSource(
-    signin::PrimaryAccountChangeEvent event_details,
-    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
-        event_source) {}
+void IOSChromeSigninClient::OnPrimaryAccountChanged(
+    signin::PrimaryAccountChangeEvent event_details) {}

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/domain_reliability/util.h"
 
 #include <stddef.h>
@@ -83,10 +88,11 @@ bool GetDomainReliabilityBeaconStatus(
     int http_response_code,
     std::string* beacon_status_out) {
   if (net_error == net::OK) {
-    if (http_response_code >= 400 && http_response_code < 600)
+    if (http_response_code >= 400 && http_response_code < 600) {
       *beacon_status_out = "http.error";
-    else
+    } else {
       *beacon_status_out = "ok";
+    }
     return true;
   }
 
@@ -115,7 +121,7 @@ std::string GetDomainReliabilityProtocol(
     case net::HttpConnectionInfoCoarse::kOTHER:
       return "";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

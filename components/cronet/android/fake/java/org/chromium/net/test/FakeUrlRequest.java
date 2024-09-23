@@ -10,6 +10,7 @@ import androidx.annotation.GuardedBy;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.CronetException;
+import org.chromium.net.ExperimentalUrlRequest;
 import org.chromium.net.InlineExecutionProhibitedException;
 import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.UploadDataProvider;
@@ -24,7 +25,7 @@ import org.chromium.net.impl.JavaUrlRequestUtils.State;
 import org.chromium.net.impl.Preconditions;
 import org.chromium.net.impl.RefCountDelegate;
 import org.chromium.net.impl.RequestFinishedInfoImpl;
-import org.chromium.net.impl.UrlRequestBase;
+import org.chromium.net.impl.UrlRequestUtil;
 import org.chromium.net.impl.UrlResponseInfoImpl;
 
 import java.io.ByteArrayOutputStream;
@@ -33,13 +34,13 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -47,7 +48,7 @@ import java.util.concurrent.RejectedExecutionException;
  * Fake UrlRequest that retrieves responses from the associated FakeCronetController. Used for
  * testing Cronet usage on Android.
  */
-final class FakeUrlRequest extends UrlRequestBase {
+final class FakeUrlRequest extends ExperimentalUrlRequest {
     // Used for logging errors.
     private static final String TAG = FakeUrlRequest.class.getSimpleName();
     // Callback used to report responses to the client.
@@ -75,8 +76,7 @@ final class FakeUrlRequest extends UrlRequestBase {
     private final List<String> mUrlChain = new ArrayList<>();
 
     // The list of HTTP headers used by this request to establish a connection.
-    @GuardedBy("mLock")
-    private final ArrayList<Map.Entry<String, String>> mAllHeadersList = new ArrayList<>();
+    private final List<Map.Entry<String, String>> mAllHeadersList;
 
     // The exception that is thrown by the request. This is the same exception as the one in
     // onFailed
@@ -96,16 +96,14 @@ final class FakeUrlRequest extends UrlRequestBase {
     private byte[] mRequestBody;
 
     // The {@link UploadDataProvider} to retrieve a request body from.
-    @GuardedBy("mLock")
-    private UploadDataProvider mUploadDataProvider;
+    private final UploadDataProvider mUploadDataProvider;
 
     // The executor to call the {@link UploadDataProvider}'s callback methods with.
-    @GuardedBy("mLock")
-    private Executor mUploadExecutor;
+    private final Executor mUploadExecutor;
 
     // The {@link UploadDataSink} for the {@link UploadDataProvider}.
     @GuardedBy("mLock")
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     FakeDataSink mFakeDataSink;
 
     // The {@link UrlResponseInfo} for the current request.
@@ -117,8 +115,7 @@ final class FakeUrlRequest extends UrlRequestBase {
     private ByteBuffer mResponse;
 
     // The HTTP method used by this request to establish a connection.
-    @GuardedBy("mLock")
-    private String mHttpMethod;
+    private final String mHttpMethod;
 
     // True after the {@link UploadDataProvider} for this request has been closed.
     @GuardedBy("mLock")
@@ -129,12 +126,12 @@ final class FakeUrlRequest extends UrlRequestBase {
     private int mState = State.NOT_STARTED;
 
     /**
-     * Holds a subset of StatusValues - {@link State#STARTED} can represent
-     * {@link Status#SENDING_REQUEST} or {@link Status#WAITING_FOR_RESPONSE}. While the distinction
-     * isn't needed to implement the logic in this class, it is needed to implement
-     * {@link #getStatus(StatusListener)}.
+     * Holds a subset of StatusValues - {@link State#STARTED} can represent {@link
+     * Status#SENDING_REQUEST} or {@link Status#WAITING_FOR_RESPONSE}. While the distinction isn't
+     * needed to implement the logic in this class, it is needed to implement {@link
+     * #getStatus(StatusListener)}.
      */
-    @StatusValues private volatile int mAdditionalStatusDetails = Status.INVALID;
+    @UrlRequestUtil.StatusValues private volatile int mAdditionalStatusDetails = Status.INVALID;
 
     /** Used to map from HTTP status codes to the corresponding human-readable text. */
     private static final Map<Integer, String> HTTP_STATUS_CODE_TO_TEXT;
@@ -218,82 +215,56 @@ final class FakeUrlRequest extends UrlRequestBase {
             final int trafficStatsUid,
             FakeCronetController fakeCronetController,
             FakeCronetEngine fakeCronetEngine,
-            Collection<Object> requestAnnotations) {
-        if (url == null) {
-            throw new NullPointerException("URL is required");
-        }
-        if (callback == null) {
-            throw new NullPointerException("Listener is required");
-        }
-        if (executor == null) {
-            throw new NullPointerException("Executor is required");
-        }
-        mCallback = callback;
+            Collection<Object> requestAnnotations,
+            String method,
+            ArrayList<Map.Entry<String, String>> requestHeaders,
+            UploadDataProvider uploadDataProvider,
+            Executor uploadDataProviderExecutor) {
+        mCurrentUrl = Objects.requireNonNull(url, "URL is required");
+        mCallback = Objects.requireNonNull(callback, "Listener is required");
+        mExecutor = Objects.requireNonNull(executor, "Executor is required");
         mUserExecutor =
                 allowDirectExecutor ? userExecutor : new DirectPreventingExecutor(userExecutor);
-        mExecutor = executor;
-        mCurrentUrl = url;
         mFakeCronetController = fakeCronetController;
         mFakeCronetEngine = fakeCronetEngine;
         mAllowDirectExecutor = allowDirectExecutor;
         mRequestAnnotations = requestAnnotations;
+        mHttpMethod = checkedHttpMethod(method);
+        mAllHeadersList = Collections.unmodifiableList(new ArrayList<>(requestHeaders));
+        mUploadDataProvider = checkedUploadDataProvider(uploadDataProvider);
+        mUploadExecutor =
+                uploadDataProviderExecutor == null || mAllowDirectExecutor
+                        ? uploadDataProviderExecutor
+                        : new DirectPreventingExecutor(uploadDataProviderExecutor);
     }
 
-    @Override
-    public void setUploadDataProvider(UploadDataProvider uploadDataProvider, Executor executor) {
+    private UploadDataProvider checkedUploadDataProvider(UploadDataProvider uploadDataProvider) {
         if (uploadDataProvider == null) {
-            throw new NullPointerException("Invalid UploadDataProvider.");
+            return null;
         }
-        synchronized (mLock) {
-            if (!checkHasContentTypeHeader()) {
-                throw new IllegalArgumentException(
-                        "Requests with upload data must have a Content-Type.");
-            }
-            checkNotStarted();
-            if (mHttpMethod == null) {
-                mHttpMethod = "POST";
-            }
-            mUploadExecutor =
-                    mAllowDirectExecutor ? executor : new DirectPreventingExecutor(executor);
-            mUploadDataProvider = uploadDataProvider;
+
+        if (!checkHasContentTypeHeader()) {
+            throw new IllegalArgumentException(
+                    "Requests with upload data must have a Content-Type.");
         }
+        return uploadDataProvider;
     }
 
-    @Override
-    public void setHttpMethod(String method) {
-        synchronized (mLock) {
-            checkNotStarted();
-            if (method == null) {
-                throw new NullPointerException("Method is required.");
-            }
-            if ("OPTIONS".equalsIgnoreCase(method)
-                    || "GET".equalsIgnoreCase(method)
-                    || "HEAD".equalsIgnoreCase(method)
-                    || "POST".equalsIgnoreCase(method)
-                    || "PUT".equalsIgnoreCase(method)
-                    || "DELETE".equalsIgnoreCase(method)
-                    || "TRACE".equalsIgnoreCase(method)
-                    || "PATCH".equalsIgnoreCase(method)) {
-                mHttpMethod = method;
-            } else {
-                throw new IllegalArgumentException("Invalid http method: " + method);
-            }
+    private static String checkedHttpMethod(String method) {
+        if (method == null) {
+            throw new NullPointerException("Method is required.");
         }
-    }
-
-    @Override
-    public void addHeader(String header, String value) {
-        synchronized (mLock) {
-            checkNotStarted();
-            mAllHeadersList.add(new AbstractMap.SimpleEntry<String, String>(header, value));
-        }
-    }
-
-    /** Verifies that the request is not already started and throws an exception if it is. */
-    @GuardedBy("mLock")
-    private void checkNotStarted() {
-        if (mState != State.NOT_STARTED) {
-            throw new IllegalStateException("Request is already started. State is: " + mState);
+        if ("OPTIONS".equalsIgnoreCase(method)
+                || "GET".equalsIgnoreCase(method)
+                || "HEAD".equalsIgnoreCase(method)
+                || "POST".equalsIgnoreCase(method)
+                || "PUT".equalsIgnoreCase(method)
+                || "DELETE".equalsIgnoreCase(method)
+                || "TRACE".equalsIgnoreCase(method)
+                || "PATCH".equalsIgnoreCase(method)) {
+            return method;
+        } else {
+            throw new IllegalArgumentException("Invalid http method: " + method);
         }
     }
 
@@ -382,7 +353,8 @@ final class FakeUrlRequest extends UrlRequestBase {
                                         new IllegalStateException(
                                                 "Response recieved from URL: "
                                                         + prevUrl
-                                                        + " was a redirect, but lacked a location header.")));
+                                                        + " was a redirect, but lacked a location"
+                                                        + " header.")));
                     });
             return;
         }
@@ -491,7 +463,7 @@ final class FakeUrlRequest extends UrlRequestBase {
         synchronized (mLock) {
             int extraStatus = mAdditionalStatusDetails;
 
-            @StatusValues final int status;
+            @UrlRequestUtil.StatusValues final int status;
             switch (mState) {
                 case State.ERROR:
                 case State.COMPLETE:
@@ -540,7 +512,7 @@ final class FakeUrlRequest extends UrlRequestBase {
             mState = newState;
         } else {
             if (!(mState == State.CANCELLED || mState == State.ERROR)) {
-                // TODO(crbug/1450573): Use Enums for state instead for better error messages.
+                // TODO(crbug.com/40915368): Use Enums for state instead for better error messages.
                 throw new IllegalStateException(
                         "Invalid state transition - expected " + expected + " but was " + mState);
             }
@@ -652,7 +624,8 @@ final class FakeUrlRequest extends UrlRequestBase {
                     return RequestFinishedInfo.CANCELED;
                 default:
                     throw new IllegalStateException(
-                            "Request should be in terminal state before calling getRequestFinishedReason");
+                            "Request should be in terminal state before calling"
+                                + " getRequestFinishedReason");
             }
         }
     }
@@ -797,12 +770,11 @@ final class FakeUrlRequest extends UrlRequestBase {
     }
 
     /**
-     * Verifies that the "content-type" header is present. Must be checked before an
-     * {@link UploadDataProvider} is premitted to be set.
+     * Verifies that the "content-type" header is present. Must be checked before an {@link
+     * UploadDataProvider} is premitted to be set.
      *
      * @return true if the "content-type" header is present in the request headers.
      */
-    @GuardedBy("mLock")
     private boolean checkHasContentTypeHeader() {
         for (Map.Entry<String, String> entry : mAllHeadersList) {
             if (entry.getKey().equalsIgnoreCase("content-type")) {

@@ -16,7 +16,7 @@ AnimatingLayoutManager* GetAnimatingLayoutManager(View* view) {
 }
 
 void WaitForAnimatingLayoutManager(AnimatingLayoutManager* layout_manager) {
-  base::RunLoop loop;
+  base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
   layout_manager->PostOrQueueAction(loop.QuitClosure());
   loop.Run();
 }

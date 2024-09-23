@@ -9,22 +9,25 @@
  */
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
+import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../settings_shared.css.js';
 import './add_site_dialog.js';
 import './edit_exception_dialog.js';
 import './site_list_entry.js';
 
+import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import type {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
+import type {SanitizeInnerHtmlOpts} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TooltipMixin} from '../tooltip_mixin.js';
@@ -40,12 +43,13 @@ export interface SiteListElement {
     addSite: HTMLElement,
     category: HTMLElement,
     listContainer: HTMLElement,
-    tooltip: PaperTooltipElement,
+    listHeader: HTMLElement,
+    tooltip: CrTooltipElement,
   };
 }
 
 const SiteListElementBase = TooltipMixin(ListPropertyUpdateMixin(
-    SiteSettingsMixin(WebUiListenerMixin(PolymerElement))));
+    SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
 export class SiteListElement extends SiteListElementBase {
   static get is() {
@@ -68,6 +72,15 @@ export class SiteListElement extends SiteListElementBase {
       },
 
       categoryHeader: String,
+
+      /**
+       * Optional warning message to be displayed bellow the category header.
+       */
+      systemPermissionWarningKey_: {
+        type: String,
+        value: null,
+        observer: 'attachSystemPermissionSettingsLinkClick_',
+      },
 
       /**
        * The site serving as the model for the currently open action menu.
@@ -168,6 +181,7 @@ export class SiteListElement extends SiteListElementBase {
 
   readOnlyList: boolean;
   categoryHeader: string;
+  private systemPermissionWarningKey_: string|null;
   private actionMenuSite_: SiteException|null;
   private showEditExceptionDialog_: boolean;
   sites: SiteException[];
@@ -191,6 +205,8 @@ export class SiteListElement extends SiteListElementBase {
   constructor() {
     super();
 
+    this.updateCategoryWarning_();
+
     /**
      * The element to return focus to, when the currently active dialog is
      * closed.
@@ -213,7 +229,47 @@ export class SiteListElement extends SiteListElementBase {
         'onIncognitoStatusChanged',
         (hasIncognito: boolean) =>
             this.onIncognitoStatusChanged_(hasIncognito));
+    this.addWebUiListener(
+        'osGlobalPermissionChanged', (messages: ContentSettingsTypes[]) => {
+          this.setCategoryWarning_(messages.includes(this.category));
+        });
     this.browserProxy.updateIncognitoStatus();
+  }
+
+  /**
+   * Update the category warning when the OS permission for this category
+   * changed.
+   */
+  private updateCategoryWarning_() {
+    this.browserProxy.getSystemDeniedPermissions().then(
+        (messages: ContentSettingsTypes[]) => {
+          this.setCategoryWarning_(messages.includes(this.category));
+        });
+  }
+
+  /**
+   * Sets the category warning when the OS permission for this category changed.
+   */
+  private setCategoryWarning_(categoryBlocked: boolean) {
+    this.set(
+        'systemPermissionWarningKey_', ((category: ContentSettingsTypes) => {
+          // We return null as warningKey in case the category is not one of
+          // the listed, as the warning in case of an OS level block is
+          // supported only for camera, microphone and location permissions.
+          if (!categoryBlocked) {
+            return null;
+          }
+          switch (category) {
+            case ContentSettingsTypes.CAMERA:
+              return 'siteSettingsContentCameraBlockedByOs';
+            case ContentSettingsTypes.MIC:
+              return 'siteSettingsContentMicBlockedByOs';
+            case ContentSettingsTypes.GEOLOCATION:
+              return 'siteSettingsContentLocationBlockedByOs';
+            default:
+              return null;
+          }
+        })(this.category));
   }
 
   /**
@@ -221,7 +277,9 @@ export class SiteListElement extends SiteListElementBase {
    * @param category The category of the site that changed.
    */
   private siteWithinCategoryChanged_(category: ContentSettingsTypes) {
-    if (category === this.category) {
+    if (category === this.category ||
+        (this.category === ContentSettingsTypes.TRACKING_PROTECTION &&
+         category === ContentSettingsTypes.COOKIES)) {
       this.configureWidget_();
     }
   }
@@ -262,11 +320,62 @@ export class SiteListElement extends SiteListElementBase {
     }
   }
 
-  /**
-   * Whether there are any site exceptions added for this content setting.
-   */
+  /** Whether there are any site exceptions added for this content setting. */
   private hasSites_(): boolean {
     return this.sites.length > 0;
+  }
+
+  /** Whether the header warning should be shown. */
+  private showHeaderWarning_(): boolean {
+    return this.hasSites_() && (this.systemPermissionWarningKey_ !== null);
+  }
+
+  /** The text of the warning. Null if the warning is not to be shown. */
+  private getSystemPermissionWarning_(): TrustedHTML {
+    const sanitizeOptions: SanitizeInnerHtmlOpts = {tags: ['a'], attrs: ['id']};
+    if (this.systemPermissionWarningKey_ !== null) {
+      return this.i18nAdvanced(
+          this.systemPermissionWarningKey_, sanitizeOptions);
+    }
+    return sanitizeInnerHtml('');
+  }
+
+  /** Attempts to open the system permission settings. */
+  private onSystemPermissionSettingsLinkClick_(event: MouseEvent) {
+    // Prevents navigation to href='#'.
+    event.preventDefault();
+    if (this.category !== null) {
+      this.browserProxy.openSystemPermissionSettings(this.category);
+    }
+  }
+
+  /** Attached the click action to the anchor element. */
+  private attachSystemPermissionSettingsLinkClick_(): void {
+    const elementId = 'openSystemSettingsLink';
+    const element: HTMLElement|null|undefined =
+        this.shadowRoot?.querySelector(`#${elementId}`);
+    if (element !== null && element !== undefined) {
+      element!.addEventListener('click', (me: MouseEvent) => {
+        this.onSystemPermissionSettingsLinkClick_(me);
+      });
+      // Set the correct aria label describing the link target.
+      const settingsPageName: string|null = (() => {
+        switch (this.category) {
+          case ContentSettingsTypes.CAMERA:
+            return 'Camera';
+          case ContentSettingsTypes.MIC:
+            return 'Microphone';
+          case ContentSettingsTypes.GEOLOCATION:
+            return 'Location';
+          default:
+            return null;
+        }
+      })();
+      if (settingsPageName) {
+        element.setAttribute(
+            'aria-label', `System Settings: ${settingsPageName}`);
+      }
+    }
   }
 
   /**
@@ -303,8 +412,8 @@ export class SiteListElement extends SiteListElementBase {
    */
   private onShowTooltip_(e: CustomEvent<{target: HTMLElement, text: string}>) {
     this.tooltipText_ = e.detail.text;
-    // paper-tooltip normally determines the target from the |for| property,
-    // which is a selector. Here paper-tooltip is being reused by multiple
+    // cr-tooltip normally determines the target from the |for| property,
+    // which is a selector. Here cr-tooltip is being reused by multiple
     // potential targets.
     this.showTooltipAtTarget(this.$.tooltip, e.detail.target);
   }
@@ -386,13 +495,23 @@ export class SiteListElement extends SiteListElementBase {
   }
 
   private onAllowClick_() {
+    // Removing the last visible item should focus the list's header.
+    const shouldMoveFocus = this.getFilteredSites_().length === 1;
     this.setContentSettingForActionMenuSite_(ContentSetting.ALLOW);
     this.closeActionMenu_();
+    if (shouldMoveFocus) {
+      this.$.listHeader.focus();
+    }
   }
 
   private onBlockClick_() {
+    // Removing the last visible item should focus the list's header.
+    const shouldMoveFocus = this.getFilteredSites_().length === 1;
     this.setContentSettingForActionMenuSite_(ContentSetting.BLOCK);
     this.closeActionMenu_();
+    if (shouldMoveFocus) {
+      this.$.listHeader.focus();
+    }
   }
 
   private onSessionOnlyClick_() {
@@ -417,11 +536,16 @@ export class SiteListElement extends SiteListElementBase {
   }
 
   private onResetClick_() {
+    // Removing the last visible item should focus the list's header.
+    const shouldMoveFocus = this.getFilteredSites_().length === 1;
     assert(this.actionMenuSite_);
     this.browserProxy.resetCategoryPermissionForPattern(
         this.actionMenuSite_.origin, this.actionMenuSite_.embeddingOrigin,
         this.category, this.actionMenuSite_.incognito);
     this.closeActionMenu_();
+    if (shouldMoveFocus) {
+      this.$.listHeader.focus();
+    }
   }
 
   private onShowActionMenu_(
@@ -430,6 +554,13 @@ export class SiteListElement extends SiteListElementBase {
     this.actionMenuSite_ = e.detail.model;
     this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
         this.activeDialogAnchor_);
+  }
+
+  private onResetEntry_() {
+    // Removing the last visible item should focus the list's header.
+    if (this.getFilteredSites_().length === 1) {
+      this.$.listHeader.focus();
+    }
   }
 
   private closeActionMenu_() {
@@ -453,6 +584,16 @@ export class SiteListElement extends SiteListElementBase {
     return this.sites.filter(
         site => propNames.some(
             propName => site[propName].toLowerCase().includes(searchFilter)));
+  }
+
+  private getAddButtonLabel_(): string {
+    if (this.categorySubtype === ContentSetting.ALLOW) {
+      return this.i18n('siteDataPageAddSiteToAllowListLabel');
+    } else if (this.categorySubtype === ContentSetting.BLOCK) {
+      return this.i18n('siteDataPageAddSiteToBlockListLabel');
+    } else {
+      return '';
+    }
   }
 }
 

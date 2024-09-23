@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/app_types.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/drag_drop/toplevel_window_drag_delegate.h"
 #include "ash/public/cpp/window_properties.h"
@@ -19,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/data_source.h"
@@ -38,6 +38,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
+#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -89,24 +90,11 @@ class TestExtendedDragSourceDelegate : public ExtendedDragSource::Delegate {
 
   bool ShouldLockCursor() const override { return lock_cursor_; }
 
-  void OnSwallowed(const std::string& mime_type) override {
-    ASSERT_FALSE(swallowed_);
-    swallowed_ = true;
-  }
-
-  void OnUnswallowed(const std::string& mime_type,
-                     const gfx::Vector2d& offset) override {
-    ASSERT_TRUE(swallowed_);
-    swallowed_ = false;
-  }
-
   void OnDataSourceDestroying() override { delete this; }
 
  private:
   const bool allow_drap_no_target_;
   const bool lock_cursor_;
-
-  bool swallowed_ = true;
 };
 
 class ExtendedDragSourceTest : public test::ExoTestBase {
@@ -160,8 +148,7 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
   }
 
   std::unique_ptr<Buffer> CreateBuffer(gfx::Size size) {
-    return std::make_unique<Buffer>(
-        exo_test_helper()->CreateGpuMemoryBuffer(size));
+    return test::ExoTestHelper::CreateBuffer(size);
   }
 
   raw_ptr<ash::DragDropController, DanglingUntriaged> drag_drop_controller_ =
@@ -296,8 +283,8 @@ class WindowObserverHookChecker : public aura::WindowObserver {
     dragged_window_->AddObserver(this);
     surface_window_->RemoveObserver(this);
 
-    dragged_window_->SetProperty(aura::client::kAppType,
-                                 static_cast<int>(ash::AppType::LACROS));
+    dragged_window_->SetProperty(chromeos::kAppTypeKey,
+                                 chromeos::AppType::LACROS);
   }
 
   void OnWindowVisibilityChanging(aura::Window* window, bool visible) override {
@@ -436,7 +423,7 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet_Touch) {
             *extended_drag_source_->GetDragOffsetForTesting());
 
   // Initiate the gesture sequence.
-  DispatchGesture(ui::ET_GESTURE_BEGIN, gfx::Point(10, 10));
+  DispatchGesture(ui::EventType::kGestureBegin, gfx::Point(10, 10));
 
   // Map the |detached_surface|.
   auto detached_buffer = CreateBuffer({50, 50});
@@ -460,8 +447,7 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet_Touch) {
 TEST_F(ExtendedDragSourceTest, DestroyDraggedSurfaceWhileDragging) {
   // Create and map a toplevel shell surface.
   gfx::Size buffer_size(32, 32);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   std::unique_ptr<Surface> surface(new Surface);
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
   surface->Attach(buffer.get());
@@ -488,7 +474,7 @@ TEST_F(ExtendedDragSourceTest, DestroyDraggedSurfaceWhileDragging) {
   // Create an drag event instance to be dispatched manually
   // and hold a dangling target pointer.
   auto event = std::make_unique<ui::MouseEvent>(
-      ui::ET_MOUSE_DRAGGED, dragged_window->bounds().origin(),
+      ui::EventType::kMouseDragged, dragged_window->bounds().origin(),
       dragged_window->bounds().origin(), ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   ui::Event::DispatcherApi(event.get())
@@ -678,6 +664,11 @@ TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates_Touch) {
 }
 
 TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
+  // This test counts configures, so pause occlusion tracking to avoid unrelated
+  // configure messages.
+  // TODO(crbug.com/325548651): Try to reduce configures, so we can remove
+  // this pause.
+  aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
   UpdateDisplay("400x300,800x600");
   // The window where the extendd drag originates.
   auto origin_shell_surface =
@@ -792,6 +783,89 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
 
   // The size will be adjusted when dropped.
   EXPECT_EQ(gfx::Size(400, 200), drop_bounds.size());
+}
+
+// Regression test for crbug.com/40946538. Ensures Exo is able to handle
+// arbitrary ordering of asynchronous system mouse events and exo client drag
+// requests.
+// TODO(crbug.com/333504586): This test started to consistently fail
+TEST_F(ExtendedDragSourceTest,
+       DISABLED_HandlesMouseMoveBeforeExtendedDragStart) {
+  UpdateDisplay("800x600,800x600");
+  const auto* screen = display::Screen::GetScreen();
+  ASSERT_EQ(2u, screen->GetAllDisplays().size());
+
+  // Create and map a toplevel shell surface at position 100, 100 on the second
+  // display.
+  constexpr gfx::Rect kOriginalWindowBounds(900, 100, 200, 200);
+  auto shell_surface =
+      exo::test::ShellSurfaceBuilder(kOriginalWindowBounds.size())
+          .SetOrigin(kOriginalWindowBounds.origin())
+          .BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+  aura::Window* shell_window = shell_surface->GetWidget()->GetNativeWindow();
+  EXPECT_EQ(screen->GetDisplayNearestWindow(shell_window).id(),
+            screen->GetAllDisplays()[1].id());
+
+  // Dragging a window without any size changes will emit origin change
+  // server events.
+  gfx::Point client_window_origin;
+  shell_surface->set_origin_change_callback(base::BindLambdaForTesting(
+      [&](const gfx::Point& point) { client_window_origin = point; }));
+
+  // Move the mouse to the intended drag target over the surface.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo({910, 110});
+  generator->PressLeftButton();
+
+  // Initiate the drag and drop session from Ash's drag drop controller.
+  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  data_device_->StartDrag(data_source_.get(), surface, /*icon=*/nullptr,
+                          ui::mojom::DragEventSource::kMouse);
+
+  // Simulate a window drag along the x axis.
+  constexpr int kXTargetMovement = 300;
+  constexpr int kXDragStep = 30;
+  int x_movement = 0;
+
+  base::RunLoop loop;
+  drag_drop_controller_->SetLoopClosureForTesting(
+      base::BindLambdaForTesting([&]() {
+        if (x_movement == kXTargetMovement) {
+          // Assert the correct initial initial location in patent-coordinates
+          // was latched for the drag.
+          const auto* window_state = ash::WindowState::Get(shell_window);
+          EXPECT_EQ(gfx::PointF(110, 110),
+                    window_state->drag_details()->initial_location_in_parent);
+
+          // End the drag once we have reached the target position.
+          generator->ReleaseLeftButton();
+        } else {
+          EXPECT_LT(x_movement, kXTargetMovement);
+          generator->MoveMouseBy(kXDragStep, 0);
+          x_movement += kXDragStep;
+
+          // The drag should be in a pending state until the server receives the
+          // extended drag source drag request. Simulate this receipt of this
+          // request after the first mouse move event has been processed by the
+          // drag source.
+          const auto* toplevel_handler =
+              ash::Shell::Get()->toplevel_window_event_handler();
+          if (!toplevel_handler->is_drag_in_progress()) {
+            extended_drag_source_->Drag(surface, gfx::Vector2d(10, 10));
+          }
+          EXPECT_TRUE(toplevel_handler->is_drag_in_progress());
+        }
+      }),
+      loop.QuitClosure());
+  loop.Run();
+
+  // Assert that the window's size is unchanged and clients have been correctly
+  // notified of the change in window position.
+  EXPECT_EQ(kOriginalWindowBounds.size(),
+            shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
+  EXPECT_EQ(kOriginalWindowBounds.origin() + gfx::Vector2d(kXTargetMovement, 0),
+            client_window_origin);
 }
 
 }  // namespace exo

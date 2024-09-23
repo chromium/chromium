@@ -279,7 +279,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     const Browser* browser,
     const tab_groups::TabGroupId& group,
     TabGroupHeader* anchor_view,
-    absl::optional<gfx::Rect> anchor_rect,
+    std::optional<gfx::Rect> anchor_rect,
     bool stop_context_menu_propagation)
     : ... {
 
@@ -374,7 +374,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     const Browser* browser,
     const tab_groups::TabGroupId& group,
     views::View* anchor_view,
-    absl::optional<gfx::Rect> anchor_rect,
+    std::optional<gfx::Rect> anchor_rect,
     TabGroupHeader* header_view,
     bool stop_context_menu_propagation)
     : ... {
@@ -1051,7 +1051,7 @@ TEST_F(CastDialogViewTest, PopulateDialog) {
   EXPECT_TRUE(dialog_->ShouldShowCloseButton());
   EXPECT_EQ(model.dialog_header(),
             dialog_->GetWindowTitle());
-  EXPECT_EQ(ui::DIALOG_BUTTON_NONE,
+  EXPECT_EQ(static_cast<int>(ui::mojom::DialogButton::kNone),
             dialog_->GetDialogButtons());
 }
 
@@ -1077,7 +1077,7 @@ TEST_F(CastDialogViewTest, PopulateDialog) {
   EXPECT_TRUE(dialog_->ShouldShowCloseButton());
   EXPECT_EQ(model.dialog_header(),
             dialog_->GetWindowTitle());
-  EXPECT_EQ(ui::DIALOG_BUTTON_NONE,
+  EXPECT_EQ(static_cast<int>(ui::mojom::DialogButton::kNone),
             dialog_->GetDialogButtons());
 }
 ```
@@ -1348,4 +1348,3 @@ void TimeView::UpdateClockLayout(
 ```
 
 |||---|||
-

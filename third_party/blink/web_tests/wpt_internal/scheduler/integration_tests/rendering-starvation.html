@@ -1,0 +1,48 @@
+<!doctype html>
+<title>Blink Scheduler Rendering Starvation Policy</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+
+<script>
+'use strict';
+
+window.onload = () => {
+  promise_test(async t => {
+    await requestAnimationFramePromise();
+
+    // Post tasks before the rendering is complete to not affect scheduler's
+    // starvation tracking.
+    const NUM_TASKS = 50;
+    const TASK_DURATION_MS = 10;
+    let taskCount = 0;
+
+    const controller = new TaskController();
+    t.add_cleanup(() => controller.abort());
+
+    for (let i = 0; i < NUM_TASKS; i++) {
+      const p = scheduler.postTask(() => {
+        ++taskCount;
+        spin(TASK_DURATION_MS);
+      }, {signal: controller.signal});
+      ignoreUnhandledRejection(p);
+    }
+
+    // Wait for after BeginMainFrame so the scheduler resets the starvation
+    // duration.
+    await scheduler.yield();
+    const start = performance.now();
+    await requestAnimationFramePromise();
+    const duration = performance.now() - start;
+
+    // Check that we're close enough to the upper bound of the starvation
+    // threshold (100 ms). This includes some slack, but it's well below the
+    // total potential blocking task time (500 ms), and good enough to catch
+    // regressions.
+    assert_less_than(duration, 130);
+    assert_less_than(taskCount, 50);
+    assert_greater_than(taskCount, 0);
+  }, 'Test that rendering is not starved by normal priority tasks');
+};
+
+</script>

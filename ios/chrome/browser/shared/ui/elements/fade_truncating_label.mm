@@ -212,8 +212,12 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
 
   // Like UILabel, always draw a minimum of one line even if there is not enough
   // vertical space.
-  const NSInteger availableLineCount =
+  NSInteger availableLineCount =
       MAX(1, floor(requestedRect.size.height / lineHeight));
+
+  const NSInteger maxAvailableLineCount =
+      self.numberOfLines ? self.numberOfLines : INT_MAX;
+  availableLineCount = MIN(availableLineCount, maxAvailableLineCount);
 
   const NSInteger stringLineCount =
       base::checked_cast<NSInteger>(stringRangeForLines.count);

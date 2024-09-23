@@ -9,20 +9,22 @@ import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
 
+import org.chromium.base.ThreadUtils;
+
 /** Test utils for clicking and other mouse actions. */
 public class ClickUtils {
     /**
-     * Click a button. Unlike {@link ClickUtils#mouseSingleClickView} this directly accesses
-     * the view and does not send motion events though the message queue. As such it doesn't require
-     * the view to have been created by the instrumented activity, but gives less flexibility than
-     * mouseSingleClickView. For example, if the view is hierachical, then clickButton will always
+     * Click a button. Unlike {@link ClickUtils#mouseSingleClickView} this directly accesses the
+     * view and does not send motion events though the message queue. As such it doesn't require the
+     * view to have been created by the instrumented activity, but gives less flexibility than
+     * mouseSingleClickView. For example, if the view is hierarchical, then clickButton will always
      * act on specified view, whereas mouseSingleClickView will send the events to the appropriate
      * child view. It is hence only really appropriate for simple views such as buttons.
      *
      * @param button the button to be clicked.
      */
     public static void clickButton(final View button) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Post the actual click to the button's message queue, to ensure that it has
                     // been inflated before the click is received.

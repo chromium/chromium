@@ -11,7 +11,7 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
@@ -66,8 +66,8 @@ AutoUpdateMode GetTPMAutoUpdateModeSetting(
   // Verify that the value is within range.
   if (*auto_update_mode < static_cast<int>(AutoUpdateMode::kNever) ||
       *auto_update_mode > static_cast<int>(AutoUpdateMode::kEnrollment)) {
-    NOTREACHED() << "Invalid value for device policy key "
-                    "TPMFirmwareUpdateSettings.AutoUpdateMode";
+    NOTREACHED_IN_MIGRATION() << "Invalid value for device policy key "
+                                 "TPMFirmwareUpdateSettings.AutoUpdateMode";
     return AutoUpdateMode::kNever;
   }
 

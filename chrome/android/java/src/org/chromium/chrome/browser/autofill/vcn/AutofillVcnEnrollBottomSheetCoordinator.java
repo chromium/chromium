@@ -30,6 +30,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
     private final AutofillVcnEnrollBottomSheetView mView;
     private final AutofillVcnEnrollBottomSheetMediator mMediator;
+    private final PropertyModel mModel;
 
     /**
      * Constructs a coordinator controller for the virtual card enrollment bottom sheet.
@@ -46,34 +47,35 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
             LayoutStateProvider layoutStateProvider,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             Delegate delegate) {
+        mModel = modelBuilder.build();
         mView = new AutofillVcnEnrollBottomSheetView(context);
-        mView.mAcceptButton.setOnClickListener(
-                (View button) -> {
-                    delegate.onAccept();
-                    hide();
-                });
-        mView.mCancelButton.setOnClickListener(
-                (View button) -> {
-                    delegate.onCancel();
-                    hide();
-                });
-
         PropertyModelChangeProcessor.create(
-                modelBuilder.build(), mView, AutofillVcnEnrollBottomSheetViewBinder::bind);
+                mModel, mView, AutofillVcnEnrollBottomSheetViewBinder::bind);
 
         mMediator =
                 new AutofillVcnEnrollBottomSheetMediator(
                         new AutofillVcnEnrollBottomSheetContent(
                                 mView.mContentView, mView.mScrollView, delegate::onDismiss),
                         new AutofillVcnEnrollBottomSheetLifecycle(
-                                layoutStateProvider, tabModelSelectorSupplier));
+                                layoutStateProvider, tabModelSelectorSupplier),
+                        mModel);
+
+        mView.mAcceptButton.setOnClickListener(
+                (View button) -> {
+                    delegate.onAccept();
+                    mMediator.onAccept();
+                });
+        mView.mCancelButton.setOnClickListener(
+                (View button) -> {
+                    delegate.onCancel();
+                    mMediator.onCancel();
+                });
     }
 
     /**
      * Requests to show the bottom sheet.
      *
      * @param window The window where the bottom sheet should be shown.
-     *
      * @return True if shown.
      */
     boolean requestShowContent(WindowAndroid window) {
@@ -87,5 +89,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
     AutofillVcnEnrollBottomSheetView getAutofillVcnEnrollBottomSheetViewForTesting() {
         return mView;
+    }
+
+    PropertyModel getPropertyModelForTesting() {
+        return mModel;
     }
 }

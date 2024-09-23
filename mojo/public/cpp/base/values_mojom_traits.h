@@ -100,7 +100,6 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
         return mojo_base::mojom::ValueDataView::Tag::kListValue;
     }
     NOTREACHED();
-    return mojo_base::mojom::ValueDataView::Tag::kNullValue;
   }
 
   static uint8_t null_value(const base::Value& value) { return 0; }

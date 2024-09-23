@@ -16,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -68,8 +69,8 @@ void CrostiniRecoveryView::Show(Profile* profile,
 }
 
 bool CrostiniRecoveryView::Accept() {
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
-  SetButtonEnabled(ui::DIALOG_BUTTON_CANCEL, false);
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
+  SetButtonEnabled(ui::mojom::DialogButton::kCancel, false);
   crostini::CrostiniManager::GetForProfile(profile_)->StopVm(
       crostini::kCrostiniDefaultVmName,
       base::BindOnce(&CrostiniRecoveryView::OnStopVm,
@@ -116,12 +117,13 @@ CrostiniRecoveryView::CrostiniRecoveryView(
       args_(args),
       callback_(std::move(callback)),
       weak_ptr_factory_(this) {
-  SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+             static_cast<int>(ui::mojom::DialogButton::kCancel));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_CROSTINI_RECOVERY_RESTART_BUTTON));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(IDS_CROSTINI_RECOVERY_TERMINAL_BUTTON));
   SetShowCloseButton(false);
   SetTitle(IDS_CROSTINI_RECOVERY_TITLE);

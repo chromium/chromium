@@ -32,6 +32,7 @@
 #include "chromeos/ash/components/phonehub/onboarding_ui_tracker_impl.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager_impl.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler_impl.h"
 #include "chromeos/ash/components/phonehub/screen_lock_manager_impl.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder_impl.h"
@@ -86,9 +87,12 @@ PhoneHubManagerFactory::PhoneHubManagerFactory()
           "PhoneHubManager",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(device_sync::DeviceSyncClientFactory::GetInstance());
   if (features::IsPhoneHubCameraRollEnabled()) {
@@ -129,6 +133,10 @@ PhoneHubManagerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  if (!features::IsCrossDeviceFeatureSuiteAllowed()) {
+    return nullptr;
+  }
+
   std::unique_ptr<AttestationCertificateGeneratorImpl>
       attestation_certificate_generator = nullptr;
 
@@ -141,15 +149,6 @@ PhoneHubManagerFactory::BuildServiceInstanceForBrowserContext(
             profile, std::move(soft_bind_attestation_flow));
   }
 
-  SyncedSessionClientAsh* synced_session_client = nullptr;
-  if (BrowserTabsModelProviderImpl::IsLacrosSessionSyncFeatureEnabled()) {
-    SyncMojoServiceAsh* sync_mojo_service =
-        SyncMojoServiceFactoryAsh::GetForProfile(profile);
-    if (sync_mojo_service) {
-      synced_session_client = sync_mojo_service->GetSyncedSessionClientAsh();
-    }
-  }
-
   auto phone_hub_manager = std::make_unique<PhoneHubManagerImpl>(
       profile->GetPrefs(),
       device_sync::DeviceSyncClientFactory::GetForProfile(profile),
@@ -158,7 +157,6 @@ PhoneHubManagerFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<BrowserTabsModelProviderImpl>(
           multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
               profile),
-          synced_session_client,
           SyncServiceFactory::GetInstance()->GetForProfile(profile),
           SessionSyncServiceFactory::GetInstance()->GetForProfile(profile),
           std::make_unique<BrowserTabsMetadataFetcherImpl>(
@@ -223,6 +221,7 @@ void PhoneHubManagerFactory::RegisterProfilePrefs(
   OnboardingUiTrackerImpl::RegisterPrefs(registry);
   ScreenLockManagerImpl::RegisterPrefs(registry);
   RecentAppsInteractionHandlerImpl::RegisterPrefs(registry);
+  PhoneHubStructuredMetricsLogger::RegisterPrefs(registry);
 }
 
 }  // namespace ash::phonehub

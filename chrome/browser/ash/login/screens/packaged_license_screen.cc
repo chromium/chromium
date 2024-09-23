@@ -4,24 +4,19 @@
 
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
 
 namespace ash {
-namespace {
-
-constexpr const char kUserActionEnrollButtonClicked[] = "enroll";
-constexpr const char kUserActionDontEnrollButtonClicked[] = "dont-enroll";
-
-}  // namespace
 
 // static
 std::string PackagedLicenseScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::DONT_ENROLL:
       return "DontEnroll";
@@ -32,12 +27,14 @@ std::string PackagedLicenseScreen::GetResultString(Result result) {
     case Result::NOT_APPLICABLE_SKIP_TO_ENROLL:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 PackagedLicenseScreen::PackagedLicenseScreen(
     base::WeakPtr<PackagedLicenseView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(PackagedLicenseView::kScreenId, OobeScreenPriority::DEFAULT),
+      OobeMojoBinder(this),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
@@ -50,14 +47,12 @@ bool PackagedLicenseScreen::MaybeSkip(WizardContext& context) {
   // enrollment flows are not triggered by the device state.
   if (config.is_license_packaged_with_device && !config.should_enroll()) {
     // Skip to enroll since GAIA form has welcoming text for enterprise license.
-    if (features::IsLicensePackagedOobeFlowEnabled() &&
-        config.license_type == policy::LicenseType::kEnterprise) {
+    if (config.license_type == policy::LicenseType::kEnterprise) {
       exit_callback_.Run(Result::NOT_APPLICABLE_SKIP_TO_ENROLL);
       return true;
     }
     // Skip to enroll since GAIA form has welcoming text for education license.
-    if (features::IsEducationEnrollmentOobeFlowEnabled() &&
-        config.license_type == policy::LicenseType::kEducation) {
+    if (config.license_type == policy::LicenseType::kEducation) {
       exit_callback_.Run(Result::NOT_APPLICABLE_SKIP_TO_ENROLL);
       return true;
     }
@@ -74,15 +69,18 @@ void PackagedLicenseScreen::ShowImpl() {
 
 void PackagedLicenseScreen::HideImpl() {}
 
-void PackagedLicenseScreen::OnUserAction(const base::Value::List& args) {
-  const std::string& action_id = args[0].GetString();
+void PackagedLicenseScreen::OnEnrollClicked() {
+  if (is_hidden()) {
+    return;
+  }
+  exit_callback_.Run(Result::ENROLL);
+}
 
-  if (action_id == kUserActionEnrollButtonClicked)
-    exit_callback_.Run(Result::ENROLL);
-  else if (action_id == kUserActionDontEnrollButtonClicked)
-    exit_callback_.Run(Result::DONT_ENROLL);
-  else
-    BaseScreen::OnUserAction(args);
+void PackagedLicenseScreen::OnDontEnrollClicked() {
+  if (is_hidden()) {
+    return;
+  }
+  exit_callback_.Run(Result::DONT_ENROLL);
 }
 
 bool PackagedLicenseScreen::HandleAccelerator(LoginAcceleratorAction action) {

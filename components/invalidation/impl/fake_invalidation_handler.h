@@ -11,6 +11,7 @@
 
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_handler.h"
+#include "components/invalidation/public/invalidator_state.h"
 
 namespace invalidation {
 
@@ -36,7 +37,7 @@ class FakeInvalidationHandler : public InvalidationHandler {
   bool IsPublicTopic(const Topic& topic) const override;
 
  private:
-  InvalidatorState state_ = DEFAULT_INVALIDATION_ERROR;
+  InvalidatorState state_ = InvalidatorState::kDisabled;
   std::map<Topic, Invalidation> received_invalidations_;
   int invalidation_count_ = 0;
   std::multiset<Topic> successfully_subscribed_;

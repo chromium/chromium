@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
@@ -71,11 +72,13 @@ void LayoutSVGModelObject::MapAncestorToLocal(
   SVGLayoutSupport::MapAncestorToLocal(*this, ancestor, transform_state, flags);
 }
 
-void LayoutSVGModelObject::AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                                         MapCoordinatesFlags mode) const {
+void LayoutSVGModelObject::QuadsInAncestorInternal(
+    Vector<gfx::QuadF>& quads,
+    const LayoutBoxModelObject* ancestor,
+    MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   quads.push_back(
-      LocalToAbsoluteQuad(gfx::QuadF(DecoratedBoundingBox()), mode));
+      LocalToAncestorQuad(gfx::QuadF(DecoratedBoundingBox()), ancestor, mode));
 }
 
 // This method is called from inside PaintOutline(), and since we call
@@ -109,20 +112,21 @@ void LayoutSVGModelObject::WillBeDestroyed() {
 }
 
 bool LayoutSVGModelObject::CheckForImplicitTransformChange(
+    const SVGLayoutInfo& layout_info,
     bool bbox_changed) const {
   NOT_DESTROYED();
   // If the transform is relative to the reference box, check relevant
   // conditions to see if we need to recompute the transform.
   switch (StyleRef().TransformBox()) {
     case ETransformBox::kViewBox:
-      return SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(this);
+      return layout_info.viewport_changed;
     case ETransformBox::kFillBox:
     case ETransformBox::kContentBox:
     case ETransformBox::kStrokeBox:
     case ETransformBox::kBorderBox:
       return bbox_changed;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -152,7 +156,6 @@ void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
   LayoutObject::StyleDidChange(diff, old_style);
 
   if (diff.NeedsFullLayout()) {
-    SetNeedsBoundariesUpdate();
     if (diff.TransformChanged())
       SetNeedsTransformUpdate();
   }

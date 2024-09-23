@@ -57,17 +57,10 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerUiBrowserTest,
             content::EvalJs(GetActiveWebContents(), "getResult()"));
 }
 
-// Test that the PaymentRequestAllowOneActivationlessShow feature allows one
-// call to show() without a user activation.
+// Test that PaymentRequest allows one call to show() without a user activation.
 class PaymentRequestActivationlessShowTest
     : public PaymentRequestPlatformBrowserTestBase {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PaymentRequestPlatformBrowserTestBase::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "PaymentRequestAllowOneActivationlessShow");
-  }
-
  protected:
   void ExpectEvent2(JourneyLogger::Event2 event, bool expected) {
     std::vector<base::Bucket> buckets =
@@ -80,7 +73,7 @@ class PaymentRequestActivationlessShowTest
   base::HistogramTester histogram_tester_;
 };
 
-// TODO(https://crbug.com/1519140): Fix flakiness and re-enable.
+// TODO(crbug.com/41492121): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(PaymentRequestActivationlessShowTest,
                        DISABLED_ActivationlessShow) {
   std::string payment_method =
@@ -118,37 +111,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestActivationlessShowTest,
   EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(), show_js));
 
   ExpectEvent2(JourneyLogger::Event2::kActivationlessShow, false);
-}
-
-// Test that activationless show() call is not allowed with the
-// PaymentRequetsAllowOneActivationlessShow feature disabled.
-class PaymentRequestActivationlessShowDisabledTest
-    : public PaymentRequestPlatformBrowserTestBase {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PaymentRequestPlatformBrowserTestBase::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kDisableBlinkFeatures,
-                                    "PaymentRequestAllowOneActivationlessShow");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(PaymentRequestActivationlessShowDisabledTest,
-                       ActivationlessShow) {
-  std::string payment_method =
-      https_server()->GetURL("a.com", "/orenpay.test/pay").spec();
-  NavigateTo("b.com", "/payment_handler_status.html");
-
-  // The error message with activationless show enabled has changed, so the old
-  // error message is hard coded below and will be removed post launch.
-  EXPECT_THAT(
-      content::EvalJs(GetActiveWebContents(),
-                      content::JsReplace("getStatus($1)", payment_method),
-                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .ExtractString(),
-      ::testing::HasSubstr(
-          "Failed to execute 'show' on 'PaymentRequest': PaymentRequest.show() "
-          "requires either transient user activation or delegated payment "
-          "request capability"));
 }
 
 }  // namespace

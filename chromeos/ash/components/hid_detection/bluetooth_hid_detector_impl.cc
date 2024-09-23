@@ -146,8 +146,9 @@ void BluetoothHidDetectorImpl::OnPropertiesUpdated(
     bluetooth_config::mojom::BluetoothSystemPropertiesPtr properties) {
   switch (state_) {
     case kNotStarted:
-      NOTREACHED() << "SystemPropertiesObserver should not be bound while in "
-                      "state |kNotStarted|";
+      NOTREACHED_IN_MIGRATION()
+          << "SystemPropertiesObserver should not be bound while in "
+             "state |kNotStarted|";
       return;
     case kStarting:
       if (properties->system_state == BluetoothSystemState::kEnabled) {
@@ -161,7 +162,7 @@ void BluetoothHidDetectorImpl::OnPropertiesUpdated(
         HID_LOG(EVENT) << "Bluetooth adapter is disabled or disabling, "
                        << "enabling adapter";
         state_ = kEnablingAdapter;
-        cros_bluetooth_config_remote_->SetBluetoothHidDetectionActive();
+        cros_bluetooth_config_remote_->SetBluetoothEnabledWithoutPersistence();
       } else {
         HID_LOG(EVENT)
             << "Bluetooth adapter is unavailable or enabling, waiting "

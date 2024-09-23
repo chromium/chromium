@@ -7,6 +7,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 
 using content::WebContents;
@@ -64,7 +65,8 @@ gfx::Image* TabModalConfirmDialogDelegate::GetIcon() {
 }
 
 int TabModalConfirmDialogDelegate::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL;
+  return static_cast<int>(ui::mojom::DialogButton::kOk) |
+         static_cast<int>(ui::mojom::DialogButton::kCancel);
 }
 
 std::u16string TabModalConfirmDialogDelegate::GetAcceptButtonTitle() {

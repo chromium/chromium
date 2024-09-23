@@ -104,10 +104,6 @@ class LocalMockAudioManager : public media::MockAudioManager {
               GetOutputStreamParameters,
               (const std::string&),
               (override));
-  MOCK_METHOD(AudioParameters,
-              GetDefaultOutputStreamParameters,
-              (),
-              (override));
   MOCK_METHOD(AudioOutputStream*,
               MakeAudioOutputStreamProxy,
               (const media::AudioParameters&, const std::string&),
@@ -160,7 +156,9 @@ class OutputDeviceMixerManagerTest
     EXPECT_CALL(audio_manager_, GetOutputStreamParameters(_))
         .WillRepeatedly(Return(default_params_));
 
-    EXPECT_CALL(audio_manager_, GetDefaultOutputStreamParameters())
+    EXPECT_CALL(audio_manager_,
+                GetOutputStreamParameters(
+                    media::AudioDeviceDescription::kDefaultDeviceId))
         .WillRepeatedly(Return(default_params_));
 
     EXPECT_CALL(audio_manager_, GetDefaultOutputDeviceID()).WillRepeatedly([&] {
@@ -543,8 +541,8 @@ TEST_F(OutputDeviceMixerManagerTest,
 
   SetUpMockMixerCreation();
 
-  EXPECT_CALL(audio_manager_, GetOutputStreamParameters(_)).Times(0);
-  EXPECT_CALL(audio_manager_, GetDefaultOutputStreamParameters())
+  EXPECT_CALL(audio_manager_,
+              GetOutputStreamParameters(kNormalizedDefaultDeviceId))
       .WillOnce(Return(default_params_));
 
   output_mixer_manager_.MakeOutputStream(kReservedDefaultId, default_params_,
@@ -555,7 +553,6 @@ TEST_F(OutputDeviceMixerManagerTest,
 
   SetUpMockMixerCreation(kOtherFakeDeviceId);
 
-  EXPECT_CALL(audio_manager_, GetDefaultOutputStreamParameters()).Times(0);
   EXPECT_CALL(audio_manager_, GetOutputStreamParameters(kOtherFakeDeviceId))
       .WillOnce(Return(default_params_));
 
@@ -589,7 +586,10 @@ TEST_F(OutputDeviceMixerManagerTest, MakeOutputStream_WithBitstreamFormat) {
 // Makes sure we still get an unmixable stream if device info is stale and
 // AudioManager::GetOutputStreamParameters() returns invalid parameters.
 TEST_F(OutputDeviceMixerManagerTest, MakeOutputStream_WithStaleDeviceInfo) {
-  EXPECT_CALL(audio_manager_, GetDefaultOutputStreamParameters()).Times(0);
+  EXPECT_CALL(audio_manager_,
+              GetOutputStreamParameters(
+                  media::AudioDeviceDescription::kDefaultDeviceId))
+      .Times(0);
 
   // Return invalid parameters, which should fail mixer creation.
   EXPECT_CALL(audio_manager_, GetOutputStreamParameters(kOtherFakeDeviceId))

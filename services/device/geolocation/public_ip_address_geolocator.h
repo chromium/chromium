@@ -13,6 +13,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/public_ip_address_location_notifier.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
+#include "services/device/public/mojom/geolocation_client_id.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
 namespace device {
@@ -32,6 +33,7 @@ class PublicIpAddressGeolocator : public mojom::Geolocation {
   // bad Mojo message *only while processing that message*.
   PublicIpAddressGeolocator(const net::PartialNetworkTrafficAnnotationTag tag,
                             PublicIpAddressLocationNotifier* notifier,
+                            mojom::GeolocationClientId client_id,
                             BadMessageCallback callback);
 
   PublicIpAddressGeolocator(const PublicIpAddressGeolocator&) = delete;
@@ -56,6 +58,8 @@ class PublicIpAddressGeolocator : public mojom::Geolocation {
 
   // Notifier to ask for IP-geolocation updates.
   const raw_ptr<PublicIpAddressLocationNotifier, DanglingUntriaged> notifier_;
+
+  const mojom::GeolocationClientId client_id_;
 
   // The most recent PartialNetworkTrafficAnnotationTag provided by a client.
   std::unique_ptr<const net::PartialNetworkTrafficAnnotationTag>

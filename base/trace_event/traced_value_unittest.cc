@@ -13,8 +13,7 @@
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 TEST(TraceEventArgumentTest, InitializerListCreatedContainers) {
   std::string json;
@@ -207,10 +206,11 @@ TEST(TraceEventArgumentTest, Hierarchy) {
 TEST(TraceEventArgumentTest, LongStrings) {
   std::string kLongString = "supercalifragilisticexpialidocious";
   std::string kLongString2 = "0123456789012345678901234567890123456789";
-  char kLongString3[4096];
-  for (size_t i = 0; i < sizeof(kLongString3); ++i)
+  std::array<char, 4096> kLongString3;
+  for (size_t i = 0; i < kLongString3.size(); ++i) {
     kLongString3[i] = 'a' + (i % 25);
-  kLongString3[sizeof(kLongString3) - 1] = '\0';
+  }
+  kLongString3.back() = '\0';
 
   std::unique_ptr<TracedValue> value(new TracedValue());
   value->SetString("a", "short");
@@ -219,14 +219,15 @@ TEST(TraceEventArgumentTest, LongStrings) {
   value->AppendString(kLongString2);
   value->AppendString("");
   value->BeginDictionary();
-  value->SetString("a", kLongString3);
+  value->SetString("a", kLongString3.data());
   value->EndDictionary();
   value->EndArray();
 
   std::string json;
   value->AppendAsTraceFormat(&json);
   EXPECT_EQ("{\"a\":\"short\",\"b\":\"" + kLongString + "\",\"c\":[\"" +
-                kLongString2 + "\",\"\",{\"a\":\"" + kLongString3 + "\"}]}",
+                kLongString2 + "\",\"\",{\"a\":\"" + kLongString3.data() +
+                "\"}]}",
             json);
 }
 
@@ -285,5 +286,4 @@ TEST(TraceEventArgumentTest, NanAndInfinityJSON) {
       formatted_json);
 }
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event

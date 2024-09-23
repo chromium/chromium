@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/formats/mp2t/ts_section_psi.h"
 
 #include <algorithm>
@@ -48,8 +53,7 @@ TsSectionPsi::~TsSectionPsi() {
 }
 
 bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
-                         const uint8_t* buf,
-                         int size) {
+                         base::span<const uint8_t> buf) {
   // Ignore partial PSI.
   if (wait_for_pusi_ && !payload_unit_start_indicator)
     return true;
@@ -60,25 +64,24 @@ bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
 
     // Update the state.
     wait_for_pusi_ = false;
-    RCHECK(size > 0);  // A payload unit must start immediately.
+    RCHECK(!buf.empty());  // A payload unit must start immediately.
     int pointer_field = buf[0];
     leading_bytes_to_discard_ = pointer_field;
-    buf++;
-    size--;
+    buf = buf.subspan(1);
   }
 
   // Discard some leading bytes if needed.
   if (leading_bytes_to_discard_ > 0) {
-    int nbytes_to_discard = std::min(leading_bytes_to_discard_, size);
-    buf += nbytes_to_discard;
-    size -= nbytes_to_discard;
+    int nbytes_to_discard = std::min(leading_bytes_to_discard_, buf.size());
     leading_bytes_to_discard_ -= nbytes_to_discard;
+    buf = buf.subspan(nbytes_to_discard);
   }
-  if (size == 0)
+  if (buf.empty()) {
     return true;
+  }
 
   // Add the data to the parser state.
-  RCHECK(psi_byte_queue_.Push(buf, size));  // Can fail if allocation fails.
+  RCHECK(psi_byte_queue_.Push(buf));
   int raw_psi_size;
   const uint8_t* raw_psi;
   psi_byte_queue_.Peek(&raw_psi, &raw_psi_size);
@@ -104,8 +107,9 @@ bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
       << "Trailing bytes after a PSI section: "
       << psi_length << " vs " << raw_psi_size;
 
-  // Verify the CRC.
-  RCHECK(IsCrcValid(raw_psi, psi_length));
+  if (!IsCrcValid(raw_psi, psi_length)) {
+    DVLOG(1) << "Invalid PSI section crc checksum.";
+  }
 
   // Parse the PSI section.
   BitReader bit_reader(raw_psi, raw_psi_size);

@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/login/auth/mount_performer.h"
+#include "components/user_manager/user_directory_integrity_manager.h"
 
 class AccountId;
 class PrefService;
@@ -53,7 +54,8 @@ class COMPONENT_EXPORT(ASH_LOGIN_INTEGRITY) MisconfiguredUserCleaner {
 
  private:
   void DoCleanup(user_manager::UserDirectoryIntegrityManager&,
-                 const AccountId&);
+                 const AccountId&,
+                 user_manager::UserDirectoryIntegrityManager::CleanupStrategy);
 
   void OnStartDeviceWipe(bool result);
 

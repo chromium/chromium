@@ -1,0 +1,47 @@
+This is a testharness.js-based test.
+[FAIL] expand float32 0D scalar to 1D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 0D scalar to 2D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 0D scalar to 3D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 0D scalar to 4D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 0D scalar to 5D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 1D constant tensor to 1D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 1D tensor to 1D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 1D tensor to 2D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 1D tensor to 3D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 1D tensor to 4D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 1D tensor to 5D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 2D tensor to 2D (1st dimension)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 2D tensor to 2D (2nd dimension)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 2D tensor to 2D (all dimensions)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 2D tensor to 3D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 2D tensor to 4D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 2D tensor to 5D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 3D tensor to 3D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 3D tensor to 4D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 3D tensor to 5D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 4D tensor to 4D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+[FAIL] expand float32 4D tensor to 5D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (expand) is not supported."
+Harness: the test ran to completion.
+

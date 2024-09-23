@@ -5,7 +5,7 @@
 #include "components/feed/core/v2/enums.h"
 
 #include <ostream>
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace feed {
 
@@ -230,7 +230,7 @@ std::ostream& operator<<(std::ostream& out, WebFeedRefreshStatus value) {
   }
 }
 
-base::StringPiece ToString(UserSettingsOnStart v) {
+std::string_view ToString(UserSettingsOnStart v) {
   switch (v) {
     case UserSettingsOnStart::kFeedNotEnabledByPolicy:
       return "FeedNotEnabledByPolicy";

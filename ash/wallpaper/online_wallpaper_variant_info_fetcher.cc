@@ -18,11 +18,12 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace ash {
 namespace {
+
+OnlineWallpaperVariantInfoFetcher* g_instance = nullptr;
 
 // The filtered results from a set of backdrop::Images for a given |location|
 // and |unit_id| value.
@@ -102,10 +103,22 @@ OnlineWallpaperVariantInfoFetcher::OnlineWallpaperRequest::
 OnlineWallpaperVariantInfoFetcher::OnlineWallpaperRequest::
     ~OnlineWallpaperRequest() = default;
 
-OnlineWallpaperVariantInfoFetcher::OnlineWallpaperVariantInfoFetcher() =
-    default;
-OnlineWallpaperVariantInfoFetcher::~OnlineWallpaperVariantInfoFetcher() =
-    default;
+OnlineWallpaperVariantInfoFetcher::OnlineWallpaperVariantInfoFetcher() {
+  DCHECK_EQ(nullptr, g_instance);
+  g_instance = this;
+}
+
+OnlineWallpaperVariantInfoFetcher::~OnlineWallpaperVariantInfoFetcher() {
+  DCHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
+
+// static
+OnlineWallpaperVariantInfoFetcher*
+OnlineWallpaperVariantInfoFetcher::GetInstance() {
+  DCHECK(g_instance);
+  return g_instance;
+}
 
 void OnlineWallpaperVariantInfoFetcher::SetClient(
     WallpaperControllerClient* client) {
@@ -137,8 +150,9 @@ void OnlineWallpaperVariantInfoFetcher::FetchOnlineWallpaper(
     LOG(WARNING)
         << "Failed to determine wallpaper url. This should only happen for "
            "very old wallpapers.";
-    base::UmaHistogramEnumeration("Ash.Wallpaper.Online.Result",
-                                  SetWallpaperResult::kInvalidState);
+    base::UmaHistogramEnumeration(
+        WallpaperMetricsManager::ToResultHistogram(WallpaperType::kOnline),
+        SetWallpaperResult::kInvalidState);
     std::move(callback).Run(std::nullopt);
     return;
   }

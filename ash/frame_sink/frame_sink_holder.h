@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "cc/scheduler/scheduler.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -83,7 +84,7 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
   // When auto-update mode is on, we keep on submitting frames asynchronously to
   // display compositor without a request to submit a frame via
   // `SubmitCompositorFrame()`.
-  void SetAutoUpdateMode(bool mode) { auto_update_ = mode; }
+  void SetAutoUpdateMode(bool mode);
 
   UiResourceManager& resource_manager() { return resources_manager_; }
 
@@ -123,6 +124,18 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
 
  private:
   friend class FrameSinkHolderTestApi;
+
+  void ObserveBeginFrameSource(bool start);
+
+  // If we have not consecutively produced a frame in response to OnBeginFrame
+  // events from the compositor, we can stop observing the
+  // `begin_frame_source_`. This is because continuous polling from the
+  // compositor and receiving DidNotProduceFrame responses from the client is
+  // unnecessary work and can cause power regression.
+  void MaybeStopObservingBeingFrameSource();
+
+  void DidNotProduceFrame(viz::BeginFrameAck&& begin_frame_ack,
+                          cc::FrameSkippedReason reason);
 
   // Create an empty frame that has dsf and size of the last submitted frame.
   viz::CompositorFrame CreateEmptyFrame();
@@ -196,6 +209,10 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
       root_window_observation_{this};
   base::ScopedObservation<viz::BeginFrameSource, viz::BeginFrameObserver>
       begin_frame_observation_{this};
+
+  // The number of DidNotProduceFrame responses since the last time when a frame
+  // is submitted.
+  int consecutive_begin_frames_produced_no_frame_count_ = 0;
 
   base::WeakPtrFactory<FrameSinkHolder> weak_ptr_factory_{this};
 };

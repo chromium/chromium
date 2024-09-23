@@ -37,7 +37,7 @@ export interface DiagnosticsBrowserProxy {
 
 export class DiagnosticsBrowserProxyImpl implements DiagnosticsBrowserProxy {
   // View which 'recordNavigation' is leaving.
-  private previousView: NavigationView|null = null;
+  previousView: NavigationView|null = null;
 
   initialize(): void {
     chrome.send('initialize');

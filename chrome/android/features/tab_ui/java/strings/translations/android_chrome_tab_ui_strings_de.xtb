@@ -1,116 +1,197 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Vor <ph name="NUM_WEEKS_ONE" /> Woche erstellt}other{Vor <ph name="NUM_WEEKS_MANY" /> Wochen erstellt}}</translation>
+<translation id="1063300264396686489">Tabgruppen von anderen Geräten automatisch öffnen</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> von deinen Tabs wurden längere Zeit nicht verwendet. Möchtest du sie schließen?</translation>
-<translation id="1155815720264022949">Möchtest du alte Tabs schließen?</translation>
+<translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Vor <ph name="NUM_YEARS_ONE" /> Jahr erstellt}other{Vor <ph name="NUM_YEARS_MANY" /> Jahren erstellt}}</translation>
+<translation id="1173894706177603556">Umbenennen</translation>
 <translation id="1197088940767939838">Orange</translation>
-<translation id="1215127405478249895">Tabs überprüfen</translation>
 <translation id="125153950246128346">Tippen, um einen anderen Tab zu sehen</translation>
-<translation id="1326271443836399892">Hier kannst du dir die aktuellen Aufräum-Einstellungen ansehen.</translation>
+<translation id="1273910660700874265">Optionen für Tapgruppe „<ph name="TITLE_OF_GROUP" />“</translation>
+<translation id="1340839264183302272">Gruppe verlassen</translation>
+<translation id="1419023007528516122">Dadurch wird die Gruppe endgültig von deinem Gerät gelöscht</translation>
+<translation id="1486715732399361704">Hier findest du alle deine Tabgruppen</translation>
+<translation id="149054111719651807">{NUM_MINS,plural, =1{Vor <ph name="NUM_MINS_ONE" /> Minute erstellt}other{Vor <ph name="NUM_MINS_MANY" /> Minuten erstellt}}</translation>
 <translation id="1499635324672558517">Alle Inkognitotabs schließen?</translation>
+<translation id="1501480321619201731">Gruppe löschen</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="161042844686301425">Cyan</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> Tabs zu Gruppe hinzugefügt</translation>
 <translation id="1657719826150349398">Tab nach unten verschieben</translation>
+<translation id="1713541401465507417">Alle Tabs und Gruppen schließen</translation>
+<translation id="176485176228926164"><ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> Tab zu Gruppe hinzugefügt</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab}other{<ph name="TABS_COUNT_MANY" /> Tabs}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab als Lesezeichen speichern}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs als Lesezeichen speichern}}</translation>
 <translation id="2118649612461486615">Händlerinfo</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden. Deinen Inkognitotab findest du dort jedoch nicht.}other{Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden. Deine # Inkognitotabs findest du dort jedoch nicht.}}</translation>
 <translation id="2162620598375156287">Jetzt <ph name="CURRENT_PRICE" /> auf <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tab-Gruppierung aufheben}other{Tab-Gruppierung aufheben}}</translation>
+<translation id="2271452184061378400">Hier werden deine Tabgruppen gespeichert</translation>
 <translation id="2277224997687551299">Gruppenname bearbeiten</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Tab zu Lesezeichen hinzufügen}other{Tabs zu Lesezeichen hinzufügen}}</translation>
+<translation id="2359808026110333948">Weiter</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab minimieren.}other{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren.}}</translation>
+<translation id="2498435670446402865">Tabgruppe umbenennen</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab minimieren}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren}}</translation>
 <translation id="2569352796411618312">Vorschlag: <ph name="NUMBER_OF_TABS" /> von deinen Tabs wurden längere Zeit nicht verwendet. Möchtest du sie schließen?</translation>
-<translation id="2613747923081026172">Gruppe erstellen</translation>
 <translation id="2662028055331606429">Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Zur Website</translation>
-<translation id="2759453070259087442">Tabgruppe "<ph name="TITLE_OF_GROUP" />" mit <ph name="NUMBER_OF_TABS" /> Tabs maximieren.</translation>
+<translation id="2677748264148917807">Verlassen</translation>
+<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> Tab hinzugefügt, <ph name="ANY_CHANGED" /> Tabs geändert, <ph name="ANY_CLOSED" /> Tabs geschlossen}other{<ph name="MANY_ADDED" /> Tabs hinzugefügt, <ph name="ANY_CHANGED" /> Tabs geändert, <ph name="ANY_CLOSED" /> Tabs geschlossen}}</translation>
+<translation id="2776817246640326047">{NUM_HOURS,plural, =1{Vor <ph name="NUM_HOURS_ONE" /> Stunde erstellt}other{Vor <ph name="NUM_HOURS_MANY" /> Stunden erstellt}}</translation>
 <translation id="2801787514987684416">Geschäftsinformationen anzeigen?</translation>
+<translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> Tab geschlossen}other{<ph name="MANY_CLOSED" /> Tabs geschlossen}}</translation>
+<translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
 <translation id="2928243913527329289">Google | Informationen zu diesem Händler</translation>
 <translation id="2977480621796371840">Aus Gruppe entfernen</translation>
+<translation id="29919168204617356">Inaktive Tabs werden automatisch geschlossen. Du kannst sie jederzeit im Verlauf finden.</translation>
 <translation id="3008554597174452548">Produkt nicht mehr beobachten</translation>
+<translation id="3026391124054406831">Erstelle Gruppen, um deine Tabs zu organisieren.</translation>
+<translation id="3051031624272448591">Du kannst sie jederzeit im Verlauf wiederherstellen</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> Preisnachlass auf das Produkt „<ph name="PRODUCT_NAME" />“</translation>
-<translation id="313819129451406482">{TABS_COUNT,plural, =1{Du hast <ph name="TABS_COUNT_ONE" /> archivierten Tab}other{Du hast <ph name="TABS_COUNT_MANY" /> archivierte Tabs}}</translation>
+<translation id="3078350928901129212">Farbe des Symbols für Tabgruppe (<ph name="COLOR_NAME" />)</translation>
 <translation id="3194464645767632461">Bewertung</translation>
+<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> Tab hinzugefügt, <ph name="ANY_CHANGED" /> Tabs geändert}other{<ph name="MANY_ADDED" /> Tabs hinzugefügt, <ph name="ANY_CHANGED" /> Tabs geändert}}</translation>
 <translation id="3291470810748040983">Du erhältst eine Benachrichtigung, wenn auf einem offenen Tab ein günstigerer Preis verfügbar ist</translation>
 <translation id="3328308545011660196">Vorschlag: <ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
+<translation id="3547352561153509682">Dadurch wird die Gruppe von allen Geräten gelöscht, die mit <ph name="USER_EMAIL" /> angemeldet sind</translation>
+<translation id="3613492231657284463">Dialogfeld „Inaktive Tabs“ ausblenden</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Vorschau: geteilte Tabelle.</translation>
-<translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab minimieren}other{Tabgruppe "<ph name="TITLE_OF_GROUP" />" mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren}}</translation>
+<translation id="381219490185664296">Tabgruppe aufheben?</translation>
 <translation id="3882834874697329510">Falls du benachrichtigt werden möchtest, wenn auf einem offenen Tab ein günstigerer Preis verfügbar ist, aktiviere Benachrichtigungen in den Einstellungen.</translation>
 <translation id="3940195383040445971">Preise auf Tabs beobachten</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Tab gruppieren}other{Tabs gruppieren}}</translation>
+<translation id="395587619114760247">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> inaktiver Tab}other{<ph name="TABS_COUNT_MANY" /> inaktive Tabs}}</translation>
+<translation id="3969565576924904454">„<ph name="TITLE_OF_GROUP" />“ öffnen</translation>
 <translation id="3996880007329611795">Benachrichtigungen erhalten</translation>
+<translation id="4009732926939031387">{NUM_DAYS,plural, =1{Vor <ph name="NUM_DAYS_ONE" /> Tag erstellt}other{Vor <ph name="NUM_DAYS_MANY" /> Tagen erstellt}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
+<translation id="4139634748112164403">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird endgültig gelöscht</translation>
+<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{Gruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab schließen, Farbe: <ph name="COLOR_NAME" />.}other{Gruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs schließen, Farbe: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4159784952369912983">Violett</translation>
-<translation id="4212246570487010370">Mehr ansehen</translation>
+<translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab maximieren.}other{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren.}}</translation>
 <translation id="427987768447457592">Neue Tabgruppe</translation>
-<translation id="4648718555153979859">Deine Tabs werden hier in Gruppen zusammengefasst</translation>
+<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> Tab geändert, <ph name="ANY_CLOSED" /> Tabs geschlossen}other{<ph name="MANY_CHANGED" /> Tabs geändert, <ph name="ANY_CLOSED" /> Tabs geschlossen}}</translation>
+<translation id="4371591986692297148">Inaktiv</translation>
+<translation id="4460014764210899310">Gruppierung aufheben</translation>
+<translation id="4590027107044272416">Du kannst jetzt hier einen neuen Tab öffnen</translation>
+<translation id="4632233446660511480">{TAB_COUNT,plural, =1{1 inaktiven Tab schließen?}other{<ph name="TAB_COUNT_MANY" /> inaktive Tabs schließen?}}</translation>
+<translation id="4686942373615810936">Gerade eben erstellt</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Nach 1 Tag schließen}other{Nach <ph name="DAY_COUNT_MANY" /> Tagen schließen}}</translation>
+<translation id="4777866634702576038">Tabgruppe löschen?</translation>
+<translation id="4783638485675352219">Titel und URLs von offenen Tabs von diesem Gerät mit dem Betriebssystem teilen</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> Rezension)}other{(<ph name="REVIEWS_COUNT_MANY" /> Rezensionen)}}</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
 <translation id="4870911314065352661">Alle Tabs schließen?</translation>
+<translation id="4871719318659334896">Gruppe schließen</translation>
+<translation id="4881695831933465202">Öffnen</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Tab schließen}other{Tabs schließen}}</translation>
+<translation id="4908147833782857886"><ph name="USER_EMAIL" /> Gruppen gespeichert (dadurch werden Tabs geschlossen und Gruppen gelöscht)</translation>
 <translation id="492284538114688557">Preisnachlass entdeckt</translation>
 <translation id="5007392906805964215">Ansehen</translation>
 <translation id="5073204694187207510">Vollbildraster ausblenden</translation>
 <translation id="5076161749301278626">Möchtest du dir Händlerrezensionen ansehen?</translation>
-<translation id="5082793167783849073">Du kannst Seiten schnell miteinander vergleichen, indem du eine Gruppe erstellst. Berühre und halte einen Link, um den Vorgang zu starten.</translation>
+<translation id="5082793167783849073">Du kannst Seiten schnell miteinander vergleichen, indem du eine Gruppe erstellst. Halte einen Link gedrückt, um den Vorgang zu starten.</translation>
+<translation id="5094423602314093681">Tab(s) entfernen und Gruppe löschen?</translation>
+<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> Tab hinzugefügt}other{<ph name="MANY_ADDED" /> Tabs hinzugefügt}}</translation>
 <translation id="5161254044473106830">Titel erforderlich</translation>
-<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Du hast <ph name="TABS_COUNT_ONE" /> Tab, den du in letzter Zeit nicht verwendet hast}other{Du hast <ph name="TABS_COUNT_MANY" /> Tabs, die du in letzter Zeit nicht verwendet hast}}</translation>
+<translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab schließen.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs schließen.}}</translation>
 <translation id="5339733443032484186">Dein letzter Tab</translation>
 <translation id="5400836586163650660">Grau</translation>
 <translation id="5490235265819901748">Tabgruppe maximiert</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
-<translation id="5545379293264651575">Ohne Ansehen schließen</translation>
+<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab schließen, Farbe: <ph name="COLOR_NAME" />.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs schließen, Farbe: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Geschäftsinformationen anzeigen, Option ist oben auf dem Bildschirm verfügbar</translation>
-<translation id="5558362125926932819">Tabgruppe mit <ph name="NUMBER_OF_TABS" /> Tabs schließen</translation>
-<translation id="5580090775658607195"><ph name="TAB_COUNT" /> Tabs gruppiert</translation>
+<translation id="5627941783489838464">Keine Tab-Updates</translation>
+<translation id="5635915157654811450">{TAB_COUNT,plural, =1{Tab wiederherstellen}other{Tabs wiederherstellen}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Link aus Chrome}other{<ph name="TABS_COUNT_MANY" /> Links aus Chrome}}</translation>
 <translation id="575494663145460764">Benachrichtigungen bei Preisnachlässen erhalten?</translation>
 <translation id="58326064309361797">Tabs zum Gruppieren ziehen</translation>
-<translation id="5846292395804797011">Tabgruppe "<ph name="TITLE_OF_GROUP" />" mit <ph name="NUMBER_OF_TABS" /> Tabs schließen</translation>
 <translation id="5901630391730855834">Gelb</translation>
 <translation id="5972844218283131174">Auswahl für alle aufheben</translation>
 <translation id="6017514345406065928">Grün</translation>
+<translation id="6040143037577758943">Schließen</translation>
+<translation id="6051432659151380973">Deine Tabgruppen werden automatisch gespeichert</translation>
 <translation id="6054741997831917303">Der Preis dieses Artikels ist kürzlich von <ph name="PREVIOUS_PRICE" /> auf <ph name="NEW_PRICE" /> gefallen</translation>
+<translation id="6082313992897617440">Du verlierst dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“</translation>
 <translation id="6193448654517602979">Tabs auswählen</translation>
 <translation id="6228793724645064692">(Händlerbewertung)</translation>
+<translation id="6271513594716432922">Alle inaktiven Tabs schließen</translation>
 <translation id="6333260925957816943">Informationen zu diesem Händler</translation>
+<translation id="6381032505162537930">Hier werden deine Tabgruppen angezeigt</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Gruppierung des <ph name="TABS_COUNT_ONE" /> ausgewählten Tabs aufheben}other{Gruppierung der <ph name="TABS_COUNT_MANY" /> ausgewählten Tabs aufheben}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Deine geschlossenen Tabs findest du im Chrome-Hauptmenü unter „Zuletzt geöffnete Tabs“. Dein Inkognitotab ist jedoch nicht dort aufgeführt.}other{Deine geschlossenen Tabs findest du im Chrome-Hauptmenü unter „Zuletzt geöffnete Tabs“. # Inkognitotabs sind jedoch nicht dort aufgeführt.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab}other{<ph name="TABS_COUNT_MANY" /> Tabs}}</translation>
+<translation id="6527303717912515753">Teilen</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Nach 1 Tag}other{Nach <ph name="DAY_COUNT_MANY" /> Tagen}}</translation>
 <translation id="6549021453810473782">Händlerinfo anzeigen</translation>
+<translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Tab nach links bewegen</translation>
 <translation id="6615455863669487791">Zeigen</translation>
-<translation id="661742612106409204">Deine geschlossenen Tabs findest du im Chrome-Hauptmenü unter „Zuletzt geöffnete Tabs“.</translation>
-<translation id="6840760312327750441">Wenn du Tabs gruppieren möchtest, berühre und halte einen Tab. Ziehe ihn dann auf einen anderen Tab.</translation>
+<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> Tab geändert}other{<ph name="MANY_CHANGED" /> Tabs geändert}}</translation>
+<translation id="6694634756612002311">Freigaben verwalten</translation>
+<translation id="6744956528665271406">Gruppenfarbe bearbeiten</translation>
 <translation id="6856809498882026482">Modus für die Mehrfachauswahl ausblenden</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{Freigegebene Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab maximieren, Farbe: <ph name="COLOR_NAME" />.}other{Freigegebene Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren, Farbe: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Tab teilen}other{Tabs teilen}}</translation>
 <translation id="7129458170538955174">Informationen zu diesem Händler sind halb geöffnet</translation>
+<translation id="7200189319044305940">{NUMBER_OF_TABS,plural, =1{Gruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab schließen.}other{Gruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs schließen.}}</translation>
 <translation id="7204204600596740190">Mehrfachauswahl</translation>
+<translation id="7211038039686180558">Deine Tabgruppen werden automatisch auf allen deinen angemeldeten Geräten gespeichert und aktualisiert</translation>
+<translation id="731648547091221002"><ph name="COLOR_NAME" /> ausgewählt</translation>
 <translation id="7326879924029668159">Rückgabebedingungen und mehr</translation>
 <translation id="7352298686197644113">Sieh nach, welcher Artikel auf deinen geöffneten Tabs zu einem günstigeren Preis erhältlich ist</translation>
+<translation id="7421293530411019405">Tabgruppe verlassen?</translation>
+<translation id="7452985128687107478">Tabgruppen werden automatisch auf allen deinen Geräten gespeichert und aktualisiert</translation>
+<translation id="747459581954555080">Alle wiederherstellen</translation>
 <translation id="753732157349120914">Tab-Wechsler</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> Rezension von Google}other{<ph name="REVIEWS_COUNT_MANY" /> Rezensionen von Google}}</translation>
 <translation id="7559245342362162951">Tabs der Gruppe in Vollbildraster anzeigen</translation>
+<translation id="7658239707568436148">Abbrechen</translation>
+<translation id="7688386659311034820">Dialogfeld „Inaktive Tabs“</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab teilen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs teilen}}</translation>
+<translation id="7773714564112603605">Tab entfernen und Gruppe löschen</translation>
 <translation id="7792771145871471484">Vorschläge ansehen.</translation>
+<translation id="7825973332242257878">Tabgruppen</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab gruppieren}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs gruppieren}}</translation>
+<translation id="7853202427316060426">Aktivität</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> Rezension}other{Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> Rezensionen}}</translation>
 <translation id="7885132941432959125">Tab nach rechts verschieben</translation>
+<translation id="7939917283308035850"><ph name="COLOR_NAME" /> nicht ausgewählt</translation>
 <translation id="7942349550061667556">Rot</translation>
+<translation id="7961015016161918242">Nie</translation>
 <translation id="7966321538264951561">Vorschläge ablehnen.</translation>
+<translation id="799469866974412355">Neue Gruppe von deinem anderen Gerät</translation>
 <translation id="8029301326595421733">Informationen zu diesem Händler sind vollständig geöffnet</translation>
+<translation id="8076492880354921740">Tabs</translation>
+<translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab maximieren, Farbe: <ph name="COLOR_NAME" />.}other{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren, Farbe: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Tab nach oben verschieben</translation>
+<translation id="8261506727792406068">Löschen</translation>
+<translation id="8338427544764842461">Deine Tabgruppen werden hier gespeichert und auf allen deinen angemeldeten Geräten aktualisiert</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Freigegebene Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab maximieren, Farbe: <ph name="COLOR_NAME" />.}other{Freigegebene Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren, Farbe: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab schließen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs schließen}}</translation>
 <translation id="8398929769197326728">Neuer Ordner – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Tabgruppe mit <ph name="NUMBER_OF_TABS" /> Tabs maximieren</translation>
+<translation id="8428213095426709021">Einstellungen</translation>
+<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> Tab hinzugefügt, <ph name="ANY_CLOSED" /> Tabs geschlossen}other{<ph name="MANY_ADDED" /> Tabs hinzugefügt, <ph name="ANY_CLOSED" /> Tabs geschlossen}}</translation>
+<translation id="8631711675211020168">Alle Mitglieder verlieren dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ und sie wird von allen Geräten gelöscht</translation>
+<translation id="8633025649649592204">Letzte Aktivität</translation>
+<translation id="870736955561925754">Tab schließen und Gruppe löschen?</translation>
 <translation id="8714939927607906138">Günstigerer Preis</translation>
+<translation id="8730621377337864115">Fertig</translation>
 <translation id="8730999928494395583">Deine Aktivitäten auf diesen Inkognitotabs werden von diesem Gerät gelöscht</translation>
+<translation id="875848103419578654">{NUM_MONTHS,plural, =1{Vor <ph name="NUM_MONTHS_ONE" /> Monat erstellt}other{Vor <ph name="NUM_MONTHS_MANY" /> Monaten erstellt}}</translation>
 <translation id="8820741577754260431">Preisnachlässe auf deinen Tabs sehen</translation>
+<translation id="8887921976452567404">Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden.</translation>
+<translation id="8915916167043355778">Alle schließen</translation>
+<translation id="8926389886865778422">Nicht mehr fragen</translation>
+<translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab maximieren.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren.}}</translation>
 <translation id="9090098097337832354">Informationen zu diesem Händler sind geschlossen</translation>
+<translation id="9111228330448174435">Beim Erstellen einer neuen Tabgruppe kleines Fenster anzeigen</translation>
 <translation id="9150694013019234766">Am unteren Bildschirmrand kannst du zwischen den Tabs in deiner Tabgruppe wechseln</translation>
 <translation id="9169594135889675189">Der Gruppe einen neuen Tab hinzufügen</translation>
-<translation id="955558140275419384">In diesem Editor kannst du dir alle archivierten Tabs ansehen und sie aufräumen.</translation>
-<translation id="959682366969460160">Besser organisiert</translation>
+<translation id="9216898458513705996">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird auf allen Geräten gelöscht, die mit <ph name="USER_EMAIL" /> angemeldet sind</translation>
+<translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab maximieren, Farbe: <ph name="COLOR_NAME" />.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren, Farbe: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

@@ -38,7 +38,7 @@ void RunAccessibilityPaintChecks(View* view) {
   if (!node_data.HasState(ax::mojom::State::kFocusable))
     return;
 
-// TODO(crbug.com/1218186): Enable these DCHECKs on ash. One of the current
+// TODO(crbug.com/40185544): Enable these DCHECKs on ash. One of the current
 // failures seem to be SearchResultPageView marking itself as ignored
 // (temporarily), which marks focusable children as ignored. One way of enabling
 // these here would be to turn `kSkipAccessibilityPaintChecks` into a cascading

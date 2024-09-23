@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_TOOLBAR_SECONDARY_TOOLBAR_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
+#import "ios/chrome/browser/ui/toolbar/secondary_toolbar_consumer.h"
 
 class FullscreenController;
 
@@ -14,7 +15,8 @@ class FullscreenController;
 
 /// View controller for the secondary part of the adaptive toolbar. It is the
 /// one at the bottom of the screen. Displayed only on specific size classes.
-@interface SecondaryToolbarViewController : AdaptiveToolbarViewController
+@interface SecondaryToolbarViewController
+    : AdaptiveToolbarViewController <SecondaryToolbarConsumer>
 
 /// Protocol to retrieve the keyboard state on the active web state.
 @property(nonatomic, weak) id<SecondaryToolbarKeyboardStateProvider>

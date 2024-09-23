@@ -10,6 +10,7 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -146,7 +147,10 @@ public class ServiceWorkerPaymentAppBridge {
     @SuppressWarnings("unchecked")
     @CalledByNative
     private static void addPaymentAppInfo(
-            Object appsInfo, String scope, @Nullable String name, @Nullable Bitmap icon) {
+            Object appsInfo,
+            @JniType("std::string") String scope,
+            @JniType("std::string") String name,
+            @Nullable Bitmap icon) {
         ((Map<String, Pair<String, Bitmap>>) appsInfo).put(scope, new Pair<>(name, icon));
     }
 

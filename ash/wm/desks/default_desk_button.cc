@@ -39,9 +39,10 @@ DefaultDeskButton::DefaultDeskButton(DeskBarViewBase* bar_view)
                      bar_view,
                      base::BindRepeating(&DefaultDeskButton::OnButtonPressed,
                                          base::Unretained(this))) {
-  GetViewAccessibility().OverrideName(
+  GetViewAccessibility().SetName(
       l10n_util::GetStringFUTF16(IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME,
-                                 DesksController::Get()->desks()[0]->name()));
+                                 DesksController::Get()->desks()[0]->name()),
+      ax::mojom::NameFrom::kAttribute);
 
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kDefaultButtonCornerRadius));
@@ -53,7 +54,8 @@ void DefaultDeskButton::UpdateLabelText() {
       bounds().width() - 2 * kDefaultButtonHorizontalPadding, gfx::ELIDE_TAIL));
 }
 
-gfx::Size DefaultDeskButton::CalculatePreferredSize() const {
+gfx::Size DefaultDeskButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   auto* root_window =
       bar_view_->GetWidget()->GetNativeWindow()->GetRootWindow();
   const int preview_width = DeskMiniView::GetPreviewWidth(

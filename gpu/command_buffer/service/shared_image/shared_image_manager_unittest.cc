@@ -23,13 +23,13 @@ namespace gpu {
 namespace {
 
 std::unique_ptr<TestImageBacking> CreateImageBacking(size_t size_in_bytes) {
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
   auto alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
 
   return std::make_unique<TestImageBacking>(mailbox, format, size, color_space,
                                             surface_origin, alpha_type, usage,
@@ -41,13 +41,13 @@ TEST(SharedImageManagerTest, BasicRefCounting) {
   SharedImageManager manager;
   auto tracker = std::make_unique<MemoryTypeTracker>(nullptr);
 
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
   auto alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
 
   auto backing = std::make_unique<TestImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
@@ -131,13 +131,13 @@ TEST(SharedImageManagerTest, TransferRefSameTracker) {
   SharedImageManager manager;
   auto tracker = std::make_unique<MemoryTypeTracker>(nullptr);
 
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
   auto alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
 
   auto backing = std::make_unique<TestImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
@@ -163,13 +163,13 @@ TEST(SharedImageManagerTest, TransferRefNewTracker) {
   auto tracker = std::make_unique<MemoryTypeTracker>(nullptr);
   auto tracker2 = std::make_unique<MemoryTypeTracker>(nullptr);
 
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
   auto alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
 
   auto backing = std::make_unique<TestImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
@@ -233,13 +233,13 @@ TEST(SharedImageManagerTest, TransferRefCrossThread) {
   auto memory_type_tracker2 = std::make_unique<MemoryTypeTracker>(
       &memory_tracker2, memory_tracker2.task_runner());
 
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
   auto alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
 
   auto backing = std::make_unique<TestImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
@@ -283,7 +283,7 @@ TEST(SharedImageManagerTest, GetUsageForMailbox) {
 
   auto backing = CreateImageBacking(kSizeBytes);
   const gpu::Mailbox mailbox = backing->mailbox();
-  const uint32_t usage = backing->usage();
+  const gpu::SharedImageUsageSet usage = backing->usage();
 
   SharedImageManager manager;
   EXPECT_EQ(std::nullopt, manager.GetUsageForMailbox(mailbox));

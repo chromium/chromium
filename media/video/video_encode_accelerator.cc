@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -37,16 +38,41 @@ BitstreamBufferMetadata::BitstreamBufferMetadata(size_t payload_size_bytes,
     : payload_size_bytes(payload_size_bytes),
       key_frame(key_frame),
       timestamp(timestamp) {}
+BitstreamBufferMetadata::~BitstreamBufferMetadata() = default;
 
-bool BitstreamBufferMetadata::dropped_frame() const {
-  return payload_size_bytes == 0;
+// static
+BitstreamBufferMetadata BitstreamBufferMetadata::CreateForDropFrame(
+    base::TimeDelta ts,
+    uint8_t sid,
+    bool end_of_picture) {
+  BitstreamBufferMetadata metadata(0, false, ts);
+  metadata.drop = DropFrameMetadata{
+      .spatial_idx = sid,
+      .end_of_picture = end_of_picture,
+  };
+
+  return metadata;
 }
 
-BitstreamBufferMetadata::~BitstreamBufferMetadata() = default;
+bool BitstreamBufferMetadata::end_of_picture() const {
+  if (vp9) {
+    return vp9->end_of_picture;
+  }
+  if (drop) {
+    return drop->end_of_picture;
+  }
+  return true;
+}
+bool BitstreamBufferMetadata::dropped_frame() const {
+  return drop.has_value();
+}
 
 std::optional<uint8_t> BitstreamBufferMetadata::spatial_idx() const {
   if (vp9) {
     return vp9->spatial_idx;
+  }
+  if (drop) {
+    return drop->spatial_idx;
   }
   return std::nullopt;
 }
@@ -55,32 +81,59 @@ VideoEncodeAccelerator::Config::Config()
     : Config(PIXEL_FORMAT_UNKNOWN,
              gfx::Size(),
              VIDEO_CODEC_PROFILE_UNKNOWN,
-             Bitrate::ConstantBitrate(0u)) {}
+             Bitrate::ConstantBitrate(0u),
+             kDefaultFramerate,
+             StorageType::kShmem,
+             ContentType::kCamera) {}
 
 VideoEncodeAccelerator::Config::Config(const Config& config) = default;
 
 VideoEncodeAccelerator::Config::Config(VideoPixelFormat input_format,
                                        const gfx::Size& input_visible_size,
                                        VideoCodecProfile output_profile,
-                                       const Bitrate& bitrate)
+                                       const Bitrate& bitrate,
+                                       uint32_t framerate,
+                                       StorageType storage_type,
+                                       ContentType content_type)
     : input_format(input_format),
       input_visible_size(input_visible_size),
       output_profile(output_profile),
-      bitrate(bitrate) {}
+      bitrate(bitrate),
+      framerate(framerate),
+      storage_type(storage_type),
+      content_type(content_type) {}
 
 VideoEncodeAccelerator::Config::~Config() = default;
 
 std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
   std::string str = base::StringPrintf(
       "input_format: %s, input_visible_size: %s, output_profile: %s, "
-      "bitrate: %s",
+      "bitrate: %s, framerate: %u",
       VideoPixelFormatToString(input_format).c_str(),
       input_visible_size.ToString().c_str(),
-      GetProfileName(output_profile).c_str(), bitrate.ToString().c_str());
-  if (initial_framerate) {
-    str += base::StringPrintf(", initial_framerate: %u",
-                              initial_framerate.value());
+      GetProfileName(output_profile).c_str(), bitrate.ToString().c_str(),
+      framerate);
+
+  str += ", storage_type: ";
+  switch (storage_type) {
+    case StorageType::kShmem:
+      str += "SharedMemory";
+      break;
+    case StorageType::kGpuMemoryBuffer:
+      str += "GpuMemoryBuffer";
+      break;
   }
+
+  str += ", content_type: ";
+  switch (content_type) {
+    case ContentType::kCamera:
+      str += "camera";
+      break;
+    case ContentType::kDisplay:
+      str += "display";
+      break;
+  }
+
   if (gop_length)
     str += base::StringPrintf(", gop_length: %u", gop_length.value());
 
@@ -106,15 +159,8 @@ std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
       break;
   }
 
-  str += ", content_type: ";
-  switch (content_type) {
-    case ContentType::kCamera:
-      str += "camera";
-      break;
-    case ContentType::kDisplay:
-      str += "display";
-      break;
-  }
+  str += base::StringPrintf(", drop_frame_thresh_percentage: %hhu",
+                            drop_frame_thresh_percentage);
 
   if (spatial_layers.empty())
     return str;
@@ -171,13 +217,17 @@ VideoEncodeAccelerator::SupportedProfile::SupportedProfile(
     uint32_t max_framerate_numerator,
     uint32_t max_framerate_denominator,
     SupportedRateControlMode rc_modes,
-    const std::vector<SVCScalabilityMode>& scalability_modes)
+    const std::vector<SVCScalabilityMode>& scalability_modes,
+    const std::vector<VideoPixelFormat>& gpu_supported_pixel_formats,
+    bool supports_gpu_shared_images)
     : profile(profile),
       max_resolution(max_resolution),
       max_framerate_numerator(max_framerate_numerator),
       max_framerate_denominator(max_framerate_denominator),
       rate_control_modes(rc_modes),
-      scalability_modes(scalability_modes) {}
+      scalability_modes(scalability_modes),
+      gpu_supported_pixel_formats(gpu_supported_pixel_formats),
+      supports_gpu_shared_images(supports_gpu_shared_images) {}
 
 VideoEncodeAccelerator::SupportedProfile::SupportedProfile(
     const SupportedProfile& other) = default;
@@ -202,13 +252,18 @@ bool VideoEncodeAccelerator::IsFlushSupported() {
 
 bool VideoEncodeAccelerator::IsGpuFrameResizeSupported() {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1166889) Add proper method overrides in
+  // TODO(crbug.com/40164413) Add proper method overrides in
   // MojoVideoEncodeAccelerator and other subclasses that might return true.
   return true;
 #else
   return false;
 #endif
 }
+
+void VideoEncodeAccelerator::SetCommandBufferHelperCB(
+    base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+        get_command_buffer_helper_cb,
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {}
 
 void VideoEncodeAccelerator::RequestEncodingParametersChange(
     const VideoBitrateAllocation& bitrate_allocation,
@@ -262,9 +317,8 @@ bool operator==(const BitstreamBufferMetadata& l,
                 const BitstreamBufferMetadata& r) {
   return l.payload_size_bytes == r.payload_size_bytes &&
          l.key_frame == r.key_frame && l.timestamp == r.timestamp &&
-         l.end_of_picture == r.end_of_picture && l.vp8 == r.vp8 &&
-         l.vp9 == r.vp9 && l.h264 == r.h264 && l.av1 == r.av1 &&
-         l.h265 == r.h265;
+         l.vp8 == r.vp8 && l.vp9 == r.vp9 && l.h264 == r.h264 &&
+         l.av1 == r.av1 && l.h265 == r.h265;
 }
 
 bool operator==(const VideoEncodeAccelerator::Config::SpatialLayer& l,
@@ -280,8 +334,7 @@ bool operator==(const VideoEncodeAccelerator::Config& l,
   return l.input_format == r.input_format &&
          l.input_visible_size == r.input_visible_size &&
          l.output_profile == r.output_profile && l.bitrate == r.bitrate &&
-         l.initial_framerate == r.initial_framerate &&
-         l.gop_length == r.gop_length &&
+         l.framerate == r.framerate && l.gop_length == r.gop_length &&
          l.h264_output_level == r.h264_output_level &&
          l.storage_type == r.storage_type && l.content_type == r.content_type &&
          l.spatial_layers == r.spatial_layers &&

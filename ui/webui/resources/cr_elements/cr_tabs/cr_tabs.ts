@@ -19,87 +19,98 @@
  *   - no horizontal scrolling, it is assumed that tabs always fit in the
  *     available space
  */
-import '../cr_hidden_style.css.js';
-import '../cr_shared_vars.css.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getCss} from './cr_tabs.css.js';
+import {getHtml} from './cr_tabs.html.js';
 
-import {getTemplate} from './cr_tabs.html.js';
+export const NONE_SELECTED: number = -1;
 
-export class CrTabsElement extends PolymerElement {
+export class CrTabsElement extends CrLitElement {
   static get is() {
     return 'cr-tabs';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       // Optional icon urls displayed in each tab.
       tabIcons: {
         type: Array,
-        value: () => [],
       },
 
       // Tab names displayed in each tab.
       tabNames: {
         type: Array,
-        value: () => [],
       },
 
       /** Index of the selected tab. */
       selected: {
         type: Number,
         notify: true,
-        observer: 'onSelectedChanged_',
       },
     };
   }
 
-  tabIcons: string[];
-  tabNames: string[];
-  selected: number;
+  tabIcons: string[] = [];
+  tabNames: string[] = [];
+  selected: number = NONE_SELECTED;
 
   private isRtl_: boolean = false;
-  private lastSelected_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
     this.isRtl_ = this.matches(':host-context([dir=rtl]) cr-tabs');
   }
 
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     this.setAttribute('role', 'tablist');
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
   }
 
-  private getAriaSelected_(index: number): string {
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('selected')) {
+      this.onSelectedChanged_(this.selected, changedProperties.get('selected'));
+    }
+  }
+
+  protected getAriaSelected_(index: number): string {
     return index === this.selected ? 'true' : 'false';
   }
 
-  private getIconStyle_(index: number): string {
+  protected getIconStyle_(index: number): string {
     const icon = this.tabIcons[index];
     return icon ? `-webkit-mask-image: url(${icon}); display: block;` : '';
   }
 
-  private getTabindex_(index: number): string {
+  protected getTabindex_(index: number): string {
     return index === this.selected ? '0' : '-1';
   }
 
-  private getSelectedClass_(index: number): string {
+  protected getSelectedClass_(index: number): string {
     return index === this.selected ? 'selected' : '';
   }
 
-  private onSelectedChanged_(newSelected: number, oldSelected: number) {
+  private onSelectedChanged_(
+      newSelected: number, oldSelected: number|undefined) {
+    if (newSelected === NONE_SELECTED || oldSelected === NONE_SELECTED ||
+        oldSelected === undefined) {
+      return;
+    }
+
     const tabs = this.shadowRoot!.querySelectorAll('.tab');
-    if (tabs.length === 0 || oldSelected === undefined ||
-        tabs.length <= newSelected || tabs.length <= oldSelected) {
-      // Tabs are not fully rendered yet.
+
+    if (tabs.length <= oldSelected) {
       return;
     }
 
@@ -127,7 +138,7 @@ export class CrTabsElement extends PolymerElement {
     this.updateIndicator_(newIndicator, newTabRect, leftmostEdge, fullWidth);
   }
 
-  private onKeyDown_(e: KeyboardEvent) {
+  private async onKeyDown_(e: KeyboardEvent) {
     const count = this.tabNames.length;
     let newSelection;
     if (e.key === 'Home') {
@@ -144,6 +155,7 @@ export class CrTabsElement extends PolymerElement {
     e.preventDefault();
     e.stopPropagation();
     this.selected = newSelection;
+    await this.updateComplete;
     this.shadowRoot!.querySelector<HTMLElement>('.tab.selected')!.focus();
   }
 
@@ -153,8 +165,9 @@ export class CrTabsElement extends PolymerElement {
     indicator.style.transform = `translateX(0) scaleX(1)`;
   }
 
-  private onTabClick_(e: DomRepeatEvent<string>) {
-    this.selected = e.model.index;
+  protected onTabClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    this.selected = Number(target.dataset['index']);
   }
 
   private updateIndicator_(

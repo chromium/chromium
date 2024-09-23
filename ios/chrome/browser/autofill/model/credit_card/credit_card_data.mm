@@ -15,7 +15,7 @@
 
 - (instancetype)initWithCreditCard:(const autofill::CreditCard&)creditCard
                               icon:(UIImage*)icon {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _cardNameAndLastFourDigits =
         base::SysUTF16ToNSString(creditCard.CardNameAndLastFourDigits());
     _cardDetails = base::SysUTF16ToNSString(

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/seekable_buffer.h"
 
 #include <algorithm>
@@ -88,7 +93,8 @@ bool SeekableBuffer::Append(const scoped_refptr<DataBuffer>& buffer_in) {
 
 bool SeekableBuffer::Append(const uint8_t* data, int size) {
   if (size > 0) {
-    scoped_refptr<DataBuffer> data_buffer = DataBuffer::CopyFrom(data, size);
+    scoped_refptr<DataBuffer> data_buffer =
+        DataBuffer::CopyFrom(base::make_span(data, static_cast<size_t>(size)));
     return Append(data_buffer);
   } else {
     // Return true if we have forward capacity.

@@ -25,11 +25,23 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 
+#include "base/compiler_specific.h"
+#include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix_read_only.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/image.h"
+#include "third_party/blink/renderer/platform/graphics/pattern.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+class DOMMatrix2DInit;
+class ExecutionContext;
 
 Pattern::RepeatMode CanvasPattern::ParseRepetitionType(
     const String& type,
@@ -58,7 +70,7 @@ CanvasPattern::CanvasPattern(scoped_refptr<Image> image,
                              bool origin_clean)
     : pattern_(Pattern::CreateImagePattern(image, repeat)),
       origin_clean_(origin_clean) {
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kCreatePattern, image ? image->width() : 0,
         image ? image->height() : 0, repeat);
@@ -73,7 +85,7 @@ void CanvasPattern::setTransform(DOMMatrix2DInit* transform,
   if (!m) {
     return;
   }
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(m->m11(), m->m12(), m->m21(),
                                                 m->m22(), m->m41(), m->m42());
   }

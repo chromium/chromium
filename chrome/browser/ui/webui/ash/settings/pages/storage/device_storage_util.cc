@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
 
+#include <bit>
+
 namespace ash::settings {
 
 int64_t RoundByteSize(int64_t bytes) {
@@ -15,20 +17,7 @@ int64_t RoundByteSize(int64_t bytes) {
     return 0;
   }
 
-  // Subtract one to the original number of bytes.
-  bytes--;
-  // Set all the lower bits to 1.
-  bytes |= bytes >> 1;
-  bytes |= bytes >> 2;
-  bytes |= bytes >> 4;
-  bytes |= bytes >> 8;
-  bytes |= bytes >> 16;
-  bytes |= bytes >> 32;
-  // Add one. The one bit beyond the highest set bit is set to 1. All the lower
-  // bits are set to 0.
-  bytes++;
-
-  return bytes;
+  return std::bit_ceil(static_cast<uint64_t>(bytes));
 }
 
 }  // namespace ash::settings

@@ -139,6 +139,21 @@ BreakAppeal CalculateBreakAppealInside(
 inline LayoutUnit ClampedToValidFragmentainerCapacity(LayoutUnit length) {
   return std::max(length, LayoutUnit(1));
 }
+// This function is most commonly used to figure out space available to children
+// of a builder, but if it's used to figure out the minimum valid fragmentainer
+// size for the fragment itself, `is_for_children` may be cleared, so that any
+// cloned box decorations are included. Such box decorations will otherwise be
+// subtracted, since children should steer clear of them.
+inline LayoutUnit ClampedToValidFragmentainerCapacity(
+    const BoxFragmentBuilder& builder,
+    LayoutUnit length,
+    bool is_for_children) {
+  LayoutUnit minimum(1);
+  if (builder.ShouldCloneBoxEndDecorations() && !is_for_children) {
+    minimum += builder.BorderScrollbarPadding().BlockSum();
+  }
+  return std::max(length, minimum);
+}
 
 // Return the logical size of the specified fragmentainer, with
 // clamping block_size.
@@ -151,10 +166,60 @@ LogicalSize FragmentainerLogicalCapacity(
 // than 0 (even if the final fragentainer size may very well be 0). The spec
 // says that fragmentainers have to accept at least 1px of content. See
 // https://www.w3.org/TR/css-break-3/#breaking-rules
-inline LayoutUnit FragmentainerCapacity(const ConstraintSpace& space) {
+//
+// This function is most commonly used to figure out space available to children
+// of a builder, but if it's used to figure out the space available the fragment
+// itself, `is_for_children` may be cleared, so that any cloned box decorations
+// are included. Such box decorations will otherwise be subtracted, since
+// children should steer clear of them.
+inline LayoutUnit FragmentainerCapacity(const BoxFragmentBuilder& builder,
+                                        bool is_for_children) {
+  const ConstraintSpace& space = builder.GetConstraintSpace();
   if (!space.HasKnownFragmentainerBlockSize())
     return kIndefiniteSize;
-  return ClampedToValidFragmentainerCapacity(space.FragmentainerBlockSize());
+  LayoutUnit size = space.FragmentainerBlockSize();
+  if (builder.Style().BoxDecorationBreak() == EBoxDecorationBreak::kClone &&
+      is_for_children) {
+    // Cloned box decorations effectively shrinks the fragmentainer space
+    // available to children.
+    size -= builder.BorderScrollbarPadding().block_start;
+    if (builder.ShouldCloneBoxEndDecorations()) {
+      size -= builder.BorderScrollbarPadding().block_end;
+    }
+  }
+  return ClampedToValidFragmentainerCapacity(builder, size, is_for_children);
+}
+
+// Get the start block-offset relatively to the fragmentainer start.
+//
+// This function is most commonly called for children of a builder, but if it's
+// used to figure out the offset for the fragment itself, `is_for_children` may
+// be cleared, so that any cloned box decorations are included. Such box
+// decorations will otherwise be subtracted, since children should steer clear
+// of them.
+inline LayoutUnit FragmentainerOffset(const BoxFragmentBuilder& builder,
+                                      bool is_for_children = true) {
+  const ConstraintSpace& space = builder.GetConstraintSpace();
+  if (!space.HasBlockFragmentation()) {
+    return LayoutUnit();
+  }
+  LayoutUnit offset = space.FragmentainerOffset();
+  if (builder.Style().BoxDecorationBreak() == EBoxDecorationBreak::kClone &&
+      is_for_children) {
+    // Adjust the fragmentainer offset, so that any child inside that's at the
+    // block-start content edge is seen as offset 0, which helps the
+    // fragmentainer machinery to not insert a break right after another break,
+    // before there has been some content progress. This fragmentainer offset
+    // isn't used to position things in layout, but only to determine whether
+    // we're at the beginning of a fragmentainer, and by the layout cache (so
+    // that we miss if a fragmented box got its offset changed), so adjusting it
+    // like this should be fine.
+    const BlockBreakToken* break_token = builder.PreviousBreakToken();
+    if (!break_token || !break_token->IsAtBlockEnd()) {
+      offset -= builder.BorderScrollbarPadding().block_start;
+    }
+  }
+  return offset;
 }
 
 // Return the block space that was available in the current fragmentainer at the
@@ -163,12 +228,20 @@ inline LayoutUnit FragmentainerCapacity(const ConstraintSpace& space) {
 // instead. If available space is negative, zero is returned. In the case of
 // initial column balancing, the size is unknown, in which case kIndefiniteSize
 // is returned.
-inline LayoutUnit FragmentainerSpaceLeft(const ConstraintSpace& space) {
+//
+// This function is most commonly used to figure out space available to children
+// of a builder, but if it's used to figure out the space available the fragment
+// itself, `is_for_children` may be cleared, so that any cloned box decorations
+// are included. Such box decorations will otherwise be subtracted, since
+// children should steer clear of them.
+inline LayoutUnit FragmentainerSpaceLeft(const BoxFragmentBuilder& builder,
+                                         bool is_for_children) {
+  const ConstraintSpace& space = builder.GetConstraintSpace();
   if (!space.HasKnownFragmentainerBlockSize())
     return kIndefiniteSize;
-  LayoutUnit available_space =
-      FragmentainerCapacity(space) - space.FragmentainerOffset();
-  return available_space.ClampNegativeToZero();
+  LayoutUnit capacity = FragmentainerCapacity(builder, is_for_children);
+  LayoutUnit offset = FragmentainerOffset(builder, is_for_children);
+  return (capacity - offset).ClampNegativeToZero();
 }
 
 // Return the border edge block-offset from the block-start of the fragmentainer
@@ -179,14 +252,9 @@ inline LayoutUnit FragmentainerSpaceLeft(const ConstraintSpace& space) {
 inline LayoutUnit FragmentainerOffsetAtBfc(const ConstraintSpace& space) {
   return space.FragmentainerOffset() - space.ExpectedBfcBlockOffset();
 }
-
-// Same as FragmentainerSpaceLeft(), but not to be called in the initial
-// column balancing pass (when fragmentainer block-size is unknown), and without
-// any clamping of negative values.
-inline LayoutUnit UnclampedFragmentainerSpaceLeft(
-    const ConstraintSpace& space) {
-  DCHECK(space.HasKnownFragmentainerBlockSize());
-  return FragmentainerCapacity(space) - space.FragmentainerOffset();
+inline LayoutUnit FragmentainerOffsetAtBfc(const BoxFragmentBuilder& builder) {
+  return FragmentainerOffset(builder) -
+         builder.GetConstraintSpace().ExpectedBfcBlockOffset();
 }
 
 // Adjust margins to take fragmentation into account. Leading/trailing block
@@ -220,19 +288,25 @@ LogicalOffset GetFragmentainerProgression(const BoxFragmentBuilder&,
                                           FragmentationType);
 
 // Set up a child's constraint space builder for block fragmentation. The child
-// participates in the same fragmentation context as parent_space. If the child
-// establishes a new formatting context, |fragmentainer_offset_delta| must be
-// set to the offset from the parent block formatting context, or, if the parent
-// formatting context starts in a previous fragmentainer; the offset from the
-// current fragmentainer block-start. |requires_content_before_breaking| is set
-// when inside node that we know will fit (and stay) in the current
-// fragmentainer. See MustStayInCurrentFragmentainer() in BoxFragmentBuilder.
+// participates in the same fragmentation context as parent_space.
+// |requires_content_before_breaking| is set when inside node that we know will
+// fit (and stay) in the current fragmentainer. See
+// MustStayInCurrentFragmentainer() in BoxFragmentBuilder.
 void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
                                        const LayoutInputNode& child,
-                                       LayoutUnit fragmentainer_offset_delta,
-                                       ConstraintSpaceBuilder*,
-                                       bool is_new_fc,
-                                       bool requires_content_before_breaking);
+                                       LayoutUnit fragmentainer_offset,
+                                       LayoutUnit fragmentainer_block_size,
+                                       bool requires_content_before_breaking,
+                                       ConstraintSpaceBuilder*);
+// If the child establishes a new formatting context,
+// |fragmentainer_offset_delta| must be set to the offset from the parent block
+// formatting context, or, if the parent formatting context starts in a previous
+// fragmentainer; the offset from the current fragmentainer block-start.
+void SetupSpaceBuilderForFragmentation(
+    const BoxFragmentBuilder& parent_fragment_builder,
+    const LayoutInputNode& child,
+    LayoutUnit fragmentainer_offset_delta,
+    ConstraintSpaceBuilder*);
 
 // Set up a node's fragment builder for block fragmentation. To be done at the
 // beginning of layout.
@@ -242,9 +316,28 @@ void SetupFragmentBuilderForFragmentation(
     const BlockBreakToken* previous_break_token,
     BoxFragmentBuilder*);
 
+// Return whether any block-start border+padding should be included in the
+// fragment being generated. Only one of the fragments should include this,
+// unless box decorations are to be cloned.
+bool ShouldIncludeBlockStartBorderPadding(const BoxFragmentBuilder&);
+
 // Return whether any block-end border+padding should be included in the
-// fragment being generated. Only one of the fragments should include this.
+// fragment being generated. Only one of the fragments should include this,
+// unless box decorations are to be cloned.
 bool ShouldIncludeBlockEndBorderPadding(const BoxFragmentBuilder&);
+
+// Return the size of the block-start box decorations, if they are cloned. In
+// the cloning box decoration model, block-start box decoration are considered
+// cloned in all fragments but the first.
+inline LayoutUnit ClonedBlockStartDecoration(
+    const BoxFragmentBuilder& builder) {
+  const BlockBreakToken* break_token = builder.PreviousBreakToken();
+  if (builder.Style().BoxDecorationBreak() == EBoxDecorationBreak::kClone &&
+      IsBreakInside(break_token) && !break_token->IsAtBlockEnd()) {
+    return builder.BorderScrollbarPadding().block_start;
+  }
+  return LayoutUnit();
+}
 
 // Outcome of considering (and possibly attempting) breaking before or inside a
 // child.
@@ -291,15 +384,10 @@ enum class BreakStatus {
 // fragmentation (kDisableFragmentation). kBrokeBefore is never returned here
 // (if we need a break before the node, that's something that will be determined
 // by the parent algorithm).
-BreakStatus FinishFragmentation(BlockNode node,
-                                const ConstraintSpace&,
-                                LayoutUnit trailing_border_padding,
-                                LayoutUnit space_left,
-                                BoxFragmentBuilder*);
+BreakStatus FinishFragmentation(BoxFragmentBuilder*);
 
 // Special rules apply for finishing fragmentation when building fragmentainers.
-BreakStatus FinishFragmentationForFragmentainer(const ConstraintSpace&,
-                                                BoxFragmentBuilder*);
+BreakStatus FinishFragmentationForFragmentainer(BoxFragmentBuilder*);
 
 // Return true if there's a valid class A/B breakpoint between the child
 // fragment that was just added to the builder, and the next sibling, if one is
@@ -335,6 +423,7 @@ BreakStatus BreakBeforeChildIfNeeded(
     LayoutInputNode child,
     const LayoutResult&,
     LayoutUnit fragmentainer_block_offset,
+    LayoutUnit fragmentainer_block_size,
     bool has_container_separation,
     BoxFragmentBuilder*,
     bool is_row_item = false,
@@ -348,6 +437,7 @@ void BreakBeforeChild(
     LayoutInputNode child,
     const LayoutResult*,
     LayoutUnit fragmentainer_block_offset,
+    LayoutUnit fragmentainer_block_size,
     std::optional<BreakAppeal> appeal,
     bool is_forced_break,
     BoxFragmentBuilder*,
@@ -379,8 +469,10 @@ void PropagateSpaceShortage(
     const ConstraintSpace&,
     const LayoutResult*,
     LayoutUnit fragmentainer_block_offset,
+    LayoutUnit fragmentainer_block_size,
     FragmentBuilder*,
     std::optional<LayoutUnit> block_size_override = std::nullopt);
+
 // Calculate how much we would need to stretch the column block-size to fit the
 // current result (if applicable). |block_size_override| should only be supplied
 // when you wish to propagate a different block-size than that of the provided
@@ -389,6 +481,7 @@ LayoutUnit CalculateSpaceShortage(
     const ConstraintSpace&,
     const LayoutResult*,
     LayoutUnit fragmentainer_block_offset,
+    LayoutUnit fragmentainer_block_size,
     std::optional<LayoutUnit> block_size_override = std::nullopt);
 // Update |minimal_space_shortage| based on the current |space_shortage|.
 void UpdateMinimalSpaceShortage(std::optional<LayoutUnit> space_shortage,
@@ -403,6 +496,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
                         LayoutInputNode child,
                         const LayoutResult& layout_result,
                         LayoutUnit fragmentainer_block_offset,
+                        LayoutUnit fragmentainer_block_size,
                         BreakAppeal appeal_before,
                         BoxFragmentBuilder* builder,
                         bool is_row_item = false,
@@ -412,6 +506,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
 bool MovePastBreakpoint(const ConstraintSpace& space,
                         const LayoutResult& layout_result,
                         LayoutUnit fragmentainer_block_offset,
+                        LayoutUnit fragmentainer_block_size,
                         BreakAppeal appeal_before,
                         BoxFragmentBuilder* builder,
                         bool is_row_item = false,
@@ -440,6 +535,7 @@ bool AttemptSoftBreak(
     LayoutInputNode child,
     const LayoutResult*,
     LayoutUnit fragmentainer_block_offset,
+    LayoutUnit fragmentainer_block_size,
     BreakAppeal appeal_before,
     BoxFragmentBuilder*,
     std::optional<LayoutUnit> block_size_override = std::nullopt,
@@ -494,19 +590,13 @@ ConstraintSpace CreateConstraintSpaceForMulticol(const BlockNode& multicol);
 // the block-offset where the margin should be applied (i.e. after the block-end
 // border edge of the last child fragment).
 inline LayoutUnit AdjustedMarginAfterFinalChildFragment(
-    const ConstraintSpace& space,
+    const BoxFragmentBuilder& builder,
     LayoutUnit block_offset,
     LayoutUnit block_end_margin) {
-  LayoutUnit space_left = FragmentainerSpaceLeft(space) - block_offset;
+  LayoutUnit space_left =
+      FragmentainerSpaceLeft(builder, /*is_for_children=*/true) - block_offset;
   return std::min(block_end_margin, space_left.ClampNegativeToZero());
 }
-
-// Note: This should only be used for a builder that represents a
-// fragmentation context root. Returns the the break token of the
-// previous fragmentainer to the child at |index|.
-const BlockBreakToken* PreviousFragmentainerBreakToken(
-    const BoxFragmentBuilder& container_builder,
-    wtf_size_t index);
 
 // Return the break token that led to the creation of the fragment specified, or
 // nullptr if this is the first fragment. Note that this operation is O(n)

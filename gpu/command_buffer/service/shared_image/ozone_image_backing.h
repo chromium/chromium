@@ -11,7 +11,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -25,11 +27,11 @@
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_pixmap.h"
+#include "ui/gl/buildflags.h"
 #include "ui/gl/gl_context.h"
 
 namespace gpu {
 class OzoneImageGLTexturesHolder;
-class VaapiDependencies;
 
 // Implementation of SharedImageBacking that uses a NativePixmap created via
 // an Ozone surface factory. The memory associated with the pixmap can be
@@ -41,17 +43,15 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
   OzoneImageBacking(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
-      gfx::BufferPlane plane,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       scoped_refptr<SharedContextState> context_state,
       scoped_refptr<gfx::NativePixmap> pixmap,
       const GpuDriverBugWorkarounds& workarounds,
-      bool use_passthrough,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 
   OzoneImageBacking(const OzoneImageBacking&) = delete;
@@ -77,9 +77,10 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
       wgpu::BackendType backend_type,
       std::vector<wgpu::TextureFormat> view_formats,
       scoped_refptr<SharedContextState> context_state) override;
-  std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
+  std::unique_ptr<SkiaGraphiteImageRepresentation> ProduceSkiaGraphite(
       SharedImageManager* manager,
-      MemoryTypeTracker* tracker) override;
+      MemoryTypeTracker* tracker,
+      scoped_refptr<SharedContextState> context_state) override;
   std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker) override;
@@ -90,25 +91,21 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
   std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
-  std::unique_ptr<VaapiImageRepresentation> ProduceVASurface(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker,
-      VaapiDependenciesFactory* dep_factory) override;
 
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<VulkanImageRepresentation> ProduceVulkan(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       gpu::VulkanDeviceQueue* vulkan_device_queue,
-      gpu::VulkanImplementation& vulkan_impl) override;
+      gpu::VulkanImplementation& vulkan_impl,
+      bool needs_detiling) override;
 #endif
 
  private:
-  friend class GLOzoneImageRepresentationShared;
+  friend class GLTexturePassthroughOzoneImageRepresentation;
   friend class DawnOzoneImageRepresentation;
   friend class SkiaVkOzoneImageRepresentation;
   friend class VulkanOzoneImageRepresentation;
-  class VaapiOzoneImageRepresentation;
   class OverlayOzoneImageRepresentation;
 
   FRIEND_TEST_ALL_PREFIXES(OzoneImageBackingFactoryTest,
@@ -126,8 +123,6 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
   FRIEND_TEST_ALL_PREFIXES(OzoneImageBackingFactoryTest,
                            CorrectlyDestroysAndMarksContextLost);
 
-  bool VaSync();
-
   void FlushAndSubmitIfNecessary(
       std::vector<GrBackendSemaphore> signal_semaphores,
       SharedContextState* const shared_context_state);
@@ -140,17 +135,7 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
                  AccessStream access_stream,
                  gfx::GpuFenceHandle fence);
 
-  template <typename T>
-  std::unique_ptr<T> ProduceGLTextureInternal(SharedImageManager* manager,
-                                              MemoryTypeTracker* tracker,
-                                              bool is_passthrough);
-
-  scoped_refptr<OzoneImageGLTexturesHolder> RetainGLTexture(
-      bool is_passthrough);
-  scoped_refptr<OzoneImageGLTexturesHolder> RetainGLTextureForCacheWorkaround(
-      bool is_passthrough);
-  scoped_refptr<OzoneImageGLTexturesHolder> RetainGLTexturePerContextCache(
-      bool is_passthrough);
+  scoped_refptr<OzoneImageGLTexturesHolder> RetainGLTexturePerContextCache();
 
   // gl::GLContext::GLContextObserver:
   void OnGLContextLost(gl::GLContext* context) override;
@@ -165,25 +150,21 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
   void DestroyTexturesOnContext(OzoneImageGLTexturesHolder* holder,
                                 gl::GLContext* context);
 
-  // Indicates if this backing produced a VASurface that may have pending work.
-  bool has_pending_va_writes_ = false;
-  std::unique_ptr<VaapiDependencies> vaapi_deps_;
-  gfx::BufferPlane plane_;
+#if BUILDFLAG(USE_DAWN)
+  bool UploadFromMemoryGraphite(const std::vector<SkPixmap>& pixmaps);
+#endif  // BUILDFLAG(USE_DAWN)
+
   uint32_t reads_in_progress_ = 0;
   bool is_write_in_progress_ = false;
   int write_streams_count_;
 
   scoped_refptr<gfx::NativePixmap> pixmap_;
-  // A texture holder cache for the |cache_texture_in_ozone_backing| workaround.
-  // Not used if features::Blah is enabled. See more details below.
-  scoped_refptr<OzoneImageGLTexturesHolder> cached_texture_holder_;
   // Per-context texture holders that are cached to reduce the number of
   // allocations/deallocations of textures and their EGLImages. That's
   // especially handy for raster tasks as there can be tens of tasks resulting
   // in creation and destruction of EGLImages, which is costly.
   std::map<gl::GLContext*, scoped_refptr<OzoneImageGLTexturesHolder>>
       per_context_cached_textures_holders_;
-  const bool use_per_context_cache_ = false;
 
   // Write fence that is external and does not do Begin/EndAccess (eg. exo)
   gfx::GpuFenceHandle external_write_fence_;
@@ -192,7 +173,6 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
   AccessStream last_write_stream_;
   scoped_refptr<SharedContextState> context_state_;
   const GpuDriverBugWorkarounds workarounds_;
-  bool use_passthrough_;
   const bool imported_from_exo_ = false;
 };
 

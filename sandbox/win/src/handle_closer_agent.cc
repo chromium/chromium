@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "sandbox/win/src/handle_closer_agent.h"
 
 #include <Windows.h>
@@ -20,6 +25,9 @@
 
 namespace sandbox {
 namespace {
+// Partial definition only for value not in PROCESSINFOCLASS.
+constexpr uint32_t ProcessHandleTable = 58;
+
 // Handle Types.
 constexpr wchar_t kFile[] = L"File";
 constexpr wchar_t kSection[] = L"Section";
@@ -57,6 +65,7 @@ bool CsrssDisconnectCleanup() {
   ::HeapDestroy(csr_port_heap);
   return true;
 }
+
 }  // namespace
 
 // Memory buffer mapped from the parent, with our configuration.
@@ -164,8 +173,8 @@ bool HandleCloserAgent::CloseHandles() {
   std::vector<char> buffer((handle_count + 1000) * sizeof(uint32_t));
   DWORD return_length;
   NTSTATUS status = GetNtExports()->QueryInformationProcess(
-      ::GetCurrentProcess(), ProcessHandleTable, buffer.data(),
-      static_cast<ULONG>(buffer.size()), &return_length);
+      ::GetCurrentProcess(), static_cast<PROCESSINFOCLASS>(ProcessHandleTable),
+      buffer.data(), static_cast<ULONG>(buffer.size()), &return_length);
 
   if (!NT_SUCCESS(status)) {
     ::SetLastError(GetLastErrorFromNtStatus(status));

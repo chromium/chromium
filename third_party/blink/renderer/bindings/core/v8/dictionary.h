@@ -78,7 +78,7 @@ class CORE_EXPORT Dictionary final {
       case ValueType::kObject:
         return dictionary_object_;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return v8::Local<v8::Value>();
     }
   }

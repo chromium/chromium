@@ -4,6 +4,8 @@
 
 #include "base/allocator/dispatcher/tls.h"
 
+#include <string_view>
+
 #if USE_LOCAL_TLS_EMULATION()
 
 #include "base/check.h"
@@ -94,7 +96,7 @@ PThreadTLSSystem& PThreadTLSSystem::operator=(PThreadTLSSystem&& other) {
 
 bool PThreadTLSSystem::Setup(
     OnThreadTerminationFunction thread_termination_function,
-    const base::StringPiece instance_id) {
+    const std::string_view instance_id) {
 #if DCHECK_IS_ON()
   // Initialize must happen outside of the allocation path. Therefore, it is
   // secure to verify with DCHECK.

@@ -6,9 +6,9 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/numerics/safe_math.h"
 #include "pdf/accessibility_structs.h"
 

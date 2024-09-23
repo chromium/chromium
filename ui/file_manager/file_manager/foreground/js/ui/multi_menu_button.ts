@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 
-import {Menu} from './menu.js';
+import type {Menu} from './menu.js';
 import {MenuItem, type MenuItemActivationEvent} from './menu_item.js';
 import {MultiMenu} from './multi_menu.js';
 import {AnchorType, positionPopupAroundElement} from './position_util.js';

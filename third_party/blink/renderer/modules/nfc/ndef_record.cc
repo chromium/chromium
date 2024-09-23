@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/modules/nfc/ndef_record.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "services/device/public/mojom/nfc.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -37,7 +38,7 @@ namespace {
 WTF::Vector<uint8_t> GetUTF8DataFromString(const String& string) {
   StringUTF8Adaptor utf8_string(string);
   WTF::Vector<uint8_t> data;
-  data.Append(utf8_string.data(), utf8_string.size());
+  data.AppendSpan(base::span(utf8_string));
   return data;
 }
 
@@ -74,17 +75,15 @@ bool GetBytesOfBufferSource(const V8BufferSource* buffer_source,
   } else if (buffer_source->IsArrayBufferView()) {
     array_piece = DOMArrayPiece(buffer_source->GetAsArrayBufferView().Get());
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return true;  // true to be consistent with `exception_state`.
   }
-  wtf_size_t checked_length;
-  if (!base::CheckedNumeric<wtf_size_t>(array_piece.ByteLength())
-           .AssignIfValid(&checked_length)) {
+  if (!base::CheckedNumeric<wtf_size_t>(array_piece.ByteLength()).IsValid()) {
     exception_state.ThrowRangeError(
         "The provided buffer source exceeds the maximum supported length");
     return false;
   }
-  target->Append(array_piece.Bytes(), checked_length);
+  target->AppendSpan(array_piece.ByteSpan());
   return true;
 }
 
@@ -117,8 +116,7 @@ bool IsValidExternalType(const String& input) {
   if (type.empty())
     return false;
 
-  static constexpr base::StringPiece kOtherCharsForCustomType(
-      ":!()+,-=@;$_*'.");
+  static constexpr std::string_view kOtherCharsForCustomType(":!()+,-=@;$_*'.");
   for (wtf_size_t i = 0; i < type.length(); i++) {
     if (!IsASCIIAlphanumeric(type[i]) &&
         !base::Contains(kOtherCharsForCustomType, type[i])) {
@@ -226,7 +224,7 @@ static NDEFRecord* CreateTextRecord(const ScriptState* script_state,
       return nullptr;
     bytes = GetUTF8DataFromString(data);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   return MakeGarbageCollected<NDEFRecord>(id, encoding_label, language,
@@ -593,8 +591,7 @@ DOMDataView* NDEFRecord::data() const {
     DCHECK(payload_data_.empty());
     return nullptr;
   }
-  DOMArrayBuffer* dom_buffer =
-      DOMArrayBuffer::Create(payload_data_.data(), payload_data_.size());
+  DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(payload_data_);
   return DOMDataView::Create(dom_buffer, 0, payload_data_.size());
 }
 

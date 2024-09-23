@@ -30,7 +30,7 @@ TEST_F(AccessibilityPrivateHooksDelegateTest, TestGetDisplayNameForLocale) {
   // it permission to the accessibilityPrivate API.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("testExtension")
-          .AddPermission("accessibilityPrivate")
+          .AddAPIPermission("accessibilityPrivate")
           .SetLocation(mojom::ManifestLocation::kComponent)
           .Build();
   RegisterExtension(extension);

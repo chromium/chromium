@@ -150,6 +150,9 @@ scheme host and port.""")
     # TODO use an empty string argument for the default subsuite
     test_selection_group.add_argument("--subsuite", action="append", dest="subsuites",
                                       help="Subsuite names to run. Runs all subsuites when omitted.")
+    test_selection_group.add_argument("--small-subsuite-size", default=50, type=int,
+                                      help="Maximum number of tests a subsuite can have to be treated as small subsuite."
+                                      "Tests from a small subsuite will be grouped in one group.")
     test_selection_group.add_argument("--include", action="append",
                                       help="URL prefix to include")
     test_selection_group.add_argument("--include-file", action="store",
@@ -221,6 +224,12 @@ scheme host and port.""")
                                  help="Path to stackwalker program used to analyse minidumps.")
     debugging_group.add_argument("--pdb", action="store_true",
                                  help="Drop into pdb on python exception")
+    debugging_group.add_argument("--leak-check", dest="leak_check", action="store_true", default=None,
+                                 help=("Enable leak checking for supported browsers "
+                                       "(Gecko: enabled by default for debug builds, "
+                                       "silently ignored for opt, mobile)"))
+    debugging_group.add_argument("--no-leak-check", dest="leak_check", action="store_false", default=None,
+                                 help="Disable leak checking")
 
     android_group = parser.add_argument_group("Android specific arguments")
     android_group.add_argument("--adb-binary", action="store",
@@ -334,11 +343,6 @@ scheme host and port.""")
     gecko_group.add_argument("--setpref", dest="extra_prefs", action='append',
                              default=[], metavar="PREF=VALUE",
                              help="Defines an extra user preference (overrides those in prefs_root)")
-    gecko_group.add_argument("--leak-check", dest="leak_check", action="store_true", default=None,
-                             help="Enable leak checking (enabled by default for debug builds, "
-                             "silently ignored for opt, mobile)")
-    gecko_group.add_argument("--no-leak-check", dest="leak_check", action="store_false", default=None,
-                             help="Disable leak checking")
     gecko_group.add_argument("--reftest-internal", dest="reftest_internal", action="store_true",
                              default=None, help="Enable reftest runner implemented inside Marionette")
     gecko_group.add_argument("--reftest-external", dest="reftest_internal", action="store_false",

@@ -5,7 +5,7 @@
 import type {ElementObject} from '../prod/file_manager/shared_types.js';
 import {getCaller, pending, repeatUntil, RootPath} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {DOWNLOADS_FAKE_TASKS, FakeTask, FILE_MANAGER_EXTENSIONS_ID} from './test_data.js';
 
@@ -50,7 +50,7 @@ const DRIVE_FAKE_TASKS = [
  * @param fakeTasks Fake tasks.
  */
 async function setupTaskTest(rootPath: string, fakeTasks: FakeTask[]) {
-  const appId = await setupAndWaitUntilReady(rootPath);
+  const appId = await remoteCall.setupAndWaitUntilReady(rootPath);
   await remoteCall.callRemoteTestUtil('overrideTasks', appId, [fakeTasks]);
   return appId;
 }
@@ -62,7 +62,7 @@ async function setupTaskTest(rootPath: string, fakeTasks: FakeTask[]) {
  * @param descriptor Task descriptor.
  */
 async function executeDefaultTask(
-    appId: string, descriptor: FileTaskDescriptor) {
+    appId: string, descriptor: chrome.fileManagerPrivate.FileTaskDescriptor) {
   // Select file.
   await remoteCall.waitUntilSelected(appId, 'hello.txt');
 
@@ -84,7 +84,8 @@ async function executeDefaultTask(
  * @return Promise to be fulfilled/rejected depends on the test result.
  */
 async function defaultTaskDialog(
-    appId: string, descriptor: FileTaskDescriptor): Promise<void> {
+    appId: string,
+    descriptor: chrome.fileManagerPrivate.FileTaskDescriptor): Promise<void> {
   // Prepare expected labels.
   const expectedLabels = [
     'DummyTask1 (default)',
@@ -330,16 +331,17 @@ export async function noActionBarOpenForDirectories() {
       appId, 'cr-menu-item[command="#open-with"]:not([hidden])');
   // Ensure apps are shown.
   await remoteCall.waitForElement(appId, '#tasks-menu:not([hidden])');
-  const appOptions = await remoteCall.callRemoteTestUtil(
+  const appOptions = await remoteCall.callRemoteTestUtil<ElementObject[]>(
       'queryAllElements', appId, ['#tasks-menu [tabindex]']);
+  chrome.test.assertTrue(!!appOptions);
   chrome.test.assertEq(3, appOptions.length);
-  chrome.test.assertEq('DirTask1 (default)', appOptions[0].text);
-  chrome.test.assertEq('DirTask2', appOptions[1].text);
-  chrome.test.assertEq('Change default…', appOptions[2].text);
+  chrome.test.assertEq('DirTask1 (default)', appOptions[0]?.text);
+  chrome.test.assertEq('DirTask2', appOptions[1]?.text);
+  chrome.test.assertEq('Change default…', appOptions[2]?.text);
 }
 
 export async function executeViaDblClick() {
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId = await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS);
   await remoteCall.callRemoteTestUtil(
       'overrideTasks', appId, [DOWNLOADS_FAKE_TASKS]);
   //  Double-click the file.
@@ -356,7 +358,7 @@ export async function executeViaDblClick() {
       'overrideTasks', appId, [DOWNLOADS_FAKE_TASKS]);
 
   // Click on the currently focused tree item to reset the file list selection.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectFocusedItem();
 
   // Double click on a different file.

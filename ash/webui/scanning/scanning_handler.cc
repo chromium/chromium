@@ -92,8 +92,7 @@ void ScanningHandler::RegisterMessages() {
 }
 
 void ScanningHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                   int index,
-                                   void* params) {
+                                   int index) {
   DCHECK(IsJavascriptAllowed());
 
   select_file_dialog_ = nullptr;
@@ -101,7 +100,7 @@ void ScanningHandler::FileSelected(const ui::SelectedFileInfo& file,
                             CreateSelectedPathValue(file.path()));
 }
 
-void ScanningHandler::FileSelectionCanceled(void* params) {
+void ScanningHandler::FileSelectionCanceled() {
   DCHECK(IsJavascriptAllowed());
 
   select_file_dialog_ = nullptr;
@@ -171,8 +170,7 @@ void ScanningHandler::HandleRequestScanToLocation(
       l10n_util::GetStringUTF16(IDS_SCANNING_APP_SELECT_DIALOG_TITLE),
       base::FilePath() /* default_path */, nullptr /* file_types */,
       0 /* file_type_index */,
-      base::FilePath::StringType() /* default_extension */, owning_window,
-      nullptr /* params */);
+      base::FilePath::StringType() /* default_extension */, owning_window);
 }
 
 void ScanningHandler::HandleShowFileInLocation(const base::Value::List& args) {

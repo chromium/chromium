@@ -13,7 +13,7 @@
 namespace autofill {
 
 AutofillSaveIbanDelegate::AutofillSaveIbanDelegate(
-    AutofillClient::SaveIbanPromptCallback save_iban_callback,
+    payments::PaymentsAutofillClient::SaveIbanPromptCallback save_iban_callback,
     content::WebContents* web_contents)
     : save_iban_callback_(std::move(save_iban_callback)),
       web_contents_(web_contents),
@@ -33,14 +33,16 @@ void AutofillSaveIbanDelegate::OnUiAccepted(
 
 void AutofillSaveIbanDelegate::OnUiCanceled() {
   std::move(save_iban_callback_)
-      .Run(AutofillClient::SaveIbanOfferUserDecision::kDeclined,
+      .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
+               kDeclined,
            /*user_provided_nickname=*/u"");
 }
 
 void AutofillSaveIbanDelegate::OnUiIgnored() {
   std::move(save_iban_callback_)
-      .Run(AutofillClient::SaveIbanOfferUserDecision::kIgnored,
-           /*user_provided_nickname=*/u"");
+      .Run(
+          payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::kIgnored,
+          /*user_provided_nickname=*/u"");
 }
 
 void AutofillSaveIbanDelegate::SetDeviceLockBridgeForTesting(
@@ -52,8 +54,10 @@ void AutofillSaveIbanDelegate::OnAfterDeviceLockUi(
     std::u16string_view user_provided_nickname,
     bool user_decision) {
   std::move(save_iban_callback_)
-      .Run(user_decision ? AutofillClient::SaveIbanOfferUserDecision::kAccepted
-                         : AutofillClient::SaveIbanOfferUserDecision::kDeclined,
+      .Run(user_decision ? payments::PaymentsAutofillClient::
+                               SaveIbanOfferUserDecision::kAccepted
+                         : payments::PaymentsAutofillClient::
+                               SaveIbanOfferUserDecision::kDeclined,
            user_decision ? user_provided_nickname : u"");
   std::move(on_finished_gathering_consent_callback_).Run();
 }

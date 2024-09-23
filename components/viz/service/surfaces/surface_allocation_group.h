@@ -171,7 +171,7 @@ class VIZ_SERVICE_EXPORT SurfaceAllocationGroup {
 
   // The set of surfaces that reference a surface in this allocation group by
   // their active frame.
-  base::flat_set<Surface*> active_embedders_;
+  base::flat_set<raw_ptr<Surface, CtnExperimental>> active_embedders_;
 
   // We keep a pointer to SurfaceManager so we can signal when this object is
   // ready to be destroyed.

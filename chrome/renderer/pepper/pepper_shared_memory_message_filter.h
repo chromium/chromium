@@ -47,7 +47,7 @@ class PepperSharedMemoryMessageFilter
       int* host_shm_handle_id,
       ppapi::proxy::SerializedHandle* plugin_shm_handle);
 
-  raw_ptr<content::RendererPpapiHost, ExperimentalRenderer> host_;
+  raw_ptr<content::RendererPpapiHost> host_;
 };
 
 #endif  // CHROME_RENDERER_PEPPER_PEPPER_SHARED_MEMORY_MESSAGE_FILTER_H_

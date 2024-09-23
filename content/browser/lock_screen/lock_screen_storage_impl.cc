@@ -54,7 +54,7 @@ class LockScreenStorageHelper {
 
   scoped_refptr<value_store::ValueStoreFactory> value_store_factory_;
   // Maps storage directory filename to ValueStore for a particular origin.
-  // TODO(crbug.com/1268227): If there can only be one lock screen app at a
+  // TODO(crbug.com/40204655): If there can only be one lock screen app at a
   // time, this does not need to be a map. Otherwise, there should be a clean
   // way of evicting value stores databases from this cache.
   std::map<std::string, std::unique_ptr<ValueStore>> storage_map_;

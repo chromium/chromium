@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">गुलाबी तपकिरी</translation>
 <translation id="249330843868392562">टेक्‍स्‍ट टू स्‍पीच सेटिंग्ज उघडा</translation>
 <translation id="2497706219848005458">हिरवट पिवळा</translation>
+<translation id="2512979179176933762">विंडो दाखवा</translation>
 <translation id="2523609930580546572">ChromeVox ट्यूटोरियल</translation>
 <translation id="2525706221823668172">Chromebook कीबोर्ड शॉर्टकट</translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{आणखी #}other{आणखी #}}</translation>
 <translation id="2792200646155001340">मागील आयटमवर जाण्यासाठी तुम्ही एका बोटाने उजवीकडून डावीकडेदेखील स्वाइप करू शकता. आता करून पहा.</translation>
 <translation id="280499067616661124">पृष्ठामध्ये ChromeVox शोधा</translation>
-<translation id="2811019999044652585">टूलबार किंवा सिस्टम ट्रे सारख्या स्क्रीनच्या अन्य भागांवर जाण्यासाठी, Control+पुढे जा की, प्रेस करा. Chromebook वर, पुढे जा की, अंक 2 की, च्या वर असते.</translation>
 <translation id="2811204574343810641">पंक्ती</translation>
 <translation id="2816868829355607410">सराव क्षेत्र: जंप कमांड</translation>
 <translation id="2841013758207633010">वेळ</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">मळकट निळा</translation>
 <translation id="4253168017788158739">टीप</translation>
 <translation id="4254798249533888099">झाड</translation>
+<translation id="4259220820964911921">फेस नियंत्रण सुरू करायचे आहे का?</translation>
 <translation id="4271220233568730077">पुढील गणित</translation>
 <translation id="4275397969489577657">इव्हेंट स्ट्रीम लॉगिंग सुरू करा</translation>
 <translation id="4278486392851938658">मागील भेट दिलेली लिंक नाही</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">लाल</translation>
 <translation id="4432896207833262240">मार्क केलेला आशय</translation>
 <translation id="4437615272777527928">मेनू शोधण्यासाठी टाइप करा. परिणामांवर जाण्यासाठी अप आणि डाउन ॲरो वापरा. मजकूर कॅरेट ॲडजस्ट करण्यासाठी आणि मेनूदरम्यान हलवण्यासाठी डावा आणि उजवा ॲरो वापरा.</translation>
+<translation id="4453530046591759283">टूलबार किंवा सिस्टीम ट्रे यांसारख्या स्क्रीनच्या इतर भागांवर थेट जाण्यासाठी, Control+F1 प्रेस करा. F1 ही एस्केप कीच्या उजवीकडील पहिली की आहे.</translation>
 <translation id="4457472090507035117">विद्यमान आवाज निवडा:</translation>
 <translation id="4476183483923481720">नवीन रेखा</translation>
 <translation id="4479068155583208887">लालभडक</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">परिशिष्ट</translation>
 <translation id="5761219715606611783">छान! तुम्ही ChromeVox स्पर्शाविषयीच्या मूलभूत गोष्टी जाणून घेतल्या आहेत. तुम्ही ट्यूटोरियल पुन्हा पाहू शकता किंवा खालील बटणे वापरून ट्यूटोरियलमधून बाहेर पडू शकता.</translation>
 <translation id="5776001898637896684">Google Enhanced Network text-to-speech extension</translation>
+<translation id="5783252477644995371">फेस नियंत्रण हे तुम्हाला चेहरा निर्देशित करणे आणि कृती करण्याची क्षमता यांसह कर्सर नियंत्रण देते, जसे की स्मितासारखे फेशियल जेश्चर वापरून लेफ्ट क्लिक करणे</translation>
 <translation id="5805940204952508776">दोन बोटांनी टॅप करा</translation>
 <translation id="5819072574982403430">Tree आयटम</translation>
 <translation id="5822819874379903994">गडद हिरवट निळा</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">गुलाबी पांढरा</translation>
 <translation id="7095834689119144465">केवळ अंकीय मजकूर संपादित करा</translation>
 <translation id="7096001299300236431">मागील माध्यम</translation>
+<translation id="7096668131290451939">जाणून घ्या मोड मधून बाहेर पाडण्यासाठी पुन्हा एस्केप प्रेस करा</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">शब्द प्रतिध्वनी</translation>
 <translation id="7137397390322864165">तांबूस पिवळा</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">पुढील चेकबॉक्‍स नाही</translation>
 <translation id="8473540203671727883">माउसखाली मजकूर बोला</translation>
 <translation id="8476408756881832830">ChromeVox बोलत असताना प्लेबॅकला विराम द्या</translation>
-<translation id="8476508772960940536">विंडो विहंगावलोकन</translation>
 <translation id="8480873377842220259">तुम्ही आता काही मूलभूत नेव्हिगेशनबद्दल जाणून घ्याल. स्क्रीनभोवती फिरण्यासाठी तुम्ही सर्च धरून ठेवू शकता आणि अ‍ॅरो की प्रेस करू शकता. पुढे सुरू ठेवण्यासाठी Search + Right arrow प्रेस करा.</translation>
 <translation id="8503360654911991865">नॅव्हिगेशन ग्रॅन्युलॅरिटी कमी करा</translation>
 <translation id="8520472399088452386">स्पिन बटण</translation>

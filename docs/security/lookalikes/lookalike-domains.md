@@ -122,6 +122,8 @@ control both sites using a special form of
    `https://example.com/.well-known/assetlinks.json` and
    `https://example.net/.well-known/assetlinks.json`.
 4. **Fill out an automated verification [request](https://forms.gle/DsoM64EmSZ5H4bNd8)**.
+   Please provide an email address with a **valid Google account**, otherwise
+   you won't get updates.
 
 Once you submit the [request](https://forms.gle/DsoM64EmSZ5H4bNd8), please allow
 a few days for all warnings to stop. If verification fails, you should be
@@ -157,7 +159,8 @@ ensure that their new domain does not trigger warnings.
 If you are unable to use the automated process above, and would like to request
 a manual review, please fill out a manual review
 [request](https://forms.gle/BxV3JGbCbRjucDxq6).
-
+Please provide an email address with a **valid Google account**, otherwise
+you won't get updates.
 
 #### Reasons an appeal might be denied
 

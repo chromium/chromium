@@ -4,9 +4,18 @@
       }
 
       #explanationText,
-      #exceptionHeader,
       #generalControls {
         padding: 0 var(--cr-section-padding);
+      }
+
+      #default,
+      #additionalProtections {
+        padding: 16px var(--cr-section-padding) 8px var(--cr-section-padding);
+      }
+
+      #defaultHeader {
+        padding-top: 0;
+        padding-bottom: 6px;
       }
 
       #exceptionHeader3pcd {
@@ -21,17 +30,6 @@
 
       #blockThirdPartyToggle {
         padding: 0 var(--cr-section-padding);
-      }
-
-      #advancedHeader {
-        padding-top: 16px;
-        padding-bottom: 8px;
-        padding-left: var(--cr-section-padding);
-      }
-
-      #rollbackNotice {
-        padding: 16px var(--cr-section-padding);
-        background: var(--cr-hover-background-color);
       }
 
       #picture {
@@ -79,7 +77,7 @@
         padding-bottom: 12px;
       }
 
-      #firstPartySetsToggle {
+      #relatedWebsiteSetsToggle {
         padding-inline-end: 0;
         padding-inline-start: 0;
       }
@@ -91,14 +89,14 @@
         min-height: var(--cr-section-two-line-min-height);
       }
     </style>
-    <picture id="picture" hidden="[[is3pcdRedesignEnabled_]]">
+    <picture id="picture" hidden="[[isTrackingProtectionUxEnabled_]]">
       <source
           srcset="chrome://settings/images/cookies_banner_dark.svg"
           media="(prefers-color-scheme: dark)">
       <img id="banner" alt=""
           src="chrome://settings/images/cookies_banner.svg">
     </picture>
-    <picture hidden="[[!is3pcdRedesignEnabled_]]">
+    <picture hidden="[[!isTrackingProtectionUxEnabled_]]">
       <source
             srcset="chrome://settings/images/tracking_protection_banner_dark.svg"
             media="(prefers-color-scheme: dark)">
@@ -107,20 +105,10 @@
       </template>
     </picture>
     <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
-      <div id="rollbackNotice"
-          hidden="[[!showTrackingProtectionRollbackNotice_]]">
-        $i18nRaw{trackingProtectionRollbackNotice}
-      </div>
       <div id="explanationText" class="secondary">
-        $i18n{thirdPartyCookiesPageDescription}
+        $i18n{thirdPartyCookiesAlignedPageDescription}
       </div>
       <div id="generalControls">
-        <template is="dom-if" if="[[!isCookieSettingsUiAlignmentEnabled_]]">
-          <h2>$i18n{thirdPartyCookiesPageDefaultBehaviorHeading}</h2>
-          <div class="secondary radio-group-sub-heading">
-            $i18n{thirdPartyCookiesPageDefaultBehaviorDescription}
-          </div>
-        </template>
         <settings-radio-group id="primarySettingGroup" no-set-pref
             pref="{{prefs.profile.cookie_controls_mode}}"
             selectable-elements="
@@ -134,13 +122,13 @@
                   $i18n{thirdPartyCookiesPageAllowExpandA11yLabel}">
             <div slot="collapse">
               <div class="bullet-line">
-                <iron-icon icon="settings:cookie"></iron-icon>
+                <cr-icon icon="privacy:cookie"></cr-icon>
                 <div class="secondary">
                   $i18n{thirdPartyCookiesPageAllowBulOne}
                 </div>
               </div>
               <div class="bullet-line">
-                <iron-icon icon="settings:cookie"></iron-icon>
+                <cr-icon icon="privacy:cookie"></cr-icon>
                 <div class="secondary">
                   $i18n{thirdPartyCookiesPageAllowBulTwo}
                 </div>
@@ -155,13 +143,13 @@
                   $i18n{thirdPartyCookiesPageBlockIncognitoExpandA11yLabel}">
             <div slot="collapse">
               <div class="bullet-line">
-                <iron-icon icon="settings:cookie"></iron-icon>
+                <cr-icon icon="privacy:cookie"></cr-icon>
                 <div class="secondary">
                   $i18n{thirdPartyCookiesPageBlockIncognitoBulOne}
                 </div>
               </div>
               <div class="bullet-line" id="blockThirdPartyIncognitoBulTwo">
-                <iron-icon icon="settings:block"></iron-icon>
+                <cr-icon icon="settings:block"></cr-icon>
                 <div class="secondary">
                   [[getThirdPartyCookiesPageBlockThirdPartyIncognitoBulTwoLabel_()]]
                 </div>
@@ -176,13 +164,13 @@
                   $i18n{thirdPartyCookiesPageBlockExpandA11yLabel}">
             <div slot="collapse">
               <div class="bullet-line">
-                <iron-icon icon="settings:cookie"></iron-icon>
+                <cr-icon icon="privacy:cookie"></cr-icon>
                 <div class="secondary">
                   $i18n{thirdPartyCookiesPageBlockBulOne}
                 </div>
               </div>
               <div class="bullet-line">
-                <iron-icon icon="settings:block"></iron-icon>
+                <cr-icon icon="settings:block"></cr-icon>
                 <div class="secondary">
                   $i18n{thirdPartyCookiesPageBlockBulTwo}
                 </div>
@@ -191,11 +179,11 @@
             <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
               <div slot="noSelectionCollapse">
                 <settings-toggle-button
-                    id="firstPartySetsToggle"
+                    id="relatedWebsiteSetsToggle"
                     pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
-                    label="$i18n{cookiePageFpsLabel}"
-                    sub-label="$i18n{cookiePageFpsSubLabel}"
-                    disabled="[[firstPartySetsToggleDisabled_(
+                    label="$i18n{cookiePageRwsLabel}"
+                    sub-label="$i18n{cookiePageRwsSubLabel}"
+                    disabled="[[relatedWebsiteSetsToggleDisabled_(
                         prefs.profile.cookie_controls_mode.value)]]">
                 </settings-toggle-button>
               </div>
@@ -205,13 +193,13 @@
       </div>
     </template>
     <template is="dom-if" if="[[is3pcdRedesignEnabled_]]">
-      <div id="explanationText" class="secondary">
+      <div id="default" class="secondary">
         $i18n{trackingProtectionPageDescription}
       </div>
       <div>
         <div class="bullet-row">
-          <iron-icon icon="settings:visibility-off" aria-hidden="true">
-          </iron-icon>
+          <cr-icon icon="settings:visibility-off" aria-hidden="true">
+          </cr-icon>
           <div>
             $i18n{trackingProtectionBulletOne}
             <div class="secondary">
@@ -220,31 +208,54 @@
           </div>
         </div>
         <div class="bullet-row">
-          <iron-icon icon="settings:domain-verification" aria-hidden="true">
-          </iron-icon>
+          <cr-icon icon="settings:domain-verification" aria-hidden="true">
+          </cr-icon>
           <div>
             $i18n{trackingProtectionBulletTwo}
             <div class="secondary">
               $i18nRaw{trackingProtectionBulletTwoDescription}
             </div>
+          </div>
         </div>
       </div>
     </template>
-    <template is="dom-if" if="[[isCookiesUiV2_]]">
-      <h2 id="advancedHeader">$i18n{trackingProtectionAdvancedLabel}</h2>
+    <h2 id="additionalProtections">
+      $i18n{trackingProtectionAdvancedLabel}
+    </h2>
+    <settings-toggle-button
+        id="blockThirdPartyToggle"
+        pref="{{prefs.tracking_protection.block_all_3pc_toggle_enabled}}"
+        label="$i18n{trackingProtectionThirdPartyCookiesToggleLabel}"
+        sub-label="
+          $i18n{trackingProtectionThirdPartyCookiesToggleSubLabel}"
+        learn-more-url="
+          $i18n{trackingProtectionThirdPartyCookiesLearnMoreUrl}"
+        learn-more-aria-label="
+          $i18n{trackingProtectionThirdPartyCookiesLearnMoreAriaLabel}"
+        on-settings-boolean-control-change="onBlockAll3pcToggleChanged_"
+        hidden="[[!is3pcdRedesignEnabled_]]"
+        icon="settings:visibility-off">
+    </settings-toggle-button>
+    <template is="dom-if" if="[[isIpProtectionAvailable_]]">
       <settings-toggle-button
-          id="blockThirdPartyToggle"
-          pref="{{prefs.tracking_protection.block_all_3pc_toggle_enabled}}"
-          label="$i18n{trackingProtectionThirdPartyCookiesToggleLabel}"
+          id="ipProtectionToggle"
+          pref="{{prefs.tracking_protection.ip_protection_enabled}}"
+          label="$i18n{trackingProtectionIpProtectionToggleLabel}"
+          sub-label-with-link="
+            $i18n{trackingProtectionIpProtectionToggleSubLabel}"
+          on-settings-boolean-control-change="onIpProtectionChanged_"
+          icon="settings:location-disabled">
+      </settings-toggle-button>
+    </template>
+    <template is="dom-if" if="[[isFingerprintingProtectionAvailable_]]">
+      <settings-toggle-button
+          id="fingerprintingProtectionToggle"
+          pref="{{prefs.tracking_protection.fingerprinting_protection_enabled}}"
+          label="$i18n{trackingProtectionFingerprintingProtectionToggleLabel}"
           sub-label="
-            $i18n{trackingProtectionThirdPartyCookiesToggleSubLabel}"
-          learn-more-url="
-            $i18n{trackingProtectionThirdPartyCookiesLearnMoreUrl}"
-          learn-more-aria-label="
-            $i18n{trackingProtectionThirdPartyCookiesLearnMoreAriaLabel}"
-          on-settings-boolean-control-change="onBlockAll3pcToggleChanged_"
-          hidden="[[!is3pcdRedesignEnabled_]]"
-          icon="settings:visibility-off">
+            $i18n{trackingProtectionFingerprintingProtectionToggleSubLabel}"
+          on-settings-boolean-control-change="onFpProtectionChanged_"
+          icon="settings:fingerprint-off">
       </settings-toggle-button>
     </template>
     <settings-do-not-track-toggle id="doNotTrack" prefs="{{prefs}}">
@@ -253,36 +264,16 @@
         on-click="onSiteDataClick_" label="$i18n{cookiePageAllSitesLink}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
-    <template is="dom-if" if="[[!isCookiesUiV2_]]">
-      <div id="exceptionHeader">
-        <h2>$i18n{thirdPartyCookiesPageCustomizedBehaviorHeading}</h2>
-        <div id="exceptionHeaderSubLabel" class="secondary">
-          $i18n{thirdPartyCookiesPageCustomizedBehaviorDescription}
-        </div>
-      </div>
-      <site-list id="allowExceptionsList"
-          category="[[cookiesContentSettingType_]]"
-          category-subtype="[[contentSetting_.ALLOW]]"
-          category-header="
-              $i18n{thirdPartyCookiesPageAllowExceptionsSubHeading}"
-          read-only-list="[[exceptionListsReadOnly_]]"
-          search-filter="[[searchTerm]]"
-          cookies-exception-type="third-party">
-      </site-list>
-    </template>
-    <template is="dom-if" if="[[isCookiesUiV2_]]">
-      <div id="exceptionHeader3pcd">
-        <h2>$i18n{trackingProtectionSitesAllowedCookiesTitle}</h2>
-      </div>
-      <site-list id="allowExceptionsList"
-          category="[[cookiesContentSettingType_]]"
-          category-subtype="[[contentSetting_.ALLOW]]"
-          category-header="$i18n{trackingProtectionSitesAllowedCookiesDescription}"
-          read-only-list="[[exceptionListsReadOnly_]]"
-          search-filter="[[searchTerm]]"
-          cookies-exception-type="third-party">
-      </site-list>
-    </template>
+    <div id="exceptionHeader3pcd">
+      <h2>$i18n{trackingProtectionSitesAllowedCookiesTitle}</h2>
+    </div>
+    <site-list id="allow3pcExceptionsList"
+        category="[[cookiesContentSettingType_]]"
+        category-subtype="[[contentSetting_.ALLOW]]"
+        category-header="$i18n{trackingProtectionSitesAllowedCookiesDescription}"
+        search-filter="[[searchTerm]]"
+        cookies-exception-type="third-party">
+    </site-list>
     <cr-toast id="toast">
       <div id="toastText">$i18n{privacySandboxCookiesDialog}</div>
       <cr-button on-click="onPrivacySandboxClick_">

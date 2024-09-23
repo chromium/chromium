@@ -38,13 +38,7 @@ ThreadedMessagingProxyBase::ThreadedMessagingProxyBase(
       parent_agent_group_task_runner_(parent_agent_group_task_runner),
       terminate_sync_load_event_(
           base::WaitableEvent::ResetPolicy::MANUAL,
-          base::WaitableEvent::InitialState::NOT_SIGNALED),
-      feature_handle_for_scheduler_(
-          !execution_context
-              ? FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle()
-              : execution_context->GetScheduler()->RegisterFeature(
-                    SchedulingPolicy::Feature::kDedicatedWorkerOrWorklet,
-                    {SchedulingPolicy::DisableBackForwardCache()})) {
+          base::WaitableEvent::InitialState::NOT_SIGNALED) {
   DCHECK((parent_execution_context_task_runners_ &&
           !parent_agent_group_task_runner_) ||
          (!parent_execution_context_task_runners_ &&
@@ -103,6 +97,12 @@ void ThreadedMessagingProxyBase::InitializeWorkerThread(
 void ThreadedMessagingProxyBase::CountFeature(WebFeature feature) {
   DCHECK(IsParentContextThread());
   UseCounter::Count(execution_context_, feature);
+}
+
+void ThreadedMessagingProxyBase::CountWebDXFeature(
+    mojom::blink::WebDXFeature feature) {
+  DCHECK(IsParentContextThread());
+  UseCounter::CountWebDXFeature(execution_context_, feature);
 }
 
 void ThreadedMessagingProxyBase::ReportConsoleMessage(
@@ -164,8 +164,6 @@ void ThreadedMessagingProxyBase::TerminateGlobalScope() {
   if (asked_to_terminate_)
     return;
   asked_to_terminate_ = true;
-
-  feature_handle_for_scheduler_.reset();
 
   terminate_sync_load_event_.Signal();
 

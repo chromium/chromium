@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gfx/color_transform.h"
 
 #include <algorithm>
@@ -129,7 +134,7 @@ float FromLinear(ColorSpace::TransferID id, float v) {
       // Handled by skcms_TransferFunction.
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -175,7 +180,7 @@ float ToLinear(ColorSpace::TransferID id, float v) {
       // Handled by skcms_TransferFunction.
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -192,7 +197,6 @@ BASE_FEATURE(kHlgPqSdrRelative,
 class ColorTransformMatrix;
 class ColorTransformSkTransferFn;
 class ColorTransformFromLinear;
-class ColorTransformFromBT2020CL;
 class ColorTransformNull;
 
 class ColorTransformStep {
@@ -204,7 +208,6 @@ class ColorTransformStep {
 
   virtual ~ColorTransformStep() {}
   virtual ColorTransformFromLinear* GetFromLinear() { return nullptr; }
-  virtual ColorTransformFromBT2020CL* GetFromBT2020CL() { return nullptr; }
   virtual ColorTransformSkTransferFn* GetSkTransferFn() { return nullptr; }
   virtual ColorTransformMatrix* GetMatrix() { return nullptr; }
   virtual ColorTransformNull* GetNull() { return nullptr; }
@@ -756,7 +759,7 @@ class ColorTransformFromLinear : public ColorTransformPerChannelTransferFn {
       default:
         break;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:
@@ -826,54 +829,11 @@ class ColorTransformToLinear : public ColorTransformPerChannelTransferFn {
       default:
         break;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:
   ColorSpace::TransferID transfer_;
-};
-
-// BT2020 Constant Luminance is different than most other
-// ways to encode RGB values as YUV. The basic idea is that
-// transfer functions are applied on the Y value instead of
-// on the RGB values. However, running the transfer function
-// on the U and V values doesn't make any sense since they
-// are centered at 0.5. To work around this, the transfer function
-// is applied to the Y, R and B values, and then the U and V
-// values are calculated from that.
-// In our implementation, the YUV->RGB matrix is used to
-// convert YUV to RYB (the G value is replaced with an Y value.)
-// Then we run the transfer function like normal, and finally
-// this class is inserted as an extra step which takes calculates
-// the U and V values.
-class ColorTransformFromBT2020CL : public ColorTransformStep {
- public:
-  void Transform(ColorTransform::TriStim* YUV,
-                 size_t num,
-                 const ColorTransform::RuntimeOptions& options) const override {
-    for (size_t i = 0; i < num; i++) {
-      float Y = YUV[i].x();
-      float U = YUV[i].y() - 0.5;
-      float V = YUV[i].z() - 0.5;
-      float B_Y, R_Y;
-      if (U <= 0) {
-        B_Y = U * (-2.0 * -0.9702);
-      } else {
-        B_Y = U * (2.0 * 0.7910);
-      }
-      if (V <= 0) {
-        R_Y = V * (-2.0 * -0.8591);
-      } else {
-        R_Y = V * (2.0 * 0.4969);
-      }
-      // Return an RYB value, later steps will fix it.
-      YUV[i] = ColorTransform::TriStim(R_Y + Y, Y, B_Y + Y);
-    }
-  }
-
-  void AppendSkShaderSource(std::stringstream* src) const override {
-    NOTREACHED();
-  }
 };
 
 // Apply the HLG OOTF for a specified maximum luminance.
@@ -1133,13 +1093,8 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
   if (!src_matrix_is_identity_or_ycgco)
     steps_.push_back(std::move(src_range_adjust_matrix));
 
-  if (src.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
-    // BT2020 CL is a special case.
-    steps_.push_back(std::make_unique<ColorTransformFromBT2020CL>());
-  } else {
-    steps_.push_back(std::make_unique<ColorTransformMatrix>(
-        Invert(src.GetTransferMatrix(options.src_bit_depth))));
-  }
+  steps_.push_back(std::make_unique<ColorTransformMatrix>(
+      Invert(src.GetTransferMatrix(options.src_bit_depth))));
 
   if (src_matrix_is_identity_or_ycgco)
     steps_.push_back(std::move(src_range_adjust_matrix));
@@ -1181,11 +1136,6 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     }
   }
 
-  if (src.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
-    // BT2020 CL is a special case.
-    steps_.push_back(std::make_unique<ColorTransformMatrix>(
-        Invert(src.GetTransferMatrix(options.src_bit_depth))));
-  }
   steps_.push_back(
       std::make_unique<ColorTransformMatrix>(src.GetPrimaryMatrix()));
 
@@ -1258,11 +1208,6 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
 
   steps_.push_back(
       std::make_unique<ColorTransformMatrix>(Invert(dst.GetPrimaryMatrix())));
-  if (dst.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
-    // BT2020 CL is a special case.
-    steps_.push_back(std::make_unique<ColorTransformMatrix>(
-        dst.GetTransferMatrix(options.dst_bit_depth)));
-  }
 
   switch (dst.GetTransferID()) {
     case ColorSpace::TransferID::HLG:
@@ -1312,12 +1257,8 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
   if (dst_matrix_is_identity_or_ycgco)
     steps_.push_back(std::move(dst_range_adjust_matrix));
 
-  if (dst.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
-    NOTREACHED();
-  } else {
-    steps_.push_back(std::make_unique<ColorTransformMatrix>(
-        dst.GetTransferMatrix(options.dst_bit_depth)));
-  }
+  steps_.push_back(std::make_unique<ColorTransformMatrix>(
+      dst.GetTransferMatrix(options.dst_bit_depth)));
 
   if (!dst_matrix_is_identity_or_ycgco)
     steps_.push_back(std::move(dst_range_adjust_matrix));

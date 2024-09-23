@@ -65,6 +65,14 @@ class NtpBackgroundService : public KeyedService {
   // is in progress will be dropped until the currently active loader completes.
   virtual void FetchCollectionImageInfo(const std::string& collection_id);
 
+  using FetchReplacementImageCallback =
+      base::OnceCallback<void(const std::optional<GURL>&)>;
+  // Requests an asynchronous fetch of a replacement preview image for a
+  // collection.
+  virtual void FetchReplacementCollectionPreviewImage(
+      const std::string& collection_id,
+      FetchReplacementImageCallback fetch_replacement_image_callback);
+
   // Requests an asynchronous fetch of metadata about the 'next' image in the
   // specified collection. The resume_token, where available, is an opaque value
   // saved from a previous GetImageFromCollectionResponse. After the update
@@ -184,30 +192,21 @@ class NtpBackgroundService : public KeyedService {
       base::OnceClosure collection_urls_verification_complete_closure,
       int headers_response_code);
 
-  // Callback that processes the response from the FetchCollectionImages
-  // request, and verifies the preview image URLs in the response, refreshing
-  // the contents of collection_images_ with server-provided data.
-  void OnCollectionPreviewURLHeadersReceived(
-      base::OnceClosure collection_fetch_complete_closure,
-      ntp::background::Collection collection,
-      const GURL& preview_image_url,
-      int headers_response_code);
   // Callback that processes the response of a FetchImageInfo request made by a
   // collection image whose preview image's URL is broken. The images in the
   // collection are fetched and then verified using VerifyImageUrl.
-  void OnFetchReplacementPreviewInfoComplete(
-      base::OnceClosure collection_fetch_complete_closure,
-      ntp::background::Collection collection,
+  void OnFetchReplacementCollectionPreviewImageComplete(
+      FetchReplacementImageCallback fetch_replacement_image_callback,
       ntp::background::GetImagesInCollectionResponse images_response,
       ErrorType error_type);
-  // Callback that processes the response of a VerifyImageUrl request made by a
-  // collection image, to replace its preview image URL.
-  void OnReplacementCollectionPreviewURLHeadersReceived(
-      base::OnceClosure collection_fetch_complete_closure,
-      ntp::background::Collection collection,
+
+  // Callback that processes the response of a VerifyImageUrl request made to
+  // to replace a collection's preview image URL.
+  void OnReplacementCollectionPreviewImageHeadersReceived(
+      FetchReplacementImageCallback fetch_replacement_image_callback,
       ntp::background::GetImagesInCollectionResponse images_response,
-      int replacement_preview_index,
-      const GURL& preview_image_url,
+      int replacement_image_index,
+      const GURL& replacement_image_url,
       int headers_response_code);
 
   // Callback that processes the response from the FetchNextCollectionImage

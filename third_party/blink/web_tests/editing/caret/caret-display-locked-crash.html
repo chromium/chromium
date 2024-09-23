@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<title>`content-visibility` crash in `[contenteditable]` after focus</title>
+<style>
+p {
+  height: 600px;
+}
+#p0 {
+  content-visibility: auto;
+}
+</style>
+</head>
+<body>
+<div contenteditable="true">
+<p id="p0">paragraph 0</p>
+<p>paragraph 1</p>
+<p>paragraph 2</p>
+<p>paragraph 3</p>
+<p>paragraph 4</p>
+<p>paragraph 5</p>
+<p>paragraph 6</p>
+</div>
+<script>
+async function animationFrame() {
+  return new Promise(resolve => {
+    requestAnimationFrame(resolve);
+  });
+}
+
+promise_test(async t => {
+  document.querySelector("div").focus();
+  await animationFrame();
+  await animationFrame();
+  // Locks #p0, which contains the caret.
+  window.scrollBy(0, 2000);
+  await animationFrame();
+  await animationFrame();
+}, 'No crash on hiding a c-v:auto block containing a text caret.');
+</script>
+</body>
+</html>

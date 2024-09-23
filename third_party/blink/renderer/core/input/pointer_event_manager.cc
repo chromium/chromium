@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/input/pointer_event_manager.h"
 
 #include "base/auto_reset.h"
@@ -29,7 +34,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -70,7 +74,7 @@ const AtomicString& MouseEventNameForPointerEventInputType(
     case WebInputEvent::Type::kPointerMove:
       return event_type_names::kMousemove;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return g_empty_atom;
   }
 }
@@ -718,7 +722,7 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
           pointer_event_target.target_element,
           pointer_event_factory_.CreatePointerCancelEvent(
               core_pointer_event->pointerId(), event.TimeStamp(),
-              core_pointer_event->deviceId()),
+              core_pointer_event->persistentDeviceId()),
           event.hovering);
     }
 
@@ -786,8 +790,10 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
 bool PointerEventManager::HandleScrollbarTouchDrag(const WebPointerEvent& event,
                                                    Scrollbar* scrollbar) {
   if (!scrollbar ||
-      event.pointer_type != WebPointerProperties::PointerType::kTouch)
+      (event.pointer_type != WebPointerProperties::PointerType::kTouch &&
+       event.pointer_type != WebPointerProperties::PointerType::kPen)) {
     return false;
+  }
 
   if (event.GetType() == WebInputEvent::Type::kPointerDown) {
     captured_scrollbar_ = scrollbar;
@@ -1077,33 +1083,43 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
         mouse_event.pointer_type)] = true;
   }
 
-  // Only calculate mouse target if either mouse compatibility event or click
-  // should be sent.
-  if (pointer_event->isPrimary() &&
-      (!prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
-           mouse_event.pointer_type)] ||
-       (!skip_click_dispatch &&
-        event_type == WebInputEvent::Type::kPointerUp))) {
-    Element* mouse_target =
+  bool send_compat_mouse =
+      pointer_event->isPrimary() &&
+      !prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
+          mouse_event.pointer_type)];
+  bool consider_click_dispatch = !skip_click_dispatch &&
+                                 pointer_event->isPrimary() &&
+                                 event_type == WebInputEvent::Type::kPointerUp;
+
+  // Calculate mouse target if either compatibility mouse event or click event
+  // or both should be sent.
+  Element* mouse_target = nullptr;
+  if (send_compat_mouse || consider_click_dispatch) {
+    mouse_target =
         RuntimeEnabledFeatures::BoundaryEventDispatchTracksNodeRemovalEnabled()
             ? mouse_event_manager_->GetElementUnderMouse()
             : NonDeletedElementTarget(effective_target, pointer_event);
-    if (!prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
-            mouse_event.pointer_type)]) {
-      result = event_handling_util::MergeEventResult(
-          result,
-          mouse_event_manager_->DispatchMouseEvent(
-              mouse_target, MouseEventNameForPointerEventInputType(event_type),
-              mouse_event, &last_mouse_position, nullptr));
-    }
-    if (!skip_click_dispatch && mouse_target &&
-        event_type == WebInputEvent::Type::kPointerUp) {
-      Element* captured_click_target = GetEffectiveTargetForPointerEvent(
-          nullptr, pointer_event->pointerId());
-      mouse_event_manager_->DispatchMouseClickIfNeeded(
-          mouse_target, captured_click_target, mouse_event,
-          pointer_event->pointerId(), pointer_event->pointerType());
-    }
+  }
+
+  // Dispatch compat mouse events.
+  if (send_compat_mouse) {
+    result = event_handling_util::MergeEventResult(
+        result,
+        mouse_event_manager_->DispatchMouseEvent(
+            mouse_target, MouseEventNameForPointerEventInputType(event_type),
+            mouse_event, &last_mouse_position, nullptr));
+  }
+
+  // Dispatch the click event if applicable.
+  if (!mouse_target) {
+    consider_click_dispatch = false;
+  }
+  if (consider_click_dispatch) {
+    Element* captured_click_target =
+        GetEffectiveTargetForPointerEvent(nullptr, pointer_event->pointerId());
+    mouse_event_manager_->DispatchMouseClickIfNeeded(
+        mouse_target, captured_click_target, mouse_event,
+        pointer_event->pointerId(), pointer_event->pointerType());
   }
 
   if (pointer_event->type() == event_type_names::kPointerup ||
@@ -1216,17 +1232,13 @@ void PointerEventManager::ProcessPendingPointerCapture(
   }
 
   if (pending_pointer_capture_target &&
-      (!RuntimeEnabledFeatures::
-           PointerCaptureLostOnRemovalDuringCaptureEnabled() ||
-       pending_pointer_capture_target->isConnected())) {
+      pending_pointer_capture_target->isConnected()) {
     SetElementUnderPointer(pointer_event, pending_pointer_capture_target);
     DispatchPointerEvent(
         pending_pointer_capture_target,
         pointer_event_factory_.CreatePointerCaptureEvent(
             pointer_event, event_type_names::kGotpointercapture));
-    if (!RuntimeEnabledFeatures::
-            PointerCaptureLostOnRemovalDuringCaptureEnabled() ||
-        pending_pointer_capture_target->isConnected()) {
+    if (pending_pointer_capture_target->isConnected()) {
       pointer_capture_target_.Set(pointer_id, pending_pointer_capture_target);
     } else {
       // As a result of dispatching gotpointercapture the capture node was

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -215,7 +216,12 @@ bool ReadingListManagerImpl::IsReadingListBookmark(
 
 void ReadingListManagerImpl::Delete(const GURL& url) {
   DCHECK(reading_list_model_->loaded());
-  reading_list_model_->RemoveEntryByURL(url);
+  reading_list_model_->RemoveEntryByURL(url, FROM_HERE);
+}
+
+void ReadingListManagerImpl::DeleteAll() {
+  DCHECK(reading_list_model_->loaded());
+  reading_list_model_->DeleteAllEntries(FROM_HERE);
 }
 
 const BookmarkNode* ReadingListManagerImpl::GetRoot() const {
@@ -277,16 +283,12 @@ bool ReadingListManagerImpl::GetReadStatus(
   if (value == kReadStatusUnread)
     return false;
 
-  NOTREACHED() << "May not be reading list node.";
+  NOTREACHED_IN_MIGRATION() << "May not be reading list node.";
   return false;
 }
 
 bool ReadingListManagerImpl::IsLoaded() const {
   return loaded_;
-}
-
-void ReadingListManagerImpl::SetIsLoadedForTests(bool is_loaded) {
-  loaded_ = is_loaded;
 }
 
 BookmarkNode* ReadingListManagerImpl::FindBookmarkByURL(const GURL& url) const {

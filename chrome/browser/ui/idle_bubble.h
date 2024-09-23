@@ -18,7 +18,7 @@ void ShowIdleBubble(Browser* browser,
                     IdleDialog::ActionSet actions,
                     base::OnceClosure on_close);
 
-// TODO(crbug.com/1442224): Convert idle_service_browsertest.cc to an
+// TODO(crbug.com/40266853): Convert idle_service_browsertest.cc to an
 // InteractiveTest, and get rid of this.
 views::BubbleFrameView* GetIdleBubble(Browser* browser);
 

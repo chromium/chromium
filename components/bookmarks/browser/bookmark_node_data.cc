@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -141,7 +142,7 @@ BookmarkNodeData::~BookmarkNodeData() {
 // static
 bool BookmarkNodeData::ClipboardContainsBookmarks() {
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
   return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
       ui::ClipboardFormatType::GetType(kClipboardFormatString),
       ui::ClipboardBuffer::kCopyPaste, &data_dst);
@@ -179,8 +180,13 @@ bool BookmarkNodeData::ReadFromTuple(const GURL& url,
 }
 
 #if !BUILDFLAG(IS_APPLE)
-void BookmarkNodeData::WriteToClipboard() {
+void BookmarkNodeData::WriteToClipboard(bool is_off_the_record) {
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+
+  if (is_off_the_record) {
+    // Data is copied from an incognito window, so mark it as off the record.
+    scw.MarkAsOffTheRecord();
+  }
 
 #if BUILDFLAG(IS_WIN)
   const std::u16string kEOL(u"\r\n");
@@ -229,7 +235,8 @@ bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer buffer) {
                       /* data_dst = */ nullptr, &data);
 
   if (!data.empty()) {
-    base::Pickle pickle(data.data(), static_cast<int>(data.size()));
+    base::Pickle pickle =
+        base::Pickle::WithUnownedBuffer(base::as_byte_span(data));
     if (ReadFromPickle(&pickle))
       return true;
   }

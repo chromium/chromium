@@ -23,7 +23,7 @@ class CanonicalCookie;
 enum class CookieChangeCause {
   // The cookie was inserted.
   INSERTED,
-  // The cookie was changed directly by a consumer's action.
+  // The cookie was deleted directly by a consumer's action.
   EXPLICIT,
   // The cookie was deleted, but no more details are known.
   UNKNOWN_DELETION,
@@ -160,7 +160,7 @@ class CookieChangeDispatcher {
   //
   // The callback will not observe a few bookkeeping changes.
   // See kChangeCauseMapping in cookie_monster.cc for details.
-  // TODO(crbug.com/1225444): Add support for Partitioned cookies.
+  // TODO(crbug.com/40188414): Add support for Partitioned cookies.
   [[nodiscard]] virtual std::unique_ptr<CookieChangeSubscription>
   AddCallbackForAllChanges(CookieChangeCallback callback) = 0;
 };

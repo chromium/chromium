@@ -1,0 +1,23 @@
+<html><head>
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+  <style>
+  .positioned-bottom {
+      position: fixed;
+      bottom: env(safe-area-inset-bottom, 0);
+      border: 2px solid green;
+      right: 8px;
+  }
+  .positioned-left {
+      position: fixed;
+      left: env(safe-area-inset-left, 0);
+      border: 2px solid purple;
+      top: 50px;
+  }
+  </style>
+  </head>
+  <body>
+  <button id="fullscreen-inner" onclick="document.documentElement.requestFullscreen() || document.documentElement.webkitRequestFullscreen()">Fullscreen</button>
+  <div class="positioned-left">Avoids SAI left - subframe</div>
+  <div class="positioned-bottom">Avoids SAI bottom - subframe</div>
+
+</body></html>

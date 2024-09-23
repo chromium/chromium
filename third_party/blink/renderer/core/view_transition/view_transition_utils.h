@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_request_forward.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_transition_element.h"
 
 namespace blink {
 
@@ -34,8 +35,9 @@ class CORE_EXPORT ViewTransitionUtils {
 
     for (const auto& view_transition_name :
          document.GetStyleEngine().ViewTransitionTags()) {
-      auto* container_pseudo = transition_pseudo->GetPseudoElement(
-          kPseudoIdViewTransitionGroup, view_transition_name);
+      auto* container_pseudo =
+          To<ViewTransitionTransitionElement>(transition_pseudo)
+              ->FindViewTransitionGroupPseudoElement(view_transition_name);
       if (!container_pseudo)
         continue;
 
@@ -78,8 +80,9 @@ class CORE_EXPORT ViewTransitionUtils {
 
     for (const auto& view_transition_name :
          document.GetStyleEngine().ViewTransitionTags()) {
-      auto* container_pseudo = transition_pseudo->GetPseudoElement(
-          kPseudoIdViewTransitionGroup, view_transition_name);
+      auto* container_pseudo =
+          To<ViewTransitionTransitionElement>(transition_pseudo)
+              ->FindViewTransitionGroupPseudoElement(view_transition_name);
       if (!container_pseudo) {
         continue;
       }
@@ -156,13 +159,21 @@ class CORE_EXPORT ViewTransitionUtils {
       case kPseudoIdViewTransitionNew:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
   // Returns the view transition in-progress in the given document, if one
   // exists.
   static ViewTransition* GetTransition(const Document& document);
+
+  // Return the incoming cross-document view transition, if one exists.
+  static ViewTransition* GetIncomingCrossDocumentTransition(
+      const Document& document);
+
+  // Return the outgoing cross-document view transition, if one exists.
+  static ViewTransition* GetOutgoingCrossDocumentTransition(
+      const Document& document);
 
   // If the given document has an in-progress view transition, this will return
   // the script delegate associated with that view transition (which may be
@@ -181,10 +192,6 @@ class CORE_EXPORT ViewTransitionUtils {
   // Returns true if the given layout object corresponds to the root
   // ::view-transition pseudo element of a view transition hierarchy.
   static bool IsViewTransitionRoot(const LayoutObject& object);
-
-  // Returns true if this object represents an element that is a view transition
-  // participant.
-  static bool IsViewTransitionParticipant(const LayoutObject& object);
 
   // Returns true if this element is a view transition participant. This is a
   // slow check that walks all of the view transition elements in the

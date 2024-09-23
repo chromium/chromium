@@ -240,7 +240,7 @@ device::BluetoothTransport BluetoothDeviceBlueZ::GetType() const {
     return device::BLUETOOTH_TRANSPORT_DUAL;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return device::BLUETOOTH_TRANSPORT_INVALID;
 }
 
@@ -299,7 +299,7 @@ void BluetoothDeviceBlueZ::DisconnectGatt() {
 
   // IsPaired() returns true if we've connected to the device before. So we
   // check the dbus property directly.
-  // TODO(crbug.com/649651): Use IsPaired once it returns true only for paired
+  // TODO(crbug.com/40486156): Use IsPaired once it returns true only for paired
   // devices.
   bluez::BluetoothDeviceClient::Properties* properties =
       bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->GetProperties(
@@ -568,7 +568,7 @@ void BluetoothDeviceBlueZ::SetConnectionLatency(
       max_connection_interval = MAX_CONNECTION_INTERVAL_HIGH;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

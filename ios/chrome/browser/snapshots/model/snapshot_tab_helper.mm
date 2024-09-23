@@ -8,9 +8,13 @@
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_generator.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_manager.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_manager.h"
+#import "ios/chrome/browser/snapshots/model/model_swift.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage_wrapper.h"
+#import "ios/chrome/browser/snapshots/model/web_state_snapshot_info.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -46,58 +50,120 @@ SnapshotTabHelper::~SnapshotTabHelper() {
 }
 
 void SnapshotTabHelper::SetDelegate(id<SnapshotGeneratorDelegate> delegate) {
-  [snapshot_manager_ setDelegate:delegate];
+  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
+    CHECK(snapshot_manager_);
+    [snapshot_manager_ setDelegate:delegate];
+  } else {
+    CHECK(legacy_snapshot_manager_);
+    [legacy_snapshot_manager_ setDelegate:delegate];
+  }
 }
 
-void SnapshotTabHelper::SetSnapshotStorage(SnapshotStorage* snapshot_storage) {
-  snapshot_manager_.snapshotStorage = snapshot_storage;
+void SnapshotTabHelper::SetSnapshotStorage(SnapshotStorageWrapper* wrapper) {
+  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
+    CHECK(snapshot_manager_);
+    SnapshotStorage* storage = nil;
+    // `wrapper` is nil when a WebState is detached.
+    if (wrapper) {
+      storage = wrapper.snapshotStorage;
+      CHECK(storage);
+    }
+    // Note that `snapshot_manager_.snapshotStorage` is SnapshotStorage. On the
+    // other hand, `legacy_snapshot_manager_.snapshotStorage` is
+    // SnapshotStorageWrapper. The type is different to avoid a dependency
+    // cycle.
+    snapshot_manager_.snapshotStorage = storage;
+  } else {
+    CHECK(legacy_snapshot_manager_);
+    legacy_snapshot_manager_.snapshotStorage = wrapper;
+  }
 }
 
 void SnapshotTabHelper::RetrieveColorSnapshot(void (^callback)(UIImage*)) {
-  [snapshot_manager_ retrieveSnapshot:callback];
+  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
+    CHECK(snapshot_manager_);
+    [snapshot_manager_ retrieveSnapshotWithCompletion:callback];
+  } else {
+    CHECK(legacy_snapshot_manager_);
+    [legacy_snapshot_manager_ retrieveSnapshot:callback];
+  }
 }
 
 void SnapshotTabHelper::RetrieveGreySnapshot(void (^callback)(UIImage*)) {
-  [snapshot_manager_ retrieveGreySnapshot:callback];
+  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
+    CHECK(snapshot_manager_);
+    [snapshot_manager_ retrieveGreySnapshotWithCompletion:callback];
+  } else {
+    CHECK(legacy_snapshot_manager_);
+    [legacy_snapshot_manager_ retrieveGreySnapshot:callback];
+  }
 }
 
 void SnapshotTabHelper::UpdateSnapshotWithCallback(void (^callback)(UIImage*)) {
   was_loading_during_last_snapshot_ = web_state_->IsLoading();
 
-  [snapshot_manager_ updateSnapshotWithCompletion:callback];
+  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
+    CHECK(snapshot_manager_);
+    [snapshot_manager_ updateSnapshotWithCompletion:callback];
+  } else {
+    CHECK(legacy_snapshot_manager_);
+    [legacy_snapshot_manager_ updateSnapshotWithCompletion:callback];
+  }
 }
 
 UIImage* SnapshotTabHelper::GenerateSnapshotWithoutOverlays() {
-  return [snapshot_manager_ generateUIViewSnapshot];
+  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
+    CHECK(snapshot_manager_);
+    return [snapshot_manager_ generateUIViewSnapshot];
+  } else {
+    CHECK(legacy_snapshot_manager_);
+    return [legacy_snapshot_manager_ generateUIViewSnapshot];
+  }
 }
 
 void SnapshotTabHelper::RemoveSnapshot() {
-  [snapshot_manager_ removeSnapshot];
+  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
+    CHECK(snapshot_manager_);
+    [snapshot_manager_ removeSnapshot];
+  } else {
+    CHECK(legacy_snapshot_manager_);
+    [legacy_snapshot_manager_ removeSnapshot];
+  }
 }
 
 void SnapshotTabHelper::IgnoreNextLoad() {
   ignore_next_load_ = true;
 }
 
-void SnapshotTabHelper::WillBeSavedGreyWhenBackgrounding() {
-  [snapshot_manager_ willBeSavedGreyWhenBackgrounding];
-}
-
-void SnapshotTabHelper::SaveGreyInBackground() {
-  [snapshot_manager_ saveGreyInBackground];
-}
-
 SnapshotID SnapshotTabHelper::GetSnapshotID() const {
-  return snapshot_manager_.snapshotID;
+  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
+    CHECK(snapshot_manager_);
+    return snapshot_manager_.snapshotID.snapshot_id;
+  } else {
+    CHECK(legacy_snapshot_manager_);
+    return legacy_snapshot_manager_.snapshotID;
+  }
 }
 
 SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   DCHECK(web_state_);
-  snapshot_manager_ = [[SnapshotManager alloc]
-      initWithGenerator:[[LegacySnapshotGenerator alloc]
-                            initWithWebState:web_state_]
-             snapshotID:GenerateSnapshotID(web_state_)];
+  if (base::FeatureList::IsEnabled(kSnapshotInSwift)) {
+    snapshot_manager_ = [[SnapshotManager alloc]
+        initWithGenerator:
+            [[SnapshotGenerator alloc]
+                initWithWebStateInfo:[[WebStateSnapshotInfo alloc]
+                                         initWithWebState:web_state_]]
+               snapshotID:[[SnapshotIDWrapper alloc]
+                              initWithSnapshotID:GenerateSnapshotID(
+                                                     web_state_)]];
+  } else {
+    legacy_snapshot_manager_ = [[LegacySnapshotManager alloc]
+        initWithGenerator:[[LegacySnapshotGenerator alloc]
+                              initWithWebState:web_state_]
+               snapshotID:GenerateSnapshotID(web_state_)];
+  }
+
   web_state_observation_.Observe(web_state_.get());
 }
 

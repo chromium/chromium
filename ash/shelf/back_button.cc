@@ -20,19 +20,22 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
 BackButton::BackButton(Shelf* shelf) : ShelfControlButton(shelf, this) {
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_SHELF_BACK_BUTTON_TITLE));
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_SHELF_BACK_BUTTON_TITLE));
   SetFlipCanvasOnPaintForRTLUI(true);
 }
 
 BackButton::~BackButton() {}
 
 void BackButton::HandleLocaleChange() {
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_SHELF_BACK_BUTTON_TITLE));
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_SHELF_BACK_BUTTON_TITLE));
   TooltipTextChanged();
 }
 
@@ -48,7 +51,7 @@ void BackButton::PaintButtonContents(gfx::Canvas* canvas) {
 }
 
 std::u16string BackButton::GetTooltipText(const gfx::Point& p) const {
-  return GetAccessibleName();
+  return GetViewAccessibility().GetCachedName();
 }
 
 void BackButton::OnShelfButtonAboutToRequestFocusFromTabTraversal(

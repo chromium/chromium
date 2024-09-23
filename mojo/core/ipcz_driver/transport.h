@@ -228,7 +228,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   // still alive. So we retain a self-reference on behalf of the Channel and
   // release it only once notified of the Channel's destruction.
   //
-  // TODO(https://crbug.com/1299283): Refactor Channel so that this is
+  // TODO(crbug.com/40058840): Refactor Channel so that this is
   // unnecessary, once the non-ipcz Mojo implementation is phased out.
   scoped_refptr<Transport> self_reference_for_channel_ GUARDED_BY(lock_);
 

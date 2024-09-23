@@ -13,7 +13,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -84,6 +84,8 @@ void RichAnswersDefinitionView::AddHeaderViews() {
   // - settings_button_view (flex=0): no resize
   views::BoxLayoutView* box_layout_view =
       content_view_->AddChildView(CreateHorizontalBoxLayoutView());
+  box_layout_view->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
   views::FlexLayoutView* header_view =
       box_layout_view->AddChildView(CreateHorizontalFlexLayoutView());
 
@@ -104,11 +106,10 @@ void RichAnswersDefinitionView::AddHeaderViews() {
 
     // Display the phonetics label in the header view if it fits, otherwise show
     // it in a subheader view below.
-    int header_space_available = kDefinitionHeaderTextWidth -
-                                 word_label->CalculatePreferredSize().width();
+    int header_space_available =
+        kDefinitionHeaderTextWidth - word_label->GetPreferredSize().width();
     int phonetics_label_width =
-        phonetics_label->CalculatePreferredSize().width() +
-        kContentSingleSpacing;
+        phonetics_label->GetPreferredSize().width() + kContentSingleSpacing;
     if (phonetics_label_width <= header_space_available) {
       header_view->AddChildView(std::move(phonetics_label));
     } else {
@@ -135,15 +136,15 @@ void RichAnswersDefinitionView::AddPhoneticsAudioButtonTo(
       weak_factory_.GetWeakPtr());
   ui::ImageModel phonetics_audio_button_closure_image_model =
       ui::ImageModel::FromVectorIcon(vector_icons::kVolumeUpIcon,
-                                     cros_tokens::kCrosSysOnSurface,
+                                     ui::kColorSysOnSurface,
                                      kRichAnswersIconSizeDip);
   views::ImageButton* button_view =
       container_view->AddChildView(CreateImageButtonView(
           phonetics_audio_button_closure,
           phonetics_audio_button_closure_image_model,
-          cros_tokens::kCrosSysHoverOnSubtle,
+          ui::kColorSysStateHoverOnSubtle,
           l10n_util::GetStringUTF16(
-              IDS_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT)));
+              IDS_RICH_ANSWERS_VIEW_PHONETICS_BUTTON_A11Y_NAME_TEXT)));
   button_view->SetMinimumImageSize(
       gfx::Size(kRichAnswersIconSizeDip, kRichAnswersIconSizeDip));
 }
@@ -164,7 +165,7 @@ void RichAnswersDefinitionView::AddWordClass() {
   content_view_->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
       definition_result_.word_class,
       GetFontList(TypographyToken::kCrosBody2Italic), kContentTextWidth,
-      /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
+      /*is_multi_line=*/false, ui::kColorSysSecondary));
 }
 
 void RichAnswersDefinitionView::SetUpSubContentView() {
@@ -178,7 +179,7 @@ void RichAnswersDefinitionView::AddDefinition(views::View* container_view,
                                               int label_width) {
   container_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
       sense.definition, GetFontList(TypographyToken::kCrosBody2), label_width,
-      /*is_multi_line=*/true, cros_tokens::kCrosSysOnSurface));
+      /*is_multi_line=*/true, ui::kColorSysOnSurface));
 }
 
 void RichAnswersDefinitionView::MaybeAddSampleSentence(
@@ -192,7 +193,7 @@ void RichAnswersDefinitionView::MaybeAddSampleSentence(
   container_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
       "\"" + sense.sample_sentence.value() + "\"",
       GetFontList(TypographyToken::kCrosBody2), label_width,
-      /*is_multi_line=*/true, cros_tokens::kCrosSysSecondary));
+      /*is_multi_line=*/true, ui::kColorSysSecondary));
 }
 
 void RichAnswersDefinitionView::MaybeAddSynonyms(views::View* container_view,
@@ -213,19 +214,19 @@ void RichAnswersDefinitionView::MaybeAddSynonyms(views::View* container_view,
   QuickAnswersTextLabel* similar_label =
       box_layout_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
           l10n_util::GetStringUTF8(
-              IDS_QUICK_ANSWERS_DEFINITION_SYNONYMS_LABEL_TEXT),
+              IDS_RICH_ANSWERS_VIEW_DEFINITION_SYNONYMS_LABEL_TEXT),
           GetFontList(TypographyToken::kCrosBody2), label_width,
-          /*is_multi_line=*/true, cros_tokens::kHighlightColorGreen));
+          /*is_multi_line=*/true, ui::kColorCrosSysPositive));
   std::string synonyms_text =
       base::JoinString(sense.synonyms_list.value(), ", ");
   int synonyms_label_width = label_width -
-                             similar_label->CalculatePreferredSize().width() -
+                             similar_label->GetPreferredSize().width() -
                              kContentSingleSpacing;
   QuickAnswersTextLabel* synonyms_label =
       box_layout_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
           synonyms_text, GetFontList(TypographyToken::kCrosBody2),
           synonyms_label_width,
-          /*is_multi_line=*/true, cros_tokens::kCrosSysSecondary));
+          /*is_multi_line=*/true, ui::kColorSysSecondary));
 
   box_layout_view->SetFlexForView(similar_label, /*flex=*/0);
   box_layout_view->SetFlexForView(synonyms_label, /*flex=*/1);
@@ -254,12 +255,12 @@ void RichAnswersDefinitionView::AddSubsense(const Sense& subsense) {
       box_layout_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
           kBulletSymbol, GetFontList(TypographyToken::kCrosBody2),
           kSubContentTextWidth,
-          /*is_multi_line=*/false, cros_tokens::kCrosSysOnSurface));
+          /*is_multi_line=*/false, ui::kColorSysOnSurface));
 
   views::BoxLayoutView* subsense_view =
       box_layout_view->AddChildView(CreateVerticalBoxLayoutView());
   int subsense_labels_width = kSubContentTextWidth -
-                              bullet_label->CalculatePreferredSize().width() -
+                              bullet_label->GetPreferredSize().width() -
                               kContentSingleSpacing;
   subsense_view->SetMinimumCrossAxisSize(subsense_labels_width);
   AddDefinition(subsense_view, subsense, subsense_labels_width);

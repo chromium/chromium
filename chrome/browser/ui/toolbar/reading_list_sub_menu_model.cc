@@ -18,10 +18,9 @@ ReadingListSubMenuModel::ReadingListSubMenuModel(
   AddItemWithStringIdAndIcon(IDC_READING_LIST_MENU_ADD_TAB,
                              IDS_READING_LIST_MENU_ADD_TAB,
                              ui::ImageModel::FromVectorIcon(kReadLaterAddIcon));
-  AddItemWithStringIdAndIcon(
-      IDC_READING_LIST_MENU_SHOW_UI, IDS_READING_LIST_MENU_SHOW_UI,
-      ui::ImageModel::FromVectorIcon(
-          features::IsChromeRefresh2023() ? kReadingListIcon : kReadLaterIcon));
+  AddItemWithStringIdAndIcon(IDC_READING_LIST_MENU_SHOW_UI,
+                             IDS_READING_LIST_MENU_SHOW_UI,
+                             ui::ImageModel::FromVectorIcon(kReadingListIcon));
   SetElementIdentifierAt(
       GetIndexOfCommandId(IDC_READING_LIST_MENU_SHOW_UI).value(),
       kReadingListMenuShowUI);

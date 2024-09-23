@@ -102,17 +102,17 @@ android_library("net_java_test_support") {
 
 generate_jni("net_test_support_provider_jni") {
   testonly = true
-  sources = [
-    "../test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java",
-    "../test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java",
-  ]
+  sources = [ "../test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java" ]
+}
+
+generate_jni("dummy_spnego_authenticator_jni") {
+  testonly = true
+  sources = [ "../test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java" ]
 }
 
 android_library("net_test_support_provider_java") {
   testonly = true
   sources = [
-    "../test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java",
-    "../test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticatorService.java",
     "../test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java",
     "../test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerService.java",
   ]
@@ -120,6 +120,24 @@ android_library("net_test_support_provider_java") {
 
   deps = [
     ":embedded_test_server_aidl_java",
+    ":net_java",
+    "//base:base_java",
+    "//base:base_java_url_utils_for_test",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+
+  data_deps = [ "//net:test_support" ]
+}
+
+android_library("dummy_spnego_authenticator_java") {
+  testonly = true
+  sources = [
+    "../test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java",
+    "../test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticatorService.java",
+  ]
+  srcjar_deps = [ ":dummy_spnego_authenticator_jni" ]
+
+  deps = [
     ":net_java",
     "//base:base_java",
     "//base:base_java_url_utils_for_test",
@@ -217,6 +235,7 @@ android_library("net_tests_java") {
     "//base:base_java_test_support",
     "//third_party/android_sdk:android_test_mock_java",
     "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",

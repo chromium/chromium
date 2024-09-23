@@ -14,6 +14,7 @@
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/window_open_disposition.h"
@@ -80,7 +81,8 @@ AssistantWebContainerView::AssistantWebContainerView(
 
 AssistantWebContainerView::~AssistantWebContainerView() = default;
 
-gfx::Size AssistantWebContainerView::CalculatePreferredSize() const {
+gfx::Size AssistantWebContainerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int non_client_frame_view_height =
       views::GetCaptionButtonLayoutSize(
           views::CaptionButtonLayoutSize::kNonBrowserCaption)
@@ -138,8 +140,9 @@ void AssistantWebContainerView::DidSuppressNavigation(
     const GURL& url,
     WindowOpenDisposition disposition,
     bool from_user_gesture) {
-  if (!from_user_gesture)
+  if (!from_user_gesture) {
     return;
+  }
 
   // Deep links are always handled by the AssistantViewDelegate. If the
   // |disposition| indicates a desire to open a new foreground tab, we also
@@ -201,8 +204,9 @@ void AssistantWebContainerView::SetCanGoBackForTesting(bool can_go_back) {
 }
 
 void AssistantWebContainerView::InitLayout() {
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_WINDOW;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.delegate = this;
   params.name = GetClassName();
 
@@ -229,8 +233,9 @@ void AssistantWebContainerView::RemoveContents() {
 void AssistantWebContainerView::UpdateBackground() {
   // Paint a theme aware background to be displayed while the web content is
   // still loading.
-  const SkColor color =
-      GetColorProvider()->GetColor(ui::kColorEndpointBackground);
+  const SkColor color = DarkLightModeController::Get()->IsDarkModeEnabled()
+                            ? SkColorSetARGB(255, 27, 27, 27)
+                            : SK_ColorWHITE;
   SetBackground(views::CreateRoundedRectBackground(color, background_radii_));
 }
 

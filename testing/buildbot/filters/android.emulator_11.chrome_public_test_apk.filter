@@ -1,13 +1,6 @@
 # vr tests do not apply to emulator
 -org.chromium.chrome.browser.hardware_acceleration.ManifestHWATest.testAccelerationDisabled
 
-# crbug.com/1193745
--org.chromium.chrome.browser.download.OMADownloadHandlerTest.testClearPendingOMADownloads
--org.chromium.chrome.browser.download.OMADownloadHandlerTest.testQueryDownloadResult
-
-# crbug.com/1036571
--org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
-
 # crbug.com/1036459
 -org.chromium.chrome.browser.ntp.NewTabPageTest.testFocusFakebox
 
@@ -17,9 +10,6 @@
 # crbug.com/1061178
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
 
-# crbug.com/1036556
--org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMediaSuspension
-
 # crbug.com/1195129
 -org.chromium.chrome.browser.omnibox.suggestions.SwitchToTabTest.testSwitchToTabInSearchActivity
 -org.chromium.chrome.browser.omnibox.suggestions.SwitchToTabTest.testSwitchToTabSuggestionWhenIncognitoTabOnTop
@@ -27,12 +17,6 @@
 
 # crbug.com/1225709
 -org.chromium.components.browser_ui.share.ShareImageFileUtilsTest.testSaveBitmapAndMediaStore
-
-# crbug.com/1225754
--org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl
-
-# crbug.com/1231227
--org.chromium.chrome.browser.webapps.WebappDisplayModeTest.*
 
 # crbug.com/1231259
 -org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessoryIntegrationTest.testFillsSuggestionOnClick

@@ -14,8 +14,7 @@ namespace ash {
 
 // Interface for dependency injection between MarketingOptInScreen and its
 // WebUI representation.
-class MarketingOptInScreenView
-    : public base::SupportsWeakPtr<MarketingOptInScreenView> {
+class MarketingOptInScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"marketing-opt-in",
                                                        "MarketingOptInScreen"};
@@ -34,11 +33,14 @@ class MarketingOptInScreenView
   // Sets whether the a11y setting for showing shelf navigation buttons is.
   // toggled on or off.
   virtual void UpdateA11yShelfNavigationButtonToggle(bool enabled) = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<MarketingOptInScreenView> AsWeakPtr() = 0;
 };
 
 // The sole implementation of the MarketingOptInScreenView, using WebUI.
-class MarketingOptInScreenHandler : public BaseScreenHandler,
-                                    public MarketingOptInScreenView {
+class MarketingOptInScreenHandler final : public BaseScreenHandler,
+                                          public MarketingOptInScreenView {
  public:
   using TView = MarketingOptInScreenView;
 
@@ -61,10 +63,13 @@ class MarketingOptInScreenHandler : public BaseScreenHandler,
             bool cloud_gaming_enabled) override;
   void UpdateA11ySettingsButtonVisibility(bool shown) override;
   void UpdateA11yShelfNavigationButtonToggle(bool enabled) override;
+  base::WeakPtr<MarketingOptInScreenView> AsWeakPtr() override;
 
  private:
   // BaseScreenHandler:
   void GetAdditionalParameters(base::Value::Dict* parameters) override;
+
+  base::WeakPtrFactory<MarketingOptInScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

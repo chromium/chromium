@@ -48,6 +48,12 @@ message TimeRangeDirective {
   optional int64 start_time_usec = 1;
   // The time on or before which entries must be deleted.
   optional int64 end_time_usec = 2;
+
+  // Optional field to filter the entries with the matching app ID.
+  // This field is set only by Android which has app-specific history feature
+  // that allows users to generate/delete history entries from Custom Tabs on
+  // app, not from BrApp.
+  optional string app_id = 3;
 }
 
 message UrlDirective {
@@ -60,4 +66,10 @@ message UrlDirective {
   // The time on or before which entries must be deleted.
   // In microseconds since the Unix epoch.
   optional int64 end_time_usec = 2;
+
+  // Optional field to filter the entries with the matching app ID.
+  // This field is set only by Android which has app-specific history feature
+  // that allows users to generate/delete history entries from Custom Tabs on
+  // app, not from BrApp.
+  optional string app_id = 3;
 }

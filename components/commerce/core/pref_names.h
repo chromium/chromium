@@ -21,6 +21,15 @@ inline constexpr char kShoppingListEnabledPrefName[] = "shopping_list_enabled";
 inline constexpr char kPriceEmailNotificationsEnabled[] =
     "price_tracking.email_notifications_enabled";
 
+inline constexpr char kProductSpecificationsEntryPointLastDismissedTime[] =
+    "product_specifications_entry_point_last_dismissed_time";
+
+inline constexpr char kProductSpecificationsEntryPointShowIntervalInDays[] =
+    "product_specifications_entry_point_show_interval_in_days";
+
+inline constexpr char kProductSpecificationsAcceptedDisclosureVersion[] =
+    "product_specifications.accepted_disclosure_version";
+
 // Register preference names for commerce features.
 void RegisterPrefs(PrefRegistrySimple* registry);
 

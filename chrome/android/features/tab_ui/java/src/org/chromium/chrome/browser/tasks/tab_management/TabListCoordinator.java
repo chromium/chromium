@@ -8,9 +8,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.util.Size;
 import android.view.LayoutInflater;
@@ -18,15 +15,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator.ItemAnimatorFinishedListener;
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 
 import org.chromium.base.Callback;
@@ -39,21 +40,22 @@ import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
+import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 import java.lang.annotation.Retention;
@@ -85,6 +87,7 @@ public class TabListCoordinator
     static final int GRID_LAYOUT_SPAN_COUNT_LARGE = 4;
     static final int MAX_SCREEN_WIDTH_COMPACT_DP = 600;
     static final int MAX_SCREEN_WIDTH_MEDIUM_DP = 800;
+    static final float PERCENTAGE_AREA_OVERLAP_MERGE_THRESHOLD = 0.5f;
 
     private final TabListMediator mMediator;
     private final TabListRecyclerView mRecyclerView;
@@ -94,8 +97,11 @@ public class TabListCoordinator
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final TabListModel mModel;
-    private final @UiType int mItemType;
-    private final ViewGroup mRootView;
+    private final boolean mHasEmptyView;
+    private final @DrawableRes int mEmptyStateImageResId;
+    private final @StringRes int mEmptyStateHeadingResId;
+    private final @StringRes int mEmptyStateSubheadingResId;
+    private final boolean mAllowDragAndDrop;
 
     private boolean mIsInitialized;
     private OnLayoutChangeListener mListLayoutListener;
@@ -104,14 +110,10 @@ public class TabListCoordinator
     private ItemTouchHelper mItemTouchHelper;
     private OnItemTouchListener mOnItemTouchListener;
     private TabListEmptyCoordinator mTabListEmptyCoordinator;
-    private boolean mHasEmptyView;
-    private int mEmptyStateImageResId;
-    private int mEmptyStateHeadingResId;
-    private int mEmptyStateSubheadingResId;
     private boolean mIsEmptyViewInitialized;
-
     private @Nullable Runnable mAwaitingLayoutRunnable;
     private int mAwaitingTabId = Tab.INVALID_TAB_ID;
+    private @TabActionState int mTabActionState;
 
     /**
      * Construct a coordinator for UI that shows a list of tabs.
@@ -120,16 +122,17 @@ public class TabListCoordinator
      * @param context The context to use for accessing {@link android.content.res.Resources}.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
      *     controls.
+     * @param modalDialogManager Used for managing the modal dialogs.
      * @param tabModelFilterSupplier The supplier for the current tab model filter.
-     * @param regularTabModelSupplier The supplier for the regular tab model.
      * @param thumbnailProvider Provider to provide screenshot related details.
-     * @param titleProvider Provider for a given tab's title.
      * @param actionOnRelatedTabs Whether tab-related actions should be operated on all related
      *     tabs.
+     * @param actionConfirmationManager An action confirmation manager.
      * @param gridCardOnClickListenerProvider Provides the onClickListener for opening dialog when
      *     click on a grid card.
      * @param dialogHandler A handler to handle requests about updating TabGridDialog.
-     * @param itemType The item type to put in the list of tabs.
+     * @param initialTabActionState The initial {@link TabActionState} to use for the shown tabs.
+     *     Must always be CLOSABLE for TabListMode.STRIP.
      * @param selectionDelegateProvider Provider to provide selected Tabs for a selectable tab list.
      *     It's NULL when selection is not possible.
      * @param priceWelcomeMessageControllerSupplier A supplier for a controller to show
@@ -139,128 +142,70 @@ public class TabListCoordinator
      * @param componentName A unique string uses to identify different components for UMA recording.
      *     Recommended to use the class name or make sure the string is unique through actions.xml
      *     file.
-     * @param rootView The root view of the app.
      * @param onModelTokenChange Callback to invoke whenever a model changes. Only currently
      *     respected in TabListMode.STRIP mode.
-     * @param hasEmptyView A boolean to determine if we should show empty view in tab switcher.
-     *     Currently only valid for TabListMode.GRID and TabListMode.LIST.
+     * @param emptyImageResId Drawable resource for empty state.
+     * @param emptyHeadingStringResId String resource for empty heading.
+     * @param emptySubheadingStringResId String resource for empty subheading.
+     * @param onTabGroupCreation Runnable invoked on tab group creation
+     * @param allowDragAndDrop Whether to allow drag and drop for this tab list coordinator.
      */
     TabListCoordinator(
             @TabListMode int mode,
             Context context,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull ModalDialogManager modalDialogManager,
             @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
-            @NonNull Supplier<TabModel> regularTabModelSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
-            @Nullable PseudoTab.TitleProvider titleProvider,
             boolean actionOnRelatedTabs,
+            @Nullable ActionConfirmationManager actionConfirmationManager,
             @Nullable
                     TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             @Nullable TabListMediator.TabGridDialogHandler dialogHandler,
-            @UiType int itemType,
+            @TabActionState int initialTabActionState,
             @Nullable TabListMediator.SelectionDelegateProvider selectionDelegateProvider,
             @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
             @NonNull ViewGroup parentView,
             boolean attachToParent,
             String componentName,
-            @NonNull ViewGroup rootView,
-            @Nullable Callback<Object> onModelTokenChange) {
-        this(
-                mode,
-                context,
-                browserControlsStateProvider,
-                tabModelFilterSupplier,
-                regularTabModelSupplier,
-                thumbnailProvider,
-                titleProvider,
-                actionOnRelatedTabs,
-                gridCardOnClickListenerProvider,
-                dialogHandler,
-                itemType,
-                selectionDelegateProvider,
-                priceWelcomeMessageControllerSupplier,
-                parentView,
-                attachToParent,
-                componentName,
-                rootView,
-                onModelTokenChange,
-                false,
-                0,
-                0,
-                0);
-    }
-
-    TabListCoordinator(
-            @TabListMode int mode,
-            Context context,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
-            @NonNull Supplier<TabModel> regularTabModelSupplier,
-            @Nullable ThumbnailProvider thumbnailProvider,
-            @Nullable PseudoTab.TitleProvider titleProvider,
-            boolean actionOnRelatedTabs,
-            @Nullable
-                    TabListMediator.GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
-            @Nullable TabListMediator.TabGridDialogHandler dialogHandler,
-            @UiType int itemType,
-            @Nullable TabListMediator.SelectionDelegateProvider selectionDelegateProvider,
-            @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
-            @NonNull ViewGroup parentView,
-            boolean attachToParent,
-            String componentName,
-            @NonNull ViewGroup rootView,
             @Nullable Callback<Object> onModelTokenChange,
             boolean hasEmptyView,
-            int emptyImageResId,
-            int emptyHeadingStringResId,
-            int emptySubheadingStringResId) {
+            @DrawableRes int emptyImageResId,
+            @StringRes int emptyHeadingStringResId,
+            @StringRes int emptySubheadingStringResId,
+            @Nullable Runnable onTabGroupCreation,
+            boolean allowDragAndDrop) {
         mMode = mode;
-        mItemType = itemType;
+        mTabActionState = initialTabActionState;
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mCurrentTabModelFilterSupplier = tabModelFilterSupplier;
         mModel = new TabListModel();
         mAdapter = new SimpleRecyclerViewAdapter(mModel);
-        mRootView = rootView;
+        mAllowDragAndDrop = allowDragAndDrop;
 
         RecyclerView.RecyclerListener recyclerListener = null;
         if (mMode == TabListMode.GRID) {
             mAdapter.registerType(
-                    UiType.SELECTABLE,
+                    UiType.TAB,
                     parent -> {
                         ViewGroup group =
                                 (ViewGroup)
                                         LayoutInflater.from(context)
                                                 .inflate(
-                                                        R.layout.selectable_tab_grid_card_item,
-                                                        parentView,
-                                                        false);
-                        group.setClickable(true);
-
-                        return group;
-                    },
-                    TabGridViewBinder::bindSelectableTab);
-
-            mAdapter.registerType(
-                    UiType.CLOSABLE,
-                    parent -> {
-                        ViewGroup group =
-                                (ViewGroup)
-                                        LayoutInflater.from(context)
-                                                .inflate(
-                                                        R.layout.closable_tab_grid_card_item,
+                                                        R.layout.tab_grid_card_item,
                                                         parentView,
                                                         false);
                         group.setClickable(true);
                         return group;
                     },
-                    TabGridViewBinder::bindClosableTab);
+                    TabGridViewBinder::bindTab);
 
             recyclerListener =
                     (holder) -> {
                         int holderItemViewType = holder.getItemViewType();
 
-                        // TODO(crbug.com/1508423): Convert this logic block to a callback.
+                        // TODO(crbug.com/40949143): Convert this logic block to a callback.
                         // If a custom message card item type is present, ensure that all attached
                         // child views are removed when the card is recycled.
                         if (holderItemViewType == UiType.CUSTOM_MESSAGE) {
@@ -268,8 +213,7 @@ public class TabListCoordinator
                             view.removeAllViews();
                         }
 
-                        if (holderItemViewType != UiType.CLOSABLE
-                                && holderItemViewType != UiType.SELECTABLE) {
+                        if (holderItemViewType != UiType.TAB) {
                             return;
                         }
 
@@ -291,47 +235,19 @@ public class TabListCoordinator
                     TabStripViewBinder::bind);
         } else if (mMode == TabListMode.LIST) {
             mAdapter.registerType(
-                    UiType.CLOSABLE,
+                    UiType.TAB,
                     parent -> {
                         ViewLookupCachingFrameLayout group =
                                 (ViewLookupCachingFrameLayout)
                                         LayoutInflater.from(context)
                                                 .inflate(
-                                                        R.layout.closable_tab_list_card_item,
+                                                        R.layout.tab_list_card_item,
                                                         parentView,
                                                         false);
                         group.setClickable(true);
-
-                        ImageView actionButton =
-                                (ImageView) group.fastFindViewById(R.id.end_button);
-                        actionButton.setVisibility(View.VISIBLE);
-                        Resources resources = group.getResources();
-                        int closeButtonSize =
-                                (int) resources.getDimension(R.dimen.tab_grid_close_button_size);
-                        Bitmap bitmap =
-                                BitmapFactory.decodeResource(resources, R.drawable.btn_close);
-                        Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true);
-                        actionButton.setImageBitmap(bitmap);
-
                         return group;
                     },
-                    TabListViewBinder::bindClosableListTab);
-
-            mAdapter.registerType(
-                    UiType.SELECTABLE,
-                    parent -> {
-                        ViewGroup group =
-                                (ViewGroup)
-                                        LayoutInflater.from(context)
-                                                .inflate(
-                                                        R.layout.selectable_tab_list_card_item,
-                                                        parentView,
-                                                        false);
-                        group.setClickable(true);
-
-                        return group;
-                    },
-                    TabListViewBinder::bindSelectableListTab);
+                    TabListViewBinder::bindTab);
         } else {
             throw new IllegalArgumentException(
                     "Attempting to create a tab list UI with invalid mode");
@@ -351,18 +267,20 @@ public class TabListCoordinator
                         context,
                         mModel,
                         mMode,
+                        modalDialogManager,
                         tabModelFilterSupplier,
-                        regularTabModelSupplier,
                         thumbnailProvider,
-                        titleProvider,
                         tabListFaviconProvider,
+                        new TabGroupColorFaviconProvider(mContext),
                         actionOnRelatedTabs,
                         selectionDelegateProvider,
                         gridCardOnClickListenerProvider,
                         dialogHandler,
                         priceWelcomeMessageControllerSupplier,
                         componentName,
-                        itemType);
+                        initialTabActionState,
+                        actionConfirmationManager,
+                        onTabGroupCreation);
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
             // Ignore attachToParent initially. In some contexts multiple TabListCoordinators are
@@ -434,13 +352,21 @@ public class TabListCoordinator
         }
 
         mHasEmptyView = hasEmptyView;
-        if (mHasEmptyView) {
+        mEmptyStateHeadingResId = emptyHeadingStringResId;
+        mEmptyStateSubheadingResId = emptySubheadingStringResId;
+        mEmptyStateImageResId = emptyImageResId;
+        if (hasEmptyView) {
             mTabListEmptyCoordinator =
-                    new TabListEmptyCoordinator(parentView, mModel, browserControlsStateProvider);
-            mEmptyStateHeadingResId = emptyHeadingStringResId;
-            mEmptyStateSubheadingResId = emptySubheadingStringResId;
-            mEmptyStateImageResId = emptyImageResId;
+                    new TabListEmptyCoordinator(
+                            parentView, mModel, this::runOnItemAnimatorFinished);
         }
+
+        configureRecyclerViewTouchHelpers(mMode, mTabActionState);
+    }
+
+    /** Returns the {@link TabListMode} of the coordinator. */
+    public @TabListMode int getTabListMode() {
+        return mMode;
     }
 
     /**
@@ -454,14 +380,22 @@ public class TabListCoordinator
         mMediator.setOnLongPressTabItemEventListener(onLongPressTabItemEventListener);
     }
 
+    /** Sets the current {@link TabActionState} for the TabList. */
+    public void setTabActionState(@TabActionState int tabActionState) {
+        assert mMediator != null;
+        mTabActionState = tabActionState;
+        configureRecyclerViewTouchHelpers(mMode, mTabActionState);
+        mMediator.setTabActionState(tabActionState);
+    }
+
     @NonNull
     Rect getThumbnailLocationOfCurrentTab() {
-        // TODO(crbug.com/964406): calculate the location before the real one is ready.
+        // TODO(crbug.com/40627995): calculate the location before the real one is ready.
         Rect rect =
                 mRecyclerView.getRectOfCurrentThumbnail(
                         mModel.indexFromId(mMediator.selectedTabId()), mMediator.selectedTabId());
         if (rect == null) return new Rect();
-        rect.offset(0, getTabListTopOffset());
+        rect.offset(0, 0);
         return rect;
     }
 
@@ -502,7 +436,7 @@ public class TabListCoordinator
         }
         mAwaitingLayoutRunnable = r;
         mAwaitingTabId = mModel.get(index).model.get(TabProperties.TAB_ID);
-        runAnimationOnNextLayout(this::checkAwaitingLayout);
+        mRecyclerView.runOnNextLayout(this::checkAwaitingLayout);
     }
 
     @NonNull
@@ -527,8 +461,7 @@ public class TabListCoordinator
         mRecyclerView.setRecyclerViewPosition(recyclerViewPosition);
     }
 
-    void initWithNative(
-            @NonNull Profile profile, @Nullable DynamicResourceLoader dynamicResourceLoader) {
+    void initWithNative(@NonNull Profile profile) {
         if (mIsInitialized) return;
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.initWithNative")) {
@@ -536,19 +469,21 @@ public class TabListCoordinator
 
             assert !profile.isOffTheRecord() : "Expecting a non-incognito profile.";
             mMediator.initWithNative(profile);
-            if (dynamicResourceLoader != null) {
-                mRecyclerView.createDynamicView(dynamicResourceLoader);
-            }
+        }
+    }
 
-            if ((mMode == TabListMode.GRID || mMode == TabListMode.LIST)
-                    && mItemType != UiType.SELECTABLE) {
+    private void configureRecyclerViewTouchHelpers(
+            @TabListMode int mode, @TabActionState int tabActionState) {
+        boolean modeAllowsDragAndDrop = mMode == TabListMode.GRID || mMode == TabListMode.LIST;
+        boolean actionStateAllowsDragAndDrop = mTabActionState != TabActionState.SELECTABLE;
+        if (mAllowDragAndDrop && modeAllowsDragAndDrop && actionStateAllowsDragAndDrop) {
+            if (mItemTouchHelper == null || mOnItemTouchListener == null) {
                 TabGridItemTouchHelperCallback callback =
                         (TabGridItemTouchHelperCallback)
                                 mMediator.getItemTouchHelperCallback(
                                         mContext.getResources()
                                                 .getDimension(R.dimen.swipe_to_dismiss_threshold),
-                                        mContext.getResources()
-                                                .getDimension(R.dimen.tab_grid_merge_threshold),
+                                        PERCENTAGE_AREA_OVERLAP_MERGE_THRESHOLD,
                                         mContext.getResources()
                                                 .getDimension(R.dimen.bottom_sheet_peek_height));
 
@@ -562,7 +497,6 @@ public class TabListCoordinator
                 //
                 // See similar comments in TabGridItemTouchHelperCallback for more details.
                 mItemTouchHelper = new ItemTouchHelper(callback);
-                mItemTouchHelper.attachToRecyclerView(mRecyclerView);
                 mOnItemTouchListener =
                         new OnItemTouchListener() {
                             @Override
@@ -603,7 +537,13 @@ public class TabListCoordinator
                                 callback.shouldBlockAction();
                             }
                         };
-                mRecyclerView.addOnItemTouchListener(mOnItemTouchListener);
+            }
+            mItemTouchHelper.attachToRecyclerView(mRecyclerView);
+            mRecyclerView.addOnItemTouchListener(mOnItemTouchListener);
+        } else {
+            if (mItemTouchHelper != null && mOnItemTouchListener != null) {
+                mItemTouchHelper.attachToRecyclerView(null);
+                mRecyclerView.removeOnItemTouchListener(mOnItemTouchListener);
             }
         }
     }
@@ -644,25 +584,6 @@ public class TabListCoordinator
     }
 
     /**
-     * @return The top offset from top toolbar to the tab list recycler view. Used to adjust the
-     *         animations for tab switcher.
-     */
-    int getTabListTopOffset() {
-        if (!ReturnToChromeUtil.isStartSurfaceEnabled(mContext)) return 0;
-        Rect tabListRect = getRecyclerViewLocation();
-        Rect parentRect = new Rect();
-        mRootView.getGlobalVisibleRect(parentRect);
-        // Offset by CompositorViewHolder top offset and top toolbar height.
-        tabListRect.offset(
-                0,
-                -parentRect.top
-                        - (int)
-                                mContext.getResources()
-                                        .getDimension(R.dimen.toolbar_height_no_shadow));
-        return tabListRect.top;
-    }
-
-    /**
      * @see TabListMediator#getPriceWelcomeMessageInsertionIndex().
      */
     int getPriceWelcomeMessageInsertionIndex() {
@@ -687,12 +608,8 @@ public class TabListCoordinator
     /**
      * @see TabListMediator#resetWithListOfTabs(List, boolean)
      */
-    boolean resetWithListOfTabs(@Nullable List<PseudoTab> tabs, boolean quickMode) {
+    boolean resetWithListOfTabs(@Nullable List<Tab> tabs, boolean quickMode) {
         return mMediator.resetWithListOfTabs(tabs, quickMode);
-    }
-
-    boolean resetWithListOfTabs(@Nullable List<Tab> tabs) {
-        return resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false);
     }
 
     void softCleanup() {
@@ -705,7 +622,8 @@ public class TabListCoordinator
 
     private void registerLayoutChangeListener() {
         if (mListLayoutListener != null) {
-            // TODO(crbug/1500016): There might be a timing or race condition that LayoutListener
+            // TODO(crbug.com/40288028): There might be a timing or race condition that
+            // LayoutListener
             // has been registered while it shouldn't be with Start surface refactor is enabled.
             if (mLayoutListenerRegistered) return;
 
@@ -723,15 +641,9 @@ public class TabListCoordinator
         }
     }
 
-    void prepareTabSwitcherView() {
-        registerLayoutChangeListener();
-        mRecyclerView.prepareTabSwitcherView();
-        mMediator.registerOnScrolledListener(mRecyclerView);
-    }
-
     void prepareTabSwitcherPaneView() {
         registerLayoutChangeListener();
-        mRecyclerView.prepareTabSwitcherPaneView();
+        mRecyclerView.setupCustomItemAnimator();
         mMediator.registerOnScrolledListener(mRecyclerView);
     }
 
@@ -749,6 +661,7 @@ public class TabListCoordinator
 
     public void prepareTabGridView() {
         registerLayoutChangeListener();
+        mRecyclerView.setupCustomItemAnimator();
     }
 
     public void cleanupTabGridView() {
@@ -773,14 +686,17 @@ public class TabListCoordinator
 
     void postHiding() {
         unregisterLayoutChangeListener();
-        mRecyclerView.postHiding();
         mMediator.postHiding();
+        if (mHasEmptyView && mTabListEmptyCoordinator != null) {
+            mTabListEmptyCoordinator.setIsTabSwitcherShowing(false);
+        }
     }
 
     /** Destroy any members that needs clean up. */
     @Override
     public void onDestroy() {
         mMediator.destroy();
+        destroyEmptyView();
         if (mTabListEmptyCoordinator != null) {
             mTabListEmptyCoordinator.removeListObserver();
         }
@@ -800,14 +716,11 @@ public class TabListCoordinator
         }
     }
 
-    int getResourceId() {
-        return mRecyclerView.getResourceId();
-    }
-
     /**
      * Register a new view type for the component.
+     *
      * @see MVCListAdapter#registerType(int, MVCListAdapter.ViewBuilder,
-     *         PropertyModelChangeProcessor.ViewBinder).
+     *     PropertyModelChangeProcessor.ViewBinder).
      */
     <T extends View> void registerItemType(
             @UiType int typeId,
@@ -858,8 +771,13 @@ public class TabListCoordinator
         mModel.get(index).model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, true);
     }
 
-    void runAnimationOnNextLayout(Runnable runnable) {
-        mRecyclerView.runAnimationOnNextLayout(runnable);
+    int getIndexOfNthTabCard(int index) {
+        return mMediator.getIndexOfNthTabCard(index);
+    }
+
+    /** Returns the filter index of a tab from its view index or TabList.INVALID_TAB_INDEX. */
+    int indexOfTabCardsOrInvalid(int index) {
+        return mMediator.indexOfTabCardsOrInvalid(index);
     }
 
     int getTabListModelSize() {
@@ -871,6 +789,10 @@ public class TabListCoordinator
      */
     boolean specialItemExists(@MessageService.MessageType int itemIdentifier) {
         return mMediator.specialItemExistsInModel(itemIdentifier);
+    }
+
+    boolean isLastItemMessage() {
+        return mMediator.isLastItemMessage();
     }
 
     private void checkAwaitingLayout() {
@@ -893,13 +815,74 @@ public class TabListCoordinator
         if (index != TabModel.INVALID_TAB_INDEX) return index;
 
         TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
-        Tab tab = TabModelUtils.getTabById(tabModel, tabId);
+        Tab tab = tabModel.getTabById(tabId);
         if (tab == null) return TabModel.INVALID_TAB_INDEX;
 
         return mMediator.getIndexForTabWithRelatedTabs(tab);
     }
 
     void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
+        assert mMode == TabListMode.GRID : "Can only run animation in GRID mode.";
         mMediator.showQuickDeleteAnimation(onAnimationEnd, tabs, mRecyclerView);
+    }
+
+    /** Runs a runnable after the item animator has finished its animations. */
+    void runOnItemAnimatorFinished(Runnable r) {
+        Runnable attachListener =
+                () -> {
+                    // The item animator sometimes gets removed. If this happens run immediately.
+                    @Nullable var itemAnimator = mRecyclerView.getItemAnimator();
+                    if (itemAnimator == null) {
+                        r.run();
+                        return;
+                    }
+                    // Create a listener that is executed once the item animator is done all its
+                    // animations.
+                    var listener =
+                            new ItemAnimatorFinishedListener() {
+                                @Override
+                                public void onAnimationsFinished() {
+                                    r.run();
+                                }
+                            };
+                    itemAnimator.isRunning(listener);
+                };
+        // Delay attaching the listener in two ways:
+        // 1) Post so that the current model updates in the current task complete before we attempt
+        //    anything.
+        // 2) Attach the listener only after the adapter has flushed any pending updates so
+        //    animations have actually started.
+        mRecyclerView.post(() -> runAfterAdapterUpdates(attachListener));
+    }
+
+    /**
+     * Runs a runnable after the recycler view adapter has flushed any pending updates and started
+     * animations for them.
+     */
+    private void runAfterAdapterUpdates(Runnable r) {
+        if (!mRecyclerView.hasPendingAdapterUpdates()) {
+            r.run();
+            return;
+        }
+
+        // It is unfortunate that a global layout listener is required, but we need to wait for
+        // views to be added/removed/rearranged as there is no other signal that pending updates
+        // were applied.
+        mRecyclerView
+                .getViewTreeObserver()
+                .addOnGlobalLayoutListener(
+                        new OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                // Keep waiting until all updates are applied.
+                                if (mRecyclerView.hasPendingAdapterUpdates()) {
+                                    return;
+                                }
+                                mRecyclerView
+                                        .getViewTreeObserver()
+                                        .removeOnGlobalLayoutListener(this);
+                                r.run();
+                            }
+                        });
     }
 }

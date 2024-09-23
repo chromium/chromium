@@ -31,6 +31,8 @@ class BrowsingDataRemoverCompletionObserver
 
   void BlockUntilCompletion();
 
+  bool browsing_data_remover_done() { return browsing_data_remover_done_; }
+
   uint64_t failed_data_types() { return failed_data_types_; }
 
  protected:

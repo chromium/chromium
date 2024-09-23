@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_system_access.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -40,10 +41,10 @@ namespace {
 class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
  public:
   NewCdmResultPromise(
-      ScriptState* script_state,
+      ScriptPromiseResolver<MediaKeys>* resolver,
       const MediaKeysConfig& config,
       const WebVector<WebEncryptedMediaSessionType>& supported_session_types)
-      : ContentDecryptionModuleResultPromise(script_state,
+      : ContentDecryptionModuleResultPromise(resolver,
                                              config,
                                              EmeApiType::kCreateMediaKeys),
         config_(config),
@@ -56,19 +57,19 @@ class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
 
   // ContentDecryptionModuleResult implementation.
   void CompleteWithContentDecryptionModule(
-      WebContentDecryptionModule* cdm) override {
+      std::unique_ptr<WebContentDecryptionModule> cdm) override {
     // NOTE: Continued from step 2.8 of createMediaKeys().
 
     if (!IsValidToFulfillPromise())
       return;
 
     // 2.9. Let media keys be a new MediaKeys object.
-    auto* media_keys = MakeGarbageCollected<MediaKeys>(
-        GetExecutionContext(), supported_session_types_, base::WrapUnique(cdm),
-        config_);
+    auto* media_keys = MakeGarbageCollected<MediaKeys>(GetExecutionContext(),
+                                                       supported_session_types_,
+                                                       std::move(cdm), config_);
 
     // 2.10. Resolve promise with media keys.
-    Resolve(media_keys);
+    Resolve<MediaKeys>(media_keys);
   }
 
  private:
@@ -116,7 +117,7 @@ HeapVector<Member<MediaKeySystemMediaCapability>> ConvertCapabilities(
         capability->setEncryptionScheme("cbcs-1-9");
         break;
       case WebMediaKeySystemMediaCapability::EncryptionScheme::kUnrecognized:
-        NOTREACHED()
+        NOTREACHED_IN_MIGRATION()
             << "Unrecognized encryption scheme should never be returned.";
         break;
     }
@@ -201,7 +202,8 @@ MediaKeySystemConfiguration* MediaKeySystemAccess::getConfiguration() const {
   return result;
 }
 
-ScriptPromise MediaKeySystemAccess::createMediaKeys(ScriptState* script_state) {
+ScriptPromise<MediaKeys> MediaKeySystemAccess::createMediaKeys(
+    ScriptState* script_state) {
   // From http://w3c.github.io/encrypted-media/#createMediaKeys
   // (Reordered to be able to pass values into the promise constructor.)
   // 2.4 Let configuration be the value of this object's configuration value.
@@ -211,9 +213,11 @@ ScriptPromise MediaKeySystemAccess::createMediaKeys(ScriptState* script_state) {
 
   // 1. Let promise be a new promise.
   MediaKeysConfig config = {keySystem(), UseHardwareSecureCodecs()};
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<MediaKeys>>(script_state);
   NewCdmResultPromise* helper = MakeGarbageCollected<NewCdmResultPromise>(
-      script_state, config, configuration.session_types);
-  ScriptPromise promise = helper->Promise();
+      resolver, config, configuration.session_types);
+  auto promise = resolver->Promise();
 
   // 2. Asynchronously create and initialize the MediaKeys object.
   // 2.1 Let cdm be the CDM corresponding to this object.

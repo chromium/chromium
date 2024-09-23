@@ -112,7 +112,7 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
   const int default_grid_icon_dimension_ = 64;
 
   // The badge icon dimension of a shortcut in apps grid view.
-  // TODO(crbug.com/1480423): Update the size after the effects visual done.
+  // TODO(crbug.com/40281395): Update the size after the effects visual done.
   const int shortcut_badge_icon_dimension_ = 42;
 
   // Maximum number of results to show in the launcher Search UI.

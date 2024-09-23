@@ -4,6 +4,7 @@
 
 #include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 
+#include "base/notreached.h"
 #include "skia/public/mojom/skcolorspace_primaries_mojom_traits.h"
 
 namespace mojo {
@@ -21,7 +22,6 @@ EnumTraits<gfx::mojom::ContentColorUsage, gfx::ContentColorUsage>::ToMojom(
       return gfx::mojom::ContentColorUsage::kHDR;
   }
   NOTREACHED();
-  return gfx::mojom::ContentColorUsage::kSRGB;
 }
 
 // static
@@ -39,7 +39,6 @@ bool EnumTraits<gfx::mojom::ContentColorUsage, gfx::ContentColorUsage>::
       *output = gfx::ContentColorUsage::kHDR;
       return true;
   }
-  NOTREACHED();
   return false;
 }
 

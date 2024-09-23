@@ -167,8 +167,8 @@ TEST_F(RefCountedFragmentTest, Move) {
 TEST_F(RefCountedFragmentTest, Free) {
   auto node = MakeRefCounted<Node>(Node::Type::kNormal, kTestDriver);
   DriverMemoryWithMapping buffer = NodeLinkMemory::AllocateMemory(kTestDriver);
-  auto memory =
-      NodeLinkMemory::Create(std::move(node), std::move(buffer.mapping));
+  auto memory = NodeLinkMemory::Create(std::move(node), LinkSide::kA,
+                                       Features{}, std::move(buffer.mapping));
 
   // Allocate a ton of fragments and let them be released by FragmentRef on
   // destruction. If the fragments aren't freed properly, allocations will fail

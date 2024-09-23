@@ -35,9 +35,8 @@ class PageLifecycleStateManagerBrowserTest : public ContentBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "VisibilityStateEntry");
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "VisibilityStateEntry");
   }
 
   WebContentsImpl* web_contents() const {
@@ -143,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(PageLifecycleStateManagerBrowserTest, SetVisibility) {
             EvalJs(rfh, "window.performanceObserverEntries"));
 }
 
-// TODO(crbug.com/1241814): Test is flaky on Win and Lacros
+// TODO(crbug.com/40786254): Test is flaky on Win and Lacros
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CrossProcessIframeHiddenAnFrozen \
   DISABLED_CrossProcessIframeHiddenAnFrozen

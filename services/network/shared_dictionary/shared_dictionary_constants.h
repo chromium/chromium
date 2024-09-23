@@ -15,7 +15,7 @@ namespace network::shared_dictionary {
 
 // The max expiration time (30 days) for Origin Trial. This is used when
 // CompressionDictionaryTransport feature is disabled in the network service.
-// TODO(crbug.com/1413922): Remove this after the Origin Trial experiment.
+// TODO(crbug.com/40255884): Remove this after the Origin Trial experiment.
 constexpr base::TimeDelta kMaxExpirationForOriginTrial = base::Days(30);
 
 // The total dictionary count limit per NetworkContext.
@@ -30,17 +30,9 @@ COMPONENT_EXPORT(NETWORK_SERVICE)
 base::ScopedClosureRunner SetDictionarySizeLimitForTesting(
     size_t dictionary_size_limit);
 
-// The header name of "available-dictionary".
-COMPONENT_EXPORT(NETWORK_SERVICE)
-extern const char kAvailableDictionaryHeaderName[];
-
 // The header name of "use-as-dictionary".
 COMPONENT_EXPORT(NETWORK_SERVICE)
 extern const char kUseAsDictionaryHeaderName[];
-
-// The header name of "content-dictionary".
-COMPONENT_EXPORT(NETWORK_SERVICE)
-extern const char kContentDictionaryHeaderName[];
 
 // The dictionary option name of "match".
 COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameMatch[];

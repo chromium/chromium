@@ -26,6 +26,11 @@ class CycleChecker : public InterpolationType::ConversionChecker {
                bool cycle_detected)
       : property_(property), value_(value), cycle_detected_(cycle_detected) {}
 
+  void Trace(Visitor* visitor) const final {
+    InterpolationType::ConversionChecker::Trace(visitor);
+    visitor->Trace(value_);
+  }
+
  private:
   bool IsValid(const InterpolationEnvironment& environment,
                const InterpolationValue&) const final {
@@ -35,7 +40,7 @@ class CycleChecker : public InterpolationType::ConversionChecker {
   }
 
   PropertyHandle property_;
-  Persistent<const CSSValue> value_;
+  Member<const CSSValue> value_;
   const bool cycle_detected_;
 };
 
@@ -73,7 +78,7 @@ InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(
   PropertyHandle property = GetProperty();
   bool cycle_detected = !css_environment.Resolve(property, &value);
   conversion_checkers.push_back(
-      std::make_unique<CycleChecker>(property, value, cycle_detected));
+      MakeGarbageCollected<CycleChecker>(property, value, cycle_detected));
   return cycle_detected ? CreateCycleDetectedValue() : nullptr;
 }
 

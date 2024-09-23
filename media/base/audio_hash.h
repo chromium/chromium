@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "media/base/media_export.h"
 
 namespace media {

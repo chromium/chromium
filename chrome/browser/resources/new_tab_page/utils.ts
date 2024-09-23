@@ -3,70 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
-import type {TimeDelta, TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-
-/**
- * Given a |container| that has scrollable content, <div>'s before and after the
- * |container| are created with an attribute "scroll-border". These <div>'s are
- * updated to have an attribute "show" when there is more content in the
- * direction of the "scroll-border". Styling is left to the caller.
- *
- * Returns an |IntersectionObserver| so the caller can disconnect the observer
- * when needed.
- */
-export function createScrollBorders(
-    container: Element, topBorder: Element, bottomBorder: Element,
-    showAttribute: string): IntersectionObserver {
-  const topProbe = document.createElement('div');
-  container.prepend(topProbe);
-  const bottomProbe = document.createElement('div');
-  container.append(bottomProbe);
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(({target, intersectionRatio}) => {
-      const show = intersectionRatio === 0;
-      if (target === topProbe) {
-        topBorder.toggleAttribute(showAttribute, show);
-      } else if (target === bottomProbe) {
-        bottomBorder.toggleAttribute(showAttribute, show);
-      }
-    });
-  }, {root: container});
-  observer.observe(topProbe);
-  observer.observe(bottomProbe);
-  return observer;
-}
-
-/** Converts a String16 to a JavaScript String. */
-export function decodeString16(str: String16|null): string {
-  return str ? str.data.map(ch => String.fromCodePoint(ch)).join('') : '';
-}
-
-/** Converts a JavaScript String to a String16. */
-export function mojoString16(str: string): String16 {
-  const array = new Array(str.length);
-  for (let i = 0; i < str.length; ++i) {
-    array[i] = str.charCodeAt(i);
-  }
-  return {data: array};
-}
-
-/**
- * Converts a time delta in milliseconds to TimeDelta.
- * @param timeDelta time delta in milliseconds
- */
-export function mojoTimeDelta(timeDelta: number): TimeDelta {
-  return {microseconds: BigInt(Math.floor(timeDelta * 1000))};
-}
-
-/**
- * Converts a time ticks in milliseconds to TimeTicks.
- * @param timeTicks time ticks in milliseconds
- */
-export function mojoTimeTicks(timeTicks: number): TimeTicks {
-  return {internalValue: BigInt(Math.floor(timeTicks * 1000))};
-}
 
 /**
  * Queries |selector| on |element|'s shadow root and returns the resulting

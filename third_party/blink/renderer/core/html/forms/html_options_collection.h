@@ -24,7 +24,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_OPTIONS_COLLECTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_OPTIONS_COLLECTION_H_
 
+#include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -74,15 +77,26 @@ struct DowncastTraits<HTMLOptionsCollection> {
 
 inline bool HTMLOptionsCollection::ElementMatches(
     const HTMLElement& element) const {
-  if (!IsA<HTMLOptionElement>(element))
+  if (!IsA<HTMLOptionElement>(element)) {
     return false;
+  }
   Node* parent = element.parentNode();
-  if (!parent)
+  if (!parent) {
     return false;
-  if (parent == &RootNode())
+  }
+  if (parent == &RootNode()) {
     return true;
-  return IsA<HTMLOptGroupElement>(*parent) &&
-         parent->parentNode() == &RootNode();
+  }
+  if (IsA<HTMLOptGroupElement>(*parent) &&
+      parent->parentNode() == &RootNode()) {
+    return true;
+  }
+  if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+    // If there is another <select> in between RootNode and element, then
+    // RootNode should not include element in its options.
+    return To<HTMLOptionElement>(element).OwnerSelectElement() == RootNode();
+  }
+  return false;
 }
 
 }  // namespace blink

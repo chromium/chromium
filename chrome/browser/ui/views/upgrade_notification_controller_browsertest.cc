@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/critical_notification_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 class OutdatedUpgradeBubbleTest : public DialogBrowserTest {
  public:
@@ -51,5 +52,18 @@ IN_PROC_BROWSER_TEST_F(OutdatedUpgradeBubbleTest, InvokeUi_Critical) {
   CriticalNotificationBubbleView::ScopedSetTimeFormatterForTesting scoper(
       &base::TimeDurationFormat);
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(OutdatedUpgradeBubbleTest,
+                       CriticalNotificationBubbleViewAccessibleProperties) {
+  auto* const upgrade_notification_controller =
+      UpgradeNotificationController::FromBrowser(browser());
+  auto bubble_view = upgrade_notification_controller
+                         ->GetCriticalNotificationBubbleViewForTest();
+  ui::AXNodeData data;
+
+  ASSERT_TRUE(bubble_view);
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kAlertDialog);
 }
 #endif

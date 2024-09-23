@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0" name="viewport">
+<meta name="assert" content="text-size-adjust should affect font-size.">
+<link rel="help" href="https://drafts.csswg.org/css-size-adjust/#propdef-text-size-adjust">
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script>
+  function runTest() {
+    // This should not be needed but is required to work around a bug in
+    // Chrome's old autosizer due to computed style being updated during layout.
+    // TODO(pdr): Remove this when b/340389272 launches.
+    const forceLayout = document.body.offsetHeight;
+
+    test(() => {
+      const fontSize = getComputedStyle(textSizeAdjust75)['font-size'];
+      assert_equals(fontSize, '12px');
+    }, 'Font-size on element with text-size-adjust: 75%');
+
+    test(() => {
+      const fontSize = getComputedStyle(textSizeAdjust100)['font-size'];
+      assert_equals(fontSize, '16px');
+    }, 'Font-size on element with text-size-adjust: 100%');
+
+    test(() => {
+      const fontSize = getComputedStyle(textSizeAdjust125)['font-size'];
+      assert_equals(fontSize, '20px');
+    }, 'Font-size on element with text-size-adjust: 125%');
+  }
+</script>
+<body onload="runTest()">
+  <div id="textSizeAdjust75" style="text-size-adjust: 75%;">Hello world</div>
+  <div id="textSizeAdjust100" style="text-size-adjust: 100%;">Hello world</div>
+  <div id="textSizeAdjust125" style="text-size-adjust: 125%;">Hello world</div>
+</body>

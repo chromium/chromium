@@ -72,9 +72,6 @@ class WebAppUninstallAndReplaceJobTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
-    auto shortcut_manager = std::make_unique<TestShortcutManager>(profile());
-    shortcut_manager_ = shortcut_manager.get();
-    os_integration_manager()->SetShortcutManager(std::move(shortcut_manager));
   }
 
   void ScheduleUninstallAndReplaceJob(
@@ -93,11 +90,6 @@ class WebAppUninstallAndReplaceJobTest : public WebAppTest {
         ->os_integration_manager()
         .AsTestOsIntegrationManager();
   }
-
-  TestShortcutManager* shortcut_manager() { return shortcut_manager_; }
-
- private:
-  raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_ = nullptr;
 };
 
 // `WebAppUninstallAndReplaceJob` uses `AppServiceProxy` to do uninstall, app
@@ -114,43 +106,34 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
   // Install a new app to migrate the old one to.
   webapps::AppId new_app_id = test::InstallDummyWebApp(
       profile(), "new_app", GURL("https://new.app.com"));
-  if (AreOsIntegrationSubManagersEnabled()) {
-    std::optional<proto::WebAppOsIntegrationState> os_state =
-        provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
-            new_app_id);
-    ASSERT_TRUE(os_state.has_value());
-    EXPECT_FALSE(os_state->has_shortcut());
-    EXPECT_FALSE(os_state->run_on_os_login().has_run_on_os_login_mode());
-  }
+  std::optional<proto::WebAppOsIntegrationState> os_state =
+      provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
+          new_app_id);
+  ASSERT_TRUE(os_state.has_value());
+  EXPECT_TRUE(os_state->has_shortcut());
+  EXPECT_TRUE(os_state->run_on_os_login().has_run_on_os_login_mode());
 
   // Set up the existing shortcuts.
   auto shortcut_info = std::make_unique<ShortcutInfo>();
   shortcut_info->url = kOldAppUrl;
-  shortcut_manager()->SetShortcutInfoForApp(old_app_id,
-                                            std::move(shortcut_info));
+  os_integration_manager()->SetShortcutInfoForApp(old_app_id,
+                                                  std::move(shortcut_info));
   ShortcutLocations locations;
   locations.on_desktop = true;
   locations.in_startup = true;
-  shortcut_manager()->SetAppExistingShortcuts(kOldAppUrl, locations);
+  os_integration_manager()->SetAppExistingShortcuts(kOldAppUrl, locations);
 
   base::test::TestFuture<bool> future;
   ScheduleUninstallAndReplaceJob({old_app_id}, new_app_id,
                                  future.GetCallback());
   EXPECT_TRUE(future.Get());
 
-  auto options = os_integration_manager()->get_last_install_options();
-  EXPECT_TRUE(options->add_to_desktop);
-  EXPECT_TRUE(options->os_hooks[OsHookType::kRunOnOsLogin]);
-  EXPECT_FALSE(options->add_to_quick_launch_bar);
-  if (AreOsIntegrationSubManagersEnabled()) {
-    std::optional<proto::WebAppOsIntegrationState> os_state =
-        provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
-            new_app_id);
-    ASSERT_TRUE(os_state.has_value());
-    EXPECT_TRUE(os_state->has_shortcut());
-    EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
-              proto::RunOnOsLoginMode::WINDOWED);
-  }
+  os_state = provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
+      new_app_id);
+  ASSERT_TRUE(os_state.has_value());
+  EXPECT_TRUE(os_state->has_shortcut());
+  EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
+            proto::RunOnOsLoginMode::WINDOWED);
 }
 
 TEST_F(WebAppUninstallAndReplaceJobTest, DoubleMigration) {

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -223,7 +224,7 @@ class ExtensionManagementServiceTest : public testing::Test {
     return GetBlockedAPIPermissions(kNonExistingExtension, update_url);
   }
 
-  void SetExampleDictPref(const base::StringPiece example_dict_preference) {
+  void SetExampleDictPref(const std::string_view example_dict_preference) {
     auto result = base::JSONReader::ReadAndReturnValueWithError(
         example_dict_preference,
         base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
@@ -396,7 +397,7 @@ class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
 
   void SetUpPolicyProvider() {
     provider_ = std::make_unique<StandardManagementPolicyProvider>(
-        extension_management_.get());
+        extension_management_.get(), profile_.get());
   }
 
   void CreateExtension(ManifestLocation location) {
@@ -1201,6 +1202,14 @@ TEST_F(ExtensionManagementServiceTest, ManifestV2Default) {
                 2, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
   EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
       3, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
+
+  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
+      2, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
+  // Note: MV3 extension isn't exempt by policy because it's not affected at
+  // all. It's not this class's responsibility to know about the rest of the
+  // criteria; only whether the extension is exempt by policy.
+  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
+      3, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
 }
 
 TEST_F(ExtensionManagementServiceTest, ManifestV2Disabled) {
@@ -1213,6 +1222,14 @@ TEST_F(ExtensionManagementServiceTest, ManifestV2Disabled) {
   EXPECT_FALSE(extension_management_->IsAllowedManifestVersion(
       2, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
   EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
+      3, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
+
+  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
+      2, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
+  // Note: MV3 extension isn't exempt by policy because it's not affected at
+  // all. It's not this class's responsibility to know about the rest of the
+  // criteria; only whether the extension is exempt by policy.
+  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
       3, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
 }
 
@@ -1227,6 +1244,14 @@ TEST_F(ExtensionManagementServiceTest, ManifestV2Enabled) {
       2, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
   EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
       3, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
+
+  EXPECT_TRUE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
+      2, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
+  // Note: MV3 extension isn't exempt by policy because it's not affected at
+  // all. It's not this class's responsibility to know about the rest of the
+  // criteria; only whether the extension is exempt by policy.
+  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
+      3, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
 }
 
 TEST_F(ExtensionManagementServiceTest, ManifestV2EnabledForForceInstalled) {
@@ -1239,6 +1264,14 @@ TEST_F(ExtensionManagementServiceTest, ManifestV2EnabledForForceInstalled) {
   EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
       3, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
 
+  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
+      2, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
+  // Note: MV3 extension isn't exempt by policy because it's not affected at
+  // all. It's not this class's responsibility to know about the rest of the
+  // criteria; only whether the extension is exempt by policy.
+  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
+      3, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
+
   base::Value::Dict forced_list_pref;
   ExternalPolicyLoader::AddExtension(forced_list_pref, kTargetExtension,
                                      kExampleUpdateUrl);
@@ -1247,6 +1280,14 @@ TEST_F(ExtensionManagementServiceTest, ManifestV2EnabledForForceInstalled) {
   EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
       2, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
   EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
+      3, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
+
+  EXPECT_TRUE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
+      2, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
+  // Note: MV3 extension isn't exempt by policy because it's not affected at
+  // all. It's not this class's responsibility to know about the rest of the
+  // criteria; only whether the extension is exempt by policy.
+  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
       3, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
 }
 
@@ -1262,6 +1303,15 @@ TEST_F(ExtensionManagementServiceTest, ManifestV2EnabledForExtensionOnly) {
   EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
       2, kTargetExtension, Manifest::Type::TYPE_LOGIN_SCREEN_EXTENSION));
   EXPECT_FALSE(extension_management_->IsAllowedManifestVersion(
+      2, kTargetExtension, Manifest::Type::TYPE_HOSTED_APP));
+
+  EXPECT_TRUE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
+      2, kTargetExtension, Manifest::Type::TYPE_EXTENSION));
+  EXPECT_TRUE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
+      2, kTargetExtension, Manifest::Type::TYPE_LOGIN_SCREEN_EXTENSION));
+  // Despite being force-installed, hosted apps aren't includede in the
+  // MV2 deprecation, so isn't exempt by policy.
+  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
       2, kTargetExtension, Manifest::Type::TYPE_HOSTED_APP));
 }
 

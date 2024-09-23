@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/feedback/redaction_tool/redaction_tool.h"
 
 #include <algorithm>
@@ -15,12 +20,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/chromeos_buildflags.h"
+#include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/feedback/redaction_tool/ip_address.h"
 #include "components/feedback/redaction_tool/pii_types.h"
-#include "components/feedback/redaction_tool/validation.h"
 #ifdef USE_SYSTEM_RE2
 #include <re2/re2.h>
 #else
@@ -934,10 +940,11 @@ std::string RedactionTool::RedactCreditCardNumbers(
       continue;
     }
 
-    std::string number;
-    base::RemoveChars(base::StringPiece(sequence), "- ", &number);
+    const std::u16string stripped_number =
+        autofill::StripCardNumberSeparators(base::UTF8ToUTF16(sequence));
+    const std::string u8number = base::UTF16ToUTF8(stripped_number);
 
-    const auto cc_it = credit_cards_.find(number);
+    const auto cc_it = credit_cards_.find(u8number);
     if (cc_it != credit_cards_.cend()) {
       result += cc_it->second;
       result.append(post_sequence);
@@ -947,11 +954,13 @@ std::string RedactionTool::RedactCreditCardNumbers(
       continue;
     }
 
-    if (redaction::IsValidCreditCardNumber(number)) {
+    const bool only_zeros =
+        stripped_number.find_first_not_of(u'0', 0) == std::u16string::npos;
+    if (!only_zeros && autofill::IsValidCreditCardNumber(stripped_number)) {
       metrics_recorder_->RecordCreditCardRedactionHistogram(
           CreditCardDetection::kValidated);
       const auto& [it, success] = credit_cards_.emplace(
-          number,
+          u8number,
           base::StrCat({"(CREDITCARD: ",
                         base::NumberToString(credit_cards_.size() + 1), ")"}));
       if (redact_credit_cards_) {
@@ -1019,7 +1028,7 @@ std::string RedactionTool::RedactIbans(
 
     // Since the logic later relies on the size of this string not changing use
     // a lambda to initialize the constant.
-    const std::string numbers_only = [](base::StringPiece stripped) {
+    const std::string numbers_only = [](std::string_view stripped) {
       // Move the first 2 chars+digits to the back of the string.
       constexpr size_t prefix_offset = 4;
       std::string rearranged = std::string(stripped.substr(prefix_offset));
@@ -1123,23 +1132,28 @@ RedactionToolCaller RedactionTool::GetCaller(const base::Location& location) {
 
   std::string fileName = filePath.substr(filePath.find_last_of("/\\") + 1);
 
-  if (fileName == "redaction_tool_unittest.cc") {
+  if (filePath.find("support_tool") != std::string::npos) {
+    return RedactionToolCaller::kSupportTool;
+  } else if (filePath.find("error_reporting") != std::string::npos) {
+    return RedactionToolCaller::kErrorReporting;
+  } else if (fileName == "redaction_tool_unittest.cc") {
     return RedactionToolCaller::kUnitTest;
   } else if (fileName == "system_log_uploader.cc") {
     return RedactionToolCaller::kSysLogUploader;
   } else if (fileName == "system_logs_fetcher.cc") {
     return RedactionToolCaller::kSysLogFetcher;
-  } else if (fileName == "log_source_access_manager.cc") {
-    return RedactionToolCaller::kBrowserSystemLogs;
+  } else if (fileName == "chrome_js_error_report_processor.cc") {
+    return RedactionToolCaller::kCrashToolJSErrors;
+  } else if (fileName == "crash_collector.cc") {
+    return RedactionToolCaller::kCrashTool;
   } else if (fileName == "feedback_common.cc") {
-    return RedactionToolCaller::kFeedbackTool;
-  } else if (filePath.find("support_tool") != std::string::npos) {
-    return RedactionToolCaller::kSupportTool;
-  } else if (filePath.find("error_reporting") != std::string::npos) {
-    return RedactionToolCaller::kErrorReporting;
-  } else {
-    return RedactionToolCaller::kUnknown;
+    return RedactionToolCaller::kFeedbackToolUserDescriptions;
+  } else if (fileName == "log_source_access_manager.cc") {
+    return RedactionToolCaller::kFeedbackToolHotRod;
+  } else if (fileName == "system_logs_fetcher.cc") {
+    return RedactionToolCaller::kFeedbackToolLogs;
   }
+  return RedactionToolCaller::kUnknown;
 }
 
 std::string RedactionTool::RedactCustomPatternWithContext(

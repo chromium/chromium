@@ -41,10 +41,8 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
                            << " has no corresponding gfx::BufferFormat";
       auto gmb = std::make_unique<media::FakeGpuMemoryBuffer>(
           coded_size, buffer_format.value());
-      const gpu::MailboxHolder empty_mailboxes[media::VideoFrame::kMaxPlanes];
       return media::VideoFrame::WrapExternalGpuMemoryBuffer(
-          visible_rect, natural_size, std::move(gmb), empty_mailboxes,
-          base::NullCallback(), timestamp);
+          visible_rect, natural_size, std::move(gmb), timestamp);
     }
     case media::VideoFrame::STORAGE_OPAQUE: {
       std::optional<gfx::BufferFormat> buffer_format =
@@ -54,19 +52,16 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
                            << " has no corresponding gfx::BufferFormat";
       auto gmb = std::make_unique<media::FakeGpuMemoryBuffer>(
           coded_size, buffer_format.value());
-      gpu::MailboxHolder mailboxes[media::VideoFrame::kMaxPlanes];
-      // Set mailbox names so this registers as a texture.
-      mailboxes[0].mailbox = gpu::Mailbox::GenerateForSharedImage();
-      for (size_t i = 0; i < media::VideoFrame::NumPlanes(pixel_format); ++i) {
-        mailboxes[i].mailbox.name[0] = 1;
-      }
+      scoped_refptr<gpu::ClientSharedImage> shared_image =
+          gpu::ClientSharedImage::CreateForTesting();
 
-      return media::VideoFrame::WrapNativeTextures(
-          pixel_format, mailboxes, base::NullCallback(), coded_size,
+      return media::VideoFrame::WrapSharedImage(
+          pixel_format, shared_image, gpu::SyncToken(),
+          shared_image->GetTextureTarget(), base::NullCallback(), coded_size,
           visible_rect, natural_size, timestamp);
     }
     default:
-      NOTREACHED() << "Unsupported storage type or pixel format";
+      NOTREACHED_IN_MIGRATION() << "Unsupported storage type or pixel format";
   }
   return nullptr;
 }

@@ -4,7 +4,7 @@
 
 #include "components/sync/engine/cycle/status_controller.h"
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/sync_protocol_error.h"
 
 namespace syncer {
@@ -13,11 +13,11 @@ StatusController::StatusController() = default;
 
 StatusController::~StatusController() = default;
 
-ModelTypeSet StatusController::get_updated_types() const {
+DataTypeSet StatusController::get_updated_types() const {
   return model_neutral_.updated_types;
 }
 
-void StatusController::add_updated_type(ModelType type) {
+void StatusController::add_updated_type(DataType type) {
   model_neutral_.updated_types.Put(type);
 }
 

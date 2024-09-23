@@ -27,7 +27,6 @@
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_reuse_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -37,7 +36,7 @@
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -49,7 +48,6 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "url/gurl.h"
 
-using password_manager::AffiliationService;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordStore;
@@ -62,7 +60,7 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
       password_feature_manager_(
           GetPrefs(),
           GetLocalStatePrefs(),
-          SyncServiceFactory::GetForBrowserStateIfExists(bridge_.browserState)),
+          SyncServiceFactory::GetForProfileIfExists(bridge_.browserState)),
       credentials_filter_(this),
       helper_(this) {
   saving_passwords_enabled_.Init(
@@ -135,7 +133,7 @@ void IOSChromePasswordManagerClient::AutomaticPasswordSave(
 }
 
 void IOSChromePasswordManagerClient::PromptUserToEnableAutosignin() {
-  // TODO(crbug.com/435048): Implement this method.
+  // TODO(crbug.com/40394758): Implement this method.
   NOTIMPLEMENTED();
 }
 
@@ -163,10 +161,11 @@ PrefService* IOSChromePasswordManagerClient::GetLocalStatePrefs() const {
 
 const syncer::SyncService* IOSChromePasswordManagerClient::GetSyncService()
     const {
-  return SyncServiceFactory::GetForBrowserStateIfExists(bridge_.browserState);
+  return SyncServiceFactory::GetForProfileIfExists(bridge_.browserState);
 }
 
-AffiliationService* IOSChromePasswordManagerClient::GetAffiliationService() {
+affiliations::AffiliationService*
+IOSChromePasswordManagerClient::GetAffiliationService() {
   // Not used on IOS platform.
   return nullptr;
 }
@@ -209,11 +208,9 @@ void IOSChromePasswordManagerClient::NotifySuccessfulLoginWithExistingPassword(
         submitted_manager) {
   helper_.NotifySuccessfulLoginWithExistingPassword(
       std::move(submitted_manager));
-  if (IsCredentialProviderExtensionPromoEnabled()) {
-    [bridge_
-        showCredentialProviderPromo:CredentialProviderPromoTrigger::
-                                        SuccessfulLoginUsingExistingPassword];
-  }
+  [bridge_
+      showCredentialProviderPromo:CredentialProviderPromoTrigger::
+                                      SuccessfulLoginUsingExistingPassword];
 }
 
 void IOSChromePasswordManagerClient::NotifyStorePasswordCalled() {
@@ -257,8 +254,9 @@ url::Origin IOSChromePasswordManagerClient::GetLastCommittedOrigin() const {
 }
 
 autofill::LanguageCode IOSChromePasswordManagerClient::GetPageLanguage() const {
-  // TODO(crbug.com/912597): Add WebState to the IOSChromePasswordManagerClient
-  // to be able to get the pages LanguageState from the TranslateManager.
+  // TODO(crbug.com/41430413): Add WebState to the
+  // IOSChromePasswordManagerClient to be able to get the pages LanguageState
+  // from the TranslateManager.
   return autofill::LanguageCode();
 }
 
@@ -286,7 +284,7 @@ IOSChromePasswordManagerClient::GetMetricsRecorder() {
 }
 
 signin::IdentityManager* IOSChromePasswordManagerClient::GetIdentityManager() {
-  return IdentityManagerFactory::GetForBrowserState(bridge_.browserState);
+  return IdentityManagerFactory::GetForProfile(bridge_.browserState);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

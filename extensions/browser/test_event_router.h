@@ -67,7 +67,8 @@ class TestEventRouter : public EventRouter {
   // Count of dispatched and broadcasted events by event name.
   std::map<std::string, int> seen_events_;
 
-  base::ObserverList<EventObserver, false>::Unchecked observers_;
+  base::ObserverList<EventObserver, false>::UncheckedAndDanglingUntriaged
+      observers_;
 };
 
 // Creates and enables a TestEventRouter for testing. Callers can override T to

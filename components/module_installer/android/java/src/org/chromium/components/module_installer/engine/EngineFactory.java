@@ -4,14 +4,11 @@
 
 package org.chromium.components.module_installer.engine;
 
-import org.chromium.base.BundleUtils;
+import org.chromium.build.BuildConfig;
 
 /** Factory used to build concrete engines. */
 public class EngineFactory {
     public InstallEngine getEngine() {
-        if (!BundleUtils.isBundle()) {
-            return new ApkEngine();
-        }
-        return new SplitCompatEngine();
+        return BuildConfig.IS_BUNDLE ? new SplitCompatEngine() : new ApkEngine();
     }
 }

@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include <optional>
+#include <string_view>
 
 #import "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
@@ -130,9 +131,9 @@ MacPlatformDelegate::GetSigningCertificatesPublicKeys(
     return public_keys;
   }
 
-  base::StringPiece spki_bytes;
+  std::string_view spki_bytes;
   if (!net::asn1::ExtractSPKIFromDERCert(
-          base::StringPiece(
+          std::string_view(
               reinterpret_cast<const char*>(CFDataGetBytePtr(der_data.get())),
               CFDataGetLength(der_data.get())),
           &spki_bytes)) {

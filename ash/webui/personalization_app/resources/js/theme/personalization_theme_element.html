@@ -1,7 +1,6 @@
 <style include="cros-button-style">
-  #themeLabel > h2 {
-    color: var(--cros-text-color-primary);
-    font: var(--personalization-app-label-font);
+  :host {
+    --iron-icon-fill-color: var(--cros-sys-primary_container);
   }
 
   cr-button {
@@ -39,15 +38,12 @@
   }
 
   cr-button:hover {
+    --hover-bg-color: var(--cros-sys-hover_on_subtle);
     background-color: rgba(var(--cros-ripple-color-rgb),
         var(--cros-button-primary-ripple-opacity));
   }
 
-  :host-context(body.jelly-enabled) cr-button:hover {
-    --hover-bg-color: var(--cros-sys-hover_on_subtle);
-  }
-
-  :host-context(body.jelly-enabled) #selector > cr-button[aria-checked=true]:hover::part(hoverBackground) {
+  #selector > cr-button[aria-checked=true]:hover::part(hoverBackground) {
     --hover-bg-color: var(--cros-sys-hover_on_prominent);
     background-color: var(--hover-bg-color);
     display: block;
@@ -58,6 +54,7 @@
   }
 
   #selector {
+    position: relative;
     display: grid;
     gap: 8px;
     grid-template-columns: auto auto auto;
@@ -73,20 +70,41 @@
     margin-inline-end: 5px;
     min-width: var(--iron-icon-width);
   }
+
+  #autoMode {
+    overflow: visible;
+  }
+
+  .consumer-tooltip {
+    --cr-icon-size: 22px;
+    --cr-tooltip-icon-fill-color: var(--cros-sys-primary_container);
+
+    border-radius: 50%;
+    inset-block-end: -2px;
+    inset-inline-end: -2px;
+    position: absolute;
+    box-shadow: inset 0 0 0 4px var(--cros-sys-primary_container);
+  }
+
+  .managed-tooltip {
+    --cr-icon-size: 16px;
+    --cr-tooltip-icon-fill-color: var(--cros-button-background-color-primary);
+
+    border-radius: 50%;
+    inset-block-end: -0px;
+    inset-inline-end: -0px;
+    position: absolute;
+    box-shadow: 0 0 0 4px var(--cros-sys-primary_container);
+    background-color: var(--cros-sys-primary_container);
+  }
 </style>
 <div id="container">
-  <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
-    <div id="themeLabel">
-      <h2>$i18n{themeLabel}</h2>
-    </div>
-  </template>
-  <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
-    <dynamic-color></dynamic-color>
-  </template>
+  <dynamic-color></dynamic-color>
   <iron-a11y-keys id="keys" keys="left right" on-keys-pressed="onKeysPress_">
   </iron-a11y-keys>
   <iron-selector id="selector" selected="0"
-      selected-item="{{selectedButton_}}" role="radiogroup">
+      selected-item="{{selectedButton_}}" role="radiogroup"
+      selectable="cr-button">
     <cr-button id="lightMode" data-color-mode="LIGHT"
         on-click="onClickColorModeButton_"
         aria-checked$="[[getLightAriaChecked_(colorModeAutoScheduleEnabled_, darkModeEnabled_)]]"
@@ -108,26 +126,45 @@
         on-click="onClickAutoModeButton_"
         on-keypress="onClickAutoModeButton_" tabindex="-1"
         aria-checked$="[[getAutoAriaChecked_(colorModeAutoScheduleEnabled_)]]"
-        aria-description="$i18n{ariaLabelEnableAutoColorMode}"
+        aria-describedby="autoColorModeDescription hiddenSeparator locationDeniedInfoIcon"
+        aria-label="$i18n{autoColorMode}"
         title="$i18n{tooltipAutoColorMode}"
         role="radio">
       <iron-icon icon="personalization:auto" aria-hidden="true"></iron-icon>
-      <div class="text">$i18n{autoColorMode}</div>
+      <div class="text" aria-hidden="true">$i18n{autoColorMode}</div>
+      <p hidden id="autoColorModeDescription">$i18n{tooltipAutoColorMode}</p>
+      <p hidden id="hiddenSeparator">.</p>
     </cr-button>
+    <template is="dom-if"
+        if="[[computeShouldShowTooltipIcon_(colorModeAutoScheduleEnabled_, geolocationPermissionEnabled_)]]"
+        restamp>
+      <template is="dom-if" if="[[geolocationIsUserModifiable_]]">
+        <cr-tooltip-icon
+            id="locationDeniedInfoIcon"
+            icon-class="cr:error"
+            tooltip-text="$i18n{errorTooltipAutoColorMode}"
+            icon-aria-label="$i18n{errorTooltipAutoColorMode}"
+            class="consumer-tooltip">
+        </cr-tooltip-icon>
+      </template>
+      <template is="dom-if" if="[[!geolocationIsUserModifiable_]]">
+        <cr-tooltip-icon
+            id="locationDeniedInfoIcon"
+            icon-class="personalization:managed"
+            tooltip-text="$i18n{managedErrorTooltipAutoColorMode}"
+            icon-aria-label="$i18n{managedErrorTooltipAutoColorMode}"
+            class="managed-tooltip">
+        </cr-tooltip-icon>
+      </template>
+    </template>
   </iron-selector>
-  <template is="dom-if" if="[[shouldShowGeolocationWarningText_]]" restamp>
-    <div id="geolocationWarningDiv">
-      <iron-icon id="warningIcon" icon="cr20:warning"></iron-icon>
-      <localized-link
-          on-link-clicked="openGeolocationDialog_"
-          localized-string="$i18n{geolocationWarningTextForWallpaper}">
-      </localized-link>
-    </div>
-  </template>
 </div>
 
 <template is="dom-if" if="[[shouldShowGeolocationDialog_]]" restamp>
   <geolocation-dialog id="geolocationDialog"
+      body-text-paragraph1="[[computeAutoModeGeolocationDialogText_(sunriseTime_, sunsetTime_)]]"
+      confirm-button-text="$i18n{autoModeGeolocationDialogConfirmButton}"
+      cancel-button-text="$i18n{autoModeGeolocationDialogCancelButton}"
       on-geolocation-enabled="onGeolocationEnabled_"
       on-close="onGeolocationDialogClose_">
   </geolocation-dialog>

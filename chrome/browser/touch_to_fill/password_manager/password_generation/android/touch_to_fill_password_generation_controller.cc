@@ -9,7 +9,7 @@
 
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/autofill/manual_filling_controller.h"
+#include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -61,7 +61,7 @@ bool TouchToFillPasswordGenerationController::ShowTouchToFill(
 
   std::u16string generated_password =
       frame_driver_->GetPasswordGenerationHelper()->GeneratePassword(
-          web_contents_->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
+          web_contents_->GetLastCommittedURL().DeprecatedGetOriginAsURL(), type,
           generation_element_data_.form_signature,
           generation_element_data_.field_signature,
           generation_element_data_.max_password_length);
@@ -122,7 +122,8 @@ void TouchToFillPasswordGenerationController::
   if (frame_driver_) {
     frame_driver_->render_frame_host()
         ->GetRenderWidgetHost()
-        ->RemoveSuppressShowingImeCallback(suppress_showing_ime_callback_);
+        ->RemoveSuppressShowingImeCallback(suppress_showing_ime_callback_,
+                                           /*trigger_ime=*/false);
   }
   suppress_showing_ime_callback_added_ = false;
 }

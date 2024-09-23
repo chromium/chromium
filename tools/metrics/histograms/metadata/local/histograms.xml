@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LocalSearchService.BindIndexHasError" enum="Boolean"
     expires_after="2024-11-30">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
     Whether or not BindIndex calls to LocalSearchService have errors. It is
@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LocalSearchService.MetricsDailyEventInterval"
     enum="DailyEventIntervalType" expires_after="2024-11-30">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
     Reasons why local search daily metrics were reported. Chrome OS only.
@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LocalSearchService.{IndexId}AddOrUpdateLatency" units="ms"
     expires_after="2024-11-28">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
     Time taken to add/update content to the index. It is reported once for every
@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LocalSearchService.{IndexId}Backend"
     enum="LocalSearchServiceBackend" expires_after="2024-11-30">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
     Type of backend requested from the Local Search Service. It is reported once
@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LocalSearchService.{IndexId}ClearIndexLatency" units="ms"
     expires_after="2024-11-30">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
     Time taken to clear all content from the index. It is reported once for
@@ -96,8 +96,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}DailySearch" units="count"
-    expires_after="2024-11-28">
-  <owner>dgrebenyuk@google.com</owner>
+    expires_after="2025-02-02">
+  <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
     Number of times the local search service has been requested to perform a
@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LocalSearchService.{IndexId}DeleteLatency" units="ms"
     expires_after="2024-11-30">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
     Time taken to delete content from the index. It is reported once for every
@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LocalSearchService.{IndexId}NumberDocuments" units="count"
     expires_after="2024-11-30">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
     Number of documents in the corpus. Recorded each time the index is updated
@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LocalSearchService.{IndexId}NumberResults" units="count"
     expires_after="2024-11-28">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
     Number of results for each successful search. Chrome OS only. {IndexId}
@@ -153,8 +153,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}NumberSearchPerformedDone"
-    enum="Boolean" expires_after="2024-11-20">
-  <owner>dgrebenyuk@google.com</owner>
+    enum="Boolean" expires_after="2025-01-26">
+  <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
     This is recorded each time a search is successfully performed using
@@ -166,8 +166,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}ResponseStatus"
-    enum="LocalSearchServiceResponseStatus" expires_after="2024-11-28">
-  <owner>dgrebenyuk@google.com</owner>
+    enum="LocalSearchServiceResponseStatus" expires_after="2025-02-02">
+  <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
     Search request response status for Cros Settings. Chrome OS only. {IndexId}
@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LocalSearchService.{IndexId}SearchLatency" units="ms"
     expires_after="2024-11-28">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
     Time taken to find search results. Only recorded if search response status
@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LocalSearchService.{IndexId}UpdateDocumentsLatency" units="ms"
     expires_after="2024-11-30">
-  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@google.com</owner>
   <owner>laurencom@chromium.org</owner>
   <summary>
     Time taken to update contents from the index. It is reported once for every
@@ -201,6 +201,20 @@ chromium-metrics-reviews@google.com.
   <token key="IndexId" variants="IndexId">
     <variant name=""/>
   </token>
+</histogram>
+
+<histogram name="LocalStorage.AccessMetaDataUpdateAtShutdown" enum="Boolean"
+    expires_after="2024-12-01">
+  <owner>arichiv@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Emitted when a local StorageArea is shutdown and the access metadata for the
+    associated StorageKey is updated. It's possible to update the access
+    metadata when new data is written to the storage area instead, so this
+    metric does not capture all access metadata updates.
+
+    Value is true if update succeeded and false if update failed.
+  </summary>
 </histogram>
 
 <histogram name="LocalStorage.BrowserLocalStorageCachePurgedInKB" units="KB"
@@ -221,8 +235,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LocalStorage.DaysSinceLastModified400DaysGT" units="days"
+    expires_after="2025-04-19">
+  <owner>arichiv@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Emitted when the browsing context that loaded the related local storage
+    controller shuts down. One entry is recorded per local storage area.
+
+    Number of days since a local storage area was modified (for values over 400
+    days).
+  </summary>
+</histogram>
+
+<histogram name="LocalStorage.DaysSinceLastModified400DaysLTE" units="days"
+    expires_after="2025-04-19">
+  <owner>arichiv@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Emitted when the browsing context that loaded the related local storage
+    controller shuts down. One entry is recorded per local storage area.
+
+    Number of days since a local storage area was modified (for values under 400
+    days).
+  </summary>
+</histogram>
+
 <histogram name="LocalStorage.MojoSizeInKB" units="KB"
-    expires_after="2024-06-30">
+    expires_after="2025-01-05">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -234,7 +274,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.MojoTimeToPrime" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2025-01-05">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -246,7 +286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.MojoTimeToPrimeFor{LocalStorageSizes}" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2025-01-05">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -258,8 +298,22 @@ chromium-metrics-reviews@google.com.
   <token key="LocalStorageSizes" variants="LocalStorageSizes"/>
 </histogram>
 
+<histogram name="LocalStorage.OrphanStorageAreasOnStartupCount" units="areas"
+    expires_after="2025-02-10">
+  <owner>arichiv@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the amount of orphan (nonce-bound buckets which will never be
+    loaded) storage areas detected on LocalStorageImpl initialization (profile
+    load). Recorded one minute after LocalStorageImpl initialization to ensure
+    any restored tabs have loaded.
+
+    See crbug.com/353555346 for more info.
+  </summary>
+</histogram>
+
 <histogram name="LocalStorage.RendererAreaCacheHit"
-    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2024-06-30">
+    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2025-09-01">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -267,6 +321,34 @@ chromium-metrics-reviews@google.com.
     opened.
 
     Warning: this histogram was expired from M78 to M92; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="LocalStorage.StaleStorageAreasDeletedOnStartupCount"
+    units="areas" expires_after="2025-02-02">
+  <owner>arichiv@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the amount of stale (400 days since last access or write) storage
+    areas deleted on LocalStorageImpl initialization (profile load).
+
+    Emitted after successful attempt to delete stale storage areas.
+
+    See crbug.com/40281870 for more info.
+  </summary>
+</histogram>
+
+<histogram name="LocalStorage.StaleStorageAreasDeletedOnStartupSuccess"
+    enum="BooleanSuccess" expires_after="2025-02-02">
+  <owner>arichiv@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the success of clearing stale (400 days since last access or write)
+    storage areas on LocalStorageImpl initialization (profile load).
+
+    Emitted after attempt to delete stale storage areas occurs.
+
+    See crbug.com/40281870 for more info.
   </summary>
 </histogram>
 

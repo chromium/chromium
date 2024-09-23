@@ -4,16 +4,8 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.actionWithAssertions;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertTrue;
@@ -26,15 +18,9 @@ import static org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DOM_DI
 
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.os.Build.VERSION_CODES;
 
 import androidx.annotation.NonNull;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.Espresso;
-import androidx.test.espresso.action.GeneralClickAction;
-import androidx.test.espresso.action.GeneralLocation;
-import androidx.test.espresso.action.Press;
-import androidx.test.espresso.action.Tap;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -47,11 +33,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -65,10 +51,13 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationServiceImpl;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.dom_distiller.ReaderModeConditions.TabBackgroundColorCondition;
+import org.chromium.chrome.test.transit.dom_distiller.ReaderModeConditions.TabFontSizeCondition;
+import org.chromium.chrome.test.transit.dom_distiller.ReaderModePreferencesDialog;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
@@ -80,11 +69,9 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageStateHandler;
 import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -96,6 +83,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
 public class ReaderModeTest implements CustomMainActivityStart {
     @Rule public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
 
@@ -138,7 +126,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         String innerHtml = getInnerHtml(originalTab);
         assertThat(innerHtml).doesNotContain("article-header");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     originalTab
                             .getUserDataHost()
@@ -163,7 +151,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
         downloadAndOpenOfflinePage();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     originalTab
                             .getUserDataHost()
@@ -221,7 +209,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         String innerHtml = getInnerHtml(originalTab);
         assertThat(innerHtml).doesNotContain("article-header");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     originalTab
                             .getUserDataHost()
@@ -250,7 +238,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         // Stop the server and also disconnect the network.
         mTestServer.stopAndDestroyServer();
         mTestServer = null;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     NetworkChangeNotifier.forceConnectivityState(false);
                 });
@@ -264,8 +252,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     private static boolean isOfflinePage(final Tab tab) {
         AtomicBoolean isOffline = new AtomicBoolean();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> isOffline.set(OfflinePageUtils.isOfflinePage(tab)));
+        ThreadUtils.runOnUiThreadBlocking(() -> isOffline.set(OfflinePageUtils.isOfflinePage(tab)));
         return isOffline.get();
     }
 
@@ -277,7 +264,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         String innerHtml = getInnerHtml(tab);
         assertThat(innerHtml).doesNotContain("article-header");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     tab.getUserDataHost()
                             .getUserData(ReaderModeManager.USER_DATA_KEY)
@@ -291,7 +278,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @EnableFeatures(ChromeFeatureList.READER_MODE_IN_CCT)
     public void testPreferenceInCCT() throws TimeoutException {
         Tab originalTab = mDownloadTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     originalTab
                             .getUserDataHost()
@@ -304,17 +291,12 @@ public class ReaderModeTest implements CustomMainActivityStart {
         Tab distillerViewerTab = Objects.requireNonNull(customTabActivity.getActivityTab());
         waitForDistillation(PAGE_TITLE, distillerViewerTab);
 
-        testPreference(customTabActivity, distillerViewerTab);
+        doTestSettingPreferences(customTabActivity, distillerViewerTab);
     }
 
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.READER_MODE_IN_CCT)
-    @DisableIf.Build(
-            sdk_is_less_than = VERSION_CODES.O,
-            message =
-                    "Failing on Lollipop Phone Tester (https://crbug.com/1120830) and test-n-phone"
-                            + " (https://crbug.com/1160911)")
     public void testPreferenceInTab() throws TimeoutException {
         mDownloadTestRule.loadUrl(
                 DomDistillerUrlUtils.getDistillerViewUrlFromUrl(
@@ -323,7 +305,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         waitForDistillation(PAGE_TITLE, tab);
 
-        testPreference(mDownloadTestRule.getActivity(), tab);
+        doTestSettingPreferences(mDownloadTestRule.getActivity(), tab);
     }
 
     /**
@@ -348,80 +330,43 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
     private DistilledPagePrefs getDistilledPagePrefs() {
         AtomicReference<DistilledPagePrefs> prefs = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DomDistillerService domDistillerService =
                             DomDistillerServiceFactory.getForProfile(
-                                    Profile.getLastUsedRegularProfile());
+                                    ProfileManager.getLastUsedRegularProfile());
                     prefs.set(domDistillerService.getDistilledPagePrefs());
                 });
         return prefs.get();
     }
 
-    private void testThemeColor(ChromeActivity activity, Tab tab) {
-        waitForBackgroundColor(tab, "\"rgb(255, 255, 255)\"");
-
-        MenuUtils.invokeCustomMenuActionSync(
-                InstrumentationRegistry.getInstrumentation(), activity, R.id.reader_mode_prefs_id);
-        ViewUtils.waitForVisibleView(allOf(withText("Dark"), isDisplayed()));
-        onView(withText("Dark")).perform(click());
-        Espresso.pressBack();
-        waitForBackgroundColor(tab, "\"rgb(32, 33, 36)\"");
-
-        MenuUtils.invokeCustomMenuActionSync(
-                InstrumentationRegistry.getInstrumentation(), activity, R.id.reader_mode_prefs_id);
-        ViewUtils.waitForVisibleView(allOf(withText("Sepia"), isDisplayed()));
-        onView(withText("Sepia")).perform(click());
-        Espresso.pressBack();
-        waitForBackgroundColor(tab, "\"rgb(254, 247, 224)\"");
-
-        MenuUtils.invokeCustomMenuActionSync(
-                InstrumentationRegistry.getInstrumentation(), activity, R.id.reader_mode_prefs_id);
-        ViewUtils.waitForVisibleView(allOf(withText("Light"), isDisplayed()));
-        onView(withText("Light")).perform(click());
-        Espresso.pressBack();
-        waitForBackgroundColor(tab, "\"rgb(255, 255, 255)\"");
-
-        verify(mTestObserver, times(3)).onChangeTheme(anyInt());
-    }
-
-    private void testFontSize(ChromeActivity activity, Tab tab) {
-        waitForFontSize(tab, "\"14px\"");
-
-        MenuUtils.invokeCustomMenuActionSync(
-                InstrumentationRegistry.getInstrumentation(), activity, R.id.reader_mode_prefs_id);
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.font_size), isDisplayed()));
-        // Max is 200% font size.
-        onView(withId(R.id.font_size))
-                .perform(
-                        actionWithAssertions(
-                                new GeneralClickAction(
-                                        Tap.SINGLE, GeneralLocation.CENTER_RIGHT, Press.FINGER)));
-        Espresso.pressBack();
-        waitForFontSize(tab, "\"28px\"");
-
-        MenuUtils.invokeCustomMenuActionSync(
-                InstrumentationRegistry.getInstrumentation(), activity, R.id.reader_mode_prefs_id);
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.font_size), isDisplayed()));
-        // Min is 50% font size.
-        onView(withId(R.id.font_size))
-                .perform(
-                        actionWithAssertions(
-                                new GeneralClickAction(
-                                        Tap.SINGLE, GeneralLocation.CENTER_LEFT, Press.FINGER)));
-        Espresso.pressBack();
-        waitForFontSize(tab, "\"7px\"");
-
-        verify(mTestObserver, times(2)).onChangeFontScaling(anyFloat());
-    }
-
-    private void testPreference(ChromeActivity activity, Tab tab) {
+    private void doTestSettingPreferences(ChromeActivity activity, Tab tab) {
         DistilledPagePrefs prefs = getDistilledPagePrefs();
         prefs.addObserver(mTestObserver);
 
-        testThemeColor(activity, tab);
-        testFontSize(activity, tab);
-        // TODO(crbug/1069520): change font family as well.
+        Condition.runAndWaitFor(
+                /* trigger= */ null,
+                new TabBackgroundColorCondition(tab, "\"rgb(255, 255, 255)\""));
+
+        ReaderModePreferencesDialog dialog = ReaderModePreferencesDialog.open(activity);
+
+        // Test setting background color
+        dialog.pickColorDark(new TabBackgroundColorCondition(tab, "\"rgb(32, 33, 36)\""));
+        dialog.pickColorSepia(new TabBackgroundColorCondition(tab, "\"rgb(254, 247, 224)\""));
+        dialog.pickColorLight(new TabBackgroundColorCondition(tab, "\"rgb(255, 255, 255)\""));
+        verify(mTestObserver, times(3)).onChangeTheme(anyInt());
+
+        // Test setting font size
+        Condition.runAndWaitFor(/* trigger= */ null, new TabFontSizeCondition(tab, "\"14px\""));
+        // Max is 200% font size.
+        dialog.setFontSizeSliderToMax(new TabFontSizeCondition(tab, "\"28px\""));
+        // Min is 50% font size.
+        dialog.setFontSizeSliderToMin(new TabFontSizeCondition(tab, "\"7px\""));
+        verify(mTestObserver, times(2)).onChangeFontScaling(anyFloat());
+
+        // TODO(crbug.com/40125950): change font family as well.
+
+        dialog.pressBackToClose();
     }
 
     /**
@@ -447,48 +392,12 @@ public class ReaderModeTest implements CustomMainActivityStart {
         return runJavaScript(tab, "document.body.innerHTML");
     }
 
-    /**
-     * Wait until the background color of a certain {@link Tab} to be a given value.
-     *
-     * @param tab The tab to be inspected.
-     * @param expectedColor The expected background color
-     */
-    private void waitForBackgroundColor(Tab tab, String expectedColor) {
-        String query = "window.getComputedStyle(document.body)['backgroundColor']";
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        Criteria.checkThat(runJavaScript(tab, query), is(expectedColor));
-                    } catch (TimeoutException ex) {
-                        throw new CriteriaNotSatisfiedException(ex);
-                    }
-                });
-    }
-
-    /**
-     * Wait until the font size of a certain {@link Tab} to be a given value.
-     *
-     * @param tab The tab to be inspected.
-     * @param expectedSize The expected font size
-     */
-    private void waitForFontSize(Tab tab, String expectedSize) {
-        String query = "window.getComputedStyle(document.body)['fontSize']";
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        Criteria.checkThat(runJavaScript(tab, query), is(expectedSize));
-                    } catch (TimeoutException ex) {
-                        throw new CriteriaNotSatisfiedException(ex);
-                    }
-                });
-    }
-
     /** Wait until a Reader Mode message shows up. */
     private void waitForReaderModeMessage() {
         CriteriaHelper.pollUiThread(
                 () -> {
                     MessageDispatcher messageDispatcher =
-                            TestThreadUtils.runOnUiThreadBlocking(
+                            ThreadUtils.runOnUiThreadBlocking(
                                     () ->
                                             MessageDispatcherProvider.from(
                                                     mDownloadTestRule

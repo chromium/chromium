@@ -29,7 +29,7 @@ class AXObjectCacheImpl;
 
 class MODULES_EXPORT BlinkAXTreeSource
     : public GarbageCollected<BlinkAXTreeSource>,
-      public ui::AXTreeSource<AXObject*> {
+      public ui::AXTreeSource<const AXObject*, ui::AXTreeData*, ui::AXNodeData> {
  public:
   // Pass truncate_inline_textboxes_ if inline textboxes should be removed
   // from the serialized tree, even if they are already available in the cache.
@@ -45,38 +45,25 @@ class MODULES_EXPORT BlinkAXTreeSource
 
   // AXTreeSource implementation.
   bool GetTreeData(ui::AXTreeData* tree_data) const override;
-  AXObject* GetRoot() const override;
-  AXObject* GetFromId(int32_t id) const override;
-  int32_t GetId(AXObject* node) const override;
-  void CacheChildrenIfNeeded(AXObject*) override {}
-  size_t GetChildCount(AXObject* node) const override;
-  AXObject* ChildAt(AXObject* node, size_t) const override;
-  void ClearChildCache(AXObject*) override {}
-  AXObject* GetParent(AXObject* node) const override;
-  void SerializeNode(AXObject* node, ui::AXNodeData* out_data) const override;
-  bool IsIgnored(AXObject* node) const override;
-  bool IsEqual(AXObject* node1, AXObject* node2) const override;
+  const AXObject* GetRoot() const override;
+  const AXObject* GetFromId(int32_t id) const override;
+  int32_t GetId(const AXObject* node) const override;
+  void CacheChildrenIfNeeded(const AXObject*) override {}
+  size_t GetChildCount(const AXObject* node) const override;
+  AXObject* ChildAt(const AXObject* node, size_t) const override;
+  void ClearChildCache(const AXObject*) override {}
+  AXObject* GetParent(const AXObject* node) const override;
+  void SerializeNode(const AXObject* node, ui::AXNodeData* out_data) const override;
+  bool IsIgnored(const AXObject* node) const override;
+  bool IsEqual(const AXObject* node1, const AXObject* node2) const override;
   AXObject* GetNull() const override;
-  std::string GetDebugString(AXObject* node) const override;
-
-  // Set the id of the node to fetch image data for. Normally the content
-  // of images is not part of the accessibility tree, but one node at a
-  // time can be designated as the image data node, which will send the
-  // contents of the image with each accessibility update until another
-  // node is designated.
-  int image_data_node_id() { return image_data_node_id_; }
-  void set_image_data_node_id(int id, const gfx::Size& max_size) {
-    image_data_node_id_ = id;
-    max_image_data_size_ = max_size;
-  }
+  std::string GetDebugString(const AXObject* node) const override;
 
   // Ignore code that limits based on the protocol (like https, file, etc.)
   // to enable tests to run.
   static void IgnoreProtocolChecksForTesting();
 
   void Trace(Visitor*) const;
-
-  AXObject* GetPluginRoot();
 
   void Freeze();
 
@@ -85,19 +72,14 @@ class MODULES_EXPORT BlinkAXTreeSource
  private:
   void Selection(const AXObject* obj,
                  bool& is_selection_backward,
-                 AXObject** anchor_object,
+                 const AXObject** anchor_object,
                  int& anchor_offset,
                  ax::mojom::blink::TextAffinity& anchor_affinity,
-                 AXObject** focus_object,
+                 const AXObject** focus_object,
                  int& focus_offset,
                  ax::mojom::blink::TextAffinity& focus_affinity) const;
 
-  AXObject* GetFocusedObject() const;
-
-  // The ID of the object to fetch image data for.
-  int image_data_node_id_ = -1;
-
-  gfx::Size max_image_data_size_;
+  const AXObject* GetFocusedObject() const;
 
   // Whether we should highlight annotation results visually on the page
   // for debugging.
@@ -107,8 +89,8 @@ class MODULES_EXPORT BlinkAXTreeSource
 
   bool frozen_ = false;
   // TODO(accessibility) If caching these does not improv perf, remove these.
-  Member<AXObject> root_ = nullptr;
-  Member<AXObject> focus_ = nullptr;
+  Member<const AXObject> root_ = nullptr;
+  Member<const AXObject> focus_ = nullptr;
 
   // The AxID of the first unlabeled image we have encountered in this tree.
   //

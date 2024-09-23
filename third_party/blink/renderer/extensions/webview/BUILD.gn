@@ -1,0 +1,76 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/python.gni")
+import("//third_party/blink/renderer/bindings/bindings.gni")
+import("//third_party/blink/renderer/build/scripts/scripts.gni")
+import("//third_party/blink/renderer/config.gni")
+import("//third_party/blink/renderer/extensions/extensions.gni")
+
+assert(use_blink_extensions_webview)
+
+visibility = [
+  "//third_party/blink/renderer/bindings/extensions/*",
+  "//third_party/blink/renderer/extensions/*",
+]
+
+config("extensions_webview_implementation") {
+  visibility += [ "//third_party/blink/renderer/bindings/extensions/*" ]
+  defines = [ "BLINK_EXTENSIONS_WEBVIEW_IMPLEMENTATION=1" ]
+}
+
+blink_extensions_webview_sources("webview_extension") {
+  sources = [
+    "android.cc",
+    "android.h",
+    "extensions_webview_export.h",
+    "media_integrity/media_integrity_error.cc",
+    "media_integrity/media_integrity_error.h",
+    "media_integrity/media_integrity_token_provider.cc",
+    "media_integrity/media_integrity_token_provider.h",
+    "web_view_android.cc",
+    "web_view_android.h",
+    "webview_extensions.cc",
+    "webview_extensions.h",
+  ]
+
+  deps = [
+    "//third_party/blink/renderer/bindings:generate_bindings_all",
+    "//third_party/blink/renderer/platform",
+    "//v8",
+  ]
+}
+
+component("webview") {
+  output_name = "blink_extensions_webview"
+
+  visibility = []  # Allow re-assignment of list.
+  visibility = [ "//third_party/blink/*" ]
+
+  # Sources are implemented in :webview_extension so they can be shared with
+  # sub-directories.
+  sources = []
+
+  # This sets the default list of configs when the blink_modules_sources target
+  # is defined. The default_compiler_configs comes from BUILDCONFIG.gn and
+  # is the list normally applied to static libraries and source sets.
+  configs += [
+    ":extensions_webview_implementation",
+
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:non_test_config",
+    "//third_party/blink/renderer:inside_blink",
+  ]
+
+  deps = [
+    "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/modules",
+  ]
+
+  public_deps = [
+    # Allow third_party/blink/renderer/controller to depend on the :webview target
+    ":webview_extension",
+    "//third_party/blink/renderer/bindings/extensions/v8:v8_webview",
+  ]
+}

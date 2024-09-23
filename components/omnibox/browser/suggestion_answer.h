@@ -14,11 +14,54 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "third_party/omnibox_proto/answer_data.pb.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
+#include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
+
+namespace omnibox::answer_data_parser {
+// These values are named and numbered to match a specification at go/ais_api.
+// The values are only used for answer results.
+//
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.omnibox
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: AnswerTextType
+enum TextType {
+  // Deprecated: ANSWER = 1,
+  // Deprecated: HEADLINE = 2,
+  TOP_ALIGNED = 3,
+  // Deprecated: DESCRIPTION = 4,
+  DESCRIPTION_NEGATIVE = 5,
+  DESCRIPTION_POSITIVE = 6,
+  // Deprecated: MORE_INFO = 7,
+  SUGGESTION = 8,
+  // Deprecated: SUGGESTION_POSITIVE = 9,
+  // Deprecated: SUGGESTION_NEGATIVE = 10,
+  // Deprecated: SUGGESTION_LINK = 11,
+  // Deprecated: STATUS = 12,
+  PERSONALIZED_SUGGESTION = 13,
+  // Deprecated: IMMERSIVE_DESCRIPTION_TEXT = 14,
+  // Deprecated: DATE_TEXT = 15,
+  // Deprecated: PREVIEW_TEXT = 16,
+  ANSWER_TEXT_MEDIUM = 17,
+  ANSWER_TEXT_LARGE = 18,
+  SUGGESTION_SECONDARY_TEXT_SMALL = 19,
+  SUGGESTION_SECONDARY_TEXT_MEDIUM = 20,
+};
+
+GURL GetFormattedURL(const std::string* url_string);
+
+bool ParseJsonToAnswerData(const base::Value::Dict& answer_json,
+                           omnibox::RichAnswerTemplate* answer_template);
+
+// Logs which answer type was used (if any) at the time a user used the
+// omnibox to go somewhere.
+void LogAnswerUsed(omnibox::AnswerType answer_type);
+}  // namespace omnibox::answer_data_parser
 
 // Structured representation of the JSON payload of a suggestion with an answer.
 // An answer has exactly two image lines, so called because they are a
@@ -35,65 +78,6 @@ class SuggestionAnswer {
   class TextField;
   typedef std::vector<TextField> TextFields;
   typedef std::vector<GURL> URLs;
-
-  // These values are based on the server-side type AnswerTriggererKey. Do not
-  // remove values from this enum (or the client/server will become out of
-  // sync).
-  //
-  // A Java counterpart will be generated for this enum.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.omnibox
-  enum AnswerType {
-    ANSWER_TYPE_INVALID = 0,
-    ANSWER_TYPE_DICTIONARY = 1,
-    ANSWER_TYPE_FINANCE = 2,
-    ANSWER_TYPE_KNOWLEDGE_GRAPH = 3,
-    ANSWER_TYPE_LOCAL = 4,
-    ANSWER_TYPE_SPORTS = 5,
-    ANSWER_TYPE_SUNRISE = 6,
-    ANSWER_TYPE_TRANSLATION = 7,
-    ANSWER_TYPE_WEATHER = 8,
-    ANSWER_TYPE_WHEN_IS = 9,
-    ANSWER_TYPE_CURRENCY = 10,
-    ANSWER_TYPE_LOCAL_TIME = 11,
-    ANSWER_TYPE_PLAY_INSTALL = 12,
-
-    // Last value - tracks total number of different answer types.
-    // Deliberately not assigning a value to this enum to prevent errors where a
-    // new enum values are added above and compiler accepts the overlapping
-    // enums.
-    ANSWER_TYPE_TOTAL_COUNT
-  };
-  static_assert(ANSWER_TYPE_TOTAL_COUNT == 13,
-                "Do not remove enums from AnswerType");
-
-  // These values are named and numbered to match a specification at go/ais_api.
-  // The values are only used for answer results.
-  //
-  // A Java counterpart will be generated for this enum.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.omnibox
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AnswerTextType
-  enum TextType {
-    // Deprecated: ANSWER = 1,
-    // Deprecated: HEADLINE = 2,
-    TOP_ALIGNED = 3,
-    // Deprecated: DESCRIPTION = 4,
-    DESCRIPTION_NEGATIVE = 5,
-    DESCRIPTION_POSITIVE = 6,
-    // Deprecated: MORE_INFO = 7,
-    SUGGESTION = 8,
-    // Deprecated: SUGGESTION_POSITIVE = 9,
-    // Deprecated: SUGGESTION_NEGATIVE = 10,
-    // Deprecated: SUGGESTION_LINK = 11,
-    // Deprecated: STATUS = 12,
-    PERSONALIZED_SUGGESTION = 13,
-    // Deprecated: IMMERSIVE_DESCRIPTION_TEXT = 14,
-    // Deprecated: DATE_TEXT = 15,
-    // Deprecated: PREVIEW_TEXT = 16,
-    ANSWER_TEXT_MEDIUM = 17,
-    ANSWER_TEXT_LARGE = 18,
-    SUGGESTION_SECONDARY_TEXT_SMALL = 19,
-    SUGGESTION_SECONDARY_TEXT_MEDIUM = 20,
-  };
 
   // The above TextType values match what is sent by server, but are not used
   // normally by new answers.  These enum values are used instead, styling
@@ -233,40 +217,29 @@ class SuggestionAnswer {
   // contents. Returns true on success. If the supplied data is not well formed
   // or is missing required elements, returns false instead.
   static bool ParseAnswer(const base::Value::Dict& answer_json,
-                          const std::u16string& answer_type_str,
+                          omnibox::AnswerType answer_type,
                           SuggestionAnswer* answer);
 
   const GURL& image_url() const { return image_url_; }
   const ImageLine& first_line() const { return first_line_; }
   const ImageLine& second_line() const { return second_line_; }
 
-  // Answer type accessors.  Valid types are non-negative and defined at
-  // https://goto.google.com/visual_element_configuration.
-  int type() const { return type_; }
-  void set_type(int type) { type_ = type; }
-
   bool Equals(const SuggestionAnswer& answer) const;
-
-  // Retrieves any image URLs appearing in this answer and adds them to |urls|.
-  void AddImageURLsTo(URLs* urls) const;
 
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
   // For new answers, replace old answer text types with appropriate new types.
-  void InterpretTextTypes();
+  void InterpretTextTypes(omnibox::AnswerType answer_type);
 
   // Some types of matches (answers for dictionary definitions, e.g.) do not
   // follow the common rules for reversing lines.
-  bool IsExceptedFromLineReversal() const;
-
-  // Logs which answer type was used (if any) at the time a user used the
-  // omnibox to go somewhere.
-  static void LogAnswerUsed(const std::optional<SuggestionAnswer>& answer);
+  bool IsExceptedFromLineReversal(omnibox::AnswerType answer_type) const;
 
 #if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;
+  base::android::ScopedJavaLocalRef<jobject> CreateJavaObject(
+      omnibox::AnswerType answer_type) const;
 #endif
 
  private:
@@ -275,7 +248,6 @@ class SuggestionAnswer {
   GURL image_url_;
   ImageLine first_line_;
   ImageLine second_line_;
-  int type_ = -1;
 
   FRIEND_TEST_ALL_PREFIXES(SuggestionAnswerTest, DifferentValuesAreUnequal);
   FRIEND_TEST_ALL_PREFIXES(SuggestionAnswerTest, LogAnswerUsed);

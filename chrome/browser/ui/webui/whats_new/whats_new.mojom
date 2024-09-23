@@ -1,0 +1,85 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module whats_new.mojom;
+
+import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // The WebUI page's |BrowserProxy| singleton calls this method when the
+  // page is first initialized.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Enum used to depict what quartile of the page the user scrolled to.
+enum ScrollDepth {
+  // 0%
+  k0 = 0,
+  // 25%
+  k25 = 25,
+  // 50%
+  k50 = 50,
+  // 75%
+  k75 = 75,
+  // 100% (Bottom of the page)
+  k100 = 100
+};
+
+
+// Enum used to depict the module position within its section.
+// There are 4 possible positions in "Spotlight" and 6 positions in the
+// "Explore More" section.
+enum ModulePosition {
+  kSpotlight1 = 1,
+  kSpotlight2 = 2,
+  kSpotlight3 = 3,
+  kSpotlight4 = 4,
+  kExploreMore1 = 5,
+  kExploreMore2 = 6,
+  kExploreMore3 = 7,
+  kExploreMore4 = 8,
+  kExploreMore5 = 9,
+  kExploreMore6 = 10,
+  kUndefined = 11
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Returns the URL of the What's New page to show.
+  GetServerUrl(bool is_staging) => (url.mojom.Url url);
+
+  // Record when the content was loaded.
+  // Time passed from JS is based on Unix epoch.
+  RecordTimeToLoadContent(mojo_base.mojom.JSTime time);
+
+  // Record metric when a version page was loaded.
+  RecordVersionPageLoaded(bool is_auto_open);
+
+  // Record metric for which edition page was loaded.
+  RecordEditionPageLoaded(string page_uid, bool is_auto_open);
+
+  // Record metric that a module was seen by the user.
+  RecordModuleImpression(string module_name, ModulePosition position);
+
+  // Record metric for expanding/collapsing "Explore More" section.
+  RecordExploreMoreToggled(bool expanded);
+
+  // Record metric that page was scrolled.
+  RecordScrollDepth(ScrollDepth depth);
+
+  // Record metric for how long page was shown.
+  RecordTimeOnPage(mojo_base.mojom.TimeDelta time);
+
+  // Record metric for a click event within a module.
+  RecordModuleLinkClicked(string module_name, ModulePosition position);
+
+  // Record metric when browser commands are executed.
+  RecordBrowserCommandExecuted();
+};
+
+// WebUI-side handler for requests from the browser.
+interface Page {};

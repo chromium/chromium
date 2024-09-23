@@ -79,9 +79,11 @@ constexpr gfx::Size kMaxResolution(1920, 1080);
 // Command line arguments that should be passed to the mirroring service.
 static const char* kPassthroughSwitches[]{
     switches::kCastStreamingForceEnableHardwareH264,
-    switches::kCastStreamingForceDisableHardwareH264,
     switches::kCastStreamingForceEnableHardwareVp8,
-    switches::kCastStreamingForceDisableHardwareVp8};
+    switches::kCastStreamingForceEnableHardwareVp9,
+    switches::kCastStreamingForceDisableHardwareH264,
+    switches::kCastStreamingForceDisableHardwareVp8,
+    switches::kCastStreamingForceDisableHardwareVp9};
 
 mojo::SelfOwnedReceiverRef<media::mojom::VideoCaptureHost>
 CreateVideoCaptureHostOnIO(
@@ -237,7 +239,8 @@ void CastMirroringServiceHost::Start(
   ShowCaptureIndicator();
 }
 
-std::optional<int> CastMirroringServiceHost::GetTabSourceId() const {
+std::optional<content::FrameTreeNodeId>
+CastMirroringServiceHost::GetTabSourceId() const {
   if (web_contents()) {
     return web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
   }
@@ -300,8 +303,7 @@ gfx::Size CastMirroringServiceHost::GetClampedResolution(
 
 void CastMirroringServiceHost::BindGpu(
     mojo::PendingReceiver<viz::mojom::Gpu> receiver) {
-  gpu_client_ =
-      content::CreateGpuClient(std::move(receiver), base::DoNothing());
+  gpu_client_ = content::CreateGpuClient(std::move(receiver));
 }
 
 void CastMirroringServiceHost::GetVideoCaptureHost(
@@ -547,7 +549,8 @@ void CastMirroringServiceHost::ShowTabSharingUI(
       TabSharingUI::Create(capturer_id, source_media_id_, sink_name_,
                            /*favicons_used_for_switch_to_tab_button=*/false,
                            /*app_preferred_current_tab=*/false,
-                           TabSharingInfoBarDelegate::TabShareType::CAST);
+                           TabSharingInfoBarDelegate::TabShareType::CAST,
+                           /*captured_surface_control_active=*/false);
 
   media_stream_ui_ = MediaCaptureDevicesDispatcher::GetInstance()
                          ->GetMediaStreamCaptureIndicator()
@@ -567,7 +570,10 @@ void CastMirroringServiceHost::ShowTabSharingUI(
 }
 
 void CastMirroringServiceHost::SwitchMirroringSourceTab(
-    const content::DesktopMediaID& media_id) {
+    const content::DesktopMediaID& media_id,
+    bool captured_surface_control_active) {
+  DCHECK(!captured_surface_control_active) << "CSC not supported for casting.";
+
   source_media_id_ = media_id;
   source_media_id_.web_contents_id.disable_local_echo = true;
 

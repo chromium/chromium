@@ -11,8 +11,8 @@
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/values.h"
-#include "pdf/draw_utils/coordinates.h"
 #include "pdf/page_orientation.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -27,7 +27,7 @@ namespace chrome_pdf {
 // orientation of pages.
 class DocumentLayout final {
  public:
-  // TODO(crbug.com/1144505): Add `kTwoUpEven` page spread support.
+  // TODO(crbug.com/40155509): Add `kTwoUpEven` page spread support.
   enum class PageSpread {
     kOneUp = 0,     // One page per spread.
     kTwoUpOdd = 1,  // Two pages per spread, with odd pages first.
@@ -88,7 +88,8 @@ class DocumentLayout final {
     PageSpread page_spread_ = PageSpread::kOneUp;
   };
 
-  static const draw_utils::PageInsetSizes kSingleViewInsets;
+  static constexpr gfx::Insets kSingleViewInsets =
+      gfx::Insets::TLBR(/*top=*/3, /*left=*/5, /*bottom=*/7, /*right=*/5);
   static constexpr int32_t kBottomSeparator = 4;
   static constexpr int32_t kHorizontalSeparator = 1;
 

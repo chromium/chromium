@@ -9,12 +9,13 @@
   IsolatedContext
 ]
 interface WebPrinter {
+  [MeasureAs=WebPrinterCachedAttributesFunction]
   WebPrinterAttributes cachedAttributes();
 
-  [CallWith=ScriptState, RaisesException]
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebPrinterFetchAttributesFunction]
   Promise<WebPrinterAttributes> fetchAttributes();
 
-  [CallWith=ScriptState, RaisesException]
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebPrinterPrintJobFunction]
   Promise<WebPrintJob> printJob(
     DOMString job_name,
     WebPrintDocumentDescription document,

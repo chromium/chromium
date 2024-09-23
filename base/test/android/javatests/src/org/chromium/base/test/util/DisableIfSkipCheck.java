@@ -40,7 +40,7 @@ public class DisableIfSkipCheck extends SkipCheck {
         List<DisableIf.Build> buildAnnotationList = gatherBuildAnnotations(method);
 
         for (DisableIf.Build v : buildAnnotationList) {
-            if (abi(v) && hardware(v) && product(v) && sdk(v)) {
+            if (abi(v) && hardware(v) && product(v) && sdk_range(v) && sdk_exact(v)) {
                 if (!v.message().isEmpty()) {
                     Log.i(TAG, "%s is disabled: %s", method.getName(), v.message());
                 }
@@ -90,9 +90,13 @@ public class DisableIfSkipCheck extends SkipCheck {
                 || Build.PRODUCT.contains(v.product_name_includes());
     }
 
-    private boolean sdk(DisableIf.Build v) {
+    private boolean sdk_range(DisableIf.Build v) {
         return Build.VERSION.SDK_INT > v.sdk_is_greater_than()
                 && Build.VERSION.SDK_INT < v.sdk_is_less_than();
+    }
+
+    private boolean sdk_exact(DisableIf.Build v) {
+        return v.sdk_equals() == 0 || Build.VERSION.SDK_INT == v.sdk_equals();
     }
 
     protected boolean deviceTypeApplies(String type) {

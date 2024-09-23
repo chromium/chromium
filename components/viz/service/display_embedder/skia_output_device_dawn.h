@@ -8,13 +8,14 @@
 #include <memory>
 #include <vector>
 
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "third_party/dawn/include/dawn/native/DawnNative.h"
 #include "third_party/dawn/include/dawn/webgpu.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -33,12 +34,21 @@ namespace viz {
 
 class SkiaOutputDeviceDawn : public SkiaOutputDevice {
  public:
-  SkiaOutputDeviceDawn(
+  using PassKey = base::PassKey<SkiaOutputDeviceDawn>;
+
+  static std::unique_ptr<SkiaOutputDeviceDawn> Create(
       scoped_refptr<gpu::SharedContextState> context_state,
       gfx::SurfaceOrigin origin,
       gpu::SurfaceHandle surface_handle,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+
+  SkiaOutputDeviceDawn(
+      scoped_refptr<gpu::SharedContextState> context_state,
+      gfx::SurfaceOrigin origin,
+      gpu::MemoryTracker* memory_tracker,
+      DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
+      base::PassKey<SkiaOutputDeviceDawn>);
 
   SkiaOutputDeviceDawn(const SkiaOutputDeviceDawn&) = delete;
   SkiaOutputDeviceDawn& operator=(const SkiaOutputDeviceDawn&) = delete;
@@ -52,11 +62,7 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
 #endif
 
   // SkiaOutputDevice implementation:
-  bool Reshape(const SkImageInfo& image_info,
-               const gfx::ColorSpace& color_space,
-               int sample_count,
-               float device_scale_factor,
-               gfx::OverlayTransform transform) override;
+  bool Reshape(const ReshapeParams& params) override;
   void Present(const std::optional<gfx::Rect>& update_rect,
                BufferPresentedCallback feedback,
                OutputSurfaceFrame frame) override;
@@ -65,9 +71,10 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
   void EndPaint() override;
 
  private:
+  bool Initialize(gpu::SurfaceHandle surface_handle);
+
   scoped_refptr<gpu::SharedContextState> context_state_;
   wgpu::Surface surface_;
-  wgpu::SwapChain swap_chain_;
   wgpu::Texture texture_;
   sk_sp<SkSurface> sk_surface_;
   std::unique_ptr<gfx::VSyncProvider> vsync_provider_;

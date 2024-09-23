@@ -146,7 +146,8 @@ void SigninErrorController::OnEndBatchOfRefreshTokenStateChanges() {
 
 void SigninErrorController::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error) {
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   Update();
 }
 

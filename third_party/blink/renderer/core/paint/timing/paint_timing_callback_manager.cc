@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_callback_manager.h"
 
+#include "components/viz/common/frame_timing_details.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -15,14 +16,15 @@ namespace blink {
 
 void PaintTimingCallbackManagerImpl::ReportPaintTime(
     std::unique_ptr<PaintTimingCallbackManager::CallbackQueue> frame_callbacks,
-    base::TimeTicks paint_time) {
+    const viz::FrameTimingDetails& presentation_details) {
   // Do not report any paint timings for detached frames.
   if (frame_view_->GetFrame().IsDetached()) {
     return;
   }
 
   while (!frame_callbacks->empty()) {
-    std::move(frame_callbacks->front()).Run(paint_time);
+    std::move(frame_callbacks->front())
+        .Run(presentation_details.presentation_feedback.timestamp);
     frame_callbacks->pop();
   }
   frame_view_->GetPaintTimingDetector().UpdateLcpCandidate();

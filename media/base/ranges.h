@@ -26,8 +26,8 @@ class Ranges {
  public:
   // Allow copy & assign.
 
-  // Add (start,end) to this object, coallescing overlaps as appropriate.
-  // Returns the number of stored ranges, post coallescing.
+  // Add (start,end) to this object, coalescing overlaps as appropriate.
+  // Returns the number of stored ranges, post coalescing.
   size_t Add(T start, T end);
 
   // Return the number of disjoint ranges.

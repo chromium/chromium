@@ -73,6 +73,8 @@ std::ostream& operator<<(std::ostream& os,
         return "service";
       case UpdateService::ErrorCategory::kUpdateCheck:
         return "update check";
+      case UpdateService::ErrorCategory::kInstaller:
+        return "installer";
     }
   };
 

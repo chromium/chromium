@@ -20,7 +20,8 @@ Bundles provide three main advantages over monolithic `.apk` files:
 3. Feature splits can be downloaded on-demand, saving disk space for users that
    do not need the functionality they provide. These are known as
    "Dynamic feature modules", or "DFMs".
-   * E.g. Chrome's VR support is packaged in this way, via the `vr` module.
+   * **The install experience for DFMs is quite poor (5-30 seconds install times,
+     sometimes fails, sometimes [triggers a crash]).**
 
 You can inspect which `.apk` files are produced by a bundle target via:
 ```
@@ -29,17 +30,18 @@ unzip -l foo.apks
 ```
 
 *** note
-Adding new features vis feature splits is highly encouraged when it makes sense
+Adding new features via feature splits is highly encouraged when it makes sense
 to do so:
- * Has a non-trivial amount of Dex (>50kb)
+ * Has a non-trivial amount of Java code (after optimization). E.g. >150kb
  * Not needed on startup
  * Has a small integration surface (calls into it must be done with reflection)
- * Not used by WebView (WebView does not support DFMs)
+ * Not used by WebView
 ***
 
 [android_build_instructions.md#multiple-chrome-targets]: android_build_instructions.md#multiple-chrome-targets
 [Android App Bundles]: https://developer.android.com/guide/app-bundle
 [isolated splits]: android_isolated_splits.md
+[triggers a crash]: https://chromium.googlesource.com/chromium/src/+/main/docs/android_isolated_splits.md#Conflicting-ClassLoaders-2
 
 ### Declaring App Bundles with GN Templates
 
@@ -154,7 +156,7 @@ chrome_module_descs += [ foo_module_desc ]
 
 The next step is to add Foo to the list of feature modules for UMA recording.
 For this, add `foo` to the `AndroidFeatureModuleName` in
-`//tools/metrics/histograms/histograms.xml`:
+`//tools/metrics/histograms/metadata/histogram_suffixes_list.xml`:
 
 ```xml
 <histogram_suffixes name="AndroidFeatureModuleName" ...>
@@ -164,10 +166,6 @@ For this, add `foo` to the `AndroidFeatureModuleName` in
 </histogram_suffixes>
 ```
 
-See [below](#metrics) for what metrics will be automatically collected after
-this step.
-
-<!--- TODO(tiborg): Add info about install UI. -->
 Lastly, give your module a title that Chrome and Play can use for the install
 UI. To do this, add a string to
 `//chrome/browser/ui/android/strings/android_chrome_strings.grd`:
@@ -238,8 +236,8 @@ $ adb shell dumpsys package org.chromium.chrome | grep splits
 *** note
 The wrapper script's `install` command does approximately:
 ```sh
-java -jar third_party/android_build_tools/bundletool/bundletool.jar build-apks --output tmp.apks ...
-java -jar third_party/android_build_tools/bundletool/bundletool.jar install-apks --apks tmp.apks
+java -jar third_party/android_build_tools/bundletool/cipd/bundletool.jar build-apks --output tmp.apks ...
+java -jar third_party/android_build_tools/bundletool/cipd/bundletool.jar install-apks --apks tmp.apks
 ```
 
 The `install-apks` command uses `adb install-multiple` under-the-hood.
@@ -936,23 +934,6 @@ of loading your module until its first use (true only on Android O+ where
 [android:isolatedSplits](https://developer.android.com/reference/android/R.attr#isolatedSplits)
 is supported. See [go/isolated-splits-dev-guide](http://go/isolated-splits-dev-guide)
 (googlers only).
-
-### Metrics
-
-After adding your module to `AndroidFeatureModuleName` (see
-[above](#create-dfm-target)) we will collect, among others, the following
-metrics:
-
-* `Android.FeatureModules.AvailabilityStatus.Foo`: Measures your module's
-  install penetration. That is, the share of users who eventually installed
-  the module after requesting it (once or multiple times).
-
-* `Android.FeatureModules.InstallStatus.Foo`: The result of an on-demand
-  install request. Can be success or one of several error conditions.
-
-* `Android.FeatureModules.UncachedAwakeInstallDuration.Foo`: The duration to
-  install your module successfully after on-demand requesting it.
-
 
 ### chrome_public_apk and Integration Tests
 

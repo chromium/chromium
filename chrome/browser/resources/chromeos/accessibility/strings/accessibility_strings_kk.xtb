@@ -50,7 +50,7 @@
 <translation id="1237797094773582699">Дәл осылай төрт саусақпен оңнан солға сырғыту арқылы алдыңғы бөлімге жылжуға болады. Қазір істеп көріңіз!</translation>
 <translation id="1237866625126425153">rdgrp</translation>
 <translation id="1243477406442346359">Гүлкекіре көк</translation>
-<translation id="1246424317317450637">Қалың</translation>
+<translation id="1246424317317450637">Жуан</translation>
 <translation id="1251750620252348585">Келесі 6-деңгей тақырыбы</translation>
 <translation id="1268366246392928616">Алдыңғы математикалық өрнек жоқ.</translation>
 <translation id="1275718070701477396">Таңдалған</translation>
@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Күлгін қоңыр</translation>
 <translation id="249330843868392562">Мәтінді дыбыстау параметрлерін ашу</translation>
 <translation id="2497706219848005458">Жасыл сары</translation>
+<translation id="2512979179176933762">терезелерді көрсету</translation>
 <translation id="2523609930580546572">ChromeVox оқулығы</translation>
 <translation id="2525706221823668172">Chromebook пернелер тіркесімдері</translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Сондай-ақ алдыңғы элементке жылжу үшін бір саусақпен оңнан солға сырғытуыңызға болады. Қазір істеп көріңіз.</translation>
 <translation id="280499067616661124">Беттен ChromeVox іздеу</translation>
-<translation id="2811019999044652585">Құралдар тақтасы немесе жүйе науасы сияқты экранның басқа бөлігіне өту үшін Control + Forward тіркесімін басыңыз. Chromebook құрылғысында Forward пернесі 2 пернесінің дәл үстінде тұрады.</translation>
 <translation id="2811204574343810641">Жол</translation>
 <translation id="2816868829355607410">Тәжірибе аймағы: өту пәрмендері</translation>
 <translation id="2841013758207633010">Уақыт</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Сұрғылт көк</translation>
 <translation id="4253168017788158739">Ескертпе</translation>
 <translation id="4254798249533888099">Ағаш</translation>
+<translation id="4259220820964911921">Бет-әлпетімен басқару функциясын қосу қажет пе?</translation>
 <translation id="4271220233568730077">Келесі математикалық өрнек</translation>
 <translation id="4275397969489577657">Іс-шара трансляциялау журналын қосу</translation>
 <translation id="4278486392851938658">Алдыңғы кірген сілтеме жоқ.</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Қоңырқай қызыл</translation>
 <translation id="4432896207833262240">Белгіленген контент</translation>
 <translation id="4437615272777527928">Мәзірлерден іздеу үшін мәтін теріңіз. Нәтижелер арасында ауысу үшін жоғары және төмен қаратылған көрсеткілерді пайдаланыңыз. Мәтін кірістіру белгісін реттеу үшін және бір мәзірден екіншісіне өту үшін оң және сол жаққа қаратылған көрсеткілерді пайдаланыңыз.</translation>
+<translation id="4453530046591759283">Экранның құралдар тақтасы немесе жүйелік науа сияқты басқа бөліктеріне өту үшін Control + F1 тіркесімін басыңыз. F1 — Escape пернесінің оң жағындағы бірінші перне.</translation>
 <translation id="4457472090507035117">Ағымдағы дауысты таңдау:</translation>
 <translation id="4476183483923481720">жаңа жол</translation>
 <translation id="4479068155583208887">Күрең</translation>
@@ -572,7 +574,7 @@
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">Алдыңғы медиа виджеті жоқ.</translation>
 <translation id="4855927945655956315">Негізгі пернелер: Ctrl</translation>
-<translation id="4862744964787595316">Қалың емес</translation>
+<translation id="4862744964787595316">Жуан емес</translation>
 <translation id="4865995900839719272">алдыңғы жолға өту</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS журналға жазуды қосу</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Қосымша</translation>
 <translation id="5761219715606611783">Жарайсыз! ChromeVox құралының негізгі түрту қимылдарын үйрендіңіз. Төмендегі түймелерді басып, осы оқулықты қайта меңгеруіңізге немесе одан шығуыңызға болады.</translation>
 <translation id="5776001898637896684">Google Enhanced Network қызметінің мәтінді дыбыстау кеңейтімі</translation>
+<translation id="5783252477644995371">Бет-әлпетімен басқару функциясы бетті қимылдату арқылы курсорды жылжытуға және жымию сияқты бет қимылдарымен тінтуірдің сол жақ түймесін басу секілді әрекеттерді орындауға мүмкіндік береді.</translation>
 <translation id="5805940204952508776">Екі саусағыңызбен түртіңіз</translation>
 <translation id="5819072574982403430">Тармақты құрылым элементі</translation>
 <translation id="5822819874379903994">Қою көгілдір</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Сарғылт ақ</translation>
 <translation id="7095834689119144465">Сандық мәтінді ғана өңдеу</translation>
 <translation id="7096001299300236431">Алдыңғы медиафайл</translation>
+<translation id="7096668131290451939">Оқу режимінен шығу үшін Escape пернесін қайтадан басыңыз.</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">сөз жаңғырығы</translation>
 <translation id="7137397390322864165">Қызғылт</translation>
@@ -1071,7 +1075,6 @@
 <translation id="847040613207937740">Келесі құсбелгі ұяшығы жоқ.</translation>
 <translation id="8473540203671727883">Тінтуірдің астындағы мәтінді дауыстап оқу</translation>
 <translation id="8476408756881832830">ChromeVox экраннан оқып жатқанда, ойнатуды кідірту</translation>
-<translation id="8476508772960940536">терезе көрінісі</translation>
 <translation id="8480873377842220259">Енді сіз жылжудың кейбір негізгі пәрмендерін үйренесіз. Экран бойымен жылжу үшін Іздеу пернесін басып тұрып, бағыттауыш пернелерді басыңыз. Жалғастыру үшін "Іздеу + оң жаққа бағыттауыш" пернелерін басыңыз.</translation>
 <translation id="8503360654911991865">Навигация грануляциясын азайту</translation>
 <translation id="8520472399088452386">Айналдыру түймесі</translation>

@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.customtabs.content;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
@@ -29,7 +29,6 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
@@ -50,6 +49,7 @@ import org.chromium.url.GURL;
  * classes in {@link CustomTabActivityUrlLoadingTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.CCT_BEFORE_UNLOAD)
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowExternalNavigationDelegateImpl.class, ShadowPostTask.class})
@@ -57,8 +57,6 @@ public class CustomTabActivityNavigationControllerTest {
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
-
-    @Rule public final JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
     private CustomTabActivityNavigationController mNavigationController;
 
@@ -95,7 +93,7 @@ public class CustomTabActivityNavigationControllerTest {
 
         mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
-        verify(mFinishHandler).onFinish(eq(FinishReason.USER_NAVIGATION));
+        verify(mFinishHandler).onFinish(FinishReason.USER_NAVIGATION, true);
         env.tabProvider.removeTab();
         Assert.assertNull(env.tabProvider.getTab());
         Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
@@ -110,6 +108,16 @@ public class CustomTabActivityNavigationControllerTest {
                                 MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
                                 MinimizeAppAndCloseTabType.MINIMIZE_APP)
                         .expectNoRecords(BackPressManager.getHistogramForTesting())
+                        .expectNoRecords(
+                                MinimizeAppAndCloseTabBackPressHandler
+                                        .getCustomTabSeparateTaskHistogramNameForTesting())
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler
+                                        .getCustomTabSameTaskHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.MINIMIZE_APP)
+                        .expectNoRecords(
+                                BackPressManager.getCustomTabSeparateTaskHistogramForTesting())
+                        .expectNoRecords(BackPressManager.getCustomTabSameTaskHistogramForTesting())
                         .build();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
@@ -117,7 +125,38 @@ public class CustomTabActivityNavigationControllerTest {
 
         mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
-        verify(mFinishHandler).onFinish(eq(FinishReason.USER_NAVIGATION));
+        verify(mFinishHandler).onFinish(FinishReason.USER_NAVIGATION, true);
+        env.tabProvider.removeTab();
+        Assert.assertNull(env.tabProvider.getTab());
+        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    public void finishes_IfBackNavigationClosesTheOnlyTabWithUnloadHandler_CctBeforeUnload() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.MINIMIZE_APP)
+                        .expectNoRecords(BackPressManager.getHistogramForTesting())
+                        .expectNoRecords(
+                                MinimizeAppAndCloseTabBackPressHandler
+                                        .getCustomTabSeparateTaskHistogramNameForTesting())
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler
+                                        .getCustomTabSameTaskHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.MINIMIZE_APP)
+                        .expectNoRecords(
+                                BackPressManager.getCustomTabSeparateTaskHistogramForTesting())
+                        .expectNoRecords(BackPressManager.getCustomTabSameTaskHistogramForTesting())
+                        .build();
+        when(mTabController.onlyOneTabRemaining()).thenReturn(true);
+        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(true);
+        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+
+        mNavigationController.navigateOnBack();
+        histogramWatcher.assertExpected();
+        verify(mFinishHandler).onFinish(FinishReason.USER_NAVIGATION, true);
         env.tabProvider.removeTab();
         Assert.assertNull(env.tabProvider.getTab());
         Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
@@ -148,7 +187,7 @@ public class CustomTabActivityNavigationControllerTest {
 
         mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
-        verify(mFinishHandler, never()).onFinish(anyInt());
+        verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
     }
 
     @Test
@@ -173,7 +212,7 @@ public class CustomTabActivityNavigationControllerTest {
 
         mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
-        verify(mFinishHandler, never()).onFinish(anyInt());
+        verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
     }
 
     @Test
@@ -194,7 +233,7 @@ public class CustomTabActivityNavigationControllerTest {
 
         mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
-        verify(mFinishHandler, never()).onFinish(anyInt());
+        verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
     }
 
     @Test
@@ -212,7 +251,7 @@ public class CustomTabActivityNavigationControllerTest {
 
         mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
-        verify(mFinishHandler, never()).onFinish(anyInt());
+        verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
     }
 
     @Test
@@ -231,9 +270,9 @@ public class CustomTabActivityNavigationControllerTest {
 
         mNavigationController.openCurrentUrlInBrowser();
 
-        verify(mFinishHandler, never()).onFinish(anyInt());
+        verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
         captor.getValue().run();
-        verify(mFinishHandler).onFinish(FinishReason.REPARENTING);
+        verify(mFinishHandler).onFinish(FinishReason.REPARENTING, false);
     }
 
     @Test
@@ -242,7 +281,7 @@ public class CustomTabActivityNavigationControllerTest {
         mNavigationController.openCurrentUrlInBrowser();
         verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
         verify(env.activity).startActivity(any(), any());
-        verify(mFinishHandler).onFinish(FinishReason.OPEN_IN_BROWSER);
+        verify(mFinishHandler).onFinish(FinishReason.OPEN_IN_BROWSER, true);
     }
 
     @Test

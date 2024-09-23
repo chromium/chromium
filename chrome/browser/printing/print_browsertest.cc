@@ -19,10 +19,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,6 +32,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
+#include "chrome/browser/printing/print_compositor_util.h"
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"
@@ -104,6 +105,12 @@
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "printing/printing_utils.h"
+#include "sandbox/policy/features.h"
+#include "sandbox/policy/switches.h"
+#endif
+
 namespace printing {
 
 using testing::_;
@@ -149,56 +156,6 @@ constexpr char kStickySettingsWithExtensionPrinterMissingPrintableArea[] = R"({
       }
     ]
   })";
-
-class KillPrintRenderFrame
-    : public mojom::PrintRenderFrameInterceptorForTesting {
- public:
-  explicit KillPrintRenderFrame(content::RenderProcessHost* rph) : rph_(rph) {}
-  ~KillPrintRenderFrame() override = default;
-
-  void OverrideBinderForTesting(content::RenderFrameHost* render_frame_host) {
-    render_frame_host->GetRemoteAssociatedInterfaces()
-        ->OverrideBinderForTesting(
-            mojom::PrintRenderFrame::Name_,
-            base::BindRepeating(&KillPrintRenderFrame::Bind,
-                                base::Unretained(this)));
-  }
-
-  void KillRenderProcess(int document_cookie,
-                         mojom::DidPrintContentParamsPtr param,
-                         PrintFrameContentCallback callback) const {
-    std::move(callback).Run(document_cookie, std::move(param));
-    rph_->Shutdown(0);
-  }
-
-  void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
-    receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::PrintRenderFrame>(
-        std::move(handle)));
-  }
-
-  // mojom::PrintRenderFrameInterceptorForTesting
-  mojom::PrintRenderFrame* GetForwardingInterface() override {
-    NOTREACHED();
-    return nullptr;
-  }
-  void PrintFrameContent(mojom::PrintFrameContentParamsPtr params,
-                         PrintFrameContentCallback callback) override {
-    // Sends the printed result back.
-    const size_t kSize = 10;
-    mojom::DidPrintContentParamsPtr printed_frame_params =
-        mojom::DidPrintContentParams::New();
-    base::MappedReadOnlyRegion region_mapping =
-        base::ReadOnlySharedMemoryRegion::Create(kSize);
-    printed_frame_params->metafile_data_region =
-        std::move(region_mapping.region);
-    KillRenderProcess(params->document_cookie, std::move(printed_frame_params),
-                      std::move(callback));
-  }
-
- private:
-  const raw_ptr<content::RenderProcessHost> rph_;
-  mojo::AssociatedReceiver<mojom::PrintRenderFrame> receiver_{this};
-};
 
 class PrintPreviewDoneObserver
     : public mojom::PrintRenderFrameInterceptorForTesting {
@@ -300,7 +257,7 @@ class TestPrintRenderFrame
 
   // mojom::PrintRenderFrameInterceptorForTesting
   mojom::PrintRenderFrame* GetForwardingInterface() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   void PrintFrameContent(mojom::PrintFrameContentParamsPtr params,
@@ -411,13 +368,13 @@ class TestPrintViewManagerForDLP : public TestPrintViewManager {
 
   void PrintPreviewRejectedForTesting() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    run_loop_->Quit();
+    TestPrintViewManager::PrintPreviewRejectedForTesting();
     allowance_ = PrintAllowance::kDisallowed;
   }
 
   void PrintPreviewAllowedForTesting() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    run_loop_->Quit();
+    TestPrintViewManager::PrintPreviewAllowedForTesting();
     allowance_ = PrintAllowance::kAllowed;
   }
 
@@ -429,6 +386,59 @@ PrintBrowserTest::WorkerHelper::WorkerHelper(
     base::WeakPtr<PrintBrowserTest> owner)
     : owner_(owner) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
+
+PrintBrowserTest::KillPrintRenderFrame::KillPrintRenderFrame(
+    content::RenderProcessHost* rph)
+    : rph_(rph), print_render_frame_(nullptr) {}
+
+PrintBrowserTest::KillPrintRenderFrame::KillPrintRenderFrame(
+    content::RenderProcessHost* rph,
+    mojom::PrintRenderFrame* print_render_frame)
+    : rph_(rph), print_render_frame_(print_render_frame) {}
+
+PrintBrowserTest::KillPrintRenderFrame::~KillPrintRenderFrame() = default;
+
+void PrintBrowserTest::KillPrintRenderFrame::OverrideBinderForTesting(
+    content::RenderFrameHost* render_frame_host) {
+  render_frame_host->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+      mojom::PrintRenderFrame::Name_,
+      base::BindRepeating(&KillPrintRenderFrame::Bind, base::Unretained(this)));
+}
+
+void PrintBrowserTest::KillPrintRenderFrame::KillRenderProcess(
+    int document_cookie,
+    mojom::DidPrintContentParamsPtr param,
+    PrintFrameContentCallback callback) const {
+  std::move(callback).Run(document_cookie, std::move(param));
+  rph_->Shutdown(0);
+}
+
+void PrintBrowserTest::KillPrintRenderFrame::Bind(
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::PrintRenderFrame>(
+      std::move(handle)));
+}
+
+mojom::PrintRenderFrame*
+PrintBrowserTest::KillPrintRenderFrame::GetForwardingInterface() {
+  CHECK(print_render_frame_);
+  rph_->Shutdown(0);
+  return print_render_frame_;
+}
+
+void PrintBrowserTest::KillPrintRenderFrame::PrintFrameContent(
+    mojom::PrintFrameContentParamsPtr params,
+    PrintFrameContentCallback callback) {
+  // Sends the printed result back.
+  const size_t kSize = 10;
+  mojom::DidPrintContentParamsPtr printed_frame_params =
+      mojom::DidPrintContentParams::New();
+  base::MappedReadOnlyRegion region_mapping =
+      base::ReadOnlySharedMemoryRegion::Create(kSize);
+  printed_frame_params->metafile_data_region = std::move(region_mapping.region);
+  KillRenderProcess(params->document_cookie, std::move(printed_frame_params),
+                    std::move(callback));
 }
 
 PrintBrowserTest::WorkerHelper::~WorkerHelper() = default;
@@ -529,6 +539,22 @@ void PrintBrowserTest::SetPrinterNameForSubsequentContexts(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   test_printing_context_factory_.SetPrinterNameForSubsequentContexts(
       printer_name);
+}
+
+#if BUILDFLAG(IS_WIN)
+void PrintBrowserTest::SetPrinterLanguageTypeForSubsequentContexts(
+    mojom::PrinterLanguageType printer_language_type) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  test_printing_context_factory_.SetPrinterLanguageTypeForSubsequentContexts(
+      printer_language_type);
+}
+#endif
+
+void PrintBrowserTest::SetUserSettingsPageRangesForSubsequentContext(
+    const PageRanges& page_ranges) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  test_printing_context_factory_.SetUserSettingsPageRangesForSubsequentContext(
+      page_ranges);
 }
 
 void PrintBrowserTest::SetNewDocumentJobId(int job_id) {
@@ -876,7 +902,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, NoScrolling) {
 
   double new_scroll1 = content::EvalJs(contents, kExpression1).ExtractDouble();
 
-  // TODO(crbug.com/1131598): Perform the corresponding EvalJs() calls here and
+  // TODO(crbug.com/40150272): Perform the corresponding EvalJs() calls here and
   // assign to new_scroll2 and new_scroll3, once the printing code has been
   // fixed to handle these cases. Right now, the scroll offset jumps.
   double new_scroll2 = old_scroll2;
@@ -987,7 +1013,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LazyLoadedIframeFetched) {
   EXPECT_NE(old_height, new_height);
 }
 
-// TODO(crbug.com/1305193)  Reenable after flakes have been resolved.
+// TODO(crbug.com/40826924)  Reenable after flakes have been resolved.
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
                        DISABLED_LazyLoadedIframeFetchedCrossOrigin) {
   ASSERT_TRUE(embedded_test_server()->Started());
@@ -1011,7 +1037,12 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
   EXPECT_NE(old_height, new_height);
 }
 
-IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LazyLoadedImagesFetchedScriptedPrint) {
+// TODO(tcaptan):
+// Re-enable this test if a solution is found that allows blocking of JS
+// initiated `window.print()` call while permitting the loading of print only
+// resources.
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
+                       DISABLED_LazyLoadedImagesFetchedScriptedPrint) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL(
       "/printing/lazy-loaded-image-offscreen.html"));
@@ -1251,8 +1282,8 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
   client->CompositeDocument(
       kDefaultDocumentCookie, main_frame,
       *TestPrintRenderFrame::GetDefaultDidPrintContentParams(),
-      ui::AXTreeUpdate(), PrintCompositeClient::GetDocumentType(),
-      base::DoNothing());
+      ui::AXTreeUpdate(), mojom::GenerateDocumentOutline::kNone,
+      GetCompositorDocumentType(), base::DoNothing());
   ASSERT_TRUE(client->GetCompositeRequest(kDefaultDocumentCookie));
   // `requested_subframes_` should be empty.
   ASSERT_TRUE(client->requested_subframes_.empty());
@@ -1529,8 +1560,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePrintBrowserTest, DisableCaching) {
   ASSERT_TRUE(embedded_test_server()->Started());
 
   // 1) Navigate to A and trigger printing.
-  GURL url(embedded_test_server()->GetURL(
-      "a.com", "/back_forward_cache/no-favicon.html"));
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::RenderFrameHost* rfh_a = current_frame_host();
   content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
@@ -1538,8 +1568,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePrintBrowserTest, DisableCaching) {
 
   // 2) Navigate to B.
   // The first page is not cached because printing preview was open.
-  GURL url_2(embedded_test_server()->GetURL(
-      "b.com", "/back_forward_cache/no-favicon.html"));
+  GURL url_2(embedded_test_server()->GetURL("b.com", "/title1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_2));
   delete_observer_rfh_a.WaitUntilDeleted();
 
@@ -1662,7 +1691,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintExtensionBrowserTest,
 
 // Printing frame content for the main frame of a generic webpage with N-up
 // printing. This is a regression test for https://crbug.com/937247
-// TODO(crbug.com/1371776): Fix flakiness and re-enable.
+// TODO(crbug.com/40870686): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DISABLED_PrintNup) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/7_pages.html"));
@@ -1686,7 +1715,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DISABLED_PrintNup) {
 }
 
 // Site per process version of PrintBrowserTest.PrintNup.
-// TODO(crbug.com/1371776): Fix flakiness and re-enable.
+// TODO(crbug.com/40870686): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, DISABLED_PrintNup) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/7_pages.html"));
@@ -1996,7 +2025,7 @@ IN_PROC_BROWSER_TEST_P(PrintPrerenderBrowserTest, QuietBlockWithWindowPrint) {
   GURL prerender_url =
       embedded_test_server()->GetURL("/printing/prerendering.html");
 
-  int prerender_id = prerender_helper_.AddPrerender(
+  content::FrameTreeNodeId prerender_id = prerender_helper_.AddPrerender(
       prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
   auto* prerender_web_contents =
       content::WebContents::FromFrameTreeNodeId(prerender_id);
@@ -2029,7 +2058,7 @@ IN_PROC_BROWSER_TEST_P(PrintPrerenderBrowserTest,
   GURL prerender_url =
       embedded_test_server()->GetURL("/printing/prerendering.html");
 
-  int prerender_id = prerender_helper_.AddPrerender(
+  content::FrameTreeNodeId prerender_id = prerender_helper_.AddPrerender(
       prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
   auto* prerender_web_contents =
       content::WebContents::FromFrameTreeNodeId(prerender_id);
@@ -2153,5 +2182,107 @@ IN_PROC_BROWSER_TEST_F(PrintFencedFrameBrowserTest, ScriptedPrint) {
 IN_PROC_BROWSER_TEST_F(PrintFencedFrameBrowserTest, DocumentExecCommand) {
   RunPrintTest("document.execCommand('print');");
 }
+
+#if BUILDFLAG(IS_WIN)
+std::string GetDocumentDataTypeTestSuffix(
+    const testing::TestParamInfo<DocumentDataType>& info) {
+  switch (info.param) {
+    case DocumentDataType::kUnknown:
+      NOTREACHED();
+    case DocumentDataType::kPdf:
+      return "Pdf";
+    case DocumentDataType::kXps:
+      return "Xps";
+  }
+}
+
+class PrintCompositorDocumentDataTypeBrowserTest
+    : public PrintBrowserTest,
+      public testing::WithParamInterface<DocumentDataType> {
+ public:
+  PrintCompositorDocumentDataTypeBrowserTest() = default;
+  ~PrintCompositorDocumentDataTypeBrowserTest() override = default;
+
+  void SetUp() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    // Force use of out-of-process print drivers, since it is required for
+    // printing with XPS.
+    enabled_features.push_back(
+        {features::kEnableOopPrintDrivers,
+         {{features::kEnableOopPrintDriversJobPrint.name, "true"}}});
+    if (GetParam() == DocumentDataType::kXps) {
+      enabled_features.push_back({features::kUseXpsForPrinting, {}});
+    } else {
+      disabled_features.push_back(features::kUseXpsForPrinting);
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
+    PrintBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrintCompositorDocumentDataTypeBrowserTest,
+                         testing::Values(DocumentDataType::kPdf,
+                                         DocumentDataType::kXps),
+                         GetDocumentDataTypeTestSuffix);
+
+// Demonstrate that the Print Compositor is plumbed to generate the different
+// document types.
+IN_PROC_BROWSER_TEST_P(PrintCompositorDocumentDataTypeBrowserTest,
+                       WindowDotPrint) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
+  content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
+                              "window.print();");
+  print_preview_observer.WaitUntilPreviewIsReady();
+
+  EXPECT_THAT(print_preview_observer.last_document_composite_data_type(),
+              testing::Optional(GetParam()));
+}
+
+// Demonstrate that the Print Compositor still works using the legacy sandbox
+// method, should the `kPrintCompositorLPAC` flag be disabled.
+// TODO(crbug.com/40283514):  Remove once LPAC sandboxing has been proven to
+// work even for GDI.
+class PrintCompositorLegacySandboxBrowserTest : public PrintBrowserTest {
+  void SetUp() override {
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    disabled_features.push_back(
+        sandbox::policy::features::kPrintCompositorLPAC);
+    disabled_features.push_back(features::kUseXpsForPrinting);
+
+    scoped_feature_list_.InitWithFeatures(/*enabled_features=*/{},
+                                          disabled_features);
+    PrintBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrintCompositorLegacySandboxBrowserTest,
+                       WindowDotPrint) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
+  content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
+                              "window.print();");
+  print_preview_observer.WaitUntilPreviewIsReady();
+
+  EXPECT_THAT(print_preview_observer.last_document_composite_data_type(),
+              testing::Optional(DocumentDataType::kPdf));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

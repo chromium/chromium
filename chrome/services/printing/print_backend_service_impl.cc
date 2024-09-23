@@ -16,6 +16,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -78,7 +79,7 @@ namespace {
 
 #if BUILDFLAG(IS_LINUX)
 void InstantiateLinuxUiDelegate() {
-  // TODO(crbug.com/809738)  Until a real UI can be used in a utility process,
+  // TODO(crbug.com/40561724)  Until a real UI can be used in a utility process,
   // need to use the stub version.
   static base::NoDestructor<ui::LinuxUiDelegateStub> linux_ui_delegate;
 }
@@ -119,6 +120,8 @@ std::unique_ptr<Metafile> CreateMetafile(mojom::MetafileDataType data_type) {
 #if BUILDFLAG(IS_WIN)
     case mojom::MetafileDataType::kEMF:
       return std::make_unique<Emf>();
+    case mojom::MetafileDataType::kPostScriptEmf:
+      return std::make_unique<PostScriptMetaFile>();
 #endif
   }
 }
@@ -145,7 +148,7 @@ std::optional<RenderData> PrepareRenderData(
   // For security reasons we need to use a copy of the data, and not operate
   // on it directly out of shared memory.  Make a copy here if the underlying
   // `Metafile` implementation doesn't do it automatically.
-  // TODO(crbug.com/1135729)  Eliminate this copy when the shared memory can't
+  // TODO(crbug.com/40151989)  Eliminate this copy when the shared memory can't
   // be written by the sender.
   base::span<const uint8_t> data = mapping.GetMemoryAsSpan<uint8_t>();
   if (render_data.metafile->ShouldCopySharedMemoryRegionData()) {
@@ -393,7 +396,7 @@ PrintBackendServiceImpl::PrintingContextDelegate::GetParentView() {
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   return parent_native_view_;
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #endif
 }
@@ -409,7 +412,7 @@ void PrintBackendServiceImpl::PrintingContextDelegate::SetParentWindow(
   parent_native_view_ = reinterpret_cast<gfx::NativeView>(
       base::win::Uint32ToHandle(parent_window_id));
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 #endif
@@ -482,7 +485,7 @@ void PrintBackendServiceImpl::Init(
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-// TODO(crbug.com/1225111)  Do nothing, this is just to assist an idle timeout
+// TODO(crbug.com/40775634)  Do nothing, this is just to assist an idle timeout
 // change by providing a low-cost call to ensure it is applied.
 void PrintBackendServiceImpl::Poke() {}
 
@@ -587,7 +590,7 @@ void PrintBackendServiceImpl::FetchCapabilities(
     // implicitly allowed.  In order to preserve ordering, the utility process
     // must process this synchronously by blocking.
     //
-    // TODO(crbug.com/1163635):  Investigate whether utility process main
+    // TODO(crbug.com/40163200):  Investigate whether utility process main
     // thread should be allowed to block like in-process workers are.
     base::ScopedAllowBlocking allow_blocking;
     caps.user_defined_papers = GetMacCustomPaperSizes();
@@ -732,7 +735,7 @@ void PrintBackendServiceImpl::StartPrinting(
     if (!connection_pool->IsConnectionAvailable()) {
       // This document has to wait until a connection becomes available.  Hold
       // off on issuing the callback.
-      // TODO(crbug.com/809738)  Place this in a queue of waiting jobs.
+      // TODO(crbug.com/40561724)  Place this in a queue of waiting jobs.
       DLOG(ERROR) << "Need queue for print jobs awaiting a connection";
       std::move(callback).Run(mojom::ResultCode::kFailed,
                               PrintingContext::kNoPrintJobId);
@@ -951,11 +954,11 @@ void PrintBackendServiceImpl::RemoveDocumentHelper(
   int cookie = document_helper.document_cookie();
   auto item =
       base::ranges::find(documents_, cookie, &DocumentHelper::document_cookie);
-  DCHECK(item != documents_.end())
+  CHECK(item != documents_.end(), base::NotFatalUntil::M130)
       << "Document " << cookie << " to be deleted not found";
   documents_.erase(item);
 
-  // TODO(crbug.com/809738)  This releases a connection; try to start the
+  // TODO(crbug.com/40561724)  This releases a connection; try to start the
   // next job waiting to be started (if any).
 }
 

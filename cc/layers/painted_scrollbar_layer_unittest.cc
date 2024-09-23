@@ -9,8 +9,8 @@
 #include "cc/animation/animation_host.h"
 #include "cc/test/fake_layer_tree_host.h"
 #include "cc/test/fake_layer_tree_host_client.h"
-#include "cc/test/fake_painted_scrollbar_layer.h"
 #include "cc/test/fake_scrollbar.h"
+#include "cc/test/fake_scrollbar_layer.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -43,10 +43,10 @@ class MockScrollbar : public FakeScrollbar {
     set_has_thumb(true);
     set_is_overlay(false);
   }
-  MOCK_METHOD3(PaintPart,
-               void(PaintCanvas* canvas,
-                    ScrollbarPart part,
-                    const gfx::Rect& rect));
+  MOCK_METHOD2(PaintThumb, void(PaintCanvas&, const gfx::Rect&));
+  MOCK_METHOD2(PaintTrackAndButtons, void(PaintCanvas&, const gfx::Rect&));
+  MOCK_METHOD(SkColor4f, ThumbColor, (), (const, override));
+  MOCK_METHOD(void, ClearThumbNeedsRepaint, (), (override));
 
  private:
   ~MockScrollbar() override = default;
@@ -67,40 +67,32 @@ TEST_F(PaintedScrollbarLayerTest, NeedsPaint) {
 
   // Request no paint, but expect them to be painted because they have not
   // yet been initialized.
-  scrollbar->set_needs_repaint_thumb(false);
-  scrollbar->set_needs_repaint_track(false);
-  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::kThumb, _)).Times(1);
-  EXPECT_CALL(*scrollbar,
-              PaintPart(_, ScrollbarPart::kTrackButtonsTickmarks, _))
-      .Times(1);
+  scrollbar->set_thumb_needs_repaint(false);
+  scrollbar->set_track_and_buttons_need_repaint(false);
+  EXPECT_CALL(*scrollbar, PaintThumb(_, _)).Times(1);
+  EXPECT_CALL(*scrollbar, PaintTrackAndButtons(_, _)).Times(1);
   scrollbar_layer->Update();
   Mock::VerifyAndClearExpectations(scrollbar.get());
 
   // The next update will paint nothing because the first update caused a paint.
-  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::kThumb, _)).Times(0);
-  EXPECT_CALL(*scrollbar,
-              PaintPart(_, ScrollbarPart::kTrackButtonsTickmarks, _))
-      .Times(0);
+  EXPECT_CALL(*scrollbar, PaintThumb(_, _)).Times(0);
+  EXPECT_CALL(*scrollbar, PaintTrackAndButtons(_, _)).Times(0);
   scrollbar_layer->Update();
   Mock::VerifyAndClearExpectations(scrollbar.get());
 
   // Enable the thumb.
-  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::kThumb, _)).Times(1);
-  EXPECT_CALL(*scrollbar,
-              PaintPart(_, ScrollbarPart::kTrackButtonsTickmarks, _))
-      .Times(0);
-  scrollbar->set_needs_repaint_thumb(true);
-  scrollbar->set_needs_repaint_track(false);
+  EXPECT_CALL(*scrollbar, PaintThumb(_, _)).Times(1);
+  EXPECT_CALL(*scrollbar, PaintTrackAndButtons(_, _)).Times(0);
+  scrollbar->set_thumb_needs_repaint(true);
+  scrollbar->set_track_and_buttons_need_repaint(false);
   scrollbar_layer->Update();
   Mock::VerifyAndClearExpectations(scrollbar.get());
 
   // Enable the track.
-  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::kThumb, _)).Times(0);
-  EXPECT_CALL(*scrollbar,
-              PaintPart(_, ScrollbarPart::kTrackButtonsTickmarks, _))
-      .Times(1);
-  scrollbar->set_needs_repaint_thumb(false);
-  scrollbar->set_needs_repaint_track(true);
+  EXPECT_CALL(*scrollbar, PaintThumb(_, _)).Times(0);
+  EXPECT_CALL(*scrollbar, PaintTrackAndButtons(_, _)).Times(1);
+  scrollbar->set_thumb_needs_repaint(false);
+  scrollbar->set_track_and_buttons_need_repaint(true);
   scrollbar_layer->Update();
   Mock::VerifyAndClearExpectations(scrollbar.get());
 }
@@ -130,6 +122,53 @@ TEST_F(PaintedScrollbarLayerTest, InternalContentBounds) {
   UpdateDrawProperties(layer_tree_host_.get());
   scrollbar_layer->Update();
   EXPECT_EQ(gfx::Size(10, 100), scrollbar_layer->internal_content_bounds());
+}
+
+TEST_F(PaintedScrollbarLayerTest, SolidColorThumbDoesntGenerateThumbBitmap) {
+  auto scrollbar = base::MakeRefCounted<MockScrollbar>();
+  scrollbar->set_uses_solid_color_thumb(true);
+  scoped_refptr<PaintedScrollbarLayer> scrollbar_layer =
+      PaintedScrollbarLayer::Create(scrollbar);
+  scrollbar_layer->SetIsDrawable(true);
+  scrollbar_layer->SetBounds(gfx::Size(100, 100));
+
+  layer_tree_host_->SetRootLayer(scrollbar_layer);
+  UpdateDrawProperties(layer_tree_host_.get());
+
+  // Start not needing any paint.
+  scrollbar->set_track_and_buttons_need_repaint(false);
+  scrollbar->set_thumb_needs_repaint(false);
+
+  // Both scrollbar parts should be "painted" on initialization. The thumb
+  // should not receive a Paint call, but instead the thumb's color should be
+  // initialized to pass to the Impl layer.
+  EXPECT_EQ(scrollbar_layer->layer_tree_host(), layer_tree_host_.get());
+  EXPECT_CALL(*scrollbar, PaintThumb(_, _)).Times(0);
+  EXPECT_CALL(*scrollbar, PaintTrackAndButtons(_, _)).Times(1);
+  EXPECT_CALL(*scrollbar, ThumbColor())
+      .Times(1)
+      .WillOnce(testing::Return(SkColor4f::FromColor(SK_ColorRED)));
+  EXPECT_CALL(*scrollbar, ClearThumbNeedsRepaint()).Times(1);
+  scrollbar_layer->Update();
+  Mock::VerifyAndClearExpectations(scrollbar.get());
+
+  // The next update will paint nothing because the first update caused a paint.
+  EXPECT_CALL(*scrollbar, PaintThumb(_, _)).Times(0);
+  EXPECT_CALL(*scrollbar, PaintTrackAndButtons(_, _)).Times(0);
+  EXPECT_CALL(*scrollbar, ThumbColor()).Times(0);
+  EXPECT_CALL(*scrollbar, ClearThumbNeedsRepaint()).Times(0);
+  scrollbar_layer->Update();
+  Mock::VerifyAndClearExpectations(scrollbar.get());
+
+  // Set the thumb needs repaint and verify it queries the thumb color and
+  // clears the needs repaint variable.
+  scrollbar->set_thumb_needs_repaint(true);
+  EXPECT_CALL(*scrollbar, PaintThumb(_, _)).Times(0);
+  EXPECT_CALL(*scrollbar, PaintTrackAndButtons(_, _)).Times(0);
+  EXPECT_CALL(*scrollbar, ThumbColor()).Times(1);
+  EXPECT_CALL(*scrollbar, ClearThumbNeedsRepaint()).Times(1);
+  scrollbar_layer->Update();
+  Mock::VerifyAndClearExpectations(scrollbar.get());
 }
 
 }  // namespace

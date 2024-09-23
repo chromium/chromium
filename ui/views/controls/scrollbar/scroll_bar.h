@@ -298,8 +298,8 @@ class VIEWS_EXPORT ScrollBar : public View,
     kScrollInProgress,
 
     // The contents will keep scrolling for a while if the events sequence ends
-    // with ui::ET_SCROLL_FLING_START. Set the status to kScrollInEnding if it
-    // happens, and set it to kScrollEnded while the scroll really ended.
+    // with ui::EventType::kScrollFlingStart. Set the status to kScrollInEnding
+    // if it happens, and set it to kScrollEnded while the scroll really ended.
     kScrollInEnding,
     kScrollEnded,
   };

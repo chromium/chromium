@@ -107,7 +107,7 @@ interface HelpBubbleHandlerFactory {
 // browser side, because HTML ids can be ambiguous within a document with shadow
 // DOMs.
 //
-// TODO(crbug.com/1376247): consider splitting into ElementTrackerHandler and
+// TODO(crbug.com/40243115): consider splitting into ElementTrackerHandler and
 // HelpBubbleHandler, with the previous handling show/hide/activated/custom
 // events and the latter handling the help bubble itself.
 interface HelpBubbleHandler {

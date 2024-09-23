@@ -73,11 +73,12 @@ bool Navigator::cookieEnabled() const {
   if (!DomWindow())
     return false;
 
-  Settings* settings = DomWindow()->GetFrame()->GetSettings();
-  if (!settings || !settings->GetCookieEnabled())
-    return false;
+  if (DomWindow()->GetStorageKey().IsThirdPartyContext()) {
+    DomWindow()->CountUse(WebFeature::kNavigatorCookieEnabledThirdParty);
+  }
 
-  return DomWindow()->document()->CookiesEnabled();
+  Settings* settings = DomWindow()->GetFrame()->GetSettings();
+  return settings && settings->GetCookieEnabled();
 }
 
 bool Navigator::webdriver() const {

@@ -15,6 +15,7 @@
 #include "cc/layers/layer_collections.h"
 #include "cc/layers/view_transition_content_layer_impl.h"
 #include "cc/paint/element_id.h"
+#include "cc/trees/damage_reason.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
@@ -45,9 +46,12 @@ class CC_EXPORT DamageTracker {
     current_damage_ = DamageAccumulator();
     has_damage_from_contributing_content_ = false;
   }
-  void AddDamageNextUpdate(const gfx::Rect& dmg) { current_damage_.Union(dmg); }
+  void AddDamageNextUpdate(const gfx::Rect& dmg) {
+    current_damage_.Union(dmg, {DamageReason::kUntracked});
+  }
 
   bool GetDamageRectIfValid(gfx::Rect* rect);
+  DamageReasonSet GetDamageReasons();
 
   bool has_damage_from_contributing_content() const {
     return has_damage_from_contributing_content_;
@@ -62,11 +66,19 @@ class CC_EXPORT DamageTracker {
   class DamageAccumulator {
    public:
     template <typename Type>
-    void Union(const Type& rect) {
-      if (!is_valid_rect_)
-        return;
+    void Union(const Type& rect, DamageReasonSet reasons) {
       if (rect.IsEmpty())
         return;
+
+      // Can skip updating reasons only if the other rect is empty so this Union
+      // is no-op. In particular, cannot skip updating reasons if this is
+      // invalid, input rect is invalid, or input rect is a subrect of this.
+      reasons_.PutAll(reasons);
+
+      if (!is_valid_rect_) {
+        return;
+      }
+
       if (IsEmpty()) {
         x_ = rect.x();
         y_ = rect.y();
@@ -81,6 +93,8 @@ class CC_EXPORT DamageTracker {
       bottom_ = std::max(bottom_, rect.bottom());
     }
 
+    void UnionReasons(DamageReasonSet reasons) { reasons_.PutAll(reasons); }
+
     int x() const { return x_; }
     int y() const { return y_; }
     int right() const { return right_; }
@@ -89,12 +103,16 @@ class CC_EXPORT DamageTracker {
 
     bool GetAsRect(gfx::Rect* rect);
 
+    DamageReasonSet reasons() const { return reasons_; }
+
    private:
     bool is_valid_rect_ = true;
     int x_ = 0;
     int y_ = 0;
     int right_ = 0;
     int bottom_ = 0;
+
+    DamageReasonSet reasons_;
   };
 
   DamageAccumulator TrackDamageFromLeftoverRects();

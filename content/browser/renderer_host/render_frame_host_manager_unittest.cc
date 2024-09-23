@@ -20,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -76,6 +75,7 @@
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/compositor.h"
@@ -264,7 +264,10 @@ void DidNavigateFrame(RenderFrameHostManager* rfh_manager,
   rfh_manager->DidNavigateFrame(rfh, true /* was_caused_by_user_gesture */,
                                 false /* is_same_document_navigation */,
                                 false /* clear_proxies_on_commit */,
-                                blink::FramePolicy());
+                                blink::FramePolicy(),
+                                false
+                                /* allow_subframe_paint_holding */,
+                                /*is_initiated_by_animated_transition=*/false);
 }
 
 class TestDevToolsClientHost : public DevToolsAgentHostClient {
@@ -606,7 +609,8 @@ TEST_P(RenderFrameHostManagerTest, ChromeSchemeProcesses) {
   // Navigate our first tab to the chrome url and then to the destination,
   // ensuring we grant bindings to the chrome URL.
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kChromeUrl);
-  EXPECT_TRUE(main_rfh()->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(
+      main_rfh()->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kDestUrl);
 
   EXPECT_FALSE(contents()->GetSpeculativePrimaryMainFrame());
@@ -1171,7 +1175,7 @@ TEST_P(RenderFrameHostManagerTest, WebUI) {
 
   // Commit.
   DidNavigateFrame(manager, host);
-  EXPECT_TRUE(host->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(host->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
 }
 
 // Tests that we can open a WebUI link in a new tab from a WebUI page and still
@@ -1213,13 +1217,13 @@ TEST_P(RenderFrameHostManagerTest, WebUIInNewTab) {
   // At this point, the initial RFH should have set the WebUI bindings.  This
   // should happen as part of selecting that RFH for the WebUI navigation in
   // GetFrameHostForNavigation().
-  EXPECT_TRUE(host1->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(host1->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
 
   // Commit and ensure we still have bindings.
   DidNavigateFrame(manager1, host1);
   SiteInstance* webui_instance = host1->GetSiteInstance();
   EXPECT_EQ(host1, manager1->current_frame_host());
-  EXPECT_TRUE(host1->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(host1->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
 
   // Now simulate clicking a link that opens in a new tab.
   std::unique_ptr<TestWebContents> web_contents2(
@@ -1246,7 +1250,7 @@ TEST_P(RenderFrameHostManagerTest, WebUIInNewTab) {
   // SiteInstance.  We should grant bindings immediately.
   EXPECT_EQ(host2, manager2->current_frame_host());
   EXPECT_TRUE(host2->web_ui());
-  EXPECT_TRUE(host2->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(host2->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
 
   DidNavigateFrame(manager2, host2);
 }
@@ -2458,7 +2462,7 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
       contents()->GetPrimaryFrameTree().root()->render_manager();
   RenderFrameHostImpl* webui_rfh = NavigateToEntry(main_rfhm, &webui_entry);
   EXPECT_EQ(webui_rfh, GetPendingFrameHost(main_rfhm));
-  EXPECT_TRUE(webui_rfh->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_TRUE(webui_rfh->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
 
   // Before it commits, do a cross-process navigation in a subframe.  This
   // should not grant WebUI bindings to the subframe's RVH.
@@ -2471,7 +2475,7 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
       nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   RenderFrameHostImpl* bar_rfh =
       NavigateToEntry(subframe_rfhm, &subframe_entry);
-  EXPECT_FALSE(bar_rfh->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
+  EXPECT_FALSE(bar_rfh->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi));
 }
 
 // This class intercepts RenderFrameProxyHost creations, and overrides their
@@ -3078,7 +3082,7 @@ TEST_P(RenderFrameHostManagerTest, SimultaneousNavigationWithOneWebUI1) {
     // This test involves starting a navigation while another navigation is
     // committing, which might lead to deletion of a pending commit RFH, which
     // will crash when RenderDocument is enabled. Skip the test if so.
-    // TODO(https://crbug.com/1220337): Update this test to work under
+    // TODO(crbug.com/40186427): Update this test to work under
     // navigation queueing, which will prevent the deletion of the pending
     // commit RFH but still fails because this test waits for the new navigation
     // to get to the ReadyToCommit stage before finishing the commit of the
@@ -3141,7 +3145,7 @@ TEST_P(RenderFrameHostManagerTest, SimultaneousNavigationWithOneWebUI2) {
     // This test involves starting a navigation while another navigation is
     // committing, which might lead to deletion of a pending commit RFH, which
     // will crash when RenderDocument is enabled. Skip the test if so.
-    // TODO(https://crbug.com/1220337): Update this test to work under
+    // TODO(crbug.com/40186427): Update this test to work under
     // navigation queueing, which will prevent the deletion of the pending
     // commit RFH but still fails because this test waits for the new navigation
     // to get to the ReadyToCommit stage before finishing the commit of the
@@ -3200,7 +3204,7 @@ TEST_P(RenderFrameHostManagerTest, SimultaneousNavigationWithTwoWebUIs1) {
     // This test involves starting a navigation while another navigation is
     // committing, which might lead to deletion of a pending commit RFH, which
     // will crash when RenderDocument is enabled. Skip the test if so.
-    // TODO(https://crbug.com/1220337): Update this test to work under
+    // TODO(crbug.com/40186427): Update this test to work under
     // navigation queueing, which will prevent the deletion of the pending
     // commit RFH but still fails because this test waits for the new navigation
     // to get to the ReadyToCommit stage before finishing the commit of the
@@ -3267,7 +3271,7 @@ TEST_P(RenderFrameHostManagerTest, SimultaneousNavigationWithTwoWebUIs2) {
     // This test involves starting a navigation while another navigation is
     // committing, which might lead to deletion of a pending commit RFH, which
     // will crash when RenderDocument is enabled. Skip the test if so.
-    // TODO(https://crbug.com/1220337): Update this test to work under
+    // TODO(crbug.com/40186427): Update this test to work under
     // navigation queueing, which will prevent the deletion of the pending
     // commit RFH but still fails because this test waits for the new navigation
     // to get to the ReadyToCommit stage before finishing the commit of the
@@ -3837,7 +3841,9 @@ class RenderFrameHostManagerTestWithBackForwardCache
         GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 
-  bool IsBackForwardCacheSupported() override { return true; }
+  bool IsBackForwardCacheSupported(WebContents& web_contents) override {
+    return true;
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

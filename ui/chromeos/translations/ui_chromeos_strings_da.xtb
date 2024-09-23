@@ -93,7 +93,7 @@
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementer blev kopieret.</translation>
 <translation id="174173592514158117">Vis alle Play-mapper</translation>
 <translation id="1742316578210444689">Hebræisk translitteration</translation>
-<translation id="1747761757048858544">Hollandsk (Holland)</translation>
+<translation id="1747761757048858544">Nederlandsk (Nederlandene)</translation>
 <translation id="174937106936716857">Samlet antal filer</translation>
 <translation id="1755345808328621801">Denne fil er designet til en pc, der kører Windows-software. Den er ikke kompatibel med din enhed, der kører ChromeOS. Søg efter en anden egnet app i Chrome Webshop.</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-host</translation>
 <translation id="3104793765551262433">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, blokeret af din administrator, oplysninger</translation>
-<translation id="3113153474486991170">"<ph name="PATH" />" kunne ikke åbnes på denne placering. Kopiér filen til "Mine filer" for at åbne den.</translation>
 <translation id="3113592018909187986">Du har 1 forsøg tilbage. Du kan ikke bruge dette netværk, før du har oprettet en ny pinkode.</translation>
 <translation id="3124404833828281817">Person dagdrømmer</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Annuller <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktiveret, <ph name="CONNECTION_STATUS" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, oplysninger</translation>
 <translation id="3691184985318546178">Singalesisk</translation>
+<translation id="3702842351052426940">Dit SIM-kort eller din eSIM-profil deaktiveres muligvis. Prøv at udskifte dit SIM-kort eller skifte eSIM-profil.</translation>
 <translation id="3722341589402358578">Der opstod en fejl. Nogle elementer er muligvis ikke smidt i papirkurven.</translation>
 <translation id="3726463242007121105">Denne enhed kan ikke åbnes, fordi dens filsystem ikke understøttes.</translation>
 <translation id="3727148787322499904">Hvis denne indstilling ændres, påvirker det alle delte netværk</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Denne proxy håndhæves af din administrator</translation>
 <translation id="3830674330436234648">Der er ingen tilgængelig afspilning.</translation>
 <translation id="383652340667548381">Serbisk</translation>
+<translation id="3839045880592694915">Dit mobilselskab har ikke givet dit modem tilladelse til at oprette forbindelse. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
 <translation id="385051799172605136">Tilbage</translation>
-<translation id="3851491607336266896">Forbundet – begrænset forbindelse</translation>
 <translation id="3855472144336161447">Tysk (Neo 2)</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3866249974567520381">Beskrivelse</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Microsoft-filer, der er åbnet for nylig, er blevet flyttet til OneDrive</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4017788180641807848">Engelsk (USA) med Workman-tastatur</translation>
-<translation id="4019998208269143058">Fastgør til Genvej til foretrukne filer</translation>
 <translation id="4040753847560036377">PUK-koden er forkert</translation>
 <translation id="4057991113334098539">Aktiverer...</translation>
 <translation id="4092890906744441904">Irsk</translation>
+<translation id="4101601646343868113">Log ind på dit mobilnetværk, og bekræft, at dit mobildataabonnement er aktivt</translation>
 <translation id="4124731372776320263">Synkroniserer 1 Drev-fil</translation>
 <translation id="4124935795427217608">Enhjørning</translation>
 <translation id="4131235941541910880">Flyt overflødige elementer til papirkurven</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Tamil med Tamil99-tastatur</translation>
 <translation id="5633226425545095130">Hvis du flytter dette element, deles det med alle, der kan se den delte mappe "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Lyt</translation>
+<translation id="5650895901941743674">Tjek din APN-konfiguration</translation>
 <translation id="5669691691057771421">Angiv ny pinkode</translation>
 <translation id="5678784840044122290">Linux-appen er tilgængelig i din terminal, og der vises muligvis også et ikon for appen på din appliste.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Forbindelsen til et arkiv eller en virtuel disk kan ikke afbrydes<ph name="END_BOLD" />
@@ -644,7 +645,7 @@
 <translation id="5911887972742538906">Der opstod en fejl ved installationen af Linux-appen.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5918480239180455431">Der er kommet nye søgefunktioner</translation>
-<translation id="5926082595146149752">Hollandsk (Holland) med amerikansk internationalt computertastatur</translation>
+<translation id="5926082595146149752">Nederlandsk (Nederlandene) med amerikansk internationalt computertastatur</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5948255720516436063">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivér efter konfiguration af enhed</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementer</translation>
@@ -680,10 +681,11 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Dansk</translation>
 <translation id="6224253798271602650">Formatér <ph name="DRIVE_NAME" /></translation>
-<translation id="6241349547798190358">Hollandsk (Belgien)</translation>
+<translation id="6241349547798190358">Nederlandsk (Belgien)</translation>
 <translation id="6267547857941397424">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, telefonbatteri <ph name="BATTERY_STATUS" /> %, opret forbindelse</translation>
 <translation id="6269630227984243955">Malajisk</translation>
 <translation id="6271903698064569429">Der kan ikke uploades filer, fordi "<ph name="SHARED_DRIVE_NAME" />" ikke har nok lagerplads.</translation>
+<translation id="6279140785485544797">Dit abonnement med mobildata er muligvis udløbet. Kontakt dit mobilselskab for at få hjælp.</translation>
 <translation id="6287852322318138013">Vælg en app, der skal åbne denne fil</translation>
 <translation id="6295542640242147836">Lås SIM-kort</translation>
 <translation id="6296410173147755564">PUK-koden er ugyldig</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-arkiv</translation>
 <translation id="6321303798550928047">Vink</translation>
 <translation id="6327785803543103246">Automatisk registrering af webproxy</translation>
-<translation id="6337014272874260727">Frigør fra Genvej til foretrukne filer</translation>
 <translation id="6339145975392024142">Amerikansk internationalt (pc)</translation>
 <translation id="6356685157277930264">Feedback i vinduet Filer</translation>
 <translation id="6358884629796491903">Drage</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Aktuel mappe</translation>
 <translation id="6751256176799620176">1 mappe er valgt</translation>
 <translation id="6755827872271341378">ChromeOS Flex-enhed</translation>
+<translation id="6777029074498310250">Gå til <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> for at få flere oplysninger</translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="6794539005637808366">Gendan elementet, eller træk det til en ny mappe uden for papirkurven</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Tamil med InScript-tastatur</translation>
 <translation id="7088615885725309056">Ældre</translation>
 <translation id="7103992300314999525">Makedonisk</translation>
+<translation id="7104338189998813914">Der opstod et problem i forbindelse med at tilgå din OneDrive-konto</translation>
 <translation id="7106346894903675391">Køb mere lagerplads...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;søg i Drev&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada (fonetisk)</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Vent et øjeblik</translation>
 <translation id="7600126690270271294">Serbisk</translation>
 <translation id="7603724359189955920">Gitre</translation>
+<translation id="7624010287655004652">Låst af et andet mobilselskab</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> findes allerede. Giv filen et nyt navn, og prøv igen.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" /> % fuldført.</translation>
 <translation id="7649070708921625228">Hjælp</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Der blev skiftet til miniaturevisning for listen med filer.</translation>
 <translation id="8601932370724196034">Crostini-billedfil</translation>
 <translation id="8609695766746872526">Islandsk</translation>
+<translation id="8630384863424041081">Indtast PIN-koden til dit SIM-kort eller standard-PIN-koden fra dit mobilselskab Kontakt dit mobilselskab for at få hjælp.</translation>
 <translation id="863903787380594467">Forkert pinkode. Du har <ph name="RETRIES" /> forsøg tilbage.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Det var nødvendigt at fjerne dine offlinefiler</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Denne fil er fortrolig og underlagt begrænsninger i henhold til administratorpolitikken.</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8713112442029511308">Maltesisk</translation>
-<translation id="8714138378966541668">Låst af telefonselskabet</translation>
 <translation id="8714406895390098252">Cykel</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> er valgt.</translation>
 <translation id="872537912056138402">Kroatisk</translation>

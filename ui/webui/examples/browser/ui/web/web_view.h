@@ -17,6 +17,8 @@ class WebView : public guest_view::GuestView<WebView> {
  public:
   using PassKey = base::PassKey<WebView>;
   static constexpr char Type[] = "BrowserWebView";
+  static const guest_view::GuestViewHistogramValue HistogramValue =
+      guest_view::GuestViewHistogramValue::kInvalid;
 
   static std::unique_ptr<guest_view::GuestViewBase> Create(
       content::RenderFrameHost* owner_render_frame_host);

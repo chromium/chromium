@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/nacl/loader/nacl_validation_query.h"
 
 #include <stdint.h>
 #include <string.h>
+
+#include <string_view>
 
 #include "base/check.h"
 #include "components/nacl/loader/nacl_validation_db.h"
@@ -53,7 +60,7 @@ void NaClValidationQuery::AddData(const char* data, size_t length) {
   }
   // Hash the input data into the buffer.  Assumes that sizeof(buffer_) >=
   // kDigestLength * 2 (the buffer can store at least two digests.)
-  CHECK(hasher_.Sign(base::StringPiece(data, length),
+  CHECK(hasher_.Sign(std::string_view(data, length),
                      reinterpret_cast<unsigned char*>(buffer_ + buffer_length_),
                      kDigestLength));
   buffer_length_ += kDigestLength;
@@ -63,7 +70,7 @@ void NaClValidationQuery::AddData(const unsigned char* data, size_t length) {
   AddData(reinterpret_cast<const char*>(data), length);
 }
 
-void NaClValidationQuery::AddData(const base::StringPiece& data) {
+void NaClValidationQuery::AddData(std::string_view data) {
   AddData(data.data(), data.length());
 }
 
@@ -92,7 +99,7 @@ void NaClValidationQuery::CompressBuffer() {
   // directly back into the buffer, but this is an "accidental" semantic we're
   // avoiding depending on.
   unsigned char temp[kDigestLength];
-  CHECK(hasher_.Sign(base::StringPiece(buffer_, buffer_length_), temp,
+  CHECK(hasher_.Sign(std::string_view(buffer_, buffer_length_), temp,
                      kDigestLength));
   memcpy(buffer_, temp, kDigestLength);
   buffer_length_ = kDigestLength;

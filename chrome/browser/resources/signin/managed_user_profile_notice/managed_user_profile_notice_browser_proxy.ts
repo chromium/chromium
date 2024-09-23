@@ -9,15 +9,32 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
+export enum BrowsingDataHandling {
+  MERGE = 'merge',
+  SEPARATE = 'separate',
+}
+
+export enum State {
+  DISCLOSURE = 0,
+  PROCESSING = 1,
+  SUCCESS = 2,
+  TIMEOUT = 3,
+  ERROR = 4,
+  VALUE_PROPOSITION = 5,
+  USER_DATA_HANDLING = 6,
+}
+
 // Managed user profile info sent from C++.
 export interface ManagedUserProfileInfo {
+  accountName: string;
+  continueAs: string;
+  email: string;
   pictureUrl: string;
   showEnterpriseBadge: boolean;
   title: string;
   subtitle: string;
   enterpriseInfo: string;
   proceedLabel: string;
-  showCancelButton: boolean;
   checkLinkDataCheckboxByDefault: boolean;
 }
 
@@ -30,7 +47,7 @@ export interface ManagedUserProfileNoticeBrowserProxy {
   /**
    * Called when the user clicks the proceed button.
    */
-  proceed(linkData: boolean): void;
+  proceed(state: State, linkData: boolean): void;
 
   /**
    * Called when the user clicks the cancel button.
@@ -48,8 +65,8 @@ export class ManagedUserProfileNoticeBrowserProxyImpl implements
     chrome.send('initializedWithSize', [height]);
   }
 
-  proceed(linkData: boolean) {
-    chrome.send('proceed', [linkData]);
+  proceed(state: State, linkData: boolean) {
+    chrome.send('proceed', [state, linkData]);
   }
 
   cancel() {

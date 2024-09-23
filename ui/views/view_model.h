@@ -28,7 +28,7 @@ class VIEWS_EXPORT ViewModelBase {
   struct Entry {
     Entry() = default;
 
-    raw_ptr<View> view = nullptr;
+    raw_ptr<View, DanglingUntriaged> view = nullptr;
     gfx::Rect ideal_bounds;
   };
   using Entries = std::vector<Entry>;

@@ -42,9 +42,8 @@ void RemoteSecurityContext::InitializePermissionsPolicy(
     const PermissionsPolicy* parent_permissions_policy) {
   report_only_permissions_policy_ = nullptr;
   permissions_policy_ = PermissionsPolicy::CreateFromParentPolicy(
-      parent_permissions_policy, container_policy,
+      parent_permissions_policy, parsed_header, container_policy,
       security_origin_->ToUrlOrigin());
-  permissions_policy_->SetHeaderPolicy(parsed_header);
 }
 
 }  // namespace blink

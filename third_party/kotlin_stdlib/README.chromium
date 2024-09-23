@@ -3,16 +3,18 @@ Short Name: Kotlin stdlib
 Version: unknown
 License: Apache Version 2.0
 License File: LICENSE
-Security Critical: No
-Shipped: no
+Security Critical: Yes
+Shipped: Yes
 URL: https://kotlinlang.org/api/latest/jvm/stdlib/
 
 Description:
 The Kotlin Standard Library provides living essentials for everyday work with
-Kotlin. This bundles three deps into one:
-- org_jetbrains_kotlin_kotlin_stdlib_java
-- org_jetbrains_kotlin_kotlin_stdlib_common_java
-- org_jetbrains_annotations_java
+Kotlin. This bundles the following Maven packages (which all have synchronized
+versions):
+- org.jetbrains.kotlin:kotlin-stdlib-jdk8
+- org.jetbrains.kotlin:kotlin-stdlib-jdk7
+- org.jetbrains.kotlin:kotlin-stdlib
+- org.jetbrains:annotations
 
 Local Modifications:
 None

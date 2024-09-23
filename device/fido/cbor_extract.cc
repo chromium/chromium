@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/fido/cbor_extract.h"
 
 #include <type_traits>
 
 #include "base/check_op.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_span.h"
 #include "components/cbor/values.h"
 
 namespace device {
@@ -182,8 +188,8 @@ class Extractor {
     return cbor::Value(std::move(key));
   }
 
-  base::span<const void*> outputs_;
-  base::span<const StepOrByte<void>> steps_;
+  base::raw_span<const void*> outputs_;
+  base::raw_span<const StepOrByte<void>> steps_;
   size_t step_i_ = 0;
 };
 

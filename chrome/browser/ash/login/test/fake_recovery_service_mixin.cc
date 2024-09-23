@@ -86,7 +86,7 @@ std::unique_ptr<HttpResponse> FakeRecoveryServiceMixin::HandleRequest(
     return std::move(http_response);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

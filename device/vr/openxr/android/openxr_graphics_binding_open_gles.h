@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "device/vr/android/local_texture.h"
 #include "device/vr/android/xr_renderer.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_platform.h"
@@ -42,9 +43,17 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
   bool CanUseSharedImages() const override;
   void CreateSharedImages(gpu::SharedImageInterface* sii) override;
   const SwapChainInfo& GetActiveSwapchainImage() override;
-  bool Render() override;
+  bool Render(
+      const scoped_refptr<viz::ContextProvider>& context_provider) override;
+  void CleanupWithoutSubmit() override;
   bool WaitOnFence(gfx::GpuFence& gpu_fence) override;
   bool ShouldFlipSubmittedImage() override;
+  void SetOverlayAndWebXrVisibility(bool overlay_visible,
+                                    bool webxr_visible) override;
+  bool SetOverlayTexture(gfx::GpuMemoryBufferHandle texture,
+                         const gpu::SyncToken& sync_token,
+                         const gfx::RectF& left,
+                         const gfx::RectF& right) override;
 
  private:
   void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) override;
@@ -56,6 +65,10 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
   XrGraphicsBindingOpenGLESAndroidKHR binding_{
       XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR, nullptr};
   std::vector<SwapChainInfo> color_swapchain_images_;
+  gfx::GpuMemoryBufferHandle overlay_handle_;
+
+  bool webxr_visible_ = true;
+  bool overlay_visible_ = false;
 
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
@@ -63,6 +76,7 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
 
   std::unique_ptr<XrRenderer> renderer_;
   GLuint back_buffer_fbo_ = 0;
+  LocalTexture overlay_texture_;
 };
 
 }  // namespace device

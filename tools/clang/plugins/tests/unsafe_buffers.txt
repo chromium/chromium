@@ -1,0 +1,81 @@
+In file included from unsafe_buffers.cpp:16:
+./unsafe_buffers_clean.h:9:10: warning: unsafe buffer access [-Wunsafe-buffer-usage]
+  return i[s];  // This is in a "clean" file, so it should make a warning.
+         ^
+./unsafe_buffers_clean.h:9:10: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_clean.h:19:3: warning: function introduces unsafe buffer manipulation [-Wunsafe-buffer-usage]
+  unsafe_fn();  // Unannotated call causes error.
+  ^~~~~~~~~~~
+./unsafe_buffers_clean.h:19:3: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_clean.h:20:3: warning: function introduces unsafe buffer manipulation [-Wunsafe-buffer-usage]
+  unsafe_fn();  // Second one uses caching and still makes an error.
+  ^~~~~~~~~~~
+./unsafe_buffers_clean.h:20:3: note: See //docs/unsafe_buffers.md for help.
+In file included from unsafe_buffers.cpp:17:
+./unsafe_buffers_not_clean.h:9:10: warning: unsafe buffer access [-Wunsafe-buffer-usage]
+  return i[s];  // This header is checked and makes an error.
+         ^
+./unsafe_buffers_not_clean.h:9:10: note: See //docs/unsafe_buffers.md for help.
+In file included from unsafe_buffers.cpp:18:
+./unsafe_buffers_not_clean_dir/clean_header.h:11:10: warning: unsafe buffer access [-Wunsafe-buffer-usage]
+  return i[s];  // This is in a "clean" file, so it should make a warning.
+         ^
+./unsafe_buffers_not_clean_dir/clean_header.h:11:10: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_not_clean_dir/clean_header.h:21:3: warning: function introduces unsafe buffer manipulation [-Wunsafe-buffer-usage]
+  in_a_dir_unsafe_fn();  // Unannotated call causes error.
+  ^~~~~~~~~~~~~~~~~~~~
+./unsafe_buffers_not_clean_dir/clean_header.h:21:3: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_not_clean_dir/clean_header.h:22:3: warning: function introduces unsafe buffer manipulation [-Wunsafe-buffer-usage]
+  in_a_dir_unsafe_fn();  // Second one uses caching and still makes an error.
+  ^~~~~~~~~~~~~~~~~~~~
+./unsafe_buffers_not_clean_dir/clean_header.h:22:3: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_not_clean_dir/clean_header.h:42:1: warning: unsafe pointer arithmetic [-Wunsafe-buffer-usage]
+INSIDE_MACRO_CHECKED(FooChecked, ptr, int*);
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./unsafe_buffers_not_clean_dir/clean_header.h:33:12: note: expanded from macro 'INSIDE_MACRO_CHECKED'
+    return FIELD##s_ + index;                    /
+           ^~~~~~~~~
+<scratch space>:20:1: note: expanded from here
+ptrs_
+^~~~~
+./unsafe_buffers_not_clean_dir/clean_header.h:42:1: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_not_clean_dir/clean_header.h:33:12: note: expanded from macro 'INSIDE_MACRO_CHECKED'
+    return FIELD##s_ + index;                    /
+           ^
+<scratch space>:20:1: note: expanded from here
+ptrs_
+^
+In file included from unsafe_buffers.cpp:21:
+./unsafe_buffers_not_clean_dir/opt_in_header.h:12:44: warning: unsafe buffer access [-Wunsafe-buffer-usage]
+DO_UNSAFE_THING_FROM_CHECKED_HEADER(OptIn, N, i, s);    // Should error.
+                                           ^
+./unsafe_buffers_not_clean_dir/clean_header.h:49:12: note: expanded from macro 'DO_UNSAFE_THING_FROM_CHECKED_HEADER'
+    return v[s];                                                              /
+           ^
+./unsafe_buffers_not_clean_dir/opt_in_header.h:12:44: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_not_clean_dir/opt_in_header.h:13:46: warning: unsafe buffer access [-Wunsafe-buffer-usage]
+DO_UNSAFE_THING_FROM_UNCHECKED_HEADER(OptIn, N, i, s);  // Should error.
+                                             ^
+./unsafe_buffers_not_clean_dir/not_clean_header.h:35:12: note: expanded from macro 'DO_UNSAFE_THING_FROM_UNCHECKED_HEADER'
+    return v[s];                                                        /
+           ^
+./unsafe_buffers_not_clean_dir/opt_in_header.h:13:46: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_not_clean_dir/opt_in_header.h:21:50: warning: unsafe buffer access [-Wunsafe-buffer-usage]
+  return MACRO_CALL_FUNCTION_FROM_CHECKED_HEADER(x)[s] +    // Should error.
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+./unsafe_buffers_not_clean_dir/clean_header.h:60:52: note: expanded from macro 'MACRO_CALL_FUNCTION_FROM_CHECKED_HEADER'
+#define MACRO_CALL_FUNCTION_FROM_CHECKED_HEADER(x) x()
+                                                   ^~~
+./unsafe_buffers_not_clean_dir/opt_in_header.h:21:50: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_not_clean_dir/opt_in_header.h:22:52: warning: unsafe buffer access [-Wunsafe-buffer-usage]
+         MACRO_CALL_FUNCTION_FROM_UNCHECKED_HEADER(x)[s] +  // Should error.
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+./unsafe_buffers_not_clean_dir/not_clean_header.h:46:54: note: expanded from macro 'MACRO_CALL_FUNCTION_FROM_UNCHECKED_HEADER'
+#define MACRO_CALL_FUNCTION_FROM_UNCHECKED_HEADER(x) x()
+                                                     ^~~
+./unsafe_buffers_not_clean_dir/opt_in_header.h:22:52: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_not_clean_dir/opt_in_header.h:23:10: warning: unsafe buffer access [-Wunsafe-buffer-usage]
+         i[s];                                              // Should error.
+         ^
+./unsafe_buffers_not_clean_dir/opt_in_header.h:23:10: note: See //docs/unsafe_buffers.md for help.
+13 warnings generated.

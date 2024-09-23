@@ -5,6 +5,7 @@
 #include "base/cfi_buildflags.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_paths.h"
@@ -14,9 +15,23 @@
 #include "extensions/common/utils/content_script_utils.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "pdf/pdf_features.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace extensions {
+
+namespace {
+
+struct BackForwardCacheDisabledDestructiveScriptTestPassToString {
+  std::string operator()(
+      const ::testing::TestParamInfo<std::tuple<int, bool>>& i) const {
+    return base::StringPrintf("%s_BUCKET_%d",
+                              std::get<1>(i.param) ? "OOPIF" : "GUESTVIEW",
+                              std::get<0>(i.param));
+  }
+};
+
+}  // namespace
 
 using ContextType = ExtensionApiTest::ContextType;
 
@@ -57,9 +72,11 @@ class ExecuteScriptApiTest : public ExecuteScriptApiTestBase,
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExecuteScriptApiTest,
                          ::testing::Values(ContextType::kPersistentBackground));
+// These tests use chrome.tabs.executeScript, which is not available in MV3.
+// See crbug.com/332328868.
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExecuteScriptApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 // If failing, mark disabled and update http://crbug.com/92105.
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptBasic) {
@@ -177,29 +194,57 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, InjectScriptInFileFrameDenied) {
 // parts. Each part takes approximately the same time to run.
 const int kDestructiveScriptTestBucketCount = 1;
 
-class DestructiveScriptTest : public ExecuteScriptApiTestBase,
-                              public testing::WithParamInterface<int> {
+class DestructiveScriptTest : public ExecuteScriptApiTestBase {
+ public:
+  virtual int GetBucketIndex() const = 0;
+
  protected:
   // The test extension selects the sub test based on the host name.
   bool RunSubtest(const std::string& test_host) {
     const std::string extension_url =
         "test.html?" + test_host + "#bucketcount=" +
         base::NumberToString(kDestructiveScriptTestBucketCount) +
-        "&bucketindex=" + base::NumberToString(GetParam());
+        "&bucketindex=" + base::NumberToString(GetBucketIndex());
     return RunExtensionTest("executescript/destructive",
                             {.extension_url = extension_url.c_str()});
   }
 };
 
+// For destructive script tests that don't involve PDFs and therefore don't need
+// to run in OOPIF PDF viewer mode.
+class DestructiveScriptTestWithoutOopifOverride
+    : public DestructiveScriptTest,
+      public testing::WithParamInterface<int> {
+ public:
+  int GetBucketIndex() const override { return GetParam(); }
+};
+
+// For destructive script tests that require BFCache to be disabled and involve
+// PDFs.
 class BackForwardCacheDisabledDestructiveScriptTest
-    : public DestructiveScriptTest {
+    : public DestructiveScriptTest,
+      public testing::WithParamInterface<std::tuple<int, bool>> {
+ public:
+  int GetBucketIndex() const override { return std::get<0>(GetParam()); }
+
+  bool UseOopif() const { return std::get<1>(GetParam()); }
+
  private:
   void SetUp() override {
     // The SynchronousRemoval and MicrotaskRemoval tests seem to be especially
     // flaky when same-site back/forward cache is enabled, so disable the
     // feature.
-    // TODO(https://crbug.com/1293865): Fix the flakiness.
-    scoped_feature_list_.InitAndDisableFeature(features::kBackForwardCache);
+    // TODO(crbug.com/40820215): Fix the flakiness.
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features{
+        features::kBackForwardCache};
+    if (UseOopif()) {
+      enabled_features.push_back(chrome_pdf::features::kPdfOopif);
+    } else {
+      disabled_features.push_back(chrome_pdf::features::kPdfOopif);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
     DestructiveScriptTest::SetUp();
   }
 
@@ -234,49 +279,60 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheDisabledDestructiveScriptTest,
 
 // TODO(http://crbug.com/1028308): Flaky on multiple platforms
 // Removes the frame at the frame's first scheduled macrotask.
-IN_PROC_BROWSER_TEST_P(DestructiveScriptTest, DISABLED_MacrotaskRemoval) {
+IN_PROC_BROWSER_TEST_P(DestructiveScriptTestWithoutOopifOverride,
+                       DISABLED_MacrotaskRemoval) {
   ASSERT_TRUE(RunSubtest("macrotask")) << message_;
 }
 
 // Removes the frame at the first DOMNodeInserted event.
-IN_PROC_BROWSER_TEST_P(DestructiveScriptTest, DOMNodeInserted1) {
+IN_PROC_BROWSER_TEST_P(DestructiveScriptTestWithoutOopifOverride,
+                       DOMNodeInserted1) {
   ASSERT_TRUE(RunSubtest("domnodeinserted1")) << message_;
 }
 
 // Removes the frame at the second DOMNodeInserted event.
-IN_PROC_BROWSER_TEST_P(DestructiveScriptTest, DOMNodeInserted2) {
+IN_PROC_BROWSER_TEST_P(DestructiveScriptTestWithoutOopifOverride,
+                       DOMNodeInserted2) {
   ASSERT_TRUE(RunSubtest("domnodeinserted2")) << message_;
 }
 
 // Removes the frame at the third DOMNodeInserted event.
-IN_PROC_BROWSER_TEST_P(DestructiveScriptTest, DOMNodeInserted3) {
+IN_PROC_BROWSER_TEST_P(DestructiveScriptTestWithoutOopifOverride,
+                       DOMNodeInserted3) {
   ASSERT_TRUE(RunSubtest("domnodeinserted3")) << message_;
 }
 
 // Removes the frame at the first DOMSubtreeModified event.
-IN_PROC_BROWSER_TEST_P(DestructiveScriptTest, DOMSubtreeModified1) {
+IN_PROC_BROWSER_TEST_P(DestructiveScriptTestWithoutOopifOverride,
+                       DOMSubtreeModified1) {
   ASSERT_TRUE(RunSubtest("domsubtreemodified1")) << message_;
 }
 
 // Removes the frame at the second DOMSubtreeModified event.
-IN_PROC_BROWSER_TEST_P(DestructiveScriptTest, DOMSubtreeModified2) {
+IN_PROC_BROWSER_TEST_P(DestructiveScriptTestWithoutOopifOverride,
+                       DOMSubtreeModified2) {
   ASSERT_TRUE(RunSubtest("domsubtreemodified2")) << message_;
 }
 
 // Removes the frame at the third DOMSubtreeModified event.
-IN_PROC_BROWSER_TEST_P(DestructiveScriptTest, DOMSubtreeModified3) {
+IN_PROC_BROWSER_TEST_P(DestructiveScriptTestWithoutOopifOverride,
+                       DOMSubtreeModified3) {
   ASSERT_TRUE(RunSubtest("domsubtreemodified3")) << message_;
 }
 
 INSTANTIATE_TEST_SUITE_P(ExecuteScriptApiTest,
-                         DestructiveScriptTest,
+                         DestructiveScriptTestWithoutOopifOverride,
                          ::testing::Range(0,
                                           kDestructiveScriptTestBucketCount));
 
-INSTANTIATE_TEST_SUITE_P(ExecuteScriptApiTest,
-                         BackForwardCacheDisabledDestructiveScriptTest,
-                         ::testing::Range(0,
-                                          kDestructiveScriptTestBucketCount));
+// TODO(crbug.com/40268279): Stop testing GuestView PDF viewer once OOPIF PDF
+// viewer launches.
+INSTANTIATE_TEST_SUITE_P(
+    ExecuteScriptApiTest,
+    BackForwardCacheDisabledDestructiveScriptTest,
+    testing::Combine(::testing::Range(0, kDestructiveScriptTestBucketCount),
+                     testing::Bool()),
+    BackForwardCacheDisabledDestructiveScriptTestPassToString());
 
 class ExecuteScriptApiFencedFrameTest : public ExecuteScriptApiTestBase {
  protected:

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/device_sharing/model/device_sharing_manager.h"
+#import "ios/chrome/browser/device_sharing/model/device_sharing_manager_impl.h"
 
 #import <memory>
 
@@ -10,10 +10,10 @@
 #import "components/handoff/handoff_manager.h"
 #import "components/handoff/pref_names_ios.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/device_sharing/model/device_sharing_manager.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager_factory.h"
-#import "ios/chrome/browser/device_sharing/model/device_sharing_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/apple/url_conversions.h"
 #import "testing/gtest_mac.h"
@@ -28,8 +28,7 @@ class DeviceSharingManagerImplTest : public PlatformTest {
         test_url_2_("http://test_sharing_2.html"),
         test_nsurl_1_(net::NSURLWithGURL(test_url_1_)),
         test_nsurl_2_(net::NSURLWithGURL(test_url_2_)) {
-    TestChromeBrowserState::Builder mainBrowserStateBuilder;
-    chrome_browser_state_ = mainBrowserStateBuilder.Build();
+    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
     sharing_manager_ = static_cast<DeviceSharingManagerImpl*>(
         DeviceSharingManagerFactory::GetForBrowserState(
             chrome_browser_state_.get()));

@@ -122,7 +122,7 @@ export class FileSystemSiteDetailsElement extends
    * then update the list displayed on the UI.
    */
   private onRevokeGrant_(e: CustomEvent<FileSystemGrant>) {
-    this.browserProxy.revokeFileSystemGrant(e.detail.origin, e.detail.filePath);
+    this.browserProxy.revokeFileSystemGrant(this.origin_, e.detail.filePath);
   }
 }
 

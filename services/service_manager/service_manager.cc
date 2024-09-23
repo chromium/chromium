@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -88,7 +89,7 @@ class DefaultServiceProcessHost : public ServiceProcessHost {
 #if BUILDFLAG(IS_IOS)
     return mojo::NullRemote();
 #else
-    // TODO(https://crbug.com/781334): Support sandboxing.
+    // TODO(crbug.com/41353434): Support sandboxing.
     CHECK_EQ(sandbox_type, sandbox::mojom::Sandbox::kNoSandbox);
     return launcher_.Start(identity, sandbox::mojom::Sandbox::kNoSandbox,
                            std::move(callback));
@@ -104,7 +105,7 @@ class DefaultServiceProcessHost : public ServiceProcessHost {
 // Default ServiceManager::Delegate implementation. This supports launching only
 // standalone service executables.
 //
-// TODO(https://crbug.com/781334): Migrate all service process support into this
+// TODO(crbug.com/41353434): Migrate all service process support into this
 // implementation and merge it into ServiceProcessHost.
 class DefaultServiceManagerDelegate : public ServiceManager::Delegate {
  public:
@@ -335,7 +336,7 @@ ServiceInstance* ServiceManager::FindOrCreateMatchingTargetInstance(
     }
 #else   // !BUILDFLAG(IS_IOS)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
 #endif  // !BUILDFLAG(IS_IOS)
   }
@@ -393,7 +394,7 @@ void ServiceManager::DestroyInstance(ServiceInstance* instance) {
 
   MakeInstanceUnreachable(instance);
   auto it = instances_.find(instance);
-  DCHECK(it != instances_.end());
+  CHECK(it != instances_.end(), base::NotFatalUntil::M130);
 
   // Deletes |instance|.
   instances_.erase(it);

@@ -1,0 +1,10 @@
+include_rules = [
+  "+third_party/webrtc/common_video/libyuv",
+  "+third_party/webrtc/modules/video_capture",
+]
+
+specific_include_rules = {
+  "v4l2_gpu_memory_buffer_tracker_unittest\.cc": [
+    "+components/viz/test/test_context_provider.h",
+  ],
+}

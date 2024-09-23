@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/not_fatal_until.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -100,7 +101,7 @@ class ExtensionAssetsManagerHelper {
                          PendingInstallList* pending_installs) {
     InstallQueue::iterator it = install_queue_.find(
         InstallQueue::key_type(id, version));
-    DCHECK(it != install_queue_.end());
+    CHECK(it != install_queue_.end(), base::NotFatalUntil::M130);
     pending_installs->swap(it->second);
     install_queue_.erase(it);
   }
@@ -230,7 +231,7 @@ bool ExtensionAssetsManagerChromeOS::CleanUpSharedExtensions(
   for (const std::string& id : extensions) {
     base::Value::Dict* extension_info = shared_extension_dict.FindDict(id);
     if (!extension_info) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
     if (!CleanUpExtension(id, *extension_info, live_extension_paths)) {
@@ -260,9 +261,9 @@ bool ExtensionAssetsManagerChromeOS::CanShareAssets(
     return false;
   }
 
-  // TODO(crbug.com/1166539): Investigate why do we allow sharing assets in case
-  // of empty update URL and if the empty update URL is not required, update
-  // this to consider only the updates from webstore.
+  // TODO(crbug.com/40742161): Investigate why do we allow sharing assets in
+  // case of empty update URL and if the empty update URL is not required,
+  // update this to consider only the updates from webstore.
   if (!updates_from_webstore_or_empty_update_url)
     return false;
 
@@ -285,7 +286,7 @@ void ExtensionAssetsManagerChromeOS::CheckSharedExtension(
   const std::string& user_id = profile->GetProfileUserName();
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (!user_manager) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -434,7 +435,7 @@ void ExtensionAssetsManagerChromeOS::MarkSharedExtensionUnused(
   base::Value::Dict& shared_extensions_dict = shared_extensions.Get();
   base::Value::Dict* extension_info = shared_extensions_dict.FindDict(id);
   if (!extension_info) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -449,18 +450,18 @@ void ExtensionAssetsManagerChromeOS::MarkSharedExtensionUnused(
        it != versions.end(); it++) {
     base::Value::Dict* version_info = extension_info->FindDict(*it);
     if (!version_info) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
     base::Value::List* users = version_info->FindList(kSharedExtensionUsers);
     if (!users) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
     if (users->EraseValue(user_name) && users->empty()) {
       std::string* shared_path = version_info->FindString(kSharedExtensionPath);
       if (!shared_path) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         continue;
       }
       GetExtensionFileTaskRunner()->PostTask(
@@ -492,7 +493,7 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
     std::multimap<std::string, base::FilePath>* live_extension_paths) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (!user_manager) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -506,7 +507,7 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
        it != versions.end(); it++) {
     base::Value::Dict* version_info = extension_info.FindDict(*it);
     if (!version_info) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
     base::Value::List* users_list =
@@ -514,14 +515,14 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
     const std::string* shared_path =
         version_info->FindString(kSharedExtensionPath);
     if (!users_list || !shared_path) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
 
     for (auto iter = users_list->begin(); iter != users_list->end();) {
       const std::string* user_id = iter->GetIfString();
       if (!user_id) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
       }
       const user_manager::User* user =

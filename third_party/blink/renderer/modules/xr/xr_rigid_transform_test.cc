@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_test_utils.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -36,17 +37,19 @@ static void AssertMatricesEqualForTest(const gfx::Transform& a,
   }
 }
 
-static void AssertTransformsEqualForTest(XRRigidTransform& a,
-                                         XRRigidTransform& b) {
-  AssertDOMPointsEqualForTest(a.position(), b.position());
-  AssertDOMPointsEqualForTest(a.orientation(), b.orientation());
-  AssertMatricesEqualForTest(a.TransformMatrix(), b.TransformMatrix());
+static void AssertTransformsEqualForTest(XRRigidTransform* a,
+                                         XRRigidTransform* b) {
+  AssertDOMPointsEqualForTest(a->position(), b->position());
+  AssertDOMPointsEqualForTest(a->orientation(), b->orientation());
+  AssertMatricesEqualForTest(a->TransformMatrix(), b->TransformMatrix());
 }
 
 static void TestComposeDecompose(DOMPointInit* position,
                                  DOMPointInit* orientation) {
-  XRRigidTransform transform_1(position, orientation);
-  XRRigidTransform transform_2(transform_1.TransformMatrix());
+  XRRigidTransform* transform_1 =
+      MakeGarbageCollected<XRRigidTransform>(position, orientation);
+  XRRigidTransform* transform_2 =
+      MakeGarbageCollected<XRRigidTransform>(transform_1->TransformMatrix());
   AssertTransformsEqualForTest(transform_1, transform_2);
 }
 
@@ -59,16 +62,17 @@ static void TestDoubleInverse(DOMPointInit* position,
   XRRigidTransform* inverse_inverse_transform =
       MakeGarbageCollected<XRRigidTransform>(
           inverse_transform->InverseTransformMatrix());
-  AssertTransformsEqualForTest(*transform, *inverse_inverse_transform);
+  AssertTransformsEqualForTest(transform, inverse_inverse_transform);
 }
 
 TEST(XRRigidTransformTest, Compose) {
   test::TaskEnvironment task_environment;
   DOMPointInit* position = MakePointForTest(1.0, 2.0, 3.0, 1.0);
   DOMPointInit* orientation = MakePointForTest(0.7071068, 0.0, 0.0, 0.7071068);
-  XRRigidTransform transform(position, orientation);
+  XRRigidTransform* transform =
+      MakeGarbageCollected<XRRigidTransform>(position, orientation);
   const Vector<double> actual_matrix =
-      GetMatrixDataForTest(transform.TransformMatrix());
+      GetMatrixDataForTest(transform->TransformMatrix());
   const Vector<double> expected_matrix{1.0, 0.0,  0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
                                        0.0, -1.0, 0.0, 0.0, 1.0, 2.0, 3.0, 1.0};
   for (int i = 0; i < 16; ++i) {
@@ -81,11 +85,13 @@ TEST(XRRigidTransformTest, Decompose) {
   auto matrix =
       gfx::Transform::ColMajor(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
                                -1.0, 0.0, 0.0, 1.0, 2.0, 3.0, 1.0);
-  XRRigidTransform transform(matrix);
-  const DOMPointReadOnly expected_position(1.0, 2.0, 3.0, 1.0);
-  const DOMPointReadOnly expected_orientation(0.7071068, 0.0, 0.0, 0.7071068);
-  AssertDOMPointsEqualForTest(transform.position(), &expected_position);
-  AssertDOMPointsEqualForTest(transform.orientation(), &expected_orientation);
+  XRRigidTransform* transform = MakeGarbageCollected<XRRigidTransform>(matrix);
+  const DOMPointReadOnly* expected_position =
+      MakeGarbageCollected<DOMPointReadOnly>(1.0, 2.0, 3.0, 1.0);
+  const DOMPointReadOnly* expected_orientation =
+      MakeGarbageCollected<DOMPointReadOnly>(0.7071068, 0.0, 0.0, 0.7071068);
+  AssertDOMPointsEqualForTest(transform->position(), expected_position);
+  AssertDOMPointsEqualForTest(transform->orientation(), expected_orientation);
 }
 
 TEST(XRRigidTransformTest, ComposeDecompose) {

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
 
 #include <stddef.h>
@@ -17,7 +22,6 @@
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gl_surface_mock.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/mocks.h"
 #include "gpu/command_buffer/service/program_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
@@ -54,6 +58,7 @@ namespace gles2 {
 
 void GLES2DecoderRGBBackbufferTest::SetUp() {
   InitState init;
+  init.gl_version = "OpenGL ES 2.0";
   init.bind_generates_resource = true;
   InitDecoder(init);
   SetupDefaultProgram();
@@ -701,9 +706,9 @@ static void CheckBeginEndQueryBadMemoryFails(GLES2DecoderTestBase* test,
   // We need to reset the decoder on each iteration, because we lose the
   // context every time.
   GLES2DecoderTestBase::InitState init;
-  init.extensions = "GL_EXT_occlusion_query_boolean"
-                    " GL_ARB_sync"
-                    " GL_ARB_timer_query";
+  init.extensions =
+      "GL_EXT_occlusion_query_boolean"
+      " GL_EXT_disjoint_timer_query";
   init.gl_version = "OpenGL ES 3.0";
   init.has_alpha = true;
   init.request_alpha = true;
@@ -754,9 +759,9 @@ TEST_P(GLES2DecoderManualInitTest, QueryReuseTest) {
     const QueryType& query_type = kQueryTypes[i];
 
     GLES2DecoderTestBase::InitState init;
-    init.extensions = "GL_EXT_occlusion_query_boolean"
-                      " GL_ARB_sync"
-                      " GL_ARB_timer_query";
+    init.extensions =
+        "GL_EXT_occlusion_query_boolean"
+        " GL_EXT_disjoint_timer_query";
     init.gl_version = "OpenGL ES 3.0";
     init.has_alpha = true;
     init.request_alpha = true;
@@ -764,6 +769,9 @@ TEST_P(GLES2DecoderManualInitTest, QueryReuseTest) {
     InitDecoder(init);
     ::testing::StrictMock<::gl::MockGLInterface>* gl = GetGLMock();
     ::gl::GPUTimingFake gpu_timing_queries;
+    if (query_type.type == GL_TIME_ELAPSED || query_type.type == GL_TIMESTAMP) {
+      gpu_timing_queries.ExpectDisjointCalls(*gl);
+    }
 
     ExecuteGenerateQueryCmd(this, gl, query_type.type,
                             kNewClientId, kNewServiceId);
@@ -912,8 +920,8 @@ TEST_P(GLES2DecoderTest, SetDisjointValueSync) {
 
 TEST_P(GLES2DecoderManualInitTest, BeginEndQueryEXTCommandsCompletedCHROMIUM) {
   InitState init;
-  init.extensions = "GL_EXT_occlusion_query_boolean GL_ARB_sync";
-  init.gl_version = "OpenGL ES 2.0";
+  init.extensions = "GL_EXT_occlusion_query_boolean";
+  init.gl_version = "OpenGL ES 3.0";
   init.has_alpha = true;
   init.request_alpha = true;
   init.bind_generates_resource = true;
@@ -1024,7 +1032,7 @@ TEST_P(GLES2DecoderManualInitTest, BeginInvalidTargetQueryFails) {
 
 TEST_P(GLES2DecoderManualInitTest, QueryCounterEXTTimeStamp) {
   InitState init;
-  init.extensions = "GL_ARB_timer_query";
+  init.extensions = "GL_EXT_disjoint_timer_query";
   init.gl_version = "OpenGL ES 3.0";
   init.has_alpha = true;
   init.request_alpha = true;
@@ -1041,6 +1049,9 @@ TEST_P(GLES2DecoderManualInitTest, QueryCounterEXTTimeStamp) {
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_, QueryCounter(kNewServiceId, GL_TIMESTAMP))
       .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetIntegerv(GL_GPU_DISJOINT_EXT, _))
+      .WillOnce(SetArgPointee<1>(0))
       .RetiresOnSaturation();
   cmds::QueryCounterEXT query_counter_cmd;
   query_counter_cmd.Init(kNewClientId, GL_TIMESTAMP, shared_memory_id_,
@@ -1220,6 +1231,11 @@ TEST_P(GLES2DecoderManualInitTest, MemoryTrackerCopyTexImage2D) {
 }
 
 TEST_P(GLES2DecoderManualInitTest, MemoryTrackerRenderbufferStorage) {
+  const GLsizei kWidth = 8;
+  const GLsizei kHeight = 4;
+  const GLenum kFormat = GL_RGBA4;
+  const size_t kNumOfBytesPerPixel = 2;
+
   auto memory_tracker = std::make_unique<SizeOnlyMemoryTracker>();
   auto* memory_tracker_ptr = memory_tracker.get();
   set_memory_tracker(std::move(memory_tracker));
@@ -1233,14 +1249,16 @@ TEST_P(GLES2DecoderManualInitTest, MemoryTrackerRenderbufferStorage) {
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_NO_ERROR))
       .RetiresOnSaturation();
-  EXPECT_CALL(*gl_, RenderbufferStorageEXT(GL_RENDERBUFFER, GL_RGBA, 8, 4))
+  EXPECT_CALL(*gl_,
+              RenderbufferStorageEXT(GL_RENDERBUFFER, kFormat, kWidth, kHeight))
       .Times(1)
       .RetiresOnSaturation();
   cmds::RenderbufferStorage cmd;
-  cmd.Init(GL_RENDERBUFFER, GL_RGBA4, 8, 4);
+  cmd.Init(GL_RENDERBUFFER, kFormat, kWidth, kHeight);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(128u, memory_tracker_ptr->GetSize());
+  EXPECT_EQ(kWidth * kHeight * kNumOfBytesPerPixel,
+            memory_tracker_ptr->GetSize());
 }
 
 TEST_P(GLES2DecoderManualInitTest, MemoryTrackerBufferData) {
@@ -1586,8 +1604,8 @@ class GLES2DecoderDescheduleUntilFinishedTest : public GLES2DecoderTest {
 
   void SetUp() override {
     InitState init;
-    init.gl_version = "4.4";
-    init.extensions += " GL_ARB_compatibility GL_ARB_sync";
+    init.gl_version = "OpenGL ES 3.0";
+    init.extensions += " GL_ARB_compatibility";
     InitDecoder(init);
 
     EXPECT_CALL(*gl_, FenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0))

@@ -42,6 +42,7 @@
 #include <climits>
 #include <cmath>
 #include <limits>
+#include <utility>
 #include <vector>
 
 #include <google/protobuf/io/coded_stream.h>
@@ -65,8 +66,6 @@
 // Must be included last.
 #include <google/protobuf/port_def.inc>
 
-#define DEBUG_STRING_SILENT_MARKER "\t "
-
 namespace google {
 namespace protobuf {
 
@@ -85,7 +84,10 @@ inline bool IsOctNumber(const std::string& str) {
 }  // namespace
 
 namespace internal {
-// Controls insertion of DEBUG_STRING_SILENT_MARKER.
+const char kDebugStringSilentMarker[] = "";
+const char kDebugStringSilentMarkerForDetection[] = "\t ";
+
+// Controls insertion of kDebugStringSilentMarker.
 PROTOBUF_EXPORT std::atomic<bool> enable_debug_text_format_marker;
 }  // namespace internal
 
@@ -244,8 +246,8 @@ class TextFormat::Parser::ParserImpl {
  public:
   // Determines if repeated values for non-repeated fields and
   // oneofs are permitted, e.g., the string "foo: 1 foo: 2" for a
-  // required/optional field named "foo", or "baz: 1 qux: 2"
-  // where "baz" and "qux" are members of the same oneof.
+  // required/optional field named "foo", or "baz: 1 bar: 2"
+  // where "baz" and "bar" are members of the same oneof.
   enum SingularOverwritePolicy {
     ALLOW_SINGULAR_OVERWRITES = 0,   // the last value is retained
     FORBID_SINGULAR_OVERWRITES = 1,  // an error is issued
@@ -455,8 +457,9 @@ class TextFormat::Parser::ParserImpl {
         }
       }
       reflection->SetString(message, any_type_url_field,
-                            prefix_and_full_type_name);
-      reflection->SetString(message, any_value_field, serialized_value);
+                            std::move(prefix_and_full_type_name));
+      reflection->SetString(message, any_value_field,
+                            std::move(serialized_value));
       return true;
     }
     if (TryConsume("[")) {
@@ -803,7 +806,7 @@ class TextFormat::Parser::ParserImpl {
       case FieldDescriptor::CPPTYPE_STRING: {
         std::string value;
         DO(ConsumeString(&value));
-        SET_FIELD(String, value);
+        SET_FIELD(String, std::move(value));
         break;
       }
 
@@ -1280,7 +1283,8 @@ class TextFormat::Parser::ParserImpl {
   bool TryConsumeWhitespace() {
     had_silent_marker_ = false;
     if (LookingAtType(io::Tokenizer::TYPE_WHITESPACE)) {
-      if (tokenizer_.current().text == " " DEBUG_STRING_SILENT_MARKER) {
+      if (tokenizer_.current().text ==
+          StrCat(" ", internal::kDebugStringSilentMarkerForDetection)) {
         had_silent_marker_ = true;
       }
       tokenizer_.Next();
@@ -1420,7 +1424,7 @@ class TextFormat::Printer::TextGenerator
   void PrintMaybeWithMarker(StringPiece text) {
     Print(text.data(), text.size());
     if (ConsumeInsertSilentMarker()) {
-      PrintLiteral(DEBUG_STRING_SILENT_MARKER);
+      PrintLiteral(internal::kDebugStringSilentMarker);
     }
   }
 
@@ -1428,7 +1432,7 @@ class TextFormat::Printer::TextGenerator
                             StringPiece text_tail) {
     Print(text_head.data(), text_head.size());
     if (ConsumeInsertSilentMarker()) {
-      PrintLiteral(DEBUG_STRING_SILENT_MARKER);
+      PrintLiteral(internal::kDebugStringSilentMarker);
     }
     Print(text_tail.data(), text_tail.size());
   }

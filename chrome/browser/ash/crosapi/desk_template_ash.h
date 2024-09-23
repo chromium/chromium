@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace crosapi {
@@ -34,10 +35,11 @@ class DeskTemplateAsh : public mojom::DeskTemplate {
       base::OnceCallback<void(crosapi::mojom::DeskTemplateStatePtr)> callback);
   void CreateBrowserWithRestoredData(
       const gfx::Rect& bounds,
-      const ui::WindowShowState show_state,
+      const ui::mojom::WindowShowState show_state,
       crosapi::mojom::DeskTemplateStatePtr additional_state);
   void GetFaviconImage(
       const GURL& url,
+      uint64_t lacros_profile_id,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback);
 
   // crosapi::mojom::DeskTemplate:

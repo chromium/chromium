@@ -21,18 +21,18 @@
 //   pt pt-PT ro ru sk sv th tr uk vi zh-CN zh-TW
 
 #import <Foundation/Foundation.h>
-
 #import <stdio.h>
+
 #import <map>
 #import <set>
 #import <string>
+#import <string_view>
 #import <utility>
 #import <vector>
 
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
-#import "base/strings/string_piece.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/tools/strings/grit_header_parsing.h"
 #import "ui/base/resource/data_pack.h"
@@ -72,7 +72,7 @@ std::unique_ptr<ui::DataPack> LoadResourceDataPack(
 // Return nil if none is found.
 NSString* GetStringFromDataPack(const ui::DataPack& data_pack,
                                 uint16_t resource_id) {
-  std::optional<base::StringPiece> data = data_pack.GetStringPiece(resource_id);
+  std::optional<std::string_view> data = data_pack.GetStringPiece(resource_id);
   if (!data.has_value()) {
     return nil;
   }

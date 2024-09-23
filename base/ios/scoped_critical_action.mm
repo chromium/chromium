@@ -8,6 +8,7 @@
 #include <float.h>
 
 #include <atomic>
+#include <string_view>
 
 #include "base/ios/ios_util.h"
 #include "base/logging.h"
@@ -15,11 +16,15 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 
 namespace base::ios {
+
+BASE_FEATURE(kScopedCriticalActionSkipOnShutdown,
+             "ScopedCriticalActionSkipOnShutdown",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 constexpr base::TimeDelta kMaxTaskReuseDelay = base::Seconds(3);
@@ -29,7 +34,7 @@ std::atomic<int> g_num_active_background_tasks_for_test{0};
 
 }  // namespace
 
-ScopedCriticalAction::ScopedCriticalAction(StringPiece task_name)
+ScopedCriticalAction::ScopedCriticalAction(std::string_view task_name)
     : task_handle_(ActiveBackgroundTaskCache::GetInstance()
                        ->EnsureBackgroundTaskExistsWithName(task_name)) {}
 
@@ -38,8 +43,21 @@ ScopedCriticalAction::~ScopedCriticalAction() {
 }
 
 // static
+void ScopedCriticalAction::ApplicationWillTerminate() {
+  if (base::FeatureList::IsEnabled(kScopedCriticalActionSkipOnShutdown)) {
+    ActiveBackgroundTaskCache::GetInstance()->ApplicationWillTerminate();
+  }
+}
+
+// static
 void ScopedCriticalAction::ClearNumActiveBackgroundTasksForTest() {
   g_num_active_background_tasks_for_test.store(0);
+}
+
+// static
+void ScopedCriticalAction::ResetApplicationWillTerminateForTest() {
+  ActiveBackgroundTaskCache::GetInstance()
+      ->ResetApplicationWillTerminateForTest();  // IN-TEST
 }
 
 // static
@@ -59,8 +77,9 @@ ScopedCriticalAction::Core::~Core() {
 // whose execution will continue (temporarily) even after the app is
 // backgrounded.
 // static
-void ScopedCriticalAction::Core::StartBackgroundTask(scoped_refptr<Core> core,
-                                                     StringPiece task_name) {
+void ScopedCriticalAction::Core::StartBackgroundTask(
+    scoped_refptr<Core> core,
+    std::string_view task_name) {
   UIApplication* application = UIApplication.sharedApplication;
   if (!application) {
     return;
@@ -146,7 +165,7 @@ ScopedCriticalAction::ActiveBackgroundTaskCache::~ActiveBackgroundTaskCache() =
 
 ScopedCriticalAction::ActiveBackgroundTaskCache::Handle ScopedCriticalAction::
     ActiveBackgroundTaskCache::EnsureBackgroundTaskExistsWithName(
-        StringPiece task_name) {
+        std::string_view task_name) {
   const base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeTicks min_reusable_time = now - kMaxTaskReuseDelay;
   NameAndTime min_reusable_key{task_name, min_reusable_time};
@@ -180,7 +199,9 @@ ScopedCriticalAction::ActiveBackgroundTaskCache::Handle ScopedCriticalAction::
   // If this call didn't newly-create a Core instance, the call to
   // StartBackgroundTask() is almost certainly (barring race conditions)
   // unnecessary. It is however harmless to invoke it twice.
-  Core::StartBackgroundTask(handle->second.core, task_name);
+  if (!application_is_terminating_) {
+    Core::StartBackgroundTask(handle->second.core, task_name);
+  }
 
   return handle;
 }
@@ -205,6 +226,16 @@ void ScopedCriticalAction::ActiveBackgroundTaskCache::ReleaseHandle(
   if (background_task_to_end != nullptr) {
     Core::EndBackgroundTask(std::move(background_task_to_end));
   }
+}
+
+void ScopedCriticalAction::ActiveBackgroundTaskCache::
+    ApplicationWillTerminate() {
+  application_is_terminating_ = true;
+}
+
+void ScopedCriticalAction::ActiveBackgroundTaskCache::
+    ResetApplicationWillTerminateForTest() {
+  application_is_terminating_ = false;
 }
 
 }  // namespace base::ios

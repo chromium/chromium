@@ -25,6 +25,10 @@ gfx::Image OmniboxClient::GetFavicon() const {
   return gfx::Image();
 }
 
+ukm::SourceId OmniboxClient::GetUKMSourceId() const {
+  return ukm::kInvalidSourceId;
+}
+
 bool OmniboxClient::IsLoading() const {
   return false;
 }
@@ -75,6 +79,11 @@ gfx::Image OmniboxClient::GetSizedIcon(const gfx::Image& icon) const {
   return gfx::Image();
 }
 
+std::optional<lens::proto::LensOverlayInteractionResponse>
+OmniboxClient::GetLensOverlayInteractionResponse() const {
+  return std::nullopt;
+}
+
 bool OmniboxClient::ProcessExtensionKeyword(const std::u16string& text,
                                             const TemplateURL* template_url,
                                             const AutocompleteMatch& match,
@@ -99,4 +108,8 @@ gfx::Image OmniboxClient::GetFaviconForKeywordSearchProvider(
     const TemplateURL* template_url,
     FaviconFetchedCallback on_favicon_fetched) {
   return gfx::Image();
+}
+
+bool OmniboxClient::IsHistoryEmbeddingsEnabled() const {
+  return false;
 }

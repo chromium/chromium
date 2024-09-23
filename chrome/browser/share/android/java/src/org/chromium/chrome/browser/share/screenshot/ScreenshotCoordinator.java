@@ -71,7 +71,7 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
     @Override
     protected void handleScreenshot() {
         if (mScreenshot == null) {
-            // TODO(crbug/1024586): Show error message
+            // TODO(crbug.com/40107491): Show error message
             return;
         }
 

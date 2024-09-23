@@ -50,6 +50,58 @@
      */
     window.test_driver = {
         /**
+         Represents `WebDriver BiDi <https://w3c.github.io/webdriver-bidi>`_ protocol.
+         */
+        bidi: {
+            /**
+             * `log <https://w3c.github.io/webdriver-bidi/#module-log>`_ module.
+             */
+            log: {
+                /**
+                 * `log.entryAdded <https://w3c.github.io/webdriver-bidi/#event-log-entryAdded>`_ event.
+                 */
+                entry_added: {
+                    /**
+                     * Subscribe to the `log.entryAdded` event. This does not
+                     * add actual listeners. To listen to the event, use the
+                     * `on` or `once` methods.
+                     * @param {{contexts?: null | (string | Window)[]}} params - Parameters for the subscription.
+                     * * `contexts`: an array of window proxies or browsing
+                     * context ids to listen to the event. If not provided, the
+                     * event subscription is done for the current window's
+                     * browsing context. `null` for the global subscription.
+                     * @return {Promise<void>}
+                     */
+                    subscribe: async function (params = {}) {
+                        return window.test_driver_internal.bidi.log.entry_added.subscribe(params);
+                    },
+                    /**
+                     * Add an event listener for the `log.entryAdded
+                     * <https://w3c.github.io/webdriver-bidi/#event-log-entryAdded>`_ event. Make sure `subscribe` is
+                     * called before using this method.
+                     *
+                     * @param callback {function(event): void} - The callback
+                     * to be called when the event is fired.
+                     * @returns {function(): void} - A function to call to
+                     * remove the event listener.
+                     */
+                    on: function (callback) {
+                        return window.test_driver_internal.bidi.log.entry_added.on(callback);
+                    },
+                    once: function () {
+                        return new Promise(resolve => {
+                            const remove_handler = window.test_driver_internal.bidi.log.entry_added.on(
+                                data => {
+                                    resolve(data);
+                                    remove_handler();
+                                });
+                        });
+                    },
+                }
+            }
+        },
+
+        /**
          * Set the context in which testharness.js is loaded
          *
          * @param {WindowProxy} context - the window containing testharness.js
@@ -1023,6 +1075,148 @@
          */
         get_virtual_sensor_information: function(sensor_type, context=null) {
             return window.test_driver_internal.get_virtual_sensor_information(sensor_type, context);
+        },
+
+        /**
+         * Overrides device posture set by hardware.
+         *
+         * Matches the `Set device posture
+         * <https://w3c.github.io/device-posture/#set-device-posture>`_
+         * WebDriver command.
+         *
+         * @param {String} posture - A `DevicePostureType
+         *                           <https://w3c.github.io/device-posture/#dom-deviceposturetype>`_
+         *                           either "continuous" or "folded".
+         * @param {WindowProxy} [context=null] - Browsing context in which to
+         *                                       run the call, or null for the
+         *                                       current browsing context.
+         *
+         * @returns {Promise} Fulfilled when device posture is set.
+         *                    Rejected in case the WebDriver command errors out
+         *                    (including if a device posture of the given type
+         *                    does not exist).
+         */
+        set_device_posture: function(posture, context=null) {
+            return window.test_driver_internal.set_device_posture(posture, context);
+        },
+
+        /**
+         * Removes device posture override and returns device posture control
+         * back to hardware.
+         *
+         * Matches the `Clear device posture
+         * <https://w3c.github.io/device-posture/#clear-device-posture>`_
+         * WebDriver command.
+         *
+         * @param {WindowProxy} [context=null] - Browsing context in which to
+         *                                       run the call, or null for the
+         *                                       current browsing context.
+         *
+         * @returns {Promise} Fulfilled after the device posture override has
+         *                    been removed. Rejected in case the WebDriver
+         *                    command errors out.
+         */
+        clear_device_posture: function(context=null) {
+            return window.test_driver_internal.clear_device_posture(context);
+        },
+
+        /**
+         * Runs the `bounce tracking timer algorithm
+         * <https://privacycg.github.io/nav-tracking-mitigations/#bounce-tracking-timer>`_,
+         * which removes all hosts from the stateful bounce tracking map, without
+         * regard for the bounce tracking grace period and returns a list of the
+         * deleted hosts.
+         *
+         * Matches the `Run Bounce Tracking Mitigations
+         * <https://privacycg.github.io/nav-tracking-mitigations/#run-bounce-tracking-mitigations-command>`_
+         * WebDriver command.
+         *
+         * @param {WindowProxy} [context=null] - Browsing context in which to
+         *                                       run the call, or null for the
+         *                                       current browsing context.
+         * @returns {Promise} Fulfilled after the bounce tracking timer
+         *                    algorithm has finished running. Returns an array
+         *                    of all hosts that were in the stateful bounce
+         *                    tracking map before deletion occurred.
+         */
+        run_bounce_tracking_mitigations: function (context = null) {
+            return window.test_driver_internal.run_bounce_tracking_mitigations(context);
+        },
+
+        /**
+         * Creates a virtual pressure source.
+         *
+         * Matches the `Create virtual pressure source
+         * <https://w3c.github.io/compute-pressure/#create-virtual-pressure-source>`_
+         * WebDriver command.
+         *
+         * @param {String} source_type - A `virtual pressure source type
+         *                               <https://w3c.github.io/compute-pressure/#dom-pressuresource>`_
+         *                               such as "cpu".
+         * @param {Object} [metadata={}] - Optional parameters described
+         *                                 in `Create virtual pressure source
+         *                                 <https://w3c.github.io/compute-pressure/#create-virtual-pressure-source>`_.
+         * @param {WindowProxy} [context=null] - Browsing context in which to
+         *                                       run the call, or null for the
+         *                                       current browsing context.
+         *
+         * @returns {Promise} Fulfilled when virtual pressure source is created.
+         *                    Rejected in case the WebDriver command errors out
+         *                    (including if a virtual pressure source of the
+         *                    same type already exists).
+         */
+        create_virtual_pressure_source: function(source_type, metadata={}, context=null) {
+            return window.test_driver_internal.create_virtual_pressure_source(source_type, metadata, context);
+        },
+
+        /**
+         * Causes a virtual pressure source to report a new reading.
+         *
+         * Matches the `Update virtual pressure source
+         * <https://w3c.github.io/compute-pressure/#update-virtual-pressure-source>`_
+         * WebDriver command.
+         *
+         * @param {String} source_type - A `virtual pressure source type
+         *                               <https://w3c.github.io/compute-pressure/#dom-pressuresource>`_
+         *                               such as "cpu".
+         * @param {String} sample - A `virtual pressure state
+         *                          <https://w3c.github.io/compute-pressure/#dom-pressurestate>`_
+         *                          such as "critical".
+         * @param {WindowProxy} [context=null] - Browsing context in which to
+         *                                       run the call, or null for the
+         *                                       current browsing context.
+         *
+         * @returns {Promise} Fulfilled after the reading update reaches the
+         *                    virtual pressure source. Rejected in case the
+         *                    WebDriver command errors out (including if a
+         *                    virtual pressure source of the given type does not
+         *                    exist).
+         */
+        update_virtual_pressure_source: function(source_type, sample, context=null) {
+            return window.test_driver_internal.update_virtual_pressure_source(source_type, sample, context);
+        },
+
+        /**
+         * Removes created virtual pressure source.
+         *
+         * Matches the `Delete virtual pressure source
+         * <https://w3c.github.io/compute-pressure/#delete-virtual-pressure-source>`_
+         * WebDriver command.
+         *
+         * @param {String} source_type - A `virtual pressure source type
+         *                               <https://w3c.github.io/compute-pressure/#dom-pressuresource>`_
+         *                               such as "cpu".
+         * @param {WindowProxy} [context=null] - Browsing context in which to
+         *                                       run the call, or null for the
+         *                                       current browsing context.
+         *
+         * @returns {Promise} Fulfilled after the virtual pressure source has
+         *                    been removed or if a pressure source of the given
+         *                    type does not exist. Rejected in case the
+         *                    WebDriver command errors out.
+         */
+        remove_virtual_pressure_source: function(source_type, context=null) {
+            return window.test_driver_internal.remove_virtual_pressure_source(source_type, context);
         }
     };
 
@@ -1034,6 +1228,21 @@
          * implementation of one of the methods is not available.
          */
         in_automation: false,
+
+        bidi: {
+            log: {
+                entry_added: {
+                    async subscribe() {
+                        throw new Error(
+                            "bidi.log.entry_added.subscribe is not implemented by testdriver-vendor.js");
+                    },
+                    on() {
+                        throw new Error(
+                            "bidi.log.entry_added.on is not implemented by testdriver-vendor.js");
+                    }
+                }
+            }
+        },
 
         async click(element, coords) {
             if (this.in_automation) {
@@ -1055,6 +1264,14 @@
 
         async get_named_cookie(name, context=null) {
             throw new Error("get_named_cookie() is not implemented by testdriver-vendor.js");
+        },
+
+        async get_computed_role(element) {
+            throw new Error("get_computed_role is a testdriver.js function which cannot be run in this context.");
+        },
+
+        async get_computed_name(element) {
+            throw new Error("get_computed_name is a testdriver.js function which cannot be run in this context.");
         },
 
         async send_keys(element, keys) {
@@ -1203,6 +1420,30 @@
 
         async get_virtual_sensor_information(sensor_type, context=null) {
             throw new Error("get_virtual_sensor_information() is not implemented by testdriver-vendor.js");
+        },
+
+        async set_device_posture(posture, context=null) {
+            throw new Error("set_device_posture() is not implemented by testdriver-vendor.js");
+        },
+
+        async clear_device_posture(context=null) {
+            throw new Error("clear_device_posture() is not implemented by testdriver-vendor.js");
+        },
+
+        async run_bounce_tracking_mitigations(context=null) {
+            throw new Error("run_bounce_tracking_mitigations() is not implemented by testdriver-vendor.js");
+        },
+
+        async create_virtual_pressure_source(source_type, metadata={}, context=null) {
+            throw new Error("create_virtual_pressure_source() is not implemented by testdriver-vendor.js");
+        },
+
+        async update_virtual_pressure_source(source_type, sample, context=null) {
+            throw new Error("update_virtual_pressure_source() is not implemented by testdriver-vendor.js");
+        },
+
+        async remove_virtual_pressure_source(source_type, context=null) {
+            throw new Error("remove_virtual_pressure_source() is not implemented by testdriver-vendor.js");
         }
     };
 })();

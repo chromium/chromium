@@ -6,8 +6,11 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/feature_info.h"
+#include "gpu/command_buffer/service/graphite_image_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
@@ -16,13 +19,14 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTextureCompressionType.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrContextThreadSafeProxy.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
-#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
+#include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
+#include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -32,10 +36,13 @@
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
+#include "third_party/skia/include/gpu/vk/VulkanTypes.h"
 #endif
 
 namespace gpu {
@@ -119,11 +126,16 @@ GrContextOptions GetDefaultGrContextOptions() {
 
 skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
     const GpuDriverBugWorkarounds& workarounds) {
-  skgpu::graphite::ContextOptions options;
+  // Use the default resource cache limits used for Ganesh which is 96 MB for
+  // the resource cache and 8 MB for the glyph cache. These same values also get
+  // used for the GPU main and Viz compositor recorders later and the resource
+  // caches are not shared so don't use the large default value of 256 MB.
   size_t max_resource_cache_bytes;
   size_t glyph_cache_max_texture_bytes;
   DetermineGrCacheLimitsFromAvailableMemory(&max_resource_cache_bytes,
                                             &glyph_cache_max_texture_bytes);
+  skgpu::graphite::ContextOptions options;
+  options.fGpuBudgetInBytes = max_resource_cache_bytes;
   options.fGlyphCacheTextureMaximumBytes = glyph_cache_max_texture_bytes;
 
   // msaa_is_slow_2 excludes new Intel >= Gen 11 GPUs. We're unconditionally
@@ -141,7 +153,56 @@ skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
   // are played out of sequence this option should no longer be used.
   options.fDisableCachedGlyphUploads = true;
 
+  // Always emit labels in Skia. For Dawn, we have a toggle that controls
+  // whether labels are emitted to the underlying backend, which is currently
+  // only enabled on Windows or DCHECK builds on other platforms. For Metal,
+  // the labels are only emitted under the SK_ENABLE_MTL_DEBUG_INFO define.
+  options.fSetBackendLabels = true;
+
   return options;
+}
+
+void DumpBackgroundGraphiteMemoryStatistics(
+    const skgpu::graphite::Context* context,
+    const skgpu::graphite::Recorder* recorder,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  using base::trace_event::MemoryAllocatorDump;
+  static constexpr char kNamePurgeableSize[] = "purgeable_size";
+
+  std::string context_dump_name =
+      base::StringPrintf("skia/gpu_resources/graphite_context_0x%" PRIXPTR,
+                         reinterpret_cast<uintptr_t>(context));
+  MemoryAllocatorDump* context_dump =
+      pmd->CreateAllocatorDump(context_dump_name);
+  context_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                          MemoryAllocatorDump::kUnitsBytes,
+                          context->currentBudgetedBytes());
+  context_dump->AddScalar(kNamePurgeableSize, MemoryAllocatorDump::kUnitsBytes,
+                          context->currentPurgeableBytes());
+
+  std::string recorder_dump_name = base::StringPrintf(
+      "skia/gpu_resources/gpu_main_graphite_recorder_0x%" PRIXPTR,
+      reinterpret_cast<uintptr_t>(recorder));
+  MemoryAllocatorDump* recorder_dump =
+      pmd->CreateAllocatorDump(recorder_dump_name);
+  recorder_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                           MemoryAllocatorDump::kUnitsBytes,
+                           recorder->currentBudgetedBytes());
+  recorder_dump->AddScalar(kNamePurgeableSize, MemoryAllocatorDump::kUnitsBytes,
+                           recorder->currentPurgeableBytes());
+
+  // The ImageProvider's bytes are not included in the recorder's budgeted
+  // bytes as they are owned by Chrome, so dump them separately.
+  const auto* image_provider = static_cast<const gpu::GraphiteImageProvider*>(
+      recorder->clientImageProvider());
+  std::string image_provider_dump_name = base::StringPrintf(
+      "skia/gpu_resources/gpu_main_graphite_image_provider_0x%" PRIXPTR,
+      reinterpret_cast<uintptr_t>(image_provider));
+  MemoryAllocatorDump* image_provider_dump =
+      pmd->CreateAllocatorDump(image_provider_dump_name);
+  image_provider_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                                 MemoryAllocatorDump::kUnitsBytes,
+                                 image_provider->CurrentSizeInBytes());
 }
 
 GLuint GetGrGLBackendTextureFormat(
@@ -294,14 +355,16 @@ void DeleteSkSurface(SharedContextState* context_state,
 
 #if BUILDFLAG(ENABLE_VULKAN)
 GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image,
+                                  const viz::SharedImageFormat& si_format,
                                   const gfx::ColorSpace& color_space) {
   DCHECK(image);
   VkPhysicalDevice physical_device =
       image->device_queue()->GetVulkanPhysicalDevice();
-  GrVkYcbcrConversionInfo gr_ycbcr_info = CreateGrVkYcbcrConversionInfo(
-      physical_device, image->image_tiling(), image->format(), color_space,
-      image->ycbcr_info());
-  GrVkAlloc alloc;
+  skgpu::VulkanYcbcrConversionInfo gr_ycbcr_info =
+      CreateVulkanYcbcrConversionInfo(physical_device, image->image_tiling(),
+                                      image->format(), si_format, color_space,
+                                      image->ycbcr_info());
+  skgpu::VulkanAlloc alloc;
   alloc.fMemory = image->device_memory();
   alloc.fOffset = 0;
   alloc.fSize = image->device_size();
@@ -323,7 +386,8 @@ GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image,
        image->format() == VK_FORMAT_B8G8R8A8_UNORM ||
        image->format() == VK_FORMAT_B8G8R8_UNORM ||
        image->format() == VK_FORMAT_R8_UNORM ||
-       image->format() == VK_FORMAT_R8G8_UNORM)) {
+       image->format() == VK_FORMAT_R8G8_UNORM ||
+       image->format() == VK_FORMAT_R5G6B5_UNORM_PACK16)) {
     image_info.fImageTiling = VK_IMAGE_TILING_OPTIMAL;
   } else {
     image_info.fImageTiling = image->image_tiling();
@@ -347,19 +411,21 @@ GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image,
   return image_info;
 }
 
-GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
+GPU_GLES2_EXPORT skgpu::VulkanYcbcrConversionInfo
+CreateVulkanYcbcrConversionInfo(
     VkPhysicalDevice physical_device,
     VkImageTiling tiling,
     VkFormat format,
+    const viz::SharedImageFormat& si_format,
     const gfx::ColorSpace& color_space,
     const std::optional<VulkanYCbCrInfo>& ycbcr_info) {
   auto valid_ycbcr_info = ycbcr_info;
   if (!valid_ycbcr_info) {
     if (!VkFormatNeedsYcbcrSampler(format)) {
-      return GrVkYcbcrConversionInfo();
+      return skgpu::VulkanYcbcrConversionInfo();
     }
 
-    // YCbCr sampler is required
+    // YCbCr sampler is required.
     VkSamplerYcbcrModelConversion ycbcr_model =
         (color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::BT709)
             ? VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709
@@ -404,7 +470,7 @@ GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
           ? VK_FILTER_LINEAR
           : VK_FILTER_NEAREST;
 
-  GrVkYcbcrConversionInfo gr_ycbcr_info;
+  skgpu::VulkanYcbcrConversionInfo gr_ycbcr_info;
   gr_ycbcr_info.fFormat = vk_format;
   gr_ycbcr_info.fExternalFormat = valid_ycbcr_info->external_format;
   gr_ycbcr_info.fYcbcrModel = static_cast<VkSamplerYcbcrModelConversion>(
@@ -418,6 +484,23 @@ GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
   gr_ycbcr_info.fChromaFilter = chroma_filter;
   gr_ycbcr_info.fForceExplicitReconstruction = false;
   gr_ycbcr_info.fFormatFeatures = format_features;
+
+  if (!gr_ycbcr_info.fExternalFormat &&
+      (si_format.is_multi_plane() &&
+       si_format.plane_config() ==
+           viz::SharedImageFormat::PlaneConfig::kY_V_U)) {
+    switch (vk_format) {
+      case VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM:
+      case VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16:
+      case VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_420_UNORM_3PACK16:
+      case VK_FORMAT_G16_B16_R16_3PLANE_420_UNORM:
+        gr_ycbcr_info.fComponents.r = VK_COMPONENT_SWIZZLE_B;
+        gr_ycbcr_info.fComponents.b = VK_COMPONENT_SWIZZLE_R;
+        break;
+      default:
+        break;
+    }
+  }
 
   return gr_ycbcr_info;
 }

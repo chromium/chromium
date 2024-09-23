@@ -11,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -22,7 +23,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Unit tests for CloseWatcher's ability to receive signals from the system back button. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -46,7 +46,7 @@ public class CloseWatcherTest {
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTab =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mActivityTestRule.getActivity().getActivityTab());
     }
 
@@ -56,7 +56,7 @@ public class CloseWatcherTest {
     public void testBackButtonTriggersCloseWatcher() throws Throwable {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(TEST_URL);
-        TestThreadUtils.runOnUiThreadBlocking(() -> activity.onBackPressed());
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onBackPressed());
         new TabTitleObserver(mTab, "SUCCESS").waitForTitleUpdate(3);
     }
 
@@ -66,7 +66,7 @@ public class CloseWatcherTest {
     public void testBackButtonTriggersCloseWatcher_BackGestureRefactor() throws Throwable {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(TEST_URL);
-        TestThreadUtils.runOnUiThreadBlocking(() -> activity.onBackPressed());
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onBackPressed());
         new TabTitleObserver(mTab, "SUCCESS").waitForTitleUpdate(3);
     }
 
@@ -80,7 +80,7 @@ public class CloseWatcherTest {
                         "<dialog id=mydialog>hello</dialog>"
                                 + "<script>mydialog.showModal();mydialog.onclose = () =>"
                                 + " window.document.title = 'SUCCESS';</script>"));
-        TestThreadUtils.runOnUiThreadBlocking(() -> activity.onBackPressed());
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onBackPressed());
         new TabTitleObserver(mTab, "SUCCESS").waitForTitleUpdate(3);
     }
 
@@ -94,7 +94,7 @@ public class CloseWatcherTest {
                         "<dialog id=mydialog>hello</dialog>"
                                 + "<script>mydialog.showModal();mydialog.onclose = () =>"
                                 + " window.document.title = 'SUCCESS';</script>"));
-        TestThreadUtils.runOnUiThreadBlocking(() -> activity.onBackPressed());
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.onBackPressed());
         new TabTitleObserver(mTab, "SUCCESS").waitForTitleUpdate(3);
     }
 }

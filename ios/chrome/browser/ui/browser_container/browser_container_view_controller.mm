@@ -7,10 +7,10 @@
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/browser_container/browser_edit_menu_handler.h"
-#import "ios/chrome/browser/ui/link_to_text/link_to_text_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -56,12 +56,12 @@
 - (void)dismissViewControllerAnimated:(BOOL)animated
                            completion:(void (^)())completion {
   if (!self.presentedViewController) {
-    // TODO(crbug.com/801165): On iOS10, UIDocumentMenuViewController and
+    // TODO(crbug.com/41364311): On iOS10, UIDocumentMenuViewController and
     // WKFileUploadPanel somehow combine to call dismiss twice instead of once.
     // The second call would dismiss the BrowserContainerViewController itself,
     // so look for that case and return early.
     //
-    // TODO(crbug.com/852367): A similar bug exists on all iOS versions with
+    // TODO(crbug.com/40580587): A similar bug exists on all iOS versions with
     // WKFileUploadPanel and UIDocumentPickerViewController. See also
     // https://crbug.com/811671.
     //

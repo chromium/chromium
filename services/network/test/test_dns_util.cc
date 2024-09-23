@@ -45,8 +45,8 @@ DnsLookupResult BlockingDnsLookup(
                          const std::optional<net::HostResolverEndpointResults>&>
       future;
   auto resolver = SimpleHostResolver::Create(network_context);
-  // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger HTTPS
-  // DNS resource record query.
+  // TODO(crbug.com/40235854): Consider passing a SchemeHostPort to trigger
+  // HTTPS DNS resource record query.
   resolver->ResolveHost(
       mojom::HostResolverHost::NewHostPortPair(host_port_pair),
       network_anonymization_key, std::move(params), future.GetCallback());

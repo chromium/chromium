@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <winternl.h>
 
-#include <memory>
+#include "base/containers/heap_array.h"
 
 namespace {
 #pragma pack(push, 1)
@@ -162,9 +162,10 @@ NTSTATUS ServiceResolverThunk::Setup(const void* target_module,
 
   relative_jump_ = 0;
   size_t thunk_bytes = GetThunkSize();
-  std::unique_ptr<char[]> thunk_buffer(new char[thunk_bytes]);
+  base::HeapArray<char> thunk_buffer =
+      base::HeapArray<char>::Uninit(thunk_bytes);
   ServiceFullThunk* thunk =
-      reinterpret_cast<ServiceFullThunk*>(thunk_buffer.get());
+      reinterpret_cast<ServiceFullThunk*>(thunk_buffer.data());
 
   if (!IsFunctionAService(&thunk->original) &&
       (!relaxed_ || !SaveOriginalFunction(&thunk->original, thunk_storage))) {

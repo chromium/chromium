@@ -183,7 +183,7 @@ class OfflinePageUtilsTest : public testing::Test,
   std::unique_ptr<content::WebContents> web_contents_;
   base::test::ScopedFeatureList scoped_feature_list_;
 #if BUILDFLAG(IS_ANDROID)
-  chrome::android::MockDownloadController download_controller_;
+  android::MockDownloadController download_controller_;
   // OfflinePageTabHelper instantiates PrefetchService which in turn requests a
   // fresh GCM token automatically. This causes the request to be done
   // synchronously instead of with a posted task.
@@ -412,7 +412,7 @@ TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeBetween) {
 
 TEST_F(OfflinePageUtilsTest, TestGetCachedOfflinePageSizeNoPageInModel) {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(https://crbug.com/1002762): Fix this test to run in < action_timeout()
+  // TODO(crbug.com/40646823): Fix this test to run in < action_timeout()
   // on the Android bots.
   const base::test::ScopedRunLoopTimeout increased_run_timeout(
       FROM_HERE, TestTimeouts::action_max_timeout());

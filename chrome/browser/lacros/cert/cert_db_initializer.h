@@ -21,7 +21,7 @@ class CertDbInitializer {
   // Must be called on the UI thread. Returns a Getter that may only be invoked
   // on the IO thread. To avoid UAF, the getter must be immediately posted to
   // the IO thread and then invoked.
-  // TODO(crbug.com/1186373): Rework the getter interface.
+  // TODO(crbug.com/40753707): Rework the getter interface.
   virtual NssCertDatabaseGetter CreateNssCertDatabaseGetterForIOThread() = 0;
 };
 

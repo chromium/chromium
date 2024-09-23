@@ -1,0 +1,43 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "MutationEventsEnabled": true
+        },
+        "prefs": {
+          "policy.deprecated_mutation_events_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "MutationEventsEnabled": false
+        },
+        "prefs": {
+          "policy.deprecated_mutation_events_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "policy.deprecated_mutation_events_enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

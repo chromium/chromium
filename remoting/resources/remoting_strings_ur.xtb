@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">کلائنٹ پر <ph name="URL" /> کو کھولنے سے قاصر۔</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2366718077645204424">میزبان تک پہنچنے سے قاصر۔ یہ شاید نیٹ ورک کے اس کنفیگریشن کی وجہ سے ہے جو آپ استعمال کر رہے ہیں۔</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> آخری بار <ph name="RELATIVE_TIMESTAMP" /> آن لائن دیکھا گیا۔</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> کو 'ایکسیسبیلٹی' کی اجازت دیں</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> سے منسلک ہے</translation>
 <translation id="2540992418118313681">کیا آپ دوسرے صارف کے دیکھنے اور کنٹرول کرنے کیلئے اس کمپیوٹر کا اشتراک کرنا چاہیں گے؟</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">سیکیورٹی کلید کی ریموٹنگ کارروائی</translation>
 <translation id="3581045510967524389">نیٹ ورک سے منسلک نہیں ہوسکا۔ براہ کرم چیک کریں کہ آپ کا آلہ آن لائن ہے۔</translation>
 <translation id="3596628256176442606">‏یہ سروس Chromoting کلائنٹس کی جانب سے آنے والے کنکشنز کو فعال کرتی ہے۔</translation>
-<translation id="369442766917958684">آف لائن۔</translation>
 <translation id="3695446226812920698">طریقہ جانیں</translation>
 <translation id="3776024066357219166">‏آپ کے Chrome ریموٹ ڈیسک ٹاپ کا سیشن ختم ہو گیا ہے۔</translation>
 <translation id="3858860766373142691">نام</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">آپ کا ڈیسک ٹاپ فی الحال <ph name="USER" /> کے ساتھ اشتراک کردہ ہے۔</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> کے بطور سائن ان کردہ۔</translation>
 <translation id="579702532610384533">دوبارہ منسلک ہوں</translation>
 <translation id="5810269635982033450">اسکرین ایک ٹریک پیڈ کی طرح کام کرتی ہے</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> نے آپ کی اسکرین کو دیکھنے اور آپ کے کی بورڈ اور ماؤس کو کنٹرول کے لیے رسائی کی درخواست کی ہے۔ اگر آپ اس درخواست کی توقع نہیں کر رہے ہیں تو "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" کو دبائیں۔ بصورت دیگر تیار ہونے پر کنکشن کی اجازت کے لیے "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" کو منتخب کریں۔</translation>

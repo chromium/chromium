@@ -28,6 +28,8 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -91,6 +93,10 @@ std::unique_ptr<KeyedService> BuildVolumeManager(
 }
 
 class CopyOrMoveIOTaskTestBase : public testing::Test {
+ public:
+  CopyOrMoveIOTaskTestBase()
+      : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+
  protected:
   void SetUp() override {
     // Define a VolumeManager to associate with the testing profile.
@@ -110,6 +116,7 @@ class CopyOrMoveIOTaskTestBase : public testing::Test {
         base::FilePath::FromUTF8Unsafe(path));
   }
 
+  ScopedTestingLocalState scoped_testing_local_state_;
   content::BrowserTaskEnvironment task_environment_;
   ash::disks::FakeDiskMountManager disk_mount_manager_;
   TestingProfile profile_;
@@ -795,7 +802,7 @@ TEST_F(CopyOrMoveIsCrossFileSystemTest, SameVolumeNotDownloads) {
 
 TEST_F(CopyOrMoveIsCrossFileSystemTest, MyFilesToMyFiles) {
   // Downloads is intentionally misspelled in these 2 test cases. These paths
-  // should be interpreted as regular "My files" paths.
+  // should be interpreted as regular MyFiles paths.
   base::FilePath source_path = downloads_volume_path_.Append("a.txt");
   base::FilePath destination_path =
       downloads_volume_path_.Append("Download/a.txt");
@@ -810,21 +817,21 @@ TEST_F(CopyOrMoveIsCrossFileSystemTest, MyFileToDownloads) {
   base::FilePath source_path = downloads_volume_path_.Append("a.txt");
   base::FilePath destination_path =
       downloads_volume_path_.Append("Downloads/b/a.txt");
-  ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
+  ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
 
   source_path = downloads_volume_path_.Append("a/b.txt");
   destination_path = downloads_volume_path_.Append("Downloads");
-  ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
+  ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
 }
 
 TEST_F(CopyOrMoveIsCrossFileSystemTest, DownloadsToMyFiles) {
   base::FilePath source_path = downloads_volume_path_.Append("Downloads/a.txt");
   base::FilePath destination_path = downloads_volume_path_.Append("b/a.txt");
-  ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
+  ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
 
   source_path = downloads_volume_path_.Append("Downloads/a/b.txt");
   destination_path = downloads_volume_path_;
-  ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
+  ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
 }
 
 TEST_F(CopyOrMoveIsCrossFileSystemTest, DownloadsToDownloads) {

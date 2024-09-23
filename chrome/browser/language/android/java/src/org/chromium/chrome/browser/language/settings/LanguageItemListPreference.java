@@ -8,6 +8,8 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
+import androidx.fragment.app.Fragment;
+
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 
@@ -34,10 +36,10 @@ public class LanguageItemListPreference extends ChromeBasePreference
     }
 
     /**
-     * @return The name of the Fragment to launch when this preference is clicked.
+     * @return The class of the Fragment to launch when this preference is clicked.
      */
-    public String getFragmentClassName() {
-        return mLanguageItemListDelegate.getFragmentClassName();
+    public Class<? extends Fragment> getFragmentClass() {
+        return mLanguageItemListDelegate.getFragmentClass();
     }
 
     /**
@@ -73,7 +75,7 @@ public class LanguageItemListPreference extends ChromeBasePreference
             if (++index > COLLECTION_SUMMARY_ITEM_LIMIT) break;
             languageNames.add(item.getDisplayName());
         }
-        // TODO(crbug.com/1181224): Make sure to localize the separator.
+        // TODO(crbug.com/40170296): Make sure to localize the separator.
         return TextUtils.join(", ", languageNames);
     }
 }

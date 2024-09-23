@@ -3,39 +3,38 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_mediator+Testing.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/location.h"
 #import "base/memory/raw_ptr.h"
-#import "base/strings/string_piece.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
-#import "base/test/scoped_feature_list.h"
+#import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_mediator+Testing.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -67,7 +66,7 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 }  // namespace
 
 @interface FakePasswordsConsumer : NSObject <PasswordsConsumer> {
-  std::vector<password_manager::CredentialUIEntry> _passwords;
+  std::vector<password_manager::CredentialUIEntry> _credentials;
   std::vector<password_manager::CredentialUIEntry> _blockedSites;
   std::vector<password_manager::AffiliatedGroup> _affiliatedGroups;
 }
@@ -89,10 +88,11 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
          insecurePasswordsCount:(NSInteger)insecureCount {
 }
 
-- (void)setPasswords:(std::vector<password_manager::CredentialUIEntry>)passwords
-        blockedSites:
-            (std::vector<password_manager::CredentialUIEntry>)blockedSites {
-  _passwords = passwords;
+- (void)setCredentials:
+            (std::vector<password_manager::CredentialUIEntry>)credentials
+          blockedSites:
+              (std::vector<password_manager::CredentialUIEntry>)blockedSites {
+  _credentials = credentials;
   _blockedSites = blockedSites;
 }
 
@@ -135,13 +135,13 @@ class PasswordsMediatorTest : public BlockCleanupTest {
         IOSChromeAffiliationServiceFactory::GetInstance(),
         base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
           return std::unique_ptr<KeyedService>(
-              std::make_unique<password_manager::FakeAffiliationService>());
+              std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementMockTracker));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
@@ -203,7 +203,7 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerOnPasswordChange) {
   EXPECT_THAT(affiliatedGroups[0].GetCredentials(),
               testing::ElementsAre(credential));
   // Remove form from the store.
-  store()->RemoveLogin(form);
+  store()->RemoveLogin(FROM_HERE, form);
   RunUntilIdle();
   affiliatedGroups = [consumer() affiliatedGroups];
   EXPECT_THAT(affiliatedGroups, testing::IsEmpty());
@@ -231,7 +231,12 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerToShowPromoOrNot) {
 // Tests that `Dismissed` is called on the FET on disconnect when the Password
 // Manager widget promo was shown and was not dismissed by the user.
 TEST_F(PasswordsMediatorTest, NotifiesFETToDismissPromoOnDisconnect) {
-  mediator().shouldNotifyFETToDismissPasswordManagerWidgetPromo = YES;
+  // Show the promo first.
+  EXPECT_CALL(*mockTracker(), ShouldTriggerHelpUI(testing::_))
+      .WillRepeatedly(testing::Return(true));
+  [mediator() askFETToShowPasswordManagerWidgetPromo];
+
+  ASSERT_TRUE(mediator().shouldNotifyFETToDismissPasswordManagerWidgetPromo);
 
   EXPECT_CALL(
       *mockTracker(),
@@ -245,7 +250,12 @@ TEST_F(PasswordsMediatorTest, NotifiesFETToDismissPromoOnDisconnect) {
 // Tests that `NotifyEvent` and `Dismissed` is called on the FET when the user
 // taps the close button of the Password Manager widget promo.
 TEST_F(PasswordsMediatorTest, NotifiesFETToDismissPromoOnPromoClosed) {
-  mediator().shouldNotifyFETToDismissPasswordManagerWidgetPromo = YES;
+  // Show the promo first.
+  EXPECT_CALL(*mockTracker(), ShouldTriggerHelpUI(testing::_))
+      .WillRepeatedly(testing::Return(true));
+  [mediator() askFETToShowPasswordManagerWidgetPromo];
+
+  ASSERT_TRUE(mediator().shouldNotifyFETToDismissPasswordManagerWidgetPromo);
 
   EXPECT_CALL(
       *mockTracker(),

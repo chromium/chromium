@@ -19,10 +19,7 @@ Typical usage:
         parsed_cmdline_args, list_of_all_test_names)
 """
 
-import argparse
-import os
 import re
-import sys
 
 
 class _TestFilter:
@@ -76,9 +73,9 @@ class _TestFilter:
     def __str__(self):
         result = self._filter_text
         if self._is_exclusion_filter:
-            result = "-" + result
+            result = '-' + result
         if self._is_prefix_match:
-            result += "*"
+            result += '*'
         return result
 
 
@@ -178,9 +175,9 @@ def _shard_tests(list_of_test_names, env):
     assert shard_index < total_shards
 
     result = []
-    for i in range(len(list_of_test_names)):
+    for i, test_name in enumerate(list_of_test_names):
         if (i % total_shards) == shard_index:
-            result.append(list_of_test_names[i])
+            result.append(test_name)
 
     return result
 

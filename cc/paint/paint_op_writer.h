@@ -2,28 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef CC_PAINT_PAINT_OP_WRITER_H_
 #define CC_PAINT_PAINT_OP_WRITER_H_
 
 #include <memory>
+#include <type_traits>
 #include <vector>
 
 #include "base/bits.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/stack_allocated.h"
 #include "base/numerics/checked_math.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer_serializer.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
+#include "third_party/skia/include/effects/SkGradientShader.h"
 
 struct SkGainmapInfo;
 struct SkHighContrastConfig;
 struct SkRect;
 struct SkIRect;
+class SkM44;
 class SkRRect;
 namespace sktext::gpu {
 class Slug;
@@ -42,9 +51,13 @@ namespace cc {
 class ColorFilter;
 class DecodedDrawImage;
 class DrawImage;
+class DrawLooper;
 class PaintShader;
+class PathEffect;
 
 class CC_PAINT_EXPORT PaintOpWriter {
+  STACK_ALLOCATED();
+
  public:
   // The SerializeOptions passed to the writer must set the required fields
   // if it can be used for serializing images, paint records or text blobs.
@@ -58,12 +71,12 @@ class CC_PAINT_EXPORT PaintOpWriter {
                 size_t size,
                 const PaintOp::SerializeOptions& options,
                 bool enable_security_constraints = false)
-      : memory_(static_cast<char*>(memory)),
+      : memory_(static_cast<uint8_t*>(memory)),
         size_(base::bits::AlignDown(size, kDefaultAlignment)),
         options_(options),
         enable_security_constraints_(enable_security_constraints) {
     memory_end_ = memory_ + size_;
-    AssertAlignment(memory, BufferAlignment());
+    AssertAlignment(memory_, BufferAlignment());
   }
 
   ~PaintOpWriter();
@@ -75,7 +88,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
         static_cast<T*>(base::AlignedAlloc(size, kMaxAlignment)));
   }
 
-  const PaintOp::SerializeOptions& options() const { return *options_; }
+  const PaintOp::SerializeOptions& options() const { return options_; }
 
   // Type and serialized_size fit in kHeaderBytes, using 1 byte and 3 bytes,
   // respectively. Note that serialized_size in the header is different from
@@ -145,12 +158,13 @@ class CC_PAINT_EXPORT PaintOpWriter {
   static inline size_t SerializedSize(T* p) {
     return SerializedSize(static_cast<const T*>(p));
   }
-  static size_t SerializedSize(const SkFlattenable* flattenable);
   static size_t SerializedSize(const SkColorSpace* color_space);
   static size_t SerializedSize(const gfx::HDRMetadata& hdr_metadata);
   static size_t SerializedSize(const SkGainmapInfo& gainmap_info);
   static size_t SerializedSize(const ColorFilter* filter);
+  static size_t SerializedSize(const DrawLooper* looper);
   static size_t SerializedSize(const PaintFilter* filter);
+  static size_t SerializedSize(const PathEffect* effect);
 
   template <typename T>
   static size_t SerializedSize(const std::optional<T>& o) {
@@ -226,6 +240,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(SkYUVAInfo::Subsampling subsampling);
   void Write(const gpu::Mailbox& mailbox);
   void Write(const SkHighContrastConfig& config);
+  void Write(const SkGradientShader::Interpolation& interpolation);
 
   // Shaders and filters need to know the current transform in order to lock in
   // the scale factor they will be evaluated at after deserialization. This is
@@ -236,7 +251,12 @@ class CC_PAINT_EXPORT PaintOpWriter {
              PaintFlags::FilterQuality quality,
              const SkM44& current_ctm);
   void Write(const ColorFilter* filter);
+  void Write(const DrawLooper* looper);
   void Write(const PaintFilter* filter, const SkM44& current_ctm);
+  void Write(const sk_sp<PaintFilter> filter, const SkM44& current_ctm) {
+    Write(filter.get(), current_ctm);
+  }
+  void Write(const PathEffect* effect);
   void Write(const gfx::HDRMetadata& hdr_metadata);
 
   void Write(SkClipOp op) { WriteEnum(op); }
@@ -257,15 +277,15 @@ class CC_PAINT_EXPORT PaintOpWriter {
   // of [kDefaultAlignment, BufferAlignment()].
   void AlignMemory(size_t alignment);
 
-  static void AssertAlignment(const volatile void* memory, size_t alignment) {
+  static void AssertAlignment(const volatile uint8_t* memory,
+                              size_t alignment) {
 #if DCHECK_IS_ON()
-    uintptr_t uintptr = reinterpret_cast<uintptr_t>(memory);
-    DCHECK_EQ(uintptr, base::bits::AlignUp(uintptr, alignment));
+    DCHECK_EQ(memory, base::bits::AlignUp(memory, alignment));
 #endif
   }
   void AssertFieldAlignment() {
 #if DCHECK_IS_ON()
-    AssertAlignment(memory_.get(), kDefaultAlignment);
+    AssertAlignment(memory_, kDefaultAlignment);
 #endif
   }
 
@@ -319,7 +339,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
     // above (the comma followed by ... generates a fold expression).
     // Note that `vals` on the inside of the fold expression refers to
     // one specific value.
-    char* ptr = memory_.get();
+    uint8_t* ptr = memory_;
     (
         [&] {
           static_assert(std::is_trivially_copyable_v<decltype(vals)>);
@@ -332,9 +352,19 @@ class CC_PAINT_EXPORT PaintOpWriter {
   }
 
   template <typename T>
+    requires(std::is_trivially_copyable_v<T>)
   void Write(const std::vector<T>& vec) {
     WriteSize(vec.size());
     WriteData(vec.size() * sizeof(T), vec.data());
+  }
+
+  template <typename T, typename... Args>
+    requires(!std::is_trivially_copyable_v<T>)
+  void Write(const std::vector<T>& vec, const Args&... args) {
+    WriteSize(vec.size());
+    for (const T& t : vec) {
+      Write(t, args...);
+    }
   }
 
  private:
@@ -350,13 +380,11 @@ class CC_PAINT_EXPORT PaintOpWriter {
       return;
     }
 
-    reinterpret_cast<T*>(memory_.get())[0] = val;
+    reinterpret_cast<T*>(memory_)[0] = val;
 
     memory_ += size;
     AssertFieldAlignment();
   }
-
-  void WriteFlattenable(const SkFlattenable* val);
 
   template <typename Enum>
   void WriteEnum(Enum value) {
@@ -419,8 +447,8 @@ class CC_PAINT_EXPORT PaintOpWriter {
     }
   }
   size_t remaining_bytes() const {
-    DCHECK_LE(memory_.get(), memory_end_);
-    return memory_end_ - memory_.get();
+    DCHECK_LE(memory_, memory_end_);
+    return memory_end_ - memory_;
   }
   sk_sp<PaintShader> TransformShaderIfNecessary(
       const PaintShader* original,
@@ -431,15 +459,15 @@ class CC_PAINT_EXPORT PaintOpWriter {
       bool* paint_image_needs_mips,
       gpu::Mailbox* mailbox_out);
 
-  raw_ptr<char, AllowPtrArithmetic> memory_ = nullptr;
-  const char* memory_end_ = nullptr;
+  uint8_t* memory_ = nullptr;
+  const uint8_t* memory_end_ = nullptr;
   size_t size_ = 0u;
-  const raw_ref<const PaintOp::SerializeOptions> options_;
+  const PaintOp::SerializeOptions& options_;
   bool valid_ = true;
 
   // Indicates that the following security constraints must be applied during
   // serialization:
-  // 1) PaintRecords and SkDrawLoopers must be ignored.
+  // 1) PaintRecords and DrawLoopers must be ignored.
   // 2) Codec backed images must be decoded and only the bitmap should be
   // serialized.
   const bool enable_security_constraints_;

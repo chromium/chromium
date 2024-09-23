@@ -34,7 +34,7 @@ class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
   void PostMainMessageLoopRun() override;
 #endif
   void PreProfileInit() override;
-#if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
+#if (defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)) || BUILDFLAG(IS_CHROMEOS_ASH)
   // Only needed for native Linux, to set up the low-memory-monitor-based memory
   // monitoring (which depends on D-Bus).
   void PostBrowserStart() override;
@@ -49,6 +49,12 @@ class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
   // ChromeBrowserMainPartsAsh and ChromeBrowserMainPartsLacros.
   scoped_refptr<chromeos::tast_support::StackSamplingRecorder>
       stack_sampling_recorder_;
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Once Sanitize is completed, ash is restarted. After ash has restarted, we
+  // should check if the restart has happened right after a sanitize. If that is
+  // the case, sanitize done dialog should be shown to the user.
+  void CheckIfSanitizeCompleted();
 #endif
 };
 

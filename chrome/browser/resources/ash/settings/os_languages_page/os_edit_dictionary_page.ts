@@ -22,6 +22,7 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {GlobalScrollTargetMixin} from '../common/global_scroll_target_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../router.js';
 
 import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
@@ -132,7 +133,7 @@ export class OsSettingsEditDictionaryPageElement extends
     this.newWordValue_ = '';
     if (word) {
       this.languageSettingsPrivate_.addSpellcheckWord(word);
-      recordSettingChange();
+      recordSettingChange(Setting.kAddSpellCheckWord);
     }
   }
 
@@ -221,7 +222,7 @@ export class OsSettingsEditDictionaryPageElement extends
    */
   private onRemoveWordClick_(e: DomRepeatEvent<string>): void {
     this.languageSettingsPrivate_.removeSpellcheckWord(e.model.item);
-    recordSettingChange();
+    recordSettingChange(Setting.kRemoveSpellCheckWord);
   }
 }
 

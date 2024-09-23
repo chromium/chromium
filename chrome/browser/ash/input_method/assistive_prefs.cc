@@ -15,13 +15,13 @@
 namespace ash {
 namespace input_method {
 
-bool IsPredictiveWritingPrefEnabled(PrefService* pref_service,
+bool IsPredictiveWritingPrefEnabled(const PrefService& pref_service,
                                     const std::string& engine_id) {
-  if (!IsPhysicalKeyboardPredictiveWritingAllowed(*pref_service)) {
+  if (!IsPhysicalKeyboardPredictiveWritingAllowed(pref_service)) {
     return false;
   }
   const base::Value::Dict& input_method_settings =
-      pref_service->GetDict(::prefs::kLanguageInputMethodSpecificSettings);
+      pref_service.GetDict(::prefs::kLanguageInputMethodSpecificSettings);
   std::optional<bool> predictive_writing_setting =
       input_method_settings.FindBoolByDottedPath(
           engine_id + ".physicalKeyboardEnablePredictiveWriting");

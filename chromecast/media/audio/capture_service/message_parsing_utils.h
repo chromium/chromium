@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/media/audio/capture_service/constants.h"
 #include "media/base/audio_bus.h"
@@ -50,10 +51,11 @@ scoped_refptr<net::IOBufferWithSize> MakeHandshakeMessage(
 // size).
 // Note serialized data cannot be empty, and the method will fail and return
 // null if |data| is null or |data_size| is zero.
+//
+// **This looks like dead code but is used by internal code.**
 scoped_refptr<net::IOBufferWithSize> MakeSerializedMessage(
     MessageType message_type,
-    const char* data,
-    size_t data_size);
+    base::span<const uint8_t> data);
 
 // Read the audio data in the message and copy to |audio_bus| based on
 // |stream_info|. Return false if fails.
@@ -81,9 +83,14 @@ size_t DataSizeInBytes(const StreamInfo& stream_info);
 
 // Following methods are exposed for unittests:
 
-// Write |buf_size|, in big-endian order, to |buf|, and fill |data| to |buf|
-// afterward.
-void FillBuffer(char* buf, size_t buf_size, const void* data, size_t data_size);
+// Writes into buf:
+// - The size of `buf` as 16 bits in big-endian order.
+// - The contents of `data`, which must fit into the remaining bytes of `buf`.
+//
+// Any other bytes in `buf` are left **uninitialized**. The unwritten tail of
+// `buf` is returned, which will be empty if all of `buf` was filled.
+base::span<uint8_t> FillBuffer(base::span<uint8_t> buf,
+                               base::span<const uint8_t> data);
 
 // Populate header of the PCM audio message, including the SmallMessageSocket
 // size bits.

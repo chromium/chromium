@@ -78,7 +78,7 @@ constexpr BackendUsage SelectedBackendToMetric(
     case os_crypt::SelectedLinuxBackend::KWALLET6:
       return used ? BackendUsage::kKwallet6 : BackendUsage::kKwallet6Failed;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return BackendUsage::kDeferFailed;
 }
 
@@ -98,7 +98,7 @@ const char* SelectedLinuxBackendToString(
     case os_crypt::SelectedLinuxBackend::KWALLET6:
       return "KWALLET6";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -118,7 +118,7 @@ std::unique_ptr<KeyStorageLinux> KeyStorageLinux::CreateService(
   VLOG(1) << "Selected backend for OSCrypt: "
           << SelectedLinuxBackendToString(selected_backend);
 
-  // TODO(crbug.com/782851) Schedule the initialisation on each backend's
+  // TODO(crbug.com/40548841) Schedule the initialisation on each backend's
   // favourite thread.
 
   // Try initializing the selected backend.

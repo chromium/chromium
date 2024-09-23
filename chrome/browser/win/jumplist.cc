@@ -5,6 +5,7 @@
 #include "chrome/browser/win/jumplist.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -15,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -181,7 +181,7 @@ bool UpdateTaskCategory(
     scoped_refptr<ShellLinkItem> chrome = CreateShellLink(cmd_line_profile_dir);
     std::u16string chrome_title = l10n_util::GetStringUTF16(IDS_NEW_WINDOW);
     base::ReplaceSubstringsAfterOffset(&chrome_title, 0, u"&",
-                                       base::StringPiece16());
+                                       std::u16string_view());
     chrome->set_title(chrome_title);
     chrome->set_icon(chrome_path, icon_index);
     items.push_back(chrome);
@@ -196,7 +196,7 @@ bool UpdateTaskCategory(
     std::u16string incognito_title =
         l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW);
     base::ReplaceSubstringsAfterOffset(&incognito_title, 0, u"&",
-                                       base::StringPiece16());
+                                       std::u16string_view());
     incognito->set_title(incognito_title);
     incognito->set_icon(chrome_path, icon_resources::kIncognitoIndex);
     items.push_back(incognito);
@@ -427,17 +427,16 @@ void JumpList::ProcessTabRestoreServiceNotification() {
     if (recently_closed_pages_.size() >= kRecentlyClosedItems)
       break;
     switch (entry->type) {
-      case sessions::TabRestoreService::TAB:
-        AddTab(static_cast<const sessions::TabRestoreService::Tab&>(*entry),
+      case sessions::tab_restore::Type::TAB:
+        AddTab(static_cast<const sessions::tab_restore::Tab&>(*entry),
                profile_dir, kRecentlyClosedItems);
         break;
-      case sessions::TabRestoreService::WINDOW:
-        AddWindow(
-            static_cast<const sessions::TabRestoreService::Window&>(*entry),
-            profile_dir, kRecentlyClosedItems);
+      case sessions::tab_restore::Type::WINDOW:
+        AddWindow(static_cast<const sessions::tab_restore::Window&>(*entry),
+                  profile_dir, kRecentlyClosedItems);
         break;
-      case sessions::TabRestoreService::GROUP:
-        AddGroup(static_cast<const sessions::TabRestoreService::Group&>(*entry),
+      case sessions::tab_restore::Type::GROUP:
+        AddGroup(static_cast<const sessions::tab_restore::Group&>(*entry),
                  profile_dir, kRecentlyClosedItems);
         break;
     }
@@ -482,7 +481,7 @@ void JumpList::OnMostVisitedURLsAvailable(
   StartLoadingFavicon();
 }
 
-bool JumpList::AddTab(const sessions::TabRestoreService::Tab& tab,
+bool JumpList::AddTab(const sessions::tab_restore::Tab& tab,
                       const base::FilePath& cmd_line_profile_dir,
                       size_t max_items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -508,7 +507,7 @@ bool JumpList::AddTab(const sessions::TabRestoreService::Tab& tab,
   return true;
 }
 
-void JumpList::AddWindow(const sessions::TabRestoreService::Window& window,
+void JumpList::AddWindow(const sessions::tab_restore::Window& window,
                          const base::FilePath& cmd_line_profile_dir,
                          size_t max_items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -520,7 +519,7 @@ void JumpList::AddWindow(const sessions::TabRestoreService::Window& window,
   }
 }
 
-void JumpList::AddGroup(const sessions::TabRestoreService::Group& group,
+void JumpList::AddGroup(const sessions::tab_restore::Group& group,
                         const base::FilePath& cmd_line_profile_dir,
                         size_t max_items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

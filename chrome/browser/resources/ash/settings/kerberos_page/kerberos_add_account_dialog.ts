@@ -29,6 +29,7 @@ import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/pol
 
 import {castExists} from '../assert_extras.js';
 import {recordSettingChange} from '../metrics_recorder.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
 import {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType, ValidateKerberosConfigResult} from './kerberos_accounts_browser_proxy.js';
 import {getTemplate} from './kerberos_add_account_dialog.html.js';
@@ -288,13 +289,13 @@ export class KerberosAddAccountDialogElement extends
           if (error === KerberosErrorType.NONE) {
             this.accountWasRefreshed = this.presetAccount != null;
             this.$.addDialog.close();
+            recordSettingChange(Setting.kAddKerberosTicketV2);
             return;
           }
 
           // Triggers the UI to update error messages.
           this.updateErrorMessages_(error);
         });
-    recordSettingChange();
   }
 
   private onPasswordInput_(): void {
@@ -352,7 +353,6 @@ export class KerberosAddAccountDialogElement extends
       // Triggers the UI to update error messages.
       this.updateConfigErrorMessage_(result);
     });
-    recordSettingChange();
   }
 
   private onAdvancedConfigClose_(event: Event): void {

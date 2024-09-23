@@ -94,10 +94,12 @@ TEST_F(HelpBubbleFactoryViewsTest, HelpBubbleDismissedOnAnchorHidden) {
 
   // Wait for the help bubble to close.
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  EXPECT_CALL(closed, Run).WillOnce([&](HelpBubble* bubble) {
-    EXPECT_EQ(help_bubble.get(), bubble);
-    run_loop.Quit();
-  });
+  EXPECT_CALL(closed, Run)
+      .WillOnce([&](HelpBubble* bubble, HelpBubble::CloseReason reason) {
+        EXPECT_EQ(help_bubble.get(), bubble);
+        EXPECT_EQ(HelpBubble::CloseReason::kAnchorHidden, reason);
+        run_loop.Quit();
+      });
   anchor_view_->SetVisible(false);
   run_loop.Run();
 }

@@ -50,11 +50,16 @@ bool IsMetadataPublished(const nearby::fastpair::Device& device) {
 }
 
 bool IsValidDeviceType(const nearby::fastpair::Device& device) {
-  if (ash::features::IsFastPairHIDEnabled() &&
-      // Fast Pair HID only works on Floss.
-      floss::features::IsFlossEnabled() &&
-      device.device_type() == nearby::fastpair::DeviceType::INPUT_DEVICE) {
-    return true;
+  // Fast Pair HID only works on Floss.
+  if (floss::features::IsFlossEnabled()) {
+    if (ash::features::IsFastPairHIDEnabled() &&
+        device.device_type() == nearby::fastpair::DeviceType::MOUSE) {
+      return true;
+    }
+    if (ash::features::IsFastPairKeyboardsEnabled() &&
+        device.device_type() == nearby::fastpair::DeviceType::INPUT_DEVICE) {
+      return true;
+    }
   }
 
   // TODO: Filter out based on solidified Fast Pair configuration list once
@@ -202,8 +207,9 @@ void FastPairDiscoverableScannerImpl::OnModelIdRetrieved(
   // and uses a reserved model ID to enable their 'fast initiation' scenario.
   // We must detect this instance and ignore these advertisements since they
   // do not correspond to Fast Pair devices that are open to pairing.
-  if (base::EqualsCaseInsensitiveASCII(model_id.value(), kNearbyShareModelId))
+  if (base::EqualsCaseInsensitiveASCII(model_id.value(), kNearbyShareModelId)) {
     return;
+  }
 
   FastPairRepository::Get()->GetDeviceMetadata(
       *model_id,
@@ -333,8 +339,9 @@ void FastPairDiscoverableScannerImpl::OnDeviceLost(
   auto it = notified_devices_.find(device->GetAddress());
 
   // Don't invoke callback if we didn't notify this device.
-  if (it == notified_devices_.end())
+  if (it == notified_devices_.end()) {
     return;
+  }
 
   CD_LOG(INFO, Feature::FP) << __func__ << ": Running lost callback";
   scoped_refptr<Device> notified_device = it->second;

@@ -23,7 +23,7 @@ PaymentAppService::PaymentAppService(content::BrowserContext* context) {
     factories_.push_back(std::make_unique<ServiceWorkerPaymentAppFactory>());
   }
 
-  // TODO(https://crbug.com/1022512): Review the feature flag name when
+  // TODO(crbug.com/40106647): Review the feature flag name when
   // AndroidPaymentAppFactory works on Android OS with generic 3rd party payment
   // apps. (Currently it works only on Chrome OS with app store billing payment
   // methods.)

@@ -63,7 +63,7 @@ class FilterExtractor {
       return;
     }
 
-    NOTREACHED() << "Unexpected feature type";
+    NOTREACHED_IN_MIGRATION() << "Unexpected feature type";
   }
 
   bool AddUkmFeatures(const proto::SegmentationModelMetadata& metadata) {

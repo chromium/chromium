@@ -78,7 +78,7 @@ void ExecutionService::Initialize(
 
 void ExecutionService::OnNewModelInfoReadyLegacy(
     const proto::SegmentInfo& segment_info) {
-  // TODO(crbug.com/1420015): Change path flow as
+  // TODO(crbug.com/40258591): Change path flow as
   // SPSI->RRM->EE::RequestModelExecution and migrate
   // MES::CancelOutstandingExecutionRequests() to EE.
   model_execution_scheduler_->OnNewModelInfoReady(segment_info);

@@ -30,29 +30,32 @@ Clipboard* Clipboard::clipboard(Navigator& navigator) {
 
 Clipboard::Clipboard(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 
-ScriptPromise Clipboard::read(ScriptState* script_state,
-                              ClipboardUnsanitizedFormats* formats,
-                              ExceptionState& exception_state) {
+ScriptPromise<IDLSequence<ClipboardItem>> Clipboard::read(
+    ScriptState* script_state,
+    ClipboardUnsanitizedFormats* formats,
+    ExceptionState& exception_state) {
   return ClipboardPromise::CreateForRead(GetExecutionContext(), script_state,
                                          formats, exception_state);
 }
 
-ScriptPromise Clipboard::readText(ScriptState* script_state,
-                                  ExceptionState& exception_state) {
+ScriptPromise<IDLString> Clipboard::readText(ScriptState* script_state,
+                                             ExceptionState& exception_state) {
   return ClipboardPromise::CreateForReadText(GetExecutionContext(),
                                              script_state, exception_state);
 }
 
-ScriptPromise Clipboard::write(ScriptState* script_state,
-                               const HeapVector<Member<ClipboardItem>>& data,
-                               ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> Clipboard::write(
+    ScriptState* script_state,
+    const HeapVector<Member<ClipboardItem>>& data,
+    ExceptionState& exception_state) {
   return ClipboardPromise::CreateForWrite(GetExecutionContext(), script_state,
                                           std::move(data), exception_state);
 }
 
-ScriptPromise Clipboard::writeText(ScriptState* script_state,
-                                   const String& data,
-                                   ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> Clipboard::writeText(
+    ScriptState* script_state,
+    const String& data,
+    ExceptionState& exception_state) {
   return ClipboardPromise::CreateForWriteText(
       GetExecutionContext(), script_state, data, exception_state);
 }

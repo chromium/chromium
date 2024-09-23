@@ -14,14 +14,17 @@ import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {EuiccProperties, EuiccRemote, QRCode} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './network_device_info_dialog.html.js';
 
-// The size of each tile in pixels.
+// The size of each tile/module in pixels.
 const QR_CODE_TILE_SIZE = 5;
+
+// The quiet zone offset in tiles/modules surrounding a QR code.
+const QUIET_ZONE_OFFSET = 4;
+
 // Styling for filled tiles in the QR code.
 const QR_CODE_FILL_STYLE = '#000000';
 
@@ -57,14 +60,6 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
       canvasSize_: Number,
 
       eid_: String,
-
-      isCellularCarrierLockEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
-              loadTimeData.getBoolean('isCellularCarrierLockEnabled');
-        },
-      },
     };
   }
 
@@ -73,8 +68,6 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
   private canvasSize_: number;
   private eid_: string|undefined;
   private canvasContext_: CanvasRenderingContext2D|null;
-  private isCellularCarrierLockEnabled_:
-    boolean;
 
     override ready(): void {
       super.ready();
@@ -106,7 +99,8 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
       if (!qrCode) {
         return;
       }
-      this.canvasSize_ = qrCode.size * QR_CODE_TILE_SIZE;
+      this.canvasSize_ = qrCode.size * QR_CODE_TILE_SIZE +
+          2 * QUIET_ZONE_OFFSET * QR_CODE_TILE_SIZE;
       flush();
       const context = this.getCanvasContext_();
       if (!context) {
@@ -115,8 +109,10 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
       context.clearRect(0, 0, this.canvasSize_, this.canvasSize_);
       context.fillStyle = QR_CODE_FILL_STYLE;
       let index = 0;
-      for (let x = 0; x < qrCode.size; x++) {
-        for (let y = 0; y < qrCode.size; y++) {
+      for (let x = QUIET_ZONE_OFFSET; x < qrCode.size + QUIET_ZONE_OFFSET;
+           x++) {
+        for (let y = QUIET_ZONE_OFFSET; y < qrCode.size + QUIET_ZONE_OFFSET;
+             y++) {
           if (qrCode.data[index]) {
             context.fillRect(
                 x * QR_CODE_TILE_SIZE, y * QR_CODE_TILE_SIZE, QR_CODE_TILE_SIZE,
@@ -152,9 +148,6 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
     }
 
     private shouldShowSerial_(): boolean {
-      if (!this.isCellularCarrierLockEnabled_) {
-        return false;
-      }
       return !!this.deviceState?.serial;
     }
 
@@ -163,8 +156,7 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
     }
 
     private getA11yLabel_(): string {
-      if (this.eid_ && this.deviceState?.imei &&
-          this.isCellularCarrierLockEnabled_ && this.deviceState?.serial) {
+      if (this.eid_ && this.deviceState?.imei && this.deviceState?.serial) {
         return this.i18n(
             'deviceInfoPopupA11yEidImeiAndSerial', this.eid_,
             this.deviceState.imei, this.deviceState.serial);
@@ -176,7 +168,7 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
               'deviceInfoPopupA11yEidAndImei', this.eid_,
               this.deviceState.imei);
         }
-        if (this.isCellularCarrierLockEnabled_ && this.deviceState?.serial) {
+        if (this.deviceState?.serial) {
           return this.i18n(
               'deviceInfoPopupA11yEidAndSerial', this.eid_,
               this.deviceState.serial);
@@ -185,7 +177,7 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
       }
 
       if (this.deviceState?.imei) {
-        if (this.isCellularCarrierLockEnabled_ && this.deviceState?.serial) {
+        if (this.deviceState?.serial) {
           return this.i18n(
               'deviceInfoPopupA11yImeiAndSerial', this.deviceState.imei,
               this.deviceState.serial);
@@ -193,7 +185,7 @@ export class NetworkDeviceInfoDialogElement extends I18nMixin
         return this.i18n('deviceInfoPopupA11yImei', this.deviceState.imei);
       }
 
-      if (this.isCellularCarrierLockEnabled_ && this.deviceState?.serial) {
+      if (this.deviceState?.serial) {
         return this.i18n('deviceInfoPopupA11ySerial', this.deviceState.serial);
       }
 

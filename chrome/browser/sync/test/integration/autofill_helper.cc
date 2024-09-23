@@ -21,11 +21,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/web_data_service_factory.h"
+#include "chrome/browser/webdata_services/web_data_service_factory.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
@@ -38,7 +40,6 @@ using autofill::AutocompleteChangeList;
 using autofill::AutocompleteEntry;
 using autofill::AutocompleteKey;
 using autofill::AutofillProfile;
-using autofill::AutofillType;
 using autofill::AutofillWebDataService;
 using autofill::AutofillWebDataServiceObserverOnDBSequence;
 using autofill::CreditCard;
@@ -67,7 +68,8 @@ scoped_refptr<AutofillWebDataService> GetWebDataService(int index) {
       test()->GetProfile(index), ServiceAccessType::EXPLICIT_ACCESS);
 }
 
-void WaitForCurrentTasksToComplete(base::SequencedTaskRunner* task_runner) {
+void WaitForCurrentTasksToComplete(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
   task_runner->PostTask(FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,
@@ -119,12 +121,13 @@ std::vector<AutocompleteEntry> GetAllAutocompleteEntries(
   return entries;
 }
 
-bool ProfilesMatchImpl(const std::optional<unsigned int>& expected_count,
-                       int profile_a,
-                       const std::vector<AutofillProfile*>& autofill_profiles_a,
-                       int profile_b,
-                       const std::vector<AutofillProfile*>& autofill_profiles_b,
-                       std::ostream* os) {
+bool ProfilesMatchImpl(
+    const std::optional<unsigned int>& expected_count,
+    int profile_a,
+    const std::vector<const AutofillProfile*>& autofill_profiles_a,
+    int profile_b,
+    const std::vector<const AutofillProfile*>& autofill_profiles_b,
+    std::ostream* os) {
   if (expected_count.has_value() &&
       autofill_profiles_a.size() != *expected_count) {
     *os << "Profile " << profile_a
@@ -133,12 +136,12 @@ bool ProfilesMatchImpl(const std::optional<unsigned int>& expected_count,
   }
 
   std::map<std::string, AutofillProfile> autofill_profiles_a_map;
-  for (AutofillProfile* p : autofill_profiles_a) {
+  for (const AutofillProfile* p : autofill_profiles_a) {
     autofill_profiles_a_map.insert({p->guid(), *p});
   }
 
   // This seems to be a transient state that will eventually be rectified by
-  // model type logic. We don't need to check b for duplicates directly because
+  // data type logic. We don't need to check b for duplicates directly because
   // after the first is erased from |autofill_profiles_a_map| the second will
   // not be found.
   if (autofill_profiles_a.size() != autofill_profiles_a_map.size()) {
@@ -146,7 +149,7 @@ bool ProfilesMatchImpl(const std::optional<unsigned int>& expected_count,
     return false;
   }
 
-  for (AutofillProfile* p : autofill_profiles_b) {
+  for (const AutofillProfile* p : autofill_profiles_b) {
     if (!autofill_profiles_a_map.count(p->guid())) {
       *os << "GUID " << p->guid() << " not found in profile " << profile_b
           << ".";
@@ -224,7 +227,7 @@ AutofillProfile CreateUniqueAutofillProfile() {
 }
 
 PersonalDataManager* GetPersonalDataManager(int index) {
-  return autofill::PersonalDataManagerFactory::GetForProfile(
+  return autofill::PersonalDataManagerFactory::GetForBrowserContext(
       test()->GetProfile(index));
 }
 
@@ -232,8 +235,8 @@ void AddKeys(int profile, const std::set<AutocompleteKey>& keys) {
   std::vector<FormFieldData> form_fields;
   for (const AutocompleteKey& key : keys) {
     FormFieldData field;
-    field.name = key.name();
-    field.value = key.value();
+    field.set_name(key.name());
+    field.set_value(key.value());
     form_fields.push_back(field);
   }
 
@@ -288,45 +291,43 @@ bool KeysMatch(int profile_a, int profile_b) {
 }
 
 void SetCreditCards(int profile, std::vector<CreditCard>* credit_cards) {
-  GetPersonalDataManager(profile)->SetCreditCards(credit_cards);
+  GetPersonalDataManager(profile)->payments_data_manager().SetCreditCards(
+      credit_cards);
 }
 
 void AddProfile(int profile, const AutofillProfile& autofill_profile) {
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
-  autofill::PersonalDataProfileTaskWaiter waiter(*pdm);
-  pdm->AddProfile(autofill_profile);
+  autofill::PersonalDataChangedWaiter waiter(*pdm);
+  pdm->address_data_manager().AddProfile(autofill_profile);
   std::move(waiter).Wait();
 }
 
 void RemoveProfile(int profile, const std::string& guid) {
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
-  autofill::PersonalDataProfileTaskWaiter waiter(*pdm);
+  autofill::PersonalDataChangedWaiter waiter(*pdm);
   pdm->RemoveByGUID(guid);
   std::move(waiter).Wait();
 }
 
 void UpdateProfile(int profile,
                    const std::string& guid,
-                   const AutofillType& type,
+                   autofill::FieldType type,
                    const std::u16string& value,
                    autofill::VerificationStatus status) {
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
-  AutofillProfile* pdm_profile = pdm->GetProfileByGUID(guid);
+  const AutofillProfile* pdm_profile =
+      pdm->address_data_manager().GetProfileByGUID(guid);
   ASSERT_TRUE(pdm_profile);
-  // `pdm_profile` points to the PDM's internal copy of the data. It shouldn't
-  // be modified directly.
   AutofillProfile updated_profile = *pdm_profile;
-  updated_profile.SetRawInfoWithVerificationStatus(type.GetStorableType(),
-                                                   value, status);
-  autofill::PersonalDataProfileTaskWaiter waiter(*pdm);
-  pdm->UpdateProfile(updated_profile);
+  updated_profile.SetRawInfoWithVerificationStatus(type, value, status);
+  autofill::PersonalDataChangedWaiter waiter(*pdm);
+  pdm->address_data_manager().UpdateProfile(updated_profile);
   std::move(waiter).Wait();
 }
 
-std::vector<AutofillProfile*> GetAllAutoFillProfiles(int profile) {
+std::vector<const AutofillProfile*> GetAllAutoFillProfiles(int profile) {
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
-  autofill::PersonalDataProfileTaskWaiter waiter(*pdm);
-  EXPECT_CALL(waiter.mock_observer(), OnPersonalDataChanged);
+  autofill::PersonalDataChangedWaiter waiter(*pdm);
   pdm->Refresh();
   // PersonalDataManager::GetProfiles() simply returns the current values that
   // have been last reported to the UI sequence. PersonalDataManager::Refresh()
@@ -344,7 +345,7 @@ std::vector<AutofillProfile*> GetAllAutoFillProfiles(int profile) {
   // which we are about to block, which means we are safe.
   WaitForCurrentTasksToComplete(GetWebDataService(profile)->GetDBTaskRunner());
   std::move(waiter).Wait();
-  return pdm->GetProfiles();
+  return pdm->address_data_manager().GetProfiles();
 }
 
 size_t GetProfileCount(int profile) {
@@ -356,9 +357,9 @@ size_t GetKeyCount(int profile) {
 }
 
 bool ProfilesMatch(int profile_a, int profile_b) {
-  const std::vector<AutofillProfile*>& autofill_profiles_a =
+  const std::vector<const AutofillProfile*>& autofill_profiles_a =
       GetAllAutoFillProfiles(profile_a);
-  const std::vector<AutofillProfile*>& autofill_profiles_b =
+  const std::vector<const AutofillProfile*>& autofill_profiles_b =
       GetAllAutoFillProfiles(profile_b);
   std::ostringstream mismatch_reason_stream;
   bool matched =
@@ -390,15 +391,22 @@ AutofillProfileChecker::AutofillProfileChecker(
     : profile_a_(profile_a),
       profile_b_(profile_b),
       expected_count_(expected_count) {
-  autofill_helper::GetPersonalDataManager(profile_a_)->AddObserver(this);
-  autofill_helper::GetPersonalDataManager(profile_b_)->AddObserver(this);
+  autofill_helper::GetPersonalDataManager(profile_a_)
+      ->address_data_manager()
+      .AddObserver(this);
+  autofill_helper::GetPersonalDataManager(profile_b_)
+      ->address_data_manager()
+      .AddObserver(this);
 }
 
 AutofillProfileChecker::~AutofillProfileChecker() {
-  autofill_helper::GetPersonalDataManager(profile_a_)->RemoveObserver(this);
-  autofill_helper::GetPersonalDataManager(profile_b_)->RemoveObserver(this);
+  autofill_helper::GetPersonalDataManager(profile_a_)
+      ->address_data_manager()
+      .RemoveObserver(this);
+  autofill_helper::GetPersonalDataManager(profile_b_)
+      ->address_data_manager()
+      .RemoveObserver(this);
 }
-
 bool AutofillProfileChecker::Wait() {
   DLOG(WARNING) << "AutofillProfileChecker::Wait() started";
   PersonalDataManager* pdm_a =
@@ -406,7 +414,7 @@ bool AutofillProfileChecker::Wait() {
   PersonalDataManager* pdm_b =
       autofill_helper::GetPersonalDataManager(profile_b_);
 
-  autofill::PersonalDataProfileTaskWaiter waiter_a(*pdm_a);
+  autofill::PersonalDataChangedWaiter waiter_a(*pdm_a);
   pdm_a->Refresh();
   // Similar to GetAllAutoFillProfiles() we need to make sure we are not reading
   // before any locally instigated async writes. This is run exactly one time
@@ -415,7 +423,7 @@ bool AutofillProfileChecker::Wait() {
       GetWebDataService(profile_a_)->GetDBTaskRunner());
   std::move(waiter_a).Wait();
 
-  autofill::PersonalDataProfileTaskWaiter waiter_b(*pdm_b);
+  autofill::PersonalDataChangedWaiter waiter_b(*pdm_b);
   pdm_b->Refresh();
   WaitForCurrentTasksToComplete(
       GetWebDataService(profile_b_)->GetDBTaskRunner());
@@ -427,14 +435,18 @@ bool AutofillProfileChecker::Wait() {
 
 bool AutofillProfileChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for matching autofill profiles";
-  const std::vector<AutofillProfile*>& autofill_profiles_a =
-      autofill_helper::GetPersonalDataManager(profile_a_)->GetProfiles();
-  const std::vector<AutofillProfile*>& autofill_profiles_b =
-      autofill_helper::GetPersonalDataManager(profile_b_)->GetProfiles();
+  const std::vector<const AutofillProfile*>& autofill_profiles_a =
+      autofill_helper::GetPersonalDataManager(profile_a_)
+          ->address_data_manager()
+          .GetProfiles();
+  const std::vector<const AutofillProfile*>& autofill_profiles_b =
+      autofill_helper::GetPersonalDataManager(profile_b_)
+          ->address_data_manager()
+          .GetProfiles();
   return ProfilesMatchImpl(expected_count_, profile_a_, autofill_profiles_a,
                            profile_b_, autofill_profiles_b, os);
 }
 
-void AutofillProfileChecker::OnPersonalDataChanged() {
+void AutofillProfileChecker::OnAddressDataChanged() {
   CheckExitCondition();
 }

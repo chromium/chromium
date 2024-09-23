@@ -5,6 +5,7 @@
 #include "ui/base/test/skia_gold_pixel_diff.h"
 
 #include <memory>
+#include <string_view>
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -28,7 +29,6 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_switches.h"
@@ -113,7 +113,7 @@ const char* GetPlatformName() {
   return "windows";
 #elif BUILDFLAG(IS_APPLE)
   return "macOS";
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #elif BUILDFLAG(IS_LINUX)
   return "linux";
@@ -166,7 +166,7 @@ const char* TestEnvironmentKeyToString(TestEnvironmentKey key) {
       return "gl_renderer";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool WriteTestEnvironmentToFile(const TestEnvironmentMap& test_environment,
@@ -182,12 +182,11 @@ bool WriteTestEnvironmentToFile(const TestEnvironmentMap& test_environment,
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::File file(keys_file, base::File::Flags::FLAG_CREATE_ALWAYS |
                                  base::File::Flags::FLAG_WRITE);
-  int ret_code = file.Write(0, content.c_str(), content.size());
+  bool ok = file.WriteAndCheck(0, base::as_byte_span(content));
   file.Close();
-  if (ret_code <= 0) {
+  if (!ok) {
     LOG(ERROR) << "Writing the keys file to temporary file failed."
-               << "File path:" << keys_file.AsUTF8Unsafe()
-               << ". Return code: " << ret_code;
+               << "File path:" << keys_file.AsUTF8Unsafe();
     return false;
   }
   return true;
@@ -440,7 +439,7 @@ std::string SkiaGoldPixelDiff::GetGoldenImageName(
     const std::string& test_suite_name,
     const std::string& test_name,
     const std::optional<std::string>& suffix) {
-  std::vector<base::StringPiece> parts;
+  std::vector<std::string_view> parts;
 
   // Test suites can have "/" in their names from a parameterization
   // instantiation, which isn't allowed in file names.
@@ -497,12 +496,11 @@ bool SkiaGoldPixelDiff::CompareScreenshot(
       base::FilePath::FromUTF8Unsafe(golden_image_name + ".png"));
   base::File file(temporary_path, base::File::Flags::FLAG_CREATE_ALWAYS |
                                       base::File::Flags::FLAG_WRITE);
-  int ret_code = file.Write(0, (char*)output.data(), output.size());
+  bool ok = file.WriteAndCheck(0, output);
   file.Close();
-  if (ret_code <= 0) {
+  if (!ok) {
     LOG(ERROR) << "Writing the PNG image to temporary file failed."
-               << "File path:" << temporary_path.AsUTF8Unsafe()
-               << ". Return code: " << ret_code;
+               << "File path:" << temporary_path.AsUTF8Unsafe();
     return false;
   }
   bool success =

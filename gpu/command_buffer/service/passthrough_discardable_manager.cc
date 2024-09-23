@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 
+#include "base/not_fatal_until.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
@@ -222,7 +223,7 @@ bool PassthroughDiscardableManager::IsEntryLockedForTesting(
     uint32_t client_id,
     const gles2::ContextGroup* context_group) const {
   auto iter = cache_.Peek({client_id, context_group});
-  DCHECK(iter != cache_.end());
+  CHECK(iter != cache_.end(), base::NotFatalUntil::M130);
   return iter->second.unlocked_texture == nullptr;
 }
 
@@ -237,7 +238,7 @@ PassthroughDiscardableManager::UnlockedTextureForTesting(
     uint32_t client_id,
     const gles2::ContextGroup* context_group) const {
   auto iter = cache_.Peek({client_id, context_group});
-  DCHECK(iter != cache_.end());
+  CHECK(iter != cache_.end(), base::NotFatalUntil::M130);
   return iter->second.unlocked_texture;
 }
 

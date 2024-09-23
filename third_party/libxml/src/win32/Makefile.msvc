@@ -37,17 +37,11 @@ UTILS_INTDIR = int.utils.msvc
 # The preprocessor and its options.
 CPP = cl.exe /EP
 CPPFLAGS = /nologo /I$(XML_SRCDIR)\include /D "NOLIBTOOL" 
-!if "$(WITH_THREADS)" != "no"
-CPPFLAGS = $(CPPFLAGS) /D "_REENTRANT"
-!endif
 
 # The compiler and its options.
 CC = cl.exe
 CFLAGS = /nologo /D "_WINDOWS" /D "_MBCS" /D "NOLIBTOOL" /W3 /wd4244 /wd4267 $(CRUNTIME)
 CFLAGS = $(CFLAGS) /I$(XML_SRCDIR) /I$(XML_SRCDIR)\include /I$(INCPREFIX)
-!if "$(WITH_THREADS)" != "no"
-CFLAGS = $(CFLAGS) /D "_REENTRANT"
-!endif
 !if "$(WITH_THREADS)" == "ctls"
 CFLAGS = $(CFLAGS) /D "XML_THREAD_LOCAL=__declspec(thread)"
 !else if "$(WITH_THREADS)" == "posix"
@@ -60,7 +54,7 @@ LD = link.exe
 LDFLAGS = /nologo /VERSION:$(LIBXML_MAJOR_VERSION).$(LIBXML_MINOR_VERSION)
 LDFLAGS = $(LDFLAGS) /LIBPATH:$(BINDIR) /LIBPATH:$(LIBPREFIX)
 LIBS =
-!if "$(WITH_FTP)" == "1" || "$(WITH_HTTP)" == "1"
+!if "$(WITH_HTTP)" == "1"
 LIBS = $(LIBS) wsock32.lib ws2_32.lib
 !endif 
 !if "$(WITH_ICONV)" == "1"
@@ -124,7 +118,6 @@ XML_OBJS = $(XML_INTDIR)\buf.obj\
 	$(XML_INTDIR)\HTMLtree.obj\
 	$(XML_INTDIR)\legacy.obj\
 	$(XML_INTDIR)\list.obj\
-	$(XML_INTDIR)\nanoftp.obj\
 	$(XML_INTDIR)\nanohttp.obj\
 	$(XML_INTDIR)\parser.obj\
 	$(XML_INTDIR)\parserInternals.obj\
@@ -169,7 +162,6 @@ XML_OBJS_A = $(XML_INTDIR_A)\buf.obj\
 	$(XML_INTDIR_A)\HTMLtree.obj\
 	$(XML_INTDIR_A)\legacy.obj\
 	$(XML_INTDIR_A)\list.obj\
-	$(XML_INTDIR_A)\nanoftp.obj\
 	$(XML_INTDIR_A)\nanohttp.obj\
 	$(XML_INTDIR_A)\parser.obj\
 	$(XML_INTDIR_A)\parserInternals.obj\
@@ -214,7 +206,6 @@ XML_OBJS_A_DLL = $(XML_INTDIR_A_DLL)\buf.obj\
 	$(XML_INTDIR_A_DLL)\HTMLtree.obj\
 	$(XML_INTDIR_A_DLL)\legacy.obj\
 	$(XML_INTDIR_A_DLL)\list.obj\
-	$(XML_INTDIR_A_DLL)\nanoftp.obj\
 	$(XML_INTDIR_A_DLL)\nanohttp.obj\
 	$(XML_INTDIR_A_DLL)\parser.obj\
 	$(XML_INTDIR_A_DLL)\parserInternals.obj\

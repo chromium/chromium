@@ -35,13 +35,21 @@ class Status(enum.IntEnum):
     NOTRUN = enum.auto()
 
 
-ABBREVIATED_ALL_PASS = '\n'.join([
-    LineType.TESTHARNESS_HEADER.value,
-    LineType.ALL_PASS.value,
-    'See https://chromium.googlesource.com/chromium/src/+/HEAD/'
-    'docs/testing/writing_web_tests.md#Text-Test-Baselines for details.',
-    LineType.FOOTER.value,
-]) + '\n'
+def make_all_pass_baseline(line_type: LineType) -> str:
+    assert line_type in {
+        LineType.TESTHARNESS_HEADER,
+        LineType.WDSPEC_HEADER,
+    }, line_type
+    return '\n'.join([
+        line_type.value,
+        LineType.ALL_PASS.value,
+        'See https://chromium.googlesource.com/chromium/src/+/HEAD/'
+        'docs/testing/writing_web_tests.md#Text-Test-Baselines for details.',
+        LineType.FOOTER.value,
+    ]) + '\n'
+
+
+ABBREVIATED_ALL_PASS = make_all_pass_baseline(LineType.TESTHARNESS_HEADER)
 
 
 class TestharnessLine(NamedTuple):

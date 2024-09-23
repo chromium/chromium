@@ -6,9 +6,9 @@
 #define COMPONENTS_METRICS_METRICS_LOG_UPLOADER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "components/metrics/metrics_log.h"
 
 namespace metrics {
@@ -29,11 +29,11 @@ class MetricsLogUploader {
   //   - a string specifying the reason why the log was forcibly discarded (or
   //     empty string if not).
   using UploadCallback =
-      base::RepeatingCallback<void(int, int, bool, bool, base::StringPiece)>;
+      base::RepeatingCallback<void(int, int, bool, bool, std::string_view)>;
 
   // Possible service types. This should correspond to a type from
   // DataUseUserData.
-  // TODO(crbug.com/1445151) Investigate cleaning up this enum if it isn't
+  // TODO(crbug.com/40912258) Investigate cleaning up this enum if it isn't
   // needed anymore.
   enum MetricServiceType {
     UMA,

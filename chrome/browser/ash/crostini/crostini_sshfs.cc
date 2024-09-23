@@ -51,7 +51,7 @@ void CrostiniSshfs::SetSshfsMounted(const guest_os::GuestId& container,
 
 void CrostiniSshfs::UnmountCrostiniFiles(const guest_os::GuestId& container_id,
                                          MountCrostiniFilesCallback callback) {
-  // TODO(crbug/1197986): Unmounting should cancel an in-progress mount.
+  // TODO(crbug.com/40760488): Unmounting should cancel an in-progress mount.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto* vmgr = file_manager::VolumeManager::Get(profile_);
@@ -174,11 +174,11 @@ void CrostiniSshfs::OnMountEvent(
           mount_path)) {
     // We don't revoke the filesystem on unmount and this call fails if a
     // filesystem of the same name already exists, so ignore errors.
-    // TODO(crbug/1197986): Should we revoke? Keeping it this way for now since
-    // that's how it's been for years and it's not come up as an issue before.
-    // Since the most common reason for unmounting is to work around an issue
-    // with suspend/resume where we promptly remount it's probably good this
-    // way.
+    // TODO(crbug.com/40760488): Should we revoke? Keeping it this way for now
+    // since that's how it's been for years and it's not come up as an issue
+    // before. Since the most common reason for unmounting is to work around an
+    // issue with suspend/resume where we promptly remount it's probably good
+    // this way.
   }
 
   auto* vmgr = file_manager::VolumeManager::Get(profile_);

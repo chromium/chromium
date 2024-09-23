@@ -14,7 +14,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -27,11 +26,8 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.AppHooksImpl;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -68,7 +64,6 @@ import java.util.List;
             ShadowAndroidShareSheetController.class,
         })
 public class ShareDelegateImplUnitTest {
-    @Rule public TestRule mFeatureProcessor = new Features.JUnitProcessor();
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
@@ -80,7 +75,6 @@ public class ShareDelegateImplUnitTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Activity mActivity;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
-    @Mock private AppHooksImpl mAppHooks;
     @Mock private Tracker mTracker;
 
     private ShareDelegateImpl mShareDelegate;
@@ -100,7 +94,6 @@ public class ShareDelegateImplUnitTest {
     @Before
     public void setup() {
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJni);
-        AppHooks.setInstanceForTesting(mAppHooks);
         TrackerFactory.setTrackerForTests(mTracker);
         Mockito.doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
         createShareDelegate(false);

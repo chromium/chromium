@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/installer/mini_installer/configuration.h"
 
-#include <shellapi.h>  // NOLINT
+#include <windows.h>
+
+#include <shellapi.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <windows.h>
 
 #include "build/branding_buildflags.h"
 #include "chrome/installer/mini_installer/appid.h"

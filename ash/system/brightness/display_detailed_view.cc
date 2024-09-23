@@ -17,6 +17,7 @@
 #include "ash/system/night_light/night_light_feature_pod_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/detailed_view_delegate.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -26,6 +27,8 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -34,9 +37,9 @@ namespace ash {
 namespace {
 
 constexpr auto kScrollViewMargin = gfx::Insets::TLBR(0, 12, 16, 12);
-constexpr auto kTileMargin = gfx::Insets::TLBR(4, 4, 12, 4);
-constexpr auto kSliderPadding = gfx::Insets::TLBR(0, 0, 4, 0);
 constexpr auto kSliderBorder = gfx::Insets(4);
+constexpr auto kSliderPadding = gfx::Insets::TLBR(0, 0, 4, 0);
+constexpr auto kTileContainerMargins = gfx::Insets::TLBR(4, 4, 12, 4);
 
 }  // namespace
 
@@ -56,20 +59,38 @@ DisplayDetailedView::DisplayDetailedView(
   auto dark_mode_controller = std::make_unique<DarkModeFeaturePodController>(
       unified_system_tray_controller_);
 
-  auto tile_container = std::make_unique<views::View>();
-  // Sets the ID for testing.
-  tile_container->SetID(VIEW_ID_QS_DISPLAY_TILE_CONTAINER);
+  auto tile_container =
+      views::Builder<views::FlexLayoutView>()
+          .SetID(VIEW_ID_QS_DISPLAY_TILE_CONTAINER)
+          .SetPreferredSize(
+              gfx::Size(GetPreferredSize().width(),
+                        kFeatureTileHeight + kTileContainerMargins.height()))
+          .CustomConfigure(base::BindOnce([](views::FlexLayoutView* layout) {
+            layout->SetDefault(views::kMarginsKey, kTileContainerMargins);
+          }))
+          .Build();
+
   tile_container->AddChildView(night_light_controller->CreateTile());
   tile_container->AddChildView(dark_mode_controller->CreateTile());
 
-  // Transfers the ownership so the controllers won't die while the page is
-  // open.
+  bool has_visible_tiles = false;
+
+  // Set `PreferredSize` to (1,1) so the `FlexLayout` allocates the same width
+  // for the child tiles based on their equal weights.
+  for (auto tile : tile_container->children()) {
+    tile->SetPreferredSize(gfx::Size(1, 1));
+    if (tile->GetVisible()) {
+      has_visible_tiles = true;
+    }
+  }
+
+  if (!has_visible_tiles) {
+    tile_container->SetVisible(false);
+  }
+
+  // Transfer ownership so the controllers won't die while the page is open.
   feature_tile_controllers_.push_back(std::move(night_light_controller));
   feature_tile_controllers_.push_back(std::move(dark_mode_controller));
-
-  auto* tile_layout =
-      tile_container->SetLayoutManager(std::make_unique<views::FlexLayout>());
-  tile_layout->SetDefault(views::kMarginsKey, kTileMargin);
 
   scroll_content()->AddChildView(std::move(tile_container));
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromeos/system/cpu_temperature_reader.h"
 
 #include <algorithm>
@@ -39,8 +44,7 @@ class CPUTemperatureReaderTest : public ::testing::Test {
   // Creates a file at |path| containing data |contents|.
   void CreateFileWithContents(const base::FilePath& path,
                               const std::string& contents) {
-    CHECK_EQ(WriteFile(path, contents.data(), contents.size()),
-             static_cast<int>(contents.size()));
+    CHECK(WriteFile(path, contents));
   }
 
   // Creates a temporary dir to act as the hwmon directory passed to |reader_|.

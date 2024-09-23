@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 
-#include <memory>
-
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/test/base/testing_profile.h"
@@ -16,8 +14,8 @@
 #include "components/media_router/common/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/vector_icon_types.h"
 
 using media_router::MediaRoute;
@@ -42,6 +40,9 @@ MediaRoute CreateRoute(const std::string& route_id,
 class CastMediaNotificationProducerTest : public testing::Test {
  public:
   void SetUp() override {
+#if !BUILDFLAG(IS_CHROMEOS)
+    feature_list_.InitAndEnableFeature(media::kGlobalMediaControlsUpdatedUI);
+#endif
     notification_producer_ = std::make_unique<CastMediaNotificationProducer>(
         &profile_, &router_, &item_manager_);
   }
@@ -56,6 +57,7 @@ class CastMediaNotificationProducerTest : public testing::Test {
   std::unique_ptr<CastMediaNotificationProducer> notification_producer_;
   NiceMock<global_media_controls::test::MockMediaItemManager> item_manager_;
   NiceMock<media_router::MockMediaRouter> router_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(CastMediaNotificationProducerTest, AddAndRemoveRoute) {
@@ -105,8 +107,13 @@ TEST_F(CastMediaNotificationProducerTest, UpdateRoute) {
   EXPECT_CALL(view, UpdateWithMediaMetadata(_))
       .WillOnce([&](const media_session::MediaMetadata& metadata) {
         const std::string separator = " \xC2\xB7 ";
+#if BUILDFLAG(IS_CHROMEOS)
         EXPECT_EQ(base::UTF8ToUTF16(new_description + separator + new_sink),
                   metadata.source_title);
+#else
+        EXPECT_EQ(base::UTF8ToUTF16(new_description), metadata.source_title);
+        EXPECT_EQ(new_sink, item->device_name());
+#endif
       });
   notification_producer_->OnRoutesUpdated({route});
 }
@@ -127,19 +134,6 @@ TEST_F(CastMediaNotificationProducerTest, DismissNotification) {
   EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
 }
 
-// The GlobalMediaControlsCastStartStop flag is disabled on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
-  // These routes should not have notification items created for them.
-  MediaRoute no_controller_route = CreateRoute("route-1");
-  no_controller_route.set_controller_type(RouteControllerType::kNone);
-  MediaRoute multizone_member_route = CreateRoute("route-2", "cast:705D30C6");
-
-  notification_producer_->OnRoutesUpdated(
-      {no_controller_route, multizone_member_route});
-  EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
-}
-#else
 TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
   // These routes should not have notification items created for them.
   MediaRoute mirroring_route =
@@ -155,7 +149,6 @@ TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
        remote_streaming_route});
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(CastMediaNotificationProducerTest, NonLocalRoutesWithoutNotifications) {
   MediaRoute non_local_route = CreateRoute("non-local-route");

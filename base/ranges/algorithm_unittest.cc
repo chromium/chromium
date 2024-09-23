@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/ranges/algorithm.h"
 
 #include <algorithm>
@@ -9,6 +14,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <random>
+#include <ranges>
 #include <utility>
 
 #include "base/ranges/functional.h"
@@ -33,7 +39,7 @@ namespace {
 // Note that this does not support capture groups, so all lambdas defined like
 // this must be stateless.
 // Example Usage: `CONSTEXPR_LAMBDA((int i, int j) { return i + j; }) lambda;`
-// TODO(crbug.com/752720): Remove once we have constexpr lambdas for real.
+// TODO(crbug.com/40533712): Remove once we have constexpr lambdas for real.
 #define CONSTEXPR_LAMBDA(fun) \
   constexpr struct { constexpr bool operator() fun }
 
@@ -106,9 +112,9 @@ TEST(RangesTest, AllOf) {
   static_assert(!ranges::all_of(array, is_non_zero), "");
 
   constexpr Int values[] = {0, 2, 4, 5};
-  static_assert(
-      ranges::all_of(values + 1, ranges::end(values), is_non_zero, &Int::value),
-      "");
+  static_assert(ranges::all_of(values + 1, std::ranges::end(values),
+                               is_non_zero, &Int::value),
+                "");
   static_assert(!ranges::all_of(values, is_non_zero, &Int::value), "");
 }
 
@@ -119,9 +125,9 @@ TEST(RangesTest, AnyOf) {
   static_assert(ranges::any_of(array, is_even), "");
 
   constexpr Int values[] = {{0}, {2}, {4}, {5}};
-  static_assert(
-      !ranges::any_of(values + 3, ranges::end(values), is_even, &Int::value),
-      "");
+  static_assert(!ranges::any_of(values + 3, std::ranges::end(values), is_even,
+                                &Int::value),
+                "");
   static_assert(ranges::any_of(values, is_even, &Int::value), "");
 }
 
@@ -137,9 +143,9 @@ TEST(RangesTest, NoneOf) {
   static_assert(!ranges::none_of(array, is_zero), "");
 
   constexpr Int values[] = {{0}, {2}, {4}, {5}};
-  static_assert(
-      ranges::none_of(values + 1, ranges::end(values), is_zero, &Int::value),
-      "");
+  static_assert(ranges::none_of(values + 1, std::ranges::end(values), is_zero,
+                                &Int::value),
+                "");
   static_assert(!ranges::none_of(values, is_zero, &Int::value), "");
 }
 
@@ -149,25 +155,25 @@ TEST(RangesTest, ForEach) {
 
   auto result = ranges::for_each(array, array + 3, times_two);
   EXPECT_EQ(result.in, array + 3);
-  // TODO(https://crbug.com/1191256): Fix googletest and switch this back to
+  // TODO(crbug.com/40174470): Fix googletest and switch this back to
   // EXPECT_EQ.
   EXPECT_TRUE(result.fun == times_two);
   EXPECT_THAT(array, ElementsAre(0, 2, 4, 3, 4, 5));
 
   ranges::for_each(array + 3, array + 6, times_two);
   EXPECT_EQ(result.in, array + 3);
-  // TODO(https://crbug.com/1191256): Fix googletest and switch this back to
+  // TODO(crbug.com/40174470): Fix googletest and switch this back to
   // EXPECT_EQ.
   EXPECT_TRUE(result.fun == times_two);
   EXPECT_THAT(array, ElementsAre(0, 2, 4, 6, 8, 10));
 
-  // TODO(https://crbug.com/1191256): Fix googletest and switch this back to
+  // TODO(crbug.com/40174470): Fix googletest and switch this back to
   // EXPECT_EQ.
   EXPECT_TRUE(times_two == ranges::for_each(array, times_two).fun);
   EXPECT_THAT(array, ElementsAre(0, 4, 8, 12, 16, 20));
 
   Int values[] = {0, 2, 4, 5};
-  // TODO(https://crbug.com/1191256): Fix googletest and switch this back to
+  // TODO(crbug.com/40174470): Fix googletest and switch this back to
   // EXPECT_EQ.
   EXPECT_TRUE(times_two ==
               ranges::for_each(values, times_two, &Int::value).fun);
@@ -182,13 +188,13 @@ TEST(RangesTest, ForEachN) {
 
   auto result = ranges::for_each_n(array, 3, times_two);
   EXPECT_EQ(result.in, array + 3);
-  // TODO(https://crbug.com/1191256): Fix googletest and switch this back to
+  // TODO(crbug.com/40174470): Fix googletest and switch this back to
   // EXPECT_EQ.
   EXPECT_TRUE(result.fun == times_two);
   EXPECT_THAT(array, ElementsAre(0, 2, 4, 3, 4, 5));
 
   Int values[] = {0, 2, 4, 5};
-  // TODO(https://crbug.com/1191256): Fix googletest and switch this back to
+  // TODO(crbug.com/40174470): Fix googletest and switch this back to
   // EXPECT_EQ.
   EXPECT_TRUE(times_two ==
               ranges::for_each_n(values, 4, times_two, &Int::value).fun);
@@ -205,8 +211,8 @@ TEST(RangesTest, Find) {
 
   constexpr Int values[] = {{0}, {2}, {4}, {5}};
   static_assert(values == ranges::find(values, values, 0, &Int::value), "");
-  static_assert(ranges::end(values) == ranges::find(values, 3, &Int::value),
-                "");
+  static_assert(
+      std::ranges::end(values) == ranges::find(values, 3, &Int::value), "");
 }
 
 TEST(RangesTest, FindIf) {
@@ -241,19 +247,20 @@ TEST(RangesTest, FindEnd) {
   int array3[] = {0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4,
                   0, 1, 2, 3, 0, 1, 2, 0, 1, 0};
 
-  EXPECT_EQ(array3 + 15, ranges::find_end(array3, ranges::end(array3), array1,
-                                          ranges::end(array1)));
-  EXPECT_EQ(ranges::end(array3), ranges::find_end(array3, ranges::end(array3),
-                                                  array2, ranges::end(array2)));
-  EXPECT_EQ(array3 + 4,
-            ranges::find_end(array3, ranges::end(array3), array2, array2 + 2));
+  EXPECT_EQ(array3 + 15, ranges::find_end(array3, std::ranges::end(array3),
+                                          array1, std::ranges::end(array1)));
+  EXPECT_EQ(std::ranges::end(array3),
+            ranges::find_end(array3, std::ranges::end(array3), array2,
+                             std::ranges::end(array2)));
+  EXPECT_EQ(array3 + 4, ranges::find_end(array3, std::ranges::end(array3),
+                                         array2, array2 + 2));
 
   Int ints1[] = {{0}, {1}, {2}};
   Int ints2[] = {{4}, {5}, {6}};
 
   EXPECT_EQ(array3 + 15, ranges::find_end(array3, ints1, ranges::equal_to{},
                                           std::identity{}, &Int::value));
-  EXPECT_EQ(ranges::end(array3),
+  EXPECT_EQ(std::ranges::end(array3),
             ranges::find_end(array3, ints2, ranges::equal_to{}, std::identity{},
                              &Int::value));
 }
@@ -263,33 +270,34 @@ TEST(RangesTest, FindFirstOf) {
   int array2[] = {7, 8, 9};
   int array3[] = {0, 1, 2, 3, 4, 5, 0, 1, 2, 3};
 
-  EXPECT_EQ(array3 + 1, ranges::find_first_of(array3, ranges::end(array3),
-                                              array1, ranges::end(array1)));
-  EXPECT_EQ(ranges::end(array3),
-            ranges::find_first_of(array3, ranges::end(array3), array2,
-                                  ranges::end(array2)));
+  EXPECT_EQ(array3 + 1,
+            ranges::find_first_of(array3, std::ranges::end(array3), array1,
+                                  std::ranges::end(array1)));
+  EXPECT_EQ(std::ranges::end(array3),
+            ranges::find_first_of(array3, std::ranges::end(array3), array2,
+                                  std::ranges::end(array2)));
   Int ints1[] = {{1}, {2}, {3}};
   Int ints2[] = {{7}, {8}, {9}};
 
   EXPECT_EQ(array3 + 1, ranges::find_first_of(array3, ints1, ranges::equal_to{},
                                               std::identity{}, &Int::value));
-  EXPECT_EQ(ranges::end(array3),
+  EXPECT_EQ(std::ranges::end(array3),
             ranges::find_first_of(array3, ints2, ranges::equal_to{},
                                   std::identity{}, &Int::value));
 }
 
 TEST(RangesTest, AdjacentFind) {
   constexpr int array[] = {1, 2, 3, 3};
-  static_assert(array + 2 == ranges::adjacent_find(array, ranges::end(array)),
-                "");
   static_assert(
-      array == ranges::adjacent_find(array, ranges::end(array), ranges::less{}),
-      "");
+      array + 2 == ranges::adjacent_find(array, std::ranges::end(array)), "");
+  static_assert(array == ranges::adjacent_find(array, std::ranges::end(array),
+                                               ranges::less{}),
+                "");
 
   constexpr Int ints[] = {{6}, {6}, {5}, {4}};
   static_assert(
       ints == ranges::adjacent_find(ints, ranges::equal_to{}, &Int::value), "");
-  static_assert(ranges::end(ints) ==
+  static_assert(std::ranges::end(ints) ==
                     ranges::adjacent_find(ints, ranges::less{}, &Int::value),
                 "");
 }

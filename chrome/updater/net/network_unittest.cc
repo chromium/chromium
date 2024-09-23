@@ -25,7 +25,7 @@
 #include "build/build_config.h"
 #include "chrome/updater/net/network.h"
 #include "chrome/updater/policy/service.h"
-#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "components/update_client/network.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -101,7 +101,7 @@ class UpdaterNetworkTest : public ::testing::Test {
       http_response->set_content("hello");
       http_response->set_content_type("application/octet-stream");
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     http_response->set_code(net::HTTP_OK);
@@ -165,8 +165,8 @@ TEST_F(UpdaterNetworkTest, NetworkFetcherPostRequest) {
       .WillOnce(RunClosure(run_loop_.QuitClosure()));
   fetcher_->PostRequest(
       test_server_.GetURL("/echo"), kPostData, {}, {},
-      base::BindOnce(&UpdaterNetworkTest::StartedCallback,
-                     base::Unretained(this)),
+      base::BindRepeating(&UpdaterNetworkTest::StartedCallback,
+                          base::Unretained(this)),
       base::BindRepeating(&UpdaterNetworkTest::ProgressCallback,
                           base::Unretained(this)),
       base::BindOnce(&UpdaterNetworkTest::PostRequestCompleteCallback,
@@ -187,8 +187,8 @@ TEST_F(UpdaterNetworkTest, NetworkFetcherDownloadToFile) {
         .WillOnce(RunClosure(run_loop_.QuitClosure()));
     fetcher_->DownloadToFile(
         test_server_.GetURL("/echo"), test_file_path,
-        base::BindOnce(&UpdaterNetworkTest::StartedCallback,
-                       base::Unretained(this)),
+        base::BindRepeating(&UpdaterNetworkTest::StartedCallback,
+                            base::Unretained(this)),
         base::BindRepeating(&UpdaterNetworkTest::ProgressCallback,
                             base::Unretained(this)),
         base::BindOnce(&UpdaterNetworkTest::DownloadCallback,
@@ -212,7 +212,7 @@ TEST_F(UpdaterDownloadTest, NetworkFetcher) {
     ASSERT_NE(fetcher, nullptr);
     fetcher->DownloadToFile(
         gurl_, dest_,
-        base::BindOnce([](int response_code, int64_t /*content_length*/) {
+        base::BindRepeating([](int response_code, int64_t /*content_length*/) {
           EXPECT_EQ(response_code, 200);
         }),
         base::BindRepeating([](int64_t /*current*/) {}),

@@ -6,8 +6,8 @@
 #define MEDIA_FORMATS_HLS_TEST_UTIL_H_
 
 #include <optional>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/types.h"
@@ -15,7 +15,7 @@
 
 namespace media::hls {
 
-inline types::VariableName CreateVarName(base::StringPiece name) {
+inline types::VariableName CreateVarName(std::string_view name) {
   return types::VariableName::Parse(SourceString::CreateForTesting(name))
       .value();
 }
@@ -58,4 +58,4 @@ inline testing::AssertionResult RoughlyEqual(
 
 }  // namespace media::hls
 
-#endif
+#endif  // MEDIA_FORMATS_HLS_TEST_UTIL_H_

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] html5lib_tests9.html b2a8131e72e53265479c08cd18d4f4663278a021
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <math math>"
+[FAIL] html5lib_tests9.html a45a8948b799dadc321a86ff0bebf13167b5f076
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <option>" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <option>\\n|         <math math>"
+[FAIL] html5lib_tests9.html 224e1bcb8030f0972c17d0fc68d912be17905e1c
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <table>\\n|       <tbody>\\n|         <tr>\\n|           <td>\\n|             <select>\\n|               \\"foobarbaz\\"\\n|     <p>\\n|       \\"quux\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <table>\\n|       <tbody>\\n|         <tr>\\n|           <td>\\n|             <select>\\n|               <math math>\\n|                 <math mi>\\n|                   \\"foo\\"\\n|                 <math mi>\\n|                   \\"bar\\"\\n|               <p>\\n|                 \\"baz\\"\\n|     <p>\\n|       \\"quux\\""
+[FAIL] html5lib_tests9.html e84d33cef974e49b69bdbc0c663c018a4dd010c0
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       \\"foobarbaz\\"\\n|     <table>\\n|     <p>\\n|       \\"quux\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <math math>\\n|         <math mi>\\n|           \\"foo\\"\\n|         <math mi>\\n|           \\"bar\\"\\n|       <p>\\n|         \\"baz\\"\\n|     <table>\\n|     <p>\\n|       \\"quux\\""
+Harness: the test ran to completion.
+

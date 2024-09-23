@@ -156,6 +156,39 @@ void CopyOutputResultSkiaRGBA::UnlockSkBitmap() const {
   result_.lock().Release();
 }
 
+ReadbackContextTexture::ReadbackContextTexture(
+    base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu,
+    std::unique_ptr<CopyOutputRequest> request,
+    const gfx::Rect& result_rect,
+    const gpu::Mailbox& mailbox,
+    const gfx::ColorSpace& color_space)
+    : impl_on_gpu_(impl_on_gpu),
+      request_(std::move(request)),
+      result_rect_(result_rect),
+      mailbox_(mailbox),
+      color_space_(color_space) {}
+
+ReadbackContextTexture::~ReadbackContextTexture() = default;
+
+void ReadbackContextTexture::OnMailboxReady(GrGpuFinishedContext c) {
+  auto context = base::WrapUnique(static_cast<ReadbackContextTexture*>(c));
+  context->OnMailboxReadyInternal();
+  // `context` is destroyed when this goes out of scope.
+}
+
+void ReadbackContextTexture::OnMailboxReadyInternal() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (impl_on_gpu_) {
+    impl_on_gpu_->ReadbackDone();
+  }
+
+  request_->SendResult(std::make_unique<CopyOutputTextureResult>(
+      request_->result_format(), result_rect_,
+      CopyOutputResult::TextureResult(mailbox_, color_space_),
+      CopyOutputResult::ReleaseCallbacks()));
+}
+
 CopyOutputResultSkiaYUV::CopyOutputResultSkiaYUV(
     SkiaOutputSurfaceImplOnGpu* impl,
     const gfx::Rect& rect,
@@ -334,59 +367,6 @@ void CopyOutputResultSkiaNV12::OnNV12PlaneReadbackDone(
 
   context->nv12_planes_readback->PlaneReadbackDone(context->plane_index,
                                                    std::move(async_result));
-}
-
-NV12PlanesReadyContext::NV12PlanesReadyContext(
-    base::WeakPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu,
-    std::unique_ptr<CopyOutputRequest> request,
-    const gfx::Rect& result_rect,
-    const std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>&
-        mailbox_holders,
-    const gfx::ColorSpace& color_space,
-    bool is_multiplane)
-    : impl_on_gpu_(impl_on_gpu),
-      request_(std::move(request)),
-      result_rect_(result_rect),
-      mailbox_holders_(mailbox_holders),
-      color_space_(color_space),
-      is_multiplane_(is_multiplane) {
-  outstanding_mailboxes_ = is_multiplane ? 1 : CopyOutputResult::kNV12MaxPlanes;
-}
-
-NV12PlanesReadyContext::~NV12PlanesReadyContext() {
-  DCHECK_EQ(outstanding_mailboxes_, 0);
-}
-
-void NV12PlanesReadyContext::OnMailboxReady() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  if (impl_on_gpu_) {
-    impl_on_gpu_->ReadbackDone();
-  }
-
-  outstanding_mailboxes_--;
-  if (outstanding_mailboxes_ == 0) {
-    auto format = is_multiplane_ ? CopyOutputResult::Format::NV12_MULTIPLANE
-                                 : CopyOutputResult::Format::NV12_PLANES;
-    request_->SendResult(std::make_unique<CopyOutputTextureResult>(
-        format, result_rect_,
-        CopyOutputResult::TextureResult(mailbox_holders_, color_space_),
-        CopyOutputResult::ReleaseCallbacks()));
-  }
-}
-
-NV12SingleMailboxReadyContext::NV12SingleMailboxReadyContext(
-    scoped_refptr<NV12PlanesReadyContext> nv12_planes_flushed)
-    : nv12_planes_flushed(nv12_planes_flushed) {}
-
-NV12SingleMailboxReadyContext::~NV12SingleMailboxReadyContext() = default;
-
-// static
-void NV12SingleMailboxReadyContext::OnMailboxReady(GrGpuFinishedContext c) {
-  auto context =
-      base::WrapUnique(static_cast<NV12SingleMailboxReadyContext*>(c));
-
-  context->nv12_planes_flushed->OnMailboxReady();
 }
 
 }  // namespace viz

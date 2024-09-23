@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -431,12 +430,14 @@ TEST(CSSParserFastPathsTest, IsValidKeywordPropertyAndValueOverflowClip) {
 
 TEST(CSSParserFastPathsTest, InternalColorsOnlyAllowedInUaMode) {
   Color color;
+
   EXPECT_EQ(ParseColorResult::kKeyword,
             CSSParserFastPaths::ParseColor("blue", kHTMLStandardMode, color));
   EXPECT_EQ(ParseColorResult::kKeyword,
             CSSParserFastPaths::ParseColor("blue", kHTMLQuirksMode, color));
   EXPECT_EQ(ParseColorResult::kKeyword,
             CSSParserFastPaths::ParseColor("blue", kUASheetMode, color));
+
   EXPECT_EQ(ParseColorResult::kFailure,
             CSSParserFastPaths::ParseColor("-internal-spelling-error-color",
                                            kHTMLStandardMode, color));
@@ -456,6 +457,47 @@ TEST(CSSParserFastPathsTest, InternalColorsOnlyAllowedInUaMode) {
   EXPECT_EQ(ParseColorResult::kKeyword,
             CSSParserFastPaths::ParseColor("-internal-grammar-error-color",
                                            kUASheetMode, color));
+
+  EXPECT_EQ(ParseColorResult::kFailure,
+            CSSParserFastPaths::ParseColor("-internal-search-color",
+                                           kHTMLStandardMode, color));
+  EXPECT_EQ(ParseColorResult::kFailure,
+            CSSParserFastPaths::ParseColor("-internal-search-color",
+                                           kHTMLQuirksMode, color));
+  EXPECT_EQ(ParseColorResult::kKeyword,
+            CSSParserFastPaths::ParseColor("-internal-search-color",
+                                           kUASheetMode, color));
+
+  EXPECT_EQ(ParseColorResult::kFailure,
+            CSSParserFastPaths::ParseColor("-internal-search-text-color",
+                                           kHTMLStandardMode, color));
+  EXPECT_EQ(ParseColorResult::kFailure,
+            CSSParserFastPaths::ParseColor("-internal-search-text-color",
+                                           kHTMLQuirksMode, color));
+  EXPECT_EQ(ParseColorResult::kKeyword,
+            CSSParserFastPaths::ParseColor("-internal-search-text-color",
+                                           kUASheetMode, color));
+
+  EXPECT_EQ(ParseColorResult::kFailure,
+            CSSParserFastPaths::ParseColor("-internal-current-search-color",
+                                           kHTMLStandardMode, color));
+  EXPECT_EQ(ParseColorResult::kFailure,
+            CSSParserFastPaths::ParseColor("-internal-current-search-color",
+                                           kHTMLQuirksMode, color));
+  EXPECT_EQ(ParseColorResult::kKeyword,
+            CSSParserFastPaths::ParseColor("-internal-current-search-color",
+                                           kUASheetMode, color));
+
+  EXPECT_EQ(
+      ParseColorResult::kFailure,
+      CSSParserFastPaths::ParseColor("-internal-current-search-text-color",
+                                     kHTMLStandardMode, color));
+  EXPECT_EQ(ParseColorResult::kFailure,
+            CSSParserFastPaths::ParseColor(
+                "-internal-current-search-text-color", kHTMLQuirksMode, color));
+  EXPECT_EQ(ParseColorResult::kKeyword,
+            CSSParserFastPaths::ParseColor(
+                "-internal-current-search-text-color", kUASheetMode, color));
 }
 
 }  // namespace blink

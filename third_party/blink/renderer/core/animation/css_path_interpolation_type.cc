@@ -42,7 +42,7 @@ const StylePath* GetPath(const CSSProperty& property,
       return DynamicTo<StylePath>(shape->GetBasicShape());
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -66,7 +66,7 @@ void SetPath(const CSSProperty& property,
           std::move(path), GeometryBox::kBorderBox));
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }
@@ -127,7 +127,7 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertInherit(
   if (!state.ParentStyle())
     return nullptr;
 
-  conversion_checkers.push_back(std::make_unique<InheritedPathChecker>(
+  conversion_checkers.push_back(MakeGarbageCollected<InheritedPathChecker>(
       CssProperty(), GetPath(CssProperty(), *state.ParentStyle())));
   return PathInterpolationFunctions::ConvertValue(
       GetPath(CssProperty(), *state.ParentStyle()),

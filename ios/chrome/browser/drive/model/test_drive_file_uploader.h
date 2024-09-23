@@ -18,6 +18,15 @@ class TestDriveFileUploader final : public DriveFileUploader {
   explicit TestDriveFileUploader(id<SystemIdentity> identity);
   ~TestDriveFileUploader() final;
 
+  // Returns values reported by callbacks of `DriveFileUploader` methods.
+  // Unless overridden e.g. using `SetFolderSearchResult()`, a default value
+  // will be returned.
+  DriveFolderResult GetFolderSearchResult() const;
+  DriveFolderResult GetFolderCreationResult() const;
+  std::vector<DriveFileUploadProgress> GetFileUploadProgressElements() const;
+  DriveFileUploadResult GetFileUploadResult() const;
+  DriveStorageQuotaResult GetStorageQuotaResult() const;
+
   // Sets folder search result to be reported by `SearchSaveToDriveFolder()`.
   void SetFolderSearchResult(const DriveFolderResult& result);
   // Sets folder creation result to be reported by `CreateSaveToDriveFolder()`.
@@ -29,8 +38,13 @@ class TestDriveFileUploader final : public DriveFileUploader {
   void SetFileUploadResult(const DriveFileUploadResult& result);
   // Sets storage quota result to be reported by `FetchStorageQuota()`.
   void SetStorageQuotaResult(const DriveStorageQuotaResult& result);
-  // Sets `quit_closure_`.
-  void SetQuitClosure(base::RepeatingClosure quit_closure);
+
+  // Set quit closures.
+  void SetSearchFolderQuitClosure(base::RepeatingClosure quit_closure);
+  void SetCreateFolderQuitClosure(base::RepeatingClosure quit_closure);
+  void SetUploadFileProgressQuitClosure(base::RepeatingClosure quit_closure);
+  void SetUploadFileCompletionQuitClosure(base::RepeatingClosure quit_closure);
+  void SetFetchStorageQuotaQuitClosure(base::RepeatingClosure quit_closure);
 
   // Returns `folder_name` passed to `SearchSaveToDriveFolder()`.
   NSString* GetSearchedFolderName() const;
@@ -91,17 +105,12 @@ class TestDriveFileUploader final : public DriveFileUploader {
       DriveStorageQuotaCompletionCallback completion_callback,
       DriveStorageQuotaResult storage_quota_result);
 
-  // Runs `quit_closure_`.
-  void RunQuitClosure();
-
-  // Returns values reported by callbacks of `DriveFileUploader` methods.
-  // Unless overridden e.g. using `SetFolderSearchResult()`, a default value
-  // will be returned.
-  DriveFolderResult GetFolderSearchResult() const;
-  DriveFolderResult GetFolderCreationResult() const;
-  std::vector<DriveFileUploadProgress> GetFileUploadProgressElements() const;
-  DriveFileUploadResult GetFileUploadResult() const;
-  DriveStorageQuotaResult GetStorageQuotaResult() const;
+  // Run quit closures.
+  void RunSearchFolderQuitClosure();
+  void RunCreateFolderQuitClosure();
+  void RunUploadFileProgressQuitClosure();
+  void RunUploadFileCompletionQuitClosure();
+  void RunFetchStorageQuotaQuitClosure();
 
   id<SystemIdentity> identity_;
 
@@ -122,8 +131,13 @@ class TestDriveFileUploader final : public DriveFileUploader {
   std::optional<DriveFileUploadResult> file_upload_result_;
   std::optional<DriveStorageQuotaResult> storage_quota_result_;
 
-  // Quit closure.
-  base::RepeatingClosure quit_closure_ = base::DoNothing();
+  // Quit closures.
+  base::RepeatingClosure search_folder_quit_closure_ = base::DoNothing();
+  base::RepeatingClosure create_folder_quit_closure_ = base::DoNothing();
+  base::RepeatingClosure upload_file_progress_quit_closure_ = base::DoNothing();
+  base::RepeatingClosure upload_file_completion_quit_closure_ =
+      base::DoNothing();
+  base::RepeatingClosure fetch_storage_quota_quit_closure_ = base::DoNothing();
 
   // Last value reported by `ReportFileUploadResult()`, if any.
   std::optional<DriveFileUploadResult> last_reported_file_upload_result_;

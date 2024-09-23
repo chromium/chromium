@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/device/hid/hid_connection_linux.h"
 
 #include <errno.h>
@@ -66,7 +71,7 @@ class HidConnectionLinux::BlockingTaskRunnerHelper {
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
     ssize_t result =
-        HANDLE_EINTR(write(fd_.get(), buffer->front(), buffer->size()));
+        HANDLE_EINTR(write(fd_.get(), buffer->data(), buffer->size()));
     if (result < 0) {
       HID_PLOG(EVENT) << "Write failed";
       return false;
@@ -87,7 +92,7 @@ class HidConnectionLinux::BlockingTaskRunnerHelper {
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
     int result = HANDLE_EINTR(
-        ioctl(fd_.get(), HIDIOCGFEATURE(buffer->size()), buffer->front()));
+        ioctl(fd_.get(), HIDIOCGFEATURE(buffer->size()), buffer->data()));
     if (result < 0) {
       HID_PLOG(EVENT) << "Failed to get feature report";
       return std::make_tuple(false, nullptr, 0);
@@ -98,7 +103,7 @@ class HidConnectionLinux::BlockingTaskRunnerHelper {
       // Linux adds a 0 to the beginning of the data received from the device.
       auto copied_buffer =
           base::MakeRefCounted<base::RefCountedBytes>(result - 1);
-      memcpy(copied_buffer->front(), buffer->front() + 1, result - 1);
+      memcpy(copied_buffer->as_vector().data(), buffer->data() + 1, result - 1);
       return std::make_tuple(true, std::move(copied_buffer), result - 1);
     } else {
       return std::make_tuple(true, std::move(buffer), result);
@@ -111,7 +116,7 @@ class HidConnectionLinux::BlockingTaskRunnerHelper {
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
     int result = HANDLE_EINTR(
-        ioctl(fd_.get(), HIDIOCSFEATURE(buffer->size()), buffer->front()));
+        ioctl(fd_.get(), HIDIOCSFEATURE(buffer->size()), buffer->data()));
     if (result < 0) {
       HID_PLOG(EVENT) << "Failed to send feature report";
       return false;
@@ -126,7 +131,7 @@ class HidConnectionLinux::BlockingTaskRunnerHelper {
 
     auto buffer =
         base::MakeRefCounted<base::RefCountedBytes>(report_buffer_size_);
-    uint8_t* data = buffer->front();
+    uint8_t* data = buffer->as_vector().data();
     size_t length = report_buffer_size_;
     if (!has_report_id_) {
       // Linux will not prefix the buffer with a report ID if report IDs are not
@@ -207,7 +212,7 @@ void HidConnectionLinux::PlatformGetFeatureReport(uint8_t report_id,
   DCHECK_GT(device_info()->max_feature_report_size(), 0u);
   auto buffer = base::MakeRefCounted<base::RefCountedBytes>(
       device_info()->max_feature_report_size() + 1);
-  buffer->data()[0] = report_id;
+  buffer->as_vector().data()[0] = report_id;
 
   auto callback_wrapper = base::BindOnce(
       [](ReadCallback callback,

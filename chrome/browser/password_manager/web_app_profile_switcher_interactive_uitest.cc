@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/web_app_profile_switcher.h"
-
 #include "base/files/file_path.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/password_manager/web_app_profile_switcher.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -16,13 +16,14 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -40,10 +41,9 @@ const char kTestWebUIManifestId[] = "chrome://password-manager/";
 const char kTestWebUIAppURL[] = "chrome://password-manager/?source=pwa";
 
 std::unique_ptr<web_app::WebAppInstallInfo> GetTestWebAppInstallInfo() {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = GURL(kTestWebUIAppURL);
+  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>(
+      GURL(kTestWebUIManifestId), GURL(kTestWebUIAppURL));
   web_app_info->title = u"Test app";
-  web_app_info->manifest_id = GURL(kTestWebUIManifestId);
   return web_app_info;
 }
 
@@ -68,15 +68,15 @@ Profile* CreateAdditionalProfile() {
 void InstallAppForProfile(
     Profile* profile,
     std::unique_ptr<web_app::WebAppInstallInfo> app_info) {
-  GURL app_url(app_info->start_url);
+  GURL app_url(app_info->start_url());
   web_app::test::InstallWebApp(profile, std::move(app_info));
   ASSERT_TRUE(web_app::FindInstalledAppWithUrlInScope(profile, app_url));
 }
 
 }  // namespace
 
-class WebAppProfileSwitcherBrowserTest
-    : public web_app::WebAppControllerBrowserTest {};
+class WebAppProfileSwitcherBrowserTest : public web_app::WebAppBrowserTestBase {
+};
 
 IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
                        SwitchWebAppProfileRequiresInstall) {

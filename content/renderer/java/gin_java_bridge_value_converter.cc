@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/renderer/java/gin_java_bridge_value_converter.h"
 
 #include <stddef.h>
@@ -132,7 +137,7 @@ std::unique_ptr<TypedArraySerializer> TypedArraySerializer::Create(
   } else if (typed_array->IsFloat64Array()) {
     return TypedArraySerializerImpl<double, double>::Create(typed_array);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

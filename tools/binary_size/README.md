@@ -10,13 +10,13 @@ There is also a dedicated mailing-list for binary size discussions:
 
  * https://groups.google.com/a/chromium.org/forum/#!forum/binary-size
 
-Bugs and feature requests are tracked in crbug under:
+Bugs and feature requests are tracked in issues.chromium.org under:
 
- * [Tools > BinarySize](https://bugs.chromium.org/p/chromium/issues/list?q=component%3ATools>BinarySize)
+ * [Tools > BinarySize](https://issues.chromium.org/issues?q=status:open%20componentid:1456763)
 
 Per-Milestone Binary Size Breakdowns:
 
- * https://chrome-supersize.firebaseapp.com/chrome-supersize/index.html
+ * https://chrome-supersize.firebaseapp.com
 
 Guide to dealing with chrome-perf size alerts:
 
@@ -64,13 +64,16 @@ and Linux (although Linux symbol diffs have issues, as noted below).
 ### Example Usage
 
 ``` bash
-# Build and diff monochrome_public_apk HEAD^ and HEAD.
+# Build and diff trichrome_bundle HEAD^ and HEAD.
 tools/binary_size/diagnose_bloat.py HEAD -v
 
-# Build and diff monochrome_apk HEAD^ and HEAD.
+# Build and diff trichrome_google_bundle HEAD^ and HEAD.
 tools/binary_size/diagnose_bloat.py HEAD --enable-chrome-android-internal -v
 
-# Build and diff monochrome_public_apk HEAD^ and HEAD without is_official_build.
+# Build and diff trichrome_google_64_32_bundle HEAD^ and HEAD.
+tools/binary_size/diagnose_bloat.py HEAD --enable-chrome-android-internal --arm64 -v
+
+# Build and diff trichrome_bundle HEAD^ and HEAD without is_official_build.
 tools/binary_size/diagnose_bloat.py HEAD --gn-args="is_official_build=false" -v
 
 # Build and diff all contiguous revs in range BEFORE_REV..AFTER_REV for src/v8.

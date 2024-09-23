@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef MEDIA_GPU_V4L2_TEST_VP8_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_VP8_DECODER_H_
 
@@ -10,9 +15,9 @@
 #include <set>
 
 #include "base/files/memory_mapped_file.h"
-#include "media/filters/ivf_parser.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
+#include "media/parsers/ivf_parser.h"
 #include "media/parsers/vp8_parser.h"
 
 namespace media {
@@ -36,7 +41,8 @@ class Vp8Decoder : public VideoDecoder {
                                        std::vector<uint8_t>& y_plane,
                                        std::vector<uint8_t>& u_plane,
                                        std::vector<uint8_t>& v_plane,
-                                       gfx::Size& size) override;
+                                       gfx::Size& size,
+                                       BitDepth& bit_depth) override;
 
  private:
   Vp8Decoder(std::unique_ptr<IvfParser> ivf_parser,

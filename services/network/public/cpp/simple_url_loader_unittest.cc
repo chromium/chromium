@@ -10,11 +10,13 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/base_paths.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -657,7 +659,7 @@ class SimpleURLLoaderTestBase {
     mojom::URLLoaderFactoryParamsPtr params =
         mojom::URLLoaderFactoryParams::New();
     params->process_id = mojom::kBrowserProcessId;
-    params->is_corb_enabled = false;
+    params->is_orb_enabled = false;
     url::Origin origin = url::Origin::Create(test_server_.base_url());
     params->isolation_info =
         net::IsolationInfo::CreateForInternalRequest(origin);
@@ -711,19 +713,107 @@ class SimpleURLLoaderTestBase {
   std::unique_ptr<base::ScopedDisallowBlocking> disallow_blocking_;
 };
 
+enum class ReadAndDiscardBodyType {
+  // The "SimpleURLLoaderUseReadAndDiscardBodyOption" feature is disabled.
+  // TODO(ricea): Remove this when the
+  // "SimpleURLLoaderUseReadAndDiscardBodyOption" feature is removed.
+  kDisabled,
+
+  // The feature is enabled, and MockURLLoader obeys it.
+  kEnabled,
+
+  // The feature is enabled, but MockURLLoader ignores it. This emulates a
+  // URLLoader that does not implement the feature or forward to one that does.
+  kEnabledButIgnored,
+};
+
+using DownloadTypeAndOptions =
+    std::tuple<SimpleLoaderTestHelper::DownloadType, ReadAndDiscardBodyType>;
+
+void PrintTo(const DownloadTypeAndOptions& value, std::ostream* os) {
+  using enum SimpleLoaderTestHelper::DownloadType;
+  const char* download_type = nullptr;
+  switch (std::get<0>(value)) {
+    case TO_STRING:
+      download_type = "TO_STRING";
+      break;
+    case TO_FILE:
+      download_type = "TO_FILE";
+      break;
+    case TO_TEMP_FILE:
+      download_type = "TO_TEMP_FILE";
+      break;
+    case HEADERS_ONLY:
+      download_type = "HEADERS_ONLY";
+      break;
+    case AS_STREAM:
+      download_type = "AS_STREAM";
+      break;
+  }
+  using enum ReadAndDiscardBodyType;
+  const char* read_body_and_discard_type = nullptr;
+  switch (std::get<1>(value)) {
+    case kDisabled:
+      read_body_and_discard_type = "NoReadAndDiscardBody";
+      break;
+    case kEnabled:
+      read_body_and_discard_type = "ReadAndDiscardBodyImplemented";
+      break;
+    case kEnabledButIgnored:
+      read_body_and_discard_type = "ReadAndDiscardBodyIgnored";
+      break;
+  }
+  *os << download_type << "_and_" << read_body_and_discard_type;
+}
+
+struct URLLoaderFactoryTestConfig {
+  ReadAndDiscardBodyType read_and_discard_body_type =
+      ReadAndDiscardBodyType::kDisabled;
+  bool expect_read_and_discard_option = false;
+};
+
 class SimpleURLLoaderTest
     : public SimpleURLLoaderTestBase,
-      public testing::TestWithParam<SimpleLoaderTestHelper::DownloadType> {
+      public testing::TestWithParam<DownloadTypeAndOptions> {
  public:
-  SimpleURLLoaderTest() {}
+  SimpleURLLoaderTest() {
+    if (GetReadAndDiscardBodyType() == ReadAndDiscardBodyType::kDisabled) {
+      scoped_feature_list_.InitAndDisableFeature(
+          kSimpleURLLoaderUseReadAndDiscardBodyOption);
+    } else {
+      scoped_feature_list_.InitAndEnableFeature(
+          kSimpleURLLoaderUseReadAndDiscardBodyOption);
+    }
+  }
 
   ~SimpleURLLoaderTest() override {}
+
+  SimpleLoaderTestHelper::DownloadType GetDownloadType() const {
+    return std::get<0>(GetParam());
+  }
+
+  ReadAndDiscardBodyType GetReadAndDiscardBodyType() const {
+    return std::get<1>(GetParam());
+  }
+
+  URLLoaderFactoryTestConfig GetURLLoaderFactoryTestConfig() {
+    auto read_and_discard_body_type = GetReadAndDiscardBodyType();
+    return {read_and_discard_body_type,
+            IsHeadersOnly() && read_and_discard_body_type !=
+                                   ReadAndDiscardBodyType::kDisabled};
+  }
+
+  // Many tests need to check this, so provide a short-cut.
+  bool IsHeadersOnly() const {
+    return GetDownloadType() ==
+           SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY;
+  }
 
   std::unique_ptr<SimpleLoaderTestHelper> CreateHelper(
       std::unique_ptr<network::ResourceRequest> resource_request) {
     EXPECT_TRUE(resource_request);
     return std::make_unique<SimpleLoaderTestHelper>(std::move(resource_request),
-                                                    GetParam());
+                                                    GetDownloadType());
   }
 
   std::unique_ptr<SimpleLoaderTestHelper> CreateHelperForURL(
@@ -742,8 +832,11 @@ class SimpleURLLoaderTest
                                    request_origin, request_origin,
                                    net::SiteForCookies());
     return std::make_unique<SimpleLoaderTestHelper>(std::move(resource_request),
-                                                    GetParam());
+                                                    GetDownloadType());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(SimpleURLLoaderTest, BasicRequest) {
@@ -763,7 +856,7 @@ TEST_P(SimpleURLLoaderTest, BasicRequest) {
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
   EXPECT_EQ(200, test_helper->GetResponseCode());
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(kExpectedResponse, *test_helper->response_body());
     EXPECT_EQ(kExpectedResponseSize,
@@ -789,7 +882,7 @@ TEST_P(SimpleURLLoaderTest, GzipBody) {
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
   EXPECT_EQ(200, test_helper->GetResponseCode());
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(content, *test_helper->response_body());
     EXPECT_EQ(static_cast<int64_t>(content.size()),
@@ -821,7 +914,7 @@ TEST_P(SimpleURLLoaderTest, Redirect) {
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
   EXPECT_EQ(200, test_helper->GetResponseCode());
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ("Echo", *test_helper->response_body());
   }
@@ -885,7 +978,7 @@ TEST_P(SimpleURLLoaderTest, OnRedirectCallback) {
 
   test_helper->StartSimpleLoaderAndWait(url_loader_factory_.get());
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ("Echo", *test_helper->response_body());
   }
@@ -921,7 +1014,7 @@ TEST_P(SimpleURLLoaderTest, OnRedirectCallbackTwoRedirects) {
 
   test_helper->StartSimpleLoaderAndWait(url_loader_factory_.get());
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ("Echo", *test_helper->response_body());
   }
@@ -980,7 +1073,7 @@ TEST_P(SimpleURLLoaderTest, UploadShortStringWithRedirect) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(kShortUploadBody, *test_helper->response_body());
   }
@@ -1012,7 +1105,7 @@ TEST_P(SimpleURLLoaderTest, UploadLongStringWithRedirect) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(GetLongUploadBody(), *test_helper->response_body());
   }
@@ -1051,7 +1144,7 @@ TEST_P(SimpleURLLoaderTest,
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     // The "foo" header is removed since the SimpleURLLoader's redirect callback
     // marks "foo" header to be removed.
@@ -1089,7 +1182,7 @@ TEST_P(SimpleURLLoaderTest,
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     // The "foo" header is not removed since the SimpleURLLoader's redirect
     // callback marks "bar" header to be removed.
@@ -1170,7 +1263,7 @@ TEST_P(SimpleURLLoaderTest, DestroyLoaderInOnComplete) {
   test_helper->set_destroy_loader_on_complete(true);
   test_helper->StartSimpleLoaderAndWait(url_loader_factory_.get());
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(kExpectedResponse, *test_helper->response_body());
   }
@@ -1225,7 +1318,7 @@ TEST_P(SimpleURLLoaderTest, HttpErrorStatusCodeResponseAllowed) {
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
   EXPECT_EQ(400, test_helper->GetResponseCode());
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ("Echo", *test_helper->response_body());
     EXPECT_EQ(4, test_helper->simple_url_loader()->GetContentSize());
@@ -1246,7 +1339,7 @@ TEST_P(SimpleURLLoaderTest, EmptyResponseBody) {
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
   EXPECT_EQ(204, test_helper->GetResponseCode());
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     // A response body is sent from the NetworkService, but it's empty.
     EXPECT_EQ("", *test_helper->response_body());
@@ -1274,7 +1367,7 @@ TEST_P(SimpleURLLoaderTest, BigResponseBody) {
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
   EXPECT_EQ(200, test_helper->GetResponseCode());
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(kResponseSize, test_helper->response_body()->length());
     EXPECT_EQ(std::string(kResponseSize, 'a'), *test_helper->response_body());
@@ -1286,10 +1379,13 @@ TEST_P(SimpleURLLoaderTest, BigResponseBody) {
   }
 }
 
+#define GTEST_SKIP_IF_STREAM()                                                \
+  if (GetDownloadType() == SimpleLoaderTestHelper::DownloadType::AS_STREAM) { \
+    GTEST_SKIP() << "Download to stream doesn't support response sizes.";     \
+  }
+
 TEST_P(SimpleURLLoaderTest, ResponseBodyWithSizeMatchingLimit) {
-  // Download to stream doesn't support response sizes.
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
-    return;
+  GTEST_SKIP_IF_STREAM();
 
   const uint32_t kResponseSize = 16;
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
@@ -1304,7 +1400,7 @@ TEST_P(SimpleURLLoaderTest, ResponseBodyWithSizeMatchingLimit) {
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
   EXPECT_EQ(200, test_helper->GetResponseCode());
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(kResponseSize, test_helper->response_body()->length());
     EXPECT_EQ(std::string(kResponseSize, 'a'), *test_helper->response_body());
@@ -1317,9 +1413,7 @@ TEST_P(SimpleURLLoaderTest, ResponseBodyWithSizeMatchingLimit) {
 }
 
 TEST_P(SimpleURLLoaderTest, ResponseBodyWithSizeBelowLimit) {
-  // Download to stream doesn't support response sizes.
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
-    return;
+  GTEST_SKIP_IF_STREAM();
 
   const uint32_t kResponseSize = 16;
   const uint32_t kMaxResponseSize = kResponseSize + 1;
@@ -1335,7 +1429,7 @@ TEST_P(SimpleURLLoaderTest, ResponseBodyWithSizeBelowLimit) {
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
   EXPECT_EQ(200, test_helper->GetResponseCode());
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(kResponseSize, test_helper->response_body()->length());
     EXPECT_EQ(std::string(kResponseSize, 'a'), *test_helper->response_body());
@@ -1348,9 +1442,7 @@ TEST_P(SimpleURLLoaderTest, ResponseBodyWithSizeBelowLimit) {
 }
 
 TEST_P(SimpleURLLoaderTest, ResponseBodyWithSizeAboveLimit) {
-  // Download to stream doesn't support response sizes.
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
-    return;
+  GTEST_SKIP_IF_STREAM();
 
   const uint32_t kResponseSize = 16;
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
@@ -1359,7 +1451,7 @@ TEST_P(SimpleURLLoaderTest, ResponseBodyWithSizeAboveLimit) {
   test_helper->StartSimpleLoaderAndWait(url_loader_factory_.get(),
                                         kResponseSize - 1);
 
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (IsHeadersOnly()) {
     EXPECT_EQ(net::OK, test_helper->simple_url_loader()->NetError());
     EXPECT_TRUE(test_helper->simple_url_loader()->CompletionStatus());
   } else {
@@ -1373,9 +1465,7 @@ TEST_P(SimpleURLLoaderTest, ResponseBodyWithSizeAboveLimit) {
 
 // Same as above, but with setting allow_partial_results to true.
 TEST_P(SimpleURLLoaderTest, ResponseBodyWithSizeAboveLimitPartialResponse) {
-  // Download to stream doesn't support response sizes.
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
-    return;
+  GTEST_SKIP_IF_STREAM();
 
   const uint32_t kResponseSize = 16;
   const uint32_t kMaxResponseSize = kResponseSize - 1;
@@ -1386,7 +1476,7 @@ TEST_P(SimpleURLLoaderTest, ResponseBodyWithSizeAboveLimitPartialResponse) {
   test_helper->StartSimpleLoaderAndWait(url_loader_factory_.get(),
                                         kMaxResponseSize);
 
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (IsHeadersOnly()) {
     EXPECT_TRUE(test_helper->simple_url_loader()->CompletionStatus());
     EXPECT_EQ(net::OK, test_helper->simple_url_loader()->NetError());
     EXPECT_FALSE(test_helper->response_body());
@@ -1406,9 +1496,7 @@ TEST_P(SimpleURLLoaderTest, ResponseBodyWithSizeAboveLimitPartialResponse) {
 // The next 4 tests duplicate the above 4, but with larger response sizes. This
 // means the size limit will not be exceeded on the first read.
 TEST_P(SimpleURLLoaderTest, BigResponseBodyWithSizeMatchingLimit) {
-  // Download to stream doesn't support response sizes.
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
-    return;
+  GTEST_SKIP_IF_STREAM();
 
   const uint32_t kResponseSize = 512 * 1024;
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
@@ -1422,7 +1510,7 @@ TEST_P(SimpleURLLoaderTest, BigResponseBodyWithSizeMatchingLimit) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(kResponseSize, test_helper->response_body()->length());
     EXPECT_EQ(std::string(kResponseSize, 'a'), *test_helper->response_body());
@@ -1435,9 +1523,7 @@ TEST_P(SimpleURLLoaderTest, BigResponseBodyWithSizeMatchingLimit) {
 }
 
 TEST_P(SimpleURLLoaderTest, BigResponseBodyWithSizeBelowLimit) {
-  // Download to stream doesn't support response sizes.
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
-    return;
+  GTEST_SKIP_IF_STREAM();
 
   const uint32_t kResponseSize = 512 * 1024;
   const uint32_t kMaxResponseSize = kResponseSize + 1;
@@ -1452,7 +1538,7 @@ TEST_P(SimpleURLLoaderTest, BigResponseBodyWithSizeBelowLimit) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(kResponseSize, test_helper->response_body()->length());
     EXPECT_EQ(std::string(kResponseSize, 'a'), *test_helper->response_body());
@@ -1465,9 +1551,7 @@ TEST_P(SimpleURLLoaderTest, BigResponseBodyWithSizeBelowLimit) {
 }
 
 TEST_P(SimpleURLLoaderTest, BigResponseBodyWithSizeAboveLimit) {
-  // Download to stream doesn't support response sizes.
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
-    return;
+  GTEST_SKIP_IF_STREAM();
 
   const uint32_t kResponseSize = 512 * 1024;
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
@@ -1476,7 +1560,7 @@ TEST_P(SimpleURLLoaderTest, BigResponseBodyWithSizeAboveLimit) {
   test_helper->StartSimpleLoaderAndWait(url_loader_factory_.get(),
                                         kResponseSize - 1);
 
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (IsHeadersOnly()) {
     EXPECT_EQ(net::OK, test_helper->simple_url_loader()->NetError());
     ASSERT_TRUE(test_helper->simple_url_loader()->CompletionStatus());
     EXPECT_EQ(net::OK,
@@ -1491,9 +1575,7 @@ TEST_P(SimpleURLLoaderTest, BigResponseBodyWithSizeAboveLimit) {
 }
 
 TEST_P(SimpleURLLoaderTest, BigResponseBodyWithSizeAboveLimitPartialResponse) {
-  // Download to stream doesn't support response sizes.
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
-    return;
+  GTEST_SKIP_IF_STREAM();
 
   const uint32_t kResponseSize = 512 * 1024;
   const uint32_t kMaxResponseSize = kResponseSize - 1;
@@ -1504,7 +1586,7 @@ TEST_P(SimpleURLLoaderTest, BigResponseBodyWithSizeAboveLimitPartialResponse) {
   test_helper->StartSimpleLoaderAndWait(url_loader_factory_.get(),
                                         kMaxResponseSize);
 
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (IsHeadersOnly()) {
     EXPECT_EQ(net::OK, test_helper->simple_url_loader()->NetError());
     ASSERT_TRUE(test_helper->simple_url_loader()->CompletionStatus());
     EXPECT_EQ(net::OK,
@@ -1595,7 +1677,7 @@ TEST_P(SimpleURLLoaderTest, NetErrorAfterHeadersWithPartialResults) {
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
   EXPECT_EQ(200, test_helper->GetResponseCode());
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ("", *test_helper->response_body());
     EXPECT_EQ(0, test_helper->simple_url_loader()->GetContentSize());
@@ -1638,7 +1720,7 @@ TEST_P(SimpleURLLoaderTest, TruncatedBodyWithPartialResults) {
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
   EXPECT_EQ(200, test_helper->GetResponseCode());
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(static_cast<int64_t>(strlen(kTruncatedBody)),
               test_helper->simple_url_loader()->GetContentSize());
@@ -1680,7 +1762,7 @@ TEST_P(SimpleURLLoaderTest, UploadShortString) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(kShortUploadBody, *test_helper->response_body());
   }
@@ -1698,7 +1780,7 @@ TEST_P(SimpleURLLoaderTest, UploadLongString) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(long_string, *test_helper->response_body());
   }
@@ -1714,7 +1796,7 @@ TEST_P(SimpleURLLoaderTest, UploadEmptyString) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ("", *test_helper->response_body());
   }
@@ -1728,7 +1810,7 @@ TEST_P(SimpleURLLoaderTest, UploadEmptyString) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_NE(std::string::npos,
               test_helper->response_body()->find("Content-Type: text/plain"));
@@ -1750,13 +1832,14 @@ TEST_P(SimpleURLLoaderTest, UploadShortStringWithRetry) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(kShortUploadBody, *test_helper->response_body());
   }
 
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
+  if (GetDownloadType() == SimpleLoaderTestHelper::DownloadType::AS_STREAM) {
     EXPECT_EQ(1, test_helper->download_as_stream_retries());
+  }
 }
 
 TEST_P(SimpleURLLoaderTest, UploadLongStringWithRetry) {
@@ -1773,13 +1856,14 @@ TEST_P(SimpleURLLoaderTest, UploadLongStringWithRetry) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(long_string, *test_helper->response_body());
   }
 
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
+  if (GetDownloadType() == SimpleLoaderTestHelper::DownloadType::AS_STREAM) {
     EXPECT_EQ(1, test_helper->download_as_stream_retries());
+  }
 }
 
 TEST_P(SimpleURLLoaderTest, UploadFile) {
@@ -1793,7 +1877,7 @@ TEST_P(SimpleURLLoaderTest, UploadFile) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(GetTestFileContents(), *test_helper->response_body());
   }
@@ -1808,7 +1892,7 @@ TEST_P(SimpleURLLoaderTest, UploadFile) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_NE(std::string::npos,
               test_helper->response_body()->find("Content-Type: text/plain"));
@@ -1831,7 +1915,7 @@ TEST_P(SimpleURLLoaderTest, UploadFileRange) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(GetTestFileContents().substr(kOffset, kLength),
               *test_helper->response_body());
@@ -1849,7 +1933,7 @@ TEST_P(SimpleURLLoaderTest, UploadFileWithPut) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(GetTestFileContents(), *test_helper->response_body());
   }
@@ -1864,7 +1948,7 @@ TEST_P(SimpleURLLoaderTest, UploadFileWithPut) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_NE(std::string::npos,
               test_helper->response_body()->find("Content-Type: text/salted"));
@@ -1888,7 +1972,7 @@ TEST_P(SimpleURLLoaderTest, UploadFileWithRetry) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(GetTestFileContents(), *test_helper->response_body());
     EXPECT_EQ(static_cast<int64_t>(GetTestFileContents().size()),
@@ -1899,8 +1983,9 @@ TEST_P(SimpleURLLoaderTest, UploadFileWithRetry) {
                   ->decoded_body_length);
   }
 
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
+  if (GetDownloadType() == SimpleLoaderTestHelper::DownloadType::AS_STREAM) {
     EXPECT_EQ(1, test_helper->download_as_stream_retries());
+  }
 }
 
 TEST_P(SimpleURLLoaderTest, UploadNonexistentFile) {
@@ -2011,11 +2096,13 @@ class MockURLLoader : public network::mojom::URLLoader {
       mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       std::vector<TestLoaderEvent> test_events,
-      scoped_refptr<network::ResourceRequestBody> request_body)
+      scoped_refptr<network::ResourceRequestBody> request_body,
+      bool should_create_data_pipe)
       : task_environment_(task_environment),
         receiver_(this, std::move(url_loader_receiver)),
         client_(std::move(client)),
-        test_events_(std::move(test_events)) {
+        test_events_(std::move(test_events)),
+        should_create_data_pipe_(should_create_data_pipe) {
     if (request_body && request_body->elements()->size() == 1 &&
         (*request_body->elements())[0].type() ==
             network::mojom::DataElementDataView::Tag::kDataPipe) {
@@ -2058,17 +2145,19 @@ class MockURLLoader : public network::mojom::URLLoader {
           ASSERT_TRUE(upload_data_pipe_.is_valid());
           std::string upload_body;
           while (true) {
-            char read_buffer[32 * 1024];
-            uint32_t read_size = sizeof(read_buffer);
+            std::string read_buffer(32 * 1024, '\0');
+            size_t actually_read_bytes = 0;
             MojoResult result = upload_data_pipe_->ReadData(
-                read_buffer, &read_size, MOJO_READ_DATA_FLAG_NONE);
+                MOJO_READ_DATA_FLAG_NONE,
+                base::as_writable_byte_span(read_buffer), actually_read_bytes);
             if (result == MOJO_RESULT_SHOULD_WAIT) {
               base::RunLoop().RunUntilIdle();
               continue;
             }
             if (result != MOJO_RESULT_OK)
               break;
-            upload_body.append(read_buffer, read_size);
+            upload_body.append(
+                std::string_view(read_buffer).substr(0, actually_read_bytes));
           }
           EXPECT_EQ(GetLongUploadBody(), upload_body);
           break;
@@ -2077,12 +2166,11 @@ class MockURLLoader : public network::mojom::URLLoader {
           ASSERT_TRUE(data_pipe_getter_);
           ASSERT_TRUE(upload_data_pipe_.is_valid());
           MojoResult result;
-          char byte;
-          uint32_t read_size;
+          uint8_t byte;
+          size_t read_size = 0;
           while (true) {
-            read_size = 1;
-            result = upload_data_pipe_->ReadData(&byte, &read_size,
-                                                 MOJO_READ_DATA_FLAG_NONE);
+            result = upload_data_pipe_->ReadData(
+                MOJO_READ_DATA_FLAG_NONE, base::span_from_ref(byte), read_size);
             if (result != MOJO_RESULT_SHOULD_WAIT)
               break;
             base::RunLoop().RunUntilIdle();
@@ -2125,8 +2213,10 @@ class MockURLLoader : public network::mojom::URLLoader {
               base::MakeRefCounted<net::HttpResponseHeaders>(
                   net::HttpUtil::AssembleRawHeaders(headers));
           mojo::ScopedDataPipeConsumerHandle consumer_handle;
-          ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
-                    MOJO_RESULT_OK);
+          if (should_create_data_pipe_) {
+            ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
+                      MOJO_RESULT_OK);
+          }
           client_->OnReceiveResponse(std::move(response_info),
                                      std::move(consumer_handle), std::nullopt);
           break;
@@ -2138,8 +2228,10 @@ class MockURLLoader : public network::mojom::URLLoader {
               base::MakeRefCounted<net::HttpResponseHeaders>(
                   net::HttpUtil::AssembleRawHeaders(headers));
           mojo::ScopedDataPipeConsumerHandle consumer_handle;
-          ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
-                    MOJO_RESULT_OK);
+          if (should_create_data_pipe_) {
+            ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
+                      MOJO_RESULT_OK);
+          }
           client_->OnReceiveResponse(std::move(response_info),
                                      std::move(consumer_handle), std::nullopt);
           break;
@@ -2151,8 +2243,10 @@ class MockURLLoader : public network::mojom::URLLoader {
               base::MakeRefCounted<net::HttpResponseHeaders>(
                   net::HttpUtil::AssembleRawHeaders(headers));
           mojo::ScopedDataPipeConsumerHandle consumer_handle;
-          ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
-                    MOJO_RESULT_OK);
+          if (should_create_data_pipe_) {
+            ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
+                      MOJO_RESULT_OK);
+          }
           client_->OnReceiveResponse(std::move(response_info),
                                      std::move(consumer_handle), std::nullopt);
           break;
@@ -2169,13 +2263,16 @@ class MockURLLoader : public network::mojom::URLLoader {
           break;
         }
         case TestLoaderEvent::kBodyDataRead: {
-          uint32_t num_bytes = 1;
-          // Writing one byte should always succeed synchronously, for the
-          // amount of data these tests send.
-          EXPECT_EQ(MOJO_RESULT_OK,
-                    body_stream_->WriteData("a", &num_bytes,
-                                            MOJO_WRITE_DATA_FLAG_NONE));
-          EXPECT_EQ(num_bytes, 1u);
+          if (should_create_data_pipe_) {
+            size_t actually_written_bytes = 0;
+            // Writing one byte should always succeed synchronously, for the
+            // amount of data these tests send.
+            EXPECT_EQ(MOJO_RESULT_OK,
+                      body_stream_->WriteData(base::byte_span_from_cstring("a"),
+                                              MOJO_WRITE_DATA_FLAG_NONE,
+                                              actually_written_bytes));
+            EXPECT_EQ(actually_written_bytes, 1u);
+          }
           break;
         }
         case TestLoaderEvent::kResponseComplete: {
@@ -2250,7 +2347,7 @@ class MockURLLoader : public network::mojom::URLLoader {
       const std::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void PauseReadingBodyFromNet() override {}
   void ResumeReadingBodyFromNet() override {}
@@ -2291,14 +2388,17 @@ class MockURLLoader : public network::mojom::URLLoader {
 
   std::unique_ptr<base::RunLoop> read_run_loop_;
 
+  const bool should_create_data_pipe_;
+
   base::WeakPtrFactory<MockURLLoader> weak_factory_for_data_pipe_callbacks_{
       this};
 };
 
 class MockURLLoaderFactory : public network::mojom::URLLoaderFactory {
  public:
-  explicit MockURLLoaderFactory(base::test::TaskEnvironment* task_environment)
-      : task_environment_(task_environment) {}
+  explicit MockURLLoaderFactory(base::test::TaskEnvironment* task_environment,
+                                URLLoaderFactoryTestConfig test_config)
+      : task_environment_(task_environment), test_config_(test_config) {}
 
   MockURLLoaderFactory(const MockURLLoaderFactory&) = delete;
   MockURLLoaderFactory& operator=(const MockURLLoaderFactory&) = delete;
@@ -2317,9 +2417,23 @@ class MockURLLoaderFactory : public network::mojom::URLLoaderFactory {
       override {
     ASSERT_FALSE(test_events_.empty());
     requested_urls_.push_back(url_request.url);
+    const bool read_and_discard_body_option_set =
+        options & mojom::kURLLoadOptionReadAndDiscardBody;
+    if (test_config_.expect_read_and_discard_option) {
+      EXPECT_TRUE(read_and_discard_body_option_set);
+    } else {
+      EXPECT_FALSE(read_and_discard_body_option_set);
+    }
+    bool should_create_data_pipe = true;
+    if (read_and_discard_body_option_set &&
+        test_config_.read_and_discard_body_type !=
+            ReadAndDiscardBodyType::kEnabledButIgnored) {
+      should_create_data_pipe = false;
+    }
     url_loaders_.push_back(std::make_unique<MockURLLoader>(
         task_environment_, std::move(url_loader_receiver), std::move(client),
-        test_events_.front(), url_request.request_body));
+        test_events_.front(), url_request.request_body,
+        should_create_data_pipe));
     test_events_.pop_front();
 
     url_loader_queue_.push_back(url_loaders_.back().get());
@@ -2374,15 +2488,17 @@ class MockURLLoaderFactory : public network::mojom::URLLoaderFactory {
   const std::list<GURL>& requested_urls() const { return requested_urls_; }
 
  private:
-  raw_ptr<base::test::TaskEnvironment> task_environment_;
+  const raw_ptr<base::test::TaskEnvironment> task_environment_;
   std::list<std::unique_ptr<MockURLLoader>> url_loaders_;
   std::list<std::vector<TestLoaderEvent>> test_events_;
 
   bool close_new_binding_on_clone_ = false;
 
+  const URLLoaderFactoryTestConfig test_config_;
+
   // Queue of URLLoaders that have yet to had their RunTest method called.
   // Separate list than |url_loaders_| so that old pipes aren't destroyed.
-  std::list<MockURLLoader*> url_loader_queue_;
+  std::list<raw_ptr<MockURLLoader, CtnExperimental>> url_loader_queue_;
 
   std::list<GURL> requested_urls_;
 
@@ -2391,7 +2507,8 @@ class MockURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
 // Check that the request fails if OnComplete() is called before anything else.
 TEST_P(SimpleURLLoaderTest, ResponseCompleteBeforeReceivedResponse) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents({TestLoaderEvent::kResponseComplete});
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
       CreateHelperForURL(GURL("foo://bar/"));
@@ -2406,21 +2523,29 @@ TEST_P(SimpleURLLoaderTest, ResponseCompleteBeforeReceivedResponse) {
 // Check that the request fails if OnComplete() is called before the body pipe
 // is received.
 TEST_P(SimpleURLLoaderTest, ResponseCompleteAfterReceivedResponse) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents({TestLoaderEvent::kReceivedResponseNoData,
                             TestLoaderEvent::kResponseComplete});
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
       CreateHelperForURL(GURL("foo://bar/"));
   loader_factory.RunTest(test_helper.get());
 
-  EXPECT_EQ(net::ERR_UNEXPECTED, test_helper->simple_url_loader()->NetError());
-  EXPECT_FALSE(test_helper->simple_url_loader()->CompletionStatus());
+  if (IsHeadersOnly()) {
+    EXPECT_EQ(net::OK, test_helper->simple_url_loader()->NetError());
+    EXPECT_TRUE(test_helper->simple_url_loader()->CompletionStatus());
+  } else {
+    EXPECT_EQ(net::ERR_UNEXPECTED,
+              test_helper->simple_url_loader()->NetError());
+    EXPECT_FALSE(test_helper->simple_url_loader()->CompletionStatus());
+  }
   EXPECT_EQ(200, test_helper->GetResponseCode());
   EXPECT_FALSE(test_helper->response_body());
 }
 
 TEST_P(SimpleURLLoaderTest, CloseClientPipeBeforeBodyStarts) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents({TestLoaderEvent::kReceivedResponseNoData,
                             TestLoaderEvent::kClientPipeClosed});
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
@@ -2436,13 +2561,18 @@ TEST_P(SimpleURLLoaderTest, CloseClientPipeBeforeBodyStarts) {
 // This test tries closing the client pipe / completing the request in most
 // possible valid orders relative to read events (Which always occur in the same
 // order).
-// TODO(crbug.com/1286251): Flakes on ios simulator.
+// TODO(crbug.com/40815508): Flakes on ios simulator.
 #if BUILDFLAG(IS_IOS)
 #define MAYBE_CloseClientPipeOrder DISABLED_CloseClientPipeOrder
 #else
 #define MAYBE_CloseClientPipeOrder CloseClientPipeOrder
 #endif
 TEST_P(SimpleURLLoaderTest, MAYBE_CloseClientPipeOrder) {
+  if (GetReadAndDiscardBodyType() == ReadAndDiscardBodyType::kEnabled &&
+      IsHeadersOnly()) {
+    GTEST_SKIP() << "There is no client pipe in this case";
+  }
+
   enum class ClientCloseOrder {
     kBeforeData,
     kDuringData,
@@ -2476,7 +2606,8 @@ TEST_P(SimpleURLLoaderTest, MAYBE_CloseClientPipeOrder) {
               bytes_received < 2) {
             continue;
           }
-          MockURLLoaderFactory loader_factory(&task_environment_);
+          MockURLLoaderFactory loader_factory(&task_environment_,
+                                              GetURLLoaderFactoryTestConfig());
           std::vector<TestLoaderEvent> events;
           events.push_back(TestLoaderEvent::kReceivedResponse);
           if (close_client_order == ClientCloseOrder::kBeforeData)
@@ -2518,8 +2649,7 @@ TEST_P(SimpleURLLoaderTest, MAYBE_CloseClientPipeOrder) {
             }
             if (!allow_partial_results) {
               EXPECT_FALSE(test_helper->response_body());
-            } else if (GetParam() !=
-                       SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+            } else if (!IsHeadersOnly()) {
               ASSERT_TRUE(test_helper->response_body());
               EXPECT_EQ(std::string(bytes_received, 'a'),
                         *test_helper->response_body());
@@ -2531,8 +2661,7 @@ TEST_P(SimpleURLLoaderTest, MAYBE_CloseClientPipeOrder) {
                                    ->CompletionStatus()
                                    ->error_code);
 
-            if (GetParam() !=
-                SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+            if (!IsHeadersOnly()) {
               ASSERT_TRUE(test_helper->response_body());
               EXPECT_EQ(std::string(bytes_received, 'a'),
                         *test_helper->response_body());
@@ -2546,7 +2675,8 @@ TEST_P(SimpleURLLoaderTest, MAYBE_CloseClientPipeOrder) {
 
 // Make sure the close client pipe message doesn't cause any issues.
 TEST_P(SimpleURLLoaderTest, ErrorAndCloseClientPipeBeforeBodyStarts) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents({TestLoaderEvent::kReceivedResponseNoData,
                             TestLoaderEvent::kResponseCompleteFailed,
                             TestLoaderEvent::kClientPipeClosed});
@@ -2564,7 +2694,8 @@ TEST_P(SimpleURLLoaderTest, ErrorAndCloseClientPipeBeforeBodyStarts) {
 
 // Make sure the close client pipe message doesn't cause any issues.
 TEST_P(SimpleURLLoaderTest, SuccessAndCloseClientPipeBeforeBodyComplete) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents(
       {TestLoaderEvent::kReceivedResponse, TestLoaderEvent::kResponseComplete,
        TestLoaderEvent::kClientPipeClosed, TestLoaderEvent::kBodyDataRead,
@@ -2579,7 +2710,7 @@ TEST_P(SimpleURLLoaderTest, SuccessAndCloseClientPipeBeforeBodyComplete) {
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
   EXPECT_EQ(200, test_helper->GetResponseCode());
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ("a", *test_helper->response_body());
   }
@@ -2587,7 +2718,8 @@ TEST_P(SimpleURLLoaderTest, SuccessAndCloseClientPipeBeforeBodyComplete) {
 
 // Make sure the close client pipe message doesn't cause any issues.
 TEST_P(SimpleURLLoaderTest, SuccessAndCloseClientPipeAfterBodyComplete) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents(
       {TestLoaderEvent::kReceivedResponse, TestLoaderEvent::kBodyDataRead,
        TestLoaderEvent::kBodyBufferClosed, TestLoaderEvent::kResponseComplete,
@@ -2602,14 +2734,15 @@ TEST_P(SimpleURLLoaderTest, SuccessAndCloseClientPipeAfterBodyComplete) {
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
   EXPECT_EQ(200, test_helper->GetResponseCode());
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ("a", *test_helper->response_body());
   }
 }
 
 TEST_P(SimpleURLLoaderTest, DoubleReceivedResponse) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents(
       {TestLoaderEvent::kReceivedResponse, TestLoaderEvent::kReceivedResponse});
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
@@ -2623,7 +2756,8 @@ TEST_P(SimpleURLLoaderTest, DoubleReceivedResponse) {
 }
 
 TEST_P(SimpleURLLoaderTest, RedirectAfterReceivedResponse) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents(
       {TestLoaderEvent::kReceivedResponse, TestLoaderEvent::kReceivedRedirect});
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
@@ -2637,7 +2771,8 @@ TEST_P(SimpleURLLoaderTest, RedirectAfterReceivedResponse) {
 }
 
 TEST_P(SimpleURLLoaderTest, DoubleBodyBufferReceived) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents(
       {TestLoaderEvent::kReceivedResponse, TestLoaderEvent::kReceivedResponse});
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
@@ -2651,7 +2786,8 @@ TEST_P(SimpleURLLoaderTest, DoubleBodyBufferReceived) {
 }
 
 TEST_P(SimpleURLLoaderTest, UnexpectedMessageAfterBodyStarts) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents({TestLoaderEvent::kReceivedResponse,
                             TestLoaderEvent::kBodyDataRead,
                             TestLoaderEvent::kReceivedRedirect});
@@ -2666,7 +2802,8 @@ TEST_P(SimpleURLLoaderTest, UnexpectedMessageAfterBodyStarts) {
 }
 
 TEST_P(SimpleURLLoaderTest, UnexpectedMessageAfterBodyStarts2) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents({TestLoaderEvent::kReceivedResponse,
                             TestLoaderEvent::kBodyDataRead,
                             TestLoaderEvent::kReceivedResponse});
@@ -2681,7 +2818,8 @@ TEST_P(SimpleURLLoaderTest, UnexpectedMessageAfterBodyStarts2) {
 }
 
 TEST_P(SimpleURLLoaderTest, UnexpectedMessageAfterBodyComplete) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents(
       {TestLoaderEvent::kReceivedResponse, TestLoaderEvent::kBodyDataRead,
        TestLoaderEvent::kBodyBufferClosed, TestLoaderEvent::kReceivedResponse});
@@ -2696,7 +2834,13 @@ TEST_P(SimpleURLLoaderTest, UnexpectedMessageAfterBodyComplete) {
 }
 
 TEST_P(SimpleURLLoaderTest, MoreDataThanExpected) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  if (GetReadAndDiscardBodyType() == ReadAndDiscardBodyType::kEnabled &&
+      IsHeadersOnly()) {
+    GTEST_SKIP() << "No data is actually sent in this case.";
+  }
+
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents(
       {TestLoaderEvent::kReceivedResponse, TestLoaderEvent::kBodyDataRead,
        TestLoaderEvent::kBodyDataRead, TestLoaderEvent::kBodyBufferClosed,
@@ -2714,7 +2858,8 @@ TEST_P(SimpleURLLoaderTest, MoreDataThanExpected) {
 TEST_P(SimpleURLLoaderTest, DownloadProgressCallbackIncremental) {
   // Make sure that intermediate states of download are reported to the
   // progress callback.
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents({TestLoaderEvent::kReceivedResponse,
                             TestLoaderEvent::kBodyDataRead,
                             TestLoaderEvent::kBodyDataRead});
@@ -2727,7 +2872,7 @@ TEST_P(SimpleURLLoaderTest, DownloadProgressCallbackIncremental) {
           [&](uint64_t current) { progress.push_back(current); }));
   loader_factory.RunTest(test_helper.get(), false);
 
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (IsHeadersOnly()) {
     EXPECT_EQ(0u, progress.size());
   } else {
     // Since the request doesn't complete this is guaranteed to receive
@@ -2780,7 +2925,8 @@ TEST_P(SimpleURLLoaderTest, RetryOn5xx) {
   };
 
   for (const auto& test_case : kTestCases) {
-    MockURLLoaderFactory loader_factory(&task_environment_);
+    MockURLLoaderFactory loader_factory(&task_environment_,
+                                        GetURLLoaderFactoryTestConfig());
     for (int i = 0; i < test_case.num_5xx; i++) {
       loader_factory.AddEvents({TestLoaderEvent::kReceived501Response});
     }
@@ -2807,7 +2953,7 @@ TEST_P(SimpleURLLoaderTest, RetryOn5xx) {
           test_helper->simple_url_loader()->CompletionStatus()->error_code);
       EXPECT_EQ(200, test_helper->GetResponseCode());
 
-      if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+      if (!IsHeadersOnly()) {
         ASSERT_TRUE(test_helper->response_body());
         EXPECT_EQ(1u, test_helper->response_body()->size());
       }
@@ -2822,7 +2968,7 @@ TEST_P(SimpleURLLoaderTest, RetryOn5xx) {
       EXPECT_EQ(kInitialURL, url);
     }
 
-    if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM) {
+    if (GetDownloadType() == SimpleLoaderTestHelper::DownloadType::AS_STREAM) {
       EXPECT_EQ(test_case.expected_num_requests - 1,
                 test_helper->download_as_stream_retries());
     }
@@ -2870,7 +3016,8 @@ TEST_P(SimpleURLLoaderTest, RetryOnNameNotResolved) {
   };
 
   for (const auto& test_case : kTestCases) {
-    MockURLLoaderFactory loader_factory(&task_environment_);
+    MockURLLoaderFactory loader_factory(&task_environment_,
+                                        GetURLLoaderFactoryTestConfig());
     for (int i = 0; i < test_case.num_name_not_resolved; i++) {
       loader_factory.AddEvents({TestLoaderEvent::kNameNotResolved});
     }
@@ -2897,7 +3044,7 @@ TEST_P(SimpleURLLoaderTest, RetryOnNameNotResolved) {
           test_helper->simple_url_loader()->CompletionStatus()->error_code);
       EXPECT_EQ(200, test_helper->GetResponseCode());
 
-      if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+      if (!IsHeadersOnly()) {
         ASSERT_TRUE(test_helper->response_body());
         EXPECT_EQ(1u, test_helper->response_body()->size());
       }
@@ -2916,7 +3063,7 @@ TEST_P(SimpleURLLoaderTest, RetryOnNameNotResolved) {
       EXPECT_EQ(kInitialURL, url);
     }
 
-    if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM) {
+    if (GetDownloadType() == SimpleLoaderTestHelper::DownloadType::AS_STREAM) {
       EXPECT_EQ(test_case.expected_num_requests - 1,
                 test_helper->download_as_stream_retries());
     }
@@ -2928,7 +3075,8 @@ TEST_P(SimpleURLLoaderTest, RetryOnNameNotResolved) {
 
 // Test that when retrying on 5xx is enabled, there's no retry on a 4xx error.
 TEST_P(SimpleURLLoaderTest, NoRetryOn4xx) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents({TestLoaderEvent::kReceived401Response});
 
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
@@ -2941,15 +3089,17 @@ TEST_P(SimpleURLLoaderTest, NoRetryOn4xx) {
   EXPECT_FALSE(test_helper->response_body());
   EXPECT_EQ(1u, loader_factory.requested_urls().size());
 
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
+  if (GetDownloadType() == SimpleLoaderTestHelper::DownloadType::AS_STREAM) {
     EXPECT_EQ(0, test_helper->download_as_stream_retries());
+  }
 }
 
 // Checks that retrying after a redirect works. The original URL should be
 // re-requested.
 TEST_P(SimpleURLLoaderTest, RetryAfterRedirect) {
   const GURL kInitialURL("foo://bar/initial");
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents({TestLoaderEvent::kReceivedRedirect,
                             TestLoaderEvent::kReceived501Response});
   loader_factory.AddEvents(
@@ -2977,8 +3127,9 @@ TEST_P(SimpleURLLoaderTest, RetryAfterRedirect) {
   loader_factory.RunTest(test_helper.get());
 
   EXPECT_EQ(200, test_helper->GetResponseCode());
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY)
+  if (!IsHeadersOnly()) {
     EXPECT_TRUE(test_helper->response_body());
+  }
   EXPECT_EQ(2, num_redirects);
 
   EXPECT_EQ(2u, loader_factory.requested_urls().size());
@@ -2988,8 +3139,9 @@ TEST_P(SimpleURLLoaderTest, RetryAfterRedirect) {
 
   EXPECT_THAT(urls_before_redirect, ElementsAre(kInitialURL, kInitialURL));
 
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
+  if (GetDownloadType() == SimpleLoaderTestHelper::DownloadType::AS_STREAM) {
     EXPECT_EQ(1, test_helper->download_as_stream_retries());
+  }
 }
 
 TEST_P(SimpleURLLoaderTest, RetryOnNetworkChange) {
@@ -3058,7 +3210,8 @@ TEST_P(SimpleURLLoaderTest, RetryOnNetworkChange) {
 
   for (const auto& network_events : kNetworkChangedEvents) {
     for (const auto& test_case : kTestCases) {
-      MockURLLoaderFactory loader_factory(&task_environment_);
+      MockURLLoaderFactory loader_factory(&task_environment_,
+                                          GetURLLoaderFactoryTestConfig());
       for (int i = 0; i < test_case.num_network_changes; i++) {
         loader_factory.AddEvents(network_events);
       }
@@ -3085,7 +3238,7 @@ TEST_P(SimpleURLLoaderTest, RetryOnNetworkChange) {
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
         EXPECT_EQ(200, test_helper->GetResponseCode());
 
-        if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+        if (!IsHeadersOnly()) {
           ASSERT_TRUE(test_helper->response_body());
           EXPECT_EQ(1u, test_helper->response_body()->size());
         }
@@ -3105,7 +3258,8 @@ TEST_P(SimpleURLLoaderTest, RetryOnNetworkChange) {
         EXPECT_EQ(kInitialURL, url);
       }
 
-      if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM) {
+      if (GetDownloadType() ==
+          SimpleLoaderTestHelper::DownloadType::AS_STREAM) {
         EXPECT_EQ(test_case.expected_num_requests - 1,
                   test_helper->download_as_stream_retries());
       }
@@ -3123,7 +3277,8 @@ TEST_P(SimpleURLLoaderTest, RetryOnNetworkChange) {
       if (test_loader_event == TestLoaderEvent::kResponseCompleteNetworkChanged)
         test_loader_event = TestLoaderEvent::kResponseCompleteFailed;
     }
-    MockURLLoaderFactory loader_factory(&task_environment_);
+    MockURLLoaderFactory loader_factory(&task_environment_,
+                                        GetURLLoaderFactoryTestConfig());
     loader_factory.AddEvents(modifed_network_events);
 
     std::unique_ptr<SimpleLoaderTestHelper> test_helper =
@@ -3139,15 +3294,17 @@ TEST_P(SimpleURLLoaderTest, RetryOnNetworkChange) {
     EXPECT_FALSE(test_helper->response_body());
     EXPECT_EQ(1u, loader_factory.requested_urls().size());
 
-    if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
+    if (GetDownloadType() == SimpleLoaderTestHelper::DownloadType::AS_STREAM) {
       EXPECT_EQ(0, test_helper->download_as_stream_retries());
+    }
   }
 }
 
 // Check the case where the URLLoaderFactory has been disconnected before the
 // request is retried.
 TEST_P(SimpleURLLoaderTest, RetryWithUnboundFactory) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents({TestLoaderEvent::kResponseCompleteNetworkChanged});
   // Since clone fails asynchronously, this shouldn't be any different from
   // the new URLLoaderFactory being disconnected in some other way.
@@ -3163,15 +3320,17 @@ TEST_P(SimpleURLLoaderTest, RetryWithUnboundFactory) {
   EXPECT_FALSE(test_helper->response_body());
 
   // Retry is still called, before the dead factory is discovered.
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::AS_STREAM)
+  if (GetDownloadType() == SimpleLoaderTestHelper::DownloadType::AS_STREAM) {
     EXPECT_EQ(1, test_helper->download_as_stream_retries());
+  }
 }
 
 // Test the case where DataPipeGetter::Read is called twice in a row,
 // with no intervening reads of the data on the pipe.
 TEST_P(SimpleURLLoaderTest, UploadLongStringStartReadTwice) {
   std::string long_string = GetLongUploadBody();
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents(
       {TestLoaderEvent::kStartReadLongUploadBody,
        TestLoaderEvent::kStartReadLongUploadBody,
@@ -3188,7 +3347,7 @@ TEST_P(SimpleURLLoaderTest, UploadLongStringStartReadTwice) {
   ASSERT_TRUE(test_helper->simple_url_loader()->CompletionStatus());
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ("", *test_helper->response_body());
   }
@@ -3200,7 +3359,8 @@ TEST_P(SimpleURLLoaderTest, UploadLongStringStartReadTwice) {
 TEST_P(SimpleURLLoaderTest,
        UploadLongStringReadPartOfUploadBodyBeforeRestartBodyRead) {
   std::string long_string = GetLongUploadBody();
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(&task_environment_,
+                                      GetURLLoaderFactoryTestConfig());
   loader_factory.AddEvents(
       {TestLoaderEvent::kStartReadLongUploadBody,
        TestLoaderEvent::kWaitForLongUploadBodySize,
@@ -3220,7 +3380,7 @@ TEST_P(SimpleURLLoaderTest,
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
 
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ("", *test_helper->response_body());
   }
@@ -3260,17 +3420,22 @@ TEST_P(SimpleURLLoaderTest, GetFinalURLAfterRedirect) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     SimpleURLLoaderTest,
-    testing::Values(SimpleLoaderTestHelper::DownloadType::TO_STRING,
-                    SimpleLoaderTestHelper::DownloadType::TO_FILE,
-                    SimpleLoaderTestHelper::DownloadType::TO_TEMP_FILE,
-                    SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY,
-                    SimpleLoaderTestHelper::DownloadType::AS_STREAM));
+    testing::Combine(
+        testing::Values(SimpleLoaderTestHelper::DownloadType::TO_STRING,
+                        SimpleLoaderTestHelper::DownloadType::TO_FILE,
+                        SimpleLoaderTestHelper::DownloadType::TO_TEMP_FILE,
+                        SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY,
+                        SimpleLoaderTestHelper::DownloadType::AS_STREAM),
+        testing::Values(ReadAndDiscardBodyType::kDisabled,
+                        ReadAndDiscardBodyType::kEnabled,
+                        ReadAndDiscardBodyType::kEnabledButIgnored)),
+    ::testing::PrintToStringParamName());
 
 class SimpleURLLoaderFileTest : public SimpleURLLoaderTestBase,
                                 public testing::Test {
  public:
-  SimpleURLLoaderFileTest() {}
-  ~SimpleURLLoaderFileTest() override {}
+  SimpleURLLoaderFileTest() = default;
+  ~SimpleURLLoaderFileTest() override = default;
 
   std::unique_ptr<SimpleLoaderTestHelper> CreateHelperForURL(const GURL& url) {
     std::unique_ptr<network::ResourceRequest> resource_request =
@@ -3335,7 +3500,9 @@ TEST_F(SimpleURLLoaderFileTest, DeleteLoaderDuringRequestDestroysFile) {
         if (body_buffer_closed && client_pipe_closed)
           continue;
 
-        MockURLLoaderFactory loader_factory(&task_environment_);
+        MockURLLoaderFactory loader_factory(
+            &task_environment_,
+            {ReadAndDiscardBodyType::kEnabledButIgnored, false});
         std::vector<TestLoaderEvent> events;
         events.push_back(TestLoaderEvent::kReceivedResponse);
         if (body_data_read)
@@ -3515,7 +3682,8 @@ class SimpleURLLoaderMockTimeTest : public testing::Test {
 // The amount of time that's simulated passing is equal to the timeout value
 // specified, so the request should fail.
 TEST_F(SimpleURLLoaderMockTimeTest, TimeoutTriggered) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(
+      &task_environment_, {ReadAndDiscardBodyType::kEnabled, false});
   loader_factory.AddEvents(
       {TestLoaderEvent::kAdvanceOneSecond, TestLoaderEvent::kReceivedResponse,
        TestLoaderEvent::kResponseComplete, TestLoaderEvent::kBodyBufferClosed});
@@ -3531,7 +3699,8 @@ TEST_F(SimpleURLLoaderMockTimeTest, TimeoutTriggered) {
 // Request fails with a timeout like in TimeoutTriggered, and the stream resume
 // closure is called after the timeout. The loader is alive throughout.
 TEST_F(SimpleURLLoaderMockTimeTest, StreamResumeAfterTimeout) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(
+      &task_environment_, {ReadAndDiscardBodyType::kEnabled, false});
   loader_factory.AddEvents(
       {TestLoaderEvent::kReceivedResponse, TestLoaderEvent::kBodyDataRead,
        TestLoaderEvent::kAdvanceOneSecond, TestLoaderEvent::kResponseComplete,
@@ -3556,7 +3725,8 @@ TEST_F(SimpleURLLoaderMockTimeTest, StreamResumeAfterTimeout) {
 // Less time is simulated passing than the timeout value, so this request should
 // succeed normally.
 TEST_F(SimpleURLLoaderMockTimeTest, TimeoutNotTriggered) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(
+      &task_environment_, {ReadAndDiscardBodyType::kEnabled, false});
   loader_factory.AddEvents(
       {TestLoaderEvent::kAdvanceOneSecond, TestLoaderEvent::kReceivedResponse,
        TestLoaderEvent::kResponseComplete, TestLoaderEvent::kBodyBufferClosed});
@@ -3575,7 +3745,8 @@ TEST_F(SimpleURLLoaderMockTimeTest, TimeoutNotTriggered) {
 // Simulate time passing, without setting the timeout. This should result in no
 // timer being started, and request should succeed.
 TEST_F(SimpleURLLoaderMockTimeTest, TimeNotSetAndTimeAdvanced) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(
+      &task_environment_, {ReadAndDiscardBodyType::kEnabled, false});
   loader_factory.AddEvents(
       {TestLoaderEvent::kAdvanceOneSecond, TestLoaderEvent::kReceivedResponse,
        TestLoaderEvent::kResponseComplete, TestLoaderEvent::kBodyBufferClosed});
@@ -3593,7 +3764,8 @@ TEST_F(SimpleURLLoaderMockTimeTest, TimeNotSetAndTimeAdvanced) {
 // Simulate time passing before and after a redirect. The redirect should not
 // reset the timeout timer, and the request should timeout.
 TEST_F(SimpleURLLoaderMockTimeTest, TimeoutAfterRedirectTriggered) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(
+      &task_environment_, {ReadAndDiscardBodyType::kEnabled, false});
   loader_factory.AddEvents(
       {TestLoaderEvent::kAdvanceOneSecond, TestLoaderEvent::kReceivedRedirect,
        TestLoaderEvent::kAdvanceOneSecond, TestLoaderEvent::kReceivedResponse,
@@ -3610,7 +3782,8 @@ TEST_F(SimpleURLLoaderMockTimeTest, TimeoutAfterRedirectTriggered) {
 // Simulate time passing after a failure. The retry restarts the timeout timer,
 // so the second attempt gets a full two seconds and it is not exhausted.
 TEST_F(SimpleURLLoaderMockTimeTest, TimeoutAfterRetryNotTriggered) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(
+      &task_environment_, {ReadAndDiscardBodyType::kEnabled, false});
   loader_factory.AddEvents({TestLoaderEvent::kAdvanceOneSecond,
                             TestLoaderEvent::kReceived501Response});
   loader_factory.AddEvents(
@@ -3633,7 +3806,8 @@ TEST_F(SimpleURLLoaderMockTimeTest, TimeoutAfterRetryNotTriggered) {
 // Trigger a failure and retry, and then simulate enough time passing to trigger
 // the timeout. The retry should have correctly started its timeout timer.
 TEST_F(SimpleURLLoaderMockTimeTest, TimeoutAfterRetryTriggered) {
-  MockURLLoaderFactory loader_factory(&task_environment_);
+  MockURLLoaderFactory loader_factory(
+      &task_environment_, {ReadAndDiscardBodyType::kEnabled, false});
   loader_factory.AddEvents({TestLoaderEvent::kAdvanceOneSecond,
                             TestLoaderEvent::kReceived501Response});
   loader_factory.AddEvents(
@@ -3653,7 +3827,7 @@ TEST_F(SimpleURLLoaderMockTimeTest, TimeoutAfterRetryTriggered) {
 
 TEST_P(SimpleURLLoaderTest, OnUploadProgressCallback) {
   std::string long_string;
-  if (SimpleLoaderTestHelper::IsDownloadTypeToFile(GetParam())) {
+  if (SimpleLoaderTestHelper::IsDownloadTypeToFile(GetDownloadType())) {
     // Use a smaller upload body when writing to disk - sometimes creating a
     // large file takes a while on the bots (and, strangely, sometimes it
     // performs fine on the exact same bot).
@@ -3683,7 +3857,7 @@ TEST_P(SimpleURLLoaderTest, OnUploadProgressCallback) {
   EXPECT_EQ(net::OK,
             test_helper->simple_url_loader()->CompletionStatus()->error_code);
   EXPECT_EQ(long_string.size(), progress);
-  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+  if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(long_string, *test_helper->response_body());
   }
@@ -3701,10 +3875,11 @@ TEST_P(SimpleURLLoaderTest, OnDownloadProgressCallback) {
         progress = current;
       }));
   test_helper->StartSimpleLoaderAndWait(url_loader_factory_.get());
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY)
+  if (IsHeadersOnly()) {
     EXPECT_EQ(0u, progress);
-  else
+  } else {
     EXPECT_EQ(kResponseSize, progress);
+  }
 }
 
 // Ensure that deleting the SimpleURLLoader in the upload progress
@@ -3729,8 +3904,9 @@ TEST_P(SimpleURLLoaderTest, DeleteInOnUploadProgressCallback) {
 // Ensure that deleting the SimpleURLLoader in the upload progress
 // callback is safe --- first invocation.
 TEST_P(SimpleURLLoaderTest, DeleteInDownloadProgressCallback) {
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY)
-    return;  // No progress callback to delete stuff in.
+  if (IsHeadersOnly()) {
+    GTEST_SKIP() << "No progress callback to delete stuff in.";
+  }
 
   const uint32_t kResponseSize = 512 * 1024;
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =
@@ -3753,8 +3929,9 @@ TEST_P(SimpleURLLoaderTest, DeleteInDownloadProgressCallback) {
 // Ensure that deleting the SimpleURLLoader in the upload progress
 // callback is safe --- completion invocation.
 TEST_P(SimpleURLLoaderTest, DeleteInDownloadProgressCallback2) {
-  if (GetParam() == SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY)
-    return;  // No progress callback to delete stuff in.
+  if (IsHeadersOnly()) {
+    GTEST_SKIP() << "No progress callback to delete stuff in.";
+  }
 
   const uint32_t kResponseSize = 512 * 1024;
   std::unique_ptr<SimpleLoaderTestHelper> test_helper =

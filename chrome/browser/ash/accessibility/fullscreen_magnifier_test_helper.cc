@@ -8,8 +8,8 @@
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
-#include "chrome/browser/ash/accessibility/magnifier_animation_waiter.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/accessibility_notification_waiter.h"
@@ -116,9 +116,8 @@ void FullscreenMagnifierTestHelper::OnMagnifierBoundsChanged() {
 
   std::move(bounds_changed_waiter_).Run();
 
-  // Wait for any additional animation to complete.
-  MagnifierAnimationWaiter magnifier_waiter(GetFullscreenMagnifierController());
-  magnifier_waiter.Wait();
+  // Note: no need to wait for animation to get updated viewport. That can be
+  // done separately if we need to check cursor changes.
 }
 
 }  // namespace ash

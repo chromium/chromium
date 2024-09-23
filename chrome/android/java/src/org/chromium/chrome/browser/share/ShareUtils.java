@@ -28,7 +28,6 @@ public class ShareUtils {
                 url.getScheme().equals(UrlConstants.CHROME_SCHEME)
                         || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
         boolean isDataScheme = url.getScheme().equals(UrlConstants.DATA_SCHEME);
-
         return !isChromeScheme && !isDataScheme;
     }
 

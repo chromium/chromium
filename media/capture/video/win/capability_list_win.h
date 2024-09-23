@@ -9,8 +9,9 @@
 #ifndef MEDIA_CAPTURE_VIDEO_WIN_CAPABILITY_LIST_WIN_H_
 #define MEDIA_CAPTURE_VIDEO_WIN_CAPABILITY_LIST_WIN_H_
 
-#include <list>
 #include <windows.h>
+
+#include <list>
 
 #include "media/capture/video_capture_types.h"
 

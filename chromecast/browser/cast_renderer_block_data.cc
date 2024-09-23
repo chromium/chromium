@@ -42,7 +42,8 @@ void CastRendererBlockData::SetRendererBlockForWebContents(
 // static
 void CastRendererBlockData::SetApplicationMediaInfoManagerForWebContents(
     content::WebContents* web_contents,
-    media::ApplicationMediaInfoManager* application_media_info_manager) {
+    base::WeakPtr<media::ApplicationMediaInfoManager>
+        application_media_info_manager) {
   DCHECK(web_contents);
   CastRendererBlockData* data = GetOrCreateCastRendererBlockData(web_contents);
   data->SetApplicationMediaInfoManager(application_media_info_manager);
@@ -60,10 +61,10 @@ void CastRendererBlockData::SetBlocked(bool blocked) {
 }
 
 void CastRendererBlockData::SetApplicationMediaInfoManager(
-    media::ApplicationMediaInfoManager* application_media_info_manager) {
+    base::WeakPtr<media::ApplicationMediaInfoManager>
+        application_media_info_manager) {
   DCHECK(application_media_info_manager);
-  application_media_info_manager_ =
-      base::AsWeakPtr(application_media_info_manager);
+  application_media_info_manager_ = application_media_info_manager;
   application_media_info_manager_->SetRendererBlock(blocked_);
 }
 

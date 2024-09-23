@@ -16,9 +16,9 @@ namespace performance_manager::policies {
 
 namespace {
 
-// TODO(crbug/1489325): oom_score_adj of some processes could be out-of-dated.
-// Override OnIsFocusedChanged to update the oom_score_adj of the focused tab
-// to make it harder to be killed by the Linux oom killer.
+// TODO(crbug.com/40283990): oom_score_adj of some processes could be
+// out-of-dated. Override OnIsFocusedChanged to update the oom_score_adj of the
+// focused tab to make it harder to be killed by the Linux oom killer.
 constexpr base::TimeDelta kOomScoresAssignmentMinimalInterval =
     base::Seconds(10);
 
@@ -29,14 +29,12 @@ OomScorePolicyChromeOS::~OomScorePolicyChromeOS() = default;
 
 void OomScorePolicyChromeOS::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  graph_ = graph;
   graph->AddPageNodeObserver(this);
 }
 
 void OomScorePolicyChromeOS::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph->RemovePageNodeObserver(this);
-  graph_ = nullptr;
 }
 
 void OomScorePolicyChromeOS::OnPageNodeAdded(const PageNode* page_node) {
@@ -45,6 +43,10 @@ void OomScorePolicyChromeOS::OnPageNodeAdded(const PageNode* page_node) {
 
 void OomScorePolicyChromeOS::OnBeforePageNodeRemoved(
     const PageNode* page_node) {
+  HandlePageNodeEventsThrottled();
+}
+
+void OomScorePolicyChromeOS::OnIsFocusedChanged(const PageNode* page_node) {
   HandlePageNodeEventsThrottled();
 }
 
@@ -67,13 +69,14 @@ void OomScorePolicyChromeOS::HandlePageNodeEventsThrottled() {
 
 void OomScorePolicyChromeOS::HandlePageNodeEvents() {
   PageDiscardingHelper* discarding_helper =
-      PageDiscardingHelper::GetFromGraph(graph_);
+      PageDiscardingHelper::GetFromGraph(GetOwningGraph());
 
-  std::vector<const PageNode*> page_nodes = graph_->GetAllPageNodes();
-
+  Graph::NodeSetView<const PageNode*> all_page_nodes =
+      GetOwningGraph()->GetAllPageNodes();
   std::vector<PageNodeSortProxy> candidates;
+  candidates.reserve(all_page_nodes.size());
 
-  for (const auto* page_node : page_nodes) {
+  for (const PageNode* page_node : all_page_nodes) {
     PageDiscardingHelper::CanDiscardResult can_discard_result =
         discarding_helper->CanDiscard(
             page_node, PageDiscardingHelper::DiscardReason::URGENT);

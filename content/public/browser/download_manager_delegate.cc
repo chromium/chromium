@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_item_rename_handler.h"
 #include "content/public/browser/web_contents_delegate.h"
 
 namespace content {
@@ -58,6 +59,11 @@ bool DownloadManagerDelegate::ShouldOpenDownload(
   return true;
 }
 
+bool DownloadManagerDelegate::ShouldObfuscateDownload(
+    download::DownloadItem* item) {
+  return false;
+}
+
 bool DownloadManagerDelegate::InterceptDownloadIfApplicable(
     const GURL& url,
     const std::string& user_agent,
@@ -81,6 +87,8 @@ void DownloadManagerDelegate::CheckDownloadAllowed(
     std::optional<url::Origin> request_initiator,
     bool from_download_cross_origin_redirect,
     bool content_initiated,
+    const std::string& mime_type,
+    std::optional<ui::PageTransition> page_transition,
     CheckDownloadAllowedCallback check_download_allowed_cb) {
   // TODO: Do this directly, if it doesn't crash.
 
@@ -116,6 +124,12 @@ DownloadManagerDelegate::GetQuarantineConnectionCallback() {
   return base::NullCallback();
 }
 
+std::unique_ptr<download::DownloadItemRenameHandler>
+DownloadManagerDelegate::GetRenameHandlerForDownload(
+    download::DownloadItem* download_item) {
+  return nullptr;
+}
+
 DownloadManagerDelegate::~DownloadManagerDelegate() {}
 
 download::DownloadItem* DownloadManagerDelegate::GetDownloadByGuid(
@@ -132,6 +146,14 @@ void DownloadManagerDelegate::CheckSavePackageAllowed(
 
 #if BUILDFLAG(IS_ANDROID)
 bool DownloadManagerDelegate::IsFromExternalApp(download::DownloadItem* item) {
+  return false;
+}
+
+bool DownloadManagerDelegate::ShouldOpenPdfInline() {
+  return false;
+}
+
+bool DownloadManagerDelegate::IsDownloadRestrictedByPolicy() {
   return false;
 }
 #endif  // BUILDFLAG(IS_ANDROID)

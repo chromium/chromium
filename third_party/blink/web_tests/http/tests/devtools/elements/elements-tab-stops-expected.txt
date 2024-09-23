@@ -2,7 +2,7 @@ Tests what elements have focus after pressing tab.
 
 DIV#tab-styles:Styles
 DIV:More tabs
-DIV:Filter Styles
+DIV:Filter
 BUTTON:Toggle Element State
 BUTTON:Element Classes
 BUTTON:New Style Rule
@@ -33,6 +33,6 @@ BUTTON:Toggle common rendering emulations
 BUTTON:New Style Rule
 BUTTON:Element Classes
 BUTTON:Toggle Element State
-DIV:Filter Styles
+DIV:Filter
 DIV:More tabs
 

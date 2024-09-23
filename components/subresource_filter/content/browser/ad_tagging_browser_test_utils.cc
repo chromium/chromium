@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -50,7 +51,7 @@ RenderFrameHost* CreateFrameImpl(const content::ToRenderFrameHost& adapter,
 
     // TODO(bokan): Fenced frames don't expose a load event so this approach
     // won't work inside a prerender.
-    DCHECK(!is_fenced_frame);
+    CHECK(!is_fenced_frame);
 
     std::string script = base::StringPrintf(
         R"JS(

@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_STATE_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "gin/public/context_holder.h"
 #include "gin/public/gin_embedders.h"
@@ -65,12 +63,12 @@ class V8PerContextData;
 //
 // You should not store ScriptState on a C++ object that can be accessed
 // by multiple worlds. For example, you can store ScriptState on
-// ScriptPromiseResolver, ScriptValue etc because they can be accessed from one
-// world. However, you cannot store ScriptState on a DOM object that has
-// an IDL interface because the DOM object can be accessed from multiple
-// worlds. If ScriptState of one world "leak"s to another world, you will
-// end up with leaking any JavaScript objects from one Chrome extension
-// to another Chrome extension, which is a severe security bug.
+// ScriptPromiseResolverBase, ScriptValue etc because they can be accessed from
+// one world. However, you cannot store ScriptState on a DOM object that has an
+// IDL interface because the DOM object can be accessed from multiple worlds. If
+// ScriptState of one world "leak"s to another world, you will end up with
+// leaking any JavaScript objects from one Chrome extension to another Chrome
+// extension, which is a severe security bug.
 //
 // Lifetime:
 // ScriptState is created when v8::Context is created.
@@ -125,7 +123,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   };
 
   static ScriptState* Create(v8::Local<v8::Context>,
-                             scoped_refptr<DOMWrapperWorld>,
+                             DOMWrapperWorld*,
                              ExecutionContext*);
 
   ScriptState(const ScriptState&) = delete;
@@ -134,40 +132,43 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
 
   virtual void Trace(Visitor*) const;
 
-  static ScriptState* Current(v8::Isolate* isolate) {  // DEPRECATED
-    return From(isolate->GetCurrentContext());
+  static ScriptState* ForCurrentRealm(v8::Isolate* isolate) {
+    DCHECK(isolate->InContext());
+    return From(isolate, isolate->GetCurrentContext());
   }
 
   static ScriptState* ForCurrentRealm(
       const v8::FunctionCallbackInfo<v8::Value>& info) {
-    return From(info.GetIsolate()->GetCurrentContext());
+    return ForCurrentRealm(info.GetIsolate());
   }
 
   static ScriptState* ForCurrentRealm(
       const v8::PropertyCallbackInfo<v8::Value>& info) {
-    return From(info.GetIsolate()->GetCurrentContext());
+    return ForCurrentRealm(info.GetIsolate());
   }
 
-  static ScriptState* ForRelevantRealm(v8::Local<v8::Object> object) {
+  static ScriptState* ForRelevantRealm(v8::Isolate* isolate,
+                                       v8::Local<v8::Object> object) {
     DCHECK(!object.IsEmpty());
     ScriptState* script_state = static_cast<ScriptState*>(
         object->GetAlignedPointerFromEmbedderDataInCreationContext(
-            kV8ContextPerContextDataIndex));
+            isolate, kV8ContextPerContextDataIndex));
     // ScriptState::ForRelevantRealm() must be called only for objects having a
     // creation context while the context must have a valid embedder data in
     // the embedder field.
-    SECURITY_CHECK(script_state);
+    DCHECK(script_state);
     return script_state;
   }
 
-  static ScriptState* From(v8::Local<v8::Context> context) {
+  static ScriptState* From(v8::Isolate* isolate,
+                           v8::Local<v8::Context> context) {
     DCHECK(!context.IsEmpty());
     ScriptState* script_state =
         static_cast<ScriptState*>(context->GetAlignedPointerFromEmbedderData(
-            kV8ContextPerContextDataIndex));
+            isolate, kV8ContextPerContextDataIndex));
     // ScriptState::From() must not be called for a context that does not have
     // valid embedder data in the embedder field.
-    SECURITY_CHECK(script_state);
+    DCHECK(script_state);
     SECURITY_CHECK(script_state->context_ == context);
     return script_state;
   }
@@ -179,7 +180,8 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   // This is also called in some situations where DissociateContext() has
   // already been called and therefore the ScriptState pointer on the
   // v8::Context has already been nulled.
-  static ScriptState* MaybeFrom(v8::Local<v8::Context> context) {
+  static ScriptState* MaybeFrom(v8::Isolate* isolate,
+                                v8::Local<v8::Context> context) {
     DCHECK(!context.IsEmpty());
     if (context->GetNumberOfEmbedderDataFields() <=
         kV8ContextPerContextDataIndex) {
@@ -187,7 +189,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
     }
     ScriptState* script_state =
         static_cast<ScriptState*>(context->GetAlignedPointerFromEmbedderData(
-            kV8ContextPerContextDataIndex));
+            isolate, kV8ContextPerContextDataIndex));
     SECURITY_CHECK(!script_state || script_state->context_ == context);
     return script_state;
   }
@@ -215,21 +217,19 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   void DissociateContext();
 
  protected:
-  ScriptState(v8::Local<v8::Context>,
-              scoped_refptr<DOMWrapperWorld>,
-              ExecutionContext*);
+  ScriptState(v8::Local<v8::Context>, DOMWrapperWorld*, ExecutionContext*);
 
  private:
   static void OnV8ContextCollectedCallback(
       const v8::WeakCallbackInfo<ScriptState>&);
 
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
+  raw_ptr<v8::Isolate, DanglingUntriaged> isolate_;
   // This persistent handle is weak.
   ScopedPersistent<v8::Context> context_;
 
   // This refptr doesn't cause a cycle because all persistent handles that
   // DOMWrapperWorld holds are weak.
-  scoped_refptr<DOMWrapperWorld> world_;
+  Member<DOMWrapperWorld> world_;
 
   Member<V8PerContextData> per_context_data_;
 
@@ -245,7 +245,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   V8ContextToken token_;
 
   using CreateCallback = ScriptState* (*)(v8::Local<v8::Context>,
-                                          scoped_refptr<DOMWrapperWorld>,
+                                          DOMWrapperWorld*,
                                           ExecutionContext*);
   static CreateCallback s_create_callback_;
   static void SetCreateCallback(CreateCallback);

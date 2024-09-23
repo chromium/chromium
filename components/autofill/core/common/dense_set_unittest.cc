@@ -65,6 +65,27 @@ TEST(DenseSetTest, initialization) {
   EXPECT_EQ(DenseSet<T>({T::kFour, T::kTwo, T::kOne}), s);
 }
 
+TEST(DenseSetTest, FromRange) {
+  enum class E { kOne = 1, kTwo = 2, kThree = 3, kMaxValue = kThree };
+  struct S {
+    auto operator<=>(const S&) const = default;
+
+    E e = E::kOne;
+  };
+
+  {
+    std::vector<S> container = {S{.e = E::kTwo}, S{.e = E::kThree}};
+    DenseSet s(container, &S::e);
+    EXPECT_EQ(s, DenseSet({E::kTwo, E::kThree}));
+  }
+
+  {
+    std::set<S> container = {S{.e = E::kOne}, S{.e = E::kThree}};
+    DenseSet s(container, &S::e);
+    EXPECT_EQ(s, DenseSet({E::kThree, E::kOne}));
+  }
+}
+
 TEST(DenseSetTest, initializer_list) {
   // The largest value so that DenseSet offers a constexpr constructor.
   constexpr uint64_t kMaxValueForConstexpr = 63;

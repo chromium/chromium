@@ -5,12 +5,12 @@
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -47,7 +47,7 @@ zxcvbn::RankedDicts ParseRankedDictionaries(const base::FilePath& install_dir) {
   }
 
   // The contained StringPieces hold references to the strings in raw_dicts.
-  std::vector<std::vector<base::StringPiece>> dicts;
+  std::vector<std::vector<std::string_view>> dicts;
   for (const auto& raw_dict : raw_dicts) {
     dicts.push_back(base::SplitStringPiece(
         raw_dict, "\r\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
@@ -80,7 +80,7 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
     return component_install_dir_.GetPath();
   }
 
-  void SetVersion(base::StringPiece version_str) {
+  void SetVersion(std::string_view version_str) {
     version_ = base::Version(version_str);
     manifest_.Set("version", version_str);
   }

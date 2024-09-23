@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.util.ColorUtils;
 
@@ -30,7 +32,15 @@ public class CustomTabNavigationBarController {
         Integer navigationBarColor = intentDataProvider.getColorProvider().getNavigationBarColor();
         Integer navigationBarDividerColor =
                 intentDataProvider.getColorProvider().getNavigationBarDividerColor();
-
+        // TODO(b/300419189): Pass the CCT Top Bar Color in AGSA intent after Page Insights Hub is
+        // launched
+        if (GoogleBottomBarCoordinator.isFeatureEnabled()
+                && CustomTabsConnection.getInstance()
+                        .shouldEnableGoogleBottomBarForIntent(intentDataProvider)) {
+            navigationBarColor = context.getColor(R.color.google_bottom_bar_background_color);
+            navigationBarDividerColor =
+                    context.getColor(R.color.google_bottom_bar_background_color);
+        }
         // PCCT is deemed incapable of system dark button support due to the way it implements
         // partial height (window coordinate translation). We do the darkening ourselves.
         boolean supportsDarkButtons =

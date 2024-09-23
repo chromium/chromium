@@ -17,10 +17,9 @@ from telemetry.web_perf import timeline_based_measurement
 RENDERING_BENCHMARK_UMA = [
     'Compositing.Display.DrawToSwapUs',
     'CompositorLatency.TotalLatency',
-    'EventLatency.FirstGestureScrollUpdate.Touchscreen.TotalLatency',
-    'EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency',
+    'EventLatency.FirstGestureScrollUpdate.TotalLatency2',
     'EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency',
-    'EventLatency.GestureScrollUpdate.Wheel.TotalLatency',
+    'EventLatency.GestureScrollUpdate.TotalLatency2',
     'Graphics.Smoothness.Checkerboarding3.AllAnimations',
     'Graphics.Smoothness.Checkerboarding3.AllInteractions',
     'Graphics.Smoothness.Checkerboarding3.AllSequences',
@@ -32,6 +31,7 @@ RENDERING_BENCHMARK_UMA = [
     'Graphics.Smoothness.PercentDroppedFrames3.AllSequences',
     'Memory.GPU.PeakMemoryUsage2.Scroll',
     'Memory.GPU.PeakMemoryUsage2.PageLoad',
+    'Event.Jank.PredictorJankyFramePercentage2',
     'Event.ScrollJank.DelayedFramesPercentage.FixedWindow',
     'Event.ScrollJank.DelayedFramesPercentage.PerScroll',
     'Event.ScrollJank.MissedVsyncsSum.FixedWindow',
@@ -42,7 +42,7 @@ RENDERING_BENCHMARK_UMA = [
 
 
 class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
-  # TODO(crbug/1205829): Capturing video is causing long cycle time and timeout
+  # TODO(crbug.com/40764818): Capturing video is causing long cycle time and timeout
   # on some Pixel devices. Disabling this option until the issue can be fixed.
   #options = {
   #    'capture_screen_video': True
@@ -50,18 +50,22 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option('--scroll-forever', action='store_true',
-                      help='If set, continuously scroll up and down forever. '
-                           'This is useful for analysing scrolling behaviour '
-                           'with tools such as perf.')
-    parser.add_option('--allow-software-compositing', action='store_true',
-                      help='If set, allows the benchmark to run with software '
-                           'compositing.')
-    parser.add_option('--extra-uma-metrics',
-                      action='store',
-                      help='Comma separated list of additional UMA metrics to '
-                      'include in result output. Note that histogram buckets '
-                      'in telemetry report may not match buckets from UMA.')
+    parser.add_argument(
+        '--scroll-forever',
+        action='store_true',
+        help=('If set, continuously scroll up and down forever. '
+              'This is useful for analysing scrolling behaviour '
+              'with tools such as perf.'))
+    parser.add_argument(
+        '--allow-software-compositing',
+        action='store_true',
+        help=('If set, allows the benchmark to run with software '
+              'compositing.'))
+    parser.add_argument(
+        '--extra-uma-metrics',
+        help=('Comma separated list of additional UMA metrics to '
+              'include in result output. Note that histogram buckets '
+              'in telemetry report may not match buckets from UMA.'))
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):
@@ -121,14 +125,7 @@ class RenderingDesktop(_RenderingBenchmark):
 
   def SetExtraBrowserOptions(self, options):
     super(RenderingDesktop, self).SetExtraBrowserOptions(options)
-    # The feature below is only needed for macOS.
-    # We found that the normal priorities used for mac is resulting into
-    # unreliable values for avg_fps and frame_times. Increasing the priority
-    # and using it in telemetry tests can help with more accurate values.
-    # crbug.com/970607
     if sys.platform == 'darwin':
-      options.AppendExtraBrowserArgs(
-          '--use-gpu-high-thread-priority-for-perf-tests')
       # Mac bots without a physical display fallbacks to SRGB. This flag forces
       # them to use a color profile (P3), which matches the usual color profile
       # on Mac monitors and changes the cost of some overlay operations to match

@@ -7,29 +7,7 @@ GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 /**
  * Test fixture.
  */
-ChromeVoxExpandingBrailleTranslatorUnitTest = class extends ChromeVoxE2ETest {
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetical by path.
-      importModule(
-          'ExpandingBrailleTranslator',
-          '/chromevox/background/braille/expanding_braille_translator.js'),
-      importModule(
-          [
-            'BrailleTextStyleSpan',
-            'ExtraCellsSpan',
-            'ValueSelectionSpan',
-            'ValueSpan',
-          ],
-          '/chromevox/background/braille/spans.js'),
-      importModule('LibLouis', '/chromevox/background/braille/liblouis.js'),
-      importModule('Spannable', '/chromevox/common/spannable.js'),
-    ]);
-  }
-};
+ChromeVoxExpandingBrailleTranslatorUnitTest = class extends ChromeVoxE2ETest {};
 
 /**
  * An implementation of {@link LibLouis.Translator} whose translation

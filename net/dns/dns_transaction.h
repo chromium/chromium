@@ -10,10 +10,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/request_priority.h"
 #include "net/dns/opt_record_rdata.h"
@@ -29,7 +29,7 @@ class NetLogWithSource;
 class ResolveContext;
 
 // The hostname probed by CreateDohProbeRunner().
-inline constexpr base::StringPiece kDohProbeHostname = "www.gstatic.com";
+inline constexpr std::string_view kDohProbeHostname = "www.gstatic.com";
 
 // DnsTransaction implements a stub DNS resolver as defined in RFC 1034.
 // The DnsTransaction takes care of retransmissions, name server fallback (or

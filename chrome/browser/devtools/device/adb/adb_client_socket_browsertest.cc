@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/device/adb/adb_device_provider.h"
@@ -142,10 +143,10 @@ class AdbClientSocketTest : public InProcessBrowserTest,
   }
 
  private:
-  DevToolsAndroidBridge* android_bridge_;
+  raw_ptr<DevToolsAndroidBridge, DanglingUntriaged> android_bridge_;
   DevToolsAndroidBridge::RemoteDevices devices_;
   // base::RunLoop used to require kNestableTaskAllowed
-  base::RunLoop* loop_;
+  raw_ptr<base::RunLoop> loop_;
 };
 
 // Combine all tests into one. Splitting up into multiple tests can be flaky

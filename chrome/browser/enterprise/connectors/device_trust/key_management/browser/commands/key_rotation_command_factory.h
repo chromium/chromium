@@ -13,6 +13,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace policy {
+class DeviceManagementService;
+}  // namespace policy
+
 namespace enterprise_connectors {
 
 class KeyRotationCommand;
@@ -27,7 +31,8 @@ class KeyRotationCommandFactory {
   // object. The shared `url_loader_factory` is used in both the linux and mac
   // key rotation for mojo support.
   virtual std::unique_ptr<KeyRotationCommand> CreateCommand(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      policy::DeviceManagementService* device_management_service);
 
  protected:
   static void SetFactoryInstanceForTesting(KeyRotationCommandFactory* factory);

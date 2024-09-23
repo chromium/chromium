@@ -79,11 +79,6 @@ class MockFileChangeServiceObserver : public FileChangeServiceObserver {
               (const storage::FileSystemURL& url),
               (override));
   MOCK_METHOD(void,
-              OnFileCopied,
-              (const storage::FileSystemURL& src,
-               const storage::FileSystemURL& dst),
-              (override));
-  MOCK_METHOD(void,
               OnFileMoved,
               (const storage::FileSystemURL& src,
                const storage::FileSystemURL& dst),
@@ -327,82 +322,6 @@ TEST_F(FileChangeServiceTest, CreatesServiceInstanceForOTRGuestProfile) {
 
   // OTR service instances should be distinct from non-OTR service instances.
   ASSERT_NE(otr_guest_profile_service, guest_profile_service);
-}
-
-// Verifies `OnFileCopied()` events are propagated to observers.
-TEST_F(FileChangeServiceTest, PropagatesOnFileCopiedEvents) {
-  auto* profile = GetProfile();
-  auto* service = FileChangeServiceFactory::GetInstance()->GetService(profile);
-  ASSERT_TRUE(service);
-
-  testing::NiceMock<MockFileChangeServiceObserver> mock_observer;
-  base::ScopedObservation<FileChangeService, FileChangeServiceObserver>
-      scoped_observation{&mock_observer};
-  scoped_observation.Observe(service);
-
-  TempFileSystem temp_file_system(profile);
-  temp_file_system.SetUp();
-
-  storage::FileSystemURL src = temp_file_system.CreateFileSystemURL("src");
-  storage::FileSystemURL dst = temp_file_system.CreateFileSystemURL("dst");
-
-  ASSERT_EQ(temp_file_system.CreateFile(src), base::File::FILE_OK);
-
-  EXPECT_CALL(mock_observer, OnFileModified)
-      .WillRepeatedly([&](const storage::FileSystemURL& propagated_url) {
-        EXPECT_EQ(dst, propagated_url);
-      });
-
-  {
-    base::RunLoop copy_run_loop;
-    EXPECT_CALL(mock_observer, OnFileCopied)
-        .WillOnce([&](const storage::FileSystemURL& propagated_src,
-                      const storage::FileSystemURL& propagated_dst) {
-          EXPECT_EQ(src, propagated_src);
-          EXPECT_EQ(dst, propagated_dst);
-          copy_run_loop.Quit();
-        })
-        .RetiresOnSaturation();
-
-    base::RunLoop modify_run_loop;
-    EXPECT_CALL(mock_observer, OnFileModified)
-        .WillOnce([&](const storage::FileSystemURL& propagated_url) {
-          EXPECT_EQ(dst, propagated_url);
-          modify_run_loop.Quit();
-        })
-        .RetiresOnSaturation();
-
-    ASSERT_EQ(temp_file_system.CopyFile(src, dst), base::File::FILE_OK);
-    copy_run_loop.Run();
-    modify_run_loop.Run();
-  }
-
-  ::testing::Mock::VerifyAndClearExpectations(&mock_observer);
-  ASSERT_EQ(temp_file_system.RemoveFile(dst), base::File::FILE_OK);
-
-  {
-    base::RunLoop copy_run_loop;
-    EXPECT_CALL(mock_observer, OnFileCopied)
-        .WillOnce([&](const storage::FileSystemURL& propagated_src,
-                      const storage::FileSystemURL& propagated_dst) {
-          EXPECT_EQ(src, propagated_src);
-          EXPECT_EQ(dst, propagated_dst);
-          copy_run_loop.Quit();
-        })
-        .RetiresOnSaturation();
-
-    base::RunLoop modify_run_loop;
-    EXPECT_CALL(mock_observer, OnFileModified)
-        .WillOnce([&](const storage::FileSystemURL& propagated_url) {
-          EXPECT_EQ(dst, propagated_url);
-          modify_run_loop.Quit();
-        })
-        .RetiresOnSaturation();
-
-    ASSERT_EQ(temp_file_system.CopyFileLocal(src, dst), base::File::FILE_OK);
-    copy_run_loop.Run();
-    modify_run_loop.Run();
-  }
 }
 
 // Verifies `OnFileMoved()` events are propagated to observers.

@@ -77,22 +77,23 @@ scoped_refptr<Image> ImageElementBase::GetSourceImageForCanvas(
 
   scoped_refptr<Image> source_image = image_content->GetImage();
 
-  if (!source_image->width() || !source_image->height()) {
-    *status = kZeroSizeImageSourceStatus;
-    return nullptr;
-  }
-
   if (auto* svg_image = DynamicTo<SVGImage>(source_image.get())) {
     UseCounter::Count(GetElement().GetDocument(), WebFeature::kSVGInCanvas2D);
-    gfx::SizeF image_size = svg_image->ConcreteObjectSize(default_object_size);
-    if (!image_size.width() || !image_size.height()) {
+    const SVGImageViewInfo* view_info =
+        SVGImageForContainer::CreateViewInfo(*svg_image, GetElement());
+    const gfx::SizeF image_size = SVGImageForContainer::ConcreteObjectSize(
+        *svg_image, view_info, default_object_size);
+    if (image_size.IsEmpty()) {
       *status = kZeroSizeImageSourceStatus;
       return nullptr;
     }
     source_image = SVGImageForContainer::Create(
-        svg_image, image_size, 1,
-        GetElement().GetDocument().CompleteURL(GetElement().ImageSourceURL()),
-        PreferredColorScheme());
+        *svg_image, image_size, 1, view_info, PreferredColorScheme());
+  }
+
+  if (source_image->Size().IsEmpty()) {
+    *status = kZeroSizeImageSourceStatus;
+    return nullptr;
   }
 
   *status = kNormalSourceImageStatus;
@@ -110,8 +111,12 @@ gfx::SizeF ImageElementBase::ElementSize(
   if (!image_content || !image_content->HasImage())
     return gfx::SizeF();
   Image* image = image_content->GetImage();
-  if (auto* svg_image = DynamicTo<SVGImage>(image))
-    return svg_image->ConcreteObjectSize(default_object_size);
+  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+    const SVGImageViewInfo* view_info =
+        SVGImageForContainer::CreateViewInfo(*svg_image, GetElement());
+    return SVGImageForContainer::ConcreteObjectSize(*svg_image, view_info,
+                                                    default_object_size);
+  }
   return gfx::SizeF(image->Size(respect_orientation));
 }
 
@@ -147,19 +152,24 @@ gfx::Size ImageElementBase::BitmapSourceSize() const {
   return image->IntrinsicSize(kDoNotRespectImageOrientation);
 }
 
-static bool HasDimensionsForImage(SVGImage* svg_image,
+static bool HasDimensionsForImage(SVGImage& svg_image,
                                   std::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions* options) {
-  if (!svg_image->ConcreteObjectSize(gfx::SizeF()).IsEmpty())
+  if (crop_rect) {
     return true;
-  if (crop_rect)
+  }
+  if (options->hasResizeWidth() && options->hasResizeHeight()) {
     return true;
-  if (options->hasResizeWidth() && options->hasResizeHeight())
+  }
+  if (!SVGImageForContainer::ConcreteObjectSize(svg_image, nullptr,
+                                                gfx::SizeF())
+           .IsEmpty()) {
     return true;
+  }
   return false;
 }
 
-ScriptPromise ImageElementBase::CreateImageBitmap(
+ScriptPromise<ImageBitmap> ImageElementBase::CreateImageBitmap(
     ScriptState* script_state,
     std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
@@ -169,28 +179,28 @@ ScriptPromise ImageElementBase::CreateImageBitmap(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "No image can be retrieved from the provided element.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
   if (options->hasResizeWidth() && options->resizeWidth() == 0) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The resize width dimension is equal to 0.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
   if (options->hasResizeHeight() && options->resizeHeight() == 0) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The resize width dimension is equal to 0.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
   if (auto* svg_image = DynamicTo<SVGImage>(image_content->GetImage())) {
-    if (!HasDimensionsForImage(svg_image, crop_rect, options)) {
+    if (!HasDimensionsForImage(*svg_image, crop_rect, options)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
           "The image element contains an SVG image without intrinsic "
           "dimensions, and no resize options or crop region are "
           "specified.");
-      return ScriptPromise();
+      return EmptyPromise();
     }
     // The following function only works on SVGImages (as checked above).
     return ImageBitmap::CreateAsync(

@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.quick_delete;
 import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.content_public.browser.WebContents;
 
 /** The JNI bridge for Quick Delete on Android to fetch browsing history data. */
 class QuickDeleteBridge {
@@ -62,6 +64,15 @@ class QuickDeleteBridge {
                         mNativeQuickDeleteBridge, timePeriod, callback);
     }
 
+    /**
+     * Attempt to trigger the HaTS survey if appropriate.
+     *
+     * @param webContents web contents of the tab to trigger the survey on.
+     */
+    public void showSurvey(WebContents webContents) {
+        QuickDeleteBridgeJni.get().showSurvey(mNativeQuickDeleteBridge, webContents);
+    }
+
     @CalledByNative
     private static void onLastVisitedDomainAndUniqueDomainCountReady(
             DomainVisitsCallback callback, String lastVisitedDomain, int domainCount) {
@@ -70,11 +81,13 @@ class QuickDeleteBridge {
 
     @NativeMethods
     interface Natives {
-        long init(QuickDeleteBridge caller, Profile profile);
+        long init(QuickDeleteBridge caller, @JniType("Profile*") Profile profile);
 
         void destroy(long nativeQuickDeleteBridge, QuickDeleteBridge caller);
 
         void getLastVisitedDomainAndUniqueDomainCount(
                 long nativeQuickDeleteBridge, int timePeriod, DomainVisitsCallback callback);
+
+        void showSurvey(long nativeQuickDeleteBridge, WebContents webContents);
     }
 }

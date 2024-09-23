@@ -10,17 +10,21 @@
 #include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/gesture_event_details.h"
 #include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -54,13 +58,20 @@ void SetupChip(views::LabelButton* chip, bool first) {
   chip->SetLabelStyle(views::style::STYLE_BODY_3_MEDIUM);
   chip->SetMinSize(gfx::Size(0, kChipHeight));
   chip->SetMaxSize(gfx::Size(kChipMaxWidth, kChipHeight));
-  chip->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_CHIP_ACCESSIBLE_NAME,
-      chip->GetText()));
   views::FocusRing::Get(chip)->SetColorId(cros_tokens::kCrosSysFocusRing);
-  views::InstallRoundRectHighlightPathGenerator(chip, gfx::Insets(1),
+  // Remove the padding between the focus ring and the `chip`.
+  views::InstallRoundRectHighlightPathGenerator(chip, gfx::Insets(4),
                                                 kChipCornerRadius);
   chip->SetNotifyEnterExitOnChild(true);
+  chip->SetTooltipText(chip->GetText());
+
+  views::ViewAccessibility& view_accessibility = chip->GetViewAccessibility();
+  view_accessibility.SetName(chip->GetText());
+  // Set the list item role with a description to let the users know that they
+  // can press this item as a button.
+  view_accessibility.SetRole(
+      ax::mojom::Role::kListItem,
+      l10n_util::GetStringUTF16(IDS_ASH_A11Y_ROLE_BUTTON));
 }
 
 void SetupOverflowIcon(views::ImageButton* overflow_icon, bool left) {
@@ -79,6 +90,50 @@ void SetupOverflowIcon(views::ImageButton* overflow_icon, bool left) {
   overflow_icon->layer()->SetFillsBoundsOpaquely(false);
 }
 
+bool IsVerticalScrollGesture(const ui::Event& event) {
+  if (!event.IsGestureEvent()) {
+    return false;
+  }
+
+  auto is_vertical = [](float x_offset, float y_offset) -> bool {
+    return std::fabs(x_offset) <= std::fabs(y_offset);
+  };
+
+  const auto& details = event.AsGestureEvent()->details();
+  return (event.type() == ui::EventType::kGestureScrollUpdate &&
+          is_vertical(details.scroll_x(), details.scroll_y())) ||
+         (event.type() == ui::EventType::kGestureScrollBegin &&
+          is_vertical(details.scroll_x_hint(), details.scroll_y_hint())) ||
+         (event.type() == ui::EventType::kScrollFlingStart &&
+          is_vertical(details.velocity_x(), details.velocity_y()));
+}
+
+class ChipCarouselScrollView : public views::ScrollView {
+  METADATA_HEADER(ChipCarouselScrollView, views::ScrollView)
+
+ public:
+  explicit ChipCarouselScrollView(ScrollWithLayers scroll_with_layers)
+      : views::ScrollView(scroll_with_layers) {}
+
+  // views::ScrollView:
+  bool OnMouseWheel(const ui::MouseWheelEvent& event) override {
+    // We want this scroll view to only handle the horizontal scroll events on
+    // it; if the user scrolls on it vertically, we want the outer scroll view
+    // to handle it.
+    return horizontal_scroll_bar()->OnScroll(event.x_offset(), 0);
+  }
+
+  // views::View:
+  bool CanAcceptEvent(const ui::Event& event) override {
+    // The vertical scroll gesture event should be handled by the outer scroll
+    // view instead of this view.
+    return views::ScrollView::CanAcceptEvent(event) &&
+           !IsVerticalScrollGesture(event);
+  }
+};
+BEGIN_METADATA(ChipCarouselScrollView)
+END_METADATA
+
 }  // namespace
 
 // `on_chip_pressed` will be called when a task chip is clicked, containing a
@@ -91,13 +146,15 @@ FocusModeChipCarousel::FocusModeChipCarousel(
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetNotifyEnterExitOnChild(true);
 
-  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
+  scroll_view_ = AddChildView(std::make_unique<ChipCarouselScrollView>(
       views::ScrollView::ScrollWithLayers::kEnabled));
   scroll_view_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+  scroll_view_->SetVerticalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
   scroll_view_->SetDrawOverflowIndicator(false);
   scroll_view_->SetPaintToLayer();
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
 
   scroll_contents_ =
       scroll_view_->SetContents(std::make_unique<views::FlexLayoutView>());
@@ -106,6 +163,12 @@ FocusModeChipCarousel::FocusModeChipCarousel(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred));
+
+  views::ViewAccessibility& scroll_contents_view_accessibility =
+      scroll_contents_->GetViewAccessibility();
+  scroll_contents_view_accessibility.SetRole(ax::mojom::Role::kList);
+  scroll_contents_view_accessibility.SetName(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUGGESTED_TASKS));
 
   left_overflow_icon_ = AddChildView(std::make_unique<views::ImageButton>(
       base::BindRepeating(&FocusModeChipCarousel::OnChevronPressed,
@@ -155,8 +218,7 @@ void FocusModeChipCarousel::OnMouseExited(const ui::MouseEvent& event) {
   UpdateGradient();
 }
 
-void FocusModeChipCarousel::SetTasks(
-    const std::vector<const api::Task*>& tasks) {
+void FocusModeChipCarousel::SetTasks(const std::vector<FocusModeTask>& tasks) {
   scroll_contents_->RemoveAllChildViews();
   if (tasks.empty()) {
     return;
@@ -165,13 +227,22 @@ void FocusModeChipCarousel::SetTasks(
   // Populate a maximum of `kMaxTasks` tasks.
   const size_t num_tasks = std::min(tasks.size(), kMaxTasks);
   for (size_t i = 0; i < num_tasks; i++) {
-    const api::Task* task = tasks[i];
+    // Skip empty task.
+    if (tasks[i].title.empty()) {
+      continue;
+    }
     views::LabelButton* chip =
         scroll_contents_->AddChildView(std::make_unique<views::LabelButton>(
-            base::BindRepeating(on_chip_pressed_, task),
-            base::UTF8ToUTF16(task->title)));
+            base::BindRepeating(on_chip_pressed_, tasks[i]),
+            base::UTF8ToUTF16(tasks[i].title)));
     SetupChip(chip, /*first=*/(i == 0));
   }
+
+  // After adding the child views to the contents of the scroll view, we need to
+  // manually call the function to update the bounds, so that the horizontal
+  // scroll bar can have a non-zero `max_pos_` to allow the chip carousel to
+  // scroll horizontally. See b/346877741.
+  scroll_view_->contents()->SizeToPreferredSize();
 
   // Scroll back to the beginning after repopulating the carousel.
   scroll_view_->ScrollToOffset(gfx::PointF(0, 0));
@@ -191,6 +262,7 @@ void FocusModeChipCarousel::UpdateGradient() {
 
   // If no gradient is needed, remove the gradient mask.
   if (scroll_view_->contents()->bounds().IsEmpty() ||
+      scroll_view_->bounds().IsEmpty() ||
       (!show_left_gradient && !show_right_gradient)) {
     RemoveGradient();
     return;
@@ -263,7 +335,7 @@ void FocusModeChipCarousel::OnChevronPressed(bool left) {
   }
 
   // Pressing a chevron should always result in a scroll.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void FocusModeChipCarousel::ScrollToChip(views::View* chip) {
@@ -295,6 +367,14 @@ void FocusModeChipCarousel::ScrollToChip(views::View* chip) {
 
 bool FocusModeChipCarousel::HasTasks() const {
   return !scroll_contents_->GetChildrenInZOrder().empty();
+}
+
+int FocusModeChipCarousel::GetTaskCountForTesting() const {
+  return scroll_contents_->GetChildrenInZOrder().size();
+}
+
+views::ScrollView* FocusModeChipCarousel::GetScrollViewForTesting() const {
+  return views::AsViewClass<views::ScrollView>(scroll_view_);
 }
 
 BEGIN_METADATA(FocusModeChipCarousel)

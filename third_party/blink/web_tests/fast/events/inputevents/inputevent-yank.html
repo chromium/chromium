@@ -24,7 +24,7 @@ test(() => {
 
     // Delete a word to setup kill buffer.
     eventSender.keyDown('Backspace', ['altKey']);
-    assert_equals(editable.innerHTML, '');
+    assert_equals(editable.innerHTML, '<br>');
 
     // Test Yank.
     eventRecorder = '';

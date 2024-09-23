@@ -4,7 +4,6 @@
 
 #include "content/browser/attribution_reporting/storable_source.h"
 
-#include <optional>
 #include <utility>
 
 #include "components/attribution_reporting/source_registration.h"

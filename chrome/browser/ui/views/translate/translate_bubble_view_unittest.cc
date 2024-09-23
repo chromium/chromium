@@ -190,7 +190,9 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     // The bubble needs the parent as an anchor.
-    anchor_widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
+    anchor_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                         views::Widget::InitParams::TYPE_WINDOW);
     anchor_widget_->Show();
 
     mock_model_ = new MockTranslateBubbleModel(
@@ -208,8 +210,9 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
   void PressButton(TranslateBubbleView::ButtonID id) {
     views::Button* button =
         static_cast<views::Button*>(bubble_->GetViewByID(id));
-    views::test::ButtonTestApi(button).NotifyClick(ui::KeyEvent(
-        ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::DomCode::ENTER, ui::EF_NONE));
+    views::test::ButtonTestApi(button).NotifyClick(
+        ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                     ui::DomCode::ENTER, ui::EF_NONE));
   }
 
   void TearDown() override {

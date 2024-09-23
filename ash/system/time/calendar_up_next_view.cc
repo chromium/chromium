@@ -178,9 +178,7 @@ CalendarUpNextView::CalendarUpNextView(
       content_view_(scroll_view_->SetContents(std::make_unique<views::View>())),
       bounds_animator_(this) {
   SetBackground(std::make_unique<CalendarUpNextViewBackground>(
-      calendar_utils::IsForGlanceablesV2()
-          ? cros_tokens::kCrosSysSystemOnBase
-          : cros_tokens::kCrosSysSystemOnBaseOpaque));
+      cros_tokens::kCrosSysSystemOnBaseOpaque));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kContainerInsets, 0));
   SetPaintToLayer();
@@ -367,6 +365,8 @@ void CalendarUpNextView::OnScrollLeftButtonPressed(const ui::Event& event) {
     return;
   }
 
+  calendar_metrics::RecordScrollEventInUpNext();
+
   const int first_visible_child_index =
       GetFirstVisibleChildIndex(event_views, scroll_view_);
   views::View* first_visible_child = event_views[first_visible_child_index];
@@ -403,6 +403,8 @@ void CalendarUpNextView::OnScrollRightButtonPressed(const ui::Event& event) {
   if (event_views.empty()) {
     return;
   }
+
+  calendar_metrics::RecordScrollEventInUpNext();
 
   const int first_visible_child_index =
       GetFirstVisibleChildIndex(event_views, scroll_view_);

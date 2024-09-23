@@ -16,7 +16,7 @@
 #import "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
@@ -82,7 +82,7 @@ class TestSendTabToSelfSyncService
     return model_.get();
   }
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override {
     return nullptr;
   }
@@ -99,7 +99,7 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
         SendTabToSelfSyncServiceFactory::GetInstance(),
         base::BindRepeating(&::TestSendTabToSelfSyncService::Build));
 
-    chrome_browser_state_ = test_browser_state_builder.Build();
+    chrome_browser_state_ = std::move(test_browser_state_builder).Build();
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     SendTabToSelfBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = SendTabToSelfBrowserAgent::FromBrowser(browser_.get());

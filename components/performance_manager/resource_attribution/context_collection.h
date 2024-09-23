@@ -28,8 +28,8 @@ class ContextCollection {
   ContextCollection(const ContextCollection& other);
   ContextCollection& operator=(const ContextCollection& other);
 
-  friend constexpr bool operator==(const ContextCollection&,
-                                   const ContextCollection&) = default;
+  friend bool operator==(const ContextCollection&,
+                         const ContextCollection&) = default;
 
   // Adds `context` to the collection.
   void AddResourceContext(const ResourceContext& context);

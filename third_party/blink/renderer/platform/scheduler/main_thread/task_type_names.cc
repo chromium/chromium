@@ -85,6 +85,8 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "Storage";
     case TaskType::kClipboard:
       return "Clipboard";
+    case TaskType::kMachineLearning:
+      return "MachineLearning";
     case TaskType::kInternalDefault:
       return "InternalDefault";
     case TaskType::kInternalLoading:
@@ -103,8 +105,10 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "InternalInspector";
     case TaskType::kMainThreadTaskQueueV8:
       return "MainThreadTaskQueueV8";
-    case TaskType::kMainThreadTaskQueueV8LowPriority:
-      return "MainThreadTaskQueueV8LowPriority";
+    case TaskType::kMainThreadTaskQueueV8UserVisible:
+      return "MainThreadTaskQueueV8UserVisible";
+    case TaskType::kMainThreadTaskQueueV8BestEffort:
+      return "MainThreadTaskQueueV8BestEffort";
     case TaskType::kMainThreadTaskQueueCompositor:
       return "MainThreadTaskQueueCompositor";
     case TaskType::kMainThreadTaskQueueDefault:
@@ -165,7 +169,7 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "InternalPostMessageForwarding";
   }
   // FrameSchedulerImpl should not call this for invalid TaskTypes.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

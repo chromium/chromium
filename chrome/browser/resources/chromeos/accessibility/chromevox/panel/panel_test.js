@@ -19,26 +19,6 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
-      importModule(
-          'CommandHandlerInterface',
-          '/chromevox/background/input/command_handler_interface.js'),
-      importModule('EventSource', '/chromevox/background/event_source.js'),
-      importModule('EventSourceType', '/chromevox/common/event_source_type.js'),
-      importModule(
-          'LocaleOutputHelper', '/chromevox/common/locale_output_helper.js'),
-      importModule(
-          ['PanelCommand', 'PanelCommandType'],
-          '/chromevox/common/panel_command.js'),
-      importModule('MenuManager', '/chromevox/panel/menu_manager.js'),
-      importModule('CursorRange', '/common/cursors/range.js'),
-      importModule('LocalStorage', '/common/local_storage.js'),
-      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
-    ]);
-
     globalThis.Gesture = chrome.accessibilityPrivate.Gesture;
     globalThis.RoleType = chrome.automation.RoleType;
 
@@ -283,7 +263,8 @@ AX_TEST_F(
           'Search+O, then B');
       this.fireMockEvent('ArrowRight')();
       this.assertActiveMenuItem(
-          'panel_menu_chromevox', 'Open keyboard shortcuts menu', 'Ctrl+Alt+/');
+          'panel_menu_chromevox', 'Enable/Disable Sticky Mode',
+          'Search+Search');
     });
 
 // Ensure 'Touch Gestures' is not in the panel menus by default.

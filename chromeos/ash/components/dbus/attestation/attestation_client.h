@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 
 namespace dbus {
 class Bus;
@@ -207,6 +207,9 @@ class COMPONENT_EXPORT(ASH_DBUS_ATTESTATION) AttestationClient {
     // Gets the fake certificate that is returned by
     // successful `FinishCertificateRequest()`.
     virtual std::string GetFakeCertificate() const = 0;
+    // Sets the status code returned by `DeleteKeys()`.
+    virtual void set_delete_keys_status(
+        ::attestation::AttestationStatus status) = 0;
   };
 
   // Not copyable or movable.

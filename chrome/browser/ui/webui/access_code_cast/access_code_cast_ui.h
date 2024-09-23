@@ -10,6 +10,9 @@
 #include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
@@ -18,6 +21,19 @@ class ColorChangeHandler;
 }  // namespace ui
 
 namespace media_router {
+class AccessCodeCastUI;
+
+class AccessCodeCastUIConfig
+    : public content::DefaultWebUIConfig<AccessCodeCastUI> {
+ public:
+  AccessCodeCastUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIAccessCodeCastHost) {}
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
+
 // The WebUI controller for chrome://access-code-cast.
 class AccessCodeCastUI : public ui::MojoWebDialogUI,
                          public access_code_cast::mojom::PageHandlerFactory {

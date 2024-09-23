@@ -5,10 +5,10 @@
 #include "pdf/pdfium/pdfium_print.h"
 
 #include <memory>
-
 #include <optional>
+#include <string_view>
+
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_engine_exports.h"
@@ -47,7 +47,7 @@ std::string GenerateRendererSpecificFileName(const std::string& file_name,
                             use_skia_renderer ? "_skia" : "");
 }
 
-base::FilePath GetReferenceFilePath(base::StringPiece test_filename) {
+base::FilePath GetReferenceFilePath(std::string_view test_filename) {
   return base::FilePath(FILE_PATH_LITERAL("pdfium_print"))
       .AppendASCII(test_filename);
 }
@@ -79,7 +79,7 @@ void CheckPdfDimensions(const std::vector<uint8_t>& pdf_data,
 void CheckPdfRendering(const std::vector<uint8_t>& pdf_data,
                        int page_number,
                        const gfx::SizeF& size_in_points,
-                       base::StringPiece expected_png_filename) {
+                       std::string_view expected_png_filename) {
   int width_in_pixels =
       printing::ConvertUnit(size_in_points.width(), printing::kPointsPerInch,
                             printing::kDefaultPdfDpi);
@@ -93,7 +93,7 @@ void CheckPdfRendering(const std::vector<uint8_t>& pdf_data,
       SkImageInfo::Make(gfx::SizeToSkISize(page_rect.size()),
                         kBGRA_8888_SkColorType, kPremul_SkAlphaType));
 
-  PDFEngineExports::RenderingSettings settings(
+  PDFiumEngineExports::RenderingSettings settings(
       gfx::Size(printing::kDefaultPdfDpi, printing::kDefaultPdfDpi), page_rect,
       /*fit_to_bounds=*/true,
       /*stretch_to_bounds=*/false,

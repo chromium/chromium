@@ -11,12 +11,10 @@
 #include "ash/shell.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
-#include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "cc/paint/render_surface_filters.h"
 #include "ui/aura/window.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -33,14 +31,6 @@
 namespace ash {
 
 namespace {
-
-// Returns the delegate, owned by the `WallpaperControllerImpl`, for
-// drag-and-drop events over the wallpaper. May be `nullptr` if drag-and-drop
-// related features are disabled.
-WallpaperDragDropDelegate* GetDragDropDelegate() {
-  auto* controller = Shell::Get()->wallpaper_controller();
-  return controller ? controller->GetDragDropDelegate() : nullptr;
-}
 
 // A view that controls the child view's layer so that the layer always has the
 // same size as the display's original, un-scaled size in DIP. The layer is then
@@ -59,7 +49,7 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
   WallpaperWidgetDelegate(const WallpaperWidgetDelegate&) = delete;
   WallpaperWidgetDelegate& operator=(const WallpaperWidgetDelegate&) = delete;
 
-  // Overrides views::View.
+  // views::View:
   void Layout(PassKey) override {
     aura::Window* window = GetWidget()->GetNativeWindow();
     // Keep |this| at the bottom since there may be other windows on top of the
@@ -72,7 +62,7 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
       child->SetBounds(0, 0, display.size().width(), display.size().height());
       gfx::Transform transform;
       // Apply RTL transform explicitly becacuse Views layer code
-      // doesn't handle RTL.  crbug.com/458753.
+      // doesn't handle RTL. crbug.com/458753.
       transform.Translate(-child->GetMirroredX(), 0);
       child->SetTransform(transform);
     }
@@ -114,75 +104,23 @@ void WallpaperView::SetLockShieldEnabled(bool enabled) {
   }
 }
 
-const char* WallpaperView::GetClassName() const {
-  return "WallpaperView";
-}
-
 bool WallpaperView::OnMousePressed(const ui::MouseEvent& event) {
   return true;
+}
+
+void WallpaperView::OnMouseReleased(const ui::MouseEvent& event) {
+  if (features::ShouldEnterOverviewFromWallpaper()) {
+    OverviewController* overview_controller =
+        Shell::Get()->overview_controller();
+    if (!overview_controller->InOverviewSession()) {
+      overview_controller->StartOverview(OverviewStartAction::kWallpaper);
+    }
+  }
 }
 
 void WallpaperView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   if (shield_view_) {
     shield_view_->SetBoundsRect(parent()->GetLocalBounds());
-  }
-}
-
-bool WallpaperView::AreDropTypesRequired() {
-  return true;
-}
-
-bool WallpaperView::CanDrop(const ui::OSExchangeData& data) {
-  if (auto* drag_drop_delegate = GetDragDropDelegate()) {
-    return drag_drop_delegate->CanDrop(data);
-  }
-  return false;
-}
-
-views::View::DropCallback WallpaperView::GetDropCallback(
-    const ui::DropTargetEvent& event) {
-  const gfx::Point location_in_screen =
-      views::View::ConvertPointToScreen(this, event.location());
-  return base::BindOnce(
-      [](const gfx::Point& location_in_screen, const ui::DropTargetEvent& event,
-         ui::mojom::DragOperation& output_drag_op,
-         std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
-        if (auto* drag_drop_delegate = GetDragDropDelegate()) {
-          output_drag_op =
-              drag_drop_delegate->OnDrop(event.data(), location_in_screen);
-        }
-      },
-      location_in_screen);
-}
-
-bool WallpaperView::GetDropFormats(int* formats,
-                                   std::set<ui::ClipboardFormatType>* types) {
-  if (auto* drag_drop_delegate = GetDragDropDelegate()) {
-    drag_drop_delegate->GetDropFormats(formats, types);
-  }
-  return *formats || types->size();
-}
-
-void WallpaperView::OnDragEntered(const ui::DropTargetEvent& event) {
-  if (auto* drag_drop_delegate = GetDragDropDelegate()) {
-    drag_drop_delegate->OnDragEntered(
-        event.data(),
-        views::View::ConvertPointToScreen(this, event.location()));
-  }
-}
-
-int WallpaperView::OnDragUpdated(const ui::DropTargetEvent& event) {
-  if (auto* drag_drop_delegate = GetDragDropDelegate()) {
-    return drag_drop_delegate->OnDragUpdated(
-        event.data(),
-        views::View::ConvertPointToScreen(this, event.location()));
-  }
-  return ui::DragDropTypes::DRAG_NONE;
-}
-
-void WallpaperView::OnDragExited() {
-  if (auto* drag_drop_delegate = GetDragDropDelegate()) {
-    drag_drop_delegate->OnDragExited();
   }
 }
 
@@ -272,16 +210,16 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
     aura::Window* root_window,
     float blur_sigma,
     bool locked,
-    WallpaperView** out_wallpaper_view) {
+    raw_ptr<WallpaperView>* out_wallpaper_view) {
   int container_id = locked ? kShellWindowId_LockScreenWallpaperContainer
                             : kShellWindowId_WallpaperContainer;
   auto* controller = Shell::Get()->wallpaper_controller();
 
   auto wallpaper_widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "WallpaperViewWidget";
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.parent = root_window->GetChildById(container_id);
   WallpaperView* wallpaper_view = new WallpaperView(blur_sigma);

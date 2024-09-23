@@ -64,14 +64,14 @@ bool ValidateOptions(blink::PushSubscriptionOptions* options,
 }
 }  // namespace
 
-ScriptPromise PushManager::subscribe(
+ScriptPromise<PushSubscription> PushManager::subscribe(
     ScriptState* script_state,
     const PushSubscriptionOptionsInit* options_init,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Window is detached.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -79,27 +79,28 @@ ScriptPromise PushManager::subscribe(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "subscribe() is not allowed in fenced frames.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   if (!registration_->active()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kAbortError,
         "Subscription failed - no active Service Worker");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   PushSubscriptionOptions* options =
       PushSubscriptionOptions::FromOptionsInit(options_init, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise();
+    return EmptyPromise();
 
   if (!ValidateOptions(options, exception_state))
-    return ScriptPromise();
+    return EmptyPromise();
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<PushSubscription>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   // The window is the only reasonable context from which to ask the
   // user for permission to use the Push API. The embedder should persist the
@@ -111,35 +112,38 @@ ScriptPromise PushManager::subscribe(
     messaging_client->Subscribe(
         registration_, options,
         LocalFrame::HasTransientUserActivation(window->GetFrame()),
-        std::make_unique<PushSubscriptionCallbacks>(resolver, registration_));
+        std::make_unique<PushSubscriptionCallbacks>(resolver,
+                                                    /*null_allowed=*/false));
   } else {
     GetPushProvider(registration_)
         ->Subscribe(options, LocalFrame::HasTransientUserActivation(nullptr),
-                    std::make_unique<PushSubscriptionCallbacks>(resolver,
-                                                                registration_));
+                    std::make_unique<PushSubscriptionCallbacks>(
+                        resolver, /*null_allowed=*/false));
   }
 
   return promise;
 }
 
-ScriptPromise PushManager::getSubscription(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromise<IDLNullable<PushSubscription>> PushManager::getSubscription(
+    ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<IDLNullable<PushSubscription>>>(script_state);
+  auto promise = resolver->Promise();
 
   GetPushProvider(registration_)
-      ->GetSubscription(
-          std::make_unique<PushSubscriptionCallbacks>(resolver, registration_));
+      ->GetSubscription(std::make_unique<PushSubscriptionCallbacks>(
+          resolver, /*null_allowed=*/true));
   return promise;
 }
 
-ScriptPromise PushManager::permissionState(
+ScriptPromise<V8PermissionState> PushManager::permissionState(
     ScriptState* script_state,
     const PushSubscriptionOptionsInit* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Window is detached.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   return PushMessagingBridge::From(registration_)

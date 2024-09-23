@@ -12,6 +12,7 @@
 #include <set>
 #include <string>
 #include <vector>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -113,6 +114,12 @@ class BluetoothLowEnergyEventRouter
     kStatusErrorNotReady,
     kStatusErrorAlreadyExists,
     kStatusErrorDoesNotExist,
+    kStatusErrorNoMemory,
+    kStatusErrorJniEnvironment,
+    kStatusErrorJniThreadAttach,
+    kStatusErrorWakelock,
+    kStatusErrorUnexpectedState,
+    kStatusErrorSocket,
   };
 
   // Error callback is used by asynchronous methods to report failures.

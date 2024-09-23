@@ -20,7 +20,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/quirks/quirks_manager.h"
-#include "third_party/qcms/src/qcms.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/types/display_constants.h"
@@ -32,136 +31,6 @@ namespace ash {
 
 namespace {
 
-std::unique_ptr<display::ColorCalibration> ParseDisplayProfile(
-    qcms_profile* display_profile,
-    bool has_color_correction_matrix) {
-  if (!display_profile) {
-    LOG(WARNING) << "Unable to load ICC profile.";
-    return nullptr;
-  }
-
-  size_t vcgt_channel_length =
-      qcms_profile_get_vcgt_channel_length(display_profile);
-
-  if (!has_color_correction_matrix && !vcgt_channel_length) {
-    LOG(WARNING) << "No vcgt table or color correction matrix.";
-    qcms_profile_release(display_profile);
-    return nullptr;
-  }
-
-  auto data = std::make_unique<display::ColorCalibration>();
-  if (vcgt_channel_length) {
-    VLOG_IF(1, has_color_correction_matrix)
-        << "Using VCGT data on CTM enabled platform.";
-
-    std::vector<uint16_t> vcgt_data;
-    vcgt_data.resize(vcgt_channel_length * 3);
-    if (!qcms_profile_get_vcgt_rgb_channels(display_profile, &vcgt_data[0])) {
-      LOG(WARNING) << "Unable to get vcgt data";
-      qcms_profile_release(display_profile);
-      return nullptr;
-    }
-
-    {
-      std::vector<display::GammaRampRGBEntry> gamma_lut;
-      gamma_lut.resize(vcgt_channel_length);
-      for (size_t i = 0; i < vcgt_channel_length; ++i) {
-        gamma_lut[i].r = vcgt_data[i];
-        gamma_lut[i].g = vcgt_data[vcgt_channel_length + i];
-        gamma_lut[i].b = vcgt_data[(vcgt_channel_length * 2) + i];
-      }
-      data->linear_to_device = display::GammaCurve(gamma_lut);
-    }
-  } else {
-    VLOG(1) << "Using full degamma/gamma/CTM from profile.";
-    qcms_profile* srgb_profile = qcms_profile_sRGB();
-
-    qcms_transform* transform =
-        qcms_transform_create(srgb_profile, QCMS_DATA_RGB_8, display_profile,
-                              QCMS_DATA_RGB_8, QCMS_INTENT_PERCEPTUAL);
-
-    if (!transform) {
-      LOG(WARNING)
-          << "Unable to create transformation from sRGB to display profile.";
-
-      qcms_profile_release(display_profile);
-      qcms_profile_release(srgb_profile);
-      return nullptr;
-    }
-
-    if (!qcms_transform_is_matrix(transform)) {
-      LOG(WARNING) << "No transformation matrix available";
-
-      qcms_transform_release(transform);
-      qcms_profile_release(display_profile);
-      qcms_profile_release(srgb_profile);
-      return nullptr;
-    }
-
-    size_t degamma_size = qcms_transform_get_input_trc_rgba(
-        transform, srgb_profile, QCMS_TRC_USHORT, nullptr);
-    size_t gamma_size = qcms_transform_get_output_trc_rgba(
-        transform, display_profile, QCMS_TRC_USHORT, nullptr);
-
-    if (degamma_size == 0 || gamma_size == 0) {
-      LOG(WARNING)
-          << "Invalid number of elements in gamma tables: degamma size = "
-          << degamma_size << " gamma size = " << gamma_size;
-
-      qcms_transform_release(transform);
-      qcms_profile_release(display_profile);
-      qcms_profile_release(srgb_profile);
-      return nullptr;
-    }
-
-    std::vector<uint16_t> degamma_data;
-    std::vector<uint16_t> gamma_data;
-    degamma_data.resize(degamma_size * 4);
-    gamma_data.resize(gamma_size * 4);
-
-    qcms_transform_get_input_trc_rgba(transform, srgb_profile, QCMS_TRC_USHORT,
-                                      &degamma_data[0]);
-    qcms_transform_get_output_trc_rgba(transform, display_profile,
-                                       QCMS_TRC_USHORT, &gamma_data[0]);
-
-    {
-      std::vector<display::GammaRampRGBEntry> degamma_lut;
-      degamma_lut.resize(degamma_size);
-      for (size_t i = 0; i < degamma_size; ++i) {
-        degamma_lut[i].r = degamma_data[i * 4];
-        degamma_lut[i].g = degamma_data[(i * 4) + 1];
-        degamma_lut[i].b = degamma_data[(i * 4) + 2];
-      }
-      data->srgb_to_linear = display::GammaCurve(degamma_lut);
-    }
-
-    {
-      std::vector<display::GammaRampRGBEntry> gamma_lut;
-      gamma_lut.resize(gamma_size);
-      for (size_t i = 0; i < gamma_size; ++i) {
-        gamma_lut[i].r = gamma_data[i * 4];
-        gamma_lut[i].g = gamma_data[(i * 4) + 1];
-        gamma_lut[i].b = gamma_data[(i * 4) + 2];
-      }
-      data->linear_to_device = display::GammaCurve(gamma_lut);
-    }
-
-    for (int i = 0; i < 3; ++i) {
-      for (int j = 0; j < 3; ++j) {
-        data->srgb_to_device_matrix.vals[i][j] =
-            qcms_transform_get_matrix(transform, i, j);
-      }
-    }
-
-    qcms_transform_release(transform);
-    qcms_profile_release(srgb_profile);
-  }
-
-  VLOG(1) << "ICC file successfully parsed";
-  qcms_profile_release(display_profile);
-  return data;
-}
-
 // Runs on a background thread because it does file IO.
 std::unique_ptr<display::ColorCalibration> ParseDisplayProfileFile(
     const base::FilePath& path,
@@ -171,9 +40,9 @@ std::unique_ptr<display::ColorCalibration> ParseDisplayProfileFile(
           << (has_color_correction_matrix ? "true" : "false");
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  // Reads from a file.
-  qcms_profile* display_profile = qcms_profile_from_path(path.value().c_str());
-  return ParseDisplayProfile(display_profile, has_color_correction_matrix);
+
+  // TODO(b/347862774): Remove callers to this function.
+  return nullptr;
 }
 
 std::unique_ptr<display::ColorCalibration> ParseVpdEntry(
@@ -197,25 +66,8 @@ std::unique_ptr<display::ColorCalibration> ParseVpdEntry(
     return nullptr;
   }
 
-  return ParseDisplayProfile(
-      qcms_profile_from_memory(output.c_str(), output.size()),
-      has_color_correction_matrix);
-}
-
-// Combines `srgb_to_device_matrix` and `color_matrix` and populates
-// `out_result_matrix_vector` with the result.
-void ColorMatrixVectorFromSrgbToDeviceAndColorMatrix(
-    const SkM44& srgb_to_device_matrix,
-    const SkM44& color_matrix,
-    std::vector<float>* out_result_matrix_vector) {
-  SkM44 matrix = color_matrix;
-  matrix.preConcat(srgb_to_device_matrix);
-
-  DCHECK(out_result_matrix_vector);
-  out_result_matrix_vector->assign(9, 0.0f);
-  (*out_result_matrix_vector)[0] = matrix.rc(0, 0);
-  (*out_result_matrix_vector)[4] = matrix.rc(1, 1);
-  (*out_result_matrix_vector)[8] = matrix.rc(2, 2);
+  // TODO(b/347862774): Remove callers to this function.
+  return nullptr;
 }
 
 bool HasColorCorrectionMatrix(display::DisplayConfigurator* configurator,
@@ -260,32 +112,10 @@ bool DisplayColorManager::SetDisplayColorTemperatureAdjustment(
   // Always overwrite any existing matrix for this display.
   SkM44 color_matrix = gfx::SkM44FromSkcmsMatrix3x3(cta.srgb_matrix);
   displays_color_matrix_map_[display_id] = color_matrix;
-
-  // Look up the calibration matrix, if one exists.
-  SkM44 srgb_to_device_matrix;
-  {
-    for (const display::DisplaySnapshot* display_snapshot :
-         configurator_->cached_displays()) {
-      if (display_snapshot->display_id() != display_id) {
-        continue;
-      }
-      const auto iter = calibration_map_.find(display_snapshot->product_code());
-      if (iter == calibration_map_.end()) {
-        continue;
-      }
-      DCHECK(iter->second);
-      srgb_to_device_matrix =
-          gfx::SkM44FromSkcmsMatrix3x3(iter->second->srgb_to_device_matrix);
-      break;
-    }
-  }
-
-  ColorMatrixVectorFromSrgbToDeviceAndColorMatrix(
-      srgb_to_device_matrix, color_matrix, &matrix_buffer_);
-  return configurator_->SetColorMatrix(display_id, matrix_buffer_);
+  return true;
 }
 
-void DisplayColorManager::OnDisplayModeChanged(
+void DisplayColorManager::OnDisplayConfigurationChanged(
     const display::DisplayConfigurator::DisplayStateList& display_states) {
   size_t displays_with_ctm_support_count = 0;
   for (const display::DisplaySnapshot* state : display_states) {
@@ -313,40 +143,17 @@ void DisplayColorManager::OnDisplayModeChanged(
     displays_ctm_support_ = DisplayCtmSupport::kMixed;
 }
 
-void DisplayColorManager::OnDisplayRemoved(
-    const display::Display& old_display) {
-  displays_color_matrix_map_.erase(old_display.id());
+void DisplayColorManager::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
+  for (const auto& display : removed_displays) {
+    displays_color_matrix_map_.erase(display.id());
+  }
 }
 
 void DisplayColorManager::ApplyDisplayColorCalibration(
     int64_t display_id,
     const display::ColorCalibration& calibration) {
   configurator_->SetColorCalibration(display_id, calibration);
-
-  if (HasColorCorrectionMatrix(configurator_, display_id)) {
-    SkM44 srgb_to_device_matrix =
-        gfx::SkM44FromSkcmsMatrix3x3(calibration.srgb_to_device_matrix);
-
-    SkM44 color_matrix;
-    {
-      const auto color_matrix_iter =
-          displays_color_matrix_map_.find(display_id);
-      if (color_matrix_iter != displays_color_matrix_map_.end()) {
-        color_matrix = color_matrix_iter->second;
-      }
-    }
-
-    ColorMatrixVectorFromSrgbToDeviceAndColorMatrix(
-        srgb_to_device_matrix, color_matrix, &matrix_buffer_);
-    if (!configurator_->SetColorMatrix(display_id, matrix_buffer_)) {
-      LOG(WARNING) << "Error applying the color matrix.";
-    }
-  }
-
-  if (!configurator_->SetGammaCorrection(display_id, calibration.srgb_to_linear,
-                                         calibration.linear_to_device)) {
-    LOG(WARNING) << "Error applying gamma correction data.";
-  }
 }
 
 bool DisplayColorManager::LoadCalibrationForDisplay(

@@ -11,6 +11,11 @@ StringView CSSParserTokenStream::StringRangeAt(wtf_size_t start,
   return tokenizer_.StringRangeAt(start, length);
 }
 
+StringView CSSParserTokenStream::RemainingText() const {
+  wtf_size_t start = HasLookAhead() ? LookAheadOffset() : Offset();
+  return tokenizer_.StringRangeFrom(start);
+}
+
 void CSSParserTokenStream::ConsumeWhitespace() {
   while (Peek().GetType() == kWhitespaceToken) {
     UncheckedConsume();
@@ -41,44 +46,6 @@ bool CSSParserTokenStream::ConsumeCommentOrNothing() {
   has_look_ahead_ = false;
   offset_ = tokenizer_.Offset();
   return true;
-}
-
-void CSSParserTokenStream::UncheckedConsumeComponentValue() {
-  DCHECK(HasLookAhead());
-
-  // Have to use internal consume/peek in here because they can read past
-  // start/end of blocks
-  unsigned nesting_level = 0;
-  do {
-    const CSSParserToken& token = UncheckedConsumeInternal();
-    if (token.GetBlockType() == CSSParserToken::kBlockStart) {
-      nesting_level++;
-    } else if (token.GetBlockType() == CSSParserToken::kBlockEnd) {
-      nesting_level--;
-    }
-  } while (!PeekInternal().IsEOF() && nesting_level);
-}
-
-CSSParserTokenRange CSSParserTokenStream::ConsumeComponentValue() {
-  EnsureLookAhead();
-
-  buffer_.Shrink(0);
-
-  if (AtEnd()) {
-    return CSSParserTokenRange(base::span<CSSParserToken>{});
-  }
-
-  unsigned nesting_level = 0;
-  do {
-    buffer_.push_back(UncheckedConsumeInternal());
-    if (buffer_.back().GetBlockType() == CSSParserToken::kBlockStart) {
-      nesting_level++;
-    } else if (buffer_.back().GetBlockType() == CSSParserToken::kBlockEnd) {
-      nesting_level--;
-    }
-  } while (!PeekInternal().IsEOF() && nesting_level);
-
-  return CSSParserTokenRange(buffer_);
 }
 
 void CSSParserTokenStream::UncheckedSkipToEndOfBlock() {

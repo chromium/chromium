@@ -1,0 +1,1 @@
+--target=arm64-apple-macosx -Xclang -plugin-arg-raw-ptr-plugin -Xclang check-raw-ptr-fields -Wobjc-root-class

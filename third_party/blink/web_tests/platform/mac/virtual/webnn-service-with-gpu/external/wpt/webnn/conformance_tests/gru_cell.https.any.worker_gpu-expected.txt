@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] gruCell float32 tensors with options.bias, options.recurrentBias and options.activations=['relu', 'relu']
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'gruCell' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] gruCell float32 tensors with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and and explicit options.layout='zrn'
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'gruCell' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] gruCell float32 tensors with options.bias, options.recurrentBias, options.activations=['relu', 'relu'] and and options.layout='rzn'
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'gruCell' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] gruCell float32 tensors with all options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'gruCell' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+Harness: the test ran to completion.
+

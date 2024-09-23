@@ -5,6 +5,7 @@
 #include "ui/base/win/lock_state.h"
 
 #include <windows.h>
+
 #include <wtsapi32.h>
 
 #include "base/functional/bind.h"

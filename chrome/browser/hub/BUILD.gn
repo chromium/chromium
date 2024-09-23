@@ -26,6 +26,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutDependencyHolder.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutScrimController.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubManager.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubShowPaneHelper.java",
     "android/java/src/org/chromium/chrome/browser/hub/LoadHint.java",
     "android/java/src/org/chromium/chrome/browser/hub/Pane.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneHubController.java",
@@ -42,6 +43,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimationData.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimator.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandImageView.java",
+    "android/java/src/org/chromium/chrome/browser/hub/TabSwitcherDrawableButtonData.java",
   ]
 
   deps = [
@@ -65,7 +67,9 @@ android_library_factory("factory_java") {
     ":java",
     "//base:base_java",
     "//chrome/browser/back_press/android:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/ui/messages/android:java",
     "//components/browser_ui/widget/android:java",
@@ -88,6 +92,7 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/hub/DrawableButtonDataUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubFieldTrialTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutScrimControllerUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubShowPaneHelperUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilderUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonDataUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/RunOnNextLayoutDelegateUnitTest.java",

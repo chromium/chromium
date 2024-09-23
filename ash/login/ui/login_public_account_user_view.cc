@@ -17,6 +17,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -26,7 +27,7 @@ constexpr char kLoginPublicAccountUserViewClassName[] =
     "LoginPublicAccountUserView";
 
 // Distance from the top of the user view to the user icon.
-constexpr int kDistanceFromTopOfBigUserViewToUserIconDp = 54;
+constexpr int kDistanceFromTopOfBigUserViewToUserIconDp = 24;
 
 // Distance from the top of the user view to the user icon.
 constexpr int kDistanceFromUserViewToArrowButton = 44;
@@ -83,13 +84,15 @@ LoginPublicAccountUserView::LoginPublicAccountUserView(
   if (display_name.empty()) {
     display_name = user.basic_user_info.display_email;
   }
-  arrow_button->SetAccessibleName(l10n_util::GetStringFUTF16(
+  arrow_button->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_ASH_LOGIN_PUBLIC_ACCOUNT_DIALOG_BUTTON_ACCESSIBLE_NAME,
       base::UTF8ToUTF16(display_name)));
   arrow_button->SetFocusPainter(nullptr);
 
   SetPaintToLayer(ui::LayerType::LAYER_NOT_DRAWN);
 
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  SetLayoutManagerUseConstrainedSpace(false);
   // build layout for public account.
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -157,8 +160,9 @@ const LoginUserInfo& LoginPublicAccountUserView::current_user() const {
   return user_view_->current_user();
 }
 
-gfx::Size LoginPublicAccountUserView::CalculatePreferredSize() const {
-  gfx::Size size = views::View::CalculatePreferredSize();
+gfx::Size LoginPublicAccountUserView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size size = views::View::CalculatePreferredSize(available_size);
   // Make sure we are at least as big as the user view. If we do not do this the
   // view will be below minimum size when no auth methods are displayed.
   size.SetToMax(user_view_->GetPreferredSize());

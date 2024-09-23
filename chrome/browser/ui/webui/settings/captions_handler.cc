@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/webui/settings/captions_handler.h"
 
+#include <string>
+#include <unordered_set>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,7 +25,6 @@
 #include "content/public/browser/web_ui.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -156,11 +159,42 @@ void CaptionsHandler::HandleInstallLanguagePacks(
 }
 
 base::Value::List CaptionsHandler::GetAvailableLanguagePacks() {
-  auto enabled_languages = speech::GetLiveCaptionEnabledLanguages();
+  std::vector<std::string> enabled_and_available_languages;
   std::vector<base::Value::Dict> available_language_packs;
+  {
+    auto enabled_languages =
+        speech::SodaInstaller::GetInstance()->GetLiveCaptionEnabledLanguages();
+    auto available_languages =
+        speech::SodaInstaller::GetInstance()->GetAvailableLanguages();
+    auto available_languages_set = std::unordered_set<std::string>(
+        available_languages.begin(), available_languages.end());
+    for (const auto& enabled_language : enabled_languages) {
+      if (available_languages_set.find(enabled_language) !=
+          available_languages_set.end()) {
+        enabled_and_available_languages.push_back(enabled_language);
+      }
+    }
+  }
+  // On ChromeOS we have already checked config availability on disk via the
+  // installer, so we don't need to check the speech::kLanguageComponentConfigs
+  // list.
+#if BUILDFLAG(IS_CHROMEOS)
+  for (const auto& language_name : enabled_and_available_languages) {
+    base::Value::Dict available_language_pack;
+    available_language_pack.Set(kCodeKey, language_name);
+    available_language_pack.Set(
+        kDisplayNameKey,
+        speech::GetLanguageDisplayName(
+            language_name, g_browser_process->GetApplicationLocale()));
+    available_language_pack.Set(
+        kNativeDisplayNameKey,
+        speech::GetLanguageDisplayName(language_name, language_name));
+    available_language_packs.push_back(std::move(available_language_pack));
+  }
+#else
   for (const auto& config : speech::kLanguageComponentConfigs) {
     if (config.language_code != speech::LanguageCode::kNone &&
-        base::Contains(enabled_languages, config.language_name)) {
+        base::Contains(enabled_and_available_languages, config.language_name)) {
       base::Value::Dict available_language_pack;
       available_language_pack.Set(kCodeKey, config.language_name);
       available_language_pack.Set(
@@ -174,7 +208,7 @@ base::Value::List CaptionsHandler::GetAvailableLanguagePacks() {
       available_language_packs.push_back(std::move(available_language_pack));
     }
   }
-
+#endif
   return SortByDisplayName(std::move(available_language_packs));
 }
 
@@ -220,6 +254,10 @@ void CaptionsHandler::OnSodaInstalled(speech::LanguageCode language_code) {
                     base::Value(l10n_util::GetStringUTF16(
                         IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_COMPLETE)),
                     base::Value(speech::GetLanguageName(language_code)));
+  newly_installed_languages_.insert(language_code);
+
+  installed_string_timer_.Start(FROM_HERE, base::Seconds(30), this,
+                                &CaptionsHandler::OnSodaInstallCleanProgress);
 }
 
 void CaptionsHandler::OnSodaInstallError(
@@ -287,6 +325,16 @@ void CaptionsHandler::OnSodaProgress(speech::LanguageCode language_code,
       base::Value(l10n_util::GetStringFUTF16Int(
           IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_PROGRESS, progress)),
       base::Value(speech::GetLanguageName(language_code)));
+}
+
+void CaptionsHandler::OnSodaInstallCleanProgress() {
+  for (const auto& language_code : newly_installed_languages_) {
+    // Update the webui to show an empty str for progress.
+    FireWebUIListener("soda-download-progress-changed",
+                      base::Value(std::u16string()),
+                      base::Value(speech::GetLanguageName(language_code)));
+  }
+  newly_installed_languages_.clear();
 }
 
 }  // namespace settings

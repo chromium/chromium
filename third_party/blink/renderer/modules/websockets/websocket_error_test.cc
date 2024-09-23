@@ -121,12 +121,10 @@ TEST_F(WebSocketErrorTest, ConstructWithOverlongReason) {
 }
 
 TEST_F(WebSocketErrorTest, InternalCreate) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* isolate = scope.GetIsolate();
   auto context = scope.GetContext();
-  auto v8value = WebSocketError::Create(isolate, "message", 1000, "reason",
-                                        ASSERT_NO_EXCEPTION);
+  auto v8value = WebSocketError::Create(isolate, "message", 1000, "reason");
 
   ASSERT_FALSE(v8value.IsEmpty());
   ASSERT_TRUE(v8value->IsObject());

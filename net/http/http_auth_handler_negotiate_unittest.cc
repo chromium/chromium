@@ -59,7 +59,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kSplitHostCacheByNetworkIsolationKey);
+        features::kPartitionConnectionsByNetworkIsolationKey);
     network_anoymization_key_ = NetworkAnonymizationKey::CreateTransient();
 #if BUILDFLAG(IS_WIN)
     auto auth_library =
@@ -503,19 +503,19 @@ class TestAuthSystem : public HttpAuthMechanism {
   bool NeedsIdentity() const override { return true; }
   bool AllowsExplicitCredentials() const override { return true; }
 
-  net::HttpAuth::AuthorizationResult ParseChallenge(
-      net::HttpAuthChallengeTokenizer* tok) override {
-    return net::HttpAuth::AUTHORIZATION_RESULT_ACCEPT;
+  HttpAuth::AuthorizationResult ParseChallenge(
+      HttpAuthChallengeTokenizer* tok) override {
+    return HttpAuth::AUTHORIZATION_RESULT_ACCEPT;
   }
 
-  int GenerateAuthToken(const net::AuthCredentials* credentials,
+  int GenerateAuthToken(const AuthCredentials* credentials,
                         const std::string& spn,
                         const std::string& channel_bindings,
                         std::string* auth_token,
                         const NetLogWithSource& net_log,
-                        net::CompletionOnceCallback callback) override {
+                        CompletionOnceCallback callback) override {
     *auth_token = kFakeToken;
-    return net::OK;
+    return OK;
   }
 
   void SetDelegation(HttpAuth::DelegationType delegation_type) override {}

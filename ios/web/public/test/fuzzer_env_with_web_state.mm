@@ -27,8 +27,7 @@ FuzzerEnvWithWebState::FuzzerEnvWithWebState() {
 
   web_client_ = std::make_unique<web::FakeWebClient>();
   SetWebClient(web_client_.get());
-  task_environment_ = std::make_unique<WebTaskEnvironment>(
-      WebTaskEnvironment::Options::DEFAULT);
+  task_environment_ = std::make_unique<WebTaskEnvironment>();
   browser_state_ = std::make_unique<FakeBrowserState>();
   WebState::CreateParams params(browser_state_.get());
   web_state_ = WebState::Create(params);

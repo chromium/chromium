@@ -11,11 +11,13 @@ CastDecryptConfigImpl::CastDecryptConfigImpl(
     std::string key_id,
     std::string iv,
     const EncryptionPattern& pattern,
-    std::vector<SubsampleEntry> subsamples)
+    std::vector<SubsampleEntry> subsamples,
+    EncryptionScheme encryption_scheme)
     : key_id_(std::move(key_id)),
       iv_(std::move(iv)),
       pattern_(pattern),
-      subsamples_(std::move(subsamples)) {}
+      subsamples_(std::move(subsamples)),
+      encryption_scheme_(encryption_scheme) {}
 
 CastDecryptConfigImpl::~CastDecryptConfigImpl() {}
 
@@ -33,6 +35,10 @@ const EncryptionPattern& CastDecryptConfigImpl::pattern() const {
 
 const std::vector<SubsampleEntry>& CastDecryptConfigImpl::subsamples() const {
   return subsamples_;
+}
+
+EncryptionScheme CastDecryptConfigImpl::encryption_scheme() const {
+  return encryption_scheme_;
 }
 
 }  // namespace media

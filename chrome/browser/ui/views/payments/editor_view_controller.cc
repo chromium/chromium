@@ -9,11 +9,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
+#include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "chrome/browser/ui/views/payments/validating_combobox.h"
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
@@ -25,6 +27,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -65,11 +68,12 @@ EditorViewController::EditorViewController(
     BackNavigationType back_navigation_type,
     bool is_incognito)
     : PaymentRequestSheetController(spec, state, dialog),
-      initial_focus_field_view_(nullptr),
       back_navigation_type_(back_navigation_type),
       is_incognito_(is_incognito) {}
 
-EditorViewController::~EditorViewController() {}
+EditorViewController::~EditorViewController() {
+  ClearViewPointers();
+}
 
 void EditorViewController::DisplayErrorMessageForField(
     autofill::FieldType type,
@@ -113,6 +117,11 @@ bool EditorViewController::ValidateInputFields() {
   return true;
 }
 
+void EditorViewController::Stop() {
+  PaymentRequestSheetController::Stop();
+  ClearViewPointers();
+}
+
 std::u16string EditorViewController::GetPrimaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_DONE);
 }
@@ -146,12 +155,12 @@ void EditorViewController::FillContentView(views::View* content_view) {
   // No insets. Child views below are responsible for their padding.
 
   // An editor can optionally have a header view specific to it.
-  std::unique_ptr<views::View> header_view = CreateHeaderView();
-  if (header_view.get())
-    content_view->AddChildView(header_view.release());
+  if (std::unique_ptr<views::View> header_view = CreateHeaderView()) {
+    content_view->AddChildView(std::move(header_view));
+  }
 
   // The heart of the editor dialog: all the input fields with their labels.
-  content_view->AddChildView(CreateEditorView().release());
+  content_view->AddChildView(CreateEditorView());
 }
 
 bool EditorViewController::ShouldAccelerateEnterKey() {
@@ -162,6 +171,8 @@ bool EditorViewController::ShouldAccelerateEnterKey() {
 }
 
 void EditorViewController::UpdateEditorView() {
+  // `UpdateContentView` removes all children, so reset pointers to them.
+  ClearViewPointers();
   UpdateContentView();
   UpdateFocus(GetFirstFocusedView());
   dialog()->EditorViewUpdated();
@@ -182,7 +193,7 @@ EditorViewController::CreateComboboxForField(const EditorField& field,
   std::unique_ptr<ValidatingCombobox> combobox =
       std::make_unique<ValidatingCombobox>(GetComboboxModelForType(field.type),
                                            std::move(delegate));
-  combobox->SetAccessibleName(field.label);
+  combobox->GetViewAccessibility().SetName(field.label);
 
   std::u16string initial_value = GetInitialValueForType(field.type);
   if (!initial_value.empty())
@@ -215,9 +226,6 @@ void EditorViewController::OnPerformAction(ValidatingCombobox* sender) {
 
 std::unique_ptr<views::View> EditorViewController::CreateEditorView() {
   std::unique_ptr<views::View> editor_view = std::make_unique<views::View>();
-  text_fields_.clear();
-  comboboxes_.clear();
-  initial_focus_field_view_ = nullptr;
 
   // All views have fixed size except the Field which stretches. The fixed
   // padding at the end is computed so that Field views have a minimum of
@@ -348,7 +356,7 @@ views::View* EditorViewController::CreateInputField(views::View* editor_view,
           std::make_unique<ValidatingTextfield>(std::move(validation_delegate));
       // Set the initial value and validity state.
       text_field->SetText(initial_value);
-      text_field->SetAccessibleName(field.label);
+      text_field->GetViewAccessibility().SetName(field.label);
       *valid = IsEditingExistingItem() &&
                delegate_ptr->IsValidTextfield(text_field.get(), &error_message);
       if (IsEditingExistingItem())
@@ -440,7 +448,7 @@ void EditorViewController::AddOrUpdateErrorMessageForField(
     autofill::FieldType type,
     const std::u16string& error_message) {
   const auto& label_view_it = error_labels_.find(type);
-  DCHECK(label_view_it != error_labels_.end());
+  CHECK(label_view_it != error_labels_.end(), base::NotFatalUntil::M130);
 
   if (error_message.empty()) {
     label_view_it->second->RemoveAllChildViews();
@@ -466,6 +474,15 @@ void EditorViewController::SaveButtonPressed(const ui::Event& event) {
     DCHECK_EQ(BackNavigationType::kPaymentSheet, back_navigation_type_);
     dialog()->GoBackToPaymentSheet();
   }
+}
+
+void EditorViewController::ClearViewPointers() {
+  for (auto [textfield, _] : text_fields_) {
+    textfield->set_controller(nullptr);
+  }
+  text_fields_.clear();
+  comboboxes_.clear();
+  initial_focus_field_view_ = nullptr;
 }
 
 }  // namespace payments

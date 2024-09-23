@@ -25,6 +25,8 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
 
   ~MockPlatformWindowDelegate() override;
 
+  MOCK_CONST_METHOD1(CalculateInsetsInDIP,
+                     gfx::Insets(PlatformWindowState window_state));
   MOCK_METHOD1(OnBoundsChanged, void(const BoundsChange& change));
   MOCK_METHOD1(OnDamageRect, void(const gfx::Rect& damaged_region));
   MOCK_METHOD1(DispatchEvent, void(Event* event));
@@ -48,16 +50,19 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD0(OnWillDestroyAcceleratedWidget, void());
   MOCK_METHOD0(OnAcceleratedWidgetDestroyed, void());
   MOCK_METHOD1(OnActivationChanged, void(bool active));
-  MOCK_METHOD0(GetMinimumSizeForWindow, std::optional<gfx::Size>());
-  MOCK_METHOD0(GetMaximumSizeForWindow, std::optional<gfx::Size>());
+  MOCK_CONST_METHOD0(GetMinimumSizeForWindow, std::optional<gfx::Size>());
+  MOCK_CONST_METHOD0(GetMaximumSizeForWindow, std::optional<gfx::Size>());
   MOCK_METHOD0(GetOwnedWindowAnchorAndRectInDIP,
                std::optional<OwnedWindowAnchor>());
   MOCK_METHOD0(OnMouseEnter, void());
+  MOCK_METHOD1(OnOcclusionStateChanged,
+               void(PlatformWindowOcclusionState occlusion_state));
+  MOCK_METHOD2(OnStateUpdate, int64_t(const State& old, const State& latest));
   MOCK_METHOD1(OnOverviewModeChanged, void(bool overview));
   MOCK_METHOD2(OnRotateFocus,
                bool(PlatformWindowDelegate::RotateDirection, bool));
-  MOCK_METHOD0(CanMaximize, bool());
-  MOCK_METHOD0(CanFullscreen, bool());
+  MOCK_CONST_METHOD0(CanMaximize, bool());
+  MOCK_CONST_METHOD0(CanFullscreen, bool());
 };
 
 bool operator==(const PlatformWindowDelegate::BoundsChange& a,

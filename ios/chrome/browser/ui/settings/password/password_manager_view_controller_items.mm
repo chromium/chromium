@@ -169,7 +169,7 @@
                             }];
 }
 
-// TODO(crbug.com/1392705): If FaviconContainerView exposed its state, the
+// TODO(crbug.com/40880506): If FaviconContainerView exposed its state, the
 // implementation of this readonly property could use that rather than an ivar.
 - (void)setFaviconTypeForMetrics:(FaviconType)faviconTypeForMetrics {
   _faviconTypeForMetrics = faviconTypeForMetrics;
@@ -225,7 +225,7 @@
   cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingHead;
   cell.detailLabel.text = self.detailText;
   cell.detailLabel.hidden = !cell.detailLabel.text.length;
-  // TODO(crbug.com/1355956): Use AffiliationGroup::GetIconURL() instead.
+  // TODO(crbug.com/40860113): Use AffiliationGroup::GetIconURL() instead.
   cell.faviconPageURL = self.affiliatedGroup.GetCredentials().begin()->GetURL();
   cell.localOnlyIcon.hidden = !self.showLocalOnlyIcon;
   if (styler.cellTitleColor) {

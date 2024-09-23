@@ -20,7 +20,7 @@ namespace sharing {
 
 // P2PAsyncAddressResolver performs DNS hostname resolution. It's used
 // to resolve addresses of STUN and relay servers.
-// TODO(crbug.com/1044522): reuse code from blink instead.
+// TODO(crbug.com/40115622): reuse code from blink instead.
 class P2PAsyncAddressResolver {
  public:
   using DoneCallback =

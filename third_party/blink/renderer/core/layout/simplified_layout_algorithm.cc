@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
-#include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/space_utils.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -64,8 +63,9 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
     if (result.BfcBlockOffset())
       container_builder_.SetBfcBlockOffset(*result.BfcBlockOffset());
 
-    if (result.LinesUntilClamp())
-      container_builder_.SetLinesUntilClamp(result.LinesUntilClamp());
+    if (result.StateUntilClamp()) {
+      container_builder_.SetStateUntilClamp(result.StateUntilClamp());
+    }
 
     container_builder_.SetExclusionSpace(result.GetExclusionSpace());
 
@@ -97,7 +97,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
     DCHECK_EQ(result.BfcLineOffset(), LayoutUnit());
     DCHECK_EQ(result.BfcBlockOffset().value_or(LayoutUnit()), LayoutUnit());
 
-    DCHECK(!result.LinesUntilClamp());
+    DCHECK(!result.StateUntilClamp());
 
     DCHECK(result.GetExclusionSpace().IsEmpty());
 
@@ -176,7 +176,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
 
     auto ComputeNewBlockSize = [&]() -> LayoutUnit {
       return ComputeBlockSizeForFragment(
-          GetConstraintSpace(), Style(), BorderPadding(),
+          GetConstraintSpace(), Node(), BorderPadding(),
           result.IntrinsicBlockSize(),
           container_builder_.InitialBorderBoxSize().inline_size);
     };
@@ -300,7 +300,7 @@ const LayoutResult* SimplifiedLayoutAlgorithm::Layout() {
       previous_result_.InitialBreakBefore());
   container_builder_.SetPreviousBreakAfter(previous_result_.FinalBreakAfter());
 
-  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
+  container_builder_.HandleOofsAndSpecialDescendants();
 
   return container_builder_.ToBoxFragment();
 }

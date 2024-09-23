@@ -4,7 +4,8 @@
 
 #include "components/media_device_salt/media_device_salt_database.h"
 
-#include "base/containers/cxx20_erase_vector.h"
+#include <vector>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
@@ -17,10 +18,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace media_device_salt {
-
-BASE_FEATURE(kMediaDeviceSaltDatabaseUseBuiltInRecoveryIfSupported,
-             "MediaDeviceSaltDatabaseUseBuiltInRecoveryIfSupported",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 // The current version of the database schema.
@@ -117,7 +114,7 @@ void MediaDeviceSaltDatabase::DeleteEntries(
     serialized_storage_keys.push_back(select_statement.ColumnString(0));
   }
 
-  base::EraseIf(serialized_storage_keys,
+  std::erase_if(serialized_storage_keys,
                 [&matcher](const std::string& serialized_storage_key) {
                   std::optional<blink::StorageKey> storage_key =
                       blink::StorageKey::Deserialize(serialized_storage_key);
@@ -137,9 +134,9 @@ void MediaDeviceSaltDatabase::DeleteEntries(
       base::StrCat({"DELETE FROM media_device_salts "
                     "WHERE storage_key IN ('",
                     base::JoinString(serialized_storage_keys, "','"), "')"});
-  DCHECK(db_.IsSQLValid(delete_storage_keys_sql.c_str()));
+  DCHECK(db_.IsSQLValid(delete_storage_keys_sql));
   sql::Statement delete_statement(
-      db_.GetUniqueStatement(delete_storage_keys_sql.c_str()));
+      db_.GetUniqueStatement(delete_storage_keys_sql));
   delete_statement.Run() && transaction.Commit();
 }
 
@@ -224,10 +221,8 @@ void MediaDeviceSaltDatabase::OnDatabaseError(int error,
                                               sql::Statement* statement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sql::UmaHistogramSqliteResult("Media.MediaDevices.SaltDatabaseErrors", error);
-  std::ignore = sql::BuiltInRecovery::RecoverIfPossible(
-      &db_, error,
-      sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze,
-      &kMediaDeviceSaltDatabaseUseBuiltInRecoveryIfSupported);
+  std::ignore = sql::Recovery::RecoverIfPossible(
+      &db_, error, sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze);
 }
 
 }  // namespace media_device_salt

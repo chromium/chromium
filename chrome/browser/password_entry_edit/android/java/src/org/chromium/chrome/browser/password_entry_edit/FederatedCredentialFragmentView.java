@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
@@ -22,10 +24,16 @@ import org.chromium.ui.widget.ChromeImageButton;
 public class FederatedCredentialFragmentView extends CredentialEntryFragmentViewBase {
     private ChromeImageButton mCopyButton;
     private TextView mUsernameTextView;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        getActivity().setTitle(R.string.password_entry_viewer_title);
+        mPageTitle.set(getString(R.string.password_entry_viewer_title));
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

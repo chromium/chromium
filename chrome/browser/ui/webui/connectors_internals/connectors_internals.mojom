@@ -42,6 +42,15 @@ struct Int32Value {
   int32 value;
 };
 
+union KeyUploadStatus {
+  // HTTP response code of the sync key request.
+  Int32Value sync_key_response_code;
+
+  // Error message related to a client-side failure preventing the upload of a
+  // key.
+  string upload_client_error;
+};
+
 struct LoadedKeyInfo {
   // Loaded key's trust level (e.g. is it a TPM key or not).
   KeyTrustLevel trust_level;
@@ -52,9 +61,9 @@ struct LoadedKeyInfo {
   // Base64-encoded SHA-256 hash value for the loaded key's SPKI.
   string encoded_spki_hash;
 
-  // HTTP response code of the sync key request. Can be unset if the response
-  // has not yet been received.
-  Int32Value? sync_key_response_code;
+  // Result of an attempt to upload the key. May be empty if the
+  // key has not yet been uploaded.
+  KeyUploadStatus? key_upload_status;
 };
 
 struct KeyInfo {
@@ -97,8 +106,14 @@ struct DeviceTrustState {
 };
 
 struct CertificateMetadata {
-  // Certificate's thumbprint.
-  string thumbprint;
+  // Hex-encoded certificate serial number's DER bytes.
+  string serial_number;
+
+  // Hex-encoded SHA-256 hash of the certificate's fingerprint.
+  string fingerprint;
+
+  // Creation date of the certificate.
+  string creation_date_string;
 
   // Expiration date of the certificate.
   string expiration_date_string;

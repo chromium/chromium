@@ -9,6 +9,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class ExceptionState;
@@ -20,20 +24,21 @@ class BluetoothUUID final : public ScriptWrappable {
 
  public:
   // IDL exposed interface:
-  static String getService(const V8BluetoothServiceUUID* name,
-                           ExceptionState& exception_state);
-  static String getCharacteristic(const V8BluetoothCharacteristicUUID* name,
-                                  ExceptionState& exception_state);
-  static String getDescriptor(const V8BluetoothDescriptorUUID* name,
-                              ExceptionState& exception_state);
-  static String canonicalUUID(unsigned alias);
+  static WTF::String getService(const V8BluetoothServiceUUID* name,
+                                ExceptionState& exception_state);
+  static WTF::String getCharacteristic(
+      const V8BluetoothCharacteristicUUID* name,
+      ExceptionState& exception_state);
+  static WTF::String getDescriptor(const V8BluetoothDescriptorUUID* name,
+                                   ExceptionState& exception_state);
+  static WTF::String canonicalUUID(unsigned alias);
 };
 
 // Helper function to retrieve the UUID (as a string) from the V8 value.
 // The value may be a string or 16-bit unsigned integer. If the value cannot
 // be interpreted as a valid UUID then an empty string will be returned.
-BLINK_EXPORT String
-GetBluetoothUUIDFromV8Value(const V8UnionStringOrUnsignedLong* value);
+BLINK_EXPORT WTF::String GetBluetoothUUIDFromV8Value(
+    const V8UnionStringOrUnsignedLong* value);
 
 }  // namespace blink
 

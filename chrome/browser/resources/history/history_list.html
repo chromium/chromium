@@ -2,7 +2,10 @@
       :host {
         box-sizing: border-box;
         display: block;
-        overflow: auto;
+      }
+
+      :host([is-empty]) {
+        padding-block: 80px;
       }
 
       .history-cards {
@@ -21,7 +24,8 @@
     <iron-list class="history-cards"
         items="[[historyData_]]" as="item" id="infinite-list"
         role="grid" aria-rowcount$="[[historyData_.length]]"
-        hidden$="[[!hasResults_(historyData_.length)]]" preserve-focus>
+        hidden$="[[!hasResults_(historyData_.length)]]" preserve-focus
+        scroll-target="[[scrollTarget]]" scroll-offset="[[scrollOffset]]">
       <template>
         <history-item tabindex$="[[tabIndex]]"
             item="[[item]]"
@@ -40,8 +44,9 @@
       </template>
     </iron-list>
 
-    <iron-scroll-threshold id="scroll-threshold" scroll-target="infinite-list"
-        lower-threshold="500" on-lower-threshold="onScrollToBottom_">
+    <iron-scroll-threshold id="scroll-threshold"
+        lower-threshold="500" on-lower-threshold="onScrollToBottom_"
+        scroll-target="[[scrollTarget]]">
     </iron-scroll-threshold>
 
     <cr-lazy-render id="dialog">

@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
 // Structure used to hold information about previous operators for a log.
@@ -17,12 +18,12 @@ struct PreviousOperatorEntry {
 // A single Certificate Transparency Log configuration.
 struct CTLogInfo {
   // LogID found in SCTs issued by this log.
-  string id;
+  mojo_base.mojom.ByteString id;
 
   // The DER-encoded SubjectPublicKeyInfo of the log.
   // TODO(rsleevi): Convert this to array<uint8> when net::CTLogVerifier uses
   // base::span<>
-  string public_key;
+  mojo_base.mojom.ByteString public_key;
 
   // The human-readable, log-supplied log name. Note that this will not be
   // translated.

@@ -1,0 +1,9 @@
+CONSOLE WARNING: A input tag was parsed inside of a <select> which caused a </select> to be inserted before this tag. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A textarea tag was parsed inside of a <select> which caused a </select> to be inserted before this tag. This is not valid HTML and the behavior may be changed in future versions of chrome.
+Test for bug 17421: Lack of end tag of SELECT element causes inaccessible (blank) a rest of a page rendered.
+
+There should be two green bars below.
+
+PASS
+
+PASS

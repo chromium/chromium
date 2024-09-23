@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/storage_access_api/status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,7 +33,7 @@ class MediaUrlDemuxerTest : public testing::Test {
     demuxer_ = std::make_unique<MediaUrlDemuxer>(
         base::SingleThreadTaskRunner::GetCurrentDefault(), media_url,
         net::SiteForCookies::FromUrl(first_party),
-        url::Origin::Create(first_party), /*has_storage_access=*/false,
+        url::Origin::Create(first_party), net::StorageAccessApiStatus::kNone,
         allow_credentials, false);
   }
 

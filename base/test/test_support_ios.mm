@@ -15,6 +15,7 @@
 #include "base/test/test_suite.h"
 #include "base/test/test_switches.h"
 #include "build/blink_buildflags.h"
+#include "build/ios_buildflags.h"
 #include "testing/coverage_util_ios.h"
 
 // Springboard will kill any iOS app that fails to check in after launch within
@@ -245,10 +246,12 @@ bool IsSceneStartupEnabled() {
 #endif
   _window = nil;
 
+#if !BUILDFLAG(IS_IOS_APP_EXTENSION)
   // Use the hidden selector to try and cleanly take down the app (otherwise
   // things can think the app crashed even on a zero exit status).
   UIApplication* application = [UIApplication sharedApplication];
   [application _terminateWithStatus:exitStatus];
+#endif
 
   exit(exitStatus);
 }

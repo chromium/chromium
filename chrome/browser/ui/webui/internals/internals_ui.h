@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/browser/webui_config.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -23,6 +24,13 @@
 namespace content {
 class WebUI;
 }  // namespace content
+
+class InternalsUI;
+
+class InternalsUIConfig : public content::DefaultWebUIConfig<InternalsUI> {
+ public:
+  InternalsUIConfig();
+};
 
 // Client could put debug WebUI as sub-URL under chrome://internals/.
 // e.g. chrome://internals/your-feature.
@@ -63,9 +71,6 @@ class InternalsUI : public ui::MojoWebUIController
   WEB_UI_CONTROLLER_TYPE_DECL();
 
 #if BUILDFLAG(IS_ANDROID)
-  // Add resources and message handler for chrome://internals/query-tiles.
-  void AddQueryTilesInternals(content::WebUI* web_ui);
-
   // Add resources and message handler for chrome://internals/lens.
   void AddLensInternals(content::WebUI* web_ui);
 #endif  // BUILDFLAG(IS_ANDROID)

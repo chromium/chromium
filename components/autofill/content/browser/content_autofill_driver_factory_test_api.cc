@@ -21,39 +21,30 @@ ContentAutofillDriverFactoryTestApi::Create(content::WebContents* web_contents,
 
 ContentAutofillDriverFactoryTestApi::ContentAutofillDriverFactoryTestApi(
     ContentAutofillDriverFactory* factory)
-    : factory_(*factory) {}
+    : AutofillDriverFactoryTestApi(factory) {}
 
 std::unique_ptr<ContentAutofillDriver>
 ContentAutofillDriverFactoryTestApi::ExchangeDriver(
     content::RenderFrameHost* rfh,
     std::unique_ptr<ContentAutofillDriver> new_driver) {
-  auto it = factory_->driver_map_.find(rfh);
-  CHECK(it != factory_->driver_map_.end());
-  return std::exchange(it->second, std::move(new_driver));
+  using enum ContentAutofillDriver::LifecycleState;
+  auto it = factory().driver_map_.find(rfh);
+  CHECK(it != factory().driver_map_.end());
+  std::unique_ptr<ContentAutofillDriver> old_driver =
+      std::exchange(it->second, std::move(new_driver));
+  test_api(*old_driver).SetLifecycleState(kPendingDeletion);
+  return old_driver;
+}
+
+ContentAutofillDriver* ContentAutofillDriverFactoryTestApi::DriverForFrame(
+    content::RenderFrameHost* rfh) {
+  return factory().DriverForFrame(rfh);
 }
 
 ContentAutofillDriver* ContentAutofillDriverFactoryTestApi::GetDriver(
     content::RenderFrameHost* rfh) {
-  auto it = factory_->driver_map_.find(rfh);
-  return it != factory_->driver_map_.end() ? it->second.get() : nullptr;
-}
-
-void ContentAutofillDriverFactoryTestApi::AddObserverAtIndex(
-    ContentAutofillDriverFactory::Observer* new_observer,
-    size_t index) {
-  std::vector<ContentAutofillDriverFactory::Observer*> observers;
-  auto it = factory_->observers_.begin();
-  for (; it != factory_->observers_.end() && index-- > 0; ++it) {
-    observers.push_back(&*it);
-  }
-  observers.push_back(new_observer);
-  for (; it != factory_->observers_.end(); ++it) {
-    observers.push_back(&*it);
-  }
-  factory_->observers_.Clear();
-  for (auto* observer : observers) {
-    factory_->observers_.AddObserver(observer);
-  }
+  auto it = factory().driver_map_.find(rfh);
+  return it != factory().driver_map_.end() ? it->second.get() : nullptr;
 }
 
 }  // namespace autofill

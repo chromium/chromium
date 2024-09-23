@@ -102,16 +102,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
@@ -125,9 +125,10 @@ import java.util.concurrent.ExecutionException;
  * the interface.
  */
 @RunWith(ContentJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+// TODO(crbug.com/344676953): Failing when batched, batch this again.
 @SuppressLint("VisibleForTests")
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+@TestAnimations.EnableAnimations
 public class WebContentsAccessibilityTest {
     // Test output error messages
     private static final String DISABLED_COMBOBOX_ERROR =
@@ -271,7 +272,7 @@ public class WebContentsAccessibilityTest {
     }
 
     public AccessibilityNodeInfoCompat createAccessibilityNodeInfo(int virtualViewId) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.mNodeProvider.createAccessibilityNodeInfo(virtualViewId));
     }
 
@@ -388,7 +389,7 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and accessibility state.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsScreenReaderEnabledForTesting(true);
                     AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
@@ -422,7 +423,7 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and accessibility state.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsScreenReaderEnabledForTesting(false);
                     AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
@@ -457,7 +458,7 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsScreenReaderEnabledForTesting(false);
                     AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
@@ -494,7 +495,7 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state, set event type masks to empty.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setStateMaskForTesting(
                             EVENT_TYPE_MASK, EVENT_TYPE_MASK_NONE);
@@ -534,7 +535,7 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state, set event type masks to empty.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setStateMaskForTesting(
                             EVENT_TYPE_MASK, EVENT_TYPE_MASK_NONE);
@@ -571,7 +572,7 @@ public class WebContentsAccessibilityTest {
                         + "<p>This is a test 3</p>");
 
         // Set the relevant features and screen reader state, set event type masks to empty.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setStateMaskForTesting(
                             EVENT_TYPE_MASK, EVENT_TYPE_MASK_NONE);
@@ -649,7 +650,7 @@ public class WebContentsAccessibilityTest {
 
         // The test suite always initializes native, so mock a call to disable accessibility. We
         // must update AccessibilityState to ensure the AXMode is propagated through to C++.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.mWcax.forceAutoDisableAccessibilityForTesting();
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
@@ -672,7 +673,7 @@ public class WebContentsAccessibilityTest {
                         .build();
 
         // To re-enable native accessibility, we need to make a request from the framework.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsScreenReaderEnabledForTesting(true);
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
@@ -694,7 +695,7 @@ public class WebContentsAccessibilityTest {
                                 AUTO_DISABLE_ACCESSIBILITY_DISABLE_METHOD_CALLED_SUCCESSIVE)
                         .expectNoRecords(USAGE_FOREGROUND_TIME)
                         .build();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.mWcax.forceAutoDisableAccessibilityForTesting();
                     AccessibilityState.setIsScreenReaderEnabledForTesting(false);
@@ -714,7 +715,7 @@ public class WebContentsAccessibilityTest {
                         .expectAnyRecord(
                                 AUTO_DISABLE_ACCESSIBILITY_REENABLE_METHOD_CALLED_SUCCESSIVE)
                         .build();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsScreenReaderEnabledForTesting(true);
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
@@ -746,7 +747,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(FOCUSING_ERROR, mNodeInfo.isAccessibilityFocused());
 
         // Use the public {resetFocus} method and verify focus has been removed.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.mWcax.resetFocus());
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.mWcax.resetFocus());
         CriteriaHelper.pollUiThread(
                 () -> !createAccessibilityNodeInfo(vvid).isAccessibilityFocused());
         rootNodeInfo = createAccessibilityNodeInfo(rootVvid);
@@ -777,12 +778,12 @@ public class WebContentsAccessibilityTest {
         focusNode(vvid1);
 
         // Reset focus explicitly.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.mWcax.resetFocus());
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.mWcax.resetFocus());
         CriteriaHelper.pollUiThread(
                 () -> !createAccessibilityNodeInfo(vvid1).isAccessibilityFocused());
 
         // Restore focus, verify that it gets back.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.mWcax.restoreFocus());
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.mWcax.restoreFocus());
         CriteriaHelper.pollUiThread(
                 () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused());
 
@@ -798,7 +799,7 @@ public class WebContentsAccessibilityTest {
                         () -> !createAccessibilityNodeInfo(vvid2).isAccessibilityFocused()));
 
         // Restore focus, verify that the second (latest focused) element gets focus.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.mWcax.restoreFocus());
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.mWcax.restoreFocus());
         CriteriaHelper.pollUiThread(
                 () -> createAccessibilityNodeInfo(vvid2).isAccessibilityFocused());
     }
@@ -817,7 +818,7 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
 
         // Changing the accessibility state will refresh the native state.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsTextShowPasswordEnabledForTesting(true);
                 });
@@ -939,7 +940,7 @@ public class WebContentsAccessibilityTest {
         mNodeInfo.getBoundsInScreen(beforeBounds);
 
         // Resize the web contents.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getWebContents().setSize(1080, beforeBounds.top / 3));
 
         // Send end of test signal.
@@ -1556,7 +1557,7 @@ public class WebContentsAccessibilityTest {
         // would be generated if spelling correction was enabled. Clear our cache for this node.
         int textNodeVirtualViewId =
                 waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.mWcax.addSpellingErrorForTesting(textNodeVirtualViewId, 4, 9);
                 });
@@ -1596,7 +1597,7 @@ public class WebContentsAccessibilityTest {
 
         // addExtraDataToAccessibilityNodeInfo() will end up calling RenderFrameHostImpl's method
         // AccessibilityPerformAction() in the C++ code, which needs to be run from the UI thread.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
                             textNodeVirtualViewId,
@@ -1642,7 +1643,7 @@ public class WebContentsAccessibilityTest {
 
         // The final result should be the separate bounding box of all four characters.
         mNodeInfo = createAccessibilityNodeInfo(textNodeVirtualViewId);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
                             textNodeVirtualViewId,
@@ -1772,7 +1773,8 @@ public class WebContentsAccessibilityTest {
     public void testNodeInfo_Actions_OverflowHidden() throws Throwable {
         // Build a simple web page with a div and overflow:hidden
         setupTestWithHTML(
-                "<div title='1234' style='overflow:hidden; width: 200px; height:50px'>\n"
+                "<div role='group' title='1234' "
+                        + "style='overflow:hidden; width: 200px; height:50px'>\n"
                         + "  <p>Example Paragraph 1</p>\n"
                         + "  <p>Example Paragraph 2</p>\n"
                         + "</div>");
@@ -2041,7 +2043,7 @@ public class WebContentsAccessibilityTest {
 
         // Perform the "cut" action, and poll for clipboard to be non-null.
         ClipboardManager clipboardManager =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return (ClipboardManager)
                                     mActivityTestRule
@@ -2097,7 +2099,7 @@ public class WebContentsAccessibilityTest {
 
         // Perform the "copy" action, and poll for clipboard to be non-null.
         ClipboardManager clipboardManager =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return (ClipboardManager)
                                     mActivityTestRule
@@ -2138,7 +2140,7 @@ public class WebContentsAccessibilityTest {
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
 
         // Add some ClipData to the ClipboardManager to paste.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ClipboardManager clipboardManager =
                             (ClipboardManager)

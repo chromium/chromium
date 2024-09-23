@@ -15,7 +15,7 @@ namespace sync_preferences::helper {
 namespace {
 
 MergeBehavior GetMergeBehavior(const PrefModelAssociatorClient& client,
-                               const std::string& pref_name) {
+                               std::string_view pref_name) {
   std::optional<SyncablePrefMetadata> metadata =
       client.GetSyncablePrefsDatabase().GetSyncablePrefMetadata(pref_name);
   CHECK(metadata.has_value());
@@ -60,7 +60,7 @@ base::Value::Dict MergeDictionaryValues(const base::Value::Dict& local_value,
 }
 
 base::Value MergePreference(const PrefModelAssociatorClient* client,
-                            const std::string& pref_name,
+                            std::string_view pref_name,
                             const base::Value& local_value,
                             const base::Value& server_value) {
   if (!client) {
@@ -73,12 +73,12 @@ base::Value MergePreference(const PrefModelAssociatorClient* client,
     case MergeBehavior::kMergeableDict:
       if (!server_value.is_dict()) {
         // Server value is corrupt or missing, keep pref value unchanged.
-        // TODO(crbug.com/1430854): Investigate in which scenarios can the value
-        // be corrupt.
+        // TODO(crbug.com/40901973): Investigate in which scenarios can the
+        // value be corrupt.
         return local_value.Clone();
       }
-      // TODO(crbug.com/1485973): Investigate if this is valid or if this should
-      // be a CHECK instead.
+      // TODO(crbug.com/40933499): Investigate if this is valid or if this
+      // should be a CHECK instead.
       if (!local_value.is_dict()) {
         return server_value.Clone();
       }
@@ -87,12 +87,12 @@ base::Value MergePreference(const PrefModelAssociatorClient* client,
     case MergeBehavior::kMergeableListWithRewriteOnUpdate:
       if (!server_value.is_list()) {
         // Server value is corrupt or missing, keep pref value unchanged.
-        // TODO(crbug.com/1430854): Investigate in which scenarios can the value
-        // be corrupt.
+        // TODO(crbug.com/40901973): Investigate in which scenarios can the
+        // value be corrupt.
         return local_value.Clone();
       }
-      // TODO(crbug.com/1485973): Investigate if this is valid or if this should
-      // be a CHECK instead.
+      // TODO(crbug.com/40933499): Investigate if this is valid or if this
+      // should be a CHECK instead.
       if (!local_value.is_list()) {
         return server_value.Clone();
       }
@@ -109,7 +109,7 @@ base::Value MergePreference(const PrefModelAssociatorClient* client,
       // If this is not a specially handled preference, server wins.
       return server_value.Clone();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::pair<base::Value::Dict, base::Value::Dict> UnmergeDictionaryValues(

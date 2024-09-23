@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "extensions/browser/api/sockets_udp/udp_socket_event_dispatcher.h"
 
 #include <utility>
@@ -94,8 +99,9 @@ void UDPSocketEventDispatcher::StartReceive(const ReceiveParams& params) {
       << "Socket has wrong owner.";
 
   // Don't start another read if the socket has been paused.
-  if (socket->paused())
+  if (socket->paused()) {
     return;
+  }
 
   int buffer_size = (socket->buffer_size() <= 0 ? 4096 : socket->buffer_size());
   socket->RecvFrom(
@@ -159,8 +165,9 @@ void UDPSocketEventDispatcher::ReceiveCallback(
       // "resumes" it.
       ResumableUDPSocket* socket =
           params.sockets->Get(params.extension_id, params.socket_id);
-      if (socket)
+      if (socket) {
         socket->set_paused(true);
+      }
     }
   }
 }
@@ -181,10 +188,12 @@ void UDPSocketEventDispatcher::DispatchEvent(void* browser_context_id,
                                              std::unique_ptr<Event> event) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context_id)) {
+    return;
+  }
+
   content::BrowserContext* context =
       reinterpret_cast<content::BrowserContext*>(browser_context_id);
-  if (!extensions::ExtensionsBrowserClient::Get()->IsValidContext(context))
-    return;
   EventRouter* router = EventRouter::Get(context);
   if (router) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

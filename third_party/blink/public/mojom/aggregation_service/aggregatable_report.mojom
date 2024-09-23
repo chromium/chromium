@@ -1,0 +1,33 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/int128.mojom";
+
+// These types are used in/for constructing AggregatableReports, see
+// //content/browser/aggregation_service/aggregatable_report.h.
+
+// Corresponds to the 'alternative aggregation mode' optional setting, but
+// also includes the default option (if no alternative is set).
+enum AggregationServiceMode {
+  // Uses a server-side Trusted Execution Environment (TEE) to process the
+  // encrypted payloads, see
+  // https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATION_SERVICE_TEE.md.
+  kTeeBased,
+
+  // Implements a protocol similar to poplar VDAF in the PPM Framework, see
+  // https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#choosing-among-aggregation-services.
+  kExperimentalPoplar,
+
+  kDefault = kTeeBased,
+};
+
+struct AggregatableReportHistogramContribution {
+  mojo_base.mojom.Uint128 bucket;
+  int32 value;
+
+  // Null if no filtering ID was explicitly set.
+  uint64? filtering_id;
+};

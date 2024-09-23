@@ -108,7 +108,7 @@ pub mod __private {
     /// The wrapper converts the file name into a C++-friendly string,
     /// and the line number into a C++-friendly signed int.
     ///
-    /// TODO(crbug.com/1298175): We should be able to receive a C++-friendly
+    /// TODO(crbug.com/40215436): We should be able to receive a C++-friendly
     /// file path.
     ///
     /// TODO(danakj): We should be able to pass a `c_int` directly to C++:

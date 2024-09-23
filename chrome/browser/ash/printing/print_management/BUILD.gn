@@ -1,0 +1,119 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//printing/buildflags/buildflags.gni")
+
+assert(is_chromeos_ash)
+
+static_library("print_management") {
+  sources = [
+    "print_job_info_mojom_conversions.cc",
+    "print_job_info_mojom_conversions.h",
+    "print_management_delegate_impl.cc",
+    "print_management_delegate_impl.h",
+    "printing_manager.cc",
+    "printing_manager.h",
+    "printing_manager_factory.cc",
+    "printing_manager_factory.h",
+  ]
+
+  deps = [
+    "//ash/webui/print_management",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/browser/ash/printing/history",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/pref_registry",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//url",
+  ]
+
+  public_deps = [
+    "//ash/webui/print_management/backend",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/printing/history:print_job_info_proto",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/components/print_management/mojom",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  if (use_cups) {
+    deps += [ "//chrome/browser/chromeos/printing" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "print_job_info_mojom_conversions_unittest.cc",
+    "printing_manager_factory_unittest.cc",
+    "printing_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":print_management",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/printing",
+    "//chrome/browser/ash/printing:test_support",
+    "//chrome/browser/ash/printing/history",
+    "//chrome/browser/ash/printing/history:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/history/core/test",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+
+  if (use_cups) {
+    deps += [ "//chrome/browser/chromeos/printing" ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "print_management_delegate_impl_browsertest.cc" ]
+
+  deps = [
+    ":print_management",
+    "//ash/webui/print_management/backend",
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/test:test_support",
+  ]
+}
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "print_management_printer_settings_interactive_uitest.cc" ]
+
+    deps = [
+      ":print_management",
+      "//ash",
+      "//ash/webui/print_management:url_constants",
+      "//ash/webui/settings/public/constants:mojom",
+      "//chrome/browser/ash/printing/history",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//components/keyed_service/content",
+      "//ui/events:test_support",
+    ]
+  }
+}

@@ -44,7 +44,6 @@ class FooUI : public ui::MojoWebUIController, public ::test::mojom::Foo {
             web_ui->GetWebContents()->GetBrowserContext(), "foo");
     data_source->SetDefaultResource(
         IDR_WEBUI_MOJO_MOJO_WEB_UI_CONTROLLER_TEST_HTML);
-    data_source->DisableContentSecurityPolicy();
     data_source->AddResourcePath("foobar.mojom-webui.js",
                                  IDR_WEBUI_MOJO_FOOBAR_MOJOM_WEBUI_JS);
     data_source->AddResourcePath("main.js", IDR_WEBUI_MOJO_MAIN_JS);
@@ -84,7 +83,6 @@ class FooBarUI : public ui::MojoWebUIController,
             web_ui->GetWebContents()->GetBrowserContext(), "foobar");
     data_source->SetDefaultResource(
         IDR_WEBUI_MOJO_MOJO_WEB_UI_CONTROLLER_TEST_HTML);
-    data_source->DisableContentSecurityPolicy();
     data_source->AddResourcePath("foobar.mojom-webui.js",
                                  IDR_WEBUI_MOJO_FOOBAR_MOJOM_WEBUI_JS);
     data_source->AddResourcePath("main.js", IDR_WEBUI_MOJO_MAIN_JS);

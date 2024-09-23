@@ -184,6 +184,18 @@
 				<string>com.adobe.pdf</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeIconFile</key>
+			<string>document.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Chromium Shortcut</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.chromium.shortcut</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
@@ -243,6 +255,8 @@
 	<string>${CHROMIUM_MIN_SYSTEM_VERSION}</string>
 	<key>LSRequiresNativeExecution</key>
 	<true/>
+	<key>NSCameraReactionEffectGesturesEnabledDefault</key>
+	<false/>
 	<key>NSPrincipalClass</key>
 	<string>BrowserCrApplication</string>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
@@ -272,6 +286,27 @@
 				<key>public.mime-type</key>
 				<array>
 					<string>application/x-chrome-extension</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>com.apple.web-internet-location</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Chromium Shortcut</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.chromium.shortcut</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>crwebloc</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>application/x-chrome-shortcut</string>
 				</array>
 			</dict>
 		</dict>
@@ -360,57 +395,6 @@
 				</array>
 			</dict>
 		</dict>
-		<dict>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.movie</string>
-			</array>
-			<key>UTTypeDescription</key>
-			<string>WebM media</string>
-			<key>UTTypeIconFile</key>
-			<string>document.icns</string>
-			<key>UTTypeIdentifier</key>
-			<string>org.webmproject.webm</string>
-			<key>UTTypeReferenceURL</key>
-			<string>https://www.webmproject.org/docs/container/</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>webm</string>
-				</array>
-				<key>public.mime-type</key>
-				<array>
-					<string>video/webm</string>
-					<string>audio/webm</string>
-				</array>
-			</dict>
-		</dict>
-		<dict>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.image</string>
-			</array>
-			<key>UTTypeDescription</key>
-			<string>WebP image</string>
-			<key>UTTypeIconFile</key>
-			<string>document.icns</string>
-			<key>UTTypeIdentifier</key>
-			<string>org.webmproject.webp</string>
-			<key>UTTypeReferenceURL</key>
-			<string>https://developers.google.com/speed/webp/docs/riff_container</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>webp</string>
-				</array>
-				<key>public.mime-type</key>
-				<array>
-					<string>image/webp</string>
-				</array>
-			</dict>
-		</dict>
 	</array>
 	<key>NSUserNotificationAlertStyle</key>
 	<string>banner</string>
@@ -421,5 +405,9 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_googlecast._tcp</string>
+	</array>
 </dict>
 </plist>

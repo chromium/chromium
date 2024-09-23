@@ -11,9 +11,29 @@ declare_args() {
   enable_qr_print = false
 }
 
+# Error type shared between C++ and Rust.
+source_set("error") {
+  sources = [ "error.h" ]
+}
+
+source_set("bitmap_generator") {
+  sources = [
+    "bitmap_generator.cc",
+    "bitmap_generator.h",
+    "dino_image.h",
+  ]
+  public_deps = [ ":error" ]
+  deps = [
+    ":qr_code_generator",
+    "//base",
+    "//components/vector_icons",
+    "//skia",
+    "//ui/gfx",
+  ]
+}
+
 source_set("qr_code_generator") {
   sources = [
-    "dino_image.h",
     "qr_code_generator.cc",
     "qr_code_generator.h",
   ]
@@ -21,7 +41,10 @@ source_set("qr_code_generator") {
     ":qr_code_generator_ffi_glue",
     "//base",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":error",
+    "//base",
+  ]
 }
 
 rust_static_library("qr_code_generator_ffi_glue") {
@@ -30,13 +53,20 @@ rust_static_library("qr_code_generator_ffi_glue") {
   sources = [ "qr_code_generator_ffi_glue.rs" ]
   cxx_bindings = [ "qr_code_generator_ffi_glue.rs" ]
   visibility = [ ":qr_code_generator" ]
-  deps = [ "//third_party/rust/qr_code/v2:lib" ]
+  deps = [
+    ":error",
+    "//third_party/rust/qr_code/v2:lib",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "qr_code_generator_unittest.cc" ]
+  sources = [
+    "bitmap_generator_unittest.cc",
+    "qr_code_generator_unittest.cc",
+  ]
   deps = [
+    ":bitmap_generator",
     ":qr_code_generator",
     "//base",
     "//base/test:test_support",

@@ -1,0 +1,25 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("test_runner_java") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/testing/TestListInstrumentationRunListener.java",
+  ]
+  mergeable_android_manifests = [ "java/AndroidManifest_runner.xml" ]
+  deps = [
+    ":test_runner_permissions_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+  ]
+}
+
+# Split into its own target because it is also needed by any APK that is an "apk_under_test".
+java_group("test_runner_permissions_java") {
+  mergeable_android_manifests = [ "java/AndroidManifest_permissions.xml" ]
+}

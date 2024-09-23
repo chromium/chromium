@@ -8,6 +8,7 @@
 // The sole purpose of dns_config_service_win.h is for unittests so we just
 // include these headers here.
 #include <winsock2.h>
+
 #include <iphlpapi.h>
 #include <iptypes.h>
 
@@ -48,10 +49,12 @@ std::string NET_EXPORT_PRIVATE ParseDomainASCII(std::wstring_view widestr);
 std::vector<std::string> NET_EXPORT_PRIVATE
 ParseSearchList(std::wstring_view value);
 
-// Fills in |dns_config| from |settings|. Exposed for tests. Returns nullopt if
-// a valid config could not be determined.
-std::optional<DnsConfig> NET_EXPORT_PRIVATE
-ConvertSettingsToDnsConfig(const WinDnsSystemSettings& settings);
+// Fills in |dns_config| from |settings|. Exposed for tests. Returns
+// ReadWinSystemDnsSettingsError if a valid config could not be determined.
+base::expected<DnsConfig, ReadWinSystemDnsSettingsError> NET_EXPORT_PRIVATE
+ConvertSettingsToDnsConfig(
+    const base::expected<WinDnsSystemSettings, ReadWinSystemDnsSettingsError>&
+        settings_or_error);
 
 // Service for reading and watching Windows system DNS settings. This object is
 // not thread-safe and methods may perform blocking I/O so methods must be

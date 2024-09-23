@@ -23,6 +23,7 @@
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/buildflags.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -36,6 +37,12 @@
 #include "services/tracing/tracing_service.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "services/video_capture/video_capture_service_impl.h"
+#include "services/video_effects/public/cpp/buildflags.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "services/video_effects/public/mojom/video_effects_service.mojom.h"  // nogncheck
+#include "services/video_effects/video_effects_service_impl.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/mach_logging.h"
@@ -84,6 +91,11 @@ extern sandbox::TargetServices* g_utility_target_services;
 #include "media/mojo/services/media_foundation_service_broker.h"  // nogncheck
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "media/mojo/mojom/mediadrm_support.mojom.h"       // nogncheck
+#include "media/mojo/services/mediadrm_support_service.h"  // nogncheck
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) && \
     (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 #include "ash/components/arc/video_accelerator/oop_arc_video_accelerator_factory.h"
@@ -107,9 +119,15 @@ extern sandbox::TargetServices* g_utility_target_services;
 #include "ui/accessibility/accessibility_features.h"
 #endif  // BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "services/viz/public/cpp/gpu/gpu.h"
+#include "services/viz/public/mojom/gpu.mojom.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/capture_switches.h"
-#include "services/viz/public/cpp/gpu/gpu.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -293,6 +311,13 @@ RunMediaFoundationServiceBroker(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+auto RunMediaDrmSupportService(
+    mojo::PendingReceiver<media::mojom::MediaDrmSupport> receiver) {
+  return std::make_unique<media::MediaDrmSupportService>(std::move(receiver));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 auto RunStorageService(
     mojo::PendingReceiver<storage::mojom::StorageService> receiver) {
   return std::make_unique<storage::StorageServiceImpl>(
@@ -307,8 +332,11 @@ auto RunTracing(
 auto RunVideoCapture(
     mojo::PendingReceiver<video_capture::mojom::VideoCaptureService> receiver) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  content::UtilityThread::Get()->BindHostReceiver(
-      GetContentClient()->utility()->InitMojoServiceManager());
+  auto service_manager_receiver =
+      GetContentClient()->utility()->InitMojoServiceManager();
+  if (service_manager_receiver.is_valid()) {
+    UtilityThread::Get()->BindHostReceiver(std::move(service_manager_receiver));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   auto service = std::make_unique<UtilityThreadVideoCaptureServiceImpl>(
       std::move(receiver), base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -319,30 +347,41 @@ auto RunVideoCapture(
   if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     mojo::PendingRemote<viz::mojom::Gpu> remote_gpu;
-    content::UtilityThread::Get()->BindHostReceiver(
+    UtilityThread::Get()->BindHostReceiver(
         remote_gpu.InitWithNewPipeAndPassReceiver());
-    std::unique_ptr<viz::Gpu> viz_gpu =
-        viz::Gpu::Create(std::move(remote_gpu),
-                         content::UtilityThread::Get()->GetIOTaskRunner());
+    std::unique_ptr<viz::Gpu> viz_gpu = viz::Gpu::Create(
+        std::move(remote_gpu), UtilityThread::Get()->GetIOTaskRunner());
     service->SetVizGpu(std::move(viz_gpu));
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS_ASH)
+
   return service;
 }
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+auto RunVideoEffects(
+    mojo::PendingReceiver<video_effects::mojom::VideoEffectsService> receiver) {
+  if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
+    return std::make_unique<video_effects::VideoEffectsServiceImpl>(
+        std::move(receiver), UtilityThread::Get()->GetIOTaskRunner());
+  }
+
+  return std::unique_ptr<video_effects::VideoEffectsServiceImpl>{};
+}
+#endif
 
 auto RunOnDeviceModel(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
         receiver) {
-  return std::make_unique<on_device_model::OnDeviceModelService>(
-      std::move(receiver));
+  return on_device_model::OnDeviceModelService::Create(std::move(receiver));
 }
 
 #if BUILDFLAG(ENABLE_VR) && !BUILDFLAG(IS_ANDROID)
 auto RunXrDeviceService(
     mojo::PendingReceiver<device::mojom::XRDeviceService> receiver) {
   return std::make_unique<device::XrDeviceService>(
-      std::move(receiver), content::ChildProcess::current()->io_task_runner());
+      std::move(receiver), ChildProcess::current()->io_task_runner());
 }
 #endif
 
@@ -412,6 +451,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunTracing);
   services.Add(RunVideoCapture);
 
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+  services.Add(RunVideoEffects);
+#endif
+
   if (optimization_guide::features::CanLaunchOnDeviceModelService()) {
     services.Add(RunOnDeviceModel);
   }
@@ -427,6 +470,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #if BUILDFLAG(IS_WIN)
   services.Add(RunMediaFoundationServiceBroker);
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID)
+  services.Add(RunMediaDrmSupportService);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_VR) && !BUILDFLAG(IS_ANDROID)
   services.Add(RunXrDeviceService);

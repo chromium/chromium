@@ -1,0 +1,22 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/test/data/webui/build_webui_tests.gni")
+
+assert(!is_android && !is_ios)
+
+build_webui_tests("build") {
+  files = [
+    "cluster_test.ts",
+    "history_clusters_test.ts",
+    "horizontal_carousel_test.ts",
+  ]
+
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_components/history_clusters:build_ts",
+    "//ui/webui/resources/cr_components/page_image_service:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+}

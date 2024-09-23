@@ -2,7 +2,6 @@
 # Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Runs a python script under an isolate
 
 This script attempts to emulate the contract of gtest-style tests
@@ -20,11 +19,12 @@ import json
 import os
 import sys
 
-# Add src/testing/ into sys.path for importing xvfb and common.
+import common
+
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+# //testing imports.
 import xvfb
-from scripts import common
 
 # pylint: disable=super-with-arguments
 
@@ -52,12 +52,12 @@ def main():
     # a non positive number).
     with open(tempfile_path) as f:
       output = f.read()
-      if "ALL TESTS PASSED\n" not in output:
+      if 'ALL TESTS PASSED\n' not in output:
         failures = [output]
 
   if args.isolated_script_test_output:
     with open(args.isolated_script_test_output, 'w') as fp:
-      json.dump({'valid': True,'failures': failures}, fp)
+      json.dump({'valid': True, 'failures': failures}, fp)
 
   return rc
 
@@ -70,8 +70,8 @@ if __name__ == '__main__':
   # Conform minimally to the protocol defined by ScriptTest.
   if 'compile_targets' in sys.argv:
     funcs = {
-      'run': None,
-      'compile_targets': main_compile_targets,
+        'run': None,
+        'compile_targets': main_compile_targets,
     }
     sys.exit(common.run_script(sys.argv[1:], funcs))
   sys.exit(main())

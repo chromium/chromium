@@ -4,7 +4,7 @@ Copyright 2022 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<!-- TODO(crbug.com/1347265): Convert this to PNG resource. -->
+<!-- TODO(crbug.com/40854594): Convert this to PNG resource. -->
 <vector
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"

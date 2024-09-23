@@ -13,12 +13,12 @@ import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {ICON_TYPES} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
-import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
-import {EntryType, type FileData, type State} from '../../state/state.js';
+import type {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
+import {EntryType, type FileData, type MaterializedView, type State} from '../../state/state.js';
 import {allEntriesSize, assertAllEntriesEqual, cd, changeSelection, createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, updMetadata, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState, type Store} from '../store.js';
 
-import {addChildEntries, clearCachedEntries, convertEntryToFileData, getMyFiles, readSubDirectories, traverseAndExpandPathEntriesInternal, updateFileData} from './all_entries.js';
+import {addChildEntries, cacheMaterializedViews, clearCachedEntries, convertEntryToFileData, getMyFiles, readSubDirectories, traverseAndExpandPathEntriesInternal, updateFileData} from './all_entries.js';
 import {convertVolumeInfoAndMetadataToVolume, myFilesEntryListKey} from './volumes.js';
 
 let store: Store;
@@ -237,7 +237,7 @@ export function testGetMyFilesWithVolumeEntry() {
   const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
   const volume =
       convertVolumeInfoAndMetadataToVolume(volumeInfo, volumeMetadata);
-  currentState.allEntries[fileData.entry.toURL()] = fileData;
+  currentState.allEntries[fileData.key] = fileData;
   currentState.volumes[volumeInfo.volumeId] = volume;
   const {myFilesEntry, myFilesVolume} = getMyFiles(currentState);
   // Expect MyFiles volume entry and volume returned.
@@ -341,6 +341,8 @@ export async function testConvertVolumeEntryToFileData(done: () => void) {
   const downloadsEntry = new VolumeEntry(downloadsVolumeInfo);
   const got = convertEntryToFileData(downloadsEntry);
   const want: FileData = {
+    key: downloadsEntry.toURL(),
+    fullPath: downloadsEntry.fullPath,
     entry: downloadsEntry,
     icon: ICON_TYPES.MY_FILES,
     type: EntryType.VOLUME_ROOT,
@@ -381,6 +383,8 @@ export async function testGenericIconInDocumentsProviderFileData(
   const documentsProviderEntry = new VolumeEntry(documentsProviderVolumeInfo);
   const got = convertEntryToFileData(documentsProviderEntry);
   const want: FileData = {
+    key: documentsProviderEntry.toURL(),
+    fullPath: documentsProviderEntry.fullPath,
     entry: documentsProviderEntry,
     icon: ICON_TYPES.GENERIC,
     type: EntryType.VOLUME_ROOT,
@@ -406,6 +410,8 @@ export async function testConvertEntryListToFileData(done: () => void) {
   const myFilesEntryList = new EntryList('My files', RootType.MY_FILES);
   const got = convertEntryToFileData(myFilesEntryList);
   const want: FileData = {
+    key: myFilesEntryList.toURL(),
+    fullPath: myFilesEntryList.fullPath,
     entry: myFilesEntryList,
     icon: ICON_TYPES.MY_FILES,
     type: EntryType.ENTRY_LIST,
@@ -432,6 +438,8 @@ export async function testConvertFakeEntryToFileData(done: () => void) {
       'Android files', 0, chrome.fileManagerPrivate.VmType.ARCVM);
   const got = convertEntryToFileData(androidFakeEntry);
   const want: FileData = {
+    key: androidFakeEntry.toURL(),
+    fullPath: androidFakeEntry.fullPath,
     entry: androidFakeEntry,
     icon: ICON_TYPES.ANDROID_FILES,
     type: EntryType.PLACEHOLDER,
@@ -457,6 +465,8 @@ export async function testConvertNativeFileEntryToFileData(done: () => void) {
   const fileEntry = fileSystem.entries['/dir-2/file-1.txt']!;
   const got = convertEntryToFileData(fileEntry);
   const want: FileData = {
+    key: fileEntry.toURL(),
+    fullPath: fileEntry.fullPath,
     entry: fileEntry,
     icon: 'text',
     type: EntryType.FS_API,
@@ -483,6 +493,8 @@ export async function testConvertNativeDirectoryEntryToFileData(
   const directoryEntry = fileSystem.entries['/dir-1']!;
   const got = convertEntryToFileData(directoryEntry);
   const want: FileData = {
+    key: directoryEntry.toURL(),
+    fullPath: directoryEntry.fullPath,
     entry: directoryEntry,
     icon: ICON_TYPES.FOLDER,
     type: EntryType.FS_API,
@@ -531,7 +543,7 @@ export async function testReadSubDirectories(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch read sub directories action producer.
-  store.dispatch(readSubDirectories(downloadsEntry));
+  store.dispatch(readSubDirectories(downloadsEntry.toURL()));
 
   // Expect store to have all its sub directories.
   const aDirEntry = fakeFs.entries['/Downloads/a']!;
@@ -582,7 +594,8 @@ export async function testReadSubDirectoriesRecursively(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch read sub directories action producer.
-  store.dispatch(readSubDirectories(downloadsEntry, /* recursive= */ true));
+  store.dispatch(
+      readSubDirectories(downloadsEntry.toURL(), /* recursive= */ true));
 
   // Expect store to have all its sub directories.
   const aDirEntry = fakeFs.entries['/Downloads/a']!;
@@ -620,7 +633,7 @@ export async function testReadSubDirectoriesWithNullEntry(done: () => void) {
   const store = setupStore();
 
   // Check reading null entry will do nothing.
-  store.dispatch(readSubDirectories(null));
+  store.dispatch(readSubDirectories(''));
 
   await waitDeepEquals(store, {}, (state) => state.allEntries);
 
@@ -641,7 +654,7 @@ export async function testReadSubDirectoriesWithNonDirectoryEntry(
       /* opt_clear= */ true);
 
   // Check reading non directory entry will do nothing.
-  store.dispatch(readSubDirectories(fakeFs.entries['/a.txt']!));
+  store.dispatch(readSubDirectories(fakeFs.entries['/a.txt']!.toURL()));
 
   await waitDeepEquals(store, {}, (state) => state.allEntries);
 
@@ -661,7 +674,7 @@ export async function testReadSubDirectoriesWithDisabledEntry(
   downloadsEntry.disabled = true;
 
   // Check reading disabled volume entry will do nothing.
-  store.dispatch(readSubDirectories(downloadsEntry));
+  store.dispatch(readSubDirectories(downloadsEntry.toURL()));
 
   await waitDeepEquals(store, {}, (state) => state.allEntries);
 
@@ -711,7 +724,7 @@ export async function testReadSubDirectoriesForFakeDriveEntry(
   const store = setupStore(initialState);
 
   // Dispatch read sub directories action producer.
-  store.dispatch(readSubDirectories(driveRootEntryList));
+  store.dispatch(readSubDirectories(driveRootEntryList.toURL()));
 
   // Expect its direct sub directories and grand sub directories of /Computers
   // should be in the store.
@@ -890,7 +903,7 @@ export async function testUpdateFileData(done: () => void) {
   const initialState = getEmptyState();
   // Add MyFiles entry to the store.
   const {fileData} = createMyFilesDataWithVolumeEntry();
-  const myFilesEntryKey = fileData.entry.toURL();
+  const myFilesEntryKey = fileData.key;
   initialState.allEntries[myFilesEntryKey] = fileData;
 
   const store = setupStore(initialState);
@@ -919,4 +932,37 @@ export async function testUpdateFileDataWithoutValidFileData(done: () => void) {
   await waitDeepEquals(store, initialState, (state) => state);
 
   done();
+}
+
+/**
+ * Test adding a Materialized View to the allEntries.
+ */
+export async function testcacheMaterializedViews() {
+  const initialState = getEmptyState();
+  const store = setupStore(initialState);
+  const state = store.getState();
+  const key = 'materialized-view://1/';
+
+  const views: MaterializedView[] =
+      [{id: '1', key, label: 'test view', isRoot: true, icon: 'the-icon'}];
+  cacheMaterializedViews(store.getState(), views);
+
+  const want: FileData = {
+    key,
+    fullPath: '//1/',
+    icon: 'the-icon',
+    label: 'test view',
+    type: EntryType.MATERIALIZED_VIEW,
+    isDirectory: true,
+    volumeId: null,
+    rootType: null,
+    metadata: {},
+    isRootEntry: true,
+    isEjectable: false,
+    canExpand: true,
+    children: [],
+    expanded: false,
+    disabled: false,
+  };
+  assertDeepEquals(want, state.allEntries[key]);
 }

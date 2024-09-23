@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/base/address_tracker_linux.h"
 
 #include <errno.h>
@@ -14,6 +19,8 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -124,7 +131,9 @@ bool GetAddress(const struct nlmsghdr* header,
     address = local;
   if (!address)
     return false;
-  *out = IPAddress(address, address_length);
+  // SAFETY: `address` is only set above after `RTA_PAYLOAD` is checked against
+  // `address_length`.
+  *out = IPAddress(UNSAFE_BUFFERS(base::span(address, address_length)));
   return true;
 }
 

@@ -49,8 +49,7 @@ class MEDIA_GPU_EXPORT ImageProcessor {
   using ErrorCB = ImageProcessorBackend::ErrorCB;
   using FrameReadyCB = ImageProcessorBackend::FrameReadyCB;
   using FrameResourceReadyCB = ImageProcessorBackend::FrameResourceReadyCB;
-  // Legacy callbacks are used when allocation mode is ALLOCATE.
-  using LegacyFrameReadyCB = ImageProcessorBackend::LegacyFrameReadyCB;
+  // Legacy callback is used when allocation mode is ALLOCATE.
   using LegacyFrameResourceReadyCB =
       ImageProcessorBackend::LegacyFrameResourceReadyCB;
 
@@ -91,9 +90,6 @@ class MEDIA_GPU_EXPORT ImageProcessor {
   // blocking function.
   // TODO(crbug.com/907767): Remove this once ImageProcessor always works as
   // IMPORT mode for output.
-  bool Process(scoped_refptr<VideoFrame> frame, LegacyFrameReadyCB cb);
-
-  // FrameResource version of legacy Process().
   bool Process(scoped_refptr<FrameResource> frame,
                LegacyFrameResourceReadyCB cb);
 
@@ -133,21 +129,20 @@ class MEDIA_GPU_EXPORT ImageProcessor {
   }
 
  protected:
-  // Container for both FrameReadyCB and LegacyFrameReadyCB. With this class,
-  // we could store both kind of callback in the same container.
-  // TODO(crbug.com/907767): Remove this once ImageProcessor always works as
-  // IMPORT mode for output.
+  // Container for FrameReadyCB, FrameResourceReadyCB, and
+  // LegacyFrameResourceReadyCB. With this class, we can store any of the
+  // callback types in the same container.
+  // TODO(crbug.com/907767): Remove LegacyFrameResourceReadyCB once
+  // ImageProcessor always works as IMPORT mode for output.
   struct ClientCallback {
     ClientCallback(FrameReadyCB ready_cb);
     ClientCallback(FrameResourceReadyCB frame_resource_ready_cb);
-    ClientCallback(LegacyFrameReadyCB legacy_ready_cb);
     ClientCallback(LegacyFrameResourceReadyCB legacy_frame_resource_ready_cb);
     ClientCallback(ClientCallback&&);
     ~ClientCallback();
 
     FrameReadyCB ready_cb;
     FrameResourceReadyCB frame_resource_ready_cb;
-    LegacyFrameReadyCB legacy_ready_cb;
     LegacyFrameResourceReadyCB legacy_frame_resource_ready_cb;
   };
 
@@ -166,12 +161,6 @@ class MEDIA_GPU_EXPORT ImageProcessor {
       std::optional<base::WeakPtr<ImageProcessor>> weak_this,
       int cb_index,
       scoped_refptr<FrameResource> frame);
-  static void OnProcessLegacyDoneThunk(
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      std::optional<base::WeakPtr<ImageProcessor>> weak_this,
-      int cb_index,
-      size_t buffer_id,
-      scoped_refptr<VideoFrame> frame);
   static void OnProcessFrameResourceLegacyDoneThunk(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::optional<base::WeakPtr<ImageProcessor>> weak_this,
@@ -181,9 +170,6 @@ class MEDIA_GPU_EXPORT ImageProcessor {
   void OnProcessDone(int cb_index, scoped_refptr<VideoFrame> frame);
   void OnProcessFrameResourceDone(int cb_index,
                                   scoped_refptr<FrameResource> frame);
-  void OnProcessLegacyDone(int cb_index,
-                           size_t buffer_id,
-                           scoped_refptr<VideoFrame> frame);
   void OnProcessFrameResourceLegacyDone(int cb_index,
                                         size_t buffer_id,
                                         scoped_refptr<FrameResource> frame);

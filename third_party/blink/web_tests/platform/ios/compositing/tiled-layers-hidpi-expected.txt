@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='composited'",
+      "name": "LayoutBlockFlow DIV id='composited'",
       "bounds": [3600, 20],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",

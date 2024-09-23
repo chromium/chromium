@@ -55,10 +55,8 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
       scoped_refptr<net::HttpResponseHeaders>* headers,
       std::string* response_body) override {
     hit_counter_++;
-    std::string cache_control_header;
-    if (request.headers.HasHeader("Cache-Control")) {
-      request.headers.GetHeader("Cache-Control", &cache_control_header);
-    }
+    std::string cache_control_header =
+        request.headers.GetHeader("Cache-Control").value_or(std::string());
     *headers = web::ResponseProvider::GetDefaultResponseHeaders();
 
     if (request.url == first_page_url_) {
@@ -86,7 +84,7 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
           hit_counter_, cache_control_header.c_str(),
           first_page_url_.spec().c_str(), kCacheTestLinkID);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -173,7 +171,7 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
   [ChromeEarlGrey waitForWebStateContainingText:"serverHitCounter: 1"];
 
   // Type a search into omnnibox and select the first suggestion (second row)
-  [ChromeEarlGreyUI focusOmniboxAndType:@"cachetestfirstpage"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"cachetestfirstpage"];
   [[[[EarlGrey
       selectElementWithMatcher:
           grey_allOf(chrome_test_util::OmniboxPopupRow(),

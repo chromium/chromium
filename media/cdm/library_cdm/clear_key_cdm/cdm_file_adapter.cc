@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/cdm/library_cdm/clear_key_cdm/cdm_file_adapter.h"
 
 #include <memory>
@@ -24,7 +29,7 @@ CdmFileAdapter::Status ConvertStatus(cdm::FileIOClient::Status status) {
       return CdmFileAdapter::Status::kError;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

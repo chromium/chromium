@@ -43,7 +43,6 @@ enum class BackendFunction {
   kCreateFileSystemOperation,
   kCreateFileStreamReader,
   kCreateFileStreamWriter,
-  kGetRedirectURLForContents,
 };
 
 // FileSystemBackend is a Chrome OS specific implementation of
@@ -128,11 +127,6 @@ class FileSystemBackend : public storage::FileSystemBackend {
   // path is not exposed by this provider.
   bool GetVirtualPath(const base::FilePath& file_system_path,
                       base::FilePath* virtual_path) const;
-
-  // Gets a redirect URL for contents. e.g. Google Drive URL for hosted
-  // documents. Returns empty URL if the entry does not have the redirect URL.
-  void GetRedirectURLForContents(const storage::FileSystemURL& url,
-                                 storage::URLCallback callback) const;
 
   // Creates an internal File System URL for performing internal operations such
   // as confirming if a file or a directory exist before granting the final

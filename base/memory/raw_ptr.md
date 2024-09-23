@@ -38,8 +38,8 @@ with questions or concerns.
 
 `raw_ptr<T>` is a non-owning smart pointer that has improved memory-safety over
 raw pointers.  It behaves just like a raw pointer on platforms where
-ENABLE_BACKUP_REF_PTR_SUPPORT is off, and almost like one when it's on. The main
-difference is that when ENABLE_BACKUP_REF_PTR_SUPPORT is enabled, `raw_ptr<T>`
+USE_RAW_PTR_BACKUP_REF_IMPL is off, and almost like one when it's on. The main
+difference is that when USE_RAW_PTR_BACKUP_REF_IMPL is enabled, `raw_ptr<T>`
 is beneficial for security, because it can prevent a significant percentage of
 Use-after-Free (UaF) bugs from being exploitable. It achieves this by
 quarantining the freed memory as long as any dangling `raw_ptr<T>` pointing to
@@ -55,18 +55,20 @@ Having said that, we want to emphasize that dereferencing a dangling pointer
 remains an Undefined Behavior.
 
 `raw_ptr<T>` protection is enabled by default in all non-Renderer processes, on:
-- Android (incl. AndroidWebView & Android WebEngine)
+- Android (incl. AndroidWebView, Android WebEngine, & Android ChromeCast)
 - Windows
 - ChromeOS (incl. Ash & Lacros)
 - macOS
 - Linux
-
-In particular, it isn't enabled by default on:
-- iOS
-- ChromeCast
 - Fuchsia
-- Aix
-- Zos
+
+In particular, it isn't yet enabled by default on:
+- iOS
+- Linux CastOS (Nest hardware)
+
+For the source of truth, both `enable_backup_ref_ptr_support` and `enable_backup_ref_ptr_feature_flag` need to enabled.
+Please refer to the following files: [build_overrides/partition_alloc.gni](https://source.chromium.org/chromium/chromium/src/+/main:build_overrides/partition_alloc.gni) and [partition_alloc.gni](https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/partition_alloc.gni;l=5?q=partition_alloc.gni&sq=&ss=chromium)
+
 
 [TOC]
 
@@ -144,7 +146,7 @@ below.
 
 ### Performance impact of using |raw_ptr&lt;T&gt;| instead of |T\*|
 
-Compared to a raw C++ pointer, on platforms where ENABLE_BACKUP_REF_PTR_SUPPORT
+Compared to a raw C++ pointer, on platforms where USE_RAW_PTR_BACKUP_REF_IMPL
 is on, `raw_ptr<T>` incurs additional runtime
 overhead for initialization, destruction, and assignment (including
 `ptr++`, `ptr += ...`, etc.).
@@ -169,7 +171,7 @@ below.)
 Some additional overhead comes from setting `raw_ptr<T>` to `nullptr`
 when default-constructed, destructed, or moved. (Yes, we said above to not rely
 on it, but to be precise this will always happen when
-ENABLE_BACKUP_REF_PTR_SUPPORT is on; no guarantees otherwise.)
+USE_RAW_PTR_BACKUP_REF_IMPL is on; no guarantees otherwise.)
 
 During
 [the "Big Rewrite"](https://groups.google.com/a/chromium.org/g/chromium-dev/c/vAEeVifyf78/m/SkBUc6PhBAAJ)

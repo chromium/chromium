@@ -91,7 +91,7 @@ void ObjectNavigationFallbackBodyLoader::BodyLoadFailed() {
 void ObjectNavigationFallbackBodyLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr) {
   // Should have already happened.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ObjectNavigationFallbackBodyLoader::OnReceiveResponse(
@@ -99,14 +99,14 @@ void ObjectNavigationFallbackBodyLoader::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   // Should have already happened.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ObjectNavigationFallbackBodyLoader::OnReceiveRedirect(
     const net::RedirectInfo&,
     network::mojom::URLResponseHeadPtr) {
   // Should have already happened.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ObjectNavigationFallbackBodyLoader::OnUploadProgress(
@@ -114,7 +114,7 @@ void ObjectNavigationFallbackBodyLoader::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback) {
   // Should have already happened.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ObjectNavigationFallbackBodyLoader::OnTransferSizeUpdated(
@@ -137,8 +137,8 @@ void ObjectNavigationFallbackBodyLoader::OnComplete(
   navigation_request_->RenderFallbackContentForObjectTag();
 }
 
-void ObjectNavigationFallbackBodyLoader::OnDataAvailable(const void* data,
-                                                         size_t num_bytes) {}
+void ObjectNavigationFallbackBodyLoader::OnDataAvailable(
+    base::span<const uint8_t> data) {}
 
 void ObjectNavigationFallbackBodyLoader::OnDataComplete() {}
 

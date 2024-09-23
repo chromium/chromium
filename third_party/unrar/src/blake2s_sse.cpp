@@ -1,15 +1,14 @@
 // Based on public domain code written in 2012 by Samuel Neves
 
-extern const byte blake2s_sigma[10][16];
-
 // Initialization vector.
 static __m128i blake2s_IV_0_3, blake2s_IV_4_7;
 
-#ifdef _WIN_64
-// Constants for cyclic rotation. Used in 64-bit mode in mm_rotr_epi32 macro.
+// Constants for cyclic rotation.
 static __m128i crotr8, crotr16;
-#endif
 
+#ifdef __GNUC__
+__attribute__((target("sse2")))
+#endif
 static void blake2s_init_sse()
 {
   // We cannot initialize these 128 bit variables in place when declaring
@@ -24,28 +23,18 @@ static void blake2s_init_sse()
   blake2s_IV_0_3 = _mm_setr_epi32( 0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A );
   blake2s_IV_4_7 = _mm_setr_epi32( 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19 );
 
-#ifdef _WIN_64
   crotr8 = _mm_set_epi8( 12, 15, 14, 13, 8, 11, 10, 9, 4, 7, 6, 5, 0, 3, 2, 1 );
   crotr16 = _mm_set_epi8( 13, 12, 15, 14, 9, 8, 11, 10, 5, 4, 7, 6, 1, 0, 3, 2 );
-#endif
 }
 
 
 #define LOAD(p)  _mm_load_si128( (__m128i *)(p) )
 #define STORE(p,r) _mm_store_si128((__m128i *)(p), r)
 
-#ifdef _WIN_32
-// 32-bit mode has less SSE2 registers and in MSVC2008 it is more efficient
-// to not use _mm_shuffle_epi8 here.
-#define mm_rotr_epi32(r, c) ( \
-              _mm_xor_si128(_mm_srli_epi32( (r), c ),_mm_slli_epi32( (r), 32-c )) )
-#else
 #define mm_rotr_epi32(r, c) ( \
                 c==8 ? _mm_shuffle_epi8(r,crotr8) \
               : c==16 ? _mm_shuffle_epi8(r,crotr16) \
               : _mm_xor_si128(_mm_srli_epi32( (r), c ),_mm_slli_epi32( (r), 32-c )) )
-#endif
-
 
 #define G1(row1,row2,row3,row4,buf) \
   row1 = _mm_add_epi32( _mm_add_epi32( row1, buf), row2 ); \
@@ -73,14 +62,6 @@ static void blake2s_init_sse()
   row3 = _mm_shuffle_epi32( row3, _MM_SHUFFLE(1,0,3,2) ); \
   row2 = _mm_shuffle_epi32( row2, _MM_SHUFFLE(2,1,0,3) );
 
-#ifdef _WIN_64
-  // MSVC 2008 in x64 mode expands _mm_set_epi32 to store to stack and load
-  // from stack operations, which are slower than this code.
-  #define _mm_set_epi32(i3,i2,i1,i0) \
-    _mm_unpacklo_epi32(_mm_unpacklo_epi32(_mm_cvtsi32_si128(i0),_mm_cvtsi32_si128(i2)), \
-                       _mm_unpacklo_epi32(_mm_cvtsi32_si128(i1),_mm_cvtsi32_si128(i3)))
-#endif
-
 // Original BLAKE2 SSE4.1 message loading code was a little slower in x86 mode
 // and about the same in x64 mode in our test. Perhaps depends on compiler.
 // We also tried _mm_i32gather_epi32 and _mm256_i32gather_epi32 AVX2 gather
@@ -101,6 +82,9 @@ static void blake2s_init_sse()
 }
 
 
+#ifdef __GNUC__
+__attribute__((target("ssse3")))
+#endif
 static int blake2s_compress_sse( blake2s_state *S, const byte block[BLAKE2S_BLOCKBYTES] )
 {
   __m128i row[4];

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -1961,6 +1966,27 @@ TEST(SafeNumerics, WrappingMath) {
   TestWrappingMathUnsigned<uint32_t>();
   TestWrappingMathSigned<int64_t>();
   TestWrappingMathUnsigned<uint64_t>();
+}
+
+TEST(SafeNumerics, StrictNumeric_SupportsAssignment) {
+  StrictNumeric<uint16_t> val(uint16_t{5});
+  EXPECT_EQ(static_cast<uint16_t>(val), 5u);
+
+  // Same underlying type.
+  val = uint16_t{6};
+  EXPECT_EQ(static_cast<uint16_t>(val), 6u);
+
+  // Different but strictly convertible type.
+  val = uint8_t{7};
+  EXPECT_EQ(static_cast<uint16_t>(val), 7u);
+
+  // Same type.
+  val = StrictNumeric<uint16_t>(uint16_t{8});
+  EXPECT_EQ(static_cast<uint16_t>(val), 8u);
+
+  // Different but strictly convertible type.
+  val = StrictNumeric<uint8_t>(uint8_t{9});
+  EXPECT_EQ(static_cast<uint16_t>(val), 9u);
 }
 
 #if defined(__clang__)

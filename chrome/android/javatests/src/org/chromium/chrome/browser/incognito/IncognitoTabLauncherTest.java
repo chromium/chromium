@@ -23,6 +23,7 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
@@ -39,7 +40,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -164,7 +164,7 @@ public class IncognitoTabLauncherTest {
         // ApplicationStatus internally, which ignores Tasks and tracks all Chrome Activities.
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> context.startActivity(intent));
+        ThreadUtils.runOnUiThreadBlocking(() -> context.startActivity(intent));
         return ChromeTabbedActivityTestRule.waitFor(ChromeTabbedActivity.class);
     }
 

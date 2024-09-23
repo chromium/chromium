@@ -49,34 +49,8 @@ String CSSViewTransitionRule::navigation() const {
   return String();
 }
 
-void CSSViewTransitionRule::setNavigation(
-    const ExecutionContext* execution_context,
-    const String& text) {
-  CSSStyleSheet* style_sheet = parentStyleSheet();
-  auto& context = *MakeGarbageCollected<CSSParserContext>(
-      ParserContext(execution_context->GetSecureContextMode()), style_sheet);
-  CSSTokenizer tokenizer(text);
-  auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange token_range(tokens);
-  AtRuleDescriptorID descriptor_id = AtRuleDescriptorID::Navigation;
-  CSSValue* new_value =
-      AtRuleDescriptorParser::ParseAtViewTransitionDescriptor(
-          descriptor_id, token_range, context);
-  if (!new_value) {
-    return;
-  }
-
-  const auto* id = DynamicTo<CSSIdentifierValue>(new_value);
-  if (!id || (id->GetValueID() != CSSValueID::kAuto &&
-              id->GetValueID() != CSSValueID::kNone)) {
-    return;
-  }
-
-  view_transition_rule_->SetNavigation(new_value);
-
-  if (Document* document = style_sheet->OwnerDocument()) {
-    document->GetStyleEngine().UpdateViewTransitionOptIn();
-  }
+Vector<String> CSSViewTransitionRule::types() const {
+  return view_transition_rule_->GetTypes();
 }
 
 void CSSViewTransitionRule::Reattach(StyleRuleBase* rule) {

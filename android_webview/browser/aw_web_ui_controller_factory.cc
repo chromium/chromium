@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/aw_web_ui_controller_factory.h"
 
+#include "android_webview/browser/safe_browsing/aw_safe_browsing_local_state_delegate_impl.h"
 #include "base/memory/ptr_util.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
@@ -22,10 +23,12 @@ const WebUI::TypeID kSafeBrowsingID = &kSafeBrowsingID;
 typedef WebUIController* (*WebUIFactoryFunctionPointer)(WebUI* web_ui,
                                                         const GURL& url);
 
-// Template for defining WebUIFactoryFunctionPointer.
-template <class T>
-WebUIController* NewWebUI(WebUI* web_ui, const GURL& url) {
-  return new T(web_ui);
+// Template for handlers defined in a component layer, that take an instance of
+// a delegate implemented in the android_webview layer.
+template <class WEB_UI_CONTROLLER, class DELEGATE>
+WebUIController* NewComponentUI(WebUI* web_ui, const GURL& url) {
+  auto delegate = std::make_unique<DELEGATE>(web_ui);
+  return new WEB_UI_CONTROLLER(web_ui, std::move(delegate));
 }
 
 WebUIFactoryFunctionPointer GetWebUIFactoryFunctionPointer(const GURL& url) {
@@ -33,7 +36,8 @@ WebUIFactoryFunctionPointer GetWebUIFactoryFunctionPointer(const GURL& url) {
   // the Developer UI Dynamic Feature Module (DevUI DFM). Therefore the hosts
   // here must not appear in IsWebUiHostInDevUiDfm().
   if (url.host() == safe_browsing::kChromeUISafeBrowsingHost) {
-    return &NewWebUI<safe_browsing::SafeBrowsingUI>;
+    return &NewComponentUI<safe_browsing::SafeBrowsingUI,
+                           safe_browsing::AwSafeBrowsingLocalStateDelegateImpl>;
   }
 
   return nullptr;

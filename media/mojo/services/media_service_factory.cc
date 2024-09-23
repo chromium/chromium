@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/notreached.h"
-#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/services/gpu_mojo_media_client.h"
@@ -33,27 +32,15 @@ std::unique_ptr<MediaService> CreateMediaService(
   return std::make_unique<MediaService>(
       std::make_unique<MediaFoundationMojoMediaClient>(), std::move(receiver));
 #else
-  NOTREACHED() << "No MediaService implementation available.";
+  NOTREACHED_IN_MIGRATION() << "No MediaService implementation available.";
   return nullptr;
 #endif
 }
 
 std::unique_ptr<MediaService> CreateGpuMediaService(
     mojo::PendingReceiver<mojom::MediaService> receiver,
-    const gpu::GpuPreferences& gpu_preferences,
-    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    const gpu::GpuFeatureInfo& gpu_feature_info,
-    const gpu::GPUInfo& gpu_info,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager,
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
-    AndroidOverlayMojoFactoryCB android_overlay_factory_cb) {
-  return std::make_unique<MediaService>(
-      std::make_unique<GpuMojoMediaClient>(
-          gpu_preferences, gpu_workarounds, gpu_feature_info, gpu_info,
-          task_runner, media_gpu_channel_manager, gpu_memory_buffer_factory,
-          std::move(android_overlay_factory_cb)),
-      std::move(receiver));
+    std::unique_ptr<GpuMojoMediaClient> client) {
+  return std::make_unique<MediaService>(std::move(client), std::move(receiver));
 }
 
 std::unique_ptr<MediaService> CreateMediaServiceForTesting(

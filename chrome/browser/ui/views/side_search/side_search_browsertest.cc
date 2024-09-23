@@ -238,8 +238,8 @@ GURL SideSearchBrowserTest::GetNonMatchingUrl() {
 }
 
 ui::MouseEvent SideSearchBrowserTest::GetDummyEvent() const {
-  return ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
-                        base::TimeTicks::Now(), 0, 0);
+  return ui::MouseEvent(ui::EventType::kMousePressed, gfx::PointF(),
+                        gfx::PointF(), base::TimeTicks::Now(), 0, 0);
 }
 
 std::unique_ptr<net::test_server::HttpResponse>

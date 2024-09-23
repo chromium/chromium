@@ -9,8 +9,8 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/extensions/permissions_updater.h"
-#include "chrome/browser/extensions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
@@ -41,6 +41,38 @@ std::unique_ptr<KeyedService> BuildEventRouter(
 
 }  // namespace
 
+// Test that basic fields (like extension id, guid, name, version, etc.) show up
+// correctly in the JSON returned by WriteToString.
+TEST_F(ExtensionsInternalsUnitTest, Basic) {
+  InitializeEmptyExtensionService();
+  extensions::EventRouterFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating(&BuildEventRouter));
+
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("test")
+          .SetID("ddchlicdkolnonkihahngkmmmjnjlkkf")
+          .SetVersion("1.2.3.4")
+          .SetLocation(extensions::mojom::ManifestLocation::kExternalPref)
+          .Build();
+  service()->AddExtension(extension.get());
+
+  ExtensionsInternalsSource source(profile());
+  auto extensions_list = base::JSONReader::Read(source.WriteToString());
+  ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
+  base::Value::Dict& extension_json = extensions_list->GetList()[0].GetDict();
+
+  EXPECT_THAT(extension_json.FindString("id"),
+              testing::Pointee(extension->id()));
+  EXPECT_THAT(extension_json.FindString("name"),
+              testing::Pointee(extension->name()));
+  EXPECT_THAT(extension_json.FindString("version"),
+              testing::Pointee(extension->VersionString()));
+  EXPECT_THAT(extension_json.FindString("location"),
+              testing::Pointee(std::string("EXTERNAL_PREF")));
+  EXPECT_THAT(extension_json.FindString("guid"),
+              testing::Pointee(extension->guid()));
+}
+
 // Test that active and optional permissions show up correctly in the JSON
 // returned by WriteToString.
 TEST_F(ExtensionsInternalsUnitTest, WriteToStringPermissions) {
@@ -53,11 +85,11 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringPermissions) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("test")
           .SetID("ddchlicdkolnonkihahngkmmmjnjlkkf")
-          .AddPermission("activeTab")
+          .AddAPIPermission("activeTab")
           .SetManifestKey("automation", true)
           .SetManifestKey("optional_permissions",
                           base::Value::List().Append("storage"))
-          .AddPermission("https://example.com/*")
+          .AddHostPermission("https://example.com/*")
           .AddContentScript("not-real.js", {"https://chromium.org/foo"})
           .Build();
 
@@ -104,7 +136,9 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringTabSpecificPermissions) {
       profile(), base::BindRepeating(&BuildEventRouter));
 
   scoped_refptr<const extensions::Extension> extension =
-      extensions::ExtensionBuilder("test").AddPermission("activeTab").Build();
+      extensions::ExtensionBuilder("test")
+          .AddAPIPermission("activeTab")
+          .Build();
   service()->AddExtension(extension.get());
 
   ExtensionsInternalsSource source(profile());
@@ -157,7 +191,7 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringWithheldPermissions) {
 
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("test")
-          .AddPermission("https://example.com/*")
+          .AddHostPermission("https://example.com/*")
           .Build();
   service()->AddExtension(extension.get());
 

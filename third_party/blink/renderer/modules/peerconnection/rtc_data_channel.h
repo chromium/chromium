@@ -26,16 +26,23 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_DATA_CHANNEL_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/fileapi/file_error.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "third_party/webrtc/api/data_channel_interface.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 
 namespace blink {
@@ -44,7 +51,6 @@ class Blob;
 class DOMArrayBuffer;
 class DOMArrayBufferView;
 class ExceptionState;
-class RTCPeerConnectionHandler;
 
 class MODULES_EXPORT RTCDataChannel final
     : public EventTarget,
@@ -54,9 +60,14 @@ class MODULES_EXPORT RTCDataChannel final
   USING_PRE_FINALIZER(RTCDataChannel, Dispose);
 
  public:
+  // Wraps the current thread with a webrtc::ThreadWrapper, if it isn't already
+  // wrapped. This is necessary when calling some of channel()'s methods.
+  // This only has an effect the first time it is called from a new
+  // DedicatedWorker thread, after deserializing an RTCDataChannel.
+  static void EnsureThreadWrappersForWorkerThread();
+
   RTCDataChannel(ExecutionContext*,
-                 rtc::scoped_refptr<webrtc::DataChannelInterface> channel,
-                 RTCPeerConnectionHandler* peer_connection_handler);
+                 rtc::scoped_refptr<webrtc::DataChannelInterface> channel);
   ~RTCDataChannel() override;
 
   String label() const;
@@ -79,6 +90,8 @@ class MODULES_EXPORT RTCDataChannel final
   String binaryType() const;
   void setBinaryType(const String&, ExceptionState&);
 
+  String priority() const;
+
   // Functions called from RTCPeerConnection's DidAddRemoteDataChannel
   // in order to make things happen in the specified order when announcing
   // a remote channel.
@@ -91,6 +104,9 @@ class MODULES_EXPORT RTCDataChannel final
   void send(Blob*, ExceptionState&);
 
   void close();
+
+  bool IsTransferable();
+  rtc::scoped_refptr<webrtc::DataChannelInterface> TransferUnderlyingChannel();
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(open, kOpen)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(bufferedamountlow, kBufferedamountlow)
@@ -110,6 +126,8 @@ class MODULES_EXPORT RTCDataChannel final
   bool HasPendingActivity() const override;
 
   void Trace(Visitor*) const override;
+
+  void ProcessSendQueue();
 
  private:
   friend class Observer;
@@ -159,17 +177,16 @@ class MODULES_EXPORT RTCDataChannel final
     const rtc::scoped_refptr<webrtc::DataChannelInterface> webrtc_channel_;
   };
 
+  void RegisterObserver();
+
   void OnStateChange(webrtc::DataChannelInterface::DataState state);
   void OnBufferedAmountChange(unsigned previous_amount);
   void OnMessage(webrtc::DataBuffer buffer);
 
   void Dispose();
 
-  void ScheduleDispatchEvent(Event*);
-  void ScheduledEventTimerFired(TimerBase*);
-
   const rtc::scoped_refptr<webrtc::DataChannelInterface>& channel() const;
-  bool ValidateSendLength(size_t length, ExceptionState& exception_state);
+  bool ValidateSendLength(uint64_t length, ExceptionState& exception_state);
   void SendRawData(const char* data, size_t length);
   void SendDataBuffer(webrtc::DataBuffer data_buffer);
 
@@ -183,8 +200,6 @@ class MODULES_EXPORT RTCDataChannel final
   enum BinaryType { kBinaryTypeBlob, kBinaryTypeArrayBuffer };
   BinaryType binary_type_ = kBinaryTypeArrayBuffer;
 
-  HeapTaskRunnerTimer<RTCDataChannel> scheduled_event_timer_;
-  HeapVector<Member<Event>> scheduled_events_;
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Open);
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Close);
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Message);
@@ -204,13 +219,70 @@ class MODULES_EXPORT RTCDataChannel final
   unsigned buffered_amount_ = 0u;
   bool stopped_ = false;
   bool closed_from_owner_ = false;
+
+  class PendingMessage;
+
+  class BlobReader : public GarbageCollected<BlobReader>,
+                     public ExecutionContextLifecycleObserver,
+                     public FileReaderAccumulator {
+   public:
+    static BlobReader* Create(ExecutionContext* context,
+                              RTCDataChannel* data_channel,
+                              PendingMessage* message) {
+      return MakeGarbageCollected<BlobReader>(context, data_channel, message);
+    }
+
+    BlobReader(ExecutionContext* context,
+               RTCDataChannel* data_channel,
+               PendingMessage* message);
+    ~BlobReader() override;
+
+    void Start(Blob* blob);
+    bool HasFinishedLoading() const;
+
+    // FileReaderAccumulator
+    void DidFinishLoading(FileReaderData data) override;
+    void DidFail(FileErrorCode error) override;
+
+    // ExecutionContextLifecycleObserver
+    void ContextDestroyed() override;
+
+    // GarbageCollected
+    void Trace(Visitor*) const override;
+
+   private:
+    Member<FileReaderLoader> loader_;
+    Member<RTCDataChannel> data_channel_;
+    Member<PendingMessage> message_;
+
+    SEQUENCE_CHECKER(sequence_checker_);
+  };
+
+  class PendingMessage final : public GarbageCollected<PendingMessage> {
+   public:
+    enum class Type {
+      kBufferReady,
+      kBufferPending,
+      kCloseEvent,
+      kBlobFailure,
+    };
+
+    void Trace(Visitor* visitor) const;
+
+    Type type_;
+    std::optional<webrtc::DataBuffer> buffer_;
+    Member<BlobReader> blob_reader_;
+  };
+  HeapDeque<Member<PendingMessage>> pending_messages_;
+
+  bool was_transferred_ = false;
+  bool is_transferable_ = true;
   // Keep the `observer_` reference const to make it clear that we don't want
   // to free the underlying channel (or callback observer) until the
   // `RTCDataChannel` instance goes away. This allows properties to be queried
   // after the state reaches `kClosed`.
   const scoped_refptr<Observer> observer_;
-  scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_;
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace blink

@@ -32,6 +32,7 @@ suite('PriceTrackingSectionTest', () => {
     currentPrice: '$12',
     previousPrice: '$34',
     clusterId: BigInt(12345),
+    categoryLabels: [],
   };
 
   const priceInsights: PriceInsightsInfo = {
@@ -164,6 +165,7 @@ suite('PriceTrackingSectionTest', () => {
         currentPrice: '$12',
         previousPrice: '$34',
         clusterId: BigInt(54321),
+        categoryLabels: [],
       };
 
       const otherBookmarkProductInfo: BookmarkProductInfo = {
@@ -204,8 +206,9 @@ suite('PriceTrackingSectionTest', () => {
     await flushTasks();
     checkPriceTrackingSectionRendering(true);
 
-    const folder = priceTrackingSection.shadowRoot!.querySelector(
-                       '#toggleAnnotationButton')! as HTMLElement;
+    const folder = priceTrackingSection.shadowRoot!.querySelector<HTMLElement>(
+        '#toggleAnnotationButton');
+    assertTrue(!!folder);
     folder.click();
 
     await shoppingServiceApi.whenCalled('showBookmarkEditorForCurrentUrl');

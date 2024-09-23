@@ -4,6 +4,8 @@
 
 package org.chromium.base.cached_flags;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.AnyThread;
 
 import org.json.JSONException;
@@ -76,11 +78,10 @@ public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
     }
 
     @Override
-    void cacheToDisk() {
+    void writeCacheValueToEditor(final SharedPreferences.Editor editor) {
         final Map<String, String> params =
                 mFeatureMap.getFieldTrialParamsForFeature(getFeatureName());
-        CachedFlagsSharedPreferences.getInstance()
-                .writeString(getSharedPreferenceKey(), encodeParams(params));
+        editor.putString(getSharedPreferenceKey(), encodeParams(params));
     }
 
     /** Sets the parameters for the specified feature when used in tests. */

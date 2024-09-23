@@ -14,10 +14,6 @@ struct DisplayMode {
   bool is_interlaced;
   // Precise refresh rate of the mode in Hz.
   float refresh_rate;
-  // Total horizontal size of the mode.
-  int32 htotal;
-  // Total vertical size of the mode.
-  int32 vtotal;
-  // Pixel clock in kHz.
-  int32 clock;
+  // Precise minimum vsync rate achievable by this mode in Hz.
+  float? vsync_rate_min;
 };

@@ -7,13 +7,13 @@
 #include <stddef.h>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
-#include "chrome/browser/sessions/closed_tab_cache.h"
-#include "chrome/browser/sessions/closed_tab_cache_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
@@ -23,14 +23,20 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tab_helpers.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/session_id.h"
@@ -40,6 +46,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ipc/ipc_message.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/range/range.h"
 
 namespace chrome {
@@ -72,8 +79,8 @@ Browser* BrowserTabStripModelDelegate::CreateNewStripWithTabs(
   // Create an empty new browser window the same size as the old one.
   Browser::CreateParams params(browser_->profile(), true);
   params.initial_bounds = window_bounds;
-  params.initial_show_state =
-      maximize ? ui::SHOW_STATE_MAXIMIZED : ui::SHOW_STATE_NORMAL;
+  params.initial_show_state = maximize ? ui::mojom::WindowShowState::kMaximized
+                                       : ui::mojom::WindowShowState::kNormal;
   Browser* browser = Browser::Create(params);
   TabStripModel* new_model = browser->tab_strip_model();
 
@@ -199,6 +206,55 @@ void BrowserTabStripModelDelegate::CreateHistoricalGroup(
   }
 }
 
+void BrowserTabStripModelDelegate::GroupAdded(
+    const tab_groups::TabGroupId& group) {
+  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    return;
+  }
+
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+    return;
+  }
+
+  tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser_->profile());
+  if (!saved_tab_group_service) {
+    return;
+  }
+
+  if (saved_tab_group_service->model()->Contains(group)) {
+    return;
+  }
+
+  saved_tab_group_service->SaveGroup(
+      group,
+      /*is_pinned=*/tab_groups::SavedTabGroupUtils::ShouldAutoPinNewTabGroups(
+          browser_->profile()));
+}
+
+void BrowserTabStripModelDelegate::WillCloseGroup(
+    const tab_groups::TabGroupId& group) {
+  // First the saved group must be stored in tab restore so that it keeps the
+  // SavedTabGroup/TabIDs
+  CreateHistoricalGroup(group);
+
+  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    return;
+  }
+
+  // When closing, the group should stay available in revisit UIs so disconnect
+  // the group to prevent deletion.
+  tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser_->profile());
+
+  if (saved_tab_group_service &&
+      saved_tab_group_service->model()->Contains(group)) {
+    saved_tab_group_service->DisconnectLocalTabGroup(group);
+  }
+}
+
 void BrowserTabStripModelDelegate::GroupCloseStopped(
     const tab_groups::TabGroupId& group) {
   sessions::TabRestoreService* service =
@@ -248,49 +304,12 @@ bool BrowserTabStripModelDelegate::SupportsReadLater() {
   return !browser_->profile()->IsGuestSession() && !IsForWebApp();
 }
 
-void BrowserTabStripModelDelegate::CacheWebContents(
-    const std::vector<std::unique_ptr<DetachedWebContents>>& web_contents) {
-  if (browser_shutdown::HasShutdownStarted() ||
-      browser_->profile()->IsOffTheRecord() ||
-      !ClosedTabCache::IsFeatureEnabled()) {
-    return;
-  }
-
-  DCHECK(!web_contents.empty());
-
-  ClosedTabCache& cache =
-      ClosedTabCacheServiceFactory::GetForProfile(browser_->profile())
-          ->closed_tab_cache();
-
-  // We assume a cache size of one. Only the last recently closed tab will be
-  // cached.
-  // TODO(https://crbug.com/1236077): Cache more than one tab in ClosedTabCache.
-  auto& dwc = web_contents.back();
-  if (!cache.CanCacheWebContents(dwc->id))
-    return;
-
-  std::unique_ptr<content::WebContents> wc = dwc->tab->ReplaceContents(nullptr);
-  dwc->remove_reason = TabStripModelChange::RemoveReason::kCached;
-  auto cached = std::make_pair(dwc->id, std::move(wc));
-  cache.CacheWebContents(std::move(cached));
-}
-
-void BrowserTabStripModelDelegate::FollowSite(
-    content::WebContents* web_contents) {
-  chrome::FollowSite(web_contents);
-}
-
-void BrowserTabStripModelDelegate::UnfollowSite(
-    content::WebContents* web_contents) {
-  chrome::UnfollowSite(web_contents);
-}
-
 bool BrowserTabStripModelDelegate::IsForWebApp() {
   return web_app::AppBrowserController::IsWebApp(browser_);
 }
 
 void BrowserTabStripModelDelegate::CopyURL(content::WebContents* web_contents) {
-  chrome::CopyURL(web_contents);
+  chrome::CopyURL(browser_, web_contents);
 }
 
 void BrowserTabStripModelDelegate::GoBack(content::WebContents* web_contents) {
@@ -300,6 +319,33 @@ void BrowserTabStripModelDelegate::GoBack(content::WebContents* web_contents) {
 bool BrowserTabStripModelDelegate::CanGoBack(
     content::WebContents* web_contents) {
   return chrome::CanGoBack(web_contents);
+}
+
+bool BrowserTabStripModelDelegate::IsNormalWindow() {
+  return browser_->is_type_normal();
+}
+
+BrowserWindowInterface*
+BrowserTabStripModelDelegate::GetBrowserWindowInterface() {
+  return browser_;
+}
+
+void BrowserTabStripModelDelegate::OnGroupsDestruction(
+    const std::vector<tab_groups::TabGroupId>& group_ids,
+    base::OnceCallback<void()> callback) {
+  tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
+      browser_,
+      tab_groups::DeletionDialogController::DialogType::CloseTabAndDelete,
+      group_ids, std::move(callback));
+}
+
+void BrowserTabStripModelDelegate::OnRemovingAllTabsFromGroups(
+    const std::vector<tab_groups::TabGroupId>& group_ids,
+    base::OnceCallback<void()> callback) {
+  tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
+      browser_,
+      tab_groups::DeletionDialogController::DialogType::RemoveTabAndDelete,
+      group_ids, std::move(callback));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

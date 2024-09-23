@@ -82,7 +82,7 @@ CSSMathExpressionNode* CSSMathMin::ToCalcExpressionNode() const {
     if (!operand) {
       // TODO(crbug.com/983784): Remove this when all ToCalcExpressionNode()
       // overrides are implemented.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
     operands.push_back(value->ToCalcExpressionNode());
@@ -90,7 +90,7 @@ CSSMathExpressionNode* CSSMathMin::ToCalcExpressionNode() const {
   if (!operands.size()) {
     // TODO(crbug.com/983784): Remove this when all ToCalcExpressionNode()
     // overrides are implemented.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   return CSSMathExpressionOperation::CreateComparisonFunction(

@@ -185,7 +185,7 @@ class SmartChargingManager : public ui::UserActivityObserver,
   base::TimeDelta most_recent_video_start_time_;
   bool is_video_playing_ = false;
 
-  // TODO(crbug.com/1028853): This is for testing only. Need to remove when ukm
+  // TODO(crbug.com/40109338): This is for testing only. Need to remove when ukm
   // logger is available.
   power_manager::UserChargingEvent user_charging_event_for_test_;
   std::vector<power_manager::PastChargingEvents::Event> past_events_;

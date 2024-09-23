@@ -40,7 +40,8 @@ namespace {
 constexpr base::TimeDelta kReportProcessesMinimalInterval = base::Seconds(3);
 
 void ReportPageProcessesOnUIThread(
-    const std::vector<ReportPageProcessesPolicy::PageProcess>& page_processes) {
+    const base::flat_map<base::ProcessId, ReportPageProcessesPolicy::PageState>&
+        page_processes) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ResourcedClient* client = ash::ResourcedClient::Get();
   if (!client) {
@@ -48,10 +49,13 @@ void ReportPageProcessesOnUIThread(
   }
 
   std::vector<ash::ResourcedClient::Process> processes;
+  processes.reserve(page_processes.size());
   for (const auto& page_process : page_processes) {
-    processes.emplace_back(page_process.pid, page_process.host_protected_page,
-                           page_process.host_visible_page,
-                           page_process.host_focused_page);
+    processes.emplace_back(page_process.first,
+                           page_process.second.host_protected_page,
+                           page_process.second.host_visible_page,
+                           page_process.second.host_focused_page,
+                           page_process.second.last_visible);
   }
 
   client->ReportBrowserProcesses(ash::ResourcedClient::Component::kAsh,
@@ -78,13 +82,16 @@ void ReportPageProcessesOnUIThread(
   }
 
   std::vector<crosapi::mojom::PageProcessPtr> processes;
+  processes.reserve(page_processes.size());
 
   for (const auto& page_process : page_processes) {
     crosapi::mojom::PageProcessPtr process = crosapi::mojom::PageProcess::New();
-    process->pid = page_process.pid;
-    process->host_protected_page = page_process.host_protected_page;
-    process->host_visible_page = page_process.host_visible_page;
-    process->host_focused_page = page_process.host_focused_page;
+    process->pid = page_process.first;
+    process->host_protected_page = page_process.second.host_protected_page;
+    process->host_visible_page = page_process.second.host_visible_page;
+    process->host_focused_page = page_process.second.host_focused_page;
+    process->last_visible_ms =
+        page_process.second.last_visible.since_origin().InMilliseconds();
     processes.push_back(std::move(process));
   }
 
@@ -107,14 +114,12 @@ ReportPageProcessesPolicy::~ReportPageProcessesPolicy() = default;
 
 void ReportPageProcessesPolicy::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  graph_ = graph;
   graph->AddPageNodeObserver(this);
 }
 
 void ReportPageProcessesPolicy::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph->RemovePageNodeObserver(this);
-  graph_ = nullptr;
 }
 
 void ReportPageProcessesPolicy::OnPageNodeAdded(const PageNode* page_node) {
@@ -136,6 +141,13 @@ void ReportPageProcessesPolicy::OnTypeChanged(const PageNode* page_node,
 }
 
 void ReportPageProcessesPolicy::HandlePageNodeEventsThrottled() {
+  // Do not throttle if the UnthrottledTabProcessReporting feature is enabled
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kUnthrottledTabProcessReporting)) {
+    HandlePageNodeEvents();
+    return;
+  }
+
   if (delayed_report_timer_.IsRunning()) {
     // This event happened too soon after the last report. The updated process
     // list will be sent after the minimal interval period.
@@ -160,13 +172,13 @@ void ReportPageProcessesPolicy::HandlePageNodeEvents() {
   has_delayed_events_ = false;
 
   PageDiscardingHelper* discarding_helper =
-      PageDiscardingHelper::GetFromGraph(graph_);
+      PageDiscardingHelper::GetFromGraph(GetOwningGraph());
 
-  std::vector<const PageNode*> page_nodes = graph_->GetAllPageNodes();
-
+  Graph::NodeSetView<const PageNode*> all_page_nodes =
+      GetOwningGraph()->GetAllPageNodes();
   std::vector<PageNodeSortProxy> candidates;
-
-  for (const auto* page_node : page_nodes) {
+  candidates.reserve(all_page_nodes.size());
+  for (const PageNode* page_node : all_page_nodes) {
     PageDiscardingHelper::CanDiscardResult can_discard_result =
         discarding_helper->CanDiscard(
             page_node, PageDiscardingHelper::DiscardReason::URGENT);
@@ -192,10 +204,18 @@ void ReportPageProcessesPolicy::HandlePageNodeEvents() {
 
 void ReportPageProcessesPolicy::ListPageProcesses(
     const std::vector<PageNodeSortProxy>& candidates) {
-  std::set<base::ProcessId> pid_set;
-  std::vector<PageProcess> page_processes;
+  base::flat_map<base::ProcessId, PageState> current_pages;
+
+  base::TimeTicks report_time = base::TimeTicks::Now();
 
   for (auto candidate : candidates) {
+    // Marked tabs are ones that were previously attempted to be discarded. Do
+    // not include their processes with the process list reported to resourced
+    // since the cannot be discarded again.
+    if (candidate.is_marked()) {
+      continue;
+    }
+
     base::flat_set<const ProcessNode*> processes =
         GraphOperations::GetAssociatedProcessNodes(candidate.page_node());
     for (auto* process : processes) {
@@ -203,24 +223,26 @@ void ReportPageProcessesPolicy::ListPageProcesses(
       if (pid == base::kNullProcessId) {
         continue;
       }
-      if (!pid_set.insert(pid).second) {
-        // If the process is already in a more important page node, skip. For
-        // example, if both a non-protected page node and a protected page node
-        // contain a process ID, the page process with this process ID is marked
-        // as protected.
-        continue;
-      }
-      page_processes.emplace_back(pid, candidate.is_protected(),
-                                  candidate.is_visible(),
-                                  candidate.is_focused());
+
+      // Insert the process in `current_pages` if not already there. Note: This
+      // is a no-op if the process was already added for a previously visited
+      // (more important) page.
+      current_pages.emplace(
+          std::piecewise_construct, std::forward_as_tuple(pid),
+          std::forward_as_tuple(candidate.is_protected(),
+                                candidate.is_visible(), candidate.is_focused(),
+                                report_time - candidate.last_visible()));
     }
   }
 
-  ReportPageProcesses(std::move(page_processes));
+  if (current_pages != previously_reported_pages_) {
+    previously_reported_pages_ = current_pages;
+    ReportPageProcesses(std::move(current_pages));
+  }
 }
 
 void ReportPageProcessesPolicy::ReportPageProcesses(
-    std::vector<PageProcess> processes) {
+    base::flat_map<base::ProcessId, PageState> processes) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&ReportPageProcessesOnUIThread, std::move(processes)));

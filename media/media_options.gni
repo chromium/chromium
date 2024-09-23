@@ -205,7 +205,7 @@ declare_args() {
     # ASAN and TSAN will occasionally hang during pa_context_connect(), so we
     # disable PulseAudio when these configurations are enabled.
     #
-    # TODO(crbug.com/986021): We shouldn't have to do this, but it's unclear why
+    # TODO(crbug.com/40636948): We shouldn't have to do this, but it's unclear why
     # our test bots are hanging and all of the ones that don't hang just fall
     # back to ALSA after a connection error anyways.
     if (!use_cras && !is_castos && !is_asan && !is_tsan) {
@@ -221,7 +221,8 @@ declare_args() {
   # This flag gives the option to override that decision in case there are no
   # hardware decoders. To do so, you will also need to update ffmpeg build files
   # in order to define which decoders to build in.
-  enable_ffmpeg_video_decoders = media_use_ffmpeg && !is_android
+  enable_ffmpeg_video_decoders =
+      media_use_ffmpeg && (!is_android || current_cpu != "arm")
 }
 
 declare_args() {
@@ -279,12 +280,6 @@ if (is_cast_media_device) {
 } else if (is_apple || is_win) {
   _default_mojo_media_services = [
     "audio_decoder",
-    "audio_encoder",
-    "video_decoder",
-  ]
-  _default_mojo_media_host = "gpu"
-} else if (is_win) {
-  _default_mojo_media_services = [
     "audio_encoder",
     "video_decoder",
   ]
@@ -352,7 +347,7 @@ media_subcomponent_deps = [
   "//media/audio",
   "//media/base",
 
-  # TODO(crbug.com/583067): These files should not be in //media/base.
+  # TODO(crbug.com/41237623): These files should not be in //media/base.
   "//media/base/android",
   "//media/capabilities",
   "//media/cdm",
@@ -360,6 +355,7 @@ media_subcomponent_deps = [
   "//media/filters",
   "//media/formats",
   "//media/muxers",
+  "//media/parsers",
   "//media/renderers",
   "//media/video",
 ]

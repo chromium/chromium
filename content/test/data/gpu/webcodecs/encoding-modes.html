@@ -26,7 +26,8 @@ Check that VideoEncoder can encode in different latency and bitrate modes
         latencyMode: arg.latency_mode,
         bitrateMode: arg.bitrate_mode,
         bitrate: 1000000,
-        framerate: 24
+        framerate: 24,
+        contentHint: arg.content_hint
       };
 
       TEST.log('Starting test with arguments: ' + JSON.stringify(arg));

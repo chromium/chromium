@@ -17,11 +17,15 @@ constexpr char kInstallPromptDismissCount[] =
     "web_apps.install_prompt.global.consecutive_dismiss";
 constexpr char kInstallPromptLastDismissTime[] =
     "web_apps.install_prompt.global.last_dismiss";
+constexpr int kInstallPromptMaxDismissCount = 3;
+constexpr base::TimeDelta kInstallPromptDismissPeriod = base::Days(7);
 
 constexpr char kInstallPromptIgnoreCount[] =
     "web_apps.install_prompt.global.consecutive_ignore";
 constexpr char kInstallPromptLastIgnoreTime[] =
     "web_apps.install_prompt.global.last_ignore";
+constexpr int kInstallPromptMaxIgnoreCount = 3;
+constexpr base::TimeDelta kInstallPromptIgnorePeriod = base::Days(3);
 
 }  // anonymous namespace
 
@@ -60,18 +64,12 @@ void InstallPromptPrefs::RecordInstallPromptClicked(PrefService* pref_service) {
 bool InstallPromptPrefs::IsPromptDismissedConsecutivelyRecently(
     PrefService* pref_service,
     base::Time now) {
-  if (!base::FeatureList::IsEnabled(features::kInstallPromptGlobalGuardrails)) {
-    return false;
-  }
-
   int dismiss_count = pref_service->GetInteger(kInstallPromptDismissCount);
-  if (dismiss_count >=
-      features::kInstallPromptGlobalGuardrails_DismissCount.Get()) {
+  if (dismiss_count >= kInstallPromptMaxDismissCount) {
     base::Time last_dismiss_time =
         pref_service->GetTime(kInstallPromptLastDismissTime);
 
-    return (now - last_dismiss_time <
-            features::kInstallPromptGlobalGuardrails_DismissPeriod.Get());
+    return (now - last_dismiss_time < kInstallPromptDismissPeriod);
   }
   return false;
 }
@@ -80,18 +78,12 @@ bool InstallPromptPrefs::IsPromptDismissedConsecutivelyRecently(
 bool InstallPromptPrefs::IsPromptIgnoredConsecutivelyRecently(
     PrefService* pref_service,
     base::Time now) {
-  if (!base::FeatureList::IsEnabled(features::kInstallPromptGlobalGuardrails)) {
-    return false;
-  }
-
   int ignore_count = pref_service->GetInteger(kInstallPromptIgnoreCount);
-  if (ignore_count >=
-      features::kInstallPromptGlobalGuardrails_IgnoreCount.Get()) {
+  if (ignore_count >= kInstallPromptMaxIgnoreCount) {
     base::Time last_ignore_time =
         pref_service->GetTime(kInstallPromptLastIgnoreTime);
 
-    return (now - last_ignore_time <
-            features::kInstallPromptGlobalGuardrails_IgnorePeriod.Get());
+    return (now - last_ignore_time < kInstallPromptIgnorePeriod);
   }
   return false;
 }

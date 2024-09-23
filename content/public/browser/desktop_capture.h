@@ -5,9 +5,11 @@
 #ifndef CONTENT_PUBLIC_BROWSER_DESKTOP_CAPTURE_H_
 #define CONTENT_PUBLIC_BROWSER_DESKTOP_CAPTURE_H_
 
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/desktop_media_id.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
@@ -47,6 +49,27 @@ CONTENT_EXPORT bool CanUsePipeWire();
 
 // Whether the capturer should find windows owned by the current process.
 CONTENT_EXPORT bool ShouldEnumerateCurrentProcessWindows();
+
+// Opens the native screen capture picker dialog.
+// `type` is the type of the source being selected (screen, window, tab).
+// `created_callback` is called after the picker is created to pass the created
+// source_id back to the DelegatedSourceListCapturer.
+// `picker_callback` is called when a source has been selected.
+// `cancel_callback` is called when the picker is closed without selecting a
+// source.
+// `error_callback` is called if an error occurs when opening the picker.
+// Exactly one of `picker_callback`, `cancel_callback` and `error_callback` will
+// be called.
+CONTENT_EXPORT void OpenNativeScreenCapturePicker(
+    content::DesktopMediaID::Type type,
+    base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
+    base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+    base::OnceCallback<void()> cancel_callback,
+    base::OnceCallback<void()> error_callback);
+
+// Makes the native screen capture picker dialog stop observing `source_id` and
+// closes the picker dialog if it is not observing anything else.
+CONTENT_EXPORT void CloseNativeScreenCapturePicker(DesktopMediaID source_id);
 
 }  // namespace desktop_capture
 }  // namespace content

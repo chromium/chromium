@@ -34,6 +34,7 @@ FloatingMenuButton::FloatingMenuButton() {
   SetFlipCanvasOnPaintForRTLUI(false);
   StyleUtil::SetUpInkDropForButton(this);
   views::InstallCircleHighlightPathGenerator(this);
+  UpdateAccessibleProperties();
 }
 
 FloatingMenuButton::FloatingMenuButton(views::Button::PressedCallback callback,
@@ -46,7 +47,9 @@ FloatingMenuButton::FloatingMenuButton(views::Button::PressedCallback callback,
                          flip_for_rtl,
                          /*size=*/kTrayItemSize,
                          /*draw_highlight=*/true,
-                         /*is_a11y_togglable=*/true) {}
+                         /*is_a11y_togglable=*/true) {
+  UpdateAccessibleProperties();
+}
 
 FloatingMenuButton::FloatingMenuButton(views::Button::PressedCallback callback,
                                        const gfx::VectorIcon& icon,
@@ -69,6 +72,7 @@ FloatingMenuButton::FloatingMenuButton(views::Button::PressedCallback callback,
   views::InstallCircleHighlightPathGenerator(this);
   SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+  UpdateAccessibleProperties();
 }
 
 FloatingMenuButton::~FloatingMenuButton() = default;
@@ -90,6 +94,8 @@ void FloatingMenuButton::SetA11yTogglable(bool a11y_togglable) {
     return;
   }
   is_a11y_togglable_ = a11y_togglable;
+  UpdateAccessibleProperties();
+
   OnPropertyChanged(&is_a11y_togglable_, views::kPropertyEffectsPaint);
 }
 
@@ -114,6 +120,8 @@ void FloatingMenuButton::SetToggled(bool toggled) {
     return;
   }
   toggled_ = toggled;
+  UpdateAccessibleProperties();
+
   UpdateImage();
   OnPropertyChanged(&toggled_, views::PropertyEffects::kPropertyEffectsPaint);
 }
@@ -133,7 +141,8 @@ void FloatingMenuButton::PaintButtonContents(gfx::Canvas* canvas) {
   views::ImageButton::PaintButtonContents(canvas);
 }
 
-gfx::Size FloatingMenuButton::CalculatePreferredSize() const {
+gfx::Size FloatingMenuButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(size_, size_);
 }
 
@@ -142,12 +151,6 @@ void FloatingMenuButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     return;
   }
   views::ImageButton::GetAccessibleNodeData(node_data);
-  if (!is_a11y_togglable_) {
-    return;
-  }
-  node_data->role = ax::mojom::Role::kToggleButton;
-  node_data->SetCheckedState(toggled_ ? ax::mojom::CheckedState::kTrue
-                                      : ax::mojom::CheckedState::kFalse);
 }
 
 void FloatingMenuButton::UpdateImage() {
@@ -159,6 +162,15 @@ void FloatingMenuButton::UpdateImage() {
   SetImageModel(
       views::Button::STATE_DISABLED,
       ui::ImageModel::FromVectorIcon(*icon_, kColorAshButtonIconDisabledColor));
+}
+
+void FloatingMenuButton::UpdateAccessibleProperties() {
+  GetViewAccessibility().SetRole(is_a11y_togglable_
+                                     ? ax::mojom::Role::kToggleButton
+                                     : ax::mojom::Role::kButton);
+  GetViewAccessibility().SetCheckedState(toggled_
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
 }
 
 BEGIN_METADATA(FloatingMenuButton)

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 
 #include "base/functional/callback_helpers.h"
@@ -49,11 +54,12 @@ gpu::SyncToken GenTestSyncToken(GLbyte id) {
 }
 
 scoped_refptr<StaticBitmapImage> CreateBitmap() {
-  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  auto client_si = gpu::ClientSharedImage::CreateForTesting();
 
-  return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      mailbox, GenTestSyncToken(100), 0, SkImageInfo::MakeN32Premul(100, 100),
-      GL_TEXTURE_2D, true, SharedGpuContext::ContextProviderWrapper(),
+  return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+      std::move(client_si), GenTestSyncToken(100), 0,
+      SkImageInfo::MakeN32Premul(100, 100), GL_TEXTURE_2D, true,
+      SharedGpuContext::ContextProviderWrapper(),
       base::PlatformThread::CurrentRef(),
       base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing(),
       /*supports_display_compositing=*/true, /*is_overlay_candidate=*/true);
@@ -69,12 +75,12 @@ class AcceleratedStaticBitmapImageTest : public Test {
   }
   void TearDown() override {
     gl_ = nullptr;
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  MockGLES2InterfaceWithSyncTokenSupport* gl_;
+  raw_ptr<MockGLES2InterfaceWithSyncTokenSupport> gl_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
 };
 

@@ -1,0 +1,88 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("customization") {
+  sources = [
+    "customization_document.cc",
+    "customization_document.h",
+    "customization_wallpaper_downloader.cc",
+    "customization_wallpaper_downloader.h",
+    "customization_wallpaper_util.cc",
+    "customization_wallpaper_util.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/extensions",
+    "//chrome/browser/ash/login/users/avatar",
+    "//chrome/browser/ash/net",
+    "//chrome/browser/profiles",
+    "//chrome/common",
+    "//chromeos/ash/components/system",
+    "//components/pref_registry",
+    "//content/public/browser",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "customization_document_browsertest.cc",
+    "customization_wallpaper_downloader_browsertest.cc",
+  ]
+
+  deps = [
+    ":customization",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/base",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/system",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "customization_document_unittest.cc" ]
+
+  deps = [
+    ":customization",
+    "//chrome/browser",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/net",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/system",
+    "//components/pref_registry",
+    "//components/prefs:test_support",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 import("//build/config/chromeos/ui_mode.gni")
 
-# TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
+# TODO(crbug.com/40149439) This is currently disabled due to Windows DLL
 # thunking issues. Fix & re-enable.
 assert(is_linux || is_chromeos)
 

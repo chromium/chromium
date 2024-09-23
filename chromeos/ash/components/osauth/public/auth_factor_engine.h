@@ -100,6 +100,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthFactorEngine {
     kDisabled,                 // Discard authentication attempts.
   };
 
+  using CleanupCallback = base::OnceCallback<void(AshAuthFactor)>;
   using CommonInitCallback = base::OnceCallback<void(AshAuthFactor)>;
   using ShutdownCallback = base::OnceCallback<void(AshAuthFactor)>;
 
@@ -130,9 +131,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthFactorEngine {
   // All events after this call should be sent using new `observer`.
   virtual void UpdateObserver(FactorEngineObserver* observer) = 0;
 
+  // Engine tears down any internal/external state that needs
+  // access of allocated resources, such as UserContext, after authentication
+  // and before shutdown. Typically, cryptohome based Engine should
+  // use this function to call TerminateAuthFactor.
+  virtual void CleanUp(CleanupCallback callback) = 0;
+
   // After this call Engine should stop notifying an `observer` set in
   // `StartAttempt`, and release any resources allocated as a result of
-  // starting attempt.
+  // starting attempt. Engine should not assume UserContext is available
+  // in this function.
   virtual void StopAuthFlow(ShutdownCallback callback) = 0;
 
   // Client should call this method only when `OnFactorAttemptResult`
@@ -169,6 +177,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthFactorEngine {
   virtual void ShutdownTimedOut() {}
   virtual void StartFlowTimedOut() {}
   virtual void StopFlowTimedOut() {}
+
+  // Called when any engine successfully authenticates an auth factor. Engines
+  // can override this when they have some action (e.g. removing a lockout) that
+  // should be carried out upon auth even when doing via another engine.
+  virtual void OnSuccessfulAuthentiation() {}
 };
 
 }  // namespace ash

@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+static_library("browser") {
+  sources = [
+    "content_language_detection_driver.cc",
+    "content_language_detection_driver.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/language_detection/content/common:common",
+    "//components/language_detection/core/browser:language_detection_model_service",
+    "//mojo/public/cpp/bindings:bindings",
+  ]
+}

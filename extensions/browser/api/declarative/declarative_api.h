@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+
 #include "base/memory/scoped_refptr.h"
 #include "extensions/browser/api/declarative/rules_registry.h"
 #include "extensions/browser/extension_function.h"

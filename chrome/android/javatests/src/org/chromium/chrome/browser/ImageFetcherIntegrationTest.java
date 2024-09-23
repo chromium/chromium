@@ -17,17 +17,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.url.GURL;
 
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests for {@link ImageFetcher}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.UNIT_TESTS)
+@Batch(Batch.PER_CLASS)
 public class ImageFetcherIntegrationTest {
     @ClassRule public static final ChromeBrowserTestRule sRule = new ChromeBrowserTestRule();
 
@@ -60,7 +60,7 @@ public class ImageFetcherIntegrationTest {
             String url, int desiredWidth, int desiredHeight, boolean shouldResize)
             throws Exception {
         TestImageFetcherCallback callbackWaiter = new TestImageFetcherCallback();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 new Callable<Void>() {
                     @Override
                     public Void call() throws TimeoutException {
@@ -76,12 +76,12 @@ public class ImageFetcherIntegrationTest {
                         ImageFetcher imageFetcher =
                                 ImageFetcherFactory.createImageFetcher(
                                         ImageFetcherConfig.NETWORK_ONLY,
-                                        Profile.getLastUsedRegularProfile().getProfileKey());
+                                        ProfileManager.getLastUsedRegularProfile().getProfileKey());
                         imageFetcher.fetchImage(params, callbackWaiter);
                         return null;
                     }
                 });
-        callbackWaiter.waitForFirst();
+        callbackWaiter.waitForOnly();
         return callbackWaiter.mBitmap;
     }
 

@@ -36,9 +36,16 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
       const BluetoothSerialDeviceEnumerator&) = delete;
   ~BluetoothSerialDeviceEnumerator() override;
 
-  void DeviceAdded(std::string_view device_address,
-                   base::StringPiece16 device_name,
-                   BluetoothDevice::UUIDSet service_class_ids);
+  // Invokes `callback` with the result of GetDevices(). Runs synchronously if
+  // the enumerator has already completed its initial enumeration, otherwise
+  // waits until enumeration is complete.
+  void GetDevicesAfterInitialEnumeration(
+      mojom::SerialPortManager::GetDevicesCallback callback);
+
+  void DeviceAddedOrChanged(std::string_view device_address,
+                            std::u16string_view device_name,
+                            BluetoothDevice::UUIDSet service_class_ids,
+                            bool is_connected);
   void DeviceRemoved(const std::string& device_address);
 
   void OpenPort(const std::string& address,
@@ -58,7 +65,6 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
   BluetoothUUID GetServiceClassIdFromToken(
       const base::UnguessableToken& token) const;
 
-  void OnGotAdapterForTesting(base::OnceClosure closure);
   void DeviceAddedForTesting(BluetoothAdapter* adapter,
                              BluetoothDevice* device);
   void DeviceChangedForTesting(BluetoothAdapter* adapter,
@@ -75,9 +81,19 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
   using DevicePortsMap =
       base::flat_map<DeviceServiceInfo, base::UnguessableToken>;
 
-  void AddService(std::string_view device_address,
-                  base::StringPiece16 device_name,
-                  const BluetoothUUID& service_class_id);
+  void AddOrUpdateService(std::string_view device_address,
+                          std::u16string_view device_name,
+                          const BluetoothUUID& service_class_id,
+                          bool is_connected);
+  void OnInitialEnumerationComplete();
+
+  // A flag indicating whether the initial enumeration has completed.
+  bool initial_enumeration_completed_ = false;
+
+  // Pending callbacks for calls to GetDevicesAfterInitialEnumeration, to be
+  // invoked once the initial enumeration is complete.
+  std::vector<mojom::SerialPortManager::GetDevicesCallback>
+      pending_get_devices_;
 
   DevicePortsMap device_ports_;
   base::SequenceBound<AdapterHelper> helper_;

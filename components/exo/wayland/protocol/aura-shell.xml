@@ -241,7 +241,9 @@
 
     <request name="set_frame_colors" since="3">
       <description summary="set the frame colors of this surface">
-	Set the frame colors.
+	Set the frame colors. This must be set before the initial
+	commit first, otherwise the subsequent request may not be
+	fulfilled.
       </description>
       <arg name="active_color" type="uint" summary="32 bit ARGB color value, not premultiplied"/>
       <arg name="inactive_color" type="uint" summary="32 bit ARGB color value, not premultiplied"/>
@@ -985,8 +987,10 @@
     <request name="set_decoration" since="35">
       <description summary="request a decoration for surface">
         Clients are allowed to request a particular decoration for a
-        zaura_toplevel. The server is not required to honor this request. See
-        decoration_type for available options. Available since M105.
+        zaura_toplevel. The server is not required to honor this
+        request. See decoration_type for available options. This must
+        be set before the initial commit first, otherwise the
+        subsequent request may not be fulfilled. Available since M105.
       </description>
       <arg name="type" type="uint" summary="the new frame type"/>
     </request>
@@ -1101,6 +1105,14 @@
       <description summary="Sets the behavior of the surface in fullscreen.">
         Suggests how the windowing manager should behave if this surface were
         to go fullscreen. Does not make the surface fullscreen.
+
+        In precise, if the surface is not in fullscreen yet, switching the mode
+        does not have immediate impact from the client side perspective, but
+        will change the behavior when making the surface fullscreen is
+        requested next time.
+        If the surface is already in fullscreen, then this request has an
+        immediate impact to switch the fullscreen mode between plan and
+        immersive.
       </description>
       <arg name="mode" type="uint" enum="fullscreen_mode"/>
     </request>

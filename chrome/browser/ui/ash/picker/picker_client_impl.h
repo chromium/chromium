@@ -11,20 +11,29 @@
 #include <string>
 #include <vector>
 
+#include "ash/picker/picker_category.h"
+#include "ash/picker/picker_client.h"
+#include "ash/picker/picker_web_paste_target.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/picker/picker_client.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
+#include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
+#include "chrome/browser/ash/input_method/editor_announcer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ui/ash/picker/picker_link_suggester.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
+class PrefService;
 class Profile;
 class ChromeSearchResult;
+class PickerFileSuggester;
+class PickerThumbnailLoader;
 
 namespace app_list {
 class SearchEngine;
+class SearchProvider;
 }
 
 namespace ash {
@@ -54,15 +63,40 @@ class PickerClientImpl
   ~PickerClientImpl() override;
 
   // ash::PickerClient:
-  std::unique_ptr<ash::AshWebView> CreateWebView(
-      const ash::AshWebView::InitParams& params) override;
-  void DownloadGifToString(const ash::ValidGifUrl& url,
-                           DownloadGifToStringCallback callback) override;
   void StartCrosSearch(const std::u16string& query,
+                       std::optional<ash::PickerCategory> category,
                        CrosSearchResultsCallback callback) override;
+  void StopCrosQuery() override;
+  bool IsEligibleForEditor() override;
+  ShowEditorCallback CacheEditorContext() override;
+  void GetSuggestedEditorResults(
+      SuggestedEditorResultsCallback callback) override;
+  void GetRecentLocalFileResults(size_t max_files,
+                                 base::TimeDelta now_delta,
+                                 RecentFilesCallback callback) override;
+  void GetRecentDriveFileResults(size_t max_files,
+                                 RecentFilesCallback callback) override;
+  void GetSuggestedLinkResults(size_t max_results,
+                               SuggestedLinksCallback callback) override;
+  bool IsFeatureAllowedForDogfood() override;
+  void FetchFileThumbnail(const base::FilePath& path,
+                          const gfx::Size& size,
+                          FetchFileThumbnailCallback callback) override;
+  PrefService* GetPrefs() override;
+  std::optional<ash::PickerWebPasteTarget> GetWebPasteTarget() override;
+  void Announce(std::u16string_view message) override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
+
+  void set_ranker_manager_for_test(
+      std::unique_ptr<app_list::RankerManager> ranker_manager) {
+    ranker_manager_ = std::move(ranker_manager);
+  }
+
+  PickerLinkSuggester* get_link_suggester_for_test() {
+    return link_suggester_.get();
+  }
 
  private:
   // Implements `AppListControllerDelegate` with empty methods. Used only for
@@ -71,11 +105,6 @@ class PickerClientImpl
    public:
     PickerAppListControllerDelegate();
     ~PickerAppListControllerDelegate() override;
-
-    // Returns the URL for the given search result.
-    // TODO: b/324154130 - Remove this once we have an API to get the URL from
-    // CrOS Search.
-    std::optional<GURL> GetUrlForSearchResult(ChromeSearchResult& result);
 
     // AppListControllerDelegate overrides:
     void DismissView() override;
@@ -92,9 +121,6 @@ class PickerClientImpl
                  const GURL& url,
                  ui::PageTransition transition,
                  WindowOpenDisposition disposition) override;
-
-   private:
-    std::optional<GURL> last_opened_url_;
   };
 
   void OnCrosSearchResultsUpdated(
@@ -104,11 +130,31 @@ class PickerClientImpl
   void SetProfileByUser(const user_manager::User* user);
   void SetProfile(Profile* profile);
 
+  std::unique_ptr<app_list::SearchProvider>
+  CreateOmniboxProvider(bool bookmarks, bool history, bool open_tabs);
+  std::unique_ptr<app_list::SearchProvider> CreateSearchProviderForCategory(
+      ash::PickerCategory category);
+
+  void ShowEditor(std::optional<std::string> preset_query_id,
+                  std::optional<std::string> freeform_text);
+
+  ash::input_method::EditorLiveRegionAnnouncer announcer_;
+
   raw_ptr<ash::PickerController> controller_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;
 
   std::unique_ptr<app_list::SearchEngine> search_engine_;
   PickerAppListControllerDelegate app_list_controller_delegate_;
+
+  // A dedicated cros search engine for filtered searches.
+  std::unique_ptr<app_list::SearchEngine> filtered_search_engine_;
+  std::optional<ash::PickerCategory> current_filter_category_;
+
+  std::unique_ptr<app_list::RankerManager> ranker_manager_;
+
+  std::unique_ptr<PickerFileSuggester> file_suggester_;
+  std::unique_ptr<PickerLinkSuggester> link_suggester_;
+  std::unique_ptr<PickerThumbnailLoader> thumbnail_loader_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::UserSessionStateObserver>

@@ -10,18 +10,92 @@
 
 namespace autofill::autofill_metrics {
 
-// Logs the `filling_stats` of the fields within a `form_type`. The filling
-// status consistent of the number of accepted, corrected or and unfilled
-// fields. See the .cc file for details.
-void LogFieldFillingStatsAndScore(
-    const FormGroupFillingStats& address_filling_stats,
-    const FormGroupFillingStats& cc_filling_stats);
+// The filling status of an autofilled field.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FieldFillingStatus {
+  // The field was filled and accepted.
+  kAccepted = 0,
+  // The field was filled and corrected to a value of the same type.
+  kCorrectedToSameType = 1,
+  // The field was filled and corrected to a value of a different type.
+  kCorrectedToDifferentType = 2,
+  // The field was filled and corrected to a value of an unknown type.
+  kCorrectedToUnknownType = 3,
+  // The field was filled and the value was cleared afterwards.
+  kCorrectedToEmpty = 4,
+  // The field was manually filled to a value of the same type as the
+  // field was predicted to.
+  kManuallyFilledToSameType = 5,
+  // The field was manually filled to a value of a different type as the field
+  // was predicted to.
+  kManuallyFilledToDifferentType = 6,
+  // The field was manually filled to a value of an unknown type.
+  kManuallyFilledToUnknownType = 7,
+  // The field was left empty.
+  kLeftEmpty = 8,
+  kMaxValue = kLeftEmpty
+};
 
-// Same as above but keyed by `AutofillFillingMethod`.
-void LogAddressFieldFillingStatsAndScoreByAutofillFillingMethod(
-    const base::flat_map<AutofillFillingMethod,
-                         autofill_metrics::FormGroupFillingStats>&
-        address_filling_stats_by_filling_method);
+// Helper struct to count the `FieldFillingStatus` for a form group like
+// addresses and credit cards.
+struct FormGroupFillingStats {
+  // Please have a look at AutofillMetrics::FieldFillingStatus for the meaning
+  // of the different fields.
+  size_t num_accepted = 0;
+  size_t num_corrected_to_same_type = 0;
+  size_t num_corrected_to_different_type = 0;
+  size_t num_corrected_to_unknown_type = 0;
+  size_t num_corrected_to_empty = 0;
+  size_t num_manually_filled_to_same_type = 0;
+  size_t num_manually_filled_to_different_type = 0;
+  size_t num_manually_filled_to_unknown_type = 0;
+  size_t num_left_empty = 0;
+
+  size_t TotalCorrected() const {
+    return num_corrected_to_same_type + num_corrected_to_different_type +
+           num_corrected_to_unknown_type + num_corrected_to_empty;
+  }
+
+  size_t TotalManuallyFilled() const {
+    return num_manually_filled_to_different_type +
+           num_manually_filled_to_unknown_type +
+           num_manually_filled_to_same_type;
+  }
+
+  size_t TotalUnfilled() const {
+    return TotalManuallyFilled() + num_left_empty;
+  }
+
+  size_t TotalFilled() const { return num_accepted + TotalCorrected(); }
+
+  size_t Total() const { return TotalFilled() + TotalUnfilled(); }
+
+  void AddFieldFillingStatus(FieldFillingStatus status);
+};
+
+// Returns the filling status of `field`.
+FieldFillingStatus GetFieldFillingStatus(const AutofillField& field);
+
+// Merge `first` into `second` by summing each attribute from
+// `FormGroupFillingStats`.
+// TODO(crbug.com/40274514): Remove this on cleanup.
+void MergeFormGroupFillingStats(const FormGroupFillingStats& first,
+                                FormGroupFillingStats& second);
+
+// Returns the `FormGroupFillingStats` corresponding to the fields in
+// `form_structure` that match `form_type`. This method does not log to UMA but
+// only returns the statistics of a submitted form. `FormGroupFillingStats` is
+// UMA logged in `LogQualityMetrics()`.
+autofill_metrics::FormGroupFillingStats GetFormFillingStatsForFormType(
+    FormType form_type,
+    const FormStructure& form_structure);
+
+// Logs the `filling_stats` of the fields within a `form_type`, and the
+// `filling_stats` of ac=unrecognized fields. The filling status
+// consistent of the number of accepted, corrected or and unfilled fields. See
+// the .cc file for details.
+void LogFieldFillingStatsAndScore(const FormStructure& form);
 
 }  // namespace autofill::autofill_metrics
 

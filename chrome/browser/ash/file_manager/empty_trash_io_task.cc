@@ -4,29 +4,22 @@
 
 #include "chrome/browser/ash/file_manager/empty_trash_io_task.h"
 
+#include <algorithm>
 #include <memory>
+#include <utility>
 
+#include "base/check.h"
+#include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/file_manager/io_task_util.h"
+#include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace file_manager::io_task {
-namespace {
-
-storage::FileSystemOperationRunner::OperationID
-StartRemoveRecursivelyOnIOThread(
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    const storage::FileSystemURL url,
-    storage::FileSystemOperationRunner::StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  return file_system_context->operation_runner()->Remove(
-      url, /*recursive=*/true, std::move(callback));
-}
-
-}  // namespace
 
 EmptyTrashIOTask::EmptyTrashIOTask(
     blink::StorageKey storage_key,
@@ -35,114 +28,109 @@ EmptyTrashIOTask::EmptyTrashIOTask(
     base::FilePath base_path,
     bool show_notification)
     : IOTask(show_notification),
-      file_system_context_(file_system_context),
-      storage_key_(storage_key),
+      file_system_context_(std::move(file_system_context)),
+      storage_key_(std::move(storage_key)),
       profile_(profile),
-      base_path_(base_path) {
+      base_path_(std::move(base_path)) {
   progress_.state = State::kQueued;
   progress_.type = OperationType::kEmptyTrash;
-  progress_.bytes_transferred = 0;
-  progress_.total_bytes = 0;
 }
 
 EmptyTrashIOTask::~EmptyTrashIOTask() {
-  if (operation_id_) {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](scoped_refptr<storage::FileSystemContext> file_system_context,
-               storage::FileSystemOperationRunner::OperationID operation_id) {
-              file_system_context->operation_runner()->Cancel(
-                  operation_id, base::DoNothing());
-            },
-            file_system_context_, *operation_id_));
-  }
+  LOG_IF(WARNING, in_flight_ > 0)
+      << "An EmptyTrashIOTask is getting deleted although it still has "
+      << in_flight_ << " ongoing deletion operations in progress";
 }
 
-void EmptyTrashIOTask::Execute(IOTask::ProgressCallback progress_callback,
+void EmptyTrashIOTask::Execute(IOTask::ProgressCallback /*progress_callback*/,
                                IOTask::CompleteCallback complete_callback) {
-  progress_callback_ = std::move(progress_callback);
+  DCHECK(!complete_callback_);
   complete_callback_ = std::move(complete_callback);
 
-  enabled_trash_locations_ =
+  // A map containing paths which are enabled for trashing.
+  const trash::TrashPathsMap locations =
       trash::GenerateEnabledTrashLocationsForProfile(profile_, base_path_);
+
+  if (locations.empty()) {
+    progress_.state = State::kSuccess;
+    Complete();
+    return;
+  }
+
+  DCHECK_EQ(in_flight_, 0);
   progress_.state = State::kInProgress;
+  for (const trash::TrashPathsMap::value_type& location : locations) {
+    base::FilePath dir =
+        location.first.Append(location.second.relative_folder_path);
 
-  trash::TrashPathsMap::const_iterator it = enabled_trash_locations_.cbegin();
-  if (it == enabled_trash_locations_.end()) {
-    Complete(State::kSuccess);
-    return;
+    const EntryStatus& entry = progress_.outputs.emplace_back(
+        file_system_context_->CreateCrackedFileSystemURL(
+            storage_key_, storage::FileSystemType::kFileSystemTypeLocal, dir),
+        std::nullopt);
+    ++in_flight_;
+
+    VLOG(1) << "Removing " << entry.url.path();
+
+    // Double-check the path to delete.
+    CHECK(dir.IsAbsolute()) << " for " << dir;
+    CHECK(!dir.ReferencesParent()) << " for " << dir;
+    CHECK(dir.BaseName().value().starts_with(trash::kTrashFolderName))
+        << " for " << dir;
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&base::DeletePathRecursively, std::move(dir)),
+        base::BindOnce(&EmptyTrashIOTask::OnRemoved,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       progress_.outputs.size() - 1));
   }
-
-  RemoveTrashSubDirectory(it, trash::kFilesFolderName);
 }
 
-void EmptyTrashIOTask::RemoveTrashSubDirectory(
-    trash::TrashPathsMap::const_iterator& trash_location,
-    const std::string& folder_name_to_remove) {
-  const base::FilePath& trash_parent_path = trash_location->first;
-  const base::FilePath trash_path =
-      trash_parent_path.Append(trash_location->second.relative_folder_path);
-  const storage::FileSystemURL trash_url =
-      file_system_context_->CreateCrackedFileSystemURL(
-          storage_key_, storage::FileSystemType::kFileSystemTypeLocal,
-          trash_path.Append(folder_name_to_remove));
+void EmptyTrashIOTask::OnRemoved(const size_t i, const bool ok) {
+  DCHECK_LT(i, progress_.outputs.size());
+  if (EntryStatus& entry = progress_.outputs[i]; ok) {
+    VLOG(1) << "Removed " << entry.url.path();
+    entry.error = base::File::FILE_OK;
+  } else {
+    LOG(ERROR) << "Cannot remove " << entry.url.path();
+    entry.error = base::File::FILE_ERROR_FAILED;
+  }
 
-  progress_.outputs.emplace_back(trash_url, std::nullopt);
+  DCHECK_GT(in_flight_, 0);
+  if (--in_flight_ > 0) {
+    // Still waiting for some deletion tasks to finish.
+    return;
+  }
 
-  auto complete_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
-      &EmptyTrashIOTask::OnRemoveTrashSubDirectory,
-      weak_ptr_factory_.GetWeakPtr(), base::OwnedRef(trash_location),
-      std::move(folder_name_to_remove)));
+  // All the deletion tasks have finished.
+  if (progress_.state != State::kCancelled) {
+    // If there was no error, then it is a success.
+    progress_.state =
+        std::all_of(progress_.outputs.cbegin(), progress_.outputs.cend(),
+                    [](const EntryStatus& entry) {
+                      return entry.error == base::File::FILE_OK;
+                    })
+            ? State::kSuccess
+            : State::kError;
+  }
 
-  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&StartRemoveRecursivelyOnIOThread, file_system_context_,
-                     trash_url, std::move(complete_callback)),
-      base::BindOnce(&EmptyTrashIOTask::SetCurrentOperationID,
-                     weak_ptr_factory_.GetWeakPtr()));
+  LOG_IF(ERROR, progress_.state != State::kSuccess)
+      << "Cannot empty the trash bin: " << progress_.state;
+  Complete();
 }
 
-void EmptyTrashIOTask::OnRemoveTrashSubDirectory(
-    trash::TrashPathsMap::const_iterator& it,
-    const std::string& removed_folder_name,
-    base::File::Error status) {
-  progress_.outputs[progress_.outputs.size() - 1].error = status;
-  if (status != base::File::FILE_OK) {
-    LOG(ERROR) << "Failed to remove trash directory " << status;
-    Complete(State::kError);
-    return;
-  }
-  if (removed_folder_name == trash::kFilesFolderName) {
-    RemoveTrashSubDirectory(it, trash::kInfoFolderName);
-    return;
-  }
-  it++;
-  if (it == enabled_trash_locations_.end()) {
-    Complete(State::kSuccess);
-    return;
-  }
-
-  RemoveTrashSubDirectory(it, trash::kFilesFolderName);
-}
-
-// Calls the completion callback for the task. `progress_` should not be
-// accessed after calling this.
-void EmptyTrashIOTask::Complete(State state) {
-  progress_.state = state;
+void EmptyTrashIOTask::Complete() {
+  DCHECK(complete_callback_);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(complete_callback_), std::move(progress_)));
 }
 
-void EmptyTrashIOTask::SetCurrentOperationID(
-    storage::FileSystemOperationRunner::OperationID id) {
-  operation_id_.emplace(id);
-}
-
 void EmptyTrashIOTask::Cancel() {
+  LOG_IF(WARNING, progress_.state == State::kInProgress)
+      << "Cannot cancel the " << in_flight_
+      << " operations that are currently emptying the trash bin";
   progress_.state = State::kCancelled;
-  // Any inflight operation will be cancelled when the task is destroyed.
 }
 
 }  // namespace file_manager::io_task

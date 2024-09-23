@@ -12,10 +12,6 @@ void LogArcNotificationActionEnabled(bool action_enabled) {
   base::UmaHistogramBoolean("Arc.Notifications.ActionEnabled", action_enabled);
 }
 
-void LogArcNotificationExpandState(ArcNotificationExpandState state) {
-  base::UmaHistogramEnumeration("Arc.Notifications.ExpandState", state);
-}
-
 void LogArcNotificationInlineReplyEnabled(bool inline_reply_enabled) {
   base::UmaHistogramBoolean("Arc.Notifications.InlineReplyEnabled",
                             inline_reply_enabled);

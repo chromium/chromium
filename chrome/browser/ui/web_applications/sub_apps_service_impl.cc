@@ -19,16 +19,19 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -60,7 +63,7 @@ using blink::mojom::SubAppsServiceResultCode;
 
 namespace web_app {
 
-// TODO(crbug.com/1467861): Replace registrar_unsafe with Locks
+// TODO(crbug.com/40924576): Replace registrar_unsafe with Locks
 // TODO (crbug.com/1467862): Move from //c/b/ui/web_applications to
 // //c/b/web_applications
 
@@ -166,6 +169,26 @@ bool CanAccessSubAppsApi(content::RenderFrameHost& render_frame_host) {
              blink::mojom::PermissionsPolicyFeature::kSubApps) &&
          content::HasIsolatedContextCapability(&render_frame_host) &&
          IsInstalledNonChildApp(render_frame_host);
+}
+
+bool ShouldSkipUserConfirmation(content::RenderFrameHost& frame) {
+#if BUILDFLAG(IS_CHROMEOS)
+  auto const* profile = Profile::FromBrowserContext(frame.GetBrowserContext());
+  if (!profile) {
+    return false;
+  }
+
+  auto const* prefs = profile->GetPrefs();
+  if (!prefs) {
+    return false;
+  }
+
+  return policy::IsOriginInAllowlist(
+      frame.GetLastCommittedURL(), prefs,
+      prefs::kSubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins);
+#else   // BUILDFLAG(IS_CHROMEOS)
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -348,6 +371,11 @@ void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
     return;
   }
 
+  if (ShouldSkipUserConfirmation(render_frame_host())) {
+    ProcessDialogResponse(add_call_id, true);
+    return;
+  }
+
   WebAppRegistrar& registrar =
       GetWebAppProvider(render_frame_host())->registrar_unsafe();
   const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
@@ -391,7 +419,7 @@ void SubAppsServiceImpl::ProcessDialogResponse(int add_call_id,
   for (const std::unique_ptr<web_app::WebAppInstallInfo>& install_info :
        add_call_info.install_infos) {
     add_call_info.results.emplace_back(SubAppsServiceAddResult::New(
-        ConvertUrlToPath(install_info->manifest_id),
+        ConvertUrlToPath(install_info->manifest_id()),
         blink::mojom::SubAppsServiceResultCode::kFailure));
   }
 
@@ -405,8 +433,8 @@ void SubAppsServiceImpl::ScheduleSubAppInstalls(int add_call_id) {
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   base::ConcurrentCallbacks<SubAppInstallResult> concurrent;
   for (auto& install_info : add_call_info.install_infos) {
-    webapps::ManifestId manifest_id = install_info->manifest_id;
-    provider->scheduler().InstallFromInfo(
+    webapps::ManifestId manifest_id = install_info->manifest_id();
+    provider->scheduler().InstallFromInfoWithParams(
         std::move(install_info), /*overwrite_existing_manifest_fields=*/false,
         webapps::WebappInstallSource::SUB_APP,
         base::BindOnce(
@@ -415,7 +443,8 @@ void SubAppsServiceImpl::ScheduleSubAppInstalls(int add_call_id) {
               return SubAppInstallResult(manifest_id, app_id, result_code);
             },
             manifest_id)
-            .Then(concurrent.CreateCallback()));
+            .Then(concurrent.CreateCallback()),
+        WebAppInstallParams());
   }
   std::move(concurrent)
       .Done(base::BindOnce(&SubAppsServiceImpl::FinishAddCall,
@@ -542,14 +571,14 @@ void SubAppsServiceImpl::RemoveSubApp(
         manifest_id_path, SubAppsServiceResultCode::kFailure));
   }
 
-  provider->scheduler().RemoveInstallSource(
+  provider->scheduler().RemoveInstallManagementMaybeUninstall(
       sub_app_id, WebAppManagement::Type::kSubApp,
       webapps::WebappUninstallSource::kSubApp,
       base::BindOnce(
           [](std::string manifest_id_path,
              webapps::UninstallResultCode result_code) {
             SubAppsServiceResultCode result =
-                result_code == webapps::UninstallResultCode::kSuccess
+                webapps::UninstallSucceeded(result_code)
                     ? SubAppsServiceResultCode::kSuccess
                     : SubAppsServiceResultCode::kFailure;
             return SubAppsServiceRemoveResult::New(manifest_id_path, result);

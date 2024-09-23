@@ -234,7 +234,6 @@ const char kContentTypePWG[] = "image/pwg-raster";
 const char kPrintRequestSuccess[] = "OK";
 
 constexpr unsigned char kPrintData[] = "print data, PDF";
-constexpr size_t kPrintDataLength = sizeof(kPrintData);
 
 // Used as a callback to StartGetPrinters() in tests.
 // Increases `call_count` and records values returned by StartGetPrinters().
@@ -288,7 +287,7 @@ void RecordPrinterInfo(size_t* call_count,
 
 std::string RefCountedMemoryToString(
     scoped_refptr<base::RefCountedMemory> memory) {
-  return std::string(memory->front_as<char>(), memory->size());
+  return std::string(base::as_string_view(*memory));
 }
 
 // Fake PwgRasterConverter used in the tests.
@@ -322,7 +321,7 @@ class FakePwgRasterConverter : public PwgRasterConverter {
       return;
     }
 
-    memcpy(memory.mapping.memory(), data->front(), data->size());
+    memory.mapping.GetMemoryAsSpan<uint8_t>().copy_from(*data);
     conversion_settings_ = conversion_settings;
     bitmap_settings_ = bitmap_settings;
     std::move(callback).Run(std::move(memory.region));
@@ -694,8 +693,8 @@ TEST_F(ExtensionPrinterHandlerTest, PrintPdf) {
   bool success = false;
   std::string status;
 
-  auto print_data = base::MakeRefCounted<base::RefCountedStaticMemory>(
-      kPrintData, kPrintDataLength);
+  auto print_data =
+      base::MakeRefCounted<base::RefCountedStaticMemory>(kPrintData);
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
@@ -731,8 +730,7 @@ TEST_F(ExtensionPrinterHandlerTest, PrintPdfReset) {
   bool success = false;
   std::string status;
 
-  auto print_data =
-      base::MakeRefCounted<base::RefCountedBytes>(kPrintData, kPrintDataLength);
+  auto print_data = base::MakeRefCounted<base::RefCountedBytes>(kPrintData);
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
@@ -757,8 +755,7 @@ TEST_F(ExtensionPrinterHandlerTest, PrintAll) {
   bool success = false;
   std::string status;
 
-  auto print_data =
-      base::MakeRefCounted<base::RefCountedBytes>(kPrintData, kPrintDataLength);
+  auto print_data = base::MakeRefCounted<base::RefCountedBytes>(kPrintData);
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
@@ -795,8 +792,7 @@ TEST_F(ExtensionPrinterHandlerTest, PrintPwg) {
   bool success = false;
   std::string status;
 
-  auto print_data =
-      base::MakeRefCounted<base::RefCountedBytes>(kPrintData, kPrintDataLength);
+  auto print_data = base::MakeRefCounted<base::RefCountedBytes>(kPrintData);
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
@@ -851,8 +847,7 @@ TEST_F(ExtensionPrinterHandlerTest, PrintPwgNonDefaultSettings) {
   bool success = false;
   std::string status;
 
-  auto print_data =
-      base::MakeRefCounted<base::RefCountedBytes>(kPrintData, kPrintDataLength);
+  auto print_data = base::MakeRefCounted<base::RefCountedBytes>(kPrintData);
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
@@ -907,8 +902,7 @@ TEST_F(ExtensionPrinterHandlerTest, PrintPwgReset) {
   bool success = false;
   std::string status;
 
-  auto print_data =
-      base::MakeRefCounted<base::RefCountedBytes>(kPrintData, kPrintDataLength);
+  auto print_data = base::MakeRefCounted<base::RefCountedBytes>(kPrintData);
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
@@ -936,8 +930,7 @@ TEST_F(ExtensionPrinterHandlerTest, PrintPwgInvalidTicket) {
   bool success = false;
   std::string status;
 
-  auto print_data =
-      base::MakeRefCounted<base::RefCountedBytes>(kPrintData, kPrintDataLength);
+  auto print_data = base::MakeRefCounted<base::RefCountedBytes>(kPrintData);
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(
@@ -958,8 +951,7 @@ TEST_F(ExtensionPrinterHandlerTest, PrintPwgFailedConversion) {
 
   pwg_raster_converter_->FailConversion();
 
-  auto print_data =
-      base::MakeRefCounted<base::RefCountedBytes>(kPrintData, kPrintDataLength);
+  auto print_data = base::MakeRefCounted<base::RefCountedBytes>(kPrintData);
   std::u16string title = u"Title";
 
   extension_printer_handler_->StartPrint(

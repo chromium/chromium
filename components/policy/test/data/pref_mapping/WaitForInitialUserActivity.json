@@ -9,9 +9,12 @@
           "WaitForInitialUserActivity": true
         },
         "prefs": {
-          "power.wait_for_initial_user_activity": {},
+          "power.wait_for_initial_user_activity": {
+            "value": true
+          },
           "session.wait_for_initial_user_activity": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

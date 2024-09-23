@@ -4,8 +4,29 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core)
+
+source_set("settings_observer") {
+  sources = [ "settings_observer.h" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//extensions/common/api",
+  ]
+}
+
+source_set("settings_namespace") {
+  sources = [
+    "settings_namespace.cc",
+    "settings_namespace.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [ "//base" ]
+}
 
 source_set("storage") {
   sources = [
@@ -23,6 +44,8 @@ source_set("storage") {
     "storage_area_namespace.h",
     "storage_frontend.cc",
     "storage_frontend.h",
+    "storage_utils.cc",
+    "storage_utils.h",
     "value_store_cache.cc",
     "value_store_cache.h",
     "value_store_util.cc",
@@ -34,6 +57,8 @@ source_set("storage") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    ":settings_namespace",
+    ":settings_observer",
     "//base",
     "//components/keyed_service/content",
     "//components/value_store",

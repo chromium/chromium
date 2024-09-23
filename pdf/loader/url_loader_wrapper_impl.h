@@ -12,6 +12,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "pdf/loader/url_loader_wrapper.h"
@@ -64,7 +65,7 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
   std::string multipart_boundary_;
   gfx::Range byte_range_ = gfx::Range::InvalidRange();
   bool is_multipart_ = false;
-  base::span<char> buffer_;
+  base::raw_span<char, DanglingUntriaged> buffer_;
   bool multi_part_processed_ = false;
 
   base::OneShotTimer read_starter_;

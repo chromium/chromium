@@ -22,7 +22,7 @@ void BrowserOnlineStateObserver::OnMaxBandwidthChanged(
     net::NetworkChangeNotifier::ConnectionType type) {
   for (RenderProcessHost::iterator it(RenderProcessHost::AllHostsIterator());
        !it.IsAtEnd(); it.Advance()) {
-    // TODO(https://crbug.com/813045): Remove this check once we have a better
+    // TODO(crbug.com/40563310): Remove this check once we have a better
     // way of iterating the hosts.
     if (it.GetCurrentValue()->IsInitializedAndNotDead()) {
       it.GetCurrentValue()->GetRendererInterface()->OnNetworkConnectionChanged(

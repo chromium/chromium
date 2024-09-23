@@ -2,10 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/ipc/common/dxgi_helpers.h"
 
 #include "base/check.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 
@@ -154,8 +162,16 @@ bool CopyD3D11TexToMem(
 
     // Key equal to 0 is also used by the producer. Therefore, this keyed
     // mutex acts purely as a regular mutex.
-    hr = keyed_mutex->AcquireSync(0, INFINITE);
-    if (FAILED(hr)) {
+    // 300ms is long enough to get the mutex in 99.999% of cases. Yet we
+    // don't want to stall the callee indefinitely if the mutex is held by
+    // e.g. GpuMain thread while it's blocked on driver waiting for shader
+    // compilation.
+    // It's better to drop a frame in this case.
+    hr = keyed_mutex->AcquireSync(0, 300);
+
+    // Can't check FAILED(hr), because AcquireSync may return e.g. WAIT_TIMEOUT
+    // value.
+    if (hr != S_OK) {
       DLOG(ERROR) << "Failed to acquire keyed mutex. Error msg: "
                   << logging::SystemErrorCodeToString(hr);
       return false;
@@ -259,7 +275,9 @@ GPU_EXPORT bool CopyMemToD3D11Tex(uint8_t* src_buffer,
     // Key equal to 0 is also used by the producer. Therefore, this keyed
     // mutex acts purely as a regular mutex.
     hr = keyed_mutex->AcquireSync(0, INFINITE);
-    if (FAILED(hr)) {
+    // Can't check FAILED(hr), because AcquireSync may return e.g. WAIT_TIMEOUT
+    // value.
+    if (hr != S_OK) {
       DLOG(ERROR) << "Failed to acquire keyed mutex. Error msg: "
                   << logging::SystemErrorCodeToString(hr);
       return false;

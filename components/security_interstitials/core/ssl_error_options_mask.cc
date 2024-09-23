@@ -19,6 +19,7 @@ int IsCertErrorFatal(int cert_error) {
     case net::ERR_CERT_NO_REVOCATION_MECHANISM:
     case net::ERR_CERT_UNABLE_TO_CHECK_REVOCATION:
     case net::ERR_CERT_WEAK_SIGNATURE_ALGORITHM:
+    case net::ERR_CERT_NON_UNIQUE_NAME:
     case net::ERR_CERT_WEAK_KEY:
     case net::ERR_CERT_NAME_CONSTRAINT_VIOLATION:
     case net::ERR_CERT_VALIDITY_TOO_LONG:
@@ -32,7 +33,7 @@ int IsCertErrorFatal(int cert_error) {
     case net::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN:
       return true;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return true;
   }
 }

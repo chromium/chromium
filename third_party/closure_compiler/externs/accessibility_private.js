@@ -124,6 +124,7 @@ chrome.accessibilityPrivate.SwitchAccessMenuAction = {
   CUT: 'cut',
   DECREMENT: 'decrement',
   DICTATION: 'dictation',
+  DRILL_DOWN: 'drillDown',
   END_TEXT_SELECTION: 'endTextSelection',
   INCREMENT: 'increment',
   ITEM_SCAN: 'itemScan',
@@ -206,7 +207,8 @@ chrome.accessibilityPrivate.SyntheticMouseEventButton = {
  *   x: number,
  *   y: number,
  *   touchAccessibility: (boolean|undefined),
- *   mouseButton: (!chrome.accessibilityPrivate.SyntheticMouseEventButton|undefined)
+ *   mouseButton: (!chrome.accessibilityPrivate.SyntheticMouseEventButton|undefined),
+ *   isDoubleClick: (boolean|undefined)
  * }}
  */
 chrome.accessibilityPrivate.SyntheticMouseEvent;
@@ -274,10 +276,10 @@ chrome.accessibilityPrivate.AcceleratorAction = {
  * @enum {string}
  */
 chrome.accessibilityPrivate.AccessibilityFeature = {
-  GOOGLE_TTS_LANGUAGE_PACKS: 'googleTtsLanguagePacks',
   DICTATION_CONTEXT_CHECKING: 'dictationContextChecking',
   FACE_GAZE: 'faceGaze',
   GOOGLE_TTS_HIGH_QUALITY_VOICES: 'googleTtsHighQualityVoices',
+  FACE_GAZE_GRAVITY_WELLS: 'faceGazeGravityWells',
 };
 
 /**
@@ -423,6 +425,49 @@ chrome.accessibilityPrivate.PumpkinData;
 chrome.accessibilityPrivate.FaceGazeAssets;
 
 /**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.ScrollDirection = {
+  UP: 'up',
+  DOWN: 'down',
+  LEFT: 'left',
+  RIGHT: 'right',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.FacialGesture = {
+  BROW_INNER_UP: 'browInnerUp',
+  BROWS_DOWN: 'browsDown',
+  EYE_SQUINT_LEFT: 'eyeSquintLeft',
+  EYE_SQUINT_RIGHT: 'eyeSquintRight',
+  EYES_BLINK: 'eyesBlink',
+  EYES_LOOK_DOWN: 'eyesLookDown',
+  EYES_LOOK_LEFT: 'eyesLookLeft',
+  EYES_LOOK_RIGHT: 'eyesLookRight',
+  EYES_LOOK_UP: 'eyesLookUp',
+  JAW_LEFT: 'jawLeft',
+  JAW_OPEN: 'jawOpen',
+  JAW_RIGHT: 'jawRight',
+  MOUTH_FUNNEL: 'mouthFunnel',
+  MOUTH_LEFT: 'mouthLeft',
+  MOUTH_PUCKER: 'mouthPucker',
+  MOUTH_RIGHT: 'mouthRight',
+  MOUTH_SMILE: 'mouthSmile',
+  MOUTH_UPPER_UP: 'mouthUpperUp',
+};
+
+/**
+ * Information about a detected facial gesture.
+ * @typedef {{
+ *   gesture: !chrome.accessibilityPrivate.FacialGesture,
+ *   confidence: number
+ * }}
+ */
+chrome.accessibilityPrivate.GestureInfo;
+
+/**
  * Property to indicate whether event source should default to touch.
  * @type {number}
  */
@@ -486,9 +531,20 @@ chrome.accessibilityPrivate.setFocusRings = function(focusRings, atType) {};
 chrome.accessibilityPrivate.setHighlights = function(rects, color) {};
 
 /**
+ * Informs the system where Chrome Vox's focus is in screen coordinates when
+ * Magnifier is enabled. No-op when Magnifier is not enabled. Causes
+ * chrome.accessibilityPrivate.onChromeVoxFocusChanged to be fired within the
+ * AccessibilityCommon component extension.
+ * @param {!chrome.accessibilityPrivate.ScreenRect} bounds Bounds of current
+ *     ChromeVox focus ring.
+ */
+chrome.accessibilityPrivate.setChromeVoxFocus = function(bounds) {};
+
+/**
  * Informs the system where Select to Speak's reading focus is in screen
- * coordinates. Causes chrome.accessibilityPrivate.onSelectToSpeakFocusChanged
- * to be fired within the AccessibilityCommon component extension.
+ * coordinates when Magnifier is enabled. No-op when Magnifier is not enabled.
+ * Causes chrome.accessibilityPrivate.onSelectToSpeakFocusChanged to be fired
+ * within the AccessibilityCommon component extension.
  * @param {!chrome.accessibilityPrivate.ScreenRect} bounds Bounds of currently
  *     spoken word (if available) or node (if the spoken node is not a text
  *     node).
@@ -553,8 +609,8 @@ chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function
  * @param {!chrome.accessibilityPrivate.SyntheticKeyboardEvent} keyEvent The
  *     event to send.
  * @param {boolean=} useRewriters If true, uses rewriters for the key event;
- *     only allowed if used from Dictation. Otherwise indicates that rewriters
- *     should be skipped.
+ *     only allowed if used from Dictation or FaceGaze. Otherwise indicates that
+ *     rewriters should be skipped.
  */
 chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent, useRewriters) {};
 
@@ -740,10 +796,38 @@ chrome.accessibilityPrivate.isLacrosPrimary = function(callback) {};
 chrome.accessibilityPrivate.showToast = function(type) {};
 
 /**
+ * Scrolls at the target location in the specified direction.
+ * @param {!chrome.accessibilityPrivate.ScreenPoint} target
+ * @param {!chrome.accessibilityPrivate.ScrollDirection} direction
+ */
+chrome.accessibilityPrivate.scrollAtPoint = function(target, direction) {};
+
+/**
+ * Fired when FaceGaze processes a video frame, detects facial gestures from the
+ * frame, then sends information about the recognized facial gesture to the
+ * settings.
+ * @param {!Array<!chrome.accessibilityPrivate.GestureInfo>} gestureInfo The
+ *     recognized facial gestures and their associated confidence values.
+ */
+chrome.accessibilityPrivate.sendGestureInfoToSettings = function(gestureInfo) {};
+
+/**
+ * Updates FaceGaze's bubble UI.
+ * @param {string} text The text to be displayed in the bubble UI.
+ */
+chrome.accessibilityPrivate.updateFaceGazeBubble = function(text) {};
+
+/**
  * Fired whenever ChromeVox should output introduction.
  * @type {!ChromeEvent}
  */
 chrome.accessibilityPrivate.onIntroduceChromeVox;
+
+/**
+ * Fired when the ChromeVox focus changes and Magnifier is enabled.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onChromeVoxFocusChanged;
 
 /**
  * Fired when an accessibility gesture is detected by the touch exploration
@@ -753,20 +837,6 @@ chrome.accessibilityPrivate.onIntroduceChromeVox;
 chrome.accessibilityPrivate.onAccessibilityGesture;
 
 /**
- * Fired when we first detect two fingers are held down, which can be used to
- * toggle spoken feedback on some touch-only devices.
- * @type {!ChromeEvent}
- */
-chrome.accessibilityPrivate.onTwoFingerTouchStart;
-
-/**
- * Fired when the user is no longer holding down two fingers (including
- * releasing one, holding down three, or moving them).
- * @type {!ChromeEvent}
- */
-chrome.accessibilityPrivate.onTwoFingerTouchStop;
-
-/**
  * Fired when the Select to Speak context menu is clicked from outside the
  * context of the Select to Speak extension.
  * @type {!ChromeEvent}
@@ -774,7 +844,8 @@ chrome.accessibilityPrivate.onTwoFingerTouchStop;
 chrome.accessibilityPrivate.onSelectToSpeakContextMenuClicked;
 
 /**
- * Fired when the Select to Speak reading focus changes.
+ * Fired when the Select to Speak reading focus changes and Magnifier is
+ * enabled.
  * @type {!ChromeEvent}
  */
 chrome.accessibilityPrivate.onSelectToSpeakFocusChanged;
@@ -867,3 +938,10 @@ chrome.accessibilityPrivate.onShowChromeVoxTutorial;
  * @type {!ChromeEvent}
  */
 chrome.accessibilityPrivate.onToggleDictation;
+
+/**
+ * Fired only from the FaceGaze settings when the settings page requests to
+ * receive or stop receiving gesture detection information from FaceGaze.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onToggleGestureInfoForSettings;

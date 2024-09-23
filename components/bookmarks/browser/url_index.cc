@@ -9,6 +9,7 @@
 #include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/common/url_load_stats.h"
@@ -167,7 +168,7 @@ void UrlIndex::RemoveImpl(BookmarkNode* node, std::set<GURL>* removed_urls) {
   url_lock_.AssertAcquired();
   if (node->is_url()) {
     auto i = nodes_ordered_by_url_set_.find(node);
-    DCHECK(i != nodes_ordered_by_url_set_.end());
+    CHECK(i != nodes_ordered_by_url_set_.end(), base::NotFatalUntil::M130);
     // i points to the first node with the URL, advance until we find the
     // node we're removing.
     while (*i != node) {

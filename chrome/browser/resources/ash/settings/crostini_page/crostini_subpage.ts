@@ -12,13 +12,13 @@ import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
-import './crostini_confirmation_dialog.js';
+import '../guest_os/guest_os_confirmation_dialog.js';
 import './crostini_disk_resize_dialog.js';
 import './crostini_disk_resize_confirmation_dialog.js';
 import './crostini_port_forwarding.js';
 import './crostini_extra_containers.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

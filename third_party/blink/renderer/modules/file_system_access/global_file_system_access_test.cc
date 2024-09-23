@@ -9,12 +9,12 @@
 #include "base/memory/raw_ref.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -29,7 +29,7 @@ namespace blink {
 class MockFileSystemAccessManager
     : public mojom::blink::FileSystemAccessManager {
  public:
-  MockFileSystemAccessManager(BrowserInterfaceBrokerProxy& broker,
+  MockFileSystemAccessManager(const BrowserInterfaceBrokerProxy& broker,
                               base::OnceClosure reached_callback)
       : reached_callback_(std::move(reached_callback)), broker_(broker) {
     broker_->SetBinderForTesting(
@@ -38,7 +38,8 @@ class MockFileSystemAccessManager
             &MockFileSystemAccessManager::BindFileSystemAccessManager,
             WTF::Unretained(this)));
   }
-  MockFileSystemAccessManager(BrowserInterfaceBrokerProxy& broker)
+  explicit MockFileSystemAccessManager(
+      const BrowserInterfaceBrokerProxy& broker)
       : broker_(broker) {
     broker_->SetBinderForTesting(
         mojom::blink::FileSystemAccessManager::Name_,
@@ -60,6 +61,10 @@ class MockFileSystemAccessManager
 
   // Unused for these tests.
   void GetSandboxedFileSystem(
+      GetSandboxedFileSystemCallback callback) override {}
+
+  void GetSandboxedFileSystemForDevtools(
+      const Vector<String>& directory_path_components,
       GetSandboxedFileSystemCallback callback) override {}
 
   void ChooseEntries(mojom::blink::FilePickerOptionsPtr options,
@@ -105,7 +110,7 @@ class MockFileSystemAccessManager
   base::OnceClosure reached_callback_;
   ChooseEntriesResponseCallback choose_entries_response_callback_;
   mojo::ReceiverSet<mojom::blink::FileSystemAccessManager> receivers_;
-  const raw_ref<BrowserInterfaceBrokerProxy, ExperimentalRenderer> broker_;
+  const raw_ref<const BrowserInterfaceBrokerProxy> broker_;
 };
 
 class GlobalFileSystemAccessTest : public PageTestBase {
@@ -119,8 +124,7 @@ class GlobalFileSystemAccessTest : public PageTestBase {
   void Navigate(const String& destinationUrl) {
     const KURL& url = KURL(NullURL(), destinationUrl);
     auto navigation_params =
-        WebNavigationParams::CreateWithHTMLBufferForTesting(
-            SharedBuffer::Create(), url);
+        WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
     GetDocument().GetFrame()->Loader().CommitNavigation(
         std::move(navigation_params), /*extra_data=*/nullptr);
     blink::test::RunPendingTasks();

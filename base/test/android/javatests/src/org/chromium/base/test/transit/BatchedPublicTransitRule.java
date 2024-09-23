@@ -13,19 +13,23 @@ import org.junit.runners.model.Statement;
 /**
  * Test rule for batched Public Transit tests.
  *
- * <p>Batched PublicTransit tests need to start and end in the same type of TransitStation, which is
- * called the home station.
+ * <p>Batched PublicTransit tests need to start and end in the same type of {@link Station}, which
+ * is called the home station.
  *
- * @param <T> The Class of the home {@link TransitStation}
+ * @param <T> The Class of the home {@link Station}
  */
-public class BatchedPublicTransitRule<T extends TransitStation> implements TestRule {
+public class BatchedPublicTransitRule<T extends Station> implements TestRule {
     private final Class<T> mHomeStationType;
+    private final boolean mExpectResetByTest;
 
     /**
      * @param homeStationType Class of the home station
+     * @param expectResetByTest Whether the tests are responsible for resetting state before they
+     *     finish. If false, state should be reset at the start of each test.
      */
-    public BatchedPublicTransitRule(Class<T> homeStationType) {
+    public BatchedPublicTransitRule(Class<T> homeStationType, boolean expectResetByTest) {
         mHomeStationType = homeStationType;
+        mExpectResetByTest = expectResetByTest;
     }
 
     @Override
@@ -41,7 +45,10 @@ public class BatchedPublicTransitRule<T extends TransitStation> implements TestR
                     TransitAsserts.assertCurrentStationType(
                             mHomeStationType, "beginning of test", true);
                     base.evaluate();
-                    TransitAsserts.assertCurrentStationType(mHomeStationType, "end of test", false);
+                    if (mExpectResetByTest) {
+                        TransitAsserts.assertCurrentStationType(
+                                mHomeStationType, "end of test", false);
+                    }
                 } finally {
                     if (testName != null) {
                         TrafficControl.onTestFinished(testName);

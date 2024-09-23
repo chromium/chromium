@@ -128,7 +128,7 @@ bool ConfigurationPolicyHandlerList::IsBlockedPlatformDevicePolicy(
     const PolicyDetails& policy_details,
     PolicyMap::const_reference entry) const {
   if (entry.second.source == POLICY_SOURCE_PLATFORM &&
-      policy_details.is_device_policy) {
+      policy_details.scope == kDevice) {
     // Device Policy is only implemented as Cloud Policy (not Platform Policy).
     LOG_POLICY(WARNING, POLICY_PROCESSING)
         << "Ignoring device platform policy: " << entry.first;

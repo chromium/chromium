@@ -17,20 +17,19 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
+#include "chrome/browser/ash/login/screens/connectivity_diagnostics_dialog.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/login/ui/captive_portal_window_proxy.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
-#include "chrome/browser/ash/login/ui/login_web_dialog.h"
-#include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/ash/connectivity_diagnostics_dialog.h"
-#include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
-#include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
+#include "chrome/browser/ui/ash/login/captive_portal_window_proxy.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_display_host_mojo.h"
+#include "chrome/browser/ui/ash/login/login_web_dialog.h"
+#include "chrome/browser/ui/ash/login/webui_login_view.h"
+#include "chrome/browser/ui/webui/ash/internet/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
@@ -40,6 +39,7 @@
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -67,9 +67,8 @@ bool g_offline_login_per_user_allowed_ = true;
 // Returns the current running kiosk app profile in a kiosk session. Otherwise,
 // returns nullptr.
 Profile* GetAppProfile() {
-  return chrome::IsRunningInForcedAppMode()
-             ? ProfileManager::GetActiveUserProfile()
-             : nullptr;
+  return IsRunningInForcedAppMode() ? ProfileManager::GetActiveUserProfile()
+                                    : nullptr;
 }
 
 }  // namespace
@@ -108,6 +107,10 @@ void ErrorScreen::AllowGuestSignin(bool allowed) {
   }
 }
 
+void ErrorScreen::DisallowOfflineLogin() {
+  ShowOfflineLoginOption(false);
+}
+
 void ErrorScreen::ShowOfflineLoginOption(bool show) {
   if (view_) {
     view_->SetOfflineSigninAllowed(show);
@@ -117,16 +120,17 @@ void ErrorScreen::ShowOfflineLoginOption(bool show) {
 void ErrorScreen::OnOfflineLoginClicked() {
   // Reset hide callback as we advance to OfflineLoginScreen. Exit from this
   // screen is handled by WizardController.
-  // TODO(https://crbug.com/1199816, dkuzmin): Use exit_callback_ once available
   on_hide_callback_ = base::OnceClosure();
   Hide();
   LoginDisplayHost::default_host()->StartWizard(OfflineLoginView::kScreenId);
 }
 
+// static
 void ErrorScreen::AllowOfflineLogin(bool allowed) {
   g_offline_login_allowed_ = allowed;
 }
 
+// static
 void ErrorScreen::AllowOfflineLoginPerUser(bool allowed) {
   g_offline_login_per_user_allowed_ = allowed;
 }
@@ -269,7 +273,7 @@ void ErrorScreen::ShowNetworkErrorMessage(NetworkStateInformer::State state,
   // No need to show the screen again if it is already shown.
   if (is_hidden()) {
     SetUIState(NetworkError::UI_STATE_SIGNIN);
-    Show(nullptr /*wizard_context*/);
+    Show(/*wizard_context=*/nullptr);
   }
 }
 
@@ -391,10 +395,9 @@ void ErrorScreen::OnReloadGaiaClicked() {
 
 void ErrorScreen::OnContinueAppLaunchButtonClicked() {
   DCHECK_EQ(parent_screen_, AppLaunchSplashScreenView::kScreenId.AsId());
-  // TODO(https://crbug.com/1199816, dkuzmin): Use exit_callback_ once
-  // available
-  auto* oobe_ui = LoginDisplayHost::default_host()->GetOobeUI();
-  oobe_ui->GetView<AppLaunchSplashScreenHandler>()->ContinueAppLaunch();
+  WizardController::default_controller()
+      ->GetScreen<AppLaunchSplashScreen>()
+      ->ContinueAppLaunch();
 }
 
 void ErrorScreen::LaunchHelpApp(int help_topic_id) {

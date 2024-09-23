@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef NET_TRAFFIC_ANNOTATION_NETWORK_TRAFFIC_ANNOTATION_H_
 #define NET_TRAFFIC_ANNOTATION_NETWORK_TRAFFIC_ANNOTATION_H_
 
@@ -54,7 +59,7 @@ struct NetworkTrafficAnnotationTag {
   }
 
   static NetworkTrafficAnnotationTag NotReached() {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::NetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_UNINITIALIZED);
   }
 
@@ -147,7 +152,7 @@ struct PartialNetworkTrafficAnnotationTag {
 //
 // An empty and a sample template for the text-encoded protobuf can be found in
 // tools/traffic_annotation/sample_traffic_annotation.cc.
-// TODO(crbug.com/690323): Add tools to check annotation text's format during
+// TODO(crbug.com/40505662): Add tools to check annotation text's format during
 // presubmit checks.
 template <size_t N1, size_t N2>
 constexpr NetworkTrafficAnnotationTag DefineNetworkTrafficAnnotation(
@@ -384,7 +389,7 @@ struct MutablePartialNetworkTrafficAnnotationTag {
 //
 // On Linux and Windows, use MISSING_TRAFFIC_ANNOTATION or
 // TRAFFIC_ANNOTATION_FOR_TESTS.
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
 // complete.
 #if !BUILDFLAG(IS_WIN) && \
     !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))

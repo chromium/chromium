@@ -19,6 +19,7 @@ class IconSet {
   enum class IconSize {
     SIZE_16x16,
     SIZE_32x32,
+    kMaxValue = SIZE_32x32,
   };
 
   IconSet();
@@ -35,6 +36,8 @@ class IconSet {
   // Gets an icon URL for the exact size. If not specified, then an invalid
   // URL will be returned.
   const GURL& GetIcon(IconSize size) const;
+
+  bool operator==(const IconSet& other) const;
 
  private:
   std::map<IconSize, GURL> icons_;

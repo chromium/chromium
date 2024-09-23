@@ -89,6 +89,6 @@ BrowserFrameViewLayoutLinuxNative::GetButtonDisplayType(
     case views::FrameButton::kClose:
       return ui::NavButtonProvider::FrameButtonDisplayType::kClose;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }

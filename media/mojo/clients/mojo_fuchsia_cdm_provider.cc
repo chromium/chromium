@@ -4,12 +4,12 @@
 
 #include "media/mojo/clients/mojo_fuchsia_cdm_provider.h"
 
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 
 namespace media {
 
 MojoFuchsiaCdmProvider::MojoFuchsiaCdmProvider(
-    blink::BrowserInterfaceBrokerProxy* interface_broker)
+    const blink::BrowserInterfaceBrokerProxy* interface_broker)
     : interface_broker_(interface_broker) {
   DCHECK(interface_broker_);
 }

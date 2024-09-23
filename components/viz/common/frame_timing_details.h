@@ -12,7 +12,14 @@
 namespace viz {
 
 struct FrameTimingDetails {
+  // The time when the frame submitted by the client is received by the Viz
+  // service. If this frame corresponds to a non-root Surface, it will not be
+  // drawn until it is referenced by a parent Surface.
   base::TimeTicks received_compositor_frame_timestamp;
+  // The time when the frame submitted by the client is embedded by a parent
+  // Surface. Maybe the same as `received_compositor_frame_timestamp` for the
+  // root surface.
+  base::TimeTicks embedded_frame_timestamp;
   base::TimeTicks draw_start_timestamp;
   gfx::SwapTimings swap_timings;
   gfx::PresentationFeedback presentation_feedback;

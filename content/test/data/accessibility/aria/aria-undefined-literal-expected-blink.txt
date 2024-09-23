@@ -8,7 +8,6 @@ rootWebArea
 ++++++group name='Current undefined'
 ++++++group name='Disabled undefined'
 ++++++treeItem name='Expanded undefined' selected=false selectedFromFocus=false
-++++++group name='Grabbed undefined'
 ++++++button name='Haspopup undefined'
 ++++++group name='Invalid undefined'
 ++++++group name='Live undefined'

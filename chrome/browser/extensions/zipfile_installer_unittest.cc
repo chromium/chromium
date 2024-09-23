@@ -285,14 +285,6 @@ TEST_P(ZipFileInstallerLocationTest, GoodZip) {
             absolute_expected_extension_install_directory);
 }
 
-/*
- base::FilePath absolute_extension_path =
-    base::MakeAbsoluteFilePath(extension->path());
-base::FilePath absolute_expected_extension_install_directory =
-    base::MakeAbsoluteFilePath(expected_extension_install_directory_.Append(
-        extension->path().BaseName()));
-*/
-
 TEST_P(ZipFileInstallerLocationTest, BadZip) {
   // Manifestless archive.
   RunInstaller(/*zip_name=*/"bad.zip",
@@ -348,8 +340,8 @@ TEST_P(ZipFileInstallerLocationTest, CannotCreateContainingDirectoryZip) {
     return;
   }
 
-  // TODO(crbug.com/1378775): Have this expect a specific error rather than just
-  // an error since other things can cause an error.
+  // TODO(crbug.com/40875193): Have this expect a specific error rather than
+  // just an error since other things can cause an error.
   RunInstaller(
       /*zip_name=*/"good.zip", /*expect_error=*/true, /*unzip_dir_root=*/
 #if !BUILDFLAG(IS_WIN)

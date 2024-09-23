@@ -2,18 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // This file contains the Windows-specific exporting to ETW.
 #ifndef BASE_TRACE_EVENT_TRACE_EVENT_ETW_EXPORT_WIN_H_
 #define BASE_TRACE_EVENT_TRACE_EVENT_ETW_EXPORT_WIN_H_
 
-#include <stdint.h>
 #include <windows.h>
+
+#include <stdint.h>
 
 #include <map>
 #include <memory>
+#include <string_view>
 
 #include "base/base_export.h"
-#include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "base/trace_event/trace_logging_minimal_win.h"
 
@@ -67,7 +73,7 @@ class BASE_EXPORT TraceEventETWExport {
                                   const char* name);
 
   // Returns true if any category in the group is enabled.
-  static bool IsCategoryGroupEnabled(StringPiece category_group_name);
+  static bool IsCategoryGroupEnabled(std::string_view category_group_name);
 
  private:
   // Ensure only the provider can construct us.
@@ -83,7 +89,7 @@ class BASE_EXPORT TraceEventETWExport {
   bool UpdateEnabledCategories();
 
   // Returns true if the category is enabled.
-  bool IsCategoryEnabled(StringPiece category_name) const;
+  bool IsCategoryEnabled(std::string_view category_name) const;
 
   uint64_t CategoryStateToETWKeyword(const uint8_t* category_state);
 
@@ -97,18 +103,14 @@ class BASE_EXPORT TraceEventETWExport {
   std::unique_ptr<TlmProvider> etw_provider_;
 
   // Maps category names to their status (enabled/disabled).
-  std::map<StringPiece, bool> categories_status_;
+  std::map<std::string_view, bool> categories_status_;
 };
 
 BASE_EXPORT uint64_t
 CategoryGroupToETWKeyword(std::string_view category_group_name);
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
 BASE_EXPORT perfetto::protos::gen::TrackEventConfig
 ETWKeywordToTrackEventConfig(uint64_t keyword);
-
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace trace_event
 }  // namespace base

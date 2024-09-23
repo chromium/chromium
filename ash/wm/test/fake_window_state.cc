@@ -21,7 +21,8 @@ void FakeWindowState::OnWMEvent(WindowState* window_state,
       was_visible_on_minimize_ = window_state->window()->IsVisible();
       break;
     case WM_EVENT_SET_BOUNDS:
-      last_requested_bounds_ = event->AsSetBoundsWMEvent()->requested_bounds();
+      last_requested_bounds_ =
+          event->AsSetBoundsWMEvent()->requested_bounds_in_parent();
       break;
     default:
       break;

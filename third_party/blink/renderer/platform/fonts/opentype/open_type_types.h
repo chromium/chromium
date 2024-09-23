@@ -22,10 +22,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_TYPES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_TYPES_H_
 
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -33,33 +38,29 @@ namespace open_type {
 
 struct Int16 {
   DISALLOW_NEW();
-  Int16(int16_t u) : v(base::HostToNet16(static_cast<uint16_t>(u))) {}
-  operator int16_t() const {
-    return static_cast<int16_t>(base::NetToHost16(v));
-  }
-  uint16_t v;  // in BigEndian
+  Int16(int16_t u) : v(base::ByteSwap(u)) {}
+  operator int16_t() const { return base::ByteSwap(v); }
+  int16_t v;  // in BigEndian
 };
 
 struct UInt16 {
   DISALLOW_NEW();
-  UInt16(uint16_t u) : v(base::HostToNet16(u)) {}
-  operator uint16_t() const { return base::NetToHost16(v); }
+  UInt16(uint16_t u) : v(base::ByteSwap(u)) {}
+  operator uint16_t() const { return base::ByteSwap(v); }
   uint16_t v;  // in BigEndian
 };
 
 struct Int32 {
   DISALLOW_NEW();
-  Int32(int32_t u) : v(base::HostToNet32(static_cast<uint32_t>(u))) {}
-  operator int32_t() const {
-    return static_cast<int32_t>(base::NetToHost32(v));
-  }
-  uint32_t v;  // in BigEndian
+  Int32(int32_t u) : v(base::ByteSwap(u)) {}
+  operator int32_t() const { return base::ByteSwap(v); }
+  int32_t v;  // in BigEndian
 };
 
 struct UInt32 {
   DISALLOW_NEW();
-  UInt32(uint32_t u) : v(base::HostToNet32(u)) {}
-  operator uint32_t() const { return base::NetToHost32(v); }
+  UInt32(uint32_t u) : v(base::ByteSwap(u)) {}
+  operator uint32_t() const { return base::ByteSwap(v); }
   uint32_t v;  // in BigEndian
 };
 

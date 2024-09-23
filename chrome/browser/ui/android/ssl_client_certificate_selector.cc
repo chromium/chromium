@@ -11,8 +11,6 @@
 #include "content/public/browser/client_certificate_delegate.h"
 #include "net/ssl/ssl_private_key.h"
 
-namespace chrome {
-
 namespace {
 
 // Returns the storage of a test hook for `ShowSSLClientCertificateSelector()`.
@@ -44,4 +42,3 @@ void SetShowSSLClientCertificateSelectorHookForTest(
   GetShowSSLClientCertificateSelectorTestingHook() = std::move(hook);
 }
 
-}  // namespace chrome

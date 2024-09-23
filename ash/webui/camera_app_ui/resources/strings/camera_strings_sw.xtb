@@ -32,20 +32,28 @@
 <translation id="2175927920773552910">Msimbo wa QR</translation>
 <translation id="2244252133441425811">Washa kiteua kasi ya picha kwa sekunde cha video (FPS)</translation>
 <translation id="2271433936731426666">Washa kipengele cha kijipicha cha video chenye ukubwa kamili</translation>
+<translation id="2281736597583450397">Pata maelezo ya kina zaidi ukitumia kipengele cha kukuza kilichoboreshwa</translation>
 <translation id="2320741269052147773">Geuza kushoto</translation>
+<translation id="2360840973209616515">Programu hii ya kamera inadhibitiwa na msimamizi wako.
+        Kwa maelezo zaidi, wasiliana na msimamizi.</translation>
+<translation id="2442754296994859145">Nakili ili uthibitishe maudhui au panua ili uache kuchanganua.</translation>
+<translation id="2486151619109781620">Kunja kidirisha na uanze kuchanganua</translation>
 <translation id="2501278716633472235">Rudi nyuma</translation>
 <translation id="2501853267655415902">Imeacha kurekodi</translation>
 <translation id="2517472476991765520">Tafuta</translation>
 <translation id="2549985041256363841">Anza kurekodi</translation>
 <translation id="2577915835281444458">Itaaacha kurekodi hivi punde. Nenda kwenye hifadhi ya kifaa ufute faili ili uongeze nafasi.</translation>
 <translation id="2599796128805996109">Kamera ya nyuma</translation>
+<translation id="2654491636277477479">Nakili ujumbe uliotambuliwa</translation>
 <translation id="2759905922487820242">Sekunde <ph name="CURRENT" /> / <ph name="MAXIMAL" /></translation>
 <translation id="2761536921376153655">Aina ya uchanganuzi</translation>
 <translation id="28682968802727151">Onyesho la kukagua hali ya kuakisi</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> imechomekwa.</translation>
 <translation id="3067436040345934772">Geuza kulia</translation>
 <translation id="3081586908890909590">Rekodi video</translation>
+<translation id="3091480460059548935">Utambuzi wa maandishi katika toleo la kukaguliwa</translation>
 <translation id="313467653172006084">FPS 30</translation>
+<translation id="3157038259444425153">Sasa unaweza kunakili ujumbe moja kwa moja kwenye picha yako</translation>
 <translation id="3158534262962737808">Jiunge na "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Maikrofoni</translation>
 <translation id="3240426699337459095">Kiungo kimenakiliwa</translation>
@@ -65,9 +73,7 @@
 <translation id="4118525110028899586">Sitisha kurekodi</translation>
 <translation id="4121305183798804752">Hati imetambuliwa</translation>
 <translation id="414641094616694804">Kamera hii haiwezi kubadilisha ubora</translation>
-<translation id="4176463684765177261">Imezimwa</translation>
 <translation id="428234092390943511">Kijipicha cha ukurasa</translation>
-<translation id="4349714250734879769">Weka fremu ya Chrome</translation>
 <translation id="4383571725254449280">Chapisha kumbukumbu za utendaji</translation>
 <translation id="4445542136948522167">Acha kupiga picha</translation>
 <translation id="4570032796877367747">Kamera ya mbele</translation>
@@ -80,7 +86,6 @@
 <translation id="4864143361253542638">Orodha ya kurasa zilizochanganuliwa</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">Nakili anwani ya kiungo <ph name="URL" /></translation>
-<translation id="491895758387112773">Kurekodi video nyingi zinazotiririshwa</translation>
 <translation id="495170559598752135">Vitendo</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Uwiano wa picha</translation>
@@ -93,6 +98,7 @@
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5320594929574852403">Inasogezwa upande wa kushoto</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5634947914995388399">Panua kidirisha na uache kuchanganua</translation>
 <translation id="5662366948659129155">Inachanganua ukurasa wa <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Mraba</translation>
 <translation id="574392208103952083">Wastani</translation>
@@ -106,6 +112,7 @@
 <translation id="5975083100439434680">Fifiza</translation>
 <translation id="5976160379964388480">Wengine </translation>
 <translation id="6073451960410192870">Acha kurekodi</translation>
+<translation id="6165508094623778733">Pata maelezo zaidi</translation>
 <translation id="6197807149213783179">Hifadhi metadata</translation>
 <translation id="6233780560267770709">3 kwa 3</translation>
 <translation id="6243827288366940320">Uwiano bora zaidi</translation>
@@ -115,11 +122,14 @@
 Iwapo maoni yako yanahusu ubora wa picha au video, tafadhali ambatisha mfano wa picha au video kisha uelezee tatizo lililopo. (Kwa mfano, hakuna mwangaza wa kutosha kwenye picha au kinachopigwa picha hakijaangaziwa vizuri.)</translation>
 <translation id="6519884562954018934">Jiunge na <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Shiriki</translation>
+<translation id="6586509689874700895">Kwanza, bofya <ph name="BUTTON_NAME" /> ili uvute karibu. Kisha, baada ya kupiga picha, utaona maelezo ya kina.</translation>
+<translation id="659539649712855529">Umenakili <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Onyesha hali zote za ubora</translation>
 <translation id="6631515515009660915">Zima kipengele cha kuakisi</translation>
 <translation id="6652737148136672975">Sogeza sehemu za pembeni kwa kutumia vitufe vya vishale</translation>
 <translation id="667999046851023355">Hati</translation>
 <translation id="6681668084120808868">Piga picha</translation>
+<translation id="6692092766759105707">Nakili ili uthibitishe maudhui.</translation>
 <translation id="6778482348691154169">Imeshindwa kupiga picha</translation>
 <translation id="6888362557094394345">Inasogezwa upande wa chini</translation>
 <translation id="695140971690006676">Weka vyote upya</translation>
@@ -132,8 +142,8 @@ Iwapo maoni yako yanahusu ubora wa picha au video, tafadhali ambatisha mfano wa 
 <translation id="7337660886763914220">Hitilafu za mfumo wa faili.</translation>
 <translation id="7450541714075000668">Maandishi yamenakiliwa</translation>
 <translation id="7488619942230388918">Rekodi video ya GIF</translation>
+<translation id="7527714402753141485">Huonyesha maandishi na kitufe cha kunakili</translation>
 <translation id="7557677699350329807">Tumia kamera inayofuata</translation>
-<translation id="7562584071994185503">Nakili maandishi <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Imepumzishwa</translation>
 <translation id="7608223098072244877">4 kwa 4</translation>
 <translation id="761421184377987513">Inasogezwa upande wa chini kushoto</translation>
@@ -153,12 +163,12 @@ Iwapo maoni yako yanahusu ubora wa picha au video, tafadhali ambatisha mfano wa 
 <translation id="8145038249676204903">Piga picha</translation>
 <translation id="8167081290930651932">Hifadhi ikiwa Picha</translation>
 <translation id="8239780215768881278">Rekodi muhtasari wa video</translation>
-<translation id="8346544573713510785">Weka fremu ya HAL ya Kamera</translation>
 <translation id="8425673304802773841">Inamisha chini</translation>
 <translation id="8428213095426709021">Mipangilio</translation>
 <translation id="8609951387004618906">Fungua <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Geuza ili uzime sauti ya maikrofoni. Sauti imezimwa</translation>
+<translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8730621377337864115">Nimemaliza</translation>
 <translation id="8732462232047530626">Kagua kwanza metadata</translation>
 <translation id="874854738381978209">Imetambua mtandao wa Wi-Fi.</translation>

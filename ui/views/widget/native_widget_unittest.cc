@@ -102,4 +102,23 @@ TEST_F(NativeWidgetTest, GetTopLevelNativeWidget2) {
   child_widget->CloseNow();
 }
 
+// GetTopLevelNativeWidget() finds the closest top-level widget.
+TEST_F(NativeWidgetTest, GetTopLevelNativeWidget3) {
+  ScopedTestWidget root_widget(CreateNativeWidget());
+  ScopedTestWidget child_widget(CreateNativeWidget());
+  ScopedTestWidget grandchild_widget(CreateNativeSubWidget());
+  ASSERT_TRUE(root_widget->GetWidget()->is_top_level());
+  ASSERT_TRUE(child_widget->GetWidget()->is_top_level());
+  ASSERT_FALSE(grandchild_widget->GetWidget()->is_top_level());
+
+  Widget::ReparentNativeView(grandchild_widget->GetNativeView(),
+                             child_widget->GetNativeView());
+  Widget::ReparentNativeView(child_widget->GetNativeView(),
+                             root_widget->GetNativeView());
+
+  EXPECT_EQ(child_widget.get(),
+            internal::NativeWidgetPrivate::GetTopLevelNativeWidget(
+                grandchild_widget->GetWidget()->GetNativeView()));
+}
+
 }  // namespace views

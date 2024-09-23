@@ -40,6 +40,11 @@ present in `InteractiveTestApi`. If a method is introduced in
 introduced in `InteractiveBrowserTestApi`, it will have **[Browser]** next to it
 instead.*
 
+There are also methods marked as **[Interactive]** - these are test actions that
+can only be used in a test which can control the mouse and things like window
+activation. Trying to use these actions in tests where these are not reliable
+will cause a CHECK() failure.
+
 ### Test Sequences
 
 The primary entry point for any test is `RunTestSequence()` [Views] or
@@ -127,14 +132,14 @@ Verbs fall into a number of different categories:
   environments where the test fixture is not running as the only process, so
   prefer to use those in interactive_ui_tests. Examples:
     - `PressButton()`
-    - `SelectMenuItem()`
+    - `SelectMenuItem()` [Interactive]
     - `SelectTab()`
-    - `SelectDropdownItem()`
+    - `SelectDropdownItem()` [Interactive] (with non-default input mode)
     - `EnterText()`
     - `SendAccelerator()`
     - `Confirm()`
     - `DoDefaultAction()`
-    - `ActivateSurface()`
+    - `ActivateSurface()` [Interactive]
       - ActivateSurface is not always reliable on Linux with the Wayland window
         manager; see [Handling Incompatibilities](#handling-incompatibilities)
         for how to correctly deal with this.
@@ -144,10 +149,10 @@ Verbs fall into a number of different categories:
 - **Mouse** verbs simulate mouse input to the entire application, and are
   therefore only reliable in test fixtures that run as exclusive processes (e.g.
   interactive_browser_tests). Examples include:
-    - `MoveMouseTo()` [Views]
-    - `DragMouseTo()` [Views]
-    - `ClickMouse()` [Views]
-    - `ReleaseMouseButton()` [Views]
+    - `MoveMouseTo()` [Views] [Interactive]
+    - `DragMouseTo()` [Views] [Interactive]
+    - `ClickMouse()` [Views] [Interactive]
+    - `ReleaseMouseButton()` [Views] [Interactive]
 - **Name** verbs assign a string name to some UI element which may not be known
   ahead of time, so that it can be referenced later in the test. Examples
   include:
@@ -169,7 +174,8 @@ Verbs fall into a number of different categories:
     - `NavigateWebContents()` [Browser]
     - `WaitForWebContentsReady()` [Browser]
     - `WaitForWebContentsNavigation()` [Browser]
-    - `FocusWebContents()` [Browser]
+    - `WaitForWebContentsPainted()` [Browser]
+    - `FocusWebContents()` [Browser] [Interactive]
     - `WaitForStateChange()` [Browser]
 - **Javascript** verbs execute javascript in an
   [instrumented WebContents](#webcontents-instrumentation), or verify a result
@@ -197,13 +203,18 @@ Verbs fall into a number of different categories:
    - `PollView()` [Views]
    - `StopObservingState()`
 - **Utility** verbs modify how the test sequence is executed.
-   - `FlushEvents()` ensures that the next step happens on a fresh
-     message loop rather than being able to chain successive steps.
+   - `WithoutDelay()` prevents step start callback and the trigger for the next
+     step being evaluated on a new call stack, after all pending events.
+     Instead, these will be evaluated as soon as possible, possibly all on the 
+     same call stack. This can be used to perform checks before an object is
+     destroyed or a resource is freed.
    - `SetOnIncompatibleAction()` changes what the sequence will do when faced
      with an action that cannot be executed on the current
      build, environment, or platform. See
      [Handling Incompatibilities](#handling-incompatibilities) for more
      information and best practices.
+   - `Screenshot()` and `ScreenshotSurface()` take Skia Gold screenshots of a
+     particular element or window.
 
 Example with mouse input:
 ```cpp
@@ -726,9 +737,9 @@ RunTestSequence(
 );
 ```
 
-For `PollElement()` and `PollView()`, the state value is an `absl::optional` and
+For `PollElement()` and `PollView()`, the state value is an `std::optional` and
 if the element or view is not present in the target context the value will be
-`absl::nullopt`.
+`std::nullopt`.
 
 Be aware that for transient or short-lived states, the correct value might be
 missed between polls, so polling should only be used for states that should

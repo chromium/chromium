@@ -1,6 +1,6 @@
 {
   "name": "test",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "1",
   "tts_engine": {
     "voices": [
@@ -8,13 +8,21 @@
         "voice_name": "name",
         "lang": "en-US",
         "gender": "female",
-        "event_types": ["start", "end", "marker"],
+        "event_types": [
+          "start",
+          "end",
+          "marker"
+        ],
         "other_key": "other_value"
       },
       {
         "voice_name": "name 2",
         "lang": "en-US",
-        "event_types": ["start", "end", "marker"],
+        "event_types": [
+          "start",
+          "end",
+          "marker"
+        ],
         "other_key": "other_value"
       }
     ]

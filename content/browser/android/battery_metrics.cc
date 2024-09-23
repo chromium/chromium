@@ -4,8 +4,6 @@
 
 #include "content/browser/android/battery_metrics.h"
 
-#include <optional>
-
 #include "base/android/application_status_listener.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -179,15 +177,18 @@ AndroidBatteryMetrics::AndroidBatteryMetrics()
 
 AndroidBatteryMetrics::~AndroidBatteryMetrics() {
   // Never called, this is a no-destruct singleton.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AndroidBatteryMetrics::InitializeOnSequence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  on_battery_power_ =
-      base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
-  base::PowerMonitor::AddPowerThermalObserver(this);
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  battery_power_status_ =
+      power_monitor->AddPowerStateObserverAndReturnBatteryPowerStatus(this);
+  power_monitor->AddPowerThermalObserver(this);
   content::ProcessVisibilityTracker::GetInstance()->AddObserver(this);
+  // TODO(b/339859756): Update this call to take into account the unknown battery
+  // status.
   UpdateMetricsEnabled();
 }
 
@@ -197,9 +198,10 @@ void AndroidBatteryMetrics::OnVisibilityChanged(bool visible) {
   UpdateMetricsEnabled();
 }
 
-void AndroidBatteryMetrics::OnPowerStateChange(bool on_battery_power) {
+void AndroidBatteryMetrics::OnBatteryPowerStatusChange(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  on_battery_power_ = on_battery_power;
+  battery_power_status_ = battery_power_status;
   UpdateMetricsEnabled();
 }
 
@@ -229,12 +231,14 @@ void AndroidBatteryMetrics::UpdateMetricsEnabled() {
   // We want to attribute battery drain to chromium while the embedding app is
   // visible. Battery drain will only be reflected in remaining battery capacity
   // when the device is not on a charger.
-  bool should_be_enabled = app_visible_ && on_battery_power_;
+  bool should_be_enabled =
+      app_visible_ && (battery_power_status_ ==
+                       PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
   if (should_be_enabled && !metrics_timer_.IsRunning()) {
     // Capture first capacity measurement and enable the repeating timer.
     last_remaining_capacity_uah_ =
-        base::PowerMonitor::GetRemainingBatteryCapacity();
+        base::PowerMonitor::GetInstance()->GetRemainingBatteryCapacity();
     skipped_timers_ = 0;
     observed_capacity_drops_ = 0;
 
@@ -252,7 +256,7 @@ void AndroidBatteryMetrics::UpdateMetricsEnabled() {
 
 void AndroidBatteryMetrics::CaptureAndReportMetrics(bool disabling) {
   int remaining_capacity_uah =
-      base::PowerMonitor::GetRemainingBatteryCapacity();
+      base::PowerMonitor::GetInstance()->GetRemainingBatteryCapacity();
 
   if (remaining_capacity_uah >= last_remaining_capacity_uah_) {
     // No change in battery capacity, or it increased. The latter could happen

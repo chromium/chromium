@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>CSS Pseudo Test: active selection with decorations on text following a path</title>
+<link rel="author" title="Stephen Chenney" email="schenney@igalia.com">
+<link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
+<link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-styling">
+<link rel="match" href="textpath-selection-012-ref.html">
+<meta name="assert" value="Verify that selected SVG with a ::selection style correctly renders, even if text decorations are given.">
+<style>
+  ::selection {
+    background-color: transparent;
+    fill: green;
+    /*
+      Text decorations for SVG are still under spec discussion, but they may force a
+      different painting path.
+    */
+    text-decoration: 5px red underline;
+  }
+</style>
+<div>
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="550" height="300">
+    <path id="pathToApply"
+        d="M 100 200
+           C 100 100 200 0 500 200"  fill="none" />
+    <text fill="red" style="font-size: 48px;"><textPath xlink:href="#pathToApply" id="test">Curvy text sample</textPath></text>
+  </svg>
+</div>
+<script>
+  var targetRange = document.createRange();
+  targetRange.setStart(document.getElementById("test").childNodes[0], 0);
+  targetRange.setEnd(document.getElementById("test").childNodes[0], 17);
+
+  window.getSelection().addRange(targetRange);
+</script>

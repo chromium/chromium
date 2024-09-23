@@ -306,7 +306,7 @@ class BrowserChildProcessObserverBrowserTest : public ContentBrowserTest {};
 // Tests that launching and then using ForceShutdown() results in a normal
 // termination.
 #if defined(ADDRESS_SANITIZER)
-// TODO(https://crbug.com/1363257): Fix ASAN failures on trybot.
+// TODO(crbug.com/40238612): Fix ASAN failures on trybot.
 #define MAYBE_LaunchAndForceShutdown DISABLED_LaunchAndForceShutdown
 #else
 #define MAYBE_LaunchAndForceShutdown LaunchAndForceShutdown
@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
 // Note: This only works for services bound using BindServiceInterface(), not
 // BindReceiver().
 #if defined(ADDRESS_SANITIZER)
-// TODO(https://crbug.com/1363257): Fix ASAN failures on trybot.
+// TODO(crbug.com/40238612): Fix ASAN failures on trybot.
 #define MAYBE_LaunchAndDisconnect DISABLED_LaunchAndDisconnect
 #else
 #define MAYBE_LaunchAndDisconnect LaunchAndDisconnect
@@ -430,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
 
 // Tests that launching and then causing a crash the host results in a crashed
 // notification.
-// TODO(https://crbug.com/1368044): Times out on Android tests.
+// TODO(crbug.com/40868150): Times out on Android tests.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_LaunchAndCrash DISABLED_LaunchAndCrash
 #else

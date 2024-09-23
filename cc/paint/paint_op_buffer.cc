@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/paint/paint_op_buffer.h"
 
 #include <algorithm>
@@ -19,29 +24,25 @@
 #include "cc/paint/paint_record.h"
 #include "cc/paint/scoped_raster_flags.h"
 #include "cc/paint/skottie_serialization_history.h"
-#include "third_party/skia/include/gpu/GrRecordingContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrRecordingContext.h"
+#include "third_party/skia/include/gpu/graphite/Recorder.h"
 
 namespace cc {
 
-PlaybackParams::PlaybackParams(ImageProvider* image_provider)
-    : PlaybackParams(image_provider, SkM44()) {}
+PlaybackCallbacks::PlaybackCallbacks() = default;
+PlaybackCallbacks::~PlaybackCallbacks() = default;
+PlaybackCallbacks::PlaybackCallbacks(const PlaybackCallbacks&) = default;
+PlaybackCallbacks& PlaybackCallbacks::operator=(const PlaybackCallbacks&) =
+    default;
 
 PlaybackParams::PlaybackParams(ImageProvider* image_provider,
                                const SkM44& original_ctm,
-                               CustomDataRasterCallback custom_callback,
-                               DidDrawOpCallback did_draw_op_callback,
-                               ConvertOpCallback convert_op_callback)
+                               const PlaybackCallbacks& callbacks)
     : image_provider(image_provider),
       original_ctm(original_ctm),
-      custom_callback(custom_callback),
-      did_draw_op_callback(std::move(did_draw_op_callback)),
-      convert_op_callback(std::move(convert_op_callback)) {}
+      callbacks(callbacks) {}
 
 PlaybackParams::~PlaybackParams() = default;
-
-PlaybackParams::PlaybackParams(const PlaybackParams& other) = default;
-PlaybackParams& PlaybackParams::operator=(const PlaybackParams& other) =
-    default;
 
 PaintOpBuffer::SerializeOptions::SerializeOptions(
     ImageProvider* image_provider,
@@ -52,7 +53,8 @@ PaintOpBuffer::SerializeOptions::SerializeOptions(
     SkottieSerializationHistory* skottie_serialization_history,
     bool can_use_lcd_text,
     bool context_supports_distance_field_text,
-    int max_texture_size)
+    int max_texture_size,
+    const ScrollOffsetMap* raster_inducing_scroll_offsets)
     : image_provider(image_provider),
       transfer_cache(transfer_cache),
       paint_cache(paint_cache),
@@ -62,7 +64,8 @@ PaintOpBuffer::SerializeOptions::SerializeOptions(
       can_use_lcd_text(can_use_lcd_text),
       context_supports_distance_field_text(
           context_supports_distance_field_text),
-      max_texture_size(max_texture_size) {}
+      max_texture_size(max_texture_size),
+      raster_inducing_scroll_offsets(raster_inducing_scroll_offsets) {}
 
 PaintOpBuffer::SerializeOptions::SerializeOptions() = default;
 PaintOpBuffer::SerializeOptions::SerializeOptions(const SerializeOptions&) =
@@ -70,22 +73,6 @@ PaintOpBuffer::SerializeOptions::SerializeOptions(const SerializeOptions&) =
 PaintOpBuffer::SerializeOptions& PaintOpBuffer::SerializeOptions::operator=(
     const SerializeOptions&) = default;
 PaintOpBuffer::SerializeOptions::~SerializeOptions() = default;
-
-PaintOpBuffer::DeserializeOptions::DeserializeOptions(
-    TransferCacheDeserializeHelper* transfer_cache,
-    ServicePaintCache* paint_cache,
-    SkStrikeClient* strike_client,
-    std::vector<uint8_t>* scratch_buffer,
-    bool is_privileged,
-    SharedImageProvider* shared_image_provider)
-    : transfer_cache(transfer_cache),
-      paint_cache(paint_cache),
-      strike_client(strike_client),
-      scratch_buffer(scratch_buffer),
-      is_privileged(is_privileged),
-      shared_image_provider(shared_image_provider) {
-  DCHECK(scratch_buffer);
-}
 
 PaintOpBuffer::PaintOpBuffer() = default;
 
@@ -107,13 +94,14 @@ PaintOpBuffer& PaintOpBuffer::operator=(PaintOpBuffer&& other) {
   subrecord_bytes_used_ = other.subrecord_bytes_used_;
   subrecord_op_count_ = other.subrecord_op_count_;
   has_non_aa_paint_ = other.has_non_aa_paint_;
-  has_discardable_images_ = other.has_discardable_images_;
   has_draw_ops_ = other.has_draw_ops_;
   has_draw_text_ops_ = other.has_draw_text_ops_;
   has_save_layer_ops_ = other.has_save_layer_ops_;
   has_save_layer_alpha_ops_ = other.has_save_layer_alpha_ops_;
   has_effects_preventing_lcd_text_for_save_layer_alpha_ =
       other.has_effects_preventing_lcd_text_for_save_layer_alpha_;
+  has_discardable_images_ = other.has_discardable_images_;
+  content_color_usage_ = other.content_color_usage_;
 
   // Make sure the other pob can destruct safely or is ready for reuse.
   other.reserved_ = 0;
@@ -125,7 +113,7 @@ void PaintOpBuffer::DestroyOps() {
   if (data_) {
     for (size_t offset = 0; offset < used_;) {
       auto* op = reinterpret_cast<PaintOp*>(data_.get() + offset);
-      offset += op->aligned_size;
+      offset += op->AlignedSize();
       op->DestroyThis();
     }
   }
@@ -147,21 +135,24 @@ void PaintOpBuffer::ResetRetainingBuffer() {
   has_non_aa_paint_ = false;
   subrecord_bytes_used_ = 0;
   subrecord_op_count_ = 0;
-  has_discardable_images_ = false;
   has_draw_ops_ = false;
   has_draw_text_ops_ = false;
   has_save_layer_ops_ = false;
   has_save_layer_alpha_ops_ = false;
   has_effects_preventing_lcd_text_for_save_layer_alpha_ = false;
+  has_discardable_images_ = false;
+  content_color_usage_ = gfx::ContentColorUsage::kSRGB;
 }
 
 void PaintOpBuffer::Playback(SkCanvas* canvas) const {
-  Playback(canvas, PlaybackParams(nullptr), nullptr);
+  Playback(canvas, PlaybackParams(nullptr), /*local_ctm=*/true,
+           /*offsets=*/nullptr);
 }
 
 void PaintOpBuffer::Playback(SkCanvas* canvas,
-                             const PlaybackParams& params) const {
-  Playback(canvas, params, nullptr);
+                             const PlaybackParams& params,
+                             bool local_ctm) const {
+  Playback(canvas, params, local_ctm, /*offsets=*/nullptr);
 }
 
 PaintRecord PaintOpBuffer::ReleaseAsRecord() {
@@ -178,13 +169,16 @@ PaintRecord PaintOpBuffer::ReleaseAsRecord() {
 
 void PaintOpBuffer::Playback(SkCanvas* canvas,
                              const PlaybackParams& params,
+                             bool local_ctm,
                              const std::vector<size_t>* offsets) const {
   if (!op_count_)
     return;
   if (offsets && offsets->empty())
     return;
-  // Prevent PaintOpBuffers from having side effects back into the canvas.
-  SkAutoCanvasRestore save_restore(canvas, true);
+  // Make sure the there are no pending saves after we are done. Add a save if
+  // this `PaintOpBuffer` isn't meant to impact the global CTM (to prevent
+  // PaintOps from having side effects back into the canvas)
+  SkAutoCanvasRestore save_restore(canvas, /*doSave=*/local_ctm);
 
   bool save_layer_alpha_should_preserve_lcd_text =
       (!params.save_layer_alpha_should_preserve_lcd_text.has_value() ||
@@ -204,16 +198,16 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
   // translate(x, y), then draw a paint record with a SetMatrix(identity),
   // the translation should be preserved instead of clobbering the top level
   // transform.  This could probably be done more efficiently.
-  PlaybackParams new_params(params.image_provider, canvas->getLocalToDevice(),
-                            params.custom_callback, params.did_draw_op_callback,
-                            params.convert_op_callback);
+  PlaybackParams new_params = params;
+  if (local_ctm) {
+    new_params.original_ctm = canvas->getLocalToDevice();
+  }
   new_params.save_layer_alpha_should_preserve_lcd_text =
       save_layer_alpha_should_preserve_lcd_text;
-  new_params.is_analyzing = params.is_analyzing;
   for (PlaybackFoldingIterator iter(*this, offsets); iter; ++iter) {
     const PaintOp* op = iter.get();
-    if (params.convert_op_callback) {
-      op = params.convert_op_callback.Run(*op);
+    if (params.callbacks.convert_op_callback) {
+      op = params.callbacks.convert_op_callback.Run(*op);
       if (!op)
         continue;
     }
@@ -230,11 +224,20 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
       continue;
 
     if (op->IsPaintOpWithFlags()) {
+      int max_texture_size;
+      if (auto* context = canvas->recordingContext()) {
+        max_texture_size = context->maxTextureSize();
+      } else if (auto* recorder = canvas->recorder()) {
+        max_texture_size = recorder->maxTextureSize();
+      } else {
+        // This can happen in tests.
+        max_texture_size = 0;
+      }
+
       const auto& flags_op = static_cast<const PaintOpWithFlags&>(*op);
-      auto* context = canvas->recordingContext();
       const ScopedRasterFlags scoped_flags(
           &flags_op.flags, new_params.image_provider, canvas->getTotalMatrix(),
-          context ? context->maxTextureSize() : 0, iter.alpha());
+          max_texture_size, iter.alpha());
       if (const auto* raster_flags = scoped_flags.flags())
         flags_op.RasterWithFlags(canvas, raster_flags, new_params);
     } else {
@@ -242,8 +245,9 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
       op->Raster(canvas, new_params);
     }
 
-    if (!new_params.did_draw_op_callback.is_null())
-      new_params.did_draw_op_callback.Run();
+    if (!new_params.callbacks.did_draw_op_callback.is_null()) {
+      new_params.callbacks.did_draw_op_callback.Run();
+    }
   }
 }
 
@@ -417,7 +421,7 @@ void PaintOpBuffer::UpdateSaveLayerBounds(size_t offset, const SkRect& bounds) {
       static_cast<SaveLayerAlphaOp*>(op)->bounds = bounds;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -427,6 +431,16 @@ PaintOpBuffer::Iterator PaintOpBuffer::begin() const {
 
 PaintOpBuffer::Iterator PaintOpBuffer::end() const {
   return Iterator(*this).end();
+}
+
+const PaintOp& PaintOpBuffer::GetOpAtForTesting(size_t index) const {
+  for (const auto& op : *this) {
+    if (!index) {
+      return op;
+    }
+    --index;
+  }
+  NOTREACHED();
 }
 
 }  // namespace cc

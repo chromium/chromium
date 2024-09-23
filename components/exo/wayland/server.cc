@@ -55,6 +55,7 @@
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/surface_augmenter.h"
 #include "components/exo/wayland/wayland_dmabuf_feedback_manager.h"
+#include "components/exo/wayland/wayland_protocol_logger.h"
 #include "components/exo/wayland/wayland_watcher.h"
 #include "components/exo/wayland/wl_compositor.h"
 #include "components/exo/wayland/wl_data_device_manager.h"
@@ -80,6 +81,7 @@
 #include "components/exo/wayland/zcr_remote_shell_v2.h"
 #include "components/exo/wayland/zcr_stylus.h"
 #include "components/exo/wayland/zcr_stylus_tools.h"
+#include "components/exo/wayland/zcr_test_controller.h"
 #include "components/exo/wayland/zcr_touchpad_haptics.h"
 #include "components/exo/wayland/zcr_ui_controls.h"
 #include "components/exo/wayland/zcr_vsync_feedback.h"
@@ -139,25 +141,7 @@ void wayland_log(const char* fmt, va_list argp) {
 }
 
 int GetTextInputExtensionV1Version() {
-  if (base::FeatureList::IsEnabled(ash::features::kExoSurroundingTextOffset)) {
-    // set_surrounding_text_offset_utf16 + new surrounding_text_support
-    // strategy enabled once at version 10 was reverted (crbug.com/1451324).
-    //
-    // Now, the new API to fix the issue is introduced in version 12.
-    // We cannot enable confirm-composition only, because it will be hitting
-    // the same issue at version 10. Thus, we'll set version 12 (including
-    // all fixes + confirm-composition), or 9 (before everything).
-
-    // If GIF support is also enabled, we need version 13.
-    if (base::FeatureList::IsEnabled(
-            ash::features::kImeSystemEmojiPickerGIFSupport)) {
-      return 13;
-    }
-
-    return 12;
-  }
-
-  return 9;
+  return 14;
 }
 
 }  // namespace
@@ -254,6 +238,8 @@ Server::Server(Display* display,
   SetSecurityDelegate(wl_display_.get(), security_delegate_.get());
 
   client_tracker_ = std::make_unique<ClientTracker>(wl_display_.get());
+  wayland_protocol_logger_ =
+      std::make_unique<WaylandProtocolLogger>(wl_display_.get());
 }
 
 void Server::Initialize() {
@@ -364,6 +350,7 @@ void Server::Initialize() {
                    /*version=*/1, display_, bind_zwp_idle_inhibit_manager);
 
   ui_controls_holder_ = std::make_unique<UiControls>(this);
+  test_controller_ = std::make_unique<TestController>(this);
 
   zcr_keyboard_extension_data_ =
       std::make_unique<WaylandKeyboardExtension>(serial_tracker_.get());
@@ -408,14 +395,9 @@ void Server::Finalize(StartCallback callback, bool success) {
 
 Server::~Server() {
   RemoveSecurityDelegate(wl_display_.get());
-  // TODO(https://crbug.com/1124106): Investigate if we can eliminate Shutdown
+  // TODO(crbug.com/40717074): Investigate if we can eliminate Shutdown
   // methods.
   serial_tracker_->Shutdown();
-}
-
-// static
-std::unique_ptr<Server> Server::Create(Display* display) {
-  return Create(display, SecurityDelegate::GetDefaultSecurityDelegate());
 }
 
 // static
@@ -473,7 +455,7 @@ void Server::Dispatch(base::TimeDelta timeout) {
 }
 
 void Server::Flush() {
-  // TODO(crbug.com/1508130): This should be updated to use
+  // TODO(crbug.com/40948841): This should be updated to use
   // wl_display_flush_clients() after an upstream libwayland fix has landed to
   // address crashes during client-disconnect.
   wl_client* client = nullptr;

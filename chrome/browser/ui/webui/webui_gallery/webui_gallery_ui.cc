@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
@@ -13,6 +18,7 @@
 #include "chrome/grit/webui_gallery_resources.h"
 #include "chrome/grit/webui_gallery_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -37,11 +43,10 @@ void CreateAndAddWebuiGalleryUIHtmlSource(Profile* profile) {
       network::mojom::CSPDirectiveName::FrameAncestors,
       "frame-ancestors 'self';");
 
-  webui::SetupChromeRefresh2023(source);
-
   // TODO(colehorvitz): Promote to a place where it can be easily registered
   // by many WebUIs.
   source->AddString("opensInNewTab", "Opens in new tab");
+  source->AddLocalizedString("backButton", IDS_ACCNAME_BACK);
 
   // Add shared SidePanel resources so that those elements can be demonstrated
   // as well.

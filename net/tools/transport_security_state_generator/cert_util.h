@@ -7,7 +7,8 @@
 
 #include <stdint.h>
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "third_party/boringssl/src/include/openssl/x509v3.h"
 
 namespace net::transport_security_state {
@@ -17,7 +18,7 @@ class SPKIHash;
 // Decodes the PEM block in |pem_data| and attempts to parse the resulting
 // structure. Returns a pointer to a X509 instance if successful and NULL
 // otherwise.
-bssl::UniquePtr<X509> GetX509CertificateFromPEM(base::StringPiece pem_data);
+bssl::UniquePtr<X509> GetX509CertificateFromPEM(std::string_view pem_data);
 
 // Extracts the SubjectPublicKeyInfo from |*certificate| and copies its SHA256
 // digest to |*out_hash|. Returns true on success and false on failure.
@@ -36,7 +37,7 @@ bool ExtractSubjectNameFromCertificate(X509* certificate, std::string* name);
 // be a SubjectPublicKeyInfo structure. Returns true on success and false on
 // failure.
 bool CalculateSPKIHashFromKey(
-    base::StringPiece pem_key,
+    std::string_view pem_key,
     net::transport_security_state::SPKIHash* out_hash);
 
 #endif  // NET_TOOLS_TRANSPORT_SECURITY_STATE_GENERATOR_CERT_UTIL_H_

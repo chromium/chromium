@@ -35,7 +35,7 @@ enum class ProfileNetUserCounts {
   kMaxValue = PROFILE_DELETED
 };
 
-int GetTotalKeyedServiceCount(Profile* profile) {
+size_t GetTotalKeyedServiceCount(Profile* profile) {
   return KeyedServiceFactory::GetServicesCount(profile) +
          RefcountedKeyedServiceFactory::GetServicesCount(profile);
 }
@@ -159,13 +159,6 @@ void ProfileMetrics::LogProfileAddNewUser(ProfileAdd metric) {
 void ProfileMetrics::LogProfileAddSignInFlowOutcome(
     ProfileSignedInFlowOutcome outcome) {
   base::UmaHistogramEnumeration("Profile.AddSignInFlowOutcome", outcome);
-}
-
-// static
-void ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
-    ProfileSignedInFlowOutcome outcome) {
-  base::UmaHistogramEnumeration("Profile.LacrosPrimaryProfileFirstRunOutcome",
-                                outcome);
 }
 
 void ProfileMetrics::LogProfileAvatarSelection(size_t icon_index) {
@@ -344,7 +337,7 @@ void ProfileMetrics::LogProfileAvatarSelection(size_t icon_index) {
       icon_name = AVATAR_GAIA;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   base::UmaHistogramEnumeration("Profile.Avatar", icon_name,
                                 NUM_PROFILE_AVATAR_METRICS);

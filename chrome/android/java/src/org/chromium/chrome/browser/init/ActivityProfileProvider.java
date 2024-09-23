@@ -52,7 +52,7 @@ public class ActivityProfileProvider extends OneshotSupplierImpl<ProfileProvider
                     @NonNull
                     @Override
                     public Profile getOriginalProfile() {
-                        return Profile.getLastUsedRegularProfile();
+                        return ProfileManager.getLastUsedRegularProfile();
                     }
 
                     @Nullable

@@ -37,7 +37,8 @@ class CC_PAINT_EXPORT SkottieMRUResourceProvider
       delete;
   ~SkottieMRUResourceProvider() override;
 
-  // Contains the metadata for all currently known ImageAssets in the animation.
+  // Contains the metadata for all currently known external ImageAssets in the
+  // animation.
   const SkottieResourceMetadataMap& GetImageAssetMetadata() const;
 
  private:

@@ -9,15 +9,18 @@
 #include <utility>
 #include <vector>
 
+#include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/public/android/content_jni_headers/ContactsDialogHost_jni.h"
 #include "content/public/browser/contacts_picker_properties.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/ContactsDialogHost_jni.h"
 
 namespace content {
 
@@ -107,9 +110,10 @@ void ContactsProviderAndroid::AddContact(
     for (const base::android::JavaRef<jbyteArray>& j_address :
          addresses_java.ReadElements<jbyteArray>()) {
       payments::mojom::PaymentAddressPtr address;
+      base::span<const uint8_t> address_bytes =
+          base::android::JavaByteBufferToSpan(env, j_address);
       if (!payments::mojom::PaymentAddress::Deserialize(
-              static_cast<jbyte*>(env->GetDirectBufferAddress(j_address.obj())),
-              env->GetDirectBufferCapacity(j_address.obj()), &address)) {
+              address_bytes.data(), address_bytes.size(), &address)) {
         continue;
       }
       addresses_vector.push_back(std::move(address));
@@ -125,9 +129,10 @@ void ContactsProviderAndroid::AddContact(
     for (const base::android::JavaRef<jbyteArray>& j_icon :
          icons_java.ReadElements<jbyteArray>()) {
       blink::mojom::ContactIconBlobPtr icon;
+      base::span<const uint8_t> icon_bytes =
+          base::android::JavaByteBufferToSpan(env, j_icon);
       if (!blink::mojom::ContactIconBlob::Deserialize(
-              static_cast<jbyte*>(env->GetDirectBufferAddress(j_icon.obj())),
-              env->GetDirectBufferCapacity(j_icon.obj()), &icon)) {
+              icon_bytes.data(), icon_bytes.size(), &icon)) {
         continue;
       }
       icons_vector.push_back(std::move(icon));

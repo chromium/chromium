@@ -14,6 +14,8 @@
 
 #include "client/simple_string_dictionary.h"
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "gtest/gtest.h"
 #include "test/gtest_death.h"
@@ -73,7 +75,7 @@ TEST(SimpleStringDictionary, SimpleStringDictionary) {
   EXPECT_FALSE(dict.GetValueForKey("key3"));
 
   // Remove by setting value to nullptr
-  dict.SetKeyValue("key2", base::StringPiece(nullptr, 0));
+  dict.SetKeyValue("key2", std::string_view(nullptr, 0));
 
   // Now make sure it's not there anymore
   EXPECT_FALSE(dict.GetValueForKey("key2"));
@@ -258,14 +260,14 @@ TEST(SimpleStringDictionary, OutOfSpace) {
 
 TEST(SimpleStringDictionaryDeathTest, SetKeyValueWithNullKey) {
   TSimpleStringDictionary<4, 6, 6> map;
-  ASSERT_DEATH_CHECK(map.SetKeyValue(base::StringPiece(nullptr, 0), "hello"),
+  ASSERT_DEATH_CHECK(map.SetKeyValue(std::string_view(nullptr, 0), "hello"),
                      "key");
 }
 
 TEST(SimpleStringDictionaryDeathTest, GetValueForKeyWithNullKey) {
   TSimpleStringDictionary<4, 6, 6> map;
   map.SetKeyValue("hi", "there");
-  ASSERT_DEATH_CHECK(map.GetValueForKey(base::StringPiece(nullptr, 0)), "key");
+  ASSERT_DEATH_CHECK(map.GetValueForKey(std::string_view(nullptr, 0)), "key");
   EXPECT_STREQ("there", map.GetValueForKey("hi"));
 }
 

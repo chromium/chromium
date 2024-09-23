@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<head>
+  <title>CanvasRenderingContext2D.PlaceElement() fills parent container</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
+  <link rel="help" href="https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md" />
+  <meta name="assert" content="Canvas fallback content fills the canvas with width/height = 100%" />
+  <style>
+    .fallback {
+      will-change: transform;
+      background-color: green;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas>
+    <div class="fallback" id="fallback">Placed Element</div>
+  </canvas>
+</body>
+
+<script>
+  const canvas = document.querySelector("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.placeElement(document.getElementById("fallback"), 0, 0);
+
+  const rect = document.getElementById("fallback").getBoundingClientRect();
+  test(function (t) {
+    assert_equals(canvas.width, rect.width);
+    assert_equals(canvas.height, rect.height);
+  }, "Verify that the dimensions of the fallback div are correct.");
+</script>

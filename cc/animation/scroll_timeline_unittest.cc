@@ -57,7 +57,6 @@ void CreateScrollingElement(PropertyTrees* property_trees,
   // Add the scrolling node for the scrolling and link it to the above transform
   // node.
   ScrollNode scroll_node;
-  scroll_node.scrollable = true;
   scroll_node.bounds = content_size;
   scroll_node.container_bounds = container_size;
   scroll_node.element_id = scroller_id;

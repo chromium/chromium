@@ -1,20 +1,7 @@
 <style include="common cros-button-style">
-  :host-context(body.jelly-enabled) #container {
+  #container {
     background-color: var(--cros-bg-color);
     border: none;
-    grid-template-areas:
-      '. slot           slot    slot      .'
-      '. image          image   image     .'
-      '. .              .       .         .'
-      '. message        message message   .'
-      '. mainpage-desc  .       thumbnail .'
-      '. .              .       .         .';
-    grid-template-columns: 20px auto 192px auto 20px;
-    grid-template-rows: auto auto 20px 192px 1fr 20px;
-  }
-
-  #container {
-    border: 1px solid var(--cros-separator-color);
     border-radius: 16px;
     display: grid;
     grid-template-areas:
@@ -24,16 +11,12 @@
       '. message        message message   .'
       '. mainpage-desc  .       thumbnail .'
       '. .              .       .         .';
-    grid-template-columns: 20px minmax(0, 1fr) 16px 106px 20px;
-    grid-template-rows: auto minmax(158px, 220px) 20px 106px auto 24px;
+    grid-template-columns: 20px auto 192px auto 20px;
+    grid-template-rows: auto auto 20px 192px 1fr 20px;
     height: 100%;
   }
 
   #container.ambient-mode-enabled {
-    grid-template-rows: auto minmax(158px, 220px) 20px auto 106px 24px;
-  }
-
-  :host-context(body.jelly-enabled) #container.ambient-mode-enabled {
     grid-template-areas:
       '. slot          .'
       '. image         .'
@@ -77,28 +60,18 @@
   }
 
   #messageContainer .text {
-    color: var(--cros-sys-on_primary_container, var(--cros-text-color-secondary));
-    font: var(--cros-body-1-font);
+    color: var(--cros-sys-on_primary_container);
+    font: var(--cros-body-2-font);
     line-height: 1.5;
-    margin-top: 12px;
+    margin-top: 56px;
     position: relative;
     text-align: center;
-    width: unset;
-  }
-
-  :host-context(body.jelly-enabled) #messageContainer .text {
-    font: var(--cros-body-2-font);
-    margin-top: 56px;
     width: 128px;
-  }
-
-  :host-context(body.jelly-enabled) #messageContainer cr-button {
-    margin-top: 8px;
   }
 
   #messageContainer cr-button {
     margin-bottom: 50px;
-    margin-top: 20px;
+    margin-top: 8px;
   }
 
   ambient-zero-state-svg {
@@ -107,29 +80,18 @@
 
   #imageContainer,
   #imagePlaceholder {
+    aspect-ratio: 340/220;
     display: flex;
     height: 100%;
     justify-self: center;
-    max-width: 360px;
-    min-width: 252px;
-    width: 100%;
-  }
-
-  :host-context(body.jelly-enabled) #imageContainer,
-  :host-context(body.jelly-enabled) #imagePlaceholder {
-    aspect-ratio: 340/220;
     max-width: 460px;
     min-width: 278px;
-  }
-
-  :host-context(body.jelly-enabled) .album-info-mainpage,
-  :host-context(body.jelly-enabled) #textPlaceholder {
-    align-items: center;
+    width: 100%;
   }
 
   .album-info-mainpage,
   #textPlaceholder {
-    align-items: flex-start;
+    align-items: center;
     display: flex;
     grid-area: mainpage-desc;
     justify-content: center;
@@ -147,53 +109,13 @@
   #albumTitle {
     color: var(--cros-text-color-primary);
     font: var(--cros-display-7-font);
-    margin-top: 4px;
-  }
-
-  :host-context(body.jelly-enabled) #albumTitle {
     margin-top: 10px;
   }
 
   #albumDescription {
     color: var(--cros-text-color-secondary);
     font: var(--cros-body-2-font);
-    margin-top: 4px;
-  }
-
-  :host-context(body.jelly-enabled) #albumDescription {
     margin-top: 2px;
-  }
-
-  #collageContainer,
-  #collagePlaceholder {
-    border-radius: 12px;
-    display: grid;
-    gap: 2px;
-    grid-area: thumbnail;
-    overflow: hidden;
-  }
-
-  #collageContainer {
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(2, minmax(0, 1fr));
-  }
-
-  #collageContainer.collage-1 .collage-item:first-child {
-    grid-row: 1 / 3;
-  }
-
-  #collageContainer.collage-1 .collage-item:first-child,
-  #collageContainer.collage-2 .collage-item:first-child,
-  #collageContainer.collage-2 .collage-item:nth-child(2),
-  #collageContainer.collage-3 .collage-item:nth-child(3) {
-    grid-column: 1 / 3;
-  }
-
-  .collage-item {
-    height: 100%;
-    object-fit: cover;
-    width: 100%;
   }
 
   #buttonContainer {
@@ -224,16 +146,10 @@
     display: grid;
     grid-area: thumbnail;
     justify-self: center;
-    max-width: 360px;
-    min-width: 252px;
-    overflow: hidden;
-    width: 100%;
-  }
-
-  :host-context(body.jelly-enabled) #thumbnailContainer,
-  :host-context(body.jelly-enabled) #thumbnailPlaceholder {
     max-width: 460px;
     min-width: 278px;
+    overflow: hidden;
+    width: 100%;
   }
 
   .thumbnail-item {
@@ -284,7 +200,7 @@
     border-radius: 16px;
   }
 
-  .help-link {
+  #helpLink {
     color: var(--text-color-action);
     text-decoration: none;
   }
@@ -303,121 +219,36 @@
       </clipPath>
     </defs>
   </svg>
-  <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
-    <template is="dom-if" if="[[!isAmbientModeAllowed_]]">
-      <div id="ambientLabel" class="disabled">
-        <h2>$i18n{screensaverLabel}</h2>
-        <cr-icon-button disabled
-            iron-icon="cr:chevron-right">
-        </cr-icon-button>
-      </div>
-      <div ambient-mode-managed
-          aria-hidden="true"
-          class="preview-image-container"
-          id="imageContainer">
-        <div class="preview-image-border"></div>
-        <img class="preview-image disabled"
-            src="//personalization/images/slideshow.png">
-      </div>
-      <div id="messageContainer">
-        <ambient-zero-state-svg></ambient-zero-state-svg>
-        <span class="text" id="turnOnDescription">
-          $i18n{ambientModeMainPageEnterpriseUserMessage}
-        </span>
-        <cr-button class="primary action-button">
-          <!-- TODO(b/282827734): create new p-link for the support page -->
-          <a class="help-link" href="https://support.google.com/chromebook?p=wallpaper_fileerror"
-              target="_blank">$i18n{ambientModeLearnMoreLabel}</a>
-        </cr-button>
-      </div>
-    </template>
-    <template is="dom-if" if="[[isAmbientModeAllowed_]]">
-      <div id="ambientLabel">
-        <h2 class="clickable" on-click="onClickAmbientSubpageLink_">
-          $i18n{screensaverLabel}
-        </h2>
-        <cr-icon-button aria-label="$i18n{ariaLabelChangeScreensaver}"
-            class="tast-open-subpage"
-            iron-icon="cr:chevron-right"
-            on-click="onClickAmbientSubpageLink_">
-        </cr-icon-button>
-      </div>
-      <template is="dom-if" if="[[loading_]]" restamp>
-        <div id="imagePlaceholder" class="placeholder"></div>
-        <div id="thumbnailPlaceholder" class="placeholder"></div>
-        <div id="textPlaceholder"
-            class="preview-text-placeholder album-info-mainpage">
-          <div class="placeholder"></div>
-          <div class="placeholder"></div>
-        </div>
-      </template>
-      <template is="dom-if" if="[[!loading_]]">
-        <template is="dom-if" if="[[!ambientModeEnabled_]]" restamp>
-          <div aria-hidden="true"
-              class="preview-image-container"
-              id="imageContainer">
-            <div class="preview-image-border"></div>
-            <img class="preview-image disabled"
-                src="//personalization/images/slideshow.png">
-          </div>
-          <div id="messageContainer">
-            <ambient-zero-state-svg></ambient-zero-state-svg>
-            <span class="text" id="turnOnDescription">
-              $i18n{ambientModeMainPageZeroStateMessageV2}
-            </span>
-            <cr-button aria-describedby="turnOnDescription"
-                class="primary action-button"
-                on-click="onClickAmbientModeButton_">
-              <span>$i18n{ambientModeTurnOnLabel}</span>
-            </cr-button>
-          </div>
-        </template>
-        <template is="dom-if" if="[[ambientModeEnabled_]]">
-          <!-- TODO(b/226235802) - Add failed/error state when no previewAlbums
-               available. Currently, we show blank containers -->
-          <template is="dom-if" if="[[previewAlbums_]]">
-            <div id="imageContainer" class="preview-image-container">
-              <div class="preview-image-border"></div>
-              <img alt$="[[getAlbumTitle_(firstPreviewAlbum_)]]"
-                  auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]"
-                  class="preview-image clickable"
-                  is-google-photos is="cr-auto-img"
-                  on-click="onClickPreviewImage_"
-                  on-keypress="onClickPreviewImage_">
-            </div>
-            <div aria-hidden="true"
-                class$="[[getThumbnailContainerClass_(thumbnailImages_)]]"
-                id="thumbnailContainer"
-                on-click="onClickThumbnails_"
-                on-keypress="onClickThumbnails_">
-              <template is="dom-repeat" items="[[thumbnailImages_]]">
-                <div class="thumbnail-item">
-                  <img auto-src="[[item.url]]"
-                      is-google-photos
-                      is="cr-auto-img">
-                </div>
-              </template>
-            </div>
-            <h3 aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]"
-                class="preview-text-container album-info-mainpage"
-                id="textContainer">
-              <span aria-hidden="true"
-                  id="albumTitle"
-                  title="[[getAlbumTitle_(firstPreviewAlbum_)]]">
-                [[getAlbumTitle_(firstPreviewAlbum_)]]
-              </span>
-              <span aria-hidden="true" id="albumDescription">
-                [[getAlbumDescription_(topicSource_, previewAlbums_)]]
-              </span>
-            </h3>
-          </template>
-        </template>
-      </template>
-    </template>
+  <template is="dom-if" if="[[!isAmbientModeAllowed_]]">
+    <div id="ambientLabel" class="disabled">
+      <h2>$i18n{screensaverLabel}</h2>
+      <cr-icon-button disabled
+          iron-icon="cr:chevron-right">
+      </cr-icon-button>
+    </div>
+    <div ambient-mode-managed
+        aria-hidden="true"
+        class="preview-image-container"
+        id="imageContainer">
+      <div class="preview-image-border"></div>
+      <img class="preview-image disabled"
+          src="//personalization/images/slideshow.png">
+    </div>
+    <div id="messageContainer">
+      <ambient-zero-state-svg></ambient-zero-state-svg>
+      <span class="text" id="turnOnDescription">
+        $i18n{ambientModeMainPageEnterpriseUserMessage}
+      </span>
+      <cr-button class="primary action-button">
+        <!-- TODO(b/282827734): create new p-link for the support page -->
+        <a id="helpLink" href="https://support.google.com/chromebook?p=wallpaper_fileerror"
+            target="_blank">$i18n{ambientModeLearnMoreLabel}</a>
+      </cr-button>
+    </div>
   </template>
-  <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
+  <template is="dom-if" if="[[isAmbientModeAllowed_]]">
     <div id="ambientLabel">
-      <h2 on-click="onClickAmbientSubpageLink_" class="clickable">
+      <h2 class="clickable" on-click="onClickAmbientSubpageLink_">
         $i18n{screensaverLabel}
       </h2>
       <cr-icon-button aria-label="$i18n{ariaLabelChangeScreensaver}"
@@ -427,13 +258,13 @@
       </cr-icon-button>
     </div>
     <template is="dom-if" if="[[loading_]]" restamp>
-      <div class="placeholder" id="imagePlaceholder"></div>
-      <div class="preview-text-placeholder album-info-mainpage"
-          id="textPlaceholder">
+      <div id="imagePlaceholder" class="placeholder"></div>
+      <div id="thumbnailPlaceholder" class="placeholder"></div>
+      <div id="textPlaceholder"
+          class="preview-text-placeholder album-info-mainpage">
         <div class="placeholder"></div>
         <div class="placeholder"></div>
       </div>
-      <div id="collagePlaceholder" class="placeholder"></div>
     </template>
     <template is="dom-if" if="[[!loading_]]">
       <template is="dom-if" if="[[!ambientModeEnabled_]]" restamp>
@@ -445,8 +276,9 @@
               src="//personalization/images/slideshow.png">
         </div>
         <div id="messageContainer">
+          <ambient-zero-state-svg></ambient-zero-state-svg>
           <span class="text" id="turnOnDescription">
-            $i18n{ambientModeMainPageZeroStateMessage}
+            $i18n{ambientModeMainPageZeroStateMessageV2}
           </span>
           <cr-button aria-describedby="turnOnDescription"
               class="primary action-button"
@@ -456,16 +288,30 @@
         </div>
       </template>
       <template is="dom-if" if="[[ambientModeEnabled_]]">
+        <!-- TODO(b/226235802) - Add failed/error state when no previewAlbums
+              available. Currently, we show blank containers -->
         <template is="dom-if" if="[[previewAlbums_]]">
-          <div class="preview-image-container" id="imageContainer">
+          <div id="imageContainer" class="preview-image-container">
             <div class="preview-image-border"></div>
             <img alt$="[[getAlbumTitle_(firstPreviewAlbum_)]]"
                 auto-src="[[getPreviewImage_(firstPreviewAlbum_)]]"
                 class="preview-image clickable"
-                is-google-photos
-                is="cr-auto-img"
+                is-google-photos is="cr-auto-img"
                 on-click="onClickPreviewImage_"
                 on-keypress="onClickPreviewImage_">
+          </div>
+          <div aria-hidden="true"
+              class$="[[getThumbnailContainerClass_(thumbnailImages_)]]"
+              id="thumbnailContainer"
+              on-click="onClickThumbnails_"
+              on-keypress="onClickThumbnails_">
+            <template is="dom-repeat" items="[[thumbnailImages_]]">
+              <div class="thumbnail-item">
+                <img auto-src="[[item.url]]"
+                    is-google-photos
+                    is="cr-auto-img">
+              </div>
+            </template>
           </div>
           <h3 aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]"
               class="preview-text-container album-info-mainpage"
@@ -479,18 +325,6 @@
               [[getAlbumDescription_(topicSource_, previewAlbums_)]]
             </span>
           </h3>
-          <div aria-hidden="true"
-              class$="[[getCollageContainerClass_(collageImages_)]]"
-              id="collageContainer"
-              on-click="onClickPhotoCollage_"
-              on-keypress="onClickPhotoCollage_">
-            <template is="dom-repeat" items="[[collageImages_]]">
-              <img auto-src="[[item.url]]"
-                  class="collage-item"
-                  is-google-photos
-                  is="cr-auto-img">
-            </template>
-          </div>
         </template>
       </template>
     </template>

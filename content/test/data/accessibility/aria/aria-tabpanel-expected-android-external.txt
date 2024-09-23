@@ -5,3 +5,4 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++View text:"Prices" viewIdResName:"prices" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="tab", roleDescription="tab"]
 ++++++TextView text:"Prices" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 3"]
 ++View text:"Item" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="tabPanel", roleDescription="tab panel"]
+++++TextView text:"Item tab content" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

@@ -1,0 +1,78 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./pdf_shared.css.js
+ * #include=pdf-shared
+ * #css_wrapper_metadata_end */
+
+:host {
+  --focus-border-color: var(--google-blue-300);
+  display: block;
+}
+
+:host(:focus) {
+  outline: none;
+}
+
+#thumbnail {
+  align-items: center;
+  cursor: pointer;
+  display: inline-flex;
+  height: 140px;
+  justify-content: center;
+  margin-bottom: 12px;
+  margin-inline-end: auto;
+  margin-inline-start: auto;
+  width: 108px;
+}
+
+:host([is-active]) #thumbnail {
+  --active-background-color: white;
+  background-color: var(--active-background-color);
+  box-shadow: 0 0 0 6px var(--focus-border-color);
+}
+
+:host(:focus-visible) #thumbnail {
+  box-shadow: 0 0 0 2px var(--focus-border-color);
+}
+
+:host([is-active]:focus-visible) #thumbnail {
+  box-shadow: 0 0 0 8px var(--focus-border-color);
+}
+
+#canvas-container {
+  opacity: 0.5;
+  position: relative;
+}
+
+:host([is-active]) #canvas-container {
+  opacity: 1;
+}
+
+:host([is-active]) #canvas-container:hover,
+#canvas-container:hover {
+  opacity: 0.7;
+}
+
+<if expr="enable_pdf_ink2">
+#ink2-canvas {
+  position: absolute;
+  z-index: 1;
+}
+</if>
+
+#pdf-canvas {
+  z-index: 0;
+}
+
+canvas {
+  display: block;
+}
+
+#pageNumber {
+  line-height: 1;
+}

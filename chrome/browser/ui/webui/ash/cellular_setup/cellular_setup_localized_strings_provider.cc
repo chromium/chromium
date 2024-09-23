@@ -55,10 +55,6 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"eSimFinalPageMessage", IDS_CELLULAR_SETUP_ESIM_FINAL_PAGE_MESSAGE},
     {"eSimFinalPageErrorMessage",
      IDS_CELLULAR_SETUP_ESIM_FINAL_PAGE_ERROR_MESSAGE},
-    {"eSimProfileDetectMessage",
-     IDS_CELLULAR_SETUP_ESIM_PROFILE_DETECT_MESSAGE},
-    {"eSimProfileDetectDuringActiveCellularConnectionMessage",
-     IDS_CELLULAR_SETUP_ESIM_PROFILE_DETECT_DURING_ACTIVE_CELLULAR_CONNECTION_MESSAGE},
     {"scanQRCode", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE},
     {"scanQRCodeNoProfilesFound",
      IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_NO_PROFILES_FOUND},
@@ -75,7 +71,6 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
      IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_USE_CAMERA_AGAIN},
     {"scanQrCodeError", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_ERROR},
     {"qrCodeRetry", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_RETRY},
-    {"scanQrCodeLoading", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_LOADING},
     {"scanQrCodeInvalid", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_INVALID},
     {"scanQrCodeInputSubtitle",
      IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_INPUT_SUBTITLE},
@@ -127,8 +122,7 @@ struct NamedResourceId {
 const std::vector<NamedBoolean>& GetBooleanValues() {
   static const base::NoDestructor<std::vector<NamedBoolean>> named_bools(
       {{"useSecondEuicc",
-        base::FeatureList::IsEnabled(features::kCellularUseSecondEuicc)},
-       {"isSmdsSupportEnabled", ash::features::IsSmdsSupportEnabled()}});
+        base::FeatureList::IsEnabled(features::kCellularUseSecondEuicc)}});
   return *named_bools;
 }
 

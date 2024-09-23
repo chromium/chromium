@@ -2,26 +2,40 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 assert(is_chromeos)
 
 component("cpp") {
   defines = [ "IS_MAHI_PUBLIC_CPP_IMPL" ]
 
   sources = [
-    "fake_mahi_manager.cc",
-    "fake_mahi_manager.h",
     "mahi_manager.cc",
     "mahi_manager.h",
-    "views/experiment_badge.cc",
-    "views/experiment_badge.h",
+    "mahi_media_app_content_manager.cc",
+    "mahi_media_app_content_manager.h",
+    "mahi_media_app_events_proxy.cc",
+    "mahi_media_app_events_proxy.h",
+    "mahi_switches.cc",
+    "mahi_switches.h",
+    "mahi_util.cc",
+    "mahi_util.h",
   ]
 
   deps = [
     "//base",
-    "//chromeos/strings:strings_grit",
+    "//chromeos/crosapi/mojom",
+    "//components/account_id",
+    "//components/user_manager",
+    "//google_apis",
     "//ui/base",
-    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/color",
     "//ui/gfx",
-    "//ui/views",
   ]
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
+  }
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
+  }
 }

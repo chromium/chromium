@@ -5,7 +5,7 @@
 import("//chrome/common/features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia)
+assert(is_win || is_mac || is_linux || is_chromeos_lacros)
 
 build_webui("build") {
   grd_prefix = "browser_switch"
@@ -13,19 +13,25 @@ build_webui("build") {
     "browser_switch.html",
     "internals/browser_switch_internals.html",
   ]
-  web_component_files = [
-    "app.ts",
-    "internals/app.ts",
-  ]
   non_web_component_files = [
+    "app.html.ts",
+    "app.ts",
     "browser_switch_proxy.ts",
+    "internals/app.html.ts",
+    "internals/app.ts",
     "internals/browser_switch_internals_proxy.ts",
+  ]
+  css_files = [
+    "app.css",
+    "internals/app.css",
   ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+
+  webui_context_type = "trusted"
 }

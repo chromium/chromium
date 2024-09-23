@@ -62,10 +62,9 @@ class FirstRunInternalPosixTest : public InProcessBrowserTest {
     // BrowserTestBase sets ContentMainParams::ui_task before this, but the
     // ui_task isn't actually Run() until after the dialog is spawned in
     // ChromeBrowserMainParts::PreMainMessageLoopRunImpl(). Instead, try to
-    // inspect state by posting a task to run in that nested RunLoop.
-    // There's no MessageLoop to enqueue a task on yet, there's also no
-    // content::NotificationService, or anything else sensible that would allow
-    // us to hook in a task. So use a testing-only Closure.
+    // inspect state by posting a task to run in that nested RunLoop. There's no
+    // MessageLoop to enqueue a task on yet or anything else sensible that would
+    // allow us to hook in a task. So use a testing-only Closure.
     GetBeforeShowFirstRunDialogHookForTesting() = base::BindOnce(
         &FirstRunInternalPosixTest::SetupNestedTask, base::Unretained(this));
     EXPECT_FALSE(inspected_state_);
@@ -105,7 +104,13 @@ class FirstRunInternalPosixTest : public InProcessBrowserTest {
 // Test the first run flow for showing the modal dialog that surfaces the first
 // run dialog. Ensure browser startup safely handles a signal while the modal
 // RunLoop is running.
-IN_PROC_BROWSER_TEST_F(FirstRunInternalPosixTest, HandleSigint) {
+// TODO(crbug.com/338037494): Flaky on Linux ASan.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_HandleSigint DISABLED_HandleSigint
+#else
+#define MAYBE_HandleSigint HandleSigint
+#endif  //  BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+IN_PROC_BROWSER_TEST_F(FirstRunInternalPosixTest, MAYBE_HandleSigint) {
   // Never reached. The above SIGINT should prevent the main message loop
   // (and the browser test hooking it) from running.
   ADD_FAILURE() << "Should never be called";

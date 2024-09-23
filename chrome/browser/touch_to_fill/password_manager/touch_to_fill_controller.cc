@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view_factory.h"
@@ -45,10 +46,11 @@ std::vector<UiCredential> SortCredentials(
 }  // namespace
 
 TouchToFillController::TouchToFillController(
+    Profile* profile,
     base::WeakPtr<
         password_manager::KeyboardReplacingSurfaceVisibilityController>
         visibility_controller)
-    : visibility_controller_(visibility_controller) {}
+    : profile_(profile), visibility_controller_(visibility_controller) {}
 TouchToFillController::~TouchToFillController() = default;
 
 bool TouchToFillController::Show(
@@ -58,8 +60,13 @@ bool TouchToFillController::Show(
     webauthn::WebAuthnCredManDelegate* cred_man_delegate,
     base::WeakPtr<password_manager::ContentPasswordManagerDriver>
         frame_driver) {
+  if (!ttf_delegate->ShouldShowTouchToFill()) {
+    return false;
+  }
+
   DCHECK(!ttf_delegate_);
   ttf_delegate_ = std::move(ttf_delegate);
+
   cred_man_delegate_ = cred_man_delegate;
   visibility_controller_->SetVisible(std::move(frame_driver));
 
@@ -104,7 +111,8 @@ bool TouchToFillController::Show(
       if (ttf_delegate_->ShouldTriggerSubmission()) {
         flags |= TouchToFillView::kTriggerSubmission;
       }
-      if (password_manager_launcher::CanManagePasswordsWhenPasskeysPresent()) {
+      if (password_manager_launcher::CanManagePasswordsWhenPasskeysPresent(
+              profile_)) {
         flags |= TouchToFillView::kCanManagePasswordsWhenPasskeysPresent;
       }
       if (ttf_delegate_->ShouldShowHybridOption()) {
@@ -179,7 +187,7 @@ void TouchToFillController::OnDismiss() {
   view_.reset();
   no_passkeys_bridge_.reset();
   if (!ttf_delegate_) {
-    // TODO(crbug/1462532): Remove this check when
+    // TODO(crbug.com/40274966): Remove this check when
     // PasswordSuggestionBottomSheetV2 is launched
     return;
   }
@@ -188,12 +196,16 @@ void TouchToFillController::OnDismiss() {
       &TouchToFillController::ActionCompleted, base::Unretained(this)));
 }
 
+Profile* TouchToFillController::GetProfile() {
+  return profile_;
+}
+
 gfx::NativeView TouchToFillController::GetNativeView() {
   return ttf_delegate_->GetNativeView();
 }
 
 void TouchToFillController::Close() {
-  // TODO(crbug/1468487). This is a duplicate of `OnDismiss`. Merge the two
+  // TODO(crbug.com/40277147). This is a duplicate of `OnDismiss`. Merge the two
   // functions.
   OnDismiss();
 }

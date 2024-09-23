@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_coordinator.h"
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_mediator.h"
 #import "ios/chrome/browser/ui/settings/address_bar_preference/address_bar_preference_view_controller.h"
@@ -41,10 +40,7 @@
   self.viewController = [[AddressBarPreferenceViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
 
-  self.mediator = [[AddressBarPreferenceMediator alloc]
-      initWithOriginalPrefService:self.browser->GetBrowserState()
-                                      ->GetOriginalChromeBrowserState()
-                                      ->GetPrefs()];
+  self.mediator = [[AddressBarPreferenceMediator alloc] init];
 
   self.mediator.consumer = self.viewController;
 

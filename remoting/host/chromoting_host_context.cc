@@ -104,7 +104,6 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContextChromeOs::Copy() {
 scoped_refptr<net::URLRequestContextGetter>
 ChromotingHostContextChromeOs::url_request_context_getter() const {
   NOTREACHED();
-  return nullptr;
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -119,7 +118,7 @@ ChromotingHostContextChromeOs::url_loader_factory() {
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
 void DisallowBlockingOperations() {
   base::DisallowBlocking();
-  // TODO(crbug.com/793486): Re-enable after the underlying issue is fixed.
+  // TODO(crbug.com/41360128): Re-enable after the underlying issue is fixed.
   // base::DisallowBaseSyncPrimitives();
 }
 
@@ -199,7 +198,7 @@ ChromotingHostContextDesktop::url_loader_factory() {
   if (!url_loader_factory_owner_) {
     url_loader_factory_owner_ =
         std::make_unique<network::TransitionalURLLoaderFactoryOwner>(
-            url_request_context_getter_);
+            url_request_context_getter_, /* is_trusted= */ true);
   }
   return url_loader_factory_owner_->GetURLLoaderFactory();
 }

@@ -50,8 +50,6 @@ class SharedStorageWorkletThreadOwningBackingThreadImpl final
     return *worker_backing_thread_;
   }
 
-  void ClearWorkerBackingThread() final { worker_backing_thread_ = nullptr; }
-
  private:
   std::unique_ptr<WorkerBackingThread> worker_backing_thread_;
 };
@@ -89,8 +87,6 @@ class SharedStorageWorkletThreadSharedBackingThreadImpl final
                 GetInstance()
                     ->GetThread();
   }
-
-  void ClearWorkerBackingThread() final {}
 
  private:
   bool IsOwningBackingThread() const final { return false; }

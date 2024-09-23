@@ -43,7 +43,7 @@ using GLSurfaceContextPair =
     std::pair<scoped_refptr<gl::GLSurface>, scoped_refptr<gl::GLContext>>;
 
 GLSurfaceContextPair GetRealContextForVulkan() {
-  // TODO(crbug.com/1143279): Remove all of this after code no longer expects
+  // TODO(crbug.com/40155015): Remove all of this after code no longer expects
   // GL to be present (eg for getting capabilities or calling glGetError).
   static base::NoDestructor<base::WeakPtr<gl::GLSurface>> cached_surface;
   static base::NoDestructor<base::WeakPtr<gl::GLContext>> cached_context;
@@ -89,7 +89,7 @@ void OnContextLost(std::unique_ptr<bool> expect_loss,
       crash_keys::kContextLossReason);
   reason_key.Set(base::NumberToString(static_cast<int>(context_lost_reason)));
 
-  // TODO(https://crbug.com/1112841): Debugging contexts losts. WebView will
+  // TODO(crbug.com/40143203): Debugging contexts losts. WebView will
   // intentionally crash in HardwareRenderer::OnViz::DisplayOutputSurface
   // that will happen after this callback. That crash happens on viz thread and
   // doesn't have any useful information. Crash here on RenderThread to
@@ -127,7 +127,7 @@ OutputSurfaceProviderWebView::~OutputSurfaceProviderWebView() {
   // have a current context at this point, so ensure that it is current here (if
   // not using ANGLE, RenderThreadManager::DestroyHardwareRendererOnRT() ensures
   // that there is a current context via its creation of a
-  // ScopedAppGLStateRestoreImpl instance, which creates a dummy context).
+  // ScopedAppGLStateRestoreImpl instance, which creates a placeholder context).
   // NOTE: |shared_context_state_| holds a ref to surface, but it explicitly
   // drops it before releasing the context.
   if (gl_surface_->is_angle()) {
@@ -155,8 +155,8 @@ void OutputSurfaceProviderWebView::InitializeContext() {
   if (enable_vulkan_) {
     DCHECK(!is_angle);
     real_context = GetRealContextForVulkan();
-    gl_surface_ = base::MakeRefCounted<AwGLSurface>(
-        display, std::move(real_context.first));
+    gl_surface_ =
+        base::MakeRefCounted<AwGLSurface>(display, real_context.first);
   } else {
     // We need to draw to FBO for External Stencil support with SkiaRenderer
     gl_surface_ =
@@ -171,10 +171,17 @@ void OutputSurfaceProviderWebView::InitializeContext() {
       GpuServiceWebView::GetInstance()
           ->gpu_feature_info()
           .enabled_gpu_driver_bug_workarounds);
+
+  // The SharedContextState expect to receive a GLSurface that was used to
+  // create the GLContext. In case of Vulkan, a GLContext is passed, but
+  // |gl_surface| is a AWGLSurface, which wraps the real GLSurface that was
+  // used to create a context.
+  scoped_refptr<gl::GLSurface> gl_surface_for_scs;
   // If failed to create real context for vulkan, just fallback to using
   // GLNonOwnedContext instead of crashing.
   if (enable_vulkan_ && real_context.second) {
     gl_context = std::move(real_context.second);
+    gl_surface_for_scs = std::move(real_context.first);
   } else {
     auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
     gl::GLContextAttribs attribs;
@@ -183,12 +190,10 @@ void OutputSurfaceProviderWebView::InitializeContext() {
     // the ANGLE context.
     attribs.angle_create_from_external_context = is_angle;
 
-    if (is_angle && display->ext->b_EGL_ANGLE_create_context_client_arrays) {
-      // By default client arrays are disabled as they are not supported by
-      // Chrome's IPC architecture. However, they are required for WebView's
-      // usage (in particular, for supporting complex clips).
-      attribs.angle_create_context_client_arrays = true;
-    }
+    // By default client arrays are disabled as they are not supported by
+    // Chrome's IPC architecture. However, they are required for WebView's
+    // usage (in particular, for supporting complex clips).
+    attribs.allow_client_arrays = true;
 
     // Skip validation when dcheck is off.
 #if DCHECK_IS_ON()
@@ -199,13 +204,14 @@ void OutputSurfaceProviderWebView::InitializeContext() {
     gl_context = gl::init::CreateGLContext(share_group.get(), gl_surface_.get(),
                                            attribs);
     gl_context->MakeCurrent(gl_surface_.get());
+    gl_surface_for_scs = gl_surface_;
   }
 
   auto* share_group = gl_context->share_group();
   auto expect_context_loss_ptr = std::make_unique<bool>(false);
   expect_context_loss_ = expect_context_loss_ptr.get();
   shared_context_state_ = base::MakeRefCounted<gpu::SharedContextState>(
-      share_group, gl_surface_, std::move(gl_context),
+      share_group, std::move(gl_surface_for_scs), std::move(gl_context),
       false /* use_virtualized_gl_contexts */,
       base::BindOnce(&OnContextLost, std::move(expect_context_loss_ptr)),
       GpuServiceWebView::GetInstance()->gpu_preferences().gr_context_type,

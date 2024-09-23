@@ -19,8 +19,11 @@
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/lock.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
@@ -37,25 +40,17 @@ namespace updater {
 #if !BUILDFLAG(IS_WIN)
 namespace {
 
-class SplashScreenImpl : public SplashScreen {
- public:
-  // Overrides for SplashScreen.
-  void Show() override {}
-  void Dismiss(base::OnceClosure callback) override {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
-  }
-};
-
 class AppInstallControllerImpl : public AppInstallController {
  public:
-  explicit AppInstallControllerImpl(scoped_refptr<UpdateService> update_service)
-      : update_service_(update_service) {}
+  AppInstallControllerImpl() = default;
+
   // Override for AppInstallController.
+  void Initialize() override {}
+
   void InstallApp(const std::string& app_id,
                   const std::string& /*app_name*/,
                   base::OnceCallback<void(int)> callback) override {
-    // TODO(crbug.com/1484292): Factor out common code from app_install_win.cc.
+    // TODO(crbug.com/40282228): Factor out common code from app_install_win.cc.
     RegistrationRequest request;
     request.app_id = app_id;
     request.version = base::Version(kNullVersion);
@@ -79,9 +74,16 @@ class AppInstallControllerImpl : public AppInstallController {
   void InstallAppOffline(const std::string& app_id,
                          const std::string& /*app_name*/,
                          base::OnceCallback<void(int)> callback) override {
-    // TODO(crbug.com/1484292): Implement this.
+    // TODO(crbug.com/40282228): Implement this.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), 0));
+  }
+
+  void Exit(int /*exit_code*/) override {}
+
+  void set_update_service(
+      scoped_refptr<UpdateService> update_service) override {
+    update_service_ = update_service;
   }
 
  protected:
@@ -95,31 +97,31 @@ class AppInstallControllerImpl : public AppInstallController {
 
 scoped_refptr<App> MakeAppInstall(bool /*is_silent_install*/) {
   return base::MakeRefCounted<AppInstall>(
-      base::BindRepeating(
-          [](const std::string& /*app_name*/) -> std::unique_ptr<SplashScreen> {
-            return std::make_unique<SplashScreenImpl>();
-          }),
-      base::BindRepeating([](scoped_refptr<UpdateService> update_service)
-                              -> scoped_refptr<AppInstallController> {
-        return base::MakeRefCounted<AppInstallControllerImpl>(update_service);
+      base::BindRepeating([]() -> scoped_refptr<AppInstallController> {
+        return base::MakeRefCounted<AppInstallControllerImpl>();
       }));
 }
 #endif  // !BUILDFLAG(IS_WIN)
 
-AppInstall::AppInstall(SplashScreen::Maker splash_screen_maker,
-                       AppInstallController::Maker app_install_controller_maker)
-    : splash_screen_maker_(std::move(splash_screen_maker)),
-      app_install_controller_maker_(app_install_controller_maker),
+AppInstall::AppInstall(AppInstallController::Maker app_install_controller_maker)
+    : app_install_controller_maker_(app_install_controller_maker),
       external_constants_(CreateExternalConstants()) {
-  CHECK(splash_screen_maker_);
   CHECK(app_install_controller_maker_);
 }
 
 AppInstall::~AppInstall() = default;
 
+void AppInstall::Shutdown(int exit_code) {
+  app_install_controller_->Exit(exit_code);
+  App::Shutdown(exit_code);
+}
+
 int AppInstall::Initialize() {
+  app_install_controller_ = app_install_controller_maker_.Run();
+  app_install_controller_->Initialize();
+
   setup_lock_ =
-      ScopedLock::Create(kSetupMutex, updater_scope(), kWaitForSetupLock);
+      CreateScopedLock(kSetupMutex, updater_scope(), kWaitForSetupLock);
   return kErrorOk;
 }
 
@@ -161,9 +163,6 @@ void AppInstall::FirstTaskRun() {
         kAppIdSwitch);
   }
 
-  splash_screen_ = splash_screen_maker_.Run(app_name_);
-  splash_screen_->Show();
-
   CreateUpdateServiceProxy();
   update_service_->GetVersion(
       base::BindOnce(&AppInstall::GetVersionDone, this));
@@ -172,25 +171,19 @@ void AppInstall::FirstTaskRun() {
 void AppInstall::CreateUpdateServiceProxy() {
   update_service_ = updater::CreateUpdateServiceProxy(
       updater_scope(), external_constants_->OverinstallTimeout());
+  app_install_controller_->set_update_service(update_service_);
 }
 
 void AppInstall::GetVersionDone(const base::Version& version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG_IF(1, version.IsValid()) << "Active version: " << version.GetString();
   if (version.IsValid() && version >= base::Version(kUpdaterVersion)) {
-    splash_screen_->Dismiss(base::BindOnce(&AppInstall::MaybeInstallApp, this));
+    MaybeInstallApp();
     return;
   }
-  InstallCandidate(
-      updater_scope(),
-      base::BindOnce(
-          [](SplashScreen* splash_screen, base::OnceCallback<void(int)> done,
-             int result) {
-            splash_screen->Dismiss(base::BindOnce(std::move(done), result));
-          },
-          splash_screen_.get(),
-          base::BindOnce(&AppInstall::InstallCandidateDone, this,
-                         version.IsValid())));
+  InstallCandidate(updater_scope(),
+                   base::BindOnce(&AppInstall::InstallCandidateDone, this,
+                                  version.IsValid()));
 }
 
 void AppInstall::InstallCandidateDone(bool valid_version, int result) {
@@ -208,7 +201,8 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
 
   // It's possible that a previous updater existed but is nonresponsive. In
   // this case, set the active version in global prefs so that this instance
-  // will take over without qualification.
+  // will take over without qualification. Also, if EULA acceptance is still
+  // required, record so here.
   base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::WithBaseSyncPrimitives()})
       ->PostTaskAndReply(
@@ -219,6 +213,12 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
                 if (prefs) {
                   prefs->SetActiveVersion(kUpdaterVersion);
                   prefs->SetSwapping(true);
+                  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+                          kEulaRequiredSwitch)) {
+                    base::MakeRefCounted<PersistedData>(
+                        scope, prefs->GetPrefService(), nullptr)
+                        ->SetEulaRequired(true);
+                  }
                   PrefsCommitPendingWrites(prefs->GetPrefService());
                 }
               },
@@ -277,8 +277,6 @@ void AppInstall::MaybeInstallApp() {
     Shutdown(kErrorOk);
     return;
   }
-  app_install_controller_ = app_install_controller_maker_.Run(update_service_);
-
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (cmd_line->HasSwitch(kOfflineDirSwitch)) {
     // Presence of "offlinedir" in command line indicates this is an offline

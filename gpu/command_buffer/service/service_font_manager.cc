@@ -12,6 +12,7 @@
 #include "base/bits.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
@@ -25,7 +26,7 @@ namespace gpu {
 namespace {
 class Deserializer {
  public:
-  Deserializer(const volatile char* memory, uint32_t memory_size)
+  Deserializer(const volatile uint8_t* memory, uint32_t memory_size)
       : memory_(memory), memory_size_(memory_size) {}
   ~Deserializer() = default;
 
@@ -35,7 +36,7 @@ class Deserializer {
     if (!AlignMemory(sizeof(T), alignof(T)))
       return false;
 
-    *val = *reinterpret_cast<const T*>(const_cast<const char*>(memory_));
+    memcpy(val, const_cast<const uint8_t*>(memory_.get()), sizeof(T));
 
     memory_ += sizeof(T);
     bytes_read_ += sizeof(T);
@@ -65,8 +66,7 @@ class Deserializer {
     // Due to the math below, alignment must be a power of two.
     DCHECK(std::has_single_bit(alignment));
 
-    size_t memory = reinterpret_cast<size_t>(memory_);
-    size_t padding = base::bits::AlignUp(memory, alignment) - memory;
+    size_t padding = base::bits::AlignUp(memory_.get(), alignment) - memory_;
 
     base::CheckedNumeric<uint32_t> checked_padded_size = bytes_read_;
     checked_padded_size += padding;
@@ -82,7 +82,7 @@ class Deserializer {
     return true;
   }
 
-  const volatile char* memory_;
+  raw_ptr<const volatile uint8_t, AllowPtrArithmetic> memory_;
   uint32_t memory_size_;
   uint32_t bytes_read_ = 0u;
 };
@@ -116,7 +116,7 @@ class ServiceFontManager::SkiaDiscardableManager
 #if DCHECK_IS_ON()
     crash_reporter::ScopedCrashKeyString auto_clear(
         &crash_key, base::StringPrintf(kFormatString, type, fontSize));
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #else
     if (dump_count_ < kMaxDumps && base::RandInt(1, 100) == 1 &&
         !font_manager_->disable_oopr_debug_crash_dump()) {
@@ -173,7 +173,7 @@ void ServiceFontManager::Destroy() {
 }
 
 bool ServiceFontManager::Deserialize(
-    const volatile char* memory,
+    const volatile uint8_t* memory,
     uint32_t memory_size,
     std::vector<SkDiscardableHandleId>* locked_handles) {
   base::ReleasableAutoLock hold(&lock_);

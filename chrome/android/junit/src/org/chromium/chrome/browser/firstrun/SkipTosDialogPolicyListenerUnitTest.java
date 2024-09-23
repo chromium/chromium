@@ -11,7 +11,6 @@ import static org.mockito.Mockito.times;
 
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,7 +29,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -41,14 +39,14 @@ import org.chromium.components.policy.PolicyService;
 /**
  * Unit tests for {@link SkipTosDialogPolicyListener}.
  *
- * For simplicity, this test will not cover cases that already tests in base class unit test
+ * <p>For simplicity, this test will not cover cases that already tests in base class unit test
  * {@link PolicyLoadListenerUnitTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
         shadows = {SkipTosDialogPolicyListenerUnitTest.ShadowFirstRunUtils.class})
-// TODO(crbug.com/1210371): Rewrite using paused loop. See crbug for details.
+// TODO(crbug.com/40182398): Rewrite using paused loop. See crbug for details.
 @LooperMode(LooperMode.Mode.LEGACY)
 public class SkipTosDialogPolicyListenerUnitTest {
     private static final String HIST_IS_DEVICE_OWNED_DETECTED =
@@ -99,7 +97,6 @@ public class SkipTosDialogPolicyListenerUnitTest {
 
     @Before
     public void setUp() {
-        UmaRecorderHolder.resetForTesting();
         doCallback((Callback<OwnedState> callback) -> mEnterpriseInfoCallback = callback)
                 .when(mMockEnterpriseInfo)
                 .getDeviceEnterpriseInfo(any());
@@ -116,11 +113,6 @@ public class SkipTosDialogPolicyListenerUnitTest {
         assertPolicyCheckNotComplete();
         Mockito.verify(mMockEnterpriseInfo).getDeviceEnterpriseInfo(mEnterpriseInfoCallback);
         Mockito.verify(mMockPolicyLoadListener).onAvailable(mPolicyLoadListenerCallback);
-    }
-
-    @After
-    public void tearDown() {
-        UmaRecorderHolder.resetForTesting();
     }
 
     @Test

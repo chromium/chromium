@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<title>Test setting contextId/filteringIdMaxBytes inside fenced frames.</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+<script src="../aggregation-service/support/aggregation-service.js"></script>
+<script src="/wpt_internal/private-aggregation/resources/utils.js"></script>
+<body>
+<script>
+promise_test(async t => {
+  const fencedframe = await attachFencedFrameContext({
+    generator_api: 'shared-storage',
+    register_beacon: true,
+  });
+
+  // The "aggregate" beacon type is registered and associated with a Private
+  // Aggregation event during the auction.
+  await fencedframe.execute(async () => {
+    await sharedStorage.worklet.addModule(
+        "/wpt_internal/fenced_frame/resources/simple-shared-storage-module.js");
+    const data = {
+      enableDebugMode: true,
+      contributions: [{bucket: 1n, value: 123}]
+    };
+
+    try {
+      await sharedStorage.run(
+        "contribute-to-histogram",
+        {data, keepAlive: true, privateAggregationConfig: {
+          contextId: "my-context-id"
+        }}
+      );
+      assert_unreached("contextId should not be allowed to be set.");
+    } catch (e) {
+      assert_equals(e.name, "DataError");
+    }
+
+    try {
+      await sharedStorage.run(
+        "contribute-to-histogram",
+        {data, keepAlive: true, privateAggregationConfig: {
+          filteringIdMaxBytes: 8
+        }}
+      );
+      assert_unreached("filteringIdMaxBytes should not be allowed to be set.");
+    } catch (e) {
+      assert_equals(e.name, "DataError");
+    }
+  });
+
+  const reports = await pollReports(
+      '/.well-known/private-aggregation/report-shared-storage');
+  assert_equals(reports, null, "No report should have been sent.");
+}, 'contextId and filteringIdMaxBytes cannot be set from fenced frames.');
+</script>
+</body>
+</html>

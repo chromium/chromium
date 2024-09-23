@@ -46,6 +46,7 @@ public class PaymentHandlerActionModeCallback extends ActionModeCallback {
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         if (!mHelper.isActionModeValid()) return true;
+
         return mHelper.onActionItemClicked(mode, item);
     }
 

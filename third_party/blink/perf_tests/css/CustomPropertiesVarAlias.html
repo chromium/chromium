@@ -8,18 +8,23 @@
     <div id=target></div>
 </body>
     <script>
-        const propCount = 2000;
+        const property_chain_count = 4;
+        const property_chain_length = 500;
 
-        // Create a rule which defines 'propCount' custom properties with a
-        // linear var()-dependency on eachother.
+        // Create a rule which defines `property_chain_count` chains of custom
+        // properties, each `property_chain_length` long, with linear var()
+        // dependencies.
         function createRule() {
             let lines = ['#target {'];
-            for (let i = 0; i < propCount; i++) {
+            for (let chain = 0; chain < property_chain_count; chain++) {
+              for (let property = 0; property < property_chain_length;
+                   property++) {
                 let value = '#fefefe';
-                if (i > 0) {
-                    value = `var(--prop-${i-1})`;
+                if (property > 0) {
+                    value = `var(--prop-${chain}-${property-1})`;
                 }
-                lines.push(`--prop-${i}: ${value};`);
+                lines.push(`--prop-${chain}-${property}: ${value};`);
+              }
             }
             lines.push('}');
             return lines.join('\n');
@@ -33,7 +38,7 @@
                 target.style = 'display: none';
                 forceStyleRecalc(target);
                 target.style = '';
-                getComputedStyle(target).getPropertyValue('--prop-'+(propCount-1));
+                forceStyleRecalc(target);
             }
         });
     </script>

@@ -51,8 +51,9 @@ XRPose* XRHitTestResult::getPose(XRSpace* other,
   return MakeGarbageCollected<XRPose>(other_offset_from_this, false);
 }
 
-ScriptPromise XRHitTestResult::createAnchor(ScriptState* script_state,
-                                            ExceptionState& exception_state) {
+ScriptPromise<XRAnchor> XRHitTestResult::createAnchor(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   DVLOG(2) << __func__;
 
   if (!session_->IsFeatureEnabled(device::mojom::XRSessionFeature::ANCHORS)) {

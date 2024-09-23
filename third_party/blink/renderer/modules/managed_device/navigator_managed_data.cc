@@ -4,9 +4,8 @@
 
 #include "third_party/blink/renderer/modules/managed_device/navigator_managed_data.h"
 
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -120,20 +119,22 @@ void NavigatorManagedData::OnServiceConnectionError() {
   }
 
   // Resolve all pending promises with a failure.
-  for (ScriptPromiseResolver* resolver : pending_promises_) {
+  for (ScriptPromiseResolverBase* resolver : pending_promises_) {
     resolver->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
                                            kNotHighTrustedAppExceptionMessage));
   }
 }
 
-ScriptPromise NavigatorManagedData::getManagedConfiguration(
-    ScriptState* script_state,
-    Vector<String> keys) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromise<IDLRecord<IDLString, IDLAny>>
+NavigatorManagedData::getManagedConfiguration(ScriptState* script_state,
+                                              Vector<String> keys) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLRecord<IDLString, IDLAny>>>(
+          script_state);
   pending_promises_.insert(resolver);
 
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   if (!GetExecutionContext()) {
     return promise;
   }
@@ -149,11 +150,14 @@ ScriptPromise NavigatorManagedData::getManagedConfiguration(
   return promise;
 }
 
-ScriptPromise NavigatorManagedData::getDirectoryId(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getDirectoryId(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
+          script_state);
   pending_promises_.insert(resolver);
 
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   if (!GetExecutionContext()) {
     return promise;
   }
@@ -163,11 +167,14 @@ ScriptPromise NavigatorManagedData::getDirectoryId(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromise NavigatorManagedData::getHostname(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getHostname(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
+          script_state);
   pending_promises_.insert(resolver);
 
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   if (!GetExecutionContext()) {
     return promise;
   }
@@ -177,11 +184,14 @@ ScriptPromise NavigatorManagedData::getHostname(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromise NavigatorManagedData::getSerialNumber(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getSerialNumber(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
+          script_state);
   pending_promises_.insert(resolver);
 
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   if (!GetExecutionContext()) {
     return promise;
   }
@@ -191,12 +201,14 @@ ScriptPromise NavigatorManagedData::getSerialNumber(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromise NavigatorManagedData::getAnnotatedAssetId(
+ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getAnnotatedAssetId(
     ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
+          script_state);
   pending_promises_.insert(resolver);
 
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   if (!GetExecutionContext()) {
     return promise;
   }
@@ -206,12 +218,14 @@ ScriptPromise NavigatorManagedData::getAnnotatedAssetId(
   return promise;
 }
 
-ScriptPromise NavigatorManagedData::getAnnotatedLocation(
-    ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromise<IDLNullable<IDLString>>
+NavigatorManagedData::getAnnotatedLocation(ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
+          script_state);
   pending_promises_.insert(resolver);
 
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   if (!GetExecutionContext()) {
     return promise;
   }
@@ -222,45 +236,44 @@ ScriptPromise NavigatorManagedData::getAnnotatedLocation(
 }
 
 void NavigatorManagedData::OnConfigurationReceived(
-    ScriptPromiseResolver* scoped_resolver,
+    ScriptPromiseResolver<IDLRecord<IDLString, IDLAny>>* resolver,
     const std::optional<HashMap<String, String>>& configurations) {
-  pending_promises_.erase(scoped_resolver);
+  pending_promises_.erase(resolver);
 
-  ScriptState* script_state = scoped_resolver->GetScriptState();
+  ScriptState* script_state = resolver->GetScriptState();
   ScriptState::Scope scope(script_state);
 
   if (!configurations.has_value()) {
-    scoped_resolver->Reject(
+    resolver->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
                                            kNotHighTrustedAppExceptionMessage));
     return;
   }
 
-  V8ObjectBuilder result(script_state);
+  HeapVector<std::pair<String, ScriptValue>> result;
   for (const auto& config_pair : *configurations) {
     v8::Local<v8::Value> v8_object;
     if (v8::JSON::Parse(script_state->GetContext(),
                         V8String(script_state->GetIsolate(), config_pair.value))
             .ToLocal(&v8_object)) {
-      result.AddV8Value(config_pair.key, v8_object);
+      result.emplace_back(config_pair.key,
+                          ScriptValue(script_state->GetIsolate(), v8_object));
     }
   }
-  scoped_resolver->Resolve(result.GetScriptValue());
+  resolver->Resolve(result);
 }
 
 void NavigatorManagedData::OnAttributeReceived(
     ScriptState* script_state,
-    ScriptPromiseResolver* scoped_resolver,
+    ScriptPromiseResolver<IDLNullable<IDLString>>* resolver,
     mojom::blink::DeviceAttributeResultPtr result) {
-  pending_promises_.erase(scoped_resolver);
+  pending_promises_.erase(resolver);
 
   if (result->is_error_message()) {
-    scoped_resolver->Reject(MakeGarbageCollected<DOMException>(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError, result->get_error_message()));
-  } else if (result->get_attribute().IsNull()) {
-    scoped_resolver->Resolve(v8::Null(script_state->GetIsolate()));
   } else {
-    scoped_resolver->Resolve(result->get_attribute());
+    resolver->Resolve(result->get_attribute());
   }
 }
 

@@ -1,0 +1,4 @@
+include_rules = [
+  "+chromeos/ash/components/geolocation",
+  "+chromeos/ash/components/settings",
+]

@@ -49,14 +49,6 @@
 #include "media/video/picture.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_fence_egl.h"
-
-namespace gl {
-
-class GLFenceEGL;
-
-}  // namespace gl
 
 namespace media {
 
@@ -116,11 +108,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
     : public VideoDecodeAccelerator,
       public base::trace_event::MemoryDumpProvider {
  public:
-  V4L2VideoDecodeAccelerator(
-      EGLDisplay egl_display,
-      const GetGLContextCallback& get_gl_context_cb,
-      const MakeGLContextCurrentCallback& make_context_current_cb,
-      scoped_refptr<V4L2Device> device);
+  explicit V4L2VideoDecodeAccelerator(scoped_refptr<V4L2Device> device);
 
   V4L2VideoDecodeAccelerator(const V4L2VideoDecodeAccelerator&) = delete;
   V4L2VideoDecodeAccelerator& operator=(const V4L2VideoDecodeAccelerator&) =
@@ -210,13 +198,11 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
     OutputRecord();
     OutputRecord(OutputRecord&&);
     ~OutputRecord();
-    EGLImageKHR egl_image;  // EGLImageKHR for the output buffer.
     int32_t picture_id;     // picture buffer id as returned to PictureReady().
-    GLuint texture_id;
     bool cleared;           // Whether the texture is cleared and safe to render
                             // from. See TextureManager for details.
     // Output frame. Used only when OutputMode is IMPORT.
-    scoped_refptr<VideoFrame> output_frame;
+    scoped_refptr<FrameResource> output_frame;
   };
 
   //
@@ -267,32 +253,11 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
                                            VideoPixelFormat pixel_format,
                                            gfx::NativePixmapHandle handle);
 
-  // Create an EGLImage on |egl_device| for the buffer associated with V4L2
-  // |buffer_index| and |picture_buffer_id|, backed by |handle|.
-  // The buffer should be bound to |texture_id| and is of format described by
-  // |fourcc|. |visible_size| is the size in pixels that the EGL device will be
-  // able to see.
-  void CreateEGLImageFor(scoped_refptr<V4L2Device> egl_device,
-                         size_t buffer_index,
-                         int32_t picture_buffer_id,
-                         gfx::NativePixmapHandle handle,
-                         GLuint texture_id,
-                         const gfx::Size& visible_size,
-                         const Fourcc fourcc);
-
-  // Take the EGLImage |egl_image|, created for |picture_buffer_id|, and use it
-  // for OutputRecord at |buffer_index|.
-  void AssignEGLImage(size_t buffer_index,
-                      int32_t picture_buffer_id,
-                      EGLImageKHR egl_image);
-
   // Service I/O on the V4L2 devices.  This task should only be scheduled from
   // DevicePollTask().  If |event_pending| is true, one or more events
   // on file descriptor are pending.
   void ServiceDeviceTask(bool event_pending);
 
-  // Release buffers awaiting for their fence to be signaled.
-  void CheckGLFences();
   // Handle the various device queues.
   void Enqueue();
   void Dequeue();
@@ -309,10 +274,8 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   bool EnqueueOutputRecord(V4L2WritableBufferRef buffer);
 
   // Task to flag the specified picture buffer for reuse, executed on the
-  // decoder_thread_. The picture buffer can only be reused after the specified
-  // fence has been signaled.
-  void ReusePictureBufferTask(int32_t picture_buffer_id,
-                              std::unique_ptr<gl::GLFenceEGL> egl_fence);
+  // decoder_thread_.
+  void ReusePictureBufferTask(int32_t picture_buffer_id);
 
   // Flush() task.  Child thread should not submit any more buffers until it
   // receives the NotifyFlushDone callback.  This task will schedule an empty
@@ -424,7 +387,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   void SendBufferToClient(size_t buffer_index,
                           int32_t bitstream_buffer_id,
                           V4L2ReadableBufferRef vda_buffer,
-                          scoped_refptr<VideoFrame> frame = nullptr);
+                          scoped_refptr<FrameResource> frame = nullptr);
 
   //
   // Methods run on child thread.
@@ -441,7 +404,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   // image processor.
   void FrameProcessed(int32_t bitstream_buffer_id,
                       size_t output_buffer_index,
-                      scoped_refptr<VideoFrame> frame);
+                      scoped_refptr<FrameResource> frame);
 
   // Image processor notifies an error.
   void ImageProcessorError();
@@ -567,14 +530,9 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   std::queue<std::pair<int32_t, V4L2ReadableBufferRef>> buffers_at_ip_;
   // Keeps decoded buffers out of the free list until the client returns them.
   // First element is the VDA buffer, second is the (optional) IP buffer.
-  std::map<int32_t, std::pair<V4L2ReadableBufferRef, scoped_refptr<VideoFrame>>>
+  std::map<int32_t,
+           std::pair<V4L2ReadableBufferRef, scoped_refptr<FrameResource>>>
       buffers_at_client_;
-  // Queue of buffers that have been returned by the client, but which fence
-  // hasn't been signaled yet. Keeps both the VDA and (optional) IP buffer.
-  std::queue<
-      std::pair<std::unique_ptr<gl::GLFenceEGL>,
-                std::pair<V4L2ReadableBufferRef, scoped_refptr<VideoFrame>>>>
-      buffers_awaiting_fence_;
 
   // Mapping of int index to output buffer record.
   std::vector<OutputRecord> output_buffer_map_;
@@ -603,14 +561,6 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   //
   // Other state, held by the child (main) thread.
   //
-
-  // EGL state
-  EGLDisplay egl_display_;
-
-  // Callback to get current GLContext.
-  GetGLContextCallback get_gl_context_cb_;
-  // Callback to set the correct gl context.
-  MakeGLContextCurrentCallback make_context_current_cb_;
 
   // Chosen input format for the video profile we are decoding from.
   uint32_t input_format_fourcc_;

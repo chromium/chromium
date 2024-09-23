@@ -28,8 +28,10 @@ class DialogModelCheckbox;
 class DialogModelCombobox;
 class DialogModelCustomField;
 class DialogModelMenuItem;
+class DialogModelTitleItem;
 class DialogModelSection;
 class DialogModelTextfield;
+class DialogModelPasswordField;
 class Event;
 
 class DialogModelFieldHost {
@@ -164,7 +166,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
                  // having multiple subsequent kSections (3 sections imply 2
                  // separators).
     kSection,
-    kTextfield
+    kTextfield,
+    kPasswordField,
+    kTitleItem  // TODO(pengchaocai): Remove kTitleItem once DialogModel
+                // supports multiple sections.
   };
 
   class COMPONENT_EXPORT(UI_BASE) Params {
@@ -196,7 +201,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   Type type() const { return type_; }
 
   void SetVisible(bool visible);
-  bool is_visible() { return is_visible_; }
+  bool is_visible() const { return is_visible_; }
 
   const base::flat_set<Accelerator>& accelerators() const {
     return accelerators_;
@@ -208,7 +213,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   DialogModelCombobox* AsCombobox();
   DialogModelMenuItem* AsMenuItem();
   const DialogModelMenuItem* AsMenuItem() const;
+  const DialogModelTitleItem* AsTitleItem() const;
   DialogModelTextfield* AsTextfield();
+  DialogModelPasswordField* AsPasswordField();
   DialogModelSection* AsSection();
   DialogModelCustomField* AsCustomField();
 
@@ -217,6 +224,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
                    ElementIdentifier id,
                    base::flat_set<Accelerator> accelerators,
                    const DialogModelField::Params& params);
+
+  void NotifyOnFieldChanged();
 
  private:
   friend class DialogModel;
@@ -420,6 +429,22 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelSeparator : public DialogModelField {
   ~DialogModelSeparator() override;
 };
 
+// Field class representing a title.
+// TODO(pengchaocai): Remove DialogModelTitleItem once DialogModel supports
+// multiple sections and titles live in sections as optional strings.
+class COMPONENT_EXPORT(UI_BASE) DialogModelTitleItem : public DialogModelField {
+ public:
+  explicit DialogModelTitleItem(std::u16string label,
+                                ElementIdentifier id = ElementIdentifier());
+  DialogModelTitleItem(const DialogModelSeparator&) = delete;
+  DialogModelTitleItem& operator=(const DialogModelSeparator&) = delete;
+  ~DialogModelTitleItem() override;
+  const std::u16string& label() const { return label_; }
+
+ private:
+  const std::u16string label_;
+};
+
 // Field class representing a textfield and corresponding label to describe the
 // textfield:
 //
@@ -476,6 +501,59 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
   std::u16string text_;
 };
 
+// Field class representing a password field and corresponding label to describe
+// the password field. The password can be revealed by clicking on the eye icon.
+// If the user enters an incorrect password, the field can be invalidated by
+// calling `Invalidate()`:
+// - the password field is cleared ;
+// - the text field is invalidated, causing its outline to be red ;
+// - `incorrect_password_text` is shown below the password field.
+// The password field becomes valid again automatically when a new character is
+// entered.
+class COMPONENT_EXPORT(UI_BASE) DialogModelPasswordField
+    : public DialogModelField {
+ public:
+  // using Params = DialogModelField::Params;
+
+  DialogModelPasswordField(ElementIdentifier id,
+                           std::u16string label,
+                           std::u16string accessible_name,
+                           std::u16string incorrect_password_text,
+                           const DialogModelPasswordField::Params& params);
+  DialogModelPasswordField(const DialogModelPasswordField&) = delete;
+  DialogModelPasswordField& operator=(const DialogModelPasswordField&) = delete;
+  ~DialogModelPasswordField() override;
+
+  const std::u16string& text() const { return text_; }
+
+  // Clears the password field, and displays `incorrect_password_text()` until
+  // the user starts typing again.
+  // Typically used when the user clicks the OK button after they are finished
+  // typing, and the password is wrong.
+  void Invalidate();
+
+  const std::u16string& label() const { return label_; }
+  const std::u16string& accessible_name() const { return accessible_name_; }
+  const std::u16string& incorrect_password_text() const {
+    return incorrect_password_text_;
+  }
+
+  void OnTextChanged(base::PassKey<DialogModelFieldHost>, std::u16string text);
+  base::CallbackListSubscription AddOnInvalidateCallback(
+      base::PassKey<DialogModelFieldHost>,
+      base::RepeatingClosure closure);
+
+ private:
+  friend class DialogModel;
+
+  const std::u16string label_;
+  const std::u16string accessible_name_;
+  const std::u16string incorrect_password_text_;
+  std::u16string text_;
+
+  base::RepeatingClosureList on_invalidate_closures_;
+};
+
 // Field base class representing a "custom" field. Used for instance to inject
 // custom Views into dialogs that use DialogModel.
 class COMPONENT_EXPORT(UI_BASE) DialogModelCustomField
@@ -507,7 +585,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCustomField
 class COMPONENT_EXPORT(UI_BASE) DialogModelSection final
     : public DialogModelField {
  public:
-  class Builder final {
+  class COMPONENT_EXPORT(UI_BASE) Builder final {
    public:
     Builder();
     Builder(const Builder&) = delete;
@@ -598,6 +676,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelSection final
   DialogModelCheckbox* GetCheckboxByUniqueId(ElementIdentifier id);
   DialogModelCombobox* GetComboboxByUniqueId(ElementIdentifier id);
   DialogModelTextfield* GetTextfieldByUniqueId(ElementIdentifier id);
+  DialogModelPasswordField* GetPasswordFieldByUniqueId(ElementIdentifier id);
 
   // Adds a paragraph at the end of the section. A paragraph consists of a
   // label and an optional header.
@@ -625,6 +704,13 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelSection final
                    const DialogModelMenuItem::Params& params =
                        DialogModelMenuItem::Params());
 
+  // Adds a menu item at the end of the section.
+  // TODO(pengchaocai): Refactor this method once dialog_model supports multiple
+  // DialogModelSection, when the title would be an optional member of `this`
+  // and explicitly adding it might not be needed.
+  void AddTitleItem(std::u16string label,
+                    ElementIdentifier id = ElementIdentifier());
+
   // Adds a separator at the end of the section.
   void AddSeparator();
 
@@ -634,6 +720,15 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelSection final
                     std::u16string text,
                     const DialogModelTextfield::Params& params =
                         DialogModelTextfield::Params());
+
+  // Adds a labeled password field (label: [password field]) at the end of the
+  // section.
+  void AddPasswordField(ElementIdentifier id,
+                        std::u16string label,
+                        std::u16string accessible_text,
+                        std::u16string incorrect_password_text,
+                        const DialogModelPasswordField::Params& params =
+                            DialogModelPasswordField::Params());
 
   // Adds a custom field at the end of the section. This is used to inject
   // framework-specific custom UI into dialogs that are otherwise constructed as

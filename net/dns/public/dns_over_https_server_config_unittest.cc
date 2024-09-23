@@ -5,6 +5,7 @@
 #include "net/dns/public/dns_over_https_server_config.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/json/json_reader.h"
 #include "net/base/ip_address.h"
@@ -173,7 +174,7 @@ TEST(DnsOverHttpsServerConfigTest, FromValueInvalid) {
   EXPECT_FALSE(DnsOverHttpsServerConfig::FromValue(base::Value::Dict()));
 
   // Wrong scheme
-  base::StringPiece input = R"(
+  std::string_view input = R"(
     {
       "template": "http://dnsserver.example.net/dns-query{?dns}"
     }

@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 component("codec") {
   sources = [
@@ -21,7 +22,8 @@ component("codec") {
   deps = [
     "//base",
     "//skia",
-    "//third_party/libpng",
+    "//skia:rusty_png_feature_detection",
+    "//third_party/zlib",
     "//ui/gfx:gfx_export",
     "//ui/gfx:gfx_skia",
     "//ui/gfx/geometry",
@@ -32,8 +34,6 @@ component("codec") {
       "jpeg_codec.cc",
       "jpeg_codec.h",
     ]
-  } else {
-    deps += [ "//third_party:jpeg" ]
   }
 
   if (is_win) {
@@ -42,4 +42,24 @@ component("codec") {
   }
 
   defines = [ "CODEC_IMPLEMENTATION" ]
+}
+
+fuzzer_test("gfx_jpeg_decoder_fuzzer") {
+  sources = [ "jpeg_decoder_fuzzer.cc" ]
+  deps = [
+    ":codec",
+    "//skia",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/images/resources/jpegfuzz" ]
+  libfuzzer_options = [ "rss_limit_mb=8192" ]
+}
+
+fuzzer_test("gfx_png_decoder_fuzzer") {
+  sources = [ "png_decoder_fuzzer.cc" ]
+  deps = [
+    ":codec",
+    "//skia",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/images/resources/pngfuzz" ]
+  libfuzzer_options = [ "rss_limit_mb=8192" ]
 }

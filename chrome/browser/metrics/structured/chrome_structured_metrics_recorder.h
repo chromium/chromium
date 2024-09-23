@@ -29,9 +29,12 @@ class ChromeStructuredMetricsRecorder final : public StructuredMetricsRecorder {
   ChromeStructuredMetricsRecorder& operator=(
       const ChromeStructuredMetricsRecorder&) = delete;
 
-  ~ChromeStructuredMetricsRecorder() override = default;
-
   static void RegisterLocalState(PrefRegistrySimple* registry);
+
+ private:
+  friend class base::RefCountedDeleteOnSequence<StructuredMetricsRecorder>;
+  friend class base::DeleteHelper<StructuredMetricsRecorder>;
+  ~ChromeStructuredMetricsRecorder() override = default;
 };
 
 }  // namespace metrics::structured

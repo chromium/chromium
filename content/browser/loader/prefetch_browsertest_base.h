@@ -107,8 +107,14 @@ class PrefetchBrowserTestBase : public ContentBrowserTest {
 
   int GetPrefetchURLLoaderCallCount();
 
+  // Register a callback to be called just before the `PrefetchURLLoader` is
+  // created and started.
+  void RegisterPrefetchLoaderCallback(base::OnceClosure callback);
+
  private:
   std::map<std::string, ResponseEntry> response_map_;
+
+  base::OnceClosure prefetch_loader_callback_;
 
   int prefetch_url_loader_called_ GUARDED_BY(lock_) = 0;
   base::Lock lock_;

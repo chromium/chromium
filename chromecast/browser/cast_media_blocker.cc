@@ -107,7 +107,7 @@ void CastMediaBlocker::MediaSessionInfoChanged(
     }
   }
 
-  // TODO(crbug.com/1057860): Rename suspended to paused to be consistent with
+  // TODO(crbug.com/40120884): Rename suspended to paused to be consistent with
   // MediaSession types.
   // Process suspended state next.
   if (suspended_ != is_suspended) {

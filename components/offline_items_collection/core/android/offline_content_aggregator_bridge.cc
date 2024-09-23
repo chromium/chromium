@@ -15,9 +15,11 @@
 #include "components/offline_items_collection/core/android/offline_item_bridge.h"
 #include "components/offline_items_collection/core/android/offline_item_share_info_bridge.h"
 #include "components/offline_items_collection/core/android/offline_item_visuals_bridge.h"
-#include "components/offline_items_collection/core/jni_headers/OfflineContentAggregatorBridge_jni.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/throttled_offline_content_provider.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/offline_items_collection/core/jni_headers/OfflineContentAggregatorBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
@@ -280,7 +282,7 @@ void OfflineContentAggregatorBridge::OnItemUpdated(
 }
 
 void OfflineContentAggregatorBridge::OnContentProviderGoingDown() {
-  // TODO(crbug.com/1177397): This event is only needed for desktop Chrome,
+  // TODO(crbug.com/40168774): This event is only needed for desktop Chrome,
   // so we didn't add an onContentProviderGoingDown() method yet. If Java
   // observers need to listen for this event in the future, we should add some
   // plumbing here.

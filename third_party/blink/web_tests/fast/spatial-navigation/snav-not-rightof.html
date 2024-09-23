@@ -7,29 +7,55 @@
     border: 1px solid black;
   }
 
+  #elements {
+    height: 500px;
+  }
+
   #e1 {
     left: 10px;
-    top: 210px;
+    top: 10px;
   }
 
   #e2 {
     left: 60px;
-    top: 330px;
+    top: 130px;
   }
 
   #e3 {
     left: 60px;
-    top: 450px;
+    top: 250px;
     width: 150px;
+  }
+
+  #e4 {
+    left: 60px;
+    top: 300px;
+    width: 150px;
+  }
+
+  #e5 {
+    left: 60px;
+    top: 350px;
+    width: 200px;
   }
 </style>
 
-<p id="description">This test ensures that e2 is NOT right of e1 and e3 is NOT right of e2.</p>
 <div id="elements">
   <a id="e1" href="#e1">Element 1</a>
   <a id="e2" href="#e2">Element 2</a>
   <a id="e3" href="#e3">Element 3</a>
+  <a id="e4" href="#e4">Element 4</a>
+  <a id="e5" href="#e5">Element 5</a>
 </div>
+<p>
+  Test that each element is considered "not on the right of" the
+  previous one.
+  <br>
+  Test also that each element is considered "not on the left of" the
+  following one, except for Element 4 which _is_ on the left of
+  Element 5 because it is partially overlapping and the right edge
+  of Element 4 is to the left of the right edge of Element 5.
+</p>
 
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
@@ -37,9 +63,17 @@
 <script type="application/javascript">
   var resultMap = [
     ["Right", "e1"],
+    ["Right", "e1"],
     ["Down", "e2"],
     ["Right", "e2"],
     ["Down", "e3"],
+    ["Right", "e3"],
+    ["Down", "e4"],
+    ["Right", "e4"],
+    ["Down", "e5"],
+    ["Left", "e4"],
+    ["Left", "e4"],
+    ["Up", "e3"],
     ["Left", "e3"],
     ["Up", "e2"],
     ["Left", "e2"],

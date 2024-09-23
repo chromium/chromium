@@ -25,17 +25,17 @@ void OnKeySystemCapability(
     bool is_hw_secure,
     media::CdmCapabilityCB cdm_capability_cb,
     bool is_supported,
-    media::mojom::KeySystemCapabilityPtr key_system_capability) {
+    const std::optional<media::KeySystemCapability>& key_system_capability) {
   // Key system must support at least 1 video codec, 1 encryption scheme,
   // and 1 encryption scheme to be considered. Support for audio codecs is
   // optional.
-  if (!is_supported || !key_system_capability) {
+  if (!is_supported || !key_system_capability.has_value()) {
     std::move(cdm_capability_cb).Run(std::nullopt);
     return;
   }
   const std::optional<media::CdmCapability>& capability =
-      is_hw_secure ? key_system_capability->hw_secure_capability
-                   : key_system_capability->sw_secure_capability;
+      is_hw_secure ? key_system_capability.value().hw_secure_capability
+                   : key_system_capability.value().sw_secure_capability;
 
   if (!capability || capability->video_codecs.empty() ||
       capability->encryption_schemes.empty() ||
@@ -66,7 +66,7 @@ void GetMediaFoundationServiceCdmCapability(
       key_system, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                       base::BindOnce(&OnKeySystemCapability, is_hw_secure,
                                      std::move(cdm_capability_cb)),
-                      false, nullptr));
+                      false, std::nullopt));
 }
 
 }  // namespace content

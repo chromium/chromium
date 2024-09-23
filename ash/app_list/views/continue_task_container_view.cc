@@ -131,9 +131,10 @@ ContinueTaskContainerView::ContinueTaskContainerView(
     columns_ = columns;
     InitializeClamshellLayout();
   }
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kList);
-  GetViewAccessibility().OverrideName(
-      l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL));
+  GetViewAccessibility().SetRole(ax::mojom::Role::kList);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL),
+      ax::mojom::NameFrom::kAttribute);
 }
 
 ContinueTaskContainerView::~ContinueTaskContainerView() = default;
@@ -308,7 +309,8 @@ void ContinueTaskContainerView::Update() {
   if (notifier) {
     std::vector<AppListNotifier::Result> notifier_results;
     for (const auto* task : tasks)
-      notifier_results.emplace_back(task->id(), task->metrics_type());
+      notifier_results.emplace_back(task->id(), task->metrics_type(),
+                                    task->continue_file_suggestion_type());
     notifier->NotifyResultsUpdated(SearchResultDisplayType::kContinue,
                                    notifier_results);
   }
@@ -506,6 +508,7 @@ void ContinueTaskContainerView::InitializeTabletLayout() {
                   gfx::Insets::TLBR(0, kColumnSpacingTablet, 0, 0))
       .SetDefault(views::kFlexBehaviorKey,
                   views::FlexSpecification(
+                      views::LayoutOrientation::kHorizontal,
                       views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
                       views::MaximumFlexSizeRule::kScaleToMaximum));
 }

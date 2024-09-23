@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PRIVATE_NETWORK_ACCESS_CHROME_PRIVATE_NETWORK_DEVICE_DELEGATE_H_
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -78,7 +77,7 @@ class ChromePrivateNetworkDeviceDelegate
   //
   // If a new permission request comes while a chooser was already being
   // displayed, the old one is canceled when we reassign this field.
-  // TODO(https://crbug.com/1455117): Handle multiple permission checks
+  // TODO(crbug.com/40272624): Handle multiple permission checks
   // better, perhaps by serializing them.
   std::unique_ptr<ChromePrivateNetworkDeviceChooser> chooser_;
 };

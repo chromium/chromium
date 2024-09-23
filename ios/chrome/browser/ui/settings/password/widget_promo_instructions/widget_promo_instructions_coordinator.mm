@@ -6,7 +6,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/widget_promo_instructions/widget_promo_instructions_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
@@ -54,9 +53,7 @@
                    animated:YES
                  completion:nil];
 
-  if (password_manager::features::IsAuthOnEntryV2Enabled()) {
-    [self startReauthCoordinator];
-  }
+  [self startReauthCoordinator];
 }
 
 - (void)stop {
@@ -103,19 +100,18 @@
   [self.delegate removeWidgetPromoInstructionsCoordinator:self];
 }
 
-- (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
-    handlerForSettings {
-  NOTREACHED_NORETURN();
+- (id<ApplicationCommands, BrowserCommands>)handlerForSettings {
+  NOTREACHED();
   return nil;
 }
 
 - (id<ApplicationCommands>)handlerForApplicationCommands {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
   return nil;
 }
 
 - (id<SnackbarCommands>)handlerForSnackbarCommands {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
   return nil;
 }
 

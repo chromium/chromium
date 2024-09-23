@@ -10,7 +10,10 @@
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace {
-NSString* const kPasswordFieldType = @"password";
+// The "password" field type does not explicitly mean that the field contains a
+// password, it means that the field obfuscates its information instead of
+// showing it plainly.
+NSString* const kObfuscatedFieldType = @"password";
 }  // namespace
 
 // A class containing the data necessary for FormSuggestionProvider to
@@ -22,15 +25,15 @@ NSString* const kPasswordFieldType = @"password";
 // missing, a name assigned by Chrome in __gCrWeb.form.getFormIdentifier.
 @property(readonly, nonatomic, copy) NSString* formName;
 
-// Number ID, unique for a tab and stable within navigations.
-@property(readonly, nonatomic) autofill::FormRendererId uniqueFormID;
+// Number ID, unique for a frame.
+@property(readonly, nonatomic) autofill::FormRendererId formRendererID;
 
 // Field HTML 'id' attribute. If missing, its 'name' attribute. If also
 // missing, a unique string path assigned in __gCrWeb.form.getFieldIdentifier.
 @property(readonly, nonatomic, copy) NSString* fieldIdentifier;
 
-// Number ID, unique for a tab and stable within navigations.
-@property(readonly, nonatomic) autofill::FieldRendererId uniqueFieldID;
+// Number ID, unique for a frame.
+@property(readonly, nonatomic) autofill::FieldRendererId fieldRendererID;
 
 // HTML input field type (i.e. 'text', 'password').
 @property(readonly, nonatomic, copy) NSString* fieldType;
@@ -46,18 +49,15 @@ NSString* const kPasswordFieldType = @"password";
 @property(readonly, nonatomic, copy) NSString* frameID;
 
 - (instancetype)initWithFormName:(NSString*)formName
-                    uniqueFormID:(autofill::FormRendererId)uniqueFormID
+                  formRendererID:(autofill::FormRendererId)formRendererID
                  fieldIdentifier:(NSString*)fieldIdentifier
-                   uniqueFieldID:(autofill::FieldRendererId)uniqueFieldID
+                 fieldRendererID:(autofill::FieldRendererId)fieldRendererID
                        fieldType:(NSString*)fieldType
                             type:(NSString*)type
                       typedValue:(NSString*)typedValue
                          frameID:(NSString*)frameID NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
-
-// Returns true if a query comes from a password field.
-- (BOOL)isOnPasswordField;
 
 // Returns true if a query comes from a focus on a field.
 - (BOOL)hasFocusType;

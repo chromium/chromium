@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
   EXPECT_EQ("denied",
             EvalJs(iframe, "getServiceWorkerNotificationPermission()"));
   EXPECT_EQ("denied", EvalJs(iframe, "getPushPermission()"));
-  // TODO(crbug.com/1409720): This should return 'denied'.
+  // TODO(crbug.com/40254041): This should return 'denied'.
   EXPECT_EQ("prompt", EvalJs(iframe, "getServiceWorkerPushPermission()"));
 }
 
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
   EXPECT_EQ("denied",
             EvalJs(main_frame, "getServiceWorkerNotificationPermission()"));
   EXPECT_EQ("prompt", EvalJs(main_frame, "getPushPermission()"));
-  // TODO(crbug.com/1409720): This should return 'denied'.
+  // TODO(crbug.com/40254041): This should return 'denied'.
   EXPECT_EQ("prompt", EvalJs(main_frame, "getServiceWorkerPushPermission()"));
 
   content::RenderFrameHost* iframe = CreateChildIframe(main_frame, TesterUrl());

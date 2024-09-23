@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/animation/interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/underlying_length_checker.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/svg/svg_number_list.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -20,7 +21,7 @@ InterpolationValue SVGNumberListInterpolationType::MaybeConvertNeutral(
   wtf_size_t underlying_length =
       UnderlyingLengthChecker::GetUnderlyingLength(underlying);
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingLengthChecker>(underlying_length));
+      MakeGarbageCollected<UnderlyingLengthChecker>(underlying_length));
 
   if (underlying_length == 0)
     return nullptr;
@@ -101,9 +102,13 @@ SVGPropertyBase* SVGNumberListInterpolationType::AppliedSVGValue(
     const NonInterpolableValue*) const {
   auto* result = MakeGarbageCollected<SVGNumberList>();
   const auto& list = To<InterpolableList>(interpolable_value);
+  // Note: using default CSSToLengthConversionData here as it's
+  // guaranteed to be a double.
+  // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
   for (wtf_size_t i = 0; i < list.length(); i++) {
     result->Append(MakeGarbageCollected<SVGNumber>(
-        To<InterpolableNumber>(list.Get(i))->Value()));
+        To<InterpolableNumber>(list.Get(i))
+            ->Value(CSSToLengthConversionData())));
   }
   return result;
 }

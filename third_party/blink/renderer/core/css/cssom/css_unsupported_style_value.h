@@ -48,7 +48,7 @@ class CORE_EXPORT CSSUnsupportedStyleValue : public CSSStyleValue {
   }
 
   const CSSValue* ToCSSValue() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

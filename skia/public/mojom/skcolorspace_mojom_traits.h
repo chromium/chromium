@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef SKIA_PUBLIC_MOJOM_SKCOLORSPACE_MOJOM_TRAITS_H_
 #define SKIA_PUBLIC_MOJOM_SKCOLORSPACE_MOJOM_TRAITS_H_
 
@@ -65,10 +70,10 @@ struct StructTraits<skia::mojom::SkcmsTransferFunctionDataView,
 
 template <>
 struct StructTraits<skia::mojom::SkColorSpaceDataView, ::sk_sp<SkColorSpace>> {
-  static absl::optional<skcms_TransferFunction> to_linear(
+  static std::optional<skcms_TransferFunction> to_linear(
       const ::sk_sp<SkColorSpace>& in) {
     if (!in) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     skcms_TransferFunction trfn = {
         1.f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f,
@@ -76,10 +81,10 @@ struct StructTraits<skia::mojom::SkColorSpaceDataView, ::sk_sp<SkColorSpace>> {
     in->transferFn(&trfn);
     return trfn;
   }
-  static absl::optional<skcms_Matrix3x3> to_xyzd50(
+  static std::optional<skcms_Matrix3x3> to_xyzd50(
       const ::sk_sp<SkColorSpace>& in) {
     if (!in) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     skcms_Matrix3x3 m = {{{1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, 1.f}}};
     // The function toXYZD50 returns a boolean for historical reasons. It will
@@ -91,11 +96,11 @@ struct StructTraits<skia::mojom::SkColorSpaceDataView, ::sk_sp<SkColorSpace>> {
 
   static bool Read(skia::mojom::SkColorSpaceDataView data,
                    ::sk_sp<SkColorSpace>* out) {
-    absl::optional<skcms_TransferFunction> to_linear;
+    std::optional<skcms_TransferFunction> to_linear;
     if (!data.ReadToLinear(&to_linear)) {
       return false;
     }
-    absl::optional<skcms_Matrix3x3> to_xyzd50;
+    std::optional<skcms_Matrix3x3> to_xyzd50;
     if (!data.ReadToXyzd50(&to_xyzd50)) {
       return false;
     }
@@ -114,4 +119,4 @@ struct StructTraits<skia::mojom::SkColorSpaceDataView, ::sk_sp<SkColorSpace>> {
 
 }  // namespace mojo
 
-#endif  // SKIA_PUBLIC_MOJOM_SKCOLOR4F_MOJOM_TRAITS_H_
+#endif  // SKIA_PUBLIC_MOJOM_SKCOLORSPACE_MOJOM_TRAITS_H_

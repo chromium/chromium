@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
+import './field_trials.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
@@ -12,10 +13,6 @@ import {getTemplate} from './app.html.js';
 import type {KeyValue, Log, LogData, MetricsInternalsBrowserProxy} from './browser_proxy.js';
 import {MetricsInternalsBrowserProxyImpl} from './browser_proxy.js';
 import {getEventsPeekString, logEventToString, sizeToString, timestampToString, umaLogTypeToString} from './log_utils.js';
-// <if expr="chromeos_ash">
-import type {StructuredMetricEvent, StructuredMetricsSummary} from './structured/structured_utils.js';
-import {updateStructuredMetricsEvents, updateStructuredMetricsSummary} from './structured/structured_utils.js';
-// </if>
 
 /**
  * An empty log. It is appended to a logs table when there are no logs (for
@@ -67,6 +64,8 @@ export class MetricsInternalsAppElement extends CustomElement {
   }
 
   private async init_(): Promise<void> {
+    this.syncTabsWithUrlHash_();
+
     // Fetch variations summary data and set up a recurring timer.
     await this.updateVariationsSummary_();
     setInterval(() => this.updateVariationsSummary_(), 3000);
@@ -75,26 +74,31 @@ export class MetricsInternalsAppElement extends CustomElement {
     await this.updateUmaSummary_();
     setInterval(() => this.updateUmaSummary_(), 3000);
 
-    // Fetch Structured Metrics tab when on ChromeOS
-    // <if expr="chromeos_ash">
-    // TODO: Implement a push model as new events are recorded.
-    await this.updateStructuredMetricsEvents_();
-    setInterval(() => this.updateStructuredMetricsSummary_(), 5000);
-
-    const eventRefreshButton = this.$('#sm-refresh-events') as HTMLElement;
-    eventRefreshButton.addEventListener(
-        'click', () => this.updateStructuredMetricsEvents_());
-    //  </if>
-
     // Set up the UMA table caption.
-    const umaTableCaption = this.$('#uma-table-caption') as HTMLElement;
+    const umaTableCaption = this.getRequiredElement('#uma-table-caption');
     const isUsingMetricsServiceObserver =
         await this.browserProxy_.isUsingMetricsServiceObserver();
-    umaTableCaption.textContent = isUsingMetricsServiceObserver ?
+    let firstPartOfCaption = isUsingMetricsServiceObserver ?
         'List of all UMA logs closed since browser startup.' :
         'List of UMA logs closed since opening this page. Starting the browser \
         with the --export-uma-logs-to-file command line flag will instead show \
         all logs closed since browser startup.';
+    firstPartOfCaption += ' See ';
+    const linkInCaptionNode = document.createElement('a');
+    linkInCaptionNode.appendChild(document.createTextNode('documentation'));
+    linkInCaptionNode.href =
+        'https://chromium.googlesource.com/chromium/src/components/metrics/+/HEAD/debug/README.md';
+    // Don't clobber the current page.  The current page (in release builds)
+    // shows only the logs since the page was opened.  We don't want to allow
+    // the current page to be navigated away from lest useful logs be lost.
+    linkInCaptionNode.target = '_blank';
+    const secondPartOfCaption =
+        ' for more information about this debug page and tools for working \
+         with the exported logs.';
+    umaTableCaption.appendChild(document.createTextNode(firstPartOfCaption));
+    umaTableCaption.appendChild(linkInCaptionNode);
+    umaTableCaption.appendChild(document.createTextNode(secondPartOfCaption));
+
 
     // Set up a listener for UMA logs. Also update UMA log data immediately in
     // case there are logs that we already have data on.
@@ -103,8 +107,33 @@ export class MetricsInternalsAppElement extends CustomElement {
     await this.updateUmaLogsData_();
 
     // Set up the UMA "Export logs" button.
-    const exportUmaLogsButton = this.$('#export-uma-logs') as HTMLElement;
+    const exportUmaLogsButton = this.getRequiredElement('#export-uma-logs');
     exportUmaLogsButton.addEventListener('click', () => this.exportUmaLogs_());
+  }
+
+  /**
+   * Synchronize the selected tab and the URL hash. Allows, for example,
+   * chrome://metrics-internals#variations to directly open the variations tab.
+   */
+  private syncTabsWithUrlHash_() {
+    const tabUrlHashes: string[] = [
+      '#uma',
+      '#variations',
+      '#field-trials',
+    ];
+
+    const tabBox = this.shadowRoot!.querySelector('cr-tab-box')!;
+    tabBox.addEventListener(
+        'selected-index-change', (e: CustomEvent<number>) => {
+          window.location.hash = tabUrlHashes[e.detail] || '';
+        });
+
+    if (window.location.hash.startsWith('#')) {
+      const entryIndex = tabUrlHashes.indexOf(window.location.hash);
+      if (entryIndex >= 0) {
+        tabBox.setAttribute('selected-index', String(entryIndex));
+      }
+    }
   }
 
   /**
@@ -130,7 +159,8 @@ export class MetricsInternalsAppElement extends CustomElement {
     // Clear the table first.
     tableBody.replaceChildren();
 
-    const template = this.$('#summary-row-template') as HTMLTemplateElement;
+    const template =
+        this.getRequiredElement<HTMLTemplateElement>('#summary-row-template');
     for (const info of summary) {
       const row = template.content.cloneNode(true) as HTMLElement;
       const [key, value] = row.querySelectorAll('td');
@@ -151,8 +181,6 @@ export class MetricsInternalsAppElement extends CustomElement {
   private async updateVariationsSummary_(): Promise<void> {
     const summary: KeyValue[] =
         await this.browserProxy_.fetchVariationsSummary();
-    const variationsSummaryTableBody =
-        this.$('#variations-summary-body') as HTMLElement;
 
     // Don't re-render the table if the data has not changed.
     const newDataString = summary.toString();
@@ -161,6 +189,8 @@ export class MetricsInternalsAppElement extends CustomElement {
     }
 
     this.previousVariationsSummaryData_ = newDataString;
+    const variationsSummaryTableBody =
+        this.getRequiredElement('#variations-summary-body');
     this.updateSummaryTable_(variationsSummaryTableBody, summary);
   }
 
@@ -188,7 +218,8 @@ export class MetricsInternalsAppElement extends CustomElement {
     // Clear the table first.
     tableBody.replaceChildren();
 
-    const template = this.$('#uma-log-row-template') as HTMLTemplateElement;
+    const template =
+        this.getRequiredElement<HTMLTemplateElement>('#uma-log-row-template');
 
     // Iterate through the logs in reverse order so that the most recent log
     // shows up first.
@@ -249,7 +280,7 @@ export class MetricsInternalsAppElement extends CustomElement {
     // We don't compare the new data with the old data to prevent re-renderings
     // because this should only be called when there is an actual change.
 
-    const umaLogsTableBody = this.$('#uma-logs-body') as HTMLElement;
+    const umaLogsTableBody = this.getRequiredElement('#uma-logs-body');
     this.updateLogsTable_(umaLogsTableBody, logs.logs);
   }
 
@@ -265,43 +296,6 @@ export class MetricsInternalsAppElement extends CustomElement {
     a.download = `uma_logs_${new Date().getTime()}.json`;
     a.click();
   }
-
-  // <if expr="chromeos_ash">
-  /**
-   * Fetches summary information of the Structured Metrics service and renders
-   * it.
-   */
-  private async updateStructuredMetricsSummary_(): Promise<void> {
-    const summary: StructuredMetricsSummary =
-        await this.browserProxy_.fetchStructuredMetricsSummary();
-    const template = this.$('#summary-row-template') as HTMLTemplateElement;
-    const smSummaryBody = this.$('#sm-summary-body') as HTMLElement;
-    updateStructuredMetricsSummary(smSummaryBody, summary, template);
-  }
-
-  /**
-   * Fetches all events currently recorded by the Structured Metrics Service and
-   * renders them. It an event has been uploaded then it will not be shown
-   * again. This only shows Events recorded in Chromium. Platform2 events are
-   * not supported yet.
-   */
-  private async updateStructuredMetricsEvents_(): Promise<void> {
-    const events: StructuredMetricEvent[] =
-        await this.browserProxy_.fetchStructuredMetricsEvents();
-    const eventTemplate =
-        this.$('#structured-metrics-event-row-template') as HTMLTemplateElement;
-
-    const eventDetailsTemplate =
-        this.$('#structured-metrics-event-details-template') as
-        HTMLTemplateElement;
-    const kvTemplate = this.$('#summary-row-template') as HTMLTemplateElement;
-    const eventTableBody = this.$('#sm-events-body') as HTMLElement;
-
-    updateStructuredMetricsEvents(
-        eventTableBody, events, eventTemplate, eventDetailsTemplate,
-        kvTemplate);
-  }
-  // </if>
 }
 
 declare global {

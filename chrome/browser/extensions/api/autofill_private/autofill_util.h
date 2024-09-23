@@ -28,9 +28,13 @@ using CallbackAfterSuccessfulUserAuth = base::OnceCallback<void(bool)>;
 AddressEntryList GenerateAddressList(
     const autofill::PersonalDataManager& personal_data);
 
-// Uses |personal_data| to generate a list of up-to-date CountryEntry objects.
+// Uses `personal_data` to generate a list of up-to-date CountryEntry objects.
+// Depending on the `for_account_address_profile` and
+// `AutofillEnableAccountStorageForIneligibleCountries`, unsupported countries
+// are filtered from the resulting list.
 CountryEntryList GenerateCountryList(
-    const autofill::PersonalDataManager& personal_data);
+    const autofill::PersonalDataManager& personal_data,
+    bool for_account_address_profile);
 
 // Uses |personal_data| to generate a list of up-to-date CreditCardEntry
 // objects.

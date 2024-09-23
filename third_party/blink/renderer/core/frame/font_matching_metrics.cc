@@ -127,7 +127,7 @@ void FontMatchingMetrics::ReportLocalFontExistenceByUniqueNameOnly(
 }
 
 void FontMatchingMetrics::InsertFontHashIntoMap(IdentifiableTokenKey input_key,
-                                                SimpleFontData* font_data,
+                                                const SimpleFontData* font_data,
                                                 TokenToTokenHashMap& hash_map) {
   DCHECK(IdentifiabilityStudyShouldSampleFonts());
   if (hash_map.Contains(input_key)) {
@@ -160,7 +160,7 @@ FontMatchingMetrics::GetTokenBuilderWithFontSelectionRequest(
 void FontMatchingMetrics::ReportFontLookupByUniqueOrFamilyName(
     const AtomicString& name,
     const FontDescription& font_description,
-    SimpleFontData* resulting_font_data) {
+    const SimpleFontData* resulting_font_data) {
   Dactyloscoper::TraceFontLookup(
       execution_context_, name, font_description,
       Dactyloscoper::FontLookupType::kUniqueOrFamilyName);
@@ -184,7 +184,7 @@ void FontMatchingMetrics::ReportFontLookupByUniqueOrFamilyName(
 void FontMatchingMetrics::ReportFontLookupByUniqueNameOnly(
     const AtomicString& name,
     const FontDescription& font_description,
-    SimpleFontData* resulting_font_data,
+    const SimpleFontData* resulting_font_data,
     bool is_loading_fallback) {
   // We ignore lookups that result in loading fallbacks for now as they should
   // only be temporary.
@@ -217,7 +217,7 @@ void FontMatchingMetrics::ReportFontLookupByFallbackCharacter(
     UChar32 fallback_character,
     FontFallbackPriority fallback_priority,
     const FontDescription& font_description,
-    SimpleFontData* resulting_font_data) {
+    const SimpleFontData* resulting_font_data) {
   if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kLocalFontLookupByFallbackCharacter)) {
     return;
@@ -236,7 +236,7 @@ void FontMatchingMetrics::ReportFontLookupByFallbackCharacter(
 
 void FontMatchingMetrics::ReportLastResortFallbackFontLookup(
     const FontDescription& font_description,
-    SimpleFontData* resulting_font_data) {
+    const SimpleFontData* resulting_font_data) {
   if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kLocalFontLookupAsLastResort)) {
     return;
@@ -361,7 +361,8 @@ void FontMatchingMetrics::PublishAllMetrics() {
   PublishEmojiGlyphMetrics();
 }
 
-int64_t FontMatchingMetrics::GetHashForFontData(SimpleFontData* font_data) {
+int64_t FontMatchingMetrics::GetHashForFontData(
+    const SimpleFontData* font_data) {
   return font_data ? FontGlobalContext::Get()
                          .GetOrComputeTypefaceDigest(font_data->PlatformData())
                          .ToUkmMetricValue()
@@ -369,7 +370,7 @@ int64_t FontMatchingMetrics::GetHashForFontData(SimpleFontData* font_data) {
 }
 
 IdentifiableToken FontMatchingMetrics::GetPostScriptNameTokenForFontData(
-    SimpleFontData* font_data) {
+    const SimpleFontData* font_data) {
   DCHECK(font_data);
   return FontGlobalContext::Get().GetOrComputePostScriptNameDigest(
       font_data->PlatformData());

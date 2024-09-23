@@ -4,11 +4,23 @@
 
 # Keeps for method level annotations.
 -keepclasseswithmembers,allowaccessmodification class ** {
-  @org.jni_zero.AccessedByNative <fields>;
+  @**org.jni_zero.AccessedByNative <fields>;
 }
--keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
-  @org.jni_zero.CalledByNative <methods>;
+-keepclasseswithmembers,includedescriptorclasses,allowaccessmodification,allowoptimization class ** {
+  @**org.jni_zero.CalledByNative <methods>;
 }
--keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
-  @org.jni_zero.CalledByNativeUnchecked <methods>;
+-keepclasseswithmembers,includedescriptorclasses,allowaccessmodification,allowoptimization class ** {
+  @**org.jni_zero.CalledByNativeUnchecked <methods>;
+}
+
+# Allow unused native methods to be removed, but prevent renaming on those that
+# are kept.
+# TODO(crbug.com/315973491): Restrict the broad scope of this rule.
+-keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class ** {
+  native <methods>;
+}
+
+# Used when multiplexing. We don't package our own @UsedByReflection, so using this instead.
+-keepclasseswithmembers class !cr_allowunused,**J.N {
+  public long *_HASH;
 }

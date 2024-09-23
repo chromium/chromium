@@ -6,10 +6,11 @@
 
 #include <cstdint>
 #include <numeric>
+#include <type_traits>
 
+#include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/storage_manager/arc_storage_manager.h"
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
@@ -19,6 +20,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -27,10 +29,11 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/cryptohome/cryptohome_util.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/conditional_cache_counting_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
@@ -40,49 +43,54 @@
 #include "content/public/browser/storage_partition.h"
 
 namespace ash::settings {
-
 namespace {
 
-void GetTotalDiskSpaceBlocking(const base::FilePath& mount_path,
-                               int64_t* total_bytes) {
-  int64_t size = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
-  if (size >= 0) {
-    *total_bytes = size;
+// Computes the size of MyFiles and Play files.
+int64_t ComputeLocalFilesSize(const base::FilePath& my_files,
+                              const base::FilePath& play_files) {
+  // Compute size of MyFiles.
+  int64_t size = base::ComputeDirectorySize(my_files);
+
+  // Compute size of Play Files.
+  if (int64_t play_size = base::ComputeDirectorySize(play_files);
+      play_size > 0) {
+    // Remove size of the Download folder, because it is already counted as part
+    // of MyFiles.
+    play_size -= base::ComputeDirectorySize(play_files.AppendASCII("Download"));
+    if (play_size > 0) {
+      size += play_size;
+    }
   }
-}
-
-void GetFreeDiskSpaceBlocking(const base::FilePath& mount_path,
-                              int64_t* available_bytes) {
-  int64_t size = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
-  if (size >= 0) {
-    *available_bytes = size;
-  }
-}
-
-// Computes the size of My Files and Play files.
-int64_t ComputeLocalFilesSize(const base::FilePath& my_files_path,
-                              const base::FilePath& android_files_path) {
-  int64_t size = 0;
-
-  // Compute directory size of My Files.
-  size += base::ComputeDirectorySize(my_files_path);
-
-  // Compute directory size of Play Files.
-  size += base::ComputeDirectorySize(android_files_path);
-
-  // Remove size of Download. If Android is enabled, the size of the Download
-  // folder is counted in both My Files and Play files. If Android is disabled,
-  // the Download folder doesn't exist and the returned size is 0.
-  const base::FilePath download_files_path =
-      android_files_path.AppendASCII("Download");
-  size -= base::ComputeDirectorySize(download_files_path);
 
   return size;
 }
 
 }  // namespace
 
-SizeCalculator::SizeCalculator(const CalculationType& calculation_type)
+std::ostream& operator<<(std::ostream& out, SizeCalculator::CalculationType t) {
+  switch (t) {
+#define PRINT(s)                              \
+  case SizeCalculator::CalculationType::k##s: \
+    return out << #s;
+    PRINT(Total)
+    PRINT(Available)
+    PRINT(MyFiles)
+    PRINT(BrowsingData)
+    PRINT(AppsExtensions)
+    PRINT(DriveOfflineFiles)
+    PRINT(Crostini)
+    PRINT(OtherUsers)
+    PRINT(System)
+#undef PRINT
+  }
+
+  return out << "CalculationType("
+             << static_cast<
+                    std::underlying_type_t<SizeCalculator::CalculationType>>(t)
+             << ")";
+}
+
+SizeCalculator::SizeCalculator(CalculationType calculation_type)
     : calculation_type_(calculation_type) {}
 
 SizeCalculator::~SizeCalculator() {}
@@ -95,18 +103,22 @@ void SizeCalculator::StartCalculation() {
   PerformCalculation();
 }
 
-void SizeCalculator::AddObserver(SizeCalculator::Observer* observer) {
+void SizeCalculator::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void SizeCalculator::RemoveObserver(SizeCalculator::Observer* observer) {
+void SizeCalculator::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SizeCalculator::NotifySizeCalculated(int64_t total_bytes) {
+void SizeCalculator::NotifySizeCalculated(const int64_t size) {
   calculating_ = false;
-  for (SizeCalculator::Observer& observer : observers_) {
-    observer.OnSizeCalculated(calculation_type_, total_bytes);
+
+  LOG_IF(ERROR, size < 0) << "Got negative size " << size
+                          << " while calculating " << calculation_type_;
+
+  for (Observer& observer : observers_) {
+    observer.OnSizeCalculated(calculation_type_, size);
   }
 }
 
@@ -133,9 +145,6 @@ void TotalDiskSpaceCalculator::GetRootDeviceSize() {
 void TotalDiskSpaceCalculator::OnGetRootDeviceSize(
     std::optional<int64_t> reply) {
   if (reply.has_value()) {
-    if (reply.value() < 0) {
-      LOG(DFATAL) << "Negative root device size (" << reply.value() << ")";
-    }
     NotifySizeCalculated(reply.value());
     return;
   }
@@ -143,28 +152,18 @@ void TotalDiskSpaceCalculator::OnGetRootDeviceSize(
   // FakeSpacedClient does not have a proper implementation of
   // GetRootDeviceSize. If SpacedClient::GetRootDeviceSize does not return a
   // value, use GetTotalDiskSpace as a fallback.
-  VLOG(1) << "SpacedClient::OnGetRootDeviceSize: Empty reply. Using "
-             "GetTotalDiskSpace as fallback.";
+  VLOG(1) << "SpacedClient::OnGetRootDeviceSize gave an empty reply. "
+             "Using GetTotalDiskSpace as fallback.";
   GetTotalDiskSpace();
 }
 
 void TotalDiskSpaceCalculator::GetTotalDiskSpace() {
-  const base::FilePath my_files_path =
-      file_manager::util::GetMyFilesFolderForProfile(profile_);
-
-  int64_t* total_bytes = new int64_t(-1);
-  base::ThreadPool::PostTaskAndReply(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&GetTotalDiskSpaceBlocking, my_files_path, total_bytes),
-      base::BindOnce(&TotalDiskSpaceCalculator::OnGetTotalDiskSpace,
-                     weak_ptr_factory_.GetWeakPtr(), base::Owned(total_bytes)));
-}
-
-void TotalDiskSpaceCalculator::OnGetTotalDiskSpace(int64_t* total_bytes) {
-  if (*total_bytes < 0) {
-    LOG(DFATAL) << "Negative total disk space (" << *total_bytes << ")";
-  }
-  NotifySizeCalculated(*total_bytes);
+      base::BindOnce(&base::SysInfo::AmountOfTotalDiskSpace,
+                     file_manager::util::GetMyFilesFolderForProfile(profile_)),
+      base::BindOnce(&TotalDiskSpaceCalculator::NotifySizeCalculated,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 FreeDiskSpaceCalculator::FreeDiskSpaceCalculator(Profile* profile)
@@ -182,10 +181,8 @@ void FreeDiskSpaceCalculator::PerformCalculation() {
 }
 
 void FreeDiskSpaceCalculator::GetUserFreeDiskSpace() {
-  const base::FilePath my_files_path =
-      file_manager::util::GetMyFilesFolderForProfile(profile_);
   SpacedClient::Get()->GetFreeDiskSpace(
-      my_files_path.value(),
+      file_manager::util::GetMyFilesFolderForProfile(profile_).value(),
       base::BindOnce(&FreeDiskSpaceCalculator::OnGetUserFreeDiskSpace,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -193,39 +190,25 @@ void FreeDiskSpaceCalculator::GetUserFreeDiskSpace() {
 void FreeDiskSpaceCalculator::OnGetUserFreeDiskSpace(
     std::optional<int64_t> reply) {
   if (reply.has_value()) {
-    if (reply.value() < 0) {
-      LOG(DFATAL) << "Negative user free disk space (" << reply.value() << ")";
-    }
     NotifySizeCalculated(reply.value());
     return;
   }
 
   // FakeSpacedClient does not have a proper implementation of
   // GetFreeDiskSpace. If SpacedClient::GetFreeDiskSpace does not return a
-  // value, use GetFreeDiskSpaceBlocking as a fallback.
-  VLOG(1) << "SpacedClient::GetFreeDiskSpace: Empty reply. Using "
-             "GetFreeDiskSpaceBlocking as fallback.";
+  // value, use GetFreeDiskSpace as a fallback.
+  VLOG(1) << "SpacedClient::GetFreeDiskSpace gave an empty reply. "
+             "Using GetFreeDiskSpace as fallback.";
   GetFreeDiskSpace();
 }
 
 void FreeDiskSpaceCalculator::GetFreeDiskSpace() {
-  const base::FilePath my_files_path =
-      file_manager::util::GetMyFilesFolderForProfile(profile_);
-
-  int64_t* available_bytes = new int64_t(-1);
-  base::ThreadPool::PostTaskAndReply(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&GetFreeDiskSpaceBlocking, my_files_path, available_bytes),
-      base::BindOnce(&FreeDiskSpaceCalculator::OnGetFreeDiskSpace,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::Owned(available_bytes)));
-}
-
-void FreeDiskSpaceCalculator::OnGetFreeDiskSpace(int64_t* available_bytes) {
-  if (*available_bytes < 0) {
-    LOG(DFATAL) << "Negative free disk space (" << *available_bytes << ")";
-  }
-  NotifySizeCalculated(*available_bytes);
+      base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
+                     file_manager::util::GetMyFilesFolderForProfile(profile_)),
+      base::BindOnce(&FreeDiskSpaceCalculator::NotifySizeCalculated,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 DriveOfflineSizeCalculator::DriveOfflineSizeCalculator(Profile* profile)
@@ -245,12 +228,8 @@ void DriveOfflineSizeCalculator::PerformCalculation() {
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&drive::util::ComputeDriveFsContentCacheSize,
                      service->GetDriveFsContentCachePath()),
-      base::BindOnce(&DriveOfflineSizeCalculator::OnGetOfflineItemsSize,
+      base::BindOnce(&DriveOfflineSizeCalculator::NotifySizeCalculated,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void DriveOfflineSizeCalculator::OnGetOfflineItemsSize(int64_t offline_bytes) {
-  NotifySizeCalculated(offline_bytes > 0 ? offline_bytes : 0);
 }
 
 MyFilesSizeCalculator::MyFilesSizeCalculator(Profile* profile)
@@ -259,21 +238,13 @@ MyFilesSizeCalculator::MyFilesSizeCalculator(Profile* profile)
 MyFilesSizeCalculator::~MyFilesSizeCalculator() = default;
 
 void MyFilesSizeCalculator::PerformCalculation() {
-  const base::FilePath my_files_path =
-      file_manager::util::GetMyFilesFolderForProfile(profile_);
-
-  const base::FilePath android_files_path =
-      base::FilePath(file_manager::util::GetAndroidFilesPath());
-
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&ComputeLocalFilesSize, my_files_path, android_files_path),
-      base::BindOnce(&MyFilesSizeCalculator::OnGetMyFilesSize,
+      base::BindOnce(&ComputeLocalFilesSize,
+                     file_manager::util::GetMyFilesFolderForProfile(profile_),
+                     file_manager::util::GetAndroidFilesPath()),
+      base::BindOnce(&MyFilesSizeCalculator::NotifySizeCalculated,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void MyFilesSizeCalculator::OnGetMyFilesSize(int64_t total_bytes) {
-  NotifySizeCalculated(total_bytes);
 }
 
 BrowsingDataSizeCalculator::BrowsingDataSizeCalculator(Profile* profile)
@@ -329,7 +300,7 @@ void BrowsingDataSizeCalculator::OnGetBrowsingDataSize(bool is_site_data,
     } else {
       browsing_data_size = -1;
     }
-    calculating_ = false;
+
     NotifySizeCalculated(browsing_data_size);
   }
 }
@@ -340,7 +311,7 @@ AppsSizeCalculator::AppsSizeCalculator(Profile* profile)
 AppsSizeCalculator::~AppsSizeCalculator() {
   arc::ArcServiceManager::Get()
       ->arc_bridge_service()
-      ->storage_manager()
+      ->disk_space()
       ->RemoveObserver(this);
 }
 
@@ -353,25 +324,25 @@ void AppsSizeCalculator::OnConnectionClosed() {
   is_android_running_ = false;
 }
 
-void AppsSizeCalculator::AddObserver(SizeCalculator::Observer* observer) {
+void AppsSizeCalculator::AddObserver(Observer* observer) {
   // Start observing arc mojo connection when the first observer is added, to
   // allow the calculation of android apps.
   if (observers_.empty()) {
     arc::ArcServiceManager::Get()
         ->arc_bridge_service()
-        ->storage_manager()
+        ->disk_space()
         ->AddObserver(this);
   }
-  observers_.AddObserver(observer);
+  SizeCalculator::AddObserver(observer);
 }
 
-void AppsSizeCalculator::RemoveObserver(SizeCalculator::Observer* observer) {
-  observers_.RemoveObserver(observer);
+void AppsSizeCalculator::RemoveObserver(Observer* observer) {
+  SizeCalculator::RemoveObserver(observer);
   // Stop observing arc connection if all observers have been removed.
   if (observers_.empty()) {
     arc::ArcServiceManager::Get()
         ->arc_bridge_service()
-        ->storage_manager()
+        ->disk_space()
         ->RemoveObserver(this);
   }
 }
@@ -416,10 +387,10 @@ void AppsSizeCalculator::UpdateAndroidAppsSize() {
   }
 
   bool success = false;
-  auto* arc_storage_manager =
-      arc::ArcStorageManager::GetForBrowserContext(profile_);
-  if (arc_storage_manager) {
-    success = arc_storage_manager->GetApplicationsSize(
+  auto* arc_disk_space_bridge =
+      arc::ArcDiskSpaceBridge::GetForBrowserContext(profile_);
+  if (arc_disk_space_bridge) {
+    success = arc_disk_space_bridge->GetApplicationsSize(
         base::BindOnce(&AppsSizeCalculator::OnGetAndroidAppsSize,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -442,7 +413,7 @@ void AppsSizeCalculator::OnGetAndroidAppsSize(
 
 void AppsSizeCalculator::UpdateBorealisAppsSize() {
   borealis::BorealisService* borealis_service =
-      borealis::BorealisService::GetForProfile(profile_);
+      borealis::BorealisServiceFactory::GetForProfile(profile_);
   if (!borealis_service || !borealis_service->Features().IsEnabled()) {
     has_borealis_apps_size_ = true;
     return;
@@ -489,7 +460,6 @@ void AppsSizeCalculator::OnGetBorealisAppsSize(
 void AppsSizeCalculator::UpdateAppsAndExtensionsSize() {
   if (has_apps_extensions_size_ && has_android_apps_size_ &&
       has_borealis_apps_size_) {
-    calculating_ = false;
     NotifySizeCalculated(apps_extensions_size_ + android_apps_size_ +
                          borealis_apps_size_);
   }
@@ -502,7 +472,7 @@ CrostiniSizeCalculator::~CrostiniSizeCalculator() = default;
 
 void CrostiniSizeCalculator::PerformCalculation() {
   if (!crostini::CrostiniFeatures::Get()->IsEnabled(profile_)) {
-    UpdateSize(
+    NotifySizeCalculated(
         profile_->GetPrefs()->GetInt64(crostini::prefs::kCrostiniLastDiskSize));
     return;
   }
@@ -521,22 +491,23 @@ void CrostiniSizeCalculator::OnGetCrostiniSize(
     std::optional<vm_tools::concierge::ListVmDisksResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to get list of VM disks. Empty response.";
-    UpdateSize(
+    NotifySizeCalculated(
         profile_->GetPrefs()->GetInt64(crostini::prefs::kCrostiniLastDiskSize));
     return;
   }
 
   if (!response->success()) {
     LOG(ERROR) << "Failed to list VM disks: " << response->failure_reason();
-    UpdateSize(
+    NotifySizeCalculated(
         profile_->GetPrefs()->GetInt64(crostini::prefs::kCrostiniLastDiskSize));
     return;
   }
+
   int64_t vm_disk_usage = response->total_size();
 
   // If Borealis is installed then we need to subtract its size from Crostini
   // in order for it to not be double counted.
-  if (borealis::BorealisService::GetForProfile(profile_)
+  if (borealis::BorealisServiceFactory::GetForProfile(profile_)
           ->Features()
           .IsEnabled()) {
     auto image = base::ranges::find(response->images(), "borealis",
@@ -549,12 +520,7 @@ void CrostiniSizeCalculator::OnGetCrostiniSize(
   }
   profile_->GetPrefs()->SetInt64(crostini::prefs::kCrostiniLastDiskSize,
                                  vm_disk_usage);
-  UpdateSize(vm_disk_usage);
-}
-
-void CrostiniSizeCalculator::UpdateSize(int64_t total_bytes) {
-  calculating_ = false;
-  NotifySizeCalculated(total_bytes);
+  NotifySizeCalculated(vm_disk_usage);
 }
 
 OtherUsersSizeCalculator::OtherUsersSizeCalculator()
@@ -592,9 +558,9 @@ void OtherUsersSizeCalculator::OnGetOtherUserSize(
   if (user_sizes_.size() != other_users_.size()) {
     return;
   }
-  int64_t other_users_total_bytes;
+
   // If all the requests succeed, shows the total bytes in the UI.
-  other_users_total_bytes =
+  const int64_t other_users_total_bytes =
       base::Contains(user_sizes_, -1)
           ? -1
           : std::accumulate(user_sizes_.begin(), user_sizes_.end(), 0LL);

@@ -23,8 +23,6 @@ class BrowserListObserver : public base::CheckedObserver {
   // Called after `browser` is added to `browser_list`.
   virtual void OnBrowserAdded(const BrowserList* browser_list,
                               Browser* browser) {}
-  virtual void OnIncognitoBrowserAdded(const BrowserList* browser_list,
-                                       Browser* browser) {}
 
   // Called *after* `browser` is removed from `browser_list`. This method will
   // execute before the object that owns `browser` destroys it, so the pointer
@@ -32,8 +30,6 @@ class BrowserListObserver : public base::CheckedObserver {
   // any processing outside of the synchronous scope of these methods.
   virtual void OnBrowserRemoved(const BrowserList* browser_list,
                                 Browser* browser) {}
-  virtual void OnIncognitoBrowserRemoved(const BrowserList* browser_list,
-                                         Browser* browser) {}
 
   // Called before the browserlist is destroyed, in case the observer needs to
   // do any cleanup. After this method is called, all observers will be removed

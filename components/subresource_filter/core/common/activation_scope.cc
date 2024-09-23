@@ -22,7 +22,7 @@ std::ostream& operator<<(std::ostream& os, const ActivationScope& state) {
       os << "ACTIVATION_LIST";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return os;

@@ -108,8 +108,8 @@ class FlashDeviceTest(unittest.TestCase):
 
         with mock.patch('os.path.exists', return_value=True):
             self._ffx_mock.return_value.stdout = \
-                '[{"title": "Build", "child": [{"value": "%s"}, ' \
-                '{"value": "%s"}]}]' % (_TEST_VERSION, _TEST_PRODUCT)
+                '{"build": {"version": "%s", ' \
+                '"product": "%s"}}' % (_TEST_VERSION, _TEST_PRODUCT)
             flash_device.update(_TEST_IMAGE_DIR, 'check', None)
             self.assertEqual(self._ffx_mock.call_count, 1)
             self.assertEqual(self._sdk_hash_mock.call_count, 1)
@@ -125,8 +125,8 @@ class FlashDeviceTest(unittest.TestCase):
             mock_boot.side_effect = boot_device.StateTransitionError(
                 'Incorrect state')
             self._ffx_mock.return_value.stdout = \
-                '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
-                '{"value": "wrong_product"}]}]'
+                '{"build": {"version": "wrong.version", ' \
+                '"product": "wrong.product"}}'
             flash_device.update(_TEST_IMAGE_DIR, 'check', None)
             mock_boot.assert_called_with(mock.ANY,
                                          boot_device.BootMode.REGULAR, None)
@@ -144,8 +144,8 @@ class FlashDeviceTest(unittest.TestCase):
                 mock.patch('flash_device.boot_device') as mock_boot, \
                 mock.patch('flash_device.subprocess.run'):
             self._ffx_mock.return_value.stdout = \
-                '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
-                '{"value": "wrong_product"}]}]'
+                '{"build": {"version": "wrong.version", ' \
+                '"product": "wrong.product"}}'
             flash_device.update(_TEST_IMAGE_DIR, 'check', None)
             mock_boot.assert_called_with(mock.ANY,
                                          boot_device.BootMode.REGULAR, None)
@@ -155,7 +155,7 @@ class FlashDeviceTest(unittest.TestCase):
         """Test update when |os_check| is 'check' and system info was not
         retrieved."""
         with mock.patch('os.path.exists', return_value=True):
-            self._ffx_mock.return_value.stdout = '[{"title": "badtitle"}]'
+            self._ffx_mock.return_value.stdout = '{"unexpected": "badtitle"}'
             flash_device.update(_TEST_IMAGE_DIR, 'check', None)
             self.assertEqual(self._ffx_mock.call_count, 2)
 

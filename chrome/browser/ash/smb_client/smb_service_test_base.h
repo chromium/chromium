@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SERVICE_TEST_BASE_H_
 #define CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SERVICE_TEST_BASE_H_
 
-#include "chrome/browser/ash/smb_client/smb_service.h"
-
 #include <stddef.h>
 
 #include "base/test/bind.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -19,6 +18,9 @@
 #include "chromeos/ash/components/smbfs/smbfs_mounter.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

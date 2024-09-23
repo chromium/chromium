@@ -31,7 +31,7 @@ public class HttpEngineNativeProvider extends CronetProvider {
      * namely access to the netlog and internal metrics. Additionally, support for experimental
      * features is not guaranteed (as with any other Cronet provider).
      */
-    // TODO(crbug/1499829): Move this to CronetProvider
+    // TODO(crbug.com/40287946): Move this to CronetProvider
     public static final String PROVIDER_NAME_HTTPENGINE_NATIVE = "HttpEngine-Native-Provider";
 
     static final int EXT_API_LEVEL = Build.VERSION_CODES.S;

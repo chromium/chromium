@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -45,7 +46,7 @@ const char* const kBackgroundPageName =
     extensions::kGeneratedBackgroundPageFilename;
 
 const StackTrace& GetStackTraceFromError(const ExtensionError* error) {
-  CHECK(error->type() == ExtensionError::RUNTIME_ERROR);
+  CHECK(error->type() == ExtensionError::Type::kRuntimeError);
   return (static_cast<const RuntimeError*>(error))->stack_trace();
 }
 
@@ -94,12 +95,8 @@ void CheckRuntimeError(const ExtensionError* error,
                        logging::LogSeverity level,
                        const GURL& context,
                        size_t expected_stack_size) {
-  CheckError(error,
-             ExtensionError::RUNTIME_ERROR,
-             id,
-             source,
-             from_incognito,
-             message);
+  CheckError(error, ExtensionError::Type::kRuntimeError, id, source,
+             from_incognito, message);
 
   const RuntimeError* runtime_error = static_cast<const RuntimeError*>(error);
   EXPECT_EQ(level, runtime_error->level());
@@ -112,9 +109,7 @@ void CheckManifestError(const ExtensionError* error,
                         const std::string& message,
                         const std::string& manifest_key,
                         const std::string& manifest_specific) {
-  CheckError(error,
-             ExtensionError::MANIFEST_ERROR,
-             id,
+  CheckError(error, ExtensionError::Type::kManifestError, id,
              // source is always the manifest for ManifestErrors.
              base::FilePath(kManifestFilename).AsUTF8Unsafe(),
              false,  // manifest errors are never from incognito.
@@ -167,8 +162,9 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
     ErrorObserver& operator=(const ErrorObserver&) = delete;
 
     virtual ~ErrorObserver() {
-      if (error_console_)
+      if (error_console_) {
         error_console_->RemoveObserver(this);
+      }
     }
 
     // ErrorConsole::Observer implementation.
@@ -266,7 +262,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
       case ACTION_NONE:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     observer.WaitForErrors();
@@ -311,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, ReportManifestErrors) {
   const ExtensionError* unknown_key_error = nullptr;
   const char kFakeKey[] = "not_a_real_key";
   for (const auto& error : errors) {
-    ASSERT_EQ(ExtensionError::MANIFEST_ERROR, error->type());
+    ASSERT_EQ(ExtensionError::Type::kManifestError, error->type());
     const std::string& key =
         (static_cast<const ManifestError*>(error.get()))->manifest_key();
     if (key == manifest_keys::kPermissions) {
@@ -530,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadExtensionPage) {
 
 // Test that extension errors that go to chrome.runtime.lastError are caught
 // and reported by the ErrorConsole.
-// TODO(crbug.com/1181558) Flaky on many builders.
+// TODO(crbug.com/40750922) Flaky on many builders.
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, DISABLED_CatchesLastError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(

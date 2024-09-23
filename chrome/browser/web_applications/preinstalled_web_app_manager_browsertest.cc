@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 
+#include <string_view>
+
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -22,7 +24,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/ssl_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
@@ -31,7 +35,7 @@
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
-#include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -41,6 +45,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -71,6 +76,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/startup/browser_init_params.h"
 #endif
@@ -113,23 +119,23 @@ void ExpectInitialManifestFieldsFromBasicWebApp(WebAppIconManager& icon_manager,
   EXPECT_EQ(web_app->display_mode(), DisplayMode::kStandalone);
   EXPECT_FALSE(web_app->theme_color().has_value());
 
-  EXPECT_FALSE(web_app->sync_fallback_data().theme_color.has_value());
-  EXPECT_EQ("Basic web app", web_app->sync_fallback_data().name);
-  EXPECT_EQ(expect_scope.spec(), web_app->sync_fallback_data().scope);
+  EXPECT_FALSE(web_app->sync_proto().has_theme_color());
+  EXPECT_EQ("Basic web app", web_app->sync_proto().name());
+  EXPECT_EQ(expect_scope.spec(), web_app->sync_proto().scope());
 
-  EXPECT_EQ(2u, web_app->sync_fallback_data().icon_infos.size());
+  ASSERT_EQ(2, web_app->sync_proto().icon_infos_size());
 
-  EXPECT_EQ(expect_start_url.Resolve("basic-48.png"),
-            web_app->sync_fallback_data().icon_infos[0].url);
-  EXPECT_EQ(48, web_app->sync_fallback_data().icon_infos[0].square_size_px);
-  EXPECT_EQ(apps::IconInfo::Purpose::kAny,
-            web_app->sync_fallback_data().icon_infos[0].purpose);
+  EXPECT_EQ(expect_start_url.Resolve("basic-48.png").spec(),
+            web_app->sync_proto().icon_infos(0).url());
+  EXPECT_EQ(48, web_app->sync_proto().icon_infos(0).size_in_px());
+  EXPECT_EQ(sync_pb::WebAppIconInfo_Purpose_ANY,
+            web_app->sync_proto().icon_infos(0).purpose());
 
-  EXPECT_EQ(expect_start_url.Resolve("basic-192.png"),
-            web_app->sync_fallback_data().icon_infos[1].url);
-  EXPECT_EQ(192, web_app->sync_fallback_data().icon_infos[1].square_size_px);
-  EXPECT_EQ(apps::IconInfo::Purpose::kAny,
-            web_app->sync_fallback_data().icon_infos[1].purpose);
+  EXPECT_EQ(expect_start_url.Resolve("basic-192.png").spec(),
+            web_app->sync_proto().icon_infos(1).url());
+  EXPECT_EQ(192, web_app->sync_proto().icon_infos(1).size_in_px());
+  EXPECT_EQ(sync_pb::WebAppIconInfo_Purpose_ANY,
+            web_app->sync_proto().icon_infos(1).purpose());
 
   // Manifest Resources: This is chrome/test/data/web_apps/basic-192.png
   EXPECT_EQ(IconManagerReadAppIconPixel(icon_manager, web_app->app_id(),
@@ -218,7 +224,8 @@ class PreinstalledWebAppManagerBrowserTestBase
         .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
             [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
                     install_results,
-                std::map<GURL, bool> uninstall_results) {
+                std::map<GURL, webapps::UninstallResultCode>
+                    uninstall_results) {
               EXPECT_EQ(install_results.size(), 0u);
               EXPECT_EQ(uninstall_results.size(), 0u);
               run_loop.Quit();
@@ -229,7 +236,7 @@ class PreinstalledWebAppManagerBrowserTestBase
   // Mocks "icon.png" as chrome/test/data/web_apps/blue-192.png.
   std::optional<webapps::InstallResultCode> SyncPreinstalledAppConfig(
       const GURL& install_url,
-      base::StringPiece app_config_string) {
+      std::string_view app_config_string) {
     base::FilePath test_config_dir(FILE_PATH_LITERAL("test_dir"));
     SetPreinstalledWebAppConfigDirForTesting(&test_config_dir);
 
@@ -263,7 +270,8 @@ class PreinstalledWebAppManagerBrowserTestBase
         .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
             [&](std::map<GURL, ExternallyManagedAppManager::InstallResult>
                     install_results,
-                std::map<GURL, bool> uninstall_results) {
+                std::map<GURL, webapps::UninstallResultCode>
+                    uninstall_results) {
               auto it = install_results.find(install_url);
               if (it != install_results.end())
                 code = it->second.code;
@@ -284,8 +292,8 @@ class PreinstalledWebAppManagerBrowserTestBase
   void ResetInterceptor() { url_loader_interceptor_.reset(); }
 
  private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
   base::AutoReset<bool> skip_preinstalled_web_app_startup_;
 };
 
@@ -293,7 +301,13 @@ class PreinstalledWebAppManagerBrowserTest
     : public PreinstalledWebAppManagerBrowserTestBase {
  public:
   PreinstalledWebAppManagerBrowserTest() {
+#if BUILDFLAG(IS_CHROMEOS)
+    feature_list_.InitWithFeatures(
+        {features::kRecordWebAppDebugInfo},
+        {chromeos::features::kPreinstalledWebAppsCoreOnly});
+#else
     feature_list_.InitWithFeatures({features::kRecordWebAppDebugInfo}, {});
+#endif
   }
 
  private:
@@ -329,6 +343,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   GURL launch_url =
       embedded_test_server()->GetURL("/web_apps/basic.html?test_launch_params");
   EXPECT_EQ(registrar().GetAppLaunchUrl(app_id), launch_url);
+
+  // This is required to allow launching to work.
+  provider().scheduler().SynchronizeOsIntegration(app_id, base::DoNothing());
 
   Browser* app_browser = LaunchWebAppBrowserAndWait(profile(), app_id);
   EXPECT_EQ(
@@ -368,6 +385,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // We should not duplicate the query param if start_url already has it.
   EXPECT_EQ(registrar().GetAppLaunchUrl(app_id), start_url);
 
+  // This is required to allow launching to work.
+  provider().scheduler().SynchronizeOsIntegration(app_id, base::DoNothing());
+
   Browser* app_browser = LaunchWebAppBrowserAndWait(profile(), app_id);
   EXPECT_EQ(
       app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
@@ -402,6 +422,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), start_url);
   EXPECT_EQ(registrar().GetAppLaunchUrl(app_id), launch_url);
+
+  // This is required to allow launching to work.
+  provider().scheduler().SynchronizeOsIntegration(app_id, base::DoNothing());
 
   Browser* app_browser = LaunchWebAppBrowserAndWait(profile(), app_id);
   EXPECT_EQ(
@@ -442,6 +465,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       "/web_apps/"
       "query_params_in_start_url.html?query_params=in&start=url&!@%23$%^*&)(");
   EXPECT_EQ(registrar().GetAppLaunchUrl(app_id), launch_url);
+
+  provider().scheduler().SynchronizeOsIntegration(app_id, base::DoNothing());
 
   Browser* app_browser = LaunchWebAppBrowserAndWait(profile(), app_id);
   EXPECT_EQ(
@@ -767,9 +792,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // Actually uninstall web app.
   {
     base::test::TestFuture<webapps::UninstallResultCode> future;
-    provider().scheduler().UninstallWebApp(
+    provider().scheduler().RemoveUserUninstallableManagements(
         app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
-    ASSERT_EQ(future.Get(), webapps::UninstallResultCode::kSuccess);
+    ASSERT_EQ(future.Get(), webapps::UninstallResultCode::kAppRemoved);
     ASSERT_FALSE(registrar().IsInstalled(app_id));
   }
 
@@ -1323,8 +1348,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       GenerateAppId(/*manifest_id=*/std::nullopt, preinstalled_app_start_url);
 
   // Install user app.
-  auto install_info = std::make_unique<WebAppInstallInfo>();
-  install_info->start_url = user_app_start_url;
+  auto install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(user_app_start_url);
   install_info->title = u"Test user app";
   webapps::AppId user_app_id =
       web_app::test::InstallWebApp(profile(), std::move(install_info));
@@ -1455,5 +1480,95 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerWithCloudGamingBrowserTest,
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+class PreinstalledWebAppManagerPreferredAppForSupportedLinksBrowserTest
+    : public PreinstalledWebAppManagerBrowserTest,
+      public ::testing::WithParamInterface<
+          /*is_preferred_app_for_supported_links=*/bool> {
+ public:
+  bool IsPreferredAppForSupportedLinks() const { return GetParam(); }
+
+  void RemoveSupportedLinksPreference(const webapps::AppId& app_id) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // NOTE: CrosAPI doesn't implement `RemoveSupportedLinksPreference()`.
+    loopback_crosapi_->RemoveSupportedLinksPreference(app_id);
+    WaitForSupportedLinksPreference(app_id, /*is_preferred_app=*/false);
+#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    apps_util::RemoveSupportedLinksPreferenceAndWait(profile(), app_id);
+#endif
+  }
+
+  void WaitForSupportedLinksPreference(const webapps::AppId& app_id,
+                                       bool is_preferred_app) {
+    apps_util::PreferredAppUpdateWaiter(
+        apps::AppServiceProxyFactory::GetForProfile(profile())
+            ->PreferredAppsList(),
+        app_id, is_preferred_app)
+        .Wait();
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+ private:
+  // PreinstalledWebAppManagerBrowserTest:
+  void SetUpOnMainThread() override {
+    PreinstalledWebAppManagerBrowserTest::SetUpOnMainThread();
+    loopback_crosapi_ =
+        std::make_unique<LoopbackCrosapiAppServiceProxy>(profile());
+  }
+
+  void TearDownOnMainThread() override {
+    PreinstalledWebAppManagerBrowserTest::TearDownOnMainThread();
+    loopback_crosapi_.reset();
+  }
+
+  std::unique_ptr<LoopbackCrosapiAppServiceProxy> loopback_crosapi_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PreinstalledWebAppManagerPreferredAppForSupportedLinksBrowserTest,
+    /*is_preferred_app_for_supported_links=*/::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
+    PreinstalledWebAppManagerPreferredAppForSupportedLinksBrowserTest,
+    MaybeSetPreferredAppForSupportedLinks) {
+  base::AutoReset<bool> bypass_offline_manifest_requirement =
+      PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const auto manifest = base::ReplaceStringPlaceholders(
+      R"({
+        "app_url": "$1",
+        "is_preferred_app_for_supported_links": $2,
+        "launch_container": "window",
+        "user_type": ["unmanaged"]
+      })",
+      {GetAppUrl().spec(),
+       IsPreferredAppForSupportedLinks() ? "true" : "false"},
+      nullptr);
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, GetAppUrl());
+
+  // Install the app for the first time.
+  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest),
+            webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_TRUE(registrar().IsInstalled(app_id));
+
+  // Verify that the app is the preferred app if requested in the manifest.
+  WaitForSupportedLinksPreference(app_id, IsPreferredAppForSupportedLinks());
+
+  // Clear the preferred app.
+  RemoveSupportedLinksPreference(app_id);
+
+  // Reinstall the app.
+  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest),
+            webapps::InstallResultCode::kSuccessAlreadyInstalled);
+  EXPECT_TRUE(registrar().IsInstalled(app_id));
+
+  // Verify that the app is *not* the preferred app after re-installation as the
+  // user may have already updated their preference.
+  WaitForSupportedLinksPreference(app_id, /*is_preferred_app=*/false);
+}
 
 }  // namespace web_app

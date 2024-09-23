@@ -4,14 +4,18 @@
 (async function(testRunner) {
   const html = `<!doctype html>
     <html><script>
-    document.addEventListener("visibilitychange", () => {
-        console.log(document.visibilityState);
-    });
+      document.addEventListener("visibilitychange", () => {
+          console.log(document.visibilityState);
+      });
+
+      const input = document.createElement('input');
+      document.body.appendChild(input);
+      input.focus();
     </script></html>
   `;
 
   const {session, dp} = await testRunner.startHTML(
-      html, `Tests browser window minimize and restore.`);
+      html, `Tests browser window minimize, restore and focus.`);
 
   await dp.Runtime.enable();
 
@@ -27,7 +31,9 @@
   async function logWindowState(text, windowId) {
     const {result: {bounds}} = await dp.Browser.getWindowBounds({windowId});
     const visibilityState = await session.evaluate(`document.visibilityState`);
-    testRunner.log(`${text}: ${bounds.windowState} ${visibilityState}`);
+    const hasFocus = await session.evaluate(`document.hasFocus()`);
+    testRunner.log(`${text}: ${bounds.windowState} ${
+        visibilityState} hasFocus=${hasFocus}`);
   }
 
   const {result: {windowId}} = await dp.Browser.getWindowForTarget();

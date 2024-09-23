@@ -91,6 +91,7 @@ class DelegatedInkTrailPresenterUnitTest : public SimTest {
       init->setButtons(MouseEvent::WebInputEventModifiersToButtons(
           WebInputEvent::Modifiers::kLeftButtonDown));
     }
+    init->setView(&Window());
     PointerEvent* event =
         PointerEvent::Create(event_type_names::kPointermove, init);
     event->SetTrusted(true);
@@ -104,8 +105,8 @@ class DelegatedInkTrailPresenterUnitTest : public SimTest {
                                         ->DelegatedInkMetadataForTesting());
   }
 
-  void SetPageZoomFactor(const float zoom) {
-    GetDocument().GetFrame()->SetPageZoomFactor(zoom);
+  void SetLayoutZoomFactor(const float zoom) {
+    GetDocument().GetFrame()->SetLayoutZoomFactor(zoom);
   }
 };
 
@@ -169,17 +170,17 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
                       GetDocument().GetFrame());
   DCHECK(presenter);
 
-  InkTrailStyle style;
-  style.setDiameter(5);
-  style.setColor("blue");
-  expected_metadata.SetDiameter(style.diameter());
+  InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
+  style->setDiameter(5);
+  style->setColor("blue");
+  expected_metadata.SetDiameter(style->diameter());
   expected_metadata.SetColor(SK_ColorBLUE);
 
   DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(100, 100);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(GetDocument().GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ true), &style, exception_state);
+      CreatePointerMoveEvent(pt, /*hovering*/ true), style, exception_state);
   expected_metadata.SetHovering(true);
   expected_metadata.SetPoint(pt);
 
@@ -191,7 +192,7 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
 TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
        NotDefaultDevicePixelRatio) {
   const float kZoom = 1.7;
-  SetPageZoomFactor(kZoom);
+  SetLayoutZoomFactor(kZoom);
 
   SimRequest main_resource("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -232,20 +233,152 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
                       GetDocument().GetFrame());
   DCHECK(presenter);
 
-  InkTrailStyle style;
-  style.setDiameter(101.5);
-  style.setColor("magenta");
-  expected_metadata.SetDiameter(style.diameter() * kZoom);
+  InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
+  style->setDiameter(101.5);
+  style->setColor("magenta");
+  expected_metadata.SetDiameter(style->diameter() * kZoom);
   expected_metadata.SetColor(SK_ColorMAGENTA);
 
   DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(87, 113);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(GetDocument().GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ true), &style, exception_state);
+      CreatePointerMoveEvent(pt, /*hovering*/ true), style, exception_state);
   expected_metadata.SetHovering(true);
   pt.Scale(kZoom);
   expected_metadata.SetPoint(pt);
+
+  expected_metadata.ExpectEqual(GetActualMetadata());
+}
+
+// Confirm that everything is still calculated correctly when the
+// PageScaleFactor is not 1. Numbers and color used were chosen arbitrarily.
+TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
+       NotDefaultPageScaleFactor) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    body {
+      margin: 0;
+    }
+    canvas {
+      width: 281px;
+      height: 190px;
+    }
+    </style>
+    <canvas id='canvas'></canvas>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  const float kCanvasWidth = 281.f;
+  const float kCanvasHeight = 190.f;
+
+  TestDelegatedInkMetadata expected_metadata;
+  const float kScale = 2.5;
+  if (!CanvasShouldBePastViewport()) {
+    SetWebViewSizeGreaterThanCanvas(kCanvasWidth * kScale,
+                                    kCanvasHeight * kScale);
+    expected_metadata = TestDelegatedInkMetadata(
+        gfx::RectF(0, 0, kCanvasWidth, kCanvasHeight), kScale);
+  } else {
+    SetWebViewSize();
+    expected_metadata.SetArea(
+        gfx::RectF(0, 0, GetViewportWidth(), GetViewportHeight()));
+  }
+  GetDocument().GetPage()->SetPageScaleFactor(kScale);
+
+  DelegatedInkTrailPresenter* presenter =
+      CreatePresenter(GetDocument().getElementById(AtomicString("canvas")),
+                      GetDocument().GetFrame());
+  DCHECK(presenter);
+
+  InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
+  style->setDiameter(101.5);
+  style->setColor("magenta");
+  expected_metadata.SetDiameter(style->diameter() * kScale);
+  expected_metadata.SetColor(SK_ColorMAGENTA);
+
+  DummyExceptionStateForTesting exception_state;
+  gfx::PointF pt(87, 113);
+  presenter->updateInkTrailStartPoint(
+      ToScriptStateForMainWorld(GetDocument().GetFrame()),
+      CreatePointerMoveEvent(pt, /*hovering*/ true), style, exception_state);
+  expected_metadata.SetHovering(true);
+  pt.Scale(kScale);
+  expected_metadata.SetPoint(pt);
+
+  expected_metadata.ExpectEqual(GetActualMetadata());
+}
+
+// Confirm that everything is still calculated correctly when the
+// PageScaleFactor is not 1 and a scroll offset is applied.
+TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
+       NotDefaultPageScaleFactorNonZeroOffset) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    body {
+      margin: 0;
+    }
+    canvas {
+      width: 281px;
+      height: 190px;
+    }
+    </style>
+    <canvas id='canvas'></canvas>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  const float kCanvasWidth = 281.f;
+  const float kCanvasHeight = 190.f;
+  const float kOffsetX = 55.f;
+  const float kOffsetY = 41.f;
+  const float kScale = 2.5;
+
+  TestDelegatedInkMetadata expected_metadata;
+
+  if (!CanvasShouldBePastViewport()) {
+    SetWebViewSizeGreaterThanCanvas(kCanvasWidth * kScale,
+                                    kCanvasHeight * kScale);
+    expected_metadata = TestDelegatedInkMetadata(
+        gfx::RectF(0, 0, kCanvasWidth - kOffsetX, kCanvasHeight - kOffsetY),
+        kScale);
+  } else {
+    SetWebViewSize();
+    expected_metadata.SetArea(
+        gfx::RectF(0, 0, GetViewportWidth(), GetViewportHeight()));
+  }
+
+  GetDocument().GetPage()->SetPageScaleFactor(kScale);
+  WebView().SetVisualViewportOffset(gfx::PointF(kOffsetX, kOffsetY));
+
+  DelegatedInkTrailPresenter* presenter =
+      CreatePresenter(GetDocument().getElementById(AtomicString("canvas")),
+                      GetDocument().GetFrame());
+  DCHECK(presenter);
+
+  DummyExceptionStateForTesting exception_state;
+  InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
+  style->setDiameter(101.5);
+  style->setColor("magenta");
+  gfx::PointF pt(87, 113);
+  presenter->updateInkTrailStartPoint(
+      ToScriptStateForMainWorld(GetDocument().GetFrame()),
+      CreatePointerMoveEvent(pt, /*hovering*/ true), style, exception_state);
+
+  gfx::PointF expected_point = pt;
+  expected_point.Offset(-kOffsetX, -kOffsetY);
+  expected_point.Scale(kScale);
+  expected_metadata.SetPoint(expected_point);
+  expected_metadata.SetHovering(true);
+  expected_metadata.SetDiameter(style->diameter() * kScale);
+  expected_metadata.SetColor(SK_ColorMAGENTA);
 
   expected_metadata.ExpectEqual(GetActualMetadata());
 }
@@ -299,17 +432,17 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport, CanvasNotAtOrigin) {
                       GetDocument().GetFrame());
   DCHECK(presenter);
 
-  InkTrailStyle style;
-  style.setDiameter(8.6);
-  style.setColor("red");
-  expected_metadata.SetDiameter(style.diameter());
+  InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
+  style->setDiameter(8.6);
+  style->setColor("red");
+  expected_metadata.SetDiameter(style->diameter());
   expected_metadata.SetColor(SK_ColorRED);
 
   DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(380, 175);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(GetDocument().GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ false), &style, exception_state);
+      CreatePointerMoveEvent(pt, /*hovering*/ false), style, exception_state);
   expected_metadata.SetHovering(false);
   expected_metadata.SetPoint(pt);
 
@@ -399,17 +532,17 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport, CanvasInIFrame) {
       iframe_document->GetFrame());
   DCHECK(presenter);
 
-  InkTrailStyle style;
-  style.setDiameter(0.3);
-  style.setColor("cyan");
-  expected_metadata.SetDiameter(style.diameter());
+  InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
+  style->setDiameter(0.3);
+  style->setColor("cyan");
+  expected_metadata.SetDiameter(style->diameter());
   expected_metadata.SetColor(SK_ColorCYAN);
 
   DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(380, 375);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(iframe_document->GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ false), &style, exception_state);
+      CreatePointerMoveEvent(pt, /*hovering*/ false), style, exception_state);
   expected_metadata.SetHovering(false);
   expected_metadata.SetPoint(
       gfx::PointF(pt.x() + kIframeLeftOffset, pt.y() + kIframeTopOffset));
@@ -528,17 +661,17 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport, NestedIframe) {
       iframe_document->GetFrame());
   DCHECK(presenter);
 
-  InkTrailStyle style;
-  style.setDiameter(100000.3);
-  style.setColor("yellow");
-  expected_metadata.SetDiameter(style.diameter());
+  InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
+  style->setDiameter(100000.3);
+  style->setColor("yellow");
+  expected_metadata.SetDiameter(style->diameter());
   expected_metadata.SetColor(SK_ColorYELLOW);
 
   DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(350, 375);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(iframe_document->GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ true), &style, exception_state);
+      CreatePointerMoveEvent(pt, /*hovering*/ true), style, exception_state);
   expected_metadata.SetHovering(true);
   expected_metadata.SetPoint(gfx::PointF(pt.x() + kInnerIframeLeftOffset,
                                          pt.y() + kInnerIframeTopOffset));
@@ -614,17 +747,17 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
       CreatePresenter(nullptr, iframe_document->GetFrame());
   DCHECK(presenter);
 
-  InkTrailStyle style;
-  style.setDiameter(0.01);
-  style.setColor("white");
-  expected_metadata.SetDiameter(style.diameter());
+  InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
+  style->setDiameter(0.01);
+  style->setColor("white");
+  expected_metadata.SetDiameter(style->diameter());
   expected_metadata.SetColor(SK_ColorWHITE);
 
   DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(380, 375);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(iframe_document->GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ true), &style, exception_state);
+      CreatePointerMoveEvent(pt, /*hovering*/ true), style, exception_state);
   expected_metadata.SetHovering(true);
   expected_metadata.SetPoint(
       gfx::PointF(pt.x() + kIframeLeftOffset, pt.y() + kIframeTopOffset));
@@ -653,17 +786,17 @@ TEST_F(DelegatedInkTrailPresenterUnitTest, PresentationAreaNotProvided) {
   TestDelegatedInkMetadata expected_metadata(
       gfx::RectF(0, 0, kViewportWidth, kViewportHeight));
 
-  InkTrailStyle style;
-  style.setDiameter(3.6);
-  style.setColor("yellow");
-  expected_metadata.SetDiameter(style.diameter());
+  InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
+  style->setDiameter(3.6);
+  style->setColor("yellow");
+  expected_metadata.SetDiameter(style->diameter());
   expected_metadata.SetColor(SK_ColorYELLOW);
 
   DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(70, 109);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(GetDocument().GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ false), &style, exception_state);
+      CreatePointerMoveEvent(pt, /*hovering*/ false), style, exception_state);
   expected_metadata.SetHovering(false);
   expected_metadata.SetPoint(pt);
 
@@ -739,17 +872,17 @@ TEST_F(DelegatedInkTrailPresenterUnitTest, CanvasExtendsOutsideOfIframe) {
       iframe_document->GetFrame());
   DCHECK(presenter);
 
-  InkTrailStyle style;
-  style.setDiameter(99.999);
-  style.setColor("lime");
-  expected_metadata.SetDiameter(style.diameter());
+  InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
+  style->setDiameter(99.999);
+  style->setColor("lime");
+  expected_metadata.SetDiameter(style->diameter());
   expected_metadata.SetColor(SK_ColorGREEN);
 
   DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(102, 67);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(iframe_document->GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ false), &style, exception_state);
+      CreatePointerMoveEvent(pt, /*hovering*/ false), style, exception_state);
   expected_metadata.SetHovering(false);
   expected_metadata.SetPoint(
       gfx::PointF(pt.x() + kIframeLeftOffset, pt.y() + kIframeTopOffset));
@@ -831,17 +964,17 @@ TEST_F(DelegatedInkTrailPresenterUnitTest, CanvasLeftAndAboveIframeBoundaries) {
       iframe_document->GetFrame());
   DCHECK(presenter);
 
-  InkTrailStyle style;
-  style.setDiameter(99.999);
-  style.setColor("lime");
-  expected_metadata.SetDiameter(style.diameter());
+  InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
+  style->setDiameter(99.999);
+  style->setColor("lime");
+  expected_metadata.SetDiameter(style->diameter());
   expected_metadata.SetColor(SK_ColorGREEN);
 
   DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(102, 67);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(iframe_document->GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ true), &style, exception_state);
+      CreatePointerMoveEvent(pt, /*hovering*/ true), style, exception_state);
   expected_metadata.SetHovering(true);
   expected_metadata.SetPoint(
       gfx::PointF(pt.x() + kIframeLeftOffset, pt.y() + kIframeTopOffset));
@@ -955,17 +1088,17 @@ TEST_F(DelegatedInkTrailPresenterUnitTest, OuterIframeClipsInnerIframe) {
       iframe_document->GetFrame());
   DCHECK(presenter);
 
-  InkTrailStyle style;
-  style.setDiameter(19);
-  style.setColor("red");
-  expected_metadata.SetDiameter(style.diameter());
+  InkTrailStyle* style = MakeGarbageCollected<InkTrailStyle>();
+  style->setDiameter(19);
+  style->setColor("red");
+  expected_metadata.SetDiameter(style->diameter());
   expected_metadata.SetColor(SK_ColorRED);
 
   DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(357, 401);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(iframe_document->GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ false), &style, exception_state);
+      CreatePointerMoveEvent(pt, /*hovering*/ false), style, exception_state);
   expected_metadata.SetHovering(false);
   expected_metadata.SetPoint(gfx::PointF(pt.x() + kInnerIframeLeftOffset,
                                          pt.y() + kInnerIframeTopOffset));

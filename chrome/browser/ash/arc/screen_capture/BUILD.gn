@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("screen_capture") {
+  sources = [
+    "arc_screen_capture_bridge.cc",
+    "arc_screen_capture_bridge.h",
+    "arc_screen_capture_session.cc",
+    "arc_screen_capture_session.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/components/arc/mojom",
+    "//base",
+    "//chrome/browser/ash/notifications",
+    "//chrome/common",
+    "//components/keyed_service/core",
+    "//components/viz/common",
+    "//content/public/browser",
+    "//content/public/browser",
+    "//gpu",
+    "//gpu/command_buffer/client:raster_interface",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/compositor",
+    "//ui/display",
+    "//ui/display/manager",
+    "//ui/gfx",
+  ]
+}

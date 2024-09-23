@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Should focus on scroller across shadow boundaries depending on delegatesFocus value.
+  assert_equals: Focus should move forward from host-no-delegates-focus/A to host-no-delegates-focus-2 expected Element node <div id="host-no-delegates-focus-2" class="scroll">\n  \n  ... but got Element node <button id="B">BUTTON B</button>
+Harness: the test ran to completion.
+

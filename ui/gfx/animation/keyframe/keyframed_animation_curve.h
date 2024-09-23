@@ -167,6 +167,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedColorAnimationCurve
 
   // BackgrounColorAnimationCurve implementation
   SkColor GetValue(base::TimeDelta t) const override;
+  SkColor GetTransformedValue(
+      base::TimeDelta t,
+      gfx::TimingFunction::LimitDirection limit_direction) const override;
 
   std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t,
                                            SkColor new_target);
@@ -216,6 +219,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedFloatAnimationCurve
 
   // FloatAnimationCurve implementation
   float GetValue(base::TimeDelta t) const override;
+  float GetTransformedValue(
+      base::TimeDelta t,
+      gfx::TimingFunction::LimitDirection limit_direction) const override;
 
   std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t, float new_target);
 
@@ -261,6 +267,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedTransformAnimationCurve
 
   // TransformAnimationCurve implementation
   gfx::TransformOperations GetValue(base::TimeDelta t) const override;
+  gfx::TransformOperations GetTransformedValue(
+      base::TimeDelta t,
+      gfx::TimingFunction::LimitDirection limit_direction) const override;
   bool PreservesAxisAlignment() const override;
   bool MaximumScale(float* max_scale) const override;
 
@@ -306,6 +315,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedSizeAnimationCurve
 
   // SizeAnimationCurve implementation
   gfx::SizeF GetValue(base::TimeDelta t) const override;
+  gfx::SizeF GetTransformedValue(
+      base::TimeDelta t,
+      gfx::TimingFunction::LimitDirection limit_direction) const override;
 
   std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t,
                                            const gfx::SizeF& new_target);
@@ -348,6 +360,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedRectAnimationCurve
 
   // RectAnimationCurve implementation
   gfx::Rect GetValue(base::TimeDelta t) const override;
+  gfx::Rect GetTransformedValue(
+      base::TimeDelta t,
+      gfx::TimingFunction::LimitDirection limit_direction) const override;
 
   std::unique_ptr<AnimationCurve> Retarget(base::TimeDelta t,
                                            const gfx::Rect& new_target);

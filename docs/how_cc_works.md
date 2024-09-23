@@ -25,7 +25,7 @@ The multi-threaded version incurs a latency cost, but allows for input and anima
 In general, the browser uses the single-threaded version as its main thread is cheap and light, whereas the renderer uses the multi-threaded version as its main thread (Blink) can be quite busy on some pages.
 
 Both single and multi-threaded versions drive themselves using the [cc::Scheduler](#scheduling), which determines when to submit frames.
-The one exception (a third mode that is only used in one place) is Blink layout tests and sim tests, which do not (always) use a scheduler and tell cc when to composite synchronously, via LayerTreeHost::Composite.
+The one exception (a third mode that is only used in one place) is Blink web tests and sim tests, which do not (always) use a scheduler and tell cc when to composite synchronously, via LayerTreeHost::CompositeForTest.
 This is for historical reasons, and also to have more control during testing.
 
 ## Content Data Flow Overview

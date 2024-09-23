@@ -40,6 +40,9 @@ class AutofillProfile;
 // Delegate.
 @property(nonatomic, weak) id<AutofillProfileEditCoordinatorDelegate> delegate;
 
+// Whether the coordinator's view controller should be opened in edit mode.
+@property(nonatomic, assign) BOOL openInEditMode;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_PROFILE_EDIT_COORDINATOR_H_

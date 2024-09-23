@@ -8,7 +8,11 @@ namespace gfx {
 
 bool VectorWStream::write(const void* buffer, size_t size) {
   const unsigned char* ptr = reinterpret_cast<const unsigned char*>(buffer);
-  dst_->insert(dst_->end(), ptr, ptr + size);
+  // TODO(https://issues.chromium.org/issues/357905831): if/when Skia gains
+  // SkSpan-based APIs, have this method take an SkSpan instead of raw (pointer,
+  // size) pair and remove the unsafe annotation.
+  // SAFETY: no feasible other option given Skia API constraints
+  UNSAFE_BUFFERS(dst_->insert(dst_->end(), ptr, ptr + size));
   return true;
 }
 

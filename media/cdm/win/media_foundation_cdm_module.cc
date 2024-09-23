@@ -4,6 +4,8 @@
 
 #include "media/cdm/win/media_foundation_cdm_module.h"
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -144,7 +146,7 @@ HRESULT MediaFoundationCdmModule::ActivateCdmFactory() {
   // Activate CdmFactory. Assuming the class ID is always in the format
   // "<key_system>.ContentDecryptionModuleFactory".
   auto class_name = base::win::ScopedHString::Create(
-      base::StringPiece(key_system_ + ".ContentDecryptionModuleFactory"));
+      std::string_view(key_system_ + ".ContentDecryptionModuleFactory"));
   ComPtr<IActivationFactory> activation_factory;
   RETURN_IF_FAILED(
       get_activation_factory_func(class_name.get(), &activation_factory));

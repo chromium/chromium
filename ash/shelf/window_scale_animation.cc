@@ -5,11 +5,11 @@
 #include "ash/shelf/window_scale_animation.h"
 
 #include <optional>
+#include <vector>
 
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -26,6 +26,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/wm/core/scoped_animation_disabler.h"
 
 namespace ash {
 
@@ -194,7 +195,7 @@ void WindowScaleAnimation::DestroyWindowAnimationObserver(
   // `animation_observer` will get deleted on the next line.
   auto* window = animation_observer->window();
 
-  base::EraseIf(window_animation_observers_,
+  std::erase_if(window_animation_observers_,
                 base::MatchesUniquePtr(animation_observer));
 
   if (window_animation_observers_.empty()) {

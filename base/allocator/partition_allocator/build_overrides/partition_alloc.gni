@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build_overrides/build.gni")
+# By definition, PartitionAlloc standalone builds outside of chromium.
+build_with_chromium = false
 
 # This is the default build configuration when building PartitionAlloc
 # as a standalone library.
@@ -19,3 +20,7 @@ enable_dangling_raw_ptr_checks_default = false
 raw_ptr_zero_on_construct_default = true
 raw_ptr_zero_on_move_default = true
 raw_ptr_zero_on_destruct_default = false
+
+# PartitionAlloc needs to support cpp17 for standalone builds, as long as Skia
+# supports it.
+assert_cpp20_default = false

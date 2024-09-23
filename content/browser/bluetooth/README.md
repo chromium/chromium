@@ -19,17 +19,17 @@ accesses the Web Bluetooth Service through Mojo IPC. For more details, see the
 The legacy permissions system is implemented by `bluetooth_allowed_devices.h`,
 which is created per origin.
 
-The new permissions system is implemented by providing an implementation for
-the `//content/public/browser/bluetooth_delegate.h` interface. In Chrome and
+The new permissions system is implemented by providing an implementation for the
+`//content/public/browser/bluetooth_delegate.h` interface. In Chrome and
 WebLayer, the implementation of this interface is provided by
 `//components/permissions/bluetooth_delegate_impl.h` which forwards permission
 queries to `//components/permissions/contexts/bluetooth_chooser_context.h`. This
-class uses `//components/permissions/chooser_context_base.h` as the base.
-This base class is also in use by other device APIs, like WebUSB. The new
-permission system enables Web Bluetooth permissions to be persistent and to
-be exposed in the settings UI for users to manage more easily. For more
-details on the new permissions system, see the [Web Bluetooth Persistent
-Permissions] design document.
+class uses `//components/permissions/object_permission_context_base.h` as the
+base. This base class is also in use by other device APIs, like WebUSB. The new
+permission system enables Web Bluetooth permissions to be persistent and to be
+exposed in the settings UI for users to manage more easily. For more details on
+the new permissions system, see the [Web Bluetooth Persistent Permissions]
+design document.
 
 [Web Bluetooth Persistent Permissions]:
 https://docs.google.com/document/d/1h3uAVXJARHrNWaNACUPiQhLt7XI-fFFQoARSs1WgMDM/edit?usp=sharing
@@ -55,7 +55,7 @@ ongoing effort to refactor the Web Bluetooth tests using the legacy
 Test API. For more details, see the [Web Bluetooth Web Tests README] and the
 [Web Bluetooth Web Platform Tests README].
 
-TODO(https://crbug.com/509038): Update this document when the remaining tests
+TODO(crbug.com/40426301): Update this document when the remaining tests
 have been submitted to W3C Web Platform Tests.
 
 The tests are run using `content_shell`, which fakes the Bluetooth related UI
@@ -70,7 +70,7 @@ and the new permissions system. For more details, see the following files in
 [BluetoothFakeAdapter]:
 ../../shell/browser/web_test/web_test_bluetooth_adapter_provider.h
 [FakeBluetooth]:
-../../../device/bluetooth/test/fake_bluetooth.h
+../../../device/bluetooth/emulation/fake_bluetooth.h
 [Web Bluetooth Web Tests README]:
 ../../../third_party/blink/web_tests/bluetooth/README.md
 [Web Bluetooth Web Platform Tests README]:

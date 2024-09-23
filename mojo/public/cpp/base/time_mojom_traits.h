@@ -21,6 +21,14 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
+    StructTraits<mojo_base::mojom::JSTimeDataView, base::Time> {
+  static double msec(const base::Time& time);
+
+  static bool Read(mojo_base::mojom::JSTimeDataView data, base::Time* time);
+};
+
+template <>
+struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
     StructTraits<mojo_base::mojom::TimeDeltaDataView, base::TimeDelta> {
   static int64_t microseconds(const base::TimeDelta& delta);
 

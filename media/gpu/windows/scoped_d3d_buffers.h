@@ -6,9 +6,11 @@
 #define MEDIA_GPU_WINDOWS_SCOPED_D3D_BUFFERS_H_
 
 #include <Windows.h>
+
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "media/gpu/media_gpu_export.h"
 
 namespace media {
@@ -16,10 +18,10 @@ namespace media {
 // The base class for a scoped buffer, which do buffer allocation in the
 // constructor and release the buffer in Commit() or destructor. In case of
 // any failure, the empty() should be true.
-class ScopedD3DBuffer {
+class MEDIA_GPU_EXPORT ScopedD3DBuffer {
  public:
-  explicit ScopedD3DBuffer(base::span<uint8_t> data = {}) : data_(data) {}
-  virtual ~ScopedD3DBuffer() = default;
+  explicit ScopedD3DBuffer(base::span<uint8_t> data = {});
+  virtual ~ScopedD3DBuffer();
   uint8_t* data() { return data_.data(); }
   size_t size() const { return data_.size(); }
   bool empty() const { return data_.empty(); }
@@ -35,7 +37,7 @@ class ScopedD3DBuffer {
   virtual bool Commit(uint32_t written_size) = 0;
 
  protected:
-  base::span<uint8_t> data_;
+  base::raw_span<uint8_t, DanglingUntriaged> data_;
 };
 
 // This class provides basic interface for getting the buffer's attribute.

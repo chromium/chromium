@@ -6,9 +6,11 @@
 
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
-#include "components/signin/public/android/jni_headers/AccountCapabilitiesFetcher_jni.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/signin/public/android/jni_headers/AccountCapabilitiesFetcher_jni.h"
 
 namespace {
 using OnAccountCapabilitiesFetchedCallback =

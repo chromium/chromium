@@ -11,11 +11,10 @@ import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox
 import {isMac, isWindows} from 'chrome://resources/js/platform.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import {html, css, CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 import {getTrustedHTML as getTrustedStaticHtml} from 'chrome://resources/js/static_types.js';
 // clang-format on
@@ -141,7 +140,7 @@ suite('CrActionMenu', function() {
     assertEquals(items[0], getDeepActiveElement());
   });
 
-  test('focus skips cr-checkbox when disabled or hidden', () => {
+  test('focus skips cr-checkbox when disabled or hidden', async () => {
     menu.showAt(dots);
     const crCheckbox = document.querySelector('cr-checkbox')!;
     assertEquals(items[2], crCheckbox);
@@ -155,22 +154,24 @@ suite('CrActionMenu', function() {
     assertEquals(checkboxFocusableElement, getDeepActiveElement());
 
     // Check checkbox is not focusable when either disabled or hidden.
-    ([
+    const cases: Array<[boolean, boolean]> = [
       [false, true],
       [true, false],
       [true, true],
-    ] as Array<[boolean, boolean]>)
-        .forEach(([disabled, hidden]) => {
-          crCheckbox.disabled = disabled;
-          crCheckbox.hidden = hidden;
-          (getDeepActiveElement() as HTMLElement).blur();
-          down();
-          assertEquals(items[0], getDeepActiveElement());
-          down();
-          assertEquals(items[1], getDeepActiveElement());
-          down();
-          assertEquals(items[0], getDeepActiveElement());
-        });
+    ];
+
+    for (const [disabled, hidden] of cases) {
+      crCheckbox.disabled = disabled;
+      crCheckbox.hidden = hidden;
+      await crCheckbox.updateComplete;
+      (getDeepActiveElement() as HTMLElement).blur();
+      down();
+      assertEquals(items[0], getDeepActiveElement());
+      down();
+      assertEquals(items[1], getDeepActiveElement());
+      down();
+      assertEquals(items[0], getDeepActiveElement());
+    }
   });
 
   test('pressing up arrow when no focus will focus last item', function() {
@@ -207,7 +208,7 @@ suite('CrActionMenu', function() {
     item.classList.add('dropdown-item');
     menu.insertBefore(item, items[0]!);
     menu.showAt(dots);
-    await flushTasks();
+    await microtasksFinished();
 
     down();
     assertEquals(item, getDeepActiveElement());
@@ -325,12 +326,12 @@ suite('CrActionMenu', function() {
     items[1]!.setAttribute('role', 'checkbox');
     menu.showAt(dots);
 
-    await flushTasks();
+    await microtasksFinished();
     assertEquals('menuitem', items[0]!.getAttribute('role'));
     assertEquals('checkbox', items[1]!.getAttribute('role'));
 
     menu.insertBefore(newItem, items[0]!);
-    await flushTasks();
+    await microtasksFinished();
     assertEquals('menuitem', newItem.getAttribute('role'));
   });
 
@@ -478,13 +479,14 @@ suite('CrActionMenu', function() {
     items[0]!.textContent = 'this is a long string to make menu wide';
   }
 
-  // <if expr="is_win">
+  // <if expr="is_win or is_macosx">
   // TODO(dpapad): Figure out why it fails on windows only and re-enable.
+  // TODO(crbug.com/329266310): Flakes on MacOS.
   test.skip(
       '[auto-reposition] enables repositioning if content changes',
       autoRepositionTest);
   // </if>
-  // <if expr="not is_win">
+  // <if expr="not is_win and not is_macosx">
   test(
       '[auto-reposition] enables repositioning if content changes',
       autoRepositionTest);
@@ -549,29 +551,32 @@ suite('CrActionMenu', function() {
     const containerTop = 10000;
     const containerWidth = 500;
 
-    class TestElement extends PolymerElement {
+    class TestElement extends CrLitElement {
       static get is() {
         return 'test-element';
       }
 
-      static get template() {
-        return html`
-          <style>
-            #container {
-              overflow: auto;
-              position: absolute;
-              top: 10000px; /* containerTop */
-              left: 5000px; /* containerLeft */
-              right: 5000px; /* containerLeft */
-              height: 500px; /* containerWidth */
-              width: 500px; /* containerWidth */
-            }
+      static override get styles() {
+        return css`
+          #container {
+            overflow: auto;
+            position: absolute;
+            top: 10000px; /* containerTop */
+            left: 5000px; /* containerLeft */
+            right: 5000px; /* containerLeft */
+            height: 500px; /* containerWidth */
+            width: 500px; /* containerWidth */
+          }
 
-            #inner-container {
-              height: 1000px;
-              width: 1000px;
-            }
-          </style>
+          #inner-container {
+            height: 1000px;
+            width: 1000px;
+          }
+        `;
+      }
+
+      override render() {
+        return html`
           <div id="container">
             <div id="inner-container">
               <button id="dots">...</button>

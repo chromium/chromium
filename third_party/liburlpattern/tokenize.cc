@@ -5,6 +5,8 @@
 
 #include "third_party/liburlpattern/tokenize.h"
 
+#include <string_view>
+
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/utf8.h"
@@ -26,7 +28,7 @@ bool IsASCII(UChar32 c) {
 
 class Tokenizer {
  public:
-  Tokenizer(absl::string_view pattern, TokenizePolicy policy)
+  Tokenizer(std::string_view pattern, TokenizePolicy policy)
       : pattern_(std::move(pattern)), policy_(policy) {
     token_list_.reserve(pattern_.size());
   }
@@ -281,16 +283,16 @@ class Tokenizer {
   // `index_`. Update `index_` to `next_index_` automatically.
   void AddToken(TokenType type) { AddToken(type, next_index_, index_); }
 
-  void Error(absl::string_view message, size_t next_pos, size_t value_pos) {
+  void Error(std::string_view message, size_t next_pos, size_t value_pos) {
     if (policy_ == TokenizePolicy::kLenient)
       AddToken(TokenType::kInvalidChar, next_pos, value_pos);
     else
       status_ = absl::InvalidArgumentError(message);
   }
 
-  void Error(absl::string_view message) { Error(message, next_index_, index_); }
+  void Error(std::string_view message) { Error(message, next_index_, index_); }
 
-  const absl::string_view pattern_;
+  const std::string_view pattern_;
   const TokenizePolicy policy_;
   std::vector<Token> token_list_;
   absl::Status status_;
@@ -344,7 +346,7 @@ std::ostream& operator<<(std::ostream& o, Token token) {
 }
 
 // Split the input pattern into a list of tokens.
-absl::StatusOr<std::vector<Token>> Tokenize(absl::string_view pattern,
+absl::StatusOr<std::vector<Token>> Tokenize(std::string_view pattern,
                                             TokenizePolicy policy) {
   Tokenizer tokenizer(std::move(pattern), policy);
   return tokenizer.Tokenize();

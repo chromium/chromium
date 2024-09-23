@@ -1,0 +1,13 @@
+<!doctype html>
+<title>meter appearance none rendering</title>
+<link rel="match" href="reference/meter-appearance-none-optimum-value-custom-color-rendering-ref.html">
+<style>
+  #target {
+    appearance: none;
+  }
+
+  #target::-webkit-meter-optimum-value  {
+    background: lime;
+  }
+</style>
+<meter value="0.5" id="target"></meter>

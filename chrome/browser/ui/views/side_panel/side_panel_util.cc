@@ -13,77 +13,40 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
-#include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/feed/feed_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/performance_controls/performance_side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/views/side_panel/user_note/user_note_ui_coordinator.h"
-#include "components/feed/feed_feature_list.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service.h"
-#include "components/performance_manager/public/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_notes/user_notes_features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
-#include "extensions/common/extension_features.h"
-#endif
-
-namespace {
-constexpr std::underlying_type_t<SidePanelOpenTrigger>
-    kInvalidSidePanelOpenTrigger = -1;
-}
-
-DEFINE_UI_CLASS_PROPERTY_TYPE(SidePanelOpenTrigger)
-DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<SidePanelOpenTrigger>,
-                             kSidePanelOpenTriggerKey,
-                             kInvalidSidePanelOpenTrigger)
 
 // static
 void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
-                                          SidePanelRegistry* global_registry) {
+                                          SidePanelRegistry* window_registry) {
   // Add reading list.
   ReadingListSidePanelCoordinator::GetOrCreateForBrowser(browser)
-      ->CreateAndRegisterEntry(global_registry);
+      ->CreateAndRegisterEntry(window_registry);
 
   // Add bookmarks.
   BookmarksSidePanelCoordinator::GetOrCreateForBrowser(browser)
-      ->CreateAndRegisterEntry(global_registry);
-
-  // Add performance.
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceControlsSidePanel)) {
-    PerformanceSidePanelCoordinator::GetOrCreateForBrowser(browser)
-        ->CreateAndRegisterEntry(global_registry);
-  }
+      ->CreateAndRegisterEntry(window_registry);
 
   // Add history clusters.
   if (HistoryClustersSidePanelCoordinator::IsSupported(browser->profile())) {
     HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser)
-        ->CreateAndRegisterEntry(global_registry);
-  }
-
-  // Add read anything.
-  if (features::IsReadAnythingEnabled()) {
-    auto* read_anything_coordinator =
-        ReadAnythingCoordinator::GetOrCreateForBrowser(browser);
-    // If the local side panel is not enabled, create and register a global side
-    // panel entry for Reading Anything.
-    if (!features::IsReadAnythingLocalSidePanelEnabled()) {
-      read_anything_coordinator->CreateAndRegisterEntry(global_registry);
-    }
+        ->CreateAndRegisterEntry(window_registry);
   }
 
   // Create Search Companion coordinator.
@@ -95,27 +58,6 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
           /*include_runtime_checks=*/false)) {
     SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);
   }
-
-  // Add user notes.
-  if (user_notes::IsUserNotesEnabled()) {
-    UserNoteUICoordinator::GetOrCreateForBrowser(browser)
-        ->CreateAndRegisterEntry(global_registry);
-  }
-
-  // Add feed.
-  if (base::FeatureList::IsEnabled(feed::kWebUiFeed)) {
-    feed::FeedSidePanelCoordinator::GetOrCreateForBrowser(browser)
-        ->CreateAndRegisterEntry(global_registry);
-  }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
-    extensions::ExtensionSidePanelManager::GetOrCreateForBrowser(browser);
-  }
-#endif
-
-  return;
 }
 
 SidePanelContentProxy* SidePanelUtil::GetSidePanelContentProxy(
@@ -134,12 +76,6 @@ std::unique_ptr<views::View> SidePanelUtil::DeregisterAndReturnView(
   std::unique_ptr<SidePanelEntry> entry =
       registry->DeregisterAndReturnEntry(key);
   return entry->CachedView() ? entry->GetContent() : nullptr;
-}
-
-SidePanelCoordinator* SidePanelUtil::GetSidePanelCoordinatorForBrowser(
-    Browser* browser) {
-  return static_cast<SidePanelCoordinator*>(
-      SidePanelUI::GetSidePanelUIForBrowser(browser));
 }
 
 void SidePanelUtil::RecordSidePanelOpen(
@@ -245,19 +181,8 @@ void SidePanelUtil::RecordPinnedButtonClicked(SidePanelEntry::Id id,
        is_pinned ? "Pinned" : "Unpinned", ".BySidePanelHeaderButton"}));
 }
 
-actions::ActionItem::InvokeActionCallback
-SidePanelUtil::CreateToggleSidePanelActionCallback(SidePanelEntryKey key,
-                                                   Browser* browser) {
-  return base::BindRepeating(
-      [](SidePanelEntryKey key, Browser* browser, actions::ActionItem* item,
-         actions::ActionInvocationContext context) {
-        const SidePanelOpenTrigger open_trigger =
-            static_cast<SidePanelOpenTrigger>(
-                context.GetProperty(kSidePanelOpenTriggerKey));
-        CHECK_GE(open_trigger, SidePanelOpenTrigger::kMinValue);
-        CHECK_LE(open_trigger, SidePanelOpenTrigger::kMaxValue);
-        SidePanelUI::GetSidePanelUIForBrowser(browser)->Toggle(key,
-                                                               open_trigger);
-      },
-      key, browser);
+void SidePanelUtil::RecordSidePanelAnimationMetrics(
+    base::TimeDelta largest_step_time) {
+  base::UmaHistogramTimes("SidePanel.TimeOfLongestAnimationStep",
+                          largest_step_time);
 }

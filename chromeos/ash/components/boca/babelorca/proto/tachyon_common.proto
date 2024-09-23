@@ -1,0 +1,46 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Source:
+// http://google3/google/internal/communications/instantmessaging/v1/tachyon_common.proto
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash.babelorca;
+
+import "tachyon_enums.proto";
+
+message Id {
+  IdType.Type type = 1;
+  string id = 2;
+  string app = 3;
+}
+
+message DeviceId {
+  DeviceIdType.Type type = 1;
+  string id = 2;
+}
+
+message ClientInfo {
+  ApiVersion.Value api_version = 7;
+  Platform.Type platform_type = 9;
+}
+
+message RequestHeader {
+  string request_id = 1;
+  string app = 3;
+  bytes auth_token_payload = 6;
+  ClientInfo client_info = 7;
+  Id requester_id = 10;
+}
+
+message AuthToken {
+  bytes payload = 1;
+  // expires_in is the approximate (due to network latency etc) number
+  // of microseconds this auth token is valid after it is first received
+  // by the client.
+  int64 expires_in = 2;
+}

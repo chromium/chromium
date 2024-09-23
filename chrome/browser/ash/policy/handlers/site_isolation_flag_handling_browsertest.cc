@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -19,11 +18,11 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/site_isolation/about_flags.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -335,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(SiteIsolationFlagHandlingTest, FlagHandlingTest) {
 
   // Remove flag sentinels. Keep whatever is between those sentinels, to
   // verify that we don't pass additional parameters in there.
-  base::EraseIf(switches_for_user, [](const std::string& flag) {
+  std::erase_if(switches_for_user, [](const std::string& flag) {
     return flag == "--flag-switches-begin" || flag == "--flag-switches-end";
   });
   EXPECT_EQ(GetParam().expected_switches_for_user, switches_for_user);

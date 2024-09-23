@@ -25,7 +25,6 @@ items:
   value: 2
 owners:
 - fsandrade@chromium.org
-- file://chrome/browser/ash/authpolicy/OWNERS
 schema:
   enum:
   - 0
@@ -36,3 +35,4 @@ supported_on:
 - chrome_os:66-114
 tags: []
 type: int-enum
+generate_device_proto: False

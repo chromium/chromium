@@ -32,6 +32,8 @@ import org.chromium.ui.base.TestActivity;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class ManagementViewTest {
+    private static final String TITLE = "title";
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -73,9 +75,9 @@ public class ManagementViewTest {
 
     @Test
     public void testNotManaged() {
+        doReturn(TITLE).when(mMockManagedBrowserUtilNatives).getTitle(mMockProfile);
         doReturn(false).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
-        doReturn("").when(mMockManagedBrowserUtilNatives).getBrowserManagerName(mMockProfile);
-        doReturn(false).when(mMockManagedBrowserUtilNatives).isReportingEnabled();
+        doReturn(false).when(mMockManagedBrowserUtilNatives).isBrowserReportingEnabled();
         doReturn(false)
                 .when(mMockPrefService)
                 .isManagedPreference(Pref.CLOUD_LEGACY_TECH_REPORT_ALLOWLIST);
@@ -84,9 +86,7 @@ public class ManagementViewTest {
 
         ManagementView view = (ManagementView) mCoordinator.getView();
         Assert.assertNotNull(view.mTitle);
-        Assert.assertEquals(
-                mActivity.getResources().getString(R.string.management_not_managed_subtitle),
-                view.mTitle.getText());
+        Assert.assertEquals(TITLE, view.mTitle.getText());
         Assert.assertEquals(View.VISIBLE, view.mTitle.getVisibility());
 
         Assert.assertEquals(View.GONE, view.mDescription.getVisibility());
@@ -99,46 +99,62 @@ public class ManagementViewTest {
     }
 
     @Test
-    public void testManagedWithoutDomain() {
+    public void testManaged() {
+        doReturn(TITLE).when(mMockManagedBrowserUtilNatives).getTitle(mMockProfile);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
-        doReturn("").when(mMockManagedBrowserUtilNatives).getBrowserManagerName(mMockProfile);
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
 
         createDialog();
 
         ManagementView view = (ManagementView) mCoordinator.getView();
         Assert.assertNotNull(view.mTitle);
-        Assert.assertEquals(
-                mActivity.getResources().getString(R.string.management_subtitle),
-                view.mTitle.getText());
+        Assert.assertEquals(TITLE, view.mTitle.getText());
         Assert.assertEquals(View.VISIBLE, view.mTitle.getVisibility());
 
         Assert.assertEquals(View.VISIBLE, view.mDescription.getVisibility());
+        Assert.assertEquals(
+                mActivity.getString(R.string.management_browser_notice),
+                view.mDescription.getText());
         Assert.assertEquals(View.VISIBLE, view.mLearnMore.getVisibility());
     }
 
     @Test
-    public void testManagedWithDomain() {
-        String domain = "domain.com";
+    public void testOnlyBrowserManaged() {
         doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
-        doReturn(domain).when(mMockManagedBrowserUtilNatives).getBrowserManagerName(mMockProfile);
+        doReturn(false).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
 
         createDialog();
 
         ManagementView view = (ManagementView) mCoordinator.getView();
-        Assert.assertNotNull(view.mTitle);
-        Assert.assertEquals(
-                mActivity.getResources().getString(R.string.management_subtitle_managed_by, domain),
-                view.mTitle.getText());
-        Assert.assertEquals(View.VISIBLE, view.mTitle.getVisibility());
-
         Assert.assertEquals(View.VISIBLE, view.mDescription.getVisibility());
+        Assert.assertEquals(
+                mActivity.getString(R.string.management_browser_notice),
+                view.mDescription.getText());
         Assert.assertEquals(View.VISIBLE, view.mLearnMore.getVisibility());
     }
 
     @Test
-    public void testCloudReporting() {
+    public void testOnlyProfileManaged() {
+        doReturn(false).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
+
+        createDialog();
+
+        ManagementView view = (ManagementView) mCoordinator.getView();
+        Assert.assertEquals(View.VISIBLE, view.mDescription.getVisibility());
+        Assert.assertEquals(
+                mActivity.getString(R.string.management_profile_notice),
+                view.mDescription.getText());
+        Assert.assertEquals(View.VISIBLE, view.mLearnMore.getVisibility());
+    }
+
+    @Test
+    public void testBothCloudReporting() {
+        doReturn(TITLE).when(mMockManagedBrowserUtilNatives).getTitle(mMockProfile);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
-        doReturn(true).when(mMockManagedBrowserUtilNatives).isReportingEnabled();
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserReportingEnabled();
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileReportingEnabled(mMockProfile);
         doReturn(false)
                 .when(mMockPrefService)
                 .isManagedPreference(Pref.CLOUD_LEGACY_TECH_REPORT_ALLOWLIST);
@@ -151,13 +167,70 @@ public class ManagementViewTest {
         Assert.assertEquals(View.VISIBLE, view.mBrowserReportingExplanation.getVisibility());
         Assert.assertEquals(View.VISIBLE, view.mReportUsername.getVisibility());
         Assert.assertEquals(View.VISIBLE, view.mReportVersion.getVisibility());
+        Assert.assertEquals(View.GONE, view.mProfileReportingExplanation.getVisibility());
+        Assert.assertEquals(View.GONE, view.mProfileReportDetails.getVisibility());
+        Assert.assertEquals(View.GONE, view.mReportLegacyTech.getVisibility());
+    }
+
+    @Test
+    public void testOnlyCloudBrowserReporting() {
+        doReturn(TITLE).when(mMockManagedBrowserUtilNatives).getTitle(mMockProfile);
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserReportingEnabled();
+        doReturn(false)
+                .when(mMockManagedBrowserUtilNatives)
+                .isProfileReportingEnabled(mMockProfile);
+        doReturn(false)
+                .when(mMockPrefService)
+                .isManagedPreference(Pref.CLOUD_LEGACY_TECH_REPORT_ALLOWLIST);
+
+        createDialog();
+
+        ManagementView view = (ManagementView) mCoordinator.getView();
+
+        Assert.assertEquals(View.VISIBLE, view.mBrowserReporting.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mBrowserReportingExplanation.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mReportUsername.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mReportVersion.getVisibility());
+        Assert.assertEquals(View.GONE, view.mProfileReportingExplanation.getVisibility());
+        Assert.assertEquals(View.GONE, view.mProfileReportDetails.getVisibility());
+        Assert.assertEquals(View.GONE, view.mReportLegacyTech.getVisibility());
+    }
+
+    @Test
+    public void testOnlyCloudProfileReporting() {
+        doReturn(TITLE).when(mMockManagedBrowserUtilNatives).getTitle(mMockProfile);
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
+        doReturn(false).when(mMockManagedBrowserUtilNatives).isBrowserReportingEnabled();
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileReportingEnabled(mMockProfile);
+        doReturn(false)
+                .when(mMockPrefService)
+                .isManagedPreference(Pref.CLOUD_LEGACY_TECH_REPORT_ALLOWLIST);
+
+        createDialog();
+
+        ManagementView view = (ManagementView) mCoordinator.getView();
+
+        Assert.assertEquals(View.VISIBLE, view.mBrowserReporting.getVisibility());
+        Assert.assertEquals(View.GONE, view.mBrowserReportingExplanation.getVisibility());
+        Assert.assertEquals(View.GONE, view.mReportUsername.getVisibility());
+        Assert.assertEquals(View.GONE, view.mReportVersion.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mProfileReportingExplanation.getVisibility());
+        Assert.assertEquals(View.VISIBLE, view.mProfileReportDetails.getVisibility());
         Assert.assertEquals(View.GONE, view.mReportLegacyTech.getVisibility());
     }
 
     @Test
     public void testLegacyReporting() {
+        doReturn(TITLE).when(mMockManagedBrowserUtilNatives).getTitle(mMockProfile);
         doReturn(true).when(mMockManagedBrowserUtilNatives).isBrowserManaged(mMockProfile);
-        doReturn(false).when(mMockManagedBrowserUtilNatives).isReportingEnabled();
+        doReturn(true).when(mMockManagedBrowserUtilNatives).isProfileManaged(mMockProfile);
+        doReturn(false).when(mMockManagedBrowserUtilNatives).isBrowserReportingEnabled();
+        doReturn(false)
+                .when(mMockManagedBrowserUtilNatives)
+                .isProfileReportingEnabled(mMockProfile);
         doReturn(true)
                 .when(mMockPrefService)
                 .isManagedPreference(Pref.CLOUD_LEGACY_TECH_REPORT_ALLOWLIST);

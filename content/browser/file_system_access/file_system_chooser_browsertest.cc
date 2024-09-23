@@ -57,6 +57,11 @@ static constexpr char kTestMountPoint[] = "testfs";
 // APIs.
 class FileSystemChooserBrowserTest : public ContentBrowserTest {
  public:
+  FileSystemChooserBrowserTest() {
+    scoped_features_.InitAndEnableFeature(
+        blink::features::kFileSystemAccessLocal);
+  }
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 #if BUILDFLAG(IS_WIN)
@@ -123,6 +128,9 @@ class FileSystemChooserBrowserTest : public ContentBrowserTest {
   base::ScopedTempDir temp_dir_;
   // Must persist through TearDown().
   SelectFileDialogParams dialog_params_;
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, CancelDialog) {
@@ -187,6 +195,24 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenFileNonASCII) {
       EvalJs(shell(),
              "(async () => { const file = await self.selected_entry.getFile(); "
              "return await file.text(); })()"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
+                       OpenFile_DisplayNameNotBaseName) {
+  const base::FilePath test_file = CreateTestFile("hello world!");
+  std::string display_name = "display-name";
+  ui::SelectedFileInfo selected_file = {test_file, test_file};
+  selected_file.display_name = base::FilePath::FromASCII(display_name).value();
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<ui::SelectedFileInfo>{selected_file}, &dialog_params_));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(display_name, EvalJs(shell(),
+                                 "(async () => {"
+                                 "  let [e] = await self.showOpenFilePicker();"
+                                 "  return e.name; })()"));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, FullscreenOpenFile) {
@@ -324,6 +350,94 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
             EvalJs(shell(),
                    "(async () => { const file = await self.entry.getFile(); "
                    "return await file.text(); })()"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
+                       SaveFile_NoEnterpriseChecks) {
+  const base::FilePath test_file = CreateTestFile("Save File");
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}, &dialog_params_));
+
+  testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
+  static_cast<FileSystemAccessManagerImpl*>(
+      shell()
+          ->web_contents()
+          ->GetBrowserContext()
+          ->GetStoragePartition(shell()->web_contents()->GetSiteInstance())
+          ->GetFileSystemAccessEntryFactory())
+      ->SetPermissionContextForTesting(&permission_context);
+
+  auto read_grant = base::MakeRefCounted<
+      testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+  auto write_grant = base::MakeRefCounted<
+      testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+
+  auto origin =
+      url::Origin::Create(embedded_test_server()->GetURL("/title1.html"));
+  auto frame_id = GlobalRenderFrameHostId(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID());
+
+  EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(permission_context, CanObtainWritePermission(origin))
+      .WillOnce(testing::Return(true));
+
+  EXPECT_CALL(permission_context,
+              GetWellKnownDirectoryPath(
+                  blink::mojom::WellKnownDirectory::kDirDocuments, origin))
+      .WillOnce(testing::Return(base::FilePath()));
+  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
+      .WillOnce(testing::Return(PathInfo()));
+  EXPECT_CALL(permission_context, GetPickerTitle(testing::_))
+      .WillOnce(testing::Return(std::u16string()));
+  EXPECT_CALL(permission_context,
+              SetLastPickedDirectory(testing::_, testing::_, testing::_,
+                                     testing::_));
+  EXPECT_CALL(permission_context,
+              OnFileCreatedFromShowSaveFilePicker(testing::_, testing::_))
+      .WillOnce(testing::Return());
+
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveEntryAccess_(
+                  origin, PathType::kLocal, test_file,
+                  FileSystemAccessPermissionContext::HandleType::kFile,
+                  FileSystemAccessPermissionContext::UserAction::kSave,
+                  frame_id, testing::_))
+      .WillOnce(RunOnceCallback<6>(SensitiveEntryResult::kAllowed));
+
+  EXPECT_CALL(permission_context,
+              GetReadPermissionGrant(
+                  origin, test_file,
+                  FileSystemAccessPermissionContext::HandleType::kFile,
+                  FileSystemAccessPermissionContext::UserAction::kSave))
+      .WillOnce(testing::Return(read_grant));
+  EXPECT_CALL(permission_context,
+              GetWritePermissionGrant(
+                  origin, test_file,
+                  FileSystemAccessPermissionContext::HandleType::kFile,
+                  FileSystemAccessPermissionContext::UserAction::kSave))
+      .WillOnce(testing::Return(write_grant));
+  EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
+                                      testing::_, testing::_, testing::_))
+                                      .Times(0);
+
+  EXPECT_CALL(*read_grant, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
+  EXPECT_CALL(*write_grant, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(
+      test_file.BaseName().AsUTF8Unsafe(),
+      EvalJs(shell(),
+             "(async () => {"
+             "  let e = await self.showSaveFilePicker();"
+             "  self.selected_entry = e;"
+             "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_SAVEAS_FILE, dialog_params_.type);
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
@@ -540,6 +654,15 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
                   FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(write_grant));
+  EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
+                                      testing::_, testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [](std::vector<PathInfo> entries,
+             content::GlobalRenderFrameHostId frame_id,
+             FileSystemAccessPermissionContext::
+                 EntriesAllowedByEnterprisePolicyCallback callback) {
+            std::move(callback).Run(std::move(entries));
+          }));
 
   EXPECT_CALL(
       *read_grant,
@@ -621,6 +744,15 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
                   FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(write_grant));
+  EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
+                                      testing::_, testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [](std::vector<PathInfo> entries,
+             content::GlobalRenderFrameHostId frame_id,
+             FileSystemAccessPermissionContext::
+                 EntriesAllowedByEnterprisePolicyCallback callback) {
+            std::move(callback).Run(std::move(entries));
+          }));
 
   EXPECT_CALL(
       *read_grant,
@@ -709,6 +841,15 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
                   FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(write_grant));
+  EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
+                                      testing::_, testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [](std::vector<PathInfo> entries,
+             content::GlobalRenderFrameHostId frame_id,
+             FileSystemAccessPermissionContext::
+                 EntriesAllowedByEnterprisePolicyCallback callback) {
+            std::move(callback).Run(std::move(entries));
+          }));
 
   EXPECT_CALL(
       *read_grant,
@@ -983,6 +1124,15 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
                   FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(write_grant));
+  EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
+                                      testing::_, testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [](std::vector<PathInfo> entries,
+             content::GlobalRenderFrameHostId frame_id,
+             FileSystemAccessPermissionContext::
+                 EntriesAllowedByEnterprisePolicyCallback callback) {
+            std::move(callback).Run(std::move(entries));
+          }));
 
   EXPECT_CALL(
       *read_grant,
@@ -1076,6 +1226,15 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
                   FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(write_grant));
+  EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
+                                      testing::_, testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [](std::vector<PathInfo> entries,
+             content::GlobalRenderFrameHostId frame_id,
+             FileSystemAccessPermissionContext::
+                 EntriesAllowedByEnterprisePolicyCallback callback) {
+            std::move(callback).Run(std::move(entries));
+          }));
 
   EXPECT_CALL(
       *read_grant,
@@ -1163,6 +1322,15 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
                   FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(write_grant));
+  EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
+                                      testing::_, testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [](std::vector<PathInfo> entries,
+             content::GlobalRenderFrameHostId frame_id,
+             FileSystemAccessPermissionContext::
+                 EntriesAllowedByEnterprisePolicyCallback callback) {
+            std::move(callback).Run(std::move(entries));
+          }));
 
   EXPECT_CALL(
       *read_grant,
@@ -1258,6 +1426,15 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
                   FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(write_grant));
+  EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
+                                      testing::_, testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [](std::vector<PathInfo> entries,
+             content::GlobalRenderFrameHostId frame_id,
+             FileSystemAccessPermissionContext::
+                 EntriesAllowedByEnterprisePolicyCallback callback) {
+            std::move(callback).Run(std::move(entries));
+          }));
 
   EXPECT_CALL(
       *read_grant,
@@ -1352,6 +1529,15 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
                   FileSystemAccessPermissionContext::UserAction::kOpen))
       .WillOnce(testing::Return(write_grant));
+  EXPECT_CALL(permission_context, CheckPathsAgainstEnterprisePolicy(
+                                      testing::_, testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [](std::vector<PathInfo> entries,
+             content::GlobalRenderFrameHostId frame_id,
+             FileSystemAccessPermissionContext::
+                 EntriesAllowedByEnterprisePolicyCallback callback) {
+            std::move(callback).Run(std::move(entries));
+          }));
 
   EXPECT_CALL(
       *read_grant,

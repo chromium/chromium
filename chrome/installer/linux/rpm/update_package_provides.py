@@ -56,6 +56,7 @@ LIBRARY_FILTER = {
     "librt.so",
     "libsmime3.so",
     "libstdc++.so",
+    "libudev.so",
     "libuuid.so",
     "libxcb-dri3.so.0",
     "libxcb.so",
@@ -64,7 +65,7 @@ LIBRARY_FILTER = {
     "rtld(GNU_HASH)",
 }
 
-SUPPORTED_FEDORA_RELEASES = ["38", "39"]
+SUPPORTED_FEDORA_RELEASES = ["39", "40"]
 SUPPORTED_OPENSUSE_LEAP_RELEASES = ["15.5"]
 
 COMMON_NS = "http://linux.duke.edu/metadata/common"

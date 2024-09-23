@@ -4,11 +4,12 @@
 
 #include "components/password_manager/core/browser/form_parsing/fuzzer/form_predictions_producer.h"
 
+#include <fuzzer/FuzzedDataProvider.h>
+
+#include <algorithm>
 #include <bitset>
 #include <string>
 #include <utility>
-
-#include <fuzzer/FuzzedDataProvider.h>
 
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -31,15 +32,13 @@ constexpr FieldType kPasswordRelatedServerTypes[] = {
     autofill::NEW_PASSWORD, autofill::CONFIRMATION_PASSWORD,
     autofill::NOT_PASSWORD};
 
-void SetPredictionType(bool pick_meaningful_type,
-                       FuzzedDataProvider& provider,
-                       PasswordFieldPrediction& prediction) {
+FieldType GeneratePredictionType(bool pick_meaningful_type,
+                                 FuzzedDataProvider& provider) {
   if (pick_meaningful_type) {
-    prediction.type = provider.PickValueInArray(kPasswordRelatedServerTypes);
+    return provider.PickValueInArray(kPasswordRelatedServerTypes);
   } else {
     // Set a random type, probably even invalid.
-    prediction.type =
-        static_cast<FieldType>(provider.ConsumeIntegral<uint8_t>());
+    return static_cast<FieldType>(provider.ConsumeIntegral<uint8_t>());
   }
 }
 
@@ -53,7 +52,7 @@ FormPredictions GenerateFormPredictions(const FormData& form_data,
   predictions.form_signature =
       autofill::FormSignature(provider.ConsumeIntegral<uint64_t>());
 
-  for (const auto& field : form_data.fields) {
+  for (const auto& field : form_data.fields()) {
     // Batch getting bits from the FuzzedDataProvider, because calling
     // `ConsumeBool` throws out 7 bits and we need multiple Booleans for each
     // iteration.
@@ -63,11 +62,10 @@ FormPredictions GenerateFormPredictions(const FormData& form_data,
     const bool use_placeholder = bools[2];
 
     if (generate_prediction) {
-      PasswordFieldPrediction field_prediction;
-      SetPredictionType(pick_meaningful_type, provider, field_prediction);
-      field_prediction.may_use_prefilled_placeholder = use_placeholder;
-      field_prediction.renderer_id = field.renderer_id;
-      predictions.fields.push_back(std::move(field_prediction));
+      predictions.fields.emplace_back(
+          field.renderer_id(), autofill::FieldSignature(123),
+          GeneratePredictionType(pick_meaningful_type, provider),
+          use_placeholder, /*is_override=*/false);
     }
   }
 
@@ -78,12 +76,24 @@ FormPredictions GenerateFormPredictions(const FormData& form_data,
     const bool pick_meaningful_type = bools[0];
     const bool use_placeholder = bools[1];
 
-    PasswordFieldPrediction field_prediction;
-    SetPredictionType(pick_meaningful_type, provider, field_prediction);
-    field_prediction.may_use_prefilled_placeholder = use_placeholder;
-    field_prediction.renderer_id =
-        autofill::FieldRendererId(provider.ConsumeIntegralInRange(-32, 31));
-    predictions.fields.push_back(std::move(field_prediction));
+    // Generate unique `renderer_id` not matching any existing field
+    // renderer_id.
+    autofill::FieldRendererId renderer_id(
+        provider.ConsumeIntegralInRange(-33, 31));
+    while (std::any_of(form_data.fields().begin(), form_data.fields().end(),
+                       [renderer_id](const autofill::FormFieldData& field) {
+                         return renderer_id.value() ==
+                                field.renderer_id().value();
+                       })) {
+      renderer_id =
+          autofill::FieldRendererId(provider.ConsumeIntegralInRange(-33, 31));
+    }
+
+    autofill::FieldSignature signature(provider.ConsumeIntegralInRange(0, 500));
+    predictions.fields.emplace_back(
+        renderer_id, signature,
+        GeneratePredictionType(pick_meaningful_type, provider), use_placeholder,
+        /*is_override=*/false);
   }
 
   return predictions;

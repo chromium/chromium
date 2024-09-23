@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
+#include "device/fido/fido_authenticator.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/operation.h"
 #include "device/fido/mac/touch_id_context.h"
@@ -30,7 +31,7 @@ namespace device::fido::mac {
 class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionOperation : public Operation {
  public:
   using Callback =
-      base::OnceCallback<void(CtapDeviceResponseCode,
+      base::OnceCallback<void(GetAssertionStatus,
                               std::vector<AuthenticatorGetAssertionResponse>)>;
 
   GetAssertionOperation(CtapGetAssertionRequest request,

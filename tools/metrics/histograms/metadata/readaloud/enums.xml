@@ -26,6 +26,27 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="PlaybackStoppedReason">
+  <int value="0" label="UNKNOWN_REASON"/>
+  <int value="1" label="MANUAL_CLOSE"/>
+  <int value="2" label="NAVIGATION_WITHIN_PLAYING_TAB"/>
+  <int value="3" label="APP_BACKGROUNDED"/>
+  <int value="4" label="APP_DESTROYED"/>
+  <int value="5" label="VOICE_PREVIEW"/>
+  <int value="6" label="VOICE_CHANGE"/>
+  <int value="7" label="NEW_PLAYBACK_REQUEST"/>
+  <int value="8" label="TRANSLATION_STATE_CHANGE"/>
+  <int value="9" label="ACTIVITY_ATTACHEMENT_CHANGED"/>
+  <int value="10" label="TAB_CLOSED"/>
+  <int value="11" label="EXTERNAL_PLAYBACK_REQUEST"/>
+</enum>
+
+<enum name="ReadAloudEntrypoint">
+  <int value="0" label="OVERFLOW_MENU"/>
+  <int value="1" label="MAGIC_TOOLBAR"/>
+  <int value="2" label="RESTORED_PLAYBACK"/>
+</enum>
+
 <enum name="ReadAloudErrorCode">
   <int value="0" label="Message successfully sent"/>
   <int value="1" label="CANCELLED"/>

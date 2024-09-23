@@ -12,18 +12,9 @@
 namespace ui {
 
 int CalculateIdleTime() {
-  // Note that the detector can be null in e.g. Ash unit tests, which can cause
-  // a crash if a browser or OS subsystem wants to know the idle state.
-  //
-  // If it is not possible to check the idle state, assume the system isn't
-  // idle.
-  const auto* const detector = ui::UserActivityDetector::Get();
-  if (!detector) {
-    return 0;
-  }
-
   const base::TimeDelta idle_time =
-      base::TimeTicks::Now() - detector->last_activity_time();
+      base::TimeTicks::Now() -
+      ui::UserActivityDetector::Get()->last_activity_time();
   return static_cast<int>(idle_time.InSeconds());
 }
 

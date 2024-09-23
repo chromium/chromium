@@ -89,7 +89,8 @@
   function flush() {
    expect_throws(_ => {
       var o = document.createElement('object');
-      o.type = "application/x-shockwave-flash";
+      o.type = "video/mp4";
+      o.data = "dummy.webm";
       document.body.appendChild(o);
     });
   }
@@ -124,6 +125,16 @@
     flush();
     return p;
   }, "Trusted Type violation report: creating a forbidden-but-not-reported policy.");
+
+  promise_test(t => {
+    let p = promise_violation("require-trusted-types-for 'script")()
+         .then(expect_blocked_uri("trusted-types-sink"))
+         .then(expect_sample("Element insertAdjacentHTML|x"));
+    expect_throws(() => {
+      document.getElementById("div").insertAdjacentHTML("beforebegin", "x");
+    });
+    return p;
+  }, "Trusted Type violation report: blocked URI and sample for insertAdjacentHTML");
 
   promise_test(t => {
     let p = promise_violation("require-trusted-types-for 'script'")();
@@ -182,7 +193,7 @@
     let p = Promise.resolve()
         .then(promise_violation("require-trusted-types-for 'script'"))
         .then(expect_blocked_uri("trusted-types-sink"))
-        .then(expect_sample("HTMLElement innerText|2+2;"));
+        .then(expect_sample("HTMLScriptElement innerText|2+2;"));
     expect_throws(_ => document.getElementById("script").innerText = "2+2;");
     return p;
   }, "Trusted Type violation report: sample for script innerText assignment");
@@ -194,7 +205,7 @@
     let p = Promise.resolve()
         .then(promise_violation("require-trusted-types-for 'script'"))
         .then(expect_blocked_uri("trusted-types-sink"))
-        .then(expect_sample("SVGAnimatedString baseVal"));
+        .then(expect_sample("SVGScriptElement href"));
       expect_throws(_ => { document.getElementById("svgscript").href.baseVal = "" });
     return p;
   }, "Trusted Type violation report: sample for SVGScriptElement href assignment");
@@ -203,7 +214,7 @@
     let p = Promise.resolve()
         .then(promise_violation("require-trusted-types-for 'script'"))
         .then(expect_blocked_uri("trusted-types-sink"))
-        .then(expect_sample("Element setAttribute"));
+        .then(expect_sample("SVGScriptElement href"));
       expect_throws(_ => { document.getElementById("svgscript").setAttribute('href', "test"); });
     return p;
   }, "Trusted Type violation report: sample for SVGScriptElement href assignment by setAttribute");
@@ -234,7 +245,7 @@
     let p = Promise.resolve()
         .then(promise_violation("require-trusted-types-for 'script'"))
         .then(expect_blocked_uri("trusted-types-sink"))
-        .then(expect_sample("HTMLElement innerText|abbb"))
+        .then(expect_sample("HTMLScriptElement innerText|abbb"))
         .then(e => assert_less_than(e.sample.length, 150));
     const value = "a" + "b".repeat(50000);
     expect_throws(_ => document.getElementById("script").innerText = value);

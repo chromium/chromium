@@ -1,5 +1,5 @@
 {% from 'templates/macros.tmpl' import license, print_if, source_files_for_generated_file %}
-{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, declare_storage, fieldwise_compare, fieldwise_diff, fieldwise_pointer_compare_inherited, fieldwise_pointer_compare_inherited_old, field_group_access_bit_name %}
+{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, declare_storage, fieldwise_compare, fieldwise_diff, fieldwise_pointer_compare_inherited, field_group_access_bit_name %}
 {% from 'templates/fields/group.tmpl' import declare_field_group_class %}
 {{license()}}
 
@@ -105,7 +105,6 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
   {% endfor %}
 
  public:
-
   inline bool IndependentInheritedEqual(const ComputedStyleBase& o) const {
     return (
         {{fieldwise_compare(computed_style, computed_style.all_fields
@@ -157,24 +156,10 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
   }
 
   inline bool InheritedDataShared(const ComputedStyleBase& o) const {
-    if (RuntimeEnabledFeatures::CSSMPCImprovementsEnabled()) {
-      return (
-          {{fieldwise_pointer_compare_inherited(computed_style)|indent(8)}}
-      );
-    } else {
-      return (
-          {{fieldwise_pointer_compare_inherited_old(computed_style)|indent(8)}}
-      );
-    }
+    return (
+        {{fieldwise_pointer_compare_inherited(computed_style)|indent(8)}}
+    );
   }
-
-  inline bool IsSurroundDataSharedWith(const ComputedStyleBase& o) const {
-    return surround_data_.Get() == o.surround_data_.Get();
-  }
-
-  {% for name, groups_to_diff in diff_functions_map.items() %}
-  static bool {{name}}(const ComputedStyle& a, const ComputedStyle& b);
-  {% endfor %}
 
   // Fields.
   // TODO(sashab): Remove initialFoo() static methods and update callers to
@@ -256,6 +241,14 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
     {{declare_storage(field)}}
     {% endfor %}
   };
+
+  enum FieldDifference : uint64_t {
+  {% for value in diff_enum %}
+    {{value}} = static_cast<uint64_t>(1) << {{loop.index0}},
+  {% endfor %}
+  };
+
+  static uint64_t FieldInvalidationDiff(const ComputedStyle& a, const ComputedStyle& b);
 
  private:
   friend class ComputedStyleBuilder;

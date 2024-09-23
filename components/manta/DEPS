@@ -1,5 +1,7 @@
 include_rules = [
+  "+chromeos/constants/chromeos_features.h",
   "+components/endpoint_fetcher",
+  "+components/account_id/account_id.h",
   "+components/keyed_service/core/keyed_service.h",
   "+components/signin/public/base",
   "+components/signin/public/identity_manager",
@@ -11,6 +13,9 @@ include_rules = [
 specific_include_rules = {
   ".*_[a-z]*unittest\.cc": [
     "+net/base/net_errors.h",
+    "+services/network/test/test_url_loader_factory.h",
+  ],
+  "base_provider_test_helper\.(cc|h)": [
     "+services/network/test/test_url_loader_factory.h",
   ],
 }

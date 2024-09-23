@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
@@ -27,7 +28,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
@@ -137,16 +137,16 @@ public final class AutoTranslateSnackbarControllerJavaTest {
     }
 
     private void showSnackbar(String targetLanguage) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mAutoTranslateSnackbarController.show(targetLanguage));
     }
 
     private void dismissSnackbar() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAutoTranslateSnackbarController.dismiss());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAutoTranslateSnackbarController.dismiss());
     }
 
     private void clickSnackbarAction() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mSnackbarManager.onClick(
                                 mActivityTestRule
@@ -155,7 +155,7 @@ public final class AutoTranslateSnackbarControllerJavaTest {
     }
 
     private void timeoutSnackbar() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mSnackbarManager.dismissSnackbars(
                                 mSnackbarManager.getCurrentSnackbarForTesting().getController()));
@@ -174,7 +174,7 @@ public final class AutoTranslateSnackbarControllerJavaTest {
     }
 
     private Snackbar getCurrentSnackbar() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> mSnackbarManager.getCurrentSnackbarForTesting());
     }
 }

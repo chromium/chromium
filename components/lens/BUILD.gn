@@ -17,6 +17,7 @@ buildflag_header("buildflags") {
 
 static_library("lens") {
   sources = [
+    "lens_constants.h",
     "lens_entrypoints.h",
     "lens_metadata.cc",
     "lens_metadata.h",
@@ -71,5 +72,16 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//url",
+  ]
+}
+
+source_set("enterprise_policy") {
+  public = [ "lens_overlay_permission_utils.h" ]
+  sources = [ "lens_overlay_permission_utils.cc" ]
+  deps = [
+    "//components/prefs",
+    "//components/sync/service",
+    "//components/sync_preferences",
+    "//components/unified_consent",
   ]
 }

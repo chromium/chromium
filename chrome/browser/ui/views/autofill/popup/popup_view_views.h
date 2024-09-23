@@ -15,10 +15,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
+#include "chrome/browser/ui/views/autofill/popup/password_favicon_loader.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
 #include "components/autofill/core/common/aliases.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -33,7 +35,9 @@ class ScrollView;
 namespace autofill {
 
 class AutofillPopupController;
+class AutofillSuggestionController;
 class PopupSeparatorView;
+class PopupTitleView;
 class PopupWarningView;
 
 // Sub-popups and their parent popups are connected by providing children
@@ -55,12 +59,15 @@ class ExpandablePopupParentView {
 class PopupViewViews : public PopupBaseView,
                        public AutofillPopupView,
                        public PopupRowView::SelectionDelegate,
-                       public ExpandablePopupParentView {
+                       public ExpandablePopupParentView,
+                       public PopupSearchBarView::Delegate {
   METADATA_HEADER(PopupViewViews, PopupBaseView)
 
  public:
-  using RowPointer =
-      absl::variant<PopupRowView*, PopupSeparatorView*, PopupWarningView*>;
+  using RowPointer = absl::variant<PopupRowView*,
+                                   PopupSeparatorView*,
+                                   PopupTitleView*,
+                                   PopupWarningView*>;
 
   // The time it takes for a selected cell to open a sub-popup if it has one.
   static constexpr base::TimeDelta kMouseOpenSubPopupDelay =
@@ -73,10 +80,17 @@ class PopupViewViews : public PopupBaseView,
   static constexpr base::TimeDelta kNoSelectionHideSubPopupDelay =
       base::Milliseconds(2500);
 
+  // Constructor for creating sub-popups.
   PopupViewViews(base::WeakPtr<AutofillPopupController> controller,
                  base::WeakPtr<ExpandablePopupParentView> parent,
                  views::Widget* parent_widget);
-  explicit PopupViewViews(base::WeakPtr<AutofillPopupController> controller);
+
+  // Constructor for creating root level popups. Providing `std::nullopt` to
+  // the `search_bar_config` results in creating a popup without a search bar.
+  explicit PopupViewViews(
+      base::WeakPtr<AutofillPopupController> controller,
+      std::optional<const AutofillPopupView::SearchBarConfig>
+          search_bar_config = std::nullopt);
   PopupViewViews(const PopupViewViews&) = delete;
   PopupViewViews& operator=(const PopupViewViews&) = delete;
   ~PopupViewViews() override;
@@ -92,6 +106,7 @@ class PopupViewViews : public PopupBaseView,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  void OnPaint(gfx::Canvas* canvas) override;
 
   // AutofillPopupView:
   bool Show(AutoselectFirstSuggestion autoselect_first_suggestion) override;
@@ -100,13 +115,21 @@ class PopupViewViews : public PopupBaseView,
   std::optional<int32_t> GetAxUniqueId() override;
   void AxAnnounce(const std::u16string& text) override;
   base::WeakPtr<AutofillPopupView> CreateSubPopupView(
-      base::WeakPtr<AutofillPopupController> controller) override;
+      base::WeakPtr<AutofillSuggestionController> controller) override;
   std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
       const override;
+  bool HasFocus() const override;
   base::WeakPtr<AutofillPopupView> GetWeakPtr() override;
 
   // PopupBaseView:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
+
+  // PopupSearchBarView::Delegate:
+  void SearchBarOnInputChanged(const std::u16string& text) override;
+  void SearchBarOnFocusLost() override;
+  bool SearchBarHandleKeyPressed(const ui::KeyEvent& event) override;
 
  private:
   friend class PopupViewViewsTestApi;
@@ -137,8 +160,11 @@ class PopupViewViews : public PopupBaseView,
     return *absl::get<PopupRowView*>(rows_[index]);
   }
 
-  // Returns whether the row at `index` exists and is a `PopupRowView`.
-  bool HasPopupRowViewAt(size_t index) const;
+  void UpdateExpandedCollapsedAccessibleState() const;
+
+  // Returns whether the row at `index` exists, is a `PopupRowView` and is
+  // selectable.
+  bool HasSelectablePopupRowViewAt(size_t index) const;
 
   // Instantiates the content of the popup.
   void InitViews();
@@ -146,11 +172,7 @@ class PopupViewViews : public PopupBaseView,
   // Creates child views based on the suggestions given by |controller_|.
   // This method expects that all non-footer suggestions precede footer
   // suggestions.
-  void CreateChildViews();
-
-  // Applies certain rounding rules to the given width, such as matching the
-  // element width when possible.
-  int AdjustWidth(int width) const;
+  void CreateSuggestionViews();
 
   // Selects the first row prior to the currently selected one that is
   // selectable (e.g. not a separator). If no row is selected or no row prior to
@@ -159,11 +181,11 @@ class PopupViewViews : public PopupBaseView,
   void SelectPreviousRow();
 
   // Analogous to previous row, just in the opposite direction: Tries to find
-  // the next selectable row after the currently selected one. If no row is
-  // selected or no row following the currently selected one is selectable, it
-  // tries to select the first row. If that one is unselectable, no row is
-  // selected.
-  void SelectNextRow();
+  // the next selectable row after the currently selected one and selects it
+  // with the given selection source. If no row is selected or no row following
+  // the currently selected one is selectable, it tries to select the first
+  // row. If that one is unselectable, no row is selected.
+  void SelectNextRow(PopupCellSelectionSource source);
 
   // Selects the next/previous in horizontal direction (i.e. left to right or
   // vice versa) cell, if there is one. Otherwise leaves the current selection.
@@ -173,9 +195,8 @@ class PopupViewViews : public PopupBaseView,
 
   // Attempts to accept the selected cell. It will return false if there is no
   // selected cell or the cell does not trigger field filling or scanning a
-  // credit card. `event_time` must be the time the user input event was
-  // triggered.
-  bool AcceptSelectedContentOrCreditCardCell(base::TimeTicks event_time);
+  // credit card.
+  bool AcceptSelectedContentOrCreditCardCell();
 
   // Attempts to remove the selected cell. Only content cells are allowed to be
   // selected.
@@ -184,15 +205,18 @@ class PopupViewViews : public PopupBaseView,
   // Reacts to key events under the assumption that the currently shown popup
   // contains Compose content.
   bool HandleKeyPressEventForCompose(
-      const content::NativeWebKeyboardEvent& event);
+      const input::NativeWebKeyboardEvent& event);
 
   // AutofillPopupView:
-  bool HandleKeyPressEvent(
-      const content::NativeWebKeyboardEvent& event) override;
-  void OnSuggestionsChanged() override;
+  bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) override;
+  void OnSuggestionsChanged(bool prefer_prev_arrow_side) override;
 
   // PopupBaseView:
   bool DoUpdateBoundsAndRedrawPopup() override;
+
+  // If `prefer_prev_arrow_side` is `true`, the view takes prev arrow side as
+  // the first preferred when recalculating the popup position.
+  bool DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side);
 
   // ExpandablePopupParentView:
   void OnMouseEnteredInChildren() override;
@@ -212,11 +236,21 @@ class PopupViewViews : public PopupBaseView,
       AutoselectFirstSuggestion autoselect_first_suggestion =
           AutoselectFirstSuggestion(false));
 
+  // Attempts to select the content cell of the row with the currently open
+  // sub-popup. This closes the sub-popup and has the effect of going one menu
+  // level up. Returns whether this was successful.
+  bool SelectParentPopupContentCell();
+
+  // Announces a string without assertively alerting a user.
+  void AnnouncePolitely(const std::u16string& text);
+
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
 
   // Parent's popup view. Present in sub-popups (non-root) only.
   std::optional<base::WeakPtr<ExpandablePopupParentView>> parent_;
+
+  std::unique_ptr<PasswordFaviconLoaderImpl> password_favicon_loader_;
 
   // The index of the row with a selected cell.
   std::optional<size_t> row_with_selected_cell_;
@@ -226,6 +260,10 @@ class PopupViewViews : public PopupBaseView,
   std::optional<size_t> row_with_open_sub_popup_;
 
   std::vector<RowPointer> rows_;
+  const std::optional<const AutofillPopupView::SearchBarConfig>
+      search_bar_config_;
+  raw_ptr<PopupSearchBarView> search_bar_ = nullptr;
+  raw_ptr<views::BoxLayoutView> suggestions_container_ = nullptr;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
   raw_ptr<views::BoxLayoutView> body_container_ = nullptr;
   raw_ptr<views::BoxLayoutView> footer_container_ = nullptr;
@@ -242,6 +280,14 @@ class PopupViewViews : public PopupBaseView,
   // set in `Show()`, but after that once it is `true` the value never gets back
   // to `false.`
   bool has_keyboard_focus_ = false;
+
+  // A boolean variable tracking the execution state of the `Show()` method.
+  // It's set to `true` when the method starts and `false` before it finishes.
+  // Required for the `HasFocus()` method, that might be called during
+  // the `Show()` execution. In this case, `GetWidget()->IsActive()` may not yet
+  // be `true`, and the `HasFocus()` returning `false` may potentially cause
+  // the popup to hide.
+  bool show_in_progress_ = false;
 
   base::WeakPtrFactory<PopupViewViews> weak_ptr_factory_{this};
 };

@@ -311,7 +311,7 @@ TEST_F(CompositeEditCommandTest, MoveParagraphsWithTableAndCaption) {
   // Should not crash. See http://crbug.com/1310613
   sample.MoveParagraphs(start, end, destination, &editing_state);
   EXPECT_FALSE(editing_state.IsAborted());
-  EXPECT_EQ("<table><caption><div><input><br></div></caption></table>",
+  EXPECT_EQ("<table><caption><div><input></div></caption></table>",
             GetDocument().body()->innerHTML());
 }
 

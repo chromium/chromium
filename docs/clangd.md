@@ -70,8 +70,13 @@ configuration.
 
 *** note
 Note: The clangd provided by Chromium does not support optional features like
-remote indexing (see https://crbug.com/1358258). If you want those features,
-you'll need to use a different build of clangd.
+remote indexing (see https://crbug.com/1358258), such that `clangd --version`
+will not mention `grpc`, and you will see “Unknown Index key External” warnings
+in the clangd log.
+
+If you want those features, you'll need to use a different build of clangd,
+such as the [clangd/clangd releases on
+GitHub](https://github.com/clangd/clangd/releases).
 ***
 
 ## Setting Up

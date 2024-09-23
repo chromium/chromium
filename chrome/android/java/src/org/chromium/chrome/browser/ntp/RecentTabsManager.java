@@ -9,11 +9,14 @@ import android.content.Context;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.invalidation.SessionsInvalidationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -28,6 +31,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -115,11 +119,17 @@ public class RecentTabsManager
         mSignInManager = IdentityServicesProvider.get().getSigninManager(mProfile);
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string.signin_account_picker_bottom_sheet_title)
+                        .build();
         mSyncPromoController =
                 new SyncPromoController(
                         mProfile,
+                        bottomSheetStrings,
                         SigninAccessPoint.RECENT_TABS,
-                        SyncConsentActivityLauncherImpl.get());
+                        SyncConsentActivityLauncherImpl.get(),
+                        SigninAndHistorySyncActivityLauncherImpl.get());
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
 
         mRecentlyClosedTabManager.setEntriesUpdatedRunnable(this::updateRecentlyClosedEntries);
@@ -136,6 +146,11 @@ public class RecentTabsManager
         updatePromoState();
 
         SessionsInvalidationManager.get(mProfile).onRecentTabsPageOpened();
+    }
+
+    /** Return the {@link Profile} associated with the recent tabs. */
+    public Profile getProfile() {
+        return mProfile;
     }
 
     private static int countSessionIdsRestored(Map<Integer, Boolean> sessionIdToRestoredState) {
@@ -245,7 +260,7 @@ public class RecentTabsManager
             ForeignSession session, ForeignSessionTab tab, int windowDisposition) {
         if (mIsDestroyed) return;
         RecordUserAction.record("MobileRecentTabManagerTabFromOtherDeviceOpened");
-        RecordUserAction.record("MobileCrossDeviceTabOpenedOrSent");
+        RecordUserAction.record("MobileCrossDeviceTabJourney");
         mForeignSessionHelper.openForeignSessionTab(mActiveTab, session, tab, windowDisposition);
     }
 
@@ -421,7 +436,23 @@ public class RecentTabsManager
     }
 
     private @SyncPromoState int calculatePromoState() {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            // If ReplaceSyncPromosWithSignInPromos is enabled, there's only one promo type.
+            //
+            // TODO(crbug.com/343908771): Revise SyncPromoState after launching
+            //     ReplaceSyncPromosWithSignInPromos.
+            if (!mSyncPromoController.canShowSyncPromo()) {
+                return SyncPromoState.NO_PROMO;
+            }
+            return SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE;
+        }
         if (!mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC)) {
+            if (!mSyncPromoController.canShowSyncPromo()) {
+                return SyncPromoState.NO_PROMO;
+            }
+            // TODO(crbug.com/338541375): Move this check inside
+            //  SyncPromoController#canShowSyncPromo().
             if (!mSignInManager.isSyncOptInAllowed()) {
                 return SyncPromoState.NO_PROMO;
             }
@@ -435,7 +466,7 @@ public class RecentTabsManager
             return SyncPromoState.NO_PROMO;
         }
 
-        // TODO(crbug.com/1341324): PROMO_FOR_SYNC_TURNED_OFF_STATE should only
+        // TODO(crbug.com/40850972): PROMO_FOR_SYNC_TURNED_OFF_STATE should only
         // be returned if mSyncService.getSelectedTypes().isEmpty(). Otherwise,
         // LegacySyncPromoView incorrectly displays a promo with string
         // R.string.ntp_recent_tabs_sync_promo_instructions.

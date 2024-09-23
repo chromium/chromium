@@ -76,11 +76,9 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
   using MediaTracksUpdatedCB =
       base::RepeatingCallback<void(std::unique_ptr<MediaTracks>)>;
 
-  // Called once the demuxer has finished enabling or disabling tracks. The type
-  // argument is required because the vector may be empty.
+  // Called once the demuxer has finished enabling or disabling tracks.
   using TrackChangeCB =
-      base::OnceCallback<void(DemuxerStream::Type type,
-                              const std::vector<DemuxerStream*>&)>;
+      base::OnceCallback<void(const std::vector<DemuxerStream*>&)>;
 
   enum DemuxerTypes {
     kChunkDemuxer,

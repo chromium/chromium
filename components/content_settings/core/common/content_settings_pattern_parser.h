@@ -6,8 +6,8 @@
 #define COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_CONTENT_SETTINGS_PATTERN_PARSER_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 
 class GURL;
@@ -20,7 +20,7 @@ class PatternParser {
   PatternParser(const PatternParser&) = delete;
   PatternParser& operator=(const PatternParser&) = delete;
 
-  static void Parse(base::StringPiece pattern_spec,
+  static void Parse(std::string_view pattern_spec,
                     ContentSettingsPattern::BuilderInterface* builder);
 
   static std::string ToString(

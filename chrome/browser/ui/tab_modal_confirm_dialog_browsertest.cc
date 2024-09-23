@@ -124,7 +124,8 @@ IN_PROC_BROWSER_TEST_F(TabModalConfirmDialogTest, Navigate) {
   content::OpenURLParams params(GURL("about:blank"), content::Referrer(),
                                 WindowOpenDisposition::CURRENT_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  browser()->tab_strip_model()->GetActiveWebContents()->OpenURL(params);
+  browser()->tab_strip_model()->GetActiveWebContents()->OpenURL(
+      params, /*navigation_handle_callback=*/{});
 
   EXPECT_EQ(0, accepted_count_);
   EXPECT_EQ(0, canceled_count_);

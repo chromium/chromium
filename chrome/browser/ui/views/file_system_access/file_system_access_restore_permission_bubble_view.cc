@@ -6,9 +6,9 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_scroll_panel.h"
-#include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_util.h"
@@ -16,7 +16,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -36,15 +36,14 @@ FileSystemAccessRestorePermissionBubbleView::
   // Initial set up.
   views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      DISTANCE_BUTTON_VERTICAL));
+      views::BoxLayout::Orientation::kVertical, gfx::Insets()));
   set_close_on_deactivate(false);
   set_fixed_width(layout_provider->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   // To prevent permissions being accepted accidentally, and as a security
   // measure against crbug.com/619429, permission prompts should not be accepted
   // as the default action.
-  SetDefaultButton(ui::DIALOG_BUTTON_NONE);
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCloseOnMainFrameOriginNavigation(true);
   DialogDelegate::SetCloseCallback(base::BindOnce(
       &FileSystemAccessRestorePermissionBubbleView::OnPromptDismissed,
@@ -85,11 +84,9 @@ FileSystemAccessRestorePermissionBubbleView::
       l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW));
   deny_button->SetID(static_cast<int>(RestorePermissionButton::kDeny));
 
-  if (features::IsChromeRefresh2023()) {
-    allow_once_button->SetStyle(ui::ButtonStyle::kTonal);
-    allow_always_button->SetStyle(ui::ButtonStyle::kTonal);
-    deny_button->SetStyle(ui::ButtonStyle::kTonal);
-  }
+  allow_once_button->SetStyle(ui::ButtonStyle::kTonal);
+  allow_always_button->SetStyle(ui::ButtonStyle::kTonal);
+  deny_button->SetStyle(ui::ButtonStyle::kTonal);
 
   auto buttons_container = std::make_unique<views::View>();
   buttons_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -104,7 +101,7 @@ FileSystemAccessRestorePermissionBubbleView::
           layout_provider->GetInsetsMetric(views::INSETS_DIALOG_BUTTON_ROW)
               .width(),
       buttons_container->GetPreferredSize().height()));
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetExtraView(std::move(buttons_container));
 }
 
@@ -190,7 +187,7 @@ void FileSystemAccessRestorePermissionBubbleView::OnButtonPressed(
       std::move(callback_).Run(permissions::PermissionAction::DENIED);
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FileSystemAccessRestorePermissionBubbleView::OnPromptDismissed() {

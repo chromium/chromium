@@ -83,7 +83,7 @@ scoped_refptr<media::DecoderBuffer> PreparePcm24Buffer(
   static_assert(ARCH_CPU_LITTLE_ENDIAN,
                 "Only little-endian CPUs are supported.");
 
-  size_t samples = buffer->data_size() / 3;
+  size_t samples = buffer->size() / 3;
   scoped_refptr<media::DecoderBuffer> result =
       base::MakeRefCounted<media::DecoderBuffer>(samples * 4);
   for (size_t i = 0; i < samples - 1; ++i) {
@@ -163,7 +163,7 @@ void WebEngineAudioRenderer::InitializeStream() {
   // AAC streams require bitstream conversion. Without it the demuxer may
   // produce decoded stream without ADTS headers which are required for AAC
   // streams in AudioConsumer.
-  // TODO(crbug.com/1120095): Reconsider this logic.
+  // TODO(crbug.com/40145747): Reconsider this logic.
   if (demuxer_stream_->audio_decoder_config().codec() ==
       media::AudioCodec::kAAC) {
     demuxer_stream_->EnableBitstreamConverter();
@@ -210,7 +210,7 @@ void WebEngineAudioRenderer::UpdateVolume() {
 
 void WebEngineAudioRenderer::OnBuffersAcquired(
     std::vector<media::VmoBuffer> buffers,
-    const fuchsia::sysmem::SingleBufferSettings&) {
+    const fuchsia::sysmem2::SingleBufferSettings&) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   input_buffers_ = std::move(buffers);
@@ -331,18 +331,19 @@ void WebEngineAudioRenderer::SetVolume(float volume) {
 
 void WebEngineAudioRenderer::SetLatencyHint(
     std::optional<base::TimeDelta> latency_hint) {
-  // TODO(crbug.com/1131116): Implement at some later date after we've vetted
+  // TODO(crbug.com/40150050): Implement at some later date after we've vetted
   // the API shape and usefulness outside of fuchsia.
   NOTIMPLEMENTED();
 }
 
 void WebEngineAudioRenderer::SetPreservesPitch(bool preserves_pitch) {
-  // TODO(crbug.com/1368392): Implement this.
+  // TODO(crbug.com/40868390): Implement this.
   NOTIMPLEMENTED();
 }
 
-void WebEngineAudioRenderer::SetWasPlayedWithUserActivation(
-    bool was_played_with_user_activation) {
+void WebEngineAudioRenderer::
+    SetWasPlayedWithUserActivationAndHighMediaEngagement(
+        bool was_played_with_user_activation_and_high_media_engagement) {
   // WebEngine does not use this signal. This is currently only used by the Live
   // Caption feature.
   NOTIMPLEMENTED_LOG_ONCE();
@@ -361,7 +362,7 @@ void WebEngineAudioRenderer::StartTicking() {
     case PlaybackState::kStartPending:
     case PlaybackState::kStarting:
     case PlaybackState::kPlaying:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 
     case PlaybackState::kPaused: {
       // If the stream was paused then we can unpause it without restarting
@@ -413,7 +414,6 @@ void WebEngineAudioRenderer::StopTicking() {
     case PlaybackState::kStopped:
     case PlaybackState::kPaused:
       NOTREACHED();
-      break;
 
     case PlaybackState::kStartPending: {
       base::AutoLock lock(timeline_lock_);
@@ -719,9 +719,9 @@ void WebEngineAudioRenderer::OnDemuxerStreamReadDone(
   if (buffer->end_of_stream()) {
     is_at_end_of_stream_ = true;
   } else {
-    if (buffer->data_size() > kBufferSize) {
+    if (buffer->size() > kBufferSize) {
       DLOG(ERROR) << "Demuxer returned buffer that is too big: "
-                  << buffer->data_size();
+                  << buffer->size();
       OnError(media::AUDIO_RENDERER_ERROR);
       return;
     }
@@ -835,7 +835,7 @@ base::TimeDelta WebEngineAudioRenderer::CurrentMediaTimeLocked() {
 }
 
 void WebEngineAudioRenderer::OnSysmemBufferStreamBufferCollectionToken(
-    fuchsia::sysmem::BufferCollectionTokenPtr token) {
+    fuchsia::sysmem2::BufferCollectionTokenPtr token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Drop old buffers.
@@ -845,7 +845,7 @@ void WebEngineAudioRenderer::OnSysmemBufferStreamBufferCollectionToken(
   // Acquire buffers for the new buffer collection.
   input_buffer_collection_ =
       sysmem_allocator_.BindSharedCollection(std::move(token));
-  fuchsia::sysmem::BufferCollectionConstraints buffer_constraints =
+  fuchsia::sysmem2::BufferCollectionConstraints buffer_constraints =
       media::VmoBuffer::GetRecommendedConstraints(kNumBuffers, kBufferSize,
                                                   /*writable=*/false);
   input_buffer_collection_->Initialize(std::move(buffer_constraints),

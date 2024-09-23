@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
@@ -185,7 +186,8 @@ void LayoutSVGText::Paint(const PaintInfo& paint_info) const {
     return;
   }
 
-  PaintInfo block_info(paint_info);
+  ScopedSVGTransformState transform_state(paint_info, *this);
+  PaintInfo& block_info = transform_state.ContentPaintInfo();
   if (const auto* properties = FirstFragment().PaintProperties()) {
     // TODO(https://crbug.com/1278452): Also consider Translate, Rotate,
     // Scale, and Offset, probably via a single transform operation to
@@ -194,7 +196,6 @@ void LayoutSVGText::Paint(const PaintInfo& paint_info) const {
       block_info.TransformCullRect(*transform);
     }
   }
-  ScopedSVGTransformState transform_state(block_info, *this);
 
   if (block_info.phase == PaintPhase::kForeground) {
     SVGModelObjectPainter::RecordHitTestData(*this, block_info);
@@ -212,7 +213,8 @@ void LayoutSVGText::Paint(const PaintInfo& paint_info) const {
   }
 }
 
-void LayoutSVGText::UpdateLayout() {
+SVGLayoutResult LayoutSVGText::UpdateSVGLayout(
+    const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
 
   // If the root layout size changed (eg. window size changes), or the screen
@@ -246,21 +248,24 @@ void LayoutSVGText::UpdateLayout() {
 
   const gfx::RectF boundaries = ObjectBoundingBox();
   const bool bounds_changed = old_boundaries != boundaries;
-  bool update_parent_boundaries = false;
+
+  SVGLayoutResult result;
   if (bounds_changed) {
-    update_parent_boundaries = true;
+    result.bounds_changed = true;
   }
-  if (UpdateAfterSvgLayout(bounds_changed)) {
-    update_parent_boundaries = true;
+  if (UpdateAfterSVGLayout(layout_info, bounds_changed)) {
+    result.bounds_changed = true;
   }
 
-  // If our bounds changed, notify the parents.
-  if (update_parent_boundaries) {
-    SetNeedsBoundariesUpdate();
+  if (result.bounds_changed) {
+    DeprecatedInvalidateIntersectionObserverCachedRects();
   }
+
+  return result;
 }
 
-bool LayoutSVGText::UpdateAfterSvgLayout(bool bounds_changed) {
+bool LayoutSVGText::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
+                                         bool bounds_changed) {
   if (bounds_changed) {
     // Invalidate all resources of this client if our reference box changed.
     SVGResourceInvalidator resource_invalidator(*this);
@@ -269,7 +274,7 @@ bool LayoutSVGText::UpdateAfterSvgLayout(bool bounds_changed) {
   }
 
   UpdateTransformAffectsVectorEffect();
-  return UpdateTransformAfterLayout(bounds_changed);
+  return UpdateTransformAfterLayout(layout_info, bounds_changed);
 }
 
 bool LayoutSVGText::IsObjectBoundingBoxValid() const {
@@ -328,11 +333,13 @@ gfx::RectF LayoutSVGText::VisualRectInLocalSVGCoordinates() const {
   return SVGLayoutSupport::ComputeVisualRectForText(*this, box);
 }
 
-void LayoutSVGText::AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                                  MapCoordinatesFlags mode) const {
+void LayoutSVGText::QuadsInAncestorInternal(
+    Vector<gfx::QuadF>& quads,
+    const LayoutBoxModelObject* ancestor,
+    MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   quads.push_back(
-      LocalToAbsoluteQuad(gfx::QuadF(DecoratedBoundingBox()), mode));
+      LocalToAncestorQuad(gfx::QuadF(DecoratedBoundingBox()), ancestor, mode));
 }
 
 gfx::RectF LayoutSVGText::LocalBoundingBoxRectForAccessibility() const {

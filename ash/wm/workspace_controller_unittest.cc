@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/wm/workspace_controller.h"
 
 #include <map>
@@ -28,6 +33,8 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -92,7 +99,8 @@ class WorkspaceControllerTest : public AshTestBase {
 
   aura::Window* CreateTestWindowUnparented() {
     aura::Window* window = new aura::Window(nullptr);
-    window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+    window->SetProperty(aura::client::kShowStateKey,
+                        ui::mojom::WindowShowState::kNormal);
     window->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window->Init(ui::LAYER_TEXTURED);
     return window;
@@ -100,7 +108,8 @@ class WorkspaceControllerTest : public AshTestBase {
 
   aura::Window* CreateTestWindow() {
     aura::Window* window = new aura::Window(nullptr);
-    window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+    window->SetProperty(aura::client::kShowStateKey,
+                        ui::mojom::WindowShowState::kNormal);
     window->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window->Init(ui::LAYER_TEXTURED);
     ParentWindowInPrimaryRootWindow(window);
@@ -177,7 +186,8 @@ TEST_F(WorkspaceControllerTest, SingleMaximizeWindow) {
   EXPECT_EQ("0,0 250x251", w1->bounds().ToString());
 
   // Maximize the window.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMaximized);
 
   EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
 
@@ -188,7 +198,8 @@ TEST_F(WorkspaceControllerTest, SingleMaximizeWindow) {
             w1->bounds().height());
 
   // Restore the window.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kNormal);
 
   EXPECT_EQ(w1.get(), GetDesktop()->children()[0]);
   EXPECT_EQ("0,0 250x251", w1->bounds().ToString());
@@ -205,7 +216,8 @@ TEST_F(WorkspaceControllerTest, FullscreenWithNormalWindow) {
   EXPECT_TRUE(w1->layer()->visible());
 
   w2->SetBounds(gfx::Rect(0, 0, 50, 51));
-  w2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  w2->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kFullscreen);
   w2->Show();
   wm::ActivateWindow(w2.get());
 
@@ -218,7 +230,8 @@ TEST_F(WorkspaceControllerTest, FullscreenWithNormalWindow) {
   EXPECT_EQ(work_area.height(), w2->bounds().height());
 
   // Restore w2, which should then go back to one workspace.
-  w2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  w2->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kNormal);
   EXPECT_EQ(50, w2->bounds().width());
   EXPECT_EQ(51, w2->bounds().height());
   EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
@@ -253,7 +266,8 @@ TEST_F(WorkspaceControllerTest, SingleFullscreenWindow) {
   std::unique_ptr<Window> w1(CreateTestWindow());
   w1->SetBounds(gfx::Rect(0, 0, 250, 251));
   // Make the window fullscreen.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kFullscreen);
   w1->Show();
   wm::ActivateWindow(w1.get());
 
@@ -263,7 +277,8 @@ TEST_F(WorkspaceControllerTest, SingleFullscreenWindow) {
 
   // Restore the window. Use SHOW_STATE_DEFAULT as that is what we'll end up
   // with when using views::Widget.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_DEFAULT);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kDefault);
   EXPECT_EQ("0,0 250x251", w1->bounds().ToString());
 
   EXPECT_EQ(w1.get(), GetDesktop()->children()[0]);
@@ -271,7 +286,8 @@ TEST_F(WorkspaceControllerTest, SingleFullscreenWindow) {
   EXPECT_EQ(251, w1->bounds().height());
 
   // Back to fullscreen.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kFullscreen);
   EXPECT_EQ(w1.get(), GetDesktop()->children()[0]);
   EXPECT_EQ(GetFullscreenBounds(w1.get()).width(), w1->bounds().width());
   EXPECT_EQ(GetFullscreenBounds(w1.get()).height(), w1->bounds().height());
@@ -287,7 +303,8 @@ TEST_F(WorkspaceControllerTest, MinimizeSingleWindow) {
 
   w1->Show();
 
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMinimized);
   EXPECT_FALSE(w1->layer()->IsVisible());
   EXPECT_TRUE(w1->layer()->GetTargetTransform().IsIdentity());
 
@@ -303,7 +320,8 @@ TEST_F(WorkspaceControllerTest, MinimizeFullscreenWindow) {
   std::unique_ptr<Window> w1(CreateTestWindow());
   std::unique_ptr<Window> w2(CreateTestWindow());
   w1->Show();
-  w2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  w2->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kFullscreen);
   w2->Show();
 
   WindowState* w1_state = WindowState::Get(w1.get());
@@ -312,7 +330,8 @@ TEST_F(WorkspaceControllerTest, MinimizeFullscreenWindow) {
   w2_state->Activate();
 
   // Minimize w2.
-  w2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+  w2->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMinimized);
   EXPECT_TRUE(w1->layer()->IsVisible());
   EXPECT_FALSE(w2->layer()->IsVisible());
 
@@ -334,7 +353,8 @@ TEST_F(WorkspaceControllerTest, MinimizeFullscreenWindow) {
   EXPECT_EQ(w1.get(), GetDesktop()->children()[1]);
 
   // Make the window normal.
-  w2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  w2->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kNormal);
   // Setting back to normal doesn't change the activation.
   EXPECT_FALSE(w2_state->IsActive());
   EXPECT_TRUE(w1_state->IsActive());
@@ -370,32 +390,38 @@ TEST_F(WorkspaceControllerTest, ShelfStateUpdated) {
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
 
   // Maximize the window.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMaximized);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 
   // Restore.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kNormal);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ("0,1 101x102", w1->bounds().ToString());
 
   // Fullscreen.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kFullscreen);
   EXPECT_EQ(SHELF_HIDDEN, shelf->GetVisibilityState());
 
   // Normal.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kNormal);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ("0,1 101x102", w1->bounds().ToString());
   w1->SetBounds(w1_bounds);
 
   // Maximize again.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMaximized);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 
   // Minimize.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMinimized);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
 
   // Since the restore from minimize will restore to the pre-minimize
@@ -410,14 +436,16 @@ TEST_F(WorkspaceControllerTest, ShelfStateUpdated) {
   w1->SetBounds(restore);
 
   // Restore.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kNormal);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ("0,1 101x102", w1->bounds().ToString());
 
   // Create another window, maximized.
   std::unique_ptr<Window> w2(CreateTestWindow());
   w2->SetBounds(gfx::Rect(10, 11, 250, 251));
-  w2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  w2->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMaximized);
   w2->Show();
   wm::ActivateWindow(w2.get());
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
@@ -456,11 +484,13 @@ TEST_F(WorkspaceControllerTest, MinimizeResetsVisibility) {
   std::unique_ptr<Window> w1(CreateTestWindow());
   w1->Show();
   wm::ActivateWindow(w1.get());
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMaximized);
   EXPECT_EQ(ShelfBackgroundType::kMaximized,
             GetPrimaryShelf()->shelf_layout_manager()->shelf_background_type());
 
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMinimized);
   EXPECT_EQ(SHELF_VISIBLE, GetPrimaryShelf()->GetVisibilityState());
   EXPECT_EQ(ShelfBackgroundType::kDefaultBg,
             GetPrimaryShelf()->shelf_layout_manager()->shelf_background_type());
@@ -477,7 +507,8 @@ TEST_F(WorkspaceControllerTest, VisibilityTests) {
   std::unique_ptr<Window> w2(CreateTestWindow());
   w2->Show();
   wm::ActivateWindow(w2.get());
-  w2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  w2->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kFullscreen);
   EXPECT_TRUE(w2->IsVisible());
   EXPECT_EQ(1.0f, w2->layer()->GetCombinedOpacity());
   EXPECT_TRUE(w1->IsVisible());
@@ -495,14 +526,16 @@ TEST_F(WorkspaceControllerTest, VisibilityTests) {
   EXPECT_TRUE(w1->IsVisible());
 
   // Restore |w2|, both windows should be visible.
-  w2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  w2->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kNormal);
   EXPECT_TRUE(w1->IsVisible());
   EXPECT_EQ(1.0f, w1->layer()->GetCombinedOpacity());
   EXPECT_TRUE(w2->IsVisible());
   EXPECT_EQ(1.0f, w2->layer()->GetCombinedOpacity());
 
   // Make |w2| fullscreen again, then close it.
-  w2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  w2->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kFullscreen);
   w2->Hide();
   EXPECT_FALSE(w2->IsVisible());
   EXPECT_EQ(1.0f, w1->layer()->GetCombinedOpacity());
@@ -512,7 +545,8 @@ TEST_F(WorkspaceControllerTest, VisibilityTests) {
   w2.reset(CreateTestWindow());
   w2->Show();
   wm::ActivateWindow(w2.get());
-  w2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  w2->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMaximized);
   EXPECT_TRUE(w2->IsVisible());
   EXPECT_EQ(1.0f, w2->layer()->GetCombinedOpacity());
   EXPECT_TRUE(w1->IsVisible());
@@ -540,7 +574,8 @@ TEST_F(WorkspaceControllerTest, DontMoveOnSwitch) {
   // Create another window and maximize it.
   std::unique_ptr<Window> w2(CreateTestWindow());
   w2->SetBounds(gfx::Rect(10, 11, 250, 251));
-  w2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  w2->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMaximized);
   w2->Show();
   wm::ActivateWindow(w2.get());
 
@@ -568,7 +603,8 @@ TEST_F(WorkspaceControllerTest, MoveOnSwitch) {
   // Create another window and maximize it.
   std::unique_ptr<Window> w2(CreateTestWindow());
   w2->SetBounds(gfx::Rect(10, 11, 250, 251));
-  w2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  w2->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMaximized);
   w2->Show();
   wm::ActivateWindow(w2.get());
 
@@ -1239,12 +1275,14 @@ TEST_F(WorkspaceControllerTest, VerifyLayerOrdering) {
   EXPECT_EQ(GetWindowNames(parent), GetLayerNames(parent));
 
   // Minimize the app, focus should go the browser.
-  app->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+  app->SetProperty(aura::client::kShowStateKey,
+                   ui::mojom::WindowShowState::kMinimized);
   EXPECT_TRUE(wm::IsActiveWindow(browser.get()));
   EXPECT_EQ(GetWindowNames(parent), GetLayerNames(parent));
 
   // Minimize the browser (neither windows are focused).
-  browser->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+  browser->SetProperty(aura::client::kShowStateKey,
+                       ui::mojom::WindowShowState::kMinimized);
   EXPECT_FALSE(wm::IsActiveWindow(browser.get()));
   EXPECT_FALSE(wm::IsActiveWindow(app.get()));
   EXPECT_EQ(GetWindowNames(parent), GetLayerNames(parent));
@@ -1261,7 +1299,8 @@ TEST_F(WorkspaceControllerTest, VerifyLayerOrdering) {
   // Restore the app. This differs from above code for |browser| as internally
   // the app code does this. Restoring this way or using Show() should not make
   // a difference.
-  app->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  app->SetProperty(aura::client::kShowStateKey,
+                   ui::mojom::WindowShowState::kNormal);
   EXPECT_EQ(GetWindowNames(parent), GetLayerNames(parent));
 
   // Activate the app.
@@ -1308,14 +1347,15 @@ TEST_F(WorkspaceControllerTest, RestoreMinimizedSnappedWindow) {
 TEST_F(WorkspaceControllerTest, SwitchFromModal) {
   std::unique_ptr<Window> modal_window(CreateTestWindowUnparented());
   modal_window->SetBounds(gfx::Rect(10, 11, 21, 22));
-  modal_window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+  modal_window->SetProperty(aura::client::kModalKey,
+                            ui::mojom::ModalType::kSystem);
   ParentWindowInPrimaryRootWindow(modal_window.get());
   modal_window->Show();
   wm::ActivateWindow(modal_window.get());
 
   std::unique_ptr<Window> maximized_window(CreateTestWindow());
   maximized_window->SetProperty(aura::client::kShowStateKey,
-                                ui::SHOW_STATE_MAXIMIZED);
+                                ui::mojom::WindowShowState::kMaximized);
   maximized_window->Show();
   wm::ActivateWindow(maximized_window.get());
   EXPECT_TRUE(maximized_window->IsVisible());
@@ -1389,12 +1429,12 @@ TEST_F(WorkspaceControllerTest, WindowEdgeHitTest) {
     for (int i = 0; i < kNumPoints; ++i) {
       SCOPED_TRACE(points[i].direction);
       const gfx::Point& location = points[i].location;
-      ui::MouseEvent mouse(ui::ET_MOUSE_MOVED, location, location,
+      ui::MouseEvent mouse(ui::EventType::kMouseMoved, location, location,
                            ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
       ui::EventTarget* target = targeter->FindTargetForEvent(root, &mouse);
       EXPECT_EQ(expected_target, target);
 
-      ui::TouchEvent touch(ui::ET_TOUCH_PRESSED, location,
+      ui::TouchEvent touch(ui::EventType::kTouchPressed, location,
                            ui::EventTimeForNow(),
                            ui::PointerDetails(ui::EventPointerType::kTouch, 0));
       target = targeter->FindTargetForEvent(root, &touch);

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
@@ -86,19 +87,21 @@ class TestTransformer : public TransformStreamTransformer {
                              TransformStreamDefaultController*,
                              ExceptionState&) {}
 
-  ScriptPromise Transform(v8::Local<v8::Value> chunk,
-                          TransformStreamDefaultController* controller,
-                          ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Transform(
+      v8::Local<v8::Value> chunk,
+      TransformStreamDefaultController* controller,
+      ExceptionState& exception_state) override {
     TransformVoid(chunk, controller, exception_state);
-    return ScriptPromise::CastUndefined(script_state_.Get());
+    return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
   virtual void FlushVoid(TransformStreamDefaultController*, ExceptionState&) {}
 
-  ScriptPromise Flush(TransformStreamDefaultController* controller,
-                      ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Flush(
+      TransformStreamDefaultController* controller,
+      ExceptionState& exception_state) override {
     FlushVoid(controller, exception_state);
-    return ScriptPromise::CastUndefined(script_state_.Get());
+    return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
   ScriptState* GetScriptState() override { return script_state_.Get(); }
@@ -132,12 +135,12 @@ class MockTransformStreamTransformer : public TransformStreamTransformer {
       : script_state_(script_state) {}
 
   MOCK_METHOD3(Transform,
-               ScriptPromise(v8::Local<v8::Value> chunk,
-                             TransformStreamDefaultController*,
-                             ExceptionState&));
+               ScriptPromise<IDLUndefined>(v8::Local<v8::Value> chunk,
+                                           TransformStreamDefaultController*,
+                                           ExceptionState&));
   MOCK_METHOD2(Flush,
-               ScriptPromise(TransformStreamDefaultController*,
-                             ExceptionState&));
+               ScriptPromise<IDLUndefined>(TransformStreamDefaultController*,
+                                           ExceptionState&));
 
   ScriptState* GetScriptState() override { return script_state_.Get(); }
 
@@ -179,7 +182,7 @@ TEST_F(TransformStreamTest, TransformIsCalled) {
 
   EXPECT_CALL(*mock, Transform(_, _, _))
       .WillOnce(
-          Return(ByMove(ScriptPromise::CastUndefined(scope.GetScriptState()))));
+          Return(ByMove(ToResolvedUndefinedPromise(scope.GetScriptState()))));
 
   // The initial read is needed to relieve backpressure.
   EvalWithPrintingError(&scope,
@@ -202,7 +205,7 @@ TEST_F(TransformStreamTest, FlushIsCalled) {
 
   EXPECT_CALL(*mock, Flush(_, _))
       .WillOnce(
-          Return(ByMove(ScriptPromise::CastUndefined(scope.GetScriptState()))));
+          Return(ByMove(ToResolvedUndefinedPromise(scope.GetScriptState()))));
 
   EvalWithPrintingError(&scope,
                         "const writer = writable.getWriter();\n"
@@ -351,8 +354,8 @@ TEST_F(TransformStreamTest, ThrowFromTransform) {
   read_tester.WaitUntilSettled();
   EXPECT_TRUE(read_tester.IsRejected());
   EXPECT_TRUE(IsTypeError(script_state, read_tester.Value(), kMessage));
-  ScriptPromiseTester write_tester(script_state,
-                                   ScriptPromise::Cast(script_state, promise));
+  ScriptPromiseTester write_tester(
+      script_state, ToResolvedPromise<IDLAny>(script_state, promise));
   write_tester.WaitUntilSettled();
   EXPECT_TRUE(write_tester.IsRejected());
   EXPECT_TRUE(IsTypeError(script_state, write_tester.Value(), kMessage));
@@ -390,8 +393,8 @@ TEST_F(TransformStreamTest, ThrowFromFlush) {
   read_tester.WaitUntilSettled();
   EXPECT_TRUE(read_tester.IsRejected());
   EXPECT_TRUE(IsTypeError(script_state, read_tester.Value(), kMessage));
-  ScriptPromiseTester write_tester(script_state,
-                                   ScriptPromise::Cast(script_state, promise));
+  ScriptPromiseTester write_tester(
+      script_state, ToResolvedPromise<IDLAny>(script_state, promise));
   write_tester.WaitUntilSettled();
   EXPECT_TRUE(write_tester.IsRejected());
   EXPECT_TRUE(IsTypeError(script_state, write_tester.Value(), kMessage));
@@ -403,9 +406,10 @@ TEST_F(TransformStreamTest, CreateFromReadableWritablePair) {
       ReadableStream::Create(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   WritableStream* writable =
       WritableStream::Create(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
-  TransformStream transform(readable, writable);
-  EXPECT_EQ(readable, transform.Readable());
-  EXPECT_EQ(writable, transform.Writable());
+  TransformStream* transform =
+      MakeGarbageCollected<TransformStream>(readable, writable);
+  EXPECT_EQ(readable, transform->Readable());
+  EXPECT_EQ(writable, transform->Writable());
 }
 
 TEST_F(TransformStreamTest, WaitInTransform) {
@@ -414,11 +418,12 @@ TEST_F(TransformStreamTest, WaitInTransform) {
     explicit WaitInTransformTransformer(ScriptState* script_state)
         : TestTransformer(script_state),
           transform_promise_resolver_(
-              MakeGarbageCollected<ScriptPromiseResolver>(script_state)) {}
+              MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+                  script_state)) {}
 
-    ScriptPromise Transform(v8::Local<v8::Value>,
-                            TransformStreamDefaultController*,
-                            ExceptionState&) override {
+    ScriptPromise<IDLUndefined> Transform(v8::Local<v8::Value>,
+                                          TransformStreamDefaultController*,
+                                          ExceptionState&) override {
       return transform_promise_resolver_->Promise();
     }
 
@@ -436,7 +441,8 @@ TEST_F(TransformStreamTest, WaitInTransform) {
     }
 
    private:
-    const Member<ScriptPromiseResolver> transform_promise_resolver_;
+    const Member<ScriptPromiseResolver<IDLUndefined>>
+        transform_promise_resolver_;
     bool flush_called_ = false;
   };
 
@@ -459,8 +465,8 @@ TEST_F(TransformStreamTest, WaitInTransform) {
       ->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION)
       ->read(script_state, ASSERT_NO_EXCEPTION);
 
-  ScriptPromiseTester write_tester(script_state,
-                                   ScriptPromise::Cast(script_state, promise));
+  ScriptPromiseTester write_tester(
+      script_state, ToResolvedPromise<IDLAny>(script_state, promise));
 
   // Give Transform() the opportunity to be called.
   scope.PerformMicrotaskCheckpoint();
@@ -481,10 +487,11 @@ TEST_F(TransformStreamTest, WaitInFlush) {
     explicit WaitInFlushTransformer(ScriptState* script_state)
         : TestTransformer(script_state),
           flush_promise_resolver_(
-              MakeGarbageCollected<ScriptPromiseResolver>(script_state)) {}
+              MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+                  script_state)) {}
 
-    ScriptPromise Flush(TransformStreamDefaultController*,
-                        ExceptionState&) override {
+    ScriptPromise<IDLUndefined> Flush(TransformStreamDefaultController*,
+                                      ExceptionState&) override {
       return flush_promise_resolver_->Promise();
     }
 
@@ -496,7 +503,7 @@ TEST_F(TransformStreamTest, WaitInFlush) {
     }
 
    private:
-    const Member<ScriptPromiseResolver> flush_promise_resolver_;
+    const Member<ScriptPromiseResolver<IDLUndefined>> flush_promise_resolver_;
   };
 
   V8TestingScope scope;
@@ -517,8 +524,8 @@ TEST_F(TransformStreamTest, WaitInFlush) {
       ->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION)
       ->read(script_state, ASSERT_NO_EXCEPTION);
 
-  ScriptPromiseTester close_tester(script_state,
-                                   ScriptPromise::Cast(script_state, promise));
+  ScriptPromiseTester close_tester(
+      script_state, ToResolvedPromise<IDLAny>(script_state, promise));
 
   // Give Flush() the opportunity to be called.
   scope.PerformMicrotaskCheckpoint();

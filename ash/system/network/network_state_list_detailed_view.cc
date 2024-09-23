@@ -27,6 +27,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
@@ -83,7 +84,6 @@ bool NetworkTypeIsConfigurable(NetworkType type) {
       return false;
   }
   NOTREACHED();
-  return false;
 }
 
 }  // namespace
@@ -131,7 +131,7 @@ class NetworkStateListDetailedView::InfoBubble
              NetworkStateListDetailedView* detailed_view)
       : views::BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
         detailed_view_(detailed_view) {
-    SetButtons(ui::DIALOG_BUTTON_NONE);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
     set_margins(gfx::Insets(kBubbleMargin));
     SetArrow(views::BubbleBorder::NONE);
     set_shadow(views::BubbleBorder::NO_SHADOW);
@@ -155,13 +155,16 @@ class NetworkStateListDetailedView::InfoBubble
 
  private:
   // View:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     // This bubble should be inset by kBubbleMargin on both left and right
     // relative to the parent bubble.
     const gfx::Size anchor_size = GetAnchorView()->size();
     int contents_width =
         anchor_size.width() - 2 * kBubbleMargin - margins().width();
-    return gfx::Size(contents_width, GetHeightForWidth(contents_width));
+    return gfx::Size(
+        contents_width,
+        GetLayoutManager()->GetPreferredHeightForWidth(this, contents_width));
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {
@@ -211,10 +214,6 @@ NetworkStateListDetailedView::~NetworkStateListDetailedView() {
 
 void NetworkStateListDetailedView::ToggleInfoBubbleForTesting() {
   ToggleInfoBubble();
-}
-
-const char* NetworkStateListDetailedView::GetClassName() const {
-  return "NetworkStateListDetailedView";
 }
 
 void NetworkStateListDetailedView::Init() {

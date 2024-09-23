@@ -34,6 +34,7 @@ class ASH_EXPORT CalendarEventListView
   void RequestCloseButtonFocus();
 
  private:
+  friend class CalendarViewEventListViewFetchTest;
   friend class CalendarViewEventListViewTest;
   friend class CalendarViewTest;
 
@@ -42,8 +43,7 @@ class ASH_EXPORT CalendarEventListView
 
   // CalendarModel::Observer:
   void OnEventsFetched(const CalendarModel::FetchingStatus status,
-                       const base::Time start_time,
-                       const google_apis::calendar::EventList* events) override;
+                       const base::Time start_time) override;
 
   // views::View
   void Layout(PassKey) override;

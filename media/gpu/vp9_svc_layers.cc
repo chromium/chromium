@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/vp9_svc_layers.h"
 
 #include "base/logging.h"
@@ -106,7 +111,7 @@ FrameConfig GetFrameConfig(size_t num_temporal_layers, size_t frame_num) {
       return TL3Pattern[frame_num % std::size(TL3Pattern)];
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 }  // namespace
@@ -197,11 +202,11 @@ void VP9SVCLayers::FillMetadataForFirstFrame(
   // The first frame is TL0 and references no frame.
   metadata.temporal_up_switch = true;
 
-  const bool end_of_picture =
+  metadata.end_of_picture =
       spatial_idx_ == config_.active_spatial_layer_resolutions.size() - 1;
 
   if (config_.inter_layer_pred == SVCInterLayerPredMode::kOnKeyPic) {
-    metadata.referenced_by_upper_spatial_layers = !end_of_picture;
+    metadata.referenced_by_upper_spatial_layers = !metadata.end_of_picture;
     metadata.reference_lower_spatial_layers = spatial_idx_ != 0;
   } else {
     metadata.referenced_by_upper_spatial_layers = false;
@@ -268,6 +273,9 @@ void VP9SVCLayers::FillMetadataForNonFirstFrame(
   // No reference between spatial layers in kOnKeyPic (frame_num!=0) and kOff.
   metadata.referenced_by_upper_spatial_layers = false;
   metadata.reference_lower_spatial_layers = false;
+
+  metadata.end_of_picture =
+      spatial_idx_ == config_.active_spatial_layer_resolutions.size() - 1;
 
   metadata.temporal_idx = frame_config.layer_index();
   metadata.spatial_idx = spatial_idx_;

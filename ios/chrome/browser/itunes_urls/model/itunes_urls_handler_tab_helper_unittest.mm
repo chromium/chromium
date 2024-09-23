@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/chrome/test/fakes/fake_web_content_handler.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
@@ -22,8 +22,7 @@ class ITunesUrlsHandlerTabHelperTest : public PlatformTest {
         chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {
     web_state_.SetBrowserState(
         chrome_browser_state_->GetOriginalChromeBrowserState());
-    ITunesUrlsHandlerTabHelper::CreateForWebState(&web_state_);
-    ITunesUrlsHandlerTabHelper::FromWebState(&web_state_)
+    ITunesUrlsHandlerTabHelper::GetOrCreateForWebState(&web_state_)
         ->SetWebContentsHandler(fake_handler_);
   }
 

@@ -76,6 +76,8 @@ if (is_mac) {
         "trichrome_64_version_code = \"@TRICHROME_64_VERSION_CODE@\" "
     _version_dictionary_template +=
         "trichrome_auto_64_version_code = \"@TRICHROME_AUTO_64_VERSION_CODE@\" "
+    _version_dictionary_template +=
+        "trichrome_desktop_64_version_code = \"@TRICHROME_DESKTOP_64_VERSION_CODE@\" "
     if (target_cpu == "arm64") {
       _version_dictionary_template += "trichrome_64_32_high_version_code = \"@TRICHROME_64_32_HIGH_VERSION_CODE@\" "
       _version_dictionary_template += "trichrome_auto_64_32_high_version_code = \"@TRICHROME_AUTO_64_32_HIGH_VERSION_CODE@\" "
@@ -166,6 +168,7 @@ if (is_mac) {
                            "trichrome_auto_64_version_code",
                            "trichrome_auto_64_32_version_code",
                            "trichrome_auto_64_32_high_version_code",
+                           "trichrome_desktop_64_version_code",
                            "trichrome_64_version_code",
                            "trichrome_beta_version_code",
                            "trichrome_32_beta_version_code",
@@ -185,6 +188,13 @@ if (is_mac) {
                          ])
 
   chrome_version_name = chrome_version_full
+
+  # There is a different version code only for arm64.
+  if (is_high_end_android && target_cpu != "arm64") {
+    trichrome_64_32_high_beta_version_code = trichrome_64_32_beta_version_code
+    trichrome_64_32_high_version_code = trichrome_64_32_version_code
+    trichrome_auto_64_32_high_version_code = trichrome_auto_64_32_version_code
+  }
 }
 
 if (is_android && current_toolchain == default_toolchain) {
@@ -214,6 +224,7 @@ if (is_android && current_toolchain == default_toolchain) {
       "TrichromeChromeAuto3264: $trichrome_auto_32_64_version_code",
       "TrichromeChromeAuto64: $trichrome_auto_64_version_code",
       "TrichromeChromeAuto6432: $trichrome_auto_64_32_version_code",
+      "TrichromeChromeDesktop64: $trichrome_desktop_64_version_code",
     ]
     if (target_cpu == "arm64") {
       lines_to_write += [
@@ -279,7 +290,11 @@ if (is_android) {
           } else {
             true_true_true_true = trichrome_64_32_version_code
           }
-          true_true_true_false = trichrome_64_version_code
+          if (is_desktop_android) {
+            true_true_true_false = trichrome_desktop_64_version_code
+          } else {
+            true_true_true_false = trichrome_64_version_code
+          }
           true_false_false_true = trichrome_32_version_code
           true_false_true_true = trichrome_32_64_version_code
         }

@@ -14,7 +14,7 @@ enum DialogButton {
 ] partial interface Internals {
   [CallWith=ScriptState] Promise<DOMString> getFedCmDialogType();
   [CallWith=ScriptState] Promise<DOMString> getFedCmTitle();
-  [CallWith=ScriptState, RaisesException] Promise<void> selectFedCmAccount(long accountIndex);
-  [CallWith=ScriptState] Promise<void> dismissFedCmDialog();
-  [CallWith=ScriptState] Promise<void> clickFedCmDialogButton(DialogButton dialogButton);
+  [CallWith=ScriptState, RaisesException] Promise<undefined> selectFedCmAccount(long accountIndex);
+  [CallWith=ScriptState] Promise<undefined> dismissFedCmDialog();
+  [CallWith=ScriptState] Promise<undefined> clickFedCmDialogButton(DialogButton dialogButton);
 };

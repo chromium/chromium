@@ -230,32 +230,32 @@
       <!-- The default value for |WebPreference::standard_font_family_map| for
            Japanese script. -->
       <message name="IDS_STANDARD_FONT_FAMILY_JAPANESE" use_name_for_id="true">
-        ,Meiryo,Yu Gothic
+        ,Noto Sans JP,Noto Sans CJK JP,Meiryo,Yu Gothic
       </message>
 
       <!-- The default value for |WebPreference::fixed_font_family_map| for
            Japanese script. -->
       <message name="IDS_FIXED_FONT_FAMILY_JAPANESE" use_name_for_id="true">
-        MS Gothic
+        ,BIZ UDGothic,MS Gothic
       </message>
 
       <!-- The default value for |WebPreference::serif_font_family_map| for
            Japanese script. -->
       <message name="IDS_SERIF_FONT_FAMILY_JAPANESE" use_name_for_id="true">
-        ,Yu Mincho,MS PMincho
+        ,Noto Serif JP,Noto Serif CJK JP,Yu Mincho,MS PMincho
       </message>
 
       <!-- The default value for |WebPreference::sans_serif_font_family_map| for
            Japanese script.  -->
       <message name="IDS_SANS_SERIF_FONT_FAMILY_JAPANESE" use_name_for_id="true">
-        ,Meiryo,Yu Gothic
+        ,Noto Sans JP,Noto Sans CJK JP,Meiryo,Yu Gothic
       </message>
 
 
      <!-- The default value for |WebPreference::standard_font_family_map| for
            Korean script. -->
       <message name="IDS_STANDARD_FONT_FAMILY_KOREAN" use_name_for_id="true">
-        Malgun Gothic
+        ,Noto Sans KR,Noto Sans CJK KR,Malgun Gothic
       </message>
 
       <!-- The default value for |WebPreference::fixed_font_family_map| for
@@ -267,13 +267,13 @@
       <!-- The default value for |WebPreference::serif_font_family_map| for
            Korean script. -->
       <message name="IDS_SERIF_FONT_FAMILY_KOREAN" use_name_for_id="true">
-        Batang
+        ,Noto Serif KR,Noto Serif CJK KR,Batang
       </message>
 
       <!-- The default value for |WebPreference::sans_serif_font_family_map| for
            Korean script.  -->
       <message name="IDS_SANS_SERIF_FONT_FAMILY_KOREAN" use_name_for_id="true">
-        Malgun Gothic
+        ,Noto Sans KR,Noto Sans CJK KR,Malgun Gothic
       </message>
 
       <!-- The default value for |WebPreference::cursive_font_family_map| for
@@ -285,7 +285,7 @@
       <!-- The default value for |WebPreference::standard_font_family_map| for
            Simplified Chinese script. -->
       <message name="IDS_STANDARD_FONT_FAMILY_SIMPLIFIED_HAN" use_name_for_id="true">
-        Microsoft YaHei
+        ,Noto Sans SC,Noto Sans CJK SC,Microsoft YaHei
       </message>
 
       <!-- The default value for |WebPreference::fixed_font_family_map| for
@@ -297,13 +297,13 @@
       <!-- The default value for |WebPreference::serif_font_family_map| for
            Simplified Chinese script. -->
       <message name="IDS_SERIF_FONT_FAMILY_SIMPLIFIED_HAN" use_name_for_id="true">
-        Simsun
+        ,Noto Serif SC,Noto Serif CJK SC,Simsun
       </message>
 
       <!-- The default value for |WebPreference::sans_serif_font_family_map| for
            Simplified Chinese script.  -->
       <message name="IDS_SANS_SERIF_FONT_FAMILY_SIMPLIFIED_HAN" use_name_for_id="true">
-        Microsoft YaHei
+        ,Noto Sans SC,Noto Sans CJK SC,Microsoft YaHei
       </message>
 
       <!-- The default value for |WebPreference::cursive_font_family_map| for
@@ -315,7 +315,7 @@
       <!-- The default value for |WebPreference::standard_font_family_map| for
            Traditional Chinese script. -->
       <message name="IDS_STANDARD_FONT_FAMILY_TRADITIONAL_HAN" use_name_for_id="true">
-        Microsoft JhengHei
+        ,Noto Sans TC,Noto Sans CJK TC,Microsoft JhengHei
       </message>
 
       <!-- The default value for |WebPreference::fixed_font_family_map| for
@@ -327,13 +327,13 @@
       <!-- The default value for |WebPreference::serif_font_family_map| for
            Traditional Chinese script. -->
       <message name="IDS_SERIF_FONT_FAMILY_TRADITIONAL_HAN" use_name_for_id="true">
-        PMingLiU
+        ,Noto Serif TC,Noto Serif CJK TC,PMingLiU
       </message>
 
       <!-- The default value for |WebPreference::sans_serif_font_family_map| for
            Traditional Chinese script.  -->
       <message name="IDS_SANS_SERIF_FONT_FAMILY_TRADITIONAL_HAN" use_name_for_id="true">
-        Microsoft JhengHei
+        ,Noto Sans TC,Noto Sans CJK TC,Microsoft JhengHei
       </message>
 
       <!-- The default value for |WebPreference::cursive_font_family_map| for

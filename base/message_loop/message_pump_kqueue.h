@@ -105,12 +105,13 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
 
   ~MessagePumpKqueue() override;
 
+  // Initializes features for this class. See `base::features::Init()`.
   static void InitializeFeatures();
 
   // MessagePump:
   void Run(Delegate* delegate) override;
-  // Simplified version of the loop used under experiment (crbug.com/1200141)
-  void RunSimplified(Delegate* delegate);
+  // Batched version of the loop used under experiment (crbug.com/1200141)
+  void RunBatched(Delegate* delegate);
   void Quit() override;
   void ScheduleWork() override;
   void ScheduleDelayedWork(

@@ -123,4 +123,4 @@ class BeaconFormData final : public BeaconData {
 
 }  // namespace blink
 
-#endif  // #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_BEACON_DATA_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_BEACON_DATA_H_

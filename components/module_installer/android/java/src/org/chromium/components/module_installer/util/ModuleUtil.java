@@ -4,49 +4,29 @@
 
 package org.chromium.components.module_installer.util;
 
-import org.chromium.base.BundleUtils;
-import org.chromium.components.module_installer.logger.SplitAvailabilityLogger;
+import org.chromium.build.BuildConfig;
 
 /** Utilitary class (proxy) exposing DFM functionality to the broader application. */
 public class ModuleUtil {
-    /**
-     * Records the execution time (ms) taken by the module installer framework.
-     *
-     * Make sure that public methods check for bundle config so that tree shaking can remove
-     * unnecessary code (modules are not supported in APKs).
-     */
-    public static void recordStartupTime() {
-        if (!BundleUtils.isBundle()) return;
-
-        Timer.recordStartupTime();
-    }
-
     /** Updates the CrashKey report containing modules currently present. */
     public static void updateCrashKeys() {
-        if (!BundleUtils.isBundle()) return;
+        if (!BuildConfig.IS_BUNDLE) return;
 
-        try (Timer timer = new Timer()) {
-            CrashKeyRecorder.updateCrashKeys();
-        }
+        CrashKeyRecorder.updateCrashKeys();
     }
 
     /** Initializes the PlayCore SplitCompat framework. */
     public static void initApplication() {
-        if (!BundleUtils.isBundle()) return;
+        if (!BuildConfig.IS_BUNDLE) return;
 
-        try (Timer timer = new Timer()) {
-            SplitCompatInitializer.initApplication();
-            ActivityObserverUtil.registerDefaultObserver();
-            SplitAvailabilityLogger.logModuleAvailability();
-        }
+        SplitCompatInitializer.initApplication();
+        ActivityObserverUtil.registerDefaultObserver();
     }
 
-    /** Notifies the ActiviyObserver when modules are installed. */
+    /** Notifies the ActivityObserver when modules are installed. */
     public static void notifyModuleInstalled() {
-        if (!BundleUtils.isBundle()) return;
+        if (!BuildConfig.IS_BUNDLE) return;
 
-        try (Timer timer = new Timer()) {
-            ActivityObserverUtil.notifyObservers();
-        }
+        ActivityObserverUtil.notifyObservers();
     }
 }

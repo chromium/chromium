@@ -3,6 +3,9 @@
     white-space: pre-wrap;
     word-wrap: break-word;
     user-select: text;
+    outline: none;
+    cursor: text;
+    padding-bottom: 1lh;
     /*One line high, to avoid resizing after first word is added.*/
     min-height: 1lh;
   }
@@ -20,10 +23,14 @@
   }
 </style>
 <div id="root">
-  <div class="result-text" hidden="[[textInput.streamingEnabled]]"
-      >[[textInput.text]]</div>
+  <div id="resultText" class="result-text"
+      hidden="[[textInput.streamingEnabled]]" contenteditable="plaintext-only"
+      on-focusin="onFocusIn_" on-focusout="onFocusOut_"
+      aria-label="$i18n{resultText}"></div>
   <div id="partialResultText" class="result-text"
       hidden="[[!textInput.streamingEnabled]]"
-  ><template is="dom-repeat" items="[[displayedChunks_]]"
-  ><span>[[item.text]]</span></template></div>
+      contenteditable$="[[partialTextCanEdit_()]]" on-focusin="onFocusIn_"
+      on-focusout="onFocusOut_"
+    ><template is="dom-repeat" items="[[displayedChunks_]]"
+    ><span>[[item.text]]</span></template></div>
 </div>

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/mediastream/media_stream_device_observer.h"
 
 #include <stddef.h>
@@ -98,7 +103,7 @@ void MediaStreamDeviceObserver::OnDeviceStopped(
   }
 
   Vector<Stream>& streams = it->value;
-  auto* stream_it = streams.begin();
+  auto stream_it = streams.begin();
   while (stream_it != it->value.end()) {
     Stream& stream = *stream_it;
     if (stream.audio_devices.empty() && stream.video_devices.empty()) {
@@ -303,7 +308,7 @@ void MediaStreamDeviceObserver::AddStream(const String& label,
   else if (IsVideoInputMediaType(device.type))
     stream.video_devices.push_back(device);
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   label_stream_map_.Set(label, Vector<Stream>{std::move(stream)});
 }
@@ -327,7 +332,7 @@ void MediaStreamDeviceObserver::RemoveStreamDevice(
   bool device_found = false;
   Vector<String> streams_to_remove;
   for (auto& entry : label_stream_map_) {
-    for (auto* stream_it = entry.value.begin();
+    for (auto stream_it = entry.value.begin();
          stream_it != entry.value.end();) {
       Stream& stream = *stream_it;
       MediaStreamDevices& audio_devices = stream.audio_devices;

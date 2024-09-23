@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/identity_internals_ui.h"
 
 #include <memory>
@@ -27,6 +32,10 @@
 #include "extensions/common/extension_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+IdentityInternalsUIConfig::IdentityInternalsUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIIdentityInternalsHost) {}
 
 namespace {
 
@@ -201,7 +210,7 @@ std::string IdentityInternalsUIMessageHandler::GetStatus(
     case extensions::IdentityTokenCacheValue::CACHE_STATUS_TOKEN:
       return "Token Present";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

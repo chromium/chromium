@@ -321,5 +321,26 @@ TEST_F(AccessibilityTest, TextOffsetInContainerWithBreakWord) {
   ASSERT_EQ(nullptr, ax_inline_text_box->NextSiblingIncludingIgnored());
 }
 
+TEST_F(AccessibilityTest, GetTextDirection) {
+  using WritingDirection = ax::mojom::blink::WritingDirection;
+  SetBodyInnerHTML(R"HTML(
+      <p id="paragraph" style="writing-mode:sideways-lr;">
+        Text.
+      </p>)HTML");
+  AXObject* ax_paragraph = GetAXObjectByElementId("paragraph");
+  ax_paragraph->LoadInlineTextBoxes();
+
+  const AXObject* ax_text_box =
+      ax_paragraph->DeepestFirstChildIncludingIgnored();
+  ASSERT_EQ(ax::mojom::Role::kInlineTextBox, ax_text_box->RoleValue());
+  // AXInlineTextBox::GetTextDirection() is used.
+  EXPECT_EQ(WritingDirection::kBtt, ax_text_box->GetTextDirection());
+
+  const AXObject* ax_static_text = ax_paragraph->FirstChildIncludingIgnored();
+  ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text->RoleValue());
+  // AXNodeObject::GetTextDirection() is used.
+  EXPECT_EQ(WritingDirection::kBtt, ax_static_text->GetTextDirection());
+}
+
 }  // namespace test
 }  // namespace blink

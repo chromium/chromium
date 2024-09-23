@@ -7,49 +7,49 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "bounds": [100, 100],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='vertical' class='content'",
+      "name": "LayoutBlockFlow (positioned) DIV id='vertical' class='content'",
       "bounds": [10, 10],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "bounds": [100, 100],
       "drawsContent": false,
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='horizontal' class='content'",
+      "name": "LayoutBlockFlow (positioned) DIV id='horizontal' class='content'",
       "bounds": [10, 10],
       "drawsContent": false,
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "bounds": [100, 100],
       "drawsContent": false,
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='both' class='content'",
+      "name": "LayoutBlockFlow (positioned) DIV id='both' class='content'",
       "bounds": [10, 10],
       "drawsContent": false,
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='corner' class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='corner' class='container'",
       "bounds": [100, 100],
       "drawsContent": false,
       "transform": 4
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='content'",
+      "name": "LayoutBlockFlow (positioned) DIV class='content'",
       "bounds": [10, 10],
       "drawsContent": false,
       "transform": 4

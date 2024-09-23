@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromeos/ash/services/secure_channel/ble_weave_packet_receiver.h"
 
 #include "build/build_config.h"
@@ -14,6 +19,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash::secure_channel::weave {
@@ -101,7 +107,7 @@ BluetoothLowEnergyWeavePacketReceiver::ReceivePacket(const Packet& packet) {
         // Counter not verified.
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   return state_;
@@ -148,7 +154,7 @@ void BluetoothLowEnergyWeavePacketReceiver::ReceiveFirstPacket(
       break;
     default:
       PA_LOG(ERROR) << "Received unrecognized control packet command: "
-                    << std::to_string(command);
+                    << base::NumberToString(command);
       MoveToErrorState(ReasonForClose::UNKNOWN_ERROR,
                        ReceiverError::UNRECOGNIZED_CONTROL_COMMAND);
       break;
@@ -168,7 +174,8 @@ void BluetoothLowEnergyWeavePacketReceiver::ReceiveNonFirstPacket(
       if (command == ControlCommand::CONNECTION_CLOSE) {
         ReceiveConnectionClose(packet);
       } else {
-        PA_LOG(ERROR) << "Received invalid command " << std::to_string(command)
+        PA_LOG(ERROR) << "Received invalid command "
+                      << base::NumberToString(command)
                       << " during data transaction";
         MoveToErrorState(
             ReasonForClose::UNKNOWN_ERROR,
@@ -202,7 +209,7 @@ void BluetoothLowEnergyWeavePacketReceiver::ReceiveNonFirstPacket(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -376,7 +383,7 @@ void BluetoothLowEnergyWeavePacketReceiver::VerifyPacketCounter(
     next_packet_counter_++;
   } else {
     PA_LOG(ERROR) << "Received invalid packet counter: "
-                  << std::to_string(count);
+                  << base::NumberToString(count);
     MoveToErrorState(ReasonForClose::RECEIVED_PACKET_OUT_OF_SEQUENCE,
                      ReceiverError::PACKET_OUT_OF_SEQUENCE);
   }

@@ -4,7 +4,9 @@
 
 import("//build/config/python.gni")
 import("//build/timestamp.gni")
+import("//chrome/enterprise_companion/buildflags.gni")
 import("//chrome/process_version_rc_template.gni")
+import("//chrome/updater/branding.gni")
 import("//testing/test.gni")
 
 source_set("msi_custom_action_sources") {
@@ -73,8 +75,23 @@ source_set("lib_with_resources") {
   public_deps = [ ":lib" ]
 }
 
+# `process_version_rc_template` invokes `process_version` with the default
+# template rc file which is at //chrome/app/chrome_version.rc.version.
 process_version_rc_template("version") {
-  template_file = "installer_version.rc.version"
+  _internal_name = "$updater_metainstaller_name" + "($current_cpu)"
+  if (is_debug) {
+    _internal_name += " (debug)"
+  }
+  extra_args = [
+    "-e",
+    "PRODUCT_FULLNAME=\"$updater_metainstaller_name\"",
+    "-e",
+    "INTERNAL_NAME=\"$_internal_name\"",
+    "-e",
+    "ORIGINAL_FILENAME=\"UpdaterSetup.exe\"",
+    "-e",
+    "PRODUCT_SHORTNAME=\"$updater_product_full_name\"",
+  ]
   output = "$root_out_dir/installer_version.rc"
 }
 
@@ -137,6 +154,10 @@ template("generate_installer") {
     if (is_component_build) {
       args += [ "--component_build=1" ]
     }
+
+    if (include_enterprise_companion_in_installer) {
+      args += [ "--include_enterprise_companion" ]
+    }
   }
 
   executable(target_name) {
@@ -157,6 +178,7 @@ template("generate_installer") {
              ":version",
              "//build/win:default_exe_manifest",
              "//chrome/updater:base",
+             "//chrome/updater:branding_header",
              "//third_party/abseil-cpp:absl",
            ] + invoker.deps
   }
@@ -172,6 +194,10 @@ generate_installer("installer") {
   deps = [ "//chrome/updater:constants_prod" ]
   release_file = "updater.release"
   runtime_deps = updater_runtime_deps
+
+  if (include_enterprise_companion_in_installer) {
+    archive_deps += [ "//chrome/enterprise_companion" ]
+  }
 }
 
 generate_installer("installer_test") {
@@ -184,4 +210,9 @@ generate_installer("installer_test") {
   deps = [ "//chrome/updater:constants_test" ]
   release_file = "updater_test.release"
   runtime_deps = updater_test_runtime_deps
+
+  if (include_enterprise_companion_in_installer) {
+    archive_deps +=
+        [ "//chrome/enterprise_companion:enterprise_companion_test" ]
+  }
 }

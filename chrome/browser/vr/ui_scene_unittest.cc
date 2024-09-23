@@ -4,10 +4,10 @@
 
 #include "chrome/browser/vr/ui_scene.h"
 
+#include <numbers>
 #include <utility>
 #include <vector>
 
-#include "base/numerics/math_constants.h"
 #include "base/test/gtest_util.h"
 #include "base/values.h"
 #include "chrome/browser/vr/databinding/binding.h"
@@ -130,14 +130,14 @@ TEST(UiScene, ParentTransformAppliesToChild) {
   element->SetSize(1000, 1000);
 
   element->SetTranslate(6, 1, 0);
-  element->SetRotate(0, 0, 1, 0.5f * base::kPiFloat);
+  element->SetRotate(0, 0, 1, 0.5f * std::numbers::pi_v<float>);
   element->SetScale(3, 3, 1);
   scene.AddUiElement(kRoot, std::move(element));
 
   // Add a child to the parent, with different transformations.
   element = std::make_unique<UiElement>();
   element->SetTranslate(3, 0, 0);
-  element->SetRotate(0, 0, 1, 0.5f * base::kPiFloat);
+  element->SetRotate(0, 0, 1, 0.5f * std::numbers::pi_v<float>);
   element->SetScale(2, 2, 1);
   UiElement* child = element.get();
   parent->AddChild(std::move(element));

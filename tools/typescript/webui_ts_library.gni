@@ -1,0 +1,49 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_path_mappings.gni")
+
+template("webui_ts_library") {
+  forward_variables_from(invoker,
+                         [
+                           "root_dir",
+                           "out_dir",
+                           "composite",
+                           "in_files",
+                           "definitions",
+                           "tsconfig_base",
+                           "path_mappings",
+                           "manifest_excludes",
+                           "enable_source_maps",
+                           "webui_context_type",
+                           "testonly",
+                         ])
+
+  ts_library_target = target_name
+  if (defined(invoker.deps)) {
+    path_mappings_target = "${target_name}_mappings"
+    path_mappings_filename = "path_mappings_${path_mappings_target}.json"
+    webui_path_mappings(path_mappings_target) {
+      ts_deps = invoker.deps
+      visibility = [ ":$ts_library_target" ]
+    }
+  }
+
+  ts_library(ts_library_target) {
+    if (defined(invoker.visibility)) {
+      visibility = invoker.visibility
+    }
+    extra_deps = []
+    if (defined(invoker.deps)) {
+      deps = invoker.deps
+      extra_deps += [ ":$path_mappings_target" ]
+      path_mappings_file = "$target_gen_dir/$path_mappings_filename"
+    }
+    if (defined(invoker.extra_deps)) {
+      extra_deps += invoker.extra_deps
+    }
+  }
+}

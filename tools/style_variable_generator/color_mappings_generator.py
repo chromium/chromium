@@ -67,7 +67,7 @@ class ColorMappingsStyleGenerator(CSSStyleGenerator):
         return mappings
 
     def _ToColorIdName(self, var_name):
-        return 'k%s' % (re.sub('[_\-\.]', '', var_name.title()))
+        return 'k%s' % (re.sub(r'[_\-\.]', '', var_name.title()))
 
     def _CppOpacity(self, opacity, mode):
         return math.floor(255 *

@@ -10,7 +10,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 
@@ -46,7 +46,8 @@ public class SearchEngineChoiceMetrics {
         EventsV2.CHOICE_REQUEST_METADATA_NULL,
         EventsV2.CHOICE_REQUEST_PARSE_FAILED,
         EventsV2.PREVIOUS_CHOICE_REQUEST_FAILED,
-        EventsV2.CHOICE_REQUEST_SUCCESS
+        EventsV2.CHOICE_REQUEST_SUCCESS,
+        EventsV2.CHOICE_ALREADY_APPLIED
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface EventsV2 {
@@ -58,12 +59,14 @@ public class SearchEngineChoiceMetrics {
         int CHOICE_REQUEST_PARSE_FAILED = 5;
         int PREVIOUS_CHOICE_REQUEST_FAILED = 6;
         int CHOICE_REQUEST_SUCCESS = 7;
-        int MAX = 8;
+        int CHOICE_ALREADY_APPLIED = 8;
+        int MAX = 9;
     }
 
     /**
      * Records an event to the search choice histogram. See {@link Events} and histograms.xml for
      * more details.
+     *
      * @param event The {@link Events} to be reported.
      */
     public static void recordEvent(@Events int event) {
@@ -146,7 +149,7 @@ public class SearchEngineChoiceMetrics {
     @VisibleForTesting
     static @SearchEngineType int getDefaultSearchEngineType() {
         TemplateUrlService templateUrlService =
-                TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+                TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
         TemplateUrl currentSearchEngine = templateUrlService.getDefaultSearchEngineTemplateUrl();
         if (currentSearchEngine == null) return SearchEngineType.SEARCH_ENGINE_UNKNOWN;
         return templateUrlService.getSearchEngineTypeFromTemplateUrl(

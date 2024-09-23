@@ -216,6 +216,10 @@ class VIEWS_EXPORT Label : public View,
   bool GetObscured() const;
   void SetObscured(bool obscured);
 
+  // Returns true if some portion of the text is not displayed because of
+  // clipping.
+  bool IsDisplayTextClipped() const;
+
   // Returns true if some portion of the text is not displayed, either because
   // of eliding or clipping.
   bool IsDisplayTextTruncated() const;
@@ -317,13 +321,15 @@ class VIEWS_EXPORT Label : public View,
   [[nodiscard]] base::CallbackListSubscription AddTextChangedCallback(
       views::PropertyChangedCallback callback);
 
+  [[nodiscard]] base::CallbackListSubscription AddTextContextChangedCallback(
+      PropertyChangedCallback callback);
+
   // View:
   int GetBaseline() const override;
-  gfx::Size CalculatePreferredSize() const final;
   gfx::Size CalculatePreferredSize(
       const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
-  int GetHeightForWidth(int w) const override;
+  gfx::Size GetMaximumSize() const override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   bool GetCanProcessEventsWithinSubtree() const override;
   WordLookupClient* GetWordLookupClient() override;
@@ -430,6 +436,9 @@ class VIEWS_EXPORT Label : public View,
   // `available_size`.
   gfx::Size GetBoundedTextSize(const SizeBounds& available_size) const;
 
+  // Returns the height of the Label given the width `w`.
+  int GetLabelHeightForWidth(int w) const;
+
   // Returns the appropriate foreground color to use given the proposed
   // |foreground| and |background| colors.
   SkColor GetForegroundColor(SkColor foreground, SkColor background) const;
@@ -446,7 +455,7 @@ class VIEWS_EXPORT Label : public View,
   bool ShouldShowDefaultTooltip() const;
 
   // Clears |display_text_| and updates |stored_selection_range_|.
-  // TODO(crbug.com/1103804) Most uses of this function are inefficient; either
+  // TODO(crbug.com/40704805) Most uses of this function are inefficient; either
   // replace with setting attributes on both RenderTexts or collapse them to one
   // RenderText.
   void ClearDisplayText();

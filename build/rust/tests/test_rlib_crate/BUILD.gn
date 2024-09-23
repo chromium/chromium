@@ -10,6 +10,7 @@ cargo_crate("target1") {
   sources = [ "crate/src/lib.rs" ]
   build_sources = [ "crate/build.rs" ]
   build_root = "crate/build.rs"
+  build_script_inputs = [ "crate/build.rs" ]
   build_script_outputs = [ "generated/generated.rs" ]
   epoch = "0.2"
   features = [
@@ -31,6 +32,7 @@ cargo_crate("target2") {
   sources = [ "crate/src/lib.rs" ]
   build_sources = [ "crate/build.rs" ]
   build_root = "crate/build.rs"
+  build_script_inputs = [ "crate/build.rs" ]
   build_script_outputs = [ "generated/generated.rs" ]
   epoch = "0.2"
   features = [ "my-feature_a" ]
@@ -46,6 +48,7 @@ cargo_crate("test_rlib_crate_associated_bin") {
   sources = [ "crate/src/main.rs" ]
   build_sources = [ "crate/build.rs" ]
   build_root = "crate/build.rs"
+  build_script_inputs = [ "crate/build.rs" ]
   features = [
     "my-feature_a",
     "my-feature_b",

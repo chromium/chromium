@@ -42,7 +42,7 @@ chrome.tabs.onUpdated.addListener(function(id, info, tab) {
   }
 });
 
-chrome.extension.onRequest.addListener(
+chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
   if (inIncognitoContext != sender.tab.incognito) {
     chrome.test.notifyFail(
@@ -96,7 +96,7 @@ chrome.test.getConfig(function(config) {
       chrome.tabs.create({windowId: win.id, url: testUrl},
         pass(function(tab) {
           chrome.tabs.executeScript(tab.id,
-            {code: 'chrome.extension.sendRequest({' +
+            {code: 'chrome.runtime.sendMessage({' +
                    '  inIncognitoContext: chrome.extension.inIncognitoContext' +
                    '});'},
             pass(function() {
@@ -104,7 +104,7 @@ chrome.test.getConfig(function(config) {
             }));
         }));
 
-      var done = chrome.test.listenForever(chrome.extension.onRequest,
+      var done = chrome.test.listenForever(chrome.runtime.onMessage,
         function(request, sender, sendResponse) {
           assertEq(inIncognitoContext, request.inIncognitoContext);
           sendResponse();

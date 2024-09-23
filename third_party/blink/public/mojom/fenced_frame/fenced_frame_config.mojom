@@ -237,4 +237,16 @@ struct FencedFrameProperties {
   // Currently false in urn iframes, and in documents cross-origin to the
   // mapped url in fenced frames.
   bool can_disable_untrusted_network;
+
+  // Whether the document this config belongs to is cross-origin to the document
+  // that owns the fenced frame config. Equivalent to
+  // FencedFrameEntity::kCrossOriginContent in the browser-side config.
+  bool is_cross_origin_content;
+
+  // Whether the original document loaded with this config opted in to
+  // cross-origin event-level reporting. That is, if the document was served
+  // with the `Allow-Cross-Origin-Event-Reporting=true` response header. This is
+  // the first half of the opt-in process for a cross-origin subframe to send a
+  // `reportEvent()` beacon using this config's reporting metadata successfully.
+  bool allow_cross_origin_event_reporting;
 };

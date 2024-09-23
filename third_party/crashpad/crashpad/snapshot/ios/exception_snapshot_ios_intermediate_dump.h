@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/exception_snapshot.h"
+#include "snapshot/ios/memory_snapshot_ios_intermediate_dump.h"
 #include "util/ios/ios_intermediate_dump_map.h"
 #include "util/mach/mach_extensions.h"
 #include "util/misc/initialization_state_dcheck.h"
@@ -106,6 +107,8 @@ class ExceptionSnapshotIOSIntermediateDump final : public ExceptionSnapshot {
   uintptr_t exception_address_;
   uint32_t exception_;
   uint32_t exception_info_;
+  std::vector<std::unique_ptr<internal::MemorySnapshotIOSIntermediateDump>>
+      extra_memory_;
   InitializationStateDcheck initialized_;
 };
 

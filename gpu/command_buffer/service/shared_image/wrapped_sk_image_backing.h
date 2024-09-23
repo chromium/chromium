@@ -17,7 +17,7 @@
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
 class SkSurface;
@@ -38,7 +38,7 @@ class WrappedSkImageBacking : public ClearTrackingSharedImageBacking {
                         const gfx::ColorSpace& color_space,
                         GrSurfaceOrigin surface_origin,
                         SkAlphaType alpha_type,
-                        uint32_t usage,
+                        gpu::SharedImageUsageSet usage,
                         std::string debug_label,
                         scoped_refptr<SharedContextState> context_state,
                         const bool thread_safe);

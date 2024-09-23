@@ -112,6 +112,18 @@ void FullscreenWebStateListObserver::WebStateListDidChange(
       }
       break;
     }
+    case WebStateListChange::Type::kGroupCreate:
+      // Do nothing when a group is created.
+      break;
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+      // Do nothing when a tab group's visual data are updated.
+      break;
+    case WebStateListChange::Type::kGroupMove:
+      // Do nothing when a tab group is moved.
+      break;
+    case WebStateListChange::Type::kGroupDelete:
+      // Do nothing when a group is deleted.
+      break;
   }
 
   if (status.active_web_state_change()) {
@@ -126,8 +138,8 @@ void FullscreenWebStateListObserver::WebStateWasActivated(
     return;
   }
   if (!web_state->IsRealized() || !web_state->GetWebViewProxy()) {
-    // TODO(crbug.com/1473942): This should not be reached. Investigate when/why
-    // an active WebState doesn't have WebViewProxy.
+    // TODO(crbug.com/40279169): This should not be reached. Investigate
+    // when/why an active WebState doesn't have WebViewProxy.
     return;
   }
   if (!HasWebStateBeenActivated(web_state)) {

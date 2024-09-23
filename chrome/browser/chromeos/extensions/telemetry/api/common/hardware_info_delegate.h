@@ -18,22 +18,9 @@ namespace chromeos {
 // manufacturer.
 class HardwareInfoDelegate {
  public:
-  class Factory {
-   public:
-    static std::unique_ptr<HardwareInfoDelegate> Create();
+  static HardwareInfoDelegate& Get();
 
-    static void SetForTesting(Factory* test_factory);
-
-    virtual ~Factory();
-
-   protected:
-    virtual std::unique_ptr<HardwareInfoDelegate> CreateInstance() = 0;
-
-   private:
-    static Factory* test_factory_;
-  };
-
-  using ManufacturerCallback = base::OnceCallback<void(std::string)>;
+  using ManufacturerCallback = base::OnceCallback<void(const std::string&)>;
 
   HardwareInfoDelegate(const HardwareInfoDelegate&) = delete;
   HardwareInfoDelegate& operator=(const HardwareInfoDelegate&) = delete;
@@ -41,14 +28,20 @@ class HardwareInfoDelegate {
 
   virtual void GetManufacturer(ManufacturerCallback done_cb);
 
+  // Clears the manufacturer cache. Should be called in test to ensure the
+  // correct manufacturer is returned.
+  void ClearCacheForTesting();
+
  protected:
   HardwareInfoDelegate();
 
  private:
-  void FallbackHandler(ManufacturerCallback done_cb,
-                       std::string probe_service_result);
+  void SetCacheAndReturnResult(ManufacturerCallback done_cb,
+                               const std::string& manufacturer);
 
-  std::unique_ptr<RemoteProbeServiceStrategy> remote_probe_service_strategy_;
+  // Each call to getManufacturer will access healthd and spawn a delegate
+  // process. We can store the result in cache to optimize performance.
+  std::optional<std::string> manufacturer_cache_ = std::nullopt;
 };
 
 }  // namespace chromeos

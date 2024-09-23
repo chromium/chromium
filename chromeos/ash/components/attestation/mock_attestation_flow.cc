@@ -54,8 +54,7 @@ MockObserver::MockObserver() = default;
 
 MockObserver::~MockObserver() = default;
 
-MockAttestationFlow::MockAttestationFlow()
-    : AttestationFlow(std::unique_ptr<ServerProxy>()) {}
+MockAttestationFlow::MockAttestationFlow() = default;
 
 MockAttestationFlow::~MockAttestationFlow() = default;
 

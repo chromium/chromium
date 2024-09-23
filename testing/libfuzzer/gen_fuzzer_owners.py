@@ -65,7 +65,7 @@ def GetOwnersFromOwnersFile(source: str) -> Optional[str]:
     file encountered while walking up through the ancestor directories of the
     target source file.
   """
-  # TODO(https://crbug.com/1513729): Use `pathlib` instead of `os.path` for
+  # TODO(crbug.com/41486296): Use `pathlib` instead of `os.path` for
   # better ergonomics and robustness.
   dirs = source.split(os.path.sep)[:-1]
 
@@ -77,13 +77,14 @@ def GetOwnersFromOwnersFile(source: str) -> Optional[str]:
 
     owners_file_path = os.path.join(CHROMIUM_SRC_DIR, *dirs, OWNERS_FILENAME)
     if os.path.exists(owners_file_path):
-      # TODO(https://crbug.com/1513729): OWNERS files can reference others,
+      # TODO(crbug.com/41486296): OWNERS files can reference others,
       # have per-file directives, etc. We should be cleverer than this.
       return open(owners_file_path).read()
 
     dirs.pop()
 
   return None
+
 
 def GetOwnersForFuzzer(sources):
   """Return owners given a list of sources as input."""
@@ -110,9 +111,10 @@ def GetOwnersForFuzzer(sources):
 
       git_dir = os.path.join(CHROMIUM_SRC_DIR, '.git')
       git_command = GetGitCommand()
-      is_git_file = bool(subprocess.check_output(
-          [git_command, '--git-dir', git_dir, 'ls-files', source],
-          cwd=CHROMIUM_SRC_DIR))
+      is_git_file = bool(
+          subprocess.check_output(
+              [git_command, '--git-dir', git_dir, 'ls-files', source],
+              cwd=CHROMIUM_SRC_DIR))
       if not is_git_file:
         # File is not in working tree. If no OWNERS file was found, we cannot
         # tell who it belongs to.
@@ -126,12 +128,15 @@ def GetOwnersForFuzzer(sources):
       # responsible for changing the first line of every copyright block in the
       # repo, and it would be best to avoid assigning ownership of every fuzz
       # issue predating that year to that one person.
-      blame_output = subprocess.check_output(
-          [git_command, '--git-dir', git_dir, 'blame', '--porcelain', '-L3,3',
-           source], cwd=CHROMIUM_SRC_DIR)
+      blame_output = subprocess.check_output([
+          git_command, '--git-dir', git_dir, 'blame', '--porcelain', '-L3,3',
+          source
+      ],
+                                             cwd=CHROMIUM_SRC_DIR)
       return GetAuthorFromGitBlame(blame_output)
 
   return None
+
 
 def FindGroupsAndDepsInDeps(deps_list, build_dir):
   """Return list of groups, as well as their deps, from a list of deps."""
@@ -139,8 +144,8 @@ def FindGroupsAndDepsInDeps(deps_list, build_dir):
   deps_for_groups = {}
   for deps in deps_list:
     output = subprocess.check_output(
-        [GNPath(), 'desc', '--fail-on-unused-args', build_dir, deps]).decode(
-                'utf8')
+        [GNPath(), 'desc', '--fail-on-unused-args', build_dir,
+         deps]).decode('utf8')
     needle = 'Type: '
     for line in output.splitlines():
       if needle and not line.startswith(needle):

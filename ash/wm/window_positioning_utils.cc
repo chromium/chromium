@@ -12,6 +12,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/system_modal_container_layout_manager.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
@@ -75,10 +76,26 @@ void AdjustBoundsSmallerThan(const gfx::Size& max_size, gfx::Rect* bounds) {
   bounds->set_height(std::min(bounds->height(), max_size.height()));
 }
 
-void AdjustBoundsToEnsureWindowVisibility(const gfx::Rect& visible_area,
-                                          int min_width,
-                                          int min_height,
-                                          gfx::Rect* bounds) {
+void AdjustBoundsToEnsureMinimumWindowVisibility(const gfx::Rect& visible_area,
+                                                 bool client_controlled,
+                                                 gfx::Rect* bounds) {
+  if (Shell::Get()->pip_controller()->is_tucked()) {
+    // PiP is allowed to be positioned beyond the threshold while it's tucked.
+    // TODO(http://b/337113950): Check if this is also needed for float windows.
+    return;
+  }
+
+  int min_width =
+      std::max(kMinimumOnScreenArea,
+               static_cast<int>(bounds->width() * kMinimumPercentOnScreenArea));
+  int min_height = std::max(
+      kMinimumOnScreenArea,
+      static_cast<int>(bounds->height() * kMinimumPercentOnScreenArea));
+  if (client_controlled) {
+    min_width++;
+    min_height++;
+  }
+
   AdjustBoundsSmallerThan(visible_area.size(), bounds);
 
   min_width = std::min(min_width, visible_area.width());
@@ -97,14 +114,9 @@ void AdjustBoundsToEnsureWindowVisibility(const gfx::Rect& visible_area,
     bounds->set_y(visible_area.bottom() -
                   std::min(bounds->height(), min_height));
   }
-  if (bounds->y() < visible_area.y())
+  if (bounds->y() < visible_area.y()) {
     bounds->set_y(visible_area.y());
-}
-
-void AdjustBoundsToEnsureMinimumWindowVisibility(const gfx::Rect& visible_area,
-                                                 gfx::Rect* bounds) {
-  AdjustBoundsToEnsureWindowVisibility(visible_area, kMinimumOnScreenArea,
-                                       kMinimumOnScreenArea, bounds);
+  }
 }
 
 gfx::Rect GetSnappedWindowBoundsInParent(aura::Window* window,
@@ -153,7 +165,6 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
     default:
       snap_region = SnapRegion::kInvalid;
       NOTREACHED();
-      break;
   }
 
   // Compute size of the side of the window bound that should be proportional
@@ -210,7 +221,6 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
       break;
     case SnapRegion::kInvalid:
       NOTREACHED();
-      break;
   }
   return snap_bounds;
 }

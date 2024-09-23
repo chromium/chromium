@@ -59,6 +59,9 @@ class SyntheticGestureTarget {
   virtual void WaitForTargetAck(SyntheticGestureParams::GestureType type,
                                 content::mojom::GestureSourceType source,
                                 base::OnceClosure callback) const = 0;
+
+  virtual void GetVSyncParameters(base::TimeTicks& timebase,
+                                  base::TimeDelta& interval) const = 0;
 };
 
 }  // namespace content

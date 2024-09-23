@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -52,15 +53,6 @@ PhysicalBoxStrut ResolveMargin(const Vector<Length>& margin,
 }
 
 // Expand rect by the given margin values.
-void ApplyMargin(PhysicalRect& expand_rect,
-                 const Vector<Length>& margin,
-                 float zoom,
-                 const gfx::SizeF& reference_size) {
-  if (margin.empty())
-    return;
-  expand_rect.Expand(ResolveMargin(margin, reference_size, zoom));
-}
-
 void ApplyMargin(gfx::RectF& expand_rect,
                  const Vector<Length>& margin,
                  float zoom,
@@ -72,13 +64,11 @@ void ApplyMargin(gfx::RectF& expand_rect,
       gfx::OutsetsF(ResolveMargin(margin, reference_size, zoom)));
 }
 
-// Returns the root intersect rect for the given root object, with the given
-// margins applied, in the coordinate system of the root object.
+// Returns the root intersect rect for the given root object, before applying
+// margins, in the coordinate system of the root object.
 //
-//   https://w3c.github.io/IntersectionObserver/#intersectionobserver-root-intersection-rectangle
-gfx::RectF InitializeRootRect(const LayoutObject* root,
-                              const Vector<Length>& margin) {
-  DCHECK(margin.empty() || margin.size() == 4);
+// https://w3c.github.io/IntersectionObserver/#intersectionobserver-root-intersection-rectangle
+gfx::RectF InitializeRootRect(const LayoutObject* root) {
   PhysicalRect result;
   auto* layout_view = DynamicTo<LayoutView>(root);
   if (layout_view && root->GetDocument().GetFrame()->IsOutermostMainFrame()) {
@@ -104,8 +94,6 @@ gfx::RectF InitializeRootRect(const LayoutObject* root,
   } else {
     result = To<LayoutInline>(root)->PhysicalLinesBoundingBox();
   }
-  ApplyMargin(result, margin, root->StyleRef().EffectiveZoom(),
-              gfx::SizeF(result.size));
   return gfx::RectF(result);
 }
 
@@ -170,8 +158,8 @@ bool ComputeIsVisible(const LayoutObject* target, const PhysicalRect& rect) {
 // multiple block fragments.
 gfx::Transform ObjectToViewTransform(const LayoutObject& object) {
   // Use faster GeometryMapper when possible.
-  PropertyTreeStateOrAlias container_properties =
-      PropertyTreeState::Uninitialized();
+  PropertyTreeStateOrAlias container_properties(
+      PropertyTreeState::kUninitialized);
   const LayoutObject* property_container =
       IntersectionGeometry::CanUseGeometryMapper(object)
           ? object.GetPropertyContainer(nullptr, &container_properties)
@@ -221,7 +209,8 @@ static const unsigned kConstructorFlagsMask =
     IntersectionGeometry::kForFrameViewportIntersection |
     IntersectionGeometry::kShouldConvertToCSSPixels |
     IntersectionGeometry::kUseOverflowClipEdge |
-    IntersectionGeometry::kRespectFilters;
+    IntersectionGeometry::kRespectFilters |
+    IntersectionGeometry::kScrollAndVisibilityOnly;
 
 }  // namespace
 
@@ -233,7 +222,8 @@ IntersectionGeometry::RootGeometry::RootGeometry(const LayoutObject* root,
     return;
   }
   zoom = root->StyleRef().EffectiveZoom();
-  local_root_rect = InitializeRootRect(root, margin);
+  pre_margin_local_root_rect = InitializeRootRect(root);
+  UpdateMargin(margin);
   if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
     root_to_view_transform = ObjectToViewTransform(*root);
   } else {
@@ -243,34 +233,17 @@ IntersectionGeometry::RootGeometry::RootGeometry(const LayoutObject* root,
   }
 }
 
+void IntersectionGeometry::RootGeometry::UpdateMargin(
+    const Vector<Length>& margin) {
+  local_root_rect = pre_margin_local_root_rect;
+  ApplyMargin(local_root_rect, margin, zoom, pre_margin_local_root_rect.size());
+}
+
 bool IntersectionGeometry::RootGeometry::operator==(
     const RootGeometry& other) const {
   return zoom == other.zoom && local_root_rect == other.local_root_rect &&
          root_to_view_transform == other.root_to_view_transform;
 }
-
-#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
-String IntersectionGeometry::CachedRects::ToString() const {
-  auto transform_to_string = [](const gfx::Transform& t) {
-    return t.IsIdentityOr2dTranslation() ? t.To2dTranslation().ToString()
-                                         : t.ToString();
-  };
-  return String::Format(
-      "target_rect: %s %s root_rect: %s %s intersection: %s %s %s "
-      "min_to_update %s %s target_t: %s root_t: %s intersect: %d "
-      "rel: %d r_scrolls_t: %d",
-      local_target_rect.ToString().c_str(), target_rect.ToString().c_str(),
-      local_root_rect.ToString().c_str(), root_rect.ToString().c_str(),
-      unscrolled_unclipped_intersection_rect.ToString().c_str(),
-      unclipped_intersection_rect.ToString().c_str(),
-      intersection_rect.ToString().c_str(),
-      computed_min_scroll_delta_to_update.ToString().c_str(),
-      min_scroll_delta_to_update.ToString().c_str(),
-      transform_to_string(target_to_view_transform).c_str(),
-      transform_to_string(root_to_view_transform).c_str(), does_intersect,
-      relationship, root_scrolls_target);
-}
-#endif
 
 const LayoutObject* IntersectionGeometry::GetExplicitRootLayoutObject(
     const Node& root_node) {
@@ -343,9 +316,9 @@ const LayoutObject* IntersectionGeometry::GetTargetLayoutObject(
     return nullptr;
   }
   // If the target is inside a locked subtree, it isn't ever visible.
-  if (UNLIKELY(target->GetFrameView()->IsDisplayLocked() ||
-               DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
-                   target_element))) {
+  if (target->GetFrameView()->IsDisplayLocked() ||
+      DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(target_element))
+      [[unlikely]] {
     return nullptr;
   }
 
@@ -528,11 +501,6 @@ void IntersectionGeometry::UpdateShouldUseCachedRects(
 
   cached_rects->valid = false;
 
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    // TODO(crbug.com/40883761): Evaluate performance.
-    return;
-  }
-
   if (root_and_target.relationship == RootAndTarget::kInvalid) {
     return;
   }
@@ -544,21 +512,37 @@ void IntersectionGeometry::UpdateShouldUseCachedRects(
     return;
   }
 
-  if (RootIsImplicit()) {
-    return;
-  }
-  // Cached rects can only be used if there are no scrollable objects in the
-  // hierarchy between target and root (a scrollable root is ok). The reason
-  // is that a scroll change in an intermediate scroller would change the
-  // intersection geometry, but it would not properly trigger an invalidation
-  // of the cached rects.
-  PaintLayer* root_layer = root_and_target.target->View()->Layer();
-  if (!root_layer) {
-    return;
-  }
-  if (root_and_target.target->DeprecatedEnclosingScrollableBox() !=
-      root_and_target.root) {
-    return;
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    if (!(flags_ & kScrollAndVisibilityOnly)) {
+      return;
+    }
+    // Cached rects can only be used if there are no scrollable objects in the
+    // hierarchy between target and root (a scrollable root is ok). The reason
+    // is that a scroll change in an intermediate scroller would change the
+    // intersection geometry, but we intentionally don't invalidate cached
+    // rects and schedule intersection update to enable the minimul-scroll-
+    // delta-to-update optimization.
+    if (root_and_target.relationship != RootAndTarget::kNotScrollable &&
+        root_and_target.relationship != RootAndTarget::kScrollableByRootOnly) {
+      return;
+    }
+  } else {
+    if (RootIsImplicit()) {
+      return;
+    }
+    // Cached rects can only be used if there are no scrollable objects in the
+    // hierarchy between target and root (a scrollable root is ok). The reason
+    // is that a scroll change in an intermediate scroller would change the
+    // intersection geometry, but it would not properly trigger an invalidation
+    // of the cached rects.
+    PaintLayer* root_layer = root_and_target.target->View()->Layer();
+    if (!root_layer) {
+      return;
+    }
+    if (root_and_target.target->DeprecatedEnclosingScrollableBox() !=
+        root_and_target.root) {
+      return;
+    }
   }
 
   flags_ |= kShouldUseCachedRects;
@@ -599,7 +583,7 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
     target_rect_ = InitializeTargetRect(target, flags_);
     pre_margin_target_rect_is_empty = target_rect_.IsEmpty();
     ApplyMargin(target_rect_, target_margin, root_geometry.zoom,
-                InitializeRootRect(root, {} /* margin */).size());
+                root_geometry.pre_margin_local_root_rect.size());
 
     // We have to map/clip target_rect_ up to the root, so we begin with the
     // intersection rect in target's coordinate system. After ClipToRoot, it
@@ -711,46 +695,6 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
         root_and_target, target_to_view_transform,
         root_geometry.root_to_view_transform, thresholds, scroll_margin);
     cached_rects->valid = true;
-
-#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
-    // TODO(wangxianzhu): Remove or clean up this code after fixing
-    // crbug.com/41492283.
-    if (!cached_rects->min_scroll_delta_to_update.IsZero() &&
-        root_and_target.relationship == RootAndTarget::kScrollableByRootOnly &&
-        CanUseGeometryMapper(*root_and_target.target) &&
-        cached_rects->local_target_rect.size() !=
-            cached_rects->unscrolled_unclipped_intersection_rect.size()) {
-      // There are no intermediate clippers, no non-2d-translation transforms.
-      // Why is unscrolled_unclipped_intersection_rect.size() different?
-      PropertyTreeStateOrAlias container_properties =
-          PropertyTreeState::Uninitialized();
-      root_and_target.target->GetPropertyContainer(nullptr,
-                                                   &container_properties);
-      auto root_state =
-          root_and_target.root->FirstFragment().ContentsProperties();
-      StringBuilder sb;
-      for (const auto* clip = &container_properties.Clip();
-           clip != &root_state.Clip(); clip = clip->Parent()) {
-        sb.Append('\n');
-        sb.Append(clip->ToString());
-      }
-      NOTREACHED()
-          << cached_rects->local_target_rect.ToString() << " "
-          << cached_rects->unscrolled_unclipped_intersection_rect.ToString()
-          << sb.ToString().Utf8();
-    }
-    cached_rects->computed_min_scroll_delta_to_update =
-        cached_rects->min_scroll_delta_to_update;
-    cached_rects->local_root_rect = root_geometry.local_root_rect;
-    cached_rects->root_rect = root_rect_;
-    cached_rects->target_rect = target_rect_;
-    cached_rects->intersection_rect = intersection_rect_;
-    cached_rects->unclipped_intersection_rect = unclipped_intersection_rect_;
-    cached_rects->target_to_view_transform = target_to_view_transform;
-    cached_rects->root_to_view_transform = root_geometry.root_to_view_transform;
-    cached_rects->relationship = static_cast<int>(root_and_target.relationship);
-    cached_rects->root_scrolls_target = root_and_target.root_scrolls_target;
-#endif
   }
 
   // This must be the last step after all calculations in zoomed coordinates.

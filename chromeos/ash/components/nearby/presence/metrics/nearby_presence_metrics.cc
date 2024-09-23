@@ -83,4 +83,20 @@ void RecordFirstTimeServerRegistrationDuration(
       registration_duration);
 }
 
+void RecordScanRequestResult(enums::StatusCode result) {
+  base::UmaHistogramEnumeration("Nearby.Presence.ScanRequest.Result", result);
+}
+
+void RecordDeviceFoundLatency(base::TimeDelta device_found_latency) {
+  base::UmaHistogramTimes("Nearby.Presence.DeviceFound.Latency",
+                          device_found_latency);
+}
+
+void RecordNearbyProcessShutdownReason(
+    ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+        shutdown_reason) {
+  base::UmaHistogramEnumeration("Nearby.Presence.Process.Shutdown.Reason",
+                                shutdown_reason);
+}
+
 }  // namespace ash::nearby::presence::metrics

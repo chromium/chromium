@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs.content;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -35,7 +36,10 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristics;
+import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristicsJni;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -52,6 +56,7 @@ import org.chromium.url.Origin;
 @Config(
         manifest = Config.NONE,
         shadows = {CustomTabActivityUrlLoadingTest.ShadowOrigin.class})
+@Features.EnableFeatures(ChromeFeatureList.CCT_PREWARM_TAB)
 public class CustomTabActivityUrlLoadingTest {
     @Implements(Origin.class)
     public static class ShadowOrigin {
@@ -65,9 +70,8 @@ public class CustomTabActivityUrlLoadingTest {
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
 
-    @Rule public Features.JUnitProcessor processor = new Features.JUnitProcessor();
-
     @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
 
     private CustomTabActivityTabController mTabController;
     private CustomTabActivityNavigationController mNavigationController;
@@ -76,12 +80,18 @@ public class CustomTabActivityUrlLoadingTest {
     @Rule public JniMocker mocker = new JniMocker();
 
     @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
+    @Mock CustomTabAuthUrlHeuristics.Natives mCustomTabAuthUrlHeuristicsJniMock;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
-        Profile.setLastUsedProfileForTesting(mProfile);
+        mocker.mock(CustomTabAuthUrlHeuristicsJni.TEST_HOOKS, mCustomTabAuthUrlHeuristicsJniMock);
+
+        when(env.profileProvider.getOriginalProfile()).thenReturn(mProfile);
+        when(env.profileProvider.getOffTheRecordProfile(eq(true))).thenReturn(mIncognitoProfile);
+        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+
         mTabController = env.createTabController();
         mNavigationController = env.createNavigationController(mTabController);
         mIntentHandler = env.createIntentHandler(mNavigationController);

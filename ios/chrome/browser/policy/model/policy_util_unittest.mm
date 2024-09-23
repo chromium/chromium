@@ -9,29 +9,32 @@
 
 using PolicyUtilTest = PlatformTest;
 
-// Tests that IsApplicationManagedByPlatform() returns false when the
+// Tests that HasPlatformPolicies() returns false when the
 // kPolicyLoaderIOSConfigurationKey value doesn't exist.
 TEST_F(PolicyUtilTest, ReturnsFalseWhenNoApplicationConfigFromPlatform) {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
-  EXPECT_FALSE(IsApplicationManagedByPlatform());
+  EXPECT_FALSE(IsApplicationManagedByMDM());
+  EXPECT_FALSE(HasPlatformPolicies());
 }
 
-// Tests that IsApplicationManagedByPlatform() returns false when the
+// Tests that HasPlatformPolicies() returns false when the
 // kPolicyLoaderIOSConfigurationKey value is empty.
 TEST_F(PolicyUtilTest, ReturnsFalseWhenEmptyApplicationConfigFromPlatform) {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:@{} forKey:kPolicyLoaderIOSConfigurationKey];
-  EXPECT_FALSE(IsApplicationManagedByPlatform());
+  EXPECT_TRUE(IsApplicationManagedByMDM());
+  EXPECT_FALSE(HasPlatformPolicies());
   [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
 }
 
-// Tests that IsApplicationManagedByPlatform() returns true when the
+// Tests that HasPlatformPolicies() returns true when the
 // kPolicyLoaderIOSConfigurationKey value is not empty.
 TEST_F(PolicyUtilTest, ReturnsTrueWhenApplicationConfigFromPlatform) {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dict = @{@"key" : @"value"};
   [userDefaults setObject:dict forKey:kPolicyLoaderIOSConfigurationKey];
-  EXPECT_TRUE(IsApplicationManagedByPlatform());
+  EXPECT_TRUE(IsApplicationManagedByMDM());
+  EXPECT_TRUE(HasPlatformPolicies());
   [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
 }

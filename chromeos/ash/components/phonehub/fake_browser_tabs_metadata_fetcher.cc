@@ -19,14 +19,6 @@ void FakeBrowserTabsMetadataFetcher::Fetch(
   callback_ = std::move(callback);
 }
 
-void FakeBrowserTabsMetadataFetcher::FetchForeignSyncedPhoneSessionMetadata(
-    const ash::ForeignSyncedSessionAsh& session,
-    SyncedSessionClientAsh* synced_session_client_ash,
-    base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) {
-  foreign_synced_session_ = &session;
-  callback_ = std::move(callback);
-}
-
 void FakeBrowserTabsMetadataFetcher::RespondToCurrentFetchAttempt(
     const BrowserTabsMetadataResponse& response) {
   std::move(callback_).Run(response);
@@ -39,11 +31,6 @@ bool FakeBrowserTabsMetadataFetcher::DoesPendingCallbackExist() {
 const sync_sessions::SyncedSession* FakeBrowserTabsMetadataFetcher::GetSession()
     const {
   return session_;
-}
-
-const ash::ForeignSyncedSessionAsh*
-FakeBrowserTabsMetadataFetcher::GetForeignSyncedSession() const {
-  return foreign_synced_session_;
 }
 
 }  // namespace phonehub

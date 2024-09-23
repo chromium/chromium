@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//printing/buildflags/buildflags.gni")
+
+assert(is_chromeos)
+assert(use_cups)
+
+static_library("printing") {
+  sources = [
+    "cups_wrapper.cc",
+    "cups_wrapper.h",
+    "cups_wrapper_impl.cc",
+    "printer_error_codes.cc",
+    "printer_error_codes.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/components/print_management/mojom",
+    "//printing:printing_base",
+    "//printing/backend",
+    "//url",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "test_cups_wrapper.cc",
+    "test_cups_wrapper.h",
+  ]
+
+  deps = [
+    ":printing",
+    "//base",
+  ]
+}

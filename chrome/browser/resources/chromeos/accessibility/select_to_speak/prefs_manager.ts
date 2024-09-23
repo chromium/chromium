@@ -386,9 +386,9 @@ export class PrefsManager {
     chrome.storage.onChanged.addListener(() => this.updateStoragePrefs_());
 
     this.updateDefaultVoice_();
-    window.speechSynthesis.onvoiceschanged = () => {
+    chrome.tts.onVoicesChanged.addListener(() => {
       this.updateDefaultVoice_();
-    };
+    });
   }
 
   /**

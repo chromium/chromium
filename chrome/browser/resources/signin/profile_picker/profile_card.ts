@@ -3,58 +3,59 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import './profile_card_menu.js';
-import './profile_picker_shared.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import type {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
 import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js';
-import {getTemplate} from './profile_card.html.js';
+import {getCss} from './profile_card.css.js';
+import {getHtml} from './profile_card.html.js';
+import {createDummyProfileState} from './profile_picker_util.js';
 
 export interface ProfileCardElement {
   $: {
     gaiaName: HTMLElement,
-    gaiaNameTooltip: PaperTooltipElement,
+    gaiaNameTooltip: CrTooltipElement,
     nameInput: CrInputElement,
-    tooltip: PaperTooltipElement,
+    tooltip: CrTooltipElement,
+    profileCardButton: CrButtonElement,
   };
 }
 
-const ProfileCardElementBase = I18nMixin(PolymerElement);
+const ProfileCardElementBase = I18nMixinLit(CrLitElement);
 
 export class ProfileCardElement extends ProfileCardElementBase {
   static get is() {
     return 'profile-card';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      profileState: {
-        type: Object,
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      pattern_: {
-        type: String,
-        value: '.*\\S.*',
-      },
+  static override get properties() {
+    return {
+      profileState: {type: Object},
+      pattern_: {type: String},
     };
   }
 
-  profileState: ProfileState;
-  private pattern_: string;
+  profileState: ProfileState = createDummyProfileState();
+  protected pattern_: string = '.*\\S.*';
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
 
@@ -62,11 +63,15 @@ export class ProfileCardElement extends ProfileCardElementBase {
     super.connectedCallback();
     this.addNameInputTooltipListeners_();
     this.addGaiaNameTooltipListeners_();
+
+    this.addEventListener('drag-tile-start', this.disableActiveRipple_);
   }
 
   private addNameInputTooltipListeners_() {
     const showTooltip = () => {
-      const inputElement = this.$.tooltip.target.inputElement;
+      const target = this.$.tooltip.target;
+      assert(target);
+      const inputElement = (target as CrInputElement).inputElement;
       // Disable tooltip if the local name editing is in progress.
       if (this.isNameTruncated_(inputElement) &&
           !this.$.nameInput.hasAttribute('focused_')) {
@@ -77,6 +82,7 @@ export class ProfileCardElement extends ProfileCardElementBase {
     };
     const hideTooltip = () => this.$.tooltip.hide();
     const target = this.$.tooltip.target;
+    assert(target);
     target.addEventListener('mouseenter', showTooltip);
     target.addEventListener('focus', hideTooltip);
     target.addEventListener('mouseleave', hideTooltip);
@@ -94,6 +100,7 @@ export class ProfileCardElement extends ProfileCardElementBase {
     };
     const hideTooltip = () => this.$.gaiaNameTooltip.hide();
     const target = this.$.gaiaNameTooltip.target;
+    assert(target);
     target.addEventListener('mouseenter', showTooltip);
     target.addEventListener('focus', showTooltip);
     target.addEventListener('mouseleave', hideTooltip);
@@ -106,17 +113,17 @@ export class ProfileCardElement extends ProfileCardElementBase {
     return !!element && element.scrollWidth > element.offsetWidth;
   }
 
-  private onProfileClick_() {
+  protected onProfileClick_() {
     this.manageProfilesBrowserProxy_.launchSelectedProfile(
         this.profileState.profilePath);
   }
 
-  private onNameInputPointerEnter_() {
+  protected onNameInputPointerEnter_() {
     this.dispatchEvent(new CustomEvent(
         'toggle-drag', {composed: true, detail: {toggle: false}}));
   }
 
-  private onNameInputPointerLeave_() {
+  protected onNameInputPointerLeave_() {
     this.dispatchEvent(new CustomEvent(
         'toggle-drag', {composed: true, detail: {toggle: true}}));
   }
@@ -124,7 +131,7 @@ export class ProfileCardElement extends ProfileCardElementBase {
   /**
    * Handler for when the profile name field is changed, then blurred.
    */
-  private onProfileNameChanged_(event: Event) {
+  protected onProfileNameChanged_(event: Event) {
     const target = event.target as CrInputElement;
 
     if (target.invalid) {
@@ -140,7 +147,7 @@ export class ProfileCardElement extends ProfileCardElementBase {
   /**
    * Handler for profile name keydowns.
    */
-  private onProfileNameKeydown_(event: KeyboardEvent) {
+  protected onProfileNameKeydown_(event: KeyboardEvent) {
     if (event.key === 'Escape' || event.key === 'Enter') {
       (event.target as HTMLElement).blur();
     }
@@ -149,9 +156,24 @@ export class ProfileCardElement extends ProfileCardElementBase {
   /**
    * Handler for profile name blur.
    */
-  private onProfileNameInputBlur_() {
+  protected onProfileNameInputBlur_() {
     if (this.$.nameInput.invalid) {
       this.$.nameInput.value = this.profileState.localProfileName;
+    }
+  }
+
+  /**
+   * Disables the ripple effect if any. This is needed when the tile is being
+   * dragged in order not to break the visual effect of the dragging tile and
+   * mouse positioning relative to the card.
+   */
+  private disableActiveRipple_(): void {
+    if (this.$.profileCardButton.hasRipple()) {
+      const buttonRipple = this.$.profileCardButton.getRipple();
+      // This sequence is equivalent to calling `buttonRipple.clear()` but also
+      // avoids the animation effect which is needed in this case.
+      buttonRipple.showAndHoldDown();
+      buttonRipple.holdDown = false;
     }
   }
 }

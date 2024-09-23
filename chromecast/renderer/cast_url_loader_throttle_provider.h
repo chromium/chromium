@@ -11,7 +11,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 
 namespace chromecast {

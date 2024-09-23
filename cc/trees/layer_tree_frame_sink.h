@@ -37,7 +37,10 @@ struct BeginFrameAck;
 }  // namespace viz
 
 namespace cc {
+
+class LayerContext;
 class LayerTreeFrameSinkClient;
+class LayerTreeHostImpl;
 
 // An interface for submitting CompositorFrames to a display compositor
 // which will compose frames from multiple clients to show on screen to the
@@ -49,6 +52,9 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
                                      public viz::ContextLostObserver,
                                      public gpu::GpuChannelLostObserver {
  public:
+  // Constructor for a frame sink local to the GPU process.
+  LayerTreeFrameSink();
+
   // Constructor for GL-based and/or software resources.
   //
   // |compositor_task_runner| is used to post worker context lost callback and
@@ -139,6 +145,11 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   virtual void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                                   FrameSkippedReason reason) = 0;
 
+  // Creates a new LayerContext through which the client can control layers in
+  // a GPU-side display tree.
+  virtual std::unique_ptr<LayerContext> CreateLayerContext(
+      LayerTreeHostImpl& host_impl);
+
   // viz::SharedBitmapReporter implementation.
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
                                const viz::SharedBitmapId& id) override = 0;
@@ -153,6 +164,8 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   // gpu::GpuChannelLostObserver override.
   void OnGpuChannelLost() override;
 
+  void GpuChannelLostOnClientThread();
+
   raw_ptr<LayerTreeFrameSinkClient> client_ = nullptr;
 
   scoped_refptr<viz::RasterContextProvider> context_provider_;
@@ -166,8 +179,8 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   int64_t source_frame_number_;
 
  private:
-  // Called on the compositor thread or the browser main thread.
-  scoped_refptr<base::SingleThreadTaskRunner> client_task_runner_;
+  // Forward the gpu channel lost task from the IO thread to the client thread.
+  base::OnceCallback<void()> task_gpu_channel_lost_on_client_thread_;
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<LayerTreeFrameSink> weak_ptr_factory_{this};

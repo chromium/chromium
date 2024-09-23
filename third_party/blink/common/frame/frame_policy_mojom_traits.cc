@@ -9,7 +9,7 @@ namespace mojo {
 bool StructTraits<blink::mojom::FramePolicyDataView, blink::FramePolicy>::Read(
     blink::mojom::FramePolicyDataView in,
     blink::FramePolicy* out) {
-  // TODO(chenleihu): Add sanity check on enum values in
+  // TODO(https://crbug.com/340618183): Add sanity check on enum values in
   // required_document_policy.
   return in.ReadSandboxFlags(&out->sandbox_flags) &&
          in.ReadContainerPolicy(&out->container_policy) &&

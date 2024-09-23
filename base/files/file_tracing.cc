@@ -40,8 +40,6 @@ FileTracing::ScopedEnabler::~ScopedEnabler() {
   FileTracing::Provider* provider = GetProvider();
   if (provider)
     provider->FileTracingDisable(this);
-  // TODO(crbug.com/1021571): Remove this once fixed.
-  PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 }
 
 FileTracing::ScopedTrace::~ScopedTrace() {

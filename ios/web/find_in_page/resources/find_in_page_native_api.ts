@@ -392,7 +392,7 @@ function findString(string: string, timeout: number): number {
  * @return {number} that represents the total matches found.
  */
 function pumpSearch(timeout: number): number {
-  // TODO(crbug.com/895531): It would be better if this DCHECKed.
+  // TODO(crbug.com/41420794): It would be better if this DCHECKed.
   if (searchInProgress_ == false) {
     return 0;
   }

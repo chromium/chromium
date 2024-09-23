@@ -6,7 +6,12 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_CONFIGURATION_PROVIDER_H_
 
 #include <memory>
+#include <set>
+#include <string_view>
 #include <vector>
+
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/group_list.h"
 #include "components/feature_engagement/public/stats.h"
@@ -56,6 +61,13 @@ class ConfigurationProvider {
   virtual bool MaybeProvideGroupConfiguration(const base::Feature& feature,
                                               GroupConfig& config) const;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Provides an allowed set of prefixes for the events which can be stored and
+  // kept, regardless of whether or not they are used in a config.
+  virtual std::set<std::string> MaybeProvideAllowedEventPrefixes(
+      const base::Feature& feature) const;
+#endif
+
   // Gets a description of the source of the configuration for debugging and
   // error tracing purposes.
   virtual const char* GetConfigurationSourceDescription() const = 0;
@@ -73,7 +85,7 @@ using ConfigurationProviderList =
 // Used to check whether Feature with `feature_name` is present in
 // `feature_list`; works with both FeatureVector and GroupVector.
 template <typename T>
-static bool ContainsFeature(const base::StringPiece& feature_name,
+static bool ContainsFeature(std::string_view feature_name,
                             const T& feature_list) {
   const auto it = std::find_if(feature_list.begin(), feature_list.end(),
                                [&feature_name](const base::Feature* f) {

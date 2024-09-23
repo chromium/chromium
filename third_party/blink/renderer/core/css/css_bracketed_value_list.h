@@ -34,6 +34,10 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 namespace cssvalue {
 
@@ -41,7 +45,7 @@ class CSSBracketedValueList : public CSSValueList {
  public:
   CSSBracketedValueList();
 
-  String CustomCSSText() const;
+  WTF::String CustomCSSText() const;
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValueList::TraceAfterDispatch(visitor);

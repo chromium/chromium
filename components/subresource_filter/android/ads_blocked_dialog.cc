@@ -12,9 +12,12 @@
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "components/subresource_filter/android/subresource_filter_jni_headers/AdsBlockedDialog_jni.h"
+#include "base/not_fatal_until.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/subresource_filter/android/subresource_filter_jni_headers/AdsBlockedDialog_jni.h"
 
 AdsBlockedDialogBase::~AdsBlockedDialogBase() = default;
 
@@ -24,7 +27,7 @@ std::unique_ptr<AdsBlockedDialogBase> AdsBlockedDialog::Create(
     base::OnceClosure allow_ads_clicked_callback,
     base::OnceClosure learn_more_clicked_callback,
     base::OnceClosure dialog_dismissed_callback) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M129);
 
   ui::WindowAndroid* window_android = web_contents->GetTopLevelNativeWindow();
   if (!window_android)

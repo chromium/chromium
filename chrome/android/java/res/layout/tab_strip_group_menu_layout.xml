@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+  <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical">
+
+    <EditText
+        tools:ignore="Autofill,LabelFor"
+        android:id="@+id/tab_group_title"
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:inputType="text|textNoSuggestions"
+        android:imeOptions="actionDone"
+        android:theme="@style/TabStripGroupContextMenuTitleTheme"
+        android:selectAllOnFocus="true"
+        android:hint="@string/title"/>
+
+    <ViewStub
+        android:id="@+id/color_picker_stub"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout="@layout/tab_group_color_picker_container" />
+
+    <include
+        layout="@layout/tab_switcher_action_menu_layout" />
+  </LinearLayout>
+</ScrollView>

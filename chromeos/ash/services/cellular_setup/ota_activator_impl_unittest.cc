@@ -53,7 +53,7 @@ class CellularSetupOtaActivatorImplTest : public testing::Test {
 
  protected:
   CellularSetupOtaActivatorImplTest()
-      : test_helper_(false /* use_default_devices_and_services */) {}
+      : test_helper_(/*use_default_devices_and_services=*/false) {}
   ~CellularSetupOtaActivatorImplTest() override = default;
 
   // testing::Test:

@@ -1,0 +1,80 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_input/cr_input_style_lit.css.js
+ * #import=../cr_shared_style_lit.css.js
+ * #import=../cr_shared_vars.css.js
+ * #import=../icons_lit.html.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit cr-input-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  user-select: none;
+  --cr-search-field-clear-icon-fill: var(--google-grey-700);
+  --cr-search-field-clear-icon-margin-end : -4px;
+  --cr-search-field-input-border-bottom: 1px solid var(--cr-secondary-text-color);
+}
+
+#searchIcon {
+  align-self: center;
+  display: var(--cr-search-field-search-icon-display, inherit);
+  height: 16px;
+  padding: 4px;
+  vertical-align: middle;
+  width: 16px;
+}
+
+#searchIconInline {
+  --iron-icon-fill-color: var(--cr-search-field-search-icon-fill, inherit);
+  display: var(--cr-search-field-search-icon-inline-display, none);
+  margin-inline-start: var(--cr-search-field-search-icon-inline-margin-start, 0);
+}
+
+#searchInput {
+  --cr-input-background-color: transparent;
+  --cr-input-border-bottom: var(--cr-search-field-input-border-bottom);
+  --cr-input-border-radius: 0;
+  --cr-input-error-display: none;
+  --cr-input-min-height: var(--cr-search-field-input-min-height, 24px);
+  --cr-input-padding-end: 0;
+  --cr-input-padding-start: var(--cr-search-field-input-padding-start, 0);
+  --cr-input-padding-bottom: var(--cr-search-field-input-padding-bottom, 2px);
+  --cr-input-padding-top: var(--cr-search-field-input-padding-top, 2px);
+  --cr-input-placeholder-color: var(--cr-search-field-placeholder-color);
+  --cr-input-underline-display: var(--cr-search-field-underline-display);
+  --cr-input-underline-border-radius: var(--cr-search-field-input-underline-border-radius, 0);
+  --cr-input-underline-height: var(--cr-search-field-input-underline-height, 0);
+  align-self: stretch;
+  color: var(--cr-primary-text-color);
+  display: block;
+  font-size: 92.3076923%;  /* To 12px from 13px. */
+  width: var(--cr-search-field-input-width, 160px);
+}
+
+:host([has-search-text]) #searchInput {
+  --cr-input-padding-end: calc(24px +
+    var(--cr-search-field-clear-icon-margin-end));
+}
+
+#clearSearch {
+  --cr-icon-button-fill-color: var(--cr-search-field-clear-icon-fill);
+  /* A 16px icon that fits on the input line. */
+  --cr-icon-button-icon-size: var(--cr-search-field-clear-icon-size, 16px);
+  --cr-icon-button-size: var(--cr-search-field-clear-button-size, 24px);
+  margin-inline-end: var(--cr-search-field-clear-icon-margin-end);
+  margin-inline-start: 4px;
+  position: absolute;
+  right: 0;
+  /* Necessary to be above the '#hover-layer' in cr-input. */
+  z-index: 1;
+}
+
+:host-context([dir='rtl']) #clearSearch {
+  left: 0;
+  right: auto;
+}

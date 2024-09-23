@@ -54,6 +54,9 @@ TermMatches FindTermMatches(std::u16string find_text,
   find_text = clean(find_text);
   text = clean(text);
 
+  if (find_text.empty())
+    return {};
+
   if (allow_prefix_matching &&
       base::StartsWith(text, find_text, base::CompareCase::SENSITIVE))
     return {{0, 0, find_text.length()}};

@@ -34,7 +34,7 @@ scoped_refptr<net::X509Certificate> CreateCertFromTrust(SecTrustRef trust);
 
 // Creates server trust object from an array of SecCertificateRef objects.
 // Returns null if `certs` is null or empty.
-// TODO(crbug.com/827554): This method is only used from tests and should be
+// TODO(crbug.com/41379946): This method is only used from tests and should be
 // removed from here.
 base::apple::ScopedCFTypeRef<SecTrustRef> CreateServerTrustFromChain(
     NSArray* certs,

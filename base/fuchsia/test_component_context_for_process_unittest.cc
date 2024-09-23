@@ -9,6 +9,8 @@
 #include <lib/async/default.h>
 #include <lib/sys/cpp/component_context.h>
 
+#include <string_view>
+
 #include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
@@ -97,7 +99,7 @@ TEST_F(TestComponentContextForProcessTest, ProvideSystemService) {
   // TestComponentContextForProcess. This service was chosen because it is one
   // of the ambient services in Fuchsia's hermetic environment for Chromium
   // tests.
-  const base::StringPiece kServiceNames[] = {
+  const std::string_view kServiceNames[] = {
       ::fuchsia::buildinfo::Provider::Name_};
   test_context_.AddServices(kServiceNames);
 
@@ -126,7 +128,7 @@ TEST_F(TestComponentContextForProcessTest, ProvideSystemServiceNatural) {
   // TestComponentContextForProcess. This service was chosen because it is one
   // of the ambient services in Fuchsia's hermetic environment for Chromium
   // tests.
-  const base::StringPiece kServiceNames[] = {
+  const std::string_view kServiceNames[] = {
       fidl::DiscoverableProtocolName<fuchsia_buildinfo::Provider>};
   test_context_.AddServices(kServiceNames);
 

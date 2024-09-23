@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<merge
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/toolbar_new_tab_button"
+        style="@style/BottomToolbarButton"
+        android:src="@drawable/plus"
+        app:tint="@color/default_icon_color_tint_list"
+        android:contentDescription="@string/bottom_tab_grid_new_tab" />
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/toolbar_menu_button"
+        style="@style/ToolbarMenuButton"
+        android:src="@drawable/ic_more_vert_24dp"
+        android:layout_gravity="center"
+        app:tint="@color/default_icon_color_tint_list"
+        android:contentDescription="@string/accessibility_toolbar_btn_menu" />
+</merge>

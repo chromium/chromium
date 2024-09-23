@@ -73,6 +73,11 @@ struct MEDIA_EXPORT VideoEncoderInfo {
   // True if encoder supports frame size change without re-initialization.
   bool supports_frame_size_change = false;
 
+  // Number of video encoder buffers (encoded frame slots) that
+  // are kept by the encoder and can be used to store encoded frames for
+  // future reference.
+  size_t number_of_manual_reference_buffers = 0;
+
   std::array<std::vector<uint8_t>, kMaxSpatialLayers> fps_allocation;
   std::vector<ResolutionBitrateLimit> resolution_bitrate_limits;
 };

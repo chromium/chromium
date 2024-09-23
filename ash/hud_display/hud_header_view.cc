@@ -23,7 +23,6 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/layout_manager.h"
 
 namespace ash {
 namespace hud_display {
@@ -112,48 +111,6 @@ class SettingsButton : public views::ImageButton {
 BEGIN_METADATA(SettingsButton)
 END_METADATA
 
-// Basically FillLayout that matches host size to the given data view.
-// Padding will take the rest of the host view to the right.
-class HUDHeaderLayout : public views::LayoutManager {
- public:
-  HUDHeaderLayout(const views::View* data_view, views::View* padding)
-      : data_view_(data_view), padding_(padding) {}
-
-  HUDHeaderLayout(const HUDHeaderLayout&) = delete;
-  HUDHeaderLayout& operator=(const HUDHeaderLayout&) = delete;
-
-  ~HUDHeaderLayout() override = default;
-
-  // views::LayoutManager:
-  void Layout(views::View* host) override;
-  gfx::Size GetPreferredSize(const views::View* host) const override;
-
- private:
-  raw_ptr<const views::View> data_view_;
-  raw_ptr<views::View> padding_;
-};
-
-gfx::Size HUDHeaderLayout::GetPreferredSize(const views::View* host) const {
-  return data_view_->GetPreferredSize() + padding_->GetPreferredSize();
-}
-
-void HUDHeaderLayout::Layout(views::View* host) {
-  // Assume there are only 3 child views (data, background and padding).
-  DCHECK_EQ(host->children().size(), 3U);
-
-  const gfx::Size preferred_size = data_view_->GetPreferredSize();
-
-  for (views::View* child : host->children()) {
-    if (child != padding_) {
-      child->SetPosition({0, 0});
-      child->SetSize(preferred_size);
-    }
-  }
-  // Layout padding
-  padding_->SetPosition({preferred_size.width(), 0});
-  padding_->SetSize({host->width() - preferred_size.width(), host->height()});
-}
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -163,28 +120,16 @@ BEGIN_METADATA(HUDHeaderView)
 END_METADATA
 
 HUDHeaderView::HUDHeaderView(HUDDisplayView* hud) {
-  // Header is rendered as horizontal container with three children:
-  // background, buttons container and padding.
-
   // Header should have background under the buttons area only.
-  // To achieve this we have buttons container view to calculate total width,
-  // and special layout manager that matches size of the background view to the
-  // size of the buttons.
   //
   // There is additional "padding" view an the end to draw bottom inner
   // rounded piece of background.
 
-  views::View* header_background =
-      AddChildView(std::make_unique<views::View>());
-  header_background->SetBackground(std::make_unique<SolidSourceBackground>(
+  views::View* header_buttons =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  header_buttons->SetBackground(std::make_unique<SolidSourceBackground>(
       kHUDBackground, kHUDTabOverlayCornerRadius));
 
-  views::View* header_buttons = AddChildView(std::make_unique<views::View>());
-  header_buttons
-      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal))
-      ->set_cross_axis_alignment(
-          views::BoxLayout::CrossAxisAlignment::kStretch);
   // Header does not have margin between header and data.
   // Data has its top margin (kHUDGraphsInset).
   header_buttons->SetBorder(views::CreateEmptyBorder(
@@ -202,8 +147,7 @@ HUDHeaderView::HUDHeaderView(HUDDisplayView* hud) {
   views::View* padding = AddChildView(std::make_unique<views::View>());
   padding->SetBackground(std::make_unique<BottomLeftOuterBackground>(
       kHUDBackground, kHUDTabOverlayCornerRadius));
-
-  SetLayoutManager(std::make_unique<HUDHeaderLayout>(header_buttons, padding));
+  SetFlexForView(padding, 1);
 }
 
 HUDHeaderView::~HUDHeaderView() = default;

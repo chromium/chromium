@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_LOGGER_CFM_LOGGER_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom-shared.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_adaptor.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom-shared.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -18,7 +18,7 @@ namespace ash::cfm {
 
 // Implementation of the MeetDevicesLogger Service.
 class CfmLoggerService : public CfmObserver,
-                         public ServiceAdaptor::Delegate,
+                         public chromeos::cfm::ServiceAdaptor::Delegate,
                          public chromeos::cfm::mojom::MeetDevicesLogger {
  public:
   class Delegate {
@@ -64,7 +64,7 @@ class CfmLoggerService : public CfmObserver,
   // CfmObserver implementation
   bool ServiceRequestReceived(const std::string& interface_name) override;
 
-  // ServiceAdaptorDelegate implementation
+  // chromeos::cfm::ServiceAdaptor::Delegate implementation
   void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) override;
   void OnAdaptorConnect(bool success) override;
   void OnAdaptorDisconnect() override;
@@ -85,7 +85,7 @@ class CfmLoggerService : public CfmObserver,
 
  private:
   raw_ptr<Delegate> delegate_;
-  ServiceAdaptor service_adaptor_;
+  chromeos::cfm::ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<chromeos::cfm::mojom::MeetDevicesLogger> receivers_;
   chromeos::cfm::mojom::LoggerState current_logger_state_;
   mojo::RemoteSet<chromeos::cfm::mojom::LoggerStateObserver> observer_list_;

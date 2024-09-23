@@ -4,32 +4,31 @@
 
 #include "chrome/browser/ash/login/screens/osauth/cryptohome_recovery_setup_screen.h"
 
+#include <memory>
 #include <optional>
-#include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/test/shell_test_api.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
-#include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/wizard_controller_screen_exit_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "content/public/test/browser_test.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
@@ -171,36 +170,6 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest,
   EXPECT_TRUE(LoginDisplayHost::default_host()
                   ->GetWizardContextForTesting()
                   ->extra_factors_token.has_value());
-
-  ContinueScreenExit();
-  EXPECT_EQ(result_.value(), CryptohomeRecoverySetupScreen::Result::DONE);
-  histogram_tester.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Cryptohome-recovery-setup.Done", 1);
-  histogram_tester.ExpectTotalCount(
-      "OOBE.StepCompletionTime.Cryptohome-recovery-setup", 1);
-}
-
-// If user opts in to recovery, the screen should be shown.
-// The PIN setup screen is skipped due to policy. In this case
-// auth session should be cleared.
-IN_PROC_BROWSER_TEST_F(CryptohomeRecoverySetupScreenTest,
-                       ShowClearsAuthSession) {
-  LoginAsRegularUser();
-  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  prefs->SetList(prefs::kQuickUnlockModeAllowlist, base::Value::List());
-  prefs->SetList(prefs::kWebAuthnFactors, base::Value::List());
-  LoginDisplayHost::default_host()
-      ->GetWizardContextForTesting()
-      ->recovery_setup.ask_about_recovery_consent = true;
-  LoginDisplayHost::default_host()
-      ->GetWizardContextForTesting()
-      ->recovery_setup.recovery_factor_opted_in = true;
-  base::HistogramTester histogram_tester;
-
-  ShowScreen();
-  EXPECT_FALSE(LoginDisplayHost::default_host()
-                   ->GetWizardContextForTesting()
-                   ->extra_factors_token.has_value());
 
   ContinueScreenExit();
   EXPECT_EQ(result_.value(), CryptohomeRecoverySetupScreen::Result::DONE);

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<script src="../../../resources/ahem.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/mouse-selection.js"></script>
+<style>
+html {
+  writing-mode: sideways-rl;
+  font: 20px/20px Ahem;
+  word-wrap: break-word;
+}
+body {
+  margin: 0;
+}
+div {
+  height: 200px;
+  margin: 200px;
+}
+</style>
+<!-- 40 Xs, 4 lines -->
+<div id="div">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</div>
+<script>
+// The expectations are based on windows editing behavior.
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+var node = div.firstChild;
+const LEFT_EDGE = 200;
+const RIGHT_EDGE = 600;
+const TOP_EDGE = 200;
+const BOTTOM_EDGE = 400;
+testMouseSelection(RIGHT_EDGE - 10, TOP_EDGE + 110, RIGHT_EDGE - 70, TOP_EDGE + 110,
+                   node, 5, node, 35,
+                   'Middle of the first line -> Middle of the last line');
+testMouseSelection(RIGHT_EDGE - 10, TOP_EDGE + 110, RIGHT_EDGE - 50, BOTTOM_EDGE + 100,
+                   node, 5, node, 30,
+                   'Middle of the first line -> Outside below the third line');
+testMouseSelection(RIGHT_EDGE - 10, TOP_EDGE + 110, RIGHT_EDGE - 50, TOP_EDGE - 100,
+                   node, 5, node, 20,
+                   'Middel of the first line -> Outside above the third line');
+testMouseSelection(RIGHT_EDGE - 10, TOP_EDGE + 110, RIGHT_EDGE - 300, TOP_EDGE + 110,
+                   node, 5, node, 35,
+                   'Middle of the first line -> Outside left, vertical middle');
+testMouseSelection(RIGHT_EDGE - 10, TOP_EDGE + 110, RIGHT_EDGE - 300, BOTTOM_EDGE + 100,
+                   node, 5, node, 40,
+                   'Middle of the first line -> Outside left, below');
+testMouseSelection(RIGHT_EDGE - 70, TOP_EDGE + 110, RIGHT_EDGE + 100, TOP_EDGE + 110,
+                   node, 5, node, 35,
+                   'Middle of the last line -> Outside right, vertical middle');
+testMouseSelection(RIGHT_EDGE - 70, TOP_EDGE + 110, RIGHT_EDGE - 30, TOP_EDGE - 100,
+                   node, 10, node, 35,
+                   'Middle of the last line -> Outside above the second line');
+testMouseSelection(RIGHT_EDGE - 70, TOP_EDGE + 110, RIGHT_EDGE - 30, BOTTOM_EDGE + 100,
+                   node, 20, node, 35,
+                   'Middle of the last line -> Outside below the second line');
+</script>

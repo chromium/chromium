@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 
@@ -18,6 +19,7 @@ class AccessorySheetTabView extends RecyclerView {
     }
 
     /** Sets a11y focus on the first child, if it is present. */
+    @SuppressLint("AccessibilityFocus")
     void requestDefaultA11yFocus() {
         // The default a11y focus can be requested immediately after setting the RecyclerView
         // adapter, at this point children may not be ready yet. The a11y action is delayed

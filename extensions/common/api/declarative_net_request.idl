@@ -170,16 +170,23 @@ namespace declarativeNetRequest {
      DOMString? regexSubstitution;
   };
 
-  // TODO(crbug.com/1141166): Add documentation once feature is complete.
-  [nodoc] dictionary HeaderInfo {
-    // The name of the header. This HeaderInfo condition matches on the name
+  dictionary HeaderInfo {
+    // The name of the header. This condition matches on the name
     // only if both `values` and `excludedValues` are not specified.
     DOMString header;
-    // If specified, this HeaderInfo condition is matched if the header's value
-    // contains at least one element in this list.
+    // If specified, this condition matches if the header's value matches at
+    // least one pattern in this list. This supports case-insensitive header
+    // value matching plus the following constructs:
+    //
+    // <b>'*'</b>  : Matches any number of characters.
+    //
+    // <b>'?'</b>  : Matches zero or one character(s).
+    //
+    // '*' and '?' can be escaped with a backslash, e.g. '\*' and '\?'
     DOMString[]? values;
-    // If specified, this HeaderInfo condition is not matched if the header
-    // exists but its value contains at least one element in this list.
+    // If specified, this condition is not matched if the header exists but its
+    // value contains at least one element in this list. This uses the same
+    // match pattern syntax as `values`.
     DOMString[]? excludedValues;
   };
 
@@ -197,8 +204,9 @@ namespace declarativeNetRequest {
     //               pattern, specifies the start of a (sub-)domain of the URL.
     //
     // <b>'^'</b>  : Separator character: This matches anything except a letter,
-    //               a digit or one of the following: _ - . %. This can also
-    //               match the end of the URL.
+    //               a digit, or one of the following: <code>_</code>,
+    //               <code>-</code>, <code>.</code>, or <code>%</code>. This
+    //               also match the end of the URL.
     //
     // Therefore <code>urlFilter</code> is composed of the following parts:
     // (optional Left/Domain name anchor) + pattern + (optional Right anchor).
@@ -354,15 +362,22 @@ namespace declarativeNetRequest {
 
     // Rule matches if the request matches any response header condition in this
     // list (if specified).
-    // TODO(crbug.com/1141166): Add documentation once feature is complete.
-    [nodoc] HeaderInfo[]? responseHeaders;
+    HeaderInfo[]? responseHeaders;
 
-    // Rule does not match if the request matches any response header condition
-    // in this list (if specified). If both `excludedResponseHeaders` and
-    // `responseHeaders` are specified, `excludedResponseHeaders` takes
-    // precedence.
-    // TODO(crbug.com/1141166): Add documentation once feature is complete.
-    [nodoc] HeaderInfo[]? excludedResponseHeaders;
+    // Rule does not match if the request matches any response header
+    // condition in this list (if specified). If both `excludedResponseHeaders`
+    // and `responseHeaders` are specified, then the `excludedResponseHeaders`
+    // property takes precedence.
+    HeaderInfo[]? excludedResponseHeaders;
+  };
+
+  // Options for regex filters and substitutions for headers.
+  [nodoc] dictionary HeaderRegexOptions {
+    // Whether the regex should match all groups for the value. This is only
+    // relevant if a regex substitution is present and would thus need to be
+    // applied onto all matching groups. Equivalent to the "g" flag.
+    // Defaults to false.
+    boolean? matchAll;
   };
 
   dictionary ModifyHeaderInfo {
@@ -370,11 +385,28 @@ namespace declarativeNetRequest {
     DOMString header;
 
     // The operation to be performed on a header.
+    // <!-- TODO(crbug.com/352093575): Make this field optional: It is ignored
+    // if `regexSubstitution` is specified but is required otherwise. -->
     HeaderOperation operation;
 
     // The new value for the header. Must be specified for <code>append</code>
     // and <code>set</code> operations.
+    // <!-- TODO(crbug.com/352093575): Ignored if `regexSubstitution` is
+    // specified, -->
     DOMString? value;
+
+    // A regular expression to match against the header value. This follows the
+    // RE2 syntax for consistency with the rest of the API.
+    [nodoc] DOMString? regexFilter;
+
+    // Substitution pattern for the response header. `regexFilter` must be
+    // specified for this to be valid. Takes precedence over `value` and
+    // `operation` if specified and valid.
+    [nodoc] DOMString? regexSubstitution;
+
+    // Options for the regex filter. If not specified, all options will be
+    // default.
+    [nodoc] HeaderRegexOptions? regexOptions;
   };
 
   [noinline_doc]
@@ -522,6 +554,15 @@ namespace declarativeNetRequest {
     // not need to correspond to a real tab ID. Default is -1, meaning that
     // the request isn't related to a tab.
     long? tabId;
+
+    // The headers provided by a hypothetical response if the request does not
+    // get blocked or redirected before it is sent. Represented as an object
+    // which maps a header name to a list of string values. If not specified,
+    // the hypothetical response would return empty response headers, which can
+    // match rules which match on the non-existence of headers.
+    // E.g. <code>{"content-type": ["text/html; charset=utf-8",
+    // "multipart/form-data"]}</code>
+    object? responseHeaders;
   };
 
   dictionary MatchedRuleInfoDebug {
@@ -635,15 +676,17 @@ namespace declarativeNetRequest {
     // extension updates.</li>
     // <li>Static rules specified as part of the extension package can not be
     // removed using this function.</li>
-    // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES) is the maximum number
-    // of combined dynamic and session rules an extension can add.</li>
+    // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_RULES) is the maximum number
+    // of dynamic rules an extension can add. The number of
+    // <a href="#safe_rules">unsafe rules</a> must not exceed
+    // $(ref:MAX_NUMBER_OF_UNSAFE_DYNAMIC_RULES).</li>
     // </ul>
     // |callback|: Called once the update is complete or has failed. In case of
     // an error, $(ref:runtime.lastError) will be set and no change will be made
     // to the rule set. This can happen for multiple reasons, such as invalid
     // rule format, duplicate rule ID, rule count limit exceeded, internal
     // errors, and others.
-    [supportsPromises] static void updateDynamicRules(
+    static void updateDynamicRules(
         UpdateRuleOptions options,
         optional EmptyCallback callback);
 
@@ -653,7 +696,7 @@ namespace declarativeNetRequest {
     // |filter|: An object to filter the list of fetched rules.
     // |callback|: Called with the set of dynamic rules. An error might be
     // raised in case of transient internal errors.
-    [supportsPromises] static void getDynamicRules(
+    static void getDynamicRules(
         optional GetRulesFilter filter,
         GetRulesCallback callback);
 
@@ -666,14 +709,14 @@ namespace declarativeNetRequest {
     // specified rules are added and removed, or an error is returned.</li>
     // <li>These rules are not persisted across sessions and are backed in
     // memory.</li>
-    // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES) is the maximum number
-    // of combined dynamic and session rules an extension can add.</li>
+    // <li>$(ref:MAX_NUMBER_OF_SESSION_RULES) is the maximum number
+    // of session rules an extension can add.</li>
     // </ul>
     // |callback|: Called once the update is complete or has failed. In case of
     // an error, $(ref:runtime.lastError) will be set and no change will be made
     // to the rule set. This can happen for multiple reasons, such as invalid
     // rule format, duplicate rule ID, rule count limit exceeded, and others.
-    [supportsPromises] static void updateSessionRules(
+    static void updateSessionRules(
         UpdateRuleOptions options,
         optional EmptyCallback callback);
 
@@ -682,7 +725,7 @@ namespace declarativeNetRequest {
     // <code>filter</code>.
     // |filter|: An object to filter the list of fetched rules.
     // |callback|: Called with the set of session scoped rules.
-    [supportsPromises] static void getSessionRules(
+    static void getSessionRules(
         optional GetRulesFilter filter,
         GetRulesCallback callback);
 
@@ -698,14 +741,14 @@ namespace declarativeNetRequest {
     // $(ref:runtime.lastError) will be set and no change will be made to set of
     // enabled rulesets. This can happen for multiple reasons, such as invalid
     // ruleset IDs, rule count limit exceeded, or internal errors.
-    [supportsPromises] static void updateEnabledRulesets(
+    static void updateEnabledRulesets(
         UpdateRulesetOptions options,
         optional EmptyCallback callback);
 
     // Returns the ids for the current set of enabled static rulesets.
     // |callback|: Called with a list of ids, where each id corresponds to an
     // enabled static $(ref:Ruleset).
-    [supportsPromises] static void getEnabledRulesets(
+    static void getEnabledRulesets(
         GetEnabledRulesetsCallback callback);
 
     // Disables and enables individual static rules in a $(ref:Ruleset).
@@ -714,7 +757,7 @@ namespace declarativeNetRequest {
     // |callback|: Called once the update is complete. In case of an error,
     // $(ref:runtime.lastError) will be set and no change will be made to the
     // enabled static rules.
-    [supportsPromises] static void updateStaticRules(
+    static void updateStaticRules(
         UpdateStaticRulesOptions options,
         optional EmptyCallback callback);
 
@@ -723,7 +766,7 @@ namespace declarativeNetRequest {
     // |options|: Specifies the ruleset to query.
     // |callback|: Called with a list of ids that correspond to the disabled
     // rules in that ruleset.
-    [supportsPromises] static void getDisabledRuleIds(
+    static void getDisabledRuleIds(
         GetDisabledRuleIdsOptions options,
         GetDisabledRuleIdsCallback callback);
 
@@ -740,14 +783,14 @@ namespace declarativeNetRequest {
     // case of an error, $(ref:runtime.lastError) will be set and no rules will
     // be returned. This can happen for multiple reasons, such as insufficient
     // permissions, or exceeding the quota.
-    [supportsPromises] static void getMatchedRules(
+    static void getMatchedRules(
         optional MatchedRulesFilter filter,
         GetMatchedRulesCallback callback);
 
     // Configures if the action count for tabs should be displayed as the
     // extension action's badge text and provides a way for that action count to
     // be incremented.
-    [supportsPromises] static void setExtensionActionOptions(
+    static void setExtensionActionOptions(
         ExtensionActionOptions options,
         optional EmptyCallback callback);
 
@@ -756,14 +799,14 @@ namespace declarativeNetRequest {
     // |regexOptions|: The regular expression to check.
     // |callback|: Called with details consisting of whether the regular
     // expression is supported and the reason if not.
-    [supportsPromises] static void isRegexSupported(
+    static void isRegexSupported(
         RegexOptions regexOptions,
         IsRegexSupportedCallback callback);
 
     // Returns the number of static rules an extension can enable before the
     // <a href="#global-static-rule-limit">global static rule limit</a> is
     // reached.
-    [supportsPromises] static void getAvailableStaticRuleCount(
+    static void getAvailableStaticRuleCount(
         GetAvailableStaticRuleCountCallback callback);
 
     // Checks if any of the extension's declarativeNetRequest rules would match
@@ -772,7 +815,7 @@ namespace declarativeNetRequest {
     // be used during extension development.
     // |requestDetails|: The request details to test.
     // |callback|: Called with the details of matched rules.
-    [supportsPromises] static void testMatchOutcome(
+    static void testMatchOutcome(
         TestMatchRequestDetails request,
         TestMatchOutcomeCallback callback);
   };
@@ -785,7 +828,7 @@ namespace declarativeNetRequest {
 
     // The maximum number of combined dynamic and session scoped rules an
     // extension can add.
-    [nodoc, value=5000] static long MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES();
+    [nodoc, value=5000, deprecated="There is no longer a combined limit. See $(ref:MAX_NUMBER_OF_DYNAMIC_RULES) and $(ref:MAX_NUMBER_OF_SESSION_RULES)."] static long MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES();
 
     // The maximum number of dynamic rules that an extension can add.
     [value=30000] static long MAX_NUMBER_OF_DYNAMIC_RULES();

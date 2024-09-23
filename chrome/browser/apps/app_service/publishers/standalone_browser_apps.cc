@@ -12,18 +12,19 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
 
@@ -91,6 +92,8 @@ AppPtr StandaloneBrowserApps::CreateStandaloneBrowserApp() {
       Readiness::kReady, full_name, InstallReason::kSystem,
       InstallSource::kSystem);
   app->short_name = short_name;
+  app->installer_package_id =
+      apps::PackageId(apps::PackageType::kSystem, app_constants::kLacrosChrome);
 
   if (crosapi::browser_util::IsAshWebBrowserEnabled()) {
     app->additional_search_terms.push_back("chrome");
@@ -135,7 +138,7 @@ void StandaloneBrowserApps::LaunchAppWithParams(AppLaunchParams&& params,
                                                 LaunchCallback callback) {
   Launch(params.app_id, ui::EF_NONE, LaunchSource::kUnknown, nullptr);
 
-  // TODO(crbug.com/1244506): Add launch return value.
+  // TODO(crbug.com/40787924): Add launch return value.
   std::move(callback).Run(LaunchResult());
 }
 
@@ -160,7 +163,7 @@ void StandaloneBrowserApps::OpenNativeSettings(const std::string& app_id) {
 
 void StandaloneBrowserApps::StopApp(const std::string& app_id) {
   DCHECK_EQ(app_constants::kLacrosAppId, app_id);
-  if (!web_app::IsWebAppsCrosapiEnabled()) {
+  if (!crosapi::browser_util::IsLacrosEnabled()) {
     return;
   }
   DCHECK(browser_app_instance_registry_);
@@ -169,7 +172,7 @@ void StandaloneBrowserApps::StopApp(const std::string& app_id) {
     views::Widget* widget =
         views::Widget::GetWidgetForNativeView(instance->window);
     DCHECK(widget);
-    // TODO(crbug.com/1252688): kUnspecified is only supposed to be used for
+    // TODO(crbug.com/40198883): kUnspecified is only supposed to be used for
     // backwards compatibility with (deprecated) Close(), but there is no enum
     // for other cases where StopApp may be invoked, for example, closing the
     // app from a menu.

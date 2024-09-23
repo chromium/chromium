@@ -28,12 +28,8 @@
 // The AuthenticationManager is used to reset the reauth infobar prompt.
 @property(nonatomic, assign) AuthenticationService* authenticationService;
 
-// Local state is used to retrieve and/or clear the pre-restore identity.
-@property(nonatomic, assign) PrefService* localState;
-
-// Returns whether or not a post restore sign-in promo should be registered
-// with the PromosManager.
-@property(readonly) BOOL shouldRegisterPromo;
+// Profile pref service used to retrieve and/or clear the pre-restore identity.
+@property(nonatomic, assign) PrefService* prefService;
 
 @end
 
@@ -49,7 +45,7 @@
                 authenticationService:
                     (AuthenticationService*)authenticationService
                       identityManager:(signin::IdentityManager*)identityManager
-                           localState:(PrefService*)localState {
+                          prefService:(PrefService*)prefService {
   DCHECK(authenticationService);
   DCHECK(identityManager);
 
@@ -58,7 +54,7 @@
     _promosManager = promosManager;
     _authenticationService = authenticationService;
     _identityManager = identityManager;
-    _localState = localState;
+    _prefService = prefService;
   }
   return self;
 }
@@ -78,7 +74,7 @@
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
   if (self.appState.initStage == InitStageFinal) {
-    self.hasAccountInfo = GetPreRestoreIdentity(_localState).has_value();
+    self.hasAccountInfo = GetPreRestoreIdentity(_prefService).has_value();
     [self maybeRegisterPromo];
     // AuthenticationService is no longer needed.
     self.authenticationService = nullptr;
@@ -102,7 +98,7 @@
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       if (self.promosManager) {
         [self deregisterPromos];
-        ClearPreRestoreIdentity(_localState);
+        ClearPreRestoreIdentity(_prefService);
         self.hasAccountInfo = NO;
         [self shutdown];
       }
@@ -117,28 +113,18 @@
   [self shutdown];
 }
 
-#pragma mark - internal
-
-// Returns whether or not a post restore sign-in promo should be registered
-// with the PromosManager.
-- (BOOL)shouldRegisterPromo {
-  return _hasAccountInfo && _promosManager;
-}
+#pragma mark - Private
 
 // Register the promo with the PromosManager, if the conditions are met,
 // otherwise deregister the promo.
 - (void)maybeRegisterPromo {
-  if (!self.shouldRegisterPromo) {
-    if (_promosManager) {
-      [self deregisterPromos];
-    }
-    if (_hasAccountInfo) {
-      ClearPreRestoreIdentity(_localState);
-    }
-    return;
+  if (_promosManager && _hasAccountInfo) {
+    [self registerPromo];
+  } else if (_promosManager) {
+    [self deregisterPromos];
+  } else if (_hasAccountInfo) {
+    ClearPreRestoreIdentity(_prefService);
   }
-
-  [self registerPromo];
 }
 
 // Registers the promo with the PromosManager.

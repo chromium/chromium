@@ -9,7 +9,6 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
@@ -18,23 +17,14 @@ public class EnhancedProtectionSettingsFragment extends SafeBrowsingSettingsFrag
     @VisibleForTesting static final String PREF_LEARN_MORE = "learn_more";
     private static final String SAFE_BROWSING_IN_CHROME_URL =
             "https://support.google.com/chrome?p=safebrowsing_in_chrome";
-    private boolean mIsEnhancedFriendlierSettingsEnabled =
-            ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION);
 
     @Override
     protected int getPreferenceResource() {
-        if (mIsEnhancedFriendlierSettingsEnabled) {
-            return R.xml.enhanced_protection_preferences_updated;
-        } else {
-            return R.xml.enhanced_protection_preferences;
-        }
+        return R.xml.enhanced_protection_preferences;
     }
 
     @Override
     protected void onCreatePreferencesInternal(Bundle bundle, String s) {
-        if (!mIsEnhancedFriendlierSettingsEnabled) return;
-
         findPreference(PREF_LEARN_MORE)
                 .setSummary(
                         SpanApplier.applySpans(

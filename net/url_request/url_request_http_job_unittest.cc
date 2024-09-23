@@ -30,6 +30,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/request_priority.h"
+#include "net/base/test_proxy_delegate.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_monster.h"
@@ -66,6 +67,11 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "net/android/net_test_support_jni/AndroidNetworkLibraryTestUtil_jni.h"
+#endif
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "net/device_bound_sessions/session_service.h"
+#include "net/device_bound_sessions/test_util.h"
 #endif
 
 using net::test::IsError;
@@ -263,8 +269,7 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestSuccessfulWithOneProxy) {
 
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-          ProxyServerToPacResultElement(
-              proxy_chain.GetProxyServer(/*chain_index=*/0)),
+          ProxyServerToPacResultElement(proxy_chain.First()),
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite writes[] = {MockWrite(kSimpleProxyGetMockWrite)};
@@ -307,9 +312,7 @@ TEST_F(URLRequestHttpJobWithProxyTest,
   // DIRECT.
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-          ProxyServerToPacResultElement(
-              proxy_chain.GetProxyServer(/*chain_index=*/0)) +
-              "; DIRECT",
+          ProxyServerToPacResultElement(proxy_chain.First()) + "; DIRECT",
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
@@ -343,6 +346,57 @@ TEST_F(URLRequestHttpJobWithProxyTest,
   EXPECT_EQ(12, request->received_response_content_length());
   EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+}
+
+// Test that for direct requests that are marked as being for IP Protection, the
+// IP Protection-specific metrics get recorded as expected.
+TEST_F(URLRequestHttpJobWithProxyTest, IpProtectionDirectProxyMetricsRecorded) {
+  const auto kIpProtectionDirectChain =
+      ProxyChain::ForIpProtection(std::vector<ProxyServer>());
+
+  std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  auto proxy_delegate = std::make_unique<TestProxyDelegate>();
+  proxy_delegate->set_proxy_chain(kIpProtectionDirectChain);
+  proxy_resolution_service->SetProxyDelegate(proxy_delegate.get());
+
+  MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
+
+  MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
+                               "Content-Length: 12\r\n\r\n"),
+                      MockRead("Test Content")};
+
+  StaticSocketDataProvider socket_data(reads, writes);
+
+  URLRequestHttpJobWithProxy http_job_with_proxy(
+      std::move(proxy_resolution_service));
+  http_job_with_proxy.socket_factory_.AddSocketDataProvider(&socket_data);
+
+  TestDelegate delegate;
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<URLRequest> request =
+      http_job_with_proxy.context_->CreateRequest(
+          GURL("http://www.example.com"), DEFAULT_PRIORITY, &delegate,
+          TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  request->Start();
+  ASSERT_TRUE(request->is_pending());
+  delegate.RunUntilComplete();
+
+  EXPECT_THAT(delegate.request_status(), IsOk());
+  EXPECT_EQ(kIpProtectionDirectChain, request->proxy_chain());
+  EXPECT_EQ(12, request->received_response_content_length());
+  EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
+  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+
+  histogram_tester.ExpectUniqueSample("Net.HttpJob.IpProtection.BytesSent",
+                                      std::size(kSimpleGetMockWrite),
+                                      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpJob.IpProtection.PrefilterBytesRead.Net",
+      /*sample=*/12, /*expected_bucket_count=*/1);
 }
 
 class URLRequestHttpJobTest : public TestWithTaskEnvironment {
@@ -1173,6 +1227,114 @@ TEST_F(URLRequestHttpJobTest, ShouldBypassHSTS) {
   }
 }
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
+class URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest
+    : public TestWithTaskEnvironment {
+ protected:
+  URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest() {
+    auto context_builder = CreateTestURLRequestContextBuilder();
+    context_builder->set_client_socket_factory_for_testing(&socket_factory_);
+    context_builder->set_device_bound_session_service(
+        std::make_unique<
+            testing::StrictMock<device_bound_sessions::SessionServiceMock>>());
+    context_ = context_builder->Build();
+    request_ = context_->CreateRequest(GURL("http://www.example.com"),
+                                       DEFAULT_PRIORITY, &delegate_,
+                                       TRAFFIC_ANNOTATION_FOR_TESTS);
+  }
+
+  device_bound_sessions::SessionServiceMock& GetMockService() {
+    return *static_cast<device_bound_sessions::SessionServiceMock*>(
+        context_->device_bound_session_service());
+  }
+
+  MockClientSocketFactory socket_factory_;
+  std::unique_ptr<URLRequestContext> context_;
+  TestDelegate delegate_;
+  std::unique_ptr<URLRequest> request_;
+};
+
+TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
+       ShouldRespondToDeviceBoundSessionHeader) {
+  const MockWrite writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.com\r\n"
+                "Connection: keep-alive\r\n"
+                "User-Agent: \r\n"
+                "Accept-Encoding: gzip, deflate\r\n"
+                "Accept-Language: en-us,fr\r\n\r\n")};
+
+  const MockRead reads[] = {
+      MockRead("HTTP/1.1 200 OK\r\n"
+               "Accept-Ranges: bytes\r\n"
+               "Sec-Session-Registration: (ES256);path=\"new\";"
+               "challenge=\"test\"\r\n"
+               "Content-Length: 12\r\n\r\n"),
+      MockRead("Test Content")};
+
+  StaticSocketDataProvider socket_data(reads, writes);
+  socket_factory_.AddSocketDataProvider(&socket_data);
+
+  request_->Start();
+  EXPECT_CALL(GetMockService(), RegisterBoundSession).Times(1);
+  delegate_.RunUntilComplete();
+  EXPECT_THAT(delegate_.request_status(), IsOk());
+}
+
+TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
+       ShouldNotRespondWithoutDeviceBoundSessionHeader) {
+  const MockWrite writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.com\r\n"
+                "Connection: keep-alive\r\n"
+                "User-Agent: \r\n"
+                "Accept-Encoding: gzip, deflate\r\n"
+                "Accept-Language: en-us,fr\r\n\r\n")};
+
+  const MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
+                                     "Accept-Ranges: bytes\r\n"
+                                     "Content-Length: 12\r\n\r\n"),
+                            MockRead("Test Content")};
+
+  StaticSocketDataProvider socket_data(reads, writes);
+  socket_factory_.AddSocketDataProvider(&socket_data);
+
+  request_->Start();
+  EXPECT_CALL(GetMockService(), RegisterBoundSession).Times(0);
+  delegate_.RunUntilComplete();
+  EXPECT_THAT(delegate_.request_status(), IsOk());
+}
+
+TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
+       ShouldProcessDeviceBoundSessionChallengeHeader) {
+  const MockWrite writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.com\r\n"
+                "Connection: keep-alive\r\n"
+                "User-Agent: \r\n"
+                "Accept-Encoding: gzip, deflate\r\n"
+                "Accept-Language: en-us,fr\r\n\r\n")};
+
+  const MockRead reads[] = {
+      MockRead(
+          "HTTP/1.1 200 OK\r\n"
+          "Accept-Ranges: bytes\r\n"
+          "Sec-Session-Challenge: \"session_identifier\";challenge=\"test\"\r\n"
+          "Content-Length: 12\r\n\r\n"),
+      MockRead("Test Content")};
+
+  StaticSocketDataProvider socket_data(reads, writes);
+  socket_factory_.AddSocketDataProvider(&socket_data);
+
+  request_->Start();
+  EXPECT_CALL(GetMockService(), SetChallengeForBoundSession).Times(1);
+  delegate_.RunUntilComplete();
+  EXPECT_THAT(delegate_.request_status(), IsOk());
+}
+
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
 namespace {
 std::unique_ptr<test_server::HttpResponse> HandleRequest(
     const std::string_view& content,
@@ -1664,9 +1826,8 @@ bool SetAllCookies(CookieMonster* cm, const CookieList& list) {
 bool CreateAndSetCookie(CookieStore* cs,
                         const GURL& url,
                         const std::string& cookie_line) {
-  auto cookie = CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), std::nullopt /* server_time */,
-      std::nullopt /* cookie_partition_key */);
+  auto cookie =
+      CanonicalCookie::CreateForTesting(url, cookie_line, base::Time::Now());
   if (!cookie)
     return false;
   DCHECK(cs);
@@ -1715,9 +1876,9 @@ TEST_F(URLRequestHttpJobTest, CookieSchemeRequestSchemeHistogram) {
   // CookieMonster::SetCanonicalCookie(), however we're using SetAllCookies() to
   // bypass the source scheme check in order to test the kUnset state which
   // would normally only happen during an existing cookie DB version upgrade.
-  std::unique_ptr<CanonicalCookie> unset_cookie1 = CanonicalCookie::Create(
-      secure_url_for_unset1, "NoSourceSchemeHttps=val", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
+  std::unique_ptr<CanonicalCookie> unset_cookie1 =
+      CanonicalCookie::CreateForTesting(
+          secure_url_for_unset1, "NoSourceSchemeHttps=val", base::Time::Now());
   unset_cookie1->SetSourceScheme(net::CookieSourceScheme::kUnset);
 
   CookieList list1 = {*unset_cookie1};
@@ -1735,9 +1896,10 @@ TEST_F(URLRequestHttpJobTest, CookieSchemeRequestSchemeHistogram) {
   GURL nonsecure_url_for_unset2("http://unset2.example:7");
   GURL secure_url_for_unset2("https://unset2.example:7");
 
-  std::unique_ptr<CanonicalCookie> unset_cookie2 = CanonicalCookie::Create(
-      nonsecure_url_for_unset2, "NoSourceSchemeHttp=val", base::Time::Now(),
-      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
+  std::unique_ptr<CanonicalCookie> unset_cookie2 =
+      CanonicalCookie::CreateForTesting(nonsecure_url_for_unset2,
+                                        "NoSourceSchemeHttp=val",
+                                        base::Time::Now());
   unset_cookie2->SetSourceScheme(net::CookieSourceScheme::kUnset);
 
   CookieList list2 = {*unset_cookie2};
@@ -1826,21 +1988,21 @@ TEST_F(URLRequestHttpJobTest, PrivacyMode_ExclusionReason) {
       req->maybe_sent_cookies(),
       UnorderedElementsAre(
           MatchesCookieWithAccessResult(
-              MatchesCookieWithName("one"),
+              MatchesCookieWithNameSourceType("one", CookieSourceType::kHTTP),
               MatchesCookieAccessResult(
                   HasExactlyExclusionReasonsForTesting(
                       std::vector<CookieInclusionStatus::ExclusionReason>{
                           CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
                   _, _, _)),
           MatchesCookieWithAccessResult(
-              MatchesCookieWithName("two"),
+              MatchesCookieWithNameSourceType("two", CookieSourceType::kHTTP),
               MatchesCookieAccessResult(
                   HasExactlyExclusionReasonsForTesting(
                       std::vector<CookieInclusionStatus::ExclusionReason>{
                           CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
                   _, _, _)),
           MatchesCookieWithAccessResult(
-              MatchesCookieWithName("three"),
+              MatchesCookieWithNameSourceType("three", CookieSourceType::kHTTP),
               MatchesCookieAccessResult(
                   HasExactlyExclusionReasonsForTesting(
                       std::vector<CookieInclusionStatus::ExclusionReason>{
@@ -1890,21 +2052,24 @@ TEST_F(URLRequestHttpJobTest, IndividuallyBlockedCookies) {
       req->maybe_sent_cookies(),
       UnorderedElementsAre(
           MatchesCookieWithAccessResult(
-              MatchesCookieWithName("blocked_one"),
+              MatchesCookieWithNameSourceType("blocked_one",
+                                              CookieSourceType::kHTTP),
               MatchesCookieAccessResult(
                   HasExactlyExclusionReasonsForTesting(
                       std::vector<CookieInclusionStatus::ExclusionReason>{
                           CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
                   _, _, _)),
           MatchesCookieWithAccessResult(
-              MatchesCookieWithName("blocked_two"),
+              MatchesCookieWithNameSourceType("blocked_two",
+                                              CookieSourceType::kHTTP),
               MatchesCookieAccessResult(
                   HasExactlyExclusionReasonsForTesting(
                       std::vector<CookieInclusionStatus::ExclusionReason>{
                           CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
                   _, _, _)),
           MatchesCookieWithAccessResult(
-              MatchesCookieWithName("allowed"),
+              MatchesCookieWithNameSourceType("allowed",
+                                              CookieSourceType::kHTTP),
               MatchesCookieAccessResult(IsInclude(), _, _, _))));
 }
 
@@ -2127,12 +2292,14 @@ TEST_F(URLRequestHttpJobTest, PartitionedCookiePrivacyMode) {
         req->maybe_sent_cookies(),
         UnorderedElementsAre(
             MatchesCookieWithAccessResult(
-                MatchesCookieWithName("__Host-partitioned"),
+                MatchesCookieWithNameSourceType("__Host-partitioned",
+                                                CookieSourceType::kHTTP),
                 MatchesCookieAccessResult(HasExactlyExclusionReasonsForTesting(
                                               want_exclusion_reasons),
                                           _, _, _)),
             MatchesCookieWithAccessResult(
-                MatchesCookieWithName("__Host-unpartitioned"),
+                MatchesCookieWithNameSourceType("__Host-unpartitioned",
+                                                CookieSourceType::kHTTP),
                 MatchesCookieAccessResult(
                     HasExactlyExclusionReasonsForTesting(
                         std::vector<CookieInclusionStatus::ExclusionReason>{
@@ -2156,14 +2323,16 @@ TEST_F(URLRequestHttpJobTest, PartitionedCookiePrivacyMode) {
         req->maybe_sent_cookies(),
         UnorderedElementsAre(
             MatchesCookieWithAccessResult(
-                MatchesCookieWithName("__Host-partitioned"),
+                MatchesCookieWithNameSourceType("__Host-partitioned",
+                                                CookieSourceType::kHTTP),
                 MatchesCookieAccessResult(
                     HasExactlyExclusionReasonsForTesting(
                         std::vector<CookieInclusionStatus::ExclusionReason>{
                             CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
                     _, _, _)),
             MatchesCookieWithAccessResult(
-                MatchesCookieWithName("__Host-unpartitioned"),
+                MatchesCookieWithNameSourceType("__Host-unpartitioned",
+                                                CookieSourceType::kHTTP),
                 MatchesCookieAccessResult(
                     HasExactlyExclusionReasonsForTesting(
                         std::vector<CookieInclusionStatus::ExclusionReason>{

@@ -32,20 +32,28 @@
 <translation id="2175927920773552910">二維條碼</translation>
 <translation id="2244252133441425811">啟用影片每秒畫格數挑選器</translation>
 <translation id="2271433936731426666">啟用原大影片快照</translation>
+<translation id="2281736597583450397">使用強化變焦功能，相片細節更清晰</translation>
 <translation id="2320741269052147773">向左平移</translation>
+<translation id="2360840973209616515">此相機應用程式由你的管理員管理。
+        詳情請聯絡管理員。</translation>
+<translation id="2442754296994859145">複製即可驗證內容，展開則可停止掃瞄。</translation>
+<translation id="2486151619109781620">收合對話框並開始掃瞄</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2501853267655415902">停咗錄影</translation>
 <translation id="2517472476991765520">掃瞄</translation>
 <translation id="2549985041256363841">開始錄影</translation>
 <translation id="2577915835281444458">系統即將停止錄製內容，請騰出裝置儲存空間。</translation>
 <translation id="2599796128805996109">後置鏡頭</translation>
+<translation id="2654491636277477479">複製偵測到的文字</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> 秒</translation>
 <translation id="2761536921376153655">掃瞄類型</translation>
 <translation id="28682968802727151">鏡像預覽</translation>
 <translation id="2879583609344924966">插入咗 <ph name="CAMERA" />。</translation>
 <translation id="3067436040345934772">向右平移</translation>
 <translation id="3081586908890909590">切換至錄影模式</translation>
+<translation id="3091480460059548935">預覽中的文字偵測功能</translation>
 <translation id="313467653172006084">每秒畫格數：30</translation>
+<translation id="3157038259444425153">現在你可以直接複製相片中的文字</translation>
 <translation id="3158534262962737808">加入「<ph name="WIFINAME" />」</translation>
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3240426699337459095">已複製連結</translation>
@@ -65,9 +73,7 @@
 <translation id="4118525110028899586">暫停錄影</translation>
 <translation id="4121305183798804752">偵測到文件</translation>
 <translation id="414641094616694804">此相機無法變更解像度</translation>
-<translation id="4176463684765177261">已停用</translation>
 <translation id="428234092390943511">頁面縮圖</translation>
-<translation id="4349714250734879769">由 Chrome 縮放畫面</translation>
 <translation id="4383571725254449280">列印效能記錄</translation>
 <translation id="4445542136948522167">停止拍照</translation>
 <translation id="4570032796877367747">前置鏡頭</translation>
@@ -80,7 +86,6 @@
 <translation id="4864143361253542638">已掃瞄的頁面清單</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">複製連結網址 <ph name="URL" /></translation>
-<translation id="491895758387112773">以多流功能錄製影片</translation>
 <translation id="495170559598752135">動作</translation>
 <translation id="4984613436295737187">四倍高清 (1440p)</translation>
 <translation id="5034763830503483128">相片長寬比</translation>
@@ -93,6 +98,7 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5320594929574852403">向左移</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5634947914995388399">展開對話框並停止掃瞄</translation>
 <translation id="5662366948659129155">正在掃瞄第 <ph name="COUNT" /> 頁</translation>
 <translation id="5671277269877808209">正方形</translation>
 <translation id="574392208103952083">中</translation>
@@ -106,6 +112,7 @@
 <translation id="5975083100439434680">縮小</translation>
 <translation id="5976160379964388480">其他</translation>
 <translation id="6073451960410192870">停止錄影</translation>
+<translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6197807149213783179">儲存元數據</translation>
 <translation id="6233780560267770709">3 x 3</translation>
 <translation id="6243827288366940320">黃金比例</translation>
@@ -115,11 +122,14 @@
 如果您的意見和圖片或影片品質有關，請附上範例相片或影片並說明問題 (例如相片太暗或無法聚焦)。</translation>
 <translation id="6519884562954018934">加入「<ph name="WIFINAME" />」</translation>
 <translation id="6527303717912515753">分享</translation>
+<translation id="6586509689874700895">首先，按下「<ph name="BUTTON_NAME" />」圖示即可放大。拍照後，就會看見經過強化的細節。</translation>
+<translation id="659539649712855529">複製咗<ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">顯示所有解像度</translation>
 <translation id="6631515515009660915">閂鏡像</translation>
 <translation id="6652737148136672975">用方向鍵嚟移動角落成位置</translation>
 <translation id="667999046851023355">文件</translation>
 <translation id="6681668084120808868">拍攝相片</translation>
+<translation id="6692092766759105707">複製即可驗證內容。</translation>
 <translation id="6778482348691154169">無法拍照</translation>
 <translation id="6888362557094394345">向下移</translation>
 <translation id="695140971690006676">全部重設</translation>
@@ -132,8 +142,8 @@
 <translation id="7337660886763914220">檔案系統錯誤。</translation>
 <translation id="7450541714075000668">已複製文字</translation>
 <translation id="7488619942230388918">錄製 GIF 影片</translation>
+<translation id="7527714402753141485">顯示文字和複製按鈕</translation>
 <translation id="7557677699350329807">切換至下一部相機</translation>
-<translation id="7562584071994185503">複製文字「<ph name="TEXT" />」</translation>
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7608223098072244877">4 乘 4</translation>
 <translation id="761421184377987513">向左下移</translation>
@@ -153,12 +163,12 @@
 <translation id="8145038249676204903">切換至拍照模式</translation>
 <translation id="8167081290930651932">儲存為相片</translation>
 <translation id="8239780215768881278">拍攝影片快照</translation>
-<translation id="8346544573713510785">由相機 HAL 縮放畫面</translation>
 <translation id="8425673304802773841">向下傾斜</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8609951387004618906">開啟 <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">將個咪校去靜音。開咗靜音</translation>
+<translation id="8712637175834984815">我知道了</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8732462232047530626">預覽元數據</translation>
 <translation id="874854738381978209">偵測到 Wi-Fi 網絡。</translation>

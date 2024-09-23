@@ -9,7 +9,6 @@
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_status_provider.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/browsing_data/core/features.h"
 #include "components/policy/core/common/management/platform_management_service.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
@@ -58,9 +57,12 @@ ManagementServiceFactory::ManagementServiceFactory()
           "EnterpriseManagementService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {}
 
 ManagementServiceFactory::~ManagementServiceFactory() = default;

@@ -1,0 +1,141 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.settings.mojom;
+
+import "chrome/test/data/webui/chromeos/settings/os_people_page/password_settings_api.test-mojom";
+import "chrome/test/data/webui/chromeos/settings/os_people_page/pin_settings_api.test-mojom";
+
+// This file contains the definition of the mojo service that can be used in
+// C++ browser tests to manipulate the settings UI. Browser tests that want to
+// use this test api should instantiate OSSettingsBrowserTestMixin.
+
+// The interface to control the lock screen page.
+interface LockScreenSettings {
+
+  enum RecoveryDialogAction {
+    CancelDialog = 0,
+    ConfirmDisabling,
+  };
+
+  // Checks whether the lock screen is unlocked or not.
+  AssertAuthenticated(bool is_authenticated) => ();
+
+  // Unlocks the lock screen page. The page should be locked before calling
+  // this. Crashes if authentication fails.
+  Authenticate(string password) => ();
+
+  // Tries to unlock the lock screen page, but expects authentication to fail.
+  // Crashes if authentication succeeds.
+  AuthenticateIncorrectly(string password) => ();
+
+  // Checks whether a control for changing passwords is visible or not.
+  AssertPasswordControlVisibility(bool is_visible) => ();
+
+  // Navigates to password settings. Crashes if no password settings control is
+  // visible. The return value can be used to interact with password settings.
+  GoToPasswordSettings() =>
+      (pending_remote<PasswordSettingsApi> password_settings);
+
+  // Checks whether a control for recovery is available or not.
+  AssertRecoveryControlAvailability(bool is_available) => ();
+
+  // Checks whether a control for recovery is visible or not.
+  AssertRecoveryControlVisibility(bool is_visible) => ();
+
+  // Checks whether recovery is configured or not according to the recovery
+  // control.
+  AssertRecoveryConfigured(bool is_configured) => ();
+
+  // Checks wheter a control for recovery is focused or not.
+  AssertRecoveryControlFocused() => ();
+
+  // Enables the cryptohome recovery configuration.
+  // Crashes if it is already on or after a click on the recovery toggle
+  // the recovery is still disabled.
+  EnableRecoveryConfiguration() => ();
+
+  // Try to enable data recovery. Data recovery must not be configured before
+  // calling this. Does not assume that the action is successful.
+  TryEnableRecoveryConfiguration() => ();
+
+  // Try to enable data recovery. Data recovery must be configured before
+  // calling this. Does not assume that the action is successful.
+  TryDisableRecoveryConfiguration() => ();
+
+  // The following function expects the cryptohome recovery toggle is on.
+  // Clicks on the recovery toggle, expecting the recovery dialog to show up.
+  // if the param is CancelDialog:
+  // - expects the recovery toggle still enabled state
+  // if the param is ConfirmDisabling:
+  // - expects the recovery toggle changed to disable state
+  // In both cases the function expects the recovery dialog to disappear.
+  // If any of the expectations fail the function crashes.
+  DisableRecoveryConfiguration(RecoveryDialogAction dialogAction) => ();
+
+  // Navigates PIN settings. The return value can be used to interace with PIN
+  // settings.
+  GoToPinSettings() => (pending_remote<PinSettingsApi> pin_settings);
+
+  // Asserts that automatic screen lock is enabled or disabled.
+  AssertAutoLockScreenEnabled(bool is_enabled) => ();
+
+  // Enables automatic screen lock. Assumes that it is currently disabled.
+  EnableAutoLockScreen() => ();
+
+  // Disables automatic screen lock. Assumes that it is currently enabled.
+  DisableAutoLockScreen() => ();
+
+  // Asserts that the auto screen lock control is currently focused.
+  AssertAutoLockScreenFocused() => ();
+
+  // Asserts when lock screen notification setting is not in focus.
+  AssertLockScreenNotificationFocused() => ();
+};
+
+// The interface used to control Google drive settings.
+interface GoogleDriveSettings {
+  // Asserts that the values returned from the Google drive PageHandler match
+  // the supplied values.
+  AssertBulkPinningSpace(string required_space,
+      string free_space) => ();
+
+  // Asserts the values returned from the Google drive PageHandler match the
+  // values returned on the JS element.
+  AssertContentCacheSize(string content_cache_size) => ();
+
+  // Click the clear offline files button and then wait until the new size has
+  // updated correctly.
+  ClickClearOfflineFilesAndAssertNewSize(string new_size) => ();
+};
+
+// An interface that allows clients to manipulate the os settings ui. Served by
+// Javascript injected into the os settings page. Consumed by C++ running in
+// the browser process during tests.
+interface OSSettingsDriver {
+  // Asserts that the lock screen settings page is open. On success, returns a
+  // remote that can be used to operate the lock screen settings page.
+  AssertOnLockScreenSettings() =>
+      (pending_remote<LockScreenSettings> lock_screen_settings);
+
+  // Navigate to lock screen settings. The settings page must be in its initial
+  // state before calling this. The return value can be used to manipulate lock
+  // screen settings.
+  GoToLockScreenSettings() =>
+      (pending_remote<LockScreenSettings> lock_screen_settings);
+
+  // Navigate to Google drive settings subpage. The settings page must be in its
+  // initial state before calling this. The return value can be used to
+  // manipulate Google drive settings.
+  AssertOnGoogleDriveSettings() =>
+      (pending_remote<GoogleDriveSettings> google_drive_settings);
+};
+
+// The interface served from within the browser process in tests. Consumed by
+// the os settings webui.
+interface OSSettingsBrowserProcess {
+  // The Javascript code injected into the os-settings page calls this to pass
+  // a driver remote to the browser process. Can only be called once.
+  RegisterOSSettingsDriver(pending_remote<OSSettingsDriver> driver) => ();
+};

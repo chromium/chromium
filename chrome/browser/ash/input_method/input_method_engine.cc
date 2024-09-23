@@ -12,7 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/system/tray/system_nudge_controller.h"
+#include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "base/check.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
@@ -22,8 +22,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/input_method/ui/input_method_menu_item.h"
-#include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
+#include "chrome/browser/ui/ash/input_method/input_method_menu_item.h"
+#include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -141,7 +141,7 @@ void InputMethodEngine::DiacriticsSettingsChanged() {
   const bool new_value =
       profile_->GetPrefs()->GetBoolean(ash::prefs::kLongPressDiacriticsEnabled);
   if (!new_value) {
-    SystemNudgeController::MaybeRecordNudgeAction(
+    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
         NudgeCatalogName::kDisableDiacritics);
   }
 }
@@ -187,8 +187,9 @@ bool InputMethodEngine::CommitText(int context_id,
 
 void InputMethodEngine::ConfirmComposition(bool reset_engine) {
   TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
-  if (input_context)
+  if (input_context) {
     input_context->ConfirmComposition(reset_engine);
+  }
 }
 
 bool InputMethodEngine::DeleteSurroundingText(int context_id,
@@ -538,8 +539,9 @@ void InputMethodEngine::Focus(
     const TextInputMethod::InputContext& input_context) {
   current_input_type_ = input_context.type;
 
-  if (!IsActive() || current_input_type_ == ui::TEXT_INPUT_TYPE_NONE)
+  if (!IsActive() || current_input_type_ == ui::TEXT_INPUT_TYPE_NONE) {
     return;
+  }
 
   context_id_ = next_context_id_;
   ++next_context_id_;
@@ -548,8 +550,9 @@ void InputMethodEngine::Focus(
 }
 
 void InputMethodEngine::Blur() {
-  if (!IsActive() || current_input_type_ == ui::TEXT_INPUT_TYPE_NONE)
+  if (!IsActive() || current_input_type_ == ui::TEXT_INPUT_TYPE_NONE) {
     return;
+  }
 
   current_input_type_ = ui::TEXT_INPUT_TYPE_NONE;
 
@@ -695,8 +698,9 @@ bool InputMethodEngine::SetButtonHighlighted(
   }
   IMEAssistiveWindowHandlerInterface* aw_handler =
       IMEBridge::Get()->GetAssistiveWindowHandler();
-  if (aw_handler)
+  if (aw_handler) {
     aw_handler->SetButtonHighlighted(button, highlighted);
+  }
   return true;
 }
 
@@ -751,16 +755,18 @@ bool InputMethodEngine::AcceptSuggestionCandidate(
 
   IMEAssistiveWindowHandlerInterface* aw_handler =
       IMEBridge::Get()->GetAssistiveWindowHandler();
-  if (aw_handler)
+  if (aw_handler) {
     aw_handler->AcceptSuggestion(suggestion);
+  }
   return true;
 }
 
 const InputMethodEngine::CandidateWindowProperty&
 InputMethodEngine::GetCandidateWindowProperty(const std::string& engine_id) {
-  if (candidate_window_property_.first != engine_id)
+  if (candidate_window_property_.first != engine_id) {
     candidate_window_property_ = {engine_id,
                                   InputMethodEngine::CandidateWindowProperty()};
+  }
   return candidate_window_property_.second;
 }
 
@@ -912,8 +918,9 @@ bool InputMethodEngine::SetSuggestion(int context_id,
 
   IMEAssistiveWindowHandlerInterface* aw_handler =
       IMEBridge::Get()->GetAssistiveWindowHandler();
-  if (aw_handler)
+  if (aw_handler) {
     aw_handler->ShowSuggestion(details);
+  }
   return true;
 }
 
@@ -929,8 +936,9 @@ bool InputMethodEngine::DismissSuggestion(int context_id, std::string* error) {
 
   IMEAssistiveWindowHandlerInterface* aw_handler =
       IMEBridge::Get()->GetAssistiveWindowHandler();
-  if (aw_handler)
+  if (aw_handler) {
     aw_handler->HideSuggestion();
+  }
   return true;
 }
 
@@ -983,16 +991,18 @@ bool InputMethodEngine::SetAssistiveWindowProperties(
 
   IMEAssistiveWindowHandlerInterface* aw_handler =
       IMEBridge::Get()->GetAssistiveWindowHandler();
-  if (aw_handler)
+  if (aw_handler) {
     aw_handler->SetAssistiveWindowProperties(assistive_window);
+  }
   return true;
 }
 
 void InputMethodEngine::Announce(const std::u16string& message) {
   IMEAssistiveWindowHandlerInterface* aw_handler =
       IMEBridge::Get()->GetAssistiveWindowHandler();
-  if (aw_handler)
+  if (aw_handler) {
     aw_handler->Announce(message);
+  }
 }
 
 void InputMethodEngine::OnProfileWillBeDestroyed(Profile* profile) {
@@ -1029,8 +1039,9 @@ bool InputMethodEngine::UpdateMenuItems(
 
 void InputMethodEngine::HideInputView() {
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
-  if (keyboard_client->is_keyboard_enabled())
+  if (keyboard_client->is_keyboard_enabled()) {
     keyboard_client->HideKeyboard(ash::HideReason::kUser);
+  }
 }
 
 void InputMethodEngine::OnInputMethodOptionsChanged() {
@@ -1063,8 +1074,9 @@ void InputMethodEngine::UpdateComposition(
 void InputMethodEngine::CommitTextToInputContext(int context_id,
                                                  const std::u16string& text) {
   TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context)
+  if (!input_context) {
     return;
+  }
 
   const bool had_composition_text = input_context->HasCompositionText();
   input_context->CommitText(

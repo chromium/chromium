@@ -4,10 +4,17 @@
 
 #include "base/android/token_android.h"
 
-#include "base/base_jni/Token_jni.h"
+#include "build/robolectric_buildflags.h"
 
-namespace base {
-namespace android {
+#if BUILDFLAG(IS_ROBOLECTRIC)
+#include "base/base_robolectric_jni/TokenBase_jni.h"  // nogncheck
+#include "base/base_robolectric_jni/Token_jni.h"      // nogncheck
+#else
+#include "base/base_jni/TokenBase_jni.h"
+#include "base/base_jni/Token_jni.h"
+#endif
+
+namespace base::android {
 
 ScopedJavaLocalRef<jobject> TokenAndroid::Create(JNIEnv* env,
                                                  const base::Token& token) {
@@ -17,14 +24,15 @@ ScopedJavaLocalRef<jobject> TokenAndroid::Create(JNIEnv* env,
 
 base::Token TokenAndroid::FromJavaToken(JNIEnv* env,
                                         const JavaRef<jobject>& j_token) {
-  const uint64_t high = static_cast<uint64_t>(Java_Token_getHigh(env, j_token));
-  const uint64_t low = static_cast<uint64_t>(Java_Token_getLow(env, j_token));
+  const uint64_t high = static_cast<uint64_t>(
+      Java_TokenBase_getHighForSerialization(env, j_token));
+  const uint64_t low = static_cast<uint64_t>(
+      Java_TokenBase_getLowForSerialization(env, j_token));
   return base::Token(high, low);
 }
 
-static ScopedJavaLocalRef<jobject> JNI_Token_CreateRandom(JNIEnv* env) {
-  return TokenAndroid::Create(env, base::Token::CreateRandom());
+static base::Token JNI_Token_CreateRandom(JNIEnv* env) {
+  return base::Token::CreateRandom();
 }
 
-}  // namespace android
-}  // namespace base
+}  // namespace base::android

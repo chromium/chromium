@@ -45,6 +45,10 @@ class ReportScheduler;
 
 namespace policy {
 
+namespace local_user_files {
+class LocalFilesCleanup;
+}
+
 class ArcAppInstallEventLogUploader;
 class CloudExternalDataManager;
 class DeviceManagementService;
@@ -157,6 +161,7 @@ class UserCloudPolicyManagerAsh
 
   // CloudPolicyService::Observer:
   void OnCloudPolicyServiceInitializationCompleted() override;
+  std::string_view name() const override;
 
   // CloudPolicyClient::Observer:
   void OnPolicyFetched(CloudPolicyClient* client) override;
@@ -328,6 +333,10 @@ class UserCloudPolicyManagerAsh
   // whether this class has triggered a re-registration after the client failed
   // to load policy with error |DM_STATUS_SERVICE_DEVICE_NOT_FOUND|.
   bool is_in_reregistration_state_ = false;
+
+  // Tracks LocalUserFilesAllowed policy changes and removes user files if
+  // needed. Used for SkyVault TT version.
+  std::unique_ptr<local_user_files::LocalFilesCleanup> local_files_cleanup_;
 };
 
 }  // namespace policy

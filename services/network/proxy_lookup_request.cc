@@ -41,7 +41,7 @@ void ProxyLookupRequest::Start(const GURL& url) {
       base::BindOnce(&ProxyLookupRequest::DestroySelf, base::Unretained(this)));
   // TODO(mmenke): The NetLogWithSource() means nothing is logged. Fix that.
   //
-  // TODO(https://crbug.com/1023435): Pass along a NetworkAnonymizationKey.
+  // TODO(crbug.com/40107017): Pass along a NetworkAnonymizationKey.
   int result =
       network_context_->url_request_context()
           ->proxy_resolution_service()

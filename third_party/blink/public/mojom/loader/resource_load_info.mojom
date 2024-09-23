@@ -98,14 +98,8 @@ struct ResourceLoadInfo {
   // The mime type.
   string mime_type;
 
-  // True if the response was fetched from the network cache (disk cache or
-  // in-memory cache).
-  // TODO(https://crbug.com/1339708): Rename this field to `was_in_any_cache`
-  // to represent what this field actually means.
+  // True if the response was fetched from the network cache.
   bool was_cached;
-
-  // True if the response was fetched from the network service in-memory cache.
-  bool was_in_network_service_memory_cache = false;
 
   // Various network related information.
   CommonNetworkInfo network_info;

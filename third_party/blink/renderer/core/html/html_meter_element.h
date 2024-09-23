@@ -64,6 +64,8 @@ class CORE_EXPORT HTMLMeterElement final : public HTMLElement {
 
   bool CanContainRangeEndPoint() const override;
 
+  void AdjustStyle(ComputedStyleBuilder& builder) override;
+
   void Trace(Visitor*) const override;
 
  private:
@@ -72,6 +74,7 @@ class CORE_EXPORT HTMLMeterElement final : public HTMLElement {
   bool IsLabelable() const override { return true; }
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  void DidRecalcStyle(const StyleRecalcChange) override;
   void ParseAttribute(const AttributeModificationParams&) override;
 
   void DidElementStateChange();

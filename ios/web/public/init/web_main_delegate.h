@@ -21,7 +21,7 @@ class WebMainDelegate {
   virtual void BasicStartupComplete() {}
 
   // Called right before the process exits.
-  // TODO(crbug.com/965895): This may not be used for anything.  Remove if
+  // TODO(crbug.com/41460422): This may not be used for anything.  Remove if
   // useless.
   virtual void ProcessExiting() {}
 };

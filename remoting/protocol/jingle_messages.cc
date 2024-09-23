@@ -5,6 +5,8 @@
 #include "remoting/protocol/jingle_messages.h"
 
 #include <memory>
+#include <optional>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -54,6 +56,37 @@ const NameMapElement<JingleMessage::Reason> kReasons[] = {
     {JingleMessage::INCOMPATIBLE_PARAMETERS, "incompatible-parameters"},
 };
 
+// The type names "local" and "stun" are not standard but JingleMessage has
+// used them from the start. So in order to remain backwards compatible,
+// we check specifically for those types and override the candidate type name
+// in those cases.
+std::string_view GetLegacyTypeName(const cricket::Candidate& c) {
+  if (c.is_local()) {
+    return "local";
+  }
+  if (c.is_stun()) {
+    return "stun";
+  }
+  return c.type_name();
+}
+
+std::optional<webrtc::IceCandidateType> LegacyTypeNameToCandidateType(
+    std::string_view type) {
+  if (type == "local" || type == "host") {
+    return webrtc::IceCandidateType::kHost;
+  }
+  if (type == "stun" || type == "srflx") {
+    return webrtc::IceCandidateType::kSrflx;
+  }
+  if (type == "prflx") {
+    return webrtc::IceCandidateType::kPrflx;
+  }
+  if (type == "relay") {
+    return webrtc::IceCandidateType::kRelay;
+  }
+  return std::nullopt;
+}
+
 bool ParseIceCredentials(const jingle_xmpp::XmlElement* element,
                          IceTransportInfo::IceCredentials* credentials) {
   DCHECK(element->Name() == QName(kIceTransportNamespace, "credentials"));
@@ -83,7 +116,9 @@ bool ParseIceCandidate(const jingle_xmpp::XmlElement* element,
       element->Attr(QName(kEmptyNamespace, "foundation"));
   const std::string& address = element->Attr(QName(kEmptyNamespace, "address"));
   const std::string& port_str = element->Attr(QName(kEmptyNamespace, "port"));
-  const std::string& type = element->Attr(QName(kEmptyNamespace, "type"));
+  const std::optional<webrtc::IceCandidateType> type =
+      LegacyTypeNameToCandidateType(
+          element->Attr(QName(kEmptyNamespace, "type")));
   const std::string& protocol =
       element->Attr(QName(kEmptyNamespace, "protocol"));
   const std::string& priority_str =
@@ -93,23 +128,28 @@ bool ParseIceCandidate(const jingle_xmpp::XmlElement* element,
 
   int port;
   unsigned priority;
-  int generation;
+  uint32_t generation;
   if (name.empty() || foundation.empty() || address.empty() ||
       !base::StringToInt(port_str, &port) || port < kPortMin ||
-      port > kPortMax || type.empty() || protocol.empty() ||
+      port > kPortMax || !type || protocol.empty() ||
       !base::StringToUint(priority_str, &priority) ||
-      !base::StringToInt(generation_str, &generation)) {
+      !base::StringToUint(generation_str, &generation)) {
     return false;
   }
 
   candidate->name = name;
-
-  candidate->candidate.set_foundation(foundation);
-  candidate->candidate.set_address(rtc::SocketAddress(address, port));
-  candidate->candidate.set_type(type);
-  candidate->candidate.set_protocol(protocol);
-  candidate->candidate.set_priority(priority);
-  candidate->candidate.set_generation(generation);
+  // Construct a new candidate instance and assign to `candidate->candidate`.
+  // The reason for this is to avoid depending on setters that are being
+  // deprecated.
+  candidate->candidate = {candidate->candidate.component(),
+                          protocol,
+                          rtc::SocketAddress(address, port),
+                          priority,
+                          candidate->candidate.username(),
+                          candidate->candidate.password(),
+                          *type,
+                          generation,
+                          foundation};
 
   return true;
 }
@@ -135,7 +175,8 @@ XmlElement* FormatIceCandidate(
                   candidate.candidate.address().ipaddr().ToString());
   result->SetAttr(QName(kEmptyNamespace, "port"),
                   base::NumberToString(candidate.candidate.address().port()));
-  result->SetAttr(QName(kEmptyNamespace, "type"), candidate.candidate.type());
+  result->SetAttr(QName(kEmptyNamespace, "type"),
+                  GetLegacyTypeName(candidate.candidate));
   result->SetAttr(QName(kEmptyNamespace, "protocol"),
                   candidate.candidate.protocol());
   result->SetAttr(QName(kEmptyNamespace, "priority"),
@@ -247,7 +288,7 @@ bool JingleMessage::ParseXml(const jingle_xmpp::XmlElement* stanza,
     if (!ParseErrorCode(error_code_tag->BodyText(), &error_code)) {
       LOG(WARNING) << "Unknown error-code received "
                    << error_code_tag->BodyText();
-      error_code = UNKNOWN_ERROR;
+      error_code = ErrorCode::UNKNOWN_ERROR;
     }
   }
 
@@ -348,7 +389,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessage::ToXml() const {
     reason_tag->AddElement(
         new XmlElement(QName(kJingleNamespace, ValueToName(kReasons, reason))));
 
-    if (error_code != UNKNOWN_ERROR) {
+    if (error_code != ErrorCode::UNKNOWN_ERROR) {
       XmlElement* error_code_tag =
           new XmlElement(QName(kChromotingXmlNamespace, "error-code"));
       jingle_tag->AddElement(error_code_tag);

@@ -22,4 +22,4 @@ struct StructTraits<ax::android::mojom::RectDataView, gfx::Rect> {
 
 }  // namespace mojo
 
-#endif
+#endif  // SERVICES_ACCESSIBILITY_ANDROID_PUBLIC_MOJOM_ACCESSIBILITY_HELPER_MOJOM_TRAITS_H_

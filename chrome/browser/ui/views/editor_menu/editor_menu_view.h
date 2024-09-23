@@ -10,15 +10,15 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
-#include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
+#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
 class ImageButton;
 class FlexLayoutView;
 class View;
+class Widget;
 }  // namespace views
 
 namespace chromeos::editor_menu {
@@ -43,7 +43,7 @@ class EditorMenuView : public PreTargetHandlerView {
 
   ~EditorMenuView() override;
 
-  static views::UniqueWidgetPtr CreateWidget(
+  static std::unique_ptr<views::Widget> CreateWidget(
       EditorMenuMode editor_menu_mode,
       const PresetTextQueries& preset_text_queries,
       const gfx::Rect& anchor_view_bounds,
@@ -52,8 +52,8 @@ class EditorMenuView : public PreTargetHandlerView {
   // PreTargetHandlerView:
   void AddedToWidget() override;
   void RequestFocus() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  int GetHeightForWidth(int width) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
@@ -66,6 +66,8 @@ class EditorMenuView : public PreTargetHandlerView {
   EditorMenuTextfieldView* textfield_for_testing() { return textfield_; }
 
  private:
+  const EditorMenuMode editor_menu_mode_;
+
   void InitLayout(const PresetTextQueries& preset_text_queries);
   void AddTitleContainer();
   void AddChipsContainer(const PresetTextQueries& preset_text_queries);
@@ -78,8 +80,6 @@ class EditorMenuView : public PreTargetHandlerView {
   void OnSettingsButtonPressed();
   void OnChipButtonPressed(const std::string& text_query_id);
 
-  EditorMenuMode editor_menu_mode_;
-
   // `delegate_` outlives `this`.
   raw_ptr<EditorMenuViewDelegate> delegate_ = nullptr;
 
@@ -91,6 +91,8 @@ class EditorMenuView : public PreTargetHandlerView {
   raw_ptr<views::FlexLayoutView> chips_container_ = nullptr;
 
   raw_ptr<EditorMenuTextfieldView> textfield_ = nullptr;
+
+  bool queued_announcement_ = false;
 
   base::WeakPtrFactory<EditorMenuView> weak_factory_{this};
 };

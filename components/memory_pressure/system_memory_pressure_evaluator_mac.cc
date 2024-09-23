@@ -5,7 +5,6 @@
 #include "components/memory_pressure/system_memory_pressure_evaluator_mac.h"
 
 #include <CoreFoundation/CoreFoundation.h>
-
 #include <dlfcn.h>
 #include <stddef.h>
 #include <sys/sysctl.h>

@@ -33,9 +33,11 @@
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/net_log/net_export_file_writer.h"
 #import "components/network_time/network_time_tracker.h"
+#import "components/os_crypt/async/browser/os_crypt_async.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/sessions/core/session_id_generator.h"
+#import "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #import "components/translate/core/browser/translate_download_manager.h"
 #import "components/ukm/ukm_service.h"
 #import "components/update_client/configurator.h"
@@ -43,8 +45,6 @@
 #import "components/variations/service/variations_service.h"
 #import "components/version_info/channel.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/browser_state/model/chrome_browser_state_manager_impl.h"
-#import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/component_updater/model/ios_component_updater_configurator.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/application_breadcrumbs_logger.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -54,16 +54,21 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
 #import "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
+#import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"
+#import "ios/chrome/browser/profile/model/profile_manager_ios_impl.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
-#import "ios/chrome/browser/segmentation_platform/model/otr_web_state_observer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/update_client/model/ios_chrome_update_query_params_delegate.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
+#import "ios/public/provider/chrome/browser/additional_features/additional_features_api.h"
+#import "ios/public/provider/chrome/browser/additional_features/additional_features_controller.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
@@ -135,19 +140,27 @@ ApplicationContextImpl::~ApplicationContextImpl() {
 }
 
 void ApplicationContextImpl::PreCreateThreads() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ios_chrome_io_thread_.reset(
       new IOSChromeIOThread(GetLocalState(), GetNetLog()));
 }
 
 void ApplicationContextImpl::PostCreateThreads() {
+  // Delegate all encryption calls to OSCrypt.
+  os_crypt_async_ = std::make_unique<os_crypt_async::OSCryptAsync>(
+      std::vector<std::pair<os_crypt_async::OSCryptAsync::Precedence,
+                            std::unique_ptr<os_crypt_async::KeyProvider>>>());
+
+  // Trigger an instance grab on a background thread if necessary.
+  std::ignore = os_crypt_async_->GetInstance(base::DoNothing());
+
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&IOSChromeIOThread::InitOnIO,
                                 base::Unretained(ios_chrome_io_thread_.get())));
 }
 
 void ApplicationContextImpl::PreMainMessageLoopRun() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // BrowserPolicyConnectorIOS is created very early because local_state()
   // needs policy to be initialized with the managed preference values.
@@ -176,15 +189,8 @@ void ApplicationContextImpl::PreMainMessageLoopRun() {
 }
 
 void ApplicationContextImpl::StartTearDown() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   tearing_down_ = true;
-
-  // Destroy the segmentation OTR observer before
-  // `chrome_browser_state_manager_`. `segmentation_otr_web_state_observer_` may
-  // not be initialized when segmentation platform feature is disabled
-  if (segmentation_otr_web_state_observer_) {
-    segmentation_otr_web_state_observer_->TearDown();
-  }
 
   // We need to destroy the MetricsServicesManager and NetworkTimeTracker before
   // the IO thread gets destroyed, since the destructor can call the URLFetcher
@@ -203,8 +209,8 @@ void ApplicationContextImpl::StartTearDown() {
     safe_browsing_service_->ShutDown();
   }
 
-  // Need to clear browser states before the IO thread.
-  chrome_browser_state_manager_.reset();
+  // Need to clear profiles before the IO thread.
+  profile_manager_.reset();
 
   // The policy providers managed by `browser_policy_connector_` need to shut
   // down while the IO threads is still alive. The monitoring framework owned by
@@ -234,7 +240,7 @@ void ApplicationContextImpl::StartTearDown() {
 }
 
 void ApplicationContextImpl::PostDestroyThreads() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Resets associated state right after actual thread is stopped as
   // IOSChromeIOThread::Globals cleanup happens in CleanUp on the IO
   // thread, i.e. as the thread exits its message loop.
@@ -246,21 +252,21 @@ void ApplicationContextImpl::PostDestroyThreads() {
 }
 
 void ApplicationContextImpl::OnAppEnterForeground() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!tearing_down_);
 
   OnAppEnterState(AppState::kForeground);
 }
 
 void ApplicationContextImpl::OnAppEnterBackground() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!tearing_down_);
 
   OnAppEnterState(AppState::kBackground);
 }
 
 bool ApplicationContextImpl::WasLastShutdownClean() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   metrics::MetricsService* metrics_service = GetMetricsService();
   if (metrics_service) {
     return metrics_service->WasLastShutdownClean();
@@ -269,7 +275,7 @@ bool ApplicationContextImpl::WasLastShutdownClean() {
 }
 
 PrefService* ApplicationContextImpl::GetLocalState() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!local_state_) {
     CreateLocalState();
   }
@@ -278,46 +284,46 @@ PrefService* ApplicationContextImpl::GetLocalState() {
 
 net::URLRequestContextGetter*
 ApplicationContextImpl::GetSystemURLRequestContext() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ios_chrome_io_thread_->system_url_request_context_getter();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ApplicationContextImpl::GetSharedURLLoaderFactory() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ios_chrome_io_thread_->GetSharedURLLoaderFactory();
 }
 
 network::mojom::NetworkContext*
 ApplicationContextImpl::GetSystemNetworkContext() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ios_chrome_io_thread_->GetSystemNetworkContext();
 }
 
 const std::string& ApplicationContextImpl::GetApplicationLocale() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!application_locale_.empty());
   return application_locale_;
 }
 
 const std::string& ApplicationContextImpl::GetApplicationCountry() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!application_country_.empty());
   return application_country_;
 }
 
-ios::ChromeBrowserStateManager*
-ApplicationContextImpl::GetChromeBrowserStateManager() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  if (!chrome_browser_state_manager_) {
-    chrome_browser_state_manager_.reset(new ChromeBrowserStateManagerImpl());
+ProfileManagerIOS* ApplicationContextImpl::GetProfileManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!profile_manager_) {
+    profile_manager_ = std::make_unique<ProfileManagerIOSImpl>(
+        GetLocalState(), base::PathService::CheckedGet(ios::DIR_USER_DATA));
   }
-  return chrome_browser_state_manager_.get();
+  return profile_manager_.get();
 }
 
 metrics_services_manager::MetricsServicesManager*
 ApplicationContextImpl::GetMetricsServicesManager() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Only create the objects if teardown hasn't started yet, as otherwise these
   // may have already been destroyed.
   if (!metrics_services_manager_ && !tearing_down_) {
@@ -330,7 +336,7 @@ ApplicationContextImpl::GetMetricsServicesManager() {
 }
 
 metrics::MetricsService* ApplicationContextImpl::GetMetricsService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* metrics_services_manager = GetMetricsServicesManager();
   if (metrics_services_manager_) {
     return metrics_services_manager->GetMetricsService();
@@ -338,8 +344,19 @@ metrics::MetricsService* ApplicationContextImpl::GetMetricsService() {
   return nullptr;
 }
 
+signin::ActivePrimaryAccountsMetricsRecorder*
+ApplicationContextImpl::GetActivePrimaryAccountsMetricsRecorder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!active_primary_accounts_metrics_recorder_) {
+    active_primary_accounts_metrics_recorder_ =
+        std::make_unique<signin::ActivePrimaryAccountsMetricsRecorder>(
+            *GetLocalState());
+  }
+  return active_primary_accounts_metrics_recorder_.get();
+}
+
 ukm::UkmRecorder* ApplicationContextImpl::GetUkmRecorder() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* metrics_services_manager = GetMetricsServicesManager();
   if (metrics_services_manager_) {
     return metrics_services_manager->GetUkmService();
@@ -348,7 +365,7 @@ ukm::UkmRecorder* ApplicationContextImpl::GetUkmRecorder() {
 }
 
 variations::VariationsService* ApplicationContextImpl::GetVariationsService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* metrics_services_manager = GetMetricsServicesManager();
   if (metrics_services_manager_) {
     return metrics_services_manager->GetVariationsService();
@@ -357,12 +374,12 @@ variations::VariationsService* ApplicationContextImpl::GetVariationsService() {
 }
 
 net::NetLog* ApplicationContextImpl::GetNetLog() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return net::NetLog::Get();
 }
 
 net_log::NetExportFileWriter* ApplicationContextImpl::GetNetExportFileWriter() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!net_export_file_writer_) {
     net_export_file_writer_ = std::make_unique<net_log::NetExportFileWriter>();
   }
@@ -371,7 +388,7 @@ net_log::NetExportFileWriter* ApplicationContextImpl::GetNetExportFileWriter() {
 
 network_time::NetworkTimeTracker*
 ApplicationContextImpl::GetNetworkTimeTracker() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!network_time_tracker_) {
     network_time_tracker_.reset(new network_time::NetworkTimeTracker(
         base::WrapUnique(new base::DefaultClock),
@@ -382,13 +399,13 @@ ApplicationContextImpl::GetNetworkTimeTracker() {
 }
 
 IOSChromeIOThread* ApplicationContextImpl::GetIOSChromeIOThread() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(ios_chrome_io_thread_.get());
   return ios_chrome_io_thread_.get();
 }
 
 gcm::GCMDriver* ApplicationContextImpl::GetGCMDriver() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!gcm_driver_) {
     CreateGCMDriver();
   }
@@ -398,7 +415,7 @@ gcm::GCMDriver* ApplicationContextImpl::GetGCMDriver() {
 
 component_updater::ComponentUpdateService*
 ApplicationContextImpl::GetComponentUpdateService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!component_updater_) {
     // Creating the component updater does not do anything, components need to
     // be registered and Start() needs to be called.
@@ -412,7 +429,7 @@ ApplicationContextImpl::GetComponentUpdateService() {
 }
 
 SafeBrowsingService* ApplicationContextImpl::GetSafeBrowsingService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!safe_browsing_service_) {
     safe_browsing_service_ = base::MakeRefCounted<SafeBrowsingServiceImpl>();
   }
@@ -421,7 +438,7 @@ SafeBrowsingService* ApplicationContextImpl::GetSafeBrowsingService() {
 
 network::NetworkConnectionTracker*
 ApplicationContextImpl::GetNetworkConnectionTracker() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!network_connection_tracker_) {
     DCHECK(!network_change_manager_);
     network_change_manager_ =
@@ -435,7 +452,7 @@ ApplicationContextImpl::GetNetworkConnectionTracker() {
 }
 
 BrowserPolicyConnectorIOS* ApplicationContextImpl::GetBrowserPolicyConnector() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!browser_policy_connector_.get()) {
     // Ensure that the ResourceBundle has already been initialized. If this
     // DCHECK ever fails, a call to
@@ -469,8 +486,8 @@ BrowserPolicyConnectorIOS* ApplicationContextImpl::GetBrowserPolicyConnector() {
   return browser_policy_connector_.get();
 }
 
-id<SingleSignOnService> ApplicationContextImpl::GetSSOService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+id<SingleSignOnService> ApplicationContextImpl::GetSingleSignOnService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!single_sign_on_service_) {
     single_sign_on_service_ = ios::provider::CreateSSOService();
     DCHECK(single_sign_on_service_);
@@ -479,33 +496,40 @@ id<SingleSignOnService> ApplicationContextImpl::GetSSOService() {
 }
 
 SystemIdentityManager* ApplicationContextImpl::GetSystemIdentityManager() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!system_identity_manager_) {
     // Give the opportunity for the test hook to override the factory from
     // the provider (allowing EG tests to use a fake SystemIdentityManager).
     system_identity_manager_ = tests_hook::CreateSystemIdentityManager();
     if (!system_identity_manager_) {
       system_identity_manager_ =
-          ios::provider::CreateSystemIdentityManager(GetSSOService());
+          ios::provider::CreateSystemIdentityManager(GetSingleSignOnService());
     }
     DCHECK(system_identity_manager_);
   }
   return system_identity_manager_.get();
 }
 
-segmentation_platform::OTRWebStateObserver*
-ApplicationContextImpl::GetSegmentationOTRWebStateObserver() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  if (!segmentation_otr_web_state_observer_) {
-    segmentation_otr_web_state_observer_ =
-        std::make_unique<segmentation_platform::OTRWebStateObserver>(
-            GetChromeBrowserStateManager());
+AccountProfileMapper* ApplicationContextImpl::GetAccountProfileMapper() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!account_profile_mapper_) {
+    account_profile_mapper_ =
+        std::make_unique<AccountProfileMapper>(GetSystemIdentityManager());
   }
-  return segmentation_otr_web_state_observer_.get();
+  return account_profile_mapper_.get();
+}
+
+IncognitoSessionTracker* ApplicationContextImpl::GetIncognitoSessionTracker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!incognito_session_tracker_) {
+    incognito_session_tracker_ =
+        std::make_unique<IncognitoSessionTracker>(GetProfileManager());
+  }
+  return incognito_session_tracker_.get();
 }
 
 PushNotificationService* ApplicationContextImpl::GetPushNotificationService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!push_notification_service_) {
     push_notification_service_ = ios::provider::CreatePushNotificationService();
     DCHECK(push_notification_service_);
@@ -514,8 +538,22 @@ PushNotificationService* ApplicationContextImpl::GetPushNotificationService() {
   return push_notification_service_.get();
 }
 
+AdditionalFeaturesController*
+ApplicationContextImpl::GetAdditionalFeaturesController() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!additional_features_controller_) {
+    additional_features_controller_ =
+        ios::provider::CreateAdditionalFeaturesController();
+  }
+  return additional_features_controller_.get();
+}
+
+os_crypt_async::OSCryptAsync* ApplicationContextImpl::GetOSCryptAsync() {
+  return os_crypt_async_.get();
+}
+
 void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!tearing_down_);
 
   // Tell the metrics services that the application state changes (taking
@@ -561,14 +599,11 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
     }
   }
 
-  // Request saving the local state prefs and all loaded ChromeBrowserStates'
+  // Request saving the local state prefs and all loaded ProfileIOS'
   // prefs (taking care not to create the objects if they have not been created
   // yet).
-  if (chrome_browser_state_manager_) {
-    std::vector<ChromeBrowserState*> loaded_browser_states =
-        chrome_browser_state_manager_->GetLoadedBrowserStates();
-
-    for (ChromeBrowserState* browser_state : loaded_browser_states) {
+  if (profile_manager_) {
+    for (ProfileIOS* profile : profile_manager_->GetLoadedProfiles()) {
       switch (app_state) {
         case AppState::kForeground:
           // Nothing extra to do when entering foreground.
@@ -576,17 +611,17 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
 
         case AppState::kBackground:
           if (history::HistoryService* history_service =
-                  ios::HistoryServiceFactory::GetForBrowserStateIfExists(
-                      browser_state, ServiceAccessType::EXPLICIT_ACCESS)) {
+                  ios::HistoryServiceFactory::GetForProfileIfExists(
+                      profile, ServiceAccessType::EXPLICIT_ACCESS)) {
             history_service->HandleBackgrounding();
           }
           break;
       }
 
       // No need to check that `GetPrefs()` returns non-null value since the
-      // ChromeBrowserState owns its PrefService and thus the method cannot
+      // ProfileIOS owns its PrefService and thus the method cannot
       // return null.
-      browser_state->GetPrefs()->CommitPendingWrite();
+      profile->GetPrefs()->CommitPendingWrite();
     }
   }
 
@@ -599,14 +634,14 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
 }
 
 void ApplicationContextImpl::SetApplicationLocale(const std::string& locale) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   application_locale_ = locale;
   translate::TranslateDownloadManager::GetInstance()->set_application_locale(
       application_locale_);
 }
 
 void ApplicationContextImpl::CreateLocalState() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!local_state_);
 
   base::FilePath local_state_path;
@@ -643,7 +678,7 @@ void ApplicationContextImpl::CreateLocalState() {
 }
 
 void ApplicationContextImpl::CreateGCMDriver() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!gcm_driver_);
 
   base::FilePath store_path;

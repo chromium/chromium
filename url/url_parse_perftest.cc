@@ -21,7 +21,7 @@ TEST(URLParse, FullURL) {
   base::PerfTimeLogger timer("Full_URL_Parse_AMillion");
 
   for (int i = 0; i < 1000000; i++)
-    url::ParseStandardURL(kUrl.data(), kUrl.size(), &parsed);
+    parsed = url::ParseStandardURL(kUrl);
   timer.Done();
 }
 
@@ -46,41 +46,34 @@ TEST(URLParse, TypicalURLParse) {
   // Do this 1/3 of a million times since we do 3 different URLs.
   base::PerfTimeLogger parse_timer("Typical_URL_Parse_AMillion");
   for (int i = 0; i < 333333; i++) {
-    url::ParseStandardURL(kTypicalUrl1.data(), kTypicalUrl1.size(), &parsed1);
-    url::ParseStandardURL(kTypicalUrl2.data(), kTypicalUrl2.size(), &parsed2);
-    url::ParseStandardURL(kTypicalUrl3.data(), kTypicalUrl3.size(), &parsed3);
+    parsed1 = url::ParseStandardURL(kTypicalUrl1);
+    parsed2 = url::ParseStandardURL(kTypicalUrl2);
+    parsed3 = url::ParseStandardURL(kTypicalUrl3);
   }
   parse_timer.Done();
 }
 
 // Includes both parsing and canonicalization with no mallocs.
 TEST(URLParse, TypicalURLParseCanon) {
-  url::Parsed parsed1;
-  url::Parsed parsed2;
-  url::Parsed parsed3;
-
   base::PerfTimeLogger canon_timer("Typical_Parse_Canon_AMillion");
   url::Parsed out_parsed;
   url::RawCanonOutput<1024> output;
   for (int i = 0; i < 333333; i++) {  // divide by 3 so we get 1M
-    url::ParseStandardURL(kTypicalUrl1.data(), kTypicalUrl1.size(), &parsed1);
     output.set_length(0);
     url::CanonicalizeStandardURL(
-        kTypicalUrl1.data(), parsed1,
+        kTypicalUrl1.data(), url::ParseStandardURL(kTypicalUrl1),
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output,
         &out_parsed);
 
-    url::ParseStandardURL(kTypicalUrl2.data(), kTypicalUrl2.size(), &parsed2);
     output.set_length(0);
     url::CanonicalizeStandardURL(
-        kTypicalUrl2.data(), parsed2,
+        kTypicalUrl2.data(), url::ParseStandardURL(kTypicalUrl2),
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output,
         &out_parsed);
 
-    url::ParseStandardURL(kTypicalUrl3.data(), kTypicalUrl3.size(), &parsed3);
     output.set_length(0);
     url::CanonicalizeStandardURL(
-        kTypicalUrl3.data(), parsed3,
+        kTypicalUrl3.data(), url::ParseStandardURL(kTypicalUrl3),
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output,
         &out_parsed);
   }
@@ -89,34 +82,27 @@ TEST(URLParse, TypicalURLParseCanon) {
 
 // Includes both parsing and canonicalization, and mallocs for the output.
 TEST(URLParse, TypicalURLParseCanonStdString) {
-  url::Parsed parsed1;
-  url::Parsed parsed2;
-  url::Parsed parsed3;
-
   base::PerfTimeLogger canon_timer("Typical_Parse_Canon_AMillion");
   url::Parsed out_parsed;
   for (int i = 0; i < 333333; i++) {  // divide by 3 so we get 1M
-    url::ParseStandardURL(kTypicalUrl1.data(), kTypicalUrl1.size(), &parsed1);
     std::string out1;
     url::StdStringCanonOutput output1(&out1);
     url::CanonicalizeStandardURL(
-        kTypicalUrl1.data(), parsed1,
+        kTypicalUrl1.data(), url::ParseStandardURL(kTypicalUrl1),
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output1,
         &out_parsed);
 
-    url::ParseStandardURL(kTypicalUrl2.data(), kTypicalUrl2.size(), &parsed2);
     std::string out2;
     url::StdStringCanonOutput output2(&out2);
     url::CanonicalizeStandardURL(
-        kTypicalUrl2.data(), parsed2,
+        kTypicalUrl2.data(), url::ParseStandardURL(kTypicalUrl2),
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output2,
         &out_parsed);
 
-    url::ParseStandardURL(kTypicalUrl3.data(), kTypicalUrl3.size(), &parsed3);
     std::string out3;
     url::StdStringCanonOutput output3(&out3);
     url::CanonicalizeStandardURL(
-        kTypicalUrl3.data(), parsed3,
+        kTypicalUrl3.data(), url::ParseStandardURL(kTypicalUrl3),
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output3,
         &out_parsed);
   }

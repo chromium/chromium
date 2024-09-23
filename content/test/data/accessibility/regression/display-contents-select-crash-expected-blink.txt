@@ -2,5 +2,7 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++comboBoxSelect collapsed
-++++++++menuListPopup invisible
-++++++++++menuListOption selected=true
+++++++++menuListPopup invisible ispopup=auto
+++++++++++group invisible name='A' nameFrom=title
+++++++++++++genericContainer ignored invisible
+++++++++++++++menuListOption selected=true

@@ -1,0 +1,119 @@
+Document
+++Group IsControlElement=false
+++++Group IsControlElement=false
+++++++Text Name='Default: '
+++++++Edit Name='Default:'
+++++Group IsControlElement=false
+++++++Text Name='Button: '
+++++++Button Name='Button:'
+++++CheckBox Name='Checkbox:' Toggle.ToggleState='Off'
+++++Group IsControlElement=false
+++++++Text Name='Color: '
+++++++Button Name='Color:' Value.Value='0% red 0% green 0% blue'
+++++Group IsControlElement=false
+++++++Text Name='Date: '
+++++++Edit Name='Date:'
+++++++++Group IsControlElement=false
+++++++++++Group IsControlElement=false
+++++++++++++Spinner Name='Month Date:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=12.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++Text Name='/'
+++++++++++++Spinner Name='Day Date:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=31.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++Text Name='/'
+++++++++++++Spinner Name='Year Date:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=275760.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++Button Name='Show date picker' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++Group IsControlElement=false
+++++++Text Name='Datetime: '
+++++++Edit Name='Datetime:'
+++++Group IsControlElement=false
+++++++Text Name='Datetime-local: '
+++++++Edit Name='Datetime-local:'
+++++++++Group IsControlElement=false
+++++++++++Group IsControlElement=false
+++++++++++++Spinner Name='Month Datetime-local:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=12.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++Text Name='/'
+++++++++++++Spinner Name='Day Datetime-local:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=31.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++Text Name='/'
+++++++++++++Spinner Name='Year Datetime-local:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=275760.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++Text Name=' '
+++++++++++++Spinner Name='Hours Datetime-local:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=12.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++Text Name=':'
+++++++++++++Spinner Name='Minutes Datetime-local:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=59.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++Text Name=' '
+++++++++++++Spinner Name='AM/PM Datetime-local:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=2.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++Button Name='Show local date and time picker' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++Group IsControlElement=false
+++++++Text Name='Email: '
+++++++Edit Name='Email:'
+++++Group IsControlElement=false
+++++++Text Name='Empty: '
+++++++Edit Name='Empty:'
+++++Group IsControlElement=false
+++++++Text Name='File: '
+++++++Button Name='File:: No file chosen' Value.Value='No file chosen'
+++++Group IsControlElement=false
+++++++Text Name='Image: '
+++++++Button Name='Image:'
+++++++++Image
+++++++++Text Name='Submit' IsControlElement=false
+++++Text Name=' '
+++++Group IsControlElement=false
+++++++Text Name='Invalid: '
+++++++Edit Name='Invalid:'
+++++Group IsControlElement=false
+++++++Text Name='Month: '
+++++++Edit Name='Month:'
+++++++++Group IsControlElement=false
+++++++++++Group IsControlElement=false
+++++++++++++Spinner Name='Month Month:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=12.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++Text Name=' '
+++++++++++++Spinner Name='Year Month:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=275760.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++Button Name='Show month picker' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++Group IsControlElement=false
+++++++Text Name='Number: '
+++++++Spinner Name='Number:' RangeValue.IsReadOnly=false RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=0.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00
+++++Group IsControlElement=false
+++++++Text Name='Password: '
+++++++Edit Name='Password:' IsPassword=true
+++++RadioButton Name='Radio:' SelectionItem.IsSelected=false
+++++Group IsControlElement=false
+++++++Text Name='Range: '
+++++++Slider Name='Range:' RangeValue.IsReadOnly=false RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=100.00 RangeValue.Minimum=0.00 RangeValue.Value=50.00 Value.Value='50'
+++++Group IsControlElement=false
+++++++Text Name='Reset: '
+++++++Button Name='Reset:'
+++++Group IsControlElement=false
+++++++Text Name='Search: '
+++++++Edit Name='Search:'
+++++Group IsControlElement=false
+++++++Text Name='Submit: '
+++++++Button Name='Submit:'
+++++Group IsControlElement=false
+++++++Text Name='Tel: '
+++++++Edit Name='Tel:'
+++++Group IsControlElement=false
+++++++Text Name='Text: '
+++++++Edit Name='Text:'
+++++Group IsControlElement=false
+++++++Text Name='Time: '
+++++++Group Name='Time:'
+++++++++Group IsControlElement=false
+++++++++++Group IsControlElement=false
+++++++++++++Spinner Name='Hours Time:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=12.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++Text Name=':'
+++++++++++++Spinner Name='Minutes Time:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=59.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++Text Name=' '
+++++++++++++Spinner Name='AM/PM Time:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=2.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++Button Name='Show time picker' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++Group IsControlElement=false
+++++++Text Name='Url: '
+++++++Edit Name='Url:'
+++++Group IsControlElement=false
+++++++Text Name='Week: '
+++++++Edit Name='Week:'
+++++++++Group IsControlElement=false
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='Week '
+++++++++++++Spinner Name='Week Week:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=53.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++++++Text Name=', '
+++++++++++++Spinner Name='Year Week:' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=275760.00 RangeValue.Minimum=1.00 RangeValue.Value=0.00 Value.Value='0'
+++++++++Button Name='Show week picker' ExpandCollapse.ExpandCollapseState='Collapsed'

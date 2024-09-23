@@ -5,10 +5,12 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "components/ukm/android/jni_headers/UkmRecorder_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/ukm/android/jni_headers/UkmRecorder_jni.h"
 
 namespace metrics {
 

@@ -232,7 +232,7 @@ TEST_F(LoopbackOnlyTest, ExtraOnlineLinks) {
   EXPECT_TRUE(GetResultOfRunHaveOnlyLoopbackAddressesJob());
 }
 
-// TODO(crbug.com/1450403): Test HaveOnlyLoopbackAddressesUsingGetifaddrs().
+// TODO(crbug.com/40270154): Test HaveOnlyLoopbackAddressesUsingGetifaddrs().
 
 #endif  // BUILDFLAG(IS_LINUX)
 

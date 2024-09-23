@@ -41,7 +41,7 @@ class VR_UI_EXPORT Ui : public UiInterface,
 
   ~Ui() override;
 
-  // TODO(crbug.com/767957): Refactor to hide these behind the UI interface.
+  // TODO(crbug.com/41346156): Refactor to hide these behind the UI interface.
   UiScene* scene() { return scene_.get(); }
   Model* model_for_test() { return model_.get(); }
 

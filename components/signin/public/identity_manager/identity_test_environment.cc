@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -29,7 +30,9 @@
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
 #include "components/signin/internal/identity_manager/primary_account_mutator_impl.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -223,6 +226,7 @@ IdentityTestEnvironment::IdentityTestEnvironment(
       dependencies_owner_->pref_service();
 
   IdentityManager::RegisterProfilePrefs(test_pref_service->registry());
+  SigninPrefs::RegisterProfilePrefs(test_pref_service->registry());
   IdentityManager::RegisterLocalStatePrefs(test_pref_service->registry());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   account_manager::AccountManager::RegisterPrefs(test_pref_service->registry());
@@ -342,7 +346,6 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
   std::unique_ptr<PrimaryAccountManager> primary_account_manager =
       std::make_unique<PrimaryAccountManager>(
           signin_client, token_service.get(), account_tracker_service.get());
-  primary_account_manager->Initialize();
 
   std::unique_ptr<GaiaCookieManagerService> gaia_cookie_manager_service =
       std::make_unique<GaiaCookieManagerService>(
@@ -456,7 +459,7 @@ void IdentityTestEnvironment::ClearPrimaryAccount() {
 }
 
 AccountInfo IdentityTestEnvironment::MakeAccountAvailable(
-    base::StringPiece email,
+    std::string_view email,
     SimpleAccountAvailabilityOptions options) {
   auto builder = CreateAccountAvailabilityOptionsBuilder();
 
@@ -511,6 +514,10 @@ void IdentityTestEnvironment::SetCookieAccounts(
     const std::vector<CookieParamsForTest>& cookie_accounts) {
   signin::SetCookieAccounts(identity_manager(), test_url_loader_factory(),
                             cookie_accounts);
+}
+
+void IdentityTestEnvironment::TriggerListAccount() {
+  signin::TriggerListAccount(identity_manager(), test_url_loader_factory());
 }
 
 void IdentityTestEnvironment::SetAutomaticIssueOfAccessTokens(bool grant) {
@@ -767,6 +774,15 @@ void IdentityTestEnvironment::SetTestURLLoaderFactory(
            "SigninClient properly.";
   }
   test_url_loader_factory_ = test_url_loader_factory;
+}
+
+int IdentityTestEnvironment::
+    GetNumCallsToPrepareForFetchingAccountCapabilities() {
+  return static_cast<FakeAccountCapabilitiesFetcherFactory*>(
+             identity_manager()
+                 ->GetAccountFetcherService()
+                 ->GetAccountCapabilitiesFetcherFactoryForTest())
+      ->GetNumCallsToPrepareForFetchingAccountCapabilities();
 }
 
 }  // namespace signin

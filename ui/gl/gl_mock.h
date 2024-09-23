@@ -69,7 +69,7 @@ class MockGLInterface {
                         GLenum format,
                         GLenum type,
                         const GLvoid* data) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   MOCK_METHOD10(CompressedTexSubImage3DNoData,
                 void(GLenum target,
@@ -106,7 +106,7 @@ class MockGLInterface {
                                           GLsizei /*imageSize*/,
                                           GLsizei /*dataSize*/,
                                           const void* /*data*/) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void CopySubTextureCHROMIUM(GLuint /*sourceId*/,
@@ -123,7 +123,7 @@ class MockGLInterface {
                               GLboolean /*unpackFlipY*/,
                               GLboolean /*unpackPremultiplyAlpha*/,
                               GLboolean /*unpackUnmultiplyAlpha*/) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void TexImage3DRobustANGLE(GLenum target,
@@ -137,7 +137,7 @@ class MockGLInterface {
                              GLenum type,
                              GLsizei bufSize,
                              const void* pixels) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void TexSubImage3D(
@@ -165,7 +165,7 @@ class MockGLInterface {
                                 GLenum type,
                                 GLsizei bufSize,
                                 const void* pixels) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   MOCK_METHOD10(TexSubImage3DNoData,
@@ -202,7 +202,7 @@ class MockGLInterface {
                              GLsizei* /*columns*/,
                              GLsizei* /*rows*/,
                              void* /*pixels*/) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ReadnPixelsRobustANGLE(GLint /*x*/,
@@ -216,7 +216,7 @@ class MockGLInterface {
                               GLsizei* /*columns*/,
                               GLsizei* /*rows*/,
                               void* /*data*/) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:

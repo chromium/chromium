@@ -17,13 +17,17 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1"
+base64 = "0.13"
 bitflags = "2"
+bytemuck = "1"
 bytes = "1"
 cfg-if = "1"
 cxx = "1"
-font-types = "0.4"
+fend-core = "1"
+font-types = "0.7"
 hex = "0.4"
 hex-literal = "0.4"
+itertools = "0.11"
 lazy_static = "1"
 libc = "0.2"
 log = "0.4"
@@ -34,18 +38,22 @@ qr_code = "2"
 quote = "1"
 rand = "0.8"
 rand_pcg = "0.3"
-read-fonts = "0.15"
+read-fonts = "0.22"
 regex = "1"
 rstest_reuse = "0.5"
 rustc-demangle-capi = "0.1"
 serde = "1"
 serde_json = "1"
-skrifa = "0.15.4"
+skrifa = "0.22"
 small_ctor = "0.1"
 static_assertions = "1"
 strum = "0.25.0"
 strum_macros = "0.25.3"
 wycheproof = "0.4"
+
+[dependencies.png]
+version = "0.17"
+features = ["unstable"]  # For `std::simd`.
 
 [dependencies.tinyvec]
 version = "1.6.0"
@@ -55,10 +63,6 @@ features = ["rustc_1_55"]
 version = "1"
 artifact = "bin"
 
-[dependencies.memoffset]
-version = "0.6"
-features = ["unstable_const"]
-
 [dependencies.rstest]
 default-features = false
 version = "0.17"
@@ -66,8 +70,12 @@ version = "0.17"
 [dependencies.rustversion]
 version = "1"
 
+# Temporarily inform our cargo tooling that we care about
+# the new version of serde_json_lenient. We are in the midst
+# of CLs that move from the older to the newer.
 [dependencies.serde_json_lenient]
-version = "0.1"
+package = "serde_json_lenient"
+version = "0.2"
 features = ["unbounded_depth", "float_roundtrip"]
 
 [dependencies.syn]
@@ -76,3 +84,7 @@ features = ["full"]
 
 [dependencies.unicode-linebreak]
 version = "0.1"
+
+[dependencies.zerocopy]
+version = "0.7.35"
+features = ["derive", "simd"]

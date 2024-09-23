@@ -6,7 +6,6 @@
 #define CHROME_TEST_CHROMEDRIVER_CAPABILITIES_H_
 
 #include <stddef.h>
-#include <third_party/abseil-cpp/absl/types/optional.h>
 
 #include <map>
 #include <memory>
@@ -24,6 +23,7 @@
 #include "chrome/test/chromedriver/chrome/log.h"
 #include "chrome/test/chromedriver/chrome/mobile_device.h"
 #include "chrome/test/chromedriver/net/net_util.h"
+#include "chrome/test/chromedriver/prompt_behavior.h"
 #include "chrome/test/chromedriver/session.h"
 
 namespace base {
@@ -127,7 +127,7 @@ struct Capabilities {
 
   bool strict_file_interactability;
 
-  std::string unhandled_prompt_behavior;
+  std::optional<PromptBehavior> unhandled_prompt_behavior;
 
   //
   // ChromeDriver specific capabilities
@@ -193,7 +193,7 @@ struct Capabilities {
 
   std::set<WebViewInfo::Type> window_types;
 
-  bool webSocketUrl = false;
+  bool web_socket_url = false;
 };
 
 bool GetChromeOptionsDictionary(const base::Value::Dict& params,

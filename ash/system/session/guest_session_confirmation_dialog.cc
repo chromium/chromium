@@ -15,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -64,7 +65,7 @@ void GuestSessionConfirmationDialog::Show() {
   g_dialog_->dialog_model_ = dialog_model.get();
 
   auto bubble = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::MODAL_TYPE_SYSTEM);
+      std::move(dialog_model), ui::mojom::ModalType::kSystem);
   bubble->SetOwnedByWidget(true);
   views::Widget* widget =
       views::DialogDelegate::CreateDialogWidget(std::move(bubble),

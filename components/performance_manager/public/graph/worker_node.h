@@ -8,15 +8,19 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/functional/callback_forward.h"
-#include "base/functional/function_ref.h"
+#include "base/observer_list_types.h"
 #include "base/types/token_type.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"
+#include "components/performance_manager/public/graph/node_set_view.h"
 #include "components/performance_manager/public/resource_attribution/worker_context.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;
+
+namespace url {
+class Origin;
+}
 
 namespace performance_manager {
 
@@ -48,10 +52,11 @@ using execution_context_priority::PriorityAndReason;
 // A client, from the point of view of the worker, is the frame or worker that
 // caused the worker to start running, either because it explicitly created it,
 // or a service worker is registered to handle their network requests.
-class WorkerNode : public Node {
+class WorkerNode : public TypedNode<WorkerNode> {
  public:
-  using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
-  using WorkerNodeVisitor = base::FunctionRef<bool(const WorkerNode*)>;
+  using NodeSet = base::flat_set<const Node*>;
+  template <class ReturnType>
+  using NodeSetView = NodeSetView<NodeSet, ReturnType>;
 
   // The different possible worker types.
   enum class WorkerType {
@@ -62,6 +67,8 @@ class WorkerNode : public Node {
 
   using Observer = WorkerNodeObserver;
   class ObserverDefaultImpl;
+
+  static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kWorker; }
 
   WorkerNode();
 
@@ -88,20 +95,21 @@ class WorkerNode : public Node {
   virtual resource_attribution::WorkerContext GetResourceContext() const = 0;
 
   // Returns the URL of the worker script. This is the final response URL which
-  // takes into account redirections.
+  // takes into account redirections. Note that for dedicated workers, this will
+  // be empty unless the PlzDedicatedWorker feature is enabled.
   virtual const GURL& GetURL() const = 0;
+
+  // Returns the worker's security origin. This will be set even if GetURL() is
+  // empty. See docs/security/origin-vs-url.md for the difference between GURL
+  // and Origin.
+  virtual const url::Origin& GetOrigin() const = 0;
 
   // Returns the current priority of the worker, and the reason for the worker
   // having that particular priority.
   virtual const PriorityAndReason& GetPriorityAndReason() const = 0;
 
   // Returns the frames that are clients of this worker.
-  virtual const base::flat_set<const FrameNode*> GetClientFrames() const = 0;
-
-  // Visits the frames that are clients of this worker. The iteration is halted
-  // if the visitor returns false. Returns true if every call to the visitor
-  // returned true, false otherwise.
-  virtual bool VisitClientFrames(const FrameNodeVisitor& visitor) const = 0;
+  virtual NodeSetView<const FrameNode*> GetClientFrames() const = 0;
 
   // Returns the workers that are clients of this worker.
   // There are 2 cases where this is possible:
@@ -109,12 +117,7 @@ class WorkerNode : public Node {
   //   one of its client worker.
   // - A dedicated worker or a shared worker will become a client of the service
   //   worker that handles their network requests.
-  virtual const base::flat_set<const WorkerNode*> GetClientWorkers() const = 0;
-
-  // Visits the workers that are clients of this worker. (See GetClientWorkers()
-  // for details.) The iteration is halted if the visitor returns false. Returns
-  // true if every call to the visitor returned true, false otherwise.
-  virtual bool VisitClientWorkers(const WorkerNodeVisitor& visitor) const = 0;
+  virtual NodeSetView<const WorkerNode*> GetClientWorkers() const = 0;
 
   // Returns the child workers of this worker.
   // There are 2 cases where a worker can be the child of another worker:
@@ -122,17 +125,7 @@ class WorkerNode : public Node {
   //   a child worker of the parent.
   // - A service worker will become a child worker of every worker for which
   //   it handles network requests.
-  virtual const base::flat_set<const WorkerNode*> GetChildWorkers() const = 0;
-
-  // Visits the child dedicated workers of this frame. The iteration is halted
-  // if the visitor returns false. Returns true if every call to the visitor
-  // returned true, false otherwise.
-  //
-  // The reason why we don't have a generic VisitChildWorkers method is that
-  // a service/shared worker may appear as a child of multiple other nodes
-  // and thus may be visited multiple times.
-  virtual bool VisitChildDedicatedWorkers(
-      const WorkerNodeVisitor& visitor) const = 0;
+  virtual NodeSetView<const WorkerNode*> GetChildWorkers() const = 0;
 
   // TODO(joenotcharles): Move the resource usage estimates to a separate
   // class.
@@ -150,14 +143,14 @@ class WorkerNode : public Node {
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
 // implement the entire interface.
-class WorkerNodeObserver {
+class WorkerNodeObserver : public base::CheckedObserver {
  public:
   WorkerNodeObserver();
 
   WorkerNodeObserver(const WorkerNodeObserver&) = delete;
   WorkerNodeObserver& operator=(const WorkerNodeObserver&) = delete;
 
-  virtual ~WorkerNodeObserver();
+  ~WorkerNodeObserver() override;
 
   // Node lifetime notifications.
 
@@ -174,10 +167,18 @@ class WorkerNodeObserver {
   // Notifications of property changes.
 
   // Invoked when the final url of the worker script has been determined, which
-  // happens when the script has finished loading.
+  // happens when the script has finished loading. Note that for dedicated
+  // workers, this won't be called unless the PlzDedicatedWorker feature is
+  // enabled.
   virtual void OnFinalResponseURLDetermined(const WorkerNode* worker_node) = 0;
 
-  // Invoked when |client_frame_node| becomes a client of |worker_node|.
+  // Invoked before |client_frame_node| becomes a client of |worker_node|. This
+  // is the last chance to traverse the graph and capture state that doesn't
+  // include the worker/frame client relationship.
+  virtual void OnBeforeClientFrameAdded(const WorkerNode* worker_node,
+                                        const FrameNode* client_frame_node) = 0;
+
+  // Invoked after |client_frame_node| becomes a client of |worker_node|.
   virtual void OnClientFrameAdded(const WorkerNode* worker_node,
                                   const FrameNode* client_frame_node) = 0;
 
@@ -186,7 +187,14 @@ class WorkerNodeObserver {
       const WorkerNode* worker_node,
       const FrameNode* client_frame_node) = 0;
 
-  // Invoked when |client_worker_node| becomes a client of |worker_node|.
+  // Invoked before |client_worker_node| becomes a client of |worker_node|. This
+  // is the last chance to traverse the graph and capture state that doesn't
+  // include the worker/worker client relationship.
+  virtual void OnBeforeClientWorkerAdded(
+      const WorkerNode* worker_node,
+      const WorkerNode* client_worker_node) = 0;
+
+  // Invoked after |client_worker_node| becomes a client of |worker_node|.
   virtual void OnClientWorkerAdded(const WorkerNode* worker_node,
                                    const WorkerNode* client_worker_node) = 0;
 
@@ -219,11 +227,16 @@ class WorkerNode::ObserverDefaultImpl : public WorkerNodeObserver {
   void OnWorkerNodeAdded(const WorkerNode* worker_node) override {}
   void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override {}
   void OnFinalResponseURLDetermined(const WorkerNode* worker_node) override {}
+  void OnBeforeClientFrameAdded(const WorkerNode* worker_node,
+                                const FrameNode* client_frame_node) override {}
   void OnClientFrameAdded(const WorkerNode* worker_node,
                           const FrameNode* client_frame_node) override {}
   void OnBeforeClientFrameRemoved(const WorkerNode* worker_node,
                                   const FrameNode* client_frame_node) override {
   }
+  void OnBeforeClientWorkerAdded(
+      const WorkerNode* worker_node,
+      const WorkerNode* client_worker_node) override {}
   void OnClientWorkerAdded(const WorkerNode* worker_node,
                            const WorkerNode* client_worker_node) override {}
   void OnBeforeClientWorkerRemoved(

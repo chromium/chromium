@@ -56,12 +56,12 @@ namespace {
   // We try to copy an _interesting_ section of the original stack trace. For
   // this we find the first null entry (aka the top of the stack) and copy the
   // n frames before it.
-  const void* const* const first_null_entry =
+  const auto first_null_entry =
       std::find(std::begin(source_trace), std::end(source_trace), nullptr);
 
   ::allocation_recorder::StackTrace data;
 
-  for (const void* const* current_item = std::begin(source_trace);
+  for (auto current_item = std::begin(source_trace);
        current_item != first_null_entry; ++current_item) {
     data.mutable_frames()->Add(ConvertStackFrame(*current_item));
   }

@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS priegloba</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> proc., užblokavo administratorius, išsami informacija</translation>
-<translation id="3113153474486991170">Nepavyko atidaryti „<ph name="PATH" />“ iš šios vietos. Nukopijuokite į skiltį „Mano failai“, kad galėtumėte atidaryti.</translation>
 <translation id="3113592018909187986">Liko vienas bandymas. Negalėsite naudoti šio tinklo, kol nustatysite naują PIN kodą.</translation>
 <translation id="3124404833828281817">Svajojantis žmogus</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Atšaukti <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, nesuaktyvintas, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> proc., išsami informacija</translation>
 <translation id="3691184985318546178">Sinhalų k.</translation>
+<translation id="3702842351052426940">SIM kortelė arba „eSIM“ kortelės profilis gali būti išaktyvinti. Pabandykite pakeisti SIM kortelę arba perjungti „eSIM“ kortelės profilius.</translation>
 <translation id="3722341589402358578">Įvyko klaida. Gali būti, kad kai kurie elementai nebuvo perkelti į šiukšliadėžę.</translation>
 <translation id="3726463242007121105">Įrenginio negalima atidaryti, nes nepalaikoma jo failų išdėstymo sistema.</translation>
 <translation id="3727148787322499904">Šio nustatymo pakeitimas turės įtakos visiems bendrinamiems tinklams</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Šį tarpinio serverio nustatymą priverstinai pritaikė administratorius</translation>
 <translation id="3830674330436234648">Atkūrimas nepasiekiamas</translation>
 <translation id="383652340667548381">Serbų</translation>
+<translation id="3839045880592694915">Operatorius neleidžia prijungti modemo. Susisiekite su operatoriumi, jei reikia daugiau išsamios informacijos.</translation>
 <translation id="385051799172605136">Atgal</translation>
-<translation id="3851491607336266896">Prisijungta, ribotas ryšys</translation>
 <translation id="3855472144336161447">Vokiečių „Neo 2“</translation>
 <translation id="3858860766373142691">Pavadinimas</translation>
 <translation id="3866249974567520381">Aprašas</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Neseniai atidaryti „Microsoft“ failai perkelti į „OneDrive“</translation>
 <translation id="4002066346123236978">Pavadinimas</translation>
 <translation id="4017788180641807848">Anglų k. (JAV) su „Workman“ klaviatūra</translation>
-<translation id="4019998208269143058">Prisegti prie sparčiųjų failų</translation>
 <translation id="4040753847560036377">Netinkamas PUK kodas</translation>
 <translation id="4057991113334098539">Aktyvinama...</translation>
 <translation id="4092890906744441904">Airių k.</translation>
+<translation id="4101601646343868113">Prisijunkite prie mobiliojo ryšio tinklo ir patvirtinkite, kad mobiliojo ryšio duomenų planas aktyvus</translation>
 <translation id="4124731372776320263">Sinchronizuojamas vienas Disko failas</translation>
 <translation id="4124935795427217608">Vienaragis</translation>
 <translation id="4131235941541910880">Perkelkite nereikalingus elementus į šiukšliadėžę</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Tamilų k. su „Tamil99“ klaviatūra</translation>
 <translation id="5633226425545095130">Perkėlus šį elementą jis bus bendrinamas su visais, kurie gali peržiūrėti bendrinamą aplanką „<ph name="DESTINATION_NAME" />“.</translation>
 <translation id="5649768706273821470">Klausyti</translation>
+<translation id="5650895901941743674">APN konfigūracijos tikrinimas</translation>
 <translation id="5669691691057771421">Įveskite naują PIN kodą</translation>
 <translation id="5678784840044122290">„Linux“ programa pasiekiama jūsų terminale ir piktograma taip pat gali būti rodoma Paleidimo priemonėje.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Negalima atsijungti nuo archyvo ar virtualiojo disko<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, telefono akumuliatorius <ph name="BATTERY_STATUS" /> %, prisijungti</translation>
 <translation id="6269630227984243955">Malajų k.</translation>
 <translation id="6271903698064569429">Nepavyko įkelti failų, nes „<ph name="SHARED_DRIVE_NAME" />“ nepakanka saugyklos vietos.</translation>
+<translation id="6279140785485544797">Gali būti, kad jūsų mobiliojo ryšio duomenų planas nebegalioja. Dėl palaikymo susisiekite su operatoriumi.</translation>
 <translation id="6287852322318138013">Pasirinkite programą, kad atidarytumėte šį failą</translation>
 <translation id="6295542640242147836">Užrakinti SIM kortelę</translation>
 <translation id="6296410173147755564">Netinkamas PUK kodas</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> archyvas</translation>
 <translation id="6321303798550928047">Mojuojanti ranka</translation>
 <translation id="6327785803543103246">Automatinis žiniatinklio tarpinio serverio aptikimas</translation>
-<translation id="6337014272874260727">Atsegti iš sparčiųjų failų</translation>
 <translation id="6339145975392024142">JAV tarptautinė (AK) klaviatūra</translation>
 <translation id="6356685157277930264">Failų atsiliepimų langas</translation>
 <translation id="6358884629796491903">Drakonas</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Dabartinis katalogas</translation>
 <translation id="6751256176799620176">Pasirinktas 1 aplankas</translation>
 <translation id="6755827872271341378">„ChromeOS Flex“ įrenginys</translation>
+<translation id="6777029074498310250">Jei reikia daugiau informacijos, apsilankykite adresu <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" />.</translation>
 <translation id="6790428901817661496">Žaisti</translation>
 <translation id="6794539005637808366">Atkurkite elementą arba nuvilkite jį į naują aplanką, esantį už šiukšliadėžės ribų</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Tamilų k. su „InScript“ klaviatūra</translation>
 <translation id="7088615885725309056">Ankstesnė</translation>
 <translation id="7103992300314999525">Makedoniečių k.</translation>
+<translation id="7104338189998813914">Bandant pasiekti „OneDrive“ paskyrą kilo problema</translation>
 <translation id="7106346894903675391">Įsigyti daugiau atminties...</translation>
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; – &lt;em&gt;ieškoti Diske&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kanadietiška fonetinė</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Luktelėkite sekundėlę</translation>
 <translation id="7600126690270271294">Serbų k.</translation>
 <translation id="7603724359189955920">Tinkleliai</translation>
+<translation id="7624010287655004652">Užrakino kitas mobiliojo ryšio operatorius</translation>
 <translation id="7627790789328695202">Oi, „<ph name="FILE_NAME" />“ jau yra. Pervardykite jį ir bandykite dar kartą.</translation>
 <translation id="7628656427739290098">Baigta <ph name="PERCENT" /> proc.</translation>
 <translation id="7649070708921625228">Pagalba</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Failų sąrašas pakeistas į miniatiūrų rodinį.</translation>
 <translation id="8601932370724196034">„Crostini“ vaizdo failas</translation>
 <translation id="8609695766746872526">Islandų k.</translation>
+<translation id="8630384863424041081">Įveskite SIM kortelės PIN kodą arba numatytąjį operatoriaus pateiktą PIN kodą. Dėl palaikymo susisiekite su operatoriumi.</translation>
 <translation id="863903787380594467">Netinkamas PIN kodas. Liko bandymų: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – prievadas</translation>
 <translation id="8656407365183407932">Neprisijungus pasiekiamus failus teko pašalinti</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Šis failas yra konfidencialus ir jam taikomi administratoriaus politikos apribojimai.</translation>
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="8713112442029511308">Maltiečių k.</translation>
-<translation id="8714138378966541668">Užrakino teikėjas</translation>
 <translation id="8714406895390098252">Dviratis</translation>
 <translation id="8719721339511222681">Pasirinktas įrašas „<ph name="ENTRY_NAME" />“.</translation>
 <translation id="872537912056138402">Kroatų</translation>

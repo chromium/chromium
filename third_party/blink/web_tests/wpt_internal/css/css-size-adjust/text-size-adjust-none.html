@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta name="assert" content="text-size-adjust: none should disable text size adjustment.">
+<link rel="help" href="https://drafts.csswg.org/css-size-adjust/#propdef-text-size-adjust">
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<style>
+  body {
+    text-size-adjust: none;
+  }
+</style>
+
+<body onload="runTest()">
+  <div id="div">
+    Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello
+    Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello
+    Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello
+    Hello Hello Hello Hello
+  </div>
+</body>
+
+<script>
+  function runTest() {
+    // This should not be needed but is required to work around a bug in
+    // Chrome's old autosizer due to computed style being updated during layout.
+    // TODO(pdr): Remove this when b/340389272 launches.
+    const forceLayout = document.body.offsetHeight;
+
+    test(() => {
+      assert_equals(getComputedStyle(div)['font-size'], '16px');
+    }, 'Text-size-adjust:none should disable adjustment');
+  }
+</script>

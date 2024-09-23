@@ -7,12 +7,14 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
+#include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
 #include "base/system/sys_info.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
@@ -35,7 +37,7 @@ ui::InputDeviceType GetInputDeviceType(
     return ui::INPUT_DEVICE_BLUETOOTH;
   // On Chrome OS emulated on Linux, the keyboard is always "UNKNOWN".
   if (base::SysInfo::IsRunningOnChromeOS())
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED();
   return ui::INPUT_DEVICE_UNKNOWN;
 }
 }  // namespace
@@ -220,7 +222,7 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
     return false;
   }
 
-  if (key_event->type() == ui::ET_KEY_PRESSED) {
+  if (key_event->type() == ui::EventType::kKeyPressed) {
     AccessibilityController* accessibility_controller =
         Shell::Get()->accessibility_controller();
 
@@ -253,7 +255,7 @@ bool AccessibilityEventRewriter::RewriteEventForMagnifier(
     return false;
   }
 
-  if (key_event->type() == ui::ET_KEY_PRESSED) {
+  if (key_event->type() == ui::EventType::kKeyPressed) {
     // If first time key is pressed (e.g. not repeat), start scrolling.
     if (!(key_event->flags() & ui::EF_IS_REPEAT))
       OnMagnifierKeyPressed(key_event);
@@ -262,7 +264,7 @@ bool AccessibilityEventRewriter::RewriteEventForMagnifier(
     return true;
   }
 
-  if (key_event->type() == ui::ET_KEY_RELEASED) {
+  if (key_event->type() == ui::EventType::kKeyReleased) {
     OnMagnifierKeyReleased(key_event);
     return true;
   }
@@ -313,8 +315,8 @@ void AccessibilityEventRewriter::MaybeSendMouseEvent(const ui::Event& event) {
   AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   if (send_mouse_events_ &&
-      (event.type() == ui::ET_MOUSE_MOVED ||
-       event.type() == ui::ET_MOUSE_DRAGGED) &&
+      (event.type() == ui::EventType::kMouseMoved ||
+       event.type() == ui::EventType::kMouseDragged) &&
       (accessibility_controller->fullscreen_magnifier().enabled() ||
        accessibility_controller->docked_magnifier().enabled() ||
        accessibility_controller->spoken_feedback().enabled() ||
@@ -330,7 +332,13 @@ ui::EventDispatchDetails AccessibilityEventRewriter::RewriteEvent(
   if (!delegate_)
     return SendEvent(continuation, &event);
 
-  if (Shell::Get()->accessibility_controller()->IsSwitchAccessRunning()) {
+  // TODO(259372916): Switch to using the tray icon visibility.
+  if (::features::IsAccessibilityMouseKeysEnabled()) {
+    captured = Shell::Get()->mouse_keys_controller()->RewriteEvent(event);
+  }
+
+  if (!captured &&
+      Shell::Get()->accessibility_controller()->IsSwitchAccessRunning()) {
     captured = RewriteEventForSwitchAccess(event, continuation);
   }
 

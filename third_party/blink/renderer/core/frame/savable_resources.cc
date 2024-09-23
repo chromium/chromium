@@ -24,10 +24,8 @@ namespace {
 // Returns |true| if |frame| contains (or should be assumed to contain)
 // a html document.
 bool DoesFrameContainHtmlDocument(Frame* frame, Element* element) {
-  if (frame->IsLocalFrame()) {
-    Document* document = LocalFrame::FromFrameToken(
-                             frame->GetFrameToken().GetAs<LocalFrameToken>())
-                             ->GetDocument();
+  if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+    Document* document = local_frame->GetDocument();
     return document->IsHTMLDocument() || document->IsXHTMLDocument();
   }
 
@@ -146,8 +144,8 @@ String SavableResources::GetSubResourceLinkFromElement(Element* element) {
     // If the link element is not linked to css, ignore it.
     String type = element->getAttribute(html_names::kTypeAttr);
     String rel = element->getAttribute(html_names::kRelAttr);
-    if ((type.ContainsOnlyASCIIOrEmpty() && type.LowerASCII() == "text/css") ||
-        (rel.ContainsOnlyASCIIOrEmpty() && rel.LowerASCII() == "stylesheet")) {
+    if (EqualIgnoringASCIICase(type, "text/css") ||
+        EqualIgnoringASCIICase(rel, "stylesheet")) {
       // TODO(jnd): Add support for extracting links of sub-resources which
       // are inside style-sheet such as @import, url(), etc.
       // See bug: http://b/issue?id=1111667.

@@ -22,9 +22,10 @@
 
 #include <iterator>
 #include <limits>
-#include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "snapshot/memory_snapshot.h"
 
 namespace crashpad {
@@ -140,16 +141,16 @@ void CaptureMemory::PointedToByMemoryRange(const MemorySnapshot& memory,
     return;
   }
 
-  std::unique_ptr<uint8_t[]> buffer(new uint8_t[memory.Size()]);
-  if (!delegate->ReadMemory(memory.Address(), memory.Size(), buffer.get())) {
+  auto buffer = base::HeapArray<uint8_t>::Uninit(memory.Size());
+  if (!delegate->ReadMemory(memory.Address(), memory.Size(), buffer.data())) {
     LOG(ERROR) << "ReadMemory";
     return;
   }
 
   if (delegate->Is64Bit())
-    CaptureAtPointersInRange<uint64_t>(buffer.get(), memory.Size(), delegate);
+    CaptureAtPointersInRange<uint64_t>(buffer.data(), buffer.size(), delegate);
   else
-    CaptureAtPointersInRange<uint32_t>(buffer.get(), memory.Size(), delegate);
+    CaptureAtPointersInRange<uint32_t>(buffer.data(), buffer.size(), delegate);
 }
 
 }  // namespace internal

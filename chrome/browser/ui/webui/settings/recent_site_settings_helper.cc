@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/webui/settings/recent_site_settings_helper.h"
 
-#include "base/containers/cxx20_erase_vector.h"
+#include <vector>
+
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -159,7 +160,7 @@ std::vector<RecentSitePermissions> GetRecentSitePermissions(
     // Remove all permission entries in the incognito map which also have
     // an entry in the regular settings. This may result in an empty setting
     // vector, in which case we remove the map entry.
-    // TODO(https://crbug.com/1049531): Make determining actual source of
+    // TODO(crbug.com/40117710): Make determining actual source of
     // active permission simpler.
     for (auto incognito_iter = incognito_settings.begin();
          incognito_iter != incognito_settings.end();) {
@@ -247,7 +248,7 @@ std::vector<RecentSitePermissions> GetRecentSitePermissions(
                              all_site_permissions.end());
 
   for (auto& site_permissions : all_site_permissions) {
-    base::EraseIf(site_permissions.settings,
+    std::erase_if(site_permissions.settings,
                   [min_timestamp](const TimestampedSetting& x) {
                     return x.timestamp < min_timestamp;
                   });

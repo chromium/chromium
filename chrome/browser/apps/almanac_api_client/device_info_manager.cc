@@ -5,15 +5,18 @@
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
 #include "chrome/browser/apps/user_type_filter.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
@@ -53,19 +56,29 @@ apps::proto::ClientUserContext::UserType ConvertStringUserTypeToProto(
     return apps::proto::ClientUserContext::USERTYPE_CHILD;
   } else if (user_type == apps::kUserTypeGuest) {
     return apps::proto::ClientUserContext::USERTYPE_GUEST;
+  } else if (user_type == apps::kUserTypeManagedGuest) {
+    return apps::proto::ClientUserContext::USERTYPE_MANAGED_GUEST;
   }
   return apps::proto::ClientUserContext::USERTYPE_UNKNOWN;
 }
 
 // Adds version numbers and custom label tag to `info`, returning the updated
 // object. Called on a background thread, since loading these values may block.
-apps::DeviceInfo LoadVersionAndCustomLabel(apps::DeviceInfo info) {
+apps::DeviceInfo LoadVersionAndCustomLabel(apps::DeviceInfo info,
+                                           bool arc_enabled) {
   info.version_info.ash_chrome = version_info::GetVersionNumber();
   std::optional<std::string> platform_version =
       chromeos::version_loader::GetVersion(
           chromeos::version_loader::VERSION_SHORT);
   info.version_info.platform = platform_version.value_or("");
   info.version_info.channel = chrome::GetChannel();
+  // Only set arc_sdk if it is enabled.
+  if (arc_enabled) {
+    base::StringToInt(
+        chromeos::version_loader::GetArcAndroidSdkVersion().value_or(
+            std::string()),
+        &info.version_info.arc_sdk);
+  }
 
   // Load device identifiers from chromeos-config, as per
   // https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/chromeos-config/README.md#identity.
@@ -94,6 +107,14 @@ apps::DeviceInfo LoadVersionAndCustomLabel(apps::DeviceInfo info) {
 
 namespace apps {
 
+VersionInfo::VersionInfo() = default;
+
+VersionInfo::VersionInfo(const VersionInfo& other) = default;
+
+VersionInfo& VersionInfo::operator=(const VersionInfo& other) = default;
+
+VersionInfo::~VersionInfo() = default;
+
 DeviceInfo::DeviceInfo() = default;
 
 DeviceInfo::DeviceInfo(const DeviceInfo& other) = default;
@@ -111,6 +132,9 @@ proto::ClientDeviceContext DeviceInfo::ToDeviceContext() const {
   device_context.mutable_versions()->set_chrome_ash(version_info.ash_chrome);
   device_context.mutable_versions()->set_chrome_os_platform(
       version_info.platform);
+  device_context.mutable_versions()->set_arc_sdk(version_info.arc_sdk);
+  device_context.mutable_versions()->set_steam_client(
+      version_info.steam_client);
   device_context.set_hardware_id(hardware_id);
   if (custom_label_tag.has_value()) {
     device_context.set_custom_label_tag(custom_label_tag.value());
@@ -141,6 +165,21 @@ DeviceInfoManager::~DeviceInfoManager() = default;
 //  - model (OnModelInfo)
 void DeviceInfoManager::GetDeviceInfo(
     base::OnceCallback<void(DeviceInfo)> callback) {
+  if (cached_info_) {
+    std::move(callback).Run(*cached_info_);
+    return;
+  }
+
+  bool is_first_get = pending_callbacks_.empty();
+  pending_callbacks_.push_back(std::move(callback));
+
+  if (!is_first_get) {
+    return;
+  }
+
+  // Start loading the Device Info so that we can cache it and deliver to
+  // pending callbacks.
+
   DeviceInfo device_info;
 
   device_info.board = base::ToLowerASCII(base::SysInfo::HardwareModelName());
@@ -148,9 +187,13 @@ void DeviceInfoManager::GetDeviceInfo(
 
   ash::system::StatisticsProvider* provider =
       ash::system::StatisticsProvider::GetInstance();
-  std::optional<base::StringPiece> hwid =
+  std::optional<std::string_view> hwid =
       provider->GetMachineStatistic(ash::system::kHardwareClassKey);
   device_info.hardware_id = std::string(hwid.value_or(""));
+  // Set steam_client to "TRUE" to indicate it is enabled.
+  if (borealis::BorealisFeatures(profile_).IsEnabled()) {
+    device_info.version_info.steam_client = "TRUE";
+  }
 
   // Locale
   PrefService* prefs = profile_->GetPrefs();
@@ -164,25 +207,27 @@ void DeviceInfoManager::GetDeviceInfo(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&LoadVersionAndCustomLabel, std::move(device_info)),
+      base::BindOnce(&LoadVersionAndCustomLabel, std::move(device_info),
+                     arc::IsArcPlayStoreEnabledForProfile(profile_)),
       base::BindOnce(&DeviceInfoManager::OnLoadedVersionAndCustomLabel,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DeviceInfoManager::OnLoadedVersionAndCustomLabel(
-    base::OnceCallback<void(DeviceInfo)> callback,
-    DeviceInfo device_info) {
-  base::SysInfo::GetHardwareInfo(base::BindOnce(
-      &DeviceInfoManager::OnModelInfo, weak_ptr_factory_.GetWeakPtr(),
-      std::move(callback), std::move(device_info)));
+void DeviceInfoManager::OnLoadedVersionAndCustomLabel(DeviceInfo device_info) {
+  base::SysInfo::GetHardwareInfo(base::BindOnce(&DeviceInfoManager::OnModelInfo,
+                                                weak_ptr_factory_.GetWeakPtr(),
+                                                std::move(device_info)));
 }
 
-void DeviceInfoManager::OnModelInfo(
-    base::OnceCallback<void(DeviceInfo)> callback,
-    DeviceInfo device_info,
-    base::SysInfo::HardwareInfo hardware_info) {
+void DeviceInfoManager::OnModelInfo(DeviceInfo device_info,
+                                    base::SysInfo::HardwareInfo hardware_info) {
   device_info.model = hardware_info.model;
-  std::move(callback).Run(std::move(device_info));
+
+  cached_info_ = std::move(device_info);
+
+  for (auto& callback : std::exchange(pending_callbacks_, {})) {
+    std::move(callback).Run(*cached_info_);
+  }
 }
 
 std::ostream& operator<<(std::ostream& os, const DeviceInfo& device_info) {
@@ -202,6 +247,8 @@ std::ostream& operator<<(std::ostream& os, const VersionInfo& version_info) {
   os << "- Version Info: " << std::endl;
   os << "  - Ash Chrome: " << version_info.ash_chrome << std::endl;
   os << "  - Platform: " << version_info.platform << std::endl;
+  os << "  - ARC SDK: " << version_info.arc_sdk << std::endl;
+  os << "  - Steam client: " << version_info.steam_client << std::endl;
   os << "  - Channel: " << version_info::GetChannelString(version_info.channel)
      << std::endl;
   return os;

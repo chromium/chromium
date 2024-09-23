@@ -41,10 +41,6 @@ mojom("mojo_interfaces") {
   if (enable_print_preview) {
     enabled_features += [ "enable_print_preview" ]
   }
-
-  if (enable_print_content_analysis) {
-    enabled_features += [ "enable_print_content_analysis" ]
-  }
 }
 
 source_set("unit_tests") {

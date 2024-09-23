@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import type {FilesAppEntry} from '../common/js/files_app_entry_types.js';
-import {DialogType} from '../common/js/shared_types.js';
-import {RootType, VolumeType} from '../common/js/volume_manager_types.js';
+import type {DialogType} from '../common/js/shared_types.js';
+import type {RootType, VolumeType} from '../common/js/volume_manager_types.js';
 import type {MetadataItem} from '../foreground/js/metadata/metadata_item.js';
 
 export {DialogType} from '../common/js/shared_types.js';
@@ -28,20 +28,24 @@ export enum EntryType {
 
   // Root for the Recent.
   RECENT = 'RECENT',
+
+  // A folder-like that doesn't have an entry linked to it.
+  MATERIALIZED_VIEW = 'MATERIALIZED_VIEW',
 }
 
 /**
  * The data for each individual file/entry.
- *
- * * `icon` can be either a string or a IconSet which is an object including
- * both high/low DPI icon data.
- *
- * TODO(b/271485133): `children` here only store sub directories for now, it
- * should store all children including files, it's up to the container to do
- * filter and sorting if needed.
  */
 export interface FileData {
-  entry: Entry|FilesAppEntry;
+  /** `key` is the file URL. */
+  key: FileKey;
+  fullPath: string;
+  entry?: Entry|FilesAppEntry;
+
+  /**
+   * `icon` can be either a string or a IconSet which is an object including
+   * both high/low DPI icon data.
+   */
   icon: string|chrome.fileManagerPrivate.IconSet;
   label: string;
   volumeId: VolumeId|null;
@@ -52,6 +56,12 @@ export interface FileData {
   isRootEntry: boolean;
   isEjectable: boolean;
   canExpand: boolean;
+
+  /**
+   * TODO(b/271485133): `children` here only store sub directories for now, it
+   * should store all children including files, it's up to the container to do
+   * filter and sorting if needed.
+   */
   children: FileKey[];
   expanded: boolean;
   disabled: boolean;
@@ -188,6 +198,7 @@ export interface Selection {
  * Represents the entries displayed in the file list/grid.
  */
 export interface DirectoryContent {
+  status: PropStatus;
   keys: FileKey[];
 }
 
@@ -381,6 +392,19 @@ export interface AndroidApp {
 }
 
 /**
+ * A view behaves like a folder, as in, it's a collection of FileData.
+ *
+ * Its content comes from the File Index.
+ */
+export interface MaterializedView {
+  id: string;
+  key: FileKey;
+  label: string;
+  icon: string;
+  isRoot: boolean;
+}
+
+/**
  * Files app's state.
  */
 export interface State {
@@ -397,4 +421,5 @@ export interface State {
   androidApps: Record<string, AndroidApp>;
   bulkPinning?: chrome.fileManagerPrivate.BulkPinProgress;
   preferences?: chrome.fileManagerPrivate.Preferences;
+  materializedViews: MaterializedView[];
 }

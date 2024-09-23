@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.signin.services;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -57,12 +58,13 @@ public class UnifiedConsentServiceBridge {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        boolean isUrlKeyedAnonymizedDataCollectionEnabled(Profile profile);
+        boolean isUrlKeyedAnonymizedDataCollectionEnabled(@JniType("Profile*") Profile profile);
 
-        void setUrlKeyedAnonymizedDataCollectionEnabled(Profile profile, boolean enabled);
+        void setUrlKeyedAnonymizedDataCollectionEnabled(
+                @JniType("Profile*") Profile profile, boolean enabled);
 
-        boolean isUrlKeyedAnonymizedDataCollectionManaged(Profile profile);
+        boolean isUrlKeyedAnonymizedDataCollectionManaged(@JniType("Profile*") Profile profile);
 
-        void recordSyncSetupDataTypesHistogram(Profile profile);
+        void recordSyncSetupDataTypesHistogram(@JniType("Profile*") Profile profile);
     }
 }

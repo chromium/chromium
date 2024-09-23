@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#if defined(UNSAFE_BUFFERS_BUILD)
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "pdf/loader/url_loader_wrapper_impl.h"
 
 #include <stddef.h>
@@ -11,6 +16,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -194,7 +200,7 @@ void URLLoaderWrapperImpl::ParseHeaders(const std::string& response_headers) {
   net::HttpUtil::HeadersIterator it(response_headers.begin(),
                                     response_headers.end(), "\n");
   while (it.GetNext()) {
-    base::StringPiece name = it.name_piece();
+    std::string_view name = it.name_piece();
     if (base::EqualsCaseInsensitiveASCII(name, "content-length")) {
       content_length_ = atoi(it.values().c_str());
     } else if (base::EqualsCaseInsensitiveASCII(name, "accept-ranges")) {

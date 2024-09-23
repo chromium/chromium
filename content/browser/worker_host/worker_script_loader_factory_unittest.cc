@@ -7,10 +7,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
-#include "content/browser/service_worker/service_worker_container_host.h"
+#include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
+#include "content/browser/worker_host/worker_script_loader.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "net/base/isolation_info.h"
@@ -101,21 +102,38 @@ TEST_F(WorkerScriptLoaderFactoryTest, ServiceWorkerContainerHost) {
       kProcessId, DedicatedOrSharedWorkerToken(),
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
       service_worker_handle_.get(), browser_context_getter_,
-      network_loader_factory_, ukm::kInvalidSourceId);
+      network_loader_factory_);
 
   // Load the script.
   network::TestURLLoaderClient client;
   mojo::PendingRemote<network::mojom::URLLoader> loader =
       CreateTestLoaderAndStart(url, factory.get(), &client);
+  base::RunLoop().RunUntilIdle();
+
+  // `SetExecutionReady()` should wait for `OnFetcherCallbackCalled()`.
+  base::WeakPtr<ServiceWorkerClient> service_worker_client =
+      service_worker_handle_->service_worker_client();
+  EXPECT_FALSE(service_worker_client->is_response_committed());
+  EXPECT_FALSE(service_worker_client->is_execution_ready());
+
+  // Emulate CommitResponse() and SetContainerReady() calls that would happen
+  // inside `WorkerScriptFetcher::callback_`.
+  auto container_info =
+      service_worker_handle_->scoped_service_worker_client()
+          ->CommitResponseAndRelease(
+              /*rfh_id=*/std::nullopt, PolicyContainerPolicies(),
+              /*coep_reporter=*/{}, ukm::kInvalidSourceId);
+  (*service_worker_handle_->scoped_service_worker_client())
+      ->SetContainerReady();
+  factory->GetScriptLoader()->OnFetcherCallbackCalled();
   client.RunUntilComplete();
+
   EXPECT_EQ(net::OK, client.completion_status().error_code);
 
   // The container host should be set up.
-  base::WeakPtr<ServiceWorkerContainerHost> container_host =
-      service_worker_handle_->container_host();
-  EXPECT_TRUE(container_host->is_response_committed());
-  EXPECT_TRUE(container_host->is_execution_ready());
-  EXPECT_EQ(url, container_host->url());
+  EXPECT_TRUE(service_worker_client->is_response_committed());
+  EXPECT_TRUE(service_worker_client->is_execution_ready());
+  EXPECT_EQ(url, service_worker_client->url());
 }
 
 // Test a null service worker handle. This typically only happens during
@@ -128,7 +146,7 @@ TEST_F(WorkerScriptLoaderFactoryTest, NullServiceWorkerHandle) {
       kProcessId, DedicatedOrSharedWorkerToken(),
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
       service_worker_handle_.get(), browser_context_getter_,
-      network_loader_factory_, ukm::kInvalidSourceId);
+      network_loader_factory_);
 
   // Destroy the handle.
   service_worker_handle_.reset();
@@ -154,7 +172,7 @@ TEST_F(WorkerScriptLoaderFactoryTest, NullBrowserContext) {
       kProcessId, DedicatedOrSharedWorkerToken(),
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
       service_worker_handle_.get(), browser_context_getter_,
-      network_loader_factory_, ukm::kInvalidSourceId);
+      network_loader_factory_);
 
   // Set a null browser context.
   helper_->context_wrapper()->Shutdown();

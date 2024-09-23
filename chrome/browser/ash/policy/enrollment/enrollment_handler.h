@@ -80,7 +80,6 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
       std::unique_ptr<CloudPolicyClient> client,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const EnrollmentConfig& enrollment_config,
-      LicenseType license_type,
       DMAuth dm_auth,
       const std::string& client_id,
       const std::string& requisition,
@@ -146,8 +145,8 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
     STEP_FINISHED = 15,          // Enrollment process done, no further action.
   };
 
-  // Handles the response to a request for server-backed state keys.
-  void HandleStateKeysResult(const std::vector<std::string>& state_keys);
+  // Handles state keys, present or not.
+  void HandleStateKeys(std::optional<std::vector<std::string>> opt_state_keys);
 
   // Starts attestation based enrollment flow.
   void StartAttestationBasedEnrollmentFlow();

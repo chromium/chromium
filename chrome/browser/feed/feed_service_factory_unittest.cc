@@ -4,7 +4,6 @@
 
 #include "chrome/browser/feed/feed_service_factory.h"
 
-#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feed {

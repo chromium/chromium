@@ -28,7 +28,7 @@ class PrivacySandboxAttestationsComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
   using AttestationsReadyRepeatingCallback =
-      base::RepeatingCallback<void(base::Version, base::FilePath)>;
+      base::RepeatingCallback<void(base::Version, base::FilePath, bool)>;
 
   // Once the attestations file is ready, `ComponentReady` will be invoked on
   // the UI thread, which in turn invokes `on_attestations_ready_`.

@@ -4,6 +4,9 @@
 
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 
+#include <map>
+#include <vector>
+
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
@@ -125,6 +128,57 @@ class SpacedClientImpl : public SpacedClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void GetQuotaCurrentSpacesForIds(const std::string& path,
+                                   const std::vector<uint32_t>& uids,
+                                   const std::vector<uint32_t>& gids,
+                                   const std::vector<uint32_t>& project_ids,
+                                   GetSpacesForIdsCallback callback) override {
+    dbus::MethodCall method_call(kSpacedInterface,
+                                 spaced::kGetQuotaCurrentSpacesForIdsMethod);
+
+    spaced::GetQuotaCurrentSpacesForIdsRequest request;
+    request.set_path(path);
+    request.mutable_uids()->Add(uids.begin(), uids.end());
+    request.mutable_gids()->Add(gids.begin(), gids.end());
+    request.mutable_project_ids()->Add(project_ids.begin(), project_ids.end());
+
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendProtoAsArrayOfBytes(request);
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(
+            [](GetSpacesForIdsCallback callback, dbus::Response* response) {
+              if (!response) {
+                LOG(ERROR) << "Spaced D-Bus method "
+                           << spaced::kGetQuotaCurrentSpacesForIdsMethod
+                           << " returned a null response";
+                std::move(callback).Run(std::nullopt);
+                return;
+              }
+              dbus::MessageReader reader(response);
+              spaced::GetQuotaCurrentSpacesForIdsReply reply;
+              if (!reader.PopArrayOfBytesAsProto(&reply)) {
+                LOG(ERROR) << "Spaced D-Bus method "
+                           << spaced::kGetQuotaCurrentSpacesForIdsMethod
+                           << " returned an invalid response: "
+                           << response->ToString();
+                std::move(callback).Run(std::nullopt);
+                return;
+              }
+              std::move(callback).Run(
+                  SpaceMaps(std::map<uint32_t, int64_t>(
+                                reply.curspaces_for_uids().begin(),
+                                reply.curspaces_for_uids().end()),
+                            std::map<uint32_t, int64_t>(
+                                reply.curspaces_for_gids().begin(),
+                                reply.curspaces_for_gids().end()),
+                            std::map<uint32_t, int64_t>(
+                                reply.curspaces_for_project_ids().begin(),
+                                reply.curspaces_for_project_ids().end())));
+            },
+            std::move(callback)));
+  }
+
   void Init(dbus::Bus* bus) {
     proxy_ = bus->GetObjectProxy(spaced::kSpacedServiceName,
                                  dbus::ObjectPath(spaced::kSpacedServicePath));
@@ -209,6 +263,19 @@ class SpacedClientImpl : public SpacedClient {
 };
 
 }  // namespace
+
+SpacedClient::SpaceMaps::SpaceMaps(
+    std::map<uint32_t, int64_t>&& curspaces_for_uids,
+    std::map<uint32_t, int64_t>&& curspaces_for_gids,
+    std::map<uint32_t, int64_t>&& curspaces_for_project_ids)
+    : curspaces_for_uids(std::move(curspaces_for_uids)),
+      curspaces_for_gids(std::move(curspaces_for_gids)),
+      curspaces_for_project_ids(std::move(curspaces_for_project_ids)) {}
+
+SpacedClient::SpaceMaps::~SpaceMaps() = default;
+
+SpacedClient::SpaceMaps::SpaceMaps(const SpacedClient::SpaceMaps& other) =
+    default;
 
 SpacedClient::SpacedClient() {
   CHECK(!g_instance);

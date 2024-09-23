@@ -211,7 +211,7 @@ public class ContextMenuParams {
             @MenuSourceType int sourceType,
             boolean openedFromHighlight,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
-        // TODO(https://crbug.com/783819): Convert Referrer to use GURL.
+        // TODO(crbug.com/40549331): Convert Referrer to use GURL.
         Referrer referrer =
                 sanitizedReferrer.isEmpty()
                         ? null

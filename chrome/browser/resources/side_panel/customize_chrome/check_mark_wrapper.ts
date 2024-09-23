@@ -2,41 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './check_mark_wrapper.html.js';
+import {getCss} from './check_mark_wrapper.css.js';
+import {getHtml} from './check_mark_wrapper.html.js';
 
 export interface CheckMarkWrapperElement {
   $: {
-    svg: Element,
+    circle: HTMLElement,
   };
 }
 
-export class CheckMarkWrapperElement extends PolymerElement {
+export class CheckMarkWrapperElement extends CrLitElement {
   static get is() {
     return 'customize-chrome-check-mark-wrapper';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       checked: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
+
       checkmarkBorderHidden: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  checked: boolean;
-  checkmarkBorderHidden: boolean;
+  checked: boolean = false;
+  checkmarkBorderHidden: boolean = false;
 }
 
 declare global {

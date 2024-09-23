@@ -1,0 +1,210 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-toggle-checked-bar-color:
+      var(--color-toggle-button-track-on,
+          var(--cr-fallback-color-primary));
+  --cr-toggle-checked-button-color:
+      var(--color-toggle-button-thumb-on,
+          var(--cr-fallback-color-on-primary));
+  --cr-toggle-checked-ripple-color: var(
+      --cr-active-neutral-on-subtle-background-color);
+  --cr-toggle-ripple-diameter: 20px;
+  --cr-toggle-unchecked-bar-color:
+      var(--color-toggle-button-track-off,
+          var(--cr-fallback-color-surface-variant));
+  --cr-toggle-unchecked-button-color:
+      var(--color-toggle-button-thumb-off,
+          var(--cr-fallback-color-outline));
+  --cr-toggle-unchecked-ripple-color: var(
+      --cr-active-neutral-on-subtle-background-color);
+  --cr-toggle-bar-border-color: var(--cr-toggle-unchecked-button-color);
+  --cr-toggle-bar-border: 1px solid var(--cr-toggle-bar-border-color);
+  --cr-toggle-bar-width: 26px;
+  --cr-toggle-knob-diameter: 8px;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  display: block;
+  height: fit-content;
+  isolation: isolate;
+  min-width: initial;
+  outline: none;
+  position: relative;
+  width: fit-content;
+}
+
+@media (forced-colors: active) {
+  /* TODO(crbug.com/40168415): cr-toggle heavily relies on
+     background-color to convey various states (on/off,
+     enabled/disabled). Until proper specs for HCM exist, this styling
+     at least makes the toggle visible. Replace with a HCM compliant
+     implementation once specs exist. */
+  :host #knob {
+    background-color: CanvasText !important;
+  }
+}
+
+:host(:active) {
+  --cr-toggle-knob-diameter: 10px;
+}
+
+:host([checked]) {
+  --cr-toggle-bar-border-color: var(--cr-toggle-checked-bar-color);
+  --cr-toggle-knob-diameter: 12px;
+}
+
+:host([checked]:active) {
+  --cr-toggle-knob-diameter: 14px;
+}
+
+:host([disabled]) {
+  --cr-toggle-checked-bar-color:
+      var(--color-toggle-button-track-on-disabled,
+          var(--cr-fallback-color-disabled-background));
+  --cr-toggle-checked-button-color:
+      var(--color-toggle-button-thumb-on-disabled, var(--cr-fallback-color-surface));
+  --cr-toggle-unchecked-bar-color: transparent;
+  --cr-toggle-unchecked-button-color:
+      var(--color-toggle-button-thumb-off-disabled,
+          var(--cr-fallback-color-disabled-foreground));
+  --cr-toggle-bar-border-color: var(--cr-toggle-unchecked-button-color);
+  cursor: initial;
+  opacity: 1;
+  pointer-events: none;
+}
+
+:host([checked][disabled]) {
+  --cr-toggle-bar-border: none;
+}
+
+#bar {
+  background-color: var(--cr-toggle-unchecked-bar-color);
+  border: var(--cr-toggle-bar-border);
+  border-radius: 50px;
+  box-sizing: border-box;
+  display: block;
+  height: 16px;
+  left: 3px;
+  opacity: 1;
+  position: initial;
+  top: 2px;
+  transition: background-color linear 80ms;
+  width: var(--cr-toggle-bar-width);
+  z-index: 0;
+}
+
+:host([checked]) #bar {
+  background-color: var(--cr-toggle-checked-bar-color);
+  opacity: 1;
+}
+
+:host(:focus-visible) #bar {
+  outline: 2px solid var(--cr-toggle-checked-bar-color);
+  outline-offset: 2px;
+}
+
+#knob {
+  /* Distance between knob center to the edge of the control is the same
+     for both checked and unchecked. */
+  --cr-toggle-knob-center-edge-distance_: 8px;
+
+  /* Direction for on/off states
+      - +1 means 'off' to the left, 'on' to the right, used in LTR.
+      - -1 means 'off' to the right, 'on' to the left, used in RTL. */
+  --cr-toggle-knob-direction_: 1;
+
+  /* Absolute distance from the center position to either left or
+     right. */
+  --cr-toggle-knob-travel-distance_: calc(
+      0.5 * var(--cr-toggle-bar-width) -
+      var(--cr-toggle-knob-center-edge-distance_));
+
+  /* Positions in the horizontal (x-axis) dimension that the knob can be
+    in. The center position is only used for calculations, and is never
+    presented to the user. */
+  --cr-toggle-knob-position-center_: calc(
+      0.5 * var(--cr-toggle-bar-width) + -50%);
+  --cr-toggle-knob-position-start_: calc(
+      var(--cr-toggle-knob-position-center_) -
+      var(--cr-toggle-knob-direction_) *
+      var(--cr-toggle-knob-travel-distance_));
+  --cr-toggle-knob-position-end_: calc(
+      var(--cr-toggle-knob-position-center_) +
+      var(--cr-toggle-knob-direction_) *
+      var(--cr-toggle-knob-travel-distance_));
+
+  background-color: var(--cr-toggle-unchecked-button-color);
+  border-radius: 50%;
+  box-shadow: none;
+  display: block;
+  height: var(--cr-toggle-knob-diameter);
+  position: absolute;
+  top: 50%;
+  transform: translate(var(--cr-toggle-knob-position-start_), -50%);
+  transition: transform linear 80ms, background-color linear 80ms,
+      width linear 80ms, height linear 80ms;
+  width: var(--cr-toggle-knob-diameter);
+  z-index: 1;
+}
+
+:host([checked]) #knob {
+  background-color: var(--cr-toggle-checked-button-color);
+  transform: translate(var(--cr-toggle-knob-position-end_), -50%);
+}
+
+:host-context([dir=rtl]) #knob {
+  left: 0;
+  /* Flip the knob's on/off direction for RTL */
+  --cr-toggle-knob-direction_: -1;
+}
+
+:host([checked]:active) #knob,
+:host([checked]:hover) #knob {
+  --cr-toggle-checked-button-color:
+      var(--color-toggle-button-thumb-on-hover,
+          var(--cr-fallback-color-primary-container));
+}
+
+:host(:hover) #knob::before {
+  background-color: var(--cr-hover-on-subtle-background-color);
+  border-radius: 50%;
+  content: '';
+  height: var(--cr-toggle-ripple-diameter);
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--cr-toggle-ripple-diameter);
+}
+
+#ink {
+  --paper-ripple-opacity: 1;
+  color: var(--cr-toggle-unchecked-ripple-color);
+  height: var(--cr-toggle-ripple-diameter);
+  left: 50%;
+  outline: var(--cr-toggle-ripple-ring, none);
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: color linear 80ms;
+  width: var(--cr-toggle-ripple-diameter);
+}
+
+:host([checked]) #ink {
+  color: var(--cr-toggle-checked-ripple-color);
+}
+
+:host-context([dir=rtl]) #ink {
+  left: auto;
+  right: 50%;
+  transform: translate(50%, -50%);
+}

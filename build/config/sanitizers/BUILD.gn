@@ -14,9 +14,22 @@ if (is_ios) {
   import("//build/config/ios/ios_sdk.gni")
 }
 
+# libfuzzer can't cope with shared objects being unloaded, which sometimes
+# occurs for large fuzzers that involve our graphics stack. Shim out dlclose
+# so that this doesn't occur.
+#
+# dlclose() is defined by POSIX, making `is_posix` a tempting condition to use.
+# However the linker does not necessarily support `-wrap` on all POSIX
+# platforms, hence the restriction to Linux and ChromeOS. We might eventually
+# want to disable shared library unloading on all platforms, but we have not
+# noticed a need for it as the known-affected large fuzzers only run on Linux.
+use_dlcloseshim = use_libfuzzer && (is_linux || is_chromeos)
+
 # Contains the dependencies needed for sanitizers to link into executables and
 # shared_libraries.
 group("deps") {
+  deps = []
+  data = []
   if (using_sanitizer) {
     public_configs = [
       # Even when a target removes default_sanitizer_flags, it may be depending
@@ -24,33 +37,31 @@ group("deps") {
       # to add the ldflags here as well as in default_sanitizer_flags.
       ":default_sanitizer_ldflags",
     ]
-    deps = []
     if (!is_fuchsia) {
       if (is_win) {
         exe = ".exe"
       } else {
         exe = ""
       }
-      data = [
+      data += [
         "//tools/valgrind/asan/",
         "$clang_base_path/bin/llvm-symbolizer${exe}",
       ]
     }
-    if (is_asan || is_lsan || is_msan || is_tsan || is_ubsan || is_ubsan_vptr ||
-        is_ubsan_security) {
+    if (is_asan || is_lsan || is_msan || is_tsan || is_ubsan_any) {
       public_configs += [ ":sanitizer_options_link_helper" ]
       deps += [ ":options_sources" ]
     }
     if (use_prebuilt_instrumented_libraries ||
         use_locally_built_instrumented_libraries) {
-      deps += [ "//third_party/instrumented_libraries:deps" ]
+      deps += [ "//third_party/instrumented_libs:deps" ]
     }
   }
   if (fail_on_san_warnings) {
     data += [ "//tools/memory/sanitizer/escalate_sanitizer_warnings.py" ]
   }
-  if (is_asan || is_ubsan || is_ubsan_vptr || is_ubsan_security) {
-    if (is_win || is_apple) {
+  if (is_asan || is_ubsan_any) {
+    if ((is_win && is_component_build) || is_apple) {
       data_deps = [ ":copy_sanitizer_runtime" ]
     }
     if (is_apple) {
@@ -68,27 +79,26 @@ group("deps") {
 assert(!(is_win && is_asan && current_cpu == "x86"),
        "ASan is only supported in 64-bit builds on Windows.")
 
-if ((is_apple || is_win) &&
-    (is_asan || is_ubsan || is_ubsan_vptr || is_ubsan_security)) {
+if ((is_apple || (is_win && is_component_build)) && (is_asan || is_ubsan_any)) {
   if (is_mac || (is_ios && target_environment == "catalyst")) {
     if (is_asan) {
       _clang_rt_dso_path = "darwin/libclang_rt.asan_osx_dynamic.dylib"
     } else {
-      assert(is_ubsan || is_ubsan_vptr || is_ubsan_security)
+      assert(is_ubsan_any)
       _clang_rt_dso_path = "darwin/libclang_rt.ubsan_osx_dynamic.dylib"
     }
   } else if (is_ios) {
     if (is_asan) {
       _clang_rt_dso_path = "darwin/libclang_rt.asan_iossim_dynamic.dylib"
     } else {
-      assert(is_ubsan || is_ubsan_vptr || is_ubsan_security)
+      assert(is_ubsan_any)
       _clang_rt_dso_path = "darwin/libclang_rt.ubsan_iossim_dynamic.dylib"
     }
-  } else if (is_win && current_cpu == "x64") {
+  } else if (is_win && current_cpu == "x64" && is_component_build) {
     if (is_asan) {
       _clang_rt_dso_path = "windows/clang_rt.asan_dynamic-x86_64.dll"
     } else {
-      assert(is_ubsan || is_ubsan_vptr || is_ubsan_security)
+      assert(is_ubsan_any)
       _clang_rt_dso_path = "windows/clang_rt.ubsan_dynamic-x86_64.dll"
     }
   }
@@ -105,7 +115,7 @@ if ((is_apple || is_win) &&
     # On iOS, the runtime library need to be code signed (adhoc signature)
     # starting with Xcode 8, so use an action instead of a copy on iOS.
     action("copy_sanitizer_runtime") {
-      script = "//build/config/ios/codesign.py"
+      script = "//build/config/apple/codesign.py"
       sources = [ _clang_rt_dso_full_path ]
       outputs = [ "$root_out_dir/" + get_path_info(sources[0], "file") ]
       args = [
@@ -170,6 +180,16 @@ static_library("options_sources") {
   }
 }
 
+if (use_dlcloseshim) {
+  source_set("dlclose_shim") {
+    sources = [ "//build/sanitizers/dlcloseshim.c" ]
+  }
+} else {
+  group("dlclose_shim") {
+    deps = []
+  }
+}
+
 # Applies linker flags necessary when either :deps or :default_sanitizer_flags
 # are used.
 config("default_sanitizer_ldflags") {
@@ -218,7 +238,7 @@ config("default_sanitizer_ldflags") {
       if (use_libfuzzer) {
         ldflags += [ "-fsanitize=fuzzer-no-link" ]
         if (is_mac) {
-          # TODO(crbug.com/926588): on macOS, dead code stripping does not work
+          # TODO(crbug.com/40611636): on macOS, dead code stripping does not work
           # well with `pc-table` instrumentation enabled by `fuzzer-no-link`.
           ldflags += [ "-fno-sanitize-coverage=pc-table" ]
         }
@@ -268,6 +288,9 @@ config("default_sanitizer_ldflags") {
       # Don't do it.
       ldflags = [ "/INCREMENTAL:NO" ]
     }
+  }
+  if (use_dlcloseshim) {
+    ldflags += [ "-Wl,-wrap,dlclose" ]
   }
 }
 
@@ -345,7 +368,7 @@ config("cfi_flags") {
       # sanitize=cfi implies -fsplit-lto-unit, and Rust needs to match
       # behaviour.  Rust needs to know the linker will be doing LTO in this case
       # or it rejects the Zsplit-lto-unit flag.
-      # TODO(crbug.com/1442331): Add -Zsanitize=cfi instead.
+      # TODO(crbug.com/40266913): Add -Zsanitize=cfi instead.
       rustflags += [
         "-Zsplit-lto-unit",
         "-Clinker-plugin-lto=yes",
@@ -364,9 +387,9 @@ config("cfi_flags") {
 
     if (use_cfi_icall) {
       cflags += [ "-fsanitize=cfi-icall" ]
-      # TODO(crbug.com/1442331): Add cflags += [
+      # TODO(crbug.com/40266913): Add cflags += [
       # "-fsanitize-cfi-icall-experimental-normalize-integers" ]
-      # TODO(crbug.com/1442331): Add rustflags += [
+      # TODO(crbug.com/40266913): Add rustflags += [
       # "-Zsanitizer-cfi-normalize-integers" ].
     }
 
@@ -415,7 +438,7 @@ config("coverage_flags") {
     if (use_libfuzzer) {
       cflags += [ "-fsanitize=fuzzer-no-link" ]
       if (is_mac) {
-        # TODO(crbug.com/926588): on macOS, dead code stripping does not work
+        # TODO(crbug.com/40611636): on macOS, dead code stripping does not work
         # well with `pc-table` instrumentation enabled by `fuzzer-no-link`.
         cflags += [ "-fno-sanitize-coverage=pc-table" ]
       }
@@ -437,6 +460,11 @@ config("coverage_flags") {
       cflags += [ "-fsanitize-coverage-allowlist=" +
                   rebase_path(sanitizer_coverage_allowlist, root_build_dir) ]
     }
+  }
+  if (use_centipede) {
+    # Centipede intercepts calls such as memcmp and memcpy in order to improve
+    # its testcase generation.
+    cflags += [ "-fno-builtin" ]
   }
 }
 
@@ -465,13 +493,16 @@ config("msan_flags") {
       "-fsanitize=memory",
       "-fsanitize-memory-track-origins=$msan_track_origins",
       "-fsanitize-ignorelist=$msan_ignorelist_path",
-
-      # TODO(https://crbug.com/1317909): evaluate and possibly enable
-      "-fno-sanitize-memory-use-after-dtor",
-
-      # TODO(https://crbug.com/1369167): evaluate and possibly enable
-      "-fno-sanitize-memory-param-retval",
     ]
+
+    if (!msan_check_use_after_dtor) {
+      # TODO(crbug.com/40222690): evaluate and possibly enable
+      cflags += [ "-fno-sanitize-memory-use-after-dtor" ]
+    }
+
+    if (!msan_eager_checks) {
+      cflags += [ "-fno-sanitize-memory-param-retval" ]
+    }
   }
 }
 
@@ -497,7 +528,7 @@ config("ubsan_flags") {
           rebase_path("//tools/ubsan/ignorelist.txt", root_build_dir)
     }
 
-    # TODO(crbug.com/1502579): Enable all of -fsanitize=undefined. Note that
+    # TODO(crbug.com/40942951): Enable all of -fsanitize=undefined. Note that
     # both this list and Clang's defaults omit -fsanitize=float-divide-by-zero.
     # C and C++ leave it undefined to accommodate non-IEEE floating point, but
     # we assume the compiler implements IEEE floating point, which does define
@@ -513,29 +544,12 @@ config("ubsan_flags") {
       "-fsanitize=object-size",
       "-fsanitize=return",
       "-fsanitize=returns-nonnull-attribute",
-      "-fsanitize=shift-exponent",
+      "-fsanitize=shift",
       "-fsanitize=signed-integer-overflow",
       "-fsanitize=unreachable",
       "-fsanitize=vla-bound",
       "-fsanitize-ignorelist=$ubsan_ignorelist_path",
     ]
-
-    # Chromecast ubsan builds fail to compile with these
-    # experimental flags, so only add them to non-chromecast ubsan builds.
-    if (!is_castos && !is_cast_android) {
-      cflags += [
-        # Employ the experimental PBQP register allocator to avoid slow
-        # compilation on files with too many basic blocks.
-        # See http://crbug.com/426271.
-        "-mllvm",
-        "-regalloc=pbqp",
-
-        # Speculatively use coalescing to slightly improve the code generated
-        # by PBQP regallocator. May increase compile time.
-        "-mllvm",
-        "-pbqp-coalescing",
-      ]
-    }
   }
 }
 

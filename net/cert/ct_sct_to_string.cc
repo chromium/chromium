@@ -54,7 +54,7 @@ const std::string OriginToString(SignedCertificateTimestamp::Origin origin) {
     case SignedCertificateTimestamp::SCT_FROM_OCSP_RESPONSE:
       return "OCSP";
     case SignedCertificateTimestamp::SCT_ORIGIN_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "Unknown";
 }

@@ -41,7 +41,7 @@ class AXRangeRectDelegate {
       AXNodeID node_id,
       int start_offset,
       int end_offset,
-      ui::AXClippingBehavior clipping_behavior,
+      AXClippingBehavior clipping_behavior,
       AXOffscreenResult* offscreen_result) = 0;
   virtual gfx::Rect GetBoundsRect(AXTreeID tree_id,
                                   AXNodeID node_id,
@@ -441,7 +441,7 @@ class AXRange {
       gfx::Rect degenerate_range_rect = delegate->GetInnerTextRangeBoundsRect(
           range_start->tree_id(), range_start->anchor_id(),
           range_start->text_offset(), range_end->text_offset(),
-          ui::AXClippingBehavior::kUnclipped, &offscreen_result);
+          AXClippingBehavior::kUnclipped, &offscreen_result);
       if (offscreen_result == AXOffscreenResult::kOnscreen) {
         DCHECK(degenerate_range_rect.width() == 0);
         degenerate_range_rect.set_width(1);
@@ -474,7 +474,7 @@ class AXRange {
         current_rect = delegate->GetInnerTextRangeBoundsRect(
             current_line_start->tree_id(), current_line_start->anchor_id(),
             current_line_start->text_offset(), current_line_end->text_offset(),
-            ui::AXClippingBehavior::kClipped, &offscreen_result);
+            AXClippingBehavior::kClipped, &offscreen_result);
       } else {
         current_rect = delegate->GetBoundsRect(current_line_start->tree_id(),
                                                current_line_start->anchor_id(),

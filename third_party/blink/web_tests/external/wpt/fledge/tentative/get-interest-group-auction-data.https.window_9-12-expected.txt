@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] getInterestGroupAdAuctionData() all IG data fields, with omit-user-bidding-signals
+  assert_true: valid key Id expected true got false
+[FAIL] getInterestGroupAdAuctionData() browserSignals
+  assert_true: valid key Id expected true got false
+[FAIL] getInterestGroupAdAuctionData() browserSignals with include-full-ads
+  assert_true: valid key Id expected true got false
+[FAIL] getInterestGroupAdAuctionData() with multiple interest groups
+  assert_true: valid key Id expected true got false
+Harness: the test ran to completion.
+

@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<ruby>base1 <wbr>base 2<b style="margin-inline: 2055603125px;"></b><a style="display: table;">cell</a><rt> </ruby>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  // Pass if no crash.
+}, 'crbug.com/345585680. An atomic-inilne was not laid out if prior items are very wide.');
+</script>

@@ -15,9 +15,22 @@ import shutil
 import subprocess
 import sys
 
-
 DEST_BUCKET = 'gs://chrome-component-file-type-policies'
 RESOURCE_SUBDIR = 'components/safe_browsing/content/resources'
+
+
+def GetConfigVersion(ascii_pb_path):
+    # Parsing the proto requires integration into the build system to
+    # generate the py bindings for DownloadFileTypeConfig. But this
+    # script intentionally has minimal interaction with the build system
+    # since builders start by building all gn targets. Instead, we
+    # simply look for the version_id in the text format.
+    with open(ascii_pb_path) as ascii_pb_file:
+      for line in ascii_pb_file:
+          split = line.split("version_id: ")
+          if len(split) == 2:
+              return int(split[1])
+    return None
 
 
 def main():
@@ -32,6 +45,10 @@ def main():
         parser.print_help()
         return 1
 
+    version_id = GetConfigVersion(os.path.join(RESOURCE_SUBDIR,
+                                               'download_file_types.asciipb'))
+    assert version_id, "Failed to get version_id from generated config pb"
+
     # Clear out the target dir before we build so we can be sure we've got
     # the freshest version.
     all_dir = os.path.join(opts.dir, "gen", RESOURCE_SUBDIR, 'all')
@@ -39,28 +56,27 @@ def main():
         shutil.rmtree(all_dir)
 
     gn_command = [
-        'ninja', '-C', opts.dir,
+        'autoninja', '-C', opts.dir,
         RESOURCE_SUBDIR + ':make_all_file_types_protobuf'
     ]
     print("Running the following")
     print("   " + (' '.join(gn_command)))
     if subprocess.call(gn_command):
-        print("Ninja failed.")
+        print("Autoninja failed.")
         return 1
 
     os.chdir(all_dir)
 
     # Sanity check that we're in the right place
     dirs = os.listdir('.')
-    assert len(dirs) == 1 and dirs[0].isdigit(), (
-        "Confused by lack of single versioned dir under " + all_dir)
+    assert sorted(dirs) == ['android', 'chromeos', 'linux', 'mac', 'win'], (
+        "Confused by wrong platform dirs under " + all_dir)
 
     # Push the files with their directories, in the form
     #   {vers}/{platform}/download_file_types.pb
     # Don't overwrite existing files, in case we forgot to increment the
     # version.
-    vers_dir = dirs[0]
-    command = ['gsutil', 'cp', '-Rn', vers_dir, DEST_BUCKET]
+    command = ['gsutil', 'cp', '-Rn', '.', DEST_BUCKET + "/" + str(version_id)]
 
     print('\nGoing to run the following command')
     print('   ', ' '.join(command))
@@ -68,7 +84,7 @@ def main():
     print('   ', all_dir)
     print('\nWhich should push the following files')
     expected_files = [
-        os.path.join(dp, f) for dp, dn, fn in os.walk(vers_dir) for f in fn
+        os.path.join(dp, f) for dp, dn, fn in os.walk('.') for f in fn
     ]
     for f in expected_files:
         print('   ', f)

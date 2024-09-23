@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/managed_state.h"
+#include "chromeos/ash/components/network/network_config.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "components/onc/onc_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -53,6 +54,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
     std::string type;
   };
 
+  // This is reflected by network/enums.xml:NetworkPortalState.
   enum class PortalState {
     // The network is not connected or the portal state is not available.
     kUnknown,
@@ -62,8 +64,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
     kPortalSuspected,
     // The network is in a portal state with a redirect URL.
     kPortal,
-    // A proxy requiring authentication is detected.
-    kProxyAuthRequired,
     // The network is connected but no internet is available and no proxy was
     // detected.
     kNoInternet,
@@ -121,10 +121,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   const std::optional<base::Value::Dict>& proxy_config() const {
     return proxy_config_;
   }
+  // TODO(b/340974631): Deprecate this getter and use network_config() instead.
   const std::optional<base::Value::Dict>& ipv4_config() const {
     return ipv4_config_;
   }
+  // TODO(b/340974631): Deprecate this getter and use network_config() instead.
   std::string GetIpAddress() const;
+  // TODO(b/340974631): Deprecate this getter and use network_config() instead.
   std::string GetGateway() const;
   GURL GetWebProxyAutoDiscoveryUrl() const;
 
@@ -138,6 +141,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   const std::optional<uint32_t> max_downlink_speed_kbps() const {
     return max_downlink_speed_kbps_;
   }
+
+  const NetworkConfig* network_config() const { return network_config_.get(); }
 
   // Wireless property accessors
   bool connectable() const { return connectable_; }
@@ -168,6 +173,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   const std::string& activation_type() const { return activation_type_; }
   const std::string& activation_state() const { return activation_state_; }
   bool allow_roaming() const { return allow_roaming_; }
+  const std::string& payment_method() const { return payment_method_; }
   const std::string& payment_url() const { return payment_url_; }
   const std::string& payment_post_data() const { return payment_post_data_; }
   bool cellular_out_of_credits() const { return cellular_out_of_credits_; }
@@ -323,9 +329,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   void SetVpnProvider(const std::string& id, const std::string& type);
 
-  void set_chrome_portal_state(PortalState portal_state) {
-    chrome_portal_state_ = portal_state;
-  }
+  void SetChromePortalState(PortalState portal_state);
 
   // Set to true if the network is a member of Manager.Services.
   bool visible_ = false;
@@ -347,6 +351,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   ::onc::ONCSource onc_source_ = ::onc::ONC_SOURCE_UNKNOWN;
   std::optional<uint32_t> max_uplink_speed_kbps_;
   std::optional<uint32_t> max_downlink_speed_kbps_;
+  std::unique_ptr<NetworkConfig> network_config_;
 
   // Last non empty Service.Error property. Expected to be cleared via
   // ClearError() when a connection attempt is initiated and when an associated
@@ -383,6 +388,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   std::string roaming_;
   bool allow_roaming_ = false;
   bool provider_requires_roaming_ = false;
+  std::string payment_method_;
   std::string payment_url_;
   std::string payment_post_data_;
   bool cellular_out_of_credits_ = false;

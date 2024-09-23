@@ -1,0 +1,70 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+
+assert(!is_android)
+assert(!is_chromeos)
+
+source_set("test_support") {
+  testonly = true
+
+  public = [ "shortcut_integration_interaction_test_base.h" ]
+  sources = [
+    "shortcut_integration_interaction_test_base.cc",
+    "shortcut_integration_interaction_test_internal.cc",
+    "shortcut_integration_interaction_test_internal.h",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//chrome/browser",
+    "//chrome/browser/shortcuts:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support_ui",
+    "//ui/views",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "create_desktop_shortcut_dialog_view_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/picture_in_picture:test_support_ui",
+    "//chrome/browser/shortcuts:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  sources = [ "shortcut_integration_interactive_uitest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":test_support",
+    "//chrome/browser/shortcuts:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

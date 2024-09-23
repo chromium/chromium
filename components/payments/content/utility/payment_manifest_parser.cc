@@ -5,6 +5,7 @@
 #include "components/payments/content/utility/payment_manifest_parser.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -79,7 +80,7 @@ bool ParseDefaultApplications(const GURL& manifest_url,
 
   const base::Value::List* list = dict->FindList(kDefaultApplications);
   if (!list) {
-    // TODO(crbug.com/1065337): Move the error message strings to
+    // TODO(crbug.com/40681786): Move the error message strings to
     // components/payments/core/native_error_strings.cc.
     log.Error(
         base::StringPrintf("\"%s\" must be a list.", kDefaultApplications));
@@ -103,7 +104,7 @@ bool ParseDefaultApplications(const GURL& manifest_url,
     }
 
     GURL url = manifest_url.Resolve(*item);
-    // TODO(crbug.com/1065337): Check that |url| is the same origin with
+    // TODO(crbug.com/40681786): Check that |url| is the same origin with
     // |manifest_url|. Currently that's checked by callers, but the earlier this
     // is caught, the fewer resources Chrome consumes.
     if (!UrlUtil::IsValidManifestUrl(url)) {
@@ -316,7 +317,7 @@ void ParsePreferredRelatedApplicationIdentifiers(
 }
 
 bool GetString(const base::Value::Dict* dict,
-               base::StringPiece key,
+               std::string_view key,
                std::string& result) {
   DCHECK(dict);
   const std::string* value = dict->FindString(key);

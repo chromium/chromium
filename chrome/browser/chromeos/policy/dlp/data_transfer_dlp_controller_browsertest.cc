@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
+
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -14,7 +17,6 @@
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -28,8 +30,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/enterprise/data_controls/dlp_histogram_helper.h"
-#include "components/enterprise/data_controls/dlp_policy_event.pb.h"
+#include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
+#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/cloud_policy.pb.h"
@@ -48,7 +50,9 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -251,21 +255,20 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
     // Create a widget containing a single, focusable textfield.
     widget_ = std::make_unique<views::Widget>();
 
-    views::Widget::InitParams params;
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     widget_->Init(std::move(params));
     textfield_ = widget_->SetContentsView(std::make_unique<views::Textfield>());
-    textfield_->SetAccessibleName(u"Textfield");
+    textfield_->GetViewAccessibility().SetName(u"Textfield");
     textfield_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
     // Show the widget.
     widget_->SetBounds(gfx::Rect(0, 0, 100, 100));
     widget_->Show();
 
-    views::test::WidgetActivationWaiter waiter(widget_.get(), true);
     widget_->Show();
-    waiter.Wait();
+    views::test::WaitForWidgetActive(widget_.get(), true);
 
     ASSERT_TRUE(widget_->IsActive());
 
@@ -283,7 +286,7 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
                                base::RunLoop& run_loop) {
     EXPECT_CALL(*reporting_queue_, AddRecord)
         .WillOnce([&run_loop, expected_event](
-                      base::StringPiece record, ::reporting::Priority priority,
+                      std::string_view record, ::reporting::Priority priority,
                       ::reporting::ReportQueue::EnqueueCallback callback) {
           DlpPolicyEvent event;
           ASSERT_TRUE(event.ParseFromString(std::string(record)));
@@ -557,7 +560,7 @@ class MAYBE_DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
                                base::RunLoop& run_loop) {
     EXPECT_CALL(*reporting_queue_, AddRecord)
         .WillOnce([&run_loop, expected_event](
-                      base::StringPiece record, ::reporting::Priority priority,
+                      std::string_view record, ::reporting::Priority priority,
                       ::reporting::ReportQueue::EnqueueCallback callback) {
           DlpPolicyEvent event;
           ASSERT_TRUE(event.ParseFromString(std::string(record)));

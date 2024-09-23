@@ -10,12 +10,13 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -109,7 +110,7 @@
   sync_sessions::SessionSyncService* syncService =
       SessionSyncServiceFactory::GetForBrowserState(browserState);
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
+      IdentityManagerFactory::GetForProfile(browserState);
   sessions::TabRestoreService* restoreService =
       IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState);
   FaviconLoader* faviconLoader =
@@ -121,15 +122,18 @@
   SceneState* currentSceneState = self.browser->GetSceneState();
   BOOL isDisabled =
       IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs());
-  self.mediator =
-      [[RecentTabsMediator alloc] initWithSessionSyncService:syncService
-                                             identityManager:identityManager
-                                              restoreService:restoreService
-                                               faviconLoader:faviconLoader
-                                                 syncService:service
-                                                 browserList:browserList
-                                                  sceneState:currentSceneState
-                                            disabledByPolicy:isDisabled];
+  self.mediator = [[RecentTabsMediator alloc]
+      initWithSessionSyncService:syncService
+                 identityManager:identityManager
+                  restoreService:restoreService
+                   faviconLoader:faviconLoader
+                     syncService:service
+                     browserList:browserList
+                      sceneState:currentSceneState
+                disabledByPolicy:isDisabled
+               engagementTracker:feature_engagement::TrackerFactory::
+                                     GetForBrowserState(browserState)
+                      modeHolder:nil];
 
   // Set the consumer first before calling [self.mediator initObservers] and
   // then [self.mediator configureConsumer].

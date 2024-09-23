@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
@@ -20,6 +21,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -33,6 +36,7 @@ AutofillBubbleBase* ShowEditAddressProfileDialogView(
   EditAddressProfileView* dialog = new EditAddressProfileView(controller);
   dialog->ShowForWebContents(web_contents);
   constrained_window::ShowWebModalDialogViews(dialog, web_contents);
+  dialog->RequestFocus();
   return dialog;
 }
 
@@ -41,18 +45,18 @@ EditAddressProfileView::EditAddressProfileView(
     : controller_(controller) {
   DCHECK(controller);
 
-  SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+             static_cast<int>(ui::mojom::DialogButton::kCancel));
+  SetModalType(ui::mojom::ModalType::kChild);
   SetShowCloseButton(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
-  SetAcceptCallback(base::BindOnce(
-      &EditAddressProfileView::OnUserDecision, base::Unretained(this),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted));
+  SetAcceptCallbackWithClose(base::BindRepeating(
+      &EditAddressProfileView::OnAcceptButtonClicked, base::Unretained(this)));
   SetCancelCallback(base::BindOnce(
       &EditAddressProfileView::OnUserDecision, base::Unretained(this),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined));
+      AutofillClient::AddressPromptUserDecision::kEditDeclined));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -63,8 +67,8 @@ EditAddressProfileView::EditAddressProfileView(
 
   SetProperty(views::kElementIdentifierKey, kTopViewId);
   SetTitle(controller_->GetWindowTitle());
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kOk, controller_->GetOkButtonLabel());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_CANCEL_BUTTON_LABEL));
 }
@@ -74,12 +78,10 @@ EditAddressProfileView::~EditAddressProfileView() = default;
 void EditAddressProfileView::ShowForWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto address_editor_controller = std::make_unique<AddressEditorController>(
       controller_->GetProfileToEdit(),
-      autofill::PersonalDataManagerFactory::GetForProfile(
-          profile->GetOriginalProfile()),
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext()),
       controller_->GetIsValidatable());
 
   // Storing subscription (which gets canceled in the destructor) in a property
@@ -88,7 +90,6 @@ void EditAddressProfileView::ShowForWebContents(
       address_editor_controller->AddIsValidChangedCallback(
           base::BindRepeating(&EditAddressProfileView::UpdateActionButtonState,
                               base::Unretained(this)));
-  UpdateActionButtonState(address_editor_controller->is_valid());
 
   address_editor_view_ = AddChildView(std::make_unique<AddressEditorView>(
       std::move(address_editor_controller)));
@@ -110,12 +111,16 @@ void EditAddressProfileView::Hide() {
   GetWidget()->Close();
 }
 
+views::View* EditAddressProfileView::GetInitiallyFocusedView() {
+  return address_editor_view_ ? address_editor_view_->initial_focus_view()
+                              : nullptr;
+}
+
 void EditAddressProfileView::WindowClosing() {
   if (controller_) {
     controller_->OnDialogClosed(
         decision_,
-        decision_ == AutofillClient::SaveAddressProfileOfferUserDecision::
-                         kEditAccepted
+        decision_ == AutofillClient::AddressPromptUserDecision::kEditAccepted
             ? base::optional_ref(address_editor_view_->GetAddressProfile())
             : std::nullopt);
     controller_ = nullptr;
@@ -132,12 +137,20 @@ AddressEditorView* EditAddressProfileView::GetAddressEditorViewForTesting() {
 }
 
 void EditAddressProfileView::OnUserDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+    AutofillClient::AddressPromptUserDecision decision) {
   decision_ = decision;
 }
 
 void EditAddressProfileView::UpdateActionButtonState(bool is_valid) {
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, is_valid);
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, is_valid);
+}
+
+bool EditAddressProfileView::OnAcceptButtonClicked() {
+  bool is_form_valid = address_editor_view_->ValidateAllFields();
+  if (is_form_valid) {
+    OnUserDecision(AutofillClient::AddressPromptUserDecision::kEditAccepted);
+  }
+  return is_form_valid;
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EditAddressProfileView, kTopViewId);

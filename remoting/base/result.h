@@ -5,10 +5,10 @@
 #ifndef REMOTING_BASE_RESULT_H_
 #define REMOTING_BASE_RESULT_H_
 
+#include <optional>
 #include <type_traits>
 #include <utility>
 
-#include <optional>
 #include "base/check.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 

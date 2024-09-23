@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.KeyEvent;
 
 import androidx.annotation.VisibleForTesting;
@@ -13,11 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.MockedInTests;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
-import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
-import org.chromium.chrome.browser.omnibox.suggestions.base.DynamicSpacingRecyclerViewItemDecoration;
+import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -25,7 +23,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 @MockedInTests
 public class BaseCarouselSuggestionView extends RecyclerView {
     private RecyclerViewSelectionController mSelectionController;
-    private DynamicSpacingRecyclerViewItemDecoration mDecoration;
+    private SpacingRecyclerViewItemDecoration mDecoration;
 
     /**
      * Constructs a new carousel suggestion view.
@@ -42,35 +40,18 @@ public class BaseCarouselSuggestionView extends RecyclerView {
         setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
 
         mSelectionController = new RecyclerViewSelectionController(getLayoutManager());
+        mSelectionController.setCycleThroughNoSelection(true);
         addOnChildAttachStateChangeListener(mSelectionController);
-
-        int initialSpacing =
-                OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                        ? OmniboxResourceProvider.getHeaderStartPadding(context)
-                                - getResources().getDimensionPixelSize(R.dimen.tile_view_padding)
-                        : OmniboxResourceProvider.getSideSpacing(context);
-        int baseSpacing =
-                getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.omnibox_carousel_suggestion_minimum_item_spacing);
-        mDecoration =
-                new DynamicSpacingRecyclerViewItemDecoration(this, initialSpacing, baseSpacing / 2);
-        addItemDecoration(mDecoration);
 
         setAdapter(adapter);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
-        if ((!isRtl && KeyNavigationUtil.isGoRight(event))
-                || (isRtl && KeyNavigationUtil.isGoLeft(event))) {
-            mSelectionController.selectNextItem();
-            return true;
-        } else if ((isRtl && KeyNavigationUtil.isGoRight(event))
-                || (!isRtl && KeyNavigationUtil.isGoLeft(event))) {
-            mSelectionController.selectPreviousItem();
-            return true;
+        if (keyCode == KeyEvent.KEYCODE_TAB && event.isShiftPressed()) {
+            return mSelectionController.selectPreviousItem();
+        } else if (keyCode == KeyEvent.KEYCODE_TAB) {
+            return mSelectionController.selectNextItem();
         } else if (KeyNavigationUtil.isEnter(event)) {
             var tile = mSelectionController.getSelectedView();
             if (tile != null) return tile.performClick();
@@ -105,7 +86,12 @@ public class BaseCarouselSuggestionView extends RecyclerView {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        mDecoration.notifyViewMeasuredSizeChanged();
+        if (mDecoration.notifyViewSizeChanged(
+                getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT,
+                getMeasuredWidth(),
+                getMeasuredHeight())) {
+            invalidateItemDecorations();
+        }
     }
 
     /* package */ void setSelectionControllerForTesting(
@@ -115,14 +101,13 @@ public class BaseCarouselSuggestionView extends RecyclerView {
         addOnChildAttachStateChangeListener(mSelectionController);
     }
 
-    /* package */ DynamicSpacingRecyclerViewItemDecoration getItemDecoration() {
-        return mDecoration;
-    }
-
-    /* package */ void setItemDecorationForTesting(
-            DynamicSpacingRecyclerViewItemDecoration decoration) {
-        removeItemDecoration(mDecoration);
+    /* package */ void setItemDecoration(SpacingRecyclerViewItemDecoration decoration) {
+        if (mDecoration != null) {
+            removeItemDecoration(mDecoration);
+        }
         mDecoration = decoration;
-        addItemDecoration(mDecoration);
+        if (mDecoration != null) {
+            addItemDecoration(mDecoration);
+        }
     }
 }

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/account_selection_sheet"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:paddingBottom="@dimen/account_selection_button_mode_sheet_item_padding"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/drag_handlebar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginHorizontal="@dimen/account_selection_sheet_horizontal_margin"
+        android:layout_marginVertical="@dimen/account_selection_button_mode_sheet_drag_handlebar_padding"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/drag_handlebar" />
+
+    <include layout="@layout/account_selection_button_mode_header_item"
+        android:id="@+id/header_view_item" />
+
+    <org.chromium.ui.widget.LoadingView
+        android:id="@+id/spinner"
+        android:layout_width="@dimen/account_selection_button_mode_sheet_spinner_size"
+        android:layout_height="@dimen/account_selection_button_mode_sheet_spinner_size"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/account_selection_button_mode_sheet_spinner_top_margin"
+        android:layout_marginBottom="@dimen/account_selection_button_mode_sheet_spinner_bottom_margin"
+        android:visibility="gone" />
+
+    <FrameLayout
+        android:id="@+id/sheet_item_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/account_selection_sheet_horizontal_margin"
+        android:paddingRight="@dimen/account_selection_sheet_horizontal_margin">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/sheet_item_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:divider="@null"
+            tools:listitem="@layout/account_selection_button_mode_account_item"/>
+      </FrameLayout>
+
+    <include layout="@layout/account_selection_button_mode_account_chip"
+        android:id="@+id/account_chip"
+        android:visibility="gone"/>
+
+    <include layout="@layout/account_selection_button_mode_data_sharing_consent_item"
+        android:id="@+id/user_data_sharing_consent"
+        android:visibility="gone"/>
+
+    <include layout="@layout/idp_signin_text_item"
+        android:id="@+id/idp_signin"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:id="@+id/error_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/account_selection_sheet_horizontal_margin"
+        android:orientation="vertical"
+        android:layoutDirection="locale"
+        android:textDirection="locale"
+        android:visibility="gone">
+
+        <include layout="@layout/error_summary_text_item"
+            android:id="@+id/error_summary"/>
+
+        <include layout="@layout/error_description_text_item"
+            android:id="@+id/error_description"/>
+    </LinearLayout>
+
+    <include layout="@layout/account_selection_button_mode_continue_button"
+        android:id="@+id/account_selection_continue_btn"
+        android:visibility="gone"/>
+
+    <include layout="@layout/account_selection_add_account_button"
+        android:id="@+id/account_selection_add_account_btn"
+        android:visibility="gone"/>
+</LinearLayout>

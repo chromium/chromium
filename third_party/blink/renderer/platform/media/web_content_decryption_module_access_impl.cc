@@ -78,8 +78,7 @@ void WebContentDecryptionModuleAccessImpl::CreateContentDecryptionModule(
   // As this object's lifetime is controlled by MediaKeySystemAccess on the
   // blink side, copy all values needed by CreateCdm() in case the blink object
   // gets garbage-collected.
-  std::unique_ptr<WebContentDecryptionModuleResult> result_copy(
-      new WebContentDecryptionModuleResult(result));
+  auto result_copy = std::make_unique<WebContentDecryptionModuleResult>(result);
   task_runner->PostTask(FROM_HERE,
                         base::BindOnce(&CreateCdm, client_, security_origin_,
                                        cdm_config_, std::move(result_copy)));

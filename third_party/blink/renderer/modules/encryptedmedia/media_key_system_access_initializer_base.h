@@ -20,10 +20,12 @@ class MediaKeySystemAccessInitializerBase : public EncryptedMediaRequest,
                                             public ExecutionContextClient {
  public:
   MediaKeySystemAccessInitializerBase(
-      ScriptState* script_state,
+      ExecutionContext*,
+      ScriptPromiseResolverBase*,
       const String& key_system,
       const HeapVector<Member<MediaKeySystemConfiguration>>&
-          supported_configurations);
+          supported_configurations,
+      bool is_from_media_capabilities);
 
   MediaKeySystemAccessInitializerBase(
       const MediaKeySystemAccessInitializerBase&) = delete;
@@ -40,11 +42,6 @@ class MediaKeySystemAccessInitializerBase : public EncryptedMediaRequest,
   }
   const SecurityOrigin* GetSecurityOrigin() const override;
 
-  // IMPORTANT: Acquire the promise immediately after creating the |this|.
-  // Otherwise the promise returned to JS will be undefined. See comment above
-  // Promise() in script_promise_resolver.h
-  ScriptPromise Promise();
-
   void Trace(Visitor* visitor) const override;
 
  protected:
@@ -56,9 +53,10 @@ class MediaKeySystemAccessInitializerBase : public EncryptedMediaRequest,
   // UMA and UKM.
   void GenerateWarningAndReportMetrics() const;
 
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverBase> resolver_;
   const String key_system_;
   WebVector<WebMediaKeySystemConfiguration> supported_configurations_;
+  bool is_from_media_capabilities_;
 };
 
 }  // namespace blink

@@ -7,25 +7,25 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 
-using bookmarks::BookmarkModel;
-
-BookmarkModelLoadedObserver::BookmarkModelLoadedObserver(Profile* profile)
+BookmarkModelLoadedObserver::BookmarkModelLoadedObserver(
+    Profile* profile,
+    bookmarks::BookmarkModel* model)
     : profile_(profile) {
+  CHECK(model);
+  observation_.Observe(model);
 }
+
+BookmarkModelLoadedObserver::~BookmarkModelLoadedObserver() = default;
 
 void BookmarkModelLoadedObserver::BookmarkModelChanged() {
 }
 
-void BookmarkModelLoadedObserver::BookmarkModelLoaded(BookmarkModel* model,
-                                                      bool ids_reassigned) {
+void BookmarkModelLoadedObserver::BookmarkModelLoaded(bool ids_reassigned) {
   // Causes lazy-load if sync is enabled.
   SyncServiceFactory::GetInstance()->GetForProfile(profile_);
-  model->RemoveObserver(this);
   delete this;
 }
 
-void BookmarkModelLoadedObserver::BookmarkModelBeingDeleted(
-    BookmarkModel* model) {
-  model->RemoveObserver(this);
+void BookmarkModelLoadedObserver::BookmarkModelBeingDeleted() {
   delete this;
 }

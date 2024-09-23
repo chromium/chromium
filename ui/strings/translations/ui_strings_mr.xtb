@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">सर्वेक्षण</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">तुमचे इंटरनेट कनेक्शन तपासत आहे</translation>
+<translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2388990488038464401">तुमच्या फोनवरून या नंबरवर कॉल करायचा का?</translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
 <translation id="24452542372838207">सूचना विस्तार करा</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">नवीन</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> वरून शेअर केले</translation>
-<translation id="271033894570825754">नवीन</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 वर्षापूर्वी}other{# वर्षांपूर्वी}}</translation>
 <translation id="2878511608894704031">सर्व हटवा</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{१दि मध्ये}other{#दि मध्ये}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> सिस्टम</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Left Arrow</translation>
+<translation id="5633029987065897167">रिक्त आहे</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 मिनिट}other{# मिनिटे}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{आज ॲक्टिव्ह होते}=1{एका दिवसापूर्वी ॲक्टिव्ह होते}other{# दिवसांपूर्वी ॲक्टिव्ह होते}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 दिवस आणि }other{# दिवस आणि }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF आशय</translation>
 <translation id="6539092367496845964">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="654149438358937226">सर्व सूचना ब्लॉक करा</translation>
-<translation id="6612467943526193239">कॅलिब्रेशनमधून बाहेर पडण्‍यासाठी Esc प्रेस करा.</translation>
 <translation id="6620110761915583480">फाइल सेव्ह करा</translation>
 <translation id="6699343763173986273">मीडिया पुढील ट्रॅक</translation>
 <translation id="6808150112686056157">मीडिया थांबवा</translation>

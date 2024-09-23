@@ -14,19 +14,25 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-// Pin to taskbar is supported on Windows 7, 8 and Win10RS5+. Returns
-// true on those platforms.
+// Pin to taskbar is supported on Win10RS5+. Returns true on those platforms.
 bool CanPinShortcutToTaskbar();
 
-// Pins a shortcut to the taskbar on Windows 7, 8 and Win10RS5+ . `shortcut`
-// file must already exist and be a shortcut that points to an executable.The
-// app id of the shortcut is used to group windows and must be set correctly.
+// Pins a shortcut to the taskbar on supported platforms. The `shortcut` file
+// must already exist and be a shortcut that points to an executable. The app id
+// of the shortcut is used to group windows and must be set correctly.
 bool PinShortcutToTaskbar(const base::FilePath& shortcut);
 
 // Unpins a shortcut from the Windows 7+ taskbar. `shortcut` must exist
 // and already be pinned to the taskbar. The app id of the shortcut is used as
 // the identifier for the taskbar item to remove and must be set correctly.
 bool UnpinShortcutFromTaskbar(const base::FilePath& shortcut);
+
+using CanPinToTaskBarDelegateFunctionPtr = bool (*)();
+
+// If delegate is set, and returns false, `PinShortcutToTaskbar` won't pin
+// any shortcuts. This allows the test infrastructure to prevent tests from
+// pinning shortcuts to the taskbar.
+void SetCanPinToTaskbarDelegate(CanPinToTaskBarDelegateFunctionPtr delegate);
 
 // Returns true if `shortcut` is pinned, false if not, and nullopt if
 // IPinnedList3 is not supported (e.g., pre WIN10_RS5). Do not to call

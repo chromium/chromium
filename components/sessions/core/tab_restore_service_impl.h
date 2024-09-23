@@ -27,7 +27,7 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
   // Does not take ownership of |time_factory|.
   TabRestoreServiceImpl(std::unique_ptr<TabRestoreServiceClient> client,
                         PrefService* pref_service,
-                        TimeFactory* time_factory);
+                        tab_restore::TimeFactory* time_factory);
 
   TabRestoreServiceImpl(const TabRestoreServiceImpl&) = delete;
   TabRestoreServiceImpl& operator=(const TabRestoreServiceImpl&) = delete;
@@ -50,7 +50,7 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
   const Entries& entries() const override;
   std::vector<LiveTab*> RestoreMostRecentEntry(
       LiveTabContext* context) override;
-  void RemoveTabEntryById(SessionID id) override;
+  void RemoveEntryById(SessionID id) override;
   std::vector<LiveTab*> RestoreEntryById(
       LiveTabContext* context,
       SessionID id,

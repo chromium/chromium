@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -39,43 +40,32 @@ ShadowPredictionComparison GetBaseComparison(
   }
 }
 
-void LogRegexShadowPredictions(const AutofillField& field) {
-  // If a `PatternSource` is active, emit shadow predictions against the
-  // `PatternSource` of the prior rollout stage.
-  // `GetNonActiveHeuristicSources()` ensures that they were computed.
+void LogRegexShadowPredictions(const AutofillField& field,
+                               HeuristicSource active_source) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  switch (GetActiveHeuristicSource()) {
-    case HeuristicSource::kDefault:
-      base::UmaHistogramSparse(
-          "Autofill.ShadowPredictions.DefaultHeuristicToDefaultServer",
-          GetShadowPrediction(field.heuristic_type(), field.server_type(),
-                              field.possible_types()));
-      base::UmaHistogramSparse(
-          "Autofill.ShadowPredictions.ExperimentalToDefault",
-          GetShadowPrediction(
-              field.heuristic_type(),
-              field.heuristic_type(HeuristicSource::kExperimental),
-              field.possible_types()));
-      break;
-    case HeuristicSource::kExperimental:
-      base::UmaHistogramSparse(
-          "Autofill.ShadowPredictions.NextGenToExperimental",
-          GetShadowPrediction(field.heuristic_type(),
-                              field.heuristic_type(HeuristicSource::kNextGen),
-                              field.possible_types()));
-      break;
-    case HeuristicSource::kLegacy:
-    case HeuristicSource::kNextGen:
-    case HeuristicSource::kMachineLearning:
-      break;
+  if (active_source == HeuristicSource::kDefaultRegexes) {
+    base::UmaHistogramSparse(
+        "Autofill.ShadowPredictions.DefaultHeuristicToDefaultServer",
+        GetShadowPrediction(field.heuristic_type(), field.server_type(),
+                            field.possible_types()));
+  }
+
+  // If the experimental source is active, emit shadow predictions against the
+  // default patterns. `FormStructure::DetermineNonActiveHeuristicTypes()`
+  // ensures that they were computed.
+  if (active_source == HeuristicSource::kExperimentalRegexes) {
+    base::UmaHistogramSparse(
+        "Autofill.ShadowPredictions.ExperimentalToDefault",
+        GetShadowPrediction(
+            field.heuristic_type(HeuristicSource::kDefaultRegexes),
+            field.heuristic_type(HeuristicSource::kExperimentalRegexes),
+            field.possible_types()));
   }
 #endif
 }
 
 void LogMlShadowPredictions(const AutofillField& field) {
-#if !BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  return;
-#endif
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (!base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
     return;
   }
@@ -87,24 +77,14 @@ void LogMlShadowPredictions(const AutofillField& field) {
           field.heuristic_type(HeuristicSource::kMachineLearning),
           submitted_types));
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  if (base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider)) {
-    base::UmaHistogramSparse(
-        "Autofill.ShadowPredictions.DefaultPatternSourceToMLModel",
-        GetShadowPrediction(
-            field.heuristic_type(HeuristicSource::kDefault),
-            field.heuristic_type(HeuristicSource::kMachineLearning),
-            submitted_types));
-    return;
-  }
-#endif
-  // In builds without internal patterns or if pattern provider is disabled,
-  // compare against the legacy heuristic type instead.
   base::UmaHistogramSparse(
-      "Autofill.ShadowPredictions.LegacyPatternSourceToMLModel",
+      "Autofill.ShadowPredictions.DefaultPatternSourceToMLModel",
       GetShadowPrediction(
-          field.heuristic_type(HeuristicSource::kLegacy),
+          field.heuristic_type(HeuristicSource::kDefaultRegexes),
           field.heuristic_type(HeuristicSource::kMachineLearning),
           submitted_types));
+#endif  // BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 }  // namespace
@@ -128,8 +108,9 @@ int GetShadowPrediction(FieldType current,
   return encoding;
 }
 
-void LogShadowPredictionComparison(const AutofillField& field) {
-  LogRegexShadowPredictions(field);
+void LogShadowPredictionComparison(const AutofillField& field,
+                                   HeuristicSource active_source) {
+  LogRegexShadowPredictions(field, active_source);
   LogMlShadowPredictions(field);
 }
 

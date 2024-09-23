@@ -14,7 +14,7 @@
 @protocol BulkUploadConsumer <NSObject>
 
 // Sets the enabled state of the button.
-@property(nonatomic, assign) BOOL validationButtonEnabled;
+- (void)setValidationButtonEnabled:(BOOL)enabled;
 
 // Update the view controller about new bookmark data.
 - (void)updateViewWithViewItems:(NSArray<BulkUploadViewItem*>*)viewItems;

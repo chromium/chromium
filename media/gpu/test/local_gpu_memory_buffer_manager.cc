@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/test/local_gpu_memory_buffer_manager.h"
 
 #include <drm_fourcc.h>
@@ -30,7 +35,7 @@ namespace {
 const int32_t kDrmNumNodes = 64;
 const int32_t kMinNodeNumber = 128;
 
-// TODO(https://crbug.com/1043007): use ui/gfx/linux/gbm_device.h instead.
+// TODO(crbug.com/40115082): use ui/gfx/linux/gbm_device.h instead.
 gbm_device* CreateGbmDevice() {
   int fd;
   int32_t min_node = kMinNodeNumber;
@@ -124,7 +129,7 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
       Unmap();
     }
 
-    gbm_bo_destroy(buffer_object_);
+    gbm_bo_destroy(buffer_object_.ExtractAsDangling());
   }
 
   bool Map() override {
@@ -231,13 +236,7 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
 
 LocalGpuMemoryBufferManager::LocalGpuMemoryBufferManager()
     : gbm_device_(CreateGbmDevice()) {}
-
-LocalGpuMemoryBufferManager::~LocalGpuMemoryBufferManager() {
-  if (gbm_device_) {
-    close(gbm_device_get_fd(gbm_device_));
-    gbm_device_destroy(gbm_device_);
-  }
-}
+LocalGpuMemoryBufferManager::~LocalGpuMemoryBufferManager() = default;
 
 std::unique_ptr<gfx::GpuMemoryBuffer>
 LocalGpuMemoryBufferManager::CreateGpuMemoryBuffer(
@@ -246,7 +245,7 @@ LocalGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     gfx::BufferUsage usage,
     gpu::SurfaceHandle surface_handle,
     base::WaitableEvent* shutdown_event) {
-  if (!gbm_device_) {
+  if (!gbm_device_.get()) {
     LOG(ERROR) << "Invalid GBM device";
     return nullptr;
   }
@@ -264,11 +263,12 @@ LocalGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     return nullptr;
   }
 
-  if (!gbm_device_is_format_supported(gbm_device_, drm_format, gbm_usage)) {
+  if (!gbm_device_is_format_supported(gbm_device_.get(), drm_format,
+                                      gbm_usage)) {
     return nullptr;
   }
 
-  gbm_bo* buffer_object = gbm_bo_create(gbm_device_, size.width(),
+  gbm_bo* buffer_object = gbm_bo_create(gbm_device_.get(), size.width(),
                                         size.height(), drm_format, gbm_usage);
   if (!buffer_object) {
     LOG(ERROR) << "Failed to create GBM buffer object";
@@ -326,8 +326,9 @@ std::unique_ptr<gfx::GpuMemoryBuffer> LocalGpuMemoryBufferManager::ImportDmaBuf(
         base::checked_cast<int>(handle.planes[plane].offset);
   }
   import_data.modifier = handle.modifier;
-  gbm_bo* buffer_object = gbm_bo_import(gbm_device_, GBM_BO_IMPORT_FD_MODIFIER,
-                                        &import_data, GBM_BO_USE_SW_READ_OFTEN);
+  gbm_bo* buffer_object =
+      gbm_bo_import(gbm_device_.get(), GBM_BO_IMPORT_FD_MODIFIER, &import_data,
+                    GBM_BO_USE_SW_READ_OFTEN);
   if (!buffer_object) {
     PLOG(ERROR) << "Could not import the DmaBuf into gbm";
     return nullptr;
@@ -344,7 +345,8 @@ bool LocalGpuMemoryBufferManager::IsFormatAndUsageSupported(
   const uint32_t gbm_usage = GetGbmUsage(usage);
   if (gbm_usage == 0)
     return false;
-  return gbm_device_is_format_supported(gbm_device_, drm_format, gbm_usage);
+  return gbm_device_is_format_supported(gbm_device_.get(), drm_format,
+                                        gbm_usage);
 }
 
 }  // namespace media

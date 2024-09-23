@@ -2,10 +2,10 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
 <translation id="1012876632442809908">USB-C ਡੀਵਾਈਸ (ਅੱਗੇ ਦਾ ਪੋਰਟ)</translation>
-<translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> ਨੂੰ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) 'ਤੇ ਬਦਲਿਆ ਗਿਆ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਬਣਾਈ ਰੱਖਣ ਲਈ 'ਤਸਦੀਕ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1013923882670373915">Bluetooth ਡੀਵਾਈਸ "<ph name="DEVICE_NAME" />" ਜੋੜਾਬੱਧ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੁੰਦਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਉਸ ਡੀਵਾਈਸ 'ਤੇ ਇਹ ਪਿੰਨ ਦਾਖਲ ਕਰੋ: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">ਇਸ ਨਾਲ <ph name="APP_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਵਾਈ-ਫਾਈ ਅਤੇ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕਾਂ ਦਾ ਟਿਕਾਣਾ ਵਰਤਣ ਦੀ ਆਗਿਆ ਮਿਲਦੀ ਹੈ ਜਿਨ੍ਹਾਂ ਕੋਲ ਟਿਕਾਣਾ ਇਜਾਜ਼ਤ ਅਤੇ ChromeOS ਹੈ।</translation>
 <translation id="1017556409696559990">Chrome ਵਿੱਚ ਕੋਈ ਵੀ ਪੁਰਾਣਾ ਇਤਿਹਾਸ ਨਾ ਹੋਣ 'ਤੇ ਉੱਪਰਲੀ ਵਿੰਡੋ ਨੂੰ ਛੋਟਾ ਕਰੋ</translation>
+<translation id="101823271612280837">ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਹੋ ਗਈ। ਟੈਬਲੈੱਟ ਮੋਡ ਵਿੱਚ ਗੇਮ ਡੈਸ਼ਬੋਰਡ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ।</translation>
 <translation id="1024364763893396229">ਆਪਣਾ <ph name="NAME" /> ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="1032891413405719768">ਸਟਾਈਲਸ ਦੀ ਬੈਟਰੀ ਘੱਟ ਹੈ</translation>
 <translation id="1036073649888683237">ਸੂਚਨਾਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
@@ -13,11 +13,13 @@
 <translation id="1036672894875463507">ਮੈਂ ਤੁਹਾਡੀ Google Assistant ਹਾਂ, ਸਾਰਾ ਦਿਨ ਤੁਹਾਡੀ ਮਦਦ ਲਈ ਉਪਲਬਧ!
 ਇੱਥੇ ਅਜਿਹੀਆਂ ਕੁਝ ਚੀਜ਼ਾਂ ਹਨ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਵਰਤ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="1038106730571050514">ਸੁਝਾਅ ਦਿਖਾਓ</translation>
 <translation id="1047017786576569492">ਅੰਸ਼ਕ</translation>
 <translation id="1052916631016577720">ਆਈਟਮ ਨੂੰ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="1056775291175587022">ਕੋਈ ਨੈੱਟਵਰਕ ਨਹੀਂ</translation>
 <translation id="1056898198331236512">ਚਿਤਾਵਨੀ</translation>
 <translation id="1058009965971887428">ਵਿਚਾਰ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
+<translation id="1059120031266247284">ਤੁਹਾਡੇ ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">ਬਦਲੋ</translation>
 <translation id="1073899992769346247">ਬੈਟਰੀ ਬਦਲੋ ਜਾਂ ਉਸਨੂੰ ਰੀਚਾਰਜ ਕਰੋ</translation>
@@ -30,23 +32,28 @@
 <translation id="109942774857561566">ਮੈਂ ਬੋਰ ਹੋ ਚੁੱਕਾ/ਚੁੱਕੀ ਹਾਂ</translation>
 <translation id="1104084341931202936">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="1104621072296271835">ਰਲ ਕੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਹੋਰ ਵੀ ਬਿਹਤਰ ਕੰਮ ਕਰਦੇ ਹਨ</translation>
-<translation id="1106446201446919638">1 ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ। ਹੌਟਸਪੌਟ ਵਰਤਣ ਦੌਰਾਨ, ਵਾਈ-ਫਾਈ ਬੰਦ ਰਹੇਗਾ।</translation>
 <translation id="1111021433905331574">ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ &gt; <ph name="APP_TITLE" /> 'ਤੇ ਜਾ ਕੇ ਆਪਣੇ ਕੀ-ਬੋਰਡ ਬੈਕਲਾਈਟ ਦਾ ਰੰਗ ਬਦਲ ਸਕਦੇ ਹੋ</translation>
 <translation id="1117719261843403176">ਮੋਬਾਈਲ ਡਾਟੇ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE" />.</translation>
+<translation id="1122849163460178706">ਅਜ਼ਮਾਉਣ ਲਈ ਕੁਝ ਚੀਜ਼ਾਂ</translation>
 <translation id="112308213915226829">ਸ਼ੈਲਫ ਆਟੋਲੁਕਾਓ</translation>
+<translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="1142002900084379065">ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ</translation>
 <translation id="114221662579355151">ਇਸ ਨਾਲ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ। ਤੁਹਾਨੂੰ ਵੈੱਬ ਪੰਨੇ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰਨ ਜਾਂ ਐਪ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ।</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> ਲਈ ਜਾਣਕਾਰੀ ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1153356358378277386">ਜੋੜਾਬੱਧ ਕੀਤੀਆਂ ਡੀਵਾਈਸਾਂ</translation>
+<translation id="1153918444040990015">ਫੋਕਸ ਧੁਨੀਆਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="1155734730463845512">ਮੌਜੂਦਾ ਬੈਟਰੀ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">ਜਨਰੇਟਿਵ AI ਪ੍ਰਯੋਗਮਈ ਹੈ ਅਤੇ ਸਮੱਗਰੀ ਗਲਤ, ਗੁੰਮਰਾਹਕੁੰਨ ਜਾਂ ਅਪਮਾਨਜਨਕ ਹੋ ਸਕਦੀ ਹੈ। ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰਨ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ। <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ਚਾਲੂ ਅਤੇ ਵਰਤੋਂ ਵਿੱਚ ਹੈ</translation>
 <translation id="1163437384438183174">ਸ਼ੈਲਫ ਤੋਂ ਫ਼ੋਨ ਹੱਬ ਨੂੰ ਹਟਾਓ</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡੀ USB-C ਕੇਬਲ ਡਿਸਪਲੇਆਂ ਨਾਲ ਠੀਕ ਤਰ੍ਹਾਂ ਕਨੈਕਟ ਨਾ ਹੋਵੇ</translation>
+<translation id="1173268871892601910">ChromeOS ਦਾ Password Manager ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
 <translation id="1175572348579024023">ਸਕ੍ਰੋਲ</translation>
 <translation id="1175944128323889279">ਮੌਜੂਦਾ ਬੈਟਰੀ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />%, ਪੂਰੀ ਤਰ੍ਹਾਂ ਖਾਲੀ ਹੋਣ ਵਿੱਚ <ph name="TIME" /> ਬਾਕੀ</translation>
 <translation id="1178581264944972037">ਰੋਕੋ</translation>
+<translation id="1179776263021875437">ਕਾਰਜ 'ਤੇ ਫੋਕਸ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
 <translation id="1182225749592316782">ਇਸ ਨਾਲ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਪਹੁੰਚ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤਾਂ ਹਨ</translation>
 <translation id="1182876754474670069">ਹੋਮ</translation>
@@ -55,7 +62,6 @@
 <translation id="118437560755358292">ਵਧੇਰੇ ਸੁਰੱਖਿਆ ਲਈ ਪਾਸਵਰਡ ਜਾਂ ਪਿੰਨ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="118532027333893379">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਕੈਪਚਰ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਟੈਪ ਕਰੋ</translation>
 <translation id="1190609913194133056">ਸੂਚਨਾ ਕੇਂਦਰ</translation>
-<translation id="1190678134285018527">ਡੀਵਾਈਸ ਨੂੰ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਵਾਪਸ ਜਾਣ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="1195412055398077112">ਓਵਰਸਕੈਨ</translation>
 <translation id="1195667586424773550">ਟੈਬ ਦੀ ਪਤਾ ਬਾਰ 'ਤੇ ਲਿੰਕ ਨੂੰ ਘਸੀਟੋ</translation>
 <translation id="119944043368869598">ਸਾਰੇ ਹਟਾਓ</translation>
@@ -63,14 +69,16 @@
 <translation id="1201402288615127009">ਅੱਗੇ</translation>
 <translation id="1210557957257435379">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ</translation>
 <translation id="121097972571826261">ਇੱਕ ਸ਼ਬਦ ਅੱਗੇ ਜਾਓ</translation>
-<translation id="1217633719248931900">ਐਪ 'ਤੇ ਜਾਓ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ਐਪ</translation>
 <translation id="1225748608451425081">ਕਿਸੇ ਜਾਣੂ ਸਮੱਸਿਆ ਕਰਕੇ ਤੁਹਾਡੀ Chromebook ਲਾਕ ਹੈ। ਤੁਸੀਂ ਇੰਨੇ ਸਮੇਂ ਬਾਅਦ ਸਾਈਨ-ਇਨ ਕਰ ਸਕੋਗੇ: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">ਚੋਣ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
+<translation id="1230853660706736937">ਚਿੱਤਰਾਂ ਦੇ ਅੰਦਰ ਲਿਖਤ ਨੂੰ ਖੋਜੋ ਅਤੇ ਚਿੱਤਰ ਦੀਆਂ ਪੂਰਵ-ਝਲਕਾਂ ਦੇਖੋ</translation>
 <translation id="1235458158152011030">ਗਿਆਤ ਨੈੱਟਵਰਕ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ਕਨੈਕਟ ਹੈ।</translation>
 <translation id="1240638468526743569">ਐਪ</translation>
+<translation id="1242198791279543032">ਸੂਚਨਾਵਾਂ ਮਿਊਟ ਕੀਤੀਆਂ ਗਈਆਂ ਹਨ</translation>
 <translation id="1242883863226959074">ਡੀਵਾਈਸ</translation>
+<translation id="1245476784081715330">ਬਹੁਤ ਵਧੀਆ!</translation>
 <translation id="1245644940275736236">Assistant 'ਤੇ ਜਾਓ</translation>
 <translation id="124678866338384709">ਮੌਜੂਦਾ ਟੈਬ ਬੰਦ ਕਰੋ</translation>
 <translation id="1246890715821376239">ਅਸਮਰਥਿਤ ਐਪਾਂ</translation>
@@ -78,10 +86,12 @@
 <translation id="1247519845643687288">ਹਾਲੀਆ ਐਪਾਂ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> ਤੋਂ ਚਾਰਜ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="1255033239764210633">ਮੌਸਮ ਕਿਹੋ ਜਿਹਾ ਹੈ?</translation>
+<translation id="1256734167083229794">ਤੁਸੀਂ ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵੱਡਦਰਸ਼ੀ ਵਿਸ਼ੇਸ਼ਤਾ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਇਆ ਹੈ। ਜ਼ੂਮ ਵਧਾਉਣ ਲਈ <ph name="ZOOM_IN_ACCELERATOR" /> ਅਤੇ ਜ਼ੂਮ ਘਟਾਉਣ ਲਈ <ph name="ZOOM_OUT_ACCELERATOR" /> ਦੀ ਵਰਤੋਂ ਕਰੋ। ਜ਼ੂਮ ਵਧਾਉਣ ਵਾਲੇ ਦ੍ਰਿਸ਼ ਦੇ ਆਲੇ-ਦੁਆਲੇ ਘੁੰਮਣ ਲਈ ctrl+alt+ ਤੀਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="1269405891096105529">ਮਹਿਮਾਨ ਮੋਡ ਵਿੱਚ ਪੈਰੀਫੈਰਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="1270290102613614947">ਔਨ-ਸਕ੍ਰੀਨ ਕੀ-ਬੋਰਡ ਅਸਮਰਥਿਤ</translation>
 <translation id="1272079795634619415">ਰੋਕੋ</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> ਨੂੰ ਪਾਵਰ ਦਿੱਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
+<translation id="1275718070701477396">ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="1276975447697633661">ਫ਼ਾਈਲ ਚੁਣੋ, ਫਿਰ <ph name="KEY" /> ਦਬਾਓ</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ਫ਼ੋਨ ਦਾ ਪਤਾ ਲਗਾਓ</translation>
@@ -94,9 +104,11 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Explore ਖੋਲ੍ਹੋ</translation>
+<translation id="129469256578833241">ਸਾਰਾਂਸ਼ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1301513122398173424">ਕਿਸੇ ਵੀ ਸਮੇਂ <ph name="LAUNCHER_KEY_NAME" /> + g ਦਬਾਓ</translation>
 <translation id="1306549533752902673">ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀਆਂ ਐਪਾਂ</translation>
-<translation id="1311294419381837540">ਤੁਸੀਂ ਟੈਬ ਨੂੰ ਕਾਸਟ ਕਰ ਰਹੇ ਹੋ। ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਸਮੇਂ ਕਾਸਟ ਕਰਨਾ ਰੋਕ ਸਕਦੇ ਜਾਂ ਉਸਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="1310396869741602366">ਟੋਨ ਬਦਲੋ</translation>
 <translation id="1312604459020188865">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">ਹਮੇਸ਼ਾਂ ਸ਼ੈਲਫ਼ ਦਿਖਾਓ</translation>
 <translation id="132346741904777634">ਕੈਮਰੇ ਨੂੰ ਉੱਪਰਲੇ ਖੱਬੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ। ਸਿਸਟਮ ਸਰਫ਼ੇਸ ਨਾਲ ਓਵਰਲੈਪ ਕਰਦਾ ਹੈ।</translation>
@@ -104,8 +116,9 @@
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> ਕਨੈਕਟ ਹੈ</translation>
 <translation id="1340378040547539434">ਪੰਨੇ 'ਤੇ ਜ਼ੂਮ ਘਟਾਓ</translation>
 <translation id="1341651618736211726">ਓਵਰਫ਼ਲੋ</translation>
-<translation id="1344141078024003905">ਤੁਸੀਂ ਆਪਣੀ ਸਕ੍ਰੀਨ ਕਾਸਟ ਕਰ ਰਹੇ ਹੋ। ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਸਮੇਂ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਕਾਸਟ ਕਰਨਾ ਰੋਕ ਸਕਦੇ ਜਾਂ ਉਸਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="1341926407152459446">ਆਡੀਓ ਇਨਪੁੱਟ ਅਤੇ ਆਊਟਪੁੱਟ ਲਈ "<ph name="DEVICE_NAME" />" ਵਰਤੋ</translation>
 <translation id="1346748346194534595">ਸੱਜਾ</translation>
+<translation id="1350494136075914725">ਕਾਲ ਜਾਰੀ ਹੈ · ਟੈਬ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="1351937230027495976">ਮੀਨੂ ਸਮੇਟੋ</translation>
 <translation id="1360220746312242196">ਕਿਸੇ ਪੰਨੇ ਨੂੰ ਖੋਜਣ ਵੇਲੇ, ਖੋਜ ਲਈ ਪਿਛਲੇ ਮਿਲਾਨ 'ਤੇ ਜਾਓ</translation>
 <translation id="1360788414852622716">ਪ੍ਰੋਫਾਈਲ ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
@@ -115,6 +128,9 @@
 <translation id="1383597849754832576">ਬੋਲੀ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
 <translation id="1391102559483454063">ਚਾਲੂ</translation>
+<translation id="1394698770495054737">ਪੂਰਾ ਧੁੰਦਲਾ</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 ਦਿਨ ਪਹਿਲਾਂ}one{# ਦਿਨ ਪਹਿਲਾਂ}other{# ਦਿਨ ਪਹਿਲਾਂ}}</translation>
+<translation id="1404963891829069586">ਫੋਕਸ ਮੋਡ ਦੀਆਂ ਧੁਨੀਆਂ</translation>
 <translation id="1407069428457324124">ਗੂੜ੍ਹਾ ਥੀਮ</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />। ਤਾਰੀਖਾਂ ਵਿਚਾਲੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਤੀਰ ਕੁੰਜੀਆਂ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="141170878022560212">ਵਿਚਕਾਰਲਾ ਬਟਨ</translation>
@@ -122,10 +138,14 @@
 <translation id="1414919006379339073">ਮੌਜੂਦਾ ਵਿੰਡੋ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="1415846719612499304">ਨੈੱਟਵਰਕ ਸੂਚੀ ਨੂੰ ਦਿਖਾਓ। <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">ਸੂਚਨਾ 'ਤੇ ਕਾਰਵਾਈ ਕਰਨ ਲਈ ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
-<translation id="1420408895951708260">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
+<translation id="1420408895951708260">ਨਾਈਟ ਲਾਈਟ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">ਹਾਂ</translation>
 <translation id="1435537621343861112">ਡਿਕਟੇਸ਼ਨ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ। ਤੁਹਾਡਾ ਮਾਈਕ ਬੰਦ ਹੈ।</translation>
+<translation id="1445031758921122223">ਚਿਹਰਾ ਕੰਟਰੋਲ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਹੋ ਗਈਆਂ</translation>
+<translation id="1447907279406111651">ਇਸ ਸਮੇਂ ਚੱਲ ਰਹੀ ਹੈ · <ph name="END_TIME" /> ਨੂੰ ਸਮਾਪਤ ਹੋਵੇਗੀ</translation>
+<translation id="1448963928642384376">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੇ ਹੌਟਸਪੌਟ</translation>
 <translation id="1455242230282523554">ਭਾਸ਼ਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
+<translation id="1459693405370120464">ਮੌਸਮ</translation>
 <translation id="1460620680449458626">ਅਵਾਜ਼ ਨੂੰ ਮਿਊਟ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
 <translation id="14648076227129703">ਇਸ ਨਾਲ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="1467432559032391204">ਖੱਬੇ ਪਾਸੇ</translation>
@@ -134,10 +154,13 @@
 <translation id="147310119694673958">ਫ਼ੋਨ ਬੈਟਰੀ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">ਹੌਟਸਪੌਟ ਟੌਗਲ ਕਰੋ। ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ, 1 ਡੀਵਾਈਸ ਕਨੈਕਟ ਹੈ।</translation>
 <translation id="1479909375538722835">ਫ਼ਲੋਟਿੰਗ ਪਹੁੰਚਯੋਗਤਾ ਮੀਨੂ</translation>
+<translation id="1483493594462132177">ਭੇਜੋ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">ਡਿਕਟੇਸ਼ਨ ਨਾਲ, ਤੁਸੀਂ ਆਪਣੀ ਅਵਾਜ਼ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਟਾਈਪ ਕਰ ਸਕਦੇ ਹੋ। ਲਿਖਤ ਖੇਤਰ 'ਤੇ ਹੋਣ ਵੇਲੇ 'ਡਿਕਟੇਸ਼ਨ' ਕੁੰਜੀ ਦਬਾਓ ਜਾਂ ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਲੇ ਪਾਸੇ ਦਿੱਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਪ੍ਰਤੀਕ 'ਤੇ ਟੈਪ ਕਰੋ। ਤੁਹਾਡੀ ਡਿਕਟੇਸ਼ਨ ਭਾਸ਼ਾ <ph name="LANGUAGE" /> 'ਤੇ ਸੈੱਟ ਹੈ। ਪ੍ਰਕਿਰਿਆ ਕਰਨ ਲਈ ਬੋਲੀ Google ਨੂੰ ਭੇਜੀ ਗਈ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ &gt; ਪਹੁੰਚਯੋਗਤਾ ਵਿੱਚ ਜਾ ਕੇ ਕਦੇ ਵੀ ਡਿਕਟੇਸ਼ਨ ਭਾਸ਼ਾ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ਨੂੰ <ph name="SECOND_ITEM_TITLE" /> ਨਾਲ ਬਦਲਿਆ ਗਿਆ</translation>
 <translation id="1500926532737552529">ਸਾਰੇ ਸੁਝਾਅ ਦਿਖਾਓ</translation>
+<translation id="1501946871587957338">ਕੀ ਆਡੀਓ ਸਰੋਤ ਨੂੰ ਸਵਿੱਚ ਕਰਨਾ ਹੈ?</translation>
+<translation id="1505542291183484463">ਟਾਇਲਡ ਮੁੜ-ਆਕਾਰ ਵਾਲੀ ਵਿੰਡੋ ਹੇਠਾਂ ਵੱਲ</translation>
 <translation id="1510238584712386396">ਲੌਂਚਰ</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। ਇੱਕ ਐਪ ਲਈ ਸੂਚਨਾਵਾਂ ਬੰਦ ਹਨ}one{ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। # ਐਪ ਲਈ ਸੂਚਨਾਵਾਂ ਬੰਦ ਹਨ}other{ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। # ਐਪਾਂ ਲਈ ਸੂਚਨਾਵਾਂ ਬੰਦ ਹਨ}}</translation>
 <translation id="1523032696246003">ਬੈਟਰੀ <ph name="BATTERY_PERCENTAGE" />% | ਪੂਰੀ ਤਰ੍ਹਾਂ ਚਾਰਜ ਹੋਣ ਵਿੱਚ <ph name="TIME" /> ਬਾਕੀ</translation>
@@ -154,37 +177,45 @@
 <translation id="1550523713251050646">ਹੋਰ ਵਿਕਲਪਾਂ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="1555130319947370107">ਨੀਲਾ</translation>
 <translation id="1557622599341396706">ਡੈਸਕ ਦਾ ਨਾਮ ਦਿਖਾਓ</translation>
+<translation id="1567138500090284106">ਮਾਊਸ ਕੁੰਜੀਆਂ ਬਟਨ</translation>
 <translation id="1569384531973824928">ਇਸ ਨਾਲ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਪਹੁੰਚ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤਾਂ ਹਨ। ਤੁਹਾਨੂੰ ਵੈੱਬ ਪੰਨੇ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰਨ ਜਾਂ ਐਪ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ।</translation>
 <translation id="1571697193564730395">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">ਵੱਡਦਰਸ਼ੀ ਦੇ ਚਾਲੂ ਹੋਣ 'ਤੇ ਜ਼ੂਮ ਘਟਾਓ</translation>
+<translation id="1582946770779745370">ਗੇਮ ਡੈਸ਼ਬੋਰਡ ਉਪਲਬਧ ਹੈ। ਖੋਲ੍ਹਣ ਲਈ ਕਿਸੇ ਵੇਲੇ ਵੀ <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, ਫਿਰ <ph name="LAUNCHER_KEY_NAME" /> + g ਨੂੰ ਦਬਾਓ</translation>
 <translation id="1586324912145647027">1 ਤੋਂ 8 ਤੱਕ ਡੈਸਕ 'ਤੇ ਜਾਓ</translation>
 <translation id="158838227375272121">Google Classroom ਵੈੱਬਸਾਈਟ</translation>
 <translation id="1589090746204042747">ਇਸ ਸ਼ੈਸ਼ਨ ਦੀ ਆਪਣੀ ਸਾਰੀ ਸਰਗਰਮੀ ਤੱਕ ਪਹੁੰਚ ਕਰੋ</translation>
+<translation id="1597880963776148053"><ph name="TOTAL_STEPS" /> ਵਿੱਚੋਂ ਪੜਾਅ <ph name="STEP" /> ਦੇਖੋ। ਤੁਹਾਡੀਆਂ ਪਿੰਨ ਕੀਤੀਆਂ ਅਤੇ ਖੁੱਲ੍ਹੀਆਂ ਐਪਾਂ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਾਂ ਸਥਿਤ ਸ਼ੈਲਫ ਵਿੱਚ ਮੌਜੂਦ ਹਨ। ਸ਼ੈਲਫ ਆਈਟਮਾਂ 'ਤੇ ਫੋਕਸ ਕਰਨ ਲਈ, Alt + Shift + L, ਫਿਰ ਟੈਬ ਦਬਾਓ।</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + ਹੇਠਾਂ ਤੀਰ</translation>
 <translation id="1604857178818051494">ਮੀਡੀਆ ਰੋਕੋ</translation>
 <translation id="1607312127821884567">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਐਪਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨਾ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="1610778689852195798">"ਅਣਕੀਤਾ ਕਰੋ"</translation>
 <translation id="1611993646327628135">ਚਾਲੂ ਹੈ</translation>
 <translation id="1620510694547887537">ਕੈਮਰਾ</translation>
+<translation id="1623768535032616219">Google Classroom ਨੂੰ ਸਮੇਟੋ</translation>
+<translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="1632985212731562677">ਸਵਿੱਚ ਪਹੁੰਚ ਨੂੰ ਸੈਟਿੰਗਾਂ &gt; ਪਹੁੰਚਯੋਗਤਾ ਵਿੱਚ ਜਾ ਕੇ ਬੰਦ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ਡੀਵਾਈਸ</translation>
 <translation id="1639239467298939599">ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="1647986356840967552">ਪਿਛਲਾ ਪੰਨਾ</translation>
 <translation id="1651914502370159744">'ਇਤਿਹਾਸ' ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="1654477262762802994">ਅਵਾਜ਼ੀ ਪੁੱਛਗਿੱਛ ਸ਼ੁਰੂ ਕਰੋ</translation>
-<translation id="1662667383227796099">ਲਾਂਚਰ ਵਿੱਚ ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ, ਐਪਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਖੋਜੋ। ਤੁਸੀਂ ਆਪਣੀ Chromebook ਬਾਰੇ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਵੀ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1668469839109562275">ਅੰਦਰ-ਮੌਜੂਦ VPN</translation>
+<translation id="1673232940951031776">ਫੋਕਸ ਮੋਡ ਬੰਦ ਕਰੋ। <ph name="REMAINING_TIME" /> ਬਾਕੀ।</translation>
+<translation id="1675570947608765064">ਹੋਰ ਲੋਕ ਉਹ ਤਬਦੀਲੀਆਂ ਦੇਖ ਸਕਦੇ ਹਨ ਜੋ ਤੁਸੀਂ ਇਸ ਕਾਰਜ ਵਿੱਚ ਕਰਦੇ ਹੋ</translation>
 <translation id="1675844249244994876">ਸੱਜੀ ਵਿੰਡੋ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ਬਾਕੀ</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ਕਨੈਕਟ ਨਹੀਂ ਹੈ।</translation>
 <translation id="1677582821739292812">ਕੋਈ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਵੱਲ ਦੇਖ ਰਿਹਾ ਹੈ</translation>
 <translation id="1679841710523778799">ਚਮਕ ਵਧਾਓ</translation>
+<translation id="1680659827022803830">ਵੀਡੀਓ ਕਾਲ ਕੰਟਰੋਲ</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ਟਾਈਮਰ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ਪਤਾ: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">ਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਡੌਕ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="1708345662127501511">ਡੈਸਕ: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ਨੈੱਟਵਰਕ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="171610090693716835">ਵਿਅਕਤੀਗਤ ਫੋਕਸ ਪਲੇਲਿਸਟਾਂ ਨਾਲ ਆਪਣੇ ਕੰਮ ਪੂਰੇ ਕਰੋ। YouTube Premium ਦੇ ਬਿਨਾਂ ਕਿਸੇ ਲਾਗਤ ਦੇ 3 ਮਹੀਨਿਆਂ ਨਾਲ, ਵਿਗਿਆਪਨ-ਰਹਿਤ YouTube Music ਅਤੇ YouTube ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="1719094688023114093">ਲਾਈਵ ਸੁਰਖੀਆਂ ਚਾਲੂ ਹਨ।</translation>
 <translation id="1720011244392820496">ਵਾਈ-ਫਾਈ ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1720230731642245863">ਹੌਟਸਪੌਟ ਬੰਦ ਹੈ</translation>
@@ -195,44 +226,57 @@
 <translation id="174102739345480129">ਮਾਰਕਰ ਬੰਦ ਹੈ।</translation>
 <translation id="1743570585616704562">ਪਛਾਣ ਨਹੀਂ ਹੋਈ</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> ਸੂਚਨਾ ਸਮੇਟੋ</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 ਘੰਟੇ ਅੰਦਰ}=1{1 ਘੰਟਾ ਪਹਿਲਾਂ}other{# ਘੰਟੇ ਪਹਿਲਾਂ}}</translation>
 <translation id="1746730358044914197">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਇਨਪੁੱਟ ਵਿਧੀਆਂ ਦਾ ਸੰਰੂਪਣ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="1747336645387973286">ਨਿਯਤ ਤਾਰੀਖ <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">ਔਨ-ਸਕ੍ਰੀਨ ਕੀ-ਬੋਰਡ ਸਮਰਥਿਤ</translation>
 <translation id="1749109475624620922">ਵਿੰਡੋ <ph name="WINDOW_TITLE" /> ਨੂੰ ਸਾਰੇ ਡੈਸਕਾਂ ਦੇ ਜ਼ਿੰਮੇ ਲਗਾਇਆ ਗਿਆ ਹੈ</translation>
 <translation id="1750088060796401187">ਸਿਰਫ਼ <ph name="MAX_DESK_LIMIT" /> ਡੈਸਕਾਂ ਦੀ ਇਜਾਜ਼ਤ ਹੈ। ਨਵਾਂ ਡੈਸਕ ਖੋਲ੍ਹਣ ਲਈ ਪਹਿਲਾਂ ਤੋਂ ਮੌਜੂਦ ਡੈਸਕ ਹਟਾਓ।</translation>
+<translation id="1751335846119670066">ਪੜ੍ਹਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ</translation>
+<translation id="1755408179247123630">ਕੀ 'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1755556344721611131">ਤਸ਼ਖੀਸੀ ਐਪ</translation>
 <translation id="1756833229520115364">ਟੈਮਪਲੇਟ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਬਹੁਤ ਸਾਰੀਆਂ ਵਿੰਡੋਆਂ ਜਾਂ ਟੈਬਾਂ ਹਨ।</translation>
 <translation id="1757857692711134412">ਸੂਰਜ ਡੁੱਬਣ ਤੱਕ ਬੰਦ ਰਹੇਗੀ</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Period ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Insert ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + Shift + Backspace ਦਬਾਓ।</translation>
 <translation id="1770726142253415363">ਕਤਾਰ <ph name="ROW_NUMBER" />, ਕਾਲਮ <ph name="COLUMN_NUMBER" /> 'ਤੇ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="1771761307086386028">ਸੱਜੇ ਪਾਸੇ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
+<translation id="17722141032474077">ਗਣਨਾਵਾਂ</translation>
 <translation id="1774796056689732716"><ph name="CURRENT_MONTH_YEAR" /> ਦੇ ਕੈਲੰਡਰ ਵਿੱਚ ਫ਼ਿਲਹਾਲ <ph name="DATE" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ ਹੈ।</translation>
-<translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" /> ਵਿੱਚੋਂ <ph name="NUM_SHOWN_ITEMS" /> ਨੂੰ ਦਿਖਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="178347895271755507">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ ਅਤੇ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="1787955149152357925">ਬੰਦ ਹੈ</translation>
 <translation id="1796561540704213354">ਵੈੱਬਸਾਈਟਾਂ ਦੀ ਸ਼੍ਰੇਣੀ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਪੰਨੇ ਅਤੇ ਖੋਲ੍ਹੇ ਗਏ ਪੰਨੇ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ</translation>
+<translation id="179842970735685253">Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮ</translation>
+<translation id="1805407494113167797">ਫੋਕਸ ਧੁਨੀਆਂ ਨੂੰ ਚਲਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ</translation>
 <translation id="181103072419391116">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="1816896987747843206">ਇਸ ਨਾਲ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ</translation>
 <translation id="1823873187264960516">ਈਥਰਨੈੱਟ: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">ਟਿਕਾਣਾ ਪਹੁੰਚ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ਨੂੰ ਅਨਪਿੰਨ ਕੀਤਾ ਗਿਆ ਸੀ</translation>
 <translation id="1831565490995294689"><ph name="APP_TO_OPEN" /> ਖੋਲ੍ਹਣ ਲਈ ਚੁਣੋ।</translation>
-<translation id="1838895407229022812">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਬੰਦ ਹੈ।</translation>
+<translation id="1838011306813517425">ਫੋਕਸ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="1838895407229022812">ਨਾਈਟ ਲਾਈਟ ਬੰਦ ਹੈ।</translation>
+<translation id="1840920496749066704">°C</translation>
 <translation id="1854180393107901205">ਕਾਸਟ ਕਰਨਾ ਰੋਕੋ</translation>
 <translation id="1862077610023398675">ਕੰਟਰੋਲ ਲੁਕਾਓ</translation>
 <translation id="1862380676329487333">ਅੱਪਡੇਟ ਕਰ ਕੇ ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="1864454756846565995">USB-C ਡੀਵਾਈਸ (ਪਿਛਲਾ ਪੋਰਟ)</translation>
-<translation id="1869497990620230175">ਤਤਕਾਲ ਫ਼ਾਈਲਾਂ</translation>
+<translation id="1867566089293859645">ਜਦੋਂ ਤੁਸੀਂ ਅਗਲੀ ਵਾਰ ਸਾਈਨ-ਇਨ ਕਰੋਗੇ, ਤਾਂ ਤਬਦੀਲੀਆਂ ਲਾਗੂ ਹੋ ਜਾਣਗੀਆਂ। ਸੈਟਿੰਗਾਂ &gt; ਸਿਸਟਮ ਤਰਜੀਹਾਂ &gt; ਸਟਾਰਟ-ਅੱਪ ਵਿੱਚ ਕਿਸੇ ਵੀ ਵੇਲੇ ਅੱਪਡੇਟ ਕਰੋ।</translation>
 <translation id="1871023081802165724">ਮੀਡੀਆ ਚਲਾਓ</translation>
+<translation id="1871915835366697861">ਇਸ ਗੇਮ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="1879018240766558464">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ। ਹੋਰ ਐਪਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="1882814835921407042">ਕੋਈ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਨਹੀਂ ਹੈ</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> ਲਈ ਪ੍ਰਤਿਬਿੰਬੀਕਰਨ</translation>
 <translation id="1885785240814121742">ਫਿੰਗਰਪ੍ਰਿੰਟ ਨਾਲ ਅਣਲਾਕ ਕਰੋ</translation>
+<translation id="1894024878080591367">ਆਪਣੇ ਕੀ-ਬੋਰਡ ਨਾਲ ਗੇਮ ਖੇਡਣ ਲਈ ਇਸਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
+<translation id="1896383923047738322">ਆਪਣੇ ਕੀ-ਬੋਰਡ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
+<translation id="1904997243703671177">ਬਲੂਟੁੱਥ ਬੰਦ ਕਰਨ 'ਤੇ, <ph name="DEVICE_COUNT" /> ਬਾਹਰੀ ਡੀਵਾਈਸ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਤੋਂ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਣਗੇ, ਇਸ ਵਿੱਚ ਸ਼ਾਮਲ ਹੈ:</translation>
 <translation id="1908992311423394684">ਨਵੀਂ ਸਥਾਪਤ ਕੀਤੀ ਗਈ</translation>
 <translation id="1915307458270490472">ਸਮਾਪਤ ਕਰੋ</translation>
 <translation id="1918022425394817322">ਕੈਮਰੇ ਨੂੰ ਉੱਪਰਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1923539912171292317">ਆਟੋਮੈਟਿਕ ਕਲਿਕ</translation>
+<translation id="1925320505152357008">1 ਮਿੰਟ ਤੋਂ ਘੱਟ</translation>
 <translation id="1928739107511554905">ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਅਟੈਚ ਕੀਤੇ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਆਪਣੀ Chromebook ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਲਈ ਟੱਚਸਕ੍ਰੀਨ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
+<translation id="1929331825127010451">ਸਵਾਲ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="1948405482892809935">ਅਗਲੇ ਵਰਤੋਂਕਾਰ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਪੂਰੀ ਹੋਈ</translation>
@@ -244,6 +288,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">ਡੈਸਕ ਅਤੇ ਵਿੰਡੋਆਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਕਰਨ ਲਈ Control + Z ਦਬਾਓ।</translation>
 <translation id="1972950159383891558">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">ਰੰਗ ਪਲਟਨਾ ਮੋਡ ਚਾਲੂ ਹੈ। ਇਸਨੂੰ ਟੌਗਲ ਕਰ ਕੇ ਬੰਦ ਕਰਨ ਲਈ ਦੁਬਾਰਾ <ph name="ACCELERATOR" /> ਦਬਾਓ।</translation>
 <translation id="1978498689038657292">ਲਿਖਤ ਇਨਪੁੱਟ</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ</translation>
 <translation id="1982717156487272186">ਪਿਛਲਾ ਹਫ਼ਤਾ ਦਿਖਾਓ</translation>
@@ -258,12 +303,14 @@
 <translation id="2017998995161831444">Explore ਐਪ ਵਿੱਚ "ਮਦਦ" ਖੋਲ੍ਹੋ</translation>
 <translation id="2018630726571919839">ਮੈਨੂੰ ਕੋਈ ਚੁਟਕਲਾ ਸੁਣਾਓ</translation>
 <translation id="2021864487439853900">ਅਣਲਾਕ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
-<translation id="2023558322300866873">ਤੁਸੀਂ ਕਿਸੇ ਵੇਲੇ ਵੀ ਪੈਕੇਟ ਕੈਪਚਰ ਨੂੰ ਰੋਕ ਸਕਦੇ ਹੋ</translation>
 <translation id="2034971124472263449">ਫਿਰ ਵੀ ਰੱਖਿਅਤ ਕਰੋ</translation>
+<translation id="2041220428661959602">ਬੈਟਰੀ ਪੱਧਰ: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">ਫ਼ਿਲਹਾਲ <ph name="SIX_PACK_KEY_NAME" /> ਸ਼ਾਰਟਕੱਟ ਦੀ ਸੁਵਿਧਾ ਬੰਦ ਹੈ</translation>
 <translation id="2049240716062114887">ਡੈਸਕ ਦਾ ਨਾਮ ਬਦਲ ਕੇ <ph name="DESK_NAME" /> ਕਰ ਦਿੱਤਾ ਗਿਆ</translation>
-<translation id="206377500836174974">ਸੰਪੂਰਨ</translation>
+<translation id="2050339315714019657">ਪੋਰਟਰੇਟ</translation>
 <translation id="2064048859448024834">ਕੈਮਰਾ ਪੂਰਵ-ਝਲਕ ਚਾਲੂ ਹੈ</translation>
+<translation id="2065098273523946419">'ਹੋਰ ਜਾਣੋ' ਲਿੰਕ। ਕਿਰਿਆਸ਼ੀਲ ਹੋਣ 'ਤੇ ਬ੍ਰਾਊਜ਼ਰ 'ਤੇ ਰੀਡਾਇਰੈਕਟ ਕਰੋ</translation>
+<translation id="2067220651560163985">ਤਾਪਮਾਨ ਨੂੰ ਸੈਲਸੀਅਸ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="2067602449040652523">ਕੀ-ਬੋਰਡ ਚਮਕ</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> ਹੈ</translation>
 <translation id="2079545284768500474">ਅਣਕੀਤਾ ਕਰੋ</translation>
@@ -279,16 +326,22 @@
 <translation id="2135456203358955318">ਡੌਕ ਕੀਤਾ ਵਿਸਤਾਰਕ</translation>
 <translation id="2148716181193084225">ਅੱਜ</translation>
 <translation id="2149229036084364364">ਪਿਛਲੇ ਟਰੈਕ 'ਤੇ ਜਾਓ</translation>
+<translation id="2152796271648108398">ਮੌਜੂਦਾ ਮੌਸਮ</translation>
 <translation id="2152895518047545149">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ ਕੁਝ ਵੀ ਖੁੰਝਿਆ ਹੋਇਆ ਨਹੀਂ ਹੈ। ਬਹੁਤ ਵਧੀਆ!</translation>
+<translation id="2159568970844941445">Files ਵਿੱਚ ਕੋਈ ਚਿੱਤਰ ਨਹੀਂ</translation>
 <translation id="2161132820593978283">ਕੈਮਰਾ ਫ੍ਰੇਮਿੰਗ ਨੂੰ ਵਰਤ ਕੇ ਦੇਖੋ ਤਾਂ ਜੋ ਤੁਸੀਂ ਵੀਡੀਓ ਕਾਲਾਂ ਵਿੱਚ ਸਕ੍ਰੀਨ ਦੇ ਕੇਂਦਰ ਵਿੱਚ ਹੋਵੋ। ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਸਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
+<translation id="216955976692983107">ਟਾਇਲਡ ਮੁੜ-ਆਕਾਰ ਵਾਲੀ ਵਿੰਡੋ ਸੱਜੇ ਵੱਲ</translation>
 <translation id="2185166372312820725">ਪਿੱਛਲੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="2185444992308415167">1 ਤੋਂ 8 ਤੱਕ ਟੈਬਾਂ 'ਤੇ ਜਾਓ</translation>
+<translation id="2195732836444333448">ਸਾਡੇ ਕੋਲ ਹਾਲੇ ਜਗ੍ਹਾ ਨਹੀਂ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਫਿਰ ਵਾਪਸ ਆਓ।</translation>
 <translation id="2198625180564913276">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="219905428774326614">ਲਾਂਚਰ, ਸਭ ਐਪਾਂ</translation>
 <translation id="2201071101391734388">ਹਾਲੀਆ ਫ਼ੋਟੋ <ph name="TOTAL_COUNT" /> ਵਿੱਚੋਂ <ph name="INDEX" />।</translation>
+<translation id="2201687081523799384">Google Tasks ਨੂੰ ਸਮੇਟੋ</translation>
 <translation id="2208323208084708176">ਯੂਨੀਫਾਈਡ ਡੈਸਕਟਾਪ ਮੋਡ</translation>
 <translation id="2220572644011485463">ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ</translation>
 <translation id="2222841058024245321">ਡੈਸਕ 7</translation>
+<translation id="2223384056430485343">ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਵਿੱਚ</translation>
 <translation id="2224075387478458881">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਦੇ ਦਿਸਣਯੋਗ ਹੋਣ 'ਤੇ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="2227179592712503583">ਸੁਝਾਅ ਹਟਾਓ</translation>
 <translation id="2248634276911611268">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ ਅਤੇ ਇਸ ਨਵੀਂ ਟੈਬ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
@@ -297,14 +350,15 @@
 <translation id="2257486738914982088"><ph name="FILENAME" /> ਡਾਊਨਲੋਡ ਕਰਨ ਵੇਲੇ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="2258734398699965611">ਸੁਝਾਈਆਂ ਗਈਆਂ ਫ਼ਾਈਲਾਂ</translation>
 <translation id="2268130516524549846">ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ</translation>
+<translation id="2268731132310444948"><ph name="TOTAL_STEPS" /> ਵਿੱਚੋਂ ਪੜਾਅ <ph name="STEP" /> ਦੇਖੋ। ਲਾਂਚਰ ਦੇ ਕਿਰਿਆਸ਼ੀਲ ਹੋਣ ਤੋਂ ਬਾਅਦ, ਤੁਹਾਨੂੰ ਇੱਕ ਵਿਸਤ੍ਰਿਤ ਖੋਜ ਪੱਟੀ ਦਿਖਾਈ ਦੇਵੇਗੀ। ਤੁਸੀਂ ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ, ਐਪਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਦੀ ਖੋਜ ਕਰਨ ਲਈ ਟਾਈਪ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰ ਸਕਦੇ ਹੋ। ਤੁਸੀਂ ਆਪਣੇ <ph name="PRODUCT_NAME" /> ਬਾਰੇ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਵੀ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2268813581635650749">ਸਭ ਨੂੰ ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="2276987123919776440">15 ਮਿੰਟ</translation>
 <translation id="2277103315734023688">ਅੱਗੇ ਕਰੋ</translation>
 <translation id="2282073721614284166">ਟੈਬ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="2292698582925480719">ਡਿਸਪਲੇ ਸਕੇਲ</translation>
+<translation id="2293443480080733021">ਤੁਸੀਂ ਕਿਸ ਕਾਰਜ 'ਤੇ ਫੋਕਸ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ? ਕਾਰਜ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, Enter ਦਬਾਓ।</translation>
 <translation id="229397294990920565">ਮੋਬਾਈਲ ਡਾਟਾ ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="2295777434187870477">ਮਾਈਕ ਚਾਲੂ ਹੈ, ਟੌਗਲ ਕਰਨ 'ਤੇ ਇਨਪੁੱਟ ਮਿਊਟ ਹੋ ਜਾਵੇਗਾ।</translation>
-<translation id="2298170939937364391">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵੱਡਦਰਸ਼ੀ ਚਾਲੂ ਹੈ। ਉਸਨੂੰ ਬੰਦ ਕਰਨ ਲਈ Ctrl+Search+M ਦਬਾਓ।</translation>
 <translation id="2302092602801625023">ਇਸ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ Family Link ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="2303600792989757991">ਵਿੰਡੋ ਰੂਪ-ਰੇਖਾ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="2305738328104302723">Google Tasks ਦੀ ਸੂਚੀ: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -312,6 +366,7 @@
 <translation id="2318576281648121272">ਅੱਜ <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, ਖੋਜ ਨਤੀਜੇ ਦੀ ਸ਼੍ਰੇਣੀ</translation>
 <translation id="2322173485024759474">ਇੱਕ ਅੱਖਰ ਪਿੱਛੇ ਜਾਓ</translation>
+<translation id="2326112202058075478">ਹੋਰ ਇਮੋਜੀ ਦਿਖਾਓ</translation>
 <translation id="2335091074961603075">ਤੁਹਾਡੀ Chromebook ਜਾਂ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਵਿੱਚ ਬਲੂਟੁੱਥ ਦੇ ਪੁਰਾਣੇ ਵਰਜਨ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ। ਬਿਹਤਰ ਆਡੀਓ ਕੁਆਲਿਟੀ ਲਈ ਅੰਦਰੂਨੀ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="2339073806695260576">ਕੋਈ ਨੋਟ-ਕਥਨ ਬਣਾਉਣ, ਸਕ੍ਰੀਨਸ਼ਾਟ ਲੈਣ, ਲੇਜ਼ਰ ਪੁਆਇੰਟਰ, ਜਾਂ ਵੱਡਦਰਸ਼ੀ ਸ਼ੀਸ਼ੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਸ਼ੈਲਫ਼ 'ਤੇ ਸਟਾਈਲਸ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
 <translation id="2341729377289034582">ਖੜ੍ਹਵੀਂ ਸਥਿਤੀ ਵਿੱਚ ਲਾਕ ਕੀਤੀ ਗਈ</translation>
@@ -323,46 +378,62 @@
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2360398059912971776">ਬੈਟਰੀ</translation>
 <translation id="2361210043495191221">ਵਾਈ-ਫਾਈ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE" />.</translation>
+<translation id="2364710166605611987">ਦਿੱਖ ਪ੍ਰਭਾਵ</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" /> ਤੋਂ ਭੇਜਿਆ ਗਿਆ</translation>
 <translation id="2367186422933365202">ਤੁਹਾਡੀ Chromebook ਵਿੱਚ ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="2367972762794486313">ਐਪਸ ਦਿਖਾਓ</translation>
 <translation id="2368828502825385061">ਟਿਕਾਣਾ ਦੇਖੋ</translation>
 <translation id="2369165858548251131">ਚੀਨੀ ਭਾਸ਼ਾ ਵਿੱਚ "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ"</translation>
-<translation id="2382875860893882175">ਕਾਸਟ ਕਰਨਾ ਫ਼ਿਲਹਾਲ ਰੋਕਿਆ ਗਿਆ ਹੈ। ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਸਮੇਂ ਕਾਸਟ ਕਰਨਾ ਮੁੜ-ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="2370971919968699910">ਇਸ ਨਾਲ ਡਾਟਾ ਖਰਚ ਹੋ ਸਕਦਾ ਹੈ।
+<ph name="DEVICECOUNT" /> ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤੇ ਗਏ।</translation>
 <translation id="2386292613071805067">ਪੰਨੇ 'ਤੇ ਸਭ ਕੁਝ ਚੁਣੋ</translation>
 <translation id="2392659840443812875">ਕੋਈ ਹੌਟਸਪੌਟ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਨਜ਼ਦੀਕ ਹੈ ਅਤੇ ਉਸਦਾ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ।</translation>
 <translation id="2397416548179033562">Chrome ਮੀਨੂ ਦਿਖਾਓ</translation>
 <translation id="240006516586367791">ਮੀਡੀਆ ਕੰਟਰੋਲ</translation>
+<translation id="240155812475001919">Google ਡੌਕ</translation>
 <translation id="2402411679569069051">ਆਪਣੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ, ਆਪਣੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੀ ਵਰਤੋਂ ਕਰੋ ਜਾਂ ਆਪਣੇ ਫ਼ੋਨ ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="240545663114741956">ਸਾਈਨ-ਆਊਟ ਕਰਨ ਲਈ <ph name="ACCELERATOR" /> ਨੂੰ ਦੋ ਵਾਰ ਦਬਾਓ।</translation>
 <translation id="2405664212338326887">ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="2408955596600435184">ਆਪਣਾ PIN ਦਾਖਲ ਕਰੋ</translation>
 <translation id="2412593942846481727">ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ</translation>
+<translation id="2416438829169535743">ਕੀ ਦ੍ਰਿਸ਼ ਤੋਂ ਬਾਹਰ ਜਾਣਾ ਹੈ?</translation>
 <translation id="2417486498593892439">ਨੈੱਟਵਰਕ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2426051945783024481">ਕੈਮਰਾ ਫ੍ਰੇਮ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕੇਂਦਰਿਤ ਹੁੰਦਾ ਹੈ</translation>
 <translation id="2427507373259914951">ਖੱਬਾ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="2429753432712299108">ਬਲੂਟੁੱਥ ਡਿਵਾਈਸ "<ph name="DEVICE_NAME" />" ਜੋੜਾਬੱਧ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੁੰਦੀ ਹੈ। ਸਵੀਕਾਰ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ, ਕਿਰਪਾ ਕਰਕੇ ਪੁਸ਼ਟੀ ਕਰੋ ਕਿ ਇਹ ਪਾਸਕੁੰਜੀ ਉਸ ਡੀਵਾਈਸ 'ਤੇ ਦਿਖਾਈ ਜਾਂਦੀ ਹੈ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">ਪਾਸਵਰਡ ਵੇਖੋ</translation>
+<translation id="2437771564543046790">ਬੈਟਰੀ ਘੱਟ ਹੈ। ਬੈਟਰੀ ਸੇਵਰ ਚਾਲੂ ਹੈ</translation>
 <translation id="243878895369688216">ਬੀਤੇ ਕੱਲ੍ਹ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="2440978926514840421">GIF ਰਿਕਾਰਡਿੰਗ ਕੀਤੀ ਗਈ</translation>
 <translation id="2441427462554639370">ਸਟੋਰੇਜ ਵਿੱਚ ਬਹੁਤ ਘੱਟ ਜਗ੍ਹਾ ਹੋਣ ਕਰਕੇ ਰਿਕਾਰਡਿੰਗ ਸਮਾਪਤ ਹੋਈ</translation>
 <translation id="2449089818483227734">ਬੈਟਰੀ ਘੱਟ ਹੈ</translation>
 <translation id="2450205753526923158">ਸਕ੍ਰੀਨਸ਼ਾਟ ਮੋਡ</translation>
+<translation id="2453860139492968684">ਖ਼ਤਮ</translation>
 <translation id="2455994958736234930">ਪਤਾ ਬਾਰ ਵਿੱਚ www. ਅਤੇ .com ਸ਼ਾਮਲ ਕਰੋ, ਫਿਰ ਵੈੱਬਸਾਈਟ ਖੋਲ੍ਹੋ</translation>
 <translation id="2456008742792828469">ਕੈਲੰਡਰ, <ph name="CURRENT_MONTH_YEAR" /></translation>
+<translation id="246052086404491029">ਬਰੀਕੀ ਨਾਲ ਸਮਝੋ</translation>
 <translation id="2465145153332031561">ਬੈਟਰੀ ਦੀ ਹਾਲਤ <ph name="BATTERY_HEALTH_PERCENTAGE" />%, ਸਾਈਕਲ ਕਾਊਂਟ <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਦੀ ਤਸਦੀਕੀ ਕਰੋ</translation>
+<translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="2475982808118771221">ਇੱਕ ਗੜਬੜ ਹੋਈ</translation>
 <translation id="2478076885740497414">ਐਪ ਇੰਸਟੌਲ ਕਰੋ</translation>
 <translation id="2482878487686419369">ਸੂਚਨਾਵਾਂ</translation>
 <translation id="2484513351006226581">ਕੀ-ਬੋਰਡ ਖਾਕਾ ਬਦਲਣ ਲਈ <ph name="KEYBOARD_SHORTCUT" /> ਦਬਾਓ।</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> ਦੀ ਪੂਰਵ-ਝਲਕ। ਕਿਰਿਆਸ਼ੀਲ ਡੈਸਕ।</translation>
+<translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" ਨੂੰ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ਰੈਜ਼ੋਲਿਊਸ਼ਨ 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ। ਤਸਦੀਕ ਕਰਨ ਤੋਂ ਬਿਨਾਂ, ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="2487915095798731898">ਸ਼ਾਮਲ ਹੋਵੋ</translation>
-<translation id="250047928202119308">ਡੈਸਕ ਪ੍ਰੋਫਾਈਲ ਮੀਨੂ</translation>
+<translation id="2496180316473517155">ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ</translation>
+<translation id="2499445554382787206">ਡੈਸਕ ਪ੍ਰੋਫਾਈਲ ਮੀਨੂ। <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ਸਟਿਕੀ ਕੁੰਜੀਆਂ</translation>
 <translation id="2504454902900101003">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ ਅਤੇ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨਾ ਖਾਰਜ ਕਰੋ</translation>
+<translation id="2505378917951323738">ਕਾਰਜ ਦਾ ਸੰਪਾਦਨ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਆਨਲਾਈਨ ਹੋਣ 'ਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2509468283778169019">CAPS LOCK ਔਨ ਹੈ</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> ਨੂੰ ਬੰਦ ਕਰੋ। <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> ਹੈ</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2515962024736506925">ਪਹੁੰਚਯੋਗਤਾ ਵਿਕਲਪ ਖੋਲ੍ਹੋ</translation>
+<translation id="2516416533263263796">ਫੋਕਸ ਮੋਡ ਚਾਲੂ ਹੈ, 10 ਮਿੰਟ ਬਾਕੀ</translation>
+<translation id="2516637483312286228">ਗੇਮ ਕੰਟਰੋਲਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
+<translation id="252054055865191167">ਮਾਰਕਰ ਟੂਲ</translation>
 <translation id="2526581474998477112">ਵਿੰਡੋ ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="2528111225373402384">ਹੌਟਸਪੌਟ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -377,7 +448,6 @@
 <translation id="2573588302192866788"><ph name="NAME" /> ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="2575685495496069081">ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="2579264398927991698">ਫ਼ਰਮਵੇਅਰ ਅੱਪਡੇਟ</translation>
-<translation id="2582112259361606227">ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="2586657967955657006">ਕਲਿੱਪਬੋਰਡ</translation>
 <translation id="2595239820337756193">ਮੀਲ ਵਿੱਚ 5K</translation>
 <translation id="2596078834055697711">ਵਿੰਡੋ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ</translation>
@@ -385,6 +455,8 @@
 <translation id="2607678425161541573">ਆਨਲਾਈਨ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="2612072250312279703">ਸਰਗਰਮੀ ਮਾਨੀਟਰ</translation>
 <translation id="2612614436418177118">ਐਪ ਪ੍ਰਤੀਕ ਨੂੰ ਐਪ ਗਰਿੱਡ ਦੇ ਅੰਦਰ ਲਿਜਾਓ</translation>
+<translation id="2619052155095999743">ਦਰਜ ਕਰੋ</translation>
+<translation id="2619326010008283367"><ph name="TOTAL_STEPS" /> ਵਿੱਚੋਂ ਪੜਾਅ <ph name="STEP" /> ਦੇਖੋ। ਤੁਸੀਂ ਲਾਂਚਰ ਵਿੱਚ ਆਪਣੀਆਂ ਡੀਵਾਈਸ ਸੈਟਿੰਗਾਂ ਦੇਖ ਸਕਦੇ ਹੋ। ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਆਪਣੇ <ph name="PRODUCT_NAME" /> ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰ ਕੇ ਦੇਖੋ, ਜਿਵੇਂ ਕਿ ਆਪਣਾ ਵਾਲਪੇਪਰ ਬਦਲਣਾ ਜਾਂ ਸਕ੍ਰੀਨ ਸੇਵਰ ਸੈੱਟ ਕਰਨਾ।</translation>
 <translation id="2620016719323068571">ਆਪਣੀ <ph name="CATEGORY" />, ਫ਼ਾਈਲਾਂ, ਐਪਾਂ, ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਖੋਜੋ...</translation>
 <translation id="2620436844016719705">ਸਿਸਟਮ</translation>
 <translation id="2620900772667816510">ਬਲੂਟੁੱਥ ਸੁਪਰ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
@@ -392,27 +464,32 @@
 <translation id="2624588537172718173">ਡੀਵਾਈਸ ਆਡੀਓ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ</translation>
 <translation id="263399434338050016">"ਸਭ ਚੁਣੋ"</translation>
 <translation id="2644422758626431000">ਵਿੰਡੋ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਪਿੰਨ ਕਰੋ</translation>
+<translation id="2645380101799517405">ਕੰਟਰੋਲ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653019840645008922">ਵਿੰਡੋ ਕੈਪਚਰ</translation>
 <translation id="2653659639078652383">ਪ੍ਰਸਤੁਤ ਕਰੋ</translation>
 <translation id="2658778018866295321">ਕਲਿੱਕ ਕਰਕੇ ਘਸੀਟੋ</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> ਅਤੇ <ph name="UNAVAILABLE_APPS_TWO" /> ਐਪਾਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹਨ।</translation>
+<translation id="2670350619068134931">ਘਟਾਏ ਗਏ ਐਨੀਮੇਸ਼ਨ</translation>
 <translation id="2673968385134502798">ਗੇਮਾਂ</translation>
 <translation id="2678852583403169292">ਚੁਣੋ ਅਤੇ ਸੁਣੋ ਮੀਨੂ</translation>
+<translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> ਪਿਛਲੇ ਹਫ਼ਤੇ</translation>
 <translation id="2687510499067466116">ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ</translation>
 <translation id="2689613560355655046">ਡੈਸਕ 8</translation>
 <translation id="2695305337569143674">ਵੈੱਬ</translation>
 <translation id="2697697418792422688">ਕੀ-ਬੋਰਡ ਸੈਟਿੰਗਾਂ ਨੂੰ ਦਿਖਾਓ। <ph name="KEYBOARD_NAME" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ ਹੈ।</translation>
 <translation id="2700493154570097719">ਆਪਣਾ ਕੀ-ਬੋਰਡ ਸੈੱਟ ਕਰੋ</translation>
+<translation id="2701576323154693023">ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ (ਵਾਈ-ਫਾਈ ਬੰਦ ਹੈ)</translation>
 <translation id="2704781753052663061">ਦੂਜੇ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ</translation>
 <translation id="2705001408393684014">ਮਾਈਕ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ਉੱਪਰ</translation>
 <translation id="2710984741481549981">ਵਿੰਡੋ ਨੂੰ ਲਾਕ ਕਰੋ</translation>
-<translation id="2718395828230677721">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ</translation>
+<translation id="2718395828230677721">ਨਾਈਟ ਲਾਈਟ</translation>
 <translation id="2726420622004325180">ਹੌਟਸਪੌਟ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ ਤੁਹਾਡੇ ਫ਼ੋਨ ਵਿੱਚ ਮੋਬਾਈਲ ਡਾਟਾ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="2727175239389218057">ਜਵਾਬ ਦਿਓ</translation>
 <translation id="2727977024730340865">ਇੱਕ ਘੱਟ-ਪਾਵਰ ਦੇ ਚਾਰਜਰ ਨਾਲ ਪਲੱਗ-ਇਨ ਕੀਤਾ ਗਿਆ। ਬੈਟਰੀ ਚਾਰਜਿੰਗ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਵੀ ਹੋ ਸਕਦੀ।</translation>
-<translation id="2744221223678373668">ਸ਼ੇਅਰ ਕੀਤਾ</translation>
+<translation id="2743301740238894839">ਸ਼ੁਰੂ ਕਰੋ</translation>
+<translation id="2743387203779672305">ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"ਮਿਟਾਓ"</translation>
 <translation id="2750941250130734256">ਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋ ਨੂੰ ਅਣਡੌਕ ਕੀਤਾ ਗਿਆ।</translation>
@@ -425,7 +502,10 @@
 <translation id="2785499565474703580">1 ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2791421900609674576">ਤੁਹਾਨੂੰ ਸਿਫ਼ਾਰਸ਼ਾਂ ਦਿਖਾਈ ਦੇਣਗੀਆਂ ਤਾਂ ਜੋ ਤੁਸੀਂ ਉੱਥੋਂ ਜਾਰੀ ਰੱਖ ਸਕੋ ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ।  ਤੁਸੀਂ ਸਿਫ਼ਾਰਸ਼ਾਂ ਹਟਾਉਣ ਲਈ ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2798702144670138229">ਟੈਬਲੈੱਟ ਮੋਡ ਚਾਲੂ ਹੈ। ਗੇਮ ਡੈਸ਼ਬੋਰਡ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
+<translation id="2801954693771979815">ਸਕ੍ਰੀਨ ਦਾ ਆਕਾਰ</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
+<translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">ਐਪਸ</translation>
 <translation id="2814448776515246190">ਅੰਸ਼ਕ ਕੈਪਚਰ</translation>
 <translation id="2819276065543622893">ਤੁਹਾਨੂੰ ਹੁਣ ਸਾਈਨ ਆਉਟ ਕੀਤਾ ਜਾਏਗਾ।</translation>
@@ -434,24 +514,30 @@
 <translation id="2825619548187458965">Shelf</translation>
 <translation id="2831035692318564937">ਸੂਰਜ ਚੜ੍ਹਨ ਤੱਕ ਚਾਲੂ ਰਹੇਗਾ</translation>
 <translation id="2834813915651407382">ਹਾਲ ਹੀ ਵਿੱਚ ਖੋਲ੍ਹੀ ਗਈ</translation>
+<translation id="2838589015763961627">ਆਕਾਰ ਬਦਲਣ ਲਈ ਪੂਰੀ-ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਨਿਕਲੋ</translation>
 <translation id="2840766858109427815">ਅਗਲੇ ਪੰਨੇ 'ਤੇ ਜਾਓ</translation>
 <translation id="2841907151129139818">ਟੈਬਲੈੱਟ ਮੋਡ 'ਤੇ ਸਵਿੱਚ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2844169650293029770">USB-C ਡੀਵਾਈਸ (ਖੱਬੇ ਪਾਸੇ ਅੱਗੇ ਦਾ ਪੋਰਟ)</translation>
 <translation id="2844350028562914727">ਵੇਰਵੇ</translation>
+<translation id="2847759467426165163">ਏਥੇ ਕਾਸਟ ਕਰੋ</translation>
 <translation id="2848120746144143659">ਪੂਰੀ ਸਕ੍ਰੀਨ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਕੈਪਚਰ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="2849936225196189499">ਆਲੋਚਨਾਤਮਿਕ</translation>
 <translation id="2860184359326882502">ਬਿਹਤਰੀਨ ਮਿਲਾਨ</translation>
 <translation id="2865888419503095837">ਨੈੱਟਵਰਕ ਜਾਣਕਾਰੀ</translation>
+<translation id="2869095047958348710">ਇਸ ਪਿਛਲੇ <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2872353916818027657">ਪ੍ਰਾਈਮਰੀ ਨਿਰੀਖਕ ਸਵੈਪ ਕਰੋ</translation>
 <translation id="2872961005593481000">ਸ਼ਟ ਡਾਊਨ</translation>
 <translation id="2876338922445400217">ਸਕ੍ਰੀਨ 'ਤੇ ਜ਼ੂਮ ਵਧਾਓ</translation>
 <translation id="2878884018241093801">ਕੋਈ ਹਾਲੀਆ ਆਈਟਮਾਂ ਨਹੀਂ</translation>
+<translation id="2880541185262491188">ਪਿੰਨ ਦਾਖਲ ਕਰਨ ਦੀ ਕਈ ਵਾਰ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਗਈ। <ph name="TIME_LEFT" /> ਤੱਕ ਉਡੀਕ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="2885950158625301909">ਹੋਰ ਜਾਣੋ</translation>
 <translation id="2891209721153296020">"ਅਣਚੁਣਿਆ ਕਰੋ"</translation>
 <translation id="2894949423239620203">ਕੇਬਲ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="2914580577416829331">ਸਕ੍ਰੀਨ ਕੈਪਚਰ</translation>
 <translation id="2924416280450782352">ਆਈਟਮਾਂ ਨਹੀਂ ਦਿਖਾਈਆਂ ਜਾ ਸਕਦੀਆਂ। ਇਸ ਪੈਨਲ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="292506373491190801">ਹੁਣੇ ਹੋ ਰਹੇ ਇਵੈਂਟ ਤੋਂ</translation>
 <translation id="2931572158271115754">ਕਰਨਯੋਗ ਕੰਮਾਂ ਦੀ ਇਸ ਸੂਚੀ 'ਤੇ ਕੁਝ ਨਹੀਂ।</translation>
+<translation id="2932487126591186298">10 ਮਿੰਟ ਸ਼ਾਮਲ ਕੀਤੇ ਗਏ। <ph name="REMAINING_TIME" /> ਬਾਕੀ।</translation>
 <translation id="2935225303485967257">ਪ੍ਰੋਫਾਈਲਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2941112035454246133">ਘੱਟ</translation>
 <translation id="2942350706960889382">ਡੌਕ ਕੀਤਾ ਵਿਸਤਾਰਕ</translation>
@@ -465,17 +551,20 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">ਕੀ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਚਾਲੂ ਕਰਨੀ ਹੈ?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> ਦੀਆਂ ਬੋਲੀ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
+<translation id="2968761508099987738">ਇਸ ਸਮੇਂ ਤੁਹਾਡਾ ਮਜੂਦਾ ਟਿਕਾਣਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
 <translation id="2970920913501714344">ਐਪਾਂ, ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਥੀਮਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰੋ</translation>
-<translation id="2977098646659697261">ਤੁਹਾਡੀਆਂ ਪਿੰਨ ਕੀਤੀਆਂ ਅਤੇ ਖੁੱਲ੍ਹੀਆਂ ਐਪਾਂ ਸ਼ੈਲਫ ਵਿੱਚ ਮੌਜੂਦ ਹਨ। ਕਿਸੇ ਐਪ ਨੂੰ ਸ਼ੈਲਫ 'ਤੇ ਪਿੰਨ ਕਰਨ ਲਈ, ਐਪ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ ਜਾਂ ਆਪਣੇ ਟੱਚਪੈਡ 'ਤੇ ਦੋ ਉਂਗਲਾਂ ਨਾਲ ਟੈਪ ਕਰੋ।</translation>
 <translation id="2977598380246111477">ਅਗਲਾ ਨੰਬਰ</translation>
+<translation id="2980700224869191055"><ph name="EMOTICON_NAME" /> ਇਮੋਟੀਕੋਨ</translation>
 <translation id="2985148236010982088">ਸਭ ਐਪਾਂ ਦੇਖੋ</translation>
+<translation id="2992272421330787632">ਸਾਰੇ ਮੀਡੀਆ ਸੁਝਾਅ ਲੁਕਾਓ</translation>
 <translation id="2992327365391326550">ਡੀਵਾਈਸ ਦਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਬਟਨ ਬੰਦ ਹੈ।</translation>
-<translation id="2996462380875591307">'ਡੌਕ ਕੀਤਾ ਵਿਸਤਾਰਕ' ਚਾਲੂ ਕੀਤਾ ਗਿਆ। ਇਸਨੂੰ ਬੰਦ 'ਤੇ ਟੌਗਲ ਕਰਨ ਲਈ ਦੁਬਾਰਾ Ctrl+Search+D ਦਬਾਓ।</translation>
 <translation id="3000461861112256445">ਮੋਨੋ ਆਡੀਓ</translation>
+<translation id="3001391739687111021">ਸਕ੍ਰੀਨ ਦੇ ਆਕਾਰ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="3009178788565917040">ਆਉਟਪੁਟ</translation>
 <translation id="3009958530611748826">ਇੱਥੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਕੋਈ ਫੋਲਡਰ ਚੁਣੋ</translation>
 <translation id="301282384882049174">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="301584155502740476">ਹੌਟਸਪੌਟ ਦੇ ਵੇਰਵੇ ਦੇਖੋ। ਹੌਟਸਪੌਟ ਬੰਦ ਹੈ।</translation>
+<translation id="3017079585324758401">ਬੈਕਗ੍ਰਾਊਂਡ</translation>
 <translation id="3018135054368884502">ਮੀਡੀਆ ਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਅੱਗੇ ਕਰੋ</translation>
 <translation id="3033545621352269033">ਚਾਲੂ</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> ਨਾਲ ਜੋੜੋ</translation>
@@ -483,6 +572,7 @@
 <translation id="3038571455154067151">ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ, ਆਪਣਾ Family Link ਮਾਂ-ਪਿਓ ਪਹੁੰਚ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="3039939407102840004">ਸਟਾਈਲਸ ਦੀ ਬੈਟਰੀ <ph name="PERCENTAGE" /> ਪ੍ਰਤੀਸ਼ਤ ਹੈ।</translation>
 <translation id="304097922505898963">Key Shortcuts ਐਪ ਖੋਲ੍ਹੋ</translation>
+<translation id="304417730895741346">ਤੁਹਾਡੀਆਂ ਪਿੰਨ ਕੀਤੀਆਂ ਅਤੇ ਖੁੱਲ੍ਹੀਆਂ ਐਪਾਂ ਸ਼ੈਲਫ ਵਿੱਚ ਮੌਜੂਦ ਹਨ। ਕਿਸੇ ਐਪ ਨੂੰ ਸ਼ੈਲਫ 'ਤੇ ਪਿੰਨ ਕਰਨ ਲਈ, ਐਪ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ ਜਾਂ ਆਪਣੇ ਟੱਚਪੈਡ 'ਤੇ ਦੋ ਉਂਗਲਾਂ ਨਾਲ ਟੈਪ ਕਰੋ।</translation>
 <translation id="3045488863354895414">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ,</translation>
 <translation id="3047761520276763270">ਇਹ ਕਹਿ ਕੇ ਦੇਖੋ:</translation>
 <translation id="3055162170959710888">ਤੁਸੀਂ ਅੱਜ ਇਸ ਡੀਵਾਈਸ ਨੂੰ <ph name="USED_TIME" /> ਤੱਕ ਵਰਤਿਆ</translation>
@@ -492,6 +582,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">ਮੀਨੂ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="3087734570205094154">ਹੇਠਲਾ</translation>
+<translation id="3090214513075567547">ਸੰਦਰਭੀ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">ਨਿਯਤ ਤਾਰੀਖ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
 <translation id="3095995014811312755">ਰੂਪ</translation>
@@ -499,13 +590,15 @@
 <translation id="3100274880412651815">ਕੈਪਚਰ ਮੋਡ ਨੂੰ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="3105917916468784889">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਵੋ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ਬਲੂਟੁੱਥ)</translation>
+<translation id="3107155169630537783">ਸੁਆਗਤੀ ਸੂਚਨਾ ਦਿਖਾਉਣ ਵਾਲੀ ਸੈਟਿੰਗ <ph name="STATE" /> ਹੈ</translation>
 <translation id="3113492864356515707">ਸ਼ੈਲਫ 'ਤੇ ਪਿਛਲੀਆਂ ਆਈਟਮਾਂ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="311799651966070385">ਰਿਮਾਈਂਡਰ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="3120421559657122717">ਕੀ ਡੀਵਾਈਸ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">ਕਲਾਸਵਰਕ ਦੀ ਕਿਸਮ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
+<translation id="3130793786899299931">ਲੰਬਾਈ ਬਦਲੋ</translation>
+<translation id="3134486240968249588">ਧਿਆਨ ਵਿੱਚ ਰੱਖਣ ਵਾਲੀਆਂ ਕੁਝ ਗੱਲਾਂ</translation>
 <translation id="3139188263101386725">ਅੱਪਡੇਟ ਕੀਤੇ ਸ਼ਾਰਟਕੱਟ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="3139942575505304791">ਡੈਸਕ 1</translation>
 <translation id="315116470104423982">ਮੋਬਾਈਲ ਡਾਟਾ</translation>
@@ -515,7 +608,7 @@
 <translation id="316086887565479535">ਟੈਮਪਲੇਟ ਵਿੱਚ ਅਸਮਰਥਿਤ ਐਪਾਂ</translation>
 <translation id="3160929076476941240">2 ਘੰ.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਵਾਪਸ ਲਿਆ ਰਿਹਾ ਹੈ। ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗਾ ਅਤੇ ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
-<translation id="3170769098533255179">ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਗਿਆ। ਹੌਟਸਪੌਟ ਵਰਤਣ ਦੌਰਾਨ, ਵਾਈ-ਫਾਈ ਬੰਦ ਰਹੇਗਾ।</translation>
+<translation id="316798519864381606">Google ਸਲਾਈਡ</translation>
 <translation id="3171170659304083361">ਇਨਪੁੱਟ ਵਿਧੀਆਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3176221688814061633">ਤੁਹਾਡੀ Chromebook ਜਾਂ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਵਿੱਚ ਬਲੂਟੁੱਥ ਦੇ ਪੁਰਾਣੇ ਵਰਜਨ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ। ਬਿਹਤਰ ਆਡੀਓ ਕੁਆਲਿਟੀ ਲਈ ਬਲੂਟੁੱਥ ਸੁਪਰ ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰੋ ਜਾਂ ਅੰਦਰੂਨੀ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="3181441307743005334">ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਕੁਝ ਸਮਾਂ ਲੱਗ ਸਕਦਾ ਹੈ</translation>
@@ -530,14 +623,18 @@
 <translation id="3226991577105957773">ਅਤੇ <ph name="COUNT" /> ਹੋਰ</translation>
 <translation id="3227137524299004712">ਮਾਈਕ੍ਰੋਫੋਨ</translation>
 <translation id="3233611303007751344">ਬੈਟਰੀ ਸੇਵਰ ਬੰਦ ਹੈ</translation>
+<translation id="3238409143297336341">ਐਪਾਂ ਲਈ ਮਾਪਿਆਂ ਦੇ ਕੰਟਰੋਲਾਂ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="324366796737464147">ਸ਼ੋਰ ਘਟਾਉਣਾ</translation>
 <translation id="3249513730522716925">ਵਿੰਡੋ <ph name="WINDOW_TITLE" /> ਨੂੰ ਡੈਸਕ <ph name="ACTIVE_DESK" /> ਤੋਂ ਡੈਸਕ <ph name="TARGET_DESK" /> 'ਤੇ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="3253743281242075461">ਕਲਾਸਵਰਕ ਦੀ ਕਿਸਮ: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">ਤੁਸੀਂ ਕੀ ਕਰ ਸਕਦੇ ਹੋ?</translation>
 <translation id="3256109297135787951">ਆਪਣੀ ਸ਼ੈਲਫ਼ 'ਤੇ ਕਿਸੇ ਆਈਟਮ ਦਾ ਉਜਾਗਰ ਹੋਣਾ ਹਟਾਓ</translation>
 <translation id="3260969790895726815">ਬੋਲੀ 'ਤੇ ਸਥਾਨਕ ਤੌਰ 'ਤੇ ਪ੍ਰਕਿਰਿਆ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਅਤੇ ਡਿਕਟੇਸ਼ਨ ਆਫ਼ਲਾਈਨ ਕੰਮ ਕਰਦੀ ਹੈ, ਪਰ ਕੁਝ ਅਵਾਜ਼ੀ ਆਦੇਸ਼ ਕੰਮ ਨਹੀਂ ਕਰਨਗੇ।</translation>
+<translation id="3264031581203585083">ਸਾਰੇ Google Drive ਸੁਝਾਅ ਲੁਕਾਓ</translation>
 <translation id="3265032511221679826">ਕੀ ਸਹੀ ਟਿਕਾਣੇ ਦੀ ਪਹੁੰਚ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3269597722229482060">ਸੱਜਾ-ਕਲਿੱਕ</translation>
+<translation id="3271554781793662131">ਦਾਖਲ ਕਰਨ ਲਈ ਖੋਜੋ</translation>
+<translation id="3273040715184276344">Caps Lock ਬੰਦ ਹੈ</translation>
 <translation id="3274634049061007184">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਐਪਾਂ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="3289364673986435196">ਪਾਵਰ ਮੀਨੂ</translation>
 <translation id="3289544412142055976">Linux ਐਪਾਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ</translation>
@@ -545,12 +642,10 @@
 <translation id="3290356915286466215">ਅਸੁਰੱਖਿਅਤ</translation>
 <translation id="3291862315280588024">ਪਿਛਲੇ ਸ਼ਬਦ ਦੀ ਸ਼ੁਰੂਆਤ 'ਤੇ ਜਾਓ</translation>
 <translation id="3294437725009624529">ਮਹਿਮਾਨ</translation>
-<translation id="3298690094479023523">ਤੁਹਾਡੇ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਦੀ ਹਾਲੇ ਵੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕੀ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3300193645498960160">ਜੇ ਤੁਸੀਂ ਮਿਊਟ ਹੋਣ ਦੌਰਾਨ ਬੋਲੋਗੇ, ਤਾਂ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕੀਤਾ ਜਾਵੇਗਾ। ਆਡੀਓ ਕਦੇ ਵੀ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਤੋਂ ਬਾਹਰ ਨਹੀਂ ਜਾਵੇਗੀ।</translation>
 <translation id="3306386552969601301"><ph name="DEVICE_NAME" /> ਦੇ ਹੌਟਸਪੌਟ ਨਾਲ <ph name="DEVICECOUNT" /> ਡੀਵਾਈਸ ਕਨੈਕਟ ਹਨ</translation>
 <translation id="3307642347673023554">ਲੈਪਟਾਪ ਮੋਡ 'ਤੇ ਸਵਿੱਚ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ਹਾਲੇ ਵੀ ਬਾਅਦ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰ ਸਕਦੇ ਹਨ।</translation>
-<translation id="3317779231018057649"><ph name="DEVICECOUNT" /> ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤੇ ਗਏ। ਹੌਟਸਪੌਟ ਵਰਤਣ ਦੌਰਾਨ, ਵਾਈ-ਫਾਈ ਬੰਦ ਰਹੇਗਾ।</translation>
 <translation id="3321628682574733415">ਮਾਂ-ਪਿਓ ਵਾਲਾ ਕੋਡ ਗਲਤ ਹੈ</translation>
 <translation id="332827762492701193">ਸੂਚਨਾਵਾਂ ਲੁਕੀਆਂ ਹੋਈਆਂ ਹਨ</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> ਸੂਚਨਾ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
@@ -562,18 +657,19 @@
 <translation id="334927402682780278">ਕਰਸਰ ਤੋਂ ਲਾਈਨ ਦੇ ਅਖੀਰ ਤੱਕ ਲਿਖਤ ਚੁਣੋ</translation>
 <translation id="3349345708646875009">ਕਾਰਜ ਪ੍ਰਬੰਧਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="3364721542077212959">ਸਟਾਈਲਸ ਟੂਲ</translation>
+<translation id="3365281428003534650">ਟਾਈਮਰ, ਕਾਰਜ ਅਤੇ ਸੰਗੀਤ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="3365977133351922112">ਤੁਹਾਡਾ ਫ਼ੋਨ ਬਹੁਤ ਦੂਰ ਹੈ। ਆਪਣਾ ਫ਼ੋਨ ਨੇੜੇ ਲਿਆਓ।</translation>
 <translation id="3368922792935385530">ਕਨੈਕਟ ਕੀਤਾ</translation>
 <translation id="3369111525500416043">ਭੁਗਤਾਨ ਦੀ ਤਾਰੀਖ ਨੇੜੇ ਹੈ</translation>
 <translation id="3371140690572404006">USB-C ਡੀਵਾਈਸ (ਸੱਜੇ ਪਾਸੇ ਅਗਲਾ ਪੋਰਟ)</translation>
 <translation id="3375634426936648815">ਕਨੈਕਟ ਹੈ</translation>
-<translation id="3378438761594387761">ਤੁਹਾਨੂੰ ਆਪਣੇ ਹਾਲੀਆ ਡਾਊਨਲੋਡ ਅਤੇ ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਇੱਥੇ ਮਿਲਣਗੇ</translation>
 <translation id="3386978599540877378">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵੱਡਦਰਸ਼ੀ</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">ਕੀ ਡਿਕਟੇਸ਼ਨ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
+<translation id="3392702002175498061">ਸਾਰੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਸਮੱਗਰੀ ਦਿਖਾਓ</translation>
 <translation id="3394432020929931914">, ਵਿਸਤਾਰ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="3401474642070997151">ਸੁਝਾਵਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ, ਕਿਸੇ ਸੁਝਾਅ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ ਜਾਂ ਦਬਾਈ ਰੱਖੋ</translation>
 <translation id="3405101454990027959">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਪਹੁੰਚ ਚਾਲੂ ਕਰੋ</translation>
-<translation id="3408735331120433841">ਤੁਸੀਂ ਫ਼ਿਲਹਾਲ ਆਪਣੀ ਸਕ੍ਰੀਨ ਕਾਸਟ ਕਰ ਰਹੇ ਹੋ।</translation>
 <translation id="3409584356742878290">ਵਿਕਾਸਕਾਰ ਟੂਲ ਨਿਰੀਖਕ ਨੂੰ ਦਿਖਾਓ ਜਾਂ ਲੁਕਾਓ</translation>
 <translation id="3410336247007142655">ਗੂੜ੍ਹੇ ਥੀਮ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="3413817803639110246">ਅਜੇ ਦੇਖਣ ਲਈ ਕੁਝ ਨਹੀਂ ਹੈ</translation>
@@ -588,6 +684,8 @@
 <translation id="3437677362970530951">Play Store ਅਤੇ ਹੋਰ ਗੇਮਿੰਗ ਪਲੇਟਫਾਰਮਾਂ 'ਤੇ ਮੌਜੂਦ ਗੇਮਾਂ</translation>
 <translation id="3439896670700055005">ਕੈਸ਼ੇ ਕੀਤੀ ਸਮੱਗਰੀ ਵਰਤੇ ਬਿਨਾਂ ਮੌਜੂਦਾ ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
+<translation id="3443917186865471894">ਆਪਣੇ ਮਾਊਸ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
+<translation id="3444385531800624797">ਨਤੀਜੇ ਲੋਡ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ਮਿੰਟ</translation>
 <translation id="3445925074670675829">USB-C ਡੀਵਾਈਸ</translation>
 <translation id="3454555520521576458">ਆਕਾਰ ਬਦਲਣਯੋਗ</translation>
@@ -604,16 +702,16 @@
 <translation id="3509391053705095206">ਤੁਹਾਡਾ ਫ਼ੋਨ ਨਹੀਂ ਲੱਭਿਆ ਜਾ ਸਕਦਾ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦਾ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ।</translation>
 <translation id="3510164367642747937">ਮਾਊਸ ਕਰਸਰ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ਵੱਲੋਂ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="3516000762115478502">ਟਾਇਲਡ ਮੁੜ-ਆਕਾਰ ਵਾਲੀ ਵਿੰਡੋ ਉੱਤੇ ਵੱਲ</translation>
+<translation id="3517037892157925473">ਕਾਰਜਾਂ ਨੂੰ ਆਖਰੀ ਵਾਰ ਅੱਪਡੇਟ ਕਰਨ ਦਾ ਸਮਾਂ: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ 1 ਮਿੰਟ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="3522979239100719575">ਉਪਲਬਧ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਲੱਭਿਆ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="3526440770046466733">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ ਅਤੇ ਮੌਜੂਦਾ ਟੈਬ ਵਿੱਚ ਬਣੇ ਰਹੋ</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3533126039236445965">ਸ਼ੈਲਫ ਵਿੱਚ ਐਪਾਂ</translation>
-<translation id="3537350467437346467">ਤੁਸੀਂ ਦੇਖਿਆ</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ਹੌਟਸਪੌਟ</translation>
 <translation id="3540893133818942399">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ ਅਤੇ ਮੀਡੀਆ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨਾ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="3542066395059568317">ਤੁਹਾਨੂੰ ਸਿਫ਼ਾਰਸ਼ਾਂ ਦਿਖਾਈ ਦੇਣਗੀਆਂ ਤਾਂ ਜੋ ਤੁਸੀਂ ਉੱਥੋਂ ਜਾਰੀ ਰੱਖ ਸਕੋ ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ। ਤੁਸੀਂ ਸਿਫ਼ਾਰਸ਼ਾਂ ਹਟਾਉਣ ਲਈ ਸੱਜਾ-ਕਲਿੱਕ ਕਰ ਸਕਦੇ ਹੋ।</translation>
-<translation id="3547318469722231257">ਤੁਸੀਂ ਸੋਧਿਆ</translation>
 <translation id="3552189655002856821">ਵਾਈ-ਫਾਈ ਬੰਦ ਹੈ</translation>
 <translation id="3554215588514239132">ਵਿਕਾਸਕਾਰ ਟੂਲ ਪੈਨਲ ਨੂੰ ਦਿਖਾਓ ਜਾਂ ਲੁਕਾਓ</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ਨੂੰ ਪਿੰਨ ਕੀਤਾ ਗਿਆ</translation>
@@ -626,30 +724,36 @@
 <translation id="3576141592585647168">ਸਮਾਂ ਖੇਤਰ ਬਦਲੋ</translation>
 <translation id="3577473026931028326">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3580650856351781466">ਬੋਲੀ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="3583350334315908861">{MINUTES,plural, =1{ਮਿੰਟ}one{ਮਿੰਟ}other{ਮਿੰਟ}}</translation>
 <translation id="3585296979871889131">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ, ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਦੇਖੋ</translation>
+<translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">ਸਾਈਡ ਬਟਨ</translation>
 <translation id="3593039967545720377">ਆਪਣਾ ਕਲਿੱਪਬੋਰਡ ਦੇਖਣ ਲਈ <ph name="SHORTCUT_KEY_NAME" /> + V ਦਬਾ ਕੇ ਆਪਣੇ ਕਲਿੱਪਬੋਰਡ ਦੇ ਇਤਿਹਾਸ ਤੱਕ ਪਹੁੰਚ ਕਰੋ। ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਕੋਈ ਆਈਟਮ ਕਾਪੀ ਕਰੋ।</translation>
 <translation id="3593646411856133110">ਖੁੱਲ੍ਹੀਆਂ ਐਪਾਂ ਦੇਖਣ ਲਈ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰਕੇ ਦਬਾਈ ਰੱਖੋ</translation>
 <translation id="3595596368722241419">ਬੈਟਰੀ ਪੂਰੀ</translation>
 <translation id="3596012367874587041">ਐਪ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="3597890697379254532">ਸਿਰਫ਼ ਲੈਂਡਸਕੇਪ ਉਪਲਬਧ</translation>
 <translation id="3598452309062311481">search+h</translation>
 <translation id="3600061223661453002">ਬੰਦ ਕਰੋ</translation>
 <translation id="3604801046548457007">ਡੈਸਕ <ph name="DESK_TITILE" /> ਬਣਾਇਆ ਗਿਆ</translation>
 <translation id="3606978283550408104">ਬ੍ਰੇਲ ਡਿਸਪਲੇ ਕਨੈਕਟ ਕੀਤਾ।</translation>
+<translation id="3612634595000403645">ਦਿੱਖ ਪ੍ਰਭਾਵ ਤਰਜੀਹਾਂ</translation>
 <translation id="3615926715408477684">ਮੋਬਾਈਲ ਡਾਟਾ ਚਾਲੂ ਕਰਨ ਨਾਲ ਬਲੂਟੁੱਥ ਵੀ ਚਾਲੂ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="3616113530831147358">ਆਡੀਓ</translation>
 <translation id="3616883743181209306">ਮੀਨੂ ਨੂੰ ਸਕ੍ਰੀਨ ਦੇ ਉੱਪਰਲੇ ਸੱਜੇ ਕੋਨੇ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="3619536907358025872">ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3621202678540785336">ਇਨਪੁਟ</translation>
 <translation id="3621712662352432595"> ਆਡੀਓ  ਸੈਟਿੰਗਾਂ</translation>
+<translation id="362253242168828226"><ph name="EMOJI_NAME" /> ਇਮੋਜੀ</translation>
 <translation id="3626281679859535460">ਚਮਕ</translation>
+<translation id="3628323833346754646">ਅਗਲਾ ਬਟਨ</translation>
 <translation id="3630697955794050612">ਬੰਦ</translation>
 <translation id="3631369015426612114">ਇਹਨਾਂ ਤੋਂ ਸੂਚਨਾਵਾਂ ਦਿਖਾਉਣ ਦਿਓ</translation>
 <translation id="3633097874324966332">ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਜੋੜਾਬੱਧ ਕਰਨ ਲਈ ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="3633851487917460983">ਕਲਿੱਪਬੋਰਡ ਖੋਲ੍ਹੋ</translation>
+<translation id="363473492175527493">ਫੋਕਸ ਕਰਨ ਲਈ ਚੁਣਿਆ ਗਿਆ ਕਾਰਜ: <ph name="TASK_NAME" />. ਕਾਰਜ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="3638400994746983214">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649256019230929621">window ਨੂੰ ਨਿਊਨਤਮ ਬਣਾਓ</translation>
-<translation id="3649505501900178324">ਅੱਪਡੇਟ ਕਰਨਾ ਬਾਕੀ ਹੈ</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> ਤੋਂ
@@ -662,7 +766,6 @@
 <translation id="3660860940251915011">ਉੱਚ ਦਿਖਣਯੋਗਤਾ <ph name="FEATURE_NAME" /> ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ਪ੍ਰਬੰਧਿਤ ਵਰਤੋਂਕਾਰ</translation>
 <translation id="3666266999138159418">ਆਪਣੀ ਫਲੋਟਿੰਗ ਵਿੰਡੋ ਨੂੰ ਲੁਕਾਉਣ ਲਈ ਸਵਾਈਪ ਕਰੋ</translation>
-<translation id="3673898235958558034">ਜਦੋਂ ਤੁਸੀਂ ਬਲੂਟੁੱਥ ਬੰਦ ਕਰਦੇ ਹੋ, ਤਾਂ "<ph name="DEVICE_NAME_1" />" ਅਤੇ "<ph name="DEVICE_NAME_2" />" ਤੁਹਾਡੀ Chromebook ਤੋਂ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਣਗੇ।</translation>
 <translation id="367531336287639526">ਪਤਾ ਬਾਰ ਦੇ ਖੱਬੇ ਪਾਸੇ ਵਾਲੇ ਪਹਿਲੇ ਪ੍ਰਤੀਕ ਨੂੰ ਚੁਣੋ</translation>
 <translation id="3677931086890821290">ਇਸ ਨਾਲ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਵਾਈ-ਫਾਈ ਅਤੇ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕਾਂ ਦਾ ਟਿਕਾਣਾ ਵਰਤਣ ਦੀ ਆਗਿਆ ਮਿਲਦੀ ਹੈ ਜਿਨ੍ਹਾਂ ਕੋਲ ਟਿਕਾਣਾ ਇਜਾਜ਼ਤ ਅਤੇ ChromeOS ਹੈ।</translation>
 <translation id="3679827876008292680">ਵਿੰਡੋ ਵਿੱਚ ਆਖਰੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
@@ -673,17 +776,23 @@
 <translation id="3702809606464356667">ਮੌਜੂਦਾ ਡੈਸਕ ਤੋਂ ਵਿੰਡੋਆਂ ਦਿਖਾਈਆਂ ਜਾ ਰਹੀਆਂ ਹਨ, ਸਾਰੇ ਡੈਸਕਾਂ ਤੋਂ ਵਿੰਡੋਆਂ ਦਿਖਾਉਣ ਲਈ ਉੱਪਰ ਤੀਰ ਵਾਲੀ ਕੁੰਜੀ ਦਬਾਓ</translation>
 <translation id="3702846122927433391">ਨਾਈਜੀਰੀਆ ਦੀ ਜਨਸੰਖਿਆ</translation>
 <translation id="3705722231355495246">-</translation>
+<translation id="3706423975342040244">ਮਨੋਰੰਜਨ</translation>
+<translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> ਅਤੇ <ph name="UNAVAILABLE_DLC_TWO" /> ਮੌਜੂਦ ਨਹੀਂ ਹਨ।</translation>
 <translation id="3708186454126126312">ਪਹਿਲਾਂ ਤੋਂ ਕਨੈਕਟ ਕੀਤੇ</translation>
 <translation id="3712143870407382523">ਇਸ ਪਾਸੇ ਲਈ ਵਿੰਡੋ ਨੂੰ ਚੁਣੋ</translation>
 <translation id="371370241367527062">ਮੂਹਰਲਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ</translation>
 <translation id="3713734891607377840">ਪੂਰਾ ਹੋਣ 'ਤੇ ਖੁੱਲ੍ਹੇ</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ਅਤੇ <ph name="UNAVAILABLE_APPS_COUNT" /> ਹੋਰ ਐਪਾਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹਨ।</translation>
+<translation id="3727231512028252576">ਆਈਟਮਾਂ ਲੋਡ ਨਹੀਂ ਕੀਤੀਆਂ ਜਾ ਸਕੀਆਂ। ਆਨਲਾਈਨ ਹੋਣ 'ਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3735740477244556633">ਇਸ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
 <translation id="3738664582935948253">ਤੁਸੀਂ ਹੁਣ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗਾਂ ਵਿੱਚ ਕਲਿੱਕਾਂ ਅਤੇ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਿਖਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="3742055079367172538">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਿਆ ਗਿਆ</translation>
+<translation id="3743775386021959186">ਫੋਕਸ ਮੋਡ ਚਾਲੂ ਹੈ, <ph name="REMAINING_TIME" /> ਬਾਕੀ</translation>
+<translation id="3750403286520637847">ਮੌਸਮ ਸੰਬੰਧੀ ਸੁਝਾਅ ਲੁਕਾਓ</translation>
 <translation id="3756485814916578707">ਸਕ੍ਰੀਨ 'ਤੇ ਕਾਸਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" /> ਸ਼ਾਰਟਕੱਟ ਨੂੰ <ph name="OLD_SHORTCUT" /> ਤੋਂ <ph name="NEW_SHORTCUT" /> 'ਤੇ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3765841986579723851">ਅੱਜ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="3772109172035555611">ਆਪਣੇ TrackPoint ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="3773700760453577392">ਕਿਸੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ <ph name="USER_EMAIL" /> ਲਈ ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਨੂੰ ਅਸਵੀਕਾਰ ਕੀਤਾ ਹੈ। ਜਾਰੀ ਰੱਖਣ ਲਈ ਸਾਰੇ ਵਰਤੋਂਕਾਰਾਂ ਦਾ ਸਾਈਨ-ਆਊਟ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3781910048497807059">ਫੋਕਸ ਨੂੰ ਪਿਛਲੀ ਪੂਰਵ-ਝਲਕ 'ਤੇ ਲੈ ਜਾਓ</translation>
@@ -694,20 +803,22 @@
 <translation id="3799080171973636491">ਤੁਸੀਂ ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵੱਡਦਰਸ਼ੀ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਇਆ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਚਾਲੂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="380165613292957338">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ, ਮੈਂ ਤੁਹਾਡੀ ਮਦਦ ਕਿਵੇਂ ਕਰਾਂ?</translation>
 <translation id="3804737937830804242">ਕੈਮਰੇ ਨੂੰ ਸਮੇਟੋ</translation>
+<translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 ਇਮੋਜੀ। ਕੋਈ ਹੋਰ ਨਤੀਜਾ ਨਹੀਂ ਹੈ।}one{# ਇਮੋਜੀ। ਕੋਈ ਹੋਰ ਨਤੀਜਾ ਨਹੀਂ ਹੈ।}other{# ਇਮੋਜੀ। ਕੋਈ ਹੋਰ ਨਤੀਜਾ ਨਹੀਂ ਹੈ।}}</translation>
 <translation id="3824784079442479685">ਇਸ ਨਾਲ <ph name="APP_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ। ਤੁਹਾਨੂੰ ਵੈੱਬ ਪੰਨੇ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰਨ ਜਾਂ ਐਪ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ।</translation>
-<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ਵਿੱਚੋਂ <ph name="NUM_TURNED_IN" /> ਸਪੁਰਦ ਕੀਤੇ ਗਏ, <ph name="NUM_GRADED" /> ਨੂੰ ਗ੍ਰੇਡ ਦਿੱਤੇ ਗਏ</translation>
 <translation id="3826099427150913765">ਪਾਸਵਰਡ 'ਤੇ ਬਦਲੀ ਕਰੋ</translation>
 <translation id="383058930331066723">ਬੈਟਰੀ ਸੇਵਰ ਮੋਡ ਚਾਲੂ ਹੈ</translation>
+<translation id="3831226344927851293">ਟਿਊਟੋਰੀਅਲ ਦ੍ਰਿਸ਼ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="383629559565718788">ਕੀ-ਬੋਰਡ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="384082539148746321">ਕੀ ਟੈਮਪਲੇਟ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> ਫਿਰ <ph name="KEY_ONE" /> ਜਾਂ <ph name="KEY_TWO" /> ਜਾਂ <ph name="KEY_THREE" /> ਜਾਂ <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">ਕੋਈ ਵੀ ਨੈੱਟਵਰਕ ਜਾਣਕਾਰੀ ਉਪਲਬਧ ਨਹੀਂ</translation>
+<translation id="3848526302597027234">ਹੇਠਾਂ ਦਿੱਤੀਆਂ ਇਜਾਜ਼ਤਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰੋ:</translation>
 <translation id="385051799172605136">ਪਿੱਛੇ</translation>
 <translation id="385300504083504382">ਸ਼ੁਰੂਆਤ</translation>
 <translation id="3859364108019690">ਐਪਾਂ ਨੂੰ ਸਟ੍ਰੀਮ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="3861651314799684201">ਪੂਰੀ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
-<translation id="3882323608730650973">ਸੋਧਣ ਦਾ ਸਮਾਂ</translation>
+<translation id="3870197372373144624">ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਬੰਦ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3886872229787704059">ਅੱਜ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="3891340733213178823">ਸਾਈਨ-ਆਊਟ ਕਰਨ ਲਈ ਦੋ ਵਾਰ Ctrl+Shift+Q ਦਬਾਓ।</translation>
 <translation id="3893630138897523026">ChromeVox (ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ)</translation>
@@ -716,10 +827,10 @@
 <translation id="3899995891769452915">ਵੌਇਸ ਇਨਪੁੱਟ</translation>
 <translation id="3900355044994618856">ਤੁਹਾਡਾ ਸੈਸ਼ਨ <ph name="SESSION_TIME_REMAINING" /> ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> ਨਾਲ ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
-<translation id="3906954721959377182">ਟੈਬਲੈੱਟ</translation>
-<translation id="3922427723338465344">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ 1 ਮਿੰਟ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟਾਂ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}}</translation>
+<translation id="3904768293285573640">ਟਾਇਲਡ ਮੁੜ-ਆਕਾਰ ਵਾਲੀ ਵਿੰਡੋ ਖੱਬੇ ਵੱਲ</translation>
 <translation id="3923494859158167397">ਕਿਸੇ ਵੀ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਦਾ ਸੈੱਟਅੱਪ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ਇਵੈਂਟ ਲੋਡ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ।</translation>
+<translation id="3927049937406914450">ਮੌਸਮ ਦੀ ਜਾਣਕਾਰੀ ਉਪਲਬਧ ਨਹੀਂ ਹੈ ਕਿਉਂਕਿ ਟਿਕਾਣੇ ਤੱਕ ਪਹੁੰਚ ਬੰਦ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਇਸਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3932043219784172185">ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="3934456833412894880">ਅਡੈਪਟਿਵ ਚਾਰਜਿੰਗ ਚਾਲੂ ਹੈ। ਬੈਟਰੀ ਲਾਈਫ਼ ਵਧਾਉਣ ਲਈ ਬੈਟਰੀ 80% ਤੱਕ ਰਹੇਗੀ, ਅਤੇ ਲੋੜ ਪੈਣ 'ਤੇ ਇਸਨੂੰ ਪੂਰਾ ਚਾਰਜ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="3943857333388298514">ਪੇਸਟ ਕਰੋ</translation>
@@ -729,19 +840,25 @@
 <translation id="3950272133184491871">ਕੀ ਹੁਣੇ ਸਾਈਨ ਆਉਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3950820424414687140">ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3953130726459169782">ਹਾਲੇ ਕੋਈ ਅਸਾਈਨਮੈਂਟ ਪੂਰਾ ਨਹੀਂ ਹੋਇਆ।</translation>
+<translation id="3958714870339660776">ਪੂਰਾ ਦਿਨ</translation>
 <translation id="3962859241508114581">ਪਿਛਲਾ ਟਰੈਕ</translation>
+<translation id="3963124517343721543">ਆਪਣੀਆਂ ਪਿਛਲੀਆਂ ਵਿੰਡੋਆਂ ਅਤੇ ਟੈਬਾਂ ਨੂੰ ਖੋਲ੍ਹ ਕੇ ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ ਉੱਥੋਂ ਹੀ ਆਸਾਨੀ ਨਾਲ ਜਾਰੀ ਰੱਖੋ। ਅੱਗੇ ਤੁਹਾਨੂੰ ਕਰਨਯੋਗ ਚੀਜ਼ਾਂ ਲਈ ਵਿਅਕਤੀਗਤ ਸੁਝਾਅ ਵੀ ਦਿਖਾਈ ਦੇਣਗੇ।</translation>
+<translation id="396506362088290977">ਆਪਣੇ ਮਾਈਕ ਦੀ ਧੁਨੀ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="3969043077941541451">ਬੰਦ ਹੈ</translation>
 <translation id="3970324493235864154">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="397105322502079400">ਅਨੁਮਾਨ ਲਗਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="397726367135689299">ਸ਼ਾਇਦ ਬੈਟਰੀ ਚਾਰਜਿੰਗ ਭਰੋਸੇਯੋਗ ਨਾ ਹੋਵੇ।</translation>
 <translation id="3977512764614765090">ਬੈਟਰੀ <ph name="PERCENTAGE" />% ਹੈ ਅਤੇ ਚਾਰਜ ਹੋ ਰਹੀ ਹੈ।</translation>
+<translation id="3982013579989864579">ਕੀ ਆਡੀਓ ਆਊਟਪੁੱਟ ਨੂੰ ਸਵਿੱਚ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3984536049089846927">ਅਗਲਾ ਪੰਨਾ</translation>
 <translation id="3986082989454912832">ਜਵਾਬ ਦਿਓ</translation>
 <translation id="3990002060657467458">ਵਾਈ-ਫਾਈ, ਬਲੂਟੁੱਥ ਅਤੇ ਅਵਾਜ਼ ਵਰਗੇ ਅਕਸਰ ਵਰਤੇ ਜਾਣ ਵਾਲੇ ਕੰਟਰੋਲ ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਹਨ। ਤੁਸੀਂ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲੈਣ ਲਈ ਇੱਥੇ ਵੀ ਜਾ ਸਕਦੇ ਹੋ।</translation>
+<translation id="3991203706072366707"><ph name="GAME_APP_NAME" /> ਦੇ ਲਈ ਬੰਦ ਹੈ</translation>
 <translation id="3995138139523574647">USB-C ਡੀਵਾਈਸ (ਸੱਜੇ ਪਾਸੇ ਪਿਛਲਾ ਪੋਰਟ)</translation>
 <translation id="4002066346123236978">ਸਿਰਲੇਖ</translation>
 <translation id="40062176907008878">ਲਿਖਾਈ</translation>
 <translation id="4011112806063830608">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਮੋਡ ਚਾਲੂ ਹੈ।</translation>
+<translation id="4015144849380506405">ਇਸਦੇ ਚਾਲੂ ਹੋਣ 'ਤੇ ਮਾਊਸ ਕੁੰਜੀਆਂ ਨੂੰ ਰੋਕੋ/ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4017989525502048489">ਲੇਜ਼ਰ ਪੁਆਇੰਟਰ</translation>
 <translation id="401993194061514265">ਮਾਰਕਰ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਸਕ੍ਰੀਨਕਾਸਟ ਦੁਬਾਰਾ ਖੋਲ੍ਹੋ।</translation>
 <translation id="4021716437419160885">ਹੇਠਾਂ ਵੱਲ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
@@ -756,29 +873,35 @@
 <translation id="404437169852192935">ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਹੋਣੇ ਬੰਦ ਹੋ ਗਏ</translation>
 <translation id="4049230407053723315">ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" /> ਵਿੱਚੋਂ <ph name="INDEX" /> ਬ੍ਰਾਊਜ਼ਰ ਟੈਬ। <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
+<translation id="4059696795118403455">ਅੱਗੇ ਕਰਨਯੋਗ ਚੀਜ਼ਾਂ ਲਈ ਵਿਅਕਤੀਗਤ ਸੁਝਾਅ ਦੇਖਣ ਵਾਸਤੇ, ਰੂਪ-ਰੇਖਾ ਕੁੰਜੀ ਦਬਾਓ</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ਇੱਕ ਐਪ ਲਈ ਬੰਦ}one{# ਐਪ ਲਈ ਬੰਦ}other{# ਐਪਾਂ ਲਈ ਬੰਦ}}</translation>
 <translation id="4066027111132117168">ਚਾਲੂ ਹੈ, <ph name="REMAINING_TIME" /></translation>
+<translation id="4067635609339702874">ChromeOS ਸੈਟਿੰਗਾਂ ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨਾ ਚਾਹੁੰਦੀਆਂ ਹਨ</translation>
 <translation id="4069532248403319695">'ਡਾਊਨਲੋਡ' ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="4072264167173457037">ਮੱਧਮ ਸਿਗਨਲ</translation>
-<translation id="4076455981957565732"><ph name="NUM_TURNED_IN" />/<ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ਨੂੰ ਪੂਰਾ ਕੀਤਾ ਗਿਆ • <ph name="NUM_GRADED" /> ਗ੍ਰੇਡ ਦਿੱਤਾ ਗਿਆ</translation>
+<translation id="4072805772816336153">ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="4086921558679520050">ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਭੌਤਿਕ ਮਾਈਕ ਸਵਿੱਚ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4101772068965291327">ਮੁੱਖ ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="4112140312785995938">ਪਿੱਛੇ ਕਰੋ</translation>
+<translation id="4113030288477039509">ਤੁਹਾਡੇ ਪ੍ਰਬੰਧਕ ਵੱਲੋਂ ਵਿਵਸਥਿਤ</translation>
 <translation id="4114315158543974537">ਫ਼ੋਨ ਹੱਬ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4115378294792113321">ਮਜੈਂਟਾ</translation>
 <translation id="411881149140864134">ਡੈਸਕ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
+<translation id="4119928251231465047">ਪਿੰਨ ਦਾਖਲ ਕਰਨ ਦੀ ਕਈ ਵਾਰ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਗਈ</translation>
 <translation id="412298498316631026">ਵਿੰਡੋ</translation>
 <translation id="4123259114412175274">ਆਪਣੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ, ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦਾ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ</translation>
 <translation id="4125970834901680537">ਟੈਬਲੈੱਟ ਮੋਡ ਵਿੱਚ ਐਪਾਂ ਨੂੰ ਸਟ੍ਰੀਮ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਲੈਪਟਾਪ ਮੋਡ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4131973331381812765">ਤਾਪਮਾਨ: <ph name="TEMPERATURE" />°C - ਮੌਜੂਦਾ ਗਤੀ: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
-<translation id="4132502210362661715">ਤੁਹਾਡੀ Chromebook ਕੰਮ ਪੂਰਾ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਨ ਲਈ ਬਿਲਟ-ਇਨ ਐਪਾਂ ਨਾਲ ਆਉਂਦੀ ਹੈ। ਲਾਂਚਰ ਵਿੱਚ ਆਪਣੀਆਂ ਐਪਾਂ ਲੱਭੋ।</translation>
 <translation id="4136724716305260864">ਸੂਰਜ ਚੜ੍ਹਨ ਤੱਕ ਚਾਲੂ ਰਹੇਗੀ</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + ਸੱਜਾ ਤੀਰ</translation>
 <translation id="4146671046252289537">ਅਗਲੇ ਸ਼ਬਦ ਦੇ ਅਖੀਰ 'ਤੇ ਜਾਓ</translation>
 <translation id="4146833061457621061">ਸੰਗੀਤ ਚਲਾਓ</translation>
 <translation id="4150201353443180367">ਡਿਸਪਲੇ</translation>
+<translation id="4151054805501931758">ਪੋਰਟਰੇਟ ਟੱਚ-ਅੱਪ</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ਬੈਟਰੀ ਬਾਕੀ ਬਚੀ ਹੈ (ਲਗਭਗ <ph name="TIME_LEFT" />)।
 ਕੁਝ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬੈਟਰੀ ਲਾਈਫ਼ ਵਧਾਉਣ ਲਈ ਸੀਮਤ ਹਨ।</translation>
+<translation id="4160919062868802509">ਇੱਕ ਤੋਂ ਵੱਧ ਆਡੀਓ ਸਰੋਤਾਂ ਦਾ ਪਤਾ ਲੱਗਿਆ</translation>
+<translation id="416245495747357243">ਹੋ ਗਿਆ!</translation>
 <translation id="4165275524535002941">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਕੇਬਲ ਡਿਸਪਲੇਆਂ ਦਾ ਸਮਰਥਨ ਨਾ ਕਰੇ</translation>
 <translation id="4177415338862979658">ਵੇਰਵਿਆਂ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="4177913004758410636">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ ਇੱਕ ਦਿਨ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
@@ -797,13 +920,14 @@
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="4201051445878709314">ਪਿਛਲਾ ਮਹੀਨਾ ਦਿਖਾਓ</translation>
 <translation id="4209973997261364186">ਵਾਈ-ਫਾਈ ਚਾਲੂ ਹੈ</translation>
+<translation id="4212246570487010370">ਬ੍ਰਾਊਜ਼ਿੰਗ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="4212472694152630271">ਪਿੰਨ 'ਤੇ ਬਦਲੀ ਕਰੋ</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, ਟੌਗਲ ਬਟਨ, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">VPN ਸੈਟਿੰਗਾਂ</translation>
 <translation id="4217571870635786043">ਬੋਲ ਅਨੁਸਾਰ ਲਿਖਤ</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ਸਥਾਪਤ ਕੀਤੀ ਗਈ ਐਪ, ਰੋਕੀ ਗਈ</translation>
 <translation id="4228078597006700451">ਕੰਟਰੋਲਾਂ ਦਾ ਸੈੱਟਅੱਪ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
-<translation id="4231053948789591973">ਕਾਸਟ ਕਰਨਾ ਫ਼ਿਲਹਾਲ ਰੋਕਿਆ ਗਿਆ ਹੈ। ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਸਮੇਂ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਕਾਸਟ ਕਰਨਾ ਮੁੜ-ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
-<translation id="423685346499232137">ਇਸ ਵੇਲੇ ਸਮੱਗਰੀ ਨੂੰ ਕਾਪੀ ਜਾਂ ਪੇਸਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="4230560241506423345">ਨਵਾਂ</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">ਰੂਪ-ਰੇਖਾ ਮੋਡ</translation>
 <translation id="4242533952199664413">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
@@ -812,15 +936,18 @@
 <translation id="425364040945105958">ਸਿਮ ਨਹੀਂ ਹੈ</translation>
 <translation id="4261870227682513959">ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। ਸੂਚਨਾਵਾਂ ਬੰਦ ਹਨ</translation>
 <translation id="4264977415328155183">, ਸਮੇਟਿਆ ਗਿਆ</translation>
+<translation id="4265259722091164182">ਸ਼ਬਦ ਦਾ ਪਹਿਲਾ ਵੱਡਾ ਅੱਖਰ</translation>
 <translation id="4269883910223712419">ਇਸ ਡੀਵਾਈਸ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਕੋਲ ਇਹ ਕਰਨ ਦੀ ਸਮਰੱਥਾ ਹੈ:</translation>
+<translation id="4271841440229266861">ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ ਦੀ ਸਮੱਗਰੀ ਦਿਖਾਓ</translation>
 <translation id="4274537685965975248">Ctrl + Alt + ਹੇਠਾਂ ਤੀਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। End ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਸੱਜਾ ਤੀਰ ਦਬਾਓ।</translation>
 <translation id="4275283744500212192">ਵਿੰਡੋ ਖਾਕਾ ਵਿਕਲਪ ਖੋਲ੍ਹੋ</translation>
-<translation id="4278138729651139331">ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਆਪਣੀ Chromebook ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ ਅਤੇ ਵਿਅਕਤੀਗਤ ਬਣਾਓ। ਆਪਣਾ ਵਾਲਪੇਪਰ ਬਦਲ ਕੇ ਦੇਖੋ ਜਾਂ ਸਕ੍ਰੀਨ ਸੇਵਰ ਸੈੱਟ ਕਰੋ।</translation>
+<translation id="4275663329226226506">ਮੀਡੀਆ</translation>
 <translation id="4279490309300973883">ਪ੍ਰਤਿਬਿੰਬੀਕਰਨ</translation>
 <translation id="4280601795273309128">ਸੁਰੱਖਿਆ ਅੱਪਡੇਟ ਸਮਾਪਤ ਹੋ ਗਏ। ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰੋ।</translation>
 <translation id="4283888303416325161">ਵਧੇਰੇ ਸੁਰੱਖਿਆ ਲਈ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="4285498937028063278">ਅਨਪਿਨ ਕਰੋ</translation>
 <translation id="428715201724021596">ਪ੍ਰੋਫਾਈਲ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
+<translation id="4287250812980588583">Chrome ਵਿੰਡੋ</translation>
 <translation id="4294319844246081198">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">ਸਾਰੀਆਂ <ph name="COUNT" /> ਸੂਚਨਾਵਾਂ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="4300272766492248925">ਐਪ ਖੋਲ੍ਹੋ</translation>
@@ -828,32 +955,39 @@
 <translation id="4302592941791324970">ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="4303223480529385476">ਸਥਿਤੀ ਖੇਤਰ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="4305133312001648038">ਪੰਨੇ 'ਤੇ ਜ਼ੂਮ ਦਾ ਪੱਧਰ ਰੀਸੈੱਟ ਕਰੋ</translation>
+<translation id="4305817255990598646">ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="4307713728991152670">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ ਅਤੇ ਐਪਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="4312840429157639164">ਕੈਮਰੇ ਨੂੰ ਉੱਪਰਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ। ਸਿਸਟਮ ਸਰਫ਼ੇਸ ਨਾਲ ਓਵਰਲੈਪ ਕਰਦਾ ਹੈ।</translation>
 <translation id="4316910396681052118">ਸਭ ਐਪਾਂ</translation>
 <translation id="4321179778687042513">ctrl</translation>
+<translation id="4322385711258710213">ਸਾਰੇ Chrome ਸੁਝਾਅ ਲੁਕਾਓ</translation>
 <translation id="4322742403972824594">Ctrl + Alt + ਉੱਪਰ ਤੀਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Home ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਖੱਬਾ ਤੀਰ ਦਬਾਓ।</translation>
 <translation id="4324840740119394760">ਇਸ ਨਾਲ <ph name="APP_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ</translation>
+<translation id="4327147325944669226">ਗੇਮ ਰਿਕਾਰਡ ਕਰੋ</translation>
 <translation id="4333628967105022692">ਕਈ ਵਰਤੋਂਕਾਰਾਂ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਹੋਣ ਦੌਰਾਨ Lacros ਸਮਰਥਿਤ ਨਹੀਂ ਹੁੰਦਾ ਹੈ।</translation>
 <translation id="4338109981321384717">ਸੂਖਮਦਰਸ਼ੀ ਕੱਚ</translation>
+<translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, ਮਿਊਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4351244548802238354">ਡਾਇਲੌਗ ਬੰਦ ਕਰੋ</translation>
 <translation id="4356872429719185452">ਹੌਟਸਪੌਟ ਦੇ ਵੇਰਵੇ ਦਿਖਾਓ। ਹੌਟਸਪੌਟ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  ਰਿਕਾਰਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4371348193907997655">ਕਾਸਟ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="4375482231364171368">ਪਤਾ ਬਾਰ ਵਿੱਚ ਖੋਜੋ</translation>
-<translation id="4378154925671717803">ਫ਼ੋਨ</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" /> ਫ਼ੀਸਦ</translation>
 <translation id="4378551569595875038">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="4379531060876907730">ਇਹ ਤੁਹਾਡੇ ਸਟਾਈਲਸ ਟੂਲ ਹਨ</translation>
 <translation id="4381031910344220229">ਇਹ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤ ਦੇ ਨਾਲ <ph name="APP_NAME" /> ਅਤੇ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਦਿੰਦੀ ਹੈ</translation>
 <translation id="4382340674111381977">ਪਿਛਲੇ ਪੰਨੇ 'ਤੇ ਜਾਓ</translation>
 <translation id="4389184120735010762">ਤੁਸੀਂ ਡੌਕ ਕੀਤੇ ਵੱਡਦਰਸ਼ੀ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਇਆ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਚਾਲੂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
+<translation id="4394466652057229831">ਸਾਰਾਂਸ਼ ਦੇਣ ਲਈ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="439598569299422042">ਰੋਕਿਆ ਗਿਆ, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ਸਕ੍ਰੀਨਕਾਸਟ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="4405151984121254935">ਇਸ ਕਨੈਕਟ ਕੀਤੀ ਪੈਰੀਫੈਰਲ ਕਿਸਮ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ</translation>
 <translation id="4406883609789734330">ਲਾਈਵ ਸੁਰਖੀਆਂ</translation>
+<translation id="4412698727486357573">ਮਦਦ ਕੇਂਦਰ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ਬੰਦ ਹੈ।</translation>
+<translation id="4417647906073317561">ਫੋਕਸ ਮੋਡ ਸੰਬੰਧੀ ਸੈਟਿੰਗਾਂ। ਕੰਮ 'ਤੇ ਧਿਆਨ ਦੇਣ ਲਈ ਟਾਈਮਰ, ਕਾਰਜ ਅਤੇ ਸੰਗੀਤ ਸੈੱਟ ਕਰੋ।</translation>
 <translation id="4424159417645388645">ਡੈਸਕ 5</translation>
+<translation id="4426817706804363424">ਬਹੁਤ ਵਧੀਆ!</translation>
 <translation id="4430019312045809116">ਵੌਲਿਊਮ</translation>
 <translation id="4441283832827406317">ਐਪਾਂ ਨੂੰ ਨਾਮ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4445159312344259901">ਅਣਲਾਕ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
@@ -861,6 +995,7 @@
 <translation id="4450893287417543264">ਦੁਬਾਰਾ ਨਾ ਦਿਖਾਓ</translation>
 <translation id="4451374464530248585">Alt + ਹੇਠਾਂ ਤੀਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Page Down ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਹੇਠਾਂ ਤੀਰ ਦਬਾਓ।</translation>
 <translation id="4453876312474547652">Ctrl + V ਦਬਾ ਕੇ ਰੱਖਣ 'ਤੇ ਤੁਹਾਨੂੰ ਕਲਿੱਪਬੋਰਡ ਦਿਖਾਈ ਦੇਵੇਗਾ। ਤੁਸੀਂ chrome://flags (ਜੇ Lacros ਵਰਤ ਰਹੇ ਹੋ ਤਾਂ os://flags) 'ਤੇ ਜਾ ਕੇ #clipboard-history-longpress ਫਲੈਗ ਨੂੰ ਬੰਦ ਕਰ ਕੇ ਇਸ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="445765352722456792">ਸੁਝਾਅ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="445864333228800152">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ,</translation>
 <translation id="4458688154122353284">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰੋ</translation>
 <translation id="445923051607553918">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ</translation>
@@ -868,30 +1003,35 @@
 <translation id="4471432286288241507">{0,plural, =0{ਡੀਵਾਈਸ ਨੂੰ ਹੁਣੇ ਅੱਪਡੇਟ ਕਰੋ}=1{ਡੀਵਾਈਸ ਨੂੰ 1 ਸਕਿੰਟ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਸਕਿੰਟਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="4472575034687746823">ਸ਼ੁਰੂਆਤ ਕਰੋ</translation>
 <translation id="4477350412780666475">ਅਗਲਾ ਟਰੈਕ</translation>
+<translation id="4477751544736611934">ਇਸ ਨਾਲ ਡਾਟਾ ਖਰਚ ਹੋ ਸਕਦਾ ਹੈ।
+1 ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="4477892968187500306">ਇਸ ਡੀਵਾਈਸ ਵਿੱਚ ਸ਼ਾਇਦ ਅਜਿਹੀਆਂ ਐਪਾਂ ਹੋਣ ਜਿਨ੍ਹਾਂ ਦੀ ਪੁਸ਼ਟੀ Google ਨੇ ਨਹੀਂ ਕੀਤੀ ਹੈ।</translation>
 <translation id="4479639480957787382">ਈਥਰਨੈਟ</translation>
 <translation id="4481530544597605423">ਅਣ-ਜੋੜਾਬੱਧ ਕੀਤੀਆਂ ਡੀਵਾਈਸਾਂ</translation>
 <translation id="4485506555414638855">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ, ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨਾ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="4491109536499578614">ਚਿੱਤਰ</translation>
+<translation id="4493452241184130939">ਇਹ ਬੁਨਿਆਦੀ ਚੀਜ਼ਾਂ ਸਨ! ਨੁਕਤਿਆਂ ਅਤੇ ਮਦਦ ਲਈ ਸਾਡੀ ਬਿਲਟ-ਇਨ ਐਪ, Explore ਵਿੱਚ ਜਾਰੀ ਰੱਖੋ। ਤੁਹਾਨੂੰ ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਨੁਕਤੇ, ਸਿਫ਼ਾਰਸ਼ੀ ਐਪਾਂ, ਖਾਸ ਪੇਸ਼ਕਸ਼ਾਂ ਅਤੇ <ph name="PRODUCT_NAME" /> ਦੀਆਂ ਨਵੀਨਤਮ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਮਿਲਣਗੀਆਂ।</translation>
 <translation id="450584155212756404">ਡੈਵ ਚੈਨਲ</translation>
 <translation id="4513946894732546136">ਵਿਚਾਰ</translation>
 <translation id="4518404433291145981">ਆਪਣੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਪਹਿਲਾ ਆਪਣੇ ਫ਼ੋਨ ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="4527045527269911712">ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ "<ph name="DEVICE_NAME" />" ਜੋੜਾਬੱਧ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੁੰਦੀ ਹੈ।</translation>
+<translation id="4531536770443562276">ਸਿਰਫ਼ ਪੂਰੀ-ਸਕ੍ਰੀਨ ਉਪਲਬਧ</translation>
 <translation id="4533343294786968049">ਤੁਹਾਡੀ ਬੈਟਰੀ ਲਾਈਫ਼ ਨੂੰ ਵਧਾਉਣਾ। ਬੈਟਰੀ <ph name="FULLY_CHARGE_TIME" /> ਤੱਕ ਪੂਰੀ ਤਰ੍ਹਾਂ ਚਾਰਜ ਹੋ ਜਾਵੇਗੀ।</translation>
 <translation id="453661520163887813">ਪੂਰੀ ਤਰ੍ਹਾਂ ਚਾਰਜ ਹੋਣ ਵਿੱਚ <ph name="TIME" /> ਬਾਕੀ</translation>
 <translation id="4538824937723742295">ਪੂਰੀ ਸਕ੍ਰੀਨ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ</translation>
 <translation id="4539127209940689201">ਮੌਜੂਦਾ ਪੰਨੇ ਨੂੰ ਪ੍ਰਿੰਟ ਕਰੋ</translation>
+<translation id="4541505619120536051">ਹਮੇਸ਼ਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="4541706525461326392">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="4544483149666270818">ਰਿਕਾਰਡ ਕਰਨ ਲਈ ਕੋਈ ਵਿੰਡੋ ਚੁਣੋ</translation>
 <translation id="4545950850562423083">ਮੌਜੂਦਾ ਪੰਨੇ ਨੂੰ ਬੁੱਕਮਾਰਕ ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="4548482551627849548">ਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਡੈਸਕ 'ਤੇ ਲਿਜਾਓ</translation>
+<translation id="4552748006424994716">ਗੂੰਜ ਤੋਂ ਬਚਣ ਲਈ, ਤੁਸੀਂ ਸਿਰਫ਼ ਤਾਰ ਵਾਲੇ ਹੈੱਡਫ਼ੋਨ ਦੇ ਨਾਲ ਹੀ ਆਪਣੇ ਮਾਈਕ ਨੂੰ ਸੁਣ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4560576029703263363">ਚਾਲੂ</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">ਪਾਸਵਰਡ ਲੁਕਾਓ</translation>
 <translation id="4566144812051858745">ਕਿਸੇ ਵੀ ਸੁਝਾਅ ਵਿੱਚ ਕੋਈ ਦਿਲਚਸਪੀ ਨਹੀਂ ਹੈ</translation>
 <translation id="4569753163207712681">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ ਅਤੇ ਐਪਾਂ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="4573176682887762361">"ਕਿਸਮ [ਸ਼ਬਦ / ਵਾਕਾਂਸ਼]"</translation>
-<translation id="4577188182049003486">ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੋਣ 'ਤੇ, ਵਾਈ-ਫਾਈ ਬੰਦ ਹੋ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="4577274620589681794">ਸਮਾਂ ਸਮਾਪਤ ਹੋਇਆ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">ਪੂਰਵ-ਝਲਕਾਂ ਦਿਖਾਓ</translation>
 <translation id="4578906031062871102">ਸੈਟਿੰਗ ਮੀਨੂ ਨੂੰ ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
@@ -900,17 +1040,20 @@
 <translation id="4585337515783392668">ਕਿਸੇ ਅਗਿਆਤ ਪ੍ਰਾਪਤਕਰਤਾ 'ਤੇ ਕਾਸਟ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="4596144739579517758">ਗੂੜ੍ਹਾ ਥੀਮ ਬੰਦ ਹੈ।</translation>
 <translation id="4596442969149038771"><ph name="USER" /> ਨੇ ਸਾਂਝਾ ਕੀਤਾ</translation>
+<translation id="4610493115106525653">ਵਧੀਆ ਆਊਟਪੁੱਟ</translation>
 <translation id="4611292653554630842">ਲੌਗ ਇਨ ਕਰੋ</translation>
 <translation id="462160925400706389"><ph name="NAME" /> ਕਨੈਕਟ ਹੈ</translation>
 <translation id="4623167406982293031">ਖਾਤੇ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="4628757576491864469">ਡਿਵਾਈਸਾਂ</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ਤਾਰਾ ਰੇਟਿੰਗ <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ ਇੱਕ ਦਿਨ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨਾਂ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}}</translation>
 <translation id="4633636853437260449">ਮਿਟਾਉਣ ਲਈ Ctrl+W ਦਬਾਓ</translation>
+<translation id="4635501805800894201">{0,plural, =0{ਡੀਵਾਈਸ ਨੂੰ ਹੁਣੇ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ}=1{ਡੀਵਾਈਸ ਨੂੰ 1 ਸਕਿੰਟ ਵਿੱਚ ਹੀ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਸਕਿੰਟਾਂ ਵਿੱਚ ਹੀ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="4642092649622328492">ਛੋਟਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਵੋ</translation>
 <translation id="4644727592819780893">ਕੈਮਰਾ ਪੂਰਵ-ਝਲਕ ਵਿੱਚ ਫਿੱਟ ਆਉਣ ਲਈ ਇਲਾਕਾ ਬਹੁਤ ਛੋਟਾ ਹੈ</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ਐਪ ਸਿਫ਼ਾਰਸ਼</translation>
+<translation id="4649019912155580914">ਤੁਸੀਂ ਸੰਪਾਦਨ ਕੀਤਾ</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> ਚੈੱਕ-ਬਾਕਸ 'ਤੇ ਸਹੀ ਦਾ ਨਿਸ਼ਾਨ ਲਗਾਇਆ ਗਿਆ।</translation>
+<translation id="465686131535918331">ਤੁਸੀਂ <ph name="PERIPHERAL_NAME" /> ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="4657775630156561295">ਅੱਗੇ ਦਿੱਤੇ ਸੁਝਾਅ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ ਦੇ ਸੁਝਾਅ ਇਤਿਹਾਸ ਤੋਂ ਪੱਕੇ ਤੌਰ 'ਤੇ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ:
 
 <ph name="QUERY" /></translation>
@@ -919,21 +1062,27 @@
 <translation id="4667099493359681081"><ph name="FILENAME" /> ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4672539464599646374">ਬੈਟਰੀ ਸੇਵਰ ਚਾਲੂ ਹੈ</translation>
 <translation id="4673427585974421255">ਚਾਲੂ ਰੱਖੋ</translation>
+<translation id="4677040906536311086">Google ਸ਼ੀਟ</translation>
 <translation id="468293128311738995">ਤੁਹਾਡੇ ਫ਼ੋਨ ਤੋਂ ਐਪਾਂ</translation>
 <translation id="4690510401873698237">ਹੇਠਲੇ 'ਤੇ ਸ਼ੈਲਫ਼</translation>
 <translation id="4696813013609194136">ਮਾਂ-ਪਿਓ ਦੇ ਕੋਡ ਨਾਲ ਡੀਵਾਈਸ ਅਣਲਾਕ ਕਰੋ</translation>
+<translation id="4697357603686181098">ਇਸ ਵਿੱਚ ਮਦਦ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ। ਕੋਈ ਹੋਰ ਬੇਨਤੀ ਕਰੋ।</translation>
 <translation id="4702647871202761252">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਬੰਦ ਹੈ</translation>
 <translation id="4706121060329443414">ਬਾਅਦ ਵਿੱਚ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਜਾਵੇਗੀ। ਫ਼ਿਲਹਾਲ ਪ੍ਰਕਿਰਿਆ ਕਰਨ ਲਈ ਬੋਲੀ Google ਨੂੰ ਭੇਜੀ ਜਾਵੇਗੀ।</translation>
 <translation id="470644585772471629">ਰੰਗ ਪਲਟਨਾ</translation>
 <translation id="4708065238214351979">ਕੀ-ਬੋਰਡ ਨੂੰ ਚਮਕਦਾਰ ਬਣਾਓ</translation>
+<translation id="4708185346211948049"><ph name="DAY_OF_WEEK" /> ਅਗਲੇ ਹਫ਼ਤੇ</translation>
 <translation id="4717575069099566988">ਤੁਹਾਡੀ USB-C ਕੇਬਲ USB4 ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ ਹੈ। ਡੀਵਾਈਸ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ।</translation>
+<translation id="4724328513667182700"><ph name="PRODUCT_NAME" /> 'ਤੇ ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ 6 ਨੁਕਤੇ</translation>
 <translation id="4730374152663651037">ਅਕਸਰ ਵਰਤੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਐਪਾਂ</translation>
 <translation id="4731797938093519117">ਮਾਂ-ਪਿਓ ਲਈ ਪਹੁੰਚ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ਖੱਬੇ ਪਾਸੇ)</translation>
 <translation id="4734965478015604180">ਲੇਟਵਾਂ</translation>
 <translation id="4735944890391795473">ਡੈਸਕ 12</translation>
+<translation id="4736732123074402682">ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="473775607612524610">ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="4740516757091333363">ਕੀ ਰੱਖਿਅਤ ਕੀਤੇ ਡੈਸਕ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
+<translation id="4746798685375253449">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ ਇੱਕ ਦਿਨ ਵਿੱਚ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨ ਵਿੱਚ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨਾਂ ਵਿੱਚ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="4747410141429390146">ਕਿਰਪਾ ਕਰਕੇ ਸੂਚਨਾਵਾਂ ਦੇਖਣ ਲਈ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="4752784485658729358">ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਸਿਰਫ਼ 6 ਡੈਸਕਾਂ ਦੀ ਆਗਿਆ ਹੈ। ਨਵਾਂ ਡੈਸਕ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਪਹਿਲਾਂ ਤੋਂ ਮੌਜੂਦ ਡੈਸਕ ਹਟਾਓ।</translation>
 <translation id="4759238208242260848">ਡਾਊਨਲੋਡਸ</translation>
@@ -948,16 +1097,20 @@
 <translation id="4778095205580009397">ਡੈਮੋ ਸੈਸ਼ਨ ਵਿੱਚ Google Assistant ਉਪਲਬਧ ਨਹੀਂ ਹੁੰਦਾ ਹੈ।</translation>
 <translation id="4789348252524569426">ਬੋਲੀ ਫ਼ਾਈਲਾਂ ਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="478959186716341421">ਕਾਸਟ ਕਰਨਾ</translation>
+<translation id="4798403412327076414">ਅਗਲੀ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਕਰਨ 'ਤੇ ਤੁਹਾਨੂੰ ਉਹ ਵਿੰਡੋਆਂ ਅਤੇ ਐਪਾਂ ਦਿਸਣਗੀਆਂ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਪਹਿਲਾਂ ਖੋਲ੍ਹਿਆ ਸੀ</translation>
 <translation id="4798622944000246716">ਤੁਹਾਡਾ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਹੌਟਸਪੌਟ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ ਹੈ</translation>
 <translation id="4798888871844665150">ਕਾਪੀ ਕੀਤੀ ਗਈ ਆਈਟਮ ਪਹਿਲਾਂ ਹੀ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਹੈ। ਦੇਖਣ ਲਈ <ph name="SHORTCUT_KEY_NAME" /> + V ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="479989351350248267">ਖੋਜੋ</translation>
 <translation id="4804818685124855865">ਡਿਸਕਨੈਕਟ ਕਰੋ</translation>
+<translation id="4806631651704497161">ਹਲਕਾ ਧੁੰਦਲਾ</translation>
 <translation id="4813311884204119883">ਟੈਬ ਪੱਟੀ 'ਤੇ ਲਿੰਕ ਨੂੰ ਕਿਸੇ ਖਾਲੀ ਖੇਤਰ ਵੱਲ ਘਸੀਟੋ</translation>
 <translation id="4814539958450445987">ਲੌਗ-ਇਨ ਸਕ੍ਰੀਨ</translation>
 <translation id="481455355267255546">ਇਸ ਤੋਂ ਬਾਅਦ</translation>
+<translation id="481749895090480684">ਕਾਰਜ ਸੂਚੀ: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ</translation>
 <translation id="482908187605862807">Play Store 'ਤੇ ਉਪਲਬਧ ਐਪਾਂ</translation>
 <translation id="4831034276697007977">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਸਵੈਚਲਿਤ ਕਲਿੱਕਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
+<translation id="4835677468087803981">ਪਿੰਨ ਲੁਕਾਓ</translation>
 <translation id="4849058404725798627">ਕੀ-ਬੋਰਡ ਫੋਕਸ ਨਾਲ ਵਸਤੂ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="485592688953820832">ਕੋਈ ਕਾਰਵਾਈ ਨਹੀਂ (ਰੋਕੋ)</translation>
 <translation id="485634149294284819">ਕੀ-ਬੋਰਡ ਮੀਨੂ ਖੋਲ੍ਹੋ
@@ -970,14 +1123,18 @@
 <translation id="4868492592575313542">ਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4871905435473761992">ਹੌਟਸਪੌਟ ਦੇ ਵੇਰਵੇ ਦੇਖੋ। ਤੁਹਾਡਾ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਹੌਟਸਪੌਟ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ ਹੈ।</translation>
 <translation id="4872237917498892622">Alt+Search ਜਾਂ Shift</translation>
+<translation id="4872724534194216608">ਗਣਨਾ ਕਰਨ ਲਈ ਖੋਜੋ</translation>
 <translation id="4872852897273142380">ਬੁੱਕਮਾਰਕ ਬਾਰ 'ਤੇ ਫੋਕਸ ਕਰੋ ਜਾਂ ਉਸਨੂੰ ਉਜਾਗਰ ਕਰੋ (ਜੇ ਦਿਖਾਈ ਗਈ ਹੋਵੇ)</translation>
+<translation id="4876935764454575645">ਆਡੀਓ ਦੀ ਚੋਣ</translation>
 <translation id="4881323000405981760">Linux ਐਪਾਂ 'ਤੇ ਪ੍ਰਭਾਵਾਂ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ</translation>
 <translation id="4881695831933465202">ਖੋਲ੍ਹੋ</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">ਸੁਝਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਵਿਕਲਪਿਕ ਵਿਚਾਰ ਮੁਹੱਈਆ ਕਰੋ:</translation>
 <translation id="4890187583552566966">Google Assistant ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬੰਦ ਕੀਤੀ ਗਈ ਹੈ।</translation>
 <translation id="4890408602550914571">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਫ਼ੋਨ ਨਜ਼ਦੀਕ ਹੈ ਅਤੇ ਉਸਦਾ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ।</translation>
 <translation id="4892981359753171125">ਚਿਹਰਾ ਕੰਟਰੋਲ</translation>
 <translation id="4895488851634969361">ਬੈਟਰੀ ਪੂਰੀ ਭਰੀ ਹੈ।</translation>
+<translation id="4902797682482387055">ਫੋਕਸ ਕਰਨ ਲਈ ਸੁਝਾਇਆ ਗਿਆ ਕਾਰਜ</translation>
 <translation id="490375751687810070">ਖੜ੍ਹਵਾਂ</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% ਬੈਟਰੀ</translation>
 <translation id="491504982845934899">ਡੀਵਾਈਸ ਸੈੱਟਅੱਪ ਤੋਂ ਬਾਅਦ <ph name="NETWORK_NAME" /> ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
@@ -988,17 +1145,22 @@
 <translation id="492453977506755176">ਕੈਪਚਰ ਮੋਡ ਕੁੰਜੀ</translation>
 <translation id="4925542575807923399">ਇਸ ਖਾਤੇ ਦੇ ਪ੍ਰਬੰਧਕ ਨੂੰ ਇਹ ਜ਼ਰੂਰੀ ਹੈ ਕਿ ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਸੈਸ਼ਨ ਵਿੱਚ ਇਹ ਖਾਤਾ ਸਭ ਤੋਂ ਪਹਿਲਾ ਸਾਈਨ-ਇਨ ਕਰਨ ਵਾਲਾ ਖਾਤਾ ਹੋਵੇ।</translation>
 <translation id="493076006037866439">ਸਕ੍ਰੀਨ ਦਾ ਜ਼ੂਮ ਘਟਾਓ</translation>
+<translation id="4932733599132424254">ਤਾਰੀਖ</translation>
 <translation id="4936329710968938986">ਹਰ ਕੋਈ, ਬੰਦ</translation>
 <translation id="4937170330762390348">ਡਿਕਟੇਸ਼ਨ ਨਾਲ, ਤੁਸੀਂ ਆਪਣੀ ਅਵਾਜ਼ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਟਾਈਪ ਕਰ ਸਕਦੇ ਹੋ। ਲਿਖਤ ਖੇਤਰ 'ਤੇ ਹੋਣ ਵੇਲੇ 'ਡਿਕਟੇਸ਼ਨ' ਕੁੰਜੀ ਦਬਾਓ ਜਾਂ ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਲੇ ਪਾਸੇ ਦਿੱਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਪ੍ਰਤੀਕ 'ਤੇ ਟੈਪ ਕਰੋ। ਤੁਹਾਡੀ ਡਿਕਟੇਸ਼ਨ ਭਾਸ਼ਾ <ph name="LANGUAGE" /> 'ਤੇ ਸੈੱਟ ਹੈ। ਬੋਲੀ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾਵੇਗਾ ਤਾਂ ਜੋ ਤੁਸੀਂ ਡਿਕਟੇਸ਼ਨ ਨੂੰ ਆਫ਼ਲਾਈਨ ਵਰਤ ਸਕੋ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ &gt; ਪਹੁੰਚਯੋਗਤਾ ਵਿੱਚ ਜਾ ਕੇ ਕਦੇ ਵੀ ਡਿਕਟੇਸ਼ਨ ਭਾਸ਼ਾ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4938176435186993759">ਸਾਰੇ ਸੁਝਾਵਾਂ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="4945196315133970626">ਸੂਚਨਾਵਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="4946376291507881335">ਕੈਪਚਰ ਕਰੋ</translation>
 <translation id="495046168593986294">ਉੱਪਰ ਵੱਲ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
+<translation id="4950800194215951939">ਆਪਣੇ ਗੇਮਿੰਗ ਅਨੁਭਵ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="4952936045814352993">ਅਲਾਰਮ ਧੁਨੀਆਂ ਬੰਦ ਹੋਣ 'ਤੇ ਫ਼ੋਨ ਦਾ ਪਤਾ ਲਗਾਉਣ ਦੀ ਵਿਸ਼ੇਸ਼ਤਾ ਉਪਲਬਧ ਨਹੀਂ ਹੁੰਦੀ</translation>
+<translation id="4953585991029886728">ਲਿਖਤ ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> ਮੁਤਾਬਕ ਤੁਹਾਨੂੰ ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਵਾਪਸ ਆਉਣ ਦੀ ਲੋੜ ਹੈ। ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗਾ ਅਤੇ ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="4961318399572185831">ਸਕ੍ਰੀਨ ਕਾਸਟ ਕਰੋ</translation>
+<translation id="4964188651935955085">ਬਲੂਟੁੱਥ ਬੰਦ ਕਰਨ 'ਤੇ, ਇਹ ਬਾਹਰੀ ਡੀਵਾਈਸ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਤੋਂ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਵੇਗਾ:</translation>
 <translation id="4966431234408005599">ਅਵਾਜ਼ ਵਧਾਓ</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />ਘੰ <ph name="MINUTES" />ਮਿੰ <ph name="SECONDS" />ਸਕਿੰ</translation>
+<translation id="496999337731226334"><ph name="TOTAL_STEPS" /> ਵਿੱਚੋਂ ਪੜਾਅ <ph name="STEP" /> ਦੇਖੋ। ਵਾਈ-ਫਾਈ, ਬਲੂਟੁੱਥ ਅਤੇ ਅਵਾਜ਼ ਵਰਗੇ ਅਕਸਰ ਵਰਤੇ ਜਾਣ ਵਾਲੇ ਕੰਟਰੋਲ ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਹਨ। ਤੁਸੀਂ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲੈਣ ਲਈ, ਇੱਥੇ ਵੀ ਜਾ ਸਕਦੇ ਹੋ। ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ, Alt + Shift + S ਦਬਾਓ।</translation>
 <translation id="4975771730019223894">ਐਪ ਬੈਜਿੰਗ</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1007,17 +1169,20 @@
 <translation id="4981175556418720939"><ph name="DATE_AND_TIME" /> ਨੂੰ ਸੋਧਿਆ ਗਿਆ</translation>
 <translation id="4987738733603015246">ਡੈਸਕ 16</translation>
 <translation id="4989163558385430922">ਸਭ ਦੇਖੋ</translation>
+<translation id="4995963195354861331">ਸੁਆਗਤੀ ਵਿੰਡੋ</translation>
+<translation id="4996265698919320288">ਰਿਕਾਰਡਿੰਗ ਚੱਲ ਰਹੀ ਹੈ</translation>
 <translation id="5003993274120026347">ਅਗਲਾ ਵਾਕ</translation>
 <translation id="5004607513195820459">ਨੈੱਟਵਰਕ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="5009463889040999939">ਪ੍ਰੋਫਾਈਲ ਦਾ ਨਾਮ ਬਦਲਿਆ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
+<translation id="5013847959275396160">ਟੂਲਬਾਰ ਲੁਕਾਓ</translation>
 <translation id="5016558321564993266">ਮਾਰਕਰ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">ਸ਼੍ਰੇਣੀਆਂ ਖੋਜੋ</translation>
+<translation id="5025389392398927910">ਲਿਖਤ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ ਖੋਜੋ</translation>
 <translation id="5030659775136592441">ਬੁੱਕਮਾਰਕ ਪ੍ਰਬੰਧਕ ਦਿਖਾਓ</translation>
 <translation id="5030687792513154421">ਸਮਾਂ ਸਮਾਪਤ ਹੋ ਗਿਆ ਹੈ</translation>
 <translation id="5033299697334913360">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਕੈਪਚਰ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="5034421018520995080">ਪੰਨੇ ਦੇ ਸਿਖਰ 'ਤੇ ਜਾਓ</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />ਨੂੰ ਨਵੇਂ ਫ਼ੋਨ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="5035389544768382859">ਡਿਸਪਲੇ ਸੰਰੂਪਣ ਦੀ ਤਸਦੀਕ ਕਰੋ</translation>
 <translation id="5042305953558921026">ਰੂਪ-ਰੇਖਾ ਮੋਡ ਕੁੰਜੀ</translation>
 <translation id="5043679421800073804">ਸ਼ੈਲਫ ਦੇ ਆਖਰੀ ਪ੍ਰਤੀਕ 'ਤੇ ਕਲਿੱਕ ਜਾਂ ਟੈਪ ਕਰੋ</translation>
 <translation id="504465286040788597">ਪਿਛਲਾ ਪੈਰਾ</translation>
@@ -1025,21 +1190,29 @@
 <translation id="5062496344832867502">ਰੈਮ</translation>
 <translation id="5068762093486106012">ਮਿਊਟ ਹੋਣ ਦੌਰਾਨ ਬੋਲਣ 'ਤੇ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕੀਤਾ ਜਾਵੇਗਾ। ਆਡੀਓ ਕਦੇ ਵੀ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਤੋਂ ਬਾਹਰ ਨਹੀਂ ਜਾਵੇਗੀ।</translation>
 <translation id="5077416371682039027">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ, ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
+<translation id="5077936103761694531">ਕੀ ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਦੀ ਤਸਦੀਕੀ ਕਰਨੀ ਹੈ?</translation>
 <translation id="5078796286268621944">ਗ਼ਲਤ PIN</translation>
 <translation id="5083035541015925118">Ctrl + alt + ਉੱਪਰ ਤੀਰ</translation>
 <translation id="5083553833479578423">Assistant ਦੀਆਂ ਹੋਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਅਣਲਾਕ ਕਰੋ।</translation>
+<translation id="5091636240353511739">ਪਿੰਨ ਦਿਖਾਓ</translation>
 <translation id="5092436659250499817">ਕੀ-ਬੋਰਡ ਬੈਕਲਾਈਟ ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ</translation>
 <translation id="5094577350232361255">ਇਸ ਬਾਰੇ</translation>
+<translation id="5095136268899496849">ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਆਪਣੇ <ph name="PRODUCT_NAME" /> ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ ਅਤੇ ਵਿਅਕਤੀਗਤ ਬਣਾਓ। ਆਪਣਾ ਵਾਲਪੇਪਰ ਬਦਲ ਕੇ ਦੇਖੋ ਜਾਂ ਸਕ੍ਰੀਨ ਸੇਵਰ ਸੈੱਟ ਕਰੋ।</translation>
+<translation id="5096125376090473584">ਲਿਖਤ ਨੂੰ ਉੱਚੀ ਅਵਾਜ਼ ਵਿੱਚ ਸੁਣਨ ਲਈ, ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਾਂ ਦਿੱਤੇ 'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਪ੍ਰਤੀਕ ਨੂੰ ਚੁਣੋ, ਫਿਰ ਲਿਖਤ ਨੂੰ ਉਜਾਗਰ ਕਰੋ।
+
+ਤੁਸੀਂ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦੀ ਵਰਤੋਂ ਵੀ ਕਰ ਸਕਦੇ ਹੋ। ਪਹਿਲਾਂ, ਲਿਖਤ ਨੂੰ ਉਜਾਗਰ ਕਰੋ, ਫਿਰ <ph name="MODIFIER" /> + s ਦਬਾਓ।</translation>
 <translation id="509790653408515442">ਜਦੋਂ ਤੁਸੀਂ ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਐਪਾਂ ਨੂੰ ਸਟ੍ਰੀਮ ਕਰਦੇ ਹੋ, ਤਾਂ ਉਹ ਇੱਥੇ ਦਿਸਦੀਆਂ ਹਨ</translation>
 <translation id="5098537242461068432">ਡੈਸਕ ਅਤੇ ਵਿੰਡੋਆਂ ਨੂੰ ਦੁਬਾਰਾ ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
+<translation id="5103975065730779239"><ph name="END_TIME_EXPRESSION" /> ਤੱਕ</translation>
 <translation id="5104236669533825617">ਸਕ੍ਰੀਨਕਾਸਟ ਨੂੰ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="5107522548814527560">ਵੈੱਬ</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
-<translation id="5111930673176965299">ਧੁੰਦਲਾ ਬੈਕਗ੍ਰਾਊਂਡ</translation>
 <translation id="5117590920725113268">ਅਗਲਾ ਮਹੀਨਾ ਦਿਖਾਓ</translation>
 <translation id="5121628974188116412">ਪੰਨੇ ਦੇ ਹੇਠਾਂ ਜਾਓ</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> ਦੀ ਪੂਰਵ-ਝਲਕ। ਅਕਿਰਿਆਸ਼ੀਲ ਡੈਸਕ।</translation>
 <translation id="5136175204352732067">ਵੱਖਰਾ ਕੀ-ਬੋਰਡ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="5140105873789567560">'ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਅਤੇ 'ਪੜ੍ਹਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਵਰਤਣ ਲਈ ਤੁਹਾਡੀ ਉਮਰ ਘੱਟੋ-ਘੱਟ 18 ਸਾਲ ਹੋਣੀ ਲਾਜ਼ਮੀ ਹੈ।</translation>
+<translation id="5144005092084035179">ਕੀ ਆਡੀਓ ਇਨਪੁੱਟ ਨੂੰ ਸਵਿੱਚ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5147567197700016471">Chromebook ਅਣਲਾਕ ਹੋ ਗਈ</translation>
 <translation id="5150070631291639005">ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5155897006997040331">ਪੜ੍ਹਨ ਸੰਬੰਧੀ ਗਤੀ</translation>
@@ -1058,24 +1231,29 @@
 <translation id="5207949376430453814">ਲਿਖਤ ਕੈਰੇਟ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="5208059991603368177">ਚਾਲੂ ਹੈ</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> ਤੱਕ ਬੰਦ ਰਹੇਗੀ</translation>
-<translation id="5218064144558110424">ਗੈਰ-ਮੁਕੰਮਲ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਕਰੋ</translation>
 <translation id="5222676887888702881">ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
+<translation id="5228195526683428788">ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਵਿਭਾਜਕ</translation>
 <translation id="5229343007215035173">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ</translation>
+<translation id="5230516054153933099">ਵਿੰਡੋ</translation>
 <translation id="5234764350956374838">ਬਰਖ਼ਾਸਤ ਕਰੋ</translation>
 <translation id="523505283826916779">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5238719049014159442">ਲਾਂਚਰ ਨੂੰ ਖੋਲ੍ਹੋ/ਬੰਦ ਕਰੋ</translation>
 <translation id="5240725217819182328">ਸਥਾਪਤ ਕੀਤੀਆਂ ਗਈਆਂ ਐਪਾਂ ਦੇ ਅੰਦਰ ਖਾਸ ਪੰਨਿਆਂ ਜਾਂ ਕਾਰਵਾਈਆਂ ਤੱਕ ਤਤਕਾਲ ਪਹੁੰਚ</translation>
+<translation id="5243355658487390559">ਤਾਰੀਖ ਖੋਜੋ</translation>
 <translation id="5245201184978705914">ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਨੂੰ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
+<translation id="5251174953851719648">ਸਮੱਗਰੀ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> ਨਾਮ ਵਾਲੇ ਕਿਸੇ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ ਹੈ, <ph name="BATTERY_PERCENTAGE" />% ਬੈਟਰੀ</translation>
 <translation id="5258528442992323769">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤੀ ਡਿਸਕ ਨਹੀਂ</translation>
 <translation id="5260676007519551770">ਡੈਸਕ 4</translation>
-<translation id="5268819379131021772">Google Tasks ਦੀ ਸੂਚੀ</translation>
+<translation id="5265391159779542051">ਨਤੀਜੇ ਲੋਡ ਕੀਤੇ ਗਏ</translation>
+<translation id="5270547718570958938">Google Calendar</translation>
 <translation id="5277869901083657836">ਸਟਾਈਲਸ ਟੂਲਾਂ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="5278086053818066789">ChromeVox ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ (ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ਨੂੰ ਤੁਹਾਡੇ ਧਿਆਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="5283198616748585639">1 ਮਿੰਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="528468243742722775">ਸਮਾਪਤੀ</translation>
 <translation id="5286194356314741248">ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="528641622273682395">ਮਾਈਕ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="5297423144044956168">ਕੋਈ ਮੋਬਾਈਲ ਡੀਵਾਈਸ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="5297704307811127955">ਬੰਦ</translation>
 <translation id="5300589172476337783">ਦਿਖਾਓ</translation>
@@ -1086,7 +1264,6 @@
 <translation id="5313326810920013265">ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5314219114274263156">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਕੀਤੀ ਗਈ</translation>
 <translation id="5314489738835854379">ਵਿੰਡੋਆਂ ਰਾਹੀਂ ਪਿੱਛੇ ਜਾਓ</translation>
-<translation id="5315931444962548795">ਨਜ਼ਦੀਕੀ ਉਪਲਬਧ ਹੌਟਸਪੌਟਾਂ ਨੂੰ ਖੋਜਣ ਲਈ ਬਲੂਟੁੱਥ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5316716239522500219">ਮਿਰਰ ਮਾਨੀਟਰਸ</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5319712128756744240">ਨਵਾਂ ਡੀਵਾਈਸ ਜੋੜਾਬੱਧ ਕਰੋ</translation>
@@ -1098,21 +1275,30 @@
 <translation id="533282197239610265">ਕਾਸਟ ਡੀਵਾਈਸਾਂ ਨੂੰ ਦਿਖਾਓ</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ਸੱਜੇ ਪਾਸੇ)</translation>
 <translation id="5352250171825660495">ਗੂੜ੍ਹਾ ਥੀਮ ਚਾਲੂ ਹੈ</translation>
+<translation id="5354804064646502504">ਇਸ ਨਾਲ ਡਾਟਾ ਖਰਚ ਹੋ ਸਕਦਾ ਹੈ।
+ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="5356963482258194581">ਗੂੜ੍ਹੇ ਅਤੇ ਹਲਕੇ ਥੀਮ ਵਿਚਕਾਰ ਸਵਿੱਚ ਕਰੋ। ਡੈਸਕਟਾਪ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰ ਕੇ 'ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ' ਚੁਣੋ।</translation>
 <translation id="536019650977002321">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਆਡੀਓ ਨੂੰ ਕੈਪਚਰ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੰਦਾ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> ਦੀਆਂ ਬੋਲੀ ਫ਼ਾਈਲਾਂ ਅੰਸ਼ਕ ਤੌਰ 'ਤੇ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਗਈਆਂ ਹਨ</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ਇਸ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
+<translation id="5363835273551457276">ਤੁਸੀਂ ਆਪਣੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਧੁਨੀ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦੇ ਹੋ। ਰੋਕਣ ਲਈ ਪੈਨਲ ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="5364693579536176785">ਸਟੋਰੇਜ ਜਗ੍ਹਾ</translation>
+<translation id="5369573834963677938">ਚਿਹਰਾ ਕੰਟਰੋਲ ਡੀਵਾਈਸ ਦੇ ਦੂਜੇ ਵਰਤੋਂਕਾਰਾਂ ਲਈ ਵੀ ਉਪਲਬਧ ਹੋਵੇਗਾ</translation>
 <translation id="5369717264580061086">Files ਐਪ ਵਿੱਚ ਫ਼ਾਈਲ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ</translation>
 <translation id="5377367976106153749">ਕੀ ਕੈਮਰਾ ਪਹੁੰਚ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
+<translation id="5378450298115733949">ਹੋਰ</translation>
 <translation id="5379115545237091094">ਬਹੁਤ ਸਾਰੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ</translation>
+<translation id="5383434787520761436">ਕੋਈ Google Drive ਫ਼ਾਈਲ ਨਹੀਂ</translation>
 <translation id="5391307769715781764">ਕੀ ਰੱਖਿਅਤ ਕੀਤੇ ਡੈਸਕ ਨੂੰ ਬਦਲਣਾ ਹੈ?</translation>
+<translation id="5392327145184648521">ਬੈਟਰੀ % ਦੀ ਗਣਨਾ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="5393156353051693207">ਆਪਣੀਆਂ ਐਪਾਂ ਨੂੰ ਮੁੜ-ਕ੍ਰਮਬੱਧ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖੋ</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> ਦੇ ਉੱਪਰ <ph name="DRAGGED_APP_NAME" />, ਫੋਲਡਰ ਬਣਾਉਣ ਲਈ ਛੱਡੋ।</translation>
 <translation id="5397578532367286026">ਇਸ ਵਰਤੋਂਕਾਰ ਦੀ ਵਰਤੋਂ ਅਤੇ ਇਤਿਹਾਸ ਦੀ ਸਮੀਖਿਆ ਪ੍ਰਬੰਧਕ (<ph name="MANAGER_EMAIL" />) ਵੱਲੋਂ chrome.com 'ਤੇ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="540713187982329711">ਹੌਟਸਪੌਟ ਟੌਗਲ ਕਰੋ। ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ, ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਹੈ।</translation>
+<translation id="5409208741270395213">ਕਾਰਜ ਦੀ ਮੁਕੰਮਲ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਕਰੋ</translation>
 <translation id="5413656666631274079">'ਸੈਟਿੰਗਾਂ' ਪੰਨਾ</translation>
 <translation id="5414198321558177633">ਪ੍ਰੋਫਾਈਲ ਸੂਚੀ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
+<translation id="5417965108047245734">ਆਪਣੇ <ph name="PRODUCT_NAME" /> ਨੂੰ ਚੰਗੀ ਤਰ੍ਹਾਂ ਸਮਝਣ ਲਈ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਜਾਣੋ</translation>
 <translation id="5426063383988017631">ਸੈਟਿੰਗ ਮੀਨੂ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5428899915242071344">ਚੁਣਨਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="5429993543155113935">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ</translation>
@@ -1130,8 +1316,9 @@
 <translation id="5503884284981862082">Google Assistant ਨੂੰ ਖੋਲ੍ਹੋ/ਬੰਦ ਕਰੋ</translation>
 <translation id="550391772491508736">ਕਾਸਟ ਕਰਨਾ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5506975627792768506">ਵੱਡਦਰਸ਼ੀ ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰੋ</translation>
+<translation id="5507778598655387680"><ph name="VOLUME_LEVEL" />, Enter ਦਬਾਉਣ ਨਾਲ ਆਡੀਓ ਮਿਊਟ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="5512042095225963688">ਪਿਛਲਾ ਸ਼ਬਦ ਮਿਟਾਓ</translation>
-<translation id="5518068085000130971">ਇਹ ਬੁਨਿਆਦੀ ਚੀਜ਼ਾਂ ਸਨ! ਨੁਕਤਿਆਂ ਅਤੇ ਮਦਦ ਲਈ ਸਾਡੀ ਬਿਲਟ-ਇਨ ਐਪ, Explore ਵਿੱਚ ਜਾਰੀ ਰੱਖੋ। ਤੁਹਾਨੂੰ ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਨੁਕਤੇ, ਸਿਫ਼ਾਰਸ਼ੀ ਐਪਾਂ, ਖਾਸ ਪੇਸ਼ਕਸ਼ਾਂ ਅਤੇ Chromebook ਦੀਆਂ ਨਵੀਨਤਮ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਮਿਲਣਗੀਆਂ।</translation>
+<translation id="5519005148254860683">Google Tasks ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਸਾਰੇ ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="5520909879404821039">ਫ਼ਰਾਂਸੀਸੀ ਵਿੱਚ ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ</translation>
@@ -1141,26 +1328,33 @@
 <translation id="5536723544185013515">ਹਾਲੀਆ ਐਪਾਂ, ਸਾਰੀਆਂ ਹਾਲੀਆ ਐਪਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਖੱਬੀ ਜਾਂ ਸੱਜੀ ਤੀਰ ਕੁੰਜੀ ਨਾਲ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
 <translation id="553675580533261935">ਸੈਸ਼ਨ ਤੋਂ ਬਾਹਰ ਜਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="5537725057119320332">ਕਾਸਟ ਕਰੋ</translation>
+<translation id="554017492391497564">ਇਸਦੀ ਮੁਕੰਮਲ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="5546397813406633847">ਵਰਤੋਂਕਾਰ ਦੇ ਪਾਸਵਰਡ ਨੂੰ ਮੁੜ-ਹਾਸਲ ਕਰੋ</translation>
 <translation id="554893713779400387">ਬੋਲ ਅਨੁਸਾਰ ਲਿਖਤ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="5550417424894892620">ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="HOLDING_SPACE_TITLE" /> ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਉਨ੍ਹਾਂ ਨੂੰ ਡੈਸਕਟਾਪ 'ਤੇ ਛੱਡੋ। ਤੁਸੀਂ ਡੈਸਕਟਾਪ 'ਤੇ ਫ਼ਾਈਲਾਂ ਸ਼ਾਮਲ ਨਹੀਂ ਕਰ ਸਕਦੇ।</translation>
 <translation id="5551456515017410630">ਕੈਲੰਡਰ ਨੂੰ ਖੋਲ੍ਹੋ/ਬੰਦ ਕਰੋ</translation>
 <translation id="5551974246223970793">ਕਿਸੇ ਪੰਨੇ ਨੂੰ ਖੋਜਣ ਵੇਲੇ, ਖੋਜ ਲਈ ਅਗਲੇ ਮਿਲਾਨ 'ਤੇ ਜਾਓ</translation>
-<translation id="5555639311269196631">ਹੌਟਸਪੌਟ ਬੰਦ ਕਰੋ</translation>
+<translation id="5556459405103347317">ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="5558091555391176027">'ਨਜ਼ਦੀਕੀ ਸਾਂਝ' ਉੱਚ ਦਿਖਣਯੋਗਤਾ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
+<translation id="5558314826121965174">ਰਚਨਾਤਮਕਤਾ</translation>
 <translation id="556042886152191864">ਬਟਨ</translation>
 <translation id="5570122939431135380">ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
 <translation id="5571066253365925590">ਬਲੂਟੁੱਥ ਸਮਰਥਿਤ</translation>
+<translation id="5572632238877308040">ਲੋੜੀਂਦੀਆਂ</translation>
 <translation id="557563299383177668">ਅਗਲਾ ਪੈਰਾ</translation>
 <translation id="5577082622442191756">ਬਲੂਟੁੱਥ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">ਜਾਂਚ ਕਰੋ ਕਿ ਫ਼ੋਨ ਹੱਬ ਵਰਤਣ ਲਈ ਤੁਹਾਡੇ ਫ਼ੋਨ 'ਤੇ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ</translation>
 <translation id="5578188167649348993">ਮੈਮੋਰੀ</translation>
 <translation id="5580000943347215299">ਲਾਇਬ੍ਰੇਰੀ</translation>
+<translation id="5586388332127302891">ਡੌਕ ਕੀਤਾ ਵੱਡਦਰਸ਼ੀ ਚਾਲੂ ਕੀਤਾ ਗਿਆ। ਇਸਨੂੰ ਟੌਗਲ ਕਰ ਕੇ ਬੰਦ ਕਰਨ ਲਈ ਦੁਬਾਰਾ <ph name="ACCELERATOR" /> ਦਬਾਓ।</translation>
 <translation id="5587506661873751671">ਡਾਊਨਲੋਡ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">ਕੈਪਚਰ ਕਰਨ ਲਈ ਕਿਸੇ ਖੇਤਰ ਨੂੰ ਚੁਣਨ ਵਾਸਤੇ ਘਸੀਟੋ</translation>
 <translation id="5590609058453685222">ਮਿਊਟ ਰਿਮਾਈਂਡਰ ਚਾਲੂ ਹੈ। ਮਿਊਟ ਹੋਣ ਦੌਰਾਨ ਬੋਲਣ 'ਤੇ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
-<translation id="5596627076506792578">ਹੋਰ ਚੋਣਾਂ</translation>
+<translation id="5592745162308462420">fn</translation>
+<translation id="5593564924968945303">Chrome ਬ੍ਰਾਊਜ਼ਰ</translation>
+<translation id="5596627076506792578">ਹੋਰ ਵਿਕਲਪ</translation>
 <translation id="5599242528220103262">ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦੀ ਸੁਵਿਧਾ ਬੰਦ ਹੈ</translation>
+<translation id="5600415762228455511">ਫੋਕਸ ਮੋਡ ਚਾਲੂ ਹੈ, <ph name="REMAINING_TIME" /> ਬਾਕੀ, ਇਸ ਕਾਰਜ 'ਤੇ ਫੋਕਸ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ ਬੰਦ ਕਰਨ ਲਈ Ctrl + Alt + Z ਦਬਾਓ।</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">ਅਸੀਂ ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਨੂੰ ਬਿਹਤਰ ਨੈੱਟਵਰਕ 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਹੈ</translation>
@@ -1170,11 +1364,14 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕੀ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="5632485077360054581">ਮੈਨੂੰ ਤਰੀਕਾ ਦਿਖਾਓ</translation>
+<translation id="5633826232582408011">ਜਦੋਂ ਤੁਸੀਂ 'ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਅਤੇ 'ਪੜ੍ਹਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਚਾਲੂ ਕਰਦੇ ਹੋ, ਤਾਂ ਇਨਪੁੱਟ ਲਿਖਤ, ਦਸਤਾਵੇਜ਼ ਸਮੱਗਰੀ ਅਤੇ ਵੈੱਬ ਪੰਨਾ URL ਨੂੰ Google AI ਸਰਵਰਾਂ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਜੋ ਲਿਖਣ ਸੰਬੰਧੀ ਸੁਝਾਅ, ਸਾਰਾਂਸ਼ ਤਿਆਰ ਕੀਤੇ ਜਾ ਸਕਣ, ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਦਿੱਤੇ ਜਾ ਸਕਣ ਅਤੇ ਉਤਪਾਦ ਨੂੰ ਬਿਹਤਰ ਬਣਾਇਆ ਜਾ ਸਕੇ, ਜੋ <ph name="LINK_TO_SERVICE_TERMS" /> ਦੇ ਅਧੀਨ ਹੈ। ਕੋਈ ਵੀ ਨਿੱਜੀ, ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਂ ਗੁਪਤ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਨਾ ਕਰੋ।</translation>
 <translation id="5648021990716966815">ਮਾਈਕ ਜੈਕ</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ਨੂੰ ਤੁਹਾਡੇ ਧਿਆਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="5662075790140998213">ਡੈਸਕ 10</translation>
 <translation id="5662709761327382534">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨਾਲ ਰਿਕਾਰਡ ਕਰੋ <ph name="CURRENT_STATE" />, ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਰਿਕਾਰਡਿੰਗ ਚਾਲੂ ਕਰਨ ਲਈ Enter ਦਬਾਓ <ph name="NEW_STATE" /></translation>
+<translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5669267381087807207">ਸਕਿਰਿਆ ਕਰ ਰਿਹਾ ਹੈ</translation>
+<translation id="5672890847723042801">ਉਪਯੋਗਤਾਵਾਂ</translation>
 <translation id="5673434351075758678">ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸਿੰਕ ਕਰਨ ਤੋਂ ਬਾਅਦ ਭਾਸ਼ਾ "<ph name="FROM_LOCALE" />" ਤੋਂ "<ph name="TO_LOCALE" />" ਹੋਈ।</translation>
 <translation id="5675363643668471212">ਸ਼ੈਲਫ ਆਈਟਮ</translation>
 <translation id="5677928146339483299">ਬਲੌਕ ਕੀਤਾ</translation>
@@ -1183,35 +1380,42 @@
 <translation id="5682642926269496722">Google Assistant ਮੌਜੂਦਾ ਵਰਤੋਂਕਾਰ ਖਾਤੇ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="5682844616152977671"><ph name="RELATIVE_DATE" /> <ph name="TIME" /></translation>
 <translation id="5689233503102158537">alt + backspace</translation>
-<translation id="5689633613396158040">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਵਿਸ਼ੇਸ਼ਤਾ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ ਘੱਟ ਰੋਸ਼ਨੀ ਵਿੱਚ ਦੇਖਣਾ ਜਾਂ ਪੜ੍ਹਨਾ ਵਧੇਰੇ ਆਸਾਨ ਬਣਾਉਂਦੀ ਹੈ। ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਵਿਸ਼ੇਸ਼ਤਾ ਦੇ ਚਾਲੂ ਜਾਂ ਬੰਦ ਹੋਣ ਦਾ ਸਮਾਂ ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
+<translation id="5689633613396158040">ਨਾਈਟ ਲਾਈਟ ਵਿਸ਼ੇਸ਼ਤਾ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ ਘੱਟ ਰੋਸ਼ਨੀ ਵਿੱਚ ਦੇਖਣਾ ਜਾਂ ਪੜ੍ਹਨਾ ਵਧੇਰੇ ਆਸਾਨ ਬਣਾਉਂਦੀ ਹੈ। ਨਾਈਟ ਲਾਈਟ ਵਿਸ਼ੇਸ਼ਤਾ ਦੇ ਚਾਲੂ ਜਾਂ ਬੰਦ ਹੋਣ ਦਾ ਸਮਾਂ ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="5691772641933328258">ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੀ ਪਛਾਣ ਨਹੀਂ ਹੋਈ</translation>
 <translation id="5693255400847650006">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤੋਂ ਵਿੱਚ ਹੈ</translation>
 <translation id="5699366815052349604">ਕਿਰਿਆਸ਼ੀਲ ਵਿੰਡੋ ਨੂੰ ਸਾਰੇ ਡੈਸਕਾਂ ਦੇ ਜ਼ਿੰਮੇ ਲਗਾਓ</translation>
 <translation id="5701785125601597013">ਫ਼ੋਨ ਹੱਬ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਆਪਣੇ ਫ਼ੋਨ ਦੇ ਸੁਨੇਹਿਆਂ ਨੂੰ ਤੁਰੰਤ ਭੇਜੋ ਜਾਂ ਉਨ੍ਹਾਂ ਦਾ ਜਵਾਬ ਦਿਓ</translation>
 <translation id="570390244361237317">ਸਾਰੀਆਂ ਐਪਾਂ, ਸਾਰੀਆਂ ਐਪਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਤੀਰ ਕੁੰਜੀਆਂ ਨਾਲ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
+<translation id="5705197514573687092">ਫੋਕਸ ਮੋਡ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। ਟਾਈਮਰ <ph name="FOCUS_DURATION" /> 'ਤੇ ਸੈੱਟ ਹੈ।</translation>
 <translation id="5707775774148071965">ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਤੁਹਾਡੀ ਕੇਬਲ ਨਾਲੋਂ ਵੱਧ ਡਾਟਾ ਦਰ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ। ਡੀਵਾਈਸ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="5710450975648804523">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਚਾਲੂ ਹੈ</translation>
+<translation id="5711984160978177607"><ph name="REMAINING_TIME" /> ਬਾਕੀ</translation>
+<translation id="5712132663381964774">ਆਪਣੇ <ph name="PRODUCT_NAME" /> 'ਤੇ ਲੋੜੀਂਦੀ ਹਰ ਚੀਜ਼ ਕਰਨ ਲਈ ਐਪਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਤੁਸੀਂ ਲਾਂਚਰ ਵਿੱਚ ਆਪਣੀਆਂ ਐਪਾਂ ਲੱਭ ਸਕਦੇ ਹੋ।</translation>
 <translation id="571295407079589142">ਮੋਬਾਈਲ ਡਾਟਾ ਬੰਦ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="5727460725221669831">ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਵਰਡ ਭੁੱਲ ਗਏ ਹੋ ਜਾਂ ਹਾਲ ਹੀ ਵਿੱਚ ਆਪਣਾ Google ਖਾਤਾ ਪਾਸਵਰਡ ਬਦਲਿਆ ਹੈ, ਤਾਂ ਇਸ ਵਰਤੋਂਕਾਰ ਲਈ ਇਸਨੂੰ ਮੁੜ-ਹਾਸਲ ਕਰ ਕੇ ਦੇਖੋ।</translation>
+<translation id="5733630091161562207">ਸੁਆਗਤੀ ਸੂਚਨਾ</translation>
 <translation id="573413375004481890">ਇਹ ਡੀਵਾਈਸ ਤੁਹਾਡੇ ਸਾਰੇ ਡਿਸਪਲੇਆਂ ਨੂੰ ਸਮਰਥਿਤ ਨਹੀਂ ਕਰ ਸਕੀ, ਇਸ ਲਈ ਇੱਕ ਨੂੰ ਡਿਸਕਨੈਕਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="5740328398383587084">ਨਜ਼ਦੀਕੀ ਸਾਂਝ</translation>
 <translation id="574392208103952083">ਦਰਮਿਆਨਾ</translation>
 <translation id="5744083938413354016">ਘਸੀਟਣ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
-<translation id="5745612484876805746">ਸੂਰਜ ਡੁੱਬਣ ਸਮੇਂ ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਆਪਣੇ ਆਪ ਚਾਲੂ ਹੋ ਜਾਂਦੀ ਹੈ</translation>
+<translation id="5745612484876805746">ਸੂਰਜ ਡੁੱਬਣ ਸਮੇਂ ਨਾਈਟ ਲਾਈਟ ਆਪਣੇ ਆਪ ਚਾਲੂ ਹੋ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="5750765938512549687">ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ</translation>
+<translation id="5758114525425072423">ਫੋਕਸ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰੋ। ਟਾਈਮਰ <ph name="FOCUS_DURATION" /> 'ਤੇ ਸੈੱਟ ਹੈ।</translation>
 <translation id="5760866832697883462">ਆਪਣਾ <ph name="NAME" /> ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5762420912707163638">ਮਾਰਕਰ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /> ਸਕ੍ਰੀਨ ਉੱਤੇ ਕੁਝ ਬਣਾਉਣ ਲਈ ਟਰੈਕਪੈਡ, ਟੱਚਸਕ੍ਰੀਨ, ਜਾਂ ਸਟਾਈਲਸ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="576341972084747908">ਖਤਰਨਾਕ <ph name="FILENAME" /> ਡਾਊਨਲੋਡ ਕਰੋ</translation>
-<translation id="576453121877257266">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਚਾਲੂ ਹੈ।</translation>
+<translation id="576453121877257266">ਨਾਈਟ ਲਾਈਟ ਚਾਲੂ ਹੈ।</translation>
 <translation id="5764569119212455782">ਆਖਰੀ ਚੁਣੀ ਗਈ ਭਾਸ਼ਾ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="5767730327234918501">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹੌਟਸਪੌਟ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="5769373120130404283">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ</translation>
+<translation id="5770004650349728202">'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5773950591113557721">ਇਸ ਨਾਲ <ph name="APP_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਪਹੁੰਚ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤਾਂ ਹਨ</translation>
 <translation id="5774295353725270860">Files ਐਪ ਖੋਲ੍ਹੋ</translation>
 <translation id="5775936059231769503">ਹੌਟਸਪੌਟ ਟੌਗਲ ਕਰੋ। ਹੌਟਸਪੌਟ ਬੰਦ ਹੈ।</translation>
 <translation id="5777841717266010279">ਕੀ ਸਕ੍ਰੀਨ ਸ਼ੇਅਰਿੰਗ ਰੋਕਣੀ ਹੈ?</translation>
 <translation id="5779721926447984944">ਪਿੰਨ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ</translation>
 <translation id="5785221443435874078">ਇਹ ਸੁਝਾਅ ਹਟਾਓ</translation>
+<translation id="5787431783058088906">ਫ਼ਾਇਦਾ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="5788127256798019331">Play ਦੀਆਂ ਫ਼ਾਈਲਾਂ</translation>
 <translation id="5788535737706478207">ਬੰਦ ਕੀਤੀ ਪਿਛਲੀ ਟੈਬ ਜਾਂ ਵਿੰਡੋ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹੋ</translation>
 <translation id="5790085346892983794">ਸਫਲਤਾ</translation>
@@ -1219,9 +1423,11 @@
 <translation id="5802516411616338943">ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
 <translation id="5804651031882187592">"ਸਿਮ ਲਾਕ" ਸੈਟਿੰਗ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
-<translation id="5816222150329690597">ਜਦੋਂ ਤੁਸੀਂ ਬਲੂਟੁੱਥ ਬੰਦ ਕਰਦੇ ਹੋ, ਤਾਂ "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" ਅਤੇ <ph name="DEVICE_COUNT" /> ਹੋਰ ਡੀਵਾਈਸ ਤੁਹਾਡੀ Chromebook ਤੋਂ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਣਗੇ।</translation>
+<translation id="5818796501620225415">ਤੁਸੀਂ ਹੋਰ ਸਮਾਂ ਸ਼ਾਮਲ ਕਰ ਜਾਂ ਆਪਣਾ ਫੋਕਸ ਸੈਸ਼ਨ ਸਮਾਪਤ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="5819918159912280082">ਤੁਹਾਡੀ Chromebook ਅਚਾਨਕ ਮੁੜ-ਸ਼ੁਰੂ ਹੋ ਗਈ। ਆਪਣੀਆਂ ਪਿਛਲੀਆਂ ਵਿੰਡੋਆਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਖੋਲ੍ਹੋ।</translation>
 <translation id="5823239091726045201">ਵੈੱਬ 'ਤੇ Google Tasks</translation>
 <translation id="5825969630400862129">ਕਨੈਕਟ ਕੀਤੇ ਡੀਵਾਈਸਾਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> ਹੋਰ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> 'ਤੇ <ph name="ROUTE_TITLE" /> ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="5841296711770970362">ਅਗਲੇ ਟਰੈਕ 'ਤੇ ਜਾਓ</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> ਦਾ ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ, ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
@@ -1232,11 +1438,12 @@
 <translation id="5864748620896638071">ਬੈਟਰੀ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">ਨੈੱਟਵਰਕ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਇਕੱਠੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="5867606971598166637">ਤੁਹਾਡਾ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੀਆਂ ਸਕ੍ਰੀਨਾਂ ਦੀ ਨਿਗਰਾਨੀ ਕਰ ਰਿਹਾ ਹੈ</translation>
-<translation id="5876535466645959772">ਚੁਣੀ ਗਈ ਸੂਚੀ ਖਾਲੀ ਹੈ, ਕੋਈ ਨਵਾਂ ਕਾਰਜ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਹੇਠਾਂ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
 <translation id="5876666360658629066">ਮਾਂ-ਪਿਓ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5881540930187678962">ਫ਼ੋਨ ਹੱਬ ਦਾ ਬਾਅਦ ਵਿੱਚ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
+<translation id="588258955323874662">ਫੁਲਸਕ੍ਰੀਨ</translation>
 <translation id="5887954372087850114">ਵਿੰਡੋ <ph name="WINDOW_TITLE" /> ਨੂੰ <ph name="DESK_TITLE" /> ਦੇ ਜ਼ਿੰਮੇ ਲਗਾਇਆ ਗਿਆ ਅਤੇ ਹੋਰ ਸਾਰੇ ਡੈਸਕਾਂ ਦੇ ਜ਼ਿੰਮੇ ਤੋਂ ਹਟਾਇਆ ਗਿਆ</translation>
 <translation id="588817334757907802">Chrome ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਫ਼ਾਈਲ ਖੋਲ੍ਹੋ</translation>
+<translation id="5892014525522223653">ਤੁਸੀਂ ਆਫ਼ਲਾਈਨ ਹੋ।</translation>
 <translation id="5895138241574237353">ਰੀਸਟਾਰਟ ਕਰੋ</translation>
 <translation id="589817443623831496">ਪੁਆਇੰਟ ਸਕੈਨਿੰਗ</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1246,22 +1453,25 @@
 <translation id="5916646100036936191">ਨਵੀਂ ਸੂਚਨਾ, ਕੁੱਲ <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">ਚਾਲੂ</translation>
 <translation id="5920710855273935292">ਮਾਈਕ ਨੂੰ ਮਿਊਟ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
+<translation id="5928083197428724029"><ph name="MANAGER" /> ਵੱਲੋਂ ਅੱਪਡੇਟ ਲੋੜੀਂਦਾ ਹੈ</translation>
+<translation id="5939518447894949180">ਰੀਸੈਟ ਕਰੋ</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ਚਾਲੂ ਹੈ।</translation>
 <translation id="5947494881799873997">ਵਾਪਸ ਲਿਆਓ</translation>
 <translation id="595202126637698455">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸਿੰਗ ਸਮਰਥਿਤ</translation>
 <translation id="5955304353782037793">ਐਪ</translation>
 <translation id="5958529069007801266">ਨਿਗਰਾਨੀ ਕੀਤੇ ਵਰਤੋਂਕਾਰ</translation>
 <translation id="5960410286721553511">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ ਅਤੇ ਮੀਡੀਆ ਦੇਖੋ</translation>
-<translation id="5961960957587052807">ਰੋਸ਼ਨੀ</translation>
 <translation id="5965524703725988602">ਗੂੜ੍ਹੇ ਥੀਮ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />.</translation>
 <translation id="5975235751479998104">ਵਿੰਡੋਆਂ ਰਾਹੀਂ ਅੱਗੇ ਜਾਓ</translation>
 <translation id="5978382165065462689">ਰਿਮੋਟ ਸਹਾਇਤਾ ਰਾਹੀਂ ਨਾਲ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦਾ ਨਿਯੰਤਰਣ ਸ਼ੇਅਰ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="5980301590375426705">ਮਹਿਮਾਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
+<translation id="5982119059638483922">ਰੱਦ ਕਰਨ ਲਈ Fn+Search ਜਾਂ Shift ਦਬਾਓ।</translation>
 <translation id="5983567367406220847">ਅਕਿਰਿਆਸ਼ੀਲਤਾ ਦੇ ਕਾਰਨ, ਹੌਟਸਪੌਟ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="598407983968395253">ਟੈਮਪਲੇਟ ਵਰਤੋ</translation>
+<translation id="5986723678596105470">Google Meet ਨਾਲ ਸ਼ਾਮਲ ਹੋਵੋ</translation>
 <translation id="598882571027504733">ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chromebook ਨੂੰ ਨਾਲ ਅਟੈਚ ਕੀਤੇ ਕੀ-ਬੋਰਡ ਰਾਹੀਂ ਮੁੜ-ਚਾਲੂ ਕਰੋ।</translation>
+<translation id="5998374579424866922">ਗੇਮ ਕੰਟਰੋਲਾਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="6000279412553873020">ਕੁੰਜੀਆਂ, ਬਟਨ ਅਤੇ ਹੋਰ</translation>
-<translation id="6002122790816966947">ਤੁਹਾਡੇ ਡੀਵਾਈਸ</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> ਵਿੱਚੋਂ <ph name="SELECTED_PAGE" /> ਪੰਨਾ</translation>
 <translation id="601304062528754300">ਸ਼ੈਲਫ 'ਤੇ ਅਗਲੀ ਆਈਟਮ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="6015573907265691211">ਮੁਕੰਮਲ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਕਰੋ</translation>
@@ -1271,9 +1481,11 @@
 <translation id="6020147141355393792">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="6022924867608035986">ਖੋਜਬਾਕਸ ਲਿਖਤ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="602472752137106327">ਸਾਰੇ ਡੈਸਕਾਂ ਤੋਂ ਉਹ ਵਿੰਡੋ ਦਿਖਾਓ ਜਿਸ ਵਿੱਚ ਰੇਡੀਓ ਬਟਨ ਨੂੰ ਚੁਣਿਆ ਹੋਵੇ</translation>
+<translation id="6024768346262692989">ਚਿਹਰਾ ਕੰਟਰੋਲ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" /> ਨੂੰ ਕੋਈ ਇਵੈਂਟ ਨਹੀਂ ਹੈ। ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ Google Calendar ਖੋਲ੍ਹਣ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="6030495522958826102">ਮੀਨੂ ਨੂੰ ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਲੇ ਖੱਬੇ ਕੋਨੇ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ।</translation>
+<translation id="6030608926359652298">ਆਪਣੇ ਟੱਚਪੈਡ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="6032620807120418574">ਪੂਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਰਿਕਾਰਡ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="6040071906258664830">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨਾਲ ਰਿਕਾਰਡ ਕਰੋ <ph name="STATE" /></translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
@@ -1285,28 +1497,37 @@
 <translation id="6052614013050385269">ਕਿਸੇ ਲਿੰਕ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="6054305421211936131">ਸਮਾਰਟ ਕਾਰਡ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6059276912018042191">ਹਾਲੀਆ Chrome ਟੈਬਾਂ</translation>
+<translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">ਤੁਹਾਨੂੰ <ph name="LOGOUT_TIME_LEFT" /> ਆਟੋਮੈਟਿਕਲੀ ਸਾਈਨ ਆਉਟ ਕੀਤਾ ਜਾਏਗਾ।</translation>
 <translation id="6064463340679478396">ਫ਼ਾਈਲ ਦੀ ਵਰਤੋਂ ਪੂਰੀ ਹੋ ਗਈ ਹੈ</translation>
 <translation id="6068258534237496331">ਵੀਡੀਓ ਕਾਲ ਦੇ ਕੰਟਰੋਲ</translation>
 <translation id="6073451960410192870">ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰੋ</translation>
 <translation id="6074087755403037157">ਬੀਟਾ ਚੈਨਲ</translation>
+<translation id="6075098173600599596">ਅੱਖਰਾਂ ਨੂੰ ਵੱਡਾ ਜਾਂ ਛੋਟਾ ਕਰੋ</translation>
+<translation id="6091929401758362855">ਪਲੇਲਿਸਟ: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6095008505822982596">ਬੋਲਣ ਦੀ ਗਤੀ</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> ਰਾਹੀਂ ਕਨੈਕਸ਼ਨ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6099678161144790572">ਪਿਛਲੇ ਮਹੀਨੇ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6103838137565245112">ਸਿਸਟਮ</translation>
+<translation id="610395411842312282">ਆਸੇ-ਪਾਸੇ ਦਿੱਤੀਆਂ ਦੋ ਵਿੰਡੋਆਂ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰੋ</translation>
 <translation id="6108952804512516814">AI ਨਾਲ ਬਣਾਓ</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> ਦੀਆਂ ਬੋਲੀ ਵਾਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6119972796024789243">ਰੰਗ ਸੁਧਾਈ</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ਡਾਊਨਲੋਡ ਦੀ ਤਸਦੀਕ ਕਰੋ</translation>
 <translation id="612734058257491180">Google Assistant ਮਹਿਮਾਨ ਸੈਸ਼ਨ ਵਿੱਚ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
+<translation id="6127395413317891856">ਤੁਸੀਂ ਆਫ਼ਲਾਈਨ ਹੋ। ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6129953537138746214">ਸਪੇਸ</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> ਲਈ 'ਹਟਾਓ' ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
+<translation id="6141205840878048728">ਤੁਸੀਂ ਕਿਸ ਕਾਰਜ 'ਤੇ ਫੋਕਸ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="6141988275892716286">ਡਾਊਨਲੋਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="6143578372829139382">YouTube 'ਤੇ ਸਾਂਝਾ ਕਰੋ</translation>
+<translation id="6147182561428020853">ਤੁਸੀਂ ਹੁਣ ਇਸ <ph name="DEVICE_TYPE" /> 'ਤੇ ਸਥਾਪਤ ਕੀਤੀਆਂ ਐਪਾਂ ਨੂੰ ਬਲਾਕ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="6153745728877356366">ਖੋਲ੍ਹਣ ਲਈ ਖੋਜੋ</translation>
 <translation id="6154006699632741460">ਪੈਰੀਫੈਰਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="6156960295318603523">ਭਾਸ਼ਾ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="6158923546703693047">ਸਮੱਗਰੀ ਸਰੋਤ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ</translation>
 <translation id="615957422585914272">ਔਨ-ਸਕ੍ਰੀਨ ਕੀ-ਬੋਰਡ ਦਿਖਾਓ</translation>
 <translation id="616543563528926612">ਸੱਜਾ-ਕਲਿੱਕ ਸ਼ਾਰਟਕੱਟ ਨੂੰ <ph name="LAUNCHER_KEY_NAME" /> key + click ਤੋਂ alt + click 'ਤੇ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6165508094623778733">ਹੋਰ ਜਾਣੋ</translation>
@@ -1325,17 +1546,23 @@
 <translation id="6200515304866777730">ਐਪ ਰਾਹੀਂ ਸਮਰਥਿਤ ਨਹੀਂ</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> ਵਿੱਚ ਪਹਿਲਾਂ ਤੋਂ ਰੱਖਿਅਤ ਕੀਤੇ <ph name="NAME" /> ਨੂੰ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="6213808132343683860">ਅੰਸ਼ਕ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ ਜਾਂ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਕਰੋ</translation>
+<translation id="621606890568890214">Google Classroom ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
+<translation id="6216759484154215561">ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ 'ਹੋਰ ਜਾਣੋ' ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
 <translation id="6220928844947387476">ਤੁਸੀਂ ਹੁਣ ਖੁਦ ਨੂੰ ਅਤੇ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਇੱਕੋ ਸਮੇਂ ਰਿਕਾਰਡ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="622484624075952240">ਹੇਠਾਂ</translation>
 <translation id="6228457605945141550">ਚਮਕ ਘਟਾਓ</translation>
 <translation id="623116199192908855">ਆਪਣੀ Chromebook ਤੋਂ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਕਾਸਟ ਕਰੋ</translation>
 <translation id="6231419273573514727">ਪੈਰੀਫੈਰਲ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ</translation>
+<translation id="6232416233079464213"><ph name="SESSION_NAME" /> ਤੋਂ</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> ਐਪ ਫ਼ਿਲਹਾਲ ਤੁਹਾਡਾ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤ ਰਹੀ ਹੈ</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">ਬੈਟਰੀ ਘੱਟ ਹੈ। ਬੈਟਰੀ ਸੇਵਰ ਚਾਲੂ ਹੈ।</translation>
+<translation id="6240603910551255087">ਸਿਖਰਲਾ ਬਟਨ</translation>
+<translation id="6240821072888636753">ਹਰ ਵਾਰ ਪੁੱਛੋ</translation>
 <translation id="6247728804802644171">ਸੂਚਨਾਵਾਂ ਖੋਲ੍ਹੋ</translation>
+<translation id="6249795363855770621">ਇਸਦੀ ਮੁਕੰਮਲ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਆਨਲਾਈਨ ਹੋਣ 'ਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6254629735336163724">ਲੇਟਵੀਂ ਸਥਿਤੀ ਵਿੱਚ ਲਾਕ ਕੀਤੀ ਗਈ</translation>
 <translation id="6259254695169772643">ਚੁਣਨ ਲਈ ਆਪਣੇ ਸਟਾਈਲਸ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
+<translation id="6260038345397266744"><ph name="TITLE" />। <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: ਐਕਟੀਵੇਟ ਹੋ ਰਿਹਾ ਹੈ...</translation>
 <translation id="6274202259872570803">ਸਕ੍ਰੀਨਕਾਸਟ</translation>
 <translation id="6276708887952587684">ਪੰਨਾ ਸਰੋਤ ਦੇਖੋ</translation>
@@ -1346,24 +1573,30 @@
 <translation id="6309219492973062892">ਸ਼ੈਲਫ ਪ੍ਰਤੀਕ 1-8 'ਤੇ ਕਲਿੱਕ ਜਾਂ ਟੈਪ ਕਰੋ</translation>
 <translation id="6315170314923504164">ਅਵਾਜ਼</translation>
 <translation id="6319058840130157106">ਹੇਠਲੇ ਸੱਜੇ ਕੋਨੇ, ਲਾਂਚਰ, ਪਤਾ ਬਾਰ, ਬੁੱਕਮਾਰਕ ਬਾਰ, ਖੁੱਲ੍ਹੀ ਵੈੱਬਸਾਈਟ ਅਤੇ ਡਾਊਨਲੋਡਾਂ ਵਿਚਾਲੇ ਪਿੱਛੇ ਵੱਲ ਜਾਓ</translation>
+<translation id="6319503618073410818">ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਵੇਰਵੇ ਦੇਖੋ</translation>
 <translation id="6324916366299863871">ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="6330012934079202188">ਸਾਰੇ ਡੈਸਕਾਂ ਤੋਂ ਵਿੰਡੋਆਂ ਦਿਖਾਈਆਂ ਜਾ ਰਹੀਆਂ ਹਨ, ਮੌਜੂਦਾ ਡੈਸਕ ਤੋਂ ਵਿੰਡੋਆਂ ਦਿਖਾਉਣ ਲਈ ਉੱਪਰ ਤੀਰ ਵਾਲੀ ਕੁੰਜੀ ਦਬਾਓ</translation>
+<translation id="6337159624125741244">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵੱਡਦਰਸ਼ੀ ਚਾਲੂ ਹੈ</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> <ph name="MANAGER" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਇੱਕ ਪ੍ਰਬੰਧਿਤ ਸੈਸ਼ਨ ਹੈ</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> ਕਨੈਕਟ ਹੈ</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> ਫਿਰ <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ਜਾਂ <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ਐਪ ਸੁਝਾਅ</translation>
 <translation id="6352082849089527770">ਅਗਿਆਤ ਨੈੱਟਵਰਕ</translation>
 <translation id="6359587239691116345">ਨਵੀਨਤਮ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਸੁਧਾਰ ਪ੍ਰਾਪਤ ਕਰੋ। ਜੇ ਤੁਸੀਂ ਇਸ ਅੱਪਡੇਟ ਨੂੰ ਅਸਵੀਕਾਰ ਕਰਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਸ਼ਾਇਦ ਹੁਣ ਸਹੀ ਢੰਗ ਨਾਲ ਕੰਮ ਨਾ ਕਰੇ ਅਤੇ ਤੁਹਾਨੂੰ ਸੁਰੱਖਿਆ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਸੰਬੰਧੀ ਸਮੱਸਿਆਵਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
+<translation id="6362833380917912748">ਆਪਣੀਆਂ ਬਿਲਟ-ਇਨ ਐਪਾਂ ਬਾਰੇ ਜਾਣੋ</translation>
 <translation id="6376931439017688372">ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ</translation>
 <translation id="6378515133128829137">ਵਿੰਡੋ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਪਿੰਨ ਕਰੋ</translation>
 <translation id="6381109794406942707">ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ, ਆਪਣਾ ਪਿੰਨ ਦਾਖਲ ਕਰੋ।</translation>
+<translation id="6381305031890976705">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ ਇੱਕ ਘੰਟੇ ਵਿੱਚ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਘੰਟੇ ਵਿੱਚ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਘੰਟਿਆਂ ਵਿੱਚ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="638716340450135524">ਕੈਮਰਾ ਪਹੁੰਚ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="639644700271529076">CAPS LOCK ਬੰਦ ਹੈ</translation>
+<translation id="6406458002328242616">ਟਾਈਮਰ ਦਾ ਸੰਪਾਦਨ ਕਰੋ। <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641817663353603351">ਪੰਨਾ ਉੱਪਰ</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਕਲੀਅਰ ਕਰੋ</translation>
+<translation id="6430225033895752525">ਫੋਕਸ ਮੋਡ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="643147933154517414">ਸਭ ਹੋ ਗਿਆ</translation>
 <translation id="6431865393913628856">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਰ</translation>
 <translation id="643593192654616063">ਕੁੱਲ <ph name="STORAGE_TOTAL_SIZE" /> ਸਟੋਰੇਜ ਵਿੱਚੋਂ <ph name="STORAGE_IN_USE_SIZE" /> ਵਰਤੋਂ ਵਿੱਚ</translation>
@@ -1374,18 +1607,20 @@
 <translation id="6450245544201845082">ਫ਼ਿਲਹਾਲ ਸੱਜਾ-ਕਲਿੱਕ ਸ਼ਾਰਟਕੱਟ ਦੀ ਸੁਵਿਧਾ ਬੰਦ ਹੈ</translation>
 <translation id="6452181791372256707">ਰੱਦ ਕਰੋ</translation>
 <translation id="6453179446719226835">ਭਾਸ਼ਾ ਬਦਲ ਦਿੱਤੀ ਗਈ ਹੈ</translation>
+<translation id="6456096448804832585">ਸਿਰਫ਼ ਪੋਰਟਰੇਟ ਉਪਲਬਧ</translation>
 <translation id="6459472438155181876">ਸਕ੍ਰੀਨ <ph name="DISPLAY_NAME" /> ਵਿੱਚ ਵਧਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="6464094930452079790">ਚਿੱਤਰ</translation>
+<translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> ਦੇ ਲਈ ਚਾਲੂ ਹੈ</translation>
+<translation id="6468406072297048412">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ 1 ਮਿੰਟ ਵਿੱਚ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟ ਵਿੱਚ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟਾਂ ਵਿੱਚ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="6469104339369989396">ਹੌਟਸਪੌਟ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="6477681113376365978">ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ</translation>
 <translation id="6482559668224714696">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵੱਡਦਰਸ਼ੀ</translation>
+<translation id="6485086611007560630">ਮੌਸਮ ਦੀ ਜਾਣਕਾਰੀ (ਉਪਲਬਧ ਨਹੀਂ)</translation>
 <translation id="6490471652906364588">USB-C ਡਿਵਾਈਸ (ਸੱਜਾ ਪੋਰਟ)</translation>
-<translation id="6491071886865974820"><ph name="MANAGER" /> ਲਈ ਤੁਹਾਨੂੰ ਸਮਾਂ-ਸੀਮਾ ਤੋਂ ਪਹਿਲਾਂ ਆਪਣੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="649452524636452238">ਸਮਾਰਟ ਕਾਰਡ ਦਾ ਪਿੰਨ</translation>
 <translation id="6495322433318104734">ਸਕ੍ਰੀਨ ਸੇਵਰ ਦਿਖਾਇਆ ਜਾ ਰਿਹਾ ਹੈ, ਬਾਹਰ ਜਾਣ ਲਈ ਕਿਸੇ ਵੀ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ</translation>
 <translation id="6495400115277918834">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਮੋਡ ਸ਼ੁਰੂ ਕਰੋ ਅਤੇ ਫੋਕਸ ਕਰਨ ਲਈ Alt+Shift+V ਦਬਾਓ</translation>
 <translation id="6497418457565568043">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਚਾਲੂ ਹੈ</translation>
-<translation id="6500896621837555595">ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> ਲਈ ਸਕਰੀਨ ਕਾਸਟ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />" ਨਾਲ Key Shortcuts ਐਪ ਖੋਲ੍ਹੋ।</translation>
 <translation id="6507618042428827377">ਅਗਲੀ ਉਪਲਬਧ ਇਨਪੁੱਟ ਵਿਧੀ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
@@ -1398,27 +1633,34 @@
 <translation id="6537924328260219877">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਫ਼ੋਨ ਦੀ ਬੈਟਰੀ <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">ਡਾਊਨਲੋਡ ਹੋ ਰਹੀ <ph name="FILENAME" /> ਫ਼ਾਈਲ ਨੂੰ ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> 'ਤੇ ਕਾਸਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
-<translation id="6546062506073634094">ਸਮੱਗਰੀ ਅਤੇ ਚਿੱਤਰ ਦੀਆਂ ਪੂਰਵ-ਝਲਕਾਂ ਮੁਤਾਬਕ ਚਿੱਤਰ ਖੋਜ</translation>
-<translation id="6547795021703527064">ਜਦੋਂ ਤੁਸੀਂ ਬਲੂਟੁੱਥ ਬੰਦ ਕਰਦੇ ਹੋ, ਤਾਂ "<ph name="DEVICE_NAME" />" ਤੁਹਾਡੀ Chromebook ਤੋਂ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਵੇਗਾ।</translation>
+<translation id="6542891623636520977">ਇਮੋਜੀ, GIF ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ</translation>
 <translation id="6555373427270923730">ਪਤਾ ਬਾਰ ਵਿੱਚ ਵੈੱਬ ਪਤਾ ਟਾਈਪ ਕਰੋ, ਫਿਰ <ph name="MODIFIER" /><ph name="KEY" /> ਦਬਾਓ</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 ਨਵੀਂ ਸਥਾਪਤ ਕੀਤੀ ਗਈ</translation>
+<translation id="6559158502366839560">ਹੋਰ ਐਪਾਂ ਅਤੇ ਗੇਮਾਂ ਦੀ ਪੜਚੋਲ ਕਰੋ</translation>
 <translation id="6559976592393364813">ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਪੁੱਛੋ</translation>
+<translation id="6562447480759345110">ਫੋਕਸ ਮੋਡ ਬੰਦ ਕਰੋ</translation>
 <translation id="6565007273808762236">ਈ-ਸਿਮ ਕਨੈਕਸ਼ਨ ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="6570831796530454248">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ ਇੱਕ ਘੰਟੇ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਘੰਟੇ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਘੰਟਿਆਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="6570902864550063460">USB ਰਾਹੀਂ ਚਾਰਜ ਹੋ ਰਿਹਾ ਹੈ</translation>
+<translation id="6571006437522772306">Files ਵਿੱਚ ਖੋਜੋ</translation>
 <translation id="6574587113394758819"><ph name="APP_TITLE" /> ਸੂਚਨਾ ਲੁਕੀ ਹੋਈ ਹੈ ਕਿਉਂਕਿ ਦੇਖਣ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ ਚਾਲੂ ਹੈ</translation>
 <translation id="6574622320167699133">ਤੁਹਾਡੇ ਫ਼ੋਨ ਤੋਂ ਅਣਲਾਕ ਕੀਤੀ ਗਈ। ਦਾਖਲ ਹੋਣ ਲਈ ਟੈਪ ਜਾਂ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="6578407462441924264">ਬੇਨਾਮ</translation>
+<translation id="6582012689384648647">ਵਿਅਕਤੀਗਤ ਫੋਕਸ ਪਲੇਲਿਸਟਾਂ ਲਈ, YouTube Music ਤੱਕ ਪਹੁੰਚ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
+<translation id="6582034443359256692">ਬੈਟਰੀ ਚਾਰਜ ਪੱਧਰ ਦੀ ਗਣਨਾ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ।</translation>
 <translation id="6585808820553845416">ਸੈਸ਼ਨ <ph name="SESSION_TIME_REMAINING" /> ਵਿੱਚ ਖ਼ਤਮ ਹੋਵੇਗਾ।</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">ਕੈਮਰੇ ਨੂੰ ਹੇਠਲੇ ਖੱਬੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ। ਸਿਸਟਮ ਸਰਫ਼ੇਸ ਨਾਲ ਓਵਰਲੈਪ ਕਰਦਾ ਹੈ।</translation>
+<translation id="6605415194043280389">ਫੋਕਸ ਮੋਡ ਚਾਲੂ ਹੈ</translation>
+<translation id="660846213831377756">ਮਾਊਸ ਕੁੰਜੀਆਂ</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="6612802754306526077">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਮੋਡ ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="6612889377159412215">ਉਪ-ਕਾਰਜ</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> ਦੀ ਸਟੋਰੇਜ ਵਰਤੋਂ ਵਿੱਚ ਹੈ | ਕੁੱਲ<ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਚਾਲੂ ਹੈ</translation>
 <translation id="6622679827379792051">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਐਪਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
+<translation id="662279009180869175">ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਦਾ ਆਕਾਰ ਬਦਲਣ ਲਈ ਖੱਬੇ ਅਤੇ ਸੱਜੇ ਤੀਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="6624493541160101248">ਮੌਜੂਦਾ ਡੈਸਕ: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> ਵਿੱਚੋਂ ਡੈਸਕ <ph name="DESK_INDEX" />.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ਅਤੇ ਹੋਰ ਸੂਚਨਾਵਾਂ ਲੁਕੀਆਂ ਹੋਈਆਂ ਹਨ ਕਿਉਂਕਿ ਦੇਖਣ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ ਚਾਲੂ ਹੈ</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1428,6 +1670,7 @@
 <translation id="6643169293433369663">ਨਾਮ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਦੇ ਕ੍ਰਮ ਨੂੰ ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="6649641931981131786">ਤੁਹਾਨੂੰ ਸਕ੍ਰੀਨ ਦੇ ਕੇਂਦਰ ਵਿੱਚ ਲਿਆਉਣ ਲਈ ਕੈਮਰੇ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰੋ।</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
+<translation id="6650742588569439432">ਆਈਟਮਾਂ ਲੋਡ ਨਹੀਂ ਕੀਤੀਆਂ ਜਾ ਸਕੀਆਂ।</translation>
 <translation id="6650933572246256093">ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ "<ph name="DEVICE_NAME" />" ਜੋੜਾਬੱਧ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੁੰਦੀ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਉਸ ਡੀਵਾਈਸ 'ਤੇ ਇਹ ਪਾਸਕੁੰਜੀ ਦਰਜ ਕਰੋ: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">ਪਾਸਵਰਡ</translation>
 <translation id="666343722268997814">ਉਜਾਗਰ ਕੀਤੀ ਆਈਟਮ ਲਈ ਸੱਜਾ-ਕਲਿੱਕ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
@@ -1436,15 +1679,19 @@
 <translation id="6670153871843998651">ਡੈਸਕ 3</translation>
 <translation id="6671495933530132209">ਚਿੱਤਰ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="6671661918848783005">ਤੁਹਾਡੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="6676552993057022464">ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਦਾ ਆਕਾਰ ਬਦਲਣ ਲਈ ਉੱਪਰ ਅਤੇ ਹੇਠਾਂ ਤੀਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="6682029141988159141">ਕਲਿੱਪਬੋਰਡ ਤੋਂ ਸਮੱਗਰੀ ਪੇਸਟ ਕਰੋ</translation>
 <translation id="6683022854667115063">ਹੈੱਡਫ਼ੋਨ</translation>
 <translation id="6686023075541098243">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
+<translation id="6694973220096431421">Google Drive ਵਿੱਚ ਖੋਜੋ</translation>
 <translation id="6696025732084565524">ਤੁਹਾਡੇ ਵੱਖ ਹੋਣਯੋਗ ਕੀ-ਬੋਰਡ ਨੂੰ ਅਤਿ ਜ਼ਰੂਰੀ ਅੱਪਡੇਟ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="6697913454192220372">ਨਵਾਂ ਡੈਸਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6700713906295497288">IME ਮੀਨੂ ਬਟਨ</translation>
-<translation id="6707693040195709527">ਡੀਵਾਈਸ ਦੀ ਪਿਛਲੇ ਵਰਜਨ ਵਿੱਚ ਤਬਦੀਲੀ ਦੀ ਮਿਆਦ ਲੰਘ ਗਈ ਹੈ</translation>
+<translation id="6704375469818246414">ਜਨਰੇਟਿਵ AI ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਸਮੇਂ ਕੁਆਲਿਟੀ ਵੱਖ-ਵੱਖ ਹੋ ਸਕਦੀ ਹੈ।</translation>
+<translation id="6706742084323792866">ਕੀ-ਬੋਰਡ ਨੂੰ ਪਿੰਨ ਕਰੋ</translation>
 <translation id="6710213216561001401">ਪਿਛਲਾ</translation>
 <translation id="6723839937902243910">ਪਾਵਰ</translation>
+<translation id="672609503628871915">ਦੇਖੋ ਕਿ ਕੀ ਨਵਾਂ ਹੈ</translation>
 <translation id="6727969043791803658">ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ, <ph name="BATTERY_PERCENTAGE" />% ਬੈਟਰੀ</translation>
 <translation id="6732087373923685049">ਕੈਮਰਾ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1464,8 +1711,10 @@
 <translation id="6782919488259222803">ਮੌਜੂਦਾ ਪੰਨਾ ਖੋਜੋ</translation>
 <translation id="6786750046913594791">ਫੋਲਡਰ ਬੰਦ ਕਰੋ</translation>
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
+<translation id="6792262051831399889">ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="679368458793552943">ਵੱਡਦਰਸ਼ੀ ਦੇ ਚਾਲੂ ਹੋਣ 'ਤੇ ਜ਼ੂਮ ਵਧਾਓ</translation>
 <translation id="6794287755901682422">ਇਸ ਆਈਟਮ ਵਿੱਚ ਹੈ: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">ਇਸਨੂੰ ਚਾਲੂ ਰੱਖੋ</translation>
 <translation id="6801878137098616817">ਹਾਲ ਹੀ ਵਿੱਚ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6802687695197837794">ਇਸ ਨਾਲ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਪਹੁੰਚ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤਾਂ ਹਨ</translation>
 <translation id="6803622936009808957">ਡਿਸਪਲੇਆਂ ਨੂੰ ਮਿਰਰ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿਉਂਕਿ ਕੋਈ ਸਮਰਥਿਤ ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨਹੀਂ ਮਿਲੇ। ਇਸਦੀ ਬਜਾਏ ਵਿਸਤ੍ਰਿਤ ਡੈਸਕਟਾਪ ਵਿੱਚ ਚਲਾ ਗਿਆ।</translation>
@@ -1478,14 +1727,17 @@
 <translation id="6836499262298959512">ਖਤਰਨਾਕ ਫ਼ਾਈਲ</translation>
 <translation id="6837621009301897464">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲੈਣ ਲਈ, ਇਹ ਦਬਾਓ</translation>
 <translation id="6852052252232534364">ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
+<translation id="6852628153543175788">10 ਮਿੰਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6855029042976311970">ਹੁਣੇ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6856708615407876657">ਖੋਜ ਨਤੀਜੇ ਦੀਆਂ ਸ਼੍ਰੇਣੀਆਂ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
+<translation id="6856756288284651804">Chromebook ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ਸਕਿੰਟ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ਇੱਕ ਅੰਕ ਬਾਕੀ}one{# ਅੰਕ ਬਾਕੀ}other{# ਅੰਕ ਬਾਕੀ}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> ਦਾ ਡਾਊਨਲੋਡ ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="6874854809828346832">ਹੌਟਸਪੌਟ ਦੇ ਵੇਰਵੇ ਦੇਖੋ। ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ।</translation>
 <translation id="6878400149835617132">ਸ਼ਾਰਟਕੱਟ ਬੰਦ ਹੈ</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ਐਪ}one{# ਐਪ}other{# ਐਪਾਂ}}</translation>
+<translation id="6879454869409141992">Caps Lock ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6883768636838842873">ਮੁੱਖ ਸ਼ਾਰਟਕੱਟ, ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰਨ ਸੰਬੰਧੀ ਨੁਕਤੇ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ</translation>
 <translation id="6884665277231944629">ਅੱਜ ਦੀ ਤਾਰੀਖ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="6886172995547742638">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਉਮੀਦ ਨਾਲੋਂ ਘੱਟ ਕਾਰਗੁਜ਼ਾਰੀ ਕਰੇ। ਕੋਈ ਪ੍ਰਮਾਣਿਤ <ph name="PREFERRED_MINIMUM_POWER" />W ਜਾਂ ਵੱਧ ਦਾ USB-C ਪਾਵਰ ਅਡਾਪਟਰ ਵਰਤੋ।</translation>
@@ -1493,8 +1745,10 @@
 <translation id="6896758677409633944">ਕਾਪੀ ਕਰੋ</translation>
 <translation id="6912841030378044227">ਪਤਾ ਬਾਰ 'ਤੇ ਫੋਕਸ ਕਰੋ</translation>
 <translation id="6912901278692845878">ਤਤਕਾਲ ਟੂਰ</translation>
+<translation id="6917259695595127329">ਕਾਰਜਾਂ ਨੂੰ ਆਖਰੀ ਵਾਰ ਅੱਪਡੇਟ ਕਰਨ ਦਾ ਸਮਾਂ: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">ਤੁਹਾਡਾ ਸਮਾਰਟ ਕਾਰਡ ਪਛਾਣਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="692135145298539227">ਮਿਟਾਓ</translation>
+<translation id="6921427376813842559">ਡੀਵਾਈਸ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="6929081673585394903">ਕੰਟਰੋਲ ਦਿਖਾਓ</translation>
 <translation id="6931576957638141829">ਇਸ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="6942518653766415536">ਰਿਕਾਰਡਿੰਗ ਦੇ ਫਾਰਮੈਟ ਦਾ ਮੀਨੂ</translation>
@@ -1505,14 +1759,13 @@
 <translation id="6961840794482373852">Alt + ਉੱਪਰ ਤੀਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Page Up ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਉੱਪਰ ਤੀਰ ਦਬਾਓ।</translation>
 <translation id="696267987219125751">ਕੈਮਰਾ ਫ੍ਰੇਮਿੰਗ ਬੰਦ ਹੈ।</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
+<translation id="6972629891077993081">HID ਡੀਵਾਈਸ</translation>
 <translation id="6972754398087986839">ਸ਼ੁਰੂ ਕੀਤਾ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6981291220124935078">ਪਹੁੰਚ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6981982820502123353">ਪਹੁੰਚਯੋਗਤਾ</translation>
 <translation id="698231206551913481">ਇਸ ਵਰਤੋਂਕਾਰ ਦੇ ਹਟਾਏ ਜਾਣ ਤੋਂ ਬਾਅਦ ਇਸ ਵਰਤੋਂਕਾਰ ਨਾਲ ਸਬੰਧਿਤ ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਸਥਾਨਕ ਡਾਟੇ ਨੂੰ ਸਥਾਈ ਤੌਰ 'ਤੇ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
-<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਬਣਾਈ ਰੱਖਣ ਲਈ 'ਤਸਦੀਕ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
-<translation id="6989752354829085073">ਆਪਣੀ Chromebook ਨੂੰ ਚੰਗੀ ਤਰ੍ਹਾਂ ਸਮਝਣ ਲਈ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਜਾਣੋ। ਅੱਗੇ ਵਧੋ ਅਤੇ 6 ਪੜਾਵਾਂ ਨੂੰ ਪੂਰਾ ਕਰੋ।</translation>
 <translation id="7000027735917578303">ਵਿੰਡੋਆਂ ਅਤੇ ਡੈਸਕਾਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="7004910047186208204">ਮੋਬਾਈਲ ਡਾਟੇ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7005239792648594238">ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਐਪ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
@@ -1520,6 +1773,7 @@
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> ਨਾਮ ਵਾਲੇ ਕਿਸੇ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> ਵਜੇ ਡੀਵਾਈਸ ਦੁਬਾਰਾ ਵਰਤੋ।</translation>
 <translation id="70168403932084660">ਡੈਸਕ 6</translation>
+<translation id="702252130983202758">ਤੁਹਾਡੀਆਂ ਐਪਾਂ</translation>
 <translation id="7025533177575372252">ਆਪਣੇ ਫ਼ੋਨ ਨਾਲ ਆਪਣੇ <ph name="DEVICE_NAME" /> ਨੂੰ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7026338066939101231">ਘਟਾਓ</translation>
 <translation id="7029814467594812963">ਸੈਸ਼ਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
@@ -1532,11 +1786,13 @@
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> ਡਿਸਕਨੈਕਟ ਹੋ ਗਿਆ</translation>
 <translation id="7055910611768509537">ਸਟਾਈਲਸ ਨੂੰ ਇੱਕ ਹਫ਼ਤੇ ਤੋਂ ਵੱਧ ਸਮੇਂ ਤੋਂ ਵਰਤਿਆ ਨਹੀਂ ਗਿਆ</translation>
 <translation id="7061457967428964661">ਕੈਮਰੇ ਦੀ ਪੂਰਵ-ਝਲਕ, ਪੂਰਵ-ਝਲਕ ਨੂੰ ਕਿਸੇ ਵੱਖਰੇ ਕੋਨੇ 'ਤੇ ਲਿਜਾਉਣ ਲਈ Control + ਤੀਰ ਕੁੰਜੀਆਂ ਦਬਾਓ</translation>
+<translation id="7064351585062927183">ਇਸ <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">ਇਹ ਨੈੱਟਵਰਕ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਅਯੋਗ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="7067196344162293536">ਸਵੈ ਘੁੰਮਾਓ</translation>
 <translation id="7068360136237591149">ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7076293881109082629">ਸਾਈਨ ਇਨ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7076878155205969899">ਧੁਨੀ ਮਿਊਟ ਕਰੋ</translation>
+<translation id="7083848064787091821">ਫੋਕਸ</translation>
 <translation id="7084678090004350185">ਹੌਟਸਪੌਟ ਟੌਗਲ ਕਰੋ। ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ, <ph name="DEVICECOUNT" /> ਡੀਵਾਈਸ ਕਨੈਕਟ ਹਨ।</translation>
 <translation id="7086931198345821656">ਇਸ ਅੱਪਡੇਟ ਲਈ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਪਾਵਰਵਾਸ਼ ਕੀਤੇ ਜਾਣ ਦੀ ਲੋੜ ਹੈ। ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਨਵੀਨਤਮ <ph name="SYSTEM_APP_NAME" /> ਅੱਪਡੇਟ ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="7088960765736518739">ਸਵਿੱਚ ਪਹੁੰਚ</translation>
@@ -1546,6 +1802,7 @@
 <translation id="7108254681523785542">ਇਸਨੂੰ ਪੇਸਟ ਕਰਨ ਲਈ ਕੋਈ ਆਈਟਮ ਚੁਣੋ। ਤੁਸੀਂ <ph name="SHORTCUT_KEY_NAME" /> + v ਦਬਾ ਕੇ ਕਲਿੱਪਬੋਰਡ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7116969082764510092">ਡੈਸਕ 11</translation>
 <translation id="7118268675952955085">ਸਕ੍ਰੀਨਸ਼ਾਟ</translation>
+<translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> ਖੋਲ੍ਹੋ</translation>
 <translation id="7119327711295338600">ਅਗਲਾ ਸ਼ਬਦ ਜਾਂ ਅੱਖਰ ਚੁਣੋ</translation>
 <translation id="7126996685418858413">ਪਿਛਲੇ ਹਫ਼ਤੇ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="7130207228079676353">ਸਭ ਤੋਂ ਵੱਧ ਸੰਭਾਵੀ ਐਪਾਂ</translation>
@@ -1553,12 +1810,15 @@
 <translation id="7143207342074048698">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7144942256906679589">ਬੈਟਰੀ ਦੀ ਸਥਿਤੀ</translation>
 <translation id="7145639536026937076">ਬੈਟਰੀ <ph name="PERCENTAGE" />% ਹੈ ਅਤੇ ਚਾਰਜ ਹੋ ਰਹੀ ਹੈ। ਬੈਟਰੀ ਸੇਵਰ ਚਾਲੂ ਹੈ।</translation>
+<translation id="7147587499155271409">ਕੋਈ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨਹੀਂ</translation>
+<translation id="7149149900052329230">ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਸਥਾਨਕ ਫ਼ਾਈਲਾਂ ਅਤੇ Google Drive ਫ਼ਾਈਲਾਂ ਦਾ Files ਐਪ ਵਿੱਚ ਹੀ ਪ੍ਰਬੰਧਨ ਕਰੋ।</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">ਪੁਰਾਣੇ ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਵਾਪਸ ਲਿਆ ਰਿਹਾ ਹੈ</translation>
 <translation id="7173114856073700355">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
+<translation id="7181691792034457084">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ। <ph name="PRODUCT_NAME" /> ਥੋੜ੍ਹਾ ਵੱਖਰਾ ਹੈ।</translation>
 <translation id="7188494361780961876">ਮੀਨੂ ਨੂੰ ਸਕ੍ਰੀਨ ਦੇ ਉੱਪਰਲੇ ਖੱਬੇ ਕੋਨੇ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="7189412385142492784">ਸ਼ੁੱਕਰ ਗ੍ਰਹਿ ਕਿੰਨੀ ਦੂਰ ਹੈ</translation>
 <translation id="7198435252016571249">ਕੈਮਰੇ ਨੂੰ ਹੇਠਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ। ਸਿਸਟਮ ਸਰਫ਼ੇਸ ਨਾਲ ਓਵਰਲੈਪ ਕਰਦਾ ਹੈ।</translation>
@@ -1566,24 +1826,31 @@
 <translation id="7229029500464092426">ਮੈਮੋਰੀ <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ਕੁੱਲ</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ਬੈਟਰੀ ਬਾਕੀ ਬਚੀ ਹੈ। ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਪਾਵਰ ਸਰੋਤ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। ਇਸ Chromebook ਨੂੰ ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਣ ਦੀ ਲੋੜ ਹੈ। ਇਸ ਵਿੱਚ 1 ਮਿੰਟ ਲੱਗ ਸਕਦਾ ਹੈ।</translation>
+<translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">ਪਿਛਲਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ</translation>
 <translation id="7258828758145722155">ਬੀਤੇ ਕੱਲ੍ਹ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="726276584504105859">ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਇੱਥੇ ਘਸੀਟੋ</translation>
 <translation id="7262906531272962081">ਯਾਦ-ਸੂਚਨਾ ਬਣਾਓ</translation>
+<translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> ਘਟਾਓ</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲੈਣ ਲਈ ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਟੂਲ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="7301826272005790482">ਵਿੰਡੋ ਸੰਬੰਧੀ ਸੁਝਾਵਾਂ ਨੂੰ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="7302889331339392448">ਲਾਈਵ ਸੁਰਖੀਆਂ ਬੰਦ ਹਨ।</translation>
 <translation id="7303365578352795231">ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਜਵਾਬ ਦਿੱਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">ਕੋਈ ਨਤੀਜਾ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="7312210124139670355">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੇ ਈ-ਸਿਮ ਨੂੰ ਰੀਸੈੱਟ ਕਰ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
+<translation id="7312761820869643657">ਡੀਵਾਈਸ ਨੂੰ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="7313193732017069507">ਕੈਮਰੇ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
-<translation id="7316261577130609484">ਨਵਾਂ ਕਾਰਜ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="73289266812733869">ਅਚੋਣਵਾਂ ਕੀਤਾ</translation>
 <translation id="7330397557116570022">ਡਿਕਟੇਸ਼ਨ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਲਿਖਤ ਖੇਤਰ 'ਤੇ ਜਾਓ</translation>
 <translation id="7331646370422660166">alt + ਹੇਠਾਂ ਤੀਰ</translation>
+<translation id="7336943714413713812">ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਖੋਜੋ</translation>
+<translation id="7337660433630200387">+10 ਮਿੰਟ</translation>
 <translation id="7340731148882810149">ਸਵੈਚਲਿਤ ਕਲਿੱਕਾਂ ਦਾ ਮੀਨੂ</translation>
 <translation id="7346909386216857016">ਠੀਕ, ਸਮਝ ਲਿਆ</translation>
 <translation id="7348093485538360975">ਔਨ-ਸਕ੍ਰੀਨ ਕੀ-ਬੋਰਡ</translation>
+<translation id="7352651011704765696">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="735745346212279324">VPN ਡਿਸਕਨੈਕਟ ਹੋ ਗਿਆ</translation>
 <translation id="7360036564632145207">ਪੈਰੀਫੈਰਲ ਸੈਟਿੰਗਾਂ ਲਈ ਆਪਣੀ ਡਾਟਾ ਪਹੁੰਚ ਸੁਰੱਖਿਆ ਨੂੰ ਬਦਲਣ ਨਾਲ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਸੁਯੋਗ ਬਣਾਇਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="736045644501761622">ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ ਸੈੱਟ ਕਰੋ</translation>
@@ -1600,6 +1867,7 @@
 <translation id="7386767620098596324">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਤੋਂ ਕਿਸੇ ਵੀ ਵੇਲੇ ਬਾਅਦ ਵਿੱਚ ਸੈੱਟਅੱਪ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7401222354741467707">ਪੂਰਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ ਜਾਂ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਕਰੋ</translation>
+<translation id="7401788553834047908">ਫੋਕਸ ਦੌਰਾਨ ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ</translation>
 <translation id="7405710164030118432">ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ, ਆਪਣਾ Family Link ਮਾਂ-ਪਿਓ ਪਹੁੰਚ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="7406608787870898861">ਆਪਣੇ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਦਾ ਸੈੱਟਅੱਪ ਪੂਰਾ ਕਰੋ</translation>
 <translation id="7406854842098869085"><ph name="MODIFIER_1" /> ਦਬਾਈ ਰੱਖੋ, <ph name="KEY" /> 'ਤੇ ਉਦੋਂ ਤੱਕ ਟੈਪ ਕਰੋ ਜਦੋਂ ਤੱਕ ਤੁਹਾਨੂੰ ਉਹ ਵਿੰਡੋ ਨਹੀਂ ਮਿਲ ਜਾਂਦੀ, ਜਿਸਨੂੰ ਤੁਸੀਂ ਖੋਲ੍ਹਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਫਿਰ ਛੱਡੋ</translation>
@@ -1609,13 +1877,16 @@
 <translation id="742594950370306541">ਕੈਮਰਾ ਵਰਤੋਂ ਵਿੱਚ ਹੈ।</translation>
 <translation id="742608627846767349">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ,</translation>
 <translation id="743058460480092004">ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫੋਨ ਵਰਤੋਂ ਵਿੱਚ ਹਨ।</translation>
+<translation id="7441711280402516925">ਵੀਡੀਓ ਚੱਲ ਰਿਹਾ ਹੈ · ਟੈਬ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="7453330308669753048">ਖੋਜ ਇਤਿਹਾਸ ਦਾ ਨਤੀਜਾ ਹਟਾਇਆ ਗਿਆ</translation>
 <translation id="7459485586006128091">ਕਿਸੇ ਅੰਦਰੂਨੀ ਗੜਬੜ ਦੇ ਕਾਰਨ, ਹੌਟਸਪੌਟ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਕੁਝ ਮਿੰਟਾਂ ਵਿੱਚ ਮੁੜ-ਕਨੈਕਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਮੋਡ</translation>
 <translation id="7466449121337984263">ਕਿਰਪਾ ਕਰਕੇ ਸੈਂਸਰ ਨੂੰ ਸਪਰਸ਼ ਕਰੋ</translation>
 <translation id="7477793887173910789">ਆਪਣਾ ਸੰਗੀਤ, ਵੀਡੀਓ ਕੰਟਰੋਲ ਕਰੋ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ</translation>
+<translation id="7488762544858401571">ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7489261257412536105">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ ਜਾਂ ਉਸ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
+<translation id="7490157877815329797">ਵਿਗਿਆਪਨ-ਰਹਿਤ ਸੰਗੀਤ ਸੁਣਨ ਅਤੇ ਵਿਅਕਤੀਗਤ ਫੋਕਸ ਸੰਗੀਤ ਦਾ ਅਨੰਦ ਲੈਣ ਲਈ, YouTube Music Premium ਵਰਤ ਕੇ ਦੇਖੋ</translation>
 <translation id="7490360161041035804">ਤੁਸੀਂ Google Drive ਦੀਆਂ ਫ਼ਾਈਲਾਂ ਸਮੇਤ ਮਹੱਤਵਪੂਰਨ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ। ਪਿੰਨ ਕਰਨ ਲਈ, ਕਰਸਰ ਨੂੰ ਕਿਸੇ ਆਈਟਮ ਦੇ ਉੱਤੇ ਘੁੰਮਾਓ ਜਾਂ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹੋ ਅਤੇ ਉਸ ਆਈਟਮ 'ਤੇ ਸੱਜਾ-ਕਲਿਕ ਕਰੋ।</translation>
 <translation id="7497767806359279797">ਭਾਸ਼ਾ ਅਤੇ ਕੀ-ਬੋਰਡ ਚੁਣੋ</translation>
 <translation id="7507162824403726948">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
@@ -1623,6 +1894,7 @@
 <translation id="7509246181739783082">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7512509370370076552">ਸੱਜਾ-ਕਲਿੱਕ ਸ਼ਾਰਟਕੱਟ ਨੂੰ alt + click ਤੋਂ<ph name="LAUNCHER_KEY_NAME" /> key + click 'ਤੇ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" /> ਨੂੰ ਨਹੀਂ ਚੁਣਿਆ ਗਿਆ</translation>
+<translation id="7513057995673284840">ਤੁਸੀਂ ਆਪਣੇ <ph name="PERIPHERAL_NAME" /> ਲਈ ਬਟਨ ਸੰਬੰਧੀ ਕਾਰਵਾਈਆਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="7513622367902644023">ਸਕ੍ਰੀਨਸ਼ਾਟ ਮੋਡ ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="7513922695575567867"><ph name="DATE" /> ਵਾਲੇ ਹਫ਼ਤੇ ਦੇ ਕੈਲੰਡਰ ਵਿੱਚ ਫ਼ਿਲਹਾਲ <ph name="SELECTED_DATE" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ ਹੈ।</translation>
 <translation id="7514365320538308">ਡਾਊਨਲੋਡ ਕਰੋ</translation>
@@ -1632,6 +1904,9 @@
 <translation id="7519649142417630956">ਬੰਦ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਪ੍ਰਸ਼ਾਸਕ ਲੌਗ-ਆਊਟ ਹੋ ਜਾਵੇਗਾ ਅਤੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨੂੰ ਕੰਟਰੋਲ ਨਹੀਂ ਕਰ ਸਕੇਗਾ।
 
 ਡੀਵਾਈਸ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, ਡੀਵਾਈਸ 'ਤੇ ਦੁਬਾਰਾ ਪਾਵਰ ਬਟਨ ਦਬਾਈ ਰੱਖੋ।</translation>
+<translation id="7523420897035067483">ਫੋਕਸ ਮੋਡ ਵਿੱਚ ਹੋਣ ਵੇਲੇ 'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7525067979554623046">ਬਣਾਓ</translation>
 <translation id="7526573455193969409">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਨੈੱਟਵਰਕ ਦੀ ਨਿਗਰਾਨੀ ਹੋ ਰਹੀ ਹੋਵੇ</translation>
 <translation id="7536035074519304529">IP ਪਤਾ: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">ਖੱਬੀ ਵਿੰਡੋ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
@@ -1642,7 +1917,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> ਐਪ ਫ਼ਿਲਹਾਲ ਤੁਹਾਡਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤ ਰਹੀ ਹੈ</translation>
 <translation id="7561982940498449837">ਮੀਨੂ ਬੰਦ ਕਰੋ</translation>
 <translation id="7564874036684306347">ਵਿੰਡੋਆਂ ਨੂੰ ਕਿਸੇ ਹੋਰ ਡੈਸਕਟਾਪ 'ਤੇ ਲਿਜਾਉਣ ਨਾਲ ਅਣਕਿਆਸਿਆ ਵਰਤਾਅ ਦਿਖ ਸਕਦਾ ਹੈ। ਇਸ ਤੋਂ ਬਾਅਦ ਦੀਆਂ ਸੂਚਨਾਵਾਂ, ਵਿੰਡੋਆਂ ਅਤੇ ਡਾਇਲੌਗ ਡੈਸਕਟਾਪਾਂ ਵਿੱਚ ਵੱਖ-ਵੱਖ ਕੀਤੇ ਜਾ ਸਕਦੇ ਹਨ।</translation>
-<translation id="7567950130372125778">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ। Chromebook ਥੋੜ੍ਹੀ ਵੱਖਰੀ ਹੈ।</translation>
+<translation id="7568790562536448087">ਅੱਪਡੇਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7569509451529460200">ਬ੍ਰੇਲ ਅਤੇ ChromeVox ਯੋਗ ਬਣਾਏ ਗਏ ਹਨ</translation>
 <translation id="7569886975397378678">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨਾ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="7571361473021531288">ਬੈਟਰੀ <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> ਬਾਕੀ</translation>
@@ -1650,13 +1925,16 @@
 <translation id="7579778809502851308">ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਕਰੋ</translation>
 <translation id="7593891976182323525">Search ਜਾਂ Shift</translation>
 <translation id="7598054670902114203">CPU ਵਰਤੋਂ ਸਨੈਪਸ਼ਾਟ, <ph name="CPU_USEAGE" />%. ਤਾਪਮਾਨ <ph name="TEMPERATURE" /> ਡਿਗਰੀ ਸੈਲਸੀਅਸ, ਮੌਜੂਦਾ ਗਤੀ: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
+<translation id="7599378375976398913">ਚੁਣਿਆ ਗਿਆ ਨਤੀਜਾ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="7600875258240007829">ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਦੇਖੋ</translation>
 <translation id="7601417191446344542">ਕੀ ਮਿਊਟ ਰਿਮਾਈਂਡਰ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="7607002721634913082">ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="7609951632080598826">ਕੈਲੰਡਰ ਦ੍ਰਿਸ਼, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">ਕੈਮਰੇ ਨੂੰ ਮੁੜ-ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ।</translation>
+<translation id="7613620083300976559">ਗੇਮ ਕੰਟਰੋਲਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="761736749114493194">ਕੈਮਰਾ ਫ੍ਰੇਮਿੰਗ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">ਕੋਈ ਸਵਾਲ ਪੁੱਛੋ</translation>
 <translation id="7634648064048557203">ਕੈਮਰੇ ਨੂੰ ਹੇਠਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7638572816805275740">ਵਿੰਡੋ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ ਜਾਂ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਕਰੋ</translation>
 <translation id="7642106959537987271">ਰੰਗ ਪਲਟਨਾ ਮੋਡ</translation>
@@ -1665,6 +1943,7 @@
 <translation id="7647488630410863958">ਆਪਣੀਆਂ ਸੂਚਨਾਵਾਂ ਦੇਖਣ ਲਈ ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="7649070708921625228">ਸਹਾਇਤਾ</translation>
 <translation id="7654687942625752712">ਬੋਲੀ ਪ੍ਰਤੀਕਰਮ ਬੰਦ ਕਰਨ ਲਈ ਦੋਵੇਂ ਅਵਾਜ਼ ਕੁੰਜੀਆਂ ਨੂੰ 5 ਸਕਿੰਟ ਤੱਕ ਦਬਾਈ ਰੱਖੋ।</translation>
+<translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" ਨੂੰ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz) ਰੈਜ਼ੋਲਿਊਸ਼ਨ 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ। ਪੋਰਟ ਬੈਂਡਵਿਡਥ ਦੀਆਂ ਸੀਮਾਵਾਂ ਕਰਕੇ, ਤੁਹਾਡੀ ਡਿਸਪਲੇ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰ ਸਕਦੀ। ਤਸਦੀਕ ਕਰਨ ਤੋਂ ਬਿਨਾਂ, ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7659861092419699379">ਡੈਸਕ ਅਤੇ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="7660160718439869192">ਤੁਹਾਡਾ <ph name="NAME" /> <ph name="EMAIL" /> ਨਾਲ ਲਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਦਿਸੇਗਾ</translation>
@@ -1672,13 +1951,16 @@
 <translation id="7670953955701272011">Google Calendar ਵਿੱਚ ਇਹ ਤਾਰੀਖ ਖੋਲ੍ਹੋ</translation>
 <translation id="7671610481353807627">ਐਪਾਂ ਨੂੰ ਰੰਗ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7672095158465655885"><ph name="NAME" /> ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ, <ph name="SUBTEXT" /></translation>
+<translation id="7680417644536099065">Caps Lock ਚਾਲੂ ਹੈ</translation>
 <translation id="7682351277038250258">ਕਲਿੱਪਬੋਰਡ ਤੋਂ ਸਮੱਗਰੀ ਨੂੰ ਸਰਲ ਲਿਖਤ ਵਜੋਂ ਪੇਸਟ ਕਰੋ</translation>
 <translation id="7684531502177797067">ਕੈਮਰਾ ਇਨਪੁੱਟ <ph name="CAMERA_NAME" /> 'ਤੇ ਸੈੱਟ ਹੈ।</translation>
+<translation id="7687172143976244806">ਤੁਸੀਂ ਖੋਲ੍ਹਿਆ</translation>
 <translation id="7689817529363080918">ਇਹ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤ ਦੇ ਨਾਲ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ਅਤੇ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਦਿੰਦੀ ਹੈ</translation>
 <translation id="7704000866383261579">ਪਿਛਲੀ ਕਾਰਵਾਈ ਨੂੰ ਮੁੜ-ਓਹੀ ਕਰੋ</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">GIF ਬਣਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="7714767791242455379">ਨਵਾਂ ਸੈਲਿਊਲਰ ਨੈੱਟਵਰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="7716257086539630827">ਆਪਣੇ ਟੈਬਲੈੱਟ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="7720400844887872976"><ph name="TIME" /> ਤੱਕ ਚਾਲੂ ਰਹੇਗੀ</translation>
 <translation id="7720410380936703141">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="7721132362314201794">ਡਿਸਕ ਦਾ ਨਾਮ</translation>
@@ -1688,22 +1970,31 @@
 <translation id="7725108879223146004">ਹੌਟਸਪੌਟ ਦੇ ਵੇਰਵੇ ਦਿਖਾਓ। ਹੌਟਸਪੌਟ ਨੂੰ ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="7726391492136714301">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ ਦੇਖੋ</translation>
 <translation id="7727952505535211425">ਵੈੱਬਸਾਈਟ ਨੂੰ ਨਵੀਂ ਟੈਬ ਦੀ ਪਤਾ ਬਾਰ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
+<translation id="7728657226117099693">Caps Lock ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="7742327441377685481">ਕੋਈ ਸੂਚਨਾ ਨਹੀਂ</translation>
 <translation id="7748275671948949022">ਸ਼ੈਲਫ 'ਤੇ ਲਾਂਚਰ ਬਟਨ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="7749443890790263709">ਡੈਸਕਾਂ ਦੀ ਅਧਿਕਤਮ ਸੰਖਿਆ ਪੂਰੀ ਹੋ ਗਈ।</translation>
-<translation id="776344839111254542">ਅੱਪਡੇਟ ਵੇਰਵਿਆਂ ਨੂੰ ਦੇਖਣ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
+<translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">ਸਾਰੇ  ਦਿਖਾਓ </translation>
+<translation id="7759183637555564029">ਤੁਸੀਂ ਕਿਸੇ ਵੇਲੇ ਵੀ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ 'ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਅਤੇ 'ਪੜ੍ਹਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">ਚੁਣੋ ਅਤੇ ਸੁਣੋ</translation>
 <translation id="7769299611924763557">ਤੁਹਾਡੇ GIF ਨੂੰ ਜਲਦ ਹੀ ਤਿਆਰ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="7773536009433685931">ਇਸਦੀ ਬਜਾਏ WiFi ਚਾਲੂ ਕਰੋ</translation>
+<translation id="77747521138552256">ਪਿੰਨ ਦਾਖਲ ਕਰਨ ਦੀਆਂ ਬਹੁਤ ਸਾਰੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ ਕੀਤੀਆਂ ਗਈਆਂ। <ph name="TIME_LEFT" /> ਇੰਤਜ਼ਾਰ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਪਿੰਨ ਅਜ਼ਮਾਓ ਜਾਂ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਤੁਰੰਤ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="7780094051999721182">ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="7780159184141939021">ਸਕ੍ਰੀਨ ਘੁਮਾਓ</translation>
+<translation id="7781829728241885113">ਕੱਲ੍ਹ</translation>
+<translation id="7787212146956232129">ਇਨਪੁੱਟ ਅਤੇ ਆਊਟਪੁੱਟ ਡੀਵਾਈਸਾਂ ਨੂੰ ਸੈੱਟ ਕੀਤਾ ਗਿਆ ਹੈ। ਤਬਦੀਲੀ ਕਰਨ ਲਈ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="7792590255364786396">ਦਿਖਣਯੋਗ</translation>
+<translation id="7793389284006812057">ਜਨਰੇਟਿਵ AI ਪ੍ਰਯੋਗਮਈ ਹੈ, ਸ਼ੁਰੂਆਤੀ ਵਿਕਾਸ ਵਿੱਚ ਹੈ ਅਤੇ ਫ਼ਿਲਹਾਲ ਇਸਦੀ ਉਪਲਬਧਤਾ ਸੀਮਤ ਹੈ।</translation>
 <translation id="7796735576426975947">ਨਵੀਂ ਸੂਚਨਾ ਲੁਕੀ ਹੋਈ ਹੈ</translation>
 <translation id="7798302898096527229">ਰੱਦ ਕਰਨ ਲਈ Search ਜਾਂ Shift ਦਬਾਓ।</translation>
 <translation id="780301667611848630">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
 <translation id="7807067443225230855">Search ਅਤੇ Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ਅਤੇ <ph name="MINUTE" /></translation>
+<translation id="7825412704590278437">ਆਗਾਮੀ ਕੈਲੰਡਰ ਇਵੈਂਟ ਤੋਂ</translation>
 <translation id="7829386189513694949">ਮਜ਼ਬੂਤ ਸਿਗਨਲ</translation>
+<translation id="7830453190047749513">ਤੁਸੀਂ ਆਪਣੇ <ph name="PERIPHERAL_NAME" /> ਲਈ ਬਟਨ ਸੰਬੰਧੀ ਕਾਰਵਾਈਆਂ, ਕਰਸਰ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="7837740436429729974">ਸਮਾਂ ਸਮਾਪਤ ਹੋਇਆ</translation>
 <translation id="7842569679327885685">ਚਿਤਾਵਨੀ: ਪ੍ਰਯੋਗਮਈ ਵਿਸ਼ੇਸ਼ਤਾ</translation>
 <translation id="7846634333498149051">ਕੀ-ਬੋਰਡ</translation>
@@ -1715,7 +2006,6 @@
 <translation id="7866482334467279021">ਚਾਲੂ</translation>
 <translation id="7872786842639831132">ਬੰਦ ਹੈ</translation>
 <translation id="7875575368831396199">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਫ਼ੋਨ ਹੱਬ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਬਲੂਟੁੱਥ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
-<translation id="7877557217297072640">{0,plural, =0{ਡੀਵਾਈਸ ਨੂੰ ਹੁਣੇ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}=1{ਡੀਵਾਈਸ ਨੂੰ 1 ਸਕਿੰਟ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਸਕਿੰਟਾਂ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}}</translation>
 <translation id="7884446017008693258">ਹੌਟਸਪੌਟ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="7884902759927478774">ਟੈਬ ਨੂੰ ਘਸੀਟਣਾ ਰੱਦ ਕਰੋ</translation>
 <translation id="7886169021410746335">ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
@@ -1724,6 +2014,7 @@
 <translation id="7893503627044934815">ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਦਿਸਣ ਨਹੀਂ ਦੇਣਾ ਚਾਹੁੰਦੇ</translation>
 <translation id="7893547474469215105">ਜ਼ੈਨਿਥ ਨੂੰ ਪਰਿਭਾਸ਼ਿਤ ਕਰੋ</translation>
 <translation id="7895348134893321514">ਟੋਟ</translation>
+<translation id="7896681766480521542">ਕੋਈ ਕਾਰਜ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7897375687985782769">ਤੁਸੀਂ ਸਕ੍ਰੀਨ ਘੁਮਾਉਣ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਇਆ ਹੈ। ਕੀ ਤੁਸੀਂ ਸਕ੍ਰੀਨ ਘੁਮਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="7897626842031123113">ਸਥਿਤੀ ਟ੍ਰੇਅ, ਸਮਾਂ <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -1732,6 +2023,7 @@
         <ph name="MANAGED" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="7899977217122813285">ਫੋਕਸ ਮੋਡ ਚਾਲੂ ਹੋਣ ਕਰਕੇ, ਸੂਚਨਾਵਾਂ <ph name="TIME" /> ਤੱਕ ਮਿਊਟ ਹਨ</translation>
 <translation id="7901190436359881020">ਵਿੰਡੋਆਂ ਨੂੰ ਸਵੈਪ ਕਰੋ</translation>
 <translation id="7901405293566323524">ਫ਼ੋਨ ਹੱਬ</translation>
 <translation id="7902625623987030061">ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈਂਸਰ ਨੂੰ ਸਪਰਸ਼ ਕਰੋ</translation>
@@ -1745,27 +2037,38 @@
 <translation id="7933084174919150729">Google Assistant ਸਿਰਫ਼ ਪ੍ਰਾਇਮਰੀ ਪ੍ਰੋਫਾਈਲ ਲਈ ਹੀ ਉਪਲਬਧ ਹੈ।</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ਅਤੇ <ph name="SECOND_PARENT_EMAIL" /> ਵੱਲੋਂ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="793716872548410480">ਆਪਣੇ ਕਲਿੱਪਬੋਰਡ ਨੂੰ ਦੇਖਣ ਲਈ <ph name="SHORTCUT_KEY_NAME" /> + V ਨੂੰ ਦਬਾਓ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਕਾਪੀ ਕੀਤੀਆਂ ਗਈਆਂ ਆਖਰੀ 5 ਆਈਟਮਾਂ ਨੂੰ ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
+<translation id="7942330802915522974"><ph name="TOTAL_STEPS" /> ਵਿੱਚੋਂ ਪੜਾਅ <ph name="STEP" /> ਦੇਖੋ। ਤੁਸੀਂ ਲਾਂਚਰ ਵਿੱਚ Files ਐਪ ਲੱਭ ਸਕਦੇ ਹੋ। ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਸਥਾਨਕ ਫ਼ਾਈਲਾਂ ਅਤੇ Google Drive ਫ਼ਾਈਲਾਂ ਦਾ Files ਐਪ ਵਿੱਚ ਹੀ ਪ੍ਰਬੰਧਨ ਕਰੋ।</translation>
 <translation id="7942349550061667556">ਲਾਲ</translation>
+<translation id="7943516765291457328">ਨਜ਼ਦੀਕੀ ਹੌਟਸਪੌਟਾਂ ਨੂੰ ਸਕੈਨ ਕਰਨ ਲਈ ਬਲੂਟੁੱਥ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7944023924886109030">ਅੱਜ ਦੇ ਸਾਰੇ ਇਵੈਂਟ ਦੇਖੋ</translation>
 <translation id="7945357288295809525">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਦਿਖਾਓ ਕਿ "<ph name="ENABLED_FEATURES" />" ਚਾਲੂ ਹੈ।</translation>
+<translation id="7946681191253332687">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟ ਉਪਲਬਧ ਹਨ</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ਐਪ <ph name="DEVICE_NAME" /> ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="7951630946012935453">ਕੀ-ਬੋਰਡ ਦੀ ਚਮਕ ਘਟਾਓ</translation>
+<translation id="7953176344218790168">ਵੱਡੇ-ਅੱਖਰ</translation>
+<translation id="7953994493035617347">ਕੀ ਨਵੇਂ ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਦੀ ਤਸਦੀਕ ਕਰਨੀ ਹੈ?</translation>
+<translation id="795958884516058160">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵੱਡਦਰਸ਼ੀ ਚਾਲੂ ਹੈ। ਇਸਨੂੰ ਟੌਗਲ ਕਰ ਕੇ ਬੰਦ ਕਰਨ ਲਈ ਦੁਬਾਰਾ <ph name="ACCELERATOR" /> ਦਬਾਓ।</translation>
+<translation id="7962583092928373823">ਸਾਰੇ Google Calendar ਸੁਝਾਅ ਲੁਕਾਓ</translation>
 <translation id="7963689218131240420">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਮੋਡ ਬੰਦ ਹੈ।</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> ਤੋਂ</translation>
 <translation id="7968693143708939792">ਫੋਲਡਰ ਚੁਣੋ...</translation>
+<translation id="7973756967040444713">ਟੂਲਬਾਰ ਬੰਦ ਕਰੋ</translation>
 <translation id="797512352675305461">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵਾਲੇ ਵੱਡਦਰਸ਼ੀ ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="7977927628060636163">ਮੋਬਾਈਲ ਨੈੱਟਵਰਕਾਂ ਦੀ ਖੋਜ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="7982789257301363584">ਨੈੱਟਵਰਕ</translation>
 <translation id="7982878511129296052">ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="7984197416080286869">ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੰਬੰਧੀ ਬਹੁਤ ਜ਼ਿਆਦਾ ਕੋਸ਼ਿਸ਼ਾਂ</translation>
 <translation id="798779949890829624">ਇਸ ਸੈਟਿੰਗ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="7989206653429884947">ਅਕਸਰ ਖੋਲ੍ਹੀ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="799296642788192631">ਤੁਸੀਂ ਮਹੱਤਵਪੂਰਨ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ। ਪਿੰਨ ਕਰਨ ਲਈ, ਕਰਸਰ ਨੂੰ ਕਿਸੇ ਆਈਟਮ ਦੇ ਉੱਤੇ ਘੁੰਮਾਓ ਜਾਂ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹੋ ਅਤੇ ਉਸ ਆਈਟਮ 'ਤੇ ਸੱਜਾ-ਕਲਿਕ ਕਰੋ।</translation>
 <translation id="7994370417837006925">ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ</translation>
 <translation id="7995804128062002838">ਸਕ੍ਰੀਨ ਨੂੰ ਕੈਪਚਰ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
+<translation id="8000020256436988724">ਟੂਲਬਾਰ</translation>
 <translation id="8000066093800657092">ਕੋਈ ਨੈੱਟਵਰਕ ਨਹੀਂ</translation>
 <translation id="8001755249288974029">ਕਰਸਰ ਤੋਂ ਲਾਈਨ ਦੀ ਸ਼ੁਰੂਆਤ ਤੱਕ ਲਿਖਤ ਚੁਣੋ</translation>
 <translation id="8004512796067398576">ਵਧਾਓ</translation>
-<translation id="8026334261755873520">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
+<translation id="8005527720597583355">ਫੋਕਸ ਸੈਸ਼ਨ ਸ਼ੁਰੂ ਕਰੋ</translation>
+<translation id="8015361438441228492">ਕਾਰਜ ਦਾ ਸੰਪਾਦਨ ਨਹੀਂ ਹੋ ਸਕਿਆ।</translation>
 <translation id="802782383769312836">ਪਿਛਲਾ ਡੈਸਕ: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> ਵਿੱਚੋਂ ਡੈਸਕ <ph name="DESK_INDEX" />.</translation>
 <translation id="8029247720646289474">ਹੌਟਸਪੌਟ ਕਨੈਕਸ਼ਨ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="8029629653277878342">ਵਧੇਰੇ ਸੁਰੱਖਿਆ ਲਈ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਲੋੜੀਂਦਾ ਹੈ</translation>
@@ -1774,20 +2077,22 @@
 <translation id="8042893070933512245">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="8044457332620420407">ਕੀ-ਬੋਰਡ ਬੈਕਲਾਈਟ ਬੰਦ ਹੈ</translation>
 <translation id="8048123526339889627">ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="8049189770492311300">ਟਾਈਮਰ</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> ਨਾਮਕ ਟੈਮਪਲੇਟ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="8052898407431791827">ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8054466585765276473">ਬੈਟਰੀ ਸਮੇਂ ਦਾ ਅਨੁਮਾਨ ਲਗਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="8079538659226626406">ਸਕ੍ਰੀਨ ਸਾਂਝਾਕਰਨ</translation>
 <translation id="8083540854303889870">ਬਾਅਦ ਲਈ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">ਹੋਰ ਵਿਕਲਪਾਂ ਲਈ ਟੈਬ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਸਾਰੇ ਡੈਸਕਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਖੱਬੇ ਅਤੇ ਸੱਜੇ ਤੀਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> ਵਜੇ ਸ਼ੁਰੂ ਹੋਵੇਗਾ <ph name="DAYS_ELAPSED" /></translation>
-<translation id="8091387634532529612">ਸਵੈਚਲਿਤ ਅੱਪਡੇਟ</translation>
 <translation id="8092380135549145188">ਸਕ੍ਰੋਲ ਕੰਟਰੋਲ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> 'ਤੇ ਸਕ੍ਰੀਨ ਕਾਸਟ ਕਰਨੀ ਬੰਦ ਕਰੋ</translation>
 <translation id="810637681351706236">ਐਪ ਨੂੰ ਸ਼ੈਲਫ ਤੋਂ ਅਣਪਿੰਨ ਕਰੋ</translation>
 <translation id="8113423164597455979">ਚਾਲੂ, ਸਭ ਐਪਾਂ</translation>
 <translation id="8113515504791187892">'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਬਟਨ</translation>
 <translation id="8120151603115102514">ਤੁਹਾਡੇ ਫ਼ੋਨ ਵਿੱਚ ਲਾਕ ਸਕ੍ਰੀਨ ਨਹੀਂ ਹੈ। ਆਪਣੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ।</translation>
+<translation id="8120249852906205273">ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8127095419621171197">Calculator ਐਪ ਖੋਲ੍ਹੋ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8130528849632411619">ਦਸਤਾਵੇਜ਼ ਦੀ ਸ਼ੁਰੂਆਤ 'ਤੇ ਜਾਓ</translation>
@@ -1806,24 +2111,33 @@
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਸੈਟਿੰਗ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ।</translation>
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> ਲਈ ਜਾਣਕਾਰੀ ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
+<translation id="8168435359814927499">ਸਮੱਗਰੀ</translation>
 <translation id="8185090165691050712">ਲਾਕ ਮੋਡ ਦਾ ਆਕਾਰ ਬਦਲਣ ਲਈ ਮੀਨੂ ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ</translation>
+<translation id="8192727139462702395">ਬਲੂਟੁੱਥ ਬੰਦ ਕਰਨ 'ਤੇ, ਇਹ ਬਾਹਰੀ ਡੀਵਾਈਸ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਤੋਂ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਣਗੇ:</translation>
 <translation id="8198456017687137612">ਟੈਬ ਕਾਸਟ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="8200772114523450471">ਦੁਬਾਰਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
+<translation id="820256110035940528"><ph name="TITLE" /> ਤੁਸੀਂ ਬਸ <ph name="FOCUSED_TIME" /> ਲਈ ਫੋਕਸ ਕੀਤਾ ਹੈ। ਦੁਬਾਰਾ ਫੋਕਸ ਕਰਨ ਲਈ ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ।</translation>
+<translation id="8203224998425013577">ਹੋਰ ਇਮੋਜੀ ਅਤੇ GIF ਦਿਖਾਓ</translation>
 <translation id="8203795194971602413">ਸੱਜਾ ਕਲਿੱਕ ਕਰੋ</translation>
-<translation id="8209010265547628927">ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="8214996719228530800">Canary ਚੈਨਲ</translation>
 <translation id="8219451629189078428">ਇਸ ਸਮੇਂ ਦੌਰਾਨ ਤੁਹਾਡੀ Chromebook ਨੂੰ ਚਾਲੂ ਰਹਿਣ ਅਤੇ ਪਾਵਰ ਨਾਲ ਕਨੈਕਟ ਰਹਿਣ ਦੀ ਲੋੜ ਹੈ। ਪੱਕਾ ਕਰੋ ਕਿ ਚਾਰਜਰ ਜਾਂ ਅਡਾਪਟਰ ਕੇਬਲਾਂ ਤੁਹਾਡੀ Chromebook ਅਤੇ ਪਾਵਰ ਸਾਕੇਟ ਦੋਵਾਂ ਵਿੱਚ ਪੂਰੀ ਤਰ੍ਹਾਂ ਲੱਗੀਆਂ ਹੋਈਆਂ ਹਨ। ਆਪਣੀ Chromebook ਨੂੰ ਬੰਦ ਨਾ ਕਰੋ।</translation>
+<translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="8228175756124063692">ਇਹ ਸੁਝਾਅ ਲੁਕਾਓ</translation>
 <translation id="8230305195727960608">ਰੰਗ ਪਲਟਨਾ ਮੋਡ</translation>
 <translation id="8236042855478648955">ਆਰਾਮ ਕਰਨ ਦਾ ਸਮਾਂ ਹੋ ਗਿਆ ਹੈ</translation>
 <translation id="8237964652943995219">ਅਗਲਾ ਡੈਸਕ: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> ਵਿੱਚੋਂ ਡੈਸਕ <ph name="DESK_INDEX" />.</translation>
+<translation id="8238817965863339552">ਆਪਣੇ <ph name="PRODUCT_NAME" /> ਨੂੰ ਚੰਗੀ ਤਰ੍ਹਾਂ ਸਮਝਣ ਲਈ ਨਵੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਜਾਣੋ। ਅੱਗੇ ਵਧੋ ਅਤੇ 5 ਪੜਾਵਾਂ ਨੂੰ ਪੂਰਾ ਕਰੋ।</translation>
 <translation id="8239034820133090126">ਡੈਸਕ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਫ਼ੋਨ ਦੀ ਬੈਟਰੀ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ਐਪ</translation>
-<translation id="8255234195843591763">ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਰੀਸੈੱਟ ਕਰੋ</translation>
+<translation id="825129991941217170">ਸਾਰੀ Google Drive ਸਮੱਗਰੀ ਦਿਖਾਓ</translation>
+<translation id="8257510091797044096">ਆਪਣੇ ਡੀਵਾਈਸ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="8261506727792406068">ਮਿਟਾਓ</translation>
 <translation id="8262312463845990408">ਪਲੇਬੈਕ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
-<translation id="8270450402312105425">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ ਇੱਕ ਘੰਟੇ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਘੰਟੇ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਘੰਟਿਆਂ ਵਿੱਚ ਹੀ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਬਦਲੋ}}</translation>
+<translation id="8268302343625273732">Google Classroom ਵਿੱਚ ਸਾਰੀਆਂ ਅਸਾਈਨਮੈਂਟਾਂ ਦੇਖੋ</translation>
 <translation id="8277261673056602147">ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਲਿਖਤ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
+<translation id="8282784978194352587">ਤੁਸੀਂ ਇਹ ਕਰ ਦਿਖਾਇਆ ਹੈ!</translation>
+<translation id="8287009018010202411">ਉਤਪਾਦਕਤਾ</translation>
 <translation id="828708037801473432">ਬੰਦ</translation>
 <translation id="8297006494302853456">ਕਮਜ਼ੋਰ</translation>
 <translation id="8308637677604853869">ਪਿਛਲਾ ਮੀਨੂ</translation>
@@ -1833,6 +2147,7 @@
 <translation id="8331351032546853669">ਡਾਊਨਲੋਡ ਵਿਚਾਰ-ਅਧੀਨ ਹੈ</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">ਖਰਾਬ ਆਊਟਪੁੱਟ</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ਵਿੰਡੋ ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="8349826889576450703">ਲਾਂਚਰ</translation>
 <translation id="8349964124165471584">ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
@@ -1846,6 +2161,8 @@
 <translation id="8375916635258623388">ਇਹ <ph name="DEVICE_NAME" /> ਅਤੇ ਤੁਹਾਡਾ ਫ਼ੋਨ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਨੈਕਟ ਹੋ ਜਾਣਗੇ</translation>
 <translation id="8380784334203145311">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ,</translation>
 <translation id="8382715499079447151">ਦੇਖਣ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ</translation>
+<translation id="8383614331548401927">Recap ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ</translation>
+<translation id="838540623579162843">Music Premium ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8388750414311082622">ਆਖਰੀ ਡੈਸਕ ਨੂੰ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ।</translation>
 <translation id="8394567579869570560">ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਨੇ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="8401850874595457088">ਭਾਸ਼ਾ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
@@ -1869,6 +2186,7 @@
 <translation id="847056008324733326">ਡਿਸਪਲੇ ਸਕੇਲ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ਕੋਲ <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ਹੈ।</translation>
 <translation id="8477270416194247200">ਰੱਦ ਕਰਨ ਲਈ Alt+Search ਜਾਂ Shift ਦਬਾਓ।</translation>
+<translation id="8480418399907765580">ਟੂਲਬਾਰ ਦਿਖਾਓ</translation>
 <translation id="8487699605742506766">ਹੌਟਸਪੌਟ</translation>
 <translation id="8491237443345908933">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। ਰੈਜ਼ੋਲਿਊਸ਼ਨ <ph name="FALLBACK_RESOLUTION" /> ਵਿੱਚ ਬਦਲਿਆ ਗਿਆ ਸੀ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਬਣਾਈ ਰੱਖਣ ਲਈ 'ਤਸਦੀਕ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
@@ -1877,6 +2195,7 @@
 <translation id="85123341071060231">ਤੁਹਾਡੀ Chromebook ਦਾ ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ। ਆਪਣੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="8513108775083588393">ਸਵੈ-ਘੁੰਮਾਓ</translation>
 <translation id="851458219935658693">ਮੌਜੂਦਾ ਡੈਸਕ ਤੋਂ ਉਹ ਵਿੰਡੋ ਦਿਖਾਓ ਜਿਸ ਵਿੱਚ ਰੇਡੀਓ ਬਟਨ ਨੂੰ ਚੁਣਿਆ ਹੋਵੇ</translation>
+<translation id="851660987304951246">ਤੇਜ਼ੀ ਨਾਲ ਸਮੱਗਰੀ ਦਾ ਸਾਰਾਂਸ਼ ਦੇਣ ਲਈ 'ਪੜ੍ਹਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਸੁਵਿਧਾ ਦੀ ਵਰਤੋਂ ਕਰੋ ਜਾਂ ਸਵਾਲ ਪੁੱਛੋ</translation>
 <translation id="8517041960877371778">ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> ਚਾਲੂ ਹੋਣ ਵੇਲੇ ਚਾਰਜ ਨਹੀਂ ਹੋ ਸਕਦੀ।</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{ਮਾਈਕ ਇਨਪੁੱਟ ਨੂੰ <ph name="APP_NAME" /> ਵੱਲੋਂ ਕੰਟਰੋਲ ਕੀਤਾ ਜਾਂਦਾ ਹੈ}one{ਮਾਈਕ ਇਨਪੁੱਟ ਨੂੰ # ਐਪ ਵੱਲੋਂ ਕੰਟਰੋਲ ਕੀਤਾ ਜਾਂਦਾ ਹੈ}other{ਮਾਈਕ ਇਨਪੁੱਟ ਨੂੰ # ਐਪਾਂ ਵੱਲੋਂ ਕੰਟਰੋਲ ਕੀਤਾ ਜਾਂਦਾ ਹੈ}}</translation>
 <translation id="8535393432370007982">ਰੰਗ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਦੇ ਕ੍ਰਮ ਨੂੰ ਅਣਕੀਤਾ ਕਰੋ</translation>
@@ -1886,17 +2205,22 @@
 <translation id="8551588720239073785">ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8553395910833293175">ਪਹਿਲਾਂ ਹੀ ਸਾਰੇ ਡੈਸਕਾਂ ਦੇ ਜ਼ਿੰਮੇ ਲਗਾਇਆ ਗਿਆ।</translation>
 <translation id="8555757996376137129">ਮੌਜੂਦਾ ਡੈਸਕ ਨੂੰ ਹਟਾਓ</translation>
-<translation id="856298576161209842"><ph name="MANAGER" /> ਵੱਲੋਂ ਤੁਹਾਨੂੰ ਆਪਣੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ</translation>
-<translation id="8563862697512465947">ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="8559845965695780508"><ph name="USER" /> ਨੇ ਸੰਪਾਦਨ ਕੀਤਾ</translation>
+<translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">ਅਜ਼ਮਾਉਣ ਲਈ ਇਹ ਕੁਝ ਸੁਝਾਅ ਹਨ</translation>
 <translation id="857201607579416096">ਮੀਨੂ ਨੂੰ ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਲੇ ਸੱਜੇ ਕੋਨੇ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> ਦਬਾ ਕੇ ਲਿੰਕ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">ਆਪਣੀਆਂ ਐਪਾਂ ਨੂੰ ਨਾਮ ਜਾਂ ਰੰਗ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
 <translation id="8609384513243082612">ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
+<translation id="861045123704058818">ਐਪਾਂ ਨੂੰ ਕੁਝ ਸਮੇਂ ਲਈ ਸ਼੍ਰੇਣੀ ਮੁਤਾਬਕ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="8612216344243590325">ਮਹੱਤਵਪੂਰਨ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡੈਸਕਟਾਪ 'ਤੇ ਰੱਖਣ ਦੀ ਬਜਾਏ ਉਨ੍ਹਾਂ ਨੂੰ <ph name="HOLDING_SPACE_TITLE" /> ਵਿੱਚ ਰੱਖੋ। ਬਸ ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="HOLDING_SPACE_TITLE" /> 'ਤੇ ਘਸੀਟੋ।</translation>
+<translation id="8612338981637220013">ਤੁਸੀਂ ਸਫਲ ਹੋਏ!</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> ਅਤੇ <ph name="APP_2_TITLE" /> ਸੂਚਨਾਵਾਂ ਲੁਕੀਆਂ ਹੋਈਆਂ ਹਨ ਕਿਉਂਕਿ ਦੇਖਣ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ ਚਾਲੂ ਹੈ</translation>
+<translation id="8615778328722901791">ਟੂਲਬਾਰ ਖੋਲ੍ਹੋ</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">ਅਵਾਜ਼ ਘਟਾਓ</translation>
+<translation id="862543346640737572">ਇਮੋਜੀ ਅਤੇ GIF</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8631727435199967028">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8634326941504371857">ਇਸ ਡੀਵਾਈਸ ਅਤੇ Google Drive 'ਤੇ ਮੌਜੂਦ ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ</translation>
@@ -1909,18 +2233,23 @@
 <translation id="8649597172973390955">ਸ਼ੈਲਫ਼ ਹਮੇਸ਼ਾਂ ਦਿਖਾਈ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="8652175077544655965">ਸੈਟਿੰਗਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="8653151467777939995">ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। ਸੂਚਨਾਵਾਂ ਚਾਲੂ ਹਨ</translation>
+<translation id="8657066291275741003">ਛੋਟੇ ਅੱਖਰ</translation>
 <translation id="8660331759611631213">71 ਦਾ ਵਰਗ ਮੂਲ</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">ਅੰਸ਼ਕ ਸਕ੍ਰੀਨਸ਼ਾਟ ਕੈਪਚਰ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="8676770494376880701">ਘੱਟ-ਪਾਵਰ ਦਾ ਚਾਰਜਰ ਕਨੈਕਟ ਕੀਤਾ</translation>
+<translation id="8679158879996532670">ਫੋਕਸ ਮੋਡ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। ਫੋਕਸ ਮੋਡ ਚਾਲੂ ਹੈ, <ph name="REMAINING_TIME" /> ਬਾਕੀ।</translation>
 <translation id="8683506306463609433">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸਿੰਗ ਕਿਰਿਆਸ਼ੀਲ ਹੈ</translation>
 <translation id="8703634754197148428">ਰਿਕਾਰਡਿੰਗ ਸ਼ੁੁਰੂ ਕਰੋ। ਇੱਕ ਵਾਰ ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਹੋਣ ਤੋਂ ਬਾਅਦ, ਸ਼ੈਲਫ 'ਤੇ ਜਾਣ ਲਈ ਅਤੇ 'ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰੋ' ਬਟਨ ਲੱਭਣ ਲਈ Alt + Shift + L ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="8704155109538237473">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਵਿੰਡੋ 'ਤੇ ਫੋਕਸ ਕਰੋ</translation>
 <translation id="870917907284186124">ਡਿਕਟੇਸ਼ਨ ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ (ਆਪਣੀ ਅਵਾਜ਼ ਨਾਲ ਟਾਈਪ ਕਰੋ)</translation>
+<translation id="8711169534266271368">ਗੇਮ ਡੈਸ਼ਬੋਰਡ ਦੇ ਵਿਕਲਪ</translation>
+<translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
 <translation id="8714138378966541668">ਪ੍ਰਦਾਨਕ ਵੱਲੋਂ ਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8717459106217102612">ਪਿਛਲਾ ਸ਼ਬਦ ਜਾਂ ਅੱਖਰ ਚੁਣੋ</translation>
 <translation id="8721053961083920564">ਅਵਾਜ਼ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਕੈਪਚਰ</translation>
+<translation id="8725066075913043281">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="8725214031272624704">ਉਪਲਬਧ ਇਨਪੁੱਟ ਵਿਧੀਆਂ ਦੀ ਸੂਚੀ ਦਿਖਾਓ</translation>
 <translation id="8730621377337864115">ਹੋ ਗਿਆ</translation>
 <translation id="8731487213223706745"><ph name="END_TIME" /> ਵਜੇ ਸਮਾਪਤ ਹੋਵੇਗਾ <ph name="DAYS_ELAPSED" /></translation>
@@ -1929,8 +2258,11 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: ਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">ਜਾਰੀ ਰੱਖੋ!</translation>
+<translation id="8753368202781196133">ਇਸ ਸਮੇਂ ਇਹ ਭਾਸ਼ਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
 <translation id="8755498163081687682">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ: <ph name="ORIGIN_NAME" /> ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="875593634123171288">VPN ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
+<translation id="8756799553341497810">ਇਸ ਦ੍ਰਿਸ਼ ਤੋਂ ਬਾਹਰ ਜਾਣ ਤੋਂ ਬਾਅਦ, ਤੁਸੀਂ ਆਪਣੀ ਐਪ ਦੇ ਖਾਕੇ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8759408218731716181">ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਸੈੱਟ ਅੱਪ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="8763883995157866248">ਡੀਵਾਈਸ ਨੂੰ ਸਲੀਪ ਮੋਡ ਵਿੱਚ ਰੱਖੋ</translation>
 <translation id="877404052021108314">C ਵਿੱਚ 90°F</translation>
@@ -1939,20 +2271,24 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />। <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">ਹੇਠਲੇ ਸੱਜੇ ਕੋਨੇ, ਲਾਂਚਰ, ਪਤਾ ਬਾਰ, ਬੁੱਕਮਾਰਕ ਬਾਰ, ਖੁੱਲ੍ਹੀ ਵੈੱਬਸਾਈਟ ਅਤੇ ਡਾਊਨਲੋਡਾਂ ਵਿਚਾਲੇ ਅੱਗੇ ਵੱਲ ਜਾਓ</translation>
 <translation id="8792626944327216835">ਮਾਈਕ੍ਰੋਫ਼ੋਨ</translation>
+<translation id="8797381270745758905">ਲਿੰਕ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਦੀ ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">ਫੋਲਡਰ <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">"ਮਦਦ"</translation>
+<translation id="8813531681893371930">ਤਾਰ ਵਾਲੇ ਹੈੱਡਫ਼ੋਨ ਨੂੰ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="8814190375133053267">ਵਾਈ-ਫਾਈ</translation>
 <translation id="8815390544836110344">ਸਕ੍ਰੀਨਸ਼ਾਟ ਸ਼ਾਰਟਕੱਟ, Ctrl + Shift + ਰੂਪ-ਰੇਖਾ ਮੋਡ ਕੁੰਜੀ ਦਬਾਓ</translation>
 <translation id="881757059229893486">ਇਨਪੁੱਟ ਵਿਧੀਆਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8819728065740986820">ਅਡੈਪਟਿਵ ਚਾਰਜਿੰਗ ਚਾਲੂ ਹੈ</translation>
+<translation id="8822104519413696986">ਇਹ ਸਕ੍ਰੀਨ ਨੂੰ ਸਪਰਸ਼ ਕਰ ਕੇ ਖੇਡਣ ਵਾਲੀ ਗੇਮ ਹੈ</translation>
 <translation id="8825863694328519386">ਪਿੱਛੇ ਜਾਣ ਲਈ ਖੱਬੇ ਪਾਸੇ ਤੋਂ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="8832513206237979203">ਬੁੱਕਮਾਰਕ ਬਾਰ ਨੂੰ ਦਿਖਾਓ ਜਾਂ ਲੁਕਾਓ</translation>
 <translation id="8834539327799336565">ਇਸ ਵੇਲੇ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="8841375032071747811">'ਪਿੱਛੇ' ਬਟਨ</translation>
 <translation id="8843682306134542540">ਘੁਮਾਅ ਸੰਬੰਧੀ ਲਾਕ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
+<translation id="8845001906332463065">ਮਦਦ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
+<translation id="8847100217801213944">ਤਾਪਮਾਨ ਨੂੰ ਫ਼ਾਰਨਹਾਈਟ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="8849001918648564819">ਲੁਕੀ ਹੋਈ</translation>
-<translation id="8853703225951107899">ਤੁਹਾਡੇ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਦੀ ਹਾਲੇ ਵੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਨੋਟ ਕਰੋ: ਜੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲਿਆ ਹੈ, ਤਾਂ ਆਪਣਾ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਵਰਤੋ। ਇੱਕ ਵਾਰ ਸਾਈਨ-ਆਊਟ ਕਰਨ 'ਤੇ ਤੁਹਾਡਾ ਨਵਾਂ ਪਾਸਵਰਡ ਲਾਗੂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="8855885154700222542">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਕੁੰਜੀ</translation>
 <translation id="8858369206579825206">ਪਰਦੇਦਾਰੀ ਕੰਟਰੋਲ</translation>
 <translation id="8860366331836346216">ਈ-ਸਿਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -1963,6 +2299,7 @@
 <translation id="8876661425082386199">ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="8877788021141246043">ਕੋਈ ਯਾਦ-ਸੂਚਨਾ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="8878886163241303700">ਸਕ੍ਰੀਨ ਦਾ ਵਿਸਤਾਰ ਕਰ ਰਿਹਾ ਹੈ</translation>
+<translation id="8885424115080869847">YouTube Music ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="888982883502837004">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਲਈ ਫ਼ਰਮਵੇਅਰ ਅੱਪਡੇਟ ਉਪਲਬਧ ਹਨ। ਸਮੀਖਿਆ ਕਰਨ ਅਤੇ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ਨੂੰ ਪੱਕੇ ਤੌਰ 'ਤੇ ਮਿਟਾਇਆ ਜਾਵੇਗਾ</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ਬੈਟਰੀ ਬਾਕੀ ਬਚੀ ਹੈ (ਲਗਭਗ <ph name="TIME_LEFT" />)। ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਪਾਵਰ ਸਰੋਤ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
@@ -1976,20 +2313,24 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ਫ਼ਾਈਲ}one{# ਫ਼ਾਈਲ}other{# ਫ਼ਾਈਲਾਂ}}</translation>
 <translation id="8936501819958976551">ਅਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8938800817013097409">USB-C ਡੀਵਾਈਸ (ਪਿੱਛੇ ਸੱਜਾ ਪੋਰਟ)</translation>
+<translation id="8939855324412367560">ਇਨਪੁੱਟ ਆਡੀਓ "<ph name="INPUT_DEVICE_NAME" />" ਹੈ ਅਤੇ ਆਊਟਪੁੱਟ ਆਡੀਓ "<ph name="OUTPUT_DEVICE_NAME" />" ਹੈ। ਤਬਦੀਲੀ ਕਰਨ ਲਈ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="8940956008527784070">ਬੈਟਰੀ ਘੱਟ (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8945508919180478719">ਸਟੂਡੀਓ-ਸਟਾਈਲ ਮਾਈਕ</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> ਚੈੱਕ-ਬਾਕਸ 'ਤੇ ਸਹੀ ਦਾ ਨਿਸ਼ਾਨ ਨਹੀਂ ਲਗਾਇਆ ਗਿਆ।</translation>
 <translation id="8949925099261528566">ਕਨੈਕਟ ਕੀਤਾ, ਕੋਈ ਇੰਟਰਨੈੱਟ ਨਹੀਂ</translation>
 <translation id="8951539504029375108">ਸਿਰਫ਼ ਮਨਜ਼ੂਰਸ਼ੁਦਾ ਥੰਡਰਬੋਲਟ ਡੀਵਾਈਸ ਹੀ ਤੁਹਾਡੀ Chromebook ਦੇ ਅਨੁਰੂਪ ਹਨ</translation>
+<translation id="8956420987536947088">ਆਪਣੀਆਂ ਪਿਛਲੀਆਂ ਵਿੰਡੋਆਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
+<translation id="8959380109429710384">ਤੁਸੀਂ ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵੱਡਦਰਸ਼ੀ ਵਿਸ਼ੇਸ਼ਤਾ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਇਆ ਹੈ। ਜ਼ੂਮ ਵਧਾਉਣ ਵਾਲੇ ਦ੍ਰਿਸ਼ ਦੇ ਆਲੇ-ਦੁਆਲੇ ਘੁੰਮਣ ਲਈ ctrl + alt + ਤੀਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="8964525410783593407">1 ਘੰ.</translation>
 <translation id="8973885907461690937">ਮੀਨੂ ਪ੍ਰਤੀਕ 'ਤੇ ਫੋਕਸ ਕਰੋ</translation>
 <translation id="8980862970816311842">ਐਪ ਗਰਿੱਡ ਵਿੱਚ ਐਪ ਪ੍ਰਤੀਕ ਨੂੰ ਫੋਲਡਰ ਦੇ ਅੰਦਰ/ਬਾਹਰ ਲਿਜਾਓ</translation>
 <translation id="8982906748181120328">ਨਜ਼ਦੀਕੀ ਦਿਖਣਯੋਗਤਾ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ਦੀ ਵਰਤੋਂ ਹੋ ਰਹੀ ਹੈ</translation>
-<translation id="8991617137207906966">ਰੰਗ ਪਲਟਨਾ ਮੋਡ ਚਾਲੂ ਹੈ। ਇਸਨੂੰ ਬੰਦ 'ਤੇ ਟੌਗਲ ਕਰਨ ਲਈ ਦੁਬਾਰਾ Ctrl+Search+H ਦਬਾਓ।</translation>
 <translation id="899350903320462459">ਸੂਚਨਾ 'ਤੇ ਕਾਰਵਾਈ ਕਰਨ ਲਈ <ph name="LOGIN_ID" /> ਵਜੋਂ ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="8993733019280019776">ਕੀ ਤੁਸੀਂ ਕੁਝ ਬੋਲ ਰਹੇ ਹੋ? ਤੁਹਾਡਾ ਮਾਈਕ ਬੰਦ ਹੈ। ਮਾਈਕ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ, ਉਸ ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="9000771174482730261">ਸਟੋਰੇਜ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="9003374957546315126">ਇਮੋਜੀ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ</translation>
 <translation id="9005984960510803406">Crosh ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="9017320285115481645">Family Link ਦਾ ਮਾਂ-ਪਿਓ ਪਹੁੰਚ ਕੋਡ ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="9024331582947483881">ਫੁਲ ਸਕ੍ਰੀਨ</translation>
@@ -1998,10 +2339,13 @@
 <translation id="9030665205623277906">CPU ਵਰਤੋਂ ਦਾ ਸਨੈਪਸ਼ਾਟ: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux ਫ਼ਾਈਲਾਂ</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ਲਈ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
+<translation id="9050012935252397793">ਬਲੂਟੁੱਥ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="906458777597946297">window ਨੂੰ ਅਧਿਕਤਮ ਬਣਾਓ</translation>
 <translation id="9065203028668620118">ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="9070640332319875144">Assistant ਸੈਟਿੰਗਾਂ</translation>
+<translation id="9071966355747967534"><ph name="FEATURE_NAME" /> ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="9072519059834302790">ਬੈਟਰੀ ਮੁੱਕਣ ਵਿੱਚ <ph name="TIME_LEFT" /> ਬਾਕੀ।</translation>
+<translation id="9074432941673450836">ਆਪਣੇ <ph name="PRODUCT_NAME" /> 'ਤੇ ਲੋੜੀਂਦੀ ਹਰ ਚੀਜ਼ ਕਰਨ ਲਈ ਐਪਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਤੁਸੀਂ ਲਾਂਚਰ ਵਿੱਚ ਆਪਣੀਆਂ ਐਪਾਂ ਲੱਭ ਸਕਦੇ ਹੋ। ਤੁਸੀਂ ਕੀ-ਬੋਰਡ 'ਤੇ ਲਾਂਚਰ ਕੁੰਜੀ (ਖੱਬੀ Shift ਕੁੰਜੀ ਦੇ ਉੱਪਰ) ਨੂੰ ਵੀ ਦਬਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="9074739597929991885">ਬਲੂਟੁੱਥ</translation>
 <translation id="9077515519330855811">ਮੀਡੀਆ ਕੰਟਰੋਲ, ਹੁਣ <ph name="MEDIA_TITLE" /> ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="9079731690316798640">ਵਾਈ-ਫਾਈ: <ph name="ADDRESS" /></translation>
@@ -2009,24 +2353,33 @@
 <translation id="9080132581049224423">ਹੋਮ 'ਤੇ ਜਾਣ ਲਈ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="9080206825613744995">ਮਾਈਕ੍ਰੋਫੋਨ ਵਰਤੋਂ ਵਿੱਚ ਹੈ।</translation>
 <translation id="9083324773537346962">OS ਵਰਜਨ</translation>
-<translation id="908451241440060346">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਚਾਲੂ ਹੋਣ 'ਤੇ ਸੂਚਨਾਵਾਂ ਮਿਊਟ ਹੁੰਦੀਆਂ ਹਨ</translation>
 <translation id="9084606467167974638">ਮੀਨੂ ਸਥਿਤੀ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="9085962983642906571">ਬੈਟਰੀ ਲਾਈਫ਼ ਵਧਾਉਣ ਲਈ ਪਲੱਗ-ਇਨ ਕਰਨ ਸਮੇਂ ਤੁਹਾਡੀ ਬੈਟਰੀ ਨੂੰ 80% 'ਤੇ ਰੱਖਿਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="9089416786594320554">ਇਨਪੁਟ ਵਿਧੀਆਂ</translation>
+<translation id="9091406374499386796">ਲਾਂਚਰ ਵਿੱਚ ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ, ਐਪਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਖੋਜੋ। ਤੁਸੀਂ ਆਪਣੇ <ph name="PRODUCT_NAME" /> ਬਾਰੇ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਵੀ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="9091626656156419976">ਡਿਲਪਲੇ <ph name="DISPLAY_NAME" /> ਨੂੰ ਹਟਾਇਆ ਗਿਆ</translation>
+<translation id="9098750710832798892">ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕੋਈ ਆਈਟਮ ਕਾਪੀ ਨਹੀਂ ਕੀਤੀ ਗਈ</translation>
 <translation id="9098969848082897657">ਫ਼ੋਨ ਖਮੋਸ਼ ਕਰੋ</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ਜਾਂ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">ਪਿਛਲੀ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਕਰੋ</translation>
+<translation id="9126642911267312373">ਬਲੂਟੁੱਥ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{1 ਮਿੰਟ ਵਿੱਚ}one{# ਮਿੰਟ ਵਿੱਚ}other{# ਮਿੰਟਾਂ ਵਿੱਚ}}</translation>
+<translation id="9129245940793250979">ਪਿਛਲਾ ਬਟਨ</translation>
 <translation id="9133335900048457298">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਨੂੰ ਰਿਕਾਰਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="9139720510312328767">ਅਗਲਾ ਅੱਖਰ ਮਿਟਾਓ</translation>
+<translation id="9148058034647219655">ਬਾਹਰ ਜਾਓ</translation>
 <translation id="9151906066336345901">ਸਮਾਪਤ</translation>
+<translation id="9159421884295554245">ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਖੋਜੋ</translation>
 <translation id="9161053988251441839">ਸੁਝਾਈਆਂ ਗਈਆਂ ਐਪਾਂ</translation>
 <translation id="9168436347345867845">ਇਸਨੂੰ ਬਾਅਦ ਵਿੱਚ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> ਲਈ 1 ਨਤੀਜਾ ਦਿਖਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="9179259655489829027">ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਤੁਹਾਨੂੰ ਕਿਸੇ ਪਾਸਵਰਡ ਦੀ ਲੋੜ ਤੋਂ ਬਿਨਾਂ ਕਿਸੇ ਵੀ ਸਾਈਨ-ਇਨ ਵਰਤੋਂਕਾਰ ਤੱਕ ਛੇਤੀ ਪਹੁੰਚ ਕਰਨ ਦਿੰਦੀ ਹੈ। ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਦੀ ਵਰਤੋਂ ਸਿਰਫ਼ ਆਪਣੇ ਭਰੋਸੇਯੋਗ ਖਾਤਿਆਂ ਨਾਲ ਹੀ ਕਰੋ।</translation>
 <translation id="9183456764293710005">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵੱਡਦਰਸ਼ੀ</translation>
+<translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" ਵਰਤੋ</translation>
 <translation id="9193626018745640770">ਕਿਸੇ ਅਗਿਆਤ ਪ੍ਰਾਪਤਕਰਤਾ 'ਤੇ ਕਾਸਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="9194617393863864469">ਕਿਸੇ ਹੋਰ ਵਰਤੋਂਕਾਰ ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ…</translation>
+<translation id="9195857219954068558">ਤੁਹਾਡੀ Chromebook ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ ਹੈ। ਆਪਣੀਆਂ ਪਿਛਲੀਆਂ ਵਿੰਡੋਆਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਖੋਲ੍ਹੋ।</translation>
+<translation id="9195990613383871904">ਕੱਲ੍ਹ</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ <ph name="RESOLUTION" /> 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਬਣਾਈ ਰੱਖਣ ਲਈ 'ਤਸਦੀਕ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="9201044636667689546"><ph name="NAME" /> ਨੂੰ ਇਸ Chromebook ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
@@ -2042,22 +2395,25 @@
 <translation id="923686485342484400">ਸਾਈਨ-ਆਊਟ ਕਰਨ ਲਈ ਦੋ ਵਾਰ Control Shift Q ਦਬਾਓ।</translation>
 <translation id="92580429198593979">ਤੁਸੀਂ ਰੰਗ ਪਲਟਨਾ ਵਿਸ਼ੇਸ਼ਤਾ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਇਆ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਚਾਲੂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="925832987464884575">ਪੂਰਵ-ਝਲਕਾਂ ਲੁਕਾਓ</translation>
-<translation id="937214777182567951"><ph name="MANAGER" /> ਲਈ ਤੁਹਾਨੂੰ ਤੁਰੰਤ ਆਪਣੇ <ph name="DEVICE_TYPE" /> ਡੀਵਾਈਸ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="938407504481277932">ਮੌਜੂਦਾ ਡੈਸਕ: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" /> ਵਿੱਚੋਂ ਡੈਸਕ <ph name="DESK_INDEX" />.</translation>
 <translation id="938963181863597773">ਮੇਰੇ ਕੈਲੰਡਰ 'ਤੇ ਕੀ ਹੈ?</translation>
+<translation id="94468042118567862">ਡੀਵਾਈਸ ਅੱਪ-ਟੂ-ਡੇਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="945383118875625837">ਬੁੱਕਮਾਰਕ ਬਾਰ 'ਤੇ ਲਿੰਕ ਘਸੀਟੋ</translation>
 <translation id="945522503751344254">ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ</translation>
 <translation id="951991426597076286">ਅਸਵੀਕਾਰ ਕਰੋ</translation>
 <translation id="953431725143473984">ਕੀ ਡੀਵਾਈਸ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> ਲਈ ਲੋੜੀਂਦੀ ਜਗ੍ਹਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਜਗ੍ਹਾ ਖਾਲੀ ਕਰੋ।</translation>
 <translation id="954520015070501466">30 ਮਿੰਟ</translation>
-<translation id="954786879461589145"><ph name="USER" /> ਨੇ ਸੋਧਿਆ</translation>
+<translation id="956452277966142925">ਗੇਮ ਡੈਸ਼ਬੋਰਡ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="961856697154696964">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> ਲਈ <ph name="RESULT_COUNT" /> ਨਤੀਜੇ ਦਿਖਾਏ ਜਾ ਰਹੇ ਹਨ</translation>
 <translation id="981011780479609956">ਕੋਈ ਨਿਯਤ ਤਾਰੀਖ ਨਹੀਂ ਹੈ</translation>
 <translation id="98120814841227350">ਦਸਤਾਵੇਜ਼ ਦੇ ਅਖੀਰ 'ਤੇ ਜਾਓ</translation>
+<translation id="98515147261107953">ਲੈਂਡਸਕੇਪ</translation>
 <translation id="987589956647469042">ਮੋਬਾਈਲ ਡਾਟਾ ਚਾਲੂ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="989374776391122812">ਕੈਮਰਾ ਅਤੇ ਆਡੀਓ ਕੰਟਰੋਲ</translation>
 <translation id="990277280839877440">ਵਿੰਡੋ <ph name="WINDOW_TITILE" /> ਬੰਦ ਹੋਈ।</translation>
+<translation id="993398562350683614"><ph name="TOTAL_STEPS" /> ਵਿੱਚੋਂ ਪੜਾਅ <ph name="STEP" /> ਦੇਖੋ। ਆਪਣੇ <ph name="PRODUCT_NAME" /> 'ਤੇ ਲੋੜੀਂਦੀ ਹਰ ਚੀਜ਼ ਕਰਨ ਲਈ ਐਪਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਤੁਸੀਂ ਲਾਂਚਰ ਵਿੱਚ ਆਪਣੀਆਂ ਐਪਾਂ ਲੱਭ ਸਕਦੇ ਹੋ। ਲਾਂਚਰ ਬਟਨ 'ਤੇ ਫੋਕਸ ਕਰਨ ਲਈ Alt + Shift + L ਦਬਾਓ।</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">ਨਵੀਨਤਮ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਸੁਧਾਰ ਪ੍ਰਾਪਤ ਕਰੋ। ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਅੱਪਡੇਟ ਚੱਲ ਰਹੇ ਹਨ।</translation>
 </translationbundle>

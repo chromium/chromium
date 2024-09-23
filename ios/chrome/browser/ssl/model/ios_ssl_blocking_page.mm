@@ -16,7 +16,7 @@
 #import "components/security_interstitials/core/ssl_error_ui.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_metrics_collector_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -57,10 +57,10 @@ IOSSSLBlockingPage::IOSSSLBlockingPage(
                                      options_mask, time_triggered, GURL(),
                                      controller_.get()));
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   safe_browsing::SafeBrowsingMetricsCollector* metrics_collector =
-      SafeBrowsingMetricsCollectorFactory::GetForBrowserState(browser_state);
+      SafeBrowsingMetricsCollectorFactory::GetForProfile(profile);
   if (metrics_collector) {
     metrics_collector->AddSafeBrowsingEventToPref(
         safe_browsing::SafeBrowsingMetricsCollector::EventType::

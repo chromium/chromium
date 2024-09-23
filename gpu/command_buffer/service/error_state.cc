@@ -225,7 +225,7 @@ void ErrorStateImpl::ClearRealGLErrors(
           std::string("GL ERROR :") +
           GLES2Util::GetStringEnum(error) + " : " +
           function_name + ": was unhandled");
-      NOTREACHED() << "GL error " << error << " was unhandled.";
+      NOTREACHED_IN_MIGRATION() << "GL error " << error << " was unhandled.";
     }
   }
 }

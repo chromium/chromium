@@ -47,10 +47,6 @@ class InvalidationHandler;
 // unregister themselves before then. (Depending on the
 // InvalidationService, shutdown may be equivalent to destruction, or
 // a separate function call like Shutdown()).
-//
-// NOTE(akalin): Invalidations that come in during browser shutdown may get
-// dropped.  This won't matter once we have an Acknowledge API, though: see
-// http://crbug.com/78462 and http://crbug.com/124149.
 class InvalidationService {
  public:
   InvalidationService() = default;

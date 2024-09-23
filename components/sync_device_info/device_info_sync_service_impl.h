@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/interested_data_types_handler.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 
 namespace syncer {
@@ -30,7 +30,7 @@ class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
   // |device_info_sync_client| must not be null and must outlive this object.
   // |sync_invalidations_service| must not be null and must outlive this object.
   DeviceInfoSyncServiceImpl(
-      OnceModelTypeStoreFactory model_type_store_factory,
+      OnceDataTypeStoreFactory data_type_store_factory,
       std::unique_ptr<MutableLocalDeviceInfoProvider>
           local_device_info_provider,
       std::unique_ptr<DeviceInfoPrefs> device_info_prefs,
@@ -46,7 +46,7 @@ class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
   // DeviceInfoSyncService implementation.
   LocalDeviceInfoProvider* GetLocalDeviceInfoProvider() override;
   DeviceInfoTracker* GetDeviceInfoTracker() override;
-  base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
+  base::WeakPtr<DataTypeControllerDelegate> GetControllerDelegate() override;
   void RefreshLocalDeviceInfo() override;
 
   // FCMRegistrationTokenObserver implementation.
@@ -55,7 +55,7 @@ class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
   // InterestedDataTypesHandler implementation.
   void OnInterestedDataTypesChanged() override;
   void SetCommittedAdditionalInterestedDataTypesCallback(
-      base::RepeatingCallback<void(const ModelTypeSet&)> callback) override;
+      base::RepeatingCallback<void(const DataTypeSet&)> callback) override;
 
   // KeyedService overrides.
   void Shutdown() override;

@@ -6,10 +6,12 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/AutofillSnackbarController_jni.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/AutofillSnackbarController_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaParamRef;
@@ -39,11 +41,9 @@ void AutofillSnackbarViewAndroid::Show() {
   java_object_.Reset(Java_AutofillSnackbarController_create(
       env, reinterpret_cast<intptr_t>(this), window_android->GetJavaObject()));
   Java_AutofillSnackbarController_show(
-      env, java_object_,
-      base::android::ConvertUTF16ToJavaString(env,
-                                              controller_->GetMessageText()),
-      base::android::ConvertUTF16ToJavaString(
-          env, controller_->GetActionButtonText()));
+      env, java_object_, controller_->GetMessageText(),
+      controller_->GetActionButtonText(),
+      static_cast<int>(controller_->GetDuration().InMilliseconds()));
 }
 
 void AutofillSnackbarViewAndroid::Dismiss() {

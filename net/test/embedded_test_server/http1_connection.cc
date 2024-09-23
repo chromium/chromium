@@ -4,6 +4,7 @@
 
 #include "net/test/embedded_test_server/http1_connection.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -77,7 +78,7 @@ bool Http1Connection::HandleReadResult(int rv) {
   if (connection_listener_)
     connection_listener_->ReadFromSocket(*socket_, rv);
 
-  request_parser_.ProcessChunk(base::StringPiece(read_buf_->data(), rv));
+  request_parser_.ProcessChunk(std::string_view(read_buf_->data(), rv));
   if (request_parser_.ParseRequest() != HttpRequestParser::ACCEPTED)
     return false;
 
@@ -88,7 +89,7 @@ bool Http1Connection::HandleReadResult(int rv) {
     request->ssl_info = ssl_info;
 
   server_delegate_->HandleRequest(weak_factory_.GetWeakPtr(),
-                                  std::move(request));
+                                  std::move(request), socket_.get());
   return true;
 }
 

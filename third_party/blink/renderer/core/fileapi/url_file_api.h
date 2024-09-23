@@ -7,7 +7,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -20,9 +23,9 @@ class CORE_EXPORT URLFileAPI {
   STATIC_ONLY(URLFileAPI);
 
  public:
-  static String createObjectURL(ScriptState*, Blob*, ExceptionState&);
-  static void revokeObjectURL(ScriptState*, const String&);
-  static void revokeObjectURL(ExecutionContext*, const String&);
+  static WTF::String createObjectURL(ScriptState*, Blob*, ExceptionState&);
+  static void revokeObjectURL(ScriptState*, const WTF::String&);
+  static void revokeObjectURL(ExecutionContext*, const WTF::String&);
 };
 
 }  // namespace blink

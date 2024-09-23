@@ -6,9 +6,9 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_WEAK_CHECK_UTILITY_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 
 namespace password_manager {
@@ -16,7 +16,7 @@ namespace password_manager {
 using IsWeakPassword = base::StrongAlias<class IsWeakPasswordTag, bool>;
 
 // Returns whether `password` is weak.
-IsWeakPassword IsWeak(base::StringPiece16 password);
+IsWeakPassword IsWeak(std::u16string_view password);
 
 // Checks each password for weakness and removes strong passwords from the
 // |passwords|.

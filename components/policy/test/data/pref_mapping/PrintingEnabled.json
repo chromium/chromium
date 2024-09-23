@@ -15,7 +15,9 @@
           "PrintingEnabled": false
         },
         "prefs": {
-          "printing.enabled": {}
+          "printing.enabled": {
+            "value": false
+          }
         }
       }
     ]

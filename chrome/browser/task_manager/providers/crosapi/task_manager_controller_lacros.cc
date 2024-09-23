@@ -8,6 +8,8 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "third_party/blink/public/common/web_cache/web_cache_resource_type_stats.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -88,6 +90,17 @@ void TaskManagerControllerLacros::GetTaskManagerTasks(
     GetTaskManagerTasksCallback callback) {
   DCHECK(observed_task_manager());
 
+  std::optional<TaskId> active_task_id;
+  std::string active_task_uuid;
+  Browser* browser = chrome::FindLastActive();
+  if (browser) {
+    if (content::WebContents* active_web_contents =
+            browser->tab_strip_model()->GetActiveWebContents()) {
+      active_task_id =
+          observed_task_manager()->GetTaskIdForWebContents(active_web_contents);
+    }
+  }
+
   std::set<TaskId> task_ids_to_remove;
   for (const auto& item : id_to_tasks_)
     task_ids_to_remove.insert(item.first);
@@ -105,6 +118,10 @@ void TaskManagerControllerLacros::GetTaskManagerTasks(
       UpdateTask(task_id, mojo_task);
     }
     task_results.push_back(id_to_tasks_[task_id].Clone());
+
+    if (task_id == active_task_id) {
+      active_task_uuid = id_to_tasks_[task_id]->task_uuid;
+    }
   }
 
   // Remove stale tasks.
@@ -125,7 +142,7 @@ void TaskManagerControllerLacros::GetTaskManagerTasks(
   }
 
   std::move(callback).Run(std::move(task_results),
-                          std::move(task_group_results));
+                          std::move(task_group_results), active_task_uuid);
 }
 
 void TaskManagerControllerLacros::OnTaskManagerClosed() {

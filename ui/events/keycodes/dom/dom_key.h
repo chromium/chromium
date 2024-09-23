@@ -82,7 +82,7 @@ class DomKey {
   // Following block is a technique to add inlined constant with C++14
   // compatible way. These can be replaced with inline constexpr after
   // C++17 support.
-  enum InvalidKey : Base { NONE = 0 };
+  enum : Base { NONE = 0 };
 // |dom_key_data.inc| describes the non-printable DomKey values, and is
 // included here to create constants for them in the DomKey:: scope.
 #define DOM_KEY_MAP_DECLARATION_START enum Key : Base {
@@ -116,7 +116,7 @@ class DomKey {
   }
 
   // Obtain the encoded integer representation of the DomKey.
-  operator Base() const { return value_; }
+  constexpr operator Base() const { return value_; }
 
   // True if the value is a valid DomKey (which excludes DomKey::NONE and
   // integers not following the DomKey format).
@@ -146,27 +146,17 @@ class DomKey {
   }
 
   // Returns a DomKey for the given Unicode character.
-  static DomKey FromCharacter(uint32_t character) {
+  constexpr static DomKey FromCharacter(uint32_t character) {
     DCHECK(character <= 0x10FFFF);
     return DomKey(TYPE_UNICODE | character);
   }
 
   // Returns a dead-key DomKey for the given combining character.
-  static DomKey DeadKeyFromCombiningCharacter(uint32_t combining_character) {
+  constexpr static DomKey DeadKeyFromCombiningCharacter(
+      uint32_t combining_character) {
     DCHECK(combining_character <= 0x10FFFF);
     return DomKey(TYPE_DEAD | combining_character);
   }
-
-  // Provide means to generate constant DomKey::Base values, primarily to
-  // allow conversion tables to be constant, without startup construction.
-  // In the future (cue the theremin) this can be replaced with constexpr
-  // functions.
-  template<Base C> struct Constant {
-    enum : Base {
-      Character = TYPE_UNICODE | C,
-      Dead = TYPE_DEAD | C,
-    };
-  };
 
  private:
   static bool IsValidValue(Base value) { return (value & TYPE_MASK) != 0; }

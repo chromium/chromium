@@ -53,7 +53,6 @@ class ThemeColorPickerHandler
                     ui::mojom::BrowserColorVariant variant) override;
   void SetSeedColorFromHue(float hue) override;
   void GetChromeColors(bool is_dark_mode,
-                       bool extended_list,
                        GetChromeColorsCallback callback) override;
   void RemoveBackgroundImage() override;
   void UpdateTheme() override;
@@ -69,7 +68,6 @@ class ThemeColorPickerHandler
 
   // NtpCustomBackgroundServiceObserver:
   void OnCustomBackgroundImageUpdated() override;
-  void OnNtpCustomBackgroundServiceShuttingDown() override;
 
   bool seed_color_changed_ = false;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;

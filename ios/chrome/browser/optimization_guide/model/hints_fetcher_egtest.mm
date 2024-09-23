@@ -38,7 +38,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
     return nullptr;
   if (hints_request.hosts().empty() && hints_request.urls().empty())
     return nullptr;
-  // TODO(crbug.com/1015113): Verify that hosts count in the hint does not
+  // TODO(crbug.com/40103566): Verify that hosts count in the hint does not
   // exceed MaxHostsForOptimizationGuideServiceHintsFetch()
 
   count_hints_requests_received++;
@@ -75,7 +75,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
              optimization_guide::HintsFetcherRemoteResponseType::kHung) {
     return std::make_unique<net::test_server::HungResponse>();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   return std::move(response);
@@ -109,7 +109,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // TODO(crbug.com/1015113): Convert to directly use the kOptimizationHints
+  // TODO(crbug.com/40103566): Convert to directly use the kOptimizationHints
   // feature.
   config.additional_args.push_back("--enable-features=OptimizationHints");
   AppendSwitch(&config.additional_args,
@@ -169,12 +169,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
 
 // The tests in this file should correspond to the tests in
 // //chrome/browser/optimization_guide/hints_fetcher_browsertest.cc.
-// TODO(crbug.com/1241158): Add more EG2 tests so that the different pieces of
+// TODO(crbug.com/40194556): Add more EG2 tests so that the different pieces of
 // optimization guide hints fetching are integration tested. This includes tests
 // that verify hints fetcher failure cases, fetching of hints for multiple open
 // tabs at startup, hints are cleared when browsing history is cleared, etc.
-
-- (void)testHintsFetchBasic {
+// TODO(crbug.com/366045251): Re-enable once fixed.
+- (void)DISABLED_testHintsFetchBasic {
   [ChromeEarlGrey loadURL:GURL("https://foo.com/test")];
   // Wait for the hints to be served.
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(

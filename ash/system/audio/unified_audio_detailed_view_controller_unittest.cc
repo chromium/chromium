@@ -34,6 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/slider.h"
@@ -45,6 +46,7 @@ namespace {
 
 constexpr uint64_t kMicJackId = 10010;
 constexpr uint64_t kInternalMicId = 10003;
+constexpr uint64_t kInternalMicStyleTransferId = 10004;
 constexpr uint64_t kFrontMicId = 10012;
 constexpr uint64_t kRearMicId = 10013;
 constexpr uint64_t kNbsMicId = 10020;
@@ -96,6 +98,10 @@ const AudioNodeInfo kInternalMic[] = {{true, kInternalMicId, "Fake Mic",
                                        "INTERNAL_MIC", "Internal Mic",
                                        cras::EFFECT_TYPE_NOISE_CANCELLATION}};
 
+const AudioNodeInfo kInternalMicStyleTransfer[] = {
+    {true, kInternalMicStyleTransferId, "Fake Mic", "INTERNAL_MIC", "Internal Mic",
+     cras::EFFECT_TYPE_STYLE_TRANSFER}};
+
 const AudioNodeInfo kFrontMic[] = {
     {true, kFrontMicId, "Fake Front Mic", "FRONT_MIC", "Front Mic", 0}};
 
@@ -137,7 +143,7 @@ AudioNodeList GenerateAudioNodeList(
 // Test param is the version of stable device id used by audio node.
 class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
  public:
-  UnifiedAudioDetailedViewControllerTest() {}
+  UnifiedAudioDetailedViewControllerTest() = default;
   ~UnifiedAudioDetailedViewControllerTest() override = default;
 
   // AshTestBase:
@@ -173,6 +179,13 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
                             base::Unretained(this));
     AudioDetailedView::SetMapNoiseCancellationToggleCallbackForTest(
         &noise_cancellation_toggle_callback_);
+
+    style_transfer_toggle_callback_ =
+        base::BindRepeating(&UnifiedAudioDetailedViewControllerTest::
+                                AddViewToStyleTransferToggleMap,
+                            base::Unretained(this));
+    AudioDetailedView::SetMapStyleTransferToggleCallbackForTest(
+        &style_transfer_toggle_callback_);
   }
 
   void TearDown() override {
@@ -201,6 +214,10 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
     toggles_map_[device_id] = view;
   }
 
+  void AddViewToStyleTransferToggleMap(uint64_t device_id, views::View* view) {
+    style_transfer_toggles_map_[device_id] = view;
+  }
+
   void ToggleLiveCaption() {
     GetAudioDetailedView()->HandleViewClicked(live_caption_view());
   }
@@ -209,6 +226,13 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
   void ToggleNoiseCancellation() {
     GetAudioDetailedView()->HandleViewClicked(
         GetAudioDetailedView()->noise_cancellation_view_);
+  }
+
+  // Toggles the style transfer button.
+  void ToggleStyleTransfer(AudioDetailedView* audio_detailed_view = nullptr) {
+    AudioDetailedView* view =
+        audio_detailed_view ? audio_detailed_view : GetAudioDetailedView();
+    view->HandleViewClicked(view->style_transfer_view_);
   }
 
  protected:
@@ -224,9 +248,7 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
     return audio_detailed_view_.get();
   }
 
-  void CheckSliderFocusBehavior(views::Widget* widget,
-                                bool is_input_slider,
-                                uint64_t device_id) {
+  void CheckSliderFocusBehavior(bool is_input_slider, uint64_t device_id) {
     SCOPED_TRACE(
         base::StringPrintf("Test params: is_input_slider=%d", is_input_slider));
 
@@ -236,7 +258,6 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
 
     auto* unified_slider_view =
         static_cast<UnifiedSliderView*>(sliders_map.find(device_id)->second);
-    widget->SetContentsView(unified_slider_view);
 
     views::Slider* slider = unified_slider_view->slider();
     IconButton* slider_button = unified_slider_view->slider_button();
@@ -244,7 +265,8 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
     // focusable.
     EXPECT_TRUE(slider->IsFocusable());
     EXPECT_FALSE(slider_button->IsFocusable());
-    EXPECT_TRUE(slider_button->IsAccessibilityFocusable());
+    EXPECT_TRUE(
+        slider_button->GetViewAccessibility().IsAccessibilityFocusable());
 
     slider->RequestFocus();
     EXPECT_STREQ(slider->GetFocusManager()->GetFocusedView()->GetClassName(),
@@ -274,6 +296,10 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
     return GetAudioDetailedView()->noise_cancellation_button_;
   }
 
+  views::ToggleButton* style_transfer_button() {
+    return GetAudioDetailedView()->style_transfer_button_;
+  }
+
   bool live_caption_enabled() {
     return Shell::Get()->accessibility_controller()->live_caption().enabled();
   }
@@ -286,12 +312,14 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
   std::map<uint64_t, views::View*> input_sliders_map_;
   std::map<uint64_t, views::View*> output_sliders_map_;
   std::map<uint64_t, views::View*> toggles_map_;
+  std::map<uint64_t, views::View*> style_transfer_toggles_map_;
   MicGainSliderController::MapDeviceSliderCallback
       map_input_device_sliders_callback_;
   UnifiedVolumeSliderController::MapDeviceSliderCallback
       map_output_device_sliders_callback_;
   AudioDetailedView::NoiseCancellationCallback
       noise_cancellation_toggle_callback_;
+  AudioDetailedView::StyleTransferCallback style_transfer_toggle_callback_;
   raw_ptr<CrasAudioHandler, DanglingUntriaged> cras_audio_handler_ =
       nullptr;  // Not owned.
   scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
@@ -310,16 +338,16 @@ TEST_F(UnifiedAudioDetailedViewControllerTest, ToggleNbsWarning) {
 
   auto jack_mic = AudioDevice(GenerateAudioNode(kMicJack));
   cras_audio_handler_->SwitchToDevice(jack_mic, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
   EXPECT_FALSE(nbs_warning_view());
 
   auto nbs_mic = AudioDevice(GenerateAudioNode(kNbsMic));
   cras_audio_handler_->SwitchToDevice(nbs_mic, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
   EXPECT_TRUE(nbs_warning_view());
 
   cras_audio_handler_->SwitchToDevice(jack_mic, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
   EXPECT_FALSE(nbs_warning_view());
 }
 
@@ -331,7 +359,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest, OneInputSlider) {
 
   cras_audio_handler_->SwitchToDevice(
       AudioDevice(GenerateAudioNode(kInternalMic)), true,
-      CrasAudioHandler::ACTIVATE_BY_USER);
+      DeviceActivateType::kActivateByUser);
   EXPECT_EQ(kInternalMicId, cras_audio_handler_->GetPrimaryActiveInputNode());
   EXPECT_TRUE(input_sliders_map_.find(kInternalMicId)->second->GetVisible());
 
@@ -339,7 +367,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest, OneInputSlider) {
   EXPECT_TRUE(input_sliders_map_.find(kMicJackId)->second->GetVisible());
 
   cras_audio_handler_->SwitchToDevice(AudioDevice(GenerateAudioNode(kMicJack)),
-                                      true, CrasAudioHandler::ACTIVATE_BY_USER);
+                                      true,
+                                      DeviceActivateType::kActivateByUser);
   EXPECT_EQ(kMicJackId, cras_audio_handler_->GetPrimaryActiveInputNode());
   EXPECT_TRUE(input_sliders_map_.find(kMicJackId)->second->GetVisible());
 
@@ -355,7 +384,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest, OneOutputSlider) {
 
   cras_audio_handler_->SwitchToDevice(
       AudioDevice(GenerateAudioNode(kInternalSpeaker)), true,
-      CrasAudioHandler::ACTIVATE_BY_USER);
+      DeviceActivateType::kActivateByUser);
   EXPECT_EQ(kInternalSpeakerId,
             cras_audio_handler_->GetPrimaryActiveOutputNode());
   // Both sliders should be visible.
@@ -365,7 +394,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest, OneOutputSlider) {
 
   cras_audio_handler_->SwitchToDevice(
       AudioDevice(GenerateAudioNode(kHeadphone)), true,
-      CrasAudioHandler::ACTIVATE_BY_USER);
+      DeviceActivateType::kActivateByUser);
   EXPECT_EQ(kHeadphoneId, cras_audio_handler_->GetPrimaryActiveOutputNode());
   // Both sliders should be visible.
   EXPECT_TRUE(output_sliders_map_.find(kHeadphoneId)->second->GetVisible());
@@ -440,7 +469,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 
   // Switches to `kMicJack` to make the internal mic inactive.
   cras_audio_handler_->SwitchToDevice(AudioDevice(GenerateAudioNode(kMicJack)),
-                                      true, CrasAudioHandler::ACTIVATE_BY_USER);
+                                      true,
+                                      DeviceActivateType::kActivateByUser);
 
   // Verifies the dual internal mic slider is inactive and its volume level
   // equals to the front mic's level.
@@ -461,7 +491,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 
   cras_audio_handler_->SwitchToDevice(
       AudioDevice(GenerateAudioNode(kInternalMic)), true,
-      CrasAudioHandler::ACTIVATE_BY_USER);
+      DeviceActivateType::kActivateByUser);
 
   std::unique_ptr<views::View> view =
       audio_detailed_view_controller_->CreateView();
@@ -477,7 +507,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 
   auto internal_mic = AudioDevice(GenerateAudioNode(kInternalMic));
   cras_audio_handler_->SwitchToDevice(internal_mic, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   // If `audio_detailed_view_` doesn't exist, this getter method will create the
   // view first.
@@ -497,7 +527,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 
   auto internal_mic = AudioDevice(GenerateAudioNode(kInternalMic));
   cras_audio_handler_->SwitchToDevice(internal_mic, true,
-                                      CrasAudioHandler::ACTIVATE_BY_USER);
+                                      DeviceActivateType::kActivateByUser);
 
   // If `audio_detailed_view_` doesn't exist, this getter method will create the
   // view first.
@@ -528,7 +558,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
   cras_audio_handler_->RequestNoiseCancellationSupported(base::DoNothing());
 
   cras_audio_handler_->SwitchToDevice(AudioDevice(GenerateAudioNode(kMicJack)),
-                                      true, CrasAudioHandler::ACTIVATE_BY_USER);
+                                      true,
+                                      DeviceActivateType::kActivateByUser);
 
   std::unique_ptr<views::View> view =
       audio_detailed_view_controller_->CreateView();
@@ -537,7 +568,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 
   cras_audio_handler_->SwitchToDevice(
       AudioDevice(GenerateAudioNode(kInternalMic)), true,
-      CrasAudioHandler::ACTIVATE_BY_USER);
+      DeviceActivateType::kActivateByUser);
   EXPECT_EQ(1u, toggles_map_.size());
 }
 
@@ -550,7 +581,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 
   cras_audio_handler_->SwitchToDevice(
       AudioDevice(GenerateAudioNode(kInternalMic)), true,
-      CrasAudioHandler::ACTIVATE_BY_USER);
+      DeviceActivateType::kActivateByUser);
 
   // If `audio_detailed_view_` doesn't exist, this getter method will create the
   // view first.
@@ -575,12 +606,164 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
       CrasAudioHandler::AudioSettingsChangeSource::kSystemTray, 1);
 }
 
+TEST_F(UnifiedAudioDetailedViewControllerTest,
+       StyleTransferToggleNotDisplayedIfNotSupported) {
+  fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
+      GenerateAudioNodeList(
+          {kInternalMicStyleTransfer, kMicJack, kFrontMic, kRearMic}));
+  fake_cras_audio_client()->SetStyleTransferSupported(false);
+
+  cras_audio_handler_->SwitchToDevice(
+      AudioDevice(GenerateAudioNode(kInternalMicStyleTransfer)), true,
+      DeviceActivateType::kActivateByUser);
+
+  std::unique_ptr<views::View> view =
+      audio_detailed_view_controller_->CreateView();
+  EXPECT_EQ(0u, style_transfer_toggles_map_.size());
+}
+
+TEST_F(UnifiedAudioDetailedViewControllerTest,
+       StyleTransferToggleDisplayedIfSupportedAndInternal) {
+  fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
+      GenerateAudioNodeList(
+          {kInternalMicStyleTransfer, kMicJack, kFrontMic, kRearMic}));
+  fake_cras_audio_client()->SetStyleTransferSupported(true);
+  cras_audio_handler_->RequestStyleTransferSupported(base::DoNothing());
+
+  auto internal_mic =
+      AudioDevice(GenerateAudioNode(kInternalMicStyleTransfer));
+  cras_audio_handler_->SwitchToDevice(internal_mic, true,
+                                      DeviceActivateType::kActivateByUser);
+
+  // If `audio_detailed_view_` doesn't exist, this getter method will create the
+  // view first.
+  GetAudioDetailedView();
+  EXPECT_EQ(1u, style_transfer_toggles_map_.size());
+  style_transfer_button()->GetIsOn();
+}
+
+TEST_F(UnifiedAudioDetailedViewControllerTest,
+       StyleTransferToggleChangesPrefAndSendsDbusSignal) {
+  audio_pref_handler_->SetStyleTransferState(false);
+
+  fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
+      GenerateAudioNodeList(
+          {kInternalMicStyleTransfer, kMicJack, kFrontMic, kRearMic}));
+  fake_cras_audio_client()->SetStyleTransferSupported(true);
+  cras_audio_handler_->RequestStyleTransferSupported(base::DoNothing());
+
+  auto internal_mic =
+      AudioDevice(GenerateAudioNode(kInternalMicStyleTransfer));
+  cras_audio_handler_->SwitchToDevice(internal_mic, true,
+                                      DeviceActivateType::kActivateByUser);
+
+  // If `audio_detailed_view_` doesn't exist, this getter method will create the
+  // view first.
+  GetAudioDetailedView();
+  EXPECT_EQ(1u, style_transfer_toggles_map_.size());
+
+  views::ToggleButton* toggle = style_transfer_button();
+  auto widget = CreateFramelessTestWidget();
+  widget->SetContentsView(toggle);
+
+  // The toggle loaded the pref correctly.
+  EXPECT_FALSE(toggle->GetIsOn());
+  EXPECT_FALSE(audio_pref_handler_->GetStyleTransferState());
+
+  // The entire row of `style_transfer_view_` is clickable.
+  ToggleStyleTransfer();
+  EXPECT_TRUE(audio_pref_handler_->GetStyleTransferState());
+
+  ToggleStyleTransfer();
+  EXPECT_FALSE(audio_pref_handler_->GetStyleTransferState());
+}
+
+TEST_F(UnifiedAudioDetailedViewControllerTest,
+       StyleTransferUpdatedWhenDeviceChanges) {
+  fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
+      GenerateAudioNodeList(
+          {kInternalMicStyleTransfer, kMicJack, kFrontMic, kRearMic}));
+  fake_cras_audio_client()->SetStyleTransferSupported(true);
+  cras_audio_handler_->RequestStyleTransferSupported(base::DoNothing());
+
+  cras_audio_handler_->SwitchToDevice(AudioDevice(GenerateAudioNode(kMicJack)),
+                                      true,
+                                      DeviceActivateType::kActivateByUser);
+
+  std::unique_ptr<views::View> view =
+      audio_detailed_view_controller_->CreateView();
+
+  EXPECT_EQ(0u, style_transfer_toggles_map_.size());
+
+  cras_audio_handler_->SwitchToDevice(
+      AudioDevice(GenerateAudioNode(kInternalMicStyleTransfer)), true,
+      DeviceActivateType::kActivateByUser);
+  EXPECT_EQ(1u, style_transfer_toggles_map_.size());
+}
+
+TEST_F(UnifiedAudioDetailedViewControllerTest,
+       StyleTransferUpdatedWhenOnStyleTransferChanges) {
+  audio_pref_handler_->SetStyleTransferState(true);
+
+  fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
+      GenerateAudioNodeList(
+          {kInternalMicStyleTransfer, kMicJack, kFrontMic, kRearMic}));
+  fake_cras_audio_client()->SetStyleTransferSupported(true);
+  cras_audio_handler_->RequestStyleTransferSupported(base::DoNothing());
+
+  cras_audio_handler_->SwitchToDevice(
+      AudioDevice(GenerateAudioNode(kInternalMicStyleTransfer)), true,
+      DeviceActivateType::kActivateByUser);
+
+  // If `audio_detailed_view_` doesn't exist, this getter method will create the
+  // view first.
+  GetAudioDetailedView();
+
+  auto widget = CreateFramelessTestWidget();
+  widget->SetContentsView(style_transfer_button());
+
+  // The style transfer button loaded the pref correctly.
+  EXPECT_TRUE(style_transfer_button()->GetIsOn());
+  EXPECT_TRUE(audio_pref_handler_->GetStyleTransferState());
+
+  cras_audio_handler_->SetStyleTransferState(/*style_transfer_on=*/false);
+
+  // The style transfer button updates the pref correctly.
+  EXPECT_FALSE(style_transfer_button()->GetIsOn());
+  EXPECT_FALSE(audio_pref_handler_->GetStyleTransferState());
+}
+
+TEST_F(UnifiedAudioDetailedViewControllerTest,
+       StyleTransferViewHasFocusWhenPressed) {
+  fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
+      GenerateAudioNodeList({kInternalMicStyleTransfer}));
+  fake_cras_audio_client()->SetStyleTransferSupported(true);
+  cras_audio_handler_->RequestStyleTransferSupported(base::DoNothing());
+
+  auto internal_mic = AudioDevice(GenerateAudioNode(kInternalMicStyleTransfer));
+  cras_audio_handler_->SwitchToDevice(internal_mic, true,
+                                      DeviceActivateType::kActivateByUser);
+
+  // A widget is required to make `HasFocus` take effect.
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  std::unique_ptr<views::View> audio_detailed_view =
+      audio_detailed_view_controller_->CreateView();
+  widget->SetContentsView(audio_detailed_view.get());
+
+  ASSERT_EQ(1u, style_transfer_toggles_map_.size());
+  EXPECT_FALSE(style_transfer_toggles_map_.begin()->second->HasFocus());
+
+  ToggleStyleTransfer(
+      static_cast<AudioDetailedView*>(audio_detailed_view.get()));
+
+  ASSERT_EQ(1u, style_transfer_toggles_map_.size());
+  EXPECT_TRUE(style_transfer_toggles_map_.begin()->second->HasFocus());
+}
+
 TEST_F(UnifiedAudioDetailedViewControllerTest, ToggleLiveCaption) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
-      {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-       ash::features::kOnDeviceSpeechRecognition},
-      {});
+      {ash::features::kOnDeviceSpeechRecognition}, {});
 
   EXPECT_TRUE(live_caption_view());
   EXPECT_FALSE(live_caption_enabled());
@@ -596,15 +779,14 @@ TEST_F(UnifiedAudioDetailedViewControllerTest, ToggleLiveCaption) {
 
 TEST_F(UnifiedAudioDetailedViewControllerTest, LiveCaptionNotAvailable) {
   // If the Live Caption feature flags are not set, the Live Caption toggle will
-  // not be enabled in audio settings.
-  EXPECT_TRUE(live_caption_view());
+  // not be visible in audio settings.
+  EXPECT_FALSE(live_caption_view());
   EXPECT_FALSE(live_caption_enabled());
 }
 
 TEST_F(UnifiedAudioDetailedViewControllerTest, SliderFocusToggleMute) {
-  std::unique_ptr<views::View> view =
-      audio_detailed_view_controller_->CreateView();
   auto widget = CreateFramelessTestWidget();
+  widget->SetContentsView(audio_detailed_view_controller_->CreateView());
   fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
       GenerateAudioNodeList({kInternalMic, kInternalSpeaker}));
 
@@ -616,15 +798,13 @@ TEST_F(UnifiedAudioDetailedViewControllerTest, SliderFocusToggleMute) {
 
   cras_audio_handler_->SwitchToDevice(
       AudioDevice(GenerateAudioNode(kInternalMic)), true,
-      CrasAudioHandler::ACTIVATE_BY_USER);
-  CheckSliderFocusBehavior(widget.get(), /*is_input_slider=*/true,
-                           kInternalMicId);
+      DeviceActivateType::kActivateByUser);
+  CheckSliderFocusBehavior(/*is_input_slider=*/true, kInternalMicId);
 
   cras_audio_handler_->SwitchToDevice(
       AudioDevice(GenerateAudioNode(kInternalSpeaker)), true,
-      CrasAudioHandler::ACTIVATE_BY_USER);
-  CheckSliderFocusBehavior(widget.get(), /*is_input_slider=*/false,
-                           kInternalSpeakerId);
+      DeviceActivateType::kActivateByUser);
+  CheckSliderFocusBehavior(/*is_input_slider=*/false, kInternalSpeakerId);
 }
 
 TEST_F(UnifiedAudioDetailedViewControllerTest,
@@ -636,7 +816,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 
   cras_audio_handler_->SwitchToDevice(
       AudioDevice(GenerateAudioNode(kHeadphone)), true,
-      CrasAudioHandler::ACTIVATE_BY_USER);
+      DeviceActivateType::kActivateByUser);
   EXPECT_EQ(kHeadphoneId, cras_audio_handler_->GetPrimaryActiveOutputNode());
 
   // Sets a volume level greater than 0 and the device is unmuted.
@@ -667,9 +847,8 @@ class UnifiedAudioDetailedViewControllerSodaTest
     // `ChromeBrowserMainPartsAsh` initializes). Create it here so that
     // calling speech::SodaInstaller::GetInstance() returns a valid instance.
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kOnDeviceSpeechRecognition, media::kLiveCaption,
-         media::kLiveCaptionMultiLanguage,
-         media::kLiveCaptionSystemWideOnChromeOS},
+        {ash::features::kOnDeviceSpeechRecognition,
+         media::kLiveCaptionMultiLanguage},
         {});
     soda_installer_impl_ =
         std::make_unique<speech::SodaInstallerImplChromeOS>();

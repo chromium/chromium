@@ -4,9 +4,8 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<style include="md-select cr-input-style support-tool-shared">
+<style include="md-select support-tool-shared">
   .md-select {
-    height: 27px;
     margin-bottom: 5px;
     width: 248px;
   }
@@ -34,7 +33,7 @@ found in the LICENSE file.
 <h1 tabindex="0">$i18n{issueDetailsPageTitle}</h1>
 <div class="support-tool-title">$i18n{supportCaseId}</div>
 <cr-input class="support-case-id" value="{{caseId_}}"
-  spellcheck="false" maxlength="20" aria-label="$i18n{supportCaseId}">
+    spellcheck="false" maxlength="20" aria-label="$i18n{supportCaseId}">
 </cr-input>
 <div id="email-title" class="support-tool-title" aria-hidden="true">
   $i18n{email}
@@ -42,13 +41,13 @@ found in the LICENSE file.
 <select class="md-select" value="{{selectedEmail_::change}}"
     aria-labelledby="email-title">
   <template is="dom-repeat" items="[[emails_]]">
-  <option value="[[item]]">[[item]]</option>
+    <option value="[[item]]">[[item]]</option>
   </template>
 </select>
 <div id="description-title" class="support-tool-title" aria-hidden="true">
   $i18n{describeIssueText}
 </div>
 <textarea id="description" class="support-tool-text" spellcheck="true"
-  value="{{issueDescription_::input}}" aria-labelledby="description-title"
-  placeholder="$i18n{issueDescriptionPlaceholder}">
+    value="{{issueDescription_::input}}" aria-labelledby="description-title"
+    placeholder="$i18n{issueDescriptionPlaceholder}">
 </textarea>

@@ -4,6 +4,7 @@
 
 #include "storage/browser/database/database_tracker.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
@@ -21,6 +22,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,7 +43,6 @@
 #include "storage/browser/database/databases_table.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
-#include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -72,12 +73,6 @@ OriginInfo::OriginInfo(const OriginInfo& origin_info) = default;
 
 OriginInfo::~OriginInfo() = default;
 
-void OriginInfo::GetAllDatabaseNames(
-    std::vector<std::u16string>* databases) const {
-  for (const auto& name_and_size : database_sizes_)
-    databases->push_back(name_and_size.first);
-}
-
 int64_t OriginInfo::GetDatabaseSize(const std::u16string& database_name) const {
   auto it = database_sizes_.find(database_name);
   if (it != database_sizes_.end())
@@ -91,11 +86,10 @@ OriginInfo::OriginInfo(const std::string& origin_identifier, int64_t total_size)
 scoped_refptr<DatabaseTracker> DatabaseTracker::Create(
     const base::FilePath& profile_path,
     bool is_incognito,
-    scoped_refptr<SpecialStoragePolicy> special_storage_policy,
     scoped_refptr<QuotaManagerProxy> quota_manager_proxy) {
   auto database_tracker = base::MakeRefCounted<DatabaseTracker>(
-      profile_path, is_incognito, std::move(special_storage_policy),
-      std::move(quota_manager_proxy), base::PassKey<DatabaseTracker>());
+      profile_path, is_incognito, std::move(quota_manager_proxy),
+      base::PassKey<DatabaseTracker>());
   database_tracker->RegisterQuotaClient();
   return database_tracker;
 }
@@ -103,7 +97,6 @@ scoped_refptr<DatabaseTracker> DatabaseTracker::Create(
 DatabaseTracker::DatabaseTracker(
     const base::FilePath& profile_path,
     bool is_incognito,
-    scoped_refptr<SpecialStoragePolicy> special_storage_policy,
     scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
     base::PassKey<DatabaseTracker>)
     : is_incognito_(is_incognito),
@@ -115,7 +108,6 @@ DatabaseTracker::DatabaseTracker(
           .page_size = 4096,
           .cache_size = 500,
       })),
-      special_storage_policy_(std::move(special_storage_policy)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -789,12 +781,6 @@ void DatabaseTracker::DeleteDataModifiedSince(
   DatabaseSet to_be_deleted;
   int rv = net::OK;
   for (const auto& origin : origins_identifiers) {
-    if (special_storage_policy_.get() &&
-        special_storage_policy_->IsStorageProtected(
-            GetOriginURLFromIdentifier(origin))) {
-      continue;
-    }
-
     std::vector<DatabaseDetails> details;
     if (!databases_table_->GetAllDatabaseDetailsForOriginIdentifier(origin,
                                                                     &details)) {
@@ -898,8 +884,9 @@ void DatabaseTracker::CloseIncognitoFileHandle(
     const std::u16string& vfs_file_name) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(is_incognito_);
-  DCHECK(incognito_file_handles_.find(vfs_file_name) !=
-         incognito_file_handles_.end());
+  CHECK(incognito_file_handles_.find(vfs_file_name) !=
+            incognito_file_handles_.end(),
+        base::NotFatalUntil::M130);
 
   auto it = incognito_file_handles_.find(vfs_file_name);
   if (it != incognito_file_handles_.end()) {
@@ -928,49 +915,10 @@ void DatabaseTracker::DeleteIncognitoDBDirectory() {
     base::DeletePathRecursively(incognito_db_dir);
 }
 
-void DatabaseTracker::ClearSessionOnlyOrigins() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  bool has_session_only_databases =
-      special_storage_policy_.get() &&
-      special_storage_policy_->HasSessionOnlyOrigins();
-
-  // Clearing only session-only databases, and there are none.
-  if (!has_session_only_databases)
-    return;
-
-  if (!LazyInit())
-    return;
-
-  std::vector<std::string> origin_identifiers;
-  GetAllOriginIdentifiers(&origin_identifiers);
-
-  for (const auto& origin : origin_identifiers) {
-    GURL origin_url = GetOriginURLFromIdentifier(origin);
-    if (!special_storage_policy_->IsStorageSessionOnly(origin_url))
-      continue;
-    if (special_storage_policy_->IsStorageProtected(origin_url))
-      continue;
-    OriginInfo origin_info;
-    std::vector<std::u16string> databases;
-    GetOriginInfo(origin, &origin_info);
-    origin_info.GetAllDatabaseNames(&databases);
-
-    for (const auto& database : databases) {
-      base::File file(
-          GetFullDBFilePath(origin, database),
-          base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WIN_SHARE_DELETE |
-              base::File::FLAG_DELETE_ON_CLOSE | base::File::FLAG_READ);
-    }
-    DeleteOrigin(origin, true);
-  }
-}
-
-
 void DatabaseTracker::Shutdown() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (shutting_down_) {
     NOTREACHED();
-    return;
   }
   shutting_down_ = true;
 
@@ -982,14 +930,14 @@ void DatabaseTracker::Shutdown() {
 
   if (is_incognito_)
     DeleteIncognitoDBDirectory();
-  else if (!force_keep_session_state_)
-    ClearSessionOnlyOrigins();
   CloseTrackerDatabaseAndClearCaches();
-}
 
-void DatabaseTracker::SetForceKeepSessionState() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  force_keep_session_state_ = true;
+  // Explicitly destroy `db_` on the correct sequence rather than waiting for
+  // the destructor, which may run on another sequence. Destroy related fields
+  // first to prevent dangling pointers. Destruction order is important.
+  meta_table_.reset();
+  databases_table_.reset();
+  db_.reset();
 }
 
 }  // namespace storage

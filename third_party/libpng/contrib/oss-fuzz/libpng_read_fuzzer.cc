@@ -1,10 +1,9 @@
+
 // libpng_read_fuzzer.cc
 // Copyright 2017-2018 Glenn Randers-Pehrson
-// Copyright 2015 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-// Last changed in libpng 1.6.35 [July 15, 2018]
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that may
+// be found in the LICENSE file https://cs.chromium.org/chromium/src/LICENSE
 
 // The modifications in 2017 by Glenn Randers-Pehrson include
 // 1. addition of a PNG_CLEANUP macro,
@@ -16,6 +15,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <vector>
@@ -59,7 +59,7 @@ struct PngObjectHandler {
       png_free(png_ptr, row_ptr);
     if (end_info_ptr)
       png_destroy_read_struct(&png_ptr, &info_ptr, &end_info_ptr);
-    else if (info_ptr) 
+    else if (info_ptr)
       png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
     else
       png_destroy_read_struct(&png_ptr, nullptr, nullptr);

@@ -5,6 +5,7 @@
 #include "content/browser/first_party_sets/database/first_party_sets_database.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -13,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -905,10 +905,12 @@ TEST_F(FirstPartySetsDatabaseTest, InsertBrowserContextCleared_PreExistingDB) {
 
 TEST_F(FirstPartySetsDatabaseTest, GetSitesToClearFilters_NoPreExistingDB) {
   OpenDatabase();
-  std::pair<std::vector<net::SchemefulSite>, net::FirstPartySetsCacheFilter>
+  std::optional<std::pair<std::vector<net::SchemefulSite>,
+                          net::FirstPartySetsCacheFilter>>
       res = db()->GetSitesToClearFilters("b");
-  EXPECT_THAT(res.first, std::vector<net::SchemefulSite>());
-  EXPECT_EQ(res.second, net::FirstPartySetsCacheFilter());
+  EXPECT_TRUE(res.has_value());
+  EXPECT_THAT(res->first, std::vector<net::SchemefulSite>());
+  EXPECT_EQ(res->second, net::FirstPartySetsCacheFilter());
 }
 
 TEST_F(FirstPartySetsDatabaseTest, GetSitesToClearFilters) {
@@ -947,18 +949,22 @@ TEST_F(FirstPartySetsDatabaseTest, GetSitesToClearFilters) {
   net::FirstPartySetsCacheFilter cache_filter(
       {{example, 1}, {example1, 2}, {example2, 2}}, expected_run_count);
 
-  std::pair<std::vector<net::SchemefulSite>, net::FirstPartySetsCacheFilter>
+  std::optional<std::pair<std::vector<net::SchemefulSite>,
+                          net::FirstPartySetsCacheFilter>>
       res = db()->GetSitesToClearFilters(browser_context_id);
-  EXPECT_THAT(res.first, input);
-  EXPECT_EQ(res.second, cache_filter);
+  EXPECT_TRUE(res.has_value());
+  EXPECT_THAT(res->first, input);
+  EXPECT_EQ(res->second, cache_filter);
 }
 
 TEST_F(FirstPartySetsDatabaseTest, GetSets_NoPreExistingDB) {
   OpenDatabase();
-  std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig> res =
-      db()->GetGlobalSetsAndConfig("b");
-  EXPECT_TRUE(res.first.empty());
-  EXPECT_TRUE(res.second.empty());
+  std::optional<
+      std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
+      res = db()->GetGlobalSetsAndConfig("b");
+  EXPECT_TRUE(res.has_value());
+  EXPECT_TRUE(res->first.empty());
+  EXPECT_TRUE(res->second.empty());
 }
 
 TEST_F(FirstPartySetsDatabaseTest, GetSets_NoPublicSets) {
@@ -993,12 +999,14 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets_NoPublicSets) {
   ASSERT_TRUE(db()->PersistSets(browser_context_id, global_sets,
                                 net::FirstPartySetsContextConfig()));
 
-  std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig> res =
-      db()->GetGlobalSetsAndConfig(browser_context_id);
+  std::optional<
+      std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
+      res = db()->GetGlobalSetsAndConfig(browser_context_id);
 
+  EXPECT_TRUE(res.has_value());
   EXPECT_THAT(
-      res.first.FindEntries({manual_site, manual_primary},
-                            net::FirstPartySetsContextConfig()),
+      res->first.FindEntries({manual_site, manual_primary},
+                             net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(manual_site,
                net::FirstPartySetEntry(
@@ -1006,7 +1014,73 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets_NoPublicSets) {
           Pair(manual_primary,
                net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary,
                                        std::nullopt))));
-  EXPECT_TRUE(res.second.empty());
+  EXPECT_TRUE(res->second.empty());
+}
+
+TEST_F(FirstPartySetsDatabaseTest, GetSets_PublicSetsHaveSingleton) {
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(
+      db_path(), GetSqlFilePath("v5.public_sets_singleton.sql")));
+
+  // Verify data in the pre-existing DB.
+  {
+    sql::Database db;
+    EXPECT_TRUE(db.Open(db_path()));
+    EXPECT_EQ(4u, CountPublicSetsEntries(&db));
+    EXPECT_EQ(1u, CountBrowserContextSetsVersionEntries(&db));
+    EXPECT_EQ(0u, CountPolicyConfigurationsEntries(&db));
+  }
+  const net::SchemefulSite aaa(GURL("https://aaa.test"));
+  const net::SchemefulSite bbb(GURL("https://bbb.test"));
+  const net::SchemefulSite ccc(GURL("https://ccc.test"));
+  const net::SchemefulSite ddd(GURL("https://ddd.test"));
+  OpenDatabase();
+
+  std::optional<
+      std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
+      res = db()->GetGlobalSetsAndConfig("b0");
+  EXPECT_TRUE(res.has_value());
+  // The singleton set should be deleted.
+  EXPECT_THAT(res->first.FindEntries({aaa, bbb, ccc, ddd},
+                                     net::FirstPartySetsContextConfig()),
+              UnorderedElementsAre(
+                  Pair(ccc, net::FirstPartySetEntry(
+                                ddd, net::SiteType::kAssociated, std::nullopt)),
+                  Pair(ddd, net::FirstPartySetEntry(
+                                ddd, net::SiteType::kPrimary, std::nullopt))));
+  EXPECT_EQ(res->second, net::FirstPartySetsContextConfig());
+}
+
+TEST_F(FirstPartySetsDatabaseTest, GetSets_PublicSetsHaveOrphan) {
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(
+      db_path(), GetSqlFilePath("v5.public_sets_orphan.sql")));
+
+  // Verify data in the pre-existing DB.
+  {
+    sql::Database db;
+    EXPECT_TRUE(db.Open(db_path()));
+    EXPECT_EQ(4u, CountPublicSetsEntries(&db));
+    EXPECT_EQ(1u, CountBrowserContextSetsVersionEntries(&db));
+    EXPECT_EQ(0u, CountPolicyConfigurationsEntries(&db));
+  }
+  const net::SchemefulSite aaa(GURL("https://aaa.test"));
+  const net::SchemefulSite bbb(GURL("https://bbb.test"));
+  const net::SchemefulSite ccc(GURL("https://ccc.test"));
+  const net::SchemefulSite ddd(GURL("https://ddd.test"));
+  OpenDatabase();
+
+  std::optional<
+      std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
+      res = db()->GetGlobalSetsAndConfig("b0");
+  EXPECT_TRUE(res.has_value());
+  // The singleton set should be deleted.
+  EXPECT_THAT(res->first.FindEntries({aaa, bbb, ccc, ddd},
+                                     net::FirstPartySetsContextConfig()),
+              UnorderedElementsAre(
+                  Pair(ccc, net::FirstPartySetEntry(
+                                ddd, net::SiteType::kAssociated, std::nullopt)),
+                  Pair(ddd, net::FirstPartySetEntry(
+                                ddd, net::SiteType::kPrimary, std::nullopt))));
+  EXPECT_EQ(res->second, net::FirstPartySetsContextConfig());
 }
 
 TEST_F(FirstPartySetsDatabaseTest, GetSets) {
@@ -1027,10 +1101,12 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets) {
   const net::SchemefulSite ddd(GURL("https://ddd.test"));
   OpenDatabase();
 
-  std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig> res =
-      db()->GetGlobalSetsAndConfig("b0");
-  EXPECT_THAT(res.first.FindEntries({aaa, bbb, ccc, ddd},
-                                    net::FirstPartySetsContextConfig()),
+  std::optional<
+      std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
+      res = db()->GetGlobalSetsAndConfig("b0");
+  EXPECT_TRUE(res.has_value());
+  EXPECT_THAT(res->first.FindEntries({aaa, bbb, ccc, ddd},
+                                     net::FirstPartySetsContextConfig()),
               UnorderedElementsAre(
                   Pair(aaa, net::FirstPartySetEntry(
                                 bbb, net::SiteType::kAssociated, std::nullopt)),
@@ -1040,7 +1116,7 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets) {
                                 ddd, net::SiteType::kAssociated, std::nullopt)),
                   Pair(ddd, net::FirstPartySetEntry(
                                 ddd, net::SiteType::kPrimary, std::nullopt))));
-  EXPECT_EQ(res.second, net::FirstPartySetsContextConfig());
+  EXPECT_EQ(res->second, net::FirstPartySetsContextConfig());
 }
 
 TEST_F(FirstPartySetsDatabaseTest,
@@ -1113,10 +1189,12 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
   // Trigger the lazy-initialization.
   EXPECT_TRUE(db()->PersistSets(browser_context_id, global_sets, config));
 
-  std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig> res =
-      db()->GetGlobalSetsAndConfig(browser_context_id);
-  EXPECT_EQ(res.first, global_sets);
-  EXPECT_EQ(res.second, config);
+  std::optional<
+      std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
+      res = db()->GetGlobalSetsAndConfig(browser_context_id);
+  EXPECT_TRUE(res.has_value());
+  EXPECT_EQ(res->first, global_sets);
+  EXPECT_EQ(res->second, config);
 }
 
 class FirstPartySetsDatabaseMigrationsTest : public FirstPartySetsDatabaseTest {

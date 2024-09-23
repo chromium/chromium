@@ -1,0 +1,228 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//rlz/buildflags/buildflags.gni")
+
+assert(is_chromeos_ash)
+
+static_library("session") {
+  sources = [
+    "chrome_session_manager.cc",
+    "chrome_session_manager.h",
+    "session_length_limiter.cc",
+    "session_length_limiter.h",
+    "user_session_initializer.cc",
+    "user_session_initializer.h",
+    "user_session_manager.cc",
+    "user_session_manager.h",
+  ]
+
+  public_deps = [
+    "//ash/components/arc",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/base",
+    "//chrome/browser/ash/hats",
+    "//chrome/browser/ash/release_notes",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/ash/components/login/integrity",
+    "//chromeos/dbus/tpm_manager:tpm_manager_proto",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//services/network/public/cpp",
+    "//ui/base/ime/ash",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc:arc_base_utils",
+    "//ash/components/arc:arc_features",
+    "//ash/components/arc:prefs",
+    "//ash/components/arc/session:arc_base_enums",
+    "//ash/constants",
+    "//ash/webui/shimless_rma",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/accessibility/live_caption",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/boca",
+    "//chrome/browser/ash/boot_times_recorder",
+    "//chrome/browser/ash/calendar",
+    "//chrome/browser/ash/child_accounts",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/kerberos",
+    "//chrome/browser/ash/logging",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ash/login/saml",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/tpm",
+    "//chrome/browser/ash/u2f",
+    "//chrome/browser/google",
+    "//chrome/browser/screen_ai:screen_ai_dlc_installer",
+    "//chrome/browser/ui/webui/ash/shimless_rma_dialog",
+    "//chrome/common",
+    "//chrome/common:channel_info",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chromeos/ash/components/account_manager",
+    "//chromeos/ash/components/assistant:buildflags",
+    "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/pciguard",
+    "//chromeos/ash/components/dbus/rmad",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/login/session",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network/portal_detector",
+    "//chromeos/ash/components/osauth/public",
+    "//chromeos/ash/components/peripheral_notification",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/standalone_browser",
+    "//chromeos/ash/components/tpm",
+    "//chromeos/constants",
+    "//chromeos/dbus/tpm_manager",
+    "//chromeos/ui/base",
+    "//chromeos/ui/vector_icons",
+    "//components/account_id",
+    "//components/account_manager_core",
+    "//components/component_updater",
+    "//components/flags_ui",
+    "//components/language/core/browser",
+    "//components/live_caption:utils",
+    "//components/password_manager/core/browser:metrics_util",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/quirks",
+    "//components/session_manager:base",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_switches",
+    "//components/signin/public/identity_manager",
+    "//components/startup_metric_utils",
+    "//components/supervised_user/core/browser",
+    "//components/trusted_vault",
+    "//components/user_manager:common",
+    "//components/version_info",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/common",
+    "//extensions/common:mojom",
+    "//media",
+    "//rlz/buildflags",
+    "//ui/aura",
+    "//url",
+
+    # TODO(b/353449319): Use //chrome/browser/ash after fixing cyclic dependency from
+    # obj/chrome/browser/ash/login/session/session/user_session_initializer.o.
+    "//chrome/browser/policy/messaging_layer/proto:app_install_events_proto",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/base",
+    "//chrome/browser/ash/kerberos",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/settings",
+  ]
+
+  if (enable_rlz) {
+    deps += [ "//components/rlz" ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "user_session_manager_test_api.cc",
+    "user_session_manager_test_api.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ash/login/session",
+  ]
+
+  deps = [ "//chromeos/ash/components/login/auth" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "chrome_session_manager_browsertest.cc" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/system",
+    "//content/test:test_support",
+    "//google_apis:test_support",
+    "//rlz/buildflags",
+    "//testing/gtest",
+    "//ui/base/clipboard",
+  ]
+
+  if (enable_rlz) {
+    deps += [
+      ":session",
+      "//chrome/browser/google",
+      "//chrome/common:non_code_constants",
+      "//chromeos/ash/components/install_attributes:test_support",
+      "//components/user_manager",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "session_length_limiter_unittest.cc",
+    "user_session_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":session",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//components/language/core/browser",
+    "//components/signin/public/base:signin_switches",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

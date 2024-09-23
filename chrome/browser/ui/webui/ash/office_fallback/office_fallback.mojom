@@ -7,6 +7,7 @@ module ash.office_fallback.mojom;
 // The selected choice when the user closes the dialog.
 enum DialogChoice {
   kCancel,
+  kOk,
   kQuickOffice,
   kTryAgain,
 };

@@ -20,6 +20,9 @@
           },
           "https_first_mode_incognito_enabled": {
             "value": false
+          },
+          "https_first_balanced_mode_enabled": {
+            "value": false
           }
         }
       },
@@ -33,6 +36,9 @@
           },
           "https_first_mode_incognito_enabled": {
             "default_value": true
+          },
+          "https_first_balanced_mode_enabled": {
+            "default_value": false
           }
         }
       },
@@ -45,6 +51,25 @@
             "value": true
           },
           "https_first_mode_incognito_enabled": {
+            "value": true
+          },
+          "https_first_balanced_mode_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "HttpsOnlyMode": "force_balanced_enabled"
+        },
+        "prefs": {
+          "https_only_mode_enabled": {
+            "value": false
+          },
+          "https_first_mode_incognito_enabled": {
+            "value": true
+          },
+          "https_first_balanced_mode_enabled": {
             "value": true
           }
         }

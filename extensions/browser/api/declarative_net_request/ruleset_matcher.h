@@ -48,19 +48,17 @@ class RulesetMatcher {
 
   ~RulesetMatcher();
 
-  // Returns an action to be performed on the request before it is sent.
-  std::optional<RequestAction> GetBeforeRequestAction(
-      const RequestParams& params) const;
-
-  // Returns an action to be performed on the request after response headers
-  // have been received.
-  std::optional<RequestAction> GetOnHeadersReceivedAction(
-      const RequestParams& params) const;
+  // Returns an action to be performed on the request. `stage` denotes both the
+  // request stage and which pool of rules are to be matched against the
+  // request.
+  std::optional<RequestAction> GetAction(const RequestParams& params,
+                                         RulesetMatchingStage stage) const;
 
   // Returns a list of actions corresponding to all matched
   // modifyHeaders rules with priority greater than |min_priority| if specified.
   std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
+      RulesetMatchingStage stage,
       std::optional<uint64_t> min_priority) const;
 
   bool IsExtraHeadersMatcher() const;
@@ -97,11 +95,11 @@ class RulesetMatcher {
   // Returns the disabled rule ids for testing.
   const base::flat_set<int>& GetDisabledRuleIdsForTesting() const;
 
- private:
   // Returns the total rule count for rules within this ruleset to be matched
   // for the given request matching `stage`.
   size_t GetRulesCount(RulesetMatchingStage stage) const;
 
+ private:
   // Returns the regex rule count for rules within this ruleset to be matched
   // for the given request matching `stage`.
   size_t GetRegexRulesCount(RulesetMatchingStage stage) const;

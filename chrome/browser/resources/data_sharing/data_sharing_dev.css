@@ -1,0 +1,10 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  /* TODO: Sharekit team should override/remove this when testing dialog
+  container settings. */
+  width: 520px;
+  height: 500px;
+}

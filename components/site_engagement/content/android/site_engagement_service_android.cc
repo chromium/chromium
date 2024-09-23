@@ -6,11 +6,13 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "components/site_engagement/content/android/jni_headers/SiteEngagementService_jni.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/site_engagement/content/android/jni_headers/SiteEngagementService_jni.h"
 
 namespace site_engagement {
 

@@ -35,7 +35,7 @@
 #include "cc/animation/animation_timeline.h"
 #include "cc/base/features.h"
 #include "cc/layers/picture_layer.h"
-#include "cc/trees/ukm_manager.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
@@ -123,7 +123,8 @@ Page* CreatePage(ChromeClient& chrome_client, WebViewImpl& opener_web_view) {
   Settings& main_settings = opener_web_view.GetPage()->GetSettings();
   Page* page = Page::CreateNonOrdinary(
       chrome_client,
-      opener_web_view.GetPage()->GetPageScheduler()->GetAgentGroupScheduler());
+      opener_web_view.GetPage()->GetPageScheduler()->GetAgentGroupScheduler(),
+      &opener_web_view.GetPage()->GetColorProviderColorMaps());
   page->GetSettings().SetAcceleratedCompositingEnabled(true);
   page->GetSettings().SetScriptEnabled(true);
   page->GetSettings().SetAllowScriptsToCloseWindows(true);
@@ -140,6 +141,7 @@ Page* CreatePage(ChromeClient& chrome_client, WebViewImpl& opener_web_view) {
       main_settings.GetPreferredColorScheme());
   page->GetSettings().SetForceDarkModeEnabled(
       main_settings.GetForceDarkModeEnabled());
+  page->GetSettings().SetInForcedColors(main_settings.GetInForcedColors());
 
   const MediaFeatureOverrides* media_feature_overrides =
       opener_web_view.GetPage()->GetMediaFeatureOverrides();
@@ -372,7 +374,8 @@ WebPagePopupImpl::WebPagePopupImpl(
       /* Frame* previous_sibling */ nullptr,
       FrameInsertType::kInsertInConstructor, LocalFrameToken(),
       window_agent_factory,
-      /* InterfaceRegistry* */ nullptr);
+      /* InterfaceRegistry* */ nullptr,
+      /* BrowserInterfaceBroker */ mojo::NullRemote());
   frame->SetPagePopupOwner(popup_client_->OwnerElement());
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
 
@@ -403,9 +406,9 @@ WebPagePopupImpl::WebPagePopupImpl(
 
   page_->DidInitializeCompositing(*widget_base_->AnimationHost());
 
-  scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
-  popup_client_->WriteDocument(data.get());
-  frame->SetPageZoomFactor(popup_client_->ZoomFactor());
+  SegmentedBuffer data;
+  popup_client_->WriteDocument(data);
+  frame->SetLayoutZoomFactor(popup_client_->ZoomFactor());
   frame->ForceSynchronousDocumentInstall(AtomicString("text/html"),
                                          std::move(data));
 
@@ -468,6 +471,14 @@ void WebPagePopupImpl::ProcessInputEventSynchronouslyForTesting(
     const WebCoalescedInputEvent& event) {
   widget_base_->input_handler().HandleInputEvent(event, nullptr,
                                                  base::DoNothing());
+}
+
+void WebPagePopupImpl::DispatchNonBlockingEventForTesting(
+    std::unique_ptr<WebCoalescedInputEvent> event) {
+  widget_base_->widget_input_handler_manager()
+      ->DispatchEventOnInputThreadForTesting(
+          std::move(event),
+          mojom::blink::WidgetInputHandler::DispatchEventCallback());
 }
 
 void WebPagePopupImpl::UpdateTextInputState() {
@@ -544,6 +555,10 @@ bool WebPagePopupImpl::IsHidden() const {
 
 void WebPagePopupImpl::SetCompositorVisible(bool visible) {
   widget_base_->SetCompositorVisible(visible);
+}
+
+void WebPagePopupImpl::WarmUpCompositor() {
+  widget_base_->WarmUpCompositor();
 }
 
 void WebPagePopupImpl::PostMessageToPopup(const String& message) {

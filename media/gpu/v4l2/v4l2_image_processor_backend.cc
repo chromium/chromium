@@ -256,38 +256,23 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
     return nullptr;
   }
 
-  VideoFrame::StorageType input_storage_type = VideoFrame::STORAGE_UNKNOWN;
-  for (auto input_type : input_config.preferred_storage_types) {
-    v4l2_memory v4l2_memory_type = InputStorageTypeToV4L2Memory(input_type);
-    if (v4l2_memory_type == V4L2_MEMORY_USERPTR ||
-        v4l2_memory_type == V4L2_MEMORY_DMABUF) {
-      input_storage_type = input_type;
-      break;
-    }
-  }
-  if (input_storage_type == VideoFrame::STORAGE_UNKNOWN) {
+  const v4l2_memory input_memory_type =
+      InputStorageTypeToV4L2Memory(input_config.storage_type);
+  if (input_memory_type != V4L2_MEMORY_USERPTR &&
+      input_memory_type != V4L2_MEMORY_DMABUF) {
     VLOGF(2) << "Unsupported input storage type";
     return nullptr;
   }
 
-  VideoFrame::StorageType output_storage_type = VideoFrame::STORAGE_UNKNOWN;
-  for (auto output_type : output_config.preferred_storage_types) {
-    v4l2_memory v4l2_memory_type = InputStorageTypeToV4L2Memory(output_type);
-    if (v4l2_memory_type == V4L2_MEMORY_MMAP ||
-        v4l2_memory_type == V4L2_MEMORY_DMABUF) {
-      output_storage_type = output_type;
-      break;
-    }
-  }
-  if (output_storage_type == VideoFrame::STORAGE_UNKNOWN) {
+  // When |output_mode| is ALLOCATE, then |output_config.storage_type| is
+  // ignored. The output memory type will be V4L2_MEMORY_MMAP.
+  const v4l2_memory output_memory_type =
+      output_mode == OutputMode::ALLOCATE
+          ? V4L2_MEMORY_MMAP
+          : InputStorageTypeToV4L2Memory(output_config.storage_type);
+  if (output_memory_type != V4L2_MEMORY_MMAP &&
+      output_memory_type != V4L2_MEMORY_DMABUF) {
     VLOGF(2) << "Unsupported output storage type";
-    return nullptr;
-  }
-
-  const v4l2_memory input_memory_type =
-      InputStorageTypeToV4L2Memory(input_storage_type);
-  if (input_memory_type == 0) {
-    VLOGF(1) << "Unsupported input storage type: " << input_storage_type;
     return nullptr;
   }
 
@@ -405,20 +390,10 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
   if (device->Ioctl(VIDIOC_S_CTRL, &alpha) != 0)
     VPLOGF(1) << "V4L2_CID_ALPHA_COMPONENT failed";
 
-  const v4l2_memory output_memory_type =
-      output_mode == OutputMode::ALLOCATE
-          ? V4L2_MEMORY_MMAP
-          : InputStorageTypeToV4L2Memory(output_storage_type);
   std::unique_ptr<V4L2ImageProcessorBackend> image_processor(
       new V4L2ImageProcessorBackend(
-          std::move(device),
-          PortConfig(input_config.fourcc, negotiated_input_size, input_planes,
-                     input_config.visible_rect, {input_storage_type}),
-          PortConfig(output_config.fourcc, negotiated_output_size,
-                     output_planes, output_config.visible_rect,
-                     {output_storage_type}),
-          input_memory_type, output_memory_type, output_mode,
-          std::move(error_cb)));
+          std::move(device), input_config, output_config, input_memory_type,
+          output_memory_type, output_mode, std::move(error_cb)));
 
   if (!image_processor->CreateInputBuffers(num_buffers) ||
       !image_processor->CreateOutputBuffers(num_buffers)) {
@@ -499,24 +474,6 @@ bool V4L2ImageProcessorBackend::TryOutputFormat(uint32_t input_pixelformat,
   return true;
 }
 
-void V4L2ImageProcessorBackend::ProcessLegacy(scoped_refptr<VideoFrame> frame,
-                                              LegacyFrameReadyCB cb) {
-  DVLOGF(4) << "ts=" << frame->timestamp().InMilliseconds();
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  CHECK_EQ(output_memory_type_, V4L2_MEMORY_MMAP);
-
-  auto job_record = std::make_unique<JobRecord>();
-  job_record->input_frame = VideoFrameResource::Create(std::move(frame));
-  job_record->legacy_ready_cb = std::move(cb);
-  if (MediaTraceIsEnabled()) {
-    job_record->start_time = base::TimeTicks::Now();
-  }
-
-  input_job_queue_.emplace(std::move(job_record));
-  ProcessJobs();
-}
-
 void V4L2ImageProcessorBackend::ProcessLegacyFrame(
     scoped_refptr<FrameResource> frame,
     LegacyFrameResourceReadyCB cb) {
@@ -527,7 +484,7 @@ void V4L2ImageProcessorBackend::ProcessLegacyFrame(
 
   auto job_record = std::make_unique<JobRecord>();
   job_record->input_frame = std::move(frame);
-  job_record->legacy_frame_ready_cb = std::move(cb);
+  job_record->legacy_ready_cb = std::move(cb);
   if (MediaTraceIsEnabled()) {
     job_record->start_time = base::TimeTicks::Now();
   }
@@ -849,7 +806,7 @@ void V4L2ImageProcessorBackend::Dequeue() {
     // Jobs are always processed in FIFO order.
     if (running_jobs_.empty() ||
         running_jobs_.front()->output_buffer_id != buffer->BufferId()) {
-      DVLOGF(3) << "previous Reset() abondoned the job, ignore.";
+      DVLOGF(3) << "previous Reset() abandoned the job, ignore.";
       continue;
     }
     std::unique_ptr<JobRecord> job_record = std::move(running_jobs_.front());
@@ -878,7 +835,7 @@ void V4L2ImageProcessorBackend::Dequeue() {
         break;
 
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     const auto timestamp = job_record->input_frame->timestamp();
@@ -894,24 +851,8 @@ void V4L2ImageProcessorBackend::Dequeue() {
           base::TimeTicks::Now(), "timestamp", timestamp.InMilliseconds());
     }
 
-    // At most of of |job_record->legacy_ready_cb| or
-    // |job_record->legacy_frame_ready_cb| should be set.
-    CHECK(job_record->legacy_ready_cb.is_null() ||
-          job_record->legacy_frame_ready_cb.is_null());
     if (!job_record->legacy_ready_cb.is_null()) {
-      // Since the legacy API only supports a |output_memory_type_| of
-      // V4L2_MEMORY_MMAP, |output_frame| is manufactured by a call to
-      // |V4L2ReadableBufferRef::GetFrameResource()|. This always returns a
-      // VideoFrameResource object, so |output_frame->AsVideoFrameResource()|
-      // returns a valid pointer.
-      // TODO(nhebert): switch to NativePixmap FrameResource when V4L2Queue
-      // does.
-      CHECK(output_frame->AsVideoFrameResource());
       std::move(job_record->legacy_ready_cb)
-          .Run(buffer->BufferId(),
-               output_frame->AsVideoFrameResource()->GetMutableVideoFrame());
-    } else if (!job_record->legacy_frame_ready_cb.is_null()) {
-      std::move(job_record->legacy_frame_ready_cb)
           .Run(buffer->BufferId(), std::move(output_frame));
     } else {
       std::move(job_record->ready_cb).Run(std::move(output_frame));
@@ -965,7 +906,7 @@ bool V4L2ImageProcessorBackend::EnqueueInputRecord(
       break;
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   DVLOGF(4) << "enqueued frame ts="
             << job_record->input_frame->timestamp().InMilliseconds()
@@ -999,7 +940,7 @@ bool V4L2ImageProcessorBackend::EnqueueOutputRecord(
           output_handle->native_pixmap_handle.planes);
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

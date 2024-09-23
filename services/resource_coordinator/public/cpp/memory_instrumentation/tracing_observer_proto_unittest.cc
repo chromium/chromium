@@ -210,11 +210,6 @@ TEST_F(TracingObserverProtoTest, AddChromeDumpToTraceIfEnabled) {
       args, kTestPid, &pmd, kTimestamp));
   data_source_tester.EndTracing();
 
-  // In SDK build we may see some metadata packets as well.
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  ASSERT_EQ(1ul, data_source_tester.GetFinalizedPacketCount());
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
   const perfetto::protos::TracePacket* packet = nullptr;
   for (size_t i = 0; i < data_source_tester.GetFinalizedPacketCount(); ++i) {
     if (data_source_tester.GetFinalizedPacket(i)
@@ -282,11 +277,6 @@ TEST_F(TracingObserverProtoTest, AddOsDumpToTraceIfEnabled) {
   EXPECT_TRUE(tracing_observer->AddOsDumpToTraceIfEnabled(
       args, kTestPid, os_dump, memory_map, kTimestamp));
   data_source_tester.EndTracing();
-
-  // In SDK build we may see some metadata packets as well.
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  EXPECT_EQ(2ul, data_source_tester.GetFinalizedPacketCount());
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   const perfetto::protos::TracePacket* process_stats_trace_packet = nullptr;
   const perfetto::protos::TracePacket* smaps_trace_packet = nullptr;
@@ -375,23 +365,10 @@ TEST_F(TracingObserverProtoTest, AsProtoInto) {
     handle->Finalize();
   };
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::TrackEvent::Trace([&](base::TrackEvent::TraceContext ctx) {
     write_dump(ctx.NewTracePacket());
   });
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  perfetto::DataSourceConfig config;
-  std::unique_ptr<perfetto::TraceWriter> trace_writer =
-      data_source_tester.GetProducerClient()->CreateTraceWriter(
-          config.target_buffer());
-  write_dump(trace_writer->NewTracePacket());
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   data_source_tester.EndTracing();
-
-  // In SDK build we may see some metadata packets as well.
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  EXPECT_EQ(1ul, data_source_tester.GetFinalizedPacketCount());
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   const perfetto::protos::TracePacket* packet = nullptr;
   for (size_t i = 0; i < data_source_tester.GetFinalizedPacketCount(); ++i) {

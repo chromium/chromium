@@ -32,7 +32,7 @@ class Widget;
 namespace ash {
 
 class CaptureModeController;
-class RecordingOverlayController;
+class AnnotationsOverlayController;
 
 // Exposes a very limited API for browser tests, and possible autotest private
 // APIs to interact with the capture mode feature.
@@ -84,6 +84,13 @@ class ASH_EXPORT CaptureModeTestApi {
   // Returns true if the 3-second countdown animation is in progress.
   bool IsInCountDownAnimation() const;
 
+  // Sets a callback that will be triggered once the video recording is started.
+  void SetOnVideoRecordingStartedCallback(base::OnceClosure callback);
+
+  // Sets a callback that will be triggered once the image is captured and
+  // encoded as JPEG bytes.
+  void SetOnImageCapturedForSearchCallback(base::OnceClosure callback);
+
   // Stops the video recording. Can only be called if a video recording was
   // in progress.
   void StopVideoRecording();
@@ -125,9 +132,9 @@ class ASH_EXPORT CaptureModeTestApi {
   void ResetRecordingServiceRemote();
   void ResetRecordingServiceClientReceiver();
 
-  // Returns the |RecordingOverlayController| which hosts the overlay widget.
+  // Returns the `AnnotationsOverlayController` which hosts the overlay widget.
   // Can only be called while recording is in progress for a Projector session.
-  RecordingOverlayController* GetRecordingOverlayController();
+  AnnotationsOverlayController* GetAnnotationsOverlayController();
 
   // Simulates the flow taken by users to open the folder selection dialog from
   // the settings menu, and waits until this dialog gets added.

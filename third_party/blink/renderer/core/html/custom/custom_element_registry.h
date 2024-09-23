@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_constructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_constructor_hash.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -28,7 +29,6 @@ class Element;
 class ElementDefinitionOptions;
 class ExceptionState;
 class LocalDOMWindow;
-class ScriptPromiseResolver;
 class ScriptState;
 class ScriptValue;
 
@@ -65,9 +65,8 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
   // TODO(dominicc): Consider broadening this API when type extensions are
   // implemented.
   void AddCandidate(Element&);
-  ScriptPromise whenDefined(ScriptState*,
-                            const AtomicString& name,
-                            ExceptionState&);
+  ScriptPromise<V8CustomElementConstructor>
+  whenDefined(ScriptState*, const AtomicString& name, ExceptionState&);
   void upgrade(Node* root);
 
   const LocalDOMWindow* GetOwnerWindow() const { return owner_.Get(); }
@@ -110,7 +109,8 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
   Member<UpgradeCandidateMap> upgrade_candidates_;
 
   using WhenDefinedPromiseMap =
-      HeapHashMap<AtomicString, Member<ScriptPromiseResolver>>;
+      HeapHashMap<AtomicString,
+                  Member<ScriptPromiseResolver<V8CustomElementConstructor>>>;
   WhenDefinedPromiseMap when_defined_promise_map_;
 
   // Weak ordered set of all documents where this registry is used, in the order

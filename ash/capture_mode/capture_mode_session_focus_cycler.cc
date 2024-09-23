@@ -1001,8 +1001,8 @@ void CaptureModeSessionFocusCycler::UpdateA11yAnnotation() {
         DCHECK(target);
         auto* contents_view = target->GetContentsView();
         auto& view_a11y = contents_view->GetViewAccessibility();
-        view_a11y.OverridePreviousFocus(previous);
-        view_a11y.OverrideNextFocus(next);
+        view_a11y.SetPreviousFocus(previous);
+        view_a11y.SetNextFocus(next);
         contents_view->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged,
                                                 true);
       };

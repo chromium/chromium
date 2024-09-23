@@ -1,0 +1,43 @@
+# Copyright 2014 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+if (is_chrome_branded) {
+  enterprise_companion_crash_product_name = "Chrome_Enterprise_Companion"
+  enterprise_companion_crash_upload_url =
+      "https://clients2.google.com/cr/report"
+  enterprise_companion_appid = "{85eedf37-756c-4972-9399-5a12a4bee148}"
+  enterprise_companion_company_short_name = "Google"
+  enterprise_companion_company_short_name_lowercase = "google"
+  enterprise_companion_company_short_name_uppercase = "GOOGLE"
+  enterprise_companion_product_full_name = "ChromeEnterpriseCompanion"
+  enterprise_companion_product_full_name_dashed_lowercase =
+      "chrome-enterprise-companion"
+  keystone_app_name = "GoogleSoftwareUpdate"
+  mac_enterprise_companion_bundle_identifier =
+      "com.google.ChromeEnterpriseCompanion"
+} else {
+  enterprise_companion_crash_product_name = "Chromium_Enterprise_Companion"
+  enterprise_companion_crash_upload_url =
+      "https://clients2.google.com/cr/staging_report"
+  enterprise_companion_appid = "{d6acc642-8982-441d-949b-312d5ccb559f}"
+  enterprise_companion_company_short_name = "Chromium"
+  enterprise_companion_company_short_name_lowercase = "chromium"
+  enterprise_companion_company_short_name_uppercase = "CHROMIUM"
+  enterprise_companion_product_full_name = "ChromiumEnterpriseCompanion"
+  enterprise_companion_product_full_name_dashed_lowercase =
+      "chromium-enterprise-companion"
+  keystone_app_name = "ChromiumSoftwareUpdate"
+  mac_enterprise_companion_bundle_identifier =
+      "org.chromium.ChromiumEnterpriseCompanion"
+}
+
+enterprise_companion_device_management_server_url =
+    "https://m.google.com/devicemanagement/data/api"
+enterprise_companion_device_management_realtime_reporting_url =
+    "https://chromereporting-pa.googleapis.com/v1/events"
+enterprise_companion_device_management_encrypted_reporting_url =
+    "https://chromereporting-pa.googleapis.com/v1/record"
+enterprise_companion_event_logging_url = "https://play.googleapis.com/log"

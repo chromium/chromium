@@ -16,7 +16,7 @@ class CORE_EXPORT ScopedAllowFullscreen {
   STACK_ALLOCATED();
 
  public:
-  enum Reason { kOrientationChange, kXrOverlay, kXrSession, kWindowOpen };
+  enum Reason { kOrientationChange, kXrOverlay, kXrSession };
 
   static std::optional<Reason> FullscreenAllowedReason();
   explicit ScopedAllowFullscreen(Reason);

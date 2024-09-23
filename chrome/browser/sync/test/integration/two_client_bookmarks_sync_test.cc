@@ -70,7 +70,6 @@ using bookmarks_helper::IsFolderWithTitleAndChildrenAre;
 using bookmarks_helper::IsUrlBookmarkWithTitleAndUrl;
 using bookmarks_helper::Move;
 using bookmarks_helper::Remove;
-using bookmarks_helper::RemoveAll;
 using bookmarks_helper::ReverseChildOrder;
 using bookmarks_helper::SetFavicon;
 using bookmarks_helper::SetTitle;
@@ -2551,8 +2550,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
 
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
 
-  // Remove all
-  RemoveAll(0);
+  GetBookmarkModel(0)->RemoveAllUserBookmarks(FROM_HERE);
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
 
   // Verify other node has no children now.
@@ -2603,7 +2601,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, ManagedBookmarks) {
   base::Value::List list;
   list.Append(std::move(bookmark));
   policy::PolicyMap policy;
-  // TODO(https://crbug.com/1187001): Migrate PolicyMap::Set() to take a
+  // TODO(crbug.com/40172729): Migrate PolicyMap::Set() to take a
   // base::Value::Dict.
   policy.Set(policy::key::kManagedBookmarks, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,

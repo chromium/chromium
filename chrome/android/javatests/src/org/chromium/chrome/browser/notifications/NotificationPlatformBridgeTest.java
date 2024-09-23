@@ -19,6 +19,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -30,16 +31,20 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -53,15 +58,12 @@ import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -111,21 +113,12 @@ public class NotificationPlatformBridgeTest {
     }
 
     private double getEngagementScoreBlocking() {
-        try {
-            return TestThreadUtils.runOnUiThreadBlocking(
-                    new Callable<Double>() {
-                        @Override
-                        public Double call() {
-                            // TODO (https://crbug.com/1063807):  Add incognito mode tests.
-                            return SiteEngagementService.getForBrowserContext(
-                                            Profile.getLastUsedRegularProfile())
-                                    .getScore(mPermissionTestRule.getOrigin());
-                        }
-                    });
-        } catch (ExecutionException ex) {
-            assert false : "Unexpected ExecutionException";
-        }
-        return 0.0;
+        // TODO (https://crbug.com/1063807):  Add incognito mode tests.
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        SiteEngagementService.getForBrowserContext(
+                                        ProfileManager.getLastUsedRegularProfile())
+                                .getScore(mPermissionTestRule.getOrigin()));
     }
 
     /**
@@ -145,7 +138,7 @@ public class NotificationPlatformBridgeTest {
                 new PermissionTestRule.PermissionUpdateWaiter(
                         "denied: ", mNotificationTestRule.getActivity());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
                 });
@@ -190,7 +183,7 @@ public class NotificationPlatformBridgeTest {
                 new PermissionTestRule.PermissionUpdateWaiter(
                         "granted: ", mNotificationTestRule.getActivity());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
                 });
@@ -492,9 +485,9 @@ public class NotificationPlatformBridgeTest {
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
 
         // Disable notification vibration in preferences.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        UserPrefs.get(Profile.getLastUsedRegularProfile())
+                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                 .setBoolean(NOTIFICATIONS_VIBRATE_ENABLED, false));
 
         Notification notification = showAndGetNotification("MyNotification", notificationOptions);
@@ -549,10 +542,10 @@ public class NotificationPlatformBridgeTest {
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
 
         // By default, vibration is enabled in notifications.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         Assert.assertTrue(
-                                UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                         .getBoolean(NOTIFICATIONS_VIBRATE_ENABLED)));
 
         Notification notification = showAndGetNotification("MyNotification", "{ vibrate: 42 }");
@@ -769,6 +762,167 @@ public class NotificationPlatformBridgeTest {
     }
 
     /**
+     * Verifies that activating the PendingIntent associated with the "Unsubscribe" button shows the
+     * `provisionally unsubscribed` notification and suspends all existing notifications, and then,
+     * clicking "Okay" commits this and revokes the notification permission.
+     *
+     * <p>One-tap Unsubscribe is supported on Android P and later.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Browser", "Notifications"})
+    @Features.EnableFeatures(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void testNotificationProvisionalUnsubscribeAndCommit() throws Exception {
+        mNotificationTestRule.setNotificationContentSettingForOrigin(
+                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+        Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
+
+        Notification notification1 = showAndGetNotification("Notification1", "{}");
+        showNotification("Notification2", "{}");
+        mNotificationTestRule.waitForNotificationCount(2);
+
+        // Click the "Unsubscribe" button.
+        Assert.assertEquals(1, notification1.actions.length);
+        PendingIntent unsubscribeIntent = notification1.actions[0].actionIntent;
+        Assert.assertNotNull(unsubscribeIntent);
+        unsubscribeIntent.send();
+
+        // Wait for the two notifications to be collapsed and the `provisionally unsubscribed`
+        // notification to appear.
+        mNotificationTestRule.waitForNotificationCount(1);
+
+        // Click the "Okay" button to commit. This is the second button.
+        Notification provisionallyUnsubscribedNotification =
+                mNotificationTestRule.getNotificationEntries().get(0).getNotification();
+        Assert.assertEquals(2, provisionallyUnsubscribedNotification.actions.length);
+        PendingIntent commitIntent = provisionallyUnsubscribedNotification.actions[1].actionIntent;
+        Assert.assertNotNull(commitIntent);
+        commitIntent.send();
+
+        // Wait for the `provisionally unsubscribed` notification to disappear.
+        mNotificationTestRule.waitForNotificationCount(0);
+
+        // This should have caused notifications permission to become reset.
+        Assert.assertEquals("\"default\"", runJavaScript("Notification.permission"));
+        checkThatShowNotificationIsDenied();
+    }
+
+    /**
+     * Verifies that activating the PendingIntent associated with the "Unsubscribe" button shows the
+     * `provisionally unsubscribed` notification and suspends all existing notifications, and then,
+     * clicking "Undo" reverts this and does not revoke the notification permission.
+     *
+     * <p>This also verifies that the icon image, which is stored and then loaded from the native
+     * `NotificationDatabase`, properly survives this journey.
+     *
+     * <p>One-tap Unsubscribe is supported on Android P and later.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Browser", "Notifications"})
+    @Features.EnableFeatures(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void testNotificationProvisionalUnsubscribeAndUndo() throws Exception {
+        mNotificationTestRule.setNotificationContentSettingForOrigin(
+                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+        Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
+
+        Notification notification1 = showAndGetNotification("Notification1", "{icon: 'red.png'}");
+        showNotification("Notification2", "{}");
+        mNotificationTestRule.waitForNotificationCount(2);
+
+        // Verify that the origin notifications will play sound/vibration.
+        var originalSBNotifications = mNotificationTestRule.getNotificationEntries();
+        Assert.assertEquals(
+                Notification.GROUP_ALERT_ALL,
+                originalSBNotifications.get(0).getNotification().getGroupAlertBehavior());
+        Assert.assertEquals(
+                Notification.GROUP_ALERT_ALL,
+                originalSBNotifications.get(1).getNotification().getGroupAlertBehavior());
+
+        // Click the "Unsubscribe" button.
+        Assert.assertEquals(1, notification1.actions.length);
+        PendingIntent unsubscribeIntent = notification1.actions[0].actionIntent;
+        Assert.assertNotNull(unsubscribeIntent);
+        unsubscribeIntent.send();
+
+        // Wait for the two notifications to be collapsed and the `provisionally unsubscribed`
+        // notification to appear.
+        mNotificationTestRule.waitForNotificationCount(1);
+
+        // Click the "Undo" button to revert. This is the first button.
+        Notification provisionallyUnsubscribedNotification =
+                mNotificationTestRule.getNotificationEntries().get(0).getNotification();
+        Assert.assertEquals(2, provisionallyUnsubscribedNotification.actions.length);
+        PendingIntent undoIntent = provisionallyUnsubscribedNotification.actions[0].actionIntent;
+        Assert.assertNotNull(undoIntent);
+        undoIntent.send();
+
+        // Wait for the `provisionally unsubscribed` notification to disappear and the two
+        // notifications to be restored.
+        mNotificationTestRule.waitForNotificationCount(2);
+
+        // Verify the icon is restored correctly.
+        Context context = ApplicationProvider.getApplicationContext();
+        var restoredSBNotifications = mNotificationTestRule.getNotificationEntries();
+        Bitmap largeIcon =
+                NotificationTestUtil.getLargeIconFromNotification(
+                        context, restoredSBNotifications.get(0).getNotification());
+        Assert.assertNotNull(largeIcon);
+        Assert.assertEquals(Color.RED, largeIcon.getPixel(0, 0));
+
+        // Verify that both notifications are silent when they are restored.
+        Assert.assertEquals(
+                Notification.GROUP_ALERT_SUMMARY,
+                restoredSBNotifications.get(0).getNotification().getGroupAlertBehavior());
+        Assert.assertEquals(
+                Notification.GROUP_ALERT_SUMMARY,
+                restoredSBNotifications.get(1).getNotification().getGroupAlertBehavior());
+
+        // This should not have caused notifications permission to become denied.
+        Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
+        showNotification("Notification3", "{}");
+        mNotificationTestRule.waitForNotificationCount(3);
+    }
+
+    /**
+     * Verifies that activating the PendingIntent associated with the "Unsubscribe" button shows the
+     * `provisionally unsubscribed` notification and suspends all existing notifications, even when
+     * we are using service-type intents.
+     *
+     * <p>One-tap Unsubscribe is supported on Android P and later.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Browser", "Notifications"})
+    @CommandLineFlags.Add({
+        "enable-features=" + ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:use_service_intent/true"
+    })
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void testNotificationProvisionalUnsubscribeWithServiceIntent() throws Exception {
+        mNotificationTestRule.setNotificationContentSettingForOrigin(
+                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+        Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
+
+        Notification notification1 = showAndGetNotification("Notification1", "{}");
+        showNotification("Notification2", "{}");
+        mNotificationTestRule.waitForNotificationCount(2);
+
+        // Click the "Unsubscribe" button.
+        Assert.assertEquals(1, notification1.actions.length);
+        PendingIntent unsubscribeIntent = notification1.actions[0].actionIntent;
+        Assert.assertNotNull(unsubscribeIntent);
+        unsubscribeIntent.send();
+
+        // Wait for the two notifications to be collapsed and the `provisionally unsubscribed`
+        // notification to appear.
+        mNotificationTestRule.waitForNotificationCount(1);
+    }
+
+    /**
      * Verifies that creating a notification with an associated "tag" will cause any previous
      * notification with the same tag to be dismissed prior to being shown.
      */
@@ -870,6 +1024,59 @@ public class NotificationPlatformBridgeTest {
 
         // Expect +1 engagement from interacting with the notification.
         Assert.assertEquals(2.5, getEngagementScoreBlocking(), 0);
+    }
+
+    /**
+     * The next two tests verify that the PendingIntent associated with the "Unsubscribe" button is
+     * either a broadcast or service type intent based on field trial configuration.
+     *
+     * <p>One-tap Unsubscribe is supported on Android P and later, but these tests rely on
+     * `isBroadcast` and `isService` that was added in API level 31.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser", "Notifications"})
+    @CommandLineFlags.Add({
+        "enable-features=" + ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:use_service_intent/false"
+    })
+    @MinAndroidSdkLevel(Build.VERSION_CODES.S)
+    @RequiresApi(Build.VERSION_CODES.S)
+    public void testNotificationProvisionalUnsubscribeIsBroadcast() throws Exception {
+        mNotificationTestRule.setNotificationContentSettingForOrigin(
+                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+
+        Notification notification = showAndGetNotification("Notification1", "{}");
+
+        // Verify the "Unsubscribe" button's intent.
+        Assert.assertEquals(1, notification.actions.length);
+        PendingIntent unsubscribeIntent = notification.actions[0].actionIntent;
+        Assert.assertNotNull(unsubscribeIntent);
+        Assert.assertTrue(unsubscribeIntent.isBroadcast());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser", "Notifications"})
+    @CommandLineFlags.Add({
+        "enable-features=" + ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:use_service_intent/true"
+    })
+    @MinAndroidSdkLevel(Build.VERSION_CODES.S)
+    @RequiresApi(Build.VERSION_CODES.S)
+    public void testNotificationProvisionalUnsubscribeIsService() throws Exception {
+        mNotificationTestRule.setNotificationContentSettingForOrigin(
+                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+
+        Notification notification = showAndGetNotification("Notification1", "{}");
+
+        // Verify the "Unsubscribe" button's intent.
+        Assert.assertEquals(1, notification.actions.length);
+        PendingIntent unsubscribeIntent = notification.actions[0].actionIntent;
+        Assert.assertNotNull(unsubscribeIntent);
+        Assert.assertTrue(unsubscribeIntent.isService());
     }
 
     /**

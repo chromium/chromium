@@ -185,6 +185,18 @@ Status ExecuteSetTimeZone(Session* session,
                           const base::Value::Dict& params,
                           std::unique_ptr<base::Value>* value);
 
+Status ExecuteCreateVirtualPressureSource(Session* session,
+                                          const base::Value::Dict& params,
+                                          std::unique_ptr<base::Value>* value);
+
+Status ExecuteUpdateVirtualPressureSource(Session* session,
+                                          const base::Value::Dict& params,
+                                          std::unique_ptr<base::Value>* value);
+
+Status ExecuteRemoveVirtualPressureSource(Session* session,
+                                          const base::Value::Dict& params,
+                                          std::unique_ptr<base::Value>* value);
+
 // Forwards a BiDi command to BiDiMapper
 Status ForwardBidiCommand(Session* session,
                           const base::Value::Dict& params,

@@ -1,7 +1,25 @@
 
 
+#ifdef _WIN_ALL
+// StreamName must include the leading ':'.
+static bool IsNtfsReservedStream(const std::wstring &StreamName)
+{
+  const wchar *Reserved[]{
+    L"::$ATTRIBUTE_LIST",L"::$BITMAP",L"::$DATA",L"::$EA",L"::$EA_INFORMATION",
+    L"::$FILE_NAME",L"::$INDEX_ALLOCATION",L":$I30:$INDEX_ALLOCATION",
+    L"::$INDEX_ROOT",L"::$LOGGED_UTILITY_STREAM",L":$EFS:$LOGGED_UTILITY_STREAM",
+    L":$TXF_DATA:$LOGGED_UTILITY_STREAM",L"::$OBJECT_ID",L"::$REPARSE_POINT"
+  };
+  for (const wchar *Name : Reserved)
+    if (wcsicomp(StreamName,Name)==0)
+      return true;
+  return false;
+}
+#endif
+
+
 #if !defined(SFX_MODULE) && defined(_WIN_ALL)
-void ExtractStreams20(Archive &Arc,const wchar *FileName)
+void ExtractStreams20(Archive &Arc,const std::wstring &FileName)
 {
   if (Arc.BrokenHeader)
   {
@@ -17,35 +35,39 @@ void ExtractStreams20(Archive &Arc,const wchar *FileName)
     return;
   }
 
-  wchar StreamName[NM+2];
-  if (FileName[0]!=0 && FileName[1]==0)
+  std::wstring StreamName;
+  if (FileName.size()==1)
   {
     // Convert single character names like f:stream to .\f:stream to
     // resolve the ambiguity with drive letters.
-    wcsncpyz(StreamName,L".\\",ASIZE(StreamName));
-    wcsncatz(StreamName,FileName,ASIZE(StreamName));
+    StreamName=L".\\"+FileName;
   }
   else
-    wcsncpyz(StreamName,FileName,ASIZE(StreamName));
-  if (wcslen(StreamName)+strlen(Arc.StreamHead.StreamName)>=ASIZE(StreamName) ||
-      Arc.StreamHead.StreamName[0]!=':')
+    StreamName=FileName;
+  if (Arc.StreamHead.StreamName[0]!=':')
   {
     uiMsg(UIERROR_STREAMBROKEN,Arc.FileName,FileName);
     ErrHandler.SetErrorCode(RARX_CRC);
     return;
   }
 
-  wchar StoredName[NM];
-  CharToWide(Arc.StreamHead.StreamName,StoredName,ASIZE(StoredName));
-  ConvertPath(StoredName+1,StoredName+1,ASIZE(StoredName)-1);
+  std::wstring StoredName;
+  // "substr(1)" to exclude ':', so we can use ConvertPath() below.
+  CharToWide(Arc.StreamHead.StreamName.substr(1),StoredName);
+  ConvertPath(&StoredName,&StoredName);
 
-  wcsncatz(StreamName,StoredName,ASIZE(StreamName));
 
-  FindData fd;
-  bool Found=FindFile::FastFind(FileName,&fd);
+  StoredName=L":"+StoredName;
+  if (IsNtfsReservedStream(StoredName))
+    return;
 
-  if ((fd.FileAttr & FILE_ATTRIBUTE_READONLY)!=0)
-    SetFileAttr(FileName,fd.FileAttr & ~FILE_ATTRIBUTE_READONLY);
+  StreamName+=StoredName;
+
+  FindData FD;
+  bool Found=FindFile::FastFind(FileName,&FD);
+
+  if ((FD.FileAttr & FILE_ATTRIBUTE_READONLY)!=0)
+    SetFileAttr(FileName,FD.FileAttr & ~FILE_ATTRIBUTE_READONLY);
 
   File CurFile;
   if (CurFile.WCreate(StreamName))
@@ -71,31 +93,29 @@ void ExtractStreams20(Archive &Arc,const wchar *FileName)
   }
   File HostFile;
   if (Found && HostFile.Open(FileName,FMF_OPENSHARED|FMF_UPDATE))
-    SetFileTime(HostFile.GetHandle(),&fd.ftCreationTime,&fd.ftLastAccessTime,
-                &fd.ftLastWriteTime);
-  if ((fd.FileAttr & FILE_ATTRIBUTE_READONLY)!=0)
-    SetFileAttr(FileName,fd.FileAttr);
+    SetFileTime(HostFile.GetHandle(),&FD.ftCreationTime,&FD.ftLastAccessTime,
+                &FD.ftLastWriteTime);
+  if ((FD.FileAttr & FILE_ATTRIBUTE_READONLY)!=0)
+    SetFileAttr(FileName,FD.FileAttr);
 }
 #endif
 
 
 #ifdef _WIN_ALL
-void ExtractStreams(Archive &Arc,const wchar *FileName,bool TestMode)
+void ExtractStreams(Archive &Arc,const std::wstring &FileName,bool TestMode)
 {
-  wchar FullName[NM+2];
+  std::wstring FullName;
   if (FileName[0]!=0 && FileName[1]==0)
   {
     // Convert single character names like f:stream to .\f:stream to
     // resolve the ambiguity with drive letters.
-    wcsncpyz(FullName,L".\\",ASIZE(FullName));
-    wcsncatz(FullName,FileName,ASIZE(FullName));
+    FullName=L".\\"+FileName;
   }
   else
-    wcsncpyz(FullName,FileName,ASIZE(FullName));
+    FullName=FileName;
 
-  wchar StreamName[NM];
-  GetStreamNameNTFS(Arc,StreamName,ASIZE(StreamName));
-  if (*StreamName!=':')
+  std::wstring StreamName=GetStreamNameNTFS(Arc);
+  if (StreamName[0]!=':')
   {
     uiMsg(UIERROR_STREAMBROKEN,Arc.FileName,FileName);
     ErrHandler.SetErrorCode(RARX_CRC);
@@ -109,44 +129,48 @@ void ExtractStreams(Archive &Arc,const wchar *FileName,bool TestMode)
     return;
   }
 
-  wcsncatz(FullName,StreamName,ASIZE(FullName));
+  FullName+=StreamName;
 
-  FindData fd;
-  bool Found=FindFile::FastFind(FileName,&fd);
 
-  if ((fd.FileAttr & FILE_ATTRIBUTE_READONLY)!=0)
-    SetFileAttr(FileName,fd.FileAttr & ~FILE_ATTRIBUTE_READONLY);
+  if (IsNtfsReservedStream(StreamName))
+    return;
+
+  FindData FD;
+  bool HostFound=FindFile::FastFind(FileName,&FD);
+
+  if ((FD.FileAttr & FILE_ATTRIBUTE_READONLY)!=0)
+    SetFileAttr(FileName,FD.FileAttr & ~FILE_ATTRIBUTE_READONLY);
   File CurFile;
-  if (CurFile.WCreate(FullName) && Arc.ReadSubData(NULL,&CurFile,false))
-    CurFile.Close();
+
+  if (CurFile.WCreate(FullName))
+  {
+    if (Arc.ReadSubData(NULL,&CurFile,false))
+      CurFile.Close();
+  }
+
+  // Restoring original file timestamps.
   File HostFile;
-  if (Found && HostFile.Open(FileName,FMF_OPENSHARED|FMF_UPDATE))
-    SetFileTime(HostFile.GetHandle(),&fd.ftCreationTime,&fd.ftLastAccessTime,
-                &fd.ftLastWriteTime);
+  if (HostFound && HostFile.Open(FileName,FMF_OPENSHARED|FMF_UPDATE))
+    SetFileTime(HostFile.GetHandle(),&FD.ftCreationTime,&FD.ftLastAccessTime,
+                &FD.ftLastWriteTime);
 
   // Restoring original file attributes. Important if file was read only
   // or did not have "Archive" attribute
-  SetFileAttr(FileName,fd.FileAttr);
+  SetFileAttr(FileName,FD.FileAttr);
 }
 #endif
 
 
-void GetStreamNameNTFS(Archive &Arc,wchar *StreamName,size_t MaxSize)
+std::wstring GetStreamNameNTFS(Archive &Arc)
 {
-  byte *Data=&Arc.SubHead.SubData[0];
-  size_t DataSize=Arc.SubHead.SubData.Size();
+  std::wstring Dest;
   if (Arc.Format==RARFMT15)
-  {
-    size_t DestSize=Min(DataSize/2,MaxSize-1);
-    RawToWide(Data,StreamName,DestSize);
-    StreamName[DestSize]=0;
-  }
+    Dest=RawToWide(Arc.SubHead.SubData);
   else
   {
-    char UtfString[NM*4];
-    size_t DestSize=Min(DataSize,ASIZE(UtfString)-1);
-    memcpy(UtfString,Data,DestSize);
-    UtfString[DestSize]=0;
-    UtfToWide(UtfString,StreamName,MaxSize);
+    std::vector<byte> Src=Arc.SubHead.SubData;
+    Src.push_back(0); // Needed for our UtfToWide.
+    UtfToWide((char *)Src.data(),Dest);
   }
+  return Dest;
 }

@@ -13,7 +13,7 @@
 #include <atomic>
 #include <cstddef>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
 
@@ -52,7 +52,7 @@ void PlatformThreadForTesting::YieldCurrentThread() {
 }
 
 size_t GetDefaultThreadStackSize(const pthread_attr_t& attributes) {
-#if BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(IS_IOS)
   return 0;
 #else
   // The macOS default for a pthread stack size is 512kB.

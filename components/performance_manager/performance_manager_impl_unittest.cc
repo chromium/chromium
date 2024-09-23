@@ -66,9 +66,9 @@ TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
           base::TaskPriority::HIGHEST);
   EXPECT_NE(nullptr, process_node.get());
   std::unique_ptr<PageNodeImpl> page_node =
-      PerformanceManagerImpl::CreatePageNode(
-          WebContentsProxy(), std::string(), GURL(), PagePropertyFlags{},
-          base::TimeTicks::Now(), PageNode::PageState::kActive);
+      PerformanceManagerImpl::CreatePageNode(nullptr, std::string(), GURL(),
+                                             PagePropertyFlags{},
+                                             base::TimeTicks::Now());
   EXPECT_NE(nullptr, page_node.get());
 
   // Create a node of each type.
@@ -77,7 +77,7 @@ TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
           process_node.get(), page_node.get(), /*parent_frame_node=*/nullptr,
           /*outer_document_for_fenced_frame*/ nullptr, ++next_render_frame_id,
           blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-          content::SiteInstanceId(0), /*is_current=*/true);
+          content::SiteInstanceGroupId(0), /*is_current=*/true);
   EXPECT_NE(nullptr, frame_node.get());
 
   PerformanceManagerImpl::DeleteNode(std::move(frame_node));
@@ -112,35 +112,35 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
           RenderProcessHostProxy::CreateForTesting(render_process_host_id),
           base::TaskPriority::HIGHEST);
   std::unique_ptr<PageNodeImpl> page_node =
-      PerformanceManagerImpl::CreatePageNode(
-          WebContentsProxy(), std::string(), GURL(), PagePropertyFlags{},
-          base::TimeTicks::Now(), PageNode::PageState::kActive);
+      PerformanceManagerImpl::CreatePageNode(nullptr, std::string(), GURL(),
+                                             PagePropertyFlags{},
+                                             base::TimeTicks::Now());
 
   std::unique_ptr<FrameNodeImpl> parent1_frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node.get(), page_node.get(), /*parent_frame_node=*/nullptr,
           /*outer_document_for_fenced_frame*/ nullptr, ++next_render_frame_id,
           blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-          content::SiteInstanceId(0), /*is_current*/ true);
+          content::SiteInstanceGroupId(0), /*is_current*/ true);
   std::unique_ptr<FrameNodeImpl> parent2_frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node.get(), page_node.get(), /*parent_frame_node=*/nullptr,
           /*outer_document_for_fenced_frame*/ nullptr, ++next_render_frame_id,
           blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-          content::SiteInstanceId(0), /*is_current*/ true);
+          content::SiteInstanceGroupId(0), /*is_current*/ true);
 
   std::unique_ptr<FrameNodeImpl> child1_frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node.get(), page_node.get(), parent1_frame.get(),
           /*outer_document_for_fenced_frame*/ nullptr, ++next_render_frame_id,
           blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-          content::SiteInstanceId(0), /*is_current*/ true);
+          content::SiteInstanceGroupId(0), /*is_current*/ true);
   std::unique_ptr<FrameNodeImpl> child2_frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node.get(), page_node.get(), parent2_frame.get(),
           /*outer_document_for_fenced_frame*/ nullptr, ++next_render_frame_id,
           blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-          content::SiteInstanceId(0), /*is_current*/ true);
+          content::SiteInstanceGroupId(0), /*is_current*/ true);
 
   std::vector<std::unique_ptr<NodeBase>> nodes;
   for (size_t i = 0; i < 10; ++i) {
@@ -148,12 +148,12 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
         process_node.get(), page_node.get(), child1_frame.get(),
         /*outer_document_for_fenced_frame*/ nullptr, ++next_render_frame_id,
         blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-        content::SiteInstanceId(0), /*is_current*/ true));
+        content::SiteInstanceGroupId(0), /*is_current*/ true));
     nodes.push_back(PerformanceManagerImpl::CreateFrameNode(
         process_node.get(), page_node.get(), child1_frame.get(),
         /*outer_document_for_fenced_frame*/ nullptr, ++next_render_frame_id,
         blink::LocalFrameToken(), content::BrowsingInstanceId(0),
-        content::SiteInstanceId(0), /*is_current*/ true));
+        content::SiteInstanceGroupId(0), /*is_current*/ true));
   }
 
   nodes.push_back(std::move(process_node));
@@ -169,9 +169,9 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
 TEST_F(PerformanceManagerImplTest, CallOnGraphImpl) {
   // Create a page node for something to target.
   std::unique_ptr<PageNodeImpl> page_node =
-      PerformanceManagerImpl::CreatePageNode(
-          WebContentsProxy(), std::string(), GURL(), PagePropertyFlags{},
-          base::TimeTicks::Now(), PageNode::PageState::kActive);
+      PerformanceManagerImpl::CreatePageNode(nullptr, std::string(), GURL(),
+                                             PagePropertyFlags{},
+                                             base::TimeTicks::Now());
   base::RunLoop run_loop;
   base::OnceClosure quit_closure = run_loop.QuitClosure();
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -191,9 +191,9 @@ TEST_F(PerformanceManagerImplTest, CallOnGraphImpl) {
 TEST_F(PerformanceManagerImplTest, CallOnGraphAndReplyWithResult) {
   // Create a page node for something to target.
   std::unique_ptr<PageNodeImpl> page_node =
-      PerformanceManagerImpl::CreatePageNode(
-          WebContentsProxy(), std::string(), GURL(), PagePropertyFlags{},
-          base::TimeTicks::Now(), PageNode::PageState::kActive);
+      PerformanceManagerImpl::CreatePageNode(nullptr, std::string(), GURL(),
+                                             PagePropertyFlags{},
+                                             base::TimeTicks::Now());
   base::RunLoop run_loop;
 
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));

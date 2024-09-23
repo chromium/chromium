@@ -8,25 +8,18 @@
 #include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_fence_arb.h"
 #include "ui/gl/gl_fence_egl.h"
 #include "ui/gl/gl_fence_nv.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_version_info.h"
 
-#if BUILDFLAG(IS_APPLE)
-#include "ui/gl/gl_fence_apple.h"
-#endif
-
-#if defined(USE_EGL)
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define USE_GL_FENCE_ANDROID_NATIVE_FENCE_SYNC
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
-#endif
-
-#include "ui/gl/gl_context_egl.h"
-#include "ui/gl/gl_surface_egl.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -43,19 +36,10 @@ GLFence::~GLFence() {
 
 bool GLFence::IsSupported() {
   DCHECK(g_current_gl_version && g_current_gl_driver);
-#if defined(USE_EGL)
   GLDisplayEGL* display = GLDisplayEGL::GetDisplayForCurrentContext();
-#endif  // !ISAPPLE && USE_EGL
 
-  return g_current_gl_driver->ext.b_GL_ARB_sync ||
-         g_current_gl_version->is_es3 ||
-         g_current_gl_version->is_desktop_core_profile ||
-#if defined(USE_EGL)
+  return g_current_gl_version->is_es3 ||
          (display && display->ext->b_EGL_KHR_fence_sync) ||
-#endif
-#if BUILDFLAG(IS_APPLE)
-         g_current_gl_driver->ext.b_GL_APPLE_fence ||
-#endif
          g_current_gl_driver->ext.b_GL_NV_fence;
 }
 
@@ -65,7 +49,6 @@ std::unique_ptr<GLFence> GLFence::Create() {
 
   std::unique_ptr<GLFence> fence;
 
-#if defined(USE_EGL)
   GLDisplayEGL* display = GLDisplayEGL::GetDisplayForCurrentContext();
   if (display && display->ext->b_EGL_KHR_fence_sync &&
       display->ext->b_EGL_KHR_wait_sync) {
@@ -75,22 +58,16 @@ std::unique_ptr<GLFence> GLFence::Create() {
     DCHECK(GLFence::IsSupported());
     return fence;
   }
-#endif  // !IS_APPLE && USE_EGL
 
-  if (g_current_gl_driver->ext.b_GL_ARB_sync || g_current_gl_version->is_es3 ||
-      g_current_gl_version->is_desktop_core_profile) {
+  if (g_current_gl_version->is_es3) {
     // Prefer ARB_sync which supports server-side wait.
     fence = std::make_unique<GLFenceARB>();
     DCHECK(fence);
-#if BUILDFLAG(IS_APPLE)
-  } else if (g_current_gl_driver->ext.b_GL_APPLE_fence) {
-    fence = std::make_unique<GLFenceAPPLE>();
-    DCHECK(fence);
-#elif defined(USE_EGL)
+#if !BUILDFLAG(IS_APPLE)
   } else if (display && display->ext->b_EGL_KHR_fence_sync) {
     fence = GLFenceEGL::Create();
     DCHECK(fence);
-#endif
+#endif  // IS_APPLE
   } else if (g_current_gl_driver->ext.b_GL_NV_fence) {
     fence = std::make_unique<GLFenceNV>();
     DCHECK(fence);
@@ -133,7 +110,7 @@ std::unique_ptr<GLFence> GLFence::CreateFromGpuFence(
 #elif BUILDFLAG(IS_WIN)
   return GLFenceWin::CreateFromGpuFence(gpu_fence);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #endif
 }
@@ -146,7 +123,7 @@ std::unique_ptr<GLFence> GLFence::CreateForGpuFence() {
 #elif BUILDFLAG(IS_WIN)
   return GLFenceWin::CreateForGpuFence();
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #endif
 }

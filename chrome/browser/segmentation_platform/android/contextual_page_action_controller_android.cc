@@ -5,8 +5,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/android/chrome_jni_headers/ContextualPageActionController_jni.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/android/toolbar/adaptive_toolbar_enums.h"
 #include "components/segmentation_platform/public/android/input_context_android.h"
@@ -18,6 +17,9 @@
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/ContextualPageActionController_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -34,6 +36,12 @@ AdaptiveToolbarButtonVariant ActionLabelToAdaptiveToolbarButtonVariant(
   } else if (label ==
              segmentation_platform::kContextualPageActionModelLabelReaderMode) {
     action = AdaptiveToolbarButtonVariant::kReaderMode;
+  } else if (label == segmentation_platform::
+                          kContextualPageActionModelLabelPriceInsights) {
+    action = AdaptiveToolbarButtonVariant::kPriceInsights;
+  } else if (label ==
+             segmentation_platform::kContextualPageActionModelLabelDiscounts) {
+    action = AdaptiveToolbarButtonVariant::kDiscounts;
   }
   return action;
 }
@@ -53,10 +61,9 @@ void RunGetClassificationResultCallback(
 
 static void JNI_ContextualPageActionController_ComputeContextualPageAction(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const JavaParamRef<jobject>& j_input_context,
     const JavaParamRef<jobject>& j_callback) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   if (!profile) {
     RunGetClassificationResultCallback(
         j_callback, segmentation_platform::ClassificationResult(

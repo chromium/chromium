@@ -106,7 +106,7 @@ bool TrialTokensHandler::Parse(Extension* extension, std::u16string* error) {
       continue;
     }
 
-    // TODO(crbug.com/1484767): Add validation of trial token contents, log an
+    // TODO(crbug.com/40282364): Add validation of trial token contents, log an
     // InstallWarning and skip the token here
 
     tokens.insert(token.GetString());

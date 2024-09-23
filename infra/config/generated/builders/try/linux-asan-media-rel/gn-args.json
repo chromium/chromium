@@ -7,7 +7,10 @@
     "is_debug": false,
     "is_lsan": true,
     "proprietary_codecs": true,
+    "target_cpu": "x64",
+    "target_os": "linux",
     "use_remoteexec": true,
+    "use_siso": true,
     "v8_enable_verify_heap": true
   }
 }

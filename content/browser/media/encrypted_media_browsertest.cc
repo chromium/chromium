@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioClearVideo_WebM) {
   TestSimplePlayback("bear-320x240-av_enc-a.webm");
 }
 
-// TODO(https://crbug.com/1239633): Flaky on Android.
+// TODO(crbug.com/40784898): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Playback_VideoAudio_WebM DISABLED_Playback_VideoAudio_WebM
 #else
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM) {
   TestSimplePlayback("bear-320x240-v_enc-v.webm");
 }
 
-// TODO(crbug.com/1045382): Flaky on multiple platforms.
+// TODO(crbug.com/40116008): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
                        DISABLED_Playback_VideoOnly_WebM_Fullsample) {
   TestSimplePlayback("bear-320x240-v-vp9_fullsample_enc-v.webm");
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM) {
   TestSimplePlayback("bear-320x240-av_enc-v.webm");
 }
 
-// TODO(https://crbug.com/1239633): Flaky on Android.
+// TODO(crbug.com/40784898): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Playback_VideoAudio_WebM_Opus \
   DISABLED_Playback_VideoAudio_WebM_Opus
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoAudio_WebM_Opus) {
   TestSimplePlayback("bear-320x240-opus-av_enc-av.webm");
 }
 
-// TODO(crbug.com/1360765): Flaky on Android.
+// TODO(crbug.com/40863269): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Playback_VideoClearAudio_WebM_Opus \
   DISABLED_Playback_VideoClearAudio_WebM_Opus
@@ -315,12 +315,12 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_VP9) {
   TestSimplePlayback("bear-320x240-v_frag-vp9-cenc.mp4");
 }
 
-// TODO(crbug.com/707127): Decide when it's supported on Android.
+// TODO(crbug.com/40513452): Decide when it's supported on Android.
 #if !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
-// TODO(https://crbug.com/1222685): Failing on Mac.
-// TODO(https://crbug.com/1280308): Failing on Fuchsia arm.
+// TODO(crbug.com/40187305): Failing on Mac.
+// TODO(crbug.com/40208879): Failing on Fuchsia arm.
 #define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
   DISABLED_Playback_VideoOnly_WebM_VP9Profile2
 #else
@@ -333,8 +333,8 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
 }
 
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
-// TODO(https://crbug.com/1270792): Failing on Mac.
-// TODO(https://crbug.com/1280308): Failing on Fuchsia arm.
+// TODO(crbug.com/40805145): Failing on Mac.
+// TODO(crbug.com/40208879): Failing on Fuchsia arm.
 #define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
   DISABLED_Playback_VideoOnly_MP4_VP9Profile2
 #else
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_AV1) {
   TestSimplePlayback("bear-av1-cenc.webm");
 }
 
-// TODO(crbug.com/1360665): Flaky on Android.
+// TODO(crbug.com/40863206): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Playback_VideoOnly_WebM_AV1_10bit \
   DISABLED_Playback_VideoOnly_WebM_AV1_10bit
@@ -391,7 +391,15 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_AV1_10bit) {
 
 // Strictly speaking this is not an "encrypted" media test. Keep it here for
 // completeness.
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, ConfigChangeVideo_ClearToClear) {
+// TODO(crbug.com/330190697): Flaky on Fuchsia, deflake and re-enable the test.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_ConfigChangeVideo_ClearToClear \
+  DISABLED_ConfigChangeVideo_ClearToClear
+#else
+#define MAYBE_ConfigChangeVideo_ClearToClear ConfigChangeVideo_ClearToClear
+#endif
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
+                       MAYBE_ConfigChangeVideo_ClearToClear) {
   TestConfigChange(ConfigChangeType::CLEAR_TO_CLEAR);
 }
 
@@ -438,7 +446,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Encryption_CBC1) {
                       media::kErrorTitle);
 }
 
-// TODO(crbug.com/1360698): Flaky on Android.
+// TODO(crbug.com/40863223): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Playback_Encryption_CENS DISABLED_Playback_Encryption_CENS
 #else

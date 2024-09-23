@@ -16,7 +16,7 @@ namespace ios {
 TemplateURLServiceClientImpl::TemplateURLServiceClientImpl(
     history::HistoryService* history_service)
     : owner_(nullptr), history_service_(history_service) {
-  // TODO(crbug.com/1166191): The keywords should be moved into the history
+  // TODO(crbug.com/40164129): The keywords should be moved into the history
   // db, which will mean we no longer need this notification and the history
   // backend can handle automatically adding the search terms as the user
   // navigates.

@@ -62,7 +62,8 @@ std::string FormatFileSystemTypeToString(FormatFileSystemType filesystem) {
     case FormatFileSystemType::kNtfs:
       return "ntfs";
   }
-  NOTREACHED() << "Unknown filesystem type " << static_cast<int>(filesystem);
+  NOTREACHED_IN_MIGRATION()
+      << "Unknown filesystem type " << static_cast<int>(filesystem);
   return "";
 }
 

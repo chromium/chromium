@@ -1,0 +1,18 @@
+Name: Khronos Vulkan Validation Layers Components
+Short Name: Vulkan Validation Layers
+Version: N/A
+URL: https://github.com/KhronosGroup/Vulkan-ValidationLayers
+SOURCE CODE: git clone https://github.com/KhronosGroup/Vulkan-ValidationLayers.git
+Revision: HEAD
+Security Critical: no
+Shipped: no
+License: Apache 2.0
+License File: src/LICENSE.txt
+
+Description:
+The Khronos Vulkan Validation Layers Components consist of the Vulkan
+Validation Layers. The layers help validate Vulkan programs at runtime
+for development. When enabled the Vulkan loader will hook the layers
+into the Vulkan APIs so that they evaluate Vulkan API calls and flag
+the incorrect use of the API with callbacks. The layers are essential
+for developing Vulkan applications.

@@ -6,8 +6,10 @@
 #include "base/android/scoped_java_ref.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/test/android/content_test_jni/DOMUtils_jni.h"
 #include "ui/android/view_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/test/android/content_test_jni/DOMUtils_jni.h"
 
 using base::android::JavaParamRef;
 

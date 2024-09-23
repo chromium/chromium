@@ -6,11 +6,13 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -155,8 +157,16 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_MultipleClicks) {
   EXPECT_TRUE(LoginScreenTestApi::ClickGuestButton());
   EXPECT_TRUE(LoginScreenTestApi::ClickGuestButton());
   EXPECT_TRUE(LoginScreenTestApi::ClickGuestButton());
+
+  // Every guest session must accept EULA before guest session is created.
+  // Device owner EULA is independent from guest session EULA.
+  ash::test::WaitForGuestTosScreen();
+  ash::test::TapGuestTosAccept();
+
   restart_job_waiter.Run();
+
   EXPECT_TRUE(LoginScreenTestApi::ClickGuestButton());
+
   // Not strictly necessary, but useful to potentially catch bugs stemming from
   // asynchronous jobs.
   base::RunLoop().RunUntilIdle();
@@ -223,8 +233,9 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest,
   EXPECT_TRUE(config.voice_input);
 }
 
-// When Eula is marked as accepted, the Guest ToS screen is skipped.
-IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_SkipGuestToS) {
+// Every Guest session displays the ToS.
+IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_ShowGuestToS) {
+  // Assume device owner accepts Eula ToS.
   StartupUtils::MarkEulaAccepted();
 
   base::RunLoop restart_job_waiter;
@@ -233,14 +244,19 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_SkipGuestToS) {
 
   ASSERT_TRUE(LoginScreenTestApi::ClickGuestButton());
 
+  // Every guest session must accept EULA before guest session is created.
+  // Device owner EULA is independent from guest session EULA.
+  ash::test::WaitForGuestTosScreen();
+  ash::test::TapGuestTosAccept();
+
   restart_job_waiter.Run();
   EXPECT_TRUE(FakeSessionManagerClient::Get()->restart_job_argv().has_value());
 
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Guest-tos", 0);
-  histogram_tester_.ExpectTotalCount("OOBE.StepShownStatus.Guest-tos", 0);
+  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Guest-tos", 1);
+  histogram_tester_.ExpectTotalCount("OOBE.StepShownStatus.Guest-tos", 1);
 }
 
-IN_PROC_BROWSER_TEST_F(GuestLoginTest, SkipGuestToS) {
+IN_PROC_BROWSER_TEST_F(GuestLoginTest, ShowGuestToS) {
   login_manager_.WaitForActiveSession();
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();

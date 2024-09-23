@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/fre_footer_viewgroup"
+        android:fadeScrollbars="false"
+        android:fillViewport="true"
+        android:scrollIndicators="bottom">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <!-- Creates a fix minimum spacing of 24dp between the logo and the
+            top of the screen. If additional free space is available in larger
+            screens then divides it at a 3:5 ratio between
+            @id/fre_space_above_logo and
+            @id/fre_space_between_header_and_bottom_group respectively. -->
+            <View
+                android:id="@+id/fre_space_above_logo"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_weight="3"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/fre_logo"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/fre_tos_image_height"
+                android:layout_marginBottom="24dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/fre_product_logo" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingMultiplier="1.2"
+                android:gravity="center"
+                android:paddingHorizontal="24dp"
+                android:text="@string/fre_welcome"
+                android:textAppearance="@style/TextAppearance.Headline.Primary"
+                android:visibility="gone"/>
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingHorizontal="60dp"
+                android:paddingTop="8dp"
+                android:text="@string/signin_fre_subtitle"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                android:visibility="gone"
+                app:leading="@dimen/text_size_medium_leading" />
+
+            <FrameLayout
+                android:id="@+id/fre_browser_managed_by"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp">
+
+                <include
+                    layout="@layout/fre_tos_privacy_disclaimer"
+                    android:id="@+id/privacy_disclaimer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal" />
+            </FrameLayout>
+
+            <!-- Refer to the comment above @id/fre_space_above_logo -->
+            <View
+                android:id="@+id/fre_space_between_header_and_bottom_group"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_weight="5"
+                android:visibility="invisible" />
+
+            <ProgressBar
+                android:id="@+id/fre_native_and_policy_load_progress_spinner"
+                style="@style/Widget.AppCompat.ProgressBar"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginBottom="128dp"
+                android:alpha="0.0" />
+
+            <include layout="@layout/fullscreen_signin_bottom_group_view" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- The footer is hidden during native and policy load. The FrameLayout
+         acts as an anchor point for the ScrollView above so it can properly
+         calculate it's height. -->
+    <FrameLayout
+        android:id="@+id/fre_footer_viewgroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp">
+
+        <org.chromium.ui.widget.TextViewWithClickableSpans
+            android:id="@+id/signin_fre_footer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_horizontal"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            android:text="@string/signin_fre_footer"
+            app:leading="@dimen/text_size_small_leading"
+            android:visibility="gone"/>
+    </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/fre_signin_progress_spinner"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="128dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/fre_signin_progress_text"
+        style="@style/TextAppearance.TextMedium.Secondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="80dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:text="@string/fre_signing_in"
+        android:visibility="gone" />
+
+</org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninView>

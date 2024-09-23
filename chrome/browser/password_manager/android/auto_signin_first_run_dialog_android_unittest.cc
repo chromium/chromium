@@ -35,10 +35,12 @@ class AutoSigninFirstRunDialogAndroidTest
   AutoSigninFirstRunDialogAndroid* CreateDialog();
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {{TrustedVaultServiceFactory::GetInstance(),
-             TrustedVaultServiceFactory::GetDefaultFactory()},
-            {SyncServiceFactory::GetInstance(),
-             SyncServiceFactory::GetDefaultFactory()}};
+    return {TestingProfile::TestingFactory{
+                TrustedVaultServiceFactory::GetInstance(),
+                TrustedVaultServiceFactory::GetDefaultFactory()},
+            TestingProfile::TestingFactory{
+                SyncServiceFactory::GetInstance(),
+                SyncServiceFactory::GetDefaultFactory()}};
   }
 };
 

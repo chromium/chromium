@@ -12,21 +12,31 @@
 # Clang drives the linking it is required.
 #
 # Part of the standard library provided here is "remap_alloc" which maps
-# allocator functions into the shim provided by PartitionAlloc so that Rust and
-# C++ use the same allocator backend.
+# allocator functions to PartitionAlloc when `use_partition_alloc_as_malloc` is
+# true, so that Rust and C++ use the same allocator backend.
 
+import("//base/allocator/partition_allocator/partition_alloc.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
 if (toolchain_has_rust) {
-  # Equivalent of allocator symbols injected by rustc.
+  # If clang performs the link step, we need to provide the allocator symbols
+  # that are normally injected by rustc during linking.
+  #
+  # We also "happen to" use this to redirect allocations to PartitionAlloc,
+  # though that would be better done through a #[global_allocator] crate (see
+  # above).
   source_set("remap_alloc") {
+    public_deps = [ "//base/allocator/partition_allocator:buildflags" ]
+    if (use_partition_alloc_as_malloc) {
+      public_deps += [ "//base/allocator/partition_allocator:partition_alloc" ]
+    }
     sources = [
       # `alias.*`, `compiler_specific.h`, and `immediate_crash.*` have been
       # copied from `//base`.
-      # TODO(https://crbug.com/1475734): Avoid duplication / reuse code.
+      # TODO(crbug.com/40279749): Avoid duplication / reuse code.
       "alias.cc",
       "alias.h",
       "compiler_specific.h",
@@ -51,7 +61,6 @@ if (toolchain_has_rust) {
     "core",
     "getopts",
     "hashbrown",
-    "libc",
     "panic_abort",
     "panic_unwind",
     "rustc_demangle",
@@ -67,6 +76,7 @@ if (toolchain_has_rust) {
       "addr2line",
       "adler",
       "gimli",
+      "libc",
       "memchr",
       "miniz_oxide",
       "object",
@@ -97,7 +107,7 @@ if (toolchain_has_rust) {
   ]
 
   config("stdlib_dependent_libs") {
-    # TODO(crbug.com/1434092): These should really be `libs`, however that
+    # TODO(crbug.com/40264561): These should really be `libs`, however that
     # breaks. Normally, we specify lib files with the `.lib` suffix but
     # then when rustc links an EXE, it invokes lld-link with `.lib.lib`
     # instead.
@@ -116,7 +126,7 @@ if (toolchain_has_rust) {
     }
   }
   config("stdlib_public_dependent_libs") {
-    # TODO(crbug.com/1434092): These should really be `libs`, however that
+    # TODO(crbug.com/40264561): These should really be `libs`, however that
     # breaks. Normally, we specify lib files with the `.lib` suffix but
     # then when rustc links an EXE, it invokes lld-link with `.lib.lib`
     # instead.
@@ -134,14 +144,23 @@ if (toolchain_has_rust) {
         "bcrypt.lib",
         "kernel32.lib",
         "ntdll.lib",
+        "synchronization.lib",
         "userenv.lib",
         "ws2_32.lib",
       ]
     }
 
     # From rust/library/std/src/sys/unix/mod.rs.
-    # TODO(danakj): We should generate this list somehow when building or rolling
-    # the Rust toolchain?
+    #
+    # libs = [ "System" ] (meaning /usr/lib/libSystem.B.dylib) is intentionally
+    # omitted here on Apple platforms, because the linker driver is responsible
+    # for adding it, much like libc on most other POSIX platforms. It can be
+    # ordering-sensitive, and including it here can alter its order relative to
+    # other libraries. https://crbug.com/367764848 is an example of a bug caused
+    # by specifying libSystem too early.
+    #
+    # TODO(danakj): We should generate this list somehow when building or
+    # rolling the Rust toolchain?
     if (is_android) {
       libs = [ "dl" ]
     } else if (target_os == "freebsd") {
@@ -154,13 +173,8 @@ if (toolchain_has_rust) {
         "rt",
         "pthread",
       ]
-    } else if (is_mac) {
-      libs = [ "System" ]
     } else if (is_ios) {
-      libs = [
-        "System",
-        "objc",
-      ]
+      libs = [ "objc" ]
       frameworks = [
         "Security.framework",
         "Foundation.framework",
@@ -267,32 +281,27 @@ if (toolchain_has_rust) {
       rustc_sanitizer_runtimes += [ ":sanitizer_rt_hwasan" ]
     }
 
-    group("local_stdlib_libs") {
+    # Builds and links against the Rust stdlib. Both Rust and C++ targets should
+    # depend on this, as it provides the path to the library and includes the
+    # allocator hooks.
+    group("std") {
       assert(toolchain_has_rust,
              "Some C++ target is depending on Rust code even though " +
                  "toolchain_has_rust=false. Usually this would mean" +
                  "a NaCl target is depending on Rust, as there's no Rust " +
                  "toolchain targetting NaCl.")
-      all_dependent_configs = [ ":stdlib_dependent_libs" ]
+      all_dependent_configs = [
+        ":stdlib_public_dependent_libs",
+        ":local_stdlib_sysroot",
+        ":stdlib_dependent_libs",
+      ]
       deps = []
       foreach(libname, stdlib_files + skip_stdlib_files) {
         deps += [ "rules:$libname" ]
       }
       deps += rustc_sanitizer_runtimes
-      visibility = [ ":*" ]
-    }
 
-    # Builds and links against the Rust stdlib. Used by targets for which
-    # linking is driven by C++.
-    group("std") {
-      all_dependent_configs = [
-        ":stdlib_public_dependent_libs",
-        ":local_stdlib_sysroot",
-      ]
-      public_deps = [
-        ":local_stdlib_libs",
-        ":remap_alloc",
-      ]
+      public_deps = [ ":remap_alloc" ]
     }
   } else {
     action("find_stdlib") {

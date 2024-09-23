@@ -12,10 +12,6 @@ interface ContentSettingsAgent {
   // main frame, it will also reload the frame afterwards.
   SetAllowRunningInsecureContent();
 
-  // Sent to inform the renderer automatic upgrades for mixed content are
-  // disabled.
-  SetDisabledMixedContentUpgrades();
-
   // Sends content setting rules for each frame to the renderer process.
   SendRendererContentSettingRules(
       RendererContentSettingRules renderer_settings);

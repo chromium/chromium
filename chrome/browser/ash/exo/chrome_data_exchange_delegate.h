@@ -8,22 +8,13 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "components/exo/data_exchange_delegate.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 namespace ash {
 
-// Translate paths from |source| VM to valid paths in the host. Invalid paths
-// are ignored.
-std::vector<base::FilePath> TranslateVMPathsToHost(
-    ui::EndpointType source,
-    const std::vector<ui::FileInfo>& vm_paths);
-
-// Share |files| with |target| VM, and translate |files| to be "file://" URLs
-// which can be used inside the vm. |callback| is invoked with translated
-// "file://" URLs.
-void ShareWithVMAndTranslateToFileUrls(
-    ui::EndpointType target,
-    const std::vector<base::FilePath>& files,
-    base::OnceCallback<void(std::vector<std::string>)> callback);
+// Get all FileSystemURLs in `pickle`.
+std::vector<storage::FileSystemURL> GetFileSystemUrlsFromPickle(
+    const base::Pickle& pickle);
 
 class ChromeDataExchangeDelegate : public exo::DataExchangeDelegate {
  public:
@@ -36,17 +27,8 @@ class ChromeDataExchangeDelegate : public exo::DataExchangeDelegate {
   // DataExchangeDelegate:
   ui::EndpointType GetDataTransferEndpointType(
       aura::Window* window) const override;
-  std::vector<ui::FileInfo> GetFilenames(
-      ui::EndpointType source,
-      const std::vector<uint8_t>& data) const override;
   std::string GetMimeTypeForUriList(ui::EndpointType target) const override;
-  void SendFileInfo(ui::EndpointType target,
-                    const std::vector<ui::FileInfo>& files,
-                    SendDataCallback callback) const override;
   bool HasUrlsInPickle(const base::Pickle& pickle) const override;
-  void SendPickle(ui::EndpointType target,
-                  const base::Pickle& pickle,
-                  SendDataCallback callback) override;
   std::vector<ui::FileInfo> ParseFileSystemSources(
       const ui::DataTransferEndpoint* source,
       const base::Pickle& pickle) const override;

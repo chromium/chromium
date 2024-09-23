@@ -25,6 +25,13 @@ using testing::_;
 
 class NodeChannelTest : public testing::Test {
  public:
+  void SetUp() override {
+    if (IsMojoIpczEnabled()) {
+      GTEST_SKIP() << "NodeChannel is never used when ipcz is enabled, so "
+                   << "these tests are neither supported nor relevant.";
+    }
+  }
+
   MockNodeChannelDelegate local_delegate_;
   MockNodeChannelDelegate remote_delegate_;
 };

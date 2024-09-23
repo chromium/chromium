@@ -13,12 +13,6 @@ def _load(ctx, tsconfig_path, loaded):
 def _paths(ctx, tsconfig_path, tsconfig, loaded):
     paths = [tsconfig_path]
     tsconfig_dir = path.dir(tsconfig_path)
-    if "extends" in tsconfig and tsconfig["extends"]:
-        base = path.join(tsconfig_dir, tsconfig["extends"])
-        paths.append(base)
-        parent = _load(ctx, base, loaded)
-        if "files" in parent and not tsconfig["files"]:
-            tsconfig["files"] = parent["files"]
     if "files" in tsconfig:
         for file in tsconfig["files"]:
             paths.append(path.join(tsconfig_dir, file))
@@ -36,15 +30,18 @@ def _scan_inputs(ctx, tsconfig_path, tsconfig, loaded, scanned):
     for fname in _paths(ctx, tsconfig_path, tsconfig, loaded):
         if fname not in inputs:
             inputs[fname] = True
-    if "references" in tsconfig:
-        for ref in tsconfig["references"]:
-            refname = path.join(path.dir(tsconfig_path), ref["path"])
-            if refname not in inputs:
-                inputs[refname] = True
-            reftc = _load(ctx, refname, loaded)
-            for fname in _scan_inputs(ctx, refname, reftc, loaded, scanned):
-                if fname not in inputs:
-                    inputs[fname] = True
+    tsconfig_dir = path.dir(tsconfig_path)
+    tsconfig_deps = [ref["path"] for ref in tsconfig.get("references", [])]
+    if "extends" in tsconfig:
+        tsconfig_deps.append(tsconfig["extends"])
+    for tsconfig_dep in tsconfig_deps:
+        ref_path = path.join(tsconfig_dir, tsconfig_dep)
+        if ref_path not in inputs:
+            inputs[ref_path] = True
+        ref_tsconfig = _load(ctx, ref_path, loaded)
+        for fname in _scan_inputs(ctx, ref_path, ref_tsconfig, loaded, scanned):
+            if fname not in inputs:
+                inputs[fname] = True
     scanned[tsconfig_path] = inputs.keys()
     return scanned[tsconfig_path]
 

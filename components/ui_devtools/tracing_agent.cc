@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/ui_devtools/tracing_agent.h"
 
 #include <algorithm>
@@ -9,7 +14,9 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/timer/timer.h"
@@ -239,9 +246,9 @@ class TracingAgent::PerfettoTracingSession
   }
 
   // mojo::DataPipeDrainer::Client implementation:
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
-    auto data_string = std::make_unique<std::string>(
-        reinterpret_cast<const char*>(data), num_bytes);
+  void OnDataAvailable(base::span<const uint8_t> data) override {
+    auto data_string =
+        std::make_unique<std::string>(base::as_string_view(data));
     endpoint_->ReceiveTraceChunk(std::move(data_string));
   }
 
@@ -274,7 +281,7 @@ class TracingAgent::PerfettoTracingSession
   mojo::Remote<tracing::mojom::TracingSessionHost> tracing_session_host_;
 
   mojo::Remote<tracing::mojom::ConsumerHost> consumer_host_;
-  ConnectorDelegate* connector_;
+  raw_ptr<ConnectorDelegate> connector_;
 
   std::string agent_label_;
   base::OnceClosure on_recording_enabled_callback_;

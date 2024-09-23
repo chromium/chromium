@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -14,7 +15,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -38,10 +39,10 @@ using ::testing::SaveArg;
 using ::testing::StrEq;
 using ::testing::StrictMock;
 
-// A callback that matches the signature of the StringPiece variant of
+// A callback that matches the signature of the std::string_view variant of
 // base::WriteFile().
 using WriteCallback =
-    base::RepeatingCallback<bool(const base::FilePath&, base::StringPiece)>;
+    base::RepeatingCallback<bool(const base::FilePath&, std::string_view)>;
 using DeleteCallback = PasswordManagerExporter::DeleteCallback;
 using SetPosixFilePermissionsCallback =
     PasswordManagerExporter::SetPosixFilePermissionsCallback;
@@ -68,11 +69,11 @@ PasswordExportInfo CreateExportInProgressInfo() {
 
 PasswordExportInfo CreateSuccessfulExportInfo(const base::FilePath& path) {
   return {
-    .status = ExportProgressStatus::kSucceeded,
+      .status = ExportProgressStatus::kSucceeded,
 #if !BUILDFLAG(IS_WIN)
-    .file_path = path.value(),
+      .file_path = path.value(),
 #else
-    .file_path = base::WideToUTF8(path.value()),
+      .file_path = base::WideToUTF8(path.value()),
 #endif
   };
 }
@@ -123,7 +124,7 @@ class PasswordManagerExporterTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
-  FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr};
   base::MockCallback<base::RepeatingCallback<void(const PasswordExportInfo&)>>

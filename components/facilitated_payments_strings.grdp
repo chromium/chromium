@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+
+<if expr="is_android">
+  <!--Payment methods settings pages-->
+  <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS_TITLE" desc="Title for the preference that allows the user to manage financial accounts other than credit cards like Pix related Bank Accounts, e-Wallets etc." formatter_data="android_java">
+    Pay with <ph name="FINANCIAL_ACCOUNT_TYPES">%1$s<ex>Pix and e-Wallets</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS_DESCRIPTION" desc="Description for the preference that allows the user to manage financial accounts other than credit cards like Pix related bank accounts, e-wallets etc." formatter_data="android_java">
+    {FINANCIAL_ACCOUNT, plural, =1 {When you make purchases in Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES">%1$s<ex>Pix</ex></ph> as an option}
+    other {When you make purchases in Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES">%1$s<ex>Pix and e-Wallets</ex></ph> as options}}
+  </message>
+  <!-- Pix related strings -->
+  <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS_PIX" desc="Pix is an instant payment platform used in Brazil. This is the string added to the summary for the 'Manage other financial accounts' preference when user has accounts available to be used with the Pix platform." formatter_data="android_java" translateable="false">
+    Pix
+  </message>
+  <!--TODO(b/339939404): Fix typo and make PIX related strings to generic names shared between bottom sheet and settings page. -->
+  <message name="IDS_SETTINGS_PIX_BANK_ACCOUNT_IDENTIFER" desc="Identifier for bank account that can be used for the Pix payment platform." formatter_data="android_java" translateable="false">
+    Pix  •  <ph name="BANK_ACCOUNT_TYPE">%1$s<ex>Checking</ex></ph> ••••<ph name="ACCOUNT_NUMBER_SUFFIX">%2$s<ex>1234</ex></ph>
+  </message>
+  <message name="IDS_BANK_ACCOUNT_TYPE_CHECKING" desc="A checking bank account is for users to transact their regular expenses. This is the string to describe a checking bank account." formatter_data="android_java">
+    Checking
+  </message>
+  <message name="IDS_BANK_ACCOUNT_TYPE_SAVINGS" desc="A savings bank account is for users to store their money and earn an interest on them. This is the string to describe a savings bank account." formatter_data="android_java">
+    Savings
+  </message>
+  <message name="IDS_BANK_ACCOUNT_TYPE_CURRENT" desc="A current bank account is used for frequent transactions and comes with features like no limits on deposits and withdrawls. It is suitable for business purposes. This is the string to describe a current bank account." formatter_data="android_java">
+    Current
+  </message>
+  <message name="IDS_BANK_ACCOUNT_TYPE_SALARY" desc="A salary bank account is used to receive payroll. This is the string used to describe a salary bank account." formatter_data="android_java">
+    Salary
+  </message>
+  <message name="IDS_BANK_ACCOUNT_TYPE_TRANSACTING" desc="A transacting account is a basic account used for regular expenses. It often has limits on the withdrawal amount. Text to describe a transacting bank account." formatter_data="android_java">
+    Account
+  </message>
+  <!-- Pix bottom sheet related strings -->
+  <message name="IDS_PIX_PAYMENT_METHODS_BOTTOM_SHEET_TITLE" desc="Title for the bottom sheet displaying user's PIX bank accounts linked to their GPay wallet. It is shown to prompt the user to pay directly on Chrome when a PIX payment page is detected." formatter_data="android_java">
+    Pay with Pix without switching apps
+  </message>
+  <message name="IDS_PIX_PAYMENT_METHODS_BOTTOM_SHEET_DESCRIPTION" desc="Explanation text for the bottom sheet displaying user's PIX bank accounts linked to their GPay wallet. It is shown to prompt the user to pay directly on Chrome when a PIX payment page is detected." formatter_data="android_java">
+    Account info is encrypted and kept private
+  </message>
+  <message name="IDS_PIX_PAYMENT_ADDITIONAL_INFO" desc="Additional info for the bottom sheet displaying user's PIX bank accounts linked to their GPay wallet. The bottom sheet is shown to prompt the user to pay directly on Chrome when a PIX payment page is detected. This string provides supplemental information about the user's accounts and the transaction." formatter_data="android_java">
+    To turn off Pix in Chrome, go to your <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>payment settings<ph name="END_LINK1">&lt;/link1&gt;</ph>
+  </message>
+  <message name="IDS_PIX_PAYMENT_ERROR_SCREEN_TITLE" desc="Title for the PIX payment error screen. It is shown if PIX payment fails after the user has selected an account to pay from." formatter_data="android_java">
+    Something went wrong
+  </message>
+  <message name="IDS_PIX_PAYMENT_ERROR_SCREEN_DESCRIPTION" desc="Description for the PIX payment error screen. It is shown if PIX payment fails after the user has selected an account to pay from." formatter_data="android_java">
+    Your transaction didn’t go through. No funds were withdrawn from your account.
+  </message>
+  <message name="IDS_PIX_PAYMENT_PROGRESS_SCREEN_MESSAGE" desc="A message shown in the Pix payment progress screen informing the current status of the transaction. It is shown after a user has selected an account to pay from, and while Chrome is contacting the backend server." formatter_data="android_java">
+    Contacting your financial institution...
+  </message>
+  <message name="IDS_FACILITATED_PAYMENTS_OK" desc="Generic OK string to be used in any Facilitated Payments UI." formatter_data="android_java">
+    OK
+  </message>
+</if>
+
+</grit-part>

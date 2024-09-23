@@ -1,11 +1,12 @@
 <style>
   :host {
+    --cr-drawer-background-color: var(--cros-sys-app_base_shaded);
     --cr-drawer-width: 256px;
   }
 
   :host dialog {
     --transition-timing: 200ms ease;
-    background-color: var(--cr-drawer-background-color, #fff);
+    background-color: var(--cr-drawer-background-color);
     border: none;
     border-start-end-radius: var(--cr-drawer-border-start-end-radius, 0);
     border-end-end-radius: var(--cr-drawer-border-end-end-radius, 0);
@@ -20,13 +21,6 @@
     top: 0;
     transition: left var(--transition-timing);
     width: var(--cr-drawer-width);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :host dialog {
-      background: var(--cr-drawer-background-color, var(--google-grey-900))
-          linear-gradient(rgba(255, 255, 255, .04), rgba(255, 255, 255, .04));
-    }
   }
 
   :host dialog,

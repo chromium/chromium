@@ -6,14 +6,9 @@
 #define COMPONENTS_EXO_EXTENDED_DRAG_OFFER_H_
 
 #include <cstdint>
-#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "components/exo/data_offer_observer.h"
-
-namespace gfx {
-class Vector2d;
-}
 
 namespace exo {
 
@@ -33,11 +28,6 @@ class ExtendedDragOffer : public DataOfferObserver {
   ExtendedDragOffer(const ExtendedDragOffer&) = delete;
   ExtendedDragOffer& operator=(const ExtendedDragOffer&) = delete;
   ~ExtendedDragOffer() override;
-
-  void Swallow(uint32_t serial, const std::string& mime_type);
-  void Unswallow(uint32_t serial,
-                 const std::string& mime_type,
-                 const gfx::Vector2d& offset);
 
  private:
   // DataOfferObserver:

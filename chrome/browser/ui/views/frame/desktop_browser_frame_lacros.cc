@@ -20,7 +20,8 @@ DesktopBrowserFrameLacros::DesktopBrowserFrameLacros(
 DesktopBrowserFrameLacros::~DesktopBrowserFrameLacros() = default;
 
 views::Widget::InitParams DesktopBrowserFrameLacros::GetWidgetParams() {
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.native_widget = this;
   params.remove_standard_frame = true;
 

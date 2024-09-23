@@ -1,0 +1,52 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("first_run") {
+  sources = [
+    "first_run.cc",
+    "first_run.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/common",
+    "//chromeos/ash/components/login/login_state",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/sync_preferences",
+    "//components/user_manager",
+    "//content/public/common",
+    "//extensions/browser",
+    "//extensions/common",
+    "//third_party/nearby:presence_types",
+    "//third_party/private_membership",
+    "//ui/display",
+    "//ui/events",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ui/ash/login",
+  ]
+}

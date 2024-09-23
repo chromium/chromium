@@ -8,9 +8,9 @@ Does the same as Xcode's Edit->Convert->To Modern Objective-C Syntax.
 
 Note that this just runs compile commands and doesn't look at build
 dependencies, i.e. it doesn't make sure generated headers exist.  It also
-requires goma to be disabled.  Suggested workflow: Build the target you want
-to convert locally with goma to create generated headers, then disable goma,
-re-run gn, and then run this script.
+requires reclient to be disabled.  Suggested workflow: Build the target you want
+to convert locally with reclient to create generated headers, then disable
+reclient, re-run gn, and then run this script.
 
 Since Chrome's clang disables the rewriter, to run this you will need to
 build ToT clang with `-DCLANG_ENABLE_ARCMT` and (temporarily) add the following
@@ -75,8 +75,8 @@ def main():
     clang_cmd = cmd['command']
 
     had_error = False
-    if 'gomacc' in clang_cmd:
-      print('need builddir with use_goma not set', file=sys.stderr)
+    if 'rewrapper' in clang_cmd:
+      print('need builddir with use_remoteexec not set', file=sys.stderr)
       had_error = True
     if 'jumbo' in clang_cmd:
       print('need builddir with use_jumbo_build not set', file=sys.stderr)

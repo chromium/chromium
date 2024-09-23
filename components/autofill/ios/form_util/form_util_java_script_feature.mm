@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/values.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
+#import "components/autofill/ios/form_util/cross_content_world_util_java_script_feature.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 
 namespace {
@@ -41,24 +42,27 @@ FormUtilJavaScriptFeature::FormUtilJavaScriptFeature()
                FeatureScript::InjectionTime::kDocumentStart,
                FeatureScript::TargetFrames::kAllFrames,
                FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
-          {web::java_script_features::GetCommonJavaScriptFeature(),
-           web::java_script_features::GetMessageJavaScriptFeature()}) {}
+          {
+              web::java_script_features::GetCommonJavaScriptFeature(),
+              web::java_script_features::GetMessageJavaScriptFeature(),
+              CrossContentWorldUtilJavaScriptFeature::GetInstance(),
+          }) {}
 
 FormUtilJavaScriptFeature::~FormUtilJavaScriptFeature() = default;
-
-void FormUtilJavaScriptFeature::SetUpForUniqueIDsWithInitialState(
-    web::WebFrame* frame,
-    uint32_t next_available_id) {
-  CallJavaScriptFunction(
-      frame, "fill.setUpForUniqueIDs",
-      base::Value::List().Append(static_cast<int>(next_available_id)));
-}
 
 void FormUtilJavaScriptFeature::SetAutofillAcrossIframes(web::WebFrame* frame,
                                                          bool enabled) {
   CallJavaScriptFunction(frame,
                          "autofill_form_features.setAutofillAcrossIframes",
                          base::Value::List().Append(enabled));
+}
+
+void FormUtilJavaScriptFeature::SetAutofillIsolatedContentWorld(
+    web::WebFrame* frame,
+    bool enabled) {
+  CallJavaScriptFunction(
+      frame, "autofill_form_features.setAutofillIsolatedContentWorld",
+      base::Value::List().Append(enabled));
 }
 
 }  // namespace autofill

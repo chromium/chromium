@@ -44,6 +44,7 @@ enum ChromeTextContext {
   // little to no effect in terms of typography (font size, weight, etc.):
   //   - Custom tab bar used by PWAs (custom_tab_bar_view.cc)
   //   - Picture-in-Picture view (picture_in_picture_browser_frame_view.cc)
+  //   - TabsharingInfoBar CSC indicator chip (tab_sharing_infobar.cc)
   CONTEXT_OMNIBOX_PRIMARY,
 
   // Primary text in the omnibox dropdown.
@@ -61,6 +62,9 @@ enum ChromeTextContext {
   //   - Additional text view in the Omnibox
   //   - Error messages in password manager (manage_passwords_details_view.cc)
   CONTEXT_OMNIBOX_DEEMPHASIZED,
+
+  // Text for suggestion row chips; e.g. the history embeddings chip.
+  CONTEXT_OMNIBOX_POPUP_ROW_CHIP,
 
   // ToolbarButton label
   CONTEXT_TOOLBAR_BUTTON,
@@ -88,14 +92,8 @@ enum ChromeTextStyle {
   CHROME_TEXT_STYLE_START = views::style::VIEWS_TEXT_STYLE_END,
 #endif
 
-  // Similar to views::style::STYLE_PRIMARY but with a monospaced typeface.
-  STYLE_PRIMARY_MONOSPACED = CHROME_TEXT_STYLE_START,
-
-  // Similar to views::style::STYLE_SECONDARY but with a monospaced typeface.
-  STYLE_SECONDARY_MONOSPACED,
-
   // A solid shade of red.
-  STYLE_RED,
+  STYLE_RED = CHROME_TEXT_STYLE_START,
 
   // A solid shade of green.
   STYLE_GREEN,

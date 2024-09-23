@@ -1,6 +1,7 @@
 <!doctype html>
 <meta charset="utf-8" />
 <meta name="author" title="Luke Warlow" href="mailto:luke@warlow.dev" />
+<meta name="timeout" content="long" />
 <link rel="help" href="https://open-ui.org/components/invokers.explainer/" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -10,40 +11,22 @@
 <script src="resources/invoker-utils.js"></script>
 
 <video controls id="invokee" src="/media/movie_5.mp4"></video>
-<button id="invokerbutton" invoketarget="invokee"></button>
+<button id="invokerbutton" commandfor="invokee"></button>
 
 <script>
-  // auto
-
-  promise_test(async function (t) {
-    t.add_cleanup(async () => {
-      invokerbutton.removeAttribute("invokeaction");
-      invokee.pause();
-      invokee.currentTime = 0;
-      invokee.muted = false;
-    });
-    assert_true(invokee.paused);
-    invokerbutton.setAttribute("invokeaction", "");
-    await clickOn(invokerbutton);
-    await new Promise(resolve => {
-      requestAnimationFrame(resolve);
-    });
-    assert_true(invokee.paused);
-  }, "invoking video with auto action is no-op");
-
   // playpause
 
   promise_test(async function (t) {
     t.add_cleanup(async () => {
-      invokerbutton.removeAttribute("invokeaction");
+      invokerbutton.removeAttribute("command");
       invokee.pause();
       invokee.currentTime = 0;
       invokee.muted = false;
     });
     assert_true(invokee.paused);
-    invokerbutton.setAttribute("invokeaction", "playpause");
+    invokerbutton.setAttribute("command", "playpause");
     await clickOn(invokerbutton);
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       requestAnimationFrame(resolve);
     });
     assert_false(invokee.paused);
@@ -51,18 +34,18 @@
 
   promise_test(async function (t) {
     t.add_cleanup(async () => {
-      invokerbutton.removeAttribute("invokeaction");
+      invokerbutton.removeAttribute("command");
       invokee.pause();
       invokee.currentTime = 0;
       invokee.muted = false;
     });
-    invokee.addEventListener("invoke", (e) => e.preventDefault(), {
+    invokee.addEventListener("command", (e) => e.preventDefault(), {
       once: true,
     });
     assert_true(invokee.paused);
-    invokerbutton.setAttribute("invokeaction", "playpause");
+    invokerbutton.setAttribute("command", "playpause");
     await clickOn(invokerbutton);
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       requestAnimationFrame(resolve);
     });
     assert_true(invokee.paused);
@@ -70,17 +53,17 @@
 
   promise_test(async function (t) {
     t.add_cleanup(async () => {
-      invokerbutton.removeAttribute("invokeaction");
+      invokerbutton.removeAttribute("command");
       invokee.pause();
       invokee.currentTime = 0;
       invokee.muted = false;
     });
-    await test_driver.bless('play video');
+    await test_driver.bless("play video");
     invokee.play();
     assert_false(invokee.paused);
-    invokerbutton.setAttribute("invokeaction", "playpause");
+    invokerbutton.setAttribute("command", "playpause");
     await clickOn(invokerbutton);
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       requestAnimationFrame(resolve);
     });
     assert_true(invokee.paused);
@@ -90,15 +73,15 @@
 
   promise_test(async function (t) {
     t.add_cleanup(async () => {
-      invokerbutton.removeAttribute("invokeaction");
+      invokerbutton.removeAttribute("command");
       invokee.pause();
       invokee.currentTime = 0;
       invokee.muted = false;
     });
     assert_true(invokee.paused);
-    invokerbutton.setAttribute("invokeaction", "play");
+    invokerbutton.setAttribute("command", "play");
     await clickOn(invokerbutton);
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       requestAnimationFrame(resolve);
     });
     assert_false(invokee.paused);
@@ -106,18 +89,18 @@
 
   promise_test(async function (t) {
     t.add_cleanup(async () => {
-      invokerbutton.removeAttribute("invokeaction");
+      invokerbutton.removeAttribute("command");
       invokee.pause();
       invokee.currentTime = 0;
       invokee.muted = false;
     });
-    invokee.addEventListener("invoke", (e) => e.preventDefault(), {
-        once: true,
+    invokee.addEventListener("command", (e) => e.preventDefault(), {
+      once: true,
     });
     assert_true(invokee.paused);
-    invokerbutton.setAttribute("invokeaction", "play");
+    invokerbutton.setAttribute("command", "play");
     await clickOn(invokerbutton);
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       requestAnimationFrame(resolve);
     });
     assert_true(invokee.paused);
@@ -125,17 +108,17 @@
 
   promise_test(async function (t) {
     t.add_cleanup(async () => {
-      invokerbutton.removeAttribute("invokeaction");
+      invokerbutton.removeAttribute("command");
       invokee.pause();
       invokee.currentTime = 0;
       invokee.muted = false;
     });
-    await test_driver.bless('play video');
+    await test_driver.bless("play video");
     invokee.play();
     assert_false(invokee.paused);
-    invokerbutton.setAttribute("invokeaction", "play");
+    invokerbutton.setAttribute("command", "play");
     await clickOn(invokerbutton);
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       requestAnimationFrame(resolve);
     });
     assert_false(invokee.paused);
@@ -145,15 +128,15 @@
 
   promise_test(async function (t) {
     t.add_cleanup(async () => {
-      invokerbutton.removeAttribute("invokeaction");
+      invokerbutton.removeAttribute("command");
       invokee.pause();
       invokee.currentTime = 0;
       invokee.muted = false;
     });
     assert_true(invokee.paused);
-    invokerbutton.setAttribute("invokeaction", "pause");
+    invokerbutton.setAttribute("command", "pause");
     await clickOn(invokerbutton);
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       requestAnimationFrame(resolve);
     });
     assert_true(invokee.paused);
@@ -161,18 +144,18 @@
 
   promise_test(async function (t) {
     t.add_cleanup(async () => {
-      invokerbutton.removeAttribute("invokeaction");
+      invokerbutton.removeAttribute("command");
       invokee.pause();
       invokee.currentTime = 0;
       invokee.muted = false;
     });
-    invokee.addEventListener("invoke", (e) => e.preventDefault(), {
-        once: true,
+    invokee.addEventListener("command", (e) => e.preventDefault(), {
+      once: true,
     });
     assert_true(invokee.paused);
-    invokerbutton.setAttribute("invokeaction", "pause");
+    invokerbutton.setAttribute("command", "pause");
     await clickOn(invokerbutton);
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       requestAnimationFrame(resolve);
     });
     assert_true(invokee.paused);
@@ -180,17 +163,17 @@
 
   promise_test(async function (t) {
     t.add_cleanup(async () => {
-      invokerbutton.removeAttribute("invokeaction");
+      invokerbutton.removeAttribute("command");
       invokee.pause();
       invokee.currentTime = 0;
       invokee.muted = false;
     });
-    await test_driver.bless('play video');
+    await test_driver.bless("play video");
     invokee.play();
     assert_false(invokee.paused);
-    invokerbutton.setAttribute("invokeaction", "pause");
+    invokerbutton.setAttribute("command", "pause");
     await clickOn(invokerbutton);
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       requestAnimationFrame(resolve);
     });
     assert_true(invokee.paused);
@@ -200,15 +183,15 @@
 
   promise_test(async function (t) {
     t.add_cleanup(async () => {
-      invokerbutton.removeAttribute("invokeaction");
+      invokerbutton.removeAttribute("command");
       invokee.pause();
       invokee.currentTime = 0;
       invokee.muted = false;
     });
     assert_false(invokee.muted);
-    invokerbutton.setAttribute("invokeaction", "toggleMuted");
+    invokerbutton.setAttribute("command", "toggleMuted");
     await clickOn(invokerbutton);
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       requestAnimationFrame(resolve);
     });
     assert_true(invokee.muted);
@@ -216,18 +199,18 @@
 
   promise_test(async function (t) {
     t.add_cleanup(async () => {
-      invokerbutton.removeAttribute("invokeaction");
+      invokerbutton.removeAttribute("command");
       invokee.pause();
       invokee.currentTime = 0;
       invokee.muted = false;
     });
-    invokee.addEventListener("invoke", (e) => e.preventDefault(), {
-        once: true,
+    invokee.addEventListener("command", (e) => e.preventDefault(), {
+      once: true,
     });
     assert_false(invokee.muted);
-    invokerbutton.setAttribute("invokeaction", "toggleMuted");
+    invokerbutton.setAttribute("command", "toggleMuted");
     await clickOn(invokerbutton);
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       requestAnimationFrame(resolve);
     });
     assert_false(invokee.muted);
@@ -235,19 +218,18 @@
 
   promise_test(async function (t) {
     t.add_cleanup(async () => {
-      invokerbutton.removeAttribute("invokeaction");
+      invokerbutton.removeAttribute("command");
       invokee.pause();
       invokee.currentTime = 0;
       invokee.muted = false;
     });
     invokee.muted = true;
     assert_true(invokee.muted);
-    invokerbutton.setAttribute("invokeaction", "toggleMuted");
+    invokerbutton.setAttribute("command", "toggleMuted");
     await clickOn(invokerbutton);
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       requestAnimationFrame(resolve);
     });
     assert_false(invokee.muted);
   }, "invoking muted video with toggleMuted action unmutes it");
-
 </script>

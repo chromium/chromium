@@ -15,7 +15,26 @@ namespace media {
 
 class CrossOriginDataSource;
 
-class MEDIA_EXPORT DataSource {
+// Abstracting informational methods into DataSourceInfo allows
+// "meta-datasource" objects like HlsDataSourceProvider to query it's entire
+// set of dependent data sources when calculating the data here.
+class MEDIA_EXPORT DataSourceInfo {
+ public:
+  virtual ~DataSourceInfo();
+
+  // The total memory size used.
+  virtual int64_t GetMemoryUsage() = 0;
+
+  // DataSource implementations that might make requests must ensure the value
+  // is accurate for cross origin resources.
+  virtual bool WouldTaintOrigin() = 0;
+
+  // Returns true if we are performing streaming. In this case seeking is
+  // not possible.
+  virtual bool IsStreaming() = 0;
+};
+
+class MEDIA_EXPORT DataSource : public DataSourceInfo {
  public:
   using ReadCB = base::OnceCallback<void(int)>;
 
@@ -39,7 +58,7 @@ class MEDIA_EXPORT DataSource {
   DataSource(const DataSource&) = delete;
   DataSource& operator=(const DataSource&) = delete;
 
-  virtual ~DataSource();
+  ~DataSource() override;
 
   // Reads |size| bytes from |position| into |data|. And when the read is done
   // or failed, |read_cb| is called with the number of bytes read or
@@ -62,10 +81,6 @@ class MEDIA_EXPORT DataSource {
   // retrieved.
   [[nodiscard]] virtual bool GetSize(int64_t* size_out) = 0;
 
-  // Returns true if we are performing streaming. In this case seeking is
-  // not possible.
-  virtual bool IsStreaming() = 0;
-
   // Notify the DataSource of the bitrate of the media.
   // Values of |bitrate| <= 0 are invalid and should be ignored.
   virtual void SetBitrate(int bitrate) = 0;
@@ -75,15 +90,11 @@ class MEDIA_EXPORT DataSource {
   // check.
   virtual bool PassedTimingAllowOriginCheck() = 0;
 
-  // DataSource implementations that might make requests must ensure the value
-  // is accurate for cross origin resources.
-  virtual bool WouldTaintOrigin() = 0;
-
   // Assume fully buffered by default.
   virtual bool AssumeFullyBuffered() const;
 
   // By default this just returns GetSize().
-  virtual int64_t GetMemoryUsage();
+  int64_t GetMemoryUsage() override;
 
   // Adjusts the buffering algorithm (if there is one) based on the given
   // preload value.

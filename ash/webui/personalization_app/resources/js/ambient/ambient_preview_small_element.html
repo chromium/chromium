@@ -3,22 +3,12 @@
     border: none;
     display: grid;
     grid-template-areas:
-      '.              . .'
       'image          . subpage-desc'
       'image          . buttons'
       '.              . .';
     grid-template-columns: 224px 32px minmax(0, 1fr);
-    grid-template-rows: 20px 118px 34px 20px;
-  }
-
-  :host-context(body.jelly-enabled) #container {
-    grid-template-areas:
-      'image          . subpage-desc'
-      'image          . buttons'
-      '.              . .';
     grid-template-rows: 118px 34px 20px;
   }
-
 
   #container.ambient-mode-disabled {
     grid-template-areas:
@@ -112,7 +102,7 @@
               is-google-photos>
         </div>
         <h3 aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]"
-            class="preview-text-container album-info-subpage jelly-disabled"
+            class="preview-text-container album-info-subpage"
             id="textContainer"
             role="alert">
           <span id="currentlySet" class="currently-set-text" aria-hidden="true">

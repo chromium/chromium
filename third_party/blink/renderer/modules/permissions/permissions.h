@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/permissions/permission_status_listener.h"
@@ -21,7 +22,7 @@ namespace blink {
 
 class ExecutionContext;
 class NavigatorBase;
-class ScriptPromiseResolver;
+class PermissionStatus;
 class ScriptState;
 class ScriptValue;
 enum class PermissionType;
@@ -39,12 +40,17 @@ class Permissions final : public ScriptWrappable,
 
   explicit Permissions(NavigatorBase&);
 
-  ScriptPromise query(ScriptState*, const ScriptValue&, ExceptionState&);
-  ScriptPromise request(ScriptState*, const ScriptValue&, ExceptionState&);
-  ScriptPromise revoke(ScriptState*, const ScriptValue&, ExceptionState&);
-  ScriptPromise requestAll(ScriptState*,
-                           const HeapVector<ScriptValue>&,
-                           ExceptionState&);
+  ScriptPromise<PermissionStatus> query(ScriptState*,
+                                        const ScriptValue&,
+                                        ExceptionState&);
+  ScriptPromise<PermissionStatus> request(ScriptState*,
+                                          const ScriptValue&,
+                                          ExceptionState&);
+  ScriptPromise<PermissionStatus> revoke(ScriptState*,
+                                         const ScriptValue&,
+                                         ExceptionState&);
+  ScriptPromise<IDLSequence<PermissionStatus>>
+  requestAll(ScriptState*, const HeapVector<ScriptValue>&, ExceptionState&);
 
   // ExecutionContextLifecycleStateObserver:
   void ContextDestroyed() override;
@@ -57,16 +63,21 @@ class Permissions final : public ScriptWrappable,
   mojom::blink::PermissionService* GetService(ExecutionContext*);
   void ServiceConnectionError();
 
-  void TaskComplete(ScriptPromiseResolver* resolver,
+  void QueryTaskComplete(ScriptPromiseResolver<PermissionStatus>* resolver,
+                         mojom::blink::PermissionDescriptorPtr descriptor,
+                         base::TimeTicks query_start_time,
+                         mojom::blink::PermissionStatus result);
+
+  void TaskComplete(ScriptPromiseResolver<PermissionStatus>* resolver,
                     mojom::blink::PermissionDescriptorPtr descriptor,
                     mojom::blink::PermissionStatus result);
 
   void VerifyPermissionAndReturnStatus(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverBase* resolver,
       mojom::blink::PermissionDescriptorPtr descriptor,
       mojom::blink::PermissionStatus result);
   void VerifyPermissionsAndReturnStatus(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverBase* resolver,
       Vector<mojom::blink::PermissionDescriptorPtr> descriptors,
       Vector<int> caller_index_to_internal_index,
       int last_verified_permission_index,
@@ -74,7 +85,7 @@ class Permissions final : public ScriptWrappable,
       const Vector<mojom::blink::PermissionStatus>& results);
 
   void PermissionVerificationComplete(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverBase* resolver,
       Vector<mojom::blink::PermissionDescriptorPtr> descriptors,
       Vector<int> caller_index_to_internal_index,
       const Vector<mojom::blink::PermissionStatus>& results,

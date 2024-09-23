@@ -4,16 +4,21 @@
 
 #import "ios/chrome/browser/drive/model/drive_availability.h"
 
+#import <Foundation/Foundation.h>
+
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/drive/model/drive_policy.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace drive {
 
 bool IsSaveToDriveAvailable(bool is_incognito,
                             signin::IdentityManager* identity_manager,
-                            drive::DriveService* drive_service) {
+                            drive::DriveService* drive_service,
+                            PrefService* pref_service) {
   // Check flag.
   if (!base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
     return false;
@@ -24,7 +29,13 @@ bool IsSaveToDriveAvailable(bool is_incognito,
     return false;
   }
 
-  // TODO(crbug.com/1497976): Check policy.
+  // Check policy.
+  if (!pref_service ||
+      pref_service->GetInteger(
+          prefs::kIosSaveToDriveDownloadManagerPolicySettings) ==
+          static_cast<int>(SaveToDrivePolicySettings::kDisabled)) {
+    return false;
+  }
 
   // Check incognito.
   if (is_incognito) {

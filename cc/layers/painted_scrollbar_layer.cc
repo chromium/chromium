@@ -48,7 +48,11 @@ PaintedScrollbarLayer::PaintedScrollbarLayer(scoped_refptr<Scrollbar> scrollbar)
       has_thumb_(scrollbar_.Read(*this)->HasThumb()),
       jump_on_track_click_(scrollbar_.Read(*this)->JumpOnTrackClick()),
       supports_drag_snap_back_(scrollbar_.Read(*this)->SupportsDragSnapBack()),
-      is_overlay_(scrollbar_.Read(*this)->IsOverlay()) {}
+      is_overlay_(scrollbar_.Read(*this)->IsOverlay()),
+      is_web_test_(scrollbar_.Read(*this)->IsRunningWebTest()),
+      uses_nine_patch_track_and_buttons_(
+          scrollbar_.Read(*this)->UsesNinePatchTrackAndButtonsResource()),
+      uses_solid_color_thumb_(scrollbar_.Read(*this)->UsesSolidColorThumb()) {}
 
 PaintedScrollbarLayer::~PaintedScrollbarLayer() = default;
 
@@ -82,11 +86,11 @@ void PaintedScrollbarLayer::PushPropertiesTo(
     scrollbar_layer->SetThumbLength(thumb_size_.Read(*this).height());
   }
 
-  if (track_resource_.Read(*this)) {
-    scrollbar_layer->set_track_ui_resource_id(
-        track_resource_.Read(*this)->id());
+  if (track_and_buttons_resource_.Read(*this)) {
+    scrollbar_layer->set_track_and_buttons_ui_resource_id(
+        track_and_buttons_resource_.Read(*this)->id());
   } else {
-    scrollbar_layer->set_track_ui_resource_id(0);
+    scrollbar_layer->set_track_and_buttons_ui_resource_id(0);
   }
   if (thumb_resource_.Read(*this)) {
     scrollbar_layer->set_thumb_ui_resource_id(
@@ -98,13 +102,34 @@ void PaintedScrollbarLayer::PushPropertiesTo(
   scrollbar_layer->SetScrollbarPaintedOpacity(painted_opacity_.Read(*this));
 
   scrollbar_layer->set_is_overlay_scrollbar(is_overlay_);
+  scrollbar_layer->set_is_web_test(is_web_test_);
+
+  if (thumb_color_.Read(*this).has_value()) {
+    scrollbar_layer->SetThumbColor(thumb_color_.Read(*this).value());
+  }
+  if (uses_nine_patch_track_and_buttons_ &&
+      track_and_buttons_resource_.Read(*this)) {
+    const auto iter = commit_state.ui_resource_sizes.find(
+        track_and_buttons_resource_.Read(*this)->id());
+    const gfx::Size image_bounds =
+        (iter == commit_state.ui_resource_sizes.end()) ? gfx::Size()
+                                                       : iter->second;
+    scrollbar_layer->SetTrackAndButtonsImageBounds(image_bounds);
+    scrollbar_layer->SetTrackAndButtonsAperture(
+        track_and_buttons_aperture_.Read(*this));
+  } else {
+    scrollbar_layer->SetTrackAndButtonsImageBounds(gfx::Size());
+    scrollbar_layer->SetTrackAndButtonsAperture(gfx::Rect());
+  }
+  scrollbar_layer->set_uses_nine_patch_track_and_buttons(
+      uses_nine_patch_track_and_buttons_);
 }
 
 void PaintedScrollbarLayer::SetLayerTreeHost(LayerTreeHost* host) {
   // When the LTH is set to null or has changed, then this layer should remove
   // all of its associated resources.
   if (!host || host != layer_tree_host()) {
-    track_resource_.Write(*this) = nullptr;
+    track_and_buttons_resource_.Write(*this) = nullptr;
     thumb_resource_.Write(*this) = nullptr;
   }
 
@@ -120,7 +145,7 @@ gfx::Size PaintedScrollbarLayer::LayerSizeToContentSize(
   return content_size;
 }
 
-bool PaintedScrollbarLayer::UpdateThumbAndTrackGeometry() {
+bool PaintedScrollbarLayer::UpdateGeometry() {
   // These properties should never change.
   DCHECK_EQ(supports_drag_snap_back_,
             scrollbar_.Read(*this)->SupportsDragSnapBack());
@@ -140,10 +165,13 @@ bool PaintedScrollbarLayer::UpdateThumbAndTrackGeometry() {
                             &forward_button_rect_.Write(*this));
   updated |= UpdateProperty(scrollbar->HasThumb(), &has_thumb_.Write(*this));
   if (has_thumb_.Read(*this)) {
+    gfx::Rect thumb_rect = scrollbar->ThumbRect();
+    if (uses_solid_color_thumb_) {
+      thumb_rect.Inset(scrollbar->SolidColorThumbInsets());
+    }
     // Ignore ThumbRect's location because the PaintedScrollbarLayerImpl will
     // compute it from scroll offset.
-    updated |= UpdateProperty(scrollbar->ThumbRect().size(),
-                              &thumb_size_.Write(*this));
+    updated |= UpdateProperty(thumb_rect.size(), &thumb_size_.Write(*this));
   } else {
     updated |= UpdateProperty(gfx::Size(), &thumb_size_.Write(*this));
   }
@@ -159,7 +187,7 @@ bool PaintedScrollbarLayer::UpdateInternalContentScale() {
       transform, layer_tree_host()->device_scale_factor());
   float scale = std::max(transform_scales.x(), transform_scales.y());
   // Clamp minimum scale to 1 to avoid too low scale during scale animation.
-  // TODO(crbug.com/1009291): Move rasterization of scrollbars to the impl side
+  // TODO(crbug.com/40100995): Move rasterization of scrollbars to the impl side
   // to better handle scale changes.
   scale = std::max(1.0f, scale);
 
@@ -176,15 +204,12 @@ bool PaintedScrollbarLayer::Update() {
 
   updated |= ScrollbarLayerBase::Update();
   updated |= UpdateInternalContentScale();
-  updated |= UpdateThumbAndTrackGeometry();
+  updated |= UpdateGeometry();
   updated |= SetHasFindInPageTickmarks(scrollbar_.Read(*this)->HasTickmarks());
 
-  gfx::Size size = bounds();
-  gfx::Size scaled_size = internal_content_bounds_.Read(*this);
-
-  if (scaled_size.IsEmpty()) {
-    if (track_resource_.Read(*this)) {
-      track_resource_.Write(*this) = nullptr;
+  if (internal_content_bounds_.Read(*this).IsEmpty()) {
+    if (track_and_buttons_resource_.Read(*this)) {
+      track_and_buttons_resource_.Write(*this) = nullptr;
       thumb_resource_.Write(*this) = nullptr;
       SetNeedsPushProperties();
       updated = true;
@@ -198,27 +223,76 @@ bool PaintedScrollbarLayer::Update() {
     updated = true;
   }
 
-  if (!track_resource_.Read(*this) ||
-      scrollbar_.Read(*this)->NeedsRepaintPart(
-          ScrollbarPart::kTrackButtonsTickmarks)) {
-    track_resource_.Write(*this) = ScopedUIResource::Create(
+  updated |= UpdateTrackAndButtonsIfNeeded();
+  updated |= UpdateThumbIfNeeded();
+
+  return updated;
+}
+
+bool PaintedScrollbarLayer::UpdateTrackAndButtonsIfNeeded() {
+  bool updated = false;
+  gfx::Size size = bounds();
+  gfx::Size scaled_size = internal_content_bounds_.Read(*this);
+  if (!track_and_buttons_resource_.Read(*this) ||
+      scrollbar_.Read(*this)->TrackAndButtonsNeedRepaint()) {
+    if (uses_nine_patch_track_and_buttons_ &&
+        // Can't use nine-patch track and buttons if tickmarks are present.
+        !scrollbar_.Read(*this)->HasTickmarks()) {
+      size = scrollbar_.Read(*this)->NinePatchTrackAndButtonsCanvasSize();
+      scaled_size =
+          gfx::ScaleToCeiledSize(size, internal_contents_scale_.Read(*this));
+      track_and_buttons_aperture_.Write(*this) =
+          scrollbar_.Read(*this)->NinePatchTrackAndButtonsAperture();
+    }
+
+    track_and_buttons_resource_.Write(*this) = ScopedUIResource::Create(
         layer_tree_host()->GetUIResourceManager(),
         RasterizeScrollbarPart(size, scaled_size,
-                               ScrollbarPart::kTrackButtonsTickmarks));
+                               [this, size](PaintCanvas& canvas) {
+                                 scrollbar_.Write(*this)->PaintTrackAndButtons(
+                                     canvas, gfx::Rect(size));
+                               }));
     SetNeedsPushProperties();
     updated = true;
   }
 
-  gfx::Size scaled_thumb_size = LayerSizeToContentSize(thumb_size_.Read(*this));
+  return updated;
+}
+
+bool PaintedScrollbarLayer::UpdateThumbIfNeeded() {
+  bool updated = false;
+  // If the scrollbar uses solid color thumb, it sends the correct color for
+  // the thumb to the Impl class instead of generating a bitmap.
+  if (uses_solid_color_thumb_) {
+    if (scrollbar_.Read(*this)->ThumbNeedsRepaint() ||
+        !thumb_color_.Read(*this).has_value()) {
+      const SkColor4f thumb_color = scrollbar_.Read(*this)->ThumbColor();
+      if (!thumb_color_.Read(*this).has_value() ||
+          thumb_color != thumb_color_.Read(*this).value()) {
+        thumb_color_.Write(*this) = thumb_color;
+        SetNeedsPushProperties();
+        updated = true;
+      }
+      // Clear thumb needs repaint regardless of if the thumb's color changed.
+      scrollbar_.Write(*this)->ClearThumbNeedsRepaint();
+    }
+    return updated;
+  }
+
+  gfx::Size thumb_size = thumb_size_.Read(*this);
+  gfx::Size scaled_thumb_size = LayerSizeToContentSize(thumb_size);
   if (has_thumb_.Read(*this) && !scaled_thumb_size.IsEmpty()) {
     if (!thumb_resource_.Read(*this) ||
-        scrollbar_.Read(*this)->NeedsRepaintPart(ScrollbarPart::kThumb) ||
+        scrollbar_.Read(*this)->ThumbNeedsRepaint() ||
         scaled_thumb_size !=
             thumb_resource_.Write(*this)->GetBitmap(0, false).GetSize()) {
       thumb_resource_.Write(*this) = ScopedUIResource::Create(
           layer_tree_host()->GetUIResourceManager(),
-          RasterizeScrollbarPart(thumb_size_.Read(*this), scaled_thumb_size,
-                                 ScrollbarPart::kThumb));
+          RasterizeScrollbarPart(thumb_size, scaled_thumb_size,
+                                 [this, thumb_size](PaintCanvas& canvas) {
+                                   scrollbar_.Write(*this)->PaintThumb(
+                                       canvas, gfx::Rect(thumb_size));
+                                 }));
       SetNeedsPushProperties();
       updated = true;
     }
@@ -232,7 +306,7 @@ bool PaintedScrollbarLayer::Update() {
 UIResourceBitmap PaintedScrollbarLayer::RasterizeScrollbarPart(
     const gfx::Size& size,
     const gfx::Size& requested_content_size,
-    ScrollbarPart part) {
+    base::FunctionRef<void(PaintCanvas&)> paint_function) {
   DCHECK(!requested_content_size.IsEmpty());
   DCHECK(!size.IsEmpty());
 
@@ -262,8 +336,7 @@ UIResourceBitmap PaintedScrollbarLayer::RasterizeScrollbarPart(
   float scale_x = content_size.width() / static_cast<float>(size.width());
   float scale_y = content_size.height() / static_cast<float>(size.height());
   canvas.scale(SkFloatToScalar(scale_x), SkFloatToScalar(scale_y));
-
-  scrollbar_.Write(*this)->PaintPart(&canvas, part, gfx::Rect(size));
+  paint_function(canvas);
   // Make sure that the pixels are no longer mutable to unavoid unnecessary
   // allocation and copying.
   skbitmap.setImmutable();

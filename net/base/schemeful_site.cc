@@ -4,6 +4,8 @@
 
 #include "net/base/schemeful_site.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -53,8 +55,7 @@ SchemefulSite::ObtainASiteResult SchemefulSite::ObtainASite(
   if (!used_registerable_domain)
     registerable_domain = origin.host();
 
-  int port = url::DefaultPortForScheme(origin.scheme().c_str(),
-                                       origin.scheme().length());
+  int port = url::DefaultPortForScheme(origin.scheme());
 
   // Provide a default port of 0 for non-standard schemes.
   if (port == url::PORT_UNSPECIFIED)
@@ -114,7 +115,7 @@ void SchemefulSite::ConvertWebSocketToHttp() {
 }
 
 // static
-SchemefulSite SchemefulSite::Deserialize(const std::string& value) {
+SchemefulSite SchemefulSite::Deserialize(std::string_view value) {
   return SchemefulSite(GURL(value));
 }
 
@@ -160,13 +161,13 @@ bool SchemefulSite::operator<(const SchemefulSite& other) const {
 // static
 std::optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
     base::PassKey<NetworkAnonymizationKey>,
-    const std::string& value) {
+    std::string_view value) {
   return DeserializeWithNonce(value);
 }
 
 // static
 std::optional<SchemefulSite> SchemefulSite::DeserializeWithNonce(
-    const std::string& value) {
+    std::string_view value) {
   std::optional<url::Origin> result = url::Origin::Deserialize(value);
   if (!result)
     return std::nullopt;

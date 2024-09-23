@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/updater/update_service.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -9,6 +11,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -37,7 +40,6 @@
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_update_data.h"
 #include "extensions/browser/updater/uninstall_ping_sender.h"
-#include "extensions/browser/updater/update_service.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
@@ -108,7 +110,7 @@ class FakeUpdateClient : public update_client::UpdateClient {
                       CrxStateChangeCallback crx_state_change_callback,
                       bool is_foreground,
                       update_client::Callback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   bool GetCrxUpdateState(
@@ -132,18 +134,12 @@ class FakeUpdateClient : public update_client::UpdateClient {
 
   void Stop() override {}
 
-  void SendUninstallPing(const update_client::CrxComponent& crx_component,
-                         int reason,
-                         update_client::Callback callback) override {
+  void SendPing(const update_client::CrxComponent& crx_component,
+                PingParams ping_params,
+                update_client::Callback callback) override {
     uninstall_pings_.emplace_back(crx_component.app_id, crx_component.version,
-                                  reason);
+                                  ping_params.extra_code1);
   }
-
-  void SendInstallPing(const update_client::CrxComponent& crx_component,
-                       bool success,
-                       int error_code,
-                       int extra_code1,
-                       update_client::Callback callback) override {}
 
   void set_delay_update() { delay_update_ = true; }
 
@@ -452,27 +448,6 @@ class UpdateServiceTest : public ExtensionsTest {
     update_client::CrxInstaller* installer = data->at(0)->installer.get();
     ASSERT_NE(installer, nullptr);
 
-    // The GetInstalledFile method is used when processing differential updates
-    // to get a path to an existing file in an extension. We want to test a
-    // number of scenarios to be user we handle invalid relative paths, don't
-    // accidentally return paths outside the extension's dir, etc.
-    base::FilePath tmp;
-    EXPECT_TRUE(installer->GetInstalledFile(foo_js.MaybeAsASCII(), &tmp));
-    EXPECT_EQ(temp_dir.GetPath().Append(foo_js), tmp) << tmp.value();
-
-    EXPECT_TRUE(installer->GetInstalledFile(bar_html.MaybeAsASCII(), &tmp));
-    EXPECT_EQ(temp_dir.GetPath().Append(bar_html), tmp) << tmp.value();
-
-    EXPECT_FALSE(installer->GetInstalledFile("does_not_exist", &tmp));
-    EXPECT_FALSE(installer->GetInstalledFile("does/not/exist", &tmp));
-    EXPECT_FALSE(installer->GetInstalledFile("/does/not/exist", &tmp));
-    EXPECT_FALSE(installer->GetInstalledFile("C:\\tmp", &tmp));
-
-    base::FilePath system_temp_dir;
-    ASSERT_TRUE(base::GetTempDir(&system_temp_dir));
-    EXPECT_FALSE(
-        installer->GetInstalledFile(system_temp_dir.MaybeAsASCII(), &tmp));
-
     // Test the install callback.
     base::ScopedTempDir new_version_dir;
     ASSERT_TRUE(new_version_dir.CreateUniqueTempDir());
@@ -483,8 +458,10 @@ class UpdateServiceTest : public ExtensionsTest {
         base::BindOnce(
             [](bool* done, const update_client::CrxInstaller::Result& result) {
               *done = true;
-              EXPECT_EQ(0, result.error);
-              EXPECT_EQ(0, result.extended_error);
+              EXPECT_EQ(result.result.category_,
+                        update_client::ErrorCategory::kNone);
+              EXPECT_EQ(result.result.code_, 0);
+              EXPECT_EQ(result.result.extra_, 0);
             },
             &done));
 

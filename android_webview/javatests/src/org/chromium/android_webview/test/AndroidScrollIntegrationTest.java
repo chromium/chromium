@@ -29,12 +29,12 @@ import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
 import org.chromium.android_webview.test.util.JavascriptEventObserver;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.Locale;
@@ -249,7 +249,7 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
             final ScrollTestContainerView testContainerView,
             final int scrollXPix,
             final int scrollYPix) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         scrollXPix == testContainerView.getScrollX()
                                 && scrollYPix == testContainerView.getScrollY());
@@ -758,7 +758,7 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
         assertScrollOnMainSync(testContainerView, 0, 0);
 
         final int maxScrollYPix =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 (testContainerView.getAwContents().computeVerticalScrollRange()
                                         - testContainerView.getHeight()));
@@ -988,7 +988,7 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
         scrollToOnMainSync(testContainerView, 0, targetScrollYPix);
 
         final int scrolledYPix =
-                TestThreadUtils.runOnUiThreadBlocking(() -> testContainerView.getScrollY());
+                ThreadUtils.runOnUiThreadBlocking(() -> testContainerView.getScrollY());
 
         Assert.assertTrue(scrolledYPix > 0);
 

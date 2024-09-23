@@ -4,54 +4,61 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
-import android.view.View;
-import android.widget.TextView;
-
-import androidx.annotation.Nullable;
-
-import org.chromium.chrome.browser.ui.signin.ConsentTextTracker;
-import org.chromium.chrome.browser.ui.signin.R;
+import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
+import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
+import org.chromium.components.signin.metrics.SyncButtonsType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
-import org.chromium.ui.text.SpanApplier;
 
 class HistorySyncViewBinder {
-    private static final String SETTINGS_LINK_OPEN = "<LINK1>";
-    private static final String SETTINGS_LINK_CLOSE = "</LINK1>";
+
+    private static boolean sMinorModeButtonShownMetricRecorded;
 
     public static void bind(PropertyModel model, HistorySyncView view, PropertyKey key) {
         if (key == HistorySyncProperties.PROFILE_DATA) {
             view.getAccountImageView()
                     .setImageDrawable(model.get(HistorySyncProperties.PROFILE_DATA).getImage());
-        } else if (key == HistorySyncProperties.ON_ACCEPT_CLICKED) {
+        } else if (key == HistorySyncProperties.FOOTER_STRING) {
+            view.getDetailsDescription().setText(model.get(HistorySyncProperties.FOOTER_STRING));
+        } else if (key == HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS
+                || key == HistorySyncProperties.USE_LANDSCAPE_LAYOUT
+                || key == HistorySyncProperties.ON_ACCEPT_CLICKED
+                || key == HistorySyncProperties.ON_DECLINE_CLICKED) {
+            view.maybeCreateButtons(
+                    model.get(HistorySyncProperties.USE_LANDSCAPE_LAYOUT),
+                    model.get(HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS));
+
+            if (view.getAcceptButton() == null || view.getDeclineButton() == null) {
+                assert model.get(HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS)
+                        == ScreenMode.PENDING;
+                return;
+            }
+
+            if (!sMinorModeButtonShownMetricRecorded) {
+                switch (model.get(HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS)) {
+                    case ScreenMode.RESTRICTED:
+                        MinorModeHelper.recordButtonsShown(
+                                SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY);
+                        break;
+                    case ScreenMode.UNRESTRICTED:
+                        MinorModeHelper.recordButtonsShown(
+                                SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED);
+                        break;
+                    case ScreenMode.DEADLINED:
+                        MinorModeHelper.recordButtonsShown(
+                                SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_DEADLINE);
+                        break;
+                }
+                sMinorModeButtonShownMetricRecorded = true;
+            }
+
             view.getAcceptButton()
                     .setOnClickListener(model.get(HistorySyncProperties.ON_ACCEPT_CLICKED));
-        } else if (key == HistorySyncProperties.ON_DECLINE_CLICKED) {
             view.getDeclineButton()
                     .setOnClickListener(model.get(HistorySyncProperties.ON_DECLINE_CLICKED));
-        } else if (key == HistorySyncProperties.ON_MORE_CLICKED) {
-            view.getMoreButton()
-                    .setOnClickListener(model.get(HistorySyncProperties.ON_MORE_CLICKED));
-        } else if (key == HistorySyncProperties.ON_SETTINGS_CLICKED) {
-            updateSigninDetailsDescription(
-                    view.getDetailsDescriptionView(),
-                    model.get(HistorySyncProperties.ON_SETTINGS_CLICKED));
+
         } else {
             throw new IllegalArgumentException("Unknown property key: " + key);
         }
-    }
-
-    private static void updateSigninDetailsDescription(
-            TextView textView, View.OnClickListener onSettingsLinkClicked) {
-        ConsentTextTracker consentTextTracker = new ConsentTextTracker(textView.getResources());
-        final @Nullable Object settingsLinkSpan =
-                new NoUnderlineClickableSpan(textView.getContext(), onSettingsLinkClicked::onClick);
-        final SpanApplier.SpanInfo spanInfo =
-                new SpanApplier.SpanInfo(SETTINGS_LINK_OPEN, SETTINGS_LINK_CLOSE, settingsLinkSpan);
-        consentTextTracker.setText(
-                textView,
-                R.string.sync_consent_details_description,
-                input -> SpanApplier.applySpans(input.toString(), spanInfo));
     }
 }

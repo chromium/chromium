@@ -20,6 +20,9 @@ import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 public class Interpolators {
     public static final Interpolator STANDARD_INTERPOLATOR =
             PathInterpolatorCompat.create(0.2f, 0f, 0f, 1f);
+    public static final Interpolator STANDARD_ACCELERATE =
+            PathInterpolatorCompat.create(0.3f, 0f, 1f, 1f);
+
     public static final AccelerateInterpolator ACCELERATE_INTERPOLATOR =
             new AccelerateInterpolator();
     public static final DecelerateInterpolator DECELERATE_INTERPOLATOR =

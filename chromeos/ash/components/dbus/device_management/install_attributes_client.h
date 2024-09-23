@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/dbus/device_management/device_management_interface.pb.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 
 namespace dbus {
 class Bus;

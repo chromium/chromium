@@ -19,12 +19,13 @@ import './os_bluetooth_summary.js';
 import './os_bluetooth_device_detail_subpage.js';
 import './os_bluetooth_pairing_dialog.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {BluetoothSystemProperties, BluetoothSystemState, SystemPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 
 import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
@@ -62,6 +63,14 @@ export class SettingsBluetoothPageElement extends
        * visibility in the subpage.
        */
       showSavedDevicesLoadingIndicators_: Boolean,
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value() {
+          return isRevampWayfindingEnabled();
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -71,6 +80,7 @@ export class SettingsBluetoothPageElement extends
   private shouldShowPairingDialog_: boolean;
   private systemProperties_: BluetoothSystemProperties;
   private systemPropertiesObserverReceiver_: SystemPropertiesObserverReceiver;
+  private isRevampWayfindingEnabled_: boolean;
 
   constructor() {
     super();

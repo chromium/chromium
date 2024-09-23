@@ -20,7 +20,7 @@ namespace ui {
 
 namespace {
 
-// TODO(https://crbug.com/1353873): Remove this method when Compositors other
+// TODO(crbug.com/40235357): Remove this method when Compositors other
 // than Exo comply with `wl_touch.frame`.
 //
 // For instance, on Gnome/Wayland, KDE and Weston compositors a wl_touch.up does
@@ -100,7 +100,8 @@ void WaylandTouch::OnTouchUp(void* data,
   DCHECK(self);
 
   self->delegate_->OnTouchReleaseEvent(wl::EventMillisecondsToTimeTicks(time),
-                                       id, EventDispatchPolicyForPlatform());
+                                       id, EventDispatchPolicyForPlatform(),
+                                       /*is_synthesized=*/false);
 }
 
 // static
@@ -122,7 +123,8 @@ void WaylandTouch::OnTouchMotion(void* data,
       gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), target);
   self->delegate_->OnTouchMotionEvent(location,
                                       wl::EventMillisecondsToTimeTicks(time),
-                                      id, EventDispatchPolicyForPlatform());
+                                      id, EventDispatchPolicyForPlatform(),
+                                      /*is_synthesized=*/false);
 }
 
 // static

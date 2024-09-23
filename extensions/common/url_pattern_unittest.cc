@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "extensions/common/url_pattern.h"
 
 #include <stddef.h>
@@ -861,12 +866,14 @@ TEST(ExtensionURLPatternTest, CanReusePatternWithParse) {
 // Returns success if neither |a| nor |b| encompasses the other.
 testing::AssertionResult NeitherContains(const URLPattern& a,
                                          const URLPattern& b) {
-  if (a.Contains(b))
+  if (a.Contains(b)) {
     return testing::AssertionFailure() << a.GetAsString() << " encompasses " <<
                                           b.GetAsString();
-  if (b.Contains(a))
+  }
+  if (b.Contains(a)) {
     return testing::AssertionFailure() << b.GetAsString() << " encompasses " <<
                                           a.GetAsString();
+  }
   return testing::AssertionSuccess() <<
       "Neither " << a.GetAsString() << " nor " << b.GetAsString() <<
       " encompass the other";
@@ -875,13 +882,15 @@ testing::AssertionResult NeitherContains(const URLPattern& a,
 // Returns success if |a| encompasses |b| but not the other way around.
 testing::AssertionResult StrictlyContains(const URLPattern& a,
                                           const URLPattern& b) {
-  if (!a.Contains(b))
+  if (!a.Contains(b)) {
     return testing::AssertionFailure() << a.GetAsString() <<
                                           " does not encompass " <<
                                           b.GetAsString();
-  if (b.Contains(a))
+  }
+  if (b.Contains(a)) {
     return testing::AssertionFailure() << b.GetAsString() << " encompasses " <<
                                           a.GetAsString();
+  }
   return testing::AssertionSuccess() << a.GetAsString() <<
                                         " strictly encompasses " <<
                                         b.GetAsString();

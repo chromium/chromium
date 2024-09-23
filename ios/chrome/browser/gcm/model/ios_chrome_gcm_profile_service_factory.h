@@ -5,26 +5,26 @@
 #ifndef IOS_CHROME_BROWSER_GCM_MODEL_IOS_CHROME_GCM_PROFILE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_GCM_MODEL_IOS_CHROME_GCM_PROFILE_SERVICE_FACTORY_H_
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace gcm {
 class GCMProfileService;
 }
 
 // Singleton that owns all GCMProfileService and associates them with
-// ChromeBrowserState.
+// profiles.
 class IOSChromeGCMProfileServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static gcm::GCMProfileService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static gcm::GCMProfileService* GetForBrowserState(ProfileIOS* profile);
 
+  static gcm::GCMProfileService* GetForProfile(ProfileIOS* profile);
   static IOSChromeGCMProfileServiceFactory* GetInstance();
 
   IOSChromeGCMProfileServiceFactory(const IOSChromeGCMProfileServiceFactory&) =

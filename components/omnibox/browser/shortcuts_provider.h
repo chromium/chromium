@@ -29,6 +29,12 @@ class ShortcutsProvider : public AutocompleteProvider,
   // AutocompleteMatch struct.  Avoiding constructing the larger struct for
   // every such match can save significant time when there are many shortcut
   // matches to process.
+  // TODO(manukh): We should probably merge `ShortcutMatch` into
+  //   `ShortcutsDatabase::Shortcut`. There's a 4-deep hierarchy of structs:
+  //   - `AutocompleteMatch` are created from `ShortcutMatch`es
+  //   - `ShortcutMatch`es own `ShortcutsDatabase::Shortcut`s
+  //   - `ShortcutsDatabase::Shortcut`s own
+  //     `ShortcutsDatabase::Shortcut::MatchCore`s
   struct ShortcutMatch {
     ShortcutMatch(int relevance,
                   int aggregate_number_of_hits,
@@ -88,14 +94,12 @@ class ShortcutsProvider : public AutocompleteProvider,
       const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts,
       int max_relevance);
 
-  // Returns an AutocompleteMatch corresponding to `shortcut`. Assigns it
-  // `stripped_destination_url` and `relevance` in the process, and highlights
+  // Returns an AutocompleteMatch corresponding to `shortcut_match`. Highlights
   // the description and contents against `input`, which should be the
   // normalized version of the user's input. `input` and `fixed_up_input_text`
   // are used to decide what can be inlined.
-  AutocompleteMatch ShortcutToACMatch(
-      const ShortcutsDatabase::Shortcut& shortcut,
-      const GURL& stripped_destination_url,
+  AutocompleteMatch ShortcutMatchToACMatch(
+      const ShortcutMatch& shortcut_match,
       int relevance,
       const AutocompleteInput& input,
       const std::u16string& fixed_up_input_text,

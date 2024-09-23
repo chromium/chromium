@@ -28,6 +28,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -44,11 +45,13 @@
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
+#include "third_party/blink/renderer/core/layout/hit_test_cache.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view_transition_root.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/list/layout_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -69,7 +72,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/quad_f.h"
-#include "ui/gfx/geometry/size_conversions.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -77,36 +79,8 @@
 
 namespace blink {
 
-namespace {
-
-class HitTestLatencyRecorder {
- public:
-  HitTestLatencyRecorder(bool allows_child_frame_content)
-      : start_(base::TimeTicks::Now()),
-        allows_child_frame_content_(allows_child_frame_content) {}
-
-  ~HitTestLatencyRecorder() {
-    base::TimeDelta duration = base::TimeTicks::Now() - start_;
-    if (allows_child_frame_content_) {
-      DEFINE_STATIC_LOCAL(CustomCountHistogram, recursive_latency_histogram,
-                          ("Event.Latency.HitTestRecursive", 0, 10000000, 100));
-      recursive_latency_histogram.CountMicroseconds(duration);
-    } else {
-      DEFINE_STATIC_LOCAL(CustomCountHistogram, latency_histogram,
-                          ("Event.Latency.HitTest", 0, 10000000, 100));
-      latency_histogram.CountMicroseconds(duration);
-    }
-  }
-
- private:
-  base::TimeTicks start_;
-  bool allows_child_frame_content_;
-};
-
-}  // namespace
-
 LayoutView::LayoutView(ContainerNode* document)
-    : LayoutNGBlockFlow(document),
+    : LayoutBlockFlow(document),
       frame_view_(To<Document>(document)->View()),
       layout_counter_count_(0),
       hit_test_count_(0),
@@ -128,10 +102,6 @@ LayoutView::LayoutView(ContainerNode* document)
       GetDocument()) {
     SetIsEffectiveRootScroller(true);
   }
-
-  // This flag is normally set when an object is inserted into the tree, but
-  // this doesn't happen for LayoutView, since it's the root.
-  SetMightTraversePhysicalFragments(true);
 }
 
 LayoutView::~LayoutView() = default;
@@ -139,9 +109,10 @@ LayoutView::~LayoutView() = default;
 void LayoutView::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
   visitor->Trace(svg_text_descendants_);
+  visitor->Trace(text_to_variable_length_transform_result_);
   visitor->Trace(hit_test_cache_);
   visitor->Trace(initial_containing_block_resize_handled_list_);
-  LayoutNGBlockFlow::Trace(visitor);
+  LayoutBlockFlow::Trace(visitor);
 }
 
 bool LayoutView::HitTest(const HitTestLocation& location,
@@ -177,8 +148,6 @@ bool LayoutView::HitTest(const HitTestLocation& location,
   if (!FirstFragment().HasLocalBorderBoxProperties())
     return false;
 
-  HitTestLatencyRecorder hit_test_latency_recorder(
-      result.GetHitTestRequest().AllowsChildFrameContent());
   return HitTestNoLifecycleUpdate(location, result);
 }
 
@@ -219,19 +188,17 @@ bool LayoutView::HitTestNoLifecycleUpdate(const HitTestLocation& location,
       // below too.
       result.SetInnerNode(nullptr);
       result.SetURLElement(nullptr);
-      ScrollableArea* scrollable_area =
-          result.GetScrollbar()->GetScrollableArea();
-      if (scrollable_area && scrollable_area->GetLayoutBox() &&
-          scrollable_area->GetLayoutBox()->GetNode()) {
-        Node* node = scrollable_area->GetLayoutBox()->GetNode();
+      if (LayoutBox* layout_box = result.GetScrollbar()->GetLayoutBox()) {
+        if (Node* node = layout_box->GetNode()) {
+          // If scrollbar belongs to Document, we should set innerNode to the
+          // <html> element to match other browser.
+          if (node->IsDocumentNode()) {
+            node = node->GetDocument().documentElement();
+          }
 
-        // If scrollbar belongs to Document, we should set innerNode to the
-        // <html> element to match other browser.
-        if (node->IsDocumentNode())
-          node = node->GetDocument().documentElement();
-
-        result.SetInnerNode(node);
-        result.SetURLElement(node->EnclosingLinkEventParentOrSelf());
+          result.SetInnerNode(node);
+          result.SetURLElement(node->EnclosingLinkEventParentOrSelf());
+        }
       }
     }
 
@@ -262,7 +229,7 @@ LayoutUnit LayoutView::ComputeMinimumWidth() {
   ConstraintSpaceBuilder builder(mode, style.GetWritingDirection(),
                                  /* is_new_fc */ true);
   return BlockNode(this)
-      .ComputeMinMaxSizes(mode, MinMaxSizesType::kIntrinsic,
+      .ComputeMinMaxSizes(mode, SizeType::kIntrinsic,
                           builder.ToConstraintSpace())
       .sizes.min_size;
 }
@@ -278,8 +245,8 @@ void LayoutView::AddChild(LayoutObject* new_child, LayoutObject* before_child) {
 
     LayoutViewTransitionRoot* snapshot_containing_block =
         MakeGarbageCollected<LayoutViewTransitionRoot>(GetDocument());
-    LayoutNGBlockFlow::AddChild(snapshot_containing_block,
-                                /*before_child=*/nullptr);
+    LayoutBlockFlow::AddChild(snapshot_containing_block,
+                              /*before_child=*/nullptr);
     snapshot_containing_block->AddChild(new_child);
 
     ViewTransition* transition =
@@ -289,7 +256,7 @@ void LayoutView::AddChild(LayoutObject* new_child, LayoutObject* before_child) {
     return;
   }
 
-  LayoutNGBlockFlow::AddChild(new_child, before_child);
+  LayoutBlockFlow::AddChild(new_child, before_child);
 }
 
 bool LayoutView::IsChildAllowed(LayoutObject* child,
@@ -412,6 +379,24 @@ TrackedDescendantsMap& LayoutView::SvgTextDescendantsMap() {
   return *svg_text_descendants_;
 }
 
+void LayoutView::RegisterVariableLengthTransformResult(
+    const LayoutText& text,
+    const VariableLengthTransformResult& result) {
+  CHECK(text.HasVariableLengthTransform());
+  text_to_variable_length_transform_result_.Set(&text, result);
+}
+
+void LayoutView::UnregisterVariableLengthTransformResult(
+    const LayoutText& text) {
+  text_to_variable_length_transform_result_.erase(&text);
+}
+
+VariableLengthTransformResult LayoutView::GetVariableLengthTransformResult(
+    const LayoutText& text) {
+  CHECK(text.HasVariableLengthTransform());
+  return text_to_variable_length_transform_result_.at(&text);
+}
+
 LayoutViewTransitionRoot* LayoutView::GetViewTransitionRoot() const {
   // Returns nullptr if LastChild isn't a ViewTransitionRoot.
   return DynamicTo<LayoutViewTransitionRoot>(LastChild());
@@ -486,11 +471,13 @@ PhysicalOffset LayoutView::OffsetForFixedPosition() const {
   return IsScrollContainer() ? ScrolledContentOffset() : PhysicalOffset();
 }
 
-void LayoutView::AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                               MapCoordinatesFlags mode) const {
+void LayoutView::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
+                                         const LayoutBoxModelObject* ancestor,
+                                         MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  quads.push_back(LocalRectToAbsoluteQuad(
-      PhysicalRect(PhysicalOffset(), GetScrollableArea()->Size()), mode));
+  quads.push_back(LocalRectToAncestorQuad(
+      PhysicalRect(PhysicalOffset(), GetScrollableArea()->Size()), ancestor,
+      mode));
 }
 
 void LayoutView::CommitPendingSelection() {
@@ -500,19 +487,20 @@ void LayoutView::CommitPendingSelection() {
   frame_view_->GetFrame().Selection().CommitAppearanceIfNeeded();
 }
 
-bool LayoutView::ShouldUsePrintingLayout(const Document& document) {
+bool LayoutView::ShouldUsePaginatedLayout(const Document& document) {
   if (!document.Printing())
     return false;
   const LocalFrameView* frame_view = document.View();
   if (!frame_view)
     return false;
-  return frame_view->GetFrame().ShouldUsePrintingLayout();
+  return frame_view->GetFrame().ShouldUsePaginatedLayout();
 }
 
 PhysicalRect LayoutView::ViewRect() const {
   NOT_DESTROYED();
-  if (ShouldUsePrintingLayout())
+  if (GetDocument().Printing()) {
     return PhysicalRect(PhysicalOffset(), Size());
+  }
 
   if (!frame_view_)
     return PhysicalRect();
@@ -697,34 +685,6 @@ void LayoutView::CalculateScrollbarModes(
 #undef RETURN_SCROLLBAR_MODE
 }
 
-PhysicalSize LayoutView::PageAreaSize(wtf_size_t page_index,
-                                      const AtomicString& page_name) const {
-  NOT_DESTROYED();
-  const ComputedStyle* page_style =
-      GetDocument().StyleForPage(page_index, page_name);
-  WebPrintPageDescription description = default_page_description_;
-  GetDocument().GetPageDescriptionNoLifecycleUpdate(*page_style, &description);
-
-  gfx::SizeF page_size(
-      std::max(.0f, description.size.width() -
-                        (description.margin_left + description.margin_right)),
-      std::max(.0f, description.size.height() -
-                        (description.margin_top + description.margin_bottom)));
-
-  page_size.Scale(page_scale_factor_);
-
-  // Round up to the nearest integer. Although layout itself could have handled
-  // subpixels just fine, the paint code cannot without bleeding across page
-  // boundaries. The printing code (outside Blink) also rounds up. It's
-  // important that all pieces of the machinery agree on which way to round, or
-  // we risk clipping away a pixel or so at the edges. The reason for rounding
-  // up (rather than down, or to the closest integer) is so that any box that
-  // starts exactly at the beginning of a page, and uses a block-size exactly
-  // equal to that of the page area (before rounding) will actually fit on one
-  // page.
-  return PhysicalSize(gfx::ToCeiledSize(page_size));
-}
-
 AtomicString LayoutView::NamedPageAtIndex(wtf_size_t page_index) const {
   // If layout is dirty, it's not possible to look up page names reliably.
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
@@ -751,10 +711,15 @@ PhysicalRect LayoutView::DocumentRect() const {
 gfx::Size LayoutView::GetLayoutSize(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
   NOT_DESTROYED();
-  if (ShouldUsePrintingLayout()) {
-    return ToFlooredSize(initial_containing_block_size_for_pagination_);
+  if (GetDocument().Printing()) {
+    return ToFlooredSize(initial_containing_block_size_for_printing_);
   }
+  return GetNonPrintingLayoutSize(scrollbar_inclusion);
+}
 
+gfx::Size LayoutView::GetNonPrintingLayoutSize(
+    IncludeScrollbarsInRect scrollbar_inclusion) const {
+  NOT_DESTROYED();
   if (!frame_view_)
     return gfx::Size();
 
@@ -782,8 +747,8 @@ int LayoutView::ViewLogicalHeight(
 
 LayoutUnit LayoutView::ViewLogicalHeightForPercentages() const {
   NOT_DESTROYED();
-  if (ShouldUsePrintingLayout()) {
-    PhysicalSize size = initial_containing_block_size_for_pagination_;
+  if (GetDocument().Printing()) {
+    PhysicalSize size = initial_containing_block_size_for_printing_;
     return IsHorizontalWritingMode() ? size.height : size.width;
   }
   return LayoutUnit(ViewLogicalHeight());
@@ -798,16 +763,16 @@ const LayoutBox& LayoutView::RootBox() const {
 }
 
 void LayoutView::InvalidateSvgRootsWithRelativeLengthDescendents() {
-  if (GetDocument().SvgExtensions() && !ShouldUsePrintingLayout()) {
+  if (GetDocument().SvgExtensions() && !ShouldUsePaginatedLayout()) {
     GetDocument()
         .AccessSVGExtensions()
         .InvalidateSVGRootsWithRelativeLengthDescendents();
   }
 }
 
-void LayoutView::UpdateLayout() {
+void LayoutView::LayoutRoot() {
   NOT_DESTROYED();
-  if (ShouldUsePrintingLayout()) {
+  if (ShouldUsePaginatedLayout()) {
     intrinsic_logical_widths_ = LogicalWidth();
   }
 
@@ -865,7 +830,7 @@ void LayoutView::UpdateAfterLayout() {
       GetScrollableArea()->ClampScrollOffsetAfterOverflowChange();
     }
   }
-  LayoutNGBlockFlow::UpdateAfterLayout();
+  LayoutBlockFlow::UpdateAfterLayout();
 }
 
 void LayoutView::UpdateHitTestResult(HitTestResult& result,
@@ -913,13 +878,15 @@ gfx::SizeF LayoutView::DynamicViewportSizeForViewportUnits() const {
 
 gfx::SizeF LayoutView::DefaultPageAreaSize() const {
   NOT_DESTROYED();
+  const WebPrintPageDescription& default_page_description =
+      frame_view_->GetFrame().GetPrintParams().default_page_description;
   return gfx::SizeF(
-      std::max(.0f, default_page_description_.size.width() -
-                        (default_page_description_.margin_left +
-                         default_page_description_.margin_right)),
-      std::max(.0f, default_page_description_.size.height() -
-                        (default_page_description_.margin_top +
-                         default_page_description_.margin_bottom)));
+      std::max(.0f, default_page_description.size.width() -
+                        (default_page_description.margin_left +
+                         default_page_description.margin_right)),
+      std::max(.0f, default_page_description.size.height() -
+                        (default_page_description.margin_top +
+                         default_page_description.margin_bottom)));
 }
 
 void LayoutView::WillBeDestroyed() {
@@ -928,12 +895,12 @@ void LayoutView::WillBeDestroyed() {
   // Should find and fix the root cause.
   if (PaintLayer* layer = Layer())
     layer->SetNeedsRepaint();
-  LayoutNGBlockFlow::WillBeDestroyed();
+  LayoutBlockFlow::WillBeDestroyed();
 }
 
 void LayoutView::UpdateFromStyle() {
   NOT_DESTROYED();
-  LayoutNGBlockFlow::UpdateFromStyle();
+  LayoutBlockFlow::UpdateFromStyle();
 
   // LayoutView of the main frame is responsible for painting base background.
   if (GetFrameView()->ShouldPaintBaseBackgroundColor())
@@ -943,7 +910,7 @@ void LayoutView::UpdateFromStyle() {
 void LayoutView::StyleDidChange(StyleDifference diff,
                                 const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  LayoutNGBlockFlow::StyleDidChange(diff, old_style);
+  LayoutBlockFlow::StyleDidChange(diff, old_style);
 
   LocalFrame& frame = GetFrameView()->GetFrame();
   VisualViewport& visual_viewport = frame.GetPage()->GetVisualViewport();
@@ -990,8 +957,7 @@ bool LayoutView::AffectedByResizedInitialContainingBlock(
   return add_result.is_new_entry;
 }
 
-void LayoutView::UpdateMarkersAndCountersAfterStyleChange(
-    LayoutObject* container) {
+void LayoutView::UpdateCountersAfterStyleChange(LayoutObject* container) {
   NOT_DESTROYED();
   if (!needs_marker_counter_update_)
     return;
@@ -1011,9 +977,9 @@ void LayoutView::UpdateMarkersAndCountersAfterStyleChange(
   // change outside the container. Hence, we can start the update traversal from
   // the container.
   LayoutObject* start = container ? container : this;
-  // Additionally, if the container contains style, we know counters inside the
-  // container cannot affect counters outside the container, which means we can
-  // limit the traversal to the container subtree.
+  // Additionally, if the container contains style, we know list-item counters
+  // inside the container cannot affect list-item counters outside the
+  // container, which means we can limit the traversal to the container subtree.
   LayoutObject* stay_within =
       container && container->ShouldApplyStyleContainment() ? container
                                                             : nullptr;
@@ -1025,8 +991,6 @@ void LayoutView::UpdateMarkersAndCountersAfterStyleChange(
     } else if (auto* inline_list_item =
                    DynamicTo<LayoutInlineListItem>(layout_object)) {
       inline_list_item->UpdateCounterStyle();
-    } else if (auto* counter = DynamicTo<LayoutCounter>(layout_object)) {
-      counter->UpdateCounter();
     }
   }
 }
@@ -1042,7 +1006,7 @@ Vector<gfx::Rect> LayoutView::GetTickmarks() const {
 }
 
 bool LayoutView::IsFragmentationContextRoot() const {
-  return ShouldUsePrintingLayout();
+  return ShouldUsePaginatedLayout();
 }
 
 }  // namespace blink

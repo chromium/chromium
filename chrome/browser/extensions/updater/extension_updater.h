@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <queue>
 #include <set>
 #include <string>
@@ -19,8 +20,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/extensions/crx_installer.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
@@ -36,6 +37,7 @@ class ScopedProfileKeepAlive;
 namespace extensions {
 
 class CrxInstallError;
+class CrxInstaller;
 class ExtensionCache;
 class ExtensionPrefs;
 class ExtensionRegistry;
@@ -169,7 +171,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
   // A callback that is invoked when the next invocation of CxrInstaller
   // finishes (successfully or not).
   void SetCrxInstallerResultCallbackForTesting(
-      CrxInstaller::InstallerResultCallback callback);
+      ExtensionSystem::InstallUpdateCallback callback);
 
  private:
   friend class ExtensionUpdaterTest;
@@ -207,8 +209,8 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
     FinishedCallback callback;
     // Prevents the destruction of the Profile* while an update check is in
     // progress.
-    // TODO(crbug.com/1191460): Find a way to pass the keepalive to UpdateClient
-    // instead of holding it here.
+    // TODO(crbug.com/40174537): Find a way to pass the keepalive to
+    // UpdateClient instead of holding it here.
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
     // The ids of extensions that have in-progress update checks.
     std::set<ExtensionId> in_progress_ids;
@@ -270,6 +272,10 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
   bool IsExtensionPending(const ExtensionId& id) override;
   bool GetExtensionExistingVersion(const ExtensionId& id,
                                    std::string* version) override;
+
+  // Returns an `ExtensionUpdateData` prepopulated with the `pending_version`
+  // and `pending_fingerprint` if there is a pending extension update.
+  ExtensionUpdateData GetExtensionUpdateData(const ExtensionId& id);
 
   void UpdatePingData(const ExtensionId& id, const PingResult& ping_result);
 
@@ -344,7 +350,7 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
 
   base::RepeatingClosure updating_started_callback_;
 
-  CrxInstaller::InstallerResultCallback installer_result_callback_for_testing_;
+  ExtensionSystem::InstallUpdateCallback installer_result_callback_for_testing_;
 
   base::WeakPtrFactory<ExtensionUpdater> weak_ptr_factory_{this};
 };

@@ -447,7 +447,7 @@ def Main(argv):
 
 
 if __name__ == '__main__':
-  # TODO(https://crbug.com/941669): Temporary workaround until all scripts use
+  # TODO(crbug.com/40618161): Temporary workaround until all scripts use
   # python3 by default.
   if sys.version_info[0] < 3:
     os.execvp('python3', ['python3'] + sys.argv)

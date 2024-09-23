@@ -14,11 +14,15 @@ DemoAshRequiresLacrosTest*
 DesksTemplatesClientLacrosTest*
 Dictation*
 *DictationTest*
+EduCoexistenceWithArcRestrictionsMochaTest*
 ExtensionKeeplistAllowPerfettoTest*
 ExtensionKeeplistTest*
+*ExtensionPrinterHandlerAdapterAshBrowserTest*
 # Note: Some of FileTasksBrowserTest* runs only on branded ash and lacros builds.
 *FileTasksBrowserTest*
 NonKioskAcceleratorLacrosTest*
+*OSSettingsMochaTestLacrosAndRevampEnabled*
+*OSSettingsMochaTestLacrosEnabledRevampDisabled*
 SelectToSpeak*
 StickyKeysBrowserTest*
 SwitchAccess*
@@ -30,6 +34,7 @@ WebAppProviderBridgeBrowserTest*
 WebKioskAcceleratorLacrosTest*
 WebKioskLacrosTest*
 CrosapiSystemLogSourceTest*
+TaskManagerAshBrowserTest*
 TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 # TODO(b/262789941) Enable more accessibility tests.
 # TODO(b/260289935): Flaky in Lacros.
@@ -46,11 +51,11 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
 -SwitchAccessTest.NavigateButtonsInTextFieldMenu
-# TODO(https://crbug.com/1378291) Ash and Lacros browser window sizes differ.
+# TODO(crbug.com/40243866) Ash and Lacros browser window sizes differ.
 -ChromeVoxEditingTest.SelectAcrossSoftLineWraps
 # TODO(b/277821091) Flaky
 -ChromeVoxEditingTest.GiantTextAreaPerformance
-# TODO(crbug.com/1478586): Flaky.
+# TODO(crbug.com/40280590): Flaky.
 -AutoclickWithAccessibilityServiceTest.ScrollableBoundsPlumbing
 # TODO(b/277256412): Test is flaky
 -DictationUIE2ETest.HintsTimeoutWithChromeVox
@@ -85,6 +90,4 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfIconFocusForward*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.TouchExploreSecondaryDisplay*
 -TouchExplorationTest
-# TODO(crbug/1484723): Flaky
--BrowserAppShelfControllerBrowserTest.WindowedApps
--BrowserAppShelfControllerBrowserTest.TabbedApps
+-SelectToSpeakMouseSelectionTest.VoiceSwitching

@@ -156,11 +156,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
   // Explicitly set the two profiles to have different client names to simulate
   // them being on different devices. Otherwise their device infos will get
   // deduped.
-  // TODO(crbug.com/1257573): This is rather misleading. The "device1"/"device2"
-  // strings below are never sent to the server, they just ensure the local
-  // device name is different from the other entry. The same string could even
-  // be used in both calls. The most robust test would be: update the device
-  // info name and wait for the right value of GetTargetDeviceInfoSortedList().
+  // TODO(crbug.com/40200734): This is rather misleading. The
+  // "device1"/"device2" strings below are never sent to the server, they just
+  // ensure the local device name is different from the other entry. The same
+  // string could even be used in both calls. The most robust test would be:
+  // update the device info name and wait for the right value of
+  // GetTargetDeviceInfoSortedList().
   static_cast<send_tab_to_self::SendTabToSelfBridge*>(
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel())

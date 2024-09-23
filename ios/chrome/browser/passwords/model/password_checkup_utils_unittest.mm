@@ -4,21 +4,23 @@
 
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 
-#import "base/strings/string_piece.h"
+#import <string_view>
+
+#import "base/location.h"
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -61,15 +63,15 @@ using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
 using password_manager::WarningType;
 
-PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
-                               base::StringPiece16 password) {
+PasswordForm MakeSavedPassword(std::string_view signon_realm,
+                               std::u16string_view password) {
   PasswordForm form;
   form.url = GURL(signon_realm);
   form.signon_realm = std::string(signon_realm);
   form.username_value = std::u16string(kUsername116);
   form.password_value = std::u16string(password);
   form.in_store = PasswordForm::Store::kProfileStore;
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // TODO(crbug.com/40774419): Once all places that operate changes on forms
   // via UpdateLogin properly set `password_issues`, setting them to an empty
   // map should be part of the default constructor.
   form.password_issues =
@@ -101,9 +103,9 @@ class PasswordCheckupUtilsTest : public PlatformTest {
         IOSChromeAffiliationServiceFactory::GetInstance(),
         base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
           return std::unique_ptr<KeyedService>(
-              std::make_unique<password_manager::FakeAffiliationService>());
+              std::make_unique<affiliations::FakeAffiliationService>());
         })));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
             IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
@@ -251,8 +253,8 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
 
 // Tests that the correct string is returned with the right timestamp.
 TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheck) {
-  EXPECT_NSEQ(@"Check never run.", FormatElapsedTimeSinceLastCheck(
-                                       manager().GetLastPasswordCheckTime()));
+  EXPECT_NSEQ(@"Check never run", FormatElapsedTimeSinceLastCheck(
+                                      manager().GetLastPasswordCheckTime()));
 
   base::Time expected1 = base::Time::Now() - base::Seconds(10);
   browser_state()->GetPrefs()->SetDouble(
@@ -270,28 +272,6 @@ TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheck) {
   EXPECT_NSEQ(
       @"Checked 5 minutes ago",
       FormatElapsedTimeSinceLastCheck(manager().GetLastPasswordCheckTime()));
-}
-
-// Verifies the title case format of elapsed time string.
-TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheckInTitleCase) {
-  base::Time expected1 = base::Time::Now() - base::Seconds(10);
-  browser_state()->GetPrefs()->SetDouble(
-      password_manager::prefs::kLastTimePasswordCheckCompleted,
-      expected1.InSecondsFSinceUnixEpoch());
-
-  EXPECT_NSEQ(@"Checked Just Now", FormatElapsedTimeSinceLastCheck(
-                                       manager().GetLastPasswordCheckTime(),
-                                       /*use_title_case=*/true));
-
-  base::Time expected2 = base::Time::Now() - base::Minutes(5);
-  browser_state()->GetPrefs()->SetDouble(
-      password_manager::prefs::kLastTimePasswordCheckCompleted,
-      expected2.InSecondsFSinceUnixEpoch());
-
-  EXPECT_NSEQ(
-      @"Checked 5 Minutes Ago",
-      FormatElapsedTimeSinceLastCheck(manager().GetLastPasswordCheckTime(),
-                                      /*use_title_case=*/true));
 }
 
 // Tests that the correct passwords are returned for each warning type.
@@ -377,7 +357,7 @@ TEST_F(PasswordCheckupUtilsTest,
   RunUntilIdle();
 
   // Remove one of the reused passwords.
-  store().RemoveLogin(reused_form1);
+  store().RemoveLogin(FROM_HERE, reused_form1);
   RunUntilIdle();
 
   std::vector<CredentialUIEntry> insecure_credentials =

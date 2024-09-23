@@ -5,10 +5,11 @@
 #include <fuchsia/settings/cpp/fidl_test_base.h>
 
 #include <optional>
+#include <string_view>
+
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -85,7 +86,7 @@ class ThemeManagerTest : public WebEngineBrowserTest,
   }
 
   // Returns the name of the color scheme selected by the CSS feature matcher.
-  base::StringPiece QueryThemeFromCssFeature() {
+  std::string_view QueryThemeFromCssFeature() {
     content::WebContents* web_contents =
         context_impl()
             ->GetFrameImplForTest(&frame_.ptr())
@@ -104,7 +105,6 @@ class ThemeManagerTest : public WebEngineBrowserTest,
     }
 
     NOTREACHED();
-    return "";
   }
 
   bool SetTheme(fuchsia::settings::ThemeType theme) {
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(ThemeManagerTest, UseDisplayService) {
 
 // Verify that the Frame connection will drop if the Display service is
 // required but missing.
-// TODO(crbug.com/1148454): Re-enable this test once the service availability
+// TODO(crbug.com/40731307): Re-enable this test once the service availability
 // validation is back in place.
 IN_PROC_BROWSER_TEST_F(ThemeManagerTest, DISABLED_DefaultWithMissingService) {
   SetTheme(fuchsia::settings::ThemeType::DEFAULT);

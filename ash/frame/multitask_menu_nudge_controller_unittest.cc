@@ -8,13 +8,14 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/display/display_move_window_util.h"
+#include "ash/frame/multitask_menu_nudge_delegate_ash.h"
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_test_util.h"
-#include "ash/frame/multitask_menu_nudge_delegate_ash.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
@@ -25,11 +26,15 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "chromeos/ui/base/nudge_util.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view_test_api.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "ui/aura/window.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
@@ -228,6 +233,17 @@ TEST_F(MultitaskMenuNudgeControllerTest, NudgeTimeout) {
   ASSERT_TRUE(GetNudgeWidgetForWindow(window.get()));
 
   FireDismissNudgeTimer(window.get());
+  EXPECT_FALSE(GetNudgeWidgetForWindow(window.get()));
+}
+
+TEST_F(MultitaskMenuNudgeControllerTest, NoNudgeForNewUser) {
+  chromeos::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(false);
+
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager{std::make_unique<user_manager::FakeUserManager>()};
+  fake_user_manager->SetIsCurrentUserNew(true);
+
+  auto window = CreateAppWindow(gfx::Rect(300, 300));
   EXPECT_FALSE(GetNudgeWidgetForWindow(window.get()));
 }
 

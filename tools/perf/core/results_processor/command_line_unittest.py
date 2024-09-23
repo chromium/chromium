@@ -13,8 +13,7 @@ import datetime
 import posixpath
 import re
 import unittest
-
-import mock
+from unittest import mock
 
 from core.results_processor import command_line
 
@@ -88,7 +87,7 @@ class TestProcessOptions(ProcessOptionsTestCase):
     options = self.ParseArgs(
         ['--output-dir', '/output', '--results-label', 'test my feature'])
     self.assertEqual(options.intermediate_dir,
-                     '/output/artifacts/test_my_feature_20151021T072800Z')
+                     '/output/artifacts/run_20151021T072800Z')
 
   def testUploadBucket_noUploadResults(self):
     options = self.ParseArgs([])

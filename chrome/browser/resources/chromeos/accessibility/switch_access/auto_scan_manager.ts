@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {Navigator} from './navigator.js';
 import {SwitchAccess} from './switch_access.js';
 import {ErrorType, Mode} from './switch_access_constants.js';
@@ -130,3 +132,5 @@ export class AutoScanManager {
 
 /** Sentinel value that indicates an uninitialized scan time. */
 const NOT_INITIALIZED = -1;
+
+TestImportManager.exportForTesting(AutoScanManager);

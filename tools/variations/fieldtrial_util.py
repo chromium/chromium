@@ -68,11 +68,11 @@ def MergeFeaturesAndFieldTrialsArgs(args):
   --force-fieldtrials and --force-fieldtrial-params. Any such merged flags are
   moved to the end of the returned list. The original argument ordering is
   otherwise maintained.
-  TODO(crbug.com/1033090): Add functionality to handle duplicate flags using the
-  Foo<Bar syntax. Currently, the implementation considers e.g. 'Foo', 'Foo<Bar'
-  and 'Foo<Baz' to be different. Also add functionality to handle cases where
-  the same trial is specified with different groups via --force-fieldtrials,
-  which isn't currently unhandled.
+  TODO(crbug.com/40663174): Add functionality to handle duplicate flags using
+  the Foo<Bar syntax. Currently, the implementation considers e.g. 'Foo',
+  'Foo<Bar' and 'Foo<Baz' to be different. Also add functionality to handle
+  cases where the same trial is specified with different groups via
+  --force-fieldtrials, which isn't currently unhandled.
 
   Args:
     args: An iterable of strings representing command line arguments.

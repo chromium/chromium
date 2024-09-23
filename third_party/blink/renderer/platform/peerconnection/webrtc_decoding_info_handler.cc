@@ -30,8 +30,6 @@ WebrtcDecodingInfoHandler::WebrtcDecodingInfoHandler()
     : WebrtcDecodingInfoHandler(
           blink::CreateWebrtcVideoDecoderFactory(
               Platform::Current()->GetGpuFactories(),
-              {},
-              {},
               Platform::Current()->GetRenderingColorSpace(),
               base::DoNothing()),
           blink::CreateWebrtcAudioDecoderFactory()) {}

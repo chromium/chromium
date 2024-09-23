@@ -6,18 +6,21 @@
 
 #include <windows.h>
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/process/process.h"
 #include "base/win/access_token.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
-IntegrityLevel GetCurrentProcessIntegrityLevel() {
-  absl::optional<base::win::AccessToken> token =
-      base::win::AccessToken::FromCurrentProcess();
+namespace {
+
+IntegrityLevel GetProcessIntegrityLevelInternal(
+    std::optional<win::AccessToken> token) {
   if (!token) {
-    PLOG(ERROR) << "AccessToken::FromCurrentProcess() failed";
+    PLOG(ERROR) << "AccessToken `token` is invalid";
     return INTEGRITY_UNKNOWN;
   }
   DWORD integrity_level = token->IntegrityLevel();
@@ -35,12 +38,27 @@ IntegrityLevel GetCurrentProcessIntegrityLevel() {
     return HIGH_INTEGRITY;
 
   NOTREACHED();
-  return INTEGRITY_UNKNOWN;
+}
+
+}  // namespace
+
+IntegrityLevel GetProcessIntegrityLevel(ProcessId process_id) {
+  auto process = Process::OpenWithAccess(process_id, PROCESS_QUERY_INFORMATION);
+  return process.IsValid()
+             ? GetProcessIntegrityLevelInternal(win::AccessToken::FromProcess(
+                   process.Handle(),
+                   /*impersonation=*/false, TOKEN_QUERY_SOURCE))
+             : INTEGRITY_UNKNOWN;
+}
+
+IntegrityLevel GetCurrentProcessIntegrityLevel() {
+  return GetProcessIntegrityLevelInternal(
+      win::AccessToken::FromCurrentProcess());
 }
 
 bool IsCurrentProcessElevated() {
-  absl::optional<base::win::AccessToken> token =
-      base::win::AccessToken::FromCurrentProcess();
+  std::optional<win::AccessToken> token =
+      win::AccessToken::FromCurrentProcess();
   if (!token) {
     PLOG(ERROR) << "AccessToken::FromCurrentProcess() failed";
     return false;
@@ -49,8 +67,8 @@ bool IsCurrentProcessElevated() {
 }
 
 bool IsCurrentProcessInAppContainer() {
-  absl::optional<base::win::AccessToken> token =
-      base::win::AccessToken::FromCurrentProcess();
+  std::optional<win::AccessToken> token =
+      win::AccessToken::FromCurrentProcess();
   if (!token) {
     PLOG(ERROR) << "AccessToken::FromCurrentProcess() failed";
     return false;

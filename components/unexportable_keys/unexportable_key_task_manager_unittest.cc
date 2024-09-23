@@ -59,7 +59,8 @@ class UnexportableKeyTaskManagerTest : public testing::Test {
   absl::variant<crypto::ScopedMockUnexportableKeyProvider,
                 crypto::ScopedNullUnexportableKeyProvider>
       scoped_key_provider_;
-  UnexportableKeyTaskManager task_manager_;
+  UnexportableKeyTaskManager task_manager_{
+      crypto::UnexportableKeyProvider::Config()};
 };
 
 TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsync) {

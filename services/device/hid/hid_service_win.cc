@@ -453,7 +453,7 @@ uint16_t HidServiceWin::PreparsedData::GetReportByteLength(
       report_length = GetCaps().FeatureReportByteLength;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   // Whether or not the device includes report IDs in its reports the size
@@ -612,7 +612,7 @@ void HidServiceWin::AddDeviceBlocking(
   auto device_info = base::MakeRefCounted<HidDeviceInfo>(
       device_path, physical_device_id, base::SysWideToUTF8(interface_id),
       vendor_id, product_id, product_string, serial_number,
-      // TODO(crbug.com/443335): Detect Bluetooth.
+      // TODO(crbug.com/40398791): Detect Bluetooth.
       mojom::HidBusType::kHIDBusTypeUSB, std::move(collection),
       max_input_report_size, max_output_report_size, max_feature_report_size);
 

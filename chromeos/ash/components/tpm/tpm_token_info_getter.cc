@@ -95,7 +95,7 @@ void TPMTokenInfoGetter::Continue() {
   user_data_auth::Pkcs11GetTpmTokenInfoRequest request;
   switch (state_) {
     case STATE_INITIAL:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case STATE_STARTED:
       chromeos::TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
@@ -117,7 +117,7 @@ void TPMTokenInfoGetter::Continue() {
                                   weak_factory_.GetWeakPtr()));
       break;
     case STATE_DONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

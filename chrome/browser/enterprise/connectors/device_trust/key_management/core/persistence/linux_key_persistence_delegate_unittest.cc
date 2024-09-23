@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/linux_key_persistence_delegate.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/files/file_path.h"
@@ -58,7 +64,7 @@ constexpr char kInvalidTrustLevelKeyFileContent[] =
     "WTQn4FZnjucsKdj2YrUkcG42LWoC2WorIp8BETdwYr2OhGAVBmSVpg9iyi5gtZ9JGZzMceWOJ"
     "\",\"trustLevel\":100}";
 
-std::vector<uint8_t> ParseKeyWrapped(base::StringPiece encoded_wrapped) {
+std::vector<uint8_t> ParseKeyWrapped(std::string_view encoded_wrapped) {
   std::string decoded_key;
   if (!base::Base64Decode(encoded_wrapped, &decoded_key)) {
     return std::vector<uint8_t>();
@@ -108,7 +114,7 @@ class LinuxKeyPersistenceDelegateTest : public testing::Test {
     return scoped_dir_.GetPath().Append(kFileName);
   }
 
-  bool CreateFile(base::StringPiece content) {
+  bool CreateFile(std::string_view content) {
     return base::WriteFile(GetKeyFilePath(), content);
   }
 

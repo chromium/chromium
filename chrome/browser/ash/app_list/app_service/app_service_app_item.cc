@@ -24,11 +24,13 @@
 #include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_context_menu.h"
+#include "chrome/browser/ash/app_list/apps_collections_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "ui/display/screen.h"
 
 namespace {
@@ -105,12 +107,6 @@ AppServiceAppItem::AppServiceAppItem(
         SetChromeFolderId(app_info->folder_id);
     }
 
-    if (!position().IsValid()) {
-      // If there is no default positions, the model builder will handle it when
-      // the item is inserted.
-      SetPosition(CalculateDefaultPositionIfApplicable());
-    }
-
     // Crostini and Bruschetta apps start in their respective folders.
     if (app_type_ == apps::AppType::kCrostini) {
       DCHECK(folder_id().empty());
@@ -126,6 +122,8 @@ AppServiceAppItem::AppServiceAppItem(
   if (package_id.has_value()) {
     SetPromisePackageId(package_id.value().ToString());
   }
+
+  SetCollectionId(apps_util::GetCollectionIdForAppId(app_update.AppId()));
 
   const bool is_new_install =
       (!sync_item || sync_item->is_new) && IsNewInstall(app_update);
@@ -162,7 +160,7 @@ void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update,
 
   if (in_constructor || app_update.ReadinessChanged() ||
       app_update.PausedChanged()) {
-    if (app_update.Readiness() == apps::Readiness::kDisabledByPolicy) {
+    if (apps_util::IsDisabled(app_update.Readiness())) {
       SetAppStatus(ash::AppStatus::kBlocked);
     } else if (app_update.Paused().value_or(false)) {
       SetAppStatus(ash::AppStatus::kPaused);
@@ -175,7 +173,7 @@ void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update,
 void AppServiceAppItem::ExecuteLaunchCommand(int event_flags) {
   Launch(event_flags, apps::LaunchSource::kFromAppListGridContextMenu);
 
-  // TODO(crbug.com/826982): drop the if, and call MaybeDismissAppList
+  // TODO(crbug.com/40569217): drop the if, and call MaybeDismissAppList
   // unconditionally?
   if (app_type_ == apps::AppType::kArc || app_type_ == apps::AppType::kRemote) {
     MaybeDismissAppList();
@@ -194,7 +192,7 @@ void AppServiceAppItem::Activate(int event_flags) {
   // apps, Crostini apps treat activations as a launch. The app can decide
   // whether to show a new window or focus an existing window as it sees fit.
   //
-  // TODO(crbug.com/1022541): Move the Chrome special case to ExtensionApps,
+  // TODO(crbug.com/40106663): Move the Chrome special case to ExtensionApps,
   // when AppService Instance feature is done.
   bool is_active_app = false;
   apps::AppServiceProxyFactory::GetForProfile(profile())

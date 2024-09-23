@@ -57,15 +57,16 @@ export class SiteEngagementAppElement extends CustomElement {
   engagementDetailsProvider: SiteEngagementDetailsProviderInterface =
       SiteEngagementDetailsProvider.getRemote();
   private updateInterval: number|null = null;
+  private showWebUiPages: boolean = false;
   private sortKey: string = 'totalScore';
   private sortReverse: boolean = true;
   private whenPopulatedResolver: PromiseResolver<void> = new PromiseResolver();
 
   connectedCallback() {
     const engagementTableHeader =
-        this.getRequiredElement<HTMLElement>('#engagement-table-header');
+        this.getRequiredElement('#engagement-table-header');
     this.engagementTableBody =
-        this.getRequiredElement<HTMLElement>('#engagement-table-body');
+        this.getRequiredElement('#engagement-table-body');
 
     const headers = engagementTableHeader.children;
     for (let i = 0; i < headers.length; i++) {
@@ -79,14 +80,19 @@ export class SiteEngagementAppElement extends CustomElement {
           this.sortKey = newSortKey;
           this.sortReverse = false;
         }
-        const oldSortColumn =
-            this.getRequiredElement<HTMLElement>('.sort-column');
+        const oldSortColumn = this.getRequiredElement('.sort-column');
         oldSortColumn.classList.remove('sort-column');
         target.classList.add('sort-column');
         target.toggleAttribute('sort-reverse', this.sortReverse);
         this.renderTable();
       });
     }
+
+    const showWebUiPagesCheckbox =
+        this.getRequiredElement<HTMLInputElement>('#show-webui-pages-checkbox');
+    showWebUiPagesCheckbox.addEventListener(
+        'change',
+        () => this.handleShowWebUiPages(showWebUiPagesCheckbox.checked));
 
     this.updateEngagementTable();
     this.enableAutoupdate();
@@ -197,6 +203,14 @@ export class SiteEngagementAppElement extends CustomElement {
   }
 
   /**
+   * Show chrome:// and chrome-untrusted:// pages.
+   */
+  private handleShowWebUiPages(show: boolean) {
+    this.showWebUiPages = show;
+    this.renderTable();
+  }
+
+  /**
    * Remove all rows from the engagement table.
    */
   private clearTable() {
@@ -223,6 +237,12 @@ export class SiteEngagementAppElement extends CustomElement {
 
     assert(this.info);
     this.info.forEach((info) => {
+      if (!this.showWebUiPages &&
+          (info.origin.url.startsWith('chrome://') ||
+           info.origin.url.startsWith('chrome-untrusted://'))) {
+        return;
+      }
+
       // Round all scores to 2 decimal places.
       info.baseScore = roundScore(info.baseScore);
       info.installedBonus = roundScore(info.installedBonus);

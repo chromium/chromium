@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_VIEWS_TEST_API_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_VIEWS_TEST_API_H_
 
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
@@ -29,7 +30,7 @@ class PopupViewViewsTestApi {
     return view_->CanShowDropdownInBounds(bounds);
   }
 
-  bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event) && {
+  bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) && {
     return view_->HandleKeyPressEvent(event);
   }
 
@@ -39,6 +40,10 @@ class PopupViewViewsTestApi {
 
   const std::vector<PopupViewViews::RowPointer>& rows() const&& {
     return view_->rows_;
+  }
+
+  void SetSearchQuery(const std::u16string& query) {
+    view_->search_bar_->SetInputTextForTesting(query);
   }
 
   base::WeakPtr<PopupViewViews> GetWeakPtr() {

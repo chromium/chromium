@@ -16,7 +16,7 @@ MockAffiliatedMatchHelper::MockAffiliatedMatchHelper()
     : AffiliatedMatchHelper(nullptr) {}
 
 MockAffiliatedMatchHelper::MockAffiliatedMatchHelper(
-    AffiliationService* affiliation_service)
+    affiliations::AffiliationService* affiliation_service)
     : AffiliatedMatchHelper(affiliation_service) {}
 
 MockAffiliatedMatchHelper::~MockAffiliatedMatchHelper() = default;

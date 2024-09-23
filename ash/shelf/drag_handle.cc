@@ -112,6 +112,7 @@ DragHandle::DragHandle(float drag_handle_corner_radius, Shelf* shelf)
   Shell::Get()->accessibility_controller()->AddObserver(this);
   shelf_->AddObserver(this);
   OnAccessibilityStatusChanged();
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 DragHandle::~DragHandle() {
@@ -243,22 +244,13 @@ void DragHandle::SetWindowDragFromShelfInProgress(bool gesture_in_progress) {
   }
 }
 
-void DragHandle::UpdateColor() {
-  if (chromeos::features::IsJellyEnabled()) {
-    layer()->SetColor(
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
-  } else {
-    layer()->SetColor(GetColorProvider()->GetColor(kColorAshShelfHandleColor));
-  }
-}
-
 void DragHandle::OnGestureEvent(ui::GestureEvent* event) {
   if (!features::IsHideShelfControlsInTabletModeEnabled() ||
       !gesture_nudge_target_visibility_) {
     return;
   }
 
-  if (event->type() == ui::ET_GESTURE_TAP) {
+  if (event->type() == ui::EventType::kGestureTap) {
     HandleTapOnNudge();
     event->StopPropagation();
   }
@@ -290,7 +282,7 @@ gfx::Rect DragHandle::GetAnchorBoundsInScreen() const {
 void DragHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // TODO(b/262424972): Remove unwanted ", window" string from the announcement.
   Button::GetAccessibleNodeData(node_data);
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kPopUpButton);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPopUpButton);
 
   std::u16string accessible_name = std::u16string();
   switch (shelf_->shelf_layout_manager()->hotseat_state()) {
@@ -301,22 +293,19 @@ void DragHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     case HotseatState::kHidden:
       accessible_name = l10n_util::GetStringUTF16(
           IDS_ASH_DRAG_HANDLE_HOTSEAT_ACCESSIBLE_NAME);
-      node_data->AddState(ax::mojom::State::kCollapsed);
 
       // When the hotseat is kHidden, the focus traversal should go to the
       // status area as the next focus and the navigation area as the previous
       // focus.
-      GetViewAccessibility().OverrideNextFocus(shelf_->GetStatusAreaWidget());
-      GetViewAccessibility().OverridePreviousFocus(
+      GetViewAccessibility().SetNextFocus(shelf_->GetStatusAreaWidget());
+      GetViewAccessibility().SetPreviousFocus(
           shelf_->shelf_widget()->navigation_widget());
       break;
     case HotseatState::kExtended:
-      node_data->AddState(ax::mojom::State::kExpanded);
-
       // When the hotseat is kExtended, the focus traversal should go to the
       // hotseat as both the next and previous focus.
-      GetViewAccessibility().OverrideNextFocus(shelf_->hotseat_widget());
-      GetViewAccessibility().OverridePreviousFocus(shelf_->hotseat_widget());
+      GetViewAccessibility().SetNextFocus(shelf_->hotseat_widget());
+      GetViewAccessibility().SetPreviousFocus(shelf_->hotseat_widget());
 
       // The name should be empty when the hotseat is extended but we cannot
       // hide it.
@@ -331,7 +320,8 @@ void DragHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void DragHandle::OnThemeChanged() {
   views::Button::OnThemeChanged();
-  UpdateColor();
+  layer()->SetColor(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
 }
 
 void DragHandle::OnOverviewModeStarting() {
@@ -362,6 +352,8 @@ void DragHandle::OnHotseatStateChanged(HotseatState old_state,
     shelf_->hotseat_widget()->set_manually_extended(false);
     force_show_hotseat_resetter_.RunAndReset();
   }
+
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 void DragHandle::OnAccessibilityStatusChanged() {
@@ -384,7 +376,7 @@ void DragHandle::ButtonPressed() {
   // The accessibility focus order depends on the hotseat state, and pressing
   // the drag handle changes the hotseat state. So, send an accessibility
   // notification in order to recompute the focus order.
-  NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 void DragHandle::OnImplicitAnimationsCompleted() {
@@ -526,6 +518,22 @@ void DragHandle::HandleTapOnNudge() {
 void DragHandle::StopDragHandleNudgeShowTimer() {
   show_drag_handle_nudge_timer_.Stop();
   overview_observation_.Reset();
+}
+
+void DragHandle::UpdateExpandedCollapsedAccessibleState() const {
+  if (!shelf_ || !shelf_->shelf_layout_manager()) {
+    return;
+  }
+
+  if (shelf_->shelf_layout_manager()->hotseat_state() ==
+      HotseatState::kExtended) {
+    GetViewAccessibility().SetIsExpanded();
+  } else if (shelf_->shelf_layout_manager()->hotseat_state() ==
+             HotseatState::kHidden) {
+    GetViewAccessibility().SetIsCollapsed();
+  } else {
+    GetViewAccessibility().RemoveExpandCollapseState();
+  }
 }
 
 BEGIN_METADATA(DragHandle)

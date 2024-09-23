@@ -6,6 +6,9 @@
 
 #include <windows.h>
 
+#include <algorithm>
+#include <limits>
+
 namespace remoting {
 
 namespace {
@@ -19,8 +22,9 @@ class DesktopDisplayInfoLoaderWin : public DesktopDisplayInfoLoader {
 };
 
 DesktopDisplayInfo DesktopDisplayInfoLoaderWin::GetCurrentDisplayInfo() {
-  DesktopDisplayInfo result;
-
+  int32_t lowest_x = std::numeric_limits<int32_t>::max();
+  int32_t lowest_y = std::numeric_limits<int32_t>::max();
+  std::vector<DisplayGeometry> displays;
   BOOL enum_result = TRUE;
   for (int device_index = 0;; ++device_index) {
     DISPLAY_DEVICE device = {};
@@ -57,9 +61,21 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderWin::GetCurrentDisplayInfo() {
     info.height = devmode.dmPelsHeight;
     info.dpi = devmode.dmLogPixels;
     info.bpp = devmode.dmBitsPerPel;
-    result.AddDisplay(info);
+    displays.push_back(info);
+
+    lowest_x = std::min(info.x, lowest_x);
+    lowest_y = std::min(info.y, lowest_y);
   }
 
+  // Normalize the displays so the bounding-box's top-left corner is at (0, 0).
+  // This matches the coordinate system used by InputInjectorWin, so that
+  // the FractionalInputFilter produces correct x,y-coordinates for injection.
+  DesktopDisplayInfo result;
+  for (DisplayGeometry& info : displays) {
+    info.x -= lowest_x;
+    info.y -= lowest_y;
+    result.AddDisplay(info);
+  }
   return result;
 }
 

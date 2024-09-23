@@ -12,6 +12,7 @@
 #include "ash/frame_sink/ui_resource.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace viz {
@@ -19,7 +20,6 @@ class CompositorFrame;
 }  // namespace viz
 
 namespace gfx {
-class GpuMemoryBuffer;
 class Size;
 }  // namespace gfx
 
@@ -50,37 +50,27 @@ ASH_EXPORT gfx::Rect BufferRectFromWindowRect(
     const gfx::Size& buffer_size,
     const gfx::Rect& window_rect);
 
-// Creates a gpu buffer of given `size` and of given usage and format defined in
-// `usage_and_format`.
-ASH_EXPORT std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuBuffer(
-    const gfx::Size& size,
-    const gfx::BufferUsageAndFormat& usage_and_format);
-
 // Creates a Mappable SharedImage of given `size`, `shared_image_usage`, and
 // `buffer_usage`. The returned ClientSharedImage will be null if creation
 // failed.
 ASH_EXPORT scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
     const gfx::Size& size,
-    uint32_t shared_image_usage,
+    gpu::SharedImageUsageSet shared_image_usage,
     gfx::BufferUsage buffer_usage);
 
-// Creates a UiResource of a given `size` and `format`. Uses the SharedImage
-// that `mailbox` is referencing if that is non-zero, in which case the created
-// UiResource does not own that SharedImage. Otherwise creates a new SharedImage
-// and has the UiResource take ownership of that SharedImage.
+// Creates a UiResource of a given `size` and `format` using the SharedImage
+// that `mailbox` (which must be non-zero) is referencing. The created
+// UiResource does not own that SharedImage.
 ASH_EXPORT std::unique_ptr<UiResource> CreateUiResource(
     const gfx::Size& size,
     UiSourceId ui_source_id,
     bool is_overlay_candidate,
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
     gpu::Mailbox mailbox,
     gpu::SyncToken sync_token);
 
 // Creates and configures a compositor frame. Uses the SharedImage that
-// `shared_image` is referencing if that is non-null, in which case the created
-// UiResource does not own that SharedImage. Otherwise creates a new SharedImage
-// if needing to create a new UiResource and has the UiResource take ownership
-// of that SharedImage.
+// `shared_image` (which must be non-null) is referencing. The created
+// UiResource does not own that SharedImage.
 ASH_EXPORT std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     const viz::BeginFrameAck& begin_frame_ack,
     const gfx::Rect& content_rect,
@@ -88,7 +78,6 @@ ASH_EXPORT std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     bool auto_update,
     const aura::Window& host_window,
     const gfx::Size& buffer_size,
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
     UiResourceManager* resource_manager,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token);

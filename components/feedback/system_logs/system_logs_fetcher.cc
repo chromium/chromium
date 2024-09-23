@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -174,7 +175,7 @@ void SystemLogsFetcher::AddResponse(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(https://crbug.com/1156750): Add test cases to exercise this code path.
+// TODO(crbug.com/40736068): Add test cases to exercise this code path.
 void SystemLogsFetcher::MergeAshAndLacrosCrashReportIdsInReponse() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Merge the lacros and ash recent crash report ids into a single log entry
@@ -206,7 +207,7 @@ void SystemLogsFetcher::MergeAshAndLacrosCrashReportIdsInReponse() {
   // with key defined by kAllCrashReportIdsKey, i.e. all_crash_report_ids.
   auto ash_all_crash_iter =
       response_->find(feedback::FeedbackReport::kAllCrashReportIdsKey);
-  DCHECK(ash_all_crash_iter != response_->end());
+  CHECK(ash_all_crash_iter != response_->end(), base::NotFatalUntil::M130);
   std::string ash_all_crash_report_ids = ash_all_crash_iter->second;
 
   std::string lacros_all_crash_report_ids;

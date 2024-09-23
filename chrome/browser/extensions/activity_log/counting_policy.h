@@ -62,7 +62,6 @@ class CountingPolicy : public ActivityLogDatabasePolicy {
 
   // The main database table, and the name for a read-only view that
   // decompresses string values for easier parsing.
-  static const char kTableName[];
   static const char kReadViewName[];
 
  protected:

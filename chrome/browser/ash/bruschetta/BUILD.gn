@@ -1,0 +1,163 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("bruschetta") {
+  sources = [
+    "bruschetta_download.cc",
+    "bruschetta_download.h",
+    "bruschetta_installer.cc",
+    "bruschetta_installer.h",
+    "bruschetta_installer_impl.cc",
+    "bruschetta_installer_impl.h",
+    "bruschetta_installer_policy_handler.cc",
+    "bruschetta_installer_policy_handler.h",
+    "bruschetta_launcher.cc",
+    "bruschetta_launcher.h",
+    "bruschetta_mount_provider.cc",
+    "bruschetta_mount_provider.h",
+    "bruschetta_network_context.cc",
+    "bruschetta_network_context.h",
+    "bruschetta_policy_handler.cc",
+    "bruschetta_policy_handler.h",
+    "bruschetta_pref_names.cc",
+    "bruschetta_pref_names.h",
+    "bruschetta_service.cc",
+    "bruschetta_service.h",
+    "bruschetta_service_factory.cc",
+    "bruschetta_service_factory.h",
+    "bruschetta_terminal_provider.cc",
+    "bruschetta_terminal_provider.h",
+    "bruschetta_util.cc",
+    "bruschetta_util.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto_lib",
+    "//components/download/public/background_service:public",
+    "//components/keyed_service/core",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//services/network/public/mojom:url_loader_base",
+    "//url",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ash/guest_os/virtual_machines",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/settings",
+    "//components/policy:generated",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//crypto",
+    "//ui/base",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/crostini",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_bruschetta_launcher.cc",
+    "fake_bruschetta_launcher.h",
+  ]
+
+  public_deps = [
+    ":bruschetta",
+    "//base",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "bruschetta_download_browsertest.cc" ]
+
+  deps = [
+    ":bruschetta",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//net",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "bruschetta_download_unittest.cc",
+    "bruschetta_installer_impl_unittest.cc",
+    "bruschetta_launcher_unittest.cc",
+    "bruschetta_mount_provider_unittest.cc",
+    "bruschetta_service_unittest.cc",
+    "bruschetta_terminal_provider_unittest.cc",
+    "bruschetta_util_unittest.cc",
+  ]
+
+  deps = [
+    ":bruschetta",
+    ":test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/guest_os:test_support",
+    "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ash/guest_os/virtual_machines",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto_lib",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/settings",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

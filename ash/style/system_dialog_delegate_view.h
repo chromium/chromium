@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/layout/layout_types.h"
@@ -75,6 +76,11 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
   void SetDescription(const std::u16string& description);
   void SetDescriptionAccessibleName(const std::u16string& accessible_name);
 
+  // Sets the visibility of the accept and cancel buttons. Both buttons are
+  // visible by default.
+  void SetAcceptButtonVisible(bool visible);
+  void SetCancelButtonVisible(bool visible);
+
   // Sets the text of accept and cancel buttons. The default accept button text
   // is "OK", and cancel button is "Cancel".
   void SetAcceptButtonText(const std::u16string& accept_text);
@@ -121,19 +127,24 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
     return ptr;
   }
 
+  // Sets the main axis alignment of the button container which is end aligned
+  // by default. Note this will only work if there is no additional view set in
+  // the button row. If an additional view is set, the button row will follow
+  // the default layout with the additional view at the start and button
+  // container at the end.
+  void SetButtonContainerAlignment(views::LayoutAlignment alignment);
+
   // Sets the cross axis alignment of the existing content which is center
   // aligned by default.
   void SetTopContentAlignment(views::LayoutAlignment alignment);
   void SetMiddleContentAlignment(views::LayoutAlignment alignment);
 
-  // If true, hides the accept button in `button_container_`.
-  void SetAcceptButtonVisible(bool visible);
-
   // Sets the margins for the title label view.
   void SetTitleMargins(const gfx::Insets& margins);
 
   // views::WidgetDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void OnWidgetInitialized() override;
@@ -212,7 +223,7 @@ VIEW_BUILDER_PROPERTY(views::LayoutAlignment, TopContentAlignment)
 VIEW_BUILDER_PROPERTY(views::LayoutAlignment, MiddleContentAlignment)
 VIEW_BUILDER_PROPERTY(bool, AcceptButtonVisible)
 VIEW_BUILDER_PROPERTY(const gfx::Insets&, TitleMargins)
-VIEW_BUILDER_PROPERTY(ui::ModalType, ModalType)
+VIEW_BUILDER_PROPERTY(ui::mojom::ModalType, ModalType)
 END_VIEW_BUILDER
 
 }  // namespace ash

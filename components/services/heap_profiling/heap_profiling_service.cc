@@ -44,12 +44,12 @@ class ProfilingServiceImpl
   ~ProfilingServiceImpl() override = default;
 
   // mojom::ProfilingService implementation:
-  void AddProfilingClient(
-      base::ProcessId pid,
-      mojo::PendingRemote<mojom::ProfilingClient> client,
-      mojom::ProcessType process_type,
-      mojom::ProfilingParamsPtr params,
-      base::OnceClosure started_profiling_closure) override {
+  void AddProfilingClient(base::ProcessId pid,
+                          mojo::PendingRemote<mojom::ProfilingClient> client,
+                          mojom::ProcessType process_type,
+                          mojom::ProfilingParamsPtr params,
+                          mojom::ProfilingService::AddProfilingClientCallback
+                              started_profiling_closure) override {
     if (params->sampling_rate == 0)
       params->sampling_rate = 1;
     connection_manager_.OnNewConnection(pid, std::move(client), process_type,

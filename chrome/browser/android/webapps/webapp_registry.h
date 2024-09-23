@@ -49,7 +49,11 @@ class WebappRegistry {
 
   // Sets an Android Shared Preference bit to indicate that there are WebAPKs
   // that need to be restored from Sync on Chrome's 2nd run.
-  virtual void SetNeedsPwaRestore();
+  static void SetNeedsPwaRestore(bool needs);
+
+  // Gets an Android Shared Preference bit which indicates whether or not there
+  // are WebAPKs that need to be restored from Sync on Chrome's 2nd run.
+  static bool GetNeedsPwaRestore();
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPPS_WEBAPP_REGISTRY_H_

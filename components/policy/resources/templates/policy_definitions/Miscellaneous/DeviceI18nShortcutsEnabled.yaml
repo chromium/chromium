@@ -23,7 +23,6 @@ items:
   value: false
 owners:
 - jimmyxgong@chromium.org
-- zentaro@chromium.org
 - cros-peripheral@google.com
 schema:
   type: boolean
@@ -31,3 +30,4 @@ supported_on:
 - chrome_os:97-
 tags: []
 type: main
+generate_device_proto: False

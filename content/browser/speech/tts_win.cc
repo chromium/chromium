@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <math.h>
 #include <objbase.h>
+
+#include <math.h>
 #include <sapi.h>
 #include <stdint.h>
 #include <wrl/client.h>
@@ -15,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -28,6 +28,7 @@
 #include "base/win/scoped_co_mem.h"
 #include "base/win/sphelper.h"
 #include "content/browser/speech/tts_platform_impl.h"
+#include "content/browser/speech/tts_win_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tts_controller.h"
@@ -290,6 +291,7 @@ void TtsPlatformImplBackgroundWorker::ProcessSpeech(
   // TODO(dmazzoni): convert SSML to SAPI xml. http://crbug.com/88072
 
   std::wstring utterance = base::UTF8ToWide(parsed_utterance);
+  RemoveXml(utterance);
   std::wstring merged_utterance = prefix + utterance + suffix;
 
   utterance_id_ = utterance_id;

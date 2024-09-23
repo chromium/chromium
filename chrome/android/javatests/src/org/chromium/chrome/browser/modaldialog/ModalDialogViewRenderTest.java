@@ -28,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -37,9 +38,10 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ModalDialogButtonSpec;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -55,7 +57,7 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
 
     private final @ColorInt int mFakeBgColor;
@@ -63,6 +65,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
     private Resources mResources;
     private PropertyModel.Builder mModelBuilder;
     private FrameLayout mContentView;
+    private FrameLayout mCustomFrameLayout;
     private ModalDialogView mModalDialogView;
     private ScrollView mCustomScrollView;
     private TextView mCustomTextView1;
@@ -90,7 +93,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
     }
 
     private void setUpViews(int style, boolean forceWrapContentHeight) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Activity activity = getActivity();
                     mResources = activity.getResources();
@@ -110,6 +113,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
                     }
 
                     mCustomScrollView = new ScrollView(activity);
+                    mCustomFrameLayout = new FrameLayout(activity);
                     mCustomTextView1 = new TextView(activity);
                     mCustomTextView1.setId(R.id.test_view_one);
                     mCustomTextView2 = new TextView(activity);
@@ -219,7 +223,7 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
             sb.append(i).append("\n");
         }
         sb.append(100);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCustomTextView1.setText(sb.toString());
                     mCustomScrollView.addView(mCustomTextView1);
@@ -230,6 +234,77 @@ public class ModalDialogViewRenderTest extends BlankUiTestActivityTestCase {
                         .with(ModalDialogProperties.CUSTOM_VIEW, mCustomScrollView)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok));
         mRenderTestRule.render(mModalDialogView, "custom_view");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_CustomViewWithButtonGroupHasTwoScrollables() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        var sb = new StringBuilder();
+        for (int i = 0; i < 20; i++) {
+            sb.append(i).append("\n");
+        }
+        sb.append(100);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCustomTextView1.setText(sb.toString());
+                    mCustomScrollView.addView(mCustomTextView1);
+                });
+
+        ModalDialogProperties.ModalDialogButtonSpec[] button_spec_list =
+                new ModalDialogButtonSpec[10];
+        for (int i = 0; i < button_spec_list.length; i++) {
+            button_spec_list[i] =
+                    new ModalDialogProperties.ModalDialogButtonSpec(ButtonType.POSITIVE, "OK");
+        }
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mCustomScrollView)
+                        .with(
+                                ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST,
+                                button_spec_list));
+        mRenderTestRule.render(
+                mModalDialogView, "custom_view_with_button_group_has_two_scrollables");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_ScrollableContainedCustomViewWithButtonGroupHasSingleScrollable()
+            throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        var sb = new StringBuilder();
+        for (int i = 0; i < 20; i++) {
+            sb.append(i).append("\n");
+        }
+        sb.append(100);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCustomTextView1.setText(sb.toString());
+                    mCustomFrameLayout.addView(mCustomTextView1);
+                });
+
+        ModalDialogProperties.ModalDialogButtonSpec[] button_spec_list =
+                new ModalDialogButtonSpec[10];
+        for (int i = 0; i < button_spec_list.length; i++) {
+            button_spec_list[i] =
+                    new ModalDialogProperties.ModalDialogButtonSpec(ButtonType.POSITIVE, "OK");
+        }
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mCustomFrameLayout)
+                        .with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true)
+                        .with(
+                                ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST,
+                                button_spec_list));
+        mRenderTestRule.render(
+                mModalDialogView,
+                "scrollable_contained_custom_view_with_button_group_has_one_scrollable");
     }
 
     @Test

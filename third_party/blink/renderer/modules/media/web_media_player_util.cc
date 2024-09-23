@@ -118,7 +118,7 @@ WebMediaPlayer::NetworkState PipelineErrorToNetworkState(
       return WebMediaPlayer::kNetworkStateDecodeError;
 
     case media::PIPELINE_OK:
-      NOTREACHED() << "Unexpected status! " << error;
+      NOTREACHED_IN_MIGRATION() << "Unexpected status! " << error;
   }
   return WebMediaPlayer::kNetworkStateFormatError;
 }

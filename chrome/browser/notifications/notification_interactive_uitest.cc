@@ -38,7 +38,6 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -731,10 +730,10 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayPopupNotification) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/1132058): Test fails on Windows and macOS on the bots as there
-// is no real display to test with. Need to find a way to run these without a
-// display and figure out why Lacros is timing out. Tests pass locally with a
-// real display.
+// TODO(crbug.com/40721738): Test fails on Windows and macOS on the bots as
+// there is no real display to test with. Need to find a way to run these
+// without a display and figure out why Lacros is timing out. Tests pass locally
+// with a real display.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ShouldQueueDuringScreenPresent \
   DISABLED_ShouldQueueDuringScreenPresent

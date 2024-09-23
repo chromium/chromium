@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_SETTINGS_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_SETTINGS_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_handler.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_handler.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller.h"
 
 @protocol AutofillSettingsProfileEditTableViewControllerDelegate;

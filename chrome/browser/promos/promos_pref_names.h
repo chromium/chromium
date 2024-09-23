@@ -7,6 +7,7 @@
 
 namespace promos_prefs {
 
+// iOS Password promo prefs.
 // Int64 that keeps track of the last impression timestamp of the "iOS password
 // promo bubble on desktop" for a given user.
 inline constexpr char kiOSPasswordPromoLastImpressionTimestamp[] =
@@ -20,6 +21,22 @@ inline constexpr char kiOSPasswordPromoImpressionsCounter[] =
 // Boolean that keeps track whether a given user has opted-out of seeing the
 // "iOS password promo bubble on desktop" again.
 inline constexpr char kiOSPasswordPromoOptOut[] = "promos.ios_password_opt_out";
+
+// iOS Address promo prefs.
+// Int64 that keeps track of the last impression timestamp of the "iOS password
+// promo bubble on desktop" for a given user.
+inline constexpr char kDesktopToiOSAddressPromoLastImpressionTimestamp[] =
+    "promos.ios_address_last_impression_timestamp";
+
+// Integer that keeps track of impressions of the "iOS address promo bubble on
+// desktop" shown to a given user.
+inline constexpr char kDesktopToiOSAddressPromoImpressionsCounter[] =
+    "promos.ios_address_impressions_counter";
+
+// Boolean that keeps track whether a given user has opted-out of seeing the
+// "iOS address promo bubble on desktop" again.
+inline constexpr char kDesktopToiOSAddressPromoOptOut[] =
+    "promos.ios_address_opt_out";
 
 }  // namespace promos_prefs
 

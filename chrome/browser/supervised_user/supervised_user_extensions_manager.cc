@@ -4,22 +4,30 @@
 
 #include "chrome/browser/supervised_user/supervised_user_extensions_manager.h"
 
+#include <string>
+
+#include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/pref_names.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
@@ -32,6 +40,25 @@ constexpr char const* kAllowlistExtensionIds[] = {
     "behllobkkfkfnphdnhnkndlbkcpglgmj"  // Tast extension.
 };
 
+// Returns the set of extensions that are missing parent approval.
+base::Value::Dict GetExtensionsMissingApproval(const PrefService& user_prefs) {
+  const base::Value::Dict& user_extensions_dict =
+      user_prefs.GetDict(pref_names::kExtensions);
+  const base::Value::Dict& approved_extensions_dict =
+      user_prefs.GetDict(prefs::kSupervisedUserApprovedExtensions);
+  base::Value::Dict unapproved_extensions_dict;
+
+  // Deduce which extensions are not parent-approved based on the
+  // corresponding preferences, as at the time of creation of
+  // `SupervisedUserExtensionsManager`, the extensions are not yet loaded in
+  // the registry.
+  for (auto extension_entry : user_extensions_dict) {
+    if (!approved_extensions_dict.contains(extension_entry.first)) {
+      unapproved_extensions_dict.Set(extension_entry.first, true);
+    }
+  }
+  return unapproved_extensions_dict;
+}
 }  // namespace
 
 SupervisedUserExtensionsManager::SupervisedUserExtensionsManager(
@@ -54,6 +81,11 @@ SupervisedUserExtensionsManager::SupervisedUserExtensionsManager(
       base::BindRepeating(
           &SupervisedUserExtensionsManager::RefreshApprovedExtensionsFromPrefs,
           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kSkipParentApprovalToInstallExtensions,
+      base::BindRepeating(&SupervisedUserExtensionsManager::
+                              OnSkipParentApprovalToInstallExtensionsChanged,
+                          base::Unretained(this)));
 
   RefreshApprovedExtensionsFromPrefs();
   ActivateManagementPolicyAndUpdateRegistration();
@@ -91,8 +123,15 @@ void SupervisedUserExtensionsManager::AddExtensionApproval(
   if (!base::Contains(approved_extensions_set_, extension.id())) {
     UpdateApprovedExtension(extension.id(), extension.VersionString(),
                             ApprovedExtensionChange::kAdd);
-  } else if (extension_prefs_->DidExtensionEscalatePermissions(
-                 extension.id())) {
+  }
+}
+
+void SupervisedUserExtensionsManager::MaybeRecordPermissionsIncreaseMetrics(
+    const extensions::Extension& extension) {
+  if (!is_active_policy_for_supervised_users_) {
+    return;
+  }
+  if (extension_prefs_->DidExtensionEscalatePermissions(extension.id())) {
     SupervisedUserExtensionsMetricsRecorder::RecordExtensionsUmaMetrics(
         SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
             kPermissionsIncreaseGranted);
@@ -119,6 +158,10 @@ bool SupervisedUserExtensionsManager::IsExtensionAllowed(
 bool SupervisedUserExtensionsManager::CanInstallExtensions() const {
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForBrowserContext(context_);
+  if (supervised_user::
+          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
+    return supervised_user_service->HasACustodian();
+  }
   return supervised_user_service->HasACustodian() &&
          user_prefs_->GetBoolean(
              prefs::kSupervisedUserExtensionsMayRequestPermissions);
@@ -183,13 +226,33 @@ void SupervisedUserExtensionsManager::OnExtensionInstalled(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     bool is_update) {
-  // This callback method is responsible for updating extension state and
-  // approved_extensions_set_ upon extension updates.
   if (!is_update) {
-    return;
+    if (!is_active_policy_for_supervised_users_) {
+      return;
+    }
+    // At the end of an extension installation under the mode where
+    // the child can skip parental approval, we grant the extension
+    // the parental approval.
+    // Applies to all installations (via the Webstore in the same
+    // client and for extensions received through sync).
+    const Profile* profile = Profile::FromBrowserContext(browser_context);
+    if (!supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
+            profile)) {
+      return;
+    }
+    CHECK(extension);
+    if (!base::Contains(approved_extensions_set_, extension->id())) {
+      AddExtensionApproval(*extension);
+      SupervisedUserExtensionsMetricsRecorder::
+          RecordImplicitParentApprovalGrantEntryPointEntryPointUmaMetrics(
+              SupervisedUserExtensionsMetricsRecorder::
+                  ImplicitExtensionApprovalEntryPoint::
+                      OnExtensionInstallationWithExtensionsSwitchEnabled);
+    }
   }
 
-  // Upon extension update, a change in extension state might be required.
+  // A change in extension state might be required upon extension update
+  // or upon granting a new approval.
   ChangeExtensionStateIfNecessary(extension->id());
 }
 
@@ -204,6 +267,9 @@ void SupervisedUserExtensionsManager::OnExtensionUninstalled(
     UpdateApprovedExtension(extension->id(), extension->VersionString(),
                             ApprovedExtensionChange::kRemove);
   }
+  if (IsLocallyParentApprovedExtension(extension->id())) {
+    RemoveLocalParentalApproval(/*extension_ids=*/{extension->id()});
+  }
 }
 
 SupervisedUserExtensionsManager::ExtensionState
@@ -211,7 +277,7 @@ SupervisedUserExtensionsManager::GetExtensionState(
     const extensions::Extension& extension) const {
   bool was_installed_by_default = extension.was_installed_by_default();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(https://crbug.com/1218633): Check if this is needed for extensions in
+  // TODO(crbug.com/40771733): Check if this is needed for extensions in
   // LaCrOS.
   // On Chrome OS all external sources are controlled by us so it means that
   // they are "default". Method was_installed_by_default returns false because
@@ -245,6 +311,11 @@ SupervisedUserExtensionsManager::GetExtensionState(
   if (base::Contains(approved_extensions_set_, extension.id())) {
     return SupervisedUserExtensionsManager::ExtensionState::ALLOWED;
   }
+  if (IsLocallyParentApprovedExtension(extension.id()) &&
+      supervised_user::
+          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
+    return SupervisedUserExtensionsManager::ExtensionState::ALLOWED;
+  }
   return SupervisedUserExtensionsManager::ExtensionState::REQUIRE_APPROVAL;
 }
 
@@ -258,7 +329,7 @@ void SupervisedUserExtensionsManager::RefreshApprovedExtensionsFromPrefs() {
   // used in GetExtensionState() to keep track of approved extensions.
   approved_extensions_set_.clear();
 
-  // TODO(crbug/1072857): This dict is actually just a set. The extension
+  // TODO(crbug.com/40685974): This dict is actually just a set. The extension
   // version information stored in the values is unnecessary. It is only there
   // for backwards compatibility. Remove the version information once sufficient
   // users have migrated away from M83.
@@ -268,6 +339,11 @@ void SupervisedUserExtensionsManager::RefreshApprovedExtensionsFromPrefs() {
     extensions_to_be_checked.insert(it.first);
   }
 
+  // If an extension goes through the parent approval flow in another client
+  // with extension parental controls in place, we remove it in this client from
+  // the locally  parent-approval set.
+  RemoveLocalParentalApproval(approved_extensions_set_);
+
   for (const auto& extension_id : extensions_to_be_checked) {
     ChangeExtensionStateIfNecessary(extension_id);
   }
@@ -276,19 +352,21 @@ void SupervisedUserExtensionsManager::RefreshApprovedExtensionsFromPrefs() {
 void SupervisedUserExtensionsManager::SetActiveForSupervisedUsers() {
   auto* profile = Profile::FromBrowserContext(context_);
   is_active_policy_for_supervised_users_ =
-      profile &&
-      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs());
+      profile && supervised_user::AreExtensionsPermissionsEnabled(profile);
 }
 
 void SupervisedUserExtensionsManager::
     ActivateManagementPolicyAndUpdateRegistration() {
   SetActiveForSupervisedUsers();
   UpdateManagementPolicyRegistration();
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  MaybeMarkExtensionsLocallyParentApproved();
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
-// TODO(crbug/1072857): We don't need the extension version information. It's
-// only included for backwards compatibility with previous versions of Chrome.
-// Remove the version information once a sufficient number of users have
+// TODO(crbug.com/40685974): We don't need the extension version information.
+// It's only included for backwards compatibility with previous versions of
+// Chrome. Remove the version information once a sufficient number of users have
 // migrated away from M83.
 void SupervisedUserExtensionsManager::UpdateApprovedExtension(
     const std::string& extension_id,
@@ -298,13 +376,19 @@ void SupervisedUserExtensionsManager::UpdateApprovedExtension(
                               prefs::kSupervisedUserApprovedExtensions);
   base::Value::Dict& approved_extensions = update.Get();
   bool success = false;
+  const Profile* profile = Profile::FromBrowserContext(context_);
   switch (type) {
     case ApprovedExtensionChange::kAdd:
       CHECK(!approved_extensions.FindString(extension_id));
       approved_extensions.Set(extension_id, std::move(version));
+
       SupervisedUserExtensionsMetricsRecorder::RecordExtensionsUmaMetrics(
-          SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
-              kApprovalGranted);
+          supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
+              profile)
+              ? SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
+                    kApprovalGrantedByDefault
+              : SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
+                    kApprovalGranted);
       break;
     case ApprovedExtensionChange::kRemove:
       success = approved_extensions.Remove(extension_id);
@@ -370,6 +454,12 @@ void SupervisedUserExtensionsManager::ChangeExtensionStateIfNecessary(
 
 bool SupervisedUserExtensionsManager::ShouldBlockExtension(
     const std::string& extension_id) const {
+  if (supervised_user::
+          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
+    // On this extension handling mode, the user is never blocked from
+    // installing extensions.
+    return false;
+  }
   if (user_prefs_->GetBoolean(
           prefs::kSupervisedUserExtensionsMayRequestPermissions)) {
     return false;
@@ -385,6 +475,129 @@ bool SupervisedUserExtensionsManager::ShouldBlockExtension(
     return true;
   }
   return false;
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+void SupervisedUserExtensionsManager::
+    MaybeMarkExtensionsLocallyParentApproved() {
+  supervised_user::LocallyParentApprovedExtensionsMigrationState
+      migration_state = static_cast<
+          supervised_user::LocallyParentApprovedExtensionsMigrationState>(
+          user_prefs_->GetInteger(
+              prefs::kLocallyParentApprovedExtensionsMigrationState));
+  if (migration_state ==
+      supervised_user::LocallyParentApprovedExtensionsMigrationState::
+          kComplete) {
+    return;
+  }
+
+  if (!supervised_user::
+          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
+    return;
+  }
+
+  if (supervised_user::IsSubjectToParentalControls(*user_prefs_)) {
+    // In the case of of a supervised user locally approve their extensions.
+    DoExtensionsMigrationToParentApproved();
+  }
+
+  // Always mark the migration done on feature release for the currently used
+  // profile. Applies to both for supervised and regular users. This way, if the
+  // profile is later Gellerized or if a supervised user takes over an existing
+  // unsupervised profile, their extensions will not be locally approved,
+  // instead they should remain in pending approval state.
+  user_prefs_->SetInteger(
+      prefs::kLocallyParentApprovedExtensionsMigrationState,
+      static_cast<int>(
+          supervised_user::LocallyParentApprovedExtensionsMigrationState::
+              kComplete));
+}
+
+void SupervisedUserExtensionsManager::DoExtensionsMigrationToParentApproved() {
+  CHECK(supervised_user::
+            IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled());
+
+  base::Value::Dict unapproved_extensions_dict =
+      GetExtensionsMissingApproval(*user_prefs_);
+  user_prefs_->SetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions,
+                       std::move(unapproved_extensions_dict));
+
+  auto& approved_extensions_dict = user_prefs_->GetDict(
+      prefs::kSupervisedUserLocallyParentApprovedExtensions);
+  for (auto extension_entry : approved_extensions_dict) {
+    if (extension_registry_->GetInstalledExtension(extension_entry.first)) {
+      ChangeExtensionStateIfNecessary(extension_entry.first);
+    }
+    SupervisedUserExtensionsMetricsRecorder::RecordExtensionsUmaMetrics(
+        SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
+            kLocalApprovalGranted);
+  }
+  base::UmaHistogramCounts1000(
+      kInitialLocallyApprovedExtensionCountWinLinuxMacHistogramName,
+      approved_extensions_dict.size());
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+bool SupervisedUserExtensionsManager::IsLocallyParentApprovedExtension(
+    const std::string& extension_id) const {
+  if (!supervised_user::
+          IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
+    return false;
+  }
+  const base::Value::Dict& current_locally_approved_dict = user_prefs_->GetDict(
+      prefs::kSupervisedUserLocallyParentApprovedExtensions);
+  return base::Contains(current_locally_approved_dict, extension_id);
+}
+
+void SupervisedUserExtensionsManager::RemoveLocalParentalApproval(
+    const std::set<std::string> extension_ids) {
+  base::Value::Dict locally_approved_extensions_dict =
+      user_prefs_
+          ->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions)
+          .Clone();
+  for (auto& extension_id : extension_ids) {
+    locally_approved_extensions_dict.Remove(extension_id);
+  }
+  user_prefs_->SetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions,
+                       std::move(locally_approved_extensions_dict));
+}
+
+void SupervisedUserExtensionsManager::
+    OnSkipParentApprovalToInstallExtensionsChanged() {
+  const Profile* profile = Profile::FromBrowserContext(context_);
+  if (!is_active_policy_for_supervised_users_ ||
+      !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
+          profile)) {
+    return;
+  }
+
+  auto unapproved_extensions_dict =
+      GetExtensionsMissingApproval(*user_prefs_.get());
+  int installed_extensions_approvals_count = 0;
+  for (auto extension_entry : unapproved_extensions_dict) {
+    const Extension* extension =
+        extension_registry_->GetInstalledExtension(extension_entry.first);
+    if (extension) {
+      ExtensionState state = GetExtensionState(*extension);
+      if (state == ExtensionState::REQUIRE_APPROVAL ||
+          (state == ExtensionState::ALLOWED &&
+           IsLocallyParentApprovedExtension(extension->id()))) {
+        AddExtensionApproval(*extension);
+        SupervisedUserExtensionsMetricsRecorder::
+            RecordImplicitParentApprovalGrantEntryPointEntryPointUmaMetrics(
+                SupervisedUserExtensionsMetricsRecorder::
+                    ImplicitExtensionApprovalEntryPoint::
+                        kOnExtensionsSwitchFlippedToEnabled);
+        installed_extensions_approvals_count += 1;
+      }
+      // If the extension id from the preferences has not been installed yet,
+      // the approval will be granted at the end of installation.
+      // See `OnExtensionInstalled`.
+    }
+  }
+  base::UmaHistogramCounts1000(
+      kExtensionApprovalsCountOnExtensionToggleHistogramName,
+      installed_extensions_approvals_count);
 }
 
 }  // namespace extensions

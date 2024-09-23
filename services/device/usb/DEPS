@@ -1,6 +1,7 @@
 include_rules = [
-  "+components/device_event_log",
   "+chromeos",
+  "+components/crash/core/common/crash_key.h",
+  "+components/device_event_log",
   "+dbus",
   "+services/device/usb/jni_headers",
   "+third_party/libusb",

@@ -14,10 +14,13 @@
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 namespace ash::settings {
 
-PrivacyHubHandler::PrivacyHubHandler() = default;
+PrivacyHubHandler::PrivacyHubHandler()
+    : mic_muted_by_security_curtain_(
+          CrasAudioHandler::Get()->IsInputMutedBySecurityCurtain()) {}
 
 PrivacyHubHandler::~PrivacyHubHandler() {
   TriggerHatsIfPageWasOpened();
@@ -25,36 +28,40 @@ PrivacyHubHandler::~PrivacyHubHandler() {
 }
 
 void PrivacyHubHandler::RegisterMessages() {
-  if (ash::features::IsCrosPrivacyHubEnabled()) {
-    privacy_hub_util::SetFrontend(this);
-    web_ui()->RegisterMessageCallback(
-        "getInitialMicrophoneHardwareToggleState",
-        base::BindRepeating(
-            &PrivacyHubHandler::HandleInitialMicrophoneSwitchState,
-            base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "getInitialCameraSwitchForceDisabledState",
-        base::BindRepeating(
-            &PrivacyHubHandler::HandleInitialCameraSwitchForceDisabledState,
-            base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "getCameraLedFallbackState",
-        base::BindRepeating(
-            &PrivacyHubHandler::HandleInitialCameraLedFallbackState,
-            base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "getCurrentTimeZoneName",
-        base::BindRepeating(&PrivacyHubHandler::HandleGetCurrentTimezoneName,
-                            base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "getCurrentSunriseTime",
-        base::BindRepeating(&PrivacyHubHandler::HandleGetCurrentSunRiseTime,
-                            base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "getCurrentSunsetTime",
-        base::BindRepeating(&PrivacyHubHandler::HandleGetCurrentSunSetTime,
-                            base::Unretained(this)));
-  }
+  privacy_hub_util::SetFrontend(this);
+  web_ui()->RegisterMessageCallback(
+      "getInitialMicrophoneHardwareToggleState",
+      base::BindRepeating(
+          &PrivacyHubHandler::HandleInitialMicrophoneSwitchState,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getInitialMicrophoneMutedBySecurityCurtainState",
+      base::BindRepeating(
+          &PrivacyHubHandler::
+              HandleInitialMicrophoneMutedBySecurityCurtainState,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getInitialCameraSwitchForceDisabledState",
+      base::BindRepeating(
+          &PrivacyHubHandler::HandleInitialCameraSwitchForceDisabledState,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getCameraLedFallbackState",
+      base::BindRepeating(
+          &PrivacyHubHandler::HandleInitialCameraLedFallbackState,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getCurrentTimeZoneName",
+      base::BindRepeating(&PrivacyHubHandler::HandleGetCurrentTimezoneName,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getCurrentSunriseTime",
+      base::BindRepeating(&PrivacyHubHandler::HandleGetCurrentSunRiseTime,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getCurrentSunsetTime",
+      base::BindRepeating(&PrivacyHubHandler::HandleGetCurrentSunSetTime,
+                          base::Unretained(this)));
 
   if (base::FeatureList::IsEnabled(
           ::features::kHappinessTrackingPrivacyHubPostLaunch)) {
@@ -80,13 +87,20 @@ void PrivacyHubHandler::NotifyJS(const std::string& event_name,
 }
 
 void PrivacyHubHandler::MicrophoneHardwareToggleChanged(bool muted) {
-  DCHECK(ash::features::IsCrosPrivacyHubEnabled());
   NotifyJS("microphone-hardware-toggle-changed", base::Value(muted));
 }
 
 void PrivacyHubHandler::SetForceDisableCameraSwitch(bool disabled) {
-  DCHECK(ash::features::IsCrosPrivacyHubEnabled());
   NotifyJS("force-disable-camera-switch", base::Value(disabled));
+}
+
+void PrivacyHubHandler::OnInputMutedBySecurityCurtainChanged(bool muted) {
+  if (mic_muted_by_security_curtain_ == muted) {
+    return;
+  }
+  mic_muted_by_security_curtain_ = muted;
+
+  NotifyJS("microphone-muted-by-security-curtain-changed", base::Value(muted));
 }
 
 void PrivacyHubHandler::SetPrivacyPageOpenedTimeStampForTesting(
@@ -120,6 +134,13 @@ void PrivacyHubHandler::HandleInitialMicrophoneSwitchState(
     const base::Value::List& args) {
   const auto callback_id = ValidateArgs(args);
   const auto value = base::Value(privacy_hub_util::MicrophoneSwitchState());
+  ResolveJavascriptCallback(callback_id, value);
+}
+
+void PrivacyHubHandler::HandleInitialMicrophoneMutedBySecurityCurtainState(
+    const base::Value::List& args) {
+  const auto callback_id = ValidateArgs(args);
+  const auto value = base::Value(mic_muted_by_security_curtain_);
   ResolveJavascriptCallback(callback_id, value);
 }
 
@@ -163,7 +184,6 @@ void PrivacyHubHandler::HandleGetCurrentSunSetTime(
 
 const base::ValueView PrivacyHubHandler::ValidateArgs(
     const base::Value::List& args) {
-  CHECK(ash::features::IsCrosPrivacyHubEnabled());
   // TODO(b/290646585): Replace with a CHECK().
   AllowJavascript();
 

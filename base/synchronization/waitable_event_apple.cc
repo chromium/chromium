@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/synchronization/waitable_event.h"
 
 #include <mach/mach.h>
@@ -41,8 +46,6 @@ WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
   }
 }
 
-WaitableEvent::~WaitableEvent() = default;
-
 void WaitableEvent::Reset() {
   PeekPort(receive_right_->Name(), true);
 }
@@ -61,7 +64,7 @@ void WaitableEvent::SignalImpl() {
   MACH_CHECK(kr == KERN_SUCCESS || kr == MACH_SEND_TIMED_OUT, kr) << "mach_msg";
 }
 
-bool WaitableEvent::IsSignaled() {
+bool WaitableEvent::IsSignaled() const {
   return PeekPort(receive_right_->Name(), policy_ == ResetPolicy::AUTOMATIC);
 }
 
@@ -124,10 +127,8 @@ bool WaitableEvent::TimedWaitImpl(TimeDelta wait_delta) {
 }
 
 // static
-size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables, size_t count) {
-  DCHECK(count) << "Cannot wait on no events";
-  internal::ScopedBlockingCallWithBaseSyncPrimitives scoped_blocking_call(
-      FROM_HERE, BlockingType::MAY_BLOCK);
+size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
+                                   size_t count) {
   // On macOS 10.11+, using Mach port sets may cause system instability, per
   // https://crbug.com/756102. On macOS 10.12+, a kqueue can be used
   // instead to work around that.
@@ -217,7 +218,6 @@ size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables, size_t count) {
     }
 
     NOTREACHED();
-    return 0;
   }
 }
 

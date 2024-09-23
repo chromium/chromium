@@ -1,0 +1,264 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "cc/mojom/element_id.mojom";
+import "cc/mojom/layer_type.mojom";
+import "skia/public/mojom/skcolor4f.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/transform.mojom";
+
+// Details about a cc::LayerImpl that has been added to a tree or modified in
+// some interesting way since a prior tree update.
+struct Layer {
+  // The layer's assigned ID. This is an arbitrary integer value which is
+  // guaranteed to be (a) unique across all layers currently in the tree and
+  // (b) consistent for the lifetime of each layer. When a LayerTreeUpdate
+  // contains a Layer with a previously unseen ID, the Layer is being added to
+  // the tree; otherwise an existing layer's properties are changing.
+  int64 id;
+
+  // The type of this layer. If this structure is updating an existing layer,
+  // the type here must match that of the existing layer.
+  cc.mojom.LayerType type;
+
+  // Bounds of the layer, generally in layer space. If this is the root layer,
+  // bounds are in viewport space, including device scale factor.
+  gfx.mojom.Size bounds;
+
+  // Optimization hints indicating whether the layer is fully opaque, or at
+  // least opaque wherever text is drawn.
+  bool contents_opaque;
+  bool contents_opaque_for_text;
+
+  // Indicates whether the layer produces any visual output for the compositor.
+  bool is_drawable;
+
+  // The background color (and safe opaque background color) used by this Layer.
+  // See comments for equivalent fields on cc::Layer.
+  skia.mojom.SkColor4f background_color;
+  skia.mojom.SkColor4f safe_opaque_background_color;
+
+  // Optional stable identifier that may be referenced in property trees and
+  // animations. Identifies a client-side object which can be represented by
+  // multiple layers over time but only by a single layer at once.
+  cc.mojom.ElementId? element_id;
+
+  // Current cumulative dirty rect for the layer since last update, in layer
+  // space.
+  gfx.mojom.Rect update_rect;
+
+  // The post-transform position of this layer.
+  gfx.mojom.Vector2dF offset_to_transform_parent;
+
+  // Property tree node IDs. Each of these IDs is bound to the range [0, N) for
+  // a property tree with N nodes.
+  int32 transform_tree_index;
+  int32 clip_tree_index;
+  int32 effect_tree_index;
+  int32 scroll_tree_index;
+};
+
+// See blink::AnchorPositionScrollData, from which the fields here are derived.
+struct AnchorPositionScrollData {
+  array<cc.mojom.ElementId> adjustment_container_ids;
+  gfx.mojom.Vector2d accumulated_scroll_origin;
+  bool needs_scroll_adjustment_in_x;
+  bool needs_scroll_adjustment_in_y;
+};
+
+// See blink::StickyPositionScrollingConstraints for documentation on this data.
+struct StickyPositionNodeData {
+  // Must be a valid index into the scroll tree.
+  int32 scroll_ancestor;
+
+  // Additional fields derived from StickyPositionScrollingConstraints.
+  bool is_anchored_left;
+  bool is_anchored_right;
+  bool is_anchored_top;
+  bool is_anchored_bottom;
+  float left_offset;
+  float right_offset;
+  float top_offset;
+  float bottom_offset;
+  gfx.mojom.RectF constraint_box_rect;
+  gfx.mojom.RectF scroll_container_relative_sticky_box_rect;
+  gfx.mojom.RectF scroll_container_relative_containing_block_rect;
+  int32 nearest_node_shifting_sticky_box;
+  int32 nearest_node_shifting_containing_block;
+  gfx.mojom.Vector2dF total_sticky_box_sticky_offset;
+  gfx.mojom.Vector2dF total_containing_block_sticky_offset;
+};
+
+// Updates to a transform tree, not including the nodes themselves. These
+// correspond to data members of cc::TransformTree.
+struct TransformTreeUpdate {
+  float page_scale_factor;
+  float device_scale_factor;
+  float device_transform_scale_factor;
+  array<int32> nodes_affected_by_outer_viewport_bounds_delta;
+  array<StickyPositionNodeData> sticky_position_data;
+  array<AnchorPositionScrollData> anchor_position_scroll_data;
+};
+
+// Details about a new or updated node within a transform property tree.
+struct TransformNode {
+  // The ID of this node. Must be in the range [0, N) for a transform tree with
+  // N nodes.
+  int32 id;
+
+  // The ID of the parent node. Must be in the range [0, N) for a transform tree
+  // with N nodes, or -1 if this is the root node.
+  int32 parent_id;
+
+  // The ID of the nearest ancestor node in the tree which corresponds to the
+  // root of a visible frame. Must be in the range [0, N) for a transform tree
+  // with N nodes, or -1 if no ancestor is desginated as a frame root by the
+  // client. May be the same as `id`.
+  int32 parent_frame_id;
+
+  // The stable ElementId of the client-side object to which this transform node
+  // applies.
+  cc.mojom.ElementId? element_id;
+
+  // Actual transformation parameters for this node. See cc::TransformNode.
+  gfx.mojom.Transform local;
+  gfx.mojom.Point3F origin;
+  gfx.mojom.PointF scroll_offset;
+  gfx.mojom.Vector2dF snap_amount;
+
+  // Optional index into the tree's sticky position constraint data.
+  uint32? sticky_position_constraint_id;
+
+  // Optional index into the tree's anchor position scroll data.
+  uint32? anchor_position_scroll_data_id;
+
+  // Arbitrary rendering context ID for sorting. This affects draw order within
+  // the layer tree relative to other nodes with sorting context IDs. Does not
+  // need to be validated.
+  int32 sorting_context_id;
+
+  // Flags reflecting client-side changes to transform state. These all
+  // correspond to equivalent flags on cc::TransformNode.
+  bool has_potential_animation;
+  bool is_currently_animating;
+  bool flattens_inherited_transform;
+  bool scrolls;
+  bool should_undo_overscroll;
+  bool should_be_snapped;
+  bool moved_by_outer_viewport_bounds_delta_y;
+  bool in_subtree_of_page_scale_layer;
+  bool transform_changed;
+  bool delegates_to_parent_for_backface;
+  bool will_change_transform;
+
+  // The stable ElementId of the client-side object (e.g. document, in Blink)
+  // corresponding to this node, if this node corresponds to the root of a
+  // visible frame.
+  cc.mojom.ElementId? visible_frame_element_id;
+};
+
+// Details about a new or updated node within a clip property tree.
+struct ClipNode {
+  // The ID of this node. Must be in the range [0, N) for a clip tree with N
+  // nodes.
+  int32 id;
+
+  // The ID of the parent node. Must be in the range [0, N) for a clip tree with
+  // N nodes, or -1 if this is the root node.
+  int32 parent_id;
+
+  // The ID of this clip node's corresponding transform node within the
+  // transform tree. Must be in the range [0, N) for a transform tree with N
+  // nodes.
+  int32 transform_id;
+
+  // The clip rectangle for this node, in the space of the corresponding
+  // transform node.
+  gfx.mojom.RectF clip;
+
+  // The ID of this node's pixel-moving filter in the effect tree, or -1.
+  int32 pixel_moving_filter_id;
+};
+
+// Details about a new or updated node within an effect property tree.
+struct EffectNode {
+  // The ID of this node. Must be in the range [0, N) for an effect tree with N
+  // nodes.
+  int32 id;
+
+  // The ID of the parent node. Must be in the range [0, N) for an effect tree
+  // with N nodes, or -1 if this is the root node.
+  int32 parent_id;
+
+  // The ID of this effect node's corresponding transform node within the
+  // transform tree. Must be in the range [0, N) for a transform tree with N
+  // nodes.
+  int32 transform_id;
+
+  // The ID of this effect node's corresponding clip node within the clip tree.
+  // Must be in the range [0, N) for a clip tree with N nodes.
+  int32 clip_id;
+
+  // The stable ElementId of the client-side object to which this effect node
+  // applies.
+  cc.mojom.ElementId? element_id;
+
+  // The opacity of drawn layers associated with this effect node.
+  float opacity;
+
+  // TODO(rockot): Replace this with a RenderSurfaceReason enumeration. In
+  // practice the specific reason is only useful for metrics, and for now all we
+  // need is to know whether or not the reason is kNone.
+  bool has_render_surface;
+
+  // Scale applied to the contents of the render surface. Ignored if this node
+  // doesn't induce a render surface.
+  gfx.mojom.Vector2dF surface_contents_scale;
+
+  // This is an SkBlendMode, which has no mojom definition yet. Must be manually
+  // validated to be no greater than SkBlendMode::kLastMode.
+  uint32 blend_mode;
+
+  // The index of the ancestor EffectNode which induces a render surface. Must
+  // be a valid index in the same effect tree.
+  int32 target_id;
+};
+
+// Details about a new or updated node within a scroll property tree.
+struct ScrollNode {
+  // The ID of this node. Must be in the range [0, N) for a scroll tree with N
+  // nodes.
+  int32 id;
+
+  // The ID of the parent node. Must be in the range [0, N) for a scroll tree
+  // with N nodes, or -1 if this is the root node.
+  int32 parent_id;
+
+  // The ID of this scroll node's corresponding transform node within the
+  // transform tree. Must be in the range [0, N) for a transform tree with N
+  // nodes.
+  int32 transform_id;
+
+  // The bounds of the scrollable container in which the scroll node's content
+  // resides. This does not include non-overlay scrollbar footprint.
+  gfx.mojom.Size container_bounds;
+
+  // The size of the content scrolled within the node's scrollable container.
+  gfx.mojom.Size bounds;
+
+  // The stable ElementId of the scrollable client-side object to which this
+  // scroll node applies.
+  cc.mojom.ElementId? element_id;
+
+  // Flags specifying the behavior of scrolls on this node.
+  bool max_scroll_offset_affected_by_page_scale;
+  bool scrolls_inner_viewport;
+  bool scrolls_outer_viewport;
+  bool prevent_viewport_scrolling_from_inner;
+  bool user_scrollable_horizontal;
+  bool user_scrollable_vertical;
+  bool is_composited;
+};

@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/not_fatal_until.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -471,6 +472,9 @@ GpuDiskCacheHandle GpuDiskCacheFactory::GetCacheHandle(
     case GpuDiskCacheType::kDawnWebGPU:
       handle = GpuDiskCacheDawnWebGPUHandle(raw_handle);
       break;
+    case GpuDiskCacheType::kDawnGraphite:
+      handle = GpuDiskCacheDawnGraphiteHandle(raw_handle);
+      break;
   }
   handle_to_path_map_[handle] = path;
   path_to_handle_map_[path] = handle;
@@ -482,7 +486,7 @@ GpuDiskCacheHandle GpuDiskCacheFactory::GetCacheHandle(
 void GpuDiskCacheFactory::ReleaseCacheHandle(GpuDiskCache* cache) {
   // Get the handle related to the cache via the path.
   auto it = path_to_handle_map_.find(cache->cache_path_);
-  DCHECK(it != path_to_handle_map_.end());
+  CHECK(it != path_to_handle_map_.end(), base::NotFatalUntil::M130);
   const base::FilePath& path = it->first;
   const GpuDiskCacheHandle& handle = it->second;
 
@@ -649,7 +653,7 @@ GpuDiskCache::~GpuDiskCache() {
 
 void GpuDiskCache::Init() {
   if (is_initialized_) {
-    NOTREACHED();  // can't initialize disk cache twice.
+    NOTREACHED_IN_MIGRATION();  // can't initialize disk cache twice.
     return;
   }
   is_initialized_ = true;
@@ -662,7 +666,8 @@ void GpuDiskCache::Init() {
       base::BindOnce(&GpuDiskCache::CacheCreatedCallback, this));
 
   if (rv.net_error == net::OK) {
-    NOTREACHED();  // This shouldn't actually happen with a non-memory backend.
+    NOTREACHED_IN_MIGRATION();  // This shouldn't actually happen with a
+                                // non-memory backend.
     backend_ = std::move(rv.backend);
   }
 }

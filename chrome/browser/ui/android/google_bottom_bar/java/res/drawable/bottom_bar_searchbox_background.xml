@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <size
+        android:height="@dimen/google_bottom_bar_searchbox_container_height" />
+
+    <solid
+        android:color="@color/google_bottom_bar_searchbox_background_color" >
+    </solid>
+
+    <corners
+        android:radius="@dimen/google_bottom_bar_searchbox_radius">
+    </corners>
+
+</shape>

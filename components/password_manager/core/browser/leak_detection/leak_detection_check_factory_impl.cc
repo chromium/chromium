@@ -25,12 +25,7 @@ std::optional<std::string> GetAPIKey(bool signed_in_user,
   if (signed_in_user) {
     return std::nullopt;
   }
-
-  if (channel == version_info::Channel::STABLE) {
-    return google_apis::GetAPIKey();
-  }
-
-  return google_apis::GetNonStableAPIKey();
+  return google_apis::GetAPIKey(channel);
 }
 
 }  // namespace

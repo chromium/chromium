@@ -1,7 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/application_context/model",
   "+ios/chrome/browser/autofill/model",
-  "+ios/chrome/browser/browser_state/model",
+  "+ios/chrome/browser/profile/model",
   "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
@@ -10,6 +10,7 @@ include_rules = [
   "+ios/chrome/browser/flags/chrome_switches.h",
   "+ios/chrome/browser/flags/ios_chrome_field_trials.h",
   "+ios/chrome/browser/follow/model",
+  "+ios/chrome/browser/geolocation/model/geolocation_manager.h",
   "+ios/chrome/browser/https_upgrades/model",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/lens/model/lens_browser_agent.h",
@@ -22,7 +23,7 @@ include_rules = [
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/parcel_tracking",
-  "+ios/chrome/browser/permissions/model/permissions_tab_helper.h",
+  "+ios/chrome/browser/permissions/model",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/prerender/model",
   "+ios/chrome/browser/promos_manager/model",
@@ -31,7 +32,7 @@ include_rules = [
   "+ios/chrome/browser/safe_browsing/model",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/segmentation_platform/model",
-  "+ios/chrome/browser/sessions",
+  "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/snapshots/model/snapshot_tab_helper.h",
   "+ios/chrome/browser/ssl/model",
@@ -117,7 +118,7 @@ specific_include_rules = {
     "+ios/web/public/test/http_server",
   ],
 
-  # TODO(crbug.com/1294160): Remove these dependencies.
+  # TODO(crbug.com/40820398): Remove these dependencies.
   "^chrome_web_client.mm": [
     "+ios/chrome/browser/shared/ui/elements/windowed_container_view.h",
   ],
@@ -126,11 +127,11 @@ specific_include_rules = {
     "+ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h",
   ],
   "^web_state_delegate_browser_agent.h": [
-    "+ios/chrome/browser/ui/dialogs/overlay_java_script_dialog_presenter.h",
+    "+ios/chrome/browser/dialogs/ui_bundled/overlay_java_script_dialog_presenter.h",
   ],
   "^web_state_delegate_browser_agent.mm": [
-    "+ios/chrome/browser/ui/dialogs/nsurl_protection_space_util.h",
-    "+ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h",
+    "+ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h",
+    "+ios/chrome/browser/dialogs/ui_bundled/nsurl_protection_space_util.h",
   ],
 
 }

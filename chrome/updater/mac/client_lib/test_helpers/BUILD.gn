@@ -1,0 +1,14 @@
+executable("emit_text") {
+  testonly = true
+  output_name = "emit_text"
+  sources = [ "emit_text.cc" ]
+  deps = [ "//base" ]
+}
+
+group("test_helpers") {
+  testonly = true
+  data_deps = [
+    ":emit_text",
+    "//chrome/updater/mac/client_lib/test_helpers/app_bundle:registration_test_app_bundle",
+  ]
+}

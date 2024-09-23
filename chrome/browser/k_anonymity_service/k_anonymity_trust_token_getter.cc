@@ -4,8 +4,11 @@
 
 #include "chrome/browser/k_anonymity_service/k_anonymity_trust_token_getter.h"
 
+#include <string_view>
+
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_metrics.h"
@@ -50,6 +53,38 @@ constexpr net::NetworkTrafficAnnotationTag
     comments:
       ""
     )");
+
+// Pull a number that may be an unsigned 32 bit integer from Dict and return it
+// as an int. If the number is less than int32_t max then the JSON parser will
+// store it as an int, otherwise it will be stored as a double. Check that the
+// double would fit in a 32 bit integer exactly before returning.
+std::optional<uint32_t> FindUnsignedInt(base::Value::Dict& dict,
+                                        std::string_view field) {
+  const base::Value* found = dict.Find(field);
+  if (!found) {
+    return std::nullopt;
+  }
+  switch (found->type()) {
+    case base::Value::Type::INTEGER: {
+      // Convert to uint32_t. This is an Id, not a number so this is okay.
+      return static_cast<uint32_t>(found->GetInt());
+    }
+    case base::Value::Type::DOUBLE: {
+      double double_value = found->GetDouble();
+      if (std::floor(double_value) != double_value) {
+        return std::nullopt;
+      }
+      // If it's a floating point number we still require it to fit in a
+      // uint32_t.
+      if (!base::IsValueInRangeForNumericType<uint32_t>(double_value)) {
+        return std::nullopt;
+      }
+      return double_value;
+    }
+    default:
+      return std::nullopt;
+  }
+}
 
 }  // namespace
 
@@ -224,7 +259,7 @@ void KAnonymityTrustTokenGetter::OnParsedNonUniqueUserId(
 
   std::optional<int> maybe_non_unique_user_id =
       response_dict->FindInt("shortClientIdentifier");
-  if (!maybe_non_unique_user_id) {
+  if (!maybe_non_unique_user_id || *maybe_non_unique_user_id < 0) {
     RecordTrustTokenGetterAction(
         KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientIDParseError);
     FailAllCallbacks();
@@ -307,7 +342,7 @@ void KAnonymityTrustTokenGetter::OnParsedTrustTokenKeyCommitment(
   }
 
   const std::optional<int> maybe_id = response_dict->FindInt("id");
-  if (!maybe_id) {
+  if (!maybe_id || *maybe_id < 0) {
     RecordTrustTokenGetterAction(
         KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError);
     FailAllCallbacks();
@@ -316,7 +351,7 @@ void KAnonymityTrustTokenGetter::OnParsedTrustTokenKeyCommitment(
 
   const std::optional<int> maybe_batchsize =
       response_dict->FindInt("batchSize");
-  if (!maybe_batchsize) {
+  if (!maybe_batchsize || *maybe_batchsize < 0) {
     RecordTrustTokenGetterAction(
         KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError);
     FailAllCallbacks();
@@ -351,18 +386,38 @@ void KAnonymityTrustTokenGetter::OnParsedTrustTokenKeyCommitment(
       return;
     }
     const std::string* maybe_key = key_commit_dict->FindString("keyMaterial");
-    std::optional<int> maybe_key_id = key_commit_dict->FindInt("keyIdentifier");
-    const std::string* maybe_expiry =
-        key_commit_dict->FindString("expirationTimestampUsec");
-    int64_t expiry;
-    if (!maybe_key || !maybe_key_id || !maybe_expiry) {
-      DLOG(ERROR) << "Key commitment missing required field: "
-                  << key_commitment.DebugString();
+    if (!maybe_key) {
+      DLOG(ERROR) << "Key commitment missing required field \"" << "keyMaterial"
+                  << "\":" << key_commitment.DebugString();
       RecordTrustTokenGetterAction(
           KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError);
       FailAllCallbacks();
       return;
     }
+    std::optional<uint32_t> maybe_key_id =
+        FindUnsignedInt(*key_commit_dict, "keyIdentifier");
+    if (!maybe_key_id) {
+      DLOG(ERROR) << "Key commitment missing required field \""
+                  << "keyIdentifier" << "\":" << key_commitment.DebugString();
+      RecordTrustTokenGetterAction(
+          KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError);
+      FailAllCallbacks();
+      return;
+    }
+
+    const std::string* maybe_expiry =
+        key_commit_dict->FindString("expirationTimestampUsec");
+    if (!maybe_expiry) {
+      DLOG(ERROR) << "Key commitment missing required field \""
+                  << "expirationTimestampUsec"
+                  << "\":" << key_commitment.DebugString();
+      RecordTrustTokenGetterAction(
+          KAnonymityTrustTokenGetterAction::kFetchTrustTokenKeyParseError);
+      FailAllCallbacks();
+      return;
+    }
+
+    int64_t expiry;
     if (!base::StringToInt64(*maybe_expiry, &expiry)) {
       DLOG(ERROR) << "Key commitment expiry has invalid format: "
                   << *maybe_expiry;

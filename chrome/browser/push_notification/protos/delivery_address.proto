@@ -1,0 +1,54 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/notifications/frontend/data/delivery_address.proto
+// Messages not used in Chrome have been omitted. Last copied at cl/529373806.
+
+syntax = "proto2";
+
+package push_notification.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+message DeliveryAddress {
+  oneof address {
+    GcmDevicePushAddress gcm_device_address = 1;
+  }
+
+  reserved 2;
+}
+
+// Used when the ChannelType is GCM_DEVICE_PUSH.
+message GcmDevicePushAddress {
+  // Note: One of registration_id or android_id must be set for push-enabled
+  // devices. For fetch-only devices fetch_only_id must be set instead of the
+  // registration_id.
+
+  // The registration ID of the device. The device obtains this ID when it
+  // registers for GCM. This is the preferred method of identifying a device in
+  // Chime for push-enabled devices.
+  optional string registration_id = 1;
+
+  // The device ID for fetch-only devices. It is an UUID generated on the
+  // device. Required for fetch-only devices.
+  // NOTE: This ID is ignored when registration_id is provided.
+  optional string fetch_only_id = 5;
+
+  // The Android ID of the device provided by Gservices. See more at
+  // go/androidids. Note that this should not be set if {@link #device_user_id}
+  // is set to anything other than 0 (i.e: primary profile).
+  optional int64 android_id = 3;
+
+  // Required. This must correspond to a previously configured GcmApplication
+  // for the client sending to this address.
+  optional string application_id = 2;
+
+  // Optional - used for the multiple user feature on JB MR1+.
+  // This is the short serial number used to identify multi-user on the device.
+  // Note that a device_user_id > 0 indicates that the Android ID above belongs
+  // to the primary user profile, since secondary users' Android IDs are not
+  // deliverable addresses.
+  optional int64 device_user_id = 4;
+}

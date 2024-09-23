@@ -7,20 +7,27 @@
 
 #include "base/component_export.h"
 #include "components/viz/common/resources/shared_image_format.h"
-#include "third_party/skia/include/core/SkColorType.h"
-#include "ui/gfx/buffer_types.h"
 
 namespace gpu {
+class ClientSharedImage;
+class SharedImageFormatToBufferFormatRestrictedUtilsAccessor;
 class SharedImageFormatRestrictedUtilsAccessor;
+class TestSharedImageInterface;
 }  // namespace gpu
 
 namespace cc {
 class PerfContextProvider;
 }
 
-namespace media {
-class VideoResourceUpdater;
+namespace gfx {
+enum class BufferFormat : uint8_t;
 }
+
+namespace media {
+class VideoFrame;
+}
+
+enum SkColorType : int;
 
 namespace viz {
 
@@ -67,10 +74,9 @@ COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 gfx::BufferFormat SinglePlaneSharedImageFormatToBufferFormat(
     SharedImageFormat format);
 
-// Returns the SharedImageFormat corresponding to `format`, which must be a
-// single-planar format.
+// Returns the SharedImageFormat corresponding to `buffer_format`.
 COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
-SharedImageFormat GetSinglePlaneSharedImageFormat(gfx::BufferFormat format);
+SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format);
 
 // Utilities that conceptually belong only on the service side, but are
 // currently used by some clients. Usage is restricted to friended clients.
@@ -81,20 +87,29 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
   friend class TestContextProvider;
   friend class TestInProcessContextProvider;
   friend class cc::PerfContextProvider;
-  friend class media::VideoResourceUpdater;
   friend class gpu::SharedImageFormatRestrictedUtilsAccessor;
-
-  // The following functions use unsigned int instead of GLenum, since including
-  // third_party/khronos/GLES2/gl2.h causes redefinition errors as
-  // macros/functions defined in it conflict with macros/functions defined in
-  // ui/gl/gl_bindings.h. See http://crbug.com/512833 for more information.
-  static unsigned int ToGLDataFormat(SharedImageFormat format);
-  static unsigned int ToGLDataType(SharedImageFormat format);
 
   // |use_angle_rgbx_format| should be true when the
   // GL_ANGLE_rgbx_internal_format extension is available.
   static unsigned int ToGLTextureStorageFormat(SharedImageFormat format,
                                                bool use_angle_rgbx_format);
+};
+
+// Utility function which conceptually belong only on the service side, but are
+// currently used by some clients. Usage is restricted to friended class.
+class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
+    SharedImageFormatToBufferFormatRestrictedUtils {
+ private:
+  friend class gpu::ClientSharedImage;
+  friend class gpu::SharedImageFormatToBufferFormatRestrictedUtilsAccessor;
+  friend class gpu::TestSharedImageInterface;
+  friend class media::VideoFrame;
+
+  // BufferFormat is being transitioned out of SharedImage code (to use
+  // SharedImageFormat instead). Refrain from using this function or preferably
+  // use with single planar SharedImageFormats. Returns BufferFormat for given
+  // `format`.
+  static gfx::BufferFormat ToBufferFormat(SharedImageFormat format);
 };
 
 }  // namespace viz

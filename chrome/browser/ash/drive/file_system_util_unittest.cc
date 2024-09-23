@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"

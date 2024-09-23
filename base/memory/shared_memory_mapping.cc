@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/memory/shared_memory_mapping.h"
 
 #include <cstdint>
@@ -44,6 +49,7 @@ SharedMemoryMapping::SharedMemoryMapping(span<uint8_t> mapped_span,
                                          const UnguessableToken& guid,
                                          SharedMemoryMapper* mapper)
     : mapped_span_(mapped_span), size_(size), guid_(guid), mapper_(mapper) {
+  CHECK_LE(size_, mapped_span_.size());
   // Note: except on Windows, `mapped_span_.size() == size_`.
   SharedMemoryTracker::GetInstance()->IncrementMemoryUsage(*this);
 }

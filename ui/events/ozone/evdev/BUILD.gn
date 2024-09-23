@@ -59,8 +59,12 @@ component("evdev") {
     "event_thread_evdev.h",
     "gamepad_event_converter_evdev.cc",
     "gamepad_event_converter_evdev.h",
+    "heatmap_palm_detector.cc",
+    "heatmap_palm_detector.h",
     "imposter_checker_evdev.cc",
     "imposter_checker_evdev.h",
+    "imposter_checker_evdev_state.cc",
+    "imposter_checker_evdev_state.h",
     "input_controller_evdev.cc",
     "input_controller_evdev.h",
     "input_device_factory_evdev.cc",
@@ -145,8 +149,6 @@ component("evdev") {
     sources += [
       "fake_keyboard_heuristic_metrics.cc",
       "fake_keyboard_heuristic_metrics.h",
-      "heatmap_palm_detector.cc",
-      "heatmap_palm_detector.h",
       "numberpad_metrics.cc",
       "numberpad_metrics.h",
     ]
@@ -155,7 +157,9 @@ component("evdev") {
       "//chromeos/ash/components/feature_usage",
     ]
     visibility += [
-      "//chrome/browser/ui:ui",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/ash",
+      "//chrome/browser/ui/ash/main_extra_parts",
       "//chromeos/ash/components/heatmap/*",
     ]
   }
@@ -221,7 +225,10 @@ source_set("mouse_button_property") {
     "//ui/events",
   ]
 
-  visibility += [ "//ash/*" ]
+  visibility += [
+    "//ash/*",
+    "//components/exo",
+  ]
 }
 
 source_set("keyboard_mouse_combo_metrics") {
@@ -253,6 +260,7 @@ source_set("event_device_info") {
     "//ash:ash_unittests",
     "//ash/webui/diagnostics_ui/backend:*",
     "//chrome/browser/ash:unit_tests",
+    "//chrome/browser/ash/system_logs:unit_tests",
     "//chromeos/ash/services/cros_healthd/*",
     "//ui/chromeos/*",
     "//ui/events/ash/*",
@@ -274,9 +282,10 @@ source_set("event_device_info_test_utils") {
   ]
 
   visibility += [
-    "//ash:ash_unittests",
     "//ash/webui/diagnostics_ui/backend:unit_tests",
     "//chrome/browser/ash:unit_tests",
+    "//chrome/browser/ash/system_logs:unit_tests",
+    "//ui/events/ash:unit_tests",
   ]
 }
 

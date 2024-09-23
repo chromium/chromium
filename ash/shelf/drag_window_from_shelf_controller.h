@@ -19,6 +19,7 @@
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
+#include "ui/compositor/layer_tree_owner.h"
 
 namespace aura {
 class Window;

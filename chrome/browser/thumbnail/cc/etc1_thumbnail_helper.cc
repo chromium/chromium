@@ -4,8 +4,12 @@
 
 #include "chrome/browser/thumbnail/cc/etc1_thumbnail_helper.h"
 
-#include "base/big_endian.h"
+#include <array>
+
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -15,13 +19,14 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
+#include "ui/android/resources/ui_resource_provider.h"
 #include "ui/display/screen.h"
 
 namespace thumbnail {
 namespace {
 
-const int kCompressedKey = 0xABABABAB;
-const int kCurrentExtraVersion = 1;
+const uint32_t kCompressedKey = 0xABABABAB;
+const uint32_t kCurrentExtraVersion = 1;
 
 unsigned int NextPowerOfTwo(int a) {
   DCHECK(a >= 0);
@@ -35,54 +40,29 @@ unsigned int NextPowerOfTwo(int a) {
   return x + 1;
 }
 
-template <typename T>
-bool ReadBigEndianFromFile(base::File& file, T* out) {
-  uint8_t buffer[sizeof(T)];
-  if (file.ReadAtCurrentPos(reinterpret_cast<char*>(buffer), sizeof(T)) !=
-      sizeof(T)) {
+bool ReadBigEndianU32FromFile(base::File& file, uint32_t* out) {
+  std::array<uint8_t, sizeof(*out)> buffer;
+  if (file.ReadAtCurrentPos(buffer).value_or(0u) != buffer.size()) {
     return false;
   }
-  base::ReadBigEndian(buffer, out);
+  *out = base::U32FromBigEndian(buffer);
   return true;
 }
-
-template <typename T>
-bool WriteBigEndianToFile(base::File& file, T val) {
-  char buffer[sizeof(T)];
-  base::WriteBigEndian(buffer, val);
-  return file.WriteAtCurrentPos(buffer, sizeof(T)) == sizeof(T);
-}
-
 bool ReadBigEndianFloatFromFile(base::File& file, float* out) {
-  char buffer[sizeof(float)];
-  if (file.ReadAtCurrentPos(buffer, sizeof(buffer)) != sizeof(buffer)) {
+  std::array<uint8_t, sizeof(*out)> buffer;
+  if (file.ReadAtCurrentPos(buffer).value_or(0u) != buffer.size()) {
     return false;
   }
-
-#if defined(ARCH_CPU_LITTLE_ENDIAN)
-  for (size_t i = 0; i < sizeof(float) / 2; i++) {
-    char tmp = buffer[i];
-    buffer[i] = buffer[sizeof(float) - 1 - i];
-    buffer[sizeof(float) - 1 - i] = tmp;
-  }
-#endif
-  memcpy(out, buffer, sizeof(buffer));
-
+  *out = base::FloatFromBigEndian(buffer);
   return true;
 }
 
-bool WriteBigEndianFloatToFile(base::File& file, float val) {
-  char buffer[sizeof(float)];
-  memcpy(buffer, &val, sizeof(buffer));
-
-#if defined(ARCH_CPU_LITTLE_ENDIAN)
-  for (size_t i = 0; i < sizeof(float) / 2; i++) {
-    char tmp = buffer[i];
-    buffer[i] = buffer[sizeof(float) - 1 - i];
-    buffer[sizeof(float) - 1 - i] = tmp;
-  }
-#endif
-  return file.WriteAtCurrentPos(buffer, sizeof(buffer)) == sizeof(buffer);
+bool WriteBigEndianU32ToFile(base::File& file,
+                             base::StrictNumeric<uint32_t> v) {
+  return file.WriteAtCurrentPos(base::U32ToBigEndian(v)) == sizeof(v);
+}
+bool WriteBigEndianFloatToFile(base::File& file, float v) {
+  return file.WriteAtCurrentPos(base::FloatToBigEndian(v)) == sizeof(v);
 }
 
 // TODO(khushalsagar): This is a hack to ensure correct byte size computation
@@ -101,15 +81,17 @@ bool WriteToFile(base::File& file,
     return false;
   }
 
-  if (!WriteBigEndianToFile(file, kCompressedKey)) {
+  if (!WriteBigEndianU32ToFile(file, kCompressedKey)) {
     return false;
   }
 
-  if (!WriteBigEndianToFile(file, content_size.width())) {
+  if (!WriteBigEndianU32ToFile(
+          file, base::checked_cast<uint32_t>(content_size.width()))) {
     return false;
   }
 
-  if (!WriteBigEndianToFile(file, content_size.height())) {
+  if (!WriteBigEndianU32ToFile(
+          file, base::checked_cast<uint32_t>(content_size.height()))) {
     return false;
   }
 
@@ -135,7 +117,7 @@ bool WriteToFile(base::File& file,
     return false;
   }
 
-  if (!WriteBigEndianToFile(file, kCurrentExtraVersion)) {
+  if (!WriteBigEndianU32ToFile(file, kCurrentExtraVersion)) {
     return false;
   }
 
@@ -154,8 +136,8 @@ bool ReadFromFile(base::File& file,
     return false;
   }
 
-  int key = 0;
-  if (!ReadBigEndianFromFile(file, &key)) {
+  uint32_t key = 0;
+  if (!ReadBigEndianU32FromFile(file, &key)) {
     return false;
   }
 
@@ -163,14 +145,24 @@ bool ReadFromFile(base::File& file,
     return false;
   }
 
-  int content_width = 0;
-  if (!ReadBigEndianFromFile(file, &content_width) || content_width <= 0) {
-    return false;
+  int content_width;
+  {
+    uint32_t val = 0;
+    if (!ReadBigEndianU32FromFile(file, &val) || val == 0u ||
+        !base::IsValueInRangeForNumericType<int>(val)) {
+      return false;
+    }
+    content_width = base::checked_cast<int>(val);
   }
 
-  int content_height = 0;
-  if (!ReadBigEndianFromFile(file, &content_height) || content_height <= 0) {
-    return false;
+  int content_height;
+  {
+    uint32_t val = 0;
+    if (!ReadBigEndianU32FromFile(file, &val) || val == 0u ||
+        !base::IsValueInRangeForNumericType<int>(val)) {
+      return false;
+    }
+    content_height = base::checked_cast<int>(val);
   }
 
   out_content_size->SetSize(content_width, content_height);
@@ -229,13 +221,13 @@ bool ReadFromFile(base::File& file,
   *out_pixels = SkMallocPixelRef::MakeWithData(info, ETC1RowBytes(raw_width),
                                                std::move(etc1_pixel_data));
 
-  int extra_data_version = 0;
-  if (!ReadBigEndianFromFile(file, &extra_data_version)) {
+  uint32_t extra_data_version = 0;
+  if (!ReadBigEndianU32FromFile(file, &extra_data_version)) {
     return false;
   }
 
   *out_scale = 1.f;
-  if (extra_data_version == 1) {
+  if (extra_data_version == 1u) {
     if (!ReadBigEndianFloatFromFile(file, out_scale)) {
       return false;
     }
@@ -251,39 +243,14 @@ bool ReadFromFile(base::File& file,
 }
 
 void CompressTask(SkBitmap raw_data,
-                  gfx::Size encoded_size,
+                  bool supports_etc_non_power_of_two,
                   base::OnceCallback<void(sk_sp<SkPixelRef>, const gfx::Size&)>
                       post_compression_task) {
-  sk_sp<SkPixelRef> compressed_data;
-  gfx::Size content_size;
-
-  if (!raw_data.empty()) {
-    gfx::Size raw_data_size(raw_data.width(), raw_data.height());
-    constexpr size_t kPixelSize = 4;  // For kARGB_8888_Config.
-    size_t stride = kPixelSize * raw_data_size.width();
-
-    size_t encoded_bytes =
-        etc1_get_encoded_data_size(encoded_size.width(), encoded_size.height());
-    SkImageInfo info =
-        SkImageInfo::Make(encoded_size.width(), encoded_size.height(),
-                          kUnknown_SkColorType, kUnpremul_SkAlphaType);
-    sk_sp<SkData> etc1_pixel_data(SkData::MakeUninitialized(encoded_bytes));
-    sk_sp<SkPixelRef> etc1_pixel_ref(SkMallocPixelRef::MakeWithData(
-        info, ETC1RowBytes(encoded_size.width()), std::move(etc1_pixel_data)));
-
-    bool success = etc1_encode_image(
-        reinterpret_cast<unsigned char*>(raw_data.getPixels()),
-        raw_data_size.width(), raw_data_size.height(), kPixelSize, stride,
-        reinterpret_cast<unsigned char*>(etc1_pixel_ref->pixels()),
-        encoded_size.width(), encoded_size.height());
-    etc1_pixel_ref->setImmutable();
-
-    if (success) {
-      compressed_data = std::move(etc1_pixel_ref);
-      content_size = raw_data_size;
-    }
-  }
-
+  sk_sp<SkPixelRef> compressed_data = ui::UIResourceProvider::CompressBitmap(
+      raw_data, supports_etc_non_power_of_two);
+  gfx::Size content_size = compressed_data
+                               ? gfx::Size(raw_data.width(), raw_data.height())
+                               : gfx::Size();
   std::move(post_compression_task)
       .Run(std::move(compressed_data), content_size);
 }
@@ -398,7 +365,7 @@ Etc1ThumbnailHelper::~Etc1ThumbnailHelper() {
 
 void Etc1ThumbnailHelper::Compress(
     SkBitmap raw_data,
-    gfx::Size encoded_size,
+    bool supports_etc_non_power_of_two,
     base::OnceCallback<void(sk_sp<SkPixelRef>, const gfx::Size&)>
         post_compression_task) {
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
@@ -406,7 +373,7 @@ void Etc1ThumbnailHelper::Compress(
       FROM_HERE,
       {base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&CompressTask, raw_data, encoded_size,
+      base::BindOnce(&CompressTask, raw_data, supports_etc_non_power_of_two,
                      base::BindPostTask(default_task_runner_,
                                         std::move(post_compression_task))));
 }

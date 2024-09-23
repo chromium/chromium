@@ -56,14 +56,10 @@ SkColor GetCascadingAccentColor(View* view) {
   const SkColor default_color =
       view->GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused);
   const SkColor background_color = GetCascadingBackgroundColor(view);
-  return features::IsChromeRefresh2023()
-             ? color_utils::BlendForMinContrast(
-                   default_color, background_color, std::nullopt,
-                   color_utils::kMinimumVisibleContrastRatio)
-                   .color
-             : color_utils::PickGoogleColor(
-                   default_color, background_color,
-                   color_utils::kMinimumVisibleContrastRatio);
+  return color_utils::BlendForMinContrast(
+             default_color, background_color, std::nullopt,
+             color_utils::kMinimumVisibleContrastRatio)
+      .color;
 }
 
 }  // namespace views

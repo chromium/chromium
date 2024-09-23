@@ -15,15 +15,15 @@ namespace {
 using SysInfoMacTest = testing::Test;
 
 TEST_F(SysInfoMacTest, SplitHardwareModelName) {
-  absl::optional<SysInfo::HardwareModelNameSplit> split_name =
+  std::optional<SysInfo::HardwareModelNameSplit> split_name =
       SysInfo::SplitHardwareModelNameDoNotUse("");
-  EXPECT_EQ(absl::nullopt, split_name);
+  EXPECT_EQ(std::nullopt, split_name);
 
   split_name = SysInfo::SplitHardwareModelNameDoNotUse("FooBar");
-  EXPECT_EQ(absl::nullopt, split_name);
+  EXPECT_EQ(std::nullopt, split_name);
 
   split_name = SysInfo::SplitHardwareModelNameDoNotUse("BarFoo77");
-  EXPECT_EQ(absl::nullopt, split_name);
+  EXPECT_EQ(std::nullopt, split_name);
 
   split_name = SysInfo::SplitHardwareModelNameDoNotUse("MacPro4,1");
   EXPECT_EQ("MacPro", split_name.value().category);

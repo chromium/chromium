@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -20,6 +21,7 @@
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -103,6 +105,11 @@ class AccountStorageAuthHelperTest : public ::testing::Test {
 };
 
 TEST_F(AccountStorageAuthHelperTest, ShouldTriggerReauthForPrimaryAccount) {
+  // Opt-in reauth is disabled with explicit signin.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kExplicitBrowserSigninUIOnDesktop);
+
   CoreAccountId account_id = MakeUnconsentedAccountAvailable();
   EXPECT_CALL(mock_signin_view_controller_,
               ShowReauthPrompt(account_id, kReauthAccessPoint, _));
@@ -111,6 +118,11 @@ TEST_F(AccountStorageAuthHelperTest, ShouldTriggerReauthForPrimaryAccount) {
 }
 
 TEST_F(AccountStorageAuthHelperTest, ShouldSetOptInOnSucessfulReauth) {
+  // Opt-in reauth is disabled with explicit signin.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kExplicitBrowserSigninUIOnDesktop);
+
   CoreAccountId account_id = MakeUnconsentedAccountAvailable();
   EXPECT_CALL(mock_signin_view_controller_,
               ShowReauthPrompt(account_id, kReauthAccessPoint, _))
@@ -125,6 +137,11 @@ TEST_F(AccountStorageAuthHelperTest, ShouldSetOptInOnSucessfulReauth) {
 }
 
 TEST_F(AccountStorageAuthHelperTest, ShouldNotSetOptInOnFailedReauth) {
+  // Opt-in reauth is disabled with explicit signin.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kExplicitBrowserSigninUIOnDesktop);
+
   CoreAccountId account_id = MakeUnconsentedAccountAvailable();
   EXPECT_CALL(mock_signin_view_controller_,
               ShowReauthPrompt(account_id, kReauthAccessPoint, _))

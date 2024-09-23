@@ -6,9 +6,9 @@
 #define BASE_VERSION_INFO_VERSION_INFO_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/sanitizer_buildflags.h"
-#include "base/strings/string_piece.h"
 #include "base/version_info/channel.h"
 #include "base/version_info/version_info_values.h"
 #include "build/branding_buildflags.h"
@@ -20,26 +20,14 @@ class Version;
 
 namespace version_info {
 
-// Returns the product name and reduced version information for the User-Agent
-// header, in the format: Chrome/<major_version>.0.build_version.0, where
-// `build_version` is a frozen BUILD number.
-const std::string GetProductNameAndVersionForReducedUserAgent(
-    const std::string& build_version);
-
 // Returns the product name, e.g. "Chromium" or "Google Chrome".
-constexpr base::StringPiece GetProductName() {
+constexpr std::string_view GetProductName() {
   return PRODUCT_NAME;
 }
 
 // Returns the version number, e.g. "6.0.490.1".
-constexpr base::StringPiece GetVersionNumber() {
+constexpr std::string_view GetVersionNumber() {
   return PRODUCT_VERSION;
-}
-
-// Returns the product name and version information for the User-Agent header,
-// in the format: Chrome/<major_version>.<minor_version>.<build>.<patch>.
-constexpr base::StringPiece GetProductNameAndVersionForUserAgent() {
-  return "Chrome/" PRODUCT_VERSION;
 }
 
 // Returns the major component (aka the milestone) of the version as an int,
@@ -53,7 +41,7 @@ std::string GetMajorVersionNumber();
 const base::Version& GetVersion();
 
 // Returns a version control specific identifier of this release.
-constexpr base::StringPiece GetLastChange() {
+constexpr std::string_view GetLastChange() {
   return LAST_CHANGE;
 }
 
@@ -65,7 +53,7 @@ constexpr bool IsOfficialBuild() {
 }
 
 // Returns the OS type, e.g. "Windows", "Linux", "FreeBSD", ...
-constexpr base::StringPiece GetOSType() {
+constexpr std::string_view GetOSType() {
 #if BUILDFLAG(IS_WIN)
   return "Windows";
 #elif BUILDFLAG(IS_IOS)
@@ -96,7 +84,7 @@ constexpr base::StringPiece GetOSType() {
 }
 
 // Returns a list of sanitizers enabled in this build.
-constexpr base::StringPiece GetSanitizerList() {
+constexpr std::string_view GetSanitizerList() {
   return ""
 #if defined(ADDRESS_SANITIZER)
          "address "

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_source_view.h"
 
 #include "base/task/bind_post_task.h"
@@ -34,7 +39,7 @@ constexpr gfx::Rect kPreviewRect(kPadding,
                                  kPadding,
                                  kPreviewWidth,
                                  kPreviewHeight);
-// TODO(crbug.com/1447461): Align favicon height properly with label.
+// TODO(crbug.com/40268977): Align favicon height properly with label.
 constexpr gfx::Rect kFaviconRect(kPadding,
                                  kPreviewRect.bottom() + kPadding,
                                  kFaviconWidth,
@@ -119,9 +124,10 @@ void ShareThisTabSourceView::StopRefreshing() {
   refreshing_ = false;
 }
 
-gfx::Size ShareThisTabSourceView::CalculatePreferredSize() const {
+gfx::Size ShareThisTabSourceView::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(crbug.com/1428878): Use distances from LayoutProvider
+  // TODO(crbug.com/40262420): Use distances from LayoutProvider
   return gfx::Size(kPreviewWidth + 2 * kPadding,
                    kTabTitleMaxRect.bottom() + kPadding);
 }

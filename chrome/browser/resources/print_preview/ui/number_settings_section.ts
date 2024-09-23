@@ -35,12 +35,6 @@ export class PrintPreviewNumberSettingsSectionElement extends
 
   static get properties() {
     return {
-      inputString_: {
-        type: String,
-        notify: true,
-        observer: 'onInputStringChanged_',
-      },
-
       inputValid: {
         type: Boolean,
         notify: true,
@@ -84,7 +78,6 @@ export class PrintPreviewNumberSettingsSectionElement extends
   inputValid: boolean;
   minValue: number;
   maxValue: number;
-  private inputString_: string;
   private errorMessage_: string;
 
   override ready() {
@@ -102,7 +95,14 @@ export class PrintPreviewNumberSettingsSectionElement extends
    * @param e Contains the new input value.
    */
   private onInputChangeEvent_(e: CustomEvent<string>) {
-    this.inputString_ = e.detail!;
+    if (e.detail === '') {
+      // Set current value first in this case, because if the input was
+      // previously invalid, it will become valid in the line below but
+      // we do not want to set the setting to the invalid value.
+      this.currentValue = '';
+    }
+    this.inputValid = this.$.userValue.validate();
+    this.currentValue = e.detail;
   }
 
   /**
@@ -124,32 +124,21 @@ export class PrintPreviewNumberSettingsSectionElement extends
   }
 
   private onBlur_() {
-    if (this.inputString_ === '') {
-      this.set('inputString_', this.defaultValue);
+    if (this.currentValue === '') {
+      this.currentValue = this.defaultValue;
+      this.inputValid = this.$.userValue.validate();
     }
     if (this.$.userValue.value === '') {
       this.$.userValue.value = this.defaultValue;
     }
   }
 
-  private onInputStringChanged_() {
-    this.inputValid = this.computeValid_();
-    this.currentValue = this.inputString_;
-  }
-
   private onCurrentValueChanged_() {
-    this.inputString_ = this.currentValue;
+    if (this.currentValue !== this.$.userValue.value) {
+      this.$.userValue.value = this.currentValue;
+      this.inputValid = this.$.userValue.validate();
+    }
     this.resetString();
-  }
-
-  /**
-   * @return Whether input value represented by inputString_ is
-   *     valid and non-empty, so that it can be used to update the setting.
-   */
-  private computeValid_(): boolean {
-    // Make sure value updates first, in case inputString_ was updated by JS.
-    this.$.userValue.value = this.inputString_;
-    return !this.$.userValue.invalid;
   }
 
   private computeErrorMessage_(): string {

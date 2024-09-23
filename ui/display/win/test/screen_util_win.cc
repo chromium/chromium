@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/display/win/test/screen_util_win.h"
 
 #include <cwchar>
@@ -22,7 +27,6 @@ MONITORINFOEX CreateMonitorInfo(const gfx::Rect& monitor,
   monitor_info.rcWork = work.ToRECT();
   size_t device_char_count = ARRAYSIZE(monitor_info.szDevice);
   wcsncpy(monitor_info.szDevice, device_name.c_str(), device_char_count);
-  monitor_info.szDevice[device_char_count-1] = L'\0';
   return monitor_info;
 }
 

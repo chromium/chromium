@@ -31,10 +31,17 @@ enum ExtensionInstallStatus {
   kTerminated,
   // Extension is blocklisted.
   kBlocklisted,
-  // Extension requires custodian approval to enable.
+  // Existing extension requires custodian approval to enable.
   kCustodianApprovalRequired,
+  // New extension requires custodian approval to be installed.
+  kCustodianApprovalRequiredForInstallation,
   // Extension is force installed or recommended by policy.
-  kForceInstalled
+  kForceInstalled,
+  // The extension may not be installed because it uses an unsupported manifest
+  // version.
+  kDeprecatedManifestVersion,
+  // Extension has been installed but it's corrupted.
+  kCorrupted,
 };
 
 // Returns the Extension install status for a Chrome web store extension with

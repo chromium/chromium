@@ -1,0 +1,47 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sharing_message.proto";
+
+package components_sharing_message;
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+// Request message to fetch a SMS from a remote device.
+message SmsFetchRequest {
+  // The list of origins that is requesting the SMS. Remote devices use it to
+  // match against the metadata contained in the received SMS. At the moment we
+  // expect at most 2 origins in the list when the request is made from a cross
+  // origin iframe. i.e. they represent the top frame and the embedded frame.
+  // required
+  repeated string origins = 1;
+}
+
+// Response message to fetch a SMS from a remote device.
+message SmsFetchResponse {
+  // The list of parsed origins of the received SMS.
+  // required
+  repeated string origins = 1;
+  // The parsed one time code of the received SMS.
+  // required
+  string one_time_code = 2;
+  // Failure type of fetching a remote sms. This should be in sync with
+  // SmsFetchFailureType.
+  enum FailureType {
+    FAILURE_TYPE_UNSPECIFIED = 0;
+    SMS_NOT_PARSED_OTP_FORMAT_REGEX_NOT_MATCH = 1;
+    SMS_NOT_PARSED_HOST_AND_PORT_NOT_PARSED = 2;
+    SMS_NOT_PARSED_GURL_NOT_VALID = 3;
+    PROMPT_TIMEOUT = 4;
+    PROMPT_CANCELLED = 5;
+    BACKEND_NOT_AVAILABLE = 6;
+  }
+  // The failure type of the fetch request.
+  // optional
+  optional FailureType failure_type = 3;
+}

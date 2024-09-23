@@ -20,3 +20,4 @@ supported_on:
 - chrome_os:29-70
 tags: []
 type: main
+generate_device_proto: False

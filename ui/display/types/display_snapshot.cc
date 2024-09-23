@@ -8,6 +8,7 @@
 
 #include <sstream>
 
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 
 namespace display {
@@ -61,7 +62,6 @@ DisplaySnapshot::DisplaySnapshot(
     int32_t year_of_manufacture,
     const gfx::Size& maximum_cursor_size,
     VariableRefreshRateState variable_refresh_rate_state,
-    const std::optional<uint16_t>& vsync_rate_min,
     const DrmFormatsAndModifiers& drm_formats_and_modifiers)
     : display_id_(display_id),
       port_display_id_(port_display_id),
@@ -88,7 +88,6 @@ DisplaySnapshot::DisplaySnapshot(
       year_of_manufacture_(year_of_manufacture),
       maximum_cursor_size_(maximum_cursor_size),
       variable_refresh_rate_state_(variable_refresh_rate_state),
-      vsync_rate_min_(vsync_rate_min),
       drm_formats_and_modifiers_(drm_formats_and_modifiers) {
   // We must explicitly clear out the bytes that represent the serial number.
   const size_t end = std::min(
@@ -98,7 +97,7 @@ DisplaySnapshot::DisplaySnapshot(
   }
 }
 
-DisplaySnapshot::~DisplaySnapshot() {}
+DisplaySnapshot::~DisplaySnapshot() = default;
 
 std::unique_ptr<DisplaySnapshot> DisplaySnapshot::Clone() const {
   DisplayModeList clone_modes;
@@ -115,15 +114,20 @@ std::unique_ptr<DisplaySnapshot> DisplaySnapshot::Clone() const {
       cloned_native_mode = clone_modes.back().get();
   }
 
-  return std::make_unique<DisplaySnapshot>(
+  auto clone = std::make_unique<DisplaySnapshot>(
       display_id_, port_display_id_, edid_display_id_, connector_index_,
       origin_, physical_size_, type_, base_connector_id_, path_topology_,
       is_aspect_preserving_scaling_, has_overscan_, privacy_screen_state_,
       has_content_protection_key_, color_info_, display_name_, sys_path_,
       std::move(clone_modes), panel_orientation_, edid_, cloned_current_mode,
       cloned_native_mode, product_code_, year_of_manufacture_,
-      maximum_cursor_size_, variable_refresh_rate_state_, vsync_rate_min_,
+      maximum_cursor_size_, variable_refresh_rate_state_,
       drm_formats_and_modifiers_);
+  // Set current mode in case it is non-native (because non-native modes are not
+  // cloned).
+  clone->set_current_mode(current_mode_);
+
+  return clone;
 }
 
 std::string DisplaySnapshot::ToString() const {
@@ -161,12 +165,47 @@ void DisplaySnapshot::AddIndexToDisplayId() {
 }
 
 bool DisplaySnapshot::IsVrrCapable() const {
-  return variable_refresh_rate_state_ != display::kVrrNotCapable &&
-         vsync_rate_min_.has_value() && vsync_rate_min_.value() > 0;
+  return variable_refresh_rate_state_ !=
+         VariableRefreshRateState::kVrrNotCapable;
 }
 
 bool DisplaySnapshot::IsVrrEnabled() const {
-  return variable_refresh_rate_state_ == display::kVrrEnabled;
+  return variable_refresh_rate_state_ == VariableRefreshRateState::kVrrEnabled;
+}
+
+void DisplaySnapshot::set_current_mode(const DisplayMode* mode) {
+  if (current_mode_ == mode ||
+      (current_mode_ && mode && *current_mode_ == *mode)) {
+    return;
+  }
+
+  if (!mode) {
+    current_mode_ = nullptr;
+    return;
+  }
+
+  for (const auto& owned_mode : modes_) {
+    if (*owned_mode == *mode) {
+      current_mode_ = owned_mode.get();
+      return;
+    }
+  }
+
+  for (const auto& owned_mode : nonnative_modes_) {
+    if (*owned_mode == *mode) {
+      current_mode_ = owned_mode.get();
+      return;
+    }
+  }
+
+  // Unowned modes can occur due to panel fitting or virtual modes.
+  VLOG(3) << "Encountered mode which does not natively belong to display: "
+          << mode->ToString();
+  // The clone will persist as an owned non-native mode until the snapshot is
+  // destructed. Do not attempt to delete it earlier in case it has been
+  // accessed elsewhere.
+  nonnative_modes_.push_back(mode->Clone());
+  current_mode_ = nonnative_modes_.back().get();
 }
 
 }  // namespace display

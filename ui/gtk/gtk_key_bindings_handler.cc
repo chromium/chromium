@@ -23,7 +23,8 @@ GtkKeyBindingsHandler::GtkKeyBindingsHandler()
     : fake_window_(gtk_offscreen_window_new()), handler_(CreateNewHandler()) {
   DCHECK(!GtkCheckVersion(4));
   gtk_container_add(
-      GlibCast<GtkContainer>(fake_window_, gtk_container_get_type()), handler_);
+      GlibCast<GtkContainer>(fake_window_.get(), gtk_container_get_type()),
+      handler_);
 }
 
 GtkKeyBindingsHandler::~GtkKeyBindingsHandler() {
@@ -50,7 +51,7 @@ bool GtkKeyBindingsHandler::MatchEvent(
 
   auto* key = reinterpret_cast<GdkEventKey*>(gdk_event);
   DCHECK(key->type == GdkKeyPress() || key->type == GdkKeyRelease());
-  gtk_bindings_activate_event(G_OBJECT(handler_), key);
+  gtk_bindings_activate_event(G_OBJECT(handler_.get()), key);
   gdk_event_free(gdk_event);
 
   bool matched = !edit_commands_.empty();

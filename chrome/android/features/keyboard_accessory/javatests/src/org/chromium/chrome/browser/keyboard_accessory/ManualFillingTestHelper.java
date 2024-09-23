@@ -44,6 +44,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Criteria;
@@ -66,7 +67,6 @@ import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.DropdownPopupWindowInterface;
@@ -143,7 +143,7 @@ public class ManualFillingTestHelper {
     }
 
     public void updateWebContentsDependentState() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeActivity activity = mActivityTestRule.getActivity();
                     mWebContentsRef.set(activity.getActivityTab().getWebContents());
@@ -174,20 +174,13 @@ public class ManualFillingTestHelper {
 
     public RecyclerView getAccessoryBarView() {
         final ViewGroup keyboardAccessory =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mActivityTestRule
                                         .getActivity()
                                         .findViewById(R.id.keyboard_accessory));
         assert keyboardAccessory != null;
-        return (RecyclerView) keyboardAccessory.findViewById(R.id.bar_items_view);
-    }
-
-    public View getFirstAccessorySuggestion() {
-        ViewGroup recyclerView = getAccessoryBarView();
-        assert recyclerView != null;
-        View view = recyclerView.getChildAt(0);
-        return isAssignableFrom(KeyboardAccessoryButtonGroupView.class).matches(view) ? null : view;
+        return keyboardAccessory.findViewById(R.id.bar_items_view);
     }
 
     public void focusPasswordField() throws TimeoutException {
@@ -196,7 +189,7 @@ public class ManualFillingTestHelper {
 
     public void focusPasswordField(boolean useFakeKeyboard) throws TimeoutException {
         DOMUtils.focusNode(mActivityTestRule.getWebContents(), PASSWORD_NODE_ID);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.getWebContents().scrollFocusedEditableNodeIntoView();
                 });
@@ -222,7 +215,7 @@ public class ManualFillingTestHelper {
         // TODO(fhorschig): This should be |focusNode|. Change with autofill popup deprecation.
         DOMUtils.clickNode(mWebContentsRef.get(), USERNAME_NODE_ID);
         if (forceAccessory) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         getManualFillingCoordinator().getMediatorForTesting().show(true);
                     });
@@ -249,7 +242,7 @@ public class ManualFillingTestHelper {
     public void clickNode(String node, long focusedFieldId, int focusedFieldType)
             throws TimeoutException {
         DOMUtils.clickNode(mWebContentsRef.get(), node);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ManualFillingComponentBridge.notifyFocusedFieldType(
                             mActivityTestRule.getWebContents(), focusedFieldId, focusedFieldType);
@@ -262,7 +255,7 @@ public class ManualFillingTestHelper {
      */
     public void clickSubmit() throws TimeoutException {
         DOMUtils.clickNode(mWebContentsRef.get(), SUBMIT_NODE_ID);
-        getKeyboard().hideAndroidSoftKeyboard(null);
+        getKeyboard().hideSoftKeyboardOnly(null);
     }
 
     // ---------------------------------
@@ -274,7 +267,7 @@ public class ManualFillingTestHelper {
                 () -> {
                     Activity activity = mActivityTestRule.getActivity();
                     return !getKeyboard()
-                            .isAndroidSoftKeyboardShowing(activity, activity.getCurrentFocus());
+                            .isSoftKeyboardShowing(activity, activity.getCurrentFocus());
                 });
     }
 
@@ -323,7 +316,7 @@ public class ManualFillingTestHelper {
                     Criteria.checkThat(
                             mInputMethodManagerWrapper.getShowSoftInputCounter(), Matchers.is(1));
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ImeAdapter.fromWebContents(webContents).setComposingTextForTest(filterInput, 4);
                 });
@@ -373,6 +366,13 @@ public class ManualFillingTestHelper {
         return getManualFillingCoordinator().getMediatorForTesting().getKeyboardAccessory();
     }
 
+    private View getFirstAccessorySuggestion() {
+        ViewGroup recyclerView = getAccessoryBarView();
+        assert recyclerView != null;
+        View view = recyclerView.getChildAt(0);
+        return isAssignableFrom(KeyboardAccessoryButtonGroupView.class).matches(view) ? null : view;
+    }
+
     // ----------------------------------
     // Helpers to set up the native side.
     // ----------------------------------
@@ -400,13 +400,14 @@ public class ManualFillingTestHelper {
     /**
      * Creates credential pairs from these strings and writes them into the cache of the native
      * controller. The controller will only refresh this cache on page load.
+     *
      * @param usernames {@link String}s to be used as display text for username chips.
      * @param passwords {@link String}s to be used as display text for password chips.
      * @param originDenylisted boolean indicating whether password saving is disabled for the
-     *                          origin.
+     *     origin.
      */
     public void cacheCredentials(String[] usernames, String[] passwords, boolean originDenylisted) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ManualFillingComponentBridge.cachePasswordSheetData(
                             mActivityTestRule.getWebContents(),
@@ -462,7 +463,7 @@ public class ManualFillingTestHelper {
     }
 
     public static void disableServerPredictions() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ManualFillingComponentBridge.disableServerPredictionsForTesting();
                 });
@@ -635,7 +636,7 @@ public class ManualFillingTestHelper {
                 new PropertyProvider<>(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC);
         getManualFillingCoordinator()
                 .registerActionProvider(mWebContentsRef.get(), generationActionProvider);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     generationActionProvider.notifyObservers(
                             new KeyboardAccessoryData.Action[] {
@@ -646,7 +647,7 @@ public class ManualFillingTestHelper {
     }
 
     public void signalAutoGenerationStatus(boolean available) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ManualFillingComponentBridge.signalAutoGenerationStatus(
                             mActivityTestRule.getWebContents(), available);
@@ -654,7 +655,7 @@ public class ManualFillingTestHelper {
     }
 
     public void registerSheetDataProvider(@AccessoryTabType int tabType) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyProvider<AccessorySheetData> sheetDataProvider =
                             new PropertyProvider<>();

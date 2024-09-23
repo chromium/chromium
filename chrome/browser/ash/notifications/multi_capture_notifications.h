@@ -85,8 +85,6 @@ class MultiCaptureNotifications : public MultiCaptureServiceClient::Observer,
   base::WeakPtrFactory<MultiCaptureNotifications> weak_factory_{this};
 };
 
-void SetIsMultiCaptureAllowedForTesting(bool is_multi_capture_allowed);
-
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_MULTI_CAPTURE_NOTIFICATIONS_H_

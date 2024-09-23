@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<style>
+  #container {
+    width: 100px;
+    height: 100px;
+    background-color: green;
+  }
+
+  .anim_cc {
+    animation: clippath_cc 0.05s infinite;
+  }
+
+  .anim_main {
+    animation: clippath_main 0.05s infinite;
+  }
+
+  @keyframes clippath_cc {
+    0% {
+      clip-path: inset(20px 20px);
+    }
+
+    100% {
+      clip-path: inset(10px 10px);
+    }
+  }
+
+  @keyframes clippath_main {
+
+    /* clip-path: inherit is non-compositable, will force a fallback to main */
+    0% {
+      clip-path: inherit;
+    }
+
+    100% {
+      clip-path: inset(10px 10px);
+    }
+  }
+</style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<body>
+  <div id="container" style="animation: clippath_cc 0.5s infinite;"></div>
+
+  <script>
+    window.onload = () => {
+      let loops = 0;
+      function swapAnimation() {
+        if (loops & 1) {
+          document.getElementById("container").className = "anim_cc";
+        } else {
+          document.getElementById("container").className = "anim_main";
+        }
+        loops++;
+      }
+
+      function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      async function stressTest() {
+        while (loops < 20) {
+          await delay(100);
+          swapAnimation();
+        }
+      }
+
+      promise_test(stressTest, "Repeatedly cancelling and adding animations through CSS should not cause a crash");
+    }
+  </script>
+</body>
+
+</html>

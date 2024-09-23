@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
+
 #import <vector>
 
 #import "base/check.h"
@@ -15,6 +16,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/web/common/features.h"
+#import "ios/web/js_features/window_error/catch_gcrweb_script_errors_java_script_feature.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
@@ -22,7 +24,6 @@
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/web_state/ui/wk_content_rule_list_provider.h"
-#import "ios/web/web_state/ui/wk_web_view_configuration_provider_observer.h"
 #import "ios/web/webui/crw_web_ui_scheme_handler.h"
 
 namespace web {
@@ -37,7 +38,6 @@ const char kWKWebViewConfigProviderKeyName[] = "wk_web_view_config_provider";
 // static
 WKWebViewConfigurationProvider&
 WKWebViewConfigurationProvider::FromBrowserState(BrowserState* browser_state) {
-  DCHECK([NSThread isMainThread]);
   DCHECK(browser_state);
   if (!browser_state->GetUserData(kWKWebViewConfigProviderKeyName)) {
     browser_state->SetUserData(
@@ -50,21 +50,23 @@ WKWebViewConfigurationProvider::FromBrowserState(BrowserState* browser_state) {
 
 base::WeakPtr<WKWebViewConfigurationProvider>
 WKWebViewConfigurationProvider::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
   return weak_ptr_factory_.GetWeakPtr();
 }
 
 WKWebViewConfigurationProvider::WKWebViewConfigurationProvider(
     BrowserState* browser_state)
     : browser_state_(browser_state),
-      content_rule_list_provider_(std::make_unique<WKContentRuleListProvider>(
-          GetWebClient()->IsMixedContentAutoupgradeEnabled(browser_state))) {}
+      content_rule_list_provider_(
+          std::make_unique<WKContentRuleListProvider>()) {}
 
-WKWebViewConfigurationProvider::~WKWebViewConfigurationProvider() = default;
+WKWebViewConfigurationProvider::~WKWebViewConfigurationProvider() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
+}
 
 void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
     WKWebViewConfiguration* configuration) {
-  DCHECK([NSThread isMainThread]);
-
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
   if (configuration_) {
     Purge();
   }
@@ -75,11 +77,37 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
     configuration_ = [configuration copy];
   }
 
-  if (browser_state_->IsOffTheRecord() && configuration == nil) {
-    // Set the data store only when configuration is nil because the data store
-    // in the configuration should be used.
-    [configuration_
-        setWebsiteDataStore:[WKWebsiteDataStore nonPersistentDataStore]];
+  // Set the data store only when configuration is nil because the data
+  // store in the configuration should be used.
+  if (configuration == nil) {
+    if (browser_state_->IsOffTheRecord()) {
+      // The data is stored in memory. A new non-persistent data store is
+      // created for each incognito browser state.
+      [configuration_
+          setWebsiteDataStore:[WKWebsiteDataStore nonPersistentDataStore]];
+    } else {
+      const std::string& storage_id = browser_state_->GetWebKitStorageID();
+      if (!storage_id.empty()) {
+        if (@available(iOS 17.0, *)) {
+          // Set the data store to configuration when the browser state is not
+          // incognito and the storage ID exists. `dataStoreForIdentifier:` is
+          // available after iOS 17. Otherwise, use the default data store.
+          [configuration_
+              setWebsiteDataStore:
+                  [WKWebsiteDataStore
+                      dataStoreForIdentifier:
+                          [[NSUUID alloc]
+                              initWithUUIDString:base::SysUTF8ToNSString(
+                                                     storage_id)]]];
+        }
+      }
+    }
+  }
+
+  // Explicitly set the default data store to the configuration. The data store
+  // always can be obtained from the configuration.
+  if (configuration_.websiteDataStore == nil) {
+    [configuration_ setWebsiteDataStore:[WKWebsiteDataStore defaultDataStore]];
   }
 
   [configuration_ setIgnoresViewportScaleLimits:YES];
@@ -92,7 +120,8 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
     // https://github.com/WebKit/webkit/blob/1233effdb7826a5f03b3cdc0f67d713741e70976/Source/WebKit/UIProcess/API/Cocoa/WKWebViewConfiguration.mm#L307
     [configuration_ setValue:@NO forKey:@"longPressActionsEnabled"];
   } @catch (NSException* exception) {
-    NOTREACHED() << "Error setting value for longPressActionsEnabled";
+    NOTREACHED_IN_MIGRATION()
+        << "Error setting value for longPressActionsEnabled";
   }
 
   // WKWebView's "fradulentWebsiteWarning" is an iOS 13+ feature that is
@@ -131,8 +160,7 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
   content_rule_list_provider_->SetUserContentController(
       configuration_.userContentController);
 
-  for (auto& observer : observers_)
-    observer.DidCreateNewConfiguration(this, configuration_);
+  configuration_created_callbacks_.Notify(configuration_);
 
   // Workaround to force the creation of the WKWebsiteDataStore. This
   // workaround need to be done here, because this method returns a copy of
@@ -146,7 +174,7 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
 
 WKWebViewConfiguration*
 WKWebViewConfigurationProvider::GetWebViewConfiguration() {
-  DCHECK([NSThread isMainThread]);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
   if (!configuration_) {
     ResetWithWebViewConfiguration(nil);
   }
@@ -156,12 +184,8 @@ WKWebViewConfigurationProvider::GetWebViewConfiguration() {
   return [configuration_ copy];
 }
 
-WKContentRuleListProvider*
-WKWebViewConfigurationProvider::GetContentRuleListProvider() {
-  return content_rule_list_provider_.get();
-}
-
 void WKWebViewConfigurationProvider::UpdateScripts() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
   [configuration_.userContentController removeAllUserScripts];
 
   JavaScriptFeatureManager* java_script_feature_manager =
@@ -175,6 +199,13 @@ void WKWebViewConfigurationProvider::UpdateScripts() {
   for (JavaScriptFeature* feature :
        GetWebClient()->GetJavaScriptFeatures(browser_state_)) {
     features.push_back(feature);
+  }
+  if (base::FeatureList::IsEnabled(features::kLogJavaScriptErrors)) {
+    // CatchGCrWebScriptErrorsJavaScriptFeature must be added last after all
+    // other scripts have setup their gCrWeb functions because this feature
+    // iterates over all such functions, wrapping them in
+    // `catchAndReportErrors`.
+    features.push_back(CatchGCrWebScriptErrorsJavaScriptFeature::GetInstance());
   }
   java_script_feature_manager->ConfigureFeatures(features);
 
@@ -191,18 +222,15 @@ void WKWebViewConfigurationProvider::UpdateScripts() {
 }
 
 void WKWebViewConfigurationProvider::Purge() {
-  DCHECK([NSThread isMainThread]);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
   configuration_ = nil;
 }
 
-void WKWebViewConfigurationProvider::AddObserver(
-    WKWebViewConfigurationProviderObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void WKWebViewConfigurationProvider::RemoveObserver(
-    WKWebViewConfigurationProviderObserver* observer) {
-  observers_.RemoveObserver(observer);
+base::CallbackListSubscription
+WKWebViewConfigurationProvider::RegisterConfigurationCreatedCallback(
+    ConfigurationCreatedCallbackList::CallbackType callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
+  return configuration_created_callbacks_.Add(std::move(callback));
 }
 
 }  // namespace web

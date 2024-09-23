@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_P(SpeculativeRenderViewHostTest,
   GURL url2(embedded_test_server()->GetURL("a.com", "/title2.html"));
   TestNavigationManager navigation(web_contents, url2);
   shell()->LoadURL(url2);
-  EXPECT_TRUE(navigation.WaitForRequestStart());
+  navigation.WaitForSpeculativeRenderFrameHostCreation();
 
   // Check that the speculative RenderViewHost exists, and that it matches the
   // RenderViewHost of the speculative RenderFrameHost.
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_P(SpeculativeRenderViewHostTest,
   GURL url2(embedded_test_server()->GetURL("b.com", "/title1.html"));
   TestNavigationManager navigation(web_contents, url2);
   shell()->LoadURL(url2);
-  EXPECT_TRUE(navigation.WaitForRequestStart());
+  navigation.WaitForSpeculativeRenderFrameHostCreation();
 
   // There should be a speculative RenderFrameHost with a RenderViewHost, but
   // the RenderViewHost should not be speculative.
@@ -126,14 +126,15 @@ IN_PROC_BROWSER_TEST_P(SpeculativeRenderViewHostTest,
   GURL url2(embedded_test_server()->GetURL("a.com", "/title2.html"));
   TestNavigationManager navigation(web_contents, url2);
   shell()->LoadURL(url2);
-  EXPECT_TRUE(navigation.WaitForRequestStart());
+  navigation.WaitForSpeculativeRenderFrameHostCreation();
   FrameTree& frame_tree = web_contents->GetPrimaryFrameTree();
   EXPECT_TRUE(frame_tree.speculative_render_view_host());
 
   // Cancel the navigation while there's still a speculative RenderFrameHost and
   // RenderViewHost.
   FrameTreeNode* root = frame_tree.root();
-  root->navigator().CancelNavigation(root, NavigationDiscardReason::kCancelled);
+  root->navigator().CancelNavigation(
+      root, NavigationDiscardReason::kExplicitCancellation);
 
   // Expect that the navigation finishes but doesn't commit. There should no
   // longer be a speculative RenderViewHost or RenderFrameHost. The current
@@ -171,7 +172,7 @@ IN_PROC_BROWSER_TEST_P(SpeculativeRenderViewHostTest, HistoryNavigation) {
   TestNavigationManager navigation(web_contents, url1);
   ASSERT_TRUE(controller.CanGoBack());
   controller.GoBack();
-  EXPECT_TRUE(navigation.WaitForRequestStart());
+  navigation.WaitForSpeculativeRenderFrameHostCreation();
 
   // Check that the speculative RenderViewHost exists, and that it matches the
   // RenderViewHost of the speculative RenderFrameHost.
@@ -252,7 +253,7 @@ IN_PROC_BROWSER_TEST_P(SpeculativeRenderViewHostTest, OpenerProxies) {
   GURL url3(embedded_test_server()->GetURL("b.com", "/title2.html"));
   TestNavigationManager navigation(contents_b, url3);
   new_shell->LoadURL(url3);
-  EXPECT_TRUE(navigation.WaitForRequestStart());
+  navigation.WaitForSpeculativeRenderFrameHostCreation();
   EXPECT_TRUE(contents_b->GetPrimaryFrameTree().speculative_render_view_host());
   EXPECT_TRUE(navigation.WaitForNavigationFinished());
 
@@ -314,7 +315,7 @@ IN_PROC_BROWSER_TEST_P(SpeculativeRenderViewHostTest, SubframeProxies) {
   GURL url2(embedded_test_server()->GetURL("a.com", "/title2.html"));
   TestNavigationManager navigation(web_contents, url2);
   shell()->LoadURL(url2);
-  EXPECT_TRUE(navigation.WaitForRequestStart());
+  navigation.WaitForSpeculativeRenderFrameHostCreation();
 
   // Make sure a speculative RenderViewHost is involved.
   FrameTree& frame_tree = web_contents->GetPrimaryFrameTree();
@@ -406,7 +407,7 @@ IN_PROC_BROWSER_TEST_P(SpeculativeRenderViewHostTest, ForEachRenderViewHost) {
   GURL url2(embedded_test_server()->GetURL("a.com", "/title2.html"));
   TestNavigationManager navigation(web_contents, url2);
   shell()->LoadURL(url2);
-  EXPECT_TRUE(navigation.WaitForRequestStart());
+  navigation.WaitForSpeculativeRenderFrameHostCreation();
 
   // Check that the speculative RenderViewHost exists, and that it matches the
   // RenderViewHost of the speculative RenderFrameHost.

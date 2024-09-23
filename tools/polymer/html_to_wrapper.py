@@ -61,6 +61,18 @@ const template = html`%(content)s`;
 document.head.appendChild(template.content);
 """
 
+# Template for Lit icon HTML files.
+_LIT_ICONS_TEMPLATE = """import '%(scheme)s//resources/cr_elements/cr_icon/cr_iconset.js';
+import {getTrustedHTML} from '%(scheme)s//resources/js/static_types.js';
+
+const div = document.createElement('div');
+div.innerHTML = getTrustedHTML`%(content)s`;
+const iconsets = div.querySelectorAll('cr-iconset');
+for (const iconset of iconsets) {
+  document.head.appendChild(iconset);
+}
+"""
+
 # Tokens used to detect whether the underlying custom element is based on
 # Polymer or Lit.
 POLYMER_TOKEN = '//resources/polymer/v3_0/polymer/polymer_bundled.min.js'
@@ -69,6 +81,7 @@ LIT_TOKEN = '//resources/lit/v3_0/lit.rollup.js'
 # Map holding all the different types of HTML files to generate wrappers for.
 TEMPLATE_MAP = {
     'lit': _LIT_ELEMENT_TEMPLATE,
+    'lit_icons': _LIT_ICONS_TEMPLATE,
     'native': _NATIVE_ELEMENT_TEMPLATE,
     'polymer_icons': _POLYMER_ICONS_TEMPLATE,
     'polymer': _POLYMER_ELEMENT_TEMPLATE,
@@ -85,6 +98,16 @@ def detect_template_type(definition_file):
       return 'lit'
 
     return 'native'
+
+
+def detect_icon_template_type(icons_file):
+  with io.open(icons_file, encoding='utf-8', mode='r') as f:
+    content = f.read()
+    if 'iron-iconset-svg' in content:
+      return 'polymer_icons'
+    assert 'cr-iconset' in content, \
+        'icons files must include iron-iconset-svg or cr-iconset'
+    return 'lit_icons'
 
 
 _IMPORTS_START_REGEX = '^<!-- #html_wrapper_imports_start$'
@@ -179,31 +202,52 @@ def main(argv):
   # Wrap the input files (minified or not) with an enclosing .ts file.
   for in_file in args.in_files:
     wrapper_in_file = path.join(wrapper_in_folder, in_file)
+    template = None
+    template_type = args.template
+    filename = path.basename(in_file)
+    effective_in_file = wrapper_in_file
 
-    with io.open(wrapper_in_file, encoding='utf-8', mode='r') as f:
-      html_content = f.read()
-
-      template = None
-      template_type = args.template
-      filename = path.basename(in_file)
-      if filename == 'icons.html' or filename.endswith('_icons.html'):
-        assert args.template == 'polymer' or args.template == 'detect', (
-            r'Polymer icons files not supported with template="%s"' %
-            args.template)
+    if filename == 'icons.html' or filename.endswith('_icons.html'):
+      if args.template == 'polymer':
         template_type = 'polymer_icons'
-      elif template_type == 'detect':
-        # Locate the file that holds the web component's definition. Assumed to
-        # be in the same folder as input HTML template file.
-        definition_file = path.splitext(path.join(in_folder,
-                                                  in_file))[0] + extension
-        template_type = detect_template_type(definition_file)
+      elif args.template == 'lit':
+        template_type = 'lit_icons'
+      else:
+        assert args.template == 'detect', (
+            r'Polymer/Lit icons files not supported with template="%s"' %
+            args.template)
+        template_type = detect_icon_template_type(wrapper_in_file)
+    elif filename.endswith('icons_lit.html'):
+      assert args.template == 'lit' or args.template == 'detect', (
+          r'Lit icons files not supported with template="%s"' % args.template)
+      # Grab the content from the equivalent Polymer file, and substitute
+      # cr-iconset for iron-iconset-svg.
+      polymer_file = path.join(wrapper_in_folder,
+                               in_file.replace('icons_lit', 'icons'))
+      effective_in_file = polymer_file
+      template_type = 'lit_icons'
+    elif template_type == 'detect':
+      # Locate the file that holds the web component's definition. Assumed to
+      # be in the same folder as input HTML template file.
+      definition_file = path.splitext(path.join(in_folder,
+                                                in_file))[0] + extension
+      template_type = detect_template_type(definition_file)
+
+    with io.open(effective_in_file, encoding='utf-8', mode='r') as f:
+      html_content = f.read()
 
       substitutions = {
           'content': html_content,
           'scheme': 'chrome:' if args.scheme == 'chrome' else '',
       }
 
-      if template_type == 'lit':
+      if template_type == 'lit_icons':
+        # Replace iron-iconset-svg for the case of Lit icons files generated
+        # from a Polymer icons file.
+        if 'iron-iconset-svg' in html_content:
+          html_content = html_content.replace('iron-iconset-svg', 'cr-iconset')
+        substitutions['content'] = html_content
+      elif template_type == 'lit':
         # Add Lit specific substitutions.
         basename = path.splitext(path.basename(in_file))[0]
         # Derive class name from file name. For example

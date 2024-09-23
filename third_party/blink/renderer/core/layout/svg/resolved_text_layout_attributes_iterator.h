@@ -50,11 +50,13 @@ class ResolvedTextLayoutAttributesIterator final {
     if (addressable_index == resolved_[index_].first) {
       return resolved_[index_].second;
     }
-    auto* it = std::find_if(resolved_.begin() + index_, resolved_.end(),
-                            [addressable_index](const auto& pair) {
-                              return addressable_index <= pair.first;
-                            });
-    index_ = static_cast<wtf_size_t>(std::distance(resolved_.begin(), it));
+    auto resolved_range = base::span(resolved_).subspan(index_);
+    auto it = base::ranges::find_if(resolved_range,
+                                    [addressable_index](const auto& pair) {
+                                      return addressable_index <= pair.first;
+                                    });
+    index_ +=
+        static_cast<wtf_size_t>(std::distance(resolved_range.begin(), it));
     return AdvanceTo(addressable_index);
   }
 

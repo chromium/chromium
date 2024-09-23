@@ -44,6 +44,7 @@ class TickClock;
 
 namespace net {
 
+class HostPortPair;
 class NetLog;
 
 namespace nqe::internal {
@@ -257,7 +258,7 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // GatherEstimatesForNextConnectionType(). This should always be called in
   // production, because getting the network id involves a blocking call to
   // recv() in AddressTrackerLinux, and the IO thread should never be blocked.
-  // TODO(https://crbug.com/821607): Remove after the bug is resolved.
+  // TODO(crbug.com/41376341): Remove after the bug is resolved.
   void EnableGetNetworkIdAsynchronously();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -569,8 +570,7 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
 
   // Minimum duration between two consecutive computations of effective
   // connection type. Set to non-zero value as a performance optimization.
-  const base::TimeDelta effective_connection_type_recomputation_interval_ =
-      base::Seconds(10);
+  const base::TimeDelta effective_connection_type_recomputation_interval_;
 
   // Time when the effective connection type was last computed.
   base::TimeTicks last_effective_connection_type_computation_;

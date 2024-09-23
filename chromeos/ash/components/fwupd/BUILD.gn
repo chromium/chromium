@@ -15,8 +15,11 @@ component("fwupd") {
     "//ash/webui/firmware_update_ui/mojom",
     "//base:base",
     "//chromeos/ash/components/dbus/fwupd",
+    "//chromeos/ash/components/network",
+    "//components/device_event_log",
     "//crypto",
     "//dbus",
+    "//third_party/zlib/google:compression_utils",
   ]
 
   sources = [
@@ -30,6 +33,30 @@ component("fwupd") {
 source_set("unit_tests") {
   testonly = true
 
+  deps = [
+    ":fwupd",
+    ":test_support",
+    "//ash",
+    "//ash/constants",
+    "//ash/webui/firmware_update_ui/mojom",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus/fwupd",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//dbus",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/message_center",
+    "//ui/message_center:test_support",
+  ]
+
+  sources = [ "firmware_update_manager_unittest.cc" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
   public_deps = [
     "//ash/public/cpp",
     "//base",
@@ -37,26 +64,13 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":fwupd",
-    "//ash",
-    "//ash/constants",
-    "//ash/webui/firmware_update_ui/mojom",
-    "//base/test:test_support",
-    "//chromeos/ash/components/dbus/fwupd",
-    "//dbus",
-    "//dbus:test_support",
     "//mojo/public/cpp/bindings",
     "//net/traffic_annotation",
     "//services/network/public/cpp",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//ui/message_center",
-    "//ui/message_center:test_support",
   ]
 
   sources = [
     "fake_fwupd_download_client.cc",
     "fake_fwupd_download_client.h",
-    "firmware_update_manager_unittest.cc",
   ]
 }

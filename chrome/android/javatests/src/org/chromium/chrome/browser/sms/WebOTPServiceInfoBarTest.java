@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -32,7 +33,6 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.components.browser_ui.sms.WebOTPServiceInfoBar;
 import org.chromium.components.browser_ui.sms.WebOTPServiceUma;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
 
@@ -60,7 +60,7 @@ public class WebOTPServiceInfoBarTest {
     }
 
     private WebOTPServiceInfoBar createInfoBar() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Tab tab = mActivity.getActivityTab();
                     WebOTPServiceInfoBar infoBar =
@@ -155,7 +155,7 @@ public class WebOTPServiceInfoBarTest {
                 sActivityTestRule.getKeyboardDelegate();
         EditText editText = new EditText(mActivity);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FrameLayout decor = (FrameLayout) mActivity.getWindow().getDecorView();
                     FrameLayout.LayoutParams params =
@@ -185,7 +185,7 @@ public class WebOTPServiceInfoBarTest {
                 dismissed_count + 1);
         assertHistogramRecordedCount(
                 TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, time_cancel_count + 0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> UiUtils.removeViewFromParent(editText));
+        ThreadUtils.runOnUiThreadBlocking(() -> UiUtils.removeViewFromParent(editText));
     }
 
     @Test
@@ -206,7 +206,7 @@ public class WebOTPServiceInfoBarTest {
                 sActivityTestRule.getKeyboardDelegate();
         EditText editText = new EditText(mActivity);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FrameLayout decor = (FrameLayout) mActivity.getWindow().getDecorView();
                     FrameLayout.LayoutParams params =
@@ -239,6 +239,6 @@ public class WebOTPServiceInfoBarTest {
                 dismissed_count + 1);
         assertHistogramRecordedCount(
                 TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, time_cancel_count + 1);
-        TestThreadUtils.runOnUiThreadBlocking(() -> UiUtils.removeViewFromParent(editText));
+        ThreadUtils.runOnUiThreadBlocking(() -> UiUtils.removeViewFromParent(editText));
     }
 }

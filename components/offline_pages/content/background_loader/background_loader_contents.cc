@@ -54,7 +54,7 @@ bool BackgroundLoaderContents::IsNeverComposited(
 
 void BackgroundLoaderContents::CloseContents(content::WebContents* source) {
   // Do nothing. Other pages should not be able to close a background page.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool BackgroundLoaderContents::ShouldSuppressDialogs(
@@ -91,7 +91,7 @@ bool BackgroundLoaderContents::IsWebContentsCreationOverridden(
   return true;
 }
 
-void BackgroundLoaderContents::AddNewContents(
+content::WebContents* BackgroundLoaderContents::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
@@ -101,8 +101,10 @@ void BackgroundLoaderContents::AddNewContents(
     bool* was_blocked) {
   // Pop-ups should be blocked;
   // background pages should not create other contents
-  if (was_blocked != nullptr)
+  if (was_blocked != nullptr) {
     *was_blocked = true;
+  }
+  return nullptr;
 }
 
 #if BUILDFLAG(IS_ANDROID)

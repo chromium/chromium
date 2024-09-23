@@ -1,0 +1,99 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "card_side_swipe_view.h",
+    "card_side_swipe_view.mm",
+    "side_swipe_mediator+Testing.h",
+    "side_swipe_mediator.h",
+    "side_swipe_mediator.mm",
+    "side_swipe_navigation_view.h",
+    "side_swipe_navigation_view.mm",
+    "side_swipe_util.h",
+    "side_swipe_util.mm",
+    "swipe_view.h",
+    "swipe_view.mm",
+  ]
+  public_deps = [ ":gesture_recognizer" ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/reading_list/core",
+    "//ios/chrome/app/theme",
+    "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/side_swipe/ui_bundled/resources",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/tabs/ui_bundled/requirements",
+    "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/ui/toolbar/public",
+    "//ios/chrome/browser/ui/toolbar/public:constants",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/web/model:page_placeholder",
+    "//ios/chrome/common",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/common",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("gesture_recognizer") {
+  sources = [
+    "side_swipe_gesture_recognizer.h",
+    "side_swipe_gesture_recognizer.mm",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "side_swipe_mediator_unittest.mm" ]
+  deps = [
+    ":ui_bundled",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/test:test_support",
+    "//ios/web/common",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "side_swipe_egtest.mm" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

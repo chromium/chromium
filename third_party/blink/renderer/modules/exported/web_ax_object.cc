@@ -81,7 +81,7 @@ mojom::blink::ScrollAlignment::Behavior ToBlinkScrollAlignmentBehavior(
     case ax::mojom::ScrollAlignment::kScrollAlignmentClosestEdge:
       return mojom::blink::ScrollAlignment::Behavior::kClosestEdge;
   }
-  NOTREACHED() << alignment;
+  NOTREACHED_IN_MIGRATION() << alignment;
 }
 }  // namespace
 
@@ -295,13 +295,6 @@ bool WebAXObject::IsOffScreen() const {
   return private_->IsOffScreen();
 }
 
-bool WebAXObject::IsSelectedOptionActive() const {
-  if (IsDetached())
-    return false;
-
-  return private_->IsSelectedOptionActive();
-}
-
 bool WebAXObject::IsVisited() const {
   if (IsDetached())
     return false;
@@ -499,7 +492,7 @@ static ax::mojom::TextAffinity ToAXAffinity(TextAffinity affinity) {
     case TextAffinity::kDownstream:
       return ax::mojom::TextAffinity::kDownstream;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ax::mojom::TextAffinity::kDownstream;
   }
 }
@@ -541,24 +534,25 @@ void WebAXObject::Selection(bool& is_selection_backward,
   if (!ax_selection)
     return;
 
-  const AXPosition base = ax_selection.Base();
-  anchor_object = WebAXObject(const_cast<AXObject*>(base.ContainerObject()));
-  const AXPosition extent = ax_selection.Extent();
-  focus_object = WebAXObject(const_cast<AXObject*>(extent.ContainerObject()));
+  const AXPosition ax_anchor = ax_selection.Anchor();
+  anchor_object =
+      WebAXObject(const_cast<AXObject*>(ax_anchor.ContainerObject()));
+  const AXPosition ax_focus = ax_selection.Focus();
+  focus_object = WebAXObject(const_cast<AXObject*>(ax_focus.ContainerObject()));
 
-  is_selection_backward = base > extent;
-  if (base.IsTextPosition()) {
-    anchor_offset = base.TextOffset();
-    anchor_affinity = ToAXAffinity(base.Affinity());
+  is_selection_backward = ax_anchor > ax_focus;
+  if (ax_anchor.IsTextPosition()) {
+    anchor_offset = ax_anchor.TextOffset();
+    anchor_affinity = ToAXAffinity(ax_anchor.Affinity());
   } else {
-    anchor_offset = base.ChildIndex();
+    anchor_offset = ax_anchor.ChildIndex();
   }
 
-  if (extent.IsTextPosition()) {
-    focus_offset = extent.TextOffset();
-    focus_affinity = ToAXAffinity(extent.Affinity());
+  if (ax_focus.IsTextPosition()) {
+    focus_offset = ax_focus.TextOffset();
+    focus_affinity = ToAXAffinity(ax_focus.Affinity());
   } else {
-    focus_offset = extent.ChildIndex();
+    focus_offset = ax_focus.ChildIndex();
   }
 }
 
@@ -572,38 +566,38 @@ bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
 
   ScopedActionAnnotator annotater(private_.Get(),
                                   ax::mojom::blink::Action::kSetSelection);
-  AXPosition ax_base, ax_extent;
+  AXPosition ax_anchor, ax_focus;
   if (static_cast<const AXObject*>(anchor_object)->IsTextObject() ||
       static_cast<const AXObject*>(anchor_object)->IsAtomicTextField()) {
-    ax_base =
+    ax_anchor =
         AXPosition::CreatePositionInTextObject(*anchor_object, anchor_offset);
   } else if (anchor_offset <= 0) {
-    ax_base = AXPosition::CreateFirstPositionInObject(*anchor_object);
+    ax_anchor = AXPosition::CreateFirstPositionInObject(*anchor_object);
   } else if (anchor_offset >= static_cast<int>(anchor_object.ChildCount())) {
-    ax_base = AXPosition::CreateLastPositionInObject(*anchor_object);
+    ax_anchor = AXPosition::CreateLastPositionInObject(*anchor_object);
   } else {
     DCHECK_GE(anchor_offset, 0);
-    ax_base = AXPosition::CreatePositionBeforeObject(
+    ax_anchor = AXPosition::CreatePositionBeforeObject(
         *anchor_object.ChildAt(static_cast<unsigned int>(anchor_offset)));
   }
 
   if (static_cast<const AXObject*>(focus_object)->IsTextObject() ||
       static_cast<const AXObject*>(focus_object)->IsAtomicTextField()) {
-    ax_extent =
+    ax_focus =
         AXPosition::CreatePositionInTextObject(*focus_object, focus_offset);
   } else if (focus_offset <= 0) {
-    ax_extent = AXPosition::CreateFirstPositionInObject(*focus_object);
+    ax_focus = AXPosition::CreateFirstPositionInObject(*focus_object);
   } else if (focus_offset >= static_cast<int>(focus_object.ChildCount())) {
-    ax_extent = AXPosition::CreateLastPositionInObject(*focus_object);
+    ax_focus = AXPosition::CreateLastPositionInObject(*focus_object);
   } else {
     DCHECK_GE(focus_offset, 0);
-    ax_extent = AXPosition::CreatePositionBeforeObject(
+    ax_focus = AXPosition::CreatePositionBeforeObject(
         *focus_object.ChildAt(static_cast<unsigned int>(focus_offset)));
   }
 
   AXSelection::Builder builder;
   AXSelection ax_selection =
-      builder.SetBase(ax_base).SetExtent(ax_extent).Build();
+      builder.SetAnchor(ax_anchor).SetFocus(ax_focus).Build();
   return ax_selection.Select();
 }
 
@@ -744,14 +738,14 @@ WebDocument WebAXObject::GetDocument() const {
   return WebDocument(document);
 }
 
-bool WebAXObject::AccessibilityIsIgnored() const {
+bool WebAXObject::IsIgnored() const {
   if (IsDetached())
     return false;
 
-  return private_->AccessibilityIsIgnored();
+  return private_->IsIgnored();
 }
 
-bool WebAXObject::AccessibilityIsIncludedInTree() const {
+bool WebAXObject::IsIncludedInTree() const {
   if (IsDetached())
     return false;
 
@@ -761,7 +755,7 @@ bool WebAXObject::AccessibilityIsIncludedInTree() const {
       << "Document lifecycle must be at LayoutClean or later, was "
       << private_->GetDocument()->Lifecycle().GetState();
 
-  return private_->AccessibilityIsIncludedInTree();
+  return private_->IsIncludedInTree();
 }
 
 unsigned WebAXObject::ColumnCount() const {
@@ -861,6 +855,7 @@ WebAXObject WebAXObject::NextOnLine() const {
   if (IsDetached())
     return WebAXObject();
 
+  ScopedFreezeAXCache freeze(private_->AXObjectCache());
   return WebAXObject(private_.Get()->NextOnLine());
 }
 
@@ -868,6 +863,7 @@ WebAXObject WebAXObject::PreviousOnLine() const {
   if (IsDetached())
     return WebAXObject();
 
+  ScopedFreezeAXCache freeze(private_->AXObjectCache());
   return WebAXObject(private_.Get()->PreviousOnLine());
 }
 
@@ -995,11 +991,27 @@ bool WebAXObject::ScrollToMakeVisibleWithSubFocus(
 
 void WebAXObject::HandleAutofillSuggestionAvailabilityChanged(
     blink::WebAXAutofillSuggestionAvailability suggestion_availability) const {
-  if (IsDetached() || !private_->IsAXLayoutObject())
+  if (IsDetached() || !private_->GetLayoutObject()) {
     return;
+  }
 
   private_->HandleAutofillSuggestionAvailabilityChanged(
       suggestion_availability);
+}
+
+int WebAXObject::GenerateAXID() {
+  DCHECK(private_->GetDocument() && private_->GetDocument()->IsActive());
+  return private_->AXObjectCache().GenerateAXID();
+}
+
+void WebAXObject::SetPluginTreeSource(
+    ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>*
+        source) {
+  private_->AXObjectCache().SetPluginTreeSource(source);
+}
+
+void WebAXObject::MarkPluginDescendantDirty(ui::AXNodeID node_id) {
+  private_->AXObjectCache().MarkPluginDescendantDirty(node_id);
 }
 
 bool WebAXObject::CanCallAOMEventListenersForTesting() const {
@@ -1069,7 +1081,18 @@ WebAXObject WebAXObject::FromWebNode(const WebNode& web_node) {
   const Document* document = web_document.ConstUnwrap<Document>();
   auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
   const Node* node = web_node.ConstUnwrap<Node>();
-  return cache ? WebAXObject(cache->Get(node)) : WebAXObject();
+
+  if (!cache) {
+    return WebAXObject();
+  }
+
+  // TODO: if this shouldn't be done by default, add a parameter passed by the
+  // caller.
+
+  // Since calls into this lookup might happen prior to the cache building
+  // everything from its backing objects like DOM, layout trees, force it here.
+  cache->UpdateAXForAllDocuments();
+  return WebAXObject(cache->Get(node));
 }
 
 // static
@@ -1088,6 +1111,15 @@ WebAXObject WebAXObject::FromWebDocumentByID(const WebDocument& web_document,
   const Document* document = web_document.ConstUnwrap<Document>();
   auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
   return cache ? WebAXObject(cache->ObjectFromAXID(ax_id)) : WebAXObject();
+}
+
+// static
+WebAXObject WebAXObject::FromWebDocumentFirstWithRole(
+    const WebDocument& web_document,
+    ax::mojom::blink::Role role) {
+  const Document* document = web_document.ConstUnwrap<Document>();
+  auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
+  return cache ? WebAXObject(cache->FirstObjectWithRole(role)) : WebAXObject();
 }
 
 // static

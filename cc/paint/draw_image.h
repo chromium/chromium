@@ -6,6 +6,7 @@
 #define CC_PAINT_DRAW_IMAGE_H_
 
 #include <optional>
+
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"

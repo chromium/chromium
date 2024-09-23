@@ -30,6 +30,15 @@ class COMPONENT_EXPORT(PATCHPANEL) PatchPanelClient
   using GetDevicesCallback = base::OnceCallback<void(
       const std::vector<patchpanel::NetworkDevice>& devices)>;
 
+  using TagSocketCallback = base::OnceCallback<void(bool success)>;
+
+  // The VPN routing policy which can be configured with TagSocket().
+  // DEFAULT_ROUTING is omitted here and std::nullopt should be used instead.
+  enum class VpnRoutingPolicy {
+    kRouteOnVpn,
+    kBypassVpn,
+  };
+
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
 
@@ -64,10 +73,24 @@ class COMPONENT_EXPORT(PATCHPANEL) PatchPanelClient
   virtual void NotifyARCVPNSocketConnectionEvent(
       const patchpanel::SocketConnectionEvent& msg) = 0;
 
+  // Tags this socket with |network_id| and |vpn_policy|. See the comments in
+  // third_party/cros_system_api/dbus/patchpanel/patchpanel_service.proto for
+  // their detailed meanings. The callback will be called once and only once
+  // after the current task is finished (i.e., via PostTask()).
+  virtual void TagSocket(int socket_fd,
+                         std::optional<int> network_id,
+                         std::optional<VpnRoutingPolicy> vpn_policy,
+                         TagSocketCallback callback) = 0;
+
   // Called when sending feature enabled flag to patchpanel.
   virtual void SetFeatureFlag(
       patchpanel::SetFeatureFlagRequest::FeatureFlag flag,
       bool enabled) = 0;
+
+  // Calls |callback| when patchpanel DBus service to be available. If the
+  // service is already up, calls |callback| immediately.
+  virtual void WaitForServiceToBeAvailable(
+      dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) = 0;
 
   // Adds an observer.
   virtual void AddObserver(Observer* observer) = 0;

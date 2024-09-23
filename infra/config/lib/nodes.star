@@ -55,7 +55,9 @@ def _create_singleton_node_type(kind):
         get = get,
     )
 
-def _create_unscoped_node_type(kind, allow_unnamed = False):
+_ANONYMOUS_PREFIX = "<anonymous>"
+
+def _create_unscoped_node_type(kind, allow_empty_id = False):
     """Create an unscoped node type.
 
     Unscoped node types only allow for one node to exist with a given key_value.
@@ -65,9 +67,11 @@ def _create_unscoped_node_type(kind, allow_unnamed = False):
     Args:
         kind: (str) An identifier for the kind of the node. Must be unique
             within the chromium namespace.
-        allow_unnamed: (bool) Whether or not to allow the creation of unnamed
-            nodes. This can allow for creating resources that are defined within
-            the definition of other resources without requiring assigned names.
+        allow_empty_id: (bool) Whether or not to allow the creation of nodes
+            without providing an ID value. This can allow for creating resources
+            that are defined within the definition of other resources without
+            requiring assigning an ID upfront. Instead, a unique ID will be
+            generated.
 
     Returns:
         A node type that can be used for creating and getting nodes of
@@ -82,7 +86,7 @@ def _create_unscoped_node_type(kind, allow_unnamed = False):
             key of kind will be extracted from the keyset.
         * add(key_id, **kwargs): Adds a node with a key created via
             `key(key_id)`. `graph.add_node` will be called with the key and
-            `**kwargs`. Returns the key. If allow_unnamed is True, key_id will
+            `**kwargs`. Returns the key. If allow_empty_id is True, key_id will
             have the defult value of None and a None value for key_id will
             create a node with a key that is unique within the lucicfg run.
         * get(key_id): Gets the node with key given by `key(key_id)`.
@@ -93,13 +97,13 @@ def _create_unscoped_node_type(kind, allow_unnamed = False):
             return key_id_or_keyset.get(kind)
         return graph.key(_CHROMIUM_NS_KIND, "", kind, key_id_or_keyset)
 
-    if allow_unnamed:
+    if allow_empty_id:
         def add(key_id = None, **kwargs):
             if key_id == None:
-                sequence_value = str(sequence.next(kind))
-                k = graph.key(_CHROMIUM_NS_KIND, "UNIQUE", kind, sequence_value)
-            else:
-                k = key(key_id)
+                key_id = "{}:{}".format(_ANONYMOUS_PREFIX, sequence.next(kind))
+            elif key_id.startswith(_ANONYMOUS_PREFIX):
+                fail("cannot specify a key ID with prefix \"{}\"".format(_ANONYMOUS_PREFIX))
+            k = key(key_id)
             graph.add_node(k, **kwargs)
             return k
     else:
@@ -341,7 +345,11 @@ def _create_link_node_type(kind, parent_node_type, child_node_type):
                 fail("kind of {} is not {}".format(parent_key, parent_kind))
             parent_node = graph.node(parent_key)
             children = []
-            for link_node in graph.children(parent_key, kind):
+
+            # The unique keys use the string representation of an incrementing
+            # number, which makes the ordering of them seem somewhat chaotic, so
+            # get the link nodes in definition order
+            for link_node in graph.children(parent_key, kind, graph.DEFINITION_ORDER):
                 for ref_node in graph.children(link_node.key, child_node_type.ref_kind):
                     children.append(child_node_type.follow_ref(ref_node, parent_node))
             return children
@@ -351,7 +359,10 @@ def _create_link_node_type(kind, parent_node_type, child_node_type):
                 fail("kind of {} is not {}".format(child_key, child_kind))
             parents = []
             for ref_node in graph.parents(child_key, child_node_type.ref_kind):
-                for link_node in graph.parents(ref_node.key, kind):
+                # The unique keys use the string representation of an
+                # incrementing number, which makes the ordering of them seem
+                # somewhat chaotic, so get the link nodes in definition order
+                for link_node in graph.parents(ref_node.key, kind, graph.DEFINITION_ORDER):
                     parents.extend(graph.parents(link_node.key, parent_kind))
             return parents
 
@@ -366,7 +377,11 @@ def _create_link_node_type(kind, parent_node_type, child_node_type):
             if parent_key.kind != parent_kind:
                 fail("kind of {} is not {}".format(parent_key, parent_kind))
             children = []
-            for link in graph.children(parent_key, kind):
+
+            # The unique keys use the string representation of an incrementing
+            # number, which makes the ordering of them seem somewhat chaotic, so
+            # get the link nodes in definition order
+            for link in graph.children(parent_key, kind, graph.DEFINITION_ORDER):
                 children.extend(graph.children(link.key, child_kind))
             return children
 
@@ -374,7 +389,11 @@ def _create_link_node_type(kind, parent_node_type, child_node_type):
             if child_key.kind != child_kind:
                 fail("kind of {} is not {}".format(child_key, child_kind))
             parents = []
-            for link in graph.parents(child_key, kind):
+
+            # The unique keys use the string representation of an incrementing
+            # number, which makes the ordering of them seem somewhat chaotic, so
+            # get the link nodes in definition order
+            for link in graph.parents(child_key, kind, graph.DEFINITION_ORDER):
                 parents.extend(graph.parents(link.key, parent_kind))
             return parents
 

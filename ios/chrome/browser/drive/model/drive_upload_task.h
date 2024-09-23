@@ -21,7 +21,8 @@ class DriveUploadTask final : public UploadTask {
   // Sets source `path`, `suggested_name` and `mime_type` of file to upload.
   void SetFileToUpload(const base::FilePath& path,
                        const base::FilePath& suggested_name,
-                       const std::string& mime_type);
+                       const std::string& mime_type,
+                       const int64_t total_bytes);
   // Sets name of folder in which to add uploaded files.
   void SetDestinationFolderName(const std::string& folder_name);
 
@@ -31,7 +32,8 @@ class DriveUploadTask final : public UploadTask {
   void Cancel() final;
   id<SystemIdentity> GetIdentity() const final;
   float GetProgress() const final;
-  NSURL* GetResponseLink() const final;
+  std::optional<GURL> GetResponseLink(
+      bool add_user_identifier = false) const final;
   NSError* GetError() const final;
 
  private:
@@ -45,17 +47,18 @@ class DriveUploadTask final : public UploadTask {
   // this existing folder using `UploadFile()`. Otherwise, create a destination
   // folder using `uploader_->CreateSaveToDriveFolder(folder_name, ...)` and
   // report the result to `UploadFile()`;
-  void CreateFolderOrDirectlyUploadFile(DriveFolderResult folder_search_result);
+  void CreateFolderOrDirectlyUploadFile(
+      const DriveFolderResult& folder_search_result);
 
   // Performs the third step of this upload task i.e. uploads the
   // file at `file_url` to the folder contained in `folder_result` using
   // `uploader_->UploadFile(file_url, ...)`.
-  void UploadFile(DriveFolderResult folder_result);
+  void UploadFile(const DriveFolderResult& folder_result);
 
   // Called when the uploader is reporting progress of upload.
-  void OnDriveFileUploadProgress(DriveFileUploadProgress progress);
+  void OnDriveFileUploadProgress(const DriveFileUploadProgress& progress);
   // Called when the uploader is reporting result of upload.
-  void OnDriveFileUploadResult(DriveFileUploadResult result);
+  void OnDriveFileUploadResult(const DriveFileUploadResult& result);
 
   // Sets `state_` and calls `UploadTaskUpdated()`.
   void SetState(State state);
@@ -64,11 +67,13 @@ class DriveUploadTask final : public UploadTask {
   State state_ = State::kNotStarted;
 
   // File path of file to upload.
-  base::FilePath file_path_;
+  std::optional<base::FilePath> file_path_;
   // Suggested file name for uploaded file.
   base::FilePath suggested_file_name_;
   // MIME type of uploaded file.
   std::string file_mime_type_;
+  // Size of the file to upload.
+  int64_t file_total_bytes_ = -1;
   // Name of folder in which to add uploaded files.
   std::string folder_name_;
 
@@ -80,6 +85,9 @@ class DriveUploadTask final : public UploadTask {
   // this will contain an error. Otherwise it will contain a link to the
   // successfully uploaded file.
   std::optional<DriveFileUploadResult> upload_result_;
+  // Number attempts to start the task i.e. incremented every time
+  // `CreateFolderOrDirectlyUploadFile()` is called.
+  int number_of_attempts_ = 0;
 
   base::WeakPtrFactory<DriveUploadTask> weak_ptr_factory_{this};
 };

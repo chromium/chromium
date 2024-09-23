@@ -62,7 +62,8 @@ interface CanvasRenderingContext2D {
     // state
     void save(); // push state on state stack
     [NoAllocDirectCall, RaisesException] void restore(); // pop state stack if top state was pushed by save, and restore state
-    [MeasureAs=Canvas2DLayers, RuntimeEnabled=Canvas2dLayers, CallWith=ScriptState, RaisesException] void beginLayer(optional BeginLayerOptions options = {}); // push state on state stack and creates bitmap for subsequent draw ops
+    [MeasureAs=Canvas2DLayers, RuntimeEnabled=Canvas2dLayers, CallWith=ScriptState] void beginLayer(); // push state on state stack and creates bitmap for subsequent draw ops
+    [MeasureAs=Canvas2DLayers, RuntimeEnabled=Canvas2dLayersWithOptions, CallWith=ScriptState, RaisesException] void beginLayer(BeginLayerOptions options); // push state on state stack and creates bitmap for subsequent draw ops
     [NoAllocDirectCall, RuntimeEnabled=Canvas2dLayers, RaisesException] void endLayer(); // pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap
     // Clear the canvas and reset the path
     void reset();
@@ -107,15 +108,15 @@ interface CanvasRenderingContext2D {
 
     // path API (see also CanvasPath)
     [HighEntropy, NoAllocDirectCall] void beginPath();
-    [HighEntropy] void fill(optional CanvasFillRule winding);
+    [HighEntropy, NoAllocDirectCall] void fill();
+    [HighEntropy] void fill(CanvasFillRule winding);
     [HighEntropy] void fill(Path2D path, optional CanvasFillRule winding);
-    [HighEntropy] void stroke();
+    [HighEntropy, NoAllocDirectCall] void stroke();
     [HighEntropy] void stroke(Path2D path);
     // Focus rings
     void drawFocusIfNeeded(Element element);
     void drawFocusIfNeeded(Path2D path, Element element);
 
-    [RuntimeEnabled=Canvas2dScrollPathIntoView] void scrollPathIntoView(optional Path2D path);
     void clip(optional CanvasFillRule winding);
     void clip(Path2D path, optional CanvasFillRule winding);
     [HighEntropy] boolean isPointInPath(unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
@@ -128,22 +129,23 @@ interface CanvasRenderingContext2D {
     [HighEntropy] void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     [HighEntropy] TextMetrics measureText(DOMString text);
 
-    // Render entire FormattedText with line wrapping (one-shot)
-    [RuntimeEnabled=FormattedText, RaisesException] void drawFormattedText(FormattedText formattedText, double x, double y);
-
     // drawing images
     [RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y);
     [RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
     [RaisesException] void drawImage(CanvasImageSource image, unrestricted double sx, unrestricted double sy, unrestricted double sw, unrestricted double sh, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
 
+    // placeElement: https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md
+    [RuntimeEnabled=CanvasPlaceElement, RaisesException] void placeElement(Element element, unrestricted double x,
+                                        unrestricted double y);
+
     // triangle mesh API
-    [RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DVertexBuffer createMesh2DVertexBuffer(Float32Array buffer);
-    [RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DUVBuffer createMesh2DUVBuffer(Float32Array buffer);
-    [RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DIndexBuffer createMesh2DIndexBuffer(Uint16Array buffer);
-    [RuntimeEnabled=Canvas2dMesh, HighEntropy, RaisesException] void drawMesh(Mesh2DVertexBuffer vertex_buffer,
-                                                                              Mesh2DUVBuffer uv_buffer,
-                                                                              Mesh2DIndexBuffer index_buffer,
-                                                                              CanvasImageSource image);
+    [MeasureAs=Canvas2DMesh, RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DVertexBuffer createMesh2DVertexBuffer(Float32Array buffer);
+    [MeasureAs=Canvas2DMesh, RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DUVBuffer createMesh2DUVBuffer(Float32Array buffer);
+    [MeasureAs=Canvas2DMesh, RuntimeEnabled=Canvas2dMesh, RaisesException] Mesh2DIndexBuffer createMesh2DIndexBuffer(Uint16Array buffer);
+    [MeasureAs=Canvas2DMesh, RuntimeEnabled=Canvas2dMesh, HighEntropy, RaisesException] void drawMesh(Mesh2DVertexBuffer vertex_buffer,
+                                                                                                      Mesh2DUVBuffer uv_buffer,
+                                                                                                      Mesh2DIndexBuffer index_buffer,
+                                                                                                      CanvasImageSource image);
 
     // pixel manipulation
     [RaisesException] ImageData createImageData(ImageData imagedata);
@@ -186,4 +188,4 @@ interface CanvasRenderingContext2D {
 };
 
 CanvasRenderingContext2D includes CanvasPath;
-CanvasRenderingContext2D includes CanvasWebGPUAccess;
+CanvasRenderingContext2D includes Canvas2dGPUTransfer;

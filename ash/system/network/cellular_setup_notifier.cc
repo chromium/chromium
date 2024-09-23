@@ -26,39 +26,17 @@
 namespace ash {
 namespace {
 
+using chromeos::network_config::mojom::DeviceStatePropertiesPtr;
+using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
+
 const char kNotifierCellularSetup[] = "ash.cellular-setup";
 
 // Delay after OOBE until notification should be shown.
 constexpr base::TimeDelta kNotificationDelay = base::Minutes(15);
 
-bool DoesCellularDeviceExist(
-    const std::vector<
-        chromeos::network_config::mojom::DeviceStatePropertiesPtr>& devices) {
-  for (const auto& device : devices) {
-    if (device->type ==
-        chromeos::network_config::mojom::NetworkType::kCellular) {
-      return true;
-    }
-  }
-  return false;
-}
-
 void OnCellularSetupNotificationClicked() {
   Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
       ::onc::network_type::kCellular);
-}
-
-// Returns the value of kCanCellularSetupNotificationBeShown for the last active
-// user. If the last active user's PrefService is null, returns false.
-bool GetCanCellularSetupNotificationBeShown() {
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  if (!prefs) {
-    // Return false because we don't want to show the notification if we're
-    // unsure if it can be shown or not.
-    return false;
-  }
-  return prefs->GetBoolean(prefs::kCanCellularSetupNotificationBeShown);
 }
 
 // Sets kCanCellularSetupNotificationBeShown to false for the last active user.
@@ -102,63 +80,19 @@ CellularSetupNotifier::~CellularSetupNotifier() {
 
 void CellularSetupNotifier::OnSessionStateChanged(
     session_manager::SessionState state) {
-  if (Shell::Get()->session_controller()->GetSessionState() !=
-      session_manager::SessionState::ACTIVE) {
-    timer_->Stop();
-    return;
-  }
-
-  if (!GetCanCellularSetupNotificationBeShown()) {
-    // The notification has already been shown or there is some condition that
-    // dictates that the notification shouldn't be shown.
-    return;
-  }
-
-  // Wait |kNotificationDelay| after the user logs in before attempting to show
-  // a notification. This allows the user time to set up a cellular network if
-  // they desire, and it also ensures we don't spam the user with an extra
-  // notification just after they log into their device for the first time.
-  timer_->Start(FROM_HERE, kNotificationDelay,
-                base::BindOnce(&CellularSetupNotifier::OnTimerFired,
-                               base::Unretained(this)));
+  has_active_session_ = Shell::Get()->session_controller()->GetSessionState() ==
+                        session_manager::SessionState::ACTIVE;
+  StartStopTimer();
 }
 
-void CellularSetupNotifier::OnTimerFired() {
-  timer_fired_ = true;
-  MaybeShowCellularSetupNotification();
-}
-
-void CellularSetupNotifier::OnNetworkStateListChanged() {
-  MaybeShowCellularSetupNotification();
-}
-
-void CellularSetupNotifier::OnNetworkStateChanged(
-    chromeos::network_config::mojom::NetworkStatePropertiesPtr network) {
-  if (network->type !=
-          chromeos::network_config::mojom::NetworkType::kCellular ||
-      network->type_state->get_cellular()->activation_state !=
-          chromeos::network_config::mojom::ActivationStateType::kActivated) {
-    return;
-  }
-
-  SetCellularSetupNotificationCannotBeShown();
-  message_center::MessageCenter* message_center =
-      message_center::MessageCenter::Get();
-  message_center->RemoveNotification(kCellularSetupNotificationId, false);
-}
-
-void CellularSetupNotifier::MaybeShowCellularSetupNotification() {
+void CellularSetupNotifier::OnDeviceStateListChanged() {
   remote_cros_network_config_->GetDeviceStateList(base::BindOnce(
       &CellularSetupNotifier::OnGetDeviceStateList, base::Unretained(this)));
 }
 
-void CellularSetupNotifier::OnGetDeviceStateList(
-    std::vector<chromeos::network_config::mojom::DeviceStatePropertiesPtr>
-        devices) {
-  if (!DoesCellularDeviceExist(devices)) {
-    // Save to prefs not to show this notification again so we don't keep
-    // starting the timer for a cellular-incapable device.
-    SetCellularSetupNotificationCannotBeShown();
+void CellularSetupNotifier::OnNetworkStateListChanged() {
+  // Return early if we have already seen an activated cellular network.
+  if (has_activated_cellular_network_) {
     return;
   }
   remote_cros_network_config_->GetNetworkStateList(
@@ -166,40 +100,105 @@ void CellularSetupNotifier::OnGetDeviceStateList(
           chromeos::network_config::mojom::FilterType::kAll,
           chromeos::network_config::mojom::NetworkType::kCellular,
           chromeos::network_config::mojom::kNoLimit),
-      base::BindOnce(&CellularSetupNotifier::OnCellularNetworksList,
+      base::BindOnce(&CellularSetupNotifier::OnGetNetworkStateList,
                      base::Unretained(this)));
 }
 
-void CellularSetupNotifier::OnCellularNetworksList(
-    std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
-        networks) {
-  // Check if there are any activated pSIM or eSIM networks. The activation
-  // state property is set to activated for all eSIM services.
+void CellularSetupNotifier::OnNetworkStateChanged(
+    NetworkStatePropertiesPtr network) {
+  // Return early if we have already seen an activated cellular network.
+  if (has_activated_cellular_network_) {
+    return;
+  }
+  if (network->type !=
+          chromeos::network_config::mojom::NetworkType::kCellular ||
+      network->type_state->get_cellular()->activation_state !=
+          chromeos::network_config::mojom::ActivationStateType::kActivated) {
+    return;
+  }
+  has_activated_cellular_network_ = true;
+  SetCellularSetupNotificationCannotBeShown();
+  StopTimerOrHideNotification();
+}
+
+void CellularSetupNotifier::OnGetNetworkStateList(
+    std::vector<NetworkStatePropertiesPtr> networks) {
+  // Check if there are any activated pSIM or eSIM networks. If any are found
+  // the notification should not be shown.
   for (auto& network : networks) {
     if (network->type_state->get_cellular()->activation_state ==
         chromeos::network_config::mojom::ActivationStateType::kActivated) {
-      // Save to prefs not to try to show this notification again so we don't
-      // keep starting the timer for a user who already has an activated
-      // cellular network.
+      has_activated_cellular_network_ = true;
       SetCellularSetupNotificationCannotBeShown();
-      message_center::MessageCenter* message_center =
-          message_center::MessageCenter::Get();
-      message_center->RemoveNotification(kCellularSetupNotificationId, false);
+      StopTimerOrHideNotification();
       return;
     }
   }
+}
 
-  // Do not show notification if it has already been shown, or the timer
-  // has not yet been fired.
-  if (!GetCanCellularSetupNotificationBeShown() || !timer_fired_) {
+void CellularSetupNotifier::OnGetDeviceStateList(
+    std::vector<DeviceStatePropertiesPtr> devices) {
+  has_cellular_device_ = false;
+  for (auto& device : devices) {
+    if (device->type ==
+        chromeos::network_config::mojom::NetworkType::kCellular) {
+      has_cellular_device_ = true;
+    }
+  }
+  StartStopTimer();
+}
+
+void CellularSetupNotifier::StartStopTimer() {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  if (!prefs ||
+      !prefs->GetBoolean(prefs::kCanCellularSetupNotificationBeShown)) {
+    timer_->Stop();
     return;
   }
 
-  ShowCellularSetupNotification();
+  // Notifications can only be shown during an active user session.
+  if (!has_active_session_) {
+    timer_->Stop();
+    return;
+  }
+
+  // The notification should only be shown if the device is cellular-capable.
+  if (!has_cellular_device_) {
+    timer_->Stop();
+    return;
+  }
+
+  // The notification should only be shown if there isn't already an activated
+  // cellular network. Unlike the cases above, finding an activated cellular
+  // should result in the notification never being shown so we additionally
+  // update the pref.
+  if (has_activated_cellular_network_) {
+    SetCellularSetupNotificationCannotBeShown();
+    timer_->Stop();
+    return;
+  }
+  if (timer_->IsRunning()) {
+    return;
+  }
+
+  // Wait |kNotificationDelay| before attempting to show a notification. This
+  // allows the user time to set up a cellular network if they desire, and it
+  // also ensures we don't spam the user with an extra notification just after
+  // they log into their device for the first time.
+  timer_->Start(
+      FROM_HERE, kNotificationDelay,
+      base::BindOnce(&CellularSetupNotifier::ShowCellularSetupNotification,
+                     base::Unretained(this)));
 }
 
-// Shows the Cellular Setup notification except in cases where it is unable to
-// save that it will have shown the notification.
+void CellularSetupNotifier::StopTimerOrHideNotification() {
+  timer_->Stop();
+  message_center::MessageCenter* message_center =
+      message_center::MessageCenter::Get();
+  message_center->RemoveNotification(kCellularSetupNotificationId, false);
+}
+
 void CellularSetupNotifier::ShowCellularSetupNotification() {
   if (!SetCellularSetupNotificationCannotBeShown()) {
     // If we didn't successfully set the flag, don't show the notification or
@@ -227,8 +226,8 @@ void CellularSetupNotifier::ShowCellularSetupNotification() {
 
   message_center::MessageCenter* message_center =
       message_center::MessageCenter::Get();
-  if (message_center->FindVisibleNotificationById(kCellularSetupNotificationId))
-    message_center->RemoveNotification(kCellularSetupNotificationId, false);
+  DCHECK(!message_center->FindVisibleNotificationById(
+      kCellularSetupNotificationId));
   message_center->AddNotification(std::move(notification));
 }
 

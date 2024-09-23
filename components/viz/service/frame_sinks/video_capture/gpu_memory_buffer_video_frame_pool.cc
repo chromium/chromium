@@ -12,8 +12,13 @@ namespace viz {
 
 GpuMemoryBufferVideoFramePool::GpuMemoryBufferVideoFramePool(
     int capacity,
+    media::VideoPixelFormat format,
+    const gfx::ColorSpace& color_space,
     GmbVideoFramePoolContextProvider* context_provider)
-    : VideoFramePool(capacity), context_provider_(context_provider) {
+    : VideoFramePool(capacity),
+      format_(format),
+      color_space_(color_space),
+      context_provider_(context_provider) {
   RecreateVideoFramePool();
 }
 
@@ -25,16 +30,16 @@ scoped_refptr<media::VideoFrame>
 GpuMemoryBufferVideoFramePool::ReserveVideoFrame(media::VideoPixelFormat format,
                                                  const gfx::Size& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(format, media::VideoPixelFormat::PIXEL_FORMAT_NV12);
-  DCHECK_LE(num_reserved_frames_, capacity());
+  CHECK_EQ(format, format_) << "Reserving a format that is different from the "
+                               "one specified in the constructor.";
+  CHECK_LE(num_reserved_frames_, capacity());
 
   if (num_reserved_frames_ == capacity()) {
     return nullptr;
   }
 
   scoped_refptr<media::VideoFrame> result =
-      video_frame_pool_->MaybeCreateVideoFrame(size,
-                                               gfx::ColorSpace::CreateREC709());
+      video_frame_pool_->MaybeCreateVideoFrame(size, color_space_);
 
   if (result) {
     num_reserved_frames_++;
@@ -49,9 +54,9 @@ GpuMemoryBufferVideoFramePool::ReserveVideoFrame(media::VideoPixelFormat format,
 media::mojom::VideoBufferHandlePtr
 GpuMemoryBufferVideoFramePool::CloneHandleForDelivery(
     const media::VideoFrame& frame) {
-  DCHECK(frame.HasGpuMemoryBuffer());
+  CHECK(frame.HasMappableGpuBuffer());
 
-  gfx::GpuMemoryBufferHandle handle = frame.GetGpuMemoryBuffer()->CloneHandle();
+  gfx::GpuMemoryBufferHandle handle = frame.GetGpuMemoryBufferHandle();
   handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
 
   return media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
@@ -71,7 +76,7 @@ void GpuMemoryBufferVideoFramePool::RecreateVideoFramePool() {
       base::BindOnce(&GpuMemoryBufferVideoFramePool::RecreateVideoFramePool,
                      weak_factory_.GetWeakPtr()));
   video_frame_pool_ = media::RenderableGpuMemoryBufferVideoFramePool::Create(
-      std::move(pool_context));
+      std::move(pool_context), format_);
 
   video_frame_pool_generation_++;
   num_reserved_frames_ = 0;
@@ -82,7 +87,7 @@ void GpuMemoryBufferVideoFramePool::OnVideoFrameDestroyed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (frame_pool_generation == video_frame_pool_generation_) {
-    DCHECK_GT(num_reserved_frames_, 0u);
+    CHECK_GT(num_reserved_frames_, 0u);
 
     num_reserved_frames_--;
   }

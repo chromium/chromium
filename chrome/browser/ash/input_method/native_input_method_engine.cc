@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/input_method/grammar_service_client.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine_observer.h"
 #include "chrome/browser/ash/input_method/suggestions_service_client.h"
-#include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
+#include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -55,7 +55,7 @@ void NativeInputMethodEngine::Initialize(
     std::unique_ptr<InputMethodEngineObserver> observer,
     const char* extension_id,
     Profile* profile) {
-  // TODO(crbug/1141231): refactor the mix of unique and raw ptr here.
+  // TODO(crbug.com/40154142): refactor the mix of unique and raw ptr here.
   std::unique_ptr<AssistiveSuggester> assistive_suggester =
       std::make_unique<AssistiveSuggester>(
           this, profile,

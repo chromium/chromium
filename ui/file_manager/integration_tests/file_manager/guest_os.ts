@@ -4,7 +4,7 @@
 
 import {ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
@@ -18,11 +18,11 @@ export async function fakesListed() {
   }
 
   // Open the files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Check that our guests are listed.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
 
   for (const name of names) {
     await directoryTree.waitForItemByLabel(name);
@@ -35,13 +35,13 @@ export async function fakesListed() {
  */
 export async function listUpdatedWhenGuestsChanged() {
   // Open the files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   const names = ['Etcetera', 'Electra'];
   const ids = [];
 
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
 
   for (const name of names) {
     // Add a guest...
@@ -88,9 +88,9 @@ export async function mountGuestSuccess() {
     vmType: 'bruschetta',
   });
   // Open the files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
 
   // Wait for our guest to appear and click it.
   await directoryTree.selectPlaceholderItemByType('bruschetta');
@@ -142,11 +142,11 @@ export async function mountAndroidVolumeSuccess() {
     vmType: 'arcvm',
   });
   // Open the files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Wait for our guest to appear and click it.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectPlaceholderItemByType('android_files');
 
   // Wait until it's loaded.

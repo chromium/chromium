@@ -12,13 +12,14 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "cc/base/features.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
@@ -42,6 +43,10 @@ TextureLayerImpl::~TextureLayerImpl() {
   }
 }
 
+mojom::LayerType TextureLayerImpl::GetLayerType() const {
+  return mojom::LayerType::kTexture;
+}
+
 std::unique_ptr<LayerImpl> TextureLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return TextureLayerImpl::Create(tree_impl, id());
@@ -62,7 +67,6 @@ void TextureLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   texture_layer->SetBlendBackgroundColor(blend_background_color_);
   texture_layer->SetForceTextureToOpaque(force_texture_to_opaque_);
   texture_layer->SetNearestNeighbor(nearest_neighbor_);
-  texture_layer->SetHdrMetadata(hdr_metadata_);
   if (own_resource_) {
     texture_layer->SetTransferableResource(transferable_resource_,
                                            std::move(release_callback_));
@@ -99,20 +103,25 @@ bool TextureLayerImpl::WillDraw(
 
   if (own_resource_) {
     DCHECK(!resource_id_);
-    if (!transferable_resource_.mailbox_holder.mailbox.IsZero()) {
+    if (!transferable_resource_.is_empty()) {
       // Currently only Canvas supports releases resources in response to
       // eviction. Other sources will be add once they can support this. Some
       // complexity arises here from WebGL/WebGPU textures, as they do not
       // necessarily maintain the data needed to rebuild the resources.
+      base::OnceClosure evicted_cb = viz::ResourceEvictedCallback();
+      if (base::FeatureList::IsEnabled(features::kEvictionUnlocksResources) &&
+          transferable_resource_.resource_source ==
+              viz::TransferableResource::ResourceSource::kCanvas) {
+        evicted_cb = base::BindOnce(&TextureLayerImpl::OnResourceEvicted,
+                                    base::Unretained(this));
+        DCHECK(MayEvictResourceInBackground(
+            transferable_resource_.resource_source));
+      }
       resource_id_ = resource_provider->ImportResource(
           transferable_resource_,
           /* impl_thread_release_callback= */ viz::ReleaseCallback(),
           /* main_thread_release_callback= */ std::move(release_callback_),
-          transferable_resource_.resource_source ==
-                  viz::TransferableResource::ResourceSource::kCanvas
-              ? base::BindOnce(&TextureLayerImpl::OnResourceEvicted,
-                               base::Unretained(this))
-              : viz::ResourceEvictedCallback());
+          /* evicted_callback= */ std::move(evicted_cb));
       DCHECK(resource_id_);
     }
     own_resource_ = false;
@@ -167,12 +176,11 @@ void TextureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
                uv_bottom_right_, bg_color, flipped_, nearest_neighbor_,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
   quad->set_resource_size_in_pixels(transferable_resource_.size);
-  quad->hdr_metadata = hdr_metadata_;
   ValidateQuadResources(quad);
 }
 
 SimpleEnclosedRegion TextureLayerImpl::VisibleOpaqueRegion() const {
-  if (transferable_resource_.is_null()) {
+  if (transferable_resource_.is_empty()) {
     return SimpleEnclosedRegion();
   }
 
@@ -216,7 +224,7 @@ void TextureLayerImpl::ReleaseResources() {
 }
 
 gfx::ContentColorUsage TextureLayerImpl::GetContentColorUsage() const {
-  if (hdr_metadata_.extended_range.has_value()) {
+  if (transferable_resource_.hdr_metadata.extended_range.has_value()) {
     return gfx::ContentColorUsage::kHDR;
   }
   return transferable_resource_.color_space.GetContentColorUsage();
@@ -250,14 +258,10 @@ void TextureLayerImpl::SetUVBottomRight(const gfx::PointF& bottom_right) {
   uv_bottom_right_ = bottom_right;
 }
 
-void TextureLayerImpl::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
-  hdr_metadata_ = hdr_metadata;
-}
-
 void TextureLayerImpl::SetTransferableResource(
     const viz::TransferableResource& resource,
     viz::ReleaseCallback release_callback) {
-  DCHECK_EQ(resource.mailbox_holder.mailbox.IsZero(), !release_callback);
+  DCHECK_EQ(resource.is_empty(), !release_callback);
   FreeTransferableResource();
   transferable_resource_ = resource;
   release_callback_ = std::move(release_callback);
@@ -277,7 +281,7 @@ void TextureLayerImpl::RegisterSharedBitmapId(
     // AppendQuads().
     to_register_bitmaps_[id] = std::move(bitmap);
   }
-  base::Erase(to_unregister_bitmap_ids_, id);
+  std::erase(to_unregister_bitmap_ids_, id);
 }
 
 void TextureLayerImpl::UnregisterSharedBitmapId(viz::SharedBitmapId id) {
@@ -296,10 +300,6 @@ void TextureLayerImpl::UnregisterSharedBitmapId(viz::SharedBitmapId id) {
   }
 }
 
-const char* TextureLayerImpl::LayerTypeAsString() const {
-  return "cc::TextureLayerImpl";
-}
-
 void TextureLayerImpl::FreeTransferableResource() {
   if (own_resource_) {
     DCHECK(!resource_id_);
@@ -307,7 +307,7 @@ void TextureLayerImpl::FreeTransferableResource() {
       // We didn't use the resource, but the client might need the SyncToken
       // before it can use the resource with its own GL context.
       std::move(release_callback_)
-          .Run(transferable_resource_.mailbox_holder.sync_token, false);
+          .Run(transferable_resource_.sync_token(), false);
     }
     transferable_resource_ = viz::TransferableResource();
   } else if (resource_id_) {
@@ -345,10 +345,21 @@ void TextureLayerImpl::SetInInvisibleLayerTree() {
       transferable_resource_.resource_source ==
           viz::TransferableResource::ResourceSource::kCanvas &&
       own_resource_) {
+    DCHECK(
+        MayEvictResourceInBackground(transferable_resource_.resource_source));
     if (!transferable_resource_.is_software) {
       FreeTransferableResource();
     }
   }
+}
+
+// static
+bool TextureLayerImpl::MayEvictResourceInBackground(
+    viz::TransferableResource::ResourceSource source) {
+  return source == viz::TransferableResource::ResourceSource::kCanvas &&
+         (base::FeatureList::IsEnabled(
+              features::kClearCanvasResourcesInBackground) ||
+          base::FeatureList::IsEnabled(features::kEvictionUnlocksResources));
 }
 
 }  // namespace cc

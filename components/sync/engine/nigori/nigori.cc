@@ -11,13 +11,14 @@
 
 #include "base/base64.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/sys_byteorder.h"
 #include "base/time/default_tick_clock.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
@@ -34,6 +35,7 @@ using crypto::SymmetricKey;
 const size_t kDerivedKeySizeInBits = 128;
 const size_t kDerivedKeySizeInBytes = kDerivedKeySizeInBits / 8;
 const size_t kHashSize = 32;
+const size_t kDefaultScryptCostParameter = 8192;  // 2^13.
 
 namespace syncer {
 
@@ -45,9 +47,7 @@ class NigoriStream {
   // Append the big-endian representation of the length of |value| with 32 bits,
   // followed by |value| itself to the stream.
   NigoriStream& operator<<(const std::string& value) {
-    uint32_t size = base::HostToNet32(value.size());
-
-    stream_.write(reinterpret_cast<char*>(&size), sizeof(uint32_t));
+    stream_ << base::as_string_view(base::U32ToBigEndian(value.size()));
     stream_ << value;
     return *this;
   }
@@ -56,10 +56,8 @@ class NigoriStream {
   // followed by the big-endian representation of the value of |type|, with 32
   // bits, to the stream.
   NigoriStream& operator<<(const Nigori::Type type) {
-    uint32_t size = base::HostToNet32(sizeof(uint32_t));
-    stream_.write(reinterpret_cast<char*>(&size), sizeof(uint32_t));
-    uint32_t value = base::HostToNet32(type);
-    stream_.write(reinterpret_cast<char*>(&value), sizeof(uint32_t));
+    stream_ << base::as_string_view(base::U32ToBigEndian(sizeof(uint32_t)));
+    stream_ << base::as_string_view(base::U32ToBigEndian(type));
     return *this;
   }
 
@@ -78,14 +76,28 @@ const char* GetHistogramSuffixForKeyDerivationMethod(
       return "Scrypt8192";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
+}
+
+size_t& GetScryptCostParameter() {
+  // Non-const to allow overriding by tests.
+  static size_t scrypt_cost_parameter = kDefaultScryptCostParameter;
+  return scrypt_cost_parameter;
 }
 
 }  // namespace
 
 Nigori::Keys::Keys() = default;
 Nigori::Keys::~Keys() = default;
+
+void Nigori::SetUseScryptCostParameterForTesting(bool use_low_scrypt_cost) {
+  if (use_low_scrypt_cost) {
+    GetScryptCostParameter() = 32;
+  } else {
+    GetScryptCostParameter() = kDefaultScryptCostParameter;
+  }
+}
 
 void Nigori::Keys::InitByDerivationUsingPbkdf2(const std::string& password) {
   // Previously (<=M70) this value has been recalculated every time based on a
@@ -124,7 +136,7 @@ void Nigori::Keys::InitByDerivationUsingPbkdf2(const std::string& password) {
 
 void Nigori::Keys::InitByDerivationUsingScrypt(const std::string& salt,
                                                const std::string& password) {
-  const size_t kCostParameter = 8192;  // 2^13.
+  const size_t kCostParameter = GetScryptCostParameter();
   const size_t kBlockSize = 8;
   const size_t kParallelizationParameter = 11;
   const size_t kMaxMemoryBytes = 32 * 1024 * 1024;  // 32 MiB.
@@ -163,16 +175,19 @@ bool Nigori::Keys::InitByImport(const std::string& user_key_str,
   // |user_key| is not used anymore so we tolerate a failed import.
   user_key = SymmetricKey::Import(SymmetricKey::AES, user_key_str);
 
-  if (encryption_key_str.empty() || mac_key_str.empty())
+  if (encryption_key_str.empty() || mac_key_str.empty()) {
     return false;
+  }
 
   encryption_key = SymmetricKey::Import(SymmetricKey::AES, encryption_key_str);
-  if (!encryption_key)
+  if (!encryption_key) {
     return false;
+  }
 
   mac_key = SymmetricKey::Import(SymmetricKey::HMAC_SHA1, mac_key_str);
-  if (!mac_key)
+  if (!mac_key) {
     return false;
+  }
 
   return true;
 }
@@ -227,8 +242,8 @@ std::string Nigori::GetKeyName() const {
 
 // Enc[Kenc,Kmac](value)
 std::string Nigori::Encrypt(const std::string& value) const {
-  std::string iv;
-  crypto::RandBytes(base::WriteInto(&iv, kIvSize + 1), kIvSize);
+  std::array<uint8_t, kIvSize> iv;
+  crypto::RandBytes(iv);
 
   crypto::Encryptor encryptor;
   CHECK(encryptor.Init(keys_.encryption_key.get(), crypto::Encryptor::CBC, iv));
@@ -239,23 +254,25 @@ std::string Nigori::Encrypt(const std::string& value) const {
   HMAC hmac(HMAC::SHA256);
   CHECK(hmac.Init(keys_.mac_key->key()));
 
-  std::vector<unsigned char> hash(kHashSize);
-  CHECK(hmac.Sign(ciphertext, &hash[0], hash.size()));
+  std::array<uint8_t, kHashSize> hash;
+  CHECK(hmac.Sign(ciphertext, hash.data(), hash.size()));
 
   std::string output;
-  output.assign(iv);
+  output.assign(base::as_string_view(iv));
   output.append(ciphertext);
-  output.append(hash.begin(), hash.end());
+  output.append(base::as_string_view(hash));
   return base::Base64Encode(output);
 }
 
 bool Nigori::Decrypt(const std::string& encrypted, std::string* value) const {
   std::string input;
-  if (!Base64Decode(encrypted, &input))
+  if (!Base64Decode(encrypted, &input)) {
     return false;
+  }
 
-  if (input.size() < kIvSize * 2 + kHashSize)
+  if (input.size() < kIvSize * 2 + kHashSize) {
     return false;
+  }
 
   // The input is:
   // * iv (16 bytes)
@@ -267,18 +284,22 @@ bool Nigori::Decrypt(const std::string& encrypted, std::string* value) const {
   std::string hash(input.substr(input.size() - kHashSize, kHashSize));
 
   HMAC hmac(HMAC::SHA256);
-  if (!hmac.Init(keys_.mac_key->key()))
+  if (!hmac.Init(keys_.mac_key->key())) {
     return false;
+  }
 
-  if (!hmac.Verify(ciphertext, hash))
+  if (!hmac.Verify(ciphertext, hash)) {
     return false;
+  }
 
   crypto::Encryptor encryptor;
-  if (!encryptor.Init(keys_.encryption_key.get(), crypto::Encryptor::CBC, iv))
+  if (!encryptor.Init(keys_.encryption_key.get(), crypto::Encryptor::CBC, iv)) {
     return false;
+  }
 
-  if (!encryptor.Decrypt(ciphertext, value))
+  if (!encryptor.Decrypt(ciphertext, value)) {
     return false;
+  }
 
   return true;
 }
@@ -290,10 +311,11 @@ void Nigori::ExportKeys(std::string* user_key,
   DCHECK(mac_key);
   DCHECK(user_key);
 
-  if (keys_.user_key)
+  if (keys_.user_key) {
     *user_key = keys_.user_key->key();
-  else
+  } else {
     user_key->clear();
+  }
 
   *encryption_key = keys_.encryption_key->key();
   *mac_key = keys_.mac_key->key();
@@ -301,10 +323,8 @@ void Nigori::ExportKeys(std::string* user_key,
 
 // static
 std::string Nigori::GenerateScryptSalt() {
-  static const size_t kSaltSizeInBytes = 32;
-  std::string salt;
-  salt.resize(kSaltSizeInBytes);
-  crypto::RandBytes(std::data(salt), salt.size());
+  std::string salt(32u, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(salt));
   return salt;
 }
 

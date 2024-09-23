@@ -27,8 +27,9 @@ SidePanelWebUIView::SidePanelWebUIView(base::RepeatingClosure on_show_cb,
     : on_show_cb_(std::move(on_show_cb)),
       close_cb_(std::move(close_cb)),
       contents_wrapper_(contents_wrapper) {
-  SidePanelUtil::GetSidePanelContentProxy(this)->SetAvailable(false);
-  SetVisible(false);
+  const bool is_ready_to_show = contents_wrapper->is_ready_to_show();
+  SidePanelUtil::GetSidePanelContentProxy(this)->SetAvailable(is_ready_to_show);
+  SetVisible(is_ready_to_show);
   SetID(kSidePanelWebViewId);
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper_->web_contents());
@@ -78,7 +79,7 @@ void SidePanelWebUIView::HideCustomContextMenu() {
 
 bool SidePanelWebUIView::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
 }

@@ -4,10 +4,10 @@
 
 #include "content/browser/background_fetch/background_fetch_scheduler.h"
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/background_fetch_delegate_proxy.h"
@@ -33,7 +33,7 @@ constexpr int kMaxActiveRegistrationsDefaultValue = 2;
 
 // The maximum number of downloads the Download Service can process at the same
 // time.
-// TODO(crbug.com/919864): Figure out how to keep this in sync with the
+// TODO(crbug.com/40608586): Figure out how to keep this in sync with the
 // Download Service value.
 constexpr char kMaxRunningDownloads[] = "max_running_downloads";
 constexpr int kMaxRunningDownloadsDefaultValue = 2;
@@ -245,7 +245,7 @@ void BackgroundFetchScheduler::DidMarkForDeletion(
     return;
 
   auto it = completed_fetches_.find(registration_id.unique_id());
-  DCHECK(it != completed_fetches_.end());
+  CHECK(it != completed_fetches_.end(), base::NotFatalUntil::M130);
 
   blink::mojom::BackgroundFetchRegistrationDataPtr& registration_data =
       it->second->registration;

@@ -26,12 +26,11 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/screens/chrome_user_selection_screen.h"
-#include "chrome/browser/ash/login/user_board_view_mojo.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/ui/ash/session_controller_client_impl.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
@@ -48,10 +47,8 @@ namespace ash {
 ViewsScreenLocker::ViewsScreenLocker()
     : system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {
   LoginScreenClientImpl::Get()->SetDelegate(this);
-  user_board_view_mojo_ = std::make_unique<UserBoardViewMojo>();
   user_selection_screen_ =
       std::make_unique<ChromeUserSelectionScreen>(DisplayedScreen::LOCK_SCREEN);
-  user_selection_screen_->SetView(user_board_view_mojo_.get());
 }
 
 ViewsScreenLocker::~ViewsScreenLocker() {
@@ -153,14 +150,14 @@ bool ViewsScreenLocker::HandleFocusLockScreenApps(bool reverse) {
 }
 
 void ViewsScreenLocker::HandleFocusOobeDialog() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ViewsScreenLocker::HandleLaunchPublicSession(
     const AccountId& account_id,
     const std::string& locale,
     const std::string& input_method) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ViewsScreenLocker::SuspendDone(base::TimeDelta sleep_duration) {
@@ -211,10 +208,12 @@ void ViewsScreenLocker::UpdateChallengeResponseAuthAvailability(
       account_id, enable_challenge_response);
 }
 
-void ViewsScreenLocker::OnPinCanAuthenticate(const AccountId& account_id,
-                                             bool can_authenticate) {
-  LoginScreen::Get()->GetModel()->SetPinEnabledForUser(account_id,
-                                                       can_authenticate);
+void ViewsScreenLocker::OnPinCanAuthenticate(
+    const AccountId& account_id,
+    bool can_authenticate,
+    cryptohome::PinLockAvailability available_at) {
+  LoginScreen::Get()->GetModel()->SetPinEnabledForUser(
+      account_id, can_authenticate, available_at);
 }
 
 }  // namespace ash

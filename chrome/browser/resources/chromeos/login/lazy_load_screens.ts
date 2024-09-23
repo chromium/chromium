@@ -73,7 +73,7 @@ function addScreensAsync(): void {
     }
     window.scheduler.postTask(addScreensAsync);
 
-    if (commonScreensList.length == 0) {
+    if (commonScreensList.length === 0) {
       traceExecution(TraceEvent.COMMON_SCREENS_ADDED);
     }
   } else if (flowSpecificScreensList.length > 0) {
@@ -94,8 +94,6 @@ function addScreensAsync(): void {
   }
 }
 
-// TODO(b/324873528) Replace type definition with official interface definition
-// of blink
 declare global {
   interface Window {
     scheduler: any;

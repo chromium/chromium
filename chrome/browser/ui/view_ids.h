@@ -16,7 +16,6 @@ enum ViewID {
 
   // Views which make up the skyline. These are used only
   // on views.
-  VIEW_ID_TAB_SEARCH_BUTTON,
   VIEW_ID_MINIMIZE_BUTTON,
   VIEW_ID_MAXIMIZE_BUTTON,
   VIEW_ID_RESTORE_BUTTON,
@@ -68,6 +67,7 @@ enum ViewID {
   VIEW_ID_AVATAR_BUTTON,
   VIEW_ID_WEBAUTHN_BUTTON,
   VIEW_ID_SHARING_HUB_BUTTON,
+  VIEW_ID_MANAGEMENT_BUTTON,
 
   // Location bar content settings icons.
   VIEW_ID_CONTENT_SETTING_JAVASCRIPT,

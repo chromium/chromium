@@ -46,8 +46,9 @@ void OnApiEventDispatched(content::BrowserContext* browser_context,
                           const ExtensionId& extension_id,
                           const std::string& event_name,
                           const base::Value::List& event_args) {
-  if (g_event_monitor)
+  if (g_event_monitor) {
     g_event_monitor(browser_context, extension_id, event_name, event_args);
+  }
 }
 
 // Called when an extension calls an API function.
@@ -55,8 +56,9 @@ void OnApiFunctionCalled(content::BrowserContext* browser_context,
                          const ExtensionId& extension_id,
                          const std::string& api_name,
                          const base::Value::List& args) {
-  if (g_function_monitor)
+  if (g_function_monitor) {
     g_function_monitor(browser_context, extension_id, api_name, args);
+  }
 }
 
 void OnWebRequestApiUsed(content::BrowserContext* browser_context,

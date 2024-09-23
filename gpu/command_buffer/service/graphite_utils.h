@@ -30,7 +30,7 @@ void GraphiteFlushAndSubmit(skgpu::graphite::Context* context,
 
 // Synchronously read pixels from a graphite image.
 // Note this is for single plane image.
-// TODO(crbug.com/1467566): Add a function to read multiplanar image.
+// TODO(crbug.com/40924444): Add a function to read multiplanar image.
 GPU_GLES2_EXPORT
 bool GraphiteReadPixelsSync(skgpu::graphite::Context* context,
                             skgpu::graphite::Recorder* recorder,

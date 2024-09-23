@@ -17,6 +17,7 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 source_set("unit_tests") {
   testonly = true
   deps = [
+    "//chromeos/services/chromebox_for_meetings/public/cpp:unit_tests",
     "//chromeos/services/machine_learning/public/cpp:unit_tests",
     "//chromeos/services/network_config/public/cpp:unit_tests",
     "//chromeos/services/tts:services_unittests",

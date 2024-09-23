@@ -37,6 +37,22 @@ enum class BubbleType {
   INACTIVE
 };
 
+// The active treatment arm of the AutofillUpstreamUpdatedUi feature.
+enum class UpdatedDesktopUiTreatmentArm {
+  // Experiment not active.
+  kDefault,
+  // Security-focused messaging and imagery.
+  kSecurityFocus,
+  // Convenience-focused messaging and imagery.
+  kConvenienceFocus,
+  // Education-focused messaging and imagery.
+  kEducationFocus
+};
+
+// Returns the active UpdatedDesktopUiTreatmentArm based on the user's current
+// Finch configuration.
+UpdatedDesktopUiTreatmentArm GetUpdatedDesktopUiTreatmentArm();
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_SAVE_CARD_UI_H_

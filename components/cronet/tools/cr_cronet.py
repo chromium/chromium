@@ -78,6 +78,9 @@ def main():
   parser.add_argument('--x64',
                       action='store_true',
                       help='build for Intel x86_64 architecture')
+  parser.add_argument('--arm',
+                      action='store_true',
+                      help='build for arm architecture')
   parser.add_argument('-R',
                       '--riscv64',
                       action='store_true',
@@ -106,6 +109,9 @@ def main():
   elif options.riscv64:
     target_cpu = 'riscv64'
     out_dir_suffix = '-riscv64'
+  elif options.arm:
+    target_cpu = 'arm'
+    out_dir_suffix = '-arm'
   else:
     target_cpu = 'arm64'
     out_dir_suffix = '-arm64'

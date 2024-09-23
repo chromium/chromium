@@ -33,7 +33,8 @@ class MappedFontFile;
 // of this mismatch, we create a thread which owns the mojo pipe, sends and
 // receives messages. The multiple threads which call through FontLoader class
 // do blocking message calls to this thread.
-// TODO(936569): Rename FontServiceThread since it's no longer a thread.
+// TODO(crbug.com/40615872): Rename FontServiceThread since it's no longer a
+// thread.
 class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
  public:
   FontServiceThread();

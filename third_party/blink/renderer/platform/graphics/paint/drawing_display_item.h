@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/rect.h"
@@ -85,14 +84,18 @@ inline DrawingDisplayItem::DrawingDisplayItem(
     PaintRecord record,
     RasterEffectOutset raster_effect_outset,
     PaintInvalidationReason paint_invalidation_reason)
-    : DisplayItem(client_id,
-                  type,
-                  UNLIKELY(ShouldTightenVisualRect(record))
-                      ? TightenVisualRect(visual_rect, record)
-                      : visual_rect,
-                  raster_effect_outset,
-                  paint_invalidation_reason,
-                  /* draws_content*/ !record.empty()),
+    : DisplayItem(
+          client_id,
+          type,
+          [&] {
+            if (ShouldTightenVisualRect(record)) [[unlikely]] {
+              return TightenVisualRect(visual_rect, record);
+            }
+            return visual_rect;
+          }(),
+          raster_effect_outset,
+          paint_invalidation_reason,
+          /* draws_content*/ !record.empty()),
       record_(std::move(record)) {
   DCHECK(IsDrawing());
   DCHECK_EQ(GetOpaqueness(), Opaqueness::kOther);

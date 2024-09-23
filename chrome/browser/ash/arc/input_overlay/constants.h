@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_CONSTANTS_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_CONSTANTS_H_
 
-#include <stddef.h>
+#include <cstddef>
 
 namespace arc::input_overlay {
 
@@ -25,6 +25,9 @@ constexpr int kAxisSize = 2;
 
 // Total key size for ActionMoveKey.
 constexpr size_t kActionMoveKeysSize = 4;
+
+// Maximum of actions size.
+inline constexpr size_t kMaxActionCount = 50;
 
 constexpr char16_t kUnknownBind[] = u"?";
 
@@ -169,6 +172,15 @@ enum class InputOverlayWindowStateType {
   kFullscreen = 3,
   kSnapped = 4,
   kMaxValue = kSnapped
+};
+
+// This is about the four directions of the ActionMove.
+enum class Direction : size_t {
+  kUp = 0,
+  kLeft = 1,
+  kDown = 2,
+  kRight = 3,
+  kMaxValue = kRight
 };
 
 }  // namespace arc::input_overlay

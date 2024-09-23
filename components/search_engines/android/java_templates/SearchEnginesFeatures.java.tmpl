@@ -1,0 +1,27 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.components.search_engines;
+
+/**
+ * Constants for the names of Search Engines features.
+ */
+public final class SearchEnginesFeatures {{
+
+{NATIVE_FEATURES}
+
+    /**
+     * Convenience method to check Search Engines component feature flags, see {{@link
+     * SearchEnginesFeatureMap#isEnabledInNative(String)}}.
+     *
+     * <p>Note: Features must be added to the array |kFeaturesExposedToJava| in
+     * //components/search_engines/android/search_engines_feature_map.cc
+     */
+    public static boolean isEnabled(String featureName) {{
+        return SearchEnginesFeatureMap.isEnabled(featureName);
+    }}
+
+    // Do not instantiate this class.
+    private SearchEnginesFeatures() {{}}
+}}

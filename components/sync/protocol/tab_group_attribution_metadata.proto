@@ -1,0 +1,42 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// Stores information about the creation and modification of a tab group or tab.
+message AttributionMetadata {
+  // Details about a single attribution event (creation or modification).
+  message Attribution {
+    // Information about the device where the attribution event occurred.
+    message AttributionDeviceInfo {
+      // The unique identifier for the device in the sync system.
+      optional string cache_guid = 1;
+    }
+
+    // Information about the device.
+    optional AttributionDeviceInfo device_info = 1;
+  }
+
+  // Identifier for device that refers to the device that created the group.
+  // Should only be set on creation, and should not be edited if the value is
+  // missing.
+
+  // Information about when the specifics was created.
+  // The cache guid should only be set on creation and not be edited if the
+  // value is missing.
+  optional Attribution created = 1;
+
+  // Information about when the specifics was last updated.
+  optional Attribution updated = 2;
+}

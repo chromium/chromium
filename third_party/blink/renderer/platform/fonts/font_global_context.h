@@ -9,6 +9,7 @@
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -33,14 +34,19 @@ class PLATFORM_EXPORT FontGlobalContext
   static FontGlobalContext& Get();
   static FontGlobalContext* TryGet();
 
-  void Trace(Visitor* visitor) const { visitor->Trace(font_cache_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(font_cache_);
+    visitor->Trace(harfbuzz_font_cache_);
+  }
 
   FontGlobalContext(const FontGlobalContext&) = delete;
   FontGlobalContext& operator=(const FontGlobalContext&) = delete;
 
   static inline FontCache& GetFontCache() { return Get().font_cache_; }
 
-  static HarfBuzzFontCache& GetHarfBuzzFontCache();
+  static HarfBuzzFontCache& GetHarfBuzzFontCache() {
+    return Get().harfbuzz_font_cache_;
+  }
 
   static FontUniqueNameLookup* GetFontUniqueNameLookup();
 
@@ -56,7 +62,7 @@ class PLATFORM_EXPORT FontGlobalContext
 
  private:
   FontCache font_cache_;
-  std::unique_ptr<HarfBuzzFontCache> harfbuzz_font_cache_;
+  HarfBuzzFontCache harfbuzz_font_cache_;
   std::unique_ptr<FontUniqueNameLookup> font_unique_name_lookup_;
   base::HashingLRUCache<SkTypefaceID, IdentifiableToken> typeface_digest_cache_;
   base::HashingLRUCache<SkTypefaceID, IdentifiableToken>

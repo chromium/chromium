@@ -27,8 +27,10 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_prefs_helper.h"
 #include "extensions/browser/extension_prefs_helper_factory.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/common/api/types.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_constants.h"
 
 using extensions::api::types::ChromeSettingScope;
@@ -160,7 +162,7 @@ SettingsOverridesAPI::GetFactoryInstance() {
   return g_settings_overrides_api_factory.Pointer();
 }
 
-void SettingsOverridesAPI::SetPref(const std::string& extension_id,
+void SettingsOverridesAPI::SetPref(const ExtensionId& extension_id,
                                    const std::string& pref_key,
                                    base::Value value) const {
   ExtensionPrefsHelper* prefs_helper = ExtensionPrefsHelper::Get(profile_);
@@ -174,7 +176,7 @@ void SettingsOverridesAPI::SetPref(const std::string& extension_id,
       extension_id, pref_key, ChromeSettingScope::kRegular, std::move(value));
 }
 
-void SettingsOverridesAPI::UnsetPref(const std::string& extension_id,
+void SettingsOverridesAPI::UnsetPref(const ExtensionId& extension_id,
                                      const std::string& pref_key) const {
   ExtensionPrefsHelper* prefs_helper = ExtensionPrefsHelper::Get(profile_);
   // Not instantiated in unit tests.
@@ -190,7 +192,7 @@ void SettingsOverridesAPI::OnExtensionLoaded(
   const SettingsOverrides* settings = SettingsOverrides::Get(extension);
   if (settings) {
     std::string install_parameter =
-        ExtensionPrefs::Get(profile_)->GetInstallParam(extension->id());
+        GetInstallParam(ExtensionPrefs::Get(profile_), extension->id());
     if (settings->homepage) {
       SetPref(extension->id(), prefs::kHomePage,
               base::Value(SubstituteInstallParam(settings->homepage->spec(),
@@ -263,7 +265,7 @@ void SettingsOverridesAPI::RegisterSearchProvider(
   DCHECK(settings->search_engine);
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_);
-  std::string install_parameter = prefs->GetInstallParam(extension->id());
+  std::string install_parameter = GetInstallParam(prefs, extension->id());
   std::unique_ptr<TemplateURLData> data = ConvertSearchProvider(
       profile_->GetPrefs(),
       search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile_),

@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
+#include "chrome/browser/media/webrtc/tab_desktop_media_list_mock_observer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
@@ -46,18 +47,6 @@ using testing::StrictMock;
 namespace {
 
 const base::TimeDelta kUpdatePeriod = base::Milliseconds(1000);
-
-class MockObserver : public DesktopMediaListObserver {
- public:
-  MOCK_METHOD1(OnSourceAdded, void(int index));
-  MOCK_METHOD1(OnSourceRemoved, void(int index));
-  MOCK_METHOD2(OnSourceMoved, void(int old_index, int new_index));
-  MOCK_METHOD1(OnSourceNameChanged, void(int index));
-  MOCK_METHOD1(OnSourceThumbnailChanged, void(int index));
-  MOCK_METHOD1(OnSourcePreviewChanged, void(size_t index));
-  MOCK_METHOD0(OnDelegatedSourceListSelection, void());
-  MOCK_METHOD0(OnDelegatedSourceListDismissed, void());
-};
 
 }  // namespace
 
@@ -105,9 +94,9 @@ class CurrentTabDesktopMediaListTest : public testing::Test {
   void TearDown() override {
     list_.reset();
 
-    // TODO(crbug.com/832879): Tearing down the TabStripModel should just delete
-    // all its owned WebContents. Then |manually_added_web_contents_| won't be
-    // necessary.
+    // TODO(crbug.com/40571733): Tearing down the TabStripModel should just
+    // delete all its owned WebContents. Then |manually_added_web_contents_|
+    // won't be necessary.
     TabStripModel* tab_strip_model = browser_->tab_strip_model();
     for (WebContents* contents : all_web_contents_) {
       tab_strip_model->DetachAndDeleteWebContentsAt(
@@ -169,7 +158,7 @@ class CurrentTabDesktopMediaListTest : public testing::Test {
   raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<Browser> browser_;
 
-  StrictMock<MockObserver> observer_;
+  StrictMock<DesktopMediaListMockObserver> observer_;
   std::unique_ptr<CurrentTabDesktopMediaList> list_;
 
   std::vector<raw_ptr<WebContents, VectorExperimental>> all_web_contents_;
@@ -282,4 +271,4 @@ TEST_F(CurrentTabDesktopMediaListTest, CallingRefreshAfterTabFreedIsSafe) {
   RefreshList();
 }
 
-// TODO(crbug.com/1136942): Test rescaling of the thumbnails.
+// TODO(crbug.com/40724504): Test rescaling of the thumbnails.

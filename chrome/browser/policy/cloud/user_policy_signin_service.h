@@ -92,10 +92,10 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
     profile_can_be_managed_for_testing_ = can_be_managed;
   }
 
- private:
   // KeyedService implementation:
   void Shutdown() override;
 
+ private:
   // UserPolicySigninServiceBase implementation:
   void InitializeCloudPolicyManager(
       const AccountId& account_id,

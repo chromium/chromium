@@ -6,6 +6,11 @@
 
 #include <stdint.h>
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/timer/mock_timer.h"
@@ -16,11 +21,16 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search.mojom-forward.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -53,6 +63,14 @@ constexpr char kTabName4[] = "Tab 4";
 constexpr char kTabName5[] = "Tab 5";
 constexpr char kTabName6[] = "Tab 6";
 
+class MockTabDeclutterController : public tabs::TabDeclutterController {
+ public:
+  explicit MockTabDeclutterController(TabStripModel* tab_strip_model)
+      : TabDeclutterController(tab_strip_model) {}
+
+  MOCK_METHOD(std::vector<tabs::TabModel*>, GetStaleTabs, (), (override));
+};
+
 class MockPage : public tab_search::mojom::Page {
  public:
   MockPage() = default;
@@ -67,12 +85,19 @@ class MockPage : public tab_search::mojom::Page {
   MOCK_METHOD(void,
               TabOrganizationSessionUpdated,
               (tab_search::mojom::TabOrganizationSessionPtr));
+  MOCK_METHOD(void,
+              TabOrganizationModelStrategyUpdated,
+              (tab_search::mojom::TabOrganizationModelStrategy));
   MOCK_METHOD(void, TabsChanged, (tab_search::mojom::ProfileDataPtr));
   MOCK_METHOD(void, TabUpdated, (tab_search::mojom::TabUpdateInfoPtr));
   MOCK_METHOD(void, TabsRemoved, (tab_search::mojom::TabsRemovedInfoPtr));
   MOCK_METHOD(void, TabSearchTabIndexChanged, (int32_t));
+  MOCK_METHOD(void,
+              TabOrganizationFeatureChanged,
+              (tab_search::mojom::TabOrganizationFeature));
   MOCK_METHOD(void, ShowFREChanged, (bool));
   MOCK_METHOD(void, TabOrganizationEnabledChanged, (bool));
+  MOCK_METHOD(void, StaleTabsChanged, (std::vector<tab_search::mojom::TabPtr>));
 };
 
 void ExpectNewTab(const tab_search::mojom::Tab* tab,
@@ -113,7 +138,7 @@ class TestTabSearchPageHandler : public TabSearchPageHandler {
  public:
   TestTabSearchPageHandler(mojo::PendingRemote<tab_search::mojom::Page> page,
                            content::WebUI* web_ui,
-                           ui::MojoBubbleWebUIController* webui_controller)
+                           TabSearchUI* webui_controller)
       : TabSearchPageHandler(
             mojo::PendingReceiver<tab_search::mojom::PageHandler>(),
             std::move(page),
@@ -149,8 +174,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     browser4_ = CreateTestBrowser(profile2(), false);
     browser5_ = CreateTestBrowser(profile1(), true);
     BrowserList::SetLastActive(browser1());
-    webui_controller_ =
-        std::make_unique<ui::MojoBubbleWebUIController>(web_ui());
+    webui_controller_ = std::make_unique<TabSearchUI>(web_ui());
     handler_ = std::make_unique<TestTabSearchPageHandler>(
         page_.BindAndGetRemote(), web_ui(), webui_controller_.get());
   }
@@ -211,6 +235,8 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
                                         base::ASCIIToUTF16(title));
   }
 
+  TabSearchUI* webui_controller() { return webui_controller_.get(); }
+
   void HideWebContents() {
     web_contents_->WasHidden();
     ASSERT_FALSE(handler_->IsWebContentsVisible());
@@ -226,7 +252,8 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     std::unique_ptr<Browser> browser =
         CreateBrowser(profile, type, false, window.get());
     BrowserList::SetLastActive(browser.get());
-    new TestBrowserWindowOwner(window.release());
+    // Self deleting.
+    new TestBrowserWindowOwner(std::move(window));
     return browser;
   }
 
@@ -238,7 +265,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<Browser> browser4_;
   std::unique_ptr<Browser> browser5_;
   std::unique_ptr<TestTabSearchPageHandler> handler_;
-  std::unique_ptr<ui::MojoBubbleWebUIController> webui_controller_;
+  std::unique_ptr<TabSearchUI> webui_controller_;
 };
 
 TEST_F(TabSearchPageHandlerTest, GetTabs) {
@@ -397,7 +424,7 @@ TEST_F(TabSearchPageHandlerTest, MediaTabsTest) {
       ->SetIsCurrentlyAudible(true);
   AddTab(browser(), GURL(kTabUrl1));
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  tab_strip_model->ReplaceWebContentsAt(0, std::move(test_web_contents));
+  tab_strip_model->DiscardWebContentsAt(0, std::move(test_web_contents));
   NavigateAndCommitActiveTab(GURL(kTabUrl1));
   tab_search::mojom::PageHandler::GetProfileDataCallback callback =
       base::BindLambdaForTesting(
@@ -891,6 +918,71 @@ TEST_F(TabSearchPageHandlerTest,
 
   // Destroying should not notify the page.
   session.reset();
+}
+
+class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
+ public:
+  void SetUp() override {
+    TabSearchPageHandlerTest::SetUp();
+    feature_list_.InitWithFeatures({features::kTabstripDeclutter}, {});
+    testing_profile_ = std::make_unique<TestingProfile>();
+    tab_strip_model_delegate_ = std::make_unique<TestTabStripModelDelegate>();
+    tab_strip_model_ = std::make_unique<TabStripModel>(
+        tab_strip_model_delegate_.get(), testing_profile_.get());
+    tab_declutter_controller_ =
+        std::make_unique<MockTabDeclutterController>(tab_strip_model_.get());
+    webui_controller()->InstallTabDeclutterController(
+        tab_declutter_controller());
+  }
+
+  void TearDown() override {
+    webui_controller()->InstallTabDeclutterController(nullptr);
+    tab_declutter_controller_.reset();
+    tab_strip_model_.reset();
+    tab_strip_model_delegate_.reset();
+    testing_profile_.reset();
+    TabSearchPageHandlerTest::TearDown();
+  }
+
+  MockTabDeclutterController* tab_declutter_controller() {
+    return tab_declutter_controller_.get();
+  }
+  TabStripModel* fake_tab_strip_model() { return tab_strip_model_.get(); }
+  Profile* testing_profile() { return testing_profile_.get(); }
+
+ private:
+  std::unique_ptr<TestingProfile> testing_profile_;
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
+  std::unique_ptr<MockTabDeclutterController> tab_declutter_controller_;
+  tabs::PreventTabFeatureInitialization prevent_;
+};
+
+TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterFindStaleTabs) {
+  std::vector<tabs::TabModel*> stale_tabs_raw_ptr;
+
+  for (int i = 0; i < 4; ++i) {
+    std::unique_ptr<tabs::TabModel> tab_model =
+        std::make_unique<tabs::TabModel>(
+            content::WebContents::Create(
+                content::WebContents::CreateParams(testing_profile())),
+            fake_tab_strip_model());
+    stale_tabs_raw_ptr.push_back(tab_model.get());
+    fake_tab_strip_model()->AppendTab(std::move(tab_model), false);
+  }
+
+  EXPECT_CALL(*tab_declutter_controller(), GetStaleTabs())
+      .WillOnce(testing::Return(stale_tabs_raw_ptr));
+
+  tab_search::mojom::PageHandler::GetStaleTabsCallback callback =
+      base::BindLambdaForTesting(
+          [&](std::vector<tab_search::mojom::TabPtr> stale_tabs) {
+            EXPECT_EQ(4u, stale_tabs.size());
+          });
+
+  // Installing a declutter controller will trigger `GetStaleTabs()`.
+  handler()->GetStaleTabs(std::move(callback));
 }
 
 }  // namespace

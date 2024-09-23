@@ -1,9 +1,14 @@
 include_rules = [
-  "+components/ml/webnn",
   "+content/test/fuzzer/mojolpm_fuzzer_support.h",
-  "+third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h",
+  "+gpu/command_buffer/service/shared_context_state.h",
+  "+gpu/config",
+  "+third_party/blink/public/common/tokens/tokens.h",
+  "+third_party/coremltools/mlmodel/format",
+  "+third_party/flatbuffers/src/include/flatbuffers",
   "+third_party/fp16/src/include/fp16.h",
-  "+ui/gl/gl_angle_util_win.h",
-  "+ui/gl/init/gl_factory.h",
-  "+third_party/coremltools/mlmodel/format"
+  "+third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h",
+  "+third_party/microsoft_dxheaders",
+  "+third_party/tflite",
+  "+third_party/xnnpack",
+  "+ui/gl/gl_switches.h",
 ]

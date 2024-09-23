@@ -1,0 +1,16 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash.babelorca;
+
+message TestingMessage {
+  int32 int_field = 1;
+  fixed32 fixed32_field = 401;
+  fixed64 fixed64_field = 402;
+  int64 int64_field = 403;
+}

@@ -60,12 +60,21 @@ enum ConnectionSubtype {
 };
 
 // Implemented in Ash-chrome.
-// Next version: 1
-// Next method id: 1
+// Next version: 2
+// Next method id: 2
 [Stable, Uuid="f1762d7c-f5cf-4580-8fad-e181dab68e4e"]
 interface  NetworkChange {
     // Adds NetworkChangeObserver to NetworkChangeManagerClient in Ash.
     AddObserver@0(pending_remote<NetworkChangeObserver> observer);
+
+    // Sends a message from Lacros to Ash to request portal detection for the
+    // active (default) network. The request will be sent from Ash to Shill
+    // (the connection manager). Called when a navigation event occurs in the
+    // captive portal signin window (which may indicate that signin occurred).
+    // Note: portal detection retries will occur without this, but there may be
+    // a user noticeable delay between retries without a request.
+    [MinVersion=1]
+    RequestPortalDetection@1();
 };
 
 // Implemented in Lacros-chrome.

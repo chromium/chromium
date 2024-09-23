@@ -1,15 +1,15 @@
-UNKNOWN_TYPE | idioma | Idioma: | es | idioma_1
-UNKNOWN_TYPE | noConsecutivoInterno | Consecutivo: |  | idioma_1
-UNKNOWN_TYPE | numero_pasaporte | Número de pasaporte: |  | idioma_1
-NAME_FIRST | nombres | Nombre(s): |  | idioma_1
-NAME_LAST | apellidos | Apellido(s): |  | idioma_1
-UNKNOWN_TYPE | nacionalidad | Nacionalidad: |  | idioma_1
-UNKNOWN_TYPE | fecha_nacimiento | Fecha de nacimiento: |  | fecha_nacimiento_2
-UNKNOWN_TYPE | sexo_pago | Sexo: |  | idioma_1
-UNKNOWN_TYPE | sexo | Sexo: |  | idioma_1
-UNKNOWN_TYPE | monto_tramite | Monto trámite: | 558.00 | idioma_1
-UNKNOWN_TYPE | concepto_tramite | Concepto trámite: |  | idioma_1
-UNKNOWN_TYPE | clave_tramite | Clave trámite: |  | idioma_1
+UNKNOWN_TYPE | idioma | Idioma: | es | -default
+UNKNOWN_TYPE | noConsecutivoInterno | Consecutivo: |  | -default
+UNKNOWN_TYPE | numero_pasaporte | Número de pasaporte: |  | -default
+NAME_FIRST | nombres | Nombre(s): |  | -default
+NAME_LAST | apellidos | Apellido(s): |  | -default
+UNKNOWN_TYPE | nacionalidad | Nacionalidad: |  | -default
+UNKNOWN_TYPE | fecha_nacimiento | Fecha de nacimiento: |  | fecha_nacimiento_1
+UNKNOWN_TYPE | sexo_pago | Sexo: |  | -default
+UNKNOWN_TYPE | sexo | Sexo: |  | -default
+UNKNOWN_TYPE | monto_tramite | Monto trámite: | 558.00 | -default
+UNKNOWN_TYPE | concepto_tramite | Concepto trámite: |  | -default
+UNKNOWN_TYPE | clave_tramite | Clave trámite: |  | -default
 
 UNKNOWN_TYPE | internacion | Vía de internación | 0 | internacion_1
 UNKNOWN_TYPE | puntoInternacion | Punto de internación | 0 | internacion_1
@@ -37,12 +37,12 @@ UNKNOWN_TYPE | motivoViaje | Motivo de viaje | 0 | paisResidencia_3
 UNKNOWN_TYPE | especifiqueMotivo | Especifique motivo | 0 | paisResidencia_3
 ADDRESS_HOME_STATE | estadoDestino | Estado | 0 | paisResidencia_3
 UNKNOWN_TYPE | domicilioMexico | Domicilio en México |  | paisResidencia_3
-NAME_FIRST | nombreTutor | Nombre(s) |  | paisResidencia_3
-NAME_LAST | apellidosTutor | Apellido(s) |  | paisResidencia_3
-UNKNOWN_TYPE | sexoTutor | Sexo | 0 | paisResidencia_3
-UNKNOWN_TYPE | fechaNacimientoTutor | Fecha de nacimiento |  | paisResidencia_3
-ADDRESS_HOME_COUNTRY | nacionalidadTutor | Nacionalidad (País) | 0 | nacionalidadTutor_4
-ADDRESS_HOME_COUNTRY | paisNacimientoTutor | País de nacimiento | 0 | nacionalidadTutor_4
-EMAIL_ADDRESS | correoElectronico | Correo electrónico |  | paisResidencia_3
-EMAIL_ADDRESS | confirmacionCorreoElectronico | Correo electrónico (Confirmación) |  | paisResidencia_3
-UNKNOWN_TYPE | captcha | Código de verificación: |  | paisResidencia_3
+NAME_FIRST | nombreTutor | Nombre(s) |  | -default
+NAME_LAST | apellidosTutor | Apellido(s) |  | -default
+UNKNOWN_TYPE | sexoTutor | Sexo | 0 | -default
+UNKNOWN_TYPE | fechaNacimientoTutor | Fecha de nacimiento |  | -default
+ADDRESS_HOME_COUNTRY | nacionalidadTutor | Nacionalidad (País) | 0 | -default
+ADDRESS_HOME_COUNTRY | paisNacimientoTutor | País de nacimiento | 0 | -default
+EMAIL_ADDRESS | correoElectronico | Correo electrónico |  | correoElectronico_4
+EMAIL_ADDRESS | confirmacionCorreoElectronico | Correo electrónico (Confirmación) |  | correoElectronico_4
+UNKNOWN_TYPE | captcha | Código de verificación: |  | correoElectronico_4

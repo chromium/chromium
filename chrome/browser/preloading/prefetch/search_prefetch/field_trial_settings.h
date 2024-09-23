@@ -13,8 +13,6 @@ BASE_DECLARE_FEATURE(kSearchPrefetchServicePrefetching);
 
 BASE_DECLARE_FEATURE(kSearchPrefetchBlockBeforeHeaders);
 
-BASE_DECLARE_FEATURE(kSearchPrefetchSkipsCancel);
-
 BASE_DECLARE_FEATURE(kSearchPrefetchOnlyAllowDefaultMatchPreloading);
 
 // Whether matching prefetches can block navigation until they are determined to
@@ -38,6 +36,10 @@ base::TimeDelta SearchPrefetchErrorBackoffDuration();
 // The max number of stored cached prefetch responses. This is stored as a list
 // of navigation URLs to prefetch URLs.
 size_t SearchPrefetchMaxCacheEntries();
+// Overrides the max cache size for testing. This should be used only when tests
+// need to override the cache size dynamically. Otherwise, the cache size should
+// be set through base::ScopedFeatureList.
+void SetSearchPrefetchMaxCacheEntriesForTesting(size_t cache_site);
 
 // The amount of time that needs to have elapsed before we consider a prefetch
 // eligible to be served.
@@ -54,10 +56,6 @@ extern const base::FeatureParam<std::string> kNavigationPrefetchParam;
 // An experimental feature to measure if starting search prefetches during
 // navigation events provides benefit over the typical navigation flow.
 bool IsSearchNavigationPrefetchEnabled();
-
-// An experimental feature that skips the cancellation logic in search prefetch
-// service.
-bool SearchPrefetchSkipsCancel();
 
 // A flavor of navigation prefetch that triggers when the user changes the
 // selected index in omnibox to a search suggestion via arrow buttons. This is
@@ -82,5 +80,26 @@ bool PrefetchSearchHistorySuggestions();
 // Whether Omnibox prefetch and prerender should be restricted to the suggestion
 // being the default match.
 bool OnlyAllowDefaultMatchPreloading();
+
+// When this feature is enabled, SearchPrefetchService will send a request to
+// the network service to preload shared dictionary from the disk storage for
+// the AutocompleteResult's `destination_url`.
+BASE_DECLARE_FEATURE(kAutocompleteDictionaryPreload);
+
+// The amount of time preloaded dictionary is kept alive.
+extern const base::FeatureParam<base::TimeDelta>
+    kAutocompletePreloadedDictionaryTimeout;
+
+// If enabled, suppresses SearchPrefetch (https://crbug.com/350519234)
+BASE_DECLARE_FEATURE(kSuppressesSearchPrefetchOnSlowNetwork);
+
+// The threshold to determine if the network is slow or not.
+extern const base::FeatureParam<base::TimeDelta>
+    kSuppressesSearchPrefetchOnSlowNetworkThreshold;
+
+// If enabled, SearchPrefetchService is ensured on
+// `SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest`, so that
+// navigation can consult the search prefetch cache even during browser startup.
+BASE_DECLARE_FEATURE(kEnsureSearchPrefetchServiceOnInterceptor);
 
 #endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_

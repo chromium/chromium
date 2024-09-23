@@ -16,7 +16,10 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.sync.SyncService;
 
 import java.lang.annotation.Retention;
@@ -234,14 +237,26 @@ public class ContextualSearchUma {
 
     /**
      * Logs whether search results were seen for a Tap gesture, for all users and sync-enabled
-     * users. For sync-enabled users we log to a separate histogram for that sub-population in order
-     * to help validate the Ranker Tap Suppression model results (since they are trained on UKM data
-     * which approximately reflects this sync-enabled population).
+     * users. For users that have UKM enabled we log to a separate histogram in order to help
+     * validate the Ranker Tap Suppression model results (since they are trained on UKM data).
+     *
      * @param wasPanelSeen Whether the panel was seen.
+     * @param profile The current {@link Profile}.
      */
-    public static void logTapResultsSeen(boolean wasPanelSeen, @Nullable SyncService syncService) {
+    public static void logTapResultsSeen(boolean wasPanelSeen, Profile profile) {
         RecordHistogram.recordBooleanHistogram(
                 "Search.ContextualSearch.Tap.ResultsSeen", wasPanelSeen);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            if (UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile)) {
+                // The histogram has SyncEnabled in the name, since this is what it was using in the
+                // past instead of checking the UKM state directly.
+                RecordHistogram.recordBooleanHistogram(
+                        "Search.ContextualSearch.Tap.SyncEnabled.ResultsSeen", wasPanelSeen);
+            }
+            return;
+        }
+        @Nullable SyncService syncService = SyncServiceFactory.getForProfile(profile);
         if (syncService != null && syncService.isSyncFeatureEnabled()) {
             RecordHistogram.recordBooleanHistogram(
                     "Search.ContextualSearch.Tap.SyncEnabled.ResultsSeen", wasPanelSeen);

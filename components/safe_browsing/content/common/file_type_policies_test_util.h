@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_FILE_TYPE_POLICIES_TEST_UTIL_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_FILE_TYPE_POLICIES_TEST_UTIL_H_
 
+#include "base/values.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 
 namespace safe_browsing {
@@ -39,6 +40,10 @@ class FileTypePoliciesTestOverlay {
 };
 
 FileTypePoliciesTestOverlay ScopedMarkAllFilesDangerousForTesting();
+
+base::Value::Dict CreateNotDangerousOverridePolicyEntryForTesting(
+    const std::string& extension,
+    const std::vector<std::string>& domains);
 
 }  // namespace safe_browsing
 

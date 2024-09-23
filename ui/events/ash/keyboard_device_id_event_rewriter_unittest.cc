@@ -104,7 +104,7 @@ TEST_F(KeyboardDeviceIdEventRewriterTest, KeyEventRewriting) {
 
   // Rewriting for non-virtual-core-keyboard has no effect.
   {
-    auto key_event = std::make_unique<KeyEvent>(ET_KEY_PRESSED, VKEY_A,
+    auto key_event = std::make_unique<KeyEvent>(EventType::kKeyPressed, VKEY_A,
                                                 /*flags=*/0);
     key_event->set_source_device_id(kKeyboardDeviceId);
 
@@ -118,7 +118,7 @@ TEST_F(KeyboardDeviceIdEventRewriterTest, KeyEventRewriting) {
   // Rewriting for virtual-core-keyboard annotates the device id
   // of the previous event.
   {
-    auto key_event = std::make_unique<KeyEvent>(ET_KEY_PRESSED, VKEY_A,
+    auto key_event = std::make_unique<KeyEvent>(EventType::kKeyPressed, VKEY_A,
                                                 /*flags=*/0);
     key_event->set_source_device_id(kVirtualCoreKeyboardDeviceId);
 
@@ -136,7 +136,7 @@ TEST_F(KeyboardDeviceIdEventRewriterTest, MotionEventRewriting) {
 
   // Rewriting for non-virtual-core-keyboard has no effect, but remembers it.
   {
-    auto key_event = std::make_unique<KeyEvent>(ET_KEY_PRESSED, VKEY_A,
+    auto key_event = std::make_unique<KeyEvent>(EventType::kKeyPressed, VKEY_A,
                                                 /*flags=*/0);
     key_event->set_source_device_id(kKeyDeviceId);
 
@@ -150,7 +150,7 @@ TEST_F(KeyboardDeviceIdEventRewriterTest, MotionEventRewriting) {
   // motion event is rewritten.
   {
     auto touch_event = std::make_unique<TouchEvent>(
-        ET_TOUCH_PRESSED, gfx::PointF(0.f, 0.f), gfx::PointF(0.f, 0.f),
+        EventType::kTouchPressed, gfx::PointF(0.f, 0.f), gfx::PointF(0.f, 0.f),
         base::TimeTicks(), PointerDetails());
     touch_event->set_source_device_id(kMotionDeviceId);
 

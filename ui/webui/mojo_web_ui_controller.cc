@@ -11,9 +11,11 @@ namespace ui {
 MojoWebUIController::MojoWebUIController(content::WebUI* contents,
                                          bool enable_chrome_send)
     : content::WebUIController(contents) {
-  int bindings = content::BINDINGS_POLICY_MOJO_WEB_UI;
-  if (enable_chrome_send)
-    bindings |= content::BINDINGS_POLICY_WEB_UI;
+  content::BindingsPolicySet bindings(
+      {content::BindingsPolicyValue::kMojoWebUi});
+  if (enable_chrome_send) {
+    bindings.Put(content::BindingsPolicyValue::kWebUi);
+  }
   contents->SetBindings(bindings);
 }
 MojoWebUIController::~MojoWebUIController() = default;

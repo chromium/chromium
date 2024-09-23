@@ -6,8 +6,10 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "services/media_session/public/cpp/android/media_session_jni_headers/MediaMetadata_jni.h"
 #include "services/media_session/public/cpp/media_image.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "services/media_session/public/cpp/android/media_session_jni_headers/MediaMetadata_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

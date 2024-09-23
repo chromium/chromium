@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 #include <utility>
 
@@ -169,7 +174,6 @@ class PingPongPaddle : public MessageReceiverWithResponderStatus {
       Message* message,
       std::unique_ptr<MessageReceiverWithStatus> responder) override {
     NOTREACHED();
-    return true;
   }
 
   base::TimeDelta Serve(uint32_t expected_count) {
@@ -244,7 +248,6 @@ class CounterReceiver : public MessageReceiverWithResponderStatus {
       Message* message,
       std::unique_ptr<MessageReceiverWithStatus> responder) override {
     NOTREACHED();
-    return true;
   }
 
   uint32_t counter() const { return counter_; }

@@ -1,0 +1,13 @@
+{
+    "GUID": "guid test",
+    "IPAddressConfigType": "DHCP",
+    "Name": "WiFi with check captive portal",
+    "Type": "WiFi",
+    "WiFi": {
+        "AutoConnect": true,
+        "HexSSID": "576966695769746844484350",
+        "Passphrase": "some passphrase",
+        "Security": "WPA-PSK"
+    },
+    "CheckCaptivePortal": "False"
+}

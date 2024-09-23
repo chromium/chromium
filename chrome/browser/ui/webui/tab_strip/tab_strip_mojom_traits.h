@@ -7,7 +7,6 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
-#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
 
 namespace mojo {

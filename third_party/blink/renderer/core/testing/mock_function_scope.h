@@ -23,9 +23,9 @@ class MockFunctionScope {
   explicit MockFunctionScope(ScriptState*);
   ~MockFunctionScope();
 
-  v8::Local<v8::Function> ExpectCall();
-  v8::Local<v8::Function> ExpectCall(String* captor);
-  v8::Local<v8::Function> ExpectNoCall();
+  ScriptFunction* ExpectCall();
+  ScriptFunction* ExpectCall(String* captor);
+  ScriptFunction* ExpectNoCall();
 
  private:
   class MockFunction : public ScriptFunction::Callable {

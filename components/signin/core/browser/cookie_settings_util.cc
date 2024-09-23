@@ -14,7 +14,7 @@
 
 namespace signin {
 
-// TODO(crbug.com/1386190): Consider whether the following checks should
+// TODO(crbug.com/40247160): Consider whether the following checks should
 // take in CookieSettingOverrides rather than default to none.
 
 bool SettingsAllowSigninCookies(

@@ -62,7 +62,7 @@ bool WebViewPasswordFeatureManager::
     IsBiometricAuthenticationBeforeFillingEnabled() const {
   // This feature is related only to MacOS and Windows, this function
   // shouldn't be called on iOS.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

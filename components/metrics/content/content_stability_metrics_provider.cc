@@ -11,8 +11,6 @@
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_termination_info.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/page_visibility_state.h"
@@ -119,6 +117,18 @@ void ContentStabilityMetricsProvider::OnRenderProcessHostCreated(
   if (!host_observation_.IsObservingSource(host)) {
     host_observation_.AddObservation(host);
   }
+}
+
+void ContentStabilityMetricsProvider::OnRenderProcessHostCreationFailed(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {
+#if BUILDFLAG(IS_IOS)
+  helper_.LogRendererCrash();
+#elif !BUILDFLAG(IS_ANDROID)
+  helper_.LogRendererCrash(
+      DetermineHostedContentType(host, extensions_helper_.get()), info.status,
+      info.exit_code);
+#endif
 }
 
 void ContentStabilityMetricsProvider::RenderProcessExited(

@@ -1,0 +1,243 @@
+object_value {
+  field {
+    name: "aggregatable_values"
+    value {
+      array_value {
+        object_value {
+          field {
+            name: "values"
+            value {
+              object_value {
+                field {
+                  name: "a"
+                  value: {
+                    number_value {
+                      integer_value {
+                        value: 123
+                      }
+                    }
+                  }
+                }
+                field {
+                  name: "b"
+                  value {
+                    number_value {
+                      integer_value {
+                        value: 456
+                      }
+                    }
+                  }
+                }
+                field {
+                  name: "e"
+                  value {
+                    object_value {
+                      field {
+                        name: "value"
+                        value {
+                          number_value {
+                            integer_value {
+                              value: 789
+                            }
+                          }
+                        }
+                      }
+                      field {
+                        name: "filtering_id"
+                        value {
+                          string_value {
+                            value: "125"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                field {
+                  name: "f"
+                  value {
+                    object_value {
+                      field {
+                        name: "value"
+                        value {
+                          number_value {
+                            integer_value {
+                              value: 321
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          field {
+            name: "filters"
+            value {
+              object_value {
+                field {
+                  name: "a"
+                  value {
+                    array_value {
+                      value {
+                        string_value {
+                          value: "x"
+                        }
+                      }
+                    }
+                  }
+                }
+                field {
+                  name: "b"
+                  value {
+                    array_value {
+                      value {
+                        string_value {
+                          value: "y"
+                        }
+                      }
+                      value {
+                        string_value {
+                          value: "z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          field {
+            name: "not_filters"
+            value {
+              object_value {
+                field {
+                  name: "a"
+                  value {
+                    array_value {
+                      value {
+                        string_value {
+                          value: "x"
+                        }
+                      }
+                    }
+                  }
+                }
+                field {
+                  name: "c"
+                  value {
+                    array_value {
+                      value {
+                        string_value {
+                          value: "d"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        object_value {
+          field {
+            name: "values"
+            value {
+              object_value {
+                field {
+                  name: "c"
+                  value: {
+                    number_value {
+                      integer_value {
+                        value: 111
+                      }
+                    }
+                  }
+                }
+                field {
+                  name: "d"
+                  value {
+                    number_value {
+                      integer_value {
+                        value: 222
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          field {
+            name: "filters"
+            value {
+              object_value {
+                field {
+                  name: "c"
+                  value {
+                    array_value {
+                      value {
+                        string_value {
+                          value: "s"
+                        }
+                      }
+                    }
+                  }
+                }
+                field {
+                  name: "d"
+                  value {
+                    array_value {
+                      value {
+                        string_value {
+                          value: "t"
+                        }
+                      }
+                      value {
+                        string_value {
+                          value: "u"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          field {
+            name: "not_filters"
+            value {
+              object_value {
+                field {
+                  name: "c"
+                  value {
+                    array_value {
+                      value {
+                        string_value {
+                          value: "s"
+                        }
+                      }
+                    }
+                  }
+                }
+                field {
+                  name: "d"
+                  value {
+                    array_value {
+                      value {
+                        string_value {
+                          value: "e"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

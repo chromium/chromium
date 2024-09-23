@@ -21,6 +21,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -35,7 +37,6 @@ namespace safe_browsing {
 
 namespace {
 
-constexpr int kAvatarSize = 40;
 constexpr int kAvatarOffset = 45;
 constexpr int kImageOffset = 5;
 
@@ -97,26 +98,22 @@ void TailoredSecurityUnconsentedModal::ShowForWebContents(
 TailoredSecurityUnconsentedModal::TailoredSecurityUnconsentedModal(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
 
   SetTitle(IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_TITLE);
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityUpdatedMessages)) {
-    auto* bodyLabel =
-        AddChildView(std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-            IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_BODY)));
-    bodyLabel->SetMultiLine(true);
-    bodyLabel->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical,
-        ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG)));
-    set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
-  }
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  auto* bodyLabel = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_BODY)));
+  bodyLabel->SetMultiLine(true);
+  bodyLabel->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG)));
+  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(
                      IDS_TAILORED_SECURITY_UNCONSENTED_ACCEPT_BUTTON));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_TAILORED_SECURITY_UNCONSENTED_CANCEL_BUTTON));
 
@@ -137,8 +134,9 @@ TailoredSecurityUnconsentedModal::TailoredSecurityUnconsentedModal(
 TailoredSecurityUnconsentedModal::~TailoredSecurityUnconsentedModal() = default;
 
 bool TailoredSecurityUnconsentedModal::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
-  return (button == ui::DIALOG_BUTTON_OK || button == ui::DIALOG_BUTTON_CANCEL);
+    ui::mojom::DialogButton button) const {
+  return (button == ui::mojom::DialogButton::kOk ||
+          button == ui::mojom::DialogButton::kCancel);
 }
 
 bool TailoredSecurityUnconsentedModal::ShouldShowCloseButton() const {
@@ -154,46 +152,12 @@ void TailoredSecurityUnconsentedModal::AddedToWidget() {
     return;
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityUpdatedMessages)) {
-    gfx::ImageSkia header_image =
-        *bundle.GetImageSkiaNamed(IDR_TAILORED_SECURITY_UNCONSENTED_UPDATED);
-    auto image_view = std::make_unique<views::ImageView>(
-        ui::ImageModel::FromImageSkia(header_image));
-    image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-    GetBubbleFrameView()->SetHeaderView(std::move(image_view));
-  } else {
-    gfx::ImageSkia avatar_image = identity_manager
-                                      ->FindExtendedAccountInfoByAccountId(
-                                          identity_manager->GetPrimaryAccountId(
-                                              signin::ConsentLevel::kSignin))
-                                      .account_image.AsImageSkia();
-
-    gfx::ImageSkia sized_avatar_image =
-        gfx::ImageSkiaOperations::CreateResizedImage(
-            avatar_image, skia::ImageOperations::RESIZE_BEST,
-            gfx::Size(kAvatarSize, kAvatarSize));
-    // The color used in `circle_mask` is irrelevant as long as it's opaque;
-    // only the alpha channel matters.
-    gfx::ImageSkia circle_mask =
-        gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-            kAvatarSize / 2, SK_ColorWHITE, gfx::ImageSkia());
-    gfx::ImageSkia cropped_avatar_image =
-        gfx::ImageSkiaOperations::CreateMaskedImage(sized_avatar_image,
-                                                    circle_mask);
-    gfx::ImageSkia header_image =
-        *bundle.GetImageSkiaNamed(IDR_TAILORED_SECURITY_UNCONSENTED);
-    gfx::ImageSkia header_and_avatar(
-        std::make_unique<SuperimposedOffsetImageSource>(header_image,
-                                                        cropped_avatar_image),
-        gfx::Size(header_image.size().width(),
-                  header_image.size().height() + kImageOffset));
-
-    auto image_view = std::make_unique<views::ImageView>(
-        ui::ImageModel::FromImageSkia(header_and_avatar));
-    image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-    GetBubbleFrameView()->SetHeaderView(std::move(image_view));
-  }
+  gfx::ImageSkia header_image =
+      *bundle.GetImageSkiaNamed(IDR_TAILORED_SECURITY_UNCONSENTED);
+  auto image_view = std::make_unique<views::ImageView>(
+      ui::ImageModel::FromImageSkia(header_image));
+  image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
 
 BEGIN_METADATA(TailoredSecurityUnconsentedModal)

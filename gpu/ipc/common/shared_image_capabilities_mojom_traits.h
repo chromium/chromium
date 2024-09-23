@@ -32,6 +32,11 @@ struct GPU_EXPORT StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
     return input.supports_r16_shared_images;
   }
 
+  static bool supports_native_nv12_mappable_shared_images(
+      const gpu::SharedImageCapabilities& input) {
+    return input.supports_native_nv12_mappable_shared_images;
+  }
+
   static bool is_r16f_supported(const gpu::SharedImageCapabilities& input) {
     return input.is_r16f_supported;
   }
@@ -54,6 +59,13 @@ struct GPU_EXPORT StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
       const gpu::SharedImageCapabilities& input) {
     return input.shared_image_swap_chain;
   }
+
+#if BUILDFLAG(IS_MAC)
+  static uint32_t texture_target_for_io_surfaces(
+      const gpu::SharedImageCapabilities& input) {
+    return input.texture_target_for_io_surfaces;
+  }
+#endif
 };
 
 }  // namespace mojo

@@ -65,9 +65,6 @@ POLICY_EXPORT void GetBrowserDeviceIdentifierAsync(
 // cloud policy type of the current platform.
 POLICY_EXPORT bool IsMachineLevelUserCloudPolicyType(const std::string& type);
 
-// Returns the machine-level user cloud policy type for the current platform.
-POLICY_EXPORT std::string GetMachineLevelUserCloudPolicyTypeForCurrentOS();
-
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLOUD_POLICY_UTIL_H_

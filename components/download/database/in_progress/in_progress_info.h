@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_DATABASE_IN_PROGRESS_IN_PROGRESS_INFO_H_
 #define COMPONENTS_DOWNLOAD_DATABASE_IN_PROGRESS_IN_PROGRESS_INFO_H_
 
-#include <optional>
 #include <string>
 #include <vector>
 

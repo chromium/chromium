@@ -1,0 +1,16 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.web_printing",
+      "default_value": 0,
+      "values_to_test": [
+        2,
+        3
+      ]
+    }
+  }
+]

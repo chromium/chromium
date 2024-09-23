@@ -31,6 +31,9 @@ class MockDragDropObserver : public aura::client::DragDropClientObserver {
   MockDragDropObserver& operator=(const MockDragDropObserver&) = delete;
   ~MockDragDropObserver() override;
 
+  // Stops observing the DragDropClient.
+  void ResetObservation();
+
   // aura::client::DragDropClientObserver:
   MOCK_METHOD(void, OnDragStarted, (), (override));
   MOCK_METHOD(void,
@@ -43,6 +46,7 @@ class MockDragDropObserver : public aura::client::DragDropClientObserver {
               (override));
   MOCK_METHOD(void, OnDragCancelled, (), (override));
   MOCK_METHOD(void, OnDropCompleted, (ui::mojom::DragOperation), (override));
+  MOCK_METHOD(void, OnDragDropClientDestroying, (), (override));
 
  private:
   base::ScopedObservation<aura::client::DragDropClient,

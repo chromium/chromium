@@ -26,7 +26,7 @@ struct URLLoaderCompletionStatus {
 
   // A copy of the data requested exists in the disk cache and/or the in-memory
   // cache.
-  // TODO(https://crbug.com/1339708): Rename this field to `exists_in_any_cache`
+  // TODO(crbug.com/40230090): Rename this field to `exists_in_any_cache`
   // to represent what this field actually means.
   bool exists_in_cache = false;
 
@@ -61,7 +61,7 @@ struct URLLoaderCompletionStatus {
   // This is used to record metrics in the client for compatibility risk
   // analysis and rollout monitoring. See https://crbug.com/1427470.
   //
-  // TODO(https://crbug.com/1268378): Remove this once preflights are enforced.
+  // TODO(crbug.com/40204695): Remove this once preflights are enforced.
   PrivateNetworkAccessPreflightResult private_network_access_preflight_result =
       PrivateNetworkAccessPreflightResult.kNone;
 
@@ -84,9 +84,9 @@ struct URLLoaderCompletionStatus {
   // Only set when |error_code| is |ERR_BLOCKED_BY_RESPONSE|.
   BlockedByResponseReasonWrapper? blocked_by_response_reason;
 
-  // Set when response blocked by CORB needs to be reported to the DevTools
+  // Set when response blocked by ORB needs to be reported to the DevTools
   // console.
-  bool should_report_corb_blocking = false;
+  bool should_report_orb_blocking = false;
 
   // Host resolution error info for this request.
   ResolveErrorInfo resolve_error_info;

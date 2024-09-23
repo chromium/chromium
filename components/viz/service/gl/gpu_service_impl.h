@@ -25,6 +25,7 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display_embedder/compositor_gpu_thread.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
@@ -49,6 +50,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/gpu_extra_info.h"
@@ -56,11 +58,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gl/direct_composition_support.h"
-
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -89,6 +86,10 @@ namespace media {
 class MediaGpuChannelManager;
 }  // namespace media
 
+namespace webnn {
+class WebNNContextProviderImpl;
+}  // namespace webnn
+
 namespace viz {
 
 class VulkanContextProvider;
@@ -109,19 +110,32 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 #if BUILDFLAG(IS_WIN)
       public gl::DirectCompositionOverlayCapsObserver,
 #endif
-      public mojom::GpuService {
+      public mojom::GpuService,
+      public BeginFrameObserverBase {
  public:
-  GpuServiceImpl(const gpu::GPUInfo& gpu_info,
-                 std::unique_ptr<gpu::GpuWatchdogThread> watchdog,
-                 scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+  struct VIZ_SERVICE_EXPORT InitParams {
+    InitParams();
+    InitParams(InitParams&& other);
+    InitParams& operator=(InitParams&& other);
+    ~InitParams();
+
+    std::unique_ptr<gpu::GpuWatchdogThread> watchdog_thread;
+    scoped_refptr<base::SingleThreadTaskRunner> io_runner;
+    raw_ptr<gpu::VulkanImplementation> vulkan_implementation = nullptr;
+#if BUILDFLAG(SKIA_USE_DAWN)
+    std::unique_ptr<gpu::DawnContextProvider> dawn_context_provider;
+#endif
+    base::OnceCallback<void(ExitCode)> exit_callback;
+  };
+
+  GpuServiceImpl(const gpu::GpuPreferences& gpu_preferences,
+                 const gpu::GPUInfo& gpu_info,
                  const gpu::GpuFeatureInfo& gpu_feature_info,
-                 const gpu::GpuPreferences& gpu_preferences,
                  const std::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu,
                  const std::optional<gpu::GpuFeatureInfo>&
                      gpu_feature_info_for_hardware_gpu,
                  const gfx::GpuExtraInfo& gpu_extra_info,
-                 gpu::VulkanImplementation* vulkan_implementation,
-                 base::OnceCallback<void(ExitCode)> exit_callback);
+                 InitParams init_params);
 
   GpuServiceImpl(const GpuServiceImpl&) = delete;
   GpuServiceImpl& operator=(const GpuServiceImpl&) = delete;
@@ -202,12 +216,10 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
           vea_provider_receiver) override;
 
-#if !BUILDFLAG(IS_CHROMEOS)
   void BindWebNNContextProvider(
       mojo::PendingReceiver<webnn::mojom::WebNNContextProvider>
           pending_receiver,
       int client_id) override;
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   void BindClientGmbInterface(
       mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> pending_receiver,
@@ -289,6 +301,17 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   bool IsExiting() const override;
   gpu::Scheduler* GetGpuScheduler() override;
 
+  // BeginFrameObserverBase implementation, which called from
+  // VizCompositorThread.
+  bool OnBeginFrameDerivedImpl(const BeginFrameArgs& args) override;
+  void OnBeginFrameSourcePausedChanged(bool paused) override;
+
+  using RequestBeginFrameForGpuServiceCB =
+      base::RepeatingCallback<void(bool toggle)>;
+  void SetRequestBeginFrameForGpuServiceCB(RequestBeginFrameForGpuServiceCB cb);
+  void SetMjpegDecodeAcceleratorBeginFrameCB(
+      std::optional<base::RepeatingClosure> cb);
+
 #if BUILDFLAG(IS_WIN)
   // DirectCompositionOverlayCapsObserver implementation.
   // Update overlay info and HDR status on the GPU process and send the updated
@@ -324,10 +347,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
     return gpu_memory_buffer_factory_.get();
   }
 
-  gpu::MailboxManager* mailbox_manager() {
-    return gpu_channel_manager_->mailbox_manager();
-  }
-
   gpu::SharedImageManager* shared_image_manager() {
     return gpu_channel_manager_->shared_image_manager();
   }
@@ -343,6 +362,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   gpu::SyncPointManager* sync_point_manager() {
     return gpu_channel_manager_->sync_point_manager();
   }
+
+  gpu::Scheduler* gpu_scheduler() { return gpu_channel_manager_->scheduler(); }
 
   scoped_refptr<base::SingleThreadTaskRunner>& main_runner() {
     return main_runner_;
@@ -527,11 +548,13 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 #endif
   }
 
+  void OnBeginFrameOnIO(const BeginFrameArgs& args);
+
   scoped_refptr<base::SingleThreadTaskRunner> main_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_runner_;
 
 #if BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/1340041): Fuchsia does not support FIDL communication from
+  // TODO(crbug.com/40850116): Fuchsia does not support FIDL communication from
   // ThreadPool's worker threads.
   std::unique_ptr<base::Thread> vea_thread_;
 #endif
@@ -569,6 +592,12 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   // Display compositor gpu thread.
   std::unique_ptr<CompositorGpuThread> compositor_gpu_thread_;
 
+  // Toggle gpu service on begin frame source which is used in main thread.
+  RequestBeginFrameForGpuServiceCB request_begin_frame_for_gpu_service_cb_;
+  // Used in GPU IO thread.
+  std::optional<base::RepeatingClosure>
+      mjpeg_decode_accelerator_begin_frame_cb_;
+
   // On some platforms (e.g. android webview), SyncPointManager,
   // SharedImageManager and Scheduler come from external sources.
   std::unique_ptr<gpu::SyncPointManager> owned_sync_point_manager_;
@@ -593,6 +622,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 #if BUILDFLAG(SKIA_USE_DAWN)
   std::unique_ptr<gpu::DawnContextProvider> dawn_context_provider_;
 #endif
+
+  std::unique_ptr<webnn::WebNNContextProviderImpl> webnn_context_provider_;
 
   std::unique_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 

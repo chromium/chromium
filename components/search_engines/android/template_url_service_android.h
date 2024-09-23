@@ -97,8 +97,7 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
       const base::android::JavaParamRef<jstring>&
           jimage_translate_source_language_param_key,
       const base::android::JavaParamRef<jstring>&
-          jimage_translate_target_language_param_key,
-      jboolean set_as_default);
+          jimage_translate_target_language_param_key);
 
   // Adds a custom search engine, sets |jkeyword| as its short_name and keyword,
   // and sets its date_created as |age_in_days| days before the current time.
@@ -138,11 +137,6 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   // SearchEngineChoiceCountry. It might be different than what LocaleUtils
   // returns.
   jboolean IsEeaChoiceCountry(JNIEnv* env);
-
-  // Returns whether the version of the search engines settings screen showing
-  // additional search engine info should be shown.
-  // TODO(b/318824817): To be removed post-launch.
-  jboolean ShouldShowUpdatedSettings(JNIEnv* env);
 
  private:
   bool IsDefaultSearchEngineGoogle();

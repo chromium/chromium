@@ -89,6 +89,7 @@ ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
       .SetOrientation(views::LayoutOrientation::kVertical)
       .SetDefault(views::kFlexBehaviorKey,
                   views::FlexSpecification(
+                      views::LayoutOrientation::kHorizontal,
                       views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
                       views::MaximumFlexSizeRule::kUnbounded));
 

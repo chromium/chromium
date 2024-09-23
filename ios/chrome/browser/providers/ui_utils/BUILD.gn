@@ -16,5 +16,5 @@ source_set("chromium_logo_controller") {
     "chromium_logo_controller.h",
     "chromium_logo_controller.mm",
   ]
-  deps = [ "//ios/chrome/browser/ui/ntp:logo" ]
+  deps = [ "//ios/chrome/browser/ntp/ui_bundled:logo" ]
 }

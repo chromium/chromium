@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/webui/file_manager/file_manager_ui.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/file_manager/file_manager_page_handler.h"
@@ -45,7 +51,6 @@ bool IsKioskSession() {
     case user_manager::UserType::kPublicAccount:
       return false;
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kArcKioskApp:
     case user_manager::UserType::kWebKioskApp:
       return true;
   }
@@ -101,13 +106,10 @@ void FileManagerUI::CreateAndAddTrustedAppDataSource(content::WebUI* web_ui,
   // Setup chrome://file-manager main and default page.
   source->AddResourcePath("", IDR_FILE_MANAGER_MAIN_HTML);
   // Add chrome://file-manager content.
-  source->AddResourcePaths(
-      base::make_span(kFileManagerSwaResources, kFileManagerSwaResourcesSize));
+  source->AddResourcePaths(kFileManagerSwaResources);
 
-  AddFilesAppResources(source, kFileManagerResources,
-                       kFileManagerResourcesSize);
-  AddFilesAppResources(source, kFileManagerGenResources,
-                       kFileManagerGenResourcesSize);
+  AddFilesAppResources(source, kFileManagerResources);
+  AddFilesAppResources(source, kFileManagerGenResources);
 
   // Load time data: add files app strings and feature flags.
   source->EnableReplaceI18nInJS();

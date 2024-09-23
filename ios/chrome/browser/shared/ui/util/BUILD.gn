@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/ios/swift_source_set.gni")
+import("//build/config/apple/swift_source_set.gni")
 import("//ios/build/chrome_build.gni")
 
 source_set("util") {
@@ -71,6 +71,28 @@ source_set("util") {
   ]
 }
 
+source_set("snackbar_util") {
+  sources = [
+    "snackbar_util.h",
+    "snackbar_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/shared/ui/util/identity_snackbar",
+    "//ios/third_party/material_components_ios",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("util_bridge") {
+  sources = [
+    "uikit_ui_util_bridge.h",
+    "uikit_ui_util_bridge.mm",
+  ]
+  deps = [ ":util" ]
+}
+
 swift_source_set("util_swift") {
   sources = [
     "UIView+WindowCoordinates.swift",
@@ -103,6 +125,25 @@ source_set("terms_util") {
   ]
 }
 
+source_set("omnibox_util") {
+  sources = [
+    "omnibox_util.h",
+    "omnibox_util.mm",
+  ]
+  deps = [
+    ":util",
+    ":util_swift",
+    "//base",
+    "//components/resources:terms_resources",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ui/base",
+    "//url",
+  ]
+}
+
 source_set("url_with_title") {
   sources = [
     "url_with_title.h",
@@ -119,6 +160,7 @@ source_set("unit_tests") {
     "named_guide_unittest.mm",
     "optional_property_animator_unittest.mm",
     "pasteboard_util_unittest.mm",
+    "rtl_geometry_unittest.mm",
     "terms_util_unittest.mm",
     "uikit_ui_util_unittest.mm",
     "uiview_window_coordinates_unittest.mm",
@@ -130,6 +172,7 @@ source_set("unit_tests") {
     ":util_swift",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/third_party/material_components_ios",
     "//testing/gtest",
     "//third_party/ocmock",
@@ -161,4 +204,17 @@ source_set("eg_test_support+eg2") {
     ":util",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "omnibox_util_egtest.mm" ]
+  deps = [
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

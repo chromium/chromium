@@ -28,7 +28,8 @@ class PopupRowContentViewTest : public ChromeViewsTestBase {
   // views::ViewsTestBase:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
   }
@@ -81,47 +82,6 @@ TEST_F(PopupRowContentViewTest, SetSelectedUpdatesBackground) {
   ASSERT_TRUE(background);
   EXPECT_EQ(background->get_color(), view().GetColorProvider()->GetColor(
                                          ui::kColorDropdownBackgroundSelected));
-}
-
-TEST_F(PopupRowContentViewTest, SetSelectedUpdatesTrackedLabels) {
-  auto cell = std::make_unique<PopupRowContentView>();
-  views::Label* tracked_label =
-      cell->AddChildView(std::make_unique<views::Label>(
-          u"Label text 1", views::style::CONTEXT_DIALOG_BODY_TEXT,
-          views::style::STYLE_SECONDARY));
-  views::Label* untracked_label =
-      cell->AddChildView(std::make_unique<views::Label>(
-          u"Label text 2", views::style::CONTEXT_DIALOG_BODY_TEXT,
-          views::style::STYLE_SECONDARY));
-  cell->TrackLabel(tracked_label);
-  ShowView(std::move(cell));
-
-  auto get_expected_color = [](views::Label& label, int style) {
-    return label.GetColorProvider()->GetColor(
-        views::TypographyProvider::Get().GetColorId(label.GetTextContext(),
-                                                    style));
-  };
-
-  // The unselected state.
-  EXPECT_EQ(tracked_label->GetEnabledColor(),
-            get_expected_color(*tracked_label, tracked_label->GetTextStyle()));
-  EXPECT_EQ(
-      untracked_label->GetEnabledColor(),
-      get_expected_color(*untracked_label, untracked_label->GetTextStyle()));
-
-  // The label styles don't get changed with selection for the new style.
-  if (!ShouldApplyNewAutofillPopupStyle()) {
-    // On select updates only the tracked label's style.
-    view().UpdateStyle(/*selected=*/true);
-    EXPECT_NE(
-        tracked_label->GetEnabledColor(),
-        get_expected_color(*tracked_label, untracked_label->GetTextStyle()));
-    EXPECT_EQ(tracked_label->GetEnabledColor(),
-              get_expected_color(*tracked_label, views::style::STYLE_SELECTED));
-    EXPECT_EQ(
-        untracked_label->GetEnabledColor(),
-        get_expected_color(*untracked_label, untracked_label->GetTextStyle()));
-  }
 }
 
 }  // namespace autofill

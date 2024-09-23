@@ -128,6 +128,7 @@ KeyframeModel::KeyframeModel(std::unique_ptr<gfx::AnimationCurve> curve,
       is_impl_only_(false),
       affects_active_elements_(true),
       affects_pending_elements_(true) {
+  CHECK_NE(group_, kInvalidGroup);
 }
 
 KeyframeModel::~KeyframeModel() = default;

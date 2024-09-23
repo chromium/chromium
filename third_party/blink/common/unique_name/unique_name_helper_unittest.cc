@@ -7,12 +7,12 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
@@ -49,7 +49,7 @@ class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
 
   bool IsMainFrame() const override { return !parent_; }
 
-  bool IsCandidateUnique(base::StringPiece name) const override {
+  bool IsCandidateUnique(std::string_view name) const override {
     auto* top = this;
     while (top->parent_)
       top = top->parent_;
@@ -66,7 +66,7 @@ class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
 
   std::vector<std::string> CollectAncestorNames(
       BeginPoint begin_point,
-      bool (*should_stop)(base::StringPiece)) const override {
+      bool (*should_stop)(std::string_view)) const override {
     EXPECT_EQ(BeginPoint::kParentFrame, begin_point);
     std::vector<std::string> result;
     for (auto* adapter = parent_.get(); adapter; adapter = adapter->parent_) {
@@ -141,7 +141,7 @@ class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
     }
   }
 
-  bool CheckUniqueness(base::StringPiece name) const {
+  bool CheckUniqueness(std::string_view name) const {
     if (name == GetNameForCurrentMode())
       return false;
     for (TestFrameAdapter* child : children_) {

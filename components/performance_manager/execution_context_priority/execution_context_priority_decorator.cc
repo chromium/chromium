@@ -4,11 +4,21 @@
 
 #include "components/performance_manager/execution_context_priority/execution_context_priority_decorator.h"
 
+#include "base/feature_list.h"
+#include "components/performance_manager/execution_context_priority/ad_frame_voter.h"
+#include "components/performance_manager/execution_context_priority/frame_audible_voter.h"
+#include "components/performance_manager/execution_context_priority/frame_capturing_media_stream_voter.h"
+#include "components/performance_manager/execution_context_priority/frame_visibility_voter.h"
+#include "components/performance_manager/execution_context_priority/inherit_client_priority_voter.h"
+#include "components/performance_manager/execution_context_priority/loading_page_voter.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/public/features.h"
 
-namespace performance_manager {
-namespace execution_context_priority {
+#if BUILDFLAG(IS_MAC)
+#include "components/performance_manager/execution_context_priority/inherit_parent_priority_voter.h"
+#endif  // BUILDFLAG(IS_MAC)
+
+namespace performance_manager::execution_context_priority {
 
 ExecutionContextPriorityDecorator::ExecutionContextPriorityDecorator() {
   // The following schema describes the structure of the voting tree. Arrows are
@@ -21,64 +31,82 @@ ExecutionContextPriorityDecorator::ExecutionContextPriorityDecorator() {
   //            |root_vote_observer_|
   //                     ^
   //                     |
-  //         |override_vote_aggregator_|
+  //         |override_vote_aggregator_| (optional, if no downvoter)
   //            ^                  ^
   //            | (override)       | (default)
   //            |                  |
-  //        Downvoter         |max_vote_aggregator_|
-  //                              ^    ^        ^
-  //                             /     |         \
-  //                            /      |          \
-  //                         Voter1, Voter2, ..., VoterN
+  //        Downvoter        |max_vote_aggregator_|
+  //                            ^    ^        ^
+  //                           /     |         \
+  //                          /      |          \
+  //                      Voter1, Voter2, ..., VoterN
   //
-  // Set up the voting tree from top to bottom.
-  override_vote_aggregator_.SetUpstreamVotingChannel(
-      root_vote_observer_.GetVotingChannel());
-  max_vote_aggregator_.SetUpstreamVotingChannel(
-      override_vote_aggregator_.GetDefaultVotingChannel());
 
-  // Set up downvoter.
-  ad_frame_voter_.SetVotingChannel(
-      override_vote_aggregator_.GetOverrideVotingChannel());
+  // --- Set up the voting tree from top to bottom. ---
 
-  // Set up voters.
-  frame_visibility_voter_.SetVotingChannel(
+  if (features::kDownvoteAdFrames.Get()) {
+    // Set up the OverrideVoteAggregator, which is needed by AdFrameVoter.
+    override_vote_aggregator_.SetUpstreamVotingChannel(
+        root_vote_observer_.GetVotingChannel());
+    max_vote_aggregator_.SetUpstreamVotingChannel(
+        override_vote_aggregator_.GetDefaultVotingChannel());
+  } else {
+    // There is no downvoter without AdFrameVoter. The OverrideVoteAggregator is
+    // skipped.
+    max_vote_aggregator_.SetUpstreamVotingChannel(
+        root_vote_observer_.GetVotingChannel());
+  }
+
+  // --- Set up downvoters. ---
+
+  // Casts a downvote for ad frames.
+  if (features::kDownvoteAdFrames.Get()) {
+    AddVoter<AdFrameVoter>(
+        override_vote_aggregator_.GetOverrideVotingChannel());
+  }
+
+  // --- Set up voters. ---
+
+  // Casts a USER_BLOCKING vote when a frame is visible.
+  AddVoter<FrameVisibilityVoter>(max_vote_aggregator_.GetVotingChannel());
+
+  // Casts a USER_BLOCKING vote when a frame is audible.
+  AddVoter<FrameAudibleVoter>(max_vote_aggregator_.GetVotingChannel());
+
+  // Casts a USER_BLOCKING vote when a frame is capturing a media stream.
+  AddVoter<FrameCapturingMediaStreamVoter>(
       max_vote_aggregator_.GetVotingChannel());
-  frame_audible_voter_.SetVotingChannel(
-      max_vote_aggregator_.GetVotingChannel());
-  frame_capturing_media_stream_voter_.SetVotingChannel(
-      max_vote_aggregator_.GetVotingChannel());
-  inherit_client_priority_voter_.SetVotingChannel(
-      max_vote_aggregator_.GetVotingChannel());
+
+  // Casts a vote for each child worker with the client's priority.
+  AddVoter<InheritClientPriorityVoter>(max_vote_aggregator_.GetVotingChannel());
+
+  // Casts a USER_BLOCKING vote for all frames in a loading page.
+  if (base::FeatureList::IsEnabled(features::kPMLoadingPageVoter)) {
+    AddVoter<LoadingPageVoter>(max_vote_aggregator_.GetVotingChannel());
+  }
+
+#if BUILDFLAG(IS_MAC)
+  // Casts a vote for each child frame with the parent's priority.
+  if (features::kInheritParentPriority.Get()) {
+    AddVoter<InheritParentPriorityVoter>(
+        max_vote_aggregator_.GetVotingChannel());
+  }
+#endif
 }
 
 ExecutionContextPriorityDecorator::~ExecutionContextPriorityDecorator() =
     default;
 
 void ExecutionContextPriorityDecorator::OnPassedToGraph(Graph* graph) {
-  // Subscribe voters to the graph.
-  if (features::kDownvoteAdFrames.Get()) {
-    graph->AddInitializingFrameNodeObserver(&ad_frame_voter_);
+  for (auto& voter : voters_) {
+    voter->InitializeOnGraph(graph);
   }
-  graph->AddInitializingFrameNodeObserver(&frame_visibility_voter_);
-  graph->AddInitializingFrameNodeObserver(&frame_audible_voter_);
-  graph->AddInitializingFrameNodeObserver(&frame_capturing_media_stream_voter_);
-  graph->AddFrameNodeObserver(&inherit_client_priority_voter_);
-  graph->AddWorkerNodeObserver(&inherit_client_priority_voter_);
 }
 
 void ExecutionContextPriorityDecorator::OnTakenFromGraph(Graph* graph) {
-  // Unsubscribe voters from the graph.
-  graph->RemoveWorkerNodeObserver(&inherit_client_priority_voter_);
-  graph->RemoveFrameNodeObserver(&inherit_client_priority_voter_);
-  graph->RemoveInitializingFrameNodeObserver(
-      &frame_capturing_media_stream_voter_);
-  graph->RemoveInitializingFrameNodeObserver(&frame_audible_voter_);
-  graph->RemoveInitializingFrameNodeObserver(&frame_visibility_voter_);
-  if (features::kDownvoteAdFrames.Get()) {
-    graph->RemoveInitializingFrameNodeObserver(&ad_frame_voter_);
+  for (auto& voter : voters_) {
+    voter->TearDownOnGraph(graph);
   }
 }
 
-}  // namespace execution_context_priority
-}  // namespace performance_manager
+}  // namespace performance_manager::execution_context_priority

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_TUTORIAL_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_TUTORIAL_H_
 
-#include <optional>
-
 #include "base/gtest_prod_util.h"
 #include "components/user_education/common/help_bubble_factory.h"
 #include "components/user_education/common/help_bubble_params.h"

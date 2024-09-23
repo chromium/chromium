@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/filename_util.h"
+#include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
@@ -95,8 +96,7 @@ IN_PROC_BROWSER_TEST_F(URLLoaderInterceptorTest, InterceptFrameWithFileScheme) {
   URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](URLLoaderInterceptor::RequestParams* params) {
         EXPECT_EQ(params->url_request.url, url);
-        // TODO(crbug.com/324458368): Plumb a process ID here.
-        EXPECT_EQ(params->process_id, network::mojom::kInvalidProcessId);
+        EXPECT_EQ(params->process_id, network::mojom::kBrowserProcessId);
         seen = true;
         network::URLLoaderCompletionStatus status;
         status.error_code = net::ERR_FAILED;
@@ -166,6 +166,7 @@ class TestBrowserClientWithHeaderClient
       int render_process_id,
       URLLoaderFactoryType type,
       const url::Origin& request_initiator,
+      const net::IsolationInfo& isolation_info,
       std::optional<int64_t> navigation_id,
       ukm::SourceIdObj ukm_source_id,
       network::URLLoaderFactoryBuilder& factory_builder,

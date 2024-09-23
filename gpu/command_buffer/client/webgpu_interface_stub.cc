@@ -13,16 +13,11 @@ class APIChannelStub : public APIChannel {
  public:
   APIChannelStub() = default;
 
-  const DawnProcTable& GetProcs() const override { return procs_; }
   WGPUInstance GetWGPUInstance() const override { return nullptr; }
   void Disconnect() override {}
 
-  DawnProcTable* procs() { return &procs_; }
-
  private:
   ~APIChannelStub() override = default;
-
-  DawnProcTable procs_ = {};
 };
 
 }  // anonymous namespace
@@ -31,10 +26,6 @@ WebGPUInterfaceStub::WebGPUInterfaceStub()
     : api_channel_(base::MakeRefCounted<APIChannelStub>()) {}
 
 WebGPUInterfaceStub::~WebGPUInterfaceStub() = default;
-
-DawnProcTable* WebGPUInterfaceStub::procs() {
-  return static_cast<APIChannelStub*>(api_channel_.get())->procs();
-}
 
 // InterfaceBase implementation.
 void WebGPUInterfaceStub::GenSyncTokenCHROMIUM(GLbyte* sync_token) {}
@@ -68,7 +59,8 @@ void WebGPUInterfaceStub::AssociateMailbox(
     GLuint device_generation,
     GLuint id,
     GLuint generation,
-    GLuint usage,
+    uint64_t usage,
+    uint64_t internal_usage,
     const WGPUTextureFormat* view_formats,
     GLuint view_format_count,
     MailboxFlags flags,

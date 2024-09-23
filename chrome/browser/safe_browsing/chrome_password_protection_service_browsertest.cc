@@ -13,7 +13,6 @@
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
@@ -26,6 +25,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -44,11 +44,12 @@
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/user_manager/user_names.h"
-#include "components/variations/service/variations_service.h"
+#include "components/variations/pref_names.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -220,17 +221,17 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                        VerifyIsInExcludedCountry) {
-  variations::VariationsService* variations_service =
-      g_browser_process->variations_service();
   const std::string non_excluded_countries[] = {"be", "br", "ca", "de", "es",
                                                 "fr", "ie", "in", "jp", "nl",
                                                 "ru", "se", "us"};
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
   for (auto country : non_excluded_countries) {
-    variations_service->OverrideStoredPermanentCountry(country);
+    g_browser_process->local_state()->SetString(
+        variations::prefs::kVariationsCountry, country);
     EXPECT_FALSE(service->IsInExcludedCountry());
   }
-  variations_service->OverrideStoredPermanentCountry("cn");
+  g_browser_process->local_state()->SetString(
+      variations::prefs::kVariationsCountry, "cn");
   EXPECT_TRUE(service->IsInExcludedCountry());
 }
 
@@ -865,9 +866,20 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       /*is_primary_account=*/false,
       password_manager::metrics_util::GaiaPasswordHashChange::
           CHANGED_IN_CONTENT_AREA);
-  ASSERT_EQ(2u, profile->GetPrefs()
-                    ->GetList(password_manager::prefs::kPasswordHashDataList)
-                    .size());
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kLocalStateEnterprisePasswordHashes)) {
+    ASSERT_EQ(1u, profile->GetPrefs()
+                      ->GetList(password_manager::prefs::kPasswordHashDataList)
+                      .size());
+    ASSERT_EQ(1u,
+              g_browser_process->local_state()
+                  ->GetList(password_manager::prefs::kLocalPasswordHashDataList)
+                  .size());
+  } else {
+    ASSERT_EQ(2u, profile->GetPrefs()
+                      ->GetList(password_manager::prefs::kPasswordHashDataList)
+                      .size());
+  }
 
   // Turn off trigger
   profile->GetPrefs()->SetInteger(
@@ -876,6 +888,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
 
   password_manager::HashPasswordManager hash_password_manager;
   hash_password_manager.set_prefs(profile->GetPrefs());
+  hash_password_manager.set_local_prefs(g_browser_process->local_state());
   EXPECT_FALSE(hash_password_manager.HasPasswordHash(
       "username@domain.com", /*is_gaia_password=*/false));
   EXPECT_FALSE(
@@ -1240,8 +1253,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL kPrerenderUrl = embedded_test_server()->GetURL("/simple.html");
   prerender_helper_.AddPrerender(kPrerenderUrl);
 
-  ASSERT_NE(prerender_helper_.GetHostForUrl(kPrerenderUrl),
-            content::RenderFrameHost::kNoFrameTreeNodeId);
+  ASSERT_TRUE(prerender_helper_.GetHostForUrl(kPrerenderUrl));
 
   // Navigate to the prerendered URL. Ensure the activation navigation is
   // deferred until the request finishes without showing a modal.

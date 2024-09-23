@@ -50,6 +50,20 @@ TEST(FilterOperationsTest, MapRectReverseBlur) {
       ops.MapRectReverse(gfx::Rect(0, -10, 10, 10), SkMatrix::Scale(1, -1)));
 }
 
+TEST(FilterOperationsTest, MapRectLargeBlurReferenceFilter) {
+  FilterOperations ops;
+  ops.Append(FilterOperation::CreateReferenceFilter(
+      sk_make_sp<BlurPaintFilter>(10000, 10000, SkTileMode::kDecal, nullptr)));
+  gfx::Rect input(20000, 20000);
+  gfx::Rect result_unspecified_space = ops.MapRect(input);
+  // In unspecified space, the spread is always 3 * std_deviation.
+  EXPECT_EQ(gfx::Rect(-30000, -30000, 80000, 80000), result_unspecified_space);
+  // In device space, large blur is clamped.
+  gfx::Rect result_device_space = ops.MapRect(input, SkMatrix::I());
+  EXPECT_NE(result_unspecified_space, result_device_space);
+  EXPECT_TRUE(result_unspecified_space.Contains(result_device_space));
+}
+
 TEST(FilterOperationsTest, MapRectDropShadowReferenceFilter) {
   FilterOperations ops;
   ops.Append(

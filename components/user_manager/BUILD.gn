@@ -4,6 +4,17 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
+component("common") {
+  sources = [
+    "user_type.cc",
+    "user_type.h",
+  ]
+
+  defines = [ "IS_USER_MANAGER_COMMON_IMPL" ]
+
+  deps = [ "//base" ]
+}
+
 component("user_manager") {
   sources = [
     "multi_user/multi_user_sign_in_policy.cc",
@@ -12,13 +23,13 @@ component("user_manager") {
     "user_manager_pref_names.h",
     "user_names.cc",
     "user_names.h",
-    "user_type.cc",
-    "user_type.h",
   ]
 
   public_deps = [
+    ":common",
     "//base",
     "//components/account_id",
+    "//components/prefs",
     "//ui/gfx",
   ]
 
@@ -31,7 +42,12 @@ component("user_manager") {
 
   if (is_chromeos_ash) {
     sources += [
+      "account_id_util.cc",
+      "account_id_util.h",
       "common_types.h",
+      "device_ownership_waiter.h",
+      "device_ownership_waiter_impl.cc",
+      "device_ownership_waiter_impl.h",
       "include_exclude_account_id_filter.cc",
       "include_exclude_account_id_filter.h",
       "known_user.cc",
@@ -54,8 +70,12 @@ component("user_manager") {
 
     deps += [
       "//ash/constants",
-      "//components/prefs",
+      "//chromeos/ash/components/install_attributes",
+      "//chromeos/ash/components/settings",
+      "//components/pref_registry",
       "//skia",
+      "//ui/base",
+      "//ui/chromeos/resources",
       "//url",
     ]
   }
@@ -65,20 +85,29 @@ if (is_chromeos_ash) {
   source_set("test_support") {
     testonly = true
     sources = [
+      "fake_device_ownership_waiter.cc",
+      "fake_device_ownership_waiter.h",
       "fake_user_manager.cc",
       "fake_user_manager.h",
+      "fake_user_manager_delegate.cc",
+      "fake_user_manager_delegate.h",
     ]
 
     public_deps = [
       ":user_manager",
       "//base",
+      "//chromeos/ash/components/install_attributes",
       "//components/account_id",
     ]
+
+    deps = [ "//chromeos/ash/components/settings" ]
   }
 
   source_set("unit_tests") {
     testonly = true
     sources = [
+      "account_id_util_unittest.cc",
+      "device_ownership_waiter_unittest.cc",
       "include_exclude_account_id_filter_unittest.cc",
       "known_user_unittest.cc",
       "user_unittest.cc",
@@ -87,6 +116,7 @@ if (is_chromeos_ash) {
       ":test_support",
       ":user_manager",
       "//base/test:test_support",
+      "//chromeos/ash/components/install_attributes:test_support",
       "//components/account_id",
       "//components/prefs:test_support",
       "//testing/gmock",

@@ -19,10 +19,10 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -151,7 +151,7 @@ void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
 void HoldingSpaceUiBrowserTestBase::SetUpOnMainThread() {
   HoldingSpaceBrowserTestBase::SetUpOnMainThread();
 
-  if (!features::IsHoldingSpacePredictabilityEnabled()) {
+  {
     ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 

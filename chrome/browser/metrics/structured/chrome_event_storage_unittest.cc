@@ -71,7 +71,7 @@ TEST_F(ChromeEventStorageTest, StoreAndProvideEvents) {
 
   EventsProto events;
   storage.CopyEvents(&events);
-  EXPECT_EQ(events.non_uma_events_size(), 1);
+  EXPECT_EQ(events.events_size(), 1);
 
   StructuredDataProto proto = GetReport(&storage);
   EXPECT_EQ(proto.events_size(), 1);
@@ -79,7 +79,7 @@ TEST_F(ChromeEventStorageTest, StoreAndProvideEvents) {
   // Storage should have no events after a successful dump.
   events.Clear();
   storage.CopyEvents(&events);
-  EXPECT_EQ(events.non_uma_events_size(), 0);
+  EXPECT_EQ(events.events_size(), 0);
 
   ExpectNoErrors();
 }

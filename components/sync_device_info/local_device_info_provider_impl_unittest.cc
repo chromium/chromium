@@ -4,9 +4,11 @@
 
 #include "components/sync_device_info/local_device_info_provider_impl.h"
 
+#include <optional>
+
 #include "base/memory/ptr_util.h"
 #include "build/chromeos_buildflags.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -31,6 +33,8 @@ const char kSharingVapidAuthSecret[] = "test_vapid_auth_secret";
 const char kSharingSenderIdFCMRegistrationToken[] = "test_sender_id_fcm_token";
 const char kSharingSenderIdP256dh[] = "test_sender_id_p256_dh";
 const char kSharingSenderIdAuthSecret[] = "test_sender_id_auth_secret";
+const char kSharingChimeRepresentativeTargetId[] =
+    "chime_representative_target_id";
 const sync_pb::SharingSpecificFields::EnabledFeatures
     kSharingEnabledFeatures[] = {
         sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2};
@@ -50,6 +54,10 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
 
   MOCK_METHOD(std::string, GetSigninScopedDeviceId, (), (const override));
   MOCK_METHOD(bool, GetSendTabToSelfReceivingEnabled, (), (const override));
+  MOCK_METHOD(sync_pb::SyncEnums_SendTabReceivingType,
+              GetSendTabToSelfReceivingType,
+              (),
+              (const override));
   MOCK_METHOD(std::optional<DeviceInfo::SharingInfo>,
               GetLocalSharingInfo,
               (),
@@ -62,7 +70,7 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
               GetFCMRegistrationToken,
               (),
               (const override));
-  MOCK_METHOD(std::optional<ModelTypeSet>,
+  MOCK_METHOD(std::optional<DataTypeSet>,
               GetInterestedDataTypes,
               (),
               (const override));
@@ -195,6 +203,32 @@ TEST_F(LocalDeviceInfoProviderImplTest, SendTabToSelfReceivingEnabled) {
       provider_->GetLocalDeviceInfo()->send_tab_to_self_receiving_enabled());
 }
 
+TEST_F(LocalDeviceInfoProviderImplTest, SendTabToSelfReceivingType) {
+  ON_CALL(device_info_sync_client_, GetSendTabToSelfReceivingType())
+      .WillByDefault(Return(
+          sync_pb::
+              SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED));
+
+  InitializeProvider();
+
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  EXPECT_EQ(
+      provider_->GetLocalDeviceInfo()->send_tab_to_self_receiving_type(),
+      sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED);
+
+  ON_CALL(device_info_sync_client_, GetSendTabToSelfReceivingType())
+      .WillByDefault(Return(
+          sync_pb::
+              SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION));
+
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  EXPECT_EQ(
+      provider_->GetLocalDeviceInfo()->send_tab_to_self_receiving_type(),
+      sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION);
+}
+
 TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
   ON_CALL(device_info_sync_client_, GetLocalSharingInfo())
       .WillByDefault(Return(std::nullopt));
@@ -214,7 +248,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
           DeviceInfo::SharingTargetInfo{kSharingSenderIdFCMRegistrationToken,
                                         kSharingSenderIdP256dh,
                                         kSharingSenderIdAuthSecret},
-          enabled_features);
+          kSharingChimeRepresentativeTargetId, enabled_features);
   ON_CALL(device_info_sync_client_, GetLocalSharingInfo())
       .WillByDefault(Return(sharing_info));
 
@@ -231,6 +265,8 @@ TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
             local_sharing_info->sender_id_target_info.fcm_token);
   EXPECT_EQ(kSharingSenderIdP256dh,
             local_sharing_info->sender_id_target_info.p256dh);
+  EXPECT_EQ(kSharingChimeRepresentativeTargetId,
+            local_sharing_info->chime_representative_target_id);
   EXPECT_EQ(kSharingSenderIdAuthSecret,
             local_sharing_info->sender_id_target_info.auth_secret);
   EXPECT_EQ(enabled_features, local_sharing_info->enabled_features);
@@ -253,9 +289,9 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateFCMRegistrationToken) {
 TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateInterestedDataTypes) {
   InitializeProvider();
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
-  EXPECT_TRUE(provider_->GetLocalDeviceInfo()->interested_data_types().Empty());
+  EXPECT_TRUE(provider_->GetLocalDeviceInfo()->interested_data_types().empty());
 
-  const ModelTypeSet kTypes = {BOOKMARKS};
+  const DataTypeSet kTypes = {BOOKMARKS};
   EXPECT_CALL(device_info_sync_client_, GetInterestedDataTypes())
       .WillRepeatedly(Return(kTypes));
 
@@ -264,7 +300,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateInterestedDataTypes) {
 
 TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
   const std::string kFCMRegistrationToken = "fcm_token";
-  const ModelTypeSet kInterestedDataTypes = {BOOKMARKS};
+  const DataTypeSet kInterestedDataTypes = {BOOKMARKS};
 
   DeviceInfo::PhoneAsASecurityKeyInfo paask_info =
       SamplePhoneAsASecurityKeyInfo();
@@ -273,9 +309,14 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
       sync_pb::SyncEnums_DeviceType_TYPE_LINUX, DeviceInfo::OsType::kLinux,
       DeviceInfo::FormFactor::kDesktop, "device_id", "manufacturer", "model",
       "full_hardware_class", base::Time(), base::Days(1),
-      /*send_tab_to_self_receiving_enabled=*/true,
+      /*send_tab_to_self_receiving_enabled=*/
+      true,
+      /*send_tab_to_self_receiving_type=*/
+      sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
       /*sharing_info=*/std::nullopt, paask_info, kFCMRegistrationToken,
-      kInterestedDataTypes);
+      kInterestedDataTypes,
+      /*floating_workspace_last_signin_timestamp=*/std::nullopt);
 
   // |kFCMRegistrationToken|, |kInterestedDataTypes|,
   // and |paask_info| should be taken from |device_info_restored_from_store|

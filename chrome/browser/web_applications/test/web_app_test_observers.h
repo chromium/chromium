@@ -108,11 +108,6 @@ class WebAppTestRegistryObserverAdapter : public WebAppRegistrarObserver {
 
   ~WebAppTestRegistryObserverAdapter() override;
 
-  using WebAppProfileWillBeDeletedDelegate =
-      base::RepeatingCallback<void(const webapps::AppId& app_id)>;
-  void SetWebAppProfileWillBeDeletedDelegate(
-      WebAppProfileWillBeDeletedDelegate delegate);
-
   using WebAppWillBeUpdatedFromSyncDelegate = base::RepeatingCallback<void(
       const std::vector<const WebApp*>& new_apps_state)>;
   void SetWebAppWillBeUpdatedFromSyncDelegate(
@@ -135,7 +130,6 @@ class WebAppTestRegistryObserverAdapter : public WebAppRegistrarObserver {
   // WebAppRegistrarObserver:
   void OnWebAppsWillBeUpdatedFromSync(
       const std::vector<const WebApp*>& new_apps_state) override;
-  void OnWebAppProfileWillBeDeleted(const webapps::AppId& app_id) override;
   void OnWebAppLastBadgingTimeChanged(const webapps::AppId& app_id,
                                       const base::Time& time) override;
   void OnWebAppProtocolSettingsChanged() override;
@@ -154,7 +148,6 @@ class WebAppTestRegistryObserverAdapter : public WebAppRegistrarObserver {
 
  private:
   WebAppWillBeUpdatedFromSyncDelegate app_will_be_updated_from_sync_delegate_;
-  WebAppProfileWillBeDeletedDelegate app_profile_will_be_deleted_delegate_;
   WebAppLastBadgingTimeChangedDelegate app_last_badging_time_changed_delegate_;
   WebAppProtocolSettingsChangedDelegate app_protocol_settings_changed_delegate_;
 

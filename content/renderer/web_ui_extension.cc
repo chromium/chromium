@@ -45,7 +45,7 @@ bool ShouldRespondToRequest(blink::WebLocalFrame** frame_ptr,
     return false;
 
   bool webui_enabled =
-      (render_frame->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI) &&
+      (render_frame->GetEnabledBindings().Has(BindingsPolicyValue::kWebUi)) &&
       (frame_url.SchemeIs(kChromeUIScheme) ||
        frame_url.SchemeIs(url::kDataScheme));
 
@@ -155,7 +155,7 @@ void WebUIExtension::Send(gin::Arguments* args) {
     // so check that the frame is still valid to avoid dereferencing a stale
     // pointer.
     if (frame != blink::WebLocalFrame::FrameForCurrentContext()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
   }

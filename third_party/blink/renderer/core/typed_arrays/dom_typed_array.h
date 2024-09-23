@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_TYPED_ARRAY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_TYPED_ARRAY_H_
 
@@ -32,10 +37,9 @@ class DOMTypedArray final : public DOMArrayBufferView {
     return Create(buffer, 0, length);
   }
 
-  static ThisType* Create(const ValueType* array, size_t length) {
-    DOMArrayBuffer* buffer =
-        DOMArrayBuffer::Create(array, length * sizeof(ValueType));
-    return Create(buffer, 0, length);
+  static ThisType* Create(base::span<const ValueType> array) {
+    DOMArrayBuffer* buffer = DOMArrayBuffer::Create(base::as_bytes(array));
+    return Create(buffer, 0, array.size());
   }
 
   static ThisType* CreateOrNull(size_t length) {
@@ -44,10 +48,10 @@ class DOMTypedArray final : public DOMArrayBufferView {
     return buffer ? Create(buffer, 0, length) : nullptr;
   }
 
-  static ThisType* CreateOrNull(const ValueType* array, size_t length) {
+  static ThisType* CreateOrNull(base::span<const ValueType> array) {
     DOMArrayBuffer* buffer =
-        DOMArrayBuffer::CreateOrNull(array, length * sizeof(ValueType));
-    return buffer ? Create(buffer, 0, length) : nullptr;
+        DOMArrayBuffer::CreateOrNull(base::as_bytes(array));
+    return buffer ? Create(buffer, 0, array.size()) : nullptr;
   }
 
   static ThisType* CreateUninitializedOrNull(size_t length) {
@@ -115,6 +119,7 @@ class DOMTypedArray final : public DOMArrayBufferView {
   V(uint8_t, Uint8Clamped, true)           \
   V(uint16_t, Uint16, false)               \
   V(uint32_t, Uint32, false)               \
+  V(uint16_t, Float16, false)              \
   V(float, Float32, false)                 \
   V(double, Float64, false)                \
   V(int64_t, BigInt64, false)              \

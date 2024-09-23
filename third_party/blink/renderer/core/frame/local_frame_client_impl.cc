@@ -36,12 +36,15 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
+#include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom-blink.h"
@@ -370,24 +373,33 @@ void LocalFrameClientImpl::Detached(FrameDetachType type) {
   web_frame_->SetCoreFrame(nullptr);
 }
 
-void LocalFrameClientImpl::DispatchWillSendRequest(ResourceRequest& request) {
+void LocalFrameClientImpl::DispatchFinalizeRequest(ResourceRequest& request) {
   // Give the WebLocalFrameClient a crack at the request.
   if (web_frame_->Client()) {
     WrappedResourceRequest webreq(request);
-    web_frame_->Client()->WillSendRequest(
-        webreq, WebLocalFrameClient::ForRedirect(
-                    request.GetRedirectInfo().has_value()));
+    web_frame_->Client()->FinalizeRequest(webreq);
   }
 }
 
+std::optional<KURL> LocalFrameClientImpl::DispatchWillSendRequest(
+    const KURL& requested_url,
+    const scoped_refptr<const SecurityOrigin>& requestor_origin,
+    const net::SiteForCookies& site_for_cookies,
+    bool has_redirect_info,
+    const KURL& upstream_url) {
+  if (!web_frame_->Client()) {
+    return std::nullopt;
+  }
+  return web_frame_->Client()->WillSendRequest(
+      requested_url, requestor_origin, site_for_cookies,
+      WebLocalFrameClient::ForRedirect(has_redirect_info), upstream_url);
+}
+
 void LocalFrameClientImpl::DispatchDidDispatchDOMContentLoadedEvent() {
-  // TODO(dglazkov): Sadly, workers are WebLocalFrameClients, and they can
-  // totally destroy themselves when DidDispatchDOMContentLoadedEvent is
-  // invoked, and in turn destroy the fake WebLocalFrame that they create, which
-  // means that you should not put any code touching `this` after the two lines
-  // below.
   if (web_frame_->Client())
     web_frame_->Client()->DidDispatchDOMContentLoadedEvent();
+
+  web_frame_->DidDispatchDOMContentLoadedEvent();
 }
 
 void LocalFrameClientImpl::DispatchDidLoadResourceFromMemoryCache(
@@ -414,35 +426,63 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
   // TODO(dglazkov): Does this need to be called for subframes?
   web_frame_->ViewImpl()->DidCommitLoad(should_create_history_entry, true);
   if (web_frame_->Client()) {
-    web_frame_->Client()->DidFinishSameDocumentNavigation(
-        commit_type, is_synchronously_committed, same_document_navigation_type,
-        is_client_redirect);
+    // This unique token is used to associate the session history entry, and its
+    // viewport screenshot before the navigation finishes in the renderer.
+    base::UnguessableToken screenshot_destination;
 
     // Exclude `kWebHistoryInertCommit` because these types of navigations does
     // not originate from nor add entries to the session history (i.e., they are
     // not history-traversable).
     // Exclude the WebView not being composited because we won't present any
     // frame if it is not being actively drawn.
-    if (IsCompositedOutermostMainFrame(web_frame_) &&
-        commit_type != kWebHistoryInertCommit) {
+    // Exclude cases with prefers-reduced-motion. Back forward transitions are
+    // disabled in this case so no screenshots are necessary.
+    // We however always propagate the history sequence number for correctness
+    // in CompositedOuterMainFrame cases.
+    bool navigation_with_screenshot = false;
+    if (IsCompositedOutermostMainFrame(web_frame_)) {
       WebFrameWidgetImpl* frame_widget = web_frame_->FrameWidgetImpl();
       // The outermost mainframe must have a frame widget.
       CHECK(frame_widget);
-      if (base::FeatureList::IsEnabled(
-              features::
-                  kIncrementLocalSurfaceIdForMainframeSameDocNavigation)) {
-        frame_widget->RequestNewLocalSurfaceId();
+      frame_widget->PropagateHistorySequenceNumberToCompositor();
+
+      if (commit_type != kWebHistoryInertCommit &&
+          !web_frame_->GetFrame()->GetSettings()->GetPrefersReducedMotion()) {
+        navigation_with_screenshot = true;
+        if (RuntimeEnabledFeatures::
+                IncrementLocalSurfaceIdForMainframeSameDocNavigationEnabled()) {
+          frame_widget->RequestNewLocalSurfaceId();
+          if (RuntimeEnabledFeatures::BackForwardTransitionsEnabled()) {
+            screenshot_destination = base::UnguessableToken::Create();
+            frame_widget->RequestViewportScreenshot(screenshot_destination);
+          }
+        }
+
+        frame_widget->NotifyPresentationTime(WTF::BindOnce(
+            [](base::TimeTicks start,
+               const viz::FrameTimingDetails& frame_timing_details) {
+              base::TimeDelta duration =
+                  frame_timing_details.presentation_feedback.timestamp - start;
+              base::UmaHistogramTimes(
+                  "Navigation."
+                  "MainframeSameDocumentNavigationCommitToPresentFirstFrame",
+                  duration);
+            },
+            base::TimeTicks::Now()));
       }
-      frame_widget->NotifyPresentationTime(WTF::BindOnce(
-          [](base::TimeTicks start, base::TimeTicks finish) {
-            base::TimeDelta duration = finish - start;
-            base::UmaHistogramTimes(
-                "Navigation."
-                "MainframeSameDocumentNavigationCommitToPresentFirstFrame",
-                duration);
-          },
-          base::TimeTicks::Now()));
     }
+    base::UmaHistogramBoolean("Navigation.SameDocumentNavigationWithScreenshot",
+                              navigation_with_screenshot);
+
+    std::optional<blink::SameDocNavigationScreenshotDestinationToken> token =
+        std::nullopt;
+    if (!screenshot_destination.is_empty()) {
+      token = blink::SameDocNavigationScreenshotDestinationToken(
+          screenshot_destination);
+    }
+    web_frame_->Client()->DidFinishSameDocumentNavigation(
+        commit_type, is_synchronously_committed, same_document_navigation_type,
+        is_client_redirect, token);
   }
 
   // Set the layout shift exclusion window for the browser initiated same
@@ -500,16 +540,17 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
 
       web_frame_->FrameWidgetImpl()->DidNavigate();
 
-      // UKM metrics are only collected for the outermost main frame. Ensure
-      // after a navigation on the main frame we setup the appropriate
-      // structures.
+      // The navigation state pushed to the compositor is limited to outermost
+      // main frames. This is particularly important for UKM metrics, since we
+      // only record URL keyed data if the URL is being displayed in the main
+      // frame.
       if (IsCompositedOutermostMainFrame(web_frame_)) {
         WebFrameWidgetImpl* frame_widget = web_frame_->FrameWidgetImpl();
 
-        // Update the URL and the document source id used to key UKM metrics in
-        // the compositor. Note that the metrics for all frames are keyed to the
-        // main frame's URL.
-        frame_widget->SetSourceURLForCompositor(
+        // Update the navigation states (URL, the document source id used to key
+        // UKM metrics in the compositor. Note that the metrics for all frames
+        // are keyed to the main frame's URL.
+        frame_widget->UpdateNavigationStateForCompositor(
             web_frame_->GetDocument().GetUkmSourceId(),
             KURL(web_frame_->Client()->LastCommittedUrlForUKM()));
 
@@ -521,8 +562,12 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
       }
     }
   }
-  if (WebDevToolsAgentImpl* dev_tools = DevToolsAgent())
+  if (WebDevToolsAgentImpl* dev_tools =
+          DevToolsAgent(/*create_if_necessary=*/false)) {
     dev_tools->DidCommitLoadForLocalFrame(web_frame_->GetFrame());
+  }
+
+  web_frame_->DidCommitLoad();
 }
 
 void LocalFrameClientImpl::DispatchDidFailLoad(
@@ -561,17 +606,17 @@ void LocalFrameClientImpl::BeginNavigation(
     const std::optional<Impression>& impression,
     const LocalFrameToken* initiator_frame_token,
     std::unique_ptr<SourceLocation> source_location,
-    mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
-        initiator_policy_container_keep_alive_handle,
+    mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
+        initiator_navigation_state_keep_alive_handle,
     bool is_container_initiated,
-    bool is_fullscreen_requested) {
+    bool has_rel_opener) {
   if (!web_frame_->Client())
     return;
 
-  // |initiator_frame_token| and |initiator_policy_container_keep_alive_handle|
+  // |initiator_frame_token| and |initiator_navigation_state_keep_alive_handle|
   // should either be both specified or both null.
   DCHECK(!initiator_frame_token ==
-         !initiator_policy_container_keep_alive_handle);
+         !initiator_navigation_state_keep_alive_handle);
 
   auto navigation_info = std::make_unique<WebNavigationInfo>();
   navigation_info->url_request.CopyFrom(WrappedResourceRequest(request));
@@ -591,8 +636,8 @@ void LocalFrameClientImpl::BeginNavigation(
   navigation_info->input_start = input_start_time;
   navigation_info->initiator_frame_token =
       base::OptionalFromPtr(initiator_frame_token);
-  navigation_info->initiator_policy_container_keep_alive_handle =
-      std::move(initiator_policy_container_keep_alive_handle);
+  navigation_info->initiator_navigation_state_keep_alive_handle =
+      std::move(initiator_navigation_state_keep_alive_handle);
   LocalFrame* origin_frame =
       origin_window ? origin_window->GetFrame() : nullptr;
   if (origin_frame) {
@@ -603,36 +648,28 @@ void LocalFrameClientImpl::BeginNavigation(
           origin_frame->GetLocalFrameToken();
     }
     // Similarly, many navigation paths do not pass an
-    // |initiator_policy_container_keep_alive_handle|.
-    if (!navigation_info->initiator_policy_container_keep_alive_handle) {
-      navigation_info->initiator_policy_container_keep_alive_handle =
-          origin_window->GetPolicyContainer()->IssueKeepAliveHandle();
+    // |initiator_navigation_state_keep_alive_handle|.
+    if (!navigation_info->initiator_navigation_state_keep_alive_handle) {
+      navigation_info->initiator_navigation_state_keep_alive_handle =
+          origin_frame->IssueKeepAliveHandle();
     }
   } else {
     // TODO(https://crbug.com/1173409 and https://crbug.com/1059959): Check that
     // we always pass an |initiator_frame_token| and an
-    // |initiator_policy_container_keep_alive_handle| if |origin_window| is not
+    // |initiator_navigation_state_keep_alive_handle| if |origin_window| is not
     // set.
   }
 
   navigation_info->impression = impression;
-  navigation_info->is_fullscreen_requested = is_fullscreen_requested;
-  // TODO(crbug.com/1142516): Enforce requirements here, before IPC to browser?
-  if (is_fullscreen_requested && !request.HasUserGesture() && origin_frame &&
-      origin_frame->GetSettings() &&
-      !origin_frame->GetSettings()
-           ->GetRequireTransientActivationForHtmlFullscreen()) {
-    UseCounter::Count(origin_frame->GetDocument(),
-                      WebFeature::kFullscreenAllowedByContentSetting);
-  }
 
   // Allow cookie access via Storage Access API during the navigation, if the
   // initiator has obtained storage access. Note that the network service still
-  // applies cookie semantics and user settings, and that this bool is not
+  // applies cookie semantics and user settings, and that this value is not
   // trusted by the browser process. (The Storage Access API is only relevant
   // when third-party cookies are blocked.)
-  navigation_info->has_storage_access =
-      origin_window && origin_window->HasStorageAccess();
+  navigation_info->storage_access_api_status =
+      origin_window ? origin_window->GetStorageAccessApiStatus()
+                    : net::StorageAccessApiStatus::kNone;
 
   // Can be null.
   LocalFrame* local_parent_frame = GetLocalParentFrame(web_frame_);
@@ -666,6 +703,8 @@ void LocalFrameClientImpl::BeginNavigation(
     navigation_info->initiator_frame_is_ad = origin_frame->IsAdFrame();
     navigation_info->is_ad_script_in_stack = origin_frame->IsAdScriptInStack();
   }
+
+  navigation_info->has_rel_opener = has_rel_opener;
 
   // The frame has navigated either by itself or by the action of the
   // |origin_window| when it is defined. |source_location| represents the
@@ -705,7 +744,8 @@ void LocalFrameClientImpl::BeginNavigation(
     }
   }
 
-  if (WebDevToolsAgentImpl* devtools = DevToolsAgent()) {
+  if (WebDevToolsAgentImpl* devtools =
+          DevToolsAgent(/*create_if_necessary=*/false)) {
     navigation_info->devtools_initiator_info =
         devtools->NavigationInitiatorInfo(web_frame_->GetFrame());
   }
@@ -782,11 +822,14 @@ void LocalFrameClientImpl::DidChangePerformanceTiming() {
 
 void LocalFrameClientImpl::DidObserveUserInteraction(
     base::TimeTicks max_event_start,
+    base::TimeTicks max_event_queued_main_thread,
+    base::TimeTicks max_event_commit_finish,
     base::TimeTicks max_event_end,
     UserInteractionType interaction_type,
     uint64_t interaction_offset) {
   web_frame_->Client()->DidObserveUserInteraction(
-      max_event_start, max_event_end, interaction_type, interaction_offset);
+      max_event_start, max_event_queued_main_thread, max_event_commit_finish,
+      max_event_end, interaction_type, interaction_offset);
 }
 
 void LocalFrameClientImpl::DidChangeCpuTiming(base::TimeDelta time) {
@@ -830,17 +873,6 @@ void LocalFrameClientImpl::DidObserveLayoutShift(double score,
                                                  bool after_input_or_scroll) {
   if (WebLocalFrameClient* client = web_frame_->Client())
     client->DidObserveLayoutShift(score, after_input_or_scroll);
-}
-
-void LocalFrameClientImpl::PreloadSubresourceOptimizationsForOrigins(
-    const WTF::HashSet<scoped_refptr<const SecurityOrigin>>& origins) {
-  if (WebLocalFrameClient* client = web_frame_->Client()) {
-    std::vector<WebSecurityOrigin> origins_list;
-    for (const auto& origin : origins) {
-      origins_list.emplace_back(origin);
-    }
-    client->PreloadSubresourceOptimizationsForOrigins(origins_list);
-  }
 }
 
 void LocalFrameClientImpl::SelectorMatchChanged(
@@ -993,9 +1025,10 @@ unsigned LocalFrameClientImpl::BackForwardLength() {
   return webview ? webview->HistoryListLength() : 0;
 }
 
-WebDevToolsAgentImpl* LocalFrameClientImpl::DevToolsAgent() {
+WebDevToolsAgentImpl* LocalFrameClientImpl::DevToolsAgent(
+    bool create_if_necessary) {
   return WebLocalFrameImpl::FromFrame(web_frame_->GetFrame()->LocalFrameRoot())
-      ->DevToolsAgentImpl();
+      ->DevToolsAgentImpl(create_if_necessary);
 }
 
 KURL LocalFrameClientImpl::OverrideFlashEmbedWithHTML(const KURL& url) {
@@ -1007,9 +1040,10 @@ void LocalFrameClientImpl::NotifyUserActivation() {
     autofill_client->UserGestureObserved();
 }
 
-void LocalFrameClientImpl::AbortClientNavigation() {
-  if (web_frame_->Client())
-    web_frame_->Client()->AbortClientNavigation();
+void LocalFrameClientImpl::AbortClientNavigation(bool for_new_navigation) {
+  if (web_frame_->Client()) {
+    web_frame_->Client()->AbortClientNavigation(for_new_navigation);
+  }
 }
 
 WebSpellCheckPanelHostClient* LocalFrameClientImpl::SpellCheckPanelHostClient()
@@ -1040,18 +1074,9 @@ LocalFrameClientImpl::MaybeGetBackgroundResourceFetchAssets() {
   return web_frame_->Client()->MaybeGetBackgroundResourceFetchAssets();
 }
 
-blink::BrowserInterfaceBrokerProxy&
-LocalFrameClientImpl::GetBrowserInterfaceBroker() {
-  return *web_frame_->Client()->GetBrowserInterfaceBroker();
-}
-
 AssociatedInterfaceProvider*
 LocalFrameClientImpl::GetRemoteNavigationAssociatedInterfaces() {
   return web_frame_->Client()->GetRemoteNavigationAssociatedInterfaces();
-}
-
-void LocalFrameClientImpl::AnnotatedRegionsChanged() {
-  web_frame_->Client()->DraggableRegionsChanged();
 }
 
 base::UnguessableToken LocalFrameClientImpl::GetDevToolsFrameToken() const {
@@ -1060,8 +1085,10 @@ base::UnguessableToken LocalFrameClientImpl::GetDevToolsFrameToken() const {
 
 String LocalFrameClientImpl::evaluateInInspectorOverlayForTesting(
     const String& script) {
-  if (WebDevToolsAgentImpl* devtools = DevToolsAgent())
+  if (WebDevToolsAgentImpl* devtools =
+          DevToolsAgent(/*create_if_necessary=*/true)) {
     return devtools->EvaluateInOverlayForTesting(script);
+  }
   return g_empty_string;
 }
 
@@ -1170,10 +1197,6 @@ void LocalFrameClientImpl::NotifyAutoscrollForSelectionInMainFrame(
       ->NotifyAutoscrollForSelectionInMainFrame(autoscroll_selection);
 }
 
-bool LocalFrameClientImpl::UsePrintingLayout() const {
-  return web_frame_->UsePrintingLayout();
-}
-
 std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
 LocalFrameClientImpl::CreateResourceLoadInfoNotifierWrapper() {
   DCHECK(web_frame_->Client());
@@ -1183,8 +1206,14 @@ LocalFrameClientImpl::CreateResourceLoadInfoNotifierWrapper() {
 void LocalFrameClientImpl::BindDevToolsAgent(
     mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost> host,
     mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver) {
-  if (WebDevToolsAgentImpl* devtools = DevToolsAgent())
+  if (WebDevToolsAgentImpl* devtools =
+          DevToolsAgent(/*create_if_necessary=*/true)) {
     devtools->BindReceiver(std::move(host), std::move(receiver));
+  }
+}
+
+bool LocalFrameClientImpl::IsDomStorageDisabled() const {
+  return web_frame_->Client()->IsDomStorageDisabled();
 }
 
 }  // namespace blink

@@ -97,7 +97,7 @@ class MetricsServiceUserDemographicsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug/1016118): Add the remaining test cases.
+// TODO(crbug.com/40103988): Add the remaining test cases.
 // Keep this test in sync with testUMADemographicsReportingWithFeatureEnabled
 // and testUMADemographicsReportingWithFeatureDisabled in
 // ios/chrome/browser/metrics/demographics_egtest.mm.
@@ -118,8 +118,8 @@ IN_PROC_BROWSER_TEST_P(MetricsServiceUserDemographicsBrowserTest,
   test::AddUserBirthYearAndGenderToSyncServer(GetFakeServer()->AsWeakPtr(),
                                               test_birth_year, test_gender);
 
-  // TODO(crbug/1076461): Try to replace the below set-up code with functions
-  // from SyncTest.
+  // TODO(crbug.com/40688248): Try to replace the below set-up code with
+  // functions from SyncTest.
   Profile* test_profile = ProfileManager::GetLastUsedProfileIfLoaded();
 
   // Enable sync for the test profile.

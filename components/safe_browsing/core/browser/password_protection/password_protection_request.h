@@ -176,11 +176,6 @@ class PasswordProtectionRequest
   // Start checking the allowlist.
   void CheckAllowlist();
 
-  static void OnAllowlistCheckDoneOnSB(
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      base::WeakPtr<PasswordProtectionRequest> weak_request,
-      bool match_allowlist);
-
   // If |main_frame_url_| matches allowlist, call Finish() immediately;
   // otherwise call CheckCachedVerdicts().
   void OnAllowlistCheckDone(bool match_allowlist);
@@ -277,7 +272,7 @@ class PasswordProtectionRequest
       password_protection_service_;
 
   // The outcome of the password protection request.
-  RequestOutcome request_outcome_;
+  RequestOutcome request_outcome_ = RequestOutcome::UNKNOWN;
 
   // If we haven't receive response after this period of time, we cancel this
   // request.

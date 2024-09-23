@@ -1,10 +1,10 @@
 rootWebArea pageLocation=(0, 0)
 ++genericContainer ignored
-++++genericContainer ignored
+++++genericContainer pageLocation=(0, 100)
 ++++++iframe pageLocation=(0, 100) transform
 ++++++++rootWebArea pageLocation=(0, 100)
 ++++++++++genericContainer ignored
-++++++++++++genericContainer ignored
+++++++++++++genericContainer pageLocation=(200, 100)
 ++++++++++++++iframe pageLocation=(200, 100) transform
 ++++++++++++++++rootWebArea pageLocation=(200, 100)
 ++++++++++++++++++genericContainer ignored

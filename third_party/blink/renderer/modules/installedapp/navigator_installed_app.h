@@ -20,10 +20,10 @@ class NavigatorInstalledApp final {
   STATIC_ONLY(NavigatorInstalledApp);
 
  public:
-  static ScriptPromiseTyped<IDLSequence<RelatedApplication>>
-  getInstalledRelatedApps(ScriptState*,
-                          Navigator&,
-                          ExceptionState& exception_state);
+  static ScriptPromise<IDLSequence<RelatedApplication>> getInstalledRelatedApps(
+      ScriptState*,
+      Navigator&,
+      ExceptionState& exception_state);
 };
 
 }  // namespace blink

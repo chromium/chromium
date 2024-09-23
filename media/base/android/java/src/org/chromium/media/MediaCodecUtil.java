@@ -21,7 +21,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Log;
-import org.chromium.base.compat.ApiHelperForN;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -352,7 +351,7 @@ class MediaCodecUtil {
                 // To work around an issue that we cannot get the codec info
                 // from the secure decoder, create an insecure decoder first
                 // so that we can query its codec info. http://b/15587335.
-                // Futhermore, it is impossible to create an insecure
+                // Furthermore, it is impossible to create an insecure
                 // decoder if the secure one is already created.
                 MediaCodec insecureCodec = MediaCodec.createByCodecName(decoderName);
                 result.supportsAdaptivePlayback =
@@ -420,12 +419,15 @@ class MediaCodecUtil {
             // http://crbug.com/597836.
             if (Build.HARDWARE.startsWith("mt")) {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return false;
-
-                // The following chipsets have been confirmed by MediaTek to work on P+
-                return Build.HARDWARE.startsWith("mt5599")
-                        || Build.HARDWARE.startsWith("mt5895")
-                        || Build.HARDWARE.startsWith("mt8768")
-                        || Build.HARDWARE.startsWith("mt5887");
+                // MediaTek chipsets after 'Android T' are compatible with vp8.
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                    // The following chipsets have been confirmed by MediaTek to work on P+
+                    return Build.HARDWARE.startsWith("mt5599")
+                            || Build.HARDWARE.startsWith("mt5895")
+                            || Build.HARDWARE.startsWith("mt8768")
+                            || Build.HARDWARE.startsWith("mt8696")
+                            || Build.HARDWARE.startsWith("mt5887");
+                }
             }
         } else if (mime.equals(MimeTypes.VIDEO_VP9)) {
             // Nexus Player VP9 decoder performs poorly at >= 1080p resolution.
@@ -661,12 +663,11 @@ class MediaCodecUtil {
     }
 
     /**
-     * Sets the encryption pattern value if and only if CryptoInfo.setPattern method is
-     * supported.
+     * Sets the encryption pattern value if and only if CryptoInfo.setPattern method is supported.
      * Note that if platformSupportsCbcsEncryption returns true, then this function will set the
      * pattern.
      */
     static void setPatternIfSupported(CryptoInfo cryptoInfo, int encrypt, int skip) {
-        ApiHelperForN.setCryptoInfoPattern(cryptoInfo, encrypt, skip);
+        cryptoInfo.setPattern(new CryptoInfo.Pattern(encrypt, skip));
     }
 }

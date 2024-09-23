@@ -26,31 +26,26 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 5;
 void ProcessPreviousAndNextElementsPresenceResult(
     base::OnceCallback<void(bool, bool)> completion_handler,
     const base::Value* res) {
-  NSString* result = nil;
-  if (res && res->is_string()) {
-    result = base::SysUTF8ToNSString(res->GetString());
-  }
-  // The result maybe an empty string here due to 2 reasons:
+  // The result may be invalid:
   // 1) When there is an exception running the JS
   // 2) There is a race when the page is changing due to which
   // SuggestionControllerJavaScriptFeature has not yet injected the
   // __gCrWeb.suggestion object.
-  // Handle this case gracefully. If a page has overridden
-  // Array.toString, the string returned may not contain a ",",
-  // hence this is a defensive measure to early return.
-  NSArray* components = [result componentsSeparatedByString:@","];
-  if (components.count != 2) {
+  // Handle this case gracefully.
+  if (!res || !res->is_dict() || res->GetDict().size() != 2) {
     std::move(completion_handler).Run(false, false);
     return;
   }
 
-  DCHECK([components[0] isEqualToString:@"true"] ||
-         [components[0] isEqualToString:@"false"]);
-  bool has_previous_element = [components[0] isEqualToString:@"true"];
-  DCHECK([components[1] isEqualToString:@"true"] ||
-         [components[1] isEqualToString:@"false"]);
-  bool has_next_element = [components[1] isEqualToString:@"true"];
-  std::move(completion_handler).Run(has_previous_element, has_next_element);
+  const base::Value::Dict& dict = res->GetDict();
+  std::optional<bool> previous = dict.FindBool("previous");
+  std::optional<bool> next = dict.FindBool("next");
+  if (!previous || !next) {
+    std::move(completion_handler).Run(false, false);
+    return;
+  }
+
+  std::move(completion_handler).Run(previous.value(), next.value());
 }
 
 }  // namespace

@@ -36,7 +36,6 @@ class ResourcePrefetchPredictorTables : public sqlite_proto::TableManager {
 
   virtual sqlite_proto::KeyValueTable<RedirectData>* host_redirect_table();
   virtual sqlite_proto::KeyValueTable<OriginData>* origin_table();
-  virtual sqlite_proto::KeyValueTable<LcppData>* lcpp_table();
 
   // Removes the redirects with more than |max_consecutive_misses| consecutive
   // misses from |data|.
@@ -86,7 +85,6 @@ class ResourcePrefetchPredictorTables : public sqlite_proto::TableManager {
   std::unique_ptr<sqlite_proto::KeyValueTable<RedirectData>>
       host_redirect_table_;
   std::unique_ptr<sqlite_proto::KeyValueTable<OriginData>> origin_table_;
-  std::unique_ptr<sqlite_proto::KeyValueTable<LcppData>> lcpp_table_;
 };
 
 }  // namespace predictors

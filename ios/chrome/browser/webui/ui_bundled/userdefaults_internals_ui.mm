@@ -9,7 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/webui/url_data_source_ios.h"
@@ -102,10 +102,9 @@ class UserDefaultsInternalsSource : public web::URLDataSourceIOS {
 UserDefaultsInternalsUI::UserDefaultsInternalsUI(web::WebUIIOS* web_ui,
                                                  const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
-  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
   web::URLDataSourceIOS::Add(
-      browser_state,
-      new UserDefaultsInternalsSource(browser_state->IsOffTheRecord()));
+      profile, new UserDefaultsInternalsSource(profile->IsOffTheRecord()));
 }
 
 UserDefaultsInternalsUI::~UserDefaultsInternalsUI() = default;

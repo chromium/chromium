@@ -157,7 +157,9 @@ class CORE_EXPORT HTMLPlugInElement
 
   // Element overrides:
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
-  bool SupportsFocus(UpdateBehavior) const final { return true; }
+  FocusableState SupportsFocus(UpdateBehavior) const final {
+    return FocusableState::kFocusable;
+  }
   bool IsFocusableStyle(UpdateBehavior update_behavior =
                             UpdateBehavior::kStyleAndLayout) const final;
   bool IsKeyboardFocusable(UpdateBehavior update_behavior =
@@ -238,10 +240,6 @@ class CORE_EXPORT HTMLPlugInElement
   bool dispose_view_ = false;
 };
 
-template <>
-inline bool IsElementOfType<const HTMLPlugInElement>(const Node& node) {
-  return IsA<HTMLPlugInElement>(node);
-}
 template <>
 struct DowncastTraits<HTMLPlugInElement> {
   static bool AllowFrom(const Node& node) {

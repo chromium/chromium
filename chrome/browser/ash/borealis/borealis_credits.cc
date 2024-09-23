@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ash/borealis/borealis_credits.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
@@ -33,7 +36,7 @@ std::string LoadCreditsFileBlocking(std::string dlc_root_path) {
 }
 
 void OnStateQueried(base::OnceCallback<void(std::string)> callback,
-                    const std::string& err,
+                    std::string_view err,
                     const dlcservice::DlcState& state) {
   if (err != dlcservice::kErrorNone) {
     LOG(ERROR) << "Failed to load credits file: DLC error: " << err;
@@ -55,7 +58,7 @@ void OnStateQueried(base::OnceCallback<void(std::string)> callback,
 
 void LoadBorealisCredits(Profile* profile,
                          base::OnceCallback<void(std::string)> callback) {
-  if (!BorealisService::GetForProfile(profile)->Features().IsEnabled()) {
+  if (!BorealisServiceFactory::GetForProfile(profile)->Features().IsEnabled()) {
     VLOG(1) << "Can't load credits file: Borealis not installed";
     std::move(callback).Run("");
     return;

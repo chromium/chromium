@@ -4,10 +4,11 @@
 
 #include "chrome/app/main_dll_loader_win.h"
 
-#include <windows.h>  // NOLINT
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
-#include <userenv.h>  // NOLINT
+#include <userenv.h>
 
 #include <memory>
 #include <string>
@@ -26,6 +27,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/shlwapi.h"
@@ -47,7 +49,11 @@
 
 namespace {
 // The entry point signature of chrome.dll.
-typedef int (*DLL_MAIN)(HINSTANCE, sandbox::SandboxInterfaceInfo*, int64_t);
+typedef int (*DLL_MAIN)(HINSTANCE,
+                        sandbox::SandboxInterfaceInfo*,
+                        int64_t exe_main_entry_point_ticks,
+                        int64_t preread_begin_ticks,
+                        int64_t preread_end_ticks);
 
 typedef void (*RelaunchChromeBrowserWithNewCommandLineIfNeededFunc)();
 
@@ -88,10 +94,25 @@ base::FilePath GetModulePath(std::wstring_view module_name) {
 // directory. Returns a handle to the loaded module on success, or nullptr on
 // failure.
 HMODULE LoadModuleWithDirectory(const base::FilePath& module,
-                                const base::CommandLine& cmd_line) {
+                                const base::CommandLine& cmd_line,
+                                bool is_browser,
+                                base::TimeTicks& preread_begin_ticks,
+                                base::TimeTicks& preread_end_ticks) {
   ::SetCurrentDirectoryW(module.DirName().value().c_str());
-  if (!cmd_line.HasSwitch(switches::kNoPreReadMainDll)) {
-    base::PreReadFile(module, /*is_executable=*/true);
+  if (is_browser) {
+    preread_begin_ticks = base::TimeTicks::Now();
+    // Always call PreReadFile() for the main browser process.
+    base::PreReadFile(module, /*is_executable=*/true, /*sequential=*/false);
+    preread_end_ticks = base::TimeTicks::Now();
+  } else {
+    // The kNoPreReadMainDll experiment only impacts other processes. Isolate
+    // the check so the experiment is easier to remove later if we land the
+    // PrefetchVirtualMemoryPolicy experiment.
+    if (!cmd_line.HasSwitch(switches::kNoPreReadMainDll)) {
+      preread_begin_ticks = base::TimeTicks::Now();
+      base::PreReadFile(module, /*is_executable=*/true, /*sequential=*/false);
+      preread_end_ticks = base::TimeTicks::Now();
+    }
   }
   HMODULE handle = ::LoadLibraryExW(module.value().c_str(), nullptr,
                                     LOAD_WITH_ALTERED_SEARCH_PATH);
@@ -101,15 +122,21 @@ HMODULE LoadModuleWithDirectory(const base::FilePath& module,
 // Prefetches and loads the appropriate DLL for the process type
 // |process_type_|. Populates |module| with the path of the loaded DLL.
 // Returns a handle to the loaded DLL, or nullptr on failure.
-HMODULE Load(base::FilePath* module, const base::CommandLine& cmd_line) {
+HMODULE Load(base::FilePath* module,
+             const base::CommandLine& cmd_line,
+             bool is_browser,
+             base::TimeTicks& preread_begin_ticks,
+             base::TimeTicks& preread_end_ticks) {
   *module = GetModulePath(installer::kChromeDll);
   if (module->empty()) {
     PLOG(ERROR) << "Cannot find module " << installer::kChromeDll;
     return nullptr;
   }
-  HMODULE dll = LoadModuleWithDirectory(*module, cmd_line);
-  if (!dll)
+  HMODULE dll = LoadModuleWithDirectory(*module, cmd_line, is_browser,
+                                        preread_begin_ticks, preread_end_ticks);
+  if (!dll) {
     PLOG(ERROR) << "Failed to load Chrome DLL from " << module->value();
+  }
   return dll;
 }
 
@@ -138,6 +165,7 @@ int MainDllLoader::Launch(HINSTANCE instance,
   const bool is_sandboxed =
       sandbox::policy::SandboxTypeFromCommandLine(cmd_line) !=
       sandbox::mojom::Sandbox::kNoSandbox;
+
   if (is_browser || is_sandboxed) {
     // For child processes that are running as --no-sandbox, don't initialize
     // the sandbox info, otherwise they'll be treated as brokers (as if they
@@ -148,8 +176,12 @@ int MainDllLoader::Launch(HINSTANCE instance,
                            : 0);
   }
 
+  base::TimeTicks preread_begin_ticks;
+  base::TimeTicks preread_end_ticks;
+
   base::FilePath file;
-  dll_ = Load(&file, cmd_line);
+  dll_ =
+      Load(&file, cmd_line, is_browser, preread_begin_ticks, preread_end_ticks);
   if (!dll_)
     return chrome::RESULT_CODE_MISSING_DATA;
 
@@ -167,7 +199,9 @@ int MainDllLoader::Launch(HINSTANCE instance,
   DLL_MAIN chrome_main =
       reinterpret_cast<DLL_MAIN>(::GetProcAddress(dll_, "ChromeMain"));
   int rc = chrome_main(instance, &sandbox_info,
-                       exe_entry_point_ticks.ToInternalValue());
+                       exe_entry_point_ticks.ToInternalValue(),
+                       preread_begin_ticks.ToInternalValue(),
+                       preread_end_ticks.ToInternalValue());
   return rc;
 }
 

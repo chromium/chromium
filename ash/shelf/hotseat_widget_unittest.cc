@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/shelf/hotseat_widget.h"
+
 #include <memory>
 #include <tuple>
 #include <vector>
@@ -17,7 +19,6 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/drag_window_from_shelf_controller_test_api.h"
 #include "ash/shelf/home_button.h"
-#include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_app_button.h"
@@ -52,6 +53,7 @@
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -109,8 +111,7 @@ class HotseatWidgetTest
   virtual void SetupFeatureLists() {
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kHideShelfControlsInTabletMode,
-          !navigation_buttons_shown_in_tablet_mode()},
-         {features::kShelfPalmRejectionSwipeOffset, true}});
+          !navigation_buttons_shown_in_tablet_mode()}});
   }
 
   void TearDown() override {
@@ -216,8 +217,7 @@ class HotseatWidgetTest
     GetEventGenerator()->GestureTapAt(overview_button_center);
   }
 
- private:
-  friend class StackedHotseatWidgetTest;
+ protected:
   const ShelfAutoHideBehavior shelf_auto_hide_behavior_;
   const bool is_assistant_enabled_;
   const bool navigation_buttons_shown_in_tablet_mode_;
@@ -225,14 +225,26 @@ class HotseatWidgetTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class HotseatWidgetForestTest : public HotseatWidgetTest {
+ public:
+  HotseatWidgetForestTest() = default;
+  ~HotseatWidgetForestTest() = default;
+
+  // HotseatWidgetTest:
+  void SetupFeatureLists() override {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kHideShelfControlsInTabletMode,
+          !navigation_buttons_shown_in_tablet_mode()},
+         {features::kForestFeature, true}});
+  }
+};
+
 class StackedHotseatWidgetTest : public HotseatWidgetTest {
  public:
   void SetupFeatureLists() override {
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kHideShelfControlsInTabletMode,
-          !navigation_buttons_shown_in_tablet_mode()},
-         {features::kShelfPalmRejectionSwipeOffset, true},
-         {features::kShelfStackedHotseat, true}});
+          !navigation_buttons_shown_in_tablet_mode()}});
   }
 };
 
@@ -240,7 +252,7 @@ class StackedHotseatWidgetTest : public HotseatWidgetTest {
 class DisplayWorkAreaChangeCounter : public display::DisplayObserver {
  public:
   DisplayWorkAreaChangeCounter() {
-    Shell::Get()->display_manager()->AddObserver(this);
+    Shell::Get()->display_manager()->AddDisplayObserver(this);
   }
 
   DisplayWorkAreaChangeCounter(const DisplayWorkAreaChangeCounter&) = delete;
@@ -248,7 +260,7 @@ class DisplayWorkAreaChangeCounter : public display::DisplayObserver {
       delete;
 
   ~DisplayWorkAreaChangeCounter() override {
-    Shell::Get()->display_manager()->RemoveObserver(this);
+    Shell::Get()->display_manager()->RemoveDisplayObserver(this);
   }
 
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -343,6 +355,15 @@ class HotseatTransitionAnimationObserver
 INSTANTIATE_TEST_SUITE_P(
     All,
     HotseatWidgetTest,
+    testing::Combine(
+        testing::Values(ShelfAutoHideBehavior::kNever,
+                        ShelfAutoHideBehavior::kAlways),
+        /*is_assistant_enabled*/ testing::Bool(),
+        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HotseatWidgetForestTest,
     testing::Combine(
         testing::Values(ShelfAutoHideBehavior::kNever,
                         ShelfAutoHideBehavior::kAlways),
@@ -968,6 +989,12 @@ TEST_P(HotseatWidgetTest, ObserverCallsMatch) {
 
 // Tests that a swipe up on the shelf shows the hotseat while in split view.
 TEST_P(HotseatWidgetTest, DisableBlurDuringOverviewMode) {
+  // TODO(sammiequon): Remove this test when forest feature can no longer be
+  // disabled.
+  if (features::IsForestFeatureEnabled()) {
+    return;
+  }
+
   TabletModeControllerTestApi().EnterTabletMode();
 
   ASSERT_EQ(
@@ -988,6 +1015,31 @@ TEST_P(HotseatWidgetTest, DisableBlurDuringOverviewMode) {
   EXPECT_EQ(
       ShelfConfig::Get()->shelf_blur_radius(),
       GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest());
+}
+
+TEST_P(HotseatWidgetForestTest, EnableBlurDuringOverviewMode) {
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  const int expected_blur_radius = ShelfConfig::Get()->shelf_blur_radius();
+  ASSERT_EQ(
+      GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest(),
+      expected_blur_radius);
+
+  // Go into overview and check that at the end of the animation, background
+  // blur is still enabled.
+  StartOverview();
+  WaitForOverviewAnimation(/*enter=*/true);
+  EXPECT_EQ(
+      GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest(),
+      expected_blur_radius);
+
+  // Exit overview and check that at the end of the animation, background
+  // blur is still enabled.
+  EndOverview();
+  WaitForOverviewAnimation(/*enter=*/false);
+  EXPECT_EQ(
+      GetShelfWidget()->hotseat_widget()->GetHotseatBackgroundBlurForTest(),
+      expected_blur_radius);
 }
 
 // Tests that releasing the hotseat gesture below the threshold results in a
@@ -1129,13 +1181,13 @@ TEST_P(HotseatWidgetTest, ShowingOverviewFromShownAnimatesOnce) {
       AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
   wm::ActivateWindow(window.get());
 
-  std::unique_ptr<HotseatStateWatcher> state_watcher_ =
+  auto state_watcher =
       std::make_unique<HotseatStateWatcher>(GetShelfLayoutManager());
   SwipeUpOnShelf();
   ASSERT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
 
   StartOverview();
-  state_watcher_->CheckEqual({HotseatState::kExtended});
+  state_watcher->CheckEqual({HotseatState::kExtended, HotseatState::kHidden});
 }
 
 // Tests that the hotseat is not flush with the bottom of the screen when home
@@ -1327,18 +1379,13 @@ TEST_P(HotseatWidgetTest, InAppToOverviewAndBack) {
   GetPrimaryShelf()->SetAutoHideBehavior(shelf_auto_hide_behavior());
   TabletModeControllerTestApi().EnterTabletMode();
 
-  std::unique_ptr<aura::Window> window =
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
-  wm::ActivateWindow(window.get());
-
-  // Start watching hotseat state before swipping up the shelf, so hotseat
-  // change expectation match for both auto-hidden and always-shown shelf.
-  HotseatStateWatcher watcher(GetShelfLayoutManager());
+  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(400, 400));
 
   // Make sure shelf (and overview button) are visible - this is moves the
   // hotseat into kExtended state.
-  if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways)
+  if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways) {
     SwipeUpOnShelf();
+  }
 
   // Start going to overview - use non zero animation so transition is not
   // immediate.
@@ -1348,12 +1395,16 @@ TEST_P(HotseatWidgetTest, InAppToOverviewAndBack) {
     StartOverview();
   }
 
+  // Start watching hotseat state after entering overview, so hotseat
+  // change expectation match for both auto-hidden and always-shown shelf.
+  HotseatStateWatcher watcher(GetShelfLayoutManager());
+
   OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   GetAppListTestHelper()->CheckVisibility(false);
 
-  // Hotseat should be extended as overview is starting.
-  watcher.CheckEqual({HotseatState::kExtended});
+  // Hotseat should be hidden as overview is starting.
+  watcher.CheckEqual({});
 
   // Exit overview to go back to the app window.
   EndOverview();
@@ -1361,7 +1412,7 @@ TEST_P(HotseatWidgetTest, InAppToOverviewAndBack) {
   EXPECT_TRUE(ShelfConfig::Get()->is_in_app());
 
   // The hotseat is expected to be hidden.
-  watcher.CheckEqual({HotseatState::kExtended, HotseatState::kHidden});
+  watcher.CheckEqual({});
 }
 
 // Tests transition to home screen initiated while transition from app window to
@@ -1370,18 +1421,13 @@ TEST_P(HotseatWidgetTest, ShowShelfAndGoHomeDuringInAppToOverviewTransition) {
   GetPrimaryShelf()->SetAutoHideBehavior(shelf_auto_hide_behavior());
   TabletModeControllerTestApi().EnterTabletMode();
 
-  std::unique_ptr<aura::Window> window =
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
-  wm::ActivateWindow(window.get());
-
-  // Start watching hotseat state before swipping up the shelf, so hotseat
-  // change expectation match for both auto-hidden and always-shown shelf.
-  HotseatStateWatcher watcher(GetShelfLayoutManager());
+  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(400, 400));
 
   // Make sure shelf (and overview button) are visible - this is moves the
   // hotseat into kExtended state.
-  if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways)
+  if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways) {
     SwipeUpOnShelf();
+  }
 
   // Start going to overview - use non zero animation so transition is not
   // immediate.
@@ -1391,12 +1437,16 @@ TEST_P(HotseatWidgetTest, ShowShelfAndGoHomeDuringInAppToOverviewTransition) {
     StartOverview();
   }
 
+  // Start watching hotseat state after entering overview, so hotseat
+  // change expectation match for both auto-hidden and always-shown shelf.
+  HotseatStateWatcher watcher(GetShelfLayoutManager());
+
   OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   GetAppListTestHelper()->CheckVisibility(false);
 
-  // Hotseat should be extended as overview is starting.
-  watcher.CheckEqual({HotseatState::kExtended});
+  // Hotseat should be hidden as overview is starting.
+  watcher.CheckEqual({});
 
   // Go home - expect transition to home (with hotseat in kShownHomeLauncher
   // state, and in app shelf hidden).
@@ -1406,8 +1456,15 @@ TEST_P(HotseatWidgetTest, ShowShelfAndGoHomeDuringInAppToOverviewTransition) {
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_FALSE(ShelfConfig::Get()->is_in_app());
 
-  watcher.CheckEqual(
-      {HotseatState::kExtended, HotseatState::kShownHomeLauncher});
+  // If shelf is always hidden and navigation buttons are shown, we swipe up on
+  // the shelf, extending the hotseat (see `ShowShelfAndGoHome()`).
+  if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways &&
+      navigation_buttons_shown_in_tablet_mode()) {
+    watcher.CheckEqual(
+        {HotseatState::kExtended, HotseatState::kShownHomeLauncher});
+  } else {
+    watcher.CheckEqual({HotseatState::kShownHomeLauncher});
+  }
 }
 
 // Tests that in-app -> overview results in only one state change with an
@@ -1427,7 +1484,7 @@ TEST_P(HotseatWidgetTest, InAppToOverviewChangesStateOnceAutohiddenShelf) {
     EnterOverview();
     WaitForOverviewAnimation(/*enter=*/true);
 
-    watcher.CheckEqual({HotseatState::kExtended});
+    watcher.CheckEqual({});
   }
 
   ExitOverview();
@@ -1444,9 +1501,8 @@ TEST_P(HotseatWidgetTest, InAppToOverviewChangesStateOnceAutohiddenShelf) {
     EnterOverview();
     WaitForOverviewAnimation(/*enter=*/true);
 
-    watcher.CheckEqual({});
-    EXPECT_EQ(HotseatState::kExtended,
-              GetShelfLayoutManager()->hotseat_state());
+    watcher.CheckEqual({HotseatState::kHidden});
+    EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
   }
 }
 
@@ -1617,13 +1673,16 @@ TEST_P(HotseatWidgetTest, ExitOverviewWithClickOnHotseat) {
   ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
   ASSERT_FALSE(WindowState::Get(window1.get())->IsMinimized());
 
-  // Enter overview, hotseat is visible. Choose the point to the farthest left.
-  // This point will not be visible.
+  // Enter overview, hotseat is hidden. Swipe up to extended it and then choose
+  // the point to the farthest left. This point will not be visible.
   auto* overview_controller = OverviewController::Get();
   auto* hotseat_widget = GetPrimaryShelf()->hotseat_widget();
   EnterOverview();
   ASSERT_TRUE(overview_controller->InOverviewSession());
+  ASSERT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
+  SwipeUpOnShelf();
   ASSERT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
+
   gfx::Point far_left_point =
       hotseat_widget->GetWindowBoundsInScreen().left_center();
 
@@ -1885,7 +1944,7 @@ TEST_P(HotseatWidgetTest, ExitingOverviewHidesHotseat) {
   EndScroll(/*is_fling=*/false, 0.f);
 
   OverviewController* overview_controller = OverviewController::Get();
-  EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
+  EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
   // Activate the window - the overview session should exit, and hotseat should
@@ -1974,7 +2033,7 @@ TEST_P(HotseatWidgetTest, SwipeOnHotseatInOverview) {
   DragHotseatDownToBezel();
 
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
+  EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
   if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways) {
     EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
     EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
@@ -2158,10 +2217,10 @@ TEST_P(HotseatWidgetTest, HotseatHidesWhenSwipedToBezel) {
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
   start = shelf_widget_bounds.bottom_center();
   // The first few events which get sent to ShelfLayoutManager are
-  // ui::ET_TAP_DOWN, and ui::ET_GESTURE_START. After a few px we get
-  // ui::ET_GESTURE_SCROLL_UPDATE. Add 6 px of slop to get the first events out
-  // of the way, and 1 extra px to ensure we are not on the bottom edge of the
-  // display.
+  // ui::EventType::kTapDown, and ui::EventType::kGestureStart. After a few px
+  // we get ui::EventType::kGestureScrollUpdate. Add 6 px of slop to get the
+  // first events out of the way, and 1 extra px to ensure we are not on the
+  // bottom edge of the display.
   start.Offset(0, -7);
 
   GetEventGenerator()->GestureScrollSequence(start, end, kTimeDelta,
@@ -2304,7 +2363,8 @@ TEST_P(HotseatWidgetTest, HotseatRemainsHiddenIfPopupLaunched) {
   // remain hidden.
   aura::Window* window_2 = CreateTestWindowInParent(window.get());
   window_2->SetBounds(gfx::Rect(201, 0, 100, 100));
-  window_2->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  window_2->SetProperty(aura::client::kShowStateKey,
+                        ui::mojom::WindowShowState::kNormal);
   window_2->Show();
   GetAppListTestHelper()->WaitUntilIdle();
   EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
@@ -2793,7 +2853,7 @@ INSTANTIATE_TEST_SUITE_P(RTL, HotseatWidgetRTLTest, testing::Bool());
 
 // The test to verify the hotseat transition animation from the extended state
 // to the home launcher state.
-// TODO(https://crbug.com/1210530): Disable this test due to flakiness.
+// TODO(crbug.com/40182469): Disable this test due to flakiness.
 TEST_P(HotseatWidgetRTLTest,
        DISABLED_VerifyTransitionFromExtendedModeToHomeLauncher) {
   TabletModeControllerTestApi().EnterTabletMode();
@@ -2810,7 +2870,7 @@ TEST_P(HotseatWidgetRTLTest,
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
 
   // Animation should be long enough in order to collect sufficient data.
-  // TODO(https://crbug.com/1208651): remove this line when we solve that issue.
+  // TODO(crbug.com/40181827): remove this line when we solve that issue.
   ui::ScopedAnimationDurationScaleMode animation_duration(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 

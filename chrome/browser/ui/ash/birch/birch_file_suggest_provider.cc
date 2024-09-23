@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
 
+#include <optional>
 #include <vector>
 
 #include "ash/birch/birch_item.h"
@@ -17,7 +18,6 @@
 
 namespace ash {
 
-
 BirchFileSuggestProvider::BirchFileSuggestProvider(Profile* profile)
     : file_suggest_service_(
           FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile)) {
@@ -26,7 +26,7 @@ BirchFileSuggestProvider::BirchFileSuggestProvider(Profile* profile)
 
 BirchFileSuggestProvider::~BirchFileSuggestProvider() = default;
 
-void BirchFileSuggestProvider::RequestDataFetch() {
+void BirchFileSuggestProvider::RequestBirchDataFetch() {
   file_suggest_service_->GetSuggestFileData(
       FileSuggestionType::kDriveFile,
       base::BindOnce(&BirchFileSuggestProvider::OnSuggestedFileDataUpdated,
@@ -38,12 +38,22 @@ void BirchFileSuggestProvider::OnFileSuggestionUpdated(
   weak_factory_.InvalidateWeakPtrs();
 
   if (type == FileSuggestionType::kDriveFile) {
-    RequestDataFetch();
+    RequestBirchDataFetch();
   }
 }
 
 void BirchFileSuggestProvider::OnSuggestedFileDataUpdated(
-    const absl::optional<std::vector<FileSuggestData>>& suggest_results) {
+    const std::optional<std::vector<FileSuggestData>>& suggest_results) {
+  if (!Shell::HasInstance()) {
+    return;
+  }
+
+  if (!suggest_results.has_value()) {
+    // No suggestion results exist yet, so avoid setting file suggest items and
+    // return early.
+    return;
+  }
+
   if (!suggest_results) {
     Shell::Get()->birch_model()->SetFileSuggestItems({});
     return;
@@ -51,11 +61,16 @@ void BirchFileSuggestProvider::OnSuggestedFileDataUpdated(
 
   std::vector<BirchFileItem> file_items;
   for (const auto& suggestion : *suggest_results) {
-    const base::Time timestamp =
-        suggestion.timestamp
-            ? *suggestion.timestamp
-            : suggestion.secondary_timestamp.value_or(base::Time());
-    file_items.emplace_back(suggestion.file_path, timestamp);
+    base::Time timestamp = suggestion.modified_time.value_or(base::Time());
+    timestamp =
+        std::max(timestamp, suggestion.viewed_time.value_or(base::Time()));
+    timestamp =
+        std::max(timestamp, suggestion.shared_time.value_or(base::Time()));
+
+    file_items.emplace_back(suggestion.file_path, suggestion.title,
+                            suggestion.prediction_reason.value_or(u""),
+                            timestamp, suggestion.drive_file_id.value_or(""),
+                            suggestion.icon_url.value_or(""));
   }
   Shell::Get()->birch_model()->SetFileSuggestItems(std::move(file_items));
 }

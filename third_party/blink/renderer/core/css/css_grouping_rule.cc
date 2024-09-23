@@ -30,14 +30,12 @@
 
 #include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 
-#include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
+#include "third_party/blink/renderer/core/css/css_page_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
-#include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -73,23 +71,9 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
       parent_rule.ParserContext(execution_context->GetSecureContextMode()),
       style_sheet);
   StyleRuleBase* new_rule = nullptr;
-  if (IsA<CSSPositionFallbackRule>(parent_rule)) {
-    new_rule = CSSParser::ParseTryRule(context, rule_string);
-    if (!new_rule) {
-      // Try reparse `new_rule` as other rules to decide if we should throw a
-      // SyntaxError (`new_rule` doesn't parse) or HierarchyRequestError
-      // (`new_rule` can parse but isn't a @try rule).
-      if (CSSParser::ParseRule(
-              context, style_sheet ? style_sheet->Contents() : nullptr,
-              CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-              rule_string)) {
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kHierarchyRequestError,
-            "only '@try' rules can be inserted into '@position-fallback' "
-            "rule.");
-        return nullptr;
-      }
-    }
+  if (IsA<CSSPageRule>(parent_rule)) {
+    new_rule = CSSParser::ParseMarginRule(
+        context, style_sheet ? style_sheet->Contents() : nullptr, rule_string);
   } else {
     StyleRule* parent_rule_for_nesting =
         FindClosestParentStyleRuleOrNull(&parent_rule);
@@ -99,6 +83,14 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
     new_rule = CSSParser::ParseRule(
         context, style_sheet ? style_sheet->Contents() : nullptr, nesting_type,
         parent_rule_for_nesting, rule_string);
+
+    if (!new_rule && parent_rule_for_nesting &&
+        RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
+      // Retry as a CSSNestedDeclarations rule.
+      // https://drafts.csswg.org/cssom/#insert-a-css-rule
+      new_rule = CSSParser::ParseNestedDeclarationsRule(
+          context, nesting_type, parent_rule_for_nesting, rule_string);
+    }
   }
 
   if (!new_rule) {
@@ -125,7 +117,8 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
     return nullptr;
   }
 
-  if (!new_rule->IsConditionRule() && !new_rule->IsStyleRule()) {
+  if (!new_rule->IsConditionRule() && !new_rule->IsStyleRule() &&
+      !new_rule->IsNestedDeclarationsRule()) {
     for (const CSSRule* current = &parent_rule; current != nullptr;
          current = current->parentRule()) {
       if (IsA<CSSStyleRule>(current)) {
@@ -133,8 +126,8 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
         // so inserting this rule is not allowed.
         exception_state.ThrowDOMException(
             DOMExceptionCode::kHierarchyRequestError,
-            "Only conditional nested group rules and style rules may be "
-            "nested.");
+            "Only conditional nested group rules, style rules, and nested "
+            "declaration rules may be nested.");
         return nullptr;
       }
     }
@@ -169,7 +162,6 @@ unsigned CSSGroupingRule::insertRule(const ExecutionContext* execution_context,
     CSSStyleSheet::RuleMutationScope mutation_scope(this);
     group_rule_->WrapperInsertRule(parentStyleSheet(), index, new_rule);
     child_rule_cssom_wrappers_.insert(index, Member<CSSRule>(nullptr));
-    UseCountForSignalAffected();
     return index;
   }
 }
@@ -195,110 +187,32 @@ void CSSGroupingRule::deleteRule(unsigned index,
     child_rule_cssom_wrappers_[index]->SetParentRule(nullptr);
   }
   child_rule_cssom_wrappers_.EraseAt(index);
-  UseCountForSignalAffected();
-}
-
-// Returns true if this is a style rule whose selector is & {} and has no
-// children. We take these (rightfully or not) as being implicitly inserted
-// during parsing, and show their declarations directly instead of having the
-// (unneeded) selector wrap them. See
-// https://github.com/w3c/csswg-drafts/issues/7850.
-static bool IsImplicitlyInsertedParentRule(CSSRule* rule) {
-  CSSStyleRule* style_rule = DynamicTo<CSSStyleRule>(rule);
-  if (style_rule == nullptr) {
-    return false;
-  }
-  if (style_rule->GetStyleRule()->ChildRules()) {
-    return false;
-  }
-  const CSSSelector* selector = style_rule->GetStyleRule()->FirstSelector();
-  return selector->IsLastInSelectorList() &&
-         selector->Match() == CSSSelector::kPseudoClass &&
-         selector->GetPseudoType() == CSSSelector::kPseudoParent;
 }
 
 void CSSGroupingRule::AppendCSSTextForItems(StringBuilder& result) const {
-  // Very similar to https://drafts.csswg.org/cssom-1/#serialize-a-css-rule.
-  // This is not official spec language (yet), so we write out the text in full.
+  // https://drafts.csswg.org/cssom-1/#serialize-a-css-rule,
+  // using CSSMediaRule as an example:
 
-  // 1. Let s initially be the string "@media", followed by a single SPACE
-  //    (U+0020).
-  // 2. Append the result of performing serialize a media query list on rule’s
-  //    media query list to s.
+  // The result of concatenating the following:
+  // 1. The string "@media", followed by a single SPACE (U+0020).
+  // 2. The result of performing serialize a media query list on rule’s media
+  //    query list.
   // [1–2 is done in the parent, and is different for @container etc.]
 
-  // 3. Append a single SPACE (U+0020) to s, followed by the string "{", i.e.,
-  //    LEFT CURLY BRACKET (U+007B).
-  result.Append(" {");
+  // 3. A single SPACE (U+0020), followed by the string "{", i.e., LEFT CURLY
+  //    BRACKET (U+007B), followed by a newline.
+  result.Append(" {\n");
 
-  // 4. If there is at least one rule in the rule's cssRules list,
-  //    and the first rule is a CSSStyleRule with a single selector
-  //    that would serialize to exactly “&”, and that rule has no children:
-  unsigned size = length();
-  if (size > 0 && IsImplicitlyInsertedParentRule(Item(0))) {
-    // 4.1. Let decls be the result of performing serialize a CSS declaration
-    // block on the first rule’s associated declarations.
-    String decls =
-        DynamicTo<CSSStyleRule>(Item(0))->GetStyleRule()->Properties().AsText();
-
-    // 4.2. Let rules be the result of performing serialize a CSS
-    //      rule on each rule in the rule’s cssRules list except the first,
-    //      or null if there are no such rules.
-    StringBuilder rules;
-    for (unsigned i = 1; i < size; ++i) {
-      // Step 4.4.2 for rules.
-      rules.Append("\n  ");
-      rules.Append(Item(i)->cssText());
-    }
-
-    // 4.3. If rules is null:
-    if (rules.empty()) {
-      // 4.3.4. Append a single SPACE (U+0020) to s.
-      result.Append(' ');
-
-      // 4.3.2. Append decls to s.
-      result.Append(decls);
-
-      // 4.3.3. Append " }" to s (i.e. a single SPACE (U+0020) followed by RIGHT
-      // CURLY BRACKET (U+007D)).
-      result.Append(" }");
-
-      // 4.3.4. Return s.
-      return;
-    }
-
-    // 4.4. Otherwise:
-    // 4.4.1. Prepend decls to rules.
-    // 4.4.2. For each rule in rules: [done above]
-    //   4.4.2.1. Append a newline followed by two spaces to s.
-    //   4.4.2.2. Append rule to s.
-
-    result.Append("\n  ");
-    result.Append(decls);
-
-    result.Append(rules);
-
-    // 4.4.3. Append a newline followed by RIGHT CURLY BRACKET (U+007D) to s.
-    // 4.4.4. Return s.
-    result.Append("\n}");
-    return;
-  }
-
-  // 5. Otherwise:
-  //   5.1. Append a newline to s.
-  result.Append('\n');
-
-  //   5.2. Append the result of performing serialize a CSS rule on each
-  //        rule in the rule’s cssRules list to s, separated by a newline and
-  //        indented by two spaces.
-  //   5.3. Append a newline to s, followed by the string "}", i.e., RIGHT CURLY
-  //        BRACKET (U+007D)
-  for (unsigned i = 0; i < size; ++i) {
-    CSSRule* child = Item(i);
+  // 4. The result of performing serialize a CSS rule on each rule in the rule’s
+  //    cssRules list, separated by a newline and indented by two spaces.
+  for (unsigned i = 0; i < length(); ++i) {
+    CSSRule* child = ItemInternal(i);
     result.Append("  ");
     result.Append(child->cssText());
     result.Append('\n');
   }
+
+  // A newline, followed by the string "}", i.e., RIGHT CURLY BRACKET (U+007D)
   result.Append('}');
 }
 
@@ -306,7 +220,8 @@ unsigned CSSGroupingRule::length() const {
   return group_rule_->ChildRules().size();
 }
 
-CSSRule* CSSGroupingRule::Item(unsigned index) const {
+CSSRule* CSSGroupingRule::Item(unsigned index,
+                               bool trigger_use_counters) const {
   if (index >= length()) {
     return nullptr;
   }
@@ -315,7 +230,7 @@ CSSRule* CSSGroupingRule::Item(unsigned index) const {
   Member<CSSRule>& rule = child_rule_cssom_wrappers_[index];
   if (!rule) {
     rule = group_rule_->ChildRules()[index]->CreateCSSOMWrapper(
-        index, const_cast<CSSGroupingRule*>(this));
+        index, const_cast<CSSGroupingRule*>(this), trigger_use_counters);
   }
   return rule.Get();
 }
@@ -337,12 +252,6 @@ void CSSGroupingRule::Reattach(StyleRuleBase* rule) {
       child_rule_cssom_wrappers_[i]->Reattach(
           group_rule_->ChildRules()[i].Get());
     }
-  }
-}
-
-void CSSGroupingRule::UseCountForSignalAffected() {
-  if (group_rule_->HasSignalingChildRule()) {
-    CountUse(WebFeature::kCSSRuleWithSignalingChildModified);
   }
 }
 

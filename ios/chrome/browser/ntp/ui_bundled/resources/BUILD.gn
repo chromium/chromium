@@ -1,0 +1,59 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/fake_omnibox_background_color.colorset/Contents.json",
+    "Assets.xcassets/fake_omnibox_bottom_gradient_color.colorset/Contents.json",
+    "Assets.xcassets/fake_omnibox_solid_background_color.colorset/Contents.json",
+    "Assets.xcassets/fake_omnibox_top_gradient_color.colorset/Contents.json",
+    "Assets.xcassets/ntp_background_color.colorset/Contents.json",
+    "Assets.xcassets/ntp_opentabs.imageset/Contents.json",
+    "Assets.xcassets/ntp_opentabs.imageset/ntp_opentabs@2x.png",
+    "Assets.xcassets/ntp_opentabs.imageset/ntp_opentabs@3x.png",
+    "Assets.xcassets/ntp_opentabs_clock.imageset/Contents.json",
+    "Assets.xcassets/ntp_opentabs_clock.imageset/ntp_opentabs_clock.png",
+    "Assets.xcassets/ntp_opentabs_clock.imageset/ntp_opentabs_clock@2x.png",
+    "Assets.xcassets/ntp_opentabs_clock.imageset/ntp_opentabs_clock@3x.png",
+    "Assets.xcassets/ntp_opentabs_header.imageset/Contents.json",
+    "Assets.xcassets/ntp_opentabs_header.imageset/ntp_opentabs_header@2x~ipad.png",
+    "Assets.xcassets/ntp_opentabs_header.imageset/ntp_opentabs_header~ipad.png",
+    "Assets.xcassets/ntp_opentabs_laptop.imageset/Contents.json",
+    "Assets.xcassets/ntp_opentabs_laptop.imageset/ntp_opentabs_laptop.png",
+    "Assets.xcassets/ntp_opentabs_laptop.imageset/ntp_opentabs_laptop@2x.png",
+    "Assets.xcassets/ntp_opentabs_laptop.imageset/ntp_opentabs_laptop@3x.png",
+    "Assets.xcassets/ntp_opentabs_last_row.imageset/Contents.json",
+    "Assets.xcassets/ntp_opentabs_last_row.imageset/ntp_opentabs_last_row@2x~ipad.png",
+    "Assets.xcassets/ntp_opentabs_last_row.imageset/ntp_opentabs_last_row~ipad.png",
+    "Assets.xcassets/ntp_opentabs_last_row_h.imageset/Contents.json",
+    "Assets.xcassets/ntp_opentabs_last_row_h.imageset/ntp_opentabs_last_row_h@2x~ipad.png",
+    "Assets.xcassets/ntp_opentabs_last_row_h.imageset/ntp_opentabs_last_row_h~ipad.png",
+    "Assets.xcassets/ntp_opentabs_list_item.imageset/Contents.json",
+    "Assets.xcassets/ntp_opentabs_list_item.imageset/ntp_opentabs_list_item@2x~ipad.png",
+    "Assets.xcassets/ntp_opentabs_list_item.imageset/ntp_opentabs_list_item~ipad.png",
+    "Assets.xcassets/ntp_opentabs_list_item_h.imageset/Contents.json",
+    "Assets.xcassets/ntp_opentabs_list_item_h.imageset/ntp_opentabs_list_item_h@2x~ipad.png",
+    "Assets.xcassets/ntp_opentabs_list_item_h.imageset/ntp_opentabs_list_item_h~ipad.png",
+    "Assets.xcassets/ntp_opentabs_phone.imageset/Contents.json",
+    "Assets.xcassets/ntp_opentabs_phone.imageset/ntp_opentabs_phone.png",
+    "Assets.xcassets/ntp_opentabs_phone.imageset/ntp_opentabs_phone@2x.png",
+    "Assets.xcassets/ntp_opentabs_phone.imageset/ntp_opentabs_phone@3x.png",
+    "Assets.xcassets/ntp_opentabs_recent_arrow.imageset/Contents.json",
+    "Assets.xcassets/ntp_opentabs_recent_arrow.imageset/ntp_opentabs_recent_arrow.png",
+    "Assets.xcassets/ntp_opentabs_recent_arrow.imageset/ntp_opentabs_recent_arrow@2x.png",
+    "Assets.xcassets/ntp_opentabs_recent_arrow.imageset/ntp_opentabs_recent_arrow@3x.png",
+    "Assets.xcassets/ntp_opentabs_tablet.imageset/Contents.json",
+    "Assets.xcassets/ntp_opentabs_tablet.imageset/ntp_opentabs_tablet.png",
+    "Assets.xcassets/ntp_opentabs_tablet.imageset/ntp_opentabs_tablet@2x.png",
+    "Assets.xcassets/ntp_opentabs_tablet.imageset/ntp_opentabs_tablet@3x.png",
+    "Assets.xcassets/ntp_recently_closed.imageset/Contents.json",
+    "Assets.xcassets/ntp_recently_closed.imageset/ntp_recently_closed.png",
+    "Assets.xcassets/ntp_recently_closed.imageset/ntp_recently_closed@2x.png",
+    "Assets.xcassets/ntp_recently_closed.imageset/ntp_recently_closed@3x.png",
+  ]
+}

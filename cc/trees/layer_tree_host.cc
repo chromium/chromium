@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/trees/layer_tree_host.h"
 
 #include <stddef.h>
@@ -22,6 +27,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -30,12 +36,14 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/features.h"
 #include "cc/base/histograms.h"
 #include "cc/base/math_util.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/page_scale_animation.h"
@@ -43,6 +51,7 @@
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/painted_scrollbar_layer.h"
+#include "cc/metrics/ukm_manager.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
 #include "cc/resources/ui_resource_manager.h"
@@ -66,7 +75,6 @@
 #include "cc/trees/swap_promise_manager.h"
 #include "cc/trees/transform_node.h"
 #include "cc/trees/tree_synchronizer.h"
-#include "cc/trees/ukm_manager.h"
 #include "cc/view_transition/view_transition_request.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -383,13 +391,8 @@ void LayerTreeHost::RequestMainFrameUpdate(bool report_metrics) {
 
 void LayerTreeHost::ImageDecodesFinished(
     const std::vector<std::pair<int, bool>>& results) {
-  DCHECK(IsMainThread());
-  // Issue stored callbacks and remove them from the pending list.
   for (const auto& pair : results) {
-    auto it = pending_image_decodes_.find(pair.first);
-    DCHECK(it != pending_image_decodes_.end());
-    std::move(it->second).Run(pair.second);
-    pending_image_decodes_.erase(it);
+    NotifyImageDecodeFinished(pair.first, pair.second);
   }
 }
 
@@ -406,6 +409,7 @@ std::unique_ptr<CommitState> LayerTreeHost::WillCommit(
   if (has_updates)
     result = ActivateCommitState();
   swap_promise_manager_.WillCommit();
+  mutator_host()->RemoveStaleTimelines();
   client_->WillCommit(has_updates ? *result : *pending_commit_state());
   pending_commit_state()->source_frame_number++;
   commit_completion_event_ = std::move(completion);
@@ -483,8 +487,19 @@ bool LayerTreeHost::IsUsingLayerLists() const {
 void LayerTreeHost::CommitComplete(int source_frame_number,
                                    const CommitTimestamps& commit_timestamps) {
   DCHECK(IsMainThread());
+
   // At this point, commit_completion_event_ could be for the *next* commit, and
-  // may not yet have been signaled.
+  // may not yet have been signaled. If we blocked on a protected sequence
+  // during the commit then the completion event for the frame will have been
+  // reset, which in turn unblocks starting a commit for the next frame. If we
+  // have a commit completion event that has been signaled, it means that we
+  // have not been blocked on a protected sequence during the commit. In this
+  // case, we still need to call WaitForCommitCompletion, which performs the
+  // flag reset; however, the Wait will be non-blocking given that the event was
+  // already signaled.
+  if (!in_commit()) {
+    mutator_host()->RemoveStaleTimelines();
+  }
   if (commit_completion_event_ && commit_completion_event_->IsSignaled())
     WaitForCommitCompletion(/* for_protected_sequence */ false);
   client_->DidCommit(source_frame_number, commit_timestamps.start,
@@ -498,6 +513,16 @@ void LayerTreeHost::CommitComplete(int source_frame_number,
                           waited_for_protected_sequence_);
   }
   waited_for_protected_sequence_ = false;
+}
+
+void LayerTreeHost::NotifyImageDecodeFinished(int request_id,
+                                              bool decode_succeeded) {
+  DCHECK(IsMainThread());
+  auto it = pending_image_decodes_.find(request_id);
+  CHECK(it != pending_image_decodes_.end(), base::NotFatalUntil::M130);
+  // Issue stored callback and remove them from the pending list.
+  std::move(it->second).Run(decode_succeeded);
+  pending_image_decodes_.erase(it);
 }
 
 void LayerTreeHost::NotifyTransitionRequestsFinished(
@@ -537,6 +562,7 @@ std::unique_ptr<LayerTreeFrameSink> LayerTreeHost::ReleaseLayerTreeFrameSink() {
 void LayerTreeHost::RequestNewLayerTreeFrameSink() {
   DCHECK(IsMainThread());
   client_->RequestNewLayerTreeFrameSink();
+  should_warm_up_ = false;
 }
 
 void LayerTreeHost::DidInitializeLayerTreeFrameSink() {
@@ -760,9 +786,9 @@ void LayerTreeHost::SetNeedsCommitWithForcedRedraw() {
 }
 
 void LayerTreeHost::SetDebugState(const LayerTreeDebugState& new_debug_state) {
-  if (LayerTreeDebugState::Equal(pending_commit_state()->debug_state,
-                                 new_debug_state))
+  if (pending_commit_state()->debug_state == new_debug_state) {
     return;
+  }
 
   pending_commit_state()->debug_state = new_debug_state;
 
@@ -799,6 +825,21 @@ void LayerTreeHost::SetVisible(bool visible) {
 bool LayerTreeHost::IsVisible() const {
   DCHECK(IsMainThread());
   return visible_;
+}
+
+void LayerTreeHost::SetShouldWarmUp() {
+  DCHECK(IsMainThread());
+  CHECK(base::FeatureList::IsEnabled(features::kWarmUpCompositor));
+  should_warm_up_ = true;
+  proxy_->SetShouldWarmUp();
+}
+
+bool LayerTreeHost::ShouldWarmUp() const {
+  DCHECK(IsMainThread());
+  if (!base::FeatureList::IsEnabled(features::kWarmUpCompositor)) {
+    return false;
+  }
+  return should_warm_up_;
 }
 
 void LayerTreeHost::LayoutAndUpdateLayers() {
@@ -855,15 +896,15 @@ void LayerTreeHost::DidPresentCompositorFrame(
     uint32_t frame_token,
     std::vector<PresentationTimeCallbackBuffer::Callback>
         presentation_callbacks,
-    std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback>
+    std::vector<PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails>
         successful_presentation_callbacks,
-    const gfx::PresentationFeedback& feedback) {
+    const viz::FrameTimingDetails& frame_timing_details) {
   DCHECK(IsMainThread());
   for (auto& callback : presentation_callbacks)
-    std::move(callback).Run(feedback);
+    std::move(callback).Run(frame_timing_details.presentation_feedback);
   for (auto& callback : successful_presentation_callbacks)
-    std::move(callback).Run(feedback.timestamp);
-  client_->DidPresentCompositorFrame(frame_token, feedback);
+    std::move(callback).Run(frame_timing_details);
+  client_->DidPresentCompositorFrame(frame_token, frame_timing_details);
 }
 
 void LayerTreeHost::DidCompletePageScaleAnimation() {
@@ -964,7 +1005,7 @@ bool LayerTreeHost::DoUpdateLayers() {
   }
 #else
   // This is a quick sanity check for readiness of paint properties.
-  // TODO(crbug.com/913464): This is to help analysis of crashes of the bug.
+  // TODO(crbug.com/40605801): This is to help analysis of crashes of the bug.
   // Remove this CHECK when we close the bug.
   CHECK(
       property_trees()->effect_tree().Node(root_layer()->effect_tree_index()));
@@ -1079,9 +1120,9 @@ void LayerTreeHost::UpdateScrollOffsetFromImpl(
         // is already updated (see LayerTreeImpl::DidUpdateScrollOffset) and we
         // are now "catching up" to it on main, so we don't need a commit.
         //
-        // But if the scroll was NOT realized on the compositor, we need a
+        // But if the scroll should be realized on the main thread, we need a
         // commit to push the transform change.
-        if (!scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node)) {
+        if (scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node)) {
           SetNeedsCommit();
         }
       }
@@ -1106,16 +1147,17 @@ void LayerTreeHost::ApplyCompositorChanges(CompositorCommitData* commit_data) {
   DCHECK(!in_apply_compositor_changes_);
   base::AutoReset<bool> in_apply_changes(&in_apply_compositor_changes_, true);
 
-  using perfetto::protos::pbzero::ChromeLatencyInfo;
   using perfetto::protos::pbzero::TrackEvent;
 
   for (auto& swap_promise : commit_data->swap_promises) {
     TRACE_EVENT(
         "input,benchmark", "LatencyInfo.Flow",
         [&swap_promise](perfetto::EventContext ctx) {
-          ChromeLatencyInfo* info = ctx.event()->set_chrome_latency_info();
+          auto* info = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                           ->set_chrome_latency_info();
           info->set_trace_id(swap_promise->GetTraceId());
-          info->set_step(ChromeLatencyInfo::STEP_MAIN_THREAD_SCROLL_UPDATE);
+          info->set_step(perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
+                             STEP_MAIN_THREAD_SCROLL_UPDATE);
           tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
                                  swap_promise->GetTraceId());
         });
@@ -1179,13 +1221,16 @@ void LayerTreeHost::DetachInputDelegateAndRenderFrameObserver() {
   proxy_->DetachInputDelegateAndRenderFrameObserver();
 }
 
-void LayerTreeHost::UpdateBrowserControlsState(BrowserControlsState constraints,
-                                               BrowserControlsState current,
-                                               bool animate) {
+void LayerTreeHost::UpdateBrowserControlsState(
+    BrowserControlsState constraints,
+    BrowserControlsState current,
+    bool animate,
+    base::optional_ref<const BrowserControlsOffsetTagsInfo> offset_tags_info) {
   DCHECK(IsMainThread());
   // Browser controls are only used in threaded mode but Blink layout tests may
   // call into this. The single threaded version is a no-op.
-  proxy_->UpdateBrowserControlsState(constraints, current, animate);
+  proxy_->UpdateBrowserControlsState(constraints, current, animate,
+                                     offset_tags_info);
 }
 
 void LayerTreeHost::AnimateLayers(base::TimeTicks monotonic_time) {
@@ -1266,7 +1311,7 @@ void LayerTreeHost::RequestPresentationTimeForNextFrame(
 }
 
 void LayerTreeHost::RequestSuccessfulPresentationTimeForNextFrame(
-    PresentationTimeCallbackBuffer::SuccessfulCallback callback) {
+    PresentationTimeCallbackBuffer::SuccessfulCallbackWithDetails callback) {
   pending_commit_state()->pending_successful_presentation_callbacks.push_back(
       std::move(callback));
 }
@@ -1508,7 +1553,7 @@ void LayerTreeHost::SetDisplayColorSpaces(
     const gfx::DisplayColorSpaces& display_color_spaces) {
   if (pending_commit_state()->display_color_spaces == display_color_spaces)
     return;
-  bool only_hdr_changed = gfx::DisplayColorSpaces::EqualExceptForHdrParameters(
+  bool only_hdr_changed = gfx::DisplayColorSpaces::EqualExceptForHdrHeadroom(
       pending_commit_state()->display_color_spaces, display_color_spaces);
   pending_commit_state()->display_color_spaces = display_color_spaces;
 
@@ -1619,6 +1664,26 @@ void LayerTreeHost::SetLocalSurfaceIdFromParent(
   SetNeedsCommit();
 }
 
+void LayerTreeHost::RequestViewportScreenshot(
+    const base::UnguessableToken& token) {
+  CHECK(pending_commit_state()->new_local_surface_id_request)
+      << "Must have requested a new LocalSurfaceID before making "
+         "this request";
+  pending_commit_state()->screenshot_destination_token = token;
+  SetNeedsCommit();
+}
+
+void LayerTreeHost::SetPrimaryMainFrameItemSequenceNumber(
+    int64_t primary_main_frame_item_sequence_number) {
+  if (pending_commit_state()->primary_main_frame_item_sequence_number ==
+      primary_main_frame_item_sequence_number) {
+    return;
+  }
+  pending_commit_state()->primary_main_frame_item_sequence_number =
+      primary_main_frame_item_sequence_number;
+  SetNeedsCommit();
+}
+
 void LayerTreeHost::RequestNewLocalSurfaceId() {
   // We can still request a new viz::LocalSurfaceId but that request will be
   // deferred until we have a valid viz::LocalSurfaceId from the parent.
@@ -1715,16 +1780,6 @@ void LayerTreeHost::UpdateHudLayer(bool show_hud_info) {
     hud_layer()->UpdateLocationAndSize(
         pending_commit_state()->device_viewport_rect.size(),
         pending_commit_state()->device_scale_factor);
-    if (pending_commit_state()->debug_state.show_web_vital_metrics) {
-      // This WebVitalMetrics is filled by the main frame, which is equivalent
-      // to WebPerf's numbers. The main frame's number doesn't include any
-      // iframes. UMA/UKM records metrics for the entire page aggregating all
-      // the frames. The page metrics are in the browser process.
-      // TODO(weiliangc): Get the page metrics for display.
-      auto metrics = client_->GetWebVitalMetrics();
-      if (metrics && metrics->HasValue())
-        hud_layer()->UpdateWebVitalMetrics(std::move(metrics));
-    }
   } else if (hud_layer()) {
     hud_layer()->RemoveFromParent();
     hud_layer_ = nullptr;
@@ -1944,8 +1999,13 @@ void LayerTreeHost::QueueImageDecode(const PaintImage& image,
                                      base::OnceCallback<void(bool)> callback) {
   TRACE_EVENT0("cc", "LayerTreeHost::QueueImageDecode");
   int next_id = s_image_decode_sequence_number.GetNext();
-  pending_commit_state()->queued_image_decodes.emplace_back(
-      next_id, std::make_unique<PaintImage>(image));
+  if (base::FeatureList::IsEnabled(
+          features::kSendExplicitDecodeRequestsImmediately)) {
+    proxy()->QueueImageDecode(next_id, image);
+  } else {
+    pending_commit_state()->queued_image_decodes.emplace_back(
+        next_id, std::make_unique<PaintImage>(image));
+  }
   pending_image_decodes_.emplace(next_id, std::move(callback));
   SetNeedsCommit();
 }
@@ -2055,6 +2115,12 @@ LayerTreeHost::TakeViewTransitionCallbacksForTesting() {
 double LayerTreeHost::GetPercentDroppedFrames() const {
   DCHECK(IsMainThread());
   return proxy_->GetPercentDroppedFrames();
+}
+
+void LayerTreeHost::DropActiveScrollDeltaNextCommit(ElementId scroll_element) {
+  pending_commit_state()->scrollers_clobbering_active_value.insert(
+      scroll_element);
+  SetNeedsCommit();
 }
 
 }  // namespace cc

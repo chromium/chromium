@@ -37,7 +37,7 @@
                       target:(id)target
                     selector:(SEL)selector
                         item:(id<ReadingListListItem>)item {
-  if (self = [super initWithName:name target:target selector:selector]) {
+  if ((self = [super initWithName:name target:target selector:selector])) {
     _item = item;
   }
   return self;
@@ -52,6 +52,9 @@
 
 - (NSArray<UIAccessibilityCustomAction*>*)customActionsForItem:
     (id<ReadingListListItem>)item {
+  if ([self.accessibilityDelegate isEditing]) {
+    return nil;
+  }
   ReadingListCustomAction* toggleReadStatus = nil;
   if ([self.accessibilityDelegate isItemRead:item]) {
     toggleReadStatus = [[ReadingListCustomAction alloc]

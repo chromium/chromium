@@ -36,7 +36,7 @@ MediaRouterDebuggerImpl::~MediaRouterDebuggerImpl() {
 
 // static.
 MediaRouterDebugger* MediaRouterDebuggerImpl::GetForFrameTreeNode(
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);

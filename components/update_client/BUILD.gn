@@ -86,6 +86,8 @@ static_library("update_client") {
     "action_runner.cc",
     "action_runner.h",
     "activity_data_service.h",
+    "cancellation.cc",
+    "cancellation.h",
     "command_line_config_policy.cc",
     "command_line_config_policy.h",
     "component.cc",
@@ -98,10 +100,14 @@ static_library("update_client") {
     "crx_downloader_factory.cc",
     "crx_downloader_factory.h",
     "crx_update_item.h",
-    "features.cc",
-    "features.h",
     "network.cc",
     "network.h",
+    "op_download.cc",
+    "op_download.h",
+    "op_install.cc",
+    "op_install.h",
+    "op_puffin.cc",
+    "op_puffin.h",
     "patcher.h",
     "persisted_data.cc",
     "persisted_data.h",
@@ -119,8 +125,6 @@ static_library("update_client") {
     "protocol_serializer.h",
     "protocol_serializer_json.cc",
     "protocol_serializer_json.h",
-    "puffin_patcher.cc",
-    "puffin_patcher.h",
     "request_sender.cc",
     "request_sender.h",
     "task.h",
@@ -173,6 +177,7 @@ static_library("update_client") {
       "background_downloader_mac.mm",
     ]
     frameworks = [ "Foundation.framework" ]
+    deps += [ ":background_downloader_delegate" ]
   }
 
   if (is_win) {
@@ -180,6 +185,25 @@ static_library("update_client") {
       "background_downloader_win.cc",
       "background_downloader_win.h",
     ]
+  }
+}
+
+if (is_mac) {
+  # The background downloader delegate is implemented as a component to avoid
+  # duplicate symbol warnings at runtime in component builds:
+  # http://crbug.com/361129285.
+  component("background_downloader_delegate") {
+    sources = [
+      "background_downloader_mac_delegate.h",
+      "background_downloader_mac_delegate.mm",
+      "update_client_errors.h",
+    ]
+    frameworks = [ "Foundation.framework" ]
+    deps = [
+      "//base",
+      "//url",
+    ]
+    defines = [ "IS_BACKGROUND_DOWNLOADER_DELEGATE_IMPL" ]
   }
 }
 
@@ -261,13 +285,16 @@ bundle_data("recovery_component_tests_bundle_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "action_runner_unittest.cc",
+    "cancellation_unittest.cc",
     "crx_cache_unittest.cc",
+    "op_download_unittest.cc",
+    "op_puffin_unittest.cc",
     "persisted_data_unittest.cc",
     "ping_manager_unittest.cc",
     "protocol_parser_json_unittest.cc",
     "protocol_serializer_json_unittest.cc",
     "protocol_serializer_unittest.cc",
-    "puffin_patcher_unittest.cc",
     "request_sender_unittest.cc",
     "unpacker_unittest.cc",
     "update_checker_unittest.cc",

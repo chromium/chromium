@@ -6,11 +6,14 @@
 import collections
 import enum
 import functools
-from typing import Dict, Iterable, List, Optional, Union
+import json
+import logging
+from typing import Any, Dict, Iterable, List, Optional, Union
 
 import dataclasses  # Built-in, but pylint gives an ordering false positive
 
 from gpu_tests import common_typing as ct
+from gpu_tests import constants
 from gpu_tests import gpu_helper
 
 from telemetry.internal.platform import gpu_device
@@ -106,6 +109,17 @@ class GpuOverlayConfig:
       self._possible_overlay_support[pixel_format] = OverlaySupport.SOFTWARE
       self._driver_conditionals[pixel_format] = []
       self._supported_rotations[pixel_format] = [VideoRotation.UNROTATED]
+
+  def __eq__(self, other: Any):
+    if not isinstance(other, self.__class__):
+      return False
+
+    self_dict = self.__dict__
+    other_dict = other.__dict__
+    if set(self_dict.keys()) != set(other_dict.keys()):
+      return False
+
+    return all(self_dict[k] == other_dict[k] for k in self_dict)
 
   def WithDirectComposition(self) -> 'GpuOverlayConfig':
     """Enables direct composition support via software."""
@@ -387,7 +401,7 @@ AllHardwareSupportDirectCompositionConfig = lambda: (
     .WithHardwareBGRA8Support())
 
 OVERLAY_CONFIGS = {
-    gpu_helper.GpuVendors.AMD: {
+    constants.GpuVendor.AMD: {
         0x7340: BasicDirectCompositionConfig()\
                 .WithHardwareNV12Support(supported_rotations=[
                     VideoRotation.ROT90,
@@ -403,7 +417,7 @@ OVERLAY_CONFIGS = {
         0x699f:
         BasicDirectCompositionConfig(),
     },
-    gpu_helper.GpuVendors.INTEL: {
+    constants.GpuVendor.INTEL: {
         # Hardware overlays are disabled in 26.20.100.8141 per
         # crbug.com/1079393#c105
         0x5912: BasicDirectCompositionConfig()\
@@ -420,8 +434,17 @@ OVERLAY_CONFIGS = {
         AllHardwareSupportDirectCompositionConfig(),
         0x9bc5:
         AllHardwareSupportDirectCompositionConfig(),
+        0x4680: BasicDirectCompositionConfig()\
+                .WithHardwareNV12Support(supported_rotations=[
+                    VideoRotation.ROT180])\
+                .WithHardwareYUY2Support()\
+                .WithHardwareBGRA8Support()\
+                .WithZeroCopyConfig(ZeroCopyConfig(
+                    supports_scaled_video=False,
+                    supported_codecs=[
+                        ZeroCopyCodec.H264])),
     },
-    gpu_helper.GpuVendors.NVIDIA: {
+    constants.GpuVendor.NVIDIA: {
         # For some reason, software BGRA8 software overlay support changes
         # based on driver version.
         0x2184: BasicDirectCompositionConfig()\
@@ -435,26 +458,32 @@ OVERLAY_CONFIGS = {
                     supports_scaled_video=True,
                     supported_codecs=[
                         ZeroCopyCodec.H264])),
+        0x2783: BasicDirectCompositionConfig()\
+                .WithHardwareNV12Support()\
+                .WithHardwareYUY2Support()\
+                .WithZeroCopyConfig(ZeroCopyConfig(
+                    supports_scaled_video=True,
+                    supported_codecs=[
+                        ZeroCopyCodec.H264])),
     },
-    gpu_helper.GpuVendors.QUALCOMM: {
+    constants.GpuVendor.QUALCOMM: {
         0x41333430: BasicDirectCompositionConfig()\
+                    .WithHardwareNV12Support(supported_rotations=[
+                        VideoRotation.ROT180])\
+                    .WithZeroCopyConfig(ZeroCopyConfig(
+                        supports_scaled_video=True)),
+        0x36333630: BasicDirectCompositionConfig()\
+                    .WithHardwareNV12Support(supported_rotations=[
+                        VideoRotation.ROT180])\
+                    .WithZeroCopyConfig(ZeroCopyConfig(
+                        supports_scaled_video=True)),
+        0x36334330: BasicDirectCompositionConfig()\
                     .WithHardwareNV12Support(supported_rotations=[
                         VideoRotation.ROT180])\
                     .WithZeroCopyConfig(ZeroCopyConfig(
                         supports_scaled_video=True)),
     },
 }
-
-
-def AppendOverlayConfigWithExtraIntelGPU(gpu: gpu_device.GPUDevice) -> None:
-  """Append a GpuOverlayConfig instance for extra Intel GPU not listed in
-  OVERLAY_CONFIGS.
-  """
-  assert gpu.vendor_id == gpu_helper.GpuVendors.INTEL
-  overlay_config = OVERLAY_CONFIGS.get(gpu.vendor_id, {})
-  if not overlay_config.get(gpu.device_id, None):
-    overlay_config.setdefault(gpu.device_id,
-                              AllHardwareSupportDirectCompositionConfig())
 
 
 def GetOverlayConfigForGpu(gpu: gpu_device.GPUDevice) -> GpuOverlayConfig:
@@ -466,3 +495,152 @@ def GetOverlayConfigForGpu(gpu: gpu_device.GPUDevice) -> GpuOverlayConfig:
         f'GPU with vendor ID {gpu.vendor_id:#02x} and device ID '
         f'{gpu.device_id:#02x} does not have an overlay config specified')
   return overlay_config.OnDriverVersion(gpu.driver_version)
+
+
+def ParseOverlayJsonFile(filepath: str) -> None:
+  """Parses overlay configs from the specified JSON file and adds to the map.
+
+  JSON data must be in the following format:
+
+  {
+    # A string representing the vendor ID in hexadecimal, in this case Intel.
+    "0x8086": {
+      # A string representing the device ID in hexadecimal.
+      "0x1234": [
+        # An ordered list of functions to call on the GpuOverlayConfig.
+        {
+          # Equivalent to .WithDirectComposition()
+          "function": "WithDirectComposition"
+        },
+        {
+          # Equivalent to:
+          # .WithHardwareNV12Support(
+          #     driver_conditionals=[DriverConditional('ge', '31.0.15.4601')])
+          "function": "WithHardwareNV12Support",
+          "args": {
+            "driver_conditionals": [
+              ["ge", "31.0.15.4601"]
+            ]
+          }
+        },
+        {
+          # Equivalent to:
+          # .WithHardwareYUY2Support(supported_rotations=[VideoRotation.ROT180])
+          "function": "WithHardwareYUY2Support",
+          "args": {
+            "supported_rotations": [
+              180
+            ]
+          }
+        },
+        {
+          # Equivalent to:
+          # .WithZeroCopyConfig(ZeroCopyConfig(
+          #     supports_scaled_video=True,
+          #     supported_codecs=[ZeroCopyCodec.H264]))
+          "function": "WithZeroCopyConfig",
+          "args": {
+            "supports_scaled_video": true,
+            "supported_codecs": [
+              'H264'
+            ]
+          }
+        },
+        {
+          # Equivalent to:
+          # .WithForceComposedBGRA8(
+          #     driver_conditionals=[DriverConditional('ge', '31.0.15.4601')])
+          "function": "WithForceComposedBGRA8",
+          "args": {
+            "driver_conditionals": [
+              ["ge", "31.0.15.4601"]
+            ]
+          }
+        }
+      ],
+      "0x2345": [
+        ...
+      ]
+    },
+    "0x1002": {
+      ...
+    }
+  }
+
+  Args:
+    filepath: A string containing a filepath pointing to the JSON file to parse.
+  """
+  with open(filepath, encoding='utf-8') as infile:
+    json_content = json.load(infile)
+
+  for vendor_str, device_map in json_content.items():
+    assert vendor_str.lower().startswith('0x')
+    vendor = int(vendor_str, 0)
+    vendor = constants.GpuVendor(vendor)
+
+    for device_str, function_list in device_map.items():
+      assert device_str.lower().startswith('0x')
+      device = int(device_str, 0)
+      _ParseOverlayJsonForDevice(vendor, device, function_list)
+
+
+def _ParseOverlayJsonForDevice(vendor: constants.GpuVendor, device: int,
+                               function_list: List[dict]) -> None:
+  """Helper to parse overlay config JSON for a single device.
+
+  Args:
+    vendor: The GpuVendor value for the device's vendor.
+    device: An int representing the device's ID.
+    function_list: A list of dicts, each dict representing a function to call.
+  """
+  if device in OVERLAY_CONFIGS.get(vendor, {}):
+    logging.warning(
+        'Config for vendor %#02x and device %#02x already exists, not applying '
+        'config from JSON file.', vendor, device)
+    return
+
+  overlay_config = GpuOverlayConfig()
+  for function_call in function_list:
+    function = function_call['function']
+    args = function_call.get('args', {})
+    # Convert any arguments that aren't built-in types before calling the
+    # provided function with the provided args.
+    _ConvertDriverConditionals(args)
+    _ConvertSupportedRotations(args)
+    _ConvertSupportedCodecs(args)
+    if function == 'WithZeroCopyConfig':
+      args = {'zero_copy_config': ZeroCopyConfig(**args)}
+    getattr(overlay_config, function)(**args)
+
+  OVERLAY_CONFIGS.setdefault(vendor, {})[device] = overlay_config
+
+
+def _ConvertDriverConditionals(args: Dict[str, Any]) -> None:
+  """Converts any driver_conditionals arguments in place."""
+  if 'driver_conditionals' not in args:
+    return
+
+  driver_conditionals = [
+      DriverConditional(*dc) for dc in args['driver_conditionals']
+  ]
+  args['driver_conditionals'] = driver_conditionals
+
+
+def _ConvertSupportedRotations(args: Dict[str, Any]) -> None:
+  """Converts any supported_rotations arguments in place."""
+  if 'supported_rotations' not in args:
+    return
+
+  supported_rotations = [
+      VideoRotation(sr) for sr in args['supported_rotations']
+  ]
+  args['supported_rotations'] = supported_rotations
+
+
+def _ConvertSupportedCodecs(args: Dict[str, Any]) -> None:
+  """Converts any supported_codecs arguments in place."""
+  if 'supported_codecs' not in args:
+    return
+
+  supported_codecs = [ZeroCopyCodec[sc] for sc in args['supported_codecs']]
+  args['supported_codecs'] = supported_codecs

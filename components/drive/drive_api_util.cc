@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/drive/drive_api_util.h"
 
 #include <string>
+#include <string_view>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/hash/md5.h"
 #include "base/strings/strcat.h"
@@ -139,12 +146,12 @@ std::string GetMd5Digest(const base::FilePath& file_path,
   base::MD5Init(&context);
 
   int64_t offset = 0;
-  std::unique_ptr<char[]> buffer(new char[kMd5DigestBufferSize]);
+  auto buffer = base::HeapArray<char>::Uninit(kMd5DigestBufferSize);
   while (true) {
     if (cancellation_flag && cancellation_flag->IsSet()) {  // Cancelled.
       return std::string();
     }
-    int result = file.Read(offset, buffer.get(), kMd5DigestBufferSize);
+    int result = file.Read(offset, buffer.data(), buffer.size());
     if (result < 0) {
       // Found an error.
       return std::string();
@@ -156,7 +163,7 @@ std::string GetMd5Digest(const base::FilePath& file_path,
     }
 
     offset += result;
-    base::MD5Update(&context, base::StringPiece(buffer.get(), result));
+    base::MD5Update(&context, std::string_view(buffer.data(), result));
   }
 
   base::MD5Digest digest;

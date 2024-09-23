@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef CC_PAINT_PAINT_OP_BUFFER_ITERATOR_H_
 #define CC_PAINT_PAINT_OP_BUFFER_ITERATOR_H_
 
@@ -29,6 +34,8 @@ class PaintOpBufferIteratorBase {
 class CC_PAINT_EXPORT PaintOpBuffer::Iterator
     : public PaintOpBufferIteratorBase {
  public:
+  constexpr Iterator() = default;
+
   explicit Iterator(const PaintOpBuffer& buffer)
       : Iterator(buffer, buffer.data_.get(), 0u) {}
 
@@ -49,8 +56,8 @@ class CC_PAINT_EXPORT PaintOpBuffer::Iterator
   Iterator& operator++() {
     DCHECK(*this);
     const PaintOp& op = **this;
-    ptr_ += op.aligned_size;
-    op_offset_ += op.aligned_size;
+    ptr_ += op.AlignedSize();
+    op_offset_ += op.AlignedSize();
 
     CHECK_LE(op_offset_, buffer_->used_);
     return *this;

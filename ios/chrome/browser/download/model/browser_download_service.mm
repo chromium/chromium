@@ -14,10 +14,10 @@
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/download/model/safari_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/vcard_tab_helper.h"
+#import "ios/chrome/browser/download/ui_bundled/features.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/ui/download/features.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
 #import "net/base/url_util.h"
@@ -59,13 +59,14 @@ void BrowserDownloadService::OnDownloadCreated(
   if ((task->GetMimeType() == kPkPassMimeType ||
        task->GetMimeType() == kPkBundledPassMimeType) &&
       !base::FeatureList::IsEnabled(kPassKitKillSwitch)) {
-    PassKitTabHelper* tab_helper = PassKitTabHelper::FromWebState(web_state);
+    PassKitTabHelper* tab_helper =
+        PassKitTabHelper::GetOrCreateForWebState(web_state);
     if (tab_helper)
       tab_helper->Download(std::move(task));
   } else if (IsUsdzFileFormat(task->GetMimeType(), task->GenerateFileName()) &&
              !base::FeatureList::IsEnabled(kARKillSwitch)) {
     ARQuickLookTabHelper* tab_helper =
-        ARQuickLookTabHelper::FromWebState(web_state);
+        ARQuickLookTabHelper::GetOrCreateForWebState(web_state);
     if (tab_helper)
       tab_helper->Download(std::move(task));
 
@@ -93,7 +94,7 @@ void BrowserDownloadService::OnDownloadCreated(
   } else {
     DownloadManagerTabHelper* tab_helper =
         DownloadManagerTabHelper::FromWebState(web_state);
-    // TODO(crbug.com/1300151): Investigate why tab_helper is sometimes nil.
+    // TODO(crbug.com/40216128): Investigate why tab_helper is sometimes nil.
     if (tab_helper)
       tab_helper->SetCurrentDownload(std::move(task));
   }

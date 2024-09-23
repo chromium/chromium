@@ -44,10 +44,7 @@ class NET_EXPORT X509Certificate
   enum PublicKeyType {
     kPublicKeyTypeUnknown,
     kPublicKeyTypeRSA,
-    kPublicKeyTypeDSA,
     kPublicKeyTypeECDSA,
-    kPublicKeyTypeDH,
-    kPublicKeyTypeECDH
   };
 
   enum Format {
@@ -233,9 +230,16 @@ class NET_EXPORT X509Certificate
                                size_t* size_bits,
                                PublicKeyType* type);
 
+  // Returns the bytes in CRYPTO_BUFFER that hold this certificate's DER encoded
+  // data. The data is not guaranteed to be valid DER or to encode a valid
+  // Certificate object.
+  base::span<const uint8_t> cert_span() const;
+
   // Returns the CRYPTO_BUFFER holding this certificate's DER encoded data. The
   // data is not guaranteed to be valid DER or to encode a valid Certificate
   // object.
+  //
+  // To access the CRYPTO_BUFFER's bytes, use `cert_span()` above.
   CRYPTO_BUFFER* cert_buffer() const { return cert_buffer_.get(); }
 
   // Returns the associated intermediate certificates that were specified

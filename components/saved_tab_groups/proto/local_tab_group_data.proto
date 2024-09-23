@@ -1,0 +1,29 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package tab_groups.proto;
+
+// The local-only metadata for the tab group that is never synced.
+message LocalTabGroupData {
+  // Local tab group ID. Stored as a serialized base::Token.
+  optional string local_group_id = 1;
+
+  // The group was created locally when sync was disabled.
+  // Useful for determining subsequent sign-in / sign-out behavior.
+  optional bool created_before_syncing_tab_groups = 2;
+
+  // Flag to indicate if this group should be closed and deleted from local
+  // storage when the associated browser window becomes available.
+  // This is used for specific cases where groups need to be cleaned up
+  // on the client-side (e.g. sign-out or group deletion message received
+  // while the associated browser window wasn't available).
+  optional bool close_and_delete_on_next_restore = 3;
+
+  // Timestamp of last explicit user interaction with the tab group.
+  optional int64 last_user_interaction_time_windows_epoch_micros = 4;
+}

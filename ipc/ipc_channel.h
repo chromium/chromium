@@ -105,28 +105,6 @@ class COMPONENT_EXPORT(IPC) Channel : public Sender {
     // Requests an associated interface from the remote endpoint.
     virtual void GetRemoteAssociatedInterface(
         mojo::GenericPendingAssociatedReceiver receiver) = 0;
-
-    // Template helper to add an interface factory to this channel.
-    template <typename Interface>
-    using AssociatedReceiverFactory = base::RepeatingCallback<void(
-        mojo::PendingAssociatedReceiver<Interface>)>;
-    template <typename Interface>
-    void AddAssociatedInterface(
-        const AssociatedReceiverFactory<Interface>& factory) {
-      AddGenericAssociatedInterface(
-          Interface::Name_,
-          base::BindRepeating(&BindPendingAssociatedReceiver<Interface>,
-                              factory));
-    }
-
-   private:
-    template <typename Interface>
-    static void BindPendingAssociatedReceiver(
-        const AssociatedReceiverFactory<Interface>& factory,
-        mojo::ScopedInterfaceEndpointHandle handle) {
-      factory.Run(
-          mojo::PendingAssociatedReceiver<Interface>(std::move(handle)));
-    }
   };
 
   // The maximum message size in bytes. Attempting to receive a message of this

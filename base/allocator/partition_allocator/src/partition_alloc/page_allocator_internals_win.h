@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_WIN_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_WIN_H_
+#ifndef PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_WIN_H_
+#define PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_WIN_H_
 
 #include <cstdint>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/oom.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/page_allocator_internal.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_check.h"
 
 namespace partition_alloc::internal {
@@ -28,7 +28,7 @@ bool IsOutOfMemory(DWORD error) {
     case ERROR_COMMITMENT_MINIMUM:
     // Page file is too small.
     case ERROR_COMMITMENT_LIMIT:
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
     // Not enough memory resources are available to process this command.
     //
     // It is not entirely clear whether this error pertains to out of address
@@ -92,6 +92,7 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
     case PageAccessibilityConfiguration::kReadExecuteProtected:
       return PAGE_EXECUTE_READ;
     case PageAccessibilityConfiguration::kReadWriteExecute:
+    case PageAccessibilityConfiguration::kReadWriteExecuteProtected:
       return PAGE_EXECUTE_READWRITE;
     case PageAccessibilityConfiguration::kInaccessible:
     case PageAccessibilityConfiguration::kInaccessibleWillJitLater:
@@ -237,6 +238,10 @@ void DiscardSystemPagesInternal(uintptr_t address, size_t length) {
   }
 }
 
+bool SealSystemPagesInternal(uintptr_t address, size_t length) {
+  return false;
+}
+
 }  // namespace partition_alloc::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_WIN_H_
+#endif  // PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_WIN_H_

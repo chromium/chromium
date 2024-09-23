@@ -6,7 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_ENUMS_H_
 
 #include <iosfwd>
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace feed {
 
@@ -179,7 +179,7 @@ enum class UserSettingsOnStart {
   kFeedNotEnabledByDse = 10,
   kMaxValue = kFeedNotEnabledByDse,
 };
-base::StringPiece ToString(UserSettingsOnStart v);
+std::string_view ToString(UserSettingsOnStart v);
 std::ostream& operator<<(std::ostream& out, UserSettingsOnStart value);
 
 }  // namespace feed

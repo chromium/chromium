@@ -7,6 +7,7 @@ source_set("presenters") {
     "notifications_alert_presenter.h",
     "notifications_confirmation_presenter.h",
   ]
+  deps = [ "//base" ]
 }
 
 source_set("opt_in_alert_coordinator") {
@@ -15,15 +16,20 @@ source_set("opt_in_alert_coordinator") {
     "notifications_opt_in_alert_coordinator.mm",
   ]
   deps = [
+    ":metrics",
+    "//components/sync_device_info",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/push_notification/model:push_notification_service_header",
+    "//ios/chrome/browser/push_notification/model:push_notification_util",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ui/base",
   ]
 }
@@ -37,14 +43,21 @@ source_set("notifications_opt_in") {
     "notifications_opt_in_mediator.mm",
   ]
   deps = [
+    ":metrics",
     ":notifications_opt_in_ui",
     ":opt_in_alert_coordinator",
     "//components/prefs",
     "//components/signin/public/base",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_notification/model:util",
+    "//ios/chrome/browser/ntp/model:set_up_list_item_type",
+    "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/push_notification/model:push_notification_service_header",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
@@ -65,15 +78,23 @@ source_set("notifications_opt_in_ui") {
     "notifications_opt_in_view_controller.mm",
   ]
   deps = [
-    "resources:notifications_opt_in_banner",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
     "//ui/base",
+  ]
+}
+
+source_set("metrics") {
+  sources = [
+    "metrics.h",
+    "metrics.mm",
   ]
 }
 
@@ -92,7 +113,10 @@ source_set("test_support") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "push_notification_egtest.mm" ]
+  sources = [
+    "notifications_opt_in_egtest.mm",
+    "push_notification_egtest.mm",
+  ]
   deps = [
     ":test_support",
     "//base",
@@ -100,12 +124,43 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/tips_notifications/model:utils",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:eg_test_support+eg2",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:constants",
+    "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",
     "//ui/strings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "notifications_opt_in_mediator_unittest.mm" ]
+  deps = [
+    ":notifications_opt_in",
+    ":notifications_opt_in_ui",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/ntp/model:set_up_list_item_type",
+    "//ios/chrome/browser/ntp/model:set_up_list_prefs",
+    "//ios/chrome/browser/push_notification/model:constants",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest:gtest",
+    "//third_party/ocmock",
   ]
 }

@@ -28,7 +28,8 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValueFactory::Create(
     const SerializedScriptValue::SerializeOptions& options,
     ExceptionState& exception_state) {
   TRACE_EVENT0("blink", "SerializedScriptValueFactory::create");
-  V8ScriptValueSerializer serializer(ScriptState::Current(isolate), options);
+  V8ScriptValueSerializer serializer(ScriptState::ForCurrentRealm(isolate),
+                                     options);
   return serializer.Serialize(value, exception_state);
 }
 
@@ -37,7 +38,7 @@ v8::Local<v8::Value> SerializedScriptValueFactory::Deserialize(
     v8::Isolate* isolate,
     const SerializedScriptValue::DeserializeOptions& options) {
   TRACE_EVENT0("blink", "SerializedScriptValueFactory::deserialize");
-  V8ScriptValueDeserializer deserializer(ScriptState::Current(isolate),
+  V8ScriptValueDeserializer deserializer(ScriptState::ForCurrentRealm(isolate),
                                          std::move(value), options);
   return deserializer.Deserialize();
 }
@@ -47,8 +48,8 @@ v8::Local<v8::Value> SerializedScriptValueFactory::Deserialize(
     v8::Isolate* isolate,
     const SerializedScriptValue::DeserializeOptions& options) {
   TRACE_EVENT0("blink", "SerializedScriptValueFactory::deserialize");
-  V8ScriptValueDeserializer deserializer(ScriptState::Current(isolate), value,
-                                         options);
+  V8ScriptValueDeserializer deserializer(ScriptState::ForCurrentRealm(isolate),
+                                         value, options);
   return deserializer.Deserialize();
 }
 

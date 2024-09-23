@@ -9,9 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_error_or.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
+#include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
+#include "chrome/browser/ash/file_system_provider/opened_cloud_file.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -35,13 +38,14 @@ namespace ash::file_system_provider {
 // A simple wrapper over a `ProvidedFileSystem` that adds additional logging,
 // currently this is hidden behind the `FileSystemProviderCloudFileSystem`
 // feature flag.
-class CloudFileSystem : public ProvidedFileSystemInterface {
+class CloudFileSystem : public ProvidedFileSystemInterface,
+                        public ContentCache::Observer {
  public:
   explicit CloudFileSystem(
       std::unique_ptr<ProvidedFileSystemInterface> file_system);
 
   CloudFileSystem(std::unique_ptr<ProvidedFileSystemInterface> file_system,
-                   ContentCache* content_cache);
+                  CacheManager* cache_manager);
 
   CloudFileSystem(const CloudFileSystem&) = delete;
   CloudFileSystem& operator=(const CloudFileSystem&) = delete;
@@ -133,13 +137,96 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
   base::WeakPtr<ProvidedFileSystemInterface> GetWeakPtr() override;
   std::unique_ptr<ScopedUserInteraction> StartUserInteraction() override;
 
+  // ContentCache::Observer
+  void OnItemEvicted(const base::FilePath& fsp_path) override;
+
  private:
   const std::string GetFileSystemId() const;
   void OnTimer();
+  void OnContentCacheInitialized(
+      base::FileErrorOr<std::unique_ptr<ContentCache>> error_or_cache);
+  // Attempts to add a watcher on the file with `file_path`. If the attempt
+  // fails with `FILE_ERROR_SECURITY`, this could be because the FSP (extension)
+  // is not ready yet to handle FSP calls. Try again every 2 seconds until the
+  // max number of attempts is reached.
+  void AddWatcherOnCachedFile(const base::FilePath& file_path);
+  void AddWatcherOnCachedFileImpl(const base::FilePath& file_path,
+                                  int attempts,
+                                  base::File::Error result);
+  void OnItemEvictedFromCache(const base::FilePath& file_path);
+  // Called when opening a file is completed with either a success or an error.
+  void OnOpenFileCompleted(const base::FilePath& file_path,
+                           OpenFileMode mode,
+                           OpenFileCallback callback,
+                           int file_handle,
+                           base::File::Error result,
+                           std::unique_ptr<EntryMetadata> metadata);
+  // Called when closing a file is completed with either a success or an error.
+  void OnCloseFileCompleted(int file_handle,
+                            storage::AsyncFileUtil::StatusCallback callback,
+                            base::File::Error result);
+
+  // Called when the get metadata request is completed with either a success or
+  // an error.
+  void OnGetMetadataCompleted(const base::FilePath& entry_path,
+                              GetMetadataCallback callback,
+                              std::unique_ptr<EntryMetadata> entry_metadata,
+                              base::File::Error result);
+
+  // When an attempt to read the file from disk completes, in the event it fails
+  // ensure it gets delegated to the underlying FSP.
+  void OnReadFileFromCacheCompleted(int file_handle,
+                                    scoped_refptr<net::IOBuffer> buffer,
+                                    int64_t offset,
+                                    int length,
+                                    ReadChunkReceivedCallback callback,
+                                    int bytes_read,
+                                    bool has_more,
+                                    base::File::Error result);
+
+  // When a `ReadFile` completes, attempt to cache the bytes on disk.
+  void OnReadFileCompleted(int file_handle,
+                           scoped_refptr<net::IOBuffer> buffer,
+                           int64_t offset,
+                           int length,
+                           ReadChunkReceivedCallback callback,
+                           int bytes_read,
+                           bool has_more,
+                           base::File::Error result);
+
+  // Called when the write file request is completed with either a success or
+  // an error.
+  void OnWriteFileCompleted(int file_handle,
+                            storage::AsyncFileUtil::StatusCallback callback,
+                            base::File::Error result);
+
+  // Called when the delete entry request is completed with either a success or
+  // an error.
+  void OnDeleteEntryCompleted(const base::FilePath& entry_path,
+                              storage::AsyncFileUtil::StatusCallback callback,
+                              base::File::Error result);
+
+  // After the bytes have finished caching, invoke the `callback`. This is the
+  // `ReadChunkReceivedCallback` above and will always be invoked as the FSP
+  // successfully read the file, if the content cache fails to write the file to
+  // disk this should not stop further FSP requests.
+  void OnBytesWrittenToCache(
+      const base::FilePath& file_path,
+      base::RepeatingCallback<void()> readchunk_success_callback,
+      base::File::Error result);
+
+  // Verify that all invariants are satisfied to make an optimistic cache read.
+  using OpenedCloudFileMap = std::map<int, OpenedCloudFile>;
+  bool ShouldAttemptToServeReadFileFromCache(
+      const OpenedCloudFileMap::const_iterator it);
+
   std::unique_ptr<ProvidedFileSystemInterface> file_system_;
-  raw_ptr<ContentCache> content_cache_;  // Not owned.
+  std::unique_ptr<ContentCache> content_cache_;
+
   base::MetronomeTimer timer_;
   int file_manager_watchers_ = 0;
+  // File handle -> OpenedCloudFile.
+  OpenedCloudFileMap opened_files_;
 
   base::WeakPtrFactory<CloudFileSystem> weak_ptr_factory_{this};
 };

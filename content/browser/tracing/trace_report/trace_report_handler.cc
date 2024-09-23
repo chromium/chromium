@@ -7,9 +7,12 @@
 #include <optional>
 
 #include "base/uuid.h"
+#include "components/tracing/common/background_tracing_state_manager.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/browser/tracing/trace_report/trace_report_database.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
+#include "content/public/browser/background_tracing_config.h"
+#include "content/public/browser/background_tracing_manager.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,17 +25,20 @@ TraceReportHandler::TraceReportHandler(
     mojo::PendingRemote<trace_report::mojom::Page> page)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      trace_upload_list_(BackgroundTracingManagerImpl::GetInstance()) {
+      trace_upload_list_(BackgroundTracingManagerImpl::GetInstance()),
+      background_tracing_manager_(BackgroundTracingManagerImpl::GetInstance()) {
   trace_upload_list_->OpenDatabaseIfExists();
 }
 
 TraceReportHandler::TraceReportHandler(
     mojo::PendingReceiver<trace_report::mojom::PageHandler> receiver,
     mojo::PendingRemote<trace_report::mojom::Page> page,
-    TraceUploadList& trace_upload_list)
+    TraceUploadList& trace_upload_list,
+    BackgroundTracingManagerImpl& background_tracing_manager)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      trace_upload_list_(trace_upload_list) {
+      trace_upload_list_(trace_upload_list),
+      background_tracing_manager_(background_tracing_manager) {
   trace_upload_list_->OpenDatabaseIfExists();
 }
 
@@ -90,9 +96,36 @@ void TraceReportHandler::OnGetAllReportsTaskComplete(
     new_trace->upload_state = single_report.upload_state;
     new_trace->upload_time = single_report.upload_time;
     new_trace->skip_reason = single_report.skip_reason;
+    new_trace->has_trace_content = single_report.has_trace_content;
     reports.push_back(std::move(new_trace));
   }
   std::move(callback).Run(std::move(reports));
+}
+
+void TraceReportHandler::GetAllPresetScenarios(
+    GetAllPresetScenariosCallback callback) {
+  std::move(callback).Run(background_tracing_manager_->GetAllPresetScenarios());
+}
+
+void TraceReportHandler::GetAllFieldScenarios(
+    GetAllFieldScenariosCallback callback) {
+  std::move(callback).Run(background_tracing_manager_->GetAllFieldScenarios());
+}
+
+void TraceReportHandler::GetEnabledScenarios(
+    GetEnabledScenariosCallback callback) {
+  std::move(callback).Run(background_tracing_manager_->GetEnabledScenarios());
+}
+
+void TraceReportHandler::SetEnabledScenarios(
+    const std::vector<std::string>& new_config,
+    SetEnabledScenariosCallback callback) {
+  auto response = background_tracing_manager_->SetEnabledScenarios(new_config);
+  if (response) {
+    tracing::BackgroundTracingStateManager::GetInstance()
+        .UpdateEnabledScenarios(new_config);
+  }
+  std::move(callback).Run(std::move(response));
 }
 
 }  // namespace content

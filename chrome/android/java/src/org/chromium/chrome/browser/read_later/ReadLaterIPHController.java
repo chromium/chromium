@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.view.View;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -23,17 +24,22 @@ public class ReadLaterIPHController {
 
     /**
      * Constructor.
+     *
      * @param activity The current activity.
+     * @param profile The current Profile.
      * @param toolbarMenuButton The toolbar menu button to which IPH will be anchored.
      * @param appMenuHandler The app menu handler
      */
     public ReadLaterIPHController(
-            Activity activity, View toolbarMenuButton, AppMenuHandler appMenuHandler) {
+            Activity activity,
+            Profile profile,
+            View toolbarMenuButton,
+            AppMenuHandler appMenuHandler) {
         this(
                 activity,
                 toolbarMenuButton,
                 appMenuHandler,
-                new UserEducationHelper(activity, new Handler(Looper.getMainLooper())));
+                new UserEducationHelper(activity, profile, new Handler(Looper.getMainLooper())));
     }
 
     ReadLaterIPHController(

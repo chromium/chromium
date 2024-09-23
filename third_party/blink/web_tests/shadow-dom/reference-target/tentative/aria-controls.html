@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <script src="../../../resources/testharness.js"></script>
+  <script src="../../../resources/testharnessreport.js"></script>
+</head>
+
+<body>
+
+  <ul id="tablist-1" role="tablist">
+    <li id="tab-1" role="tab" tabindex="-1">Tab 1</li>
+    <li id="tab-2" role="tab" tabindex="-1" aria-controls="x-panel-2">Tab 2</li>
+  </ul>
+
+  <div id="panel-1" role="tabpanel">
+    <h3 tabindex="0">Panel 1</h3>
+  </div>
+
+  <x-panel-2 id="x-panel-2">
+    <template shadowrootmode="open" shadowrootreferencetarget="panel-2">
+      <div id="panel-2" role="tabpanel">
+        <h2 id="item-in-panel-2" tabindex="0">Panel 2</h2>
+      </div>
+    </template>
+  </x-panel-2>
+
+  <script>
+
+    test((t) => {
+      const tabList = accessibilityController.accessibleElementById('tablist-1');
+      const tab2 = tabList.childAtIndex(1);
+
+      assert_equals(tab2.isSelected, false, "tab2.isSelected is false initially");
+
+      // we set KB focus to something in x-panel-2, which means that tab2 should become selected
+      // because it aria-controls x-panel-2
+      const xPanel2 = document.getElementById("x-panel-2");
+      const panel2Item = xPanel2.shadowRoot.getElementById("item-in-panel-2");
+      panel2Item.focus();
+
+      assert_equals(tab2.isSelected, true, "tab2.isSelected is true after focusing panel2Item");
+
+    }, "aria-controls with a custom element that uses shadowrootreferencetarget");
+
+  </script>
+
+</body>
+
+</html>

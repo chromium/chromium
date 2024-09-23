@@ -52,9 +52,9 @@ export class DeviceTrustConnectorElement extends CustomElement {
     this.setValueToElement('#policy-enabled-levels', `${policyLevels}`);
   }
 
-  set consentMetadata(consentMetadata: ConsentMetadata|undefined) {
-    const consentDetailsEl = (this.$('#consent-details') as HTMLElement);
-    const noConsentDetailsEl = (this.$('#no-consent') as HTMLElement);
+  set consentMetadata(consentMetadata: ConsentMetadata|null) {
+    const consentDetailsEl = this.getRequiredElement('#consent-details');
+    const noConsentDetailsEl = this.getRequiredElement('#no-consent-details');
     if (!consentMetadata) {
       this.showElement(noConsentDetailsEl);
       this.hideElement(consentDetailsEl);
@@ -71,19 +71,19 @@ export class DeviceTrustConnectorElement extends CustomElement {
   }
 
   set keyInfo(keyInfo: KeyInfo) {
-    const keySectionEl = (this.$('#key-manager-section') as HTMLElement);
-    const initStateEl = (this.$('#key-manager-state') as HTMLElement);
+    const keySectionEl = this.getRequiredElement('#key-manager-section');
+    const initStateEl = this.getRequiredElement('#key-manager-state');
 
     const keyPermanentErrorRowEl =
-        (this.$('#key-permanent-failure-row') as HTMLElement);
+        this.getRequiredElement('#key-permanent-failure-row');
     const keyPermanentErrorValueEl =
-        (this.$('#key-permanent-failure') as HTMLElement);
+        this.getRequiredElement('#key-permanent-failure');
 
-    const keyLoadedRows = (this.$('#key-loaded-rows') as HTMLElement);
-    const trustLevelStateEl = (this.$('#key-trust-level') as HTMLElement);
-    const keyTypeStateEl = (this.$('#key-type') as HTMLElement);
-    const spkiHashStateEl = (this.$('#spki-hash') as HTMLElement);
-    const keySyncStateEl = (this.$('#key-sync') as HTMLElement);
+    const keyLoadedRows = this.getRequiredElement('#key-loaded-rows');
+    const trustLevelStateEl = this.getRequiredElement('#key-trust-level');
+    const keyTypeStateEl = this.getRequiredElement('#key-type');
+    const spkiHashStateEl = this.getRequiredElement('#spki-hash');
+    const keySyncStateEl = this.getRequiredElement('#key-sync');
 
     const initializedValue = keyInfo.isKeyManagerInitialized;
     if (initializedValue === KeyManagerInitializedValue.UNSUPPORTED) {
@@ -111,8 +111,8 @@ export class DeviceTrustConnectorElement extends CustomElement {
             utils.trustLevelToString(keyMetadata.trustLevel);
         keyTypeStateEl.innerText = utils.keyTypeToString(keyMetadata.keyType);
         spkiHashStateEl.innerText = keyMetadata.encodedSpkiHash;
-        keySyncStateEl.innerText =
-            utils.keySyncCodeToString(keyMetadata.syncKeyResponseCode);
+        keySyncStateEl.innerText = utils.keySyncCodeToString(
+            keyMetadata.keyUploadStatus?.syncKeyResponseCode);
 
         this.showElement(keyLoadedRows);
       } else {
@@ -129,7 +129,7 @@ export class DeviceTrustConnectorElement extends CustomElement {
 
   private signalsString_: string = '';
   set signalsString(str: string) {
-    const signalsEl = (this.$('#signals') as HTMLElement);
+    const signalsEl = this.$<HTMLElement>('#signals');
     if (signalsEl) {
       signalsEl.innerText = str;
       this.signalsString_ = str;
@@ -137,7 +137,7 @@ export class DeviceTrustConnectorElement extends CustomElement {
       console.error('Could not find #signals element.');
     }
 
-    const signalsSection = (this.$('#signals-section') as HTMLElement);
+    const signalsSection = this.$<HTMLElement>('#signals-section');
     if (signalsSection) {
       str === '' ? this.hideElement(signalsSection) :
                    this.showElement(signalsSection);

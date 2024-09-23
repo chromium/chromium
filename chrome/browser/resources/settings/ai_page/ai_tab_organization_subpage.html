@@ -1,0 +1,47 @@
+<style include="settings-shared settings-columned-section">
+  cr-icon {
+    flex-shrink: 0;
+  }
+</style>
+
+<settings-toggle-button
+    pref="{{prefs.optimization_guide.tab_organization_setting_state}}"
+    numeric-unchecked-values="[[numericUncheckedValues_]]"
+    numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
+    label="$i18n{experimentalAdvancedFeature2Label}"
+    sub-label="$i18n{experimentalAdvancedFeature2Sublabel}">
+</settings-toggle-button>
+<div class="settings-columned-section">
+  <div class="column">
+    <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:astrophotography-mode" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">
+          $i18n{experimentalAdvancedFeature2Sublabel}
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="column">
+    <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:ai" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">$i18n{privacyPageTitle}</div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:googleg" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">$i18n{privacyPageTitle}</div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:ai" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">$i18n{privacyPageTitle}</div>
+      </li>
+    </ul>
+  </div>
+</div>

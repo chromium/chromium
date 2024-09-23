@@ -8,6 +8,7 @@ import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {AllowedPaths} from '../../common/js/volume_manager_types.js';
 import {updateDirectoryContent, updateSelection} from '../../state/ducks/current_directory.js';
+import {PropStatus} from '../../state/state.js';
 import type {Store} from '../../state/store.js';
 
 import {type FileSelection, FileSelectionHandler} from './file_selection.js';
@@ -49,7 +50,8 @@ export class FakeFileSelectionHandler extends FileSelectionHandler {
 
     if (store) {
       // Make sure that the entry is in the directory content.
-      store.dispatch(updateDirectoryContent({entries}));
+      store.dispatch(
+          updateDirectoryContent({entries, status: PropStatus.SUCCESS}));
       // Mark the entry as selected.
       store.dispatch(updateSelection({
         selectedKeys: entries.map(e => e.toURL()),

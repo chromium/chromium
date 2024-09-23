@@ -1,0 +1,99 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "add_contacts_coordinator.h",
+    "add_contacts_coordinator.mm",
+    "country_code_picker_coordinator.h",
+    "country_code_picker_coordinator.mm",
+  ]
+  deps = [
+    ":ui",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/web/model/annotations",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "country_code_picker_view_controller.h",
+    "country_code_picker_view_controller.mm",
+    "phone_number_actions_view_controller.h",
+    "phone_number_actions_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:constants",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//third_party/libphonenumber",
+    "//ui/base",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "phone_number_constants.h",
+    "phone_number_constants.mm",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "country_code_picker_egtest.mm" ]
+  deps = [
+    ":constants",
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "country_code_picker_app_interface.h",
+    "country_code_picker_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "country_code_picker_app_interface.h",
+    "country_code_picker_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}

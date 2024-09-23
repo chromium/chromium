@@ -10,9 +10,10 @@
 #include <string>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/time/time.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
-#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/rsa_private_key.h"
 #include "crypto/signature_creator.h"
@@ -299,9 +300,11 @@ DMPolicyBuilderForTesting::CreateInstanceWithOptions(
 void DMPolicyBuilderForTesting::FillPolicyFetchResponseWithPayload(
     enterprise_management::PolicyFetchResponse* policy_response,
     const std::string& policy_type,
-    const std::string& policy_payload) const {
+    const std::string& policy_payload,
+    bool attach_new_public_key) const {
   const DMSigningKeyForTesting* signing_key = signing_key_.get();
-  if (new_signing_key_) {
+  if (new_signing_key_ && attach_new_public_key) {
+    VLOG(1) << "Attaching new public key for policy " << policy_type;
     signing_key = new_signing_key_.get();
 
     // Attach the new public key and its signature to the policy response.
@@ -313,6 +316,8 @@ void DMPolicyBuilderForTesting::FillPolicyFetchResponseWithPayload(
       if (signing_option_ == SigningOption::kTamperKeySignature) {
         *policy_response->mutable_new_public_key_signature() = "bad-key-sig";
       } else {
+        policy_response->set_policy_data_signature_type(
+            enterprise_management::PolicyFetchRequest::SHA256_RSA);
         signing_key_->SignData(
             policy_response->new_public_key(),
             policy_response->mutable_new_public_key_signature());
@@ -329,6 +334,8 @@ void DMPolicyBuilderForTesting::FillPolicyFetchResponseWithPayload(
     policy_response->set_new_public_key_verification_data_signature(
         new_signing_key_->GetPublicKeySignature());
   } else {
+    VLOG(1) << "Added policy [" << policy_type
+            << "] in response without a public key.";
     policy_response->clear_new_public_key();
     policy_response->clear_new_public_key_verification_data();
     policy_response->clear_new_public_key_verification_data_signature();
@@ -352,6 +359,8 @@ void DMPolicyBuilderForTesting::FillPolicyFetchResponseWithPayload(
   if (signing_option_ == SigningOption::kTamperDataSignature) {
     *policy_response->mutable_policy_data_signature() = "bad-data-sig";
   } else {
+    policy_response->set_policy_data_signature_type(
+        enterprise_management::PolicyFetchRequest::SHA256_RSA);
     signing_key->SignData(policy_response->policy_data(),
                           policy_response->mutable_policy_data_signature());
   }
@@ -362,7 +371,8 @@ std::string DMPolicyBuilderForTesting::GetResponseBlobForPolicyPayload(
     const std::string& policy_payload) const {
   enterprise_management::PolicyFetchResponse policy_response;
   FillPolicyFetchResponseWithPayload(&policy_response, policy_type,
-                                     policy_payload);
+                                     policy_payload,
+                                     /*attach_new_public_key=*/true);
   return policy_response.SerializeAsString();
 }
 
@@ -372,11 +382,21 @@ DMPolicyBuilderForTesting::BuildDMResponseForPolicies(
   auto dm_response =
       std::make_unique<::enterprise_management::DeviceManagementResponse>();
 
-  for (const auto& policy : policies) {
+  for (const auto& [policy_type, policy_data] : policies) {
     FillPolicyFetchResponseWithPayload(
-        dm_response->mutable_policy_response()->add_responses(), policy.first,
-        policy.second);
+        dm_response->mutable_policy_response()->add_responses(), policy_type,
+        policy_data,
+        /*attach_new_public_key=*/policy_type == "google/machine-level-omaha");
   }
+  return dm_response;
+}
+
+std::unique_ptr<::enterprise_management::DeviceManagementResponse>
+DMPolicyBuilderForTesting::BuildDMResponseWithError(
+    ::enterprise_management::DeviceManagementErrorDetail error) const {
+  auto dm_response =
+      std::make_unique<::enterprise_management::DeviceManagementResponse>();
+  dm_response->add_error_detail(error);
   return dm_response;
 }
 

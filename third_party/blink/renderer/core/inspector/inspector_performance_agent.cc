@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/inspector/inspector_performance_agent.h"
 
 #include <utility>
@@ -9,6 +14,7 @@
 #include "base/process/process.h"
 #include "base/process/process_metrics.h"
 #include "base/time/time_override.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -50,8 +56,7 @@ std::unique_ptr<base::ProcessMetrics> GetCurrentProcessMetrics() {
 base::TimeDelta GetCurrentProcessTime() {
   std::unique_ptr<base::ProcessMetrics> process_metrics =
       GetCurrentProcessMetrics();
-  base::TimeDelta process_time = process_metrics->GetCumulativeCPUUsage();
-  return process_time;
+  return process_metrics->GetCumulativeCPUUsage().value_or(base::TimeDelta());
 }
 
 }  // namespace
@@ -275,12 +280,13 @@ protocol::Response InspectorPerformanceAgent::getMetrics(
   return protocol::Response::Success();
 }
 
-void InspectorPerformanceAgent::ConsoleTimeStamp(const String& title) {
+void InspectorPerformanceAgent::ConsoleTimeStamp(v8::Isolate* isolate,
+                                                 v8::Local<v8::String> label) {
   if (!enabled_.Get())
     return;
   std::unique_ptr<protocol::Array<protocol::Performance::Metric>> metrics;
   getMetrics(&metrics);
-  GetFrontend()->metrics(std::move(metrics), title);
+  GetFrontend()->metrics(std::move(metrics), ToCoreString(isolate, label));
 }
 
 void InspectorPerformanceAgent::ScriptStarts() {

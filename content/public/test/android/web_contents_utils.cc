@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -15,7 +16,11 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/result_codes.h"
+#include "content/public/test/browser_test_utils.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/test/android/content_test_jni/WebContentsUtils_jni.h"
 
 using base::android::ConvertJavaStringToUTF16;
@@ -76,7 +81,8 @@ void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
     // No callback requested.
     web_contents->GetPrimaryMainFrame()
         ->ExecuteJavaScriptWithUserGestureForTests(
-            ConvertJavaStringToUTF16(env, script), base::NullCallback());
+            ConvertJavaStringToUTF16(env, script), base::NullCallback(),
+            ISOLATED_WORLD_ID_GLOBAL);
     return;
   }
 
@@ -87,7 +93,8 @@ void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
 
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
       ConvertJavaStringToUTF16(env, script),
-      base::BindOnce(&JavaScriptResultCallback, std::move(j_callback)));
+      base::BindOnce(&JavaScriptResultCallback, std::move(j_callback)),
+      ISOLATED_WORLD_ID_GLOBAL);
 }
 
 void JNI_WebContentsUtils_CrashTab(JNIEnv* env,
@@ -96,6 +103,21 @@ void JNI_WebContentsUtils_CrashTab(JNIEnv* env,
       WebContents::FromJavaWebContents(jweb_contents));
   web_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
       RESULT_CODE_KILLED);
+}
+
+void JNI_WebContentsUtils_NotifyCopyableViewInWebContents(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jweb_contents,
+    const JavaParamRef<jobject>& done_callback) {
+  WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
+      WebContents::FromJavaWebContents(jweb_contents));
+
+  NotifyCopyableViewInWebContents(
+      web_contents, base::BindOnce(
+                        [](const ScopedJavaGlobalRef<jobject>& inner_callback) {
+                          base::android::RunRunnableAndroid(inner_callback);
+                        },
+                        ScopedJavaGlobalRef<jobject>(done_callback)));
 }
 
 }  // namespace content

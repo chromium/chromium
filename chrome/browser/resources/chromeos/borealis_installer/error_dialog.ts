@@ -165,7 +165,7 @@ export class BorealisInstallerErrorDialogElement extends PolymerElement {
   }
 
   protected shouldShowLink(): boolean {
-    return this.behaviour.getLink() != '';
+    return this.behaviour.getLink() !== '';
   }
 
   protected getLink(): string {

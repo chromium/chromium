@@ -1,0 +1,41 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/policy/external_data",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/ash/crostini",
+  "+chrome/browser/ash/login/users/avatar",
+  "+chrome/browser/ash/policy/core",
+  "+chrome/browser/ash/policy/handlers",
+  "+chrome/browser/ash/policy/invalidation",
+  "+chrome/browser/ash/policy/login",
+  "+chrome/browser/ash/printing",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/settings",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/browser_process_platform_part.h",
+  "+chrome/browser/policy",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ui/ash",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/common/chrome_paths.h",
+  "+chrome/common/pref_names.h",
+  "+chrome/test/base",
+]
+
+specific_include_rules = {
+  "cloud_external_data_policy_observer_unittest.cc": [
+    "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
+  ],
+}

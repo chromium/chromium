@@ -20,7 +20,7 @@ class MockSyncSessionsClient : public SyncSessionsClient {
   MockSyncSessionsClient();
   ~MockSyncSessionsClient() override;
   MOCK_METHOD(SessionSyncPrefs*, GetSessionSyncPrefs, (), (override));
-  MOCK_METHOD(syncer::RepeatingModelTypeStoreFactory,
+  MOCK_METHOD(syncer::RepeatingDataTypeStoreFactory,
               GetStoreFactory,
               (),
               (override));

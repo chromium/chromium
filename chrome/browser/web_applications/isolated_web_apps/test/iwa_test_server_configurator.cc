@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
+
 #include <string>
+
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 
@@ -36,11 +39,12 @@ void ConfigureFakeWebContentsManager(
 
   auto& page_state =
       fake_web_contents_manager.GetOrCreatePageState(install_url);
-  page_state.url_load_result = web_app::WebAppUrlLoaderResult::kUrlLoaded;
+  page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
   page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
   page_state.manifest_url = origin_url.Resolve("manifest.webmanifest");
   page_state.valid_manifest_for_web_app = true;
-  page_state.opt_manifest = CreateDefaultManifest(origin_url);
+  page_state.manifest_before_default_processing =
+      CreateDefaultManifest(origin_url);
 }
 }  // namespace
 

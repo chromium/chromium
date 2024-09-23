@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
+import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.AnchoredPopupWindow;

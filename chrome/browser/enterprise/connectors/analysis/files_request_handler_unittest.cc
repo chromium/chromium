@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 
 #include <map>
@@ -19,8 +24,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
@@ -316,11 +323,12 @@ class FilesRequestHandlerTest : public BaseTest {
       EXPECT_EQ(request->tab_title(), kTabTitle);
     }
 
+    upload_performed_ = true;
+
     // Simulate a response.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), path,
-                       safe_browsing::BinaryUploadService::Result::SUCCESS,
+        base::BindOnce(std::move(callback), path, result,
                        ConnectorStatusCallback(path)),
         kResponseDelay);
   }
@@ -351,6 +359,8 @@ class FilesRequestHandlerTest : public BaseTest {
     return response;
   }
 
+  bool was_upload_performed() { return upload_performed_; }
+
  private:
   ScopedSetDMToken scoped_dm_token_{
       policy::DMToken::CreateValidToken(kDmToken)};
@@ -367,6 +377,8 @@ class FilesRequestHandlerTest : public BaseTest {
   // To verify user action requests count in local content analysis request is
   // set correctly.
   uint64_t expected_user_action_requests_count_ = 0;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  bool upload_performed_ = false;
 
   base::WeakPtrFactory<FilesRequestHandlerTest> weak_ptr_factory_{this};
 };
@@ -481,6 +493,7 @@ TEST_F(FilesRequestHandlerTest, FileIsEncrypted) {
   EXPECT_THAT((*results)[0],
               MatchesRequestHandlerResult(
                   false, FinalContentAnalysisResult::ENCRYPTED_FILES, ""));
+  EXPECT_FALSE(was_upload_performed());
 }
 
 // With a local service provider, a scan should not terminate early due to
@@ -545,6 +558,47 @@ TEST_F(FilesRequestHandlerTest, FileIsEncrypted_PolicyAllows) {
   EXPECT_THAT((*results)[0],
               MatchesRequestHandlerResult(
                   true, FinalContentAnalysisResult::SUCCESS, ""));
+  // When the resumable upload protocol is in use and the policy does not block
+  // encrypted files by default, the file's metadata is uploaded for scanning.
+  EXPECT_TRUE(was_upload_performed());
+}
+
+TEST_F(FilesRequestHandlerTest, FileIsLarge) {
+  content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
+
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(), AnalysisConnector::FILE_ATTACHED,
+      R"(
+    {
+      "service_provider": "google",
+      "enable": [
+        {
+          "url_list": ["*"],
+          "tags": ["dlp", "malware"]
+        }
+      ],
+      "block_until_verdict": 1,
+      "block_large_files": true
+    })");
+  GURL url(kTestUrl);
+  std::vector<base::FilePath> paths;
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.doc");
+  std::string contents(
+      safe_browsing::BinaryUploadService::kMaxUploadSizeBytes + 1, 'a');
+  base::WriteFile(file_path, contents);
+  paths.emplace_back(file_path);
+  SetExpectedUserActionRequestsCount(1);
+
+  auto results = ScanUpload(paths);
+  ASSERT_TRUE(results.has_value());
+  EXPECT_EQ(1u, results->size());
+  EXPECT_THAT((*results)[0],
+              MatchesRequestHandlerResult(
+                  false, FinalContentAnalysisResult::LARGE_FILES, ""));
+  EXPECT_FALSE(was_upload_performed());
 }
 
 // With a local service provider, a scan should not terminate early due to
@@ -576,6 +630,46 @@ TEST_F(FilesRequestHandlerTest, FileIsLarge_LocalAnalysis) {
                   true, FinalContentAnalysisResult::SUCCESS, ""));
 }
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+
+TEST_F(FilesRequestHandlerTest, FileIsLarge_PolicyAllows) {
+  content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
+
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(), AnalysisConnector::FILE_ATTACHED,
+      R"(
+    {
+      "service_provider": "google",
+      "enable": [
+        {
+          "url_list": ["*"],
+          "tags": ["dlp", "malware"]
+        }
+      ],
+      "block_until_verdict": 1,
+      "block_large_files": false
+    })");
+  GURL url(kTestUrl);
+  std::vector<base::FilePath> paths;
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.doc");
+  std::string contents(
+      safe_browsing::BinaryUploadService::kMaxUploadSizeBytes + 1, 'a');
+  base::WriteFile(file_path, contents);
+  paths.emplace_back(file_path);
+  SetExpectedUserActionRequestsCount(1);
+
+  auto results = ScanUpload(paths);
+  ASSERT_TRUE(results.has_value());
+  EXPECT_EQ(1u, results->size());
+  EXPECT_THAT((*results)[0],
+              MatchesRequestHandlerResult(
+                  true, FinalContentAnalysisResult::SUCCESS, ""));
+  // When the resumable upload protocol is in use and the policy does not block
+  // large files by default, the file's metadata is uploaded for scanning.
+  EXPECT_TRUE(was_upload_performed());
+}
 
 // With a local service provider, multiple file uploads should result in
 // multiple analysis requests.

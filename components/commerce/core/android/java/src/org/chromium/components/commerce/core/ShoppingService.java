@@ -4,6 +4,7 @@
 
 package org.chromium.components.commerce.core;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -12,6 +13,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.url.GURL;
@@ -23,6 +25,8 @@ import java.util.Optional;
 /** A central hub for accessing shopping and product information. */
 @JNINamespace("commerce")
 public class ShoppingService {
+    private static Boolean sShoppingListEligibleForTestsing;
+
     /** A data container for product info provided by the shopping service. */
     public static final class ProductInfo {
         public final String title;
@@ -159,6 +163,17 @@ public class ShoppingService {
         void onResult(GURL url, PriceInsightsInfo info);
     }
 
+    /** A callback for acquiring discounts information about a page. */
+    public interface DiscountInfoCallback {
+        /**
+         * A notification that fetching discounts information for the URL has completed.
+         *
+         * @param url The URL the discounts info was fetched for.
+         * @param info A list of available discounts for the URL or empty if none is available.
+         */
+        void onResult(GURL url, @NonNull List<DiscountInfo> info);
+    }
+
     /** A pointer to the native side of the object. */
     private long mNativeShoppingServiceAndroid;
 
@@ -233,6 +248,22 @@ public class ShoppingService {
     }
 
     /**
+     * Fetch discounts information for a URL.
+     *
+     * @param url The URL to fetch price insights info for.
+     * @param callback The callback that will run after the fetch is completed.
+     */
+    public void getDiscountInfoForUrl(GURL url, DiscountInfoCallback callback) {
+        if (mNativeShoppingServiceAndroid == 0) {
+            callback.onResult(url, null);
+            return;
+        }
+
+        ShoppingServiceJni.get()
+                .getDiscountInfoForUrl(mNativeShoppingServiceAndroid, this, url, callback);
+    }
+
+    /**
      * Requests that the service fetch the price notification email preference from the backend.
      * This call will update the preference kept by the pref service directly -- changes to the
      * value should also be observed through the pref service. This method should only be used in
@@ -270,6 +301,7 @@ public class ShoppingService {
                         sub.userSeenOffer.offerId,
                         sub.userSeenOffer.userSeenPrice,
                         sub.userSeenOffer.countryCode,
+                        sub.userSeenOffer.locale,
                         callback);
     }
 
@@ -370,6 +402,8 @@ public class ShoppingService {
      * @return Whether the user is eligible to use the shopping list feature.
      */
     public boolean isShoppingListEligible() {
+        if (sShoppingListEligibleForTestsing != null) return sShoppingListEligibleForTestsing;
+
         if (mNativeShoppingServiceAndroid == 0) return false;
 
         return ShoppingServiceJni.get().isShoppingListEligible(mNativeShoppingServiceAndroid, this);
@@ -401,6 +435,16 @@ public class ShoppingService {
 
         return ShoppingServiceJni.get()
                 .isPriceInsightsEligible(mNativeShoppingServiceAndroid, this);
+    }
+
+    // This is a feature check for the "discounts on navigation", which will return true
+    // if the user has the feature flag enabled, has MSBB enabled, and (if
+    // applicable) is in an eligible country and locale.
+    public boolean isDiscountEligibleToShowOnNavigation() {
+        if (mNativeShoppingServiceAndroid == 0) return false;
+
+        return ShoppingServiceJni.get()
+                .isDiscountEligibleToShowOnNavigation(mNativeShoppingServiceAndroid, this);
     }
 
     @CalledByNative
@@ -534,6 +578,13 @@ public class ShoppingService {
     }
 
     @CalledByNative
+    private static void runDiscountInfoCallback(
+            DiscountInfoCallback callback, GURL url, DiscountInfo[] infos) {
+        List<DiscountInfo> list = infos == null ? null : List.of(infos);
+        callback.onResult(url, list);
+    }
+
+    @CalledByNative
     private static CommerceSubscription createSubscription(
             int type, int idType, int managementType, String id) {
         return new CommerceSubscription(type, idType, id, managementType, null);
@@ -551,6 +602,15 @@ public class ShoppingService {
         for (SubscriptionsObserver o : mSubscriptionsObservers) {
             o.onUnsubscribe(sub, succeeded);
         }
+    }
+
+    public static void setShoppingListEligibleForTesting(Boolean eligible) {
+        sShoppingListEligibleForTestsing = eligible;
+        ResettersForTesting.register(() -> sShoppingListEligibleForTestsing = null);
+    }
+
+    public static Boolean isShoppingListEligibleForTesting() {
+        return sShoppingListEligibleForTestsing;
     }
 
     @NativeMethods
@@ -584,6 +644,7 @@ public class ShoppingService {
                 String seenOfferId,
                 long seenPrice,
                 String seenCountry,
+                String seenLocale,
                 Callback<Boolean> callback);
 
         void unsubscribe(
@@ -631,5 +692,14 @@ public class ShoppingService {
                 PriceInsightsInfoCallback callback);
 
         boolean isPriceInsightsEligible(long nativeShoppingServiceAndroid, ShoppingService caller);
+
+        void getDiscountInfoForUrl(
+                long nativeShoppingServiceAndroid,
+                ShoppingService caller,
+                GURL url,
+                DiscountInfoCallback callback);
+
+        boolean isDiscountEligibleToShowOnNavigation(
+                long nativeShoppingServiceAndroid, ShoppingService caller);
     }
 }

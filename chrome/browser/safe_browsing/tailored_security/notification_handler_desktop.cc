@@ -126,13 +126,8 @@ void DisplayTailoredSecurityUnconsentedPromotionNotification(Profile* profile) {
       kTailoredSecurityUnconsentedPromotionNotificationId;
   const std::u16string& title = l10n_util::GetStringUTF16(
       IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_TITLE);
-  const std::u16string& description =
-      (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityUpdatedMessages))
-          ? l10n_util::GetStringUTF16(
-                IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_DESCRIPTION_UPDATED)
-          : l10n_util::GetStringUTF16(
-                IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_DESCRIPTION);
+  const std::u16string& description = l10n_util::GetStringUTF16(
+      IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_DESCRIPTION);
   const std::u16string& primary_button = l10n_util::GetStringUTF16(
       IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_ACCEPT);
   const std::u16string& secondary_button =
@@ -142,12 +137,7 @@ void DisplayTailoredSecurityUnconsentedPromotionNotification(Profile* profile) {
 #else
   const message_center::NotifierId notifier_id = GetNotifierId();
 #endif
-  auto icon = (base::FeatureList::IsEnabled(
-                  safe_browsing::kTailoredSecurityUpdatedMessages))
-                  ? GetNotificationIcon()
-                  : ui::ImageModel::FromVectorIcon(
-                        kSafetyCheckIcon, ui::kColorAccent,
-                        message_center::kNotificationIconSize);
+  auto icon = GetNotificationIcon();
   LogUnconsentedOutcome(TailoredSecurityOutcome::kShown);
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,

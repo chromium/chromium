@@ -36,7 +36,7 @@ ThunderboltSecurityLevel TranslateThunderboltSecurityLevel(
       return THUNDERBOLT_SECURITY_NO_PCIE_LEVEL;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace

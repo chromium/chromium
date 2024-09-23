@@ -10,10 +10,15 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/platform/ax_platform_node_id.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+
+namespace content {
+class WebContentsAccessibility;
+}
 
 namespace ui {
 
@@ -71,7 +76,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
   // The accessibility tree source has sent us invalid information. This could
   // indicate either a serious error or a malicious attack, e.g. from a rogue
   // renderer.
-  virtual void AccessibilityFatalError() = 0;
+  virtual void UnrecoverableAccessibilityError() = 0;
 
   // Returns a handle to the platform specific widget containing the current
   // accessibility tree. Example: the HWND of the widget containing the
@@ -110,6 +115,23 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
                               AXNodeID hit_node_id)> opt_callback) = 0;
 
   virtual gfx::NativeWindow GetTopLevelNativeWindow() = 0;
+
+  virtual bool CanFireAccessibilityEvents() const = 0;
+
+  // These methods are all specific to Web content, and should be removed from
+  // here and into the content layer if and when possible. These were
+  // moved into AXPlatformTreeManagerDelegate as part of the refactor
+  // to move BrowserAccessibility* into the ui/ layer to support their reuse
+  // in views. crbug.com/327499435
+  virtual bool AccessibilityIsRootFrame() const = 0;
+
+  // On Mac, VoiceOver moves focus to the web content when it receives an
+  // AXLoadComplete event. On chrome's new tab page, focus should stay
+  // in the omnibox, so we purposefully do not fire the AXLoadComplete
+  // event in this case.
+  virtual bool ShouldSuppressAXLoadComplete() = 0;
+  virtual content::WebContentsAccessibility*
+  AccessibilityGetWebContentsAccessibility() = 0;
 
  protected:
   AXPlatformTreeManagerDelegate() = default;

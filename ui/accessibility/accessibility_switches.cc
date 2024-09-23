@@ -41,6 +41,10 @@ const char kEnableExperimentalAccessibilitySwitchAccessText[] =
 // zooming in.
 const char kEnableMagnifierDebugDrawRect[] = "enable-magnifier-debug-draw-rect";
 
+// Enables the switchover to the newer NSAccessibility property-based API.
+const char kEnableMacAccessibilityAPIMigration[] =
+    "enable-mac-accessibility-api-migration";
+
 bool IsExperimentalAccessibilityLanguageDetectionEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalAccessibilityLanguageDetection);
@@ -61,11 +65,20 @@ bool IsMagnifierDebugDrawRectEnabled() {
       ::switches::kEnableMagnifierDebugDrawRect);
 }
 
-// Optionally disable AXMenuList, which makes the internal pop-up menu
-// UI for a select element directly accessible.
-const char kDisableAXMenuList[] = "disable-ax-menu-list";
-
 const char kGenerateAccessibilityTestExpectations[] =
     "generate-accessibility-test-expectations";
+
+// Turns off the accessibility in the renderer.
+const char kDisableRendererAccessibility[] = "disable-renderer-accessibility";
+
+// Force renderer accessibility to be on instead of enabling it on demand when
+// a screen reader is detected. The disable-renderer-accessibility switch
+// overrides this if present.
+// This switch has an optional parameter that forces an AXMode bundle. The three
+// available bundle settings are: 'basic', 'form-controls', and 'complete'. If
+// the bundle argument is invalid, then the forced AXMode will default to
+// 'complete'. If the bundle argument is missing, then the initial AXMode will
+// default to complete but allow changes to the AXMode during execution.
+const char kForceRendererAccessibility[] = "force-renderer-accessibility";
 
 }  // namespace switches

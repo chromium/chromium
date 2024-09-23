@@ -15,13 +15,6 @@ namespace content {
 class WebContents;
 }
 
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.contextmenu
-enum ContextMenuImageFormat {
-  JPEG = 0,
-  PNG = 1,
-  ORIGINAL = 2,
-};
-
 class ContextMenuNativeDelegateImpl {
  public:
   explicit ContextMenuNativeDelegateImpl(

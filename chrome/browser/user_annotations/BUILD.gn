@@ -1,0 +1,66 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/ui.gni")
+import("//chrome/version.gni")
+import("//components/optimization_guide/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
+static_library("user_annotations") {
+  sources = [
+    "user_annotations_service_factory.cc",
+    "user_annotations_service_factory.h",
+    "user_annotations_web_contents_observer.cc",
+    "user_annotations_web_contents_observer.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_attributes",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/ui/autofill",
+    "//components/autofill/content/browser:browser",
+    "//components/compose:buildflags",
+    "//components/user_annotations",
+    "//ui/accessibility",
+  ]
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/profiles" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "user_annotations_service_browsertest.cc" ]
+
+    public_deps = [ "//content/test:test_support" ]
+
+    deps = [
+      ":user_annotations",
+      "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//components/autofill_prediction_improvements/core/browser",
+      "//components/user_annotations",
+      "//content/test:test_support",
+    ]
+
+    if (is_chromeos_ash) {
+      deps += [ "//chrome/browser/ash/login/test:test_support" ]
+    }
+  }
+}

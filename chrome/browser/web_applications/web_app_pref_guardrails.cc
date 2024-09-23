@@ -21,6 +21,7 @@
 #include "components/webapps/browser/features.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 
 namespace web_app {
 
@@ -51,7 +52,7 @@ base::Value::Dict& UpdateWebAppDictionary(
 
 std::optional<int> GetIntWebAppPref(const PrefService* pref_service,
                                     const webapps::AppId& app_id,
-                                    base::StringPiece path) {
+                                    std::string_view path) {
   const base::Value::Dict* web_app_prefs =
       GetWebAppDictionary(pref_service, app_id);
   if (!web_app_prefs) {
@@ -62,7 +63,7 @@ std::optional<int> GetIntWebAppPref(const PrefService* pref_service,
 
 std::optional<base::Time> GetTimeWebAppPref(const PrefService* pref_service,
                                             const webapps::AppId& app_id,
-                                            base::StringPiece path) {
+                                            std::string_view path) {
   const auto* web_app_prefs = GetWebAppDictionary(pref_service, app_id);
   if (!web_app_prefs) {
     return std::nullopt;
@@ -91,12 +92,12 @@ WebAppPrefGuardrails WebAppPrefGuardrails::GetForMlInstallPrompt(
 }
 
 // static
-WebAppPrefGuardrails WebAppPrefGuardrails::GetForLinkCapturingIph(
+WebAppPrefGuardrails WebAppPrefGuardrails::GetForNavigationCapturingIph(
     PrefService* pref_service) {
   return WebAppPrefGuardrails(
-      pref_service, web_app::kIPHLinkCapturingGuardrails,
-      web_app::kIPHLinkCapturingPrefNames,
-      features::kLinkCapturingIPHGuardrailStorageDuration.Get());
+      pref_service, web_app::kIPHNavigationCapturingGuardrails,
+      web_app::kIPHNavigationCapturingPrefNames,
+      features::kNavigationCapturingIPHGuardrailStorageDuration.Get());
 }
 
 // static
@@ -375,7 +376,7 @@ void WebAppPrefGuardrails::LogGlobalBlockReason(
 }
 
 void WebAppPrefGuardrails::UpdateTimeWebAppPref(const webapps::AppId& app_id,
-                                                base::StringPiece path,
+                                                std::string_view path,
                                                 base::Time value) {
   ScopedDictPrefUpdate update(pref_service_, prefs::kWebAppsPreferences);
 
@@ -384,7 +385,7 @@ void WebAppPrefGuardrails::UpdateTimeWebAppPref(const webapps::AppId& app_id,
 }
 
 void WebAppPrefGuardrails::UpdateIntWebAppPref(const webapps::AppId& app_id,
-                                               base::StringPiece path,
+                                               std::string_view path,
                                                int value) {
   ScopedDictPrefUpdate update(pref_service_, prefs::kWebAppsPreferences);
 

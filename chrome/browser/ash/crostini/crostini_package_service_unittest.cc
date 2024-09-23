@@ -307,7 +307,7 @@ class CrostiniPackageServiceTest : public testing::Test {
       case UninstallPackageProgressSignal::SUCCEEDED:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     fake_cicerone_client_->UninstallPackageProgress(signal);
 
@@ -338,7 +338,7 @@ class CrostiniPackageServiceTest : public testing::Test {
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     fake_cicerone_client_->InstallLinuxPackageProgress(signal);
   }
@@ -454,7 +454,7 @@ std::u16string GetAppName(KnownApp app) {
     case DIFFERENT_CONTAINER_2:
       return kDifferentContainerApp2Name16;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

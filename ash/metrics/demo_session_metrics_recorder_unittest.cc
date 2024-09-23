@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/app_types.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -21,9 +20,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/timer/mock_timer.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
@@ -94,8 +94,7 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
     std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
         aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 0,
         gfx::Rect(0, 0, 10, 10)));
-    window->SetProperty(aura::client::kAppType,
-                        static_cast<int>(ash::AppType::BROWSER));
+    window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
     return window;
   }
 
@@ -105,8 +104,7 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
     std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
         aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 0,
         gfx::Rect(0, 0, 10, 10)));
-    window->SetProperty(aura::client::kAppType,
-                        static_cast<int>(ash::AppType::BROWSER));
+    window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
     window->SetProperty(
         kShelfIDKey,
         new std::string(ShelfID(app_id, std::string()).Serialize()));
@@ -119,8 +117,7 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
     std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
         aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 0,
         gfx::Rect(0, 0, 10, 10)));
-    window->SetProperty(aura::client::kAppType,
-                        static_cast<int>(ash::AppType::CHROME_APP));
+    window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
     window->SetProperty(
         kShelfIDKey,
         new std::string(ShelfID(app_id, std::string()).Serialize()));
@@ -133,8 +130,7 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
     std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
         aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 0,
         gfx::Rect(0, 0, 10, 10)));
-    window->SetProperty(aura::client::kAppType,
-                        static_cast<int>(ash::AppType::ARC_APP));
+    window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
 
     // ARC++ shelf app IDs are hashes of package_name#activity_name formatted as
     // extension IDs. The point is that they are opaque to the metrics recorder.
@@ -281,6 +277,10 @@ TEST_F(DemoSessionMetricsRecorderTest, ActiveAppAfterDelayedArcPackageName) {
   // There should be no app activity recorded yet, because there was
   // no package name in the ARC window.
   histogram_tester_->ExpectTotalCount("DemoMode.ActiveApp", 0);
+
+  // Simulate that no package name in the ARC window but metric
+  // recording is triggered again. It should not cause any crash.
+  FireTimer();
 
   // Set the package name after window creation/activation.
   arc_window->SetProperty(kArcPackageNameKey,

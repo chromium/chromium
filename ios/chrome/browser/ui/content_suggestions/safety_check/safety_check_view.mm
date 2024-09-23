@@ -6,8 +6,9 @@
 
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/multi_row_container_view.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
@@ -18,17 +19,32 @@
 @end
 
 @implementation SafetyCheckView {
+  id<MagicStackModuleContentViewDelegate> _contentViewDelegate;
   SafetyCheckState* _state;
+  UIView* _contentView;
 }
 
 #pragma mark - Public methods
 
-- (instancetype)initWithState:(SafetyCheckState*)state {
-  if (self = [super init]) {
+- (instancetype)initWithState:(SafetyCheckState*)state
+          contentViewDelegate:
+              (id<MagicStackModuleContentViewDelegate>)contentViewDelegate {
+  if ((self = [super init])) {
+    _contentViewDelegate = contentViewDelegate;
     _state = state;
   }
 
   return self;
+}
+
+#pragma mark - SafetyCheckMagicStackConsumer
+
+- (void)safetyCheckStateDidChange:(SafetyCheckState*)state {
+  _state = state;
+  if (_contentView) {
+    [_contentView removeFromSuperview];
+  }
+  [self createSubviews];
 }
 
 #pragma mark - UIView
@@ -42,7 +58,7 @@
 #pragma mark - SafetyCheckItemViewTapDelegate
 
 - (void)didTapSafetyCheckItemView:(SafetyCheckItemView*)view {
-  [self.commandhandler didSelectSafetyCheckItem:view.itemType];
+  [self.audience didSelectSafetyCheckItem:view.itemType];
 }
 
 #pragma mark - Private methods
@@ -57,6 +73,9 @@
   self.translatesAutoresizingMaskIntoConstraints = NO;
   self.accessibilityIdentifier = safety_check::kSafetyCheckViewID;
 
+  [_contentViewDelegate
+      setSubtitle:FormatElapsedTimeSinceLastSafetyCheck(_state.lastRunTime)];
+
   // If any of the checks are running, the module should display its running
   // state.
   if (_state.runningState == RunningSafetyCheckState::kRunning ||
@@ -69,9 +88,10 @@
 
     view.tapDelegate = self;
 
-    [self addSubview:view];
+    _contentView = view;
+    [self addSubview:_contentView];
 
-    AddSameConstraints(view, self);
+    AddSameConstraints(_contentView, self);
 
     return;
   }
@@ -88,9 +108,10 @@
 
     view.tapDelegate = self;
 
-    [self addSubview:view];
+    _contentView = view;
+    [self addSubview:_contentView];
 
-    AddSameConstraints(view, self);
+    AddSameConstraints(_contentView, self);
 
     return;
   }
@@ -105,9 +126,10 @@
 
     view.tapDelegate = self;
 
-    [self addSubview:view];
+    _contentView = view;
+    [self addSubview:_contentView];
 
-    AddSameConstraints(view, self);
+    AddSameConstraints(_contentView, self);
 
     return;
   }
@@ -161,9 +183,10 @@
 
     multiRowContainer.translatesAutoresizingMaskIntoConstraints = NO;
 
-    [self addSubview:multiRowContainer];
+    _contentView = multiRowContainer;
+    [self addSubview:_contentView];
 
-    AddSameConstraints(multiRowContainer, self);
+    AddSameConstraints(_contentView, self);
 
     return;
   }
@@ -190,9 +213,10 @@
 
   view.tapDelegate = self;
 
-  [self addSubview:view];
+  _contentView = view;
+  [self addSubview:_contentView];
 
-  AddSameConstraints(view, self);
+  AddSameConstraints(_contentView, self);
 }
 
 @end

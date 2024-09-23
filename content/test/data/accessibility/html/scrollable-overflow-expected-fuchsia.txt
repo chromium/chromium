@@ -16,7 +16,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++UNKNOWN label=' '
 ++++++++++++UNKNOWN label='cd'
 ++++++UNKNOWN hidden
-++++++++UNKNOWN
+++++++++UNKNOWN hidden
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='tiny'
 ++++++++++++++UNKNOWN label='tiny'

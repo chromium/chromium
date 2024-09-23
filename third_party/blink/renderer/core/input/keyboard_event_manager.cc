@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/web/web_link_preview_triggerer.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/input/keyboard_shortcut_recorder.h"
 #include "third_party/blink/renderer/core/input/scroll_manager.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/focusgroup_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -191,7 +193,7 @@ bool KeyboardEventManager::HandleAccessKey(const WebKeyboardEvent& evt) {
   if ((evt.GetModifiers() & (WebKeyboardEvent::kKeyModifiers &
                              ~WebInputEvent::kShiftKey)) != kAccessKeyModifiers)
     return false;
-  String key = String(evt.unmodified_text);
+  String key = String(evt.unmodified_text.data());
   Element* elem =
       frame_->GetDocument()->GetElementByAccessKey(key.DeprecatedLower());
   if (!elem)
@@ -208,6 +210,8 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
   base::AutoReset<bool> is_handling_key_event(&is_handling_key_event_, true);
   if (initial_key_event.windows_key_code == VK_CAPITAL)
     CapsLockStateMayHaveChanged();
+
+  KeyEventModifierMayHaveChanged(initial_key_event.GetModifiers());
 
   if (scroll_manager_->MiddleClickAutoscrollInProgress()) {
     DCHECK(RuntimeEnabledFeatures::MiddleClickAutoscrollEnabled());
@@ -384,7 +388,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
       WebKeyboardEvent char_event = initial_key_event;
       char_event.SetType(WebInputEvent::Type::kChar);
 
-      KeyboardEvent *event = KeyboardEvent::Create(
+      KeyboardEvent* event = KeyboardEvent::Create(
           char_event, frame_->GetDocument()->domWindow(), event_cancellable);
       event->SetTarget(node);
       event->SetStopPropagation(!send_key_event);
@@ -393,7 +397,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
       break;
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return event_handling_util::ToWebInputEventResult(dispatch_result);
 }
@@ -403,6 +407,16 @@ void KeyboardEventManager::CapsLockStateMayHaveChanged() {
     if (auto* text_control = DynamicTo<HTMLInputElement>(element))
       text_control->CapsLockStateMayHaveChanged();
   }
+}
+
+void KeyboardEventManager::KeyEventModifierMayHaveChanged(int modifiers) {
+  WebLinkPreviewTriggerer* triggerer =
+      frame_->GetOrCreateLinkPreviewTriggerer();
+  if (!triggerer) {
+    return;
+  }
+
+  triggerer->MaybeChangedKeyEventModifier(modifiers);
 }
 
 void KeyboardEventManager::DefaultKeyboardEventHandler(
@@ -418,11 +432,12 @@ void KeyboardEventManager::DefaultKeyboardEventHandler(
     if (event->keyCode() == kVKeyProcessKey)
       return;
 
-    if (event->key() == "Tab") {
+    const AtomicString key(event->key());
+    if (key == keywords::kTab) {
       DefaultTabEventHandler(event);
-    } else if (event->key() == "Escape") {
+    } else if (key == keywords::kEscape) {
       DefaultEscapeEventHandler(event);
-    } else if (event->key() == "Enter") {
+    } else if (key == keywords::kCapitalEnter) {
       DefaultEnterEventHandler(event);
     } else if (event->KeyEvent() &&
                static_cast<int>(event->KeyEvent()->dom_key) == 0x00200310) {
@@ -437,7 +452,7 @@ void KeyboardEventManager::DefaultKeyboardEventHandler(
     frame_->GetEditor().HandleKeyboardEvent(event);
     if (event->DefaultHandled())
       return;
-    if (event->key() == "Enter") {
+    if (event->key() == keywords::kCapitalEnter) {
       DefaultEnterEventHandler(event);
     } else if (event->charCode() == ' ') {
       DefaultSpaceEventHandler(event, possible_focused_node);
@@ -445,7 +460,7 @@ void KeyboardEventManager::DefaultKeyboardEventHandler(
   } else if (event->type() == event_type_names::kKeyup) {
     if (event->DefaultHandled())
       return;
-    if (event->key() == "Enter") {
+    if (event->key() == keywords::kCapitalEnter) {
       DefaultEnterEventHandler(event);
     }
     if (event->keyCode() == last_scrolling_keycode_) {
@@ -631,21 +646,6 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
   }
 
   frame_->DomWindow()->closewatcher_stack()->EscapeKeyHandler(event);
-
-  HTMLDialogElement* dialog = frame_->GetDocument()->ActiveModalDialog();
-  if (dialog && !RuntimeEnabledFeatures::CloseWatcherEnabled()) {
-    auto* cancel_event = Event::CreateCancelable(event_type_names::kCancel);
-    dialog->DispatchEvent(*cancel_event);
-    if (!cancel_event->defaultPrevented()) {
-      dialog->close();
-    }
-  }
-
-  if (!RuntimeEnabledFeatures::CloseWatcherEnabled()) {
-    auto* target_node = event->GetEventPath()[0].Target()->ToNode();
-    DCHECK(target_node);
-    HTMLElement::HandlePopoverLightDismiss(*event, *target_node);
-  }
 }
 
 void KeyboardEventManager::DefaultEnterEventHandler(KeyboardEvent* event) {

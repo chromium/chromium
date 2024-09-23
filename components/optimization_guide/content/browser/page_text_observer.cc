@@ -46,7 +46,7 @@ std::string TextDumpEventToString(mojom::TextDumpEvent event) {
     case mojom::TextDumpEvent::kFinishedLoad:
       return "FinishedLoad";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

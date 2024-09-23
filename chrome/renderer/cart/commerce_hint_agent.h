@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_CART_COMMERCE_HINT_AGENT_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -39,12 +40,11 @@ class CommerceHintAgent
   // Whether the string, either from path of URL or XHR form contents, matches
   // the add-to-cart heuristics. |skip_length_limit| to decide whether to
   // crop the string to under length limit when matching.
-  static bool IsAddToCart(base::StringPiece str,
-                          bool skip_length_limit = false);
+  static bool IsAddToCart(std::string_view str, bool skip_length_limit = false);
   // Whether the string from XHR form contents matches the add-to-cart
   // heuristics. This should only be used when DOM-based AddToCart heuristics
   // are enabled.
-  static bool IsAddToCartForDomBasedHeuristics(base::StringPiece str);
+  static bool IsAddToCartForDomBasedHeuristics(std::string_view str);
   // Whether the main frame URL is a shopping cart.
   static bool IsVisitCart(const GURL& main_frame_url);
   // Whether the main frame URL is a checkout page.
@@ -52,9 +52,9 @@ class CommerceHintAgent
   // Whether the main frame URL is a purchase page.
   static bool IsPurchase(const GURL& main_frame_url);
   // Whether the button text in a page with |url| corresponds to a purchase.
-  static bool IsPurchase(const GURL& url, base::StringPiece button_text);
+  static bool IsPurchase(const GURL& url, std::string_view button_text);
   // Whether the product should be skipped, based on product name.
-  static bool ShouldSkip(base::StringPiece product_name);
+  static bool ShouldSkip(std::string_view product_name);
   // Whether the request with navigation URL as |navigation_url| and request URL
   // as |request_url| should be skipped for AddToCart detection.
   static bool ShouldSkipAddToCartRequest(const GURL& navigation_url,

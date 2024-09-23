@@ -26,7 +26,7 @@ struct PromoDisplayData {
 
 // Designated initializer.
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                promoImpressionLimits:(PromoConfigsSet)promoImpressionLimits
+                         promoConfigs:(PromoConfigsSet)promoConfigs
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -34,8 +34,8 @@ struct PromoDisplayData {
 // Deregisters `promo` (stopping `promo` from being displayed).
 - (void)deregisterPromo:(promos_manager::Promo)promo;
 
-// Records the display impression of `promo`.
-- (void)recordImpression:(promos_manager::Promo)promo;
+// Deregisters `promo` after display.
+- (void)deregisterAfterDisplay:(promos_manager::Promo)promo;
 
 // Queries the PromosManager for the next promo (promos_manager::Promo) to
 // display, if any. Allows for special behavior if this is the first promo

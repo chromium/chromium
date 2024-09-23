@@ -7,14 +7,13 @@
 #include <string>
 
 #include "base/containers/contains.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "components/update_client/update_query_params.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/common/channel_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 void TestParams(update_client::UpdateQueryParams::ProdId prod_id) {
   std::string params = update_client::UpdateQueryParams::Get(prod_id);
@@ -42,8 +41,9 @@ void TestParams(update_client::UpdateQueryParams::ProdId prod_id) {
 using IOSChromeUpdateQueryParamsDelegateTest = PlatformTest;
 
 TEST_F(IOSChromeUpdateQueryParamsDelegateTest, GetParams) {
-  base::ScopedClosureRunner runner(
-      base::BindOnce(update_client::UpdateQueryParams::SetDelegate, nullptr));
+  absl::Cleanup reset_delegate = [] {
+    update_client::UpdateQueryParams::SetDelegate(nullptr);
+  };
   update_client::UpdateQueryParams::SetDelegate(
       IOSChromeUpdateQueryParamsDelegate::GetInstance());
 

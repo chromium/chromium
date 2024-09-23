@@ -11,8 +11,8 @@
 
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/model/metadata_change_list.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 
 namespace syncer {
 
@@ -34,9 +34,9 @@ class InMemoryMetadataChangeList : public MetadataChangeList {
   void DropMetadataChangeForStorageKey(const std::string& storage_key);
 
   // MetadataChangeList implementation.
-  void UpdateModelTypeState(
-      const sync_pb::ModelTypeState& model_type_state) override;
-  void ClearModelTypeState() override;
+  void UpdateDataTypeState(
+      const sync_pb::DataTypeState& data_type_state) override;
+  void ClearDataTypeState() override;
   void UpdateMetadata(const std::string& storage_key,
                       const sync_pb::EntityMetadata& metadata) override;
   void ClearMetadata(const std::string& storage_key) override;
@@ -49,13 +49,13 @@ class InMemoryMetadataChangeList : public MetadataChangeList {
     sync_pb::EntityMetadata metadata;
   };
 
-  struct ModelTypeStateChange {
+  struct DataTypeStateChange {
     ChangeType type;
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
   };
 
   std::map<std::string, MetadataChange> metadata_changes_;
-  std::unique_ptr<ModelTypeStateChange> state_change_;
+  std::unique_ptr<DataTypeStateChange> state_change_;
 };
 
 }  // namespace syncer

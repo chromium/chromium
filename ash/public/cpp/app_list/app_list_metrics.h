@@ -149,8 +149,8 @@ enum SearchResultType {
   REMOTE_APP,
   // A Borealis App Result.
   BOREALIS_APP,
-  // A Help App (aka Explore) Result. For default or help results. There are
-  // different search result types for Updates and Discover.
+  // A Help App (aka Explore) Result. For default or help results. There is a
+  // different search result type for Updates.
   HELP_APP_DEFAULT,
   // A result from omnibox for query suggestion.
   OMNIBOX_SEARCH_SUGGEST_ENTITY,
@@ -166,8 +166,8 @@ enum SearchResultType {
   DRIVE_SEARCH,
   // A Help App result about the "What's new" (Updates) page.
   HELP_APP_UPDATES,
-  // A Help App result about the "Discover" page.
-  HELP_APP_DISCOVER,
+  // A Help App result about the "Discover" page. (Deprecated).
+  HELP_APP_DISCOVER_DEPRECATED,
   // A keyboard shortcut result from the Keyboard Shortcut provider.
   KEYBOARD_SHORTCUT,
   // A keyboard shortcut result from the Keyboard Shortcut provider.
@@ -191,6 +191,31 @@ enum SearchResultType {
   APP_SHORTCUTS_V2,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
+};
+
+// Sub-types defined for zero state file/drive suggestions that indicate
+// the reason the file result was suggested.
+// Used for metrics - assigned values should not change.
+enum class ContinueFileSuggestionType {
+  // For zero state drive suggestions - file suggested because the user
+  // viewed it recently.
+  kViewedDrive = 0,
+  // For zero state drive suggestions - file suggested because it was
+  // recently modified (usually by another user).
+  kModifiedDrive = 1,
+  // For zero state drive suggestions - file suggested because the user
+  // modified it recently.
+  kModifiedByCurrentUserDrive = 2,
+  // For zero state drive suggestions - file suggested because it was recently
+  // shared with the user.
+  kSharedWithUserDrive = 3,
+  // For zero state local file suggestions - file suggested because the user
+  // viewed it recently.
+  kViewedFile = 4,
+  // For zero state local file suggestions - file suggested because the user
+  // modified it recently.
+  kModifiedByCurrentUserFile = 5,
+  kMaxValue = kModifiedByCurrentUserFile,
 };
 
 ASH_PUBLIC_EXPORT std::string SearchSessionConclusionToString(

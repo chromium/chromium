@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
+
 #include <optional>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/mahi/mahi_browser_client_wrapper.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 
 namespace ash {
@@ -41,15 +44,35 @@ void MahiBrowserDelegateAsh::RegisterMojoClient(
 void MahiBrowserDelegateAsh::OnFocusedPageChanged(
     crosapi::mojom::MahiPageInfoPtr page_info,
     OnFocusedPageChangedCallback callback) {
-  // TODO(b/318565610): sends the page_info to `mahi_manager_ash`.
-  std::move(callback).Run(true);
+  if (!chromeos::features::IsMahiEnabled()) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  auto* manager = chromeos::MahiManager::Get();
+  if (manager) {
+    manager->SetCurrentFocusedPageInfo(std::move(page_info));
+    std::move(callback).Run(true);
+  } else {
+    std::move(callback).Run(false);
+  }
 }
 
 void MahiBrowserDelegateAsh::OnContextMenuClicked(
     crosapi::mojom::MahiContextMenuRequestPtr context_menu_request,
     OnContextMenuClickedCallback callback) {
-  // TODO(b/318565610): sends the context_menu_request to `mahi_manager_ash`.
-  std::move(callback).Run(true);
+  if (!chromeos::features::IsMahiEnabled()) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  auto* manager = chromeos::MahiManager::Get();
+  if (manager) {
+    manager->OnContextMenuClicked(std::move(context_menu_request));
+    std::move(callback).Run(true);
+  } else {
+    std::move(callback).Run(false);
+  }
 }
 
 void MahiBrowserDelegateAsh::UnregisterClient(

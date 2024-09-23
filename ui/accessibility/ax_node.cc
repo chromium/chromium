@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_computed_node_data.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_hypertext.h"
 #include "ui/accessibility/ax_language_detection.h"
@@ -725,8 +726,9 @@ std::optional<int> AXNode::CompareTo(const AXNode& other) const {
     return 1;
 
   if (our_ancestors.empty() || other_ancestors.empty()) {
-    NOTREACHED() << "The common ancestor should be followed by two uncommon "
-                    "children in the two corresponding lists of ancestors.";
+    NOTREACHED_IN_MIGRATION()
+        << "The common ancestor should be followed by two uncommon "
+           "children in the two corresponding lists of ancestors.";
     return std::nullopt;
   }
 
@@ -908,6 +910,33 @@ AXSelection AXNode::GetUnignoredSelection() const {
   return selection;
 }
 
+bool AXNode::HasIntAttribute(ax::mojom::IntAttribute attribute) const {
+  if (data().HasIntAttribute(attribute)) {
+    return true;
+  }
+  return AXComputedNodeData::CanComputeAttribute(attribute, this);
+}
+
+int AXNode::GetIntAttribute(ax::mojom::IntAttribute attribute) const {
+  int value;
+  if (GetIntAttribute(attribute, &value)) {
+    return value;
+  }
+  // If missing, return the default value for AXNodeData::GetIntAttribute
+  return 0;
+}
+
+bool AXNode::GetIntAttribute(ax::mojom::IntAttribute attribute,
+                             int* value) const {
+  if (data().GetIntAttribute(attribute, value)) {
+    return true;
+  }
+  if (AXComputedNodeData::CanComputeAttribute(attribute, this)) {
+    return GetComputedNodeData().ComputeAttribute(attribute, value);
+  }
+  return false;
+}
+
 bool AXNode::HasStringAttribute(ax::mojom::StringAttribute attribute) const {
   return GetComputedNodeData().HasOrCanComputeAttribute(attribute);
 }
@@ -917,27 +946,9 @@ const std::string& AXNode::GetStringAttribute(
   return GetComputedNodeData().GetOrComputeAttributeUTF8(attribute);
 }
 
-bool AXNode::GetStringAttribute(ax::mojom::StringAttribute attribute,
-                                std::string* value) const {
-  if (GetComputedNodeData().HasOrCanComputeAttribute(attribute)) {
-    *value = GetComputedNodeData().GetOrComputeAttributeUTF8(attribute);
-    return true;
-  }
-  return false;
-}
-
 std::u16string AXNode::GetString16Attribute(
     ax::mojom::StringAttribute attribute) const {
   return GetComputedNodeData().GetOrComputeAttributeUTF16(attribute);
-}
-
-bool AXNode::GetString16Attribute(ax::mojom::StringAttribute attribute,
-                                  std::u16string* value) const {
-  if (GetComputedNodeData().HasOrCanComputeAttribute(attribute)) {
-    *value = GetComputedNodeData().GetOrComputeAttributeUTF16(attribute);
-    return true;
-  }
-  return false;
 }
 
 bool AXNode::HasInheritedStringAttribute(
@@ -974,15 +985,6 @@ const std::vector<int32_t>& AXNode::GetIntListAttribute(
   return GetComputedNodeData().GetOrComputeAttribute(attribute);
 }
 
-bool AXNode::GetIntListAttribute(ax::mojom::IntListAttribute attribute,
-                                 std::vector<int32_t>* value) const {
-  if (GetComputedNodeData().HasOrCanComputeAttribute(attribute)) {
-    *value = GetComputedNodeData().GetOrComputeAttribute(attribute);
-    return true;
-  }
-  return false;
-}
-
 AXLanguageInfo* AXNode::GetLanguageInfo() const {
   return language_info_.get();
 }
@@ -1007,16 +1009,7 @@ void AXNode::ClearComputedNodeData() {
 
 const std::string& AXNode::GetNameUTF8() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
-  const AXNode* node = this;
-  if (GetRole() == ax::mojom::Role::kPortal &&
-      GetNameFrom() == ax::mojom::NameFrom::kNone) {
-    const AXTreeManager* child_tree_manager =
-        AXTreeManager::ForChildTree(*this);
-    if (child_tree_manager)
-      node = child_tree_manager->GetRoot();
-  }
-
-  return node->GetStringAttribute(ax::mojom::StringAttribute::kName);
+  return this->GetStringAttribute(ax::mojom::StringAttribute::kName);
 }
 
 std::u16string AXNode::GetNameUTF16() const {
@@ -1111,37 +1104,6 @@ int AXNode::GetTextContentLengthUTF16() const {
   return GetComputedNodeData().GetOrComputeTextContentLengthUTF16();
 }
 
-gfx::RectF AXNode::GetTextContentRangeBoundsUTF8(int start_offset,
-                                                 int end_offset) const {
-  DCHECK(!tree_->GetTreeUpdateInProgressState());
-  DCHECK_LE(start_offset, end_offset)
-      << "Invalid `start_offset` and `end_offset`.\n"
-      << start_offset << ' ' << end_offset << "\nin\n"
-      << *this;
-  // Since we DCHECK that `start_offset` <= `end_offset`, there is no need to
-  // check whether `start_offset` is also in range.
-  if (end_offset > GetTextContentLengthUTF8())
-    return gfx::RectF();
-
-  // TODO(nektar): Update this to use
-  // "base/strings/utf_offset_string_conversions.h" which provides caching of
-  // offsets.
-  std::u16string out_trancated_string_utf16;
-  if (!base::UTF8ToUTF16(GetTextContentUTF8().data(),
-                         base::checked_cast<size_t>(start_offset),
-                         &out_trancated_string_utf16)) {
-    return gfx::RectF();
-  }
-  start_offset = base::checked_cast<int>(out_trancated_string_utf16.length());
-  if (!base::UTF8ToUTF16(GetTextContentUTF8().data(),
-                         base::checked_cast<size_t>(end_offset),
-                         &out_trancated_string_utf16)) {
-    return gfx::RectF();
-  }
-  end_offset = base::checked_cast<int>(out_trancated_string_utf16.length());
-  return GetTextContentRangeBoundsUTF16(start_offset, end_offset);
-}
-
 gfx::RectF AXNode::GetTextContentRangeBoundsUTF16(int start_offset,
                                                   int end_offset) const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
@@ -1149,16 +1111,19 @@ gfx::RectF AXNode::GetTextContentRangeBoundsUTF16(int start_offset,
       << "Invalid `start_offset` and `end_offset`.\n"
       << start_offset << ' ' << end_offset << "\nin\n"
       << *this;
+
+  int text_content_length = GetTextContentLengthUTF16();
   // Since we DCHECK that `start_offset` <= `end_offset`, there is no need to
   // check whether `start_offset` is also in range.
-  if (end_offset > GetTextContentLengthUTF16())
+  if (end_offset > text_content_length) {
     return gfx::RectF();
+  }
 
   const std::vector<int32_t>& character_offsets =
       GetIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets);
   int character_offsets_length =
       base::checked_cast<int>(character_offsets.size());
-  // Charactger offsets are always based on the UTF-16 representation of the
+  // Character offsets are always based on the UTF-16 representation of the
   // text.
   if (character_offsets_length < GetTextContentLengthUTF16()) {
     // Blink might not return pixel offsets for all characters. Clamp the
@@ -1376,6 +1341,49 @@ AXNode* AXNode::GetTableCellFromCoords(int row_index, int col_index) const {
                                               [static_cast<size_t>(col_index)]);
 }
 
+AXNode* AXNode::GetTableCellFromAriaCoords(int aria_row_index,
+                                           int aria_col_index) const {
+  DCHECK(!tree_->GetTreeUpdateInProgressState());
+  const AXTableInfo* table_info = GetAncestorTableInfo();
+  if (!table_info) {
+    return nullptr;
+  }
+
+  if (aria_row_index < 1 || aria_row_index > table_info->aria_row_count ||
+      aria_col_index < 1 || aria_col_index > table_info->aria_col_count) {
+    return nullptr;
+  }
+
+  // Aria rows/columns are not guaranteed to be contiguous, and can also
+  // span multiple "rows" or "columns".
+  // So while we do need to check many of the internal rows/columns, we can do
+  // some skipping around, and don't need to continue to search if we are past
+  // the specified row/column.
+  for (size_t row = 0; row < table_info->row_count; ++row) {
+    for (size_t col = 0; col < table_info->col_count; ++col) {
+      AXNode* node = tree_->GetFromId(table_info->cell_ids[row][col]);
+      CHECK(node);
+
+      std::optional<int> current_aria_row = node->GetTableCellAriaRowIndex();
+      std::optional<int> current_aria_col = node->GetTableCellAriaColIndex();
+      if (!current_aria_row || *current_aria_row < aria_row_index) {
+        break;
+      } else if (*current_aria_row > aria_row_index) {
+        return nullptr;
+      }
+      if (!current_aria_col || *current_aria_col < aria_col_index) {
+        continue;
+      } else if (*current_aria_col > aria_col_index) {
+        return nullptr;
+      }
+      DCHECK(*current_aria_row == aria_row_index &&
+             *current_aria_col == aria_col_index);
+      return node;
+    }
+  }
+  return nullptr;
+}
+
 std::vector<AXNodeID> AXNode::GetTableColHeaderNodeIds() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
@@ -1439,7 +1447,7 @@ AXNode::GetExtraMacNodes() const {
 }
 
 bool AXNode::IsGenerated() const {
-  bool is_generated_node = id() < 0;
+  bool is_generated_node = id() < 0 && id() > kInitialEmptyDocumentRootNodeID;
 #if DCHECK_IS_ON()
   // Currently, the only generated nodes are columns and table header
   // containers, and when those roles occur, they are always extra mac nodes.
@@ -1801,8 +1809,7 @@ bool AXNode::SetRoleMatchesItemRole(const AXNode* ordered_set) const {
     case ax::mojom::Role::kDescriptionList:
       // Only the term for each description list entry should receive posinset
       // and setsize.
-      return item_role == ax::mojom::Role::kDescriptionListTerm ||
-             item_role == ax::mojom::Role::kTerm;
+      return item_role == ax::mojom::Role::kTerm;
     case ax::mojom::Role::kComboBoxSelect:
       // kComboBoxSelect wraps a kMenuListPopUp.
       return item_role == ax::mojom::Role::kMenuListPopup;
@@ -2166,8 +2173,9 @@ bool AXNode::IsLikelyARIAActiveDescendant() const {
   // This requirement may need to be removed if ARIA element reflection is
   // implemented. HTML attribute serialization must currently be turned on in
   // order to pass this requirement.
-  if (!HasHtmlAttribute("id"))
+  if (!HasStringAttribute(ax::mojom::StringAttribute::kHtmlId)) {
     return false;
+  }
 
   // Finally, check for the required ancestor.
   for (AXNode* ancestor_node = GetUnignoredParent(); ancestor_node;
@@ -2177,12 +2185,13 @@ bool AXNode::IsLikelyARIAActiveDescendant() const {
             ax::mojom::IntAttribute::kActivedescendantId)) {
       return true;
     }
-    // Check for an ancestor listbox that is controlled by a textfield combobox
-    // that also has an aria-activedescendant.
-    // Note: blink will map aria-owns to aria-controls in the textfield combobox
-    // case as it was the older technique, but treating as an actual aria-owns
-    // makes no sense as a textfield cannot have children.
-    if (ancestor_node->GetRole() == ax::mojom::Role::kListBox) {
+    // Check for an ancestor listbox/tree/grid/treegrid/dialog that is
+    // controlled by a textfield combobox that also has an
+    // aria-activedescendant. Note: blink will map aria-owns to aria-controls in
+    // the textfield combobox case as it was the older technique, but treating
+    // as an actual aria-owns makes no sense as a textfield cannot have
+    // children.
+    if (ui::IsComboBoxContainer(ancestor_node->GetRole())) {
       std::set<AXNodeID> nodes_that_control_this_list =
           tree()->GetReverseRelations(ax::mojom::IntListAttribute::kControlsIds,
                                       ancestor_node->id());
@@ -2269,10 +2278,11 @@ AXNode* AXNode::GetCollapsedMenuListSelectAncestor() const {
 }
 
 bool AXNode::IsEmbeddedGroup() const {
-  if (GetRole() != ax::mojom::Role::kGroup || !GetParent())
+  if (GetRole() != ax::mojom::Role::kGroup || !GetUnignoredParent()) {
     return false;
+  }
 
-  return ui::IsSetLike(GetParent()->GetRole());
+  return ui::IsSetLike(GetUnignoredParent()->GetRole());
 }
 
 AXNode* AXNode::GetLowestPlatformAncestor() const {

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -25,6 +24,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
@@ -53,7 +53,7 @@ LaunchAppUserChoiceDialogView::LaunchAppUserChoiceDialogView(
 LaunchAppUserChoiceDialogView::~LaunchAppUserChoiceDialogView() = default;
 
 void LaunchAppUserChoiceDialogView::Init() {
-  SetModalType(ui::MODAL_TYPE_NONE);
+  SetModalType(ui::mojom::ModalType::kNone);
 #if !BUILDFLAG(IS_CHROMEOS)
   SetTitle(l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
 #endif
@@ -147,8 +147,7 @@ void LaunchAppUserChoiceDialogView::InitChildViews() {
         CreateNameLabel(base::UTF8ToUTF16(registrar.GetAppShortName(app_id_)))
             .release());
     app_name_publisher_view->AddChildView(
-        CreateOriginLabel(
-            url::Origin::Create(registrar.GetAppStartUrl(app_id_)), true)
+        CreateOriginLabelFromStartUrl(registrar.GetAppStartUrl(app_id_), true)
             .release());
     app_info_view->AddChildView(std::move(app_name_publisher_view));
 

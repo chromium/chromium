@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -23,7 +24,7 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -33,7 +34,6 @@ import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Test for download settings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -71,7 +71,7 @@ public class DownloadSettingsTest {
                             matcher);
                 });
 
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> downloadSettings.findPreference(preferenceKey));
     }
 
@@ -80,15 +80,15 @@ public class DownloadSettingsTest {
         CriteriaHelper.pollUiThread(
                 () ->
                         DownloadDialogBridge.isLocationDialogManaged(
-                                Profile.getLastUsedRegularProfile()));
+                                ProfileManager.getLastUsedRegularProfile()));
     }
 
     private void verifyLocationPromptPolicy(boolean promptForDownload) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             DownloadDialogBridge.isLocationDialogManaged(
-                                    Profile.getLastUsedRegularProfile()));
+                                    ProfileManager.getLastUsedRegularProfile()));
                     Assert.assertTrue(
                             getPrefService().isManagedPreference(Pref.PROMPT_FOR_DOWNLOAD));
                     DownloadSettings downloadSettings = mSettingsActivityTestRule.getFragment();
@@ -104,7 +104,7 @@ public class DownloadSettingsTest {
     }
 
     PrefService getPrefService() {
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
     }
 
     @Test

@@ -93,7 +93,7 @@ proto::UrlPatternPart::PartType UrlPatternPartTypeToProto(
     liburlpattern::PartType part_type) {
   switch (part_type) {
     case liburlpattern::PartType::kRegex:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case liburlpattern::PartType::kFullWildcard:
       return proto::UrlPatternPart_PartType_FULL_WILDCARD;
@@ -229,58 +229,6 @@ ParseAppImageResource(const char* container_name_for_logging,
   return manifest_icons;
 }
 
-sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app) {
-  CHECK(app.start_url().is_valid(), base::NotFatalUntil::M124);
-  CHECK(app.manifest_id().is_valid(), base::NotFatalUntil::M124);
-
-  sync_pb::WebAppSpecifics sync_proto;
-  // The relative id does not include the initial '/' character.
-  std::string relative_manifest_id_path = app.manifest_id().PathForRequest();
-  if (relative_manifest_id_path.starts_with("/")) {
-    relative_manifest_id_path = relative_manifest_id_path.substr(1);
-  }
-  sync_proto.set_relative_manifest_id(relative_manifest_id_path);
-  sync_proto.set_start_url(app.start_url().spec());
-
-  CHECK(app.user_display_mode_cros() || app.user_display_mode_non_cros(),
-        base::NotFatalUntil::M125);
-
-  if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS) ||
-      base::FeatureList::IsEnabled(kSyncOnlySeparateUserDisplayModeForCrOS)) {
-    if (app.user_display_mode_cros()) {
-      sync_proto.set_user_display_mode_cros(
-          ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
-              app.user_display_mode_cros().value()));
-    }
-    if (app.user_display_mode_non_cros()) {
-      sync_proto.set_user_display_mode_non_cros(
-          ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
-              app.user_display_mode_non_cros().value()));
-    }
-  } else {
-    sync_proto.set_user_display_mode_non_cros(
-        ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
-            app.user_display_mode_non_cros().value()));
-  }
-
-  sync_proto.set_name(app.sync_fallback_data().name);
-  if (app.sync_fallback_data().theme_color.has_value())
-    sync_proto.set_theme_color(app.sync_fallback_data().theme_color.value());
-  if (app.user_page_ordinal().IsValid()) {
-    sync_proto.set_user_page_ordinal(app.user_page_ordinal().ToInternalValue());
-  }
-  if (app.user_launch_ordinal().IsValid()) {
-    sync_proto.set_user_launch_ordinal(
-        app.user_launch_ordinal().ToInternalValue());
-  }
-  if (app.sync_fallback_data().scope.is_valid())
-    sync_proto.set_scope(app.sync_fallback_data().scope.spec());
-  for (const apps::IconInfo& icon_info : app.sync_fallback_data().icon_infos) {
-    *(sync_proto.add_icon_infos()) = AppIconInfoToSyncProto(icon_info);
-  }
-  return sync_proto;
-}
-
 sync_pb::WebAppIconInfo AppIconInfoToSyncProto(
     const apps::IconInfo& icon_info) {
   sync_pb::WebAppIconInfo icon_info_proto;
@@ -315,34 +263,6 @@ content::proto::ImageResource AppImageResourceToProto(
         ManifestImageResourcePurposeToImageResoucePurposeProto(purpose));
   }
   return image_resource_proto;
-}
-
-std::optional<WebApp::SyncFallbackData> ParseSyncFallbackDataStruct(
-    const sync_pb::WebAppSpecifics& sync_proto) {
-  WebApp::SyncFallbackData parsed_sync_fallback_data;
-
-  parsed_sync_fallback_data.name = sync_proto.name();
-
-  if (sync_proto.has_theme_color())
-    parsed_sync_fallback_data.theme_color = sync_proto.theme_color();
-
-  if (sync_proto.has_scope()) {
-    parsed_sync_fallback_data.scope = GURL(sync_proto.scope());
-    if (!parsed_sync_fallback_data.scope.is_valid()) {
-      DLOG(ERROR) << "WebAppSpecifics scope has invalid url: "
-                  << parsed_sync_fallback_data.scope.possibly_invalid_spec();
-      return std::nullopt;
-    }
-  }
-
-  std::optional<std::vector<apps::IconInfo>> parsed_icon_infos =
-      ParseAppIconInfos("WebAppSpecifics", sync_proto.icon_infos());
-  if (!parsed_icon_infos)
-    return std::nullopt;
-
-  parsed_sync_fallback_data.icon_infos = std::move(parsed_icon_infos.value());
-
-  return parsed_sync_fallback_data;
 }
 
 RunOnOsLoginMode ToRunOnOsLoginMode(WebAppProto::RunOnOsLoginMode mode) {
@@ -477,6 +397,16 @@ std::optional<TabStrip> ProtoToTabStrip(proto::TabStrip tab_strip_proto) {
   tab_strip.new_tab_button = new_tab_button_params;
 
   return tab_strip;
+}
+
+std::string RelativeManifestIdPath(webapps::ManifestId manifest_id) {
+  CHECK(manifest_id.is_valid(), base::NotFatalUntil::M127);
+  // The relative id does not include the initial '/' character.
+  std::string relative_manifest_id_path = manifest_id.PathForRequest();
+  if (relative_manifest_id_path.starts_with("/")) {
+    relative_manifest_id_path = relative_manifest_id_path.substr(1);
+  }
+  return relative_manifest_id_path;
 }
 
 }  // namespace web_app

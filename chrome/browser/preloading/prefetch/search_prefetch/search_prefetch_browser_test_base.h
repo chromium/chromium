@@ -52,6 +52,11 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest,
 
   void WaitUntilStatusChangesTo(const GURL& canonical_search_url,
                                 std::optional<SearchPrefetchStatus> status);
+  // Given the canonical_search_url, returns the corresponding url that is sent
+  // to the network.
+  // TODO(crbug.com/345275145): Prerender should not rely on this to get the
+  // real url. Refactor the test code and then remove this method.
+  GURL GetRealPrefetchUrlForTesting(const GURL& canonical_search_url);
 
   content::WebContents* GetWebContents() const;
 

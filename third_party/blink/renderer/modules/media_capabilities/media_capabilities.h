@@ -15,6 +15,8 @@
 #include "media/mojo/mojom/video_decode_perf_history.mojom-blink.h"
 #include "media/mojo/mojom/webrtc_video_perf.mojom-blink.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_configuration.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -30,12 +32,12 @@ namespace blink {
 
 class ExceptionState;
 class ExecutionContext;
+class MediaCapabilitiesDecodingInfo;
+class MediaCapabilitiesInfo;
 class MediaDecodingConfiguration;
 class MediaEncodingConfiguration;
 class MediaKeySystemAccess;
 class NavigatorBase;
-class ScriptPromise;
-class ScriptPromiseResolver;
 class ScriptState;
 
 class MODULES_EXPORT MediaCapabilities final
@@ -58,25 +60,27 @@ class MODULES_EXPORT MediaCapabilities final
 
   void Trace(blink::Visitor* visitor) const override;
 
-  ScriptPromise decodingInfo(ScriptState*,
-                             const MediaDecodingConfiguration*,
-                             ExceptionState&);
-  ScriptPromise encodingInfo(ScriptState*,
-                             const MediaEncodingConfiguration*,
-                             ExceptionState&);
+  ScriptPromise<MediaCapabilitiesDecodingInfo> decodingInfo(
+      ScriptState*,
+      const MediaDecodingConfiguration*,
+      ExceptionState&);
+  ScriptPromise<MediaCapabilitiesInfo> encodingInfo(
+      ScriptState*,
+      const MediaEncodingConfiguration*,
+      ExceptionState&);
 
  private:
   // Stores pending callback state from and intermediate prediction values while
   // we wait for all predictions to arrive.
   class PendingCallbackState : public GarbageCollected<PendingCallbackState> {
    public:
-    PendingCallbackState(ScriptPromiseResolver* resolver,
+    PendingCallbackState(ScriptPromiseResolverBase* resolver,
                          MediaKeySystemAccess* access,
                          const base::TimeTicks& request_time,
                          std::optional<IdentifiableToken> input_token);
     virtual void Trace(blink::Visitor* visitor) const;
 
-    Member<ScriptPromiseResolver> resolver;
+    Member<ScriptPromiseResolverBase> resolver;
     Member<MediaKeySystemAccess> key_system_access;
     std::optional<bool> is_supported;
     std::optional<bool> is_bad_window_prediction_smooth;
@@ -110,13 +114,14 @@ class MODULES_EXPORT MediaCapabilities final
   // successful. Returns true if it was already bound.
   bool EnsureWebrtcPerfHistoryService(ExecutionContext* execution_context);
 
-  ScriptPromise GetEmeSupport(ScriptState*,
-                              media::VideoCodec,
-                              media::VideoCodecProfile,
-                              media::VideoColorSpace,
-                              const MediaDecodingConfiguration*,
-                              const base::TimeTicks& request_time,
-                              ExceptionState&);
+  ScriptPromise<MediaCapabilitiesDecodingInfo> GetEmeSupport(
+      ScriptState*,
+      media::VideoCodec,
+      media::VideoCodecProfile,
+      media::VideoColorSpace,
+      const MediaDecodingConfiguration*,
+      const base::TimeTicks& request_time,
+      ExceptionState&);
   // Gets perf info from VideoDecodePerrHistory DB. Will optionally kick off
   // parallel request to GetPerfInfo_ML() when learning experiment is enabled.
   void GetPerfInfo(media::VideoCodec,
@@ -124,7 +129,7 @@ class MODULES_EXPORT MediaCapabilities final
                    media::VideoColorSpace,
                    const MediaDecodingConfiguration*,
                    const base::TimeTicks& request_time,
-                   ScriptPromiseResolver*,
+                   ScriptPromiseResolver<MediaCapabilitiesDecodingInfo>*,
                    MediaKeySystemAccess*);
 
   // Gets ML perf predictions from remote LearingTaskControllers.
@@ -168,14 +173,16 @@ class MODULES_EXPORT MediaCapabilities final
   // |pending_callback_map_|.
   void ResolveCallbackIfReady(int callback_id);
 
+  enum class OperationType { kEncoding, kDecoding };
   void OnWebrtcSupportInfo(
       int callback_id,
       media::mojom::blink::WebrtcPredictionFeaturesPtr features,
       float frames_per_second,
+      OperationType,
       bool is_supported,
       bool is_power_efficient);
 
-  void OnWebrtcPerfHistoryInfo(int callback_id, bool is_smooth);
+  void OnWebrtcPerfHistoryInfo(int callback_id, OperationType, bool is_smooth);
 
   // Creates a new (incremented) callback ID from |last_callback_id_| for
   // mapping in |pending_cb_map_|.
@@ -217,12 +224,12 @@ class MODULES_EXPORT MediaCapabilities final
   HeapHashMap<int, Member<PendingCallbackState>> pending_cb_map_;
 
   // Makes it possible to override the WebrtcDecodingInfoHandler in tests.
-  raw_ptr<WebrtcDecodingInfoHandler, ExperimentalRenderer>
-      webrtc_decoding_info_handler_for_test_ = nullptr;
+  raw_ptr<WebrtcDecodingInfoHandler> webrtc_decoding_info_handler_for_test_ =
+      nullptr;
 
   // Makes it possible to override the WebrtcEncodingInfoHandler in tests.
-  raw_ptr<WebrtcEncodingInfoHandler, ExperimentalRenderer>
-      webrtc_encoding_info_handler_for_test_ = nullptr;
+  raw_ptr<WebrtcEncodingInfoHandler> webrtc_encoding_info_handler_for_test_ =
+      nullptr;
 };
 
 }  // namespace blink

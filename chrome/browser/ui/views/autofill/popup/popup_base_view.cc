@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/dcheck_is_on.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -46,7 +48,6 @@
 
 #if DCHECK_IS_ON()
 #include "base/containers/fixed_flat_set.h"
-#include "base/strings/string_piece.h"
 #endif
 
 namespace autofill {
@@ -90,33 +91,45 @@ std::unique_ptr<views::Border> CreateBorder() {
 // static
 int PopupBaseView::GetCornerRadius() {
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      ShouldApplyNewAutofillPopupStyle() ? views::Emphasis::kHigh
-                                         : views::Emphasis::kMedium);
+      views::Emphasis::kHigh);
 }
 
 // static
-int PopupBaseView::GetHorizontalMargin() {
+int PopupBaseView::ArrowHorizontalMargin() {
   // The horizontal margin should match the offset of the bubble arrow (if
   // that arrow happens to be shown on the top).
   return views::BubbleBorder::kVisibleArrowBuffer;
 }
 
-// static
-int PopupBaseView::GetHorizontalPadding() {
-  // TODO(crbug.com/1411172): Combine with `GetHorizontalMargin`.
-  return GetHorizontalMargin();
-}
-
 // The widget that the PopupBaseView will be attached to.
 class PopupBaseView::Widget : public views::Widget {
  public:
-  explicit Widget(PopupBaseView* autofill_popup_base_view) {
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  // Takes ownership of `autofill_popup_base_view` and uses it as the delegate
+  // of a new Widget. `parent_native_view` is the intended parent view of the
+  // new Widget.
+  explicit Widget(PopupBaseView* autofill_popup_base_view,
+                  gfx::NativeView parent_native_view,
+                  views::Widget::InitParams::Activatable activatable) {
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_POPUP);
     params.delegate = autofill_popup_base_view;
-    params.parent = autofill_popup_base_view->GetParentNativeView();
+    params.parent = parent_native_view;
     // Ensure the popup border is not painted on an opaque background.
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
+    params.activatable = activatable;
+
+    // `kSecuritySurface` makes the popup to display on top of all other windows
+    // (including system ones, but the support among different OS, versions and
+    // setups is not consistent). This is not required for regular autofill
+    // popup use, but it makes certain attacks (those based on the popup being
+    // obscured) less practical.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillPopupZOrderSecuritySurface)) {
+      params.z_order = ui::ZOrderLevel::kSecuritySurface;
+    }
+
     Init(std::move(params));
     AddObserver(popup_base_view());
 
@@ -168,7 +181,7 @@ class PopupBaseView::Widget : public views::Widget {
     // another window, which is not a problem because the popup closes on focus
     // loss anyway. The exit event will be synthesized by the sub-popup later
     // (find the trick that does this below).
-    if (event->type() == ui::EventType::ET_MOUSE_EXITED &&
+    if (event->type() == ui::EventType::kMouseExited &&
         GetContentsView()->IsMouseHovered()) {
       return;
     }
@@ -177,7 +190,7 @@ class PopupBaseView::Widget : public views::Widget {
     // properly and thus provide more intuitive UX when the child's transparent
     // parts (e.g. shadow) overlap the parent (assuming that the child contents
     // view is not overlapped).
-    if (event->type() == ui::EventType::ET_MOUSE_MOVED &&
+    if (event->type() == ui::EventType::kMouseMoved &&
         !GetContentsView()->IsMouseHovered() &&
         parent_content_view->IsMouseHovered()) {
       parent()->SynthesizeMouseMoveEvent();
@@ -194,8 +207,9 @@ class PopupBaseView::Widget : public views::Widget {
       const gfx::Point location = View::ConvertPointFromScreen(
           parent()->GetRootView(),
           last_synthesized_parent_mouse_move_position_.value());
-      ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, location, location,
-                                 ui::EventTimeForNow(), ui::EF_IS_SYNTHESIZED,
+      ui::MouseEvent mouse_event(ui::EventType::kMouseExited, location,
+                                 location, ui::EventTimeForNow(),
+                                 ui::EF_IS_SYNTHESIZED,
                                  /*changed_button_flags=*/0);
       parent()->OnMouseEvent(&mouse_event);
       last_synthesized_parent_mouse_move_position_.reset();
@@ -211,13 +225,21 @@ class PopupBaseView::Widget : public views::Widget {
 PopupBaseView::PopupBaseView(
     base::WeakPtr<AutofillPopupViewDelegate> delegate,
     views::Widget* parent_widget,
-    base::span<const views::BubbleArrowSide> preferred_popup_sides,
+    views::Widget::InitParams::Activatable new_widget_activatable,
     bool show_arrow_pointer)
     : delegate_(delegate),
       parent_widget_(parent_widget),
-      preferred_popup_sides_(
-          {preferred_popup_sides.begin(), preferred_popup_sides.end()}),
-      show_arrow_pointer_(show_arrow_pointer) {}
+      new_widget_activatable_(new_widget_activatable),
+      show_arrow_pointer_(show_arrow_pointer) {
+  // TODO(aleventhal) The correct role spec-wise to use here is kMenu, however
+  // as of NVDA 2018.2.1, firing a menu event with kMenu breaks left/right
+  // arrow editing feedback in text field. If NVDA addresses this we should
+  // consider returning to using kMenu, so that users are notified that a
+  // menu popup has been shown.
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPane);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
+}
 
 PopupBaseView::~PopupBaseView() {
   if (delegate_) {
@@ -240,14 +262,17 @@ bool PopupBaseView::DoShow() {
   if (initialize_widget) {
     // On Mac Cocoa browser, |parent_widget_| is null (the parent is not a
     // views::Widget).
-    // TODO(crbug.com/826862): Remove |parent_widget_|.
+    // TODO(crbug.com/41379554): Remove |parent_widget_|.
     if (parent_widget_) {
       parent_widget_->AddObserver(this);
     }
 
     // The widget is destroyed by the corresponding NativeWidget, so we don't
     // have to worry about deletion.
-    new PopupBaseView::Widget(this);
+    new PopupBaseView::Widget(this, /*parent_native_view=*/
+                              parent_widget_ ? parent_widget_->GetNativeView()
+                                             : delegate_->container_view(),
+                              new_widget_activatable_);
   }
 
   GetWidget()->GetRootView()->SetBorder(CreateBorder());
@@ -258,7 +283,7 @@ bool PopupBaseView::DoShow() {
     return false;
   }
 
-  if (content::WebContents* web_contents = GetWebContents()) {
+  if (GetWebContents()) {
     custom_cursor_suppressor_.Start(
         /*max_dimension_dips=*/kMaximumAllowedCustomCursorDimension + 1);
   } else {
@@ -331,11 +356,13 @@ void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
   }
   selected_view.GetViewAccessibility().SetPopupFocusOverride();
 #if DCHECK_IS_ON()
-  constexpr auto kDerivedClasses = base::MakeFixedFlatSet<base::StringPiece>(
+  constexpr auto kDerivedClasses = base::MakeFixedFlatSet<std::string_view>(
       {"PopupSuggestionView", "PopupPasswordSuggestionView", "PopupFooterView",
        "PopupSeparatorView", "PopupWarningView", "PopupBaseView",
        "PasswordGenerationPopupViewViews::GeneratedPasswordBox", "PopupRowView",
-       "PopupRowContentView", "EditPasswordRow", "MdTextButton"});
+       "PopupRowContentView", "MdTextButton",
+       "PopupRowPredictionImprovementsFeedbackView",
+       "PopupRowPredictionImprovementsDetailsView"});
   DCHECK(kDerivedClasses.contains(selected_view.GetClassName()))
       << "If you add a new derived class from AutofillPopupRowView, add it "
          "here and to onSelection(evt) in "
@@ -344,7 +371,6 @@ void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
          "announces the item when selected. Missing class: "
       << selected_view.GetClassName();
 #endif
-  selected_view.NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
 }
 
 void PopupBaseView::OnWidgetBoundsChanged(views::Widget* widget,
@@ -354,7 +380,7 @@ void PopupBaseView::OnWidgetBoundsChanged(views::Widget* widget,
     return;
   }
 
-  HideController(PopupHidingReason::kWidgetChanged);
+  HideController(SuggestionHidingReason::kWidgetChanged);
 }
 
 void PopupBaseView::OnWidgetDestroying(views::Widget* widget) {
@@ -372,7 +398,7 @@ void PopupBaseView::OnWidgetDestroying(views::Widget* widget) {
   // destruction (e.g., by attempting to remove observers).
   parent_widget_ = nullptr;
 
-  HideController(PopupHidingReason::kWidgetChanged);
+  HideController(SuggestionHidingReason::kWidgetChanged);
 }
 
 void PopupBaseView::RemoveWidgetObservers() {
@@ -424,10 +450,11 @@ gfx::Rect PopupBaseView::GetTopWindowBounds() const {
   return gfx::Rect();
 }
 
-gfx::Rect PopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
+gfx::Rect PopupBaseView::GetOptimalPositionAndPlaceArrowOnPopup(
     const gfx::Rect& element_bounds,
     const gfx::Rect& max_bounds_for_popup,
-    const gfx::Size& preferred_size) {
+    const gfx::Size& preferred_size,
+    base::span<const views::BubbleArrowSide> preferred_popup_sides) {
   views::BubbleBorder* border = static_cast<views::BubbleBorder*>(
       GetWidget()->GetRootView()->GetBorder());
   DCHECK(border);
@@ -451,7 +478,8 @@ gfx::Rect PopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
       maximum_pixel_offset_to_center,
       /*maximum_width_percentage_to_center=*/
       kMaximumWidthPercentageToMoveTheSuggestionToCenter,
-      /*popup_bounds=*/popup_bounds, preferred_popup_sides_);
+      /*popup_bounds=*/popup_bounds, preferred_popup_sides,
+      /*anchor_type=*/delegate_->anchor_type());
 
   // Those values are not supported for adding an arrow.
   // Currently, they can not be returned by GetOptimalPopupPlacement().
@@ -472,7 +500,7 @@ gfx::Rect PopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
 bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   gfx::Size preferred_size = GetPreferredSize();
   const gfx::Rect content_area_bounds = GetContentAreaBounds();
-  // TODO(crbug.com/1262371) Once popups can render outside the main window on
+  // TODO(crbug.com/40799454) Once popups can render outside the main window on
   // Linux, use the screen bounds.
   const gfx::Rect top_window_bounds = GetTopWindowBounds();
   const gfx::Rect& max_bounds_for_popup =
@@ -481,14 +509,19 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
 
   gfx::Rect element_bounds = gfx::ToEnclosingRect(delegate_->element_bounds());
 
-  // If the element exceeds the content area, ensure that the popup is still
-  // visually attached to the input element.
-  element_bounds.Intersect(content_area_bounds);
-  if (element_bounds.IsEmpty()) {
-    HideController(PopupHidingReason::kElementOutsideOfContentArea);
-    return false;
+  // An element that is contained by the `content_area_bounds` (even if empty,
+  // which means either the height or the width is 0) is never outside the
+  // content area. An empty element case can happen with caret bounds, which
+  // sometimes has 0 width.
+  if (!content_area_bounds.Contains(element_bounds)) {
+    // If the element exceeds the content area, ensure that the popup is still
+    // visually attached to the input element.
+    element_bounds.Intersect(content_area_bounds);
+    if (element_bounds.IsEmpty()) {
+      HideController(SuggestionHidingReason::kElementOutsideOfContentArea);
+      return false;
+    }
   }
-
   // Consider the element is |kElementBorderPadding| pixels larger at the top
   // and at the bottom in order to reposition the dropdown, so that it doesn't
   // look too close to the element.
@@ -500,15 +533,17 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   int item_height =
       children().size() > 0 ? children()[0]->GetPreferredSize().height() : 0;
   if (!CanShowDropdownHere(item_height, max_bounds_for_popup, element_bounds)) {
-    HideController(PopupHidingReason::kInsufficientSpace);
+    HideController(SuggestionHidingReason::kInsufficientSpace);
     return false;
   }
 
-  gfx::Rect popup_bounds = GetOptionalPositionAndPlaceArrowOnPopup(
-      element_bounds, max_bounds_for_popup, preferred_size);
+  gfx::Rect popup_bounds = GetOptimalPositionAndPlaceArrowOnPopup(
+      element_bounds, max_bounds_for_popup, preferred_size,
+      kDefaultPreferredPopupSides);
 
   if (BoundsOverlapWithPictureInPictureWindow(popup_bounds)) {
-    HideController(PopupHidingReason::kOverlappingWithPictureInPictureWindow);
+    HideController(
+        SuggestionHidingReason::kOverlappingWithPictureInPictureWindow);
     return false;
   }
 
@@ -524,22 +559,11 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
 
 void PopupBaseView::OnNativeFocusChanged(gfx::NativeView focused_now) {
   if (GetWidget() && GetWidget()->GetNativeView() != focused_now) {
-    HideController(PopupHidingReason::kFocusChanged);
+    HideController(SuggestionHidingReason::kFocusChanged);
   }
 }
 
-void PopupBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // TODO(aleventhal) The correct role spec-wise to use here is kMenu, however
-  // as of NVDA 2018.2.1, firing a menu event with kMenu breaks left/right
-  // arrow editing feedback in text field. If NVDA addresses this we should
-  // consider returning to using kMenu, so that users are notified that a
-  // menu popup has been shown.
-  node_data->role = ax::mojom::Role::kPane;
-  node_data->SetNameChecked(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
-}
-
-void PopupBaseView::HideController(PopupHidingReason reason) {
+void PopupBaseView::HideController(SuggestionHidingReason reason) {
   if (delegate_) {
     delegate_->Hide(reason);
   }
@@ -554,15 +578,6 @@ content::WebContents* PopupBaseView::GetWebContents() const {
   }
 
   return delegate_->GetWebContents();
-}
-
-gfx::NativeView PopupBaseView::GetParentNativeView() const {
-  return parent_widget_ ? parent_widget_->GetNativeView()
-                        : delegate_->container_view();
-}
-
-gfx::NativeView PopupBaseView::container_view() {
-  return delegate_->container_view();
 }
 
 BEGIN_METADATA(PopupBaseView)

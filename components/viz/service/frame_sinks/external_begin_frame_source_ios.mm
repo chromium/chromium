@@ -6,7 +6,6 @@
 
 #import <Foundation/Foundation.h>
 #import <QuartzCore/QuartzCore.h>
-#import <UIKit/UIKit.h>
 
 #include "base/apple/mach_logging.h"
 #include "base/logging.h"
@@ -14,6 +13,9 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace {
+
+// ProMotion devices only support up to 120Hz.
+constexpr float kMaxRefreshRate = 120;
 
 constexpr float kMinimumRefreshRate =
     (viz::BeginFrameArgs::MinInterval() == base::TimeDelta()
@@ -88,7 +90,7 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
     _displayLink =
         [CADisplayLink displayLinkWithTarget:self
                                     selector:@selector(displayLinkDidFire:)];
-    _maximumRefreshRate = UIScreen.mainScreen.maximumFramesPerSecond;
+    _maximumRefreshRate = kMaxRefreshRate;
     [self setPreferredInterval:base::Hertz(_maximumRefreshRate)];
     [self setEnabled:false];
     [_displayLink addToRunLoop:NSRunLoop.currentRunLoop
@@ -98,7 +100,7 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
 }
 
 - (id)init {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nil;
 }
 
@@ -215,17 +217,10 @@ void ExternalBeginFrameSourceIOS::SetPreferredInterval(
 base::TimeDelta ExternalBeginFrameSourceIOS::GetMaximumRefreshFrameInterval() {
   const int64_t max_refresh_rate =
       [objc_storage_->display_link_impl maximumRefreshRate];
-  if (UNLIKELY(max_refresh_rate <= 0)) {
+  if (max_refresh_rate <= 0) [[unlikely]] {
     return BeginFrameArgs::DefaultInterval();
   }
   return base::Hertz(max_refresh_rate);
-}
-
-void ExternalBeginFrameSourceIOS::SetDynamicBeginFrameDeadlineOffsetSource(
-    DynamicBeginFrameDeadlineOffsetSource*
-        dynamic_begin_frame_deadline_offset_source) {
-  begin_frame_args_generator_.set_dynamic_begin_frame_deadline_offset_source(
-      dynamic_begin_frame_deadline_offset_source);
 }
 
 void ExternalBeginFrameSourceIOS::OnVSync(base::TimeTicks vsync_time,

@@ -24,8 +24,8 @@ struct udev_monitor;
 namespace device {
 
 // Interface to libudev. Accessed through the static Get() function, which
-// will try to load libudev1 first and then libudev0 on first use. If neither
-// libraries load successfully, the program will fail with a crash.
+// will try to load libudev1. If the libraries does not load successfully, the
+// program will fail with a crash.
 //
 // All the methods have the same signatures as libudev's functions. e.g.
 // udev_monitor_get_fd(mon) simply becomes device::udev_monitor_get_fd(mon).
@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(DEVICE_UDEV_LINUX) UdevLoader {
   static UdevLoader* Get();
 
   // Allows to set a particular implementation of the loader.
-  // Given the shape of the existing API bad things will happen if one gets
+  // Given the shape of the existing API, bad things will happen if one gets
   // a udev_device instance, switches to a new loader, and tries to use that
   // udev_instance again. The expectation is that when running unit tests,
   // before we switch to fake udev, all attempts to interact with real udev
@@ -42,8 +42,6 @@ class COMPONENT_EXPORT(DEVICE_UDEV_LINUX) UdevLoader {
   static void SetForTesting(UdevLoader* loader, bool delete_previous = true);
 
   virtual ~UdevLoader();
-
-  virtual bool Init() = 0;
 
   virtual const char* udev_device_get_action(udev_device* udev_device) = 0;
   virtual const char* udev_device_get_devnode(udev_device* udev_device) = 0;
@@ -94,12 +92,6 @@ class COMPONENT_EXPORT(DEVICE_UDEV_LINUX) UdevLoader {
       udev_monitor* udev_monitor) = 0;
   virtual void udev_monitor_unref(udev_monitor* udev_monitor) = 0;
   virtual udev* udev_new() = 0;
-  virtual void udev_set_log_fn(
-      struct udev* udev,
-      void (*log_fn)(struct udev* udev, int priority,
-                     const char* file, int line,
-                     const char* fn, const char* format, va_list args)) = 0;
-  virtual void udev_set_log_priority(struct udev* udev, int priority) = 0;
   virtual void udev_unref(udev* udev) = 0;
 };
 

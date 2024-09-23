@@ -43,3 +43,8 @@ void Group::Add(const AutocompleteMatch& match) {
   DCHECK_EQ(count_, matches_.size());
   group_id_limits_and_counts_[match.suggestion_group_id.value()].count++;
 }
+
+void Group::GroupMatchesBySearchVsUrl() {
+  base::ranges::stable_sort(matches_.begin(), matches_.end(), {},
+                            [](const auto& m) { return m->GetSortingOrder(); });
+}

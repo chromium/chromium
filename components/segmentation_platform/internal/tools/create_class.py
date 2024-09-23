@@ -104,7 +104,6 @@ _MODEL_HEADER_TEMPLATE = """// Copyright {year} The Chromium Authors
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
@@ -247,7 +246,7 @@ void {clas}::ExecuteModelWithInput(
   // Invalid inputs.
   if (inputs.size() != kUMAFeatures.size()) {{
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }}
 

@@ -4,15 +4,21 @@
 
 #include "chromeos/ash/components/osauth/impl/engines/cryptohome_pin_engine.h"
 
+#include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/functional/bind.h"
+#include "base/check.h"
+#include "base/logging.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
-#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
-#include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/impl/engines/cryptohome_based_engine.h"
+#include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
+#include "chromeos/ash/components/osauth/public/cryptohome_core.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -57,13 +63,10 @@ void CryptohomePinEngine::PerformPinAttempt(const std::string& raw_pin) {
     return;
   }
   CHECK(get_ref().has_value());
-  const AccountId& account_id = get_core()->GetCurrentContext()->GetAccountId();
   get_observer()->OnFactorAttempt(GetFactor());
-  get_core()->GetAuthPerformer()->AuthenticateWithPin(
-      raw_pin, GetUserSalt(account_id, local_state_),
-      get_core()->BorrowContext(),
-      base::BindOnce(&CryptohomePinEngine::OnAuthAttempt,
-                     weak_factory_.GetWeakPtr()));
+  get_core()->BorrowContext(
+      base::BindOnce(&CryptohomePinEngine::PerformAuthenticationAttempt,
+                     weak_factory_.GetWeakPtr(), raw_pin));
 }
 
 void CryptohomePinEngine::OnAuthAttempt(
@@ -72,6 +75,16 @@ void CryptohomePinEngine::OnAuthAttempt(
   get_core()->ReturnContext(std::move(context));
   get_observer()->OnFactorAttemptResult(GetFactor(),
                                         /* success= */ !error.has_value());
+}
+
+void CryptohomePinEngine::PerformAuthenticationAttempt(
+    const std::string& raw_pin,
+    std::unique_ptr<UserContext> context) {
+  const AccountId& account_id = context->GetAccountId();
+  get_core()->GetAuthPerformer()->AuthenticateWithPin(
+      raw_pin, GetUserSalt(account_id, local_state_), std::move(context),
+      base::BindOnce(&CryptohomePinEngine::OnAuthAttempt,
+                     weak_factory_.GetWeakPtr()));
 }
 
 std::string CryptohomePinEngine::GetUserSalt(const AccountId& account_id,

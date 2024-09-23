@@ -21,6 +21,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
 #include "net/net_buildflags.h"
+#include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
@@ -77,6 +78,8 @@ class TestNetworkContext : public mojom::NetworkContext {
       const url::Origin& top_frame_origin) override {}
   void GetStoredTrustTokenCounts(
       GetStoredTrustTokenCountsCallback callback) override {}
+  void GetPrivateStateTokenRedemptionRecords(
+      GetPrivateStateTokenRedemptionRecordsCallback callback) override {}
   void DeleteStoredTrustTokens(
       const url::Origin& issuer,
       DeleteStoredTrustTokensCallback callback) override {}
@@ -128,6 +131,8 @@ class TestNetworkContext : public mojom::NetworkContext {
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       const base::flat_map<std::string, std::string>& endpoints) override {}
+  void SetEnterpriseReportingEndpoints(
+      const base::flat_map<std::string, GURL>& endpoints) override {}
   void SendReportsAndRemoveSource(
       const base::UnguessableToken& reporting_source) override {}
   void QueueReport(
@@ -136,8 +141,11 @@ class TestNetworkContext : public mojom::NetworkContext {
       const GURL& url,
       const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      const std::optional<std::string>& user_agent,
       base::Value::Dict body) override {}
+  void QueueEnterpriseReport(const std::string& type,
+                             const std::string& group,
+                             const GURL& url,
+                             base::Value::Dict body) override {}
   void QueueSignedExchangeReport(
       mojom::SignedExchangeReportPtr report,
       const net::NetworkAnonymizationKey& network_anonymization_key) override {}
@@ -189,7 +197,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       const GURL& url,
       const std::vector<std::string>& requested_protocols,
       const net::SiteForCookies& site_for_cookies,
-      bool has_storage_access,
+      net::StorageAccessApiStatus storage_access_api_status,
       const net::IsolationInfo& isolation_info,
       std::vector<mojom::HttpHeaderPtr> additional_headers,
       int32_t process_id,
@@ -228,7 +236,6 @@ class TestNetworkContext : public mojom::NetworkContext {
   void NotifyExternalCacheHit(const GURL& url,
                               const std::string& http_method,
                               const net::NetworkIsolationKey& key,
-                              bool is_subframe_document_resource,
                               bool include_credentials) override {}
   void VerifyCertForSignedExchange(
       const scoped_refptr<net::X509Certificate>& certificate,
@@ -332,14 +339,38 @@ class TestNetworkContext : public mojom::NetworkContext {
       base::Time start_time,
       base::Time end_time,
       GetSharedDictionaryOriginsBetweenCallback callback) override {}
+  void PreloadSharedDictionaryInfoForDocument(
+      const std::vector<GURL>& urls,
+      mojo::PendingReceiver<mojom::PreloadedSharedDictionaryInfoHandle>
+          preload_handle) override {}
+  void HasPreloadedSharedDictionaryInfoForTesting(
+      HasPreloadedSharedDictionaryInfoForTestingCallback callback) override {}
   void ResourceSchedulerClientVisibilityChanged(
       const base::UnguessableToken& client_token,
       bool visible) override {}
   void FlushCachedClientCertIfNeeded(
       const net::HostPortPair& host,
       const scoped_refptr<net::X509Certificate>& certificate) override {}
+  void FlushMatchingCachedClientCert(
+      const scoped_refptr<net::X509Certificate>& certificate) override {}
   void SetCookieDeprecationLabel(
       const std::optional<std::string>& label) override {}
+  void RevokeNetworkForNonces(
+      const std::vector<base::UnguessableToken>& nonces,
+      RevokeNetworkForNoncesCallback callback) override {}
+  void ClearNonces(const std::vector<base::UnguessableToken>& nonces) override {
+  }
+  void ExemptUrlFromNetworkRevocationForNonce(
+      const GURL& exempted_url,
+      const base::UnguessableToken& nonce,
+      ExemptUrlFromNetworkRevocationForNonceCallback callback) override {}
+  void Prefetch(int32_t request_id,
+                uint32_t options,
+                const ResourceRequest& request,
+                const net::MutableNetworkTrafficAnnotationTag&
+                    traffic_annotation) override {}
+  void GetBoundNetworkForTesting(
+      GetBoundNetworkForTestingCallback callback) override {}
 };
 
 }  // namespace network

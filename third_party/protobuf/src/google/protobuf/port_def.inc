@@ -118,6 +118,27 @@
 #define PROTOBUF_has_builtin_DEFINED_
 #endif
 
+// Portable PROTOBUF_BUILTIN_BSWAPxx definitions
+// Code must check for availability, e.g.: `defined(PROTOBUF_BUILTIN_BSWAP32)`
+#ifdef PROTOBUF_BUILTIN_BSWAP16
+#error PROTOBUF_BUILTIN_BSWAP16 was previously defined
+#endif
+#ifdef PROTOBUF_BUILTIN_BSWAP32
+#error PROTOBUF_BUILTIN_BSWAP32 was previously defined
+#endif
+#ifdef PROTOBUF_BUILTIN_BSWAP64
+#error PROTOBUF_BUILTIN_BSWAP64 was previously defined
+#endif
+#if defined(__GNUC__) || __has_builtin(__builtin_bswap16)
+#define PROTOBUF_BUILTIN_BSWAP16(x) __builtin_bswap16(x)
+#endif
+#if defined(__GNUC__) || __has_builtin(__builtin_bswap32)
+#define PROTOBUF_BUILTIN_BSWAP32(x) __builtin_bswap32(x)
+#endif
+#if defined(__GNUC__) || __has_builtin(__builtin_bswap64)
+#define PROTOBUF_BUILTIN_BSWAP64(x) __builtin_bswap64(x)
+#endif
+
 // Portable check for GCC minimum version:
 // https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) \
@@ -157,17 +178,17 @@
 #ifdef PROTOBUF_VERSION
 #error PROTOBUF_VERSION was previously defined
 #endif
-#define PROTOBUF_VERSION 3020003
+#define PROTOBUF_VERSION 3021012
 
 #ifdef PROTOBUF_MIN_HEADER_VERSION_FOR_PROTOC
 #error PROTOBUF_MIN_HEADER_VERSION_FOR_PROTOC was previously defined
 #endif
-#define PROTOBUF_MIN_HEADER_VERSION_FOR_PROTOC 3020000
+#define PROTOBUF_MIN_HEADER_VERSION_FOR_PROTOC 3021000
 
 #ifdef PROTOBUF_MIN_PROTOC_VERSION
 #error PROTOBUF_MIN_PROTOC_VERSION was previously defined
 #endif
-#define PROTOBUF_MIN_PROTOC_VERSION 3020000
+#define PROTOBUF_MIN_PROTOC_VERSION 3021000
 
 #ifdef PROTOBUF_VERSION_SUFFIX
 #error PROTOBUF_VERSION_SUFFIX was previously defined
@@ -235,7 +256,8 @@
 #endif
 #if __has_cpp_attribute(clang::musttail) && !defined(__arm__) && \
     !defined(_ARCH_PPC) && !defined(__wasm__) &&                 \
-    !(defined(_MSC_VER) && defined(_M_IX86))
+    !(defined(_MSC_VER) && defined(_M_IX86)) &&                  \
+    !(defined(__NDK_MAJOR__) && __NDK_MAJOR__ <= 24)
 #  ifndef PROTO2_OPENSOURCE
 // Compilation fails on ARM32: b/195943306
 // Compilation fails on powerpc64le: b/187985113
@@ -368,7 +390,7 @@
 
 // The minimum library version which works with the current version of the
 // headers.
-#define GOOGLE_PROTOBUF_MIN_LIBRARY_VERSION 3020000
+#define GOOGLE_PROTOBUF_MIN_LIBRARY_VERSION 3021000
 
 #ifdef PROTOBUF_RTTI
 #error PROTOBUF_RTTI was previously defined
@@ -513,6 +535,10 @@
 #error PROTOBUF_FORCE_COPY_IN_MOVE was previously defined
 #endif
 
+#ifdef PROTOBUF_FORCE_RESET_IN_CLEAR
+#error PROTOBUF_FORCE_RESET_IN_CLEAR was previously defined
+#endif
+
 // Force copy the default string to a string field so that non-optimized builds
 // have harder-to-rely-on address stability.
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
@@ -594,6 +620,22 @@
 #define PROTOBUF_THREAD_LOCAL __thread
 #endif
 
+// TODO(b/228173843): cleanup PROTOBUF_LITTLE_ENDIAN in various 3p forks.
+#if (defined(__BYTE_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__) && \
+     __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+#define PROTOBUF_LITTLE_ENDIAN 1
+#ifdef PROTOBUF_BIG_ENDIAN
+#error Conflicting PROTOBUF_BIG_ENDIAN was previously defined
+#endif
+#elif defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && \
+    __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#define PROTOBUF_BIG_ENDIAN 1
+#elif defined(_WIN32) || defined(__x86_64__) || defined(__aarch64__)
+#define PROTOBUF_LITTLE_ENDIAN 1
+#else
+#error "endian detection failed for current compiler"
+#endif
+
 // For enabling message owned arena, one major blocker is semantic change from
 // moving to copying when there is ownership transfer (e.g., move ctor, swap,
 // set allocated, release). This change not only causes performance regression
@@ -608,24 +650,29 @@
 #ifdef PROTOBUF_CONSTINIT
 #error PROTOBUF_CONSTINIT was previously defined
 #endif
-#if defined(__cpp_constinit)
+#if defined(__cpp_constinit) && !defined(_MSC_VER)
 #define PROTOBUF_CONSTINIT constinit
 #define PROTOBUF_CONSTEXPR constexpr
 // Some older Clang versions incorrectly raise an error about
 // constant-initializing weak default instance pointers. Versions 12.0 and
 // higher seem to work, except that XCode 12.5.1 shows the error even though it
 // uses Clang 12.0.5.
-#elif __has_cpp_attribute(clang::require_constant_initialization) && \
+// Clang-cl on Windows raises error also.
+#elif !defined(_MSC_VER) && __has_cpp_attribute(clang::require_constant_initialization) && \
     ((defined(__APPLE__) && __clang_major__ >= 13) ||                \
      (!defined(__APPLE__) && __clang_major__ >= 12))
 #define PROTOBUF_CONSTINIT [[clang::require_constant_initialization]]
 #define PROTOBUF_CONSTEXPR constexpr
-#elif PROTOBUF_GNUC_MIN(12, 0)
+#elif PROTOBUF_GNUC_MIN(12, 2)
 #define PROTOBUF_CONSTINIT __constinit
+#define PROTOBUF_CONSTEXPR constexpr
+// MSVC 17 currently seems to raise an error about constant-initialized pointers.
+#elif defined(_MSC_VER) && _MSC_VER >= 1930
+#define PROTOBUF_CONSTINIT
 #define PROTOBUF_CONSTEXPR constexpr
 #else
 #define PROTOBUF_CONSTINIT
-#define PROTOBUF_CONSTEXPR inline
+#define PROTOBUF_CONSTEXPR
 #endif
 
 // Some globals with an empty non-trivial destructor are annotated with
@@ -789,8 +836,12 @@
 #undef ERROR_INSTALL_FAILED
 #pragma push_macro("ERROR_NOT_FOUND")
 #undef ERROR_NOT_FOUND
+#pragma push_macro("GetClassName")
+#undef GetClassName
 #pragma push_macro("GetMessage")
 #undef GetMessage
+#pragma push_macro("GetObject")
+#undef GetObject
 #pragma push_macro("IGNORE")
 #undef IGNORE
 #pragma push_macro("IN")
@@ -834,6 +885,9 @@
 #undef TRUE
 #pragma push_macro("FALSE")
 #undef FALSE
+// Inconvenient macro names from usr/include/sys/syslimits.h in some macOS SDKs.
+#pragma push_macro("UID_MAX")
+#undef UID_MAX
 #endif  // __APPLE__
 
 #if defined(__clang__) || PROTOBUF_GNUC_MIN(3, 0) || defined(_MSC_VER)
@@ -843,12 +897,7 @@
 #undef DEBUG
 #endif // defined(__clang__) || PROTOBUF_GNUC_MIN(3, 0) || defined(_MSC_VER)
 
-#if defined(__clang__)
-#pragma clang diagnostic push
-// TODO(gerbens) ideally we cleanup the code. But a cursory try shows many
-// violations. So let's ignore for now.
-#pragma clang diagnostic ignored "-Wshorten-64-to-32"
-#elif PROTOBUF_GNUC_MIN(3, 0)
+#if PROTOBUF_GNUC_MIN(3, 0)
 // GCC does not allow disabling diagnostics within an expression:
 // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=60875, so we disable this one
 // globally even though it's only used for PROTOBUF_FIELD_OFFSET.

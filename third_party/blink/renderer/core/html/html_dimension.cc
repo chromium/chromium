@@ -28,6 +28,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/html/html_dimension.h"
 
 #include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
@@ -63,9 +68,9 @@ static HTMLDimension ParseDimension(const CharacterType* characters,
 
   if (position > last_parsed_index) {
     bool ok = false;
-    unsigned integer_value = CharactersToUInt(characters + last_parsed_index,
-                                              position - last_parsed_index,
-                                              WTF::NumberParsingOptions(), &ok);
+    unsigned integer_value = CharactersToUInt(
+        {characters + last_parsed_index, position - last_parsed_index},
+        WTF::NumberParsingOptions(), &ok);
     if (!ok)
       return HTMLDimension(0., HTMLDimension::kRelative);
     value += integer_value;
@@ -82,9 +87,8 @@ static HTMLDimension ParseDimension(const CharacterType* characters,
       }
 
       if (fraction_numbers.size()) {
-        double fraction_value =
-            CharactersToUInt(fraction_numbers.data(), fraction_numbers.size(),
-                             WTF::NumberParsingOptions(), &ok);
+        double fraction_value = CharactersToUInt(
+            base::span(fraction_numbers), WTF::NumberParsingOptions(), &ok);
         if (!ok)
           return HTMLDimension(0., HTMLDimension::kRelative);
 
@@ -168,8 +172,8 @@ static bool ParseDimensionValue(const CharacterType* current,
     SkipWhile<CharacterType, IsASCIIDigit>(current, end);
   }
   bool ok;
-  double value = CSSValueClampingUtils::ClampDouble(
-      CharactersToDouble(number_start, current - number_start, &ok));
+  double value = CSSValueClampingUtils::ClampDouble(CharactersToDouble(
+      {number_start, static_cast<size_t>(current - number_start)}, &ok));
   if (!ok)
     return false;
   HTMLDimension::HTMLDimensionType type = HTMLDimension::kAbsolute;

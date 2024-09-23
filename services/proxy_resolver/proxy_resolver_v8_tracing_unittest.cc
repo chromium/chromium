@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/proxy_resolver/proxy_resolver_v8_tracing.h"
 
 #include <string>
@@ -1008,7 +1013,7 @@ TEST_F(ProxyResolverV8TracingTest, MultipleResolvers) {
       EXPECT_EQ("[166.155.144.33.test:",
                 proxy_uri.substr(0, proxy_uri.find(':') + 1));
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }

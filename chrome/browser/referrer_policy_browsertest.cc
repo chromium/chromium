@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -229,7 +230,7 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
     if (expected_referrer != EXPECT_EMPTY_REFERRER) {
       expected_referrer_value =
           base::UTF16ToASCII(expected_title)
-              .substr(base::StringPiece("Referrer is ").size());
+              .substr(std::string_view("Referrer is ").size());
     }
     base::ReleasableAutoLock releaseable_lock(&check_on_requests_lock_);
     check_on_requests_ = RequestCheck{
@@ -410,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, HttpsMiddleClickTargetBlankOrigin) {
 }
 
 // Context menu, from HTTP to HTTP.
-// TODO(crbug.com/1269942): Flaky on Lacros.
+// TODO(crbug.com/40804570): Flaky on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ContextMenuOrigin DISABLED_ContextMenuOrigin
 #else
@@ -426,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_ContextMenuOrigin) {
 }
 
 // Context menu, from HTTPS to HTTP.
-// TODO(crbug.com/1269041): Fix flakiness on Linux and Lacros then reenable.
+// TODO(crbug.com/40803947): Fix flakiness on Linux and Lacros then reenable.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_HttpsContextMenuOrigin DISABLED_HttpsContextMenuOrigin
 #else
@@ -535,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest,
 }
 
 // Context menu, from HTTP to HTTP via server redirect.
-// TODO(crbug.com/1269041): Fix flakiness on Linux and Lacros then reenable.
+// TODO(crbug.com/40803947): Fix flakiness on Linux and Lacros then reenable.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ContextMenuRedirect DISABLED_ContextMenuRedirect
 #else
@@ -552,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_ContextMenuRedirect) {
 }
 
 // Context menu, from HTTPS to HTTP via server redirect.
-// TODO(crbug.com/1269942): Flaky on Lacros.
+// TODO(crbug.com/40804570): Flaky on Lacros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_HttpsContextMenuRedirect DISABLED_HttpsContextMenuRedirect
 #else

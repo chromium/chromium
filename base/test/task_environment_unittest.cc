@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <memory>
+#include <string_view>
 
 #include "base/atomicops.h"
 #include "base/cancelable_callback.h"
@@ -1509,7 +1510,7 @@ TEST_F(TaskEnvironmentTest, NoCOMEnvironment) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-// TODO(crbug.com/1318840): Re-enable this test
+// TODO(crbug.com/40835641): Re-enable this test
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ParallelExecutionFence DISABLED_ParallelExecutionFence
 #else
@@ -1623,8 +1624,8 @@ bool FailOnTaskEnvironmentLog(int severity,
                               int line,
                               size_t message_start,
                               const std::string& str) {
-  StringPiece file_str(file);
-  if (file_str.find("task_environment.cc") != StringPiece::npos) {
+  std::string_view file_str(file);
+  if (file_str.find("task_environment.cc") != std::string_view::npos) {
     ADD_FAILURE() << str;
     return true;
   }

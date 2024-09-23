@@ -23,8 +23,7 @@ namespace ash {
 
 // Interface for dependency injection between AssistantOptInFlowScreen
 // and its WebUI representation.
-class AssistantOptInFlowScreenView
-    : public base::SupportsWeakPtr<AssistantOptInFlowScreenView> {
+class AssistantOptInFlowScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "assistant-optin-flow", "AssistantOptInFlowScreen"};
@@ -36,12 +35,13 @@ class AssistantOptInFlowScreenView
   virtual ~AssistantOptInFlowScreenView() = default;
 
   virtual void Show() = 0;
+  virtual base::WeakPtr<AssistantOptInFlowScreenView> AsWeakPtr() = 0;
 
  protected:
   AssistantOptInFlowScreenView() = default;
 };
 
-class AssistantOptInFlowScreenHandler
+class AssistantOptInFlowScreenHandler final
     : public BaseScreenHandler,
       public AssistantOptInFlowScreenView,
       public AssistantStateObserver,
@@ -78,6 +78,7 @@ class AssistantOptInFlowScreenHandler
 
   // AssistantOptInFlowScreenView:
   void Show() override;
+  base::WeakPtr<AssistantOptInFlowScreenView> AsWeakPtr() override;
 
   // assistant::SpeakerIdEnrollmentClient:
   void OnListeningHotword() override;

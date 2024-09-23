@@ -11,4 +11,6 @@
 BASE_DECLARE_FEATURE(kWebApkShellUpdate);
 extern const base::FeatureParam<int> kWebApkTargetShellVersion;
 
+BASE_DECLARE_FEATURE(kWebApkMinShellVersion);
+
 #endif  // CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_FEATURES_H_

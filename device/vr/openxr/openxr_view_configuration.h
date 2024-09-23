@@ -8,10 +8,44 @@
 #include <vector>
 
 #include "base/memory/raw_ptr_exclusion.h"
+#include "device/vr/public/mojom/vr_service.mojom-forward.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace device {
+// -------- Constants/Helpers used for working with ViewConfigurations --------
+
+// The primary view configuration is always enabled and active in OpenXR. We
+// currently only support the stereo view configuration.
+static constexpr XrViewConfigurationType kPrimaryViewConfiguration =
+    XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+
+// Secondary view configurations that we currently support. The OpenXR runtime
+// must also support these for them to be enabled. There can be an arbitrary
+// number of secondary views enabled.
+static constexpr std::array<XrViewConfigurationType, 1>
+    kSecondaryViewConfigurations = {
+        XR_VIEW_CONFIGURATION_TYPE_SECONDARY_MONO_FIRST_PERSON_OBSERVER_MSFT,
+};
+
+// The number of views in the primary view configuration. Each frame must return
+// at least this number of views, in addition to any secondary views that are
+// enabled and active.
+static constexpr uint32_t kNumPrimaryViews = 2;
+
+// Per the OpenXR 1.0 spec for the XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO
+// view configuration: View index 0 must represent the left eye and view index 1
+// must represent the right eye.
+static constexpr uint32_t kLeftView = 0;
+static constexpr uint32_t kRightView = 1;
+// Since kNumPrimaryViews is used to size a vector that uses
+// kLeftView/kRightView as indices, ensure that kNumPrimaryViews is greater than
+// the largest index.
+static_assert(kRightView < kNumPrimaryViews,
+              "kNumPrimaryViews must be greater than kRightView");
+
+mojom::XREye GetEyeFromIndex(int i);
+// ------ End constants/helpers used for working with ViewConfigurations ------
 
 // A helper class to abstract away decisions that may need to be made about how
 // to use/consume/interpret the properties.

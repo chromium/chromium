@@ -65,7 +65,7 @@ EXPECTATION_DESCRIPTIONS = {
 }
 
 
-class _NotExpectation(typ_types.Expectation):
+class _NotExpectation(typ_types.ExpectationType):
     '''This class is a placeholder for emtpy lines or comments in the
     test expectations file. It has the same API as typ_types.Expectations.
     However the test member variable is set to an empty string and there
@@ -92,8 +92,9 @@ class ParseError(Exception):
 
 @dataclass
 class ExpectationsChange:
-    lines_added: List[typ_types.Expectation] = field(default_factory=list)
-    lines_removed: List[typ_types.Expectation] = field(default_factory=list)
+    lines_added: List[typ_types.ExpectationType] = field(default_factory=list)
+    lines_removed: List[typ_types.ExpectationType] = field(
+        default_factory=list)
 
     def __add__(self, other: 'ExpectationsChange') -> 'ExpectationsChange':
         lines_added = {line.to_string(): line for line in self.lines_added}
@@ -103,9 +104,9 @@ class ExpectationsChange:
         return ExpectationsChange(list(lines_added.values()),
                                   list(lines_removed.values()))
 
-    def _add_delta(self, lines: Collection[typ_types.Expectation],
-                   negative: Dict[str, typ_types.Expectation],
-                   positive: Dict[str, typ_types.Expectation]):
+    def _add_delta(self, lines: Collection[typ_types.ExpectationType],
+                   negative: Dict[str, typ_types.ExpectationType],
+                   positive: Dict[str, typ_types.ExpectationType]):
         for line in lines:
             formatted_line = line.to_string()
             if formatted_line in negative:
@@ -114,7 +115,7 @@ class ExpectationsChange:
                 positive[formatted_line] = line
 
 
-def _exp_order(exp: typ_types.Expectation):
+def _exp_order(exp: typ_types.ExpectationType):
     formatted_line = exp.to_string().strip()
     meaningful = formatted_line and not formatted_line.startswith('#')
     # Format empty lines and comments before semantically meaningful content.
@@ -487,7 +488,7 @@ class TestExpectations:
 
     def add_expectations(self,
                          path: str,
-                         exps: List[typ_types.Expectation],
+                         exps: List[typ_types.ExpectationType],
                          lineno: int = 0) -> ExpectationsChange:
         """This method adds Expectation instances to an expectations file. It will
         add the new instances after the line number passed through the lineno parameter.
@@ -706,8 +707,8 @@ class SystemConfigurationEditor:
             self._exp_path, exps_to_remove)
         return change
 
-    def _merge_expectations(self, exps: List[typ_types.Expectation],
-                            tags: FrozenSet[str]) -> typ_types.Expectation:
+    def _merge_expectations(self, exps: List[typ_types.ExpectationType],
+                            tags: FrozenSet[str]) -> typ_types.ExpectationType:
         reasons = {exp.reason.strip() for exp in exps}
         comments = set()
         for exp in exps:
@@ -729,7 +730,8 @@ class SystemConfigurationEditor:
             tags=tags)
 
     def _find_marker(self,
-                     marker: Optional[str] = None) -> typ_types.Expectation:
+                     marker: Optional[str] = None
+                     ) -> typ_types.ExpectationType:
         lines = self._test_expectations.get_updated_lines(self._exp_path)
         if marker:
             for line in lines:

@@ -1,0 +1,96 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-chip-border-radius: 8px;
+  --cr-chip-color: var(--color-chip-foreground,
+      var(--cr-fallback-color-on-surface));
+  --cr-chip-font-size: 12px;
+  --cr-chip-height: 28px;
+}
+
+button {
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-color: var(--color-chip-icon, var(--cr-fallback-color-primary));
+  --cr-icon-ripple-margin: 0;
+  --cr-icon-ripple-size: 16px;
+  --cr-icon-size: contain;
+  --iron-icon-fill-color: var(--color-chip-icon,
+      var(--cr-fallback-color-primary));
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  align-items: center;
+  appearance: none;
+  background-color: transparent;
+  border: 1px solid var(--color-chip-border,
+      var(--cr-fallback-color-tonal-outline));
+  border-radius: var(--cr-chip-border-radius);
+  color: var(--cr-chip-color);
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  flex-direction: row;
+  font-size: var(--cr-chip-font-size);
+  font-weight: 500;
+  gap: 4px;
+  height: var(--cr-chip-height);
+  overflow: hidden;
+  padding: 0 8px;
+  position: relative;
+  white-space: nowrap;
+}
+
+button:not(:is([disabled], [selected])):hover {
+  background-color: transparent;
+  border-color: var(--color-chip-border,
+      var(--cr-fallback-color-tonal-outline));
+}
+
+button:focus-visible {
+  outline: solid 2px var(--cr-focus-outline-color);
+  outline-offset: 2px;
+}
+
+button[disabled] {
+  cursor: default;
+  opacity: var(--cr-disabled-opacity);
+}
+
+button[selected] {
+  --cr-icon-color: var(--color-chip-icon-selected,
+      var(--cr-fallback-color-on-tonal-container));
+  --iron-icon-fill-color: var(--color-chip-icon-selected,
+      var(--cr-fallback-color-on-tonal-container));
+  background-color: var(--color-chip-background-selected,
+      var(--cr-fallback-color-tonal-container));
+  border-color: var(--color-chip-background-selected,
+      var(--cr-fallback-color-tonal-container));
+  color: var(--color-chip-foreground-selected,
+      var(--cr-fallback-color-on-tonal-container));
+  padding: 0 8px;
+}
+
+#hoverLayer {
+  display: none;
+}
+
+button:hover #hoverLayer {
+  background: var(--cr-hover-on-subtle-background-color);
+  display: block;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+#ink {
+  --paper-ripple-opacity: 1;
+  color: var(--cr-active-neutral-on-subtle-background-color);
+  display: block;
+}

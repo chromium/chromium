@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_FETCH_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_FETCH_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
@@ -104,7 +105,7 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
 
   void RequestIntercepted(std::unique_ptr<InterceptedRequestInfo> info);
 
-  DevToolsIOContext* const io_context_;
+  const raw_ptr<DevToolsIOContext> io_context_;
   std::unique_ptr<Fetch::Frontend> frontend_;
   std::unique_ptr<DevToolsURLLoaderInterceptor> interceptor_;
   UpdateLoaderFactoriesCallback update_loader_factories_callback_;

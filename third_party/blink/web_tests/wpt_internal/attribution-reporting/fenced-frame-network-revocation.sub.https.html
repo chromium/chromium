@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<title>Test that disableUntrustedNetwork disables Attribution Reporting.</title>
+<meta name=variant content="?fencedframe=source&type=event&cutoff=after&expect=true">
+<meta name=variant content="?fencedframe=trigger&type=event&cutoff=after&expect=true">
+<meta name=variant content="?fencedframe=source&type=event&cutoff=before&expect=false">
+<meta name=variant content="?fencedframe=trigger&type=event&cutoff=before&expect=false">
+<meta name=variant content="?fencedframe=source&type=aggregate&cutoff=after&expect=true">
+<meta name=variant content="?fencedframe=trigger&type=aggregate&cutoff=after&expect=true">
+<meta name=variant content="?fencedframe=source&type=aggregate&cutoff=before&expect=false">
+<meta name=variant content="?fencedframe=trigger&type=aggregate&cutoff=before&expect=false">
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/wpt_internal/fenced_frame/resources/utils.js"></script>
+<script src="/attribution-reporting/resources/helpers.js"></script>
+
+<body>
+<script>
+
+// This test ensures that new attribution reports cannot be registered after
+// network revocation inside fenced frames. To send an attribution report, a
+// source and a trigger need to be registered, which involve sending a request
+// to a relevant server to verify that it's a valid attribution reporting
+// endpoint. This request should not go out after network revocation.
+
+// The tests are set up with the following variants:
+
+// - fencedframe=source: The attribution source is registered in the fenced
+//   frame, and the trigger is registered in the main frame.
+// - fencedframe=trigger: The attribution trigger is registered in the fenced
+//   frame, and the source is registered in the main frame.
+
+// - type=event: The attribution report is an event-level report.
+// - type=aggregate: The attribution report is an in-aggregate report.
+
+// - cutoff=before: The fenced frame's network access is revoked before the
+//   source/trigger is registered inside of it.
+// - cutoff=after: The fenced frame's network access is revoked after the
+//   source/trigger is registered inside of it.
+
+// - expect=false: We do not expect an attribution report to send out.
+// - expect=true: We expect an attribution report to send out.
+
+const reportingOrigin = getDefaultReportingOrigin();
+
+attribution_reporting_promise_test(async t => {
+  const host = 'https://{{host}}';
+  const expectedSourceEventId = generateSourceEventId();
+
+  // The params are set by the <meta name=variant> tags.
+  const params = new URLSearchParams(location.search);
+  const param_fencedframe = params.get('fencedframe');
+  const param_report_type = params.get('type');
+  const param_cutoff = params.get('cutoff');
+  const param_expected_report = params.get('expect');
+
+  let source;
+  let trigger;
+  if (param_report_type == "event") {
+    source = {
+      destination: host,
+      source_event_id: expectedSourceEventId,
+    };
+    trigger = {
+      event_trigger_data: [{trigger_data: '2'}]
+    };
+  } else {
+    // The magic values in the source and trigger are arbitrary. Some value is
+    // needed to make this work, but it doesn't matter what the values are.
+    source = {
+      destination: host,
+      aggregation_keys: {
+          campaignCounts: '0x159',
+          geoValue: '0x5',
+        },
+    };
+    trigger = {
+      aggregatable_trigger_data: [],
+        aggregatable_values: {
+          campaignCounts: 32768,
+          geoValue: 1664,
+        },
+    };
+  }
+
+  const ready_key = token();
+
+  // If the fenced frame is registering the trigger, register the source in the
+  // main frame beforehand.
+  if (param_fencedframe == "trigger") {
+    registerAttributionSrcByImg(createRedirectChain([
+      {
+        cookie: 'foo=bar;Secure;HttpOnly;Path=/',
+        reportingOrigin,
+        source: source
+      },
+    ]));
+  }
+
+  const urn = await generateURNFromFledge(
+      "resources/fenced-frame-network-revocation-inner.https.html",
+      [ready_key, param_fencedframe, param_cutoff,
+      JSON.stringify(source).replaceAll(',', '&#44;'),
+      JSON.stringify(trigger).replaceAll(',', '&#44;')]);
+  const fencedframe = attachFencedFrame(urn);
+
+  // If the fenced frame is registering the source, register the trigger in the
+  // main frame afterwards.
+  if (param_fencedframe == "source") {
+    await nextValueFromServer(ready_key);
+    registerAttributionSrcByImg(createRedirectChain([
+      {
+        cookie: 'foo=bar;Secure;HttpOnly;Path=/',
+        reportingOrigin,
+        trigger: trigger
+      },
+    ]));
+  }
+
+  const getReports = async (reportingOrigin) => {
+    if (param_report_type == "event") {
+      return pollEventLevelReports(reportingOrigin);
+    } else {
+      return pollAggregatableReports(reportingOrigin);
+    }
+  };
+  if (param_expected_report == "true") {
+    const payload = await getReports(reportingOrigin);
+    assert_equals(payload.reports.length, 1,
+        "A beacon should have been sent.");
+  } else {
+    const timeout = new Promise(resolve => t.step_timeout(resolve, 2000));
+    const result = await Promise.race([getReports(reportingOrigin),
+        timeout]);
+    assert_true(result === undefined, "A beacon should not have been sent.");
+  }
+}, 'Test attribution reporting + network cutoff.');
+
+</script>
+</body>
+</html>

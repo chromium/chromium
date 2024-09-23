@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">แบบสำรวจ</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/วินาที</translation>
 <translation id="2353636109065292463">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
+<translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2388990488038464401">โทรหาหมายเลขนี้จากโทรศัพท์ของคุณใช่ไหม</translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
 <translation id="24452542372838207">ขยายการแจ้งเตือน</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">ใหม่</translation>
 <translation id="2666092431469916601">ด้านบน</translation>
 <translation id="2701330563083355633">แชร์จาก <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">ใหม่</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 ปีที่ผ่านมา}other{# ปีที่ผ่านมา}}</translation>
 <translation id="2878511608894704031">ลบทั้งหมด</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{ใน 1 วัน}other{ใน # วัน}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">ระบบ <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">ลูกศรซ้าย</translation>
+<translation id="5633029987065897167">ว่าง</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 นาที}other{# นาที}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ใช้งานวันนี้}=1{ใช้งานเมื่อ 1 วันที่ผ่านมา}other{ใช้งานเมื่อ # วันที่ผ่านมา}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 วันกับอีก }other{# วันกับอีก }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">เนื้อหา RTF</translation>
 <translation id="6539092367496845964">เกิดข้อผิดพลาด ลองอีกครั้งภายหลัง</translation>
 <translation id="654149438358937226">บล็อกการแจ้งเตือนทั้งหมด</translation>
-<translation id="6612467943526193239">หากต้องการออกจากการปรับเทียบ ให้กด Esc</translation>
 <translation id="6620110761915583480">บันทึกไฟล์</translation>
 <translation id="6699343763173986273">แทร็กถัดไปของสื่อ</translation>
 <translation id="6808150112686056157">หยุดสื่อ</translation>

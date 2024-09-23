@@ -1,0 +1,54 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "ios_tab_model_url_visit_data_fetcher.h",
+    "ios_tab_model_url_visit_data_fetcher.mm",
+    "visited_url_ranking_service_factory.h",
+    "visited_url_ranking_service_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/history_clusters/core",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/sync_device_info",
+    "//components/url_deduplication",
+    "//components/visited_url_ranking/internal",
+    "//components/visited_url_ranking/public",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/sessions/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
+    "//ios/components/webui:url_constants",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_tab_model_url_visit_data_fetcher_unittest.mm" ]
+  deps = [
+    ":model",
+    "//components/tab_groups",
+    "//components/visited_url_ranking/public",
+    "//ios/chrome/browser/sessions/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}

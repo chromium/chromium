@@ -35,7 +35,7 @@ bool SyncService::IsSyncFeatureEnabled() const {
 }
 
 bool SyncService::CanSyncFeatureStart() const {
-  return GetDisableReasons().Empty() &&
+  return GetDisableReasons().empty() &&
 #if BUILDFLAG(IS_CHROMEOS_ASH)
          !GetUserSettings()->IsSyncFeatureDisabledViaDashboard() &&
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -54,7 +54,7 @@ bool SyncService::IsEngineInitialized() const {
     case TransportState::ACTIVE:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -73,7 +73,7 @@ bool SyncService::IsSyncFeatureActive() const {
     case TransportState::ACTIVE:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

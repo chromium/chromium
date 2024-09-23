@@ -34,7 +34,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "content/public/browser/page_navigator.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -54,6 +53,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -63,10 +63,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupButton,
-                                      kDeleteGroupMenuItem);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupButton,
-                                      kMoveGroupToNewWindowMenuItem);
+namespace tab_groups {
 
 namespace {
 // The max height of the button and the max width of a button with no title.
@@ -87,32 +84,26 @@ constexpr float kEmptyChipInsets = 4.0f;
 constexpr float kEmptyChipCornerRadius = 2.0f;
 }  // namespace
 
-SavedTabGroupButton::SavedTabGroupButton(
-    const SavedTabGroup& group,
-    base::RepeatingCallback<content::PageNavigator*()> page_navigator,
-    PressedCallback callback,
-    Browser* browser,
-    bool animations_enabled)
+SavedTabGroupButton::SavedTabGroupButton(const SavedTabGroup& group,
+                                         PressedCallback callback,
+                                         Browser* browser,
+                                         bool animations_enabled)
     : MenuButton(std::move(callback), group.title()),
       tab_group_color_id_(group.color()),
       guid_(group.saved_guid()),
       local_group_id_(group.local_group_id()),
       tabs_(group.saved_tabs()),
-      browser_(*browser),
-      service_(
-          *SavedTabGroupServiceFactory::GetForProfile(browser_->profile())),
-      page_navigator_callback_(std::move(page_navigator)),
       context_menu_controller_(
           this,
           base::BindRepeating(
-              &SavedTabGroupButton::CreateDialogModelForContextMenu,
-              base::Unretained(this)),
+              &SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel,
+              browser,
+              group.saved_guid()),
           views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED) {
-  SetAccessibilityProperties(
-      ax::mojom::Role::kButton, /*name=*/GetAccessibleNameForButton(),
-      /*description=*/std::nullopt,
-      l10n_util::GetStringUTF16(
-          IDS_ACCNAME_SAVED_TAB_GROUP_BUTTON_ROLE_DESCRIPTION));
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  GetViewAccessibility().SetName(GetAccessibleNameForButton());
+  GetViewAccessibility().SetRoleDescription(l10n_util::GetStringUTF16(
+      IDS_ACCNAME_SAVED_TAB_GROUP_BUTTON_ROLE_DESCRIPTION));
   SetTextProperties(group);
   SetID(VIEW_ID_BOOKMARK_BAR_ELEMENT);
   SetProperty(views::kElementIdentifierKey, kSavedTabGroupButtonElementId);
@@ -150,12 +141,11 @@ void SavedTabGroupButton::UpdateButtonData(const SavedTabGroup& group) {
   tabs_ = group.saved_tabs();
 
   UpdateButtonLayout();
+  UpdateAccessibleName();
 }
 
 std::u16string SavedTabGroupButton::GetTooltipText(const gfx::Point& p) const {
-  return label()->GetPreferredSize().width() > label()->size().width()
-             ? GetText()
-             : std::u16string();
+  return GetAccessibleNameForButton();
 }
 
 bool SavedTabGroupButton::OnKeyPressed(const ui::KeyEvent& event) {
@@ -171,10 +161,10 @@ bool SavedTabGroupButton::OnKeyPressed(const ui::KeyEvent& event) {
   return false;
 }
 
-void SavedTabGroupButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::MenuButton::GetAccessibleNodeData(node_data);
-  node_data->SetNameChecked(GetAccessibleNameForButton());
-  node_data->role = ax::mojom::Role::kButton;
+bool SavedTabGroupButton::IsTriggerableEvent(const ui::Event& e) {
+  return e.type() == ui::EventType::kGestureTap ||
+         e.type() == ui::EventType::kGestureTapDown ||
+         event_utils::IsPossibleDispositionEvent(e);
 }
 
 void SavedTabGroupButton::PaintButtonContents(gfx::Canvas* canvas) {
@@ -199,7 +189,7 @@ void SavedTabGroupButton::PaintButtonContents(gfx::Canvas* canvas) {
                         kEmptyChipCornerRadius, flags);
 }
 
-std::u16string SavedTabGroupButton::GetAccessibleNameForButton() {
+std::u16string SavedTabGroupButton::GetAccessibleNameForButton() const {
   const std::u16string& opened_state =
       local_group_id_.has_value()
           ? l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_OPENED)
@@ -215,8 +205,17 @@ std::u16string SavedTabGroupButton::GetAccessibleNameForButton() {
   return saved_group_acessible_name;
 }
 
+void SavedTabGroupButton::UpdateAccessibleName() {
+  GetViewAccessibility().SetName(GetAccessibleNameForButton());
+}
+
+void SavedTabGroupButton::SetText(const std::u16string& text) {
+  LabelButton::SetText(text);
+  UpdateAccessibleName();
+}
+
 void SavedTabGroupButton::SetTextProperties(const SavedTabGroup& group) {
-  SetAccessibleName(GetAccessibleNameForButton());
+  GetViewAccessibility().SetName(GetAccessibleNameForButton());
   SetTooltipText(group.title());
   SetText(group.title());
 }
@@ -249,7 +248,7 @@ void SavedTabGroupButton::UpdateButtonLayout() {
     // When the text is empty force the button to have square dimensions.
     SetPreferredSize(gfx::Size(kButtonSize, kButtonSize));
   } else {
-    SetPreferredSize(CalculatePreferredSize());
+    SetPreferredSize(CalculatePreferredSize({}));
   }
 }
 
@@ -292,122 +291,7 @@ bool SavedTabGroupButton::CanStartDragForView(View* sender,
   return View::ExceededDragThreshold(move_offset);
 }
 
-void SavedTabGroupButton::TabMenuItemPressed(const GURL& url, int event_flags) {
-  CHECK(page_navigator_callback_);
-
-  content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-                                /*is_renderer_initiated=*/false,
-                                /*started_from_context_menu=*/true);
-  page_navigator_callback_.Run()->OpenURL(params);
-}
-
-void SavedTabGroupButton::MoveGroupToNewWindowPressed(int event_flags) {
-  Browser* const browser_with_local_group_id =
-      local_group_id_.has_value()
-          ? SavedTabGroupUtils::GetBrowserWithTabGroupId(
-                local_group_id_.value())
-          : std::to_address(browser_);
-
-  if (!local_group_id_.has_value()) {
-    // Open the group in the browser the button was pressed.
-    service_->OpenSavedTabGroupInBrowser(browser_with_local_group_id, guid_);
-  }
-
-  // Move the open group to a new browser window.
-  const SavedTabGroup* group = service_->model()->Get(guid_);
-  browser_with_local_group_id->tab_strip_model()
-      ->delegate()
-      ->MoveGroupToNewWindow(group->local_group_id().value());
-}
-
-void SavedTabGroupButton::DeleteGroupPressed(int event_flags) {
-  if (local_group_id_.has_value()) {
-    const Browser* const browser_with_local_group_id =
-        SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id_.value());
-
-    // Keep the opened tab group in the tabstrip but remove the SavedTabGroup
-    // data from the model.
-    TabGroup* tab_group = browser_with_local_group_id->tab_strip_model()
-                              ->group_model()
-                              ->GetTabGroup(local_group_id_.value());
-
-    service_->UnsaveGroup(local_group_id_.value());
-
-    // Notify observers to update the tab group header.
-    // TODO(dljames): Find a way to move this into
-    // SavedTabGroupKeyedService::DisconnectLocalTabGroup. The goal is to
-    // abstract this logic from the button in case we need to do similar
-    // functionality elsewhere in the future. Ensure this change works when
-    // dragging a Saved group out of the window.
-    tab_group->SetVisualData(*tab_group->visual_data());
-
-  } else {
-    // Remove the SavedTabGroup from the model. No need to worry about updating
-    // tabstrip, since this group is not open.
-    service_->model()->Remove(guid_);
-  }
-}
-
-std::unique_ptr<ui::DialogModel>
-SavedTabGroupButton::CreateDialogModelForContextMenu() {
-  ui::DialogModel::Builder dialog_model = ui::DialogModel::Builder();
-
-  const std::u16string move_or_open_group_text =
-      local_group_id_.has_value()
-          ? l10n_util::GetStringUTF16(
-                IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW)
-          : l10n_util::GetStringUTF16(
-                IDS_TAB_GROUP_HEADER_CXMENU_OPEN_GROUP_IN_NEW_WINDOW);
-
-  bool should_enable_move_menu_item = true;
-  if (local_group_id_.has_value()) {
-    const Browser* const browser_with_local_group_id =
-        SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id_.value());
-    const TabStripModel* const tab_strip_model =
-        browser_with_local_group_id->tab_strip_model();
-
-    // Show the menu item if there are tabs outside of the saved group.
-    should_enable_move_menu_item =
-        tab_strip_model->count() != tab_strip_model->group_model()
-                                        ->GetTabGroup(local_group_id_.value())
-                                        ->tab_count();
-  }
-
-  dialog_model
-      .AddMenuItem(
-          ui::ImageModel::FromVectorIcon(kMoveGroupToNewWindowRefreshIcon),
-          move_or_open_group_text,
-          base::BindRepeating(&SavedTabGroupButton::MoveGroupToNewWindowPressed,
-                              base::Unretained(this)),
-          ui::DialogModelMenuItem::Params()
-              .SetId(kMoveGroupToNewWindowMenuItem)
-              .SetIsEnabled(should_enable_move_menu_item))
-      .AddMenuItem(
-          ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon),
-          l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP),
-          base::BindRepeating(&SavedTabGroupButton::DeleteGroupPressed,
-                              base::Unretained(this)),
-          ui::DialogModelMenuItem::Params().SetId(kDeleteGroupMenuItem))
-      .AddSeparator();
-
-  for (const SavedTabGroupTab& tab : tabs_) {
-    const ui::ImageModel& image =
-        tab.favicon().has_value()
-            ? ui::ImageModel::FromImage(tab.favicon().value())
-            : favicon::GetDefaultFaviconModel(
-                  GetTabGroupBookmarkColorId(tab_group_color_id_));
-    const std::u16string title =
-        tab.title().empty() ? base::UTF8ToUTF16(tab.url().spec()) : tab.title();
-    dialog_model.AddMenuItem(
-        image, title,
-        base::BindRepeating(&SavedTabGroupButton::TabMenuItemPressed,
-                            base::Unretained(this), tab.url()));
-  }
-
-  return dialog_model.Build();
-}
-
 BEGIN_METADATA(SavedTabGroupButton)
 END_METADATA
+
+}  // namespace tab_groups

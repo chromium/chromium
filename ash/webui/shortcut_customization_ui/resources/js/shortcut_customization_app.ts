@@ -57,8 +57,6 @@ declare global {
     // onAcceleratorsUpdated() the other is by onRequestUpdateAccelerators().
     // This is used to prevent the onAcceleratorsUpdated() to update the
     // dialog when accelerator update is in progress.
-    // TODO(longbowei): Revisit this and consider refactoring on how we manage
-    // updates within the app.
     'accelerator-update-in-progress': CustomEvent<void>;
   }
 }
@@ -194,9 +192,9 @@ export class ShortcutCustomizationAppElement extends
     this.shortcutProvider.getAccelerators().then(
         ({config}) => this.onAcceleratorConfigFetched(config));
 
-    // Fetch the hasLauncherButton value.
-    this.shortcutProvider.hasLauncherButton().then(({hasLauncherButton}) => {
-      this.acceleratorlookupManager.setHasLauncherButton(hasLauncherButton);
+    // Fetch the MetaKey value to display.
+    this.shortcutProvider.getMetaKeyToDisplay().then(({metaKey}) => {
+      this.acceleratorlookupManager.setMetaKeyToDisplay(metaKey);
     });
   }
 
@@ -240,9 +238,9 @@ export class ShortcutCustomizationAppElement extends
       this.updateDialogAccelerators(this.dialogSource, this.dialogAction);
     }
 
-    // Update the hasLauncherButton value every time accelerators are updated.
-    this.shortcutProvider.hasLauncherButton().then(({hasLauncherButton}) => {
-      this.acceleratorlookupManager.setHasLauncherButton(hasLauncherButton);
+    // Update the getMetaKeyDisplay value every time accelerators are updated.
+    this.shortcutProvider.getMetaKeyToDisplay().then(({metaKey}) => {
+      this.acceleratorlookupManager.setMetaKeyToDisplay(metaKey);
     });
   }
 
@@ -325,7 +323,6 @@ export class ShortcutCustomizationAppElement extends
 
   protected onConfirmRestoreButtonClicked(): void {
     this.shortcutProvider.restoreAllDefaults().then(({result}) => {
-      // TODO(jimmyxgong): Explore error state with restore all.
       if (result.result === AcceleratorConfigResult.kSuccess) {
         this.shortcutProvider.recordUserAction(UserAction.kResetAll);
         strictQuery('#restoreDialog', this.shadowRoot, CrDialogElement).close();

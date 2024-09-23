@@ -101,7 +101,7 @@ void SubscribeToWebFeedTask::RequestComplete(
     Done(WebFeedSubscriptionRequestStatus::kSuccess);
     return;
   }
-  // TODO(crbug/1152592): Check for 'too many subscriptions' error.
+  // TODO(crbug.com/40158714): Check for 'too many subscriptions' error.
   Done(WebFeedSubscriptionRequestStatus::kFailedUnknownError);
 }
 

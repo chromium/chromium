@@ -15,9 +15,9 @@
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item.h"
@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
-#import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_data_sink.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_data_source.h"
@@ -157,6 +156,19 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     [self removeEmptySections];
   }
   [self updateToolbarItems];
+
+  // Force update a11y actions based on edit mode.
+  for (int section = 0; section < self.tableViewModel.numberOfSections;
+       section++) {
+    if (![self.tableViewModel numberOfItemsInSection:section]) {
+      continue;
+    }
+    NSInteger sectionIdentifier =
+        [self.tableViewModel sectionIdentifierForSectionIndex:section];
+    [self reconfigureCellsForItems:
+              [self.tableViewModel
+                  itemsInSectionWithIdentifier:sectionIdentifier]];
+  }
 }
 
 - (void)setSelectedUnreadItemCount:(NSUInteger)selectedUnreadItemCount {
@@ -284,12 +296,12 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
         self.selectedReadItemCount++;
         break;
       case kSectionIdentifierSignInPromo:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   } else {
     // Open the URL.
     TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-    // TODO(crbug.com/1430839): the runtime check will be replaced using new
+    // TODO(crbug.com/40263259): the runtime check will be replaced using new
     // methods implementations in TableViewItem and ReadingListTableViewItem.
     if ([item conformsToProtocol:@protocol(ReadingListListItem)]) {
       [self.delegate
@@ -314,7 +326,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
         self.selectedReadItemCount--;
         break;
       case kSectionIdentifierSignInPromo:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }
@@ -332,7 +344,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     return nil;
   }
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  // TODO(crbug.com/1430839): the runtime check will be replaced using new
+  // TODO(crbug.com/40263259): the runtime check will be replaced using new
   // methods implementations in TableViewItem and ReadingListTableViewItem.
   if ([item conformsToProtocol:@protocol(ReadingListListItem)]) {
     return [self.menuProvider
@@ -360,7 +372,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   if (self.tableView.editing)
     return nil;
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  // TODO(crbug.com/1430839): the runtime check will be replaced using new
+  // TODO(crbug.com/40263259): the runtime check will be replaced using new
   // methods implementations in TableViewItem and ReadingListTableViewItem.
   if ([item conformsToProtocol:@protocol(ReadingListListItem)]) {
     id<ReadingListListItem> readingListItem = (id<ReadingListListItem>)item;
@@ -769,7 +781,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     // Updating the favicon can lead to synchronous update of the item if the
     // icon is already available. To avoid causing a crash, update the trigger
     // the favicon asynchronously.
-    // TODO(crbug.com/1368111): check the fix actually prevents crashing.
+    // TODO(crbug.com/40240200): check the fix actually prevents crashing.
     __weak __typeof(item) weakItem = item;
     dispatch_async(dispatch_get_main_queue(), ^{
       if (weakSelf && weakItem) {
@@ -832,7 +844,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   NSArray* items = [self.tableViewModel itemsInSectionWithIdentifier:section];
   // Read the objects in reverse order to keep the order (last modified first).
   for (TableViewItem* item in [items reverseObjectEnumerator]) {
-    // TODO(crbug.com/1430839): the runtime check will be replaced using new
+    // TODO(crbug.com/40263259): the runtime check will be replaced using new
     // methods implementations in TableViewItem and ReadingListTableViewItem.
     if ([item conformsToProtocol:@protocol(ReadingListListItem)]) {
       updater((id<ReadingListListItem>)item);
@@ -851,7 +863,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   // Read the objects in reverse order to keep the order (last modified first).
   for (NSIndexPath* indexPath in [indexPaths reverseObjectEnumerator]) {
     TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-    // TODO(crbug.com/1430839): the runtime check will be replaced by new
+    // TODO(crbug.com/40263259): the runtime check will be replaced by new
     // methods implementations in TableViewItem and ReadingListTableViewItem.
     if ([item conformsToProtocol:@protocol(ReadingListListItem)]) {
       updater((id<ReadingListListItem>)item);
@@ -1213,7 +1225,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
       sectionIndex++;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

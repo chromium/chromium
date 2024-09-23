@@ -32,7 +32,8 @@
     </option>
   </template>
   <option value="[[notFoundValue]]"
-      disabled="[[!showNotFoundValue_(menuOptions, pref.value)]]">
+      disabled="[[!showNotFoundValue_(menuOptions, pref.value)]]"
+      aria-hidden="[[!showNotFoundValue_(menuOptions, pref.value)]]">
     $i18n{custom}
   </option>
 </select>

@@ -83,6 +83,10 @@ GL_BASE_LINK_OPTS = select({
         "-framework OpenGL",
         "-framework CoreVideo",
     ],
+    "//mediapipe:emscripten": [
+        # Needed for symbols such as glFenceSync.
+        "-s MAX_WEBGL_VERSION=2",
+    ],
 })
 
 # This is @unused internally.
@@ -115,6 +119,7 @@ cc_library(
     deps = [":gl_base_hdr"] + select({
         "//mediapipe:android": [],
         "//mediapipe:apple": [],
+        "//mediapipe:emscripten": [],
         "//conditions:default": [
         ],
     }),
@@ -140,6 +145,7 @@ cc_library(
     deps = select({
         "//mediapipe:android": [],
         "//mediapipe:apple": [],
+        "//mediapipe:emscripten": [],
         "//conditions:default": [
         ],
     }),
@@ -151,6 +157,11 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":gl_base",
+        "@com_google_absl//absl/base:core_headers",
+        "@com_google_absl//absl/base:log_severity",
+        "@com_google_absl//absl/log",
+        "@com_google_absl//absl/log:absl_log",
+        "@com_google_absl//absl/time",
     ],
 )
 
@@ -165,6 +176,9 @@ cc_library(
         ],
         "//mediapipe:ios": [
             "gl_context_eagl.cc",
+        ],
+        "//mediapipe:emscripten": [
+            "gl_context_webgl.cc",
         ],
         "//mediapipe:macos": [
             "gl_context_nsgl.cc",
@@ -188,7 +202,9 @@ cc_library(
             "-framework AppKit",
         ],
     }),
-    visibility = ["//visibility:public"],
+    visibility = [
+        "//visibility:public",
+    ],
     deps = [
         ":attachments",
         ":gl_base",
@@ -222,6 +238,7 @@ cc_library(
         ],
         "//mediapipe:ios": [
         ],
+        "//mediapipe:emscripten": [],
         "//mediapipe:macos": [
         ],
     }),
@@ -239,9 +256,12 @@ cc_library(
         ":gpu_buffer_format",
         ":gpu_buffer_storage",
         ":gpu_buffer_storage_image_frame",
+        "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/strings:str_format",
+        "@com_google_absl//absl/synchronization",
         # TODO: remove this dependency. Some other teams' tests
         # depend on having an indirect image_frame dependency, need to be
         # fixed first.
@@ -356,6 +376,16 @@ cc_library(
     }),
 )
 
+cc_test(
+    name = "gpu_buffer_format_test",
+    srcs = ["gpu_buffer_format_test.cc"],
+    deps = [
+        ":gl_base_hdr",
+        ":gpu_buffer_format",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
 cc_library(
     name = "gpu_buffer_storage",
     srcs = ["gpu_buffer_storage.cc"],
@@ -392,7 +422,7 @@ cc_library(
 mediapipe_cc_test(
     name = "gpu_buffer_storage_cv_pixel_buffer_test",
     size = "small",
-    timeout = "moderate",
+    timeout = "long",
     srcs = ["gpu_buffer_storage_cv_pixel_buffer_test.cc"],
     platforms = ["ios"],
     deps = [
@@ -438,10 +468,12 @@ cc_library(
         ":multi_pool",
         ":pixel_buffer_pool_util",
         "//mediapipe/framework/port:logging",
+        "//mediapipe/framework/port:ret_check",
         "//mediapipe/objc:CFHolder",
         "//mediapipe/objc:util",
         "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings:str_format",
         "@com_google_absl//absl/synchronization",
     ],
 )
@@ -539,6 +571,19 @@ mediapipe_proto_library(
 )
 
 cc_library(
+    name = "gpu_origin_utils",
+    srcs = ["gpu_origin_utils.cc"],
+    hdrs = ["gpu_origin_utils.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":gpu_origin_cc_proto",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings:str_format",
+    ],
+)
+
+cc_library(
     name = "pixel_buffer_pool_util",
     srcs = ["pixel_buffer_pool_util.cc"],
     hdrs = ["pixel_buffer_pool_util.h"],
@@ -571,6 +616,8 @@ cc_library(
         "//mediapipe/framework/port:ret_check",
         "@google_toolbox_for_mac//:GTM_Defines",
     ] + [
+        "//third_party/apple_frameworks:CoreVideo",
+        "//third_party/apple_frameworks:Metal",
     ],
     alwayslink = 1,
 )
@@ -666,16 +713,21 @@ cc_library(
         ":gpu_buffer_multi_pool",
         ":gpu_shared_data_header",
         ":graph_support",
+        ":multi_pool",
         "//mediapipe/framework:calculator_context",
         "//mediapipe/framework:calculator_node",
         "//mediapipe/framework:executor",
+        "//mediapipe/framework:graph_service",
         "//mediapipe/framework/deps:no_destructor",
+        "//mediapipe/framework/port:map_util",
         "//mediapipe/framework/port:ret_check",
+        "//mediapipe/framework/port:status",
         "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
     ] + select({
         "//conditions:default": [],
         "//mediapipe:apple": [
@@ -692,9 +744,12 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":gl_texture_buffer",
+        ":gpu_buffer_format",
         ":multi_pool",
         ":reusable_pool",
+        "//mediapipe/framework/port:ret_check",
         "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings:str_format",
         "@com_google_absl//absl/synchronization",
     ],
 )
@@ -708,6 +763,7 @@ cc_library(
         "//mediapipe/framework/port:status",
         "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/functional:any_invocable",
+        "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/synchronization",
     ],
@@ -719,7 +775,9 @@ cc_library(
     deps = [
         "//mediapipe/framework/port:status",
         "//mediapipe/util:resource_cache",
+        "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/synchronization",
     ],
 )
 
@@ -749,6 +807,7 @@ cc_library(
     deps = [
         ":gl_base",
         ":gpu_buffer",
+        ":gpu_buffer_format",
         ":gpu_shared_data_header",
         ":multi_pool",
         "//mediapipe/framework:calculator_context",
@@ -812,6 +871,7 @@ cc_library(
     hdrs = ["egl_surface_holder.h"],
     deps = [
         ":gl_base",
+        "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/synchronization",
     ],
 )
@@ -1019,12 +1079,15 @@ cc_library(
         ":gl_quad_renderer",
         ":gl_scaler_calculator_cc_proto",
         ":gl_simple_shaders",
+        ":gpu_buffer",
+        ":gpu_buffer_format",
         ":shader_util",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework/formats:image",
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",
         "//mediapipe/framework/tool:options_util",
+        "@com_google_absl//absl/status:statusor",
     ],
     alwayslink = 1,
 )
@@ -1035,16 +1098,20 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":egl_surface_holder",
+        ":gl_base_hdr",
         ":gl_calculator_helper",
         ":gl_quad_renderer",
         ":gl_surface_sink_calculator_cc_proto",
         ":gpu_buffer",
-        ":shader_util",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework/api2:node",
+        "//mediapipe/framework/api2:packet",
+        "//mediapipe/framework/api2:port",
+        "//mediapipe/framework/formats:image",
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework/port:status",
         "@com_google_absl//absl/log:absl_log",
+        "@com_google_absl//absl/status",
         "@com_google_absl//absl/synchronization",
     ],
     alwayslink = 1,
@@ -1190,7 +1257,7 @@ test_suite(
 
 objc_library(
     name = "gl_ios_test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = [
         "gl_ios_test.mm",
         "metal_shared_resources_test.mm",
@@ -1236,6 +1303,10 @@ mediapipe_cc_test(
     name = "gpu_buffer_storage_ahwb_test",
     size = "small",
     srcs = ["gpu_buffer_storage_ahwb_test.cc"],
+    # Ensures that virtual device chosen is Android 26+.
+    android_devices = {
+        "//tools/target_cpu:x86": "//tools/mobile/devices/android/generic_phone:android_26_x86",
+    },
     exclude_platforms = [
         "ios",
         "wasm",

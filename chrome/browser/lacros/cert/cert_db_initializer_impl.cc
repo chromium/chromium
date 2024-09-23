@@ -17,6 +17,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "cert_db_initializer_io_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -110,9 +111,20 @@ void CertDbInitializerImpl::InitializeReadOnlyCertDb() {
 }
 
 void CertDbInitializerImpl::InitializeForMainProfile() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   auto software_db_loaded_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&CertDbInitializerImpl::DidLoadSoftwareNssDb,
                      weak_factory_.GetWeakPtr()));
+
+  if (chromeos::IsKioskSession()) {
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CertDbInitializerIOImpl::InitReadOnlyPublicSlot,
+                       base::Unretained(cert_db_initializer_io_.get()),
+                       std::move(software_db_loaded_callback)));
+    return;
+  }
 
   const chromeos::BrowserParamsProxy* init_params =
       chromeos::BrowserParamsProxy::Get();

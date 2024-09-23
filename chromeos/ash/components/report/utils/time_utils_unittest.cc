@@ -374,7 +374,40 @@ TEST(TimeUtilsTest, IsFirstActiveUnderFourMonthsAgo) {
         base::Time::FromUTCExploded(test_case.active_exploded, &active_ts));
     EXPECT_TRUE(base::Time::FromUTCExploded(test_case.first_active_exploded,
                                             &first_active_ts));
-    EXPECT_EQ(IsFirstActiveUnderFourMonthsAgo(active_ts, first_active_ts),
+
+    // 4 Months ago assuming max 31 days per month.
+    int max_days_in_4_months = 31 * 4;
+    EXPECT_EQ(IsFirstActiveUnderNDaysAgo(active_ts, first_active_ts,
+                                         max_days_in_4_months),
+              test_case.expected_result);
+  }
+}
+
+TEST(TimeUtilsTest, IsFirstActiveUnderFiveWeeksAgo) {
+  struct {
+    base::Time::Exploded active_exploded;
+    base::Time::Exploded first_active_exploded;
+    bool expected_result;
+  } kTestCases[] = {
+      // Check when active and first active represent the same time.
+      {{2021, 1, 0, 3, 12, 30, 0, 0}, {2021, 1, 0, 3, 12, 30, 0, 0}, true},
+      // Check boundary case if first active under 5 weeks ago.
+      {{2021, 2, 0, 4, 12, 30, 0, 0}, {2020, 12, 0, 31, 12, 30, 0, 0}, true},
+      // Check outside four month boundary is false.
+      {{2021, 1, 0, 31, 12, 30, 0, 0}, {2020, 9, 0, 1, 12, 30, 0, 0}, false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::Time active_ts;
+    base::Time first_active_ts;
+    EXPECT_TRUE(
+        base::Time::FromUTCExploded(test_case.active_exploded, &active_ts));
+    EXPECT_TRUE(base::Time::FromUTCExploded(test_case.first_active_exploded,
+                                            &first_active_ts));
+
+    int max_days_in_5_weeks = 7 * 5;
+    EXPECT_EQ(IsFirstActiveUnderNDaysAgo(active_ts, first_active_ts,
+                                         max_days_in_5_weeks),
               test_case.expected_result);
   }
 }

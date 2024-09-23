@@ -59,11 +59,6 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
     return base::AdoptRef(new BitmapImage(observer, is_multipart));
   }
 
-  // Returns a BitmapImage if `url` is a data URL with a known encoded 1x1
-  // transparent gif.
-  static scoped_refptr<BitmapImage> MaybeCreateTransparentPlaceholderImage(
-      KURL url);
-
   ~BitmapImage() override;
 
   bool IsBitmapImage() const override { return true; }
@@ -103,7 +98,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
 
   PaintImage PaintImageForTesting();
   void AdvanceAnimationForTesting() override {
-    NOTREACHED() << "Supported only with svgs";
+    NOTREACHED_IN_MIGRATION() << "Supported only with svgs";
   }
   void SetDecoderForTesting(std::unique_ptr<DeferredImageDecoder> decoder) {
     decoder_ = std::move(decoder);
@@ -131,9 +126,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   };
 
   BitmapImage(const SkBitmap&, ImageObserver* = nullptr);
-  BitmapImage(ImageObserver* = nullptr,
-              bool is_multi_part = false,
-              bool is_transparent_placeholder = false);
+  BitmapImage(ImageObserver* = nullptr, bool is_multi_part = false);
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
@@ -186,9 +179,6 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   bool have_frame_count_ : 1;
 
   bool default_frame_has_alpha_ : 1;
-
-  const bool is_transparent_placeholder_ : 1;  // Whether this image represents
-                                               // a 1x1 transparent gif.
 
   RepetitionCountStatus repetition_count_status_;
   int repetition_count_;  // How many total animation loops we should do.  This

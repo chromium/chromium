@@ -16,12 +16,15 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/numerics/angle_conversions.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "services/device/generic_sensor/platform_sensor_reader_win_base.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 
 namespace device {
 
@@ -43,7 +46,7 @@ class PlatformSensorReaderWinrtFactory {
 // interfaces should be passed in. The owner of this class must guarantee
 // construction and destruction occur on the same thread and that no
 // other thread is accessing it during destruction.
-// TODO(crbug.com/995594): Change Windows.Devices.Sensors based
+// TODO(crbug.com/41477114): Change Windows.Devices.Sensors based
 //   implementation of W3C sensor API to use hardware thresholding.
 template <wchar_t const* runtime_class_id,
           class ISensorWinrtStatics,
@@ -78,11 +81,14 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
 
  protected:
   PlatformSensorReaderWinrtBase();
-  virtual ~PlatformSensorReaderWinrtBase() { StopSensor(); }
+  virtual ~PlatformSensorReaderWinrtBase() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
+    StopSensor();
+  }
 
   // Derived classes should implement this function to handle sensor specific
   // parsing of the sensor reading.
-  virtual HRESULT OnReadingChangedCallback(
+  virtual void OnReadingChangedCallback(
       ISensorWinrtClass* sensor,
       ISensorReadingChangedEventArgs* reading_changed_args) = 0;
 
@@ -94,11 +100,15 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
       Microsoft::WRL::ComPtr<ISensorReading> sensor_reading,
       base::TimeDelta* timestamp_delta);
 
-  // Following class member is protected by lock since SetClient,
-  // StartSensor, and StopSensor can all be called from different
-  // threads by PlatformSensorWin.
-  base::Lock lock_;
-  // Null if there is no client to notify, non-null otherwise.
+  SEQUENCE_CHECKER(com_sta_sequence_checker_);
+  SEQUENCE_CHECKER(main_sequence_checker_);
+
+  mutable base::Lock lock_;
+
+  // Null if there is no client to notify, non-null otherwise. Protected by
+  // |lock_| because SetClient() and StartSensor() are called from the main
+  // task runner rather than the thread where this object is created, and
+  // StopSensor() may be called from the main task runner too.
   raw_ptr<Client, DanglingUntriaged> client_ GUARDED_BY(lock_);
 
   // Always report the first sample received after starting the sensor.
@@ -107,13 +117,21 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
  private:
   base::TimeDelta GetMinimumReportIntervalFromSensor();
 
+  // Task runner where this object was created.
+  scoped_refptr<base::SingleThreadTaskRunner> com_sta_task_runner_;
+
   GetSensorFactoryFunctor get_sensor_factory_callback_;
 
   // std::nullopt if the sensor has not been started, non-empty otherwise.
   std::optional<EventRegistrationToken> reading_callback_token_;
 
-  base::TimeDelta minimum_report_interval_;
+  // Protected by |lock_| because GetMinimalReportingInterval() is called from
+  // the main task runner.
+  base::TimeDelta minimum_report_interval_ GUARDED_BY(lock_);
+
   Microsoft::WRL::ComPtr<ISensorWinrtClass> sensor_;
+
+  base::WeakPtrFactory<PlatformSensorReaderWinrtBase> weak_ptr_factory_{this};
 };
 
 class PlatformSensorReaderWinrtLightSensor final
@@ -140,7 +158,7 @@ class PlatformSensorReaderWinrtLightSensor final
   ~PlatformSensorReaderWinrtLightSensor() override = default;
 
  protected:
-  HRESULT OnReadingChangedCallback(
+  void OnReadingChangedCallback(
       ABI::Windows::Devices::Sensors::ILightSensor* sensor,
       ABI::Windows::Devices::Sensors::ILightSensorReadingChangedEventArgs*
           reading_changed_args) override;
@@ -177,7 +195,7 @@ class PlatformSensorReaderWinrtAccelerometer final
   ~PlatformSensorReaderWinrtAccelerometer() override = default;
 
  protected:
-  HRESULT OnReadingChangedCallback(
+  void OnReadingChangedCallback(
       ABI::Windows::Devices::Sensors::IAccelerometer* sensor,
       ABI::Windows::Devices::Sensors::IAccelerometerReadingChangedEventArgs*
           reading_changed_args) override;
@@ -215,7 +233,7 @@ class PlatformSensorReaderWinrtGyrometer final
   ~PlatformSensorReaderWinrtGyrometer() override = default;
 
  protected:
-  HRESULT OnReadingChangedCallback(
+  void OnReadingChangedCallback(
       ABI::Windows::Devices::Sensors::IGyrometer* sensor,
       ABI::Windows::Devices::Sensors::IGyrometerReadingChangedEventArgs*
           reading_changed_args) override;
@@ -254,7 +272,7 @@ class PlatformSensorReaderWinrtMagnetometer final
   ~PlatformSensorReaderWinrtMagnetometer() override = default;
 
  protected:
-  HRESULT OnReadingChangedCallback(
+  void OnReadingChangedCallback(
       ABI::Windows::Devices::Sensors::IMagnetometer* sensor,
       ABI::Windows::Devices::Sensors::IMagnetometerReadingChangedEventArgs*
           reading_changed_args) override;
@@ -293,7 +311,7 @@ class PlatformSensorReaderWinrtAbsOrientationEulerAngles final
   ~PlatformSensorReaderWinrtAbsOrientationEulerAngles() override = default;
 
  protected:
-  HRESULT OnReadingChangedCallback(
+  void OnReadingChangedCallback(
       ABI::Windows::Devices::Sensors::IInclinometer* sensor,
       ABI::Windows::Devices::Sensors::IInclinometerReadingChangedEventArgs*
           reading_changed_args) override;
@@ -324,7 +342,7 @@ class PlatformSensorReaderWinrtAbsOrientationQuaternion final
           ABI::Windows::Devices::Sensors::
               IOrientationSensorReadingChangedEventArgs> {
  public:
-  static constexpr double kRadianThreshold = gfx::DegToRad(0.1);
+  static constexpr double kRadianThreshold = base::DegToRad(0.1);
 
   static std::unique_ptr<PlatformSensorReaderWinBase> Create();
 
@@ -332,7 +350,7 @@ class PlatformSensorReaderWinrtAbsOrientationQuaternion final
   ~PlatformSensorReaderWinrtAbsOrientationQuaternion() override;
 
  protected:
-  HRESULT OnReadingChangedCallback(
+  void OnReadingChangedCallback(
       ABI::Windows::Devices::Sensors::IOrientationSensor* sensor,
       ABI::Windows::Devices::Sensors::IOrientationSensorReadingChangedEventArgs*
           reading_changed_args) override;

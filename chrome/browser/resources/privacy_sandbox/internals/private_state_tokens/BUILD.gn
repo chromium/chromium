@@ -1,0 +1,56 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(!is_android)
+
+build_webui("build") {
+  grd_prefix = "private_state_tokens"
+
+  static_files = [ "private_state_tokens.html" ]
+
+  non_web_component_files = [
+    "app.ts",
+    "app.html.ts",
+    "list_container.ts",
+    "list_container.html.ts",
+    "navigation.ts",
+    "navigation.html.ts",
+    "browser_proxy.ts",
+    "list_item.ts",
+    "list_item.html.ts",
+    "metadata.ts",
+    "metadata.html.ts",
+    "private_state_tokens.ts",
+    "sidebar.ts",
+    "sidebar.html.ts",
+    "toolbar.ts",
+    "toolbar.html.ts",
+    "types.ts",
+  ]
+
+  css_files = [
+    "app.css",
+    "list_container.css",
+    "list_item.css",
+    "metadata.css",
+    "shared_vars.css",
+    "sidebar.css",
+    "toolbar.css",
+  ]
+
+  mojo_files_deps = [ "//chrome/browser/ui/webui/privacy_sandbox/private_state_tokens:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/privacy_sandbox/private_state_tokens/private_state_tokens.mojom-webui.ts" ]
+
+  ts_composite = true
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  generate_grdp = true
+  grd_resource_path_prefix = "private_state_tokens"
+}

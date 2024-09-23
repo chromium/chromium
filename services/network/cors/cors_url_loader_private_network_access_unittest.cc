@@ -6,9 +6,11 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "net/base/net_errors.h"
 #include "services/network/cors/cors_url_loader_test_util.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/cors.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -848,7 +850,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, DoesNotShareCache) {
 // Network Access. The `*PolicyWarnPreflight*` variants test what happens when
 // a preflight was attempted before noticing the private network access.
 //
-// TODO(https://crbug.com/1268378): Remove these tests once the policy is never
+// TODO(crbug.com/40204695): Remove these tests once the policy is never
 // set to `kPreflightWarn` anymore.
 
 // This test verifies that when:
@@ -882,6 +884,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleNetError) {
                   .Build())
           .WithDevToolsObserver(devtools_observer.Bind())
           .Build();
+  request.devtools_request_id = "devtools";
 
   base::HistogramTester histogram_tester;
 
@@ -960,6 +963,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSimpleTimeout) {
                   .Build())
           .WithDevToolsObserver(devtools_observer.Bind())
           .Build();
+  request.devtools_request_id = "devtools";
 
   base::HistogramTester histogram_tester;
 
@@ -1113,6 +1117,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockPreflightNoTimeout) {
                   .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
                   .Build())
           .Build();
+  request.devtools_request_id = "devtools";
 
   base::HistogramTester histogram_tester;
 
@@ -1384,7 +1389,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightNetError) {
       histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
       ElementsAre(
           MakeBucket(mojom::CorsError::kInvalidResponse, 1),
-          // TODO(https://crbug.com/1290390): This should not be logged.
+          // TODO(crbug.com/40212338): This should not be logged.
           MakeBucket(mojom::CorsError::kUnexpectedPrivateNetworkAccess, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
               IsEmpty());
@@ -1422,6 +1427,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightCorsError) {
                   .Build())
           .WithDevToolsObserver(devtools_observer.Bind())
           .Build();
+  request.devtools_request_id = "devtools";
 
   base::HistogramTester histogram_tester;
 
@@ -1450,7 +1456,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightCorsError) {
       histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
       ElementsAre(
           MakeBucket(mojom::CorsError::kPreflightMissingAllowOriginHeader, 1),
-          // TODO(https://crbug.com/1290390): This should not be logged.
+          // TODO(crbug.com/40212338): This should not be logged.
           MakeBucket(mojom::CorsError::kUnexpectedPrivateNetworkAccess, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
               IsEmpty());
@@ -1900,6 +1906,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyBlockCorsError) {
                   .Build())
           .WithDevToolsObserver(devtools_observer.Bind())
           .Build();
+  request.devtools_request_id = "devtools";
 
   base::HistogramTester histogram_tester;
 
@@ -1981,6 +1988,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
                   .Build())
           .WithDevToolsObserver(devtools_observer.Bind())
           .Build();
+  request.devtools_request_id = "devtools";
 
   base::HistogramTester histogram_tester;
 
@@ -2063,6 +2071,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
                   .Build())
           .WithDevToolsObserver(devtools_observer.Bind())
           .Build();
+  request.devtools_request_id = "devtools";
 
   base::HistogramTester histogram_tester;
 
@@ -2234,6 +2243,44 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyOnFactoryAndRequest) {
 
   EXPECT_EQ(client().completion_status().error_code,
             net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+}
+
+TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
+       NoPermissionPromptForNonPnaPreflights) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPrivateNetworkAccessPermissionPrompt);
+
+  auto initiator = url::Origin::Create(GURL("https://foo.example"));
+  ResetFactoryParams factory_params;
+  factory_params.is_trusted = true;
+  factory_params.client_security_state = mojom::ClientSecurityState::New();
+  factory_params.client_security_state->is_web_secure_context = true;
+  factory_params.url_loader_network_observer =
+      TestURLLoaderNetworkObserver().Bind();
+  ResetFactory(initiator, kRendererProcessId, factory_params);
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCorsWithForcedPreflight;
+  request.required_ip_address_space = mojom::IPAddressSpace::kPrivate;
+  request.target_ip_address_space = mojom::IPAddressSpace::kUnknown;
+  request.url = GURL("http://example.com/");
+  request.request_initiator = initiator;
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithClientSecurityState(
+              ClientSecurityStateBuilder()
+                  .WithPrivateNetworkRequestPolicy(
+                      mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
+                  .WithIsSecureContext(false)
+                  .WithIPAddressSpace(mojom::IPAddressSpace::kUnknown)
+                  .Build())
+          .Build();
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  EXPECT_EQ(client().completion_status().error_code, net::OK);
 }
 
 }  // namespace

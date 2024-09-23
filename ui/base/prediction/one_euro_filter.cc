@@ -38,16 +38,4 @@ const char* OneEuroFilter::GetName() const {
   return features::kFilterNameOneEuro;
 }
 
-InputFilter* OneEuroFilter::Clone() {
-  OneEuroFilter* new_filter = new OneEuroFilter();
-  new_filter->x_filter_.reset(x_filter_->Clone());
-  new_filter->y_filter_.reset(y_filter_->Clone());
-  return new_filter;
-}
-
-void OneEuroFilter::Reset() {
-  x_filter_->Reset();
-  y_filter_->Reset();
-}
-
 }  // namespace ui

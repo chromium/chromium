@@ -22,19 +22,20 @@ class _LoadingBaseClusterTelemetry(loading._LoadingBase):
   def AddBenchmarkCommandLineArgs(cls, parser):
     super(_LoadingBaseClusterTelemetry, cls).AddBenchmarkCommandLineArgs(parser)
     ct_benchmarks_util.AddBenchmarkCommandLineArgs(parser)
-    parser.add_option(
-        '--wait-time',  action='store', type='int',
-        default=60, help='Number of seconds to wait for after navigation.')
-    parser.add_option(
-        '--traffic-setting',  choices=cls._ALL_NET_CONFIGS,
+    parser.add_argument('--wait-time',
+                        type=int,
+                        default=60,
+                        help='Number of seconds to wait for after navigation.')
+    parser.add_argument(
+        '--traffic-setting',
+        choices=cls._ALL_NET_CONFIGS,
         default=traffic_setting.REGULAR_4G,
-        help='Traffic condition (string). Default to "%%default". Can be: %s' %
-         ', '.join(cls._ALL_NET_CONFIGS))
-    parser.add_option(
-        '--cache-temperature',  choices=cls._ALL_CACHE_TEMPERATURES,
+        help='Traffic condition (string). Default to "%(default)s".')
+    parser.add_argument(
+        '--cache-temperature',
+        choices=cls._ALL_CACHE_TEMPERATURES,
         default=cache_temperature_module.COLD,
-        help='Cache temperature (string). Default to "%%default". Can be: %s' %
-         ', '.join(cls._ALL_CACHE_TEMPERATURES))
+        help='Cache temperature (string). Default to "%(default)s".')
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):

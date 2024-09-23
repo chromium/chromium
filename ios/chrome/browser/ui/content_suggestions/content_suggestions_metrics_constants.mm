@@ -23,8 +23,6 @@ const char kContentNotificationSnackbarAction[] =
 #pragma mark - Histograms
 
 const char kTrendingQueriesHistogram[] = "IOS.TrendingQueries";
-const char kMagicStackTopModuleImpressionHistogram[] =
-    "IOS.MagicStack.Module.TopImpression";
 const char kMagicStackModuleEngagementHistogram[] =
     "IOS.MagicStack.Module.Click";
 const char kMagicStackModuleEngagementMostVisitedIndexHistogram[] =
@@ -39,5 +37,16 @@ const char kMagicStackModuleEngagementSafetyCheckIndexHistogram[] =
     "IOS.MagicStack.Module.Click.SafetyCheck";
 const char kMagicStackModuleEngagementParcelTrackingIndexHistogram[] =
     "IOS.MagicStack.Module.Click.ParcelTracking";
+const char kMagicStackModuleEngagementPriceTrackingPromoIndexHistogram[] =
+    "IOS.MagicStack.Module.Click.PriceTrackingPromo";
+const char kMagicStackModuleDisabledHistogram[] =
+    "IOS.MagicStack.Module.Disabled";
 const char kContentNotificationSnackbarEventHistogram[] =
     "ContentNotifications.Promo.Snackbar.Event";
+const char kIOSSafetyCheckMagicStackHiddenReason[] =
+    "IOS.SafetyCheck.MagicStack.HiddenReason";
+
+const char kMagicStackStartSegmentationRankingFetchTimeHistogram[] =
+    "IOS.MagicStack.Start.SegmentationRankingFetchTime";
+const char kMagicStackNTPSegmentationRankingFetchTimeHistogram[] =
+    "IOS.MagicStack.NTP.SegmentationRankingFetchTime";

@@ -10,65 +10,51 @@ instructions for your target platform up to and including running hooks.
 
 ## Building Cronet for development and debugging
 
-To build Cronet for development and debugging purposes:
+Similarly to Chromium, to build Cronet for development and debugging purposes:
 
-First, `gn` is used to create ninja files targeting the intended platform, then
-`ninja` executes the ninja files to run the build.
+1. Use `gn` to create ninja files targeting the intended platform
+1. Use `ninja` to execute the ninja files to run the build
 
-### Android builds
+The two main difference from a Chromium build are:
 
-```shell
-$ ./components/cronet/tools/cr_cronet.py gn --out_dir=out/Cronet
-```
+1. Cronet only builds a subset of Chromium
+1. Cronet uses a different set of gn args to build
 
-Android binaries will be built irrespective of the platform.
+### Using gn
 
-Note: these commands clobber output of previously executed gn commands in
-`out/Cronet`. If `--out_dir` is left out, the output directory defaults to
-`out/Debug` for debug builds and `out/Release` for release builds (see below).
-
-If `--x86` option is specified, then a native library is built for Intel x86
-architecture, and the output directory defaults to `out/Debug-x86` if
-unspecified. This can be useful for running on mobile emulators.
-
-### Desktop builds (targets the current OS)
-
-TODO(caraitto): Specify how to target Chrome OS and Fuchsia.
+TODO(crbug.com/40287068): This might change in the future.
+Remembering the set of gn args to be used for a Cronet build is complicated.
+So, we rely on `//components/cronet/tools/cr_cronet.py` to do that for us.
 
 ```shell
-gn gen out/Cronet
+$ ./components/cronet/tools/cr_cronet.py gn
 ```
 
-### Running the ninja files
-
-Now, use the generated ninja files to execute the build against the
-`cronet_package` build target:
+To better understand how this works, and the configuration paraters it supports,
+refer to `cr_cronet.py`'s source code and:
 
 ```shell
-$ ninja -C out/Cronet cronet_package
+$ ./components/cronet/tools/cr_cronet.py --help
 ```
+
+### Using ninja
+
+The previous steps generated the files needed to compile Cronet. All that
+remains now is to find a target to build. This can be done through this command:
+
+```shell
+$ autoninja -C out/your_cronet_output_directory your_cronet_target
+```
+
+Where, `your_cronet_output_directory` is what was set through `cr_cronet` and
+`your_cronet_target` is one of of Cronet's target within some `BUILD.gn` file.
 
 ## Building Cronet mobile for releases
 
 To build Cronet with optimizations and with debug information stripped out:
 
 ```shell
+$ gn clean out/Release
 $ ./components/cronet/tools/cr_cronet.py gn --release
-$ ninja -C out/Release cronet_package
+$ autoninja -C out/Release cronet_package
 ```
-
-Note: these commands clobber output of previously executed gn commands in
-`out/Release`.
-
-## Building for other architectures
-
-By default ARMv7 32-bit executables are generated. To generate executables
-targeting other architectures modify [cr_cronet.py](tools/cr_cronet.py)'s
-`gn_args` variable to include:
-
-*   For ARMv8 64-bit: `target_cpu="arm64"`
-*   For x86 32-bit: `target_cpu="x86"`
-*   For x86 64-bit: `target_cpu="x64"`
-
-Alternatively you can run `gn args {out_dir}` and modify arguments in the editor
-that comes up. This has advantage of not changing `cr_cronet.py`.

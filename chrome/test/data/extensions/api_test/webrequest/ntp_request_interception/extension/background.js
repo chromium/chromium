@@ -6,8 +6,9 @@ var urlToIntercept;
 var interceptedRequest = false;
 
 chrome.webRequest.onBeforeRequest.addListener(function(details) {
-  if (urlToIntercept && details.url === urlToIntercept)
+  if (urlToIntercept && details.url === urlToIntercept) {
     interceptedRequest = true;
+  }
 }, {
   urls: ['<all_urls>'],
 });

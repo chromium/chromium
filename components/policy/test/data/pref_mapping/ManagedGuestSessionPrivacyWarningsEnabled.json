@@ -10,7 +10,8 @@
         },
         "prefs": {
           "managed_session.privacy_warning_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": false
           }
         }
       }

@@ -121,8 +121,16 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
 
 }  // namespace
 
+// TODO(crbug.com/334416161): Re-enble this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FirstPaintAfterBackForwardCacheRestore \
+  DISABLED_FirstPaintAfterBackForwardCacheRestore
+#else
+#define MAYBE_FirstPaintAfterBackForwardCacheRestore \
+  FirstPaintAfterBackForwardCacheRestore
+#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
-                       FirstPaintAfterBackForwardCacheRestore) {
+                       MAYBE_FirstPaintAfterBackForwardCacheRestore) {
   Start();
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -341,8 +349,17 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
   ExpectMetricValueForUrl(url_a, UkmEntry::kBackForwardCache_IsAmpPageName, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
-                       CumulativeLayoutShiftAfterBackForwardCacheRestore) {
+// TODO(crbug.com/334416161): Re-enble this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CumulativeLayoutShiftAfterBackForwardCacheRestore \
+  DISABLED_CumulativeLayoutShiftAfterBackForwardCacheRestore
+#else
+#define MAYBE_CumulativeLayoutShiftAfterBackForwardCacheRestore \
+  CumulativeLayoutShiftAfterBackForwardCacheRestore
+#endif
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCachePageLoadMetricsObserverBrowserTest,
+    MAYBE_CumulativeLayoutShiftAfterBackForwardCacheRestore) {
   Start();
 
   const char path[] = "/layout-instability/simple-block-movement.html";
@@ -464,7 +481,7 @@ return score;
       "PageLoad.LayoutInstability.CumulativeShiftScore", 0, 4);
 }
 
-// TODO(crbug.com/1184305): Disabled for being flaky.
+// TODO(crbug.com/40752530): Disabled for being flaky.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCachePageLoadMetricsObserverBrowserTest,
     DISABLED_RequestAnimationFramesAfterBackForwardCacheRestore) {
@@ -515,8 +532,17 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
-                       LayoutShiftNormalization_AfterBackForwardCacheRestore) {
+// TODO(crbug.com/334416161): Re-enble this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_LayoutShiftNormalization_AfterBackForwardCacheRestore \
+  DISABLED_LayoutShiftNormalization_AfterBackForwardCacheRestore
+#else
+#define MAYBE_LayoutShiftNormalization_AfterBackForwardCacheRestore \
+  LayoutShiftNormalization_AfterBackForwardCacheRestore
+#endif
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCachePageLoadMetricsObserverBrowserTest,
+    MAYBE_LayoutShiftNormalization_AfterBackForwardCacheRestore) {
   Start();
 
   const char path[] = "/layout-instability/simple-block-movement.html";
@@ -585,10 +611,11 @@ return score;
   ExpectMetricValueForUrl(url_a,
                           "CumulativeShiftScoreAfterBackForwardCacheRestore",
                           page_load_metrics::LayoutShiftUkmValue(next_score));
-  ExpectMetricValueForUrl(url_a,
-                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
-                          "SessionWindow.Gap1000ms.Max5000ms",
-                          page_load_metrics::LayoutShiftUkmValue(next_score));
+  ExpectMetricValueForUrl(
+      url_a,
+      "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
+      "SessionWindow.Gap1000ms.Max5000ms2",
+      page_load_metrics::LayoutShiftUmaValue10000(next_score));
   // Go back to A again.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
@@ -609,7 +636,7 @@ return score;
                           2);
   histogram_tester().ExpectTotalCount(
       "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
-      "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms",
+      "AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms2",
       2);
 }
 
@@ -678,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(
   VerifyHistoryNavPageEndReasons(expected_reasons_b, url_b);
 }
 
-// TODO(https://crbug.com/1494775): Test is flaky on MSAN.
+// TODO(crbug.com/40937315): Test is flaky on MSAN.
 // TODO(https://crbug.com/40799125): Test is flaky on Windows and Mac.
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies \

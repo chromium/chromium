@@ -20,6 +20,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/xml/xslt_processor.h"
 
 #include <libxslt/imports.h>
@@ -197,7 +202,7 @@ static int WriteToStringBuilder(void* context, const char* buffer, int len) {
       &string_current, buffer + len, &buffer_u_char, buffer_u_char_end);
   if (result != WTF::unicode::kConversionOK &&
       result != WTF::unicode::kSourceExhausted) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return -1;
   }
 

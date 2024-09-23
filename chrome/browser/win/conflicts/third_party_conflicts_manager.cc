@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -37,8 +38,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-
-#include <windows.h>
 
 namespace {
 
@@ -218,7 +217,7 @@ void ThirdPartyConflictsManager::OnModuleDatabaseIdle() {
 }
 
 void ThirdPartyConflictsManager::OnModuleListComponentRegistered(
-    base::StringPiece component_id,
+    std::string_view component_id,
     const base::Version& component_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

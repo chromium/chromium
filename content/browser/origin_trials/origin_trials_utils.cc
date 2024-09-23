@@ -4,7 +4,8 @@
 
 #include "content/browser/origin_trials/origin_trials_utils.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "net/http/http_response_headers.h"
 
 namespace content {
@@ -12,7 +13,7 @@ namespace content {
 namespace {
 
 std::vector<std::string> GetHeaderValues(
-    base::StringPiece header_name,
+    std::string_view header_name,
     const net::HttpResponseHeaders* headers) {
   if (!headers) {
     return {};

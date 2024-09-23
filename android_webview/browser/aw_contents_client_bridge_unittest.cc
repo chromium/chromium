@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "android_webview/test/android_webview_unittests_jni/MockAwContentsClientBridge_jni.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
@@ -22,6 +21,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/test/android_webview_unittests_jni/MockAwContentsClientBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;

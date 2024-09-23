@@ -41,7 +41,7 @@ class ScopedPixelLocalStorageInterrupt {
   }
 
  private:
-  const raw_ptr<blink::DrawingBuffer::Client, ExperimentalRenderer> client_;
+  const raw_ptr<blink::DrawingBuffer::Client> client_;
 };
 
 }  // namespace
@@ -81,9 +81,7 @@ XRWebGLDrawingBuffer::ColorBuffer::~ColorBuffer() {
   gl->DeleteTextures(1, &texture_id);
   gpu::SyncToken sync_token;
   gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  auto* sii = drawing_buffer->drawing_buffer_->ContextProvider()
-                  ->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, std::move(shared_image));
+  shared_image->UpdateDestructionSyncToken(sync_token);
 }
 
 scoped_refptr<XRWebGLDrawingBuffer> XRWebGLDrawingBuffer::Create(
@@ -188,8 +186,15 @@ bool XRWebGLDrawingBuffer::Initialize(const gfx::Size& size,
   if (use_multisampling) {
     gl->GetIntegerv(GL_MAX_SAMPLES_ANGLE, &max_sample_count);
     anti_aliasing_mode_ = kMSAAExplicitResolve;
-    if (extensions_util->SupportsExtension(
-            "GL_EXT_multisampled_render_to_texture")) {
+    const auto& gpu_feature_info =
+        drawing_buffer_->ContextProvider()->GetGpuFeatureInfo();
+    const bool is_using_graphite =
+        gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+        gpu::kGpuFeatureStatusEnabled;
+    // With Graphite, Skia is not using ANGLE, so ANGLE cannot do an implicit
+    // resolve when the back buffer is sampled by Skia.
+    if (!is_using_graphite && extensions_util->SupportsExtension(
+                                  "GL_EXT_multisampled_render_to_texture")) {
       anti_aliasing_mode_ = kMSAAImplicitResolve;
     }
   }
@@ -264,7 +269,6 @@ void XRWebGLDrawingBuffer::UseSharedBuffer(
 
   // Create a texture backed by the shared buffer image.
   DCHECK(!shared_buffer_texture_id_);
-  DCHECK(buffer_mailbox_holder.mailbox.IsSharedImage());
   shared_buffer_texture_id_ = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
       buffer_mailbox_holder.mailbox.name);
 
@@ -495,15 +499,14 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
   // These shared images will be imported into textures on the GL context. We
   // take a read/write access scope whenever the color buffer is used as the
   // back buffer.
-  uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                   gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-                   gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
+  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                   gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   auto client_shared_image = sii->CreateSharedImage(
-      alpha_ ? viz::SinglePlaneFormat::kRGBA_8888
-             : viz::SinglePlaneFormat::kRGBX_8888,
-      size_, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      usage, "XRWebGLDrawingBuffer", gpu::kNullSurfaceHandle);
+      {alpha_ ? viz::SinglePlaneFormat::kRGBA_8888
+              : viz::SinglePlaneFormat::kRGBX_8888,
+       size_, gfx::ColorSpace(), usage, "XRWebGLDrawingBuffer"},
+      gpu::kNullSurfaceHandle);
   CHECK(client_shared_image);
 
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
@@ -660,8 +663,8 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
   const SkImageInfo sk_image_info =
       SkImageInfo::MakeN32Premul(size_.width(), size_.height());
 
-  return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      buffer->shared_image->mailbox(), buffer->produce_sync_token,
+  return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+      buffer->shared_image, buffer->produce_sync_token,
       /* shared_image_texture_id = */ 0, sk_image_info, GL_TEXTURE_2D,
       /* is_origin_top_left = */ false,
       drawing_buffer_->ContextProviderWeakPtr(),

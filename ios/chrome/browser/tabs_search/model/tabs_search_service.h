@@ -13,11 +13,12 @@
 #import "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/core/session_id.h"
-#include "ios/chrome/browser/ui/history/ios_browsing_history_driver.h"
-#include "ios/chrome/browser/ui/history/ios_browsing_history_driver_delegate.h"
+#include "ios/chrome/browser/history/ui_bundled/ios_browsing_history_driver.h"
+#include "ios/chrome/browser/history/ui_bundled/ios_browsing_history_driver_delegate.h"
 
 class Browser;
 class BrowserList;
+class TabGroup;
 
 namespace history {
 class HistoryService;
@@ -68,18 +69,22 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
                     WebHistoryServiceGetter web_history_service_getter);
   ~TabsSearchService() override;
 
-  // A container to store matched WebStates with a reference to their associated
+  // A container to store matched WebStates and TabGroups with a reference to
+  // their associated `browser`.
   // `browser`.
   struct TabsSearchBrowserResults {
-    TabsSearchBrowserResults(const Browser*, const std::vector<web::WebState*>);
+    TabsSearchBrowserResults(Browser*,
+                             const std::vector<web::WebState*>,
+                             const std::vector<const TabGroup*>);
     ~TabsSearchBrowserResults();
 
     TabsSearchBrowserResults(const TabsSearchBrowserResults&);
 
-    raw_ptr<const Browser> browser;
+    raw_ptr<Browser> browser;
     const std::vector<web::WebState*> web_states;
+    const std::vector<const TabGroup*> tab_groups;
   };
-  // Searches through tabs in all the Browsers associated with `browser_state`
+  // Searches through tabs in all the Browsers associated with `profile`
   // for WebStates with current titles or URLs matching `term`. The matching
   // WebStates are returned to the `completion` callback in instances of
   // TabsSearchBrowserResults along with their associated Browser.
@@ -93,15 +98,15 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
   // present the results to the user.
   typedef std::pair<SessionID, const sessions::SerializedNavigationEntry>
       RecentlyClosedItemPair;
-  // Searches through recently closed tabs within `browser_state` in the same
-  // manner as `Search`. Can't be called on an off the record `browser_state`.
+  // Searches through recently closed tabs within `profile` in the same
+  // manner as `Search`. Can't be called on an off the record `profile`.
   void SearchRecentlyClosed(
       const std::u16string& term,
       base::OnceCallback<void(std::vector<RecentlyClosedItemPair>)> completion);
 
   // Searches through Remote Tabs for tabs matching `term`. The matching tabs
   // returned in the vector are owned by the SyncedSessions instance passed to
-  // the callback. Can't be called on an off the record `browser_state`.
+  // the callback. Can't be called on an off the record `profile`.
   void SearchRemoteTabs(
       const std::u16string& term,
       base::OnceCallback<void(std::unique_ptr<synced_sessions::SyncedSessions>,
@@ -113,7 +118,7 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
   // `completion` will be called with the result unless a new call to
   // SearchHistory is made. Only the last call to `SearchHistory` will continue
   // to be processed. Completion callbacks to earlier calls will not be run.
-  // Can't be called on an off the record `browser_state`.
+  // Can't be called on an off the record `profile`.
   void SearchHistory(const std::u16string& term,
                      base::OnceCallback<void(size_t result_count)> completion);
 
@@ -162,7 +167,7 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
   // A callback to return history search results once the current in progress
   // history search completes. Will be null if no search is in progress.
   base::OnceCallback<void(size_t result_count)> history_search_callback_;
-  // A history service instance for the associated `browser_state_`.
+  // A history service instance for the associated `profile_`.
   std::unique_ptr<history::BrowsingHistoryService> browsing_history_service_;
   // Provides dependencies and funnels callbacks from BrowsingHistoryService.
   std::unique_ptr<IOSBrowsingHistoryDriver> history_driver_;

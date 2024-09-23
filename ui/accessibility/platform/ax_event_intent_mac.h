@@ -115,7 +115,7 @@ struct AXTextSelection final {
   bool focus_change = false;
 };
 
-// The equivalent of an accessibility event intent (ui::AXEventIntent), as
+// The equivalent of an accessibility event intent (AXEventIntent), as
 // defined by Mac's accessibility framework.
 struct COMPONENT_EXPORT(AX_PLATFORM) AXTextStateChangeIntent final {
   // Constructs an intent that is used when the selection is set to a different
@@ -148,7 +148,7 @@ struct COMPONENT_EXPORT(AX_PLATFORM) AXTextStateChangeIntent final {
   AXTextSelection selection;
 };
 
-// Converts from Chromium's ui::AXEventIntent to Mac's AXTextStateChangeIntent.
+// Converts from Chromium's AXEventIntent to Mac's AXTextStateChangeIntent.
 COMPONENT_EXPORT(AX_PLATFORM)
 AXTextStateChangeIntent FromEventIntent(const AXEventIntent& event_intent);
 

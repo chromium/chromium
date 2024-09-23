@@ -19,7 +19,7 @@ TEST(RemoteHostContactedSignalTest, GeneratesUniqueIdForSignal) {
             "www.example.com,HTTP_HTTPS,CONTENT_SCRIPT");
 }
 
-// TODO(crbug.com/1447587): Remove test once new RHC
+// TODO(crbug.com/40913716): Remove test once new RHC
 // interception flow is fully launched.
 TEST(RemoteHostContactedSignalTest,
      GeneratesUniqueIdForSignalWithDefaultContactInitiator) {

@@ -18,7 +18,7 @@
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 
 namespace aura {
 class Window;
@@ -50,13 +50,14 @@ enum class UpstartOperation {
   JOB_STOP_AND_START,
 };
 
-// Enum for configuring ureadahead mode of operation during ARC boot process.
+// Enum for configuring ureadahead mode of operation during ARC boot process for
+// both host and guest.
 enum class ArcUreadaheadMode {
-  // ARCVM ureadahead is in readahead mode for normal user boot flow.
+  // ARC ureadahead is in readahead mode for normal user boot flow.
   READAHEAD = 0,
-  // ARCVM ureadahead is turned on for generate mode in data collector flow.
+  // ARC ureadahead is turned on for generate mode in data collector flow.
   GENERATE,
-  // ARCVM ureadahead is turned off for disabled mode.
+  // ARC ureadahead is turned off for disabled mode.
   DISABLED,
 };
 
@@ -150,14 +151,6 @@ bool IsArcVmUseHugePages();
 // vm_tools/init/arcvm_dev.conf file are ignored during ARCVM start.
 bool IsArcVmDevConfIgnored();
 
-// Returns true if ureadahead is disabled completely, including host and guest
-// parts. See also |GetArcVmUreadaheadMode|.
-bool IsUreadaheadDisabled();
-
-// Returns true in case host ureadahead generation is active in the current
-// session.
-bool IsHostUreadaheadGeneration();
-
 // Returns true if ARC is using dev caches for arccachesetup service.
 bool IsArcUseDevCaches();
 
@@ -182,31 +175,13 @@ bool ShouldArcStartManually();
 // Returns true if ARC OptIn ui needs to be shown for testing.
 bool ShouldShowOptInForTesting();
 
-// Returns true if ARC is installed and running ARC kiosk apps on the current
-// device is officially supported.
-// It doesn't follow that ARC is available for user sessions and
-// IsArcAvailable() will return true, although the reverse should be.
-// This is used to distinguish special cases when ARC kiosk is available on
-// the device, but is not yet supported for regular user sessions.
-// In most cases, IsArcAvailable() check should be used instead of this.
-// Also not that this function may return true when ARC is not running in
-// Kiosk mode, it checks only ARC Kiosk availability.
-bool IsArcKioskAvailable();
-
-// Returns true if ARC should run under Kiosk mode for the current profile.
-// As it can return true only when user is already initialized, it implies
-// that ARC availability was checked before and IsArcKioskAvailable()
-// should also return true in that case.
-bool IsArcKioskMode();
-
 // Returns true if current user is a robot account user, or offline demo mode
 // user.
-// These are Public Session and ARC Kiosk users. Note that demo mode, including
+// These are Public Session users. Note that demo mode, including
 // offline demo mode, is implemented as a Public Session - offline demo mode
 // is setup offline and it isn't associated with a working robot account.
 // As it can return true only when user is already initialized, it implies
 // that ARC availability was checked before.
-// The check is basically IsArcKioskMode() | IsLoggedInAsPublicSession().
 bool IsRobotOrOfflineDemoAccountMode();
 
 // Returns true if ARC is allowed for the given user. Note this should not be
@@ -277,8 +252,14 @@ bool ShouldUseVirtioBlkData(PrefService* prefs);
 // Returns true if ARC should use KeyMint. Returns false if ARC should use
 // Keymaster. It is based on the lsb-release value. If missing lsb-release
 // value (e.g. in unit tests), it returns false. Use
-// `SetChromeOSVersionInfoForTest` to set ARC version in unit test, if needed.
+// `ScopedChromeOSVersionInfo` to set ARC version in unit test, if needed.
 bool ShouldUseArcKeyMint();
+
+// Returns true if ARC should use key and ID attestation. It is based on the
+// lsb-release value. If missing lsb-release value (e.g. in unit tests), it
+// returns false. Use `ScopedChromeOSVersionInfo` to set ARC version in unit
+// test, if needed.
+bool ShouldUseArcAttestation();
 
 // Returns ARCVM /data migration should be done within how many days. When the
 // migration has not started, the value is calculated from the time when the
@@ -323,6 +304,24 @@ using EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback =
 void EnsureStaleArcVmAndArcVmUpstartJobsStopped(
     const std::string& user_id_hash,
     EnsureStaleArcVmAndArcVmUpstartJobsStoppedCallback callback);
+
+// Returns if Android volumes (DocumentsProviders and Play files) should be
+// mounted in the Files app regardless of whether Play Store is enabled or not.
+bool ShouldAlwaysMountAndroidVolumesInFilesForTesting();
+
+// Returns true if ARC's activation should be deferred until the user session
+// start up tasks are completed.
+// This checks the history of first ARC activation timing in recent user
+// sessions, and decides whether or not to defer ARC.
+// See also b/326065955#comment9 and linked materials for more background.
+bool ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+    const PrefService* prefs);
+
+// Records whether first ARC activation is done during user session start up
+// in `prefs`. Just to be explicit, `value` == true means the first activation
+// is done during the user session start up.
+void RecordFirstActivationDuringUserSessionStartUp(PrefService* prefs,
+                                                   bool value);
 
 }  // namespace arc
 

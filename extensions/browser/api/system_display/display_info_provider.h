@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "extensions/common/api/system_display.h"
@@ -134,7 +135,7 @@ class DisplayInfoProvider : public display::DisplayObserver {
 
   // DisplayObserver
   void OnDisplayAdded(const display::Display& new_display) override;
-  void OnDisplayRemoved(const display::Display& old_display) override;
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 

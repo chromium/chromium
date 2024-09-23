@@ -14,10 +14,10 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -33,16 +33,16 @@ PersonalizationSystemAppDelegate::PersonalizationSystemAppDelegate(
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 PersonalizationSystemAppDelegate::GetWebAppInfo() const {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url =
+  GURL start_url =
       GURL(ash::personalization_app::kChromeUIPersonalizationAppURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::personalization_app::kChromeUIPersonalizationAppURL);
   info->title = l10n_util::GetStringUTF16(
       IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE);
 
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {
           {
               "app_hub_icon_64.png",
@@ -81,16 +81,10 @@ gfx::Rect PersonalizationSystemAppDelegate::GetDefaultBounds(
     Browser* browser) const {
   gfx::Rect bounds =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-  if (ash::features::IsPersonalizationJellyEnabled()) {
-    // TODO(b/267332833): The sizing does not look right. May need updating as
-    // Jelly is implemented.
-    if (ash::Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
-      bounds.ClampToCenteredSize({826, 881});
-    } else {
-      bounds.ClampToCenteredSize({826, 608});
-    }
+  if (ash::Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
+    bounds.ClampToCenteredSize({826, 881});
   } else {
-    bounds.ClampToCenteredSize({826, 745});
+    bounds.ClampToCenteredSize({826, 708});
   }
   return bounds;
 }

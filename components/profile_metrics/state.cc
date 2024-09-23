@@ -46,11 +46,6 @@ enum class DeleteProfileContext {
 
 }  // namespace
 
-void LogProfileAvatar(AvatarState avatar_state, StateSuffix suffix) {
-  base::UmaHistogramEnumeration("Profile.State.Avatar" + GetStateSuffix(suffix),
-                                avatar_state);
-}
-
 void LogProfileAccountType(UnconsentedPrimaryAccountType account_type,
                            StateSuffix suffix) {
   base::UmaHistogramEnumeration(

@@ -25,6 +25,10 @@ class CONTENT_EXPORT DevToolsManagerDelegate {
   // Opens the inspector for |agent_host|.
   virtual void Inspect(DevToolsAgentHost* agent_host);
 
+  // Activates the associated inspector for `agent_host` if there
+  // is one.
+  virtual void Activate(DevToolsAgentHost* agent_host);
+
   // Returns DevToolsAgentHost type to use for given |web_contents| target.
   virtual std::string GetTargetType(WebContents* web_contents);
 

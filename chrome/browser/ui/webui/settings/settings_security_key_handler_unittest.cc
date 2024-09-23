@@ -4,25 +4,33 @@
 
 #include "chrome/browser/ui/webui/settings/settings_security_key_handler.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <string>
+#include <vector>
 
-#include "base/test/gmock_callback_support.h"
+#include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/webauthn/local_credential_management.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/test_web_ui.h"
-#include "device/fido/fake_fido_discovery.h"
 #include "device/fido/fido_constants.h"
-#include "device/fido/fido_discovery_factory.h"
+#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
-#include "device/fido/test_callback_receiver.h"
+#include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "base/test/gmock_callback_support.h"
+#include "chrome/browser/webauthn/local_credential_management.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 namespace settings {
 
@@ -407,7 +415,6 @@ class PasskeysHandlerTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(PasskeysHandlerTest, TestHandleEdit) {
-  device::test::TestCallbackReceiver<bool> callback;
   std::vector<uint8_t> credential_id =
       device::fido_parsing_utils::Materialize(kCredentialID);
   std::string credential_id_hex = base::HexEncode(credential_id);
@@ -447,7 +454,6 @@ TEST_F(PasskeysHandlerTest, TestHandleEdit) {
 }
 
 TEST_F(PasskeysHandlerTest, TestRecordPasskeyDelete) {
-  device::test::TestCallbackReceiver<bool> callback;
   std::vector<uint8_t> credential_id =
       device::fido_parsing_utils::Materialize(kCredentialID);
   std::string credential_id_hex = base::HexEncode(credential_id);

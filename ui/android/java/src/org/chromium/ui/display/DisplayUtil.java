@@ -12,10 +12,11 @@ import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
-import org.chromium.base.compat.ApiHelperForR;
+import androidx.annotation.Nullable;
 
 /**
  * Helper functions relevant to working with displays, but have no parallel in the native
@@ -23,16 +24,16 @@ import org.chromium.base.compat.ApiHelperForR;
  */
 public abstract class DisplayUtil {
     private static final float UI_SCALING_FACTOR_FOR_AUTOMOTIVE = 1.34f;
-    private static float sUiScalingFactorForAutomotive = UI_SCALING_FACTOR_FOR_AUTOMOTIVE;
+    private static @Nullable Float sUiScalingFactorForAutomotiveOverride;
 
     /** Change the UI scaling factor on automotive devices for testing. */
     public static void setUiScalingFactorForAutomotiveForTesting(float scalingFactor) {
-        sUiScalingFactorForAutomotive = scalingFactor;
+        sUiScalingFactorForAutomotiveOverride = scalingFactor;
     }
 
     /** Reset the UI scaling factor on automotive devices to the default value. */
     public static void resetUiScalingFactorForAutomotiveForTesting() {
-        sUiScalingFactorForAutomotive = UI_SCALING_FACTOR_FOR_AUTOMOTIVE;
+        sUiScalingFactorForAutomotiveOverride = null;
     }
 
     /**
@@ -41,11 +42,21 @@ public abstract class DisplayUtil {
      */
     @Deprecated
     public static float getUiScalingFactorForAutomotive() {
-        return sUiScalingFactorForAutomotive;
+        return sUiScalingFactorForAutomotiveOverride;
     }
 
-    public static int getUiDensityForAutomotive(int baseDensity) {
-        int rawScaledDensity = (int) (baseDensity * sUiScalingFactorForAutomotive);
+    public static int getUiDensityForAutomotive(Context context, int baseDensity) {
+        TypedValue automotiveUiScaleFactor = new TypedValue();
+        context.getResources()
+                .getValue(
+                        org.chromium.ui.R.dimen.automotive_ui_scale_factor,
+                        automotiveUiScaleFactor,
+                        true);
+        float uiScalingFactor =
+                sUiScalingFactorForAutomotiveOverride != null
+                        ? sUiScalingFactorForAutomotiveOverride
+                        : automotiveUiScaleFactor.getFloat();
+        int rawScaledDensity = (int) (baseDensity * uiScalingFactor);
         // Round up to the nearest 20 to align with DisplayMetrics defined densities.
         return ((int) Math.ceil(rawScaledDensity / 20.0f)) * 20;
     }
@@ -71,11 +82,13 @@ public abstract class DisplayUtil {
 
     /**
      * Scales up the UI for the {@link DisplayMetrics} by the scaling factor for automotive devices.
+     *
      * @param displayMetrics The DisplayMetrics to scale up density for.
      * @return The DisplayMetrics that was scaled up.
      */
-    public static DisplayMetrics scaleUpDisplayMetricsForAutomotive(DisplayMetrics displayMetrics) {
-        int adjustedDensity = getUiDensityForAutomotive(displayMetrics.densityDpi);
+    public static DisplayMetrics scaleUpDisplayMetricsForAutomotive(
+            Context context, DisplayMetrics displayMetrics) {
+        int adjustedDensity = getUiDensityForAutomotive(context, displayMetrics.densityDpi);
         float scaling = (float) adjustedDensity / (float) displayMetrics.densityDpi;
         displayMetrics.density *= scaling;
         displayMetrics.densityDpi = adjustedDensity;
@@ -98,7 +111,7 @@ public abstract class DisplayUtil {
         assert windowManager != null;
         windowManager.getDefaultDisplay().getRealMetrics(displayMetrics);
 
-        int adjustedDensity = getUiDensityForAutomotive(displayMetrics.densityDpi);
+        int adjustedDensity = getUiDensityForAutomotive(context, displayMetrics.densityDpi);
         float scaling = (float) adjustedDensity / (float) displayMetrics.densityDpi;
 
         int screenWidthDp = displayMetrics.widthPixels;
@@ -151,7 +164,7 @@ public abstract class DisplayUtil {
             WindowManager manager =
                     (WindowManager) windowManagerContext.getSystemService(Context.WINDOW_SERVICE);
             assert manager != null;
-            Rect bounds = ApiHelperForR.getMaximumWindowMetricsBounds(manager);
+            Rect bounds = manager.getMaximumWindowMetrics().getBounds();
             return DisplayUtil.pxToDp(
                     display, Math.min(bounds.right - bounds.left, bounds.bottom - bounds.top));
         }

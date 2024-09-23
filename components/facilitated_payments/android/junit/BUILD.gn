@@ -1,0 +1,24 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+robolectric_library("junit") {
+  sources = [
+    "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClientBridgeUnitTest.java",
+    "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClientUnitTest.java",
+  ]
+  deps = [
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//components/facilitated_payments/android/java",
+    "//components/signin/public/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

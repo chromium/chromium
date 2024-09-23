@@ -4,7 +4,8 @@
 
 module storage.mojom;
 
-import "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom";
+import "components/services/storage/privileged/mojom/bucket_client_info.mojom";
+import "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom";
 import "components/services/storage/public/mojom/buckets/bucket_id.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 
@@ -21,13 +22,24 @@ interface IdbInternalsHandler {
   // partition contains an array of 'IdbOriginMetadata's which contain a
   // representation of an IDB database.
   GetAllBucketsAcrossAllStorageKeys()
-    => (string? error, array<IdbPartitionMetadata> partitions);
+      => (string? error, array<IdbPartitionMetadata> partitions);
 
   // Downloads the IDB in a zip file and closes it for the given bucket.
-  DownloadBucketData(BucketId bucketId)
-    => (string? error);
+  DownloadBucketData(BucketId bucketId) => (string? error);
 
   // Closes the IDB for the given bucket.
-  ForceClose(BucketId bucketId)
-    => (string? error);
+  ForceClose(BucketId bucketId) => (string? error);
+
+  // Starts a metadata recording session for a given bucket ID.
+  // Records metadata over time for all databases on the specified bucket.
+  StartMetadataRecording(BucketId bucket_id) => (string? error);
+
+  // Stops metadata recording session. Returns an list of metadata structs for
+  // each snapshot taken during the recording session.
+  StopMetadataRecording(BucketId bucket_id)
+      => (string? error, array<IdbBucketMetadata> metadata);
+
+  // Opens the DevTools window for the client represented by `client_info`.
+  // Returns an error if the client is not found.
+  InspectClient(BucketClientInfo client_info) => (string? error);
 };

@@ -29,9 +29,19 @@ ValidatingAuthenticator::ValidatingAuthenticator(
   DCHECK(!remote_jid_.empty());
   DCHECK(validation_callback_);
   DCHECK(current_authenticator_);
+  ChainStateChangeAfterAcceptedWithUnderlying(*current_authenticator_);
 }
 
 ValidatingAuthenticator::~ValidatingAuthenticator() = default;
+
+CredentialsType ValidatingAuthenticator::credentials_type() const {
+  return current_authenticator_->credentials_type();
+}
+
+const Authenticator& ValidatingAuthenticator::implementing_authenticator()
+    const {
+  return current_authenticator_->implementing_authenticator();
+}
 
 Authenticator::State ValidatingAuthenticator::state() const {
   return pending_auth_message_ ? MESSAGE_READY : state_;
@@ -48,6 +58,10 @@ Authenticator::RejectionReason ValidatingAuthenticator::rejection_reason()
 
 const std::string& ValidatingAuthenticator::GetAuthKey() const {
   return current_authenticator_->GetAuthKey();
+}
+
+const SessionPolicies* ValidatingAuthenticator::GetSessionPolicies() const {
+  return current_authenticator_->GetSessionPolicies();
 }
 
 std::unique_ptr<ChannelAuthenticator>
@@ -144,6 +158,14 @@ void ValidatingAuthenticator::UpdateState(base::OnceClosure resume_callback) {
   } else {
     std::move(resume_callback).Run();
   }
+}
+
+void ValidatingAuthenticator::NotifyStateChangeAfterAccepted() {
+  state_ = current_authenticator_->state();
+  if (state_ == REJECTED) {
+    rejection_reason_ = current_authenticator_->rejection_reason();
+  }
+  Authenticator::NotifyStateChangeAfterAccepted();
 }
 
 }  // namespace remoting::protocol

@@ -11,7 +11,7 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='target3'",
+      "name": "LayoutBlockFlow (positioned) DIV id='target3'",
       "position": [420, 20],
       "bounds": [100, 100],
       "contentsOpaque": true,

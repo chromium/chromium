@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
-#include "chrome/browser/ui/views/frame/tab_search_frame_caption_button.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/profiles/profile_indicator_icon.h"
@@ -51,13 +50,16 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
@@ -76,13 +78,15 @@
 #include "ash/wm/window_util.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#include "chrome/browser/ui/ash/session_util.h"
+#include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/ui/frame/interior_resize_handler_targeter.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+DEFINE_UI_CLASS_PROPERTY_TYPE(BrowserNonClientFrameViewChromeOS*)
 
 namespace {
 
@@ -113,6 +117,10 @@ content::RenderWidgetHost* GetRenderWidgetHost(views::WebView* web_view) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+DEFINE_UI_CLASS_PROPERTY_KEY(BrowserNonClientFrameViewChromeOS*,
+                             kBrowserNonClientFrameViewChromeOSKey,
+                             nullptr)
+
 // Returns true if the header should be painted so that it looks the same as
 // the header used for packaged apps.
 bool UsePackagedAppHeaderStyle(const Browser* browser) {
@@ -137,8 +145,17 @@ BrowserNonClientFrameViewChromeOS::BrowserNonClientFrameViewChromeOS(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   frame->GetNativeWindow()->SetEventTargeter(
-      std::make_unique<chromeos::InteriorResizeHandleTargeter>());
+      std::make_unique<chromeos::InteriorResizeHandleTargeter>(
+          base::BindRepeating([](const aura::Window* window) {
+            return window->GetProperty(chromeos::kWindowStateTypeKey);
+          })));
 #endif
+
+  // TODO: b/330360595 - Confirm if this is needed in Lacros.
+  aura::Window* frame_window = frame->GetNativeWindow();
+  frame_window->SetProperty(kBrowserNonClientFrameViewChromeOSKey, this);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTitleBar);
 }
 
 BrowserNonClientFrameViewChromeOS::~BrowserNonClientFrameViewChromeOS() {
@@ -152,15 +169,13 @@ BrowserNonClientFrameViewChromeOS::~BrowserNonClientFrameViewChromeOS() {
   }
 }
 
+BrowserNonClientFrameViewChromeOS* BrowserNonClientFrameViewChromeOS::Get(
+    aura::Window* window) {
+  return window->GetProperty(kBrowserNonClientFrameViewChromeOSKey);
+}
+
 void BrowserNonClientFrameViewChromeOS::Init() {
   Browser* browser = browser_view()->browser();
-
-  std::unique_ptr<TabSearchFrameCaptionButton> tab_search_button;
-  if (TabSearchFrameCaptionButton::IsTabSearchCaptionButtonEnabled(browser)) {
-    tab_search_button =
-        std::make_unique<TabSearchFrameCaptionButton>(browser->profile());
-    tab_search_bubble_host_ = tab_search_button->tab_search_bubble_host();
-  }
 
   const bool is_close_button_enabled =
       !(browser->app_controller() &&
@@ -168,7 +183,7 @@ void BrowserNonClientFrameViewChromeOS::Init() {
 
   caption_button_container_ =
       AddChildView(std::make_unique<chromeos::FrameCaptionButtonContainerView>(
-          frame(), is_close_button_enabled, std::move(tab_search_button)));
+          frame(), is_close_button_enabled));
 
   // Initializing the TabIconView is expensive, so only do it if we need to.
   if (browser_view()->ShouldShowWindowIcon()) {
@@ -268,18 +283,17 @@ int BrowserNonClientFrameViewChromeOS::GetTopInset(bool restored) const {
     }
   }
 
+  if (browser_view()->GetTabStripVisible()) {
+    return 0;
+  }
+
   Browser* browser = browser_view()->browser();
 
   int header_height = frame_header_ ? frame_header_->GetHeaderHeight() : 0;
-  auto toolbar_size = browser_view()->GetWebAppFrameToolbarPreferredSize();
+  const gfx::Size toolbar_size =
+      browser_view()->GetWebAppFrameToolbarPreferredSize();
   if (!toolbar_size.IsEmpty()) {
     header_height = std::max(header_height, toolbar_size.height());
-  }
-  if (browser_view()->GetTabStripVisible()) {
-    if (features::IsChromeRefresh2023()) {
-      return 0;
-    }
-    return header_height - browser_view()->GetTabStripHeight();
   }
 
   return UsePackagedAppHeaderStyle(browser)
@@ -336,11 +350,6 @@ SkColor BrowserNonClientFrameViewChromeOS::GetFrameColor(
   return color.value_or(fallback_color);
 }
 
-TabSearchBubbleHost*
-BrowserNonClientFrameViewChromeOS::GetTabSearchBubbleHost() {
-  return tab_search_bubble_host_;
-}
-
 void BrowserNonClientFrameViewChromeOS::UpdateMinimumSize() {
   gfx::Size current_min_size = GetMinimumSize();
   if (last_minimum_size_ == current_min_size)
@@ -378,7 +387,7 @@ int BrowserNonClientFrameViewChromeOS::NonClientHitTest(
   if (hit_test == HTCLIENT && !frame()->IsMaximized() &&
       !frame()->IsFullscreen() &&
       !display::Screen::GetScreen()->InTabletMode()) {
-    // TODO(crbug.com/1213133): Tab Strip hit calculation and bounds logic
+    // TODO(crbug.com/40768579): Tab Strip hit calculation and bounds logic
     // should reside in the TabStrip class.
     gfx::Point client_point(point);
     View::ConvertPointToTarget(this, frame()->client_view(), &client_point);
@@ -483,11 +492,6 @@ void BrowserNonClientFrameViewChromeOS::Layout(PassKey) {
   }
 }
 
-void BrowserNonClientFrameViewChromeOS::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTitleBar;
-}
-
 gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // System web apps (e.g. Settings) may have a fixed minimum size.
@@ -498,6 +502,15 @@ gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {
       return minimum_size;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // The minimum size of a borderless window is only limited by the window's
+  // `highlight_border_overlay_`.
+  if (browser_view()->IsBorderlessModeEnabled()) {
+    // `CalculateImageSourceSize()` returns the minimum size needed to draw the
+    // highlight border, which in turn is the minimum size of a borderless
+    // window.
+    return highlight_border_overlay_->CalculateImageSourceSize();
+  }
 
   gfx::Size min_client_view_size(frame()->client_view()->GetMinimumSize());
   const int min_frame_width =
@@ -521,21 +534,12 @@ gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {
     min_height = min_height + caption_button_container_->size().height();
   }
 
-  if (browser_view()->IsBorderlessModeEnabled()) {
-    gfx::Size border_size =
-        highlight_border_overlay_->CalculateImageSourceSize();
-    // The minimum size of a borderless window is only limited by the window's
-    // `highlight_border_overlay_`s. The minimum size for the window is then
-    // twice as much as there are always two overlays vertically or
-    // horizontally.
-    min_width = 2 * border_size.width();
-    min_height = 2 * border_size.height();
-  }
-
-  if (chromeos::features::IsRoundedWindowsEnabled()) {
-    // Include bottom rounded corners region.
-    min_height =
-        min_height + chromeos::GetFrameCornerRadius(frame()->GetNativeWindow());
+  const int window_corner_radius = frame()->GetNativeWindow()->GetProperty(
+      aura::client::kWindowCornerRadiusKey);
+  if (chromeos::features::IsRoundedWindowsEnabled() &&
+      window_corner_radius > 0) {
+    // Include bottom rounded corners region. See b/294588040.
+    min_height = min_height + window_corner_radius;
   }
 
   return gfx::Size(min_width, min_height);
@@ -630,9 +634,9 @@ void BrowserNonClientFrameViewChromeOS::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
   // When the display is rotated, the frame header may have invalid snap icons.
-  // For example, when |features::kVerticalSnapState| is enabled, rotating from
-  // landscape display to portrait display layout should update snap icons from
-  // left/right arrows to upward/downward arrows for top and bottom snaps.
+  // For example, rotating from landscape display to portrait display layout
+  // should update snap icons from left/right arrows to upward/downward arrows
+  // for top and bottom snaps.
   if ((changed_metrics & DISPLAY_METRIC_ROTATION) && frame_header_)
     frame_header_->InvalidateLayout();
 }
@@ -706,6 +710,7 @@ void BrowserNonClientFrameViewChromeOS::OnWindowDestroying(
     aura::Window* window) {
   DCHECK(window_observation_.IsObserving());
   window_observation_.Reset();
+  display_observer_.reset();
 }
 
 void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
@@ -721,9 +726,9 @@ void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
 
   if (key == aura::client::kShowStateKey) {
     bool enter_fullscreen = window->GetProperty(aura::client::kShowStateKey) ==
-                            ui::SHOW_STATE_FULLSCREEN;
-    bool exit_fullscreen =
-        static_cast<ui::WindowShowState>(old) == ui::SHOW_STATE_FULLSCREEN;
+                            ui::mojom::WindowShowState::kFullscreen;
+    bool exit_fullscreen = static_cast<ui::mojom::WindowShowState>(old) ==
+                           ui::mojom::WindowShowState::kFullscreen;
 
     // May have to hide caption buttons while in fullscreen mode, or show them
     // when exiting fullscreen.
@@ -943,9 +948,12 @@ bool BrowserNonClientFrameViewChromeOS::GetShouldPaint() const {
 void BrowserNonClientFrameViewChromeOS::OnAddedToOrRemovedFromOverview() {
   const bool should_show_caption_buttons = GetShowCaptionButtons();
   caption_button_container_->SetVisible(should_show_caption_buttons);
-  // The WebAppFrameToolbarView is part of the BrowserView, so make sure the
-  // BrowserView is re-layed out to take into account these changes.
-  browser_view()->InvalidateLayout();
+  if (!chromeos::features::AreOverviewSessionInitOptimizationsEnabled() ||
+      browser_view()->GetIsWebAppType()) {
+    // The WebAppFrameToolbarView is part of the BrowserView, so make sure the
+    // BrowserView is re-layed out to take into account these changes.
+    browser_view()->InvalidateLayout();
+  }
 }
 
 std::unique_ptr<chromeos::FrameHeader>
@@ -1045,6 +1053,15 @@ void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
 
   if (frame_header_) {
     frame_header_->SetHeaderCornerRadius(corner_radius);
+  }
+
+  if (browser_view()->IsWindowControlsOverlayEnabled()) {
+    // With window controls overlay enabled, the caption_button_container is
+    // drawn above the client view. The container has a background that extends
+    // over the curvature of the top-right corner, requiring its rounding.
+    caption_button_container_->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(0, corner_radius, 0, 0));
+    caption_button_container_->layer()->SetIsFastRoundedCorner(/*enable=*/true);
   }
 
   if (chromeos::features::IsRoundedWindowsEnabled()) {

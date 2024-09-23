@@ -187,11 +187,6 @@ EffectNode* RenderSurfaceImpl::OwningEffectNodeMutableForTest() const {
       EffectTreeIndex());
 }
 
-const ViewTransitionElementId& RenderSurfaceImpl::GetViewTransitionElementId()
-    const {
-  return OwningEffectNode()->view_transition_shared_element_id;
-}
-
 void RenderSurfaceImpl::SetClipRect(const gfx::Rect& clip_rect) {
   if (clip_rect == draw_properties_.clip_rect)
     return;

@@ -4,6 +4,7 @@
 
 #include "media/gpu/windows/d3d11_video_frame_mailbox_release_helper.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/bind_post_task.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -18,6 +19,7 @@ D3D11VideoFrameMailboxReleaseHelper::D3D11VideoFrameMailboxReleaseHelper(
       get_helper_cb_(std::move(get_helper_cb)) {
   // May be called from any thread.
   DCHECK(get_helper_cb_);
+  DETACH_FROM_THREAD(thread_checker_);
 }
 
 // Note: It doesn't matter which thread this is destructed on since `helper_`
@@ -31,19 +33,17 @@ void D3D11VideoFrameMailboxReleaseHelper::Initialize(InitCB init_cb) {
   helper_ = std::move(get_helper_cb_).Run();
 
   // Get the stub, register, and generally do stuff.
-  if (!helper_ || !helper_->MakeContextCurrent()) {
+  if (!helper_) {
     if (media_log_) {
-      MEDIA_LOG(ERROR, media_log_) << "Failed to make context current.";
+      MEDIA_LOG(ERROR, media_log_) << "Failed to get command buffer helper.";
     }
 
-    helper_.reset();
     std::move(init_cb).Run(false, ReleaseMailboxCB());
     return;
   }
 
   // Note: Since this is a RefCounted class it can't own any callbacks that are
   // bound to itself or the ref count will never reach zero and thus leak.
-
   std::move(init_cb).Run(
       true,
       base::BindPostTaskToCurrentDefault(base::BindRepeating(

@@ -4,9 +4,14 @@
 
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_lacros_base_test.h"
 
+#include <memory>
+
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
@@ -51,7 +56,7 @@ void WebKioskLacrosBaseTest::InitializeWebAppServer() {
   web_app_server_.RegisterRequestHandler(
       base::BindRepeating(&ServeSimpleHtmlPage));
   ASSERT_TRUE(web_app_server_handle_ = web_app_server_.StartAndReturnHandle());
-  SetAppInstallUrl(web_app_server_.base_url().spec());
+  SetAppInstallUrl(web_app_server_.base_url());
 }
 
 }  // namespace ash

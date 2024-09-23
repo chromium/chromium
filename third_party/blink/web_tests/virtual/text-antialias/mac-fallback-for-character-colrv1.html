@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<title>Test fallback for character with COLRv1 web font specified</title>
+<style>
+  @font-face {
+    font-family: color_font;
+    src: url("resources/test_glyphs-glyf_colr_1.ttf");
+  }
+
+  div {
+    font-size: 32px;
+    font-family: color_font;
+  }
+</style>
+<div lang="hi">हे</div>

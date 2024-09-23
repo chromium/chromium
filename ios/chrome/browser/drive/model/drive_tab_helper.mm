@@ -4,16 +4,21 @@
 
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 
+#import "base/feature_list.h"
 #import "ios/chrome/browser/drive/model/drive_file_uploader.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive/model/drive_upload_task.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 using drive::DriveService;
 using drive::DriveServiceFactory;
 
 DriveTabHelper::DriveTabHelper(web::WebState* web_state)
-    : web_state_(web_state) {}
+    : web_state_(web_state) {
+  DCHECK(base::FeatureList::IsEnabled(kIOSSaveToDrive));
+}
 
 DriveTabHelper::~DriveTabHelper() = default;
 
@@ -39,7 +44,7 @@ void DriveTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
     case web::DownloadTask::State::kComplete:
       upload_task_->SetFileToUpload(task->GetResponsePath(),
                                     task->GenerateFileName(),
-                                    task->GetMimeType());
+                                    task->GetMimeType(), task->GetTotalBytes());
       upload_task_->Start();
       break;
     case web::DownloadTask::State::kCancelled:
@@ -64,8 +69,8 @@ void DriveTabHelper::ResetSaveToDriveData(web::DownloadTask* task,
   if (!task || !identity) {
     return;
   }
-  DriveService* drive_service =
-      DriveServiceFactory::GetForBrowserState(web_state_->GetBrowserState());
+  DriveService* drive_service = DriveServiceFactory::GetForBrowserState(
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
   std::unique_ptr<DriveFileUploader> file_uploader =
       drive_service->CreateFileUploader(identity);
   upload_task_ = std::make_unique<DriveUploadTask>(std::move(file_uploader));

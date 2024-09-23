@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -114,7 +115,7 @@ void MockWidgetInputHandler::DispatchNonBlockingEvent(
 
 void MockWidgetInputHandler::WaitForInputProcessed(
     WaitForInputProcessedCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 MockWidgetInputHandler::MessageVector
@@ -140,7 +141,8 @@ void MockWidgetInputHandler::GetFrameWidgetInputHandler(
 void MockWidgetInputHandler::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
-    bool animate) {}
+    bool animate,
+    const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info) {}
 
 MockWidgetInputHandler::DispatchedMessage::DispatchedMessage(
     const std::string& name)

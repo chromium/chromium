@@ -1,0 +1,164 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=../shared/animations.css.js
+ * #import=../shared/chooser_shared.css.js
+ * #include=animations chooser-shared
+ * #css_wrapper_metadata_end */
+
+.apps-ask {
+  text-align: center;
+}
+
+.chrome-logo {
+  background-image: url(../images/module_icons/add_bookmarks.svg);
+  background-position: center bottom;
+  background-size: 170px 170px;
+  height: 146px;
+  margin: auto;
+  margin-bottom: 32px;
+  width: 170px;
+}
+
+h1 {
+  color: var(--cr-primary-text-color);
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0;
+  margin-bottom: 48px;
+  outline: none;
+}
+
+#appChooser {
+  display: block;
+  white-space: nowrap;
+}
+
+.button-bar {
+  margin-top: 4rem;
+}
+
+.option {
+  -webkit-appearance: none;
+  align-items: center;
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: inline-flex;
+  font-family: inherit;
+  height: 7.5rem;
+  justify-content: center;
+  outline: 0;
+  position: relative;
+  transition-duration: 500ms;
+  transition-property: box-shadow;
+  vertical-align: bottom;
+  width: 6.25rem;
+}
+
+.option:not(:first-of-type) {
+  margin-inline-start: 1.5rem;
+}
+
+.option[active] {
+  border: 1px solid var(--cr-checked-color);
+  color: var(--cr-checked-color);
+  font-weight: 500;
+}
+
+.option.keyboard-focused:focus {
+  outline: var(--navi-keyboard-focus-color) solid 3px;
+}
+
+.option-name {
+  flex-grow: 0;
+  line-height: 1.25rem;
+  text-align: center;
+  white-space: normal;
+}
+
+.option-icon {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 2rem;
+  margin: auto;
+  width: 2rem;
+}
+
+.option-icon-shadow {
+  background-color: var(--navi-option-icon-shadow-color);
+  border-radius: 50%;
+  display: flex;
+  height: 3rem;
+  margin-bottom: .25rem;
+  width: 3rem;
+}
+
+.option cr-icon {
+  --iron-icon-fill-color: var(--cr-card-background-color);
+  background: var(--navi-check-icon-color);
+  border-radius: 50%;
+  display: none;
+  height: .75rem;
+  margin: 0;
+  position: absolute;
+  right: .375rem;
+  top: .375rem;
+  width: .75rem;
+}
+
+:host-context([dir=rtl]) .option cr-icon {
+  left: .375rem;
+  right: unset;
+}
+
+.option.keyboard-focused:focus cr-icon[icon='cr:check'],
+.option:hover cr-icon[icon='cr:check'],
+.option[active] cr-icon[icon='cr:check'] {
+  display: block;
+}
+
+.option[active] cr-icon[icon='cr:check'] {
+  background: var(--cr-checked-color);
+}
+
+/* App Icons */
+.gmail {
+  content: image-set(
+      url(chrome://theme/IDS_WELCOME_GMAIL@1x) 1x,
+      url(chrome://theme/IDS_WELCOME_GMAIL@2x) 2x);
+}
+
+.youtube {
+  content: image-set(
+      url(chrome://theme/IDS_WELCOME_YOUTUBE@1x) 1x,
+      url(chrome://theme/IDS_WELCOME_YOUTUBE@2x) 2x);
+}
+
+.maps {
+  content: image-set(
+      url(chrome://theme/IDS_WELCOME_MAPS@1x) 1x,
+      url(chrome://theme/IDS_WELCOME_MAPS@2x) 2x);
+}
+
+.translate {
+  content: image-set(
+      url(chrome://theme/IDS_WELCOME_TRANSLATE@1x) 1x,
+      url(chrome://theme/IDS_WELCOME_TRANSLATE@2x) 2x);
+}
+
+.news {
+  content: image-set(
+      url(chrome://theme/IDS_WELCOME_NEWS@1x) 1x,
+      url(chrome://theme/IDS_WELCOME_NEWS@2x) 2x);
+}
+
+.search {
+  content: image-set(
+      url(chrome://theme/IDS_WELCOME_SEARCH@1x) 1x,
+      url(chrome://theme/IDS_WELCOME_SEARCH@2x) 2x);
+}

@@ -15,8 +15,6 @@ import android.view.WindowInsets;
 import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.ApiCompatibilityUtils;
-
 /** Collection of methods computing various height dimensions that differ by OS build version. */
 public abstract class DimensionCompat {
     protected final Activity mActivity;
@@ -38,10 +36,14 @@ public abstract class DimensionCompat {
     public abstract void updatePosition();
 
     /**
-     * Returns window height. In multi-window mode, returns the window height of the current app
-     * excluding the navigation bar. In non-MW mode, it includes the navigation bar height as well.
+     * Returns window height including all system bar areas. In multi-window mode, returns the
+     * window height of the current app excluding the navigation bar. In non-MW mode, it includes
+     * the navigation bar height as well.
      */
     public abstract @Px int getWindowHeight();
+
+    /** Returns window width */
+    public abstract @Px int getWindowWidth();
 
     /** Returns the status bar height */
     public abstract @Px int getStatusbarHeight();
@@ -65,6 +67,12 @@ public abstract class DimensionCompat {
         @Px
         public int getWindowHeight() {
             return mActivity.getWindowManager().getCurrentWindowMetrics().getBounds().height();
+        }
+
+        @Override
+        @Px
+        public int getWindowWidth() {
+            return mActivity.getWindowManager().getCurrentWindowMetrics().getBounds().width();
         }
 
         @Override
@@ -106,7 +114,6 @@ public abstract class DimensionCompat {
             // On pre-R devices, We wait till the layout is complete and get the content
             // |android.R.id.content| view height. See |getAppUsableScreenHeightFromContent|.
             View contentFrame = mActivity.findViewById(android.R.id.content);
-
             // Maybe invoked before layout inflation? Simply return here - position update will be
             // attempted later again by |onPostInflationStartUp|.
             if (contentFrame == null) return;
@@ -130,26 +137,16 @@ public abstract class DimensionCompat {
                     });
         }
 
-        // TODO(jinsukkim): Explore the way to use androidx.window.WindowManager or
-        // androidx.window.java.WindowInfoRepoJavaAdapter once the androidx API get finalized and is
-        // available in Chromium to use #getCurrentWindowMetrics()/#currentWindowMetrics() to get
-        // the height of the display our Window currently in.
-        //
-        // The #getRealMetrics() method will give the physical size of the screen, which is
-        // generally fine when the app is not in multi-window mode and #getMetrics() will give the
-        // height excludes the decor views, so not suitable for our case. But in multi-window mode,
-        // we have no much choice, the closest way is to use #getMetrics() method, because we need
-        // to handle rotation.
         @Override
         @Px
         public int getWindowHeight() {
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            if (ApiCompatibilityUtils.isInMultiWindowMode(mActivity)) {
-                mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-            } else {
-                mActivity.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
-            }
-            return displayMetrics.heightPixels;
+            return getDisplayMetrics().heightPixels;
+        }
+
+        @Override
+        @Px
+        public int getWindowWidth() {
+            return getDisplayMetrics().widthPixels;
         }
 
         @Override
@@ -182,6 +179,26 @@ public abstract class DimensionCompat {
                     - Math.max(
                             getAppUsableScreenHeightFromContent(),
                             getAppUsableScreenHeightFromDisplay());
+        }
+
+        // TODO(jinsukkim): Explore the way to use androidx.window.WindowManager or
+        // androidx.window.java.WindowInfoRepoJavaAdapter once the androidx API get finalized and is
+        // available in Chromium to use #getCurrentWindowMetrics()/#currentWindowMetrics() to get
+        // the height of the display our Window currently in.
+        //
+        // The #getRealMetrics() method will give the physical size of the screen, which is
+        // generally fine when the app is not in multi-window mode and #getMetrics() will give the
+        // height excludes the decor views, so not suitable for our case. But in multi-window mode,
+        // we have no much choice, the closest way is to use #getMetrics() method, because we need
+        // to handle rotation.
+        private DisplayMetrics getDisplayMetrics() {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            if (mActivity.isInMultiWindowMode()) {
+                mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            } else {
+                mActivity.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+            }
+            return displayMetrics;
         }
 
         private int getAppUsableScreenHeightFromContent() {

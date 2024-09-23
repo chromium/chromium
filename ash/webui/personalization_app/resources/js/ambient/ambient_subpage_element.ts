@@ -19,7 +19,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AmbientModeAlbum, AmbientTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
-import {isAmbientModeAllowed, isPersonalizationJellyEnabled, isScreenSaverDurationEnabled} from '../load_time_booleans.js';
+import {isAmbientModeAllowed} from '../load_time_booleans.js';
 import {Paths, ScrollableTarget} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -72,19 +72,6 @@ export class AmbientSubpageElement extends WithPersonalizationStore {
             'computeLoading_(ambientModeEnabled_, albums_, temperatureUnit_, topicSource_, isOnline_)',
         observer: 'onLoadingChanged_',
       },
-      isPersonalizationJellyEnabled_: {
-        type: Boolean,
-        value() {
-          return isPersonalizationJellyEnabled();
-        },
-      },
-      isScreenSaverDurationEnabled_: {
-        readOnly: true,
-        type: Boolean,
-        value() {
-          return isScreenSaverDurationEnabled();
-        },
-      },
       isOnline_: {
         type: Boolean,
         value() {
@@ -102,8 +89,6 @@ export class AmbientSubpageElement extends WithPersonalizationStore {
   private duration_: number|null;
   private temperatureUnit_: TemperatureUnit|null;
   private topicSource_: TopicSource|null;
-  private isScreenSaverDurationEnabled_: boolean;
-  private isPersonalizationJellyEnabled_: boolean;
   private isOnline_: boolean;
 
   // Refetch albums if the user is currently viewing ambient subpage, focuses
@@ -236,8 +221,7 @@ export class AmbientSubpageElement extends WithPersonalizationStore {
   private computeLoading_(): boolean {
     return this.ambientModeEnabled_ === null || this.albums_ === null ||
         this.topicSource_ === null || this.temperatureUnit_ === null ||
-        (this.isScreenSaverDurationEnabled_ && this.duration_ === null) ||
-        !this.isOnline_;
+        this.duration_ === null || !this.isOnline_;
   }
 
   private getPlaceholders_(x: number): number[] {

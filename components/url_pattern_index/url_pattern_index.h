@@ -10,12 +10,12 @@
 
 #include <map>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "components/url_pattern_index/closed_hash_map.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
@@ -81,7 +81,7 @@ UrlRuleOffset SerializeUrlRule(const proto::UrlRule& rule,
 // Returns a negative value if |lhs_domain| should be ordered before
 // |rhs_domain|, zero if |lhs_domain| is equal to |rhs_domain| and a positive
 // value if |lhs_domain| should be ordered after |rhs_domain|.
-int CompareDomains(base::StringPiece lhs_domain, base::StringPiece rhs_domain);
+int CompareDomains(std::string_view lhs_domain, std::string_view rhs_domain);
 
 // The current format version of UrlPatternIndex.
 // Increase this value when introducing an incompatible change to the
@@ -120,7 +120,7 @@ class UrlPatternIndexBuilder {
   // N-gram is picked using a greedy heuristic, i.e. the one is chosen which
   // corresponds to the shortest list of rules within the index. If there are no
   // valid N-grams in the |pattern|, the return value is 0.
-  NGram GetMostDistinctiveNGram(base::StringPiece pattern);
+  NGram GetMostDistinctiveNGram(std::string_view pattern);
 
   // This index contains all non-REGEXP rules that have at least one acceptable
   // N-gram. For each given rule, the N-gram used as an index key is picked

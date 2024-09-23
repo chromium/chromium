@@ -5,6 +5,7 @@
 #include "ui/gfx/sequential_id_generator.h"
 
 #include "base/check_op.h"
+#include "base/not_fatal_until.h"
 
 namespace {
 
@@ -19,7 +20,7 @@ void Remove(uint32_t key, T* first, T* second) {
   first->erase(iter);
 
   iter = second->find(second_key);
-  DCHECK(iter != second->end());
+  CHECK(iter != second->end(), base::NotFatalUntil::M130);
   second->erase(iter);
 }
 

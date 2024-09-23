@@ -151,7 +151,7 @@ Task RegisteredTaskSource::TakeTask(TaskSource::Transaction* transaction) {
   return task_source_->TakeTask(transaction);
 }
 
-absl::optional<Task> RegisteredTaskSource::Clear(
+std::optional<Task> RegisteredTaskSource::Clear(
     TaskSource::Transaction* transaction) {
   DCHECK(!transaction || transaction->task_source() == get());
   return task_source_->Clear(transaction);

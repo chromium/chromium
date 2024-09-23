@@ -21,6 +21,7 @@ void FakeLorgnetteManagerClient::Init(dbus::Bus* bus) {}
 void FakeLorgnetteManagerClient::ListScanners(
     const std::string& client_id,
     bool local_only,
+    bool preferred_only,
     chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), list_scanners_response_));

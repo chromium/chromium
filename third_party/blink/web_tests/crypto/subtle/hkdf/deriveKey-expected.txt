@@ -9,7 +9,7 @@ PASS derivedKey.algorithm.name is "AES-GCM"
 PASS derivedKey.usages.join(',') is "encrypt"
 
 Try to derive an HKDF key...
-error is: TypeError: No length was specified for the HKDF Derive Bits operation.
+error is: OperationError: No length was specified for the HKDF Derive Bits operation.
 PASS emptyKey.type is "secret"
 PASS typeof emptyKey.extractable is 'boolean'
 PASS emptyKey.extractable is false

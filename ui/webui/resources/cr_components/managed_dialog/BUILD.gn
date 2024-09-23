@@ -10,16 +10,21 @@ assert(include_polymer)
 build_webui("build") {
   grd_prefix = "cr_components_managed_dialog"
 
-  web_component_files = [ "managed_dialog.ts" ]
+  non_web_component_files = [
+    "managed_dialog.ts",
+    "managed_dialog.html.ts",
+  ]
+  css_files = [ "managed_dialog.css" ]
 
   ts_out_dir =
       "$root_gen_dir/ui/webui/resources/tsc/cr_components/managed_dialog"
   ts_composite = true
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+  webui_context_type = "relative"
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
 }

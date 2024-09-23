@@ -78,7 +78,7 @@ namespace cast_crypto = ::cast_certificate;
 AuthResult ParseAuthMessage(const CastMessage& challenge_reply,
                             DeviceAuthMessage* auth_message) {
   if (challenge_reply.payload_type() !=
-      cast::channel::CastMessage_PayloadType_BINARY) {
+      openscreen::cast::proto::CastMessage_PayloadType_BINARY) {
     return AuthResult::CreateWithParseError(
         "Wrong payload type in challenge reply",
         AuthResult::ERROR_WRONG_PAYLOAD_TYPE);
@@ -127,8 +127,8 @@ class CastNonce {
   CastNonce() { GenerateNonce(); }
   void GenerateNonce() {
     // Create a cryptographically secure nonce.
-    crypto::RandBytes(base::WriteInto(&nonce_, kNonceSizeInBytes + 1),
-                      kNonceSizeInBytes);
+    nonce_.resize(kNonceSizeInBytes);
+    crypto::RandBytes(base::as_writable_byte_span(nonce_));
     nonce_generation_time_ = base::Time::Now();
   }
 
@@ -298,11 +298,11 @@ AuthResult AuthContext::VerifySenderNonce(
 }
 
 AuthResult VerifyAndMapDigestAlgorithm(
-    cast::channel::HashAlgorithm response_digest_algorithm,
+    openscreen::cast::proto::HashAlgorithm response_digest_algorithm,
     cast_certificate::CastDigestAlgorithm* digest_algorithm) {
   AuthResult success;
   switch (response_digest_algorithm) {
-    case cast::channel::SHA1:
+    case openscreen::cast::proto::SHA1:
       RecordSignatureStatus(CastSignatureStatus::kAlgorithmUnsupported);
       *digest_algorithm = cast_certificate::CastDigestAlgorithm::SHA1;
       if (base::FeatureList::IsEnabled(kEnforceSHA256Checking)) {
@@ -313,7 +313,7 @@ AuthResult VerifyAndMapDigestAlgorithm(
         success.set_flag(CastChannelFlag::kSha1DigestAlgorithm);
       }
       break;
-    case cast::channel::SHA256:
+    case openscreen::cast::proto::SHA256:
       *digest_algorithm = cast_certificate::CastDigestAlgorithm::SHA256;
       break;
   }
@@ -390,9 +390,7 @@ AuthResult AuthenticateChallengeReply(const CastMessage& challenge_reply,
 //
 // * Verifies that the certificate chain |response.client_auth_certificate| +
 //   |response.intermediate_certificate| is valid and chains to a trusted
-//   Cast root. The list of trusted Cast roots can be overrided by providing a
-//   non-nullptr |cast_trust_store|. The certificate is verified at
-//   |verification_time|.
+//   Cast root. The certificate is verified at |verification_time|.
 //
 // * Verifies that none of the certificates in the chain are revoked based on
 //   the CRL provided in the response |response.crl|. The CRL is verified to be
@@ -408,7 +406,6 @@ AuthResult AuthenticateChallengeReply(const CastMessage& challenge_reply,
 AuthResult VerifyCredentialsImpl(const AuthResponse& response,
                                  const std::string& signature_input,
                                  const cast_crypto::CRLPolicy& crl_policy,
-                                 bssl::TrustStore* cast_trust_store,
                                  bssl::TrustStore* crl_trust_store,
                                  const base::Time& verification_time) {
   // Verify the certificate
@@ -449,10 +446,9 @@ AuthResult VerifyCredentialsImpl(const AuthResponse& response,
 
   // Perform certificate verification.
   cast_crypto::CastDeviceCertPolicy device_policy;
-  cast_crypto::CastCertError verify_result =
-      cast_crypto::VerifyDeviceCertUsingCustomTrustStore(
-          cert_chain, verification_time, &verification_context, &device_policy,
-          crl.get(), fallback_crl.get(), crl_policy, cast_trust_store);
+  cast_crypto::CastCertError verify_result = cast_crypto::VerifyDeviceCert(
+      cert_chain, verification_time, &verification_context, &device_policy,
+      crl.get(), fallback_crl.get(), crl_policy);
 
   // Handle and report errors.
   AuthResult result = MapToAuthResult(verify_result, crl_policy);
@@ -521,19 +517,16 @@ AuthResult VerifyCredentials(const AuthResponse& response,
       policy = cast_crypto::CRLPolicy::CRL_OPTIONAL_WITH_FALLBACK;
     }
   }
-  return VerifyCredentialsImpl(response, signature_input, policy, nullptr,
-                               nullptr, now);
+  return VerifyCredentialsImpl(response, signature_input, policy, nullptr, now);
 }
 
 AuthResult VerifyCredentialsForTest(const AuthResponse& response,
                                     const std::string& signature_input,
                                     const cast_crypto::CRLPolicy& crl_policy,
-                                    bssl::TrustStore* cast_trust_store,
                                     bssl::TrustStore* crl_trust_store,
                                     const base::Time& verification_time) {
   return VerifyCredentialsImpl(response, signature_input, crl_policy,
-                               cast_trust_store, crl_trust_store,
-                               verification_time);
+                               crl_trust_store, verification_time);
 }
 
 }  // namespace cast_channel

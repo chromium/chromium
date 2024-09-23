@@ -52,7 +52,7 @@ void InterpolatedTransformOperation::Apply(
   transform.PreConcat(to_transform);
 }
 
-scoped_refptr<TransformOperation> InterpolatedTransformOperation::Blend(
+TransformOperation* InterpolatedTransformOperation::Blend(
     const TransformOperation* from,
     double progress,
     bool blend_to_identity) {
@@ -62,16 +62,16 @@ scoped_refptr<TransformOperation> InterpolatedTransformOperation::Blend(
   to_operations.Operations().push_back(this);
   TransformOperations from_operations;
   if (blend_to_identity) {
-    return InterpolatedTransformOperation::Create(to_operations,
-                                                  from_operations, 0, progress);
+    return MakeGarbageCollected<InterpolatedTransformOperation>(
+        to_operations, from_operations, 0, progress);
   }
 
   if (from) {
     from_operations.Operations().push_back(
         const_cast<TransformOperation*>(from));
   }
-  return InterpolatedTransformOperation::Create(from_operations, to_operations,
-                                                0, progress);
+  return MakeGarbageCollected<InterpolatedTransformOperation>(
+      from_operations, to_operations, 0, progress);
 }
 
 }  // namespace blink

@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package tpcd.metadata;
+
+// MetadataEntry holds a pair of primary and secondary url patterns.
+message MetadataEntry {
+  // primary_pattern_spec represents the pattern specifications to match against
+  // third-party contexts url.
+  optional string primary_pattern_spec = 1;
+  // secondary_pattern_spec represents the pattern specifications to match
+  // against first-party contexts url.
+  optional string secondary_pattern_spec = 2;
+
+  // The origination of these patterns pair.
+  optional string source = 7;
+
+  // Deprecation Trial Rollout Percentage (DTRP) is expected to be applicable to
+  // `MetadataEntry`s with `Source::SOURCE_1P_DT` and `Source::SOURCE_3P_DT`
+  // (Design Doc: go/sgac):
+  optional uint32 dtrp = 10;
+  // This DTRP attribute will hold the DTRP value that if set overrides `dtrp`.
+  optional uint32 dtrp_override = 11;
+}
+
+// Metadata holds a list of url patterns pair aka `MetadataEntry`.
+message Metadata {
+  repeated MetadataEntry metadata_entries = 1;
+}

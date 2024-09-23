@@ -4,7 +4,6 @@
 
 #include "content/browser/interest_group/interest_group_priority_util.h"
 
-#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"

@@ -69,6 +69,8 @@ class PersonalizationAppAmbientProviderImpl
   void HandleTimeOfDayBannerDismissed() override;
   void IsGeolocationEnabledForSystemServices(
       IsGeolocationEnabledForSystemServicesCallback callback) override;
+  void IsGeolocationUserModifiable(
+      IsGeolocationUserModifiableCallback callback) override;
   void EnableGeolocationForSystemServices() override;
 
   // Notify WebUI the latest values.
@@ -86,6 +88,7 @@ class PersonalizationAppAmbientProviderImpl
   bool IsAmbientModeEnabled();
 
   bool IsGeolocationEnabledForSystemServices();
+  bool IsGeolocationUserModifiable();
 
   // Notify webUI the current state of system geolocation permission.
   void NotifyGeolocationPermissionChanged();

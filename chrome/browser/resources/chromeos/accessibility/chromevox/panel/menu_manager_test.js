@@ -7,19 +7,6 @@ GEN_INCLUDE(['panel_test_base.js']);
 
 /** Test fixture for MenuManager. */
 ChromeVoxMenuManagerTest = class extends ChromeVoxPanelTestBase {
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule('KeyMap', '/chromevox/common/key_map.js'),
-      importModule(
-          ['PanelCommand', 'PanelCommandType'],
-          '/chromevox/common/panel_command.js'),
-    ]);
-  }
-
   getMenuManager() {
     return this.getPanel().instance.getMenuManagerForTesting();
   }

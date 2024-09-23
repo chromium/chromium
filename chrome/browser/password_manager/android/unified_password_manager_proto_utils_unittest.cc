@@ -4,10 +4,10 @@
 
 #include "chrome/browser/password_manager/android/unified_password_manager_proto_utils.h"
 
-#include "components/password_manager/core/browser/password_form.h"
 #include "chrome/browser/password_manager/android/protos/list_passwords_result.pb.h"
 #include "chrome/browser/password_manager/android/protos/password_info.pb.h"
 #include "chrome/browser/password_manager/android/protos/password_with_local_data.pb.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -110,15 +110,15 @@ TEST_P(UnifiedPasswordManagerProtoUtilsTest,
   EXPECT_THAT(form.password_element, Eq(kTestPasswordElementName16));
   EXPECT_THAT(form.signon_realm, Eq("signon_realm"));
   EXPECT_FALSE(form.skip_zero_click);
-  EXPECT_EQ(form.form_data.url, GURL(kTestOrigin));
-  EXPECT_EQ(form.form_data.action, GURL(kTestAction));
-  EXPECT_EQ(form.form_data.name, kTestFormName16);
-  ASSERT_EQ(form.form_data.fields.size(), 2u);
-  EXPECT_EQ(form.form_data.fields[0].name, kTestUsernameElementName16);
-  EXPECT_EQ(form.form_data.fields[0].form_control_type,
+  EXPECT_EQ(form.form_data.url(), GURL(kTestOrigin));
+  EXPECT_EQ(form.form_data.action(), GURL(kTestAction));
+  EXPECT_EQ(form.form_data.name(), kTestFormName16);
+  ASSERT_EQ(form.form_data.fields().size(), 2u);
+  EXPECT_EQ(form.form_data.fields()[0].name(), kTestUsernameElementName16);
+  EXPECT_EQ(form.form_data.fields()[0].form_control_type(),
             kTestUsernameElementType);
-  EXPECT_EQ(form.form_data.fields[1].name, kTestPasswordElementName16);
-  EXPECT_EQ(form.form_data.fields[1].form_control_type,
+  EXPECT_EQ(form.form_data.fields()[1].name(), kTestPasswordElementName16);
+  EXPECT_EQ(form.form_data.fields()[1].form_control_type(),
             kTestPasswordElementType);
 
   PasswordWithLocalData password_data_converted_back =

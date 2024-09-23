@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <vector>
 
 #include "gpu/config/gpu_blocklist.h"
@@ -110,6 +115,8 @@ GPU_BLOCKLIST_FEATURE_TEST(AcceleratedWebGPU,
 
 GPU_BLOCKLIST_FEATURE_TEST(SkiaGraphite, GPU_FEATURE_TYPE_SKIA_GRAPHITE)
 
+GPU_BLOCKLIST_FEATURE_TEST(WebNN, GPU_FEATURE_TYPE_WEBNN)
+
 // Test for invariant "Assume the newly last added entry has the largest ID".
 // See GpuControlList::GpuControlList.
 // It checks software_rendering_list.json
@@ -127,9 +134,8 @@ TEST_F(GpuBlocklistTest, TestBlocklistIsValid) {
   EXPECT_EQ(real_max_entry_id, max_entry_id);
 }
 
-void TestBlockList(const GpuControlList::Entry* entries, size_t count) {
-  for (size_t i = 0; i < count; ++i) {
-    const auto& entry = entries[i];
+void TestBlockList(base::span<const GpuControlList::Entry> entries) {
+  for (const auto& entry : entries) {
     if (const auto* gl_strings = entry.conditions.gl_strings) {
       if (gl_strings->gl_vendor) {
         EXPECT_TRUE(RE2(gl_strings->gl_vendor).ok())
@@ -174,9 +180,8 @@ void TestBlockList(const GpuControlList::Entry* entries, size_t count) {
 
 // It checks software_rendering_list.json
 TEST_F(GpuBlocklistTest, VerifyGLStrings) {
-  TestBlockList(kSoftwareRenderingListEntries,
-                kSoftwareRenderingListEntryCount);
-  TestBlockList(kGpuDriverBugListEntries, kGpuDriverBugListEntryCount);
+  TestBlockList(kSoftwareRenderingListEntries);
+  TestBlockList(kGpuDriverBugListEntries);
 }
 
 }  // namespace gpu

@@ -157,7 +157,9 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
 
   // Creates app window and set optional ARC application id.
   views::Widget* CreateArcWindow(const std::string& window_app_id) {
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW);
     views::Widget* widget = new views::Widget();
     params.context = GetContext();
     widget->Init(std::move(params));
@@ -628,7 +630,7 @@ TEST_F(ShelfContextMenuTest, InternalAppShelfContextMenuOptionsNumber) {
 
 // Checks the context menu for a "normal" crostini app (i.e. a registered one).
 // Particularly, we ensure that the density changing option exists.
-// TODO(crbug.com/1177126) Re-enable test
+// TODO(crbug.com/40168664) Re-enable test
 TEST_F(ShelfContextMenuTest, CrostiniNormalApp) {
   const std::string app_name = "foo";
   crostini_helper()->AddApp(crostini::CrostiniTestHelper::BasicApp(app_name));

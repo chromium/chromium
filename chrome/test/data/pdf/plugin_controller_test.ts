@@ -6,10 +6,10 @@ import {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgieh
 
 const tests = [
   async function testRequestThumbnail() {
-    const data = await PluginController.getInstance().requestThumbnail(1);
+    const data = await PluginController.getInstance().requestThumbnail(0);
 
-    const expectedWidth = 108 * window.devicePixelRatio;
-    const expectedHeight = 140 * window.devicePixelRatio;
+    const expectedWidth = Math.floor(108 * window.devicePixelRatio);
+    const expectedHeight = Math.floor(140 * window.devicePixelRatio);
     chrome.test.assertEq(expectedWidth, data.width);
     chrome.test.assertEq(expectedHeight, data.height);
 

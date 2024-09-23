@@ -2,16 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 
 #include "base/apple/foundation_util.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "components/crash/core/common/crash_key.h"
 #import "components/remote_cocoa/app_shim/features.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
@@ -103,6 +111,12 @@ void OrderChildWindow(NSWindow* child_window,
 
 }  // namespace
 
+@interface NSNextStepFrame (Private)
+- (instancetype)initWithFrame:(NSRect)frame
+                    styleMask:(NSUInteger)styleMask
+                        owner:(id)owner;
+@end
+
 @interface NSWindow (Private)
 + (Class)frameViewClassForStyleMask:(NSWindowStyleMask)windowStyle;
 - (BOOL)hasKeyAppearance;
@@ -160,6 +174,7 @@ void OrderChildWindow(NSWindow* child_window,
 @end
 
 @implementation NativeWidgetMacNSWindowBorderlessFrame
+
 - (void)mouseDown:(NSEvent*)event {
   [self cr_mouseDownOnFrameView:event];
   [super mouseDown:event];
@@ -174,10 +189,12 @@ void OrderChildWindow(NSWindow* child_window,
   CommandDispatcher* __strong _commandDispatcher;
   id<UserInterfaceItemCommandHandler> __strong _commandHandler;
   id<WindowTouchBarDelegate> __weak _touchBarDelegate;
+  NSData* __strong _lastSavedRestorableState;
   uint64_t _bridgedNativeWidgetId;
   // This field is not a raw_ptr<> because it requires @property rewrite.
   RAW_PTR_EXCLUSION remote_cocoa::NativeWidgetNSWindowBridge* _bridge;
   BOOL _willUpdateRestorableState;
+  BOOL _willSaveRestorableStateAfterDelay;
   BOOL _isEnforcingNeverMadeVisible;
   BOOL _preventKeyWindow;
   BOOL _isTooltip;
@@ -347,7 +364,7 @@ void OrderChildWindow(NSWindow* child_window,
   // We should like to DCHECK that the object returned implements the
   // NSAccessibility protocol, but the NSAccessibilityRemoteUIElement interface
   // does not conform.
-  // TODO(https://crbug.com/944698): Create a sub-class that does.
+  // TODO(crbug.com/41448396): Create a sub-class that does.
   return obj;
 }
 
@@ -609,10 +626,47 @@ void OrderChildWindow(NSWindow* child_window,
 }
 
 - (void)saveRestorableState {
-  if (!_bridge)
+  if (!_bridge || ![self _isConsideredOpenForPersistentState]) {
     return;
-  if (![self _isConsideredOpenForPersistentState])
+  }
+
+  // Certain conditions, such as in the Speedometer 3 benchmark, can trigger a
+  // rapid succession of calls to saveRestorableState. If there's no pending
+  // save of restorable state, save the state now. This ensures that the first
+  // new state change gets saved immediately. Then, set up to save again 500ms
+  // after the last request. This will coalesce a storm of restorable state
+  // saves into the first and last requests. This might ultimately result in a
+  // single save operation if the first and last states are identical.
+  //
+  // We take pains to save the first and last requests to ensure we get the
+  // expected state save on browser close. For example, if a browser window
+  // miniaturizes and then the browser quits within our 500ms delay, the
+  // miniaturized state may not get saved. Even if the call to
+  // -reallySaveRestorableState occurs in time, we might still be in trouble
+  // because the save has to cross the remote cocoa boundary (and so is
+  // dependent on a couple more turns of the run loop to get the save to take).
+  if (!_willSaveRestorableStateAfterDelay) {
+    [self reallySaveRestorableState];
+    _willSaveRestorableStateAfterDelay = YES;
+  }
+
+  [NSObject cancelPreviousPerformRequestsWithTarget:self
+                                           selector:@selector
+                                           (reallySaveRestorableState)
+                                             object:nil];
+  [self performSelector:@selector(reallySaveRestorableState)
+             withObject:nil
+             afterDelay:0.5];
+}
+
+- (void)reallySaveRestorableState {
+  _willSaveRestorableStateAfterDelay = NO;
+
+  if (!_bridge) {
     return;
+  }
+
+  _willUpdateRestorableState = NO;
 
   // On macOS 12+, create restorable state archives with secure encoding. See
   // the article at
@@ -623,12 +677,18 @@ void OrderChildWindow(NSWindow* child_window,
   encoder.delegate = self;
   [self encodeRestorableStateWithCoder:encoder];
   [encoder finishEncoding];
-  NSData* restorableStateData = encoder.encodedData;
+  NSData* restorableState = encoder.encodedData;
 
-  auto* bytes = static_cast<uint8_t const*>(restorableStateData.bytes);
+  // Don't bother saving restorable state if it didn't actually change since
+  // the last save. This avoids an extra IPC when nothing has changed.
+  if ([restorableState isEqual:_lastSavedRestorableState]) {
+    return;
+  }
+  _lastSavedRestorableState = restorableState;
+
+  auto* bytes = static_cast<uint8_t const*>(restorableState.bytes);
   _bridge->host()->OnWindowStateRestorationDataChanged(
-      std::vector<uint8_t>(bytes, bytes + restorableStateData.length));
-  _willUpdateRestorableState = NO;
+      std::vector<uint8_t>(bytes, bytes + restorableState.length));
 }
 
 // AppKit calls -invalidateRestorableState when a property of the window which
@@ -839,5 +899,19 @@ void OrderChildWindow(NSWindow* child_window,
   }
   return NO;
 }
+
+- (NSWindow*)preferredSheetParent {
+  return [self immersiveFullscreen] ? [self rootWindow] : self;
+}
+
+#ifndef NDEBUG
+- (NSString*)debugDescription {
+  if (!self.title.length) {
+    return [super debugDescription];
+  }
+  return [NSString
+      stringWithFormat:@"%@ - %@", [super debugDescription], self.title];
+}
+#endif  // NDEBUG
 
 @end

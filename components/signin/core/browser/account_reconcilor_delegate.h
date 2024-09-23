@@ -29,11 +29,6 @@ class AccountReconcilorDelegate {
   // false.
   virtual bool IsReconcileEnabled() const;
 
-  // Returns true if calling OAuthMultiLogin to update cookies to match
-  // refresh tokens is allowed. Used in Dice to disable updating cookies when
-  // the user is not signed in to chrome.
-  virtual bool IsUpdateCookieAllowed() const;
-
   // Returns the value to set in the "source" parameter for Gaia API calls.
   virtual gaia::GaiaSource GetGaiaApiSource() const;
 

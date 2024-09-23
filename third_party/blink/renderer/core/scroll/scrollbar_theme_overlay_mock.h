@@ -56,11 +56,11 @@ class CORE_EXPORT ScrollbarThemeOverlayMock
   }
 
   bool ShouldSnapBackToDragOrigin(const Scrollbar& scrollbar,
-                                  const WebMouseEvent& evt) override {
+                                  const WebMouseEvent& evt) const override {
     return false;
   }
 
-  int MinimumThumbLength(const Scrollbar& scrollbar) override {
+  int MinimumThumbLength(const Scrollbar& scrollbar) const override {
     return ThumbThickness(scrollbar.ScaleFromDIP(), EScrollbarWidth::kAuto);
   }
 

@@ -1,41 +1,72 @@
 <style>
-  :host {
-    background-color: #fff;
-    border-color: rgba(0,0,0,.12);
-    border-radius: 4px;
+  div, td, th {
+    border-color: var(--border-color);
     border-style: solid;
+  }
+
+  div {
     border-width: 1px;
-    display: block;
-    overflow-x: scroll;
+    max-height: 100%;
+    overflow: auto;
   }
 
   table {
-    border: 0;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     /* Per
      * https://limebrains.com/blog/2021-03-02T13:00-heigh-100-inside-table-td
      * this forces the header buttons to expand vertically, making them easier
      * to click on.
      */
     height: 1px;
+    width: 100%;
   }
 
-  tbody tr, tfoot tr {
-    border-top-color: rgba(0,0,0,.12);
-    border-top-style: solid;
-    border-top-width: 1px;
+  thead, tfoot {
+    background: var(--header-background);
+    position: sticky;
+    z-index: 1;
   }
 
-  thead tr {
-    border: 0;
+  thead {
+    top: 0;
+  }
+
+  tbody > tr[aria-selected="false"]:hover {
+    background: var(--data-hover-background);
+    cursor: pointer;
+  }
+
+  tbody > tr[aria-selected="true"] {
+    background: var(--data-selected-background);
   }
 
   tfoot {
-    font-weight: bold;
+    bottom: 0;
+  }
+
+  tfoot th {
+    text-align: right;
+  }
+
+  thead th {
+    border-width: 0 0 1px 0;
+  }
+
+  td, tfoot th {
+    border-width: 1px 0 0 0;
+  }
+
+  tbody > tr:first-child > td {
+    border-width: 0;
   }
 
   td, th {
-    padding-inline: 16px;
+    font-weight: normal;
+    padding-inline: var(--cell-padding);
+    text-align: left;
+    text-wrap: nowrap;
+    vertical-align: top;
   }
 
   th[aria-sort] {
@@ -43,32 +74,38 @@
   }
 
   th[aria-sort] button {
+    align-items: start;
     background: none;
     border: none;
     color: inherit;
     cursor: pointer;
+    display: flex;
     font: inherit;
     height: 100%;
-    outline: none;
-    padding-inline: 16px;
+    padding-inline: var(--cell-padding);
     height: 100%;
+    text-align: left;
     width: 100%;
   }
 
   th[aria-sort] button:hover {
-    background: rgba(0,0,0,.12);
+    background: var(--header-hover-background);
+  }
+
+  th[aria-sort] button::after {
+    margin-left: auto;
   }
 
   th[aria-sort='none'] button::after {
-    content: '⬍';
+    content: '⇅';
   }
 
   th[aria-sort='ascending'] button::after {
-    content: '⬆';
+    content: '↑';
   }
 
   th[aria-sort='descending'] button::after {
-    content: '⬇';
+    content: '↓';
   }
 
   ul, li {
@@ -77,21 +114,30 @@
     padding: 0;
   }
 
-  .send-error {
-    background-color: rgb(250,199,192);
+  .send-error::after {
+    content: ' ❌';
   }
 
-  .number {
+  td.number {
     font-variant-numeric: tabular-nums;
     text-align: right;
   }
+
+  pre {
+    margin: 0;
+  }
 </style>
-<table>
-  <thead>
-    <tr></tr>
-  </thead>
-  <tbody></tbody>
-  <tfoot>
-    <tr><td></td></tr>
-  </tfoot>
-</table>
+<div>
+  <table>
+    <thead>
+      <tr></tr>
+    </thead>
+    <tbody></tbody>
+    <tfoot>
+      <tr>
+        <th scope=row>Row Count</th>
+        <td>0</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>

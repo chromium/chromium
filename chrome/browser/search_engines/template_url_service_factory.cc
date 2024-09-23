@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
@@ -18,13 +19,13 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
-#include "chrome/browser/web_data_service_factory.h"
+#include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/default_search_manager.h"
-#include "components/search_engines/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_site_search_manager.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_service.h"
 #include "rlz/buildflags/buildflags.h"
@@ -37,25 +38,9 @@
 #include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/1125897
 #endif
 
-namespace {
-
-BASE_FEATURE(kProfileBasedTemplateURLService,
-             "ProfileBasedTemplateURLService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-}  // namespace
-
 // static
 TemplateURLService* TemplateURLServiceFactory::GetForProfile(Profile* profile) {
   TRACE_EVENT0("loading", "TemplateURLServiceFactory::GetForProfile");
-
-  if (base::FeatureList::IsEnabled(kProfileBasedTemplateURLService)) {
-    if (!profile->template_url_service()) {
-      profile->set_template_url_service(static_cast<TemplateURLService*>(
-          GetInstance()->GetServiceForBrowserContext(profile, true)));
-    }
-    return profile->template_url_service().value();
-  }
 
   return static_cast<TemplateURLService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
@@ -78,8 +63,10 @@ std::unique_ptr<KeyedService> TemplateURLServiceFactory::BuildInstanceFor(
 #endif
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TemplateURLService>(
-      profile->GetPrefs(),
-      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile),
+      CHECK_DEREF(profile->GetPrefs()),
+      CHECK_DEREF(
+          search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+              profile)),
       std::make_unique<UIThreadSearchTermsData>(),
       WebDataServiceFactory::GetKeywordWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
@@ -105,6 +92,9 @@ TemplateURLServiceFactory::TemplateURLServiceFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               // It's not possible for the user to search in a system profile.
               .WithSystem(ProfileSelection::kNone)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(search_engines::SearchEngineChoiceServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
@@ -144,11 +134,4 @@ void TemplateURLServiceFactory::RegisterProfilePrefs(
 
 bool TemplateURLServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
-}
-
-void TemplateURLServiceFactory::BrowserContextDestroyed(
-    content::BrowserContext* browser_context) {
-  Profile::FromBrowserContext(browser_context)
-      ->set_template_url_service(nullptr);
-  BrowserContextKeyedServiceFactory::BrowserContextDestroyed(browser_context);
 }

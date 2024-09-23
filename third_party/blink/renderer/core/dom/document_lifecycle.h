@@ -38,7 +38,9 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 #if DCHECK_IS_ON()
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+namespace WTF {
+class String;
+}  // namespace WTF
 #endif
 
 namespace blink {

@@ -20,11 +20,6 @@
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
 
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "base/feature_list.h"
-#include "components/ml/webnn/features.mojom-features.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 namespace viz {
 
 GpuClient::GpuClient(std::unique_ptr<GpuClientDelegate> delegate,
@@ -55,14 +50,6 @@ void GpuClient::Add(mojo::PendingReceiver<mojom::Gpu> receiver) {
 void GpuClient::OnError(ErrorReason reason) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   ClearCallback();
-  if (gpu_receivers_.empty() && delegate_) {
-    if (auto* gpu_memory_buffer_manager =
-            delegate_->GetGpuMemoryBufferManager()) {
-      gpu_memory_buffer_manager->DestroyAllGpuMemoryBufferForClient(client_id_);
-    }
-  }
-  if (reason == ErrorReason::kConnectionLost && connection_error_handler_)
-    std::move(connection_error_handler_).Run(this);
 }
 
 void GpuClient::PreEstablishGpuChannel() {
@@ -113,16 +100,10 @@ void GpuClient::RemoveDiskCacheHandles() {
     gpu_host->RemoveChannelDiskCacheHandles(client_id_);
 }
 
-void GpuClient::SetConnectionErrorHandler(
-    ConnectionErrorHandlerClosure connection_error_handler) {
-  connection_error_handler_ = std::move(connection_error_handler);
-}
-
 base::WeakPtr<GpuClient> GpuClient::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 void GpuClient::BindWebNNContextProvider(
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
   if (auto* gpu_host = delegate_->EnsureGpuHost()) {
@@ -130,7 +111,6 @@ void GpuClient::BindWebNNContextProvider(
                                                       client_id_);
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void GpuClient::OnEstablishGpuChannel(
     mojo::ScopedMessagePipeHandle channel_handle,
@@ -164,15 +144,6 @@ void GpuClient::OnEstablishGpuChannel(
   }
 }
 
-void GpuClient::OnCreateGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                                        gfx::GpuMemoryBufferHandle handle) {
-  auto it = pending_create_callbacks_.find(id);
-  DCHECK(it != pending_create_callbacks_.end());
-  CreateGpuMemoryBufferCallback callback = std::move(it->second);
-  pending_create_callbacks_.erase(it);
-  std::move(callback).Run(std::move(handle));
-}
-
 void GpuClient::ClearCallback() {
   if (!callback_)
     return;
@@ -190,7 +161,7 @@ void GpuClient::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
   if (channel_handle_.is_valid()) {
     // If a channel has been pre-established and cached,
     //   1) if callback is valid, return it right away.
-    //   2) if callback is empty, it's PreEstablishGpyChannel() being called
+    //   2) if callback is empty, it's PreEstablishGpuChannel() being called
     //      more than once, no need to do anything.
     if (callback) {
       std::move(callback).Run(client_id_, std::move(channel_handle_), gpu_info_,
@@ -241,67 +212,8 @@ void GpuClient::CreateVideoEncodeAcceleratorProvider(
   }
 }
 
-void GpuClient::CreateGpuMemoryBuffer(
-    gfx::GpuMemoryBufferId id,
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    mojom::GpuMemoryBufferFactory::CreateGpuMemoryBufferCallback callback) {
-  auto* gpu_memory_buffer_manager = delegate_->GetGpuMemoryBufferManager();
-
-  if (pending_create_callbacks_.find(id) != pending_create_callbacks_.end()) {
-    gpu_memory_buffer_factory_receivers_.ReportBadMessage(
-        "GpuMemoryBufferId already in use");
-    return;
-  }
-
-  if (!gpu::GpuMemoryBufferSupport::IsSizeValid(size)) {
-    gpu_memory_buffer_factory_receivers_.ReportBadMessage("Invalid GMB size");
-    return;
-  }
-
-  if (!gpu_memory_buffer_manager) {
-    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
-    return;
-  }
-
-  pending_create_callbacks_[id] = std::move(callback);
-  gpu_memory_buffer_manager->AllocateGpuMemoryBuffer(
-      id, client_id_, size, format, usage, gpu::kNullSurfaceHandle,
-      base::BindOnce(&GpuClient::OnCreateGpuMemoryBuffer,
-                     weak_factory_.GetWeakPtr(), id));
-}
-
-void GpuClient::DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id) {
-  if (auto* gpu_memory_buffer_manager =
-          delegate_->GetGpuMemoryBufferManager()) {
-    gpu_memory_buffer_manager->DestroyGpuMemoryBuffer(id, client_id_);
-  }
-}
-
-void GpuClient::CopyGpuMemoryBuffer(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion shared_memory,
-    CopyGpuMemoryBufferCallback callback) {
-  auto* gpu_memory_buffer_manager = delegate_->GetGpuMemoryBufferManager();
-
-  if (!gpu_memory_buffer_manager) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  gpu_memory_buffer_manager->CopyGpuMemoryBufferAsync(
-      std::move(buffer_handle), std::move(shared_memory), std::move(callback));
-}
-
-void GpuClient::CreateGpuMemoryBufferFactory(
-    mojo::PendingReceiver<mojom::GpuMemoryBufferFactory> receiver) {
-  gpu_memory_buffer_factory_receivers_.Add(this, std::move(receiver));
-}
-
 void GpuClient::CreateClientGpuMemoryBufferFactory(
     mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> receiver) {
-  CHECK(base::FeatureList::IsEnabled(features::kUseClientGmbInterface));
   // Send the PendingReceiver to GpuService via IPC.
   if (auto* gpu_host = delegate_->EnsureGpuHost()) {
     gpu_host->gpu_service()->BindClientGmbInterface(std::move(receiver),

@@ -15,12 +15,26 @@ const PrefMap kUserPermissions = {"extensions.user_permissions",
                                   PrefType::kDictionary, PrefScope::kProfile};
 
 // Records the configuration of user scripts worlds.
-// Note: Currently there is only one user script world per extension. However,
-// we plan to add support for multiple user scripts world (crbug.com/1496935).
-// To avoid future pref migrations, we are storing the configuration on a
-// dictionary that allows support for multiple worlds.
 const PrefMap kUserScriptsWorldsConfiguration = {
     "user_scripts_worlds.configuration", PrefType::kDictionary,
     PrefScope::kExtensionSpecific};
+
+// Stores whether the user has acknowledged the MV2 deprecation notice for the
+// warning stage globally.
+const PrefMap kMV2DeprecationWarningAcknowledgedGloballyPref = {
+    "mv2_deprecation_warning_ack_globally", PrefType::kBool,
+    PrefScope::kProfile};
+
+// Stores whether the user has acknowledged the MV2 deprecation notice for the
+// disabled stage globally.
+const PrefMap kMV2DeprecationDisabledAcknowledgedGloballyPref = {
+    "mv2_deprecation_disabled_ack_globally", PrefType::kBool,
+    PrefScope::kProfile};
+
+// Stores whether the user has acknowledged the MV2 deprecation notice for the
+// unsupported stage globally.
+const PrefMap kMV2DeprecationUnsupportedAcknowledgedGloballyPref = {
+    "mv2_deprecation_unsupported_ack_globally", PrefType::kBool,
+    PrefScope::kProfile};
 
 }  // namespace extensions

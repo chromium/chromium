@@ -53,7 +53,9 @@
 #include "ui/gfx/render_text_test_api.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/touch_selection/touch_selection_metrics.h"
+#include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/textfield/textfield_model.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
@@ -183,6 +185,7 @@ class MockInputMethod : public ui::InputMethodBase {
   }
   void OnInputLocaleChanged() override {}
   bool IsInputLocaleCJK() const override { return false; }
+  void OnUrlChanged() override {}
 #endif
 
   bool untranslated_ime_message_called() const {
@@ -258,7 +261,7 @@ ui::EventDispatchDetails MockInputMethod::DispatchKeyEvent(ui::KeyEvent* key) {
   ClearStates();
   if (handled) {
     DCHECK(!key->is_char());
-    ui::KeyEvent mock_key(ui::ET_KEY_PRESSED, ui::VKEY_PROCESSKEY,
+    ui::KeyEvent mock_key(ui::EventType::kKeyPressed, ui::VKEY_PROCESSKEY,
                           key->flags());
     dispatch_details = DispatchKeyEventPostIME(&mock_key);
   } else {
@@ -279,7 +282,7 @@ ui::EventDispatchDetails MockInputMethod::DispatchKeyEvent(ui::KeyEvent* key) {
         client->SetCompositionText(composition_);
       else
         client->ClearCompositionText();
-    } else if (key->type() == ui::ET_KEY_PRESSED) {
+    } else if (key->type() == ui::EventType::kKeyPressed) {
       char16_t ch = key->GetCharacter();
       if (ch)
         client->InsertChar(*key);
@@ -378,13 +381,22 @@ class TestTextfield : public views::Textfield {
   }
 
   void OnAccessibilityEvent(ax::mojom::Event event_type) override {
-    if (event_type == ax::mojom::Event::kTextSelectionChanged)
-      ++accessibility_selection_fired_count_;
+    accessibility_events_.push_back(event_type);
   }
 
-  int GetAccessibilitySelectionFiredCount() {
-    return accessibility_selection_fired_count_;
+  std::vector<ax::mojom::Event> GetAccessibilityEventsOfTypes(
+      const std::vector<ax::mojom::Event>& event_types) {
+    std::vector<ax::mojom::Event> filtered_events;
+    for (const auto& event : accessibility_events_) {
+      if (std::find(event_types.begin(), event_types.end(), event) !=
+          event_types.end()) {
+        filtered_events.push_back(event);
+      }
+    }
+    return filtered_events;
   }
+
+  void ClearAccessibilityEvents() { accessibility_events_.clear(); }
 
  private:
   // views::View:
@@ -403,14 +415,15 @@ class TestTextfield : public views::Textfield {
     key_handled_ = event->handled();
 
     // Currently, Textfield::OnKeyReleased always returns false.
-    if (event->type() == ui::ET_KEY_RELEASED)
+    if (event->type() == ui::EventType::kKeyReleased) {
       EXPECT_FALSE(key_handled_);
+    }
   }
 
   bool key_handled_ = false;
   bool key_received_ = false;
   int event_flags_ = 0;
-  int accessibility_selection_fired_count_ = 0;
+  std::vector<ax::mojom::Event> accessibility_events_;
 
   base::WeakPtrFactory<TestTextfield> weak_ptr_factory_{this};
 };
@@ -724,11 +737,11 @@ gfx::Rect TextfieldTest::GetCursorViewRect() {
 // |x_offset| and y-axis is in the middle of |bound|'s vertical range.
 void TextfieldTest::MouseClick(const gfx::Rect bound, int x_offset) {
   gfx::Point point(bound.x() + x_offset, bound.y() + bound.height() / 2);
-  ui::MouseEvent click(ui::ET_MOUSE_PRESSED, point, point,
+  ui::MouseEvent click(ui::EventType::kMousePressed, point, point,
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON);
   event_target_->OnMousePressed(click);
-  ui::MouseEvent release(ui::ET_MOUSE_RELEASED, point, point,
+  ui::MouseEvent release(ui::EventType::kMouseReleased, point, point,
                          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                          ui::EF_LEFT_MOUSE_BUTTON);
   event_target_->OnMouseReleased(release);
@@ -736,13 +749,13 @@ void TextfieldTest::MouseClick(const gfx::Rect bound, int x_offset) {
 
 // This is to avoid double/triple click.
 void TextfieldTest::NonClientMouseClick() {
-  ui::MouseEvent click(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent click(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(),
                        int{ui::EF_LEFT_MOUSE_BUTTON} | ui::EF_IS_NON_CLIENT,
                        ui::EF_LEFT_MOUSE_BUTTON);
   event_target_->OnMousePressed(click);
-  ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(),
+  ui::MouseEvent release(ui::EventType::kMouseReleased, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(),
                          int{ui::EF_LEFT_MOUSE_BUTTON} | ui::EF_IS_NON_CLIENT,
                          ui::EF_LEFT_MOUSE_BUTTON);
   event_target_->OnMouseReleased(release);
@@ -784,14 +797,14 @@ void TextfieldTest::VerifyTextfieldContextMenuContents(
 }
 
 void TextfieldTest::PressMouseButton(ui::EventFlags mouse_button_flags) {
-  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, mouse_position_, mouse_position_,
-                       ui::EventTimeForNow(), mouse_button_flags,
-                       mouse_button_flags);
+  ui::MouseEvent press(ui::EventType::kMousePressed, mouse_position_,
+                       mouse_position_, ui::EventTimeForNow(),
+                       mouse_button_flags, mouse_button_flags);
   event_target_->OnMousePressed(press);
 }
 
 void TextfieldTest::ReleaseMouseButton(ui::EventFlags mouse_button_flags) {
-  ui::MouseEvent release(ui::ET_MOUSE_RELEASED, mouse_position_,
+  ui::MouseEvent release(ui::EventType::kMouseReleased, mouse_position_,
                          mouse_position_, ui::EventTimeForNow(),
                          mouse_button_flags, mouse_button_flags);
   event_target_->OnMouseReleased(release);
@@ -817,8 +830,8 @@ void TextfieldTest::ClickRightMouseButton() {
 
 void TextfieldTest::DragMouseTo(const gfx::Point& where) {
   mouse_position_ = where;
-  ui::MouseEvent drag(ui::ET_MOUSE_DRAGGED, where, where, ui::EventTimeForNow(),
-                      ui::EF_LEFT_MOUSE_BUTTON, 0);
+  ui::MouseEvent drag(ui::EventType::kMouseDragged, where, where,
+                      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0);
   event_target_->OnMouseDragged(drag);
 }
 
@@ -828,13 +841,13 @@ void TextfieldTest::MoveMouseTo(const gfx::Point& where) {
 
 // Taps on the textfield.
 void TextfieldTest::TapAtCursor(ui::EventPointerType pointer_type) {
-  ui::GestureEventDetails tap_down_details(ui::ET_GESTURE_TAP_DOWN);
+  ui::GestureEventDetails tap_down_details(ui::EventType::kGestureTapDown);
   tap_down_details.set_primary_pointer_type(pointer_type);
   ui::GestureEvent tap_down =
       CreateTestGestureEvent(GetCursorPositionX(0), 0, tap_down_details);
   textfield_->OnGestureEvent(&tap_down);
 
-  ui::GestureEventDetails tap_up_details(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails tap_up_details(ui::EventType::kGestureTap);
   tap_up_details.set_primary_pointer_type(pointer_type);
   ui::GestureEvent tap_up =
       CreateTestGestureEvent(GetCursorPositionX(0), 0, tap_up_details);
@@ -952,6 +965,39 @@ TEST_F(TextfieldTest, Scroll) {
   EXPECT_EQ(GetTextfieldTestApi().GetDisplayOffsetX(), -100);
 }
 
+TEST_F(TextfieldTest, ScrollUpdatesScrollXAccessibilityAttribute) {
+  InitTextfield();
+  // Size the textfield wide enough to hold 10 characters.
+  gfx::test::RenderTextTestApi render_text_test_api(
+      GetTextfieldTestApi().GetRenderText());
+  constexpr int kGlyphWidth = 10;
+  render_text_test_api.SetGlyphWidth(kGlyphWidth);
+  constexpr int kCursorWidth = 1;
+  GetTextfieldTestApi().GetRenderText()->SetDisplayRect(
+      gfx::Rect(kGlyphWidth * 10 + kCursorWidth, 20));
+  textfield_->SetTextWithoutCaretBoundsChangeNotification(
+      u"0123456789_123456789_123456789", 0);
+  GetTextfieldTestApi().SetDisplayOffsetX(0);
+
+  ui::AXNodeData textfield_node_data;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(
+      &textfield_node_data);
+  int scroll_x =
+      textfield_node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollX);
+  EXPECT_EQ(GetTextfieldTestApi().GetDisplayOffsetX(), scroll_x);
+
+  textfield_->SetSelectedRange({0, 20});
+  textfield_->Scroll({20});
+  textfield_node_data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(
+      &textfield_node_data);
+  EXPECT_EQ(
+      GetTextfieldTestApi().GetDisplayOffsetX(),
+      textfield_node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollX));
+  EXPECT_NE(scroll_x, textfield_node_data.GetIntAttribute(
+                          ax::mojom::IntAttribute::kScrollX));
+}
+
 TEST_F(TextfieldTest,
        SetTextWithoutCaretBoundsChangeNotification_ModelEditHistory) {
   InitTextfield();
@@ -1030,7 +1076,7 @@ TEST_F(TextfieldTest, KeyTestControlModifier) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_KeysWithModifiersTest KeysWithModifiersTest
 #else
-// TODO(crbug.com/645104): Implement keyboard layout changing for other
+// TODO(crbug.com/41274325): Implement keyboard layout changing for other
 //                         platforms.
 #define MAYBE_KeysWithModifiersTest DISABLED_KeysWithModifiersTest
 #endif
@@ -1392,25 +1438,27 @@ TEST_F(TextfieldTest, InsertionDeletionTest) {
 
 // Test that deletion operations behave correctly with an active selection.
 TEST_F(TextfieldTest, DeletionWithSelection) {
-  struct {
+  struct TestCase {
     ui::KeyboardCode key;
     bool shift;
-  } cases[] = {
+  };
+
+  constexpr auto kTestCases = std::to_array<TestCase>({
       {ui::VKEY_BACK, false},
       {ui::VKEY_BACK, true},
       {ui::VKEY_DELETE, false},
       {ui::VKEY_DELETE, true},
-  };
+  });
 
   InitTextfield();
   // [Ctrl] ([Alt] on Mac) + [Delete]/[Backspace] should delete the active
   // selection, regardless of [Shift].
-  for (size_t i = 0; i < std::size(cases); ++i) {
+  for (size_t i = 0; i < kTestCases.size(); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing cases[%" PRIuS "]", i));
     textfield_->SetText(u"one two three");
     textfield_->SetSelectedRange(gfx::Range(2, 6));
     // Make selection as - on|e tw|o three.
-    SendWordEvent(cases[i].key, cases[i].shift);
+    SendWordEvent(kTestCases[i].key, kTestCases[i].shift);
     // Verify state is on|o three.
     EXPECT_EQ(u"ono three", textfield_->GetText());
     EXPECT_EQ(gfx::Range(2), textfield_->GetSelectedRange());
@@ -1419,27 +1467,29 @@ TEST_F(TextfieldTest, DeletionWithSelection) {
 
 // Test that deletion operations behave correctly with multiple selections.
 TEST_F(TextfieldTest, DeletionWithMultipleSelections) {
-  struct {
+  struct TestCase {
     ui::KeyboardCode key;
     bool shift;
-  } cases[] = {
+  };
+
+  constexpr auto kTestCases = std::to_array<TestCase>({
       {ui::VKEY_BACK, false},
       {ui::VKEY_BACK, true},
       {ui::VKEY_DELETE, false},
       {ui::VKEY_DELETE, true},
-  };
+  });
 
   InitTextfield();
   // [Ctrl] ([Alt] on Mac) + [Delete]/[Backspace] should delete the active
   // selection, regardless of [Shift].
-  for (size_t i = 0; i < std::size(cases); ++i) {
+  for (size_t i = 0; i < kTestCases.size(); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing cases[%" PRIuS "]", i));
     textfield_->SetText(u"one two three");
     // Select: o[ne] [two] th[re]e
     textfield_->SetSelectedRange(gfx::Range(4, 7));
     textfield_->AddSecondarySelectedRange(gfx::Range(10, 12));
     textfield_->AddSecondarySelectedRange(gfx::Range(1, 3));
-    SendWordEvent(cases[i].key, cases[i].shift);
+    SendWordEvent(kTestCases[i].key, kTestCases[i].shift);
     EXPECT_EQ(u"o  the", textfield_->GetText());
     EXPECT_EQ(gfx::Range(2), textfield_->GetSelectedRange());
     EXPECT_EQ(0U,
@@ -1449,23 +1499,25 @@ TEST_F(TextfieldTest, DeletionWithMultipleSelections) {
 
 // Test deletions not covered by other tests with key events.
 TEST_F(TextfieldTest, DeletionWithEditCommands) {
-  struct {
+  struct TestCase {
     ui::TextEditCommand command;
     const char16_t* expected;
-  } cases[] = {
+  };
+
+  constexpr auto kTestCases = std::to_array<TestCase>({
       {ui::TextEditCommand::DELETE_TO_BEGINNING_OF_LINE, u"two three"},
       {ui::TextEditCommand::DELETE_TO_BEGINNING_OF_PARAGRAPH, u"two three"},
       {ui::TextEditCommand::DELETE_TO_END_OF_LINE, u"one "},
       {ui::TextEditCommand::DELETE_TO_END_OF_PARAGRAPH, u"one "},
-  };
+  });
 
   InitTextfield();
-  for (size_t i = 0; i < std::size(cases); ++i) {
+  for (size_t i = 0; i < kTestCases.size(); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing cases[%" PRIuS "]", i));
     textfield_->SetText(u"one two three");
     textfield_->SetSelectedRange(gfx::Range(4));
-    GetTextfieldTestApi().ExecuteTextEditCommand(cases[i].command);
-    EXPECT_EQ(cases[i].expected, textfield_->GetText());
+    GetTextfieldTestApi().ExecuteTextEditCommand(kTestCases[i].command);
+    EXPECT_EQ(kTestCases[i].expected, textfield_->GetText());
   }
 }
 
@@ -2075,13 +2127,12 @@ TEST_F(TextfieldTest, DragAndDrop_InitiateDrag) {
   textfield_->SetText(u"hello string world");
 
   // Ensure the textfield will provide selected text for drag data.
-  std::u16string string;
   ui::OSExchangeData data;
   const gfx::Range kStringRange(6, 12);
   textfield_->SetSelectedRange(kStringRange);
   const gfx::Point kStringPoint(GetCursorPositionX(9), GetCursorYForTesting());
   textfield_->WriteDragDataForView(nullptr, kStringPoint, &data);
-  EXPECT_TRUE(data.GetString(&string));
+  std::optional<std::u16string> string = data.GetString();
   EXPECT_EQ(textfield_->GetSelectedText(), string);
 
   // Ensure that disabled textfields do not support drag operations.
@@ -2120,7 +2171,6 @@ TEST_F(TextfieldTest, DragAndDrop_ToTheRight) {
   textfield_->SetText(u"hello world");
   const int cursor_y = GetCursorYForTesting();
 
-  std::u16string string;
   ui::OSExchangeData data;
   int formats = 0;
   int operations = 0;
@@ -2136,7 +2186,7 @@ TEST_F(TextfieldTest, DragAndDrop_ToTheRight) {
   EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE | ui::DragDropTypes::DRAG_COPY,
             operations);
   textfield_->WriteDragDataForView(nullptr, point, &data);
-  EXPECT_TRUE(data.GetString(&string));
+  std::optional<std::u16string> string = data.GetString();
   EXPECT_EQ(textfield_->GetSelectedText(), string);
   EXPECT_TRUE(textfield_->GetDropFormats(&formats, &format_types));
   EXPECT_EQ(ui::OSExchangeData::STRING, formats);
@@ -2174,7 +2224,6 @@ TEST_F(TextfieldTest, DragAndDrop_ToTheLeft) {
   textfield_->SetText(u"hello world");
   const int cursor_y = GetCursorYForTesting();
 
-  std::u16string string;
   ui::OSExchangeData data;
   int formats = 0;
   int operations = 0;
@@ -2190,7 +2239,7 @@ TEST_F(TextfieldTest, DragAndDrop_ToTheLeft) {
   EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE | ui::DragDropTypes::DRAG_COPY,
             operations);
   textfield_->WriteDragDataForView(nullptr, point, &data);
-  EXPECT_TRUE(data.GetString(&string));
+  std::optional<std::u16string> string = data.GetString();
   EXPECT_EQ(textfield_->GetSelectedText(), string);
   EXPECT_TRUE(textfield_->GetDropFormats(&formats, &format_types));
   EXPECT_EQ(ui::OSExchangeData::STRING, formats);
@@ -2228,7 +2277,6 @@ TEST_F(TextfieldTest, DropCallbackCancelled) {
   textfield_->SetText(u"hello world");
   const int cursor_y = GetCursorYForTesting();
 
-  std::u16string string;
   ui::OSExchangeData data;
   int formats = 0;
   int operations = 0;
@@ -2244,7 +2292,7 @@ TEST_F(TextfieldTest, DropCallbackCancelled) {
   EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE | ui::DragDropTypes::DRAG_COPY,
             operations);
   textfield_->WriteDragDataForView(nullptr, point, &data);
-  EXPECT_TRUE(data.GetString(&string));
+  std::optional<std::u16string> string = data.GetString();
   EXPECT_EQ(textfield_->GetSelectedText(), string);
   EXPECT_TRUE(textfield_->GetDropFormats(&formats, &format_types));
   EXPECT_EQ(ui::OSExchangeData::STRING, formats);
@@ -3116,7 +3164,8 @@ TEST_F(TextfieldTest, HitInsideTextAreaTest) {
   cursor_bounds.push_back(bound);
 
   // Expected cursor position when clicking left and right of each character.
-  size_t cursor_pos_expected[] = {0, 1, 1, 2, 4, 3, 3, 2};
+  constexpr auto cursor_pos_expected =
+      std::to_array<size_t>({0, 1, 1, 2, 4, 3, 3, 2});
 
   int index = 0;
   for (size_t i = 0; i < cursor_bounds.size() - 1; ++i) {
@@ -3209,7 +3258,16 @@ TEST_F(TextfieldTest, HitOutsideTextAreaInRTLTest) {
   base::i18n::SetICUDefaultLocale(locale);
 }
 
-TEST_F(TextfieldTest, OverflowTest) {
+// TODO(https://crbug.com/361276581, https://crbug.com/361247468): Flakes on
+// Fuschia cast Debug bots.
+#if BUILDFLAG(IS_FUCHSIA) && !defined(NDEBUG)
+#define MAYBE_OverflowTest DISABLED_OverflowTest
+#define MAYBE_OverflowInRTLTest DISABLED_OverflowInRTLTest
+#else
+#define MAYBE_OverflowTest OverflowTest
+#define MAYBE_OverflowInRTLTest OverflowInRTLTest
+#endif
+TEST_F(TextfieldTest, MAYBE_OverflowTest) {
   InitTextfield();
 
   std::u16string str;
@@ -3235,7 +3293,7 @@ TEST_F(TextfieldTest, OverflowTest) {
   EXPECT_EQ(501U, textfield_->GetCursorPosition());
 }
 
-TEST_F(TextfieldTest, OverflowInRTLTest) {
+TEST_F(TextfieldTest, MAYBE_OverflowInRTLTest) {
   std::string locale = base::i18n::GetConfiguredLocale();
   base::i18n::SetICUDefaultLocale("he");
 
@@ -3264,6 +3322,20 @@ TEST_F(TextfieldTest, OverflowInRTLTest) {
 
   // Reset locale.
   base::i18n::SetICUDefaultLocale(locale);
+}
+
+TEST_F(TextfieldTest, PasswordProtected) {
+  InitTextfield();
+  ui::AXNodeData data;
+
+  textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kProtected));
+
+  data = ui::AXNodeData();
+  textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_NONE);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kProtected));
 }
 
 TEST_F(TextfieldTest, CommitComposingTextTest) {
@@ -3339,7 +3411,7 @@ TEST_F(TextfieldTest, GetCompositionCharacterBoundsTest) {
 TEST_F(TextfieldTest, GetCompositionCharacterBounds_ComplexText) {
   InitTextfield();
 
-  const char16_t kUtf16Chars[] = {
+  constexpr auto kUtf16Chars = std::to_array<char16_t>({
       // U+0020 SPACE
       0x0020,
       // U+1F408 (CAT) as surrogate pair
@@ -3354,17 +3426,17 @@ TEST_F(TextfieldTest, GetCompositionCharacterBounds_ComplexText) {
       0xFE0F,
       // U+0020 SPACE
       0x0020,
-  };
-  const size_t kUtf16CharsCount = std::size(kUtf16Chars);
+  });
 
   ui::CompositionText composition;
-  composition.text.assign(kUtf16Chars, kUtf16Chars + kUtf16CharsCount);
+  composition.text.assign(kUtf16Chars.data(), kUtf16Chars.size());
   textfield_->SetCompositionText(composition);
 
   // Make sure GetCompositionCharacterBounds never fails for index.
-  gfx::Rect rects[kUtf16CharsCount];
-  for (uint32_t i = 0; i < kUtf16CharsCount; ++i)
+  std::array<gfx::Rect, kUtf16Chars.size()> rects;
+  for (uint32_t i = 0; i < kUtf16Chars.size(); ++i) {
     EXPECT_TRUE(textfield_->GetCompositionCharacterBounds(i, &rects[i]));
+  }
 
   // Here we might expect the following results but it actually depends on how
   // Uniscribe or HarfBuzz treats them with given font.
@@ -3398,7 +3470,7 @@ TEST_F(TextfieldTest, KeepInitiallySelectedWord) {
   EXPECT_EQ(gfx::Range(7, 0), textfield_->GetSelectedRange());
 }
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(TextfieldTest, SelectionClipboard) {
@@ -3411,15 +3483,15 @@ TEST_F(TextfieldTest, SelectionClipboard) {
   gfx::Point point_4(GetCursorPositionX(4), cursor_y);
 
   // Text selected by the mouse should be placed on the selection clipboard.
-  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, point_1, point_1,
+  ui::MouseEvent press(ui::EventType::kMousePressed, point_1, point_1,
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON);
   textfield_->OnMousePressed(press);
-  ui::MouseEvent drag(ui::ET_MOUSE_DRAGGED, point_3, point_3,
+  ui::MouseEvent drag(ui::EventType::kMouseDragged, point_3, point_3,
                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                       ui::EF_LEFT_MOUSE_BUTTON);
   textfield_->OnMouseDragged(drag);
-  ui::MouseEvent release(ui::ET_MOUSE_RELEASED, point_3, point_3,
+  ui::MouseEvent release(ui::EventType::kMouseReleased, point_3, point_3,
                          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                          ui::EF_LEFT_MOUSE_BUTTON);
   textfield_->OnMouseReleased(release);
@@ -3434,12 +3506,12 @@ TEST_F(TextfieldTest, SelectionClipboard) {
 
   // Shift-click selection modifications should update the clipboard.
   NonClientMouseClick();
-  ui::MouseEvent press_2(ui::ET_MOUSE_PRESSED, point_2, point_2,
+  ui::MouseEvent press_2(ui::EventType::kMousePressed, point_2, point_2,
                          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                          ui::EF_LEFT_MOUSE_BUTTON);
   press_2.SetFlags(press_2.flags() | ui::EF_SHIFT_DOWN);
   textfield_->OnMousePressed(press_2);
-  ui::MouseEvent release_2(ui::ET_MOUSE_RELEASED, point_2, point_2,
+  ui::MouseEvent release_2(ui::EventType::kMouseReleased, point_2, point_2,
                            ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                            ui::EF_LEFT_MOUSE_BUTTON);
   textfield_->OnMouseReleased(release_2);
@@ -3466,7 +3538,7 @@ TEST_F(TextfieldTest, SelectionClipboard) {
 
   // Middle clicking should paste at the mouse (not cursor) location.
   // The cursor should be placed at the end of the pasted text.
-  ui::MouseEvent middle(ui::ET_MOUSE_PRESSED, point_4, point_4,
+  ui::MouseEvent middle(ui::EventType::kMousePressed, point_4, point_4,
                         ui::EventTimeForNow(), ui::EF_MIDDLE_MOUSE_BUTTON,
                         ui::EF_MIDDLE_MOUSE_BUTTON);
   textfield_->OnMousePressed(middle);
@@ -3506,15 +3578,15 @@ TEST_F(TextfieldTest, SelectionClipboard) {
   // Double and triple clicking should update the clipboard contents.
   textfield_->SetText(u"ab cd ef");
   gfx::Point word(GetCursorPositionX(4), cursor_y);
-  ui::MouseEvent press_word(ui::ET_MOUSE_PRESSED, word, word,
+  ui::MouseEvent press_word(ui::EventType::kMousePressed, word, word,
                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                             ui::EF_LEFT_MOUSE_BUTTON);
   textfield_->OnMousePressed(press_word);
-  ui::MouseEvent release_word(ui::ET_MOUSE_RELEASED, word, word,
+  ui::MouseEvent release_word(ui::EventType::kMouseReleased, word, word,
                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                               ui::EF_LEFT_MOUSE_BUTTON);
   textfield_->OnMouseReleased(release_word);
-  ui::MouseEvent double_click(ui::ET_MOUSE_PRESSED, word, word,
+  ui::MouseEvent double_click(ui::EventType::kMousePressed, word, word,
                               ui::EventTimeForNow(),
                               ui::EF_LEFT_MOUSE_BUTTON | ui::EF_IS_DOUBLE_CLICK,
                               ui::EF_LEFT_MOUSE_BUTTON);
@@ -3599,7 +3671,7 @@ TEST_F(TextfieldTest, TestLongPressInitiatesDragDrop) {
   // Create a long press event in the selected region should start a drag.
   ui::GestureEvent long_press = CreateTestGestureEvent(
       kStringPoint.x(), kStringPoint.y(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   textfield_->OnGestureEvent(&long_press);
   EXPECT_TRUE(
       textfield_->CanStartDragForView(nullptr, kStringPoint, kStringPoint));
@@ -3789,7 +3861,7 @@ TEST_F(TextfieldTest, TwoFingerScrollUpdate) {
   EXPECT_LT(GetTextfieldTestApi().GetDisplayOffsetX(), 0);
 }
 
-// TODO(crbug.com/1465767): Rewrite these long press tests when EventGenerator
+// TODO(crbug.com/40276114): Rewrite these long press tests when EventGenerator
 // can generate long press gestures.
 TEST_F(TextfieldTest, LongPressSelection) {
   base::test::ScopedFeatureList feature_list;
@@ -3805,7 +3877,7 @@ TEST_F(TextfieldTest, LongPressSelection) {
       textfield_, {GetCursorPositionX(2), GetCursorYForTesting()});
   ui::GestureEvent long_press = CreateTestGestureEvent(
       kLongPressPoint.x(), kLongPressPoint.y(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   event_generator_->Dispatch(&long_press);
 
   // Check that the nearest word is selected, but that the touch selection
@@ -3817,9 +3889,9 @@ TEST_F(TextfieldTest, LongPressSelection) {
   EXPECT_FALSE(GetTextfieldTestApi().touch_selection_controller());
 
   // Check that touch selection is activated after the long press is released.
-  ui::GestureEvent long_tap =
-      CreateTestGestureEvent(kLongPressPoint.x(), kLongPressPoint.y(),
-                             ui::GestureEventDetails(ui::ET_GESTURE_LONG_TAP));
+  ui::GestureEvent long_tap = CreateTestGestureEvent(
+      kLongPressPoint.x(), kLongPressPoint.y(),
+      ui::GestureEventDetails(ui::EventType::kGestureLongTap));
   event_generator_->Dispatch(&long_tap);
   EXPECT_TRUE(GetTextfieldTestApi().touch_selection_controller());
 }
@@ -3839,7 +3911,7 @@ TEST_F(TextfieldTest, LongPressDragSelectionLTRForward) {
   event_generator_->PressTouch(kLongPressPoint);
   ui::GestureEvent long_press = CreateTestGestureEvent(
       kLongPressPoint.x(), kLongPressPoint.y(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   event_generator_->Dispatch(&long_press);
   event_generator_->MoveTouchBy(25, 0);
   event_generator_->ReleaseTouch();
@@ -3867,7 +3939,7 @@ TEST_F(TextfieldTest, LongPressDragSelectionLTRBackward) {
   event_generator_->PressTouch(kLongPressPoint);
   ui::GestureEvent long_press = CreateTestGestureEvent(
       kLongPressPoint.x(), kLongPressPoint.y(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   event_generator_->Dispatch(&long_press);
   event_generator_->MoveTouchBy(-25, 0);
   event_generator_->ReleaseTouch();
@@ -3896,7 +3968,7 @@ TEST_F(TextfieldTest, LongPressDragSelectionRTLForward) {
   event_generator_->PressTouch(kLongPressPoint);
   ui::GestureEvent long_press = CreateTestGestureEvent(
       kLongPressPoint.x(), kLongPressPoint.y(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   event_generator_->Dispatch(&long_press);
   event_generator_->MoveTouchBy(-25, 0);
   event_generator_->ReleaseTouch();
@@ -3924,7 +3996,7 @@ TEST_F(TextfieldTest, LongPressDragSelectionRTLBackward) {
   event_generator_->PressTouch(kLongPressPoint);
   ui::GestureEvent long_press = CreateTestGestureEvent(
       kLongPressPoint.x(), kLongPressPoint.y(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   event_generator_->Dispatch(&long_press);
   event_generator_->MoveTouchBy(25, 0);
   event_generator_->ReleaseTouch();
@@ -4043,7 +4115,7 @@ TEST_F(TextfieldTest, TouchSelectionDraggingMetrics) {
   event_generator_->PressTouch(kDragStart);
   ui::GestureEvent long_press = CreateTestGestureEvent(
       kDragStart.x(), kDragStart.y(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   event_generator_->Dispatch(&long_press);
   event_generator_->MoveTouchBy(25, 0);
   event_generator_->ReleaseTouch();
@@ -4099,17 +4171,27 @@ TEST_F(TextfieldTest, CursorBlinkRestartsOnInsertOrReplace) {
   EXPECT_TRUE(GetTextfieldTestApi().IsCursorBlinkTimerRunning());
 }
 
+TEST_F(TextfieldTest, InitialAccessibilityProperties) {
+  InitTextfield();
+  ui::AXNodeData data;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTextField);
+  EXPECT_TRUE(textfield_->GetViewAccessibility().IsLeaf());
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kEditable));
+}
+
 // Verifies setting the accessible name will call NotifyAccessibilityEvent.
 TEST_F(TextfieldTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   InitTextfield();
   std::u16string test_tooltip_text = u"Test Accessible Name";
   test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
-  textfield_->SetAccessibleName(test_tooltip_text);
+  textfield_->GetViewAccessibility().SetName(test_tooltip_text);
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
-  EXPECT_EQ(test_tooltip_text, textfield_->GetAccessibleName());
+  EXPECT_EQ(test_tooltip_text,
+            textfield_->GetViewAccessibility().GetCachedName());
   ui::AXNodeData data;
-  textfield_->GetAccessibleNodeData(&data);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
   const std::string& name =
       data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ(test_tooltip_text, base::ASCIIToUTF16(name));
@@ -4121,13 +4203,72 @@ TEST_F(TextfieldTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttribute);
 }
 
+#if BUILDFLAG(IS_WIN)
+TEST_F(TextfieldTest, AccessibilityAttributes) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+  InitTextfield();
+
+  ViewAXPlatformNodeDelegate* delegate =
+      static_cast<ViewAXPlatformNodeDelegate*>(
+          &textfield_->GetViewAccessibility());
+
+  textfield_->GetViewAccessibility().EnsureAtomicViewAXTreeManager();
+  textfield_->SetText(u"this is the textfield");
+  textfield_->SetBounds(1, 2, 3, 4);
+
+  ui::AXNodeData actual =
+      delegate->GetAtomicViewAXTreeManagerForTesting()->GetRoot()->data();
+
+  EXPECT_EQ(ax::mojom::Role::kTextField, actual.role);
+  EXPECT_TRUE(actual.HasState(ax::mojom::State::kEditable) &&
+              actual.HasState(ax::mojom::State::kFocusable));
+  EXPECT_EQ(textfield_->GetAccessibleName(),
+            actual.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(textfield_->GetText(),
+            actual.GetString16Attribute(ax::mojom::StringAttribute::kValue));
+  EXPECT_EQ(
+      textfield_->GetPlaceholderText(),
+      actual.GetString16Attribute(ax::mojom::StringAttribute::kPlaceholder));
+
+  EXPECT_EQ(static_cast<const int>(textfield_->GetSelectedRange().start()),
+            actual.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart));
+  EXPECT_EQ(static_cast<const int>(textfield_->GetSelectedRange().end()),
+            actual.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd));
+
+  EXPECT_EQ(gfx::Rect(1, 2, 3, 4),
+            gfx::ToEnclosingRect(actual.relative_bounds.bounds));
+
+  EXPECT_EQ(textfield_->GetBoundsInScreen(),
+            delegate->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
+                                    ui::AXClippingBehavior::kUnclipped, nullptr));
+}
+#endif
+
+TEST_F(TextfieldTest, AccessiblePlaceholderTest) {
+  InitTextfield();
+
+  ui::AXNodeData data;
+  textfield_->SetPlaceholderText(u"Some placeholder");
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kPlaceholder),
+            u"Some placeholder");
+
+  data = ui::AXNodeData();
+  textfield_->SetPlaceholderText(u"Updated placeholder");
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kPlaceholder),
+            u"Updated placeholder");
+}
+
 TEST_F(TextfieldTest, AccessibleNameFromLabel) {
   InitTextfield();
 
   const std::u16string label_text = u"Some label";
   View label;
-  label.SetAccessibleName(label_text);
-  textfield_->SetAccessibleName(&label);
+  label.GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  label.GetViewAccessibility().SetName(label_text);
+  textfield_->GetViewAccessibility().SetName(label);
 
   // Use `ViewAccessibility::GetAccessibleNodeData` so that we can get the
   // label's accessible id to compare with the textfield's labelled-by id.
@@ -4135,11 +4276,11 @@ TEST_F(TextfieldTest, AccessibleNameFromLabel) {
   label.GetViewAccessibility().GetAccessibleNodeData(&label_data);
 
   ui::AXNodeData textfield_data;
-  textfield_->GetAccessibleNodeData(&textfield_data);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&textfield_data);
   EXPECT_EQ(
       textfield_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       label_text);
-  EXPECT_EQ(textfield_->GetAccessibleName(), label_text);
+  EXPECT_EQ(textfield_->GetViewAccessibility().GetCachedName(), label_text);
   EXPECT_EQ(textfield_data.GetNameFrom(), ax::mojom::NameFrom::kRelatedElement);
   EXPECT_EQ(textfield_data.GetIntListAttribute(
                 ax::mojom::IntListAttribute::kLabelledbyIds)[0],
@@ -4265,7 +4406,7 @@ TEST_F(TextfieldTest, LongPressOnSelection) {
   event_generator_->PressTouch(kLongPressPoint);
   ui::GestureEvent long_press = CreateTestGestureEvent(
       kLongPressPoint.x(), kLongPressPoint.y(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   event_generator_->Dispatch(&long_press);
 
   // Check that the selection has not changed and that touch selection is not
@@ -4539,7 +4680,7 @@ TEST_F(TextfieldTest, AccessiblePasswordTest) {
   textfield_->SetText(u"password");
 
   ui::AXNodeData node_data_regular;
-  textfield_->GetAccessibleNodeData(&node_data_regular);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data_regular);
   EXPECT_EQ(ax::mojom::Role::kTextField, node_data_regular.role);
   EXPECT_EQ(u"password", node_data_regular.GetString16Attribute(
                              ax::mojom::StringAttribute::kValue));
@@ -4547,7 +4688,8 @@ TEST_F(TextfieldTest, AccessiblePasswordTest) {
 
   textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   ui::AXNodeData node_data_protected;
-  textfield_->GetAccessibleNodeData(&node_data_protected);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data_protected);
   EXPECT_EQ(ax::mojom::Role::kTextField, node_data_protected.role);
   EXPECT_EQ(u"••••••••", node_data_protected.GetString16Attribute(
                              ax::mojom::StringAttribute::kValue));
@@ -4558,16 +4700,64 @@ TEST_F(TextfieldTest, AccessibleRole) {
   InitTextfield();
 
   ui::AXNodeData data;
-  textfield_->GetAccessibleNodeData(&data);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kTextField);
-  EXPECT_EQ(textfield_->GetAccessibleRole(), ax::mojom::Role::kTextField);
+  EXPECT_EQ(textfield_->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kTextField);
 
-  textfield_->SetAccessibleRole(ax::mojom::Role::kSearchBox);
+  textfield_->GetViewAccessibility().SetRole(ax::mojom::Role::kSearchBox);
 
   data = ui::AXNodeData();
-  textfield_->GetAccessibleNodeData(&data);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kSearchBox);
-  EXPECT_EQ(textfield_->GetAccessibleRole(), ax::mojom::Role::kSearchBox);
+  EXPECT_EQ(textfield_->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kSearchBox);
+}
+
+TEST_F(TextfieldTest, AccessibleReadOnly) {
+  InitTextfield();
+
+  textfield_->SetReadOnly(true);
+
+  ui::AXNodeData data;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetRestriction(), ax::mojom::Restriction::kReadOnly);
+
+  textfield_->SetReadOnly(false);
+
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetRestriction(), ax::mojom::Restriction::kReadOnly);
+
+  // We should not override the disabled restriction with a readonly one.
+  textfield_->SetEnabled(false);
+  textfield_->SetReadOnly(true);
+
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetRestriction(), ax::mojom::Restriction::kDisabled);
+
+  // If we re-enable the textfield, the readonly restriction should be applied.
+  textfield_->SetEnabled(true);
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetRestriction(), ax::mojom::Restriction::kReadOnly);
+
+  // If we start out with a disabled textfield and then set it to readonly and
+  // then enable it again, the readonly restriction should be applied.
+  textfield_->SetEnabled(false);
+  textfield_->SetReadOnly(false);
+
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetRestriction(), ax::mojom::Restriction::kDisabled);
+
+  textfield_->SetReadOnly(true);
+  textfield_->SetEnabled(true);
+
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetRestriction(), ax::mojom::Restriction::kReadOnly);
 }
 
 // Verify that cursor visibility is controlled by SetCursorEnabled.
@@ -4579,6 +4769,34 @@ TEST_F(TextfieldTest, CursorVisibility) {
 
   textfield_->SetCursorEnabled(true);
   EXPECT_TRUE(GetTextfieldTestApi().IsCursorVisible());
+}
+
+TEST_F(TextfieldTest, AccessibleValue) {
+  InitTextfield();
+  textfield_->SetText(u"password");
+
+  ui::AXNodeData node_data_regular;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data_regular);
+  EXPECT_EQ(ax::mojom::Role::kTextField, node_data_regular.role);
+  EXPECT_EQ(u"password", node_data_regular.GetString16Attribute(
+                             ax::mojom::StringAttribute::kValue));
+  EXPECT_FALSE(node_data_regular.HasState(ax::mojom::State::kProtected));
+
+  textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+  ui::AXNodeData node_data_protected;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data_protected);
+  EXPECT_EQ(ax::mojom::Role::kTextField, node_data_protected.role);
+  EXPECT_EQ(u"••••••••", node_data_protected.GetString16Attribute(
+                             ax::mojom::StringAttribute::kValue));
+  EXPECT_TRUE(node_data_protected.HasState(ax::mojom::State::kProtected));
+
+  textfield_->SetText(u"password");
+  node_data_protected = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data_protected);
+  EXPECT_EQ(u"••••••••", node_data_protected.GetString16Attribute(
+                             ax::mojom::StringAttribute::kValue));
 }
 
 // Tests that Textfield::FitToLocalBounds() sets the RenderText's display rect
@@ -4673,7 +4891,8 @@ TEST_F(TextfieldTest, TextfieldBoundsChangeTest) {
 // Verify that after creating a new Textfield, the Textfield doesn't
 // automatically receive focus and the text cursor is not visible.
 TEST_F(TextfieldTest, TextfieldInitialization) {
-  std::unique_ptr<Widget> widget = CreateTestWidget();
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   {
     View* container = widget->SetContentsView(std::make_unique<View>());
     TestTextfield* new_textfield =
@@ -4850,23 +5069,52 @@ TEST_F(TextfieldTest, AccessibilitySelectionEvents) {
   InitTextfield();
   textfield_->SetText(kText);
   EXPECT_TRUE(textfield_->HasFocus());
-  int previous_selection_fired_count =
-      textfield_->GetAccessibilitySelectionFiredCount();
-  textfield_->SelectAll(false);
-  EXPECT_LT(previous_selection_fired_count,
-            textfield_->GetAccessibilitySelectionFiredCount());
-  previous_selection_fired_count =
-      textfield_->GetAccessibilitySelectionFiredCount();
 
-  // No selection event when textfield blurred, even though text is
-  // deselected.
+  std::vector<ax::mojom::Event> event_type = {
+      ax::mojom::Event::kTextSelectionChanged};
+  std::vector<ax::mojom::Event> previous_selection_events =
+      textfield_->GetAccessibilityEventsOfTypes(event_type);
+
+  textfield_->SelectAll(false);
+
+  std::vector<ax::mojom::Event> selection_events =
+      textfield_->GetAccessibilityEventsOfTypes(event_type);
+  EXPECT_LT(previous_selection_events.size(), selection_events.size());
+  previous_selection_events = selection_events;
+
+  // Validate that there's no selection event fired when the textfield blurred,
+  // even though the text lost selection.
   widget_->GetFocusManager()->ClearFocus();
   EXPECT_FALSE(textfield_->HasFocus());
   textfield_->ClearSelection();
   EXPECT_FALSE(textfield_->HasSelection());
+
+  selection_events = textfield_->GetAccessibilityEventsOfTypes(event_type);
   // Has not changed.
-  EXPECT_EQ(previous_selection_fired_count,
-            textfield_->GetAccessibilitySelectionFiredCount());
+  EXPECT_EQ(previous_selection_events.size(), selection_events.size());
+}
+
+TEST_F(TextfieldTest, AccessibilitySelectionEventsOnInitialFocus) {
+  // Initialize the textfield so we have text to select.
+  const std::u16string kText = u"abcdef";
+  InitTextfield();
+  textfield_->SetText(kText);
+
+  // Ensure focus isn't on the textfield yet.
+  widget_->GetFocusManager()->ClearFocus();
+  // Clear all the accessibility events we got so far.
+  textfield_->ClearAccessibilityEvents();
+
+  // Setting the focus should fire a focus event and a text selection event, in
+  // that order.
+  textfield_->RequestFocus();
+  std::vector<ax::mojom::Event> events =
+      textfield_->GetAccessibilityEventsOfTypes(
+          {ax::mojom::Event::kFocus, ax::mojom::Event::kTextSelectionChanged});
+
+  EXPECT_EQ(2u, events.size());
+  EXPECT_EQ(ax::mojom::Event::kFocus, events[0]);
+  EXPECT_EQ(ax::mojom::Event::kTextSelectionChanged, events[1]);
 }
 
 TEST_F(TextfieldTest, FocusReasonMouse) {
@@ -4993,6 +5241,28 @@ TEST_F(TextfieldTest, ChangeTextDirectionAndLayoutAlignmentTest) {
   EXPECT_EQ(textfield_->GetHorizontalAlignment(), gfx::ALIGN_TO_HEAD);
 }
 
+TEST_F(TextfieldTest, AccessibilityTextDirection) {
+  InitTextfield();
+  ui::AXNodeData node_data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextDirection),
+            static_cast<int32_t>(ax::mojom::WritingDirection::kLtr));
+
+  textfield_->ChangeTextDirectionAndLayoutAlignment(
+      base::i18n::TextDirection::RIGHT_TO_LEFT);
+  node_data = ui::AXNodeData();  // Reset the node data.
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextDirection),
+            static_cast<int32_t>(ax::mojom::WritingDirection::kRtl));
+
+  textfield_->ChangeTextDirectionAndLayoutAlignment(
+      base::i18n::TextDirection::LEFT_TO_RIGHT);
+  node_data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextDirection),
+            static_cast<int32_t>(ax::mojom::WritingDirection::kLtr));
+}
+
 TEST_F(TextfieldTest, TextChangedCallbackTest) {
   InitTextfield();
 
@@ -5089,6 +5359,26 @@ TEST_F(TextfieldTest, AccessibleTextDirectionRTL) {
             static_cast<int32_t>(ax::mojom::WritingDirection::kRtl));
 }
 
+TEST_F(TextfieldTest, AccessibleDefaultActionVerb) {
+  InitTextfield();
+  ui::AXNodeData data;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kActivate);
+
+  data = ui::AXNodeData();
+  textfield_->SetEnabled(false);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(
+      data.HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+
+  data = ui::AXNodeData();
+  textfield_->SetEnabled(true);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kActivate);
+}
+
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 TEST_F(TextfieldTest, WordOffsets) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -5108,10 +5398,12 @@ TEST_F(TextfieldTest, WordOffsets) {
 }
 
 TEST_F(TextfieldTest, AccessibleGraphemeOffsets) {
-  struct {
+  struct TestCase {
     std::u16string text;
     std::vector<int32_t> expected_offsets;
-  } cases[] = {
+  };
+
+  const auto kTestCases = std::to_array<TestCase>({
       {std::u16string(), {}},
       // LTR.
       {u"asdfghkl:/", {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100}},
@@ -5133,7 +5425,7 @@ TEST_F(TextfieldTest, AccessibleGraphemeOffsets) {
       // LTR ab, 𝄞 'MUSICAL SYMBOL G CLEF' U+1D11E (surrogate pair), LTR cd.
       // Windows requires wide strings for \Unnnnnnnn universal character names.
       {u"ab\U0001D11Ecd", {0, 10, 20, 30, 40, 50}},
-  };
+  });
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
@@ -5148,15 +5440,15 @@ TEST_F(TextfieldTest, AccessibleGraphemeOffsets) {
   GetTextfieldTestApi().GetRenderText()->SetDisplayRect(
       gfx::Rect(0, 0, 20 * kGlyphWidth, 100));
 
-  for (size_t i = 0; i < std::size(cases); i++) {
+  for (size_t i = 0; i < kTestCases.size(); i++) {
     SCOPED_TRACE(base::StringPrintf("Testing cases[%" PRIuS "]", i));
-    textfield_->SetText(cases[i].text);
+    textfield_->SetText(kTestCases[i].text);
 
     ui::AXNodeData node_data;
     textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
     EXPECT_EQ(node_data.GetIntListAttribute(
                   ax::mojom::IntListAttribute::kCharacterOffsets),
-              cases[i].expected_offsets);
+              kTestCases[i].expected_offsets);
   }
 }
 
@@ -5199,6 +5491,41 @@ TEST_F(TextfieldTest, AccessibleGraphemeOffsetsElidedTail) {
   textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   std::vector<int32_t> expected_offsets = {0, 10, 20, 30, 40, 40, 40};
   EXPECT_EQ(node_data.GetIntListAttribute(
+                ax::mojom::IntListAttribute::kCharacterOffsets),
+            expected_offsets);
+}
+
+TEST_F(TextfieldTest, AccessibleGraphemeOffsetsIndependentOfDisplayOffset) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+  InitTextfield();
+
+  // Size the textfield wide enough to hold 10 characters.
+  gfx::test::RenderTextTestApi render_text_test_api(
+      GetTextfieldTestApi().GetRenderText());
+  constexpr int kGlyphWidth = 10;
+  render_text_test_api.SetGlyphWidth(kGlyphWidth);
+  GetTextfieldTestApi().GetRenderText()->SetDisplayRect(
+      gfx::Rect(kGlyphWidth * 10, 20));
+  textfield_->SetTextWithoutCaretBoundsChangeNotification(
+      u"3.141592653589793238462", 0);
+  GetTextfieldTestApi().SetDisplayOffsetX(0);
+
+  ui::AXNodeData node_data;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  std::vector<int32_t> expected_offsets = {
+      0,   10,  20,  30,  40,  50,  60,  70,  80,  90,  100, 110,
+      120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230};
+  EXPECT_EQ(node_data.GetIntListAttribute(
+                ax::mojom::IntListAttribute::kCharacterOffsets),
+            expected_offsets);
+  GetTextfieldTestApi().SetDisplayOffsetX(-100);
+  EXPECT_EQ(GetTextfieldTestApi().GetDisplayOffsetX(), -100);
+
+  ui::AXNodeData node_data_2;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data_2);
+  // The offsets should be the same.
+  EXPECT_EQ(node_data_2.GetIntListAttribute(
                 ax::mojom::IntListAttribute::kCharacterOffsets),
             expected_offsets);
 }

@@ -7,6 +7,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -33,7 +34,7 @@ const GURL& GetActiveUrl(Browser* browser) {
 
 using ExtensionTabUtilBrowserTest = ExtensionBrowserTest;
 
-// TODO(https://crbug.com/811471): Fix and re-enable.
+// TODO(crbug.com/41370170): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
                        DISABLED_OpenExtensionsOptionsPage) {
   // Load an extension with an options page that opens in a tab and one that
@@ -132,16 +133,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_EQ(options_url, GetActiveUrl(browser()));
 }
 
-// Flaky on Windows: http://crbug.com/745729
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_OpenSplitModeExtensionOptionsPageIncognito \
-  DISABLED_OpenSplitModeExtensionOptionsPageIncognito
-#else
-#define MAYBE_OpenSplitModeExtensionOptionsPageIncognito \
-  OpenSplitModeExtensionOptionsPageIncognito
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
-                       MAYBE_OpenSplitModeExtensionOptionsPageIncognito) {
+                       OpenSplitModeExtensionOptionsPageIncognito) {
   const Extension* options_split_extension =
       LoadExtension(test_data_dir_.AppendASCII("options_page_split_incognito"),
                     {.allow_in_incognito = true});

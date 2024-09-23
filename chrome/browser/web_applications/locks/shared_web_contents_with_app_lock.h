@@ -18,11 +18,11 @@
 
 namespace content {
 class WebContents;
-struct PartitionedLockHolder;
 }  // namespace content
 
 namespace web_app {
 
+struct PartitionedLockHolder;
 class WebAppLockManager;
 
 // This locks both the background shared web contents AND the given app ids. The
@@ -66,10 +66,9 @@ class SharedWebContentsWithAppLock : public Lock,
 
  private:
   friend class WebAppLockManager;
-  SharedWebContentsWithAppLock(
-      base::WeakPtr<WebAppLockManager> lock_manager,
-      std::unique_ptr<content::PartitionedLockHolder> holder,
-      content::WebContents& web_contents);
+  SharedWebContentsWithAppLock(base::WeakPtr<WebAppLockManager> lock_manager,
+                               std::unique_ptr<PartitionedLockHolder> holder,
+                               content::WebContents& web_contents);
 
   base::WeakPtrFactory<SharedWebContentsWithAppLock> weak_factory_{this};
 };

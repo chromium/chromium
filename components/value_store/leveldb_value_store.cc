@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <stdint.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -24,8 +25,6 @@
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
-
-using base::StringPiece;
 
 namespace {
 
@@ -55,19 +54,19 @@ LeveldbValueStore::~LeveldbValueStore() {
 
 size_t LeveldbValueStore::GetBytesInUse(const std::string& key) {
   // Let SettingsStorageQuotaEnforcer implement this.
-  NOTREACHED() << "Not implemented";
+  NOTREACHED_IN_MIGRATION() << "Not implemented";
   return 0;
 }
 
 size_t LeveldbValueStore::GetBytesInUse(const std::vector<std::string>& keys) {
   // Let SettingsStorageQuotaEnforcer implement this.
-  NOTREACHED() << "Not implemented";
+  NOTREACHED_IN_MIGRATION() << "Not implemented";
   return 0;
 }
 
 size_t LeveldbValueStore::GetBytesInUse() {
   // Let SettingsStorageQuotaEnforcer implement this.
-  NOTREACHED() << "Not implemented";
+  NOTREACHED_IN_MIGRATION() << "Not implemented";
   return 0;
 }
 
@@ -106,7 +105,7 @@ ValueStore::ReadResult LeveldbValueStore::Get() {
   for (it->SeekToFirst(); it->Valid(); it->Next()) {
     std::string key = it->key().ToString();
     std::optional<base::Value> value = base::JSONReader::Read(
-        StringPiece(it->value().data(), it->value().size()));
+        std::string_view(it->value().data(), it->value().size()));
     if (!value) {
       return ReadResult(Status(CORRUPTION,
                                Delete(key).ok() ? VALUE_RESTORE_DELETE_SUCCESS

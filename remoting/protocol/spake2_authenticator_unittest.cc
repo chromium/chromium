@@ -26,9 +26,6 @@ namespace {
 const int kMessageSize = 100;
 const int kMessages = 1;
 
-const char kClientId[] = "alice@gmail.com/abc";
-const char kHostId[] = "alice@gmail.com/123";
-
 const char kTestSharedSecret[] = "1234-1234-5678";
 const char kTestSharedSecretBad[] = "0000-0000-0001";
 

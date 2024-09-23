@@ -1,0 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This minimize icon is slightly different from the public minimize
+// icon.
+
+CANVAS_DIMENSIONS, 24,
+FILL_RULE_NONZERO,
+MOVE_TO, 4, 20,
+R_V_LINE_TO, -2,
+R_H_LINE_TO, 16,
+R_V_LINE_TO, 2,
+CLOSE

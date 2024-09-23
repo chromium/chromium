@@ -38,7 +38,7 @@ std::string PipelineStatusToString(const PipelineStatus& status) {
 
 #undef STRINGIFY_STATUS_CASE
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::ostream& operator<<(std::ostream& out, const PipelineStatus& status) {

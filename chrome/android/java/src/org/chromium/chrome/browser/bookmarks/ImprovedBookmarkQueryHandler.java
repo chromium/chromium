@@ -20,7 +20,6 @@ import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -45,7 +44,8 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
         mBookmarkModel = bookmarkModel;
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mShoppingService = shoppingService;
-        mBasicBookmarkQueryHandler = new BasicBookmarkQueryHandler(bookmarkModel, mBookmarkUiPrefs);
+        mBasicBookmarkQueryHandler =
+                new BasicBookmarkQueryHandler(bookmarkModel, mBookmarkUiPrefs, shoppingService);
     }
 
     @Override
@@ -56,9 +56,7 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
     @Override
     public List<BookmarkListEntry> buildBookmarkListForParent(
             BookmarkId parentId, Set<PowerBookmarkType> powerFilter) {
-        // TODO(crbug.com/1501998): Add account reading list folder support here.
-        boolean isReadingList =
-                Objects.equals(parentId, mBookmarkModel.getLocalOrSyncableReadingListFolder());
+        boolean isReadingList = BookmarkUtils.isReadingListFolder(mBookmarkModel, parentId);
         final List<BookmarkListEntry> bookmarkListEntries;
         if (!isReadingList && powerFilter != null && !powerFilter.isEmpty()) {
             bookmarkListEntries = collectLeafNodes(parentId);
@@ -93,10 +91,9 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
     }
 
     @Override
-    public List<BookmarkListEntry> buildBookmarkListForFolderSelect(
-            BookmarkId parentId, boolean movingFolder) {
+    public List<BookmarkListEntry> buildBookmarkListForFolderSelect(BookmarkId parentId) {
         List<BookmarkListEntry> bookmarkListEntries =
-                mBasicBookmarkQueryHandler.buildBookmarkListForFolderSelect(parentId, movingFolder);
+                mBasicBookmarkQueryHandler.buildBookmarkListForFolderSelect(parentId);
         sortByStoredPref(bookmarkListEntries);
         if (parentId.equals(mBookmarkModel.getRootFolderId())) {
             sortByAccountStatus(bookmarkListEntries);
@@ -180,7 +177,7 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
 
     private boolean isPriceTracked(BookmarkListEntry bookmarkListEntry) {
         PowerBookmarkMeta meta = bookmarkListEntry.getPowerBookmarkMeta();
-        if (!PowerBookmarkUtils.isShoppingListItem(meta)) return false;
+        if (!PowerBookmarkUtils.isShoppingListItem(mShoppingService, meta)) return false;
         return mShoppingService.isSubscribedFromCache(
                 PowerBookmarkUtils.createCommerceSubscriptionForShoppingSpecifics(
                         meta.getShoppingSpecifics()));
@@ -211,7 +208,7 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
     }
 
     private void maybeInsertLocalSectionHeader(List<BookmarkListEntry> entries) {
-        if (!BookmarkFeatures.isBookmarksAccountStorageEnabled()) {
+        if (!mBookmarkModel.areAccountBookmarkFoldersActive()) {
             return;
         }
 

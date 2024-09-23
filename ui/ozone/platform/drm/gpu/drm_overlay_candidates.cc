@@ -37,4 +37,19 @@ void DrmOverlayCandidates::RegisterOverlayRequirement(bool requires_overlay) {
   overlay_manager_->RegisterOverlayRequirement(widget_, requires_overlay);
 }
 
+void DrmOverlayCandidates::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
+  overlay_manager_->OnSwapBuffersComplete(swap_result);
+}
+
+void DrmOverlayCandidates::SetSupportedBufferFormats(
+    base::flat_set<gfx::BufferFormat> supported_buffer_formats) {
+  overlay_manager_->SetSupportedBufferFormats(
+      widget_, std::move(supported_buffer_formats));
+}
+
+void DrmOverlayCandidates::NotifyOverlayPromotion(
+    std::vector<gfx::OverlayType> promoted_overlay_types) {
+  overlay_manager_->OnPromotedOverlayTypes(std::move(promoted_overlay_types));
+}
+
 }  // namespace ui

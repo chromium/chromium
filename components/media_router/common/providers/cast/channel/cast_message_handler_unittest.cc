@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
+
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -63,7 +65,7 @@ constexpr char kAppParams[] = R"(
 constexpr int kMaxProtocolMessageSize = 64 * 1024;
 
 data_decoder::DataDecoder::ValueOrError ParseJsonLikeDataDecoder(
-    base::StringPiece json) {
+    std::string_view json) {
   return ParseJson(json);
 }
 

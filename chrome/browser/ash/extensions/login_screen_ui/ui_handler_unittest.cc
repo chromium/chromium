@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "ash/login/test_login_screen.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ash/login/ui/login_screen_extension_ui/create_options.h"
-#include "chrome/browser/ash/login/ui/login_screen_extension_ui/window.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/ui/ash/test_login_screen.h"
+#include "chrome/browser/ui/ash/login/login_screen_extension_ui/create_options.h"
+#include "chrome/browser/ui/ash/login/login_screen_extension_ui/window.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -139,7 +139,7 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
                      /*name=*/"LoginScreenUi test extension")
                      .SetID(kAllowlistedExtensionID1)
                      .SetLocation(ManifestLocation::kExternalPolicy)
-                     .AddPermission(kPermissionName)
+                     .AddAPIPermission(kPermissionName)
                      .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
                      .Build();
     extension_registry_->AddEnabled(extension_);
@@ -303,7 +303,7 @@ TEST_F(LoginScreenExtensionUiHandlerUnittest, OnlyOneWindow) {
       extensions::ExtensionBuilder(/*name=*/"Imprivata")
           .SetID(kAllowlistedExtensionID2)
           .SetLocation(ManifestLocation::kExternalPolicy)
-          .AddPermission(kPermissionName)
+          .AddAPIPermission(kPermissionName)
           .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
           .Build();
   extension_registry_->AddEnabled(other_extension);
@@ -382,7 +382,7 @@ TEST_F(LoginScreenExtensionUiHandlerDeathUnittest, NotAllowed) {
       extensions::ExtensionBuilder(/*name=*/"other profile")
           .SetID(kAllowlistedExtensionID2)  // allowlisted
           .SetLocation(ManifestLocation::kExternalPolicy)
-          .AddPermission(kPermissionName)
+          .AddAPIPermission(kPermissionName)
           .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
           .Build();
 

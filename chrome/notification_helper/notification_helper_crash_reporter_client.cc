@@ -106,7 +106,7 @@ bool NotificationHelperCrashReporterClient::GetShouldDumpLargerDumps() {
 
 int NotificationHelperCrashReporterClient::GetResultCodeRespawnFailed() {
   // The restart dialog is never shown for the notification_helper.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -149,6 +149,6 @@ bool NotificationHelperCrashReporterClient::
 bool NotificationHelperCrashReporterClient::EnableBreakpadForProcess(
     const std::string& process_type) {
   // This is not used by Crashpad (at least on Windows).
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }

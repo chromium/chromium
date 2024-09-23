@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/fileicon_source.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -38,8 +40,7 @@ const char kPathParameter[] = "path";
 // URL parameter specifying scale factor.
 const char kScaleFactorParameter[] = "scale";
 
-IconLoader::IconSize SizeStringToIconSize(
-    const base::StringPiece& size_string) {
+IconLoader::IconSize SizeStringToIconSize(std::string_view size_string) {
   if (size_string == "small") return IconLoader::SMALL;
   if (size_string == "large") return IconLoader::LARGE;
   // We default to NORMAL if we don't recognize the size_string. Including
@@ -53,7 +54,7 @@ void ParseQueryParams(const std::string& path,
                       IconLoader::IconSize* icon_size) {
   GURL request = GURL(chrome::kChromeUIFileiconURL).Resolve(path);
   for (net::QueryIterator it(request); !it.IsAtEnd(); it.Advance()) {
-    const base::StringPiece key = it.GetKey();
+    const std::string_view key = it.GetKey();
     if (key == kPathParameter) {
       *file_path = base::FilePath::FromUTF8Unsafe(it.GetUnescapedValue())
                        .NormalizePathSeparators();
@@ -89,7 +90,7 @@ void FileIconSource::FetchFileIcon(
     scoped_refptr<base::RefCountedBytes> icon_data(new base::RefCountedBytes);
     gfx::PNGCodec::EncodeBGRASkBitmap(
         icon->ToImageSkia()->GetRepresentation(scale_factor).GetBitmap(), false,
-        &icon_data->data());
+        &icon_data->as_vector());
 
     std::move(callback).Run(icon_data.get());
   } else {
@@ -118,7 +119,7 @@ void FileIconSource::StartDataRequest(
   base::FilePath file_path;
   IconLoader::IconSize icon_size = IconLoader::NORMAL;
   float scale_factor = 1.0f;
-  // TODO(crbug/1009127): Make ParseQueryParams take GURL.
+  // TODO(crbug.com/40050262): Make ParseQueryParams take GURL.
   ParseQueryParams(path, &file_path, &scale_factor, &icon_size);
   FetchFileIcon(file_path, scale_factor, icon_size, std::move(callback));
 }
@@ -138,7 +139,7 @@ void FileIconSource::OnFileIconDataAvailable(IconRequestDetails details,
     scoped_refptr<base::RefCountedBytes> icon_data(new base::RefCountedBytes);
     gfx::PNGCodec::EncodeBGRASkBitmap(
         icon.ToImageSkia()->GetRepresentation(details.scale_factor).GetBitmap(),
-        false, &icon_data->data());
+        false, &icon_data->as_vector());
 
     std::move(details.callback).Run(icon_data.get());
   } else {

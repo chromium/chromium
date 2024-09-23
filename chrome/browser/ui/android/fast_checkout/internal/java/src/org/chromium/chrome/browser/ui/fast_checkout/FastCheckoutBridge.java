@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.fast_checkout;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
@@ -14,6 +15,9 @@ import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This bridge creates and initializes a {@link FastCheckoutComponent} on construction and forwards
@@ -44,32 +48,11 @@ class FastCheckoutBridge implements FastCheckoutComponent.Delegate {
 
     @CalledByNative
     private void showBottomSheet(
-            FastCheckoutAutofillProfile[] profiles, FastCheckoutCreditCard[] creditCards) {
-        mFastCheckoutComponent.showOptions(profiles, creditCards);
-    }
-
-    @CalledByNative
-    private static void setAutofillProfile(
-            FastCheckoutAutofillProfile[] profiles,
-            int index,
-            FastCheckoutAutofillProfile profile) {
-        profiles[index] = profile;
-    }
-
-    @CalledByNative
-    private static void setCreditCard(
-            FastCheckoutCreditCard[] creditCards, int index, FastCheckoutCreditCard creditCard) {
-        creditCards[index] = creditCard;
-    }
-
-    @CalledByNative
-    private static FastCheckoutAutofillProfile[] createAutofillProfilesArray(int size) {
-        return new FastCheckoutAutofillProfile[size];
-    }
-
-    @CalledByNative
-    private static FastCheckoutCreditCard[] createCreditCardsArray(int size) {
-        return new FastCheckoutCreditCard[size];
+            @JniType("std::vector") Object[] profiles,
+            @JniType("std::vector") Object[] creditCards) {
+        mFastCheckoutComponent.showOptions(
+                (List<FastCheckoutAutofillProfile>) (List<?>) Arrays.asList(profiles),
+                (List<FastCheckoutCreditCard>) (List<?>) Arrays.asList(creditCards));
     }
 
     @CalledByNative

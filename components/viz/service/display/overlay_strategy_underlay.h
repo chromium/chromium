@@ -32,7 +32,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlay
 
   // If |allow_nonopaque_overlays| is true, then we don't require that the
   // the candidate is_opaque.
-  OverlayStrategyUnderlay(
+  explicit OverlayStrategyUnderlay(
       OverlayProcessorUsingStrategy* capability_checker,
       OpaqueMode opaque_mode = OpaqueMode::RequireOpaqueCandidates);
 
@@ -46,7 +46,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlay
       const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
       const OverlayProcessorInterface::FilterOperationsMap&
           render_pass_backdrop_filters,
-      DisplayResourceProvider* resource_provider,
+      const DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
       const PrimaryPlane* primary_plane,
@@ -58,7 +58,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlay
       const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
       const OverlayProcessorInterface::FilterOperationsMap&
           render_pass_backdrop_filters,
-      DisplayResourceProvider* resource_provider,
+      const DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
       const PrimaryPlane* primary_plane,

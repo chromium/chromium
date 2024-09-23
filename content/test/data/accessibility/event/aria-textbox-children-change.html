@@ -10,16 +10,16 @@
 -->
 <html>
 <body>
-<div role="textbox" aria-label="role only, rich">
+<div role="textbox" aria-label="role only, rich" contenteditable>
   foo <button id="btn1">ok</button>
 </div>
-<div role="textbox" tabindex="0" aria-label="focusable">
+<div role="textbox" tabindex="0" aria-label="focusable" contenteditable>
   foo <button id="btn2">ok</button>
 </div>
-<div role="textbox" contenteditable aria-label="editable">
+<div role="textbox" contenteditable aria-label="editable" contenteditable>
   foo <button id="btn3">ok</button>
 </div>
-<div id="txt4" role="textbox" aria-label="role only, plain">foo</div>
+<div id="txt4" role="textbox" aria-label="role only, plain" contenteditable>foo</div>
 <button id="btn4">ok</button>
 <script>
   var go_passes = [

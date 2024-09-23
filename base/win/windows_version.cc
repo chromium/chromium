@@ -11,11 +11,12 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/file_version_info_win.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -159,7 +160,8 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
                DWORD os_type)
     : version_(Version::PRE_XP),
       wow_process_machine_(WowProcessMachine::kUnknown),
-      wow_native_machine_(WowNativeMachine::kUnknown) {
+      wow_native_machine_(WowNativeMachine::kUnknown),
+      os_type_(os_type) {
   version_number_.major = version_info.dwMajorVersion;
   version_number_.minor = version_info.dwMinorVersion;
   version_number_.build = version_info.dwBuildNumber;
@@ -203,8 +205,12 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
       case PRODUCT_ENTERPRISE_S_EVALUATION:
       case PRODUCT_ENTERPRISE_S_N:
       case PRODUCT_ENTERPRISE_S_N_EVALUATION:
+      case PRODUCT_ENTERPRISE_SUBSCRIPTION:
+      case PRODUCT_ENTERPRISE_SUBSCRIPTION_N:
       case PRODUCT_BUSINESS:
       case PRODUCT_BUSINESS_N:
+      case PRODUCT_IOTENTERPRISE:
+      case PRODUCT_IOTENTERPRISES:
         version_type_ = SUITE_ENTERPRISE;
         break;
       case PRODUCT_PRO_FOR_EDUCATION:
@@ -335,6 +341,30 @@ std::string OSInfo::processor_model_name() {
   return processor_model_name_;
 }
 
+bool OSInfo::IsWindowsNSku() const {
+  switch (os_type_) {
+    case PRODUCT_BUSINESS_N:
+    case PRODUCT_CORE_N:
+    case PRODUCT_CORE_CONNECTED_N:
+    case PRODUCT_EDUCATION_N:
+    case PRODUCT_ENTERPRISE_N:
+    case PRODUCT_ENTERPRISE_S_N:
+    case PRODUCT_ENTERPRISE_SUBSCRIPTION_N:
+    case PRODUCT_HOME_BASIC_N:
+    case PRODUCT_HOME_PREMIUM_N:
+    case PRODUCT_PRO_FOR_EDUCATION_N:
+    case PRODUCT_PRO_WORKSTATION_N:
+    case PRODUCT_PROFESSIONAL_N:
+    case PRODUCT_PROFESSIONAL_S_N:
+    case PRODUCT_PROFESSIONAL_STUDENT_N:
+    case PRODUCT_STARTER_N:
+    case PRODUCT_ULTIMATE_N:
+      return true;
+    default:
+      return false;
+  }
+}
+
 // With the exception of Server 2003, server variants are treated the same as
 // the corresponding workstation release.
 // static
@@ -349,6 +379,9 @@ Version OSInfo::MajorMinorBuildToVersion(uint32_t major,
   }
 
   if (major == 10) {
+    if (build >= 26100) {
+      return Version::WIN11_24H2;
+    }
     if (build >= 22631) {
       return Version::WIN11_23H2;
     }
@@ -405,7 +438,14 @@ Version OSInfo::MajorMinorBuildToVersion(uint32_t major,
 
   if (major > 6) {
     // Hitting this likely means that it's time for a >11 block above.
-    NOTREACHED() << major << "." << minor << "." << build;
+    LOG(DFATAL) << "Unsupported version: " << major << "." << minor << "."
+                << build;
+
+    SCOPED_CRASH_KEY_NUMBER("WindowsVersion", "major", major);
+    SCOPED_CRASH_KEY_NUMBER("WindowsVersion", "minor", minor);
+    SCOPED_CRASH_KEY_NUMBER("WindowsVersion", "build", build);
+    base::debug::DumpWithoutCrashing();
+
     return Version::WIN_LAST;
   }
 

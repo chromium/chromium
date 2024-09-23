@@ -13,22 +13,19 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
+import {PackagedLicensePageHandlerRemote} from '../../mojom-webui/screens_oobe.mojom-webui.js';
+import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './packaged_license.html.js';
 
 
 export const PackagedLicenseScreenBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, LoginScreenBehavior, OobeDialogHostBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
-    };
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
 
 export class PackagedLicenseScreen extends PackagedLicenseScreenBase {
@@ -42,6 +39,16 @@ export class PackagedLicenseScreen extends PackagedLicenseScreenBase {
 
   static get properties(): PolymerElementProperties {
     return {};
+  }
+
+  private handler: PackagedLicensePageHandlerRemote;
+
+  constructor() {
+    super();
+    this.handler = new PackagedLicensePageHandlerRemote();
+    OobeScreensFactoryBrowserProxy.getInstance()
+        .screenFactory.establishPackagedLicenseScreenPipe(
+            this.handler.$.bindNewPipeAndPassReceiver());
   }
 
   override ready(): void {
@@ -60,14 +67,14 @@ export class PackagedLicenseScreen extends PackagedLicenseScreenBase {
    * On-tap event handler for Don't Enroll button.
    */
   private onDontEnrollButtonPressed(): void {
-    this.userActed('dont-enroll');
+    this.handler.onDontEnrollClicked();
   }
 
   /**
    * On-tap event handler for Enroll button.
    */
   private onEnrollButtonPressed(): void {
-    this.userActed('enroll');
+    this.handler.onEnrollClicked();
   }
 }
 

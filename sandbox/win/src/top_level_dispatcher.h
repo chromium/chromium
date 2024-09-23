@@ -19,7 +19,7 @@ namespace sandbox {
 // dispatchers.
 class TopLevelDispatcher : public Dispatcher {
  public:
-  // |policy| must outlive this class.
+  // `policy` must outlive this class, and be fully Configured.
   explicit TopLevelDispatcher(PolicyBase* policy);
 
   TopLevelDispatcher(const TopLevelDispatcher&) = delete;
@@ -32,19 +32,24 @@ class TopLevelDispatcher : public Dispatcher {
   bool SetupService(InterceptionManager* manager, IpcTag service) override;
 
  private:
+  friend class PolicyDiagnostic;
+
   // Test IPC provider.
   bool Ping(IPCInfo* ipc, void* cookie);
 
   // Returns a dispatcher from ipc_targets_.
   Dispatcher* GetDispatcher(IpcTag ipc_tag);
+  // Helper that reports the set of IPCs this top level dispatcher can service.
+  std::vector<IpcTag> ipc_targets();
 
   raw_ptr<PolicyBase> policy_;
+  // Dispatchers below are only created if they are needed.
   std::unique_ptr<Dispatcher> filesystem_dispatcher_;
   std::unique_ptr<Dispatcher> thread_process_dispatcher_;
   std::unique_ptr<Dispatcher> handle_dispatcher_;
   std::unique_ptr<Dispatcher> process_mitigations_win32k_dispatcher_;
   std::unique_ptr<Dispatcher> signed_dispatcher_;
-  Dispatcher* ipc_targets_[kMaxIpcTag];
+  Dispatcher* ipc_targets_[kSandboxIpcCount];
 };
 
 }  // namespace sandbox

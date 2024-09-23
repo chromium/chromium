@@ -79,7 +79,7 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
 @implementation CRWWKUIHandler
 
 - (instancetype)init {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _mainTaskRunner = base::SequencedTaskRunner::GetCurrentDefault();
     CHECK(_mainTaskRunner);
   }
@@ -154,7 +154,7 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
                        : [self.delegate documentURLForWebViewHandler:self];
 
   // There is no reliable way to tell if there was a user gesture, so this code
-  // checks if user has recently tapped on web view. TODO(crbug.com/809706):
+  // checks if user has recently tapped on web view. TODO(crbug.com/40561701):
   // Remove the usage of -userIsInteracting when rdar://19989909 is fixed.
   bool initiatedByUser = [self.delegate UIHandler:self
                             isUserInitiatedAction:action];

@@ -6,12 +6,16 @@ package org.chromium.chrome.modules.readaloud;
 
 import android.app.Activity;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -55,6 +59,12 @@ public interface Player {
          */
         Promise<Playback> previewVoice(PlaybackVoice voice);
 
+        /**
+         * Restores playback to the UI. If playback is stopped due to background playback, the UI
+         * for the original playback will still be shown so it can be seamless restored on play.
+         */
+        void restorePlayback();
+
         /** Navigate to the tab associated with the current playback */
         void navigateToPlayingTab();
 
@@ -64,8 +74,8 @@ public interface Player {
         /** Returns the current profile's PrefService. */
         PrefService getPrefService();
 
-        /** Returns the BrowserControlsSizer to allow pushing web contents up. */
-        BrowserControlsSizer getBrowserControlsSizer();
+        /** Returns the {@link BottomControlsStacker} to allow pushing web contents up. */
+        BottomControlsStacker getBottomControlsStacker();
 
         /**
          * Returns the LayoutManager, needed for showing the mini player SceneLayer which is drawn
@@ -79,6 +89,13 @@ public interface Player {
          * change updates.
          */
         ActivityLifecycleDispatcher getActivityLifecycleDispatcher();
+
+        /** Return the current {@link Profile}. */
+        @Nullable
+        Profile getProfile();
+
+        /** Return {@link UserEducationHelper} for requesting in-product-help. */
+        UserEducationHelper getUserEducationHelper();
     }
 
     /** Observer interface to provide updates about player UI. */
@@ -91,6 +108,9 @@ public interface Player {
 
         /** Called when the user closes the voice menu. */
         void onVoiceMenuClosed();
+
+        /** Called when the mini player finishes its transition from gone to showing. */
+        void onMiniPlayerShown();
     }
 
     /**
@@ -156,4 +176,10 @@ public interface Player {
      * @param boolean isScreenLocked
      */
     default void onScreenStatusChanged(boolean isScreenLocked) {}
+
+    /**
+     * Sets the player restorable property. This is used to indicate whether there is a restorable
+     * playback that has been stopped due to background playback.
+     */
+    default void setPlayerRestorable(boolean isPlayerRestorable) {}
 }

@@ -7,14 +7,14 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
-#include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
@@ -27,11 +27,14 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/proto_time_conversion.h"
+#include "components/trusted_vault/recovery_key_store_connection_impl.h"
+#include "components/trusted_vault/recovery_key_store_controller.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
@@ -92,7 +95,7 @@ void WriteDataToDiskImpl(const trusted_vault_pb::LocalTrustedVault& data,
   file_proto.set_md5_digest_hex_string(
       base::MD5String(file_proto.serialized_local_trusted_vault()));
   bool success = base::ImportantFileWriter::WriteFileAtomically(
-      file_path, file_proto.SerializeAsString());
+      file_path, file_proto.SerializeAsString(), "TrustedVault");
   if (!success) {
     DLOG(ERROR) << "Failed to write trusted vault file.";
   }
@@ -172,7 +175,7 @@ GetDeviceRegistrationOutcomeForUMAFromResponse(
     case TrustedVaultRegistrationStatus::kOtherError:
       return TrustedVaultDeviceRegistrationOutcomeForUMA::kOtherError;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return TrustedVaultDeviceRegistrationOutcomeForUMA::kOtherError;
 }
 
@@ -285,18 +288,41 @@ StandaloneTrustedVaultBackend::GetDownloadKeysStatusForUMAFromResponse(
       return TrustedVaultDownloadKeysStatusForUMA::kOtherError;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return TrustedVaultDownloadKeysStatusForUMA::kOtherError;
 }
 
 StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
     const base::FilePath& file_path,
     std::unique_ptr<Delegate> delegate,
-    std::unique_ptr<TrustedVaultConnection> connection)
+    std::unique_ptr<TrustedVaultConnection> connection,
+    std::unique_ptr<RecoveryKeyStoreController::RecoveryKeyProvider>
+        recovery_key_provider,
+    std::unique_ptr<RecoveryKeyStoreConnection> recovery_key_store_connection)
     : file_path_(file_path),
       delegate_(std::move(delegate)),
       connection_(std::move(connection)),
-      clock_(base::DefaultClock::GetInstance()) {}
+      clock_(base::DefaultClock::GetInstance()) {
+  if (recovery_key_provider) {
+    // TODO(crbug.com/40187814): Initialize/recreate in SetPrimaryAccount().
+    CHECK(recovery_key_store_connection);
+    recovery_key_store_controller_ =
+        std::make_unique<RecoveryKeyStoreController>(
+            std::move(recovery_key_provider),
+            std::move(recovery_key_store_connection), this);
+  }
+}
+
+StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
+    const base::FilePath& file_path,
+    std::unique_ptr<Delegate> delegate,
+    std::unique_ptr<TrustedVaultConnection> connection)
+    : StandaloneTrustedVaultBackend(file_path,
+                                    std::move(delegate),
+                                    std::move(connection),
+                                    /*recovery_key_provider=*/nullptr,
+                                    /*recovery_key_store_connection=*/nullptr) {
+}
 
 StandaloneTrustedVaultBackend::~StandaloneTrustedVaultBackend() = default;
 
@@ -399,7 +425,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
                                  .private_key_material()));
   if (!key_pair) {
     // Corrupted state: device is registered, but |key_pair| can't be imported.
-    // TODO(crbug.com/1094326): restore from this state (throw away the key and
+    // TODO(crbug.com/40699425): restore from this state (throw away the key and
     // trigger device registration again).
     FulfillFetchKeys(account_info.gaia, std::move(callback),
                      TrustedVaultDownloadKeysStatusForUMA::
@@ -475,7 +501,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
       MaybeRegisterDevice();
 
       CHECK(degraded_recoverability_handler_);
-      // TODO(crbug.com/1247990): Add Integration test.
+      // TODO(crbug.com/40790270): Add Integration test.
       degraded_recoverability_handler_->HintDegradedRecoverabilityChanged(
           TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
               kPersistentAuthErrorResolved);
@@ -508,7 +534,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
           per_user_vault->degraded_recoverability_state());
   // Should process `pending_get_is_recoverability_degraded_` if it belongs to
   // the current primary account.
-  // TODO(crbug.com/1413179): |pending_get_is_recoverability_degraded_| should
+  // TODO(crbug.com/40255601): |pending_get_is_recoverability_degraded_| should
   // be redundant now. GetRecoverabilityIsDegraded() should be called after
   // SetPrimaryAccount(). This logic is similar to FetchKeys() reporting
   // kNoPrimaryAccount, once there is data confirming that this bucked is not
@@ -534,6 +560,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   }
 
   MaybeProcessPendingTrustedRecoveryMethod();
+  MaybeStartRecoveryKeyStoreUploads();
 }
 
 void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
@@ -547,7 +574,7 @@ void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
   // removed once account become non-primary if it was ever removed from cookie
   // jar.
   if (primary_account_.has_value() &&
-      !base::Contains(gaia_ids_in_cookie_jar, primary_account_->gaia)) {
+      !gaia_ids_in_cookie_jar.contains(primary_account_->gaia)) {
     trusted_vault_pb::LocalTrustedVaultPerUser* primary_account_data_ =
         FindUserVault(primary_account_->gaia);
     primary_account_data_->set_should_delete_keys_when_non_primary(true);
@@ -562,7 +589,7 @@ void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
           return false;
         }
         // Delete data if account isn't in cookie jar.
-        return !base::Contains(gaia_ids_in_cookie_jar, gaia_id);
+        return !gaia_ids_in_cookie_jar.contains(gaia_id);
       };
 
   data_.mutable_user()->erase(
@@ -662,12 +689,15 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
   // base::Unretained() here.
   ongoing_add_recovery_method_request_ =
       connection_->RegisterAuthenticationFactor(
-          *primary_account_, GetAllVaultKeys(*per_user_vault),
-          per_user_vault->last_vault_key_version(), *imported_public_key,
-          AuthenticationFactorType::kUnspecified, method_type_hint,
-          base::BindOnce(
+          *primary_account_,
+          GetTrustedVaultKeysWithVersions(
+              GetAllVaultKeys(*per_user_vault),
+              per_user_vault->last_vault_key_version()),
+          *imported_public_key,
+          UnspecifiedAuthenticationFactorType(method_type_hint),
+          base::IgnoreArgs<TrustedVaultRegistrationStatus, int>(base::BindOnce(
               &StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded,
-              base::Unretained(this), std::move(cb)));
+              base::Unretained(this), std::move(cb))));
 }
 
 void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
@@ -687,6 +717,58 @@ void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
   // mode. Trigger device registration attempt immediately as it can succeed in
   // these cases.
   MaybeRegisterDevice();
+}
+
+void StandaloneTrustedVaultBackend::SetRecoveryKeyStoreUploadEnabled(
+    const CoreAccountInfo& account_info,
+    bool is_enabled) {
+  // `recovery_key_store_controller_` may not be nullopt at construction if this
+  // method is called.
+  CHECK(recovery_key_store_controller_);
+
+  // TODO(crbug.com/40187814): Shift responsibility for updating the enabled bit
+  // in the state to the RecoveryKeyStoreController.
+  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+      FindUserVault(account_info.gaia);
+  if (!per_user_vault) {
+    return;
+  }
+  trusted_vault_pb::RecoveryKeyStoreState* recovery_key_store_state =
+      per_user_vault->mutable_recovery_key_store_state();
+  recovery_key_store_state->set_recovery_key_store_upload_enabled(is_enabled);
+  WriteDataToDisk();
+
+  if (primary_account_ != account_info) {
+    // Only the primary account uploads to recovery key store.
+    return;
+  }
+
+  if (!is_enabled) {
+    recovery_key_store_controller_->StopPeriodicUploads();
+    return;
+  }
+
+  MaybeStartRecoveryKeyStoreUploads();
+}
+
+void StandaloneTrustedVaultBackend::MaybeStartRecoveryKeyStoreUploads() {
+  CHECK(primary_account_);
+
+  if (!recovery_key_store_controller_) {
+    return;
+  }
+
+  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+      FindUserVault(primary_account_->gaia);
+  CHECK(per_user_vault);
+  const trusted_vault_pb::RecoveryKeyStoreState& recovery_key_store_state =
+      per_user_vault->recovery_key_store_state();
+  if (!recovery_key_store_state.recovery_key_store_upload_enabled()) {
+    return;
+  }
+  recovery_key_store_controller_->StartPeriodicUploads(
+      *primary_account_, recovery_key_store_state,
+      RecoveryKeyStoreController::kDefaultUpdatePeriod);
 }
 
 std::optional<CoreAccountInfo>
@@ -758,7 +840,7 @@ bool StandaloneTrustedVaultBackend::AreConnectionRequestsThrottledForTesting() {
 
 std::optional<TrustedVaultDeviceRegistrationStateForUMA>
 StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
-  // TODO(crbug.com/1413179): in case of transient failure this function is
+  // TODO(crbug.com/40255601): in case of transient failure this function is
   // likely to be not called until the browser restart; implement retry logic.
   if (!connection_) {
     // Feature disabled.
@@ -823,15 +905,16 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
   if (HasNonConstantKey(*per_user_vault)) {
     ongoing_device_registration_request_ =
         connection_->RegisterAuthenticationFactor(
-            *primary_account_, GetAllVaultKeys(*per_user_vault),
-            per_user_vault->last_vault_key_version(), key_pair->public_key(),
-            AuthenticationFactorType::kPhysicalDevice,
-            /*authentication_factor_type_hint=*/std::nullopt,
+            *primary_account_,
+            GetTrustedVaultKeysWithVersions(
+                GetAllVaultKeys(*per_user_vault),
+                per_user_vault->last_vault_key_version()),
+            key_pair->public_key(), LocalPhysicalDevice(),
             base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
                            base::Unretained(this)));
   } else {
     ongoing_device_registration_request_ =
-        connection_->RegisterDeviceWithoutKeys(
+        connection_->RegisterLocalDeviceWithoutKeys(
             *primary_account_, key_pair->public_key(),
             base::BindOnce(
                 &StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys,
@@ -867,7 +950,12 @@ void StandaloneTrustedVaultBackend::MaybeProcessPendingTrustedRecoveryMethod() {
 }
 
 void StandaloneTrustedVaultBackend::OnDeviceRegistered(
-    TrustedVaultRegistrationStatus status) {
+    TrustedVaultRegistrationStatus status,
+    int key_version_unused) {
+  // |key_version_unused| is unused because this callback is invoked when
+  // adding a member to an existing security domain. In this case the key
+  // version is already known.
+
   // If |primary_account_| was changed meanwhile, this callback must be
   // cancelled.
   DCHECK(primary_account_.has_value());
@@ -922,7 +1010,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
 
 void StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys(
     TrustedVaultRegistrationStatus status,
-    const TrustedVaultKeyAndVersion& vault_key_and_version) {
+    int key_version) {
   // If |primary_account_| was changed meanwhile, this callback must be
   // cancelled.
   DCHECK(primary_account_.has_value());
@@ -952,10 +1040,9 @@ void StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys(
       // there might be StoreKeys() call during handling the request.
       if (!HasNonConstantKey(*per_user_vault)) {
         AssignBytesToProtoString(
-            vault_key_and_version.key,
+            GetConstantTrustedVaultKey(),
             per_user_vault->add_vault_key()->mutable_key_material());
-        per_user_vault->set_last_vault_key_version(
-            vault_key_and_version.version);
+        per_user_vault->set_last_vault_key_version(key_version);
         // WriteToDisk() will be called by OnDeviceRegistered().
       }
       break;
@@ -968,7 +1055,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys(
     case TrustedVaultRegistrationStatus::kOtherError:
       break;
   }
-  OnDeviceRegistered(status);
+  OnDeviceRegistered(status, key_version);
 }
 
 void StandaloneTrustedVaultBackend::OnKeysDownloaded(
@@ -1038,8 +1125,7 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
 }
 
 void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
-    base::OnceClosure cb,
-    TrustedVaultRegistrationStatus status) {
+    base::OnceClosure cb) {
   DCHECK(ongoing_add_recovery_method_request_);
   ongoing_add_recovery_method_request_ = nullptr;
 
@@ -1087,7 +1173,7 @@ void StandaloneTrustedVaultBackend::FulfillFetchKeys(
   std::vector<std::vector<uint8_t>> vault_keys;
   if (per_user_vault) {
     vault_keys = GetAllVaultKeys(*per_user_vault);
-    base::EraseIf(vault_keys, [](const std::vector<uint8_t>& key) {
+    std::erase_if(vault_keys, [](const std::vector<uint8_t>& key) {
       return key == GetConstantTrustedVaultKey();
     });
   }
@@ -1156,6 +1242,62 @@ StandaloneTrustedVaultBackend::FindUserVault(const std::string& gaia_id) {
 void StandaloneTrustedVaultBackend::WriteDataToDisk() {
   WriteDataToDiskImpl(data_, file_path_);
   delegate_->NotifyStateChanged();
+}
+
+void StandaloneTrustedVaultBackend::WriteRecoveryKeyStoreState(
+    const trusted_vault_pb::RecoveryKeyStoreState& state) {
+  CHECK(primary_account_);
+  CHECK(state.recovery_key_store_upload_enabled());
+  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+      FindUserVault(primary_account_->gaia);
+  *per_user_vault->mutable_recovery_key_store_state() = state;
+  WriteDataToDisk();
+}
+
+void StandaloneTrustedVaultBackend::AddRecoveryKeyToSecurityDomain(
+    const std::vector<uint8_t>& public_key_bytes,
+    RecoveryKeyRegistrationCallback callback) {
+  CHECK(primary_account_);
+  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+      FindUserVault(primary_account_->gaia);
+  CHECK(per_user_vault);
+
+  std::unique_ptr<SecureBoxPublicKey> public_key =
+      SecureBoxPublicKey::CreateByImport(public_key_bytes);
+  if (!public_key) {
+    // Invalid public key.
+    return;
+  }
+
+  // Resetting `ongoing_recovery_key_registration_request_` will cancel any
+  // other recovery key registration request that is already in progress.
+  //
+  // AreConnectionRequestsThrottled() isn't used because we ensure externally
+  // that this doesn't spam the server.
+  ongoing_recovery_key_registration_request_ =
+      connection_->RegisterAuthenticationFactor(
+          *primary_account_,
+          GetTrustedVaultKeysWithVersions(
+              GetAllVaultKeys(*per_user_vault),
+              per_user_vault->last_vault_key_version()),
+          *public_key, LockScreenKnowledgeFactor(),
+          base::BindOnce(&StandaloneTrustedVaultBackend::
+                             OnRecoveryKeyAddedToSecurityDomain,
+                         base::Unretained(this), std::move(callback)));
+}
+
+void StandaloneTrustedVaultBackend::OnRecoveryKeyAddedToSecurityDomain(
+    RecoveryKeyRegistrationCallback callback,
+    TrustedVaultRegistrationStatus status,
+    int key_version_unused) {
+  // |key_version_unused| is unused because this callback is invoked when
+  // adding a member to an existing security domain. In this case the key
+  // version is already known.
+  CHECK(primary_account_);
+  CHECK(ongoing_recovery_key_registration_request_);
+
+  ongoing_recovery_key_registration_request_.reset();
+  std::move(callback).Run(status);
 }
 
 }  // namespace trusted_vault

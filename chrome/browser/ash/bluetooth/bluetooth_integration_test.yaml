@@ -1,0 +1,24 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Schema can be found at: platform/dev/test/gtest/gtest_schema.yaml
+---
+name: "BluetoothIntegrationTest"
+harness: "crosier"
+category: "integration"
+owners:
+  - email: "jamescook@chromium.org"
+  - email: "chadduffin@chromium.org"
+  - email: "chromeos-sw-engprod@google.com"
+hw_agnostic: False
+criteria: |
+  Crosier Bluetooth test.
+cases:
+  - id: "ToggleBluetoothFromQuickSettings"
+    tags: ["crosier:crosierdemosuite"]
+  - id: "ToggleBluetoothFromQuickSettingsBluetoothPage"
+    tags: ["crosier:crosierdemosuite"]
+  - id: "ToggleBluetoothFromOsSettings"
+    tags: ["crosier:crosierdemosuite"]
+...

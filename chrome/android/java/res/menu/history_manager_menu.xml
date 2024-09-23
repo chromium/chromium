@@ -29,11 +29,6 @@ found in the LICENSE file.
             android:title="@string/close"
             app:showAsAction="ifRoom"
             app:iconTint="@color/default_icon_color_secondary_tint_list" />
-        <item
-            android:id="@+id/optout_menu_id"
-            android:title="@string/history_clusters_disable_menu_item_label"
-            android:visible="false"
-            app:showAsAction="never" />
      </group>
      <group
          android:id="@+id/selection_mode_menu_group"

@@ -19,7 +19,8 @@
 
 namespace content {
 
-class MockWidget : public blink::mojom::Widget {
+class MockWidget : public blink::mojom::Widget,
+                   public blink::mojom::RenderInputRouterClient {
  public:
   MockWidget();
 
@@ -41,11 +42,17 @@ class MockWidget : public blink::mojom::Widget {
   void ClearHidden() { is_hidden_ = std::nullopt; }
   const std::optional<bool>& IsHidden() const { return is_hidden_; }
 
-  // blink::mojom::Widget overrides.
-  void ForceRedraw(ForceRedrawCallback callback) override;
+  // blink::mojom::RenderInputRouterClient overrides;
   void GetWidgetInputHandler(
       mojo::PendingReceiver<blink::mojom::WidgetInputHandler> request,
       mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost> host) override;
+  void ShowContextMenu(ui::MenuSourceType source_type,
+                       const gfx::Point& location) override {}
+  void BindInputTargetClient(
+      mojo::PendingReceiver<viz::mojom::InputTargetClient> receiver) override {}
+
+  // blink::mojom::Widget overrides.
+  void ForceRedraw(ForceRedrawCallback callback) override;
   void UpdateVisualProperties(
       const blink::VisualProperties& visual_properties) override;
 
@@ -60,6 +67,11 @@ class MockWidget : public blink::mojom::Widget {
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
       override;
   void CancelSuccessfulPresentationTimeRequest() override;
+  void SetupRenderInputRouterConnections(
+      mojo::PendingReceiver<blink::mojom::RenderInputRouterClient>
+          browser_request,
+      mojo::PendingReceiver<blink::mojom::RenderInputRouterClient> viz_request)
+      override;
 
  private:
   std::optional<bool> is_hidden_;
@@ -67,6 +79,7 @@ class MockWidget : public blink::mojom::Widget {
   std::vector<blink::VisualProperties> visual_properties_;
   std::vector<std::pair<gfx::Rect, gfx::Rect>> screen_rects_;
   std::vector<UpdateScreenRectsCallback> screen_rects_callbacks_;
+  mojo::Receiver<blink::mojom::RenderInputRouterClient> input_receiver_{this};
   mojo::Remote<blink::mojom::WidgetInputHandlerHost> input_handler_host_;
   mojo::AssociatedReceiver<blink::mojom::Widget> blink_widget_{this};
 };

@@ -46,9 +46,13 @@ class TestRequestHandler {
     response->set_code(net::HTTP_OK);
     response->set_content(R"(
         {
-          "courses": [
-            {"id": "course-1", "name": "Course Name 1", "courseState": "ACTIVE"}
-          ]
+        "courses": [
+          {
+          "id": "course-1",
+          "name": "Course Name 1",
+          "courseState": "ACTIVE"
+          }
+        ]
         })");
     response->set_content_type("application/json");
     return response;
@@ -115,13 +119,14 @@ TEST_F(ClassroomApiListCoursesRequestsTest, ListCoursesRequest) {
           Field(&HttpRequest::relative_url,
                 Eq("/v1/courses"
                    "?fields=courses(id%2Cname%2CcourseState)%2CnextPageToken"
+                   "&studentId=test1%40test.com"
                    "&courseStates=ACTIVE")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse())));
 
   base::test::TestFuture<base::expected<std::unique_ptr<Courses>, ApiErrorCode>>
       future;
   auto request = std::make_unique<ListCoursesRequest>(
-      request_sender(), /*student_id=*/"", /*teacher_id=*/"",
+      request_sender(), /*student_id=*/"test1@test.com", /*teacher_id=*/"",
       /*page_token=*/"", future.GetCallback());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
@@ -141,7 +146,6 @@ TEST_F(ClassroomApiListCoursesRequestsTest,
                 Eq("/v1/courses"
                    "?fields=courses(id%2Cname%2CcourseState)%2CnextPageToken"
                    "&studentId=test1%40test.com"
-                   "&teacherId=test2%40test.com"
                    "&courseStates=ACTIVE"
                    "&pageToken=qwerty")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse())));
@@ -149,8 +153,7 @@ TEST_F(ClassroomApiListCoursesRequestsTest,
   base::test::TestFuture<base::expected<std::unique_ptr<Courses>, ApiErrorCode>>
       future;
   auto request = std::make_unique<ListCoursesRequest>(
-      request_sender(), /*student_id=*/"test1@test.com",
-      /*teacher_id=*/"test2@test.com",
+      request_sender(), /*student_id=*/"test1@test.com", /*teacher_id=*/"",
       /*page_token=*/"qwerty", future.GetCallback());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
@@ -168,19 +171,45 @@ TEST_F(ClassroomApiListCoursesRequestsTest, ListCoursesRequestHandlesError) {
           Field(&HttpRequest::relative_url,
                 Eq("/v1/courses"
                    "?fields=courses(id%2Cname%2CcourseState)%2CnextPageToken"
+                   "&studentId=test1%40test.com"
                    "&courseStates=ACTIVE")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
   base::test::TestFuture<base::expected<std::unique_ptr<Courses>, ApiErrorCode>>
       future;
   auto request = std::make_unique<ListCoursesRequest>(
-      request_sender(), /*student_id=*/"", /*teacher_id=*/"",
+      request_sender(), /*student_id=*/"test1@test.com", /*teacher_id=*/"",
       /*page_token=*/"", future.GetCallback());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
   ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(), HTTP_INTERNAL_SERVER_ERROR);
+}
+
+TEST_F(ClassroomApiListCoursesRequestsTest, ListCoursesRequestTeacherId) {
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(AllOf(
+          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
+          Field(&HttpRequest::relative_url,
+                Eq("/v1/courses"
+                   "?fields=courses(id%2Cname%2CcourseState)%2CnextPageToken"
+                   "&teacherId=teacher1%40test.com"
+                   "&courseStates=ACTIVE")))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse())));
+
+  base::test::TestFuture<base::expected<std::unique_ptr<Courses>, ApiErrorCode>>
+      future;
+  auto request = std::make_unique<ListCoursesRequest>(
+      request_sender(), /*student_id=*/"", /*teacher_id=*/"teacher1@test.com",
+      /*page_token=*/"", future.GetCallback());
+  request_sender()->StartRequestWithAuthRetry(std::move(request));
+  ASSERT_TRUE(future.Wait());
+
+  ASSERT_TRUE(future.Get().has_value());
+  ASSERT_TRUE(future.Get().value());
+  EXPECT_EQ(future.Get().value()->items().size(), 1u);
 }
 
 }  // namespace google_apis::classroom

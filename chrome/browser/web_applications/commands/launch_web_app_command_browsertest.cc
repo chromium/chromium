@@ -8,7 +8,6 @@
 #include <tuple>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -24,12 +23,17 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -121,7 +125,7 @@ class FirstRunServiceOverrideHelper {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class LaunchWebAppWithFirstRunServiceBrowserTest
-    : public WebAppControllerBrowserTest,
+    : public WebAppBrowserTestBase,
       public testing::WithParamInterface<bool> {
  public:
   LaunchWebAppWithFirstRunServiceBrowserTest() = default;
@@ -154,7 +158,7 @@ class LaunchWebAppWithFirstRunServiceBrowserTest
           app_id = new_app_id;
           run_loop.Quit();
         }),
-        /*use_fallback=*/true);
+        FallbackBehavior::kAllowFallbackDataAlways);
 
     run_loop.Run();
     return app_id;
@@ -187,7 +191,9 @@ IN_PROC_BROWSER_TEST_P(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  ASSERT_TRUE(GetProvider().registrar_unsafe().IsLocallyInstalled(app_id));
+  ASSERT_TRUE(GetProvider().registrar_unsafe().IsInstallState(
+      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::INSTALLED_WITH_OS_INTEGRATION}));
 
   Browser* browser = LaunchWebAppBrowser(app_id);
   ASSERT_TRUE(browser);
@@ -212,7 +218,9 @@ IN_PROC_BROWSER_TEST_P(LaunchWebAppWithFirstRunServiceBrowserTest,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  ASSERT_TRUE(GetProvider().registrar_unsafe().IsLocallyInstalled(app_id));
+  ASSERT_TRUE(GetProvider().registrar_unsafe().IsInstallState(
+      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::INSTALLED_WITH_OS_INTEGRATION}));
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
   ASSERT_TRUE(browser);
@@ -235,7 +243,9 @@ IN_PROC_BROWSER_TEST_P(LaunchWebAppWithFirstRunServiceBrowserTest,
     ASSERT_FALSE(first_run_service);
   }
 
-  ASSERT_TRUE(GetProvider().registrar_unsafe().IsLocallyInstalled(app_id));
+  ASSERT_TRUE(GetProvider().registrar_unsafe().IsInstallState(
+      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::INSTALLED_WITH_OS_INTEGRATION}));
 
   Browser* browser = LaunchWebAppBrowser(app_id);
   ASSERT_EQ(browser == nullptr, GetParam());
@@ -258,7 +268,9 @@ IN_PROC_BROWSER_TEST_P(LaunchWebAppWithFirstRunServiceBrowserTest,
     ASSERT_FALSE(first_run_service);
   }
 
-  ASSERT_TRUE(GetProvider().registrar_unsafe().IsLocallyInstalled(app_id));
+  ASSERT_TRUE(GetProvider().registrar_unsafe().IsInstallState(
+      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::INSTALLED_WITH_OS_INTEGRATION}));
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
   ASSERT_TRUE(browser);
@@ -269,13 +281,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                          LaunchWebAppWithFirstRunServiceBrowserTest,
                          ::testing::Values(true, false));
 
-class LaunchWebAppCommandTest : public WebAppControllerBrowserTest {
+class LaunchWebAppCommandTest : public WebAppBrowserTestBase {
  public:
   const std::string kAppName = "TestApp";
   const GURL kAppStartUrl = GURL("https://example.com");
 
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
     app_id_ = test::InstallDummyWebApp(profile(), kAppName, kAppStartUrl);
   }
 
@@ -325,14 +337,6 @@ class LaunchWebAppCommandTest : public WebAppControllerBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, TabbedLaunchCurrentBrowser) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // When shortstand enabled, we no longer allow web app to be launched in
-  // browser tab. This test is no longer valid. The shortstand behaviour is
-  // tested in LaunchWebAppCommandTest_Shortstand.* below.
-  if (chromeos::features::IsCrosShortstandEnabled()) {
-    GTEST_SKIP();
-  }
-#endif
   apps::AppLaunchParams launch_params = CreateLaunchParams(
       app_id_, apps::LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -369,140 +373,84 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunch) {
   EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-class LaunchWebAppCommandTest_Shortstand : public LaunchWebAppCommandTest {
- public:
-  LaunchWebAppCommandTest_Shortstand() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kCrosShortstand);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::GetForTests()->Clone();
-    init_params->is_cros_shortstand_enabled = true;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
+IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunchAppConfig) {
+  base::WeakPtr<Browser> launch_browser;
+  base::WeakPtr<content::WebContents> web_contents;
+  apps::LaunchContainer launch_container;
+  base::test::TestFuture<base::WeakPtr<Browser>,
+                         base::WeakPtr<content::WebContents>,
+                         apps::LaunchContainer>
+      launch_future;
+  provider().scheduler().LaunchApp(app_id_, std::nullopt,
+                                   launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Wait());
+  std::tie(launch_browser, web_contents, launch_container) =
+      launch_future.Get();
 
-  std::tuple<base::WeakPtr<Browser>,
-             base::WeakPtr<content::WebContents>,
-             apps::LaunchContainer>
-  DoNonCustomLaunch(const webapps::AppId& app_id, const GURL& url) {
-    base::test::TestFuture<base::WeakPtr<Browser>,
-                           base::WeakPtr<content::WebContents>,
-                           apps::LaunchContainer>
-        future;
-    provider().scheduler().LaunchUrlInApp(app_id, url, future.GetCallback());
-    return future.Get();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest_Shortstand,
-                       ShortcutLaunchInTab) {
-  const GURL kShortcutUrl("https://www.shortcut-example.com");
-  webapps::AppId web_shortcut_id =
-      test::InstallShortcut(profile(), "TestShortcut", kShortcutUrl);
-
-  {
-    apps::AppLaunchParams launch_params = CreateLaunchParams(
-        web_shortcut_id, apps::LaunchContainer::kLaunchContainerTab,
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        apps::LaunchSource::kFromCommandLine, {}, std::nullopt, std::nullopt);
-
-    auto [launch_browser, web_contents, launch_container] =
-        DoLaunch(std::move(launch_params));
-
-    EXPECT_FALSE(AppBrowserController::IsWebApp(launch_browser.get()));
-    EXPECT_EQ(launch_browser.get(), browser());
-    EXPECT_EQ(launch_browser->tab_strip_model()->count(), 2);
-    EXPECT_EQ(web_contents->GetVisibleURL(), kShortcutUrl);
-    EXPECT_EQ(launch_container, apps::LaunchContainer::kLaunchContainerTab);
-  }
-
-  // Verify that setting launch params to window still launch in tab.
-  {
-    apps::AppLaunchParams launch_params = CreateLaunchParams(
-        web_shortcut_id, apps::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        apps::LaunchSource::kFromCommandLine, {}, std::nullopt, std::nullopt);
-
-    auto [launch_browser, web_contents, launch_container] =
-        DoLaunch(std::move(launch_params));
-
-    EXPECT_FALSE(AppBrowserController::IsWebApp(launch_browser.get()));
-    EXPECT_EQ(launch_browser.get(), browser());
-    EXPECT_EQ(launch_browser->tab_strip_model()->count(), 3);
-    EXPECT_EQ(web_contents->GetVisibleURL(), kShortcutUrl);
-    EXPECT_EQ(launch_container, apps::LaunchContainer::kLaunchContainerTab);
-  }
-
-  // Verify that launch with non custom params will launch in tab.
-  {
-    auto [launch_browser, web_contents, launch_container] =
-        DoNonCustomLaunch(web_shortcut_id, kShortcutUrl);
-
-    EXPECT_FALSE(AppBrowserController::IsWebApp(launch_browser.get()));
-    EXPECT_EQ(launch_browser.get(), browser());
-    EXPECT_EQ(launch_browser->tab_strip_model()->count(), 4);
-    EXPECT_EQ(web_contents->GetVisibleURL(), kShortcutUrl);
-    EXPECT_EQ(launch_container, apps::LaunchContainer::kLaunchContainerTab);
-  }
+  EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser.get()));
+  EXPECT_NE(launch_browser.get(), browser());
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2ul);
+  EXPECT_EQ(launch_browser->tab_strip_model()->count(), 1);
+  EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
 }
 
-IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest_Shortstand,
-                       WebAppLaunchInStandaloneWindow) {
-  {
-    apps::AppLaunchParams launch_params = CreateLaunchParams(
-        app_id_, apps::LaunchContainer::kLaunchContainerWindow,
-        WindowOpenDisposition::CURRENT_TAB,
-        apps::LaunchSource::kFromCommandLine, {}, std::nullopt, std::nullopt);
+IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
+  const GURL kStartUrl =
+      https_server()->GetURL("/banners/manifest_test_page.html");
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kStartUrl);
+  web_app_info->scope = kStartUrl.GetWithoutFilename();
+  web_app_info->title = u"Name";
+  web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
-    auto [launch_browser, web_contents, launch_container] =
-        DoLaunch(std::move(launch_params));
+  // Install & bypass os integration.
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  WebAppInstallParams params;
+  params.add_to_applications_menu = false;
+  params.add_to_desktop = false;
+  params.add_to_quick_launch_bar = false;
+  params.install_state = proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
+  provider().scheduler().InstallFromInfoWithParams(
+      std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      install_future.GetCallback(), params);
+  ASSERT_TRUE(install_future.Wait());
+  webapps::AppId app_id = install_future.Get<webapps::AppId>();
 
-    EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser.get()));
-    EXPECT_NE(launch_browser.get(), browser());
-    EXPECT_EQ(BrowserList::GetInstance()->size(), 2ul);
-    EXPECT_EQ(launch_browser->tab_strip_model()->count(), 1);
-    EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
-    EXPECT_EQ(launch_container, apps::LaunchContainer::kLaunchContainerWindow);
-  }
+  // Check that OS integration NOT has occurred.
+  EXPECT_FALSE(provider()
+                   .registrar_unsafe()
+                   .GetAppCurrentOsIntegrationState(app_id)
+                   ->has_shortcut());
+  EXPECT_EQ(provider().registrar_unsafe().GetInstallState(app_id),
+            proto::INSTALLED_WITHOUT_OS_INTEGRATION);
 
-  // Verify that setting launch container to tab will still launch in window.
-  {
-    apps::AppLaunchParams launch_params = CreateLaunchParams(
-        app_id_, apps::LaunchContainer::kLaunchContainerTab,
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        apps::LaunchSource::kFromCommandLine, {}, std::nullopt, std::nullopt);
+  base::test::TestFuture<base::WeakPtr<Browser>,
+                         base::WeakPtr<content::WebContents>,
+                         apps::LaunchContainer>
+      launch_future;
+  provider().scheduler().LaunchApp(app_id, std::nullopt,
+                                   launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Wait());
+  EXPECT_EQ(provider().registrar_unsafe().GetInstallState(app_id),
+            proto::INSTALLED_WITH_OS_INTEGRATION);
 
-    auto [launch_browser, web_contents, launch_container] =
-        DoLaunch(std::move(launch_params));
+  // Check the state is correct.
+  EXPECT_TRUE(AppBrowserController::IsWebApp(
+      launch_future.Get<base::WeakPtr<Browser>>().get()));
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2ul);
+  EXPECT_EQ(
+      launch_future.Get<base::WeakPtr<content::WebContents>>()->GetVisibleURL(),
+      kStartUrl);
 
-    EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser.get()));
-    EXPECT_NE(launch_browser.get(), browser());
-    EXPECT_EQ(BrowserList::GetInstance()->size(), 3ul);
-    EXPECT_EQ(launch_browser->tab_strip_model()->count(), 1);
-    EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
-    EXPECT_EQ(launch_container, apps::LaunchContainer::kLaunchContainerWindow);
-  }
-
-  // Verify that launch with non custom params will launch in window.
-  {
-    auto [launch_browser, web_contents, launch_container] =
-        DoNonCustomLaunch(app_id_, kAppStartUrl);
-
-    EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser.get()));
-    EXPECT_NE(launch_browser.get(), browser());
-    EXPECT_EQ(BrowserList::GetInstance()->size(), 4ul);
-    EXPECT_EQ(launch_browser->tab_strip_model()->count(), 1);
-    EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
-    EXPECT_EQ(launch_container, apps::LaunchContainer::kLaunchContainerWindow);
-  }
+  // Check that OS integration has occurred & the app is fully installed now.
+  EXPECT_TRUE(provider()
+                  .registrar_unsafe()
+                  .GetAppCurrentOsIntegrationState(app_id)
+                  ->has_shortcut());
+  EXPECT_TRUE(provider().registrar_unsafe().IsActivelyInstalled(app_id));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 

@@ -48,7 +48,6 @@ PRUNTIME_FUNCTION Win32UnwindFunctions::LookupFunctionEntry(
   return ::RtlLookupFunctionEntry(program_counter, image_base, nullptr);
 #else
   NOTREACHED();
-  return nullptr;
 #endif
 }
 
@@ -135,7 +134,6 @@ bool Win32StackFrameUnwinder::TryUnwind(
   return false;
 #else
   NOTREACHED();
-  return false;
 #endif
 }
 

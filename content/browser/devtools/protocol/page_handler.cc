@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,7 +18,10 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -53,6 +57,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/result_codes.h"
@@ -60,17 +65,23 @@
 #include "content/public/common/url_utils.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-forward.h"
+#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/script_source_location.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/codec/webp_codec.h"
+#include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/snapshot/snapshot.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/compositor_impl_android.h"
@@ -205,6 +216,233 @@ bool CanExecuteGlobalCommands(
     return true;
   callback->sendFailure(response);
   return false;
+}
+
+void GotManifest(protocol::Maybe<std::string> manifest_id,
+                 std::unique_ptr<PageHandler::GetAppManifestCallback> callback,
+                 const GURL& manifest_url,
+                 ::blink::mojom::ManifestPtr input_manifest,
+                 blink::mojom::ManifestDebugInfoPtr debug_info) {
+  if (manifest_id &&
+      manifest_id.value() != input_manifest->id.possibly_invalid_spec()) {
+    std::move(callback)->sendFailure(protocol::Response::InvalidParams(
+        std::string("Page manifest id ") +
+        input_manifest->id.possibly_invalid_spec() +
+        " does not match the input " + manifest_id.value()));
+    return;
+  }
+
+  auto errors = std::make_unique<protocol::Array<Page::AppManifestError>>();
+  bool failed = true;
+  if (debug_info) {
+    failed = false;
+    for (const auto& error : debug_info->errors) {
+      errors->emplace_back(Page::AppManifestError::Create()
+                               .SetMessage(error->message)
+                               .SetCritical(error->critical)
+                               .SetLine(error->line)
+                               .SetColumn(error->column)
+                               .Build());
+      if (error->critical) {
+        failed = true;
+      }
+    }
+  }
+
+  auto convert_icon = [](const blink::Manifest::ImageResource& input_icon)
+      -> std::unique_ptr<Page::ImageResource> {
+    auto icon = Page::ImageResource::Create();
+    std::vector<std::string> size_strings;
+    base::ranges::transform(input_icon.sizes, std::back_inserter(size_strings),
+                            &gfx::Size::ToString);
+    icon.SetSizes(base::JoinString(size_strings, " "));
+    icon.SetType(base::UTF16ToUTF8(input_icon.type));
+    return icon.SetUrl(input_icon.src.possibly_invalid_spec()).Build();
+  };
+
+  auto convert_icons =
+      [convert_icon](
+          const std::vector<blink::Manifest::ImageResource>& input_icons)
+      -> std::unique_ptr<protocol::Array<Page::ImageResource>> {
+    auto icons = std::make_unique<protocol::Array<Page::ImageResource>>();
+    for (const auto& input_icon : input_icons) {
+      icons->push_back(convert_icon(input_icon));
+    }
+    return icons;
+  };
+
+  auto manifest = Page::WebAppManifest::Create();
+  if (input_manifest->has_background_color) {
+    manifest.SetBackgroundColor(color_utils::SkColorToRgbaString(
+        static_cast<SkColor>(input_manifest->background_color)));
+  }
+  if (input_manifest->description) {
+    manifest.SetDescription(
+        base::UTF16ToUTF8(input_manifest->description.value()));
+  }
+  // TODO(crbug.com/331214986): Fill the WebAppManifest.dir (direction).
+  manifest.SetDisplay(base::ToString(input_manifest->display));
+  if (!input_manifest->display_override.empty()) {
+    auto display_overrides = std::make_unique<protocol::Array<std::string>>();
+    for (const auto& display_override : input_manifest->display_override) {
+      display_overrides->push_back(base::ToString(display_override));
+    }
+    manifest.SetDisplayOverrides(std::move(display_overrides));
+  }
+  if (!input_manifest->file_handlers.empty()) {
+    auto file_handlers = std::make_unique<protocol::Array<Page::FileHandler>>();
+    for (const auto& input_file_handler : input_manifest->file_handlers) {
+      auto file_handler = Page::FileHandler::Create();
+      if (!input_file_handler->icons.empty()) {
+        file_handler.SetIcons(convert_icons(input_file_handler->icons));
+      }
+      if (!input_file_handler->accept.empty()) {
+        auto accepts = std::make_unique<protocol::Array<Page::FileFilter>>();
+        for (const auto& input_accept : input_file_handler->accept) {
+          auto accept = Page::FileFilter::Create();
+          accept.SetName(base::UTF16ToUTF8(input_accept.first));
+          if (!input_accept.second.empty()) {
+            auto accept_strs = std::make_unique<protocol::Array<std::string>>();
+            for (const auto& accept_str : input_accept.second) {
+              accept_strs->push_back(base::UTF16ToUTF8(accept_str));
+            }
+            accept.SetAccepts(std::move(accept_strs));
+          }
+          accepts->push_back(accept.Build());
+        }
+        file_handler.SetAccepts(std::move(accepts));
+      }
+      file_handlers->push_back(
+          file_handler
+              .SetAction(input_file_handler->action.possibly_invalid_spec())
+              .SetName(base::UTF16ToUTF8(input_file_handler->name))
+              .SetLaunchType(base::ToString(input_file_handler->launch_type))
+              .Build());
+    }
+  }
+  if (!input_manifest->icons.empty()) {
+    manifest.SetIcons(convert_icons(input_manifest->icons));
+  }
+  manifest.SetId(input_manifest->id.possibly_invalid_spec());
+  // TODO(crbug.com/331214986): Fill the WebAppManifest.lang.
+  if (input_manifest->launch_handler) {
+    manifest.SetLaunchHandler(
+        Page::LaunchHandler::Create()
+            .SetClientMode(base::ToString(
+                input_manifest->launch_handler.value().client_mode))
+            .Build());
+  }
+  if (input_manifest->name) {
+    manifest.SetName(base::UTF16ToUTF8(input_manifest->name.value()));
+  }
+  manifest.SetOrientation(base::ToString(input_manifest->orientation));
+  manifest.SetPreferRelatedApplications(
+      input_manifest->prefer_related_applications);
+  if (!input_manifest->protocol_handlers.empty()) {
+    auto protocol_handlers =
+        std::make_unique<protocol::Array<Page::ProtocolHandler>>();
+    for (const auto& input_protocol_handler :
+         input_manifest->protocol_handlers) {
+      protocol_handlers->push_back(
+          Page::ProtocolHandler::Create()
+              .SetProtocol(base::UTF16ToUTF8(input_protocol_handler->protocol))
+              .SetUrl(input_protocol_handler->url.possibly_invalid_spec())
+              .Build());
+    }
+    manifest.SetProtocolHandlers(std::move(protocol_handlers));
+  }
+  if (!input_manifest->scope_extensions.empty()) {
+    auto scope_extensions =
+        std::make_unique<protocol::Array<Page::ScopeExtension>>();
+    for (const auto& input_scope_extension : input_manifest->scope_extensions) {
+      scope_extensions->push_back(
+          Page::ScopeExtension::Create()
+              .SetOrigin(input_scope_extension->origin.Serialize())
+              .SetHasOriginWildcard(input_scope_extension->has_origin_wildcard)
+              .Build());
+    }
+    manifest.SetScopeExtensions(std::move(scope_extensions));
+  }
+  if (!input_manifest->screenshots.empty()) {
+    auto screenshots = std::make_unique<protocol::Array<Page::Screenshot>>();
+    for (const auto& input_screenshot : input_manifest->screenshots) {
+      auto screenshot = Page::Screenshot::Create();
+      if (input_screenshot->label) {
+        screenshot.SetLabel(base::UTF16ToUTF8(input_screenshot->label.value()));
+      }
+      screenshots->push_back(
+          screenshot.SetImage(convert_icon(input_screenshot->image))
+              .SetFormFactor(base::ToString(input_screenshot->form_factor))
+              .Build());
+    }
+    manifest.SetScreenshots(std::move(screenshots));
+  }
+  if (input_manifest->share_target) {
+    const auto& input_share_target = input_manifest->share_target.value();
+    auto share_target = Page::ShareTarget::Create();
+    if (input_share_target.params.title) {
+      share_target.SetTitle(
+          base::UTF16ToUTF8(input_share_target.params.title.value()));
+    }
+    if (input_share_target.params.text) {
+      share_target.SetTitle(
+          base::UTF16ToUTF8(input_share_target.params.text.value()));
+    }
+    if (input_share_target.params.url) {
+      share_target.SetTitle(
+          base::UTF16ToUTF8(input_share_target.params.url.value()));
+    }
+    manifest.SetShareTarget(
+        share_target
+            .SetAction(
+                input_manifest->share_target->action.possibly_invalid_spec())
+            .SetMethod(base::ToString(input_manifest->share_target->method))
+            .SetEnctype(base::ToString(input_manifest->share_target->action))
+            .Build());
+  }
+  if (!input_manifest->related_applications.empty()) {
+    auto related_apps =
+        std::make_unique<protocol::Array<Page::RelatedApplication>>();
+    for (const auto& input_related_app : input_manifest->related_applications) {
+      auto related_app = Page::RelatedApplication::Create();
+      if (input_related_app.id) {
+        related_app.SetId(base::UTF16ToUTF8(input_related_app.id.value()));
+      }
+      related_apps->push_back(
+          related_app.SetUrl(input_related_app.url.possibly_invalid_spec())
+              .Build());
+    }
+    manifest.SetRelatedApplications(std::move(related_apps));
+  }
+  manifest.SetScope(input_manifest->scope.possibly_invalid_spec());
+  if (!input_manifest->shortcuts.empty()) {
+    auto shortcuts = std::make_unique<protocol::Array<Page::Shortcut>>();
+    for (const auto& input_shortcut : input_manifest->shortcuts) {
+      shortcuts->push_back(
+          Page::Shortcut::Create()
+              .SetName(base::UTF16ToUTF8(input_shortcut.name))
+              .SetUrl(input_shortcut.url.possibly_invalid_spec())
+              .Build());
+    }
+    manifest.SetShortcuts(std::move(shortcuts));
+  }
+  manifest.SetStartUrl(input_manifest->start_url.possibly_invalid_spec());
+  if (input_manifest->has_theme_color) {
+    manifest.SetThemeColor(color_utils::SkColorToRgbaString(
+        static_cast<SkColor>(input_manifest->theme_color)));
+  }
+
+  std::unique_ptr<Page::AppManifestParsedProperties> parsed;
+  if (!blink::IsEmptyManifest(input_manifest)) {
+    parsed = Page::AppManifestParsedProperties::Create()
+                 .SetScope(input_manifest->scope.possibly_invalid_spec())
+                 .Build();
+  }
+
+  std::move(callback)->sendSuccess(
+      manifest_url.possibly_invalid_spec(), std::move(errors),
+      failed ? Maybe<std::string>() : debug_info->raw_manifest,
+      std::move(parsed), manifest.Build());
 }
 
 }  // namespace
@@ -382,8 +620,9 @@ Response PageHandler::Disable() {
     pending_dialog_.Reset();
   }
 
-  for (auto* item : pending_downloads_)
+  for (download::DownloadItem* item : pending_downloads_) {
     item->RemoveObserver(this);
+  }
   pending_downloads_.clear();
   navigate_callbacks_.clear();
   SetPrerenderingAllowed(true);
@@ -415,6 +654,7 @@ Response PageHandler::Close() {
 
 void PageHandler::Reload(Maybe<bool> bypassCache,
                          Maybe<std::string> script_to_evaluate_on_load,
+                         Maybe<std::string> loader_id,
                          std::unique_ptr<ReloadCallback> callback) {
   Response response = AssureTopLevelActiveFrame();
   if (response.IsError()) {
@@ -427,6 +667,16 @@ void PageHandler::Reload(Maybe<bool> bypassCache,
   // itself will fail.
   RenderFrameHostImpl* outermost_main_frame =
       host_->GetOutermostMainFrameOrEmbedder();
+
+  if (loader_id.has_value()) {
+    auto navigation_token = outermost_main_frame->GetDevToolsNavigationToken();
+    if (!navigation_token.has_value() ||
+        *loader_id != navigation_token->ToString()) {
+      callback->sendFailure(Response::InvalidParams(
+          "Reload was discarded because the page already navigated"));
+      return;
+    }
+  }
 
   // It is important to fallback before triggering reload, so that
   // renderer could prepare beforehand.
@@ -681,7 +931,7 @@ void PageHandler::OnDownloadUpdated(download::DownloadItem* item) {
       state = Page::DownloadProgress::StateEnum::Canceled;
       break;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   frontend_->DownloadProgress(item->GetGuid(), item->GetTotalBytes(),
                               item->GetReceivedBytes(), state);
@@ -799,7 +1049,7 @@ void PageHandler::CaptureSnapshot(
 
 // Sets a clip with full page dimensions. Calls CaptureScreenshot with updated
 // value to proceed with capturing the full page screenshot.
-// TODO(crbug.com/1363574): at the point this method is called, the page could
+// TODO(crbug.com/40238745): at the point this method is called, the page could
 // have changed its size.
 void PageHandler::CaptureFullPageScreenshot(
     Maybe<std::string> format,
@@ -966,7 +1216,7 @@ void PageHandler::CaptureScreenshot(
         modified_web_prefs);
 
     {
-      // TODO(crbug.com/1141835): Remove the bug is fixed.
+      // TODO(crbug.com/40727379): Remove the bug is fixed.
       // Walkaround for the bug. Emulated `view_size` has to be set twice,
       // otherwise the scrollbar will be on the screenshot present.
       blink::DeviceEmulationParams tmp_params = modified_params;
@@ -1103,13 +1353,21 @@ Response PageHandler::HandleJavaScriptDialog(bool accept,
 }
 
 Response PageHandler::BringToFront() {
-  ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
-  if (absl::holds_alternative<Response>(result))
-    return absl::get<Response>(result);
+  // Not using AssureTopLevelActiveFrame here because
+  // we allow bringing WebContents to front that might have ongoing
+  // lifecycle updates.
+  if (!host_) {
+    return Response::ServerError(kErrorNotAttached);
+  }
 
-  WebContentsImpl* web_contents = absl::get<WebContentsImpl*>(result);
+  if (host_->GetParentOrOuterDocument()) {
+    return Response::ServerError(kCommandIsOnlyAvailableAtTopTarget);
+  }
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(host_));
   web_contents->Activate();
-  web_contents->Focus();
+  web_contents->GetOutermostWebContents()->Focus();
   return Response::Success();
 }
 
@@ -1130,13 +1388,13 @@ Response PageHandler::SetDownloadBehavior(const std::string& behavior,
 }
 
 void PageHandler::GetAppManifest(
+    protocol::Maybe<std::string> manifest_id,
     std::unique_ptr<GetAppManifestCallback> callback) {
   if (!CanExecuteGlobalCommands(this, callback))
     return;
   ManifestManagerHost::GetOrCreateForPage(host_->GetPage())
-      ->RequestManifestDebugInfo(base::BindOnce(&PageHandler::GotManifest,
-                                                weak_factory_.GetWeakPtr(),
-                                                std::move(callback)));
+      ->RequestManifestDebugInfo(base::BindOnce(
+          GotManifest, std::move(manifest_id), std::move(callback)));
 }
 
 PageHandler::ResponseOrWebContents
@@ -1277,39 +1535,6 @@ void PageHandler::ScreenshotCaptured(
   callback->sendSuccess(Binary::fromVector(std::move(encoded_bitmap)));
 }
 
-void PageHandler::GotManifest(std::unique_ptr<GetAppManifestCallback> callback,
-                              const GURL& manifest_url,
-                              ::blink::mojom::ManifestPtr parsed_manifest,
-                              blink::mojom::ManifestDebugInfoPtr debug_info) {
-  auto errors = std::make_unique<protocol::Array<Page::AppManifestError>>();
-  bool failed = true;
-  if (debug_info) {
-    failed = false;
-    for (const auto& error : debug_info->errors) {
-      errors->emplace_back(Page::AppManifestError::Create()
-                               .SetMessage(error->message)
-                               .SetCritical(error->critical)
-                               .SetLine(error->line)
-                               .SetColumn(error->column)
-                               .Build());
-      if (error->critical)
-        failed = true;
-    }
-  }
-
-  std::unique_ptr<Page::AppManifestParsedProperties> parsed;
-  if (!blink::IsEmptyManifest(parsed_manifest)) {
-    parsed = Page::AppManifestParsedProperties::Create()
-                 .SetScope(parsed_manifest->scope.possibly_invalid_spec())
-                 .Build();
-  }
-
-  callback->sendSuccess(
-      manifest_url.possibly_invalid_spec(), std::move(errors),
-      failed ? Maybe<std::string>() : debug_info->raw_manifest,
-      std::move(parsed));
-}
-
 Response PageHandler::StopLoading() {
   ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
 
@@ -1389,8 +1614,6 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::SchemeNotHTTPOrHTTPS;
     case Reason::kLoading:
       return Page::BackForwardCacheNotRestoredReasonEnum::Loading;
-    case Reason::kWasGrantedMediaAccess:
-      return Page::BackForwardCacheNotRestoredReasonEnum::WasGrantedMediaAccess;
     case Reason::kDisableForRenderFrameHostCalled:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           DisableForRenderFrameHostCalled;
@@ -1427,9 +1650,6 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kEnteredBackForwardCacheBeforeServiceWorkerHostAdded:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           EnteredBackForwardCacheBeforeServiceWorkerHostAdded;
-    case Reason::kNotMostRecentNavigationEntry:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          NotMostRecentNavigationEntry;
     case Reason::kServiceWorkerClaim:
       return Page::BackForwardCacheNotRestoredReasonEnum::ServiceWorkerClaim;
     case Reason::kIgnoreEventAndEvict:
@@ -1486,22 +1706,36 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           CacheControlNoStoreHTTPOnlyCookieModified;
-    case Reason::kNoResponseHead:
-      return Page::BackForwardCacheNotRestoredReasonEnum::NoResponseHead;
     case Reason::kErrorDocument:
       return Page::BackForwardCacheNotRestoredReasonEnum::ErrorDocument;
-    case Reason::kFencedFramesEmbedder:
-      return Page::BackForwardCacheNotRestoredReasonEnum::FencedFramesEmbedder;
     case Reason::kCookieDisabled:
       return Page::BackForwardCacheNotRestoredReasonEnum::CookieDisabled;
     case Reason::kHTTPAuthRequired:
       return Page::BackForwardCacheNotRestoredReasonEnum::HTTPAuthRequired;
     case Reason::kCookieFlushed:
       return Page::BackForwardCacheNotRestoredReasonEnum::CookieFlushed;
+    case Reason::kBroadcastChannelOnMessage:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          BroadcastChannelOnMessage;
+    case Reason::kWebViewSettingsChanged:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          WebViewSettingsChanged;
+    case Reason::kWebViewJavaScriptObjectChanged:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          WebViewJavaScriptObjectChanged;
+    case Reason::kWebViewMessageListenerInjected:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          WebViewMessageListenerInjected;
+    case Reason::kWebViewSafeBrowsingAllowlistChanged:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          WebViewSafeBrowsingAllowlistChanged;
+    case Reason::kWebViewDocumentStartJavascriptChanged:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          WebViewDocumentStartJavascriptChanged;
     case Reason::kBlocklistedFeatures:
       // Blocklisted features should be handled separately and be broken down
       // into sub reasons.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
     case Reason::kUnknown:
       return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
@@ -1540,9 +1774,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::ContainsPlugins;
     case WebSchedulerTrackedFeature::kDocumentLoaded:
       return Page::BackForwardCacheNotRestoredReasonEnum::DocumentLoaded;
-    case WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          DedicatedWorkerOrWorklet;
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           OutstandingNetworkRequestOthers;
@@ -1590,16 +1821,12 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::WebDatabase;
     case WebSchedulerTrackedFeature::kPictureInPicture:
       return Page::BackForwardCacheNotRestoredReasonEnum::PictureInPicture;
-    case WebSchedulerTrackedFeature::kPortal:
-      return Page::BackForwardCacheNotRestoredReasonEnum::Portal;
     case WebSchedulerTrackedFeature::kSpeechRecognizer:
       return Page::BackForwardCacheNotRestoredReasonEnum::SpeechRecognizer;
     case WebSchedulerTrackedFeature::kIdleManager:
       return Page::BackForwardCacheNotRestoredReasonEnum::IdleManager;
     case WebSchedulerTrackedFeature::kPaymentManager:
       return Page::BackForwardCacheNotRestoredReasonEnum::PaymentManager;
-    case WebSchedulerTrackedFeature::kSpeechSynthesis:
-      return Page::BackForwardCacheNotRestoredReasonEnum::SpeechSynthesis;
     case WebSchedulerTrackedFeature::kKeyboardLock:
       return Page::BackForwardCacheNotRestoredReasonEnum::KeyboardLock;
     case WebSchedulerTrackedFeature::kWebOTPService:
@@ -1617,7 +1844,7 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::IndexedDBEvent;
     case WebSchedulerTrackedFeature::kDummy:
       // This is a test only reason and should never be called.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Page::BackForwardCacheNotRestoredReasonEnum::Dummy;
     case WebSchedulerTrackedFeature::
         kJsNetworkRequestReceivedCacheControlNoStoreResource:
@@ -1626,29 +1853,31 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
     case WebSchedulerTrackedFeature::kWebSerial:
       // Currently we add WebSchedulerTrackedFeature::kWebSerial only for
       // disabling aggressive throttling.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case WebSchedulerTrackedFeature::kSmartCard:
       return Page::BackForwardCacheNotRestoredReasonEnum::SmartCard;
     case WebSchedulerTrackedFeature::kLiveMediaStreamTrack:
       return Page::BackForwardCacheNotRestoredReasonEnum::LiveMediaStreamTrack;
     case WebSchedulerTrackedFeature::kUnloadHandler:
       return Page::BackForwardCacheNotRestoredReasonEnum::UnloadHandler;
+    case WebSchedulerTrackedFeature::kParserAborted:
+      return Page::BackForwardCacheNotRestoredReasonEnum::ParserAborted;
   }
 }
 
-std::unique_ptr<Page::BackForwardCacheBlockingDetails>
-BlockingDetailsToProtocol(const blink::mojom::BlockingDetailsPtr& details) {
+std::unique_ptr<Page::BackForwardCacheBlockingDetails> SourceLocationToProtocol(
+    const blink::mojom::ScriptSourceLocationPtr& source) {
   auto blocking_details = Page::BackForwardCacheBlockingDetails::Create();
-  if (details->url.has_value()) {
-    blocking_details.SetUrl(details->url.value());
+  if (!source->url.is_empty()) {
+    blocking_details.SetUrl(source->url.spec());
   }
-  if (details->function_name.has_value()) {
-    blocking_details.SetFunction(details->function_name.value());
+  if (!source->function_name.empty()) {
+    blocking_details.SetFunction(source->function_name);
   }
-  CHECK(details->line_number > 0);
-  CHECK(details->column_number > 0);
-  return blocking_details.SetLineNumber(details->line_number - 1)
-      .SetColumnNumber(details->column_number - 1)
+  CHECK(source->line_number > 0);
+  CHECK(source->column_number > 0);
+  return blocking_details.SetLineNumber(source->line_number - 1)
+      .SetColumnNumber(source->column_number - 1)
       .Build();
 }
 
@@ -1657,10 +1886,10 @@ DisableForRenderFrameHostReasonToProtocol(
     BackForwardCache::DisabledReason reason) {
   switch (reason.source) {
     case BackForwardCache::DisabledSource::kLegacy:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
     case BackForwardCache::DisabledSource::kTesting:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
     case BackForwardCache::DisabledSource::kContent:
       switch (
@@ -1693,6 +1922,8 @@ DisableForRenderFrameHostReasonToProtocol(
         case BackForwardCacheDisable::DisabledReasonId::kScreenReader:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               ContentScreenReader;
+        case BackForwardCacheDisable::DisabledReasonId::kDiscarded:
+          return Page::BackForwardCacheNotRestoredReasonEnum::ContentDiscarded;
       }
     case BackForwardCache::DisabledSource::kEmbedder:
       switch (static_cast<back_forward_cache::DisabledReasonId>(reason.id)) {
@@ -1731,20 +1962,16 @@ DisableForRenderFrameHostReasonToProtocol(
         case back_forward_cache::DisabledReasonId::kModalDialog:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               EmbedderModalDialog;
-        case back_forward_cache::DisabledReasonId::kExtensions:
-          return Page::BackForwardCacheNotRestoredReasonEnum::
-              EmbedderExtensions;
         case back_forward_cache::DisabledReasonId::kExtensionMessaging:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               EmbedderExtensionMessaging;
         case back_forward_cache::DisabledReasonId::
-            kExtensionMessagingForOpenPort:
-          return Page::BackForwardCacheNotRestoredReasonEnum::
-              EmbedderExtensionMessagingForOpenPort;
-        case back_forward_cache::DisabledReasonId::
             kExtensionSentMessageToCachedFrame:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               EmbedderExtensionSentMessageToCachedFrame;
+        case back_forward_cache::DisabledReasonId::kRequestedByWebViewClient:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              RequestedByWebViewClient;
       }
   }
 }
@@ -1759,7 +1986,6 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kHTTPStatusNotOK:
     case Reason::kSchemeNotHTTPOrHTTPS:
     case Reason::kLoading:
-    case Reason::kWasGrantedMediaAccess:
     case Reason::kDisableForRenderFrameHostCalled:
     case Reason::kDomainNotAllowed:
     case Reason::kHTTPMethodNotGET:
@@ -1775,7 +2001,6 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kSessionRestored:
     case Reason::kServiceWorkerPostMessage:
     case Reason::kEnteredBackForwardCacheBeforeServiceWorkerHostAdded:
-    case Reason::kNotMostRecentNavigationEntry:
     case Reason::kServiceWorkerClaim:
     case Reason::kIgnoreEventAndEvict:
     case Reason::kHaveInnerContents:
@@ -1791,12 +2016,16 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kBrowsingInstanceNotSwapped:
     case Reason::kBackForwardCacheDisabledForDelegate:
     case Reason::kServiceWorkerUnregistration:
-    case Reason::kNoResponseHead:
     case Reason::kErrorDocument:
-    case Reason::kFencedFramesEmbedder:
     case Reason::kCookieDisabled:
     case Reason::kHTTPAuthRequired:
     case Reason::kCookieFlushed:
+    case Reason::kBroadcastChannelOnMessage:
+    case Reason::kWebViewSettingsChanged:
+    case Reason::kWebViewJavaScriptObjectChanged:
+    case Reason::kWebViewMessageListenerInjected:
+    case Reason::kWebViewSafeBrowsingAllowlistChanged:
+    case Reason::kWebViewDocumentStartJavascriptChanged:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case Reason::kCacheControlNoStore:
     case Reason::kCacheControlNoStoreCookieModified:
@@ -1808,7 +2037,7 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kUnknown:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
     case Reason::kBlocklistedFeatures:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
   }
 }
@@ -1835,8 +2064,8 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kSmartCard:
     case WebSchedulerTrackedFeature::kLiveMediaStreamTrack:
     case WebSchedulerTrackedFeature::kUnloadHandler:
+    case WebSchedulerTrackedFeature::kParserAborted:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
-    case WebSchedulerTrackedFeature::kPortal:
     case WebSchedulerTrackedFeature::kWebNfc:
     case WebSchedulerTrackedFeature::kRequestedStorageAccessGrant:
     case WebSchedulerTrackedFeature::kRequestedMIDIPermission:
@@ -1851,8 +2080,6 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kPictureInPicture:
     case WebSchedulerTrackedFeature::kWebLocks:
     case WebSchedulerTrackedFeature::kWebSocket:
-    case WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet:
-    case WebSchedulerTrackedFeature::kSpeechSynthesis:
     case WebSchedulerTrackedFeature::kKeepaliveRequest:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore:
@@ -1870,7 +2097,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kWebSocketSticky:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case WebSchedulerTrackedFeature::kWebSerial:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -1899,7 +2126,7 @@ CreateNotRestoredExplanation(
        not_restored_reasons) {
     if (not_restored_reason ==
         BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures) {
-      DCHECK(!blocklisted_features.Empty());
+      DCHECK(!blocklisted_features.empty());
       for (blink::scheduler::WebSchedulerTrackedFeature feature :
            blocklisted_features) {
         // Details are not always present for blocklisted features, because the
@@ -1908,13 +2135,8 @@ CreateNotRestoredExplanation(
             protocol::Array<Page::BackForwardCacheBlockingDetails>>();
         CHECK(details.contains(feature));
         for (const auto& detail : details.at(feature)) {
-          if (detail->line_number != 0 && detail->column_number != 0) {
-            details_list->push_back(BlockingDetailsToProtocol(detail));
-          } else {
-            // Details are not captured.
-            CHECK(!detail->url.has_value() || detail->url == "");
-            CHECK(!detail->function_name.has_value() ||
-                  detail->function_name == "");
+          if (detail->source) {
+            details_list->push_back(SourceLocationToProtocol(detail->source));
           }
         }
         auto explanation =
@@ -2031,7 +2253,7 @@ void PageHandler::BackForwardCacheNotUsed(
       result->not_restored_reasons(), result->blocklisted_features(),
       result->disabled_reasons(), result->blocking_details_map());
 
-  // TODO(crbug.com/1281855): |tree_result| should not be nullptr when |result|
+  // TODO(crbug.com/40812472): |tree_result| should not be nullptr when |result|
   // has the reasons.
   std::unique_ptr<Page::BackForwardCacheNotRestoredExplanationTree>
       explanation_tree =

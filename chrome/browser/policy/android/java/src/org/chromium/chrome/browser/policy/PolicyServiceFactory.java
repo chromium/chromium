@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.policy;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -53,6 +54,6 @@ public class PolicyServiceFactory {
     public interface Natives {
         PolicyService getGlobalPolicyService();
 
-        PolicyService getProfilePolicyService(Profile profile);
+        PolicyService getProfilePolicyService(@JniType("Profile*") Profile profile);
     }
 }

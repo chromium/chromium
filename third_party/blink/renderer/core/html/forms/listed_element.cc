@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -48,6 +49,8 @@
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -56,14 +59,14 @@ namespace {
 
 void InvalidateShadowIncludingAncestorForms(ContainerNode& insertion_point) {
   // Let any forms in the shadow including ancestors know that this
-  // ListedElement has changed. Don't include any forms inside the same
-  // TreeScope know because that relationship isn't tracked by listed elements
-  // including shadow trees.
-  for (ContainerNode* parent = insertion_point.OwnerShadowHost(); parent;
+  // ListedElement has changed. We also cache listed elements inside
+  // (descendant) nested forms and therefore need to invalidate the caches also
+  // inside the same `TreeScope`.
+  ContainerNode* starting_node = insertion_point.ParentOrShadowHostNode();
+  for (ContainerNode* parent = starting_node; parent;
        parent = parent->ParentOrShadowHostNode()) {
     if (HTMLFormElement* form = DynamicTo<HTMLFormElement>(parent)) {
       form->InvalidateListedElementsIncludingShadowTrees();
-      return;
     }
   }
 }
@@ -645,6 +648,16 @@ void ListedElement::UpdateAncestorDisabledState() const {
   ancestor_disabled_state_ = disabled_fieldset_ancestor
                                  ? AncestorDisabledState::kDisabled
                                  : AncestorDisabledState::kEnabled;
+  if (!disabled_fieldset_ancestor &&
+      RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    if (auto* button = DynamicTo<HTMLButtonElement>(ToHTMLElement())) {
+      if (auto* select = button->OwnerSelect()) {
+        ancestor_disabled_state_ = select->is_element_disabled_
+          ? AncestorDisabledState::kDisabled
+          : AncestorDisabledState::kEnabled;
+      }
+    }
+  }
 }
 
 void ListedElement::AncestorDisabledStateWasChanged() {
@@ -753,9 +766,10 @@ HTMLElement& ListedElement::ToHTMLElement() {
 
 FormAttributeTargetObserver::FormAttributeTargetObserver(const AtomicString& id,
                                                          ListedElement* element)
-    : IdTargetObserver(
-          element->ToHTMLElement().GetTreeScope().GetIdTargetObserverRegistry(),
-          id),
+    : IdTargetObserver(element->ToHTMLElement()
+                           .GetTreeScope()
+                           .EnsureIdTargetObserverRegistry(),
+                       id),
       element_(element) {}
 
 void FormAttributeTargetObserver::Trace(Visitor* visitor) const {

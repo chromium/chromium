@@ -207,7 +207,8 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
                 DeleteBrowsingDataAction.MAX_VALUE);
         // Need to fetch data in order to clear it.
         BrowserContextHandle browserContext = getDelegate().getBrowserContext();
-        WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(browserContext);
+        WebsitePermissionsFetcher fetcher =
+                new WebsitePermissionsFetcher(getDelegate().getSiteSettingsDelegate());
         String origin = Origin.createOrThrow(mPageUrl).toString();
         WebsiteAddress address = WebsiteAddress.create(origin);
 

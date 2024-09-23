@@ -27,6 +27,9 @@ public interface Pane extends BackPressHandler {
     @Nullable
     MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler();
 
+    /** Returns whether the menu button should be visible for the Pane. */
+    boolean getMenuButtonVisible();
+
     /** Returns the desired color scheme. Should be constant for individual panes. */
     @HubColorScheme
     int getColorScheme();
@@ -57,6 +60,14 @@ public interface Pane extends BackPressHandler {
     /** Returns the visuals for creating a button to navigate to this pane. */
     @NonNull
     ObservableSupplier<DisplayButtonData> getReferenceButtonDataSupplier();
+
+    /** Returns whether to show the hairline for the pane. */
+    @NonNull
+    ObservableSupplier<Boolean> getHairlineVisibilitySupplier();
+
+    /** Returns an optional listener for animation progress. */
+    @Nullable
+    HubLayoutAnimationListener getHubLayoutAnimationListener();
 
     /**
      * Create a {@link HubLayoutAnimatorProvider} to use when showing the {@link HubLayout} if this

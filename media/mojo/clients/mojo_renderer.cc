@@ -77,8 +77,7 @@ void MojoRenderer::InitializeRendererFromStreams(
 
   // Create mojom::DemuxerStream for each demuxer stream and bind its lifetime
   // to the pipe.
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams =
-      media_resource_->GetAllStreams();
+  std::vector<DemuxerStream*> streams = media_resource_->GetAllStreams();
   std::vector<mojo::PendingRemote<mojom::DemuxerStream>> stream_proxies;
 
   for (media::DemuxerStream* stream : streams) {
@@ -120,7 +119,7 @@ void MojoRenderer::InitializeRendererFromUrl(media::RendererClient* client) {
   // |remote_renderer_| is destroyed.
   mojom::MediaUrlParamsPtr media_url_params = mojom::MediaUrlParams::New(
       url_params.media_url, url_params.site_for_cookies,
-      url_params.top_frame_origin, url_params.has_storage_access,
+      url_params.top_frame_origin, url_params.storage_access_api_status,
       url_params.allow_credentials, url_params.is_hls, url_params.headers);
   remote_renderer_->Initialize(client_receiver_.BindNewEndpointAndPassRemote(),
                                std::nullopt, std::move(media_url_params),
@@ -159,7 +158,12 @@ void MojoRenderer::SetCdm(CdmContext* cdm_context,
 }
 
 void MojoRenderer::SetLatencyHint(std::optional<base::TimeDelta> latency_hint) {
-  // TODO(chcunningham): Proxy to remote renderer if needed.
+  DVLOG(2) << __func__;
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  BindRemoteRendererIfNeeded();
+
+  remote_renderer_->SetLatencyHint(latency_hint);
 }
 
 void MojoRenderer::Flush(base::OnceClosure flush_cb) {
@@ -330,7 +334,7 @@ void MojoRenderer::OnDemuxerStreamConnectionError(
       return;
     }
   }
-  NOTREACHED() << "Unrecognized demuxer stream=" << stream;
+  NOTREACHED_IN_MIGRATION() << "Unrecognized demuxer stream=" << stream;
 }
 
 void MojoRenderer::BindRemoteRendererIfNeeded() {

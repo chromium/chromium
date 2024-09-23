@@ -5,6 +5,7 @@
 #include "extensions/browser/api/declarative/declarative_rule.h"
 
 #include <optional>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -116,8 +117,9 @@ struct FulfillableCondition {
 
   void GetURLMatcherConditionSets(
       URLMatcherConditionSet::Vector* condition_sets) const {
-    if (condition_set.get())
+    if (condition_set.get()) {
       condition_sets->push_back(condition_set);
+    }
   }
 
   bool IsFulfilled(const MatchData& match_data) const {

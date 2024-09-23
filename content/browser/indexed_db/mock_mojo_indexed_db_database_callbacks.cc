@@ -4,25 +4,23 @@
 
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 
-namespace content {
+namespace content::indexed_db {
 
-MockMojoIndexedDBDatabaseCallbacks::MockMojoIndexedDBDatabaseCallbacks() =
-    default;
-MockMojoIndexedDBDatabaseCallbacks::~MockMojoIndexedDBDatabaseCallbacks() =
-    default;
+MockMojoDatabaseCallbacks::MockMojoDatabaseCallbacks() = default;
+MockMojoDatabaseCallbacks::~MockMojoDatabaseCallbacks() = default;
 
 mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
-MockMojoIndexedDBDatabaseCallbacks::CreateInterfacePtrAndBind() {
+MockMojoDatabaseCallbacks::CreateInterfacePtrAndBind() {
   return receiver_.BindNewEndpointAndPassRemote();
 }
 
 mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
-MockMojoIndexedDBDatabaseCallbacks::BindNewEndpointAndPassDedicatedRemote() {
+MockMojoDatabaseCallbacks::BindNewEndpointAndPassDedicatedRemote() {
   return receiver_.BindNewEndpointAndPassDedicatedRemote();
 }
 
-void MockMojoIndexedDBDatabaseCallbacks::FlushForTesting() {
+void MockMojoDatabaseCallbacks::FlushForTesting() {
   receiver_.FlushForTesting();
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

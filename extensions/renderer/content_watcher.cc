@@ -174,9 +174,7 @@ void ContentWatcher::OnWatchPages(
       return true;  // Continue visiting.
     }
 
-    const raw_ref<const blink::WebVector<blink::WebString>,
-                  ExperimentalRenderer>
-        css_selectors;
+    const raw_ref<const blink::WebVector<blink::WebString>> css_selectors;
   };
   WatchSelectors visitor(css_selectors_);
   content::RenderFrame::ForEach(&visitor);

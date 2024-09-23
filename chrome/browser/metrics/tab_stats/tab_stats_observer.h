@@ -53,6 +53,9 @@ class TabStatsObserver : public base::CheckedObserver {
   // Records that a tab's visibility changed.
   virtual void OnTabVisibilityChanged(content::WebContents* web_contents) {}
 
+  // Records that a tab has been discarded.
+  virtual void OnTabDiscarded(content::WebContents* web_contents) {}
+
   // Invoked when media enters or exits fullscreen, see
   // WebContentsImpl::MediaEffectivelyFullscreenChanged for more details.
   virtual void OnMediaEffectivelyFullscreenChanged(

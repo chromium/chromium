@@ -40,9 +40,12 @@ NoStatePrefetchManagerFactory::NoStatePrefetchManagerFactory()
           "NoStatePrefetchManager",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(

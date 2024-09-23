@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_CSS_AGENT_H_
 #define COMPONENTS_UI_DEVTOOLS_CSS_AGENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/ui_devtools/css.h"
 #include "components/ui_devtools/dom_agent.h"
 
@@ -61,7 +62,7 @@ class UI_DEVTOOLS_EXPORT CSSAgent
   // Sends header to frontend for each section in properties panel.
   void InitStylesheetHeaders(UIElement* ui_element);
 
-  DOMAgent* const dom_agent_;
+  const raw_ptr<DOMAgent> dom_agent_;
 };
 
 }  // namespace ui_devtools

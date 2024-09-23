@@ -61,7 +61,7 @@ bool JobDelegate::ShouldYield() {
 }
 
 void JobDelegate::YieldIfNeeded() {
-  // TODO(crbug.com/839091): Implement this.
+  // TODO(crbug.com/40574605): Implement this.
 }
 
 void JobDelegate::NotifyConcurrencyIncrease() {

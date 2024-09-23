@@ -1,0 +1,156 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("idle_timeout_policy_scene_agent") {
+  sources = [
+    "idle_timeout_policy_scene_agent.h",
+    "idle_timeout_policy_scene_agent.mm",
+  ]
+
+  deps = [
+    ":constants",
+    ":idle_timeout_policy_ui",
+    "//base",
+    "//components/enterprise/idle",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/enterprise/model/idle",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/scoped_ui_blocker",
+    "//ios/third_party/material_components_ios",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("idle_timeout_policy_ui") {
+  sources = [
+    "idle_timeout_cofirmation_presenter.h",
+    "idle_timeout_confirmation_consumer.h",
+    "idle_timeout_confirmation_coordinator.h",
+    "idle_timeout_confirmation_coordinator.mm",
+    "idle_timeout_confirmation_coordinator_delegate.h",
+    "idle_timeout_confirmation_mediator.h",
+    "idle_timeout_confirmation_mediator.mm",
+    "idle_timeout_confirmation_view_controller.h",
+    "idle_timeout_confirmation_view_controller.mm",
+    "idle_timeout_launch_screen_view_controller.h",
+    "idle_timeout_launch_screen_view_controller.mm",
+    "idle_timeout_policy_utils.h",
+    "idle_timeout_policy_utils.mm",
+  ]
+
+  deps = [
+    ":constants",
+    "//base",
+    "//components/enterprise/idle",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//ios/chrome/app:launch_screen_ui",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/enterprise/model/idle",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy/model/resources",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements:activity_overlay",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/signin",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ui/base",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "idle_timeout_confirmation_mediator_unittest.mm",
+    "idle_timeout_policy_scene_agent_unittest.mm",
+    "idle_timeout_policy_utils_unittest.mm",
+  ]
+
+  deps = [
+    ":idle_timeout_policy_scene_agent",
+    ":idle_timeout_policy_ui",
+    "//base/test:test_support",
+    "//components/enterprise/idle",
+    "//components/prefs",
+    "//ios/chrome/app:app_internal",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/app/application_delegate:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/enterprise/model/idle",
+    "//ios/chrome/browser/policy/ui_bundled/idle:idle_timeout_policy_scene_agent",
+    "//ios/chrome/browser/shared/coordinator/scene",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/ui/whats_new:constants",
+    "//ios/chrome/browser/ui/whats_new:util",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "idle_timeout_policy_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base/test:test_support",
+    "//components/enterprise/idle",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common:common_constants",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/policy/model:eg_test_support+eg2",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

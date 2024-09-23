@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -145,20 +147,21 @@ void SetResponseContent(const GURL& url,
     base::FilePath path(GetTestFilePath("browsing_data", value->c_str()));
     base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
     EXPECT_TRUE(file.IsValid());
+
     int64_t length = file.GetLength();
     EXPECT_GE(length, 0);
-    std::unique_ptr<char[]> buffer(new char[length + 1]);
-    file.Read(0, buffer.get(), length);
-    buffer[length] = '\0';
+
+    auto buffer = base::HeapArray<uint8_t>::WithSize(length);
+    file.Read(0, buffer);
 
     if (path.Extension() == FILE_PATH_LITERAL(".js"))
       response->set_content_type("application/javascript");
     else if (path.Extension() == FILE_PATH_LITERAL(".html"))
       response->set_content_type("text/html");
     else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 
-    response->set_content(buffer.get());
+    response->set_content(base::as_string_view(buffer));
   }
 }
 

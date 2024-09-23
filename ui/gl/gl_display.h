@@ -5,18 +5,14 @@
 #ifndef UI_GL_GL_DISPLAY_H_
 #define UI_GL_GL_DISPLAY_H_
 
+#include <EGL/egl.h>
 #include <stdint.h>
 
 #include <memory>
 #include <vector>
 
 #include "ui/gl/gl_export.h"
-
-#if defined(USE_EGL)
-#include <EGL/egl.h>
-
 #include "ui/gl/gpu_switching_manager.h"
-#endif  // defined(USE_EGL)
 
 #if BUILDFLAG(IS_APPLE)
 #if __OBJC__
@@ -107,7 +103,7 @@ class GL_EXPORT GLDisplay {
   DisplayPlatform type_ = NONE;
 };
 
-#if defined(USE_EGL)
+// TODO(344606399): Consider merging GLDisplayEGL into GLDisplay.
 class GL_EXPORT GLDisplayEGL : public GLDisplay {
  public:
   GLDisplayEGL(const GLDisplayEGL&) = delete;
@@ -116,6 +112,8 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
   ~GLDisplayEGL() override;
 
   static GLDisplayEGL* GetDisplayForCurrentContext();
+
+  static void EnableANGLEDebugLayer();
 
   EGLDisplay GetDisplay() const override;
   void Shutdown() override;
@@ -140,7 +138,6 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
   std::unique_ptr<DisplayExtensionsEGL> ext;
 
 #if BUILDFLAG(IS_APPLE)
-  bool IsANGLEMetalSharedEventSyncSupported();
 #if __OBJC__
   bool CreateMetalSharedEvent(id<MTLSharedEvent>* shared_event_out,
                               uint64_t* signal_value_out);
@@ -194,7 +191,6 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
   std::unique_ptr<ObjCStorage> objc_storage_;
 #endif
 };
-#endif  // defined(USE_EGL)
 
 }  // namespace gl
 

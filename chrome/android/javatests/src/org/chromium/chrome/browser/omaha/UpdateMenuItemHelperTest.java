@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -32,7 +33,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -109,7 +109,7 @@ public class UpdateMenuItemHelperTest {
     @Before
     public void setUp() {
         // This test explicitly tests for the menu item, so turn it on.
-        VersionNumberGetter.setEnableUpdateDetection(true);
+        VersionNumberGetter.setEnableUpdateDetectionForTesting(true);
     }
 
     /**
@@ -247,7 +247,7 @@ public class UpdateMenuItemHelperTest {
         ActivityResult intentResult = new ActivityResult(Activity.RESULT_OK, null);
         Intents.intending(IntentMatchers.hasData(TEST_MARKET_URL)).respondWith(intentResult);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         AppMenuTestSupport.callOnItemClick(
                                 mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
@@ -273,7 +273,7 @@ public class UpdateMenuItemHelperTest {
 
     private void showAppMenuAndAssertMenuShown() throws TimeoutException {
         int currentCallCount = mMenuObserver.menuShownCallback.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppMenuTestSupport.showAppMenu(
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
@@ -284,7 +284,7 @@ public class UpdateMenuItemHelperTest {
     private void hideAppMenuAndAssertMenuShown() throws TimeoutException {
         int currentCallCount = mMenuObserver.menuHiddenCallback.getCallCount();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler().hideAppMenu());
 
         mMenuObserver.menuHiddenCallback.waitForCallback(currentCallCount);

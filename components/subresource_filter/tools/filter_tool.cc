@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/values.h"
@@ -165,7 +166,7 @@ void FilterTool::MatchBatchImpl(std::istream* request_stream,
     std::optional<base::Value> dictionary = base::JSONReader::Read(line);
     CHECK(dictionary);
 
-    DCHECK(dictionary->is_dict());
+    CHECK(dictionary->is_dict());
     const std::string& origin =
         ExtractStringFromDictionary(dictionary->GetDict(), "origin");
     const std::string& request_url =

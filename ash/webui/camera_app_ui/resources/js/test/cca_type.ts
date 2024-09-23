@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ExpertOption} from '../expert.js';
-import {StateUnion} from '../state.js';
+import {State, StateUnion} from '../state.js';
 import {ViewName} from '../type.js';
 
 export const SELECTOR_MAP = {
@@ -42,9 +42,6 @@ export const SELECTOR_MAP = {
   expertCustomVideoParametersOption: '#custom-video-parameters',
   expertModeButton: '#settings-expert',
   expertModeOption: '#expert-enable-expert-mode',
-  expertMultiStreamRecordingOption: '#expert-enable-multistream-recording',
-  expertMultiStreamRecordingChromeOption:
-      '#expert-enable-multistream-recording-chrome',
   expertSaveMetadataOption: '#expert-save-metadata',
   expertShowMetadataOption: '#expert-show-metadata',
   feedbackButton: '#settings-feedback',
@@ -80,6 +77,7 @@ export const SELECTOR_MAP = {
   photoResolutionSettingButton: '#settings-photo-resolution',
   // TODO(kamchonlathorn): Remove this once its usage in Tast is removed.
   previewExposureTime: '#preview-exposure-time',
+  previewOcrOption: '#settings-preview-ocr',
   previewResolution: '#preview-resolution',
   previewVideo: '#preview-video',
   previewViewport: '#preview-viewport',
@@ -105,6 +103,7 @@ export const SELECTOR_MAP = {
   videoProfileSelect: '#video-profile',
   videoResolutionSettingButton: '#settings-video-resolution',
   videoSnapshotButton: '#video-snapshot',
+  warningMessage: '#view-warning',
   zoomInButton: '#zoom-in',
   zoomOutButton: '#zoom-out',
 } as const;
@@ -119,14 +118,6 @@ export const SETTING_OPTION_MAP = {
     component: 'expertModeOption',
     state: ExpertOption.EXPERT,
   },
-  multiStreamRecordingOption: {
-    component: 'expertMultiStreamRecordingOption',
-    state: ExpertOption.ENABLE_MULTISTREAM_RECORDING,
-  },
-  multiStreamRecordingChromeOption: {
-    component: 'expertMultiStreamRecordingChromeOption',
-    state: ExpertOption.ENABLE_MULTISTREAM_RECORDING_CHROME,
-  },
   saveMetadataOption: {
     component: 'expertSaveMetadataOption',
     state: ExpertOption.SAVE_METADATA,
@@ -134,6 +125,10 @@ export const SETTING_OPTION_MAP = {
   showMetadataOption: {
     component: 'expertShowMetadataOption',
     state: ExpertOption.SHOW_METADATA,
+  },
+  previewOcrOption: {
+    component: 'previewOcrOption',
+    state: State.ENABLE_PREVIEW_OCR,
   },
 } satisfies Record<string, {component: UIComponent, state: StateUnion}>;
 export type SettingOption = keyof typeof SETTING_OPTION_MAP;

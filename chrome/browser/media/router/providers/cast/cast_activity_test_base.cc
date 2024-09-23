@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -38,13 +37,13 @@ namespace media_router {
 
 MockCastSessionClient::MockCastSessionClient(const std::string& client_id,
                                              const url::Origin& origin,
-                                             int tab_id)
+                                             content::FrameTreeNodeId tab_id)
     : CastSessionClient(client_id, origin, tab_id) {
   instances_.push_back(this);
 }
 
 MockCastSessionClient::~MockCastSessionClient() {
-  base::Erase(instances_, this);
+  std::erase(instances_, this);
 }
 
 std::vector<MockCastSessionClient*> MockCastSessionClient::instances_;
@@ -109,7 +108,7 @@ void CastActivityTestBase::RunUntilIdle() {
 std::unique_ptr<CastSessionClient> CastActivityTestBase::MakeClientForTest(
     const std::string& client_id,
     const url::Origin& origin,
-    int tab_id) {
+    content::FrameTreeNodeId tab_id) {
   return std::make_unique<NiceMock<MockCastSessionClient>>(client_id, origin,
                                                            tab_id);
 }
@@ -117,7 +116,7 @@ std::unique_ptr<CastSessionClient> CastActivityTestBase::MakeClientForTest(
 MockCastSessionClient* CastActivityTestBase::AddMockClient(
     CastActivity* activity,
     const std::string& client_id,
-    int tab_id) {
+    content::FrameTreeNodeId tab_id) {
   CastMediaSource source("dummySourceId", std::vector<CastAppInfo>());
   source.set_client_id(client_id);
   activity->AddClient(source, url::Origin(), tab_id);

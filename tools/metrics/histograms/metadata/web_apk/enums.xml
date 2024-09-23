@@ -26,11 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BooleanWebApkNotificationPermission">
-  <int value="0" label="WebAPK notification permission disabled"/>
-  <int value="1" label="WebAPK notification permission enabled"/>
-</enum>
-
 <enum name="PwaInstallPath">
   <summary>The path taken by the user to reach install point for PWAs.</summary>
   <int value="0" label="Unknown metric (error case)"/>
@@ -54,6 +49,26 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Invalid"/>
   <int value="1" label="Don't show"/>
   <int value="2" label="Show install prompt"/>
+</enum>
+
+<enum name="UniversalInstallDialogActions">
+  <int value="0" label="Dialog shown"/>
+  <int value="1" label="Install app"/>
+  <int value="2" label="Open existing app"/>
+  <int value="3" label="Create shortcut (regular)"/>
+  <int value="4" label="Create shortcut (to app)"/>
+  <int value="5" label="Dialog shown after timeout"/>
+  <int value="6" label="Dialog cancelled (Back)"/>
+  <int value="7" label="Redirect to shortcut creation"/>
+  <int value="8" label="Redirect to install crafted app"/>
+  <int value="9" label="Redirect to install homebrew app"/>
+</enum>
+
+<enum name="WebApkAppType">
+  <int value="0" label="Native"/>
+  <int value="1" label="WebApk"/>
+  <int value="2" label="Shortcut"/>
+  <int value="3" label="WebApk (homebrew)"/>
 </enum>
 
 <enum name="WebApkGooglePlayInstallResult">
@@ -118,6 +133,8 @@ chromium-metrics-reviews@google.com.
   <int value="5200" label="ERROR_DOWNLOAD_FAILED"/>
 </enum>
 
+<!-- LINT.IfChange(WebApkInstallResult) -->
+
 <enum name="WebApkInstallResult">
   <int value="0" label="Success"/>
   <int value="1" label="Play install failed"/>
@@ -129,12 +146,27 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Request invalid"/>
   <int value="8" label="Not enough space"/>
   <int value="9" label="Download icon and hash error"/>
+  <int value="11" label="Install already in progress"/>
 </enum>
 
-<enum name="WebApkUpdateRequestQueued">
-  <int value="0" label="Queued for the first time"/>
-  <int value="1" label="Queued for the second time"/>
-  <int value="2" label="Queued for the third time"/>
+<!-- LINT.ThenChange(/components/webapps/browser/android/webapk/webapk_types.h:WebApkInstallResult) -->
+
+<!-- LINT.IfChange(WebApkRestoreFallbackReason) -->
+
+<enum name="WebApkRestoreFallbackReason">
+  <int value="0" label="Installing fetched WebAPK (not fallback)"/>
+  <int value="1" label="Failed to load URL"/>
+  <int value="2" label="Manifest ID mismatch"/>
+  <int value="3" label="Fetch result is not WebAPK Compatible"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/android/webapk/webapk_restore_task.h:WebApkRestoreFallbackReason) -->
+
+<enum name="WebApkSyncAddOrModifyType">
+  <int value="0" label="New install on device, and new addition to Sync"/>
+  <int value="1" label="New install on device, and modification to Sync"/>
+  <int value="2" label="Launch on device, and new addition to Sync"/>
+  <int value="3" label="Launch on device, and modification to Sync"/>
 </enum>
 
 <enum name="WebApkUpdateRequestSent">

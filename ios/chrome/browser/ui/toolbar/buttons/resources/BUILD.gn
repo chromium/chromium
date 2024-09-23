@@ -2,18 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/asset_catalog.gni")
+import("//build/config/ios/rules.gni")
 
-colorset("omnibox_incognito_background_color") {
-  sources = [ "omnibox_incognito_background_color.colorset/Contents.json" ]
-}
-
-colorset("tab_toolbar_button_color_highlighted") {
-  sources = [ "tab_toolbar_button_color_highlighted.colorset/Contents.json" ]
-}
-
-colorset("tab_toolbar_button_color_highlighted_incognito") {
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
   sources = [
-    "tab_toolbar_button_color_highlighted_incognito.colorset/Contents.json",
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/omnibox_incognito_background_color.colorset/Contents.json",
+    "Assets.xcassets/tab_toolbar_button_color_highlighted.colorset/Contents.json",
+    "Assets.xcassets/tab_toolbar_button_color_highlighted_incognito.colorset/Contents.json",
   ]
 }

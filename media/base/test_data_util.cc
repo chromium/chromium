@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/test_data_util.h"
 
 #include <stdint.h>
@@ -13,7 +18,6 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
-#include "media/base/decoder_buffer.h"
 
 namespace media {
 
@@ -181,7 +185,11 @@ const char kErrorTitle[] = "error";
 const base::FilePath::CharType kTestDataPath[] =
     FILE_PATH_LITERAL("media/test/data");
 
-base::FilePath GetTestDataFilePath(const std::string& name) {
+const base::span<const uint8_t> ExternalMemoryAdapterForTesting::Span() const {
+  return span_;
+}
+
+base::FilePath GetTestDataFilePath(std::string_view name) {
   base::FilePath file_path;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path));
   return file_path.Append(GetTestDataPath()).AppendASCII(name);
@@ -191,7 +199,7 @@ base::FilePath GetTestDataPath() {
   return base::FilePath(kTestDataPath);
 }
 
-std::string GetMimeTypeForFile(const std::string& file_name) {
+std::string GetMimeTypeForFile(std::string_view file_name) {
   const auto& map = GetFileToMimeTypeMap();
   auto itr = map.find(file_name);
   CHECK(itr != map.end()) << ": file_name = " << file_name;
@@ -209,7 +217,7 @@ std::string GetURLQueryString(const base::StringPairs& query_params) {
   return query;
 }
 
-scoped_refptr<DecoderBuffer> ReadTestDataFile(const std::string& name) {
+scoped_refptr<DecoderBuffer> ReadTestDataFile(std::string_view name) {
   base::FilePath file_path = GetTestDataFilePath(name);
 
   int64_t tmp = 0;
@@ -226,7 +234,7 @@ scoped_refptr<DecoderBuffer> ReadTestDataFile(const std::string& name) {
   return buffer;
 }
 
-scoped_refptr<DecoderBuffer> ReadTestDataFile(const std::string& name,
+scoped_refptr<DecoderBuffer> ReadTestDataFile(std::string_view name,
                                               base::TimeDelta pts) {
   auto buffer = ReadTestDataFile(name);
   buffer->set_timestamp(pts);
@@ -250,7 +258,7 @@ bool LookupTestKeyVector(const std::vector<uint8_t>& key_id,
   return false;
 }
 
-bool LookupTestKeyString(const std::string& key_id,
+bool LookupTestKeyString(std::string_view key_id,
                          bool allow_rotation,
                          std::string* key) {
   std::vector<uint8_t> key_vector;

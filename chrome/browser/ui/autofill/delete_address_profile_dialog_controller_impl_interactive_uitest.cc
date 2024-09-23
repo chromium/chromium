@@ -17,12 +17,11 @@
 #include "ui/views/window/dialog_client_view.h"
 
 namespace autofill {
-
 namespace {
+
 constexpr char kSuppressedScreenshotError[] =
     "Screenshot can only run in pixel_tests on Windows.";
 constexpr char kTestEmail[] = "test@example.com";
-}  // namespace
 
 class DeleteAddressProfileDialogControllerImplTest
     : public InteractiveBrowserTest {
@@ -133,7 +132,8 @@ IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),
           Screenshot(views::DialogClientView::kTopViewId,
-                     "local_address_profile", "4905025"))));
+                     /*screenshot_name=*/"local_address_profile",
+                     /*baseline_cl=*/"4905025"))));
 }
 
 IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
@@ -147,7 +147,8 @@ IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),
           Screenshot(views::DialogClientView::kTopViewId,
-                     "sync_address_profile", "4905025"))));
+                     /*screenshot_name=*/"sync_address_profile",
+                     /*baseline_cl=*/"4905025"))));
 }
 
 IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
@@ -162,19 +163,19 @@ IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),
           Screenshot(views::DialogClientView::kTopViewId,
-                     "account_address_profile", "4905025"))));
+                     /*screenshot_name=*/"account_address_profile",
+                     /*baseline_cl=*/"4905025"))));
 }
 
 IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
                        DialogAccepted) {
-  RunTestSequence(
-      ConfigureAddressSync(/*enable_address_sync=*/false),
-      ShowDialog(/*is_account_address_profile=*/false),
-      InAnyContext(Steps(
-          WaitForShow(views::DialogClientView::kTopViewId),
-          PressButton(views::DialogClientView::kOkButtonElementId),
-          WaitForHide(views::DialogClientView::kTopViewId), FlushEvents())),
-      EnsureClosedWithUserDecision(/*user_accepted_delete=*/true));
+  RunTestSequence(ConfigureAddressSync(/*enable_address_sync=*/false),
+                  ShowDialog(/*is_account_address_profile=*/false),
+                  InAnyContext(Steps(
+                      WaitForShow(views::DialogClientView::kTopViewId),
+                      PressButton(views::DialogClientView::kOkButtonElementId),
+                      WaitForHide(views::DialogClientView::kTopViewId))),
+                  EnsureClosedWithUserDecision(/*user_accepted_delete=*/true));
 }
 
 IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
@@ -182,11 +183,12 @@ IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplTest,
   RunTestSequence(
       ConfigureAddressSync(/*enable_address_sync=*/false),
       ShowDialog(/*is_account_address_profile=*/false),
-      InAnyContext(Steps(
-          WaitForShow(views::DialogClientView::kTopViewId),
-          PressButton(views::DialogClientView::kCancelButtonElementId),
-          WaitForHide(views::DialogClientView::kTopViewId), FlushEvents())),
+      InAnyContext(
+          Steps(WaitForShow(views::DialogClientView::kTopViewId),
+                PressButton(views::DialogClientView::kCancelButtonElementId),
+                WaitForHide(views::DialogClientView::kTopViewId))),
       EnsureClosedWithUserDecision(/*user_accepted_delete=*/false));
 }
 
+}  // namespace
 }  // namespace autofill

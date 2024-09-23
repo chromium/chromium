@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
+#include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
@@ -64,7 +65,7 @@ void V8ObjectConstructor::IsValidConstructorMode(
     V8ThrowException::ThrowTypeError(info.GetIsolate(), "Illegal constructor");
     return;
   }
-  V8SetReturnValue(info, info.Holder());
+  bindings::V8SetReturnValue(info, info.This());
 }
 
 v8::Local<v8::Function> V8ObjectConstructor::CreateInterfaceObject(
@@ -80,7 +81,7 @@ v8::Local<v8::Function> V8ObjectConstructor::CreateInterfaceObject(
   v8::Local<v8::Function> interface_object;
   bool get_interface_object =
       interface_template->GetFunction(context).ToLocal(&interface_object);
-  if (UNLIKELY(!get_interface_object)) {
+  if (!get_interface_object) [[unlikely]] {
     // For investigation of crbug.com/1247628
     static crash_reporter::CrashKeyString<64> crash_key(
         "blink__create_interface_object");

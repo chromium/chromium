@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PAINT_PREVIEW_SERVICES_PAINT_PREVIEW_TAB_SERVICE_FILE_MIXIN_H_
 #define CHROME_BROWSER_PAINT_PREVIEW_SERVICES_PAINT_PREVIEW_TAB_SERVICE_FILE_MIXIN_H_
 
+#include <string_view>
+
 #include "components/paint_preview/browser/paint_preview_file_mixin.h"
 
 namespace paint_preview {
@@ -12,7 +14,7 @@ namespace paint_preview {
 class PaintPreviewTabServiceFileMixin : public PaintPreviewFileMixin {
  public:
   PaintPreviewTabServiceFileMixin(const base::FilePath& profile_dir,
-                                  base::StringPiece ascii_feature_name);
+                                  std::string_view ascii_feature_name);
   PaintPreviewTabServiceFileMixin(const PaintPreviewTabServiceFileMixin&) =
       delete;
   PaintPreviewTabServiceFileMixin& operator=(

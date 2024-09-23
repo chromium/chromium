@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
@@ -20,6 +21,7 @@
 using content::WebContents;
 
 class TabStripModelStatsRecorderTest : public ChromeRenderViewHostTestHarness {
+  tabs::PreventTabFeatureInitialization prevent_;
 };
 
 TEST_F(TabStripModelStatsRecorderTest,

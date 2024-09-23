@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Xóa</translation>
 <translation id="1192844206376121885">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie do <ph name="ORIGIN" /> lưu trữ.</translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
+<translation id="1240190568154816272">Mẹo dùng Chrome</translation>
 <translation id="1242008676835033345">Được nhúng trên <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Dừng</translation>
 <translation id="1289742167380433257">Google đã tối ưu hóa các hình ảnh trong trang này để tiết kiệm dữ liệu cho bạn.</translation>
@@ -21,17 +22,16 @@
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1384959399684842514">Đã tạm dừng quá trình tải xuống</translation>
 <translation id="1415402041810619267">URL đã được cắt bớt</translation>
-<translation id="1434873037477293673">thẻ thông báo giảm giá</translation>
 <translation id="1448064542941920355">Giảm mức thu phóng</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> trang web}other{<ph name="SITE_COUNT" /> trang web}}</translation>
+<translation id="1500473259453106018">Ẩn thẻ thông báo giảm giá trên thẻ</translation>
 <translation id="1510341833810331442">Các trang web không được phép lưu dữ liệu trên thiết bị của bạn</translation>
 <translation id="1547123415014299762">Cho phép sử dụng cookie của bên thứ ba</translation>
 <translation id="1568470248891039841">Các trang web bạn truy cập có thể nhúng nội dung từ các trang web khác, chẳng hạn như hình ảnh, quảng cáo và văn bản. Các trang web khác này có thể yêu cầu quyền sử dụng thông tin mà họ đã lưu về bạn khi bạn duyệt xem trang web. <ph name="BEGIN_LINK" />Tìm hiểu thêm về nội dung được nhúng<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Có các thao tác mới ở gần đầu màn hình</translation>
-<translation id="1620510694547887537">Máy ảnh</translation>
+<translation id="1620510694547887537">Camera</translation>
 <translation id="1633720957382884102">Các trang web liên quan</translation>
 <translation id="1644574205037202324">Nhật ký</translation>
-<translation id="1647582022260550163">Bạn có chắc chắn muốn đặt lại quyền, xóa cookie và dữ liệu trang web không?</translation>
 <translation id="1652197001188145583">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị NFC. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị NFC.</translation>
 <translation id="1660204651932907780">Cho phép các trang web phát âm thanh (được đề xuất)</translation>
 <translation id="1677097821151855053">Cookie và dữ liệu trang web khác được dùng để ghi nhớ thông tin của bạn, chẳng hạn như giúp bạn đăng nhập hoặc cá nhân hóa quảng cáo. Để quản lý cookie cho tất cả trang web, hãy xem phần <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" />.</translation>
@@ -40,6 +40,7 @@
 <translation id="1743802530341753419">Hỏi trước khi cho phép trang web kết nối với một thiết bị (khuyên dùng)</translation>
 <translation id="1779089405699405702">Bộ giải mã hình ảnh</translation>
 <translation id="1785415724048343560">Nên chọn để có trải nghiệm tốt nhất</translation>
+<translation id="1799920918471566157">Mẹo khi dùng Chrome</translation>
 <translation id="1818308510395330587">Để cho phép <ph name="APP_NAME" /> sử dụng công nghệ thực tế tăng cường (AR), hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Đã tắt quyền truy cập vị trí đối với thiết bị này. Hãy bật trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Kết thúc</translation>
@@ -69,7 +70,6 @@
 <translation id="2241587408274973373">Thẻ trên trang Thẻ mới</translation>
 <translation id="2241634353105152135">Chỉ một lần</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Xoá</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Đã chặn 1 trang web}other{Đã chặn # trang web}}</translation>
 <translation id="228293613124499805">Hầu hết trang web bạn truy cập có thể sẽ lưu dữ liệu vào thiết bị, thường là để cải thiện trải nghiệm của bạn bằng cách lưu các lựa chọn ưu tiên hoặc thông tin mà bạn chia sẻ với trang web. Chúng tôi khuyên bạn luôn bật chế độ cài đặt này.</translation>
 <translation id="2289270750774289114">Hỏi khi một trang web muốn tìm các thiết bị Bluetooth ở gần (khuyên dùng)</translation>
 <translation id="2315043854645842844">Lựa chọn chứng chỉ phía ứng dụng khách không được hệ điều hành hỗ trợ.</translation>
@@ -93,10 +93,10 @@
 <translation id="2498359688066513246">Trợ giúp và phản hồi</translation>
 <translation id="2501278716633472235">Quay lại</translation>
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Đã chặn 1 cookie}other{Đã chặn # cookie}}</translation>
 <translation id="2570922361219980984">Quyền truy cập vị trí cũng đã bị tắt đối với thiết bị này. Hãy bật trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Đã mở rộng - nhấp để thu gọn.</translation>
 <translation id="2586657967955657006">Bảng nhớ tạm</translation>
+<translation id="2588271083332682494">Sắp xếp gọn gàng nhờ các nhóm thẻ</translation>
 <translation id="2597457036804169544">Không áp dụng giao diện tối cho các trang web</translation>
 <translation id="2606760465469169465">Tự động xác minh</translation>
 <translation id="2621115761605608342">Cho phép JavaScript cho trang web cụ thể.</translation>
@@ -106,7 +106,7 @@
 <translation id="2683434792633810741">Xoá và đặt lại?</translation>
 <translation id="2713106313042589954">Tắt máy ảnh</translation>
 <translation id="2717722538473713889">Địa chỉ email</translation>
-<translation id="2750481671343847896">Các trang web có thể đưa ra lời nhắc đăng nhập từ các dịch vụ nhận dạng.</translation>
+<translation id="2750481671343847896">Các trang web có thể đưa ra lời nhắc đăng nhập qua các dịch vụ định danh.</translation>
 <translation id="2790501146643349491">Khi bạn bật tuỳ chọn này, các trang web đã đóng gần đây có thể hoàn tất quá trình gửi và nhận dữ liệu. Khi bạn tắt tuỳ chọn này, các trang web đã đóng gần đây không thể hoàn tất quá trình gửi hoặc nhận dữ liệu.</translation>
 <translation id="2822354292072154809">Bạn có chắc muốn đặt lại tất cả các quyền của trang web cho <ph name="CHOSEN_OBJECT_NAME" /> không?</translation>
 <translation id="2850913818900871965">Yêu cầu chế độ xem trên thiết bị di động</translation>
@@ -115,15 +115,14 @@
 <translation id="2891975107962658722">Không cho phép một trang web lưu dữ liệu trên thiết bị của bạn</translation>
 <translation id="2903493209154104877">Địa chỉ</translation>
 <translation id="2910701580606108292">Hỏi trước khi cho phép trang web phát nội dung được bảo vệ</translation>
+<translation id="2918484639460781603">Chuyển đến phần cài đặt</translation>
 <translation id="2932883381142163287">Báo cáo lạm dụng</translation>
 <translation id="2939338015096024043">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu theo dõi vị trí camera và tìm hiểu về môi trường xung quanh bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể theo dõi vị trí camera hoặc tìm hiểu về môi trường xung quanh bạn.</translation>
 <translation id="2968755619301702150">Trình xem chứng chỉ</translation>
 <translation id="2979365474350987274">Cookie của bên thứ ba bị hạn chế</translation>
 <translation id="3008272652534848354">Đặt lại quyền</translation>
 <translation id="301521992641321250">Tự động bị chặn</translation>
-<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Cho phép đăng nhập qua bên thứ ba cho một trang web cụ thể.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Hết hạn ngày mai}other{Hết hạn sau # ngày nữa}}</translation>
 <translation id="310297983047869047">Trang trình bày trước</translation>
 <translation id="3109724472072898302">Đã thu gọn</translation>
 <translation id="3114012059975132928">Trình phát video</translation>
@@ -135,7 +134,9 @@
 <translation id="3198916472715691905">Dữ liệu đã lưu trữ: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Để cho phép <ph name="APP_NAME" /> gửi thông báo cho bạn, hãy bật cả thông báo trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micrô</translation>
+<translation id="3232293466644486101">Xoá dữ liệu duyệt web…</translation>
 <translation id="3242646949159196181">Khi bạn bật tuỳ chọn này, các trang web có thể phát âm thanh. Khi bạn tắt tuỳ chọn này, các trang web không thể phát âm thanh.</translation>
+<translation id="3273479183583863618">Thông báo giảm giá trên thẻ</translation>
 <translation id="3277252321222022663">Cho phép các trang web sử dụng cảm biến của thiết bị (nên dùng)</translation>
 <translation id="3285500645985761267">Cho phép các trang web liên quan xem hoạt động của bạn trong nhóm</translation>
 <translation id="3295019059349372795">Chương 11: Thành phố ngọc lục bảo của xứ Oz</translation>
@@ -149,6 +150,7 @@
 <translation id="3448554387819310837">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng camera. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng camera.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome sẽ chặn cookie trở lại vào ngày mai}other{Chrome sẽ chặn cookie trở lại sau # ngày nữa}}</translation>
 <translation id="3521663503435878242">Các trang web thuộc miền <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Không cho phép trang web theo dõi tay bạn</translation>
 <translation id="3536227077203206203">Đã cho phép sử dụng cho lần này</translation>
 <translation id="3538390592868664640">Chặn không cho trang web tạo bản đồ 3D về các khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của máy ảnh</translation>
 <translation id="3544058026430919413">Một công ty có thể xác định nhóm các trang web được sử dụng cookie để chia sẻ hoạt động của bạn trong nhóm. Tính năng này bị tắt trong chế độ Ẩn danh.</translation>
@@ -159,11 +161,13 @@
 <translation id="3600792891314830896">Tắt tiếng trên các trang web phát âm thanh</translation>
 <translation id="3602290021589620013">Xem trước</translation>
 <translation id="3628308229821498208">Cụm từ tìm kiếm đề xuất</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="RWS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}other{<ph name="RWS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="RWS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}}</translation>
 <translation id="3697164069658504920">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị USB. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị USB.</translation>
 <translation id="3707034683772193706">Trang web bạn truy cập có thể lưu một lượng nhỏ thông tin với Chrome, chủ yếu để xác thực rằng bạn không phải là bot</translation>
 <translation id="3721953990244350188">Đóng và hiện thao tác có sẵn tiếp theo</translation>
 <translation id="3744111561329211289">Đồng bộ hoá trong nền</translation>
 <translation id="3763247130972274048">Nhấn đúp vào bên trái hoặc bên phải của video để tua lại/tua đi 10 giây</translation>
+<translation id="3779154269823594982">Đổi mật khẩu</translation>
 <translation id="3797520601150691162">Không áp dụng giao diện tối cho một trang web cụ thể</translation>
 <translation id="3803367742635802571">Các trang web bạn truy cập có thể không còn hoạt động như dự kiến</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -174,8 +178,11 @@
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="3859306556332390985">Tìm kiếm tiến</translation>
 <translation id="3895926599014793903">Buộc bật thu phóng</translation>
+<translation id="3905475044299942653">Ngừng nhận nhiều thông báo</translation>
 <translation id="3908288065506437185">Chặn cookie của bên thứ ba ở Chế độ ẩn danh</translation>
+<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Một số tính năng có thể không hoạt động. Các trang web có liên quan vẫn có thể sử dụng cookie của bên thứ ba.</translation>
+<translation id="3933121352599513978">Thu gọn các yêu cầu không mong muốn (nên dùng)</translation>
 <translation id="3955193568934677022">Cho phép trang web phát nội dung được bảo vệ (được đề xuất)</translation>
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
 <translation id="3974105241379491420">Các trang web có thể yêu cầu bạn cho phép sử dụng thông tin mà họ đã lưu về bạn</translation>
@@ -187,17 +194,16 @@
 <translation id="4149890623864272035">Bạn có chắc chắn muốn xoá toàn bộ dữ liệu cục bộ, kể cả cookie, và đặt lại mọi quyền cho trang web này không?</translation>
 <translation id="4149994727733219643">Chế độ xem đơn giản cho trang web</translation>
 <translation id="4151930093518524179">Thu phóng mặc định</translation>
-<translation id="4165986682804962316">Chế độ cài đặt trang web</translation>
-<translation id="4169019654293892025">Ẩn <ph name="TITLE_OF_MODULE" /></translation>
+<translation id="4165986682804962316">Cài đặt trang web</translation>
 <translation id="4169549551965910670">Đã kết nối với một thiết bị USB</translation>
 <translation id="4194328954146351878">Hỏi trước khi cho phép các trang web xem và thay đổi thông tin trên thiết bị NFC (nên chọn)</translation>
 <translation id="4200726100658658164">Mở phần Cài đặt vị trí</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> Từ <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">Thông báo có thể làm rung thiết bị</translation>
 <translation id="4259722352634471385">Điều hướng bị chặn: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Được cho phép</translation>
 <translation id="429312253194641664">Một trang web đang phát nội dung đa phương tiện</translation>
 <translation id="42981349822642051">Mở rộng</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Hết hạn ngày mai}other{Hết hạn sau # ngày nữa}}</translation>
 <translation id="4336566011000459927">Hôm nay, Chrome sẽ hạn chế cookie trở lại</translation>
 <translation id="4338831206024587507">Tất cả trang web thuộc <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Không cho các trang web biết khi bạn đang dùng thiết bị này</translation>
@@ -213,17 +219,21 @@
 <translation id="4566417217121906555">Tắt micrô</translation>
 <translation id="4570913071927164677">Chi tiết</translation>
 <translation id="4598549027014564149">Ở chế độ Ẩn danh, các trang web không thể dùng cookie để xem hoạt động duyệt web của bạn trên nhiều trang web, ngay cả các trang web có liên quan. Hoạt động duyệt web của bạn không được dùng cho các mục đích như cá nhân hoá quảng cáo. Các tính năng của một số trang web có thể không hoạt động.</translation>
+<translation id="4619615317237390068">Thẻ trên các thiết bị khác</translation>
 <translation id="4644713492825682049">Xoá và đặt lại</translation>
 <translation id="4645575059429386691">Do cha mẹ của bạn quản lý</translation>
 <translation id="4670064810192446073">Thực tế ảo</translation>
+<translation id="4676059169848868271">Để cho phép <ph name="APP_NAME" /> dùng tính năng theo dõi cử chỉ tay, hãy bật cả tính năng này trong phần <ph name="BEGIN_LINK" />cài đặt hệ thống<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Cảm biến chuyển động hoặc ánh sáng</translation>
 <translation id="4755971844837804407">Khi bạn bật tuỳ chọn này, các trang web có thể hiển thị bất kỳ quảng cáo nào cho bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu lầm.</translation>
 <translation id="4779083564647765204">Thu phóng</translation>
+<translation id="4807122856660838973">Bật tính năng Duyệt web an toàn</translation>
 <translation id="4811450222531576619">Tìm hiểu về nguồn và chủ đề của trang</translation>
 <translation id="4836046166855586901">Hỏi khi một trang web muốn biết khi bạn đang dùng thiết bị này</translation>
 <translation id="483914009762354899">Bao gồm tất cả trang web thuộc miền này</translation>
 <translation id="4883854917563148705">Bạn không thể đặt lại các tùy chọn cài đặt được quản lý</translation>
 <translation id="4887024562049524730">Hỏi ý bạn trước khi cho phép các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn (khuyên dùng)</translation>
+<translation id="4936863036653376783">Bạn sẽ thấy các nhóm trong mục nhóm thẻ trên tất cả các thiết bị của bạn</translation>
 <translation id="4953688446973710931">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu tự động tải nhiều tệp xuống. Khi bạn tắt tuỳ chọn này, các trang web không thể tự động tải nhiều tệp xuống.</translation>
 <translation id="4962975101802056554">Thu hồi tất cả các quyền đối với thiết bị</translation>
 <translation id="497421865427891073">Đi về phía trước</translation>
@@ -232,8 +242,11 @@
 <translation id="4994033804516042629">Không tìm thấy người liên hệ nào</translation>
 <translation id="4996978546172906250">Chia sẻ qua</translation>
 <translation id="5001526427543320409">Cookie của bên thứ ba</translation>
+<translation id="5007392906805964215">Xem</translation>
+<translation id="5014182796621173645">Bạn đã truy cập <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Cho phép</translation>
 <translation id="5048398596102334565">Cho phép trang web sử dụng cảm biến chuyển động (nên dùng)</translation>
+<translation id="5048841907079026162">Quản lý dữ liệu duyệt web của bạn</translation>
 <translation id="5050380848339752099">Trang web này sắp chia sẻ thông tin với một ứng dụng bên ngoài chế độ Ẩn danh.</translation>
 <translation id="5063480226653192405">Mức sử dụng</translation>
 <translation id="5091013926750941408">Trang web dành cho thiết bị di động</translation>
@@ -241,6 +254,7 @@
 <translation id="5091663350197390230">Khi bạn bật tuỳ chọn này, các trang web có thể dùng JavaScript. Khi bạn tắt tuỳ chọn này, các trang web không thể dùng JavaScript.</translation>
 <translation id="5099358668261120049">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie do <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính lưu trữ.</translation>
 <translation id="5100237604440890931">Đã thu gọn - nhấp để mở rộng.</translation>
+<translation id="5116239826668864748">Bạn có thể dùng Chrome bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác</translation>
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Ưu đãi giảm giá trên các thẻ đang mở}other{Ưu đãi giảm giá trên các thẻ đang mở}}</translation>
 <translation id="5186036860380548585">Tùy chọn này ở gần đầu màn hình</translation>
@@ -258,6 +272,7 @@
 <translation id="5335288049665977812">Cho phép các trang web chạy JavaScript (được đề xuất)</translation>
 <translation id="534295439873310000">Thiết bị dùng công nghệ NFC</translation>
 <translation id="5344522958567249764">Quản lý quyền riêng tư trong quảng cáo</translation>
+<translation id="5373874281522292782">Các nhóm thẻ của bạn sẽ được lưu</translation>
 <translation id="5389626883706033615">Các trang web không được yêu cầu bạn cho phép sử dụng thông tin mà họ đã lưu về bạn</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lựa chọn khác)}other{(+ # lựa chọn khác)}}</translation>
 <translation id="5403592356182871684">Tên</translation>
@@ -272,6 +287,7 @@
 <translation id="5553374991681107062">Mới nhất</translation>
 <translation id="5556459405103347317">Tải lại</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bị chặn</translation>
+<translation id="5632485077360054581">Chỉ cho tôi cách làm</translation>
 <translation id="5649053991847567735">Tự động tải xuống</translation>
 <translation id="5668404140385795438">Ghi đè yêu cầu của trang web để chặn phóng to</translation>
 <translation id="5677928146339483299">Bị chặn</translation>
@@ -282,15 +298,17 @@
 <translation id="5706552988683188916">Thao tác này sẽ xoá cookie và dữ liệu khác của trang web <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">Đã chặn các cookie bên thứ ba ở Chế độ ẩn danh</translation>
 <translation id="5740126560802162366">Các trang web có thể lưu dữ liệu trên thiết bị của bạn</translation>
+<translation id="5750869797196646528">Theo dõi cử chỉ tay</translation>
 <translation id="5771720122942595109">Đã chặn: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5844448279347999754">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu xem văn bản và hình ảnh đã lưu vào bảng nhớ tạm. Khi bạn tắt tuỳ chọn này, các trang web không thể xem văn bản hoặc hình ảnh đã lưu vào bảng nhớ tạm.</translation>
 <translation id="5853982612236235577">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu gửi thông báo. Khi bạn tắt tuỳ chọn này, các trang web không thể gửi thông báo.</translation>
 <translation id="5860033963881614850">Tắt</translation>
 <translation id="5876056640971328065">Tạm dừng video</translation>
+<translation id="5877248419911025165">Thu gọn tất cả yêu cầu</translation>
 <translation id="5884085660368669834">Lựa chọn ưu tiên cho trang web</translation>
 <translation id="5887687176710214216">Lần truy cập gần đây nhất: hôm qua</translation>
-<translation id="5916664084637901428">Bật</translation>
+<translation id="5916664084637901428">Đang bật</translation>
 <translation id="5922853908706496913">Đang chia sẻ màn hình của bạn</translation>
 <translation id="5922967540311291836">Chặn cookie của bên thứ ba:</translation>
 <translation id="5923512600150154850">Thao tác này sẽ xoá <ph name="DATASIZE" /> dữ liệu và cookie do các trang web lưu trữ.</translation>
@@ -305,6 +323,7 @@
 <translation id="6064125863973209585">Đã hoàn tất quá trình tải xuống</translation>
 <translation id="6071501408666570960">Bạn có thể bị đăng xuất khỏi trang web này</translation>
 <translation id="6120483543004435978">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu được biết khi nào bạn đang sử dụng thiết bị. Khi bạn tắt tuỳ chọn này, các trang web sẽ không được biết khi nào bạn đang sử dụng thiết bị.</translation>
+<translation id="6140839633433422817">Bạn có chắc chắn muốn đặt lại quyền và xoá cookie cùng dữ liệu trang web không?</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6171020522141473435">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị Bluetooth. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị Bluetooth.</translation>
 <translation id="6177111841848151710">Bị chặn đối với công cụ tìm kiếm hiện tại</translation>
@@ -338,27 +357,35 @@
 <translation id="6545864417968258051">Quét tìm Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Đã chặn <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{Đã chặn <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
 <translation id="6554732001434021288">Lần truy cập gần đây nhất: <ph name="NUM_DAYS" /> ngày trước</translation>
+<translation id="656065428026159829">Xem thêm</translation>
 <translation id="6561560012278703671">Dùng thông báo nhẹ nhàng hơn (chặn thông báo bật lên làm phiền bạn)</translation>
-<translation id="6593061639179217415">Trang web cho máy tính</translation>
+<translation id="6593061639179217415">Trang web dành cho máy tính</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Đã cho phép <ph name="RWS_MEMBERS_COUNT" /> trang web của <ph name="RWS_OWNER" /> sử dụng cookie}other{Đã cho phép <ph name="RWS_MEMBERS_COUNT" /> trang web của <ph name="RWS_OWNER" /> sử dụng cookie}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Nội dung được bảo vệ</translation>
 <translation id="662080504995468778">Ở lại</translation>
 <translation id="6653342741369270081">Nhấn nút quay lại để thoát khỏi chế độ toàn màn hình.</translation>
+<translation id="6683865262523156564">Trang web này nằm trong một nhóm có thể xem hoạt động của bạn. Nhóm này do <ph name="RWS_OWNER" /> xác định</translation>
 <translation id="6689172468748959065">Ảnh tiểu sử</translation>
 <translation id="6697925417670533197">Hiện đang tải xuống</translation>
-<translation id="6722828510648505498">Chặn lời nhắc đăng nhập từ các dịch vụ nhận dạng.</translation>
+<translation id="6709432001666529933">Hỏi trước khi cho phép các trang web theo dõi tay bạn (khuyên dùng)</translation>
+<translation id="6722828510648505498">Chặn lời nhắc đăng nhập qua dịch vụ định danh</translation>
 <translation id="6746124502594467657">Di chuyển xuống</translation>
 <translation id="6749077623962119521">Đặt lại quyền?</translation>
 <translation id="6766622839693428701">Vuốt xuống để đóng.</translation>
 <translation id="6787751205395685251">Chọn một lựa chọn cho <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6818926723028410516">Chọn mục</translation>
+<translation id="6838525730752203626">Sử dụng Chrome theo mặc định</translation>
+<translation id="6840760312327750441">Để nhóm các thẻ, hãy chạm và giữ một thẻ. Sau đó, kéo thẻ đó lên một thẻ khác.</translation>
 <translation id="6864395892908308021">Thiết bị này không hỗ trợ công nghệ Giao tiếp phạm vi gần (NFC)</translation>
-<translation id="6867014948848323204">Từ <ph name="FROM_DEVICE" /></translation>
+<translation id="6870169401250095575">Ẩn thẻ Kiểm tra an toàn</translation>
+<translation id="6900883974539674431">Tạo các nhóm thẻ tự động lưu và cập nhật trên mọi thiết bị của bạn</translation>
 <translation id="6912998170423641340">Chặn trang web đọc văn bản và hình ảnh từ bảng nhớ tạm</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6950072572526089586">Trang web bạn truy cập có thể lưu thông tin về những việc bạn đang làm để có thể vận hành như dự kiến, ví dụ: để duy trì trạng thái đăng nhập vào một trang web hoặc lưu các mặt hàng vào giỏ hàng. Thông thường, các trang web lưu thông tin này tạm thời trên thiết bị của bạn.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980861169612950611">Xoá dữ liệu trang web? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Hỗ trợ tiếp cận</translation>
 <translation id="6992289844737586249">Hỏi trước trước khi cho phép các trang web sử dụng micrô của bạn (được đề xuất)</translation>
 <translation id="7000754031042624318">Đã tắt trong phần Cài đặt Android</translation>
@@ -366,6 +393,7 @@
 <translation id="702275896380648118">Trang web này xác định sở thích của bạn, sau đó đề xuất quảng cáo mà các trang web khác nên hiển thị. Trang web này cũng thu thập thông tin về chủ đề quảng cáo bạn quan tâm qua Chrome để hiển thị cho bạn những quảng cáo phù hợp hơn.</translation>
 <translation id="7053983685419859001">Chặn</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Đã chọn 1 mục}other{Đã chọn # mục}}</translation>
+<translation id="708014373017851679">"<ph name="APP_NAME" />" đã lỗi thời. Vui lòng cập nhật ứng dụng.</translation>
 <translation id="7087918508125750058">Đã chọn <ph name="ITEM_COUNT" /> mục. Bạn có thể sử dụng các tùy chọn ở gần đầu màn hình</translation>
 <translation id="7141896414559753902">Chặn trang web hiển thị cửa sổ bật lên và liên kết chuyển hướng (khuyên dùng)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
@@ -385,6 +413,7 @@
 <translation id="7366415735885268578">Thêm trang web</translation>
 <translation id="7368695150573390554">Mọi dữ liệu ngoại tuyến sẽ bị xoá</translation>
 <translation id="7383715096023715447">Chế độ cài đặt cho <ph name="DOMAIN" /></translation>
+<translation id="7399802613464275309">Kiểm tra an toàn</translation>
 <translation id="7406113532070524618">Chế độ cài đặt này có hiệu lực mà không cần xác định danh tính của bạn hay cho phép các trang web xem nhật ký duyệt web của bạn mặc dù các trang web có thể chia sẻ một lượng thông tin nhỏ trong quá trình xác minh</translation>
 <translation id="7423098979219808738">Hỏi trước</translation>
 <translation id="7423538860840206698">Đã chặn quyền đọc bảng nhớ tạm</translation>
@@ -396,12 +425,14 @@
 <translation id="7561196759112975576">Luôn luôn</translation>
 <translation id="757524316907819857">Chặn không cho trang web phát nội dung được bảo vệ</translation>
 <translation id="7594634374516752650">Đã kết nối với một thiết bị Bluetooth</translation>
-<translation id="7641339528570811325">Xoá dữ liệu duyệt web…</translation>
+<translation id="7617547684249261169">Bạn có thể xoá một số hoặc toàn bộ nhật ký, cookie, dữ liệu trang web và các dữ liệu khác</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
 <translation id="7658239707568436148">Huỷ</translation>
 <translation id="7667547420449112975">Phù thủy xứ Oz</translation>
 <translation id="7684642910516280563">Không cho phép một trang web dùng cookie của bên thứ ba</translation>
+<translation id="7688240020069572972">Ẩn thẻ mẹo dùng Chrome</translation>
 <translation id="7719367874908701697">Thu phóng trang</translation>
+<translation id="7759147511335618829">Lập trình lại và điều khiển thiết bị MIDI</translation>
 <translation id="7781829728241885113">Hôm qua</translation>
 <translation id="7791543448312431591">Thêm</translation>
 <translation id="7801888679188438140">{TILE_COUNT,plural, =1{Tiếp tục duyệt xem thẻ này}other{Tiếp tục duyệt xem các thẻ này}}</translation>
@@ -415,10 +446,10 @@
 <translation id="7882806643839505685">Cho phép phát âm thanh trên một trang web cụ thể.</translation>
 <translation id="789180354981963912">Chặn cookie của bên thứ ba ở Chế độ ẩn danh:</translation>
 <translation id="7940722705963108451">Nhắc tôi</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="FPS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}other{<ph name="FPS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="FPS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}}</translation>
 <translation id="7986741934819883144">Chọn một người liên hệ</translation>
 <translation id="7990211076305263060">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng micrô của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng micrô của bạn.</translation>
 <translation id="8007176423574883786">Tắt cho thiết bị này</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ẩn thẻ tiếp tục duyệt xem thẻ này}other{Ẩn thẻ tiếp tục duyệt xem các thẻ này}}</translation>
 <translation id="802154636333426148">Tải xuống không thành công</translation>
 <translation id="8042586301629853791">Sắp xếp theo:</translation>
 <translation id="8067883171444229417">Phát video</translation>
@@ -453,7 +484,7 @@
 <translation id="8441146129660941386">Tìm kiếm lùi</translation>
 <translation id="8444433999583714703">Để cho phép <ph name="APP_NAME" /> truy cập vào thông tin vị trí của bạn, hãy bật cả dịch vụ vị trí trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Thu hồi quyền truy cập thiết bị</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie đang được sử dụng}other{# cookie đang được sử dụng}}</translation>
+<translation id="8473055640493819707">"<ph name="APP_NAME" />" đã lỗi thời. Vui lòng cài đặt lại ứng dụng.</translation>
 <translation id="8487700953926739672">Có thể dùng khi không có mạng</translation>
 <translation id="848952951823693243">Luôn yêu cầu trang web dành cho thiết bị di động</translation>
 <translation id="8499083585497694743">Bật micrô</translation>
@@ -461,20 +492,20 @@
 <translation id="851751545965956758">Chặn các trang web kết nối với thiết bị</translation>
 <translation id="8525306231823319788">Toàn màn hình</translation>
 <translation id="8541410041357371550">Trang web này thu thập thông tin về chủ đề quảng cáo bạn quan tâm qua Chrome để hiển thị cho bạn những quảng cáo phù hợp hơn</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Đã cho phép cookie với <ph name="FPS_MEMBERS_COUNT" /> trang web của <ph name="FPS_OWNER" />}other{Đã cho phép cookie với <ph name="FPS_MEMBERS_COUNT" /> trang web của <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Được phép (nên dùng)</translation>
 <translation id="8609465669617005112">Di chuyển lên</translation>
 <translation id="8617611086246832542">Khi bạn bật tuỳ chọn này, các trang web sẽ hiển thị ở chế độ xem trên máy tính để bàn. Khi bạn tắt tuỳ chọn này, các trang web sẽ hiển thị ở chế độ xem trên thiết bị di động.</translation>
 <translation id="8649036394979866943">Chrome hạn chế hầu hết các trang web sử dụng cookie của bên thứ ba để theo dõi bạn khi bạn duyệt web. Hãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý các biện pháp chống theo dõi<ph name="END_LINK" /></translation>
+<translation id="8676316391139423634">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu theo dõi tay bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể theo dõi tay bạn.</translation>
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>
 <translation id="8681886425883659911">Quảng cáo sẽ bị chặn trên các trang web được xác định là hiện quảng cáo xâm nhập hoặc gây hiểu lầm</translation>
 <translation id="868929229000858085">Tìm kiếm trong danh bạ</translation>
 <translation id="8712637175834984815">Tôi hiểu</translation>
+<translation id="8715862698998036666">Kéo từ trên xuống và vuốt từ mép trái hoặc mép phải để thoát khỏi chế độ toàn màn hình.</translation>
 <translation id="8719283222052720129">Bật quyền cho <ph name="APP_NAME" /> trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu tìm thiết bị Bluetooth. Khi bạn tắt tuỳ chọn này, các trang web không thể tìm thiết bị Bluetooth.</translation>
 <translation id="8725066075913043281">Thử lại</translation>
 <translation id="8730621377337864115">Xong</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Đã cho phép 1 trang web}other{Đã cho phép # trang web}}</translation>
 <translation id="8751914237388039244">Chọn hình ảnh</translation>
 <translation id="8800034312320686233">Trang web không hoạt động?</translation>
 <translation id="8801436777607969138">Chặn JavaScript cho một trang web cụ thể.</translation>
@@ -493,12 +524,12 @@
 <translation id="8959122750345127698">Không thể tiếp cận điều hướng: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Quên</translation>
 <translation id="8990043154272859344">Bạn sẽ bị đăng xuất khỏi tất cả các trang web</translation>
+<translation id="8993853206419610596">Mở rộng tất cả yêu cầu</translation>
 <translation id="9002538116239926534">Khi bạn bật tuỳ chọn này, các trang web có thể lưu dữ liệu trên thiết bị của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể lưu dữ liệu trên thiết bị của bạn.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> được cho phép</translation>
 <translation id="9019902583201351841">Do cha mẹ của bạn quản lý</translation>
 <translation id="9039697262778250930">Bạn có thể bị đăng xuất khỏi các trang web này</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Trang web này nằm trong nhóm có thể xem hoạt động của bạn. Nhóm này do <ph name="FPS_OWNER" /> xác định</translation>
 <translation id="9106233582039520022">Xoá cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
 <translation id="913657688200966289">Bật quyền cho <ph name="APP_NAME" /> trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
@@ -506,5 +537,6 @@
 <translation id="9162462602695099906">Đây là trang nguy hiểm</translation>
 <translation id="930525582205581608">Xóa trang web này?</translation>
 <translation id="947156494302904893">Các trang web bạn truy cập có thể xác minh rằng bạn là người thực chứ không phải bot</translation>
+<translation id="959682366969460160">Sắp xếp gọn gàng</translation>
 <translation id="967624055006145463">Dữ liệu đã lưu trữ</translation>
 </translationbundle>

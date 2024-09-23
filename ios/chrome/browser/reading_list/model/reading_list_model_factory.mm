@@ -6,7 +6,6 @@
 
 #import <utility>
 
-#import "base/feature_list.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/no_destructor.h"
@@ -16,24 +15,17 @@
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/reading_list/core/reading_list_model_storage_impl.h"
 #import "components/signin/public/identity_manager/tribool.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/storage_type.h"
-#import "components/sync/model/model_type_store_service.h"
+#import "components/sync/model/data_type_store_service.h"
 #import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
-#import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
+#import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
 
 namespace {
-
-// Kill switch as an extra safeguard, in addition to the guarding behind
-// syncer::kReplaceSyncPromosWithSignInPromos.
-BASE_FEATURE(kAllowReadingListModelWipingForFirstSessionAfterDeviceRestore,
-             "AllowReadingListModelWipingForFirstSessionAfterDeviceRestore",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Returns what the local-or-syncable instance should do when sync is disabled,
 // that is, whether reading list entries might need to be deleted.
@@ -43,30 +35,29 @@ GetWipeModelUponSyncDisabledBehaviorForSyncableModel() {
     return syncer::WipeModelUponSyncDisabledBehavior::kNever;
   }
 
-  return (base::FeatureList::IsEnabled(
-              kAllowReadingListModelWipingForFirstSessionAfterDeviceRestore) &&
-          base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos))
-             ? syncer::WipeModelUponSyncDisabledBehavior::
-                   kOnceIfTrackingMetadata
-             : syncer::WipeModelUponSyncDisabledBehavior::kNever;
+  return syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata;
 }
 
 }  // namespace
 
 // static
 ReadingListModel* ReadingListModelFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+ReadingListModel* ReadingListModelFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<ReadingListModel*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
 reading_list::DualReadingListModel*
-ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
-    ChromeBrowserState* browser_state) {
+ReadingListModelFactory::GetAsDualReadingListModelForProfile(
+    ProfileIOS* profile) {
   return static_cast<reading_list::DualReadingListModel*>(
-      GetForBrowserState(browser_state));
+      GetForProfile(profile));
 }
 
 // static
@@ -79,7 +70,7 @@ ReadingListModelFactory::ReadingListModelFactory()
     : BrowserStateKeyedServiceFactory(
           "ReadingListModel",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 ReadingListModelFactory::~ReadingListModelFactory() {}
@@ -89,8 +80,8 @@ std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
 
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
           ->GetStoreFactory();
   auto local_storage =
       std::make_unique<ReadingListModelStorageImpl>(std::move(store_factory));
@@ -100,8 +91,8 @@ std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
           GetWipeModelUponSyncDisabledBehaviorForSyncableModel(),
           base::DefaultClock::GetInstance());
 
-  syncer::OnceModelTypeStoreFactory store_factory_for_account_storage =
-      ModelTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
+  syncer::OnceDataTypeStoreFactory store_factory_for_account_storage =
+      DataTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
           ->GetStoreFactoryForAccountStorage();
   auto account_storage = std::make_unique<ReadingListModelStorageImpl>(
       std::move(store_factory_for_account_storage));

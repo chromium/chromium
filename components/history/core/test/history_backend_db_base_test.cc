@@ -47,7 +47,10 @@ class BackendDelegate : public HistoryBackend::Delegate {
                         const VisitRow& visit_row,
                         std::optional<int64_t> local_navigation_id) override {}
   void NotifyURLsModified(const URLRows& changed_urls) override {}
-  void NotifyURLsDeleted(DeletionInfo deletion_info) override {}
+  void NotifyDeletions(DeletionInfo deletion_info) override {}
+  void NotifyVisitedLinksAdded(const HistoryAddPageArgs& args) override {}
+  void NotifyVisitedLinksDeleted(
+      const std::vector<DeletedVisitedLink>& links) override {}
   void NotifyKeywordSearchTermUpdated(const URLRow& row,
                                       KeywordID keyword_id,
                                       const std::u16string& term) override {}

@@ -39,3 +39,4 @@
 };
 
 HTMLAreaElement includes HTMLHyperlinkElementUtils;
+HTMLAreaElement includes InterestInvokerElement;

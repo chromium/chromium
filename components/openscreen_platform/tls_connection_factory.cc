@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/openscreen_platform/tls_connection_factory.h"
 
 #include <openssl/pool.h>
@@ -26,7 +31,7 @@ namespace openscreen {
 class TaskRunner;
 
 std::unique_ptr<TlsConnectionFactory> TlsConnectionFactory::CreateFactory(
-    Client* client,
+    Client& client,
     TaskRunner& task_runner) {
   return std::make_unique<openscreen_platform::TlsConnectionFactory>(client);
 }
@@ -109,7 +114,7 @@ void TlsConnectionFactory::Listen(const IPEndpoint& local_address,
 }
 
 TlsConnectionFactory::TlsConnectionFactory(
-    openscreen::TlsConnectionFactory::Client* client)
+    openscreen::TlsConnectionFactory::Client& client)
     : client_(client) {}
 
 TlsConnectionFactory::TcpConnectRequest::TcpConnectRequest(

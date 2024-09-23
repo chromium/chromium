@@ -101,7 +101,7 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
 
   // mojom::WebBundleHandle
   void Clone(mojo::PendingReceiver<mojom::WebBundleHandle> receiver) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void OnWebBundleError(mojom::WebBundleErrorType type,
@@ -541,7 +541,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, CrossOriginJson) {
   ASSERT_TRUE(mojo::BlockingCopyToString(
       request.client->response_body_release(), &body));
   EXPECT_TRUE(body.empty())
-      << "body should be empty because JSON is a CORB-protected resource";
+      << "body should be empty because JSON is a ORB-protected resource";
 }
 
 TEST_F(WebBundleURLLoaderFactoryTest, CrossOriginJs) {
@@ -557,7 +557,7 @@ TEST_F(WebBundleURLLoaderFactoryTest, CrossOriginJs) {
   ASSERT_TRUE(mojo::BlockingCopyToString(
       request.client->response_body_release(), &body));
   EXPECT_EQ("const not_secret = 1;", body)
-      << "body should be valid one because JS is not a CORB protected resource";
+      << "body should be valid one because JS is not a ORB protected resource";
 }
 
 TEST_F(WebBundleURLLoaderFactoryTest, WrongBundleURL) {

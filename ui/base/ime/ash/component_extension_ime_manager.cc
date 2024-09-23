@@ -5,6 +5,7 @@
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/command_line.h"
@@ -21,10 +22,12 @@ namespace {
 int GetInputMethodCategory(const std::string& id) {
   const std::string engine_id =
       extension_ime_util::GetComponentIDByInputMethodID(id);
-  if (base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE))
+  if (base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE)) {
     return 0;
-  if (base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE))
+  }
+  if (base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE)) {
     return 1;
+  }
   if (engine_id.find("-t-i0-") != std::string::npos &&
       !base::StartsWith(engine_id, "zh-", base::CompareCase::SENSITIVE)) {
     return 2;
@@ -37,7 +40,7 @@ bool InputMethodCompare(const input_method::InputMethodDescriptor& im1,
   return GetInputMethodCategory(im1.id()) < GetInputMethodCategory(im2.id());
 }
 
-} // namespace
+}  // namespace
 
 ComponentExtensionEngine::ComponentExtensionEngine() = default;
 
@@ -60,13 +63,15 @@ ComponentExtensionIMEManager::ComponentExtensionIMEManager(
   std::vector<ComponentExtensionIME> ext_list = delegate_->ListIME();
   for (const auto& ext : ext_list) {
     bool extension_exists = IsAllowlistedExtension(ext.id);
-    if (!extension_exists)
+    if (!extension_exists) {
       component_extension_imes_[ext.id] = ext;
+    }
     for (const auto& ime : ext.engines) {
       const std::string input_method_id =
           extension_ime_util::GetComponentInputMethodID(ext.id, ime.engine_id);
-      if (extension_exists && !IsAllowlisted(input_method_id))
+      if (extension_exists && !IsAllowlisted(input_method_id)) {
         component_extension_imes_[ext.id].engines.push_back(ime);
+      }
       input_method_id_set_.insert(input_method_id);
     }
   }
@@ -88,8 +93,9 @@ bool ComponentExtensionIMEManager::LoadComponentExtensionIME(
       extension_loaded->insert(ime.id);
       will_load = true;
     }
-    if (will_load)
+    if (will_load) {
       delegate_->Load(profile, ime.id, ime.manifest, ime.path);
+    }
     return will_load;
   }
   return false;
@@ -108,17 +114,16 @@ bool ComponentExtensionIMEManager::IsAllowlistedExtension(
 }
 
 input_method::InputMethodDescriptors
-    ComponentExtensionIMEManager::GetAllIMEAsInputMethodDescriptor() {
+ComponentExtensionIMEManager::GetAllIMEAsInputMethodDescriptor() {
   input_method::InputMethodDescriptors result;
   for (std::map<std::string, ComponentExtensionIME>::const_iterator it =
-          component_extension_imes_.begin();
+           component_extension_imes_.begin();
        it != component_extension_imes_.end(); ++it) {
     const ComponentExtensionIME& ext = it->second;
     for (size_t j = 0; j < ext.engines.size(); ++j) {
       const ComponentExtensionEngine& ime = ext.engines[j];
       const std::string input_method_id =
-          extension_ime_util::GetComponentInputMethodID(
-              ext.id, ime.engine_id);
+          extension_ime_util::GetComponentInputMethodID(ext.id, ime.engine_id);
       result.push_back(input_method::InputMethodDescriptor(
           input_method_id, ime.display_name, ime.indicator, ime.layout,
           ime.language_codes,
@@ -138,8 +143,9 @@ ComponentExtensionIMEManager::GetXkbIMEAsInputMethodDescriptor() {
   const input_method::InputMethodDescriptors& descriptors =
       GetAllIMEAsInputMethodDescriptor();
   for (const auto& descriptor : descriptors) {
-    if (extension_ime_util::IsKeyboardLayoutExtension(descriptor.id()))
+    if (extension_ime_util::IsKeyboardLayoutExtension(descriptor.id())) {
       result.push_back(descriptor);
+    }
   }
   return result;
 }
@@ -147,17 +153,20 @@ ComponentExtensionIMEManager::GetXkbIMEAsInputMethodDescriptor() {
 bool ComponentExtensionIMEManager::FindEngineEntry(
     const std::string& input_method_id,
     ComponentExtensionIME* out_extension) {
-  if (!IsAllowlisted(input_method_id))
+  if (!IsAllowlisted(input_method_id)) {
     return false;
+  }
 
   std::string extension_id =
       extension_ime_util::GetExtensionIDFromInputMethodID(input_method_id);
   auto it = component_extension_imes_.find(extension_id);
-  if (it == component_extension_imes_.end())
+  if (it == component_extension_imes_.end()) {
     return false;
+  }
 
-  if (out_extension)
+  if (out_extension) {
     *out_extension = it->second;
+  }
   return true;
 }
 

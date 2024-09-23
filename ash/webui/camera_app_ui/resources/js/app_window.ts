@@ -106,6 +106,7 @@ export class AppWindow {
     this.perfs.push({
       event: event,
       duration: (performance.now() - this.launchedTime),
+      perfInfo: {},
     });
   }
 

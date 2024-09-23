@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
+
 #include <memory>
 
 #include "base/functional/callback.h"
@@ -12,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -25,14 +28,12 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -214,6 +215,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     observer_manager_.reset();
     // Cancel unfinished download if any.
     CancelDownloads();
+    CHECK_EQ(DownloadCoreService::BlockingShutdownCountAllProfiles(), 0);
   }
 
   // Most test cases will trigger downloads, though we don't really care if
@@ -500,13 +502,11 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
   }
 
   int CountOfRecentNavigationsToAppend(
-      bool extended_reporting_enabled,
+      bool enhanced_protection_enabled,
       bool is_incognito,
       SafeBrowsingNavigationObserverManager::AttributionResult result) {
-    SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(),
-                                     extended_reporting_enabled);
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
-                                                 extended_reporting_enabled);
+    SetEnhancedProtectionPrefForTests(browser()->profile()->GetPrefs(),
+                                      enhanced_protection_enabled);
     auto* maybe_otr_profile = is_incognito
                                   ? browser()->profile()->GetPrimaryOTRProfile(
                                         /*create_if_needed=*/true)
@@ -2351,82 +2351,84 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
                        VerifyNumberOfRecentNavigationsToCollect) {
+  EXPECT_EQ(0,
+            CountOfRecentNavigationsToAppend(
+                /*enhanced_protection_enabled=*/false, /*is_incognito=*/false,
+                SafeBrowsingNavigationObserverManager::SUCCESS));
   EXPECT_EQ(0, CountOfRecentNavigationsToAppend(
-                   /*extended_reporting_enabled=*/false, /*is_incognito=*/false,
-                   SafeBrowsingNavigationObserverManager::SUCCESS));
-  EXPECT_EQ(0, CountOfRecentNavigationsToAppend(
-                   /*extended_reporting_enabled=*/false, /*is_incognito=*/true,
+                   /*enhanced_protection_enabled=*/false, /*is_incognito=*/true,
                    SafeBrowsingNavigationObserverManager::SUCCESS));
   EXPECT_EQ(0,
             CountOfRecentNavigationsToAppend(
-                /*extended_reporting_enabled=*/false, /*is_incognito=*/false,
+                /*enhanced_protection_enabled=*/false, /*is_incognito=*/false,
                 SafeBrowsingNavigationObserverManager::SUCCESS_LANDING_PAGE));
   EXPECT_EQ(0,
             CountOfRecentNavigationsToAppend(
-                /*extended_reporting_enabled=*/false, /*is_incognito=*/true,
+                /*enhanced_protection_enabled=*/false, /*is_incognito=*/true,
                 SafeBrowsingNavigationObserverManager::SUCCESS_LANDING_PAGE));
   EXPECT_EQ(
       0, CountOfRecentNavigationsToAppend(
-             /*extended_reporting_enabled=*/false, /*is_incognito=*/false,
+             /*enhanced_protection_enabled=*/false, /*is_incognito=*/false,
              SafeBrowsingNavigationObserverManager::SUCCESS_LANDING_REFERRER));
   EXPECT_EQ(
       0, CountOfRecentNavigationsToAppend(
-             /*extended_reporting_enabled=*/false, /*is_incognito=*/true,
+             /*enhanced_protection_enabled=*/false, /*is_incognito=*/true,
              SafeBrowsingNavigationObserverManager::SUCCESS_LANDING_REFERRER));
+  EXPECT_EQ(0,
+            CountOfRecentNavigationsToAppend(
+                /*enhanced_protection_enabled=*/false, /*is_incognito=*/false,
+                SafeBrowsingNavigationObserverManager::INVALID_URL));
   EXPECT_EQ(0, CountOfRecentNavigationsToAppend(
-                   /*extended_reporting_enabled=*/false, /*is_incognito=*/false,
-                   SafeBrowsingNavigationObserverManager::INVALID_URL));
-  EXPECT_EQ(0, CountOfRecentNavigationsToAppend(
-                   /*extended_reporting_enabled=*/false, /*is_incognito=*/true,
+                   /*enhanced_protection_enabled=*/false, /*is_incognito=*/true,
                    SafeBrowsingNavigationObserverManager::INVALID_URL));
   EXPECT_EQ(
       0,
       CountOfRecentNavigationsToAppend(
-          /*extended_reporting_enabled=*/false, /*is_incognito=*/false,
+          /*enhanced_protection_enabled=*/false, /*is_incognito=*/false,
           SafeBrowsingNavigationObserverManager::NAVIGATION_EVENT_NOT_FOUND));
   EXPECT_EQ(
       0,
       CountOfRecentNavigationsToAppend(
-          /*extended_reporting_enabled=*/false, /*is_incognito=*/true,
+          /*enhanced_protection_enabled=*/false, /*is_incognito=*/true,
           SafeBrowsingNavigationObserverManager::NAVIGATION_EVENT_NOT_FOUND));
 
   EXPECT_EQ(5, CountOfRecentNavigationsToAppend(
-                   /*extended_reporting_enabled=*/true, /*is_incognito=*/false,
+                   /*enhanced_protection_enabled=*/true, /*is_incognito=*/false,
                    SafeBrowsingNavigationObserverManager::SUCCESS));
   EXPECT_EQ(0, CountOfRecentNavigationsToAppend(
-                   /*extended_reporting_enabled=*/true, /*is_incognito=*/true,
+                   /*enhanced_protection_enabled=*/true, /*is_incognito=*/true,
                    SafeBrowsingNavigationObserverManager::SUCCESS));
   EXPECT_EQ(5,
             CountOfRecentNavigationsToAppend(
-                /*extended_reporting_enabled=*/true, /*is_incognito=*/false,
+                /*enhanced_protection_enabled=*/true, /*is_incognito=*/false,
                 SafeBrowsingNavigationObserverManager::SUCCESS_LANDING_PAGE));
   EXPECT_EQ(0,
             CountOfRecentNavigationsToAppend(
-                /*extended_reporting_enabled=*/true, /*is_incognito=*/true,
+                /*enhanced_protection_enabled=*/true, /*is_incognito=*/true,
                 SafeBrowsingNavigationObserverManager::SUCCESS_LANDING_PAGE));
   EXPECT_EQ(
       0, CountOfRecentNavigationsToAppend(
-             /*extended_reporting_enabled=*/true, /*is_incognito=*/false,
+             /*enhanced_protection_enabled=*/true, /*is_incognito=*/false,
              SafeBrowsingNavigationObserverManager::SUCCESS_LANDING_REFERRER));
   EXPECT_EQ(
       0, CountOfRecentNavigationsToAppend(
-             /*extended_reporting_enabled=*/true, /*is_incognito=*/true,
+             /*enhanced_protection_enabled=*/true, /*is_incognito=*/true,
              SafeBrowsingNavigationObserverManager::SUCCESS_LANDING_REFERRER));
   EXPECT_EQ(5, CountOfRecentNavigationsToAppend(
-                   /*extended_reporting_enabled=*/true, /*is_incognito=*/false,
+                   /*enhanced_protection_enabled=*/true, /*is_incognito=*/false,
                    SafeBrowsingNavigationObserverManager::INVALID_URL));
   EXPECT_EQ(0, CountOfRecentNavigationsToAppend(
-                   /*extended_reporting_enabled=*/true, /*is_incognito=*/true,
+                   /*enhanced_protection_enabled=*/true, /*is_incognito=*/true,
                    SafeBrowsingNavigationObserverManager::INVALID_URL));
   EXPECT_EQ(
       5,
       CountOfRecentNavigationsToAppend(
-          /*extended_reporting_enabled=*/true, /*is_incognito=*/false,
+          /*enhanced_protection_enabled=*/true, /*is_incognito=*/false,
           SafeBrowsingNavigationObserverManager::NAVIGATION_EVENT_NOT_FOUND));
   EXPECT_EQ(
       0,
       CountOfRecentNavigationsToAppend(
-          /*extended_reporting_enabled=*/true, /*is_incognito=*/true,
+          /*enhanced_protection_enabled=*/true, /*is_incognito=*/true,
           SafeBrowsingNavigationObserverManager::NAVIGATION_EVENT_NOT_FOUND));
 }
 
@@ -2509,8 +2511,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
 
   auto* initial_web_contents = web_contents();
 
-  ui_test_utils::UrlLoadObserver url_observer(
-      new_window_url, content::NotificationService::AllSources());
+  ui_test_utils::UrlLoadObserver url_observer(new_window_url);
   ASSERT_TRUE(
       ExecJs(web_contents()->GetPrimaryMainFrame(),
              content::JsReplace("var w = window.open($1, 'New Window');",
@@ -2553,7 +2554,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   EXPECT_EQ(4, referrer_chain.size());
   VerifyReferrerChainEntry(
       new_window_subframe_url,  // url
-      // TODO(crbug.com/1300014): this should be |new_window_url|.
+      // TODO(crbug.com/40823953): this should be |new_window_url|.
       GURL(),                         // main_frame_url
       ReferrerChainEntry::EVENT_URL,  // type
       test_server_ip,                 // ip_address
@@ -3392,9 +3393,8 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
                            referrer_chain.Get(0));
 }
 
-// TODO(crbug.com/1247228): Test is flaky across multiple platforms.
 IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
-                       DISABLED_AllowlistDomainsRemoved_RecentNavigation) {
+                       AllowlistDomainsRemoved_RecentNavigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kSingleFrameTestURL)));
   GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+           tools:keep="@drawable/topic_taxonomy_1_id_1,@drawable/topic_taxonomy_1_id_57,@drawable/topic_taxonomy_1_id_86,@drawable/topic_taxonomy_1_id_100,@drawable/topic_taxonomy_1_id_103,@drawable/topic_taxonomy_1_id_126,@drawable/topic_taxonomy_1_id_149,@drawable/topic_taxonomy_1_id_172,@drawable/topic_taxonomy_1_id_180,@drawable/topic_taxonomy_1_id_196,@drawable/topic_taxonomy_1_id_207,@drawable/topic_taxonomy_1_id_215,@drawable/topic_taxonomy_1_id_226,@drawable/topic_taxonomy_1_id_239,@drawable/topic_taxonomy_1_id_243,@drawable/topic_taxonomy_1_id_250,@drawable/topic_taxonomy_1_id_254,@drawable/topic_taxonomy_1_id_263,@drawable/topic_taxonomy_1_id_272,@drawable/topic_taxonomy_1_id_289,@drawable/topic_taxonomy_1_id_299,@drawable/topic_taxonomy_1_id_332" />

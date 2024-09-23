@@ -127,7 +127,8 @@ void CloseButton::OnThemeChanged() {
   SchedulePaint();
 }
 
-gfx::Size CloseButton::CalculatePreferredSize() const {
+gfx::Size CloseButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int size = GetCloseButtonSize(type_);
   return gfx::Size(size, size);
 }

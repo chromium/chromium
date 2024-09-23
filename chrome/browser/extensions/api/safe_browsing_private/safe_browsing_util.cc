@@ -47,7 +47,7 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
       entry.url_type = safe_browsing_private::URLType::kReferrer;
       break;
     case safe_browsing::ReferrerChainEntry_URLType_DEPRECATED_SERVER_REDIRECT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   if (referrer.ip_addresses_size() > 0) {
     entry.ip_addresses.emplace();
@@ -105,7 +105,7 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
             safe_browsing_private::NavigationInitiation::kNotificationInitiated;
         break;
       case safe_browsing::ReferrerChainEntry_NavigationInitiation_UNDEFINED:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   if (referrer.has_maybe_launched_by_external_application()) {

@@ -7,9 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_tracing.h"
@@ -17,7 +19,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct stat;
 
@@ -206,13 +207,11 @@ class BASE_EXPORT File {
   // (relative to the start) or -1 in case of error.
   int64_t Seek(Whence whence, int64_t offset);
 
-  // Simplified versions of Read() and friends (see below) that check the int
+  // Simplified versions of Read() and friends (see below) that check the
   // return value and just return a boolean. They return true if and only if
-  // the function read in / wrote out exactly |data.size()| bytes of data.
+  // the function read in exactly |data.size()| bytes of data.
   bool ReadAndCheck(int64_t offset, span<uint8_t> data);
   bool ReadAtCurrentPosAndCheck(span<uint8_t> data);
-  bool WriteAndCheck(int64_t offset, span<const uint8_t> data);
-  bool WriteAtCurrentPosAndCheck(span<const uint8_t> data);
 
   // Reads the given number of bytes (or until EOF is reached) starting with the
   // given offset. Returns the number of bytes read, or -1 on error. Note that
@@ -220,20 +219,31 @@ class BASE_EXPORT File {
   // is not intended for stream oriented files but instead for cases when the
   // normal expectation is that actually |size| bytes are read unless there is
   // an error.
-  int Read(int64_t offset, char* data, int size);
-  absl::optional<size_t> Read(int64_t offset, base::span<uint8_t> data);
+  UNSAFE_BUFFER_USAGE int Read(int64_t offset, char* data, int size);
+  std::optional<size_t> Read(int64_t offset, base::span<uint8_t> data);
 
   // Same as above but without seek.
-  int ReadAtCurrentPos(char* data, int size);
-  absl::optional<size_t> ReadAtCurrentPos(base::span<uint8_t> data);
+  UNSAFE_BUFFER_USAGE int ReadAtCurrentPos(char* data, int size);
+  std::optional<size_t> ReadAtCurrentPos(base::span<uint8_t> data);
 
   // Reads the given number of bytes (or until EOF is reached) starting with the
   // given offset, but does not make any effort to read all data on all
-  // platforms. Returns the number of bytes read, or -1 on error.
-  int ReadNoBestEffort(int64_t offset, char* data, int size);
+  // platforms. Returns the number of bytes read, or -1/std::nullopt on error.
+  UNSAFE_BUFFER_USAGE int ReadNoBestEffort(int64_t offset,
+                                           char* data,
+                                           int size);
+  std::optional<size_t> ReadNoBestEffort(int64_t offset,
+                                         base::span<uint8_t> data);
 
   // Same as above but without seek.
-  int ReadAtCurrentPosNoBestEffort(char* data, int size);
+  UNSAFE_BUFFER_USAGE int ReadAtCurrentPosNoBestEffort(char* data, int size);
+  std::optional<size_t> ReadAtCurrentPosNoBestEffort(base::span<uint8_t> data);
+
+  // Simplified versions of Write() and friends (see below) that check the
+  // return value and just return a boolean. They return true if and only if
+  // the function wrote out exactly |data.size()| bytes of data.
+  bool WriteAndCheck(int64_t offset, span<const uint8_t> data);
+  bool WriteAtCurrentPosAndCheck(span<const uint8_t> data);
 
   // Writes the given buffer into the file at the given offset, overwritting any
   // data that was previously there. Returns the number of bytes written, or -1
@@ -241,19 +251,23 @@ class BASE_EXPORT File {
   // all platforms. |data| can be nullptr when |size| is 0.
   // Ignores the offset and writes to the end of the file if the file was opened
   // with FLAG_APPEND.
-  int Write(int64_t offset, const char* data, int size);
-  absl::optional<size_t> Write(int64_t offset, base::span<const uint8_t> data);
+  UNSAFE_BUFFER_USAGE int Write(int64_t offset, const char* data, int size);
+  std::optional<size_t> Write(int64_t offset, base::span<const uint8_t> data);
 
   // Save as above but without seek.
-  int WriteAtCurrentPos(const char* data, int size);
-  absl::optional<size_t> WriteAtCurrentPos(base::span<const uint8_t> data);
+  UNSAFE_BUFFER_USAGE int WriteAtCurrentPos(const char* data, int size);
+  std::optional<size_t> WriteAtCurrentPos(base::span<const uint8_t> data);
 
   // Save as above but does not make any effort to write all data on all
-  // platforms. Returns the number of bytes written, or -1 on error.
-  int WriteAtCurrentPosNoBestEffort(const char* data, int size);
+  // platforms. Returns the number of bytes written, or -1/std::nullopt
+  // on error.
+  UNSAFE_BUFFER_USAGE int WriteAtCurrentPosNoBestEffort(const char* data,
+                                                        int size);
+  std::optional<size_t> WriteAtCurrentPosNoBestEffort(
+      base::span<const uint8_t> data);
 
   // Returns the current size of this file, or a negative number on failure.
-  int64_t GetLength();
+  int64_t GetLength() const;
 
   // Truncates the file to the given length. If |length| is greater than the
   // current size of the file, the file is extended with zeros. If the file
@@ -277,7 +291,9 @@ class BASE_EXPORT File {
   // Updates the file times.
   bool SetTimes(Time last_access_time, Time last_modified_time);
 
-  // Returns some basic information for the given file.
+  // Returns some basic information for the given file. Code that needs to
+  // support android Content-URIs should use base::GetFileInfo(FilePath)
+  // which is able to use the path (URI) to populate Info via Java APIs.
   bool GetInfo(Info* info);
 
 #if !BUILDFLAG( \
@@ -326,6 +342,12 @@ class BASE_EXPORT File {
   // Serialise this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
+#if BUILDFLAG(IS_APPLE)
+  // Initializes experiments. Must be invoked early in process startup, but
+  // after `FeatureList` initialization.
+  static void InitializeFeatures();
+#endif  // BUILDFLAG(IS_APPLE)
+
 #if BUILDFLAG(IS_WIN)
   // Sets or clears the DeleteFile disposition on the file. Returns true if
   // the disposition was set or cleared, as indicated by |delete_on_close|.
@@ -359,18 +381,18 @@ class BASE_EXPORT File {
   //   deleted in the event of untimely process termination, and then clearing
   //   this state once the file is suitable for persistence.
   bool DeleteOnClose(bool delete_on_close);
-#endif
 
-#if BUILDFLAG(IS_WIN)
+  // Precondition: last_error is not 0, also known as ERROR_SUCCESS.
   static Error OSErrorToFileError(DWORD last_error);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  // Precondition: saved_errno is not 0.
   static Error OSErrorToFileError(int saved_errno);
 #endif
 
   // Gets the last global error (errno or GetLastError()) and converts it to the
-  // closest base::File::Error equivalent via OSErrorToFileError(). The returned
-  // value is only trustworthy immediately after another base::File method
-  // fails. base::File never resets the global error to zero.
+  // closest base::File::Error equivalent via OSErrorToFileError(). It should
+  // therefore only be called immediately after another base::File method fails.
+  // base::File never resets the global error to zero.
   static Error GetLastFileError();
 
   // Converts an error value to a human-readable form. Used for logging.
@@ -378,11 +400,11 @@ class BASE_EXPORT File {
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Wrapper for stat().
-  static int Stat(const char* path, stat_wrapper_t* sb);
+  static int Stat(const FilePath& path, stat_wrapper_t* sb);
   // Wrapper for fstat().
   static int Fstat(int fd, stat_wrapper_t* sb);
   // Wrapper for lstat().
-  static int Lstat(const char* path, stat_wrapper_t* sb);
+  static int Lstat(const FilePath& path, stat_wrapper_t* sb);
 #endif
 
   // This function can be used to augment `flags` with the correct flags

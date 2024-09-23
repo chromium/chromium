@@ -53,7 +53,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
 
   switch (type) {
     case Type::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case Type::kSideloadingDisallowed:
       title = l10n_util::GetStringUTF16(

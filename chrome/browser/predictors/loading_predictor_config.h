@@ -96,6 +96,28 @@ struct LoadingPredictorConfig {
   // The max histogram bucket count that can be stored in the LCP critical path
   // predictor (LCPP) database.
   size_t max_lcpp_histogram_buckets;
+
+  // Parameters for LCPP multiple key support (crbug.com/328487899)
+  // In LCPP multiple key support, hint data (aka. statistics) are stored not
+  // per origin but origin + the first-path name.
+  // In LcppMultipleKeyTypes::kLcppKeyStat option, the number of the first-path
+  // name per origin is limited and we use the top-k element algorithm
+  // (https://docs.google.com/document/d/1T80d4xW8xIEqfo792g1nC1deFqzMraunFJW_5ft4ziQ/edit#heading=h.fzlb8kz89fgy)
+  // to decide an entry to evict.lcpp_multiple_key_histogram_sliding_window_size
+  // and lcpp_multiple_key_max_histgram_buckets are paraieters used for the
+  // algorithm. The former is is the virtual sliding window size, and the
+  // latter is max number of buckets.
+  size_t lcpp_multiple_key_histogram_sliding_window_size;
+  size_t lcpp_multiple_key_max_histogram_buckets;
+
+  // Parameters for double keyed LCPP (crbug.com/343093433)
+  // In double keyd LCPP, hint data (aka. statistics) are stored
+  // per navigation initiator origin + destination origin.
+  // Initiator origins are kept by the above top-k algorithm too with the below
+  // two parameters.
+  // This feature is orthogonal to LCPP multiple key support.
+  size_t lcpp_initiator_origin_histogram_sliding_window_size;
+  size_t lcpp_initiator_origin_max_histogram_buckets;
 };
 
 }  // namespace predictors

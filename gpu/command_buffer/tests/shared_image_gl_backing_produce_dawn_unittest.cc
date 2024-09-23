@@ -22,13 +22,13 @@ namespace {
 
 class MockBufferMapCallback {
  public:
-  MOCK_METHOD(void, Call, (WGPUBufferMapAsyncStatus status, void* userdata));
+  MOCK_METHOD(void, Call, (wgpu::MapAsyncStatus status, const char* message));
 };
 std::unique_ptr<testing::StrictMock<MockBufferMapCallback>>
     mock_buffer_map_callback;
 
-void ToMockBufferMapCallback(WGPUBufferMapAsyncStatus status, void* userdata) {
-  mock_buffer_map_callback->Call(status, userdata);
+void ToMockBufferMapCallback(wgpu::MapAsyncStatus status, const char* message) {
+  mock_buffer_map_callback->Call(status, message);
 }
 
 }  // namespace
@@ -79,9 +79,8 @@ class SharedImageGLBackingProduceDawnTest : public WebGPUTest {
 };
 
 // Tests using Associate/DissociateMailbox to share an image with Dawn.
-// For simplicity of the test the image is shared between a Dawn device and
-// itself: we render to it using the Dawn device, then re-associate it to a
-// Dawn texture and read back the values that were written.
+// We render to the `SharedImage` via GL, re-associate it to a Dawn texture,
+// and read back the values that were written.
 TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
   if (ShouldSkipTest())
     return;
@@ -96,17 +95,18 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
 
   // Create the shared image
   SharedImageInterface* sii = gl_context_->GetSharedImageInterface();
-  Mailbox gl_mailbox =
-      sii->CreateSharedImage(viz::SinglePlaneFormat::kRGBA_8888, {1, 1},
-                             gfx::ColorSpace::CreateSRGB(),
-                             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                             SHARED_IMAGE_USAGE_GLES2_WRITE, "TestLabel",
-                             kNullSurfaceHandle)
-          ->mailbox();
+  scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
+      {viz::SinglePlaneFormat::kRGBA_8888,
+       {1, 1},
+       gfx::ColorSpace::CreateSRGB(),
+       SharedImageUsageSet(
+           {SHARED_IMAGE_USAGE_GLES2_WRITE, SHARED_IMAGE_USAGE_WEBGPU_READ}),
+       "TestLabel"},
+      kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   gl()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
-  GLuint texture =
-      gl()->CreateAndTexStorage2DSharedImageCHROMIUM(gl_mailbox.name);
+  GLuint texture = gl()->CreateAndTexStorage2DSharedImageCHROMIUM(
+      shared_image->mailbox().name);
 
   gl()->BeginSharedImageAccessDirectCHROMIUM(
       texture, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
@@ -135,10 +135,10 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
     gpu::webgpu::ReservedTexture reservation =
         webgpu()->ReserveTexture(device.Get());
 
-    webgpu()->AssociateMailbox(reservation.deviceId,
-                               reservation.deviceGeneration, reservation.id,
-                               reservation.generation, WGPUTextureUsage_CopySrc,
-                               webgpu::WEBGPU_MAILBOX_NONE, gl_mailbox);
+    webgpu()->AssociateMailbox(
+        reservation.deviceId, reservation.deviceGeneration, reservation.id,
+        reservation.generation, WGPUTextureUsage_CopySrc,
+        webgpu::WEBGPU_MAILBOX_NONE, shared_image->mailbox());
     wgpu::Texture wgpu_texture = wgpu::Texture::Acquire(reservation.texture);
 
     // Copy the texture in a mappable buffer.
@@ -169,12 +169,12 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
     webgpu()->DissociateMailbox(reservation.id, reservation.generation);
 
     // Map the buffer and assert the pixel is the correct value.
-    readback_buffer.MapAsync(wgpu::MapMode::Read, 0, 4, ToMockBufferMapCallback,
-                             nullptr);
+    readback_buffer.MapAsync(wgpu::MapMode::Read, 0, 4,
+                             wgpu::CallbackMode::AllowSpontaneous,
+                             ToMockBufferMapCallback);
     EXPECT_CALL(*mock_buffer_map_callback,
-                Call(WGPUBufferMapAsyncStatus_Success, nullptr))
+                Call(wgpu::MapAsyncStatus::Success, nullptr))
         .Times(1);
-
     WaitForCompletion(device);
 
     const void* data = readback_buffer.GetConstMappedRange(0, 4);

@@ -5,16 +5,21 @@
 #ifndef PDF_UI_THUMBNAIL_H_
 #define PDF_UI_THUMBNAIL_H_
 
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace chrome_pdf {
 
+class Thumbnail;
+
+using SendThumbnailCallback = base::OnceCallback<void(Thumbnail)>;
+
 class Thumbnail final {
  public:
   Thumbnail(const gfx::Size& page_size, float device_pixel_ratio);
-  Thumbnail(Thumbnail&& other);
-  Thumbnail& operator=(Thumbnail&& other);
+  Thumbnail(Thumbnail&& other) noexcept;
+  Thumbnail& operator=(Thumbnail&& other) noexcept;
   ~Thumbnail();
 
   float device_pixel_ratio() const { return device_pixel_ratio_; }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_ITEM_SPAN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_ITEM_SPAN_H_
 
@@ -38,7 +43,7 @@ struct InlineItemSpan final {
 
   const InlineItem* begin() const {
     SECURITY_DCHECK(begin_ < data_->items.size());
-    return data_->items.begin() + begin_;
+    return data_->items.data() + begin_;
   }
   const InlineItem* end() const {
     SECURITY_DCHECK(begin_ + size_ <= data_->items.size());

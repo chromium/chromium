@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
 
 #include "base/command_line.h"
@@ -17,6 +22,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -46,7 +52,7 @@ namespace {
 // The default set of engines (when no country is available) has ids 1, 2
 // and 3. The ID 83 is associated with mail.ru, chosen because it's not part
 // of the prepopulated set where we run tests.
-// TODO(crbug.com/1500526): Update the test to fix the country in such a way
+// TODO(crbug.com/40940777): Update the test to fix the country in such a way
 // that we have more control on what is in the prepopulated set or not.
 const int kTestExtensionPrepopulatedId = 83;
 // TemplateURLData with search engines settings from test extension manifest.
@@ -58,7 +64,7 @@ std::unique_ptr<TemplateURLData> TestExtensionSearchEngine(Profile* profile) {
   // Enforcing that `kTestExtensionPrepopulatedId` is not part of the
   // prepopulated set for the current profile's country.
   for (auto& data : TemplateURLPrepopulateData::GetPrepopulatedEngines(
-           prefs, search_engine_choice_service, nullptr)) {
+           prefs, search_engine_choice_service)) {
     EXPECT_NE(data->prepopulate_id, kTestExtensionPrepopulatedId);
   }
 

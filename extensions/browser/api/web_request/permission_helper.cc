@@ -5,6 +5,7 @@
 #include "extensions/browser/api/web_request/permission_helper.h"
 
 #include "base/no_destructor.h"
+#include "build/android_buildflags.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -54,9 +55,39 @@ void BrowserContextKeyedAPIFactory<
   DependsOn(ProcessMapFactory::GetInstance());
   // Used in CanCrossIncognito().
   DependsOn(ExtensionPrefsFactory::GetInstance());
-  // For ShouldHideBrowserNetworkRequest().
-  for (auto* factory : ExtensionsAPIClient::Get()->GetFactoryDependencies())
+
+  // `ShouldHideBrowserNetworkRequest()` relies on the ExtensionsAPIClient,
+  // which itself uses varioius KeyedServices. Thus, this KeyedService
+  // implicitly depends upon those.
+  ExtensionsAPIClient* extensions_api_client = ExtensionsAPIClient::Get();
+
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  // TODO(https://crbug.com/356905053): On Android, the startup and
+  // initialization flow is different.
+  // ExtensionsAPIClient is instantiated as part of the ExtensionsBrowserClient,
+  // which in turn is created as part of BrowserProcessImpl::Init(). On
+  // most desktop platforms, this happens before any profile initialization,
+  // which means KeyedServices and factories can rely on the
+  // ExtensionsBrowserClient and related classes existing.
+  // On Android, however, because of StartupData (from
+  // //chrome/browser/startup_data), the profile initialization happens *before*
+  // the BrowserProcess is initialized, and as part of profile initialization,
+  // we instantiate KeyedService factories. This, in turn, means that the
+  // ExtensionsBrowserClient (and other global state we expect to "always exist"
+  // is not ready at this point.
+  // This doesn't matter at this point yet, since the desktop-android
+  // implementation of the ExtensionsAPIClient has no factory dependencies. But
+  // in general, this is no good, and we'll definitely need to fix it.
+  if (!extensions_api_client) {
+    return;
+  }
+#endif
+
+  CHECK(extensions_api_client);
+
+  for (auto* factory : ExtensionsAPIClient::Get()->GetFactoryDependencies()) {
     DependsOn(factory);
+  }
 }
 
 }  // namespace extensions

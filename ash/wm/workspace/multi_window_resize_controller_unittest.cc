@@ -28,6 +28,7 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/class_property.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -131,27 +132,27 @@ TEST_F(MultiWindowResizeControllerTest, IsOverWindows) {
   //  |        | w3     |
   //  |________|________|
   std::unique_ptr<views::Widget> w1(new views::Widget);
-  views::Widget::InitParams params1;
+  views::Widget::InitParams params1(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   params1.delegate = new TestWidgetDelegateAsh();
-  params1.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params1.bounds = gfx::Rect(100, 200);
   params1.context = GetContext();
   w1->Init(std::move(params1));
   w1->Show();
 
   std::unique_ptr<views::Widget> w2(new views::Widget);
-  views::Widget::InitParams params2;
+  views::Widget::InitParams params2(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   params2.delegate = new TestWidgetDelegateAsh();
-  params2.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params2.bounds = gfx::Rect(100, 0, 100, 100);
   params2.context = GetContext();
   w2->Init(std::move(params2));
   w2->Show();
 
   std::unique_ptr<views::Widget> w3(new views::Widget);
-  views::Widget::InitParams params3;
+  views::Widget::InitParams params3(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   params3.delegate = new TestWidgetDelegateAsh();
-  params3.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params3.bounds = gfx::Rect(100, 100, 100, 100);
   params3.context = GetContext();
   w3->Init(std::move(params3));
@@ -402,28 +403,34 @@ TEST_F(MultiWindowResizeControllerTest, WindowStateChange) {
   EXPECT_TRUE(IsShowing());
 
   // Maxmize one window should dismiss the resizer.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMaximized);
   EXPECT_FALSE(IsShowing());
 
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kNormal);
   generator->MoveMouseTo(w1_center_in_screen);
   ShowNow();
   EXPECT_TRUE(IsShowing());
 
   // Entering Fullscreen should dismiss the resizer.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kFullscreen);
   EXPECT_FALSE(IsShowing());
 
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kNormal);
   generator->MoveMouseTo(w1_center_in_screen);
   ShowNow();
   EXPECT_TRUE(IsShowing());
 
   // Minimize one window should dimiss the resizer.
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kMinimized);
   EXPECT_FALSE(IsShowing());
 
-  w1->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  w1->SetProperty(aura::client::kShowStateKey,
+                  ui::mojom::WindowShowState::kNormal);
   generator->MoveMouseTo(w1_center_in_screen);
   ShowNow();
   EXPECT_TRUE(IsShowing());

@@ -18,71 +18,16 @@ BASE_FEATURE(kEnableOverwritingPlaceholderUsernames,
              "EnableOverwritingPlaceholderUsernames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// When enabled, initial sync will be forced during startup if the password
-// store has encryption service failures.
-BASE_FEATURE(kForceInitialSyncWhenDecryptionFails,
-             "ForceInitialSyncWhenDecryptionFails",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-// When enabled, username fields for forgot password flows are recognized
-// and filled.
-BASE_FEATURE(kForgotPasswordFormSupport,
-             "ForgotPasswordFormSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_IOS)
-// Enables password bottom sheet to be displayed (on iOS) when a user is
-// signed-in and taps on a username or password field on a website that has at
-// least one credential saved in their password manager.
-BASE_FEATURE(kIOSPasswordBottomSheet,
-             "IOSPasswordBottomSheet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables password bottom sheet to be triggered on autofocus events (on iOS).
 BASE_FEATURE(kIOSPasswordBottomSheetAutofocus,
              "kIOSPasswordBottomSheetAutofocus",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, eligible users will be given the possibility to bulk upload
-// local passwords in the iOS password settings.
-BASE_FEATURE(kIOSPasswordSettingsBulkUploadLocalPasswords,
-             "IOSPasswordSettingsBulkUploadLocalPasswords",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // IS_IOS
-
-// Killswitch for changes regarding password issues in
-// `PasswordSpcificsMetadata`. Guards writing issues to metadata and preserving
-// the new notification field.
-BASE_FEATURE(kPasswordIssuesInSpecificsMetadata,
-             "PasswordIssuesInSpecificsMetadata",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables sending credentials from the settings UI.
-BASE_FEATURE(kSendPasswords,
-             "SendPasswords",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables filling and saving for forms in shadow DOM.
-BASE_FEATURE(kShadowDomSupport,
-             "ShadowDomSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables .well-known based password change flow from leaked password dialog.
-BASE_FEATURE(kPasswordChangeWellKnown,
-             "PasswordChangeWellKnown",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables password reuse detection.
 BASE_FEATURE(kPasswordReuseDetectionEnabled,
              "PasswordReuseDetectionEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables showing UI which allows users to easily revert their choice to
-// never save passwords on a certain website.
-BASE_FEATURE(kRecoverFromNeverSaveAndroid,
-             "RecoverFromNeverSaveAndroid_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Removes password suggestion filtering by username.
@@ -90,17 +35,13 @@ BASE_FEATURE(kNoPasswordSuggestionFiltering,
              "NoPasswordSuggestionFiltering",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows to show suggestions automatically when password forms are autofocused
+// on pageload.
+BASE_FEATURE(kShowSuggestionsOnAutofocus,
+             "ShowSuggestionsOnAutofocus",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
-// Use GMS AccountSettings to manage passkeys when UPM is not available.
-BASE_FEATURE(kPasskeyManagementUsingAccountSettingsAndroid,
-             "PasskeyManagementUsingAccountSettingsAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables the Password generation bottom sheet.
-BASE_FEATURE(kPasswordGenerationBottomSheet,
-             "PasswordGenerationBottomSheet",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the refactored Password Suggestion bottom sheet (Touch-To-Fill).
 // The goal of the refactoring is to transfer the knowledge about the
 // Touch-To-Fill feature to the browser code completely and so to simplify the
@@ -117,14 +58,6 @@ BASE_FEATURE(kPasswordSuggestionBottomSheetV2,
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
              "UnifiedPasswordManagerLocalPasswordsMigrationWarning",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, the built-in sync functionality in PasswordSyncBridge becomes
-// unused, meaning that SyncService/SyncEngine will no longer download or
-// upload changes to/from the Sync server. Instead, an external Android-specific
-// backend will be used to achieve similar behavior.
-BASE_FEATURE(kUnifiedPasswordManagerSyncUsingAndroidBackendOnly,
-             "UnifiedPasswordManagerSyncUsingAndroidBackendOnly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -159,12 +92,5 @@ const char kGenerationRequirementsPrefixLength[] = "prefix_length";
 // high values is not strong.
 // Default to 5000 ms.
 const char kGenerationRequirementsTimeout[] = "timeout";
-
-#if BUILDFLAG(IS_IOS)
-bool IsBulkUploadLocalPasswordsEnabled() {
-  return base::FeatureList::IsEnabled(
-      kIOSPasswordSettingsBulkUploadLocalPasswords);
-}
-#endif  // IS_IOS
 
 }  // namespace password_manager::features

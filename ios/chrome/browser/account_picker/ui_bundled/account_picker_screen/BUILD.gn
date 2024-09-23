@@ -1,0 +1,25 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("account_picker_screen") {
+  sources = [
+    "account_picker_screen_constants.h",
+    "account_picker_screen_constants.mm",
+    "account_picker_screen_navigation_controller.h",
+    "account_picker_screen_navigation_controller.mm",
+    "account_picker_screen_presentation_controller.h",
+    "account_picker_screen_presentation_controller.mm",
+    "account_picker_screen_slide_transition_animator.h",
+    "account_picker_screen_slide_transition_animator.mm",
+    "account_picker_screen_view_controller.h",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/browser/account_picker/ui_bundled:account_picker_layout",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util/image",
+    "//ios/chrome/common/ui/util",
+  ]
+}

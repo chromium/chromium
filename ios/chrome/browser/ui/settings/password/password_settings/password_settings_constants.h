@@ -17,9 +17,6 @@ extern NSString* const kPasswordSettingsExportConfirmViewId;
 extern NSString* const kPasswordSettingsSavePasswordSwitchTableViewId;
 extern NSString* const kPasswordSettingsManagedSavePasswordSwitchTableViewId;
 
-// Accessibility ID for the switch controlling the account storage setting.
-extern NSString* const kPasswordSettingsAccountStorageSwitchTableViewId;
-
 // Accessibility IDs for the sections/items pertaining to bulk move passwords to
 // account.
 extern NSString* const

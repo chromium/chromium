@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal_processor.h"
+
+#include <array>
+
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "crypto/sha2.h"
@@ -19,8 +22,8 @@ using TabsExecuteScriptInfo =
 using ScriptInfo =
     ExtensionTelemetryReportRequest_SignalInfo_TabsExecuteScriptInfo_ScriptInfo;
 
-constexpr const char* kExtensionId[] = {"aaaaaaaabbbbbbbbccccccccdddddddd",
-                                        "eeeeeeeeffffffffgggggggghhhhhhhh"};
+constexpr auto kExtensionId = std::to_array(
+    {"aaaaaaaabbbbbbbbccccccccdddddddd", "eeeeeeeeffffffffgggggggghhhhhhhh"});
 
 struct ScriptData {
   explicit ScriptData(const std::string& script_code)
@@ -32,11 +35,11 @@ struct ScriptData {
 class TabsExecuteScriptSignalProcessorTest : public ::testing::Test {
  protected:
   TabsExecuteScriptSignalProcessorTest()
-      : script_data_{{ScriptData("document.write('Hello World')")},
-                     {ScriptData("document.write('Goodbye World')")}} {}
+      : script_data_{ScriptData("document.write('Hello World')"),
+                     ScriptData("document.write('Goodbye World')")} {}
 
   TabsExecuteScriptSignalProcessor processor_;
-  const ScriptData script_data_[2];
+  const std::array<ScriptData, 2> script_data_;
 };
 
 TEST_F(TabsExecuteScriptSignalProcessorTest, NoDataPresentInitially) {

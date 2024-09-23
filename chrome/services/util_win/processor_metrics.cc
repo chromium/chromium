@@ -5,10 +5,13 @@
 #include "chrome/services/util_win/processor_metrics.h"
 
 #include <objbase.h>
+
 #include <sysinfoapi.h>
 #include <wbemidl.h>
 #include <winbase.h>
 #include <wrl/client.h>
+
+#include <string_view>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -102,7 +105,7 @@ void RecordProcessorMetricsFromWMI(const ComPtr<IWbemServices>& services) {
   }
 }
 
-// TODO(crbug.com/1136224) Can be removed once CET support is stable.
+// TODO(crbug.com/40152192) Can be removed once CET support is stable.
 void RecordCetAvailability() {
   bool available = false;
   auto is_user_cet_available_in_environment =
@@ -127,7 +130,7 @@ void RecordCetAvailability() {
   }
 }
 
-void RecordEnclaveAvailabilityInternal(base::StringPiece type,
+void RecordEnclaveAvailabilityInternal(std::string_view type,
                                        DWORD enclave_type) {
   // This API does not appear to be exported from kernel32.dll on
   // Windows 10.0.10240.

@@ -33,6 +33,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -53,6 +54,7 @@ public class CardUnmaskPrompt
     private static CardUnmaskObserverForTest sObserverForTest;
 
     private final CardUnmaskPromptDelegate mDelegate;
+    private final PersonalDataManager mPersonalDataManager;
     private PropertyModel mDialogModel;
     private boolean mShouldRequestExpirationDate;
 
@@ -159,6 +161,7 @@ public class CardUnmaskPrompt
     public CardUnmaskPrompt(
             Context context,
             CardUnmaskPromptDelegate delegate,
+            PersonalDataManager personalDataManager,
             String title,
             String instructions,
             int cardIconId,
@@ -176,6 +179,7 @@ public class CardUnmaskPrompt
             boolean defaultUseScreenlockChecked,
             long successMessageDurationMilliseconds) {
         mDelegate = delegate;
+        mPersonalDataManager = personalDataManager;
         mGooglePayDrawableId = googlePayDrawableId;
         mIsVirtualCard = isVirtualCard;
 
@@ -183,13 +187,14 @@ public class CardUnmaskPrompt
         mMainView = inflater.inflate(R.layout.autofill_card_unmask_prompt, null);
         AutofillUiUtils.addCardDetails(
                 context,
+                mPersonalDataManager,
                 mMainView,
                 cardName,
                 cardLastFourDigits,
                 cardExpiration,
                 cardArtUrl,
                 cardIconId,
-                AutofillUiUtils.CardIconSize.LARGE,
+                ImageSize.LARGE,
                 R.dimen.card_unmask_dialog_credit_card_icon_end_margin,
                 /* cardNameAndNumberTextAppearance= */ R.style.TextAppearance_TextLarge_Primary,
                 /* cardLabelTextAppearance= */ R.style.TextAppearance_TextMedium_Secondary,
@@ -197,20 +202,20 @@ public class CardUnmaskPrompt
                         cardArtUrl, /* isVirtualCard= */ isVirtualCard));
 
         updateTitleForCustomView(title, context);
-        mInstructions = (TextView) mMainView.findViewById(R.id.instructions);
+        mInstructions = mMainView.findViewById(R.id.instructions);
         mInstructions.setText(instructions);
-        mNoRetryErrorMessage = (TextView) mMainView.findViewById(R.id.no_retry_error_message);
-        mCardUnmaskInput = (EditText) mMainView.findViewById(R.id.card_unmask_input);
+        mNoRetryErrorMessage = mMainView.findViewById(R.id.no_retry_error_message);
+        mCardUnmaskInput = mMainView.findViewById(R.id.card_unmask_input);
         if (isVirtualCard) {
             mCardUnmaskInput.setHint("");
         }
-        mMonthInput = (EditText) mMainView.findViewById(R.id.expiration_month);
-        mYearInput = (EditText) mMainView.findViewById(R.id.expiration_year);
+        mMonthInput = mMainView.findViewById(R.id.expiration_month);
+        mYearInput = mMainView.findViewById(R.id.expiration_year);
         mExpirationContainer = mMainView.findViewById(R.id.expiration_container);
-        mNewCardLink = (TextView) mMainView.findViewById(R.id.new_card_link);
+        mNewCardLink = mMainView.findViewById(R.id.new_card_link);
         mNewCardLink.setOnClickListener(this);
-        mErrorMessage = (TextView) mMainView.findViewById(R.id.error_message);
-        mUseScreenlockCheckbox = (CheckBox) mMainView.findViewById(R.id.use_screenlock_checkbox);
+        mErrorMessage = mMainView.findViewById(R.id.error_message);
+        mUseScreenlockCheckbox = mMainView.findViewById(R.id.use_screenlock_checkbox);
         mUseScreenlockCheckbox.setChecked(defaultUseScreenlockChecked);
         if (!shouldOfferWebauthn) {
             mUseScreenlockCheckbox.setVisibility(View.GONE);
@@ -218,13 +223,12 @@ public class CardUnmaskPrompt
         }
         logCheckBoxInitialStateStats(mUseScreenlockCheckbox.isChecked());
         mUseScreenlockCheckbox.setOnCheckedChangeListener(this);
-        mControlsContainer = (ViewGroup) mMainView.findViewById(R.id.controls_container);
+        mControlsContainer = mMainView.findViewById(R.id.controls_container);
         mVerificationOverlay = mMainView.findViewById(R.id.verification_overlay);
-        mVerificationProgressBar =
-                (ProgressBar) mMainView.findViewById(R.id.verification_progress_bar);
-        mVerificationView = (TextView) mMainView.findViewById(R.id.verification_message);
+        mVerificationProgressBar = mMainView.findViewById(R.id.verification_progress_bar);
+        mVerificationView = mMainView.findViewById(R.id.verification_message);
         mSuccessMessageDurationMilliseconds = successMessageDurationMilliseconds;
-        ImageView cvcHintImage = (ImageView) mMainView.findViewById(R.id.cvc_hint_image);
+        ImageView cvcHintImage = mMainView.findViewById(R.id.cvc_hint_image);
         cvcHintImage.setImageResource(cvcDrawableId);
         cvcHintImage.setContentDescription(cvcImageAnnouncement);
 
@@ -333,7 +337,7 @@ public class CardUnmaskPrompt
     }
 
     private void updateTitleForCustomView(String title, Context context) {
-        TextView titleView = (TextView) mMainView.findViewById(R.id.title);
+        TextView titleView = mMainView.findViewById(R.id.title);
         titleView.setText(title);
     }
 

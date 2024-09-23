@@ -53,7 +53,7 @@ struct UrlLoadParams;
 // `targetMode`.
 - (void)expectNewForegroundTabForMode:(ApplicationMode)targetMode;
 
-// TODO(crbug.com/907527): refactor to remove this and most methods above.
+// TODO(crbug.com/41427539): refactor to remove this and most methods above.
 @property(nonatomic, readonly) Browser* currentBrowserForURLLoading;
 
 @end

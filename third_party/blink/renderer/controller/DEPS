@@ -9,4 +9,9 @@ include_rules = [
     "+third_party/blink/renderer/modules",
     "+third_party/blink/renderer/platform",
     "+web",
+
+    # `#include "partition_alloc/..."` is prefered to
+    # `#include "base/allocator/partition_allocator/src/partition_alloc/..."`.
+    "+partition_alloc",
+    "-base/allocator/partition_allocator",
 ]

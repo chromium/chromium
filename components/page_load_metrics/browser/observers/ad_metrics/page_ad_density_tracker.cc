@@ -28,7 +28,7 @@ int CalculateIntersectedLength(int start1, int end1, int start2, int end2) {
 // This counts each overlapping area a single time and does not include areas
 // where there is no line segment.
 //
-// TODO(https://crbug.com/1068586): Optimize segment length calculation.
+// TODO(crbug.com/40683539): Optimize segment length calculation.
 // AddSegment and RemoveSegment are both logarithmic operations, making this
 // linearithmic with the number of segments. However the expected number
 // of segments at any given time in the density calculation is low.
@@ -231,7 +231,7 @@ void PageAdDensityTracker::AddRect(RectId rect_id,
                                  RectEventSetIterators(top_it, bottom_it));
 
   if (recalculate_density) {
-    // TODO(https://crbug.com/1068586): Improve performance by adding additional
+    // TODO(crbug.com/40683539): Improve performance by adding additional
     // throttling to only calculate when max density can decrease (frame deleted
     // or moved).
     CalculatePageAdDensity();

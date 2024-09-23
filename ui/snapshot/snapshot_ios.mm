@@ -31,9 +31,9 @@ UIImage* GetViewSnapshot(UIView* view, CGRect bounds) {
 
 }  // namespace
 
-void GrabViewSnapshotAsync(gfx::NativeView view,
-                           const gfx::Rect& source_rect,
-                           GrabSnapshotImageCallback callback) {
+void GrabViewSnapshot(gfx::NativeView view,
+                      const gfx::Rect& source_rect,
+                      GrabSnapshotImageCallback callback) {
   gfx::Image image;
 
   UIView* source_view = view.Get();
@@ -47,9 +47,9 @@ void GrabViewSnapshotAsync(gfx::NativeView view,
   std::move(callback).Run(image);
 }
 
-void GrabWindowSnapshotAsync(gfx::NativeWindow window,
-                             const gfx::Rect& source_rect,
-                             GrabSnapshotImageCallback callback) {
+void GrabWindowSnapshot(gfx::NativeWindow window,
+                        const gfx::Rect& source_rect,
+                        GrabSnapshotImageCallback callback) {
   gfx::Image image;
 
   UIWindow* source_window = window.Get();

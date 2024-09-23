@@ -24,12 +24,12 @@
 #include "net/base/net_export.h"
 #include "net/base/privacy_mode.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/cookies/cookie_util.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/http/http_request_info.h"
 #include "net/socket/connection_attempts.h"
 #include "net/url_request/url_request_job.h"
-#include "net/url_request/url_request_throttler_entry_interface.h"
 
 namespace net {
 
@@ -75,6 +75,7 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   ConnectionAttempts GetConnectionAttempts() const override;
   void CloseConnectionOnDestruction() override;
   std::unique_ptr<SourceStream> SetUpSourceStream() override;
+  cookie_util::StorageAccessStatus StorageAccessStatus() const override;
 
   RequestPriority priority() const {
     return priority_;
@@ -126,6 +127,11 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
       CookieAccessResultList& excluded_cookies) const;
   void SaveCookiesAndNotifyHeadersComplete(int result);
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  // Process the DBSC header, if one exists.
+  void ProcessDeviceBoundSessionsHeader();
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
   // Processes the Strict-Transport-Security header, if one exists.
   void ProcessStrictTransportSecurityHeader();
 
@@ -168,8 +174,13 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   int ReadRawData(IOBuffer* buf, int buf_size) override;
   int64_t GetTotalReceivedBytes() const override;
   int64_t GetTotalSentBytes() const override;
+  int64_t GetReceivedBodyBytes() const override;
   void DoneReading() override;
   void DoneReadingRedirectResponse() override;
+  void DoneReadingRetryResponse() override;
+  bool NeedsRetryWithStorageAccess() override;
+  void SetSharedDictionaryGetter(
+      SharedDictionaryGetter shared_dictionary_getter) override;
 
   IPEndPoint GetResponseRemoteEndpoint() const override;
   void NotifyURLRequestDestroyed() override;
@@ -227,6 +238,9 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // in a request.
   bool ShouldRecordPartitionedCookieUsage() const;
 
+  // Applies the relevant Sec-Fetch-Storage-Access header if needed.
+  void MaybeSetSecFetchStorageAccessHeader();
+
   RequestPriority priority_ = DEFAULT_PRIORITY;
 
   HttpRequestInfo request_info_;
@@ -250,10 +264,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // itself owned by one of those, so `response_info_` needs to be destroyed
   // first.
   raw_ptr<const HttpResponseInfo> response_info_ = nullptr;
-
-  // This is used to supervise traffic and enforce exponential
-  // back-off. May be NULL.
-  scoped_refptr<URLRequestThrottlerEntryInterface> throttling_entry_;
 
   base::Time request_creation_time_;
 
@@ -306,6 +316,13 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // The First-Party Set metadata associated with this job. Set when the job is
   // started.
   FirstPartySetMetadata first_party_set_metadata_;
+
+  // The level of storage access available to this request. Note that this
+  // member is not set during construction; it is only set on request legs that
+  // include the Sec-Fetch-Storage-Access request header. (In particular, this
+  // excludes same-site requests and requests that cannot include cookies.)
+  cookie_util::StorageAccessStatus storage_access_status_ =
+      cookie_util::StorageAccessStatus::kNone;
 
   base::WeakPtrFactory<URLRequestHttpJob> weak_factory_{this};
 };

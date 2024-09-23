@@ -8,7 +8,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "third_party/google_benchmark/src/include/benchmark/benchmark.h"
 #include "url/gurl.h"
 
@@ -16,8 +16,8 @@ namespace net {
 
 namespace {
 
-spdy::Http2HeaderBlock MakeHeaderBlock() {
-  spdy::Http2HeaderBlock headers;
+quiche::HttpHeaderBlock MakeHeaderBlock() {
+  quiche::HttpHeaderBlock headers;
   headers[":status"] = "200";
   headers["date"] = "Thu, 14 Sep 2023 12:40:24 GMT";
   headers["server"] = "server1234.example.com";
@@ -57,7 +57,7 @@ spdy::Http2HeaderBlock MakeHeaderBlock() {
 
 using SpdyHeadersToHttpResponseHeadersFunctionPtrType =
     base::expected<scoped_refptr<HttpResponseHeaders>, int> (*)(
-        const spdy::Http2HeaderBlock&);
+        const quiche::HttpHeaderBlock&);
 
 // The benchmark code is templated on the function to force it to be specialized
 // at compile time so there is no indirection via a function pointer at runtime
@@ -110,7 +110,7 @@ void BM_CreateSpdyHeadersFromHttpRequest(::benchmark::State& state) {
       "Chrome/117.0.0.0 Safari/537.36");
 
   for (auto _ : state) {
-    spdy::Http2HeaderBlock headers;
+    quiche::HttpHeaderBlock headers;
     CreateSpdyHeadersFromHttpRequest(info, RequestPriority::DEFAULT_PRIORITY,
                                      http_request_headers, &headers);
     ::benchmark::DoNotOptimize(headers);

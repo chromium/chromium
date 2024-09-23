@@ -55,6 +55,18 @@ class DownloadsListTracker
   // Stops sending updates to the page.
   void Stop();
 
+  // Returns the number of dangerous download items that have been sent to the
+  // page. Does not count those which we know about but are not yet displayed
+  // on the page, e.g. due to not having scrolled far enough yet.
+  // Note this includes items that have been cancelled; they still display a
+  // warning in grayed out text.
+  int NumDangerousItemsSent() const;
+
+  // Returns the first dangerous item that is not cancelled, i.e. it is the
+  // first (topmost) item to be shown on the page with an active warning.
+  // Returns nullptr if none are found.
+  download::DownloadItem* GetFirstActiveWarningItem();
+
   content::DownloadManager* GetMainNotifierManager() const;
   content::DownloadManager* GetOriginalNotifierManager() const;
 
@@ -93,6 +105,21 @@ class DownloadsListTracker
                            CreateDownloadData_UrlFormatting_Long);
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
                            CreateDownloadData_UrlFormatting_VeryLong);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_ReferrerUrlPresent);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_ReferrerUrlNotPresent);
+  FRIEND_TEST_ALL_PREFIXES(
+      DownloadsListTrackerTest,
+      CreateDownloadData_ReferrerUrlFormatting_OmitUserPass);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_ReferrerUrlFormatting_Idn);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_ReferrerUrlFormatting_Long);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
+                           CreateDownloadData_ReferrerUrlFormatting_VeryLong);
+  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest, RenamingProgress);
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
                            CreateDownloadData_SafeBrowsing);
@@ -126,6 +153,9 @@ class DownloadsListTracker
   // Removes the item that corresponds to |remove| and sends "removeItems"
   // if sending updates.
   void RemoveItem(const SortedSet::iterator& remove);
+
+  // Calculates and returns the percent complete of |download_item|.
+  int GetPercentComplete(download::DownloadItem* download_item) const;
 
   download::AllDownloadItemNotifier main_notifier_;
   std::unique_ptr<download::AllDownloadItemNotifier> original_notifier_;

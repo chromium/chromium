@@ -105,16 +105,10 @@ class ImageSkiaStorage : public base::RefCountedThreadSafe<ImageSkiaStorage> {
 
   // Returns the iterator of the image rep whose density best matches
   // |scale|. If the image for the |scale| doesn't exist in the storage and
-  // |storage| is set, it fetches new image by calling
-  // |ImageSkiaSource::GetImageForScale|. There are two modes to deal with
-  // arbitrary scale factors.
-  // 1: Invoke GetImageForScale with requested scale and if the source
-  //   returns the image with different scale (if the image doesn't exist in
-  //   resource, for example), it will fallback to closest image rep.
-  // 2: Invoke GetImageForScale with the closest known scale to the requested
-  //   one and rescale the image.
-  // Right now only Windows uses 2 and other platforms use 1 by default.
-  // TODO(mukai, oshima): abandon 1 code path and use 2 for every platforms.
+  // |source_| is set, it fetches new image by calling
+  // |ImageSkiaSource::GetImageForScale|. Arbitrary scale factors are dealt by
+  // invoking GetImageForScale with the closest known scale to the requested
+  // one and rescaling the image.
   std::vector<ImageSkiaRep>::const_iterator FindRepresentation(
       float scale,
       bool fetch_new_image) const;
@@ -203,24 +197,42 @@ std::vector<ImageSkiaRep>::const_iterator ImageSkiaStorage::FindRepresentation(
     float scale,
     bool fetch_new_image) const {
   TRACE_EVENT0("ui", "ImageSkiaStorage::FindRepresentation");
-  auto closest_iter = image_reps_.end();
+
   auto exact_iter = image_reps_.end();
-  float smallest_diff = std::numeric_limits<float>::max();
-  for (auto it = image_reps_.begin(); it < image_reps_.end(); ++it) {
+  auto closest_downscale_iter = image_reps_.end();
+  auto closest_upscale_iter = image_reps_.end();
+  float smallest_downscale_diff = std::numeric_limits<float>::max();
+  float smallest_upscale_diff = std::numeric_limits<float>::max();
+  for (auto it = image_reps_.begin(); it != image_reps_.end(); ++it) {
     if (it->scale() == scale) {
       // found exact match
       fetch_new_image = false;
-      if (it->is_null())
+      if (it->is_null()) {
         continue;
+      }
       exact_iter = it;
       break;
     }
-    float diff = std::abs(it->scale() - scale);
-    if (diff < smallest_diff && !it->is_null()) {
-      closest_iter = it;
-      smallest_diff = diff;
+
+    if (it->is_null()) {
+      continue;
+    }
+
+    if (it->scale() > scale) {
+      float diff = it->scale() - scale;
+      if (diff < smallest_downscale_diff) {
+        closest_downscale_iter = it;
+        smallest_downscale_diff = diff;
+      }
+    } else {
+      float diff = scale - it->scale();
+      if (diff < smallest_upscale_diff) {
+        closest_upscale_iter = it;
+        smallest_upscale_diff = diff;
+      }
     }
   }
+
   if (fetch_new_image && source_) {
     DCHECK(sequence_checker_.CalledOnValidSequence())
         << "An ImageSkia with the source must be accessed by the same "
@@ -256,12 +268,25 @@ std::vector<ImageSkiaRep>::const_iterator ImageSkiaStorage::FindRepresentation(
       mutable_this->image_reps_.push_back(image);
     }
 
-    // image_reps_ should have the exact much now, or we will fallback
-    // to the new closest value. We pass false to prevent the generation step
-    // from running again and repeating the recursion.
-    return FindRepresentation(scale, false);
+    // If the source returned the new image, `image_reps_` should have the exact
+    // match now, or we will fallback to the new closest value. We pass false to
+    // prevent the generation step from running again and repeating the
+    // recursion.
+    return FindRepresentation(!image.is_null() ? image.scale() : scale, false);
   }
-  return exact_iter != image_reps_.end() ? exact_iter : closest_iter;
+
+  if (exact_iter != image_reps_.end()) {
+    return exact_iter;
+  }
+
+  // Prefer downscale over upscale which results in better quality, and is
+  // consistent with other places such as `IconImage::LoadImageForScaleAsync`.
+  // TODO(crbug.com/329953472): Use a predefined threshold.
+  if (closest_downscale_iter != image_reps_.end()) {
+    return closest_downscale_iter;
+  }
+
+  return closest_upscale_iter;
 }
 
 ImageSkiaStorage::~ImageSkiaStorage() = default;

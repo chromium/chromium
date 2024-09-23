@@ -22,6 +22,7 @@
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #if BUILDFLAG(IS_ANDROID)
@@ -89,8 +90,9 @@ class CastAudioManagerTest : public testing::Test {
       audio_manager_->Shutdown();
       audio_manager_.reset();
     }
-    if (audio_thread_.IsRunning())
+    if (audio_thread_.IsRunning()) {
       audio_thread_.Stop();
+    }
     CHECK(audio_thread_.StartAndWaitForTesting());
 
     mock_backend_factory_ = std::make_unique<MockCmaBackendFactory>();
@@ -137,10 +139,6 @@ class CastAudioManagerTest : public testing::Test {
     audio_thread_.FlushForTesting();
   }
 
-  void GetDefaultOutputStreamParameters(::media::AudioParameters* params) {
-    *params = device_info_accessor_->GetDefaultOutputStreamParameters();
-  }
-
   base::Thread audio_thread_;
   base::test::TaskEnvironment task_environment_;
   ::media::FakeAudioLogFactory fake_audio_log_factory_;
@@ -156,8 +154,10 @@ class CastAudioManagerTest : public testing::Test {
 };
 
 TEST_F(CastAudioManagerTest, HasValidOutputStreamParameters) {
-  ::media::AudioParameters params;
-  GetDefaultOutputStreamParameters(&params);
+  std::string default_device_id =
+      ::media::AudioDeviceDescription::kDefaultDeviceId;
+  ::media::AudioParameters params =
+      audio_manager_->GetOutputStreamParameters(default_device_id);
   EXPECT_TRUE(params.IsValid());
 }
 
@@ -185,8 +185,8 @@ TEST_F(CastAudioManagerTest, CanMakeStream) {
 TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
   const ::media::AudioParameters kAC3AudioParams(
       ::media::AudioParameters::AUDIO_BITSTREAM_AC3,
-      ::media::CHANNEL_LAYOUT_5_1, ::media::AudioParameters::kAudioCDSampleRate,
-      256);
+      ::media::ChannelLayoutConfig::FromLayout<::media::CHANNEL_LAYOUT_5_1>(),
+      ::media::AudioParameters::kAudioCDSampleRate, 256);
   ::media::AudioOutputStream* stream = audio_manager_->MakeAudioOutputStream(
       kAC3AudioParams, "", ::media::AudioManager::LogCallback());
   EXPECT_TRUE(stream);
@@ -208,8 +208,8 @@ TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
 TEST_F(CastAudioManagerTest, CanMakeDTSStream) {
   const ::media::AudioParameters kDTSAudioParams(
       ::media::AudioParameters::AUDIO_BITSTREAM_DTS,
-      ::media::CHANNEL_LAYOUT_5_1, ::media::AudioParameters::kAudioCDSampleRate,
-      256);
+      ::media::ChannelLayoutConfig::FromLayout<::media::CHANNEL_LAYOUT_5_1>,
+      ::media::AudioParameters::kAudioCDSampleRate, 256);
   ::media::AudioOutputStream* stream = audio_manager_->MakeAudioOutputStream(
       kDTSAudioParams, "", ::media::AudioManager::LogCallback());
   EXPECT_TRUE(stream);

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/extensions/api/notifications/notifications_api.h"
 
 #include <stddef.h>
@@ -39,6 +44,7 @@
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -87,14 +93,14 @@ const char kLowPriorityDeprecatedOnPlatform[] =
 
 // Given an extension id and another id, returns an id that is unique
 // relative to other extensions.
-std::string CreateScopedIdentifier(const std::string& extension_id,
+std::string CreateScopedIdentifier(const ExtensionId& extension_id,
                                    const std::string& id) {
   return extension_id + "-" + id;
 }
 
 // Removes the unique internal identifier to send the ID as the
 // extension expects it.
-std::string StripScopeFromIdentifier(const std::string& extension_id,
+std::string StripScopeFromIdentifier(const ExtensionId& extension_id,
                                      const std::string& scoped_id) {
   size_t index_of_separator = extension_id.length() + 1;
   DCHECK_LT(index_of_separator, scoped_id.length());
@@ -168,12 +174,12 @@ bool NotificationBitmapToGfxImage(
 bool ShouldShowOverCurrentFullscreenWindow(Profile* profile,
                                            const GURL& origin) {
   DCHECK(profile);
-  std::string extension_id =
+  ExtensionId extension_id =
       ExtensionNotificationHandler::GetExtensionId(origin);
   DCHECK(!extension_id.empty());
   AppWindowRegistry::AppWindowList windows =
       AppWindowRegistry::Get(profile)->GetAppWindowsForApp(extension_id);
-  for (auto* window : windows) {
+  for (AppWindow* window : windows) {
     if (window->IsFullscreen() && window->GetBaseWindow()->IsActive())
       return true;
   }
@@ -326,7 +332,7 @@ bool NotificationsApiFunction::CreateNotification(
   optional_fields.settings_button_handler =
       message_center::SettingsButtonHandler::INLINE;
 
-  // TODO(crbug.com/772004): Remove the manual limitation in favor of an IDL
+  // TODO(crbug.com/41348342): Remove the manual limitation in favor of an IDL
   // annotation once supported.
   if (id.size() > kNotificationIdLengthLimit) {
     *error =
@@ -407,7 +413,7 @@ bool NotificationsApiFunction::UpdateNotification(
       *error = kUnableToDecodeIconError;
       return false;
     }
-    notification->set_small_image(app_icon_mask);
+    notification->SetSmallImage(app_icon_mask);
     notification->set_small_image_needs_additional_masking(true);
   }
 
@@ -457,7 +463,7 @@ bool NotificationsApiFunction::UpdateNotification(
       *error = kExtraImageProvided;
       return false;
     }
-    notification->set_image(image);
+    notification->SetImage(image);
   }
 
   if (options->progress) {
@@ -570,7 +576,6 @@ NotificationsCreateFunction::RunNotificationsApi() {
   params_ = api::notifications::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
-  const std::string extension_id(extension_->id());
   std::string notification_id;
   if (params_->notification_id && !params_->notification_id->empty()) {
     // If the caller provided a notificationId, use that.

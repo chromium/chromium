@@ -29,7 +29,7 @@ class AppUpdate : public App {
 
 int AppUpdate::Initialize() {
   setup_lock_ =
-      ScopedLock::Create(kSetupMutex, updater_scope(), kWaitForSetupLock);
+      CreateScopedLock(kSetupMutex, updater_scope(), kWaitForSetupLock);
   return kErrorOk;
 }
 

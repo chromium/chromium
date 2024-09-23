@@ -5,9 +5,11 @@
 #include "components/permissions/bluetooth_chooser_controller.h"
 
 #include "base/check_op.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -72,9 +74,10 @@ std::u16string BluetoothChooserController::GetOption(size_t index) const {
   DCHECK_LT(index, devices_.size());
   const std::string& device_id = devices_[index].id;
   const auto& device_name_it = device_id_to_name_map_.find(device_id);
-  DCHECK(device_name_it != device_id_to_name_map_.end());
+  CHECK(device_name_it != device_id_to_name_map_.end(),
+        base::NotFatalUntil::M130);
   const auto& it = device_name_counts_.find(device_name_it->second);
-  DCHECK(it != device_name_counts_.end());
+  CHECK(it != device_name_counts_.end(), base::NotFatalUntil::M130);
   return it->second == 1
              ? device_name_it->second
              : l10n_util::GetStringFUTF16(
@@ -120,7 +123,7 @@ void BluetoothChooserController::OnAdapterPresenceChanged(
   ClearAllDevices();
   switch (presence) {
     case content::BluetoothChooser::AdapterPresence::ABSENT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case content::BluetoothChooser::AdapterPresence::POWERED_OFF:
       if (view()) {
@@ -175,7 +178,7 @@ void BluetoothChooserController::AddOrUpdateDevice(
       name_it->second = device_name;
 
       const auto& it = device_name_counts_.find(previous_device_name);
-      DCHECK(it != device_name_counts_.end());
+      CHECK(it != device_name_counts_.end(), base::NotFatalUntil::M130);
       DCHECK_GT(it->second, 0);
 
       if (--(it->second) == 0)
@@ -187,7 +190,7 @@ void BluetoothChooserController::AddOrUpdateDevice(
     auto device_it =
         base::ranges::find(devices_, device_id, &BluetoothDeviceInfo::id);
 
-    DCHECK(device_it != devices_.end());
+    CHECK(device_it != devices_.end(), base::NotFatalUntil::M130);
     // When Bluetooth device scanning stops, the |signal_strength_level|
     // is -1, and in this case, should still use the previously stored
     // signal strength level value.
@@ -221,7 +224,7 @@ void BluetoothChooserController::RemoveDevice(const std::string& device_id) {
     devices_.erase(device_it);
 
     const auto& it = device_name_counts_.find(name_it->second);
-    DCHECK(it != device_name_counts_.end());
+    CHECK(it != device_name_counts_.end(), base::NotFatalUntil::M130);
     DCHECK_GT(it->second, 0);
 
     if (--(it->second) == 0)
@@ -247,6 +250,30 @@ void BluetoothChooserController::ClearAllDevices() {
   devices_.clear();
   device_id_to_name_map_.clear();
   device_name_counts_.clear();
+}
+
+bool BluetoothChooserController::ShouldShowAdapterOffView() const {
+  return true;
+}
+
+int BluetoothChooserController::GetAdapterOffMessageId() const {
+  return IDS_BLUETOOTH_DEVICE_CHOOSER_ADAPTER_OFF;
+}
+
+int BluetoothChooserController::GetTurnAdapterOnLinkTextMessageId() const {
+  return IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ON_BLUETOOTH_LINK_TEXT;
+}
+
+bool BluetoothChooserController::ShouldShowAdapterUnauthorizedView() const {
+  return true;
+}
+
+int BluetoothChooserController::GetBluetoothUnauthorizedMessageId() const {
+  return IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH;
+}
+
+int BluetoothChooserController::GetAuthorizeBluetoothLinkTextMessageId() const {
+  return IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK_TEXT;
 }
 
 }  // namespace permissions

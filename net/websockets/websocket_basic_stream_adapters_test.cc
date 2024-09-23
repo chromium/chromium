@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -55,6 +55,7 @@
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_server_info.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/quic/test_quic_crypto_client_config_handle.h"
@@ -212,18 +213,18 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, Read) {
   EXPECT_TRUE(adapter.is_initialized());
 
   // Buffer larger than each MockRead.
-  const int kReadBufSize = 1024;
+  constexpr int kReadBufSize = 1024;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   int rv = adapter.Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
   ASSERT_EQ(3, rv);
-  EXPECT_EQ("foo", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("foo", std::string_view(read_buf->data(), rv));
 
   TestCompletionCallback callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
   ASSERT_EQ(3, rv);
-  EXPECT_EQ("bar", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("bar", std::string_view(read_buf->data(), rv));
 
   EXPECT_TRUE(data.AllReadDataConsumed());
   EXPECT_TRUE(data.AllWriteDataConsumed());
@@ -243,26 +244,26 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, ReadIntoSmallBuffer) {
   EXPECT_TRUE(adapter.is_initialized());
 
   // Buffer smaller than each MockRead.
-  const int kReadBufSize = 2;
+  constexpr int kReadBufSize = 2;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   int rv = adapter.Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
   ASSERT_EQ(2, rv);
-  EXPECT_EQ("fo", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("fo", std::string_view(read_buf->data(), rv));
 
   rv = adapter.Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
   ASSERT_EQ(1, rv);
-  EXPECT_EQ("o", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("o", std::string_view(read_buf->data(), rv));
 
   TestCompletionCallback callback1;
   rv = adapter.Read(read_buf.get(), kReadBufSize, callback1.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback1.WaitForResult();
   ASSERT_EQ(2, rv);
-  EXPECT_EQ("ba", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("ba", std::string_view(read_buf->data(), rv));
 
   rv = adapter.Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
   ASSERT_EQ(1, rv);
-  EXPECT_EQ("r", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("r", std::string_view(read_buf->data(), rv));
 
   EXPECT_TRUE(data.AllReadDataConsumed());
   EXPECT_TRUE(data.AllWriteDataConsumed());
@@ -315,7 +316,7 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, AsyncReadAndWrite) {
   WebSocketClientSocketHandleAdapter adapter(std::move(connection));
   EXPECT_TRUE(adapter.is_initialized());
 
-  const int kReadBufSize = 1024;
+  constexpr int kReadBufSize = 1024;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback read_callback;
   int rv = adapter.Read(read_buf.get(), kReadBufSize, read_callback.callback());
@@ -329,7 +330,7 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, AsyncReadAndWrite) {
 
   rv = read_callback.WaitForResult();
   ASSERT_EQ(6, rv);
-  EXPECT_EQ("foobar", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("foobar", std::string_view(read_buf->data(), rv));
 
   rv = write_callback.WaitForResult();
   ASSERT_EQ(3, rv);
@@ -344,7 +345,7 @@ class MockDelegate : public WebSocketSpdyStreamAdapter::Delegate {
   MOCK_METHOD(void, OnHeadersSent, (), (override));
   MOCK_METHOD(void,
               OnHeadersReceived,
-              (const spdy::Http2HeaderBlock&),
+              (const quiche::HttpHeaderBlock&),
               (override));
   MOCK_METHOD(void, OnClose, (int), (override));
 };
@@ -366,12 +367,12 @@ class WebSocketSpdyStreamAdapterTest : public TestWithTaskEnvironment {
 
   ~WebSocketSpdyStreamAdapterTest() override = default;
 
-  static spdy::Http2HeaderBlock RequestHeaders() {
+  static quiche::HttpHeaderBlock RequestHeaders() {
     return WebSocketHttp2Request("/", "www.example.org:443",
                                  "http://www.example.org", {});
   }
 
-  static spdy::Http2HeaderBlock ResponseHeaders() {
+  static quiche::HttpHeaderBlock ResponseHeaders() {
     return WebSocketHttp2Response({});
   }
 
@@ -672,6 +673,11 @@ TEST_F(WebSocketSpdyStreamAdapterTest, OnHeadersReceivedThenStreamEnd) {
   EXPECT_CALL(mock_delegate_, OnHeadersReceived(_));
   EXPECT_CALL(mock_delegate_, OnClose(ERR_CONNECTION_CLOSED));
 
+  // Must create buffer before `adapter`, since `adapter` doesn't hold onto a
+  // reference to it.
+  constexpr int kReadBufSize = 1024;
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
+
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
   WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
@@ -681,8 +687,6 @@ TEST_F(WebSocketSpdyStreamAdapterTest, OnHeadersReceivedThenStreamEnd) {
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-  constexpr int kReadBufSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback read_callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, read_callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -770,14 +774,14 @@ TEST_F(WebSocketSpdyStreamAdapterTest, Read) {
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-  const int kReadBufSize = 3;
+  constexpr int kReadBufSize = 3;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
   ASSERT_EQ(3, rv);
-  EXPECT_EQ("foo", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("foo", std::string_view(read_buf->data(), rv));
 
   // Read EOF to destroy the connection and the stream.
   // This calls SpdySession::Delegate::OnClose().
@@ -790,11 +794,11 @@ TEST_F(WebSocketSpdyStreamAdapterTest, Read) {
   // Two socket reads are concatenated by WebSocketSpdyStreamAdapter.
   rv = adapter.Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
   ASSERT_EQ(3, rv);
-  EXPECT_EQ("bar", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("bar", std::string_view(read_buf->data(), rv));
 
   rv = adapter.Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
   ASSERT_EQ(3, rv);
-  EXPECT_EQ("baz", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("baz", std::string_view(read_buf->data(), rv));
 
   // Even though connection and stream are already closed,
   // WebSocketSpdyStreamAdapter::Delegate::OnClose() is only called after all
@@ -840,14 +844,14 @@ TEST_F(WebSocketSpdyStreamAdapterTest, CallDelegateOnCloseShouldNotCrash) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Buffer larger than each MockRead.
-  const int kReadBufSize = 1024;
+  constexpr int kReadBufSize = 1024;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
   ASSERT_EQ(3, rv);
-  EXPECT_EQ("foo", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("foo", std::string_view(read_buf->data(), rv));
 
   // Read RST_STREAM to destroy the stream.
   // This calls SpdySession::Delegate::OnClose().
@@ -860,7 +864,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, CallDelegateOnCloseShouldNotCrash) {
   // Read remaining buffered data.  This will PostTask CallDelegateOnClose().
   rv = adapter.Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
   ASSERT_EQ(3, rv);
-  EXPECT_EQ("bar", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("bar", std::string_view(read_buf->data(), rv));
 
   adapter.DetachDelegate();
 
@@ -942,7 +946,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, AsyncReadAndWrite) {
 
   base::RunLoop().RunUntilIdle();
 
-  const int kReadBufSize = 1024;
+  constexpr int kReadBufSize = 1024;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback read_callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, read_callback.callback());
@@ -956,7 +960,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, AsyncReadAndWrite) {
 
   rv = read_callback.WaitForResult();
   ASSERT_EQ(6, rv);
-  EXPECT_EQ("foobar", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("foobar", std::string_view(read_buf->data(), rv));
 
   rv = write_callback.WaitForResult();
   ASSERT_EQ(3, rv);
@@ -1020,7 +1024,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, ReadCallbackDestroysAdapter) {
   WebSocketSpdyStreamAdapter* adapter_raw = adapter.get();
   KillerCallback callback(std::move(adapter));
 
-  const int kReadBufSize = 1024;
+  constexpr int kReadBufSize = 1024;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   rv = adapter_raw->Read(read_buf.get(), kReadBufSize, callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -1107,6 +1111,11 @@ TEST_F(WebSocketSpdyStreamAdapterTest,
   EXPECT_CALL(mock_delegate_, OnHeadersSent());
   EXPECT_CALL(mock_delegate_, OnHeadersReceived(_));
 
+  // Must create buffer before `adapter`, since `adapter` doesn't hold onto a
+  // reference to it.
+  constexpr int kReadBufSize = 1024;
+  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
+
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
   WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
@@ -1118,8 +1127,6 @@ TEST_F(WebSocketSpdyStreamAdapterTest,
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-  const int kReadBufSize = 1024;
-  auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback callback;
   rv = adapter.Read(read_buf.get(), kReadBufSize, callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -1133,7 +1140,7 @@ class MockQuicDelegate : public WebSocketQuicStreamAdapter::Delegate {
   MOCK_METHOD(void, OnHeadersSent, (), (override));
   MOCK_METHOD(void,
               OnHeadersReceived,
-              (const spdy::Http2HeaderBlock&),
+              (const quiche::HttpHeaderBlock&),
               (override));
   MOCK_METHOD(void, OnClose, (int), (override));
 };
@@ -1142,7 +1149,7 @@ class WebSocketQuicStreamAdapterTest
     : public TestWithTaskEnvironment,
       public ::testing::WithParamInterface<quic::ParsedQuicVersion> {
  protected:
-  static spdy::Http2HeaderBlock RequestHeaders() {
+  static quiche::HttpHeaderBlock RequestHeaders() {
     return WebSocketHttp2Request("/", "www.example.org:443",
                                  "http://www.example.org", {});
   }
@@ -1194,28 +1201,33 @@ class WebSocketQuicStreamAdapterTest
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructServerDataPacket(
       uint64_t packet_number,
-      base::StringPiece data) {
+      std::string_view data) {
     quiche::QuicheBuffer buffer = quic::HttpEncoder::SerializeDataFrameHeader(
         data.size(), quiche::SimpleBufferAllocator::Get());
-    return server_maker_.MakeDataPacket(
-        packet_number, client_data_stream_id1_, /*fin=*/false,
-        base::StrCat({base::StringPiece(buffer.data(), buffer.size()), data}));
+    return server_maker_.Packet(packet_number)
+        .AddStreamFrame(
+            client_data_stream_id1_, /*fin=*/false,
+            base::StrCat(
+                {std::string_view(buffer.data(), buffer.size()), data}))
+        .Build();
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructRstPacket(
       uint64_t packet_number,
       quic::QuicRstStreamErrorCode error_code) {
-    return client_maker_.MakeRstPacket(packet_number, client_data_stream_id1_,
-                                       error_code,
-                                       /*include_stop_sending_if_v99=*/true);
+    return client_maker_.Packet(packet_number)
+        .AddStopSendingFrame(client_data_stream_id1_, error_code)
+        .AddRstStreamFrame(client_data_stream_id1_, error_code)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicEncryptedPacket> ConstructClientAckPacket(
       uint64_t packet_number,
       uint64_t largest_received,
       uint64_t smallest_received) {
-    return client_maker_.MakeAckPacket(packet_number, largest_received,
-                                       smallest_received);
+    return client_maker_.Packet(packet_number)
+        .AddAckFrame(1, largest_received, smallest_received)
+        .Build();
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructAckAndRstPacket(
@@ -1223,10 +1235,11 @@ class WebSocketQuicStreamAdapterTest
       quic::QuicRstStreamErrorCode error_code,
       uint64_t largest_received,
       uint64_t smallest_received) {
-    return client_maker_.MakeAckAndRstPacket(
-        packet_number, client_data_stream_id1_, error_code, largest_received,
-        smallest_received,
-        /*include_stop_sending_if_v99=*/true);
+    return client_maker_.Packet(packet_number)
+        .AddAckFrame(/*first_received=*/1, largest_received, smallest_received)
+        .AddStopSendingFrame(client_data_stream_id1_, error_code)
+        .AddRstStreamFrame(client_data_stream_id1_, error_code)
+        .Build();
   }
 
   void Initialize() {
@@ -1267,11 +1280,13 @@ class WebSocketQuicStreamAdapterTest
         /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
         &transport_security_state_, &ssl_config_service_,
         /*server_info=*/nullptr,
-        QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
-                       ProxyChain::Direct(), SessionUsage::kDestination,
-                       SocketTag(), NetworkAnonymizationKey(),
-                       SecureDnsPolicy::kAllow,
-                       /*require_dns_https_alpn=*/false),
+        QuicSessionAliasKey(
+            url::SchemeHostPort(),
+            QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
+                           ProxyChain::Direct(), SessionUsage::kDestination,
+                           SocketTag(), NetworkAnonymizationKey(),
+                           SecureDnsPolicy::kAllow,
+                           /*require_dns_https_alpn=*/false)),
         /*require_confirmation=*/false,
         /*migrate_session_early_v2=*/false,
         /*migrate_session_on_network_change_v2=*/false,
@@ -1288,10 +1303,12 @@ class WebSocketQuicStreamAdapterTest
             kQuicYieldAfterDurationMilliseconds),
         /*cert_verify_flags=*/0, quic::test::DefaultQuicConfig(),
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
-        dns_start, dns_end, base::DefaultTickClock::GetInstance(),
+        "CONNECTION_UNKNOWN", dns_start, dns_end,
+        base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-        /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),
-        NetLog::Get());
+        /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
+        /*report_ecn=*/true, /*enable_origin_frame=*/true,
+        NetLogWithSource::Make(NetLogSourceType::NONE));
 
     session_->Initialize();
 
@@ -1397,19 +1414,25 @@ TEST_P(WebSocketQuicStreamAdapterTest, Disconnect) {
 }
 
 TEST_P(WebSocketQuicStreamAdapterTest, AsyncAdapterCreation) {
-  const size_t kMaxOpenStreams = 50;
+  constexpr size_t kMaxOpenStreams = 50;
 
   int packet_number = 1;
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructSettingsPacket(packet_number++));
 
-  mock_quic_data_.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
-                                            packet_number++, kMaxOpenStreams,
-                                            /* unidirectional = */ false));
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                       .AddStreamsBlockedFrame(/*control_frame_id=*/1,
+                                               /*stream_count=*/kMaxOpenStreams,
+                                               /* unidirectional = */ false)
+                       .Build());
 
   mock_quic_data_.AddRead(
-      ASYNC, server_maker_.MakeMaxStreamsPacket(1, kMaxOpenStreams + 2,
-                                                /* unidirectional = */ false));
+      ASYNC, server_maker_.Packet(1)
+                 .AddMaxStreamsFrame(/*control_frame_id=*/1,
+                                     /*stream_count=*/kMaxOpenStreams + 2,
+                                     /* unidirectional = */ false)
+                 .Build());
 
   mock_quic_data_.AddRead(ASYNC, ERR_IO_PENDING);
   mock_quic_data_.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
@@ -1454,7 +1477,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, SendRequestHeadersThenDisconnect) {
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructSettingsPacket(packet_number++));
   SpdyTestUtil spdy_util;
-  spdy::Http2HeaderBlock request_header_block = WebSocketHttp2Request(
+  quiche::HttpHeaderBlock request_header_block = WebSocketHttp2Request(
       "/", "www.example.org:443", "http://www.example.org", {});
   mock_quic_data_.AddWrite(
       SYNCHRONOUS,
@@ -1490,7 +1513,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, OnHeadersReceivedThenDisconnect) {
                            ConstructSettingsPacket(packet_number++));
 
   SpdyTestUtil spdy_util;
-  spdy::Http2HeaderBlock request_header_block = WebSocketHttp2Request(
+  quiche::HttpHeaderBlock request_header_block = WebSocketHttp2Request(
       "/", "www.example.org:443", "http://www.example.org", {});
   mock_quic_data_.AddWrite(
       SYNCHRONOUS,
@@ -1499,7 +1522,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, OnHeadersReceivedThenDisconnect) {
           /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
           std::move(request_header_block), nullptr));
 
-  spdy::Http2HeaderBlock response_header_block = WebSocketHttp2Response({});
+  quiche::HttpHeaderBlock response_header_block = WebSocketHttp2Response({});
   mock_quic_data_.AddRead(
       ASYNC, server_maker_.MakeResponseHeadersPacket(
                  /*packet_number=*/1, client_data_stream_id1_, /*fin=*/false,
@@ -1542,7 +1565,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, Read) {
                            ConstructSettingsPacket(packet_number++));
 
   SpdyTestUtil spdy_util;
-  spdy::Http2HeaderBlock request_header_block = WebSocketHttp2Request(
+  quiche::HttpHeaderBlock request_header_block = WebSocketHttp2Request(
       "/", "www.example.org:443", "http://www.example.org", {});
   mock_quic_data_.AddWrite(
       SYNCHRONOUS,
@@ -1551,7 +1574,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, Read) {
           /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
           std::move(request_header_block), nullptr));
 
-  spdy::Http2HeaderBlock response_header_block = WebSocketHttp2Response({});
+  quiche::HttpHeaderBlock response_header_block = WebSocketHttp2Response({});
   mock_quic_data_.AddRead(
       ASYNC, server_maker_.MakeResponseHeadersPacket(
                  /*packet_number=*/1, client_data_stream_id1_, /*fin=*/false,
@@ -1594,7 +1617,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, Read) {
   run_loop.Run();
 
   // Buffer larger than each MockRead.
-  const int kReadBufSize = 1024;
+  constexpr int kReadBufSize = 1024;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback read_callback;
 
@@ -1608,11 +1631,11 @@ TEST_P(WebSocketQuicStreamAdapterTest, Read) {
 
   rv = read_callback.WaitForResult();
   ASSERT_EQ(3, rv);
-  EXPECT_EQ("foo", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("foo", std::string_view(read_buf->data(), rv));
 
   rv = adapter->Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
   ASSERT_EQ(8, rv);
-  EXPECT_EQ("hogehoge", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("hogehoge", std::string_view(read_buf->data(), rv));
 
   adapter->Disconnect();
 
@@ -1626,7 +1649,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, ReadIntoSmallBuffer) {
                            ConstructSettingsPacket(packet_number++));
 
   SpdyTestUtil spdy_util;
-  spdy::Http2HeaderBlock request_header_block = WebSocketHttp2Request(
+  quiche::HttpHeaderBlock request_header_block = WebSocketHttp2Request(
       "/", "www.example.org:443", "http://www.example.org", {});
   mock_quic_data_.AddWrite(
       SYNCHRONOUS,
@@ -1635,7 +1658,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, ReadIntoSmallBuffer) {
           /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
           std::move(request_header_block), nullptr));
 
-  spdy::Http2HeaderBlock response_header_block = WebSocketHttp2Response({});
+  quiche::HttpHeaderBlock response_header_block = WebSocketHttp2Response({});
   mock_quic_data_.AddRead(
       ASYNC, server_maker_.MakeResponseHeadersPacket(
                  /*packet_number=*/1, client_data_stream_id1_, /*fin=*/false,
@@ -1676,7 +1699,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, ReadIntoSmallBuffer) {
   session_->StartReading();
   run_loop.Run();
 
-  const int kReadBufSize = 3;
+  constexpr int kReadBufSize = 3;
   auto read_buf = base::MakeRefCounted<IOBufferWithSize>(kReadBufSize);
   TestCompletionCallback read_callback;
 
@@ -1690,15 +1713,15 @@ TEST_P(WebSocketQuicStreamAdapterTest, ReadIntoSmallBuffer) {
 
   rv = read_callback.WaitForResult();
   ASSERT_EQ(3, rv);
-  EXPECT_EQ("abc", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("abc", std::string_view(read_buf->data(), rv));
 
   rv = adapter->Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
   ASSERT_EQ(3, rv);
-  EXPECT_EQ("12A", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("12A", std::string_view(read_buf->data(), rv));
 
   rv = adapter->Read(read_buf.get(), kReadBufSize, CompletionOnceCallback());
   ASSERT_EQ(3, rv);
-  EXPECT_EQ("BCD", base::StringPiece(read_buf->data(), rv));
+  EXPECT_EQ("BCD", std::string_view(read_buf->data(), rv));
 
   adapter->Disconnect();
 

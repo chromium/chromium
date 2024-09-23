@@ -18,14 +18,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -36,8 +36,6 @@ import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Tests for GeolocationHeader and GeolocationTracker. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -46,8 +44,6 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 public class GeolocationHeaderTest {
     public @ClassRule static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-    public @ClassRule static DisableAnimationsTestRule disableAnimationsRule =
-            new DisableAnimationsTestRule();
     public @Rule BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, true);
 
@@ -195,7 +191,6 @@ public class GeolocationHeaderTest {
     @Test
     @SmallTest
     @Feature({"Location"})
-    @DisabledTest(message = "http://crbug/1479552")
     public void testGeolocationHeaderPrimingEnabledPermissionAllow() {
         setPermission(ContentSettingValues.ALLOW);
         checkHeaderPriming(/* shouldPrimeHeader= */ true);
@@ -204,7 +199,6 @@ public class GeolocationHeaderTest {
     @Test
     @SmallTest
     @Feature({"Location"})
-    @DisabledTest(message = "http://crbug/1479552")
     public void testGeolocationHeaderPrimingDisabledPermissionBlock() {
         setPermission(ContentSettingValues.BLOCK);
         checkHeaderPriming(/* shouldPrimeHeader= */ false);
@@ -213,7 +207,6 @@ public class GeolocationHeaderTest {
     @Test
     @SmallTest
     @Feature({"Location"})
-    @DisabledTest(message = "http://crbug/1479552")
     public void testGeolocationHeaderPrimingDisabledPermissionAsk() {
         setPermission(ContentSettingValues.ASK);
         checkHeaderPriming(/* shouldPrimeHeader= */ false);
@@ -223,7 +216,6 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     @RequiresRestart(value = "Needs to reset cached geolocation from previous tests")
-    @DisabledTest(message = "http://crbug/1479552")
     public void testGeolocationHeaderPrimingDisabledOSPermissionBlocked() {
         setPermission(ContentSettingValues.ALLOW);
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
@@ -234,7 +226,7 @@ public class GeolocationHeaderTest {
             final @ContentSettingValues int httpsPermission,
             final long locationTime,
             final boolean shouldBeNull) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PermissionInfo infoHttps =
                             new PermissionInfo(
@@ -244,7 +236,7 @@ public class GeolocationHeaderTest {
                                     /* isEmbargo= */ false,
                                     SessionModel.DURABLE);
                     infoHttps.setContentSetting(
-                            Profile.getLastUsedRegularProfile(), httpsPermission);
+                            ProfileManager.getLastUsedRegularProfile(), httpsPermission);
                     String header =
                             GeolocationHeader.getGeoHeader(
                                     SEARCH_URL_1, sActivityTestRule.getActivity().getActivityTab());
@@ -253,7 +245,7 @@ public class GeolocationHeaderTest {
     }
 
     private void checkHeaderWithLocation(final long locationTime, final boolean shouldBeNull) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setMockLocation(locationTime);
                     String header =
@@ -310,7 +302,7 @@ public class GeolocationHeaderTest {
 
     private void assertNullHeader(final String url, final boolean isIncognito) {
         final Tab tab = sActivityTestRule.loadUrlInNewTab("about:blank", isIncognito);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertNull(GeolocationHeader.getGeoHeader(url, tab));
                 });
@@ -319,7 +311,7 @@ public class GeolocationHeaderTest {
     private void assertNonNullHeader(
             final String url, final boolean isIncognito, final long locationTime) {
         final Tab tab = sActivityTestRule.loadUrlInNewTab("about:blank", isIncognito);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertHeaderEquals(locationTime, GeolocationHeader.getGeoHeader(url, tab));
                 });
@@ -368,7 +360,7 @@ public class GeolocationHeaderTest {
     }
 
     private void setPermission(
-            final @ContentSettingValues int setting, @SessionModel int sessionModel) {
+            final @ContentSettingValues int setting, @SessionModel.EnumType int sessionModel) {
         PermissionInfo infoHttps =
                 new PermissionInfo(
                         ContentSettingsType.GEOLOCATION,
@@ -377,13 +369,14 @@ public class GeolocationHeaderTest {
                         /* isEmbargo= */ false,
                         sessionModel);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    infoHttps.setContentSetting(Profile.getLastUsedRegularProfile(), setting);
+                    infoHttps.setContentSetting(
+                            ProfileManager.getLastUsedRegularProfile(), setting);
                 });
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return infoHttps.getContentSetting(Profile.getLastUsedRegularProfile())
+                    return infoHttps.getContentSetting(ProfileManager.getLastUsedRegularProfile())
                             == setting;
                 });
     }

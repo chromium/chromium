@@ -58,14 +58,9 @@ class UpdateClientImpl : public UpdateClient {
                          CrxUpdateItem* update_item) const override;
   bool IsUpdating(const std::string& id) const override;
   void Stop() override;
-  void SendUninstallPing(const CrxComponent& crx_component,
-                         int reason,
-                         Callback callback) override;
-  void SendInstallPing(const CrxComponent& crx_component,
-                       bool success,
-                       int error_code,
-                       int extra_code1,
-                       Callback callback) override;
+  void SendPing(const CrxComponent& crx_component,
+                PingParams ping_params,
+                Callback callback) override;
 
  private:
   ~UpdateClientImpl() override;
@@ -77,7 +72,7 @@ class UpdateClientImpl : public UpdateClient {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // True if Stop method has been called.
+  // True if `Stop()` has been called.
   bool is_stopped_ = false;
 
   scoped_refptr<Configurator> config_;

@@ -17,7 +17,7 @@ void IOSChromeFieldTrials::OnVariationsSetupComplete() {
   if (base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir)) {
     InstantiatePersistentHistogramsWithFeaturesAndCleanup(user_data_dir);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   if (used_seed_) {
     [IOSChromeVariationsSeedStore notifySeedApplication];

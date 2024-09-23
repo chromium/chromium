@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // This file looks like a unit test, but it contains benchmarks and test
 // utilities intended for manual evaluation of the scalers in
 // gl_helper*. These tests produce output in the form of files and printouts,

@@ -14,6 +14,7 @@ bool MimeHandlerViewGuestDelegate::HandleContextMenu(
 
 void MimeHandlerViewGuestDelegate::RecordLoadMetric(
     bool is_full_page,
-    const std::string& mime_type) {}
+    const std::string& mime_type,
+    content::BrowserContext* browser_context) {}
 
 }  // namespace extensions

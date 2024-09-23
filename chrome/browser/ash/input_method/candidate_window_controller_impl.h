@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/input_method/candidate_window_controller.h"
-#include "chrome/browser/ash/input_method/ui/candidate_window_view.h"
+#include "chrome/browser/ui/ash/input_method/candidate_window_view.h"
 #include "ui/base/ime/ash/ime_candidate_window_handler_interface.h"
 #include "ui/base/ime/infolist_entry.h"
 #include "ui/views/widget/widget_observer.h"

@@ -25,7 +25,7 @@ void FontCache::SetSystemFontFamily(const AtomicString& family_name) {
   MutableSystemFontFamily() = family_name;
 }
 
-scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
+const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     const FontDescription& font_description,
     UChar32 character,
     const SimpleFontData* font_data_to_substitute,
@@ -48,12 +48,12 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
                           !typeface->isItalic() &&
                           font_description.SyntheticItalicAllowed();
 
-  auto font_data = std::make_unique<FontPlatformData>(
+  auto* font_data = MakeGarbageCollected<FontPlatformData>(
       std::move(typeface), std::string(), font_description.EffectiveFontSize(),
       synthetic_bold, synthetic_italic, font_description.TextRendering(),
       ResolvedFontFeatures(), font_description.Orientation());
 
-  return FontDataFromFontPlatformData(font_data.get(), kDoNotRetain);
+  return FontDataFromFontPlatformData(font_data);
 }
 
 }  // namespace blink

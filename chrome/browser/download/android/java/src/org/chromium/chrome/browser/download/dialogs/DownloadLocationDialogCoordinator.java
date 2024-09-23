@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.settings.DownloadLocationHelperImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.util.DownloadUtils;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -147,7 +148,7 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
         if (dirs.size() == 1
                 && !mLocationDialogManaged
                 && mDialogType == DownloadLocationDialogType.DEFAULT
-                && !shouldShowIncognitoWarning()) {
+                && !mProfile.isOffTheRecord()) {
             final DirectoryOption dir = dirs.get(0);
             if (dir.type == DirectoryOption.DownloadLocationDirectoryType.DEFAULT) {
                 assert (!TextUtils.isEmpty(dir.location));
@@ -202,6 +203,9 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 resources,
                                 R.string.cancel)
+                        .with(
+                                ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
+                                UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS)
                         .build();
 
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
@@ -282,7 +286,7 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
                 break;
         }
 
-        if (shouldShowIncognitoWarning()) {
+        if (mProfile.isOffTheRecord()) {
             builder.with(DownloadLocationDialogProperties.SHOW_INCOGNITO_WARNING, true);
             builder.with(DownloadLocationDialogProperties.DONT_SHOW_AGAIN_CHECKBOX_SHOWN, false);
         }
@@ -293,13 +297,9 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
     private String getDefaultTitle() {
         return mContext.getString(
                 mLocationDialogManaged
-                                || (shouldShowIncognitoWarning() && !mHasMultipleDownloadLocations)
+                                || (mProfile.isOffTheRecord() && !mHasMultipleDownloadLocations)
                         ? R.string.download_location_dialog_title_confirm_download
                         : R.string.download_location_dialog_title);
-    }
-
-    private boolean shouldShowIncognitoWarning() {
-        return DownloadDialogUtils.shouldShowIncognitoWarning(mProfile.isOffTheRecord());
     }
 
     /**

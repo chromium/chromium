@@ -43,10 +43,8 @@ class ScanningHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
 
   // SelectFileDialog::Listener:
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
   // Uses the full filepath and the base directory (lowest level directory in
   // the filepath, used to display in the UI) to create a Value object to return

@@ -79,7 +79,9 @@ class WaitUntilObserver::ThenFunction final : public ScriptFunction::Callable {
           WTF::BindOnce(&WaitUntilObserver::OnPromiseRejected,
                         WrapPersistent(observer_.Get())));
       observer_ = nullptr;
-      return ScriptPromise::Reject(script_state, value).AsScriptValue();
+      return ScriptValue(
+          script_state->GetIsolate(),
+          ScriptPromiseUntyped::Reject(script_state, value).V8Promise());
     }
 
     event_loop->EnqueueMicrotask(
@@ -121,7 +123,7 @@ void WaitUntilObserver::DidDispatchEvent(bool event_dispatch_failed) {
 
 // https://w3c.github.io/ServiceWorker/#dom-extendableevent-waituntil
 bool WaitUntilObserver::WaitUntil(ScriptState* script_state,
-                                  ScriptPromise script_promise,
+                                  ScriptPromiseUntyped script_promise,
                                   ExceptionState& exception_state,
                                   PromiseSettledCallback on_promise_fulfilled,
                                   PromiseSettledCallback on_promise_rejected) {
@@ -212,7 +214,7 @@ void WaitUntilObserver::MaybeCompleteEvent() {
 
   switch (event_dispatch_state_) {
     case EventDispatchState::kInitial:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case EventDispatchState::kDispatching:
       // Still dispatching, do not complete the event.

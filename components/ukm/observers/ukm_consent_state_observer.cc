@@ -11,7 +11,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/metrics/metrics_switches.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -37,7 +37,7 @@ bool IsMsbbConsentStateAllowed() {
 }
 
 bool CanUploadUkmForType(syncer::SyncService* sync_service,
-                         syncer::ModelType model_type,
+                         syncer::DataType data_type,
                          bool msbb_consent) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Enable uploading of UKM for Kiosk and MGS only if MSBB consent is set.
@@ -46,11 +46,11 @@ bool CanUploadUkmForType(syncer::SyncService* sync_service,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  switch (GetUploadToGoogleState(sync_service, model_type)) {
+  switch (GetUploadToGoogleState(sync_service, data_type)) {
     case syncer::UploadState::NOT_ACTIVE:
       return false;
     // INITIALIZING is considered good enough, because sync is enabled and
-    // |model_type| is known to be uploaded to Google, and transient errors
+    // |data_type| is known to be uploaded to Google, and transient errors
     // don't matter here.
     case syncer::UploadState::INITIALIZING:
     case syncer::UploadState::ACTIVE:
@@ -59,7 +59,11 @@ bool CanUploadUkmForType(syncer::SyncService* sync_service,
 }
 }  // namespace
 
-UkmConsentStateObserver::UkmConsentStateObserver() = default;
+UkmConsentStateObserver::UkmConsentStateObserver()
+    : ukm_consent_state_(UkmConsentState()) {}
+
+UkmConsentStateObserver::UkmConsentStateObserver(NoInitialUkmConsentStateTag)
+    : ukm_consent_state_(std::nullopt) {}
 
 UkmConsentStateObserver::~UkmConsentStateObserver() {
   for (const auto& entry : consent_helpers_) {
@@ -95,15 +99,14 @@ UkmConsentStateObserver::ProfileState UkmConsentStateObserver::GetProfileState(
   }
 
   if (msbb_consent &&
-      CanUploadUkmForType(sync_service, syncer::ModelType::EXTENSIONS,
+      CanUploadUkmForType(sync_service, syncer::DataType::EXTENSIONS,
                           msbb_consent)) {
     state.SetConsentType(EXTENSIONS);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool app_sync_consent =
-      CanUploadUkmForType(sync_service, syncer::ModelType::APPS,
-                          msbb_consent) ||
+      CanUploadUkmForType(sync_service, syncer::DataType::APPS, msbb_consent) ||
       // Demo mode is a special managed guest session that doesn't support
       // AppKM. To support AppKM an exception needs to be made within UKM.
       IsDeviceInDemoMode();
@@ -114,8 +117,8 @@ UkmConsentStateObserver::ProfileState UkmConsentStateObserver::GetProfileState(
 #else
   // This separation isn't actually needed for non-ChromeOS devices. But for
   // clarity it is added.
-  if (msbb_consent && CanUploadUkmForType(sync_service, syncer::ModelType::APPS,
-                                          msbb_consent)) {
+  if (msbb_consent &&
+      CanUploadUkmForType(sync_service, syncer::DataType::APPS, msbb_consent)) {
     state.SetConsentType(APPS);
   }
 #endif
@@ -142,14 +145,18 @@ void UkmConsentStateObserver::UpdateUkmAllowedForAllProfiles(bool total_purge) {
   const UkmConsentState new_state = GetPreviousStatesForAllProfiles();
 
   // Any change in profile states needs to call OnUkmAllowedStateChanged so that
-  // the new settings take effect.
+  // the new settings take effect. If ukm_consent_state_ is std::nullopt (i.e.
+  // no profile loaded yet), this will always be considered as a change.
   if (total_purge || new_state != ukm_consent_state_) {
-    // Records whether the App sync consent changed when the consent state is
-    // updated. This is to see how often App sync is changed by users.
-    base::UmaHistogramBoolean(
-        "UKM.ConsentObserver.AppSyncConsentChanged",
-        ukm_consent_state_.Has(APPS) != new_state.Has(APPS));
-    const auto previous_consent_state = ukm_consent_state_;
+    if (ukm_consent_state_.has_value()) {
+      // Records whether the App sync consent changed when the consent state is
+      // updated. This is to see how often App sync is changed by users.
+      base::UmaHistogramBoolean(
+          "UKM.ConsentObserver.AppSyncConsentChanged",
+          ukm_consent_state_->Has(APPS) != new_state.Has(APPS));
+    }
+
+    const auto previous_consent_state = GetUkmConsentState();
     ukm_consent_state_ = new_state;
     OnUkmAllowedStateChanged(total_purge, previous_consent_state);
   }
@@ -230,15 +237,18 @@ void UkmConsentStateObserver::OnSyncShutdown(syncer::SyncService* sync) {
 }
 
 bool UkmConsentStateObserver::IsUkmAllowedForAllProfiles() {
+  const UkmConsentState ukm_consent_state = GetUkmConsentState();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ukm_consent_state_.Has(MSBB) || ukm_consent_state_.Has(APPS);
+  return ukm_consent_state.Has(MSBB) || ukm_consent_state.Has(APPS);
 #else
-  return ukm_consent_state_.Has(MSBB);
+  return ukm_consent_state.Has(MSBB);
 #endif
 }
 
 UkmConsentState UkmConsentStateObserver::GetUkmConsentState() {
-  return ukm_consent_state_;
+  // Consider that the state is empty if it is std::nullopt (the not set
+  // state is only relevant to detect when the first profile is loaded).
+  return ukm_consent_state_.value_or(UkmConsentState());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

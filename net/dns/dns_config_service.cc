@@ -62,7 +62,7 @@ void DnsConfigService::WatchConfig(const CallbackType& callback) {
 
 void DnsConfigService::RefreshConfig() {
   // Overridden on supported platforms.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 DnsConfigService::Watcher::Watcher(DnsConfigService& service)

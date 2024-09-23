@@ -47,13 +47,18 @@ class ZstdSourceStream : public FilterSourceStream {
     // to '... protect decoders from unreasonable memory requirements'.
     int window_log_max = 23;
     if (dictionary_) {
-      // For shared dictionary case, allow using larger window size (Log2Ceiling
-      // of `dictionary_size`). It is safe because we have the size limit per
-      // shared dictionary and the total dictionary size limit.
-      window_log_max =
-          std::max(base::bits::Log2Ceiling(
-                       base::checked_cast<uint32_t>(dictionary_size_)),
-                   window_log_max);
+      // For shared dictionary case, allow using larger window size:
+      //   clamp(dictionary size * 1.25, 8MB, 128MB)
+      // See https://github.com/httpwg/http-extensions/issues/2754 for more
+      // details. To avoid floating point calculations, using `* 5 / 4` for
+      // `* 1.25` specified by the standard.
+      // Note: `base::checked_cast<uint32_t>` is safe because we have the size
+      // limit per shared dictionary and the total dictionary size limit.
+      window_log_max = std::clamp(
+          base::bits::Log2Ceiling(
+              base::checked_cast<uint32_t>(dictionary_size_ * 5 / 4)),
+          23,   // 8MB
+          27);  // 128MB
     }
     ZSTD_DCtx_setParameter(dctx_.get(), ZSTD_d_windowLogMax, window_log_max);
     if (dictionary_) {

@@ -1,0 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module pdf.mojom;
+
+// PdfSearchifier converts inaccessible PDFs to searchable PDFs.
+interface PdfSearchifier {
+  // Takes an inaccessible PDF and outputs a searchable PDF by performing OCR
+  // and adding a layer of text on the PDF.
+  Searchify(array<uint8> pdf) => (array<uint8> searchified_pdf);
+};

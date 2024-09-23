@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 namespace gfx {
 class ColorSpace;
@@ -32,15 +33,14 @@ struct ColorSpaceConversionConstants {
 
 struct ExternalTextureSource {
   scoped_refptr<media::VideoFrame> media_video_frame = nullptr;
-  raw_ptr<media::PaintCanvasVideoRenderer, ExperimentalRenderer>
-      video_renderer = nullptr;
+  raw_ptr<media::PaintCanvasVideoRenderer> video_renderer = nullptr;
   std::optional<media::VideoFrame::ID> media_video_frame_unique_id =
       std::nullopt;
   bool valid = false;
 };
 
 struct ExternalTexture {
-  WGPUExternalTexture wgpu_external_texture = nullptr;
+  wgpu::ExternalTexture wgpu_external_texture = nullptr;
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture = nullptr;
   bool is_zero_copy = false;
 };
@@ -65,8 +65,7 @@ ExternalTextureSource GetExternalTextureSourceFromVideoFrame(
 
 ExternalTexture CreateExternalTexture(
     GPUDevice* device,
-    gfx::ColorSpace src_color_space,
-    gfx::ColorSpace dst_color_space,
+    PredefinedColorSpace dst_predefined_color_space,
     scoped_refptr<media::VideoFrame> media_video_frame,
     media::PaintCanvasVideoRenderer* video_renderer);
 }  // namespace blink

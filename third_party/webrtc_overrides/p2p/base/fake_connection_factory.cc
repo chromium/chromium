@@ -4,6 +4,8 @@
 
 #include "third_party/webrtc_overrides/p2p/base/fake_connection_factory.h"
 
+#include <string_view>
+
 #include "third_party/webrtc/p2p/base/basic_packet_socket_factory.h"
 #include "third_party/webrtc/p2p/base/fake_port_allocator.h"
 #include "third_party/webrtc/p2p/base/port.h"
@@ -36,15 +38,15 @@ void FakeConnectionFactory::Prepare(uint32_t allocator_flags) {
 }
 
 cricket::Connection* FakeConnectionFactory::CreateConnection(
-    CandidateType type,
-    base::StringPiece remote_ip,
+    webrtc::IceCandidateType type,
+    std::string_view remote_ip,
     int remote_port,
     int priority) {
   if (ports_.size() == 0) {
     return nullptr;
   }
   cricket::Candidate remote =
-      CreateUdpCandidate(GetPortType(type), remote_ip, remote_port, priority);
+      CreateUdpCandidate(type, remote_ip, remote_port, priority);
   cricket::Connection* conn = nullptr;
   for (auto port : ports_) {
     if (port->SupportsProtocol(remote.protocol())) {
@@ -58,19 +60,6 @@ cricket::Connection* FakeConnectionFactory::CreateConnection(
   return conn;
 }
 
-base::StringPiece FakeConnectionFactory::GetPortType(CandidateType type) {
-  switch (type) {
-    case CandidateType::LOCAL:
-      return cricket::LOCAL_PORT_TYPE;
-    case CandidateType::SRFLX:
-      return cricket::STUN_PORT_TYPE;
-    case CandidateType::PRFLX:
-      return cricket::PRFLX_PORT_TYPE;
-    case CandidateType::RELAY:
-      return cricket::RELAY_PORT_TYPE;
-  }
-}
-
 void FakeConnectionFactory::OnPortReady(cricket::PortAllocatorSession* session,
                                         cricket::PortInterface* port) {
   ports_.push_back(port);
@@ -80,18 +69,18 @@ void FakeConnectionFactory::OnPortReady(cricket::PortAllocatorSession* session,
 }
 
 cricket::Candidate FakeConnectionFactory::CreateUdpCandidate(
-    base::StringPiece type,
-    base::StringPiece ip,
+    webrtc::IceCandidateType type,
+    std::string_view ip,
     int port,
     int priority,
-    base::StringPiece ufrag) {
+    std::string_view ufrag) {
   cricket::Candidate c;
   c.set_address(rtc::SocketAddress(ip.data(), port));
   c.set_component(::cricket::ICE_CANDIDATE_COMPONENT_DEFAULT);
   c.set_protocol(::cricket::UDP_PROTOCOL_NAME);
   c.set_priority(priority);
   c.set_username(ufrag.data());
-  c.set_type(type.data());
+  c.set_type(type);
   return c;
 }
 

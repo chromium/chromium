@@ -323,7 +323,7 @@ TEST_F(WebStateTest, RestoreLargeSession) {
   web_state->SetKeepRenderProcessAlive(true);
   WebState* web_state_ptr = web_state.get();
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
-  // TODO(crbug.com/873729): The session will not be restored until
+  // TODO(crbug.com/41407753): The session will not be restored until
   // LoadIfNecessary call. Fix the bug and remove extra call.
   navigation_manager->LoadIfNecessary();
 
@@ -406,7 +406,7 @@ TEST_F(WebStateTest, RestoreLargeSession) {
   // The restoration of www.0.com ends with displaying an error page which may
   // not be complete at this point.
   // Queue some javascript to wait for every handler to complete.
-  // TODO(crbug.com/1244067): Remove this workaround.
+  // TODO(crbug.com/40195685): Remove this workaround.
   __block BOOL called = false;
   CRWWebController* web_controller =
       WebStateImpl::FromWebState(web_state.get())->GetWebController();
@@ -431,7 +431,7 @@ TEST_F(WebStateTest, CallStopDuringSessionRestore) {
   web_state->SetKeepRenderProcessAlive(true);
   WebState* web_state_ptr = web_state.get();
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
-  // TODO(crbug.com/873729): The session will not be restored until
+  // TODO(crbug.com/41407753): The session will not be restored until
   // LoadIfNecessary call. Fix the bug and remove extra call.
   navigation_manager->LoadIfNecessary();
 
@@ -468,7 +468,7 @@ TEST_F(WebStateTest, CallLoadURLWithParamsDuringSessionRestore) {
   web_state->SetKeepRenderProcessAlive(true);
   WebState* web_state_ptr = web_state.get();
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
-  // TODO(crbug.com/873729): The session will not be restored until
+  // TODO(crbug.com/41407753): The session will not be restored until
   // LoadIfNecessary call. Fix the bug and remove extra call.
   navigation_manager->LoadIfNecessary();
 
@@ -492,7 +492,7 @@ TEST_F(WebStateTest, CallLoadURLWithParamsDuringSessionRestore) {
   EXPECT_TRUE(navigation_manager->CanGoForward());
 
   // Now wait until the last committed item is fully loaded.
-  // TODO(crbug.com/996544) On Xcode 11 beta 6 this became very slow.  This
+  // TODO(crbug.com/41477584) On Xcode 11 beta 6 this became very slow.  This
   // appears to only affect simulator, and will hopefully be fixed in a future
   // Xcode release.  Revert this to `kWaitForPageLoadTimeout` alone when fixed.
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout * 7, ^{
@@ -512,7 +512,7 @@ TEST_F(WebStateTest, CallReloadDuringSessionRestore) {
   web_state->SetKeepRenderProcessAlive(true);
   WebState* web_state_ptr = web_state.get();
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
-  // TODO(crbug.com/873729): The session will not be restored until
+  // TODO(crbug.com/41407753): The session will not be restored until
   // LoadIfNecessary call. Fix the bug and remove extra call.
   navigation_manager->LoadIfNecessary();
 
@@ -549,7 +549,7 @@ TEST_F(WebStateTest, RestorePageTitles) {
 
   web_state->SetKeepRenderProcessAlive(true);
   NavigationManager* navigation_manager = web_state->GetNavigationManager();
-  // TODO(crbug.com/873729): The session will not be restored until
+  // TODO(crbug.com/41407753): The session will not be restored until
   // LoadIfNecessary call. Fix the bug and remove extra call.
   navigation_manager->LoadIfNecessary();
 
@@ -563,6 +563,8 @@ TEST_F(WebStateTest, RestorePageTitles) {
               item->GetVirtualURL());
     EXPECT_EQ(base::ASCIIToUTF16(base::StringPrintf("Test%u", i)),
               item->GetTitle());
+    EXPECT_EQ(base::ASCIIToUTF16(base::StringPrintf("Test%u", i)),
+              item->GetTitleForDisplay());
   }
 }
 

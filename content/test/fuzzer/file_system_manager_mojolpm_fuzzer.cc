@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stdint.h>
 #include <utility>
 
@@ -225,7 +230,7 @@ void FileSystemManagerTestcase::RunAction(const ProtoAction& action,
 
     case ProtoAction::kRunThread:
       if (action.run_thread().id() == ThreadId_UI) {
-        content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+        GetUIThreadTaskRunner({})->PostTaskAndReply(
             FROM_HERE, base::DoNothing(), std::move(run_closure));
       } else if (action.run_thread().id() == ThreadId_IO) {
         content::GetIOThreadTaskRunner({})->PostTaskAndReply(

@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Les pestanyes dels dispositius sincronitzats es poden restaurar amb un toc. Navega per revisar o restaurar amb un toc les pestanyes seleccionades per al dispositiu actual. El teclat està amagat.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Obre <ph name="TABS_COUNT_ONE" /> pestanya}other{Obre <ph name="TABS_COUNT_MANY" /> pestanyes}}</translation>
 <translation id="4509609396389120020">Recupera les pestanyes d'altres dispositius</translation>
+<translation id="4619615317237390068">Pestanyes d'altres dispositius</translation>
 <translation id="4811934403802581334">Es restauraran totes les pestanyes seleccionades del dispositiu seleccionat actualment.</translation>
 <translation id="5336031759968328813">Revisa totes les pestanyes</translation>
 <translation id="5494920125229734069">Selecciona-ho tot</translation>

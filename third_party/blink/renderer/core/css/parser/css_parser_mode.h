@@ -53,6 +53,10 @@ enum CSSParserMode : uint8_t {
   // @font-palette-values rules are specially tagged so modifications through
   // the inspector don't treat them as style rules.
   kCSSFontPaletteValuesRuleMode,
+  // @position-try rules have limitations on what they allow, also through
+  // mutations in CSSOM.
+  // https://drafts.csswg.org/css-anchor-position-1/#om-position-try
+  kCSSPositionTryRuleMode,
   // User agent stylesheets are parsed in standards mode but also allows
   // internal properties and values.
   kUASheetMode,

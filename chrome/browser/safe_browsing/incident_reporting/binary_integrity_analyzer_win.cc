@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -22,19 +23,19 @@
 namespace safe_browsing {
 
 std::vector<base::FilePath> GetCriticalBinariesPath() {
-  static const base::FilePath::CharType* const kUnversionedFiles[] = {
+  static constexpr auto kUnversionedFiles = std::to_array({
       FILE_PATH_LITERAL("chrome.exe"),
-  };
-  static const base::FilePath::CharType* const kVersionedFiles[] = {
+  });
+  static constexpr auto kVersionedFiles = std::to_array({
       FILE_PATH_LITERAL("chrome.dll"),
       FILE_PATH_LITERAL("chrome_child.dll"),
       FILE_PATH_LITERAL("chrome_elf.dll"),
-  };
+  });
 
   // Find where chrome.exe is installed.
   base::FilePath chrome_exe_dir;
   if (!base::PathService::Get(base::DIR_EXE, &chrome_exe_dir))
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   std::vector<base::FilePath> critical_binaries;
   critical_binaries.reserve(std::size(kUnversionedFiles) +

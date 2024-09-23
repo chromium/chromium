@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/cast.gni")
 import("//build/config/features.gni")
 import("//build/config/gclient_args.gni")
 
@@ -13,6 +12,10 @@ import("//build/config/gclient_args.gni")
 
 # Some non-Chromium builds don't support building java targets.
 enable_java_templates = true
+
+# Variable that can be used to support multiple build scenarios, like when
+# V8 is embedded within a target.
+build_with_v8_embedder = build_with_chromium
 
 # Enables assertions on safety checks in libc++.
 #
@@ -32,15 +35,8 @@ declare_args() {
   # libchrome (CrOS's version of //base). This flag can disable tracing support
   # altogether, in which case all tracing instrumentation in //base becomes a
   # no-op.
-  # TODO(crbug/1065905): Add dependency on perfetto to support typed events.
+  # TODO(crbug.com/40124378): Add dependency on perfetto to support typed events.
   enable_base_tracing = true
-
-  # Switches the TRACE_EVENT instrumentation from base's TraceLog implementation
-  # to //third_party/perfetto's client library.
-  # TODO(crbug/1006541): Switch to perfetto's client library on all platforms.
-  use_perfetto_client_library =
-      (is_linux || is_android || (use_blink && is_ios) || is_win ||
-       is_chromeos || is_mac) && !is_castos
 
   # Limits the defined //third_party/android_deps targets to only "buildCompile"
   # and "buildCompileNoDeps" targets. This is useful for third-party
@@ -54,7 +50,7 @@ declare_args() {
   gtest_enable_absl_printers = !is_nacl
 
   # Allow projects that wish to stay on C++17 to override Chromium's default.
-  # TODO(crbug.com/1402249): evaluate removing this end of 2023
+  # TODO(crbug.com/40251117): evaluate removing this end of 2023
   use_cxx17 = false
 }
 
@@ -62,7 +58,7 @@ declare_args() {
 declare_args() {
   # Use Perfetto's trace processor for converting protobuf-encoded traces to
   # the legacy JSON format in base::TraceLog.
-  use_perfetto_trace_processor = use_perfetto_client_library && !is_nacl
+  use_perfetto_trace_processor = !is_nacl
 }
 
 # Allows different projects to specify their own suppression/ignore lists for

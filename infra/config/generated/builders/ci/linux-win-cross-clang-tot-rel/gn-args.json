@@ -1,0 +1,13 @@
+{
+  "gn_args": {
+    "dcheck_always_on": true,
+    "is_clang": true,
+    "is_component_build": true,
+    "is_debug": false,
+    "llvm_force_head_revision": true,
+    "symbol_level": 1,
+    "target_cpu": "x64",
+    "target_os": "win",
+    "use_siso": true
+  }
+}

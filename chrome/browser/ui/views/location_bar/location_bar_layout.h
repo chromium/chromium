@@ -56,7 +56,10 @@ class LocationBarLayout {
   // First pass of decoration layout process. Pass the full width of the
   // location bar in `entry_width`. This pass will decrease it to account for
   // non-collapsible and non-resizable decorations.
-  void LayoutPass1(int* entry_width);
+  // `reserved_width` is the minimum necessary width required by the location
+  // bar excluding decorations. This used in preferred size calculations to
+  // ensure the available space constraint is calculated correctly.
+  void LayoutPass1(int* entry_width, int reserved_width);
 
   // Second pass of decoration layout process. Pass the `entry_width` computed
   // by the first pass. This pass will decrease it to account for resizable

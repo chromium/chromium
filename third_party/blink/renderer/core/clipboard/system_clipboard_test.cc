@@ -57,6 +57,15 @@ class SystemClipboardTest : public testing::Test {
   SystemClipboard& system_clipboard() {
     return *(page_holder_.get()->GetFrame().GetSystemClipboard());
   }
+  void reset_remote_and_validate_buffer() {
+    // Reset mojo remote to unbound.
+    system_clipboard().clipboard_.reset();
+    EXPECT_FALSE(system_clipboard().clipboard_.is_bound());
+    // Check if the buffer is valid to make sure the read APIs return null
+    // string because of unbound mojo remote and not because of invalid buffer.
+    EXPECT_TRUE(
+        system_clipboard().IsValidBufferType(system_clipboard().buffer_));
+  }
 
   void RunUntilIdle() { test::RunPendingTasks(); }
 
@@ -271,28 +280,29 @@ TEST_F(SystemClipboardTest, Files) {
 
 TEST_F(SystemClipboardTest, CustomData) {
   // Clipboard starts empty.
-  EXPECT_EQ(system_clipboard().ReadCustomData("a"), "");
+  EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("a"), "");
 
   // Setting text in the host is visible in system.
-  clipboard_host()->WriteCustomData({{"a", "first"}});
-  EXPECT_EQ(system_clipboard().ReadCustomData("a"), "first");
+  clipboard_host()->WriteDataTransferCustomData({{"a", "first"}});
+  EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("a"), "first");
 
   // Inside a snapshot scope, the first read from the system clipboard
   // remembers the result, even if the underlying clipboard host changes.
   {
     ScopedSystemClipboardSnapshot snapshot(system_clipboard());
 
-    clipboard_host()->WriteCustomData({{"a", "second"}});
-    EXPECT_EQ(system_clipboard().ReadCustomData("a"), "second");
+    clipboard_host()->WriteDataTransferCustomData({{"a", "second"}});
+    EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("a"), "second");
 
-    clipboard_host()->WriteCustomData({{"a", "third"}, {"b", "fourth"}});
-    EXPECT_EQ(system_clipboard().ReadCustomData("a"), "second");
-    EXPECT_EQ(system_clipboard().ReadCustomData("b"), "fourth");
+    clipboard_host()->WriteDataTransferCustomData(
+        {{"a", "third"}, {"b", "fourth"}});
+    EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("a"), "second");
+    EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("b"), "fourth");
   }
 
   // Now that the snapshot is out of scope, reads from the system clipboard
   // reflect the state of the clipboard host.
-  EXPECT_EQ(system_clipboard().ReadCustomData("a"), "third");
+  EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("a"), "third");
 }
 
 TEST_F(SystemClipboardTest, SnapshotNesting) {
@@ -333,4 +343,170 @@ TEST_F(SystemClipboardTest, SnapshotNesting) {
   EXPECT_EQ(system_clipboard().ReadPlainText(), "fifth");
 }
 
+TEST_F(SystemClipboardTest, ReadTextWithUnboundClipboardHost) {
+  // Clipboard starts empty.
+  EXPECT_EQ(system_clipboard().ReadPlainText(), "");
+
+  // Setting text in the host is visible in system clipboard.
+  clipboard_host()->WriteText("first");
+  EXPECT_EQ(system_clipboard().ReadPlainText(), "first");
+
+  reset_remote_and_validate_buffer();
+
+  // Now the Reads should return null string.
+  EXPECT_EQ(system_clipboard().ReadPlainText(), String());
+  // Writes will fail since the mojo remote is unbound.
+  clipboard_host()->WriteText("second");
+  EXPECT_EQ(system_clipboard().ReadPlainText(), String());
+}
+
+TEST_F(SystemClipboardTest, ReadHtmlWithUnboundClipboardHost) {
+  KURL url;
+  unsigned fragment_start;
+  unsigned fragment_end;
+
+  // Clipboard starts empty.
+  EXPECT_EQ(system_clipboard().ReadHTML(url, fragment_start, fragment_end), "");
+
+  // Setting text in the host is visible in system clipboard.
+  clipboard_host()->WriteHtml("first", KURL("http://first.com"));
+  EXPECT_EQ(system_clipboard().ReadHTML(url, fragment_start, fragment_end),
+            "first");
+  EXPECT_EQ(url, KURL("http://first.com"));
+
+  reset_remote_and_validate_buffer();
+
+  // Now the Reads should return null string.
+  EXPECT_EQ(system_clipboard().ReadHTML(url, fragment_start, fragment_end),
+            String());
+  // Writes will fail since the mojo remote is unbound.
+  clipboard_host()->WriteHtml("first", KURL("http://first.com"));
+  EXPECT_EQ(system_clipboard().ReadHTML(url, fragment_start, fragment_end),
+            String());
+  EXPECT_EQ(url, KURL(String()));
+}
+
+TEST_F(SystemClipboardTest, ReadRtfWithUnboundClipboardHost) {
+  // Clipboard starts empty.
+  EXPECT_EQ(system_clipboard().ReadRTF(), "");
+
+  // Setting text in the host is visible in system clipboard.
+  mock_clipboard_host()->WriteRtf("first");
+  EXPECT_EQ(system_clipboard().ReadRTF(), "first");
+
+  reset_remote_and_validate_buffer();
+
+  // Now the Reads should return null string.
+  EXPECT_EQ(system_clipboard().ReadRTF(), String());
+  // Writes will fail since the mojo remote is unbound.
+  mock_clipboard_host()->WriteRtf("second");
+  EXPECT_EQ(system_clipboard().ReadRTF(), String());
+}
+
+TEST_F(SystemClipboardTest, ReadPngWithUnboundClipboardHost) {
+  auto buf = mojom::blink::ClipboardBuffer::kStandard;
+
+  // Clipboard starts empty.
+  mojo_base::BigBuffer png = system_clipboard().ReadPng(buf);
+  EXPECT_EQ(png.size(), 0u);
+
+  // Create test bitmaps to put into the clipboard.
+  SkBitmap bitmapIn;
+  ASSERT_TRUE(bitmapIn.tryAllocPixelsFlags(
+      SkImageInfo::Make(4, 3, kN32_SkColorType, kOpaque_SkAlphaType), 0));
+
+  // Setting image in the host is visible in system clipboard.
+  clipboard_host()->WriteImage(bitmapIn);
+  clipboard_host()->CommitWrite();
+
+  SkBitmap bitmapOut;
+  png = system_clipboard().ReadPng(buf);
+  ASSERT_TRUE(gfx::PNGCodec::Decode(png.data(), png.size(), &bitmapOut));
+  EXPECT_EQ(bitmapOut.width(), 4);
+  EXPECT_EQ(bitmapOut.height(), 3);
+
+  reset_remote_and_validate_buffer();
+
+  // Now the Reads should return zero sized png.
+  png = system_clipboard().ReadPng(buf);
+  EXPECT_EQ(png.size(), 0u);
+
+  // Setting image in the host will fail since the mojo remote is unbound.
+  clipboard_host()->WriteImage(bitmapIn);
+  clipboard_host()->CommitWrite();
+  png = system_clipboard().ReadPng(buf);
+  EXPECT_EQ(png.size(), 0u);
+}
+
+TEST_F(SystemClipboardTest, ReadFilesWithUnboundClipboardHost) {
+  // Clipboard starts empty.
+  auto files = system_clipboard().ReadFiles();
+  EXPECT_EQ(files->files.size(), 0u);
+
+  // Setting file in the host is visible in system clipboard.
+  mock_clipboard_host()->WriteFiles(CreateFiles(1));
+  EXPECT_EQ(system_clipboard().ReadFiles()->files.size(), 1u);
+
+  reset_remote_and_validate_buffer();
+
+  // Now the Reads should return null pointer to files.
+  EXPECT_TRUE(system_clipboard().ReadFiles().is_null());
+  // Writes will fail since the mojo remote is unbound.
+  mock_clipboard_host()->WriteFiles(CreateFiles(1));
+  EXPECT_TRUE(system_clipboard().ReadFiles().is_null());
+}
+
+TEST_F(SystemClipboardTest, IsFormatAvailableWithUnboundClipboardHost) {
+  // Clipboard starts empty.
+  EXPECT_FALSE(system_clipboard().IsFormatAvailable(
+      blink::mojom::ClipboardFormat::kPlaintext));
+
+  // Setting text in the host is visible in system clipboard.
+  clipboard_host()->WriteText("first");
+  EXPECT_TRUE(system_clipboard().IsFormatAvailable(
+      blink::mojom::ClipboardFormat::kPlaintext));
+
+  reset_remote_and_validate_buffer();
+
+  // Now the Reads should return false.
+  EXPECT_FALSE(system_clipboard().IsFormatAvailable(
+      blink::mojom::ClipboardFormat::kPlaintext));
+  // Writes will fail since the mojo remote is unbound.
+  clipboard_host()->WriteText("second");
+  EXPECT_FALSE(system_clipboard().IsFormatAvailable(
+      blink::mojom::ClipboardFormat::kPlaintext));
+}
+
+TEST_F(SystemClipboardTest, ReadAvailableTypesWithUnboundClipboardHost) {
+  // Clipboard starts empty.
+  EXPECT_EQ(system_clipboard().ReadAvailableTypes().size(), 0u);
+
+  // Setting text in the host is visible in system clipboard.
+  clipboard_host()->WriteText("first");
+  EXPECT_EQ(system_clipboard().ReadAvailableTypes().size(), 1u);
+
+  reset_remote_and_validate_buffer();
+
+  // Now the Reads should return no available types.
+  EXPECT_EQ(system_clipboard().ReadAvailableTypes().size(), 0u);
+  // Writes will fail since the mojo remote is unbound.
+  clipboard_host()->WriteText("second");
+  EXPECT_EQ(system_clipboard().ReadAvailableTypes().size(), 0u);
+}
+
+TEST_F(SystemClipboardTest, SequenceNumberWithUnboundClipboardHost) {
+  // Clipboard starts empty.
+  auto sequence_number = system_clipboard().SequenceNumber();
+  // Setting text in the host is visible in system clipboard.
+  clipboard_host()->WriteText("first");
+  clipboard_host()->CommitWrite();
+  auto sequence_number_after_write = system_clipboard().SequenceNumber();
+  EXPECT_NE(sequence_number, sequence_number_after_write);
+
+  reset_remote_and_validate_buffer();
+
+  // After clipboard reset, sequenceNumber will be random.
+  auto sequence_number_after_reset = system_clipboard().SequenceNumber();
+  EXPECT_NE(sequence_number_after_write, sequence_number_after_reset);
+}
 }  // namespace blink

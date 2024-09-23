@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/viz/service/frame_sinks/video_detector.h"
+
 #include <algorithm>
 #include <memory>
 #include <set>
@@ -25,10 +27,10 @@
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
-#include "components/viz/service/frame_sinks/video_detector.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
 #include "components/viz/test/surface_id_allocator_set.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -90,7 +92,6 @@ class VideoDetectorTest : public testing::Test {
   VideoDetectorTest()
       : surface_aggregator_(frame_sink_manager_.surface_manager(),
                             &resource_provider_,
-                            false,
                             false) {}
 
   VideoDetectorTest(const VideoDetectorTest&) = delete;
@@ -125,7 +126,7 @@ class VideoDetectorTest : public testing::Test {
                 VideoDetector::kMinDamageHeight);
   static constexpr base::TimeDelta kMinDuration =
       VideoDetector::kMinVideoDuration;
-  static constexpr base::TimeDelta kTimeout = VideoDetector::kVideoTimeout;
+  static constexpr base::TimeDelta kTimeout = VideoDetector::kMaxVideoTimeout;
 
   // Move |detector_|'s idea of the current time forward by |delta|.
   void AdvanceTime(base::TimeDelta delta) {
@@ -245,10 +246,12 @@ class VideoDetectorTest : public testing::Test {
   ServerSharedBitmapManager shared_bitmap_manager_;
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
+  gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
   FrameSinkManagerImpl frame_sink_manager_{
       FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
   DisplayResourceProviderSoftware resource_provider_{
-      &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_};
+      &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_,
+      &gpu_scheduler_};
   FakeCompositorFrameSinkClient frame_sink_client_;
   SurfaceIdAllocatorSet allocators_;
   SurfaceAggregator surface_aggregator_;
@@ -258,13 +261,6 @@ class VideoDetectorTest : public testing::Test {
   raw_ptr<VideoDetector> detector_;
 };
 
-class VideoDetectorIncludeNonVideoTest : public VideoDetectorTest {
- public:
-  VideoDetectorIncludeNonVideoTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kVideoDetectorIgnoreNonVideos);
-  }
-};
 
 constexpr gfx::Rect VideoDetectorTest::kMinRect;
 constexpr base::TimeDelta VideoDetectorTest::kMinDuration;
@@ -346,15 +342,6 @@ TEST_F(VideoDetectorTest, DoesNotReportNonVideoFrames) {
   SendUpdates(frame_sink.get(), kMinRect, /*may_contain_video=*/false,
               /*use_per_quad_damage=*/false, kMinFps + 5, kDuration);
   EXPECT_TRUE(observer_.IsEmpty());
-}
-
-TEST_F(VideoDetectorIncludeNonVideoTest, ReportNonVideoFramesWhenFeatureIsOff) {
-  const base::TimeDelta kDuration = kMinDuration + base::Milliseconds(100);
-  std::unique_ptr<CompositorFrameSinkSupport> frame_sink = CreateFrameSink();
-  EmbedClient(frame_sink.get());
-  SendUpdates(frame_sink.get(), kMinRect, /*may_contain_video=*/false,
-              /*use_per_quad_damage=*/false, kMinFps + 5, kDuration);
-  EXPECT_FALSE(observer_.IsEmpty());
 }
 
 // Turn video activity on and off. Make sure the observers are notified

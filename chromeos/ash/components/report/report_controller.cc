@@ -127,8 +127,6 @@ void ReportController::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kDeviceActiveLastKnownChurnActiveStatus,
                                 0);
   registry->RegisterBooleanPref(
-      prefs::kDeviceActiveChurnObservationFirstObservedNewChurnMetadata, false);
-  registry->RegisterBooleanPref(
       prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0, false);
   registry->RegisterBooleanPref(
       prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1, false);

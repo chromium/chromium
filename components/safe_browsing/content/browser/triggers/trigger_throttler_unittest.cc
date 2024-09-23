@@ -235,8 +235,8 @@ class TriggerThrottlerTestFinch : public ::testing::Test {
         break;
 
       default:
-        NOTREACHED() << "Unhandled trigger type: "
-                     << static_cast<int>(trigger_type);
+        NOTREACHED_IN_MIGRATION()
+            << "Unhandled trigger type: " << static_cast<int>(trigger_type);
     }
   }
 

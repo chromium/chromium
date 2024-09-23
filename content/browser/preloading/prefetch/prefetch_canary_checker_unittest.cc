@@ -8,8 +8,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/simple_test_clock.h"
-#include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
@@ -248,7 +246,7 @@ TEST_F(PrefetchCanaryCheckerTest, CacheHit) {
   EXPECT_FALSE(checker->IsActive());
 }
 
-// TODO(crbug.com/1307470): Re-enable; flaky.
+// TODO(crbug.com/40828450): Re-enable; flaky.
 TEST_F(PrefetchCanaryCheckerTest, DISABLED_NetworkConnectionShardsCache) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_3G);

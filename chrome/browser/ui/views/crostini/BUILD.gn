@@ -1,0 +1,120 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("crostini") {
+  sources = [
+    "crostini_ansible_software_config_view.cc",
+    "crostini_ansible_software_config_view.h",
+    "crostini_app_restart_dialog.cc",
+    "crostini_app_restart_dialog.h",
+    "crostini_expired_container_warning_view.cc",
+    "crostini_expired_container_warning_view.h",
+    "crostini_force_close_view.cc",
+    "crostini_force_close_view.h",
+    "crostini_package_install_failure_view.cc",
+    "crostini_package_install_failure_view.h",
+    "crostini_recovery_view.cc",
+    "crostini_recovery_view.h",
+    "crostini_uninstaller_view.cc",
+    "crostini_uninstaller_view.h",
+    "crostini_update_filesystem_view.cc",
+    "crostini_update_filesystem_view.h",
+  ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/crostini/ansible",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ui/views/bruschetta",
+    "//chrome/browser/ui/webui/ash/crostini_upgrader",
+    "//ui/chromeos",
+    "//ui/strings:ui_strings_grit",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/crostini/ansible",
+  ]
+}
+
+static_library("browser_test_support") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "crostini_dialogue_browser_test_util.cc",
+    "crostini_dialogue_browser_test_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/crostini:browser_test_support",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//components/component_updater:component_updater_paths",
+    "//components/component_updater/ash:test_support",
+    "//components/prefs",
+    "//content/test:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "crostini_app_restart_dialog_unittest.cc" ]
+
+  deps = [
+    ":crostini",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//ui/base/mojom",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "crostini_ansible_software_config_view_browsertest.cc",
+    "crostini_force_close_view_browsertest.cc",
+    "crostini_package_install_failure_view_browsertest.cc",
+    "crostini_recovery_view_browsertest.cc",
+    "crostini_uninstaller_view_browsertest.cc",
+    "crostini_update_filesystem_view_browsertest.cc",
+  ]
+
+  deps = [
+    ":browser_test_support",
+    ":crostini",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/test:test_support",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ash/crostini/ansible",
+    "//chrome/browser/ash/crostini/ansible:test_support",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/test:test_support_ui",
+    "//components/exo:test_support",
+    "//ui/chromeos",
+  ]
+}

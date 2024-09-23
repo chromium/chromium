@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/testing/exception_state_matchers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
@@ -44,7 +45,7 @@ TEST_F(V8DictionaryTest, Get_Empty) {
 
   auto r = dictionary.Get<IDLByteString>("key", scope.GetExceptionState());
 
-  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  ASSERT_THAT(scope.GetExceptionState(), HadNoException());
   EXPECT_FALSE(r.has_value());
 }
 
@@ -55,7 +56,7 @@ TEST_F(V8DictionaryTest, Get_NonPresentForNonEmpty) {
 
   auto r = dictionary.Get<IDLByteString>("key", scope.GetExceptionState());
 
-  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  ASSERT_THAT(scope.GetExceptionState(), HadNoException());
   EXPECT_FALSE(r.has_value());
 }
 
@@ -66,7 +67,7 @@ TEST_F(V8DictionaryTest, Get_UndefinedValue) {
 
   auto r = dictionary.Get<IDLByteString>("foo", scope.GetExceptionState());
 
-  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  ASSERT_THAT(scope.GetExceptionState(), HadNoException());
   EXPECT_FALSE(r.has_value());
 }
 
@@ -77,7 +78,7 @@ TEST_F(V8DictionaryTest, Get_Found) {
 
   auto r = dictionary.Get<IDLByteString>("foo", scope.GetExceptionState());
 
-  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  ASSERT_THAT(scope.GetExceptionState(), HadNoException());
   ASSERT_TRUE(r.has_value());
   EXPECT_EQ(*r, "3");
 }
@@ -89,7 +90,7 @@ TEST_F(V8DictionaryTest, Get_Found2) {
 
   auto r = dictionary.Get<IDLLong>("foo", scope.GetExceptionState());
 
-  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  ASSERT_THAT(scope.GetExceptionState(), HadNoException());
   ASSERT_TRUE(r.has_value());
   EXPECT_EQ(*r, 3);
 }
@@ -101,7 +102,7 @@ TEST_F(V8DictionaryTest, Get_Getter) {
 
   auto r = dictionary.Get<IDLByteString>("foo", scope.GetExceptionState());
 
-  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  ASSERT_THAT(scope.GetExceptionState(), HadNoException());
   ASSERT_TRUE(r.has_value());
   EXPECT_EQ(*r, "xy");
 }
@@ -152,7 +153,7 @@ TEST_F(V8DictionaryTest, Get_TypeConversion) {
 
   auto r = dictionary.Get<IDLByteString>("foo", scope.GetExceptionState());
 
-  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  ASSERT_THAT(scope.GetExceptionState(), HadNoException());
   ASSERT_TRUE(r.has_value());
   EXPECT_EQ(*r, "hello");
 }

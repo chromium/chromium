@@ -58,7 +58,7 @@ void AddAllowedPolicyTypes(em::DeviceRegisterRequest::Type type,
       allowed_policy_types->insert({dm_protocol::kChromeUserPolicyType});
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -4,22 +4,19 @@
 
 #import "ios/chrome/browser/ui/main/default_browser_promo_scene_agent.h"
 
-#import "base/feature_list.h"
-#import "base/ios/ios_util.h"
-#import "base/version.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/features.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
-#import "ios/chrome/browser/ui/default_promo/post_default_abandonment/features.h"
-#import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
 
 @interface DefaultBrowserPromoSceneAgent ()
 
@@ -34,29 +31,17 @@
 
 @implementation DefaultBrowserPromoSceneAgent
 
-- (instancetype)initWithCommandDispatcher:(CommandDispatcher*)dispatcher {
-  self = [super init];
-  if (self) {
-    _dispatcher = dispatcher;
-  }
-  return self;
-}
-
 #pragma mark - Private
 
-// Registers the post restore default browser promo if the user is eligible. To
-// be eligible, they must be in the first session after an iOS restore and have
-// previously set Chrome as their default browser.
+// Registers the post restore default browser promo if the user is eligible.
+// Otherwise, deregisters. To be eligible, they must be in the first session
+// after an iOS restore and have previously set Chrome as their default browser.
 - (void)updatePostRestorePromoRegistration {
   if (!_postRestorePromoSeenInCurrentSession &&
       IsPostRestoreDefaultBrowserEligibleUser()) {
-    // TODO(crbug.com/1453786): register other variations.
-    if (GetPostRestoreDefaultBrowserPromoType() ==
-        PostRestoreDefaultBrowserPromoType::kAlert) {
       self.promosManager->RegisterPromoForSingleDisplay(
           promos_manager::Promo::PostRestoreDefaultBrowserAlert);
       _postRestorePromoSeenInCurrentSession = YES;
-    }
   } else {
     self.promosManager->DeregisterPromo(
         promos_manager::Promo::PostRestoreDefaultBrowserAlert);
@@ -73,6 +58,50 @@
   }
 }
 
+// Register All Tabs Default Browser promo if eligible and otherwise,
+// deregister.
+- (void)updateAllTabsPromoRegistration {
+  if (!IsChromeLikelyDefaultBrowser() && self.isSignedIn) {
+    self.promosManager->RegisterPromoForSingleDisplay(
+        promos_manager::Promo::AllTabsDefaultBrowser);
+  } else {
+    self.promosManager->DeregisterPromo(
+        promos_manager::Promo::AllTabsDefaultBrowser);
+  }
+}
+
+// Register Made for iOS Default Browser promo and otherwise, deregister.
+- (void)updateMadeForIOSPromoRegistration {
+  if (!IsChromeLikelyDefaultBrowser()) {
+    self.promosManager->RegisterPromoForSingleDisplay(
+        promos_manager::Promo::MadeForIOSDefaultBrowser);
+  } else {
+    self.promosManager->DeregisterPromo(
+        promos_manager::Promo::MadeForIOSDefaultBrowser);
+  }
+}
+
+// Register Stay Safe Default Browser promo and otherwise, deregister.
+- (void)updateStaySafePromoRegistration {
+  if (!IsChromeLikelyDefaultBrowser()) {
+    self.promosManager->RegisterPromoForSingleDisplay(
+        promos_manager::Promo::StaySafeDefaultBrowser);
+  } else {
+    self.promosManager->DeregisterPromo(
+        promos_manager::Promo::StaySafeDefaultBrowser);
+  }
+}
+
+// Register Generic Default Browser promo and otherwise, deregister.
+- (void)updateGenericPromoRegistration {
+  if (!IsChromeLikelyDefaultBrowser()) {
+    self.promosManager->RegisterPromoForSingleDisplay(
+        promos_manager::Promo::DefaultBrowser);
+  } else {
+    self.promosManager->DeregisterPromo(promos_manager::Promo::DefaultBrowser);
+  }
+}
+
 - (BOOL)isSignedIn {
   ChromeBrowserState* browserState =
       self.sceneState.browserProviderInterface.mainBrowserProvider.browser
@@ -86,67 +115,71 @@
       signin::ConsentLevel::kSignin);
 }
 
-#pragma mark - BaseDefaultBrowserPromoSchedulerSceneAgent
-
-- (bool)promoCanBeDisplayed {
-  return ShouldRegisterPromoWithPromoManager(self.signedIn,
-                                             /*is_omnibox_copy_paste=*/true);
-}
-
-- (void)resetPromoHandler {
-}
-
-- (void)initPromoHandler:(Browser*)browser {
-}
-
-- (void)notifyHandlerShowPromo {
-  PromosManagerSceneAgent* promosManagerSceneAgent =
-      [PromosManagerSceneAgent agentFromScene:self.sceneState];
-  if (!promosManagerSceneAgent) {
+// Signed in users are eligible for generic default browser promo. Notify FET if
+// user is currently signed in.
+- (void)notifyFETSigninStatus {
+  if (!self.isSignedIn) {
     return;
   }
 
-  self.promosManager->RegisterPromoForSingleDisplay(
-      promos_manager::Promo::DefaultBrowser);
+  Browser* browser =
+      self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
+  if (!browser || !browser->GetBrowserState()) {
+    return;
+  }
 
-  [promosManagerSceneAgent maybeForceDisplayPromo];
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          browser->GetBrowserState());
+  tracker->NotifyEvent(
+      feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
 }
 
-- (void)notifyHandlerDismissPromo:(BOOL)animated {
-}
-
-- (void)onEnteringBackground:(PromoReason)currentPromoReason
-              promoIsShowing:(bool)promoIsShowing {
-}
-
-- (void)onEnteringForeground {
-  DCHECK(self.promosManager);
-
-  [self updatePostRestorePromoRegistration];
-  [self updatePostDefaultAbandonmentPromoRegistration];
-
-  if (ShouldRegisterPromoWithPromoManager(self.signedIn,
-                                          /*is_omnibox_copy_paste=*/false)) {
-    self.promosManager->RegisterPromoForSingleDisplay(
-        promos_manager::Promo::DefaultBrowser);
-  } else {
-    self.promosManager->DeregisterPromo(promos_manager::Promo::DefaultBrowser);
+- (void)maybeSetTriggerCriteriaExperimentStartTimestamp {
+  if (IsDefaultBrowserTriggerCriteraExperimentEnabled() &&
+      !HasTriggerCriteriaExperimentStarted()) {
+    SetTriggerCriteriaExperimentStartTimestamp();
   }
 }
 
-- (void)logPromoAppear:(PromoReason)currentPromoReason {
+- (void)maybeNotifyFETTriggerCriteriaExperimentConditionMet {
+  if (IsDefaultBrowserTriggerCriteraExperimentEnabled() &&
+      HasTriggerCriteriaExperimentStarted21days()) {
+    Browser* browser =
+        self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
+    if (!browser || !browser->GetBrowserState()) {
+      return;
+    }
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForBrowserState(
+            browser->GetBrowserState());
+    tracker->NotifyEvent(feature_engagement::events::
+                             kDefaultBrowserPromoTriggerCriteriaConditionsMet);
+  }
 }
 
-- (void)logPromoAction:(PromoReason)currentPromoReason
-        promoShownTime:(base::TimeTicks)promoShownTime {
-}
+#pragma mark - SceneStateObserver
 
-- (void)logPromoUserDismiss:(PromoReason)currentPromoReason
-             promoShownTime:(base::TimeTicks)promoShownTime {
-}
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  DCHECK(self.promosManager);
 
-- (void)logPromoTimeout:(PromoReason)currentPromoReason
-         promoShownTime:(base::TimeTicks)promoShownTime {
+  if (self.sceneState.appState.initStage < InitStageFinal) {
+    return;
+  }
+
+  if (level == SceneActivationLevelForegroundActive) {
+    [self updatePostRestorePromoRegistration];
+    [self updatePostDefaultAbandonmentPromoRegistration];
+    [self updateAllTabsPromoRegistration];
+    [self updateMadeForIOSPromoRegistration];
+    [self updateStaySafePromoRegistration];
+    [self updateGenericPromoRegistration];
+
+    [self notifyFETSigninStatus];
+    [self maybeSetTriggerCriteriaExperimentStartTimestamp];
+    [self maybeNotifyFETTriggerCriteriaExperimentConditionMet];
+  }
 }
 
 @end

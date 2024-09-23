@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/language.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
+
+#include "third_party/blink/renderer/platform/language.h"
 
 namespace blink {
 
@@ -13,12 +19,12 @@ TextResourceDecoderOptions::TextResourceDecoderOptions(
     : TextResourceDecoderOptions(kUseContentAndBOMBasedDetection,
                                  content_type,
                                  default_encoding,
-                                 nullptr,
+                                 AtomicString(),
                                  KURL()) {}
 
 TextResourceDecoderOptions TextResourceDecoderOptions::CreateUTF8Decode() {
   return TextResourceDecoderOptions(kAlwaysUseUTF8ForText, kPlainTextContent,
-                                    UTF8Encoding(), nullptr, NullURL());
+                                    UTF8Encoding(), AtomicString(), NullURL());
 }
 
 TextResourceDecoderOptions
@@ -42,7 +48,7 @@ TextResourceDecoderOptions::TextResourceDecoderOptions(
     EncodingDetectionOption encoding_detection_option,
     ContentType content_type,
     const WTF::TextEncoding& default_encoding,
-    const char* hint_encoding,
+    const AtomicString& hint_encoding,
     const KURL& hint_url)
     : encoding_detection_option_(encoding_detection_option),
       content_type_(content_type),

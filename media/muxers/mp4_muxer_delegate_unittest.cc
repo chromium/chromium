@@ -2,17 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/mp4/mp4_stream_parser.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
+#include "media/muxers/mp4_muxer_delegate.h"
 
 #include <algorithm>
 #include <cstddef>
+#include <string_view>
 #include <vector>
 
-#include "base/big_endian.h"
+#include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_tracks.h"
@@ -20,7 +26,6 @@
 #include "media/base/stream_parser.h"
 #include "media/formats/mp4/es_descriptor.h"
 #include "media/formats/mp4/mp4_stream_parser.h"
-#include "media/muxers/mp4_muxer_delegate.h"
 #include "media/muxers/mp4_type_conversion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,7 +65,7 @@ class Mp4MuxerDelegateTest : public testing::Test {
   void EndOfSegmentF() {}
 
  protected:
-  void LoadEncodedFile(base::StringPiece filename,
+  void LoadEncodedFile(std::string_view filename,
                        base::MemoryMappedFile& mapped_stream) {
     base::FilePath file_path = GetTestDataFilePath(filename);
 
@@ -109,7 +114,7 @@ class Mp4MuxerDelegateTest : public testing::Test {
   testing::StrictMock<MockMediaLog> media_log_;
 
  private:
-  base::FilePath GetTestDataFilePath(base::StringPiece name) {
+  base::FilePath GetTestDataFilePath(std::string_view name) {
     base::FilePath file_path;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
     file_path = file_path.Append(FILE_PATH_LITERAL("media"))
@@ -126,13 +131,13 @@ class Mp4MuxerDelegateTest : public testing::Test {
 TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
   // Add video stream only.
   base::MemoryMappedFile mapped_file_1;
-  LoadEncodedFile("avc-bitstream-format-0.h264", mapped_file_1);
+  LoadEncodedFile("bear-320x180-10bit-frame-0.h264", mapped_file_1);
   std::string video_stream_1(
       reinterpret_cast<const char*>(mapped_file_1.data()),
       mapped_file_1.length());
 
   base::MemoryMappedFile mapped_file_2;
-  LoadEncodedFile("avc-bitstream-format-1.h264", mapped_file_2);
+  LoadEncodedFile("bear-320x180-10bit-frame-1.h264", mapped_file_2);
   std::string video_stream_2(
       reinterpret_cast<const char*>(mapped_file_2.data()),
       mapped_file_2.length());
@@ -145,7 +150,8 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
   std::vector<uint8_t> second_moof_written_data;
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
+      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                   std::back_inserter(total_written_data));
 
@@ -172,7 +178,7 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
   base::TimeTicks base_time_ticks = base::TimeTicks::Now();
 
   constexpr uint32_t kSampleDurations[] = {29, 32, 31, 30};
-  constexpr uint32_t kSampleDurationsAfterTimescale[] = {870, 960, 930, 900};
+  constexpr uint32_t kSampleDurationsAfterTimescale[] = {870, 960, 930, 999};
 
   base::TimeDelta delta;
 
@@ -224,7 +230,7 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
         &media_log_);
 
     bool result = mp4_stream_parser.AppendToParseBuffer(
-        total_written_data.data(), total_written_data.size());
+        base::make_span(total_written_data));
     EXPECT_TRUE(result);
 
     // `MP4StreamParser::Parse` validates the MP4 format.
@@ -458,7 +464,8 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
   // Default Mp4MuxerDelegate with default max default audio duration of
   // 5 seconds.
   Mp4MuxerDelegate delegate(
-      base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
+      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                   std::back_inserter(total_written_data));
 
@@ -522,7 +529,7 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
         &media_log_);
 
     bool result = mp4_stream_parser.AppendToParseBuffer(
-        total_written_data.data(), total_written_data.size());
+        base::make_span(total_written_data));
     EXPECT_TRUE(result);
 
     // `MP4StreamParser::Parse` validates the MP4 format.
@@ -682,7 +689,8 @@ TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
+      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                   std::back_inserter(total_written_data));
 
@@ -699,7 +707,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioOnlyNewFragmentCreation) {
             run_loop.Quit();
         }
       }),
-      base::Milliseconds(300));
+      10);
 
   std::vector<uint8_t> audio_codec_description;
   PopulateAacAdts(audio_codec_description);
@@ -792,9 +800,9 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
                            mapped_file_1.length());
 
   base::MemoryMappedFile mapped_file_2;
-  LoadEncodedFile("avc-bitstream-format-0.h264", mapped_file_2);
-  std::string video_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
-                           mapped_file_1.length());
+  LoadEncodedFile("bear-320x180-10bit-frame-0.h264", mapped_file_2);
+  std::string video_stream(reinterpret_cast<const char*>(mapped_file_2.data()),
+                           mapped_file_2.length());
 
   base::RunLoop run_loop;
 
@@ -804,7 +812,8 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
+      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                   std::back_inserter(total_written_data));
 
@@ -827,7 +836,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
             run_loop.Quit();
         }
       }),
-      base::Milliseconds(300));
+      10);
 
   std::vector<uint8_t> code_description;
   PopulateAacAdts(code_description);
@@ -932,7 +941,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioAndVideoAddition) {
     ASSERT_EQ(1u, traf_boxes[1].runs[0].sample_durations.size());
 
     // The first and last item.
-    EXPECT_EQ(1500u, traf_boxes[1].runs[0].sample_durations[0]);
+    EXPECT_EQ(999u, traf_boxes[1].runs[0].sample_durations[0]);
   }
 
   {
@@ -993,9 +1002,9 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
                            mapped_file_1.length());
 
   base::MemoryMappedFile mapped_file_2;
-  LoadEncodedFile("avc-bitstream-format-0.h264", mapped_file_2);
-  std::string video_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
-                           mapped_file_1.length());
+  LoadEncodedFile("bear-320x180-10bit-frame-0.h264", mapped_file_2);
+  std::string video_stream(reinterpret_cast<const char*>(mapped_file_2.data()),
+                           mapped_file_2.length());
 
   base::RunLoop run_loop;
 
@@ -1006,7 +1015,8 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
+      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                   std::back_inserter(total_written_data));
 
@@ -1031,7 +1041,7 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
             run_loop.Quit();
         }
       }),
-      base::Milliseconds(300));
+      10);
 
   std::vector<uint8_t> audio_codec_description;
   PopulateAacAdts(audio_codec_description);
@@ -1095,63 +1105,96 @@ TEST_F(Mp4MuxerDelegateTest, MfraBoxOnAudioAndVideoAddition) {
 
   size_t tfra_box_offset = mfra_start_offset + kMfraBoxSize;
   size_t track_id = tfra_box_offset + kFullBoxSize;
-  base::BigEndianReader big_endian_reader(
-      base::span(total_written_data).subspan(track_id, 12u));
+  auto reader =
+      base::SpanReader(base::span(total_written_data).subspan(track_id, 12u));
 
   uint32_t value;
-  big_endian_reader.ReadU32(&value);
+  reader.ReadU32BigEndian(value);
   EXPECT_EQ(value, 2u);  // video track id.
 
-  big_endian_reader.ReadU32(&value);
+  reader.ReadU32BigEndian(value);
   EXPECT_EQ(value, 63u);  // entry number size. 63 == 0x3f.
 
-  big_endian_reader.ReadU32(&value);
-  // The file has 4 fragments, but video samples exists only for
-  // 2 fragments so the `tfra` box has only 2 entries.
-  EXPECT_EQ(value, 2u);  // number of entries.
+  reader.ReadU32BigEndian(value);
+  // The file has 4 fragments, but video will also have 4 fragments
+  // and the first two fragments have empty video samples.
+  EXPECT_EQ(value, 4u);  // number of entries.
 
-  // Third entry.
-  size_t third_tfra_entry = tfra_box_offset + kTfraBoxSize;
-  base::BigEndianReader big_endian_reader2(
-      base::span(total_written_data)
-          .subspan(third_tfra_entry, kTfraEntrySize * 2u));
+  // First entry.
+  size_t first_tfra_entry = tfra_box_offset + kTfraBoxSize;
+  reader =
+      base::SpanReader(base::span(total_written_data)
+                           .subspan(first_tfra_entry, kTfraEntrySize * 4u));
   uint64_t time;
-  big_endian_reader2.ReadU64(&time);
+  reader.ReadU64BigEndian(time);
   EXPECT_EQ(time, 0u);  // time.
 
-  uint64_t third_moof_offset;
-  big_endian_reader2.ReadU64(&third_moof_offset);
+  uint64_t moof_offset;
+  reader.ReadU64BigEndian(moof_offset);
 
-  big_endian_reader2.ReadU32(&value);
+  reader.ReadU32BigEndian(value);
   EXPECT_EQ(value, 1u);  // traf number.
 
-  big_endian_reader2.ReadU32(&value);
+  reader.ReadU32BigEndian(value);
   EXPECT_EQ(value, 1u);  // trun number.
 
-  big_endian_reader2.ReadU32(&value);
+  reader.ReadU32BigEndian(value);
   EXPECT_EQ(value, 1u);  // sample number.
-  EXPECT_TRUE(memcmp(&total_written_data[third_moof_offset],
-                     third_moof_written_data.data(),
-                     third_moof_written_data.size()) == 0);
+
+  // Second entry.
+  reader.ReadU64BigEndian(time);
+  EXPECT_EQ(time, 0u);  // time.
+
+  reader.ReadU64BigEndian(moof_offset);
+
+  reader.ReadU32BigEndian(value);
+  EXPECT_EQ(value, 1u);  // traf number.
+
+  reader.ReadU32BigEndian(value);
+  EXPECT_EQ(value, 1u);  // trun number.
+
+  reader.ReadU32BigEndian(value);
+  EXPECT_EQ(value, 1u);  // sample number.
+
+  // Third entry.
+  reader.ReadU64BigEndian(time);
+
+  // first fragment that holds video frames, so it should have
+  // a 0 that is video frame start time.
+  EXPECT_EQ(time, 0u);  // time.
+
+  reader.ReadU64BigEndian(moof_offset);
+
+  reader.ReadU32BigEndian(value);
+  EXPECT_EQ(value, 1u);  // traf number.
+
+  reader.ReadU32BigEndian(value);
+  EXPECT_EQ(value, 1u);  // trun number.
+
+  reader.ReadU32BigEndian(value);
+  EXPECT_EQ(value, 1u);  // sample number.
+  EXPECT_EQ(base::span(total_written_data)
+                .subspan(moof_offset, third_moof_written_data.size()),
+            third_moof_written_data);
 
   // Fourth entry.
-  big_endian_reader2.ReadU64(&time);
+  reader.ReadU64BigEndian(time);
   EXPECT_NE(time, 0u);  // time.
 
   uint64_t fourth_moof_offset;
-  big_endian_reader2.ReadU64(&fourth_moof_offset);
+  reader.ReadU64BigEndian(fourth_moof_offset);
 
-  big_endian_reader2.ReadU32(&value);
+  reader.ReadU32BigEndian(value);
   EXPECT_EQ(value, 1u);  // traf number.
 
-  big_endian_reader2.ReadU32(&value);
+  reader.ReadU32BigEndian(value);
   EXPECT_EQ(value, 1u);  // trun number.
 
-  big_endian_reader2.ReadU32(&value);
+  reader.ReadU32BigEndian(value);
   EXPECT_EQ(value, 1u);  // sample number.
-  EXPECT_TRUE(memcmp(&total_written_data[fourth_moof_offset],
-                     fourth_moof_written_data.data(),
-                     fourth_moof_written_data.size()) == 0);
+  EXPECT_EQ(base::span(total_written_data)
+                .subspan(fourth_moof_offset, fourth_moof_written_data.size()),
+            fourth_moof_written_data);
 }
 
 TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
@@ -1166,9 +1209,9 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
                            mapped_file_1.length());
 
   base::MemoryMappedFile mapped_file_2;
-  LoadEncodedFile("avc-bitstream-format-0.h264", mapped_file_2);
-  std::string video_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
-                           mapped_file_1.length());
+  LoadEncodedFile("bear-320x180-10bit-frame-0.h264", mapped_file_2);
+  std::string video_stream(reinterpret_cast<const char*>(mapped_file_2.data()),
+                           mapped_file_2.length());
 
   base::RunLoop run_loop;
 
@@ -1177,7 +1220,8 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
+      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                   std::back_inserter(total_written_data));
 
@@ -1193,7 +1237,7 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
             break;
         }
       }),
-      base::Milliseconds(300));
+      10);
 
   std::vector<uint8_t> audio_codec_description;
   PopulateAacAdts(audio_codec_description);
@@ -1285,7 +1329,7 @@ TEST_F(Mp4MuxerDelegateTest, VideoAndAudioAddition) {
     // `trun` test of video.
     ASSERT_EQ(1u, traf_boxes[1].runs.size());
     EXPECT_EQ(24u, traf_boxes[1].runs[0].sample_count);
-    EXPECT_EQ(743u, traf_boxes[1].runs[0].data_offset);
+    EXPECT_EQ(5859u, traf_boxes[1].runs[0].data_offset);
 
     ASSERT_EQ(24u, traf_boxes[1].runs[0].sample_durations.size());
 
@@ -1308,9 +1352,9 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
                            mapped_file_1.length());
 
   base::MemoryMappedFile mapped_file_2;
-  LoadEncodedFile("avc-bitstream-format-0.h264", mapped_file_2);
-  std::string video_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
-                           mapped_file_1.length());
+  LoadEncodedFile("bear-320x180-10bit-frame-0.h264", mapped_file_2);
+  std::string video_stream(reinterpret_cast<const char*>(mapped_file_2.data()),
+                           mapped_file_2.length());
 
   base::RunLoop run_loop;
 
@@ -1320,7 +1364,8 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
 
   int callback_count = 0;
   Mp4MuxerDelegate delegate(
-      base::BindLambdaForTesting([&](base::StringPiece mp4_data_string) {
+      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
         std::copy(mp4_data_string.begin(), mp4_data_string.end(),
                   std::back_inserter(total_written_data));
 
@@ -1340,7 +1385,7 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
             break;
         }
       }),
-      base::Milliseconds(300));
+      10);
 
   std::vector<uint8_t> audio_codec_description;
   PopulateAacAdts(audio_codec_description);
@@ -1419,6 +1464,106 @@ TEST_F(Mp4MuxerDelegateTest, AudioVideoAndAudioVideoFragment) {
     EXPECT_EQ(2u, traf_boxes[0].runs[0].sample_count);
     EXPECT_EQ(1u, traf_boxes[1].runs[0].sample_count);
   }
+}
+
+TEST_F(Mp4MuxerDelegateTest, ConvertedEncodedDataOnAvc1) {
+  // Add audio and video the first fragment, but video and audio
+  // on the second fragment.
+  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                media::ChannelLayoutConfig::Stereo(),
+                                kAudioSampleRate, 1000);
+
+  base::MemoryMappedFile mapped_file_1;
+  LoadEncodedFile("bear.h264", mapped_file_1);
+  std::string video_stream(reinterpret_cast<const char*>(mapped_file_1.data()),
+                           mapped_file_1.length());
+
+  base::RunLoop run_loop;
+
+  std::vector<uint8_t> total_written_data;
+  std::vector<uint8_t> moof_and_mdat_written_data;
+
+  int callback_count = 0;
+  int moof_box_start_offset = 0;
+  Mp4MuxerDelegate delegate(
+      media::AudioCodec::kAAC, std::nullopt, std::nullopt,
+      base::BindLambdaForTesting([&](std::string_view mp4_data_string) {
+        switch (++callback_count) {
+          case 1:
+            // 'ftyp' box.
+          case 2:
+            // 'moov' box.
+            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                      std::back_inserter(total_written_data));
+            break;
+          case 3:
+            // 'moof' box.
+            moof_box_start_offset = total_written_data.size();
+
+            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                      std::back_inserter(total_written_data));
+
+            std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                      std::back_inserter(moof_and_mdat_written_data));
+            run_loop.Quit();
+            break;
+          case 4:
+            // MFRA data
+            run_loop.Quit();
+            break;
+        }
+      }),
+      10);
+
+  std::vector<uint8_t> audio_codec_description;
+  PopulateAacAdts(audio_codec_description);
+
+  // video stream.
+  std::vector<uint8_t> video_codec_description;
+  PopulateAVCDecoderConfiguration(video_codec_description);
+
+  base::TimeTicks base_time_ticks = base::TimeTicks::Now();
+  media::Muxer::VideoParameters video_params(gfx::Size(kWidth, kHeight), 30,
+                                             media::VideoCodec::kH264,
+                                             gfx::ColorSpace());
+
+  delegate.AddVideoFrame(video_params, video_stream, video_codec_description,
+                         base_time_ticks, true);
+
+  // Write box data to the callback.
+  delegate.Flush();
+
+  run_loop.Run();
+
+  std::unique_ptr<mp4::BoxReader> moof_reader;
+  mp4::ParseResult result = mp4::BoxReader::ReadTopLevelBox(
+      moof_and_mdat_written_data.data(), moof_and_mdat_written_data.size(),
+      nullptr, &moof_reader);
+  EXPECT_EQ(result, mp4::ParseResult::kOk);
+
+  // `moof`box read.
+  EXPECT_EQ(mp4::FOURCC_MOOF, moof_reader->type());
+  EXPECT_TRUE(moof_reader->ScanChildren());
+
+  // `traf` box read.
+  std::vector<mp4::TrackFragment> traf_boxes;
+  EXPECT_TRUE(moof_reader->ReadChildren(&traf_boxes));
+
+  uint32_t mdat_video_data_offset;
+  EXPECT_EQ(112u, traf_boxes[0].runs[0].data_offset);
+  mdat_video_data_offset = traf_boxes[0].runs[0].data_offset;
+
+  // `moof` offset + `mdat_video_data_offset` is the start of the video data,
+  // which should be NAL size instead of the start code.
+  uint32_t nal_size_offset = moof_box_start_offset + mdat_video_data_offset;
+
+  constexpr int kNaluLength = 4;
+  uint32_t nalsize = 0;
+  for (int i = 0; i < kNaluLength; i++) {
+    nalsize = (nalsize << 8) | total_written_data[nal_size_offset++];
+  }
+
+  EXPECT_EQ(nalsize, 578u);
 }
 
 #endif

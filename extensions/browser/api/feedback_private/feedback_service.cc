@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
@@ -34,7 +35,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/user_manager.h"
+#include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
@@ -54,15 +59,11 @@ constexpr base::FilePath::CharType kBluetoothLogsFilePathOld[] =
     FILE_PATH_LITERAL("bluetooth/log.bz2.old");
 constexpr base::FilePath::CharType kBluetoothQualityReportFilePath[] =
     FILE_PATH_LITERAL("bluetooth/bluetooth_quality_report");
-constexpr base::FilePath::CharType kWifiDebugLogsFilePath[] =
-    FILE_PATH_LITERAL("wifi/iwlwifi_firmware_dumps.tar.zst");
 
 constexpr char kBluetoothLogsAttachmentName[] = "bluetooth_logs.bz2";
 constexpr char kBluetoothLogsAttachmentNameOld[] = "bluetooth_logs.old.bz2";
 constexpr char kBluetoothQualityReportAttachmentName[] =
     "bluetooth_quality_report";
-constexpr char kWifiDebugLogsAttachmentName[] =
-    "iwlwifi_firmware_dumps.tar.zst";
 
 constexpr char kLacrosHistogramsFilename[] = "lacros_histograms.zip";
 
@@ -80,23 +81,24 @@ void AddAttachment(scoped_refptr<feedback::FeedbackData> feedback_data,
   }
 }
 
-void LoadAttachmentsIfRequested(
-    scoped_refptr<feedback::FeedbackData> feedback_data,
-    const base::FilePath& root_path,
-    bool send_bluetooth_logs,
-    bool send_wifi_debug_logs) {
-  if (send_bluetooth_logs) {
-    AddAttachment(feedback_data, root_path, kBluetoothLogsFilePath,
-                  kBluetoothLogsAttachmentName);
-    AddAttachment(feedback_data, root_path, kBluetoothLogsFilePathOld,
-                  kBluetoothLogsAttachmentNameOld);
-    AddAttachment(feedback_data, root_path, kBluetoothQualityReportFilePath,
-                  kBluetoothQualityReportAttachmentName);
-  }
+void AttachBluetoothLogs(scoped_refptr<feedback::FeedbackData> feedback_data,
+                         const base::FilePath& root_path) {
+  AddAttachment(feedback_data, root_path, kBluetoothLogsFilePath,
+                kBluetoothLogsAttachmentName);
+  AddAttachment(feedback_data, root_path, kBluetoothLogsFilePathOld,
+                kBluetoothLogsAttachmentNameOld);
+  AddAttachment(feedback_data, root_path, kBluetoothQualityReportFilePath,
+                kBluetoothQualityReportAttachmentName);
+}
 
-  if (send_wifi_debug_logs) {
-    AddAttachment(feedback_data, root_path, kWifiDebugLogsFilePath,
-                  kWifiDebugLogsAttachmentName);
+// A new case must be added for every new log type. Otherwise the code should
+// not compile.
+std::string_view GetAttachmentName(debugd::FeedbackBinaryLogType log_type) {
+  switch (log_type) {
+    case debugd::WIFI_FIRMWARE_DUMP:
+      return "wifi_firmware_dumps.tar.zst";
+    case debugd::BLUETOOTH_FIRMWARE_DUMP:
+      return "bluetooth_firmware_dumps.tar.zst";
   }
 }
 #endif
@@ -169,10 +171,9 @@ void FeedbackService::FetchAttachedFileAndScreenshot(
   if (must_attach_file) {
     auto populate_attached_file = base::BindOnce(
         [](scoped_refptr<feedback::FeedbackData> feedback_data,
-           std::unique_ptr<std::string> data, int64_t length) {
+           std::string data, int64_t /*length*/) {
           feedback_data->set_attached_file_uuid(std::string());
-          if (data)
-            feedback_data->AttachAndCompressFileData(std::move(*data));
+          feedback_data->AttachAndCompressFileData(std::move(data));
         },
         feedback_data);
 
@@ -184,10 +185,9 @@ void FeedbackService::FetchAttachedFileAndScreenshot(
   if (must_attach_screenshot) {
     auto populate_screenshot = base::BindOnce(
         [](scoped_refptr<feedback::FeedbackData> feedback_data,
-           std::unique_ptr<std::string> data, int64_t length) {
+           std::string data, int64_t /*length*/) {
           feedback_data->set_screenshot_uuid(std::string());
-          if (data)
-            feedback_data->set_image(std::move(*data));
+          feedback_data->set_image(std::move(data));
         },
         feedback_data);
     BlobReader::Read(
@@ -292,20 +292,52 @@ void FeedbackService::OnLacrosHistogramsFetched(
                            std::move(compressed_histograms));
   }
 
-  // If at least one attachment is requested, invoke LoadAttachmentsIfRequested
-  // to add all requested attachments in a separate thread to avoid blocking the
-  // UI thread.
-  if (params.send_bluetooth_logs || params.send_wifi_debug_logs) {
+  auto barrier_closure =
+      base::BarrierClosure((params.send_bluetooth_logs ? 2 : 0) +
+                               (params.send_wifi_debug_logs ? 1 : 0),
+                           base::BindOnce(&FeedbackService::OnAllLogsFetched,
+                                          this, params, feedback_data));
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  const auto account_identifier =
+      cryptohome::CreateAccountIdentifierFromAccountId(
+          user ? user->GetAccountId() : EmptyAccountId());
+
+  // If bluetooth logs are requested, invoke AttachBluetoothLogs to add
+  // them in a separate thread to avoid blocking the UI thread.
+  if (params.send_bluetooth_logs) {
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&LoadAttachmentsIfRequested, feedback_data,
-                       log_file_root_, params.send_bluetooth_logs,
-                       params.send_wifi_debug_logs),
-        base::BindOnce(&FeedbackService::OnAllLogsFetched, this, params,
-                       feedback_data));
-  } else {
-    OnAllLogsFetched(params, feedback_data);
+        base::BindOnce(&AttachBluetoothLogs, feedback_data, log_file_root_),
+        barrier_closure);
+
+    binary_log_files_reader_.GetFeedbackBinaryLogs(
+        account_identifier,
+        debugd::FeedbackBinaryLogType::BLUETOOTH_FIRMWARE_DUMP,
+        base::BindOnce(&FeedbackService::OnBinaryLogFilesFetched, this, params,
+                       feedback_data, barrier_closure));
   }
+
+  if (params.send_wifi_debug_logs) {
+    binary_log_files_reader_.GetFeedbackBinaryLogs(
+        account_identifier, debugd::FeedbackBinaryLogType::WIFI_FIRMWARE_DUMP,
+        base::BindOnce(&FeedbackService::OnBinaryLogFilesFetched, this, params,
+                       feedback_data, barrier_closure));
+  }
+}
+
+void FeedbackService::OnBinaryLogFilesFetched(
+    const FeedbackParams& params,
+    scoped_refptr<feedback::FeedbackData> feedback_data,
+    base::RepeatingClosure barrier_closure_callback,
+    feedback::BinaryLogFilesReader::BinaryLogsResponse binary_logs_response) {
+  if (binary_logs_response) {
+    for (auto& item : *binary_logs_response) {
+      feedback_data->AddFile(GetAttachmentName(item.first).data(),
+                             std::move(item.second));
+    }
+  }
+  std::move(barrier_closure_callback).Run();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

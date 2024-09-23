@@ -1,0 +1,43 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Manages storage file modifications for a non-incognito file handle held by
+// an AccessHandle of FileSystemAccess.
+//
+// This interface is used for non-incognito files only. In incognito mode, quota
+// is fully managed in the browser process.
+interface FileSystemAccessFileModificationHost {
+  // Requests or releases storage capacity.
+  //
+  // This interface's consumer must only expand the file handle associated with
+  // this host according to the capacity obtained from RequestCapacityChange().
+  // Renderers that deviate from this requirement will be terminated.
+  //
+  // Positive deltas are requests for capacity increases. The implementation may
+  // grant more or less capacity than requested, but it will never decrease
+  // capacity when an increase is requested. In other words, if
+  // `capacity_delta` > 0, `granted_capacity_delta` is guaranteed to be >= 0.
+  //
+  // Negative deltas are capacity releases. Releasing unavailable capacity is a
+  // bad message. Subject to this constraint, capacity releases are guaranteed
+  // to succeed. In other words, if `capacity_delta` < 0,
+  // `granted_capacity_delta` is guaranteed to == `capacity_delta`.
+  //
+  // The synchronous method is needed as File System Access Access Handles
+  // implement synchronous write operations.
+  [Sync]
+  RequestCapacityChange(int64 capacity_delta) =>
+      (int64 granted_capacity_delta);
+
+  // Signal to the browser process that the file has been modified. Since this
+  // write happened directly from the renderer, the observer hooks in
+  // storage/browser/file_system/ were bypassed.
+  //
+  // This is intentionally fire-and-forget, since SyncAccessHandle writes are
+  // synchronous and requiring round-trip IPC to complete before synchronously
+  // returning would be detrimental to performance.
+  OnContentsModified();
+};

@@ -1,0 +1,12 @@
+{
+  "name": "Debugger API test for flat session mode",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": [
+    "debugger"
+  ]
+}

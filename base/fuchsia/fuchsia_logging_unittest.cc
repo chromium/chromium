@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/fuchsia/scoped_fx_logger.h"
+#include "base/fuchsia/fuchsia_logging.h"
 
 #include <fidl/base.testfidl/cpp/fidl.h>
 #include <fidl/fuchsia.logger/cpp/fidl.h>
@@ -10,8 +10,10 @@
 #include <lib/fidl/cpp/binding.h>
 #include <lib/sys/cpp/component_context.h>
 
+#include <string_view>
+
 #include "base/fuchsia/fuchsia_component_connect.h"
-#include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/scoped_fx_logger.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/fuchsia/test_log_listener_safe.h"
 #include "base/logging.h"
@@ -49,7 +51,7 @@ TEST(FuchsiaLoggingTest, SystemLogging) {
   // test listener.
   LOG(ERROR) << kLogMessage;
 
-  absl::optional<fuchsia_logger::LogMessage> logged_message =
+  std::optional<fuchsia_logger::LogMessage> logged_message =
       listener.RunUntilMessageReceived(kLogMessage);
 
   ASSERT_TRUE(logged_message.has_value());
@@ -64,7 +66,7 @@ TEST(FuchsiaLoggingTest, SystemLogging) {
 TEST(FuchsiaLoggingTest, SystemLoggingMultipleTags) {
   constexpr char kLogMessage[] =
       "This is FuchsiaLoggingTest.SystemLoggingMultipleTags!";
-  const std::vector<StringPiece> kTags = {"tag1", "tag2"};
+  const std::vector<std::string_view> kTags = {"tag1", "tag2"};
 
   test::SingleThreadTaskEnvironment task_environment_{
       test::SingleThreadTaskEnvironment::MainThreadType::IO};
@@ -82,12 +84,12 @@ TEST(FuchsiaLoggingTest, SystemLoggingMultipleTags) {
       std::move(log_sink_client_end.value()), kTags);
   logger.LogMessage("", 0, kLogMessage, FUCHSIA_LOG_ERROR);
 
-  absl::optional<fuchsia_logger::LogMessage> logged_message =
+  std::optional<fuchsia_logger::LogMessage> logged_message =
       listener.RunUntilMessageReceived(kLogMessage);
 
   ASSERT_TRUE(logged_message.has_value());
-  auto tags = std::vector<StringPiece>(logged_message->tags().begin(),
-                                       logged_message->tags().end());
+  auto tags = std::vector<std::string_view>(logged_message->tags().begin(),
+                                            logged_message->tags().end());
   EXPECT_EQ(tags, kTags);
 }
 
@@ -157,7 +159,7 @@ TEST(FuchsiaLoggingTest, FidlBindingClosureWarningLogger) {
   base::FidlBindingClosureWarningLogger<base_testfidl::TestInterface>()(
       fidl::UnbindInfo::PeerClosed(ZX_ERR_PEER_CLOSED));
 
-  absl::optional<fuchsia_logger::LogMessage> logged_message =
+  std::optional<fuchsia_logger::LogMessage> logged_message =
       listener.RunUntilMessageReceived(
           "base.testfidl.TestInterface unbound: ZX_ERR_PEER_CLOSED (-24)");
 

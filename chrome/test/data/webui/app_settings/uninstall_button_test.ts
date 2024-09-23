@@ -5,17 +5,17 @@
 /** @fileoverview Test suite for app-management-uninstall-button. */
 import 'chrome://app-settings/uninstall_button.js';
 
-import type {AppManagementUninstallButtonElement} from 'chrome://app-settings/uninstall_button.js';
+import type {UninstallButtonElement} from 'chrome://app-settings/uninstall_button.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {InstallReason} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createTestApp, TestAppManagementBrowserProxy} from './app_management_test_support.js';
 
 suite('AppManagementUninstallButtonTest', () => {
-  let uninstallButton: AppManagementUninstallButtonElement;
+  let uninstallButton: UninstallButtonElement;
   let testProxy: TestAppManagementBrowserProxy;
 
   setup(async function() {
@@ -28,7 +28,7 @@ suite('AppManagementUninstallButtonTest', () => {
     uninstallButton = document.createElement('app-management-uninstall-button');
     uninstallButton.app = app;
     document.body.appendChild(uninstallButton);
-    await flushTasks();
+    await microtasksFinished();
   }
 
   test('Click uninstall', async () => {

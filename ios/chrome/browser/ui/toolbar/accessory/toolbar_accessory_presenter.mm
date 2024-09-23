@@ -59,7 +59,7 @@ const CGFloat kAnimationDuration = 0.15;
 #pragma mark - Public
 
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _isIncognito = isIncognito;
   }
   return self;

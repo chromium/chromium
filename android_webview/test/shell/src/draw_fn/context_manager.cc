@@ -8,14 +8,13 @@
 #include <GLES2/gl2.h>
 
 #include "android_webview/public/browser/draw_fn.h"
-#include "android_webview/test/draw_fn_impl_jni_headers/ContextManager_jni.h"
 #include "android_webview/test/shell/src/draw_fn/allocator.h"
 #include "base/android/jni_array.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/native_library.h"
 #include "base/threading/thread_restrictions.h"
-#include "gpu/vulkan/init/gr_vk_memory_allocator_impl.h"
+#include "gpu/vulkan/init/skia_vk_memory_allocator_impl.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -29,21 +28,25 @@
 #include "third_party/skia/include/core/SkDrawable.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
-#include "third_party/skia/include/gpu/GrBackendDrawableInfo.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrBackendDrawableInfo.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkDirectContext.h"
-#include "third_party/skia/include/gpu/vk/GrVkBackendContext.h"
-#include "third_party/skia/include/gpu/vk/GrVkExtensions.h"
-#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/vk/VulkanBackendContext.h"
+#include "third_party/skia/include/gpu/vk/VulkanExtensions.h"
 #include "third_party/skia/include/gpu/vk/VulkanMutableTextureState.h"
+#include "third_party/skia/include/gpu/vk/VulkanTypes.h"
 #include "ui/gfx/color_space.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/test/draw_fn_impl_jni_headers/ContextManager_jni.h"
 
 namespace draw_fn {
 
@@ -654,7 +657,7 @@ void ContextManagerVulkan::DoCreateContext(JNIEnv* env, int width, int height) {
                                     gpu::VulkanSurface::FORMAT_RGBA_32));
   ResizeSurface(env, width, height);
 
-  GrVkBackendContext backend_context;
+  skgpu::VulkanBackendContext backend_context;
   backend_context.fInstance = device_queue_->GetVulkanInstance();
   backend_context.fPhysicalDevice = device_queue_->GetVulkanPhysicalDevice();
   backend_context.fDevice = device_queue_->GetVulkanDevice();
@@ -664,10 +667,10 @@ void ContextManagerVulkan::DoCreateContext(JNIEnv* env, int width, int height) {
                                        ->vulkan_info()
                                        .used_api_version;
   backend_context.fMemoryAllocator =
-      gpu::CreateGrVkMemoryAllocator(device_queue_.get());
+      gpu::CreateSkiaVulkanMemoryAllocator(device_queue_.get());
 
-  GrVkGetProc get_proc = [](const char* proc_name, VkInstance instance,
-                            VkDevice device) {
+  skgpu::VulkanGetProc get_proc = [](const char* proc_name, VkInstance instance,
+                                     VkDevice device) {
     if (device) {
       return vkGetDeviceProcAddr(device, proc_name);
     }
@@ -682,13 +685,13 @@ void ContextManagerVulkan::DoCreateContext(JNIEnv* env, int width, int height) {
   device_extensions.reserve(device_queue_->enabled_extensions().size());
   for (const auto& extension : device_queue_->enabled_extensions())
     device_extensions.push_back(extension.data());
-  GrVkExtensions gr_extensions;
-  gr_extensions.init(get_proc,
+  skgpu::VulkanExtensions vk_extensions;
+  vk_extensions.init(get_proc,
                      vulkan_implementation_->GetVulkanInstance()->vk_instance(),
                      device_queue_->GetVulkanPhysicalDevice(),
                      instance_extensions.size(), instance_extensions.data(),
                      device_extensions.size(), device_extensions.data());
-  backend_context.fVkExtensions = &gr_extensions;
+  backend_context.fVkExtensions = &vk_extensions;
   backend_context.fDeviceFeatures2 =
       &device_queue_->enabled_device_features_2();
   backend_context.fGetProc = get_proc;

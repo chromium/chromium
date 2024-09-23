@@ -1,21 +1,58 @@
 <!DOCTYPE html>
 <meta name=fuzzy content="maxDifference=0-3; totalPixels=0-100">
+<style>
+div {
+  display: inline-block;
+  height: 23ch;
+  line-height: 1.6;
+}
+</style>
 <html>
 <body>
-<input id="i1" type="number" value=1 style="writing-mode: vertical-rl; direction: ltr;">
-<input id="i2" type="number" value=2 style="writing-mode: vertical-rl; direction: rtl;">
-<input id="i3" type="number" value=3 style="writing-mode: vertical-lr; direction: ltr;">
-<input id="i4" type="number" value=4 style="writing-mode: vertical-lr; direction: rtl;">
+<div style="writing-mode: vertical-rl;">
+vertical-rl
+<input type="number" value=1 style="direction: ltr;">
+<input type="number" value=2 dir="ltr">
+<input type="number" value=3 style="direction: rtl;">
+<input type="number" value=4 dir="rtl">
+</div>
 
-<input id="i5" type="number" value=5 style="writing-mode: vertical-rl;" dir="ltr">
-<input id="i6" type="number" value=6 style="writing-mode: vertical-rl;" dir="rtl">
-<input id="i7" type="number" value=7 style="writing-mode: vertical-lr;" dir="ltr">
-<input id="i8" type="number" value=8 style="writing-mode: vertical-lr;" dir="rtl">
+<div style="writing-mode: vertical-lr;">
+vertical-lr
+<input type="number" value=5 style="direction: ltr;">
+<input type="number" value=6 dir="ltr">
+<input id="i7" type="number" value=7 style="direction: rtl;">
+<input type="number" value=8 dir="rtl">
+</div>
+
+<br>
+
+<div style="writing-mode: sideways-rl;">
+sideways-rl
+<input type="number" value=9 style="direction: ltr;">
+<input type="number" value=10 dir="ltr">
+<input type="number" value=11 style="direction: rtl;">
+<input type="number" value=12 dir="rtl">
+</div>
+
+<div style="writing-mode: sideways-lr;">
+sideways-lr
+<input type="number" value=13 style="direction: ltr;">
+<input type="number" value=14 dir="ltr">
+<input type="number" value=15 style="direction: rtl;">
+<input type="number" value=16 dir="rtl">
+</div>
 
 <script>
-var input = document.getElementById('i4');
-// A spinbutton should be showing on the top (left)
-input.focus();
+if (window.internals) {
+  for (let input of document.querySelectorAll('input')) {
+    internals.setPseudoClassState(input, ':hover', true);
+  }
+} else {
+  var input = document.getElementById('i7');
+  // A spinbutton should be showing on the top (left)
+  input.focus();
+}
 </script>
 </body>
 </html>

@@ -16,7 +16,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/cdm_config.h"
+#include "media/base/cdm_factory.h"
 #include "media/base/content_decryption_module.h"
+#include "media/base/key_systems.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_session.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -42,7 +44,7 @@ class WebContentDecryptionModuleSessionImpl;
 class PLATFORM_EXPORT CdmSessionAdapter
     : public base::RefCounted<CdmSessionAdapter> {
  public:
-  CdmSessionAdapter();
+  explicit CdmSessionAdapter(media::KeySystems* key_systems);
   CdmSessionAdapter(const CdmSessionAdapter&) = delete;
   CdmSessionAdapter& operator=(const CdmSessionAdapter&) = delete;
 
@@ -132,7 +134,7 @@ class PLATFORM_EXPORT CdmSessionAdapter
   void OnCdmCreated(const media::CdmConfig& cdm_config,
                     base::TimeTicks start_time,
                     const scoped_refptr<media::ContentDecryptionModule>& cdm,
-                    const std::string& error_message);
+                    media::CreateCdmStatus status);
 
   // Callbacks for firing session events.
   void OnSessionMessage(const std::string& session_id,
@@ -149,6 +151,9 @@ class PLATFORM_EXPORT CdmSessionAdapter
   // Helper function of the callbacks.
   WebContentDecryptionModuleSessionImpl* GetSession(
       const std::string& session_id);
+
+  // Non-owned
+  raw_ptr<media::KeySystems> key_systems_;
 
   scoped_refptr<media::ContentDecryptionModule> cdm_;
 

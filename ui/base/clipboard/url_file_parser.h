@@ -7,8 +7,7 @@
 
 #include <cstddef>
 #include <string>
-
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace ui::clipboard_util::internal {
 
@@ -24,8 +23,7 @@ constexpr size_t kMaximumParsableFileSize = 16'384;
 // Implementation note: This function does not do full validation of the file
 // contents. If a malformed file is passed in, this function may or may not
 // manage to find any URLs within.
-std::string ExtractURLFromURLFileContents(
-    const base::StringPiece& file_contents);
+std::string ExtractURLFromURLFileContents(std::string_view file_contents);
 
 }  // namespace ui::clipboard_util::internal
 

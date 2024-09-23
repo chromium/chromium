@@ -65,7 +65,7 @@ TypedStatus<T>&& AddHere() &&;
 // specific error value, ie: HRESULT. This data is for human consumption only
 // in a developer setting, and can't be extracted from the TypedStatus
 // normally. The code value should be sufficiently informative between sender
-// and reciever of the TypedStatus.
+// and receiver of the TypedStatus.
 template<typename D>
 TypedStatus<T>&& WithData(const char *key, const D& value) &&;
 template<typename D>

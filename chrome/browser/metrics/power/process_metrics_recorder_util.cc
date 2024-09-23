@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/power/process_metrics_recorder_util.h"
 
 #include <cmath>
+#include <optional>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -38,7 +39,8 @@ bool HasConstantRateTSC() {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-void RecordAverageCPUUsage(const char* histogram_suffix, double cpu_usage) {
+void RecordAverageCPUUsage(const char* histogram_suffix,
+                           const std::optional<double>& cpu_usage) {
 #if BUILDFLAG(IS_WIN)
   // Skip recording the average CPU usage if the CPU doesn't support constant
   // rate TSC, since Windows does not offer a way to get a precise measurement
@@ -47,10 +49,14 @@ void RecordAverageCPUUsage(const char* histogram_suffix, double cpu_usage) {
     return;
 #endif
 
+  // The metric definition in
+  // tools/metrics/histograms/metadata/power/histograms.xml says, "If no process
+  // of type {ProcessName} existed during the interval, a sample of zero is
+  // still emitted."
   base::UmaHistogramCustomCounts(
       base::StrCat({"PerformanceMonitor.AverageCPU8.", histogram_suffix}),
-      cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin, kCPUUsageHistogramMax,
-      kCPUUsageHistogramBucketCount);
+      cpu_usage.value_or(0.0) * kCPUUsageFactor, kCPUUsageHistogramMin,
+      kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
 }
 
 }  // namespace

@@ -10,6 +10,12 @@ namespace blink::v8_compile_hints {
 inline constexpr const char* kStatusHistogram =
     "WebCore.Scripts.V8CompileHintsStatus";
 
+inline constexpr const char* kLocalCompileHintsGeneratedHistogram =
+    "WebCore.Scripts.V8LocalCompileHintsGenerated";
+
+inline constexpr const char* kLocalCompileHintsObsoletedByCodeCacheHistogram =
+    "WebCore.Scripts.V8LocalCompileHintsObsoletedByCodeCache";
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class Status {
@@ -24,7 +30,16 @@ enum class Status {
   kConsumeLocalCompileHintsStreaming = 8,
   kConsumeCrowdsourcedCompileHintsStreaming = 9,
   kProduceCompileHintsStreaming = 10,
-  kMaxValue = kProduceCompileHintsStreaming
+  kNoCompileHintsClassicNonStreaming = 11,
+  kNoCompileHintsModuleNonStreaming = 12,
+  kNoCompileHintsStreaming = 13,
+  kMaxValue = kNoCompileHintsStreaming
+};
+
+enum class LocalCompileHintsGenerated {
+  kNonFinal = 0,
+  kFinal = 1,
+  kMaxValue = kFinal
 };
 
 }  // namespace blink::v8_compile_hints

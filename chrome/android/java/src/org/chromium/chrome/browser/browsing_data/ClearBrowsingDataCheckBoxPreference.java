@@ -48,7 +48,7 @@ public class ClearBrowsingDataCheckBoxPreference extends ChromeBaseCheckBoxPrefe
 
         mView = holder.itemView;
 
-        final TextView textView = (TextView) mView.findViewById(android.R.id.summary);
+        final TextView textView = mView.findViewById(android.R.id.summary);
 
         // Create custom onTouch listener to be able to respond to click events inside the summary.
         textView.setOnTouchListener(
@@ -60,7 +60,7 @@ public class ClearBrowsingDataCheckBoxPreference extends ChromeBaseCheckBoxPrefe
                     int offset = textView.getOffsetForPosition(event.getX(), event.getY());
                     // Check if this character contains a span.
                     CharSequence text = textView.getText();
-                    // TODO(crbug.com/783866): On some devices the SpannableString is not applied
+                    // TODO(crbug.com/40549355): On some devices the SpannableString is not applied
                     // correctly.
                     boolean isSpanned = text instanceof Spanned;
                     if (!isSpanned) {

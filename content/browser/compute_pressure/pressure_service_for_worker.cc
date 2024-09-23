@@ -4,6 +4,7 @@
 
 #include "content/browser/compute_pressure/pressure_service_for_worker.h"
 
+#include "content/browser/compute_pressure/web_contents_pressure_manager_proxy.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/shared_worker_host.h"
@@ -29,6 +30,28 @@ bool PressureServiceForWorker<WorkerHost>::ShouldDeliverUpdate() const {
     }
   }
   return false;
+}
+
+template <typename WorkerHost>
+std::optional<base::UnguessableToken>
+PressureServiceForWorker<WorkerHost>::GetTokenFor(
+    device::mojom::PressureSource source) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if constexpr (std::is_same_v<WorkerHost, DedicatedWorkerHost>) {
+    const auto* web_contents =
+        WebContents::FromRenderFrameHost(RenderFrameHostImpl::FromID(
+            worker_host_->GetAncestorRenderFrameHostId()));
+    if (const auto* pressure_manager_proxy =
+            WebContentsPressureManagerProxy::FromWebContents(web_contents)) {
+      return pressure_manager_proxy->GetTokenFor(source);
+    }
+  }
+
+  // Shared workers always return std::nullopt, as there is no one
+  // corresponding WebContents instance to retrieve a
+  // WebContentsPressureManagerProxy instance from.
+  return std::nullopt;
 }
 
 template class EXPORT_TEMPLATE_DEFINE(CONTENT_EXPORT)

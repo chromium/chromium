@@ -20,8 +20,8 @@
 #include "base/values.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
 #include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
-#include "components/no_state_prefetch/common/prerender_origin.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -87,11 +87,6 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
     // A NoStatePrefetchContents with an unset final status will always call
     // OnPrefetchStop before being destroyed.
     virtual void OnPrefetchStop(NoStatePrefetchContents* contents) {}
-
-    // Signals that a resource finished loading and altered the running byte
-    // count.
-    virtual void OnPrefetchNetworkBytesChanged(
-        NoStatePrefetchContents* contents) {}
 
    protected:
     Observer() {}
@@ -189,15 +184,9 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   // the future: https://crbug.com/1126305
   void MarkAsUsedForTesting();
 
-  // Increments the number of bytes fetched over the network for this prerender.
-  void AddNetworkBytes(int64_t bytes);
-
   bool prefetching_has_been_cancelled() const {
     return prefetching_has_been_cancelled_;
   }
-
-  // Running byte count. Increased when each resource completes loading.
-  int64_t network_bytes() { return network_bytes_; }
 
   void AddPrerenderCancelerReceiver(
       mojo::PendingReceiver<prerender::mojom::PrerenderCanceler> receiver);
@@ -263,7 +252,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   mojo::ReceiverSet<prerender::mojom::PrerenderCanceler>
       prerender_canceler_receiver_set_;
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observer_list_;
 
   // The prefetch manager owning this object.
   raw_ptr<NoStatePrefetchManager> no_state_prefetch_manager_;
@@ -314,10 +303,6 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
 
   // The bounds of the WebView from the launching page.
   gfx::Rect bounds_;
-
-  // A running tally of the number of bytes this prerender has caused to be
-  // transferred over the network for resources.  Updated with AddNetworkBytes.
-  int64_t network_bytes_;
 
   base::WeakPtrFactory<NoStatePrefetchContents> weak_factory_{this};
 };

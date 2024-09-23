@@ -106,12 +106,12 @@
     deep-link-focus-id$="[[Setting.kCrostiniMicAccess]]">
 </settings-toggle-button>
 <template is="dom-if" if="[[showCrostiniMicPermissionDialog_]]" restamp>
-  <settings-crostini-confirmation-dialog
+  <settings-guest-os-confirmation-dialog
       id="crostini-mic-permission-dialog"
       accept-button-text="$i18n{crostiniMicDialogShutdownButton}"
       on-close="onCrostiniMicPermissionDialogClose_">
     <div slot="body">$i18n{crostiniMicDialogLabel}</div>
-  </settings-crostini-confirmation-dialog>
+  </settings-guest-os-confirmation-dialog>
 </template>
 <template is="dom-if" if="[[!hideCrostiniUninstall_]]">
   <div id="remove" class="settings-box">

@@ -76,6 +76,7 @@ class BLINK_EXPORT WebSharedWorker {
       network::mojom::CredentialsMode,
       const WebString& name,
       WebSecurityOrigin constructor_origin,
+      WebSecurityOrigin origin_from_browser,
       bool is_constructor_secure_context,
       const WebString& user_agent,
       const UserAgentMetadata& ua_metadata,
@@ -93,7 +94,8 @@ class BLINK_EXPORT WebSharedWorker {
       scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
       CrossVariantMojoRemote<mojom::SharedWorkerHostInterfaceBase>,
       WebSharedWorkerClient*,
-      ukm::SourceId ukm_source_id);
+      ukm::SourceId ukm_source_id,
+      bool require_cross_site_request_for_cookies);
 
   // Sends a connect event to the SharedWorker context.
   virtual void Connect(int connection_request_id,

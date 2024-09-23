@@ -10,8 +10,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-blink-forward.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -23,7 +23,7 @@ class MockFileChooser : public mojom::blink::FileChooser {
  public:
   // |reached_callback| is called when OpenFileChooser() or
   // |EnumerateChosenDirectory() is called.
-  MockFileChooser(blink::BrowserInterfaceBrokerProxy& broker,
+  MockFileChooser(const blink::BrowserInterfaceBrokerProxy& broker,
                   base::OnceClosure reached_callback)
       : broker_(broker), reached_callback_(std::move(reached_callback)) {
     broker.SetBinderForTesting(
@@ -71,7 +71,7 @@ class MockFileChooser : public mojom::blink::FileChooser {
       std::move(reached_callback_).Run();
   }
 
-  blink::BrowserInterfaceBrokerProxy& broker_;
+  const blink::BrowserInterfaceBrokerProxy& broker_;
   mojo::ReceiverSet<FileChooser> receivers_;
   OpenFileChooserCallback callback_;
   FileChooserParamsPtr params_;

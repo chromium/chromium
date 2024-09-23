@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/public/browser/stable_video_decoder_factory.h"
 
 #include "base/containers/queue.h"
@@ -123,20 +128,13 @@ class StableVideoDecoderFactoryProcessLauncher final
       return;
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    const bool enable_direct_video_decoder =
-        gpu_preferences_.enable_chromeos_direct_video_decoder;
-#else
-    const bool enable_direct_video_decoder = true;
-#endif
-
     mojo::Remote<media::stable::mojom::StableVideoDecoderFactoryProcess>
         process;
     ServiceProcessHost::Launch(
         process.BindNewPipeAndPassReceiver(),
         ServiceProcessHost::Options().WithDisplayName("Video Decoder").Pass());
-    process->InitializeStableVideoDecoderFactory(
-        *gpu_feature_info_, enable_direct_video_decoder, std::move(receiver));
+    process->InitializeStableVideoDecoderFactory(*gpu_feature_info_,
+                                                 std::move(receiver));
     processes_.Add(std::move(process));
   }
 

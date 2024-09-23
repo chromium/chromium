@@ -34,6 +34,22 @@ using ::base::test::RunClosure;
 using ::testing::_;
 using ::testing::Field;
 
+class ScopedFileForTest {
+ public:
+  ScopedFileForTest(const base::FilePath& absolute_file_path,
+                    const std::string& file_contents)
+      : absolute_file_path_(absolute_file_path) {
+    EXPECT_TRUE(base::WriteFile(absolute_file_path_, file_contents));
+  }
+
+  ~ScopedFileForTest() { EXPECT_TRUE(base::DeleteFile(absolute_file_path_)); }
+
+  const base::FilePath GetPath() { return absolute_file_path_; }
+
+ private:
+  const base::FilePath absolute_file_path_;
+};
+
 class RestoreIOTaskTest : public TrashBaseTest {
  public:
   RestoreIOTaskTest() = default;
@@ -64,6 +80,39 @@ class RestoreIOTaskTest : public TrashBaseTest {
   std::string GenerateTrashInfoContents(const std::string& restore_path) {
     return base::StrCat({"[Trash Info]\nPath=", restore_path, "\nDeletionDate=",
                          base::TimeFormatAsIso8601(base::Time::UnixEpoch())});
+  }
+
+  void ExpectRestorePathFailure(const std::string& restore_path_in_trashinfo) {
+    std::string foo_contents = base::RandBytesAsString(kTestFileSize);
+    std::string foo_metadata_contents =
+        GenerateTrashInfoContents(restore_path_in_trashinfo);
+
+    const base::FilePath trash_path =
+        downloads_dir_.Append(trash::kTrashFolderName);
+    ScopedFileForTest trash_info_file(
+        trash_path.Append(trash::kInfoFolderName).Append("foo.txt.trashinfo"),
+        foo_metadata_contents);
+    ScopedFileForTest trash_files_file(
+        trash_path.Append(trash::kFilesFolderName).Append("foo.txt"),
+        foo_contents);
+
+    base::RunLoop run_loop;
+    std::vector<storage::FileSystemURL> source_urls = {
+        CreateFileSystemURL(trash_info_file.GetPath()),
+    };
+
+    base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+    base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+    EXPECT_CALL(progress_callback, Run(_)).Times(0);
+    EXPECT_CALL(complete_callback,
+                Run(Field(&ProgressStatus::state, State::kError)))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+    RestoreIOTask task(source_urls, profile_.get(), file_system_context_,
+                       temp_dir_.GetPath());
+    task.Execute(progress_callback.Get(), complete_callback.Get());
+    run_loop.Run();
   }
 
  private:
@@ -182,42 +231,12 @@ TEST_F(RestoreIOTaskTest, MetadataWithNoCorrespondingFileShouldError) {
   run_loop.Run();
 }
 
-TEST_F(RestoreIOTaskTest, RestorePathsShouldNotReferenceParent) {
+TEST_F(RestoreIOTaskTest, InvalidRestorePaths) {
   EnsureTrashDirectorySetup(downloads_dir_);
 
-  std::string foo_contents = base::RandBytesAsString(kTestFileSize);
-  std::string foo_metadata_contents =
-      GenerateTrashInfoContents("/../../../bad/actor/foo.txt");
-
-  const base::FilePath trash_path =
-      downloads_dir_.Append(trash::kTrashFolderName);
-  const base::FilePath info_file_path =
-      trash_path.Append(trash::kInfoFolderName).Append("foo.txt.trashinfo");
-  ASSERT_TRUE(base::WriteFile(info_file_path, foo_metadata_contents));
-  const base::FilePath files_path =
-      trash_path.Append(trash::kFilesFolderName).Append("foo.txt");
-  ASSERT_TRUE(base::WriteFile(files_path, foo_contents));
-
-  base::RunLoop run_loop;
-  std::vector<storage::FileSystemURL> source_urls = {
-      CreateFileSystemURL(info_file_path),
-  };
-
-  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
-  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
-
-  EXPECT_CALL(progress_callback, Run(_)).Times(0);
-
-  // We should get one complete callback when the restore path is found to have
-  // parent path traversal, i.e. ".." characters.
-  EXPECT_CALL(complete_callback,
-              Run(Field(&ProgressStatus::state, State::kError)))
-      .WillOnce(RunClosure(run_loop.QuitClosure()));
-
-  RestoreIOTask task(source_urls, profile_.get(), file_system_context_,
-                     temp_dir_.GetPath());
-  task.Execute(progress_callback.Get(), complete_callback.Get());
-  run_loop.Run();
+  ExpectRestorePathFailure("/../../../bad/actor/foo.txt");
+  ExpectRestorePathFailure("../../../bad/actor/foo.txt");
+  ExpectRestorePathFailure("/");
 }
 
 TEST_F(RestoreIOTaskTest, ValidRestorePathShouldSucceedAndCreateDirectory) {

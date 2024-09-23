@@ -297,7 +297,13 @@ bool ChromeUpdateClientConfig::EnabledDeltas() const {
 }
 
 bool ChromeUpdateClientConfig::EnabledBackgroundDownloader() const {
-  return impl_.EnabledBackgroundDownloader();
+  // Historically, Chrome hasn't used background downloaders like BITS for
+  // extension updates. In theory, they should work in most cases. When they
+  // don't (for example because they don't pass the credentials necessary to
+  // download private extensions), the system should fall back to the foreground
+  // downloader. So, returning `true` here is probably safe, but should likely
+  // be done as a Finch experiment that is carefully monitored.
+  return false;
 }
 
 bool ChromeUpdateClientConfig::EnabledCupSigning() const {

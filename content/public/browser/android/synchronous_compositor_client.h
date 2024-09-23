@@ -69,6 +69,8 @@ class SynchronousCompositorClient {
 
   virtual void AddBeginFrameCompletionCallback(base::OnceClosure callback) = 0;
 
+  virtual void SetThreadIds(const std::vector<int32_t>& thread_ids) = 0;
+
  protected:
   SynchronousCompositorClient() {}
   virtual ~SynchronousCompositorClient() {}

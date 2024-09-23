@@ -19,7 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 
 namespace {
 
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests, PrefChange) {
   // Set up the system source to save the pref changes into a future object
   base::test::TestFuture<device::LocationSystemPermissionStatus> status;
 
-  device::GeolocationManager::GetInstance()
+  device::GeolocationSystemPermissionManager::GetInstance()
       ->SystemGeolocationSourceForTest()
       .RegisterPermissionUpdateCallback(
           base::BindRepeating(status.GetRepeatingCallback()));
@@ -134,9 +134,10 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests,
     GTEST_SKIP() << "Skipping as the Ash is not compatible with this test.";
   }
 
-  class Observer : public device::GeolocationManager::PermissionObserver {
+  class Observer
+      : public device::GeolocationSystemPermissionManager::PermissionObserver {
    public:
-    // device::GeolocationManager::PermissionObserver:
+    // device::GeolocationSystemPermissionManager::PermissionObserver:
     void OnSystemPermissionUpdated(
         device::LocationSystemPermissionStatus status) override {
       status_.GetRepeatingCallback().Run(std::move(status));
@@ -144,8 +145,8 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests,
     base::test::TestFuture<device::LocationSystemPermissionStatus> status_;
   };
 
-  device::GeolocationManager* manager =
-      device::GeolocationManager::GetInstance();
+  device::GeolocationSystemPermissionManager* manager =
+      device::GeolocationSystemPermissionManager::GetInstance();
   ASSERT_TRUE(manager);
 
   Observer observer;

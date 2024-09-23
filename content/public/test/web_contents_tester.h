@@ -139,6 +139,9 @@ class WebContentsTester {
   // Sets the return value of GetContentsMimeType().
   virtual void SetMainFrameMimeType(const std::string& mime_type) = 0;
 
+  // Sets the main frame size.
+  virtual void SetMainFrameSize(const gfx::Size& frame_size) = 0;
+
   // Change currently audible state for testing. This will cause all relevant
   // notifications to fire as well.
   virtual void SetIsCurrentlyAudible(bool audible) = 0;
@@ -152,18 +155,33 @@ class WebContentsTester {
   // Simulates terminating an load with a network error.
   virtual void TestDidFailLoadWithError(const GURL& url, int error_code) = 0;
 
+  // Simulates the first non-empty paint.
+  virtual void TestDidFirstVisuallyNonEmptyPaint() = 0;
+
   // Returns whether PauseSubresourceLoading was called on this web contents.
   virtual bool GetPauseSubresourceLoadingCalled() = 0;
 
   // Resets the state around PauseSubresourceLoadingCalled.
   virtual void ResetPauseSubresourceLoadingCalled() = 0;
 
+  // Sets the last active time ticks.
+  virtual void SetLastActiveTimeTicks(
+      base::TimeTicks last_active_time_ticks) = 0;
+
   // Sets the last active time.
-  virtual void SetLastActiveTime(base::TimeTicks last_active_time) = 0;
+  virtual void SetLastActiveTime(base::Time last_active_time) = 0;
 
   // Increments/decrements the number of frames with connected USB devices.
   virtual void TestIncrementUsbActiveFrameCount() = 0;
   virtual void TestDecrementUsbActiveFrameCount() = 0;
+
+  // Increments/decrements the number of frames with connected HID devices.
+  virtual void TestIncrementHidActiveFrameCount() = 0;
+  virtual void TestDecrementHidActiveFrameCount() = 0;
+
+  // Increments/decrements the number of frames actively using serial ports.
+  virtual void TestIncrementSerialActiveFrameCount() = 0;
+  virtual void TestDecrementSerialActiveFrameCount() = 0;
 
   // Increments/decrements the number of connected Bluetooth devices.
   virtual void TestIncrementBluetoothConnectedDeviceCount() = 0;
@@ -176,7 +194,7 @@ class WebContentsTester {
   // Starts prerendering a page with |url|, and returns the root frame tree node
   // id of the page. The page has a pending navigation in the root frame tree
   // node when this method returns.
-  virtual int AddPrerender(const GURL& url) = 0;
+  virtual FrameTreeNodeId AddPrerender(const GURL& url) = 0;
   // Starts prerendering a page, simulates a navigation to |url| in the main
   // frame and returns the main frame of the page after the navigation is
   // complete.
@@ -197,6 +215,11 @@ class WebContentsTester {
       std::optional<blink::mojom::PictureInPictureWindowOptions> options) = 0;
 
   virtual bool GetOverscrollNavigationEnabled() = 0;
+
+  // Sets return value for GetMediaCaptureRawDeviceIdsOpened(), keyed by `type`.
+  virtual void SetMediaCaptureRawDeviceIdsOpened(
+      blink::mojom::MediaStreamType type,
+      std::vector<std::string> ids) = 0;
 };
 
 }  // namespace content

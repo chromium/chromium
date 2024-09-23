@@ -27,7 +27,7 @@ extern const char kMuteNotificationId[];
 // capturing a display. It will block notifications while such a capture is
 // ongoing. Note that this does not include casting the whole display and only
 // covers capturing via WebContents.
-// TODO(crbug.com/1131375): Also block notifications while casting a screen.
+// TODO(crbug.com/40150170): Also block notifications while casting a screen.
 class ScreenCaptureNotificationBlocker
     : public NotificationBlocker,
       public MutedNotificationHandler::Delegate,
@@ -101,7 +101,8 @@ class ScreenCaptureNotificationBlocker
 
   // Storing raw pointers here is fine because MediaStreamCaptureIndicator
   // notifies us before the WebContents is destroyed.
-  base::flat_set<content::WebContents*> capturing_web_contents_;
+  base::flat_set<raw_ptr<content::WebContents, CtnExperimental>>
+      capturing_web_contents_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_SCREEN_CAPTURE_NOTIFICATION_BLOCKER_H_

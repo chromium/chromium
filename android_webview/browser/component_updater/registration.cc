@@ -5,7 +5,6 @@
 #include "android_webview/browser/component_updater/registration.h"
 
 #include "android_webview/browser/component_updater/first_party_sets_component_loader.h"
-#include "android_webview/browser/component_updater/loader_policies/empty_component_loader_policy.h"
 #include "android_webview/browser/component_updater/masked_domain_list_component_loader.h"
 #include "android_webview/browser/component_updater/origin_trials_component_loader.h"
 #include "android_webview/browser/component_updater/tpcd_metadata_component_loader.h"
@@ -20,7 +19,6 @@ component_updater::ComponentLoaderPolicyVector GetComponentLoaderPolicies() {
   LoadTrustTokenKeyCommitmentsComponent(policies);
   LoadMaskedDomainListComponent(policies);
   LoadOriginTrialsComponent(policies);
-  LoadEmptyComponent(policies);
   LoadTpcMetadataComponent(policies);
   return policies;
 }

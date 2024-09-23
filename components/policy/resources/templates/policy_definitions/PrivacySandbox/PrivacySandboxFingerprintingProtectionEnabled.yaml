@@ -1,0 +1,31 @@
+caption: Choose whether the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> Fingerprinting Protection feature is to be enabled.
+default: null
+desc: |-
+  A policy to control whether the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> Fingerprinting Protection setting is to be enabled or disabled for your users.
+
+  If you set this policy to Disabled, then the Fingerprinting Protection feature setting will be turned off for your users.
+  If you set this policy to Enabled, your users will have the Fingerprinting Protection feature setting turned on.
+  If the policy is not set, users will be able to turn on or off the Fingerprinting Protection feature in their UI settings. The default state will be false or disabled, meaning the Fingerprinting Protection feature will be turned off.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+ - chrome.*
+ - chrome_os
+ - android
+items:
+- caption: Enable the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> Fingerprinting Protection feature.
+  value: true
+- caption: Disable the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> Fingerprinting Protection feature.
+  value: false
+- caption: Allow users to turn on or turn off the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> Fingerprinting Protection setting on their device.
+  value: null
+owners:
+- johnykim@google.com
+- rizvis@google.com
+- file://components/privacy_sandbox/OWNERS
+schema:
+  type: boolean
+tags: []
+type: main

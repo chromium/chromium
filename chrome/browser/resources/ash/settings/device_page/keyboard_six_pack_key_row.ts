@@ -9,7 +9,7 @@
  * six pack key action.
  */
 
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import './input_device_settings_shared.css.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';

@@ -23,9 +23,11 @@
 
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/script/pending_script.h"
 #include "third_party/blink/renderer/core/script/script_scheduling_type.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_finish_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_fetch_options.h"
@@ -41,7 +43,6 @@ class ScriptElementBase;
 class Script;
 class ScriptResource;
 class ScriptWebBundle;
-class SpeculationRuleSet;
 class Modulator;
 
 class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
@@ -101,10 +102,11 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
 
   // Helper functions used by our parent classes.
   void DidNotifySubtreeInsertionsToDocument();
-  void ChildrenChanged();
+  void ChildrenChanged(const ContainerNode::ChildrenChange&);
   void HandleSourceAttribute(const String& source_url);
   void HandleAsyncAttribute();
   void Removed();
+  void DocumentBaseURLChanged();
 
  private:
   // ResourceFinishObserver. This should be used only for managing
@@ -127,6 +129,10 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   ScriptSchedulingType GetScriptSchedulingTypePerSpec(
       Document& element_document,
       ParserBlockingInlineOption) const;
+  // Methods to add/remove a SpeculationRuleSet in DocumentSpeculationRules.
+  // Only used for <script type="speculationrules">.
+  void AddSpeculationRuleSet(SpeculationRuleSet::Source* source);
+  SpeculationRuleSet* RemoveSpeculationRuleSet();
 
   Member<ScriptElementBase> element_;
 

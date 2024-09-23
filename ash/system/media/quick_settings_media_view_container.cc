@@ -39,7 +39,8 @@ int QuickSettingsMediaViewContainer::GetExpandedHeight() const {
              : 0;
 }
 
-gfx::Size QuickSettingsMediaViewContainer::CalculatePreferredSize() const {
+gfx::Size QuickSettingsMediaViewContainer::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kTrayMenuWidth, GetExpandedHeight());
 }
 

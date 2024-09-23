@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/page_info/android/page_info_controller_android.h"
+
 #include <string>
 
 #include "base/android/jni_android.h"
@@ -14,7 +15,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/page_info/android/jni_headers/PageInfoController_jni.h"
 #include "components/page_info/android/page_info_client.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info.h"
@@ -27,7 +27,15 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/page_info/android/jni_headers/PageInfoController_jni.h"
+
+#if BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/features.h"
+#endif
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
@@ -83,7 +91,7 @@ void PageInfoControllerAndroid::RecordPageInfoAction(
     const JavaParamRef<jobject>& obj,
     jint action) {
   presenter_->RecordPageInfoAction(
-      static_cast<PageInfo::PageInfoAction>(action));
+      static_cast<page_info::PageInfoAction>(action));
 }
 
 void PageInfoControllerAndroid::UpdatePermissions(
@@ -143,14 +151,16 @@ void PageInfoControllerAndroid::SetPermissionInfo(
     permissions_to_display.push_back(ContentSettingsType::BLUETOOTH_SCANNING);
   permissions_to_display.push_back(ContentSettingsType::VR);
   permissions_to_display.push_back(ContentSettingsType::AR);
+#if BUILDFLAG(ENABLE_VR)
+  if (device::features::IsHandTrackingEnabled()) {
+    permissions_to_display.push_back(ContentSettingsType::HAND_TRACKING);
+  }
+#endif
   if (base::FeatureList::IsEnabled(features::kFedCm)) {
     permissions_to_display.push_back(
         ContentSettingsType::FEDERATED_IDENTITY_API);
   }
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionStorageAccessAPI)) {
     permissions_to_display.push_back(ContentSettingsType::STORAGE_ACCESS);
-  }
 
   std::map<ContentSettingsType, ContentSetting>
       user_specified_settings_to_display;
@@ -224,11 +234,11 @@ std::optional<ContentSetting> PageInfoControllerAndroid::GetSettingToDisplay(
       return permission.default_setting;
   }
 
-  // TODO(crbug.com/1077766): Also return permissions that are non
+  // TODO(crbug.com/40129299): Also return permissions that are non
   // factory-default after we add the functionality to populate the permissions
   // subpage directly from the permissions returned from this controller.
 
-  return std::optional<ContentSetting>();
+  return std::nullopt;
 }
 
 void PageInfoControllerAndroid::SetAdPersonalizationInfo(

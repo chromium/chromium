@@ -7,11 +7,13 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "components/prefs/pref_name_set.h"
@@ -42,10 +44,10 @@ const char kPreviouslyProtectedPrefValue[] = "previously_protected_value";
 
 // A simple InterceptablePrefFilter which doesn't do anything but hand the prefs
 // back downstream in FinalizeFilterOnLoad.
-class SimpleInterceptablePrefFilter : public InterceptablePrefFilter {
+class SimpleInterceptablePrefFilter final : public InterceptablePrefFilter {
  public:
   // PrefFilter remaining implementation.
-  void FilterUpdate(const std::string& path) override { ADD_FAILURE(); }
+  void FilterUpdate(std::string_view path) override { ADD_FAILURE(); }
   OnWriteCallbackPair FilterSerializeData(
       base::Value::Dict& pref_store_contents) override {
     ADD_FAILURE();
@@ -62,6 +64,12 @@ class SimpleInterceptablePrefFilter : public InterceptablePrefFilter {
     std::move(post_filter_on_load_callback)
         .Run(std::move(pref_store_contents), prefs_altered);
   }
+
+  base::WeakPtr<InterceptablePrefFilter> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  base::WeakPtrFactory<InterceptablePrefFilter> weak_ptr_factory_{this};
 };
 
 // A test fixture designed to be used like this:
@@ -183,7 +191,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
       case MOCK_PROTECTED_PREF_STORE:
         return !unprotected_store_successful_write_callback_.is_null();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -262,7 +270,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
       case MOCK_PROTECTED_PREF_STORE:
         return !!protected_prefs_;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -273,7 +281,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
       case MOCK_PROTECTED_PREF_STORE:
         return migration_modified_protected_store_;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

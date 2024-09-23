@@ -36,7 +36,7 @@ class MODULES_EXPORT WakeLockSentinel final
 
   // Web-exposed interfaces
   DEFINE_ATTRIBUTE_EVENT_LISTENER(release, kRelease)
-  ScriptPromise release(ScriptState*);
+  ScriptPromise<IDLUndefined> release(ScriptState*);
   bool released() const;
   V8WakeLockType type() const;
 
@@ -57,9 +57,9 @@ class MODULES_EXPORT WakeLockSentinel final
   // This function, which only has any effect once, detaches this sentinel from
   // its |manager_|, and fires a "release" event.
   // It is implemented separately from release() itself so that |manager_| can
-  // call it without triggering the creation of a new ScriptPromise, as it is
-  // not relevant to |manager_| and this function may be called from a context
-  // where |script_state_|'s context is no longer valid.
+  // call it without triggering the creation of a new ScriptPromiseUntyped, as
+  // it is not relevant to |manager_| and this function may be called from a
+  // context where |script_state_|'s context is no longer valid.
   void DoRelease();
 
   Member<WakeLockManager> manager_;

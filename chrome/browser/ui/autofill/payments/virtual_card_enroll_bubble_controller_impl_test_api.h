@@ -9,13 +9,16 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/autofill/autofill_vcn_enroll_bottom_sheet_bridge.h"
+#endif
 
 namespace autofill {
 
 class VirtualCardEnrollBubbleControllerImplTestApi {
  public:
   explicit VirtualCardEnrollBubbleControllerImplTestApi(
-      VirtualCardEnrollBubbleControllerImpl* controller)
+      VirtualCardEnrollBubbleControllerImpl& controller)
       : controller_(controller) {}
 
   ~VirtualCardEnrollBubbleControllerImplTestApi() = default;
@@ -26,26 +29,32 @@ class VirtualCardEnrollBubbleControllerImplTestApi {
         bubble_shown_closure_for_testing;
   }
 
+  void SetUiModel(std::unique_ptr<VirtualCardEnrollUiModel> ui_model) {
+    controller_->ui_model_ = std::move(ui_model);
+  }
+
 #if BUILDFLAG(IS_ANDROID)
+  void SetAutofillVCNEnrollBottomSheetBridge(
+      std::unique_ptr<AutofillVCNEnrollBottomSheetBridge> bridge) {
+    controller_->autofill_vcn_enroll_bottom_sheet_bridge_ = std::move(bridge);
+  }
+
   bool DidShowBottomSheet() {
     return !!controller_->autofill_vcn_enroll_bottom_sheet_bridge_;
   }
-
-  void SetFields(const VirtualCardEnrollmentFields& fields) {
-    controller_->ui_model_.enrollment_fields = fields;
+#else   // !BUILDFLAG(IS_ANDROID)
+  VirtualCardEnrollBubbleControllerImpl::EnrollmentStatus
+  GetEnrollmentStatus() {
+    return controller_->enrollment_status_;
   }
-#else
-  void SetIsEnrollmentInProgress(bool is_enrollment_in_progress) {
-    controller_->is_enrollment_in_progress_ = is_enrollment_in_progress;
-  }
-#endif  // IS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
-  raw_ptr<VirtualCardEnrollBubbleControllerImpl> controller_;
+  raw_ref<VirtualCardEnrollBubbleControllerImpl> controller_;
 };
 
 inline VirtualCardEnrollBubbleControllerImplTestApi test_api(
-    VirtualCardEnrollBubbleControllerImpl* controller) {
+    VirtualCardEnrollBubbleControllerImpl& controller) {
   return VirtualCardEnrollBubbleControllerImplTestApi(controller);
 }
 

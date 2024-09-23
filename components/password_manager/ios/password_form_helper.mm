@@ -4,33 +4,36 @@
 
 #import "components/password_manager/ios/password_form_helper.h"
 
-#include <stddef.h>
+#import <stddef.h>
 
 #import "base/debug/crash_logging.h"
 #import "base/debug/dump_without_crashing.h"
-#include "base/functional/bind.h"
+#import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/strings/string_number_conversions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
-#include "components/autofill/core/common/field_data_manager.h"
-#include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/password_form_fill_data.h"
-#include "components/autofill/ios/browser/autofill_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/values.h"
+#import "components/autofill/core/common/field_data_manager.h"
+#import "components/autofill/core/common/form_data.h"
+#import "components/autofill/core/common/password_form_fill_data.h"
+#import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
-#include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
-#include "components/password_manager/ios/account_select_fill_data.h"
-#include "components/password_manager/ios/password_manager_ios_util.h"
+#import "components/password_manager/ios/account_select_fill_data.h"
+#import "components/password_manager/ios/ios_password_manager_driver.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
+#import "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/password_manager/ios/password_manager_tab_helper.h"
-#include "components/ukm/ios/ukm_url_recorder.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
 
 using autofill::FieldPropertiesFlags;
 using autofill::FormData;
@@ -56,7 +59,7 @@ const char kFrameIdKey[] = "frame_id";
 - (void)getPasswordForms:(std::vector<FormData>*)forms
                 fromJSON:(NSString*)jsonString
                  pageURL:(const GURL&)pageURL
-             frameOrigin:(const GURL&)frameOrigin;
+                   frame:(web::WebFrame*)frame;
 
 // Records both UMA & UKM metrics.
 - (void)recordFormFillingSuccessMetrics:(bool)success;
@@ -78,8 +81,6 @@ const char kFrameIdKey[] = "frame_id";
 
 #pragma mark - Properties
 
-@synthesize fieldDataManager = _fieldDataManager;
-
 - (const GURL&)lastCommittedURL {
   return _webState ? _webState->GetLastCommittedURL() : GURL::EmptyGURL();
 }
@@ -96,10 +97,6 @@ const char kFrameIdKey[] = "frame_id";
     _webState->AddObserver(_webStateObserverBridge.get());
     _formActivityObserverBridge =
         std::make_unique<autofill::FormActivityObserverBridge>(_webState, self);
-
-    UniqueIDDataTabHelper* uniqueIDDataTabHelper =
-        UniqueIDDataTabHelper::FromWebState(_webState);
-    _fieldDataManager = uniqueIDDataTabHelper->GetFieldDataManager();
 
     password_manager::PasswordManagerTabHelper::GetOrCreateForWebState(webState)
         ->SetFormHelper(self);
@@ -144,11 +141,15 @@ const char kFrameIdKey[] = "frame_id";
   if (!self.delegate || formData.empty()) {
     return;
   }
+
+  autofill::FieldDataManager* fieldDataManager =
+      autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
+
   std::vector<FormData> forms;
   NSString* nsFormData = [NSString stringWithUTF8String:formData.c_str()];
   autofill::ExtractFormsData(nsFormData, false, std::u16string(), pageURL,
                              pageURL.DeprecatedGetOriginAsURL(),
-                             *self.fieldDataManager, &forms);
+                             *fieldDataManager, frame->GetFrameId(), &forms);
   if (forms.size() != 1) {
     return;
   }
@@ -161,11 +162,14 @@ const char kFrameIdKey[] = "frame_id";
 - (void)getPasswordForms:(std::vector<FormData>*)forms
                 fromJSON:(NSString*)JSONString
                  pageURL:(const GURL&)pageURL
-             frameOrigin:(const GURL&)frameOrigin {
+                   frame:(web::WebFrame*)frame {
+  autofill::FieldDataManager* fieldDataManager =
+      autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
+
   std::vector<FormData> formsData;
   if (!autofill::ExtractFormsData(JSONString, false, std::u16string(), pageURL,
-                                  frameOrigin, *self.fieldDataManager,
-                                  &formsData)) {
+                                  frame->GetSecurityOrigin(), *fieldDataManager,
+                                  frame->GetFrameId(), &formsData)) {
     return;
   }
   *forms = std::move(formsData);
@@ -186,8 +190,8 @@ const char kFrameIdKey[] = "frame_id";
 #pragma mark - Public methods
 
 - (void)findPasswordFormsInFrame:(web::WebFrame*)frame
-               completionHandler:(void (^)(const std::vector<FormData>&,
-                                           uint32_t))completionHandler {
+               completionHandler:
+                   (void (^)(const std::vector<FormData>&))completionHandler {
   if (!_webState) {
     return;
   }
@@ -205,20 +209,8 @@ const char kFrameIdKey[] = "frame_id";
             [weakSelf getPasswordForms:&forms
                               fromJSON:JSONString
                                pageURL:*pageURL
-                           frameOrigin:frame->GetSecurityOrigin()];
-            // Find the maximum extracted value.
-            uint32_t maxID = 0;
-            for (const auto& form : forms) {
-              if (form.renderer_id) {
-                maxID = std::max(maxID, form.renderer_id.value());
-              }
-              for (const auto& field : form.fields) {
-                if (field.renderer_id) {
-                  maxID = std::max(maxID, field.renderer_id.value());
-                }
-              }
-            }
-            completionHandler(forms, maxID);
+                                 frame:frame];
+            completionHandler(forms);
           }));
 }
 
@@ -228,8 +220,10 @@ const char kFrameIdKey[] = "frame_id";
     confirmPasswordIdentifier:(FieldRendererId)confirmPasswordIdentifier
             generatedPassword:(NSString*)generatedPassword
             completionHandler:(nullable void (^)(BOOL))completionHandler {
+  const scoped_refptr<autofill::FieldDataManager> fieldDataManager =
+      autofill::FieldDataManagerFactoryIOS::GetRetainable(frame);
+
   // Send JSON over to the web view.
-  __weak PasswordFormHelper* weakSelf = self;
   password_manager::PasswordManagerJavaScriptFeature::GetInstance()
       ->FillPasswordForm(
           frame, formIdentifier, newPasswordIdentifier,
@@ -237,11 +231,11 @@ const char kFrameIdKey[] = "frame_id";
           base::BindOnce(
               ^(BOOL success) {
                 if (success) {
-                  weakSelf.fieldDataManager->UpdateFieldDataMap(
+                  fieldDataManager->UpdateFieldDataMap(
                       newPasswordIdentifier,
                       SysNSStringToUTF16(generatedPassword),
                       FieldPropertiesFlags::kAutofilledOnUserTrigger);
-                  weakSelf.fieldDataManager->UpdateFieldDataMap(
+                  fieldDataManager->UpdateFieldDataMap(
                       confirmPasswordIdentifier,
                       SysNSStringToUTF16(generatedPassword),
                       FieldPropertiesFlags::kAutofilledOnUserTrigger);
@@ -252,43 +246,93 @@ const char kFrameIdKey[] = "frame_id";
               }));
 }
 
-- (void)fillPasswordFormWithFillData:(const password_manager::FillData&)fillData
+// Handles the result from filling with fill data. Returns YES if the fill
+// operation is considered as a success.
+- (BOOL)handleFillResult:(const base::Value*)result
+            fromFillData:(password_manager::FillData)fillData
+    withFieldDataManager:(autofill::FieldDataManager*)manager
+                  driver:(IOSPasswordManagerDriver*)driver {
+  if (!result || !result->is_dict()) {
+    return NO;
+  }
+
+  std::optional<bool> did_attempt_fill =
+      result->GetDict().FindBool("didAttemptFill");
+  std::optional<bool> did_fill_username =
+      result->GetDict().FindBool("didFillUsername");
+  std::optional<bool> did_fill_password =
+      result->GetDict().FindBool("didFillPassword");
+
+  if (!did_attempt_fill || !did_fill_username || !did_fill_password) {
+    return NO;
+  }
+  const bool success = *did_attempt_fill;
+
+  [self recordFormFillingSuccessMetrics:success];
+
+  // TODO(crbug.com/347882357): Add a metric to record the reason why
+  // |didFillUsername| or |didFillPassword| is false.
+
+  // Set the fill property even if |*did_fill_password| or |*did_fill_username|
+  // are false to avoid skewing the PasswordManager.FillingAssistance histogram.
+  // This is the status quo with how the field data used to be updated, before
+  // crrev.com/c/5494354.
+  if (fillData.username_element_id && success) {
+    manager->UpdateFieldDataMap(fillData.username_element_id,
+                                fillData.username_value,
+                                FieldPropertiesFlags::kAutofilledOnUserTrigger);
+
+    if (*did_fill_username) {
+      driver->GetPasswordManager()->UpdateStateOnUserInput(
+          driver, fillData.form_id, fillData.username_element_id,
+          fillData.username_value);
+    }
+  }
+  if (fillData.password_element_id && success) {
+    manager->UpdateFieldDataMap(fillData.password_element_id,
+                                fillData.password_value,
+                                FieldPropertiesFlags::kAutofilledOnUserTrigger);
+    if (*did_fill_password) {
+      driver->GetPasswordManager()->UpdateStateOnUserInput(
+          driver, fillData.form_id, fillData.password_element_id,
+          fillData.password_value);
+    }
+  }
+
+  return success;
+}
+
+- (void)fillPasswordFormWithFillData:(password_manager::FillData)fillData
                              inFrame:(web::WebFrame*)frame
-                    triggeredOnField:(FieldRendererId)uniqueFieldID
+                    triggeredOnField:(FieldRendererId)fieldRendererID
                    completionHandler:
                        (nullable void (^)(BOOL))completionHandler {
-  // Necessary copy so the values can be used inside a block.
-  FieldRendererId usernameID = fillData.username_element_id;
-  FieldRendererId passwordID = fillData.password_element_id;
-  std::u16string usernameValue = fillData.username_value;
-  std::u16string passwordValue = fillData.password_value;
+  const scoped_refptr<autofill::FieldDataManager> fieldDataManager =
+      autofill::FieldDataManagerFactoryIOS::GetRetainable(frame);
+  const scoped_refptr<IOSPasswordManagerDriver> driver =
+      IOSPasswordManagerDriverFactory::GetRetainableDriver(_webState, frame);
 
   // Do not fill the username if filling was triggered on a password field and
   // the username field has user typed input.
-  BOOL fillUsername = uniqueFieldID == usernameID ||
-                      !_fieldDataManager->DidUserType(usernameID);
+  BOOL fillUsername =
+      fieldRendererID == fillData.username_element_id ||
+      !fieldDataManager->DidUserType(fillData.username_element_id);
   __weak PasswordFormHelper* weakSelf = self;
   password_manager::PasswordManagerJavaScriptFeature::GetInstance()
-      ->FillPasswordForm(
-          frame, fillData, fillUsername, UTF16ToUTF8(usernameValue),
-          UTF16ToUTF8(passwordValue), base::BindOnce(^(BOOL success) {
-            PasswordFormHelper* strongSelf = weakSelf;
-            if (!strongSelf) {
-              return;
-            }
-            [strongSelf recordFormFillingSuccessMetrics:success];
-            if (success) {
-              strongSelf.fieldDataManager->UpdateFieldDataMap(
-                  usernameID, usernameValue,
-                  FieldPropertiesFlags::kAutofilledOnUserTrigger);
-              strongSelf.fieldDataManager->UpdateFieldDataMap(
-                  passwordID, passwordValue,
-                  FieldPropertiesFlags::kAutofilledOnUserTrigger);
-            }
-            if (completionHandler) {
-              completionHandler(success);
-            }
-          }));
+      ->FillPasswordForm(frame, fillData, fillUsername,
+                         UTF16ToUTF8(fillData.username_value),
+                         UTF16ToUTF8(fillData.password_value),
+                         base::BindOnce(^(const base::Value* result) {
+                           const BOOL success =
+                               [weakSelf handleFillResult:result
+                                             fromFillData:fillData
+                                     withFieldDataManager:fieldDataManager.get()
+                                                   driver:driver.get()];
+
+                           if (completionHandler) {
+                             completionHandler(success);
+                           }
+                         }));
 }
 
 // Finds the password form named |formName| and calls
@@ -310,14 +354,16 @@ const char kFrameIdKey[] = "frame_id";
     return;
   }
 
-  scoped_refptr<autofill::FieldDataManager> fieldDataManager =
-      _fieldDataManager;
+  const scoped_refptr<autofill::FieldDataManager> fieldDataManager =
+      autofill::FieldDataManagerFactoryIOS::GetRetainable(frame);
+
+  std::string frame_id = frame->GetFrameId();
   password_manager::PasswordManagerJavaScriptFeature::GetInstance()
       ->ExtractForm(
           frame, formIdentifier, base::BindOnce(^(NSString* jsonString) {
             FormData formData;
             if (!JsonStringToFormData(jsonString, &formData, *pageURL,
-                                      *fieldDataManager)) {
+                                      *fieldDataManager, frame_id)) {
               completionHandler(NO, FormData());
               return;
             }
@@ -326,15 +372,13 @@ const char kFrameIdKey[] = "frame_id";
           }));
 }
 
-- (void)setUpForUniqueIDsWithInitialState:(uint32_t)nextAvailableID
-                                  inFrame:(web::WebFrame*)frame {
-  autofill::FormUtilJavaScriptFeature::GetInstance()
-      ->SetUpForUniqueIDsWithInitialState(frame, nextAvailableID);
-}
-
 - (void)updateFieldDataOnUserInput:(autofill::FieldRendererId)field_id
+                           inFrame:(web::WebFrame*)frame
                         inputValue:(NSString*)value {
-  self.fieldDataManager->UpdateFieldDataMap(
+  autofill::FieldDataManager* fieldDataManager =
+      autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
+
+  fieldDataManager->UpdateFieldDataMap(
       field_id, base::SysNSStringToUTF16(value),
       autofill::FieldPropertiesFlags::kUserTyped);
 }
@@ -374,10 +418,13 @@ const char kFrameIdKey[] = "frame_id";
     return HandleSubmittedFormStatus::kRejectedNoFrameMatchingId;
   }
 
+  autofill::FieldDataManager* fieldDataManager =
+      autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
+
   FormData form;
   if (!autofill::ExtractFormData(dict, false, std::u16string(), *pageURL,
                                  pageURL->DeprecatedGetOriginAsURL(),
-                                 *self.fieldDataManager, &form)) {
+                                 *fieldDataManager, *frame_id, &form)) {
     return HandleSubmittedFormStatus::kRejectedCantExtractFormData;
   }
 

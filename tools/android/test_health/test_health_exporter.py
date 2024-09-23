@@ -81,9 +81,13 @@ def _to_java_test_health_dict(java_test_health: JavaTestHealth
         test_dict.update(dict(java_package=java_test_health.java_package))
 
     test_dict.update(
-        dict(disabled_tests_count=java_test_health.disabled_tests_count,
-             disable_if_tests_count=java_test_health.disable_if_tests_count,
-             tests_count=java_test_health.tests_count))
+        dict(
+            disabled_tests_count=java_test_health.disabled_tests_count,
+            disable_if_tests_count=java_test_health.disable_if_tests_count,
+            tests_count=java_test_health.tests_count,
+            disabled_tests=java_test_health.disabled_tests,
+            disable_if_tests=java_test_health.disable_if_tests,
+        ))
 
     return test_dict
 

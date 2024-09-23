@@ -6,6 +6,7 @@
 #define COMPONENTS_METRICS_SYSTEM_SESSION_ANALYZER_SYSTEM_SESSION_ANALYZER_WIN_H_
 
 #include <windows.h>
+
 #include <winevt.h>
 
 #include <map>

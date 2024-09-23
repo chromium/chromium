@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_GRAPH_POLICIES_BFCACHE_POLICY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_POLICIES_BFCACHE_POLICY_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -40,8 +39,6 @@ class BFCachePolicy : public GraphOwned,
 
   // SystemNodeObserver:
   void OnMemoryPressure(MemoryPressureLevel new_level) override;
-
-  raw_ptr<Graph> graph_;
 };
 
 }  // namespace performance_manager::policies

@@ -78,11 +78,11 @@ struct CORE_EXPORT FrameLoadRequest {
     return resource_request_;
   }
 
-  void SetClientRedirectReason(ClientNavigationReason reason) {
+  void SetClientNavigationReason(ClientNavigationReason reason) {
     client_navigation_reason_ = reason;
   }
 
-  ClientNavigationReason ClientRedirectReason() const {
+  ClientNavigationReason GetClientNavigationReason() const {
     return client_navigation_reason_;
   }
 
@@ -103,14 +103,14 @@ struct CORE_EXPORT FrameLoadRequest {
     triggering_event_info_ = info;
   }
 
-  mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
-  TakeInitiatorPolicyContainerKeepAliveHandle() {
-    return std::move(initiator_policy_container_keep_alive_handle_);
+  mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
+  TakeInitiatorNavigationStateKeepAliveHandle() {
+    return std::move(initiator_navigation_state_keep_alive_handle_);
   }
-  void SetInitiatorPolicyContainerKeepAliveHandle(
-      mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
+  void SetInitiatorNavigationStateKeepAliveHandle(
+      mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
           handle) {
-    initiator_policy_container_keep_alive_handle_ = std::move(handle);
+    initiator_navigation_state_keep_alive_handle_ = std::move(handle);
   }
 
   std::unique_ptr<SourceLocation> TakeSourceLocation() {
@@ -134,9 +134,7 @@ struct CORE_EXPORT FrameLoadRequest {
   }
 
   // The javascript world in which this request initiated.
-  const scoped_refptr<const DOMWrapperWorld>& JavascriptWorld() const {
-    return world_;
-  }
+  const DOMWrapperWorld* JavascriptWorld() const { return world_; }
 
   // The BlobURLToken that should be used when fetching the resource. This
   // is needed for blob URLs, because the blob URL might be revoked before the
@@ -174,6 +172,7 @@ struct CORE_EXPORT FrameLoadRequest {
   }
 
   void SetNoOpener() { window_features_.noopener = true; }
+  void SetExplicitOpener() { window_features_.explicit_opener = true; }
   void SetNoReferrer() {
     should_send_referrer_ = kNeverSendReferrer;
     resource_request_.SetReferrerString(Referrer::NoReferrer());
@@ -212,13 +211,6 @@ struct CORE_EXPORT FrameLoadRequest {
     return force_history_push_;
   }
 
-  bool IsFullscreenRequested() const {
-    // If the window was requested as fullscreen and a popup, then the loaded
-    // frame should enter fullscreen.
-    // See: https://chromestatus.com/feature/6002307972464640
-    return GetWindowFeatures().is_fullscreen && GetWindowFeatures().is_popup;
-  }
-
   // This function is meant to be used in HTML/SVG attributes where dangling
   // markup injection occurs. See https://github.com/whatwg/html/pull/9309.
   const AtomicString& CleanNavigationTarget(const AtomicString& target) const;
@@ -234,7 +226,7 @@ struct CORE_EXPORT FrameLoadRequest {
       mojom::blink::TriggeringEventInfo::kNotFromEvent;
   Element* source_element_ = nullptr;
   ShouldSendReferrer should_send_referrer_;
-  scoped_refptr<const DOMWrapperWorld> world_;
+  const DOMWrapperWorld* world_ = nullptr;
   scoped_refptr<base::RefCountedData<mojo::Remote<mojom::blink::BlobURLToken>>>
       blob_url_token_;
   base::TimeTicks input_start_time_;
@@ -245,8 +237,8 @@ struct CORE_EXPORT FrameLoadRequest {
       picture_in_picture_window_options_;
   std::optional<blink::Impression> impression_;
   std::optional<LocalFrameToken> initiator_frame_token_;
-  mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
-      initiator_policy_container_keep_alive_handle_;
+  mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
+      initiator_navigation_state_keep_alive_handle_;
   std::unique_ptr<SourceLocation> source_location_;
   KURL requestor_base_url_;
 

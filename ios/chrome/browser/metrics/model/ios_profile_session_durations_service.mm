@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
 
 #import "components/password_manager/core/browser/password_session_durations_metrics_recorder.h"
+#import "components/signin/core/browser/signin_status_metrics_provider_helpers.h"
 #import "components/sync/service/sync_session_durations_metrics_recorder.h"
 #import "components/unified_consent/msbb_session_durations_metrics_recorder.h"
 
@@ -62,8 +63,17 @@ bool IOSProfileSessionDurationsService::IsSessionActive() {
   return is_session_active_;
 }
 
-bool IOSProfileSessionDurationsService::IsSignedIn() const {
-  return sync_metrics_recorder_->IsSignedIn();
+signin_metrics::SingleProfileSigninStatus
+IOSProfileSessionDurationsService::GetSigninStatus() const {
+  switch (sync_metrics_recorder_->GetSigninStatus()) {
+    case syncer::SyncSessionDurationsMetricsRecorder::SigninStatus::kSignedIn:
+      return signin_metrics::SingleProfileSigninStatus::kSignedIn;
+    case syncer::SyncSessionDurationsMetricsRecorder::SigninStatus::
+        kSignedInWithError:
+      return signin_metrics::SingleProfileSigninStatus::kSignedInWithError;
+    case syncer::SyncSessionDurationsMetricsRecorder::SigninStatus::kSignedOut:
+      return signin_metrics::SingleProfileSigninStatus::kSignedOut;
+  }
 }
 
 bool IOSProfileSessionDurationsService::IsSyncing() const {

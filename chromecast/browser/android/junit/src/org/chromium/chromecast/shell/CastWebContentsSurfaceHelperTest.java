@@ -33,7 +33,7 @@ import org.chromium.chromecast.base.Scope;
 import org.chromium.chromecast.base.Unit;
 import org.chromium.chromecast.shell.CastWebContentsSurfaceHelper.MediaSessionGetter;
 import org.chromium.chromecast.shell.CastWebContentsSurfaceHelper.StartParams;
-import org.chromium.content.browser.MediaSessionImpl;
+import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.function.Consumer;
@@ -48,7 +48,7 @@ public class CastWebContentsSurfaceHelperTest {
     private @Mock Consumer<Uri> mFinishCallback;
     private CastWebContentsSurfaceHelper mSurfaceHelper;
     private @Mock MediaSessionGetter mMediaSessionGetter;
-    private @Mock MediaSessionImpl mMediaSessionImpl;
+    private @Mock MediaSession mMediaSession;
     private Controller<Unit> mSurfaceAvailable = new Controller<>();
 
     private static class StartParamsBuilder {
@@ -90,7 +90,7 @@ public class CastWebContentsSurfaceHelperTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        when(mMediaSessionGetter.get(any())).thenReturn(mMediaSessionImpl);
+        when(mMediaSessionGetter.get(any())).thenReturn(mMediaSession);
         when(mWebContentsView.open(any())).thenReturn(mock(Scope.class));
         mSurfaceHelper = new CastWebContentsSurfaceHelper(
                 mWebContentsView, mFinishCallback, mSurfaceAvailable);
@@ -113,7 +113,7 @@ public class CastWebContentsSurfaceHelperTest {
                                      .withShouldRequestAudioFocus(true)
                                      .build();
         mSurfaceHelper.onNewStartParams(params);
-        verify(mMediaSessionImpl).requestSystemAudioFocus();
+        verify(mMediaSession).requestSystemAudioFocus();
     }
 
     @Test
@@ -125,7 +125,7 @@ public class CastWebContentsSurfaceHelperTest {
                                      .withShouldRequestAudioFocus(false)
                                      .build();
         mSurfaceHelper.onNewStartParams(params);
-        verify(mMediaSessionImpl, never()).requestSystemAudioFocus();
+        verify(mMediaSession, never()).requestSystemAudioFocus();
     }
 
     @Test

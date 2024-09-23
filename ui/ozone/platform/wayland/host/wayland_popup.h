@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_POPUP_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_POPUP_H_
 
+#include "base/memory/weak_ptr.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace views::corewm {
@@ -16,7 +17,7 @@ namespace ui {
 class WaylandConnection;
 class ShellPopupWrapper;
 
-class WaylandPopup : public WaylandWindow {
+class WaylandPopup final : public WaylandWindow {
  public:
   WaylandPopup(PlatformWindowDelegate* delegate,
                WaylandConnection* connection,
@@ -27,7 +28,7 @@ class WaylandPopup : public WaylandWindow {
 
   ~WaylandPopup() override;
 
-  ShellPopupWrapper* shell_popup() const { return shell_popup_.get(); }
+  ShellPopupWrapper* shell_popup() { return shell_popup_.get(); }
 
   // WaylandWindow overrides:
   void TooltipShown(const char* text,
@@ -48,9 +49,10 @@ class WaylandPopup : public WaylandWindow {
   bool OnInitialize(PlatformWindowInitProperties properties,
                     PlatformWindowDelegate::State* state) override;
   WaylandPopup* AsWaylandPopup() override;
-  void SetWindowGeometry(gfx::Size size_dip) override;
+  void SetWindowGeometry(const PlatformWindowDelegate::State& state) override;
   void UpdateWindowMask() override;
   void PropagateBufferScale(float new_scale) override;
+  base::WeakPtr<WaylandWindow> AsWeakPtr() override;
   void ShowTooltip(const std::u16string& text,
                    const gfx::Point& position,
                    const PlatformWindowTooltipTrigger trigger,
@@ -92,6 +94,8 @@ class WaylandPopup : public WaylandWindow {
 
   // The last buffer scale sent to the wayland server.
   std::optional<float> last_sent_buffer_scale_;
+
+  base::WeakPtrFactory<WaylandPopup> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

@@ -23,7 +23,7 @@
 @implementation PromosManagerSceneAgent
 
 - (instancetype)initWithCommandDispatcher:(CommandDispatcher*)dispatcher {
-  DCHECK(ShouldDisplayPromos());
+  DCHECK(ShouldPromoManagerDisplayPromos());
   self = [super init];
   if (self) {
     _dispatcher = dispatcher;
@@ -71,51 +71,12 @@
 
 // Notify observer(s) that the UI is available for a promo.
 - (void)maybeNotifyObserver {
-  if (self.UIAvailableForPromo) {
+  if (IsUIAvailableForPromo(self.sceneState)) {
     id<PromosManagerCommands> promosManagerHandler =
         HandlerForProtocol(self.dispatcher, PromosManagerCommands);
 
     [promosManagerHandler maybeDisplayPromo];
   }
-}
-
-// Returns YES if a promo can be displayed.
-- (BOOL)isUIAvailableForPromo {
-  // The following app & scene conditions need to be met to enable a promo's
-  // display (please note the Promos Manager may still decide *not* to display a
-  // promo, based on its own internal criteria):
-
-  // (1) The app initialization is over (the stage InitStageFinal is reached).
-  if (self.sceneState.appState.initStage < InitStageFinal)
-    return NO;
-
-  // (2) The scene is in the foreground.
-  if (self.sceneState.activationLevel < SceneActivationLevelForegroundActive)
-    return NO;
-
-  // (3) There is no UI blocker.
-  if (self.sceneState.appState.currentUIBlocker)
-    return NO;
-
-  // (4) The app isn't shutting down.
-  if (self.sceneState.appState.appIsTerminating)
-    return NO;
-
-  // (5) There are no launch intents (external intents).
-  if (self.sceneState.startupHadExternalIntent)
-    return NO;
-
-  // Additional, sensible checks to add to minimize user annoyance:
-
-  // (6) The user isn't currently signing in.
-  if (self.sceneState.signinInProgress)
-    return NO;
-
-  // (7) The user isn't currently looking at a modal overlay.
-  if (self.sceneState.presentingModalOverlay)
-    return NO;
-
-  return YES;
 }
 
 @end

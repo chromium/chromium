@@ -47,21 +47,6 @@ struct SSLConfig {
   // If false, disables TLS Encrypted ClientHello (ECH). If true, the feature
   // may be enabled or disabled, depending on feature flags.
   bool ech_enabled = true;
-
-  // If specified, controls whether insecure hashes are allowed in TLS
-  // handshakes. If kUnset, this is determined by feature flags.
-  OptionalBool insecure_hash_override = kUnset;
-
-  // If specified, controls whether the X.509 keyUsage extension is checked in
-  // TLS 1.2 for RSA certificates that chain to a local trust anchor. If kUnset,
-  // this is determined by feature flags.
-  //
-  // Independent of the setting of this value, keyUsage is always checked at TLS
-  // 1.3, for ECDSA certificates, and for all certificates that chain to a known
-  // root.
-  //
-  // TODO(crbug.com/795089): Enable this unconditionally.
-  OptionalBool rsa_key_usage_for_local_anchors_override = kUnset;
 };
 
 // Receives SSL configuration updates.

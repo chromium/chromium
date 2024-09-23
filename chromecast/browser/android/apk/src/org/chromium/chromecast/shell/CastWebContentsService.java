@@ -20,7 +20,7 @@ import org.chromium.base.Log;
 import org.chromium.chromecast.base.Controller;
 import org.chromium.chromecast.base.Observable;
 import org.chromium.chromecast.base.Observer;
-import org.chromium.content.browser.MediaSessionImpl;
+import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.function.Function;
@@ -41,9 +41,8 @@ public class CastWebContentsService extends Service {
     private final Controller<Intent> mIntentState = new Controller<>();
     private final Observable<WebContents> mWebContentsState =
             mIntentState.map(CastWebContentsIntentUtils::getWebContents);
-    // Allows tests to inject a mock MediaSessionImpl to test audio focus logic.
-    private Function<WebContents, MediaSessionImpl> mMediaSessionGetter =
-            MediaSessionImpl::fromWebContents;
+    // Allows tests to inject a mock MediaSession to test audio focus logic.
+    private Function<WebContents, MediaSession> mMediaSessionGetter = MediaSession::fromWebContents;
 
     {
         // React to web contents by presenting them in a headless view.
@@ -58,8 +57,9 @@ public class CastWebContentsService extends Service {
             startForeground(CAST_NOTIFICATION_ID, notification);
             return () -> stopForeground(true /*removeNotification*/);
         });
-        mWebContentsState.map(this::getMediaSessionImpl)
-                .subscribe(Observer.onOpen(MediaSessionImpl::requestSystemAudioFocus));
+        mWebContentsState
+                .map(this::getMediaSession)
+                .subscribe(Observer.onOpen(MediaSession::requestSystemAudioFocus));
         // Inform CastContentWindowAndroid we're detaching.
         Observable<String> instanceIdState = mIntentState.map(Intent::getData).map(Uri::getPath);
         instanceIdState.subscribe(Observer.onClose(CastWebContentsComponent::onComponentClosed));
@@ -95,7 +95,7 @@ public class CastWebContentsService extends Service {
         return false;
     }
 
-    private MediaSessionImpl getMediaSessionImpl(WebContents webContents) {
+    private MediaSession getMediaSession(WebContents webContents) {
         return mMediaSessionGetter.apply(webContents);
     }
 
@@ -103,7 +103,7 @@ public class CastWebContentsService extends Service {
         return mWebContentsState;
     }
 
-    void setMediaSessionImplGetterForTesting(Function<WebContents, MediaSessionImpl> getter) {
+    void setMediaSessionGetterForTesting(Function<WebContents, MediaSession> getter) {
         mMediaSessionGetter = getter;
     }
 

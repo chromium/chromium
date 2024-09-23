@@ -1,0 +1,50 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_SCANNER_SCANNER_CONTROLLER_H_
+#define ASH_SCANNER_SCANNER_CONTROLLER_H_
+
+#include <memory>
+
+#include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
+
+namespace ash {
+
+class ScannerDelegate;
+class ScannerSession;
+
+// This is the top level controller used for Scanner. It acts as a mediator
+// between Scanner and any consuming features.
+class ASH_EXPORT ScannerController {
+ public:
+  explicit ScannerController(std::unique_ptr<ScannerDelegate> delegate);
+  ScannerController(const ScannerController&) = delete;
+  ScannerController& operator=(const ScannerController&) = delete;
+  ~ScannerController();
+
+  static bool IsEnabled();
+
+  // Creates a new ScannerSession and returns a pointer to the created session.
+  // Note that the created session is owned by the ScannerController. If the
+  // Scanner cannot be initialized due to system level constraints (e.g. pref
+  // disabled, feature not allowed), then no session is created and `nullptr` is
+  // returned instead.
+  ScannerSession* StartNewSession();
+
+  // Should be called when the user has finished interacting with a Scanner
+  // session. This will trigger relevant cleanup and eventually destroy the
+  // scanner session.
+  void OnSessionUIClosed();
+
+ private:
+  std::unique_ptr<ScannerDelegate> delegate_;
+
+  // May hold an active Scanner session, to allow access to the Scanner feature.
+  std::unique_ptr<ScannerSession> scanner_session_;
+};
+
+}  // namespace ash
+
+#endif  // ASH_SCANNER_SCANNER_CONTROLLER_H_

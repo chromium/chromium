@@ -9,11 +9,12 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
-#include "chrome/browser/extensions/permissions_updater.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -33,12 +34,13 @@
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
+#include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
-#include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/gfx/text_elider.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -284,7 +286,7 @@ base::Value::Dict GetExtensionInfo(const Extension* extension) {
 
   GURL icon = extensions::ExtensionIconSource::GetIconURL(
       extension, extension_misc::EXTENSION_ICON_SMALLISH,
-      ExtensionIconSet::MATCH_BIGGER,
+      ExtensionIconSet::Match::kBigger,
       false);  // Not grayscale.
   dict.Set("icon", icon.spec());
 
@@ -293,23 +295,13 @@ base::Value::Dict GetExtensionInfo(const Extension* extension) {
 
 std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
     const Extension* extension,
-    Profile* profile,
-    bool include_optional_permissions) {
+    Profile* profile) {
   // Initialize permissions if they have not already been set so that
   // any transformations are correctly reflected in the install prompt.
   PermissionsUpdater(profile, PermissionsUpdater::INIT_FLAG_TRANSIENT)
       .InitializePermissions(extension);
 
-  std::unique_ptr<const PermissionSet> permissions_to_display =
-      extension->permissions_data()->active_permissions().Clone();
-
-  if (include_optional_permissions) {
-    const PermissionSet& optional_permissions =
-        PermissionsParser::GetOptionalPermissions(extension);
-    permissions_to_display = PermissionSet::CreateUnion(*permissions_to_display,
-                                                        optional_permissions);
-  }
-  return permissions_to_display;
+  return extension->permissions_data()->active_permissions().Clone();
 }
 
 std::vector<content::BrowserContext*> GetAllRelatedProfiles(
@@ -355,6 +347,16 @@ void SetDeveloperModeForProfile(Profile* profile, bool in_developer_mode) {
 
   user_script_manager->SetUserScriptSourceEnabledForExtensions(
       UserScript::Source::kDynamicUserScript, in_developer_mode);
+}
+
+std::u16string GetFixupExtensionNameForUIDisplay(
+    const std::string& extension_name) {
+  const size_t extension_name_char_limit =
+      75;  // Extension name char limit on CWS
+  gfx::BreakType break_type = gfx::BreakType::CHARACTER_BREAK;
+  std::u16string fixup_extension_name = gfx::TruncateString(
+      base::UTF8ToUTF16(extension_name), extension_name_char_limit, break_type);
+  return fixup_extension_name;
 }
 
 }  // namespace util

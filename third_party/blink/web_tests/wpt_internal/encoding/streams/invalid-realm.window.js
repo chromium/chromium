@@ -18,15 +18,14 @@ promise_test(async t => {
   const stream = new iframe.contentWindow.TextDecoderStream();
   const NestedTypeError = iframe.contentWindow.TypeError;
   const readPromise = stream.readable.getReader().read();
+  readPromise.then(t.unreached_func("read should not resolve"),
+                   t.unreached_func("read should not reject"));
   const writer = stream.writable.getWriter();
   await writer.ready;
   iframe.remove();
-  return Promise.all([
-    promise_rejects_js(t, NestedTypeError, writer.write(new Uint8Array([65])),
-                       'TypeError should be thrown'),
-    promise_rejects_js(t, NestedTypeError, readPromise,
-                       'TypeError should be thrown'),
-  ]);
+  return promise_rejects_js(t, NestedTypeError,
+                            writer.write(new Uint8Array([65])),
+                            'TypeError should be thrown');
 }, 'TextDecoderStream: write in detached realm should fail');
 
 promise_test(async t => {
@@ -34,15 +33,13 @@ promise_test(async t => {
   const stream = new iframe.contentWindow.TextEncoderStream();
   const NestedTypeError = iframe.contentWindow.TypeError;
   const readPromise = stream.readable.getReader().read();
+  readPromise.then(t.unreached_func("read should not resolve"),
+                   t.unreached_func("read should not reject"));
   const writer = stream.writable.getWriter();
   await writer.ready;
   iframe.remove();
-  return Promise.all([
-    promise_rejects_js(t, NestedTypeError, writer.write('A'),
-                       'TypeError should be thrown'),
-    promise_rejects_js(t, NestedTypeError, readPromise,
-                       'TypeError should be thrown'),
-  ]);
+  return promise_rejects_js(t, NestedTypeError, writer.write('A'),
+                            'TypeError should be thrown');
 }, 'TextEncoderStream: write in detached realm should fail');
 
 for (const type of ['TextEncoderStream', 'TextDecoderStream']) {

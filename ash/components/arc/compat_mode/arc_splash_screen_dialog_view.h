@@ -64,7 +64,8 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView,
   static void Show(aura::Window* parent, bool is_for_unresizable);
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void AddedToWidget() override;
   void OnThemeChanged() override;
 

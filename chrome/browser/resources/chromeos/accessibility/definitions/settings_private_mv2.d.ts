@@ -5,9 +5,9 @@
 /** @fileoverview Definitions for chrome.settingsPrivate API in Manifest V2 */
 // This file exists because MV3 supports promises and MV2 does not.
 // TODO(b/260590502): Delete this after MV3 migration.
-// TODO(crbug.com/1203307): Auto-generate this file.
+// TODO(crbug.com/40179454): Auto-generate this file.
 
-import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event';
+import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
 
 declare global {
   export namespace chrome {
@@ -41,7 +41,7 @@ declare global {
       type GetAllPrefsCallback = (prefs: PrefObject[]) => void;
       type OnPrefSetCallback = (success: boolean) => void;
       type GetPrefCallback = (pref: PrefObject) => void;
-      // TODO(crbug/1373934) Update existing usages of PrefObject to be typed,
+      // TODO(crbug.com/40242259) Update existing usages of PrefObject to be typed,
       // removing the need to use any here.
       export interface PrefObject<T = any> {
         key: string;

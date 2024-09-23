@@ -119,6 +119,8 @@ class TaskManagerObserver {
   // has become unresponsive.
   virtual void OnTaskUnresponsive(TaskId id) {}
 
+  virtual void OnActiveTaskFetched(TaskId id) {}
+
   const base::TimeDelta& desired_refresh_time() const {
     return desired_refresh_time_;
   }

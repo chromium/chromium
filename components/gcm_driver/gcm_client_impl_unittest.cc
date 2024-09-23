@@ -496,7 +496,7 @@ void GCMClientImplTest::SetFeatureParams(const base::Feature& feature,
 void GCMClientImplTest::InitializeInvalidationFieldTrial() {
   std::map<std::string, std::string> params;
   params[features::kParamNameTokenInvalidationPeriodDays] =
-      std::to_string(kTestTokenInvalidationPeriod);
+      base::NumberToString(kTestTokenInvalidationPeriod);
   ASSERT_NO_FATAL_FAILURE(
       SetFeatureParams(features::kInvalidateTokenFeature, std::move(params)));
 }

@@ -92,10 +92,9 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
   ~ArcWindowDelegateImpl() override = default;
 
   bool IsInArcAppWindow(const aura::Window* window) const override {
-    // WMHelper is not craeted in browser_tests.
+    // WMHelper is not created in browser_tests.
     if (!exo::WMHelper::HasInstance())
       return false;
-    aura::Window* active = exo::WMHelper::GetInstance()->GetActiveWindow();
     for (; window; window = window->parent()) {
       if (ash::IsArcWindow(window))
         return true;
@@ -105,16 +104,6 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
       // have kSkipImeProcessing.
       if (window->GetProperty(aura::client::kSkipImeProcessing))
         return true;
-
-      // IsArcAppWindow returns false for a window of ARC++ Kiosk app, so we
-      // have to check application id of the active window to cover that case.
-      // TODO(yhanada): Make IsArcAppWindow support a window of ARC++ Kiosk.
-      // Specifically, a window of ARC++ Kiosk should have ash::AppType::ARC_APP
-      // property. Please see implementation of IsArcAppWindow().
-      if (window == active && IsArcKioskMode() &&
-          GetWindowTaskId(window).has_value()) {
-        return true;
-      }
     }
     return false;
   }
@@ -128,7 +117,7 @@ class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
 
   void UnregisterFocusObserver() override {
     // If WMHelper is already destroyed, do nothing.
-    // TODO(crbug.com/748380): Fix shutdown order.
+    // TODO(crbug.com/40531599): Fix shutdown order.
     if (!exo::WMHelper::HasInstance())
       return;
     exo::WMHelper::GetInstance()->RemoveFocusObserver(ime_service_);
@@ -416,6 +405,10 @@ void ArcImeService::SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
 // Overridden from ash::KeyboardControllerObserver
 void ArcImeService::OnKeyboardAppearanceChanged(
     const ash::KeyboardStateDescriptor& state) {
+  if (state.is_temporary) {
+    return;
+  }
+
   gfx::Rect new_bounds = state.occluded_bounds_in_screen;
   // Multiply by the scale factor. To convert from Chrome DIP to Android pixels.
   gfx::Rect bounds_in_px =
@@ -426,6 +419,10 @@ void ArcImeService::OnKeyboardAppearanceChanged(
 
 ////////////////////////////////////////////////////////////////////////////////
 // Overridden from ui::TextInputClient:
+
+base::WeakPtr<ui::TextInputClient> ArcImeService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
 
 void ArcImeService::SetCompositionText(const ui::CompositionText& composition) {
   InvalidateSurroundingTextAndSelectionRange();
@@ -610,12 +607,12 @@ bool ArcImeService::SetCompositionFromExistingText(
 }
 
 gfx::Range ArcImeService::GetAutocorrectRange() const {
-  // TODO(https://crbug.com/1091088): Implement this method.
+  // TODO(crbug.com/40134032): Implement this method.
   return gfx::Range();
 }
 
 gfx::Rect ArcImeService::GetAutocorrectCharacterBounds() const {
-  // TODO(https://crbug.com/952757): Implement this method.
+  // TODO(crbug.com/40623107): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return gfx::Rect();
 }
@@ -625,20 +622,20 @@ bool ArcImeService::SetAutocorrectRange(const gfx::Range& range) {
     base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Count",
                                   TextInputClient::SubClass::kArcImeService);
   }
-  // TODO(https://crbug.com/1091088): Implement this method.
+  // TODO(crbug.com/40134032): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 std::optional<ui::GrammarFragment> ArcImeService::GetGrammarFragmentAtCursor()
     const {
-  // TODO(https://crbug.com/1201454): Implement this method.
+  // TODO(crbug.com/40178699): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return std::nullopt;
 }
 
 bool ArcImeService::ClearGrammarFragments(const gfx::Range& range) {
-  // TODO(https://crbug.com/1201454): Implement this method.
+  // TODO(crbug.com/40178699): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
@@ -649,7 +646,7 @@ bool ArcImeService::AddGrammarFragments(
     base::UmaHistogramEnumeration("InputMethod.Assistive.Grammar.Count",
                                   TextInputClient::SubClass::kArcImeService);
   }
-  // TODO(https://crbug.com/1201454): Implement this method.
+  // TODO(crbug.com/40178699): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }

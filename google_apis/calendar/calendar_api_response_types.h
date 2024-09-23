@@ -44,6 +44,10 @@ class SingleCalendar {
   const std::string& id() const { return id_; }
   void set_id(const std::string& id) { id_ = id; }
 
+  // The Calendar summary (i.e. name of the calendar shown in Google Calendar)
+  const std::string& summary() const { return summary_; }
+  void set_summary(const std::string& summary) { summary_ = summary; }
+
   // The color ID of the calendar
   const std::string& color_id() const { return color_id_; }
   void set_color_id(const std::string& color_id) { color_id_ = color_id; }
@@ -61,6 +65,7 @@ class SingleCalendar {
 
  private:
   std::string id_;
+  std::string summary_;
   std::string color_id_;
   bool selected_ = false;
   bool primary_ = false;
@@ -131,6 +136,39 @@ class DateTime {
   base::Time date_time_;
 };
 
+// Parses the attachment field in the `CalendarEvent` response.
+class Attachment {
+ public:
+  Attachment();
+  Attachment(const Attachment&);
+  Attachment& operator=(const Attachment&);
+  Attachment(Attachment&&) noexcept;
+  Attachment& operator=(Attachment&&) noexcept;
+  ~Attachment();
+
+  // The title of the attachment (file name).
+  const std::string& title() const { return title_; }
+  void set_title(const std::string& title) { title_ = title; }
+
+  // The URL of the attachment.
+  const GURL& file_url() const { return file_url_; }
+  void set_file_url(const GURL& file_url) { file_url_ = file_url; }
+
+  // The URL of the attachment icon.
+  const GURL& icon_link() const { return icon_link_; }
+  void set_icon_link(const GURL& icon_link) { icon_link_ = icon_link; }
+
+  // The file ID of the attachment.
+  const std::string& file_id() const { return file_id_; }
+  void set_file_id(const std::string& file_id) { file_id_ = file_id; }
+
+ private:
+  std::string title_;
+  GURL file_url_;
+  GURL icon_link_;
+  std::string file_id_;
+};
+
 // Parses the event item from the response. Not every field is parsed. If you
 // find the field you want to use is not parsed here, you will need to add it.
 class CalendarEvent {
@@ -188,12 +226,27 @@ class CalendarEvent {
     self_response_status_ = self_response_status;
   }
 
+  // Boolean indicating if there is an attendee other than the user
+  // attending the event. If the version of the request only fetches
+  // 1 attendee, this will always be false.
+  bool has_other_attendee() const { return has_other_attendee_; }
+  void set_has_other_attendee(bool has_other_attendee) {
+    has_other_attendee_ = has_other_attendee;
+  }
+
+  // The location of the event.
+  const std::string& location() const { return location_; }
+  void set_location(const std::string& location) { location_ = location; }
+
+  // The start time of the event.
   const DateTime& start_time() const { return start_time_; }
   void set_start_time(const DateTime& start_time) { start_time_ = start_time; }
 
+  // The end time of the event.
   const DateTime& end_time() const { return end_time_; }
   void set_end_time(const DateTime& end_time) { end_time_ = end_time; }
 
+  // Boolean indicating if the event lasts all day.
   const bool& all_day_event() const { return all_day_event_; }
   void set_all_day_event(const bool& all_day_event) {
     all_day_event_ = all_day_event;
@@ -205,6 +258,12 @@ class CalendarEvent {
   GURL conference_data_uri() const { return conference_data_uri_; }
   void set_conference_data_uri(const GURL& uri) { conference_data_uri_ = uri; }
 
+  // The attachments of each event, if any.
+  const std::vector<Attachment>& attachments() const { return attachments_; }
+  void set_attachments(std::vector<Attachment> attachments) {
+    attachments_ = std::move(attachments);
+  }
+
   // Return the approximate size of this event, in bytes.
   int GetApproximateSizeInBytes() const;
 
@@ -215,10 +274,13 @@ class CalendarEvent {
   std::string color_id_;
   EventStatus status_ = EventStatus::kUnknown;
   ResponseStatus self_response_status_ = ResponseStatus::kUnknown;
+  bool has_other_attendee_ = false;
+  std::string location_;
   DateTime start_time_;
   DateTime end_time_;
   bool all_day_event_ = false;
   GURL conference_data_uri_;
+  std::vector<Attachment> attachments_;
 };
 
 // Parses a list of calendar events.

@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,8 +27,9 @@
 #include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/garbage_collect_storage_partitions_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_dev_mode.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -39,6 +41,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -47,12 +50,13 @@ namespace web_app {
 
 namespace {
 
-using MaybeIwaLocation = IsolatedWebAppInstallationManager::MaybeIwaLocation;
+using MaybeIwaInstallSource =
+    IsolatedWebAppInstallationManager::MaybeIwaInstallSource;
 
 void OnGetBundlePathFromCommandLine(
-    base::OnceCallback<void(MaybeIwaLocation)> callback,
-    MaybeIwaLocation proxy_url,
-    MaybeIwaLocation bundle_path) {
+    base::OnceCallback<void(MaybeIwaInstallSource)> callback,
+    MaybeIwaInstallSource proxy_url,
+    MaybeIwaInstallSource bundle_path) {
   bool is_proxy_url_set = !proxy_url.has_value() || proxy_url->has_value();
   bool is_bundle_path_set =
       !bundle_path.has_value() || bundle_path->has_value();
@@ -74,7 +78,7 @@ void OnGetBundlePathFromCommandLine(
 
 void GetBundlePathFromCommandLine(
     const base::CommandLine& command_line,
-    base::OnceCallback<void(MaybeIwaLocation)> callback) {
+    base::OnceCallback<void(MaybeIwaInstallSource)> callback) {
   base::FilePath switch_value =
       command_line.GetSwitchValuePath(switches::kInstallIsolatedWebAppFromFile);
 
@@ -86,7 +90,7 @@ void GetBundlePathFromCommandLine(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
-          [](base::FilePath switch_value) -> MaybeIwaLocation {
+          [](base::FilePath switch_value) -> MaybeIwaInstallSource {
             base::FilePath absolute_path =
                 base::MakeAbsoluteFilePath(switch_value);
 
@@ -98,38 +102,45 @@ void GetBundlePathFromCommandLine(
                                 " flag: '", switch_value.AsUTF8Unsafe(), "'"}));
             }
 
-            return DevModeBundle{.path = absolute_path};
+            return IsolatedWebAppInstallSource::FromDevCommandLine(
+                IwaSourceBundleDevModeWithFileOp(absolute_path,
+                                                 kDefaultBundleDevFileOp));
           },
           std::move(switch_value)),
       std::move(callback));
 }
 
-MaybeIwaLocation GetProxyUrl(const GURL& gurl) {
-  url::Origin url_origin = url::Origin::Create(gurl);
-
-  // The .is_valid() check here will also capture an empty URL.
-  if (!gurl.is_valid() || url_origin.opaque()) {
-    return base::unexpected(
-        base::StrCat({"Invalid URL provided: ", gurl.possibly_invalid_spec()}));
-  }
-
-  if (url_origin.GetURL() != gurl) {
+base::expected<url::Origin, std::string> ValidateProxyOrigin(const GURL& gurl) {
+  if (!gurl.SchemeIsHTTPOrHTTPS()) {
     return base::unexpected(base::StrCat(
-        {"Non-origin URL provided: '", gurl.possibly_invalid_spec(), "'",
-         ". Possible origin URL: '", url_origin.Serialize(), "'."}));
+        {"Proxy URL must be HTTP or HTTPS: ", gurl.possibly_invalid_spec()}));
   }
 
-  return DevModeProxy{.proxy_url = url_origin};
+  if (gurl.path() != "/") {
+    return base::unexpected(base::StrCat(
+        {"Non-origin URL provided: '", gurl.possibly_invalid_spec()}));
+  }
+
+  url::Origin url_origin = url::Origin::Create(gurl);
+  if (!network::IsUrlPotentiallyTrustworthy(gurl)) {
+    return base::unexpected(base::StrCat(
+        {"Proxy URL not trustworthy: ", gurl.possibly_invalid_spec()}));
+  }
+  return url_origin;
 }
 
-MaybeIwaLocation GetProxyUrlFromCommandLine(
+MaybeIwaInstallSource GetProxyUrlFromCommandLine(
     const base::CommandLine& command_line) {
   std::string switch_value =
       command_line.GetSwitchValueASCII(switches::kInstallIsolatedWebAppFromUrl);
   if (switch_value.empty()) {
     return std::nullopt;
   }
-  return GetProxyUrl(GURL(switch_value));
+  return ValidateProxyOrigin(GURL(switch_value))
+      .transform([](url::Origin proxy_url) {
+        return IsolatedWebAppInstallSource::FromDevCommandLine(
+            IwaSourceProxy(proxy_url));
+      });
 }
 
 }  // namespace
@@ -186,30 +197,46 @@ void IsolatedWebAppInstallationManager::Start() {
 
 void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeProxy(
     const GURL& gurl,
+    InstallSurface install_surface,
     base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
         callback) {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   CHECK(!callback.is_null());
 
   // Ensure the URL we're given is okay.
-  MaybeIwaLocation location = GetProxyUrl(gurl);
-  if (!location.has_value()) {
-    std::move(callback).Run(base::unexpected(location.error()));
+  base::expected<url::Origin, std::string> proxy_origin =
+      ValidateProxyOrigin(gurl);
+  if (!proxy_origin.has_value()) {
+    std::move(callback).Run(base::unexpected(proxy_origin.error()));
     return;
   }
 
-  InstallIsolatedWebAppFromLocation(std::move(location), std::move(callback));
+  InstallIsolatedWebAppFromInstallSource(
+      CreateInstallSource(*proxy_origin, install_surface), std::move(callback));
 }
 
 void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeBundle(
     const base::FilePath& path,
+    InstallSurface install_surface,
     base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
         callback) {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   CHECK(!callback.is_null());
 
-  InstallIsolatedWebAppFromLocation(DevModeBundle{.path = path},
-                                    std::move(callback));
+  InstallIsolatedWebAppFromInstallSource(
+      CreateInstallSource(path, install_surface), std::move(callback));
+}
+
+void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeBundle(
+    const base::ScopedTempFile* file,
+    InstallSurface install_surface,
+    base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
+        callback) {
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!callback.is_null());
+
+  InstallIsolatedWebAppFromInstallSource(
+      CreateInstallSource(file, install_surface), std::move(callback));
 }
 
 // static
@@ -278,14 +305,40 @@ void IsolatedWebAppInstallationManager::MaybeInstallIwaFromCommandLine(
 
 // static
 void IsolatedWebAppInstallationManager::
-    GetIsolatedWebAppLocationFromCommandLine(
+    GetIsolatedWebAppInstallSourceFromCommandLine(
         const base::CommandLine& command_line,
-        base::OnceCallback<void(MaybeIwaLocation)> callback) {
-  MaybeIwaLocation proxy_url = GetProxyUrlFromCommandLine(command_line);
+        base::OnceCallback<void(MaybeIwaInstallSource)> callback) {
+  MaybeIwaInstallSource proxy_url = GetProxyUrlFromCommandLine(command_line);
 
   GetBundlePathFromCommandLine(
       command_line, base::BindOnce(&OnGetBundlePathFromCommandLine,
                                    std::move(callback), std::move(proxy_url)));
+}
+
+// static
+IsolatedWebAppInstallSource
+IsolatedWebAppInstallationManager::CreateInstallSource(
+    absl::variant<base::FilePath, const base::ScopedTempFile*, url::Origin>
+        source,
+    InstallSurface surface) {
+  switch (surface) {
+    case InstallSurface::kDevUi:
+      return IsolatedWebAppInstallSource::FromDevUi(absl::visit(
+          base::Overloaded{
+              [](base::FilePath path) -> IwaSourceDevModeWithFileOp {
+                return IwaSourceBundleDevModeWithFileOp(
+                    std::move(path), kDefaultBundleDevFileOp);
+              },
+              [](const base::ScopedTempFile* temp_file)
+                  -> IwaSourceDevModeWithFileOp {
+                return IwaSourceBundleDevModeWithFileOp(
+                    temp_file->path(), IwaSourceBundleDevFileOp::kMove);
+              },
+              [](url::Origin proxy_url) -> IwaSourceDevModeWithFileOp {
+                return IwaSourceProxy(std::move(proxy_url));
+              }},
+          std::move(source)));
+  }
 }
 
 void IsolatedWebAppInstallationManager::InstallFromCommandLine(
@@ -299,18 +352,19 @@ void IsolatedWebAppInstallationManager::InstallFromCommandLine(
     return;
   }
   content::GetUIThreadTaskRunner({task_priority})
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(
-                     &GetIsolatedWebAppLocationFromCommandLine, command_line,
-                     base::BindOnce(
-                         &IsolatedWebAppInstallationManager::
-                             OnGetIsolatedWebAppLocationFromCommandLine,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(keep_alive),
-                         std::move(optional_profile_keep_alive))));
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &GetIsolatedWebAppInstallSourceFromCommandLine, command_line,
+              base::BindOnce(
+                  &IsolatedWebAppInstallationManager::
+                      OnGetIsolatedWebAppInstallSourceFromCommandLine,
+                  weak_ptr_factory_.GetWeakPtr(), std::move(keep_alive),
+                  std::move(optional_profile_keep_alive))));
 }
 
-void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromLocation(
-    MaybeIwaLocation location,
+void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromInstallSource(
+    MaybeIwaInstallSource install_source,
     base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
         callback) {
   if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
@@ -329,28 +383,25 @@ void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromLocation(
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::ISOLATED_WEB_APP_INSTALL,
       KeepAliveRestartOption::DISABLED);
-  std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive;
-  if (!profile_->IsOffTheRecord()) {
-    optional_profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-        &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppInstall);
-  }
-  InstallIsolatedWebAppFromLocation(std::move(keep_alive),
-                                    std::move(optional_profile_keep_alive),
-                                    location, std::move(callback));
+  auto optional_profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      &profile_.get(), ProfileKeepAliveOrigin::kIsolatedWebAppInstall);
+  InstallIsolatedWebAppFromInstallSource(std::move(keep_alive),
+                                         std::move(optional_profile_keep_alive),
+                                         install_source, std::move(callback));
 }
 
-void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromLocation(
+void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromInstallSource(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-    MaybeIwaLocation location,
+    MaybeIwaInstallSource install_source,
     base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
         callback) {
   ASSIGN_OR_RETURN(
-      std::optional<IsolatedWebAppLocation> optional_location, location,
-      [&](std::string error) {
+      std::optional<IsolatedWebAppInstallSource> optional_install_source,
+      install_source, [&](std::string error) {
         std::move(callback).Run(base::unexpected(std::move(error)));
       });
-  if (!optional_location.has_value()) {
+  if (!optional_install_source.has_value()) {
     return;
   }
 
@@ -360,23 +411,23 @@ void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromLocation(
     return;
   }
 
-  IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
-      *optional_location,
+  IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
+      optional_install_source->source(),
       base::BindOnce(
           &IsolatedWebAppInstallationManager::OnGetIsolatedWebAppUrlInfo,
           weak_ptr_factory_.GetWeakPtr(), std::move(keep_alive),
-          std::move(optional_profile_keep_alive), *optional_location,
+          std::move(optional_profile_keep_alive), *optional_install_source,
           std::move(callback)));
 }
 
 void IsolatedWebAppInstallationManager::
-    OnGetIsolatedWebAppLocationFromCommandLine(
+    OnGetIsolatedWebAppInstallSourceFromCommandLine(
         std::unique_ptr<ScopedKeepAlive> keep_alive,
         std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-        MaybeIwaLocation location) {
-  InstallIsolatedWebAppFromLocation(
+        MaybeIwaInstallSource install_source) {
+  InstallIsolatedWebAppFromInstallSource(
       std::move(keep_alive), std::move(optional_profile_keep_alive),
-      std::move(location),
+      std::move(install_source),
       base::BindOnce(
           &IsolatedWebAppInstallationManager::ReportInstallationResult,
           weak_ptr_factory_.GetWeakPtr()));
@@ -385,7 +436,7 @@ void IsolatedWebAppInstallationManager::
 void IsolatedWebAppInstallationManager::OnGetIsolatedWebAppUrlInfo(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-    const IsolatedWebAppLocation& location,
+    const IsolatedWebAppInstallSource& install_source,
     base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)> callback,
     base::expected<IsolatedWebAppUrlInfo, std::string> url_info) {
   RETURN_IF_ERROR(url_info, [&](std::string error) {
@@ -394,7 +445,7 @@ void IsolatedWebAppInstallationManager::OnGetIsolatedWebAppUrlInfo(
   });
 
   provider_->scheduler().InstallIsolatedWebApp(
-      url_info.value(), location,
+      url_info.value(), install_source,
       /*expected_version=*/std::nullopt, std::move(keep_alive),
       std::move(optional_profile_keep_alive),
       base::BindOnce(
@@ -427,7 +478,7 @@ void IsolatedWebAppInstallationManager::MaybeScheduleGarbageCollection() {
   // We are migrating from `ExtensionsPref::kStorageGarbageCollect` to
   // `prefs::kShouldGarbageCollectStoragePartitions`. During the migration,
   // either one of the prefs can trigger garbage collection.
-  // TODO(crbug.com/1463825): Delete `ExtensionsPref::kStorageGarbageCollect`.
+  // TODO(crbug.com/40922689): Delete `ExtensionsPref::kStorageGarbageCollect`.
   if (profile_->GetPrefs()->GetBoolean(
           prefs::kShouldGarbageCollectStoragePartitions) ||
       provider_->extensions_manager().ShouldGarbageCollectStoragePartitions()) {

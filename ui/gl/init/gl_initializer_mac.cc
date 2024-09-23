@@ -21,23 +21,19 @@
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/init/gl_display_initializer.h"
-
-#if defined(USE_EGL)
 #include "ui/gl/gl_egl_api_implementation.h"
-#endif  // defined(USE_EGL)
 
 namespace gl {
 namespace init {
 
 namespace {
 
-#if defined(USE_EGL)
 const char kGLESv2ANGLELibraryName[] = "libGLESv2.dylib";
 const char kEGLANGLELibraryName[] = "libEGL.dylib";
 
 bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
 #if BUILDFLAG(USE_STATIC_ANGLE)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 
   // Some unit test targets depend on Angle/SwiftShader but aren't built
@@ -107,14 +103,12 @@ bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
 
   return true;
 }
-#endif  // defined(USE_EGL)
 
 }  // namespace
 
 GLDisplay* InitializeGLOneOffPlatform(gl::GpuPreference gpu_preference) {
   GLDisplayEGL* display = GetDisplayEGL(gpu_preference);
   switch (GetGLImplementation()) {
-#if defined(USE_EGL)
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
       if (!InitializeDisplay(display, EGLDisplayPlatform(0))) {
@@ -122,7 +116,7 @@ GLDisplay* InitializeGLOneOffPlatform(gl::GpuPreference gpu_preference) {
         return nullptr;
       }
       break;
-#endif  // defined(USE_EGL)
+
     default:
       break;
   }
@@ -142,18 +136,17 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
   base::ScopedAllowBlocking allow_blocking;
 
   switch (implementation.gl) {
-#if defined(USE_EGL)
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
       return InitializeStaticEGLInternal(implementation);
-#endif  // #if defined(USE_EGL)
+
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
       SetGLImplementationParts(implementation);
       InitializeStaticGLBindingsGL();
       return true;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return false;
@@ -161,11 +154,10 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
 
 void ShutdownGLPlatform(GLDisplay* display) {
   ClearBindingsGL();
-#if defined(USE_EGL)
+
   if (display)
     display->Shutdown();
   ClearBindingsEGL();
-#endif  // defined(USE_EGL)
 }
 
 }  // namespace init

@@ -26,9 +26,14 @@ AdAuctionResultMetrics::~AdAuctionResultMetrics() {
   // Check that every non-skipped auction should complete (but skip the check if
   // clamping may have occurred).
   if (num_requested_auctions_ <
-      std::numeric_limits<decltype(num_requested_auctions_)::type>::max()) {
-    DCHECK_EQ(num_auctions_not_run_due_to_auction_limit_.RawValue(),
-              (num_requested_auctions_ - num_completed_auctions_).RawValue());
+          std::numeric_limits<decltype(num_requested_auctions_)::type>::max() &&
+      num_auctions_not_run_due_to_auction_limit_.RawValue() !=
+          (num_requested_auctions_ - num_completed_auctions_).RawValue()) {
+    // TODO(crbug.com/354735928): Add back removed DCHECK once the
+    // "RenderDocument on main frames" feature ships. In the meantime, if we're
+    // here, we've encountered racy page destruction, so metrics may be wrong.
+    // Don't report metrics in that case.
+    return;
   }
   base::UmaHistogramCounts100("Ads.InterestGroup.Auction.NumAuctionsPerPage",
                               num_completed_auctions_);

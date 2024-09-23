@@ -85,7 +85,6 @@ AsyncFileUtil* IsolatedFileSystemBackend::GetAsyncFileUtil(
     default:
       NOTREACHED();
   }
-  return nullptr;
 }
 
 WatcherManager* IsolatedFileSystemBackend::GetWatcherManager(

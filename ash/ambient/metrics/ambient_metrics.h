@@ -10,9 +10,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ambient/ambient_mode_photo_source.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
-
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "ui/views/view.h"
@@ -45,6 +45,20 @@ enum class AmbientVideoSessionStatus {
 // See summary in histograms.xml for why 15 seconds is used.
 constexpr base::TimeDelta kMetricsStartupTimeMax = base::Seconds(15);
 
+// Must be kept in sync with the `AmbientVideoDlcInstallLabels` variants
+// in tool/metrics/histograms/metadata/ash/histograms.xml.
+//
+// Install that happens when it's time to launch one of the video screen savers
+// (on demand). If a "Background" installation succeeded in the past, the
+// foreground installation will succeed and be a trivial operation.
+inline constexpr char kAmbientVideoDlcForegroundLabel[] = "Foreground";
+
+// Install that happens shortly after login. In most cases, this should occur
+// before the screen saver is first launched into the foreground. If the
+// background install fails, it's not user-facing and another attempt will be
+// made with the "Foreground".
+inline constexpr char kAmbientVideoDlcBackgroundLabel[] = "Background";
+
 ASH_EXPORT AmbientModePhotoSource
 AmbientSettingsToPhotoSource(const AmbientSettings& settings);
 
@@ -56,16 +70,15 @@ ASH_EXPORT void RecordAmbientModeTimeElapsed(
     bool tablet_mode,
     const AmbientUiSettings& ui_settings);
 
+ASH_EXPORT void RecordAmbientModeTopicSource(
+    ash::personalization_app::mojom::TopicSource topic_source);
+
 ASH_EXPORT void RecordAmbientModeTotalNumberOfAlbums(int num_albums);
 
 ASH_EXPORT void RecordAmbientModeSelectedNumberOfAlbums(int num_albums);
 
 ASH_EXPORT void RecordAmbientModeAnimationSmoothness(
     int smoothness,
-    const AmbientUiSettings& ui_settings);
-
-ASH_EXPORT void RecordAmbientModePhotoOrientationMatch(
-    int percentage_match,
     const AmbientUiSettings& ui_settings);
 
 ASH_EXPORT void RecordAmbientModeStartupTime(

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromeos/ash/components/network/network_sms_handler.h"
 
 #include <stddef.h>
@@ -11,7 +16,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
@@ -303,9 +307,7 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::MessageReceived(
     new_dictionary.Set(kTimestampKey, *timestamp);
   }
 
-  if (features::IsSuppressTextMessagesEnabled()) {
-    new_dictionary.Set(kNetworkGuidKey, last_active_network_guid_);
-  }
+  new_dictionary.Set(kNetworkGuidKey, last_active_network_guid_);
 
   host_->MessageReceived(new_dictionary);
 }
@@ -319,7 +321,6 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
 
 void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
     SetLastActiveNetwork(const NetworkState* network_state) {
-  CHECK(features::IsSuppressTextMessagesEnabled());
   if (!network_state) {
     return;
   }
@@ -352,7 +353,6 @@ void NetworkSmsHandler::Init() {
 }
 
 void NetworkSmsHandler::Init(NetworkStateHandler* network_state_handler) {
-  CHECK(features::IsSuppressTextMessagesEnabled());
   network_state_handler_ = network_state_handler;
   network_state_handler_observation_.Observe(network_state_handler_);
   Init();
@@ -385,14 +385,12 @@ void NetworkSmsHandler::OnPropertyChanged(const std::string& name,
     UpdateDevices(value.GetList());
   }
 
-  if (name == shill::kIccidProperty && value.is_string() &&
-      features::IsSuppressTextMessagesEnabled()) {
+  if (name == shill::kIccidProperty && value.is_string()) {
     OnActiveDeviceIccidChanged(value.GetString());
   }
 }
 
 void NetworkSmsHandler::OnActiveDeviceIccidChanged(const std::string& iccid) {
-  CHECK(features::IsSuppressTextMessagesEnabled());
   if (!device_handler_ || iccid.empty()) {
     return;
   }
@@ -413,7 +411,6 @@ void NetworkSmsHandler::OnActiveDeviceIccidChanged(const std::string& iccid) {
 
 void NetworkSmsHandler::ActiveNetworksChanged(
     const std::vector<const NetworkState*>& active_networks) {
-  CHECK(features::IsSuppressTextMessagesEnabled());
   for (const NetworkState* network : active_networks) {
     if (network->type() == shill::kTypeCellular && device_handler_) {
       device_handler_->SetLastActiveNetwork(network);
@@ -432,13 +429,6 @@ void NetworkSmsHandler::AddReceivedMessage(const base::Value::Dict& message) {
 
 void NetworkSmsHandler::NotifyMessageReceived(
     const base::Value::Dict& message) {
-  if (!ash::features::IsSuppressTextMessagesEnabled()) {
-    for (auto& observer : observers_) {
-      observer.MessageReceived(message);
-    }
-    return;
-  }
-
   TextMessageData message_data{GetStringOptional(message, kNumberKey),
                                GetStringOptional(message, kTextKey),
                                GetStringOptional(message, kTimestampKey)};
@@ -534,14 +524,13 @@ void NetworkSmsHandler::DevicePropertiesCallback(
   device_handler_ = std::make_unique<ModemManager1NetworkSmsDeviceHandler>(
       this, *service_name, object_path);
 
-  if (features::IsSuppressTextMessagesEnabled()) {
     OnActiveDeviceIccidChanged(
         GetStringOptional(*properties, shill::kIccidProperty)
             .value_or(std::string()));
     device_handler_->SetLastActiveNetwork(
         network_state_handler_->ConnectedNetworkByType(
             NetworkTypePattern::Cellular()));
-  }
+
   if (!cellular_device_path_.empty()) {
     ShillDeviceClient::Get()->RemovePropertyChangedObserver(
         dbus::ObjectPath(cellular_device_path_), this);

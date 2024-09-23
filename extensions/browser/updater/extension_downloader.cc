@@ -143,7 +143,7 @@ bool IncrementAuthUserIndex(GURL* url) {
   std::vector<std::string> new_query_parts;
   url::Component query(0, old_query.length());
   url::Component key, value;
-  while (url::ExtractQueryKeyValue(old_query.c_str(), &query, &key, &value)) {
+  while (url::ExtractQueryKeyValue(old_query, &query, &key, &value)) {
     std::string key_string = old_query.substr(key.begin, key.len);
     std::string value_string = old_query.substr(value.begin, value.len);
     if (key_string == kAuthUserQueryKey) {
@@ -1466,9 +1466,9 @@ bool ExtensionDownloader::IterateFetchCredentialsAfterFailure(
       }
       return false;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -6,6 +6,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/trace_event/trace_event.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/download/internal/background_service/jni_headers/BatteryStatusListenerAndroid_jni.h"
 
 namespace download {

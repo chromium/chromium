@@ -33,28 +33,13 @@
 namespace blink {
 
 inline const ComputedStyle* Node::GetComputedStyle() const {
-  if (IsElementNode()) {
-    return GetComputedStyleAssumingElement();
+  if (const auto* element = DynamicTo<Element>(this)) {
+    return element->GetComputedStyle();
   }
   // Text nodes and Document.
   if (LayoutObject* layout_object = GetLayoutObject())
     return layout_object->Style();
   return nullptr;
-}
-
-inline const ComputedStyle& Element::ComputedStyleRef() const {
-  const ComputedStyle* style = GetComputedStyle();
-  DCHECK(style);
-  return *style;
-}
-
-inline const ComputedStyle* Node::GetComputedStyleAssumingElement() const {
-  DCHECK(IsElementNode());
-  return data_->GetComputedStyle();
-}
-
-inline const ComputedStyle* Element::GetComputedStyle() const {
-  return GetComputedStyleAssumingElement();
 }
 
 }  // namespace blink

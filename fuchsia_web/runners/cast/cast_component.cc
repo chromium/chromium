@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -70,7 +71,7 @@ bool CastComponent::Params::AreComplete() const {
   return true;
 }
 
-CastComponent::CastComponent(base::StringPiece debug_name,
+CastComponent::CastComponent(std::string_view debug_name,
                              WebContentRunner* runner,
                              CastComponent::Params params,
                              bool is_headless)
@@ -124,7 +125,7 @@ void CastComponent::StartComponent() {
   }
 
   if (IsAppConfigForCastStreaming(application_config_)) {
-    // TODO(crbug.com/1082821): Remove this once the Cast Streaming Receiver
+    // TODO(crbug.com/40131115): Remove this once the Cast Streaming Receiver
     // component has been implemented.
 
     // Register the MessagePort for the Cast Streaming Receiver.
@@ -163,7 +164,7 @@ void CastComponent::StartComponent() {
 
   // Apply application-specific web permissions to the fuchsia.web.Frame.
   if (application_config_.has_permissions()) {
-    // TODO(crbug.com/1136994): Replace this with the PermissionManager API
+    // TODO(crbug.com/40724536): Replace this with the PermissionManager API
     // when available.
     const std::string origin =
         GURL(application_config_.web_url()).DeprecatedGetOriginAsURL().spec();

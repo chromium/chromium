@@ -5,8 +5,8 @@
 #include "remoting/host/file_transfer/session_file_operations_handler.h"
 
 #include <memory>
-
 #include <optional>
+
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"

@@ -1,0 +1,35 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("user_policy") {
+  sources = [
+    "user_policy_prompt_coordinator.h",
+    "user_policy_prompt_coordinator.mm",
+    "user_policy_prompt_coordinator_delegate.h",
+    "user_policy_prompt_mediator.h",
+    "user_policy_prompt_mediator.mm",
+    "user_policy_prompt_presenter.h",
+    "user_policy_prompt_view_controller.h",
+    "user_policy_prompt_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/public/base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy/model/resources",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/elements:activity_overlay",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/signin",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

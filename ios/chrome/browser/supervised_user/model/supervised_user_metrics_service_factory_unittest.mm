@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_metrics_service_factory.h"
 
 #import "components/supervised_user/core/browser/supervised_user_metrics_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -34,7 +34,7 @@ TEST_F(SupervisedUserMetricsServiceFactoryTest, CreateService) {
 TEST_F(SupervisedUserMetricsServiceFactoryTest,
        ReturnsNullOnOffTheRecordBrowserState) {
   ChromeBrowserState* otr_browser_state =
-      browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories({});
+      browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories();
   CHECK(otr_browser_state);
   supervised_user::SupervisedUserMetricsService* service =
       SupervisedUserMetricsServiceFactory::GetForBrowserState(

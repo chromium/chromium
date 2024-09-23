@@ -32,6 +32,10 @@ const int
     ContextualSearchFieldTrial::kContextualSearchDefaultSampleSurroundingSize =
         400;
 
+BASE_FEATURE(kContextualSearchWithCredentialsForDebug,
+             "ContextualSearchWithCredentialsForDebug",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ContextualSearchFieldTrial::ContextualSearchFieldTrial()
     : is_resolver_url_prefix_cached_(false),
       is_surrounding_size_cached_(false),

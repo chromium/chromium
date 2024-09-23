@@ -4,12 +4,12 @@
 
 /** @fileoverview Suite of tests for extension-item. */
 
-import type {ExtensionsItemElement, IronIconElement} from 'chrome://extensions/extensions.js';
+import type {CrIconElement, ExtensionsItemElement} from 'chrome://extensions/extensions.js';
 import {navigation, Page} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {createExtensionInfo, MockItemDelegate, testVisible} from './test_util.js';
@@ -95,7 +95,7 @@ suite('ExtensionItemTest', function() {
     assertTrue(item.$.enableToggle.checked);
     item.set('data.state', 'DISABLED');
     assertFalse(item.$.enableToggle.checked);
-    item.set('data.state', 'BLACKLISTED');
+    item.set('data.state', 'BLOCKLISTED');
     assertFalse(item.$.enableToggle.checked);
   });
 
@@ -130,14 +130,14 @@ suite('ExtensionItemTest', function() {
   });
 
   /** Tests that the delegate methods are correctly called. */
-  test('ClickableItems', function() {
+  test('ClickableItems', async function() {
     item.set('inDevMode', true);
 
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.$.removeButton, 'deleteItem', [item.data.id]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.$.enableToggle, 'setItemEnabled', [item.data.id, false]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!.querySelector<HTMLElement>(
             '#inspect-views a[is="action-link"]')!,
         'inspectItemView', [item.data.id, item.data.views[0]]);
@@ -163,7 +163,7 @@ suite('ExtensionItemTest', function() {
 
     item.set('data.disableReasons.corruptInstall', true);
     flush();
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!.querySelector<HTMLElement>('#repair-button')!,
         'repairItem', [item.data.id]);
     testVisible(item, '#enableToggle', false);
@@ -172,7 +172,7 @@ suite('ExtensionItemTest', function() {
 
     item.set('data.state', chrome.developerPrivate.ExtensionState.TERMINATED);
     flush();
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!.querySelector<HTMLElement>(
             '#terminated-reload-button')!,
         'reloadItem', [item.data.id], Promise.resolve());
@@ -183,56 +183,79 @@ suite('ExtensionItemTest', function() {
   });
 
   /** Tests that the reload button properly fires the load-error event. */
-  test(
-      'FailedReloadFiresLoadError', async function() {
-        item.set('inDevMode', true);
-        item.set('data.location', chrome.developerPrivate.Location.UNPACKED);
-        flush();
-        testVisible(item, '#dev-reload-button', true);
+  test('FailedReloadFiresLoadError', async function() {
+    item.set('inDevMode', true);
+    item.set('data.location', chrome.developerPrivate.Location.UNPACKED);
+    flush();
+    testVisible(item, '#dev-reload-button', true);
 
-        // Check clicking the reload button. The reload button should fire a
-        // load-error event if and only if the reload fails (indicated by a
-        // rejected promise).
-        // This is a bit of a pain to verify because the promises finish
-        // asynchronously, so we have to use setTimeout()s.
-        let firedLoadError = false;
-        item.addEventListener('load-error', () => {
-          firedLoadError = true;
+    // Check clicking the reload button. The reload button should fire a
+    // load-error event if and only if the reload fails (indicated by a
+    // rejected promise).
+    // This is a bit of a pain to verify because the promises finish
+    // asynchronously, so we have to use setTimeout()s.
+    let firedLoadError = false;
+    item.addEventListener('load-error', () => {
+      firedLoadError = true;
+    });
+
+    // This is easier to test with a TestBrowserProxy-style delegate.
+    const proxyDelegate = new TestService();
+    item.delegate = proxyDelegate;
+
+    function verifyEventPromise(expectCalled: boolean): Promise<void> {
+      return new Promise((resolve, _reject) => {
+        setTimeout(() => {
+          assertEquals(expectCalled, firedLoadError);
+          resolve();
         });
-
-        // This is easier to test with a TestBrowserProxy-style delegate.
-        const proxyDelegate = new TestService();
-        item.delegate = proxyDelegate;
-
-        function verifyEventPromise(expectCalled: boolean): Promise<void> {
-          return new Promise((resolve, _reject) => {
-            setTimeout(() => {
-              assertEquals(expectCalled, firedLoadError);
-              resolve();
-            });
-          });
-        }
-
-        item.shadowRoot!.querySelector<HTMLElement>(
-                            '#dev-reload-button')!.click();
-        let id = await proxyDelegate.whenCalled('reloadItem');
-        assertEquals(item.data.id, id);
-        await verifyEventPromise(false);
-        proxyDelegate.resetResolver('reloadItem');
-        proxyDelegate.setForceReloadItemError(true);
-        item.shadowRoot!.querySelector<HTMLElement>(
-                            '#dev-reload-button')!.click();
-        id = await proxyDelegate.whenCalled('reloadItem');
-        assertEquals(item.data.id, id);
-        return verifyEventPromise(true);
       });
+    }
+
+    item.shadowRoot!.querySelector<HTMLElement>('#dev-reload-button')!.click();
+    let id = await proxyDelegate.whenCalled('reloadItem');
+    assertEquals(item.data.id, id);
+    await verifyEventPromise(false);
+    proxyDelegate.resetResolver('reloadItem');
+    proxyDelegate.setForceReloadItemError(true);
+    item.shadowRoot!.querySelector<HTMLElement>('#dev-reload-button')!.click();
+    id = await proxyDelegate.whenCalled('reloadItem');
+    assertEquals(item.data.id, id);
+    return verifyEventPromise(true);
+  });
+
+  test('Description', function() {
+    // Description is visible if there are no warnings.
+    assertTrue(isChildVisible(item, '#description'));
+
+    // Description is hidden if there is a severe warning.
+    item.set('data.disableReasons.corruptInstall', true);
+    flush();
+    assertFalse(isChildVisible(item, '#description'));
+
+    // Description is hidden if there is a MV2 deprecation warning.
+    item.set('data.disableReasons.corruptInstall', false);
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
+    flush();
+    assertFalse(isChildVisible(item, '#description'));
+
+    // Description is hidden if there is an allowlist warning.
+    item.set('data.disableReasons.unsupportedManifestVersion', false);
+    item.set('data.showSafeBrowsingAllowlistWarning', true);
+    flush();
+    assertFalse(isChildVisible(item, '#description'));
+  });
 
   test('Warnings', function() {
+    // Severe warnings.
     const kCorrupt = 1 << 0;
     const kSuspicious = 1 << 1;
-    const kBlacklisted = 1 << 2;
+    const kBlocklisted = 1 << 2;
     const kRuntime = 1 << 3;
+    // Allowlist warning.
     const kSafeBrowsingAllowlist = 1 << 4;
+    // MV2 deprecation warning.
+    const kMv2Deprecation = 1 << 5;
 
     function assertWarnings(mask: number) {
       assertEquals(
@@ -240,17 +263,21 @@ suite('ExtensionItemTest', function() {
       assertEquals(
           !!(mask & kSuspicious), isChildVisible(item, '#suspicious-warning'));
       assertEquals(
-          !!(mask & kBlacklisted),
-          isChildVisible(item, '#blacklisted-warning'));
+          !!(mask & kBlocklisted),
+          isChildVisible(item, '#blocklisted-warning'));
       assertEquals(
           !!(mask & kRuntime), isChildVisible(item, '#runtime-warnings'));
       assertEquals(
           !!(mask & kSafeBrowsingAllowlist),
           isChildVisible(item, '#allowlist-warning'));
+      assertEquals(
+          !!(mask & kMv2Deprecation),
+          isChildVisible(item, '#mv2-deprecation-warning'));
     }
 
     assertWarnings(0);
 
+    // Show severe warnings by updating the corresponding properties.
     item.set('data.disableReasons.corruptInstall', true);
     flush();
     assertWarnings(kCorrupt);
@@ -259,11 +286,11 @@ suite('ExtensionItemTest', function() {
     flush();
     assertWarnings(kCorrupt | kSuspicious);
 
-    item.set('data.blacklistText', 'This item is blacklisted');
+    item.set('data.blocklistText', 'This item is blocklisted');
     flush();
-    assertWarnings(kCorrupt | kSuspicious | kBlacklisted);
+    assertWarnings(kCorrupt | kSuspicious | kBlocklisted);
 
-    item.set('data.blacklistText', null);
+    item.set('data.blocklistText', null);
     flush();
     assertWarnings(kCorrupt | kSuspicious);
 
@@ -271,21 +298,41 @@ suite('ExtensionItemTest', function() {
     flush();
     assertWarnings(kCorrupt | kSuspicious | kRuntime);
 
+    // Reset all properties affecting warnings.
     item.set('data.disableReasons.corruptInstall', false);
     item.set('data.disableReasons.suspiciousInstall', false);
     item.set('data.runtimeWarnings', []);
     flush();
     assertWarnings(0);
 
-    item.set('data.showSafeBrowsingAllowlistWarning', true);
+    // Show MV2 deprecation warning.
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
     flush();
-    assertWarnings(kSafeBrowsingAllowlist);
-
-    // Test that the allowlist warning is not shown when there is already a
-    // warning message.
+    assertWarnings(kMv2Deprecation);
+    // MV2 deprecation warning is hidden if there are any severe warnings.
     item.set('data.disableReasons.suspiciousInstall', true);
     flush();
     assertWarnings(kSuspicious);
+
+    // Reset all properties affecting warnings.
+    item.set('data.disableReasons.unsupportedManifestVersion', false);
+    item.set('data.disableReasons.suspiciousInstall', false);
+    flush();
+    assertWarnings(0);
+
+    // Show allowlist warning.
+    item.set('data.showSafeBrowsingAllowlistWarning', true);
+    flush();
+    assertWarnings(kSafeBrowsingAllowlist);
+    // Allowlist warning is not visible if there are any severe warnings.
+    item.set('data.disableReasons.suspiciousInstall', true);
+    flush();
+    assertWarnings(kSuspicious);
+    // Allowlist warning is not visible if there is a MV2 deprecation warning
+    item.set('data.disableReasons.suspiciousInstall', false);
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
+    flush();
+    assertWarnings(kMv2Deprecation);
   });
 
   test('SourceIndicator', function() {
@@ -293,8 +340,8 @@ suite('ExtensionItemTest', function() {
     item.set('data.location', 'UNPACKED');
     flush();
     assertTrue(isChildVisible(item, '#source-indicator'));
-    const icon = item.shadowRoot!.querySelector<IronIconElement>(
-        '#source-indicator iron-icon');
+    const icon = item.shadowRoot!.querySelector<CrIconElement>(
+        '#source-indicator cr-icon');
     assertTrue(!!icon);
     assertEquals('extensions-icons:unpacked', icon.icon);
 
@@ -334,8 +381,8 @@ suite('ExtensionItemTest', function() {
     item.set('data.userMayModify', true);
     flush();
 
-    // Test case of a blacklisted extension.
-    item.set('data.state', 'BLACKLISTED');
+    // Test case of a blocklisted extension.
+    item.set('data.state', 'BLOCKLISTED');
     flush();
     assertTrue(item.$.enableToggle.disabled);
     // Reset state.
@@ -412,53 +459,52 @@ suite('ExtensionItemTest', function() {
     testVisible(item, '#repair-button', false);
   });
 
-  test(
-      'InspectableViewSortOrder', function() {
-        function getUrl(path: string) {
-          return `chrome-extension://${extensionData.id}/${path}`;
-        }
-        item.set('data.views', [
-          {
-            type: chrome.developerPrivate.ViewType.EXTENSION_POPUP,
-            url: getUrl('popup.html'),
-          },
-          {
-            type: chrome.developerPrivate.ViewType.EXTENSION_BACKGROUND_PAGE,
-            url: getUrl('_generated_background_page.html'),
-          },
-          {
-            type: chrome.developerPrivate.ViewType
-                      .EXTENSION_SERVICE_WORKER_BACKGROUND,
-            url: getUrl('sw.js'),
-          },
-        ]);
-        item.set('inDevMode', true);
-        flush();
+  test('InspectableViewSortOrder', function() {
+    function getUrl(path: string) {
+      return `chrome-extension://${extensionData.id}/${path}`;
+    }
+    item.set('data.views', [
+      {
+        type: chrome.developerPrivate.ViewType.EXTENSION_POPUP,
+        url: getUrl('popup.html'),
+      },
+      {
+        type: chrome.developerPrivate.ViewType.EXTENSION_BACKGROUND_PAGE,
+        url: getUrl('_generated_background_page.html'),
+      },
+      {
+        type: chrome.developerPrivate.ViewType
+                  .EXTENSION_SERVICE_WORKER_BACKGROUND,
+        url: getUrl('sw.js'),
+      },
+    ]);
+    item.set('inDevMode', true);
+    flush();
 
-        // Check that when multiple views are available, the service worker is
-        // sorted first.
-        assertEquals(
-            'service worker,',
-            item.shadowRoot!
-                .querySelector<HTMLElement>(
-                    '#inspect-views a:first-of-type')!.textContent!.trim());
-      });
+    // Check that when multiple views are available, the service worker is
+    // sorted first.
+    assertEquals(
+        'service worker,',
+        item.shadowRoot!
+            .querySelector<HTMLElement>(
+                '#inspect-views a:first-of-type')!.textContent!.trim());
+  });
 
   // Test that the correct tooltip text is shown when the enable toggle is
   // hovered over, depending on if the extension is enabled/disabled and its
   // permissions.
-  test('EnableExtensionToggleTooltips', function() {
-    const paperTooltip =
+  test('EnableExtensionToggleTooltips', async() => {
+    const crTooltip =
         item.shadowRoot!.querySelector<HTMLElement>('#enable-toggle-tooltip')!;
     testVisible(item, '#enable-toggle-tooltip', false);
 
     item.$.enableToggle.dispatchEvent(
-        new MouseEvent('mouseenter', {bubbles: true, composed: true}));
-    flush();
+        new CustomEvent('pointerenter', {bubbles: true, composed: true}));
+    await microtasksFinished();
     testVisible(item, '#enable-toggle-tooltip', true);
     assertEquals(
         loadTimeData.getString('enableToggleTooltipEnabled'),
-        paperTooltip.textContent!.trim());
+        crTooltip.textContent!.trim());
 
     item.set(
         'data.permissions',
@@ -466,12 +512,12 @@ suite('ExtensionItemTest', function() {
     flush();
     assertEquals(
         loadTimeData.getString('enableToggleTooltipEnabledWithSiteAccess'),
-        paperTooltip.textContent!.trim());
+        crTooltip.textContent!.trim());
 
     item.set('data.state', 'DISABLED');
     flush();
     assertEquals(
         loadTimeData.getString('enableToggleTooltipDisabled'),
-        paperTooltip.textContent!.trim());
+        crTooltip.textContent!.trim());
   });
 });

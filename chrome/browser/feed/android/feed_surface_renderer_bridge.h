@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_FEED_ANDROID_FEED_SURFACE_RENDERER_BRIDGE_H_
 #define CHROME_BROWSER_FEED_ANDROID_FEED_SURFACE_RENDERER_BRIDGE_H_
 
+#include <string_view>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -39,9 +41,9 @@ class FeedSurfaceRendererBridge : public ::feed::SurfaceRenderer {
 
   // SurfaceRenderer implementation.
   void StreamUpdate(const feedui::StreamUpdate& update) override;
-  void ReplaceDataStoreEntry(base::StringPiece key,
-                             base::StringPiece data) override;
-  void RemoveDataStoreEntry(base::StringPiece key) override;
+  void ReplaceDataStoreEntry(std::string_view key,
+                             std::string_view data) override;
+  void RemoveDataStoreEntry(std::string_view key) override;
 
   ReliabilityLoggingBridge& GetReliabilityLoggingBridge() override;
 

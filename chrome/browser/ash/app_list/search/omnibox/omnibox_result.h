@@ -38,6 +38,7 @@ class OmniboxResult : public ChromeSearchResult,
   OmniboxResult& operator=(const OmniboxResult&) = delete;
 
   // ChromeSearchResult:
+  std::optional<GURL> url() const override;
   void Open(int event_flags) override;
 
   // BitmapFetcherDelegate:

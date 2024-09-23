@@ -82,6 +82,12 @@ class Statement;
 // Default Search Provider ID        The id of the default search provider.
 // Builtin Keyword Version           The version of builtin keywords data.
 // Starter Pack Keyword Version      The version of starter pack data.
+// Builtin Keyword Country           The country associated with the builtin
+//                                   keywords data, stored as a country ID.
+// Builtin Keyword Milestone         The version number of Chrome milestone when
+//                                   the keyword data has been last merged into
+//                                   the database. Written between Chrome M122
+//                                   and M129.
 //
 class KeywordTable : public WebDatabaseTable {
  public:
@@ -135,8 +141,7 @@ class KeywordTable : public WebDatabaseTable {
   int GetBuiltinKeywordDataVersion();
 
   // Chrome milestone when the built-in keywords were last updated.
-  bool SetBuiltinKeywordMilestone(int milestone);
-  int GetBuiltinKeywordMilestone();
+  bool ClearBuiltinKeywordMilestone();
 
   // Country associated with the built-in keywords, stored as a country ID,
   // see `country_codes::CountryStringToCountryID()`.

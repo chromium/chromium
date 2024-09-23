@@ -17,12 +17,18 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(wtf_size_t num_fields) {
 PhysicalFragmentRareData::PhysicalFragmentRareData(
     const PhysicalRect* scrollable_overflow,
     const PhysicalBoxStrut* borders,
+    const PhysicalBoxStrut* scrollbar,
     const PhysicalBoxStrut* padding,
     std::optional<PhysicalRect> inflow_bounds,
     BoxFragmentBuilder& builder,
     wtf_size_t num_fields)
     : table_collapsed_borders_(builder.table_collapsed_borders_),
-      mathml_paint_info_(builder.mathml_paint_info_) {
+      mathml_paint_info_(builder.mathml_paint_info_),
+      reading_flow_elements_(
+          builder.reading_flow_elements_.size()
+              ? MakeGarbageCollected<HeapVector<Member<Element>>>(
+                    builder.reading_flow_elements_)
+              : nullptr) {
   field_list_.ReserveInitialCapacity(num_fields);
 
   // Each field should be processed in order of FieldId to avoid vector
@@ -34,6 +40,9 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
   }
   if (borders) {
     SetField(FieldId::kBorders).borders = *borders;
+  }
+  if (scrollbar) {
+    SetField(FieldId::kScrollbar).scrollbar = *scrollbar;
   }
   if (padding) {
     SetField(FieldId::kPadding).padding = *padding;
@@ -100,6 +109,7 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
 
   SET_IF_EXISTS(kScrollableOverflow, scrollable_overflow, other);
   SET_IF_EXISTS(kBorders, borders, other);
+  SET_IF_EXISTS(kScrollbar, scrollbar, other);
   SET_IF_EXISTS(kPadding, padding, other);
   SET_IF_EXISTS(kInflowBounds, inflow_bounds, other);
   CLONE_IF_EXISTS(kFrameSetLayoutData, frame_set_layout_data, other);
@@ -127,6 +137,7 @@ PhysicalFragmentRareData::~PhysicalFragmentRareData() = default;
   switch (type) {                                                           \
     FUNC(kScrollableOverflow, scrollable_overflow);                         \
     FUNC(kBorders, borders);                                                \
+    FUNC(kScrollbar, scrollbar);                                            \
     FUNC(kPadding, padding);                                                \
     FUNC(kInflowBounds, inflow_bounds);                                     \
     FUNC(kFrameSetLayoutData, frame_set_layout_data);                       \

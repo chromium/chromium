@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -16,6 +17,7 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/actions/actions.h"
+#include "ui/base/metadata/metadata_types.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/native_theme/native_theme.h"
@@ -93,7 +95,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   // allow callers to specify a OnceClosure or RepeatingClosure if they don't
   // care about the callback arg.
   //
-  // TODO(crbug.com/772945): Re-evaluate if this class can/should be converted
+  // TODO(crbug.com/41348855): Re-evaluate if this class can/should be converted
   // to a type alias + various helpers or overloads to support the
   // RepeatingClosure case.
   class VIEWS_EXPORT PressedCallback {
@@ -156,7 +158,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   static ButtonState GetButtonStateFrom(ui::NativeTheme::State state);
 
-  void SetTooltipText(const std::u16string& tooltip_text);
+  virtual void SetTooltipText(const std::u16string& tooltip_text);
   const std::u16string& GetTooltipText() const;
 
   // Tag is now a property. These accessors are deprecated. Use GetTag() and
@@ -207,7 +209,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   void SetHotTracked(bool is_hot_tracked);
   bool IsHotTracked() const;
 
-  // TODO(crbug/1266066): These property accessors and tag_ field should be
+  // TODO(crbug.com/40801855): These property accessors and tag_ field should be
   // removed and use SetID()/GetID from the ancestor View class.
   void SetTag(int value);
   int GetTag() const;
@@ -219,12 +221,14 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   // Menus, bubbles, and IPH should call this when they anchor. This ensures
   // that highlighting is handled correctly with multiple anchored elements.
-  // TODO(crbug/1428097): Migrate callers of SetHighlighted to this function,
-  // where appropriate.
+  // TODO(crbug.com/40262104): Migrate callers of SetHighlighted to this
+  // function, where appropriate.
   ScopedAnchorHighlight AddAnchorHighlight();
 
   base::CallbackListSubscription AddStateChangedCallback(
       PropertyChangedCallback callback);
+  base::CallbackListSubscription AddAnchorCountChangedCallback(
+      base::RepeatingCallback<void(size_t)> callback);
 
   // Overridden from View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -246,7 +250,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   // Instead of overriding this, subclasses that want custom painting should use
   // PaintButtonContents.
   void OnPaint(gfx::Canvas* canvas) final;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
@@ -335,20 +338,30 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   base::WeakPtr<Button> GetWeakPtr();
 
+  virtual void OnEnabledChanged();
+
+  // Sets the |default_action_verb_| for accessibility. Subclasses may
+  // call this method to set their specific default action verb.
+  void SetDefaultActionVerb(ax::mojom::DefaultActionVerb verb);
+  // Called whenever the state impacting default action verb changes.
+  void UpdateAccessibleDefaultActionVerb();
+
  private:
   friend class test::ButtonTestApi;
   friend class ScopedAnchorHighlight;
   FRIEND_TEST_ALL_PREFIXES(BlueButtonTest, Border);
 
-  void OnEnabledChanged();
-
   void ReleaseAnchorHighlight();
+  void UpdateAccessibleCheckedState();
 
   // The text shown in a tooltip.
   std::u16string tooltip_text_;
 
   // The button's listener. Notified when clicked.
   PressedCallback callback_;
+
+  // Callbacks called when the anchor count changes.
+  base::RepeatingCallbackList<void(size_t)> anchor_count_changed_callbacks_;
 
   // The id tag associated with this button. Used to disambiguate buttons.
   // TODO(pbos): See if this can be removed, e.g. by replacing with SetID().
@@ -397,6 +410,9 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
                                                     base::Unretained(this)))};
 
   size_t anchor_count_ = 0;
+
+  ax::mojom::DefaultActionVerb default_action_verb_ =
+      ax::mojom::DefaultActionVerb::kPress;
 
   base::WeakPtrFactory<Button> weak_ptr_factory_{this};
 };

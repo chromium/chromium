@@ -10,12 +10,14 @@
 #include "base/json/json_reader.h"
 #include "base/notreached.h"
 #include "base/values.h"
-#include "components/content_capture/android/test_support/jni_headers/ContentCaptureTestSupport_jni.h"
 #include "components/content_capture/browser/content_capture_receiver.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "ui/gfx/geometry/size.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/content_capture/android/test_support/jni_headers/ContentCaptureTestSupport_jni.h"
 
 namespace content_capture {
 
@@ -27,7 +29,7 @@ blink::mojom::FaviconIconType ToType(std::string type) {
     return blink::mojom::FaviconIconType::kTouchIcon;
   else if (type == "touch precomposed icon")
     return blink::mojom::FaviconIconType::kTouchPrecomposedIcon;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return blink::mojom::FaviconIconType::kInvalid;
 }
 

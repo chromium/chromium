@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -29,6 +30,7 @@
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
 #include "net/reporting/reporting_service.h"
+#include "net/reporting/reporting_target_type.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -493,7 +495,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
         details.user_agent, policy->report_to, kReportType,
         CreateReportBody(phase_string, type_string, sampling_fraction.value(),
                          details),
-        details.reporting_upload_depth);
+        details.reporting_upload_depth, ReportingTargetType::kDeveloper);
   }
 
   void DoQueueSignedExchangeReport(SignedExchangeReportDetails details,
@@ -542,7 +544,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
         details.outer_url, std::nullopt, details.network_anonymization_key,
         details.user_agent, policy->report_to, kReportType,
         CreateSignedExchangeReportBody(details, sampling_fraction.value()),
-        0 /* depth */);
+        0 /* depth */, ReportingTargetType::kDeveloper);
     RecordSignedExchangeRequestOutcome(RequestOutcome::kQueued);
   }
 
@@ -686,7 +688,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
       store_->AddNelPolicy(policy);
 
     auto iter_and_result = policies_.emplace(policy.key, std::move(policy));
-    // TODO(crbug.com/1326282): Change this to a DCHECK when we're sure the bug
+    // TODO(crbug.com/40225752): Change this to a DCHECK when we're sure the bug
     // is fixed.
     CHECK(iter_and_result.second);
 
@@ -712,7 +714,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   // Removes the policy pointed to by |policy_it|. Invalidates |policy_it|.
   // Returns the iterator to the next element.
   PolicyMap::iterator RemovePolicy(PolicyMap::iterator policy_it) {
-    DCHECK(policy_it != policies_.end());
+    CHECK(policy_it != policies_.end(), base::NotFatalUntil::M130);
     NelPolicy* policy = &policy_it->second;
     MaybeRemoveWildcardPolicy(policy);
 
@@ -733,7 +735,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
 
     auto wildcard_it =
         wildcard_policies_.find(WildcardNelPolicyKey(origin_key));
-    DCHECK(wildcard_it != wildcard_policies_.end());
+    CHECK(wildcard_it != wildcard_policies_.end(), base::NotFatalUntil::M130);
 
     size_t erased = wildcard_it->second.erase(policy);
     DCHECK_EQ(1u, erased);
@@ -766,7 +768,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
 
     // This should only be called if we have hit the max policy limit, so there
     // should be at least one policy.
-    DCHECK(stalest_it != policies_.end());
+    CHECK(stalest_it != policies_.end(), base::NotFatalUntil::M130);
 
     RemovePolicy(stalest_it);
   }

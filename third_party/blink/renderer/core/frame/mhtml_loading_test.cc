@@ -79,8 +79,10 @@ class MHTMLLoadingTest : public testing::Test {
   void SetUp() override { helper_.Initialize(); }
 
   void LoadURLInTopFrame(const WebURL& url, const std::string& file_name) {
-    scoped_refptr<SharedBuffer> buffer = test::ReadFromFile(
+    std::optional<Vector<char>> data = test::ReadFromFile(
         test::CoreTestDataPath(WebString::FromUTF8("mhtml/" + file_name)));
+    ASSERT_TRUE(data);
+    scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create(std::move(*data));
     WebLocalFrameImpl* frame = helper_.GetWebView()->MainFrameImpl();
     auto params = std::make_unique<WebNavigationParams>();
     params->url = url;
@@ -93,10 +95,8 @@ class MHTMLLoadingTest : public testing::Test {
         blink::WebPolicyContainerPolicies(),
         mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
     params->policy_container->policies.sandbox_flags = kMhtmlSandboxFlags;
-    auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
-    body_loader->Write(*buffer);
-    body_loader->Finish();
-    params->body_loader = std::move(body_loader);
+    params->body_loader =
+        StaticDataNavigationBodyLoader::CreateWithData(std::move(buffer));
     frame->CommitNavigation(std::move(params), nullptr /* extra_data */);
     frame_test_helpers::PumpPendingRequestsForFrameToLoad(frame);
   }

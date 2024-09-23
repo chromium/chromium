@@ -24,6 +24,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 #include "base/notreached.h"
@@ -122,7 +127,7 @@ String BlendModeToString(BlendMode blend_op) {
     case BlendMode::kPlusLighter:
       return "plus-lighter";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -269,7 +274,7 @@ String ImageDataStorageFormatName(ImageDataStorageFormat format) {
     case ImageDataStorageFormat::kFloat32:
       return "float32";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -288,7 +293,7 @@ String PredefinedColorSpaceName(PredefinedColorSpace color_space) {
     case PredefinedColorSpace::kSRGBLinear:
       return "srgb-linear";
   };
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -299,7 +304,7 @@ String CanvasPixelFormatName(CanvasPixelFormat pixel_format) {
     case CanvasPixelFormat::kF16:
       return "float16";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 

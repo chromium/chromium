@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -41,6 +40,8 @@
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "ui/aura/client/aura_constants.h"
@@ -101,23 +102,8 @@ void OnSharePathForLaunchApplication(
         CrostiniResult::SHARE_PATHS_FAILED);
   }
 
-  if (registration.Terminal()) {
-    // TODO(crbug.com/853560): This could be improved by using garcon
-    // DesktopFile::GenerateArgvWithFiles().
-    std::vector<std::string> terminal_args = {
-        registration.ExecutableFileName()};
-    terminal_args.insert(terminal_args.end(), args.begin(), args.end());
-    guest_os::LaunchTerminal(profile, display_id, container_id,
-                             /*cwd=*/std::string(), terminal_args);
-    OnApplicationLaunched(app_id, std::move(callback),
-                          crostini::CrostiniResult::SUCCESS, true,
-                          std::string());
-    return;
-  }
-
   guest_os::launcher::LaunchApplication(
-      profile, container_id, registration.DesktopFileId(), args,
-      registration.IsScaled(),
+      profile, container_id, std::move(registration), display_id, args,
       base::BindOnce(OnApplicationLaunched, app_id, std::move(callback),
                      crostini::CrostiniResult::UNKNOWN_ERROR));
 }
@@ -471,8 +457,8 @@ bool IsCrostiniWindow(const aura::Window* window) {
   // more productionised they get their own app type (e.g. lacros), but at some
   // point we'll want to untangle these different types to e.g. avoid double
   // counting in usage metrics.
-  return window->GetProperty(aura::client::kAppType) ==
-         static_cast<int>(ash::AppType::CROSTINI_APP);
+  return window->GetProperty(chromeos::kAppTypeKey) ==
+         chromeos::AppType::CROSTINI_APP;
 }
 
 void RecordAppLaunchHistogram(CrostiniAppLaunchAppType app_type) {

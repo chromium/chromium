@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view_observer.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/zoom/zoom_event_manager.h"
 #include "components/zoom/zoom_event_manager_observer.h"
 #include "content/public/browser/navigation_handle.h"
@@ -108,6 +109,8 @@ class PageActionIconController : public PageActionIconViewObserver,
   raw_ptr<ZoomView> zoom_icon_ = nullptr;
 
   IconViews page_action_icon_views_;
+
+  PrefChangeRegistrar pref_change_registrar_;
 
   std::map<GURL, std::vector<raw_ptr<PageActionIconView, VectorExperimental>>>
       page_actions_excluded_from_logging_;

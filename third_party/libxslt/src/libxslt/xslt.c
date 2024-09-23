@@ -4460,6 +4460,8 @@ xsltParseSequenceConstructor(xsltCompilerCtxtPtr cctxt, xmlNodePtr cur)
     * NOTE that this content model does *not* allow xsl:param.
     */
     while (cur != NULL) {
+        cctxt->style->principal->opCount += 1;
+
 	if (deleteNode != NULL)	{
 #ifdef WITH_XSLT_DEBUG_BLANKS
 	    xsltGenericDebug(xsltGenericDebugContext,
@@ -4500,7 +4502,11 @@ xsltParseSequenceConstructor(xsltCompilerCtxtPtr cctxt, xmlNodePtr cur)
 			* Leave the contained text-node in the tree.
 			*/
 			xmlUnlinkNode(tmp);
-			xmlAddPrevSibling(cur, tmp);
+			if (xmlAddPrevSibling(cur, tmp) == NULL) {
+                            xsltTransformError(ctxt, NULL, NULL,
+                                    "out of memory\n");
+                            xmlFreeNode(tmp);
+                        }
 		    } else {
 			tmp = NULL;
 			xsltTransformError(NULL, cctxt->style, cur,
@@ -4854,6 +4860,8 @@ xsltParseTemplateContent(xsltStylesheetPtr style, xmlNodePtr templ) {
 	* user-defined extension instruction if needed).
 	*/
 	do {
+            style->principal->opCount += 1;
+
 	    if ((child->type == XML_ELEMENT_NODE) &&
 		IS_XSLT_ELEM_FAST(child) &&
 		IS_XSLT_NAME(child, "param"))
@@ -4897,6 +4905,8 @@ xsltParseTemplateContent(xsltStylesheetPtr style, xmlNodePtr templ) {
     cur = templ->children;
     delete = NULL;
     while (cur != NULL) {
+        style->principal->opCount += 1;
+
 	if (delete != NULL) {
 #ifdef WITH_XSLT_DEBUG_BLANKS
 	    xsltGenericDebug(xsltGenericDebugContext,
@@ -4986,7 +4996,11 @@ xsltParseTemplateContent(xsltStylesheetPtr style, xmlNodePtr templ) {
 
 			    next = text->next;
 			    xmlUnlinkNode(text);
-			    xmlAddPrevSibling(cur, text);
+                            if (xmlAddPrevSibling(cur, text) == NULL) {
+                                xsltTransformError(NULL, style, NULL,
+                                        "out of memory\n");
+                                xmlFreeNode(text);
+                            }
 			    text = next;
 			}
 		    }
@@ -5365,6 +5379,15 @@ xsltParseStylesheetTemplate(xsltStylesheetPtr style, xmlNodePtr template) {
     if ((style == NULL) || (template == NULL) ||
         (template->type != XML_ELEMENT_NODE))
 	return;
+
+    if (style->principal->opLimit > 0) {
+        if (style->principal->opCount > style->principal->opLimit) {
+            xsltTransformError(NULL, style, NULL,
+                "XSLT parser operation limit exceeded\n");
+	    style->errors++;
+            return;
+        }
+    }
 
     /*
      * Create and link the structure
@@ -6090,6 +6113,15 @@ xsltParseStylesheetTop(xsltStylesheetPtr style, xmlNodePtr top) {
     if ((top == NULL) || (top->type != XML_ELEMENT_NODE))
 	return;
 
+    if (style->principal->opLimit > 0) {
+        if (style->principal->opCount > style->principal->opLimit) {
+            xsltTransformError(NULL, style, NULL,
+                "XSLT parser operation limit exceeded\n");
+	    style->errors++;
+            return;
+        }
+    }
+
     prop = xmlGetNsProp(top, (const xmlChar *)"version", NULL);
     if (prop == NULL) {
 	xsltTransformError(NULL, style, top,
@@ -6113,6 +6145,8 @@ xsltParseStylesheetTop(xsltStylesheetPtr style, xmlNodePtr top) {
      */
     cur = top->children;
     while (cur != NULL) {
+            style->principal->opCount += 1;
+
 	    if (IS_BLANK_NODE(cur)) {
 		    cur = cur->next;
 		    continue;
@@ -6129,6 +6163,8 @@ xsltParseStylesheetTop(xsltStylesheetPtr style, xmlNodePtr top) {
      * process other top-level elements
      */
     while (cur != NULL) {
+        style->principal->opCount += 1;
+
 	if (IS_BLANK_NODE(cur)) {
 	    cur = cur->next;
 	    continue;

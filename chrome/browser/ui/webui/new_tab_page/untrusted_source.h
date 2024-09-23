@@ -78,6 +78,7 @@ class UntrustedSource : public content::URLDataSource,
                             const std::string& position_y,
                             const std::string& scrim_display,
                             content::URLDataSource::GotDataCallback callback);
+  bool IsURLBlockedByPolicy(const GURL& url);
 
   std::vector<content::URLDataSource::GotDataCallback>
       one_google_bar_callbacks_;

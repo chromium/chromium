@@ -106,8 +106,9 @@ int AppWindowFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   return HTCAPTION;
 }
 
-gfx::Size AppWindowFrameViewWin::CalculatePreferredSize() const {
-  gfx::Size pref = widget_->client_view()->GetPreferredSize();
+gfx::Size AppWindowFrameViewWin::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size pref = widget_->client_view()->GetPreferredSize(available_size);
   gfx::Rect bounds(0, 0, pref.width(), pref.height());
   return widget_->non_client_view()
       ->GetWindowBoundsForClientBounds(bounds)
@@ -128,6 +129,8 @@ gfx::Size AppWindowFrameViewWin::GetMaximumSize() const {
   gfx::Size max_size = widget_->client_view()->GetMaximumSize();
 
   gfx::Insets insets = GetFrameInsets();
+  insets += GetClientAreaInsets(
+      MonitorFromWindow(HWNDForView(this), MONITOR_DEFAULTTONEAREST));
   if (max_size.width()) {
     max_size.Enlarge(insets.left() + insets.right(), 0);
   }

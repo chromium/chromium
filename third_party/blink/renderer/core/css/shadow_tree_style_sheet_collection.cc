@@ -66,11 +66,13 @@ void ShadowTreeStyleSheetCollection::CollectStyleSheets(
           css_sheet, rule_set_scope.RuleSetForSheet(engine, css_sheet)));
     }
   }
-  if (!GetTreeScope().HasAdoptedStyleSheets()) {
+
+  const TreeScope& tree_scope = GetTreeScope();
+  if (!tree_scope.HasAdoptedStyleSheets()) {
     return;
   }
 
-  for (CSSStyleSheet* sheet : *GetTreeScope().AdoptedStyleSheets()) {
+  for (CSSStyleSheet* sheet : *tree_scope.AdoptedStyleSheets()) {
     if (!sheet || !sheet->CanBeActivated(g_null_atom)) {
       continue;
     }

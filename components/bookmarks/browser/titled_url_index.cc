@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/bookmarks/browser/titled_url_index.h"
-#include "base/strings/utf_string_conversions.h"
 
 #include <stdint.h>
 
@@ -12,7 +11,6 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/unicodestring.h"
 #include "base/logging.h"
@@ -87,6 +85,15 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
   if (terms.empty())
     return {};
 
+  // `ExtractQueryWords()` splits on symbols like '@'. That's usually good; e.g.
+  // it allows 'xyz@gmail' to match 'xyz gmail'. But for inputs starting with
+  // '@', like '@h', the user's more likely wants to enter the history scope
+  // search than to select a 'https://google.com' bookmark.
+  if (query.starts_with('@') && query.size() >= 2 && terms[0].size() >= 1 &&
+      query[1] == terms[0][0]) {
+    return {};
+  }
+
   // `matches` shouldn't exclude nodes that don't match every query term, as the
   // query terms may match in the ancestors. `MatchTitledUrlNodeWithQuery()`
   // below will filter out nodes that neither match nor ancestor-match every
@@ -113,7 +120,7 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
 }
 
 // static
-std::u16string TitledUrlIndex::Normalize(const std::u16string& text) {
+std::u16string TitledUrlIndex::Normalize(std::u16string_view text) {
   UErrorCode status = U_ZERO_ERROR;
   const icu::Normalizer2* normalizer2 =
       icu::Normalizer2::getInstance(nullptr, "nfkc", UNORM2_COMPOSE, status);
@@ -128,7 +135,7 @@ std::u16string TitledUrlIndex::Normalize(const std::u16string& text) {
   if (U_FAILURE(status)) {
     // This should not happen. Log the error and fall back.
     LOG(ERROR) << "normalization failed: " << u_errorName(status);
-    return text;
+    return std::u16string(text);
   }
   return base::i18n::UnicodeStringToString16(unicode_normalized_text);
 }

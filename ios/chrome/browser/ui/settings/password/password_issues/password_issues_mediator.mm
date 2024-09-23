@@ -239,6 +239,10 @@ NSInteger GetDismissedWarningsCount(
   [self providePasswordsToConsumer];
 }
 
+- (void)passwordCheckManagerWillShutdown {
+  _passwordCheckObserver.reset();
+}
+
 #pragma mark - SavedPasswordsPresenterObserver
 
 - (void)savedPasswordsDidChange {
@@ -302,7 +306,7 @@ NSInteger GetDismissedWarningsCount(
                                      base::NumberToString16(numberOfIssues));
 
     case WarningType::kNoInsecurePasswordsWarning:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

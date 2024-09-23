@@ -7,7 +7,9 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_is_test.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_policy_observer.h"
@@ -16,6 +18,21 @@
 #include "chromeos/dbus/power_manager/idle.pb.h"
 
 namespace ash {
+
+// static
+std::unique_ptr<EphemeralNetworkConfigurationHandler>
+EphemeralNetworkConfigurationHandler::TryCreate(
+    ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+    bool was_enterprise_managed_at_startup) {
+  // LoginState may be missing in unit tests.
+  if (!LoginState::IsInitialized()) {
+    CHECK_IS_TEST();
+    return {};
+  }
+  return base::WrapUnique(new EphemeralNetworkConfigurationHandler(
+      managed_network_configuration_handler,
+      was_enterprise_managed_at_startup));
+}
 
 EphemeralNetworkConfigurationHandler::EphemeralNetworkConfigurationHandler(
     ManagedNetworkConfigurationHandler* managed_network_configuration_handler,

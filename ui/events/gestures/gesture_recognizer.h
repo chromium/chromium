@@ -76,19 +76,6 @@ class EVENTS_EXPORT GestureRecognizer {
       GestureConsumer* new_consumer,
       TransferTouchesBehavior transfer_touches_behavior) = 0;
 
-  // Extracts the consumer's current pointer state as "DOWN" TouchEvents. Each
-  // TouchEvent corresponds to an active pointer.
-  virtual std::vector<std::unique_ptr<TouchEvent>> ExtractTouches(
-      GestureConsumer* consumer) = 0;
-
-  // Used to transfer a consumer's pointer state to another consumer
-  // (|consumer|). The touch events are extracted from the old consumer using
-  // ExtractTouches. These events are then re-dispatched to |consumer|, which
-  // also results in gestures restarting in the new consumer.
-  virtual void TransferTouches(
-      GestureConsumer* consumer,
-      const std::vector<std::unique_ptr<ui::TouchEvent>>& touch_events) = 0;
-
   // If a gesture is underway for |consumer| |point| is set to the last touch
   // point and true is returned. If no touch events have been processed for
   // |consumer| false is returned and |point| is untouched.
@@ -113,8 +100,8 @@ class EVENTS_EXPORT GestureRecognizer {
   // Returns whether `consumer` has active touch or not.
   virtual bool DoesConsumerHaveActiveTouch(GestureConsumer* consumer) const = 0;
 
-  // Synthesizes gesture end events (including ET_GESTURE_END and
-  // ET_GESTURE_SCROLL_END) and send to `consumer`.
+  // Synthesizes gesture end events (including EventType::kGestureEnd and
+  // EventType::kGestureScrollEnd) and send to `consumer`.
   virtual void SendSynthesizedEndEvents(GestureConsumer* consumer) = 0;
 };
 

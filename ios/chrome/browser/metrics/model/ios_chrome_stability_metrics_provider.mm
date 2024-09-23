@@ -73,6 +73,6 @@ void IOSChromeStabilityMetricsProvider::RenderProcessGone(
   if (!recording_enabled_)
     return;
   LogRendererCrash();
-  // TODO(crbug.com/685649): web_state->GetLastCommittedURL() is likely the URL
-  // that caused a renderer crash and can be logged here.
+  // TODO(crbug.com/41297697): web_state->GetLastCommittedURL() is likely the
+  // URL that caused a renderer crash and can be logged here.
 }

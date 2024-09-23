@@ -1,0 +1,63 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package google.internal.remoting.cloud.v1alpha;
+
+import "field_mask.proto";
+import "remote_access_host.proto";
+import "service_account_info.proto";
+
+// Creates a new remote access host instance in the Directory.
+message ProvisionGceInstanceRequest {
+  // The email address of the user to associate the new remote access host
+  // instance with. This value is also used to determine if the user has
+  // permission to access the Instance remotely based on the GCP Project
+  // metadata associated with it.
+  string owner_email = 1;
+
+  // This value is used to provide the initial 'display_name' value which is
+  // shown in the website client UI.
+  string display_name = 2;
+
+  // Public key for the host. Must be a 2048-bit RSA key encoded with Base64.
+  bytes public_key = 3;
+
+  // Version of the start-host utility being used for provisioning.
+  string version = 4;
+
+  // An optional value which, if provided, is used to remove a previous host
+  // instance from the machine. Prior to deleting `existing_directory_id`, the
+  // backend will validate the other fields in the request and ensure
+  // `owner_email` owns the previous instance as well.
+  optional string existing_directory_id = 5;
+}
+
+// The response to a ProvisionGceInstanceRequest.
+message ProvisionGceInstanceResponse {
+  // The UUID of the new remote access host instance in the Directory.
+  string directory_id = 1;
+
+  // The email address and authorization_code for the service account created
+  // for the new remote access host instance.
+  ServiceAccountInfo service_account_info = 2;
+}
+
+// Updates the last seen timestamp for a remote access host.
+message SendHeartbeatRequest {
+  // The UUID of the remote access host to update in the Directory.
+  string directory_id = 1;
+}
+
+// Updates a remote access host in the Directory.
+message UpdateRemoteAccessHostRequest {
+  // `remote_access_host.directory_id` indicates which host entry to update.
+  RemoteAccessHost remote_access_host = 1;
+
+  // The list of fields to update.
+  FieldMask update_mask = 2;
+}

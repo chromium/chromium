@@ -14,8 +14,8 @@
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "content/browser/coop_related_group.h"
 #include "content/browser/isolation_context.h"
+#include "content/browser/security/coop/coop_related_group.h"
 #include "content/browser/site_instance_group_manager.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
@@ -352,7 +352,7 @@ class CONTENT_EXPORT BrowsingInstance final
   // given, of only being able to DOM script same-origin same-COOP documents,
   // and to have limited cross-origin communication with all other pages.
   //
-  // TODO(https://crbug.com/1385827): This assumes that popups opened from
+  // TODO(crbug.com/40879437): This assumes that popups opened from
   // cross-origin iframes are opened with no-opener. Once COOP inheritance for
   // those cases is figured out, change the mentions of origin to "COOP origin".
   std::optional<url::Origin> common_coop_origin_;
@@ -361,8 +361,8 @@ class CONTENT_EXPORT BrowsingInstance final
   // navigations in the frames belonging to this BrowsingInstance. For <webview>
   // tags, this is always true.
   //
-  // TODO(crbug.com/1503007): We actually always want this behavior. Remove this
-  // bit when we are ready.
+  // TODO(crbug.com/40943418): We actually always want this behavior. Remove
+  // this bit when we are ready.
   const bool is_fixed_storage_partition_;
 
   // A token uniquely identifying this BrowsingInstance. This is used in case we

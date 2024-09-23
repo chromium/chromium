@@ -220,7 +220,7 @@ public class WebApkUpdateDataFetcherTest {
         CallbackWaiter waiter = new CallbackWaiter();
         startWebApkUpdateDataFetcher(getTestIntentDataProviderBuilder(WEB_MANIFEST_URL2), waiter);
 
-        waiter.waitForFirst();
+        waiter.waitForOnly();
         Assert.assertTrue(waiter.isWebApkCompatible());
         Assert.assertEquals(WEB_MANIFEST_NAME1, waiter.name());
         Assert.assertNotNull(waiter.manifestId());
@@ -242,7 +242,7 @@ public class WebApkUpdateDataFetcherTest {
 
         WebappTestPage.navigateToServiceWorkerPageWithManifest(
                 mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL2);
-        waiter.waitForFirst();
+        waiter.waitForOnly();
         Assert.assertTrue(waiter.isWebApkCompatible());
         Assert.assertEquals(WEB_MANIFEST_NAME2, waiter.name());
         Assert.assertNotNull(waiter.manifestId());
@@ -268,7 +268,7 @@ public class WebApkUpdateDataFetcherTest {
 
         startWebApkUpdateDataFetcher(oldIntentDataProviderBuilder, waiter);
 
-        waiter.waitForFirst();
+        waiter.waitForOnly();
         Assert.assertTrue(waiter.isWebApkCompatible());
         Assert.assertEquals(WEB_MANIFEST_NAME3, waiter.name());
         Assert.assertNotNull(waiter.manifestId());

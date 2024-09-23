@@ -4,15 +4,22 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/chrome_camera_app_ui_delegate.h"
 
+#include <memory>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/camera_app_ui/ocr.mojom.h"
+#include "ash/webui/camera_app_ui/pdf_builder.mojom.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,32 +33,46 @@
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/pdf/pdf_service.h"
+#include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
+#include "chrome/browser/ui/webui/ash/internet/internet_config_dialog.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/services/pdf/public/mojom/pdf_progressive_searchifier.mojom.h"
+#include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
+#include "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
@@ -77,6 +98,9 @@ std::string DeviceTypeToString(chromeos::DeviceType device_type) {
 const int64_t kStorageLowThreshold = 128 * 1024 * 1024;           // 128MB
 const int64_t kStorageCriticallyLowThreshold = 32 * 1024 * 1024;  // 32MB
 
+// PDFs saved from CCA are always 72 dpi.
+constexpr int kPdfDpi = 72;
+
 }  // namespace
 
 // static
@@ -95,7 +119,7 @@ ChromeCameraAppUIDelegate::CameraAppDialog::CameraAppDialog(
   set_can_maximize(true);
   // For customizing the title bar.
   set_dialog_frame_kind(ui::WebDialogDelegate::FrameKind::kNonClient);
-  set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+  set_dialog_modal_type(ui::mojom::ModalType::kWindow);
   set_dialog_size(
       gfx::Size(kChromeCameraAppDefaultWidth, kChromeCameraAppDefaultHeight));
 }
@@ -243,6 +267,193 @@ void ChromeCameraAppUIDelegate::StorageMonitor::MonitorCurrentStatus() {
   }
 }
 
+ChromeCameraAppUIDelegate::PdfServiceManager::PdfServiceManager(
+    scoped_refptr<screen_ai::OpticalCharacterRecognizer>
+        optical_character_recognizer)
+    : optical_character_recognizer_(optical_character_recognizer) {
+  pdf_thumbnailers_.set_disconnect_handler(
+      base::BindRepeating(&ChromeCameraAppUIDelegate::PdfServiceManager::
+                              ConsumeGotThumbnailCallback,
+                          weak_factory_.GetWeakPtr(), std::vector<uint8_t>()));
+}
+
+ChromeCameraAppUIDelegate::PdfServiceManager::~PdfServiceManager() = default;
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::GetThumbnail(
+    const std::vector<uint8_t>& pdf,
+    base::OnceCallback<void(const std::vector<uint8_t>&)> callback) {
+  // TODO(b/329069826): To prevent the thumbnailer from adding a white
+  // background to the result, get the actual dimensions and limit them to the
+  // maximum supported dimensions (keeping the aspect ratio), rather than
+  // passing the maximum supported dimensions directly.
+  auto params = pdf::mojom::ThumbParams::New(
+      /*size_px=*/gfx::Size(pdf::mojom::PdfThumbnailer::kMaxWidthPixels,
+                            pdf::mojom::PdfThumbnailer::kMaxHeightPixels),
+      /*dpi=*/gfx::Size(kPdfDpi, kPdfDpi),
+      /*stretch_to_bounds=*/false, /*keep_aspect_ratio=*/true);
+  auto pdf_region = base::ReadOnlySharedMemoryRegion::Create(pdf.size());
+  if (!pdf_region.IsValid()) {
+    LOG(ERROR) << "Failed to allocate memory for PDF";
+    std::move(callback).Run({});
+    return;
+  }
+  memcpy(pdf_region.mapping.memory(), pdf.data(), pdf.size());
+
+  mojo::Remote<pdf::mojom::PdfService> pdf_service = LaunchPdfService();
+  mojo::PendingRemote<pdf::mojom::PdfThumbnailer> pdf_thumbnailer;
+  pdf_service->BindPdfThumbnailer(
+      pdf_thumbnailer.InitWithNewPipeAndPassReceiver());
+  mojo::RemoteSetElementId pdf_service_id =
+      pdf_services_.Add(std::move(pdf_service));
+  mojo::RemoteSetElementId pdf_thumbnailer_id =
+      pdf_thumbnailers_.Add(std::move(pdf_thumbnailer));
+  pdf_thumbnailer_callbacks[pdf_thumbnailer_id] = std::move(callback);
+  pdf_thumbnailers_.Get(pdf_thumbnailer_id)
+      ->GetThumbnail(
+          std::move(params), std::move(pdf_region.region),
+          base::BindOnce(
+              &ChromeCameraAppUIDelegate::PdfServiceManager::GotThumbnail,
+              weak_factory_.GetWeakPtr(), pdf_service_id, pdf_thumbnailer_id));
+}
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::GotThumbnail(
+    mojo::RemoteSetElementId pdf_service_id,
+    mojo::RemoteSetElementId pdf_thumbnailer_id,
+    const SkBitmap& bitmap) {
+  std::vector<uint8_t> jpeg_data;
+  if (gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &jpeg_data)) {
+    ConsumeGotThumbnailCallback(std::move(jpeg_data), pdf_thumbnailer_id);
+  } else {
+    LOG(ERROR) << "Failed to encode bitmap to JPEG";
+    ConsumeGotThumbnailCallback({}, pdf_thumbnailer_id);
+  }
+  pdf_thumbnailers_.Remove(pdf_thumbnailer_id);
+  pdf_services_.Remove(pdf_service_id);
+}
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::ConsumeGotThumbnailCallback(
+    const std::vector<uint8_t>& thumbnail,
+    mojo::RemoteSetElementId id) {
+  std::move(pdf_thumbnailer_callbacks[id]).Run(thumbnail);
+  pdf_thumbnailer_callbacks.erase(id);
+}
+
+mojo::PendingRemote<pdf::mojom::Ocr>
+ChromeCameraAppUIDelegate::PdfServiceManager::CreateOcrRemote() {
+  mojo::PendingReceiver<::pdf::mojom::Ocr> receiver;
+  mojo::PendingRemote<::pdf::mojom::Ocr> remote =
+      receiver.InitWithNewPipeAndPassRemote();
+  ocr_receivers_.Add(this, std::move(receiver));
+  return remote;
+}
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::PerformOcr(
+    const SkBitmap& image,
+    PerformOcrCallback callback) {
+  if (base::FeatureList::IsEnabled(ash::features::kCameraAppPdfOcr)) {
+    optical_character_recognizer_->PerformOCR(image, std::move(callback));
+    return;
+  }
+  std::move(callback).Run(screen_ai::mojom::VisualAnnotation::New());
+}
+
+// TODO(b/339345727): Inform CCA earlier when the PDF service crashes.
+std::unique_ptr<ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf>
+ChromeCameraAppUIDelegate::PdfServiceManager::CreateProgressivePdf() {
+  mojo::Remote<pdf::mojom::PdfService> pdf_service = LaunchPdfService();
+  mojo::Remote<pdf::mojom::PdfProgressiveSearchifier> pdf_searchifier;
+  pdf_service->BindPdfProgressiveSearchifier(
+      pdf_searchifier.BindNewPipeAndPassReceiver(), CreateOcrRemote());
+  return std::make_unique<
+      ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf>(
+      std::move(pdf_service), std::move(pdf_searchifier));
+}
+
+ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::ProgressivePdf(
+    mojo::Remote<pdf::mojom::PdfService> pdf_service,
+    mojo::Remote<pdf::mojom::PdfProgressiveSearchifier> pdf_searchifier)
+    : pdf_service_(std::move(pdf_service)),
+      pdf_searchifier_(std::move(pdf_searchifier)) {
+  pdf_searchifier_.set_disconnect_handler(
+      base::BindRepeating(&ChromeCameraAppUIDelegate::PdfServiceManager::
+                              ProgressivePdf::ConsumeSaveCallback,
+                          weak_factory_.GetWeakPtr(), std::vector<uint8_t>()));
+}
+
+ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::
+    ~ProgressivePdf() = default;
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::AddPage(
+    mojo_base::BigBuffer jpg,
+    uint32_t index) {
+  AddPageInternal(jpg, index);
+}
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::
+    AddPageInline(const std::vector<uint8_t>& jpg, uint32_t index) {
+  AddPageInternal(jpg, index);
+}
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::
+    AddPageInternal(base::span<const uint8_t> jpg, uint32_t index) {
+  if (!pdf_searchifier_) {
+    LOG(ERROR) << "Failed to add new page to PDF";
+    return;
+  }
+  std::unique_ptr<SkBitmap> bitmap =
+      gfx::JPEGCodec::Decode(jpg.data(), jpg.size());
+  pdf_searchifier_->AddPage(std::move(*bitmap), index);
+}
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::DeletePage(
+    uint32_t index) {
+  if (!pdf_searchifier_) {
+    LOG(ERROR) << "Failed to delete page from PDF";
+    return;
+  }
+  pdf_searchifier_->DeletePage(index);
+}
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::Save(
+    SaveCallback callback) {
+  SaveInline(base::BindOnce(
+      [](SaveCallback callback, const std::vector<uint8_t>& pdf) {
+        std::move(callback).Run(pdf);
+      },
+      std::move(callback)));
+}
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::SaveInline(
+    SaveInlineCallback callback) {
+  if (!pdf_searchifier_) {
+    LOG(ERROR) << "Failed to save PDF";
+    std::move(callback).Run({});
+    return;
+  }
+  save_callback_ = std::move(callback);
+  pdf_searchifier_->Save(
+      base::BindOnce(&ChromeCameraAppUIDelegate::PdfServiceManager::
+                         ProgressivePdf::ConsumeSaveCallback,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ChromeCameraAppUIDelegate::PdfServiceManager::ProgressivePdf::
+    ConsumeSaveCallback(const std::vector<uint8_t>& searchified_pdf) {
+  // `PDF service crashed. Avoid any further calls to `pdf_searchifier`.
+  if (searchified_pdf.empty()) {
+    LOG(ERROR) << "PDF Searchifier crashed";
+    pdf_searchifier_.reset();
+    pdf_service_.reset();
+  }
+
+  // `save_callback_` may have value if `pdf_searchifier` crashed on calling
+  // `Save`.
+  if (save_callback_.is_null()) {
+    return;
+  }
+  std::move(save_callback_).Run(searchified_pdf);
+}
+
 ChromeCameraAppUIDelegate::ChromeCameraAppUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui),
       session_start_time_(base::Time::Now()),
@@ -256,7 +467,12 @@ ChromeCameraAppUIDelegate::ChromeCameraAppUIDelegate(content::WebUI* web_ui)
       base::BindOnce(&ChromeCameraAppUIDelegate::OnFileMonitorInitialized,
                      weak_factory_.GetWeakPtr()));
 
-  IntializeStorageMonitor();
+  InitializeStorageMonitor();
+  // TODO(b/338363415): Check the service availability before trying to use it.
+  optical_character_recognizer_ = screen_ai::OpticalCharacterRecognizer::Create(
+      Profile::FromWebUI(web_ui_), screen_ai::mojom::OcrClientType::kCameraApp);
+  pdf_service_manager_ =
+      std::make_unique<PdfServiceManager>(optical_character_recognizer_);
 }
 
 ChromeCameraAppUIDelegate::~ChromeCameraAppUIDelegate() {
@@ -269,14 +485,6 @@ ChromeCameraAppUIDelegate::~ChromeCameraAppUIDelegate() {
 
   // Try triggering the HaTS survey when leaving the app.
   MaybeTriggerSurvey();
-}
-
-ash::HoldingSpaceClient* ChromeCameraAppUIDelegate::GetHoldingSpaceClient() {
-  ash::HoldingSpaceKeyedService* holding_space_keyed_service =
-      ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
-          Profile::FromWebUI(web_ui_));
-  CHECK(holding_space_keyed_service);
-  return holding_space_keyed_service->client();
 }
 
 void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
@@ -322,14 +530,20 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   source->AddString("board_name", base::SysInfo::GetLsbReleaseBoard());
   source->AddString("device_type",
                     DeviceTypeToString(chromeos::GetDeviceType()));
-  source->AddBoolean("auto_qr", base::FeatureList::IsEnabled(
-                                    ash::features::kCameraAppAutoQRDetection));
   source->AddBoolean("digital_zoom", base::FeatureList::IsEnabled(
                                          ash::features::kCameraAppDigitalZoom));
+  source->AddBoolean("preview_ocr", base::FeatureList::IsEnabled(
+                                        ash::features::kCameraAppPreviewOcr));
+  source->AddBoolean("super_res", base::FeatureList::IsEnabled(
+                                      ash::features::kCameraSuperResSupported));
 
   const PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
-  source->AddBoolean("video_capture_disallowed",
-                     !prefs->GetBoolean(prefs::kVideoCaptureAllowed));
+  GURL cca_url = GURL(ash::kChromeUICameraAppURL);
+  bool url_allowed = policy::IsOriginInAllowlist(
+      cca_url, prefs, prefs::kVideoCaptureAllowedUrls);
+  source->AddBoolean(
+      "cca_disallowed",
+      !prefs->GetBoolean(prefs::kVideoCaptureAllowed) && !url_allowed);
 
   const char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
   const char kTestImageRelease[] = "testimage-channel";
@@ -343,6 +557,10 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   source->AddString("browser_version",
                     std::string(version_info::GetVersionNumber()));
   source->AddString("os_version", base::SysInfo::OperatingSystemVersion());
+
+  // BigBuffer doesn't work well on ARM devices. See b/360028048.
+  std::string arch = base::SysInfo::ProcessCPUArchitecture();
+  source->AddBoolean("can_use_big_buffer", !base::StartsWith(arch, "ARM"));
 }
 
 bool ChromeCameraAppUIDelegate::IsMetricsAndCrashReportingEnabled() {
@@ -373,7 +591,7 @@ void ChromeCameraAppUIDelegate::OpenFeedbackDialog(
   // reports to end up in.
   Profile* profile = Profile::FromWebUI(web_ui_);
   chrome::ShowFeedbackPage(GURL(ash::kChromeUICameraAppURL), profile,
-                           chrome::kFeedbackSourceCameraApp,
+                           feedback::kFeedbackSourceCameraApp,
                            std::string() /* description_template */,
                            placeholder /* description_placeholder_text */,
                            "chromeos-camera-app" /* category_tag */,
@@ -396,7 +614,7 @@ std::string ChromeCameraAppUIDelegate::GetFilePathInArcByName(
   }
   if (requires_sharing) {
     LOG(ERROR) << "File path should be in MyFiles and not require any sharing";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::string();
   }
   return arc_url_out.spec();
@@ -505,7 +723,7 @@ void ChromeCameraAppUIDelegate::MonitorFileDeletionOnFileThread(
   file_monitor->Monitor(file_path, std::move(callback));
 }
 
-void ChromeCameraAppUIDelegate::IntializeStorageMonitor() {
+void ChromeCameraAppUIDelegate::InitializeStorageMonitor() {
   storage_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
@@ -545,8 +763,8 @@ void ChromeCameraAppUIDelegate::OpenWifiDialog(WifiConfig wifi_config) {
   } else if (wifi_config.security == onc::wifi::kWPA_EAP) {
     config->security = SecurityType::kWpaEap;
   } else {
-    NOTREACHED() << "Unexpected network security type: "
-                 << wifi_config.security;
+    NOTREACHED_IN_MIGRATION()
+        << "Unexpected network security type: " << wifi_config.security;
   }
   config->passphrase = wifi_config.password;
   if (config->security == SecurityType::kWpaEap) {
@@ -561,6 +779,68 @@ void ChromeCameraAppUIDelegate::OpenWifiDialog(WifiConfig wifi_config) {
   }
   ash::InternetConfigDialog::ShowDialogForNetworkWithWifiConfig(
       std::move(config));
+}
+
+std::string ChromeCameraAppUIDelegate::GetSystemLanguage() {
+  auto* profile = Profile::FromWebUI(web_ui_);
+  auto* pref_service = profile->GetPrefs();
+  std::string accept_languages =
+      pref_service->GetString(language::prefs::kAcceptLanguages);
+  // Languages are splitted by ','. We only need to return the first one.
+  return accept_languages.substr(0, accept_languages.find(','));
+}
+
+void ChromeCameraAppUIDelegate::RenderPdfAsJpeg(
+    const std::vector<uint8_t>& pdf,
+    base::OnceCallback<void(const std::vector<uint8_t>&)> callback) {
+  pdf_service_manager_->GetThumbnail(pdf, std::move(callback));
+}
+
+void ChromeCameraAppUIDelegate::PerformOcr(
+    base::span<const uint8_t> jpeg_data,
+    base::OnceCallback<void(ash::camera_app::mojom::OcrResultPtr)> callback) {
+  std::unique_ptr<SkBitmap> bitmap =
+      gfx::JPEGCodec::Decode(jpeg_data.data(), jpeg_data.size());
+  optical_character_recognizer_->PerformOCR(
+      std::move(*bitmap),
+      base::BindOnce(
+          [](base::OnceCallback<void(ash::camera_app::mojom::OcrResultPtr)>
+                 callback,
+             screen_ai::mojom::VisualAnnotationPtr annotation) {
+            auto result = ash::camera_app::mojom::OcrResult::New();
+            for (const auto& line_box : annotation->lines) {
+              auto line = ash::camera_app::mojom::Line::New();
+              line->text = line_box->text_line;
+              line->bounding_box = std::move(line_box->bounding_box);
+              line->bounding_box_angle = line_box->bounding_box_angle;
+              line->language = line_box->language;
+              line->confidence = line_box->confidence;
+              for (const auto& word_box : line_box->words) {
+                auto word = ash::camera_app::mojom::Word::New();
+                word->bounding_box = std::move(word_box->bounding_box);
+                word->bounding_box_angle = word_box->bounding_box_angle;
+                word->text = word_box->word;
+                if (word_box->direction ==
+                    screen_ai::mojom::Direction::DIRECTION_RIGHT_TO_LEFT) {
+                  word->direction =
+                      ash::camera_app::mojom::WordDirection::kRightToLeft;
+                } else {
+                  word->direction =
+                      ash::camera_app::mojom::WordDirection::kLeftToRight;
+                }
+                line->words.push_back(std::move(word));
+              }
+              result->lines.push_back(std::move(line));
+            }
+            std::move(callback).Run(std::move(result));
+          },
+          std::move(callback)));
+}
+
+void ChromeCameraAppUIDelegate::CreatePdfBuilder(
+    mojo::PendingReceiver<ash::camera_app::mojom::PdfBuilder> receiver) {
+  mojo::MakeSelfOwnedReceiver(pdf_service_manager_->CreateProgressivePdf(),
+                              std::move(receiver));
 }
 
 ash::CameraAppUIDelegate::WifiConfig::WifiConfig() = default;

@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 
@@ -104,14 +105,14 @@ static String ValueToDateTimeString(double value, InputType::Type type) {
       components.SetMillisecondsSinceEpochForWeek(value);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return components.GetType() == DateComponents::kInvalid
              ? String()
              : components.ToString();
 }
 
-void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
+void DateTimeChooserImpl::WriteDocument(SegmentedBuffer& data) {
   String step_string = String::Number(parameters_->step);
   String step_base_string = String::Number(parameters_->step_base, 11);
   String today_label_string;
@@ -138,12 +139,12 @@ void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
       "content='light dark'><style>\n",
       data);
 
-  data->Append(ChooserResourceLoader::GetPickerCommonStyleSheet());
-  data->Append(ChooserResourceLoader::GetSuggestionPickerStyleSheet());
-  data->Append(ChooserResourceLoader::GetCalendarPickerStyleSheet());
+  data.Append(ChooserResourceLoader::GetPickerCommonStyleSheet());
+  data.Append(ChooserResourceLoader::GetSuggestionPickerStyleSheet());
+  data.Append(ChooserResourceLoader::GetCalendarPickerStyleSheet());
   if (parameters_->type == InputType::Type::kTime ||
       parameters_->type == InputType::Type::kDateTimeLocal) {
-    data->Append(ChooserResourceLoader::GetTimePickerStyleSheet());
+    data.Append(ChooserResourceLoader::GetTimePickerStyleSheet());
   }
   AddString(
       "</style></head><body><div id=main>Loading...</div><script>\n"
@@ -237,16 +238,16 @@ void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
   }
   AddString("}\n", data);
 
-  data->Append(ChooserResourceLoader::GetPickerCommonJS());
-  data->Append(ChooserResourceLoader::GetSuggestionPickerJS());
-  data->Append(ChooserResourceLoader::GetMonthPickerJS());
+  data.Append(ChooserResourceLoader::GetPickerCommonJS());
+  data.Append(ChooserResourceLoader::GetSuggestionPickerJS());
+  data.Append(ChooserResourceLoader::GetMonthPickerJS());
   if (parameters_->type == InputType::Type::kTime) {
-    data->Append(ChooserResourceLoader::GetTimePickerJS());
+    data.Append(ChooserResourceLoader::GetTimePickerJS());
   } else if (parameters_->type == InputType::Type::kDateTimeLocal) {
-    data->Append(ChooserResourceLoader::GetTimePickerJS());
-    data->Append(ChooserResourceLoader::GetDateTimeLocalPickerJS());
+    data.Append(ChooserResourceLoader::GetTimePickerJS());
+    data.Append(ChooserResourceLoader::GetDateTimeLocalPickerJS());
   }
-  data->Append(ChooserResourceLoader::GetCalendarPickerJS());
+  data.Append(ChooserResourceLoader::GetCalendarPickerJS());
   AddString("</script></body>\n", data);
 }
 

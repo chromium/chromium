@@ -7,12 +7,19 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
+
 @protocol SystemIdentity;
 
 // View controller used to fake "My Google Account" view in tests.
 @interface FakeAccountDetailsViewController : UIViewController
 
-- (instancetype)initWithIdentity:(id<SystemIdentity>)identity;
+- (instancetype)initWithIdentity:(id<SystemIdentity>)identity
+             dismissalCompletion:(ProceduralBlock)dismissalCompletion;
+
+// Dismisses `FakeAccountDetailsViewController`, and calls the dismissal
+// completion.
+- (void)dismissAnimated:(BOOL)animated;
 
 @end
 

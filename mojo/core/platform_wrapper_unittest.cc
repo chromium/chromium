@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -23,6 +24,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include "base/win/scoped_handle.h"
 #elif BUILDFLAG(IS_APPLE)
 #include "base/apple/scoped_mach_port.h"
@@ -66,7 +68,7 @@ namespace {
 using PlatformWrapperTest = test::MojoTestBase;
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_WrapPlatformHandle DISABLED_WrapPlatformHandle
 #else
 #define MAYBE_WrapPlatformHandle WrapPlatformHandle
@@ -114,14 +116,13 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformFile, PlatformWrapperTest, h) {
 
   // Expect to read the same message from the file.
   std::vector<char> data(message.size());
-  EXPECT_EQ(file.ReadAtCurrentPos(data.data(), static_cast<int>(data.size())),
-            static_cast<int>(data.size()));
+  EXPECT_TRUE(file.ReadAtCurrentPosAndCheck(base::as_writable_byte_span(data)));
   EXPECT_TRUE(base::ranges::equal(message, data));
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1418597): Test currently fails on iOS.
+// TODO(crbug.com/40257752): Test currently fails on iOS.
 #define MAYBE_WrapPlatformSharedMemoryRegion \
   DISABLED_WrapPlatformSharedMemoryRegion
 #else
@@ -133,7 +134,7 @@ TEST_F(PlatformWrapperTest, MAYBE_WrapPlatformSharedMemoryRegion) {
   auto region = base::UnsafeSharedMemoryRegion::Create(kMessage.size());
   base::WritableSharedMemoryMapping buffer = region.Map();
   CHECK(buffer.IsValid());
-  memcpy(buffer.memory(), kMessage.data(), kMessage.size());
+  base::as_writable_chars(base::span(buffer)).copy_from(kMessage);
 
   RunTestClient("ReadPlatformSharedBuffer", [&](MojoHandle h) {
     // Wrap the shared memory handle and send it to the child along with the
@@ -228,9 +229,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
   ASSERT_TRUE(region.IsValid());
 
   base::WritableSharedMemoryMapping mapping = region.Map();
-  ASSERT_TRUE(mapping.memory());
-  EXPECT_TRUE(std::equal(message.begin(), message.end(),
-                         static_cast<const char*>(mapping.memory())));
+  EXPECT_EQ(base::as_byte_span(message), base::span(mapping));
 
   // Verify that the received buffer's internal GUID was preserved in transit.
   EXPECT_EQ(MOJO_RESULT_OK, WaitForSignals(h, MOJO_HANDLE_SIGNAL_READABLE));

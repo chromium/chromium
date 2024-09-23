@@ -13,8 +13,8 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
+#include "media/cast/cast_callbacks.h"
 #include "media/cast/cast_config.h"
-#include "media/cast/cast_sender.h"
 #include "media/cast/sender/frame_sender.h"
 
 namespace openscreen::cast {
@@ -31,15 +31,8 @@ class AudioEncoder;
 // RTCP packets.
 // Additionally it posts a bunch of delayed tasks to the main thread for various
 // timeouts.
-class AudioSender final : public FrameSender::Client {
+class AudioSender : public FrameSender::Client {
  public:
-  // Old way to instantiate, using a cast transport.
-  // TODO(https://crbug.com/1316434): should be removed once libcast sender is
-  // successfully launched.
-  AudioSender(scoped_refptr<CastEnvironment> cast_environment,
-              const FrameSenderConfig& audio_config,
-              StatusChangeOnceCallback status_change_cb,
-              CastTransport* const transport_sender);
 
   // New way of instantiating using an openscreen::cast::Sender. Since the
   // |Sender| instance is destroyed when renegotiation is complete, |this|
@@ -52,13 +45,13 @@ class AudioSender final : public FrameSender::Client {
   AudioSender(const AudioSender&) = delete;
   AudioSender& operator=(const AudioSender&) = delete;
 
-  ~AudioSender() final;
+  ~AudioSender() override;
 
   // Note: It is not guaranteed that |audio_frame| will actually be encoded and
   // sent, if AudioSender detects too many frames in flight.  Therefore, clients
   // should be careful about the rate at which this method is called.
-  void InsertAudio(std::unique_ptr<AudioBus> audio_bus,
-                   const base::TimeTicks& recorded_time);
+  virtual void InsertAudio(std::unique_ptr<AudioBus> audio_bus,
+                           base::TimeTicks recorded_time);
 
   void SetTargetPlayoutDelay(base::TimeDelta new_target_playout_delay);
   base::TimeDelta GetTargetPlayoutDelay() const;
@@ -67,6 +60,9 @@ class AudioSender final : public FrameSender::Client {
   base::WeakPtr<AudioSender> AsWeakPtr();
 
  protected:
+  // For mocking in unit tests.
+  AudioSender();
+
   // FrameSender::Client overrides.
   int GetNumberOfFramesInEncoder() const final;
   base::TimeDelta GetEncoderBacklogDuration() const final;
@@ -84,7 +80,7 @@ class AudioSender final : public FrameSender::Client {
   scoped_refptr<CastEnvironment> cast_environment_;
 
   // The number of RTP units advanced per second;
-  const int rtp_timebase_;
+  const int rtp_timebase_ = 0;
 
   // The backing frame sender implementation.
   std::unique_ptr<FrameSender> frame_sender_;

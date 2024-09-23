@@ -137,9 +137,6 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
   // process (or this thread object, in single-process mode).
   void DisconnectChildProcessHost();
 
-  virtual void RunServiceDeprecated(const std::string& service_name,
-                                    mojo::ScopedMessagePipeHandle service_pipe);
-
   virtual void BindServiceInterface(mojo::GenericPendingReceiver receiver);
 
   virtual void OnBindReceiver(mojo::GenericPendingReceiver receiver);
@@ -149,6 +146,8 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
 
   // Called when the process refcount is 0.
   virtual void OnProcessFinalRelease();
+
+  virtual void SetBatterySaverMode(bool battery_saver_mode_enabled);
 
   // Must be called by subclasses during initialization if and only if they set
   // |Options::expose_interfaces_to_browser| to |true|. This makes |binders|
@@ -177,13 +176,6 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
 #endif
 
  private:
-  // TODO(crbug.com/1111231): This class is a friend so that it can call our
-  // private mojo implementation methods, acting as a pass-through. This is only
-  // necessary during the associated interface migration, after which,
-  // AgentSchedulingGroup will not act as a pass-through to the private methods
-  // here. At that point we'll remove this friend class.
-  friend class AgentSchedulingGroup;
-
   class IOThreadState;
 
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)

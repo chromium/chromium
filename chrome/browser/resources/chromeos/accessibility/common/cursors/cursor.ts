@@ -11,6 +11,7 @@ import {AutomationPredicate} from '../automation_predicate.js';
 import {AutomationUtil} from '../automation_util.js';
 import {constants} from '../constants.js';
 import {StringUtil} from '../string_util.js';
+import {TestImportManager} from '../testing/test_import_manager.js';
 import {AutomationTreeWalker} from '../tree_walker.js';
 
 import {AncestryRecoveryStrategy, RecoveryStrategy} from './recovery_strategy.js';
@@ -682,3 +683,5 @@ export class WrappingCursor extends Cursor {
     return new WrappingCursor(result.node, result.index);
   }
 }
+
+TestImportManager.exportForTesting(Cursor);

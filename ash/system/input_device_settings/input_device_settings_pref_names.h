@@ -33,6 +33,11 @@ inline constexpr char kPeripheralNotificationMiceSeen[] =
 inline constexpr char kPeripheralNotificationGraphicsTabletsSeen[] =
     "settings.graphics_tablet.peripheral_notification_seen";
 
+// Prefs which contain peripheral devices that have seen the enhanced
+// "Welcome Experience" notification.
+inline constexpr char kWelcomeExperienceNotificationSeen[] =
+    "settings.device.welcome_experience_notification_seen";
+
 // Prefs which contain login screen settings for connected external devices.
 inline constexpr char kKeyboardLoginScreenExternalSettingsPref[] =
     "settings.keyboard.external";
@@ -73,6 +78,10 @@ inline constexpr char kKeyboardInternalSettings[] =
 // to be valid (ie false positives).
 inline constexpr char kKeyboardDeviceImpostersListPref[] =
     "settings.keyboard.imposter_false_positives";
+// Pref which contains a list of previously seen imposter mice that we know to
+// be valid (ie false positives).
+inline constexpr char kMouseDeviceImpostersListPref[] =
+    "settings.mouse.imposter_false_positives";
 
 // Prefs which contain dictionaries of button remappings for each connected
 // device.
@@ -113,6 +122,38 @@ inline constexpr char kTouchpadUpdateSettingsMetricInfo[] =
     "settings.touchpad.update_settings_info";
 inline constexpr char kPointingStickUpdateSettingsMetricInfo[] =
     "settings.pointing_stick.update_settings_info";
+inline constexpr char kTopRowRemappingNudgeShownCount[] =
+    "settings.keyboard.top_row_key_remapping_nudge_shown_count";
+inline constexpr char kPageUpRemappingNudgeShownCount[] =
+    "settings.keyboard.page_up_key_remapping_nudge_shown_count";
+inline constexpr char kPageDownRemappingNudgeShownCount[] =
+    "settings.keyboard.page_down_key_remapping_nudge_shown_count";
+inline constexpr char kHomeRemappingNudgeShownCount[] =
+    "settings.keyboard.home_key_remapping_nudge_shown_count";
+inline constexpr char kEndRemappingNudgeShownCount[] =
+    "settings.keyboard.end_key_remapping_nudge_shown_count";
+inline constexpr char kDeleteRemappingNudgeShownCount[] =
+    "settings.keyboard.delete_key_remapping_nudge_shown_count";
+inline constexpr char kInsertRemappingNudgeShownCount[] =
+    "settings.keyboard.insert_key_remapping_nudge_shown_count";
+inline constexpr char kCapsLockRemappingNudgeShownCount[] =
+    "settings.keyboard.caps_lock_remapping_nudge_shown_count";
+inline constexpr char kTopRowRemappingNudgeLastShown[] =
+    "settings.keyboard.top_row_key_remapping_nudge_last_shown";
+inline constexpr char kPageUpRemappingNudgeLastShown[] =
+    "settings.keyboard.page_up_key_remapping_nudge_last_shown";
+inline constexpr char kPageDownRemappingNudgeLastShown[] =
+    "settings.keyboard.page_down_key_remapping_nudge_last_shown";
+inline constexpr char kHomeRemappingNudgeLastShown[] =
+    "settings.keyboard.home_key_remapping_nudge_last_shown";
+inline constexpr char kEndRemappingNudgeLastShown[] =
+    "settings.keyboard.end_key_remapping_nudge_last_shown";
+inline constexpr char kDeleteRemappingNudgeLastShown[] =
+    "settings.keyboard.delete_key_remapping_nudge_last_shown";
+inline constexpr char kInsertRemappingNudgeLastShown[] =
+    "settings.keyboard.insert_key_remapping_nudge_last_shown";
+inline constexpr char kCapsLockRemappingNudgeLastShown[] =
+    "settings.keyboard.caps_lock_remapping_nudge_last_shown";
 
 // Mouse settings dictionary keys.
 inline constexpr char kMouseSettingSwapRight[] = "swap_right";
@@ -166,6 +207,10 @@ inline constexpr char kButtonRemappingStaticShortcutAction[] =
 
 // Last updated dictionary keys.
 inline constexpr char kLastUpdatedKey[] = "last_updated";
+
+// Preference key used to access a dictionary that maps device identifiers
+// to their corresponding image URLs.
+inline constexpr char kDeviceImagesDictPref[] = "settings.devices.images";
 
 }  // namespace ash::prefs
 

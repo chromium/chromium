@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit qurilmalari</translation>
 <translation id="3085752524577180175">SOCKS hosti</translation>
 <translation id="3104793765551262433">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Administrator tomonidan bloklangan, Batafsil</translation>
-<translation id="3113153474486991170">“<ph name="PATH" />” faylni bu joydan ochilmadi. Uni ochish uchun “Mening fayllarim” jildiga nusxalang.</translation>
 <translation id="3113592018909187986">Sizda 1 ta urinish qoldi. Yangi PIN kodni sozlamaguncha bu tarmoqdan foydalana olmaysiz.</translation>
 <translation id="3124404833828281817">Uyqusragan odam</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Bekor qilish <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Tarmoq: <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, faolsizlantirilgan, <ph name="CONNECTION_STATUS" />, signal kuchi <ph name="SIGNAL_STRENGTH" />%, tafsilotlar</translation>
 <translation id="3691184985318546178">Singal</translation>
+<translation id="3702842351052426940">SIM karta yoki eSIM profili faolsilantirilmadi. Boshqa SIM karta joylang yoki eSIM profillarini almashtiring.</translation>
 <translation id="3722341589402358578">Xatolik yuz berdi. Ayrim elementlar chiqindiga tushmasligi mumkin.</translation>
 <translation id="3726463242007121105">Bu qurilmani fayl tizimi qo‘llab-quvvatlanmasligi sababli ochib bo‘lmadi.</translation>
 <translation id="3727148787322499904">Bu parametrni o‘zgartirish barcha umumiy tarmoqlarga ta’sir qiladi</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Bu proksi-server sozlamalari administrator tomonidan belgilangan</translation>
 <translation id="3830674330436234648">Ijro etib bo‘lmaydi.</translation>
 <translation id="383652340667548381">Serb tili</translation>
+<translation id="3839045880592694915">Aloqa operatori modem orqali ulanishni taqiqlagan. Batafsil axborot uchun aloqa operatoriga murojaat qiling.</translation>
 <translation id="385051799172605136">Orqaga</translation>
-<translation id="3851491607336266896">Ulangan, lekin aloqa cheklangan</translation>
 <translation id="3855472144336161447">Nemis Neo 2</translation>
 <translation id="3858860766373142691">Ism</translation>
 <translation id="3866249974567520381">Tavsif</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Yaqinda ochilgan OneDrive omboriga olingan Microsoft fayllari</translation>
 <translation id="4002066346123236978">Nomi</translation>
 <translation id="4017788180641807848">Ingliz (AQSH) va Workman klaviaturasi</translation>
-<translation id="4019998208269143058">Tezkor fayllarga mahkamlash</translation>
 <translation id="4040753847560036377">PUK kod xato</translation>
 <translation id="4057991113334098539">Faollashtirilmoqda...</translation>
 <translation id="4092890906744441904">Irland</translation>
+<translation id="4101601646343868113">Mobil tarmoq hisobiga kiring va mobil internet tarifi yoniqligini tasdiqlang</translation>
 <translation id="4124731372776320263">1 ta Drive fayli sinxronlanmoqda</translation>
 <translation id="4124935795427217608">Bir shoxli ot</translation>
 <translation id="4131235941541910880">Elementlarni boshqa jildga olish uchun chiqitdon kerak emas</translation>
@@ -605,6 +605,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5625294776298156701">Tamil (Tamil99 klaviaturasi)</translation>
 <translation id="5633226425545095130">Bu fayl koʻchirilsa, u <ph name="DESTINATION_NAME" /> jildiga ruxsati bor barcha foydalanuvchilarga ulashiladi.</translation>
 <translation id="5649768706273821470">Tinglash</translation>
+<translation id="5650895901941743674">APN konfiguratsiyasini tekshiring</translation>
 <translation id="5669691691057771421">Yangi PIN kodni kiriting</translation>
 <translation id="5678784840044122290">Linux ilovasi terminal ichida ham ishlaydi, shuningdek, Launcherda ham ikonkasi chiqadi.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Arxiv yoki virtual disk uzilmadi<ph name="END_BOLD" />
@@ -684,6 +685,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6267547857941397424">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Telefon nomi: <ph name="PHONE_NAME" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Telefon quvvati: <ph name="BATTERY_STATUS" />%, Ulanish</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6271903698064569429"><ph name="SHARED_DRIVE_NAME" /> omborida yetarli joy qolmagani uchun fayllar yuklanmadi.</translation>
+<translation id="6279140785485544797">Mobil internet tarifingiz muddati tugagan shekilli. Yordam uchun aloqa operatoriga murojaat qiling.</translation>
 <translation id="6287852322318138013">Ushbu faylni ochish uchun kerakli dasturni tanlang</translation>
 <translation id="6295542640242147836">SIM kartani qulflash</translation>
 <translation id="6296410173147755564">PUK kod xato</translation>
@@ -693,7 +695,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> arxiv</translation>
 <translation id="6321303798550928047">Salomlashish</translation>
 <translation id="6327785803543103246">Proksi-server avtomatik aniqlanishi</translation>
-<translation id="6337014272874260727">Tezkor fayllardan yechish</translation>
 <translation id="6339145975392024142">AQSH halqaro klaviaturasi (PC)</translation>
 <translation id="6356685157277930264">Fayllar haqida axborot oynasi</translation>
 <translation id="6358884629796491903">Ajdar</translation>
@@ -739,6 +740,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6750737795876287924">Joriy katalog</translation>
 <translation id="6751256176799620176">1 ta jild tanlandi</translation>
 <translation id="6755827872271341378">ChromeOS Flex qurilmasi</translation>
+<translation id="6777029074498310250">Batafsil: <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /></translation>
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="6794539005637808366">Faylni tiklang yoki uni chiqitdon tashqarisidagi yangi jildga sudrang.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -792,6 +794,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7086590977277044826">Tamil (InScript klaviaturasi)</translation>
 <translation id="7088615885725309056">Avvalgi</translation>
 <translation id="7103992300314999525">Makedon</translation>
+<translation id="7104338189998813914">OneDrive hisobingizga kirishda muammo chiqdi</translation>
 <translation id="7106346894903675391">Qo‘shimcha joy sotib olish...</translation>
 <translation id="7126604456862387217">“&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;” - &lt;em&gt;Google Diskdan qidirish&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada, fonetik</translation>
@@ -852,6 +855,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7589661784326793847">Kutib turing...</translation>
 <translation id="7600126690270271294">Serb</translation>
 <translation id="7603724359189955920">To‘r</translation>
+<translation id="7624010287655004652">Boshqa mobil operator tomonidan qulflangan</translation>
 <translation id="7627790789328695202">“<ph name="FILE_NAME" />” fayli allaqachon mavjud. Boshqa nom berib qaytadan urinib ko‘ring.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% bajarildi.</translation>
 <translation id="7649070708921625228">Yordam</translation>
@@ -1009,6 +1013,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8600173386174225982">Fayllar roʻyxati uchun saralash shakli eskizlarga almashdi.</translation>
 <translation id="8601932370724196034">Crostini tasvir fayli</translation>
 <translation id="8609695766746872526">Island</translation>
+<translation id="8630384863424041081">SIM karta PIN kodini yoki aloqa operatori taqdim etgan standart PIN kodni kiriting. Yordam uchun aloqa operatoriga murojaat qiling.</translation>
 <translation id="863903787380594467">PIN kod xato. Sizda <ph name="RETRIES" /> ta urinish qoldi.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Oflayn fayllar olib tashlandi</translation>
@@ -1018,7 +1023,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8698877009525468705">Bu maxfiy fayl va administrator siyosati tomonidan taqiqlanishi mumkin.</translation>
 <translation id="8712637175834984815">Tushunarli</translation>
 <translation id="8713112442029511308">Malta</translation>
-<translation id="8714138378966541668">Taʼminotchi qulflagan</translation>
 <translation id="8714406895390098252">Velosiped</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> tanlandi.</translation>
 <translation id="872537912056138402">Xorvat</translation>

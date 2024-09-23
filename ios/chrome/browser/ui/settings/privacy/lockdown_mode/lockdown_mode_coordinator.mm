@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/privacy/lockdown_mode/lockdown_mode_mediator.h"
 #import "ios/chrome/browser/ui/settings/privacy/lockdown_mode/lockdown_mode_view_controller.h"
@@ -38,8 +38,7 @@
   self.viewController =
       [[LockdownModeViewController alloc] initWithStyle:ChromeTableViewStyle()];
   self.viewController.presentationDelegate = self;
-  self.mediator = [[LockdownModeMediator alloc]
-      initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()];
+  self.mediator = [[LockdownModeMediator alloc] init];
   self.mediator.consumer = self.viewController;
   self.viewController.modelDelegate = self.mediator;
   DCHECK(self.baseNavigationController);

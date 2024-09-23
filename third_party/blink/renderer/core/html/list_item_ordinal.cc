@@ -8,26 +8,32 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/html/html_menu_element.h"
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
+#include "third_party/blink/renderer/core/html/html_ulist_element.h"
 #include "third_party/blink/renderer/core/layout/list/layout_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 ListItemOrdinal::ListItemOrdinal() : type_(kNeedsUpdate) {}
 
-bool ListItemOrdinal::IsList(const Node& node) {
-  // Counters can not cross elements with style containment, hence we
-  // pretend such elements are lists for the purposes of calculating ordinal
-  // values.
-  //
-  // https://drafts.csswg.org/css-contain-2/#containment-style
+bool ListItemOrdinal::IsListOwner(const Node& node) {
+  // Counters must not cross the list owner, which can be either <ol>, <ul>,
+  // or <menu> element. Additionally, counters should not cross elements that
+  // have style containment, hence we pretend such elements are list owners for
+  // the purposes of calculating ordinal values.
+  // See https://html.spec.whatwg.org/#the-li-element and
+  // https://drafts.csswg.org/css-contain-2/#containment-style for more details.
   return IsA<HTMLUListElement>(node) || IsA<HTMLOListElement>(node) ||
+         (RuntimeEnabledFeatures::HTMLMenuElementIsListOwnerEnabled() &&
+          IsA<HTMLMenuElement>(node)) ||
          HasStyleContainment(node);
 }
 
 bool ListItemOrdinal::IsListItem(const LayoutObject* layout_object) {
-  return layout_object && layout_object->IsListItemIncludingNG();
+  return layout_object && layout_object->IsListItem();
 }
 
 bool ListItemOrdinal::IsListItem(const Node& node) {
@@ -66,15 +72,16 @@ Node* ListItemOrdinal::EnclosingList(const Node* list_item_node) {
   // not Element.
   for (Node* parent = FlatTreeTraversal::Parent(*list_item_node); parent;
        parent = FlatTreeTraversal::Parent(*parent)) {
-    if (IsList(*parent))
+    if (IsListOwner(*parent)) {
       return parent;
+    }
     if (!first_node)
       first_node = parent;
   }
 
-  // If there's no actual <ul> or <ol> list element, then the first found
-  // node acts as our list for purposes of determining what other list items
-  // should be numbered as part of the same list.
+  // If there is no actual list element such as <ul>, <ol>, or <menu>, then the
+  // first found node acts as our list for purposes of determining what other
+  // list items should be numbered as part of the same list.
   return first_node;
 }
 
@@ -90,7 +97,7 @@ ListItemOrdinal::NodeAndOrdinal ListItemOrdinal::NextListItem(
   current = LayoutTreeBuilderTraversal::Next(*current, list_node);
 
   while (current) {
-    if (IsList(*current)) {
+    if (IsListOwner(*current)) {
       // We've found a nested, independent list: nothing to do here.
       current =
           LayoutTreeBuilderTraversal::NextSkippingChildren(*current, list_node);

@@ -44,8 +44,21 @@ class COMPOSITOR_EXPORT ThroughputTracker {
   // Cancels tracking. The supplied callback will not be invoked.
   void Cancel();
 
+  // Cancels the pending report after `Stop()` is called. The supplied callback
+  // will not be invoked after this. Note do not call this in the supplied
+  // callback.
+  // TODO(b/345297869): Merge with `Cancel`.
+  void CancelReport();
+
  private:
   friend class Compositor;
+
+  enum class State {
+    kNotStarted,     // Tracking is not started.
+    kStarted,        // Tracking is started.
+    kWaitForReport,  // Tracking is stopped and waits for report.
+    kCanceled,       // Tracking is stopped and reporting is canceled.
+  };
 
   // Private since it should only be created via Compositor's
   // RequestNewThroughputTracker call.
@@ -54,7 +67,7 @@ class COMPOSITOR_EXPORT ThroughputTracker {
   static const TrackerId kInvalidId = 0u;
   TrackerId id_ = kInvalidId;
   base::WeakPtr<ThroughputTrackerHost> host_;
-  bool started_ = false;
+  State state_ = State::kNotStarted;
 };
 
 }  // namespace ui

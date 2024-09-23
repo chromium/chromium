@@ -4,31 +4,31 @@
 
 #include "components/crash/android/crash_keys_android.h"
 
+#include <array>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "components/crash/android/jni_headers/CrashKeys_jni.h"
 #include "components/crash/core/common/crash_key.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/crash/android/jni_headers/CrashKeys_jni.h"
 
 namespace {
 
 using JavaCrashKey = crash_reporter::CrashKeyString<64>;
+using BigJavaCrashKey = crash_reporter::CrashKeyString<256>;
 
-JavaCrashKey& GetCrashKey(int index) {
+BigJavaCrashKey g_installed_modules_key("installed_modules");
+
+JavaCrashKey& GetCrashKey(jint index) {
   // See CrashKeys.java for how to add a new crash key.
-  static JavaCrashKey crash_keys[] = {
-      {"loaded_dynamic_module", JavaCrashKey::Tag::kArray},
-      {"active_dynamic_module", JavaCrashKey::Tag::kArray},
-      {"application_status", JavaCrashKey::Tag::kArray},
-      {"installed_modules", JavaCrashKey::Tag::kArray},
-      {"emulated_modules", JavaCrashKey::Tag::kArray},
-      {"dynamic_module_dex_name", JavaCrashKey::Tag::kArray},
-      {"partner_customization_config", JavaCrashKey::Tag::kArray},
-      {"first_run", JavaCrashKey::Tag::kArray},
-  };
-  static_assert(
-      std::size(crash_keys) == static_cast<size_t>(CrashKeyIndex::NUM_ENTRIES),
-      "crash_keys out of sync with index enum");
-
+  static std::array<JavaCrashKey,
+                    static_cast<size_t>(CrashKeyIndex::NUM_SMALL_KEYS)>
+      crash_keys{{
+          {"application_status", JavaCrashKey::Tag::kArray},
+          {"partner_customization_config", JavaCrashKey::Tag::kArray},
+          {"first_run", JavaCrashKey::Tag::kArray},
+      }};
   return crash_keys[index];
 }
 
@@ -62,8 +62,17 @@ static void JNI_CrashKeys_Set(
     jint key,
     const base::android::JavaParamRef<jstring>& value) {
   if (value.is_null()) {
-    GetCrashKey(key).Clear();
+    if (key == static_cast<jint>(CrashKeyIndex::INSTALLED_MODULES)) {
+      g_installed_modules_key.Clear();
+    } else {
+      GetCrashKey(key).Clear();
+    }
   } else {
-    GetCrashKey(key).Set(base::android::ConvertJavaStringToUTF8(env, value));
+    std::string val = base::android::ConvertJavaStringToUTF8(env, value);
+    if (key == static_cast<jint>(CrashKeyIndex::INSTALLED_MODULES)) {
+      g_installed_modules_key.Set(val);
+    } else {
+      GetCrashKey(key).Set(val);
+    }
   }
 }

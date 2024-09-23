@@ -27,14 +27,6 @@ export function isRgbKeyboardSupported() {
   return loadTimeData.getBoolean('isRgbKeyboardSupported');
 }
 
-export function isScreenSaverDurationEnabled() {
-  return loadTimeData.getBoolean('isScreenSaverDurationEnabled');
-}
-
-export function isPersonalizationJellyEnabled() {
-  return loadTimeData.getBoolean('isPersonalizationJellyEnabled');
-}
-
 export function isMultiZoneRgbKeyboardSupported() {
   return loadTimeData.getInteger('keyboardBacklightZoneCount') > 1;
 }
@@ -49,11 +41,6 @@ export function isTimeOfDayScreenSaverEnabled() {
 
 export function isTimeOfDayWallpaperEnabled() {
   return loadTimeData.getBoolean('isTimeOfDayWallpaperEnabled');
-}
-
-export function isTimeOfDayWallpaperForcedAutoScheduleEnabled() {
-  return loadTimeData.getBoolean(
-      'isTimeOfDayWallpaperForcedAutoScheduleEnabled');
 }
 
 export function isCrosPrivacyHubLocationEnabled() {

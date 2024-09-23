@@ -4,7 +4,13 @@
 
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//services/screen_ai/buildflags/features.gni")
+import("//services/video_effects/args.gni")
 import("//testing/test.gni")
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+}
 
 # One Big Target for services to register their unit test sources. This exists
 # to avoid having to maintain a separate test binary for every service.
@@ -53,6 +59,7 @@ test("services_unittests") {
       "//services/viz/public/cpp/gpu:tests",
       "//services/viz/public/cpp/hit_test:tests",
       "//services/webnn:tests",
+      "//services/webnn/public/mojom:tests",
     ]
     if (is_ios) {
       bundle_deps =
@@ -86,13 +93,24 @@ test("services_unittests") {
       # Some tests need to initialize V8.
       "//gin:v8_snapshot_assets",
     ]
+
+    if (enable_chrome_android_internal) {
+      data_deps += [ "//clank/build/bot/filters:services_unittests_filters" ]
+    }
   }
 
   if (!is_android && !is_ios) {
     # NOTE: We do not currently support standalone service binaries on Android
     # or iOS, so any tests which use the ServiceTest framework to connect to
     # standalone services must be added here.
-    deps += [ "//services/video_capture:tests" ]
+    deps += [
+      "//services/passage_embeddings:tests",
+      "//services/video_capture:tests",
+    ]
+  }
+
+  if (enable_video_effects) {
+    deps += [ "//services/video_effects:tests" ]
   }
 
   if (is_fuchsia) {
@@ -100,6 +118,10 @@ test("services_unittests") {
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
       "//build/config/fuchsia/test/network.shard.test-cml",
     ]
+  }
+
+  if (enable_screen_ai_service) {
+    deps += [ "//services/screen_ai:unit_tests" ]
   }
 }
 

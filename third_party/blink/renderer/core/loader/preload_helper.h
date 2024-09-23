@@ -42,7 +42,8 @@ class PreloadHelper final {
       LoadLinksFromHeaderMode,
       const ViewportDescription*,  // can be nullptr
       std::unique_ptr<AlternateSignedExchangeResourceInfo>,
-      const base::UnguessableToken* /* can be nullptr */);
+      const base::UnguessableToken*
+          recursive_prefetch_token /* can be nullptr */);
   static Resource* StartPreload(ResourceType, FetchParameters&, Document&);
 
   // Currently only used for UseCounter.
@@ -73,9 +74,9 @@ class PreloadHelper final {
                                     Document&,
                                     const ViewportDescription*,
                                     PendingLinkPreload*);
-  static void FetchDictionaryIfNeeded(const LinkLoadParameters&,
-                                      Document&,
-                                      PendingLinkPreload*);
+  static void FetchCompressionDictionaryIfNeeded(const LinkLoadParameters&,
+                                                 Document&,
+                                                 PendingLinkPreload*);
 
   static std::optional<ResourceType> GetResourceTypeFromAsAttribute(
       const String& as);

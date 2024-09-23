@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/downgrade/user_data_downgrade.h"
-
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/mock_callback.h"
@@ -22,6 +20,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/downgrade/downgrade_manager.h"
+#include "chrome/browser/downgrade/user_data_downgrade.h"
 #include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -66,8 +65,8 @@ MATCHER_P(HasSwitch, switch_name, "") {
   return arg.HasSwitch(switch_name);
 }
 
-int GetPrePrefixCount(base::StringPiece test_name) {
-  static constexpr base::StringPiece kPrePrefix("PRE_");
+int GetPrePrefixCount(std::string_view test_name) {
+  static constexpr std::string_view kPrePrefix("PRE_");
   int pre_count = 0;
   while (
       base::StartsWith(test_name, kPrePrefix, base::CompareCase::SENSITIVE)) {
@@ -284,12 +283,19 @@ class BookmarksSnapshotTest : public UserDataSnapshotBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(BookmarksSnapshotTest, PRE_PRE_PRE_Test) {}
 IN_PROC_BROWSER_TEST_F(BookmarksSnapshotTest, PRE_PRE_Test) {}
 IN_PROC_BROWSER_TEST_F(BookmarksSnapshotTest, PRE_Test) {}
-IN_PROC_BROWSER_TEST_F(BookmarksSnapshotTest, Test) {}
+// TODO(crbug.com/326168468): Flaky on TSan.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_Test DISABLED_Test
+#else
+#define MAYBE_Test Test
+#endif
+IN_PROC_BROWSER_TEST_F(BookmarksSnapshotTest, MAYBE_Test) {}
+#undef MAYBE_Test
 
 class HistorySnapshotTest : public UserDataSnapshotBrowserTestBase {
   struct HistoryEntry {
-    HistoryEntry(base::StringPiece url,
-                 base::StringPiece title,
+    HistoryEntry(std::string_view url,
+                 std::string_view title,
                  base::Time time,
                  history::VisitSource source)
         : url(url),
@@ -381,7 +387,14 @@ class HistorySnapshotTest : public UserDataSnapshotBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(HistorySnapshotTest, PRE_PRE_PRE_Test) {}
 IN_PROC_BROWSER_TEST_F(HistorySnapshotTest, PRE_PRE_Test) {}
 IN_PROC_BROWSER_TEST_F(HistorySnapshotTest, PRE_Test) {}
-IN_PROC_BROWSER_TEST_F(HistorySnapshotTest, Test) {}
+// TODO(crbug.com/326168468): Flaky on TSan.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_Test DISABLED_Test
+#else
+#define MAYBE_Test Test
+#endif
+IN_PROC_BROWSER_TEST_F(HistorySnapshotTest, MAYBE_Test) {}
+#undef MAYBE_Test
 
 class TabsSnapshotTest : public UserDataSnapshotBrowserTestBase {
  protected:
@@ -392,13 +405,18 @@ class TabsSnapshotTest : public UserDataSnapshotBrowserTestBase {
 
   void SimulateUserActions() override {
     browser()->profile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 1);
-    browser()->OpenURL(content::OpenURLParams(
-        embedded_test_server()->GetURL("/title1.html"), content::Referrer(),
-        WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
-    browser()->OpenURL(content::OpenURLParams(
-        embedded_test_server()->GetURL("/title2.html"), content::Referrer(),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-        false));
+    browser()->OpenURL(
+        content::OpenURLParams(embedded_test_server()->GetURL("/title1.html"),
+                               content::Referrer(),
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui::PAGE_TRANSITION_TYPED, false),
+        /*navigation_handle_callback=*/{});
+    browser()->OpenURL(
+        content::OpenURLParams(embedded_test_server()->GetURL("/title2.html"),
+                               content::Referrer(),
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui::PAGE_TRANSITION_LINK, false),
+        /*navigation_handle_callback=*/{});
   }
 
   void ValidateUserActions() override {
@@ -430,7 +448,14 @@ class TabsSnapshotTest : public UserDataSnapshotBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(TabsSnapshotTest, PRE_PRE_PRE_Test) {}
 IN_PROC_BROWSER_TEST_F(TabsSnapshotTest, PRE_PRE_Test) {}
 IN_PROC_BROWSER_TEST_F(TabsSnapshotTest, PRE_Test) {}
-IN_PROC_BROWSER_TEST_F(TabsSnapshotTest, Test) {}
+// TODO(crbug.com/326168468): Flaky on TSan.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_Test DISABLED_Test
+#else
+#define MAYBE_Test Test
+#endif
+IN_PROC_BROWSER_TEST_F(TabsSnapshotTest, MAYBE_Test) {}
+#undef MAYBE_Test
 
 // Tests that Google Chrome does not takes snapshots on mid-milestone updates.
 IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, SameMilestoneSnapshot) {

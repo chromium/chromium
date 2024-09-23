@@ -188,6 +188,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   bool ValidateToplevelConfiguration(base::Value::Dict* result);
   bool ValidateNetworkConfiguration(base::Value::Dict* result);
   bool ValidateCellular(base::Value::Dict* result);
+  bool ValidateAPN(base::Value::Dict* result);
   bool ValidateEthernet(base::Value::Dict* result);
   bool ValidateIPConfig(base::Value::Dict* result, bool require_fields = true);
   bool ValidateNameServersConfig(base::Value::Dict* result);
@@ -267,6 +268,15 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
                                     const std::string& kGUID,
                                     std::set<std::string>* guids);
 
+  // Returns true if the list of admin APN IDs provided by the |dict|'s
+  // |key_list_of_ids| field are all non-empty. The function also adds the IDs
+  // to |admin_assigned_apn_ids_|. |key_list_of_ids| must be either
+  // onc::cellular::kAdminAssignedAPNIds or
+  // onc::global_network_config::kPSIMAdminAssignedAPNIds.
+  bool CheckAdminAssignedAPNIdsAreNonEmptyAndAddToSet(
+      const base::Value::Dict& dict,
+      const std::string& key_list_of_ids);
+
   // Prohibit global network configuration in user ONC imports.
   bool IsGlobalNetworkConfigInUserImport(const base::Value::Dict& onc_object);
 
@@ -287,6 +297,11 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   // Accumulates all network GUIDs during validation. Used to identify
   // duplicate GUIDs.
   std::set<std::string> network_guids_;
+
+  // Accumulates all admin assigned APN IDs during validation. Used to identify
+  // if the APNs provided by the admin at ::onc::toplevel_config::kAdminAPNList
+  // contains APNs for all admin APN IDs referenced.
+  std::set<std::string> admin_assigned_apn_ids_;
 
   // Accumulates all certificate GUIDs during validation. Used to identify
   // duplicate GUIDs.

@@ -110,7 +110,7 @@ class CC_EXPORT TileManagerClient {
 
   // Returns the sample count to use if MSAA is enabled for a tile.
   virtual int GetMSAASampleCountForRaster(
-      const scoped_refptr<DisplayItemList>& display_list) = 0;
+      const DisplayItemList& display_list) const = 0;
 
   // True if there is a pending tree.
   virtual bool HasPendingTree() = 0;
@@ -159,6 +159,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
               base::SequencedTaskRunner* origin_task_runner,
               scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
               size_t scheduled_raster_task_limit,
+              bool running_on_renderer_process,
               const TileManagerSettings& tile_manager_settings);
 
   TileManager(const TileManager&) = delete;
@@ -477,6 +478,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   raw_ptr<RasterBufferProvider, DanglingUntriaged> raster_buffer_provider_;
   GlobalStateThatImpactsTilePriority global_state_;
   size_t scheduled_raster_task_limit_;
+  const bool running_on_renderer_process_;
 
   const TileManagerSettings tile_manager_settings_;
   bool use_gpu_rasterization_;
@@ -509,7 +511,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   uint64_t prepare_tiles_count_;
   uint64_t next_tile_id_;
 
-  std::unordered_set<Tile*> pending_gpu_work_tiles_;
+  std::unordered_set<raw_ptr<Tile, CtnExperimental>> pending_gpu_work_tiles_;
   uint64_t pending_required_for_activation_callback_id_ = 0;
   uint64_t pending_required_for_draw_callback_id_ = 0;
   // If true, we should re-compute tile requirements in

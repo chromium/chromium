@@ -53,7 +53,7 @@ TEST_F(WebAppCommandSchedulerTest, FetchManifestAndInstall) {
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       web_contents()->GetWeakPtr(), base::DoNothing(), base::DoNothing(),
-      /*use_fallback=*/true);
+      FallbackBehavior::kCraftedManifestOnly);
 
   provider()->StartWithSubsystems();
   EXPECT_EQ(provider()->command_manager().GetStartedCommandCountForTesting(),

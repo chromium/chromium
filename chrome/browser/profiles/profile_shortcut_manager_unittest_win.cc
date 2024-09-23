@@ -125,7 +125,7 @@ class ProfileShortcutManagerTest : public testing::Test {
 
     base::FilePath chrome_exe;
     if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
 

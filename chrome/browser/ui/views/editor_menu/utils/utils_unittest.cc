@@ -55,7 +55,7 @@ std::vector<GetEditorMenuBoundsTestParams> get_editor_menu_bounds_test_cases = {
                     /*y=*/TestScreen::kDefaultScreenBounds.height() / 2 +
                         kEditorMenuMarginDip),
                 gfx::Size(
-                    /*width=*/kEditorMenuWidthOnSideDip,
+                    /*width=*/kEditorMenuMinWidthDip,
                     /*height=*/kEditorMenuHeightForTestDip),
             },
     },
@@ -82,11 +82,11 @@ std::vector<GetEditorMenuBoundsTestParams> get_editor_menu_bounds_test_cases = {
         .editor_menu_bounds =
             {gfx::Point(
                  /*x=*/TestScreen::kDefaultScreenBounds.width() / 2 -
-                     kEditorMenuMarginDip - kEditorMenuWidthOnSideDip,
+                     kEditorMenuMarginDip - kEditorMenuMinWidthDip,
                  /*y=*/TestScreen::kDefaultScreenBounds.height() / 2 +
                      kEditorMenuMarginDip),
              gfx::Size(
-                 /*width=*/kEditorMenuWidthOnSideDip,
+                 /*width=*/kEditorMenuMinWidthDip,
                  /*height=*/kEditorMenuHeightForTestDip)},
     },
     // When:
@@ -101,11 +101,11 @@ std::vector<GetEditorMenuBoundsTestParams> get_editor_menu_bounds_test_cases = {
         .anchor_view_bounds =
             {
                 gfx::Point(
-                    /*x=*/kEditorMenuWidthOnSideDip + kEditorMenuMarginDip,
+                    /*x=*/kEditorMenuMinWidthDip + kEditorMenuMarginDip,
                     /*y=*/kEditorMenuHeightForTestDip + kEditorMenuMarginDip),
                 gfx::Size(
                     /*width=*/TestScreen::kDefaultScreenBounds.width() / 2 -
-                        kEditorMenuWidthOnSideDip - kEditorMenuMarginDip,
+                        kEditorMenuMinWidthDip - kEditorMenuMarginDip,
 
                     /*height=*/TestScreen::kDefaultScreenBounds.height() -
                         kEditorMenuHeightForTestDip * 2 -
@@ -114,11 +114,10 @@ std::vector<GetEditorMenuBoundsTestParams> get_editor_menu_bounds_test_cases = {
         .editor_menu_bounds =
             {
                 gfx::Point(
-                    /*x=*/kEditorMenuWidthOnSideDip + kEditorMenuMarginDip,
+                    /*x=*/kEditorMenuMinWidthDip + kEditorMenuMarginDip,
                     /*y=*/0),
                 gfx::Size(
-                    /*width=*/TestScreen::kDefaultScreenBounds.width() / 2 -
-                        kEditorMenuWidthOnSideDip - kEditorMenuMarginDip,
+                    /*width=*/kEditorMenuMinWidthDip,
                     /*height=*/kEditorMenuHeightForTestDip),
             },
     },
@@ -134,11 +133,11 @@ std::vector<GetEditorMenuBoundsTestParams> get_editor_menu_bounds_test_cases = {
         .anchor_view_bounds =
             {
                 gfx::Point(
-                    /*x=*/kEditorMenuWidthOnSideDip + kEditorMenuMarginDip,
+                    /*x=*/kEditorMenuMinWidthDip + kEditorMenuMarginDip,
                     /*y=*/kEditorMenuHeightForTestDip + kEditorMenuMarginDip),
                 gfx::Size(
                     /*width=*/TestScreen::kDefaultScreenBounds.width() / 2 -
-                        kEditorMenuWidthOnSideDip - kEditorMenuMarginDip,
+                        kEditorMenuMinWidthDip - kEditorMenuMarginDip,
                     /*height=*/TestScreen::kDefaultScreenBounds.height() -
                         kEditorMenuHeightForTestDip * 2 -
                         kEditorMenuMarginDip * 2),
@@ -146,12 +145,11 @@ std::vector<GetEditorMenuBoundsTestParams> get_editor_menu_bounds_test_cases = {
         .editor_menu_bounds =
             {
                 gfx::Point(
-                    /*x=*/kEditorMenuWidthOnSideDip + kEditorMenuMarginDip,
+                    /*x=*/kEditorMenuMinWidthDip + kEditorMenuMarginDip,
                     /*y=*/TestScreen::kDefaultScreenBounds.height() -
                         kEditorMenuHeightForTestDip),
                 gfx::Size(
-                    /*width=*/TestScreen::kDefaultScreenBounds.width() / 2 -
-                        kEditorMenuWidthOnSideDip - kEditorMenuMarginDip,
+                    /*width=*/kEditorMenuMinWidthDip,
                     /*height=*/kEditorMenuHeightForTestDip),
             },
     },
@@ -180,7 +178,7 @@ std::vector<GetEditorMenuBoundsTestParams> get_editor_menu_bounds_test_cases = {
                      kEditorMenuMarginDip,
                  /*y=*/0),
              gfx::Size(
-                 /*width=*/kEditorMenuWidthOnSideDip,
+                 /*width=*/kEditorMenuMinWidthDip,
                  /*height=*/kEditorMenuHeightForTestDip)},
     },
     // When:
@@ -209,7 +207,7 @@ std::vector<GetEditorMenuBoundsTestParams> get_editor_menu_bounds_test_cases = {
                  /*y=*/TestScreen::kDefaultScreenBounds.height() -
                      kEditorMenuHeightForTestDip),
              gfx::Size(
-                 /*width=*/kEditorMenuWidthOnSideDip,
+                 /*width=*/kEditorMenuMinWidthDip,
                  /*height=*/kEditorMenuHeightForTestDip)},
     },
     // When:
@@ -234,10 +232,10 @@ std::vector<GetEditorMenuBoundsTestParams> get_editor_menu_bounds_test_cases = {
         .editor_menu_bounds =
             {gfx::Point(
                  /*x=*/TestScreen::kDefaultScreenBounds.width() / 2 -
-                     kEditorMenuMarginDip - kEditorMenuWidthOnSideDip,
+                     kEditorMenuMarginDip - kEditorMenuMinWidthDip,
                  /*y=*/0),
              gfx::Size(
-                 /*width=*/kEditorMenuWidthOnSideDip,
+                 /*width=*/kEditorMenuMinWidthDip,
                  /*height=*/kEditorMenuHeightForTestDip)},
     },
     // When:
@@ -262,19 +260,20 @@ std::vector<GetEditorMenuBoundsTestParams> get_editor_menu_bounds_test_cases = {
         .editor_menu_bounds =
             {gfx::Point(
                  /*x=*/TestScreen::kDefaultScreenBounds.width() / 2 -
-                     kEditorMenuMarginDip - kEditorMenuWidthOnSideDip,
+                     kEditorMenuMarginDip - kEditorMenuMinWidthDip,
                  /*y=*/TestScreen::kDefaultScreenBounds.height() -
                      kEditorMenuHeightForTestDip),
              gfx::Size(
-                 /*width=*/kEditorMenuWidthOnSideDip,
+                 /*width=*/kEditorMenuMinWidthDip,
                  /*height=*/kEditorMenuHeightForTestDip)},
     },
 };
 
 class MockView : public views::View {
  public:
-  int GetHeightForWidth(int width) const override {
-    return kEditorMenuHeightForTestDip;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    return gfx::Size(kEditorMenuMinWidthDip, kEditorMenuHeightForTestDip);
   }
 };
 

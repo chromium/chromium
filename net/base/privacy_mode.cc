@@ -19,7 +19,7 @@ const char* PrivacyModeToDebugString(PrivacyMode privacy_mode) {
     case PRIVACY_MODE_ENABLED_PARTITIONED_STATE_ALLOWED:
       return "enabled partitioned state allowed";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

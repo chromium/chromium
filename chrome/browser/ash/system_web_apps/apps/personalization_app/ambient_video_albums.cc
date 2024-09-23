@@ -20,8 +20,8 @@ namespace {
 
 struct VideoAlbumInfo {
   AmbientVideo video;
-  base::StringPiece id;
-  base::StringPiece url;
+  std::string_view id;
+  std::string_view url;
   int title_resource_id;
 };
 
@@ -58,7 +58,7 @@ void AppendAmbientVideoAlbums(AmbientVideo currently_selected_video,
   }
 }
 
-std::optional<AmbientVideo> FindAmbientVideoByAlbumId(base::StringPiece id) {
+std::optional<AmbientVideo> FindAmbientVideoByAlbumId(std::string_view id) {
   for (const VideoAlbumInfo& album_info : kAllVideoAlbumInfo) {
     if (album_info.id == id) {
       return album_info.video;

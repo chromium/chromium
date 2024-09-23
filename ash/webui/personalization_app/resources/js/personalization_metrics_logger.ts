@@ -5,14 +5,15 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {ColorScheme} from '../color_scheme.mojom-webui.js';
-import {StaticColor} from '../personalization_app.mojom-webui.js';
+import {StaticColor, TopicSource} from '../personalization_app.mojom-webui.js';
 
+import {GeolocationAccessLevel} from './geolocation_dialog.js';
 import {Paths} from './personalization_router_element.js';
 
 // Numerical values are used for metrics; do not change or reuse values. These
 // enum values map to Paths enum string values from
 // personalization_router_element.ts.
-enum MetricsPath {
+const enum MetricsPath {
   AMBIENT = 0,
   AMBIENT_ALBUMS = 1,
   WALLPAPER_COLLECTION_IMAGES = 2,
@@ -23,15 +24,19 @@ enum MetricsPath {
   USER = 7,
   WALLPAPER_SEA_PEN_COLLECTION = 8,
   WALLPAPER_SEA_PEN_RESULTS = 9,
+  WALLPAPER_SEA_PEN_FREEFORM = 10,
 
-  MAX_VALUE = WALLPAPER_SEA_PEN_RESULTS,
+  MAX_VALUE = WALLPAPER_SEA_PEN_FREEFORM,
 }
 
 const enum HistogramName {
   PATH = 'Ash.Personalization.Path',
+  AMBIENT_ALBUMS_PATH = 'Ash.Personalization.AmbientMode.AlbumsPath',
   AMBIENT_OPTIN = 'Ash.Personalization.AmbientMode.OptIn',
   AMBIENT_PERFORMANCE_GOOGLE_PHOTOS_PREVIEWS =
       'Ash.Personalization.Ambient.GooglePhotosPreviewsLoadTime',
+  AMBIENT_LINK_TO_GOOGLE_PHOTOS_CLICKED =
+      'Ash.Personalization.Ambient.LinkToGooglePhotosClicked',
   DYNAMIC_COLOR_COLOR_SCHEME_BUTTON =
       'Ash.Personalization.DynamicColor.ColorSchemeButton',
   DYNAMIC_COLOR_STATIC_COLOR_BUTTON =
@@ -39,6 +44,8 @@ const enum HistogramName {
   DYNAMIC_COLOR_TOGGLE_BUTTON = 'Ash.Personalization.DynamicColor.ToggleButton',
   KEYBOARD_BACKLIGHT_OPEN_ZONE_CUSTOMIZATION =
       'Ash.Personalization.KeyboardBacklight.OpenZoneCustomization',
+  LOCATION_PERMISSION_CHANGE_FROM_DIALOG =
+      'ChromeOS.PrivacyHub.Geolocation.AccessLevelChanged.GeolocationDialog',
 }
 
 function toMetricsEnum(path: Paths) {
@@ -63,6 +70,8 @@ function toMetricsEnum(path: Paths) {
       return MetricsPath.WALLPAPER_SEA_PEN_COLLECTION;
     case Paths.SEA_PEN_RESULTS:
       return MetricsPath.WALLPAPER_SEA_PEN_RESULTS;
+    case Paths.SEA_PEN_FREEFORM:
+      return MetricsPath.WALLPAPER_SEA_PEN_FREEFORM;
   }
 }
 
@@ -71,6 +80,12 @@ export function logPersonalizationPathUMA(path: Paths) {
   assert(metricsPath <= MetricsPath.MAX_VALUE);
   chrome.metricsPrivate.recordEnumerationValue(
       HistogramName.PATH, metricsPath, MetricsPath.MAX_VALUE + 1);
+}
+
+export function logAmbientAlbumsPathUMA(topicSource: TopicSource) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      HistogramName.AMBIENT_ALBUMS_PATH, topicSource,
+      TopicSource.MAX_VALUE + 1);
 }
 
 export function logAmbientModeOptInUMA() {
@@ -106,4 +121,16 @@ export function logDynamicColorColorSchemeButtonClick(color: ColorScheme) {
   chrome.metricsPrivate.recordEnumerationValue(
       HistogramName.DYNAMIC_COLOR_COLOR_SCHEME_BUTTON, color,
       ColorScheme.MAX_VALUE);
+}
+
+export function logAmbientModeLinkToGooglePhotosClick() {
+  chrome.metricsPrivate.recordBoolean(
+      HistogramName.AMBIENT_LINK_TO_GOOGLE_PHOTOS_CLICKED, true);
+}
+
+export function logSystemLocationPermissionChange(
+    accessLevel: GeolocationAccessLevel) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      HistogramName.LOCATION_PERMISSION_CHANGE_FROM_DIALOG, accessLevel,
+      GeolocationAccessLevel.MAX_VALUE + 1);
 }

@@ -9,20 +9,16 @@
 #import <memory>
 #import <utility>
 
-#import "base/feature_list.h"
 #import "base/logging.h"
+#import "base/memory/ptr_util.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
-#import "ios/chrome/browser/infobars/model/infobar_ios.h"
-#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/infobars/model/infobar_utils.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -30,83 +26,58 @@
 #import "ui/base/models/image_model.h"
 
 // static
-bool ReSignInInfoBarDelegate::Create(ChromeBrowserState* browser_state,
-                                     web::WebState* web_state,
-                                     id<SigninPresenter> presenter) {
-  DCHECK(web_state);
-  infobars::InfoBarManager* infobar_manager =
-      InfoBarManagerImpl::FromWebState(web_state);
-  DCHECK(infobar_manager);
-
-  std::unique_ptr<infobars::InfoBar> infobar =
-      ReSignInInfoBarDelegate::CreateInfoBar(infobar_manager, browser_state,
-                                             presenter);
-  if (!infobar)
-    return false;
-  return !!infobar_manager->AddInfoBar(std::move(infobar));
-}
-
-// static
-std::unique_ptr<infobars::InfoBar> ReSignInInfoBarDelegate::CreateInfoBar(
-    infobars::InfoBarManager* infobar_manager,
-    ChromeBrowserState* browser_state,
-    id<SigninPresenter> presenter) {
-  DCHECK(infobar_manager);
-  std::unique_ptr<ReSignInInfoBarDelegate> delegate =
-      ReSignInInfoBarDelegate::CreateInfoBarDelegate(browser_state, presenter);
-  if (!delegate)
+std::unique_ptr<ReSignInInfoBarDelegate> ReSignInInfoBarDelegate::Create(
+    AuthenticationService* authentication_service,
+    signin::IdentityManager* identity_manager,
+    AppState* app_state,
+    id<SigninPresenter> signin_presenter) {
+  if (app_state.initStage != InitStageFinal) {
     return nullptr;
-  return CreateConfirmInfoBar(std::move(delegate));
-}
+  }
 
-// static
-std::unique_ptr<ReSignInInfoBarDelegate>
-ReSignInInfoBarDelegate::CreateInfoBarDelegate(
-    ChromeBrowserState* browser_state,
-    id<SigninPresenter> presenter) {
-  DCHECK(browser_state);
-  // Do not ask user to sign in if current profile is incognito.
-  if (browser_state->IsOffTheRecord())
+  if (!authentication_service) {
+    // Do not show the infobar on incognito.
     return nullptr;
-  // Returns null if user does not need to be prompted to sign in again.
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state);
-  // Don't show the notification if sign-in is not supported.
-  switch (authService->GetServiceStatus()) {
-    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-    case AuthenticationService::ServiceStatus::SigninAllowed:
-      break;
+  }
+
+  switch (authentication_service->GetServiceStatus()) {
     case AuthenticationService::ServiceStatus::SigninDisabledByUser:
     case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
     case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
       return nullptr;
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      break;
   }
-  if (!authService->ShouldReauthPromptForSignInAndSync())
-    return nullptr;
-  // Returns null if user has already signed in via some other path.
-  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    authService->ResetReauthPromptForSignInAndSync();
+
+  if (!authentication_service->ShouldReauthPromptForSignInAndSync()) {
     return nullptr;
   }
+
+  if (authentication_service->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    authentication_service->ResetReauthPromptForSignInAndSync();
+    return nullptr;
+  }
+
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
       signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR);
-  // User needs to be reminded to sign in again. Creates a new infobar delegate
-  // and returns it.
-  return std::make_unique<ReSignInInfoBarDelegate>(browser_state, presenter);
+  return base::WrapUnique(new ReSignInInfoBarDelegate(
+      authentication_service, identity_manager, signin_presenter));
 }
 
 ReSignInInfoBarDelegate::ReSignInInfoBarDelegate(
-    ChromeBrowserState* browser_state,
-    id<SigninPresenter> presenter)
-    : browser_state_(browser_state),
-      icon_(DefaultSymbolWithPointSize(kWarningFillSymbol,
-                                       kInfobarSymbolPointSize)),
-      presenter_(presenter) {
-  DCHECK(browser_state_);
-  DCHECK(!browser_state_->IsOffTheRecord());
+    AuthenticationService* authentication_service,
+    signin::IdentityManager* identity_manager,
+    id<SigninPresenter> signin_presenter)
+    : authentication_service_(authentication_service),
+      signin_presenter_(signin_presenter) {
+  identity_manager_observer_.Observe(identity_manager);
+  CHECK(authentication_service_);
+  CHECK(signin_presenter_);
 }
 
-ReSignInInfoBarDelegate::~ReSignInInfoBarDelegate() {}
+ReSignInInfoBarDelegate::~ReSignInInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 ReSignInInfoBarDelegate::GetIdentifier() const {
@@ -119,19 +90,13 @@ bool ReSignInInfoBarDelegate::ShouldExpire(
 }
 
 std::u16string ReSignInInfoBarDelegate::GetTitleText() const {
-  return base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos)
-             ? l10n_util::GetStringUTF16(
-                   IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_ENCRYPTION_FIX_NOW)
-             : std::u16string();
+  return l10n_util::GetStringUTF16(
+      IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_ENCRYPTION_FIX_NOW);
 }
 
 std::u16string ReSignInInfoBarDelegate::GetMessageText() const {
-  return base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos)
-             ? l10n_util::GetStringUTF16(
-                   IDS_IOS_SYNC_LOGIN_INFO_OUT_OF_DATE_WITH_UNO)
-             : l10n_util::GetStringUTF16(IDS_IOS_SYNC_LOGIN_INFO_OUT_OF_DATE);
+  return l10n_util::GetStringUTF16(
+      IDS_IOS_SYNC_LOGIN_INFO_OUT_OF_DATE_WITH_UNO);
 }
 
 int ReSignInInfoBarDelegate::GetButtons() const {
@@ -140,35 +105,45 @@ int ReSignInInfoBarDelegate::GetButtons() const {
 
 std::u16string ReSignInInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
-  return base::FeatureList::IsEnabled(
-             syncer::kReplaceSyncPromosWithSignInPromos)
-             ? l10n_util::GetStringUTF16(
-                   IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_BUTTON_LABEL)
-             : l10n_util::GetStringUTF16(
-                   IDS_IOS_SYNC_INFOBAR_SIGN_IN_SETTINGS_BUTTON_MOBILE);
+  return l10n_util::GetStringUTF16(
+      IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_BUTTON_LABEL);
 }
 
 ui::ImageModel ReSignInInfoBarDelegate::GetIcon() const {
-  return ui::ImageModel::FromImage(icon_);
+  return ui::ImageModel::FromImage(gfx::Image(
+      DefaultSymbolWithPointSize(kWarningFillSymbol, kInfobarSymbolPointSize)));
 }
 
 bool ReSignInInfoBarDelegate::Accept() {
   signin_metrics::RecordSigninUserActionForAccessPoint(
       signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kSigninAndSyncReauth
+      initWithOperation:AuthenticationOperation::kResignin
             accessPoint:signin_metrics::AccessPoint::
                             ACCESS_POINT_RESIGNIN_INFOBAR];
-  [presenter_ showSignin:command];
+  [signin_presenter_ showSignin:command];
 
   // Stop displaying the infobar once user interacted with it.
-  AuthenticationServiceFactory::GetForBrowserState(browser_state_)
-      ->ResetReauthPromptForSignInAndSync();
+  authentication_service_->ResetReauthPromptForSignInAndSync();
+  identity_manager_observer_.Reset();
   return true;
 }
 
 void ReSignInInfoBarDelegate::InfoBarDismissed() {
   // Stop displaying the infobar once user interacted with it.
-  AuthenticationServiceFactory::GetForBrowserState(browser_state_)
-      ->ResetReauthPromptForSignInAndSync();
+  authentication_service_->ResetReauthPromptForSignInAndSync();
+  identity_manager_observer_.Reset();
+}
+
+void ReSignInInfoBarDelegate::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      identity_manager_observer_.Reset();
+      infobar()->RemoveSelf();
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }

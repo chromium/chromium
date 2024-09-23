@@ -12,3 +12,47 @@ mojom("mojo_bindings") {
   public_deps =
       [ "//chrome/browser/ash/borealis:borealis_installer_types_mojom" ]
 }
+
+static_library("borealis_installer") {
+  sources = [
+    "borealis_installer_dialog.cc",
+    "borealis_installer_dialog.h",
+    "borealis_installer_page_handler.cc",
+    "borealis_installer_page_handler.h",
+    "borealis_installer_ui.cc",
+    "borealis_installer_ui.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/borealis",
+    "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//ui/web_dialogs",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:chrome_unscaled_resources",
+    "//chrome/browser/resources/chromeos/borealis_installer:resources",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/views/borealis",
+    "//chrome/browser/ui/webui:webui_util",
+    "//components/strings:components_strings",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/strings:ui_strings",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/borealis" ]
+}

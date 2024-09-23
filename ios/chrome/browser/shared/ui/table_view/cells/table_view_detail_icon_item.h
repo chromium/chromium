@@ -49,9 +49,14 @@ enum class BadgeType {
 // Default in no badge (BadgeType::kNone).
 @property(nonatomic, assign) BadgeType badgeType;
 
-// YES if multiple lines are allowed in the detail text. Value is ignored if
-// the layout constraint axis is set to horizontal. NO by default.
-@property(nonatomic, assign) BOOL allowMultilineDetailText;
+// Maximum number of lines for the `detailText`. It sets the numberOfLines of
+// the detailText UILabel. Value is ignored if the layout constraint axis is set
+// to horizontal. 1 by default.
+@property(nonatomic, assign) NSInteger detailTextNumberOfLines;
+
+// YES if the icon is centered vertically within the cell. NO if the icon is
+// aligned with the top of the cell. YES by default.
+@property(nonatomic, assign) BOOL iconCenteredVertically;
 
 @end
 
@@ -74,9 +79,14 @@ enum class BadgeType {
 // Custom label defined via the setter, if any.
 @property(nonatomic, strong) NSString* customAccessibilityLabel;
 
-// YES if multiple lines are allowed in the detail text. Value is ignored if
-// the layout constraint axis is set to horizontal. NO by default.
-@property(nonatomic, assign) BOOL allowMultilineDetailText;
+// Maximum number of lines for the `detailText`. It sets the numberOfLines of
+// the detailText UILabel. Value is ignored if the layout constraint axis is set
+// to horizontal. 1 by default.
+@property(nonatomic, assign) NSInteger detailTextNumberOfLines;
+
+// YES if the icon is centered vertically within the cell. NO if the icon is
+// aligned with the top of the cell. YES by default.
+@property(nonatomic, assign) BOOL iconCenteredVertically;
 
 // Sets the `image` that should be displayed at the leading edge of the cell
 // with a `tintColor`. If set to nil, the icon will be hidden and the text
@@ -96,6 +106,10 @@ enum class BadgeType {
 // they are activated while the axis is vertical, the app will crash through
 // CHECK. Remove the badge by setting the type to BadgeType::kNone.
 - (void)setBadgeType:(BadgeType)badgeType;
+
+// Updates the width of the icon background to match the width of the image it
+// contains.
+- (void)updateIconBackgroundWidthToFitContent:(BOOL)useCustomWidth;
 
 @end
 

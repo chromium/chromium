@@ -5,18 +5,21 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_DIAGNOSTICS_WEB_APP_ICON_HEALTH_CHECKS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_DIAGNOSTICS_WEB_APP_ICON_HEALTH_CHECKS_H_
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/web_applications/diagnostics/app_type_initialized_event.h"
-#include "chrome/browser/ui/web_applications/diagnostics/web_app_icon_diagnostic.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
 namespace web_app {
+
+struct WebAppIconDiagnosticResult;
 
 // Runs a suite of icon diagnostics on all installed web app icons at start up
 // (triggered by WebAppMetrics) and records aggregate metrics for any broken
@@ -37,17 +40,16 @@ class WebAppIconHealthChecks : public WebAppInstallManagerObserver {
  private:
   void RunDiagnostics();
   void SaveDiagnosticForApp(webapps::AppId app_id,
-                            std::optional<WebAppIconDiagnostic::Result> result);
+                            std::optional<WebAppIconDiagnosticResult> result);
   void RecordDiagnosticResults();
 
   raw_ptr<Profile> profile_ = nullptr;
   apps::AppType app_type_;
   AppTypeInitializedEvent web_apps_published_event_;
 
-  base::flat_map<webapps::AppId, std::unique_ptr<WebAppIconDiagnostic>>
-      running_diagnostics_;
+  base::flat_set<webapps::AppId> apps_running_icon_diagnostics_;
   base::RepeatingClosure run_complete_callback_;
-  std::vector<WebAppIconDiagnostic::Result> results_;
+  std::vector<WebAppIconDiagnosticResult> results_;
   base::OnceClosure done_callback_;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>

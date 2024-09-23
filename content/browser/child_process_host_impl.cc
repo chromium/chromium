@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/child_process_host_impl.h"
 
 #include <limits>
@@ -104,7 +109,7 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
       child_base_name +=
           GetContentClient()->browser()->GetChildProcessSuffix(flags);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     child_path = child_path.Append(child_base_name + ".app")
@@ -201,15 +206,6 @@ base::Process& ChildProcessHostImpl::GetPeerProcess() {
   return peer_process_;
 }
 
-// TODO(crbug.com/1328879): Remove this method when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-void ChildProcessHostImpl::RunServiceDeprecated(
-    const std::string& service_name,
-    mojo::ScopedMessagePipeHandle service_pipe) {
-  child_process_->RunServiceDeprecated(service_name, std::move(service_pipe));
-}
-#endif
-
 void ChildProcessHostImpl::ForceShutdown() {
   child_process_->ProcessShutdown();
 }
@@ -298,7 +294,8 @@ bool ChildProcessHostImpl::Send(IPC::Message* message) {
   return channel_->Send(message);
 }
 
-int ChildProcessHostImpl::GenerateChildProcessUniqueId() {
+// static
+int ChildProcessHost::GenerateChildProcessUniqueId() {
   // This function must be threadsafe.
   //
   // Historically, this function returned ids started with 1, so in several
@@ -326,8 +323,8 @@ uint64_t ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(
 
   // The hash value is incremented so that the tracing id is never equal to
   // MemoryDumpManager::kInvalidTracingProcessId.
-  return static_cast<uint64_t>(base::PersistentHash(
-             base::as_bytes(base::make_span(&child_process_id, 1u)))) +
+  return static_cast<uint64_t>(
+             base::PersistentHash(base::byte_span_from_ref(child_process_id))) +
          1;
 }
 
@@ -397,7 +394,7 @@ void ChildProcessHostImpl::OnChannelConnected(int32_t peer_pid) {
   // really no need to get this information from the child process when we
   // already have it.
   //
-  // TODO(crbug.com/616980): Remove the peer_pid argument altogether from
+  // TODO(crbug.com/41256971): Remove the peer_pid argument altogether from
   // IPC::Listener::OnChannelConnected.
   const base::Process& peer_process = GetPeerProcess();
   base::ProcessId pid =
@@ -436,5 +433,10 @@ void ChildProcessHostImpl::NotifyMemoryPressureToChildProcess(
   child_process()->OnMemoryPressure(level);
 }
 #endif
+
+void ChildProcessHostImpl::SetBatterySaverMode(
+    bool battery_saver_mode_enabled) {
+  child_process()->SetBatterySaverMode(battery_saver_mode_enabled);
+}
 
 }  // namespace content

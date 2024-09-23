@@ -4,42 +4,56 @@
 
 #include "base/android/jni_bytebuffer.h"
 
+#include "base/android/scoped_java_ref.h"
+#include "base/android_runtime_jni_headers/Buffer_jni.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace base::android {
 
-base::span<const uint8_t> JavaByteBufferToSpan(JNIEnv* env, jobject buffer) {
+base::span<const uint8_t> JavaByteBufferToSpan(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& buffer) {
   auto span = MaybeJavaByteBufferToSpan(env, buffer);
   CHECK(span.has_value());
   return *span;
 }
 
-base::span<uint8_t> JavaByteBufferToMutableSpan(JNIEnv* env, jobject buffer) {
+base::span<uint8_t> JavaByteBufferToMutableSpan(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& buffer) {
   auto span = MaybeJavaByteBufferToMutableSpan(env, buffer);
   CHECK(span.has_value());
   return *span;
 }
 
-absl::optional<base::span<const uint8_t>> MaybeJavaByteBufferToSpan(
+std::optional<base::span<const uint8_t>> MaybeJavaByteBufferToSpan(
     JNIEnv* env,
-    jobject buffer) {
+    const base::android::JavaRef<jobject>& buffer) {
   auto span = MaybeJavaByteBufferToMutableSpan(env, buffer);
-  return span ? absl::make_optional(base::span<const uint8_t>(*span))
-              : absl::nullopt;
+  return span ? std::make_optional(base::span<const uint8_t>(*span))
+              : std::nullopt;
 }
 
-absl::optional<base::span<uint8_t>> MaybeJavaByteBufferToMutableSpan(
+std::optional<base::span<uint8_t>> MaybeJavaByteBufferToMutableSpan(
     JNIEnv* env,
-    jobject buffer) {
-  void* data = env->GetDirectBufferAddress(buffer);
-  jlong size = env->GetDirectBufferCapacity(buffer);
+    const base::android::JavaRef<jobject>& buffer) {
+  void* data = env->GetDirectBufferAddress(buffer.obj());
 
-  if (!data || size < 0) {
-    return absl::nullopt;
+  size_t position =
+      static_cast<size_t>(JNI_Buffer::Java_Buffer_position(env, buffer));
+  size_t limit =
+      static_cast<size_t>(JNI_Buffer::Java_Buffer_limit(env, buffer));
+  size_t size = limit - position;
+
+  // !data && size == 0 is allowed - this is how a 0-length Buffer is
+  // represented.
+  if (!data && size > 0) {
+    return std::nullopt;
   }
 
-  return base::span<uint8_t>(static_cast<uint8_t*>(data),
-                             base::checked_cast<size_t>(size));
+  // SAFETY: This relies on the ByteBuffer to be internally valid.
+  return UNSAFE_BUFFERS(base::span<uint8_t>(static_cast<uint8_t*>(data), limit))
+      .subspan(position);
 }
 
 }  // namespace base::android

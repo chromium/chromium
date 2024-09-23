@@ -184,6 +184,7 @@ found in the LICENSE file.
 
         <meta-data android:name="org.chromium.webapk.shell_apk.isNewStyleWebApk" android:value="[[ use_new_splash ]]" />
         <meta-data android:name="org.chromium.webapk.shell_apk.enableSiteSettingsShortcut" android:value="{{{enable_site_settings_shortcut}}}" />
+        <meta-data android:name="org.chromium.webapk.shell_apk.hasCustomName" android:value="{{{has_custom_name}}}" />
         <service
             android:name="org.chromium.webapk.shell_apk.WebApkServiceFactory"
             android:exported="true"

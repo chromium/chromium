@@ -76,13 +76,4 @@ void PolicyContainer::AddContentSecurityPolicies(
       std::move(policies));
 }
 
-mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
-PolicyContainer::IssueKeepAliveHandle() {
-  mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
-      keep_alive_remote;
-  policy_container_host_remote_->IssueKeepAliveHandle(
-      keep_alive_remote.InitWithNewPipeAndPassReceiver());
-  return keep_alive_remote;
-}
-
 }  // namespace blink

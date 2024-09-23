@@ -6,7 +6,6 @@ package org.chromium.tools.errorprone.plugin;
 
 import static com.google.errorprone.matchers.Matchers.instanceMethod;
 
-import com.google.auto.service.AutoService;
 import com.google.errorprone.BugPattern;
 import com.google.errorprone.BugPattern.LinkType;
 import com.google.errorprone.BugPattern.SeverityLevel;
@@ -19,8 +18,10 @@ import com.google.errorprone.suppliers.Suppliers;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodInvocationTree;
 
+import org.chromium.build.annotations.ServiceImpl;
+
 /** Assert {@link android.content.res.Resources#getColor(int)} is not used. */
-@AutoService(BugChecker.class)
+@ServiceImpl(BugChecker.class)
 @BugPattern(
         name = "NoResourcesGetColor",
         summary = "Do not use android.content.res.Resources#getColor(int).",
@@ -39,7 +40,7 @@ public class NoResourcesGetColor extends BugChecker implements MethodInvocationT
                     .named(METHOD_NAME)
                     .withParameters(int.class.getName());
 
-    // TODO(https://crbug.com/1302803): Remove this in a separate change to minimize revert size.
+    // TODO(crbug.com/40825542): Remove this in a separate change to minimize revert size.
     public static boolean sEnabled = true;
 
     @Override

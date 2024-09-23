@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+
 #include "base/values.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/frame.mojom.h"
@@ -35,6 +36,7 @@ class ProgrammaticScriptInjector : public ScriptInjector {
   mojom::InjectionType script_type() const override;
   blink::mojom::UserActivationOption IsUserGesture() const override;
   mojom::ExecutionWorld GetExecutionWorld() const override;
+  const std::optional<std::string>& GetExecutionWorldId() const override;
   mojom::CSSOrigin GetCssOrigin() const override;
   mojom::CSSInjection::Operation GetCSSInjectionOperation() const override;
   blink::mojom::WantResultOption ExpectsResults() const override;

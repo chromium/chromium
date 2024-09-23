@@ -13,11 +13,9 @@
 #include "device/vr/openxr/openxr_util.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/ipc/common/android/android_hardware_buffer_utils.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
@@ -44,7 +42,15 @@ void OpenXrGraphicsBinding::GetRequiredExtensions(
 }
 
 OpenXrGraphicsBindingOpenGLES::OpenXrGraphicsBindingOpenGLES() = default;
-OpenXrGraphicsBindingOpenGLES::~OpenXrGraphicsBindingOpenGLES() = default;
+OpenXrGraphicsBindingOpenGLES::~OpenXrGraphicsBindingOpenGLES() {
+  if (back_buffer_fbo_) {
+    glDeleteFramebuffersEXT(1, &back_buffer_fbo_);
+  }
+
+  if (overlay_texture_.id) {
+    glDeleteTextures(1, &overlay_texture_.id);
+  }
+}
 
 bool OpenXrGraphicsBindingOpenGLES::Initialize(XrInstance instance,
                                                XrSystemId system) {
@@ -71,7 +77,7 @@ bool OpenXrGraphicsBindingOpenGLES::Initialize(XrInstance instance,
   // None of the other runtimes support ANGLE, so we disable it too for now.
   // TODO(alcooper): Investigate if we can support ANGLE or if we'll run into
   // similar problems as cardboard.
-  gl::init::DisableANGLE();
+  gl::DisableANGLE();
 
   // Everything below is a hacky first pass at making a session and likely needs
   // to be re-written with proper context/surfaces/types.
@@ -229,11 +235,9 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
   // The SharedImages created here will eventually be transferred to other
   // processes to have their contents written by WebGL and read via GL by
   // OpenXR.
-  uint32_t shared_image_usage =
+  gpu::SharedImageUsageSet shared_image_usage =
       gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
-
-  glGenTextures(1, &swap_chain_info.shared_buffer_texture);
 
   swap_chain_info.scoped_ahb_handle =
       gpu::CreateScopedHardwareBufferHandle(transfer_size, format, usage);
@@ -252,14 +256,15 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
   // actually done in the linear space. So set up our shared image to be linear.
   // Note that this matches the behavior in the D3D11 graphics binding as well.
   swap_chain_info.shared_image = sii->CreateSharedImage(
-      viz::SinglePlaneFormat::kRGBA_8888, transfer_size,
-      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                      gfx::ColorSpace::TransferID::LINEAR),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
-      "OpenXrGraphicsBinding", std::move(gmb_handle));
+      {viz::SinglePlaneFormat::kRGBA_8888, transfer_size,
+       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                       gfx::ColorSpace::TransferID::LINEAR),
+       shared_image_usage, "OpenXrGraphicsBinding"},
+      std::move(gmb_handle));
   CHECK(swap_chain_info.shared_image);
   swap_chain_info.sync_token = sii->GenVerifiedSyncToken();
-  DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(format));
+  DCHECK_EQ(swap_chain_info.shared_image->GetTextureTarget(),
+            static_cast<uint32_t>(GL_TEXTURE_2D));
 
   DVLOG(2) << ": CreateSharedImage, mailbox="
            << swap_chain_info.shared_image->mailbox().ToDebugString()
@@ -273,8 +278,13 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
     return;
   }
 
-  glBindTexture(GL_TEXTURE_EXTERNAL_OES, swap_chain_info.shared_buffer_texture);
-  glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image.get());
+  swap_chain_info.shared_buffer_texture.target =
+      XrImageTransportBase::SharedBufferTextureTarget();
+  glGenTextures(1, &swap_chain_info.shared_buffer_texture.id);
+  glBindTexture(swap_chain_info.shared_buffer_texture.target,
+                swap_chain_info.shared_buffer_texture.id);
+  glEGLImageTargetTexture2DOES(swap_chain_info.shared_buffer_texture.target,
+                               egl_image.get());
   swap_chain_info.local_eglimage = std::move(egl_image);
 }
 
@@ -299,7 +309,8 @@ const SwapChainInfo& OpenXrGraphicsBindingOpenGLES::GetActiveSwapchainImage() {
   return color_swapchain_images_[active_swapchain_index()];
 }
 
-bool OpenXrGraphicsBindingOpenGLES::Render() {
+bool OpenXrGraphicsBindingOpenGLES::Render(
+    const scoped_refptr<viz::ContextProvider>& context_provider) {
   if (!has_active_swapchain_image() ||
       active_swapchain_index() >= color_swapchain_images_.size()) {
     return false;
@@ -322,6 +333,7 @@ bool OpenXrGraphicsBindingOpenGLES::Render() {
   glDisable(GL_CULL_FACE);
   glDisable(GL_SCISSOR_TEST);
   glDisable(GL_POLYGON_OFFSET_FILL);
+  glDisable(GL_BLEND);
 
   // TODO(https://crbug.com/324596270): This shouldn't be necessary, but we
   // can't seem to get the image set up to be treated as linear any other way.
@@ -331,9 +343,41 @@ bool OpenXrGraphicsBindingOpenGLES::Render() {
   gfx::Transform transform;
   float transform_floats[16];
   transform.GetColMajorF(transform_floats);
-  renderer_->Draw(swap_chain_info.shared_buffer_texture, transform_floats);
+
+  if (webxr_visible_) {
+    renderer_->Draw(swap_chain_info.shared_buffer_texture, transform_floats);
+  }
+
+  if (overlay_visible_) {
+    glEnable(GL_FRAMEBUFFER_SRGB);
+    if (webxr_visible_) {
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    auto egl_image = gpu::CreateEGLImageFromAHardwareBuffer(
+        overlay_handle_.android_hardware_buffer.get());
+    if (!egl_image.is_valid()) {
+      return false;
+    }
+
+    if (!overlay_texture_.id) {
+      overlay_texture_.target =
+          XrImageTransportBase::SharedBufferTextureTarget();
+      glGenTextures(1, &overlay_texture_.id);
+    }
+
+    glBindTexture(overlay_texture_.target, overlay_texture_.id);
+    glEGLImageTargetTexture2DOES(overlay_texture_.target, egl_image.get());
+    renderer_->Draw(overlay_texture_, transform_floats);
+  }
 
   return true;
+}
+
+void OpenXrGraphicsBindingOpenGLES::CleanupWithoutSubmit() {
+  // Nothing to do, we store all of our necessary data on the active swapchain
+  // image, which gets recycled when the frame ends.
 }
 
 bool OpenXrGraphicsBindingOpenGLES::WaitOnFence(gfx::GpuFence& gpu_fence) {
@@ -353,6 +397,27 @@ void OpenXrGraphicsBindingOpenGLES::OnSwapchainImageActivated(
   CHECK(has_active_swapchain_image());
   CHECK(active_swapchain_index() < color_swapchain_images_.size());
   ResizeSharedBuffer(color_swapchain_images_[active_swapchain_index()], sii);
+}
+
+void OpenXrGraphicsBindingOpenGLES::SetOverlayAndWebXrVisibility(
+    bool overlay_visible,
+    bool webxr_visible) {
+  overlay_visible_ = overlay_visible;
+  webxr_visible_ = webxr_visible;
+}
+
+bool OpenXrGraphicsBindingOpenGLES::SetOverlayTexture(
+    gfx::GpuMemoryBufferHandle texture,
+    const gpu::SyncToken& sync_token,
+    const gfx::RectF& left,
+    const gfx::RectF& right) {
+  if (texture.is_null()) {
+    return false;
+  }
+
+  CHECK(texture.type == gfx::ANDROID_HARDWARE_BUFFER);
+  overlay_handle_ = std::move(texture);
+  return true;
 }
 
 }  // namespace device

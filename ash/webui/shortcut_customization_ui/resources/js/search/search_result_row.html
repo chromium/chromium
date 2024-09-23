@@ -105,14 +105,14 @@
                   as="modifierKey">
                 <shortcut-input-key key="[[modifierKey]]" key-state="modifier-selected"
                     narrow highlighted="[[selected]]"
-                    has-launcher-button="[[hasLauncherButton]]">
+                    meta-key="[[metaKey]]">
                 </shortcut-input-key>
               </template>
               <shortcut-input-key
                   key="[[getStandardAcceleratorKey(acceleratorInfo)]]"
                   key-state="alpha-numeric-selected" narrow
                   highlighted="[[selected]]"
-                  has-launcher-button="[[hasLauncherButton]]">
+                  meta-key="[[metaKey]]">
               </shortcut-input-key>
               <template is="dom-if"
                   if="[[shouldShowTextDivider(index, searchResult)]]">

@@ -1,0 +1,8 @@
+greywang@google.com
+hdchuong@chromium.org
+curtismcmullan@chromium.org
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+per-file *_mojom_traits*.*=set noparent
+per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS

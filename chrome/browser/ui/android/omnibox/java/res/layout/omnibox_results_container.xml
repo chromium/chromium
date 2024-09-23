@@ -11,5 +11,11 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:importantForAccessibility="yes"
-    android:descendantFocusability="blocksDescendants"
-    />
+    android:descendantFocusability="blocksDescendants">
+  <org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown
+      android:id="@+id/omnibox_suggestions_dropdown"
+      android:visibility="gone"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:clipToPadding="false"/>
+</FrameLayout>

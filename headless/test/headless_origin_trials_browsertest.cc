@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,
 
   // Ensures that createShadowRoot() is not defined, as no token is provided to
   // enable the WebComponents V0 origin trial.
-  // TODO(crbug.com/1050190): Implement a permanent, sample trial so this test
+  // TODO(crbug.com/40673000): Implement a permanent, sample trial so this test
   // doesn't rely on WebComponents V0, which will eventually go away.
   EXPECT_THAT(
       EvaluateScript(web_contents,

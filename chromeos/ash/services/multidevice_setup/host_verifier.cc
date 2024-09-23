@@ -20,7 +20,7 @@ void HostVerifier::AttemptVerificationNow() {
     PA_LOG(ERROR) << "HostVerifier::AttemptVerificationNow(): Attempted to "
                   << "start verification, but the current host has already "
                   << "been verified.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   PerformAttemptVerificationNow();

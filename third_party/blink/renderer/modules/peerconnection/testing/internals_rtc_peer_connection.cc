@@ -16,17 +16,18 @@ int InternalsRTCPeerConnection::peerConnectionCountLimit(Internals& internals) {
   return RTCPeerConnection::PeerConnectionCountLimit();
 }
 
-ScriptPromise
+ScriptPromise<IDLAny>
 InternalsRTCPeerConnection::waitForPeerConnectionDispatchEventsTaskCreated(
     ScriptState* script_state,
     Internals& internals,
     RTCPeerConnection* connection) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+  auto promise = resolver->Promise();
   CHECK(!connection->dispatch_events_task_created_callback_for_testing_);
   connection->dispatch_events_task_created_callback_for_testing_ =
       WTF::BindOnce(
-          [](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
+          [](ScriptPromiseResolver<IDLAny>* resolver) { resolver->Resolve(); },
           WrapPersistent(resolver));
   return promise;
 }

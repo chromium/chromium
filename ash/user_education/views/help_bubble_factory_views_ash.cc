@@ -21,6 +21,7 @@
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -78,7 +79,7 @@ bool HelpBubbleViewsAsh::ToggleFocusForAccessibility() {
   }
 
   bool set_focus = false;
-  if (anchor->IsAccessibilityFocusable()) {
+  if (anchor->GetViewAccessibility().IsAccessibilityFocusable()) {
 #if BUILDFLAG(IS_MAC)
     // Mac does not automatically pass activation on focus, so we have to do it
     // manually.

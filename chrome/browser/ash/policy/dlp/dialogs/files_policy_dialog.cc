@@ -21,6 +21,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/label.h"
@@ -45,6 +46,7 @@ std::u16string GetAccessibleLearnMoreLinkNameForBlockReason(
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_LEARN_MORE_ABOUT_MALWARE_PROTECTION_ACCESSIBLE_NAME);
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsScanFailed:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknownScanResult:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile:
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile:
@@ -66,6 +68,8 @@ PolicyDialogBase::ViewIds FilesPolicyDialog::MapBlockReasonToViewID(
       return PolicyDialogBase::kDlpSectionId;
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknownScanResult:
       return PolicyDialogBase::kEnterpriseConnectorsUnknownScanResultSectionId;
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsScanFailed:
+      return PolicyDialogBase::kEnterpriseConnectorsScanFailedResultSectionId;
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData:
       return PolicyDialogBase::kEnterpriseConnectorsSensitiveDataSectionId;
     case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware:
@@ -205,8 +209,8 @@ FilesPolicyDialog::FilesPolicyDialog(size_t file_count,
                                      dlp::FileAction action,
                                      gfx::NativeWindow modal_parent)
     : action_(action), file_count_(file_count) {
-  ui::ModalType modal =
-      modal_parent ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_SYSTEM;
+  ui::mojom::ModalType modal = modal_parent ? ui::mojom::ModalType::kWindow
+                                            : ui::mojom::ModalType::kSystem;
 
   set_margins(gfx::Insets::TLBR(24, 0, 20, 0));
 

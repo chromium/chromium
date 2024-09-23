@@ -37,6 +37,12 @@ class ASH_EXPORT BubbleView : public TrayBubbleView {
   BubbleView& operator=(const BubbleView&) = delete;
   ~BubbleView() override;
 
+  // Called when DLC download state updates, used to add and update a warning
+  // string.
+  void OnDLCDownloadStateInError(
+      bool add_warning_view,
+      const std::u16string& feature_tile_title_string);
+
   // views::View:
   void AddedToWidget() override;
   void ChildPreferredSizeChanged(View* child) override;
@@ -50,9 +56,14 @@ class ASH_EXPORT BubbleView : public TrayBubbleView {
   // Unowned by `BubbleView`.
   raw_ptr<VideoConferenceTrayController> controller_;
 
+  // String id's of all `FeatureTile`'s that have an error downloading.
+  std::set<std::u16string> feature_tile_error_string_ids_;
+
   const raw_ref<const MediaApps> media_apps_;
 
   raw_ptr<views::View> set_camera_background_view_ = nullptr;
+
+  base::WeakPtrFactory<BubbleView> weak_factory_{this};
 };
 
 }  // namespace video_conference

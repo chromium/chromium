@@ -166,9 +166,9 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
     # Verify seed has been updated successfully and it's different from the
     # injected test seed.
     #
-    # TODO(crbug.com/1234171): This test expectation may not work correctly when
-    # a field trial config under test does not affect a platform, so it requires
-    # more investigations to figure out the correct behavior.
+    # TODO(crbug.com/40191854): This test expectation may not work correctly
+    # when a field trial config under test does not affect a platform, so it
+    # requires more investigations to figure out the correct behavior.
     current_seed, current_signature = seed_helper.get_current_seed(
         self._user_data_dir())
     if current_seed == seed or current_signature == signature:

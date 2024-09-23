@@ -40,17 +40,30 @@ declare_args() {
   # connections use HTTPS.
   include_transport_security_state_preload_list = true
 
-  # Platforms for which certificate verification can be performed using the
-  # builtin cert verifier with the Chrome Root Store, and this can be
-  # configured using the ChromeRootStoreUsed feature flag. When the feature
-  # flag is false, verification may be done with the platform verifier or the
-  # builtin verifier using platform roots, depending on the platform.
-  # See https://crbug.com/1216547 for status.
+  # Platforms for which certificate verification can be performed either using
+  # the builtin cert verifier with the Chrome Root Store, or with the platform
+  # verifier.
+  #
+  # Currently this is used only for Android because WebView does not use the
+  # builtin cert verifier, but uses the Android cert verifier.
   chrome_root_store_optional = is_android && !is_cronet_build
 
   # Platforms for which certificate verification can only be performed using
   # the builtin cert verifier with the Chrome Root Store.
   chrome_root_store_only = is_win || is_mac || is_linux || is_chromeos
+
+  # DBSC is only supported on windows for now
+  enable_device_bound_sessions = is_win
+
+  # Bracketed URIs parsing is only available for debug builds.
+  # TODO(crbug.com/365771838): Ensure tests are updated if needed if this
+  # feature is changed at all.
+  enable_bracketed_proxy_uris = is_debug
+
+  # General QUIC proxy support is only available for debug builds.
+  # TODO(crbug.com/367400641): If flag is changed or removed, ensure all
+  # TODOs for this bug are correctly modified.
+  enable_quic_proxy_support = is_debug
 }
 
 assert(!chrome_root_store_optional || !chrome_root_store_only,

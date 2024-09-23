@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PAGE_ALLOCATOR_CONSTANTS_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PAGE_ALLOCATOR_CONSTANTS_H_
+#ifndef PARTITION_ALLOC_PAGE_ALLOCATOR_CONSTANTS_H_
+#define PARTITION_ALLOC_PAGE_ALLOCATOR_CONSTANTS_H_
 
 #include <cstddef>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 
-#if BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
+#if PA_BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 
 #include <mach/vm_page_size.h>
 
@@ -25,11 +25,15 @@
 // elimination.
 #define PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR __attribute__((const))
 
-#elif (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)) && defined(ARCH_CPU_ARM64)
+#elif (PA_BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)) || \
+    (PA_BUILDFLAG(IS_LINUX) && PA_BUILDFLAG(PA_ARCH_CPU_ARM64)) || \
+    (PA_BUILDFLAG(IS_LINUX) && PA_BUILDFLAG(PA_ARCH_CPU_PPC64))
 // This should work for all POSIX (if needed), but currently all other
 // supported OS/architecture combinations use either hard-coded values
 // (such as x86) or have means to determine these values without needing
 // atomics (such as macOS on arm64).
+
+#define PARTITION_ALLOCATOR_CONSTANTS_POSIX_NONCONST_PAGE_SIZE
 
 // Page allocator constants are run-time constant
 #define PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR __attribute__((const))
@@ -65,16 +69,17 @@ extern PageCharacteristics page_characteristics;
 
 // Ability to name anonymous VMAs is available on some, but not all Linux-based
 // systems.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#if PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(IS_LINUX)
 #include <sys/prctl.h>
 
 #if defined(PR_SET_VMA) && defined(PR_SET_VMA_ANON_NAME)
 #define LINUX_NAME_REGION 1
 #endif
 
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#endif  // PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(IS_LINUX)
 
-namespace partition_alloc::internal {
+namespace partition_alloc {
+namespace internal {
 
 // Forward declaration, implementation below
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
@@ -82,26 +87,36 @@ PageAllocationGranularity();
 
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PageAllocationGranularityShift() {
-#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_PPC64)
-  // Modern ppc64 systems support 4kB (shift = 12) and 64kB (shift = 16) page
-  // sizes.  Since 64kB is the de facto standard on the platform and binaries
-  // compiled for 64kB are likely to work on 4kB systems, 64kB is a good choice
-  // here.
-  return 16;  // 64kB
-#elif defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_LOONGARCH64)
-  return 14;  // 16kB
-#elif BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
-  return static_cast<size_t>(vm_page_shift);
-#elif (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)) && defined(ARCH_CPU_ARM64)
+#if defined(PARTITION_ALLOCATOR_CONSTANTS_POSIX_NONCONST_PAGE_SIZE)
   // arm64 supports 4kb (shift = 12), 16kb (shift = 14), and 64kb (shift = 16)
   // page sizes. Retrieve from or initialize cache.
   size_t shift = page_characteristics.shift.load(std::memory_order_relaxed);
-  if (PA_UNLIKELY(shift == 0)) {
+  if (shift == 0) [[unlikely]] {
     shift = static_cast<size_t>(
         __builtin_ctz((unsigned int)PageAllocationGranularity()));
     page_characteristics.shift.store(shift, std::memory_order_relaxed);
   }
   return shift;
+#elif PA_BUILDFLAG(IS_WIN) || PA_BUILDFLAG(PA_ARCH_CPU_PPC64)
+  // Modern ppc64 systems support 4kB (shift = 12) and 64kB (shift = 16) page
+  // sizes.  Since 64kB is the de facto standard on the platform and binaries
+  // compiled for 64kB are likely to work on 4kB systems, 64kB is a good choice
+  // here.
+  return 16;  // 64kB
+#elif defined(_MIPS_ARCH_LOONGSON) || PA_BUILDFLAG(PA_ARCH_CPU_LOONGARCH64)
+  return 14;  // 16kB
+#elif PA_BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
+  return static_cast<size_t>(vm_page_shift);
+#elif PA_BUILDFLAG(IS_WIN) || PA_BUILDFLAG(PA_ARCH_CPU_PPC64)
+  // Modern ppc64 systems support 4kB (shift = 12) and 64kB (shift = 16) page
+  // sizes.  Since 64kB is the de facto standard on the platform and binaries
+  // compiled for 64kB are likely to work on 4kB systems, 64kB is a good choice
+  // here.
+  return 16;  // 64kB
+#elif defined(_MIPS_ARCH_LOONGSON) || PA_BUILDFLAG(PA_ARCH_CPU_LOONGARCH64)
+  return 14;  // 16kB
+#elif PA_BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
+  return static_cast<size_t>(vm_page_shift);
 #else
   return 12;  // 4kB
 #endif
@@ -109,15 +124,15 @@ PageAllocationGranularityShift() {
 
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PageAllocationGranularity() {
-#if BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
+#if PA_BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
   // This is literally equivalent to |1 << PageAllocationGranularityShift()|
   // below, but was separated out for IS_APPLE to avoid << on a non-constexpr.
   return vm_page_size;
-#elif (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)) && defined(ARCH_CPU_ARM64)
+#elif defined(PARTITION_ALLOCATOR_CONSTANTS_POSIX_NONCONST_PAGE_SIZE)
   // arm64 supports 4kb, 16kb, and 64kb page sizes. Retrieve from or
   // initialize cache.
   size_t size = page_characteristics.size.load(std::memory_order_relaxed);
-  if (PA_UNLIKELY(size == 0)) {
+  if (size == 0) [[unlikely]] {
     size = static_cast<size_t>(getpagesize());
     page_characteristics.size.store(size, std::memory_order_relaxed);
   }
@@ -142,7 +157,7 @@ SystemPageShift() {
   // On Windows allocation granularity is higher than the page size. This comes
   // into play when reserving address space range (allocation granularity),
   // compared to committing pages into memory (system page granularity).
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
   return 12;  // 4096=1<<12
 #else
   return PageAllocationGranularityShift();
@@ -151,9 +166,8 @@ SystemPageShift() {
 
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 SystemPageSize() {
-#if (BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)) || \
-    (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)) || \
-    (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64))
+#if (PA_BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)) || \
+    defined(PARTITION_ALLOCATOR_CONSTANTS_POSIX_NONCONST_PAGE_SIZE)
   // This is literally equivalent to |1 << SystemPageShift()| below, but was
   // separated out for 64-bit IS_APPLE and arm64 on Android/Linux to avoid <<
   // on a non-constexpr.
@@ -176,6 +190,13 @@ SystemPageBaseMask() {
 constexpr size_t kPageMetadataShift = 5;  // 32 bytes per partition page.
 constexpr size_t kPageMetadataSize = 1 << kPageMetadataShift;
 
-}  // namespace partition_alloc::internal
+}  // namespace internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PAGE_ALLOCATOR_CONSTANTS_H_
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
+SystemPageSize() {
+  return internal::SystemPageSize();
+}
+
+}  // namespace partition_alloc
+
+#endif  // PARTITION_ALLOC_PAGE_ALLOCATOR_CONSTANTS_H_

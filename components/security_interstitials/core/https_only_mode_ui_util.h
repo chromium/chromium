@@ -17,11 +17,12 @@ struct HttpInterstitialState;
 void PopulateHttpsOnlyModeStringsForBlockingPage(
     base::Value::Dict& load_time_data,
     const GURL& url,
-    const security_interstitials::https_only_mode::HttpInterstitialState&
-        state);
+    const security_interstitials::https_only_mode::HttpInterstitialState& state,
+    bool august2024_refresh_enabled);
 
 // Values added to get shared interstitial HTML to play nice.
 void PopulateHttpsOnlyModeStringsForSharedHTML(
-    base::Value::Dict& load_time_data);
+    base::Value::Dict& load_time_data,
+    bool august2024_refresh_enabled);
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_UI_UTIL_H_

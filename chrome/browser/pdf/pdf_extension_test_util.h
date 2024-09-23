@@ -29,10 +29,25 @@ class Point;
 
 namespace pdf_extension_test_util {
 
-// Gets the PDF extension host that is the child of `embedder_host`. The
-// embedder host should only have one child, otherwise returns nullptr.
+// Options for customizing behavior in `EnsurePDFHasLoadedWithOptions()`.
+struct EnsurePDFHasLoadedOptions {
+  // // Whether to wait for hit test data or not after the PDF successfully
+  // loads.
+  bool wait_for_hit_test_data = true;
+  // The tag name of the PDF embedder element.
+  std::string pdf_element = "embed";
+  // True if the PDF embedder frame should be allowed to have multiple
+  // subframes, false otherwise. This can occur if extensions append subframes
+  // to the PDF embedder.
+  bool allow_multiple_frames = false;
+};
+
+// Gets the PDF extension host that is the first child of `embedder_host`.
+// If multiple frames aren't allowed and there is more than one child frame,
+// returns nullptr.
 content::RenderFrameHost* GetPdfExtensionHostFromEmbedder(
-    content::RenderFrameHost* embedder_host);
+    content::RenderFrameHost* embedder_host,
+    bool allow_multiple_frames);
 
 // Gets the PDF extension host for a given `WebContents`. There should only be
 // one extension host in `contents`, otherwise returns nullptr.
@@ -52,24 +67,26 @@ std::vector<content::RenderFrameHost*> GetPdfPluginFrames(
     content::WebContents* contents);
 
 // Counts the total number of unique PDF plugin processes.
-size_t CountPdfPluginProcesses(Browser* browser);
+size_t CountPdfPluginProcesses(const Browser* browser);
 
 // Ensures, inside the given `frame`, that a PDF has either finished
 // loading or prompted a password. The result indicates success if the PDF loads
 // successfully, otherwise it indicates failure. If it doesn't finish loading,
-// the test will hang.
+// the test will hang. The test will fail if the PDF embedder host has multiple
+// subframes.
 //
 // In order to ensure an OOPIF PDF has loaded, `frame` must be an embedder host,
 // and the extension host must have already been created.
 //
-// Tests that attempt to send mouse/pointer events should pass `true` for
-// `wait_for_hit_test_data`, otherwise the necessary hit test data may not be
-// available by the time this function returns. (This behavior is the default,
-// since the delay should be small.)
+// Waits for hit test data if the PDF successfully loads so that tests that
+// attempt to send mouse/pointer events have the necessary hit test data.
 [[nodiscard]] testing::AssertionResult EnsurePDFHasLoaded(
+    const content::ToRenderFrameHost& frame);
+// Same as `EnsurePDFHasLoaded()`, but uses `EnsurePDFHasLoadedOptions` to
+// customize behavior.
+[[nodiscard]] testing::AssertionResult EnsurePDFHasLoadedWithOptions(
     const content::ToRenderFrameHost& frame,
-    bool wait_for_hit_test_data = true,
-    const std::string& pdf_element = "embed");
+    const EnsurePDFHasLoadedOptions& options);
 
 gfx::Point ConvertPageCoordToScreenCoord(
     content::ToRenderFrameHost guest_main_frame,
@@ -77,7 +94,7 @@ gfx::Point ConvertPageCoordToScreenCoord(
 
 // Synchronously sets the input focus on the plugin frame by clicking on the
 // top-left corner of a PDF document.
-// TODO(crbug.com/1445746): Remove this once there are no more existing use
+// TODO(crbug.com/40268279): Remove this once there are no more existing use
 // cases.
 void SetInputFocusOnPlugin(extensions::MimeHandlerViewGuest* guest);
 

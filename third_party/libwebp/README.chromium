@@ -2,8 +2,8 @@ Name: WebP image encoder/decoder
 Short Name: libwebp
 URL: https://chromium.googlesource.com/webm/libwebp
 Version: N/A
-Revision: ca332209cb5567c9b249c86788cb2dbf8847e760
-CPEPrefix: cpe:/a:webmproject:libwebp:1.3.2
+Revision: 845d5476a866141ba35ac133f856fa62f0b7445f
+CPEPrefix: cpe:/a:webmproject:libwebp:1.4.0
 License: BSD
 License File: LICENSE
 Security Critical: Yes
@@ -28,4 +28,6 @@ Please follow these steps to update libwebp source code:
 
 2. Update 'Revision:' in this file.
 
-3. Update BUILD.gn as needed.
+3. Update 'CPEPrefix:' in this file as needed.
+
+4. Update BUILD.gn as needed.

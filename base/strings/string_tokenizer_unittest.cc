@@ -4,9 +4,12 @@
 
 #include "base/strings/string_tokenizer.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using std::string;
+using testing::Eq;
+using testing::Optional;
 
 namespace base {
 
@@ -36,6 +39,30 @@ TEST(StringTokenizerTest, Simple) {
   EXPECT_EQ("test", t.token());
 
   EXPECT_FALSE(t.GetNext());
+  // The end of string, after the last token tokens, is considered a delimiter.
+  EXPECT_TRUE(t.token_is_delim());
+}
+
+TEST(StringTokenizerTest, SimpleUsingTokenView) {
+  string input = "this is a test";
+  StringTokenizer t(input, " ");
+  // The start of string, before returning any tokens, is considered a
+  // delimiter.
+  EXPECT_TRUE(t.token_is_delim());
+
+  EXPECT_THAT(t.GetNextTokenView(), Optional(Eq("this")));
+  EXPECT_FALSE(t.token_is_delim());
+
+  EXPECT_THAT(t.GetNextTokenView(), Optional(Eq("is")));
+  EXPECT_FALSE(t.token_is_delim());
+
+  EXPECT_THAT(t.GetNextTokenView(), Optional(Eq("a")));
+  EXPECT_FALSE(t.token_is_delim());
+
+  EXPECT_THAT(t.GetNextTokenView(), Optional(Eq("test")));
+  EXPECT_FALSE(t.token_is_delim());
+
+  EXPECT_THAT(t.GetNextTokenView(), Eq(std::nullopt));
   // The end of string, after the last token tokens, is considered a delimiter.
   EXPECT_TRUE(t.token_is_delim());
 }

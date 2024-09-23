@@ -12,7 +12,7 @@
 
 namespace content {
 
-// TODO(https://crbug.com/998131): Add test coverage across all platforms.
+// TODO(crbug.com/41478398): Add test coverage across all platforms.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class PanelRotationBrowserTest : public ContentBrowserTest {
  protected:

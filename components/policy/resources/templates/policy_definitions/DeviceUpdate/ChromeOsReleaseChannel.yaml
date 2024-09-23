@@ -40,3 +40,4 @@ supported_on:
 - chrome_os:11-
 tags: []
 type: string-enum
+generate_device_proto: False

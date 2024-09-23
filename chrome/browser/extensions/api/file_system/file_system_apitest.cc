@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTest,
   CheckStoredDirectoryMatches(base::FilePath());
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
 IN_PROC_BROWSER_TEST_F(FileSystemApiTest,
                        FileSystemApiOpenDirectoryOnGraylistAndAllowTest) {
   base::FilePath test_file = TempFilePath("open_existing.txt", true);
@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTest,
       << message_;
   CheckStoredDirectoryMatches(test_file);
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
 
 IN_PROC_BROWSER_TEST_F(FileSystemApiTest,
     FileSystemApiInvalidChooseEntryTypeTest) {

@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -39,12 +40,9 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.components.policy.test.annotations.Policies;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.url.GURL;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Integration test for {@link HomepagePolicyManager}. Checking if enabling HomepageLocation policy
@@ -77,7 +75,6 @@ public class HomepagePolicyIntegrationTest {
 
     @Before
     public void setUp() {
-
         // Give some user pref setting, simulate user that have their customized preference.
         // Use shared preference manager, not to change the order object created in tests.
         mHomepageTestRule.useCustomizedHomepageForTest(GOOGLE_HTML);
@@ -93,7 +90,7 @@ public class HomepagePolicyIntegrationTest {
     @MediumTest
     @Feature({"Homepage"})
     public void testStartUpPage() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         Assert.assertTrue(
                                 "HomepageLocation Policy should be enforced",
@@ -188,7 +185,7 @@ public class HomepagePolicyIntegrationTest {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         // Close all tabs so the new activity will create another initial tab with current homepage.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.getTabModelSelector().closeAllTabs();
                 });
@@ -211,11 +208,7 @@ public class HomepagePolicyIntegrationTest {
     }
 
     private String getHomepageUrlOnUiThread() {
-        AtomicReference<String> res = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    res.set(HomepageManager.getHomepageGurl().getSpec());
-                });
-        return res.get();
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> HomepageManager.getInstance().getHomepageGurl().getSpec());
     }
 }

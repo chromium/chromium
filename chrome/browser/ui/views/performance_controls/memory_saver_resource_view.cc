@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/views/performance_controls/memory_saver_resource_view.h"
+
 #include <string>
 
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/performance_manager/public/features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -18,6 +24,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
@@ -37,6 +44,11 @@ constexpr int kStrokeWidth = 8;
 constexpr int kTickStrokeWidth = 2;
 constexpr int kBucketCount = 4;
 constexpr double kBucketWidthDegrees = 180 / kBucketCount;
+
+constexpr int64_t kMemorySaverChartPmf25PercentileBytes = 62 * 1024 * 1024;
+constexpr int64_t kMemorySaverChartPmf50PercentileBytes = 112 * 1024 * 1024;
+constexpr int64_t kMemorySaverChartPmf75PercentileBytes = 197 * 1024 * 1024;
+constexpr int64_t kMemorySaverChartPmf99PercentileBytes = 800 * 1024 * 1024;
 
 // Enum to represent memory savings quartiles.
 enum MemorySavingsQuartile {
@@ -61,22 +73,14 @@ constexpr int kQuartilesLabels[] = {
 // Returns which of the four quartiles of memory savings this number falls into.
 // The lowest memory usage quartile (0-24th percentile) returns 0 and the
 // highest quartile (75-99 percentile) returns 3.
-int GetMemorySavingsQuartile(const int memory_savings_bytes) {
-  if (memory_savings_bytes <
-      performance_manager::features::kMemorySaverChartPmf25PercentileBytes
-          .Get()) {
+int GetMemorySavingsQuartile(const int64_t memory_savings_bytes) {
+  if (memory_savings_bytes < kMemorySaverChartPmf25PercentileBytes) {
     return MemorySavingsQuartile::kLow;
-  } else if (memory_savings_bytes <
-             performance_manager::features::
-                 kMemorySaverChartPmf50PercentileBytes.Get()) {
+  } else if (memory_savings_bytes < kMemorySaverChartPmf50PercentileBytes) {
     return MemorySavingsQuartile::kMedium;
-  } else if (memory_savings_bytes <
-             performance_manager::features::
-                 kMemorySaverChartPmf75PercentileBytes.Get()) {
+  } else if (memory_savings_bytes < kMemorySaverChartPmf75PercentileBytes) {
     return MemorySavingsQuartile::kHigh;
-  } else if (memory_savings_bytes <
-             performance_manager::features::
-                 kMemorySaverChartPmf99PercentileBytes.Get()) {
+  } else if (memory_savings_bytes < kMemorySaverChartPmf99PercentileBytes) {
     return MemorySavingsQuartile::kVeryHigh;
   } else {
     return MemorySavingsQuartile::kHuge;
@@ -87,7 +91,7 @@ class GaugeView : public views::FlexLayoutView {
   METADATA_HEADER(GaugeView, views::FlexLayoutView)
 
  public:
-  explicit GaugeView(const int memory_savings_bytes)
+  explicit GaugeView(const int64_t memory_savings_bytes)
       : memory_savings_bytes_(memory_savings_bytes) {
     SetOrientation(views::LayoutOrientation::kVertical);
     SetMainAxisAlignment(views::LayoutAlignment::kEnd);
@@ -96,7 +100,8 @@ class GaugeView : public views::FlexLayoutView {
 
   ~GaugeView() override = default;
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size((kGaugeRadius + kStrokeWidth) * 2,
                      kGaugeRadius + kStrokeWidth);
   }
@@ -127,7 +132,7 @@ class GaugeView : public views::FlexLayoutView {
   }
 
  private:
-  const int memory_savings_bytes_;
+  const int64_t memory_savings_bytes_;
 
   // Draws an arc starting at the far left, with the specified center point and
   // angle (in degrees).
@@ -162,9 +167,9 @@ class GaugeView : public views::FlexLayoutView {
     flags.setAntiAlias(true);
 
     // Vector of length 1 in the direction of the tick mark.
-    gfx::Vector2dF unit_vector(
-        std::cos(-angle_degrees * base::kPiDouble / 180),
-        std::sin(-angle_degrees * base::kPiDouble / 180));
+    const double angle_radians = base::DegToRad(angle_degrees);
+    const gfx::Vector2dF unit_vector(std::cos(-angle_radians),
+                                     std::sin(-angle_radians));
 
     // Draw a line from the inner edge of the arc to the outer edge of the arc.
     canvas->DrawLine(
@@ -180,7 +185,7 @@ END_METADATA
 }  // namespace
 
 MemorySaverResourceView::MemorySaverResourceView(
-    const int memory_savings_bytes) {
+    const int64_t memory_savings_bytes) {
   SetOrientation(views::LayoutOrientation::kVertical);
 
   auto* gauge_view =
@@ -193,7 +198,7 @@ MemorySaverResourceView::MemorySaverResourceView(
                               kMemorySaverResourceViewMemorySavingsElementId);
   memory_savings->SetFontList(
       memory_savings->font_list().DeriveWithSizeDelta(kMemoryLabelSizeDelta));
-  memory_savings->SetAccessibleName(l10n_util::GetStringFUTF16(
+  memory_savings->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_MEMORY_SAVER_DIALOG_SAVINGS_ACCNAME, {formatted_savings}));
 
   auto* memory_label = AddChildView(std::make_unique<views::Label>(

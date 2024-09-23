@@ -4,7 +4,7 @@
 
 package org.chromium.components.webapps.pwa_restore_ui;
 
-import android.util.Pair;
+import android.graphics.Bitmap;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
@@ -25,6 +25,7 @@ public class PwaRestoreProperties {
     public static class AppInfo {
         private final String mAppId;
         private final String mAppName;
+        private final Bitmap mAppIcon;
         private int mLastUsedDaysAgo;
 
         // Whether the app is selected or not.
@@ -33,14 +34,16 @@ public class PwaRestoreProperties {
         /**
          * @param appId the ID of the app.
          * @param appName the name of the app.
+         * @param appIcon the app icon.
          * @param lastUsedDaysAgo when the app was last used (days ago).
          */
-        public AppInfo(String appId, String appName, int lastUsedDaysAgo) {
+        public AppInfo(String appId, String appName, Bitmap appIcon, int lastUsedDaysAgo) {
             mAppId = appId;
             mAppName = appName;
+            mAppIcon = appIcon;
             mLastUsedDaysAgo = lastUsedDaysAgo;
 
-            mSelected = false;
+            mSelected = true;
         }
 
         public String getId() {
@@ -49,6 +52,10 @@ public class PwaRestoreProperties {
 
         public String getName() {
             return mAppName;
+        }
+
+        public Bitmap getIcon() {
+            return mAppIcon;
         }
 
         public long getLastUsedDaysAgo() {
@@ -78,8 +85,8 @@ public class PwaRestoreProperties {
     // PropertyKey indicating the view state of the bottom sheet:
     static final WritableIntPropertyKey VIEW_STATE = new WritableIntPropertyKey();
 
-    // App list (recent apps and older apps):
-    static final WritableObjectPropertyKey<Pair<List<AppInfo>, List<AppInfo>>> APPS =
+    // App list:
+    static final WritableObjectPropertyKey<List<AppInfo>> APPS =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
     // Simple labels:
@@ -95,12 +102,13 @@ public class PwaRestoreProperties {
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> DESELECT_BUTTON_LABEL =
             new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<Boolean> DESELECT_BUTTON_ENABLED =
+            new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> EXPANDED_BUTTON_LABEL =
             new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<String> RECENT_APPS_TITLE =
+    static final WritableObjectPropertyKey<Boolean> EXPANDED_BUTTON_ENABLED =
             new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<String> OLDER_APPS_TITLE =
-            new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<String> APPS_TITLE = new WritableObjectPropertyKey<>();
 
     // Button handling:
     static final ReadableObjectPropertyKey<OnClickListener> BACK_BUTTON_ON_CLICK_CALLBACK =
@@ -125,9 +133,10 @@ public class PwaRestoreProperties {
         EXPANDED_DESCRIPTION,
         EXPANDED_TITLE,
         DESELECT_BUTTON_LABEL,
+        DESELECT_BUTTON_ENABLED,
         EXPANDED_BUTTON_LABEL,
-        RECENT_APPS_TITLE,
-        OLDER_APPS_TITLE,
+        EXPANDED_BUTTON_ENABLED,
+        APPS_TITLE,
         BACK_BUTTON_ON_CLICK_CALLBACK,
         REVIEW_BUTTON_ON_CLICK_CALLBACK,
         DESELECT_BUTTON_ON_CLICK_CALLBACK,

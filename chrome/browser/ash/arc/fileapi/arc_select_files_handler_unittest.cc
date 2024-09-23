@@ -7,8 +7,6 @@
 #include <string>
 
 #include "ash/components/arc/mojom/file_system.mojom.h"
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -311,7 +309,7 @@ TEST_F(ArcSelectFilesHandlerTest, FileSelected_CallbackCalled) {
   arc_select_files_handler_->SelectFiles(request, callback.Get());
 
   EXPECT_CALL(std::move(callback), Run(_)).Times(1);
-  arc_select_files_handler_->FileSelected(ui::SelectedFileInfo(), 0, nullptr);
+  arc_select_files_handler_->FileSelected(ui::SelectedFileInfo(), 0);
 }
 
 TEST_F(ArcSelectFilesHandlerTest, FileSelected_PickerActivitySelected) {
@@ -334,8 +332,7 @@ TEST_F(ArcSelectFilesHandlerTest, FileSelected_PickerActivitySelected) {
 
   base::FilePath path =
       ConvertAndroidActivityToFilePath(package_name, activity_name);
-  arc_select_files_handler_->FileSelected(ui::SelectedFileInfo(path), 0,
-                                          nullptr);
+  arc_select_files_handler_->FileSelected(ui::SelectedFileInfo(path), 0);
 }
 
 TEST_F(ArcSelectFilesHandlerTest, FileSelectionCanceled_CallbackCalled) {
@@ -350,22 +347,17 @@ TEST_F(ArcSelectFilesHandlerTest, FileSelectionCanceled_CallbackCalled) {
   EXPECT_CALL(std::move(callback),
               Run(SelectFilesResultMatcher(expected_result.get())))
       .Times(1);
-  arc_select_files_handler_->FileSelectionCanceled(nullptr);
+  arc_select_files_handler_->FileSelectionCanceled();
 }
 
 TEST_F(ArcSelectFilesHandlerTest, OnFileSelectorEvent) {
-  bool isFilesNewDirectoryTreeOn =
-      base::FeatureList::IsEnabled(ash::features::kFilesNewDirectoryTree);
   CallOnFileSelectorEventAndCheckScript(mojom::FileSelectorEventType::CLICK_OK,
                                         "", kScriptClickOk);
   CallOnFileSelectorEventAndCheckScript(
       mojom::FileSelectorEventType::CLICK_CANCEL, "", kScriptClickCancel);
   CallOnFileSelectorEventAndCheckScript(
       mojom::FileSelectorEventType::CLICK_DIRECTORY, "Click Target",
-      base::StringPrintf(isFilesNewDirectoryTreeOn
-                             ? kScriptClickDirectoryForNewTree
-                             : kScriptClickDirectory,
-                         "\"Click Target\""));
+      base::StringPrintf(kScriptClickDirectory, "\"Click Target\""));
   CallOnFileSelectorEventAndCheckScript(
       mojom::FileSelectorEventType::CLICK_FILE, "Click\tTarget",
       base::StringPrintf(kScriptClickFile, "\"Click\\tTarget\""));
@@ -376,13 +368,7 @@ TEST_F(ArcSelectFilesHandlerTest, OnFileSelectorEvent) {
 }
 
 TEST_F(ArcSelectFilesHandlerTest, GetFileSelectorElements) {
-  bool isFilesNewDirectoryTreeOn =
-      base::FeatureList::IsEnabled(ash::features::kFilesNewDirectoryTree);
-  EXPECT_CALL(
-      *mock_dialog_holder_,
-      ExecuteJavaScript(isFilesNewDirectoryTreeOn ? kScriptGetElementsForNewTree
-                                                  : kScriptGetElements,
-                        _))
+  EXPECT_CALL(*mock_dialog_holder_, ExecuteJavaScript(kScriptGetElements, _))
       .WillOnce(testing::Invoke(
           [](const std::string&, JavaScriptResultCallback callback) {
             std::move(callback).Run(

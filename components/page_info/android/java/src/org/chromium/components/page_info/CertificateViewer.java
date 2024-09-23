@@ -20,11 +20,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.core.view.ViewCompat;
 
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 
 import java.io.ByteArrayInputStream;
@@ -84,8 +82,7 @@ public class CertificateViewer implements OnItemSelectedListener {
                         TextView view = (TextView) super.getView(position, convertView, parent);
                         // Add extra padding on the end side to avoid overlapping the dropdown
                         // arrow.
-                        ViewCompat.setPaddingRelative(
-                                view, mPadding, mPadding, mPadding * 2, mPadding);
+                        view.setPaddingRelative(mPadding, mPadding, mPadding * 2, mPadding);
                         return view;
                     }
                 };
@@ -97,7 +94,7 @@ public class CertificateViewer implements OnItemSelectedListener {
         TextView title = new AppCompatTextView(mContext);
         title.setText(R.string.certtitle);
         title.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
-        ApiCompatibilityUtils.setTextAppearance(title, android.R.style.TextAppearance_Large);
+        title.setTextAppearance(android.R.style.TextAppearance_Large);
         title.setTypeface(title.getTypeface(), Typeface.BOLD);
         title.setPadding(mPadding, mPadding, mPadding, mPadding / 2);
         dialogContainer.addView(title);
@@ -237,7 +234,7 @@ public class CertificateViewer implements OnItemSelectedListener {
         t.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
         t.setPadding(mPadding, mPadding / 2, mPadding, 0);
         t.setText(label);
-        ApiCompatibilityUtils.setTextAppearance(t, R.style.TextAppearance_TextMediumThick_Primary);
+        t.setTextAppearance(R.style.TextAppearance_TextMediumThick_Primary);
         certificateView.addView(t);
         return t;
     }
@@ -247,7 +244,7 @@ public class CertificateViewer implements OnItemSelectedListener {
         t.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
         t.setText(value);
         t.setPadding(mPadding, 0, mPadding, mPadding / 2);
-        ApiCompatibilityUtils.setTextAppearance(t, R.style.TextAppearance_TextMedium_Primary);
+        t.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
         certificateView.addView(t);
     }
 

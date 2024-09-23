@@ -9,6 +9,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -20,12 +21,14 @@ constexpr char kUserActionContinue[] = "continue";
 }  // namespace
 
 std::string FamilyLinkNoticeScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kDone:
       return "Done";
     case Result::kSkipped:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 FamilyLinkNoticeScreen::FamilyLinkNoticeScreen(
@@ -60,9 +63,16 @@ void FamilyLinkNoticeScreen::ShowImpl() {
     view_->SetIsNewGaiaAccount(context()->is_child_gaia_account_new);
   }
   view_->Show();
+
+  if (context()->extra_factors_token) {
+    session_refresher_ = AuthSessionStorage::Get()->KeepAlive(
+        context()->extra_factors_token.value());
+  }
 }
 
-void FamilyLinkNoticeScreen::HideImpl() {}
+void FamilyLinkNoticeScreen::HideImpl() {
+  session_refresher_.reset();
+}
 
 void FamilyLinkNoticeScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();

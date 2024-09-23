@@ -11,11 +11,15 @@
 #include "ui/gfx/geometry/rect.h"
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
+                                       chromeos::AppType)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
                                        chromeos::WindowPinType)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
                                        chromeos::WindowStateType)
 
 namespace chromeos {
+
+DEFINE_UI_CLASS_PROPERTY_KEY(AppType, kAppTypeKey, AppType::NON_APP)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAutoMaximizeXdgShellEnabled, true)
 

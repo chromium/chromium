@@ -104,7 +104,6 @@ class MagnificationManager
   void SetProfile(Profile* profile);
 
   void SetMagnifierEnabledInternal(bool enabled);
-  void SetMagnifierKeepFocusCenteredInternal(bool keep_focus_centered);
   void SetMagnifierScaleInternal(double scale);
   void SetMagnifierMouseFollowingModeInternal(
       MagnifierMouseFollowingMode mouse_following_mode);
@@ -119,7 +118,6 @@ class MagnificationManager
   base::TimeTicks last_mouse_event_;
 
   bool fullscreen_magnifier_enabled_ = false;
-  bool keep_focus_centered_ = false;
   double scale_ = 0.0;
 
   base::ScopedObservation<session_manager::SessionManager,

@@ -23,12 +23,14 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/resource_context.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/mojom/webview/webview_media_integrity.mojom.h"
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 #include "components/spellcheck/browser/spell_check_host_impl.h"
@@ -78,7 +80,6 @@ void CreateMediaDrmStorage(
 // over to the IO thread.
 void MaybeCreateSafeBrowsing(
     int rph_id,
-    base::WeakPtr<content::ResourceContext> resource_context,
     base::RepeatingCallback<scoped_refptr<safe_browsing::UrlCheckerDelegate>()>
         get_checker_delegate,
     mojo::PendingReceiver<safe_browsing::mojom::SafeBrowsing> receiver) {
@@ -89,17 +90,8 @@ void MaybeCreateSafeBrowsing(
   if (!render_process_host)
     return;
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
-        rph_id, std::move(resource_context), std::move(get_checker_delegate),
-        std::move(receiver));
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&safe_browsing::MojoSafeBrowsingImpl::MaybeCreate,
-                       rph_id, std::move(resource_context),
-                       std::move(get_checker_delegate), std::move(receiver)));
-  }
+  safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
+      rph_id, std::move(get_checker_delegate), std::move(receiver));
 }
 
 void BindNetworkHintsHandler(
@@ -148,6 +140,31 @@ void CreateRenderMessageFilter(
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   mojo::MakeSelfOwnedReceiver(std::make_unique<AwContentsMessageFilter>(rph_id),
                               std::move(receiver));
+}
+
+template <typename Interface>
+void ForwardToJavaFrame(content::RenderFrameHost* render_frame_host,
+                        mojo::PendingReceiver<Interface> receiver) {
+  render_frame_host->GetJavaInterfaces()->GetInterface(std::move(receiver));
+}
+
+void BindMediaIntegrityServiceReceiver(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::mojom::WebViewMediaIntegrityService>
+        receiver) {
+  const url::Origin& origin = render_frame_host->GetLastCommittedOrigin();
+  // Note that this particular check respects the origin of the base URL
+  // supplied by loadDataWithBaseURL.
+  if ((origin.scheme() != url::kHttpScheme &&
+       origin.scheme() != url::kHttpsScheme) ||
+      !network::IsOriginPotentiallyTrustworthy(origin)) {
+    mojo::ReportBadMessage(
+        "Attempted to access WebView Media Integrity service for a "
+        "non-trustworthy or non-HTTP/HTTPS origin.");
+    return;
+  };
+  ForwardToJavaFrame<blink::mojom::WebViewMediaIntegrityService>(
+      render_frame_host, std::move(receiver));
 }
 
 }  // anonymous namespace
@@ -221,12 +238,9 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* render_process_host) {
-  content::ResourceContext* resource_context =
-      render_process_host->GetBrowserContext()->GetResourceContext();
   registry->AddInterface<safe_browsing::mojom::SafeBrowsing>(
       base::BindRepeating(
           &MaybeCreateSafeBrowsing, render_process_host->GetID(),
-          resource_context->GetWeakPtr(),
           base::BindRepeating(
               &AwContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
               base::Unretained(this))),
@@ -255,14 +269,17 @@ void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
       base::BindRepeating(create_spellcheck_host),
       content::GetUIThreadTaskRunner({}));
 #endif
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewMediaIntegrityApiBlinkExtension)) {
+    map->Add<blink::mojom::WebViewMediaIntegrityService>(
+        base::BindRepeating(&BindMediaIntegrityServiceReceiver));
+  }
 }
 
 void AwContentBrowserClient::
     RegisterMojoBinderPoliciesForSameOriginPrerendering(
         content::MojoBinderPolicyMap& policy_map) {
-  if (!base::FeatureList::IsEnabled(features::kWebViewPrerender2)) {
-    return;
-  }
   policy_map.SetAssociatedPolicy<page_load_metrics::mojom::PageLoadMetrics>(
       content::MojoBinderAssociatedPolicy::kGrant);
 }

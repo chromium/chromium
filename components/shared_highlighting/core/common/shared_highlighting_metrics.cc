@@ -75,7 +75,7 @@ void LogTextFragmentLinkOpenSource(const GURL& referrer) {
 
 void LogTextFragmentMatchRate(int matches, int text_fragments) {
   if (text_fragments == 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

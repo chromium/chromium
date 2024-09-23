@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_CONFIG_HOLDER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_CONFIG_HOLDER_H_
 
+#include <map>
 #include <memory>
+#include <set>
+#include <string>
 #include <vector>
+
 #include "base/containers/flat_set.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"

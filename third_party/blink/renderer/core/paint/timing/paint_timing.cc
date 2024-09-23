@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
@@ -213,17 +214,6 @@ void PaintTiming::NotifyPaint(bool is_first_paint,
     GetFrame()->OnFirstPaint(text_painted, image_painted);
 }
 
-void PaintTiming::OnPortalActivate() {
-  last_portal_activated_presentation_ = base::TimeTicks();
-  RegisterNotifyPresentationTime(PaintEvent::kPortalActivatedPaint);
-}
-
-void PaintTiming::SetPortalActivatedPaint(base::TimeTicks stamp) {
-  DCHECK(last_portal_activated_presentation_.is_null());
-  last_portal_activated_presentation_ = stamp;
-  NotifyPaintTimingChanged();
-}
-
 void PaintTiming::SetTickClockForTesting(const base::TickClock* clock) {
   clock_ = clock;
 }
@@ -320,32 +310,63 @@ void PaintTiming::RegisterNotifyPresentationTime(ReportTimeCallback callback) {
       *GetFrame(), std::move(callback));
 }
 
-void PaintTiming::ReportPresentationTime(PaintEvent event,
-                                         base::TimeTicks timestamp) {
-  DCHECK(IsMainThread());
+void PaintTiming::ReportPresentationTime(
+    PaintEvent event,
+    const viz::FrameTimingDetails& presentation_details) {
+  CHECK(IsMainThread());
+  base::TimeTicks timestamp =
+      presentation_details.presentation_feedback.timestamp;
+
   switch (event) {
     case PaintEvent::kFirstPaint:
       SetFirstPaintPresentation(timestamp);
       return;
     case PaintEvent::kFirstContentfulPaint:
       SetFirstContentfulPaintPresentation(timestamp);
+      RecordFirstContentfulPaintTimingMetrics(presentation_details);
       return;
     case PaintEvent::kFirstImagePaint:
       SetFirstImagePaintPresentation(timestamp);
-      return;
-    case PaintEvent::kPortalActivatedPaint:
-      SetPortalActivatedPaint(timestamp);
       return;
     default:
       NOTREACHED();
   }
 }
 
+void PaintTiming::RecordFirstContentfulPaintTimingMetrics(
+    const viz::FrameTimingDetails& frame_timing_details) {
+  if (frame_timing_details.received_compositor_frame_timestamp ==
+          base::TimeTicks() ||
+      frame_timing_details.embedded_frame_timestamp == base::TimeTicks()) {
+    return;
+  }
+  bool frame_submitted_before_embed =
+      (frame_timing_details.received_compositor_frame_timestamp <
+       frame_timing_details.embedded_frame_timestamp);
+  base::UmaHistogramBoolean("Navigation.FCPFrameSubmittedBeforeSurfaceEmbed",
+                            frame_submitted_before_embed);
+
+  if (frame_submitted_before_embed) {
+    base::UmaHistogramCustomTimes(
+        "Navigation.FCPFrameSubmissionToSurfaceEmbed",
+        frame_timing_details.embedded_frame_timestamp -
+            frame_timing_details.received_compositor_frame_timestamp,
+        base::Milliseconds(1), base::Minutes(3), 50);
+  } else {
+    base::UmaHistogramCustomTimes(
+        "Navigation.SurfaceEmbedToFCPFrameSubmission",
+        frame_timing_details.received_compositor_frame_timestamp -
+            frame_timing_details.embedded_frame_timestamp,
+        base::Milliseconds(1), base::Minutes(3), 50);
+  }
+}
+
 void PaintTiming::ReportFirstPaintAfterBackForwardCacheRestorePresentationTime(
     wtf_size_t index,
-    base::TimeTicks timestamp) {
-  DCHECK(IsMainThread());
-  SetFirstPaintAfterBackForwardCacheRestorePresentation(timestamp, index);
+    const viz::FrameTimingDetails& presentation_details) {
+  CHECK(IsMainThread());
+  SetFirstPaintAfterBackForwardCacheRestorePresentation(
+      presentation_details.presentation_feedback.timestamp, index);
 }
 
 void PaintTiming::SetFirstPaintPresentation(base::TimeTicks stamp) {
@@ -518,35 +539,6 @@ void PaintTiming::OnRestoredFromBackForwardCache() {
           MakeGarbageCollected<
               RecodingTimeAfterBackForwardCacheRestoreFrameCallback>(this,
                                                                      index));
-}
-
-bool PaintTiming::IsLCPMouseoverDispatchedRecently() const {
-  static constexpr base::TimeDelta kRecencyDelta = base::Milliseconds(500);
-  return (
-      !lcp_mouse_over_dispatch_time_.is_null() &&
-      ((clock_->NowTicks() - lcp_mouse_over_dispatch_time_) < kRecencyDelta));
-}
-
-void PaintTiming::SetLCPMouseoverDispatched() {
-  {
-    // TODO(https://crbug.com/1288027): Code in this scope is added for
-    // debugging purposes only. Remove it once we have a clearer picture on
-    // heuristic failures.
-    static constexpr base::TimeDelta kRecencyDelta = base::Milliseconds(500);
-    LocalFrame* frame = GetFrame();
-    if (frame && RuntimeEnabledFeatures::LCPMouseoverHeuristicsEnabled() &&
-        (lcp_mouse_over_dispatch_time_.is_null() ||
-         (clock_->NowTicks() - lcp_mouse_over_dispatch_time_) >=
-             kRecencyDelta)) {
-      if (Document* document = frame->GetDocument()) {
-        document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kOther,
-            mojom::blink::ConsoleMessageLevel::kVerbose,
-            "Mouseover event over an LCP image happened."));
-      }
-    }
-  }
-  lcp_mouse_over_dispatch_time_ = clock_->NowTicks();
 }
 
 void PaintTiming::SoftNavigationDetected() {

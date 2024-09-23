@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_WINHTTP_NETWORK_FETCHER_H_
 #define COMPONENTS_WINHTTP_NETWORK_FETCHER_H_
 
-#include <stdint.h>
 #include <windows.h>
 
+#include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -17,11 +19,12 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/winhttp/proxy_configuration.h"
 #include "components/winhttp/scoped_hinternet.h"
+#include "components/winhttp/scoped_winttp_proxy_info.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -39,7 +42,7 @@ class NetworkFetcher : public base::RefCountedThreadSafe<NetworkFetcher> {
       base::OnceCallback<void(int response_code, int64_t content_length)>;
   using FetchProgressCallback = base::RepeatingCallback<void(int64_t current)>;
 
-  NetworkFetcher(const HINTERNET& session_handle,
+  NetworkFetcher(scoped_refptr<SharedHInternet> session_handle,
                  scoped_refptr<ProxyConfiguration> proxy_configuration);
   NetworkFetcher(const NetworkFetcher&) = delete;
   NetworkFetcher& operator=(const NetworkFetcher&) = delete;
@@ -95,7 +98,13 @@ class NetworkFetcher : public base::RefCountedThreadSafe<NetworkFetcher> {
 
   HRESULT BeginFetch(
       const std::string& data,
-      base::flat_map<std::string, std::string> additional_headers);
+      const base::flat_map<std::string, std::string>& additional_headers);
+  std::optional<ScopedWinHttpProxyInfo> GetProxyForUrl();
+  void ContinueFetch(
+      const std::string& data,
+      base::flat_map<std::string, std::string> additional_headers,
+      std::optional<ScopedWinHttpProxyInfo> winhttp_proxy_info);
+
   ScopedHInternet Connect();
   ScopedHInternet OpenRequest();
   HRESULT SendRequest(const std::string& data);
@@ -115,8 +124,7 @@ class NetworkFetcher : public base::RefCountedThreadSafe<NetworkFetcher> {
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
-  const raw_ref<const HINTERNET, LeakedDanglingUntriaged>
-      session_handle_;  // Owned by NetworkFetcherFactory.
+  scoped_refptr<SharedHInternet> session_handle_;
   scoped_refptr<ProxyConfiguration> proxy_configuration_;
   ScopedHInternet connect_handle_;
   ScopedHInternet request_handle_;

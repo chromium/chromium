@@ -68,8 +68,11 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_quote_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
+#include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
@@ -137,7 +140,7 @@ class EmptyLocalFrameClientWithFailingLoaderFactory final
             [](const network::ResourceRequest& resource_request,
                mojo::PendingReceiver<network::mojom::URLLoader> receiver,
                mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
             }));
   }
 };
@@ -862,7 +865,8 @@ void MergeWithNextTextNode(Text* text_node, ExceptionState& exception_state) {
 static Document* CreateStagingDocumentForMarkupSanitization(
     AgentGroupScheduler& agent_group_scheduler) {
   Page* page = Page::CreateNonOrdinary(GetStaticEmptyChromeClientInstance(),
-                                       agent_group_scheduler);
+                                       agent_group_scheduler,
+                                       /*color_provider_colors=*/nullptr);
 
   page->GetSettings().SetScriptEnabled(false);
   page->GetSettings().SetPluginsEnabled(false);
@@ -878,8 +882,9 @@ static Document* CreateStagingDocumentForMarkupSanitization(
       nullptr,  // Frame* parent
       nullptr,  // Frame* previous_sibling
       FrameInsertType::kInsertInConstructor, blink::LocalFrameToken(),
-      nullptr,  // WindowAgentFactory*
-      nullptr   // InterfaceRegistry*
+      nullptr,            // WindowAgentFactory*
+      nullptr,            // InterfaceRegistry*
+      mojo::NullRemote()  // BrowserInterfaceBroker
   );
   // Don't leak the actual viewport size to unsanitized markup
   LocalFrameView* frame_view =
@@ -912,9 +917,7 @@ static bool ContainsStyleElements(const DocumentFragment& fragment) {
 static bool StripSVGUseNonLocalHrefs(Node& node) {
   if (auto* use = DynamicTo<SVGUseElement>(node)) {
     SVGURLReferenceResolver resolver(use->HrefString(), use->GetDocument());
-    if ((RuntimeEnabledFeatures::PastingBlocksSVGUseNonLocalHrefsEnabled() &&
-         !resolver.IsLocal()) ||
-        resolver.AbsoluteUrl().ProtocolIsData()) {
+    if (!resolver.IsLocal() || resolver.AbsoluteUrl().ProtocolIsData()) {
       node.remove();
     }
     return true;

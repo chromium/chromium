@@ -1,0 +1,28 @@
+body {
+    font-size: 5rem;
+}
+
+div.class1 {
+    color: orange;
+    .class11 { /* a nested selector */
+        color:black;
+    };
+}
+
+div.class1 .class2 {
+    color: red;
+    .class11 { /* another nested selector */
+        color:blueviolet;
+    }
+}
+
+/* this is a comment to create a single line selector */div.class6{color:brown;}/* this is a comment to create a single line selector */
+
+/* two selectors in this selector list */
+#notreal, .second-in-selector-list {
+    color: papayawhip;
+}
+
+#again, .second-in-selector-list {
+    color: aliceblue;
+}

@@ -19,6 +19,7 @@ class ExtensionOptionsGuest
     : public guest_view::GuestView<ExtensionOptionsGuest> {
  public:
   static const char Type[];
+  static const guest_view::GuestViewHistogramValue HistogramValue;
 
   ~ExtensionOptionsGuest() override;
   ExtensionOptionsGuest(const ExtensionOptionsGuest&) = delete;
@@ -44,16 +45,19 @@ class ExtensionOptionsGuest
   void OnPreferredSizeChanged(const gfx::Size& pref_size) final;
 
   // content::WebContentsDelegate implementation.
-  void AddNewContents(content::WebContents* source,
-                      std::unique_ptr<content::WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& window_features,
-                      bool user_gesture,
-                      bool* was_blocked) final;
+  content::WebContents* AddNewContents(
+      content::WebContents* source,
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) final;
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
-      const content::OpenURLParams& params) final;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) final;
   void CloseContents(content::WebContents* source) final;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) final;

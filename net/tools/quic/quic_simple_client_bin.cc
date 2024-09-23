@@ -46,7 +46,6 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_socket_address.h"
 #include "net/third_party/quiche/src/quiche/quic/tools/quic_toy_client.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/tools/quic/quic_simple_client.h"
 #include "net/tools/quic/synchronous_host_resolver.h"
 #include "url/scheme_host_port.h"
@@ -71,7 +70,7 @@ class QuicSimpleClientFactory : public quic::QuicToyClient::ClientFactory {
     quic::QuicIpAddress ip_addr;
     if (!ip_addr.FromString(host_for_lookup)) {
       net::AddressList addresses;
-      // TODO(https://crbug.com/1300660) Let the caller pass in the scheme
+      // TODO(crbug.com/40216365) Let the caller pass in the scheme
       // rather than guessing "https"
       int rv = net::SynchronousHostResolver::Resolve(
           url::SchemeHostPort(url::kHttpsScheme, host_for_lookup, port),

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSAPI_ROOTFS_LACROS_LOADER_H_
 
 #include <optional>
+#include <ostream>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -32,14 +33,45 @@ class RootfsLacrosLoader : public LacrosSelectionLoader {
   RootfsLacrosLoader& operator=(const RootfsLacrosLoader&) = delete;
   ~RootfsLacrosLoader() override;
 
+  // The state representing the loading state.
+  enum class State {
+    // Loader is not running any task.
+    kNotLoaded,
+
+    // Loader is in the process of reading the version from manifest file.
+    kReadingVersion,
+
+    // Loader gets version of lacros-chrome but not loaded it yet.
+    kVersionReadyButNotLoaded,
+
+    // Loader is in the process of loading lacros-chrome.
+    kLoading,
+
+    // Loader has loaded lacros-chrome and `version_` and `path_` is ready.
+    kLoaded,
+
+    // Loader is in the process of unloading lacros-chrome.
+    kUnloading,
+
+    // Loader has unloaded the lacros-chrome. State must NOT change once it
+    // becomes kUnloaded.
+    kUnloaded,
+  };
+
+  State GetState() const { return state_; }
+
   // LacrosSelectionLoader:
   void Load(LoadCompletionCallback callback, bool forced) override;
-  void Unload() override;
-  void Reset() override;
+  void Unload(base::OnceClosure callback) override;
   void GetVersion(
       base::OnceCallback<void(const base::Version&)> callback) override;
+  bool IsUnloading() const override;
+  bool IsUnloaded() const override;
 
  private:
+  void GetVersionInternal(
+      base::OnceCallback<void(const base::Version&)> callback);
+
   // Called after GetVersion.
   void OnGetVersion(base::OnceCallback<void(const base::Version&)> callback,
                     base::Version version);
@@ -55,6 +87,9 @@ class RootfsLacrosLoader : public LacrosSelectionLoader {
 
   // Callback from upstart mounting lacros-chrome.
   void OnUpstartLacrosMounter(LoadCompletionCallback callback, bool success);
+
+  // Called on unload completed.
+  void OnUnloadCompleted(base::OnceClosure callback, bool success);
 
   // The bundled rootfs lacros-chrome binary version. This is set after the
   // first async call that checks the installed rootfs lacros version number.
@@ -72,11 +107,17 @@ class RootfsLacrosLoader : public LacrosSelectionLoader {
   // testing.
   base::FilePath metadata_path_;
 
+  base::OnceClosure pending_unload_;
+
+  State state_ = State::kNotLoaded;
+
   // Used for DCHECKs to ensure method calls executed in the correct thread.
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<RootfsLacrosLoader> weak_factory_{this};
 };
+
+std::ostream& operator<<(std::ostream&, RootfsLacrosLoader::State);
 
 }  // namespace crosapi
 

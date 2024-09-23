@@ -37,12 +37,6 @@
   --iron-icon-fill-color: currentColor;
 }
 
-:host-context([cros]) cr-dialog::part(dialog) {
-  --cr-dialog-background-color: var(--cros-bg-color-elevation-3);
-  background-image: none;
-  box-shadow: var(--cros-elevation-3-shadow);
-}
-
 :host-context([cros]) cr-radio-button {
   --cr-radio-button-checked-color: var(--cros-radio-button-color);
   --cr-radio-button-checked-ripple-color:
@@ -51,17 +45,6 @@
       var(--cros-radio-button-color-unchecked);
   --cr-radio-button-unchecked-ripple-color:
       var(--cros-radio-button-ripple-color-unchecked);
-}
-
-:host-context([cros]) cr-toast {
-  --cr-toast-background-color: var(--cros-toast-background-color);
-  --cr-toast-background: var(--cros-toast-background-color);
-  --cr-toast-text-color: var(--cros-toast-text-color);
-  --iron-icon-fill-color: var(--cros-toast-icon-color);
-}
-
-:host-context([cros]) cr-toast .error-message {
-  color: var(--cros-toast-text-color);
 }
 
 :host-context([cros]) cr-toggle {
@@ -83,10 +66,6 @@
 
 :host-context([cros]) paper-spinner-lite {
   --paper-spinner-color: var(--cros-icon-color-prominent);
-}
-
-:host-context([cros]) cr-tooltip-icon {
-  --cr-link-color: var(--cros-tooltip-link-color);
 }
 
 /** Jelly-specific styles below */
@@ -189,29 +168,12 @@
   --cr-checkbox-ripple-ring: 2px solid var(--cros-sys-focus_ring);
 }
 
-/* Dialog */
-:host-context(body.jelly-enabled) cr-dialog::part(dialog) {
-  --cr-dialog-background-color: var(--cros-sys-base_elevated);
-  background-image: none;
-
-  /* TODO(b/266837484) Replace with cros.sys.app-elevation3 when available */
-  box-shadow: 0 0 12px 0 var(--cros-sys-shadow);
-}
-
-:host-context(body.jelly-enabled) cr-dialog > [slot='title'] {
-  font: var(--cros-display-7-font);
-}
-
-/* Drawer */
-:host-context(body.jelly-enabled) cr-drawer {
-  --cr-drawer-background-color: var(--cros-sys-app_base_shaded);
-}
-
 /* Icon button */
 :host-context(body.jelly-enabled) cr-icon-button,
 :host-context(body.jelly-enabled) cr-link-row::part(icon),
 :host-context(body.jelly-enabled) cr-expand-button::part(icon) {
   --cr-icon-button-fill-color: var(--cros-sys-secondary);
+  --cr-icon-button-focus-outline-color: var(--cros-sys-focus_ring);
 }
 
 /* Input and Textarea */
@@ -266,13 +228,6 @@
 }
 
 /* md-select */
-:host-context(body.jelly-enabled) .md-select {
-  --md-select-bg-color: var(--cros-sys-input_field_on_base);
-  --md-select-focus-shadow-color: var(--cros-sys-primary);
-  --md-select-option-bg-color: var(--cros-sys-base_elevated);
-  --md-select-text-color: var(--cros-sys-on_surface);
-}
-
 :host-context([cros][chrome-refresh-2023]) .md-select {
   --md-arrow-width: 7px;
   --md-select-bg-color: var(--cros-sys-input_field_on_base);
@@ -296,12 +251,6 @@
   border-color: transparent;
   color: var(--md-select-text-color);
   opacity: var(--cros-disabled-opacity);
-}
-
-/* Menu */
-:host-context(body.jelly-enabled) cr-action-menu {
-  --cr-menu-background-color: var(--cros-sys-base_elevated);
-  --cr-menu-background-focus-color: var(--cros-sys-hover_on_subtle);
 }
 
 /* Radio button */
@@ -369,16 +318,6 @@
   --cr-input-padding-top: 10px;
 }
 
-/* Searchable Dropdown */
-:host-context(body.jelly-enabled) cr-searchable-drop-down {
-  --cr-searchable-drop-down-bg-color: var(--cros-sys-base_elevated);
-  --cr-searchable-drop-down-icon-color-focus: var(--cros-sys-primary);
-  --cr-searchable-drop-down-list-bg-color-selected:
-      var(--cros-sys-base_highlight);
-  --cr-searchable-drop-down-list-item-color: var(--cros-sys-on_surface);
-  --cr-searchable-drop-down-shadow: var(--cros-elevation-3-shadow);
-}
-
 /* Slider */
 :host-context(body.jelly-enabled) cr-slider {
   --cr-slider-active-color: var(--cros-sys-primary);
@@ -406,11 +345,6 @@
   color: var(--cros-sys-on_primary);
 }
 
-/* Tabs */
-:host-context(body.jelly-enabled) cr-tabs {
-  --cr-tabs-selected-color: var(--cros-sys-primary);
-}
-
 /* Toggle */
 :host-context(body.jelly-enabled) cr-toggle {
   --cr-toggle-checked-bar-color: var(--cros-sys-primary_container);
@@ -420,8 +354,7 @@
   --cr-toggle-unchecked-bar-color: var(--cros-sys-secondary);
   --cr-toggle-unchecked-button-color: var(--cros-sys-surface_variant);
   --cr-toggle-unchecked-ripple-color: var(--cros-sys-hover_on_prominent);
-  /* TODO(b/266837484) Replace with cros.sys.app-elevation1 when available */
-  --cr-toggle-box-shadow: var(--cros-elevation-1-shadow);
+  --cr-toggle-box-shadow: var(--cros-sys-app-elevation-1-shadow);
   --cr-toggle-ripple-diameter: 32px;
 }
 
@@ -453,4 +386,16 @@
 :host-context([cros][chrome-refresh-2023]):host-context(.focus-outline-visible)
     cr-toggle:focus {
   --cr-toggle-ripple-ring: none;
+}
+
+/* Tooltip */
+:host-context(body.jelly-enabled) paper-tooltip {
+  --paper-tooltip-background: var(--cros-sys-on_surface);
+  --paper-tooltip-border-radius: 4px;
+  --paper-tooltip-padding: 5px 8px;
+  --paper-tooltip-text-color: var(--cros-sys-inverse_on_surface);
+}
+
+:host-context(body.jelly-enabled) paper-tooltip::part(tooltip) {
+  font: var(--cros-annotation-1-font);
 }

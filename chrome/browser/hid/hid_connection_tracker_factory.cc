@@ -29,9 +29,12 @@ HidConnectionTrackerFactory::HidConnectionTrackerFactory()
           "HidConnectionTracker",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
@@ -43,14 +46,4 @@ HidConnectionTrackerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<HidConnectionTracker>(
       Profile::FromBrowserContext(context));
-}
-
-void HidConnectionTrackerFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  DCHECK(context);
-  auto* hid_connection_tracker =
-      GetForProfile(Profile::FromBrowserContext(context), /*create=*/false);
-  if (hid_connection_tracker)
-    hid_connection_tracker->CleanUp();
-  ProfileKeyedServiceFactory::BrowserContextShutdown(context);
 }

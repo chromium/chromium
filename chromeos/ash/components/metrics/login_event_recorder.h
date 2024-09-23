@@ -141,6 +141,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS) LoginEventRecorder {
   // Immediately execute the task to write login times.
   void RunScheduledWriteLoginTimes();
 
+  // Returns the duration between given markers.
+  std::optional<base::TimeDelta> GetDuration(
+      const std::string& begin_marker_name,
+      const std::string& end_marker_name);
+
   // Write logout times to logs.
   void WriteLogoutTimes(const std::string base_name,
                         const std::string uma_name,

@@ -10,7 +10,7 @@ NSString* const kCardNumberPrefKey = @"cardNumber";
 NSString* const kExpirationMonthPrefKey = @"expirationMonth";
 NSString* const kExpirationYearPrefKey = @"expirationYear";
 NSString* const kLegalMessagesPrefKey = @"legalMessages";
-NSString* const kCurrentCardSavedPrefKey = @"currentCardSaved";
+NSString* const kCurrentCardSaveAcceptedPrefKey = @"currentCardSaveAccepted";
 NSString* const kSupportsEditingPrefKey = @"supportsEditing";
 NSString* const kDisplayedTargetAccountEmailPrefKey =
     @"displayedTargetAccountEmail";

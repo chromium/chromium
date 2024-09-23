@@ -6,9 +6,9 @@
 #define CC_LAYERS_DEADLINE_POLICY_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/check.h"
 #include "cc/cc_export.h"
 

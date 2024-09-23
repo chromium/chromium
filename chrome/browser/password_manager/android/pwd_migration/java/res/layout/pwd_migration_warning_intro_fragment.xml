@@ -15,6 +15,7 @@ found in the LICENSE file.
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
+      android:textAlignment="center"
       android:layout_marginBottom="@dimen/pwd_migration_warning_margin"
       android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
 
@@ -29,7 +30,7 @@ found in the LICENSE file.
       android:ellipsize="end"
       android:singleLine="true"
       android:text="@string/password_migration_warning_acknowledge"
-      style="@style/FilledButton.Flat"/>
+      style="@style/FilledButton"/>
 
   <org.chromium.ui.widget.ButtonCompat
       android:descendantFocusability="blocksDescendants"

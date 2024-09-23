@@ -106,4 +106,4 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
 
 }  // namespace ax::android
 
-#endif
+#endif  // SERVICES_ACCESSIBILITY_ANDROID_ACCESSIBILITY_NODE_INFO_DATA_WRAPPER_H_

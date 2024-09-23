@@ -13,7 +13,7 @@ working production implementations of the Cronet API. Currently this includes:
 This directory also contains so-called "shared" code, which is shared between
 all Cronet packages, *including* the API package.
 
-TODO(crbug.com/1507021): these should really be three distinct directories.
+TODO(crbug.com/40947707): these should really be three distinct directories.
 
 **IMPORTANT:** in most Cronet release channels (e.g. Google-internal, Maven,
 AOSP) the API and impl code are expected to always be in sync with each other,

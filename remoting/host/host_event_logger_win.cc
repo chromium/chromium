@@ -4,8 +4,9 @@
 
 #include "remoting/host/host_event_logger.h"
 
-#include <stddef.h>
 #include <windows.h>
+
+#include <stddef.h>
 
 #include <memory>
 #include <string>

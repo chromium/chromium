@@ -53,10 +53,6 @@ function workAroundSeveralReportsIssue(audioOutputLevels) {
   if (audioOutputLevels.length == 1) {
     return audioOutputLevels[0];
   }
-
-  console.log("Hit issue where one report batch returns two or more reports " +
-              "with audioReportLevel; got " + audioOutputLevels);
-
   return Math.max(audioOutputLevels[0], audioOutputLevels[1]);
 }
 

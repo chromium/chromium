@@ -1,40 +1,17 @@
 [
   {
+    "can_be_recommended": true,
     "os": [
       "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "settings.a11y.caret_highlight": {
-            "default_value": false,
-            "location": "signin_profile"
-          }
-        }
-      },
-      {
-        "policies": {
-          "DeviceLoginScreenCaretHighlightEnabled": true
-        },
-        "prefs": {
-          "settings.a11y.caret_highlight": {
-            "location": "signin_profile",
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "DeviceLoginScreenCaretHighlightEnabled": false
-        },
-        "prefs": {
-          "settings.a11y.caret_highlight": {
-            "location": "signin_profile",
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.a11y.caret_highlight",
+      "pref_location": "signin_profile",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

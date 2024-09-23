@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/test/test_navigation_throttle.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
 
-#include <optional>
+#include "content/public/test/test_navigation_throttle.h"
 
 #include "base/functional/bind.h"
 #include "content/public/browser/browser_task_traits.h"

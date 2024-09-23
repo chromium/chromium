@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354862211): Remove this after removing unsafe code only used
+// in Lacros in OnDesksChanged
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
 #include <cstring>
@@ -58,13 +64,6 @@ void WaylandZAuraShell::Instantiate(WaylandConnection* connection,
   connection->zaura_shell_ =
       std::make_unique<WaylandZAuraShell>(zaura_shell.release(), connection);
   ReportShellUMA(UMALinuxWaylandShell::kZauraShell);
-
-  // Usually WaylandOutputManager is instantiated first, so any ZAuraOutputs it
-  // created wouldn't have been initialized, since the zaura_shell didn't exist
-  // yet. So initialize them now.
-  if (connection->wayland_output_manager()) {
-    connection->wayland_output_manager()->InitializeAllZAuraOutputs();
-  }
 }
 
 WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
@@ -156,6 +155,9 @@ void WaylandZAuraShell::OnDesksChanged(void* data,
   auto* self = static_cast<WaylandZAuraShell*>(data);
   char* desk_name = reinterpret_cast<char*>(states->data);
   self->desks_.clear();
+  // SAFETY: TODO(crbug.com/354862211): This code is only used by Lacros and
+  // will be removed, so we are opting not fix the unsafe pointer
+  // arithmetic and -Wunsafe-buffer-usage suppression in this file.
   while (desk_name < reinterpret_cast<char*>(states->data) + states->size) {
     std::string str(desk_name, strlen(desk_name));
     self->desks_.push_back(str);

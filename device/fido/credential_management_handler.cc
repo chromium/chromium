@@ -196,7 +196,7 @@ void CredentialManagementHandler::GetCredentials(
   if (!authenticator_) {
     // AuthenticatorRemoved() may have been called, but the observer would have
     // seen a FidoAuthenticatorRemoved() call.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   get_credentials_callback_ = std::move(callback);
@@ -251,7 +251,7 @@ void CredentialManagementHandler::DeleteCredentials(
   if (!authenticator_) {
     // AuthenticatorRemoved() may have been called, but the observer would have
     // seen a FidoAuthenticatorRemoved() call.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   DCHECK(pin_token_);
@@ -286,7 +286,7 @@ void CredentialManagementHandler::UpdateUserInformation(
   if (!authenticator_) {
     // AuthenticatorRemoved() may have been called, but the observer would have
     // seen a FidoAuthenticatorRemoved() call.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   DCHECK(pin_token_);

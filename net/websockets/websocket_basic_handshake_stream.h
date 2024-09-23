@@ -11,11 +11,11 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
@@ -27,7 +27,7 @@
 
 namespace net {
 
-class ClientSocketHandle;
+class StreamSocketHandle;
 class HttpNetworkSession;
 class HttpRequestHeaders;
 class HttpResponseHeaders;
@@ -36,7 +36,6 @@ class HttpStream;
 class HttpStreamParser;
 class IOBuffer;
 class IPEndPoint;
-class SSLCertRequestInfo;
 class SSLInfo;
 class WebSocketEndpointLockManager;
 class WebSocketStreamRequestAPI;
@@ -51,7 +50,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
  public:
   // |connect_delegate| and |failure_message| must out-live this object.
   WebSocketBasicHandshakeStream(
-      std::unique_ptr<ClientSocketHandle> connection,
+      std::unique_ptr<StreamSocketHandle> connection,
       WebSocketStream::ConnectDelegate* connect_delegate,
       bool using_proxy,
       std::vector<std::string> requested_sub_protocols,
@@ -89,14 +88,13 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
       AlternativeService* alternative_service) const override;
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
   void GetSSLInfo(SSLInfo* ssl_info) override;
-  void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) override;
   int GetRemoteEndpoint(IPEndPoint* endpoint) override;
   void Drain(HttpNetworkSession* session) override;
   void SetPriority(RequestPriority priority) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
   std::unique_ptr<HttpStream> RenewStreamForAuth() override;
   const std::set<std::string>& GetDnsAliases() const override;
-  base::StringPiece GetAcceptChViaAlps() const override;
+  std::string_view GetAcceptChViaAlps() const override;
 
   // This is called from the top level once correct handshake response headers
   // have been received. It creates an appropriate subclass of WebSocketStream
@@ -141,8 +139,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
 
   // Owned by another object.
   // |connect_delegate| will live during the lifetime of this object.
-  const raw_ptr<WebSocketStream::ConnectDelegate, DanglingUntriaged>
-      connect_delegate_;
+  const raw_ptr<WebSocketStream::ConnectDelegate> connect_delegate_;
 
   // This is stored in SendRequest() for use by ReadResponseHeaders().
   raw_ptr<HttpResponseInfo> http_response_info_ = nullptr;
@@ -170,7 +167,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
   // to avoid including extension-related header files here.
   std::unique_ptr<WebSocketExtensionParams> extension_params_;
 
-  const raw_ptr<WebSocketStreamRequestAPI, DanglingUntriaged> stream_request_;
+  const raw_ptr<WebSocketStreamRequestAPI> stream_request_;
 
   const raw_ptr<WebSocketEndpointLockManager> websocket_endpoint_lock_manager_;
 

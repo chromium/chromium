@@ -4,7 +4,6 @@
 
 #include "chrome/renderer/net/net_error_page_controller.h"
 
-#include "base/strings/string_piece.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"

@@ -10,14 +10,17 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
+#include "base/metrics/histogram.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "cc/base/histograms.h"
 #include "cc/base/region.h"
 #include "cc/slim/frame_data.h"
 #include "cc/slim/frame_sink_impl.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree_client.h"
+#include "cc/slim/surface_layer.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -26,6 +29,7 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/frame_deadline.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -181,15 +185,6 @@ void LayerTreeImpl::ReleaseDeferBeginFrame() {
   UpdateNeedsBeginFrame();
 }
 
-void LayerTreeImpl::UpdateTopControlsVisibleHeight(float height) {
-  if (top_controls_visible_height_ &&
-      top_controls_visible_height_.value() == height) {
-    return;
-  }
-  top_controls_visible_height_ = height;
-  SetNeedsDraw();
-}
-
 void LayerTreeImpl::SetNeedsAnimate() {
   SetClientNeedsOneBeginFrame();
 }
@@ -331,7 +326,7 @@ void LayerTreeImpl::DidPresentCompositorFrame(
     // Only run `success_callbacks` if successful.
     if (success) {
       for (auto& callback : itr->success_callbacks) {
-        std::move(callback).Run(details.presentation_feedback.timestamp);
+        std::move(callback).Run(details);
       }
       itr->success_callbacks.clear();
     }
@@ -400,6 +395,19 @@ void LayerTreeImpl::RemoveSurfaceRange(const viz::SurfaceRange& range) {
   }
 }
 
+void LayerTreeImpl::RegisterOffsetTag(const viz::OffsetTag& tag,
+                                      SurfaceLayer* owner) {
+  bool inserted = registered_offset_tags_.insert({tag, owner}).second;
+  // There should only be a single SurfaceLayer owner for each tag.
+  CHECK(inserted);
+}
+
+void LayerTreeImpl::UnregisterOffsetTag(const viz::OffsetTag& tag,
+                                        SurfaceLayer* owner) {
+  size_t erased = registered_offset_tags_.erase(tag);
+  CHECK_EQ(erased, 1u);
+}
+
 void LayerTreeImpl::MaybeRequestFrameSink() {
   if (frame_sink_ || !visible_ || frame_sink_request_pending_) {
     return;
@@ -452,6 +460,7 @@ void LayerTreeImpl::GenerateCompositorFrame(
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_GENERATE_COMPOSITOR_FRAME);
+        data->set_display_trace_id(args.trace_id);
       });
 
   for (auto& resource_request :
@@ -487,8 +496,16 @@ void LayerTreeImpl::GenerateCompositorFrame(
   for (const auto& [range, range_counts] : referenced_surfaces_) {
     out_frame.metadata.referenced_surfaces.emplace_back(range);
   }
-  out_frame.metadata.top_controls_visible_height = top_controls_visible_height_;
-  top_controls_visible_height_.reset();
+  for (auto& [tag, layer] : registered_offset_tags_) {
+    // Only add OffsetTagDefinitions if the SurfaceLayer they are registered to
+    // embed something. There is no way to provide an offset value without an
+    // embedded viz::Surface to look the value up from.
+    // TODO(b/334144355): Don't tag quads if no definition is added.
+    if (layer->surface_id().is_valid()) {
+      out_frame.metadata.offset_tag_definitions.push_back(
+          layer->GetOffsetTagDefinition(tag));
+    }
+  }
   out_frame.metadata.display_transform_hint = display_transform_hint_;
 
   FrameData frame_data(out_frame, out_hit_test_region_list.regions);
@@ -546,12 +563,20 @@ void LayerTreeImpl::GenerateCompositorFrame(
       args.frame_time, frame_data.deadline_in_frames.value_or(0u),
       args.interval, frame_data.use_default_lower_bound_deadline);
 
+  size_t total_quad_count = 0;
   for (const auto& pass : out_frame.render_pass_list) {
+    total_quad_count += pass->quad_list.size();
     for (const auto* quad : pass->quad_list) {
       for (viz::ResourceId resource_id : quad->resources) {
         out_resource_ids.insert(resource_id);
       }
     }
+  }
+
+  if (const char* client_name = GetClientNameForMetrics()) {
+    UMA_HISTOGRAM_COUNTS_1000(
+        base::StringPrintf("Compositing.%s.CompositorFrame.Quads", client_name),
+        total_quad_count);
   }
 
   if (!presentation_callback_for_next_frame_.empty() ||
@@ -585,18 +610,6 @@ void LayerTreeImpl::Draw(Layer& layer,
     return;
   }
 
-  // Compute new clip in layer space.
-  const bool mask_to_bounds =
-      layer.masks_to_bounds() || layer.HasNonTrivialMaskFilterInfo();
-  gfx::RectF clip_in_layer = transform_from_parent->MapRect(clip_in_parent);
-  if (mask_to_bounds) {
-    clip_in_layer.Intersect(
-        gfx::RectF(layer.bounds().width(), layer.bounds().height()));
-  }
-  if (clip_in_layer.IsEmpty()) {
-    return;
-  }
-
   gfx::Transform transform_to_target = parent_transform_to_target;
   gfx::Transform transform_to_root = parent_transform_to_root;
   {
@@ -604,6 +617,53 @@ void LayerTreeImpl::Draw(Layer& layer,
     const gfx::Transform transform_to_parent = layer.ComputeTransformToParent();
     transform_to_target.PreConcat(transform_to_parent);
     transform_to_root.PreConcat(transform_to_parent);
+  }
+
+  // Compute new clip in layer space.
+  gfx::RectF clip_in_layer;
+  std::optional<base::AutoReset<viz::OffsetTag>> offset_tag_reset;
+  if (layer.offset_tag() &&
+      registered_offset_tags_.contains(layer.offset_tag())) {
+    // A layer can't have a different offset tag than it's ancestor.
+    CHECK(!data.offset_tag);
+
+    offset_tag_reset.emplace(&data.offset_tag, layer.offset_tag());
+
+    // If `layer` has an offset tag then the position `layer` will be drawn at
+    // isn't fixed and `transform_to_target` and `transform_to_parent` might be
+    // inaccurate. Any required clipping from ancestor layers is already part of
+    // `parent_clip_in_target` if the ancestor layer has an axis-aligned
+    // transform to target render pass. Otherwise the ancestor layer will have
+    // introduced a new render pass to perform clipping. In either case, the
+    // ancestor clipping is handled and we could discard parent clipping in
+    // layer space without issues.
+    //
+    // A valid `clip_in_layer` is still needed so take `parent_clip_in_target`,
+    // expand it by the maximum movement of current layer based on offset tag
+    // constraints and transform it back to current layers coordinate space.
+    // This represents the area of `layer` that can be visible for any possible
+    // `transform_to_target` at draw time aka it clips any part of the current
+    // layer that isn't possible to be visible.
+    gfx::RectF expanded_parent_clip_in_target =
+        parent_clip_in_target ? *parent_clip_in_target
+                              : gfx::RectF(parent_pass.output_rect);
+    auto tag_constraints = registered_offset_tags_[layer.offset_tag()]
+                               ->GetOffsetTagDefinition(layer.offset_tag())
+                               .constraints;
+    tag_constraints.ExpandVisibleRect(expanded_parent_clip_in_target);
+    clip_in_layer = transform_to_target.GetCheckedInverse().MapRect(
+        expanded_parent_clip_in_target);
+  } else {
+    clip_in_layer = transform_from_parent->MapRect(clip_in_parent);
+  }
+
+  const bool mask_to_bounds =
+      layer.masks_to_bounds() || layer.HasNonTrivialMaskFilterInfo();
+  if (mask_to_bounds) {
+    clip_in_layer.Intersect(gfx::RectF(layer.bounds()));
+  }
+  if (clip_in_layer.IsEmpty()) {
+    return;
   }
 
   {
@@ -629,7 +689,12 @@ void LayerTreeImpl::Draw(Layer& layer,
       // Compute new clip in target space.
       gfx::RectF new_clip_in_target(gfx::SizeF(layer.bounds()));
       const gfx::RectF* clip_in_target = parent_clip_in_target;
-      if (mask_to_bounds) {
+
+      // If `layer`, or an ancestor layer, has an OffsetTag then it's not known
+      // where it will be drawn in target render pass coordinate space. Don't
+      // add layer bounds to `clip_in_target` and rely on layer space clipping
+      // in `clip_in_layer`.
+      if (mask_to_bounds && !data.offset_tag) {
         new_clip_in_target = transform_to_target.MapRect(new_clip_in_target);
         if (parent_clip_in_target) {
           new_clip_in_target.Intersect(*parent_clip_in_target);
@@ -705,6 +770,12 @@ void LayerTreeImpl::Draw(Layer& layer,
   {
     SimpleEnclosedRegion parent_pass_occlusion = data.occlusion_in_target;
     data.occlusion_in_target.Clear();
+
+    // The OffsetTag will be applied to the RenderPassDrawQuad so reset it when
+    // drawing layers to the new render pass.
+    base::AutoReset<viz::OffsetTag> render_pass_offset_tag_reset(
+        &data.offset_tag, viz::OffsetTag());
+
     DrawChildrenAndAppendQuads(layer, *new_pass, data, transform_to_root,
                                transform_to_target, clip_in_target,
                                clip_in_layer,
@@ -762,6 +833,8 @@ void LayerTreeImpl::Draw(Layer& layer,
                             parent_opacity * layer.opacity(),
                             SkBlendMode::kSrcOver, /*sorting_context=*/0,
                             /*layer_id=*/0u, /*fast_rounded_corner=*/true);
+  shared_quad_state->offset_tag = data.offset_tag;
+
   auto* quad =
       parent_pass.CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
 
@@ -853,6 +926,16 @@ bool LayerTreeImpl::UpdateOcclusionRect(
     float opacity,
     const gfx::RectF& visible_rectf_in_target,
     gfx::RectF& visible_rect) {
+  if (data.offset_tag) {
+    // If layer has an offset tag then it's not known where it will be drawn.
+    // Don't consider anything above it as occluding or anything below it as
+    // occluded.
+    // TODO(kylechar): It's possible to start a new "occlusion context" at the
+    // parent layer and compute occlusion between layers that have the same
+    // OffsetTag, since they all move together.
+    return true;
+  }
+
   // Skip occlusion calculations on non-axis aligned layers.
   // Note this is to reduce complexity of occlusion tracking (eg can use
   // Transform::MapRect on RectF directly and only need to worry about

@@ -17,6 +17,7 @@
 #include "base/strings/levenshtein_distance.h"
 #include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -45,7 +46,7 @@ ObservationType GetObservationTypeForEditedField(
     FieldType type,
     std::u16string_view edited_value,
     const AutofillProfile& profile,
-    const std::vector<AutofillProfile*>& other_profiles,
+    const std::vector<const AutofillProfile*>& other_profiles,
     const std::string& app_locale) {
   if (edited_value.empty()) {
     return ObservationType::kEditedValueCleared;
@@ -63,7 +64,7 @@ ObservationType GetObservationTypeForEditedField(
   // value of the `profile` for any of the `types`.
   auto matches = [&](FieldTypeSet types, const AutofillProfile& profile) {
     const l10n::CaseInsensitiveCompare compare;
-    return base::ranges::any_of(types, [&](FieldType type) {
+    return std::ranges::any_of(types, [&](FieldType type) {
       return profile.HasInfo(type) &&
              compare.StringsEqual(edited_value,
                                   profile.GetInfo(type, app_locale));
@@ -81,15 +82,17 @@ ObservationType GetObservationTypeForEditedField(
     return ObservationType::kEditedToDifferentTokenOfSameProfile;
   }
 
-  if (base::ranges::any_of(other_profiles, [&](AutofillProfile* other_profile) {
-        return matches(other_types(*other_profile), *other_profile);
-      })) {
+  if (std::ranges::any_of(
+          other_profiles, [&](const AutofillProfile* other_profile) {
+            return matches(other_types(*other_profile), *other_profile);
+          })) {
     return ObservationType::kEditedToDifferentTokenOfOtherProfile;
   }
 
-  if (base::ranges::any_of(other_profiles, [&](AutofillProfile* other_profile) {
-        return matches({type}, *other_profile);
-      })) {
+  if (std::ranges::any_of(other_profiles,
+                          [&](const AutofillProfile* other_profile) {
+                            return matches({type}, *other_profile);
+                          })) {
     return ObservationType::kEditedToSameTokenOfOtherProfile;
   }
 
@@ -125,10 +128,11 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
     const FormStructure& form_structure,
     const FormData& form_data,
     const PersonalDataManager& pdm) {
-  CHECK_EQ(form_structure.field_count(), form_data.fields.size());
+  CHECK_EQ(form_structure.field_count(), form_data.fields().size());
 
-  std::vector<AutofillProfile*> other_profiles = pdm.GetProfiles();
-  std::erase_if(other_profiles, [&](AutofillProfile* p) {
+  std::vector<const AutofillProfile*> other_profiles =
+      pdm.address_data_manager().GetProfiles();
+  std::erase_if(other_profiles, [&](const AutofillProfile* p) {
     return p->guid() == profile_->guid();
   });
 
@@ -141,7 +145,7 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
       continue;
     }
     if (!field.autofilled_type()) {
-      // TODO(b/311604770): Field-by-field filling doesn't support
+      // TODO(crbug.com/311604770): Field-by-field filling doesn't support
       // `autofilled_type()`.
       continue;
     }
@@ -163,11 +167,18 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
       // An observation for the `stored_type` and `hash` was already collected.
       continue;
     }
+
+    // If the field has a selected option, we give precedence to the option's
+    // text over its value because the user-visible text is likely more
+    // meaningful. Currently, only <select> elements may have a selected option.
+    base::optional_ref<const SelectOption> selected_option =
+        form_data.fields()[i].selected_option();
+    std::u16string value =
+        selected_option ? selected_option->text : form_data.fields()[i].value();
     possible_observations.emplace_back(
         stored_type,
         Observation{.type = base::to_underlying(GetObservationTypeFromField(
-                        field, form_data.fields[i].value, other_profiles,
-                        pdm.app_locale())),
+                        field, value, other_profiles, pdm.app_locale())),
                     .form_hash = hash});
   }
   return AddSubsetOfObservations(std::move(possible_observations)) > 0;
@@ -178,11 +189,6 @@ void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
     const FormStructure& form_structure,
     const FormData& form_data,
     PersonalDataManager& pdm) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillTrackProfileTokenQuality)) {
-    return;
-  }
-
   autofill_metrics::LogObservationCountBeforeSubmissionMetric(form_structure,
                                                               pdm);
 
@@ -194,13 +200,20 @@ void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
       // for the profile that was used to autofill the field.
       continue;
     }
-    AutofillProfile* profile =
-        pdm.GetProfileByGUID(*field->autofill_source_profile_guid());
-    if (profile && profile->token_quality().AddObservationsForFilledForm(
-                       form_structure, form_data, pdm)) {
-      pdm.UpdateProfile(*profile);
+    const AutofillProfile* profile =
+        pdm.address_data_manager().GetProfileByGUID(
+            *field->autofill_source_profile_guid());
+    if (!profile) {
+      continue;
+    }
+    AutofillProfile updatable_profile = *profile;
+    if (updatable_profile.token_quality().AddObservationsForFilledForm(
+            form_structure, form_data, pdm)) {
+      pdm.address_data_manager().UpdateProfile(updatable_profile);
     }
   }
+
+  autofill_metrics::LogProfileTokenQualityScoreMetric(form_structure, pdm);
 }
 
 std::vector<ObservationType>
@@ -226,7 +239,6 @@ ProfileTokenQuality::GetObservationTypesForFieldType(FieldType type) const {
 
 void ProfileTokenQuality::AddObservation(FieldType type,
                                          Observation observation) {
-  CHECK(GetSupportedTypes(*profile_).contains(type)) << FieldTypeToString(type);
   CHECK_NE(observation.type, base::to_underlying(ObservationType::kUnknown));
   base::circular_deque<Observation>& observations =
       observations_[profile_->GetStorableTypeOf(type)];
@@ -250,8 +262,8 @@ size_t ProfileTokenQuality::AddSubsetOfObservations(
                                         : 1;
   // Shuffle the `observations` and add the first `observations_to_add` many.
   base::RandomShuffle(observations.begin(), observations.end());
-  for (auto& [type, observation] : base::make_span(
-           observations.begin(), observations.begin() + observations_to_add)) {
+  for (auto& [type, observation] :
+       base::span(observations).first(observations_to_add)) {
     AddObservation(type, std::move(observation));
   }
   return observations_to_add;
@@ -260,14 +272,14 @@ size_t ProfileTokenQuality::AddSubsetOfObservations(
 ObservationType ProfileTokenQuality::GetObservationTypeFromField(
     const AutofillField& field,
     std::u16string_view current_field_value,
-    const std::vector<AutofillProfile*>& other_profiles,
+    const std::vector<const AutofillProfile*>& other_profiles,
     const std::string& app_locale) const {
   CHECK(field.autofill_source_profile_guid() == profile_->guid());
   DCHECK(!base::Contains(other_profiles, profile_->guid(),
-                         [](AutofillProfile* p) { return p->guid(); }));
+                         [](const AutofillProfile* p) { return p->guid(); }));
 
   const FieldType type = field.Type().GetStorableType();
-  if (field.is_autofilled) {
+  if (field.is_autofilled()) {
     // The filled value was accepted without editing.
     return GetDatabaseStoredTypesOfAutofillProfile().contains(type)
                ? ObservationType::kAccepted
@@ -296,17 +308,26 @@ std::vector<uint8_t> ProfileTokenQuality::SerializeObservationsForStoredType(
 void ProfileTokenQuality::LoadSerializedObservationsForStoredType(
     FieldType type,
     base::span<const uint8_t> serialized_data) {
-  CHECK(GetDatabaseStoredTypesOfAutofillProfile().contains(type));
+  if (!GetSupportedTypes(*profile_).contains(type)) {
+    // Observations only get stored for supported types. However, due to changes
+    // in the data model, it is possible for types to become unsupported.
+    return;
+  }
   // If the database was modified through external means, the `serialized_data`
-  // might not be valid. In this case, the code won't crash, but it might create
-  // observations with incorrect types.
-  for (size_t i = 0; i + 1 < serialized_data.size(); i += 2) {
+  // might not be valid. Any invalid entries are skipped.
+  for (size_t i = 0; i + 1 < serialized_data.size() &&
+                     observations_.size() < kMaxObservationsPerToken;
+       i += 2) {
+    static_assert(base::to_underlying(ObservationType::kUnknown) == 0);
+    if (serialized_data[i] == 0 ||
+        serialized_data[i] > base::to_underlying(ObservationType::kMaxValue)) {
+      // Invalid data read from disk.
+      continue;
+    }
     AddObservation(
         type,
-        Observation{
-            .type = std::min(serialized_data[i],
-                             base::to_underlying(ObservationType::kMaxValue)),
-            .form_hash = FormSignatureHash(serialized_data[i + 1])});
+        Observation{.type = serialized_data[i],
+                    .form_hash = FormSignatureHash(serialized_data[i + 1])});
   }
 }
 
@@ -329,10 +350,6 @@ void ProfileTokenQuality::ResetObservationsForStoredType(FieldType type) {
 
 void ProfileTokenQuality::ResetObservationsForDifferingTokens(
     const AutofillProfile& other) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillTrackProfileTokenQuality)) {
-    return;
-  }
   for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
     if (profile_->GetRawInfo(type) != other.GetRawInfo(type)) {
       ResetObservationsForStoredType(type);

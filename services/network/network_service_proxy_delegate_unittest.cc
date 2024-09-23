@@ -41,8 +41,7 @@ MATCHER_P2(Contain,
            expected_value,
            std::string("headers ") + (negation ? "don't " : "") + "contain '" +
                expected_name + ": " + expected_value + "'") {
-  std::string value;
-  return arg.GetHeader(expected_name, &value) && value == expected_value;
+  return arg.GetHeader(expected_name) == expected_value;
 }
 
 struct HeadersReceived {
@@ -498,50 +497,6 @@ TEST_F(NetworkServiceProxyDelegateTest, OnTunnelHeadersReceivedObserved) {
   EXPECT_EQ(
       TestObserver()->HeadersReceivedArgs()->response_headers->raw_headers(),
       headers->raw_headers());
-}
-
-TEST_F(NetworkServiceProxyDelegateTest, MergeProxyRules) {
-  net::ProxyChain chain1({
-      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                              "proxy2a.com", 80),
-      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                              "proxy2b.com", 80),
-  });
-  net::ProxyChain chain2(net::ProxyChain::Direct());
-  net::ProxyChain chain3(net::ProxyServer::FromSchemeHostAndPort(
-      net::ProxyServer::SCHEME_HTTPS, "proxy1.com", 80));
-  net::ProxyList existing_proxy_list;
-  existing_proxy_list.AddProxyChain(chain1);
-  existing_proxy_list.AddProxyChain(chain2);
-  existing_proxy_list.AddProxyChain(chain3);
-
-  net::ProxyChain custom1({
-      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                              "custom-a.com", 80),
-      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                              "custom-b.com", 80),
-      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
-                                              "custom-c.com", 80),
-  });
-  net::ProxyChain custom2(net::ProxyChain::Direct());
-  net::ProxyList custom_proxy_list;
-  custom_proxy_list.AddProxyChain(custom1);
-  custom_proxy_list.AddProxyChain(custom2);
-
-  auto config = mojom::CustomProxyConfig::New();
-  auto delegate = CreateDelegate(std::move(config));
-
-  auto result =
-      delegate->MergeProxyRules(existing_proxy_list, custom_proxy_list);
-
-  // Custom chains replace `chain2`.
-  std::vector<net::ProxyChain> expected = {
-      chain1,
-      custom1,
-      custom2,
-      chain3,
-  };
-  EXPECT_EQ(result.AllChains(), expected);
 }
 
 }  // namespace network

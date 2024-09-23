@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/android/linker/linker_jni.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
 
 #include <android/dlext.h>
 #include <dlfcn.h>
@@ -19,6 +22,9 @@
 
 #include <memory>
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/android/linker/linker_jni.h"
+
 namespace chromium_android_linker {
 
 namespace {
@@ -31,6 +37,10 @@ RelroSharingStatus s_relro_sharing_status = RelroSharingStatus::NOT_ATTEMPTED;
 
 // Saved JavaVM passed to JNI_OnLoad().
 JavaVM* s_java_vm = nullptr;
+
+size_t GetPageSize() {
+  return sysconf(_SC_PAGESIZE);
+}
 
 // With mmap(2) reserves a range of virtual addresses.
 //
@@ -97,8 +107,10 @@ bool ScanRegionInBuffer(const char* buf,
   if (strcmp(permissions, "---p"))
     return false;
 
-  if (vma_start % PAGE_SIZE || vma_end % PAGE_SIZE)
+  const size_t kPageSize = GetPageSize();
+  if (vma_start % kPageSize || vma_end % kPageSize) {
     return false;
+  }
 
   *out_address = static_cast<uintptr_t>(vma_start);
   *out_size = vma_end - vma_start;
@@ -108,12 +120,20 @@ bool ScanRegionInBuffer(const char* buf,
 
 bool FindRegionInOpenFile(int fd, uintptr_t* out_address, size_t* out_size) {
   constexpr size_t kMaxLineLength = 256;
-  constexpr size_t kReadSize = PAGE_SIZE;
+  const size_t kPageSize = GetPageSize();
+  const size_t kReadSize = kPageSize;
 
   // Loop until no bytes left to scan. On every iteration except the last, fill
   // the buffer till the end. On every iteration except the first, the buffer
   // begins with kMaxLineLength bytes from the end of the previous fill.
+
+// Silence clang's warning about allocating on the stack because this is a very
+// special case.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wvla-extension"
   char buf[kReadSize + kMaxLineLength + 1];
+#pragma clang diagnostic pop
+
   buf[kReadSize + kMaxLineLength] = '\0';  // Stop strstr().
   size_t pos = 0;
   size_t bytes_requested = kReadSize + kMaxLineLength;
@@ -381,11 +401,6 @@ bool NativeLibInfo::FindRelroAndLibraryRangesInElf() {
     return false;
   }
 
-  // Sanitycheck PAGE_SIZE before use.
-  int page_size = sysconf(_SC_PAGESIZE);
-  if (page_size != PAGE_SIZE)
-    abort();
-
   // Compute the ranges of PT_LOAD segments and the PT_GNU_RELRO. It is possible
   // to reach for the same information by iterating over all loaded libraries
   // and their program headers using dl_iterate_phdr(3). Instead here the
@@ -407,6 +422,7 @@ bool NativeLibInfo::FindRelroAndLibraryRangesInElf() {
   const auto* ehdr = reinterpret_cast<const ElfW(Ehdr)*>(load_address_);
   const auto* phdrs =
       reinterpret_cast<const ElfW(Phdr)*>(load_address_ + ehdr->e_phoff);
+  const size_t kPageSize = GetPageSize();
   for (int i = 0; i < ehdr->e_phnum; i++) {
     const ElfW(Phdr)* phdr = &phdrs[i];
     switch (phdr->p_type) {
@@ -417,7 +433,7 @@ bool NativeLibInfo::FindRelroAndLibraryRangesInElf() {
           max_vaddr = phdr->p_vaddr + phdr->p_memsz;
         break;
       case PT_GNU_RELRO:
-        min_relro_vaddr = PAGE_START(phdr->p_vaddr);
+        min_relro_vaddr = PageStart(kPageSize, phdr->p_vaddr);
         max_relro_vaddr = phdr->p_vaddr + phdr->p_memsz;
 
         // As of 2020-11 in libmonochrome.so RELRO is covered by a LOAD segment.
@@ -436,9 +452,10 @@ bool NativeLibInfo::FindRelroAndLibraryRangesInElf() {
   }
 
   // Fill out size and RELRO information.
-  load_size_ = PAGE_END(max_vaddr) - PAGE_START(min_vaddr);
-  relro_size_ = PAGE_END(max_relro_vaddr) - PAGE_START(min_relro_vaddr);
-  relro_start_ = load_address_ + PAGE_START(min_relro_vaddr);
+  load_size_ = PageEnd(kPageSize, max_vaddr) - PageStart(kPageSize, min_vaddr);
+  relro_size_ = PageEnd(kPageSize, max_relro_vaddr) -
+                PageStart(kPageSize, min_relro_vaddr);
+  relro_start_ = load_address_ + PageStart(kPageSize, min_relro_vaddr);
   return true;
 }
 

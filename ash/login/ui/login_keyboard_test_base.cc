@@ -37,9 +37,9 @@ void LoginKeyboardTestBase::ShowKeyboard() {
   // lock/login layout.
   int height = Shell::GetPrimaryRootWindow()->bounds().height() / 2;
   keyboard_controller->GetKeyboardWindow()->SetBounds(
-      keyboard::KeyboardBoundsFromRootBounds(
+      keyboard::test::KeyboardBoundsFromRootBounds(
           Shell::GetPrimaryRootWindow()->bounds(), height));
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 }
 
 void LoginKeyboardTestBase::HideKeyboard() {

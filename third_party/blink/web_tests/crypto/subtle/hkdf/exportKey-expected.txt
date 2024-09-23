@@ -4,7 +4,7 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 
 Calling exportKey() on an HKDF key...
-error is: InvalidAccessError: key is not extractable
+error is: InvalidAccessError: Failed to execute 'exportKey' on 'SubtleCrypto': key is not extractable
 PASS successfullyParsed is true
 
 TEST COMPLETE

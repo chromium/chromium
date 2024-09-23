@@ -25,9 +25,9 @@
 #include "ppapi/shared_impl/url_request_info_data.h"
 #include "ppapi/shared_impl/var.h"
 #include "ppapi/thunk/enter.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_http_body.h"
@@ -59,7 +59,7 @@ mojo::Remote<blink::mojom::FileSystemManager> GetFileSystemManager(
   mojo::Remote<blink::mojom::FileSystemManager> file_system_manager;
   RenderFrame* frame = renderer_ppapi_host->GetRenderFrameForInstance(instance);
   if (frame)
-    frame->GetBrowserInterfaceBroker()->GetInterface(
+    frame->GetBrowserInterfaceBroker().GetInterface(
         file_system_manager.BindNewPipeAndPassReceiver());
   return file_system_manager;
 }
@@ -106,7 +106,7 @@ bool AppendFileRefToBody(PP_Instance instance,
       platform_path = file_ref_host->GetExternalFilePath();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   std::optional<base::Time> optional_modified_time;
   if (expected_last_modified_time != 0)

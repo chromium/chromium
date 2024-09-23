@@ -1,6 +1,8 @@
 include_rules = [
     "+base/atomic_sequence_num.h",
     "+base/memory/scoped_refptr.h",
+    "+base/containers/heap_array.h",
+    "+base/containers/span.h",
     "+mojo/public/cpp/base",
     "+mojo/public/cpp/bindings",
     "+mojo/public/cpp/system",
@@ -26,6 +28,7 @@ include_rules = [
     "+ui/display/screen_infos.h",
     "+ui/display/mojom",
     "+ui/color",
+    "+ui/gfx/animation/keyframe/timing_function.h",
     "+ui/gfx/geometry",
     "-web",
 ]
@@ -62,7 +65,7 @@ specific_include_rules = {
     ],
 
     "tcp_writable_stream_wrapper.h": [
-        "+base/allocator/partition_allocator/src/partition_alloc/partition_root.h",
+        "+partition_alloc/partition_root.h",
     ],
     ".*_stream_wrapper.cc": [
         "+net/base/ip_endpoint.h",

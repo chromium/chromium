@@ -43,7 +43,7 @@ class DistillerNativeJavaScript {
   void StoreIntFontFamily(int font_family);
   void StoreFloatFontScaling(float font_scale);
 
-  raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_;
+  raw_ptr<content::RenderFrame> render_frame_;
   mojo::Remote<mojom::DistillerJavaScriptService> distiller_js_service_;
 };
 

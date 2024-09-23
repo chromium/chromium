@@ -1,0 +1,87 @@
+<style include="settings-shared">
+  :host {
+    --cr-section-indent-width: 60px;
+  }
+
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  settings-toggle-button,
+  cr-link-row {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .settings-box .action-row {
+    align-items: flex-start;
+  }
+</style>
+
+<template is="dom-if" if="[[showAddActionDialog_]]" restamp>
+  <facegaze-actions-add-dialog
+      prefs="{{prefs}}"
+      id="actionsAddDialog"
+      left-click-gestures="[[leftClickGestures_]]"
+      initial-page="[[dialogPageToShow_]]"
+      command-pair-to-configure="[[commandPairToConfigure_]]"
+      on-facegaze-command-pair-added="onCommandPairAdded_"
+      on-close="onAddActionDialogClose_">
+  </facegaze-actions-add-dialog>
+</template>
+
+<!-- TODO(b:341770753): Localize strings. -->
+<settings-card header-text="$i18n{faceGazeActionsSectionTitle}">
+  <settings-toggle-button
+      id="faceGazeActionsEnabledButton"
+      label="$i18n{faceGazeActionsEnabledLabel}"
+      pref="{{prefs.settings.a11y.face_gaze.actions_enabled}}"
+      disabled="[[disabled]]">
+  </settings-toggle-button>
+  <dom-repeat items="[[commandPairs_]]">
+    <template>
+      <div class="settings-box">
+        <div class="start settings-box-text two-line single-column action-row">
+          <div>[[getActionDisplayText_(item.action)]]</div>
+          <template is="dom-if" if="[[getSubLabel_(item.action)]]">
+            <div class="secondary">[[getSubLabel_(item.action)]]</div>
+          </template>
+          <template is="dom-if" if="[[getKeyComboDisplayText_(item)]]">
+            <div class="secondary">[[getKeyComboDisplayText_(item)]]</div>
+          </template>
+        </div>
+        <template is="dom-if" if="[[item.gesture]]" restamp>
+          <cros-chip
+              type="input"
+              label="[[getGestureDisplayText_(item.gesture)]]"
+              on-click="onConfigureGestureButtonClick_"
+              disabled="[[disableConfigureControls_]]">
+            <iron-icon icon="[[getGestureIconName_(item.gesture)]]" slot="icon">
+            </iron-icon>
+          </cros-chip>
+        </template>
+        <template is="dom-if" if="[[!item.gesture]]" restamp>
+          <cros-chip
+              type="input"
+              label="Assign a gesture"
+              on-click="onAssignGestureButtonClick_"
+              disabled="[[disableConfigureControls_]]">
+            <iron-icon icon="cr:add" slot="icon"></iron-icon>
+          </cros-chip>
+        </template>
+        <cr-icon-button class="icon-clear" on-click="onRemoveCommandPairButtonClick_">
+        </cr-icon-button>
+      </div>
+    </template>
+  </dom-repeat>
+  <div class="settings-box">
+    <cr-button
+        id="addActionButton"
+        class="button"
+        on-click="onAddActionButtonClick_"
+        disabled="[[disableConfigureControls_]]">
+      <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
+      $i18n{faceGazeActionsAddAction}
+    </cr-button>
+  </div>
+</settings-card>

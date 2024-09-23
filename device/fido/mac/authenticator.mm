@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
@@ -149,7 +148,9 @@ const AuthenticatorSupportedOptions& TouchIdAuthenticator::Options() const {
 }
 
 void TouchIdAuthenticator::GetTouch(base::OnceClosure callback) {
-  NOTREACHED();
+  // If at any point request processing wants to collect a "touch" from this
+  // authenticator, pretend that happens immediately because UI interaction
+  // already happened to trigger this authenticator.
   std::move(callback).Run();
 }
 

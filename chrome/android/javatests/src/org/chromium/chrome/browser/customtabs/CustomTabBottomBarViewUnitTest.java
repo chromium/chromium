@@ -31,12 +31,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /** On device unit tests for {@link CustomTabBottomBarView}. */
@@ -53,7 +55,7 @@ public class CustomTabBottomBarViewUnitTest extends BlankUiTestActivityTestCase 
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(mSwipeHandler.isSwipeEnabled(eq(ScrollDirection.UP))).thenReturn(true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mView =
                             (CustomTabBottomBarView)
@@ -83,6 +85,7 @@ public class CustomTabBottomBarViewUnitTest extends BlankUiTestActivityTestCase 
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/329163715")
     public void testSwipeUp() {
         onView(withChild(withId(R.id.stub))).perform(swipeUp());
         verify(mSwipeHandler).onSwipeStarted(eq(ScrollDirection.UP), any(MotionEvent.class));
@@ -90,6 +93,10 @@ public class CustomTabBottomBarViewUnitTest extends BlankUiTestActivityTestCase 
 
     @Test
     @SmallTest
+    @DisableIf.Build(
+            supported_abis_includes = "arm64-v8a",
+            sdk_is_greater_than = 33,
+            message = "crbug.com/353773627")
     public void testSwipeRightDoesNotTrigger() {
         onView(withChild(withId(R.id.stub))).perform(swipeRight());
         verify(mSwipeHandler, never()).onSwipeStarted(anyInt(), any());

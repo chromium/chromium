@@ -38,8 +38,9 @@ ChromeExtensionDownloaderFactory::CreateForURLLoaderFactory(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::string brand;
   google_brand::GetBrand(&brand);
-  if (!google_brand::IsOrganic(brand))
+  if (!google_brand::IsOrganic(brand)) {
     downloader->set_brand_code(brand);
+  }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::string manifest_query_params =
       UpdateQueryParams::Get(UpdateQueryParams::CRX);
@@ -71,7 +72,8 @@ ChromeExtensionDownloaderFactory::CreateForProfile(
   // (ExtensionSystemSharedFactory) specifies that it depends on
   // IdentityManager. Hence, the IdentityManager instance is guaranteed to
   // outlive |downloader|.
-  // TODO(843519): Make this lifetime relationship more explicit/cleaner.
+  // TODO(crbug.com/41389279): Make this lifetime relationship more
+  // explicit/cleaner.
   downloader->SetIdentityManager(
       IdentityManagerFactory::GetForProfile(profile));
   return downloader;

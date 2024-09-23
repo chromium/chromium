@@ -61,8 +61,8 @@ class WaitForURLsDeletedObserver : public history::HistoryServiceObserver {
       delete;
 
   // history::HistoryServiceObserver:
-  void OnURLsDeleted(history::HistoryService* service,
-                     const history::DeletionInfo& deletion_info) override {
+  void OnHistoryDeletions(history::HistoryService* service,
+                          const history::DeletionInfo& deletion_info) override {
     runner_->Quit();
   }
 

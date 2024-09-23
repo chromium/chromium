@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <message name="IDS_SAVED_TAB_GROUPS_CREATION_FORMAT" desc="Subtitle of a synced tab group in Tab Groups panel in Tab Grid representing the elapsed time since its creation.">
+    Created <ph name="DATE"><ex>2 days ago</ex>$1</ph>
+  </message>
+  <message name="IDS_SAVED_TAB_GROUPS_CREATION_JUST_NOW" desc="Subtitle of a synced tab group in Tab Groups panel in Tab Grid that just got created.">
+    Created just now
+  </message>
+</grit-part>

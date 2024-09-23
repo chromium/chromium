@@ -2,7 +2,7 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src='../../resources/gesture-util.js'></script>
-<script src="../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
+<script src="../../resources/percent-based-util.js"></script>
 <style>
 
   ::-webkit-scrollbar {
@@ -40,10 +40,10 @@ var start_y = (rect.top + rect.bottom) / 2;
 async function scrollDown(pixels_to_scroll, gesture_source_type, precise_deltas) {
   await waitForCompositorCommit();
   const previous_scroll_offset = scrollable.scrollTop;
-  const expectedScrollY = (isPercentBasedScrollingEnabled() && 
-               gesture_source_type == GestureSourceType.MOUSE_INPUT && 
-              !precise_deltas) ? 
-                  calculateExpectedScroll(scrollable, 0, pixels_to_scroll).y : 
+  const expectedScrollY = (isPercentBasedScrollingEnabled() &&
+               gesture_source_type == GestureSourceType.MOUSE_INPUT &&
+              !precise_deltas) ?
+                  calculateExpectedScroll(scrollable, 0, pixels_to_scroll).y :
                   pixels_to_scroll;
   await smoothScroll(pixels_to_scroll, start_x, start_y, gesture_source_type,
                     'down', SPEED_INSTANT, precise_deltas);

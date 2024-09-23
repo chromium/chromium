@@ -8,6 +8,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -85,11 +86,11 @@ void FakeLocalFrame::MediaPlayerActionAt(
     const gfx::Point& location,
     blink::mojom::MediaPlayerActionPtr action) {}
 
-void FakeLocalFrame::RequestVideoFrameAt(const gfx::Point& window_point,
-                                         const gfx::Size& max_size,
-                                         int max_area,
-                                         RequestVideoFrameAtCallback callback) {
-}
+void FakeLocalFrame::RequestVideoFrameAtWithBoundsHint(
+    const gfx::Point& window_point,
+    const gfx::Size& max_size,
+    int max_area,
+    RequestVideoFrameAtWithBoundsHintCallback callback) {}
 
 void FakeLocalFrame::PluginActionAt(const gfx::Point& location,
                                     blink::mojom::PluginActionType action) {}
@@ -105,6 +106,9 @@ void FakeLocalFrame::ReportContentSecurityPolicyViolation(
 
 void FakeLocalFrame::DidUpdateFramePolicy(
     const blink::FramePolicy& frame_policy) {}
+
+void FakeLocalFrame::OnFrameVisibilityChanged(
+    blink::mojom::FrameVisibility visibility) {}
 
 void FakeLocalFrame::PostMessageEvent(
     const std::optional<blink::RemoteFrameToken>& source_frame_token,
@@ -126,8 +130,9 @@ void FakeLocalFrame::JavaScriptExecuteRequest(
 
 void FakeLocalFrame::JavaScriptExecuteRequestForTests(
     const std::u16string& javascript,
-    bool wants_result,
     bool has_user_gesture,
+    bool resolve_promises,
+    bool honor_js_content_settings,
     int32_t world_id,
     JavaScriptExecuteRequestForTestsCallback callback) {}
 
@@ -201,7 +206,13 @@ void FakeLocalFrame::DispatchNavigateEventForCrossDocumentTraversal(
     bool is_browser_initiated) {}
 
 void FakeLocalFrame::SnapshotDocumentForViewTransition(
+    const blink::ViewTransitionToken& transition_token,
+    blink::mojom::PageSwapEventParamsPtr,
     SnapshotDocumentForViewTransitionCallback callback) {}
+
+void FakeLocalFrame::NotifyViewTransitionAbortedToOldDocument() {}
+
+void FakeLocalFrame::DispatchPageSwap(blink::mojom::PageSwapEventParamsPtr) {}
 
 void FakeLocalFrame::AddResourceTimingEntryForFailedSubframeNavigation(
     const ::blink::FrameToken& subframe_token,
@@ -220,12 +231,15 @@ void FakeLocalFrame::AddResourceTimingEntryForFailedSubframeNavigation(
     const std::string& normalized_server_timing,
     const ::network::URLLoaderCompletionStatus& completion_status) {}
 
-void FakeLocalFrame::RequestFullscreenDocumentElement() {}
-
 void FakeLocalFrame::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<blink::mojom::LocalFrame>(
       std::move(handle)));
+}
+
+void FakeLocalFrame::UpdatePrerenderURL(const ::GURL& matched_url,
+                                        UpdatePrerenderURLCallback callback) {
+  std::move(callback).Run();
 }
 
 }  // namespace content

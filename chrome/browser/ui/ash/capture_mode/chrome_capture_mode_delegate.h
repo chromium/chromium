@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
@@ -37,7 +38,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
 
   // ash::CaptureModeDelegate:
   base::FilePath GetUserDefaultDownloadsFolder() const override;
-  void ShowScreenCaptureItemInFolder(const base::FilePath& file_path) override;
+  void OpenScreenCaptureItem(const base::FilePath& file_path) override;
   void OpenScreenshotInImageEditor(const base::FilePath& file_path) override;
   bool Uses24HourFormat() const override;
   void CheckCaptureModeInitRestrictionByDlp(
@@ -65,8 +66,8 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   bool GetDriveFsMountPointPath(base::FilePath* path) const override;
   base::FilePath GetAndroidFilesPath() const override;
   base::FilePath GetLinuxFilesPath() const override;
-  std::unique_ptr<ash::RecordingOverlayView> CreateRecordingOverlayView()
-      const override;
+  base::FilePath GetOneDriveMountPointPath() const override;
+  PolicyCapturePath GetPolicyCapturePath() const override;
   void ConnectToVideoSourceProvider(
       mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
       override;
@@ -82,6 +83,12 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       crosapi::mojom::VideoConferenceMediaUsageStatusPtr status) override;
   void NotifyDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice device) override;
+  void FinalizeSavedFile(
+      base::OnceCallback<void(bool, const base::FilePath&)> callback,
+      const base::FilePath& path,
+      const gfx::Image& thumbnail) override;
+  base::FilePath RedirectFilePath(const base::FilePath& path) override;
+  std::unique_ptr<ash::AshWebView> CreateSearchResultsView() const override;
 
  private:
   // Called back by the Drive integration service when the quota usage is
@@ -89,6 +96,9 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   void OnGetDriveQuotaUsage(ash::OnGotDriveFsFreeSpace callback,
                             drive::FileError error,
                             drivefs::mojom::QuotaUsagePtr usage);
+
+  // Called back once temporary directory for OneDrive is created.
+  void SetOdfsTempDir(base::ScopedTempDir temp_dir);
 
   // Used to temporarily disable capture mode in certain cases for which neither
   // a device policy, nor DLP will be triggered. For example, Some extension
@@ -104,6 +114,10 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
 
   // True when a capture mode session is currently active.
   bool is_session_active_ = false;
+
+  // Temporary directory to which files will be redirected before being uploaded
+  // to OneDrive cloud. Created and destructed asynchronously.
+  base::ScopedTempDir odfs_temp_dir_;
 
   base::WeakPtrFactory<ChromeCaptureModeDelegate> weak_ptr_factory_{this};
 };

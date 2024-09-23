@@ -60,12 +60,15 @@ DeskIconButton::DeskIconButton(DeskBarViewBase* bar_view,
                                ui::ColorId icon_color_id,
                                ui::ColorId background_color_id,
                                bool initially_enabled,
-                               base::RepeatingClosure callback)
+                               base::RepeatingClosure callback,
+                               base::RepeatingClosure state_change_callback)
     : DeskButtonBase(text, /*set_text=*/false, bar_view, callback),
       state_(bar_view_->IsZeroState() ? State::kZero : State::kExpanded),
       button_icon_(button_icon),
       icon_color_id_(icon_color_id),
-      background_color_id_(background_color_id) {
+      background_color_id_(background_color_id),
+      state_change_callback_(std::move(state_change_callback)) {
+  CHECK(state_change_callback_);
   SetEnabled(initially_enabled);
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(kWindowMiniViewFocusRingHaloInset),
@@ -77,7 +80,7 @@ DeskIconButton::DeskIconButton(DeskBarViewBase* bar_view,
         base::BindRepeating([](const views::View* view) {
           const auto* v = views::AsViewClass<DeskIconButton>(view);
           CHECK(v);
-          if (v->is_focused()) {
+          if (v->HasFocus()) {
             return true;
           }
           if (v->state_ != State::kActive) {
@@ -116,6 +119,7 @@ void DeskIconButton::UpdateState(State state) {
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(kWindowMiniViewFocusRingHaloInset),
       GetFocusRingRadiusForState(state_));
+  state_change_callback_.Run();
 }
 
 bool DeskIconButton::IsPointOnButton(const gfx::Point& screen_location) const {
@@ -133,7 +137,46 @@ bool DeskIconButton::IsPointOnButton(const gfx::Point& screen_location) const {
   return hit_test_bounds.Contains(screen_location);
 }
 
-gfx::Size DeskIconButton::CalculatePreferredSize() const {
+void DeskIconButton::UpdateFocusState() {
+  auto get_focus_color = [this]() -> std::optional<ui::ColorId> {
+    if (HasFocus()) {
+      return ui::kColorAshFocusRing;
+    }
+    if (state_ == State::kActive && bar_view_->dragged_item_over_bar() &&
+        IsPointOnButton(bar_view_->last_dragged_item_screen_location())) {
+      return ui::kColorAshFocusRing;
+    }
+    if (state_ == State::kActive && paint_as_active_) {
+      return cros_tokens::kCrosSysTertiary;
+    }
+    return std::nullopt;
+  };
+
+  std::optional<ui::ColorId> new_focus_color_id = get_focus_color();
+  if (focus_color_id_ == new_focus_color_id) {
+    return;
+  }
+
+  focus_color_id_ = new_focus_color_id;
+
+  // Only repaint the focus ring if the color gets updated.
+  auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetColorId(new_focus_color_id);
+  focus_ring->SchedulePaint();
+}
+
+void DeskIconButton::OnFocus() {
+  UpdateFocusState();
+  DeskButtonBase::OnFocus();
+}
+
+void DeskIconButton::OnBlur() {
+  UpdateFocusState();
+  DeskButtonBase::OnBlur();
+}
+
+gfx::Size DeskIconButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (state_ == State::kZero) {
     return gfx::Size(kZeroStateButtonWidth, kZeroStateButtonHeight);
   }
@@ -146,31 +189,6 @@ gfx::Size DeskIconButton::CalculatePreferredSize() const {
 
   DCHECK_EQ(state_, State::kActive);
   return gfx::Size(desk_preview_bounds.width(), desk_preview_bounds.height());
-}
-
-void DeskIconButton::UpdateFocusState() {
-  std::optional<ui::ColorId> new_focus_color_id;
-
-  if (is_focused() ||
-      (state_ == State::kActive && bar_view_->dragged_item_over_bar() &&
-       IsPointOnButton(bar_view_->last_dragged_item_screen_location()))) {
-    new_focus_color_id = ui::kColorAshFocusRing;
-  } else if (state_ == State::kActive && paint_as_active_) {
-    new_focus_color_id = cros_tokens::kCrosSysTertiary;
-  } else {
-    new_focus_color_id = std::nullopt;
-  }
-
-  if (focus_color_id_ == new_focus_color_id) {
-    return;
-  }
-
-  focus_color_id_ = new_focus_color_id;
-
-  // Only repaint the focus ring if the color gets updated.
-  auto* focus_ring = views::FocusRing::Get(this);
-  focus_ring->SetColorId(new_focus_color_id);
-  focus_ring->SchedulePaint();
 }
 
 void DeskIconButton::OnThemeChanged() {

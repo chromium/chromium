@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/constants",
   "-content",
+  "+components/autofill/core/common/credit_card_number_validation.h",
   "+components/keyed_service/core",
   "+components/prefs",
   "+components/sync_preferences",

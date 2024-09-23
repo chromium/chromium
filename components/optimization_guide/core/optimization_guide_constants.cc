@@ -26,6 +26,12 @@ const char kOptimizationGuideServiceModelQualtiyDefaultURL[] =
 const char kLoadedHintLocalHistogramString[] =
     "OptimizationGuide.LoadedHint.Result";
 
+const char kModelValidationErrorHistogramString[] =
+    "OptimizationGuide.ModelValidation.OnDevice.DidError";
+
+const char kOptimizationGuideLanguageOverrideHeaderKey[] =
+    "x-optimization-guide-language-override";
+
 const base::FilePath::CharType kOptimizationGuideHintStore[] =
     FILE_PATH_LITERAL("optimization_guide_hint_cache_store");
 
@@ -39,13 +45,6 @@ const base::FilePath::CharType kOldOptimizationGuidePredictionModelDownloads[] =
 const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[] =
     FILE_PATH_LITERAL("optimization_guide_model_store");
 
-const base::FilePath::CharType kPageEntitiesMetadataStore[] =
-    FILE_PATH_LITERAL("page_content_annotations_page_entities_metadata_store");
-
-const base::FilePath::CharType kSpModelFile[] = FILE_PATH_LITERAL("spm.model");
-
-const base::FilePath::CharType kModelFile[] = FILE_PATH_LITERAL("model.pb");
-
 const base::FilePath::CharType kWeightsFile[] =
     FILE_PATH_LITERAL("weights.bin");
 
@@ -56,5 +55,8 @@ const base::FilePath::CharType kTsSpModelFile[] =
 
 const base::FilePath::CharType kOnDeviceModelExecutionConfigFile[] =
     FILE_PATH_LITERAL("on_device_model_execution_config.pb");
+
+const base::FilePath::CharType kOnDeviceModelAdaptationWeightsFile[] =
+    FILE_PATH_LITERAL("adaptation_weights.bin");
 
 }  // namespace optimization_guide

@@ -19,7 +19,6 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> বিক্রেতার থেকেঅজানা পণ্য <ph name="PRODUCT_ID" /> (সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ফাইলটি প্রতিস্থাপন করতে ব্যর্থ৷ ফাইলটি ব্যবহার হচ্ছে কিনা দেখে নিন৷</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> বিক্রেতার থেকে অজানা পণ্য <ph name="PRODUCT_ID" /></translation>
-<translation id="3369521687965833290">এক্সটেনশন আনপ্যাক করতে পারেনা৷ কোনও এক্সটেনশনকে সুরক্ষিতভাবে আনপ্যাক করতে, আপনার প্রোফাইল ডিরেক্টরিতে অবশ্যই এমন একটি পথ থাকবে যা চালক অক্ষর দিয়ে শুরু হবে এবং এতে কোন জাংশন, মাউন্ট পয়েন্ট বা সিমলিঙ্ক থাকবে না৷  আপনার প্রোফাইলে এই ধরনের কোনও পথ নেই৷</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> বিক্রেতার থেকে <ph name="PRODUCT_NAME" /> (সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ব্যক্তিগত কীয়ের জন্য ইনপুট মান অবশ্যই একটি সঠিক পাথ হবে৷</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">এই মেশিনের প্রশাসকের <ph name="EXTENSION_NAME" /> ইন্সটল করা প্রয়োজন। এটি আনইন্সটল করা যাবে না।</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> এর থেকে অজানা পণ্য <ph name="PRODUCT_ID" /> (সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> বিক্রেতার থেকে <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">এক্সটেনশনটি আনপ্যাক করতে পারে না৷  নিরাপদে কোনও এক্সটেনশন আনপ্যাক করতে, আপনার প্রোফাইল ডিরেক্টরিতে অবশ্যই এমন একটি পথ থাকতে হবে যেখানে কোনও সিমলিঙ্ক থাকে না৷  এই ধরনের কোনও পথ আপনার প্রোফাইলে নেই৷</translation>
 <translation id="6322279351188361895">ব্যক্তিগত কী-টি পড়তে ব্যর্থ৷</translation>
 <translation id="6391538222494443604">ইনপুট নির্দেশিকা বন্ধ করা আবশ্যক৷</translation>
 <translation id="641087317769093025">এক্সটেনশন আনজিপ করা যায়নি</translation>

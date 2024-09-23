@@ -1,8 +1,7 @@
 rootWebArea htmlTag='#document'
-++genericContainer ignored htmlTag='html'
-++++genericContainer ignored htmlTag='body'
+++genericContainer ignored
+++++genericContainer ignored
 ++++++genericContainer htmlTag='div'
-++++++++genericContainer ignored invisible htmlTag='slot'
 ++++++++paragraph htmlTag='p'
 ++++++++++staticText name='paragraph'
 ++++++++++++inlineTextBox name='paragraph'

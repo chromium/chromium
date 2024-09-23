@@ -1,0 +1,72 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/mwb_shared_style_lit.css.js
+ * #import=./auto_tab_groups_shared_style.css.js
+ * #scheme=relative
+ * #include=mwb-shared-style-lit auto-tab-groups-shared-style
+ * #css_wrapper_metadata_end */
+
+cr-feedback-buttons {
+  color: var(--color-icon);
+}
+
+.button-row {
+  display: flex;
+  gap: 8px;
+}
+
+.feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+:host([multi-tab-organization]) .feedback {
+  background-color: var(--color-tab-search-footer-background);
+  margin: calc(var(--mwb-list-item-horizontal-margin) * -1);
+  margin-top: 0;
+  padding: var(--mwb-list-item-horizontal-margin);
+}
+
+.results {
+  background-color: var(--color-tab-search-card-background);
+  border-radius: 8px;
+}
+
+#scrollable {
+  --external-margin: 20px;
+  --scrollbar-width: 4px;
+  --scroll-border: solid 1px var(--color-tab-search-divider);
+  --non-scroll-border: solid 1px transparent;
+  border-bottom: var(--non-scroll-border);
+  border-top: var(--non-scroll-border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* Render the scroll bar and scroll borders at the edge of the dialog */
+  margin: 0 calc(-1 * var(--external-margin));
+  overflow-y: auto;
+  padding: 0 calc(var(--external-margin) - var(--scrollbar-width))
+           0 var(--external-margin);
+  scrollbar-gutter: stable;
+}
+
+#scrollable.can-scroll.is-scrolled {
+  border-top: var(--scroll-border);
+}
+
+#scrollable.can-scroll:not(.scrolled-to-bottom) {
+  border-bottom: var(--scroll-border);
+}
+
+.auto-tab-groups-body,
+.auto-tab-groups-link {
+  display: inline;
+  font-size: 11px;
+  line-height: 16px;
+}

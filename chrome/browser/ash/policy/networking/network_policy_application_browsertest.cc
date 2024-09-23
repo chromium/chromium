@@ -7,12 +7,15 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/system_tray_test_api.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -20,15 +23,18 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/policy/networking/network_configuration_updater.h"
+#include "chrome/browser/ui/ash/network/enrollment_dialog_view.h"
+#include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/ash/scoped_test_system_nss_key_slot_mixin.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -52,6 +58,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "crypto/scoped_nss_types.h"
 #include "dbus/object_path.h"
@@ -61,6 +68,17 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/widget/widget_utils.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace policy {
 
@@ -91,9 +109,6 @@ constexpr char kUserIdentity[] = "user_identity";
 
 constexpr char kTestDomain[] = "test_domain";
 constexpr char kTestDeviceId[] = "test_device_id";
-
-constexpr char kOncRecommendedFieldsWorkaroundActionHistogram[] =
-    "Network.Ethernet.Policy.OncRecommendedFieldsWorkaroundAction";
 
 // Records all values that shill service property had during the lifetime of
 // ServicePropertyValueWatcher. Only supports string properties at the moment.
@@ -431,6 +446,112 @@ std::vector<std::string> GetStaticNameServersFromShillProperties(
   }
   EXPECT_THAT(result, Not(IsEmpty()));
   return result;
+}
+
+// Waits until a views::View exists which is a (possibly indirect) child of a
+// parent View and satisfies some predicate.
+class ViewWaiter : public views::ViewObserver {
+ public:
+  // This will be used to check if a view is the one the ViewWaiter is waiting
+  // for.
+  using ViewPredicate = base::RepeatingCallback<bool(views::View*)>;
+
+  ViewWaiter(views::View* observed_view, ViewPredicate view_predicate)
+      : observed_view_(observed_view), view_predicate_(view_predicate) {}
+
+  void Wait() {
+    matching_view_ = FindExpectedView(observed_view_);
+    if (matching_view_ != nullptr) {
+      return;
+    }
+
+    scoped_observation_.Observe(observed_view_);
+    run_loop.Run();
+    if (matching_view_ == nullptr) {
+      FAIL() << "Could not find the expected view";
+    }
+  }
+
+  views::View* GetMatchingView() { return matching_view_; }
+
+ private:
+  void OnViewHierarchyChanged(
+      views::View* observed_view,
+      const views::ViewHierarchyChangedDetails& details) override {
+    matching_view_ = FindExpectedView(observed_view_);
+    if (matching_view_ != nullptr) {
+      run_loop.Quit();
+    }
+  }
+
+  views::View* FindExpectedView(views::View* view) {
+    if (view_predicate_.Run(view)) {
+      return view;
+    }
+    for (views::View* const child : view->children()) {
+      if (views::View* const found = FindExpectedView(child)) {
+        return found;
+      }
+    }
+    return nullptr;
+  }
+
+  raw_ptr<views::View> observed_view_;
+  ViewPredicate view_predicate_;
+  base::ScopedObservation<views::View, ViewWaiter> scoped_observation_{this};
+  base::RunLoop run_loop;
+  raw_ptr<views::View> matching_view_;
+};
+
+ViewWaiter::ViewPredicate ViewWithLabel(const std::u16string& label) {
+  return base::BindLambdaForTesting([label](views::View* view) {
+    if (views::Label* const label_view = views::AsViewClass<views::Label>(view);
+        label_view && label_view->GetText() == label) {
+      return true;
+    }
+    return false;
+  });
+}
+
+ViewWaiter::ViewPredicate LabelButtonWithLabel(const std::u16string& label) {
+  return base::BindLambdaForTesting([label](views::View* view) {
+    if (views::LabelButton* const label_button_view =
+            views::AsViewClass<views::LabelButton>(view);
+        label_button_view && label_button_view->GetText() == label) {
+      return true;
+    }
+    return false;
+  });
+}
+
+// Opens the "network detailed view" of the system tray and attempts to press on
+// the entry that is displaying `ssid`. This relies on the fact that the SSID
+// will be on the corresponding UI label verbatim.
+void ConnectToSsidUsingSystemTray(std::string_view ssid) {
+  auto system_tray = ash::SystemTrayTestApi::Create();
+  system_tray->ShowNetworkDetailedView();
+
+  ViewWaiter waiter(system_tray->GetMainBubbleView(),
+                    ViewWithLabel(base::UTF8ToUTF16(ssid)));
+  ASSERT_NO_FATAL_FAILURE(waiter.Wait());
+
+  ui::test::EventGenerator event_generator(ash::Shell::GetPrimaryRootWindow());
+
+  event_generator.MoveMouseTo(
+      waiter.GetMatchingView()->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+}
+
+void AcceptCertEnrollmentDialog(views::Widget* dialog_widget) {
+  ViewWaiter waiter(dialog_widget->GetRootView(),
+                    LabelButtonWithLabel(l10n_util::GetStringUTF16(
+                        IDS_NETWORK_ENROLLMENT_HANDLER_BUTTON)));
+  ASSERT_NO_FATAL_FAILURE(waiter.Wait());
+
+  // For some reason, clicking on the button found by `waiter` (which is the
+  // "Accept" button of the dialog) doesn't seem to have an action in a
+  // browsertest, so "accept" the dialog programmatically.
+  dialog_widget->widget_delegate()->AsDialogDelegate()->AcceptDialog();
 }
 
 }  // namespace
@@ -821,34 +942,6 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
 
   testing::NiceMock<MockConfigurationPolicyProvider> policy_provider_;
   PolicyMap current_policy_;
-};
-
-// A variant of NetworkPolicyApplicationTest which ensures that
-// the feature DisablePolicyEthernetRecommendedWorkaround is activated.
-class NetworkPolicyApplicationNoEthernetWorkaroundTest
-    : public NetworkPolicyApplicationTest {
- public:
-  NetworkPolicyApplicationNoEthernetWorkaroundTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        policy::kDisablePolicyEthernetRecommendedWorkaround);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// A variant of NetworkPolicyApplicationTest which ensures that
-// the feature DisablePolicyEthernetRecommendedWorkaround is not activated.
-class NetworkPolicyApplicationEthernetWorkaroundTest
-    : public NetworkPolicyApplicationTest {
- public:
-  NetworkPolicyApplicationEthernetWorkaroundTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        policy::kDisablePolicyEthernetRecommendedWorkaround);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // A variant of NetworkPolicyApplicationTest which enables the
@@ -1702,9 +1795,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
 // Tests that application of policy settings does not wipe an already-configured
 // client certificate. This is a regression test for b/203015922.
-// TODO(crbug.com/1482522): Re-enable this test
-IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
-                       DISABLED_DoesNotWipeCertSettings) {
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, DoesNotWipeCertSettings) {
   const char* kCertKeyFilename = "client_3.pk8";
   const char* kCertFilename = "client_3.pem";
   const char* kCertIssuerCommonName = "E CA";
@@ -1759,8 +1850,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
                        DevicePolicyProfileWideVariableExpansions) {
   const std::string kSerialNumber = "test_serial";
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kSerialNumber);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                kSerialNumber);
 
   Add8021xWifiService(kServiceWifi1, "DeviceLevelWifiGuidOrig",
                       "DeviceLevelWifiSsid", shill::kStateIdle);
@@ -1873,11 +1964,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
 
 // Tests that re-applying Ethernet policy retains a manually-set IP address.
 // This is a regression test for b/183676832 and b/180365271.
-// This variant of the test runs with
-// "DisablePolicyEthernetRecommendedWorkaround" feature not activated, so the
-// "treat Ethernet IP address as Recommended by default" workaround is applied.
-IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEthernetWorkaroundTest,
-                       RetainEthernetIPAddr) {
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
   constexpr char kEthernetGuid[] = "{EthernetGuid}";
 
   shill_service_client_test_->AddService(kServiceEth, "orig_guid_ethernet_any",
@@ -1885,29 +1972,29 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEthernetWorkaroundTest,
                                          shill::kStateOnline, /*visible=*/true);
 
   {
-    base::HistogramTester histogram_tester;
-    // For Ethernet, not mentioning "Recommended" currently means that the IP
-    // address is editable by the user.
-    std::string kDeviceONC1 = base::StringPrintf(R"(
-      {
-        "NetworkConfigurations": [
-          {
-            "GUID": "%s",
-            "Name": "EthernetName",
-            "Type": "Ethernet",
-            "Ethernet": {
-               "Authentication": "None"
-            }
-          }
-        ]
-      })",
+    std::string kDeviceONCEverythingRecommended =
+        base::StringPrintf(R"(
+    {
+      "NetworkConfigurations": [
+        {
+          "GUID": "%s",
+          "Name": "EthernetName",
+          "Type": "Ethernet",
+          "Ethernet": {
+             "Authentication": "None"
+          },
+          "StaticIPConfig": {
+             "Recommended": ["Gateway", "IPAddress", "RoutingPrefix",
+                             "NameServers"]
+          },
+          "Recommended": ["IPAddressConfigType", "NameServersConfigType"]
+        }
+      ]
+    })",
 
-                                                 kEthernetGuid);
-    SetDeviceOpenNetworkConfiguration(kDeviceONC1, /*wait_applied=*/true);
-    // Expect "Enabled by feature, ONC NetworkConfiguration eligible".
-    histogram_tester.ExpectUniqueSample(
-        kOncRecommendedFieldsWorkaroundActionHistogram,
-        /*sample=kEnabledAndAffected*/ 1, /*count=*/1);
+                           kEthernetGuid);
+    SetDeviceOpenNetworkConfiguration(kDeviceONCEverythingRecommended,
+                                      /*wait_applied=*/true);
   }
 
   {
@@ -1953,7 +2040,6 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEthernetWorkaroundTest,
   }
 
   {
-    base::HistogramTester histogram_tester;
     // Modify the policy: Force custom nameserver, but allow IP address to be
     // modifiable.
     std::string kDeviceONC2 = base::StringPrintf(R"(
@@ -1977,10 +2063,6 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEthernetWorkaroundTest,
     })",
                                                  kEthernetGuid);
     SetDeviceOpenNetworkConfiguration(kDeviceONC2, /*wait_applied=*/true);
-    // Expect "Enabled by feature, ONC NetworkConfiguration not eligible".
-    histogram_tester.ExpectUniqueSample(
-        kOncRecommendedFieldsWorkaroundActionHistogram,
-        /*sample=kEnabledAndNotAffected*/ 0, /*count=*/1);
   }
 
   // Verify that the Static IP is still active, and the custom name server has
@@ -2247,241 +2329,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   }
 }
 
-// Tests that when the kDisablePolicyEthernetRecommendedWorkaround feature is
-// enabled, Ethernet policy behaves like wifi when nothing is "Recommended" -
-// all fields are policy-enforced, including IP address and name servers.
-IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
-                       NothingRecommended) {
-  constexpr char kEthernetGuid[] = "{EthernetGuid}";
-
-  shill_service_client_test_->AddService(kServiceEth, "orig_guid_ethernet_any",
-                                         "ethernet_any", shill::kTypeEthernet,
-                                         shill::kStateOnline, /*visible=*/true);
-
-  base::HistogramTester histogram_tester;
-
-  // For Ethernet, not mentioning "Recommended" currently means that the IP
-  // address is not editable by the user.
-  std::string kDeviceONCNothingRecommended = base::StringPrintf(R"(
-    {
-      "NetworkConfigurations": [
-        {
-          "GUID": "%s",
-          "Name": "EthernetName",
-          "Type": "Ethernet",
-          "Ethernet": {
-             "Authentication": "None"
-          }
-        }
-      ]
-    })",
-                                                                kEthernetGuid);
-  SetDeviceOpenNetworkConfiguration(kDeviceONCNothingRecommended,
-                                    /*wait_applied=*/true);
-  // Expect "Disabled by feature, ONC NetworkConfiguration eligible".
-  histogram_tester.ExpectUniqueSample(
-      kOncRecommendedFieldsWorkaroundActionHistogram,
-      /*sample=kDisabledAndAffected*/ 3, /*count=*/1);
-
-  {
-    const base::Value::Dict* eth_service_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceEth);
-    ASSERT_TRUE(eth_service_properties);
-    EXPECT_THAT(
-        *eth_service_properties,
-        DictionaryHasValue(shill::kGuidProperty, base::Value(kEthernetGuid)));
-  }
-
-  // Check that IP address and name servers are policy enforced.
-  {
-    auto properties = CrosNetworkConfigGetManagedProperties("{EthernetGuid}");
-    ASSERT_TRUE(properties);
-    EXPECT_EQ(properties->ip_address_config_type->policy_source,
-              network_mojom::PolicySource::kDevicePolicyEnforced);
-    EXPECT_EQ(properties->name_servers_config_type->policy_source,
-              network_mojom::PolicySource::kDevicePolicyEnforced);
-  }
-
-  // Simulate the UI trying to set the IP address / nameservers.
-  {
-    auto properties = network_mojom::ConfigProperties::New();
-    properties->type_config =
-        network_mojom::NetworkTypeConfigProperties::NewEthernet(
-            network_mojom::EthernetConfigProperties::New());
-    properties->ip_address_config_type =
-        ::onc::network_config::kIPConfigTypeStatic;
-    properties->static_ip_config = network_mojom::IPConfigProperties::New();
-    properties->static_ip_config->ip_address = "192.168.1.44";
-    properties->static_ip_config->gateway = "192.168.1.1";
-    properties->static_ip_config->routing_prefix = 4;
-    ASSERT_NO_FATAL_FAILURE(
-        CrosNetworkConfigSetProperties(kEthernetGuid, std::move(properties)));
-  }
-
-  // Verify that the Static IP config has not been applied.
-  {
-    const base::Value::Dict* shill_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceEth);
-    ASSERT_TRUE(shill_properties);
-    EXPECT_THAT(GetStaticIPAddressFromShillProperties(*shill_properties),
-                IsEmpty());
-  }
-}
-
-// Tests that when the kDisablePolicyEthernetRecommendedWorkaround feature is
-// enabled and policy "Recommends" IP Address or NameServers, they are
-// modifiable.
-// Also tests that when going back to not "Recommending" those, they become
-// unmodifiable and switch back to DHCP.
-IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
-                       RetainEthernetIPAddr) {
-  constexpr char kEthernetGuid[] = "{EthernetGuid}";
-
-  shill_service_client_test_->AddService(kServiceEth, "orig_guid_ethernet_any",
-                                         "ethernet_any", shill::kTypeEthernet,
-                                         shill::kStateOnline, /*visible=*/true);
-
-  base::HistogramTester histogram_tester;
-
-  // Modify the policy: Explicitly recommend both IP address and Nameservers,
-  // allowing the user to modify them.
-  std::string kDeviceONCEverythingRecommended =
-      base::StringPrintf(R"(
-    {
-      "NetworkConfigurations": [
-        {
-          "GUID": "%s",
-          "Name": "EthernetName",
-          "Type": "Ethernet",
-          "Ethernet": {
-             "Authentication": "None"
-          },
-          "StaticIPConfig": {
-             "Recommended": ["Gateway", "IPAddress", "RoutingPrefix",
-                             "NameServers"]
-          },
-          "Recommended": ["IPAddressConfigType", "NameServersConfigType"]
-        }
-      ]
-    })",
-                         kEthernetGuid);
-  SetDeviceOpenNetworkConfiguration(kDeviceONCEverythingRecommended,
-                                    /*wait_applied=*/true);
-  // Expect "Disabled by feature, ONC NetworkConfiguration not eligible".
-  histogram_tester.ExpectUniqueSample(
-      kOncRecommendedFieldsWorkaroundActionHistogram,
-      /*sample=kDisabledAndAffected*/ 2, /*count=*/1);
-
-  // Check that IP address is modifiable and policy-recommended.
-  {
-    auto properties = CrosNetworkConfigGetManagedProperties("{EthernetGuid}");
-    ASSERT_TRUE(properties);
-    EXPECT_EQ(properties->ip_address_config_type->policy_source,
-              network_mojom::PolicySource::kDevicePolicyRecommended);
-  }
-
-  // Simulate setting an IP address through the UI.
-  {
-    auto properties = network_mojom::ConfigProperties::New();
-    properties->type_config =
-        network_mojom::NetworkTypeConfigProperties::NewEthernet(
-            network_mojom::EthernetConfigProperties::New());
-    properties->ip_address_config_type =
-        ::onc::network_config::kIPConfigTypeStatic;
-    properties->static_ip_config = network_mojom::IPConfigProperties::New();
-    properties->static_ip_config->ip_address = "192.168.1.44";
-    properties->static_ip_config->gateway = "192.168.1.1";
-    properties->static_ip_config->routing_prefix = 4;
-    ASSERT_NO_FATAL_FAILURE(
-        CrosNetworkConfigSetProperties(kEthernetGuid, std::move(properties)));
-  }
-
-  // Verify that the Static IP config has been applied.
-  {
-    const base::Value::Dict* shill_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceEth);
-    ASSERT_TRUE(shill_properties);
-    EXPECT_EQ(GetStaticIPAddressFromShillProperties(*shill_properties),
-              "192.168.1.44");
-  }
-
-  // Modify the policy: Force custom nameserver, but allow IP address to be
-  // modifiable.
-  std::string kDeviceONCIpRecommended = base::StringPrintf(R"(
-    {
-      "NetworkConfigurations": [
-        {
-          "GUID": "%s",
-          "Name": "EthernetName",
-          "Type": "Ethernet",
-          "Ethernet": {
-             "Authentication": "None"
-          },
-          "StaticIPConfig": {
-             "NameServers": ["8.8.3.1", "8.8.2.1"],
-             "Recommended": ["Gateway", "IPAddress", "RoutingPrefix"]
-          },
-          "NameServersConfigType": "Static",
-          "Recommended": ["IPAddressConfigType"]
-        }
-      ]
-    })",
-                                                           kEthernetGuid);
-  SetDeviceOpenNetworkConfiguration(kDeviceONCIpRecommended,
-                                    /*wait_applied=*/true);
-
-  // Verify that the Static IP is still active, and the custom name server has
-  // been applied.
-  {
-    const base::Value::Dict* shill_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceEth);
-    ASSERT_TRUE(shill_properties);
-    EXPECT_EQ(GetStaticIPAddressFromShillProperties(*shill_properties),
-              "192.168.1.44");
-    EXPECT_THAT(GetStaticNameServersFromShillProperties(*shill_properties),
-                ElementsAre("8.8.3.1", "8.8.2.1", "0.0.0.0", "0.0.0.0"));
-  }
-
-  // For Ethernet, not mentioning "Recommended" currently means that the IP
-  // address is not editable by the user.
-  std::string kDeviceONCNothingRecommended = base::StringPrintf(R"(
-    {
-      "NetworkConfigurations": [
-        {
-          "GUID": "%s",
-          "Name": "EthernetName",
-          "Type": "Ethernet",
-          "IPAddressConfigType": "DHCP",
-          "NameServersConfigType": "DHCP",
-          "Ethernet": {
-             "Authentication": "None"
-          }
-        }
-      ]
-    })",
-                                                                kEthernetGuid);
-  SetDeviceOpenNetworkConfiguration(kDeviceONCNothingRecommended,
-                                    /*wait_applied=*/true);
-
-  // Check that IP address is not modifiable.
-  {
-    auto properties = CrosNetworkConfigGetManagedProperties("{EthernetGuid}");
-    ASSERT_TRUE(properties);
-    EXPECT_EQ(properties->ip_address_config_type->policy_source,
-              network_mojom::PolicySource::kDevicePolicyEnforced);
-  }
-
-  // Verify that the Static IP is gone.
-  {
-    const base::Value::Dict* shill_properties =
-        shill_service_client_test_->GetServiceProperties(kServiceEth);
-    ASSERT_TRUE(shill_properties);
-    EXPECT_THAT(GetStaticIPAddressFromShillProperties(*shill_properties),
-                IsEmpty());
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
                        RetainEthernetIPAddrUnmanagedToManaged) {
   constexpr char kEthernetGuidUnmanaged[] = "{orig_guid_ethernet_any}";
   constexpr char kEthernetGuidManaged[] = "{EthernetGuid}";
@@ -2967,4 +2815,182 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEphemeralActionsKillSwitchTest,
   // Verify that the unmanaged wifi service has not been wiped.
   EXPECT_TRUE(shill_profile_client_test_->HasService(kServiceWifi2));
 }
+
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
+                       CheckCaptivePortal_AllValues) {
+  constexpr char kGuidWifiTrue[] = "guid_wifi_true";
+  constexpr char kGuidWifiFalse[] = "guid_wifi_false";
+  constexpr char kGuidWifiHTTPOnly[] = "guid_wifi_http_only";
+
+  constexpr char kNetworkNameTrue[] = "NetworkTrue";
+  constexpr char kNetworkNameFalse[] = "NetworkFalse";
+  constexpr char kNetworkNameHTTPOnly[] = "NetworkHTTPOnly";
+
+  constexpr char kWifiNameTrue[] = "WifiTrue";
+  constexpr char kWifiNameFalse[] = "WifiFalse";
+  constexpr char kWifiNameHTTPOnly[] = "WifiHTTPOnly";
+
+  AddPskWifiService(kServiceWifi1, kGuidWifiTrue, kWifiNameTrue,
+                    shill::kStateIdle);
+  AddPskWifiService(kServiceWifi2, kGuidWifiFalse, kWifiNameFalse,
+                    shill::kStateIdle);
+  AddPskWifiService(kServiceWifi3, kGuidWifiHTTPOnly, kWifiNameHTTPOnly,
+                    shill::kStateIdle);
+
+  static constexpr char kConfig[] = R"(
+      {
+        "GlobalNetworkConfiguration": {
+        },
+        "NetworkConfigurations": [
+          {
+            "GUID": "%s",
+            "Name": "%s",
+            "Type": "WiFi",
+            "CheckCaptivePortal": "%s",
+            "WiFi": {
+              "AutoConnect": true,
+              "HiddenSSID": false,
+              "Passphrase": "DeviceLevelWifiPwd",
+              "SSID": "%s",
+              "Security": "WPA-PSK"
+            }
+          },
+          {
+            "GUID": "%s",
+            "Name": "%s",
+            "Type": "WiFi",
+            "CheckCaptivePortal": "%s",
+            "WiFi": {
+              "AutoConnect": true,
+              "HiddenSSID": false,
+              "Passphrase": "DeviceLevelWifiPwd",
+              "SSID": "%s",
+              "Security": "WPA-PSK"
+            }
+          },
+          {
+            "GUID": "%s",
+            "Name": "%s",
+            "Type": "WiFi",
+            "CheckCaptivePortal": "%s",
+            "WiFi": {
+              "AutoConnect": true,
+              "HiddenSSID": false,
+              "Passphrase": "DeviceLevelWifiPwd",
+              "SSID": "%s",
+              "Security": "WPA-PSK"
+            }
+          }
+        ],
+        "Type": "UnencryptedConfiguration"
+      })";
+
+  const std::string kDeviceONC = base::StringPrintf(
+      kConfig, kGuidWifiTrue, kNetworkNameTrue,
+      ::onc::check_captive_portal::kTrue, kWifiNameTrue, kGuidWifiFalse,
+      kNetworkNameFalse, ::onc::check_captive_portal::kFalse, kWifiNameFalse,
+      kGuidWifiHTTPOnly, kNetworkNameHTTPOnly,
+      ::onc::check_captive_portal::kHTTPOnly, kWifiNameHTTPOnly);
+  SetDeviceOpenNetworkConfiguration(kDeviceONC,
+                                    /*wait_applied=*/true);
+
+  // Verify that the CheckCaptivePortal of the managed Wi-Fi services are set
+  // correctly.
+  {
+    const base::Value::Dict* shill_properties1 =
+        shill_service_client_test_->GetServiceProperties(kServiceWifi1);
+    ASSERT_TRUE(shill_properties1);
+    EXPECT_THAT(
+        *shill_properties1,
+        DictionaryHasValue(shill::kCheckPortalProperty, base::Value("true")));
+
+    const base::Value::Dict* shill_properties2 =
+        shill_service_client_test_->GetServiceProperties(kServiceWifi2);
+    ASSERT_TRUE(shill_properties2);
+    EXPECT_THAT(
+        *shill_properties2,
+        DictionaryHasValue(shill::kCheckPortalProperty, base::Value("false")));
+
+    const base::Value::Dict* shill_properties3 =
+        shill_service_client_test_->GetServiceProperties(kServiceWifi3);
+    ASSERT_TRUE(shill_properties3);
+    EXPECT_THAT(*shill_properties3,
+                DictionaryHasValue(shill::kCheckPortalProperty,
+                                   base::Value("http-only")));
+  }
+}
+
+// Tests that when
+// - a policy-provided network has a ClientCertPattern which contains an
+//   EnrollmentURI and
+// - the ClientCertPattern doesn't match any installed client certificate,
+// then, on a connection attempt through the system tray, a dialog is triggered
+// which suggests to enroll a client certificate (the somewhat confusingly named
+// "enrollment dialog" - it's not related to enterprise enrollment).
+// Also tests that when accepting that dialog, a browser tab is opened,
+// navigating to the provided EnrollmentURI.
+//
+// This is a regression test for b/319188170.
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
+                       ClientCertEnrollmentUriTriggered) {
+  Add8021xWifiService(kServiceWifi1, "UserLevelWifiGuidOrig",
+                      "UserLevelWifiSsid", shill::kStateIdle);
+
+  LoginUser(test_account_id_);
+  const std::string user_hash = user_manager::UserManager::Get()
+                                    ->FindUser(test_account_id_)
+                                    ->username_hash();
+  shill_profile_client_test_->AddProfile(kUserProfilePath, user_hash);
+
+  // Set a policy that uses a ClientCertPattern which has an EnrollmentURI and
+  // will not resolve to any client certificate (no client certificate has been
+  // installed/imported at all).
+  static constexpr char kUserONC[] = R"(
+    {
+      "NetworkConfigurations": [
+        {
+          "GUID": "{user-policy-for-wifi}",
+          "Name": "OncPolicyToSelectClientCert",
+          "Type": "WiFi",
+          "WiFi": {
+             "EAP":  {
+              "Outer": "EAP-TLS",
+              "ClientCertType": "Pattern",
+              "Identity": "SomeIdentity",
+              "ClientCertPattern": {
+                "Issuer": {
+                  "CommonName": "DoesntMatchAnything"
+                },
+                "EnrollmentURI": ["chrome://version"]
+              }
+             },
+             "SSID": "UserLevelWifiSsid",
+             "Security": "WPA-EAP"
+          }
+        }
+      ]
+    })";
+  SetUserOpenNetworkConfiguration(user_hash, kUserONC,
+                                  /*wait_applied=*/true);
+
+  // Click on the SSID in the system tray and expect the (client certificate)
+  // enrollment dialog to appear.
+  views::NamedWidgetShownWaiter dialog_widget_waiter(
+      views::test::AnyWidgetTestPasskey(), ash::enrollment::kWidgetName);
+  ASSERT_NO_FATAL_FAILURE(ConnectToSsidUsingSystemTray("UserLevelWifiSsid"));
+
+  views::Widget* dialog_widget = dialog_widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(dialog_widget);
+
+  // Accept the enrollment dialog and expect a corresponding tab with the
+  // EnrollmentURI to be opened.
+  ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
+  ASSERT_NO_FATAL_FAILURE(AcceptCertEnrollmentDialog(dialog_widget));
+
+  content::WebContents* const tab_contents = tab_waiter.Wait();
+  ASSERT_TRUE(tab_contents);
+
+  EXPECT_EQ(tab_contents->GetVisibleURL(), GURL("chrome://version"));
+}
+
 }  // namespace policy

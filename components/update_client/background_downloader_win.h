@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_BACKGROUND_DOWNLOADER_WIN_H_
 #define COMPONENTS_UPDATE_CLIENT_BACKGROUND_DOWNLOADER_WIN_H_
 
-#include <bits.h>
 #include <windows.h>
+
+#include <bits.h>
 #include <wrl/client.h>
 
 #include <memory>

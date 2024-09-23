@@ -47,7 +47,12 @@ class ScannerDiscoveryRunner {
 
   static void SetDiscoveryConfirmationResultForTesting(bool result);
 
-  void Start(crosapi::mojom::ScannerEnumFilterPtr filter,
+  // Prompts the user for confirmation if needed, then sends lorgnette a
+  // `GetScannerList` request with `filter` and sends the response to
+  // `callback`. If `approved` is true, this request is already approved and any
+  // confirmation dialogs are skipped.
+  void Start(bool approved,
+             crosapi::mojom::ScannerEnumFilterPtr filter,
              GetScannerListCallback callback);
 
   const ExtensionId& extension_id() const;

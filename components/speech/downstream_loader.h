@@ -6,10 +6,10 @@
 #define COMPONENTS_SPEECH_DOWNSTREAM_LOADER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
@@ -30,7 +30,7 @@ class DownstreamLoader : public network::SimpleURLLoaderStreamConsumer {
   ~DownstreamLoader() override;
 
   // SimpleURLLoaderStreamConsumer implementation:
-  void OnDataReceived(base::StringPiece string_piece,
+  void OnDataReceived(std::string_view string_piece,
                       base::OnceClosure resume) override;
   void OnComplete(bool success) override;
   void OnRetry(base::OnceClosure start_retry) override;

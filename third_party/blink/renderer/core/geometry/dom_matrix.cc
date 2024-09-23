@@ -53,7 +53,7 @@ DOMMatrix* DOMMatrix::Create(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

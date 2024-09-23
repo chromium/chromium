@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/credential_provider/extension/service.h"
+
 #include <windows.h>
 
 #include "base/files/file_path.h"
 #include "base/threading/thread.h"
 #include "chrome/credential_provider/extension/scoped_handle.h"
-#include "chrome/credential_provider/extension/service.h"
 #include "chrome/credential_provider/test/gcp_fakes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

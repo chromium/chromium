@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -22,7 +24,9 @@
 #include "tab_organization_service_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/ui_base_features.h"
 
 namespace {
 
@@ -40,7 +44,7 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
 
   Browser* AddBrowser() {
     Browser::CreateParams native_params(profile_.get(), true);
-    native_params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+    native_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
     std::unique_ptr<Browser> browser =
         CreateBrowserWithTestWindowForParams(native_params);
     Browser* browser_ptr = browser.get();
@@ -79,9 +83,10 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
  private:
   void SetUp() override {
     feature_list_.InitWithFeatures({features::kTabOrganization}, {});
+    TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
     profile_ = std::make_unique<TestingProfile>();
     service_ = std::make_unique<TabOrganizationService>(profile_.get());
-// The signin flow is not used on ChromeOS.
+    // The signin flow is not used on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile());
@@ -140,7 +145,7 @@ TEST_F(TabOrganizationServiceTest, DoesntAddSessionOnTriggerIfExists) {
   Browser* browser = AddBrowser();
   AddValidTabToBrowser(browser, 0);
   service()->OnTriggerOccured(browser);
-  service()->CreateSessionForBrowser(browser);
+  service()->CreateSessionForBrowser(browser, TabOrganizationEntryPoint::kNone);
   EXPECT_TRUE(base::Contains(service()->browser_session_map(), browser));
   const TabOrganizationSession* session =
       service()->GetSessionForBrowser(browser);
@@ -154,8 +159,10 @@ TEST_F(TabOrganizationServiceTest, DoesntAddSessionOnTriggerIfExists) {
 TEST_F(TabOrganizationServiceTest, EachBrowserHasADistinctSession) {
   Browser* browser1 = AddBrowser();
   Browser* browser2 = AddBrowser();
-  service()->CreateSessionForBrowser(browser1);
-  service()->CreateSessionForBrowser(browser2);
+  service()->CreateSessionForBrowser(browser1,
+                                     TabOrganizationEntryPoint::kNone);
+  service()->CreateSessionForBrowser(browser2,
+                                     TabOrganizationEntryPoint::kNone);
   EXPECT_NE(service()->GetSessionForBrowser(browser1),
             service()->GetSessionForBrowser(browser2));
 }
@@ -178,7 +185,8 @@ TEST_F(TabOrganizationServiceTest, SessionFromBrowserPopulatesRequest) {
     AddValidTabToBrowser(browser1, 0);
   }
   std::unique_ptr<TabOrganizationSession> session =
-      TabOrganizationSession::CreateSessionForBrowser(browser1);
+      TabOrganizationSession::CreateSessionForBrowser(
+          browser1, TabOrganizationEntryPoint::kNone);
   EXPECT_EQ(session->request()->tab_datas().size(), 4u);
 
   session->StartRequest();
@@ -207,7 +215,8 @@ TEST_F(TabOrganizationServiceTest,
       ->NavigateAndCommit(GURL(kInvalidURL));
 
   std::unique_ptr<TabOrganizationSession> session =
-      TabOrganizationSession::CreateSessionForBrowser(browser1);
+      TabOrganizationSession::CreateSessionForBrowser(
+          browser1, TabOrganizationEntryPoint::kNone);
   EXPECT_EQ(static_cast<int>(session->request()->tab_datas().size()),
             valid_tab_count);
 
@@ -232,9 +241,13 @@ TEST_F(TabOrganizationServiceTest,
   }
 
   TabOrganizationSession::ID session_id_1 =
-      service()->CreateSessionForBrowser(browser1)->session_id();
+      service()
+          ->CreateSessionForBrowser(browser1, TabOrganizationEntryPoint::kNone)
+          ->session_id();
   TabOrganizationSession::ID session_id_2 =
-      service()->ResetSessionForBrowser(browser1)->session_id();
+      service()
+          ->ResetSessionForBrowser(browser1, TabOrganizationEntryPoint::kNone)
+          ->session_id();
   EXPECT_NE(session_id_1, session_id_2);
 }
 
@@ -244,13 +257,13 @@ TEST_F(TabOrganizationServiceTest, SecondRequestAfterCompletionDoesntCrash) {
     AddValidTabToBrowser(browser1, 0);
   }
 
-  service()->StartRequest(browser1);
+  service()->StartRequest(browser1, TabOrganizationEntryPoint::kNone);
   auto* const session = service()->GetSessionForBrowser(browser1);
   ASSERT_EQ(session->tab_organizations().size(), 1u);
   session->GetNextTabOrganization()->Accept();
   ASSERT_TRUE(session->IsComplete());
 
-  service()->StartRequest(browser1);
+  service()->StartRequest(browser1, TabOrganizationEntryPoint::kNone);
 }
 
 TEST_F(TabOrganizationServiceTest, SecondRequestAfterStartingDoesntCrash) {
@@ -259,12 +272,12 @@ TEST_F(TabOrganizationServiceTest, SecondRequestAfterStartingDoesntCrash) {
     AddValidTabToBrowser(browser1, 0);
   }
 
-  service()->StartRequest(browser1);
+  service()->StartRequest(browser1, TabOrganizationEntryPoint::kNone);
   auto* const session = service()->GetSessionForBrowser(browser1);
   ASSERT_EQ(session->tab_organizations().size(), 1u);
   ASSERT_FALSE(session->IsComplete());
 
-  service()->StartRequest(browser1);
+  service()->StartRequest(browser1, TabOrganizationEntryPoint::kNone);
 }
 
 // Session Creation Tests
@@ -277,7 +290,8 @@ TEST_F(TabOrganizationServiceTest, CreateSessionForBrowserOnTab) {
   }
 
   std::unique_ptr<TabOrganizationSession> session =
-      TabOrganizationSession::CreateSessionForBrowser(browser1, base_tab);
+      TabOrganizationSession::CreateSessionForBrowser(
+          browser1, TabOrganizationEntryPoint::kNone, base_tab);
   EXPECT_NE(session->request()->base_tab_id(), std::nullopt);
 }
 
@@ -305,14 +319,30 @@ TEST_F(TabOrganizationServiceTest, TabStripAddRemoveDestroysSession) {
     AddValidTabToBrowser(browser1, 0);
   }
 
-  service()->CreateSessionForBrowser(browser1);
+  service()->CreateSessionForBrowser(browser1,
+                                     TabOrganizationEntryPoint::kNone);
   content::WebContents* contents = AddValidTabToBrowser(browser1, 0);
   EXPECT_EQ(service()->GetSessionForBrowser(browser1), nullptr);
 
-  service()->CreateSessionForBrowser(browser1);
+  service()->CreateSessionForBrowser(browser1,
+                                     TabOrganizationEntryPoint::kNone);
   browser1->tab_strip_model()->CloseWebContentsAt(
       browser1->tab_strip_model()->GetIndexOfWebContents(contents),
       TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(service()->GetSessionForBrowser(browser1), nullptr);
+}
+
+TEST_F(TabOrganizationServiceTest, TabGroupAddDestroysSession) {
+  Browser* browser1 = AddBrowser();
+  for (int i = 0; i < 4; i++) {
+    AddValidTabToBrowser(browser1, 0);
+  }
+
+  service()->CreateSessionForBrowser(browser1,
+                                     TabOrganizationEntryPoint::kNone);
+
+  browser1->tab_strip_model()->AddToNewGroup({1});
+
   EXPECT_EQ(service()->GetSessionForBrowser(browser1), nullptr);
 }
 
@@ -366,18 +396,14 @@ TEST_F(TabOrganizationServiceTest,
       std::make_unique<TabData>(model, model->GetWebContentsAt(0)));
   tab_datas_1.emplace_back(
       std::make_unique<TabData>(model, model->GetWebContentsAt(1)));
-  TabOrganization org_1 =
-      TabOrganization(std::move(tab_datas_1), names, 0u,
-                      TabOrganization::UserChoice::kNoChoice);
+  TabOrganization org_1 = TabOrganization(std::move(tab_datas_1), names);
 
   std::vector<std::unique_ptr<TabData>> tab_datas_2;
   tab_datas_2.emplace_back(
       std::make_unique<TabData>(model, model->GetWebContentsAt(0)));
   tab_datas_2.emplace_back(
       std::make_unique<TabData>(model, model->GetWebContentsAt(1)));
-  TabOrganization org_2 =
-      TabOrganization(std::move(tab_datas_2), names, 0u,
-                      TabOrganization::UserChoice::kNoChoice);
+  TabOrganization org_2 = TabOrganization(std::move(tab_datas_2), names);
 
   TestOrganizationObserver observer(&org_1, &org_2);
   org_1.AddObserver(&observer);

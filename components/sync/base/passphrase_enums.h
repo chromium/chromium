@@ -5,9 +5,13 @@
 #ifndef COMPONENTS_SYNC_BASE_PASSPHRASE_ENUMS_H_
 #define COMPONENTS_SYNC_BASE_PASSPHRASE_ENUMS_H_
 
+#include <cstdint>
 #include <optional>
 
-#include "components/sync/protocol/nigori_specifics.pb.h"
+namespace sync_pb {
+enum NigoriSpecifics_KeyDerivationMethod : int;
+enum NigoriSpecifics_PassphraseType : int;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -16,6 +20,7 @@ namespace syncer {
 // Do not re-order or delete these entries; they are used in a UMA histogram.
 // Please edit SyncPassphraseType in enums.xml if a value is added.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
+// LINT.IfChange(SyncPassphraseType)
 enum class PassphraseType {
   // GAIA-based passphrase (deprecated).
   // TODO(crbug.com/1201684,crbug.com/1466401): Some codepaths use this value as
@@ -33,6 +38,7 @@ enum class PassphraseType {
   // Alias used by UMA macros to deduce the correct boundary value.
   kMaxValue = kTrustedVaultPassphrase
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncPassphraseType)
 
 bool IsExplicitPassphrase(PassphraseType type);
 
@@ -41,17 +47,16 @@ bool IsExplicitPassphrase(PassphraseType type);
 // values of the enum that are not currently supported. Note however that if the
 // field is not populated, it defaults to IMPLICIT_PASSPHRASE for backwards
 // compatibility reasons.
-sync_pb::NigoriSpecifics::PassphraseType ProtoPassphraseInt32ToProtoEnum(
-    ::google::protobuf::int32 type);
+sync_pb::NigoriSpecifics_PassphraseType ProtoPassphraseInt32ToProtoEnum(
+    std::int32_t type);
 
 // Returns std::nullopt if |type| represents an unknown value, likely coming
 // from a future version of the browser. Note however that if the field is not
 // populated, it defaults to IMPLICIT_PASSPHRASE for backwards compatibility
 // reasons.
-std::optional<PassphraseType> ProtoPassphraseInt32ToEnum(
-    ::google::protobuf::int32 type);
+std::optional<PassphraseType> ProtoPassphraseInt32ToEnum(std::int32_t type);
 
-sync_pb::NigoriSpecifics::PassphraseType EnumPassphraseTypeToProto(
+sync_pb::NigoriSpecifics_PassphraseType EnumPassphraseTypeToProto(
     PassphraseType type);
 
 // Different key derivation methods. Used for deriving the encryption key from a
@@ -67,9 +72,9 @@ enum class KeyDerivationMethod {
 // and PBKDF2_HMAC_SHA1_1003 if value is unspecified (indicates value coming
 // from older version, that is not aware of the field).
 std::optional<KeyDerivationMethod> ProtoKeyDerivationMethodToEnum(
-    ::google::protobuf::int32 method);
+    std::int32_t method);
 
-sync_pb::NigoriSpecifics::KeyDerivationMethod EnumKeyDerivationMethodToProto(
+sync_pb::NigoriSpecifics_KeyDerivationMethod EnumKeyDerivationMethodToProto(
     KeyDerivationMethod method);
 
 }  // namespace syncer

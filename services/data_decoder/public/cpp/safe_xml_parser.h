@@ -8,6 +8,7 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -81,7 +82,7 @@ bool GetAllXmlElementChildrenWithTag(const base::Value& element,
 // not needed.
 const base::Value* FindXmlElementPath(
     const base::Value& element,
-    std::initializer_list<base::StringPiece> path,
+    std::initializer_list<std::string_view> path,
     bool* unique_path);
 
 // Returns the value of the attribute named |attribute_name| in |element|, or

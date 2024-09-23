@@ -8,59 +8,64 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer_input_stream.h"
-#include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
-#include <climits>
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class CSSTokenizerInputStream;
 
 class CORE_EXPORT CSSTokenizer {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
-  // The overload with const String& holds on to a reference to the string.
-  // (Most places, we probably don't need to do that, but fixing that would
-  // require manual inspection.)
-  explicit CSSTokenizer(const String&, wtf_size_t offset = 0);
+  // The StringView must live for at least as long as the CSSTokenizer does
+  // (i.e., don't send it a temporary String or similar).
   explicit CSSTokenizer(StringView, wtf_size_t offset = 0);
   CSSTokenizer(const CSSTokenizer&) = delete;
   CSSTokenizer& operator=(const CSSTokenizer&) = delete;
 
-  Vector<CSSParserToken, 32> TokenizeToEOF();
-  wtf_size_t TokenCount();
-
-  // Like TokenizeToEOF(), but also returns the start byte for each token.
-  // There's an extra offset at the very end that returns the end byte
-  // of the last token, i.e., the length of the input string.
-  // This matches the convention CSSParserTokenOffsets expects.
-  std::pair<Vector<CSSParserToken, 32>, Vector<wtf_size_t, 32>>
-  TokenizeToEOFWithOffsets();
-
-  // The unicode-range descriptor invokes a special tokenizer
-  // to solve a design mistake in CSS.
-  //
-  // https://drafts.csswg.org/css-syntax/#consume-unicode-range-value
-  Vector<CSSParserToken, 32> TokenizeToEOFWithUnicodeRanges();
+  wtf_size_t TokenCount() const;
 
   wtf_size_t Offset() const { return input_.Offset(); }
   wtf_size_t PreviousOffset() const { return prev_offset_; }
+  StringView StringRangeFrom(wtf_size_t start) const;
   StringView StringRangeAt(wtf_size_t start, wtf_size_t length) const;
   const Vector<String>& StringPool() const { return string_pool_; }
   CSSParserToken TokenizeSingle();
   CSSParserToken TokenizeSingleWithComments();
 
-  // If you want the returned CSSParserTokens' Value() to be valid beyond
-  // the destruction of CSSTokenizer, you'll need to call PersistString()
-  // to some longer-lived tokenizer (escaped string tokens may have
-  // StringViews that refer to the string pool). The tokenizer
-  // (*this, not the destination) is in an undefined state after this;
-  // all you can do is destroy it.
-  void PersistStrings(CSSTokenizer& destination);
+  // Skips to the given offset, which _must_ be exactly the end of
+  // the current block. Does _not_ return a new token for lookahead
+  // (because the only caller in question does not want that).
+  //
+  // Leaves PreviousOffset() in an undefined state.
+  void SkipToEndOfBlock(wtf_size_t offset) {
+    DCHECK_GT(offset, input_.Offset());
+#if DCHECK_IS_ON()
+    // Verify that the offset is indeed going to be at the
+    // end of the current block.
+    wtf_size_t base_nesting_level = block_stack_.size();
+    DCHECK_GE(base_nesting_level, 1u);
+    while (input_.Offset() < offset - 1) {
+      TokenizeSingle();
+      DCHECK_GE(block_stack_.size(), base_nesting_level);
+    }
+
+    // The last token should be block-closing, and take us exactly
+    // to the desired offset and nesting level.
+    DCHECK_EQ(input_.Offset(), offset - 1);
+    DCHECK_EQ(block_stack_.size(), base_nesting_level);
+    TokenizeSingle();
+    DCHECK_EQ(input_.Offset(), offset);
+    DCHECK_EQ(block_stack_.size(), base_nesting_level - 1);
+#else
+    // Undo block stack mutation.
+    block_stack_.pop_back();
+#endif
+    input_.Restore(offset);
+  }
 
   // See documentation near CSSParserTokenStream.
   CSSParserToken Restore(const CSSParserToken& next, wtf_size_t offset) {
@@ -80,7 +85,7 @@ class CORE_EXPORT CSSTokenizer {
   }
 
  private:
-  template <bool SkipComments, bool StoreOffset>
+  template <bool SkipComments>
   ALWAYS_INLINE CSSParserToken NextToken();
 
   UChar Consume();
@@ -113,32 +118,9 @@ class CORE_EXPORT CSSTokenizer {
                             StringView);
   CSSParserToken BlockEnd(CSSParserTokenType, CSSParserTokenType start_type);
 
-  CSSParserToken WhiteSpace(UChar);
-  CSSParserToken LeftParenthesis(UChar);
-  CSSParserToken RightParenthesis(UChar);
-  CSSParserToken LeftBracket(UChar);
-  CSSParserToken RightBracket(UChar);
-  CSSParserToken LeftBrace(UChar);
-  CSSParserToken RightBrace(UChar);
-  CSSParserToken PlusOrFullStop(UChar);
-  CSSParserToken Comma(UChar);
   CSSParserToken HyphenMinus(UChar);
-  CSSParserToken Asterisk(UChar);
-  CSSParserToken LessThan(UChar);
-  CSSParserToken Colon(UChar);
-  CSSParserToken SemiColon(UChar);
   CSSParserToken Hash(UChar);
-  CSSParserToken CircumflexAccent(UChar);
-  CSSParserToken DollarSign(UChar);
-  CSSParserToken VerticalLine(UChar);
-  CSSParserToken Tilde(UChar);
-  CSSParserToken CommercialAt(UChar);
-  CSSParserToken ReverseSolidus(UChar);
-  CSSParserToken AsciiDigit(UChar);
   CSSParserToken LetterU(UChar);
-  CSSParserToken NameStart(UChar);
-  CSSParserToken StringStart(UChar);
-  CSSParserToken EndOfFile(UChar);
 
   StringView RegisterString(const String&);
 
@@ -153,6 +135,10 @@ class CORE_EXPORT CSSTokenizer {
   wtf_size_t prev_offset_ = 0;
   wtf_size_t token_count_ = 0;
 
+  // The unicode-range descriptor (unicode_ranges_allowed=true) invokes
+  // a special tokenizer to solve a design mistake in CSS.
+  //
+  // https://drafts.csswg.org/css-syntax/#consume-unicode-range-value
   bool unicode_ranges_allowed_ = false;
 };
 }  // namespace blink

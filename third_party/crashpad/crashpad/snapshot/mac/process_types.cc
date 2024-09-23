@@ -19,8 +19,8 @@
 #include <uuid/uuid.h>
 
 #include <iterator>
-#include <memory>
 
+#include "base/containers/heap_array.h"
 #include "snapshot/mac/process_types/internal.h"
 #include "util/process/process_memory_mac.h"
 
@@ -245,8 +245,9 @@ inline void Assign<UInt64Array4, UInt32Array4>(UInt64Array4* destination,
                                           mach_vm_address_t address,           \
                                           size_t count,                        \
                                           struct_name* generic) {              \
-    std::unique_ptr<T[]> specific(new T[count]);                               \
-    if (!T::ReadArrayInto(process_reader, address, count, &specific[0])) {     \
+    auto specific = base::HeapArray<T>::Uninit(count);                         \
+    if (!T::ReadArrayInto(                                                     \
+            process_reader, address, specific.size(), specific.data())) {      \
       return false;                                                            \
     }                                                                          \
     for (size_t index = 0; index < count; ++index) {                           \

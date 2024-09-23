@@ -13,4 +13,8 @@ interface StructuredHeadersParser {
 
   // Parses a list.
   ParseList(string header) => (array<network.mojom.StructuredHeadersParameterizedMember>? result);
+
+  // Parses a dictionary.
+  ParseDictionary(string header) => (
+    network.mojom.StructuredHeadersDictionary? result);
 };

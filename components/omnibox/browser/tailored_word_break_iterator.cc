@@ -5,15 +5,14 @@
 #include "components/omnibox/browser/tailored_word_break_iterator.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/i18n/break_iterator.h"
-#include "base/strings/string_piece.h"
 
 using base::i18n::BreakIterator;
 
-TailoredWordBreakIterator::TailoredWordBreakIterator(
-    const base::StringPiece16& str)
+TailoredWordBreakIterator::TailoredWordBreakIterator(std::u16string_view str)
     : BreakIterator(str, BreakIterator::BREAK_WORD),
       prev_(0),
       pos_(0),
@@ -31,11 +30,11 @@ bool TailoredWordBreakIterator::Advance() {
     return false;
   prev_ = 0;
   pos_ = 0;
-  special_word_ = base::StringPiece16();
+  special_word_ = std::u16string_view();
   if (!IsWord())
     return true;
-  base::StringPiece16 word = BreakIterator::GetStringPiece();
-  if (word.find_first_of(all_breaks_) != base::StringPiece16::npos) {
+  std::u16string_view word = BreakIterator::GetStringView();
+  if (word.find_first_of(all_breaks_) != std::u16string_view::npos) {
     special_word_ = word;
     AdvanceInSpecialWord();
   }
@@ -44,21 +43,21 @@ bool TailoredWordBreakIterator::Advance() {
 
 bool TailoredWordBreakIterator::IsWord() const {
   if (HasSpecialWord()) {
-    base::StringPiece16 word = GetStringPiece();
+    std::u16string_view word = GetStringView();
     if (!word.empty())
       return non_word_breaks_.find(word[0]) == std::u16string::npos;
   }
   return BreakIterator::IsWord();
 }
 
-base::StringPiece16 TailoredWordBreakIterator::GetStringPiece() const {
+std::u16string_view TailoredWordBreakIterator::GetStringView() const {
   if (!special_word_.empty())
     return special_word_.substr(prev_, pos_ - prev_);
-  return BreakIterator::GetStringPiece();
+  return BreakIterator::GetStringView();
 }
 
 std::u16string TailoredWordBreakIterator::GetString() const {
-  return std::u16string(GetStringPiece());
+  return std::u16string(GetStringView());
 }
 
 size_t TailoredWordBreakIterator::prev() const {
@@ -80,7 +79,7 @@ bool TailoredWordBreakIterator::AdvanceInSpecialWord() {
   if (pos_ == special_word_.size()) {
     prev_ = 0;
     pos_ = 0;
-    special_word_ = base::StringPiece16();
+    special_word_ = std::u16string_view();
     return false;
   }
 

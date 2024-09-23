@@ -107,9 +107,9 @@ TEST_F(TabbedPaneTest, SizeAndLayoutInVerticalOrientation) {
   tabbed_pane->SelectTabAt(0);
 
   // |tabbed_pane_| reserves extra width for the tab strip in vertical mode.
-  EXPECT_GT(tabbed_pane->GetPreferredSize().width(), 20);
+  EXPECT_GT(tabbed_pane->GetPreferredSize({}).width(), 20);
   // |tabbed_pane_| height should match the largest child in vertical mode.
-  EXPECT_EQ(tabbed_pane->GetPreferredSize().height(), 10);
+  EXPECT_EQ(tabbed_pane->GetPreferredSize({}).height(), 10);
 
   // The child views should resize to fit in larger tabbed panes.
   tabbed_pane->SetBounds(0, 0, 100, 200);
@@ -127,6 +127,14 @@ TEST_F(TabbedPaneTest, SizeAndLayoutInVerticalOrientation) {
   EXPECT_EQ(child1->bounds(), child2->bounds());
 }
 
+TEST_F(TabbedPaneTest, AccessibleAttributes) {
+  auto tabbed_pane = std::make_unique<TabbedPane>();
+
+  ui::AXNodeData data;
+  tabbed_pane->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTabList);
+}
+
 class TabbedPaneWithWidgetTest : public ViewsTestBase {
  public:
   TabbedPaneWithWidgetTest() = default;
@@ -141,8 +149,8 @@ class TabbedPaneWithWidgetTest : public ViewsTestBase {
     // Create a widget so that accessibility data will be returned correctly.
     widget_ = std::make_unique<Widget>();
     Widget::InitParams params =
-        CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 650, 650);
     widget_->Init(std::move(params));
     tabbed_pane_ = tabbed_pane.get();
@@ -167,7 +175,7 @@ class TabbedPaneWithWidgetTest : public ViewsTestBase {
 
   void SendKeyPressToSelectedTab(ui::KeyboardCode keyboard_code) {
     tabbed_pane_->GetSelectedTab()->OnKeyPressed(
-        ui::KeyEvent(ui::ET_KEY_PRESSED, keyboard_code,
+        ui::KeyEvent(ui::EventType::kKeyPressed, keyboard_code,
                      ui::UsLayoutKeyboardCodeToDomCode(keyboard_code), 0));
   }
 
@@ -187,17 +195,17 @@ TEST_F(TabbedPaneWithWidgetTest, SizeAndLayout) {
 
   // In horizontal mode, |tabbed_pane_| width should match the largest child or
   // the minimum size necessary to display the tab titles, whichever is larger.
-  EXPECT_EQ(tabbed_pane_->GetPreferredSize().width(),
-            tabbed_pane_->GetTabAt(0)->GetPreferredSize().width() +
-                tabbed_pane_->GetTabAt(1)->GetPreferredSize().width());
+  EXPECT_EQ(tabbed_pane_->GetPreferredSize({}).width(),
+            tabbed_pane_->GetTabAt(0)->GetPreferredSize({}).width() +
+                tabbed_pane_->GetTabAt(1)->GetPreferredSize({}).width());
   // |tabbed_pane_| reserves extra height for the tab strip in horizontal mode.
-  EXPECT_GT(tabbed_pane_->GetPreferredSize().height(), 10);
+  EXPECT_GT(tabbed_pane_->GetPreferredSize({}).height(), 10);
 
   // Test that the preferred size is now the size of the size of the largest
   // child.
   View* child3 = tabbed_pane_->AddTab(
       u"tab3", std::make_unique<StaticSizedView>(gfx::Size(150, 5)));
-  EXPECT_EQ(tabbed_pane_->GetPreferredSize().width(), 150);
+  EXPECT_EQ(tabbed_pane_->GetPreferredSize({}).width(), 150);
 
   // The child views should resize to fit in larger tabbed panes.
   widget_->SetBounds(gfx::Rect(0, 0, 300, 200));
@@ -315,7 +323,7 @@ TEST_F(TabbedPaneWithWidgetTest, SelectTabWithAccessibleAction) {
   // Check the a11y information for each tab.
   for (size_t i = 0; i < kNumTabs; ++i) {
     ui::AXNodeData data;
-    GetTabAt(i)->GetAccessibleNodeData(&data);
+    GetTabAt(i)->GetViewAccessibility().GetAccessibleNodeData(&data);
     SCOPED_TRACE(testing::Message() << "TabbedPaneTab at index: " << i);
     EXPECT_EQ(ax::mojom::Role::kTab, data.role);
     EXPECT_EQ(DefaultTabTitle(),
@@ -426,6 +434,47 @@ TEST_F(TabbedPaneWithWidgetTest, AccessibleEvents) {
             counter.GetCount(ax::mojom::Event::kFocus, ax::mojom::Role::kTab));
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kSelection));
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged));
+}
+
+TEST_F(TabbedPaneWithWidgetTest, AccessibleNameTest) {
+  tabbed_pane_->AddTab(u"Tab1", std::make_unique<View>());
+  ui::AXNodeData data;
+
+  GetTabAt(0)->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(u"Tab1",
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(ax::mojom::NameFrom::kContents, data.GetNameFrom());
+
+  GetTabAt(0)->SetTitleText(u"Updated Tab1");
+  data = ui::AXNodeData();
+  GetTabAt(0)->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(u"Updated Tab1",
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(ax::mojom::NameFrom::kContents, data.GetNameFrom());
+
+  GetTabAt(0)->SetTitleText(u"");
+  data = ui::AXNodeData();
+  GetTabAt(0)->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(u"", data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(ax::mojom::NameFrom::kAttributeExplicitlyEmpty, data.GetNameFrom());
+}
+
+TEST_F(TabbedPaneWithWidgetTest, AccessibleSelected) {
+  tabbed_pane_->AddTab(u"Tab1", std::make_unique<View>());
+  ui::AXNodeData data;
+
+  GetTabAt(0)->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  data = ui::AXNodeData();
+  GetTabAt(0)->SetSelected(false);
+  GetTabAt(0)->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  data = ui::AXNodeData();
+  GetTabAt(0)->SetSelected(true);
+  GetTabAt(0)->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }
 
 }  // namespace views::test

@@ -5,6 +5,7 @@
 #include "services/webnn/dml/command_queue.h"
 
 #include "base/check_is_test.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -18,12 +19,14 @@ CommandQueue::PendingWorkDelegate::PendingWorkDelegate(
     std::deque<CommandQueue::QueuedObject> queued_objects,
     Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue,
     uint64_t last_fence_value,
-    Microsoft::WRL::ComPtr<ID3D12Fence> fence)
+    Microsoft::WRL::ComPtr<ID3D12Fence> fence,
+    base::win::ScopedHandle fence_event)
     : base::win::ObjectWatcher::Delegate(),
       queued_objects_(std::move(queued_objects)),
       command_queue_(std::move(command_queue)),
       last_fence_value_(last_fence_value),
-      fence_(std::move(fence)) {
+      fence_(std::move(fence)),
+      fence_event_(std::move(fence_event)) {
   CHECK(object_watcher_.StartWatchingOnce(fence_event_.get(), this));
 }
 
@@ -54,15 +57,16 @@ void CommandQueue::ScheduleCleanupForPendingWork(
 
   HRESULT hr = fence->SetEventOnCompletion(last_fence_value, fence_event.get());
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to set event on completion : "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "[WebNN] Failed to set event on completion: "
+               << logging::SystemErrorCodeToString(hr);
     return;
   }
 
   // It is by design we're not using std::unique_ptr because PendingWorkDelegate
   // deletes itself.
   new PendingWorkDelegate(std::move(queued_objects), std::move(command_queue),
-                          last_fence_value, std::move(fence));
+                          last_fence_value, std::move(fence),
+                          std::move(fence_event));
 }
 
 CommandQueue::CommandQueue(ComPtr<ID3D12CommandQueue> command_queue,
@@ -73,6 +77,8 @@ CommandQueue::CommandQueue(ComPtr<ID3D12CommandQueue> command_queue,
   fence_event_.Set(CreateEvent(nullptr, /*bManualReset=*/FALSE,
                                /*bInitialState=*/FALSE, nullptr));
   CHECK(fence_event_.is_valid());
+
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 CommandQueue::~CommandQueue() {
@@ -89,13 +95,17 @@ CommandQueue::~CommandQueue() {
 scoped_refptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
   ComPtr<ID3D12CommandQueue> command_queue;
   D3D12_COMMAND_QUEUE_DESC command_queue_desc = {};
-  command_queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-  command_queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+  command_queue_desc.Type = D3D12_COMMAND_LIST_TYPE_COMPUTE;
+  // To avoid TDRs on account of long compute work, create WebNN command queues
+  // with the "disable timeout" flag. If other compute work on the system
+  // competes with WebNN, the scheduler will TDR us anyways if it cannot preempt
+  // our queue.
+  command_queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_DISABLE_GPU_TIMEOUT;
   HRESULT hr = d3d12_device->CreateCommandQueue(&command_queue_desc,
                                                 IID_PPV_ARGS(&command_queue));
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create ID3D12CommandQueue: "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "[WebNN] Failed to create ID3D12CommandQueue: "
+               << logging::SystemErrorCodeToString(hr);
     return nullptr;
   }
 
@@ -103,8 +113,8 @@ scoped_refptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
   hr =
       d3d12_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create ID3D12Fence: "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "[WebNN] Failed to create ID3D12Fence: "
+               << logging::SystemErrorCodeToString(hr);
     return nullptr;
   }
 
@@ -113,38 +123,54 @@ scoped_refptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
 }
 
 HRESULT CommandQueue::ExecuteCommandList(ID3D12CommandList* command_list) {
-  return ExecuteCommandLists(base::make_span(&command_list, 1u));
+  return ExecuteCommandLists(base::span_from_ref(command_list));
 }
 
 HRESULT CommandQueue::ExecuteCommandLists(
     base::span<ID3D12CommandList*> command_lists) {
+  TRACE_EVENT0("gpu", "dml::CommandQueue::ExecuteCommandLists");
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   command_queue_->ExecuteCommandLists(
       base::checked_cast<uint32_t>(command_lists.size()), command_lists.data());
   ++last_fence_value_;
   return command_queue_->Signal(fence_.Get(), last_fence_value_);
 }
 
-HRESULT CommandQueue::WaitSyncForTesting() {
-  CHECK_IS_TEST();
+HRESULT CommandQueue::WaitSync() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (fence_->GetCompletedValue() >= last_fence_value_) {
+    ReleaseCompletedResources();
     return S_OK;
   }
 
   HRESULT hr =
       fence_->SetEventOnCompletion(last_fence_value_, fence_event_.get());
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to set event on completion : "
-                << logging::SystemErrorCodeToString(hr);
+    ReleaseCompletedResources();
+    LOG(ERROR) << "Failed to set event on completion : "
+               << logging::SystemErrorCodeToString(hr);
     return hr;
   }
   CHECK_EQ(WaitForSingleObject(fence_event_.get(), INFINITE), WAIT_OBJECT_0);
+  ReleaseCompletedResources();
   return S_OK;
 }
 
 void CommandQueue::OnObjectSignaled(HANDLE object) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_END0("gpu", "dml::CommandQueue::WaitAsync",
                                   TRACE_ID_LOCAL(this));
   CHECK_EQ(object, fence_event_.get());
+  ReleaseCompletedResources();
+
+  // If the owning document has shutdown by the time we get here, the only
+  // remaining references to CommandQueue are inside of the queued_callbacks_
+  // callbacks. Running them while continuing to dereference member variables
+  // will free "this" and cause use-after-free  The caller of OnObjectSignaled,
+  // ObjectWatcher::Signal, has a similar problem. To fix, we take a reference
+  // to ourselves while we run the callbacks.
+  scoped_refptr<CommandQueue> self = this;
+
   while (!queued_callbacks_.empty() &&
          queued_callbacks_.front().fence_value <= fence_->GetCompletedValue()) {
     std::move(queued_callbacks_.front().callback).Run();
@@ -152,7 +178,8 @@ void CommandQueue::OnObjectSignaled(HANDLE object) {
   }
 }
 
-void CommandQueue::WaitAsync(OnWaitAyncCallback callback) {
+void CommandQueue::WaitAsync(base::OnceCallback<void(HRESULT hr)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!object_watcher_.IsWatching()) {
     CHECK(object_watcher_.StartWatchingMultipleTimes(fence_event_.get(), this));
   }
@@ -160,8 +187,9 @@ void CommandQueue::WaitAsync(OnWaitAyncCallback callback) {
   HRESULT hr =
       fence_->SetEventOnCompletion(last_fence_value_, fence_event_.get());
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to set event on completion : "
-                << logging::SystemErrorCodeToString(hr);
+    ReleaseCompletedResources();
+    LOG(ERROR) << "[WebNN] Failed to set event on completion: "
+               << logging::SystemErrorCodeToString(hr);
     std::move(callback).Run(hr);
     return;
   }
@@ -172,10 +200,12 @@ void CommandQueue::WaitAsync(OnWaitAyncCallback callback) {
 }
 
 void CommandQueue::ReferenceUntilCompleted(ComPtr<IUnknown> object) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   queued_objects_.push_back({last_fence_value_, std::move(object)});
 }
 
 void CommandQueue::ReleaseCompletedResources() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   uint64_t completed_value = fence_->GetCompletedValue();
   while (!queued_objects_.empty() &&
          queued_objects_.front().fence_value <= completed_value) {
@@ -188,7 +218,15 @@ uint64_t CommandQueue::GetCompletedValue() const {
 }
 
 uint64_t CommandQueue::GetLastFenceValue() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return last_fence_value_;
+}
+
+const std::deque<CommandQueue::QueuedObject>&
+CommandQueue::GetQueuedObjectsForTesting() const {
+  CHECK_IS_TEST();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return queued_objects_;
 }
 
 CommandQueue::QueuedObject::QueuedObject(uint64_t fence_value,

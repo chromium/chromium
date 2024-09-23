@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "components/viz/service/display/resource_fence.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
@@ -127,6 +128,7 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockSetForExternalUse(
     ExternalUseClient* client)
     : resource_provider_(resource_provider) {
   DCHECK(!resource_provider_->external_use_client_);
+  DCHECK(client);
   resource_provider_->external_use_client_ = client;
 }
 
@@ -140,7 +142,7 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
     bool maybe_concurrent_reads,
     bool raw_draw_is_possible) {
   auto it = resource_provider_->resources_.find(id);
-  DCHECK(it != resource_provider_->resources_.end());
+  CHECK(it != resource_provider_->resources_.end(), base::NotFatalUntil::M130);
 
   ChildResource& resource = it->second;
   DCHECK(resource.is_gpu_resource_type());
@@ -159,10 +161,12 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
 
       resource.image_context =
           resource_provider_->external_use_client_->CreateImageContext(
-              resource.transferable.mailbox_holder, resource.transferable.size,
-              resource.transferable.format, maybe_concurrent_reads,
-              resource.transferable.ycbcr_info, std::move(image_color_space),
-              raw_draw_is_possible);
+              gpu::MailboxHolder(resource.transferable.mailbox(),
+                                 resource.transferable.sync_token(),
+                                 resource.transferable.texture_target()),
+              resource.transferable.size, resource.transferable.format,
+              maybe_concurrent_reads, resource.transferable.ycbcr_info,
+              std::move(image_color_space), raw_draw_is_possible);
     }
     resource.locked_for_external_use = true;
 

@@ -40,7 +40,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/threading/thread.h"
-#include "device/vr/windows/d3d11_texture_helper.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -84,7 +83,9 @@ class OpenXrRenderLoop : public XRThread,
                          public viz::ContextLostObserver {
  public:
   using RequestSessionCallback =
-      base::OnceCallback<void(bool result, mojom::XRSessionPtr)>;
+      base::OnceCallback<void(bool result,
+                              mojom::XRSessionPtr,
+                              mojo::PendingRemote<mojom::ImmersiveOverlay>)>;
 
   OpenXrRenderLoop(
       VizContextProviderFactoryAsync context_provider_factory_async,
@@ -105,8 +106,6 @@ class OpenXrRenderLoop : public XRThread,
       mojom::XRFrameDataRequestOptionsPtr options,
       XRFrameDataProvider::GetFrameDataCallback callback) override;
 
-  void RequestOverlay(mojo::PendingReceiver<mojom::ImmersiveOverlay> receiver);
-
   void RequestSession(base::RepeatingCallback<void(mojom::XRVisibilityState)>
                           on_visibility_state_changed,
                       mojom::XRRuntimeSessionOptionsPtr options,
@@ -126,7 +125,6 @@ class OpenXrRenderLoop : public XRThread,
       base::RepeatingCallback<void(mojom::XRVisibilityState)>
           on_visibility_state_changed,
       mojom::XRRuntimeSessionOptionsPtr options,
-      RequestSessionCallback callback,
       bool success);
 
   // Will Submit if we have textures submitted from the Overlay (if it is
@@ -163,7 +161,7 @@ class OpenXrRenderLoop : public XRThread,
 
   // ImmersiveOverlay:
   void SubmitOverlayTexture(int16_t frame_id,
-                            mojo::PlatformHandle texture,
+                            gfx::GpuMemoryBufferHandle texture,
                             const gpu::SyncToken& sync_token,
                             const gfx::RectF& left_bounds,
                             const gfx::RectF& right_bounds,
@@ -197,23 +195,26 @@ class OpenXrRenderLoop : public XRThread,
 
   mojom::XRFrameDataPtr GetNextFrameData();
 
-  // TODO(https://crbug.com/1516973): Investigate removing this callback.
-  using StartRuntimeCallback = base::OnceCallback<void(bool success)>;
+  // TODO(crbug.com/41489956): Investigate removing this callback.
+  using ContextProviderAcquiredCallback =
+      base::OnceCallback<void(bool success)>;
 
-  void StartRuntime(StartRuntimeCallback start_runtime_callback);
+  void StartRuntime(base::RepeatingCallback<void(mojom::XRVisibilityState)>
+                        on_visibility_state_changed,
+                    mojom::XRRuntimeSessionOptionsPtr options);
   void StopRuntime();
   void OnSessionStart();
   bool HasSessionEnded();
   bool SubmitCompositedFrame();
-  void EnableSupportedFeatures(
-      const std::vector<device::mojom::XRSessionFeature>& requiredFeatures,
-      const std::vector<device::mojom::XRSessionFeature>& optionalFeatures);
 
   // viz::ContextLostObserver Implementation
   void OnContextLost() override;
 
-  void OnOpenXrSessionStarted(StartRuntimeCallback start_runtime_callback,
-                              XrResult result);
+  void OnOpenXrSessionStarted(
+      base::RepeatingCallback<void(mojom::XRVisibilityState)>
+          on_visibility_state_changed,
+      mojom::XRRuntimeSessionOptionsPtr options,
+      XrResult result);
   bool UpdateViews();
   bool UpdateView(const XrView& view_head,
                   int width,
@@ -254,10 +255,9 @@ class OpenXrRenderLoop : public XRThread,
       OpenXrAnchorManager* anchor_manager,
       const std::vector<mojom::XRInputSourceStatePtr>& input_state);
 
-  void StartContextProviderIfNeeded(
-      StartRuntimeCallback start_runtime_callback);
+  void StartContextProviderIfNeeded(ContextProviderAcquiredCallback callback);
   void OnContextProviderCreated(
-      StartRuntimeCallback start_runtime_callback,
+      ContextProviderAcquiredCallback start_runtime_callback,
       scoped_refptr<viz::ContextProvider> context_provider);
   void OnContextLostCallback(
       scoped_refptr<viz::ContextProvider> context_provider);
@@ -266,13 +266,11 @@ class OpenXrRenderLoop : public XRThread,
                             GLuint id,
                             std::unique_ptr<gfx::GpuFence> gpu_fence);
 
+  void MaybeRejectSessionCallback();
+
   bool IsFeatureEnabled(device::mojom::XRSessionFeature feature) const;
-#if BUILDFLAG(IS_WIN)
-  D3D11TextureHelper texture_helper_{this};
-#endif
   int16_t next_frame_id_ = 0;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-  std::unordered_set<device::mojom::XRSessionFeature> enabled_features_;
 
   // Owned by OpenXrStatics
   XrInstance instance_;
@@ -317,6 +315,8 @@ class OpenXrRenderLoop : public XRThread,
 
   mojo::AssociatedReceiver<mojom::XREnvironmentIntegrationProvider>
       environment_receiver_{this};
+
+  RequestSessionCallback request_session_callback_;
 
   // This must be the last member
   base::WeakPtrFactory<OpenXrRenderLoop> weak_ptr_factory_{this};

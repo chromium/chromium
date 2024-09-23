@@ -16,6 +16,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -61,7 +62,9 @@ void BootingAnimationController::Show() {
   }
 
   widget_ = std::make_unique<views::Widget>();
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.delegate = new views::WidgetDelegate;  // Takes ownership.
   params.delegate->SetOwnedByWidget(true);
   // Allow maximize so the booting container's FillLayoutManager can
@@ -69,9 +72,8 @@ void BootingAnimationController::Show() {
   // fullscreen widgets.
   params.delegate->SetCanMaximize(true);
   params.delegate->SetCanFullscreen(true);
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.name = "BootingAnimationWidget";
-  params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  params.show_state = ui::mojom::WindowShowState::kFullscreen;
   // Create the Booting Animation widget on the primary display.
   auto* animation_window = Shell::GetContainer(
       Shell::GetPrimaryRootWindow(), kShellWindowId_BootingAnimationContainer);
@@ -123,7 +125,7 @@ BootingAnimationController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void BootingAnimationController::OnDisplayModeChanged(
+void BootingAnimationController::OnDisplayConfigurationChanged(
     const display::DisplayConfigurator::DisplayStateList& displays) {
   if (!is_gpu_ready_) {
     return;
@@ -207,7 +209,7 @@ void BootingAnimationController::IgnoreGpuReadiness() {
   if (IsDeviceReady()) {
     return;
   }
-  LOG(ERROR) << "Ignore the readinees of the GPU and play the animation.";
+  LOG(ERROR) << "Ignore the readiness of the GPU and play the animation.";
 
   is_gpu_ready_ = true;
   scoped_display_configurator_observer_.Reset();

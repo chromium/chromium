@@ -16,11 +16,13 @@
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -59,40 +61,12 @@ std::unique_ptr<proto::LogAiDataRequest> BuildComposeLogAiDataReuqest() {
   quality.set_final_status(
       optimization_guide::proto::FinalStatus::STATUS_INSERTED);
 
-  *(compose_logging_data.mutable_request_data()) = request;
-  *(compose_logging_data.mutable_response_data()) = response;
-  *(compose_logging_data.mutable_quality_data()) = quality;
+  *(compose_logging_data.mutable_request()) = request;
+  *(compose_logging_data.mutable_response()) = response;
+  *(compose_logging_data.mutable_quality()) = quality;
 
   *(log_ai_data_request->mutable_compose()) = compose_logging_data;
   return log_ai_data_request;
-}
-
-std::unique_ptr<ModelQualityLogEntry> GetModelQualityLogEntryAndSetFeedback(
-    proto::ModelExecutionFeature feature,
-    proto::UserFeedback feedback) {
-  std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request(
-      new proto::LogAiDataRequest());
-  std::unique_ptr<ModelQualityLogEntry> log_entry =
-      std::make_unique<ModelQualityLogEntry>(std::move(log_ai_data_request));
-  switch (feature) {
-    case proto::MODEL_EXECUTION_FEATURE_COMPOSE:
-      log_entry->quality_data<ComposeFeatureTypeMap>()->set_user_feedback(
-          feedback);
-      break;
-    case proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
-      log_entry->quality_data<TabOrganizationFeatureTypeMap>()
-          ->add_organizations()
-          ->set_user_feedback(feedback);
-      break;
-    case proto::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
-      log_entry->quality_data<WallpaperSearchFeatureTypeMap>()
-          ->set_user_feedback(feedback);
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  return log_entry;
 }
 
 }  // namespace
@@ -105,7 +79,7 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
-    prefs::RegisterLocalStatePrefs(pref_service_.registry());
+    model_execution::prefs::RegisterLocalStatePrefs(pref_service_.registry());
     model_quality_logs_uploader_service_ =
         std::make_unique<ModelQualityLogsUploaderService>(
             shared_url_loader_factory_, &pref_service_);
@@ -121,9 +95,13 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
 
   ~ModelQualityLogsUploaderServiceTest() override = default;
 
+  void SetUp() override {
+    model_execution::prefs::RegisterProfilePrefs(pref_service_.registry());
+  }
+
   void WritePerformanceClassToPref(OnDeviceModelPerformanceClass perf_class) {
     pref_service_.SetInteger(
-        prefs::localstate::kOnDevicePerformanceClass,
+        model_execution::prefs::localstate::kOnDevicePerformanceClass,
         base::to_underlying(OnDeviceModelPerformanceClass::kVeryHigh));
   }
 
@@ -138,9 +116,40 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
   void UploadModelQualityLogsWithLogEntry(
       std::unique_ptr<ModelQualityLogEntry> log_entry) {
     model_quality_logs_uploader_service_->UploadModelQualityLogs(
-        std::move(log_entry));
+        std::move(log_entry->log_ai_data_request_));
 
     RunUntilIdle();
+  }
+
+  std::unique_ptr<ModelQualityLogEntry> GetModelQualityLogEntryAndSetFeedback(
+      UserVisibleFeatureKey feature,
+      proto::UserFeedback feedback) {
+    std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request(
+        new proto::LogAiDataRequest());
+    std::unique_ptr<ModelQualityLogEntry> log_entry =
+        std::make_unique<ModelQualityLogEntry>(
+            std::move(log_ai_data_request),
+            model_quality_logs_uploader_service_->GetWeakPtr());
+    switch (feature) {
+      case UserVisibleFeatureKey::kCompose:
+        log_entry->quality_data<ComposeFeatureTypeMap>()->set_user_feedback(
+            feedback);
+        break;
+      case UserVisibleFeatureKey::kTabOrganization:
+        log_entry->quality_data<TabOrganizationFeatureTypeMap>()
+            ->add_organizations()
+            ->set_user_feedback(feedback);
+        break;
+      case UserVisibleFeatureKey::kWallpaperSearch:
+        log_entry->quality_data<WallpaperSearchFeatureTypeMap>()
+            ->set_user_feedback(feedback);
+        break;
+      case UserVisibleFeatureKey::kHistorySearch:
+        // TODO(crbug.com/345308285): Add user feedback for history searches.
+        break;
+    }
+
+    return log_entry;
   }
 
   void VerifyNumberOfPendingRequests(int no_requests) {
@@ -263,22 +272,6 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestMultipleUploads) {
       ModelQualityLogsUploadStatus::kUploadSuccessful, 2);
 }
 
-TEST_F(ModelQualityLogsUploaderServiceTest, TestUploadWhenLoggingDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kModelQualityLogging,
-      {{"model_execution_feature_compose", "false"}});
-
-  auto ai_data_request = BuildComposeLogAiDataReuqest();
-  UploadModelQualityLogs(std::move(ai_data_request));
-
-  // When logging is disabled there should be no pending requests.
-  VerifyNumberOfPendingRequests(0);
-  histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
-      ModelQualityLogsUploadStatus::kLoggingNotEnabled, 1);
-}
-
 TEST_F(ModelQualityLogsUploaderServiceTest, TestUploadWhenRequestIsEmpty) {
   UploadModelQualityLogs(nullptr);
 
@@ -325,8 +318,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestBadResponse) {
 TEST_F(ModelQualityLogsUploaderServiceTest, WallpaperSearchUserFeedbackUMA) {
   std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
       GetModelQualityLogEntryAndSetFeedback(
-          proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
+          UserVisibleFeatureKey::kWallpaperSearch,
           proto::USER_FEEDBACK_THUMBS_UP);
   UploadModelQualityLogsWithLogEntry(std::move(log_entry_1));
 
@@ -336,8 +328,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest, WallpaperSearchUserFeedbackUMA) {
 
   std::unique_ptr<ModelQualityLogEntry> log_entry_2 =
       GetModelQualityLogEntryAndSetFeedback(
-          proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
+          UserVisibleFeatureKey::kWallpaperSearch,
           proto::USER_FEEDBACK_THUMBS_DOWN);
   UploadModelQualityLogsWithLogEntry(std::move(log_entry_2));
   histogram_tester_.ExpectBucketCount(
@@ -348,8 +339,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest, WallpaperSearchUserFeedbackUMA) {
 TEST_F(ModelQualityLogsUploaderServiceTest, TabOrganizationUserFeedbackUMA) {
   std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
       GetModelQualityLogEntryAndSetFeedback(
-          proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
+          UserVisibleFeatureKey::kTabOrganization,
           proto::USER_FEEDBACK_THUMBS_UP);
   UploadModelQualityLogsWithLogEntry(std::move(log_entry_1));
 
@@ -359,8 +349,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TabOrganizationUserFeedbackUMA) {
 
   std::unique_ptr<ModelQualityLogEntry> log_entry_2 =
       GetModelQualityLogEntryAndSetFeedback(
-          proto::ModelExecutionFeature::
-              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
+          UserVisibleFeatureKey::kTabOrganization,
           proto::USER_FEEDBACK_THUMBS_DOWN);
   UploadModelQualityLogsWithLogEntry(std::move(log_entry_2));
   histogram_tester_.ExpectBucketCount(
@@ -379,11 +368,12 @@ TEST_F(ModelQualityLogsUploaderServiceTest,
 
   proto::TabOrganizationRequest tab_request;
 
-  *(tab_organization_logging_data.mutable_request_data()) = tab_request;
+  *(tab_organization_logging_data.mutable_request()) = tab_request;
   *(log_ai_data_request_1->mutable_tab_organization()) =
       tab_organization_logging_data;
   std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
-      std::make_unique<ModelQualityLogEntry>(std::move(log_ai_data_request_1));
+      std::make_unique<ModelQualityLogEntry>(std::move(log_ai_data_request_1),
+                                             nullptr);
 
   // Upload logs without quality data set this should mark user_feedback as
   // unspecified.
@@ -394,11 +384,32 @@ TEST_F(ModelQualityLogsUploaderServiceTest,
       proto::USER_FEEDBACK_UNSPECIFIED, 1);
 }
 
+TEST_F(ModelQualityLogsUploaderServiceTest,
+       TabOrganizationMultipleOrganizationUserFeedbackUMA) {
+  std::unique_ptr<ModelQualityLogEntry> log_entry =
+      GetModelQualityLogEntryAndSetFeedback(
+          UserVisibleFeatureKey::kTabOrganization,
+          proto::USER_FEEDBACK_THUMBS_UP);
+  // Add one more tab organization to existing log_entry with user feedback.
+  log_entry->quality_data<TabOrganizationFeatureTypeMap>()
+      ->add_organizations()
+      ->set_user_feedback(proto::USER_FEEDBACK_THUMBS_DOWN);
+
+  UploadModelQualityLogsWithLogEntry(std::move(log_entry));
+
+  // We only record the first user feedback value.
+  histogram_tester_.ExpectBucketCount(
+      "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
+      proto::USER_FEEDBACK_THUMBS_UP, 1);
+  histogram_tester_.ExpectBucketCount(
+      "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
+      proto::USER_FEEDBACK_THUMBS_DOWN, 0);
+}
+
 TEST_F(ModelQualityLogsUploaderServiceTest, ComposeUserFeedbackUMA) {
   std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
-      GetModelQualityLogEntryAndSetFeedback(
-          proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE,
-          proto::USER_FEEDBACK_THUMBS_UP);
+      GetModelQualityLogEntryAndSetFeedback(UserVisibleFeatureKey::kCompose,
+                                            proto::USER_FEEDBACK_THUMBS_UP);
   UploadModelQualityLogsWithLogEntry(std::move(log_entry_1));
 
   histogram_tester_.ExpectBucketCount(
@@ -406,13 +417,25 @@ TEST_F(ModelQualityLogsUploaderServiceTest, ComposeUserFeedbackUMA) {
       proto::USER_FEEDBACK_THUMBS_UP, 1);
 
   std::unique_ptr<ModelQualityLogEntry> log_entry_2 =
-      GetModelQualityLogEntryAndSetFeedback(
-          proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE,
-          proto::USER_FEEDBACK_THUMBS_DOWN);
+      GetModelQualityLogEntryAndSetFeedback(UserVisibleFeatureKey::kCompose,
+                                            proto::USER_FEEDBACK_THUMBS_DOWN);
   UploadModelQualityLogsWithLogEntry(std::move(log_entry_2));
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQuality.UserFeedback.Compose",
       proto::USER_FEEDBACK_THUMBS_DOWN, 1);
+}
+
+TEST_F(ModelQualityLogsUploaderServiceTest, CheckUploadOnDestruction) {
+  std::unique_ptr<ModelQualityLogEntry> log_entry =
+      GetModelQualityLogEntryAndSetFeedback(UserVisibleFeatureKey::kCompose,
+                                            proto::USER_FEEDBACK_THUMBS_UP);
+  // Instead of calling UploadModelQualityLogs, resetting the log entry this
+  // shouldn't upload the logs as
+  // ModelQualityLogsUploaderService::CanUploadLogs will return false.
+  log_entry.reset();
+
+  RunUntilIdle();
+  VerifyNumberOfPendingRequests(0);
 }
 
 // TODO(b/301301447): Add more tests to cover all cases.

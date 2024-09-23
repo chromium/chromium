@@ -60,8 +60,7 @@ class VideoFrameCompositorTest
     : public media::VideoRendererSink::RenderCallback,
       public testing::Test {
  public:
-  VideoFrameCompositorTest()
-      : client_(new StrictMock<MockWebVideoFrameSubmitter>()) {}
+  VideoFrameCompositorTest() = default;
   VideoFrameCompositorTest(const VideoFrameCompositorTest&) = delete;
   VideoFrameCompositorTest& operator=(const VideoFrameCompositorTest&) = delete;
 
@@ -146,9 +145,10 @@ class VideoFrameCompositorTest
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::TimeDelta preferred_render_interval_;
   base::SimpleTestTickClock tick_clock_;
-  raw_ptr<StrictMock<MockWebVideoFrameSubmitter>, DanglingUntriaged> submitter_;
-  std::unique_ptr<StrictMock<MockWebVideoFrameSubmitter>> client_;
+  std::unique_ptr<StrictMock<MockWebVideoFrameSubmitter>> client_ =
+      std::make_unique<StrictMock<MockWebVideoFrameSubmitter>>();
   std::unique_ptr<VideoFrameCompositor> compositor_;
+  raw_ptr<StrictMock<MockWebVideoFrameSubmitter>> submitter_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_ =
       task_environment_.GetMainThreadTaskRunner();
 };
@@ -332,6 +332,22 @@ TEST_F(VideoFrameCompositorTest, VideoRendererSinkFrameDropped) {
   StopVideoRendererSink(true);
 }
 
+TEST_F(VideoFrameCompositorTest, VideoRendererSinkGetCurrentFrameNoDrops) {
+  scoped_refptr<media::VideoFrame> opaque_frame = CreateOpaqueFrame();
+
+  EXPECT_CALL(*this, Render(_, _, _)).WillRepeatedly(Return(opaque_frame));
+  StartVideoRendererSink();
+
+  EXPECT_TRUE(
+      compositor()->UpdateCurrentFrame(base::TimeTicks(), base::TimeTicks()));
+
+  auto frame = compositor()->GetCurrentFrameOnAnyThread();
+  EXPECT_FALSE(
+      compositor()->UpdateCurrentFrame(base::TimeTicks(), base::TimeTicks()));
+
+  StopVideoRendererSink(true);
+}
+
 TEST_F(VideoFrameCompositorTest, StartFiresBackgroundRender) {
   scoped_refptr<media::VideoFrame> opaque_frame = CreateOpaqueFrame();
   EXPECT_CALL(*this, Render(_, _, RenderingMode::kStartup))
@@ -501,11 +517,10 @@ TEST_F(VideoFrameCompositorTest, OnContextLost) {
   std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
       std::make_unique<media::FakeGpuMemoryBuffer>(
           encode_size, gfx::BufferFormat::YUV_420_BIPLANAR);
-  gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes];
   scoped_refptr<media::VideoFrame> gpu_frame =
       media::VideoFrame::WrapExternalGpuMemoryBuffer(
-          gfx::Rect(encode_size), encode_size, std::move(gmb), mailbox_holders,
-          base::DoNothing(), base::TimeDelta());
+          gfx::Rect(encode_size), encode_size, std::move(gmb),
+          base::TimeDelta());
 
   compositor_->set_background_rendering_for_testing(true);
 

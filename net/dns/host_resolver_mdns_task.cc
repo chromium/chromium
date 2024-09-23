@@ -52,7 +52,7 @@ class HostResolverMdnsTask::Transaction {
     DCHECK_EQ(ERR_IO_PENDING, results_.error());
     DCHECK(!async_transaction_);
 
-    // TODO(crbug.com/926300): Use |allow_cached_response| to set the
+    // TODO(crbug.com/40611558): Use |allow_cached_response| to set the
     // QUERY_CACHE flag or not.
     int flags = MDnsTransaction::SINGLE_RESULT | MDnsTransaction::QUERY_CACHE |
                 MDnsTransaction::QUERY_NETWORK;
@@ -105,7 +105,7 @@ class HostResolverMdnsTask::Transaction {
         break;
       default:
         // No other results should be possible with the request flags used.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     results_ = HostResolverMdnsTask::ParseResult(error, query_type_, parsed,
@@ -134,7 +134,7 @@ HostResolverMdnsTask::HostResolverMdnsTask(MDnsClient* mdns_client,
                                            std::string hostname,
                                            DnsQueryTypeSet query_types)
     : mdns_client_(mdns_client), hostname_(std::move(hostname)) {
-  CHECK(!query_types.Empty());
+  CHECK(!query_types.empty());
   DCHECK(!query_types.Has(DnsQueryType::UNSPECIFIED));
 
   static constexpr DnsQueryTypeSet kUnwantedQueries = {DnsQueryType::HTTPS};
@@ -210,7 +210,7 @@ HostCache::Entry HostResolverMdnsTask::ParseResult(
       // Not supported.
       // TODO(ericorth@chromium.org): Consider support for HTTPS in mDNS if it
       // is ever decided to support HTTPS via non-DoH.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return HostCache::Entry(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
     case DnsQueryType::A:
       return HostCache::Entry(

@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
+#include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -26,11 +27,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
-using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+using ScoringSignals = ::metrics::OmniboxScoringSignals;
 
 namespace {
 
@@ -525,6 +527,23 @@ TEST_F(AutocompleteMatchTest, UpgradeMatchWithPropertiesFrom) {
   EXPECT_EQ(history_match.type, AutocompleteMatchType::HISTORY_TITLE);
   EXPECT_EQ(history_match.contents, u"propagate");
   EXPECT_EQ(history_match.inline_autocompletion, u"preserve");
+
+  omnibox::RichAnswerTemplate answer_template;
+  omnibox::SuggestionEnhancement* enhancement =
+      answer_template.mutable_enhancements()->add_enhancements();
+  enhancement->set_display_text("Similar and opposite words");
+  AutocompleteMatch match_with_answer_actions(
+      search_provider.get(), 400, true, AutocompleteMatchType::SEARCH_SUGGEST);
+  match_with_answer_actions.actions.push_back(
+      base::MakeRefCounted<OmniboxAnswerAction>(
+          std::move(*enhancement), TemplateURLRef::SearchTermsArgs(),
+          omnibox::ANSWER_TYPE_DICTIONARY));
+  AutocompleteMatch match_with_no_answer_actions(
+      search_provider.get(), 400, true,
+      AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+  match_with_no_answer_actions.UpgradeMatchWithPropertiesFrom(
+      match_with_answer_actions);
+  EXPECT_EQ(0u, match_with_no_answer_actions.actions.size());
 }
 
 TEST_F(AutocompleteMatchTest, MergeScoringSignals) {
@@ -977,9 +996,10 @@ TEST_F(AutocompleteMatchTest, TryRichAutocompletionShortcutText) {
 
 TEST_F(AutocompleteMatchTest, BetterDuplicate) {
   const auto create_match = [](scoped_refptr<FakeAutocompleteProvider> provider,
-                               int relevance) {
-    return AutocompleteMatch{provider.get(), relevance, false,
-                             AutocompleteMatchType::URL_WHAT_YOU_TYPED};
+                               int relevance,
+                               AutocompleteMatchType::Type match_type =
+                                   AutocompleteMatchType::URL_WHAT_YOU_TYPED) {
+    return AutocompleteMatch{provider.get(), relevance, false, match_type};
   };
 
   scoped_refptr<FakeAutocompleteProvider> document_provider =
@@ -994,6 +1014,10 @@ TEST_F(AutocompleteMatchTest, BetterDuplicate) {
 
   scoped_refptr<FakeAutocompleteProvider> shortcuts_provider =
       new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SHORTCUTS);
+
+  scoped_refptr<FakeAutocompleteProvider> featured_search_provider =
+      new FakeAutocompleteProvider(
+          AutocompleteProvider::Type::TYPE_FEATURED_SEARCH);
 
   // Prefer document provider matches over other providers, even if scored
   // lower.
@@ -1012,12 +1036,46 @@ TEST_F(AutocompleteMatchTest, BetterDuplicate) {
       create_match(document_provider, 0),
       create_match(bookmark_provider, 1000)));
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Prefer non-shortcuts provider matches over shortcuts provider matches.
   EXPECT_TRUE(AutocompleteMatch::BetterDuplicate(
       create_match(history_provider, 0),
       create_match(shortcuts_provider, 1000)));
 
-  // Prefer non-shortcuts provider matches over shortcuts provider matches.
+  // Prefer featured enterprise search over other matches.
+  EXPECT_TRUE(AutocompleteMatch::BetterDuplicate(
+      create_match(featured_search_provider, 100,
+                   AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH),
+      create_match(featured_search_provider, 500,
+                   AutocompleteMatchType::STARTER_PACK)));
+
+  EXPECT_FALSE(AutocompleteMatch::BetterDuplicate(
+      create_match(featured_search_provider, 500,
+                   AutocompleteMatchType::STARTER_PACK),
+      create_match(featured_search_provider, 100,
+                   AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH)));
+
+  EXPECT_TRUE(AutocompleteMatch::BetterDuplicate(
+      create_match(featured_search_provider, 100,
+                   AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH),
+      create_match(bookmark_provider, 500)));
+
+  EXPECT_FALSE(AutocompleteMatch::BetterDuplicate(
+      create_match(bookmark_provider, 500),
+      create_match(featured_search_provider, 100,
+                   AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH)));
+
+  // Prefer stater pack matches over other matches.
+  EXPECT_TRUE(AutocompleteMatch::BetterDuplicate(
+      create_match(featured_search_provider, 100,
+                   AutocompleteMatchType::STARTER_PACK),
+      create_match(bookmark_provider, 500)));
+
+  EXPECT_FALSE(AutocompleteMatch::BetterDuplicate(
+      create_match(bookmark_provider, 500),
+      create_match(featured_search_provider, 100,
+                   AutocompleteMatchType::STARTER_PACK)));
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // Prefer more relevant matches.
   EXPECT_FALSE(
@@ -1274,9 +1332,10 @@ TEST_F(AutocompleteMatchTest, ValidateGetVectorIcons) {
             match.GetVectorIcon(/*is_bookmark=*/false, &turl).is_empty());
       }
     } else if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL ||
-               match.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
-      // SEARCH_SUGGEST_TAIL and NULL_RESULT_MESSAGE suggestions use an empty
-      // vector icon.
+               (match.type == AutocompleteMatchType::NULL_RESULT_MESSAGE &&
+                !match.IsIPHSuggestion())) {
+      // SEARCH_SUGGEST_TAIL and non-IPH NULL_RESULT_MESSAGE suggestions use an
+      // empty vector icon.
       EXPECT_TRUE(match.GetVectorIcon(/*is_bookmark=*/false).is_empty());
     } else {
       // All other suggestion types should result in non-empty vector icons.
@@ -1285,3 +1344,15 @@ TEST_F(AutocompleteMatchTest, ValidateGetVectorIcons) {
   }
 }
 #endif
+
+TEST_F(AutocompleteMatchTest, IsClipboardType) {
+  std::set<int> clipboard_types{AutocompleteMatchType::CLIPBOARD_TEXT,
+                                AutocompleteMatchType::CLIPBOARD_URL,
+                                AutocompleteMatchType::CLIPBOARD_IMAGE};
+
+  for (int type = 0; type < AutocompleteMatchType::NUM_TYPES; type++) {
+    EXPECT_EQ(
+        AutocompleteMatch::IsClipboardType((AutocompleteMatchType::Type)type),
+        clipboard_types.contains(type));
+  }
+}

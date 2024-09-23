@@ -112,7 +112,7 @@ export class ModuleWrapperElement extends PolymerElement {
     // Use `pagehide` rather than `unload` because unload is being deprecated.
     // `pagehide` fires with the same timing and is safe to use since NTP never
     // enters back/forward-cache.
-    window.addEventListener('pageload', () => {
+    window.addEventListener('pagehide', () => {
       recordPerdecage(
           'NewTabPage.Modules.ImpressionRatio', intersectionPerdecage);
       recordPerdecage(

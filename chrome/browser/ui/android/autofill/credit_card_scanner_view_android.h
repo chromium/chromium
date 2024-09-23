@@ -38,13 +38,12 @@ class CreditCardScannerViewAndroid : public CreditCardScannerView {
                      const base::android::JavaParamRef<jobject>& object);
 
   // Called by JNI when credit card scan completed successfully.
-  void ScanCompleted(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& object,
-      const base::android::JavaParamRef<jstring>& card_holder_name,
-      const base::android::JavaParamRef<jstring>& card_number,
-      jint expiration_month,
-      jint expiration_year);
+  void ScanCompleted(JNIEnv* env,
+                     const base::android::JavaParamRef<jobject>& object,
+                     const std::u16string& card_holder_name,
+                     const std::u16string& card_number,
+                     jint expiration_month,
+                     jint expiration_year);
 
  private:
   // CreditCardScannerView implementation.

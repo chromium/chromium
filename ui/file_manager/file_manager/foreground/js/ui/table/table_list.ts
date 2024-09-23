@@ -8,9 +8,9 @@
 
 import {jsSetter} from '../../../../common/js/cr_ui.js';
 import {List} from '../list.js';
-import {ListItem} from '../list_item.js';
+import type {ListItem} from '../list_item.js';
 
-import {Table} from './table.js';
+import type {Table} from './table.js';
 
 
 /**

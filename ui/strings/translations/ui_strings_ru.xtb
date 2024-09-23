@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Опрос</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> ТБ/с</translation>
 <translation id="2353636109065292463">Проверка подключения к Интернету</translation>
+<translation id="2359808026110333948">Продолжить</translation>
 <translation id="2388990488038464401">Позвонить на этот номер со своего телефона?</translation>
 <translation id="2435457462613246316">Показать пароль</translation>
 <translation id="24452542372838207">Развернуть уведомление</translation>
@@ -63,9 +64,8 @@
 <translation id="2583543531130364912">Откалибруйте сенсорный экран</translation>
 <translation id="2586657967955657006">Буфер обмена</translation>
 <translation id="2653844658857826081">НОВИНКА</translation>
-<translation id="2666092431469916601">Наверх</translation>
+<translation id="2666092431469916601">Сверху</translation>
 <translation id="2701330563083355633">С устройства "<ph name="DEVICE_NAME" />"</translation>
-<translation id="271033894570825754">Новое</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{год назад}one{# год назад}few{# года назад}many{# лет назад}other{# года назад}}</translation>
 <translation id="2878511608894704031">Удалить все</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{через 1 д.}one{через # д.}few{через # д.}many{через # д.}other{через # д.}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">Система <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Клавиша возврата (Backspace)</translation>
 <translation id="5613020302032141669">Стрелка влево</translation>
+<translation id="5633029987065897167">Пусто</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин.}one{# мин.}few{# мин.}many{# мин.}other{# мин.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Последние действия: сегодня}=1{Последние действия: 1 день назад}one{Последние действия: # день назад}few{Последние действия: # дня назад}many{Последние действия: # дней назад}other{Последние действия: # дня назад}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 день }one{# день }few{# дня }many{# дней }other{# дня }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">Контент в формате RTF</translation>
 <translation id="6539092367496845964">Произошла ошибка. Повторите попытку позже.</translation>
 <translation id="654149438358937226">Блокировать все уведомления</translation>
-<translation id="6612467943526193239">Чтобы выйти из режима калибровки, нажмите ESC</translation>
 <translation id="6620110761915583480">Сохранить файл</translation>
 <translation id="6699343763173986273">Следующий трек</translation>
 <translation id="6808150112686056157">Остановить</translation>

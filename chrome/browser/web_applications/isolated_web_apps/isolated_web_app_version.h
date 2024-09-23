@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_VERSION_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_VERSION_H_
 
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
+#include "base/version.h"
 
 namespace web_app {
 
@@ -21,9 +22,9 @@ enum class IwaVersionParseError {
 };
 
 // Parses a string representing the version of an Isolated Web App. Returns the
-// parsed version components on success.
-base::expected<std::vector<uint32_t>, IwaVersionParseError>
-ParseIwaVersionIntoComponents(base::StringPiece version_string);
+// parsed version on success.
+base::expected<base::Version, IwaVersionParseError> ParseIwaVersion(
+    std::string_view version_string);
 
 std::string IwaVersionParseErrorToString(IwaVersionParseError error);
 

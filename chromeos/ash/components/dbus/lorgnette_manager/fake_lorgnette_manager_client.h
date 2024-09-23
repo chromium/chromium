@@ -30,6 +30,7 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) FakeLorgnetteManagerClient
   void ListScanners(
       const std::string& client_id,
       bool local_only,
+      bool preferred_only,
       chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback)
       override;
   void GetScannerCapabilities(

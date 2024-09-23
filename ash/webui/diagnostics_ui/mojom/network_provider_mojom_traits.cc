@@ -34,7 +34,6 @@ diagnostics_mojom::SecurityType EnumTraits<diagnostics_mojom::SecurityType,
   }
   VLOG(1) << "Unknown security type: " << input;
   NOTREACHED();
-  return diagnostics_mojom::SecurityType::kMinValue;
 }
 
 // static
@@ -62,7 +61,6 @@ bool EnumTraits<diagnostics_mojom::SecurityType,
   VLOG(1) << "Unknown security type: "
           << static_cast<network_config_mojom::SecurityType>(input);
   NOTREACHED();
-  return false;
 }
 
 // static
@@ -78,7 +76,6 @@ EnumTraits<diagnostics_mojom::AuthenticationType,
   }
   VLOG(1) << "Unknown authentication type: " << input;
   NOTREACHED();
-  return diagnostics_mojom::AuthenticationType::kMinValue;
 }
 
 // static
@@ -97,7 +94,6 @@ bool EnumTraits<diagnostics_mojom::AuthenticationType,
   VLOG(1) << "Unknown authentication type: "
           << static_cast<network_config_mojom::AuthenticationType>(input);
   NOTREACHED();
-  return false;
 }
 
 }  // namespace mojo

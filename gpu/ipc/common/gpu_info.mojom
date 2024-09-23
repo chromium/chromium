@@ -5,7 +5,6 @@
 // gpu/config/gpu_info.h
 module gpu.mojom;
 
-import "gpu/ipc/common/dx_diag_node.mojom";
 [EnableIf=is_win]
 import "gpu/ipc/common/luid.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -29,7 +28,6 @@ struct GpuDevice {
   string device_string;
   string driver_vendor;
   string driver_version;
-  int32 cuda_compute_capability_major;
   [EnableIf=is_win]
   Luid luid;
   gl.mojom.GpuPreference gpu_preference;
@@ -155,6 +153,7 @@ struct OverlayInfo {
   OverlaySupport nv12_overlay_support;
   OverlaySupport bgra8_overlay_support;
   OverlaySupport rgb10a2_overlay_support;
+  OverlaySupport p010_overlay_support;
 };
 
 // Corresponds to |gpu::GPUInfo| in gpu/config/gpu_info.h
@@ -164,6 +163,7 @@ struct GpuInfo {
   bool amd_switchable;
   GpuDevice gpu;
   array<GpuDevice> secondary_gpus;
+  array<GpuDevice> npus;
   string pixel_shader_version;
   string vertex_shader_version;
   string max_msaa_samples;
@@ -185,11 +185,8 @@ struct GpuInfo {
   bool passthrough_cmd_decoder;
   bool can_support_threaded_texture_mailbox;
 
-  [EnableIf=is_mac]
-  uint32 macos_specific_texture_target;
-
   [EnableIf=is_win]
-  DxDiagNode dx_diagnostics;
+  uint32 directml_feature_level;
   [EnableIf=is_win]
   uint32 d3d12_feature_level;
   [EnableIf=is_win]

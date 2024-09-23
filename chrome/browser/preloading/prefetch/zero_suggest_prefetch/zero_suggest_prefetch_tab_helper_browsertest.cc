@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
+
 #include <memory>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -51,19 +55,10 @@ class ZeroSuggestPrefetchTabHelperBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    auto template_url_service = std::make_unique<TemplateURLService>(
-        /*prefs=*/nullptr, /*search_engine_choice_service=*/nullptr,
-        std::make_unique<SearchTermsData>(),
-        /*web_data_service=*/nullptr,
-        std::unique_ptr<TemplateURLServiceClient>(), base::RepeatingClosure()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                                                         ,
-        /*for_lacros_main_profile=*/false
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    );
-
+    TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(browser()->profile());
     auto client_ = std::make_unique<MockAutocompleteProviderClient>();
-    client_->set_template_url_service(std::move(template_url_service));
+    client_->set_template_url_service(template_url_service);
 
     auto controller =
         std::make_unique<testing::NiceMock<MockAutocompleteController>>(

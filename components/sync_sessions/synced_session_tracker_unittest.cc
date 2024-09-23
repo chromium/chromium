@@ -18,6 +18,7 @@ using testing::AssertionFailure;
 using testing::AssertionResult;
 using testing::AssertionSuccess;
 using testing::ElementsAre;
+using testing::Eq;
 using testing::IsEmpty;
 using testing::IsNull;
 using testing::Ne;
@@ -31,6 +32,9 @@ namespace {
 
 const char kValidUrl[] = "http://www.example.com";
 const char kSessionName[] = "sessionname";
+// Monday, September 2, 2024 13:31:31 GMT+2.
+const base::Time kSessionStartTime =
+    base::Time::FromSecondsSinceUnixEpoch(1725283891);
 const sync_pb::SyncEnums::DeviceType kDeviceType =
     sync_pb::SyncEnums_DeviceType_TYPE_PHONE;
 const syncer::DeviceInfo::FormFactor kFormFactor =
@@ -816,11 +820,15 @@ TEST_F(SyncedSessionTrackerTest, ReassociateTabOldMappedNewUnmapped) {
 TEST_F(SyncedSessionTrackerTest, UpdateTrackerWithHeader) {
   sync_pb::SessionSpecifics header;
   header.set_session_tag(kTag);
+  header.mutable_header()->set_session_start_time_unix_epoch_millis(
+      kSessionStartTime.InMillisecondsSinceUnixEpoch());
   header.mutable_header()->add_window()->set_window_id(kWindow1.id());
   header.mutable_header()->mutable_window(0)->add_tab(kTab1.id());
   header.mutable_header()->mutable_window(0)->add_tab(kTab2.id());
   UpdateTrackerWithSpecifics(header, base::Time::Now(), &tracker_);
 
+  EXPECT_THAT(tracker_.LookupSession(kTag)->GetStartTime(),
+              Eq(kSessionStartTime));
   EXPECT_THAT(
       tracker_.LookupSession(kTag),
       MatchesSyncedSession(kTag, {{kWindow1.id(), {kTab1.id(), kTab2.id()}}}));
@@ -994,6 +1002,7 @@ TEST_F(SyncedSessionTrackerTest, UpdateTrackerWithTwoTabsSameId) {
 
 TEST_F(SyncedSessionTrackerTest, SerializeTrackerToSpecifics) {
   tracker_.InitLocalSession(kTag, kSessionName, kDeviceType, kFormFactor);
+  tracker_.SetLocalSessionStartTime(kSessionStartTime);
   tracker_.PutWindowInSession(kTag, kWindow1);
   tracker_.GetSession(kTag)->windows[kWindow1]->window_type =
       sync_pb::SyncEnums_BrowserType_TYPE_TABBED;
@@ -1011,9 +1020,10 @@ TEST_F(SyncedSessionTrackerTest, SerializeTrackerToSpecifics) {
   base::MockCallback<base::RepeatingCallback<void(
       const std::string& session_name, sync_pb::SessionSpecifics* specifics)>>
       callback;
-  EXPECT_CALL(callback, Run(kSessionName,
-                            Pointee(MatchesHeader(kTag, {kWindow1.id()},
-                                                  {kTab1.id(), kTab2.id()}))));
+  EXPECT_CALL(callback,
+              Run(kSessionName, Pointee(MatchesHeader(
+                                    kTag, kSessionStartTime, {kWindow1.id()},
+                                    {kTab1.id(), kTab2.id()}))));
   EXPECT_CALL(callback, Run(kSessionName,
                             Pointee(MatchesTab(kTag, kWindow1.id(), kTab1.id(),
                                                kTabNode1, /*urls=*/_))));
@@ -1029,9 +1039,10 @@ TEST_F(SyncedSessionTrackerTest, SerializeTrackerToSpecifics) {
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(&callback));
 
   // Serialize the header only.
-  EXPECT_CALL(callback, Run(kSessionName,
-                            Pointee(MatchesHeader(kTag, {kWindow1.id()},
-                                                  {kTab1.id(), kTab2.id()}))));
+  EXPECT_CALL(callback,
+              Run(kSessionName, Pointee(MatchesHeader(
+                                    kTag, kSessionStartTime, {kWindow1.id()},
+                                    {kTab1.id(), kTab2.id()}))));
   SerializePartialTrackerToSpecifics(
       tracker_, {{kTag, {TabNodePool::kInvalidTabNodeID}}}, callback.Get());
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(&callback));

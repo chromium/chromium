@@ -111,7 +111,8 @@ void ContentInfoBarManager::OpenURL(const GURL& url,
                              (disposition == WindowOpenDisposition::CURRENT_TAB)
                                  ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                                  : disposition,
-                             ui::PAGE_TRANSITION_LINK, false));
+                             ui::PAGE_TRANSITION_LINK, false),
+      /*navigation_handle_callback=*/{});
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentInfoBarManager);

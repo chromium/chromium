@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ui/webui/settings/privacy_sandbox_handler.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/privacy_sandbox/canonical_topic.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 namespace settings {
 
@@ -75,6 +79,18 @@ void PrivacySandboxHandler::RegisterMessages() {
       "getChildTopicsCurrentlyAssigned",
       base::BindRepeating(
           &PrivacySandboxHandler::HandleGetChildTopicsCurrentlyAssigned,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "privacySandboxPrivacyGuideShouldShowAdTopicsCard",
+      base::BindRepeating(
+          &PrivacySandboxHandler::
+              HandlePrivacySandboxPrivacyGuideShouldShowAdTopicsCard,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "privacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel",
+      base::BindRepeating(
+          &PrivacySandboxHandler::
+              HandlePrivacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel,
           base::Unretained(this)));
 }
 
@@ -186,6 +202,31 @@ void PrivacySandboxHandler::HandleGetChildTopicsCurrentlyAssigned(
   }
   ResolveJavascriptCallback(args[0],
                             std::move(child_topics_currently_assigned_list));
+}
+
+void PrivacySandboxHandler::
+    HandlePrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
+        const base::Value::List& args) {
+  AllowJavascript();
+  bool should_show_ad_topics_card =
+      GetPrivacySandboxCountries()->IsConsentCountry() &&
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
+  ResolveJavascriptCallback(args[0], should_show_ad_topics_card);
+}
+
+void PrivacySandboxHandler::
+    HandlePrivacySandboxPrivacyGuideShouldShowCompletionCardAdTopicsSubLabel(
+        const base::Value::List& args) {
+  AllowJavascript();
+  ResolveJavascriptCallback(
+      args[0], base::FeatureList::IsEnabled(
+                   privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics));
+}
+
+PrivacySandboxCountries* PrivacySandboxHandler::GetPrivacySandboxCountries() {
+  static PrivacySandboxCountriesImpl instance;
+  return &instance;
 }
 
 PrivacySandboxService* PrivacySandboxHandler::GetPrivacySandboxService() {

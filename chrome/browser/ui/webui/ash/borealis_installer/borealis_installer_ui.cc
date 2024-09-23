@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_ui.h"
 
 #include "ash/constants/ash_features.h"
@@ -20,11 +25,6 @@
 
 namespace ash {
 
-bool BorealisInstallerUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(features::kBorealisWebUIInstaller);
-}
-
 BorealisInstallerUI::BorealisInstallerUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui}, web_ui_(web_ui) {
   // Set up the chrome://borealis-installer source.
@@ -34,6 +34,7 @@ BorealisInstallerUI::BorealisInstallerUI(content::WebUI* web_ui)
           chrome::kChromeUIBorealisInstallerHost);
   static constexpr webui::LocalizedString kStrings[] = {
       {"cancel", IDS_CANCEL},
+      {"close", IDS_CLOSE},
       {"install", IDS_INSTALL},
       {"confirmationTitle", IDS_BOREALIS_INSTALLER_CONFIRMATION_TITLE},
       {"confirmationMessage", IDS_BOREALIS_INSTALLER_CONFIRMATION_MESSAGE},

@@ -10,7 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
-#include "components/android_autofill/browser/autofill_provider_android_bridge.h"
+#include "components/android_autofill/browser/android_autofill_provider_bridge.h"
 
 namespace autofill {
 
@@ -23,10 +23,10 @@ class AndroidAutofillBridgeFactory {
  public:
   static AndroidAutofillBridgeFactory& GetInstance();
 
-  // Creates and returns a `AutofillProviderAndroidBridge`.
-  std::unique_ptr<AutofillProviderAndroidBridge>
-  CreateAutofillProviderAndroidBridge(
-      AutofillProviderAndroidBridge::Delegate* delegate);
+  // Creates and returns a `AndroidAutofillProviderBridge`.
+  std::unique_ptr<AndroidAutofillProviderBridge>
+  CreateAndroidAutofillProviderBridge(
+      AndroidAutofillProviderBridge::Delegate* delegate);
 
   // Creates and returns a `FormDataAndroidBridge`.
   std::unique_ptr<FormDataAndroidBridge> CreateFormDataAndroidBridge();
@@ -35,13 +35,13 @@ class AndroidAutofillBridgeFactory {
   std::unique_ptr<FormFieldDataAndroidBridge>
   CreateFormFieldDataAndroidBridge();
 
-  // Sets a testing factory for `AutofillProviderAndroidBridge`s. If set, the
+  // Sets a testing factory for `AndroidAutofillProviderBridge`s. If set, the
   // testing factory is used in the factory method.
-  using AutofillProviderAndroidBridgeTestingFactory =
-      base::RepeatingCallback<std::unique_ptr<AutofillProviderAndroidBridge>(
-          AutofillProviderAndroidBridge::Delegate* delegate)>;
-  void SetAutofillProviderAndroidTestingFactory(
-      AutofillProviderAndroidBridgeTestingFactory factory) {
+  using AndroidAutofillProviderBridgeTestingFactory =
+      base::RepeatingCallback<std::unique_ptr<AndroidAutofillProviderBridge>(
+          AndroidAutofillProviderBridge::Delegate* delegate)>;
+  void SetAndroidAutofillProviderTestingFactory(
+      AndroidAutofillProviderBridgeTestingFactory factory) {
     autofill_provider_android_bridge_testing_factory_ = std::move(factory);
   }
 
@@ -69,7 +69,7 @@ class AndroidAutofillBridgeFactory {
   AndroidAutofillBridgeFactory();
   ~AndroidAutofillBridgeFactory();
 
-  AutofillProviderAndroidBridgeTestingFactory
+  AndroidAutofillProviderBridgeTestingFactory
       autofill_provider_android_bridge_testing_factory_;
   FormDataAndroidBridgeTestingFactory form_data_android_bridge_testing_factory_;
   FormFieldDataAndroidBridgeTestingFactory

@@ -17,11 +17,12 @@ chrome.test.runTests([
   async function nestedWebContents() {
     const query = {url: 'http://a.com/*'};
     let tab = await getSingleTab(query);
-    // There should be exactly 2 frames.
+    // There should be exactly one frame, which is the main frame. The frame for
+    // the nested WebContents should not be included here.
     let frames = await chrome.webNavigation.getAllFrames({tabId: tab.id});
-    chrome.test.assertEq(2, frames.length);
+    chrome.test.assertEq(1, frames.length);
 
-    // There should be exactly 2 results from executeScript.
+    // There should be exactly one result from executeScript.
     let results = await chrome.scripting.executeScript({
       target: {
         tabId: tab.id,
@@ -30,12 +31,10 @@ chrome.test.runTests([
       func: injectedFunction,
     });
 
-    // We see two frames here, the main frame and one for the embed. We should
-    // *not* see the third "embed within the embed" created by the PDF
-    // reader.
-    chrome.test.assertEq(2, results.length);
-    chrome.test.assertEq('/page_with_embedded_pdf.html', results[0].result);
-    chrome.test.assertEq('/pdf/test.pdf', results[1].result);
+    // Only one frame should execute the script, which is the main frame. The
+    // frame for the nested WebContents should not execute the script.
+    chrome.test.assertEq(1, results.length);
+    chrome.test.assertEq('/iframe_about_blank.html', results[0].result);
     chrome.test.succeed();
   },
 ]);

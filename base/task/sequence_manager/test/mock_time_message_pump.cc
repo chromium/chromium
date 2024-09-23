@@ -54,13 +54,9 @@ void MockTimeMessagePump::Run(Delegate* delegate) {
     if (info.is_immediate())
       continue;
 
-    bool have_immediate_work = delegate->DoIdleWork();
-
+    delegate->DoIdleWork();
     if (!keep_running_)
       break;
-
-    if (have_immediate_work)
-      continue;
 
     if (MaybeAdvanceTime(info.delayed_run_time))
       continue;

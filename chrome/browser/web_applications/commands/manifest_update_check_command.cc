@@ -43,13 +43,13 @@ ManifestUpdateCheckCommand::ManifestUpdateCheckCommand(
     std::unique_ptr<WebAppIconDownloader> icon_downloader)
     : WebAppCommand<AppLock,
                     ManifestUpdateCheckResult,
-                    std::optional<WebAppInstallInfo>>(
+                    std::unique_ptr<WebAppInstallInfo>>(
           "ManifestUpdateCheckCommand",
           AppLockDescription(app_id),
           std::move(callback),
           /*args_for_shutdown=*/
           std::make_tuple(ManifestUpdateCheckResult::kSystemShutdown,
-                          /*new_install_info=*/std::nullopt)),
+                          /*new_install_info=*/nullptr)),
       url_(url),
       app_id_(app_id),
       check_time_(check_time),
@@ -163,12 +163,12 @@ void ManifestUpdateCheckCommand::DownloadNewManifestJson(
 void ManifestUpdateCheckCommand::StashNewManifestJson(
     base::OnceClosure next_step_callback,
     blink::mojom::ManifestPtr opt_manifest,
-    const GURL& manifest_url,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode installable_status) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
 
-  GetMutableDebugValue().Set("manifest_url", manifest_url.spec());
+  GetMutableDebugValue().Set(
+      "manifest_url", opt_manifest ? opt_manifest->manifest_url.spec() : "");
   GetMutableDebugValue().Set("manifest_installable_result",
                              base::ToString(installable_status));
 
@@ -180,10 +180,10 @@ void ManifestUpdateCheckCommand::StashNewManifestJson(
   CHECK(!new_install_info_);
 
   new_install_info_ = std::make_unique<WebAppInstallInfo>(
-      CreateWebAppInfoFromManifest(*opt_manifest, manifest_url));
-  CHECK(new_install_info_->manifest_id.is_valid());
+      CreateWebAppInfoFromManifest(*opt_manifest));
 
-  if (app_id_ != GenerateAppIdFromManifestId(new_install_info_->manifest_id)) {
+  if (app_id_ !=
+      GenerateAppIdFromManifestId(new_install_info_->manifest_id())) {
     CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult::kAppIdMismatch);
     return;
   }
@@ -244,11 +244,10 @@ void ManifestUpdateCheckCommand::ValidateNewScopeExtensions(
   }
 
   CHECK(new_install_info_);
-  CHECK(new_install_info_->manifest_id.is_valid());
   ScopeExtensions new_scope_extensions = new_install_info_->scope_extensions;
 
   lock_->origin_association_manager().GetWebAppOriginAssociations(
-      new_install_info_->manifest_id, std::move(new_scope_extensions),
+      new_install_info_->manifest_id(), std::move(new_scope_extensions),
       std::move(next_step_callback));
 }
 
@@ -468,7 +467,7 @@ void ManifestUpdateCheckCommand::ConfirmAppIdentityUpdate(
         break;
       }
     }
-    // TODO(crbug.com/1409710): Try other sizes if the above sizes fail.
+    // TODO(crbug.com/40254036): Try other sizes if the above sizes fail.
   }
 
   if (before_icon == nullptr || after_icon == nullptr ||
@@ -535,9 +534,9 @@ void ManifestUpdateCheckCommand::RevertIdentityChangesIfNeeded() {
           IdentityUpdateDecision::kRevert &&
       manifest_data_changes_.app_icon_identity_change) {
     const WebApp& web_app = GetWebApp();
-    // TODO(crbug.com/1485348): Bundle up product icon data into a single struct
-    // to make this a single assignment and less likely to miss fields as they
-    // get added in future.
+    // TODO(crbug.com/40282537): Bundle up product icon data into a single
+    // struct to make this a single assignment and less likely to miss fields as
+    // they get added in future.
     new_install_info_->manifest_icons = web_app.manifest_icons();
     new_install_info_->icon_bitmaps = existing_app_icon_bitmaps_;
     new_install_info_->is_generated_icon = web_app.is_generated_icon();
@@ -589,7 +588,7 @@ void ManifestUpdateCheckCommand::CompleteCommandAndSelfDestruct(
       case ManifestUpdateCheckResult::kCancelledDueToMainFrameNavigation:
         return CommandResult::kFailure;
       case ManifestUpdateCheckResult::kSystemShutdown:
-        NOTREACHED_NORETURN() << "This should be handled by OnShutdown()";
+        NOTREACHED() << "This should be handled by OnShutdown()";
     }
   }();
 
@@ -597,8 +596,8 @@ void ManifestUpdateCheckCommand::CompleteCommandAndSelfDestruct(
   CompleteAndSelfDestruct(
       command_result, check_result,
       check_result == ManifestUpdateCheckResult::kAppUpdateNeeded
-          ? std::make_optional<WebAppInstallInfo>(std::move(*new_install_info_))
-          : std::nullopt);
+          ? std::move(new_install_info_)
+          : nullptr);
 }
 
 }  // namespace web_app

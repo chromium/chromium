@@ -38,10 +38,10 @@ found in the LICENSE file.
     for-step="restart-required,revert-promise,powerwash-proposal"
     footer-shrinkable>
   <iron-icon slot="icon" icon="oobe-32:alert"></iron-icon>
-  <h1 slot="title">
+  <h1 slot="title" aria-live="polite">
     [[i18nDynamic(locale, 'resetWarningTitle')]]
   </h1>
-  <div slot="subtitle" class="powerwash-warning">
+  <div slot="subtitle" id="powerwash-warning">
     <!-- Subtitle:  Restart required  -->
     <span for-step="restart-required">
       [[i18nDynamic(locale, 'resetRestartMessage')]]
@@ -57,7 +57,8 @@ found in the LICENSE file.
     <if expr="_google_chrome">
       <a id="powerwash-help-link-md" class="oobe-local-link"
           hidden="[[inRevertState_]]" is="action-link"
-          on-click="onLearnMoreClick">
+          on-click="onLearnMoreClick"
+          aria-describedby="powerwash-warning">
         [[i18nDynamic(locale, 'learnMore')]]
       </a>
     </if>
@@ -92,7 +93,8 @@ found in the LICENSE file.
           </span>
           <if expr="_google_chrome">
             <a class="oobe-local-link" is="action-link"
-                on-click="onTpmFirmwareUpdateLearnMore">
+                on-click="onTpmFirmwareUpdateLearnMore"
+                aria-describedby="tpmFirmwareUpdateContainer">
               [[i18nDynamic(locale, 'learnMore')]]
             </a>
           </if>
@@ -121,8 +123,9 @@ found in the LICENSE file.
 
 <!-- Powerwash confirmation dialog (depends on powerwash mode) -->
 <oobe-modal-dialog should-hide-backdrop id="confirmationDialog"
-    on-close="onDialogClosed">
-  <div slot="title">[[confirmationDialogTitle_]]</div>
+    on-close="onDialogClosed" role="dialog">
+  <div slot="title" aria-label="[[confirmationDialogTitle_]]"
+      aria-live="polite">[[confirmationDialogTitle_]]</div>
   <div slot="content">[[confirmationDialogText_]]</div>
   <div slot="buttons">
     <oobe-text-button id="cancelButton" border on-click="onDialogCancelClick"

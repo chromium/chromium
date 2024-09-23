@@ -193,87 +193,90 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
     super(SkiaGoldIntegrationTestBase, cls).AddCommandlineArgs(parser)
-    parser.add_option(
-        '--git-revision', help='Chrome revision being tested.', default=None)
-    parser.add_option(
+    parser.add_argument('--git-revision', help='Chrome revision being tested.')
+    parser.add_argument(
         '--test-machine-name',
-        help='Name of the test machine. Specifying this argument causes this '
-        'script to upload failure images and diffs to cloud storage directly, '
-        'instead of relying on the archive_gpu_pixel_test_results.py script.',
-        default='')
-    parser.add_option(
+        default='',
+        help=('Name of the test machine. Specifying this argument causes this '
+              'script to upload failure images and diffs to cloud storage '
+              'directly, instead of relying on the '
+              'archive_gpu_pixel_test_results.py script.'))
+    parser.add_argument(
         '--dont-restore-color-profile-after-test',
-        dest='dont_restore_color_profile_after_test',
         action='store_true',
         default=False,
-        help="(Mainly on Mac) don't restore the system's original color "
-        'profile after the test completes; leave the system using the sRGB '
-        'color profile. See http://crbug.com/784456.')
-    parser.add_option(
-        '--gerrit-issue',
-        help='For Skia Gold integration. Gerrit issue ID.',
-        default='')
-    parser.add_option(
+        help=("(Mainly on Mac) don't restore the system's original color "
+              'profile after the test completes; leave the system using the '
+              'sRGB color profile. See http://crbug.com/784456.'))
+    parser.add_argument('--gerrit-issue',
+                        default='',
+                        help='For Skia Gold integration. Gerrit issue ID.')
+    parser.add_argument(
         '--gerrit-patchset',
-        help='For Skia Gold integration. Gerrit patch set number.',
-        default='')
-    parser.add_option(
-        '--buildbucket-id',
-        help='For Skia Gold integration. Buildbucket build ID.',
-        default='')
-    parser.add_option(
+        default='',
+        help='For Skia Gold integration. Gerrit patch set number.')
+    parser.add_argument('--buildbucket-id',
+                        default='',
+                        help='For Skia Gold integration. Buildbucket build ID.')
+    parser.add_argument(
         '--no-skia-gold-failure',
         action='store_true',
         default=False,
-        help='For Skia Gold integration. Always report that the test passed '
-        'even if the Skia Gold image comparison reported a failure, but '
-        'otherwise perform the same steps as usual.')
+        help=('For Skia Gold integration. Always report that the test passed '
+              'even if the Skia Gold image comparison reported a failure, but '
+              'otherwise perform the same steps as usual.'))
     # Telemetry is *still* using optparse instead of argparse, so we can't have
     # these two options in a mutually exclusive group.
-    parser.add_option(
+    # TODO(crbug.com/40807291): Use a mutually exclusive group once the
+    # optparse -> argparse migration is complete.
+    parser.add_argument(
         '--local-pixel-tests',
         action='store_true',
         default=None,
-        help='Specifies to run the test harness in local run mode or not. When '
-        'run in local mode, uploading to Gold is disabled and links to '
-        'help with local debugging are output. Running in local mode also '
-        'implies --no-luci-auth. If both this and --no-local-pixel-tests are '
-        'left unset, the test harness will attempt to detect whether it is '
-        'running on a workstation or not and set this option accordingly.')
-    parser.add_option(
+        help=('Specifies to run the test harness in local run mode or not. '
+              'When run in local mode, uploading to Gold is disabled and links '
+              'to help with local debugging are output. Running in local mode '
+              'also implies --no-luci-auth. If both this and '
+              '--no-local-pixel-tests are left unset, the test harness will '
+              'attempt to detect whether it is running on a workstation or not '
+              'and set this option accordingly.'))
+    parser.add_argument(
         '--no-local-pixel-tests',
         action='store_false',
         dest='local_pixel_tests',
-        help='Specifies to run the test harness in non-local (bot) mode. When '
-        'run in this mode, data is actually uploaded to Gold and triage links '
-        'arge generated. If both this and --local-pixel-tests are left unset, '
-        'the test harness will attempt to detect whether it is running on a '
-        'workstation or not and set this option accordingly.')
-    parser.add_option(
+        help=('Specifies to run the test harness in non-local (bot) mode. When '
+              'run in this mode, data is actually uploaded to Gold and triage '
+              'links are generated. If both this and --local-pixel-tests are '
+              'left unset, the test harness will attempt to detect whether it '
+              'is running on a workstation or not and set this option '
+              'accordingly.'))
+    parser.add_argument(
         '--skia-gold-local-png-write-directory',
-        help='Specifies a directory to save local image diffs to instead of '
-        'the default of a temporary directory. Only has an effect when running '
-        'tests locally, not on a bot.')
-    parser.add_option(
+        help=('Specifies a directory to save local image diffs to instead of '
+              'the default of a temporary directory. Only has an effect when '
+              'running tests locally, not on a bot.'))
+    parser.add_argument(
         '--no-luci-auth',
         action='store_true',
         default=False,
-        help="Don't use the service account provided by LUCI for "
-        'authentication for Skia Gold, instead relying on gsutil to be '
-        'pre-authenticated. Meant for testing locally instead of on the bots.')
-    parser.add_option(
+        help=("Don't use the service account provided by LUCI for "
+              'authentication for Skia Gold, instead relying on gsutil to be '
+              'pre-authenticated. Meant for testing locally instead of on the '
+              'bots.'))
+    parser.add_argument(
         '--service-account',
-        help='Specifies the service account to use instead of using '
-        'LUCI_CONTEXT or whatever is configured in gsutil. Implies '
-        '--no-luci-auth. Only meant for use in Skylab where the tests are '
-        'automated but do not have LUCI_CONTEXT available.')
-    parser.add_option(
+        help=('Specifies the service account to use instead of using '
+              'LUCI_CONTEXT or whatever is configured in gsutil. Implies '
+              '--no-luci-auth. Only meant for use in Skylab where the tests '
+              'are automated but do not have LUCI_CONTEXT available.'))
+    parser.add_argument(
         '--bypass-skia-gold-functionality',
         action='store_true',
         default=False,
-        help='Bypass all interaction with Skia Gold, effectively disabling the '
-        'image comparison portion of any tests that use Gold. Only meant to '
-        'be used in case a Gold outage occurs and cannot be fixed quickly.')
+        help=('Bypass all interaction with Skia Gold, effectively disabling '
+              'the image comparison portion of any tests that use Gold. Only '
+              'meant to be used in case a Gold outage occurs and cannot be '
+              'fixed quickly.'))
 
   @classmethod
   def ResetGpuInfo(cls) -> None:

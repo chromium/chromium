@@ -6,6 +6,7 @@
  * @fileoverview ChromeVox keyboard handler.
  */
 import {KeyCode} from '/common/key_code.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {EventSourceType} from '../../common/event_source_type.js';
 import {ChromeVoxKbHandler} from '../../common/keyboard_handler.js';
@@ -113,7 +114,7 @@ export class BackgroundKeyboardHandler {
   }
 
   /** Returns true if the key should continue propagation. */
-  private callOnKeyDownHandlers_(evt: Event): boolean {
+  private callOnKeyDownHandlers_(evt: KeyboardEvent): boolean {
     // Defer first to the math handler, if it exists, then ordinary keyboard
     // commands.
     if (!MathHandler.onKeyDown(evt)) {
@@ -180,3 +181,5 @@ export class BackgroundKeyboardHandler {
     return false;
   }
 }
+
+TestImportManager.exportForTesting(BackgroundKeyboardHandler);

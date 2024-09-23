@@ -6,7 +6,9 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/media_options.gni")
+import("//services/video_effects/args.gni")
 import("//testing/test.gni")
+import("//third_party/webrtc/webrtc.gni")
 
 group("capture") {
   public_deps = [
@@ -25,7 +27,10 @@ component("capture_switches") {
     "capture_switches.cc",
     "capture_switches.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
 }
 
 # Things needed by //media/capture/mojom/video_capture_types.mojom.
@@ -106,9 +111,9 @@ source_set("capture_device_specific") {
     "//media/capture/mojom:image_capture_types",
     "//media/capture/mojom:video_capture",
     "//media/mojo/mojom",
-    "//media/parsers",
     "//skia",
     "//third_party/libyuv",
+    "//third_party/webrtc_overrides:webrtc_component",
     "//ui/gfx",
   ]
 }
@@ -143,6 +148,7 @@ component("capture_lib") {
   public_deps = [
     ":capture_base",
     ":capture_device_specific",
+    ":capture_gpu_channel",
     ":capture_switches",
   ]
 
@@ -157,10 +163,18 @@ component("capture_lib") {
     "//media/mojo/mojom",
     "//services/service_manager/public/cpp",
     "//services/video_capture/public/mojom",
+    "//services/video_effects/buildflags",
     "//third_party/libyuv",
     "//ui/display",
     "//ui/gfx",
   ]
+
+  if (enable_video_effects) {
+    sources += [
+      "video/video_capture_effects_processor.cc",
+      "video/video_capture_effects_processor.h",
+    ]
+  }
 
   if (is_android) {
     public_deps += [ "video/android" ]
@@ -171,8 +185,8 @@ component("capture_lib") {
     sources += [
       "video/apple/gpu_memory_buffer_tracker_apple.cc",
       "video/apple/gpu_memory_buffer_tracker_apple.h",
-      "video/apple/pixel_buffer_pool.cc",
       "video/apple/pixel_buffer_pool.h",
+      "video/apple/pixel_buffer_pool.mm",
       "video/apple/pixel_buffer_transferer.cc",
       "video/apple/pixel_buffer_transferer.h",
       "video/apple/sample_buffer_transformer.cc",
@@ -239,6 +253,14 @@ component("capture_lib") {
       "video/linux/video_capture_device_linux.cc",
       "video/linux/video_capture_device_linux.h",
     ]
+    if (rtc_use_pipewire) {
+      sources += [
+        "video/linux/video_capture_device_factory_webrtc.cc",
+        "video/linux/video_capture_device_factory_webrtc.h",
+        "video/linux/video_capture_device_webrtc.cc",
+        "video/linux/video_capture_device_webrtc.h",
+      ]
+    }
     deps += [ "//gpu/command_buffer/client" ]
   }
 
@@ -248,18 +270,6 @@ component("capture_lib") {
       "video/linux/v4l2_capture_delegate_gpu_helper.h",
       "video/linux/v4l2_gpu_memory_buffer_tracker.cc",
       "video/linux/v4l2_gpu_memory_buffer_tracker.h",
-    ]
-  }
-
-  # Establish GPU Channel
-  if (is_linux || is_win || is_chromeos_ash) {
-    sources += [
-      "video/video_capture_gpu_channel_host.cc",
-      "video/video_capture_gpu_channel_host.h",
-    ]
-    deps += [
-      "//gpu/command_buffer/client",
-      "//gpu/ipc/client",
     ]
   }
 
@@ -273,18 +283,24 @@ component("capture_lib") {
       "video/chromeos/camera_app_device_impl.h",
       "video/chromeos/camera_app_device_provider_impl.cc",
       "video/chromeos/camera_app_device_provider_impl.h",
+      "video/chromeos/camera_auto_framing_state_observer.cc",
+      "video/chromeos/camera_auto_framing_state_observer.h",
       "video/chromeos/camera_buffer_factory.cc",
       "video/chromeos/camera_buffer_factory.h",
       "video/chromeos/camera_device_context.cc",
       "video/chromeos/camera_device_context.h",
       "video/chromeos/camera_device_delegate.cc",
       "video/chromeos/camera_device_delegate.h",
+      "video/chromeos/camera_effects_observer.cc",
+      "video/chromeos/camera_effects_observer.h",
       "video/chromeos/camera_hal_delegate.cc",
       "video/chromeos/camera_hal_delegate.h",
       "video/chromeos/camera_hal_dispatcher_impl.cc",
       "video/chromeos/camera_hal_dispatcher_impl.h",
       "video/chromeos/camera_metadata_utils.cc",
       "video/chromeos/camera_metadata_utils.h",
+      "video/chromeos/camera_sw_privacy_switch_state_observer.cc",
+      "video/chromeos/camera_sw_privacy_switch_state_observer.h",
       "video/chromeos/camera_trace_utils.cc",
       "video/chromeos/camera_trace_utils.h",
       "video/chromeos/capture_metadata_dispatcher.h",
@@ -336,16 +352,21 @@ component("capture_lib") {
       "//components/chromeos_camera:mojo_mjpeg_decode_accelerator",
       "//components/chromeos_camera/common",
       "//components/device_event_log",
+      "//gpu/ipc/client:ipc_client_sources",
       "//gpu/ipc/common:common",
       "//media/capture/video/chromeos/mojom:cros_camera",
+      "//media/capture/video/chromeos/mojom:document_scanner",
       "//media/capture/video/chromeos/mojom:jpeg_accelerator",
       "//media/capture/video/chromeos/mojom:system_event_monitor",
+      "//media/capture/video/chromeos/mojom:video_capture_device_info_monitor",
       "//third_party/libsync",
     ]
     data_deps = [
       ":camera_hal_dispatcher_mojo_policy",
+      ":document_scanner_mojo_policy",
       ":jpeg_accelerator_mojo_policy",
       ":system_event_monitor_mojo_policy",
+      ":video_capture_device_info_monitor_mojo_policy",
     ]
   }
 
@@ -361,6 +382,25 @@ component("capture_lib") {
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3:fuchsia.camera3_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
       "//third_party/libyuv",
+    ]
+  }
+}
+
+source_set("capture_gpu_channel") {
+  defines = [ "CAPTURE_IMPLEMENTATION" ]
+  sources = []
+  deps = []
+
+  # Establish GPU Channel
+  if (is_linux || is_win || is_chromeos_ash || is_mac) {
+    sources += [
+      "video/video_capture_gpu_channel_host.cc",
+      "video/video_capture_gpu_channel_host.h",
+    ]
+    deps += [
+      ":capture_base",
+      "//gpu/command_buffer/client",
+      "//gpu/ipc/client",
     ]
   }
 }
@@ -438,6 +478,10 @@ test("capture_unittests") {
     "video_capture_types_unittest.cc",
   ]
 
+  if (enable_video_effects) {
+    sources += [ "video/video_capture_effects_processor_unittest.cc" ]
+  }
+
   data = [ "//media/test/data/bear.mjpeg" ]
 
   deps = [
@@ -445,17 +489,23 @@ test("capture_unittests") {
     ":test_support",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//gpu:test_support",
     "//gpu/command_buffer/client",
     "//media:test_support",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:image_capture_types",
     "//mojo/core/embedder",
     "//services/video_capture/public/mojom",
+    "//services/video_effects/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libyuv:libyuv",
     "//ui/gfx:test_support",
   ]
+
+  if (enable_video_effects) {
+    deps += [ "//components/viz/test:test_support" ]
+  }
 
   if (is_linux || is_chromeos_lacros) {
     sources += [
@@ -536,7 +586,7 @@ test("capture_unittests") {
     deps += [ "//chromeos/dbus/power" ]
   }
 
-  # TODO(https://crbug.com/1043007): use is_linux.
+  # TODO(crbug.com/40115082): use is_linux.
   if (is_chromeos_ash) {
     deps += [ "//media/gpu/test:local_gpu_memory_buffer_manager" ]
   }
@@ -562,7 +612,7 @@ test("capture_unittests") {
   }
 }
 
-# TODO(crbug.com/1484229): Move platform-specific files/targets into subdirectories.
+# TODO(crbug.com/40932597): Move platform-specific files/targets into subdirectories.
 copy("camera_hal_dispatcher_mojo_policy") {
   sources = [ "video/chromeos/camera_hal_dispatcher_mojo_policy.jsonc" ]
   outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
@@ -575,5 +625,15 @@ copy("jpeg_accelerator_mojo_policy") {
 
 copy("system_event_monitor_mojo_policy") {
   sources = [ "video/chromeos/system_event_monitor.jsonc" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
+}
+
+copy("video_capture_device_info_monitor_mojo_policy") {
+  sources = [ "video/chromeos/video_capture_device_info_monitor.jsonc" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
+}
+
+copy("document_scanner_mojo_policy") {
+  sources = [ "video/chromeos/document_scanner_mojo_policy.jsonc" ]
   outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
 }

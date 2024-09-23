@@ -54,6 +54,14 @@ class SVGUseElement;
 
 typedef HeapHashSet<Member<SVGElement>> SVGElementSet;
 
+// Structure for referencing/tracking a "resource target" (an element in an
+// external resource document that is targeted by a <use> element).
+struct SVGResourceTarget : public GarbageCollected<SVGResourceTarget> {
+  void Trace(Visitor* visitor) const { visitor->Trace(target); }
+
+  Member<SVGElement> target;
+};
+
 class CORE_EXPORT SVGElement : public Element {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -164,10 +172,11 @@ class CORE_EXPORT SVGElement : public Element {
   void SetCorrespondingElement(SVGElement*);
   SVGUseElement* GeneratingUseElement() const;
 
+  SVGResourceTarget& EnsureResourceTarget();
+  bool IsResourceTarget() const;
+
   void SynchronizeSVGAttribute(const QualifiedName&) const;
   virtual void SynchronizeAllSVGAttributes() const;
-  void CollectExtraStyleForPresentationAttribute(
-      MutableCSSPropertyValueSet*) override;
 
   const ComputedStyle* CustomStyleForLayoutObject(
       const StyleRecalcContext&) final;
@@ -251,10 +260,26 @@ class CORE_EXPORT SVGElement : public Element {
   void ParseAttribute(const AttributeModificationParams&) override;
   void AttributeChanged(const AttributeModificationParams&) override;
 
+  void UpdatePresentationAttributeStyle(const QualifiedName&);
+  void UpdatePresentationAttributeStyle(const SVGAnimatedPropertyBase&);
+  void UpdatePresentationAttributeStyle(CSSPropertyID,
+                                        const QualifiedName&,
+                                        const AtomicString& value);
+  MutableCSSPropertyValueSet* GetPresentationAttributeStyleForDirectUpdate();
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
+  void AddPropertyToPresentationAttributeStyleWithCache(
+      MutableCSSPropertyValueSet*,
+      CSSPropertyID,
+      const AtomicString& value);
+  void AddAnimatedPropertyToPresentationAttributeStyle(
+      const SVGAnimatedPropertyBase& property,
+      MutableCSSPropertyValueSet* style);
+  void AddAnimatedPropertiesToPresentationAttributeStyle(
+      const base::span<const SVGAnimatedPropertyBase*> properties,
+      MutableCSSPropertyValueSet* style);
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
@@ -303,7 +328,9 @@ class CORE_EXPORT SVGElement : public Element {
   bool IsStyledElement() const =
       delete;  // This will catch anyone doing an unnecessary check.
 
-  bool SupportsFocus(UpdateBehavior) const override { return false; }
+  FocusableState SupportsFocus(UpdateBehavior) const override {
+    return FocusableState::kNotFocusable;
+  }
 
   void WillRecalcStyle(const StyleRecalcChange) override;
   static SVGElementSet& GetDependencyTraversalVisitedSet();
@@ -336,7 +363,7 @@ void SVGElement::NotifyIncomingReferences(
     auto* element = member.Get();
     if (!element->GetLayoutObject())
       continue;
-    if (UNLIKELY(!invalidating_dependencies.insert(element).is_new_entry)) {
+    if (!invalidating_dependencies.insert(element).is_new_entry) [[unlikely]] {
       // Reference cycle: we are in process of invalidating this dependant.
       continue;
     }

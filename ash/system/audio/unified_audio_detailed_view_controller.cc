@@ -52,6 +52,10 @@ void UnifiedAudioDetailedViewController::OnNoiseCancellationStateChanged() {
   UpdateView();
 }
 
+void UnifiedAudioDetailedViewController::OnStyleTransferStateChanged() {
+  UpdateView();
+}
+
 void UnifiedAudioDetailedViewController::UpdateView() {
   if (view_) {
     view_->Update();

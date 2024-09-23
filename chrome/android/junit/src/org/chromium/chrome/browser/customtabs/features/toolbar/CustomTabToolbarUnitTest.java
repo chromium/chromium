@@ -41,7 +41,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -56,17 +55,16 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
-import org.chromium.chrome.browser.customtabs.features.partialcustomtab.SimpleHandleStrategy;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -79,11 +77,13 @@ import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
+import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
-import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
-import org.chromium.components.content_settings.CookieControlsStatus;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -109,7 +109,6 @@ public class CustomTabToolbarUnitTest {
             new GURL("https://www.google.com/amp/s/www.nyt.com/ampthml/blogs.html");
 
     @Rule public MockitoRule mRule = MockitoJUnit.rule();
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock LocationBarModel mLocationBarModel;
     @Mock ActionMode.Callback mActionModeCallback;
@@ -118,9 +117,12 @@ public class CustomTabToolbarUnitTest {
     @Mock ToolbarDataProvider mToolbarDataProvider;
     @Mock ToolbarTabController mTabController;
     @Mock MenuButtonCoordinator mMenuButtonCoordinator;
+    @Mock private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
     @Mock HistoryDelegate mHistoryDelegate;
     @Mock BooleanSupplier mPartnerHomepageEnabledSupplier;
     @Mock OfflineDownloader mOfflineDownloader;
+    @Mock UserEducationHelper mUserEducationHelper;
+    @Mock Tracker mTracker;
     @Mock Tab mTab;
     @Mock Callback<Integer> mContainerVisibilityChangeObserver;
     @Mock View mParentView;
@@ -133,6 +135,8 @@ public class CustomTabToolbarUnitTest {
     private CustomTabLocationBar mLocationBar;
     private TextView mTitleBar;
     private TextView mUrlBar;
+    private ImageButton mSecurityButton;
+    private ImageButton mSecurityIcon;
 
     @Before
     public void setup() {
@@ -155,13 +159,18 @@ public class CustomTabToolbarUnitTest {
                 (CustomTabToolbar)
                         LayoutInflater.from(mActivity)
                                 .inflate(R.layout.custom_tabs_toolbar, null, false);
+        ObservableSupplierImpl<Tracker> trackerSupplier = new ObservableSupplierImpl<>();
+        trackerSupplier.set(mTracker);
         mToolbar.initialize(
                 mToolbarDataProvider,
                 mTabController,
                 mMenuButtonCoordinator,
+                mTabSwitcherButtonCoordinator,
                 mHistoryDelegate,
                 mPartnerHomepageEnabledSupplier,
-                mOfflineDownloader);
+                mOfflineDownloader,
+                mUserEducationHelper,
+                trackerSupplier);
 
         when(mFeatureOverridesManager.isFeatureEnabled(anyString())).thenReturn(null);
         mToolbar.setFeatureOverridesManager(mFeatureOverridesManager);
@@ -179,6 +188,8 @@ public class CustomTabToolbarUnitTest {
         mTitleBar = mToolbar.findViewById(R.id.title_bar);
         mLocationBar.setAnimDelegateForTesting(mAnimationDelegate);
         mLocationBar.setIPHControllerForTesting(mPageInfoIPHController);
+        mSecurityButton = mToolbar.findViewById(R.id.security_button);
+        mSecurityIcon = mToolbar.findViewById(R.id.security_icon);
     }
 
     @After
@@ -341,13 +352,11 @@ public class CustomTabToolbarUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void testMaximizeButton() {
         assertFalse(mToolbar.isMaximizeButtonEnabledForTesting());
         mToolbar.initSideSheetMaximizeButton(/* maximizedOnInit= */ false, () -> true);
         assertTrue(mToolbar.isMaximizeButtonEnabledForTesting());
-        var maximizeButton =
-                (ImageButton) mToolbar.findViewById(R.id.custom_tabs_sidepanel_maximize);
+        var maximizeButton = mToolbar.findViewById(R.id.custom_tabs_sidepanel_maximize);
 
         mToolbar.onFinishInflate();
         View titleUrlContainer = Mockito.mock(View.class);
@@ -386,7 +395,7 @@ public class CustomTabToolbarUnitTest {
         MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
         setup();
         LinearLayout closeMinimizeLayout = mToolbar.findViewById(R.id.close_minimize_layout);
-        var minimizeButton = (ImageButton) mToolbar.findViewById(R.id.custom_tabs_minimize_button);
+        ImageButton minimizeButton = mToolbar.findViewById(R.id.custom_tabs_minimize_button);
         View titleUrlContainer = Mockito.mock(View.class);
         when(titleUrlContainer.getLayoutParams())
                 .thenReturn(
@@ -421,8 +430,8 @@ public class CustomTabToolbarUnitTest {
     @DisableFeatures({ChromeFeatureList.CCT_MINIMIZED})
     public void testMinimizeButtonDisabled() {
         LinearLayout closeMinimizeLayout = mToolbar.findViewById(R.id.close_minimize_layout);
-        var minimizeButton = (ImageButton) mToolbar.findViewById(R.id.custom_tabs_minimize_button);
-        var closeButton = (ImageButton) mToolbar.findViewById(R.id.close_button);
+        ImageButton minimizeButton = mToolbar.findViewById(R.id.custom_tabs_minimize_button);
+        ImageButton closeButton = mToolbar.findViewById(R.id.close_button);
 
         // Button on left side
         assertNull("Minimize button should never be initialized", minimizeButton);
@@ -480,23 +489,6 @@ public class CustomTabToolbarUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
-    public void testHandleStrategy_ClickCloseListener() {
-        var strategy1 = new SimpleHandleStrategy(r -> {});
-        mToolbar.setHandleStrategy(strategy1);
-
-        View.OnClickListener listener = v -> {};
-        mToolbar.setCustomTabCloseClickHandler(listener);
-        assertNotNull(strategy1.getClickCloseHandlerForTesting());
-
-        var strategy2 = new SimpleHandleStrategy(r -> {});
-        // Another call to #setHandleStrategy which can come from device rotation.
-        // HandleStrategy should be initialized properly in response.
-        mToolbar.setHandleStrategy(strategy2);
-        assertNotNull(strategy2.getClickCloseHandlerForTesting());
-    }
-
-    @Test
     public void testContainerVisibilityChange() {
         // Self changes should be ignored.
         mToolbar.addContainerVisibilityChangeObserver(mContainerVisibilityChangeObserver);
@@ -514,10 +506,11 @@ public class CustomTabToolbarUnitTest {
     }
 
     @Test
-    public void testCookieControlsIcon_animateOnPageStoppedLoadingWithHighBreakageConfidence() {
+    public void testCookieControlsIcon_onHighlightCookieControl_animateOnPageStoppedLoading() {
         verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
 
-        mLocationBar.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
+        mLocationBar.onHighlightCookieControl(true);
+
         verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
         verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
 
@@ -525,36 +518,21 @@ public class CustomTabToolbarUnitTest {
         verify(mAnimationDelegate, times(1)).updateSecurityButton(R.drawable.ic_eye_crossed);
         verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
 
-        mLocationBar.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.LOW);
+        mLocationBar.onHighlightCookieControl(false);
         mLocationBar.onPageLoadStopped();
         verify(mAnimationDelegate, times(1)).updateSecurityButton(R.drawable.ic_eye_crossed);
         verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
     }
 
     @Test
-    public void testCookieControlsIcon_trackingProtectionsEnabled_cookieBlockingEnabled() {
+    public void
+            testCookieControlsIcon_trackingProtectionsEnabled_cookieBlockingDisabled_doesNotDisplayIPH() {
         verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
 
-        mLocationBar.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
+        mLocationBar.onHighlightCookieControl(true);
         mLocationBar.onStatusChanged(
-                CookieControlsStatus.ENABLED,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.LIMITED,
-                /* expiration= */ 0);
-
-        // Should show only the reminder IPH.
-        mLocationBar.onPageLoadStopped();
-        verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
-        verify(mPageInfoIPHController, times(1)).showCookieControlsReminderIPH(anyInt(), anyInt());
-    }
-
-    @Test
-    public void testCookieControlsIcon_trackingProtectionsEnabled_cookieBlockingDisabled() {
-        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
-
-        mLocationBar.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
-        mLocationBar.onStatusChanged(
-                CookieControlsStatus.DISABLED,
+                /* controls_visible= */ false,
+                /* protections_on= */ false,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.LIMITED,
                 /* expiration= */ 0);
@@ -562,16 +540,17 @@ public class CustomTabToolbarUnitTest {
         // None of the IPHs should be shown.
         mLocationBar.onPageLoadStopped();
         verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
-        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
     }
 
     @Test
-    public void testCookieControlsIcon_trackingProtectionDisabled_cookieBlockingEnabled() {
+    public void
+            testCookieControlsIcon_trackingProtectionDisabled_cookieBlockingEnabled_displaysCookieControlsIPH() {
         verify(mAnimationDelegate, never()).updateSecurityButton(anyInt());
 
-        mLocationBar.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
+        mLocationBar.onHighlightCookieControl(true);
         mLocationBar.onStatusChanged(
-                CookieControlsStatus.ENABLED,
+                /* controls_visible= */ true,
+                /* protections_on= */ true,
                 /* enforcement= */ 0,
                 CookieBlocking3pcdStatus.NOT_IN3PCD,
                 /* expiration= */ 0);
@@ -579,7 +558,56 @@ public class CustomTabToolbarUnitTest {
         // Should show only the Cookie controls IPH.
         mLocationBar.onPageLoadStopped();
         verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
-        verify(mPageInfoIPHController, never()).showCookieControlsReminderIPH(anyInt(), anyInt());
+    }
+
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.CCT_REVAMPED_BRANDING,
+        ChromeFeatureList.CCT_NESTED_SECURITY_ICON
+    })
+    public void testSecurityIconVisibility() {
+        assertEquals(View.INVISIBLE, mSecurityButton.getVisibility());
+        assertEquals(View.GONE, mSecurityIcon.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CCT_REVAMPED_BRANDING,
+        ChromeFeatureList.CCT_NESTED_SECURITY_ICON
+    })
+    public void testSecurityIconVisibility_nestedIcon() {
+        assertEquals(View.GONE, mSecurityButton.getVisibility());
+        assertEquals(View.INVISIBLE, mSecurityIcon.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CCT_REVAMPED_BRANDING,
+        ChromeFeatureList.CCT_NESTED_SECURITY_ICON
+    })
+    public void testSecurityIconHidden() {
+        when(mLocationBarModel.getSecurityIconResource(anyBoolean()))
+                .thenReturn(R.drawable.omnibox_https_valid_refresh);
+        when(mLocationBarModel.getSecurityLevel()).thenReturn(ConnectionSecurityLevel.SECURE);
+
+        mLocationBar.onSecurityStateChanged();
+
+        verify(mAnimationDelegate).updateSecurityButton(0);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.CCT_REVAMPED_BRANDING,
+        ChromeFeatureList.CCT_NESTED_SECURITY_ICON
+    })
+    public void testSecurityIconShown() {
+        when(mLocationBarModel.getSecurityIconResource(anyBoolean()))
+                .thenReturn(R.drawable.omnibox_info);
+        when(mLocationBarModel.getSecurityLevel()).thenReturn(ConnectionSecurityLevel.NONE);
+
+        mLocationBar.onSecurityStateChanged();
+
+        verify(mAnimationDelegate).updateSecurityButton(R.drawable.omnibox_info);
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {

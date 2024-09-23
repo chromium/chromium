@@ -135,7 +135,7 @@ bool AshNotificationDragController::CanStartDragForView(
        drag_area && drag_area->Contains(press_pt));
 
   // Assume that the drag on `sender` will start when `can_start_drag` is true.
-  // TODO(https://crbug.com/1410276): in some edge cases, the view drag does not
+  // TODO(crbug.com/40254274): in some edge cases, the view drag does not
   // start when `CanStartDragForView()` returns true. We should come up with a
   // general solution to observe drag start.
   if (can_start_drag) {

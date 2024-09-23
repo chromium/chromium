@@ -32,7 +32,7 @@ GURL AutofillImageFetcherImpl::ResolveCardArtURL(const GURL& card_art_url) {
   // metadata, and so cannot be fetched at different sizes. We defer handling
   // that URL to the base class.
   //
-  // TODO(crbug.com/1313616): Remove this once the server stops sending down
+  // TODO(crbug.com/40221039): Remove this once the server stops sending down
   // this static URL for some cards.
   if (card_art_url.spec() == kCapitalOneCardArtUrl) {
     return AutofillImageFetcher::ResolveCardArtURL(card_art_url);
@@ -59,7 +59,7 @@ gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
   // metadata, and so cannot be fetched at different sizes. We defer handling
   // those images to the base class.
   //
-  // TODO(crbug.com/1313616): Remove this once the server stops sending down
+  // TODO(crbug.com/40221039): Remove this once the server stops sending down
   // this static URL for some cards.
   if (card_art_url.spec() == kCapitalOneCardArtUrl) {
     return AutofillImageFetcher::ResolveCardArtImage(card_art_url,

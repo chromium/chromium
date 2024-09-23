@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -335,12 +334,6 @@ class HTMLMediaElementWithMockSchedulerTest
     EnablePlatform();
 
     s_platform_clock_ = GetTickClock();
-
-    if (!task_environment()) {
-      time_overrides_ =
-          std::make_unique<base::subtle::ScopedTimeClockOverrides>(
-              nullptr, &HTMLMediaElementWithMockSchedulerTest::Now, nullptr);
-    }
 
     // DocumentParserTiming has DCHECKS to make sure time > 0.0.
     AdvanceClock(base::Seconds(1));

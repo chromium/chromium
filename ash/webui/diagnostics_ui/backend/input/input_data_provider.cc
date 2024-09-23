@@ -17,6 +17,7 @@
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/diagnostics/keyboard_input_log.h"
 #include "ash/system/diagnostics/mojom/input.mojom.h"
+#include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
 #include "ash/webui/diagnostics_ui/backend/input/event_watcher_factory.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_event_watcher.h"
@@ -154,7 +155,8 @@ void InputDataProvider::GetConnectedDevices(
   bool has_internal_keyboard = false;
   for (const ui::KeyboardDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
-    if (keyboard.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
+    if (keyboard.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL &&
+        !IsSplitModifierKeyboard(keyboard.id)) {
       has_internal_keyboard = true;
       break;
     }
@@ -585,6 +587,11 @@ void InputDataProvider::AddKeyboard(const InputDeviceInformation* device_info) {
       keyboard_helper_.ConstructKeyboard(device_info, aux_data.get());
   const bool is_internal_keyboard =
       keyboard->connection_type == mojom::ConnectionType::kInternal;
+  // Don't add keyboard if internal keyboard is a split modifier keyboard.
+  if (is_internal_keyboard &&
+      IsSplitModifierKeyboard(device_info->input_device.id)) {
+    return;
+  }
   if (!features::IsExternalKeyboardInDiagnosticsAppEnabled() &&
       !is_internal_keyboard) {
     return;

@@ -5,6 +5,7 @@
 package org.chromium.base.test.transit;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.ConditionStatus.Status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,120 +13,101 @@ import java.util.List;
 /** Spot checks multiple {@link Condition}s to assert preconditions are still valid. */
 public class ConditionChecker {
 
-    /** The fulfillment status of a {@link Condition} being checked once. */
-    private static class ConditionCheckStatus {
+    /** The process of checking a {@link Condition} only once. */
+    private static class ConditionCheck {
 
         private final Condition mCondition;
-        private boolean mFulfilled;
-        private String mError;
+        private ConditionStatus mStatus;
 
-        private ConditionCheckStatus(Condition condition) {
+        private ConditionCheck(Condition condition) {
             mCondition = condition;
         }
 
         private boolean update() {
             try {
-                boolean fulfilled;
                 if (mCondition.isRunOnUiThread()) {
-                    // TODO(crbug.com/1489445): Post multiple checks in parallel, the UI thread will
+                    // TODO(crbug.com/40284026): Post multiple checks in parallel, the UI thread
+                    // will
                     // run them sequentially.
-                    fulfilled = ThreadUtils.runOnUiThreadBlocking(mCondition::check);
+                    mStatus = ThreadUtils.runOnUiThreadBlocking(mCondition::check);
                 } else {
-                    fulfilled = mCondition.check();
-                }
-
-                if (fulfilled) {
-                    reportFulfilled();
-                    return false;
-                } else {
-                    reportUnfulfilled();
-                    return true;
+                    mStatus = mCondition.check();
                 }
             } catch (Exception e) {
-                reportError(e);
-                return true;
+                mStatus = Condition.error(e.toString());
             }
+
+            return mStatus.isError() || !mStatus.isFulfilled();
         }
 
-        private void reportFulfilled() {
-            mFulfilled = true;
-        }
-
-        private void reportUnfulfilled() {
-            mFulfilled = false;
-        }
-
-        private void reportError(Exception e) {
-            mError = e.getMessage();
-        }
-
-        private boolean isFulfilled() {
-            return mFulfilled;
-        }
-
-        private String getError() {
-            return mError;
+        private ConditionStatus getConditionStatus() {
+            return mStatus;
         }
     }
 
     /**
      * Spot checks each of the {@link Condition}s.
      *
+     * @param stateName the name of the state whose conditions we are checking.
      * @param conditions the {@link Condition}s to check.
      * @throws AssertionError if not all Conditions are fulfilled.
      */
-    public static void check(List<Condition> conditions) {
+    public static void check(String stateName, List<Condition> conditions) {
         boolean anyCriteriaMissing = false;
-        List<ConditionCheckStatus> checkStatuses = new ArrayList<>();
+        List<ConditionCheck> checks = new ArrayList<>();
         for (Condition condition : conditions) {
-            checkStatuses.add(new ConditionCheckStatus(condition));
+            checks.add(new ConditionCheck(condition));
         }
 
-        for (ConditionCheckStatus status : checkStatuses) {
-            anyCriteriaMissing |= status.update();
+        for (ConditionCheck check : checks) {
+            anyCriteriaMissing |= check.update();
         }
 
         if (anyCriteriaMissing) {
-            throw buildCheckConditionsException(checkStatuses);
+            throw buildCheckConditionsException(stateName, checks);
         }
     }
 
     private static AssertionError buildCheckConditionsException(
-            List<ConditionCheckStatus> checkStatuses) {
+            String stateName, List<ConditionCheck> checks) {
         return new AssertionError(
-                "Preconditions not fulfilled:\n" + createCheckConditionsSummary(checkStatuses));
+                "Preconditions not fulfilled for "
+                        + stateName
+                        + ":\n"
+                        + createCheckConditionsSummary(checks));
     }
 
-    private static String createCheckConditionsSummary(List<ConditionCheckStatus> checkStatuses) {
+    private static String createCheckConditionsSummary(List<ConditionCheck> checks) {
         StringBuilder detailsString = new StringBuilder();
 
         int i = 1;
-        for (ConditionCheckStatus checkStatus : checkStatuses) {
-            String conditionDescription = checkStatus.mCondition.getDescription();
+        for (ConditionCheck check : checks) {
+            String conditionDescription = check.mCondition.getDescription();
 
-            String error = checkStatus.getError();
-            String errorsString = null;
-            String statusString;
-            if (error != null) {
-                errorsString = String.format(" {error: %s}", error);
-                statusString = "[ERR ]";
-            } else {
-                if (checkStatus.isFulfilled()) {
-                    statusString = "[OK  ]";
-                } else {
-                    statusString = "[FAIL]";
-                }
+            ConditionStatus status = check.getConditionStatus();
+            String verdictString =
+                    switch (status.getStatus()) {
+                        case Status.FULFILLED -> "[OK  ]";
+                        case Status.NOT_FULFILLED -> "[FAIL]";
+                        case Status.ERROR -> "[ERR ]";
+                        default -> null;
+                    };
+
+            StringBuilder historyString = new StringBuilder();
+            if (status.getMessage() != null) {
+                historyString.append("\n        ");
+                historyString.append(status.getMessage());
             }
 
             detailsString
                     .append("    [")
                     .append(i)
                     .append(" ")
-                    .append(statusString)
+                    .append(verdictString)
                     .append(" ")
                     .append(conditionDescription);
-            if (errorsString != null) {
-                detailsString.append(" ").append(errorsString);
+            if (historyString.length() > 0) {
+                detailsString.append(historyString);
             }
             detailsString.append('\n');
             i++;

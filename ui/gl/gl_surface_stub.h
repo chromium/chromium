@@ -17,10 +17,6 @@ class GL_EXPORT GLSurfaceStub : public GLSurface {
   void SetSize(const gfx::Size& size) { size_ = size; }
   void set_buffers_flipped(bool flipped) { buffers_flipped_ = flipped; }
 
-  void set_supports_draw_rectangle(bool support) {
-    supports_draw_rectangle_ = support;
-  }
-
   // Implement GLSurface.
   void Destroy() override;
   bool Resize(const gfx::Size& size,
@@ -34,8 +30,6 @@ class GL_EXPORT GLSurfaceStub : public GLSurface {
   void* GetHandle() override;
   bool BuffersFlipped() const override;
   GLSurfaceFormat GetFormat() override;
-  bool SupportsDCLayers() const override;
-  gfx::Vector2d GetDrawOffset() const override;
 
  protected:
   ~GLSurfaceStub() override;
@@ -43,7 +37,6 @@ class GL_EXPORT GLSurfaceStub : public GLSurface {
  private:
   gfx::Size size_;
   bool buffers_flipped_ = false;
-  bool supports_draw_rectangle_ = false;
 };
 
 }  // namespace gl

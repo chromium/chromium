@@ -382,7 +382,7 @@ bool ChannelNacl::DidEmptyInputBuffers() {
 void ChannelNacl::HandleInternalMessage(const Message& msg) {
   // The trusted side IPC::Channel should handle the "hello" handshake; we
   // should not receive the "Hello" message.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Channel's methods

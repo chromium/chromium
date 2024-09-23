@@ -7,8 +7,9 @@
 // A good article:  http://www.ddj.com/windows/184416651
 // A good mozilla bug:  http://bugzilla.mozilla.org/show_bug.cgi?id=363258
 //
-// The default windows timer, GetSystemTimeAsFileTime is not very precise.
-// It is only good to ~15.5ms.
+// The default windows timer, GetSystemTimePreciseAsFileTime is quite precise.
+// However it is not always fast on some hardware and is slower than the
+// performance counters.
 //
 // QueryPerformanceCounter is the logical choice for a high-precision timer.
 // However, it is known to be buggy on some hardware.  Specifically, it can
@@ -41,7 +42,7 @@
 #include <atomic>
 #include <cstdint>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/bit_cast.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"
@@ -77,7 +78,7 @@ FILETIME MicrosecondsToFileTime(int64_t us) {
 
 int64_t CurrentWallclockMicroseconds() {
   FILETIME ft;
-  ::GetSystemTimeAsFileTime(&ft);
+  ::GetSystemTimePreciseAsFileTime(&ft);
   return FileTimeToMicroseconds(ft);
 }
 
@@ -113,8 +114,8 @@ Time TimeNowIgnoringOverride() {
   }
 
   // We implement time using the high-resolution timers so that we can get
-  // timeouts which are smaller than 10-15ms.  If we just used
-  // CurrentWallclockMicroseconds(), we'd have the less-granular timer.
+  // timeouts which likely are smaller than those if we just used
+  // CurrentWallclockMicroseconds().
   //
   // To make this work, we initialize the clock (g_initial_time) and the
   // counter (initial_ctr).  To compute the initial time, we can check
@@ -410,7 +411,7 @@ ThreadTicks ThreadTicks::GetForThread(
     const PlatformThreadHandle& thread_handle) {
   PA_BASE_DCHECK(IsSupported());
 
-#if defined(ARCH_CPU_ARM64)
+#if PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
   // QueryThreadCycleTime versus TSCTicksPerSecond doesn't have much relation to
   // actual elapsed time on Windows on Arm, because QueryThreadCycleTime is
   // backed by the actual number of CPU cycles executed, rather than a
@@ -444,7 +445,7 @@ ThreadTicks ThreadTicks::GetForThread(
 
 // static
 bool ThreadTicks::IsSupportedWin() {
-#if defined(ARCH_CPU_ARM64)
+#if PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
   // The Arm implementation does not use QueryThreadCycleTime and therefore does
   // not care about the time stamp counter.
   return true;
@@ -455,7 +456,7 @@ bool ThreadTicks::IsSupportedWin() {
 
 // static
 void ThreadTicks::WaitUntilInitializedWin() {
-#if !defined(ARCH_CPU_ARM64)
+#if !PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
   while (time_internal::TSCTicksPerSecond() == 0) {
     ::Sleep(10);
   }
@@ -491,7 +492,7 @@ ABI::Windows::Foundation::DateTime TimeDelta::ToWinrtDateTime() const {
   return date_time;
 }
 
-#if !defined(ARCH_CPU_ARM64)
+#if !PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
 namespace time_internal {
 
 bool HasConstantRateTSC() {
@@ -560,6 +561,6 @@ double TSCTicksPerSecond() {
 }
 
 }  // namespace time_internal
-#endif  // defined(ARCH_CPU_ARM64)
+#endif  // PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
 
 }  // namespace partition_alloc::internal::base

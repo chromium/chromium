@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ChromeSigninInterceptionParameters, DiceWebSigninInterceptBrowserProxy, InterceptionParameters} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_browser_proxy.js';
+import type {ChromeSigninInterceptionParameters, DiceWebSigninInterceptBrowserProxy, InterceptionParameters} from 'chrome://signin-dice-web-intercept.top-chrome/dice_web_signin_intercept_browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
@@ -30,17 +30,20 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
       headerTextColor: '',
       interceptedProfileColor: '',
       primaryProfileColor: '',
-      interceptedAccount: {isManaged: false, pictureUrl: ''},
-      primaryAccount: {isManaged: false, pictureUrl: ''},
+      interceptedAccount: {pictureUrl: '', avatarBadge: ''},
+      primaryAccount: {pictureUrl: '', avatarBadge: ''},
       useV2Design: false,
       showManagedDisclaimer: false,
     };
 
     this.chromeSigninInterceptionParameters_ = {
+      title: '',
+      subtitle: '',
       fullName: '',
       givenName: '',
       email: '',
       pictureUrl: '',
+      managedUserBadge: '',
     };
   }
 

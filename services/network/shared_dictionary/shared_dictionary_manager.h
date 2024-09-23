@@ -6,9 +6,11 @@
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_MANAGER_H_
 
 #include <map>
+#include <memory>
 
 #include "base/component_export.h"
 #include "base/containers/lru_cache.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
@@ -16,8 +18,9 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/disk_cache/disk_cache.h"
-#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
+#include "net/shared_dictionary/shared_dictionary_getter.h"
+#include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace base {
@@ -31,7 +34,10 @@ class BackendFileOperationsFactory;
 namespace network {
 namespace cors {
 class CorsURLLoaderSharedDictionaryTest;
-}
+}  // namespace cors
+namespace mojom {
+enum class RequestDestination;
+}  // namespace mojom
 
 class SharedDictionaryStorage;
 
@@ -92,6 +98,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
       base::Time end_time,
       base::OnceCallback<void(const std::vector<url::Origin>&)> callback) = 0;
 
+  net::SharedDictionaryGetter MaybeCreateSharedDictionaryGetter(
+      int request_load_flags,
+      mojom::RequestDestination request_destination);
+
+  void PreloadSharedDictionaryInfoForDocument(
+      const std::vector<GURL>& urls,
+      mojo::PendingReceiver<mojom::PreloadedSharedDictionaryInfoHandle>
+          preload_handle);
+  bool HasPreloadedSharedDictionaryInfo() const;
+
  protected:
   SharedDictionaryManager();
 
@@ -99,6 +115,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
   // called only when there is no matching storage in `storages_`.
   virtual scoped_refptr<SharedDictionaryStorage> CreateStorage(
       const net::SharedDictionaryIsolationKey& isolation_key) = 0;
+
+  scoped_refptr<net::SharedDictionary> GetDictionaryImpl(
+      mojom::RequestDestination request_destination,
+      const std::optional<net::SharedDictionaryIsolationKey>& isolation_key,
+      const GURL& request_url);
 
   base::WeakPtr<SharedDictionaryManager> GetWeakPtr();
 
@@ -109,11 +130,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
 
  private:
   friend class cors::CorsURLLoaderSharedDictionaryTest;
+  class PreloadedDictionaries;
 
   size_t GetStorageCountForTesting();
 
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
+
+  void DeletePreloadedDictionaries(
+      PreloadedDictionaries* preloaded_dictionaries);
 
   base::LRUCache<net::SharedDictionaryIsolationKey,
                  scoped_refptr<SharedDictionaryStorage>>
@@ -124,6 +149,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
 
   std::map<net::SharedDictionaryIsolationKey, raw_ptr<SharedDictionaryStorage>>
       storages_;
+  std::set<std::unique_ptr<PreloadedDictionaries>, base::UniquePtrComparator>
+      preloaded_dictionaries_set_;
 
   base::WeakPtrFactory<SharedDictionaryManager> weak_factory_{this};
 };
@@ -143,6 +170,7 @@ network::mojom::SharedDictionaryInfoPtr ToMojoSharedDictionaryInfo(
   std::sort(mojo_info->match_dest.begin(), mojo_info->match_dest.end());
   mojo_info->id = info.id();
   mojo_info->dictionary_url = info.url();
+  mojo_info->last_fetch_time = info.last_fetch_time();
   mojo_info->response_time = info.response_time();
   mojo_info->expiration = info.expiration();
   mojo_info->last_used_time = info.last_used_time();

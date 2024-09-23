@@ -20,7 +20,7 @@ class NoOpkeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
     }
 
     @Override
-    public int calculateKeyboardHeight(View view) {
+    public int calculateTotalKeyboardHeight(View view) {
         return 0;
     }
 

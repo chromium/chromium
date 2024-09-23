@@ -34,7 +34,7 @@ class TestObject {
   ~TestObject() { ++(*counter_); }
 
  private:
-  raw_ptr<int, ExperimentalRenderer> counter_;
+  raw_ptr<int> counter_;
 };
 
 }  // namespace

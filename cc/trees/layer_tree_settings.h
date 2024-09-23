@@ -30,6 +30,17 @@ class CC_EXPORT LayerTreeSettings {
   SchedulerSettings ToSchedulerSettings() const;
   TileManagerSettings ToTileManagerSettings() const;
 
+  // If true, this tree doesn't draw itself. Instead upon activation it pushes
+  // differential updates to a remote (GPU-side) display tree which is drawn
+  // using tile resources prepared by this tree.
+  bool UseLayerContextForDisplay() const;
+
+  // If true, this is a GPU-side display tree receiving updates from a remote
+  // client via the LayerContext API. Such trees do no raster work of their own
+  // and submit compositor frames directly within Viz using tiles rastered by
+  // the remote client.
+  bool is_display_tree = false;
+
   bool single_thread_proxy_scheduler = true;
   bool main_frame_before_activation_enabled = false;
   bool using_synchronous_renderer_compositor = false;
@@ -124,8 +135,8 @@ class CC_EXPORT LayerTreeSettings {
   // rendered in a different process from its ancestor frames.
   bool is_for_embedded_frame = false;
 
-  // Indicates when the LayerTree is for a portal element, GuestView, or top
-  // level frame. In all these cases we may have a page scale.
+  // Indicates when the LayerTree is for a GuestView or top level frame. In all
+  // these cases we may have a page scale.
   bool is_for_scalable_page = true;
 
   // Determines whether we disallow non-exact matches when finding resources
@@ -166,11 +177,6 @@ class CC_EXPORT LayerTreeSettings {
   // Whether SetViewportRectAndScale should update the painted scale factor or
   // the device scale factor.
   bool use_painted_device_scale_factor = false;
-
-  // When true, LayerTreeHostImplClient will be posting a task to call
-  // DidReceiveCompositorFrameAck, used by the Compositor but not the
-  // LayerTreeView.
-  bool send_compositor_frame_ack = true;
 
   // When false, scroll deltas accumulated on the impl thread are rounded to
   // integer values when sent to Blink on commit. This flag should eventually
@@ -219,7 +225,7 @@ class CC_EXPORT LayerTreeSettings {
   bool disable_frame_rate_limit = false;
 
   // Enables shared image cache for gpu.
-  // TODO(crbug.com/1378251): not ready to be used by renderer cc instance yet.
+  // TODO(crbug.com/40243842): not ready to be used by renderer cc instance yet.
   bool enable_shared_image_cache_for_gpu = false;
 
   // Maximum size for buffers allocated for rendering when GPU compositing is
@@ -227,13 +233,12 @@ class CC_EXPORT LayerTreeSettings {
   // This is an arbitrary limit here similar to what hardware might have.
   int max_render_buffer_bounds_for_sw = 16 * 1024;
 
+  // Whether the client supports HitTestOpaqueness::kOpaque. If yes, cc will
+  // respect the flag and optimize scroll hit testing.
+  bool enable_hit_test_opaqueness = false;
+
   // Whether to use variable refresh rates when generating begin frames.
   bool enable_variable_refresh_rate = false;
-};
-
-class CC_EXPORT LayerListSettings : public LayerTreeSettings {
- public:
-  LayerListSettings() { use_layer_lists = true; }
 };
 
 }  // namespace cc

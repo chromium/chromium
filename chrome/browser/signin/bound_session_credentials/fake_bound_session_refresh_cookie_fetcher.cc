@@ -35,9 +35,11 @@ FakeBoundSessionRefreshCookieFetcher::~FakeBoundSessionRefreshCookieFetcher() =
     default;
 
 void FakeBoundSessionRefreshCookieFetcher::Start(
-    RefreshCookieCompleteCallback callback) {
+    RefreshCookieCompleteCallback callback,
+    std::optional<std::string> sec_session_challenge_response) {
   DCHECK(!callback_);
   callback_ = std::move(callback);
+  sec_session_challenge_response_ = std::move(sec_session_challenge_response);
 
   if (unlock_automatically_in_.has_value()) {
     const base::TimeDelta kMaxAge = base::Minutes(10);
@@ -50,6 +52,23 @@ void FakeBoundSessionRefreshCookieFetcher::Start(
                        base::Time::Now() + kMaxAge),
         unlock_automatically_in_.value());
   }
+}
+
+bool FakeBoundSessionRefreshCookieFetcher::IsChallengeReceived() const {
+  return false;
+}
+
+std::optional<std::string>
+FakeBoundSessionRefreshCookieFetcher::TakeSecSessionChallengeResponseIfAny() {
+  std::optional<std::string> response =
+      std::move(sec_session_challenge_response_);
+  sec_session_challenge_response_.reset();
+  return response;
+}
+
+void FakeBoundSessionRefreshCookieFetcher::set_sec_session_challenge_response(
+    std::string sec_session_challenge_response) {
+  sec_session_challenge_response_ = std::move(sec_session_challenge_response);
 }
 
 void FakeBoundSessionRefreshCookieFetcher::SimulateCompleteRefreshRequest(
@@ -135,7 +154,7 @@ FakeBoundSessionRefreshCookieFetcher::CreateFakeCookie(
           /*last_access_time=*/now, /*secure=*/true,
           /*http_only=*/true, net::CookieSameSite::UNSPECIFIED,
           net::CookiePriority::COOKIE_PRIORITY_HIGH,
-          /*partition_key=*/std::nullopt);
+          /*partition_key=*/std::nullopt, /*status=*/nullptr);
 
   DCHECK(new_cookie);
   return new_cookie;

@@ -9,7 +9,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "components/ntp_tiles/ntp_tile.h"
-#import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
+#import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_provider.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
@@ -209,7 +209,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, SaveMostVisitedToDisk) {
   VerifyWithImage(image_saved_tile, image_title, image_url);
 }
 
-// TODO(crbug.com/1478989): reenable this test.
+// TODO(crbug.com/40071361): reenable this test.
 TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateSingleFaviconFallback) {
   // Set up test with 3 saved sites, 2 of which have a favicon.
   ntp_tiles::NTPTile image_tile1 = ntp_tiles::NTPTile();

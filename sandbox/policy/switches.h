@@ -7,9 +7,9 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/export.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/assistant/buildflags.h"
@@ -42,6 +42,7 @@ SANDBOX_POLICY_EXPORT extern const char kServiceSandboxWithJit[];
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 SANDBOX_POLICY_EXPORT extern const char kScreenAISandbox[];
 #endif
+SANDBOX_POLICY_EXPORT extern const char kVideoEffectsSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kSpeechRecognitionSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kVideoCaptureSandbox[];
 
@@ -67,6 +68,7 @@ SANDBOX_POLICY_EXPORT extern const char kHardwareVideoEncodingSandbox[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 SANDBOX_POLICY_EXPORT extern const char kImeSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kTtsSandbox[];
+SANDBOX_POLICY_EXPORT extern const char kNearbySandbox[];
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 SANDBOX_POLICY_EXPORT extern const char kLibassistantSandbox[];
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -103,6 +105,7 @@ SANDBOX_POLICY_EXPORT extern const char kRendererProcess[];
 SANDBOX_POLICY_EXPORT extern const char kUtilityProcess[];
 SANDBOX_POLICY_EXPORT extern const char kZygoteProcessType[];
 SANDBOX_POLICY_EXPORT extern const char kRelauncherProcessType[];
+SANDBOX_POLICY_EXPORT extern const char kCodeSignCloneCleanupProcessType[];
 
 }  // namespace switches
 }  // namespace policy

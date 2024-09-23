@@ -9,6 +9,8 @@
 
 namespace ash::enrollment {
 
+inline constexpr char kWidgetName[] = "EnrollmentDialogWidget";
+
 // Creates and shows the dialog for certificate-based network enrollment.
 bool CreateEnrollmentDialog(const std::string& network_id);
 

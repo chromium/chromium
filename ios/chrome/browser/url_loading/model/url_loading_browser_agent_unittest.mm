@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
@@ -50,13 +50,12 @@ namespace {
 class URLLoadingBrowserAgentTest : public BlockCleanupTest {
  public:
   URLLoadingBrowserAgentTest() {
-    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
-    otr_browser_state_ =
-        chrome_browser_state_->GetOffTheRecordChromeBrowserState();
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    otr_profile_ = profile_->GetOffTheRecordProfile();
     url_loading_delegate_ = [[URLLoadingTestDelegate alloc] init];
     scene_loader_ = std::make_unique<TestSceneUrlLoadingService>();
-    otr_browser_ = std::make_unique<TestBrowser>(otr_browser_state_);
+    otr_browser_ = std::make_unique<TestBrowser>(otr_profile_);
 
     // Configure app service.
     scene_loader_->current_browser_ = browser_.get();
@@ -92,11 +91,11 @@ class URLLoadingBrowserAgentTest : public BlockCleanupTest {
   void TearDown() override {
     // Cleanup to avoid debugger crash in non empty observer lists.
     WebStateList* web_state_list = browser_->GetWebStateList();
-    web_state_list->CloseAllWebStates(
-        WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+    CloseAllWebStates(*web_state_list,
+                      WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
     WebStateList* otr_web_state_list = otr_browser_->GetWebStateList();
-    otr_web_state_list->CloseAllWebStates(
-        WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+    CloseAllWebStates(*otr_web_state_list,
+                      WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
 
     BlockCleanupTest::TearDown();
   }
@@ -104,17 +103,17 @@ class URLLoadingBrowserAgentTest : public BlockCleanupTest {
   // Returns a new unique_ptr containing a test webstate.
   std::unique_ptr<web::FakeWebState> CreateFakeWebState() {
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(chrome_browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     return web_state;
   }
 
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  raw_ptr<ChromeBrowserState> otr_browser_state_;
+  raw_ptr<ProfileIOS> otr_profile_;
   URLLoadingTestDelegate* url_loading_delegate_;
   std::unique_ptr<TestSceneUrlLoadingService> scene_loader_;
   raw_ptr<UrlLoadingBrowserAgent> loader_;
@@ -260,8 +259,8 @@ TEST_F(URLLoadingBrowserAgentTest, TestOpenInCurrentIncognitoTab) {
   ASSERT_EQ(0, otr_web_state_list->count());
 
   // Make app level to be otr.
-  std::unique_ptr<TestBrowser> otr_browser = std::make_unique<TestBrowser>(
-      chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+  std::unique_ptr<TestBrowser> otr_browser =
+      std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
   scene_loader_->current_browser_ = otr_browser.get();
 
   // Set a new tab.
@@ -302,8 +301,8 @@ TEST_F(URLLoadingBrowserAgentTest, TestOpenInNewIncognitoTab) {
   WebStateList* otr_web_state_list = otr_browser_->GetWebStateList();
   ASSERT_EQ(0, otr_web_state_list->count());
 
-  std::unique_ptr<TestBrowser> otr_browser = std::make_unique<TestBrowser>(
-      chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+  std::unique_ptr<TestBrowser> otr_browser =
+      std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
   scene_loader_->current_browser_ = otr_browser.get();
 
   GURL url1("http://test/1");
@@ -333,8 +332,8 @@ TEST_F(URLLoadingBrowserAgentTest, TestOpenNormalInNewTabWithIncognitoService) {
   WebStateList* otr_web_state_list = otr_browser_->GetWebStateList();
   ASSERT_EQ(0, otr_web_state_list->count());
 
-  std::unique_ptr<TestBrowser> otr_browser = std::make_unique<TestBrowser>(
-      chrome_browser_state_->GetOffTheRecordChromeBrowserState());
+  std::unique_ptr<TestBrowser> otr_browser =
+      std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
   scene_loader_->current_browser_ = otr_browser.get();
 
   // Send to right service.

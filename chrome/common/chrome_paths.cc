@@ -174,7 +174,7 @@ bool PathProvider(int key, base::FilePath* result) {
       return base::PathService::Get(chrome::DIR_USER_DATA, result);
 #else
       // Debug builds write next to the binary (in the build tree)
-      // TODO(crbug.com/1262330): implement workable solution for Fuchsia.
+      // TODO(crbug.com/40202595): implement workable solution for Fuchsia.
 #if BUILDFLAG(IS_MAC)
       // Apps may not write into their own bundle.
       if (base::apple::AmIBundled()) {
@@ -337,7 +337,7 @@ bool PathProvider(int key, base::FilePath* result) {
         return false;
       }
 #else
-      // TODO(crbug.com/1325862): Migrate Windows to use `DIR_USER_DATA` like
+      // TODO(crbug.com/40840089): Migrate Windows to use `DIR_USER_DATA` like
       // other platforms.
       if (!base::PathService::Get(base::DIR_EXE, &cur)) {
         return false;
@@ -419,10 +419,7 @@ bool PathProvider(int key, base::FilePath* result) {
     case chrome::DIR_COMPONENT_UPDATED_WIDEVINE_CDM: {
       int components_dir =
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kEnableLacrosSharedComponentsDir)
-              ? static_cast<int>(chromeos::lacros_paths::LACROS_SHARED_DIR)
-              : static_cast<int>(chrome::DIR_USER_DATA);
+          static_cast<int>(chromeos::lacros_paths::LACROS_SHARED_DIR);
 #else
           chrome::DIR_USER_DATA;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -550,7 +547,7 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
     }
 #endif
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
 // complete.
 #if BUILDFLAG(IS_CHROMEOS_ASH) ||                              \
     ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
@@ -571,10 +568,6 @@ bool PathProvider(int key, base::FilePath* result) {
     }
 #endif
     case chrome::DIR_EXTERNAL_EXTENSIONS:
-#if BUILDFLAG(IS_FUCHSIA)
-      // TODO(crbug.com/1241872): Support external extensions.
-      return false;
-#else
 #if BUILDFLAG(IS_MAC)
       if (!chrome::GetGlobalApplicationSupportDirectory(&cur)) {
         return false;
@@ -592,13 +585,8 @@ bool PathProvider(int key, base::FilePath* result) {
       create_dir = true;
 #endif
       break;
-#endif
 
     case chrome::DIR_DEFAULT_APPS:
-#if BUILDFLAG(IS_FUCHSIA)
-      // TODO(crbug.com/1241872): Support default-installed apps.
-      return false;
-#else
 #if BUILDFLAG(IS_MAC)
       cur = base::apple::FrameworkBundlePath();
       cur = cur.Append(FILE_PATH_LITERAL("Default Apps"));
@@ -609,7 +597,6 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = cur.Append(FILE_PATH_LITERAL("default_apps"));
 #endif
       break;
-#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC))

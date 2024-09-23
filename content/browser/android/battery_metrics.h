@@ -38,7 +38,8 @@ class AndroidBatteryMetrics
   void OnVisibilityChanged(bool visible) override;
 
   // base::PowerStateObserver implementation:
-  void OnPowerStateChange(bool on_battery_power) override;
+  void OnBatteryPowerStatusChange(base::PowerStateObserver::BatteryPowerStatus
+                                      battery_power_status) override;
 
   // base::PowerThermalObserver implementation:
   void OnThermalStateChange(DeviceThermalState new_state) override;
@@ -59,7 +60,8 @@ class AndroidBatteryMetrics
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   bool app_visible_ = false;
-  bool on_battery_power_ = false;
+  PowerStateObserver::BatteryPowerStatus battery_power_status_ =
+      PowerStateObserver::BatteryPowerStatus::kUnknown;
   int last_remaining_capacity_uah_ = 0;
   base::RepeatingTimer metrics_timer_;
   int skipped_timers_ = 0;

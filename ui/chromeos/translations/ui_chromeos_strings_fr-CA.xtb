@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Hôte SOCKS</translation>
 <translation id="3104793765551262433">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puissance du signal <ph name="SIGNAL_STRENGTH" /> %, bloqué par votre administrateur, détails</translation>
-<translation id="3113153474486991170">Impossible d'ouvrir « <ph name="PATH" /> » à partir de cet endroit. Veuillez copier l'élément sous « Mes fichiers » pour l'ouvrir.</translation>
 <translation id="3113592018909187986">Il vous reste une tentative. Vous ne pourrez pas utiliser ce réseau tant que vous n'aurez pas configuré un nouveau NIP.</translation>
 <translation id="3124404833828281817">Personne rêvassant</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Annuler <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, non activé, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, renseignements</translation>
 <translation id="3691184985318546178">Singhalais</translation>
+<translation id="3702842351052426940">Il se peut que votre carte SIM ou votre profil eSIM soient désactivés. Essayez de remplacer votre carte SIM ou de changer de profil eSIM.</translation>
 <translation id="3722341589402358578">Une erreur s'est produite. Il est possible que certains éléments n'aient pas été placés dans la corbeille.</translation>
 <translation id="3726463242007121105">Impossible d'ouvrir cet appareil, car son système de fichiers n'est pas compatible.</translation>
 <translation id="3727148787322499904">La modification de ce paramètre aura des conséquences sur tous les réseaux partagés</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Votre administrateur impose ces paramètres de mandataire</translation>
 <translation id="3830674330436234648">Aucune lecture disponible</translation>
 <translation id="383652340667548381">Serbe</translation>
+<translation id="3839045880592694915">Votre modem n'est pas autorisé à se connecter par votre opérateur. Communiquez avec votre opérateur pour plus de détails.</translation>
 <translation id="385051799172605136">Retour</translation>
-<translation id="3851491607336266896">Connecté, connectivité limitée</translation>
 <translation id="3855472144336161447">Allemand (Neo 2)</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3866249974567520381">Description</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Les fichiers Microsoft récemment ouverts ont été déplacés vers OneDrive</translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4017788180641807848">Anglais (É.-U.) avec clavier Workman</translation>
-<translation id="4019998208269143058">Épingler à l'accès rapide aux fichiers</translation>
 <translation id="4040753847560036377">Clé personnelle de déblocage incorrecte</translation>
 <translation id="4057991113334098539">Activation en cours…</translation>
 <translation id="4092890906744441904">Irlandais</translation>
+<translation id="4101601646343868113">Connectez-vous à votre réseau cellulaire et confirmez que votre forfait de données cellulaires est actif</translation>
 <translation id="4124731372776320263">Synchronisation de 1 fichier Disque en cours…</translation>
 <translation id="4124935795427217608">Licorne</translation>
 <translation id="4131235941541910880">Mettre les éléments inutiles dans la corbeille.</translation>
@@ -607,6 +607,7 @@
 <translation id="5625294776298156701">Tamoul avec clavier Tamil99</translation>
 <translation id="5633226425545095130">En déplaçant cet élément, vous le partagerez avec quiconque peut accéder au dossier partagé « <ph name="DESTINATION_NAME" /> ».</translation>
 <translation id="5649768706273821470">Écouter</translation>
+<translation id="5650895901941743674">Vérifiez votre configuration APN</translation>
 <translation id="5669691691057771421">Entrez le nouveau NIP</translation>
 <translation id="5678784840044122290">L'application Linux sera disponible dans votre terminal et une icône peut également s'afficher dans votre lanceur d'applications.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Déconnexion à partir d'une archive ou d'un disque virtuel impossible<ph name="END_BOLD" />
@@ -686,6 +687,7 @@
 <translation id="6267547857941397424">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, pile du téléphone : <ph name="BATTERY_STATUS" /> %, connexion</translation>
 <translation id="6269630227984243955">Malais</translation>
 <translation id="6271903698064569429">Impossible de téléverser les fichiers, car « <ph name="SHARED_DRIVE_NAME" /> » n'a pas assez d'espace de stockage.</translation>
+<translation id="6279140785485544797">Votre forfait de données cellulaires est peut-être expiré. Communiquez avec votre opérateur pour obtenir de l'aide.</translation>
 <translation id="6287852322318138013">Sélectionner une application pour ouvrir ce fichier</translation>
 <translation id="6295542640242147836">Verrouiller la carte SIM</translation>
 <translation id="6296410173147755564">Clé personnelle de déblocage incorrecte</translation>
@@ -695,7 +697,6 @@
 <translation id="6320212353742551423">Archive <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Signe de la main</translation>
 <translation id="6327785803543103246">Découverte automatique de mandataire Web</translation>
-<translation id="6337014272874260727">Annuler l'épinglage de l'accès rapide aux fichiers</translation>
 <translation id="6339145975392024142">Américain international (PC)</translation>
 <translation id="6356685157277930264">Fenêtre de commentaires pour Fichiers</translation>
 <translation id="6358884629796491903">Dragon</translation>
@@ -741,6 +742,7 @@
 <translation id="6750737795876287924">Répertoire actuel</translation>
 <translation id="6751256176799620176">1 dossier sélectionné</translation>
 <translation id="6755827872271341378">Appareil Chrome OS Flex</translation>
+<translation id="6777029074498310250">Consultez la page <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> pour en savoir plus</translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6794539005637808366">Restaurez l'élément ou faites-le glisser vers un nouveau dossier en dehors de la corbeille</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -794,6 +796,7 @@
 <translation id="7086590977277044826">Tamoul avec clavier InScript</translation>
 <translation id="7088615885725309056">Plus ancien</translation>
 <translation id="7103992300314999525">Macédonien</translation>
+<translation id="7104338189998813914">Un problème d'accès à votre compte OneDrive est survenu</translation>
 <translation id="7106346894903675391">Acheter de l'espace de stockage supplémentaire…</translation>
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; - &lt;em&gt;rechercher dans Google Disque&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada phonétique</translation>
@@ -854,6 +857,7 @@
 <translation id="7589661784326793847">Veuillez patienter un court instant.</translation>
 <translation id="7600126690270271294">Serbe</translation>
 <translation id="7603724359189955920">Grilles</translation>
+<translation id="7624010287655004652">Verrouillée par un autre fournisseur de services mobiles</translation>
 <translation id="7627790789328695202">Le fichier <ph name="FILE_NAME" /> existe déjà. Veuillez le renommer, puis réessayer.</translation>
 <translation id="7628656427739290098">Opération terminée à <ph name="PERCENT" /> %.</translation>
 <translation id="7649070708921625228">Aide</translation>
@@ -1011,6 +1015,7 @@
 <translation id="8600173386174225982">La liste de fichiers utilise maintenant l'affichage en miniatures.</translation>
 <translation id="8601932370724196034">Fichier d'image Crostini</translation>
 <translation id="8609695766746872526">Islandais</translation>
+<translation id="8630384863424041081">Saisissez le NIP de votre carte SIM ou le NIP par défaut fourni par votre opérateur. Communiquez avec votre opérateur pour obtenir de l'aide.</translation>
 <translation id="863903787380594467">NIP incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Port</translation>
 <translation id="8656407365183407932">Vos fichiers hors ligne ont dû être retirés</translation>
@@ -1020,7 +1025,6 @@
 <translation id="8698877009525468705">Ce fichier est confidentiel et soumis à des restrictions aux termes de la politique de l'administrateur.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8713112442029511308">Maltais</translation>
-<translation id="8714138378966541668">Verrouillé par le fournisseur</translation>
 <translation id="8714406895390098252">Vélo</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> sélectionné.</translation>
 <translation id="872537912056138402">Croate</translation>

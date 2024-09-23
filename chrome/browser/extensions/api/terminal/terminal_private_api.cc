@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/extensions/api/terminal/terminal_private_api.h"
 
 #include <cstdlib>
@@ -27,6 +32,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
+#include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
@@ -730,10 +736,21 @@ TerminalPrivateOpenSettingsSubpageFunction::
 
 ExtensionFunction::ResponseAction
 TerminalPrivateOpenSettingsSubpageFunction::Run() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
   // Ignore params->subpage for now, and always open crostini.
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetActiveUserProfile(),
-      chromeos::settings::mojom::kCrostiniSectionPath);
+  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    if (crostini::CrostiniFeatures::Get()->IsEnabled(profile)) {
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kCrostiniDetailsSubpagePath);
+    } else {
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kAboutChromeOsSectionPath,
+          chromeos::settings::mojom::Setting::kSetUpCrostini);
+    }
+  } else {
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        profile, chromeos::settings::mojom::kCrostiniSectionPath);
+  }
   return RespondNow(NoArguments());
 }
 
@@ -741,9 +758,6 @@ TerminalPrivateGetOSInfoFunction::~TerminalPrivateGetOSInfoFunction() = default;
 
 ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
   base::Value::Dict info;
-  info.Set("alternative_emulator",
-           base::FeatureList::IsEnabled(
-               ash::features::kTerminalAlternativeEmulator));
   info.Set("tast", extensions::ExtensionRegistry::Get(browser_context())
                        ->enabled_extensions()
                        .Contains(extension_misc::kGuestModeTestExtensionId));

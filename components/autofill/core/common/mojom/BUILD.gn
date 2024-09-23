@@ -27,10 +27,6 @@ mojom("mojo_types") {
           cpp = "::autofill::FormData"
         },
         {
-          mojom = "autofill.mojom.FormData_FillData"
-          cpp = "::autofill::FormData::FillData"
-        },
-        {
           mojom = "autofill.mojom.FormDataPredictions"
           cpp = "::autofill::FormDataPredictions"
         },
@@ -120,6 +116,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/password_manager/core/common",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
   ]
 }

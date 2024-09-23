@@ -7,12 +7,19 @@
 
 #include <string>
 
+#include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/api/declarative_net_request.h"
+#include "extensions/common/permissions/permissions_data.h"
+#include "net/http/http_response_headers.h"
 
 namespace extensions {
 
 namespace declarative_net_request {
+class CompositeMatcher;
 struct ReadJSONRulesResult;
+struct RequestAction;
+struct RequestParams;
 }  // namespace declarative_net_request
 
 namespace api::declarative_net_request::GetDynamicRules {
@@ -225,6 +232,31 @@ class DeclarativeNetRequestTestMatchOutcomeFunction : public ExtensionFunction {
 
   // ExtensionFunction override:
   ExtensionFunction::ResponseAction Run() override;
+
+ private:
+  using TestResponseHeaders =
+      api::declarative_net_request::TestMatchRequestDetails::ResponseHeaders;
+
+  // Parse `test_headers` provided by the API function's args into a headers
+  // object. Populates `error` and returns null if parsing fails or if the
+  // resultant headers contain invalid names or values.
+  scoped_refptr<const net::HttpResponseHeaders> ParseHeaders(
+      std::optional<TestResponseHeaders>& test_headers,
+      std::string& error) const;
+
+  // Creates a base::Value::List which wraps a list of dnr_api::MatchedRule from
+  // the provided `actions`. The base::Value::List will be returned as part of
+  // this API function's response.
+  base::Value::List CreateMatchedRulesFromActions(
+      const std::vector<declarative_net_request::RequestAction>& actions) const;
+
+  // Returns a list of matching actions for the given request `params` against
+  // this extension's `matcher`.
+  std::vector<declarative_net_request::RequestAction> GetActions(
+      const declarative_net_request::CompositeMatcher& matcher,
+      const declarative_net_request::RequestParams& params,
+      declarative_net_request::RulesetMatchingStage stage,
+      PermissionsData::PageAccess page_access) const;
 };
 
 }  // namespace extensions

@@ -16,7 +16,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
-#include "chrome/android/chrome_jni_headers/OfflinePageDownloadBridge_jni.h"
 #include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/download/android/download_controller_base.h"
@@ -57,6 +56,9 @@
 #include "net/base/filename_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/OfflinePageDownloadBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
@@ -131,7 +133,7 @@ void DownloadUIAdapterDelegate::OpenItem(
     const offline_items_collection::OpenParams& open_params) {
   JNIEnv* env = AttachCurrentThread();
   Java_OfflinePageDownloadBridge_openItem(
-      env, ConvertUTF8ToJavaString(env, item.url.spec()), offline_id,
+      env, item.url.spec(), offline_id,
       static_cast<int>(open_params.launch_location),
       open_params.open_in_incognito,
       offline_pages::ShouldOfflinePagesInDownloadHomeOpenInCct());
@@ -253,9 +255,9 @@ content::WebContents* GetWebContentsByFrameID(int render_process_id,
 content::WebContents::Getter GetWebContentsGetter(
     content::WebContents* web_contents) {
   // The FrameTreeNode ID should be used to access the WebContents.
-  int frame_tree_node_id =
+  content::FrameTreeNodeId frame_tree_node_id =
       web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId();
-  if (frame_tree_node_id != content::RenderFrameHost::kNoFrameTreeNodeId) {
+  if (frame_tree_node_id) {
     return base::BindRepeating(content::WebContents::FromFrameTreeNodeId,
                                frame_tree_node_id);
   }
@@ -371,7 +373,7 @@ void OfflinePageDownloadBridge::Destroy(JNIEnv* env,
 void JNI_OfflinePageDownloadBridge_StartDownload(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_tab,
-    const JavaParamRef<jstring>& j_origin) {
+    std::string& origin) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, j_tab);
   if (!tab)
     return;
@@ -380,7 +382,6 @@ void JNI_OfflinePageDownloadBridge_StartDownload(
   if (!web_contents)
     return;
 
-  std::string origin = ConvertJavaStringToUTF8(env, j_origin);
   ScopedJavaGlobalRef<jobject> j_tab_ref(env, j_tab);
 
   // Ensure that the storage permission is granted since the target file

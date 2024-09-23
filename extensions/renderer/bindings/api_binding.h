@@ -136,7 +136,7 @@ class APIBinding {
   std::map<std::string, std::vector<EnumEntry>> enums_;
 
   // The associated properties of the API, if any.
-  raw_ptr<const base::Value::Dict, ExperimentalRenderer> property_definitions_;
+  raw_ptr<const base::Value::Dict> property_definitions_;
   // The names of all the "root properties" added to the API; i.e., properties
   // exposed on the API object itself.
   base::flat_set<std::string> root_properties_;
@@ -150,7 +150,7 @@ class APIBinding {
   std::unique_ptr<APIBindingHooks> binding_hooks_;
 
   // The reference map for all known types; required to outlive this object.
-  raw_ptr<APITypeReferenceMap, ExperimentalRenderer> type_refs_;
+  raw_ptr<APITypeReferenceMap> type_refs_;
 
   // The associated request handler, shared between this and other bindings.
   // Required to outlive this object.

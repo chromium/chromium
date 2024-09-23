@@ -107,7 +107,7 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
     const std::string* same_site = cookie_dict.FindString("sameSite");
 
     base::Time now = base::Time::Now();
-    // TODO(crbug.com/1264458) If CreateSanitizedCookie were used below, this
+    // TODO(crbug.com/40800807) If CreateSanitizedCookie were used below, this
     // wouldn't be needed and ValidateAndAdjustExpiryDate could be moved back
     // into anon namespace instead of being exposed as a static function.
     // Alternatly, if we were sure GAIA cookies wouldn't try to expire more
@@ -130,7 +130,7 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
       samesite_mode = net::StringToCookieSameSite(*same_site, &samesite_string);
     }
     net::RecordCookieSameSiteAttributeValueHistogram(samesite_string);
-    // TODO(crbug.com/1155648) Consider using CreateSanitizedCookie instead.
+    // TODO(crbug.com/40160040) Consider using CreateSanitizedCookie instead.
     std::unique_ptr<net::CanonicalCookie> new_cookie =
         net::CanonicalCookie::FromStorage(
             name ? *name : "", value ? *value : "", cookie_domain,
@@ -139,7 +139,7 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
             is_http_only.value_or(true), samesite_mode,
             net::StringToCookiePriority(priority ? *priority : "medium"),
             /*partition_key=*/std::nullopt, net::CookieSourceScheme::kUnset,
-            url::PORT_UNSPECIFIED);
+            url::PORT_UNSPECIFIED, net::CookieSourceType::kOther);
     // If the unique_ptr is null, it means the cookie was not canonical.
     // FromStorage() also uses a less strict version of IsCanonical(), we need
     // to check the stricter version as well here.

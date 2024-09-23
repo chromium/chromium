@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
 
+#import "ios/chrome/browser/badges/ui_bundled/badge_type_util.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
-#import "ios/chrome/browser/ui/badges/badge_type_util.h"
 
 using infobars::InfoBar;
 

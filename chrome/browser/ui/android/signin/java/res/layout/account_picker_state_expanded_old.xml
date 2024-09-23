@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <include layout="@layout/account_picker_bottom_sheet_header_old" />
+
+    <View
+        style="@style/HorizontalDivider"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/account_picker_account_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:requiresFadingEdge="vertical"
+        android:scrollbars="vertical"
+        android:scrollbarStyle="outsideOverlay" />
+
+</LinearLayout>

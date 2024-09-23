@@ -7,14 +7,18 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
+#include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "url/gurl.h"
@@ -1503,19 +1507,49 @@ TEST_F(FeaturePolicyMutationTest, TestAllowNewFeatureUnconditionally) {
       mojom::blink::PermissionsPolicyFeature::kPayment, test_policy));
 }
 
-class PermissionsPolicyViolationHistogramTest : public testing::Test {
+class FeaturePolicyVisibilityTest
+    : public testing::Test,
+      public testing::WithParamInterface</*is_isolated=*/bool> {
  public:
-  PermissionsPolicyViolationHistogramTest(
-      const PermissionsPolicyViolationHistogramTest&) = delete;
-  PermissionsPolicyViolationHistogramTest& operator=(
-      const PermissionsPolicyViolationHistogramTest&) = delete;
+  FeaturePolicyVisibilityTest() : is_isolated_(GetParam()) {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kDirectSockets},
+        /*disabled_features=*/{});
+  }
 
- protected:
-  PermissionsPolicyViolationHistogramTest() = default;
+  bool GetIsIsolated() { return is_isolated_; }
 
-  ~PermissionsPolicyViolationHistogramTest() override = default;
+ private:
   test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  bool is_isolated_{false};
 };
+
+INSTANTIATE_TEST_SUITE_P(All, FeaturePolicyVisibilityTest, testing::Bool());
+
+TEST_P(FeaturePolicyVisibilityTest, VerifyIsolated) {
+  EXPECT_TRUE(RuntimeEnabledFeatures::ControlledFrameEnabled());
+  EXPECT_TRUE(RuntimeEnabledFeatures::DirectSocketsEnabled());
+
+  auto dummy_page_holder = std::make_unique<DummyPageHolder>();
+  ExecutionContext* execution_context =
+      dummy_page_holder->GetFrame().DomWindow();
+
+  Agent::ResetIsIsolatedContextForTest();
+  Agent::SetIsIsolatedContext(GetIsIsolated());
+  bool is_isolated_context = execution_context->IsIsolatedContext();
+  EXPECT_EQ(is_isolated_context, GetIsIsolated());
+
+  const String kControlledFrameFeature = "controlled-frame";
+  EXPECT_EQ(GetDefaultFeatureNameMap(is_isolated_context)
+                .Contains(kControlledFrameFeature),
+            GetIsIsolated());
+
+  const String kDirectSocketsFeature = "direct-sockets";
+  EXPECT_EQ(GetDefaultFeatureNameMap(is_isolated_context)
+                .Contains(kDirectSocketsFeature),
+            GetIsIsolated());
+}
 
 }  // namespace blink
 

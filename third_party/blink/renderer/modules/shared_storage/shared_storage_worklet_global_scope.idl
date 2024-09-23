@@ -29,10 +29,6 @@ interface SharedStorageWorkletGlobalScope : WorkletGlobalScope {
   readonly attribute Crypto crypto;
 };
 
-// TODO(yaoxia): Figure out whether `urls`'s type can be `FrozenArray` instead
-// of `sequence`. Currently, the conversion from `Vector<String>` to
-// `IDLArray<IDLString>` would cause an error, while the conversion from it to
-// `IDLSequence<IDLString>` wouldn't.
 callback RunFunctionForSharedStorageSelectURLOperation =
     Promise<any>(sequence<DOMString> urls, optional any data);
 

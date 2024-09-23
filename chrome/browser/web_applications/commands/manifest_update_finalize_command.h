@@ -14,7 +14,6 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/common/web_app_id.h"
@@ -41,7 +40,7 @@ class ManifestUpdateFinalizeCommand
   ManifestUpdateFinalizeCommand(
       const GURL& url,
       const webapps::AppId& app_id,
-      WebAppInstallInfo install_info,
+      std::unique_ptr<WebAppInstallInfo> install_info,
       ManifestWriteCallback write_callback,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive);
@@ -58,8 +57,7 @@ class ManifestUpdateFinalizeCommand
 
  private:
   void OnInstallationComplete(const webapps::AppId& app_id,
-                              webapps::InstallResultCode code,
-                              OsHooksErrors os_hooks_errors);
+                              webapps::InstallResultCode code);
   void CompleteCommand(webapps::InstallResultCode code,
                        ManifestUpdateResult result);
 
@@ -67,7 +65,7 @@ class ManifestUpdateFinalizeCommand
 
   const GURL url_;
   const webapps::AppId app_id_;
-  WebAppInstallInfo install_info_;
+  std::unique_ptr<WebAppInstallInfo> install_info_;
   // Two KeepAlive objects, to make sure that manifest update writes
   // still happen even though the app window has closed.
   std::unique_ptr<ScopedKeepAlive> keep_alive_;

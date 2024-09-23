@@ -22,8 +22,7 @@ namespace storage {
 // of execution) or with File::FILE_OK if no error occurred.
 
 class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveHookDelegateComposite
-    : public CopyOrMoveHookDelegate,
-      public base::SupportsWeakPtr<CopyOrMoveHookDelegateComposite> {
+    : public CopyOrMoveHookDelegate {
  public:
   // If parent is no CopyOrMoveHookDelegateComposite, a new one is created and
   // parent and child are added. If parent is already a composite, child is

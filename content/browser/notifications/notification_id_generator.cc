@@ -5,6 +5,7 @@
 #include "content/browser/notifications/notification_id_generator.h"
 
 #include <sstream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
@@ -24,14 +25,14 @@ const char kNotificationShownByBrowserFlag = 'b';
 
 // static
 bool NotificationIdGenerator::IsPersistentNotification(
-    const base::StringPiece& notification_id) {
+    const std::string_view& notification_id) {
   return notification_id.length() > 0 &&
          notification_id.front() == kPersistentNotificationPrefix;
 }
 
 // static
 bool NotificationIdGenerator::IsNonPersistentNotification(
-    const base::StringPiece& notification_id) {
+    const std::string_view& notification_id) {
   return notification_id.length() > 0 &&
          notification_id.front() == kNonPersistentNotificationPrefix;
 }

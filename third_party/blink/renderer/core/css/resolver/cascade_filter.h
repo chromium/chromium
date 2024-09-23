@@ -32,7 +32,7 @@ class CORE_EXPORT CascadeFilter {
   // This is equivalent to:
   //
   //  CascadeFilter filter;
-  //  filter.Add(flag, v);
+  //  filter = filter.Add(flag, v);
   //
   CascadeFilter(CSSProperty::Flag flag, bool v)
       : mask_(flag), flags_(v ? flag : 0) {}
@@ -84,6 +84,8 @@ class CORE_EXPORT CascadeFilter {
   bool Rejects(CSSProperty::Flag flag, bool v) const {
     return ~((v ? flag : 0) ^ flags_) & (mask_ & flag);
   }
+
+  bool IsEmpty() const { return mask_ == 0; }
 
  private:
   CascadeFilter(CSSProperty::Flags mask, CSSProperty::Flags flags)

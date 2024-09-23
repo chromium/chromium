@@ -6,7 +6,6 @@
 #define COMPONENTS_LIVE_CAPTION_CAPTION_BUBBLE_CONTEXT_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"

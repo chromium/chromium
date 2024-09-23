@@ -1,0 +1,153 @@
+# Copyright 2024 The Chromium Project. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# The set of path prefixes that should be checked for unsafe pointer usage (see
+# -Wunsafe-buffer-usage in Clang).
+#
+# ***
+# Paths should be written as relative to the root of the source tree with
+# unix-style path separators. Directory prefixes should end with `/`, such
+# as `base/`.
+# ***
+#
+# Lines that begin with `-` name path prefixes that will *not* be checked for
+# unsafe-buffer-usage. They are known to do unsafe things and should be
+# changed to use constructs like base::span or containers like base::HeapArray
+# and std::vector instead. See https://crbug.com/40285824
+#
+# Lines that begin with `+` name path prefixes that have no unsafe-buffer-usage
+# (or all such usage is annotated), and are protected against new unsafe pointer
+# behaviour by the compiler.
+#
+# By default, all files are checked for unsafe-buffer-usage unless they are
+# match a `-` path prefix line here. If a file matches both a `-` and `+` line,
+# the `+` line takes precedence and the file will be checked.
+#
+# To opt individual files out of checks, place `#pragma allow_unsafe_buffers`
+# anywhere in the (source or header) file, guarded by
+# `#ifdef UNSAFE_BUFFERS_BUILD`. These pragmas represent the technical debt and
+# security risk present in the file through unsafe pointer usage.
+#
+# ***
+# Recommended process for removing a `-dir/` line from this file:
+#
+# 1. Remove the `-dir/` line from this paths file.
+#    a. Possibly add some subdirectories if needed to reduce scope,
+#       like `-dir/sub_dir/`.
+# 2. Add `#pragma allow_unsafe_buffers` to every file in the directory that now
+#    has a compilation error, with a TODO to the tracking bug for the
+#    directory:
+#    ```
+#    #ifdef UNSAFE_BUFFERS_BUILD
+#    // TODO(crbug.com/ABC): Remove this and convert code to safer constructs.
+#    #pragma allow_unsafe_buffers
+#    #endif
+#    ```
+# 3. Work through the files in the directory, converting pointers to spans, or
+#    to owning containers like HeapArray and vector. Remove the pragmas from
+#    the files when there is no unsafe pointer usage left in each one.
+#
+# See `docs/unsafe_buffers.md`.
+
+-android_webview/
+-base/allocator
+-base/third_party
+-chrome/browser/ash/chromebox_for_meetings/
+-chrome/browser/ash/policy/
+-chrome/browser/component_updater/
+-chrome/browser/extensions/api/messaging/
+-chrome/browser/extensions/api/printing/
+-chrome/browser/local_discovery/
+-chrome/browser/media/webrtc
+-chrome/browser/platform_experience/win/
+-chrome/browser/thumbnail/
+-chrome/browser/ui/android/hats/
+-chrome/browser/ui/webui/lens/
+-chrome/browser/ui/webui/media_router/
+-chrome/chrome_elf/third_party_dlls/
+-chrome/common/profiler/
+-chrome/credential_provider/
+-chrome/elevation_service/
+-chrome/services/cups_proxy/
+-chrome/services/ipp_parser/public/cpp/
+-chrome/services/sharing/nearby/decoder/
+-chrome/test/
+-chrome/tools/service_discovery_sniffer/
+-chrome/updater/net/
+-chromecast/
+-chromeos/ash/components/memory/userspace_swap/
+-chromeos/ash/components/system/
+-chromeos/ash/services/libassistant/
+-chromeos/components/kcer/kcer_nss
+-clank/
+-components/allocation_recorder/
+-components/chromeos_camera
+-components/commerce/
+-components/crash/
+-components/cronet/
+-components/crx_file/
+-components/desks_storage/
+-components/device_event_log/
+-components/exo/
+-components/grpc_support/
+-components/gwp_asan/
+-components/media_router/
+-components/open_from_clipboard/
+-components/optimization_guide/internal/
+-components/ownership/
+-components/query_parser/
+-components/segmentation_platform/
+-components/sharing_message/
+-components/signin/
+-components/system_cpu/
+-components/url_formatter/
+-components/url_pattern_index/
+-components/webrtc_logging/
+-components/zucchini/
+-fuchsia_web/
+-google_apis/
+-gpu/ipc/service/
+-ios/
+-ios_internal/
+-native_client/
+-net/third_party/
+-printing/
+-remoting/host/
+-remoting/client/input/
+-testing/iossim/
+-third_party/
++third_party/blink/
+-tools/
+-ui/base/clipboard/
+-ui/base/ime/ash/
+-ui/display/manager/
+-ui/events/ash/
+-ui/ozone/
++ui/ozone/platform/wayland
+-url/third_party
+-v8/
+
+# Before clearing this directory, make sure to run against a bot running
+# with the build flag: use_internal_isolated_origins. There are none on the CQ
+# by default. See file components/site_isolation/preloaded_isolated_origins.cc
+-components/site_isolation/
+
+# TODO(crbug.com/41497066#comment22) The Win SDK headers don't get categorized
+# as system headers when building with DEPOT_TOOLS_WIN_TOOLCHAIN=0 ?
+-Program Files (x86)/Windows Kits/
+
+# Please be cautious before removing this opt-out, because it won't show up on
+# the Mega-CQ, nor Sheriffs' dashboards. See https://crbug.com/361760067
+# Removing this directory may fail on the bot CI bot:
+# https://luci-milo.appspot.com/ui/p/chrome/builders/official/win-arm64-clang
+-chrome/installer/
+
+# Please check 'linux-v4l2-codec-rel' bot before removing this opt-out.
+-media/gpu/v4l2/
+
+# //codelabs is a directory that contains examples for developers to modify as
+# they learn about chromium development. This is indefinitely opt-out because
+# it is not part of the main build, and we don't want developers to be blocked
+# by this check.
+-codelabs/

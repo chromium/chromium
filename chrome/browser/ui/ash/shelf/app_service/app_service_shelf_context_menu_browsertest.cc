@@ -6,14 +6,17 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -25,6 +28,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -47,10 +51,11 @@ class AppServiceShelfContextMenuBrowserTest : public InProcessBrowserTest {
   ~AppServiceShelfContextMenuBrowserTest() override = default;
 
   struct MenuSection {
+    STACK_ALLOCATED();
+
+   public:
     std::unique_ptr<ui::SimpleMenuModel> menu_model;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #addr-of, #union
-    RAW_PTR_EXCLUSION ui::MenuModel* sub_model = nullptr;
+    ui::MenuModel* sub_model = nullptr;
     size_t command_index = 0;
   };
 
@@ -91,13 +96,10 @@ class AppServiceShelfContextMenuWebAppBrowserTest
       public testing::WithParamInterface<bool> {
  public:
   AppServiceShelfContextMenuWebAppBrowserTest() {
-    base::flat_map<base::test::FeatureRef, bool> features;
-    features.insert({blink::features::kDesktopPWAsTabStrip, true});
-    features.insert({features::kDesktopPWAsTabStripSettings, true});
-    features.insert(
-        {chromeos::features::kCrosShortstand, IsShortstandEnabled()});
-
-    scoped_feature_list_.InitWithFeatureStates(features);
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kDesktopPWAsTabStrip,
+         features::kDesktopPWAsTabStripSettings},
+        {});
   }
   ~AppServiceShelfContextMenuWebAppBrowserTest() override = default;
 
@@ -121,8 +123,9 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
   Profile* profile = browser()->profile();
   base::UserActionTester user_action_tester;
 
-  auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_install_info->start_url = GURL("https://example.org");
+  auto web_app_install_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+          GURL("https://example.org"));
   web_app_install_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
   webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
@@ -165,8 +168,9 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
   Profile* profile = browser()->profile();
   base::UserActionTester user_action_tester;
 
-  auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_install_info->start_url = GURL("https://example.org");
+  auto web_app_install_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+          GURL("https://example.org"));
   web_app_install_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
   webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
@@ -198,8 +202,11 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
   Profile* profile = browser()->profile();
   base::UserActionTester user_action_tester;
 
-  auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_install_info->start_url = GURL("https://example.org");
+  auto web_app_install_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+          GURL("https://example.org"));
+  web_app_install_info->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
   webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
@@ -224,8 +231,9 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
   }
 
   Profile* profile = browser()->profile();
-  auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_install_info->start_url = GURL("https://example.org");
+  auto web_app_install_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+          GURL("https://example.org"));
   webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 
@@ -282,8 +290,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuTabbedWebAppBrowserTest,
   Profile* profile = browser()->profile();
   base::UserActionTester user_action_tester;
 
-  auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_install_info->start_url = GURL("https://example.org");
+  auto web_app_install_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+          GURL("https://example.org"));
   web_app_install_info->display_mode = blink::mojom::DisplayMode::kStandalone;
   web_app_install_info->display_override = {blink::mojom::DisplayMode::kTabbed};
   webapps::AppId app_id =
@@ -326,8 +335,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuNonTabbedWebAppBrowserTest,
   Profile* profile = browser()->profile();
   base::UserActionTester user_action_tester;
 
-  auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_install_info->start_url = GURL("https://example.org");
+  auto web_app_install_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+          GURL("https://example.org"));
   web_app_install_info->display_mode = blink::mojom::DisplayMode::kStandalone;
   web_app_install_info->display_override = {blink::mojom::DisplayMode::kTabbed};
   webapps::AppId app_id =
@@ -419,6 +429,43 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuCrostiniAppBrowserTest,
       menu_section->menu_model->GetSubmenuModelAt(menu_section->command_index));
   EXPECT_EQ(menu_section->menu_model->GetLabelAt(menu_section->command_index),
             u"Shut down Linux");
+  EXPECT_EQ(menu_section->menu_model->GetIconAt(menu_section->command_index)
+                .GetVectorIcon()
+                .vector_icon(),
+            &kShutdownGuestOsIcon);
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuCrostiniAppBrowserTest,
+                       ShutDownBruschettaOs) {
+  ash::SystemWebAppManager::Get(browser()->profile())
+      ->InstallSystemAppsForTesting();
+  auto menu_section = GetContextMenuSectionForAppCommand(
+      guest_os::kTerminalSystemAppId, ash::SHUTDOWN_BRUSCHETTA_OS);
+  ASSERT_FALSE(menu_section);
+
+  guest_os::GuestId id(guest_os::VmType::BRUSCHETTA,
+                       bruschetta::kBruschettaVmName, "");
+  guest_os::GuestOsSessionTracker::GetForProfile(browser()->profile())
+      ->AddGuestForTesting(id, guest_os::GuestInfo{id, 0, {}, {}, {}, {}});
+
+  auto* bruschetta_service =
+      bruschetta::BruschettaService::GetForProfile(browser()->profile());
+  bruschetta_service->RegisterVmLaunch(bruschetta::kBruschettaVmName,
+                                       bruschetta::RunningVmPolicy{false});
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+
+  menu_section = GetContextMenuSectionForAppCommand(
+      guest_os::kTerminalSystemAppId, ash::SHUTDOWN_BRUSCHETTA_OS);
+  ASSERT_TRUE(menu_section);
+
+  EXPECT_GT(menu_section->command_index, 0u);
+  EXPECT_FALSE(
+      menu_section->menu_model->GetSubmenuModelAt(menu_section->command_index));
+  EXPECT_NE(menu_section->menu_model->GetLabelAt(menu_section->command_index)
+                .find(base::ASCIIToUTF16(bruschetta::GetBruschettaDisplayName(
+                    browser()->profile()))),
+            std::string::npos);
   EXPECT_EQ(menu_section->menu_model->GetIconAt(menu_section->command_index)
                 .GetVectorIcon()
                 .vector_icon(),

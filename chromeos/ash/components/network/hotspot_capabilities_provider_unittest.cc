@@ -4,10 +4,8 @@
 
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
@@ -50,8 +48,6 @@ class TestObserver : public HotspotCapabilitiesProvider::Observer {
 class HotspotCapabilitiesProviderTest : public ::testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kHotspot);
-
     if (hotspot_capabilities_provider_ &&
         hotspot_capabilities_provider_->HasObserver(&observer_)) {
       hotspot_capabilities_provider_->RemoveObserver(&observer_);
@@ -93,7 +89,6 @@ class HotspotCapabilitiesProviderTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<HotspotAllowedFlagHandler> hotspot_allowed_flag_handler_;
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
@@ -103,10 +98,8 @@ class HotspotCapabilitiesProviderTest : public ::testing::Test {
 };
 
 TEST_F(HotspotCapabilitiesProviderTest, GetHotspotCapabilities) {
-  EXPECT_EQ(
-      hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoCellularUpstream,
-      hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
-  EXPECT_EQ(0u, observer_.hotspot_capabilities_changed_count());
+  // Notify when first retrieve hotspot capabilities upon login.
+  EXPECT_EQ(1u, observer_.hotspot_capabilities_changed_count());
 
   auto capabilities_dict =
       base::Value::Dict()
@@ -121,7 +114,7 @@ TEST_F(HotspotCapabilitiesProviderTest, GetHotspotCapabilities) {
   EXPECT_EQ(
       hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoCellularUpstream,
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
-  EXPECT_EQ(0u, observer_.hotspot_capabilities_changed_count());
+  EXPECT_EQ(2u, observer_.hotspot_capabilities_changed_count());
 
   capabilities_dict.Set(shill::kTetheringCapUpstreamProperty,
                         base::Value::List().Append(shill::kTypeCellular));
@@ -133,7 +126,7 @@ TEST_F(HotspotCapabilitiesProviderTest, GetHotspotCapabilities) {
   EXPECT_EQ(
       hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoWiFiDownstream,
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
-  EXPECT_EQ(1u, observer_.hotspot_capabilities_changed_count());
+  EXPECT_EQ(3u, observer_.hotspot_capabilities_changed_count());
 
   // Add WiFi to the downstream technology list in Shill
   capabilities_dict.Set(shill::kTetheringCapDownstreamProperty,
@@ -152,7 +145,7 @@ TEST_F(HotspotCapabilitiesProviderTest, GetHotspotCapabilities) {
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
   EXPECT_EQ(2u, hotspot_capabilities_provider_->GetHotspotCapabilities()
                     .allowed_security_modes.size());
-  EXPECT_EQ(2u, observer_.hotspot_capabilities_changed_count());
+  EXPECT_EQ(4u, observer_.hotspot_capabilities_changed_count());
 
   // Simulate mobile network has no internet connectivity.
   ShillServiceClient::TestInterface* service_test =
@@ -174,7 +167,7 @@ TEST_F(HotspotCapabilitiesProviderTest, GetHotspotCapabilities) {
   EXPECT_EQ(
       hotspot_config::mojom::HotspotAllowStatus::kDisallowedReadinessCheckFail,
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
-  EXPECT_EQ(3u, observer_.hotspot_capabilities_changed_count());
+  EXPECT_EQ(5u, observer_.hotspot_capabilities_changed_count());
 
   // Disconnect the active cellular network
   service_test->SetServiceProperty(kCellularServicePath, shill::kStateProperty,
@@ -183,7 +176,7 @@ TEST_F(HotspotCapabilitiesProviderTest, GetHotspotCapabilities) {
   EXPECT_EQ(
       hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoMobileData,
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
-  EXPECT_EQ(4u, observer_.hotspot_capabilities_changed_count());
+  EXPECT_EQ(6u, observer_.hotspot_capabilities_changed_count());
 
   // Simulate check tethering readiness operation success and re-connect the
   // cellular network
@@ -197,20 +190,20 @@ TEST_F(HotspotCapabilitiesProviderTest, GetHotspotCapabilities) {
   EXPECT_EQ(
       hotspot_config::mojom::HotspotAllowStatus::kAllowed,
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
-  EXPECT_EQ(5u, observer_.hotspot_capabilities_changed_count());
+  EXPECT_EQ(7u, observer_.hotspot_capabilities_changed_count());
 
   hotspot_capabilities_provider_->SetPolicyAllowed(/*allowed=*/false);
   EXPECT_EQ(
       hotspot_config::mojom::HotspotAllowStatus::kDisallowedByPolicy,
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
-  EXPECT_EQ(6u, observer_.hotspot_capabilities_changed_count());
+  EXPECT_EQ(8u, observer_.hotspot_capabilities_changed_count());
 
   hotspot_capabilities_provider_->SetPolicyAllowed(/*allowed=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       hotspot_config::mojom::HotspotAllowStatus::kAllowed,
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
-  EXPECT_EQ(7u, observer_.hotspot_capabilities_changed_count());
+  EXPECT_EQ(9u, observer_.hotspot_capabilities_changed_count());
 }
 
 TEST_F(HotspotCapabilitiesProviderTest, CheckTetheringReadiness_Ready) {

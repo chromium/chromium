@@ -72,7 +72,7 @@ void TrustTokenQueryAnswerer::AnswerTokenQueryWithStore(
 
   if (!trust_token_store->SetAssociation(issuer, top_frame_origin_)) {
     std::move(callback).Run(mojom::HasTrustTokensResult::New(
-        mojom::TrustTokenOperationStatus::kResourceExhausted,
+        mojom::TrustTokenOperationStatus::kResourceLimited,
         /*has_trust_tokens=*/false));
     return;
   }

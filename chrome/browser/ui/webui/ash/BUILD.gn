@@ -1,0 +1,99 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+# Gather unit tests from subdirectories.
+group("unit_tests") {
+  testonly = true
+
+  deps = [
+    "//chrome/browser/ui/webui/ash/add_supervision:unit_tests",
+    "//chrome/browser/ui/webui/ash/cloud_upload:unit_tests",
+    "//chrome/browser/ui/webui/ash/diagnostics_dialog:unit_tests",
+    "//chrome/browser/ui/webui/ash/emoji:unit_tests",
+    "//chrome/browser/ui/webui/ash/enterprise_reporting:unit_tests",
+    "//chrome/browser/ui/webui/ash/lobster:unit_tests",
+    "//chrome/browser/ui/webui/ash/login:unit_tests",
+    "//chrome/browser/ui/webui/ash/mako:unit_tests",
+    "//chrome/browser/ui/webui/ash/parent_access:unit_tests",
+    "//chrome/browser/ui/webui/ash/print_preview_cros:unit_tests",
+    "//chrome/browser/ui/webui/ash/sensor_info:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/a11y:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/about:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/apps:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/apps/mojom:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/bluetooth:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/crostini:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/device:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/device/display_settings:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/internet:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/main:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/multidevice:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/people:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/personalization:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/printing:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/search:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/storage:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/search:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/services/metrics:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/services/settings_manager:unit_tests",
+    "//chrome/browser/ui/webui/ash/smb_shares:unit_tests",
+  ]
+}
+
+# Gather browser tests from subdirectories.
+group("browser_tests") {
+  testonly = true
+
+  deps = [
+    "//chrome/browser/ui/webui/ash/add_supervision:browser_tests",
+    "//chrome/browser/ui/webui/ash/app_install:browser_tests",
+    "//chrome/browser/ui/webui/ash/cloud_upload:browser_tests",
+    "//chrome/browser/ui/webui/ash/cros_components:browser_tests",
+    "//chrome/browser/ui/webui/ash/crostini_upgrader:browser_tests",
+    "//chrome/browser/ui/webui/ash/edu_coexistence:browser_tests",
+    "//chrome/browser/ui/webui/ash/kerberos:browser_tests",
+    "//chrome/browser/ui/webui/ash/login:browser_tests",
+    "//chrome/browser/ui/webui/ash/login/testapi:browser_tests",
+    "//chrome/browser/ui/webui/ash/manage_mirrorsync:browser_tests",
+    "//chrome/browser/ui/webui/ash/office_fallback:browser_tests",
+    "//chrome/browser/ui/webui/ash/parent_access:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/integration_tests:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/a11y:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/apps:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/files:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/people:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/power:browser_tests",
+    "//chrome/browser/ui/webui/ash/skyvault:browser_tests",
+    "//chrome/browser/ui/webui/ash/smb_shares:browser_tests",
+    "//chrome/browser/ui/webui/ash/system_web_dialog:browser_tests",
+  ]
+}
+
+if (is_chromeos_device) {
+  group("integration_tests") {
+    testonly = true
+    deps = [
+      "//chrome/browser/ui/webui/ash/settings/pages/printing/integration_tests",
+    ]
+  }
+} else {
+  group("interactive_ui_tests") {
+    testonly = true
+    deps = [
+      "//chrome/browser/ui/webui/ash/firmware_update_ui/integration_tests:interactive_ui_tests",
+      "//chrome/browser/ui/webui/ash/settings/integration_tests:interactive_ui_tests",
+      "//chrome/browser/ui/webui/ash/settings/integration_tests/device_page:interactive_ui_tests",
+      "//chrome/browser/ui/webui/ash/settings/pages/device/integration_tests:interactive_ui_tests",
+      "//chrome/browser/ui/webui/ash/shortcut_customization/integration_tests:interactive_ui_tests",
+    ]
+  }
+}

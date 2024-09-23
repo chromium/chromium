@@ -58,7 +58,9 @@ void TestSystemTrayClient::ShowWifiSyncSettings() {
   show_wifi_sync_settings_count_++;
 }
 
-void TestSystemTrayClient::ShowAboutChromeOS() {}
+void TestSystemTrayClient::ShowAboutChromeOS() {
+  show_about_chromeos_count_++;
+}
 
 void TestSystemTrayClient::ShowAboutChromeOSDetails() {}
 
@@ -103,6 +105,10 @@ void TestSystemTrayClient::ShowNetworkCreate(const std::string& type) {
 }
 
 void TestSystemTrayClient::ShowSettingsCellularSetup(bool show_psim_flow) {}
+
+void TestSystemTrayClient::ShowMobileDataSubpage() {
+  show_mobile_data_subpage_count_++;
+}
 
 void TestSystemTrayClient::ShowSettingsSimUnlock() {
   ++show_sim_unlock_settings_count_;
@@ -198,6 +204,26 @@ void TestSystemTrayClient::ShowTouchpadSettings() {
 
 void TestSystemTrayClient::ShowRemapKeysSubpage(int device_id) {
   ++show_remap_keys_subpage_count_;
+}
+
+void TestSystemTrayClient::ShowYouTubeMusicPremiumPage() {
+  ++show_youtube_music_premium_page_count_;
+}
+
+void TestSystemTrayClient::ShowChromebookPerksYouTubePage() {
+  ++show_chromebook_perks_youtube_page_count_;
+}
+
+void TestSystemTrayClient::ShowKeyboardSettings() {
+  ++show_keyboard_settings_count_;
+}
+
+void TestSystemTrayClient::ShowPointingStickSettings() {
+  ++show_pointing_stick_settings_count_;
+}
+
+void TestSystemTrayClient::ShowNearbyShareSettings() {
+  ++show_nearby_share_settings_count_;
 }
 
 }  // namespace ash

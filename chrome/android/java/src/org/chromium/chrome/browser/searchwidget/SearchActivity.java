@@ -5,106 +5,184 @@
 package org.chromium.chrome.browser.searchwidget;
 
 import android.app.Activity;
-import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityOptionsCompat;
+
+import org.jni_zero.CheckDiscard;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.UnownedUserDataSupplier;
-import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.content.WebContentsFactory;
-import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
-import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
-import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
-import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
+import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
-import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.rlz.RevenueStats;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
-import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
-import org.chromium.components.browser_ui.widget.InsetObserver;
-import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
-import org.chromium.components.external_intents.ExternalNavigationHandler;
-import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 
 /** Queries the user's default search engine and shows autocomplete suggestions. */
 public class SearchActivity extends AsyncInitializationActivity
-        implements SnackbarManageable,
-                BackKeyBehaviorDelegate,
-                UrlFocusChangeListener,
-                OmniboxSuggestionsDropdownScrollListener {
+        implements SnackbarManageable, BackKeyBehaviorDelegate, UrlFocusChangeListener {
     // Shared with other org.chromium.chrome.browser.searchwidget classes.
     protected static final String TAG = "searchwidget";
 
     public static final String EXTRA_FROM_SEARCH_ACTIVITY =
             "org.chromium.chrome.browser.searchwidget.FROM_SEARCH_ACTIVITY";
+
+    @VisibleForTesting
+    /* package */ static final String USED_ANY_FROM_SEARCH_WIDGET = "SearchWidget.WidgetSelected";
+
+    @VisibleForTesting
+    /* package */ static final String USED_TEXT_FROM_SHORTCUTS_WIDGET =
+            "QuickActionSearchWidget.TextQuery";
+
+    @VisibleForTesting
+    /* package */ static final String USED_VOICE_FROM_SHORTCUTS_WIDGET =
+            "QuickActionSearchWidget.VoiceQuery";
+
+    @VisibleForTesting
+    /* package */ static final String USED_LENS_FROM_SHORTCUTS_WIDGET =
+            "QuickActionSearchWidget.LensQuery";
+
+    @VisibleForTesting
+    /* package */ static final String HISTOGRAM_LAUNCHED_WITH_QUERY =
+            "Android.Omnibox.SearchActivity.LaunchedWithQuery";
+
+    @VisibleForTesting
+    /* package */ static final String HISTOGRAM_INTENT_ORIGIN =
+            "Android.Omnibox.SearchActivity.IntentOrigin";
+
+    private static final String HISTOGRAM_REQUESTED_SEARCH_TYPE = //
+            "Android.Omnibox.SearchActivity.RequestedSearchType";
+    private static final String HISTOGRAM_INTENT_ACTIVITY_PRESENT =
+            "Android.Omnibox.SearchActivity.ActivityPresent";
+
+    @VisibleForTesting
+    /* package */ static final String HISTOGRAM_INTENT_REFERRER_VALID =
+            "Android.Omnibox.SearchActivity.ReferrerValid";
+
+    @VisibleForTesting
+    /* package */ static final String HISTOGRAM_NAVIGATION_TARGET_TYPE =
+            "Android.Omnibox.SearchActivity.NavigationTargetType";
+
+    @VisibleForTesting
+    /* package */ static final String HISTOGRAM_SESSION_TERMINATION_REASON =
+            "Android.Omnibox.SearchActivity.SessionTerminationReason";
+
+    /** Controls whether Referrer App ID is passed to Search Results Page via client= param. */
+    public static final BooleanCachedFieldTrialParameter SEARCH_IN_CCT_APPLY_REFERRER_ID =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.SEARCH_IN_CCT, "apply_referrer_id", false);
+
+    // NOTE: This is used to capture HISTOGRAM_NAVIGATION_TARGET_TYPE.
+    // Do not shuffle or reassign values.
+    @VisibleForTesting
+    @IntDef({
+        NavigationTargetType.URL,
+        NavigationTargetType.SEARCH,
+        NavigationTargetType.NATIVE_PAGE,
+        NavigationTargetType.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface NavigationTargetType {
+        int URL = 0;
+        int SEARCH = 1;
+        int NATIVE_PAGE = 2;
+        int COUNT = 3;
+    }
+
+    // NOTE: This is used to capture HISTOGRAM_SESSION_TERMINATION_REASON.
+    // Do not shuffle or reassign values.
+    @IntDef({
+        TerminationReason.NAVIGATION,
+        TerminationReason.UNSPECIFIED,
+        TerminationReason.TAP_OUTSIDE,
+        TerminationReason.BACK_KEY_PRESSED,
+        TerminationReason.OMNIBOX_FOCUS_LOST,
+        TerminationReason.ACTIVITY_FOCUS_LOST,
+        TerminationReason.FRE_NOT_COMPLETED,
+        TerminationReason.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface TerminationReason {
+        int NAVIGATION = 0;
+        int UNSPECIFIED = 1;
+        int TAP_OUTSIDE = 2;
+        int BACK_KEY_PRESSED = 3;
+        int OMNIBOX_FOCUS_LOST = 4;
+        int ACTIVITY_FOCUS_LOST = 5;
+        int FRE_NOT_COMPLETED = 6;
+        int COUNT = 7;
+    }
+
+    @VisibleForTesting /* package */ static final String CCT_CLIENT_PACKAGE_PREFIX = "app-cct-";
 
     /** Notified about events happening inside a SearchActivity. */
     public static class SearchActivityDelegate {
@@ -132,55 +210,40 @@ public class SearchActivity extends AsyncInitializationActivity
 
         /** Called when {@link SearchActivity#finishDeferredInitialization} is done. */
         void onFinishDeferredInitialization() {}
-
-        /** Returning true causes the Activity to finish itself immediately when starting up. */
-        boolean isActivityDisabledForTests() {
-            return false;
-        }
     }
-
-    private static final Object DELEGATE_LOCK = new Object();
 
     /** Notified about events happening for the SearchActivity. */
     private static SearchActivityDelegate sDelegate;
 
-    /** Main content view. */
-    private ViewGroup mContentView;
-
-    private View mAnchorView;
+    // Incoming intent request type. See {@link SearchActivityUtils#IntentOrigin}.
+    @IntentOrigin Integer mIntentOrigin;
+    // Incoming intent search type. See {@link SearchActivityUtils#SearchType}.
+    @SearchType Integer mSearchType;
 
     /** Whether the user is now allowed to perform searches. */
     private boolean mIsActivityUsable;
 
     /** Input submitted before before the native library was loaded. */
-    private String mQueuedUrl;
+    private OmniboxLoadUrlParams mQueuedParams;
 
-    private @PageTransition int mQueuedTransition;
-    private String mQueuedPostDataType;
-    private byte[] mQueuedPostData;
-
-    /** The View that represents the search box. */
+    private LocationBarCoordinator mLocationBarCoordinator;
     private SearchActivityLocationBarLayout mSearchBox;
 
-    LocationBarCoordinator mLocationBarCoordinator;
-
     private SnackbarManager mSnackbarManager;
-    private SearchBoxDataProvider mSearchBoxDataProvider;
     private Tab mTab;
-    private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
-    protected final UnownedUserDataSupplier<InsetObserver> mInsetObserverViewSupplier =
-            new InsetObserverSupplier();
+    private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
 
-    private final UmaActivityObserver mUmaActivityObserver;
+    // SearchBoxDataProvider and LocationBarEmbedderUiOverrides are passed to several child
+    // components upon construction. Ensure we don't accidentally introduce disconnection by
+    // keeping only a single live instance here.
+    private final SearchBoxDataProvider mSearchBoxDataProvider = new SearchBoxDataProvider();
+    private final LocationBarEmbedderUiOverrides mLocationBarUiOverrides =
+            new LocationBarEmbedderUiOverrides();
+    private UmaActivityObserver mUmaActivityObserver;
 
     public SearchActivity() {
         mUmaActivityObserver = new UmaActivityObserver(this);
-    }
-
-    @Override
-    protected boolean isStartedUpCorrectly(Intent intent) {
-        if (getActivityDelegate().isActivityDisabledForTests()) return false;
-        return super.isStartedUpCorrectly(intent);
+        mLocationBarUiOverrides.setForcedPhoneStyleOmnibox();
     }
 
     @Override
@@ -193,7 +256,7 @@ public class SearchActivity extends AsyncInitializationActivity
         return new ActivityWindowAndroid(
                 this,
                 /* listenToActivityState= */ true,
-                new SingleWindowKeyboardVisibilityDelegate(new WeakReference(this)),
+                new ActivityKeyboardVisibilityDelegate(new WeakReference(this)),
                 getIntentRequestTracker()) {
             @Override
             public ModalDialogManager getModalDialogManager() {
@@ -212,56 +275,37 @@ public class SearchActivity extends AsyncInitializationActivity
     protected void triggerLayoutInflation() {
         enableHardwareAcceleration();
         mSnackbarManager = new SnackbarManager(this, findViewById(android.R.id.content), null);
-        mSearchBoxDataProvider = new SearchBoxDataProvider(this);
-        mSearchBoxDataProvider.setIsFromQuickActionSearchWidget(isFromQuickActionSearchWidget());
+        mSearchBoxDataProvider.initialize(this);
 
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().getRootView();
         // Setting fitsSystemWindows to false ensures that the root view doesn't consume the
         // insets.
         rootView.setFitsSystemWindows(false);
-        // Add an inset observer that stores the insets to access later.
-        // WebContents needs the insets to determine the portion of the screen obscured by
-        // non-content displaying things such as the OSK.
-        mInsetObserverViewSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
-        mInsetObserverViewSupplier.set(new InsetObserver(rootView));
 
-        mContentView = createContentView();
-        setContentView(mContentView);
+        var contentView = createContentView();
+        setContentView(contentView);
 
         // Build the search box.
-        mSearchBox =
-                (SearchActivityLocationBarLayout)
-                        mContentView.findViewById(R.id.search_location_bar);
-        mAnchorView = mContentView.findViewById(R.id.toolbar);
-        updateAnchorViewLayout();
+        mSearchBox = contentView.findViewById(R.id.search_location_bar);
+        View anchorView = contentView.findViewById(R.id.toolbar);
 
-        // Create status bar color controller and assign to search activity.
-        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
-            // Update the status bar's color based on the toolbar color.
-            Drawable anchorViewBackground = mAnchorView.getBackground();
-            if (anchorViewBackground instanceof ColorDrawable) {
-                int anchorViewColor = ((ColorDrawable) anchorViewBackground).getColor();
-                StatusBarColorController.setStatusBarColor(this.getWindow(), anchorViewColor);
-            }
+        // Update the status bar's color based on the toolbar color.
+        Drawable anchorViewBackground = anchorView.getBackground();
+        assert anchorViewBackground instanceof GradientDrawable
+                : "Unsupported background drawable.";
+        if (anchorViewBackground instanceof GradientDrawable) {
+            int anchorViewColor =
+                    ((GradientDrawable) anchorViewBackground).getColor().getDefaultColor();
+            StatusBarColorController.setStatusBarColor(this.getWindow(), anchorViewColor);
         }
-
-        OverrideUrlLoadingDelegate overrideUrlLoadingDelegate =
-                (String url,
-                        @PageTransition int transition,
-                        long inputStart,
-                        String postDataType,
-                        byte[] postData,
-                        boolean incognito) -> {
-                    loadUrl(url, transition, postDataType, postData);
-                    return true;
-                };
 
         BackPressManager backPressManager = new BackPressManager();
         getOnBackPressedDispatcher().addCallback(this, backPressManager.getCallback());
+
         mLocationBarCoordinator =
                 new LocationBarCoordinator(
                         mSearchBox,
-                        mAnchorView,
+                        anchorView,
                         mProfileSupplier,
                         PrivacyPreferencesManagerImpl.getInstance(),
                         mSearchBoxDataProvider,
@@ -273,7 +317,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         /* shareDelegateSupplier= */ null,
                         /* incognitoStateProvider= */ null,
                         getLifecycleDispatcher(),
-                        overrideUrlLoadingDelegate,
+                        this::loadUrl,
                         /* backKeyBehavior= */ this,
                         /* pageInfoAction= */ (tab, pageInfoHighlight) -> {},
                         IntentHandler::bringTabToFront,
@@ -286,7 +330,6 @@ public class SearchActivity extends AsyncInitializationActivity
                         new OmniboxActionDelegateImpl(
                                 this,
                                 () -> mSearchBoxDataProvider.getTab(),
-                                new SettingsLauncherImpl(),
                                 // TODO(ender): phase out callbacks when the modules below are
                                 // components.
                                 // Open URL in an existing, else new regular tab.
@@ -310,29 +353,26 @@ public class SearchActivity extends AsyncInitializationActivity
                                 () ->
                                         PasswordManagerLauncher.showPasswordSettings(
                                                 this,
+                                                getProfileProviderSupplier()
+                                                        .get()
+                                                        .getOriginalProfile(),
                                                 ManagePasswordsReferrer.CHROME_SETTINGS,
                                                 () -> getModalDialogManager(),
                                                 /* managePasskeys= */ false),
-                                // Open History Clusters UI for Query:
-                                query -> {},
                                 // Open Quick Delete Dialog callback:
                                 null),
                         null,
-                        ChromePureJavaExceptionReporter::reportJavaException,
                         backPressManager,
-                        /* OmniboxSuggestionsDropdownScrollListener= */ this,
-                        new OpenHistoryClustersDelegate() {
-                            @Override
-                            public void openHistoryClustersUi(String query) {}
-                        },
+                        /* OmniboxSuggestionsDropdownScrollListener= */ null,
                         /* tabModelSelectorSupplier= */ null,
-                        /* forcePhoneStyleOmnibox= */ true);
+                        mLocationBarUiOverrides,
+                        null);
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         mLocationBarCoordinator.getOmniboxStub().addUrlFocusChangeListener(this);
 
         // Kick off everything needed for the user to type into the box.
-        beginQuery();
+        handleNewIntent(getIntent(), false);
 
         // Kick off loading of the native library.
         if (!getActivityDelegate().shouldDelayNativeInitialization()) {
@@ -340,6 +380,81 @@ public class SearchActivity extends AsyncInitializationActivity
         }
 
         onInitialLayoutInflationComplete();
+    }
+
+    /**
+     * Process newly received intent.
+     *
+     * @param intent the intent to be processed
+     * @param activityPresent whether activity was already showing when the intent was received
+     */
+    @VisibleForTesting
+    /* package */ void handleNewIntent(Intent intent, boolean activityPresent) {
+        mIntentOrigin = SearchActivityUtils.getIntentOrigin(intent);
+        mSearchType = SearchActivityUtils.getIntentSearchType(intent);
+
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_INTENT_ORIGIN, mIntentOrigin, IntentOrigin.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_REQUESTED_SEARCH_TYPE, mSearchType, SearchType.COUNT);
+        RecordHistogram.recordBooleanHistogram(HISTOGRAM_INTENT_ACTIVITY_PRESENT, activityPresent);
+
+        recordUsage(mIntentOrigin, mSearchType);
+
+        switch (mIntentOrigin) {
+            case IntentOrigin.CUSTOM_TAB:
+                // Note: this may be refined by refinePageClassWithProfile().
+                mSearchBoxDataProvider.setPageClassification(PageClassification.OTHER_ON_CCT_VALUE);
+                mLocationBarUiOverrides
+                        .setLensEntrypointAllowed(false)
+                        .setVoiceEntrypointAllowed(false);
+                break;
+
+            case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET:
+                mLocationBarUiOverrides
+                        .setLensEntrypointAllowed(true)
+                        .setVoiceEntrypointAllowed(true);
+                mSearchBoxDataProvider.setPageClassification(
+                        PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE);
+                break;
+
+            case IntentOrigin.SEARCH_WIDGET:
+                // fallthrough
+
+            default:
+                mLocationBarUiOverrides
+                        .setLensEntrypointAllowed(false)
+                        .setVoiceEntrypointAllowed(true);
+                mSearchBoxDataProvider.setPageClassification(
+                        PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
+                break;
+        }
+
+        var profile = mProfileSupplier.get();
+        if (profile != null) refinePageClassWithProfile(profile);
+
+        mSearchBoxDataProvider.setCurrentUrl(SearchActivityUtils.getIntentUrl(intent));
+        beginQuery();
+    }
+
+    /** Translate current intent origin and extras to a PageClassification. */
+    @VisibleForTesting
+    /* package */ void refinePageClassWithProfile(@NonNull Profile profile) {
+        int pageClass = mSearchBoxDataProvider.getPageClassification(false);
+
+        // Verify if the PageClassification can be refined.
+        var url = SearchActivityUtils.getIntentUrl(getIntent());
+        if (pageClass != PageClassification.OTHER_ON_CCT_VALUE || GURL.isEmptyOrInvalid(url)) {
+            return;
+        }
+
+        var templateSvc = TemplateUrlServiceFactory.getForProfile(profile);
+        if (templateSvc != null && templateSvc.isSearchResultsPageFromDefaultSearchProvider(url)) {
+            mSearchBoxDataProvider.setPageClassification(
+                    PageClassification.SEARCH_RESULT_PAGE_ON_CCT_VALUE);
+        } else {
+            mSearchBoxDataProvider.setPageClassification(PageClassification.OTHER_ON_CCT_VALUE);
+        }
     }
 
     @Override
@@ -377,72 +492,14 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     private void finishNativeInitializationWithProfile(Profile profile) {
-        TabDelegateFactory factory =
-                new TabDelegateFactory() {
-                    @Override
-                    public TabWebContentsDelegateAndroid createWebContentsDelegate(Tab tab) {
-                        return new TabWebContentsDelegateAndroid() {
-                            @Override
-                            public int getDisplayMode() {
-                                return DisplayMode.BROWSER;
-                            }
-
-                            @Override
-                            protected boolean shouldResumeRequestsForCreatedWindow() {
-                                return false;
-                            }
-
-                            @Override
-                            protected boolean addNewContents(
-                                    WebContents sourceWebContents,
-                                    WebContents webContents,
-                                    int disposition,
-                                    Rect initialPosition,
-                                    boolean userGesture) {
-                                return false;
-                            }
-
-                            @Override
-                            protected void setOverlayMode(boolean useOverlayMode) {}
-
-                            @Override
-                            public boolean canShowAppBanners() {
-                                return false;
-                            }
-                        };
-                    }
-
-                    @Override
-                    public ExternalNavigationHandler createExternalNavigationHandler(Tab tab) {
-                        return null;
-                    }
-
-                    @Override
-                    public ContextMenuPopulatorFactory createContextMenuPopulatorFactory(Tab tab) {
-                        return null;
-                    }
-
-                    @Override
-                    public BrowserControlsVisibilityDelegate
-                            createBrowserControlsVisibilityDelegate(Tab tab) {
-                        return null;
-                    }
-
-                    @Override
-                    public NativePage createNativePage(
-                            String url, NativePage candidatePage, Tab tab) {
-                        // SearchActivity does not create native pages.
-                        return null;
-                    }
-                };
-
+        refinePageClassWithProfile(profile);
         WebContents webContents = WebContentsFactory.createWebContents(profile, false, false);
         mTab =
                 new TabBuilder(profile)
                         .setWindow(getWindowAndroid())
                         .setLaunchType(TabLaunchType.FROM_EXTERNAL_APP)
                         .setWebContents(webContents)
-                        .setDelegateFactory(factory)
+                        .setDelegateFactory(new SearchActivityTabDelegateFactory())
                         .build();
         mTab.loadUrl(new LoadUrlParams(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
 
@@ -455,7 +512,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
                     if (result == null || !result.booleanValue()) {
                         Log.e(TAG, "User failed to select a default search engine.");
-                        finish();
+                        finish(TerminationReason.FRE_NOT_COMPLETED);
                         return;
                     }
 
@@ -469,30 +526,25 @@ public class SearchActivity extends AsyncInitializationActivity
     // OverrideBackKeyBehaviorDelegate implementation.
     @Override
     public boolean handleBackKeyPressed() {
-        cancelSearch();
+        finish(TerminationReason.BACK_KEY_PRESSED);
         return true;
     }
 
-    private void finishDeferredInitialization() {
+    @VisibleForTesting
+    void finishDeferredInitialization() {
         assert !mIsActivityUsable
                 : "finishDeferredInitialization() incorrectly called multiple times";
         mIsActivityUsable = true;
-        if (mQueuedUrl != null) {
-            loadUrl(mQueuedUrl, mQueuedTransition, mQueuedPostDataType, mQueuedPostData);
+        if (mQueuedParams != null) {
+            // SearchActivity does not support incognito operation.
+            loadUrl(mQueuedParams, /* isIncognito= */ false);
         }
 
         // TODO(tedchoc): Warmup triggers the CustomTab layout to be inflated, but this widget
         //                will navigate to Tabbed mode.  Investigate whether this can inflate
         //                the tabbed mode layout in the background instead of CCTs.
         CustomTabsConnection.getInstance().warmup(0);
-        VoiceRecognitionHandler voiceRecognitionHandler =
-                mLocationBarCoordinator.getVoiceRecognitionHandler();
-        @SearchType int searchType = getSearchType(getIntent().getAction());
-        if (isFromQuickActionSearchWidget()) {
-            recordQuickActionSearchType(searchType);
-        }
-        mSearchBox.onDeferredStartup(searchType, voiceRecognitionHandler, getWindowAndroid());
-        RecordUserAction.record("SearchWidget.WidgetSelected");
+        mSearchBox.onDeferredStartup(mSearchType, getWindowAndroid());
 
         getActivityDelegate().onFinishDeferredInitialization();
     }
@@ -506,27 +558,13 @@ public class SearchActivity extends AsyncInitializationActivity
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        mSearchBoxDataProvider.setIsFromQuickActionSearchWidget(isFromQuickActionSearchWidget());
-        beginQuery();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        // Make sure that re-entering the SearchActivity from different widgets shows appropriate
-        // suggestion types.
-        mLocationBarCoordinator.clearOmniboxFocus();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mSearchBox.focusTextBox();
+        handleNewIntent(intent, true);
     }
 
     @Override
     public void onPauseWithNative() {
         umaSessionEnd();
+        RevenueStats.setCustomTabSearchClient(null);
         super.onPauseWithNative();
     }
 
@@ -534,6 +572,14 @@ public class SearchActivity extends AsyncInitializationActivity
     public void onResumeWithNative() {
         // Start a new UMA session for the new activity.
         umaSessionResume();
+        if (mIntentOrigin == IntentOrigin.CUSTOM_TAB
+                && SEARCH_IN_CCT_APPLY_REFERRER_ID.getValue()) {
+            var referrer = SearchActivityUtils.getReferrer(getIntent());
+            var referrerValid = !TextUtils.isEmpty(referrer);
+            RecordHistogram.recordBooleanHistogram(HISTOGRAM_INTENT_REFERRER_VALID, referrerValid);
+            RevenueStats.setCustomTabSearchClient(
+                    referrerValid ? CCT_CLIENT_PACKAGE_PREFIX + referrer : null);
+        }
 
         // Inform the actity lifecycle observers. Among other things, the observers record
         // metrics pertaining to the "resumed" activity. This needs to happens after
@@ -542,9 +588,14 @@ public class SearchActivity extends AsyncInitializationActivity
         super.onResumeWithNative();
     }
 
-    /** Mark that the UMA session has ended. */
+    /** Initiate new UMA session, associating metrics with appropriate Activity type. */
     private void umaSessionResume() {
-        mUmaActivityObserver.startUmaSession(ActivityType.TABBED, null, getWindowAndroid());
+        mUmaActivityObserver.startUmaSession(
+                mIntentOrigin == IntentOrigin.CUSTOM_TAB
+                        ? ActivityType.CUSTOM_TAB
+                        : ActivityType.TABBED,
+                null,
+                getWindowAndroid());
     }
 
     /** Mark that the UMA session has ended. */
@@ -557,44 +608,16 @@ public class SearchActivity extends AsyncInitializationActivity
         return mSnackbarManager;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static @SearchType int getSearchType(String action) {
-        if (TextUtils.equals(action, SearchActivityConstants.ACTION_START_VOICE_SEARCH)
-                || TextUtils.equals(
-                        action, SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH)) {
-            return SearchType.VOICE;
-        } else if (TextUtils.equals(action, SearchActivityConstants.ACTION_START_LENS_SEARCH)) {
-            return SearchType.LENS;
-        } else {
-            return SearchType.TEXT;
-        }
-    }
-
-    private boolean isFromSearchWidget() {
-        return IntentUtils.safeGetBooleanExtra(
-                getIntent(), SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false);
-    }
-
-    private boolean isFromQuickActionSearchWidget() {
-        return IntentUtils.safeGetBooleanExtra(
-                getIntent(),
-                SearchActivityConstants.EXTRA_BOOLEAN_FROM_QUICK_ACTION_SEARCH_WIDGET,
-                false);
-    }
-
-    private String getOptionalIntentQuery() {
-        return IntentUtils.safeGetStringExtra(getIntent(), SearchManager.QUERY);
-    }
-
     private void beginQuery() {
-        @SearchType int searchType = getSearchType(getIntent().getAction());
-        if (isFromQuickActionSearchWidget()) {
-            recordQuickActionSearchType(searchType);
-        }
+        var query = SearchActivityUtils.getIntentQuery(getIntent());
+
+        RecordHistogram.recordBooleanHistogram(
+                HISTOGRAM_LAUNCHED_WITH_QUERY, !TextUtils.isEmpty(query));
+
         mSearchBox.beginQuery(
-                searchType,
-                getOptionalIntentQuery(),
-                mLocationBarCoordinator.getVoiceRecognitionHandler(),
+                mIntentOrigin,
+                mSearchType,
+                SearchActivityUtils.getIntentQuery(getIntent()),
                 getWindowAndroid());
     }
 
@@ -622,22 +645,32 @@ public class SearchActivity extends AsyncInitializationActivity
         }
     }
 
-    /* package */ void loadUrl(
-            String url,
-            @PageTransition int transition,
-            @Nullable String postDataType,
-            @Nullable byte[] postData) {
-        // Wait until native has loaded.
+    /* package */ boolean loadUrl(OmniboxLoadUrlParams params, boolean isIncognito) {
+        recordNavigationTargetType(new GURL(params.url));
+
+        if (mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
+            SearchActivityUtils.resolveOmniboxRequestForResult(this, params);
+        } else {
+            loadUrlInChromeBrowser(params);
+        }
+
+        finish(TerminationReason.NAVIGATION);
+        return true;
+    }
+
+    private void loadUrlInChromeBrowser(@NonNull OmniboxLoadUrlParams params) {
         if (!mIsActivityUsable) {
-            mQueuedUrl = url;
-            mQueuedTransition = transition;
-            mQueuedPostDataType = postDataType;
-            mQueuedPostData = postData;
+            // Wait until native has loaded.
+            mQueuedParams = params;
             return;
         }
 
-        Intent intent = createIntentForStartActivity(url, postDataType, postData);
+        Intent intent = SearchActivityUtils.createIntentForStartActivity(this, params);
         if (intent == null) return;
+
+        if (mIntentOrigin == IntentOrigin.SEARCH_WIDGET) {
+            intent.putExtra(SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, true);
+        }
 
         IntentUtils.safeStartActivity(
                 this,
@@ -646,98 +679,76 @@ public class SearchActivity extends AsyncInitializationActivity
                                 this, android.R.anim.fade_in, android.R.anim.fade_out)
                         .toBundle());
         RecordUserAction.record("SearchWidget.SearchMade");
-        LocaleManager.getInstance().recordLocaleBasedSearchMetrics(true, url, transition);
-        finish();
+        LocaleManager.getInstance()
+                .recordLocaleBasedSearchMetrics(true, params.url, params.transitionType);
     }
 
-    /**
-     * Creates an intent that will be used to launch Chrome.
-     *
-     * @param url The URL to be loaded.
-     * @param postDataType postData type.
-     * @param postData Post-data to include in the tab URL's request body, ex. bitmap when image
-     *     search.
-     * @return the intent will be passed to ChromeLauncherActivity, null if input was emprty.
-     */
-    private Intent createIntentForStartActivity(
-            String url, @Nullable String postDataType, @Nullable byte[] postData) {
-        // Don't do anything if the input was empty. This is done after the native check to prevent
-        // resending a queued query after the user deleted it.
-        if (TextUtils.isEmpty(url)) return null;
-
-        // Fix up the URL and send it to the full browser.
-        GURL fixedUrl = UrlFormatter.fixupUrl(url);
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(fixedUrl.getValidSpecOrEmpty()));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        intent.setClass(this, ChromeLauncherActivity.class);
-        if (!TextUtils.isEmpty(postDataType) && postData != null && postData.length != 0) {
-            intent.putExtra(IntentHandler.EXTRA_POST_DATA_TYPE, postDataType);
-            intent.putExtra(IntentHandler.EXTRA_POST_DATA, postData);
-        }
-        if (isFromSearchWidget()) {
-            intent.putExtra(SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, true);
-        }
-        intent.putExtra(EXTRA_FROM_SEARCH_ACTIVITY, true);
-        IntentUtils.addTrustedIntentExtras(intent);
-
-        return intent;
-    }
-
-    private ViewGroup createContentView() {
-        assert mContentView == null;
-
-        ViewGroup contentView =
-                (ViewGroup)
-                        LayoutInflater.from(this).inflate(R.layout.search_activity, null, false);
-        contentView.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        cancelSearch();
-                    }
-                });
-
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(this)) {
-            View toolbarView = contentView.findViewById(R.id.toolbar);
-            final int edgePadding = OmniboxResourceProvider.getToolbarSidePadding(this);
-            toolbarView.setPaddingRelative(
-                    edgePadding,
-                    toolbarView.getPaddingTop(),
-                    edgePadding,
-                    toolbarView.getPaddingBottom());
-            toolbarView.setBackground(
-                    new ColorDrawable(
-                            ChromeColors.getSurfaceColor(
-                                    this, R.dimen.omnibox_suggestion_dropdown_bg_elevation)));
-        }
+    @VisibleForTesting
+    /* package */ ViewGroup createContentView() {
+        var contentView =
+                (ViewGroup) getLayoutInflater().inflate(R.layout.search_activity, null, false);
+        contentView.setOnClickListener(v -> finish(TerminationReason.TAP_OUTSIDE));
         return contentView;
     }
 
-    private void cancelSearch() {
-        finish();
-        overridePendingTransition(0, R.anim.activity_close_exit);
-    }
+    /**
+     * Terminate search session, invoking animations appropriate for the session type, and recording
+     * session termination reason.
+     *
+     * <p>This method should be called instead of {@link finish()}.
+     *
+     * @param reason the reason session was terminated
+     */
+    @VisibleForTesting
+    /* package */ void finish(@TerminationReason int reason) {
+        if (isFinishing()) return;
 
-    private static void recordQuickActionSearchType(@SearchType int searchType) {
-        if (searchType == SearchType.VOICE) {
-            RecordUserAction.record("QuickActionSearchWidget.VoiceQuery");
-        } else if (searchType == SearchType.LENS) {
-            RecordUserAction.record("QuickActionSearchWidget.LensQuery");
-        } else if (searchType == SearchType.TEXT) {
-            RecordUserAction.record("QuickActionSearchWidget.TextQuery");
+        var exitAnimationRes = 0;
+        if (mIntentOrigin != null && mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
+            if (reason != TerminationReason.NAVIGATION) {
+                SearchActivityUtils.resolveOmniboxRequestForResult(this, null);
+            }
+            exitAnimationRes = android.R.anim.fade_out;
+        } else {
+            exitAnimationRes = R.anim.activity_close_exit;
         }
+
+        recordEnumeratedHistogramWithIntentOriginBreakdown(
+                HISTOGRAM_SESSION_TERMINATION_REASON, reason, TerminationReason.COUNT);
+
+        super.finish();
+        overridePendingTransition(0, exitAnimationRes);
     }
 
     @Override
+    public void finish() {
+        finish(TerminationReason.UNSPECIFIED);
+    }
+
     @VisibleForTesting
-    public final void startDelayedNativeInitialization() {
-        super.startDelayedNativeInitialization();
+    /* package */ static void recordUsage(@IntentOrigin int origin, @SearchType int searchType) {
+        var name =
+                switch (origin) {
+                    case IntentOrigin.SEARCH_WIDGET -> USED_ANY_FROM_SEARCH_WIDGET;
+
+                    case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET -> switch (searchType) {
+                        case SearchType.TEXT -> USED_TEXT_FROM_SHORTCUTS_WIDGET;
+                        case SearchType.VOICE -> USED_VOICE_FROM_SHORTCUTS_WIDGET;
+                        case SearchType.LENS -> USED_LENS_FROM_SHORTCUTS_WIDGET;
+                        default -> null;
+                    };
+
+                        // Tracked by Custom Tabs.
+                    case IntentOrigin.CUSTOM_TAB -> null;
+                    default -> null;
+                };
+
+        if (name != null) RecordUserAction.record(name);
     }
 
     private static SearchActivityDelegate getActivityDelegate() {
-        synchronized (DELEGATE_LOCK) {
-            if (sDelegate == null) sDelegate = new SearchActivityDelegate();
-        }
+        ThreadUtils.checkUiThread();
+        if (sDelegate == null) sDelegate = new SearchActivityDelegate();
         return sDelegate;
     }
 
@@ -748,77 +759,100 @@ public class SearchActivity extends AsyncInitializationActivity
         ResettersForTesting.register(() -> sDelegate = oldValue);
     }
 
-    public View getAnchorViewForTesting() {
-        return mAnchorView;
-    }
+    @VisibleForTesting
+    void recordNavigationTargetType(@NonNull GURL url) {
+        var templateSvc = TemplateUrlServiceFactory.getForProfile(mProfileSupplier.get());
+        boolean isSearch =
+                templateSvc != null
+                        && templateSvc.isSearchResultsPageFromDefaultSearchProvider(url);
+        boolean isNative =
+                NativePage.isNativePageUrl(
+                        url, /* incognito= */ false, /* hasPdfDownload= */ false);
 
-    LocationBarCoordinator getLocationBarCoordinatorForTesting() {
-        return mLocationBarCoordinator;
+        int targetType =
+                isNative
+                        ? NavigationTargetType.NATIVE_PAGE
+                        : isSearch ? NavigationTargetType.SEARCH : NavigationTargetType.URL;
+
+        recordEnumeratedHistogramWithIntentOriginBreakdown(
+                HISTOGRAM_NAVIGATION_TARGET_TYPE, targetType, NavigationTargetType.COUNT);
     }
 
     /**
-     * Increase the toolbar vertical height and bottom padding if the omnibox phase 2 feature is
-     * enabled.
+     * An extension of {@link RecordHistogram.recordEnumeratedHistogram} that captures the value
+     * with an additional breakdown by {@link IntentOrigin}.
+     *
+     * <p>The break down may not be captured if the histogram is recorded ahead of origin being
+     * identified (e.g. the activity was terminated before it was able to process the intent).
+     *
+     * @param histogramName the name of histogram to record
+     * @param sample the sample value to record
+     * @param max the maximum value the histogram can take
      */
-    private void updateAnchorViewLayout() {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(mAnchorView.getContext())) {
-            return;
-        }
+    private void recordEnumeratedHistogramWithIntentOriginBreakdown(
+            String histogramName, int sample, int max) {
+        RecordHistogram.recordEnumeratedHistogram(histogramName, sample, max);
 
-        var layoutParams = mAnchorView.getLayoutParams();
-        int heightIncrease =
-                getResources()
-                        .getDimensionPixelSize(
-                                OmniboxFeatures.shouldShowActiveColorOnOmnibox()
-                                        ? R.dimen.toolbar_url_focus_height_increase_active_color
-                                        : R.dimen
-                                                .toolbar_url_focus_height_increase_no_active_color);
-        layoutParams.height =
-                getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                        + heightIncrease;
-        mAnchorView.setLayoutParams(layoutParams);
-
-        // Apply extra bottom padding for no active-color treatments.
-        if (!OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
-            int bottomPadding =
-                    getResources().getDimensionPixelSize(R.dimen.toolbar_url_focus_bottom_padding);
-            mAnchorView.setPaddingRelative(
-                    mAnchorView.getPaddingStart(),
-                    mAnchorView.getPaddingTop(),
-                    mAnchorView.getPaddingEnd(),
-                    bottomPadding);
+        if (mIntentOrigin != null) {
+            String suffix =
+                    switch (mIntentOrigin) {
+                        case IntentOrigin.CUSTOM_TAB -> ".CustomTab";
+                        case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET -> ".ShortcutsWidget";
+                        default -> ".SearchWidget";
+                    };
+            RecordHistogram.recordEnumeratedHistogram(histogramName + suffix, sample, max);
         }
     }
 
-    /** Apply the color to locationbar's and toolbar's background. */
-    private void applyColor(@ColorInt int color) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(SearchActivity.this)
-                || OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
-            return;
-        }
-
-        Drawable locationbarBackground =
-                mContentView.findViewById(R.id.search_location_bar).getBackground();
-        Drawable toolbarBackground = mContentView.findViewById(R.id.toolbar).getBackground();
-        locationbarBackground.setTint(color);
-        toolbarBackground.setTint(color);
-
-        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
-            StatusBarColorController.setStatusBarColor(this.getWindow(), color);
-        }
+    /* package */ void setLocationBarCoordinatorForTesting(LocationBarCoordinator coordinator) {
+        mLocationBarCoordinator = coordinator;
     }
 
-    @Override
-    public void onSuggestionDropdownScroll() {
-        applyColor(
-                ChromeColors.getSurfaceColor(
-                        SearchActivity.this, R.dimen.toolbar_text_box_elevation));
+    /* package */ LocationBarCoordinator getLocationBarCoordinatorForTesting() {
+        return mLocationBarCoordinator;
+    }
+
+    /* package */ void setActivityUsableForTesting(boolean isUsable) {
+        mIsActivityUsable = isUsable;
+    }
+
+    /* package */ SearchBoxDataProvider getSearchBoxDataProviderForTesting() {
+        return mSearchBoxDataProvider;
+    }
+
+    /* package */ LocationBarEmbedderUiOverrides getEmbedderUiOverridesForTesting() {
+        return mLocationBarUiOverrides;
+    }
+
+    /* package */ ObservableSupplier<Profile> getProfileSupplierForTesting() {
+        return mProfileSupplier;
+    }
+
+    /* package */ void setLocationBarLayoutForTesting(SearchActivityLocationBarLayout layout) {
+        mSearchBox = layout;
+    }
+
+    /* package */ void setUmaActivityObserverForTesting(UmaActivityObserver observer) {
+        mUmaActivityObserver = observer;
     }
 
     @Override
-    public void onSuggestionDropdownOverscrolledToTop() {
-        applyColor(
-                ChromeColors.getSurfaceColor(
-                        SearchActivity.this, R.dimen.omnibox_suggestion_dropdown_bg_elevation));
+    @SuppressWarnings("MissingSuperCall")
+    public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        super_onTopResumedActivityChanged(isTopResumedActivity);
+
+        // TODO(crbug.com/329702834): Ensure showing Suggestions when activity resumes.
+        // This may only happen when user enters tab switcher, and immediately returns to the
+        // SearchActivity.
+        if (!isTopResumedActivity) {
+            mSearchBox.clearOmniboxFocus();
+        } else {
+            mSearchBox.requestOmniboxFocus();
+        }
+    }
+
+    @CheckDiscard("Isolated for testing; should be inlined by Proguard")
+    /* package */ void super_onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        super.onTopResumedActivityChanged(isTopResumedActivity);
     }
 }

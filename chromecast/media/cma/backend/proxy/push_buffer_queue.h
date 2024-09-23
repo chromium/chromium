@@ -7,9 +7,9 @@
 
 #include <atomic>
 #include <istream>
+#include <optional>
 #include <ostream>
 
-#include <optional>
 #include "base/sequence_checker.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/decoder_buffer_base.h"

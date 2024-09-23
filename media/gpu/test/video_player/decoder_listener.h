@@ -47,6 +47,7 @@ class DecoderListener {
     kConfigInfo,  // A config info was encountered in an H.264/HEVC video
                   // stream.
     kNewBuffersRequested,
+    kFailure,
     kNumEvents,
   };
   using EventCallback = base::RepeatingCallback<bool(Event)>;

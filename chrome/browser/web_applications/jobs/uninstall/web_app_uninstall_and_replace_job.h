@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UNINSTALL_WEB_APP_UNINSTALL_AND_REPLACE_JOB_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UNINSTALL_WEB_APP_UNINSTALL_AND_REPLACE_JOB_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "base/values.h"
 #include "components/webapps/common/web_app_id.h"
 
 class Profile;
@@ -54,12 +56,12 @@ class WebAppUninstallAndReplaceJob {
 
   void OnShortcutLocationGathered(const webapps::AppId& from_app,
                                   base::OnceClosure on_complete,
-                                  ShortcutLocations locations);
+                                  ShortcutLocations from_app_locations);
 
-  void InstallOsHooksForReplacementApp(base::OnceClosure on_complete,
-                                       ShortcutLocations locations);
-
-  void OnInstallOsHooksCompleted(base::OnceClosure on_complete, OsHooksErrors);
+  void SynchronizeOSIntegrationForReplacementApp(
+      base::OnceClosure on_complete,
+      bool from_app_run_on_os_login,
+      ShortcutLocations from_app_locations);
 
   const raw_ref<Profile> profile_;
   const raw_ref<base::Value::Dict> debug_value_;

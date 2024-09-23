@@ -2,9 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 #include <unordered_set>
 
 #include "base/files/file_util.h"
@@ -25,7 +33,6 @@
 #include "chrome/browser/profiles/profile_avatar_downloader.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
@@ -34,12 +41,11 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/profile_metrics/state.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "profile_attributes_storage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -294,11 +300,11 @@ class ProfileAttributesStorageTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfileManager testing_profile_manager_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ash::ScopedCrosSettingsTestHelper>
       scoped_cros_settings_test_helper_;
 #endif
+  TestingProfileManager testing_profile_manager_;
   ProfileAttributesTestObserver observer_;
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
@@ -368,10 +374,8 @@ TEST_F(ProfileAttributesStorageTest, AddProfiles) {
 
 #endif  // !BUILDFLAG(IS_ANDROID)
     std::string supervised_user_id;
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     if (i == 3u)
       supervised_user_id = supervised_user::kChildAccountSUID;
-#endif
 
     ProfileAttributesInitParams params;
     params.profile_path = profile_path;
@@ -399,12 +403,7 @@ TEST_F(ProfileAttributesStorageTest, AddProfiles) {
     EXPECT_EQ(icon->width(), actual_icon->width());
     EXPECT_EQ(icon->height(), actual_icon->height());
 #endif
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     EXPECT_EQ(i == 3u, entry->IsSupervised());
-#else
-    EXPECT_FALSE(entry->IsSupervised());
-    EXPECT_FALSE(entry->IsOmitted());
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
     EXPECT_EQ(supervised_user_id, entry->GetSupervisedUserId());
   }
 
@@ -1114,24 +1113,18 @@ TEST_F(ProfileAttributesStorageTest, SupervisedUsersAccessors) {
 
   entry->SetSupervisedUserId("");
   ASSERT_FALSE(entry->IsSupervised());
-  ASSERT_FALSE(entry->IsChild());
 
   EXPECT_CALL(observer(), OnProfileSupervisedUserIdChanged(path)).Times(1);
   entry->SetSupervisedUserId("some_supervised_user_id");
   VerifyAndResetCallExpectations();
   ASSERT_TRUE(entry->IsSupervised());
-  ASSERT_FALSE(entry->IsChild());
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   EXPECT_CALL(observer(), OnProfileSupervisedUserIdChanged(path)).Times(1);
   entry->SetSupervisedUserId(supervised_user::kChildAccountSUID);
   VerifyAndResetCallExpectations();
   ASSERT_TRUE(entry->IsSupervised());
-  ASSERT_TRUE(entry->IsChild());
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 TEST_F(ProfileAttributesStorageTest, CreateSupervisedTestingProfile) {
   DisableObserver();  // This test doesn't test observers.
 
@@ -1156,7 +1149,6 @@ TEST_F(ProfileAttributesStorageTest, CreateSupervisedTestingProfile) {
     EXPECT_EQ(supervised_user_id, entry->GetSupervisedUserId());
   }
 }
-#endif
 
 TEST_F(ProfileAttributesStorageTest, ReSortTriggered) {
   DisableObserver();  // No need to test observers in this test.
@@ -1547,7 +1539,7 @@ TEST_F(ProfileAttributesStorageTest, LoadAvatarFromDiskTest) {
       "\x24\x00\x00\x00\x0A\x49\x44\x41\x54\x08\x1D\x63\x60\x00\x00\x00"
       "\x02\x00\x01\xCF\xC8\x35\xE5\x00\x00\x00\x00\x49\x45\x4E\x44\xAE"
       "\x42\x60\x82";
-  base::WriteFile(icon_path, base::StringPiece(bitmap, sizeof(bitmap)));
+  base::WriteFile(icon_path, std::string_view(bitmap, sizeof(bitmap)));
   ASSERT_TRUE(base::PathExists(icon_path));
 
   // Add a new profile.
@@ -1596,18 +1588,18 @@ TEST_F(ProfileAttributesStorageTest, ProfilesState_ActiveMultiProfile) {
   storage()->RecordProfilesState();
 
   // There are 5 profiles all together.
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_All", 5);
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_ActiveMultiProfile",
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_All", 5);
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_ActiveMultiProfile",
                                     5);
 
   // Other user segments get 0 records.
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_SingleProfile", 0);
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_LatentMultiProfile",
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_SingleProfile", 0);
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_LatentMultiProfile",
                                     0);
   histogram_tester.ExpectTotalCount(
-      "Profile.State.Avatar_LatentMultiProfileActive", 0);
+      "Profile.State.LastUsed_LatentMultiProfileActive", 0);
   histogram_tester.ExpectTotalCount(
-      "Profile.State.Avatar_LatentMultiProfileOthers", 0);
+      "Profile.State.LastUsed_LatentMultiProfileOthers", 0);
 }
 
 // On Android (at least on KitKat), all profiles are considered active (because
@@ -1627,17 +1619,17 @@ TEST_F(ProfileAttributesStorageTest, ProfilesState_LatentMultiProfile) {
   storage()->RecordProfilesState();
 
   // There are 5 profiles all together.
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_All", 5);
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_LatentMultiProfile",
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_All", 5);
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_LatentMultiProfile",
                                     5);
   histogram_tester.ExpectTotalCount(
-      "Profile.State.Avatar_LatentMultiProfileActive", 1);
+      "Profile.State.LastUsed_LatentMultiProfileActive", 1);
   histogram_tester.ExpectTotalCount(
-      "Profile.State.Avatar_LatentMultiProfileOthers", 4);
+      "Profile.State.LastUsed_LatentMultiProfileOthers", 4);
 
   // Other user segments get 0 records.
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_SingleProfile", 0);
-  histogram_tester.ExpectTotalCount("Profile.State.Avatar_ActiveMultiProfile",
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_SingleProfile", 0);
+  histogram_tester.ExpectTotalCount("Profile.State.LastUsed_ActiveMultiProfile",
                                     0);
 }
 #endif

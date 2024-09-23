@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from optparse import OptionParser  # pylint: disable=deprecated-module
 import unittest
 
 import six
 
 from telemetry.page import shared_page_state
+from telemetry.core import optparse_argparse_migration as oam
 
 from contrib.cluster_telemetry import rasterize_and_record_micro_ct
 from contrib.cluster_telemetry import skpicture_printer
@@ -36,7 +36,7 @@ class CTBenchmarks(unittest.TestCase):
 
   def testCTBenchmarks(self):
     for benchmark in self.ct_benchmarks:
-      parser = OptionParser()
+      parser = oam.CreateFromOptparseInputs()
       parser.user_agent = 'mobile'
       parser.archive_data_file = self.archive_data_file
       parser.urls_list = self.urls_list
@@ -56,7 +56,7 @@ class CTBenchmarks(unittest.TestCase):
 
   def testCTBenchmarks_wrongAgent(self):
     for benchmark in self.ct_benchmarks:
-      parser = OptionParser()
+      parser = oam.CreateFromOptparseInputs()
       parser.user_agent = 'mobileeeeee'
       parser.archive_data_file = self.archive_data_file
       parser.urls_list = self.urls_list
@@ -71,7 +71,7 @@ class CTBenchmarks(unittest.TestCase):
 
   def testCTBenchmarks_missingDataFile(self):
     for benchmark in self.ct_benchmarks:
-      parser = OptionParser()
+      parser = oam.CreateFromOptparseInputs()
       parser.user_agent = 'mobile'
       parser.urls_list = self.urls_list
       parser.use_live_sites = False
@@ -84,11 +84,11 @@ class CTBenchmarks(unittest.TestCase):
       except AttributeError as e:
         if six.PY2:
           expected_error = (
-              "OptionParser instance has no attribute 'archive_data_file'")
+              "ArgumentParser instance has no attribute 'archive_data_file'")
           actual_error = e.message
         else:
           expected_error = (
-              "'OptionParser' object has no attribute 'archive_data_file'")
+              "'ArgumentParser' object has no attribute 'archive_data_file'")
           actual_error = str(e)
         self.assertEqual(actual_error, expected_error)
 
@@ -100,7 +100,7 @@ class CTBenchmarks(unittest.TestCase):
 
   def testCTBenchmarks_missingDataFileUseLiveSites(self):
     for benchmark in self.ct_benchmarks:
-      parser = OptionParser()
+      parser = oam.CreateFromOptparseInputs()
       parser.user_agent = 'mobile'
       parser.urls_list = self.urls_list
       parser.use_live_sites = True
@@ -113,7 +113,7 @@ class CTBenchmarks(unittest.TestCase):
 
   def testCTBenchmarks_missingUrlsList(self):
     for benchmark in self.ct_benchmarks:
-      parser = OptionParser()
+      parser = oam.CreateFromOptparseInputs()
       parser.user_agent = 'mobile'
       parser.archive_data_file = self.archive_data_file
       benchmark.AddBenchmarkCommandLineArgs(parser)
@@ -124,11 +124,11 @@ class CTBenchmarks(unittest.TestCase):
         self.fail('Expected AttributeError')
       except AttributeError as e:
         if six.PY2:
-          self.assertEqual("OptionParser instance has no attribute 'urls_list'",
-                           str(e))
+          self.assertEqual(
+              "ArgumentParser instance has no attribute 'urls_list'", str(e))
         else:
-          self.assertEqual("'OptionParser' object has no attribute 'urls_list'",
-                           str(e))
+          self.assertEqual(
+              "'ArgumentParser' object has no attribute 'urls_list'", str(e))
 
       # Now add an empty urls_list.
       parser.urls_list = ''

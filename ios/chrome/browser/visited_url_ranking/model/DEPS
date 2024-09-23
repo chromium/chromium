@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/history_clusters/core",
+  "+components/url_deduplication",
+  "+components/visited_url_ranking",
+  "+ios/chrome/browser/bookmarks/model",
+  "+ios/chrome/browser/history/model",
+  "+ios/chrome/browser/segmentation_platform/model",
+  "+ios/chrome/browser/sessions/model",
+  "+ios/chrome/browser/sync/model",
+]

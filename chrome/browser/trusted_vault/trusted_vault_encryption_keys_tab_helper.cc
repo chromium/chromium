@@ -153,9 +153,6 @@ class EncryptionKeyApi
                             &chrome::mojom::TrustedVaultKey::bytes);
     const int32_t last_key_version = keys.back()->version;
 
-    // When Chrome OS wants to enable enclave support in non-primary profiles
-    // this `#if` will need to be more specific.
-#if !BUILDFLAG(IS_CHROMEOS)
     if (security_domain == trusted_vault::SecurityDomainId::kPasskeys) {
       if (enclave_manager_) {
         enclave_manager_->StoreKeys(gaia_id, std::move(keys_as_bytes),
@@ -163,7 +160,6 @@ class EncryptionKeyApi
       }
       return;
     }
-#endif
 
     trusted_vault::TrustedVaultClient* trusted_vault_client =
         trusted_vault_service_->GetTrustedVaultClient(security_domain);
@@ -209,7 +205,7 @@ void TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(
   if (!web_contents->GetBrowserContext()->IsOffTheRecord()) {
     trusted_vault_service = TrustedVaultServiceFactory::GetForProfile(profile);
     if (!trusted_vault_service) {
-      // TODO(crbug.com/1434661): Is it possible? Ideally, this should be
+      // TODO(crbug.com/40264840): Is it possible? Ideally, this should be
       // replaced with CHECK(trusted_vault_service).
       return;
     }
@@ -218,7 +214,8 @@ void TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(
   EnclaveManager* enclave_manager = nullptr;
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
-    enclave_manager = EnclaveManagerFactory::GetForProfile(profile);
+    enclave_manager =
+        EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile);
   }
 #endif
 

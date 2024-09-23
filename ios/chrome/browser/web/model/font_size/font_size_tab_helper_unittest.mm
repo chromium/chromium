@@ -13,9 +13,9 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_java_script_feature.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
@@ -94,9 +94,9 @@ class FontSizeTabHelperTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
@@ -191,7 +191,7 @@ class FontSizeTabHelperTest : public PlatformTest {
 
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -292,7 +292,7 @@ TEST_F(FontSizeTabHelperTest, ZoomIn) {
   std::string pref_key =
       ZoomMultiplierPrefKey(preferred_content_size_category_, test_url);
   const base::Value::Dict& pref =
-      browser_state_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
+      profile_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
   EXPECT_EQ(1.1, pref.FindDoubleByDottedPath(pref_key));
 }
 
@@ -315,7 +315,7 @@ TEST_F(FontSizeTabHelperTest, ZoomOut) {
   std::string pref_key =
       ZoomMultiplierPrefKey(preferred_content_size_category_, test_url);
   const base::Value::Dict& pref =
-      browser_state_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
+      profile_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
   EXPECT_EQ(0.9, pref.FindDoubleByDottedPath(pref_key));
 }
 
@@ -332,7 +332,7 @@ TEST_F(FontSizeTabHelperTest, ResetZoom) {
   std::string pref_key =
       ZoomMultiplierPrefKey(preferred_content_size_category_, test_url);
   const base::Value::Dict& pref =
-      browser_state_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
+      profile_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
   EXPECT_EQ(1.1, pref.FindDoubleByDottedPath(pref_key));
 
   // Then reset. The pref key should be removed from the dictionary.
@@ -360,7 +360,7 @@ TEST_F(FontSizeTabHelperTest, ZoomAndAccessibilityTextSize) {
   EXPECT_TRUE(WaitForMainFrameTextSizeAdjustmentEqualTo(123));
   // Only the user zoom portion is stored in the preferences.
   const base::Value::Dict& pref =
-      browser_state_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
+      profile_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
   EXPECT_EQ(1.1, pref.FindDoubleByDottedPath(pref_key));
 }
 
@@ -376,14 +376,14 @@ TEST_F(FontSizeTabHelperTest, ClearUserZoomPrefs) {
 
   // Make sure the first value is stored in the pref store.
   const base::Value::Dict& pref =
-      browser_state_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
+      profile_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
   std::string pref_key =
       ZoomMultiplierPrefKey(preferred_content_size_category_, test_url);
   EXPECT_EQ(1.1, pref.FindDoubleByDottedPath(pref_key));
 
-  FontSizeTabHelper::ClearUserZoomPrefs(browser_state_->GetPrefs());
+  FontSizeTabHelper::ClearUserZoomPrefs(profile_->GetPrefs());
 
-  EXPECT_TRUE(browser_state_.get()
+  EXPECT_TRUE(profile_.get()
                   ->GetPrefs()
                   ->GetDict(prefs::kIosUserZoomMultipliers)
                   .empty());
@@ -413,7 +413,7 @@ TEST_F(FontSizeTabHelperTest, GoogleCachedAMPPageHasSeparateKey) {
   EXPECT_NE(google_pref_key, google_amp_pref_key);
 
   const base::Value::Dict& pref =
-      browser_state_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
+      profile_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
   EXPECT_EQ(1.1, pref.FindDoubleByDottedPath(google_pref_key));
   EXPECT_EQ(0.9, pref.FindDoubleByDottedPath(google_amp_pref_key));
 }

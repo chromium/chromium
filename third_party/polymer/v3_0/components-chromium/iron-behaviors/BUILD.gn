@@ -6,14 +6,6 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 
-js_library("iron-button-state") {
-  deps = [
-    ".:iron-control-state",
-    "../iron-a11y-keys-behavior:iron-a11y-keys-behavior",
-    "../polymer:polymer_bundled",
-  ]
-}
-
 js_library("iron-control-state") {
   deps = [ "../polymer:polymer_bundled" ]
 }

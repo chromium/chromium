@@ -11,6 +11,7 @@ include_rules = [
     "+base/no_destructor.h",
 
     # TODO(https://crbug.com/787252): Replace the use by WTF::HashMap.
+    "+base/containers/flat_set.h",
     "+base/containers/flat_map.h",
 ]
 

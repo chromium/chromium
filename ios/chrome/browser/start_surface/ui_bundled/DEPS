@@ -1,0 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h",
+  "+ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h",
+  "+ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h",
+  "+ios/chrome/browser/ntp/shared/metrics/home_metrics.h",
+]

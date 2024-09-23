@@ -4,8 +4,9 @@
 
 #include "base/win/com_init_util.h"
 
-#include <stdint.h>
 #include <windows.h>
+
+#include <stdint.h>
 #include <winternl.h>
 
 #include "base/logging.h"

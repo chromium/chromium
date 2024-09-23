@@ -17,7 +17,8 @@ import type {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 import {getEntryLabel, str} from '../../../common/js/translations.js';
 import type {FilesTooltip} from '../../elements/files_tooltip.js';
 import {type FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, type GroupValue} from '../file_list_model.js';
-import {ListThumbnailLoader, type ThumbnailLoadedEvent} from '../list_thumbnail_loader.js';
+import type {ListThumbnailLoader} from '../list_thumbnail_loader.js';
+import {type ThumbnailLoadedEvent} from '../list_thumbnail_loader.js';
 import {type MetadataItem} from '../metadata/metadata_item.js';
 import {type MetadataModel} from '../metadata/metadata_model.js';
 
@@ -28,7 +29,7 @@ import {FileTapHandler} from './file_tap_handler.js';
 import {Grid, GridSelectionController} from './grid.js';
 import {List} from './list.js';
 import {ListItem} from './list_item.js';
-import {ListSelectionModel} from './list_selection_model.js';
+import type {ListSelectionModel} from './list_selection_model.js';
 
 // Align with CSS .grid-title.group-by-modificationTime.
 const MODIFICATION_TIME_GROUP_HEADING_HEIGHT = 57;

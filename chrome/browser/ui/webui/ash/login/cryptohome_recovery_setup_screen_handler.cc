@@ -42,4 +42,9 @@ void CryptohomeRecoverySetupScreenHandler::SetLoadingState() {
   CallExternalAPI("setLoadingState");
 }
 
+base::WeakPtr<CryptohomeRecoverySetupScreenView>
+CryptohomeRecoverySetupScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

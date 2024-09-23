@@ -5,6 +5,7 @@
 #include "ui/gfx/win/physical_size.h"
 
 #include <windows.h>
+
 #include <setupapi.h>
 
 #include <iostream>

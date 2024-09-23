@@ -107,6 +107,9 @@ class DownloadDisplayController : public FullscreenObserver,
   // the info about all models.
   const DownloadBubbleDisplayInfo& UpdateButtonStateFromUpdateService();
 
+  // Obtains and announces accessible alerts from the update service.
+  void HandleAccessibleAlerts();
+
   // Stops and restarts `icon_disappearance_timer_`. The toolbar button will
   // be hidden after the `interval`.
   void ScheduleToolbarDisappearance(base::TimeDelta interval);

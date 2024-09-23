@@ -36,7 +36,10 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -68,7 +71,8 @@ class CORE_EXPORT PingLoader {
                                 const KURL& destination_url);
   static void SendViolationReport(ExecutionContext* execution_context,
                                   const KURL& report_url,
-                                  scoped_refptr<EncodedFormData> report);
+                                  scoped_refptr<EncodedFormData> report,
+                                  bool is_frame_ancestors_violation);
 
   // The last argument is guaranteed to be set to the size of payload if
   // these method return true. If these method returns false, the value
@@ -79,7 +83,7 @@ class CORE_EXPORT PingLoader {
   static bool SendBeacon(const ScriptState&,
                          LocalFrame*,
                          const KURL&,
-                         const String&);
+                         const WTF::String&);
   static bool SendBeacon(const ScriptState&,
                          LocalFrame*,
                          const KURL&,

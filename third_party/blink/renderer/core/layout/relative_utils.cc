@@ -30,19 +30,20 @@ LogicalOffset ComputeRelativeOffset(
                          LayoutUnit size) -> std::optional<LayoutUnit> {
     if (length.IsAuto())
       return std::nullopt;
-    if (length.IsPercentOrCalc() && size == kIndefiniteSize)
+    if (length.HasPercent() && size == kIndefiniteSize) {
       return std::nullopt;
+    }
     return MinimumValueForLength(length, size);
   };
 
   std::optional<LayoutUnit> left =
-      ResolveInset(child_style.UsedLeft(), physical_size.width);
+      ResolveInset(child_style.Left(), physical_size.width);
   std::optional<LayoutUnit> right =
-      ResolveInset(child_style.UsedRight(), physical_size.width);
+      ResolveInset(child_style.Right(), physical_size.width);
   std::optional<LayoutUnit> top =
-      ResolveInset(child_style.UsedTop(), physical_size.height);
+      ResolveInset(child_style.Top(), physical_size.height);
   std::optional<LayoutUnit> bottom =
-      ResolveInset(child_style.UsedBottom(), physical_size.height);
+      ResolveInset(child_style.Bottom(), physical_size.height);
 
   // Common case optimization.
   if (!left && !right && !top && !bottom)
@@ -84,7 +85,7 @@ LogicalOffset ComputeRelativeOffset(
       return container_writing_direction.IsLtr() ? LogicalOffset(*bottom, *left)
                                                  : LogicalOffset(*top, *left);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return LogicalOffset();
   }
 }

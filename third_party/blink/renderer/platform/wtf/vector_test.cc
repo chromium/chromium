@@ -23,6 +23,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 #include <memory>
@@ -31,6 +36,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
 
@@ -40,6 +46,26 @@ HashSet<void*> g_constructed_wrapped_ints;
 unsigned LivenessCounter::live_ = 0;
 
 namespace {
+
+struct SameSizeAsVector {
+  void* buffer;
+  wtf_size_t capacity;
+  wtf_size_t size;
+};
+
+ASSERT_SIZE(Vector<int>, SameSizeAsVector);
+
+#define FAIL_COMPILE 0
+#if FAIL_COMPILE
+// This code should trigger static_assert failure in Vector::TypeConstraints.
+struct StackAllocatedType {
+  STACK_ALLOCATED();
+};
+
+TEST(VectorTest, FailCompile) {
+  Vector<StackAllocatedType> v;
+}
+#endif
 
 TEST(VectorTest, Basic) {
   Vector<int> int_vector;
@@ -112,18 +138,18 @@ TEST(VectorTest, Erase) {
   EXPECT_EQ(4, int_vector[4]);
   EXPECT_EQ(5, int_vector[5]);
 
-  auto* first = int_vector.erase(int_vector.begin());
+  auto first = int_vector.erase(int_vector.begin());
   EXPECT_EQ(5u, int_vector.size());
   EXPECT_EQ(1, *first);
   EXPECT_EQ(int_vector.begin(), first);
 
-  auto* last = std::lower_bound(int_vector.begin(), int_vector.end(), 5);
-  auto* end = int_vector.erase(last);
+  auto last = std::lower_bound(int_vector.begin(), int_vector.end(), 5);
+  auto end = int_vector.erase(last);
   EXPECT_EQ(4u, int_vector.size());
   EXPECT_EQ(int_vector.end(), end);
 
-  auto* item2 = std::lower_bound(int_vector.begin(), int_vector.end(), 2);
-  auto* item4 = int_vector.erase(item2, item2 + 2);
+  auto item2 = std::lower_bound(int_vector.begin(), int_vector.end(), 2);
+  auto item4 = int_vector.erase(item2, item2 + 2);
   EXPECT_EQ(2u, int_vector.size());
   EXPECT_EQ(4, *item4);
 
@@ -212,9 +238,9 @@ TEST(VectorTest, OwnPtr) {
   wtf_size_t index = 0;
   for (OwnPtrVector::iterator iter = vector.begin(); iter != vector.end();
        ++iter) {
-    std::unique_ptr<DestructCounter>* ref_counter = iter;
-    EXPECT_EQ(index, static_cast<wtf_size_t>(ref_counter->get()->Get()));
-    EXPECT_EQ(index, static_cast<wtf_size_t>((*ref_counter)->Get()));
+    std::unique_ptr<DestructCounter>& ref_counter = *iter;
+    EXPECT_EQ(index, static_cast<wtf_size_t>(ref_counter.get()->Get()));
+    EXPECT_EQ(index, static_cast<wtf_size_t>(ref_counter->Get()));
     index++;
   }
   EXPECT_EQ(0, destruct_number);
@@ -574,6 +600,23 @@ bool IsOneTwoThree(const Vector<int>& vector) {
 
 Vector<int> ReturnOneTwoThree() {
   return {1, 2, 3};
+}
+
+TEST(VectorTest, AppendContainers) {
+  Vector<int> result;
+  Vector<int> empty_vector;
+  Vector<int> other_vector({1, 2});
+  std::array<int, 3> other_array = {{3, 4, 5}};
+  int other_c_array[4] = {6, 7, 8, 9};
+  result.AppendVector(other_vector);
+  result.AppendRange(other_array.begin(), other_array.end());
+  result.AppendSpan(base::span(other_c_array));
+  EXPECT_THAT(result, ::testing::ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9));
+
+  result.AppendVector(empty_vector);
+  result.AppendRange(other_array.end(), other_array.end());
+  result.AppendSpan(base::span(other_c_array).subspan(4));
+  EXPECT_THAT(result, ::testing::ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9));
 }
 
 TEST(VectorTest, InitializerList) {

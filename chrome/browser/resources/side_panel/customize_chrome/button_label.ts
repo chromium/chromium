@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './button_label.html.js';
+import {getCss} from './button_label.css.js';
+import {getHtml} from './button_label.html.js';
 
 export interface ButtonLabelElement {
   $: {
@@ -13,30 +14,27 @@ export interface ButtonLabelElement {
   };
 }
 
-export class ButtonLabelElement extends PolymerElement {
+export class ButtonLabelElement extends CrLitElement {
   static get is() {
     return 'customize-chrome-button-label';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      label: {
-        reflectToAttribute: true,
-        type: String,
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      labelDescription: {
-        reflectToAttribute: true,
-        type: String,
-      },
+  static override get properties() {
+    return {
+      label: {type: String},
+      labelDescription: {type: String},
     };
   }
 
-  label: string;
+  label: string = '';
   labelDescription: string|null = null;
 }
 

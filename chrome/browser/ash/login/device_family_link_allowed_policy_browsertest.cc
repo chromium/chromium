@@ -98,7 +98,7 @@ class DeviceFamilyLinkAllowedPolicyTest : public LoginManagerTest {
     fake_gaia_.SetupFakeGaiaForChildUser(
         family_link_user_.account_id.GetUserEmail(),
         family_link_user_.account_id.GetGaiaId(),
-        FakeGaiaMixin::kFakeRefreshToken, false /*issue_any_scope_token*/);
+        FakeGaiaMixin::kFakeRefreshToken, /*issue_any_scope_token=*/true);
     login_manager_.AttemptLoginUsingAuthenticator(
         user_context, std::make_unique<StubAuthenticatorBuilder>(user_context));
   }

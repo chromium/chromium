@@ -56,12 +56,15 @@ export function createTestApp(id: string, optConfig?: AppConfig): App {
       learnMoreUrl: {url: 'https://google.com/'},
     },
     installSource: InstallSource.kUnknown,
-    appSize: undefined,
-    dataSize: undefined,
+    appSize: null,
+    dataSize: null,
     publisherId: '',
     formattedOrigin: '',
     scopeExtensions: [],
     supportedLocales: [],
+    selectedLocale: null,
+    showSystemNotificationsSettingsLink: false,
+    allowUninstall: true,
   };
 
   if (optConfig) {

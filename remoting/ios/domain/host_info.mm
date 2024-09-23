@@ -26,7 +26,7 @@
 
 - (instancetype)initWithRemotingHostInfo:
     (const remoting::apis::v1::HostInfo&)hostInfo {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _hostId = base::SysUTF8ToNSString(hostInfo.host_id());
     _hostName = base::SysUTF8ToNSString(hostInfo.host_name());
     _hostOs = base::SysUTF8ToNSString(hostInfo.host_os_name());

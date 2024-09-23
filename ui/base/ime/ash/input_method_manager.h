@@ -81,6 +81,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     virtual void InputMethodChanged(InputMethodManager* manager,
                                     Profile* profile,
                                     bool show_message) = 0;
+
     // Called when the availability of any of the extra input methods (emoji,
     // handwriting, voice) has changed. The overall state is toggle-able
     // independently of the individual options.
@@ -314,6 +315,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
   // Connects a receiver to the InputEngineManager instance.
   virtual void ConnectInputEngineManager(
       mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) = 0;
+
+  // Connects a receiver to the InputMethodUserDataService instance.
+  virtual void BindInputMethodUserDataService(
+      mojo::PendingReceiver<ime::mojom::InputMethodUserDataService>
+          receiver) = 0;
 
   virtual bool IsISOLevel5ShiftUsedByCurrentInputMethod() const = 0;
 

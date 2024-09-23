@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/audio_glitch_info.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -110,7 +111,7 @@ void WebAudioMediaStreamSource::DeliverRebufferedAudio(
       base::Microseconds(
           frame_delay * base::Time::kMicrosecondsPerSecond /
           MediaStreamAudioSource::GetAudioParameters().sample_rate());
-  MediaStreamAudioSource::DeliverDataToTracks(audio_bus, reference_time);
+  MediaStreamAudioSource::DeliverDataToTracks(audio_bus, reference_time, {});
 }
 
 }  // namespace blink

@@ -25,7 +25,7 @@ constexpr int kWifiCredentialsIdBad = 112;
 constexpr char kWifiSsidOk[] = "test_ssid1";
 constexpr char kWifiSsidBad[] = "test_ssid2";
 const WifiCredentialsAttachment::SecurityType kWifiSecurityType =
-    sharing::mojom::WifiCredentialsMetadata::SecurityType::kWpaPsk;
+    ::sharing::mojom::WifiCredentialsMetadata::SecurityType::kWpaPsk;
 
 }  // namespace
 

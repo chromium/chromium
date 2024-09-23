@@ -10,7 +10,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/views/critical_notification_bubble_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #endif
 
@@ -44,6 +43,17 @@ void UpgradeNotificationController::OnCriticalUpgradeInstalled() {
       ->Show();
 #endif
 }
+
+#if BUILDFLAG(IS_WIN)
+std::unique_ptr<CriticalNotificationBubbleView>
+UpgradeNotificationController::GetCriticalNotificationBubbleViewForTest() {
+  views::View* anchor_view =
+      views::ElementTrackerViews::GetInstance()->GetUniqueView(
+          kToolbarAppMenuButtonElementId,
+          views::ElementTrackerViews::GetContextForView(GetBrowserView()));
+  return std::make_unique<CriticalNotificationBubbleView>(anchor_view);
+}
+#endif
 
 UpgradeNotificationController::UpgradeNotificationController(Browser* browser)
     : BrowserUserData<UpgradeNotificationController>(*browser) {

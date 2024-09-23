@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/page/grid_focusgroup_structure_info.h"
@@ -20,59 +21,58 @@ FocusgroupDirection FocusgroupControllerUtils::FocusgroupDirectionForEvent(
   if (event->ctrlKey() || event->metaKey() || event->shiftKey())
     return FocusgroupDirection::kNone;
 
+  const AtomicString key(event->key());
   // TODO(bebeaudr): Support RTL. Will it be as simple as inverting the
   // direction associated with the left and right arrows when in a RTL element?
-  if (event->key() == "ArrowDown")
-    return FocusgroupDirection::kForwardVertical;
-  else if (event->key() == "ArrowRight")
-    return FocusgroupDirection::kForwardHorizontal;
-  else if (event->key() == "ArrowUp")
-    return FocusgroupDirection::kBackwardVertical;
-  else if (event->key() == "ArrowLeft")
-    return FocusgroupDirection::kBackwardHorizontal;
+  if (key == keywords::kArrowDown) {
+    return FocusgroupDirection::kForwardBlock;
+  } else if (key == keywords::kArrowRight) {
+    return FocusgroupDirection::kForwardInline;
+  } else if (key == keywords::kArrowUp) {
+    return FocusgroupDirection::kBackwardBlock;
+  } else if (key == keywords::kArrowLeft) {
+    return FocusgroupDirection::kBackwardInline;
+  }
 
   return FocusgroupDirection::kNone;
 }
 
 bool FocusgroupControllerUtils::IsDirectionForward(
     FocusgroupDirection direction) {
-  return direction == FocusgroupDirection::kForwardHorizontal ||
-         direction == FocusgroupDirection::kForwardVertical;
+  return direction == FocusgroupDirection::kForwardInline ||
+         direction == FocusgroupDirection::kForwardBlock;
 }
 
 bool FocusgroupControllerUtils::IsDirectionBackward(
     FocusgroupDirection direction) {
-  return direction == FocusgroupDirection::kBackwardHorizontal ||
-         direction == FocusgroupDirection::kBackwardVertical;
+  return direction == FocusgroupDirection::kBackwardInline ||
+         direction == FocusgroupDirection::kBackwardBlock;
 }
 
-bool FocusgroupControllerUtils::IsDirectionHorizontal(
+bool FocusgroupControllerUtils::IsDirectionInline(
     FocusgroupDirection direction) {
-  return direction == FocusgroupDirection::kBackwardHorizontal ||
-         direction == FocusgroupDirection::kForwardHorizontal;
+  return direction == FocusgroupDirection::kBackwardInline ||
+         direction == FocusgroupDirection::kForwardInline;
 }
 
-bool FocusgroupControllerUtils::IsDirectionVertical(
+bool FocusgroupControllerUtils::IsDirectionBlock(
     FocusgroupDirection direction) {
-  return direction == FocusgroupDirection::kBackwardVertical ||
-         direction == FocusgroupDirection::kForwardVertical;
+  return direction == FocusgroupDirection::kBackwardBlock ||
+         direction == FocusgroupDirection::kForwardBlock;
 }
 
 bool FocusgroupControllerUtils::IsAxisSupported(FocusgroupFlags flags,
                                                 FocusgroupDirection direction) {
-  return ((flags & FocusgroupFlags::kHorizontal) &&
-          IsDirectionHorizontal(direction)) ||
-         ((flags & FocusgroupFlags::kVertical) &&
-          IsDirectionVertical(direction));
+  return ((flags & FocusgroupFlags::kInline) && IsDirectionInline(direction)) ||
+         ((flags & FocusgroupFlags::kBlock) && IsDirectionBlock(direction));
 }
 
 bool FocusgroupControllerUtils::WrapsInDirection(
     FocusgroupFlags flags,
     FocusgroupDirection direction) {
-  return ((flags & FocusgroupFlags::kWrapHorizontally) &&
-          IsDirectionHorizontal(direction)) ||
-         ((flags & FocusgroupFlags::kWrapVertically) &&
-          IsDirectionVertical(direction));
+  return ((flags & FocusgroupFlags::kWrapInline) &&
+          IsDirectionInline(direction)) ||
+         ((flags & FocusgroupFlags::kWrapBlock) && IsDirectionBlock(direction));
 }
 
 bool FocusgroupControllerUtils::FocusgroupExtendsInAxis(
@@ -113,7 +113,7 @@ Element* FocusgroupControllerUtils::FindNearestFocusgroupAncestor(
             return ancestor;
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       return nullptr;

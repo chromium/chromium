@@ -6,16 +6,17 @@
 #define DEVICE_GAMEPAD_RAW_INPUT_DATA_FETCHER_WIN_H_
 
 #include <Unknwn.h>
+#include <windows.h>
+
 #include <WinDef.h>
 #include <hidsdi.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <windows.h>
 
 #include <map>
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
+#include "base/containers/heap_array.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/win/message_window.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
@@ -25,8 +26,7 @@
 
 namespace device {
 
-class RawInputDataFetcher : public GamepadDataFetcher,
-                            public base::SupportsWeakPtr<RawInputDataFetcher> {
+class RawInputDataFetcher : public GamepadDataFetcher {
  public:
   using Factory = GamepadDataFetcherFactoryImpl<RawInputDataFetcher,
                                                 GamepadSource::kWinRaw>;
@@ -64,7 +64,7 @@ class RawInputDataFetcher : public GamepadDataFetcher,
                      WPARAM wparam,
                      LPARAM lparam,
                      LRESULT* result);
-  RAWINPUTDEVICE* GetRawInputDevices(DWORD flags);
+  base::HeapArray<RAWINPUTDEVICE> GetRawInputDevices(DWORD flags);
   void ClearControllers();
 
   // The window to receive RawInput events.

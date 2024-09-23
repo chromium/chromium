@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -59,7 +58,7 @@ class VisibleUnitsWordTest : public EditingTestBase {
   std::string DoMiddleOfWord(const std::string& selection_text) {
     SelectionInDOMTree selection = SetSelectionTextToBody(selection_text);
     return GetCaretTextFromBody(
-        MiddleOfWordPosition(selection.Base(), selection.Extent()));
+        MiddleOfWordPosition(selection.Anchor(), selection.Focus()));
   }
 
   // To avoid name conflict in jumbo build, following functions should be here.

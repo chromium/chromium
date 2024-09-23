@@ -6,7 +6,7 @@
 
 #include "base/base64.h"
 #include "base/logging.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 
@@ -18,7 +18,7 @@ FakeSyncEncryptionHandler::~FakeSyncEncryptionHandler() = default;
 
 void FakeSyncEncryptionHandler::NotifyInitialStateToObservers() {}
 
-ModelTypeSet FakeSyncEncryptionHandler::GetEncryptedTypes() {
+DataTypeSet FakeSyncEncryptionHandler::GetEncryptedTypes() {
   return AlwaysEncryptedUserTypes();
 }
 

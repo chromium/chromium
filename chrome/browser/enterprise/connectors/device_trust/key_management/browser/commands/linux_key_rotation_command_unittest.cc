@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/linux_key_rotation_command.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -114,8 +115,8 @@ class LinuxKeyRotationCommandTest : public testing::Test {
   }
 
   void CreateManagementServiceBinary() {
-    ASSERT_TRUE(base::WriteFile(GetBinaryFilePath(),
-                                base::StringPiece("test_content")));
+    ASSERT_TRUE(
+        base::WriteFile(GetBinaryFilePath(), std::string_view("test_content")));
   }
 
   void ExpectCommandErrorHistogram(KeyRotationCommandError error) {

@@ -58,13 +58,14 @@ suite('cr-lazy-render', function() {
     assertNotEquals(-1, inner.textContent!.indexOf('DC'));
   });
 
-  test('two-way binding works', function() {
+  test('two-way binding works', async function() {
     bind.checked = true;
 
     lazy.get();
     const checkbox = document.querySelector('cr-checkbox')!;
     assertTrue(checkbox.checked);
     checkbox.click();
+    await checkbox.updateComplete;
     assertFalse(checkbox.checked);
     assertFalse(bind.checked);
   });

@@ -8,7 +8,6 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "build/branding_buildflags.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
@@ -19,10 +18,11 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -72,7 +72,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = builder.Build();
+    chrome_browser_state_ = std::move(builder).Build();
     // Set up the test browser and attach the browser agents.
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
@@ -146,7 +146,9 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     fake_system_identity_manager()->AddIdentity(identity_);
   }
 
-  PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
+  PrefService* GetLocalState() {
+    return GetApplicationContext()->GetLocalState();
+  }
 
   // Tests the mediator with a new created configurator when no accounts are on
   // the device.
@@ -189,7 +191,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     NSString* title = nil;
     switch (style) {
       case SigninPromoViewStyleStandard:
-        title = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
+        title = GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN);
         break;
       case SigninPromoViewStyleCompactHorizontal:
       case SigninPromoViewStyleCompactVertical:
@@ -213,12 +215,11 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     OCMExpect([signin_promo_view_ stopSignInSpinner]);
     if (style == SigninPromoViewStyleCompactVertical ||
         style == SigninPromoViewStyleCompactHorizontal) {
-      UIImage* logo;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      logo = [UIImage imageNamed:@"signin_promo_logo_chrome_color"];
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+      UIImage* logo = [UIImage imageNamed:kChromeSigninPromoLogoImage];
 #else
-      logo = [UIImage imageNamed:@"signin_promo_logo_chromium_color"];
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      UIImage* logo = [UIImage imageNamed:kChromiumSigninPromoLogoImage];
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
       OCMExpect([signin_promo_view_ setNonProfileImage:logo]);
     }
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
@@ -614,7 +615,8 @@ TEST_F(SigninPromoViewMediatorTest,
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   TestChromeBrowserState::Builder builder;
   builder.SetPrefService(CreatePrefService());
-  std::unique_ptr<TestChromeBrowserState> browser_state = builder.Build();
+  std::unique_ptr<TestChromeBrowserState> browser_state =
+      std::move(builder).Build();
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
                               static_cast<int>(BrowserSigninMode::kDisabled));
   EXPECT_FALSE([SigninPromoViewMediator
@@ -765,7 +767,8 @@ TEST_F(SigninPromoViewMediatorTest,
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
   TestChromeBrowserState::Builder builder;
   builder.SetPrefService(CreatePrefService());
-  std::unique_ptr<TestChromeBrowserState> browser_state = builder.Build();
+  std::unique_ptr<TestChromeBrowserState> browser_state =
+      std::move(builder).Build();
   browser_state->GetPrefs()->SetBoolean(
       prefs::kIosBookmarkSettingsPromoAlreadySeen, true);
   EXPECT_FALSE([SigninPromoViewMediator

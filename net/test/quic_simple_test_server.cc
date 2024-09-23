@@ -142,11 +142,11 @@ std::string const QuicSimpleTestServer::GetSimpleHeaderValue() {
 }
 
 void SetupQuicMemoryCacheBackend() {
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[kHelloHeaderName] = kHelloHeaderValue;
   headers[kStatusHeader] = kHelloStatus;
   headers[kCombinedHeaderName] = kCombinedHelloHeaderValue;
-  spdy::Http2HeaderBlock trailers;
+  quiche::HttpHeaderBlock trailers;
   trailers[kHelloTrailerName] = kHelloTrailerValue;
   g_quic_cache_backend = new quic::QuicMemoryCacheBackend();
   g_quic_cache_backend->AddResponse(base::StringPrintf("%s", kTestServerHost),
@@ -240,7 +240,7 @@ bool QuicSimpleTestServer::Start() {
 }
 
 void QuicSimpleTestServer::AddResponse(const std::string& path,
-                                       spdy::Http2HeaderBlock response_headers,
+                                       quiche::HttpHeaderBlock response_headers,
                                        const std::string& response_body) {
   g_quic_cache_backend->AddResponse(
       base::StringPrintf("%s:%d", kTestServerHost, GetPort()), path,
@@ -249,9 +249,9 @@ void QuicSimpleTestServer::AddResponse(const std::string& path,
 
 void QuicSimpleTestServer::AddResponseWithEarlyHints(
     const std::string& path,
-    const spdy::Http2HeaderBlock& response_headers,
+    const quiche::HttpHeaderBlock& response_headers,
     const std::string& response_body,
-    const std::vector<spdy::Http2HeaderBlock>& early_hints) {
+    const std::vector<quiche::HttpHeaderBlock>& early_hints) {
   g_quic_cache_backend->AddResponseWithEarlyHints(kTestServerHost, path,
                                                   response_headers.Clone(),
                                                   response_body, early_hints);

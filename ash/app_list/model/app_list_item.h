@@ -22,6 +22,7 @@
 namespace ash {
 enum class AppListConfigType;
 class AppListFolderItem;
+class AppListTestHelper;
 class AppListItemList;
 class AppListItemListTest;
 class AppListItemObserver;
@@ -132,6 +133,8 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
   bool is_new_install() const { return metadata_->is_new_install; }
 
+  AppCollection collection_id() const { return metadata_->collection_id; }
+
   // Sets the `is_new_install` metadata field and notifies observers.
   void SetIsNewInstall(bool is_new_install);
 
@@ -156,7 +159,9 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // Subclasses also have mutable access to the metadata ptr.
   AppListItemMetadata* metadata() { return metadata_.get(); }
 
+  friend class AppsCollectionSectionViewTest;
   friend class AppListBadgeController;
+  friend class AppListTestHelper;
   friend class AppListItemList;
   friend class AppListItemListTest;
   friend class AppListItemViewPixelTestBase;
@@ -172,6 +177,9 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
   // Sets the name to be used as the accessible name for the item.
   void SetAccessibleName(const std::string& accessible_name);
+
+  // Sets the app collection id for this item.
+  void SetAppCollectionId(AppCollection collection_id);
 
   // Updates whether the notification badge is shown on the view.
   void UpdateNotificationBadge(bool has_badge);
@@ -189,6 +197,7 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
  private:
   friend class AppListModelTest;
+  FRIEND_TEST_ALL_PREFIXES(AppListItemViewTest, AccessibleDescription);
 
   std::unique_ptr<AppListItemMetadata> metadata_;
 

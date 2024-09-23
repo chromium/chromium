@@ -161,14 +161,14 @@ public final class ScreenshotTask implements ScreenshotSource {
 
         // If the bottom sheet is currently open, then do not use the Compositor based screenshot
         // so that the Android View for the bottom sheet will be captured.
-        // TODO(https://crbug.com/835862): When the sheet is partially opened both the compositor
+        // TODO(crbug.com/40573072): When the sheet is partially opened both the compositor
         // and Android views should be captured in the screenshot.
         if (BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()).isSheetOpen()) {
             return false;
         }
 
-        // If the start surface or the grid tab switcher are in use, do not use the compositor, it
-        // will snapshot the last active tab instead of the current screen if we try to use it.
+        // If the grid tab switcher is in use, do not use the compositor, it will snapshot the last
+        // active tab instead of the current screen if we try to use it.
         if (chromeActivity.isInOverviewMode()) {
             return false;
         }

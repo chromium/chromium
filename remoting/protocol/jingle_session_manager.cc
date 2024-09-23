@@ -11,6 +11,7 @@
 #include "remoting/protocol/content_description.h"
 #include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/jingle_session.h"
+#include "remoting/protocol/session_observer.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/signaling/iq_sender.h"
 #include "remoting/signaling/signal_strategy.h"
@@ -57,6 +58,17 @@ void JingleSessionManager::set_authenticator_factory(
     std::unique_ptr<AuthenticatorFactory> authenticator_factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   authenticator_factory_ = std::move(authenticator_factory);
+}
+
+SessionObserver::Subscription JingleSessionManager::AddSessionObserver(
+    SessionObserver* observer) {
+  observers_.AddObserver(observer);
+  return SessionObserver::Subscription(
+      base::BindOnce(&JingleSessionManager::RemoveSessionObserver,
+                     weak_factory_.GetWeakPtr(), observer));
+}
+void JingleSessionManager::RemoveSessionObserver(SessionObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void JingleSessionManager::OnSignalStrategyStateChange(
@@ -110,16 +122,15 @@ bool JingleSessionManager::OnSignalStrategyIncomingStanza(
       ErrorCode error;
       switch (response) {
         case OVERLOAD:
-          error = HOST_OVERLOAD;
+          error = ErrorCode::HOST_OVERLOAD;
           break;
 
         case DECLINE:
-          error = SESSION_REJECTED;
+          error = ErrorCode::SESSION_REJECTED;
           break;
 
         default:
           NOTREACHED();
-          error = SESSION_REJECTED;
       }
 
       session->Close(error);

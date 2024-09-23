@@ -982,7 +982,8 @@ TEST(BrowserControlsOffsetManagerTest, ScrollByWithZeroHeightControlsIsNoop) {
   MockBrowserControlsOffsetManagerClient client(0.f, 0.5f, 0.5f);
   BrowserControlsOffsetManager* manager = client.manager();
   manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
-                                      BrowserControlsState::kBoth, false);
+                                      BrowserControlsState::kBoth, false,
+                                      std::nullopt);
 
   manager->ScrollBegin();
   gfx::Vector2dF pending = manager->ScrollBy(gfx::Vector2dF(0.f, 20.f));
@@ -1053,12 +1054,14 @@ TEST(BrowserControlsOffsetManagerTest,
   EXPECT_FLOAT_EQ(1.f, client.CurrentBottomControlsShownRatio());
 
   manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
-                                      BrowserControlsState::kHidden, true);
+                                      BrowserControlsState::kHidden, true,
+                                      std::nullopt);
   EXPECT_TRUE(manager->HasAnimation());
   EXPECT_FLOAT_EQ(1.f, client.CurrentBottomControlsShownRatio());
 
   manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
-                                      BrowserControlsState::kShown, true);
+                                      BrowserControlsState::kShown, true,
+                                      std::nullopt);
   EXPECT_FALSE(manager->HasAnimation());
   EXPECT_FLOAT_EQ(1.f, client.CurrentBottomControlsShownRatio());
 }
@@ -1214,7 +1217,8 @@ TEST(BrowserControlsOffsetManagerTest, MinHeightChangeUpdatesAnimation) {
   // Hide the controls to start an animation to min-height.
   EXPECT_FLOAT_EQ(1.f, manager->TopControlsShownRatio());
   manager->UpdateBrowserControlsState(BrowserControlsState::kHidden,
-                                      BrowserControlsState::kBoth, true);
+                                      BrowserControlsState::kBoth, true,
+                                      std::nullopt);
   base::TimeTicks time = base::TimeTicks::Now();
   manager->Animate(time);
   EXPECT_TRUE(manager->HasAnimation());
@@ -1314,7 +1318,8 @@ TEST(BrowserControlsOffsetManagerTest,
 
   // Start an animation to show the controls
   manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
-                                      BrowserControlsState::kShown, true);
+                                      BrowserControlsState::kShown, true,
+                                      std::nullopt);
   EXPECT_TRUE(manager->IsAnimatingToShowControls());
 
   // Start a scroll, which should cancel the animation.
@@ -1349,7 +1354,8 @@ TEST(BrowserControlsOffsetManagerTest,
 
   // Start an animation to show the controls.
   manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
-                                      BrowserControlsState::kShown, true);
+                                      BrowserControlsState::kShown, true,
+                                      std::nullopt);
   EXPECT_TRUE(manager->IsAnimatingToShowControls());
 
   // Finish the scroll, and the animation should still be in progress and/or
@@ -1357,6 +1363,127 @@ TEST(BrowserControlsOffsetManagerTest,
   // is trying to show the controls.
   manager->ScrollEnd();
   EXPECT_TRUE(manager->IsAnimatingToShowControls());
+}
+
+TEST(BrowserControlsOffsetManagerTest, MinHeightIncreasedByMoreThanHeight) {
+  MockBrowserControlsOffsetManagerClient client(150.f, 0.5f, 0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+
+  // Set a starting height without animation.
+  client.SetBrowserControlsParams(
+      {/* top_controls_height */ 80,
+       /* top_controls_min_height */ 0,
+       /* bottom_controls_height */ 50,
+       /* bottom_controls_min_height */ 0,
+       /* animate_browser_controls_height_changes */ false,
+       /* browser_controls_shrink_blink_size */ false});
+  EXPECT_FLOAT_EQ(80.f, manager->TopControlsHeight());
+  EXPECT_FLOAT_EQ(1.f, manager->TopControlsShownRatio());
+  EXPECT_FLOAT_EQ(50.f, manager->BottomControlsHeight());
+  EXPECT_FLOAT_EQ(0.f, manager->BottomControlsMinHeight());
+  EXPECT_FLOAT_EQ(0.f, manager->BottomControlsMinHeightOffset());
+  EXPECT_FLOAT_EQ(1.f, manager->BottomControlsShownRatio());
+  EXPECT_FALSE(manager->HasAnimation());
+
+  client.SetBrowserControlsParams(
+      {/* top_controls_height */ 80,
+       /* top_controls_min_height */ 0,
+       /* bottom_controls_height */ 200,
+       /* bottom_controls_min_height */ 200,
+       /* animate_browser_controls_height_changes */ true,
+       /* browser_controls_shrink_blink_size */ false});
+  EXPECT_FLOAT_EQ(80.f, manager->TopControlsHeight());
+  EXPECT_FLOAT_EQ(1.f, manager->TopControlsShownRatio());
+  EXPECT_FLOAT_EQ(200.f, manager->BottomControlsHeight());
+  EXPECT_FLOAT_EQ(200.f, manager->BottomControlsMinHeight());
+  // The min height offset should have been "stepped up" to match the previous
+  // height of 50, so that it animates over the same range of values as the
+  // height does.
+  EXPECT_FLOAT_EQ(50.f, manager->BottomControlsMinHeightOffset());
+  // With the animation, the shown ratio won't change just yet. With a
+  // transition from 50 -> 200, only 25% is currently showing.
+  EXPECT_FLOAT_EQ(0.25f, manager->BottomControlsShownRatio());
+  EXPECT_TRUE(manager->HasAnimation());
+
+  base::TimeTicks time = base::TimeTicks::Now();
+  // First animate will establish the animation.
+  float previous = manager->BottomControlsShownRatio();
+  manager->Animate(time);
+  EXPECT_EQ(manager->BottomControlsShownRatio(), previous);
+
+  while (manager->HasAnimation()) {
+    previous = manager->BottomControlsShownRatio();
+    time = base::Microseconds(100) + time;
+    manager->Animate(time);
+    EXPECT_GT(manager->BottomControlsShownRatio(), previous);
+
+    // Ensure that the min height offset is moving in coordination with the
+    // shown ratio.
+    EXPECT_FLOAT_EQ(manager->BottomControlsMinHeightOffset() /
+                        manager->BottomControlsMinHeight(),
+                    manager->BottomControlsShownRatio());
+  }
+  EXPECT_FALSE(manager->HasAnimation());
+  // Controls should be fully shown when the animation ends.
+  EXPECT_FLOAT_EQ(1.f, manager->BottomControlsShownRatio());
+}
+
+TEST(BrowserControlsOffsetManagerTest, MinHeightDecreasedByMoreThanHeight) {
+  MockBrowserControlsOffsetManagerClient client(150.f, 0.5f, 0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+
+  // Set a starting height without animation.
+  client.SetBrowserControlsParams(
+      {/* top_controls_height */ 80,
+       /* top_controls_min_height */ 0,
+       /* bottom_controls_height */ 200,
+       /* bottom_controls_min_height */ 200,
+       /* animate_browser_controls_height_changes */ false,
+       /* browser_controls_shrink_blink_size */ false});
+  EXPECT_FLOAT_EQ(80.f, manager->TopControlsHeight());
+  EXPECT_FLOAT_EQ(1.f, manager->TopControlsShownRatio());
+  EXPECT_FLOAT_EQ(200.f, manager->BottomControlsHeight());
+  EXPECT_FLOAT_EQ(200.f, manager->BottomControlsMinHeight());
+  EXPECT_FLOAT_EQ(200.f, manager->BottomControlsMinHeightOffset());
+  EXPECT_FLOAT_EQ(1.f, manager->BottomControlsShownRatio());
+  EXPECT_FALSE(manager->HasAnimation());
+
+  client.SetBrowserControlsParams(
+      {/* top_controls_height */ 80,
+       /* top_controls_min_height */ 0,
+       /* bottom_controls_height */ 50,
+       /* bottom_controls_min_height */ 0,
+       /* animate_browser_controls_height_changes */ true,
+       /* browser_controls_shrink_blink_size */ false});
+  EXPECT_FLOAT_EQ(80.f, manager->TopControlsHeight());
+  EXPECT_FLOAT_EQ(1.f, manager->TopControlsShownRatio());
+  EXPECT_FLOAT_EQ(50.f, manager->BottomControlsHeight());
+  EXPECT_FLOAT_EQ(0.f, manager->BottomControlsMinHeight());
+  // The min height offset should still be at the full value, as the animation
+  // hasn't yet started.
+  EXPECT_FLOAT_EQ(200.f, manager->BottomControlsMinHeightOffset());
+  // With the animation, the shown ratio won't change just yet. With a
+  // transition from 200 -> 50, 400% is currently showing.
+  EXPECT_FLOAT_EQ(4.0f, manager->BottomControlsShownRatio());
+  EXPECT_TRUE(manager->HasAnimation());
+
+  base::TimeTicks time = base::TimeTicks::Now();
+  // First animate will establish the animation.
+  float previous = manager->BottomControlsShownRatio();
+  manager->Animate(time);
+  EXPECT_EQ(manager->BottomControlsShownRatio(), previous);
+
+  while (manager->HasAnimation()) {
+    previous = manager->BottomControlsShownRatio();
+    time = base::Microseconds(100) + time;
+    manager->Animate(time);
+    EXPECT_LT(manager->BottomControlsShownRatio(), previous);
+  }
+  EXPECT_FALSE(manager->HasAnimation());
+  // Controls should be fully shown when the animation ends.
+  EXPECT_FLOAT_EQ(1.f, manager->BottomControlsShownRatio());
+  // Ensure that the min height offset has fully shrunk.
+  EXPECT_FLOAT_EQ(0.f, manager->BottomControlsMinHeightOffset());
 }
 
 }  // namespace

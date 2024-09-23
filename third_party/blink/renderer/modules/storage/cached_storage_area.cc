@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/storage/cached_storage_area.h"
 
 #include <inttypes.h>
@@ -11,9 +16,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -107,12 +114,35 @@ bool CachedStorageArea::SetItem(const String& key,
                       StringToUint8Vector(value, value_format),
                       optional_old_value, source_string,
                       MakeSuccessCallback(source));
+    EnqueueCheckpointMicrotask(source);
   }
   if (!IsSessionStorage())
     EnqueuePendingMutation(key, value, old_value, source_string);
   else if (old_value != value)
     EnqueueStorageEvent(key, old_value, value, page_url, source_id);
   return true;
+}
+
+void CachedStorageArea::EnqueueCheckpointMicrotask(Source* source) {
+  if (checkpoint_queued_) {
+    return;
+  }
+
+  LocalDOMWindow* window = source->GetDOMWindow();
+  if (!window) {
+    return;
+  }
+
+  checkpoint_queued_ = true;
+  window->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
+      &CachedStorageArea::NotifyCheckpoint, weak_factory_.GetWeakPtr()));
+}
+
+void CachedStorageArea::NotifyCheckpoint() {
+  checkpoint_queued_ = false;
+  if (remote_area_) {
+    remote_area_->Checkpoint();
+  }
 }
 
 void CachedStorageArea::RemoveItem(const String& key, Source* source) {
@@ -133,6 +163,7 @@ void CachedStorageArea::RemoveItem(const String& key, Source* source) {
     remote_area_->Delete(StringToUint8Vector(key, GetKeyFormat()),
                          optional_old_value, source_string,
                          MakeSuccessCallback(source));
+    EnqueueCheckpointMicrotask(source);
   }
   if (!IsSessionStorage())
     EnqueuePendingMutation(key, String(), old_value, source_string);
@@ -171,6 +202,7 @@ void CachedStorageArea::Clear(Source* source) {
   if (!is_session_storage_for_prerendering_) {
     remote_area_->DeleteAll(source_string, std::move(new_observer),
                             MakeSuccessCallback(source));
+    EnqueueCheckpointMicrotask(source);
   }
   if (!IsSessionStorage())
     EnqueuePendingMutation(String(), String(), String(), source_string);
@@ -556,7 +588,8 @@ CachedStorageArea::PopPendingMutation(const String& source) {
   const String key = mutation->key;
   if (!key.IsNull()) {
     auto key_queue_iter = pending_mutations_by_key_.find(key);
-    DCHECK(key_queue_iter != pending_mutations_by_key_.end());
+    CHECK(key_queue_iter != pending_mutations_by_key_.end(),
+          base::NotFatalUntil::M130);
     DCHECK_EQ(key_queue_iter->value.front(), mutation.get());
     key_queue_iter->value.pop_front();
     if (key_queue_iter->value.empty())
@@ -820,7 +853,7 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
       return result;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CachedStorageArea::EvictCachedData() {

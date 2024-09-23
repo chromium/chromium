@@ -7,13 +7,10 @@
 
 #include "base/memory/singleton.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
-}
-
-namespace web {
-class BrowserState;
 }
 
 namespace policy {
@@ -33,8 +30,10 @@ class UserPolicySigninServiceFactory : public BrowserStateKeyedServiceFactory {
   static UserPolicySigninServiceFactory* GetInstance();
 
   // Returns the instance of UserPolicySigninService for the `context`.
-  static UserPolicySigninService* GetForBrowserState(
-      web::BrowserState* context);
+  static UserPolicySigninService* GetForProfile(ProfileIOS* profile);
+
+  // Deprecated: use GetForProfile(...).
+  static UserPolicySigninService* GetForBrowserState(ProfileIOS* profile);
 
   // Allows setting a mock DeviceManagementService for tests. Does not take
   // ownership, and should be reset to nullptr at the end of the test.

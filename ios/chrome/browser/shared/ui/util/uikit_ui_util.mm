@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 #import <stddef.h>
 #import <stdint.h>
+
 #import <cmath>
 
 #import "base/apple/foundation_util.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
@@ -69,6 +71,15 @@ void MaybeSetUITextFieldScaledFont(BOOL maybe,
 UIFont* CreateDynamicFont(UIFontTextStyle style, UIFontWeight weight) {
   UIFontDescriptor* fontDescriptor =
       [UIFontDescriptor preferredFontDescriptorWithTextStyle:style];
+  return [UIFont systemFontOfSize:fontDescriptor.pointSize weight:weight];
+}
+
+UIFont* CreateDynamicFont(UIFontTextStyle style,
+                          UIFontWeight weight,
+                          id<UITraitEnvironment> environment) {
+  UIFontDescriptor* fontDescriptor = [UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:style
+             compatibleWithTraitCollection:environment.traitCollection];
   return [UIFont systemFontOfSize:fontDescriptor.pointSize weight:weight];
 }
 
@@ -207,15 +218,6 @@ bool IsCompactHeight(id<UITraitEnvironment> environment) {
 
 bool IsCompactHeight(UITraitCollection* traitCollection) {
   return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
-}
-
-bool IsRegularXRegularSizeClass(id<UITraitEnvironment> environment) {
-  return IsRegularXRegularSizeClass(environment.traitCollection);
-}
-
-bool IsRegularXRegularSizeClass(UITraitCollection* traitCollection) {
-  return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
-         traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
 }
 
 bool ShouldShowCompactToolbar(id<UITraitEnvironment> environment) {
@@ -429,4 +431,45 @@ CGFloat DeviceCornerRadius() {
   const BOOL isRoundedDevice =
       (idiom == UIUserInterfaceIdiomPhone && window.safeAreaInsets.bottom);
   return isRoundedDevice ? 40.0 : 0.0;
+}
+
+bool IsBottomOmniboxAvailable() {
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
+}
+
+NSArray<UITrait>* TraitCollectionSetForTraits(NSArray<UITrait>* traits) {
+  if (base::FeatureList::IsEnabled(kEnableTraitCollectionRegistration) &&
+      traits) {
+    return traits;
+  }
+
+  static dispatch_once_t once;
+  static NSArray<UITrait>* everyUIMutableTrait = nil;
+  dispatch_once(&once, ^{
+    // This is a list of all the UITraits provided by iOS. This was generated
+    // from Apple's documentation on UIMutableTraits and is subject to change
+    // with subsequent releases of iOS. See
+    // https://developer.apple.com/documentation/uikit/uimutabletraits?language=objc
+    NSMutableArray<UITrait>* mutableTraits = [@[
+      UITraitAccessibilityContrast.self, UITraitActiveAppearance.self,
+      UITraitDisplayGamut.self, UITraitDisplayScale.self,
+      UITraitForceTouchCapability.self, UITraitHorizontalSizeClass.self,
+      UITraitImageDynamicRange.self, UITraitLayoutDirection.self,
+      UITraitLegibilityWeight.self, UITraitPreferredContentSizeCategory.self,
+      UITraitSceneCaptureState.self, UITraitToolbarItemPresentationSize.self,
+      UITraitTypesettingLanguage.self, UITraitUserInterfaceIdiom.self,
+      UITraitUserInterfaceLevel.self, UITraitUserInterfaceStyle.self,
+      UITraitVerticalSizeClass.self
+    ] mutableCopy];
+
+#if defined(__IPHONE_18_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_0
+    if (@available(iOS 18, *)) {
+      [mutableTraits addObject:UITraitListEnvironment.self];
+    }
+#endif
+
+    everyUIMutableTrait = [NSArray arrayWithArray:mutableTraits];
+  });
+
+  return everyUIMutableTrait;
 }

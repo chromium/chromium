@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/download/download_bubble_row_view_info.h"
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_ui_model.h"
@@ -13,10 +14,13 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/vector_icons/vector_icons.h"
@@ -302,25 +306,28 @@ TEST_F(DownloadBubbleRowViewInfoTest, InterruptedInfo) {
   } kTestCases[] = {
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED},
        false,
-       &views::kInfoIcon,
+       &views::kInfoChromeRefreshIcon,
        std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG},
        false,
-       &vector_icons::kFileDownloadOffIcon,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE},
        false,
-       &vector_icons::kFileDownloadOffIcon,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED},
        false,
-       &vector_icons::kFileDownloadOffIcon,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        std::optional<DownloadCommands::Command>()},
-      {no_retry_interrupt_reasons, false, &vector_icons::kFileDownloadOffIcon,
+      {no_retry_interrupt_reasons, false,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        std::optional<DownloadCommands::Command>()},
-      {retry_interrupt_reasons, false, &vector_icons::kFileDownloadOffIcon,
+      {retry_interrupt_reasons, false,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        DownloadCommands::Command::RETRY},
-      {retry_interrupt_reasons, true, &vector_icons::kFileDownloadOffIcon,
+      {retry_interrupt_reasons, true,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        DownloadCommands::Command::RESUME},
   };
 

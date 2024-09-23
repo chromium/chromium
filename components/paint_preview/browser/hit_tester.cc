@@ -39,8 +39,4 @@ void HitTester::HitTest(const gfx::Rect& query,
   rtree_.SearchRefs(query, results);
 }
 
-void HitTester::Reset() {
-  rtree_.Reset();
-}
-
 }  // namespace paint_preview

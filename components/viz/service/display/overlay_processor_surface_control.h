@@ -34,6 +34,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorSurfaceControl
       OverlayCandidateList* candidates) override;
   gfx::Rect GetOverlayDamageRectForOutputSurface(
       const OverlayCandidate& overlay) const override;
+  bool SupportsFlipRotateTransform() const override;
 
  private:
   gfx::OverlayTransform display_transform_ = gfx::OVERLAY_TRANSFORM_NONE;

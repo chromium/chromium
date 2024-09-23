@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_WEBGPU_DECODER_H_
 
 #include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/common_decoder.h"
 #include "gpu/command_buffer/service/decoder_context.h"

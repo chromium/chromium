@@ -8,6 +8,7 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -25,6 +26,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -35,6 +37,7 @@
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/load_flags.h"
@@ -54,6 +57,8 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
@@ -87,6 +92,7 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/ssl/ssl_connection_status_flags.h"
+#include "net/storage_access_api/status.h"
 #include "net/url_request/clear_site_data.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request.h"
@@ -94,7 +100,6 @@
 #include "net/url_request/url_request_error_job.h"
 #include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_redirect_job.h"
-#include "net/url_request/url_request_throttler_manager.h"
 #include "net/url_request/websocket_handshake_userdata_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -103,6 +108,12 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "net/android/network_library.h"
 #endif
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "net/device_bound_sessions/registration_fetcher_param.h"
+#include "net/device_bound_sessions/session_challenge_param.h"
+#include "net/device_bound_sessions/session_service.h"
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 namespace {
 
@@ -143,6 +154,7 @@ base::Value::Dict CookieInclusionStatusNetLogParams(
     const std::string& cookie_name,
     const std::string& cookie_domain,
     const std::string& cookie_path,
+    const std::optional<net::CookiePartitionKey>& partition_key,
     const net::CookieInclusionStatus& status,
     net::NetLogCaptureMode capture_mode) {
   base::Value::Dict dict;
@@ -156,6 +168,21 @@ base::Value::Dict CookieInclusionStatusNetLogParams(
     if (!cookie_path.empty())
       dict.Set("path", cookie_path);
   }
+  // The partition key is not sensitive, since it is fully determined by the
+  // structure of the page. The cookie may either be partitioned or not, but
+  // does not have the ability to influence the key's value.
+  std::string partition_key_str;
+  if (partition_key.has_value()) {
+    base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                   std::string>
+        serialized = net::CookiePartitionKey::Serialize(partition_key);
+    partition_key_str = serialized.has_value()
+                            ? serialized.value().GetDebugString()
+                            : serialized.error();
+  } else {
+    partition_key_str = "(none)";
+  }
+  dict.Set("partition_key", std::move(partition_key_str));
   return dict;
 }
 
@@ -243,7 +270,49 @@ enum class HttpRequestStsState {
   kMaxValue = kProtectedHttp,
 };
 
-void RecordSTSHistogram(bool sts_enabled, bool is_secure, int load_flags) {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(HttpRequestSSLUpgradeDecision)
+enum class HttpRequestSSLUpgradeDecision {
+  // The request was insecure and was not upgraded to use SSL.
+  kInsecureNoUpgrade = 0,
+  // The request used SSL. It would not have been upgraded if it was insecure.
+  kSSLNoUpgrade = 1,
+  // The request was insecure but upgraded to use SSL using static data.
+  kInsecureStaticUpgrade = 2,
+  // The request used SSL. If was insecure, it would have been upgraded using
+  // static data.
+  kSSLStaticUpgrade = 3,
+  // The request was insecure but upgraded to use SSL using dynamic data. It
+  // would not have been upgraded using only static data.
+  kInsecureDynamicUpgrade = 4,
+  // The request used SSL. If it was insecure, it would have been upgraded using
+  // dynamic data but not with only static data.
+  kSSLDynamicUpgrade = 5,
+  kMaxValue = kSSLDynamicUpgrade,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enums.xml:HttpRequestSSLUpgradeDecision)
+
+HttpRequestSSLUpgradeDecision GetMetricForSSLUpgradeDecision(
+    net::SSLUpgradeDecision upgrade_decision,
+    bool is_secure) {
+  switch (upgrade_decision) {
+    case net::SSLUpgradeDecision::kNoUpgrade:
+      return is_secure ? HttpRequestSSLUpgradeDecision::kSSLNoUpgrade
+                       : HttpRequestSSLUpgradeDecision::kInsecureNoUpgrade;
+    case net::SSLUpgradeDecision::kStaticUpgrade:
+      return is_secure ? HttpRequestSSLUpgradeDecision::kSSLStaticUpgrade
+                       : HttpRequestSSLUpgradeDecision::kInsecureStaticUpgrade;
+    case net::SSLUpgradeDecision::kDynamicUpgrade:
+      return is_secure ? HttpRequestSSLUpgradeDecision::kSSLDynamicUpgrade
+                       : HttpRequestSSLUpgradeDecision::kInsecureDynamicUpgrade;
+  }
+  NOTREACHED();
+}
+
+void RecordSTSHistograms(net::SSLUpgradeDecision upgrade_decision,
+                         bool is_secure,
+                         int load_flags) {
   // Embrace the layering violation and only record the histogram for main frame
   // navigations. It's possible to record this outside of net/, but the code is
   // a lot more complicated, and while this flag is deprecated, there are no
@@ -251,6 +320,8 @@ void RecordSTSHistogram(bool sts_enabled, bool is_secure, int load_flags) {
   if (!(load_flags & net::LOAD_MAIN_FRAME_DEPRECATED)) {
     return;
   }
+  const bool sts_enabled =
+      upgrade_decision != net::SSLUpgradeDecision::kNoUpgrade;
   HttpRequestStsState sts_state = HttpRequestStsState::kUnknown;
   if (is_secure) {
     sts_state = (sts_enabled ? HttpRequestStsState::kProtectedHttps
@@ -260,6 +331,22 @@ void RecordSTSHistogram(bool sts_enabled, bool is_secure, int load_flags) {
                              : HttpRequestStsState::kUnprotectedHttp);
   }
   UMA_HISTOGRAM_ENUMERATION("Net.HttpRequestStsState", sts_state);
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "Net.HttpRequestSSLUpgradeDecision",
+      GetMetricForSSLUpgradeDecision(upgrade_decision, is_secure));
+}
+
+char const* GetSecFetchStorageAccessHeaderValue(
+    net::cookie_util::StorageAccessStatus storage_access_status) {
+  switch (storage_access_status) {
+    case net::cookie_util::StorageAccessStatus::kInactive:
+      return "inactive";
+    case net::cookie_util::StorageAccessStatus::kActive:
+      return "active";
+    case net::cookie_util::StorageAccessStatus::kNone:
+      return "none";
+  }
 }
 
 }  // namespace
@@ -273,9 +360,12 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
   DCHECK(request->context()->http_transaction_factory());
   DCHECK(url.SchemeIsHTTPOrHTTPS() || url.SchemeIsWSOrWSS());
 
-  TransportSecurityState* hsts = request->context()->transport_security_state();
-  bool should_upgrade_to_ssl =
-      hsts && hsts->ShouldUpgradeToSSL(url.host(), request->net_log());
+  SSLUpgradeDecision upgrade_decision = SSLUpgradeDecision::kNoUpgrade;
+  if (TransportSecurityState* hsts =
+          request->context()->transport_security_state()) {
+    upgrade_decision =
+        hsts->GetSSLUpgradeDecision(url.host(), request->net_log());
+  }
 
   // Check for reasons not to return a URLRequestHttpJob. These don't apply to
   // https and wss requests.
@@ -289,9 +379,9 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
       CHECK(request->allow_credentials() == false);
     } else {
       // Check for HSTS upgrade.
-      if (should_upgrade_to_ssl) {
-        RecordSTSHistogram(/*sts_enabled=*/true, /*is_secure=*/false,
-                           request->load_flags());
+      if (upgrade_decision != SSLUpgradeDecision::kNoUpgrade) {
+        RecordSTSHistograms(upgrade_decision,
+                            /*is_secure=*/false, request->load_flags());
         return std::make_unique<URLRequestRedirectJob>(
             request, UpgradeSchemeToCryptographic(url),
             // Use status code 307 to preserve the method, so POST requests
@@ -306,16 +396,16 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
     // ERR_CLEARTEXT_NOT_PERMITTED if not.
     if (request->context()->check_cleartext_permitted() &&
         !android::IsCleartextPermitted(url.host_piece())) {
-      RecordSTSHistogram(/*sts_enabled=*/false, /*is_secure=*/false,
-                         request->load_flags());
+      RecordSTSHistograms(SSLUpgradeDecision::kNoUpgrade,
+                          /*is_secure=*/false, request->load_flags());
       return std::make_unique<URLRequestErrorJob>(request,
                                                   ERR_CLEARTEXT_NOT_PERMITTED);
     }
 #endif
   }
 
-  RecordSTSHistogram(should_upgrade_to_ssl, url.SchemeIsCryptographic(),
-                     request->load_flags());
+  RecordSTSHistograms(upgrade_decision, url.SchemeIsCryptographic(),
+                      request->load_flags());
   return base::WrapUnique<URLRequestJob>(new URLRequestHttpJob(
       request, request->context()->http_user_agent_settings()));
 }
@@ -325,10 +415,6 @@ URLRequestHttpJob::URLRequestHttpJob(
     const HttpUserAgentSettings* http_user_agent_settings)
     : URLRequestJob(request),
       http_user_agent_settings_(http_user_agent_settings) {
-  URLRequestThrottlerManager* manager = request->context()->throttler_manager();
-  if (manager)
-    throttling_entry_ = manager->RegisterRequestUrl(request->url());
-
   ResetTimer();
 }
 
@@ -360,6 +446,9 @@ void URLRequestHttpJob::Start() {
   request_info_.is_subframe_document_resource =
       request_->isolation_info().request_type() ==
       net::IsolationInfo::RequestType::kSubFrame;
+  request_info_.is_main_frame_navigation =
+      request_->isolation_info().IsMainFrameRequest();
+  request_info_.initiator = request_->initiator();
   request_info_.load_flags = request_->load_flags();
   request_info_.priority_incremental = request_->priority_incremental();
   request_info_.secure_dns_policy = request_->secure_dns_policy();
@@ -375,14 +464,12 @@ void URLRequestHttpJob::Start() {
   // url and initiator are same-site, to prevent cross-site sibling iframes
   // benefit from each other's storage access API grants.
   request()->cookie_setting_overrides().PutOrRemove(
-      net::CookieSettingOverride::kStorageAccessGrantEligible,
-      request()->has_storage_access() && request_initiator_site().has_value() &&
+      CookieSettingOverride::kStorageAccessGrantEligible,
+      request()->storage_access_api_status() ==
+              StorageAccessApiStatus::kAccessViaAPI &&
+          request_initiator_site().has_value() &&
           IsSameSiteIgnoringWebSocketProtocol(request_initiator_site().value(),
                                               request()->url()));
-
-  UMA_HISTOGRAM_BOOLEAN("Net.HttpJob.CanIncludeCookies",
-                        ShouldAddCookieHeader());
-
   CookieStore* cookie_store = request()->context()->cookie_store();
   const CookieAccessDelegate* delegate =
       cookie_store ? cookie_store->cookie_access_delegate() : nullptr;
@@ -400,6 +487,37 @@ void URLRequestHttpJob::Start() {
   if (maybe_metadata.has_value()) {
     auto [metadata, match_info] = std::move(maybe_metadata).value();
     OnGotFirstPartySetMetadata(std::move(metadata), std::move(match_info));
+  }
+}
+
+namespace {
+
+bool ShouldBlockAllCookies(PrivacyMode privacy_mode) {
+  return privacy_mode == PRIVACY_MODE_ENABLED ||
+         privacy_mode == PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS;
+}
+
+}  // namespace
+
+void URLRequestHttpJob::MaybeSetSecFetchStorageAccessHeader() {
+  if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(
+          base::OptionalToPtr(request_->isolation_info().top_frame_origin()),
+          request_->url())) {
+    return;
+  }
+  // Avoid attaching the header in cases where the Cookie header is not included
+  // in the request.
+  if (!ShouldAddCookieHeader() ||
+      ShouldBlockAllCookies(request_info_.privacy_mode)) {
+    return;
+  }
+  std::optional<cookie_util::StorageAccessStatus> storage_access_status =
+      request_->network_delegate()->GetStorageAccessStatus(*request_);
+  if (storage_access_status) {
+    storage_access_status_ = storage_access_status.value();
+    request_info_.extra_headers.SetHeader(
+        HttpRequestHeaders::kSecFetchStorageAccess,
+        GetSecFetchStorageAccessHeaderValue(storage_access_status_));
   }
 }
 
@@ -484,7 +602,7 @@ PrivacyMode URLRequestHttpJob::DeterminePrivacyMode() const {
     // |allow_credentials_| implies LOAD_DO_NOT_SAVE_COOKIES.
     DCHECK(request_->load_flags() & LOAD_DO_NOT_SAVE_COOKIES);
 
-    // TODO(https://crbug.com/775438): Client certs should always be
+    // TODO(crbug.com/40089326): Client certs should always be
     // affirmatively omitted for these requests.
     return request()->send_client_certs()
                ? PRIVACY_MODE_ENABLED
@@ -511,7 +629,7 @@ PrivacyMode URLRequestHttpJob::DeterminePrivacyMode() const {
     case NetworkDelegate::PrivacySetting::kStateDisallowed:
       return PRIVACY_MODE_ENABLED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PRIVACY_MODE_ENABLED;
 }
 
@@ -527,10 +645,10 @@ void URLRequestHttpJob::NotifyHeadersComplete() {
     response_info_ = transaction_->GetResponseInfo();
   }
 
-  if (!response_info_->was_cached && throttling_entry_.get())
-    throttling_entry_->UpdateWithResponse(GetResponseCode());
-
   ProcessStrictTransportSecurityHeader();
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  ProcessDeviceBoundSessionsHeader();
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   // Clear |set_cookie_access_result_list_| after any processing in case
   // SaveCookiesAndNotifyHeadersComplete is called again.
@@ -668,18 +786,12 @@ void URLRequestHttpJob::StartTransactionInternal() {
             is_shared_dictionary_read_allowed_callback_);
       }
 
-      if (!throttling_entry_.get() ||
-          !throttling_entry_->ShouldRejectRequest(*request_)) {
-        rv = transaction_->Start(
-            &request_info_,
-            base::BindOnce(&URLRequestHttpJob::OnStartCompleted,
-                           base::Unretained(this)),
-            request_->net_log());
-        start_time_ = base::TimeTicks::Now();
-      } else {
-        // Special error code for the exponential back-off module.
-        rv = ERR_TEMPORARILY_THROTTLED;
-      }
+      rv = transaction_->Start(
+          &request_info_,
+          base::BindOnce(&URLRequestHttpJob::OnStartCompleted,
+                         base::Unretained(this)),
+          request_->net_log());
+      start_time_ = base::TimeTicks::Now();
     }
   }
 
@@ -710,6 +822,7 @@ void URLRequestHttpJob::AddExtraHeaders() {
           accept_language);
     }
   }
+  MaybeSetSecFetchStorageAccessHeader();
 }
 
 void URLRequestHttpJob::AddCookieHeaderAndStart() {
@@ -742,15 +855,6 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
       base::BindOnce(&URLRequestHttpJob::SetCookieHeaderAndStart,
                      weak_factory_.GetWeakPtr(), options));
 }
-
-namespace {
-
-bool ShouldBlockAllCookies(const PrivacyMode& privacy_mode) {
-  return privacy_mode == PRIVACY_MODE_ENABLED ||
-         privacy_mode == PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS;
-}
-
-}  // namespace
 
 void URLRequestHttpJob::SetCookieHeaderAndStart(
     const CookieOptions& options,
@@ -797,7 +901,7 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
 
     size_t n_partitioned_cookies = 0;
 
-    // TODO(crbug.com/1031664): Reduce the number of times the cookie list
+    // TODO(crbug.com/40110557): Reduce the number of times the cookie list
     // is iterated over. Get metrics for every cookie which is included.
     for (const auto& c : maybe_included_cookies) {
       bool request_is_secure = request_->url().SchemeIsCryptographic();
@@ -871,6 +975,7 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
                 "send", cookie_with_access_result.cookie.Name(),
                 cookie_with_access_result.cookie.Domain(),
                 cookie_with_access_result.cookie.Path(),
+                cookie_with_access_result.cookie.PartitionKey(),
                 cookie_with_access_result.access_result.status, capture_mode);
           });
     }
@@ -903,8 +1008,8 @@ void URLRequestHttpJob::AnnotateAndMoveUserBlockedCookies(
 
 void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   DCHECK(set_cookie_access_result_list_.empty());
-  // TODO(crbug.com/1186863): Turn this CHECK into DCHECK once the investigation
-  // is done.
+  // TODO(crbug.com/40753971): Turn this CHECK into DCHECK once the
+  // investigation is done.
   CHECK_EQ(0, num_cookie_lines_left_);
 
   // End of the call started in OnStartCompleted.
@@ -941,10 +1046,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
     clear_site_data_prevents_cookies_from_being_stored = true;
   }
 
-  base::Time response_date;
-  std::optional<base::Time> server_time = std::nullopt;
-  if (GetResponseHeaders()->GetDateValue(&response_date))
-    server_time = std::make_optional(response_date);
+  std::optional<base::Time> server_time = GetResponseHeaders()->GetDateValue();
 
   bool force_ignore_site_for_cookies =
       request_->force_ignore_site_for_cookies();
@@ -967,7 +1069,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
 
   // Set all cookies, without waiting for them to be set. Any subsequent
   // read will see the combined result of all cookie operation.
-  const base::StringPiece name("Set-Cookie");
+  const std::string_view name("Set-Cookie");
   std::string cookie_string;
   size_t iter = 0;
 
@@ -985,17 +1087,9 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
 
     num_cookie_lines_left_++;
 
-    // For the block_truncated parameter, the value shouldn't matter here
-    // because HTTP requests containing NULLs causes an error before this code
-    // can be reached and unpaired carriage returns and line feed characters
-    // cause truncation during HTTP header processing before reaching this
-    // point, so DCHECK this assumption and just pass true for this parameter.
-    DCHECK(cookie_string.find('\0') == std::string::npos);
-    DCHECK(cookie_string.find('\r') == std::string::npos);
-    DCHECK(cookie_string.find('\n') == std::string::npos);
     std::unique_ptr<CanonicalCookie> cookie = net::CanonicalCookie::Create(
         request_->url(), cookie_string, base::Time::Now(), server_time,
-        request_->cookie_partition_key(), /*block_truncated=*/true,
+        request_->cookie_partition_key(), net::CookieSourceType::kHTTP,
         &returned_status);
 
     std::optional<CanonicalCookie> cookie_to_return = std::nullopt;
@@ -1046,15 +1140,16 @@ void URLRequestHttpJob::OnSetCookieResult(const CookieOptions& options,
                                           std::string cookie_string,
                                           CookieAccessResult access_result) {
   if (request_->net_log().IsCapturing()) {
-    request_->net_log().AddEvent(NetLogEventType::COOKIE_INCLUSION_STATUS,
-                                 [&](NetLogCaptureMode capture_mode) {
-                                   return CookieInclusionStatusNetLogParams(
-                                       "store",
-                                       cookie ? cookie.value().Name() : "",
-                                       cookie ? cookie.value().Domain() : "",
-                                       cookie ? cookie.value().Path() : "",
-                                       access_result.status, capture_mode);
-                                 });
+    request_->net_log().AddEvent(
+        NetLogEventType::COOKIE_INCLUSION_STATUS,
+        [&](NetLogCaptureMode capture_mode) {
+          return CookieInclusionStatusNetLogParams(
+              "store", cookie ? cookie.value().Name() : "",
+              cookie ? cookie.value().Domain() : "",
+              cookie ? cookie.value().Path() : "",
+              cookie ? cookie.value().PartitionKey() : std::nullopt,
+              access_result.status, capture_mode);
+        });
   }
 
   set_cookie_access_result_list_.emplace_back(
@@ -1068,6 +1163,32 @@ void URLRequestHttpJob::OnSetCookieResult(const CookieOptions& options,
   if (num_cookie_lines_left_ == 0)
     NotifyHeadersComplete();
 }
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
+  device_bound_sessions::SessionService* service =
+      request_->context()->device_bound_session_service();
+  if (!service) {
+    return;
+  }
+
+  const auto& request_url = request_->url();
+  auto* headers = GetResponseHeaders();
+  std::vector<device_bound_sessions::RegistrationFetcherParam> params =
+      device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
+          request_url, headers);
+  for (auto& param : params) {
+    service->RegisterBoundSession(std::move(param), request_->isolation_info());
+  }
+
+  std::vector<device_bound_sessions::SessionChallengeParam> challenge_params =
+      device_bound_sessions::SessionChallengeParam::CreateIfValid(request_url,
+                                                                  headers);
+  for (auto& param : challenge_params) {
+    service->SetChallengeForBoundSession(request_url, std::move(param));
+  }
+}
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 void URLRequestHttpJob::ProcessStrictTransportSecurityHeader() {
   DCHECK(response_info_);
@@ -1407,7 +1528,7 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
         break;
       case SourceStream::TYPE_NONE:
       case SourceStream::TYPE_UNKNOWN:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return nullptr;
     }
     if (downstream == nullptr)
@@ -1420,6 +1541,11 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
   UMA_HISTOGRAM_ENUMERATION("Net.ContentEncodingType", content_encoding_type);
 
   return upstream;
+}
+
+cookie_util::StorageAccessStatus URLRequestHttpJob::StorageAccessStatus()
+    const {
+  return storage_access_status_;
 }
 
 bool URLRequestHttpJob::CopyFragmentOnRedirect(const GURL& location) const {
@@ -1443,6 +1569,11 @@ bool URLRequestHttpJob::IsSafeRedirect(const GURL& location) {
 }
 
 bool URLRequestHttpJob::NeedsAuth() {
+  if (!transaction_.get()) {
+    // If we synthesized a redirect (for `DNS_NAME_HTTPS_ONLY`, e.g.), we aren't
+    // guaranteed to have a transaction here.
+    return false;
+  }
   int code = GetResponseCode();
   if (code == -1)
     return false;
@@ -1462,6 +1593,38 @@ bool URLRequestHttpJob::NeedsAuth() {
       return true;
   }
   return false;
+}
+
+bool URLRequestHttpJob::NeedsRetryWithStorageAccess() {
+  if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(
+          base::OptionalToPtr(request_->isolation_info().top_frame_origin()),
+          request_->url())) {
+    return false;
+  }
+  if (!ShouldAddCookieHeader() ||
+      storage_access_status_ != cookie_util::StorageAccessStatus::kInactive ||
+      request_->cookie_setting_overrides().Has(
+          CookieSettingOverride::kStorageAccessGrantEligible) ||
+      request_->cookie_setting_overrides().Has(
+          CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
+    // We're not allowed to read cookies for this request, or this request
+    // already had all the relevant settings overrides, so retrying it wouldn't
+    // change anything.
+    return false;
+  }
+
+  HttpResponseHeaders* headers = request_->response_headers();
+  // We use the Origin header's value directly, rather than
+  // `request_.initiator()`, because the header may be "null" in some cases.
+  return headers && headers->HasStorageAccessRetryHeader(base::OptionalToPtr(
+                        request_info_.extra_headers.GetHeader(
+                            HttpRequestHeaders::kOrigin)));
+}
+
+void URLRequestHttpJob::SetSharedDictionaryGetter(
+    SharedDictionaryGetter dictionary_getter) {
+  CHECK(!request_info_.dictionary_getter);
+  request_info_.dictionary_getter = std::move(dictionary_getter);
 }
 
 std::unique_ptr<AuthChallengeInfo> URLRequestHttpJob::GetAuthChallengeInfo() {
@@ -1624,6 +1787,13 @@ int64_t URLRequestHttpJob::GetTotalSentBytes() const {
   return total_sent_bytes;
 }
 
+int64_t URLRequestHttpJob::GetReceivedBodyBytes() const {
+  if (transaction_) {
+    return transaction_->GetReceivedBodyBytes();
+  }
+  return 0;
+}
+
 void URLRequestHttpJob::DoneReading() {
   if (transaction_) {
     transaction_->DoneReading();
@@ -1650,13 +1820,20 @@ void URLRequestHttpJob::DoneReadingRedirectResponse() {
   DoneWithRequest(FINISHED);
 }
 
+void URLRequestHttpJob::DoneReadingRetryResponse() {
+  // We don't bother calling `transaction_->DoneReading()` here, since that
+  // marks the cache entry as valid but we know that we're about to retry the
+  // request and bypass the cache regardless.
+  DoneWithRequest(FINISHED);
+}
+
 IPEndPoint URLRequestHttpJob::GetResponseRemoteEndpoint() const {
   return response_info_ ? response_info_->remote_endpoint : IPEndPoint();
 }
 
 void URLRequestHttpJob::RecordTimer() {
   if (request_creation_time_.is_null()) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "The same transaction shouldn't start twice without new timing.";
     return;
   }
@@ -1674,7 +1851,7 @@ void URLRequestHttpJob::RecordTimer() {
   // connection makes use of 0-RTT. However, 0-RTT can affect how requests are
   // bound to connections and which connections offer resumption. We look at
   // all TLS 1.3 responses for an apples-to-apples comparison.
-  // TODO(crbug.com/641225): Remove these metrics after launching 0-RTT.
+  // TODO(crbug.com/41272059): Remove these metrics after launching 0-RTT.
   if (transaction_ && transaction_->GetResponseInfo() &&
       IsTLS13OverTCP(*transaction_->GetResponseInfo()) &&
       HasGoogleHost(request()->url())) {
@@ -1685,8 +1862,7 @@ void URLRequestHttpJob::RecordTimer() {
 
 void URLRequestHttpJob::ResetTimer() {
   if (!request_creation_time_.is_null()) {
-    NOTREACHED()
-        << "The timer was reset before it was recorded.";
+    NOTREACHED_IN_MIGRATION() << "The timer was reset before it was recorded.";
     return;
   }
   request_creation_time_ = base::Time::Now();
@@ -1793,7 +1969,7 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
     // Record metrics for TLS 1.3 to measure the impact of 0-RTT. See comment in
     // RecordTimer().
     //
-    // TODO(https://crbug.com/641225): Remove these metrics after launching
+    // TODO(crbug.com/41272059): Remove these metrics after launching
     // 0-RTT.
     if (IsTLS13OverTCP(*response_info_) && is_https_google) {
       base::UmaHistogramTimes("Net.HttpJob.TotalTime.TLS13.Google", total_time);

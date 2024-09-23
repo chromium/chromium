@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<script src="/wpt_internal/fenced_frame/resources/utils.js"></script>
+<script src="/attribution-reporting/resources/helpers.js"></script>
+<script src="/resources/testharness.js"></script>
+<title>File loaded into fenced frame for network revocation test</title>
+
+<body>
+<script>
+async function init() {
+  // This file is meant to be navigated to from a <fencedframe> element.
+  // It handles setting either the source or trigger for an ARA event as well as
+  // network revocation, depending on what the test requires. It lets the test
+  // know when it revokes its network access so it can be sure to register a
+  // trigger *after* the fenced frame registers a source.
+  const [ready_key, fencedframe_register, cutoff, source, trigger] =
+      parseKeylist();
+  const reportingOrigin = getDefaultReportingOrigin();
+  const source_obj = JSON.parse(source.replaceAll('&#44;', ','));
+  const trigger_obj = JSON.parse(trigger.replaceAll('&#44;', ','));
+
+  // Exempt the key value store URL from network revocation so the fenced frame
+  // can still send the ready signal.
+  const key_value_store_url =
+      new URL(`${STORE_URL}?key=${ready_key}&value=ready`, location.origin);
+  await window.internals.exemptUrlFromNetworkRevocation(key_value_store_url);
+
+  if (cutoff == "before") {
+    await window.fence.disableUntrustedNetwork();
+  }
+  if (fencedframe_register == "source") {
+    registerAttributionSrcByImg(createRedirectChain([
+      {
+        cookie: 'foo=bar;Secure;HttpOnly;Path=/',
+        reportingOrigin,
+        source: source_obj
+      },
+    ]));
+  } else {
+    registerAttributionSrcByImg(createRedirectChain([
+      {
+        cookie: 'foo=bar;Secure;HttpOnly;Path=/',
+        reportingOrigin,
+        trigger: trigger_obj
+      },
+    ]));
+  }
+
+  // We add a delay to give the attribution src time to perform the requests
+  // needed to be registered. Without this, the network revocation would happen
+  // mid-request, canceling the request/response needed to register the
+  // attribution src.
+  await delay(1000);
+
+  if (cutoff == "after") {
+    await window.fence.disableUntrustedNetwork();
+  }
+  await writeValueToServer(ready_key, "ready");
+}
+
+init();
+</script>
+</body>
+</html>

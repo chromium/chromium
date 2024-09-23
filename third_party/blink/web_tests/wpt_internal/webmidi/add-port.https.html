@@ -12,7 +12,7 @@ async_test(t => {
   let noteOn = [ 0x90, 0x45, 0x7f ];
 
   t.step(() => {
-    setMidiPermission({}, 'granted').then(() => {
+    setMidiPermission({sysex: true}, 'granted').then(() => {
       return navigator.requestMIDIAccess();
     }).then(a => {
       let started = false;

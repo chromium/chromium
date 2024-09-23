@@ -1,0 +1,147 @@
+This is a testharness.js-based test.
+Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] PaymentRequest interface: existence and properties of interface object
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface object length
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface object name
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: operation show(optional Promise<PaymentDetailsUpdate>)
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: operation abort()
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: operation canMakePayment()
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: attribute id
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: attribute shippingAddress
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: attribute shippingOption
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: attribute shippingType
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: attribute onshippingaddresschange
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: attribute onshippingoptionchange
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest interface: attribute onpaymentmethodchange
+  assert_own_property: self does not have own property "PaymentRequest" expected property "PaymentRequest" missing
+[FAIL] PaymentRequest must be primary interface of paymentRequest
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] Stringification of paymentRequest
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: paymentRequest must inherit property "show(optional Promise<PaymentDetailsUpdate>)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: calling show(optional Promise<PaymentDetailsUpdate>) on paymentRequest with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: paymentRequest must inherit property "abort()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: paymentRequest must inherit property "canMakePayment()" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: paymentRequest must inherit property "id" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: paymentRequest must inherit property "shippingAddress" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: paymentRequest must inherit property "shippingOption" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: paymentRequest must inherit property "shippingType" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: paymentRequest must inherit property "onshippingaddresschange" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: paymentRequest must inherit property "onshippingoptionchange" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentRequest interface: paymentRequest must inherit property "onpaymentmethodchange" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: paymentRequest is not defined"
+[FAIL] PaymentResponse interface: existence and properties of interface object
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface object length
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface object name
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: operation toJSON()
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: attribute requestId
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: attribute methodName
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: attribute details
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: attribute shippingAddress
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: attribute shippingOption
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: attribute payerName
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: attribute payerEmail
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: attribute payerPhone
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: operation complete(optional PaymentComplete, optional PaymentCompleteDetails)
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: operation retry(optional PaymentValidationErrors)
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentResponse interface: attribute onpayerdetailchange
+  assert_own_property: self does not have own property "PaymentResponse" expected property "PaymentResponse" missing
+[FAIL] PaymentMethodChangeEvent interface: existence and properties of interface object
+  assert_own_property: self does not have own property "PaymentMethodChangeEvent" expected property "PaymentMethodChangeEvent" missing
+[FAIL] PaymentMethodChangeEvent interface object length
+  assert_own_property: self does not have own property "PaymentMethodChangeEvent" expected property "PaymentMethodChangeEvent" missing
+[FAIL] PaymentMethodChangeEvent interface object name
+  assert_own_property: self does not have own property "PaymentMethodChangeEvent" expected property "PaymentMethodChangeEvent" missing
+[FAIL] PaymentMethodChangeEvent interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "PaymentMethodChangeEvent" expected property "PaymentMethodChangeEvent" missing
+[FAIL] PaymentMethodChangeEvent interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "PaymentMethodChangeEvent" expected property "PaymentMethodChangeEvent" missing
+[FAIL] PaymentMethodChangeEvent interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PaymentMethodChangeEvent" expected property "PaymentMethodChangeEvent" missing
+[FAIL] PaymentMethodChangeEvent interface: attribute methodName
+  assert_own_property: self does not have own property "PaymentMethodChangeEvent" expected property "PaymentMethodChangeEvent" missing
+[FAIL] PaymentMethodChangeEvent interface: attribute methodDetails
+  assert_own_property: self does not have own property "PaymentMethodChangeEvent" expected property "PaymentMethodChangeEvent" missing
+[FAIL] PaymentMethodChangeEvent must be primary interface of new PaymentMethodChangeEvent("paymentmethodchange")
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PaymentMethodChangeEvent is not defined"
+[FAIL] Stringification of new PaymentMethodChangeEvent("paymentmethodchange")
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PaymentMethodChangeEvent is not defined"
+[FAIL] PaymentMethodChangeEvent interface: new PaymentMethodChangeEvent("paymentmethodchange") must inherit property "methodName" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PaymentMethodChangeEvent is not defined"
+[FAIL] PaymentMethodChangeEvent interface: new PaymentMethodChangeEvent("paymentmethodchange") must inherit property "methodDetails" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PaymentMethodChangeEvent is not defined"
+[FAIL] PaymentRequestUpdateEvent interface: new PaymentMethodChangeEvent("paymentmethodchange") must inherit property "updateWith(Promise<PaymentDetailsUpdate>)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PaymentMethodChangeEvent is not defined"
+[FAIL] PaymentRequestUpdateEvent interface: calling updateWith(Promise<PaymentDetailsUpdate>) on new PaymentMethodChangeEvent("paymentmethodchange") with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PaymentMethodChangeEvent is not defined"
+[FAIL] PaymentRequestUpdateEvent interface: existence and properties of interface object
+  assert_own_property: self does not have own property "PaymentRequestUpdateEvent" expected property "PaymentRequestUpdateEvent" missing
+[FAIL] PaymentRequestUpdateEvent interface object length
+  assert_own_property: self does not have own property "PaymentRequestUpdateEvent" expected property "PaymentRequestUpdateEvent" missing
+[FAIL] PaymentRequestUpdateEvent interface object name
+  assert_own_property: self does not have own property "PaymentRequestUpdateEvent" expected property "PaymentRequestUpdateEvent" missing
+[FAIL] PaymentRequestUpdateEvent interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "PaymentRequestUpdateEvent" expected property "PaymentRequestUpdateEvent" missing
+[FAIL] PaymentRequestUpdateEvent interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "PaymentRequestUpdateEvent" expected property "PaymentRequestUpdateEvent" missing
+[FAIL] PaymentRequestUpdateEvent interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PaymentRequestUpdateEvent" expected property "PaymentRequestUpdateEvent" missing
+[FAIL] PaymentRequestUpdateEvent interface: operation updateWith(Promise<PaymentDetailsUpdate>)
+  assert_own_property: self does not have own property "PaymentRequestUpdateEvent" expected property "PaymentRequestUpdateEvent" missing
+[FAIL] PaymentRequestUpdateEvent must be primary interface of new PaymentRequestUpdateEvent("paymentrequestupdate")
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PaymentRequestUpdateEvent is not defined"
+[FAIL] Stringification of new PaymentRequestUpdateEvent("paymentrequestupdate")
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PaymentRequestUpdateEvent is not defined"
+[FAIL] PaymentRequestUpdateEvent interface: new PaymentRequestUpdateEvent("paymentrequestupdate") must inherit property "updateWith(Promise<PaymentDetailsUpdate>)" with the proper type
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PaymentRequestUpdateEvent is not defined"
+[FAIL] PaymentRequestUpdateEvent interface: calling updateWith(Promise<PaymentDetailsUpdate>) on new PaymentRequestUpdateEvent("paymentrequestupdate") with too few arguments must throw TypeError
+  assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PaymentRequestUpdateEvent is not defined"
+Harness: the test ran to completion.

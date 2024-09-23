@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
-<translation id="101606685846791463">ryd browserens cache, ryd browsercache, ryd historik, slet cookies, ryd browserhistorik, ryd browser historik</translation>
 <translation id="132297926492792130">styr min google-konto, styr min google konto, fiks google-konto, fiks google konto, ret google-konto, ret google konto, administrer google-konto, administrer google konto, administrer min google-konto, administrer min google konto</translation>
 <translation id="1455865776268085776">åbn inkognitotilstand, nyt inkognitovindue, åbn inkognitofane</translation>
 <translation id="1545931455576308147">del denne side, del denne fane, del side, del fane, del siden, del fanen</translation>
@@ -28,6 +27,7 @@
 <translation id="7153639895359139570">tilføj adresse, skift leveringsadresse, rediger adresser, administrer adresser</translation>
 <translation id="7242693601647412075">administrer sikkerhedsindstillinger</translation>
 <translation id="7441773108452086364">skift gmail adgangskode, skift gmail-adgangskode, skift min gmail adgangskode, skift min gmail-adgangskode, skift google adgangskode, skift google-adgangskode, nulstil adgangskode til gmail konto, nulstil adgangskode til gmail-konto</translation>
+<translation id="7469628627013714019">slet browserens cache, ryd browsercache, slet historik, slet cookies, ryd browserhistorik, ryd browser historik</translation>
 <translation id="7660956169713698963">tilpas ChromeOS-hjælpefunktioner, administrer hjælpefunktioner, juster hjælpefunktioner, tilpas hjælpefunktioner, tilpas hjælpefunktioner i ChromeOS, administrer hjælpefunktioner i ChromeOS, juster hjælpefunktioner i ChromeOS, styr hjælpefunktioner</translation>
 <translation id="7700496593710078083">se Chrome-historik, se browserhistorik, se Chrome-historikken, se browserhistorikken, se historikken for Chrome, se historikken for browsing, tjek Chrome-historikken, tjek browserhistorikken</translation>
 <translation id="7739523284295786564">administrer Chrome-downloads, se downloads, styr downloads, styr Chrome-downloads, administrer downloads i Chrome, se downloads i Chrome, se Chrome-downloads, styr downloads i Chrome</translation>

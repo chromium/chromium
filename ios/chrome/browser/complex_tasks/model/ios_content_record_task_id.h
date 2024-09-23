@@ -13,7 +13,7 @@
 // Stores Task ID data in a NavigationItem. Task IDs track navigations and
 // relationships between navigations
 //
-// TODO(crbug.com/976501)
+// TODO(crbug.com/40632717)
 // Move common logic to components/sessionss/core and have
 // IOSContentRecordTaskId inherit from there. Common logic in
 // components/sessions/content/content_record_task_id.h will inherit from

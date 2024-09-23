@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:ignore="UseCompoundDrawables">
+
+    <ImageView
+        android:id="@+id/branding_icon"
+        android:layout_width="@dimen/custom_tabs_toolbar_branding_icon_width"
+        android:layout_height="wrap_content"
+        android:src="@drawable/chromelogo16"
+        app:tint="@color/default_icon_color_tint_list"
+        android:layout_gravity="center_vertical"
+        android:paddingStart="@dimen/custom_tabs_toolbar_branding_icon_start_padding"
+        android:paddingEnd="@dimen/custom_tabs_toolbar_branding_icon_end_padding"
+        android:importantForAccessibility="no"/>
+    <TextView
+        android:id="@+id/branding_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="start|center_vertical"
+        android:ellipsize="middle"
+        android:text="@string/twa_running_in_chrome" />
+</LinearLayout>

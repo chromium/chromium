@@ -181,7 +181,6 @@ void LoginMetricsRecorder::RecordUserTrayClick(TrayClickTarget target) {
         return;
       default:
         NOTREACHED() << "Unexpected session state: " << static_cast<int>(state);
-        return;
     }
   }
   NOTREACHED() << "Tray click target wasn't found in the |kTrayTargets|.";
@@ -216,7 +215,6 @@ void LoginMetricsRecorder::RecordUserShelfButtonClick(
         return;
       default:
         NOTREACHED() << "Unexpected session state: " << static_cast<int>(state);
-        return;
     }
   }
   NOTREACHED() << "Shelf click target wasn't found in the |kShelfTargets|.";

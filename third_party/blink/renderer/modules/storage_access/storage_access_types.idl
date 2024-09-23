@@ -15,4 +15,5 @@ dictionary StorageAccessTypes {
     boolean createObjectURL = false;
     boolean revokeObjectURL = false;
     boolean BroadcastChannel = false;
+    boolean SharedWorker = false;
 };

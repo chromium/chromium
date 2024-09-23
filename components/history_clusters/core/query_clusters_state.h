@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_QUERY_CLUSTERS_STATE_H_
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_QUERY_CLUSTERS_STATE_H_
 
-#include <optional>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -54,6 +53,7 @@ class QueryClustersState {
   QueryClustersState(base::WeakPtr<HistoryClustersService> service,
                      history::HistoryService* history_service,
                      const std::string& query,
+                     base::Time begin_time = base::Time(),
                      bool recluster = false);
   ~QueryClustersState();
 
@@ -126,6 +126,10 @@ class QueryClustersState {
 
   // The string query the user entered into the searchbox.
   const std::string query_;
+
+  // The beginning of a time range to narrow cluster results by, provided by
+  // the user through specific relative date chips or the URL.
+  base::Time begin_time_;
 
   // The filter params to use for `query_`.
   const QueryClustersFilterParams filter_params_;

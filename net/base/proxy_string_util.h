@@ -47,14 +47,14 @@ namespace net {
 //   "BLAH xxx:xx"      INVALID
 NET_EXPORT ProxyChain
 PacResultElementToProxyChain(std::string_view pac_result_element);
-// TODO(crbug.com/1491092): Remove method once all calls are updated to use
+// TODO(crbug.com/40284947): Remove method once all calls are updated to use
 // PacResultElementToProxyChain.
 NET_EXPORT ProxyServer
 PacResultElementToProxyServer(std::string_view pac_result_element);
 NET_EXPORT std::string ProxyServerToPacResultElement(
     const ProxyServer& proxy_server);
 
-// Converts a non-standard URI string to/from a ProxyServer.
+// Converts a non-standard URI string to/from a ProxyChain.
 //
 // The non-standard URI strings have the format:
 //   [<scheme>"://"]<server>[":"<port>]
@@ -87,9 +87,33 @@ NET_EXPORT std::string ProxyServerToPacResultElement(
 //   "direct://"        {scheme=DIRECT}
 //   "foopy:X"          INVALID -- bad port.
 NET_EXPORT ProxyChain ProxyUriToProxyChain(std::string_view uri,
-                                           ProxyServer::Scheme default_scheme);
-NET_EXPORT ProxyServer
-ProxyUriToProxyServer(std::string_view uri, ProxyServer::Scheme default_scheme);
+                                           ProxyServer::Scheme default_scheme,
+                                           bool is_quic_allowed = false);
+
+// Converts a bracketed string of non-standard uris to a multi-proxy
+// `net::ProxyChain`.
+//
+// The `uris` parameter may contain 1 or more non-standard URIs but not 0 which
+// would result in an invalid `ProxyChain()`.
+//
+// If brackets are omitted from the `uris` string, it MUST be a single
+// non-standard URI. Otherwise, an invalid `ProxyChain()` will be returned.
+//
+//
+// The bracketed non-standard URIs strings have the format:
+//   [x y z] where individual non-standard uris are space delimited and
+//   encompassed within brackets.
+//   ex. [https://foopy:17 https://hoopy:17]
+//
+// Each non-standard URI string follows the format described in the
+// documentation for the `ProxyUriToProxyChain` function.
+NET_EXPORT ProxyChain
+MultiProxyUrisToProxyChain(std::string_view uris,
+                           ProxyServer::Scheme default_scheme,
+                           bool is_quic_allowed = false);
+NET_EXPORT ProxyServer ProxyUriToProxyServer(std::string_view uri,
+                                             ProxyServer::Scheme default_scheme,
+                                             bool is_quic_allowed = false);
 NET_EXPORT std::string ProxyServerToProxyUri(const ProxyServer& proxy_server);
 NET_EXPORT ProxyServer
 ProxySchemeHostAndPortToProxyServer(ProxyServer::Scheme scheme,
@@ -99,7 +123,9 @@ ProxySchemeHostAndPortToProxyServer(ProxyServer::Scheme scheme,
 // representation used in `ProxyUriToProxyServer()` and
 // `ProxyServerToProxyUri()`. If no type could be matched, returns
 // SCHEME_INVALID.
-NET_EXPORT ProxyServer::Scheme GetSchemeFromUriScheme(std::string_view scheme);
+NET_EXPORT ProxyServer::Scheme GetSchemeFromUriScheme(
+    std::string_view scheme,
+    bool is_quic_allowed = false);
 
 }  // namespace net
 

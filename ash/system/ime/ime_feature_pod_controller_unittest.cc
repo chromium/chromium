@@ -164,7 +164,7 @@ TEST_F(IMEFeaturePodControllerTest, ButtonVisibilityPolicy) {
   EXPECT_TRUE(IsButtonVisible());
 }
 
-// TODO(crbug.com/1416179): Test is failing on "Linux ChromiumOS MSan Tests".
+// TODO(crbug.com/40893381): Test is failing on "Linux ChromiumOS MSan Tests".
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_IconUMATracking DISABLED_IconUMATracking
 #else

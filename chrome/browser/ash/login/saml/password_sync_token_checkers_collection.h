@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_SYNC_TOKEN_CHECKERS_COLLECTION_H_
 #define CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_SYNC_TOKEN_CHECKERS_COLLECTION_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <unordered_map>
 
 #include "chrome/browser/ash/login/saml/password_sync_token_login_checker.h"
+#include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "net/base/backoff_entry.h"
 

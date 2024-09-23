@@ -102,14 +102,14 @@ found in the LICENSE file.
         <div slot="body">
           <div id="select-div">
             <network-select
-                on-network-item-selected="onNetworkItemSelected_"
-                on-custom-item-selected="onCustomItemSelected_">
+                on-network-item-selected="onNetworkItemSelected"
+                on-custom-item-selected="onCustomItemSelected">
             </network-select>
           </div>
         </div>
         <div slot="button-container" class="flex layout horizontal">
           <cr-button id="cancelButton" class="cancel-button"
-              on-click="onCloseTap_">
+              on-click="onCloseClick">
             $i18n{lockScreenCancelButton}
           </cr-button>
         </div>

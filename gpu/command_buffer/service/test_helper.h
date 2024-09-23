@@ -121,13 +121,11 @@ class TestHelper {
       ::gl::MockGLInterface* gl,
       bool is_es3_enabled,
       bool is_es3_capable,
-      bool is_desktop_core_profile,
       const gfx::ExtensionSet& extensions,
       bool use_default_textures);
   static void SetupTextureManagerDestructionExpectations(
       ::gl::MockGLInterface* gl,
       bool is_es3_enabled,
-      bool is_desktop_core_profile,
       const gfx::ExtensionSet& extensions,
       bool use_default_textures);
 

@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package org.chromium.android_webview.proto;
 
-option optimize_for = LITE_RUNTIME;  // TODO(crbug/800281): Remove this after proto 4.0
+option optimize_for = LITE_RUNTIME;  // TODO(crbug.com/40557343): Remove this after proto 4.0
 option java_package = "org.chromium.android_webview.proto";
 
 // WebView uses HistogramRecord to serialize a histogram record that

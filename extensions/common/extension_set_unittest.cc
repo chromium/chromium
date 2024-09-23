@@ -124,7 +124,7 @@ TEST(ExtensionSetTest, ExtensionSet) {
                             GURL("filesystem:http://dev.chromium.org/foo")));
   EXPECT_EQ(nullptr, extensions.GetExtensionOrAppByURL(
                          GURL("filesystem:http://code.google.com/foo")));
-  // TODO(crbug/852162): Support blob URLs. This should return ext3.
+  // TODO(crbug.com/41394231): Support blob URLs. This should return ext3.
   EXPECT_EQ(nullptr, extensions.GetExtensionOrAppByURL(
                          GURL("blob:http://dev.chromium.org/abcd")));
 

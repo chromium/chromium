@@ -10,7 +10,6 @@
 #include <type_traits>
 
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 
 namespace base::internal {
 

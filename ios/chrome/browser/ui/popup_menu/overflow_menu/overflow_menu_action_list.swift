@@ -12,33 +12,46 @@ struct OverflowMenuActionList: View {
   /// The metrics handler to alert when the user takes metrics actions.
   weak var metricsHandler: PopupMenuMetricsHandler?
 
+  @ObservedObject var uiConfiguration: OverflowMenuUIConfiguration
+
   /// The namespace for the animation of this view appearing or disappearing.
   let namespace: Namespace.ID
 
   var body: some View {
-    List {
-      let nonEmpty = actionGroups.filter({ !$0.actions.isEmpty })
-      ForEach(nonEmpty) { actionGroup in
-        let isLast = actionGroup == nonEmpty.last
-        OverflowMenuActionSection(
-          actionGroup: actionGroup, metricsHandler: metricsHandler,
-          footerBackground: {
-            if isLast {
-              Color.clear.onAppear {
-                metricsHandler?.popupMenuUserScrolledToEndOfActions()
+    ScrollViewReader { scrollProxy in
+      List {
+        let nonEmpty = actionGroups.filter({ !$0.actions.isEmpty })
+        ForEach(nonEmpty) { actionGroup in
+          let isLast = actionGroup == nonEmpty.last
+          OverflowMenuActionSection(
+            actionGroup: actionGroup, metricsHandler: metricsHandler,
+            footerBackground: {
+              if isLast {
+                Color.clear.onAppear {
+                  metricsHandler?.popupMenuUserScrolledToEndOfActions()
+                }
               }
-            }
-          })
+            })
+        }
+      }
+      .matchedGeometryEffect(id: MenuCustomizationAnimationID.actions, in: namespace)
+      .simultaneousGesture(
+        DragGesture().onChanged({ _ in
+          metricsHandler?.popupMenuScrolledVertically()
+        })
+      )
+      .accessibilityIdentifier(kPopupMenuToolsMenuActionListId)
+      .overflowMenuListStyle()
+      .onReceive(uiConfiguration.$scrollToAction) { action in
+        guard let action = action else {
+          return
+        }
+        withAnimation {
+          // Scroll so the item is in the middle of the screen.
+          scrollProxy.scrollTo(action.id, anchor: UnitPoint(x: 0.5, y: 0.5))
+        }
       }
     }
-    .matchedGeometryEffect(id: MenuCustomizationAnimationID.actions, in: namespace)
-    .simultaneousGesture(
-      DragGesture().onChanged({ _ in
-        metricsHandler?.popupMenuScrolledVertically()
-      })
-    )
-    .accessibilityIdentifier(kPopupMenuToolsMenuActionListId)
-    .overflowMenuListStyle()
   }
 }
 

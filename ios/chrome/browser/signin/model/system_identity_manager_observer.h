@@ -19,11 +19,8 @@ class SystemIdentityManagerObserver : public base::CheckedObserver {
   SystemIdentityManagerObserver() = default;
   ~SystemIdentityManagerObserver() override = default;
 
-  // Called when the list of identity has changed. If `notify_user` is true,
-  // the identity changed due to an external source; this means that a first
-  // party Google application has added or removed identies, or the identity
-  // token is invalid.
-  virtual void OnIdentityListChanged(bool notify_user) {}
+  // Called when the list of identity has changed.
+  virtual void OnIdentityListChanged() {}
 
   // Called when information about `identity` (such as the name or the image)
   // have been updated.

@@ -55,16 +55,19 @@ public class ImePasswordTest {
                 mRule.getConnectionFactory().getOutAttrs().inputType
                         & InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
 
-        // Change input_password to type text.
-        final String code = "document.getElementById(\"input_password\").type = \"text\"";
+        // Change input_password to type text and remove focus.
+        final String code =
+                "document.getElementById(\"input_password\").type = \"text\";"
+                        + " document.getElementById(\"input_password\").blur();";
         JavaScriptUtils.executeJavaScriptAndWaitForResult(mRule.getWebContents(), code);
 
-        // <input type="password"> that was changed to type="text" should still
-        // be considered a password field.
+        // <input type="password"> that was changed to type="text" should be considered
+        // as visible password field.
+        mRule.focusElement("input_password");
         Assert.assertEquals(
-                InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD,
+                InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
                 mRule.getConnectionFactory().getOutAttrs().inputType
-                        & InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
+                        & InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
 
         // Temporarily focus input_text and verify that it is not a password input.
         mRule.focusElement("input_text");
@@ -74,12 +77,12 @@ public class ImePasswordTest {
                         & InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
 
         // Return to input_password and verify that it is still considered a
-        // password input despite having input="text" now.
+        // visible password input despite having input="text" now.
         mRule.focusElement("input_password");
         Assert.assertEquals(
-                InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD,
+                InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
                 mRule.getConnectionFactory().getOutAttrs().inputType
-                        & InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
+                        & InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         Assert.assertEquals(
                 "\"text\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(

@@ -100,7 +100,7 @@ CSSMathOperator CanonicalOperator(CSSMathOperator op) {
     case CSSMathOperator::kDivide:
       return CSSMathOperator::kMultiply;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CSSMathOperator::kInvalid;
   }
 }
@@ -283,40 +283,32 @@ CSSNumericValue* CSSNumericValue::parse(
     const ExecutionContext* execution_context,
     const String& css_text,
     ExceptionState& exception_state) {
-  CSSTokenizer tokenizer(css_text);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(css_text);
   stream.ConsumeWhitespace();
-  auto range = stream.ConsumeUntilPeekedTypeIs<>();
-  stream.ConsumeWhitespace();
-  if (!stream.AtEnd()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "Invalid math expression");
-    return nullptr;
-  }
 
-  switch (range.Peek().GetType()) {
+  switch (stream.Peek().GetType()) {
     case kNumberToken:
     case kPercentageToken:
     case kDimensionToken: {
-      const auto token = range.ConsumeIncludingWhitespace();
-      if (!range.AtEnd() || !IsValidUnit(token.GetUnitType())) {
+      const auto token = stream.ConsumeIncludingWhitespace();
+      if (!stream.AtEnd() || !IsValidUnit(token.GetUnitType())) {
         break;
       }
       return CSSUnitValue::Create(token.NumericValue(), token.GetUnitType());
     }
     case kFunctionToken:
-      if (range.Peek().FunctionId() == CSSValueID::kCalc ||
-          range.Peek().FunctionId() == CSSValueID::kWebkitCalc ||
-          range.Peek().FunctionId() == CSSValueID::kMin ||
-          range.Peek().FunctionId() == CSSValueID::kMax ||
-          range.Peek().FunctionId() == CSSValueID::kClamp) {
+      if (stream.Peek().FunctionId() == CSSValueID::kCalc ||
+          stream.Peek().FunctionId() == CSSValueID::kWebkitCalc ||
+          stream.Peek().FunctionId() == CSSValueID::kMin ||
+          stream.Peek().FunctionId() == CSSValueID::kMax ||
+          stream.Peek().FunctionId() == CSSValueID::kClamp) {
         using enum CSSMathExpressionNode::Flag;
         using Flags = CSSMathExpressionNode::Flags;
 
         // TODO(crbug.com/1309178): Decide how to handle anchor queries here.
         CSSMathExpressionNode* expression =
             CSSMathExpressionNode::ParseMathFunction(
-                CSSValueID::kCalc, range,
+                CSSValueID::kCalc, stream,
                 *MakeGarbageCollected<CSSParserContext>(*execution_context),
                 Flags({AllowPercent}), kCSSAnchorQueryTypesNone);
         if (expression) {
@@ -337,10 +329,21 @@ CSSNumericValue* CSSNumericValue::parse(
 CSSNumericValue* CSSNumericValue::FromCSSValue(const CSSPrimitiveValue& value) {
   if (value.IsCalculated()) {
     const auto& math_function = To<CSSMathFunctionValue>(value);
-    if (math_function.InvolvesAnchorQueries()) {
+    // We don't currently have a spec or implementation for a typed OM
+    // representation of anchor functions or sizing keywords (in calc-size()).
+    // So we should not attempt to produce such a representation.  Do this
+    // exactly for anchor functions, but handle sizing keywords by rejecting
+    // any calc-size() function (even if it doesn't have sizing keywords),
+    // since the use of sizing keywords is the main use of such functions.
+    auto is_calc_size = [](const CSSMathExpressionNode* expression) {
+      const auto* operation = DynamicTo<CSSMathExpressionOperation>(expression);
+      return operation && operation->IsCalcSize();
+    };
+    const CSSMathExpressionNode* expression = math_function.ExpressionNode();
+    if (math_function.HasAnchorFunctions() || is_calc_size(expression)) {
       return nullptr;
     }
-    return CalcToNumericValue(*math_function.ExpressionNode());
+    return CalcToNumericValue(*expression);
   }
   return CSSUnitValue::FromCSSValue(To<CSSNumericLiteralValue>(value));
 }

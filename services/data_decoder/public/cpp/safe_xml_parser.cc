@@ -4,6 +4,8 @@
 
 #include "services/data_decoder/public/cpp/safe_xml_parser.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
@@ -163,13 +165,13 @@ bool GetAllXmlElementChildrenWithTag(
 
 const base::Value* FindXmlElementPath(
     const base::Value& element,
-    std::initializer_list<base::StringPiece> path,
+    std::initializer_list<std::string_view> path,
     bool* unique_path) {
   const base::Value* cur = nullptr;
   if (unique_path)
     *unique_path = true;
 
-  for (const base::StringPiece component_piece : path) {
+  for (const std::string_view component_piece : path) {
     std::string component(component_piece);
     if (!cur) {
       // First element has to match the current node.

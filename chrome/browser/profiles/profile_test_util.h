@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_selections.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -37,7 +38,7 @@ class ScopedNonEnterpriseDomainSetterForTesting {
   // pretty basic level in tests (`user_manager::kStubUserEmail`)
   // This is needed to prevent `TurnSyncOnHelper` for trying to make network
   // calls to fetch policy for the current account.
-  // TODO(https://crbug.com/1311650): Try to get saner defaults for stub user
+  // TODO(crbug.com/40831172): Try to get saner defaults for stub user
   // info or allowlisted domains.
   explicit ScopedNonEnterpriseDomainSetterForTesting(
       const char* domain = "example.com");

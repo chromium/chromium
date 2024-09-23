@@ -19,10 +19,6 @@ namespace gcm {
 class GCMDriver;
 }
 
-namespace ios {
-class ChromeBrowserStateManager;
-}
-
 namespace metrics {
 class MetricsService;
 }
@@ -52,8 +48,12 @@ namespace network_time {
 class NetworkTimeTracker;
 }
 
-namespace segmentation_platform {
-class OTRWebStateObserver;
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+
+namespace signin {
+class ActivePrimaryAccountsMetricsRecorder;
 }
 
 namespace ukm {
@@ -64,10 +64,16 @@ namespace variations {
 class VariationsService;
 }
 
+class AdditionalFeaturesController;
+class AccountProfileMapper;
 class ApplicationContext;
 class BrowserPolicyConnectorIOS;
+class IncognitoSessionTracker;
 class IOSChromeIOThread;
 class PrefService;
+
+class ProfileManagerIOS;
+
 class PushNotificationService;
 class SafeBrowsingService;
 @protocol SingleSignOnService;
@@ -118,8 +124,8 @@ class ApplicationContext {
   // Gets the country locale used by the application
   virtual const std::string& GetApplicationCountry() = 0;
 
-  // Gets the ChromeBrowserStateManager used by this application.
-  virtual ios::ChromeBrowserStateManager* GetChromeBrowserStateManager() = 0;
+  // Gets the Profile Manager used by this application.
+  virtual ProfileManagerIOS* GetProfileManager() = 0;
 
   // Gets the manager for the various metrics-related service, constructing it
   // if necessary. May return null.
@@ -128,6 +134,11 @@ class ApplicationContext {
 
   // Gets the MetricsService used by this application. May return null.
   virtual metrics::MetricsService* GetMetricsService() = 0;
+
+  // Gets the ActivePrimaryAccountsMetricsRecorder used by this application. May
+  // return null.
+  virtual signin::ActivePrimaryAccountsMetricsRecorder*
+  GetActivePrimaryAccountsMetricsRecorder() = 0;
 
   // Gets the UkmRecorder used by this application. May return null.
   virtual ukm::UkmRecorder* GetUkmRecorder() = 0;
@@ -164,18 +175,28 @@ class ApplicationContext {
   virtual BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() = 0;
 
   // Returns the SingleSignOnService instance used by this application.
-  virtual id<SingleSignOnService> GetSSOService() = 0;
+  virtual id<SingleSignOnService> GetSingleSignOnService() = 0;
 
   // Returns the SystemIdentityManager instance used by this application.
   virtual SystemIdentityManager* GetSystemIdentityManager() = 0;
 
-  // Returns the application's OTRWebStateObserver for segmentation platform.
-  virtual segmentation_platform::OTRWebStateObserver*
-  GetSegmentationOTRWebStateObserver() = 0;
+  // Returns the AccountProfileMapper instance used by this application.
+  virtual AccountProfileMapper* GetAccountProfileMapper() = 0;
+
+  // Returns the application's IncognitoSessionTracker instance.
+  virtual IncognitoSessionTracker* GetIncognitoSessionTracker() = 0;
 
   // Returns the application's PushNotificationService that handles all
   // interactions with the push notification server
   virtual PushNotificationService* GetPushNotificationService() = 0;
+
+  // Returns the application's OSCryptAsync instance which can be used to create
+  // instances of Encryptor for data encryption.
+  virtual os_crypt_async::OSCryptAsync* GetOSCryptAsync() = 0;
+
+  // Returns the application's AdditionalFeaturesController that manages some
+  // features not declared by `BASE_DECLARE_FEATURE()`.
+  virtual AdditionalFeaturesController* GetAdditionalFeaturesController() = 0;
 
  protected:
   // Sets the global ApplicationContext instance.

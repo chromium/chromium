@@ -14,16 +14,42 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/android/window_android.h"
-#include "ui/base/ui_base_jni_headers/SelectFileDialog_jni.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "ui/base/select_file_dialog_jni_headers/SelectFileDialog_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace ui {
+namespace {
+
+constexpr char kGetContent[] = "android.intent.action.GET_CONTENT";
+constexpr char kOpenDocument[] = "android.intent.action.OPEN_DOCUMENT";
+constexpr char kOpenDocumentTree[] = "android.intent.action.OPEN_DOCUMENT_TREE";
+
+std::string IntentActionFromType(SelectFileDialog::Type type,
+                                 bool open_writable) {
+  switch (type) {
+    case SelectFileDialog::SELECT_NONE:
+      return kGetContent;
+    case SelectFileDialog::SELECT_OPEN_FILE:
+    case SelectFileDialog::SELECT_OPEN_MULTI_FILE:
+      return open_writable ? kOpenDocument : kGetContent;
+    case SelectFileDialog::SELECT_SAVEAS_FILE:
+      return kOpenDocument;
+    case SelectFileDialog::SELECT_FOLDER:
+    case SelectFileDialog::SELECT_UPLOAD_FOLDER:
+    case SelectFileDialog::SELECT_EXISTING_FOLDER:
+      return kOpenDocumentTree;
+  }
+}
+
+}  // namespace
 
 // static
 SelectFileDialogImpl* SelectFileDialogImpl::Create(
@@ -47,7 +73,7 @@ void SelectFileDialogImpl::OnFileSelected(
   if (!file_name.empty())
     file_info.display_name = file_name;
 
-  listener_->FileSelected(file_info, 0, nullptr);
+  listener_->FileSelected(file_info, 0);
 }
 
 void SelectFileDialogImpl::OnMultipleFilesSelected(
@@ -80,22 +106,14 @@ void SelectFileDialogImpl::OnMultipleFilesSelected(
     selected_files.push_back(file_info);
   }
 
-  listener_->MultiFilesSelected(selected_files, nullptr);
+  listener_->MultiFilesSelected(selected_files);
 }
 
 void SelectFileDialogImpl::OnFileNotSelected(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_object) {
   if (listener_)
-    listener_->FileSelectionCanceled(nullptr);
-}
-
-void SelectFileDialogImpl::OnContactsSelected(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& java_object,
-    const JavaParamRef<jstring>& java_contacts) {
-  std::string data = ConvertJavaStringToUTF8(env, java_contacts.obj());
-  listener_->FileSelected(ui::SelectedFileInfo(), 0, (void*)data.c_str());
+    listener_->FileSelectionCanceled();
 }
 
 bool SelectFileDialogImpl::IsRunning(gfx::NativeWindow) const {
@@ -106,6 +124,18 @@ void SelectFileDialogImpl::ListenerDestroyed() {
   listener_ = nullptr;
 }
 
+void SelectFileDialogImpl::SetAcceptTypes(std::vector<std::u16string> types) {
+  accept_types_ = std::move(types);
+}
+
+void SelectFileDialogImpl::SetUseMediaCapture(bool use_media_capture) {
+  use_media_capture_ = use_media_capture;
+}
+
+void SelectFileDialogImpl::SetOpenWritable(bool open_writable) {
+  open_writable_ = open_writable;
+}
+
 void SelectFileDialogImpl::SelectFileImpl(
     SelectFileDialog::Type type,
     const std::u16string& title,
@@ -114,27 +144,20 @@ void SelectFileDialogImpl::SelectFileImpl(
     int file_type_index,
     const std::string& default_extension,
     gfx::NativeWindow owning_window,
-    void* params,
     const GURL* caller) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  // The first element in the pair is a list of accepted types, the second
-  // indicates whether the device's capture capabilities should be used.
-  typedef std::pair<std::vector<std::u16string>, bool> AcceptTypes;
-  AcceptTypes accept_types =
-      std::make_pair(std::vector<std::u16string>(), false);
-
-  if (params)
-    accept_types = *(reinterpret_cast<AcceptTypes*>(params));
-
+  ScopedJavaLocalRef<jstring> intent_action =
+      base::android::ConvertUTF8ToJavaString(
+          env, IntentActionFromType(type, open_writable_));
   ScopedJavaLocalRef<jobjectArray> accept_types_java =
-      base::android::ToJavaArrayOfStrings(env, accept_types.first);
+      base::android::ToJavaArrayOfStrings(env, accept_types_);
 
   bool accept_multiple_files = SelectFileDialog::SELECT_OPEN_MULTI_FILE == type;
 
-  Java_SelectFileDialog_selectFile(env, java_object_, accept_types_java,
-                                   accept_types.second, accept_multiple_files,
-                                   owning_window->GetJavaObject());
+  Java_SelectFileDialog_selectFile(
+      env, java_object_, intent_action, accept_types_java, use_media_capture_,
+      accept_multiple_files, owning_window->GetJavaObject());
 }
 
 SelectFileDialogImpl::~SelectFileDialogImpl() {

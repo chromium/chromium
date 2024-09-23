@@ -70,7 +70,6 @@ struct StructTraits<arc::mojom::PrinterCapabilitiesDataView,
                    printing::PrinterSemanticCapsAndDefaults* out) {
     // This is never used.
     NOTREACHED();
-    return false;
   }
 };
 

@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 
 class GURL;
@@ -51,13 +51,13 @@ class TranslateLanguageList {
   // Returns the language code that can be used with the Translate method for a
   // specified |language|. (ex. GetLanguageCode("en-US") will return "en", and
   // GetLanguageCode("zh-CN") returns "zh-CN")
-  std::string GetLanguageCode(base::StringPiece language);
+  std::string GetLanguageCode(std::string_view language);
 
   // Returns true if |language| is supported by the translation server.
-  bool IsSupportedLanguage(base::StringPiece language);
+  bool IsSupportedLanguage(std::string_view language);
 
   // Returns true if |language| is supported by the partial translation server.
-  static bool IsSupportedPartialTranslateLanguage(base::StringPiece language);
+  static bool IsSupportedPartialTranslateLanguage(std::string_view language);
 
   // Fetches the language list from the translate server if resource requests
   // are allowed, and otherwise keeps the request as pending until allowed.
@@ -102,7 +102,7 @@ class TranslateLanguageList {
   // Parses |language_list| containing the list of languages that the translate
   // server can translate to and from. Returns true iff the list is parsed
   // without syntax errors.
-  bool SetSupportedLanguages(base::StringPiece language_list);
+  bool SetSupportedLanguages(std::string_view language_list);
 
   // Returns the url from which to load the list of languages.
   static GURL TranslateLanguageUrl();

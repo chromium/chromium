@@ -11,9 +11,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/attachment_info.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
 // Listens for incoming or outgoing transfer updates from Nearby Connections and

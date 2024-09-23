@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_IMPL_H_
 
+#include <sys/types.h>
+
 #include <cstddef>
 #include <list>
 #include <memory>
@@ -33,10 +35,12 @@
 #include "content/browser/interest_group/interest_group_update_manager.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/k_anonymity_service_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
+#include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -54,6 +58,7 @@ class FilePath;
 
 namespace content {
 
+class AdAuctionPageData;
 class InterestGroupStorage;
 struct DebugReportLockoutAndCooldowns;
 
@@ -68,6 +73,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       base::RepeatingCallback<bool(const std::vector<url::Origin>&)>;
   using GetKAnonymityServiceDelegateCallback =
       InterestGroupKAnonymityManager::GetKAnonymityServiceDelegateCallback;
+  using RealTimeReportingContributions =
+      std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
+  using AdAuctionPageDataCallback =
+      base::RepeatingCallback<AdAuctionPageData*()>;
 
   // Controls how auction worklets will be run. kDedicated will use
   // fully-isolated utility processes solely for worklet. kInRenderer will
@@ -148,10 +157,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // navigator.joinAdInterestGroup() was invoked, and will be used for the
   // .well-known fetch if one is needed.
   //
-  // `url_loader_factory_for_keyfetch`  will  be used to pre-fetch
-  // B&A server keys if the B&A server is enabled and if this is the first
-  // joinAdInterestGroup call since browser start.
-  //
   // `report_result_only`, if true, results in calling `callback` with the
   // result of the permissions check, but not actually joining the interest
   // group, regardless of success or failure. This is used to avoid leaking
@@ -167,8 +172,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const net::NetworkIsolationKey& network_isolation_key,
       bool report_result_only,
       network::mojom::URLLoaderFactory& url_loader_factory,
-      scoped_refptr<network::SharedURLLoaderFactory>
-          url_loader_factory_for_keyfetch,
       AreReportingOriginsAttestedCallback attestation_callback,
       blink::mojom::AdAuctionService::JoinInterestGroupCallback callback);
 
@@ -233,6 +236,11 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       AreReportingOriginsAttestedCallback callback,
       const base::TimeDelta& delay);
 
+  // Allows the interest group specified by `group_key` to be updated if it was
+  // last updated before `update_if_older_than`.
+  void AllowUpdateIfOlderThan(const blink::InterestGroupKey& group_key,
+                              base::TimeDelta update_if_older_than);
+
   // For testing *only*; changes the maximum amount of time that the update
   // process can run before it gets cancelled for taking too long.
   void set_max_update_round_duration_for_testing(base::TimeDelta delta) {
@@ -265,7 +273,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   // Reports the ad keys to the k-anonymity service. Should be called when
   // FLEDGE selects an ad.
-  void RegisterAdKeysAsJoined(base::flat_set<std::string> keys);
+  void RegisterAdKeysAsJoined(base::flat_set<std::string> hashed_keys);
 
   // Gets a single interest group.
   void GetInterestGroup(
@@ -292,6 +300,24 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const url::Origin& owner,
       base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback);
 
+  // For a given `owner`, return whether the owner origin and bidding signal
+  // origin were cached in-memory in previous calls to
+  // GetInterestGroupsForOwner and JoinInterestGroup. If the `owner` origin was
+  // cached, update `signals_origin` to the one that was cached -- or set to
+  // nullopt if no bidding signals origin was cached or if it would be the same
+  // as the owner origin. The cache includes at most one entry per origin, and
+  // may not reflect the results of interest group updates. It's intended to be
+  // used for best-effort preconnecting, and should not be considered
+  // authoritative. It is guaranteed not to contain interest groups that have
+  // are beyond the max expiration time limit, so preconnecting should not leak
+  // data the bidder would otherwise have access to, if it so desired. That is,
+  // manual voluntarily removing or expiring of an interest group may not be
+  // reflected in the result, but hitting the the global interest group lifetime
+  // cap will be respected.
+  bool GetCachedOwnerAndSignalsOrigins(
+      const url::Origin& owner,
+      std::optional<url::Origin>& signals_origin);
+
   // Clear out storage for the matching owning storage key. If the matcher is
   // empty then apply to all storage keys.
   void DeleteInterestGroupData(
@@ -310,7 +336,19 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   virtual void EnqueueReports(
       ReportType report_type,
       std::vector<GURL> report_urls,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
+      const url::Origin& frame_origin,
+      const network::mojom::ClientSecurityState& client_security_state,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  // Similar to EnqueueReports(), but enqueues real time reporting
+  // contributions. Contributions will be sampled and converted to histograms by
+  // calling CalculateRealTimeReportingHistograms() before added to queue.
+  // Virtual for testing.
+  virtual void EnqueueRealTimeReports(
+      std::map<url::Origin, RealTimeReportingContributions> contributions,
+      AdAuctionPageDataCallback ad_auction_page_data_callback,
+      FrameTreeNodeId frame_tree_node_id,
       const url::Origin& frame_origin,
       const network::mojom::ClientSecurityState& client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -391,6 +429,16 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     reporting_interval_ = interval;
   }
 
+  // For testing *only*; changes `real_time_reporting_window_`.
+  void set_real_time_reporting_window_for_testing(base::TimeDelta window) {
+    real_time_reporting_window_ = window;
+  }
+
+  // For testing *only*; changes `max_real_time_reports_`.
+  void set_max_real_time_reports_for_testing(int max_num_reports) {
+    max_real_time_reports_ = max_num_reports;
+  }
+
   size_t report_queue_length_for_testing() const {
     return report_requests_.size();
   }
@@ -400,16 +448,20 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // (including ads). Also reports membership in the interest group to the
   // k-anonymity of interest-group service.
   void QueueKAnonymityUpdateForInterestGroup(
-      const blink::InterestGroupKey& group_key);
-  // Records K-anonymity to the database.
-  void UpdateKAnonymity(const StorageInterestGroup::KAnonymityData& data);
-
-  // Gets all KAnonymityData for ads part of the interest group specified by
-  // `interest_group_key`.
-  void GetKAnonymityDataForUpdate(
       const blink::InterestGroupKey& group_key,
-      base::OnceCallback<void(
-          const std::vector<StorageInterestGroup::KAnonymityData>&)> callback);
+      const std::optional<InterestGroupKanonUpdateParameter> update_parameter);
+  // Records a K-anonymity update for an interest group. If
+  // `replace_existing_values` is true, this update will store the new
+  // `update_time` and `positive_hashed_values`, replacing the interest
+  // group's existing update time and keys. If `replace_existing_values` is
+  // false, `positive_hashed_keys` will be added to the existing positive keys
+  // without updating the stored update time.  No value is stored if
+  // `update_time` is older than the `update_time` already stored in the
+  // database.
+  void UpdateKAnonymity(const blink::InterestGroupKey& interest_group_key,
+                        const std::vector<std::string>& positive_hashed_keys,
+                        const base::Time update_time,
+                        bool initial_update);
 
   // Gets lockout and cooldown for sending forDebuggingOnly reports.
   void GetDebugReportLockoutAndCooldowns(
@@ -419,22 +471,22 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   // Gets the last time that the key was reported to the k-anonymity server.
   void GetLastKAnonymityReported(
-      const std::string& key,
+      const std::string& hashed_key,
       base::OnceCallback<void(std::optional<base::Time>)> callback);
   // Updates the last time that the key was reported to the k-anonymity server.
-  void UpdateLastKAnonymityReported(const std::string& key);
+  void UpdateLastKAnonymityReported(const std::string& hashed_key);
 
   void GetInterestGroupAdAuctionData(
       url::Origin top_level_origin,
       base::Uuid generation_id,
+      base::Time timestamp,
+      blink::mojom::AuctionDataConfigPtr config,
       base::OnceCallback<void(BiddingAndAuctionData)> callback);
 
-  // Get the public key to use for the auction data. The `loader` pointer must
-  // remain valid until the `callback` is called or destroyed. The `callback`
-  // may be called synchronously if the key is already available or the
-  // coordinator is not recognized.
+  // Get the public key to use for the auction data. The `callback` may be
+  // called synchronously if the key is already available or the coordinator is
+  // not recognized.
   void GetBiddingAndAuctionServerKey(
-      scoped_refptr<network::SharedURLLoaderFactory> loader,
       std::optional<url::Origin> coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback);
@@ -475,6 +527,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     ~ReportRequest();
 
     GURL report_url;
+    // Real time reporting histograms to be sent in POST request's body. Null
+    // for other report types.
+    std::optional<std::vector<uint8_t>> real_time_histogram;
+
     url::Origin frame_origin;
     network::mojom::ClientSecurityState client_security_state;
 
@@ -484,7 +540,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     // the binary, so no need for anything to own them.
     const char* name;
     int request_url_size_bytes;
-    int frame_tree_node_id;
+    FrameTreeNodeId frame_tree_node_id;
   };
 
   struct AdAuctionDataLoaderState {
@@ -504,8 +560,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       blink::InterestGroup group,
       const GURL& joining_url,
       bool report_result_only,
-      scoped_refptr<network::SharedURLLoaderFactory>
-          url_loader_factory_for_keyfetch,
       AreReportingOriginsAttestedCallback attestation_callback,
       blink::mojom::AdAuctionService::JoinInterestGroupCallback callback,
       bool can_join);
@@ -552,11 +606,12 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
                            base::OnceCallback<void(bool)> callback);
 
   // Called when a call to UpdateInterestGroup() completes. Sends a notification
-  // about the update and invokes `callback` with `success`.
-  void OnUpdateComplete(const url::Origin& owner_origin,
-                        const std::string& name,
-                        base::OnceCallback<void(bool)> callback,
-                        bool success);
+  // about the update and invokes `callback` with `success`. Queues a
+  // k-anonymity update with `kanon_update_parameter`.
+  void OnUpdateComplete(
+      const blink::InterestGroupKey& group_key,
+      base::OnceCallback<void(bool)> callback,
+      std::optional<InterestGroupKanonUpdateParameter> kanon_update_parameter);
 
   // Modifies the update rate limits stored in the database, with a longer delay
   // for parse failure.
@@ -577,12 +632,22 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Invoked when a report request completed.
   void OnOneReportSent(
       std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       const std::string& devtools_request_id,
       scoped_refptr<net::HttpResponseHeaders> response_headers);
 
   // Clears `report_requests_`.  Does not abort currently pending requests.
   void TimeoutReports();
+
+  // Shuffles the owners then calls `LoadNextInterestGroupAdAuctionData()`.
+  // We need the shuffle so that interest group owners are not included in the
+  // auction data in the same order every time. Our serialization only solves
+  // an approximation of the "knapsack" problem, so the amount of interest
+  // groups we can fit for each owner may depend on the order in which
+  // they are processed. Shuffling helps guarantee fairness.
+  void ShuffleOwnersThenLoadInterestGroupAdAuctionData(
+      AdAuctionDataLoaderState state,
+      std::vector<url::Origin> owners);
 
   // Loads the next owner's interest group data. If there are no more owners
   // whose interest groups need to be loaded, calls OnAdAuctionDataLoadComplete.
@@ -597,9 +662,16 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       url::Origin owner,
       scoped_refptr<StorageInterestGroups> groups);
 
+  // Invoked when loading interest groups is completed. Load debug report
+  // lockout information if sampling debug report is enabled, otherwise invoke
+  // `OnAdAuctionDataLoadComplete()` directly.
+  void OnInterestGroupAdAuctionDataLoadComplete(AdAuctionDataLoaderState state);
+
   // Constructs the AuctionAdata when the load is complete and calls the
   // provided callback.
-  void OnAdAuctionDataLoadComplete(AdAuctionDataLoaderState state);
+  void OnAdAuctionDataLoadComplete(
+      AdAuctionDataLoaderState state,
+      std::optional<base::Time> last_report_sent_time);
 
   // Helper to that returns bound NotifyInterestGroupAccessed() callbacks to
   // allow notifications to be sent after a database update.
@@ -663,8 +735,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Should *only* be changed by tests.
   int max_report_queue_length_;
 
-  // The time interval to wait before sending the next report request after
-  // sending one.
+  // The time interval to wait before sending the next batch of report requests
+  // after sending one batch.
   //
   // Should *only* be changed by tests.
   base::TimeDelta reporting_interval_;
@@ -674,6 +746,13 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   //
   // Should *only* be changed by tests.
   base::TimeDelta max_reporting_round_duration_;
+
+  // The number of real time reports (`max_real_time_reports_`) per reporting
+  // origin per page per `real_time_reporting_window_`.
+  //
+  // Should *only* be changed by tests.
+  base::TimeDelta real_time_reporting_window_;
+  double max_real_time_reports_;
 
   // Used to clear all pending reports in the queue if reporting takes too long.
   // Started when sending reports starts. Stopped once all reports are sent.

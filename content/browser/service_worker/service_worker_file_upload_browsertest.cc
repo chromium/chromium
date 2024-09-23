@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -155,7 +157,7 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
     ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &file_path));
     ASSERT_TRUE(
-        base::WriteFile(file_path, base::StringPiece(kFileContent, kFileSize)));
+        base::WriteFile(file_path, std::string_view(kFileContent, kFileSize)));
 
     // Fill out the form to refer to the test file.
     base::RunLoop run_loop;
@@ -405,7 +407,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerFileUploadTest, MAYBE_Subresource) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &file_path));
   ASSERT_TRUE(
-      base::WriteFile(file_path, base::StringPiece(kFileContent, kFileSize)));
+      base::WriteFile(file_path, std::string_view(kFileContent, kFileSize)));
 
   std::string result;
   RunSubresourceTest(file_path, &result);
@@ -437,7 +439,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerFileUploadTest,
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().Append(nonAsciiFilename);
   ASSERT_TRUE(
-      base::WriteFile(file_path, base::StringPiece(kFileContent, kFileSize)));
+      base::WriteFile(file_path, std::string_view(kFileContent, kFileSize)));
 
   std::string result;
   RunSubresourceTest(file_path, &result);

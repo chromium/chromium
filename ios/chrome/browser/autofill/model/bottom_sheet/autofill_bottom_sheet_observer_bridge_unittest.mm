@@ -47,7 +47,7 @@ class AutofillBottomSheetObserverBridgeTest : public PlatformTest {
     fake_web_state_.SetWebFramesManager(content_world,
                                         std::move(frames_manager));
 
-    AutofillBottomSheetTabHelper::CreateForWebState(&fake_web_state_, nil);
+    AutofillBottomSheetTabHelper::CreateForWebState(&fake_web_state_);
     AutofillBottomSheetTabHelper* helper =
         AutofillBottomSheetTabHelper::FromWebState(&fake_web_state_);
 

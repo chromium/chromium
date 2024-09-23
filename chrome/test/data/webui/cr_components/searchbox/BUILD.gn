@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/test/data/webui/build_webui_tests.gni")
+
+assert(!is_android && !is_ios)
+
+build_webui_tests("build") {
+  files = [
+    "searchbox_lens_test.ts",
+    "searchbox_match_test.ts",
+    "searchbox_test_utils.ts",
+    "searchbox_test.ts",
+    "test_searchbox_browser_proxy.ts",
+  ]
+
+  ts_tsconfig_base = "tsconfig_base.json"
+
+  ts_deps = [
+    "//chrome/browser/resources/new_tab_page:build_ts",
+    "//ui/webui/resources/cr_components/searchbox:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  ts_path_mappings =
+      [ "chrome://new-tab-page/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/new_tab_page/tsc/*",
+                    target_gen_dir) ]
+}

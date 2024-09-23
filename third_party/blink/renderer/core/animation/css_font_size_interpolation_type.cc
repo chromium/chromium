@@ -62,7 +62,7 @@ InterpolationValue MaybeConvertKeyword(
   if (FontSizeFunctions::IsValidValueID(value_id)) {
     bool is_monospace = state.StyleBuilder().GetFontDescription().IsMonospace();
     conversion_checkers.push_back(
-        std::make_unique<IsMonospaceChecker>(is_monospace));
+        MakeGarbageCollected<IsMonospaceChecker>(is_monospace));
     return ConvertFontSize(state.GetFontBuilder().FontSizeForKeyword(
         FontSizeFunctions::KeywordSize(value_id), is_monospace));
   }
@@ -73,7 +73,7 @@ InterpolationValue MaybeConvertKeyword(
   const FontDescription::Size& inherited_font_size =
       state.ParentFontDescription().GetSize();
   conversion_checkers.push_back(
-      std::make_unique<InheritedFontSizeChecker>(inherited_font_size));
+      MakeGarbageCollected<InheritedFontSizeChecker>(inherited_font_size));
   if (value_id == CSSValueID::kSmaller)
     return ConvertFontSize(
         FontDescription::SmallerSize(inherited_font_size).value);
@@ -102,7 +102,7 @@ InterpolationValue CSSFontSizeInterpolationType::MaybeConvertInherit(
   const FontDescription::Size& inherited_font_size =
       state.ParentFontDescription().GetSize();
   conversion_checkers.push_back(
-      std::make_unique<InheritedFontSizeChecker>(inherited_font_size));
+      MakeGarbageCollected<InheritedFontSizeChecker>(inherited_font_size));
   return ConvertFontSize(inherited_font_size.value);
 }
 
@@ -143,9 +143,13 @@ void CSSFontSizeInterpolationType::ApplyStandardPropertyValue(
                                               Length::ValueRange::kNonNegative);
   float font_size =
       FloatValueForLength(font_size_length, parent_font.GetSize().value);
+  // TODO(dbaron): Setting is_absolute_size this way doesn't match the way
+  // StyleBuilderConverterBase::ConvertFontSize handles calc().  But neither
+  // really makes sense.  (Is it possible to get a calc() here?)
   state.GetFontBuilder().SetSize(FontDescription::Size(
       0, font_size,
-      !font_size_length.IsPercentOrCalc() || parent_font.IsAbsoluteSize()));
+      !(font_size_length.IsPercent() || font_size_length.IsCalculated()) ||
+          parent_font.IsAbsoluteSize()));
 }
 
 }  // namespace blink

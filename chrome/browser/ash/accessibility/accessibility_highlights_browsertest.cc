@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include "build/build_config.h"
 
 #include "ash/accessibility/ui/accessibility_cursor_ring_layer.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"

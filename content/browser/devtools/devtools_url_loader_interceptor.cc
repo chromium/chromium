@@ -2,23 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/devtools/devtools_url_loader_interceptor.h"
 
 #include <memory>
+#include <optional>
+#include <string_view>
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/strings/pattern.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/network_handler.h"
+#include "content/browser/devtools/request_body_collector.h"
 #include "content/browser/loader/download_utils_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -212,10 +221,9 @@ class BodyReader : public mojo::DataPipeDrainer::Client {
   }
 
  private:
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
+  void OnDataAvailable(base::span<const uint8_t> data) override {
     DCHECK(!data_complete_);
-    body_->data().append(
-        std::string(static_cast<const char*>(data), num_bytes));
+    body_->as_string().append(base::as_string_view(data));
   }
 
   void OnDataComplete() override;
@@ -242,7 +250,7 @@ void BodyReader::OnDataComplete() {
   data_complete_ = true;
   body_pipe_drainer_.reset();
   // TODO(caseq): only encode if necessary.
-  encoded_body_ = base::Base64Encode(body_->data());
+  encoded_body_ = base::Base64Encode(*body_);
   for (auto& cb : callbacks_)
     cb->sendSuccess(encoded_body_, true);
   callbacks_.clear();
@@ -262,6 +270,25 @@ struct ResponseMetadata {
   size_t transfer_size = 0;
   network::URLLoaderCompletionStatus status;
 };
+
+void RemoveUnsafeRequestHeadersOnRedirect(net::HttpRequestHeaders& headers) {
+  // Mimic the behavior of URLLoader::OnReceivedRedirect. It has already
+  // been called for the request and we just need to reflect the changes
+  // on our side. It is ok to remove more headers than the network stack
+  // did as RequestReceivedExtraInfo event will contain all the actual
+  // headers.
+  headers.RemoveHeader(net::HttpRequestHeaders::kCookie);
+  const net::HttpRequestHeaders::HeaderVector request_headers =
+      headers.GetHeaderVector();
+  for (const auto& header : request_headers) {
+    if (StartsWith(header.key, "sec-ch-",
+                   base::CompareCase::INSENSITIVE_ASCII) ||
+        StartsWith(header.key, "sec-fetch-",
+                   base::CompareCase::INSENSITIVE_ASCII)) {
+      headers.RemoveHeader(header.key);
+    }
+  }
+}
 
 class HeadersOverride {
  public:
@@ -285,43 +312,14 @@ class HeadersOverride {
   }
 
   static void Revert(std::unique_ptr<HeadersOverride> instance) {
-    instance->request_.headers = std::move(instance->original_headers_);
-    instance->request_.referrer = instance->original_referrer_;
-    instance->request_.referrer_policy = instance->original_referrer_policy_;
+    instance->request_->headers = std::move(instance->original_headers_);
+    instance->request_->referrer = instance->original_referrer_;
+    instance->request_->referrer_policy = instance->original_referrer_policy_;
   }
 
-  static void RevertForFollowRedirect(
-      std::unique_ptr<HeadersOverride> instance,
-      std::vector<std::string>& removed_headers,
-      net::HttpRequestHeaders& modified_headers) {
-    ComputeModifications(instance->request_.headers,
-                         instance->original_headers_, removed_headers,
-                         modified_headers);
-    Revert(std::move(instance));
+  void RemoveUnsafeOriginalHeadersOnRedirect() {
+    RemoveUnsafeRequestHeadersOnRedirect(original_headers_);
   }
-
-  // If the higher-level URLLoader performs any header modifications when
-  // calling `FollowRedirect()`, apply those to "original" headers, so these get
-  // applied during Revert.
-  void ApplyModifications(const std::vector<std::string>& removed_headers,
-                          const net::HttpRequestHeaders& modified_headers) {
-    for (const auto& entry : removed_headers)
-      original_headers_.RemoveHeader(entry);
-    original_headers_.MergeFrom(modified_headers);
-  }
-
-  void ModificationsForRedirect(std::vector<std::string>& removed_headers,
-                                net::HttpRequestHeaders& modified_headers) {
-    ComputeModifications(original_headers_, request_.headers, removed_headers,
-                         modified_headers);
-  }
-
- private:
-  explicit HeadersOverride(network::ResourceRequest& request)
-      : request_(request),
-        original_headers_(std::move(request.headers)),
-        original_referrer_(request.referrer),
-        original_referrer_policy_(request.referrer_policy) {}
 
   // Compute `remove_headers` and `modified_headers` that are needed
   // to turn `a` into `b`.
@@ -347,7 +345,14 @@ class HeadersOverride {
       removed_headers.push_back(entry.first);
   }
 
-  network::ResourceRequest& request_;
+ private:
+  explicit HeadersOverride(network::ResourceRequest& request)
+      : request_(request),
+        original_headers_(std::move(request.headers)),
+        original_referrer_(request.referrer),
+        original_referrer_policy_(request.referrer_policy) {}
+
+  const raw_ref<network::ResourceRequest> request_;
   net::HttpRequestHeaders original_headers_;
   GURL original_referrer_;
   net::ReferrerPolicy original_referrer_policy_;
@@ -406,6 +411,8 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   }
 
   Response InnerContinueRequest(std::unique_ptr<Modifications> modifications);
+  void ProcessFollowRedirect(
+      const net::HttpRequestHeaders& modified_cors_exempt_headers);
   void ProcessAuthResponse(
       const DevToolsURLLoaderInterceptor::AuthChallengeResponse&
           auth_challenge_response);
@@ -428,12 +435,15 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   std::unique_ptr<InterceptedRequestInfo> BuildRequestInfo(
       const network::mojom::URLResponseHeadPtr& head);
   void NotifyClient(std::unique_ptr<InterceptedRequestInfo> request_info);
-  void FetchCookies(
-      network::mojom::CookieManager::GetCookieListCallback callback);
-  void NotifyClientWithCookies(
-      std::unique_ptr<InterceptedRequestInfo> request_info,
+  void FetchCookies(base::OnceClosure callback);
+  void OnGotCookies(
+      base::OnceClosure callback,
       const net::CookieAccessResultList& cookies_with_access_result,
       const net::CookieAccessResultList& excluded_cookies);
+  void OnGotRequestBodies(base::OnceClosure callback,
+                          std::vector<RequestBodyCollector::BodyEntry> bodies);
+  void CompleteNotifyingClient(
+      std::unique_ptr<InterceptedRequestInfo> request_info);
 
   void ResponseBodyComplete();
 
@@ -484,8 +494,8 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   const base::UnguessableToken frame_token_;
   const bool report_upload_;
 
-  DevToolsURLLoaderInterceptor* interceptor_;
-  InterceptionStage stage_;
+  raw_ptr<DevToolsURLLoaderInterceptor> interceptor_;
+  DevToolsURLLoaderInterceptor::InterceptionStages stages_;
 
   std::unique_ptr<CreateLoaderParameters> create_loader_params_;
   const bool is_download_;
@@ -538,6 +548,19 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   // In case headers are overridden, keep the original and restore them
   // upon a redirect, so that overrides don't stick across redirects.
   std::unique_ptr<HeadersOverride> headers_override_;
+  // Header overrides are reverted before the redirect, so that
+  // request paused event contains original headers. Previous headers
+  // are used on resume to compute the difference for the network stack.
+  std::unique_ptr<net::HttpRequestHeaders> headers_before_redirect_;
+
+  // These two are needed to build a Request and are prepared as needed when
+  // sending Request for the first time. Both need to be cleared upon redirect.
+  std::vector<RequestBodyCollector::BodyEntry> request_bodies_;
+  std::optional<std::string> request_cookies_;
+
+  // This is only for retaining the body collector for the duration of its
+  // work (and properly cancelling it if the job gets prematurely destroyed).
+  std::unique_ptr<RequestBodyCollector> request_body_collector_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -564,17 +587,18 @@ void DevToolsURLLoaderInterceptor::CreateJob(
       std::move(client), std::move(target_factory), std::move(cookie_manager));
 }
 
-InterceptionStage DevToolsURLLoaderInterceptor::GetInterceptionStage(
+DevToolsURLLoaderInterceptor::InterceptionStages
+DevToolsURLLoaderInterceptor::GetInterceptionStages(
     const GURL& url,
     blink::mojom::ResourceType resource_type) const {
-  InterceptionStage stage = InterceptionStage::DONT_INTERCEPT;
+  DevToolsURLLoaderInterceptor::InterceptionStages stages;
   std::string unused;
   std::string url_str = protocol::NetworkHandler::ExtractFragment(url, &unused);
   for (const auto& pattern : patterns_) {
     if (pattern.Matches(url_str, resource_type))
-      stage |= pattern.interception_stage;
+      stages.Put(pattern.interception_stage);
   }
-  return stage;
+  return stages;
 }
 
 class DevToolsURLLoaderFactoryProxy : public network::mojom::URLLoaderFactory {
@@ -778,7 +802,7 @@ bool DevToolsURLLoaderInterceptor::CreateProxyForInterception(
       target_remote.InitWithNewPipeAndPassReceiver();
   mojo::PendingRemote<network::mojom::CookieManager> cookie_manager;
 
-  // TODO(https://crbug.com/1467851): Using 0 as the process id for navigations
+  // TODO(crbug.com/40276949): Using 0 as the process id for navigations
   // can lead to collisions between multiple navigations/service workers main
   // script fetch. It should be replaced by the more robust
   // GlobalRequestID::MakeBrowserInitiated().
@@ -851,12 +875,13 @@ bool InterceptionJob::StartJobAndMaybeNotify() {
   interceptor_->AddJob(current_id_, this);
 
   const network::ResourceRequest& request = create_loader_params_->request;
-  stage_ = interceptor_->GetInterceptionStage(
+  stages_ = interceptor_->GetInterceptionStages(
       request.url,
       static_cast<blink::mojom::ResourceType>(request.resource_type));
 
-  if (!(stage_ & InterceptionStage::REQUEST))
+  if (!stages_.Has(InterceptionStage::kRequest)) {
     return false;
+  }
 
   if (state_ == State::kRedirectReceived)
     state_ = State::kFollowRedirect;
@@ -903,7 +928,7 @@ void InterceptionJob::UpdateCORSFlag() {
 }
 
 bool InterceptionJob::CanGetResponseBody(std::string* error_reason) {
-  if (!(stage_ & InterceptionStage::RESPONSE)) {
+  if (!stages_.Has(InterceptionStage::kResponse)) {
     *error_reason =
         "Can only get response body on HeadersReceived pattern matched "
         "requests.";
@@ -969,7 +994,7 @@ void InterceptionJob::ContinueInterceptedRequest(
 }
 
 void InterceptionJob::Detach() {
-  stage_ = InterceptionStage::DONT_INTERCEPT;
+  stages_.Clear();
   interceptor_ = nullptr;
   if (!waiting_for_resolution_)
     return;
@@ -992,17 +1017,8 @@ Response InterceptionJob::InnerContinueRequest(
   waiting_for_resolution_ = false;
   TRACE_EVENT_NESTABLE_ASYNC_END0("devtools", "Fetch.requestPaused", this);
   if (modifications->intercept_response.has_value()) {
-    if (modifications->intercept_response.value()) {
-      if (stage_ == InterceptionStage::REQUEST)
-        stage_ = InterceptionStage::BOTH;
-      else
-        stage_ = InterceptionStage::RESPONSE;
-    } else {
-      if (stage_ == InterceptionStage::BOTH)
-        stage_ = InterceptionStage::REQUEST;
-      else if (stage_ == InterceptionStage::RESPONSE)
-        stage_ = InterceptionStage::DONT_INTERCEPT;
-    }
+    stages_.PutOrRemove(InterceptionStage::kResponse,
+                        modifications->intercept_response.value());
   }
 
   if (state_ == State::kAuthRequired) {
@@ -1051,23 +1067,15 @@ Response InterceptionJob::InnerContinueRequest(
   if (state_ == State::kFollowRedirect) {
     if (!modifications->modified_url.has_value()) {
       // TODO(caseq): report error if other modifications are present.
-      state_ = State::kRequestSent;
-      std::vector<std::string> removed_headers;
-      net::HttpRequestHeaders modified_headers;
-      if (!modifications->modified_headers) {
-        if (headers_override_) {
-          HeadersOverride::RevertForFollowRedirect(
-              std::move(headers_override_), removed_headers, modified_headers);
-        }
-      } else {
+
+      // At this point we already reverted headers to the original state.
+      if (modifications->modified_headers) {
         headers_override_ = HeadersOverride::SaveAndOverride(
             create_loader_params_->request,
             std::move(*modifications->modified_headers));
-        headers_override_->ModificationsForRedirect(removed_headers,
-                                                    modified_headers);
       }
-      loader_->FollowRedirect(removed_headers, modified_headers, {},
-                              std::nullopt);
+
+      ProcessFollowRedirect({});
       return Response::Success();
     }
     CancelRequest();
@@ -1123,8 +1131,23 @@ Response InterceptionJob::InnerContinueRequest(
 
   DCHECK_EQ(State::kNotStarted, state_);
   ApplyModificationsToRequest(std::move(modifications));
+  headers_before_redirect_.reset();
   StartRequest();
   return Response::Success();
+}
+
+void InterceptionJob::ProcessFollowRedirect(
+    const net::HttpRequestHeaders& modified_cors_exempt_headers) {
+  std::vector<std::string> removed_headers;
+  net::HttpRequestHeaders modified_headers;
+  CHECK(headers_before_redirect_);
+  HeadersOverride::ComputeModifications(*headers_before_redirect_,
+                                        create_loader_params_->request.headers,
+                                        removed_headers, modified_headers);
+  headers_before_redirect_.reset();
+  loader_->FollowRedirect(removed_headers, modified_headers,
+                          modified_cors_exempt_headers, std::nullopt);
+  state_ = State::kRequestSent;
 }
 
 void InterceptionJob::ApplyModificationsToRequest(
@@ -1148,6 +1171,7 @@ void InterceptionJob::ApplyModificationsToRequest(
     const auto& post_data = modifications->modified_post_data.value();
     request->request_body = network::ResourceRequestBody::CreateFromBytes(
         reinterpret_cast<const char*>(post_data.data()), post_data.size());
+    request_bodies_.clear();
   }
 
   if (modifications->modified_headers) {
@@ -1210,11 +1234,10 @@ Response InterceptionJob::ProcessResponseOverride(
       size_t bytes_to_sniff =
           std::min(body_size, static_cast<size_t>(net::kMaxBytesToSniff));
       const std::string hint = head->mime_type;
-      net::SniffMimeType(
-          base::StringPiece(body->front_as<const char>() + response_body_offset,
-                            bytes_to_sniff),
-          url, hint, net::ForceSniffFileUrlsForHtml::kDisabled,
-          &head->mime_type);
+      net::SniffMimeType(base::as_string_view(*body).substr(
+                             response_body_offset, bytes_to_sniff),
+                         url, hint, net::ForceSniffFileUrlsForHtml::kDisabled,
+                         &head->mime_type);
       head->did_mime_sniff = true;
     } else if (head->mime_type.empty()) {
       head->mime_type.assign("text/plain");
@@ -1265,19 +1288,17 @@ void InterceptionJob::ProcessSetCookies(const net::HttpResponseHeaders& headers,
   }
 
   std::vector<std::unique_ptr<net::CanonicalCookie>> cookies;
-  base::Time response_date;
-  std::optional<base::Time> server_time = std::nullopt;
-  if (headers.GetDateValue(&response_date))
-    server_time = std::make_optional(response_date);
+  std::optional<base::Time> server_time = headers.GetDateValue();
   base::Time now = base::Time::Now();
 
-  const base::StringPiece name("Set-Cookie");
+  const std::string_view name("Set-Cookie");
   std::string cookie_line;
   size_t iter = 0;
   while (headers.EnumerateHeader(&iter, name, &cookie_line)) {
     std::unique_ptr<net::CanonicalCookie> cookie = net::CanonicalCookie::Create(
         create_loader_params_->request.url, cookie_line, now, server_time,
-        std::nullopt);
+        std::nullopt, net::CookieSourceType::kOther,
+        /*status=*/nullptr);
     if (cookie)
       cookies.emplace_back(std::move(cookie));
   }
@@ -1338,22 +1359,26 @@ void InterceptionJob::ProcessRedirectByClient(const GURL& redirect_url) {
 
 void InterceptionJob::SendResponse(scoped_refptr<base::RefCountedMemory> body,
                                    size_t offset) {
-  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  base::span<const uint8_t> bytes_to_write;
   if (body) {
-    DCHECK_LE(offset, body->size());
-    size_t body_size = body->size() - offset;
-    // We shouldn't be able to transfer a string that big over the protocol,
-    // but just in case...
-    DCHECK_LE(body_size, UINT32_MAX)
-        << "Response bodies larger than " << UINT32_MAX << " are not supported";
-    mojo::ScopedDataPipeProducerHandle producer_handle;
-    CHECK_EQ(mojo::CreateDataPipe(body_size, producer_handle, consumer_handle),
-             MOJO_RESULT_OK);
-    uint32_t num_bytes = body_size;
+    bytes_to_write = base::as_byte_span(*body).subspan(offset);
+  }
+  // We shouldn't be able to transfer a string that big over the protocol,
+  // but just in case...
+  CHECK_LE(bytes_to_write.size(), UINT32_MAX)
+      << "Response bodies larger than " << UINT32_MAX << " are not supported";
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  CHECK_EQ(mojo::CreateDataPipe(bytes_to_write.size(), producer_handle,
+                                consumer_handle),
+           MOJO_RESULT_OK);
+
+  if (body) {
+    size_t actually_written_bytes = 0;
     MojoResult res = producer_handle->WriteData(
-        body->front() + offset, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+        bytes_to_write, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
     DCHECK_EQ(0u, res);
-    DCHECK_EQ(num_bytes, body_size);
+    DCHECK_EQ(actually_written_bytes, bytes_to_write.size());
   }
   client_->OnReceiveResponse(std::move(response_metadata_->head),
                              std::move(consumer_handle),
@@ -1426,12 +1451,7 @@ std::unique_ptr<InterceptedRequestInfo> InterceptionJob::BuildRequestInfo(
   return result;
 }
 
-void InterceptionJob::FetchCookies(
-    network::mojom::CookieManager::GetCookieListCallback callback) {
-  if (!GetResourceRequestForCookies().SendsCookies()) {
-    std::move(callback).Run({}, {});
-    return;
-  }
+void InterceptionJob::FetchCookies(base::OnceClosure callback) {
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_do_not_update_access_time();
@@ -1455,34 +1475,75 @@ void InterceptionJob::FetchCookies(
           request.request_initiator, is_main_frame_navigation,
           should_treat_as_first_party));
 
-  cookie_manager_->GetCookieList(request.url, options,
-                                 net::CookiePartitionKeyCollection::Todo(),
-                                 std::move(callback));
+  cookie_manager_->GetCookieList(
+      request.url, options, net::CookiePartitionKeyCollection::Todo(),
+      base::BindOnce(&InterceptionJob::OnGotCookies, base::Unretained(this),
+                     std::move(callback)));
 }
 
 void InterceptionJob::NotifyClient(
     std::unique_ptr<InterceptedRequestInfo> request_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!waiting_for_resolution_);
-  FetchCookies(base::BindOnce(&InterceptionJob::NotifyClientWithCookies,
-                              base::Unretained(this), std::move(request_info)));
+
+  const network::ResourceRequest request = GetResourceRequestForCookies();
+
+  const bool have_cookies = !!request_cookies_;
+  const bool want_cookies = request.SendsCookies();
+  CHECK(!have_cookies || want_cookies);
+
+  const bool have_request_bodies = !request_bodies_.empty();
+  const bool want_request_bodies = !!request.request_body;
+  CHECK(!have_request_bodies || want_request_bodies);
+
+  const int pending_callback_count =
+      (have_cookies == want_cookies ? 0 : 1) +
+      (have_request_bodies == want_request_bodies ? 0 : 1);
+
+  base::RepeatingClosure closure = BarrierClosure(
+      pending_callback_count,
+      base::BindOnce(&InterceptionJob::CompleteNotifyingClient,
+                     base::Unretained(this), std::move(request_info)));
+  if (have_cookies != want_cookies) {
+    FetchCookies(closure);
+  }
+  if (have_request_bodies != want_request_bodies) {
+    CHECK(!request_body_collector_);
+    request_body_collector_ = RequestBodyCollector::Collect(
+        *request.request_body,
+        base::BindOnce(&InterceptionJob::OnGotRequestBodies,
+                       base::Unretained(this), closure));
+  }
 }
 
-void InterceptionJob::NotifyClientWithCookies(
-    std::unique_ptr<InterceptedRequestInfo> request_info,
+void InterceptionJob::OnGotCookies(
+    base::OnceClosure callback,
     const net::CookieAccessResultList& cookies_with_access_result,
     const net::CookieAccessResultList& excluded_cookies) {
+  request_cookies_.emplace(
+      cookies_with_access_result.empty()
+          ? std::string()
+          : net::CanonicalCookie::BuildCookieLine(cookies_with_access_result));
+  std::move(callback).Run();
+}
+
+void InterceptionJob::OnGotRequestBodies(
+    base::OnceClosure callback,
+    std::vector<RequestBodyCollector::BodyEntry> bodies) {
+  request_bodies_ = std::move(bodies);
+  request_body_collector_.reset();
+  std::move(callback).Run();
+}
+
+void InterceptionJob::CompleteNotifyingClient(
+    std::unique_ptr<InterceptedRequestInfo> request_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!interceptor_)
     return;
-  std::string cookie_line;
-  if (!cookies_with_access_result.empty()) {
-    cookie_line =
-        net::CanonicalCookie::BuildCookieLine(cookies_with_access_result);
-  }
   request_info->network_request =
       protocol::NetworkHandler::CreateRequestFromResourceRequest(
-          create_loader_params_->request, cookie_line);
+          create_loader_params_->request,
+          request_cookies_.value_or(std::string()), request_bodies_);
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("devtools", "Fetch.requestPaused", this);
   waiting_for_resolution_ = true;
@@ -1519,7 +1580,18 @@ void InterceptionJob::FollowRedirect(
     tainted_origin_ = true;
   }
 
+  // Save previous headers and revert to the original ones before applying
+  // any client changes.
+  headers_before_redirect_ = std::make_unique<net::HttpRequestHeaders>(
+      create_loader_params_->request.headers);
+  if (headers_override_) {
+    // Always revert to the first request in the chain.
+    HeadersOverride::Revert(std::move(headers_override_));
+  }
+
   bool clear_body = false;
+  // Reflect changes to the request that the network service will make on
+  // FollowRedirect.
   net::RedirectUtil::UpdateHttpRequest(request->url, request->method, info,
                                        removed_headers, modified_headers,
                                        &request->headers, &clear_body);
@@ -1527,8 +1599,12 @@ void InterceptionJob::FollowRedirect(
   for (const std::string& name : removed_headers)
     request->cors_exempt_headers.RemoveHeader(name);
 
-  if (clear_body)
+  if (clear_body) {
     request->request_body = nullptr;
+    request_bodies_.clear();
+  }
+  request_cookies_.reset();
+
   request->method = info.new_method;
   request->url = info.new_url;
   request->site_for_cookies = info.new_site_for_cookies;
@@ -1545,9 +1621,6 @@ void InterceptionJob::FollowRedirect(
 
   url_chain_.push_back(create_loader_params_->request.url);
 
-  if (headers_override_)
-    headers_override_->ApplyModifications(removed_headers, modified_headers);
-
   if (interceptor_) {
     redirected_request_id_ = current_id_;
     // Pretend that each redirect hop is a new request -- this is for
@@ -1558,26 +1631,12 @@ void InterceptionJob::FollowRedirect(
       return;
   }
   if (state_ == State::kRedirectReceived) {
-    state_ = State::kRequestSent;
-    if (!headers_override_) {
-      loader_->FollowRedirect(removed_headers, modified_headers,
-                              modified_cors_exempt_headers,
-                              std::nullopt /* new_url */);
-      return;
-    }
-    // Re-compute removed and modified headers while taking original
-    // restored header values into account;
-    std::vector<std::string> removals;
-    net::HttpRequestHeaders modifications;
-    HeadersOverride::RevertForFollowRedirect(std::move(headers_override_),
-                                             removals, modifications);
-    loader_->FollowRedirect(removals, modifications,
-                            modified_cors_exempt_headers,
-                            std::nullopt /* new_url */);
+    ProcessFollowRedirect(modified_cors_exempt_headers);
     return;
   }
 
   DCHECK_EQ(State::kNotStarted, state_);
+  headers_before_redirect_.reset();
   StartRequest();
 }
 
@@ -1611,7 +1670,7 @@ void InterceptionJob::OnReceiveResponse(
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   state_ = State::kResponseReceived;
   DCHECK(!response_metadata_);
-  if (!(stage_ & InterceptionStage::RESPONSE)) {
+  if (!stages_.Has(InterceptionStage::kResponse)) {
     client_->OnReceiveResponse(std::move(head), std::move(body),
                                std::move(cached_metadata));
     return;
@@ -1643,7 +1702,14 @@ void InterceptionJob::OnReceiveRedirect(
   response_metadata_->redirect_info =
       std::make_unique<net::RedirectInfo>(redirect_info);
 
-  if (!(stage_ & InterceptionStage::RESPONSE)) {
+  // Delete some headers to sync the request with what the network
+  // service already did.
+  RemoveUnsafeRequestHeadersOnRedirect(create_loader_params_->request.headers);
+  if (headers_override_) {
+    headers_override_->RemoveUnsafeOriginalHeadersOnRedirect();
+  }
+
+  if (!stages_.Has(InterceptionStage::kResponse)) {
     client_->OnReceiveRedirect(redirect_info, std::move(head));
     return;
   }
@@ -1696,7 +1762,7 @@ void InterceptionJob::OnComplete(
     // If we haven't seen response and get an error completion,
     // treat it as a response and intercept (provided response are
     // being intercepted).
-    if (!(stage_ & InterceptionStage::RESPONSE) || !status.error_code) {
+    if (!stages_.Has(InterceptionStage::kResponse) || !status.error_code) {
       CompleteRequest(status);
       return;
     }
@@ -1723,7 +1789,7 @@ void InterceptionJob::OnAuthRequest(
   DCHECK(pending_auth_callback_.is_null());
   DCHECK(!waiting_for_resolution_);
 
-  if (!(stage_ & InterceptionStage::REQUEST) || !interceptor_ ||
+  if (!stages_.Has(InterceptionStage::kRequest) || !interceptor_ ||
       !interceptor_->handle_auth_) {
     std::move(callback).Run(true, std::nullopt);
     return;

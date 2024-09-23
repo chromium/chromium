@@ -4,13 +4,12 @@
 
 #include "chrome/chrome_elf/third_party_dlls/main.h"
 
-#include <limits>
-
 #include <windows.h>
 
+#include <assert.h>
 #include <versionhelpers.h>
 
-#include <assert.h>
+#include <limits>
 
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/chrome_elf/third_party_dlls/hook.h"

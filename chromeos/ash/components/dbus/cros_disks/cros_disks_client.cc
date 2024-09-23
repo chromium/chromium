@@ -15,6 +15,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -24,7 +25,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -40,16 +41,12 @@
 namespace ash {
 namespace {
 
-constexpr char kReadOnlyOption[] = "ro";
-constexpr char kReadWriteOption[] = "rw";
-constexpr char kRemountOption[] = "remount";
-constexpr char kMountLabelOption[] = "mountlabel";
-
 CrosDisksClient* g_instance = nullptr;
 
 DeviceType ToDeviceType(uint32_t media_type) {
-  if (media_type > static_cast<uint32_t>(DeviceType::kMaxValue))
+  if (media_type > static_cast<uint32_t>(DeviceType::kMaxValue)) {
     return DeviceType::kUnknown;
+  }
 
   return static_cast<DeviceType>(media_type);
 }
@@ -113,8 +110,9 @@ void MaybeGetStringFromDictionaryValue(const base::Value::Dict& dict,
                                        const char* key,
                                        std::string* result) {
   const std::string* value = dict.FindString(key);
-  if (value)
+  if (value) {
     *result = *value;
+  }
 }
 
 // The CrosDisksClient implementation.
@@ -147,9 +145,8 @@ class CrosDisksClientImpl : public CrosDisksClient {
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(source_path);
     writer.AppendString(source_format);
-    std::vector<std::string> options =
-        ComposeMountOptions(mount_options, mount_label, access_mode, remount);
-    writer.AppendArrayOfStrings(options);
+    writer.AppendArrayOfStrings(
+        ComposeMountOptions(mount_options, mount_label, access_mode, remount));
     proxy_->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                        base::BindOnce(&CrosDisksClientImpl::OnMount,
                                       weak_ptr_factory_.GetWeakPtr(),
@@ -439,8 +436,9 @@ class CrosDisksClientImpl : public CrosDisksClient {
       return;
     }
 
-    for (auto& observer : observer_list_)
+    for (Observer& observer : observer_list_) {
       observer.OnMountEvent(event_type, device);
+    }
   }
 
   // Handles MountCompleted signal and notifies observers.
@@ -465,8 +463,9 @@ class CrosDisksClientImpl : public CrosDisksClient {
             static_cast<int>(entry.mount_error));
 
     // Notify observers.
-    for (Observer& observer : observer_list_)
+    for (Observer& observer : observer_list_) {
       observer.OnMountCompleted(entry);
+    }
   }
 
   // Handles MountProgress signal and notifies observers.
@@ -479,8 +478,9 @@ class CrosDisksClientImpl : public CrosDisksClient {
     }
 
     // Notify observers.
-    for (Observer& observer : observer_list_)
+    for (Observer& observer : observer_list_) {
       observer.OnMountProgress(entry);
+    }
   }
 
   // Handles FormatCompleted signal and notifies observers.
@@ -794,14 +794,16 @@ bool DiskInfo::InitializeFromResponse(dbus::Response* response) {
   // PB.
   std::optional<double> device_size_double =
       dict.FindDouble(cros_disks::kDeviceSize);
-  if (device_size_double.has_value())
+  if (device_size_double.has_value()) {
     total_size_in_bytes_ = device_size_double.value();
+  }
 
   // dbus::PopDataAsValue() pops uint32_t as double.
   std::optional<double> media_type_double =
       dict.FindDouble(cros_disks::kDeviceMediaType);
-  if (media_type_double.has_value())
+  if (media_type_double.has_value()) {
     device_type_ = ToDeviceType(media_type_double.value());
+  }
 
   if (const base::Value::List* const mount_paths =
           dict.FindList(cros_disks::kDeviceMountPaths);
@@ -874,30 +876,27 @@ base::FilePath CrosDisksClient::GetRemovableDiskMountPoint() {
 
 // static
 std::vector<std::string> CrosDisksClient::ComposeMountOptions(
-    const std::vector<std::string>& options,
-    const std::string& mount_label,
-    MountAccessMode access_mode,
-    RemountOption remount) {
-  std::vector<std::string> mount_options = options;
-  switch (access_mode) {
-    case MountAccessMode::kReadOnly:
-      mount_options.push_back(kReadOnlyOption);
-      break;
-    case MountAccessMode::kReadWrite:
-      mount_options.push_back(kReadWriteOption);
-      break;
-  }
+    std::vector<std::string> options,
+    const std::string_view mount_label,
+    const MountAccessMode access_mode,
+    const RemountOption remount) {
+  options.push_back(access_mode == MountAccessMode::kReadWrite ? "rw" : "ro");
+
   if (remount == RemountOption::kRemountExistingDevice) {
-    mount_options.push_back(kRemountOption);
+    options.push_back("remount");
   }
 
   if (!mount_label.empty()) {
-    std::string mount_label_option =
-        base::StringPrintf("%s=%s", kMountLabelOption, mount_label.c_str());
-    mount_options.push_back(mount_label_option);
+    options.push_back(base::StrCat({"mountlabel=", mount_label}));
   }
 
-  return mount_options;
+  // TODO(b/364409158) Remove with files-kernel-drivers feature flag.
+  options.push_back(base::StrCat(
+      {"prefer-driver=",
+       base::FeatureList::IsEnabled(features::kFilesKernelDrivers) ? "kernel"
+                                                                   : "fuse"}));
+
+  return options;
 }
 
 }  // namespace ash

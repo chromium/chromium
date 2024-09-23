@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/jni_zero/jni_zero_helper.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // This method is required by the module loading backend. And it is supposed to
 // register VR's native JNI methods. However, since VR's Android-specific native

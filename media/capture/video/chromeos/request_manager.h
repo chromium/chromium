@@ -49,6 +49,25 @@ constexpr int32_t kMinConfiguredStreams = 1;
 // Maximum configured streams could contain two optional YUV streams.
 constexpr int32_t kMaxConfiguredStreams = 4;
 
+// The interface to register/retire buffer from the buffer pool maintained in
+// the camera HAL side.
+class CAPTURE_EXPORT VideoCaptureBufferObserver {
+ public:
+  VideoCaptureBufferObserver(base::WeakPtr<RequestManager> request_manager);
+
+  ~VideoCaptureBufferObserver();
+
+  // Registers buffer to the camera HAL buffer pool.
+  void OnNewBuffer(ClientType client_type,
+                   cros::mojom::CameraBufferHandlePtr buffer);
+
+  // Retires a buffer from the camera HAL buffer pool.
+  void OnBufferRetired(ClientType client_type, uint64_t buffer_id);
+
+ private:
+  const base::WeakPtr<RequestManager> request_manager_;
+};
+
 // RequestManager is responsible for managing the flow for sending capture
 // requests and receiving capture results. Having RequestBuilder to build
 // request and StreamBufferManager to handles stream buffers, it focuses on
@@ -158,6 +177,13 @@ class CAPTURE_EXPORT RequestManager final
   // CaptureMetadataDispatcher implementations.
   void AddResultMetadataObserver(ResultMetadataObserver* observer) override;
   void RemoveResultMetadataObserver(ResultMetadataObserver* observer) override;
+
+  // Registers buffer to the camera HAL buffer pool.
+  void OnNewBuffer(ClientType client_type,
+                   cros::mojom::CameraBufferHandlePtr buffer);
+
+  // Retires a buffer from the camera HAL buffer pool.
+  void OnBufferRetired(ClientType client_type, uint64_t buffer_id);
 
   // Queues a capture setting that will be send along with the earliest next
   // capture request.
@@ -321,7 +347,8 @@ class CAPTURE_EXPORT RequestManager final
 
   // StreamBufferManager does not own the ResultMetadataObservers.  The
   // observers are responsible for removing itself before self-destruction.
-  std::unordered_set<ResultMetadataObserver*> result_metadata_observers_;
+  std::unordered_set<raw_ptr<ResultMetadataObserver, CtnExperimental>>
+      result_metadata_observers_;
 
   // The list of settings to set/override once in the capture request.
   std::vector<cros::mojom::CameraMetadataEntryPtr> capture_settings_override_;

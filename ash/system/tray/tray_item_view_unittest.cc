@@ -15,6 +15,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -85,12 +86,21 @@ class TrayItemViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
+    // Create a hosting widget with non empty bounds so that it actually draws.
     widget_ = CreateFramelessTestWidget();
+    widget_->SetBounds(gfx::Rect(0, 0, 100, 80));
     widget_->Show();
     tray_item_ = widget_->SetContentsView(
         std::make_unique<TestTrayItemView>(GetPrimaryShelf()));
     tray_item_->CreateImageView();
     tray_item_->SetVisible(true);
+
+    // Warms up the compositor so that UI changes are picked up in time before
+    // throughput tracker is stopped.
+    ui::Compositor* const compositor =
+        tray_item()->GetWidget()->GetCompositor();
+    compositor->ScheduleFullRedraw();
+    ASSERT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
   }
 
   void TearDown() override {
@@ -112,6 +122,18 @@ class TrayItemViewTest : public AshTestBase {
       compositor->ScheduleFullRedraw();
       std::ignore = ui::WaitForNextFrameToBePresented(compositor,
                                                       base::Milliseconds(500));
+    }
+  }
+
+  // Helper function that waits for `tray_item()` opacity to change to a value
+  // different from `opacity`.
+  void WaitForAnimationChangeOpacityFrom(float opacity) {
+    ASSERT_TRUE(tray_item()->IsAnimating());
+
+    ui::Compositor* const compositor =
+        tray_item()->GetWidget()->GetCompositor();
+    while (tray_item()->layer()->opacity() == opacity) {
+      ASSERT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
     }
   }
 
@@ -222,12 +244,11 @@ TEST_F(TrayItemViewTest, LargeImageIcon) {
 
   // The preferred size is the size of the larger image (which is not the
   // default tray icon size, see static_assert above).
-  EXPECT_EQ(tray_item()->CalculatePreferredSize(), kLargeImageSize);
+  EXPECT_EQ(tray_item()->CalculatePreferredSize({}), kLargeImageSize);
 }
 
-// TODO(crbug.com/1520190): Re-enable when flakiness is resolved.
 // Tests that a smoothness metric is recorded for the "show" animation.
-TEST_F(TrayItemViewTest, DISABLED_SmoothnessMetricRecordedForShowAnimation) {
+TEST_F(TrayItemViewTest, SmoothnessMetricRecordedForShowAnimation) {
   // Start with the tray item hidden. Note that animations still complete
   // immediately in this part of the test, so no smoothness metrics are emitted.
   tray_item()->SetVisible(false);
@@ -248,8 +269,7 @@ TEST_F(TrayItemViewTest, DISABLED_SmoothnessMetricRecordedForShowAnimation) {
 }
 
 // Tests that a smoothness metric is recorded for the "hide" animation.
-// TODO(crbug.com/1523924): Fix and re-enable flaky test.
-TEST_F(TrayItemViewTest, DISABLED_SmoothnessMetricRecordedForHideAnimation) {
+TEST_F(TrayItemViewTest, SmoothnessMetricRecordedForHideAnimation) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kHideAnimationSmoothnessHistogramName, 0);
 
@@ -268,9 +288,7 @@ TEST_F(TrayItemViewTest, DISABLED_SmoothnessMetricRecordedForHideAnimation) {
 
 // Tests that the smoothness metric for the "hide" animation is still recorded
 // even when the "hide" animation interrupts the "show" animation.
-// TODO(b/41496872): Re-enable flaky test.
-TEST_F(TrayItemViewTest,
-       DISABLED_HideSmoothnessMetricRecordedWhenHideInterruptsShow) {
+TEST_F(TrayItemViewTest, HideSmoothnessMetricRecordedWhenHideInterruptsShow) {
   // Start with the tray item hidden. Note that animations still complete
   // immediately in this part of the test, so no smoothness metrics are emitted.
   tray_item()->SetVisible(false);
@@ -285,6 +303,11 @@ TEST_F(TrayItemViewTest,
   // Start the tray item's "show" animation, but interrupt it with the "hide"
   // animation. Wait for the "hide" animation to complete.
   tray_item()->SetVisible(true);
+
+  // Wait for animation to change opacity to actually draw on screen. Otherwise,
+  // the interrupted animation may end up as a no-op.
+  WaitForAnimationChangeOpacityFrom(0.0f);
+
   tray_item()->SetVisible(false);
   WaitForAnimation();
 
@@ -294,8 +317,7 @@ TEST_F(TrayItemViewTest,
 
 // Tests that the smoothness metric for the "show" animation is still recorded
 // even when the "show" animation interrupts the "hide" animation.
-TEST_F(TrayItemViewTest,
-       DISABLED_ShowSmoothnessMetricRecordedWhenShowInterruptsHide) {
+TEST_F(TrayItemViewTest, ShowSmoothnessMetricRecordedWhenShowInterruptsHide) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kHideAnimationSmoothnessHistogramName, 0);
 
@@ -307,11 +329,61 @@ TEST_F(TrayItemViewTest,
   // Start the tray item's "hide" animation, but interrupt it with the "show"
   // animation. Wait for the "show" animation to complete.
   tray_item()->SetVisible(false);
+
+  // Wait for animation to change opacity to actually draw on screen. Otherwise,
+  // the interrupted animation may end up as a no-op.
+  WaitForAnimationChangeOpacityFrom(1.0f);
+
   tray_item()->SetVisible(true);
   WaitForAnimation();
 
   // Verify that the "show" animation's smoothness metric was recorded.
   histogram_tester.ExpectTotalCount(kShowAnimationSmoothnessHistogramName, 1);
+}
+
+TEST_F(TrayItemViewTest, IconizedLabelAccessibleProperties) {
+  tray_item()->CreateLabel();
+  IconizedLabel* label = tray_item()->label();
+  ui::AXNodeData data;
+
+  // Test when custom accessible name is empty.
+  label->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(label->GetTextContext(), views::style::CONTEXT_LABEL);
+  EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
+  EXPECT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+
+  label->SetText(u"Sample text");
+  label->SetTextContext(views::style::CONTEXT_DIALOG_TITLE);
+  data = ui::AXNodeData();
+  label->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTitleBar);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Sample text");
+
+  // Test when custom accessible name is not empty.
+  label->SetCustomAccessibleName(u"Sample name");
+  label->SetTextContext(views::style::CONTEXT_LABEL);
+  data = ui::AXNodeData();
+  label->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Sample name");
+
+  label->SetTextContext(views::style::CONTEXT_DIALOG_TITLE);
+  label->SetText(u"New sample text");
+  data = ui::AXNodeData();
+  label->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kStaticText);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Sample name");
+
+  // Test when custom accessible name is again set to empty.
+  label->SetCustomAccessibleName(u"");
+  data = ui::AXNodeData();
+  label->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTitleBar);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"New sample text");
 }
 
 }  // namespace ash

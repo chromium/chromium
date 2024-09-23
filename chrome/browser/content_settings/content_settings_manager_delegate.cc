@@ -20,7 +20,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif
 
-namespace chrome {
 namespace {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -108,5 +107,3 @@ std::unique_ptr<content_settings::ContentSettingsManagerImpl::Delegate>
 ContentSettingsManagerDelegate::Clone() {
   return std::make_unique<ContentSettingsManagerDelegate>();
 }
-
-}  // namespace chrome

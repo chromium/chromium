@@ -287,6 +287,31 @@ class WebTestFinderTests(unittest.TestCase):
             set(tests[1]),
             set(['path/test.html','virtual/path/test.html',]))
 
+    def test_inverted_test_filter_find_tests(self):
+        host = MockHost()
+        port = host.port_factory.get('test-win-win7', None)
+        mock_files = {
+            'test-list.txt': 'path/test.html\nvirtual/path/test.html',
+            'inverted-filter.txt': 'path/test.html'
+        }
+        host.filesystem = MockFileSystem(files=mock_files)
+
+        port_tests = [
+            'path/test.html',
+            'not/in/test/list.html',
+        ]
+
+        port.tests = lambda paths: paths or port_tests
+
+        finder = web_test_finder.WebTestFinder(port, {})
+
+        tests = finder.find_tests(
+            args=[],
+            test_lists=['test-list.txt'],
+            inverted_filter_files=['inverted-filter.txt'])
+        self.assertEqual(set(tests[1]), set([
+            'virtual/path/test.html',
+        ]))
 
 class FilterTestsTests(unittest.TestCase):
     simple_test_filter = ['a/a1.html', 'a/a2.html', 'b/b1.html']

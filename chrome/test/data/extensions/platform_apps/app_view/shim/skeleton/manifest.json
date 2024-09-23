@@ -3,6 +3,9 @@
   "name": "skeleton",
   "minimum_chrome_version": "24.0.1307.0",
   "version": "1.0",
+  "permissions": [
+    "webview"
+  ],
   "app": {
     "background": {
       "scripts": ["main.js"]

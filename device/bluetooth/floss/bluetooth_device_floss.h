@@ -42,6 +42,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
     kGattDisconnected = 0,
     kGattConnecting,
     kGattConnected,
+    // Initial state, no prior connection built. Use direct connection.
+    kGattConnectionInit,
   };
   enum PropertiesState : uint32_t {
     kNotRead = 0,
@@ -199,6 +201,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
  private:
   // Invoked when no connection established during connecting.
   void ConnectionIncomplete();
+  // Connects with specified transport
+  void ConnectWithTransport(
+      device::BluetoothDevice::PairingDelegate* pairing_delegate,
+      ConnectCallback callback,
+      FlossAdapterClient::BluetoothTransport transport);
   // Method to connect profiles.
   void ConnectAllEnabledProfiles();
   // Updates the state of connecting and calls callbacks accordingly.
@@ -224,6 +231,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
       base::OnceClosure callback,
       DBusResult<FlossAdapterClient::BtAddressType> ret);
   void OnConnectAllEnabledProfiles(DBusResult<Void> ret);
+  void OnConnectAllEnabledProfiles(DBusResult<FlossDBusClient::BtifStatus> ret);
   void OnDisconnectAllEnabledProfiles(base::OnceClosure callback,
                                       ErrorCallback error_callback,
                                       DBusResult<Void> ret);
@@ -241,6 +249,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
                               ErrorCallback error_callback,
                               DBusResult<Void> ret);
   void OnCreateBond(DBusResult<bool> ret);
+  void OnCreateBond(DBusResult<FlossDBusClient::BtifStatus> ret);
 
 #if BUILDFLAG(IS_CHROMEOS)
   void OnExecuteWrite(base::OnceClosure callback,
@@ -330,7 +339,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 
   // The status of GATT connecting.
   GattConnectingState gatt_connecting_state_ =
-      GattConnectingState::kGattDisconnected;
+      GattConnectingState::kGattConnectionInit;
 
   // UI thread task runner and socket thread used to create sockets.
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;

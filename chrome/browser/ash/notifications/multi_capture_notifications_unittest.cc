@@ -15,7 +15,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service.h"
+#include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -27,47 +32,80 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/origin.h"
 
 namespace {
 constexpr base::TimeDelta kMinimumNotificationPresenceTime = base::Seconds(6);
+constexpr char kUserMail[] = "testingprofile@chromium.org";
+
+class MockMultiCaptureService : public crosapi::mojom::MultiCaptureService {
+ public:
+  MockMultiCaptureService() = default;
+  MockMultiCaptureService(const MockMultiCaptureService&) = delete;
+  MockMultiCaptureService& operator=(const MockMultiCaptureService&) = delete;
+  ~MockMultiCaptureService() override = default;
+
+  void BindReceiver(
+      mojo::PendingReceiver<crosapi::mojom::MultiCaptureService> receiver) {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+  // crosapi::mojom::MultiCaptureService:
+  MOCK_METHOD(void,
+              MultiCaptureStarted,
+              (const std::string& label, const std::string& host),
+              (override));
+  MOCK_METHOD(void,
+              MultiCaptureStopped,
+              (const std::string& label),
+              (override));
+  MOCK_METHOD(void,
+              MultiCaptureStartedFromApp,
+              (const std::string& label,
+               const std::string& app_id,
+               const std::string& app_name),
+              (override));
+  MOCK_METHOD(void,
+              IsMultiCaptureAllowed,
+              (const GURL& url, IsMultiCaptureAllowedCallback),
+              (override));
+  MOCK_METHOD(void,
+              IsMultiCaptureAllowedForAnyOriginOnMainProfile,
+              (IsMultiCaptureAllowedForAnyOriginOnMainProfileCallback),
+              (override));
+
+ private:
+  mojo::ReceiverSet<crosapi::mojom::MultiCaptureService> receivers_;
+};
+
 }  // namespace
 
 namespace ash {
 
-class MultiCaptureNotificationsTest : public AshTestBase {
+class MultiCaptureNotificationsTest : public BrowserWithTestWindowTest {
  public:
   MultiCaptureNotificationsTest()
-      : AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
-            std::make_unique<content::BrowserTaskEnvironment>(
-                base::test::TaskEnvironment::TimeSource::MOCK_TIME))),
-        active_user_account_id_(
-            AccountId::FromUserEmail(/*user_email=*/"sample_user@gmail.com")) {}
+      : BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~MultiCaptureNotificationsTest() override = default;
 
   void SetUp() override {
-    AshTestBase::SetUp();
+    BrowserWithTestWindowTest::SetUp();
     UserDataAuthClient::InitializeFake();
 
-    std::unique_ptr<FakeChromeUserManager> user_manager =
-        std::make_unique<FakeChromeUserManager>();
-    user_manager_ = user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
-    user_manager_->AddUser(active_user_account_id_);
+    LogIn(kUserMail);
+    auto* user_profile = CreateProfile(kUserMail);
+    ASSERT_TRUE(user_profile);
 
-    CreateUserSessions(1);
-
-    LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_NONE,
-                                        LoginState::LOGGED_IN_USER_NONE);
     multi_capture_notifications_ =
         std::make_unique<MultiCaptureNotifications>();
     notification_count_ = 0u;
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
         std::make_unique<SystemNotificationHelper>());
-    tester_ = std::make_unique<NotificationDisplayServiceTester>(
-        /*profile=*/nullptr);
+    tester_ =
+        std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
     tester_->SetNotificationAddedClosure(
         base::BindRepeating(&MultiCaptureNotificationsTest::OnNotificationAdded,
                             base::Unretained(this)));
@@ -75,12 +113,17 @@ class MultiCaptureNotificationsTest : public AshTestBase {
         &MultiCaptureNotificationsTest::OnNotificationRemoved,
         base::Unretained(this)));
     notification_count_ = 0u;
+
+    capture_policy::SetMultiCaptureServiceForTesting(
+        &mock_multi_capture_service_);
   }
 
   void TearDown() override {
+    capture_policy::SetMultiCaptureServiceForTesting(
+        /*service=*/nullptr);
     multi_capture_notifications_.reset();
     UserDataAuthClient::Shutdown();
-    AshTestBase::TearDown();
+    BrowserWithTestWindowTest::TearDown();
   }
 
   std::optional<message_center::Notification> GetLoginNotification() {
@@ -108,22 +151,20 @@ class MultiCaptureNotificationsTest : public AshTestBase {
  protected:
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::unique_ptr<MultiCaptureNotifications> multi_capture_notifications_;
-  AccountId active_user_account_id_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  raw_ptr<FakeChromeUserManager> user_manager_ = nullptr;
+  testing::StrictMock<MockMultiCaptureService> mock_multi_capture_service_;
 
   unsigned int notification_count_;
 };
 
 TEST_F(MultiCaptureNotificationsTest, LoginNotificationTriggeredOnLogin) {
-  LoginState* login_state = LoginState::Get();
-  SetIsMultiCaptureAllowedForTesting(
-      /*is_multi_capture_allowed=*/true);
+  EXPECT_CALL(mock_multi_capture_service_,
+              IsMultiCaptureAllowedForAnyOriginOnMainProfile(testing::_))
+      .WillOnce(testing::Invoke([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      }));
   EXPECT_EQ(0u, notification_count_);
 
-  user_manager_->SwitchActiveUser(active_user_account_id_);
-  user_manager_->SimulateUserProfileLoad(active_user_account_id_);
-  login_state->SetLoggedInState(
+  LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
       LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
 
@@ -139,14 +180,14 @@ TEST_F(MultiCaptureNotificationsTest, LoginNotificationTriggeredOnLogin) {
 
 TEST_F(MultiCaptureNotificationsTest,
        LoginFeatureDisabledNotificationNotTriggeredOnLogin) {
-  LoginState* login_state = LoginState::Get();
-  SetIsMultiCaptureAllowedForTesting(
-      /*is_multi_capture_allowed=*/false);
+  EXPECT_CALL(mock_multi_capture_service_,
+              IsMultiCaptureAllowedForAnyOriginOnMainProfile(testing::_))
+      .WillOnce(testing::Invoke([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(false);
+      }));
   EXPECT_EQ(0u, notification_count_);
 
-  user_manager_->SwitchActiveUser(active_user_account_id_);
-  user_manager_->SimulateUserProfileLoad(active_user_account_id_);
-  login_state->SetLoggedInState(
+  LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
       LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
 
@@ -157,14 +198,9 @@ TEST_F(MultiCaptureNotificationsTest,
 }
 
 TEST_F(MultiCaptureNotificationsTest, LoginNotLoggedInNoNotification) {
-  LoginState* login_state = LoginState::Get();
-  SetIsMultiCaptureAllowedForTesting(
-      /*is_multi_capture_allowed=*/true);
   EXPECT_EQ(0u, notification_count_);
 
-  user_manager_->SwitchActiveUser(active_user_account_id_);
-  user_manager_->SimulateUserProfileLoad(active_user_account_id_);
-  login_state->SetLoggedInState(
+  LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_NONE,
       LoginState::LoggedInUserType::LOGGED_IN_USER_NONE);
 

@@ -34,7 +34,6 @@ bool RarAnalyzer::ResumeExtraction() {
   while (reader_.ExtractNextEntry()) {
     const third_party_unrar::RarReader::EntryInfo& entry =
         reader_.current_entry();
-    results()->encryption_info.is_encrypted |= entry.is_encrypted;
     if (entry.is_encrypted && !entry.contents_valid) {
       results()->encryption_info.password_status =
           EncryptionInfo::kKnownIncorrect;
@@ -86,7 +85,11 @@ void RarAnalyzer::OnGetTempFile(base::File temp_file) {
     return;
   }
 
-  results()->encryption_info.is_encrypted = reader_.HeadersEncrypted();
+  results()->encryption_info.is_encrypted |= reader_.HeadersEncrypted();
+  if (IsTopLevelArchive()) {
+    results()->encryption_info.is_top_level_encrypted |=
+        reader_.HeadersEncrypted();
+  }
   if (reader_.HeaderDecryptionFailed()) {
     results()->encryption_info.password_status =
         EncryptionInfo::kKnownIncorrect;

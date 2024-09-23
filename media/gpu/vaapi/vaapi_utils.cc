@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/vaapi/vaapi_utils.h"
 
 #include <algorithm>
@@ -33,43 +38,45 @@ void CheckedMemcpy(To& to, From& from) {
 
 }  // namespace
 
-ScopedVABufferMapping::ScopedVABufferMapping(
+// static
+std::unique_ptr<ScopedVABufferMapping> ScopedVABufferMapping::Create(
     const base::Lock* lock,
     VADisplay va_display,
-    VABufferID buffer_id,
-    base::OnceCallback<void(VABufferID)> release_callback)
-    : lock_(lock), va_display_(va_display), buffer_id_(buffer_id) {
-  MAYBE_ASSERT_ACQUIRED(lock_);
+    VABufferID buffer_id) {
+  DCHECK(va_display);
   DCHECK_NE(buffer_id, VA_INVALID_ID);
+  MAYBE_ASSERT_ACQUIRED(lock);
 
-  const VAStatus result =
-      vaMapBuffer(va_display_, buffer_id_, &va_buffer_data_);
-  const bool success = result == VA_STATUS_SUCCESS;
-  LOG_IF(ERROR, !success) << "vaMapBuffer failed: " << vaErrorStr(result);
-  DCHECK(success == (va_buffer_data_ != nullptr))
-      << "|va_buffer_data| should be null if vaMapBuffer() fails";
+  void* va_buffer_data;
+  const VAStatus result = vaMapBuffer(va_display, buffer_id, &va_buffer_data);
+  if (result != VA_STATUS_SUCCESS) {
+    LOG(ERROR) << "vaMapBuffer failed: " << vaErrorStr(result);
+    return nullptr;
+  }
+  CHECK(va_buffer_data)
+      << "va_buffer_data must not be null if vaMapBuffer() succeeds";
 
-  if (!success && release_callback)
-    std::move(release_callback).Run(buffer_id_);
+  return base::WrapUnique(
+      new ScopedVABufferMapping(lock, va_display, buffer_id, va_buffer_data));
 }
+
+ScopedVABufferMapping::ScopedVABufferMapping(const base::Lock* lock,
+                                             VADisplay va_display,
+                                             VABufferID buffer_id,
+                                             void* va_buffer_data)
+    : lock_(lock),
+      va_display_(va_display),
+      buffer_id_(buffer_id),
+      va_buffer_data_(va_buffer_data) {}
 
 ScopedVABufferMapping::~ScopedVABufferMapping() {
   CHECK(sequence_checker_.CalledOnValidSequence());
-  if (va_buffer_data_) {
-    MAYBE_ASSERT_ACQUIRED(lock_);
-    Unmap();
-  }
-}
-
-VAStatus ScopedVABufferMapping::Unmap() {
-  CHECK(sequence_checker_.CalledOnValidSequence());
+  CHECK(va_buffer_data_);
   MAYBE_ASSERT_ACQUIRED(lock_);
-  const VAStatus result = vaUnmapBuffer(va_display_, buffer_id_);
-  if (result == VA_STATUS_SUCCESS)
-    va_buffer_data_ = nullptr;
-  else
+  if (VAStatus result = vaUnmapBuffer(va_display_, buffer_id_);
+      result != VA_STATUS_SUCCESS) {
     LOG(ERROR) << "vaUnmapBuffer failed: " << vaErrorStr(result);
-  return result;
+  }
 }
 
 // static
@@ -133,42 +140,77 @@ ScopedVABuffer::~ScopedVABuffer() {
       << "Failed to destroy a VA buffer: " << vaErrorStr(va_res);
 }
 
-ScopedVAImage::ScopedVAImage(base::Lock* lock,
-                             VADisplay va_display,
-                             VASurfaceID va_surface_id,
-                             VAImageFormat* format,
-                             const gfx::Size& size)
-    : lock_(lock), va_display_(va_display), image_(new VAImage{}) {
-  MAYBE_ASSERT_ACQUIRED(lock_);
-  VAStatus result = vaCreateImage(va_display_, format, size.width(),
-                                  size.height(), image_.get());
-  if (result != VA_STATUS_SUCCESS) {
-    DCHECK_EQ(image_->image_id, VA_INVALID_ID);
-    LOG(ERROR) << "vaCreateImage failed: " << vaErrorStr(result);
-    return;
-  }
-  DCHECK_NE(image_->image_id, VA_INVALID_ID);
+// static
+std::unique_ptr<ScopedVAImage> ScopedVAImage::Create(
+    base::Lock* lock,
+    VADisplay va_display,
+    VASurfaceID va_surface_id,
+    const VAImageFormat& format,
+    const gfx::Size& size) {
+  DCHECK(va_display);
+  DCHECK_NE(va_surface_id, VA_INVALID_ID);
+  DCHECK(!size.IsEmpty());
+  MAYBE_ASSERT_ACQUIRED(lock);
 
-  result = vaGetImage(va_display_, va_surface_id, 0, 0, size.width(),
-                      size.height(), image_->image_id);
+  VAImage image{};
+  VAImageFormat format_copy = format;
+  VAStatus result = vaCreateImage(va_display, &format_copy, size.width(),
+                                  size.height(), &image);
+  if (result != VA_STATUS_SUCCESS) {
+    DCHECK_EQ(image.image_id, VA_INVALID_ID);
+    LOG(ERROR) << "vaCreateImage failed: " << vaErrorStr(result);
+    return nullptr;
+  }
+  CHECK_EQ(format.fourcc, format_copy.fourcc);
+  CHECK_EQ(format.byte_order, format_copy.byte_order);
+  CHECK_EQ(format.bits_per_pixel, format_copy.bits_per_pixel);
+  CHECK_EQ(format.depth, format_copy.depth);
+  CHECK_EQ(format.red_mask, format_copy.red_mask);
+  CHECK_EQ(format.green_mask, format_copy.green_mask);
+  CHECK_EQ(format.blue_mask, format_copy.blue_mask);
+  CHECK_EQ(format.alpha_mask, format_copy.alpha_mask);
+
+  DCHECK_NE(image.image_id, VA_INVALID_ID);
+
+  result = vaGetImage(va_display, va_surface_id, 0, 0, size.width(),
+                      size.height(), image.image_id);
   if (result != VA_STATUS_SUCCESS) {
     LOG(ERROR) << "vaGetImage failed: " << vaErrorStr(result);
-    return;
+    result = vaDestroyImage(va_display, image.image_id);
+    LOG_IF(ERROR, result != VA_STATUS_SUCCESS)
+        << "vaDestroyImage failed: " << vaErrorStr(result);
+    return nullptr;
+  }
+  std::unique_ptr<ScopedVABufferMapping> va_buffer =
+      ScopedVABufferMapping::Create(lock, va_display, image.buf);
+  if (!va_buffer) {
+    result = vaDestroyImage(va_display, image.image_id);
+    LOG_IF(ERROR, result != VA_STATUS_SUCCESS)
+        << "vaDestroyImage failed: " << vaErrorStr(result);
+    return nullptr;
   }
 
-  va_buffer_ =
-      std::make_unique<ScopedVABufferMapping>(lock_, va_display, image_->buf);
+  return base::WrapUnique(
+      new ScopedVAImage(lock, va_display, image, std::move(va_buffer)));
 }
+
+ScopedVAImage::ScopedVAImage(base::Lock* lock,
+                             VADisplay va_display,
+                             const VAImage& image,
+                             std::unique_ptr<ScopedVABufferMapping> va_buffer)
+    : lock_(lock),
+      va_display_(va_display),
+      image_(image),
+      va_buffer_(std::move(va_buffer)) {}
 
 ScopedVAImage::~ScopedVAImage() {
   CHECK(sequence_checker_.CalledOnValidSequence());
-  if (image_->image_id != VA_INVALID_ID) {
-    base::AutoLockMaybe auto_lock(lock_.get());
+  CHECK_NE(image_.image_id, VA_INVALID_ID);
+  base::AutoLockMaybe auto_lock(lock_.get());
 
-    // |va_buffer_| has to be deleted before vaDestroyImage().
-    va_buffer_.reset();
-    vaDestroyImage(va_display_, image_->image_id);
-  }
+  // |va_buffer_| has to be deleted before vaDestroyImage().
+  va_buffer_.reset();
+  vaDestroyImage(va_display_, image_.image_id);
 }
 
 ScopedVASurface::ScopedVASurface(scoped_refptr<VaapiWrapper> vaapi_wrapper,
@@ -241,7 +283,7 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
   const auto last_frame = reference_frames.GetFrame(Vp8RefType::VP8_FRAME_LAST);
   if (last_frame) {
     pic_param->last_ref_frame =
-        last_frame->AsVaapiVP8Picture()->GetVASurfaceID();
+        last_frame->AsVaapiVP8Picture()->va_surface_id();
   } else {
     pic_param->last_ref_frame = VA_INVALID_SURFACE;
   }
@@ -250,7 +292,7 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
       reference_frames.GetFrame(Vp8RefType::VP8_FRAME_GOLDEN);
   if (golden_frame) {
     pic_param->golden_ref_frame =
-        golden_frame->AsVaapiVP8Picture()->GetVASurfaceID();
+        golden_frame->AsVaapiVP8Picture()->va_surface_id();
   } else {
     pic_param->golden_ref_frame = VA_INVALID_SURFACE;
   }
@@ -258,7 +300,7 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
   const auto alt_frame =
       reference_frames.GetFrame(Vp8RefType::VP8_FRAME_ALTREF);
   if (alt_frame)
-    pic_param->alt_ref_frame = alt_frame->AsVaapiVP8Picture()->GetVASurfaceID();
+    pic_param->alt_ref_frame = alt_frame->AsVaapiVP8Picture()->va_surface_id();
   else
     pic_param->alt_ref_frame = VA_INVALID_SURFACE;
 

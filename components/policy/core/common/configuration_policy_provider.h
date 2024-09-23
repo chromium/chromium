@@ -91,7 +91,7 @@ class POLICY_EXPORT ConfigurationPolicyProvider
   void ShutdownForTesting();
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  bool is_active() { return is_active_; }
+  bool is_active() const { return is_active_; }
 
   void set_active(bool active) { is_active_ = active; }
 

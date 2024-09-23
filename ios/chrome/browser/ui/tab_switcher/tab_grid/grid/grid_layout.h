@@ -7,6 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
+
+@class GridItemIdentifier;
+
 enum class TabsSectionHeaderType {
   kNone,          // No header is shown.
   kSearch,        // The Search header is shown, with the number of matches.
@@ -14,8 +18,9 @@ enum class TabsSectionHeaderType {
                   // shown.
   kAnimatingOut,  // The previous header is being animated out. This adds a
                   // 0.1pt high empty header.
-                  // TODO(crbug.com/1504153): Remove once the button is a cell
+                  // TODO(crbug.com/40944664): Remove once the button is a cell
                   // and not a header.
+  kTabGroup,      // Tab Group information header is shown.
 };
 
 // A collection view compositional layout that displays items in a grid.
@@ -36,6 +41,12 @@ enum class TabsSectionHeaderType {
 
 // The insets to add to the different sections. Defaults to UIEdgeInsetsZero.
 @property(nonatomic, assign) NSDirectionalEdgeInsets sectionInsets;
+
+// The diffable data source used to configure the layout. It is used
+// to resolve section indices.
+@property(nonatomic, weak)
+    UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>*
+        diffableDataSource;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

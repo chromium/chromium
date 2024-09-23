@@ -8,7 +8,6 @@
 
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
-#include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -36,6 +35,15 @@ bool CSSParser::ParseDeclarationList(const CSSParserContext* context,
                                              context);
 }
 
+StyleRuleBase* CSSParser::ParseNestedDeclarationsRule(
+    const CSSParserContext* context,
+    CSSNestingType nesting_type,
+    StyleRule* parent_rule_for_nesting,
+    StringView text) {
+  return CSSParserImpl::ParseNestedDeclarationsRule(
+      context, nesting_type, parent_rule_for_nesting, text);
+}
+
 void CSSParser::ParseDeclarationListForInspector(
     const CSSParserContext* context,
     const String& declaration,
@@ -52,11 +60,9 @@ base::span<CSSSelector> CSSParser::ParseSelector(
     StyleSheetContents* style_sheet_contents,
     const String& selector,
     HeapVector<CSSSelector>& arena) {
-  CSSTokenizer tokenizer(selector);
-  const auto tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenStream stream(selector);
   return CSSSelectorParser::ParseSelector(
-      CSSParserTokenRange(tokens), context, nesting_type,
-      parent_rule_for_nesting, is_within_scope,
+      stream, context, nesting_type, parent_rule_for_nesting, is_within_scope,
       /* semicolon_aborts_nested_selector */ false, style_sheet_contents,
       arena);
 }
@@ -65,10 +71,22 @@ CSSSelectorList* CSSParser::ParsePageSelector(
     const CSSParserContext& context,
     StyleSheetContents* style_sheet_contents,
     const String& selector) {
-  CSSTokenizer tokenizer(selector);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  return CSSParserImpl::ParsePageSelector(CSSParserTokenRange(tokens),
-                                          style_sheet_contents, context);
+  CSSParserTokenStream stream(selector);
+  CSSSelectorList* selector_list =
+      CSSParserImpl::ParsePageSelector(stream, style_sheet_contents, context);
+  if (!stream.AtEnd()) {
+    // Extra tokens at end of selector.
+    return nullptr;
+  }
+  return selector_list;
+}
+
+StyleRuleBase* CSSParser::ParseMarginRule(const CSSParserContext* context,
+                                          StyleSheetContents* style_sheet,
+                                          const String& rule) {
+  return CSSParserImpl::ParseRule(rule, context, CSSNestingType::kNone,
+                                  /*parent_rule_for_nesting=*/nullptr,
+                                  style_sheet, CSSParserImpl::kPageMarginRules);
 }
 
 StyleRuleBase* CSSParser::ParseRule(const CSSParserContext* context,
@@ -179,10 +197,9 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
   const CSSProperty& property = CSSProperty::Get(resolved_property);
   if (parser_mode == kHTMLStandardMode && property.IsProperty() &&
       !property.IsShorthand()) {
-    CSSTokenizer tokenizer(string);
-    const auto tokens = tokenizer.TokenizeToEOF();
+    CSSParserTokenStream stream(string);
     value =
-        CSSPropertyParser::ParseSingleValue(resolved_property, tokens, context);
+        CSSPropertyParser::ParseSingleValue(resolved_property, stream, context);
     if (value != nullptr) {
       return declaration->SetLonghandProperty(CSSPropertyValue(
           CSSPropertyName(resolved_property), *value, important));
@@ -244,10 +261,8 @@ const CSSValue* CSSParser::ParseSingleValue(CSSPropertyID property_id,
           CSSParserFastPaths::MaybeParseValue(property_id, string, context)) {
     return value;
   }
-  CSSTokenizer tokenizer(string);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  return CSSPropertyParser::ParseSingleValue(
-      property_id, CSSParserTokenRange(tokens), context);
+  CSSParserTokenStream stream(string);
+  return CSSPropertyParser::ParseSingleValue(property_id, stream, context);
 }
 
 ImmutableCSSPropertyValueSet* CSSParser::ParseInlineStyleDeclaration(
@@ -259,9 +274,10 @@ ImmutableCSSPropertyValueSet* CSSParser::ParseInlineStyleDeclaration(
 ImmutableCSSPropertyValueSet* CSSParser::ParseInlineStyleDeclaration(
     const String& style_string,
     CSSParserMode parser_mode,
-    SecureContextMode secure_context_mode) {
-  return CSSParserImpl::ParseInlineStyleDeclaration(style_string, parser_mode,
-                                                    secure_context_mode);
+    SecureContextMode secure_context_mode,
+    const Document* document) {
+  return CSSParserImpl::ParseInlineStyleDeclaration(
+      style_string, parser_mode, secure_context_mode, document);
 }
 
 std::unique_ptr<Vector<KeyframeOffset>> CSSParser::ParseKeyframeKeyList(
@@ -282,20 +298,12 @@ String CSSParser::ParseCustomPropertyName(const String& name_text) {
   return CSSParserImpl::ParseCustomPropertyName(name_text);
 }
 
-StyleRuleTry* CSSParser::ParseTryRule(const CSSParserContext* context,
-                                      const String& rule) {
-  StyleRuleBase* try_rule = CSSParserImpl::ParseRule(
-      rule, context, CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-      nullptr, CSSParserImpl::kTryRules);
-  return To<StyleRuleTry>(try_rule);
-}
 bool CSSParser::ParseSupportsCondition(
     const String& condition,
     const ExecutionContext* execution_context) {
   // window.CSS.supports requires to parse as-if it was wrapped in parenthesis.
   String wrapped_condition = "(" + condition + ")";
-  CSSTokenizer tokenizer(wrapped_condition);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(wrapped_condition);
   DCHECK(execution_context);
   // Create parser context using document so it can check for origin trial
   // enabled property/value.
@@ -358,13 +366,15 @@ bool CSSParser::ParseColor(Color& color, const String& string, bool strict) {
 bool CSSParser::ParseSystemColor(Color& color,
                                  const String& color_string,
                                  mojom::blink::ColorScheme color_scheme,
-                                 const ui::ColorProvider* color_provider) {
+                                 const ui::ColorProvider* color_provider,
+                                 bool is_in_web_app_scope) {
   CSSValueID id = CssValueKeywordID(color_string);
   if (!StyleColor::IsSystemColorIncludingDeprecated(id)) {
     return false;
   }
 
-  color = LayoutTheme::GetTheme().SystemColor(id, color_scheme, color_provider);
+  color = LayoutTheme::GetTheme().SystemColor(id, color_scheme, color_provider,
+                                              is_in_web_app_scope);
   return true;
 }
 
@@ -387,15 +397,13 @@ CSSPrimitiveValue* CSSParser::ParseLengthPercentage(
   if (string.empty() || !context) {
     return nullptr;
   }
-  CSSTokenizer tokenizer(string);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
+  CSSParserTokenStream stream(string);
   // Trim whitespace from the string. It's only necessary to consume leading
   // whitespaces, since ConsumeLengthOrPercent always consumes trailing ones.
-  range.ConsumeWhitespace();
+  stream.ConsumeWhitespace();
   CSSPrimitiveValue* parsed_value =
-      css_parsing_utils::ConsumeLengthOrPercent(range, *context, value_range);
-  return range.AtEnd() ? parsed_value : nullptr;
+      css_parsing_utils::ConsumeLengthOrPercent(stream, *context, value_range);
+  return stream.AtEnd() ? parsed_value : nullptr;
 }
 
 MutableCSSPropertyValueSet* CSSParser::ParseFont(

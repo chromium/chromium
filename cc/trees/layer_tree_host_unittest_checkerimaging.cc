@@ -135,7 +135,7 @@ class LayerTreeHostCheckerImagingTestMergeWithMainFrame
         EndTest();
       } break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

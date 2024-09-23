@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -32,7 +31,7 @@ namespace blink {
 
 namespace {
 
-bool IsNGBlockFragmentationRoot(const LayoutNGBlockFlow* block_flow) {
+bool IsNGBlockFragmentationRoot(const LayoutBlockFlow* block_flow) {
   return block_flow && block_flow->IsFragmentationContextRoot() &&
          block_flow->IsLayoutNGObject();
 }
@@ -93,7 +92,7 @@ static PhysicalOffset CornerPointOfRect(const PhysicalRect& rect,
     case Corner::kTopRight:
       return rect.MaxXMinYCorner();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PhysicalOffset();
 }
 
@@ -119,7 +118,7 @@ static PhysicalRect RelativeBounds(const LayoutObject* layout_object,
     local_bounds.Unite(text->PhysicalLinesBoundingBox());
   } else {
     // Only LayoutBox and LayoutText are supported.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   gfx::RectF relative_bounds =
@@ -436,7 +435,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorRecursive(
     return status;
 
   bool is_block_fragmentation_context_root =
-      IsNGBlockFragmentationRoot(DynamicTo<LayoutNGBlockFlow>(candidate));
+      IsNGBlockFragmentationRoot(DynamicTo<LayoutBlockFlow>(candidate));
 
   for (LayoutObject* child = candidate->SlowFirstChild(); child;
        child = child->NextSibling()) {
@@ -483,7 +482,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
   // the LayoutObject associated with the fragment will be set to nullptr, so we
   // need to check for that.
   bool is_block_fragmentation_context_root =
-      IsNGBlockFragmentationRoot(DynamicTo<LayoutNGBlockFlow>(layout_block));
+      IsNGBlockFragmentationRoot(DynamicTo<LayoutBlockFlow>(layout_block));
   for (const PhysicalBoxFragment& fragment :
        layout_block->PhysicalFragments()) {
     if (!fragment.HasOutOfFlowFragmentChild() &&

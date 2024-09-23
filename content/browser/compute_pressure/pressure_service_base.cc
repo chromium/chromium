@@ -13,6 +13,7 @@
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
@@ -53,7 +54,7 @@ bool PressureServiceBase::HasImplicitFocus(RenderFrameHost* render_frame_host) {
   }
 
   // 4. If browsing context is capturing, return true.
-  // TODO(crbug/1505317): Take muted state into account.
+  // TODO(crbug.com/40945930): Take muted state into account.
   if (static_cast<RenderFrameHostImpl*>(render_frame_host)
           ->HasMediaStreams(
               RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream)) {
@@ -84,7 +85,7 @@ bool PressureServiceBase::CanCallAddClient() const {
 }
 
 void PressureServiceBase::BindReceiver(
-    mojo::PendingReceiver<device::mojom::PressureManager> receiver) {
+    mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (manager_receiver_.is_bound()) {
@@ -100,19 +101,19 @@ void PressureServiceBase::BindReceiver(
                           base::Unretained(this)));
 }
 
-void PressureServiceBase::AddClient(
-    mojo::PendingRemote<device::mojom::PressureClient> client,
-    device::mojom::PressureSource source,
-    AddClientCallback callback) {
+void PressureServiceBase::AddClient(device::mojom::PressureSource source,
+                                    AddClientCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!CanCallAddClient()) {
-    std::move(callback).Run(device::mojom::PressureStatus::kNotSupported);
+    std::move(callback).Run(
+        device::mojom::PressureManagerAddClientResult::NewError(
+            device::mojom::PressureManagerAddClientError::kNotSupported));
     return;
   }
 
   auto& pressure_client = source_to_client_[static_cast<size_t>(source)];
-  if (pressure_client.has_remote()) {
+  if (pressure_client.is_client_remote_bound()) {
     manager_receiver_.ReportBadMessage(
         "PressureClientImpl is already connected.");
     return;
@@ -129,8 +130,19 @@ void PressureServiceBase::AddClient(
     GetDeviceService().BindPressureManager(std::move(receiver));
   }
 
-  pressure_client.AddClient(manager_remote_.get(), std::move(client), source,
-                            std::move(callback));
+  if (pressure_client.is_client_receiver_bound()) {
+    // Calling BindNewPipeAndPassReceiver() is safe because we call
+    // PressureClientImpl::is_client_remote_bound() above.
+    std::move(callback).Run(
+        device::mojom::PressureManagerAddClientResult::NewPressureClient(
+            pressure_client.BindNewPipeAndPassReceiver()));
+  } else {
+    manager_remote_->AddClient(
+        source, GetTokenFor(source),
+        base::BindOnce(&PressureServiceBase::DidAddClient,
+                       weak_ptr_factory_.GetWeakPtr(), source,
+                       std::move(callback)));
+  }
 }
 
 // Disconnection handler for |manager_receiver_| and |manager_remote_|. If
@@ -141,6 +153,27 @@ void PressureServiceBase::OnPressureManagerDisconnected() {
 
   manager_receiver_.reset();
   manager_remote_.reset();
+}
+
+void PressureServiceBase::DidAddClient(
+    device::mojom::PressureSource source,
+    AddClientCallback client_callback,
+    device::mojom::PressureManagerAddClientResultPtr result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (result->is_error()) {
+    std::move(client_callback).Run(std::move(result));
+    return;
+  }
+
+  auto& pressure_client = source_to_client_[static_cast<size_t>(source)];
+  pressure_client.BindReceiver(std::move(result->get_pressure_client()));
+
+  std::move(client_callback)
+      .Run(device::mojom::PressureManagerAddClientResult::NewPressureClient(
+          // This is safe because AddClient() already checked
+          // PressureClientImpl::is_client_remote_bound()'s return value.
+          pressure_client.BindNewPipeAndPassReceiver()));
 }
 
 }  // namespace content

@@ -7,7 +7,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "chrome/browser/vr/graphics_delegate.h"
-#include "chrome/browser/vr/model/controller_model.h"
 #include "chrome/browser/vr/render_info.h"
 #include "chrome/browser/vr/test/mock_browser_ui_interface.h"
 #include "chrome/browser/vr/ui_interface.h"
@@ -55,10 +54,13 @@ class MockGraphicsDelegate : public GraphicsDelegate {
   bool using_buffer() { return using_buffer_; }
 
   // GraphicsDelegate
+  void Initialize(base::OnceClosure on_initialized) override {
+    std::move(on_initialized).Run();
+  }
   bool PreRender() override { return true; }
   void PostRender() override {}
-  mojo::PlatformHandle GetTexture() override { NOTREACHED_NORETURN(); }
-  const gpu::SyncToken& GetSyncToken() override { NOTREACHED_NORETURN(); }
+  gfx::GpuMemoryBufferHandle GetTexture() override { NOTREACHED(); }
+  gpu::SyncToken GetSyncToken() override { NOTREACHED(); }
   void ResetMemoryBuffer() override {}
   bool BindContext() override { return true; }
   void ClearContext() override {}

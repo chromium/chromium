@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_UNEXPORTABLE_KEY_SERVICE_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_UNEXPORTABLE_KEY_SERVICE_H_
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -48,12 +48,14 @@ namespace unexportable_keys {
 // 4. Use obtained key ID to sign data:
 //
 //  service.SignSlowlyAsync(*key_id, kData, kPriority, std::move(callback));
-class UnexportableKeyService : public KeyedService {
+class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService {
  public:
   UnexportableKeyService() = default;
 
   UnexportableKeyService(const UnexportableKeyService&) = delete;
   UnexportableKeyService& operator=(const UnexportableKeyService&) = delete;
+
+  virtual ~UnexportableKeyService() = default;
 
   // Generates a new signing key asynchronously and returns an ID of this key.
   // Returned `UnexportableKeyId` can be used later to perform key operations on

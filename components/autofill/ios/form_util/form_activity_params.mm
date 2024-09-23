@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
 
-#include "base/strings/string_number_conversions.h"
-#include "ios/web/public/js_messaging/script_message.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/ios/browser/autofill_util.h"
+#import "ios/web/public/js_messaging/script_message.h"
+
+using base::SysUTF8ToNSString;
 
 namespace autofill {
 
@@ -39,23 +42,6 @@ bool BaseFormActivityParams::FromMessage(const web::ScriptMessage& message,
   }
 
   params->frame_id = *frame_id;
-  const std::string* form_name = message_body_dict.FindString("formName");
-  const std::string* unique_form_id =
-      message_body_dict.FindString("uniqueFormID");
-  if (!form_name || !unique_form_id) {
-    params->input_missing = true;
-  }
-
-  if (form_name) {
-    params->form_name = *form_name;
-  }
-
-  std::string unique_id;
-  if (unique_form_id) {
-    unique_id = *unique_form_id;
-  }
-  base::StringToUint(unique_id, &params->unique_form_id.value());
-
   params->is_main_frame = message.is_main_frame();
 
   return true;
@@ -71,25 +57,44 @@ bool FormActivityParams::FromMessage(const web::ScriptMessage& message,
     return false;
   }
 
+  const std::string* form_name = message_body->FindString("formName");
+  const std::string* form_renderer_id =
+      message_body->FindString("formRendererID");
   const std::string* field_identifier =
       message_body->FindString("fieldIdentifier");
-  const std::string* unique_field_id =
-      message_body->FindString("uniqueFieldID");
+  const std::string* field_renderer_id =
+      message_body->FindString("fieldRendererID");
   const std::string* field_type = message_body->FindString("fieldType");
   const std::string* type = message_body->FindString("type");
   const std::string* value = message_body->FindString("value");
+
+  if (!form_name || !form_renderer_id) {
+    params->input_missing = true;
+  }
+
+  if (form_name) {
+    params->form_name = *form_name;
+  }
+
+  if (form_renderer_id) {
+    // Parse the form renderer id.
+    // Fallback to 0 if invalid or no form id provided, which is interpreted in
+    // Autofill as the field not being owned by a form element.
+    base::StringToUint(*form_renderer_id, &params->form_renderer_id.value());
+  }
+
   std::optional<bool> has_user_gesture =
       message_body->FindBool("hasUserGesture");
-  if (!field_identifier || !unique_field_id || !field_type || !type || !value ||
-      !has_user_gesture) {
+  if (!field_identifier || !field_renderer_id || !field_type || !type ||
+      !value || !has_user_gesture) {
     params->input_missing = true;
   }
 
   if (field_identifier) {
     params->field_identifier = *field_identifier;
   }
-  if (unique_field_id) {
-    base::StringToUint(*unique_field_id, &params->unique_field_id.value());
+  if (field_renderer_id) {
+    base::StringToUint(*field_renderer_id, &params->field_renderer_id.value());
   }
   if (field_type) {
     params->field_type = *field_type;
@@ -109,10 +114,42 @@ bool FormActivityParams::FromMessage(const web::ScriptMessage& message,
 
 bool FormActivityParams::operator==(const FormActivityParams& params) const {
   return BaseFormActivityParams::operator==(params) &&
+         (form_name == params.form_name) &&
+         (form_renderer_id == params.form_renderer_id) &&
          (field_identifier == params.field_identifier) &&
-         (unique_field_id == params.unique_field_id) &&
+         (field_renderer_id == params.field_renderer_id) &&
          (field_type == params.field_type) && (value == params.value) &&
          (type == params.type) && (has_user_gesture == params.has_user_gesture);
+}
+
+bool FormRemovalParams::FromMessage(const web::ScriptMessage& message,
+                                    FormRemovalParams* params) {
+  const base::Value::Dict* message_body = nullptr;
+  if (!BaseFormActivityParams::FromMessage(message, &message_body, params)) {
+    return false;
+  }
+
+  // Parse array of form id's.
+  if (const std::string* removed_form_ids =
+          message_body->FindString("removedFormIDs")) {
+    if (const auto extracted_form_ids =
+            ExtractIDs<FormRendererId>(SysUTF8ToNSString(*removed_form_ids))) {
+      params->removed_forms = std::move(*extracted_form_ids);
+    }
+  }
+
+  // Parse array of field id's.
+  if (const std::string* removed_field_ids =
+          message_body->FindString("removedFieldIDs")) {
+    if (const auto extracted_field_ids = ExtractIDs<FieldRendererId>(
+            SysUTF8ToNSString(*removed_field_ids))) {
+      params->removed_unowned_fields = *extracted_field_ids;
+    }
+  }
+
+  // Params are valid if there are removed forms and/or removed unowned fields.
+  return !params->removed_forms.empty() ||
+         !params->removed_unowned_fields.empty();
 }
 
 }  // namespace autofill

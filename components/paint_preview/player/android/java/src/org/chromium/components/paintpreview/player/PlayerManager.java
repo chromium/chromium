@@ -131,7 +131,7 @@ public class PlayerManager {
                                 this::onCompositorReady,
                                 mListener::onCompositorError);
 
-        // TODO(crbug/1230021): Consider making these parts of setup deferred as these objects
+        // TODO(crbug.com/40190158): Consider making these parts of setup deferred as these objects
         // aren't needed immediately and appear to be the slowest part of PlayerManager init.
         mPlayerSwipeRefreshHandler =
                 new PlayerSwipeRefreshHandler(mContext, mListener::onPullToRefresh);

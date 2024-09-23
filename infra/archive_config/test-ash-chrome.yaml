@@ -17,6 +17,8 @@ data:
   - file: nacl_helper
   - file: nacl_helper_bootstrap
   - file: nacl_irt_x86_64.nexe
+  - file: PrivacySandboxAttestationsPreloaded/manifest.json
+  - file: PrivacySandboxAttestationsPreloaded/privacy-sandbox-attestations.dat
   - file: product_logo_48.png
   - file: resources.pak
   - file: snapshot_blob.bin

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -10,7 +12,6 @@
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
-#include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +46,7 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
   std::unique_ptr<ManifestUpdateFinalizeCommand> CreateCommand(
       const GURL& url,
       const webapps::AppId& app_id,
-      WebAppInstallInfo install_info,
+      std::unique_ptr<WebAppInstallInfo> install_info,
       ManifestUpdateFinalizeCommand::ManifestWriteCallback callback) {
     auto keep_alive = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::APP_MANIFEST_UPDATE, KeepAliveRestartOption::DISABLED);
@@ -55,9 +57,10 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
         std::move(keep_alive), std::move(profile_keep_alive));
   }
 
-  ManifestUpdateResult RunCommandAndGetResult(const GURL& url,
-                                              const webapps::AppId& app_id,
-                                              WebAppInstallInfo install_info) {
+  ManifestUpdateResult RunCommandAndGetResult(
+      const GURL& url,
+      const webapps::AppId& app_id,
+      std::unique_ptr<WebAppInstallInfo> install_info) {
     ManifestUpdateResult output_result;
     base::RunLoop loop;
     provider().command_manager().ScheduleCommand(CreateCommand(
@@ -73,24 +76,14 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
     return output_result;
   }
 
-  webapps::AppId InstallWebApp() {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = app_url();
-    web_app_info->manifest_id = GenerateManifestIdFromStartUrlOnly(app_url());
-    web_app_info->scope = app_url().GetWithoutFilename();
-    web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
-    web_app_info->title = u"Foo Bar";
-    return test::InstallWebApp(profile(), std::move(web_app_info));
-  }
 
-  WebAppInstallInfo GetNewInstallInfoWithTitle(std::u16string new_title) {
-    WebAppInstallInfo info;
-    info.start_url = app_url();
-    info.manifest_id = GenerateManifestIdFromStartUrlOnly(app_url());
-    info.scope = app_url().GetWithoutFilename();
-    info.user_display_mode = mojom::UserDisplayMode::kStandalone;
-    info.title = new_title;
-    info.validated_scope_extensions.emplace();
+  std::unique_ptr<WebAppInstallInfo> GetNewInstallInfoWithTitle(
+      std::u16string new_title) {
+    auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(app_url());
+    info->scope = app_url().GetWithoutFilename();
+    info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+    info->title = new_title;
+    info->validated_scope_extensions.emplace();
     return info;
   }
 
@@ -103,7 +96,8 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
 };
 
 TEST_F(ManifestUpdateFinalizeCommandTest, NameUpdate) {
-  webapps::AppId app_id = InstallWebApp();
+  webapps::AppId app_id =
+      test::InstallDummyWebApp(profile(), "Old Name", app_url());
   ManifestUpdateResult expected_result = RunCommandAndGetResult(
       app_url(), app_id, GetNewInstallInfoWithTitle(u"New Name"));
   EXPECT_EQ(expected_result, ManifestUpdateResult::kAppUpdated);

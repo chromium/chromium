@@ -30,6 +30,7 @@ class CertProvisioningInvalidator;
 // has a result (which could be success or failure).
 using CertProvisioningWorkerCallback =
     base::OnceCallback<void(CertProfile profile,
+                            std::string process_id,
                             CertProvisioningWorkerState state)>;
 
 class CertProvisioningWorker;
@@ -51,6 +52,7 @@ class CertProvisioningWorkerFactory {
   static CertProvisioningWorkerFactory* Get();
 
   virtual std::unique_ptr<CertProvisioningWorker> Create(
+      std::string process_id,
       CertScope cert_scope,
       Profile* profile,
       PrefService* pref_service,

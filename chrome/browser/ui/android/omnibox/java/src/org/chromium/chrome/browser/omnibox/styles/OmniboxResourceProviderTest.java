@@ -21,15 +21,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -41,8 +38,6 @@ import org.chromium.ui.base.TestActivity;
 @Config(manifest = Config.NONE)
 public class OmniboxResourceProviderTest {
     private static final String TAG = "ORPTest";
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -446,10 +441,7 @@ public class OmniboxResourceProviderTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void replaceContextForSmallTabletWindow() {
-        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
-
         Context originalContext = mActivity;
         originalContext.getResources().getConfiguration().screenWidthDp = 700;
         Assert.assertEquals(
@@ -460,5 +452,15 @@ public class OmniboxResourceProviderTest {
         Assert.assertNotEquals(
                 originalContext,
                 OmniboxResourceProvider.maybeReplaceContextForSmallTabletWindow(originalContext));
+    }
+
+    @Test
+    public void getAdditionalTextColor() {
+        final int defaultTextColorSecondary =
+                MaterialColors.getColor(mActivity, R.attr.colorOnSurfaceVariant, TAG);
+        assertEquals(
+                "Wrong additional text color.",
+                defaultTextColorSecondary,
+                OmniboxResourceProvider.getAdditionalTextColor(mActivity));
     }
 }

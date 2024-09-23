@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/css_syntax_string_parser.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_syntax_component.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 

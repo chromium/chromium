@@ -14,6 +14,21 @@
 
 namespace gpu {
 
+using JavaSurfaceVariant =
+    absl::variant<gl::ScopedJavaSurface, gl::ScopedJavaSurfaceControl>;
+
+struct GPU_EXPORT SurfaceRecord {
+  SurfaceRecord(gl::ScopedJavaSurface surface,
+                bool can_be_used_with_surface_control);
+  explicit SurfaceRecord(gl::ScopedJavaSurfaceControl surface_control);
+  ~SurfaceRecord();
+
+  SurfaceRecord(SurfaceRecord&&);
+  SurfaceRecord(const SurfaceRecord&) = delete;
+
+  JavaSurfaceVariant surface_variant;
+  bool can_be_used_with_surface_control = false;
+};
 // This class provides an interface to look up window surface handles
 // that cannot be sent through the IPC channel.
 class GPU_EXPORT GpuSurfaceLookup {
@@ -28,11 +43,7 @@ class GPU_EXPORT GpuSurfaceLookup {
   static GpuSurfaceLookup* GetInstance();
   static void InitInstance(GpuSurfaceLookup* lookup);
 
-  using JavaSurfaceVariant =
-      absl::variant<gl::ScopedJavaSurface, gl::ScopedJavaSurfaceControl>;
-  virtual JavaSurfaceVariant AcquireJavaSurface(
-      int surface_id,
-      bool* can_be_used_with_surface_control) = 0;
+  virtual SurfaceRecord AcquireJavaSurface(int surface_id) = 0;
 };
 
 }  // namespace gpu

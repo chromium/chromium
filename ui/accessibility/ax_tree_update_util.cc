@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/ax_tree_update_util.h"
 
+#include "base/metrics/histogram_macros.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_tree_update.h"
 
 namespace ui {
@@ -27,6 +29,9 @@ bool AXTreeUpdatesCanBeMerged(const AXTreeUpdate& u1, const AXTreeUpdate& u2) {
 
 bool MergeAXTreeUpdates(const std::vector<AXTreeUpdate>& src,
                         std::vector<AXTreeUpdate>* dst) {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.MergeAXTreeUpdates");
+
   size_t merge_count = 0;
   for (size_t i = 1; i < src.size(); i++) {
     if (AXTreeUpdatesCanBeMerged(src[i - 1], src[i]))
@@ -41,13 +46,25 @@ bool MergeAXTreeUpdates(const std::vector<AXTreeUpdate>& src,
     return false;
 
   dst->resize(src.size() - merge_count);
-  (*dst)[0] = src[0];
+  if (features::IsUseMoveNotCopyInMergeTreeUpdateEnabled()) {
+    (*dst)[0] = std::move(const_cast<AXTreeUpdate&>(src[0]));
+  } else {
+    (*dst)[0] = src[0];
+  }
   size_t dst_index = 0;
   for (size_t i = 1; i < src.size(); i++) {
     if (AXTreeUpdatesCanBeMerged(src[i - 1], src[i])) {
       std::vector<AXNodeData>& dst_nodes = (*dst)[dst_index].nodes;
-      const std::vector<AXNodeData>& src_nodes = src[i].nodes;
-      dst_nodes.insert(dst_nodes.end(), src_nodes.begin(), src_nodes.end());
+      if (features::IsUseMoveNotCopyInMergeTreeUpdateEnabled()) {
+        std::vector<AXNodeData>& src_nodes =
+            const_cast<std::vector<AXNodeData>&>(src[i].nodes);
+        for (auto& src_node : src_nodes) {
+          dst_nodes.emplace_back(std::move(src_node));
+        }
+      } else {
+        const std::vector<AXNodeData>& src_nodes = src[i].nodes;
+        dst_nodes.insert(dst_nodes.end(), src_nodes.begin(), src_nodes.end());
+      }
     } else {
       dst_index++;
       (*dst)[dst_index] = src[i];

@@ -41,7 +41,7 @@ typedef NS_ENUM(NSUInteger, SuggestionProviderType) {
 // Determines whether the receiver can provide suggestions for the specified
 // |form| and |field|, returning the result using the provided |completion|.
 // |typedValue| contains the text that the user has typed into the field so far.
-// TODO(crbug.com/1075444): Remove formName and fieldIdentifier once unique IDs
+// TODO(crbug.com/40128249): Remove formName and fieldIdentifier once unique IDs
 // are used in Autofill.
 - (void)checkIfSuggestionsAvailableForForm:
             (FormSuggestionProviderQuery*)formQuery
@@ -57,13 +57,14 @@ typedef NS_ENUM(NSUInteger, SuggestionProviderType) {
                           webState:(web::WebState*)webState
                  completionHandler:(SuggestionsReadyCompletion)completion;
 
-// Handles user selection of a suggestion for the specified form and
+// Handles user selection of a suggestion at |index| for the specified form and
 // field, invoking |completion| when finished.
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
                        form:(NSString*)formName
-               uniqueFormID:(autofill::FormRendererId)uniqueFormID
+             formRendererID:(autofill::FormRendererId)formRendererID
             fieldIdentifier:(NSString*)fieldIdentifier
-              uniqueFieldID:(autofill::FieldRendererId)uniqueFieldID
+            fieldRendererID:(autofill::FieldRendererId)fieldRendererID
                     frameID:(NSString*)frameID
           completionHandler:(SuggestionHandledCompletion)completion;
 

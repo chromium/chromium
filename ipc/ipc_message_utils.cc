@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ipc/ipc_message_utils.h"
 
 #include <stddef.h>
@@ -34,6 +39,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <tchar.h>
+
 #include "ipc/handle_win.h"
 #include "ipc/ipc_platform_file.h"
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -304,7 +310,7 @@ bool ReadValue(const base::Pickle* pickle,
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 
@@ -426,7 +432,7 @@ bool ParamTraits<double>::Read(const base::Pickle* m,
                                param_type* r) {
   const char *data;
   if (!iter->ReadBytes(&data, sizeof(*r))) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   memcpy(r, data, sizeof(param_type));
@@ -559,10 +565,10 @@ void ParamTraits<base::FileDescriptor>::Write(base::Pickle* m,
   if (p.auto_close) {
     if (!m->WriteAttachment(
             new internal::PlatformFileAttachment(base::ScopedFD(p.fd))))
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   } else {
     if (!m->WriteAttachment(new internal::PlatformFileAttachment(p.fd)))
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -614,7 +620,7 @@ void ParamTraits<base::ScopedFD>::Write(base::Pickle* m, const param_type& p) {
 
   if (!m->WriteAttachment(new internal::PlatformFileAttachment(
           std::move(const_cast<param_type&>(p))))) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -699,7 +705,7 @@ void ParamTraits<zx::vmo>::Write(base::Pickle* m, const param_type& p) {
 
   if (!m->WriteAttachment(new internal::HandleAttachmentFuchsia(
           std::move(const_cast<param_type&>(p))))) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -744,7 +750,7 @@ void ParamTraits<zx::channel>::Write(base::Pickle* m, const param_type& p) {
 
   if (!m->WriteAttachment(new internal::HandleAttachmentFuchsia(
           std::move(const_cast<param_type&>(p))))) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -1419,7 +1425,7 @@ void ParamTraits<Message>::Write(base::Pickle* m, const Message& p) {
   m->WriteUInt32(static_cast<uint32_t>(p.routing_id()));
   m->WriteUInt32(p.type());
   m->WriteUInt32(p.flags());
-  m->WriteData(p.payload(), p.payload_size());
+  m->WriteData(p.payload_bytes());
 }
 
 bool ParamTraits<Message>::Read(const base::Pickle* m,
@@ -1480,7 +1486,7 @@ bool ParamTraits<MSG>::Read(const base::Pickle* m,
     memcpy(r, data, sizeof(MSG));
   } else {
     result = false;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   return result;

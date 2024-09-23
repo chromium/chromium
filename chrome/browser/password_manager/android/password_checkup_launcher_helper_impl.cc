@@ -4,6 +4,9 @@
 
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper_impl.h"
 
+#include "chrome/browser/profiles/profile.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/PasswordCheckupLauncher_jni.h"
 
 PasswordCheckupLauncherHelperImpl::~PasswordCheckupLauncherHelperImpl() =
@@ -19,6 +22,7 @@ void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnlineWithWindowAndroid(
 
 void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnDevice(
     JNIEnv* env,
+    Profile* profile,
     ui::WindowAndroid* windowAndroid,
     password_manager::PasswordCheckReferrerAndroid passwordCheckReferrer,
     std::string account_email) {
@@ -26,7 +30,7 @@ void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnDevice(
     return;
   }
   Java_PasswordCheckupLauncher_launchCheckupOnDevice(
-      env, windowAndroid->GetJavaObject(),
+      env, profile->GetJavaObject(), windowAndroid->GetJavaObject(),
       static_cast<int>(passwordCheckReferrer),
       account_email.empty()
           ? nullptr

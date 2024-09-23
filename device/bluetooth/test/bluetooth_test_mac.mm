@@ -269,8 +269,8 @@ BluetoothDevice* BluetoothTestMac::SimulateLowEnergyDevice(int device_ordinal) {
       tx_power = nil;
       break;
     default:
-      NOTREACHED() << "SimulateLowEnergyDevice not implemented for "
-                   << device_ordinal;
+      NOTREACHED_IN_MIGRATION()
+          << "SimulateLowEnergyDevice not implemented for " << device_ordinal;
       identifier = nil;
       name = nil;
       rssi = nil;

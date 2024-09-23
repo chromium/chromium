@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/mime_util.h"
 
 #include <stddef.h>
@@ -26,7 +31,7 @@
 namespace media::internal {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-// TODO(https://crbug.com/1117275): Remove conditioning of kUsePropCodecs when
+// TODO(crbug.com/40145071): Remove conditioning of kUsePropCodecs when
 // testing *parsing* functions.
 const bool kUsePropCodecs = true;
 #else
@@ -480,24 +485,8 @@ TEST(MimeUtilTest, ParseVideoCodecString_SimpleCodecsHaveProfiles) {
     EXPECT_EQ(VideoColorSpace::REC709(), result->color_space);
   }
 
-  const bool kHaveTheoraCodec =
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-      base::FeatureList::IsEnabled(kTheoraVideoCodec);
-#else
-      false;
-#endif
-
   // Valid Theora string.
-  if (kHaveTheoraCodec) {
-    auto result = ParseVideoCodecString("video/ogg", "theora");
-    ASSERT_TRUE(result);
-    EXPECT_EQ(VideoCodec::kTheora, result->codec);
-    EXPECT_EQ(THEORAPROFILE_ANY, result->profile);
-    EXPECT_EQ(kNoVideoCodecLevel, result->level);
-    EXPECT_EQ(VideoColorSpace::REC709(), result->color_space);
-  } else {
-    EXPECT_FALSE(ParseVideoCodecString("video/ogg", "theora"));
-  }
+  EXPECT_FALSE(ParseVideoCodecString("video/ogg", "theora"));
 }
 
 TEST(IsCodecSupportedOnAndroidTest, EncryptedCodecBehavior) {

@@ -11,8 +11,8 @@
 #include "extensions/common/api/management.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/icons/extension_icon_set.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -139,13 +139,21 @@ class ManagementAPIDelegate {
   // Forwards the call to ExtensionIconSource::GetIconURL in chrome.
   virtual GURL GetIconURL(const Extension* extension,
                           int icon_size,
-                          ExtensionIconSet::MatchType match,
+                          ExtensionIconSet::Match match,
                           bool grayscale) const = 0;
 
   // Returns effective update URL from ExtensionManagement.
   virtual GURL GetEffectiveUpdateURL(
       const Extension& extension,
       content::BrowserContext* context) const = 0;
+
+  // Displays the re-enable dialog when `extension` was disabled due to the MV2
+  // deprecation. Calls `done_callback` when accepted/cancelled.
+  virtual void ShowMv2DeprecationReEnableDialog(
+      content::BrowserContext* context,
+      content::WebContents* web_contents,
+      const Extension& extension,
+      base::OnceCallback<void(bool)> done_callback) const = 0;
 };
 
 }  // namespace extensions

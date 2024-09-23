@@ -128,7 +128,8 @@ class DlpContentManager : public DlpContentObserver,
   virtual void OnScreenShareSourceChanging(
       const std::string& label,
       const content::DesktopMediaID& old_media_id,
-      const content::DesktopMediaID& new_media_id);
+      const content::DesktopMediaID& new_media_id,
+      bool captured_surface_control_active);
 
   void AddObserver(DlpContentManagerObserver* observer,
                    DlpContentRestriction restriction);
@@ -246,6 +247,10 @@ class DlpContentManager : public DlpContentObserver,
     // otherwise.
     bool HasOpenDialogWidget();
 
+    // Records that Captured Surface Control was active at some point during
+    // the capture.
+    void SetCapturedSurfaceControlActive();
+
     base::WeakPtr<ScreenShareInfo> GetWeakPtr();
 
    private:
@@ -283,6 +288,9 @@ class DlpContentManager : public DlpContentObserver,
 
     // Set only for tab shares.
     base::WeakPtr<content::WebContents> web_contents_;
+
+    // Only meaningful for tab-shares.
+    bool captured_surface_control_active_ = false;
 
     base::WeakPtrFactory<ScreenShareInfo> weak_factory_{this};
   };

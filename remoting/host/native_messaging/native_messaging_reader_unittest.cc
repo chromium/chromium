@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "remoting/host/native_messaging/native_messaging_reader.h"
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -114,7 +119,7 @@ TEST_F(NativeMessagingReaderTest, ReaderDestroyedByClosingPipe) {
 #if BUILDFLAG(IS_WIN)
 // This scenario is only a problem on Windows as closing the write pipe there
 // does not trigger the parent process to close the read pipe.
-// TODO(crbug.com/1313610) Disabled because it's flaky.
+// TODO(crbug.com/40221037) Disabled because it's flaky.
 TEST_F(NativeMessagingReaderTest, DISABLED_ReaderDestroyedByOwner) {
   WriteMessage("{\"foo\": 42}");
   RunAndWaitForOperationComplete();

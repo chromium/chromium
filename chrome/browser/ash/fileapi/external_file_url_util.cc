@@ -12,12 +12,14 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_constants.h"
+#include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -56,25 +58,69 @@ GURL VirtualPathToExternalFileURL(const base::FilePath& virtual_path) {
       base::EscapePath(virtual_path.AsUTF8Unsafe()).c_str()));
 }
 
-GURL CreateExternalFileURLFromPath(Profile* profile,
+GURL CreateExternalFileURLFromPath(content::BrowserContext* browser_context,
                                    const base::FilePath& path,
                                    bool force) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   GURL raw_file_system_url;
   if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-          profile, path, file_manager::util::GetFileManagerURL(),
+          browser_context, path, file_manager::util::GetFileManagerURL(),
           &raw_file_system_url)) {
     return GURL();
   }
 
   const storage::FileSystemURL file_system_url =
-      file_manager::util::GetFileManagerFileSystemContext(profile)
+      file_manager::util::GetFileManagerFileSystemContext(browser_context)
           ->CrackURLInFirstPartyContext(raw_file_system_url);
   if (!file_system_url.is_valid())
     return GURL();
 
   return FileSystemURLToExternalFileURL(file_system_url, force);
+}
+
+GURL ExternalFileURLToFuseboxMonikerFileURL(
+    content::BrowserContext* browser_context,
+    const GURL& url,
+    bool read_only,
+    base::TimeDelta lifetime) {
+  const base::FilePath virtual_path = ExternalFileURLToVirtualPath(url);
+
+  const storage::FileSystemURL fs_url =
+      file_manager::util::GetFileManagerFileSystemContext(browser_context)
+          ->CreateCrackedFileSystemURL(
+              blink::StorageKey::CreateFirstParty(
+                  file_manager::util::GetFilesAppOrigin()),
+              storage::kFileSystemTypeExternal, virtual_path);
+  if (!fs_url.is_valid()) {
+    return GURL();
+  }
+
+  fusebox::Server* fusebox_server = fusebox::Server::GetInstance();
+  if (!fusebox_server) {
+    return GURL();
+  }
+
+  fusebox::Moniker moniker = fusebox_server->CreateMoniker(fs_url, read_only);
+
+  // Keep the Moniker alive for the lifetime. We could be cleverer about
+  // scheduling the clean up, but "destroy after a fixed amount of time" is
+  // simple and works well enough in practice.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](fusebox::Moniker moniker) {
+            fusebox::Server* fusebox_server = fusebox::Server::GetInstance();
+            if (fusebox_server) {
+              fusebox_server->DestroyMoniker(moniker);
+            }
+          },
+          moniker),
+      lifetime);
+
+  base::FilePath moniker_path(fusebox::MonikerMap::GetFilename(moniker));
+  return net::FilePathToFileURL(
+      moniker_path.AddExtension(virtual_path.Extension()));
 }
 
 }  // namespace ash

@@ -8,34 +8,14 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "prefs": {
-          "profile.managed_default_content_settings.clipboard": {
-            "default_value": 0
-          }
-        }
-      },
-      {
-        "policies": {
-          "DefaultClipboardSetting": 2
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.clipboard": {
-            "value": 2
-          }
-        }
-      },
-      {
-        "policies": {
-          "DefaultClipboardSetting": 3
-        },
-        "prefs": {
-          "profile.managed_default_content_settings.clipboard": {
-            "value": 3
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_default_content_settings.clipboard",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        2,
+        3
+      ]
+    }
   }
 ]

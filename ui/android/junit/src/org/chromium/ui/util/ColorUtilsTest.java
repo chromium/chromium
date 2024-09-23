@@ -83,6 +83,40 @@ public class ColorUtilsTest {
         assertColorsExactlyEqual("", expected, actual);
     }
 
+    @Test
+    public void testCalculateLuminance() {
+        assertEquals(
+                "Color.BLACK should have a luminance of 0.",
+                0.0f,
+                ColorUtils.calculateLuminance(Color.BLACK),
+                0.01f);
+        assertEquals(
+                "Color.WHITE should have a luminance of 1.",
+                1.0f,
+                ColorUtils.calculateLuminance(Color.WHITE),
+                0.01f);
+        assertEquals(
+                "Color.GRAY should have a luminance of 0.53125.",
+                0.53125f,
+                ColorUtils.calculateLuminance(Color.GRAY),
+                0.01f);
+        assertEquals(
+                "Color.GREEN should have a luminance of about 0.71875.",
+                0.71875f,
+                ColorUtils.calculateLuminance(Color.GREEN),
+                0.01f);
+        assertEquals(
+                "Color.CYAN should have a luminance of 0.78125.",
+                0.78125f,
+                ColorUtils.calculateLuminance(Color.CYAN),
+                0.01f);
+        assertEquals(
+                "Color.YELLOW should have a luminance of 0.9375.",
+                0.9375f,
+                ColorUtils.calculateLuminance(Color.YELLOW),
+                0.01f);
+    }
+
     private void testBlendColorsMultiplyHelper(
             @ColorInt int background, @ColorInt int from, @ColorInt int to) {
         String sharedMessage = formatColors("background:%s from:%s to:%s", background, from, to);

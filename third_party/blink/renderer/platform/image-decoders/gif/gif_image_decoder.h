@@ -28,19 +28,16 @@
 
 #include <memory>
 
-#include "base/containers/flat_set.h"
-#include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
-
-#include "third_party/skia/include/codec/SkCodec.h"
+#include "third_party/blink/renderer/platform/image-decoders/skia/skia_image_decoder_base.h"
 
 namespace blink {
 
-class SegmentStream;
-
 // This class decodes the GIF image format.
-class PLATFORM_EXPORT GIFImageDecoder final : public ImageDecoder {
+class PLATFORM_EXPORT GIFImageDecoder final : public SkiaImageDecoderBase {
  public:
-  GIFImageDecoder(AlphaOption, ColorBehavior, wtf_size_t max_decoded_bytes);
+  // Exposing the same constructor as the base class:
+  using SkiaImageDecoderBase::SkiaImageDecoderBase;
+
   GIFImageDecoder(const GIFImageDecoder&) = delete;
   GIFImageDecoder& operator=(const GIFImageDecoder&) = delete;
   ~GIFImageDecoder() override;
@@ -48,49 +45,10 @@ class PLATFORM_EXPORT GIFImageDecoder final : public ImageDecoder {
   // ImageDecoder:
   String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
-  void OnSetData(scoped_refptr<SegmentReader> data) override;
-  int RepetitionCount() const override;
-  bool FrameIsReceivedAtIndex(wtf_size_t) const override;
-  base::TimeDelta FrameDurationAtIndex(wtf_size_t) const override;
-  // CAUTION: SetFailed() deletes |codec_|.  Be careful to avoid
-  // accessing deleted memory.
-  bool SetFailed() override;
 
-  wtf_size_t ClearCacheExceptFrame(wtf_size_t) override;
-
- private:
-  // ImageDecoder:
-  void DecodeSize() override {}
-  wtf_size_t DecodeFrameCount() override;
-  void InitializeNewFrame(wtf_size_t) override;
-  void Decode(wtf_size_t) override;
-  // When the disposal method of the frame is DisposeOverWritePrevious, the
-  // next frame will use a previous frame's buffer as its starting state, so
-  // we can't take over the data in that case. Before calling this method, the
-  // caller must verify that the frame exists.
-  bool CanReusePreviousFrameBuffer(wtf_size_t) const override;
-
-  // When a frame depends on a previous frame's content, there is a list of
-  // candidate reference frames. This function will find a previous frame from
-  // that list which satisfies the requirements of being a reference frame
-  // (kFrameComplete, not kDisposeOverwritePrevious).
-  // If no frame is found, it returns kNotFound.
-  wtf_size_t GetViableReferenceFrameIndex(wtf_size_t) const;
-
-  // Calls the index of the failed frames during decoding. If all frames fail to
-  // decode, call GIFImageDecoder::SetFailed.
-  void SetFailedFrameIndex(wtf_size_t index);
-
-  // Returns whether decoding of the current frame has failed.
-  bool IsFailedFrameIndex(wtf_size_t index) const;
-
-  std::unique_ptr<SkCodec> codec_;
-  // |codec_| owns the SegmentStream, but we need access to it to append more
-  // data as it arrives.
-  raw_ptr<SegmentStream> segment_stream_ = nullptr;
-  mutable int repetition_count_ = kAnimationLoopOnce;
-  int prior_frame_ = SkCodec::kNoFrame;
-  base::flat_set<wtf_size_t> decode_failed_frames_;
+ protected:
+  std::unique_ptr<SkCodec> OnCreateSkCodec(std::unique_ptr<SegmentStream>,
+                                           SkCodec::Result* result) override;
 };
 
 }  // namespace blink

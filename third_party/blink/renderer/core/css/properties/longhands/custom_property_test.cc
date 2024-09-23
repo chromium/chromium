@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -38,20 +40,16 @@ class CustomPropertyTest : public PageTestBase {
   }
 
   const CSSValue* GetComputedValue(const CustomProperty& property) {
-    return property.CSSValueFromComputedStyle(GetComputedStyle(),
-                                              nullptr /* layout_object */,
-                                              false /* allow_visited_style */);
+    return property.CSSValueFromComputedStyle(
+        GetComputedStyle(), nullptr /* layout_object */,
+        false /* allow_visited_style */, CSSValuePhase::kComputedValue);
   }
 
   const CSSValue* ParseValue(const CustomProperty& property,
                              const String& value,
                              const CSSParserLocalContext& local_context) {
-    CSSTokenizer tokenizer(value);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
     auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-    return property.Parse(CSSTokenizedValue{range, value}, *context,
-                          local_context);
+    return property.Parse(value, *context, local_context);
   }
 };
 
@@ -105,7 +103,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueInherited) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
   const auto* primitive_value = To<CSSPrimitiveValue>(value);
-  EXPECT_EQ(100, primitive_value->GetIntValue());
+  EXPECT_EQ(
+      100, primitive_value->ComputeLength<double>(CSSToLengthConversionData()));
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueNonInherited) {
@@ -115,7 +114,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueNonInherited) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
   const auto* primitive_value = To<CSSPrimitiveValue>(value);
-  EXPECT_EQ(100, primitive_value->GetIntValue());
+  EXPECT_EQ(
+      100, primitive_value->ComputeLength<double>(CSSToLengthConversionData()));
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueInitial) {
@@ -125,7 +125,8 @@ TEST_F(CustomPropertyTest, ComputedCSSValueInitial) {
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
   const auto* primitive_value = To<CSSPrimitiveValue>(value);
-  EXPECT_EQ(100, primitive_value->GetIntValue());
+  EXPECT_EQ(
+      100, primitive_value->ComputeLength<double>(CSSToLengthConversionData()));
 }
 
 TEST_F(CustomPropertyTest, ComputedCSSValueEmptyInitial) {
@@ -195,7 +196,8 @@ TEST_F(CustomPropertyTest, ParseSingleValueTyped) {
   const CSSValue* value1 =
       ParseValue(property, "100px", CSSParserLocalContext());
   EXPECT_TRUE(value1->IsPrimitiveValue());
-  EXPECT_EQ(100, To<CSSPrimitiveValue>(value1)->GetIntValue());
+  EXPECT_EQ(100, To<CSSPrimitiveValue>(value1)->ComputeLength<double>(
+                     CSSToLengthConversionData()));
 
   const CSSValue* value2 =
       ParseValue(property, "maroon", CSSParserLocalContext());
@@ -241,8 +243,6 @@ TEST_F(CustomPropertyTest, HasInitialValue) {
 }
 
 TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLength) {
-  ScopedCSSAnchorPositioningForTest enabled_scope(true);
-
   RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
   CustomProperty property(AtomicString("--x"), GetDocument());
 
@@ -255,8 +255,6 @@ TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLength) {
 }
 
 TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLengthPercentage) {
-  ScopedCSSAnchorPositioningForTest enabled_scope(true);
-
   RegisterProperty(GetDocument(), "--x", "<length-percentage>", "0px", false);
   CustomProperty property(AtomicString("--x"), GetDocument());
 
@@ -293,8 +291,7 @@ TEST_F(CustomPropertyTest, ValueMode) {
 
   CustomProperty property(AtomicString("--x"), GetDocument());
 
-  scoped_refptr<CSSVariableData> data =
-      css_test_helpers::CreateVariableData("100px");
+  CSSVariableData* data = css_test_helpers::CreateVariableData("100px");
   ASSERT_FALSE(data->IsAnimationTainted());
   auto* declaration = MakeGarbageCollected<CSSUnparsedDeclarationValue>(
       data, /* parser_context */ nullptr);

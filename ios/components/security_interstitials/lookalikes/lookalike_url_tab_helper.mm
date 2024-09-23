@@ -36,11 +36,11 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
     std::move(callback).Run(CreateAllowDecision());
     return;
   }
-  // TODO(crbug.com/1188945): Only detect lookalike navigations if they're the
+  // TODO(crbug.com/40755149): Only detect lookalike navigations if they're the
   // first or last URL in the redirect chain. Other URLs are invisible to the
   // user. Then, ensure UKM is set correctly to record which URL triggered.
 
-  // TODO(crbug.com/1104386): Create container and ReleaseInterstitialParams.
+  // TODO(crbug.com/40705072): Create container and ReleaseInterstitialParams.
   // Get stored interstitial parameters early. Doing so ensures that a
   // navigation to an irrelevant (for this interstitial's purposes) URL such as
   // chrome://settings while the lookalike interstitial is being shown clears
@@ -76,7 +76,7 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
     return;
   }
 
-  // TODO(crbug.com/1104386): If this is a reload and if the current
+  // TODO(crbug.com/40705072): If this is a reload and if the current
   // URL is the last URL of the stored redirect chain, the interstitial
   // was probably reloaded. Stop the reload and navigate back to the
   // original lookalike URL so that the full checks are exercised again.
@@ -90,7 +90,7 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
     return;
   }
 
-  // TODO(crbug.com/1104384): After site engagement has been componentized,
+  // TODO(crbug.com/40705070): After site engagement has been componentized,
   // fetch and set `engaged_sites` here so that an interstitial won't be
   // shown on engaged sites, and so that the interstitial will be shown on
   // lookalikes of engaged sites.

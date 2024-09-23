@@ -15,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_process_info.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -34,7 +33,8 @@ class Process;
 }  // namespace base
 
 namespace content {
-class ServiceProcessHostPinUser32;
+// Passkeys for service process host Options.
+class ServiceProcessHostGpuClient;
 class ServiceProcessHostPreloadLibraries;
 
 // Sandbox type for ServiceProcessHost::Launch<remote>() is found by
@@ -110,11 +110,13 @@ class CONTENT_EXPORT ServiceProcessHost {
     Options& WithPreloadedLibraries(
         std::vector<base::FilePath> preload_libraries,
         base::PassKey<ServiceProcessHostPreloadLibraries> passkey);
-
-    // Forces user32 to be loaded into the process before the sandbox is locked
-    // down.
-    Options& WithPinUser32(base::PassKey<ServiceProcessHostPinUser32> passkey);
 #endif  // BUILDFLAG(IS_WIN)
+
+    // Allows the viz.mojom.Gpu client to be bound via the process host on
+    // platforms where that is supported. This option will be removed in future.
+    // Prefer to avoid setting this option and instead bind the client directly
+    // by passing a `pending_receiver<viz.mojom.Gpu>` to the service via mojo.
+    Options& WithGpuClient(base::PassKey<ServiceProcessHostGpuClient> passkey);
 
     // Passes the contents of this Options object to a newly returned Options
     // value. This must be called when moving a built Options object into a call
@@ -128,8 +130,8 @@ class CONTENT_EXPORT ServiceProcessHost {
     base::OnceCallback<void(const base::Process&)> process_callback;
 #if BUILDFLAG(IS_WIN)
     std::vector<base::FilePath> preload_libraries;
-    bool pin_user32;
 #endif  // BUILDFLAG(IS_WIN)
+    std::optional<bool> allow_gpu_client;
   };
 
   // An interface which can be implemented and registered/unregistered with

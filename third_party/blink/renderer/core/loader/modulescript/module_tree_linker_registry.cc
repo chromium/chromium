@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker_registry.h"
 
+#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 
@@ -61,7 +62,7 @@ void ModuleTreeLinkerRegistry::ReleaseFinishedLinker(ModuleTreeLinker* linker) {
   DCHECK(linker->HasFinished());
 
   auto it = active_tree_linkers_.find(linker);
-  DCHECK_NE(it, active_tree_linkers_.end());
+  CHECK_NE(it, active_tree_linkers_.end(), base::NotFatalUntil::M130);
   active_tree_linkers_.erase(it);
 }
 

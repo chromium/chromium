@@ -227,16 +227,12 @@ SecurePaymentConfirmationRequest* CreateSecurePaymentConfirmationRequest(
   HeapVector<Member<V8UnionArrayBufferOrArrayBufferView>> credentialIds;
   credentialIds.push_back(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
-          DOMArrayBuffer::Create(
-              kSecurePaymentConfirmationCredentialId,
-              std::size(kSecurePaymentConfirmationCredentialId))));
+          DOMArrayBuffer::Create(kSecurePaymentConfirmationCredentialId)));
   request->setCredentialIds(credentialIds);
 
   request->setChallenge(
       MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
-          DOMArrayBuffer::Create(
-              kSecurePaymentConfirmationChallenge,
-              std::size(kSecurePaymentConfirmationChallenge))));
+          DOMArrayBuffer::Create(kSecurePaymentConfirmationChallenge)));
 
   PaymentCredentialInstrument* instrument =
       PaymentCredentialInstrument::Create(scope.GetIsolate());

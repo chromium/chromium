@@ -20,6 +20,9 @@ struct CONTENT_EXPORT NavigationHandleTiming {
   NavigationHandleTiming(const NavigationHandleTiming& timing);
   NavigationHandleTiming& operator=(const NavigationHandleTiming& timing);
 
+  // The time the URLLoader for the navigation started.
+  base::TimeTicks loader_start_time;
+
   // The time the first HTTP request was sent. This is filled with
   // net::LoadTimingInfo::send_start during navigation.
   //
@@ -52,23 +55,48 @@ struct CONTENT_EXPORT NavigationHandleTiming {
   // The time the final HTTP request was sent. This is filled with
   // net::LoadTimingInfo::send_start during navigation.
   //
+  // Note that if this value is checked before the navigation received the
+  // final non-redirect response, this might be set to a "non-final" request
+  // time, which can still result in a redirect. This is because the value is
+  // updated every time we get a response, which can be a redirect response. See
+  // also `non_redirected_request_start_time`.
+  //
   // In some cases, this can be the time an internal request started that did
   // not go to the networking layer. See the comment for
   // |first_request_start_time|.
   //
   // This is equal to |first_request_start_time| if there is no redirection.
+  //
+  // TODO(https://crbug.com/347706997): Consider renaming or not setting this
+  // until we get a non-redirect response, to avoid confusion.
   base::TimeTicks final_request_start_time;
 
   // The time the headers of the final HTTP response were received. This is
   // filled with net::LoadTimingInfo::receive_headers_start on the final HTTP
   // response during navigation. The response can be informational (1xx).
   //
+  // Note that if this value is checked before the navigation received the
+  // final non-redirect response, this might be set to a "non-final" redirect
+  // response time. This is because the value is updated every time we get a
+  // response, which can be a redirect response. See also
+  // `non_redirect_response_start_time`.
+  //
   // In some cases, this can be the time an internal response was received that
   // did not come from the networking layer. See the comment for
   // |first_response_start_time|.
   //
   // This is equal to |first_response_start_time| if there is no redirection.
+  //
+  // TODO(https://crbug.com/347706997): Consider renaming or not setting this
+  // until we get a non-redirect response, to avoid confusion.
   base::TimeTicks final_response_start_time;
+
+  // Similar to `final_request_start_time`, `final_response_start_time`, and
+  // `first_loader_callback_time`, but only set when we get the final
+  // non-redirect response for the navigation.
+  base::TimeTicks non_redirected_request_start_time;
+  base::TimeTicks non_redirect_response_start_time;
+  base::TimeTicks non_redirect_response_loader_callback_time;
 
   // The time the headers of the final non-informational (non-1xx) HTTP response
   // were received. This is filled with
@@ -85,8 +113,30 @@ struct CONTENT_EXPORT NavigationHandleTiming {
   // This is equal to |first_loader_callback_time| if there is no redirection.
   base::TimeTicks final_loader_callback_time;
 
+  // The time the navigation request is determined to be failed and turned to
+  // commit an error page.
+  base::TimeTicks request_failed_time;
+
   // The time the navigation commit message was sent to a renderer process.
   base::TimeTicks navigation_commit_sent_time;
+
+  // The time the navigation commit message was received in the renderer
+  // process.
+  base::TimeTicks navigation_commit_received_time;
+
+  // The time the DidCommit navigation message was received in the browser
+  // process.
+  base::TimeTicks navigation_did_commit_time;
+
+  // ConnectTiming related delay information for the first HTTP response.
+  base::TimeDelta first_request_domain_lookup_delay;
+  base::TimeDelta first_request_connect_delay;
+  base::TimeDelta first_request_ssl_delay;
+
+  // ConnectTiming related delay information for the final HTTP response.
+  base::TimeDelta final_request_domain_lookup_delay;
+  base::TimeDelta final_request_connect_delay;
+  base::TimeDelta final_request_ssl_delay;
 };
 
 }  // namespace content

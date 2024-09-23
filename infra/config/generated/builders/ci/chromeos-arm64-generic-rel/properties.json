@@ -21,11 +21,11 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
+                "cros_boards_with_qemu_images": [
+                  "arm64-generic-vm"
+                ],
                 "target_arch": "arm",
                 "target_bits": 64,
-                "target_cros_boards": [
-                  "arm64-generic"
-                ],
                 "target_platform": "chromeos"
               },
               "legacy_gclient_config": {
@@ -50,14 +50,24 @@
           "builder": "chromeos-arm64-generic-rel",
           "group": "tryserver.chromium.chromiumos"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
-    "jobs": 250,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-trusted",
+    "remote_jobs": 250
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -67,6 +77,9 @@
     ]
   },
   "builder_group": "chromium.chromiumos",
+  "gardener_rotations": [
+    "chromium"
+  ],
   "recipe": "chromium",
   "sheriff_rotations": [
     "chromium"

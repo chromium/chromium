@@ -6,6 +6,7 @@
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
+
 #include <memory>
 #include <optional>
 
@@ -18,10 +19,10 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/common/content_features.h"
 #include "content/renderer/media/codec_factory.h"
 #include "content/renderer/render_thread_impl.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/decoder.h"
@@ -33,20 +34,20 @@
 #include "third_party/skia/include/core/SkTypes.h"
 
 namespace content {
+
+#if BUILDFLAG(IS_WIN)
 namespace {
 
-// Kill switch for using multiplanar YV12 instead of I420 with 3x single planar.
-BASE_FEATURE(kUseYV12MultiPlanar,
-             "UseYV12MultiPlanar",
+// Use NV12 as the default video frame output format. Note that NV12 is the
+// preferred 4:2:0 pixel format on Windows according to:
+// https://learn.microsoft.com/en-us/windows-hardware/drivers/display/4-2-0-video-pixel-formats
+// https://learn.microsoft.com/en-us/windows/win32/medfound/recommended-8-bit-yuv-formats-for-video-rendering#nv12
+BASE_FEATURE(kUseNV12OutputFormat,
+             "UseNV12OutputFormat",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-bool UseYV12MultiPlanar() {
-  return base::FeatureList::IsEnabled(
-             media::kUseMultiPlaneFormatForSoftwareVideo) &&
-         base::FeatureList::IsEnabled(kUseYV12MultiPlanar);
-}
-
 }  // namespace
+#endif
 
 // static
 std::unique_ptr<GpuVideoAcceleratorFactoriesImpl>
@@ -211,6 +212,8 @@ void GpuVideoAcceleratorFactoriesImpl::OnChannelTokenReady(
   channel_token_ = token;
   channel_token_callbacks_.Notify(channel_token_);
   DCHECK(channel_token_callbacks_.empty());
+  codec_factory_->OnChannelTokenReady(
+      token, context_provider_->GetCommandBufferProxy()->route_id());
 }
 
 int32_t GpuVideoAcceleratorFactoriesImpl::GetCommandBufferRouteId() {
@@ -287,14 +290,6 @@ bool GpuVideoAcceleratorFactoriesImpl::ShouldUseGpuMemoryBuffersForVideoFrames(
                           : enable_video_gpu_memory_buffers_;
 }
 
-unsigned GpuVideoAcceleratorFactoriesImpl::ImageTextureTarget(
-    gfx::BufferFormat format) {
-  DCHECK(context_provider_);
-  return gpu::GetBufferTextureTarget(gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-                                     format,
-                                     context_provider_->ContextCapabilities());
-}
-
 media::GpuVideoAcceleratorFactories::OutputFormat
 GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormat(
     media::VideoPixelFormat pixel_format) {
@@ -306,9 +301,12 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormat(
 media::GpuVideoAcceleratorFactories::OutputFormat
 GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
     media::VideoPixelFormat pixel_format) {
+  using OutputFormat = media::GpuVideoAcceleratorFactories::OutputFormat;
+
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (CheckContextLost())
+  if (CheckContextLost()) {
     return media::GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED;
+  }
 #if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(IS_OZONE)
   // TODO(sugoi): This configuration is currently used only for testing ChromeOS
   // on Linux and doesn't support hardware acceleration. OSMesa did not support
@@ -316,14 +314,17 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
   // revealed this issue. See https://crbug.com/859946
   if (gpu_channel_host_->gpu_info().gl_renderer.find("SwiftShader") !=
       std::string::npos) {
-    return media::GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED;
+    return OutputFormat::UNDEFINED;
   }
 #endif
   auto capabilities = context_provider_->ContextCapabilities();
+  const auto& shared_image_capabilities =
+      context_provider_->SharedImageInterface()->GetCapabilities();
   const size_t bit_depth = media::BitDepth(pixel_format);
   if (bit_depth > 8) {
-    if (capabilities.image_ycbcr_p010 && bit_depth == 10)
-      return media::GpuVideoAcceleratorFactories::OutputFormat::P010;
+    if (capabilities.image_ycbcr_p010 && bit_depth == 10) {
+      return OutputFormat::P010;
+    }
 
 #if !BUILDFLAG(IS_MAC)
     // If high bit depth rendering is enabled, bail here, otherwise try and use
@@ -331,9 +332,10 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
     // a reduced bit depth of 8 bits per component.
     // TODO(mcasas): continue working on this, avoiding dropping information as
     // long as the hardware may support it https://crbug.com/798485.
-    if (rendering_color_space_.IsHDR())
-      return media::GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED;
-#endif
+    if (rendering_color_space_.IsHDR()) {
+      return OutputFormat::UNDEFINED;
+    }
+#endif  // !BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_WIN)
     // TODO(mcasas): enable Win https://crbug.com/803451.
@@ -341,45 +343,56 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
     // just x010ToAR30 conversions, https://crbug.com/libyuv/751.
     if (bit_depth == 10) {
       if (capabilities.image_ar30) {
-        return media::GpuVideoAcceleratorFactories::OutputFormat::XR30;
+        return OutputFormat::XR30;
       } else if (capabilities.image_ab30) {
-        return media::GpuVideoAcceleratorFactories::OutputFormat::XB30;
+        return OutputFormat::XB30;
       }
     }
-#endif
+#endif  // !BUILDFLAG(IS_WIN)
     if (capabilities.texture_rg) {
-      if (UseYV12MultiPlanar()) {
-        return media::GpuVideoAcceleratorFactories::OutputFormat::YV12;
+#if BUILDFLAG(IS_WIN)
+      // Use NV12 for Windows platform which has the overlay support.
+      if (base::FeatureList::IsEnabled(kUseNV12OutputFormat)) {
+        return OutputFormat::NV12;
       }
-      return media::GpuVideoAcceleratorFactories::OutputFormat::I420;
+#endif
+      return OutputFormat::YV12;
     }
-    return media::GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED;
+    return OutputFormat::UNDEFINED;
   }
 
   if (pixel_format == media::PIXEL_FORMAT_I420A) {
 #if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)
-    return media::GpuVideoAcceleratorFactories::OutputFormat::BGRA;
+    return OutputFormat::BGRA;
 #elif SK_PMCOLOR_BYTE_ORDER(R, G, B, A)
-    return media::GpuVideoAcceleratorFactories::OutputFormat::RGBA;
+    return OutputFormat::RGBA;
 #endif
   }
 
-  if (capabilities.image_ycbcr_420v &&
-      !capabilities.image_ycbcr_420v_disabled_for_video_frames) {
-    return media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB;
-  }
-  if (capabilities.texture_rg) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-    // Windows supports binding single shmem GMB as separate shared images. We
-    // prefer single GMB because it makes dcomp overlay code simpler.
-    // UseMultiPlaneFormatForSoftwareVideo is enabled by default on mac so we
-    // can use NV12_SINGLE_GMB.
-    return media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB;
+#if BUILDFLAG(IS_FUCHSIA)
+  // Hardware support for NV12 GMBs is expected to be present on all supported
+  // Fuchsia devices.
+  CHECK(capabilities.image_ycbcr_420v);
+  CHECK(shared_image_capabilities.supports_native_nv12_mappable_shared_images);
+  return OutputFormat::NV12;
 #else
-    return media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB;
-#endif
+
+  if (capabilities.image_ycbcr_420v &&
+      shared_image_capabilities.supports_native_nv12_mappable_shared_images) {
+    return OutputFormat::NV12;
   }
-  return media::GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED;
+
+  // For ChromeOS, if above hardware support for NV12 is not present then
+  // fallback to pixel upload.
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (capabilities.texture_rg) {
+    // Use NV12 for Mac, Windows, Linux and CastOS platforms.
+    return OutputFormat::NV12;
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  return OutputFormat::UNDEFINED;
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 gpu::SharedImageInterface*

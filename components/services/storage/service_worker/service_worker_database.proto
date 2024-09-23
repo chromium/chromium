@@ -71,7 +71,7 @@ message ServiceWorkerRegistrationData {
     optional ReferrerPolicyValue referrer_policy = 1 [default = DEFAULT];
     optional int32 sandbox_flags = 2 [default = 0];
     optional IPAddressSpace ip_address_space = 3 [default = UNKNOWN];
-    // TODO(https://crbug.com/1177199): add content security policies
+    // TODO(crbug.com/40168691): add content security policies
   }
 
   message RouterRules {
@@ -168,6 +168,7 @@ message ServiceWorkerRegistrationData {
             kDictionaryDestination = 24;
             kSpeculationRulesDestination = 25;
             kJsonDestination = 26;
+            kSharedStorageWorkletDestination = 27;
           }
           optional Destination destination = 3;
         }
@@ -178,14 +179,17 @@ message ServiceWorkerRegistrationData {
           }
           optional Status status = 1;
         }
-        // TODO(crbug.com/1492871): Remove and replace this to `condition`
+        // TODO(crbug.com/40285651): Remove and replace this to `condition`
         message ConditionObject {
           repeated Condition conditions = 1;
         }
         message OrCondition {
           repeated ConditionObject objects = 1;
         }
-        // TODO(crbug.com/1492871): Make this a `message` to fit WebIDL
+        message NotCondition {
+          required ConditionObject object = 1;
+        }
+        // TODO(crbug.com/40285651): Make this a `message` to fit WebIDL
         oneof condition {
           // Used for representing URLPattern.
           URLPattern url_pattern = 1;
@@ -196,6 +200,9 @@ message ServiceWorkerRegistrationData {
           // Used for representing 'or' condition.
           // The `_condition` suffix is to avoid conflicts with keywords in C++
           OrCondition or_condition = 4;
+          // Used for representing 'not' condition.
+          // The `_condition` suffix is to avoid conflicts with keywords in C++
+          NotCondition not_condition = 5;
         }
       }
       message Source {

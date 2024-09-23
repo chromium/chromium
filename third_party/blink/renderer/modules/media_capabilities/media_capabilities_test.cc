@@ -27,7 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -607,7 +607,7 @@ base::FieldTrialParams MakeMlParams(double bad_window_threshold,
 MediaCapabilitiesInfo* DecodingInfo(
     const MediaDecodingConfiguration* decoding_config,
     MediaCapabilitiesTestContext* context) {
-  ScriptPromise promise = context->GetMediaCapabilities()->decodingInfo(
+  ScriptPromiseUntyped promise = context->GetMediaCapabilities()->decodingInfo(
       context->GetScriptState(), decoding_config, context->GetExceptionState());
 
   ScriptPromiseTester tester(context->GetScriptState(), promise);
@@ -625,7 +625,7 @@ MediaCapabilitiesInfo* DecodingInfo(
 MediaCapabilitiesInfo* EncodingInfo(
     const MediaEncodingConfiguration* encoding_config,
     MediaCapabilitiesTestContext* context) {
-  ScriptPromise promise = context->GetMediaCapabilities()->encodingInfo(
+  ScriptPromiseUntyped promise = context->GetMediaCapabilities()->encodingInfo(
       context->GetScriptState(), encoding_config, context->GetExceptionState());
 
   ScriptPromiseTester tester(context->GetScriptState(), promise);
@@ -1098,7 +1098,7 @@ void RunCallbackPermutationTest(std::vector<PredictionType> callback_order) {
   }
 
   // Call decodingInfo() to kick off the calls to prediction services.
-  ScriptPromise promise = context.GetMediaCapabilities()->decodingInfo(
+  ScriptPromiseUntyped promise = context.GetMediaCapabilities()->decodingInfo(
       context.GetScriptState(), kDecodingConfig, context.GetExceptionState());
   ScriptPromiseTester tester(context.GetScriptState(), promise);
 
@@ -1419,8 +1419,6 @@ TEST(MediaCapabilitiesTests, WebrtcDecodePowerEfficientIsSmooth) {
   WebrtcDecodingInfoHandler decoding_info_handler(
       blink::CreateWebrtcVideoDecoderFactory(
           mock_gpu_factories.get(),
-          Platform::Current()->GetMediaDecoderFactory(),
-          Platform::Current()->MediaThreadTaskRunner(),
           Platform::Current()->GetRenderingColorSpace(), base::DoNothing()),
       blink::CreateWebrtcAudioDecoderFactory());
 
@@ -1460,9 +1458,8 @@ TEST(MediaCapabilitiesTests, WebrtcDecodeOverridePowerEfficientIsSmooth) {
   media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
   WebrtcDecodingInfoHandler decoding_info_handler(
       blink::CreateWebrtcVideoDecoderFactory(
-          &mock_gpu_factories, Platform::Current()->GetMediaDecoderFactory(),
-          Platform::Current()->MediaThreadTaskRunner(),
-          Platform::Current()->GetRenderingColorSpace(), base::DoNothing()),
+          &mock_gpu_factories, Platform::Current()->GetRenderingColorSpace(),
+          base::DoNothing()),
       blink::CreateWebrtcAudioDecoderFactory());
   context.GetMediaCapabilities()->set_webrtc_decoding_info_handler_for_test(
       &decoding_info_handler);

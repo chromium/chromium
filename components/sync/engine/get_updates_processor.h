@@ -8,8 +8,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/engine/model_type_registry.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/engine/data_type_registry.h"
 #include "components/sync/engine/syncer_error.h"
 
 namespace sync_pb {
@@ -43,10 +43,10 @@ class GetUpdatesProcessor {
   //
   // Returns SYNCER_OK if the download succeeds or an appropriate error value in
   // case of failure.
-  SyncerError DownloadUpdates(ModelTypeSet* request_types, SyncCycle* cycle);
+  SyncerError DownloadUpdates(DataTypeSet* request_types, SyncCycle* cycle);
 
   // Applies any downloaded and processed updates.
-  void ApplyUpdates(const ModelTypeSet& gu_types,
+  void ApplyUpdates(const DataTypeSet& gu_types,
                     StatusController* status_controller);
 
   // Returns true if last DownloadUpdates() outcome indicated that there are
@@ -56,18 +56,18 @@ class GetUpdatesProcessor {
 
  private:
   // Populates a GetUpdates request message with per-type information.
-  void PrepareGetUpdates(const ModelTypeSet& gu_types,
+  void PrepareGetUpdates(const DataTypeSet& gu_types,
                          sync_pb::ClientToServerMessage* message);
 
   // Sends the specified message to the server and stores the response in a
   // member of the |cycle|'s StatusController.
-  SyncerError ExecuteDownloadUpdates(ModelTypeSet* request_types,
+  SyncerError ExecuteDownloadUpdates(DataTypeSet* request_types,
                                      SyncCycle* cycle,
                                      sync_pb::ClientToServerMessage* msg);
 
   // Processes a GetUpdates response for each type.
   SyncerError ProcessResponse(const sync_pb::GetUpdatesResponse& gu_response,
-                              const ModelTypeSet& gu_types,
+                              const DataTypeSet& gu_types,
                               StatusController* status_controller);
 
   FRIEND_TEST_ALL_PREFIXES(GetUpdatesProcessorTest, BookmarkNudge);

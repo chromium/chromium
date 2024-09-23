@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <script src="../../../../resources/js-test.js"></script>
+    <script>
+        if (window.testRunner)
+            testRunner.waitUntilDone();
+
+        var numBlurs = 0;
+
+        window.onload = function() { document.getElementById("input").focus(); }
+
+        function finish() {
+            var f = document.getElementById('f')
+
+            f.innerHTML = '';
+
+            if (numBlurs)
+                testFailed('Onblur handler called.');
+            else
+                testPassed('Onblur handler not called.');
+
+            debug('<br /><span class="pass">TEST COMPLETE</span>');
+            if (window.testRunner)
+                testRunner.notifyDone();
+        }
+    </script>
+  </head>
+<body>
+    <p id="description"></p>
+    <form id='f'>
+      <input id="input" onblur="numBlurs++" onfocus="setTimeout('finish()', 0)">
+    </form>
+    <div id="console"></div>
+    <script>
+        description("This tests that elements shouldn't emit any onblur events when they are being removed from the document. <br>" +
+                    "Note, this test is expected to fail as of 04/25/2011. See bug #59379.");
+    </script>
+  </body>
+</html>

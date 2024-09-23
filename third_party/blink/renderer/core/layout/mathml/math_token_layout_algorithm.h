@@ -19,9 +19,8 @@ class CORE_EXPORT MathTokenLayoutAlgorithm
  public:
   explicit MathTokenLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
- private:
-  const LayoutResult* Layout() final;
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
+  const LayoutResult* Layout();
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
 };
 
 }  // namespace blink

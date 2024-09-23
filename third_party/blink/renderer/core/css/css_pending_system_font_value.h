@@ -9,9 +9,11 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
-namespace blink {
+namespace WTF {
+class String;
+}  // namespace WTF
 
-class FontSelectionValue;
+namespace blink {
 
 namespace cssvalue {
 
@@ -36,8 +38,6 @@ class CSSPendingSystemFontValue : public CSSValue {
 
   CSSValueID SystemFontId() const { return system_font_id_; }
 
-  const FontSelectionValue& ResolveFontStyle() const;
-  const FontSelectionValue& ResolveFontWeight() const;
   const AtomicString& ResolveFontFamily() const;
   float ResolveFontSize(const Document*) const;
 
@@ -45,7 +45,7 @@ class CSSPendingSystemFontValue : public CSSValue {
     return system_font_id_ == other.system_font_id_;
   }
 
-  String CustomCSSText() const;
+  WTF::String CustomCSSText() const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

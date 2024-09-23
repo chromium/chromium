@@ -1,0 +1,177 @@
+// Copyright 2014 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojom;
+
+// The structures here roughly mirror those from autocomplete.
+
+struct ACMatchClassification {
+  int32 offset;
+  int32 style;
+};
+
+struct DictionaryEntry {
+  string key;
+  string value;
+};
+
+// Keep consistent:
+// - omnibox_event.proto `ScoringSignals`
+// - omnibox_scoring_signals.proto `OmniboxScoringSignals`
+// - autocomplete_scoring_model_handler.cc
+//   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
+// - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
+// - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
+// - omnibox_metrics_provider.cc `GetScoringSignalsForLogging()`
+// - omnibox.mojom `struct Signals`
+// - omnibox_page_handler.cc
+//   `TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr>`
+// - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
+//   AutocompleteMatch::ScoringSignals>`
+// - omnibox_util.ts `signalNames`
+// - omnibox/histograms.xml
+//   `Omnibox.URLScoringModelExecuted.ScoringSignalCoverage`
+struct Signals {
+  int32? typed_count;
+  int32? visit_count;
+  int64? elapsed_time_last_visit_secs;
+  int32? shortcut_visit_count;
+  int32? shortest_shortcut_len;
+  int64? elapsed_time_last_shortcut_visit_sec;
+  bool? is_host_only;
+  int32? num_bookmarks_of_url;
+  int32? first_bookmark_title_match_position;
+  int32? total_bookmark_title_match_length;
+  int32? num_input_terms_matched_by_bookmark_title;
+  int32? first_url_match_position;
+  int32? total_url_match_length;
+  bool? host_match_at_word_boundary;
+  int32? total_host_match_length;
+  int32? total_path_match_length;
+  int32? total_query_or_ref_match_length;
+  int32? total_title_match_length;
+  bool? has_non_scheme_www_match;
+  int32? num_input_terms_matched_by_title;
+  int32? num_input_terms_matched_by_url;
+  int32? length_of_url;
+  float? site_engagement;
+  bool? allowed_to_be_default_match;
+  int32? search_suggest_relevance;
+  bool? is_search_suggest_entity;
+  bool? is_verbatim;
+  bool? is_navsuggest;
+  bool? is_search_suggest_tail;
+  bool? is_answer_suggest;
+  bool? is_calculator_suggest;
+};
+
+struct AutocompleteMatch {
+  string provider_name;
+  bool provider_done;
+  int32 relevance;
+  bool deletable;
+  string fill_into_edit;
+  string inline_autocompletion;
+  string destination_url;
+  string stripped_destination_url;
+  string image;
+  string contents;
+  array<ACMatchClassification> contents_class;
+  string description;
+  array<ACMatchClassification> description_class;
+  bool swap_contents_and_description;
+  string answer;
+  string transition;
+  bool allowed_to_be_default_match;
+  string type;
+  bool is_search_type;
+  string aqs_type_subtypes;
+  bool has_tab_match;
+  string associated_keyword;
+  string keyword;
+  bool starred;
+  int32 duplicates;
+  bool from_previous;
+  int32 pedal_id;
+  Signals scoring_signals;
+  array<DictionaryEntry> additional_info;
+};
+
+struct AutocompleteResultsForProvider {
+  string provider_name;
+  array<AutocompleteMatch> results;
+};
+
+struct OmniboxResponse {
+  int32 cursor_position;
+  // Time delta since the request was started, in milliseconds.
+  int32 time_since_omnibox_started_ms;
+  bool done;
+  // The inferred metrics::OmniboxInputType of the request represented as a
+  // string.
+  string type;
+  string host;
+  bool is_typed_host;
+  string input_text;
+  array<AutocompleteMatch> combined_results;
+  array<AutocompleteResultsForProvider> results_by_provider;
+};
+
+enum AutocompleteControllerType {
+  // The autocomplete controller for the real omnibox in the location bar.
+  kBrowser = 0,
+  // The autocomplete controller used by chrome://omnibox to support customized
+  // inputs without messing with the location bar omnibox.
+  kDebug = 1,
+  // The autocomplete controller used by chrome://omnibox/ml that forces off ML
+  // scoring.
+  kMlDisabledDebug = 2,
+};
+
+// ts (`BrowserProxy`) -> cpp (`OmniboxPageHandler`) path.
+interface OmniboxPageHandler {
+  // Registers the webui page.
+  SetClientPage(pending_remote<OmniboxPage> page);
+  // Prompts an autocomplete controller to process an omnibox query.
+  StartOmniboxQuery(string input_string,
+                    bool reset_autocomplete_controller,
+                    int32 cursor_position,
+                    bool zero_suggest,
+                    bool prevent_inline_autocomplete,
+                    bool prefer_keyword,
+                    string current_url,
+                    int32 page_classification);
+  // Gets the ML model version.
+  GetMlModelVersion() => (int32 version);
+  // Runs `AutocompleteScoringModelService`.
+  StartMl(Signals signals) => (float score);
+};
+
+// cpp (`OmniboxPageHandler`) -> ts (`BrowserProxy`) path.
+interface OmniboxPage {
+  // Notifies the page a new omnibox query has begun.
+  HandleNewAutocompleteQuery(
+    AutocompleteControllerType autocomplete_controller_type,
+    string input_text);
+
+  // Notifies the page of an omnibox response from a autocomplete
+  // controller.
+  HandleNewAutocompleteResponse(
+    AutocompleteControllerType autocomplete_controller_type,
+    OmniboxResponse response);
+
+  // Notifies the page of an ML scoring batch completing. This is an
+  // intermediate step of autocompletion. This occurs before the omnibox
+  // response is created (i.e. before `HandleNewAutocompleteResponse()` is
+  // called) and won't usually have the same matches.
+  HandleNewMlResponse(AutocompleteControllerType autocomplete_controller_type,
+                      string input_text,
+                      array<AutocompleteMatch> matches);
+
+  // Asynchronously notifies the page of the image data URLs for previous
+  // omnibox responses.
+  HandleAnswerImageData(AutocompleteControllerType autocomplete_controller_type,
+                        string image_url,
+                        string image_data);
+};

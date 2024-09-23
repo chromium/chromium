@@ -14,6 +14,8 @@ import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 
 import {getDeviceNameUnsafe} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
+import {getHidPreservingController} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.js';
+import {HidWarningDialogSource} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -62,7 +64,7 @@ export class SettingsBluetoothSummaryElement extends
        */
       isBluetoothToggleOn_: {
         type: Boolean,
-        observer: 'onBluetoothToggleChanged_',
+        observer: 'onIsBluetoothToggleOnChanged_',
       },
 
       LabelType: {
@@ -91,6 +93,14 @@ export class SettingsBluetoothSummaryElement extends
         },
         readOnly: true,
       },
+
+      isBluetoothDisconnectWarningEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('bluetoothDisconnectWarningFlag');
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -101,6 +111,7 @@ export class SettingsBluetoothSummaryElement extends
   private isBluetoothToggleOn_: boolean;
   private isSecondaryUser_: boolean;
   private primaryUserEmail_: string;
+  private isBluetoothDisconnectWarningEnabled_: boolean;
 
   constructor() {
     super();
@@ -139,18 +150,15 @@ export class SettingsBluetoothSummaryElement extends
    * Observer for isBluetoothToggleOn_ that returns early until the previous
    * value was not undefined to avoid wrongly toggling the Bluetooth state.
    */
-  private onBluetoothToggleChanged_(_newValue: boolean, oldValue?: boolean):
+  private onIsBluetoothToggleOnChanged_(_newValue: boolean, oldValue?: boolean):
       void {
     if (oldValue === undefined) {
       return;
     }
-    // If the toggle value changed but the toggle is disabled, the change came
-    // from CrosBluetoothConfig, not the user. Don't attempt to update the
-    // enabled state.
-    if (this.isToggleDisabled_()) {
-      return;
-    }
-    getBluetoothConfig().setBluetoothEnabledState(this.isBluetoothToggleOn_);
+
+    getAnnouncerInstance().announce(
+        this.isBluetoothToggleOn_ ? this.i18n('bluetoothEnabledA11YLabel') :
+                                    this.i18n('bluetoothDisabledA11YLabel'));
   }
 
   private isToggleDisabled_(): boolean {
@@ -251,7 +259,7 @@ export class SettingsBluetoothSummaryElement extends
 
     if (this.systemProperties.systemState === BluetoothSystemState.kDisabled ||
         this.systemProperties.systemState === BluetoothSystemState.kDisabling) {
-      this.isBluetoothToggleOn_ = true;
+      this.updateBluetoothState_(true);
       return;
     }
     this.navigateToBluetoothDevicesSubpage_();
@@ -264,10 +272,28 @@ export class SettingsBluetoothSummaryElement extends
     }));
   }
 
-  private onBluetoothToggleChange_(): void {
-    getAnnouncerInstance().announce(
-        this.isBluetoothToggleOn_ ? this.i18n('bluetoothEnabledA11YLabel') :
-                                    this.i18n('bluetoothDisabledA11YLabel'));
+  private onBluetoothToggleChange_(event: CustomEvent): void {
+    event.stopPropagation();
+
+    // If the toggle value changed but the toggle is disabled, the change came
+    // from CrosBluetoothConfig, not the user. Don't attempt to update the
+    // enabled state.
+    if (this.isToggleDisabled_()) {
+      return;
+    }
+    this.updateBluetoothState_(event.detail);
+  }
+
+  private updateBluetoothState_(enabled: boolean): void {
+    if (this.isBluetoothDisconnectWarningEnabled_) {
+      // Reset Bluetooth toggle state to previous state. Toggle should only be
+      // updated when System properties changes.
+      this.isBluetoothToggleOn_ = !enabled;
+      getHidPreservingController().tryToSetBluetoothEnabledState(
+          enabled, HidWarningDialogSource.kOsSettings);
+    } else {
+      getBluetoothConfig().setBluetoothEnabledState(enabled);
+    }
 
     this.browserProxy_.showBluetoothRevampHatsSurvey();
   }

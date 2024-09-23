@@ -53,7 +53,7 @@ ChromeBrowserCloudManagementController::Delegate::
 
 void ChromeBrowserCloudManagementController::Delegate::DeferInitialization(
     base::OnceClosure callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 ChromeBrowserCloudManagementController::ChromeBrowserCloudManagementController(
@@ -158,14 +158,14 @@ void ChromeBrowserCloudManagementController::Init(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   if (!IsEnabled()) {
-    LOG_POLICY(ERROR, CBCM_ENROLLMENT)
+    VLOG_POLICY(1, CBCM_ENROLLMENT)
         << "Cloud management controller initialization aborted as CBCM is not "
            "enabled. Please use the `--enable-chrome-browser-cloud-management` "
            "command line flag to enable it if you are not using the official "
            "Google Chrome build.";
     return;
   }
-  LOG_POLICY(INFO, CBCM_ENROLLMENT)
+  VLOG_POLICY(1, CBCM_ENROLLMENT)
       << "Starting CBCM Controller Initialization";
 
   delegate_->InitializeOAuthTokenFactory(url_loader_factory, local_state);
@@ -442,9 +442,6 @@ void ChromeBrowserCloudManagementController::
         << "No DM token returned from browser registration.";
     RecordEnrollmentResult(
         ChromeBrowserCloudManagementEnrollmentResult::kFailedToFetch);
-    base::UmaHistogramTimes(
-        "Enterprise.MachineLevelUserCloudPolicyEnrollment.RequestFailureTime",
-        enrollment_time);
     MachineLevelUserCloudPolicyManager* policy_manager =
         delegate_->GetMachineLevelUserCloudPolicyManager();
 

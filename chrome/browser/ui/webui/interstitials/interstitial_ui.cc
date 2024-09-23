@@ -25,6 +25,7 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_blocking_page_quiet.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/https_only_mode_controller_client.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ssl/insecure_form/insecure_form_controller_client.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
@@ -46,7 +47,8 @@
 #include "components/security_interstitials/core/ssl_error_options_mask.h"
 #include "components/security_interstitials/core/ssl_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/browser/supervised_user_error_page.h"  // nogncheck
+#include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -69,12 +71,16 @@
 #include "components/security_interstitials/content/captive_portal_blocking_page.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/browser/supervised_user_error_page.h"  // nogncheck
-#include "components/supervised_user/core/browser/supervised_user_interstitial.h"
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/supervised_user/supervised_user_verification_controller_client.h"
+#include "chrome/browser/supervised_user/supervised_user_verification_page.h"
 #endif
 
 using security_interstitials::TestSafeBrowsingBlockingPageQuiet;
+
+InterstitialUIConfig::InterstitialUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIInterstitialHost) {}
 
 namespace {
 
@@ -120,9 +126,7 @@ class InterstitialHTMLSource : public content::URLDataSource {
       content::URLDataSource::GotDataCallback callback) override;
 
  private:
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   std::string GetSupervisedUserInterstitialHTML(const std::string& path);
-#endif
 };
 
 std::unique_ptr<SSLBlockingPage> CreateSslBlockingPage(
@@ -277,13 +281,14 @@ CreateHttpsOnlyModePage(content::WebContents* web_contents) {
       web_contents, request_url,
       std::make_unique<HttpsOnlyModeControllerClient>(web_contents,
                                                       request_url),
-      security_interstitials::https_only_mode::HttpInterstitialState{});
+      security_interstitials::https_only_mode::HttpInterstitialState{},
+      /*use_new_interstitial=*/IsNewHttpsFirstModeInterstitialEnabled());
 }
 
 std::unique_ptr<security_interstitials::SecurityInterstitialPage>
 CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
   safe_browsing::SBThreatType threat_type =
-      safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
   GURL request_url("http://example.com");
   std::string url_param;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "url",
@@ -292,22 +297,20 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
       request_url = GURL(url_param);
     }
   }
-  GURL main_frame_url(request_url);
-  // TODO(mattm): add flag to change main_frame_url or add dedicated flag to
-  // test subresource interstitials.
   std::string type_param;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "type",
                                  &type_param)) {
     if (type_param == "malware") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
     } else if (type_param == "phishing") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
     } else if (type_param == "unwanted") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_UNWANTED;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED;
     } else if (type_param == "clientside_phishing") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
+      threat_type =
+          safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
     } else if (type_param == "billing") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_BILLING;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING;
     }
   }
   auto* primary_main_frame = web_contents->GetPrimaryMainFrame();
@@ -315,8 +318,6 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
       primary_main_frame->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
-  resource.is_subresource = request_url != main_frame_url;
-  resource.is_subframe = false;
   resource.threat_type = threat_type;
   resource.render_process_id = primary_main_frame_id.child_id;
   resource.render_frame_token = primary_main_frame->GetFrameToken().value();
@@ -337,9 +338,9 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
       g_browser_process->safe_browsing_service()->ui_manager().get();
   return base::WrapUnique<security_interstitials::SecurityInterstitialPage>(
       ui_manager->CreateBlockingPage(
-          web_contents, main_frame_url, {resource},
+          web_contents, request_url, {resource},
           /*forward_extension_event=*/false,
-          /*blocked_page_shown_timestamp=*/absl::nullopt));
+          /*blocked_page_shown_timestamp=*/std::nullopt));
 }
 
 std::unique_ptr<EnterpriseBlockPage> CreateEnterpriseBlockPage(
@@ -364,9 +365,8 @@ std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
       primary_main_frame->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = kRequestUrl;
-  resource.is_subresource = false;
-  resource.is_subframe = false;
-  resource.threat_type = safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
   resource.render_process_id = primary_main_frame_id.child_id;
   resource.render_frame_token = primary_main_frame->GetFrameToken().value();
   resource.threat_source =
@@ -382,10 +382,47 @@ std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
                                                        kRequestUrl));
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+std::unique_ptr<SupervisedUserVerificationPage>
+CreateSupervisedUserVerificationPage(content::WebContents* web_contents,
+                                     bool is_main_frame) {
+  const GURL kRequestUrl("https://supervised-user-verification.example.net");
+  return std::make_unique<SupervisedUserVerificationPage>(
+      web_contents, "first.last@gmail.com", kRequestUrl,
+      SupervisedUserVerificationPage::VerificationPurpose::REAUTH_REQUIRED_SITE,
+      /*child_account_service*/ nullptr, ukm::kInvalidSourceId,
+      std::make_unique<SupervisedUserVerificationControllerClient>(
+          web_contents,
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())
+              ->GetPrefs(),
+          g_browser_process->GetApplicationLocale(),
+          GURL(chrome::kChromeUINewTabURL), kRequestUrl),
+      is_main_frame);
+}
+
+std::unique_ptr<SupervisedUserVerificationPage>
+CreateSupervisedUserVerificationPageForBlockedSite(
+    content::WebContents* web_contents,
+    bool is_main_frame) {
+  const GURL kRequestUrl("https://supervised-user-verification.example.net");
+  return std::make_unique<SupervisedUserVerificationPage>(
+      web_contents, "first.last@gmail.com", kRequestUrl,
+      SupervisedUserVerificationPage::VerificationPurpose::DEFAULT_BLOCKED_SITE,
+      /*child_account_service*/ nullptr, ukm::kInvalidSourceId,
+      std::make_unique<SupervisedUserVerificationControllerClient>(
+          web_contents,
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())
+              ->GetPrefs(),
+          g_browser_process->GetApplicationLocale(),
+          GURL(chrome::kChromeUINewTabURL), kRequestUrl),
+      is_main_frame);
+}
+#endif
+
 std::unique_ptr<TestSafeBrowsingBlockingPageQuiet>
 CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
   safe_browsing::SBThreatType threat_type =
-      safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
   GURL request_url("http://example.com");
   std::string url_param;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "url",
@@ -393,21 +430,20 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
     if (GURL(url_param).is_valid())
       request_url = GURL(url_param);
   }
-  GURL main_frame_url(request_url);
   std::string type_param;
   bool is_giant_webview = false;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "type",
                                  &type_param)) {
     if (type_param == "malware") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
     } else if (type_param == "phishing") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
     } else if (type_param == "unwanted") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_UNWANTED;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED;
     } else if (type_param == "billing") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_BILLING;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING;
     } else if (type_param == "giant") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
       is_giant_webview = true;
     }
   }
@@ -416,8 +452,6 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
       primary_main_frame->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
-  resource.is_subresource = request_url != main_frame_url;
-  resource.is_subframe = false;
   resource.threat_type = threat_type;
   resource.render_process_id = primary_main_frame_id.child_id;
   resource.render_frame_token = primary_main_frame->GetFrameToken().value();
@@ -437,7 +471,7 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
   return base::WrapUnique<TestSafeBrowsingBlockingPageQuiet>(
       TestSafeBrowsingBlockingPageQuiet::CreateBlockingPage(
           g_browser_process->safe_browsing_service()->ui_manager().get(),
-          web_contents, main_frame_url, resource, is_giant_webview));
+          web_contents, request_url, resource, is_giant_webview));
 }
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
@@ -522,7 +556,7 @@ void InterstitialHTMLSource::StartDataRequest(
     const GURL& request_url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
-  // TODO(crbug/1009127): Simplify usages of |path| since |request_url| is
+  // TODO(crbug.com/40050262): Simplify usages of |path| since |request_url| is
   // available.
   const std::string path =
       content::URLDataSource::URLToRequestPath(request_url);
@@ -564,6 +598,21 @@ void InterstitialHTMLSource::StartDataRequest(
     interstitial_delegate = CreateInsecureFormPage(web_contents);
   } else if (path_without_query == "/https_only") {
     interstitial_delegate = CreateHttpsOnlyModePage(web_contents);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  } else if (path_without_query == "/supervised-user-verify") {
+    interstitial_delegate = CreateSupervisedUserVerificationPage(
+        web_contents, /*is_main_frame=*/true);
+  } else if (path_without_query == "/supervised-user-verify-blocked-site") {
+    interstitial_delegate = CreateSupervisedUserVerificationPageForBlockedSite(
+        web_contents, /*is_main_frame=*/true);
+  } else if (path_without_query == "/supervised-user-verify-subframe") {
+    interstitial_delegate = CreateSupervisedUserVerificationPage(
+        web_contents, /*is_main_frame=*/false);
+  } else if (path_without_query ==
+             "/supervised-user-verify-blocked-site-subframe") {
+    interstitial_delegate = CreateSupervisedUserVerificationPageForBlockedSite(
+        web_contents, /*is_main_frame=*/false);
+#endif
   }
 
   if (path_without_query == "/quietsafebrowsing") {
@@ -571,10 +620,8 @@ void InterstitialHTMLSource::StartDataRequest(
         CreateSafeBrowsingQuietBlockingPage(web_contents);
     html = blocking_page->GetHTML();
     interstitial_delegate = std::move(blocking_page);
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  } else if (path_without_query == "/supervised_user") {
+  } else if (path_without_query == "/supervised-user-ask-parent") {
     html = GetSupervisedUserInterstitialHTML(path);
-#endif
   } else if (interstitial_delegate.get()) {
     html = interstitial_delegate.get()->GetHTMLContents();
   } else {
@@ -582,11 +629,10 @@ void InterstitialHTMLSource::StartDataRequest(
         IDR_SECURITY_INTERSTITIAL_UI_HTML);
   }
   scoped_refptr<base::RefCountedString> html_bytes = new base::RefCountedString;
-  html_bytes->data().assign(html.begin(), html.end());
+  html_bytes->as_string() = html;
   std::move(callback).Run(html_bytes.get());
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
     const std::string& path) {
   GURL url("https://localhost/" + path);
@@ -622,8 +668,6 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
       reason = supervised_user::FilteringBehaviorReason::ASYNC_CHECKER;
     } else if (reason_string == "manual") {
       reason = supervised_user::FilteringBehaviorReason::MANUAL;
-    } else if (reason_string == "not_signed_in") {
-      reason = supervised_user::FilteringBehaviorReason::NOT_SIGNED_IN;
     }
   }
 
@@ -639,4 +683,3 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
       g_browser_process->GetApplicationLocale(), /*already_sent_request=*/false,
       /*is_main_frame=*/true, show_banner);
 }
-#endif

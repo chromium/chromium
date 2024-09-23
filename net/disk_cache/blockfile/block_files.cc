@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/disk_cache/blockfile/block_files.h"
 
 #include <atomic>
@@ -113,7 +118,7 @@ bool BlockHeader::CreateMapBlock(int size, int* index) {
 
 void BlockHeader::DeleteMapBlock(int index, int size) {
   if (size < 0 || size > kMaxNumBlocks) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   int byte_index = index / 8;

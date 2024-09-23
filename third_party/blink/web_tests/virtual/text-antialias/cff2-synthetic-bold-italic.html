@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="UTF-8" />
+  <style type="text/css">
+    .explain {
+      font-family: sans-serif;
+    }
+    @font-face {
+      font-family: "adobevfproto";
+      font-weight: 389.34425;
+      src: url("../../third_party/AdobeVF/AdobeVFPrototype.otf");
+    }
+  </style>
+  <p class="explain">
+    Test ensures that synthetic bold and italic work when switching CFF2 fonts
+    rendering to Fontations.
+  </p>
+  <p>Regular</p>
+  <p style="font-weight: bold">Synthetic Bold</p>
+  <p style="font-style: italic">Synthetic Italic</p>
+  <p style="font-weight: bold; font-style: italic">Synthetic bold & italic</p>
+</html>

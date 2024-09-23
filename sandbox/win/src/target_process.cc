@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "sandbox/win/src/target_process.h"
 
-#include <processenv.h>
 #include <windows.h>
 
+#include <processenv.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -67,7 +72,7 @@ void CopyPolicyToTarget(base::span<const uint8_t> source, void* dest) {
 
   size_t offset = reinterpret_cast<size_t>(source.data());
 
-  for (size_t i = 0; i < sandbox::kMaxServiceCount; i++) {
+  for (size_t i = 0; i < sandbox::kSandboxIpcCount; i++) {
     size_t buffer = reinterpret_cast<size_t>(policy->entry[i]);
     if (buffer) {
       buffer -= offset;

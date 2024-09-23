@@ -230,7 +230,7 @@ blink::mojom::StreamDevicesSetPtr MediaStreamDevicesController::GetDevices(
   if (!audio_allowed && !video_allowed)
     return nullptr;
 
-  // TODO(crbug.com/1300883): Generalize to multiple streams.
+  // TODO(crbug.com/40216442): Generalize to multiple streams.
   stream_devices_set->stream_devices.emplace_back(
       blink::mojom::StreamDevices::New());
   blink::mojom::StreamDevices& devices = *stream_devices_set->stream_devices[0];
@@ -283,27 +283,26 @@ blink::mojom::StreamDevicesSetPtr MediaStreamDevicesController::GetDevices(
       // Transferred tracks, that use blink::MEDIA_GET_OPEN_DEVICE type, do not
       // need to get permissions for MediaStreamDevice as those are controlled
       // by the original context.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
     case blink::MEDIA_DEVICE_ACCESS: {
       // Get the preferred devices for the request.
       if (audio_allowed) {
+        // `SpeechRecognitionManagerImpl` doesn't provide a list of requested
+        // devices, so just get the most preferred device without filtering.
+        CHECK(request_.requested_audio_device_ids.empty());
         devices.audio_device =
             enumerator_->GetPreferredAudioDeviceForBrowserContext(
-                web_contents_->GetBrowserContext(),
-                request_.requested_audio_device_ids);
+                web_contents_->GetBrowserContext(), {});
       }
-      if (video_allowed) {
-        devices.video_device =
-            enumerator_->GetPreferredVideoDeviceForBrowserContext(
-                web_contents_->GetBrowserContext(),
-                request_.requested_video_device_ids);
-      }
+      // MEDIA_DEVICE_ACCESS is only used for speech recognition, so it never
+      // requests video access.
+      CHECK(!video_allowed);
       break;
     }
     case blink::MEDIA_DEVICE_UPDATE: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
   }  // switch
@@ -398,7 +397,7 @@ bool MediaStreamDevicesController::IsUserAcceptAllowed(
       content_type = ContentSettingsType::MEDIASTREAM_CAMERA;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 
@@ -502,7 +501,7 @@ bool MediaStreamDevicesController::HasAvailableDevices(
              permission == blink::PermissionType::CAMERA_PAN_TILT_ZOOM) {
     devices = &enumerator_->GetVideoCaptureDevices();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // TODO(tommi): It's kind of strange to have this here since if we fail this

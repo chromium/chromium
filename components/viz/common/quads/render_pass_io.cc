@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/viz/common/quads/render_pass_io.h"
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -13,7 +19,7 @@
 #include "base/bit_cast.h"
 #include "base/containers/span.h"
 #include "base/json/values_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/values.h"
@@ -28,7 +34,6 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -174,7 +179,7 @@ bool SkColor4fFromDict(const base::Value::Dict& dict, SkColor4f* color) {
 // Many quads now store color as an SkColor4f, but older logs will still store
 // SkColors (which are ints). For backward compatibility's sake, read either.
 bool ColorFromDict(const base::Value::Dict& dict,
-                   base::StringPiece key,
+                   std::string_view key,
                    SkColor4f* output_color) {
   const base::Value::Dict* color_key = dict.FindDict(key);
   SkColor4f color_4f;
@@ -260,7 +265,7 @@ const char* RRectFTypeToString(gfx::RRectF::Type type) {
     MAP_RRECTF_TYPE_TO_STRING(kOval)
     MAP_RRECTF_TYPE_TO_STRING(kComplex)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -513,8 +518,7 @@ sk_sp<cc::PaintFilter> PaintFilterFromString(const std::string& encoded) {
   // constraints explicitly disable serializing images using the transfer cache
   // and serialization of PaintRecords.
   std::vector<uint8_t> scratch_buffer;
-  cc::PaintOp::DeserializeOptions options(nullptr, nullptr, nullptr,
-                                          &scratch_buffer, false, nullptr);
+  cc::PaintOp::DeserializeOptions options{.scratch_buffer = scratch_buffer};
   cc::PaintOpReader reader(buffer.data(), buffer.size(), options,
                            /*enable_security_constraints=*/true);
   sk_sp<cc::PaintFilter> filter;
@@ -702,6 +706,7 @@ const char* ColorSpacePrimaryIdToString(gfx::ColorSpace::PrimaryID id) {
     MATCH_ENUM_CASE(PrimaryID, APPLE_GENERIC_RGB)
     MATCH_ENUM_CASE(PrimaryID, WIDE_GAMUT_COLOR_SPIN)
     MATCH_ENUM_CASE(PrimaryID, CUSTOM)
+    MATCH_ENUM_CASE(PrimaryID, EBU_3213_E)
   }
 }
 
@@ -747,7 +752,6 @@ const char* ColorSpaceMatrixIdToString(gfx::ColorSpace::MatrixID id) {
     MATCH_ENUM_CASE(MatrixID, SMPTE240M)
     MATCH_ENUM_CASE(MatrixID, YCOCG)
     MATCH_ENUM_CASE(MatrixID, BT2020_NCL)
-    MATCH_ENUM_CASE(MatrixID, BT2020_CL)
     MATCH_ENUM_CASE(MatrixID, YDZDX)
     MATCH_ENUM_CASE(MatrixID, GBR)
   }
@@ -784,6 +788,7 @@ uint8_t StringToColorSpacePrimaryId(const std::string& token) {
   MATCH_ENUM_CASE(PrimaryID, APPLE_GENERIC_RGB)
   MATCH_ENUM_CASE(PrimaryID, WIDE_GAMUT_COLOR_SPIN)
   MATCH_ENUM_CASE(PrimaryID, CUSTOM)
+  MATCH_ENUM_CASE(PrimaryID, EBU_3213_E)
   return -1;
 }
 
@@ -827,7 +832,6 @@ uint8_t StringToColorSpaceMatrixId(const std::string& token) {
   MATCH_ENUM_CASE(MatrixID, SMPTE240M)
   MATCH_ENUM_CASE(MatrixID, YCOCG)
   MATCH_ENUM_CASE(MatrixID, BT2020_NCL)
-  MATCH_ENUM_CASE(MatrixID, BT2020_CL)
   MATCH_ENUM_CASE(MatrixID, YDZDX)
   MATCH_ENUM_CASE(MatrixID, GBR)
   return -1;
@@ -1062,7 +1066,6 @@ int StringToDrawQuadMaterial(const std::string& str) {
   MAP_STRING_TO_MATERIAL(kSurfaceContent)
   MAP_STRING_TO_MATERIAL(kTextureContent)
   MAP_STRING_TO_MATERIAL(kTiledContent)
-  MAP_STRING_TO_MATERIAL(kYuvVideoContent)
   MAP_STRING_TO_MATERIAL(kVideoHole)
   return -1;
 }
@@ -1100,7 +1103,8 @@ struct DrawQuadCommon {
   gfx::Rect rect;
   gfx::Rect visible_rect;
   bool needs_blending = false;
-  raw_ptr<const SharedQuadState> shared_quad_state = nullptr;
+  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).
+  RAW_PTR_EXCLUSION const SharedQuadState* shared_quad_state = nullptr;
   DrawQuad::Resources resources;
 };
 
@@ -1212,7 +1216,7 @@ const char* ProtectedVideoTypeToString(gfx::ProtectedVideoType type) {
     MAP_VIDEO_TYPE_TO_STRING(kSoftwareProtected)
     MAP_VIDEO_TYPE_TO_STRING(kHardwareProtected)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -1249,7 +1253,11 @@ void TextureDrawQuadToDict(const TextureDrawQuad* draw_quad,
   dict->Set("uv_top_left", PointFToDict(draw_quad->uv_top_left));
   dict->Set("uv_bottom_right", PointFToDict(draw_quad->uv_bottom_right));
   dict->Set("background_color", SkColor4fToDict(draw_quad->background_color));
-  dict->Set("vertex_opacity", FloatArrayToList(draw_quad->vertex_opacity));
+  // TODO(crbug.com/40942150): Update
+  // "components/test/data/viz/render_pass_data/" to reflect the deprecation of
+  // vertex opacity.
+  float vertex_opacity[4] = {1.f, 1.0f, 1.0f, 1.f};
+  dict->Set("vertex_opacity", FloatArrayToList(vertex_opacity));
   dict->Set("y_flipped", draw_quad->y_flipped);
   dict->Set("nearest_neighbor", draw_quad->nearest_neighbor);
   dict->Set("secure_output_only", draw_quad->secure_output_only);
@@ -1277,27 +1285,6 @@ void TileDrawQuadToDict(const TileDrawQuad* draw_quad,
   DCHECK_EQ(1u, draw_quad->resources.count);
 }
 
-void YUVVideoDrawQuadToDict(const YUVVideoDrawQuad* draw_quad,
-                            base::Value::Dict* dict) {
-  DCHECK(draw_quad);
-  DCHECK(dict);
-  dict->Set("ya_tex_coord_rect", RectFToDict(draw_quad->ya_tex_coord_rect()));
-  dict->Set("uv_tex_coord_rect", RectFToDict(draw_quad->uv_tex_coord_rect()));
-  dict->Set("ya_tex_size", SizeToDict(draw_quad->ya_tex_size()));
-  dict->Set("uv_tex_size", SizeToDict(draw_quad->uv_tex_size()));
-  dict->Set("resource_offset", draw_quad->resource_offset);
-  dict->Set("resource_multiplier", draw_quad->resource_multiplier);
-  dict->Set("bits_per_channel", static_cast<int>(draw_quad->bits_per_channel));
-  dict->Set("video_color_space",
-            ColorSpaceToDict(draw_quad->video_color_space));
-  dict->Set("protected_video_type",
-            ProtectedVideoTypeToString(draw_quad->protected_video_type));
-  DCHECK(4u == draw_quad->resources.count || 3u == draw_quad->resources.count);
-  if (draw_quad->damage_rect.has_value()) {
-    dict->Set("damage_rect", RectToDict(draw_quad->damage_rect.value()));
-  }
-}
-
 void VideoHoleDrawQuadToDict(const VideoHoleDrawQuad* draw_quad,
                              base::Value::Dict* dict) {
   DCHECK(draw_quad);
@@ -1309,9 +1296,9 @@ void VideoHoleDrawQuadToDict(const VideoHoleDrawQuad* draw_quad,
   }
 }
 
-#define UNEXPECTED_DRAW_QUAD_TYPE(NAME)     \
-  case DrawQuad::Material::NAME:            \
-    NOTREACHED() << "Unexpected " << #NAME; \
+#define UNEXPECTED_DRAW_QUAD_TYPE(NAME)                  \
+  case DrawQuad::Material::NAME:                         \
+    NOTREACHED_IN_MIGRATION() << "Unexpected " << #NAME; \
     break;
 #define WRITE_DRAW_QUAD_TYPE_FIELDS(NAME, TYPE)                    \
   case DrawQuad::Material::NAME:                                   \
@@ -1330,7 +1317,6 @@ base::Value::Dict DrawQuadToDict(
     WRITE_DRAW_QUAD_TYPE_FIELDS(kSurfaceContent, SurfaceDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kTextureContent, TextureDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kTiledContent, TileDrawQuad)
-    WRITE_DRAW_QUAD_TYPE_FIELDS(kYuvVideoContent, YUVVideoDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kVideoHole, VideoHoleDrawQuad)
     UNEXPECTED_DRAW_QUAD_TYPE(kPictureContent)
     default:
@@ -1467,6 +1453,9 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
       dict.FindBool("premultiplied_alpha");
   const base::Value::Dict* uv_top_left = dict.FindDict("uv_top_left");
   const base::Value::Dict* uv_bottom_right = dict.FindDict("uv_bottom_right");
+  // TODO(crbug.com/40942150): Update
+  // "components/test/data/viz/render_pass_data/" to reflect the deprecation of
+  // vertex opacity.
   const base::Value::List* vertex_opacity = dict.FindList("vertex_opacity");
   const base::Value::Dict* damage_rect = dict.FindDict("damage_rect");
   std::optional<bool> y_flipped = dict.FindBool("y_flipped");
@@ -1496,9 +1485,7 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
       !ColorFromDict(dict, "background_color", &t_background_color)) {
     return false;
   }
-  float t_vertex_opacity[4];
-  if (!FloatArrayFromList(*vertex_opacity, 4u, t_vertex_opacity))
-    return false;
+
   const size_t kIndex = TextureDrawQuad::kResourceIdIndex;
   ResourceId resource_id = common.resources.ids[kIndex];
   draw_quad->SetAll(
@@ -1508,7 +1495,6 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
       t_background_color, y_flipped.value(), nearest_neighbor.value(),
       secure_output_only.value(),
       static_cast<gfx::ProtectedVideoType>(protected_video_type_index));
-  draw_quad->set_vertex_opacity(t_vertex_opacity);
 
   draw_quad->is_stream_video = dict.FindBool("is_stream_video").value_or(false);
 
@@ -1544,90 +1530,6 @@ bool TileDrawQuadFromDict(const base::Value::Dict& dict,
   return true;
 }
 
-bool YUVVideoDrawQuadFromDict(const base::Value::Dict& dict,
-                              const DrawQuadCommon& common,
-                              YUVVideoDrawQuad* draw_quad) {
-  DCHECK(draw_quad);
-  if (common.resources.count < 3u || common.resources.count > 4u)
-    return false;
-  const base::Value::Dict* ya_tex_coord_rect =
-      dict.FindDict("ya_tex_coord_rect");
-  const base::Value::Dict* uv_tex_coord_rect =
-      dict.FindDict("uv_tex_coord_rect");
-  const base::Value::Dict* ya_tex_size = dict.FindDict("ya_tex_size");
-  const base::Value::Dict* uv_tex_size = dict.FindDict("uv_tex_size");
-  const base::Value::Dict* damage_rect = dict.FindDict("damage_rect");
-  std::optional<double> resource_offset = dict.FindDouble("resource_offset");
-  std::optional<double> resource_multiplier =
-      dict.FindDouble("resource_multiplier");
-  std::optional<int> bits_per_channel = dict.FindInt("bits_per_channel");
-  const base::Value::Dict* video_color_space =
-      dict.FindDict("video_color_space");
-  const std::string* protected_video_type =
-      dict.FindString("protected_video_type");
-
-  if (!ya_tex_coord_rect || !uv_tex_coord_rect || !ya_tex_size ||
-      !uv_tex_size || !resource_offset || !resource_multiplier ||
-      !bits_per_channel || !video_color_space || !protected_video_type) {
-    return false;
-  }
-  gfx::RectF t_ya_tex_coord_rect, t_uv_tex_coord_rect;
-  gfx::ColorSpace t_video_color_space;
-  if (!RectFFromDict(*ya_tex_coord_rect, &t_ya_tex_coord_rect) ||
-      !RectFFromDict(*uv_tex_coord_rect, &t_uv_tex_coord_rect) ||
-      !ColorSpaceFromDict(*video_color_space, &t_video_color_space)) {
-    return false;
-  }
-  int protected_video_type_index =
-      StringToProtectedVideoType(*protected_video_type);
-  if (protected_video_type_index < 0)
-    return false;
-  gfx::Size t_ya_tex_size, t_uv_tex_size;
-  if (!SizeFromDict(*ya_tex_size, &t_ya_tex_size) ||
-      !SizeFromDict(*uv_tex_size, &t_uv_tex_size)) {
-    return false;
-  }
-
-  const size_t kIndexY = YUVVideoDrawQuad::kYPlaneResourceIdIndex;
-  const size_t kIndexU = YUVVideoDrawQuad::kUPlaneResourceIdIndex;
-  const size_t kIndexV = YUVVideoDrawQuad::kVPlaneResourceIdIndex;
-  const size_t kIndexA = YUVVideoDrawQuad::kAPlaneResourceIdIndex;
-  ResourceId y_plane_resource_id = common.resources.ids[kIndexY];
-  ResourceId u_plane_resource_id = common.resources.ids[kIndexU];
-  ResourceId v_plane_resource_id = common.resources.ids[kIndexV];
-  ResourceId a_plane_resource_id = common.resources.ids[kIndexA];
-  if (common.resources.count == 3u && a_plane_resource_id)
-    return false;
-
-  // TODO(elgarawany): Change the unit test data to reflect the new class
-  // members.
-  // This is a bit hacky, but recreate coded_size, video_visible_rect, and the
-  // UV plane sample size from the tex coord sizes and rects.
-  const gfx::Size coded_size = t_ya_tex_size;
-  const gfx::Rect video_visible_rect = gfx::ToRoundedRect(t_ya_tex_coord_rect);
-  const gfx::Size uv_sample_size(
-      t_ya_tex_size.width() / t_uv_tex_size.width(),
-      t_ya_tex_size.height() / t_uv_tex_size.height());
-
-  draw_quad->SetAll(
-      common.shared_quad_state, common.rect, common.visible_rect,
-      common.needs_blending, coded_size, video_visible_rect, uv_sample_size,
-      y_plane_resource_id, u_plane_resource_id, v_plane_resource_id,
-      a_plane_resource_id, t_video_color_space,
-      static_cast<float>(resource_offset.value()),
-      static_cast<float>(resource_multiplier.value()),
-      static_cast<uint32_t>(bits_per_channel.value()),
-      static_cast<gfx::ProtectedVideoType>(protected_video_type_index),
-      gfx::HDRMetadata());
-
-  gfx::Rect t_damage_rect;
-  if (damage_rect && RectFromDict(*damage_rect, &t_damage_rect)) {
-    draw_quad->damage_rect = t_damage_rect;
-  }
-
-  return true;
-}
-
 bool VideoHoleDrawQuadFromDict(const base::Value::Dict& dict,
                                const DrawQuadCommon& common,
                                VideoHoleDrawQuad* draw_quad) {
@@ -1654,9 +1556,9 @@ bool VideoHoleDrawQuadFromDict(const base::Value::Dict& dict,
   return true;
 }
 
-#define UNEXPECTED_DRAW_QUAD_TYPE(NAME)     \
-  case DrawQuad::Material::NAME:            \
-    NOTREACHED() << "Unexpected " << #NAME; \
+#define UNEXPECTED_DRAW_QUAD_TYPE(NAME)                  \
+  case DrawQuad::Material::NAME:                         \
+    NOTREACHED_IN_MIGRATION() << "Unexpected " << #NAME; \
     break;
 #define GET_QUAD_FROM_DICT(NAME, TYPE)                             \
   case DrawQuad::Material::NAME: {                                 \
@@ -1689,7 +1591,6 @@ bool QuadListFromList(const base::Value::List& list,
       GET_QUAD_FROM_DICT(kSurfaceContent, SurfaceDrawQuad)
       GET_QUAD_FROM_DICT(kTextureContent, TextureDrawQuad)
       GET_QUAD_FROM_DICT(kTiledContent, TileDrawQuad)
-      GET_QUAD_FROM_DICT(kYuvVideoContent, YUVVideoDrawQuad)
       GET_QUAD_FROM_DICT(kVideoHole, VideoHoleDrawQuad)
       UNEXPECTED_DRAW_QUAD_TYPE(kPictureContent)
       default:
@@ -1904,7 +1805,7 @@ const char* BlendModeToString(SkBlendMode blend_mode) {
     MAP_BLEND_MODE_TO_STRING(kColor)
     MAP_BLEND_MODE_TO_STRING(kLuminosity)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -1924,10 +1825,9 @@ const char* DrawQuadMaterialToString(DrawQuad::Material material) {
     MAP_MATERIAL_TO_STRING(kSurfaceContent)
     MAP_MATERIAL_TO_STRING(kTextureContent)
     MAP_MATERIAL_TO_STRING(kTiledContent)
-    MAP_MATERIAL_TO_STRING(kYuvVideoContent)
     MAP_MATERIAL_TO_STRING(kVideoHole)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

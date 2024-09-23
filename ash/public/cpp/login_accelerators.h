@@ -34,7 +34,6 @@ enum LoginAcceleratorAction {
   kCancelScreenAction,
   kStartEnrollment,
   kStartKioskEnrollment,
-  kEnableConsumerKiosk,
   kEnableDebugging,
   kEditDeviceRequisition,
   kDeviceRequisitionRemora,

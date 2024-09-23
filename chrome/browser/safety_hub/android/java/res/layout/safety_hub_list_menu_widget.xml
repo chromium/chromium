@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.ui.listmenu.ListMenuButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/button"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:focusable="true"
+    android:background="@null"
+    android:src="@drawable/ic_more_vert_24dp"
+    app:tint="@color/default_icon_color_tint_list"
+    app:menuMaxWidth="@dimen/menu_width" />

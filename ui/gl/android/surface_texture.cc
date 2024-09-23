@@ -8,11 +8,14 @@
 
 #include "base/android/jni_android.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/android/surface_texture_listener.h"
 #include "ui/gl/gl_bindings.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/gl/gl_jni_headers/SurfaceTexturePlatformWrapper_jni.h"
 
 #ifndef GL_ANGLE_texture_storage_external
@@ -82,7 +85,7 @@ void SurfaceTexture::UpdateTexImage() {
     glInvalidateTextureANGLE(GL_TEXTURE_EXTERNAL_OES);
 }
 
-void SurfaceTexture::GetTransformMatrix(float mtx[16]) {
+void SurfaceTexture::GetTransformMatrix(base::span<float, 16> mtx) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   base::android::ScopedJavaLocalRef<jfloatArray> jmatrix(
@@ -92,7 +95,8 @@ void SurfaceTexture::GetTransformMatrix(float mtx[16]) {
 
   jfloat* elements = env->GetFloatArrayElements(jmatrix.obj(), nullptr);
   for (int i = 0; i < 16; ++i) {
-    mtx[i] = static_cast<float>(elements[i]);
+    // SAFETY: required from Android API.
+    mtx[i] = static_cast<float>(UNSAFE_BUFFERS(elements[i]));
   }
   env->ReleaseFloatArrayElements(jmatrix.obj(), elements, JNI_ABORT);
 }

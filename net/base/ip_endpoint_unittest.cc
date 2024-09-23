@@ -26,6 +26,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
+
 #include <ws2bth.h>
 
 #include "base/test/gtest_util.h"   // For EXPECT_DCHECK_DEATH
@@ -54,7 +55,7 @@ const uint16_t* GetPortFieldFromSockaddr(const struct sockaddr* address,
         reinterpret_cast<const struct sockaddr_in6*>(address);
     return &sockaddr->sin6_port;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 }

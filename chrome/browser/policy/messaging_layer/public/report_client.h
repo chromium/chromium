@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"
 
@@ -22,7 +23,8 @@ namespace reporting {
 // (currently only primary Chrome is supported, and so the client expects
 // cloud policy client to be available and creates an uploader to use it.
 
-class ReportingClient : public ReportQueueProvider {
+class ReportingClient : public ReportQueueProvider,
+                        public ReportingServerConnector::Observer {
  public:
   // RAII class for testing ReportingClient - substitutes reporting files
   // location, signature verification public key and a cloud policy client
@@ -57,6 +59,10 @@ class ReportingClient : public ReportQueueProvider {
       std::unique_ptr<ReportQueueConfiguration> report_queue_config,
       ReportQueueProvider::ReportQueueConfiguredCallback completion_cb)
       override;
+
+  // ReportingServerConnector::Observer implementation.
+  void OnConnected() override;
+  void OnDisconnected() override;
 
 #if !BUILDFLAG(IS_CHROMEOS)
   //

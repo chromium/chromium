@@ -20,6 +20,7 @@ class EmbeddedPermissionPromptAskView
 
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowThisTimeId);
 
   EmbeddedPermissionPromptAskView(
       Browser* browser,

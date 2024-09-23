@@ -26,7 +26,7 @@ class PrefRegistrySyncable;
 namespace signin {
 
 extern const char kSignInPromoQueryKeyAccessPoint[];
-// TODO(https://crbug.com/1205147): Auto close is unused. Remove it.
+// TODO(crbug.com/40764426): Auto close is unused. Remove it.
 extern const char kSignInPromoQueryKeyAutoClose[];
 extern const char kSignInPromoQueryKeyForceKeepData[];
 extern const char kSignInPromoQueryKeyReason[];

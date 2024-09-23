@@ -34,13 +34,9 @@ class HermesManagerClientImpl : public HermesManagerClient {
     dbus::ObjectPath hermes_manager_path(hermes::kHermesManagerPath);
     object_proxy_ =
         bus->GetObjectProxy(hermes::kHermesServiceName, hermes_manager_path);
-    properties_ = std::make_unique<Properties>(
-        object_proxy_,
-        base::BindRepeating(&HermesManagerClientImpl::OnPropertyChanged,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            hermes_manager_path));
-    properties_->ConnectSignals();
-    properties_->GetAll();
+    object_proxy_->WaitForServiceToBeAvailable(
+        base::BindOnce(&HermesManagerClientImpl::OnHermesAvailable,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
   explicit HermesManagerClientImpl(const HermesManagerClient&) = delete;
   HermesManagerClientImpl& operator=(const HermesManagerClient&) = delete;
@@ -48,7 +44,10 @@ class HermesManagerClientImpl : public HermesManagerClient {
 
   // HermesManagerClient:
   const std::vector<dbus::ObjectPath>& GetAvailableEuiccs() override {
-    return properties_->available_euiccs().value();
+    if (properties_) {
+      available_euiccs_ = properties_->available_euiccs().value();
+    }
+    return available_euiccs_;
   }
 
   TestInterface* GetTestInterface() override { return nullptr; }
@@ -83,8 +82,20 @@ class HermesManagerClientImpl : public HermesManagerClient {
     }
   }
 
+  void OnHermesAvailable(bool service_is_available) {
+    dbus::ObjectPath hermes_manager_path(hermes::kHermesManagerPath);
+    properties_ = std::make_unique<Properties>(
+        object_proxy_,
+        base::BindRepeating(&HermesManagerClientImpl::OnPropertyChanged,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            hermes_manager_path));
+    properties_->ConnectSignals();
+    properties_->GetAll();
+  }
+
   raw_ptr<dbus::ObjectProxy> object_proxy_;
   std::unique_ptr<Properties> properties_;
+  std::vector<dbus::ObjectPath> available_euiccs_;
   base::WeakPtrFactory<HermesManagerClientImpl> weak_ptr_factory_{this};
 };
 

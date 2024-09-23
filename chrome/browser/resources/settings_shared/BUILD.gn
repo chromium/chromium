@@ -11,13 +11,19 @@ build_webui("build") {
   grd_resource_path_prefix = "shared/settings"
 
   # Used by browser settings and password manager. Do not use from Ash
-  # settings, use the version in c/b/r/ash/settings/controls instead.
-  web_component_files = [ "controls/extension_controlled_indicator.ts" ]
+  # settings, use the Ash versions instead:
+  # cr_policy_pref_indicator from ash/webui/common/resources/cr_elements
+  # extension_controlled_indicator from c/b/r/ash/settings/controls.
+  web_component_files = [
+    "controls/cr_policy_pref_indicator.ts",
+    "controls/extension_controlled_indicator.ts",
+  ]
 
   non_web_component_files = [
     "extension_control_browser_proxy.ts",
     "lifetime_browser_proxy.ts",
 
+    "a11y_page/ax_annotations_browser_proxy.ts",
     "a11y_page/captions_browser_proxy.ts",
     "appearance_page/fonts_browser_proxy.ts",
     "controls/cr_policy_pref_mixin.ts",
@@ -25,11 +31,16 @@ build_webui("build") {
     "controls/settings_boolean_control_mixin.ts",
     "people_page/profile_info_browser_proxy.ts",
     "people_page/sync_browser_proxy.ts",
+    "prefs/prefs_mixin.ts",
+    "prefs/prefs.ts",
+    "prefs/prefs_types.ts",
+    "prefs/pref_util.ts",
     "privacy_page/privacy_page_browser_proxy.ts",
   ]
 
   ts_composite = true
   ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
@@ -43,8 +54,9 @@ build_webui("build") {
   }
   ts_deps = [
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources/cr_components/settings_prefs:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+
+  webui_context_type = "trusted"
 }

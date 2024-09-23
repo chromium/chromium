@@ -33,6 +33,8 @@ public class StubbedHistoryProvider implements HistoryProvider {
     private int mPaging = 5;
     private boolean mHostOnly;
 
+    private boolean mQueryAppsTriggered;
+
     @Override
     public void setObserver(BrowsingHistoryObserver observer) {
         mObserver = observer;
@@ -96,6 +98,15 @@ public class StubbedHistoryProvider implements HistoryProvider {
 
         List<HistoryItem> items = targetItems.subList(queryStartPosition, queryEndPosition);
         mObserver.onQueryHistoryComplete(items, hasMoreItems);
+    }
+
+    @Override
+    public void queryApps() {
+        mQueryAppsTriggered = true;
+    }
+
+    public boolean isQueryAppsTriggered() {
+        return mQueryAppsTriggered;
     }
 
     @Override

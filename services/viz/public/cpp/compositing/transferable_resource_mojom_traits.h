@@ -44,9 +44,18 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.size;
   }
 
-  static const gpu::MailboxHolder& mailbox_holder(
+  static viz::MemoryBufferId memory_buffer_id(
       const viz::TransferableResource& resource) {
-    return resource.mailbox_holder;
+    return resource.memory_buffer_id();
+  }
+
+  static const gpu::SyncToken& sync_token(
+      const viz::TransferableResource& resource) {
+    return resource.sync_token();
+  }
+
+  static uint32_t texture_target(const viz::TransferableResource& resource) {
+    return resource.texture_target();
   }
 
   static viz::TransferableResource::SynchronizationType synchronization_type(
@@ -66,7 +75,7 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
       const viz::TransferableResource& resource) {
 #if BUILDFLAG(IS_ANDROID)
     // TransferableResource has this in an #ifdef, but mojo doesn't let us.
-    // TODO(https://crbug.com/671901)
+    // TODO(crbug.com/40496893)
     return resource.is_backed_by_surface_texture;
 #else
     return false;
@@ -76,7 +85,7 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
   static bool wants_promotion_hint(const viz::TransferableResource& resource) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
     // TransferableResource has this in an #ifdef, but mojo doesn't let us.
-    // TODO(https://crbug.com/671901)
+    // TODO(crbug.com/40496893)
     return resource.wants_promotion_hint;
 #else
     return false;
@@ -104,6 +113,24 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
 
   static bool Read(viz::mojom::TransferableResourceDataView data,
                    viz::TransferableResource* out);
+};
+
+template <>
+struct UnionTraits<viz::mojom::MemoryBufferIdDataView, viz::MemoryBufferId> {
+  static viz::mojom::MemoryBufferIdDataView::Tag GetTag(
+      const viz::MemoryBufferId& memory_buffer_id);
+
+  static gpu::Mailbox mailbox(const viz::MemoryBufferId& memory_buffer_id) {
+    return absl::get<gpu::Mailbox>(memory_buffer_id);
+  }
+
+  static viz::SharedBitmapId shared_bitmap_id(
+      const viz::MemoryBufferId& memory_buffer_id) {
+    return absl::get<viz::SharedBitmapId>(memory_buffer_id);
+  }
+
+  static bool Read(viz::mojom::MemoryBufferIdDataView memory_buffer_id,
+                   viz::MemoryBufferId* out);
 };
 
 }  // namespace mojo

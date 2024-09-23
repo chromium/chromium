@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
+import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.payments.ui.ContactDetailsSection;
 import org.chromium.chrome.browser.payments.ui.SectionInformation;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -42,7 +43,8 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                         requestPayerName,
                         requestPayerPhone,
                         requestPayerEmail,
-                        /* saveToDisk= */ true);
+                        /* saveToDisk= */ true,
+                        AutofillTestHelper.getPersonalDataManagerForLastUsedProfile());
         mContactDetailsSection =
                 new ContactDetailsSection(
                         ApplicationProvider.getApplicationContext(),
@@ -248,7 +250,10 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                         .setEmailAddress("jane@example.test")
                         .build();
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
-                new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
+                new AutofillAddress(
+                        ApplicationProvider.getApplicationContext(),
+                        newProfile,
+                        AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()));
 
         // We now expect the new item to be last.
         items = mContactDetailsSection.getItems();
@@ -316,7 +321,10 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                         .setEmailAddress("") /* No email */
                         .build();
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
-                new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
+                new AutofillAddress(
+                        ApplicationProvider.getApplicationContext(),
+                        newProfile,
+                        AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()));
 
         // We now expect the new item, because it is incomplete, to be last.
         items = mContactDetailsSection.getItems();
@@ -366,7 +374,10 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                         .setEmailAddress("jane@example.test")
                         .build();
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
-                new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
+                new AutofillAddress(
+                        ApplicationProvider.getApplicationContext(),
+                        newProfile,
+                        AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()));
 
         // We now expect the new item to be first. The selection is not changed.
         items = mContactDetailsSection.getItems();
@@ -432,7 +443,10 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                         .setEmailAddress("john@example.test")
                         .build();
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
-                new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
+                new AutofillAddress(
+                        ApplicationProvider.getApplicationContext(),
+                        newProfile,
+                        AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()));
 
         items = mContactDetailsSection.getItems();
         Assert.assertEquals(1, items.size());
@@ -477,7 +491,10 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                         .setEmailAddress("") /* no email */
                         .build();
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
-                new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
+                new AutofillAddress(
+                        ApplicationProvider.getApplicationContext(),
+                        newProfile,
+                        AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()));
 
         // We now expect the new item to be first, but unselected because incomplete.
         items = mContactDetailsSection.getItems();

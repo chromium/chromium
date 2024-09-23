@@ -29,7 +29,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
@@ -68,18 +68,14 @@ std::u16string GetCancelButtonText(
 
 ui::ImageModel GetSiteSettingsIcon() {
   return ui::ImageModel::FromVectorIcon(
-      features::IsChromeRefresh2023() ? vector_icons::kSettingsChromeRefreshIcon
-                                      : vector_icons::kSettingsIcon,
-      ui::kColorIcon, GetLayoutConstant(PAGE_INFO_ICON_SIZE));
+      vector_icons::kSettingsChromeRefreshIcon, ui::kColorIcon,
+      GetLayoutConstant(PAGE_INFO_ICON_SIZE));
 }
 
 ui::ImageModel GetLaunchIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      features::IsChromeRefresh2023() ? vector_icons::kLaunchChromeRefreshIcon
-                                      : vector_icons::kLaunchIcon,
-      features::IsChromeRefresh2023() ? ui::kColorIcon
-                                      : ui::kColorIconSecondary,
-      GetLayoutConstant(PAGE_INFO_ICON_SIZE));
+  return ui::ImageModel::FromVectorIcon(vector_icons::kLaunchChromeRefreshIcon,
+                                        ui::kColorIcon,
+                                        GetLayoutConstant(PAGE_INFO_ICON_SIZE));
 }
 
 bool ShouldShowManageButton(
@@ -263,7 +259,7 @@ void ContentSettingBubbleContents::ListItemContainer::UpdateScrollHeight(
   }
 }
 
-BEGIN_METADATA(ContentSettingBubbleContents, ListItemContainer, views::View)
+BEGIN_METADATA(ContentSettingBubbleContents, ListItemContainer)
 END_METADATA
 
 // ContentSettingBubbleContents -----------------------------------------------
@@ -277,7 +273,10 @@ ContentSettingBubbleContents::ContentSettingBubbleContents(
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow)
     : content::WebContentsObserver(web_contents),
-      BubbleDialogDelegateView(anchor_view, arrow),
+      BubbleDialogDelegateView(anchor_view,
+                               arrow,
+                               views::BubbleBorder::DIALOG_SHADOW,
+                               true),
       content_setting_bubble_model_(std::move(content_setting_bubble_model)) {
   // Although other code in this class treats content_setting_bubble_model_ as
   // though it's optional, in fact it can only become null if
@@ -289,18 +288,19 @@ ContentSettingBubbleContents::ContentSettingBubbleContents(
   const std::u16string& cancel_text =
       GetCancelButtonText(content_setting_bubble_model_->bubble_content());
   SetButtons(cancel_text.empty()
-                 ? ui::DIALOG_BUTTON_OK
-                 : (ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, done_text.empty()
-                                           ? l10n_util::GetStringUTF16(IDS_DONE)
-                                           : done_text);
+                 ? static_cast<int>(ui::mojom::DialogButton::kOk)
+                 : static_cast<int>(ui::mojom::DialogButton::kOk) |
+                       static_cast<int>(ui::mojom::DialogButton::kCancel));
+  SetButtonLabel(
+      ui::mojom::DialogButton::kOk,
+      done_text.empty() ? l10n_util::GetStringUTF16(IDS_DONE) : done_text);
   SetExtraView(CreateHelpAndManageView());
   SetAcceptCallback(
       base::BindOnce(&ContentSettingBubbleModel::OnDoneButtonClicked,
                      base::Unretained(content_setting_bubble_model_.get())));
 
   if (!cancel_text.empty()) {
-    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, cancel_text);
+    SetButtonLabel(ui::mojom::DialogButton::kCancel, cancel_text);
     SetCancelCallback(
         base::BindOnce(&ContentSettingBubbleModel::OnCancelButtonClicked,
                        base::Unretained(content_setting_bubble_model_.get())));
@@ -328,13 +328,11 @@ void ContentSettingBubbleContents::OnListItemAdded(
     const ContentSettingBubbleModel::ListItem& item) {
   DCHECK(list_item_container_);
   list_item_container_->AddItem(item);
-  SizeToContents();
 }
 
 void ContentSettingBubbleContents::OnListItemRemovedAt(int index) {
   DCHECK(list_item_container_);
   list_item_container_->RemoveRowAtIndex(index);
-  SizeToContents();
 }
 
 int ContentSettingBubbleContents::GetSelectedRadioOption() {
@@ -343,7 +341,7 @@ int ContentSettingBubbleContents::GetSelectedRadioOption() {
     if ((*i)->GetChecked())
       return i - radio_group_.begin();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ContentSettingBubbleContents::OnThemeChanged() {
@@ -473,7 +471,7 @@ void ContentSettingBubbleContents::Init() {
   }
 
   if (bubble_content.manage_text_style == ManageTextStyle::kHoverButton) {
-    SetButtons(ui::DIALOG_BUTTON_NONE);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
     auto separator = std::make_unique<views::Separator>();
     rows.push_back({std::move(separator), LayoutRowType::DEFAULT});
 
@@ -565,9 +563,7 @@ ContentSettingBubbleContents::CreateHelpAndManageView() {
     manage_button->SetMinSize(gfx::Size(
         layout->GetDistanceMetric(views::DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH),
         0));
-    if (features::IsChromeRefresh2023()) {
-      manage_button->SetStyle(ui::ButtonStyle::kTonal);
-    }
+    manage_button->SetStyle(ui::ButtonStyle::kTonal);
     manage_button_ = manage_button.get();
     extra_views.push_back(std::move(manage_button));
   }

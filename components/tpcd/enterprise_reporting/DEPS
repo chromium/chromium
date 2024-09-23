@@ -1,0 +1,8 @@
+include_rules = [
+  "+content/public/browser",
+  "+content/public/test",
+  "+mojo/public/cpp/bindings",
+  "+net",
+  "+services/network/public",
+  "+services/network/test",
+]

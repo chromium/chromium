@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/export/export_progress_status.h"
 
@@ -40,7 +40,7 @@ class PasswordManagerExporter {
   using ProgressCallback =
       base::RepeatingCallback<void(const PasswordExportInfo&)>;
   using WriteCallback =
-      base::RepeatingCallback<bool(const base::FilePath&, base::StringPiece)>;
+      base::RepeatingCallback<bool(const base::FilePath&, std::string_view)>;
   using DeleteCallback = base::RepeatingCallback<bool(const base::FilePath&)>;
   using SetPosixFilePermissionsCallback =
       base::RepeatingCallback<bool(const base::FilePath&, int)>;

@@ -1,5 +1,5 @@
 #!special-case-list-v1
-# TODO(https://crbug.com/1515966): update to glob patterns
+# TODO(crbug.com/41488956): update to glob patterns
 
 # This file defines which warnings should be ignored while running clang's
 # control flow integrity sanitizer, as run by the cfi_flags build target.
@@ -16,7 +16,7 @@
 # with guards against non-Clang compilers; see the definition of NO_SANITIZE in
 # Chromium), e.g.
 #
-# __attribute__((no_sanitize("cfi-unrelated-cast")))
+# [[clang::no_sanitize("cfi-unrelated-cast")]]
 
 [cfi-unrelated-cast|cfi-derived-cast]
 
@@ -160,12 +160,20 @@ fun:*GetPCIDevicesWithLibPCI*
 fun:*GetTraceCategoryEnabledFlag*
 fun:*AddTraceEvent*
 
+# dav1d, calls to dav1d shared library from crabbyavif (Rust library). cfi-icall
+# does not work when the callback is a Rust function and the parameters are
+# fixed width integer types (or pointers to fixed width integer types).
+# TODO(crbug.com/40266913): Remove this entry once Rust CFI is built with
+# -fsanitize-cfi-icall-experimental-normalize-integers and
+# -Zsanitizer-cfi-normalize-integers.
+src:*third_party/dav1d/libdav1d/src/ref.c
+
 # Dawn, calls to OpenGL and Vulkan function pointers from shared library.
 src:*third_party/dawn/src/dawn/native/*
 
 # Dawn uses std::function for callbacks from the main binary to
 # liboptimization_guide_internal.so.
-# TODO(crbug.com/1511050): See if we can avoid disabling CFI for std::function.
+# TODO(crbug.com/41483637): See if we can avoid disabling CFI for std::function.
 src:*third_party/libc*/invoke.h
 src:*third_party/libc*/function.h
 
@@ -183,8 +191,6 @@ src:*media/gpu/vaapi/va_stubs.cc
 
 # Calls to auto-generated stubs by generate_library_loader.py
 src:*content/browser/speech/tts_linux.cc
-src:*device/udev_linux/udev0_loader.cc
-src:*device/udev_linux/udev1_loader.cc
 
 # Calls to auto-generated stubs by ui/gl/generate_bindings.py
 src:*ui/gl/gl_bindings_autogen_*
@@ -192,13 +198,13 @@ src:*ui/gl/gl_bindings_autogen_*
 # Calls to vulkan function pointers from shared library.
 src:*third_party/vulkan_memory_allocator/include/vk_mem_alloc.h
 src:*third_party/angle/third_party/vulkan-loader/src/loader*
-src:*third_party/vulkan-deps/vulkan-loader/src/loader*
-src:*third_party/vulkan-deps/vulkan-validation-layers/src/layers/*
+src:*third_party/vulkan-loader/src/loader*
+src:*third_party/vulkan-validation-layers/src/layers/*
 src:*third_party/angle/src/common/vulkan/vulkan_icd.cpp
 
 src:*components/os_crypt/sync/*
 
-src:*content/browser/accessibility/browser_accessibility_auralinux.cc
+src:*ui/accessibility/platform/browser_accessibility_auralinux.cc
 src:*ui/accessibility/platform/ax_platform_node_auralinux.cc
 src:*ui/accessibility/platform/ax_platform_atk_hyperlink.cc
 src:*ui/accessibility/platform/ax_platform_node_auralinux_unittest.cc
@@ -241,6 +247,10 @@ src:*net/http/http_auth_gssapi_posix.cc
 src:*third_party/breakpad/breakpad/src/common/linux/libcurl_wrapper.cc
 src:*third_party/crashpad/crashpad/snapshot/crashpad_info_client_options_test.cc
 src:*third_party/skia/src/ports/SkFontHost_FreeType.cpp
+
+# WebRTC / PipeWire
+fun:*pw_registry_bind*
+fun:*pw_core_get_registry*
 
 ######### Function pointers cast to incorrect type signatures
 

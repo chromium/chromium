@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/extension_localization_throttle.h"
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
@@ -68,7 +69,7 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
     // ExtensionLocalizationURLLoader is
     // created by ExtensionLocalizationThrottle::WillProcessResponse(), which is
     // equivalent to OnReceiveResponse().
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head,
@@ -78,7 +79,7 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
     // ExtensionLocalizationURLLoader is
     // created by ExtensionLocalizationThrottle::WillProcessResponse(), which is
     // equivalent to OnReceiveResponse().
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
@@ -87,7 +88,7 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
     // ExtensionLocalizationURLLoader is
     // created by ExtensionLocalizationThrottle::WillProcessResponse(), which is
     // equivalent to OnReceiveResponse().
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
@@ -96,7 +97,7 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
     // ExtensionLocalizationURLLoader is
     // created by ExtensionLocalizationThrottle::WillProcessResponse(), which is
     // equivalent to OnReceiveResponse().
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
     destination_url_loader_client_->OnTransferSizeUpdated(transfer_size_diff);
@@ -115,7 +116,7 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
       const std::optional<GURL>& new_url) override {
     // ExtensionLocalizationURLLoader starts handling the request after
     // OnReceivedResponse(). A redirect response is not expected.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {
@@ -129,8 +130,8 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
   }
 
   // mojo::DataPipeDrainer
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
-    data_.append(static_cast<const char*>(data), num_bytes);
+  void OnDataAvailable(base::span<const uint8_t> data) override {
+    data_.append(base::as_string_view(data));
   }
   void OnDataComplete() override {
     data_drainer_.reset();

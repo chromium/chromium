@@ -4,8 +4,11 @@
 
 #include "components/exo/wayland/test/shell_client_data.h"
 
+#include <memory>
+
 #include "base/memory/ptr_util.h"
 #include "components/exo/wayland/test/client_util.h"
+#include "extended-drag-unstable-v1-client-protocol.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -107,15 +110,27 @@ void OnTouchUp(void* data,
 void OnDataOffer(void* data,
                  wl_data_device* data_device,
                  wl_data_offer* offer) {
-  static_cast<ShellClientData*>(data)->set_data_offer(base::WrapUnique(offer));
+  static_cast<ShellClientData*>(data)->set_data_offer(
+      std::unique_ptr<wl_data_offer, decltype(&wl_data_offer_destroy)>(
+          offer, &wl_data_offer_destroy));
 }
 
 }  // namespace
 
 ShellClientData::ShellClientData(test::TestClient* client)
     : client_(client),
-      surface_(wl_compositor_create_surface(client->compositor())) {
-  data_device_ = base::WrapUnique(wl_data_device_manager_get_data_device(
+      pointer_(nullptr, &wl_pointer_destroy),
+      touch_(nullptr, &wl_touch_destroy),
+      surface_(wl_compositor_create_surface(client->compositor()),
+               &wl_surface_destroy),
+      xdg_surface_(nullptr, &xdg_surface_destroy),
+      xdg_toplevel_(nullptr, &xdg_toplevel_destroy),
+      aura_toplevel_(nullptr, &zaura_toplevel_destroy),
+      remote_surface_(nullptr, &zcr_remote_surface_v2_destroy),
+      data_device_(nullptr, &wl_data_device_destroy),
+      data_source_(nullptr, &wl_data_source_destroy),
+      data_offer_(nullptr, &wl_data_offer_destroy) {
+  data_device_.reset(wl_data_device_manager_get_data_device(
       client_->globals().data_device_manager.get(),
       client_->globals().seat.get()));
   constexpr wl_data_device_listener kDataDeviceListener = {
@@ -130,8 +145,7 @@ ShellClientData::ShellClientData(test::TestClient* client)
   };
   wl_data_device_add_listener(data_device_.get(), &kDataDeviceListener, this);
 
-  pointer_ = base::WrapUnique(static_cast<wl_pointer*>(
-      wl_seat_get_pointer(client_->globals().seat.get())));
+  pointer_.reset(wl_seat_get_pointer(client_->globals().seat.get()));
   constexpr wl_pointer_listener kPointerListener = {
       .enter = &OnEnter,
       .leave = &OnLeave,
@@ -146,8 +160,7 @@ ShellClientData::ShellClientData(test::TestClient* client)
   };
   wl_pointer_add_listener(pointer_.get(), &kPointerListener, this);
 
-  touch_ = base::WrapUnique(
-      static_cast<wl_touch*>(wl_seat_get_touch(client_->globals().seat.get())));
+  touch_.reset(wl_seat_get_touch(client_->globals().seat.get()));
   constexpr wl_touch_listener kTouchListener = {
       .down = &OnTouchDown,
       .up = &OnTouchUp,
@@ -235,7 +248,7 @@ void ShellClientData::RequestWindowBounds(const gfx::Rect& bounds,
 
 void ShellClientData::StartDrag(uint32_t serial) {
   DCHECK(!data_source_);
-  data_source_ = base::WrapUnique(wl_data_device_manager_create_data_source(
+  data_source_.reset(wl_data_device_manager_create_data_source(
       client_->globals().data_device_manager.get()));
   constexpr wl_data_source_listener kDataSourceListener = {
       .target = [](void* data, wl_data_source*, const char*) {},

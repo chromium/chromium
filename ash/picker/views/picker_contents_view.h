@@ -6,11 +6,12 @@
 #define ASH_PICKER_VIEWS_PICKER_CONTENTS_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/picker/views/picker_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
+
+enum class PickerLayoutType;
 
 // View for the main contents of the Picker.
 // Consists of multiple "pages", with at most one page visible at a time.
@@ -19,15 +20,18 @@ class ASH_EXPORT PickerContentsView : public views::View {
 
  public:
   // Creates an empty view with no pages.
-  explicit PickerContentsView(PickerView::PickerLayoutType layout_type);
+  explicit PickerContentsView(PickerLayoutType layout_type);
   PickerContentsView(const PickerContentsView&) = delete;
   PickerContentsView& operator=(const PickerContentsView&) = delete;
   ~PickerContentsView() override;
 
-  // Adds a new page.
+  // Adds a new page. If this is the first page, then it is also set as the
+  // active page.
   template <typename T>
   T* AddPage(std::unique_ptr<T> view) {
-    view->SetVisible(false);
+    if (!page_container_->children().empty()) {
+      view->SetVisible(false);
+    }
     return page_container_->AddChildView(std::move(view));
   }
 

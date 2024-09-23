@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <limits>
+#include <string_view>
 
 #include "base/json/string_escape.h"
 #include "base/logging.h"
@@ -106,7 +107,7 @@ bool JSONWriter::BuildJSONString(double node, size_t depth) {
   return true;
 }
 
-bool JSONWriter::BuildJSONString(StringPiece node, size_t depth) {
+bool JSONWriter::BuildJSONString(std::string_view node, size_t depth) {
   EscapeJSONString(node, true, json_string_);
   return true;
 }
@@ -215,21 +216,21 @@ void JSONWriter::IndentLine(size_t depth) {
   json_string_->append(depth * 3U, ' ');
 }
 
-absl::optional<std::string> WriteJson(ValueView node, size_t max_depth) {
+std::optional<std::string> WriteJson(ValueView node, size_t max_depth) {
   std::string result;
   if (!JSONWriter::Write(node, &result, max_depth)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return result;
 }
 
-absl::optional<std::string> WriteJsonWithOptions(ValueView node,
-                                                 uint32_t options,
-                                                 size_t max_depth) {
+std::optional<std::string> WriteJsonWithOptions(ValueView node,
+                                                uint32_t options,
+                                                size_t max_depth) {
   std::string result;
   if (!JSONWriter::WriteWithOptions(node, static_cast<int>(options), &result,
                                     max_depth)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return result;
 }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "base/process/memory.h"
@@ -13,13 +18,13 @@
 #include <vector>
 
 #include "base/allocator/allocator_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/page_size.h"
 #include "build/build_config.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/page_allocator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -30,10 +35,10 @@
 #endif
 #if BUILDFLAG(IS_MAC)
 #include <malloc/malloc.h>
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/check_op.h"
 #include "base/process/memory_unittest_mac.h"
+#include "partition_alloc/shim/allocator_interception_apple.h"
+#include "partition_alloc/shim/allocator_shim.h"
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <malloc.h>
@@ -73,7 +78,7 @@ static void callFree(void *ptr) {
 }
 
 TEST(ProcessMemoryTest, MacTerminateOnHeapCorruption) {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   allocator_shim::InitializeAllocatorShim();
 #endif
   // Assert that freeing an unallocated pointer will crash the process.
@@ -92,14 +97,14 @@ TEST(ProcessMemoryTest, MacTerminateOnHeapCorruption) {
   ADD_FAILURE() << "This test is not supported in this build configuration.";
 #endif
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   allocator_shim::UninterceptMallocZonesForTesting();
 #endif
 }
 
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 TEST(MemoryTest, AllocatorShimWorking) {
 #if BUILDFLAG(IS_MAC)
   allocator_shim::InitializeAllocatorShim();
@@ -111,11 +116,11 @@ TEST(MemoryTest, AllocatorShimWorking) {
   allocator_shim::UninterceptMallocZonesForTesting();
 #endif
 }
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 // OpenBSD does not support these tests. Don't test these on ASan/TSan/MSan
 // configurations: only test the real allocator.
-#if !BUILDFLAG(IS_OPENBSD) && BUILDFLAG(USE_ALLOCATOR_SHIM) && \
+#if !BUILDFLAG(IS_OPENBSD) && PA_BUILDFLAG(USE_ALLOCATOR_SHIM) && \
     !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 namespace {
@@ -156,7 +161,7 @@ class OutOfMemoryTest : public testing::Test {
 class OutOfMemoryDeathTest : public OutOfMemoryTest {
  public:
   void SetUpInDeathAssert() {
-#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_MAC) && PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
     allocator_shim::InitializeAllocatorShim();
 #endif
 
@@ -490,7 +495,7 @@ TEST_F(OutOfMemoryDeathTest, CFAllocatorMalloc) {
   });
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // PartitionAlloc-Everywhere does not intercept other malloc zones than the
 // default (the top) malloc zone.  Plus,
 // CFAllocatorAllocate(kCFAllocatorSystemDefault, size, 0) does not call the
@@ -510,7 +515,7 @@ TEST_F(OutOfMemoryDeathTest, MAYBE_CFAllocatorSystemDefault) {
   });
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // PartitionAlloc-Everywhere does not intercept other malloc zones than the
 // default (the top) malloc zone.  Plus,
 // CFAllocatorAllocate(kCFAllocatorMallocZone, size, 0) does not call the
@@ -653,7 +658,7 @@ TEST_F(OutOfMemoryHandledTest, NewReleasesReservation) {
 
 // Android's allocator does not allow overcommits, so very large
 // UncheckedMallocs will yield OOM errors.
-// TODO(crbug.com/1112840): Fails on some Android bots.
+// TODO(crbug.com/40143202): Fails on some Android bots.
 #define MAYBE_UncheckedMallocDies DISABLED_UncheckedMallocDies
 #define MAYBE_UncheckedCallocDies DISABLED_UncheckedCallocDies
 TEST_F(OutOfMemoryDeathTest, MAYBE_UncheckedMallocDies) {
@@ -707,10 +712,10 @@ TEST_F(OutOfMemoryHandledTest, UncheckedCalloc) {
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
-#endif  // !BUILDFLAG(IS_OPENBSD) && BUILDFLAG(USE_ALLOCATOR_SHIM) &&
+#endif  // !BUILDFLAG(IS_OPENBSD) && PA_BUILDFLAG(USE_ALLOCATOR_SHIM) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
-#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_MAC) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // Not a proper test because it needs to be in a static initializer, see the
 // comment in UncheckedMalloc() in memory_mac.mm.
@@ -730,4 +735,4 @@ size_t need_a_static_initializer = []() {
   return actual_size;
 }();
 
-#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // BUILDFLAG(IS_MAC) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

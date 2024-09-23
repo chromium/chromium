@@ -6,6 +6,7 @@
 #define CC_METRICS_PREDICTOR_JANK_TRACKER_H_
 
 #include <optional>
+
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
@@ -36,9 +37,13 @@ class CC_EXPORT PredictorJankTracker {
   void ResetCurrentScrollReporting();
 
   void set_scroll_jank_ukm_reporter(
-      raw_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter) {
+      ScrollJankUkmReporter* scroll_jank_ukm_reporter) {
     scroll_jank_ukm_reporter_ = scroll_jank_ukm_reporter;
   }
+
+  static float GetSlowScrollDeltaThreshold();
+  static float GetSlowScrollJankyThreshold();
+  static float GetFastScrollJankyThreshold();
 
  private:
   // The metric works by storing a sliding window of the previous two

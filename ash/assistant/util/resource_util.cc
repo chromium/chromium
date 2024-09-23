@@ -7,9 +7,11 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -99,7 +101,6 @@ std::string ToString(IconName name) {
       return kTranslateIconName;
   }
   NOTREACHED();
-  return std::string();
 }
 
 std::string ToString(ResourceLinkParam param) {
@@ -112,7 +113,6 @@ std::string ToString(ResourceLinkParam param) {
       return kTypeParamKey;
   }
   NOTREACHED();
-  return std::string();
 }
 
 std::string ToString(ResourceLinkType type) {
@@ -123,7 +123,6 @@ std::string ToString(ResourceLinkType type) {
       return std::string();
   }
   NOTREACHED();
-  return std::string();
 }
 
 ResourceLinkType ToType(const std::string& type) {
@@ -154,7 +153,6 @@ const gfx::VectorIcon& ToVectorIcon(IconName name) {
       return chromeos::kTranslateIcon;
   }
   NOTREACHED();
-  return gfx::kNoneIcon;
 }
 
 const gfx::VectorIcon& ToVectorIcon(const std::string& name) {
@@ -166,17 +164,14 @@ std::optional<std::string> GetParam(const GURL& url, ResourceLinkParam param) {
     return std::nullopt;
 
   const std::string param_key = ToString(param);
-
-  auto ToString = [&url](const url::Component& component) {
-    if (component.len <= 0)
-      return std::string();
-    return std::string(url.query(), component.begin, component.len);
-  };
-
-  url::Component query(0, url.query().length()), key, value;
-  while (url::ExtractQueryKeyValue(url.query().c_str(), &query, &key, &value)) {
-    if (ToString(key) == param_key)
-      return ToString(value);
+  const std::string_view query_piece = url.query_piece();
+  url::Component query(0, query_piece.length()), key, value;
+  while (url::ExtractQueryKeyValue(query_piece, &query, &key, &value)) {
+    if (query_piece.substr(key.begin, base::checked_cast<size_t>(key.len)) ==
+        param_key) {
+      return std::string(query_piece.substr(
+          value.begin, base::checked_cast<size_t>(value.len)));
+    }
   }
 
   return std::nullopt;

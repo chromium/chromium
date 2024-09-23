@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "android_webview/browser_jni_headers/AndroidProtocolHandler_jni.h"
 #include "android_webview/common/url_constants.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -21,6 +20,9 @@
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AndroidProtocolHandler_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ClearException;

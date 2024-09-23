@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
 
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -122,7 +127,7 @@ ActiveSheetsChange CompareActiveStyleSheets(
 
   std::sort(merged_sorted.begin(), merged_sorted.end());
 
-  auto* merged_iterator = merged_sorted.begin();
+  auto merged_iterator = merged_sorted.begin();
   while (merged_iterator != merged_sorted.end()) {
     const auto& sheet1 = *merged_iterator++;
     if (merged_iterator == merged_sorted.end() ||

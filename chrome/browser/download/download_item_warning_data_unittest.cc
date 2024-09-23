@@ -13,6 +13,7 @@
 using WarningSurface = DownloadItemWarningData::WarningSurface;
 using WarningAction = DownloadItemWarningData::WarningAction;
 using WarningActionEvent = DownloadItemWarningData::WarningActionEvent;
+using DeepScanTrigger = DownloadItemWarningData::DeepScanTrigger;
 
 class DownloadItemWarningDataTest : public testing::Test {
  public:
@@ -162,9 +163,9 @@ TEST_F(DownloadItemWarningDataTest, GetEvents_ExceedEventMaxLength) {
 }
 
 TEST_F(DownloadItemWarningDataTest, IsEncryptedArchive) {
-  EXPECT_FALSE(DownloadItemWarningData::IsEncryptedArchive(&download_));
-  DownloadItemWarningData::SetIsEncryptedArchive(&download_, true);
-  EXPECT_TRUE(DownloadItemWarningData::IsEncryptedArchive(&download_));
+  EXPECT_FALSE(DownloadItemWarningData::IsTopLevelEncryptedArchive(&download_));
+  DownloadItemWarningData::SetIsTopLevelEncryptedArchive(&download_, true);
+  EXPECT_TRUE(DownloadItemWarningData::IsTopLevelEncryptedArchive(&download_));
 }
 
 TEST_F(DownloadItemWarningDataTest, HasIncorrectPassword) {
@@ -179,4 +180,48 @@ TEST_F(DownloadItemWarningDataTest, HasShownLocalDecryptionPrompt) {
   DownloadItemWarningData::SetHasShownLocalDecryptionPrompt(&download_, true);
   EXPECT_TRUE(
       DownloadItemWarningData::HasShownLocalDecryptionPrompt(&download_));
+}
+
+TEST_F(DownloadItemWarningDataTest, DeepScanTrigger) {
+  EXPECT_EQ(DownloadItemWarningData::DownloadDeepScanTrigger(&download_),
+            DeepScanTrigger::TRIGGER_UNKNOWN);
+  DownloadItemWarningData::SetDeepScanTrigger(
+      &download_, DeepScanTrigger::TRIGGER_CONSUMER_PROMPT);
+  EXPECT_EQ(DownloadItemWarningData::DownloadDeepScanTrigger(&download_),
+            DeepScanTrigger::TRIGGER_CONSUMER_PROMPT);
+}
+
+TEST_F(DownloadItemWarningDataTest, FirstShownTimeAndSurface) {
+  EXPECT_EQ(DownloadItemWarningData::WarningFirstShownSurface(&download_),
+            std::nullopt);
+  EXPECT_TRUE(
+      DownloadItemWarningData::WarningFirstShownTime(&download_).is_null());
+  base::Time now = base::Time::Now();
+  FastForwardAndAddEvent(base::Seconds(0),
+                         WarningSurface::DOWNLOAD_NOTIFICATION,
+                         WarningAction::SHOWN);
+  FastForwardAndAddEvent(base::Seconds(5), WarningSurface::BUBBLE_MAINPAGE,
+                         WarningAction::SHOWN);
+
+  EXPECT_EQ(*DownloadItemWarningData::WarningFirstShownSurface(&download_),
+            WarningSurface::DOWNLOAD_NOTIFICATION);
+  EXPECT_EQ(DownloadItemWarningData::WarningFirstShownTime(&download_), now);
+}
+
+TEST_F(DownloadItemWarningDataTest, EventToString) {
+  FastForwardAndAddEvent(base::Seconds(0), WarningSurface::BUBBLE_MAINPAGE,
+                         WarningAction::SHOWN);
+  FastForwardAndAddEvent(base::Seconds(5), WarningSurface::BUBBLE_SUBPAGE,
+                         WarningAction::CLOSE);
+  FastForwardAndAddEvent(base::Seconds(10), WarningSurface::DOWNLOAD_PROMPT,
+                         WarningAction::CANCEL);
+  FastForwardAndAddEvent(base::Seconds(15), WarningSurface::DOWNLOADS_PAGE,
+                         WarningAction::DISCARD);
+
+  std::vector<WarningActionEvent> events = GetEvents();
+
+  // The initial SHOWN event is not included.
+  EXPECT_EQ(events[0].ToString(), "BUBBLE_SUBPAGE:CLOSE:5000");
+  EXPECT_EQ(events[1].ToString(), "DOWNLOAD_PROMPT:CANCEL:15000");
+  EXPECT_EQ(events[2].ToString(), "DOWNLOADS_PAGE:DISCARD:30000");
 }

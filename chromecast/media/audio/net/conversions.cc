@@ -27,7 +27,6 @@ media::SampleFormat ConvertSampleFormat(SampleFormat format) {
     default:
       NOTREACHED() << "Unknown sample format " << format;
   }
-  return kSampleFormatS16;
 }
 
 SampleFormat ConvertSampleFormat(media::SampleFormat format) {
@@ -47,7 +46,6 @@ SampleFormat ConvertSampleFormat(media::SampleFormat format) {
     default:
       NOTREACHED() << "Unhandled sample format " << format;
   }
-  return SAMPLE_FORMAT_INT16_I;
 }
 
 int GetSampleSizeBytes(SampleFormat format) {

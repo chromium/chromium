@@ -79,8 +79,8 @@ void NotificationExample::OnViewAddedToWidget(View* observed_view) {
           GURL(), l10n_util::GetStringUTF16(IDS_NOTIFICATION_TITLE_LABEL),
           /*web_app_id=*/std::nullopt),
       data, base::MakeRefCounted<message_center::NotificationDelegate>());
-  notification.set_small_image(CreateTestImage(gfx::Size(16, 16), cp));
-  notification.set_image(CreateTestImage(gfx::Size(320, 240), cp));
+  notification.SetSmallImage(CreateTestImage(gfx::Size(16, 16), cp));
+  notification.SetImage(CreateTestImage(gfx::Size(320, 240), cp));
   std::vector<message_center::ButtonInfo> buttons = {
       message_center::ButtonInfo(u"No-op"),
       message_center::ButtonInfo(u"Text input")};

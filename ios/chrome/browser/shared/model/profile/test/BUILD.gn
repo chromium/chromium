@@ -1,0 +1,50 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test") {
+  testonly = true
+  sources = [
+    "test_profile_ios.h",
+    "test_profile_ios.mm",
+    "test_profile_ios_forward.h",
+    "test_profile_manager_ios.h",
+    "test_profile_manager_ios.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/policy/core/common",
+    "//components/profile_metrics",
+    "//components/supervised_user/core/browser",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//components/user_prefs",
+    "//ios/chrome/browser/net/model:net_types",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/prefs/model",
+    "//ios/chrome/browser/profile/model:keyed_service_factories",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/thread",
+    "//net:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "test_profile_manager_ios_unittest.cc" ]
+  deps = [
+    ":test",
+    "//base",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

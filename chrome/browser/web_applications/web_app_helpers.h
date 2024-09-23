@@ -53,7 +53,6 @@ webapps::AppId GenerateAppId(const std::optional<std::string>& manifest_id_path,
 // manifest. See the `webapps::AppId` type for more information. This will
 // CHECK-fail if the `id` field is not present on the manifest.
 webapps::AppId GenerateAppIdFromManifest(
-
     const blink::mojom::Manifest& manifest,
     const std::optional<webapps::ManifestId>& parent_manifest_id =
         std::nullopt);

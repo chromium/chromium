@@ -11,7 +11,7 @@ namespace {
 const char kTestSsid[] = "test_SSID";
 const char kTestPassword[] = "T35t_P@ssw0rd";
 const WifiCredentialsAttachment::SecurityType kTestSecurityType =
-    sharing::mojom::WifiCredentialsMetadata::SecurityType::kWpaPsk;
+    ::sharing::mojom::WifiCredentialsMetadata::SecurityType::kWpaPsk;
 
 }  // namespace
 TEST(WifiCredentialsAttachmentTest, WifiCredentialsAttachmentTest) {

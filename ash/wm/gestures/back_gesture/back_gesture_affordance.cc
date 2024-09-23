@@ -207,7 +207,8 @@ bool AboveBottomOfSplitViewDivider(const gfx::Point& location, int origin_y) {
       split_view_controller->GetSnappedWindowBoundsInScreen(
           IsCurrentScreenOrientationPrimary() ? SnapPosition::kSecondary
                                               : SnapPosition::kPrimary,
-          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio);
+          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+          /*account_for_divider_width=*/true);
   return bounds_of_bottom_snapped_window.Contains(location) &&
          origin_y < GetSplitViewDividerBoundsInScreen(location).bottom();
 }
@@ -306,7 +307,7 @@ void BackGestureAffordance::Abort() {
 }
 
 void BackGestureAffordance::Complete() {
-  DCHECK_EQ(State::DRAGGING, state_);
+  CHECK_EQ(State::DRAGGING, state_);
   state_ = State::COMPLETING;
 
   animation_ = std::make_unique<gfx::LinearAnimation>(
@@ -322,10 +323,10 @@ bool BackGestureAffordance::IsActivated() const {
 void BackGestureAffordance::CreateAffordanceWidget(const gfx::Point& location) {
   affordance_widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.accept_events = true;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.name = "BackGestureAffordance";
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.parent = window_util::GetRootWindowAt(location)->GetChildById(
@@ -473,7 +474,6 @@ void BackGestureAffordance::AnimationProgressed(
   switch (state_) {
     case State::DRAGGING:
       NOTREACHED();
-      break;
     case State::ABORTING:
       SetAbortProgress(animation->GetCurrentValue());
       break;

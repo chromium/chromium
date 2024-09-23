@@ -7,6 +7,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/run_loop.h"
@@ -32,8 +33,8 @@ class MockModuleListFilter : public ModuleListFilter {
   MockModuleListFilter(const MockModuleListFilter&) = delete;
   MockModuleListFilter& operator=(const MockModuleListFilter&) = delete;
 
-  bool IsAllowlisted(base::StringPiece module_basename_hash,
-                     base::StringPiece module_code_id_hash) const override {
+  bool IsAllowlisted(std::string_view module_basename_hash,
+                     std::string_view module_code_id_hash) const override {
     return false;
   }
 

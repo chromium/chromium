@@ -57,6 +57,9 @@ class BrowsingHistoryDriver {
   virtual void HasOtherFormsOfBrowsingHistory(bool has_other_forms,
                                               bool has_synced_results) {}
 
+  // Fetch all the app IDs used in the database.
+  virtual void OnGetAllAppIds(const std::vector<std::string>& app_ids) {}
+
   // If history deletions are currently allowed.
   virtual bool AllowHistoryDeletions() = 0;
 

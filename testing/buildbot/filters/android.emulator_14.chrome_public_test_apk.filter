@@ -1,0 +1,43 @@
+# crbug.com/1036556
+-org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabAddedFromCustomTab
+
+# crbug.com/350393662
+-org.chromium.chrome.browser.searchwidget.SearchActivityTest.*
+
+# crbug.com/350394860
+-org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddCustomTopMenuItemHasNoEffect
+-org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddRemoteViewsHasNoEffect
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithCustomCloseButtonAndMaxTopActionItems__HTTP
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithCustomCloseButtonAndMaxTopActionItems__HTTPS
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithDefaultCloseButtonAndMaxTopActionItems__HTTP
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithDefaultCloseButtonAndMaxTopActionItems__HTTPS
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testActionButtonBadRatio
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testBottomBar
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testRecordRetainableSession_WithoutWarmupAndSession
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testRemoteViews
+-org.chromium.chrome.browser.customtabs.CustomTabPrivacySandboxDialogTest.adsNoticeCCT_AppIDNullShowDialog
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testCreateNewTab
+-org.chromium.chrome.browser.customtabs.DetachedResourceRequestTest.testCanBlockThirdPartyCookies
+
+# crbug.com/350395970
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNewTabForUnknownApp
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNewTabWithNewTabExtra
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNoNewTabForSameApp
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNoNewTabForSameAppOnStart
+
+# crbug.com/351025215
+-org.chromium.chrome.browser.share.share_sheet.ShareSheetTest.nothingFromDefaultRankingAvailable
+
+# crbug.com/351025374
+-org.chromium.chrome.browser.toolbar.top.ToolbarPhoneTest.testToolbarColorSameAsSuggestionColorWhenFocus_activeColorOmnibox
+
+# crbug.com/351026514
+-org.chromium.chrome.browser.gsa.GSAAccountChangeListenerTest.testReceivesBroadcastIntents
+
+# crbug.com/326040498
+-org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionOther
+-org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionPassword
+-org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionPasswordAndOther
+
+# crbug.com/362792693
+-org.chromium.chrome.browser.permissions.GeolocationTest.testGeolocationWatchDialog

@@ -1,0 +1,70 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinators") {
+  sources = [
+    "translate_infobar_placeholder_overlay_coordinator.h",
+    "translate_infobar_placeholder_overlay_coordinator.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/browser/overlays/model/public/common/infobars",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:coordinators",
+  ]
+}
+
+source_set("mediators") {
+  sources = [
+    "translate_infobar_banner_overlay_mediator.h",
+    "translate_infobar_banner_overlay_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/translate/core/browser",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/model/overlays:util",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:mediators",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/infobars/banners",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "translate_infobar_banner_overlay_mediator_unittest.mm" ]
+
+  deps = [
+    ":mediators",
+    "//base/test:test_support",
+    "//components/infobars/core",
+    "//components/strings",
+    "//components/translate/core/browser:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/common/infobars",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
+    "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/test",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/translate/model:test_support",
+    "//ios/chrome/browser/ui/infobars/banners/test",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

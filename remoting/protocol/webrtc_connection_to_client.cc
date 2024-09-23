@@ -12,10 +12,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "net/base/io_buffer.h"
+#include "remoting/base/logging.h"
 #include "remoting/codec/video_encoder.h"
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/audio_stream.h"
+#include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/host_control_dispatcher.h"
@@ -86,15 +88,14 @@ void WebrtcConnectionToClient::Disconnect(ErrorCode error) {
 }
 
 std::unique_ptr<VideoStream> WebrtcConnectionToClient::StartVideoStream(
-    const std::string& stream_name,
+    webrtc::ScreenId screen_id,
     std::unique_ptr<DesktopCapturer> desktop_capturer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(transport_);
 
-  auto stream =
-      std::make_unique<WebrtcVideoStream>(stream_name, session_options_);
+  auto stream = std::make_unique<WebrtcVideoStream>(session_options_);
   stream->set_video_stats_dispatcher(video_stats_dispatcher_.GetWeakPtr());
-  stream->Start(std::move(desktop_capturer), transport_.get(),
+  stream->Start(screen_id, std::move(desktop_capturer), transport_.get(),
                 video_encoder_factory_);
   stream->SetEventTimestampsSource(
       event_dispatcher_->event_timestamps_source());
@@ -136,9 +137,13 @@ void WebrtcConnectionToClient::set_input_stub(protocol::InputStub* input_stub) {
 void WebrtcConnectionToClient::ApplySessionOptions(
     const SessionOptions& options) {
   session_options_ = options;
-  DCHECK(transport_);
   transport_->ApplySessionOptions(options);
   video_encoder_factory_->ApplySessionOptions(options);
+}
+
+void WebrtcConnectionToClient::ApplyNetworkSettings(
+    const NetworkSettings& settings) {
+  transport_->ApplyNetworkSettings(settings);
 }
 
 PeerConnectionControls* WebrtcConnectionToClient::peer_connection_controls() {
@@ -167,7 +172,8 @@ void WebrtcConnectionToClient::OnSessionStateChange(Session::State state) {
 
     case Session::AUTHENTICATED: {
       base::WeakPtr<WebrtcConnectionToClient> self = weak_factory_.GetWeakPtr();
-      event_handler_->OnConnectionAuthenticated();
+      event_handler_->OnConnectionAuthenticated(
+          session_->authenticator().GetSessionPolicies());
 
       // OnConnectionAuthenticated() call above may result in the connection
       // being torn down.
@@ -181,10 +187,11 @@ void WebrtcConnectionToClient::OnSessionStateChange(Session::State state) {
     case Session::FAILED:
       control_dispatcher_.reset();
       event_dispatcher_.reset();
-      transport_->Close(state == Session::CLOSED ? OK : session_->error());
+      transport_->Close(state == Session::CLOSED ? ErrorCode::OK
+                                                 : session_->error());
       transport_.reset();
       event_handler_->OnConnectionClosed(
-          state == Session::CLOSED ? OK : session_->error());
+          state == Session::CLOSED ? ErrorCode::OK : session_->error());
       break;
   }
 }
@@ -285,13 +292,17 @@ void WebrtcConnectionToClient::OnChannelClosed(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (channel_dispatcher == &video_stats_dispatcher_) {
-    LOG(WARNING) << "video_stats channel was closed.";
+    HOST_LOG << "video_stats channel was closed.";
     return;
   }
 
-  LOG(ERROR) << "Channel " << channel_dispatcher->channel_name()
-             << " was closed unexpectedly.";
-  Disconnect(INCOMPATIBLE_PROTOCOL);
+  // The control channel is closed when the user clicks disconnect on the client
+  // or the client page is closed normally. If the client goes offline then the
+  // channel will remain open. Hence it should be safe to report ErrorCode::OK
+  // here.
+  HOST_LOG << "Channel " << channel_dispatcher->channel_name()
+           << " was closed.";
+  Disconnect(ErrorCode::OK);
 }
 
 bool WebrtcConnectionToClient::allChannelsConnected() {

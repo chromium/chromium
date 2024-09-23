@@ -32,6 +32,7 @@ class BLINK_PLATFORM_EXPORT WebEncryptedMediaClientImpl
     : public WebEncryptedMediaClient {
  public:
   WebEncryptedMediaClientImpl(
+      media::KeySystems* key_systems,
       media::CdmFactory* cdm_factory,
       media::MediaPermission* media_permission,
       std::unique_ptr<KeySystemConfigSelector::WebLocalFrameDelegate>
@@ -78,8 +79,8 @@ class BLINK_PLATFORM_EXPORT WebEncryptedMediaClientImpl
   // Reporter singletons.
   std::unordered_map<std::string, std::unique_ptr<Reporter>> reporters_;
 
-  const raw_ptr<media::CdmFactory> cdm_factory_;
   const raw_ptr<media::KeySystems> key_systems_;
+  const raw_ptr<media::CdmFactory> cdm_factory_;
   KeySystemConfigSelector key_system_config_selector_;
 
   // Pending requests while waiting for KeySystems initialization.

@@ -13,16 +13,15 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 PushNotificationService::PushNotificationService()
     : client_manager_(std::make_unique<PushNotificationClientManager>()) {
-  ios::ChromeBrowserStateManager* manager =
-      GetApplicationContext()->GetChromeBrowserStateManager();
   context_manager_ = [[PushNotificationAccountContextManager alloc]
-      initWithChromeBrowserStateManager:manager];
+      initWithProfileManager:GetApplicationContext()->GetProfileManager()];
 }
 
 PushNotificationService::~PushNotificationService() = default;
@@ -50,7 +49,6 @@ void PushNotificationService::SetPreference(NSString* account_id,
         disablePushNotification:client_id
                      forAccount:base::SysNSStringToUTF8(account_id)];
   }
-
   SetPreferences(
       account_id,
       [context_manager_
@@ -75,9 +73,17 @@ void PushNotificationService::UnregisterAccount(
   }
 }
 
+// TODO(crbug.com/343495515): remove after downstream implementation is added.
+std::string PushNotificationService::GetRepresentativeTargetIdForGaiaId(
+    NSString* gaia_id) {
+  return "";
+}
+
 void PushNotificationService::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kFeaturePushNotificationPermissions);
+  registry->RegisterBooleanPref(prefs::kSendTabNotificationsPreviouslyDisabled,
+                                false);
 }
 
 void PushNotificationService::RegisterLocalStatePrefs(
@@ -86,6 +92,7 @@ void PushNotificationService::RegisterLocalStatePrefs(
       prefs::kPushNotificationAuthorizationStatus,
       base::to_underlying(
           push_notification::SettingsAuthorizationStatus::NOTDETERMINED));
+  registry->RegisterDictionaryPref(prefs::kAppLevelPushNotificationPermissions);
 }
 
 void PushNotificationService::SetPreferences(

@@ -13,10 +13,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 
 import java.util.ArrayList;
@@ -83,7 +83,6 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
         mCompositorViewHolderInitializer.initializeCompositorContent(
                 layoutDriver,
                 mActivity.findViewById(org.chromium.chrome.R.id.url_bar),
-                contentContainer,
                 mActivity.findViewById(org.chromium.chrome.R.id.control_container));
 
         for (Callback<LayoutManagerImpl> listener : mListeners) {

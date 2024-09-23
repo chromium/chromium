@@ -8,6 +8,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
@@ -52,7 +53,8 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
                         model.get(TopToolbarOverlayProperties.CONTENT_OFFSET),
                         model.get(TopToolbarOverlayProperties.SHOW_SHADOW),
                         model.get(TopToolbarOverlayProperties.VISIBLE),
-                        model.get(TopToolbarOverlayProperties.ANONYMIZE));
+                        model.get(TopToolbarOverlayProperties.ANONYMIZE),
+                        model.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
 
         DrawingInfo progressInfo = model.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO);
         if (progressInfo == null) return;
@@ -114,7 +116,8 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
                 float contentOffset,
                 boolean showShadow,
                 boolean visible,
-                boolean anonymize);
+                boolean anonymize,
+                OffsetTag offsetTag);
 
         void updateProgressBar(
                 long nativeTopToolbarSceneLayer,

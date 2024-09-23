@@ -153,6 +153,12 @@ found in the LICENSE file.
         menu-options="[[audioStrategyOptions_]]">
     </settings-dropdown-menu>
   </div>
+  <template is="dom-if" if="[[mainNodeAnnotationsFeatureEnabled_]]">
+    <settings-ax-annotations-section
+        id="AxAnnotationsSection"
+        prefs="{{prefs}}">
+    </settings-ax-annotations-section>
+  </template>
 </div>
 <h2>$i18n{chromeVoxVoicesLabel}</h2>
 <div class="sub-item">

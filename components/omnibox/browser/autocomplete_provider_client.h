@@ -47,6 +47,10 @@ namespace history_clusters {
 class HistoryClustersService;
 }
 
+namespace history_embeddings {
+class HistoryEmbeddingsService;
+}
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -57,10 +61,6 @@ class ComponentUpdateService;
 
 namespace signin {
 class IdentityManager;
-}
-
-namespace query_tiles {
-class TileService;
 }
 
 class TemplateURLService;
@@ -78,9 +78,10 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual AutocompleteClassifier* GetAutocompleteClassifier() = 0;
   virtual history::HistoryService* GetHistoryService() = 0;
   virtual history_clusters::HistoryClustersService* GetHistoryClustersService();
+  virtual history_embeddings::HistoryEmbeddingsService*
+  GetHistoryEmbeddingsService();
   virtual scoped_refptr<history::TopSites> GetTopSites() = 0;
-  virtual bookmarks::BookmarkModel* GetLocalOrSyncableBookmarkModel() = 0;
-  virtual bookmarks::BookmarkModel* GetAccountBookmarkModel() = 0;
+  virtual bookmarks::BookmarkModel* GetBookmarkModel() = 0;
   virtual history::URLDatabase* GetInMemoryDatabase() = 0;
   virtual InMemoryURLIndex* GetInMemoryURLIndex() = 0;
   virtual TemplateURLService* GetTemplateURLService() = 0;
@@ -94,7 +95,6 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() = 0;
   virtual std::unique_ptr<KeywordExtensionsDelegate>
   GetKeywordExtensionsDelegate(KeywordProvider* keyword_provider) = 0;
-  virtual query_tiles::TileService* GetQueryTileService() const = 0;
   virtual OmniboxTriggeredFeatureService* GetOmniboxTriggeredFeatureService()
       const = 0;
   virtual AutocompleteScoringModelService* GetAutocompleteScoringModelService()
@@ -122,10 +122,10 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // most commonly-used URLs from that set.
   virtual std::vector<std::u16string> GetBuiltinsToProvideAsUserTypes() = 0;
 
-  // TODO(crbug/925072): clean up component update service if it's confirmed
-  // it's not needed for on device head provider.
-  // The component update service instance which will be used by on device
-  // suggestion provider to observe the model update event.
+  // TODO(crbug.com/40610979): clean up component update service if it's
+  // confirmed it's not needed for on device head provider. The component update
+  // service instance which will be used by on device suggestion provider to
+  // observe the model update event.
   virtual component_updater::ComponentUpdateService*
   GetComponentUpdateService() = 0;
 
@@ -195,6 +195,17 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
 
   // Returns true if the sharing hub command is enabled.
   virtual bool IsSharingHubAvailable() const;
+
+  // Returns true if history embeddings is enabled and user has opted in.
+  virtual bool IsHistoryEmbeddingsEnabled() const;
+
+  // Returns true if history embeddings is enabled and user can opt in/out.
+  virtual bool IsHistoryEmbeddingsSettingVisible() const;
+
+  // Returns whether the app is currently in the background state (Mobile only).
+  virtual bool in_background_state() const;
+
+  virtual void set_in_background_state(bool in_background_state) {}
 
   // Gets a weak pointer to the client. Used when providers need to use the
   // client when the client may no longer be around.

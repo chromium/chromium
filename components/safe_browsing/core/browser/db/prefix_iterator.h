@@ -7,8 +7,8 @@
 
 #include <cstddef>
 #include <iterator>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 
 namespace safe_browsing {
@@ -19,16 +19,16 @@ namespace safe_browsing {
 class PrefixIterator {
  public:
   using iterator_category = std::random_access_iterator_tag;
-  using value_type = base::StringPiece;
+  using value_type = std::string_view;
   using difference_type = std::ptrdiff_t;
-  using pointer = base::StringPiece*;
-  using reference = base::StringPiece&;
+  using pointer = std::string_view*;
+  using reference = std::string_view&;
 
-  PrefixIterator(base::StringPiece prefixes, size_t index, size_t size);
+  PrefixIterator(std::string_view prefixes, size_t index, size_t size);
   PrefixIterator(const PrefixIterator& rhs);
 
-  base::StringPiece operator*() const { return GetPiece(index_); }
-  base::StringPiece operator[](const int& rhs) const {
+  std::string_view operator*() const { return GetPiece(index_); }
+  std::string_view operator[](const int& rhs) const {
     return GetPiece(index_ + rhs);
   }
 
@@ -86,11 +86,11 @@ class PrefixIterator {
   }
 
  private:
-  base::StringPiece GetPiece(size_t index) const {
+  std::string_view GetPiece(size_t index) const {
     return prefixes_.substr(index * size_, size_);
   }
 
-  base::StringPiece prefixes_;
+  std::string_view prefixes_;
   size_t index_;
   size_t size_;
 };

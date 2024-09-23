@@ -53,7 +53,6 @@ TEST(FontPaletteTest, HashingAndComparison) {
 }
 
 TEST(FontPaletteTest, MixPaletteValue) {
-  ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette =
       FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),
                        FontPalette::Create(FontPalette::kDarkPalette), 30, 70,
@@ -62,7 +61,6 @@ TEST(FontPaletteTest, MixPaletteValue) {
 }
 
 TEST(FontPaletteTest, NestedMixPaletteValue) {
-  ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette_start = FontPalette::Create();
   scoped_refptr<FontPalette> palette_end =
       FontPalette::Mix(FontPalette::Create(FontPalette::kLightPalette),
@@ -78,7 +76,6 @@ TEST(FontPaletteTest, NestedMixPaletteValue) {
 }
 
 TEST(FontPaletteTest, InterpolablePalettesNotEqual) {
-  ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette1 =
       FontPalette::Mix(FontPalette::Create(FontPalette::kDarkPalette),
                        FontPalette::Create(FontPalette::kLightPalette), 90, 10,
@@ -90,7 +87,6 @@ TEST(FontPaletteTest, InterpolablePalettesNotEqual) {
 }
 
 TEST(FontPaletteTest, InterpolableAndNonInterpolablePalettesNotEqual) {
-  ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette1 =
       FontPalette::Create(FontPalette::kDarkPalette);
   scoped_refptr<FontPalette> palette2 =
@@ -101,7 +97,6 @@ TEST(FontPaletteTest, InterpolableAndNonInterpolablePalettesNotEqual) {
 }
 
 TEST(FontPaletteTest, NonInterpolablePalettesNotEqual) {
-  ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette1 =
       FontPalette::Create(FontPalette::kDarkPalette);
   palette1->SetMatchFamilyName(AtomicString("family1"));
@@ -112,7 +107,6 @@ TEST(FontPaletteTest, NonInterpolablePalettesNotEqual) {
 }
 
 TEST(FontPaletteTest, PalettesEqual) {
-  ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette1 =
       FontPalette::Mix(FontPalette::Create(FontPalette::kDarkPalette),
                        FontPalette::Create(FontPalette::kLightPalette), 90, 10,
@@ -125,7 +119,6 @@ TEST(FontPaletteTest, PalettesEqual) {
 }
 
 TEST(FontPaletteTest, ComputeEndpointPercentagesFromNormalized) {
-  ScopedFontPaletteAnimationForTest scoped_feature(true);
   FontPalette::NonNormalizedPercentages expected_percentages_1({50, 50});
   FontPalette::NonNormalizedPercentages actual_percentages_1 =
       FontPalette::ComputeEndpointPercentagesFromNormalized(0.5);

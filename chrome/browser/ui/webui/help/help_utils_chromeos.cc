@@ -11,7 +11,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 
 namespace help_utils_chromeos {

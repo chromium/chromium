@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_CRYPTO_RESULT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_CRYPTO_RESULT_H_
 
+#include "base/containers/span.h"
 #include "base/synchronization/atomic_flag.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -38,8 +39,6 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
-
-class ExecutionContext;
 
 // Allows non-Blink webcrypto threads to query for cancellation status.
 class CryptoResultCancel : public ThreadSafeRefCounted<CryptoResultCancel> {
@@ -57,16 +56,16 @@ class PLATFORM_EXPORT CryptoResult : public GarbageCollected<CryptoResult> {
   virtual ~CryptoResult() = default;
 
   virtual void CompleteWithError(WebCryptoErrorType, const WebString&) = 0;
-  virtual void CompleteWithBuffer(const void* bytes, unsigned bytes_size) = 0;
-  virtual void CompleteWithJson(const char* utf8_data, unsigned length) = 0;
+  virtual void CompleteWithBuffer(base::span<const uint8_t> bytes) = 0;
+  virtual void CompleteWithJson(std::string_view utf8_data) = 0;
   virtual void CompleteWithBoolean(bool) = 0;
   virtual void CompleteWithKey(const WebCryptoKey&) = 0;
   virtual void CompleteWithKeyPair(const WebCryptoKey& public_key,
                                    const WebCryptoKey& private_key) = 0;
 
-  virtual ExecutionContext* GetExecutionContext() = 0;
   virtual WebCryptoWarningType GetWarning() = 0;
   virtual void SetWarning(WebCryptoWarningType code) = 0;
+  virtual ExecutionContext* GetExecutionContext() const = 0;
 
   virtual void Trace(Visitor* visitor) const {}
 };

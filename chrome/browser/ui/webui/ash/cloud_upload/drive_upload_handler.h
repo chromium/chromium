@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_notification_manager.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
@@ -30,33 +31,30 @@
 class Profile;
 
 namespace ash::cloud_upload {
+FORWARD_DECLARE_TEST(DriveUploadHandlerTest, OnGetDriveMetadata_WhenNoMetadata);
+FORWARD_DECLARE_TEST(DriveUploadHandlerTest,
+                     OnGetDriveMetadata_WhenInvalidAlternateUrl);
+FORWARD_DECLARE_TEST(DriveUploadHandlerTest,
+                     OnGetDriveMetadata_WhenHostIsUnexpected);
+FORWARD_DECLARE_TEST(DriveUploadHandlerTest,
+                     OnGetDriveMetadata_WhenFileNotAnOfficeFile);
 
 // Manages the "upload to Drive" workflow after user confirmation on the upload
 // dialog. Instantiated by the static `Upload` method. Starts with moving the
 // file to the cloud. Gets upload status by observing move and Drive events.
 // Calls the UploadCallback with the uploaded file's hosted URL once the upload
 // is completed, which is when `DriveUploadHandler` goes out of scope.
-class DriveUploadHandler : public base::RefCounted<DriveUploadHandler>,
-                           ::file_manager::io_task::IOTaskController::Observer,
-                           drivefs::DriveFsHost::Observer,
-                           drive::DriveIntegrationService::Observer {
+class DriveUploadHandler
+    : public ::file_manager::io_task::IOTaskController::Observer,
+      drivefs::DriveFsHost::Observer,
+      drive::DriveIntegrationService::Observer {
  public:
   using UploadCallback =
       base::OnceCallback<void(OfficeTaskResult, std::optional<GURL>, int64_t)>;
 
-  // Starts the upload workflow for the file specified at construct time.
-  static void Upload(Profile* profile,
+  DriveUploadHandler(Profile* profile,
                      const storage::FileSystemURL& source_url,
                      UploadCallback callback,
-                     base::SafeRef<CloudOpenMetrics> cloud_open_metrics);
-
-  DriveUploadHandler(const DriveUploadHandler&) = delete;
-  DriveUploadHandler& operator=(const DriveUploadHandler&) = delete;
-
- private:
-  friend base::RefCounted<DriveUploadHandler>;
-  DriveUploadHandler(Profile* profile,
-                     const storage::FileSystemURL source_url,
                      base::SafeRef<CloudOpenMetrics> cloud_open_metrics);
   ~DriveUploadHandler() override;
 
@@ -67,8 +65,21 @@ class DriveUploadHandler : public base::RefCounted<DriveUploadHandler>,
   //   `CopyOrMoveIOTask` is not used because the source file should only be
   //   deleted at the end of the sync operation.
   // Initiated by the `Upload` static method.
-  void Run(UploadCallback callback);
+  void Run();
 
+  DriveUploadHandler(const DriveUploadHandler&) = delete;
+  DriveUploadHandler& operator=(const DriveUploadHandler&) = delete;
+
+  FRIEND_TEST_ALL_PREFIXES(DriveUploadHandlerTest,
+                           OnGetDriveMetadata_WhenNoMetadata);
+  FRIEND_TEST_ALL_PREFIXES(DriveUploadHandlerTest,
+                           OnGetDriveMetadata_WhenInvalidAlternateUrl);
+  FRIEND_TEST_ALL_PREFIXES(DriveUploadHandlerTest,
+                           OnGetDriveMetadata_WhenHostIsUnexpected);
+  FRIEND_TEST_ALL_PREFIXES(DriveUploadHandlerTest,
+                           OnGetDriveMetadata_WhenFileNotAnOfficeFile);
+
+ private:
   // Updates the progress notification for the upload workflow (copy + syncing).
   void UpdateProgressNotification();
 
@@ -107,7 +118,7 @@ class DriveUploadHandler : public base::RefCounted<DriveUploadHandler>,
 
   // Find the base::File::Error error returned by the IO Task and convert it to
   // an appropriate error notification.
-  void ShowIOTaskError(const file_manager::io_task::ProgressStatus& status);
+  void ShowIOTaskError(const ::file_manager::io_task::ProgressStatus& status);
 
   // DriveFsHost::Observer implementation.
   void OnUnmounted() override;

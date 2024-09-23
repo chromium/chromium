@@ -9,6 +9,10 @@ ConcatMenuModel::ConcatMenuModel(ui::MenuModel* m1, ui::MenuModel* m2)
 
 ConcatMenuModel::~ConcatMenuModel() = default;
 
+base::WeakPtr<ui::MenuModel> ConcatMenuModel::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 size_t ConcatMenuModel::GetItemCount() const {
   return m1_->GetItemCount() + m2_->GetItemCount();
 }

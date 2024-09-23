@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/lazy_image_helper.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/core/style/cursor_data.h"
@@ -55,7 +56,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -134,10 +134,12 @@ StyleImage* StyleImageLoader::Load(
   if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
     StyleImage* style_image =
         ResolveImageSet(*image_set_value, image_request_behavior, cross_origin);
-    return image_set_value->CacheImage(style_image, device_scale_factor_);
+    return image_set_value->CacheImage(
+        style_image, device_scale_factor_,
+        style_image ? style_image->IsOriginClean() : true);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -223,7 +225,7 @@ bool ElementStyleResources::IsPending(const CSSValue& value) const {
     return img_set_value->IsCachePending(device_scale_factor_);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -250,7 +252,7 @@ StyleImage* ElementStyleResources::CachedStyleImage(
     return img_set_value->CachedImage(device_scale_factor_);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -298,7 +300,7 @@ static void LoadResourcesForFilter(
       continue;
     }
     if (SVGResource* resource = reference_operation->Resource()) {
-      resource->Load(document);
+      resource->Load(document, kCrossOriginAttributeNotSet);
     }
   }
 }
@@ -316,7 +318,7 @@ void ElementStyleResources::LoadPendingSVGResources(
         LoadResourcesForFilter(builder.MutableFilterOperations(), document);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }
@@ -329,9 +331,6 @@ static CSSValue* PendingCssValue(StyleImage* style_image) {
 }
 
 StyleImage* ElementStyleResources::LoadMaskSource(CSSValue& pending_value) {
-  if (!RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
-    return nullptr;
-  }
   auto* image_value = DynamicTo<CSSImageValue>(pending_value);
   if (!image_value) {
     return nullptr;
@@ -447,15 +446,11 @@ void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
         }
         break;
       }
-      case CSSPropertyID::kMaskImage:
-      case CSSPropertyID::kWebkitMaskImage: {
+      case CSSPropertyID::kMaskImage: {
         for (FillLayer* mask_layer = &builder.AccessMaskLayers(); mask_layer;
              mask_layer = mask_layer->Next()) {
           if (auto* pending_value = PendingCssValue(mask_layer->GetImage())) {
-            StyleImage* image = nullptr;
-            if (property == CSSPropertyID::kMaskImage) {
-              image = LoadMaskSource(*pending_value);
-            }
+            StyleImage* image = LoadMaskSource(*pending_value);
             if (!image) {
               image = loader.Load(*pending_value,
                                   FetchParameters::ImageRequestBehavior::kNone,
@@ -476,7 +471,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
         }
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }

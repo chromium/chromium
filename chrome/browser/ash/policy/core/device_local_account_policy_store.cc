@@ -11,6 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/value_validation/onc_user_policy_value_validator.h"
+#include "chromeos/ash/components/dbus/session_manager/policy_descriptor.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/external_data_fetcher.h"
@@ -45,8 +46,10 @@ void DeviceLocalAccountPolicyStore::Load() {
   // Cancel all pending requests.
   weak_factory_.InvalidateWeakPtrs();
 
-  session_manager_client_->RetrieveDeviceLocalAccountPolicy(
-      account_id_,
+  login_manager::PolicyDescriptor descriptor = ash::MakeChromePolicyDescriptor(
+      login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT, account_id_);
+  session_manager_client_->RetrievePolicy(
+      descriptor,
       base::BindOnce(&DeviceLocalAccountPolicyStore::ValidateLoadedPolicyBlob,
                      weak_factory_.GetWeakPtr(),
                      true /*validate_in_background*/));
@@ -78,9 +81,10 @@ void DeviceLocalAccountPolicyStore::LoadImmediately() {
   weak_factory_.InvalidateWeakPtrs();
 
   std::string policy_blob;
+  login_manager::PolicyDescriptor descriptor = ash::MakeChromePolicyDescriptor(
+      login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT, account_id_);
   RetrievePolicyResponseType response =
-      session_manager_client_->BlockingRetrieveDeviceLocalAccountPolicy(
-          account_id_, &policy_blob);
+      session_manager_client_->BlockingRetrievePolicy(descriptor, &policy_blob);
   ValidateLoadedPolicyBlob(false /*validate_in_background*/, response,
                            policy_blob);
 }
@@ -197,13 +201,12 @@ void DeviceLocalAccountPolicyStore::CheckKeyAndValidate(
   if (validate_in_background) {
     device_settings_service_->GetOwnershipStatusAsync(base::BindOnce(
         &DeviceLocalAccountPolicyStore::Validate, weak_factory_.GetWeakPtr(),
-        valid_timestamp_required, std::move(policy), std::move(callback),
-        validate_in_background));
+        valid_timestamp_required, std::move(policy), std::move(callback)));
   } else {
     ash::DeviceSettingsService::OwnershipStatus ownership_status =
         device_settings_service_->GetOwnershipStatus();
     Validate(valid_timestamp_required, std::move(policy), std::move(callback),
-             validate_in_background, ownership_status);
+             ownership_status);
   }
 }
 
@@ -211,7 +214,6 @@ void DeviceLocalAccountPolicyStore::Validate(
     bool valid_timestamp_required,
     std::unique_ptr<em::PolicyFetchResponse> policy_response,
     ValidateCompletionCallback callback,
-    bool validate_in_background,
     ash::DeviceSettingsService::OwnershipStatus ownership_status) {
   DCHECK_NE(ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown,
             ownership_status);
@@ -257,16 +259,10 @@ void DeviceLocalAccountPolicyStore::Validate(
   validator->ValidatePayload();
   validator->ValidateSignature(key->as_string());
 
-  if (validate_in_background) {
-    UserCloudPolicyValidator::StartValidation(
-        std::move(validator),
-        base::BindOnce(std::move(callback), key->as_string()));
-  } else {
-    validator->RunValidation();
-    std::move(callback).Run(
-        /*signature_validation_public_key=*/key->as_string(),
-        /*validator=*/validator.get());
-  }
+  validator->RunValidation();
+  std::move(callback).Run(
+      /*signature_validation_public_key=*/key->as_string(),
+      /*validator=*/validator.get());
 }
 
 }  // namespace policy

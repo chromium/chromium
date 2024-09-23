@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+static_library("wifi_direct") {
+  sources = [
+    "wifi_direct_connection.cc",
+    "wifi_direct_connection.h",
+    "wifi_direct_manager.cc",
+    "wifi_direct_manager.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/wifi_p2p",
+    "//chromeos/ash/services/wifi_direct/public/mojom",
+  ]
+
+  deps = [ "//components/device_event_log" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "wifi_direct_manager_unittest.cc" ]
+
+  deps = [
+    ":wifi_direct",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/patchpanel",
+    "//chromeos/ash/components/dbus/shill:test_support",
+    "//testing/gtest",
+  ]
+}

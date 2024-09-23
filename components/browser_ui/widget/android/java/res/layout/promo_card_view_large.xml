@@ -61,7 +61,7 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:ellipsize="end"
           android:singleLine="true"
-          style="@style/FilledButton.Flat" />
+          style="@style/FilledButton" />
       <org.chromium.ui.widget.ButtonCompat
           android:id="@+id/promo_secondary_button"
           style="@style/TextButton"

@@ -5,7 +5,7 @@
 import type {ElementObject} from '../prod/file_manager/shared_types.js';
 import {ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
@@ -21,8 +21,8 @@ import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
  */
 async function tabUntilFileSelected(appId: string) {
   // Check: the file-list should have nothing selected.
-  const selectedRows = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, ['#file-list li[selected]']);
+  const selectedRows =
+      await remoteCall.queryElements(appId, ['#file-list li[selected]']);
   chrome.test.assertEq(0, selectedRows.length);
 
   // Press the tab until file-list gets focus and select some file.
@@ -32,8 +32,8 @@ async function tabUntilFileSelected(appId: string) {
     chrome.test.assertEq(result, 'tabKeyDispatched', 'Tab key dispatch failed');
 
     // Check if there is a file selected, and return if so.
-    const selectedRows = await remoteCall.callRemoteTestUtil(
-        'deepQueryAllElements', appId, ['#file-list li[selected]']);
+    const selectedRows =
+        await remoteCall.queryElements(appId, ['#file-list li[selected]']);
     if (selectedRows.length > 0) {
       return;
     }
@@ -46,13 +46,13 @@ async function tabUntilFileSelected(appId: string) {
  * Tests that file list column header have ARIA attributes.
  */
 export async function fileListAriaAttributes() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Fetch column header.
   const columnHeadersQuery = ['#detail-table .table-header [aria-describedby]'];
-  const columnHeaders = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, [columnHeadersQuery, ['display']]);
+  const columnHeaders =
+      await remoteCall.queryElements(appId, columnHeadersQuery, ['display']);
 
   chrome.test.assertTrue(columnHeaders.length > 0);
   for (const header of columnHeaders) {
@@ -69,15 +69,15 @@ export async function fileListAriaAttributes() {
  * nothing is selected.
  */
 export async function fileListFocusFirstItem() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Send Tab keys to make file selected.
   await tabUntilFileSelected(appId);
 
   // Check: The first file only is selected in the file entry rows.
-  const fileRows: ElementObject[] = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, ['#file-list li']);
+  const fileRows: ElementObject[] =
+      await remoteCall.queryElements(appId, ['#file-list li']);
   chrome.test.assertEq(5, fileRows.length);
   const selectedRows = fileRows.filter(item => 'selected' in item.attributes);
   chrome.test.assertEq(1, selectedRows.length);
@@ -89,12 +89,12 @@ export async function fileListFocusFirstItem() {
  * Tab to focus the files list it selects the item that was last focused.
  */
 export async function fileListSelectLastFocusedItem() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Check: the file-list should have nothing selected.
-  let selectedRows = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, ['#file-list li[selected]']);
+  let selectedRows =
+      await remoteCall.queryElements(appId, ['#file-list li[selected]']);
   chrome.test.assertEq(0, selectedRows.length);
 
   // Move to item 2.
@@ -121,8 +121,8 @@ export async function fileListSelectLastFocusedItem() {
       'Ctrl+Space failed');
 
   // Check that items 2 and 3 are selected.
-  selectedRows = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, ['#file-list li[selected]']);
+  selectedRows =
+      await remoteCall.queryElements(appId, ['#file-list li[selected]']);
   chrome.test.assertEq(2, selectedRows.length);
 
   // Cancel the selection.
@@ -135,12 +135,12 @@ export async function fileListSelectLastFocusedItem() {
   await tabUntilFileSelected(appId);
 
   // Check: The 3rd item only is selected.
-  const fileRows: ElementObject[] = await remoteCall.callRemoteTestUtil(
-      'deepQueryAllElements', appId, ['#file-list li']);
+  const fileRows: ElementObject[] =
+      await remoteCall.queryElements(appId, ['#file-list li']);
   chrome.test.assertEq(5, fileRows.length);
   selectedRows = fileRows.filter(item => 'selected' in item.attributes);
   chrome.test.assertEq(1, selectedRows.length);
-  chrome.test.assertEq(2, fileRows.indexOf(selectedRows[0]));
+  chrome.test.assertEq(2, fileRows.indexOf(selectedRows[0]!));
 }
 
 /**
@@ -148,15 +148,16 @@ export async function fileListSelectLastFocusedItem() {
  * Tab to focus the files list it selects the item that was last focused.
  */
 export async function fileListSortWithKeyboard() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Send shift-Tab key to tab into sort button.
   const result = await sendTestMessage({name: 'dispatchTabKey', shift: true});
   chrome.test.assertEq(result, 'tabKeyDispatched', 'Tab key dispatch failed');
   // Check: sort button has focus.
-  let focusedElement =
-      await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
+  let focusedElement = await remoteCall.callRemoteTestUtil<ElementObject>(
+      'getActiveElement', appId, []);
+  chrome.test.assertTrue(!!focusedElement);
   // Check: button is showing down arrow.
   chrome.test.assertTrue(
       focusedElement['attributes']['iron-icon'] === 'files16:arrow_down_small');
@@ -202,8 +203,8 @@ export async function fileListSortWithKeyboard() {
 async function countAndCheckLatestA11yMessage(
     appId: string, expectedCount: number,
     expectedMessage?: null|string): Promise<string> {
-  const a11yMessages =
-      await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
+  const a11yMessages = await remoteCall.callRemoteTestUtil<string[]>(
+      'getA11yAnnounces', appId, []);
   if (expectedMessage === null || expectedMessage === undefined) {
     return '';
   }
@@ -214,7 +215,7 @@ async function countAndCheckLatestA11yMessage(
       `Wrong number of a11y messages: latest message: ${
           latestMessage} \nAll messages:\n ${a11yMessages.join('\n-')}`);
   chrome.test.assertEq(expectedMessage, latestMessage);
-  return latestMessage;
+  return latestMessage!;
 }
 
 /**
@@ -225,7 +226,7 @@ async function countAndCheckLatestA11yMessage(
  * @param isGridView if the test is testing the grid view.
  */
 export async function fileListKeyboardSelectionA11yImpl(isGridView?: boolean) {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   let a11yMsgCount = 0;
@@ -302,7 +303,7 @@ export async function fileListKeyboardSelectionA11y() {
  * @param isGridView if the test is testing the grid view.
  */
 export async function fileListMouseSelectionA11yImpl(isGridView?: boolean) {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   let a11yMsgCount = 0;
@@ -365,7 +366,7 @@ export async function fileListMouseSelectionA11y() {
  * mode.
  */
 export async function fileListDeleteMultipleFiles() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Select first 2 items.
@@ -421,7 +422,7 @@ export async function fileListDeleteMultipleFiles() {
  * list item in selection mode. crbug.com/1094260
  */
 export async function fileListRenameSelectedItem() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Select 2 items.
@@ -472,8 +473,8 @@ export async function fileListRenameSelectedItem() {
  * having selected any file previously.
  */
 export async function fileListRenameFromSelectAll() {
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Select all the files.
   const ctrlA = ['#file-list', 'a', true, false, false];

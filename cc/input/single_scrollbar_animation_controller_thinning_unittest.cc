@@ -63,7 +63,7 @@ class SingleScrollbarAnimationControllerThinningTest
 
   void SetUp() override {
     root_layer()->SetBounds(gfx::Size(100, 100));
-    auto* scroll_layer = AddLayer<LayerImpl>();
+    auto* scroll_layer = AddLayerInActiveTree<LayerImpl>();
     scroll_layer->SetBounds(gfx::Size(200, 200));
     scroll_layer->SetElementId(
         LayerIdToElementIdForTesting(scroll_layer->id()));
@@ -72,7 +72,7 @@ class SingleScrollbarAnimationControllerThinningTest
     const int kTrackLength = 100;
     const bool kIsLeftSideVerticalScrollbar = false;
 
-    scrollbar_layer_ = AddLayer<SolidColorScrollbarLayerImpl>(
+    scrollbar_layer_ = AddLayerInActiveTree<SolidColorScrollbarLayerImpl>(
         ScrollbarOrientation::kVertical, kThumbThickness, kTrackStart,
         kIsLeftSideVerticalScrollbar);
 
@@ -86,6 +86,7 @@ class SingleScrollbarAnimationControllerThinningTest
     scrollbar_layer_->SetOffsetToTransformParent(gfx::Vector2dF(90, 0));
     CreateEffectNode(scrollbar_layer_).has_potential_opacity_animation = true;
 
+    host_impl()->active_tree()->UpdateAllScrollbarGeometriesForTesting();
     UpdateActiveTreeDrawProperties();
 
     scrollbar_controller_ = SingleScrollbarAnimationControllerThinning::Create(
@@ -479,7 +480,8 @@ TEST_F(SingleScrollbarAnimationControllerThinningFluentTest,
        MouseOverHiddenBar) {
   // Scrollbars opacity value is 1.f on these tests start up. Set it 0 to
   // simulate a hidden scrollbar
-  scrollbar_layer_->SetOverlayScrollbarLayerOpacityAnimated(0.f);
+  scrollbar_layer_->SetOverlayScrollbarLayerOpacityAnimated(
+      0.f, /*fade_out_animation=*/false);
   EXPECT_FLOAT_EQ(0.f, scrollbar_layer_->Opacity());
 
   // Move mouse on top of scrollbar.
@@ -621,7 +623,7 @@ TEST_P(SingleScrollbarAnimationControllerThinningTest,
       scrollbar_controller_->device_viewport_last_pointer_location());
   EXPECT_FALSE(scrollbar_controller_->mouse_is_near_scrollbar_thumb());
   EXPECT_FALSE(scrollbar_controller_->mouse_is_over_scrollbar_thumb());
-  EXPECT_TRUE(scrollbar_controller_->mouse_is_near_scrollbar_track());
+  EXPECT_TRUE(scrollbar_controller_->mouse_is_near_scrollbar());
   scrollbar_controller_->DidMouseDown();
   EXPECT_FALSE(scrollbar_controller_->captured());
 
@@ -631,7 +633,7 @@ TEST_P(SingleScrollbarAnimationControllerThinningTest,
   scrollbar_controller_->DidScrollUpdate();
   EXPECT_TRUE(scrollbar_controller_->mouse_is_near_scrollbar_thumb());
   EXPECT_TRUE(scrollbar_controller_->mouse_is_over_scrollbar_thumb());
-  EXPECT_TRUE(scrollbar_controller_->mouse_is_near_scrollbar_track());
+  EXPECT_TRUE(scrollbar_controller_->mouse_is_near_scrollbar());
 
   // Clicking now should capture the thumb.
   scrollbar_controller_->DidMouseDown();

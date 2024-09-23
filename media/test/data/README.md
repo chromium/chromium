@@ -50,9 +50,6 @@ have the mvhd version 0 32-bit duration field set to all 1's.
 
 VP8 video stream from bear-1280x720.mp4 in ivf container.
 
-#### negative-audio-timestamps.avi
-A truncated audio/video file with audio packet timestamps of -1. We need to ensure that these packets aren't dropped.
-
 #### noise-xhe-aac.mp4
 #### noise-xhe-aac-mono.mp4
 Fragmented mp4 of noise encoded with xHE-AAC, from xHE-AAC samples in [Android
@@ -558,6 +555,49 @@ bear-320x180-10bit-frame-0.h264: SPS+PPS+Single IDR
 bear-320x180-10bit-frame-1.h264: B
 bear-320x180-10bit-frame-2.h264: B
 bear-320x180-10bit-frame-3.h264: P
+
+#### gbrp.png
+
+A screenshot frame captured from `gbrp-av1.mp4` on macOS 14.
+
+#### gbrp-h264.mp4
+
+H.264 encoded video with GBR colorspace matrix and 4:4:4 chroma sampling.
+```
+ffmpeg -f lavfi -i testsrc=s=320x240:r=1:d=1 -pix_fmt gbrp -color_range 2 -colorspace 0 -color_primaries 1 -color_trc 13 -c:v libx264rgb gbrp-h264.mp4
+```
+
+#### gbrp-h265.mp4
+
+H.265 encoded video with GBR colorspace matrix and 4:4:4 chroma sampling.
+```
+ffmpeg -f lavfi -i testsrc=s=320x240:r=1:d=1 -pix_fmt gbrp -color_range 2 -colorspace 0 -color_primaries 1 -color_trc 13 -c:v libx265 gbrp-h265.mp4
+```
+
+#### gbrp-vp9.mp4
+
+VP9 encoded video with GBR colorspace matrix and 4:4:4 chroma sampling.
+```
+ffmpeg -f lavfi -i testsrc=s=320x240:r=1:d=1 -pix_fmt gbrp -color_range 2 -colorspace 0 -color_primaries 1 -color_trc 13 -c:v vp9 gbrp-vp9.mp4
+```
+
+#### gbrp-av1.mp4
+
+AV1 encoded video with GBR colorspace matrix and 4:4:4 chroma sampling.
+```
+ffmpeg -f lavfi -i testsrc=s=320x240:r=1:d=1 -pix_fmt gbrp -color_range 2 -colorspace 0 -color_primaries 1 -color_trc 13 -c:v av1 gbrp-av1.mp4
+```
+
+#### ebu-3213-e-vp9.mp4
+
+VP9 encoded video with `EBU_3213_E` colorspace primary.
+
+NOTE: FFmpeg can't convert a video to `EBU_3213_E` primary directly, the
+workaround is to convert it into `BT470BG` primary first because they should
+be identical, and then tag the primary as `EBU_3213_E` inside the container.
+```
+ffmpeg -f lavfi -i testsrc=s=320x240:r=1:d=1 -pix_fmt yuv420p -vf "colorspace=space=bt470bg:range=tv:primaries=smpte170m:trc=smpte170m:ispace=smpte170m:irange=tv:iprimaries=smpte170m:itrc=smpte170m" -color_range 1 -colorspace 6 -color_primaries 22 -color_trc 6 -c:v vp9 ebu-3213-e-vp9.mp4
+```
 
 ### AAC test data from MPEG-DASH demoplayer (44100 Hz, stereo)
 Duration of each packet is (1024/44100 Hz), approximately 23.22 ms.
@@ -1445,6 +1485,11 @@ HEVC video stream with 10-bit main10 profile, generated with
 ```
 ffmpeg -i bear-1280x720.mp4 -vcodec hevc -pix_fmt yuv420p10le bear-1280x720-hevc-10bit.mp4
 ```
+#### bear-1280x720-hevc-10bit-no-audio.mp4
+HEVC video stream with 10-bit main10 profile, generated with
+```
+ffmpeg -i bear-1280x720-hevc-10bit.mp4 -vcodec copy -an bear-1280x720-hevc-10bit-no-audio.mp4
+```
 
 #### bear-1280x720-hevc-8bit-422.mp4
 HEVC video stream with 8-bit 422 range extension profile, generated with
@@ -1452,10 +1497,16 @@ HEVC video stream with 8-bit 422 range extension profile, generated with
 ffmpeg -i bear-1280x720.mp4 -vcodec hevc -pix_fmt yuv422p bear-1280x720-hevc-8bit-422.mp4
 ```
 
-#### bear-1280x720-hevc-10bit-no-audio.mp4
-HEVC video stream with 10-bit main10 profile, generated with
+#### bear-1280x720-hevc-8bit-422-no-audio.mp4
+HEVC video stream with 8-bit 422 range extension profile, generated with
 ```
-ffmpeg -i bear-1280x720-hevc-10bit.mp4 -vcodec copy -an bear-1280x720-hevc-10bit-no-audio.mp4
+ffmpeg -i bear-1280x720-hevc-8bit-422.mp4 -vcodec copy -an bear-1280x720-hevc-8bit-422-no-audio.mp4
+```
+
+#### bear-1280x720-hevc-8bit-444-no-audio.mp4
+HEVC video stream with 8-bit 444 range extension profile, generated with
+```
+ffmpeg -i bear-1280x720.mp4 -vcodec hevc -an -pix_fmt yuv444p bear-1280x720-hevc-8bit-444-no-audio.mp4
 ```
 
 #### bear-1280x720-hevc-10bit-422.mp4
@@ -1665,6 +1716,13 @@ avc-bitstream-format-1.h264: Non-IDR
   ffmpeg -i %1 -f image2 -vcodec copy -bsf h264_mp4toannexb "%d.h264"
 - manually convert one of created Non-IDR annexb file to avc bitstream.
   (replace annexb start code with length)
+
+### reference-frame-scaling-test.ivf
+Video stream for testing reference frame scaling in AV1 files where resolution changes at various stages in a AV1 video stream.
+- 300 frames. 
+- First 100 frames Resolution: 1920 x 1080.
+- Next 100 frames Resolution: 1280 x 720. 
+- Last 100 frames Resolution: 960 x 540.
 
 ### hls/ directory
 This directory contains all the HLS files needed to run pipeline integration tests against the HLS demuxer. The readme file in this directory contains specific steps to regenerate media and manifest files.

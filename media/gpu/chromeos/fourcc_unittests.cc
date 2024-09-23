@@ -84,10 +84,10 @@ TEST(FourccTest, V4L2PixFmtToVideoPixelFormat) {
 
   EXPECT_EQ(PIXEL_FORMAT_ARGB,
             Fourcc::FromV4L2PixFmt(V4L2_PIX_FMT_ABGR32)->ToVideoPixelFormat());
-  EXPECT_EQ(PIXEL_FORMAT_P016LE,
+  EXPECT_EQ(PIXEL_FORMAT_P010LE,
             Fourcc::FromV4L2PixFmt(ComposeFourcc('P', '0', '1', '0'))
                 ->ToVideoPixelFormat());
-  EXPECT_EQ(PIXEL_FORMAT_P016LE,
+  EXPECT_EQ(PIXEL_FORMAT_P010LE,
             Fourcc::FromV4L2PixFmt(ComposeFourcc('Q', '1', '0', 'C'))
                 ->ToVideoPixelFormat());
 
@@ -162,7 +162,7 @@ TEST(FourccTest, VAFourCCToVideoPixelFormat) {
             Fourcc::FromVAFourCC(VA_FOURCC_YV12)->ToVideoPixelFormat());
   EXPECT_EQ(PIXEL_FORMAT_YUY2,
             Fourcc::FromVAFourCC(VA_FOURCC_YUY2)->ToVideoPixelFormat());
-  EXPECT_EQ(PIXEL_FORMAT_P016LE,
+  EXPECT_EQ(PIXEL_FORMAT_P010LE,
             Fourcc::FromVAFourCC(VA_FOURCC_P010)->ToVideoPixelFormat());
   EXPECT_EQ(PIXEL_FORMAT_ARGB,
             Fourcc::FromVAFourCC(VA_FOURCC_ARGB)->ToVideoPixelFormat());
@@ -180,7 +180,7 @@ TEST(FourccTest, VideoPixelFormatToVAFourCC) {
   EXPECT_EQ(static_cast<uint32_t>(VA_FOURCC_YUY2),
             *Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_YUY2)->ToVAFourCC());
   EXPECT_EQ(static_cast<uint32_t>(VA_FOURCC_P010),
-            *Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_P016LE)->ToVAFourCC());
+            *Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_P010LE)->ToVAFourCC());
   EXPECT_EQ(static_cast<uint32_t>(VA_FOURCC_ARGB),
             *Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_ARGB)->ToVAFourCC());
 }

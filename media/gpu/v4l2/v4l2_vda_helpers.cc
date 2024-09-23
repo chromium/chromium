@@ -14,9 +14,9 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-#include "media/video/h265_parser.h"
+#include "media/parsers/h265_parser.h"
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 namespace media {
@@ -89,9 +89,9 @@ std::unique_ptr<ImageProcessor> CreateImageProcessor(
       base::BindRepeating(&V4L2ImageProcessorBackend::Create,
                           image_processor_device, nb_buffers),
       ImageProcessor::PortConfig(vda_output_format, vda_output_coded_size, {},
-                                 visible_rect, {VideoFrame::STORAGE_DMABUFS}),
+                                 visible_rect, VideoFrame::STORAGE_DMABUFS),
       ImageProcessor::PortConfig(ip_output_format, ip_output_coded_size, {},
-                                 visible_rect, {output_storage_type}),
+                                 visible_rect, output_storage_type),
       image_processor_output_mode, std::move(error_cb),
       std::move(client_task_runner));
   if (!image_processor)
@@ -266,9 +266,9 @@ bool H264InputBufferFragmentSplitter::AdvanceFrameFragment(const uint8_t* data,
         return true;
       }
     }
-    *endpos = (nalu.data + nalu.size) - data;
+    *endpos = (nalu.data + base::checked_cast<size_t>(nalu.size)) - data;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void H264InputBufferFragmentSplitter::Reset() {
@@ -400,9 +400,9 @@ bool HEVCInputBufferFragmentSplitter::AdvanceFrameFragment(const uint8_t* data,
         return true;
       }
     }
-    *endpos = (nalu.data + nalu.size) - data;
+    *endpos = (nalu.data + base::checked_cast<size_t>(nalu.size)) - data;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void HEVCInputBufferFragmentSplitter::Reset() {

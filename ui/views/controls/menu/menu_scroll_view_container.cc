@@ -30,6 +30,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -68,7 +69,8 @@ class MenuScrollButton : public View {
   MenuScrollButton(const MenuScrollButton&) = delete;
   MenuScrollButton& operator=(const MenuScrollButton&) = delete;
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override {
     return gfx::Size(MenuConfig::instance().scroll_arrow_height * 2 - 1,
                      pref_height_);
   }
@@ -188,12 +190,12 @@ class MenuScrollViewContainer::MenuScrollView : public View {
     View* child = GetContents();
     int old_y = child->y();
     int y = -std::max(
-        0, std::min(child->GetPreferredSize().height() - this->height(),
+        0, std::min(child->GetPreferredSize({}).height() - this->height(),
                     dy - child->y()));
     child->SetY(y);
 
     const int min_y = 0;
-    const int max_y = -(child->GetPreferredSize().height() - this->height());
+    const int max_y = -(child->GetPreferredSize({}).height() - this->height());
 
     if (old_y == min_y && old_y != y)
       owner_->DidScrollAwayFromTop();
@@ -214,7 +216,7 @@ class MenuScrollViewContainer::MenuScrollView : public View {
   raw_ptr<MenuScrollViewContainer> owner_;
 };
 
-BEGIN_METADATA(MenuScrollViewContainer, MenuScrollView, View)
+BEGIN_METADATA(MenuScrollViewContainer, MenuScrollView)
 END_METADATA
 
 // MenuScrollViewContainer ----------------------------------------------------
@@ -259,6 +261,15 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
   // code needs to know the final size of the menu.  Calling CreateBorder() is
   // the easiest way to do that.
   CreateBorder();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenuBar);
+  // On macOS, NSMenus are not supposed to have anything wrapped around them. To
+  // allow VoiceOver to recognize this as a menu and to read aloud the total
+  // number of items inside it, we ignore the MenuScrollViewContainer (which
+  // holds the menu itself: the SubmenuView).
+#if BUILDFLAG(IS_MAC)
+  GetViewAccessibility().SetIsIgnored(true);
+#endif
 }
 
 bool MenuScrollViewContainer::HasBubbleBorder() const {
@@ -297,22 +308,19 @@ gfx::Insets MenuScrollViewContainer::GetInsets() const {
 }
 
 void MenuScrollViewContainer::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  // TODO(crbug.com/325137417): To ensure the name is set for content_view, the
+  // role must be assigned before calling GetAccessibleNodeData. Omitting this
+  // role could disrupt functionality, as the AXNodeData::SetName() function
+  // checks for the relevant role.
+  node_data->role = content_view_->GetViewAccessibility().GetCachedRole();
   // Get the name from the submenu view.
   content_view_->GetAccessibleNodeData(node_data);
-
-  // On macOS, NSMenus are not supposed to have anything wrapped around them. To
-  // allow VoiceOver to recognize this as a menu and to read aloud the total
-  // number of items inside it, we ignore the MenuScrollViewContainer (which
-  // holds the menu itself: the SubmenuView).
-#if BUILDFLAG(IS_MAC)
-  node_data->role = ax::mojom::Role::kNone;
-#else
-  node_data->role = ax::mojom::Role::kMenuBar;
-#endif
 }
 
-gfx::Size MenuScrollViewContainer::CalculatePreferredSize() const {
-  gfx::Size prefsize = scroll_view_->GetContents()->GetPreferredSize();
+gfx::Size MenuScrollViewContainer::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
+  gfx::Size prefsize =
+      scroll_view_->GetContents()->GetPreferredSize(available_size);
   const gfx::Insets insets = GetInsets();
   prefsize.Enlarge(insets.width(), insets.height());
   return prefsize;
@@ -358,8 +366,8 @@ void MenuScrollViewContainer::OnBoundsChanged(
   // offset is always reset to 0, so always hide the scroll-up control, and only
   // show the scroll-down control if it's going to be useful.
   scroll_up_button_->SetVisible(false);
-  scroll_down_button_->SetVisible(
-      scroll_view_->GetContents()->GetPreferredSize().height() > height());
+  scroll_down_button_->SetVisible(content_view_->GetPreferredSize({}).height() >
+                                  GetContentsBounds().height());
 
   const bool any_scroll_button_visible =
       scroll_up_button_->GetVisible() || scroll_down_button_->GetVisible();

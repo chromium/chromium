@@ -38,10 +38,6 @@ class Status;
 //   * The key usages have already been verified. In fact in the case of calls
 //     to Encrypt()/Decrypt() the corresponding key usages may not be present
 //     (when wrapping/unwrapping).
-//
-// An AlgorithmImplementation can also assume that crypto::EnsureOpenSSLInit()
-// will be called before any of its methods are invoked (except the
-// constructor).
 class AlgorithmImplementation {
  public:
   virtual ~AlgorithmImplementation();

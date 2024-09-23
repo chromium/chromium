@@ -29,7 +29,7 @@ class DynamicImportTreeClient final : public ModuleTreeClient {
  public:
   DynamicImportTreeClient(const KURL& url,
                           Modulator* modulator,
-                          ScriptPromiseResolver* promise_resolver)
+                          ScriptPromiseResolver<IDLAny>* promise_resolver)
       : url_(url), modulator_(modulator), promise_resolver_(promise_resolver) {}
 
   void Trace(Visitor*) const override;
@@ -40,13 +40,14 @@ class DynamicImportTreeClient final : public ModuleTreeClient {
 
   const KURL url_;
   const Member<Modulator> modulator_;
-  const Member<ScriptPromiseResolver> promise_resolver_;
+  const Member<ScriptPromiseResolver<IDLAny>> promise_resolver_;
 };
 
 // Abstract callback for modules resolution.
 class ModuleResolutionCallback : public ScriptFunction::Callable {
  public:
-  explicit ModuleResolutionCallback(ScriptPromiseResolver* promise_resolver)
+  explicit ModuleResolutionCallback(
+      ScriptPromiseResolver<IDLAny>* promise_resolver)
       : promise_resolver_(promise_resolver) {}
 
   void Trace(Visitor* visitor) const override {
@@ -55,15 +56,16 @@ class ModuleResolutionCallback : public ScriptFunction::Callable {
   }
 
  protected:
-  Member<ScriptPromiseResolver> promise_resolver_;
+  Member<ScriptPromiseResolver<IDLAny>> promise_resolver_;
 };
 
 // Callback for modules with top-level await.
 // Called on successful resolution.
 class ModuleResolutionSuccessCallback final : public ModuleResolutionCallback {
  public:
-  ModuleResolutionSuccessCallback(ScriptPromiseResolver* promise_resolver,
-                                  ModuleScript* module_script)
+  ModuleResolutionSuccessCallback(
+      ScriptPromiseResolver<IDLAny>* promise_resolver,
+      ModuleScript* module_script)
       : ModuleResolutionCallback(promise_resolver),
         module_script_(module_script) {}
 
@@ -89,7 +91,7 @@ class ModuleResolutionSuccessCallback final : public ModuleResolutionCallback {
 class ModuleResolutionFailureCallback final : public ModuleResolutionCallback {
  public:
   explicit ModuleResolutionFailureCallback(
-      ScriptPromiseResolver* promise_resolver)
+      ScriptPromiseResolver<IDLAny>* promise_resolver)
       : ModuleResolutionCallback(promise_resolver) {}
 
  private:
@@ -157,14 +159,13 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
       // <spec step="10">Perform
       // FinishDynamicImport(referencingScriptOrModule, specifier,
       // promiseCapability, promise).</spec>
-      ScriptPromise promise = result.GetPromise(script_state);
       auto* callback_success = MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<ModuleResolutionSuccessCallback>(
                             promise_resolver_, module_script));
       auto* callback_failure = MakeGarbageCollected<ScriptFunction>(
           script_state, MakeGarbageCollected<ModuleResolutionFailureCallback>(
                             promise_resolver_));
-      promise.Then(callback_success, callback_failure);
+      result.GetPromise(script_state).Then(callback_success, callback_failure);
       break;
     }
   }
@@ -187,7 +188,7 @@ void DynamicModuleResolver::Trace(Visitor* visitor) const {
 void DynamicModuleResolver::ResolveDynamically(
     const ModuleRequest& module_request,
     const ReferrerScriptInfo& referrer_info,
-    ScriptPromiseResolver* promise_resolver) {
+    ScriptPromiseResolver<IDLAny>* promise_resolver) {
   DCHECK(modulator_->GetScriptState()->GetIsolate()->InContext())
       << "ResolveDynamically should be called from V8 callback, within a valid "
          "context.";
@@ -221,8 +222,8 @@ void DynamicModuleResolver::ResolveDynamically(
 
   // <spec label="fetch-an-import()-module-script-graph" step="1">Let url be the
   // result of resolving a module specifier given base URL and specifier.</spec>
-  KURL url =
-      modulator_->ResolveModuleSpecifier(module_request.specifier, base_url);
+  KURL url = modulator_->ResolveModuleSpecifier(
+      module_request.specifier, base_url, /*failure_reason=*/nullptr);
 
   ModuleType module_type = modulator_->ModuleTypeFromRequest(module_request);
 
@@ -280,10 +281,12 @@ void DynamicModuleResolver::ResolveDynamically(
   // <spec href="https://wicg.github.io/priority-hints/#script">
   // dynamic imports get kAuto. Only the main script resource is impacted by
   // Priority Hints.
+  //
   ScriptFetchOptions options(
-      referrer_info.Nonce(), IntegrityMetadataSet(), String(),
-      referrer_info.ParserState(), referrer_info.CredentialsMode(),
-      referrer_info.GetReferrerPolicy(), mojom::blink::FetchPriorityHint::kAuto,
+      referrer_info.Nonce(), modulator_->GetIntegrityMetadata(url),
+      modulator_->GetIntegrityMetadataString(url), referrer_info.ParserState(),
+      referrer_info.CredentialsMode(), referrer_info.GetReferrerPolicy(),
+      mojom::blink::FetchPriorityHint::kAuto,
       RenderBlockingBehavior::kNonBlocking);
 
   // <spec label="fetch-an-import()-module-script-graph" step="3">Fetch a single

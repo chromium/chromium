@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit-part>
+  <message name="IDS_FACEGAZE_CONFIRMATION_DIALOG_TITLE" desc="The visible title of a confirmation dialog that is shown when FaceGaze is enabled.">
+    Enable face control?
+  </message>
+  <message name="IDS_FACEGAZE_CONFIRMATION_DIALOG_DESC" desc="The visible description of a confirmation dialog that is shown when FaceGaze is enabled.">
+    Face control gives you cursor control with face pointing and ability to perform actions, such as left clicking with facial gestures like smile
+  </message>
+</grit-part>

@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
+#include "media/mojo/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -25,22 +26,6 @@ const bool kPropCodecsEnabled = true;
 const bool kPropCodecsEnabled = false;
 #endif
 
-bool IsTheoraSupported() {
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  return base::FeatureList::IsEnabled(kTheoraVideoCodec);
-#else
-  return false;
-#endif
-}
-
-bool IsMPEG4Supported() {
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
-  return base::FeatureList::IsEnabled(kCrOSLegacyMediaFormats);
-#else
-  return false;
-#endif
-}
-
 TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
   // Default to common 709.
   const VideoColorSpace kColorSpace = VideoColorSpace::REC709();
@@ -53,8 +38,7 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, kColorSpace}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, kColorSpace}));
-  EXPECT_EQ(
-      IsTheoraSupported(),
+  EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, kColorSpace}));
 
@@ -73,8 +57,7 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
   EXPECT_EQ(kPropCodecsEnabled,
             IsSupportedVideoType(
                 {VideoCodec::kH264, H264PROFILE_BASELINE, 1, kColorSpace}));
-  EXPECT_EQ(
-      IsMPEG4Supported(),
+  EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kMPEG4, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, kColorSpace}));
 
@@ -142,6 +125,7 @@ TEST(SupportedTypesTest, IsSupportedVideoType_VP9Primaries) {
       VideoColorSpace::PrimaryID::SMPTEST428_1,
       VideoColorSpace::PrimaryID::SMPTEST431_2,
       VideoColorSpace::PrimaryID::SMPTEST432_1,
+      VideoColorSpace::PrimaryID::EBU_3213_E,
   };
 
   for (int i = 0; i <= (1 << (8 * sizeof(VideoColorSpace::PrimaryID))); i++) {
@@ -277,23 +261,20 @@ TEST(SupportedTypesTest, IsSupportedAudioTypeWithSpatialRenderingBasics) {
 }
 
 TEST(SupportedTypesTest, XHE_AACSupported) {
-  bool is_supported = false;
+  AudioType aac{AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false};
+  EXPECT_EQ(false, IsSupportedAudioType(aac));
 
-#if BUILDFLAG(IS_ANDROID)
-  is_supported = kPropCodecsEnabled &&
-                 base::android::BuildInfo::GetInstance()->sdk_int() >=
-                     base::android::SDK_VERSION_P;
-#elif BUILDFLAG(USE_PROPRIETARY_CODECS)
-#if BUILDFLAG(IS_MAC)
-  is_supported = true;
-#elif BUILDFLAG(IS_WIN)
-  is_supported = base::win::GetVersion() >= base::win::Version::WIN11_22H2;
-#endif
-#endif
+  UpdateDefaultSupportedAudioTypes({aac});
 
-  EXPECT_EQ(is_supported,
-            IsSupportedAudioType(
-                {AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false}));
+  EXPECT_EQ(
+#if BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER) && \
+    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
+      kPropCodecsEnabled,
+#else
+      false,
+#endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER) && (BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
+      IsSupportedAudioType(aac));
 }
 
 TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
@@ -308,8 +289,7 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, color_space}));
-  EXPECT_EQ(
-      IsTheoraSupported(),
+  EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
 
@@ -326,8 +306,7 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, color_space}));
-  EXPECT_EQ(
-      IsTheoraSupported(),
+  EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
   EXPECT_TRUE(
@@ -340,8 +319,7 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
       {VideoCodec::kVP8, VP8PROFILE_ANY, kUnspecifiedLevel, color_space}));
   EXPECT_TRUE(IsSupportedVideoType(
       {VideoCodec::kVP9, VP9PROFILE_PROFILE0, kUnspecifiedLevel, color_space}));
-  EXPECT_EQ(
-      IsTheoraSupported(),
+  EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, color_space}));
   // HDR10 metadata only works with the PQ transfer.
@@ -361,23 +339,20 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
 
 TEST(SupportedTypesTest, IsBuiltInVideoCodec) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kH264));
+  EXPECT_EQ(base::FeatureList::IsEnabled(kBuiltInH264Decoder),
+            IsBuiltInVideoCodec(VideoCodec::kH264));
 #else
   EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kH264));
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
         // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  EXPECT_EQ(IsTheoraSupported(), IsBuiltInVideoCodec(VideoCodec::kTheora));
-#else
   EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kTheora));
-#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) || BUILDFLAG(ENABLE_LIBVPX)
+#if BUILDFLAG(ENABLE_LIBVPX)
   EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kVP8));
 #else
   EXPECT_FALSE(IsBuiltInVideoCodec(VideoCodec::kVP8));
-#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) || BUILDFLAG(ENABLE_LIBVPX)
+#endif  // BUILDFLAG(ENABLE_LIBVPX)
 
 #if BUILDFLAG(ENABLE_LIBVPX)
   EXPECT_TRUE(IsBuiltInVideoCodec(VideoCodec::kVP9));

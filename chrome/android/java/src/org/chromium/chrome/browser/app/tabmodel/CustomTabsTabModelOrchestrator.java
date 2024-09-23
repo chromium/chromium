@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -34,7 +35,9 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
             TabCreatorManager tabCreatorManager,
             TabModelFilterFactory tabModelFilterFactory,
             TabPersistencePolicy persistencePolicy,
-            AsyncTabParamsManager asyncTabParamsManager) {
+            @ActivityType int activityType,
+            AsyncTabParamsManager asyncTabParamsManager,
+            CipherFactory cipherFactory) {
         // Instantiate TabModelSelectorImpl
         NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.LOCATIONAL;
         mTabModelSelector =
@@ -45,13 +48,19 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
                         nextTabPolicySupplier,
                         asyncTabParamsManager,
                         false,
-                        ActivityType.CUSTOM_TAB,
+                        activityType,
                         false);
 
         // Instantiate TabPersistentStore
         mTabPersistencePolicy = persistencePolicy;
         mTabPersistentStore =
-                new TabPersistentStore(mTabPersistencePolicy, mTabModelSelector, tabCreatorManager);
+                new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_CUSTOM,
+                        mTabPersistencePolicy,
+                        mTabModelSelector,
+                        tabCreatorManager,
+                        TabWindowManagerSingleton.getInstance(),
+                        cipherFactory);
 
         wireSelectorAndStore();
         markTabModelsInitialized();

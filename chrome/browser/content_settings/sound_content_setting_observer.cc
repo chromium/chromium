@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -25,6 +26,8 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #endif
+
+using content_settings::SettingSource;
 
 SoundContentSettingObserver::SoundContentSettingObserver(
     content::WebContents* contents)
@@ -67,8 +70,9 @@ void SoundContentSettingObserver::ReadyToCommitNavigation(
     return;
   }
 
-  if (setting_info.source != content_settings::SETTING_SOURCE_USER)
+  if (setting_info.source != SettingSource::kUser) {
     return;
+  }
 
   if (setting_info.primary_pattern.MatchesAllHosts() &&
       setting_info.secondary_pattern.MatchesAllHosts()) {
@@ -121,7 +125,7 @@ void SoundContentSettingObserver::MuteOrUnmuteIfNecessary() {
   if (mute == web_contents()->IsAudioMuted())
     return;
 
-  TabMutedReason reason = chrome::GetTabAudioMutedReason(web_contents());
+  TabMutedReason reason = GetTabAudioMutedReason(web_contents());
 
   // Do not override the decisions of an extension.
   if (reason == TabMutedReason::EXTENSION)
@@ -139,8 +143,8 @@ void SoundContentSettingObserver::MuteOrUnmuteIfNecessary() {
   if (!mute && reason == TabMutedReason::AUDIO_INDICATOR)
     return;
 
-  chrome::SetTabAudioMuted(web_contents(), mute,
-                           TabMutedReason::CONTENT_SETTING, std::string());
+  SetTabAudioMuted(web_contents(), mute, TabMutedReason::CONTENT_SETTING,
+                   std::string());
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -155,8 +159,8 @@ void SoundContentSettingObserver::CheckSoundBlocked(bool is_audible) {
     // Since this is a page-level event and only primary pages can play audio
     // in prerendering, we get `settings` from the main frame of the primary
     // page.
-    // TODO(https://crbug.com/1103176): For other types of FrameTrees(fenced
-    // frames, portals) than prerendering, we should figure a way of not having
+    // TODO(crbug.com/40139135): For other types of FrameTrees (fenced
+    // frames) than prerendering, we should figure a way of not having
     // to use GetPrimaryMainFrame here. (pass the source frame somehow)
     content_settings::PageSpecificContentSettings* settings =
         content_settings::PageSpecificContentSettings::GetForFrame(
@@ -187,7 +191,7 @@ SoundContentSettingObserver::GetSiteMutedReason() {
   host_content_settings_map_->GetWebsiteSetting(
       url, url, ContentSettingsType::SOUND, &info);
 
-  DCHECK_EQ(content_settings::SETTING_SOURCE_USER, info.source);
+  DCHECK_EQ(SettingSource::kUser, info.source);
 
   if (info.primary_pattern == ContentSettingsPattern::Wildcard() &&
       info.secondary_pattern == ContentSettingsPattern::Wildcard()) {

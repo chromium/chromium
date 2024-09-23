@@ -12,12 +12,12 @@
 #include "base/path_service.h"
 #include "base/types/expected.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_module.h"
 #include "components/reporting/storage/storage_module_interface.h"
-#include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/statusor.h"
 
 namespace reporting {
@@ -63,7 +63,7 @@ void StorageSelector::CreateLocalStorageModule(
 }
 
 // static
-UploadClient::ReportSuccessfulUploadCallback
+ReportSuccessfulUploadCallback
 StorageSelector::GetLocalReportSuccessfulUploadCb(
     scoped_refptr<StorageModuleInterface> storage_module) {
   return base::BindRepeating(
@@ -76,8 +76,7 @@ StorageSelector::GetLocalReportSuccessfulUploadCb(
 }
 
 // static
-UploadClient::EncryptionKeyAttachedCallback
-StorageSelector::GetLocalEncryptionKeyAttachedCb(
+EncryptionKeyAttachedCallback StorageSelector::GetLocalEncryptionKeyAttachedCb(
     scoped_refptr<StorageModuleInterface> storage_module) {
   return base::BindRepeating(
       [](scoped_refptr<StorageModuleInterface> storage_module,

@@ -264,7 +264,7 @@ MediaToolbarButtonView* MediaRouterDialogControllerViews::GetMediaButton() {
   return media_button;
 }
 
-MediaRouterActionController*
+CastToolbarButtonController*
 MediaRouterDialogControllerViews::GetActionController() {
   return media_router_ui_service_->action_controller();
 }

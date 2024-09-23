@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
-<title>Session Storage: DisableThirdPartyStoragePartitioning deprecation trial third-party for wrong origin</title>
+<title>Session Storage: DisableThirdPartyStoragePartitioning2 deprecation trial third-party for wrong origin</title>
 <meta name=help href="https://privacycg.github.io/storage-partitioning/">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="https://{{hosts[][www]}}:{{ports[https][0]}}/wpt_internal/webstorage/resources/storage-deprecation-trial-fourth-party-injection.js"></script>
 <script src="https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/webstorage/resources/storage-deprecation-trial-third-party-injection.js"></script>
 <body>
 <script type="module">

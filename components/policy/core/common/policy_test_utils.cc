@@ -20,6 +20,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/memory/scoped_policy.h"
 #endif
 
 namespace policy {
@@ -58,62 +59,75 @@ bool PolicyServiceIsEmpty(const PolicyService* service) {
 }
 
 #if BUILDFLAG(IS_APPLE)
-CFPropertyListRef ValueToProperty(const base::Value& value) {
-  switch (value.type()) {
-    case base::Value::Type::NONE:
-      return kCFNull;
+base::apple::ScopedCFTypeRef<CFPropertyListRef> ValueToProperty(
+    const base::Value& value) {
+  base::apple::ScopedCFTypeRef<CFPropertyListRef> result;
 
-    case base::Value::Type::BOOLEAN:
-      return value.GetBool() ? kCFBooleanTrue : kCFBooleanFalse;
+  switch (value.type()) {
+    case base::Value::Type::NONE: {
+      result.reset(kCFNull, base::scoped_policy::RETAIN);
+      break;
+    }
+
+    case base::Value::Type::BOOLEAN: {
+      result.reset(value.GetBool() ? kCFBooleanTrue : kCFBooleanFalse,
+                   base::scoped_policy::RETAIN);
+      break;
+    }
 
     case base::Value::Type::INTEGER: {
       const int int_value = value.GetInt();
-      return CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &int_value);
+      result.reset(
+          CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &int_value));
+      break;
     }
 
     case base::Value::Type::DOUBLE: {
       const double double_value = value.GetDouble();
-      return CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType,
-                            &double_value);
+      result.reset(CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType,
+                                  &double_value));
+      break;
     }
 
     case base::Value::Type::STRING: {
       const std::string& string_value = value.GetString();
-      return base::SysUTF8ToCFStringRef(string_value).release();
+      result = base::SysUTF8ToCFStringRef(string_value);
+      break;
     }
 
     case base::Value::Type::DICT: {
       const base::Value::Dict& value_dict = value.GetDict();
-      // |dict| is owned by the caller.
-      CFMutableDictionaryRef dict = CFDictionaryCreateMutable(
-          kCFAllocatorDefault, value_dict.size(),
-          &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-      for (const auto key_value_pair : value_dict) {
-        // CFDictionaryAddValue() retains both |key| and |value|, so make sure
-        // the references are balanced.
-        base::apple::ScopedCFTypeRef<CFStringRef> key(
-            base::SysUTF8ToCFStringRef(key_value_pair.first));
-        base::apple::ScopedCFTypeRef<CFPropertyListRef> cf_value(
-            ValueToProperty(key_value_pair.second));
-        if (cf_value)
-          CFDictionaryAddValue(dict, key.get(), cf_value.get());
+      base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> cf_dict(
+          CFDictionaryCreateMutable(kCFAllocatorDefault, value_dict.size(),
+                                    &kCFTypeDictionaryKeyCallBacks,
+                                    &kCFTypeDictionaryValueCallBacks));
+      for (const auto [dict_key, dict_value] : value_dict) {
+        base::apple::ScopedCFTypeRef<CFStringRef> cf_key =
+            base::SysUTF8ToCFStringRef(dict_key);
+        base::apple::ScopedCFTypeRef<CFPropertyListRef> cf_value =
+            ValueToProperty(dict_value);
+        if (cf_value) {
+          CFDictionaryAddValue(cf_dict.get(), cf_key.get(), cf_value.get());
+        }
       }
-      return dict;
+      result = cf_dict;
+      break;
     }
 
     case base::Value::Type::LIST: {
       const base::Value::List& list = value.GetList();
-      CFMutableArrayRef array =
-          CFArrayCreateMutable(nullptr, list.size(), &kCFTypeArrayCallBacks);
+      base::apple::ScopedCFTypeRef<CFMutableArrayRef> cf_array(
+          CFArrayCreateMutable(kCFAllocatorDefault, list.size(),
+                               &kCFTypeArrayCallBacks));
       for (const base::Value& entry : list) {
-        // CFArrayAppendValue() retains |cf_value|, so make sure the reference
-        // created by ValueToProperty() is released.
-        base::apple::ScopedCFTypeRef<CFPropertyListRef> cf_value(
-            ValueToProperty(entry));
-        if (cf_value)
-          CFArrayAppendValue(array, cf_value.get());
+        base::apple::ScopedCFTypeRef<CFPropertyListRef> cf_value =
+            ValueToProperty(entry);
+        if (cf_value) {
+          CFArrayAppendValue(cf_array.get(), cf_value.get());
+        }
       }
-      return array;
+      result = cf_array;
+      break;
     }
 
     case base::Value::Type::BINARY:
@@ -123,7 +137,7 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
       break;
   }
 
-  return nullptr;
+  return result;
 }
 #endif  // BUILDFLAG(IS_APPLE)
 

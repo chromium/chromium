@@ -1,0 +1,133 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("files") {
+  sources = [
+    "diacritics_checker.cc",
+    "diacritics_checker.h",
+    "drive_search_provider.cc",
+    "drive_search_provider.h",
+    "file_result.cc",
+    "file_result.h",
+    "file_search_provider.cc",
+    "file_search_provider.h",
+    "file_title.cc",
+    "file_title.h",
+    "justifications.cc",
+    "justifications.h",
+    "zero_state_drive_provider.cc",
+    "zero_state_drive_provider.h",
+    "zero_state_file_provider.cc",
+    "zero_state_file_provider.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/strings",
+    "//base",
+    "//base:i18n",
+    "//chrome/browser:primitives",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/ash/app_list/search/local_image_search",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/thumbnail_loader",
+    "//chromeos/ash/components/drivefs/mojom",
+    "//chromeos/ash/components/string_matching",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/ui/base",
+    "//components/drive",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//content/public/browser",
+    "//net",
+    "//skia:skia_core_public_headers",
+    "//storage/browser",
+    "//third_party/re2",
+    "//ui/base",
+    "//ui/chromeos/strings",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/local_image_search",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "diacritics_checker_unittest.cc",
+    "file_result_unittest.cc",
+    "file_search_provider_unittest.cc",
+    "justifications_unittest.cc",
+    "zero_state_drive_provider_unittest.cc",
+    "zero_state_file_provider_unittest.cc",
+  ]
+
+  deps = [
+    ":files",
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/strings",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/ash/app_list/search/ranking:proto",
+    "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/ash/file_suggest",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/holding_space:test_support",
+    "//chrome/browser/ui/ash/thumbnail_loader",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/string_matching",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/ui/base",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//content/test:test_support",
+    "//storage/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/color:color_headers",
+    "//ui/gfx",
+    "//ui/gfx:gfx_skia",
+    "//ui/gfx:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "drive_search_browsertest.cc" ]
+
+  deps = [
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/test:browser_test_support",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/drive:test_support",
+    "//chrome/browser/ui",
+  ]
+}

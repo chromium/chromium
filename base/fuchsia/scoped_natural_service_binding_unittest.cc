@@ -11,7 +11,6 @@
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/fuchsia/test_interface_natural_impl.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,7 +87,7 @@ TEST_F(ScopedNaturalServiceBindingTest, ConnectDebugService) {
   // service directory.
   auto release_stub =
       CreateTestInterfaceClient(test_context_.published_services_natural());
-  EXPECT_EQ(VerifyTestInterface(release_stub), ZX_ERR_PEER_CLOSED);
+  EXPECT_EQ(VerifyTestInterface(release_stub), ZX_ERR_NOT_FOUND);
 }
 
 // Test the last client callback is called every time the number of active

@@ -35,13 +35,16 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -129,7 +132,6 @@ constexpr const int kPasswordRowHorizontalSpacingDp = 6;
 // the password textfield.
 constexpr const int kPasswordTextfieldMarginDp = 2;
 
-constexpr const int kPasswordRowCornerRadiusDp = 4;
 constexpr const int kJellyPasswordRowCornerRadiusDp = 8;
 
 // Delay after which the password gets cleared if nothing has been typed. It is
@@ -149,13 +151,9 @@ class LoginPasswordView::LoginPasswordRow : public views::View {
 
  public:
   explicit LoginPasswordRow() {
-    const bool is_jelly = chromeos::features::IsJellyEnabled();
-    const int corner_radius =
-        is_jelly ? kJellyPasswordRowCornerRadiusDp : kPasswordRowCornerRadiusDp;
+    const int corner_radius = kJellyPasswordRowCornerRadiusDp;
     const ui::ColorId background_color =
-        is_jelly
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
-            : kColorAshControlBackgroundColorInactive;
+        cros_tokens::kCrosSysSystemBaseElevated;
 
     SetBackground(views::CreateThemedRoundedRectBackground(background_color,
                                                            corner_radius));
@@ -166,7 +164,7 @@ class LoginPasswordView::LoginPasswordRow : public views::View {
   LoginPasswordRow& operator=(const LoginPasswordRow&) = delete;
 };
 
-BEGIN_METADATA(LoginPasswordView, LoginPasswordRow, views::View)
+BEGIN_METADATA(LoginPasswordView, LoginPasswordRow)
 END_METADATA
 
 // A textfield that selects all text on focus and allows to switch between
@@ -227,7 +225,8 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
 
   // This is useful when the display password button is not shown. In such a
   // case, the login text field needs to define its size.
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(kPasswordTotalWidthDp, kIconSizeDp);
   }
 
@@ -254,7 +253,7 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
   base::RepeatingClosure on_tab_focus_closure_;
 };
 
-BEGIN_METADATA(LoginPasswordView, LoginTextfield, views::Textfield)
+BEGIN_METADATA(LoginPasswordView, LoginTextfield)
 END_METADATA
 
 class LoginPasswordView::DisplayPasswordButton
@@ -272,13 +271,8 @@ class LoginPasswordView::DisplayPasswordButton
     SetInstallFocusRingOnFocus(true);
     views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 
-    const bool is_jelly = chromeos::features::IsJellyrollEnabled();
-    const ui::ColorId enabled_icon_color_id =
-        is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-                 : kColorAshIconColorPrimary;
-    const ui::ColorId disabled_icon_color_id =
-        is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysDisabled)
-                 : kColorAshIconPrimaryDisabledColor;
+    const ui::ColorId enabled_icon_color_id = cros_tokens::kCrosSysOnSurface;
+    const ui::ColorId disabled_icon_color_id = cros_tokens::kCrosSysDisabled;
 
     const ui::ImageModel invisible_icon = ui::ImageModel::FromVectorIcon(
         kLockScreenPasswordInvisibleIcon, enabled_icon_color_id, kIconSizeDp);
@@ -298,9 +292,7 @@ class LoginPasswordView::DisplayPasswordButton
   ~DisplayPasswordButton() override = default;
 };
 
-BEGIN_METADATA(LoginPasswordView,
-               DisplayPasswordButton,
-               views::ToggleImageButton)
+BEGIN_METADATA(LoginPasswordView, DisplayPasswordButton)
 END_METADATA
 
 LoginPasswordView::TestApi::TestApi(LoginPasswordView* view) : view_(view) {}
@@ -423,12 +415,9 @@ LoginPasswordView::LoginPasswordView()
   submit_button_->SetBackgroundColorId(kColorAshControlBackgroundColorInactive);
   submit_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
-  submit_button_->SetAccessibleName(
+  submit_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   submit_button_->SetEnabled(false);
-
-  // Initialize the capslock icon without a highlight.
-  is_capslock_higlight_ = false;
 
   // Make sure the textfield always starts with focus.
   RequestFocus();
@@ -451,16 +440,6 @@ void LoginPasswordView::Init(
   DCHECK(on_password_text_changed);
   on_submit_ = on_submit;
   on_password_text_changed_ = on_password_text_changed;
-}
-
-void LoginPasswordView::SetEnabledOnEmptyPassword(bool enabled) {
-  enabled_on_empty_password_ = enabled;
-  UpdateUiState();
-}
-
-void LoginPasswordView::OnAccessibleNameChanged(
-    const std::u16string& new_name) {
-  textfield_->SetAccessibleName(new_name);
 }
 
 void LoginPasswordView::SetFocusEnabledForTextfield(bool enable) {
@@ -503,9 +482,9 @@ void LoginPasswordView::Backspace() {
 
   // views::Textfield::OnKeyPressed is private, so we call it via views::View.
   auto* view = static_cast<views::View*>(textfield_);
-  view->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_BACK,
+  view->OnKeyPressed(ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_BACK,
                                   ui::DomCode::BACKSPACE, ui::EF_NONE));
-  view->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_BACK,
+  view->OnKeyPressed(ui::KeyEvent(ui::EventType::kKeyReleased, ui::VKEY_BACK,
                                   ui::DomCode::BACKSPACE, ui::EF_NONE));
 }
 
@@ -531,8 +510,10 @@ bool LoginPasswordView::IsReadOnly() const {
   return textfield_->GetReadOnly();
 }
 
-gfx::Size LoginPasswordView::CalculatePreferredSize() const {
-  gfx::Size size = views::View::CalculatePreferredSize();
+gfx::Size LoginPasswordView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size size = views::View::CalculatePreferredSize(
+      views::SizeBounds(kPasswordTotalWidthDp, {}));
   size.set_width(kPasswordTotalWidthDp);
   return size;
 }
@@ -598,7 +579,7 @@ bool LoginPasswordView::HandleKeyEvent(views::Textfield* sender,
     return false;
   }
 
-  if (key_event.type() != ui::ET_KEY_PRESSED) {
+  if (key_event.type() != ui::EventType::kKeyPressed) {
     return false;
   }
 
@@ -636,8 +617,7 @@ void LoginPasswordView::OnImplicitAnimationsCompleted() {
 }
 
 bool LoginPasswordView::IsPasswordSubmittable() {
-  return !textfield_->GetReadOnly() &&
-         (enabled_on_empty_password_ || !textfield_->GetText().empty());
+  return !textfield_->GetReadOnly() && !textfield_->GetText().empty();
 }
 
 void LoginPasswordView::SubmitPassword() {
@@ -650,23 +630,25 @@ void LoginPasswordView::SubmitPassword() {
 }
 
 void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
-  is_capslock_higlight_ = highlight;
-
-  const bool is_jelly = chromeos::features::IsJellyrollEnabled();
-  const ui::ColorId enabled_icon_color_id =
-      is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-               : kColorAshIconColorPrimary;
-  const ui::ColorId disabled_icon_color_id =
-      is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysDisabled)
-               : kColorAshIconPrimaryDisabledColor;
+  const gfx::VectorIcon& capslock_icon =
+      Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()
+          ? kModifierSplitLockScreenCapsLockIcon
+          : kLockScreenCapsLockIcon;
+  const ui::ColorId enabled_icon_color_id = cros_tokens::kCrosSysOnSurface;
+  const ui::ColorId disabled_icon_color_id = cros_tokens::kCrosSysDisabled;
   capslock_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      kLockScreenCapsLockIcon,
+      capslock_icon,
       highlight ? enabled_icon_color_id : disabled_icon_color_id));
 }
 
 void LoginPasswordView::SetLoginArrowNavigationDelegate(
     LoginArrowNavigationDelegate* delegate) {
   arrow_navigation_delegate_ = delegate;
+}
+
+void LoginPasswordView::SetAccessibleNameOnTextfield(
+    const std::u16string& new_name) {
+  textfield_->GetViewAccessibility().SetName(new_name);
 }
 
 BEGIN_METADATA(LoginPasswordView)

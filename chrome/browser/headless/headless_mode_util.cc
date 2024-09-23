@@ -34,7 +34,7 @@ enum HeadlessMode {
   kNoHeadlessMode,
   kOldHeadlessMode,
   kNewHeadlessMode,
-  kDefaultHeadlessMode = kOldHeadlessMode
+  kDefaultHeadlessMode = kNewHeadlessMode
 };
 
 HeadlessMode GetHeadlessMode() {
@@ -99,7 +99,8 @@ class HeadlessModeHandleImpl : public HeadlessModeHandle {
   // If Ozone/Headless is enabled, Vulkan initialization crashes unless
   // Angle implementation is specified explicitly.
   if (!command_line->HasSwitch(switches::kUseGL) &&
-      !command_line->HasSwitch(switches::kUseANGLE)) {
+      !command_line->HasSwitch(switches::kUseANGLE) &&
+      !command_line->HasSwitch(switches::kEnableGPU)) {
     command_line->AppendSwitchASCII(
         switches::kUseANGLE, gl::kANGLEImplementationSwiftShaderForWebGLName);
   }

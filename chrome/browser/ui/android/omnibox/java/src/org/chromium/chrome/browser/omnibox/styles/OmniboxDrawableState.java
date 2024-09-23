@@ -35,7 +35,7 @@ public class OmniboxDrawableState {
      * @param color the color to apply
      * @return newly created OmniboxDrawableState
      */
-    public static OmniboxDrawableState forColor(@ColorInt int color) {
+    public static @NonNull OmniboxDrawableState forColor(@ColorInt int color) {
         return new OmniboxDrawableState(
                 new ColorDrawable(color),
                 /* useRoundedCorners= */ true,
@@ -51,7 +51,7 @@ public class OmniboxDrawableState {
      * @param allowTint whether the icon should be tinted with text color
      * @return newly created OmniboxDrawableState
      */
-    public static OmniboxDrawableState forSmallIcon(
+    public static @NonNull OmniboxDrawableState forSmallIcon(
             @NonNull Context context, @DrawableRes int resourceId, boolean allowTint) {
         return new OmniboxDrawableState(
                 OmniboxResourceProvider.getDrawable(context, resourceId),
@@ -68,7 +68,7 @@ public class OmniboxDrawableState {
      * @param allowTint whether the icon should be tinted with text color
      * @return newly created OmniboxDrawableState
      */
-    public static OmniboxDrawableState forLargeIcon(
+    public static @NonNull OmniboxDrawableState forLargeIcon(
             @NonNull Context context, @DrawableRes int resourceId, boolean allowTint) {
         return new OmniboxDrawableState(
                 OmniboxResourceProvider.getDrawable(context, resourceId),
@@ -84,7 +84,7 @@ public class OmniboxDrawableState {
      * @param bitmap bitmap with decoded site favicon
      * @return newly created OmniboxDrawableState
      */
-    public static OmniboxDrawableState forFavIcon(
+    public static @NonNull OmniboxDrawableState forFavIcon(
             @NonNull Context context, @NonNull Bitmap bitmap) {
         return new OmniboxDrawableState(
                 new BitmapDrawable(context.getResources(), bitmap),
@@ -100,7 +100,8 @@ public class OmniboxDrawableState {
      * @param bitmap dedicated bitmap
      * @return newly created OmniboxDrawableState
      */
-    public static OmniboxDrawableState forImage(@NonNull Context context, @NonNull Bitmap bitmap) {
+    public static @NonNull OmniboxDrawableState forImage(
+            @NonNull Context context, @NonNull Bitmap bitmap) {
         return new OmniboxDrawableState(
                 new BitmapDrawable(context.getResources(), bitmap),
                 /* useRoundedCorners= */ true,

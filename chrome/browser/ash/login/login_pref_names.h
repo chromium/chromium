@@ -25,6 +25,10 @@ inline constexpr char kOobeMarketingOptInChoice[] = "OobeMarketingOptInChoice";
 // Time when new user has finished onboarding.
 inline constexpr char kOobeOnboardingTime[] = "oobe.onboarding_time";
 
+// A boolean pref to indicate if the gamgee perk is shown in OOBE for the user.
+inline constexpr char kOobePerksDiscoveryGamgeeShown[] =
+    "OobePerksDiscoveryGamgeeShown";
+
 // Indicates the amount of time for which a user authenticated against GAIA
 // without SAML can use offline authentication against a cached password
 // before being forced to go through online authentication against GAIA again.
@@ -103,6 +107,10 @@ inline constexpr char kOobeDrivePinningEnabledDeferred[] =
 inline constexpr char kOobeDisplaySizeFactorDeferred[] =
     "oobe.display_size_factor_defer";
 
+// List of categories selected from the CategoriesSelection screen.
+// This list is used to filter the apps in the new recommended apps screen.
+inline constexpr char kOobeCategoriesSelected[] = "oobe.categories_selected";
+
 // *************** OOBE LOCAL STATE PREFS ***************
 
 // A boolean pref of the OOBE complete flag (first OOBE part before login).
@@ -118,11 +126,6 @@ inline constexpr char kOobeStartTime[] = "oobe.oobe_start_time";
 // OOBE should only be triggered for guest sessions without a device owner. This
 // pref is used to hold that consent across browser restart.
 inline constexpr char kOobeGuestMetricsEnabled[] = "oobe.guest_metrics_enabled";
-
-// Boolean pref whether guest user went through ToS screen before starting the
-// session. If so, kOobeGuestMetricsEnabled will be loaded as the metrics
-// consent for the session.
-inline constexpr char kOobeGuestAcceptedTos[] = "oobe.guest_accepted_tos";
 
 // Indicates that the reven board was updated from CloudReady to Flex.
 // TODO(https://crbug.com/1322394): deprecate this pref once update from
@@ -156,6 +159,33 @@ inline constexpr char kOobeScreenAfterConsumerUpdate[] =
 // page to autofill the username field.
 inline constexpr char kUrlParameterToAutofillSAMLUsername[] =
     "saml.UrlParameterToAutofillSAMLUsername";
+
+// A string pref containing the initial metrics client ID at the start of OOBE
+// to be later compared with the ID at the end of OOBE. This will determine
+// whether the ID was reset during OOBE or the first onboarding experience.
+// This pref is cleared before the first session starts.
+inline constexpr char kOobeMetricsClientIdAtOobeStart[] =
+    "OobeMetricsClientIdAtOobeStart";
+
+// A boolean pref that indicates if `StatsReportingController` ever reported the
+// status of metrics to be enabled during OOBE. This pref is only updated during
+// pre-login OOBE or the first onboarding experience and cleared before the
+// first session starts.
+inline constexpr char kOobeMetricsReportedAsEnabled[] =
+    "OobeMetricsReportedEnabled";
+
+// A boolean pref that indicates if `StatsReportingController` ever reported a
+// switch from enabled to disabled during OOBE. This pref is only updated during
+// pre-login OOBE or the first onboarding experience and cleared before the
+// first session start.
+inline constexpr char kOobeStatsReportingControllerReportedReset[] =
+    "OobeStatsReportingControllerReportedReset";
+
+// Time interval (in minutes) by which the user's authentication flow should
+// automatically be reloaded. Policy name:
+// `DeviceAuthenticationFlowAutoReloadInterval`.
+inline constexpr char kAuthenticationFlowAutoReloadInterval[] =
+    "AuthenticationFlowAutoReloadInterval";
 
 }  // namespace ash::prefs
 

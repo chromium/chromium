@@ -12,12 +12,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
-
 namespace {
 
 const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
-
-}  // namespace
 
 TEST(YearComboboxModelTest, ExpirationYear) {
   autofill::TestAutofillClock test_clock;
@@ -130,4 +127,5 @@ TEST(MonthComboboxModelTest, SetDefaultIndexByMonthOutOfRange) {
       model.GetItemAt(model.GetDefaultIndex().value()));
 }
 
+}  // namespace
 }  // namespace autofill

@@ -14,13 +14,13 @@ found in the LICENSE file.
     </item>
     <item android:top="0dp" android:left="4dp">
         <shape android:shape="rectangle">
-            <solid android:color="@color/modern_grey_200"/>
+            <solid android:color="@color/baseline_neutral_80"/>
             <size android:height="4dp" android:width="4dp"/>
         </shape>
     </item>
     <item android:top="4dp" android:left="0dp">
         <shape android:shape="rectangle">
-            <solid android:color="@color/modern_grey_200"/>
+            <solid android:color="@color/baseline_neutral_80"/>
             <size android:height="4dp" android:width="4dp"/>
         </shape>
     </item>

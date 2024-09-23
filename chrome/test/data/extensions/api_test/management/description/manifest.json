@@ -1,6 +1,6 @@
 {
   "name": "description",
   "version": "0.1",
-  "manifest_version": 2,
-  "description" : "a short description"
+  "manifest_version": 3,
+  "description": "a short description"
 }

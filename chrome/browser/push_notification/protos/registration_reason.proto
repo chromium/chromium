@@ -1,0 +1,21 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/notifications/frontend/data/common/registration_reason.proto
+// Messages not used in Chrome have been omitted. Last copied at cl/522909214.
+
+syntax = "proto2";
+
+package push_notification.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// Chrome Desktop currently only uses COLLABORATOR_API_CALL, all other
+// options have been removed. If a new RegistrationReason is needed, it
+// can be copied here from the google3 version of this proto.
+enum RegistrationReason {
+  // Registration was initialized by the collaborator/app.
+  COLLABORATOR_API_CALL = 7;
+}

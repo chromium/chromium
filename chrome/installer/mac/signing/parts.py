@@ -238,6 +238,9 @@ def sign_chrome(paths, config, sign_framework=False):
     # Display the code signature.
     signing.validate_app(paths, config, parts['app'])
 
+    # Validate the app's architecture geometry, if configured.
+    signing.validate_app_geometry(paths, config, parts['app'])
+
 
 def _sanity_check_version_keys(paths, parts):
     """Verifies that the various version keys in Info.plists match.

@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Apklausa</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">Tikrinamas interneto ryšys</translation>
+<translation id="2359808026110333948">Tęskite</translation>
 <translation id="2388990488038464401">Skambinti šiuo numeriu iš jūsų telefono?</translation>
 <translation id="2435457462613246316">Rodyti slaptažodį</translation>
 <translation id="24452542372838207">Išskleisti pranešimą</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">NAUJ.</translation>
 <translation id="2666092431469916601">Į viršų</translation>
 <translation id="2701330563083355633">Bendrinta iš „<ph name="DEVICE_NAME" />“</translation>
-<translation id="271033894570825754">Naujiena</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Prieš 1 metus}one{Prieš # metus}few{Prieš # metus}many{Prieš # metų}other{Prieš # metų}}</translation>
 <translation id="2878511608894704031">Ištrinti viską</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{po 1 d.}one{po # d.}few{po # d.}many{po # d.}other{po # d.}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">„<ph name="IDS_SHORT_PRODUCT_OS_NAME" />“ sistema</translation>
 <translation id="5583640892426849032">Grįžties klavišas</translation>
 <translation id="5613020302032141669">Rodyklė į kairę</translation>
+<translation id="5633029987065897167">Tuščia</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min.}one{# min.}few{# min.}many{# min.}other{# min.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktyvus šiandien}=1{Aktyvus prieš 1 d.}one{Aktyvus prieš # d.}few{Aktyvus prieš # d.}many{Aktyvus prieš # d.}other{Aktyvus prieš # d.}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 diena ir }one{# diena ir }few{# dienos ir }many{# dienos ir }other{# dienų ir }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF turinys</translation>
 <translation id="6539092367496845964">Įvyko klaida. Vėliau bandykite dar kartą.</translation>
 <translation id="654149438358937226">Blokuoti visus pranešimus</translation>
-<translation id="6612467943526193239">Jei norite išeiti iš kalibravimo, paspauskite „Esc“.</translation>
 <translation id="6620110761915583480">Išsaugoti failą</translation>
 <translation id="6699343763173986273">Kitas medijos takelis</translation>
 <translation id="6808150112686056157">Sustabdyti mediją</translation>

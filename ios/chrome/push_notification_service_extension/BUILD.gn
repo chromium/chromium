@@ -1,0 +1,43 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/chrome_build.gni")
+
+assert(
+    ios_enable_push_notification_service_extension,
+    "ios_enable_push_notification_service_extension must be true to depend on //ios/chrome/push_notification_service_extension")
+
+source_set("push_notification_service_extension") {
+  public_deps = [ ":push_notification_service_extension_header" ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/crash_report",
+    "//ios/chrome/common/ui/util",
+    ios_push_notification_service_extension_target,
+  ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [
+    "Foundation.framework",
+    "UserNotifications.framework",
+  ]
+}
+
+source_set("push_notification_service_extension_header") {
+  sources = [ "push_notification_service_extension.h" ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [
+    "Foundation.framework",
+    "UserNotifications.framework",
+  ]
+}
+
+source_set("push_notification_service_extension_implementation") {
+  sources = [ "push_notification_service_extension.mm" ]
+  deps = [ ":push_notification_service_extension_header" ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [
+    "Foundation.framework",
+    "UserNotifications.framework",
+  ]
+}

@@ -12,6 +12,7 @@ import type {CrInputElement, SettingsSearchEngineEditDialogElement, SettingsSear
 import type {SearchEnginesInfo} from 'chrome://settings/settings.js';
 import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {createSampleOmniboxExtension, createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 // clang-format on
@@ -332,7 +333,7 @@ suite('SearchEnginePageTests', function() {
 
     // Check behavior when switching space triggering off.
     radioButtons.item(1)!.click();
-    flush();
+    await eventToPromise('selected-changed', radioGroup);
     assertEquals('false', radioGroup.selected);
     let result =
         await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
@@ -341,7 +342,7 @@ suite('SearchEnginePageTests', function() {
 
     // Check behavior when switching space triggering on.
     radioButtons.item(0).click();
-    flush();
+    await eventToPromise('selected-changed', radioGroup);
     assertEquals('true', radioGroup.selected);
     result = await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
     assertEquals(
@@ -446,6 +447,17 @@ suite('SearchEnginePageTests', function() {
     assertEquals(
         dialog.$.actionButton.textContent!.trim(),
         loadTimeData.getString('done'));
+
+    // Ensures that field validation is not run for search engines created by
+    // policy (b/348165485).
+    browserProxy.resetResolver('validateSearchEngineInput');
+    dialog.$.keyword.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
+    assertEquals(0, browserProxy.getCallCount('validateSearchEngineInput'));
+
+    assertTrue(dialog.$.cancel.hidden);
+    assertFalse(dialog.$.actionButton.hidden);
+    assertFalse(dialog.$.actionButton.disabled);
   });
 
   test('EditSearchEngineDialog_UrlLocked', async function() {

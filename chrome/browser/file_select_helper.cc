@@ -44,10 +44,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/file_select_helper_contacts_android.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "content/public/browser/site_instance.h"
@@ -59,6 +55,11 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/picture_in_picture/scoped_disallow_picture_in_picture.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 using blink::mojom::FileChooserFileInfo;
 using blink::mojom::FileChooserFileInfoPtr;
 using blink::mojom::FileChooserParams;
@@ -67,11 +68,6 @@ using content::BrowserThread;
 using content::WebContents;
 
 namespace {
-
-#if BUILDFLAG(IS_ANDROID)
-// The MIME type for selecting contacts.
-constexpr char16_t kContactsMimeType[] = u"text/json+contacts";
-#endif
 
 void DeleteFiles(std::vector<base::FilePath> paths) {
   for (auto& file_path : paths)
@@ -91,6 +87,8 @@ bool IsValidProfile(Profile* profile) {
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 
+// Safe Browsing checks are only applied when `params->mode` is
+// `kSave`, which is only for PPAPI requests.
 bool IsDownloadAllowedBySafeBrowsing(
     safe_browsing::DownloadCheckResult result) {
   using Result = safe_browsing::DownloadCheckResult;
@@ -121,12 +119,13 @@ bool IsDownloadAllowedBySafeBrowsing(
     case Result::DEEP_SCANNED_SAFE:
     case Result::PROMPT_FOR_SCANNING:
     case Result::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
-    case Result::BLOCKED_UNSUPPORTED_FILE_TYPE:
     case Result::DEEP_SCANNED_FAILED:
-      NOTREACHED();
+    case Result::BLOCKED_SCAN_FAILED:
+    case Result::IMMEDIATE_DEEP_SCAN:
+      NOTREACHED_IN_MIGRATION();
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -165,8 +164,7 @@ FileSelectHelper::~FileSelectHelper() {
 }
 
 void FileSelectHelper::FileSelected(const ui::SelectedFileInfo& file,
-                                    int index,
-                                    void* params) {
+                                    int /* index */) {
   if (IsValidProfile(profile_)) {
     base::FilePath path = file.file_path;
     if (dialog_mode_ != FileChooserParams::Mode::kUploadFolder)
@@ -199,8 +197,7 @@ void FileSelectHelper::FileSelected(const ui::SelectedFileInfo& file,
 }
 
 void FileSelectHelper::MultiFilesSelected(
-    const std::vector<ui::SelectedFileInfo>& files,
-    void* params) {
+    const std::vector<ui::SelectedFileInfo>& files) {
   if (!files.empty() && IsValidProfile(profile_)) {
     base::FilePath path = files[0].file_path;
     if (dialog_mode_ != FileChooserParams::Mode::kUploadFolder)
@@ -217,7 +214,7 @@ void FileSelectHelper::MultiFilesSelected(
 #endif  // BUILDFLAG(IS_MAC)
 }
 
-void FileSelectHelper::FileSelectionCanceled(void* params) {
+void FileSelectHelper::FileSelectionCanceled() {
   RunFileChooserEnd();
 }
 
@@ -261,7 +258,7 @@ void FileSelectHelper::OnListDone(int error) {
   std::unique_ptr<ActiveDirectoryEnumeration> entry =
       std::move(directory_enumeration_);
   if (error) {
-    FileSelectionCanceled(nullptr);
+    FileSelectionCanceled();
     return;
   }
 
@@ -529,17 +526,6 @@ void FileSelectHelper::RunFileChooser(
   Profile* profile = Profile::FromBrowserContext(
       render_frame_host->GetProcess()->GetBrowserContext());
 
-#if BUILDFLAG(IS_ANDROID)
-  if (params.accept_types.size() == 1 &&
-      params.accept_types[0] == kContactsMimeType) {
-    scoped_refptr<FileSelectHelperContactsAndroid> file_select_helper_android(
-        new FileSelectHelperContactsAndroid(profile));
-    file_select_helper_android->RunFileChooser(
-        render_frame_host, std::move(listener), params.Clone());
-    return;
-  }
-#endif
-
   // FileSelectHelper will keep itself alive until it sends the result
   // message.
   scoped_refptr<FileSelectHelper> file_select_helper(
@@ -581,6 +567,14 @@ void FileSelectHelper::RunFileChooser(
   listener_ = std::move(listener);
   content::WebContentsObserver::Observe(web_contents_);
 
+#if !BUILDFLAG(IS_ANDROID)
+  if (PictureInPictureWindowManager::GetInstance()
+          ->ShouldFileDialogBlockPictureInPicture(web_contents_)) {
+    scoped_disallow_picture_in_picture_ =
+        std::make_unique<ScopedDisallowPictureInPicture>();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&FileSelectHelper::GetFileTypesInThreadPool, this,
@@ -614,6 +608,9 @@ void FileSelectHelper::GetSanitizedFilenameOnUIThread(
   base::FilePath default_file_path = profile_->last_selected_directory().Append(
       GetSanitizedFileName(params->default_file_name));
 #if BUILDFLAG(FULL_SAFE_BROWSING)
+  // Mode `kSave` is only for PPAPI writes, which are checked by Safe Browsing.
+  // See comments on
+  // //third_party/blink/public/mojom/choosers/file_chooser.mojom.
   if (params->mode == FileChooserParams::Mode::kSave) {
     CheckDownloadRequestWithSafeBrowsing(default_file_path, std::move(params));
     return;
@@ -700,19 +697,15 @@ void FileSelectHelper::RunFileChooserOnUIThread(
     default:
       // Prevent warning.
       dialog_type_ = ui::SelectFileDialog::SELECT_OPEN_FILE;
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   gfx::NativeWindow owning_window =
       platform_util::GetTopLevel(web_contents_->GetNativeView());
 
 #if BUILDFLAG(IS_ANDROID)
-  // Android needs the original MIME types and an additional capture value.
-  std::pair<std::vector<std::u16string>, bool> accept_types =
-      std::make_pair(params->accept_types, params->use_media_capture);
-  void* accept_types_ptr = &accept_types;
-#else
-  void* accept_types_ptr = nullptr;
+  select_file_dialog_->SetAcceptTypes(params->accept_types);
+  select_file_dialog_->SetUseMediaCapture(params->use_media_capture);
 #endif
 
   // Never consider the current scope as hung. The hang watching deadline (if
@@ -724,13 +717,15 @@ void FileSelectHelper::RunFileChooserOnUIThread(
   int file_type_index =
       select_file_types_ && !select_file_types_->extensions.empty() ? 1 : 0;
 
+  // TODO(https://crbug.com/340178601): this might go out of scope before
+  // SelectFile() finishes - isn't this a potential UAF? is it ever actually
+  // used?
   const GURL* caller =
       &render_frame_host_->GetMainFrame()->GetLastCommittedURL();
 
-  select_file_dialog_->SelectFile(dialog_type_, params->title,
-                                  default_file_path, select_file_types_.get(),
-                                  file_type_index, base::FilePath::StringType(),
-                                  owning_window, accept_types_ptr, caller);
+  select_file_dialog_->SelectFile(
+      dialog_type_, params->title, default_file_path, select_file_types_.get(),
+      file_type_index, base::FilePath::StringType(), owning_window, caller);
 
   select_file_types_.reset();
 }
@@ -754,6 +749,11 @@ void FileSelectHelper::RunFileChooserEnd() {
     select_file_dialog_->ListenerDestroyed();
     select_file_dialog_.reset();
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  scoped_disallow_picture_in_picture_.reset();
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   Release();
 }
 

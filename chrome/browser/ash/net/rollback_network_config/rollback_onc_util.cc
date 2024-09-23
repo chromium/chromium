@@ -51,7 +51,7 @@ const base::Value::Dict* OncGetEap(const base::Value::Dict& network) {
     DCHECK(eap);
     return eap;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

@@ -5,6 +5,7 @@
 #include "ui/native_theme/native_theme.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ui {
@@ -13,10 +14,7 @@ namespace {
 
 class TestNativeTheme : public NativeTheme {
  public:
-  TestNativeTheme()
-      : NativeTheme(/*should_only_use_dark_colors=*/false,
-                    /*system_theme=*/ui::SystemTheme::kDefault,
-                    /*theme_to_update=*/nullptr) {}
+  TestNativeTheme() : NativeTheme(false) {}
   TestNativeTheme(const TestNativeTheme&) = delete;
   TestNativeTheme& operator=(const TestNativeTheme&) = delete;
   ~TestNativeTheme() override = default;
@@ -38,6 +36,7 @@ class TestNativeTheme : public NativeTheme {
              const gfx::Rect& rect,
              const ExtraParams& extra,
              ColorScheme color_scheme = ColorScheme::kDefault,
+             bool in_forced_colors = false,
              const std::optional<SkColor>& accent_color =
                  std::nullopt) const override {}
   bool SupportsNinePatch(Part part) const override { return false; }
@@ -98,6 +97,20 @@ TEST(NativeThemeTest, TestColorProviderKeyForcedColors) {
 
   theme.set_page_colors(NativeTheme::PageColors::kDusk);
   EXPECT_EQ(theme.GetForcedColorsKey(), ColorProviderKey::ForcedColors::kNone);
+}
+
+TEST(NativeThemeTest, TestCaretBlinkInterval) {
+  TestNativeTheme theme;
+
+  EXPECT_EQ(base::Milliseconds(500), theme.GetCaretBlinkInterval());
+
+  base::TimeDelta new_interval = base::Milliseconds(42);
+  theme.set_caret_blink_interval(new_interval);
+  EXPECT_EQ(new_interval, theme.GetCaretBlinkInterval());
+
+  new_interval = base::Milliseconds(0);
+  theme.set_caret_blink_interval(new_interval);
+  EXPECT_EQ(new_interval, theme.GetCaretBlinkInterval());
 }
 
 }  // namespace ui

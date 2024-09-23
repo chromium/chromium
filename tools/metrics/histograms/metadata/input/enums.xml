@@ -229,6 +229,9 @@ chromium-metrics-reviews@google.com.
   <int value="41" label="CONSENT_SCREEN_IMPRESSION"/>
   <int value="42" label="TEXT_INSERTION_REQUESTED"/>
   <int value="43" label="TEXT_QUEUED_FOR_INSERTION"/>
+  <int value="44" label="REQUEST"/>
+  <int value="45" label="FEATURE_BLOCKED_BY_UNSUPPORTED_CAPABILITY"/>
+  <int value="46" label="FEATURE_BLOCKED_BY_UNKNOWN_CAPABILITY"/>
 </enum>
 
 <enum name="IMEGrammarActions">
@@ -388,6 +391,14 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="FLOATING_MODE"/>
 </enum>
 
+<enum name="InputMethodApiOperation">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="CommitText_MoveCursorAfterText"/>
+  <int value="2" label="CommitText_MoveCursorBeforeText"/>
+  <int value="3" label="SetCompositionText"/>
+  <int value="4" label="DeleteSurroundingText"/>
+</enum>
+
 <enum name="InputMethodCategory">
   <int value="0" label="Unkown"/>
   <int value="1" label="XKB">XKeyboard</int>
@@ -399,18 +410,176 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="7" label="ARC"/>
 </enum>
 
-<enum name="InputMethodDecoderEvent">
-  <int value="3" label="WordCommitted"/>
-  <int value="4" label="SuggestionPickedManually"/>
-  <int value="5" label="TextDeleteBackspace"/>
-  <int value="6" label="WordDeleteBackspace"/>
-  <int value="7" label="RevertAutoCorrect"/>
-  <int value="11" label="WordAutoCorrection"/>
-  <int value="22" label="PredictionPicked"/>
-  <int value="25" label="WordDeleted"/>
-  <int value="26" label="WordEdited"/>
-  <int value="103" label="SpaceCommitted"/>
-  <int value="104" label="SpaceDeleted"/>
+<enum name="InputMethodID2">
+<!--
+    Mappings for input method IDs of first-party Chrome OS IME extension ONLY
+    (i.e. extension with ID "jkghodnilhceideoidjikpgommlajknk" and defined in
+    google_xkb_manifest.json [1]), although InputMethod.ID2 histogram is
+    recorded for open-source Chromium OS and third-party IME extensions as well.
+    [1] https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/chromeos/input_method/google_xkb_manifest.json?q=google_xkb_manifest.json
+  -->
+
+  <int value="-2082426075" label="xkb:cz:qwerty:cze"/>
+  <int value="-2039513744" label="xkb:ru::rus"/>
+  <int value="-2030885731" label="vkd_fa"/>
+  <int value="-2004968165" label="xkb:gb:dvorak:eng"/>
+  <int value="-2004834194" label="xkb:ca:multix:fra"/>
+  <int value="-1992142310" label="xkb:dk::dan"/>
+  <int value="-1989523479" label="pa-t-i0-und"/>
+  <int value="-1955862460" label="xkb:ro::rum"/>
+  <int value="-1953637256" label="xkb:us:workman-intl:eng"/>
+  <int value="-1951732875" label="xkb:be::nld"/>
+  <int value="-1856842164" label="xkb:ge::geo"/>
+  <int value="-1793755122" label="zh-hant-t-i0-cangjie-1987-x-m0-simplified"/>
+  <int value="-1710308694" label="experimental_layout-es_lang-ca"/>
+  <int value="-1710145174" label="xkb:am:phonetic:arm"/>
+  <int value="-1709647399" label="xkb:mn::mon"/>
+  <int value="-1668610460" label="xkb:us:dvp:eng"/>
+  <int value="-1622129313" label="sr-t-i0-und"/>
+  <int value="-1616253108" label="ta-t-i0-und"/>
+  <int value="-1608984043" label="vkd_my_myansan"/>
+  <int value="-1607960640" label="xkb:za:gb:eng"/>
+  <int value="-1595218901" label="experimental_layout-gb(extd)_lang-sv"/>
+  <int value="-1530423498" label="experimental_layout-no_lang-sv"/>
+  <int value="-1520893793" label="vkd_te_phone"/>
+  <int value="-1474243589" label="xkb:it::ita"/>
+  <int value="-1466408010" label="hi-t-i0-und"/>
+  <int value="-1408581676" label="xkb:gb:extd:eng"/>
+  <int value="-1402880636" label="xkb:se::swe"/>
+  <int value="-1386518472" label="vkd_ru_phone_aatseel"/>
+  <int value="-1362493117" label="zh-hant-t-i0-dayi-1988"/>
+  <int value="-1356599825" label="bn-t-i0-und"/>
+  <int value="-1346177950" label="experimental_layout-us_lang-nl"/>
+  <int value="-1346114248" label="vkd_vi_vni"/>
+  <int value="-1338032348" label="xkb:de:neo:ger"/>
+  <int value="-1148371254" label="xkb:us:intl:por"/>
+  <int value="-1093390778" label="vkd_ml_phone"/>
+  <int value="-1084450354" label="gu-t-i0-und"/>
+  <int value="-1083153469" label="experimental_layout-gb(extd)_lang-nl"/>
+  <int value="-1053378431" label="xkb:tr::tur"/>
+  <int value="-1044696009" label="ar-t-i0-und"/>
+  <int value="-1032532014" label="xkb:bg:phonetic:bul"/>
+  <int value="-1024152574" label="xkb:ca:eng:eng"/>
+  <int value="-1021036210" label="xkb:us::ind"/>
+  <int value="-1011117789" label="vkd_ta_itrans"/>
+  <int value="-994915284" label="xkb:ch:fr:fra"/>
+  <int value="-955047705" label="xkb:sk::slo"/>
+  <int value="-942739805" label="xkb:tr:f:tur"/>
+  <int value="-923332388" label="xkb:ua::ukr"/>
+  <int value="-827208209" label="xkb:hu::hun"/>
+  <int value="-769279084" label="xkb:us:intl_pc:eng"/>
+  <int value="-762849066" label="experimental_layout-us_lang-es-ES"/>
+  <int value="-694112343" label="vkd_ne_phone"/>
+  <int value="-666585286" label="xkb:bg::bul"/>
+  <int value="-650362029" label="xkb:ie::ga"/>
+  <int value="-607101895" label="zh-t-i0-pinyin"/>
+  <int value="-554403769" label="xkb:pk::eng"/>
+  <int value="-547772150" label="xkb:ro:std:rum"/>
+  <int value="-545936253" label="zh-hant-t-i0-array-1992"/>
+<!-- TODO(b/274989284): Properly de-duplicate this label. -->
+
+  <int value="-537214862" label="xkb:us:intl_pc:eng (*)"/>
+  <int value="-535089160" label="xkb:us::msa"/>
+  <int value="-512360986" label="xkb:us:altgr-intl:eng"/>
+  <int value="-496003957" label="xkb:de::ger"/>
+  <int value="-489436211" label="xkb:us:intl_pc:nld"/>
+  <int value="-456651526" label="kn-t-i0-und"/>
+  <int value="-428164685" label="ml-t-i0-und"/>
+  <int value="-383640577" label="or-t-i0-und"/>
+  <int value="-366323598" label="fa-t-i0-und"/>
+  <int value="-352571373" label="xkb:rs::srp"/>
+  <int value="-329596558" label="te-t-i0-und"/>
+  <int value="-299716106" label="xkb:si::slv"/>
+  <int value="-292687390" label="xkb:fi::fin"/>
+  <int value="-263932473" label="xkb:ch::ger"/>
+  <int value="-244167850" label="nacl_mozc_jp"/>
+  <int value="-202781885" label="xkb:us:intl:eng"/>
+  <int value="-176093583" label="vkd_bn_phone"/>
+  <int value="-119597715" label="mr-t-i0-und"/>
+  <int value="-70827301" label="xkb:be::fra"/>
+  <int value="-6069851" label="experimental_layout-us_lang-fr-FR"/>
+  <int value="2215666" label="xkb:jp::jpn"/>
+  <int value="23642603" label="yue-hant-t-i0-und"/>
+  <int value="28549849" label="xkb:pt::por"/>
+  <int value="60054916" label="xkb:fo::fao"/>
+  <int value="68243712" label="vkd_si"/>
+  <int value="71141287" label="experimental_layout-se_lang-da"/>
+  <int value="87135772" label="xkb:fr::fra"/>
+  <int value="132261074" label="ti-t-i0-und"/>
+  <int value="191937478" label="experimental_layout-dk_lang-sv"/>
+  <int value="193122406" label="xkb:gr::gre"/>
+  <int value="197116831" label="xkb:es::spa"/>
+  <int value="233227876" label="vkd_km"/>
+  <int value="319509360" label="xkb:be::ger"/>
+  <int value="374544129" label="vkd_th_pattajoti"/>
+  <int value="382485416" label="xkb:lv:apostrophe:lav"/>
+  <int value="469000663" label="xkb:es:cat:cat"/>
+  <int value="472995125" label="vkd_ta_phone"/>
+  <int value="484753645" label="xkb:us:workman:eng"/>
+  <int value="490329655" label="zh-t-i0-wubi-1986"/>
+  <int value="520496071" label="vkd_ckb_en"/>
+  <int value="535728072" label="ne-t-i0-und"/>
+  <int value="537062379" label="vkd_ru_phone_yazhert"/>
+  <int value="575092141" label="experimental_layout-gb(extd)_lang-fr-FR"/>
+  <int value="602570138" label="xkb:mk::mkd"/>
+  <int value="612541362" label="vkd_ar"/>
+  <int value="629711326" label="xkb:il::heb"/>
+  <int value="683071754" label="xkb:hr::scr"/>
+  <int value="774753710" label="vkd_th_tis"/>
+  <int value="787164771" label="vkd_lo"/>
+  <int value="789603234" label="xkb:by::bel"/>
+  <int value="789867412" label="vkd_ethi"/>
+  <int value="790570407" label="a11y_dictation"/>
+  <int value="822222165" label="xkb:ru:phonetic:rus"/>
+  <int value="825747412" label="xkb:latam::spa"/>
+  <int value="828287201" label="vkd_ta_inscript"/>
+  <int value="843503620" label="ur-t-i0-und"/>
+  <int value="871656925" label="xkb:us::fil"/>
+  <int value="1028639984" label="he-t-i0-und"/>
+  <int value="1091977227" label="vkd_my"/>
+  <int value="1190741118" label="am-t-i0-und"/>
+  <int value="1203226200" label="vkd_kn_phone"/>
+  <int value="1213876678" label="experimental_layout-se_lang-no"/>
+  <int value="1275989482" label="xkb:ee::est"/>
+  <int value="1292575742" label="el-t-i0-und"/>
+  <int value="1299470210" label="experimental_layout-gb(extd)_lang-es-ES"/>
+  <int value="1321401457" label="zh-hant-t-i0-pinyin"/>
+  <int value="1346294191" label="vkd_vi_tcvn"/>
+  <int value="1364126694" label="vkd_vi_viqr"/>
+  <int value="1409029247" label="xkb:ca::fra"/>
+  <int value="1411091864" label="vkd_th"/>
+  <int value="1425002521" label="vkd_ckb_ar"/>
+  <int value="1480758122" label="experimental_layout-us_lang-fr-CA"/>
+  <int value="1518946305" label="experimental_layout-us_lang-sv"/>
+  <int value="1530194498" label="vkd_deva_phone"/>
+  <int value="1624346366" label="zh-hant-t-i0-und"/>
+  <int value="1643737979" label="xkb:fr:bepo:fra"/>
+  <int value="1680967466" label="sa-t-i0-und"/>
+  <int value="1683010298" label="xkb:is::ice"/>
+  <int value="1691327142" label="vkd_gu_phone"/>
+  <int value="1718072990" label="xkb:us::eng"/>
+  <int value="1763643144" label="xkb:lt::lit"/>
+  <int value="1783807851" label="nacl_mozc_us"/>
+  <int value="1842376130" label="vkd_ta_typewriter"/>
+  <int value="1847701260" label="xkb:pl::pol"/>
+  <int value="1851658441" label="xkb:hu:qwerty:hun"/>
+  <int value="1882667893" label="xkb:us:colemak:eng"/>
+  <int value="1925299009" label="xkb:br::por"/>
+  <int value="1942788456" label="experimental_layout-no_lang-da"/>
+  <int value="1952551273" label="vkd_ta_tamil99"/>
+  <int value="1960579818" label="experimental_layout-dk_lang-no"/>
+  <int value="1960657481" label="vkd_vi_telex"/>
+  <int value="1970923579" label="xkb:us:intl:nld"/>
+  <int value="1983264676" label="xkb:no::nob"/>
+  <int value="2007323478" label="xkb:cz::cze"/>
+  <int value="2014669693" label="xkb:kz::kaz"/>
+  <int value="2018878326" label="zh-hant-t-i0-cangjie-1987"/>
+  <int value="2031967946" label="xkb:mt::mlt"/>
+  <int value="2060414855" label="braille"/>
+  <int value="2077260254" label="ko-t-i0-und"/>
+  <int value="2091571148" label="xkb:in::eng"/>
+  <int value="2121258069" label="xkb:us:dvorak:eng"/>
+  <int value="2143389015" label="vkd_ne_inscript"/>
 </enum>
 
 <enum name="JapaneseStartupAction">
@@ -433,6 +602,56 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
     turning the flag back on.
   </int>
 </enum>
+
+<!--LINT.IfChange(jp_settings_hist_enums)-->
+
+<enum name="JpSettingsInputMode">
+  <int value="0" label="Romaji"/>
+  <int value="1" label="Kana"/>
+</enum>
+
+<enum name="JpSettingsKeymapStyle">
+  <int value="0" label="Custom"/>
+  <int value="1" label="Atok"/>
+  <int value="2" label="Msime"/>
+  <int value="3" label="Kotoeri"/>
+  <int value="4" label="Mobile"/>
+  <int value="5" label="Chromeos"/>
+</enum>
+
+<enum name="JpSettingsPunctuationStyle">
+  <int value="0" label="KutenTouten"/>
+  <int value="1" label="CommaPeriod"/>
+  <int value="2" label="KutenPeriod"/>
+  <int value="3" label="CommaTouten"/>
+</enum>
+
+<enum name="JpSettingsSelectionShortcut">
+  <int value="0" label="Digits123456789"/>
+  <int value="1" label="Asdfghjkl"/>
+  <int value="2" label="NoShortcut"/>
+</enum>
+
+<enum name="JpSettingsShiftKeyModeStyle">
+  <int value="0" label="Off"/>
+  <int value="1" label="Alphanumeric"/>
+  <int value="2" label="Katakana"/>
+</enum>
+
+<enum name="JpSettingsSpaceInputStyle">
+  <int value="0" label="kInputMode"/>
+  <int value="1" label="kFullWidth"/>
+  <int value="2" label="kHalfWidth"/>
+</enum>
+
+<enum name="JpSettingsSymbolStyle">
+  <int value="0" label="CornerBracketMiddleDot"/>
+  <int value="1" label="SquareBracketSlash"/>
+  <int value="2" label="CornerBracketSlash"/>
+  <int value="3" label="SquareBracketMiddleDot"/>
+</enum>
+
+<!--LINT.ThenChange(/chrome/browser/ash/input_method/japanese/japanese_settings.cc:jp_settings_hist_enums)-->
 
 <enum name="KoreanAction">
   <summary>Actions that are available on the Korean IME.</summary>
@@ -459,16 +678,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="6" label="XHTML-MP document type"/>
 </enum>
 
-<enum name="ModeChangeKeyAction">
-  <summary>Result of pressing the mode change key</summary>
-  <int value="0" label="Show indicator">
-    Showed the indicator for the current input method.
-  </int>
-  <int value="1" label="Switch to next IME">
-    Switched to the next input method.
-  </int>
-</enum>
-
 <enum name="PhysicalKeyboardShortcut">
   <int value="0" label="zoom-in"/>
   <int value="1" label="zoom-out"/>
@@ -476,6 +685,14 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="delete-line"/>
   <int value="4" label="page-up"/>
   <int value="5" label="page-down"/>
+</enum>
+
+<enum name="PointerDigitizerType">
+  <int value="0" label="Unknown digitizer type"/>
+  <int value="1" label="Direct pen digitizer (integrated into display)"/>
+  <int value="2" label="Indirect pen digitizer (not integrated into display)"/>
+  <int value="3" label="Touch digitizer"/>
+  <int value="4" label="Touchpad digitizer"/>
 </enum>
 
 <enum name="PrimaryPointerType">
@@ -563,12 +780,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
 
 <enum name="VirtualKeyboardErrorTypeHashes">
   <int value="30998784" label="Generic Error"/>
-</enum>
-
-<enum name="VirtualKeyboardHandwritingCommitType">
-  <int value="0" label="Commit text only"/>
-  <int value="1" label="Commit text with newline"/>
-  <int value="2" label="Commit text with space"/>
 </enum>
 
 </enums>

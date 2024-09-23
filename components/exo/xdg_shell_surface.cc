@@ -6,6 +6,7 @@
 
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -32,14 +33,19 @@ void XdgShellSurface::OverrideInitParams(views::Widget::InitParams* params) {
   // window property.
   bool auto_maximize_enabled = params->init_properties_container.GetProperty(
       chromeos::kAutoMaximizeXdgShellEnabled);
-  if (auto_maximize_enabled && ShouldAutoMaximize())
-    params->show_state = ui::SHOW_STATE_MAXIMIZED;
+  if (auto_maximize_enabled && ShouldAutoMaximize()) {
+    params->show_state = ui::mojom::WindowShowState::kMaximized;
+  }
+  if (!frame_enabled() && !has_frame_colors()) {
+    params->layer_type = ui::LAYER_NOT_DRAWN;
+  }
 }
 
 bool XdgShellSurface::ShouldAutoMaximize() {
-  if (initial_show_state() != ui::SHOW_STATE_DEFAULT || is_popup_ ||
-      !CanMaximize())
+  if (initial_show_state() != ui::mojom::WindowShowState::kDefault ||
+      is_popup_ || !CanMaximize()) {
     return false;
+  }
 
   DCHECK(!widget_);
   gfx::Size work_area_size = display::Screen::GetScreen()

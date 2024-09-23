@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -66,6 +65,7 @@ class MockDelegate : public Mp4MuxerDelegateInterface {
                base::TimeTicks timestamp),
               (override));
   MOCK_METHOD(bool, Flush, (), (override));
+  MOCK_METHOD(bool, FlushFragment, (), (override));
 };
 
 AudioEncoder::CodecDescription GetAudioCodecDescription(uint8_t data) {
@@ -188,7 +188,7 @@ TEST_P(Mp4MuxerTest, DoesntFlushOnInsufficientlySpacedFrames) {
   Mock::VerifyAndClearExpectations(delegate_ptr_);
 }
 
-TEST_P(Mp4MuxerTest, FlushesOnSufficientlySpacedFrames) {
+TEST_P(Mp4MuxerTest, FlushesOnSufficientlySpacedFramesForVideo) {
   // This test needs video.
   if (!GetParam().has_video) {
     return;
@@ -207,9 +207,36 @@ TEST_P(Mp4MuxerTest, FlushesOnSufficientlySpacedFrames) {
   // Time will advance to the time for the next flush, so expect Flush called
   // on the next keyframe.
   task_environment_.AdvanceClock(base::Seconds(1));
-  EXPECT_CALL(*delegate_ptr_, Flush);
+  EXPECT_CALL(*delegate_ptr_, FlushFragment);
   muxer_->PutFrame(
       Muxer::EncodedFrame{video_params, GetVideoCodecDescription(1), "v2",
+                          std::string(), true},
+      base::Milliseconds(0));
+  Mock::VerifyAndClearExpectations(delegate_ptr_);
+}
+
+TEST_P(Mp4MuxerTest, FlushesOnSufficientlySpacedFramesForAudioOnly) {
+  if (GetParam().has_video) {
+    return;
+  }
+  CreateMuxer(base::Seconds(2));
+  AudioParameters audio_params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                               ChannelLayoutConfig::Stereo(), kAudioSampleRate,
+                               1000);
+  muxer_->PutFrame(
+      Muxer::EncodedFrame{audio_params, GetVideoCodecDescription(1), "a1",
+                          std::string(), true},
+      base::Milliseconds(0));
+  task_environment_.AdvanceClock(base::Seconds(1));
+  muxer_->PutFrame(Muxer::EncodedFrame{audio_params, std::nullopt, "a2",
+                                       std::string(), false},
+                   base::Milliseconds(0));
+  // Time will advance to the time for the next flush, so expect Flush called
+  // on the next keyframe.
+  task_environment_.AdvanceClock(base::Seconds(1));
+  EXPECT_CALL(*delegate_ptr_, FlushFragment);
+  muxer_->PutFrame(
+      Muxer::EncodedFrame{audio_params, GetAudioCodecDescription(1), "a2",
                           std::string(), true},
       base::Milliseconds(0));
   Mock::VerifyAndClearExpectations(delegate_ptr_);

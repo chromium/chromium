@@ -181,7 +181,7 @@ found in the LICENSE file.
       <!-- Action button -->
       <org.chromium.ui.widget.ButtonCompat
           android:id="@+id/fast_checkout_button_accept"
-          style="@style/FilledButton.Flat"
+          style="@style/FilledButton"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginTop="@dimen/fast_checkout_home_sheet_items_spacing"

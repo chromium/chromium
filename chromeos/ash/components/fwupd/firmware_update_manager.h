@@ -14,7 +14,6 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -25,6 +24,7 @@
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_update.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -59,12 +59,66 @@ enum class FwupdStatus {
   kMaxValue = kWaitingForUser,
 };
 
+// Used in histograms. Keep in sync with FirmwareUpdateMethodResult in
+// tools/metrics/histograms/metadata/chromeos/enums.xml.
+enum class MethodResult {
+  kSuccess = 0,
+  // DEPRECATED: kInstallFailed = 1,
+  kFailedToCreateUpdateDirectory = 2,
+  // DEPRECATED: kInvalidDestinationFile = 3,
+  kInvalidFile = 4,
+  kFailedToDownloadToFile = 5,
+  kFailedToCreatePatchFile = 6,
+  kEmptyPatchFile = 7,
+  kInvalidPatchFileUri = 8,
+  kInvalidPatchFile = 9,
+  kInstallFailedTimeout = 10,
+  kFailedToGetFirmwareFilename = 11,
+
+  // All Install Errors returned by fwupd dbus signal
+  // These errors are consistent with
+  // /chromeos/ash/components/dbus/fwupd/fwupd_client.h
+  //
+  // Starting values from 100 to keep the Fwupd Error message contiguous in case
+  // more error names are added.
+  kInternalError = 100,
+  kVersionNewerError = 101,
+  kVersionSameError = 102,
+  kAlreadyPendingError = 103,
+  kAuthFailedError = 104,
+  kReadError = 105,
+  kWriteError = 106,
+  kInvalidFileError = 107,
+  kNotFoundError = 108,
+  kNothingToDoError = 109,
+  kNotSupportedError = 110,
+  kSignatureInvalidError = 111,
+  kAcPowerRequiredError = 112,
+  kPermissionDeniedError = 113,
+  kBrokenSystemError = 114,
+  kBatteryLevelTooLowError = 115,
+  kNeedsUserActionError = 116,
+  kAuthExpiredError = 117,
+  kUnknownError = 118,
+  kMaxValue = kUnknownError,
+};
+
 // FirmwareUpdateManager contains all logic that runs the firmware update SWA.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
     : public FwupdClient::Observer,
       public firmware_update::mojom::UpdateProvider,
-      public firmware_update::mojom::InstallController {
+      public firmware_update::mojom::InstallController,
+      public NetworkStateHandlerObserver {
  public:
+  enum class Source {
+    kUI = 0,
+    kStartup = 1,
+    kUSBChange = 2,
+    kInstallComplete = 3,
+    kNetworkChange = 4,
+    kMaxValue = kNetworkChange,
+  };
+
   FirmwareUpdateManager();
   FirmwareUpdateManager(const FirmwareUpdateManager&) = delete;
   FirmwareUpdateManager& operator=(const FirmwareUpdateManager&) = delete;
@@ -124,19 +178,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   // it calls this function and passes the response.
   void OnUpdateListResponse(const std::string& device_id,
                             FwupdUpdateList* updates) override;
-  void OnInstallResponse(bool success) override;
   // TODO(jimmyxgong): Implement this function to send property updates via
   // mojo.
   void OnPropertiesChangedResponse(FwupdProperties* properties) override;
 
   // Query all updates for all devices.
-  void RequestAllUpdates();
+  void RequestAllUpdates(Source source);
 
-  // TODO(jimmyxgong): This should override the mojo api interface.
-  // Download and prepare the install file for a specific device.
-  void StartInstall(const std::string& device_id,
-                    const base::FilePath& filepath,
-                    base::OnceCallback<void()> callback);
+  // NetworkStateHandlerObserver:
+  void DefaultNetworkChanged(const NetworkState* network) override;
 
   void BindInterface(
       mojo::PendingReceiver<firmware_update::mojom::UpdateProvider>
@@ -144,6 +194,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
 
   void set_should_show_notification_for_test(bool show_notification) {
     should_show_notification_for_test_ = show_notification;
+  }
+
+  void set_refresh_remote_for_testing(bool for_testing) {
+    refresh_remote_for_testing_ = for_testing;
   }
 
  protected:
@@ -161,39 +215,98 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   // Query the fwupd DBus client for updates for a certain device.
   void RequestUpdates(const std::string& device_id);
 
-  // Callback handler after fetching the file descriptor.
-  void OnGetFileDescriptor(const std::string& device_id,
-                           FirmwareInstallOptions options,
-                           base::OnceCallback<void()> callback,
-                           base::ScopedFD file_descriptor);
+  typedef base::OnceCallback<void(MethodResult)> MethodCallback;
+
+  // Download and prepare the install file for a specific device.
+  void StartInstall(const std::string& device_id,
+                    const base::FilePath& filepath,
+                    MethodCallback callback);
+
+  // Callback handler after fetching the file.
+  void OnGetFile(const std::string& device_id,
+                 FirmwareInstallOptions options,
+                 MethodCallback callback,
+                 base::File file);
 
   // Query the fwupd DBus client to install an update for a certain device.
   void InstallUpdate(const std::string& device_id,
                      FirmwareInstallOptions options,
-                     base::OnceCallback<void()> callback,
+                     MethodCallback callback,
                      base::File patch_file);
+
+  // Response from fwupd DBus client InstallUpdate call.
+  void OnInstallResponse(MethodCallback callback, FwupdDbusResult result);
+
+  // InstallComplete will be called exactly once with a result when an install
+  // attempt succeeds or fails for any reason.
+  void InstallComplete(MethodResult result);
 
   void CreateLocalPatchFile(const base::FilePath& cache_path,
                             const std::string& device_id,
                             const base::FilePath& filepath,
-                            base::OnceCallback<void()> callback);
+                            MethodCallback callback,
+                            bool create_dir_success);
 
   void MaybeDownloadFileToInternal(const base::FilePath& patch_path,
                                    const std::string& device_id,
                                    const base::FilePath& filepath,
-                                   base::OnceCallback<void()> callback,
+                                   MethodCallback callback,
                                    bool write_file_success);
 
   void DownloadFileToInternal(const base::FilePath& patch_path,
                               const std::string& device_id,
                               const base::FilePath& filepath,
-                              base::OnceCallback<void()> callback);
+                              MethodCallback callback);
 
   void OnUrlDownloadedToFile(
       const std::string& device_id,
       std::unique_ptr<network::SimpleURLLoader> simple_loader,
-      base::OnceCallback<void()> callback,
+      MethodCallback callback,
       base::FilePath download_path);
+
+  // If refresh remote is allowed and call RefreshRemote otherwise continue with
+  // RequestUpdates()
+  void MaybeRefreshRemote(bool refresh_allowed);
+
+  using DownloadCompleteCallback =
+      base::OnceCallback<void(base::FilePath, base::File)>;
+
+  // Refresh LVFS remote metadata by downloading the required files and calling
+  // UpdateMetadata dbus function.
+  void RefreshRemote();
+
+  void CreateTempFileAndDownload(base::FilePath local_file,
+                                 std::string download_filename,
+                                 DownloadCompleteCallback callback,
+                                 bool create_dir_success);
+
+  void DownloadLvfsMirrorFile(std::string filename,
+                              base::FilePath download_filepath,
+                              DownloadCompleteCallback callback,
+                              bool write_file_success);
+
+  void GetFileDescriptor(
+      std::unique_ptr<network::SimpleURLLoader> simple_loader,
+      DownloadCompleteCallback callback,
+      base::FilePath download_path);
+
+  void OnGetChecksumFile(base::FilePath checksum_filepath,
+                         base::File checksum_file);
+
+  void GetFirmwareFilename(std::string file_contents);
+
+  void TriggerDownloadOfFirmwareFile(std::string firmware_filename);
+
+  // Call UpdateMetadata dbus api using `checksum_file_` and `firmware_file`.
+  void UpdateMetadata(base::FilePath firmware_filepath,
+                      base::File firmware_file);
+
+  void OnUpdateMetadataResponse(FwupdDbusResult result);
+
+  // RefreshRemoteComplete will be called exactly once with a result when an
+  // attempt to refresh lvfs remote succeeds or fails for any reason.
+  // Then continue requesting devices.
+  void RefreshRemoteComplete(MethodResult result);
 
   // Notifies observers registered with ObservePeripheralUpdates() the current
   // list of devices with pending updates (if any).
@@ -201,7 +314,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
 
   bool HasPendingUpdates();
 
-  void SetFakeUrlForTesting(const std::string& fake_url) {
+  void set_fake_url_for_testing(const std::string& fake_url) {
     fake_url_for_testing_ = fake_url;
   }
 
@@ -225,6 +338,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   void RecordUpdateMetrics();
 
   int GetNumCriticalUpdates();
+
+  // Gets /tmp directory path to store downloaded files.
+  const base::FilePath GetCacheDirPath();
 
   // Map of a device ID to `FwupdDevice` which is waiting for the list
   // of updates.
@@ -261,8 +377,23 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   // Whether or not fetching updates in inflight.
   bool is_fetching_updates_ = false;
 
+  // Whether Refresh Remote has been requested and pending successful
+  // completion.
+  bool is_refresh_pending_ = false;
+
+  // Checksum and firmware paths and File objects are held temporarily during
+  // download, and are used for cleanup which must be done on task_runner_.
+  base::FilePath checksum_filepath_;
+  base::FilePath firmware_filepath_;
+  base::File checksum_file_;
+  base::File firmware_file_;
+
   // Used only for testing to force notification to appear.
   bool should_show_notification_for_test_ = false;
+
+  // Used only for testing to trigger RefreshRemote and create file in random
+  // directory to avoid flakiness
+  bool refresh_remote_for_testing_ = false;
 
   // Remotes for tracking observers that will be notified of changes to the
   // list of firmware updates.

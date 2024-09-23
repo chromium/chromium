@@ -70,6 +70,8 @@ source_set("frame") {
     "non_client_frame_view_base.h",
   ]
 
+  public_deps = [ "//ui/base/mojom:ui_base_types" ]
+
   deps = [
     "//base",
     "//chromeos/constants/",
@@ -119,5 +121,25 @@ source_set("test_support") {
     "//ui/gfx",
     "//ui/gfx:test_support",
     "//ui/views",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "non_client_frame_view_interactive_uitest.cc" ]
+
+  deps = [
+    ":frame",
+    ":test_support",
+    "//base/test:test_support",
+    "//chrome/browser/ui/chromeos:test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/ui/base",
+    "//content/test:test_support",
   ]
 }

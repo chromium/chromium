@@ -35,6 +35,11 @@ int responsibility_spawnattrs_setdisclaim(posix_spawnattr_t attrs,
 
 namespace base {
 
+void CheckPThreadStackMinIsSafe() {
+  static_assert(__builtin_constant_p(PTHREAD_STACK_MIN),
+                "Always constant on mac");
+}
+
 namespace {
 
 // DPSXCHECK is a Debug Posix Spawn Check macro. The posix_spawn* family of
@@ -140,6 +145,9 @@ bool GetAppOutputInternal(const std::vector<std::string>& argv,
   }
 
   Process process = LaunchProcess(argv, launch_options);
+  if (!process.IsValid()) {
+    return false;
+  }
 
   // Close the parent process' write descriptor, so that EOF is generated in
   // read loop below.
@@ -238,24 +246,22 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     argv_cstr.push_back(const_cast<char*>(arg.c_str()));
   argv_cstr.push_back(nullptr);
 
-  std::unique_ptr<char*[]> owned_environ;
+  base::HeapArray<char*> owned_environ;
   char* empty_environ = nullptr;
   char** new_environ =
       options.clear_environment ? &empty_environ : *_NSGetEnviron();
   if (!options.environment.empty()) {
     owned_environ =
         internal::AlterEnvironment(new_environ, options.environment);
-    new_environ = owned_environ.get();
+    new_environ = owned_environ.data();
   }
 
   const char* executable_path = !options.real_path.empty()
                                     ? options.real_path.value().c_str()
                                     : argv_cstr[0];
 
-  if (__builtin_available(macOS 11.0, *)) {
-    if (options.enable_cpu_security_mitigations) {
-      DPSXCHECK(posix_spawnattr_set_csm_np(attr.get(), POSIX_SPAWN_NP_CSM_ALL));
-    }
+  if (options.enable_cpu_security_mitigations) {
+    DPSXCHECK(posix_spawnattr_set_csm_np(attr.get(), POSIX_SPAWN_NP_CSM_ALL));
   }
 
   if (!options.current_directory.empty()) {
@@ -277,20 +283,28 @@ Process LaunchProcess(const std::vector<std::string>& argv,
   int rv;
   pid_t pid;
   {
+    const bool has_mach_ports_for_rendezvous =
+        !options.mach_ports_for_rendezvous.empty();
+#if BUILDFLAG(IS_IOS)
+    // This code is only used for the iOS simulator to launch tests. We do not
+    // support setting MachPorts on launch. You should look at
+    // content::ChildProcessLauncherHelper (for iOS) if you are trying to spawn
+    // a non-test and need ports.
+    CHECK(!has_mach_ports_for_rendezvous);
+#else
     // If |options.mach_ports_for_rendezvous| is specified : the server's lock
     // must be held for the duration of posix_spawnp() so that new child's PID
     // can be recorded with the set of ports.
-    const bool has_mach_ports_for_rendezvous =
-        !options.mach_ports_for_rendezvous.empty();
     AutoLockMaybe rendezvous_lock(
         has_mach_ports_for_rendezvous
             ? &MachPortRendezvousServer::GetInstance()->GetLock()
             : nullptr);
-
+#endif
     // Use posix_spawnp as some callers expect to have PATH consulted.
     rv = posix_spawnp(&pid, executable_path, file_actions.get(), attr.get(),
                       &argv_cstr[0], new_environ);
 
+#if !BUILDFLAG(IS_IOS)
     if (has_mach_ports_for_rendezvous) {
       if (rv == 0) {
         MachPortRendezvousServer::GetInstance()->GetLock().AssertAcquired();
@@ -307,6 +321,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
         }
       }
     }
+#endif
   }
 
 #if !BUILDFLAG(IS_MAC)

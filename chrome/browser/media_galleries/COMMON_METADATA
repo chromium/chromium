@@ -1,6 +1,3 @@
-monorail: {
-  component: "Platform>Apps>MediaGalleries"
-}
 buganizer_public: {
-  component_id: 1456653
+  component_id: 1253877  #  ChromeOS Public Tracker > Enterprise & Edu > ChromeApps and Extensions
 }

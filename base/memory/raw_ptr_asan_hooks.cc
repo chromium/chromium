@@ -4,7 +4,7 @@
 
 #include "base/memory/raw_ptr_asan_hooks.h"
 
-#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 #include <cstring>
 
@@ -125,4 +125,4 @@ const RawPtrHooks* GetRawPtrAsanHooks() {
 
 }  // namespace base::internal
 
-#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)

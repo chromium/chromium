@@ -5,7 +5,7 @@
 #include "components/aggregation_service/parsing_utils.h"
 
 #include <optional>
-#include <string>
+#include <string_view>
 
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "url/gurl.h"
@@ -13,7 +13,7 @@
 
 namespace aggregation_service {
 
-std::optional<url::Origin> ParseAggregationCoordinator(const std::string& str) {
+std::optional<url::Origin> ParseAggregationCoordinator(std::string_view str) {
   auto origin = url::Origin::Create(GURL(str));
   if (IsAggregationCoordinatorOriginAllowed(origin)) {
     return origin;

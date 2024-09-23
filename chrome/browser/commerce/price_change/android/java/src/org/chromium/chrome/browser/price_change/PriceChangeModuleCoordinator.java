@@ -64,8 +64,8 @@ public class PriceChangeModuleCoordinator implements ModuleProvider {
     }
 
     @Override
-    public String getModuleTitle(Context context) {
-        return context.getString(R.string.price_change_module_context_menu_item);
+    public String getModuleContextMenuHideText(Context context) {
+        return context.getString(R.string.price_change_module_context_menu_hide);
     }
 
     @Override

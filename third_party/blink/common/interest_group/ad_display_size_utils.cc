@@ -17,7 +17,7 @@ namespace blink {
 namespace {
 
 blink::AdSize::LengthUnit ConvertUnitStringToUnitEnum(
-    const base::StringPiece input) {
+    const std::string_view input) {
   if (input == "px") {
     return blink::AdSize::LengthUnit::kPixels;
   }
@@ -60,7 +60,7 @@ std::string ConvertAdSizeToString(const blink::AdSize& ad_size) {
 }
 
 std::tuple<double, blink::AdSize::LengthUnit> ParseAdSizeString(
-    const base::StringPiece input) {
+    const std::string_view input) {
   std::string value;
   std::string unit;
   // This regular expression is used to parse the ad size specified in

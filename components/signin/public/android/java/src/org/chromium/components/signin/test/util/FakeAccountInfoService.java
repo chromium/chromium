@@ -17,11 +17,11 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.AccountInfoService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 /** This class is an {@link AccountInfoService} stub intended for testing. */
 public class FakeAccountInfoService implements IdentityManager.Observer, AccountInfoService {
@@ -30,7 +30,7 @@ public class FakeAccountInfoService implements IdentityManager.Observer, Account
     protected final ObserverList<Observer> mObservers;
 
     public FakeAccountInfoService() {
-        mObservers = TestThreadUtils.runOnUiThreadBlockingNoException(ObserverList::new);
+        mObservers = ThreadUtils.runOnUiThreadBlocking((Callable<ObserverList>) ObserverList::new);
     }
 
     @Override

@@ -1,0 +1,273 @@
+{
+  "description": "One unique scopes set per reporting origin per navigation - no scopes",
+  "api_config": {
+    "needs_attribution_scopes": true
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        // S1: No scopes set, should register.
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                "debug_reporting": true
+              }
+            }
+          },
+          // S2: Non-empty scopes set, should not register.
+          {
+            "timestamp": "1",
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination2.test",
+                "source_event_id": "234",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "values": [
+                    "1"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          },
+          // S3: Should register as registration contains no scopes.
+          {
+            "timestamp": "2",
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "456",
+                "debug_reporting": true
+              }
+            }
+          },
+          // S4: Should register as reporting origin is different from S1.
+          {
+            "timestamp": "3",
+            "url": "https://reporter2.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "567",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "values": [
+                    "1"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // S5: Should register as it's a part of a different navigation.
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination2.test",
+                "source_event_id": "789",
+                "priority": "-1",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "values": [
+                    "1"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Should be attributed to S5 as S2 was not registered
+      {
+        "timestamp": "2000",
+        "registration_request": {
+          "context_origin": "https://destination2.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      // Event redirect chain, limit only applies to navigation sources so both
+      // sources here should register.
+      {
+        "timestamp": "3000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "event-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter3.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "111",
+                "debug_reporting": true
+              }
+            }
+          },
+          {
+            "timestamp": "3001",
+            "url": "https://reporter3.test/event-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "222",
+                "attribution_scopes": {
+                  "limit": 3,
+                  "values": [
+                    "2"
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "123",
+              "source_site": "https://source.test"
+            },
+            "type": "source-success"
+          }
+        ],
+        "report_time": "0",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "456",
+              "source_site": "https://source.test"
+            },
+            "type": "source-success"
+          }
+        ],
+        "report_time": "2",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "567",
+              "source_site": "https://source.test"
+            },
+            "type": "source-success"
+          }
+        ],
+        "report_time": "3",
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination2.test",
+              "source_event_id": "789",
+              "source_site": "https://source.test"
+            },
+            "type": "source-success"
+          }
+        ],
+        "report_time": "1000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "111",
+              "source_site": "https://source.test"
+            },
+            "type": "source-success"
+          }
+        ],
+        "report_time": "3000",
+        "report_url": "https://reporter3.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "222",
+              "source_site": "https://source.test"
+            },
+            "type": "source-success"
+          }
+        ],
+        "report_time": "3001",
+        "report_url": "https://reporter3.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination2.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172801",
+          "source_event_id": "789",
+          "source_type": "navigation",
+          "trigger_data": "1"
+        },
+        "report_time": "172801000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
+      }
+    ]
+  }
+}

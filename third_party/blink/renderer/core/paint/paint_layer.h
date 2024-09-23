@@ -47,6 +47,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -87,6 +88,20 @@ enum PaintLayerIteration {
       kNormalFlowChildren | kPositiveZOrderChildren,
   kAllChildren =
       kNegativeZOrderChildren | kNormalFlowChildren | kPositiveZOrderChildren
+};
+
+// TODO(crbug.com/332933527): Support anchors-valid.
+// If the size of this enum changes, make sure to update the bits needed for
+// `invisible_for_position_visibility_`.
+enum class LayerPositionVisibility : uint8_t {
+  // anchors-visible, anchor intersection.
+  kAnchorsIntersectionVisible = 1,
+  // anchors-visible, anchor CSS visibility.
+  kAnchorsCssVisible = 1 << 1,
+  // anchors-visible, chained anchor visibility.
+  kChainedAnchorsVisible = 1 << 2,
+  // no-overflow.
+  kNoOverflow = 1 << 3,
 };
 
 // PaintLayer is an old object that handles lots of unrelated operations.
@@ -253,13 +268,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                HitTestResult&,
                const PhysicalRect& hit_test_area);
 
-  // Static position is set in parent's coordinate space.
-  LayoutUnit StaticBlockPosition() const { return static_block_position_; }
-
-  void SetStaticBlockPosition(LayoutUnit position) {
-    static_block_position_ = position;
-  }
-
   using InlineEdge = LogicalStaticPosition::InlineEdge;
   using BlockEdge = LogicalStaticPosition::BlockEdge;
   InlineEdge StaticInlineEdge() const {
@@ -358,11 +366,13 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // Filter reference box is the area over which the filter is computed, in the
   // local coordinate system of the effect node containing the filter.
   gfx::RectF FilterReferenceBox() const;
+  std::optional<gfx::SizeF> FilterViewport() const;
   gfx::RectF BackdropFilterReferenceBox() const;
   gfx::RRectF BackdropFilterBounds() const;
 
   void UpdateFilterReferenceBox();
-  void UpdateFilters(const ComputedStyle* old_style,
+  void UpdateFilters(StyleDifference,
+                     const ComputedStyle* old_style,
                      const ComputedStyle& new_style);
   void UpdateBackdropFilters(const ComputedStyle* old_style,
                              const ComputedStyle& new_style);
@@ -382,8 +392,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   }
 
   PaintLayerClipper Clipper() const;
-
-  bool ScrollsOverflow() const;
 
   bool NeedsVisualOverflowRecalc() const {
     return needs_visual_overflow_recalc_;
@@ -427,11 +435,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // context's painted output, but not the content in any grandparent
   // stacking contexts.
   bool HasNonIsolatedDescendantWithBlendMode() const;
-
-  CompositingReasons GetCompositingReasons() const {
-    // TODO(pdr): Remove this.
-    return CompositingReason::kNone;
-  }
 
   void UpdateDescendantDependentFlags();
 
@@ -509,7 +512,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool IsReplacedNormalFlowStacking() const;
 
 #if DCHECK_IS_ON()
-  bool IsInStackingParentZOrderLists() const;
   bool LayerListMutationAllowed() const { return layer_list_mutation_allowed_; }
 #endif
 
@@ -521,6 +523,17 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   PhysicalRect LocalBoundingBoxIncludingSelfPaintingDescendants() const;
 
+  // If `invisible` is true, the whole subtree will be omitted in painting and
+  // hit-testing. The invisible status of each LayerPositionVisibility value is
+  // tracked separately.
+  void SetInvisibleForPositionVisibility(LayerPositionVisibility visibility,
+                                         bool invisible);
+  // Returns true if any bit of the flag is set.
+  bool InvisibleForPositionVisibility() const {
+    return invisible_for_position_visibility_;
+  }
+  bool HasAncestorInvisibleForPositionVisibility() const;
+
  private:
   void Update3DTransformedDescendantStatus();
 
@@ -531,8 +544,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   void SetPreviousSibling(PaintLayer* prev) { previous_ = prev; }
   void SetFirstChild(PaintLayer* first) { first_ = first; }
   void SetLastChild(PaintLayer* last) { last_ = last; }
-
-  void UpdateHasSelfPaintingLayerDescendant() const;
 
   void AppendSingleFragmentForHitTesting(
       PaintLayerFragments&,
@@ -644,7 +655,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void SetNeedsDescendantDependentFlagsUpdate();
 
-  void UpdateTransformAfterStyleChange(const ComputedStyle* old_style,
+  void UpdateTransformAfterStyleChange(StyleDifference,
+                                       const ComputedStyle* old_style,
                                        const ComputedStyle& new_style);
 
   void MarkCompositingContainerChainForNeedsRepaint();
@@ -727,6 +739,9 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   unsigned static_inline_edge_ : 2;
   unsigned static_block_edge_ : 2;
 
+  unsigned invisible_for_position_visibility_ : 4 = 0;
+  unsigned descendant_needs_check_position_visibility_ : 1 = false;
+
 #if DCHECK_IS_ON()
   mutable unsigned layer_list_mutation_allowed_ : 1;
   bool is_destroyed_ = false;
@@ -758,6 +773,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   friend class PaintLayerPaintOrderIterator;
   friend class PaintLayerPaintOrderReverseIterator;
   friend class PaintLayerStackingNode;
+  friend class CheckAncestorPositionVisibilityScope;
 
   FRIEND_TEST_ALL_PREFIXES(PaintLayerTest,
                            DescendantDependentFlagsStopsAtThrottledFrames);
@@ -773,15 +789,37 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   FRIEND_TEST_ALL_PREFIXES(PaintLayerOverlapTest,
                            NestedFixedUsesExpandedBoundingBoxForOverlap);
   FRIEND_TEST_ALL_PREFIXES(PaintLayerOverlapTest,
-
                            FixedWithExpandedBoundsForChild);
   FRIEND_TEST_ALL_PREFIXES(PaintLayerOverlapTest,
                            FixedWithClippedExpandedBoundsForChild);
   FRIEND_TEST_ALL_PREFIXES(PaintLayerOverlapTest,
                            FixedWithExpandedBoundsForGrandChild);
   FRIEND_TEST_ALL_PREFIXES(PaintLayerOverlapTest,
-
                            FixedWithExpandedBoundsForFixedChild);
+};
+
+// This scope should be instantiated for each stacking context during hit-test
+// and paint. In rare cases, a non-stacking-context PaintLayer containing
+// self-painting descendants sets descendant_needs_check_position_visibility_
+// to true on the containing stacking context to let descendants (not across
+// descendant stacking contexts) check if they need to hide due to the position
+// visibility hidden flag on that layer.
+class CheckAncestorPositionVisibilityScope {
+  STACK_ALLOCATED();
+
+ public:
+  explicit CheckAncestorPositionVisibilityScope(
+      const PaintLayer& stacking_context)
+      : reset_(&should_check_,
+               stacking_context.descendant_needs_check_position_visibility_) {
+    CHECK(stacking_context.GetLayoutObject().IsStackingContext());
+  }
+
+  static bool ShouldCheck() { return should_check_; }
+
+ private:
+  static bool should_check_;
+  base::AutoReset<bool> reset_;
 };
 
 #if DCHECK_IS_ON()

@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -57,7 +58,7 @@
 //
 //   Note: This has changed from `GURL origin` to StorageKey but the name will
 //   be updated in the future to avoid a migration.
-//   TODO(crbug.com/1199077): Update name during a migration to Version 3.
+//   TODO(crbug.com/40177656): Update name during a migration to Version 3.
 //   See StorageKey::Deserialize() for more information on the format.
 //   key: "INITDATA_UNIQUE_ORIGIN:" + <StorageKey>
 //   value: <empty>
@@ -67,7 +68,7 @@
 //
 //   Note: This has changed from `GURL origin` to StorageKey but the name will
 //   be updated in the future to avoid a migration.
-//   TODO(crbug.com/1199077): Update name during a migration to Version 3.
+//   TODO(crbug.com/40177656): Update name during a migration to Version 3.
 //   See StorageKey::Deserialize() for more information on the format.
 //   key: "REG:" + <StorageKey> + '\x00' + <int64_t 'registration_id'>
 //    (ex. "REG:https://example.com/\x00123456")
@@ -94,7 +95,7 @@
 //
 //   Note: This has changed from `GURL origin` to StorageKey but the name will
 //   be updated in the future to avoid a migration.
-//   TODO(crbug.com/1199077): Update name during a migration to Version 3.
+//   TODO(crbug.com/40177656): Update name during a migration to Version 3.
 //   See StorageKey::Deserialize() for more information on the format.
 //   key: "REGID_TO_ORIGIN:" + <int64_t 'registration_id'>
 //   value: <StorageKey>
@@ -149,9 +150,7 @@ constexpr size_t kWriteBufferSize = 512 * 1024;
 
 class ServiceWorkerEnv : public leveldb_env::ChromiumEnv {
  public:
-  ServiceWorkerEnv()
-      : ChromiumEnv("LevelDBEnv.ServiceWorker",
-                    storage::CreateFilesystemProxy()) {}
+  ServiceWorkerEnv() : ChromiumEnv(storage::CreateFilesystemProxy()) {}
 
   // Returns a shared instance of ServiceWorkerEnv. This is thread-safe.
   static ServiceWorkerEnv* GetInstance() {
@@ -379,7 +378,7 @@ void ConvertToProtoParts(
         break;
       }
       case liburlpattern::PartType::kRegex:
-        NOTREACHED_NORETURN() << "should not see regexp URLPattern";
+        NOTREACHED() << "should not see regexp URLPattern";
       case liburlpattern::PartType::kSegmentWildcard: {
         ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
             URLPattern::Part::WildcardPattern* ptn =
@@ -409,8 +408,8 @@ bool WriteToBlinkCondition(
     const ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition&
         condition,
     blink::ServiceWorkerRouterCondition& out) {
-  auto&& [out_url_pattern, out_request, out_running_status, out_or_condition] =
-      out.get();
+  auto&& [out_url_pattern, out_request, out_running_status, out_or_condition,
+          out_not_condition] = out.get();
   switch (condition.condition_case()) {
     case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
         CONDITION_NOT_SET:
@@ -673,6 +672,11 @@ bool WriteToBlinkCondition(
               Request::kJsonDestination:
             request.destination = network::mojom::RequestDestination::kJson;
             break;
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+              Request::kSharedStorageWorkletDestination:
+            request.destination =
+                network::mojom::RequestDestination::kSharedStorageWorklet;
+            break;
         }
       }
       out_request = request;
@@ -734,9 +738,37 @@ bool WriteToBlinkCondition(
       out_or_condition = std::move(or_condition);
       break;
     }
+    case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+        kNotCondition: {
+      if (out_not_condition) {
+        // Duplicated `not` condition found
+        return false;
+      }
+      if (!condition.has_not_condition()) {
+        return false;
+      }
+      blink::ServiceWorkerRouterNotCondition not_condition;
+      const auto& pb_o = condition.not_condition().object();
+      blink::ServiceWorkerRouterCondition blink_condition;
+      for (const auto& pb_c : pb_o.conditions()) {
+        if (!WriteToBlinkCondition(pb_c, blink_condition)) {
+          return false;
+        }
+      }
+      if (blink_condition.IsEmpty()) {
+        return false;
+      }
+      not_condition.condition =
+          std::make_unique<blink::ServiceWorkerRouterCondition>(
+              std::move(blink_condition));
+
+      out_not_condition = std::move(not_condition);
+      break;
+    }
   }
 
   if (!out.IsValid()) {
+    DLOG(ERROR) << "out is not valid";
     return false;
   }
 
@@ -782,8 +814,8 @@ class AddConditionHelper {
 void WriteConditionToProtoWithHelper(
     const blink::ServiceWorkerRouterCondition& condition,
     AddConditionHelper& out) {
-  const auto& [url_pattern, request, running_status, or_condition] =
-      condition.get();
+  const auto& [url_pattern, request, running_status, or_condition,
+               not_condition] = condition.get();
   if (url_pattern) {
     auto* out_c = out.add_condition();
     ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::URLPattern*
@@ -999,6 +1031,11 @@ void WriteConditionToProtoWithHelper(
               ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
                   Request::kJsonDestination);
           break;
+        case network::mojom::RequestDestination::kSharedStorageWorklet:
+          mutable_request->set_destination(
+              ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                  Request::kSharedStorageWorkletDestination);
+          break;
       }
     }
   }
@@ -1031,6 +1068,12 @@ void WriteConditionToProtoWithHelper(
       WriteConditionToProtoWithHelper(c, pb_o);
     }
   }
+  if (not_condition) {
+    auto* out_c = out.add_condition();
+    AddConditionHelper pb_o(out_c->mutable_not_condition()->mutable_object());
+    CHECK(not_condition->condition);
+    WriteConditionToProtoWithHelper(*not_condition->condition, pb_o);
+  }
 }
 
 void WriteConditionToProto(
@@ -1062,7 +1105,7 @@ const char* ServiceWorkerDatabase::StatusToString(
     case ServiceWorkerDatabase::Status::kErrorStorageDisconnected:
       return "Storage is disconnected";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Database unknown error";
 }
 
@@ -2370,7 +2413,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::LazyOpen(
       return Status::kOk;
     default:
       // Other cases should be handled in ReadDatabaseVersion.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Status::kErrorCorrupted;
   }
 }
@@ -2478,8 +2521,10 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(out);
   ServiceWorkerRegistrationData data;
-  if (!data.ParseFromString(serialized))
+  if (!data.ParseFromString(serialized)) {
+    DLOG(ERROR) << "Failed to parse serialized data.";
     return Status::kErrorCorrupted;
+  }
 
   GURL scope_url(data.scope_url());
   GURL script_url(data.script_url());
@@ -2720,6 +2765,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     if (data.router_rules().version() !=
         service_worker_internals::kRouterRuleVersion) {
       // Unknown route version.
+      DLOG(ERROR) << "Router version '" << data.router_rules().version()
+                  << "' is not valid.";
       return Status::kErrorCorrupted;
     }
     blink::ServiceWorkerRouterRules router_rules;
@@ -2728,6 +2775,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
       blink::ServiceWorkerRouterCondition condition;
       for (const auto& c : r.condition()) {
         if (!WriteToBlinkCondition(c, condition)) {
+          DLOG(ERROR) << "Failed to write to blink condition.";
           return Status::kErrorCorrupted;
         }
       }
@@ -2737,25 +2785,28 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
         switch (s.source_case()) {
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               SOURCE_NOT_SET:
+            DLOG(ERROR) << "Source not set.";
             return Status::kErrorCorrupted;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kNetworkSource:
-            source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+            source.type =
+                network::mojom::ServiceWorkerRouterSourceType::kNetwork;
             source.network_source.emplace();
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kRaceSource:
-            source.type = blink::ServiceWorkerRouterSource::Type::kRace;
+            source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
             source.race_source.emplace();
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kFetchEventSource:
-            source.type = blink::ServiceWorkerRouterSource::Type::kFetchEvent;
+            source.type =
+                network::mojom::ServiceWorkerRouterSourceType::kFetchEvent;
             source.fetch_event_source.emplace();
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kCacheSource:
-            source.type = blink::ServiceWorkerRouterSource::Type::kCache;
+            source.type = network::mojom::ServiceWorkerRouterSourceType::kCache;
             blink::ServiceWorkerRouterCacheSource cache_source;
             if (s.cache_source().has_cache_name()) {
               cache_source.cache_name = s.cache_source().cache_name();
@@ -2867,7 +2918,7 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
             ServiceWorkerRegistrationData::SKIPPABLE_EMPTY_FETCH_HANDLER);
         break;
       case blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   data.set_last_update_check_time(
@@ -2961,16 +3012,16 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
         ServiceWorkerRegistrationData::RouterRules::RuleV1::Source* source =
             v1->add_source();
         switch (s.type) {
-          case blink::ServiceWorkerRouterSource::Type::kNetwork:
+          case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
             source->mutable_network_source();
             break;
-          case blink::ServiceWorkerRouterSource::Type::kRace:
+          case network::mojom::ServiceWorkerRouterSourceType::kRace:
             source->mutable_race_source();
             break;
-          case blink::ServiceWorkerRouterSource::Type::kFetchEvent:
+          case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
             source->mutable_fetch_event_source();
             break;
-          case blink::ServiceWorkerRouterSource::Type::kCache:
+          case network::mojom::ServiceWorkerRouterSourceType::kCache:
             auto* cache_source = source->mutable_cache_source();
             if (s.cache_source->cache_name) {
               cache_source->set_cache_name(*s.cache_source->cache_name);

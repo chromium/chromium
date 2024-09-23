@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/script/import_map_error.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
@@ -37,7 +39,6 @@ class ReferrerScriptInfo;
 class ResourceFetcher;
 class ModuleRecordResolver;
 class ScriptFetchOptions;
-class ScriptPromiseResolver;
 class ScriptState;
 enum class ModuleType;
 
@@ -173,12 +174,12 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // https://html.spec.whatwg.org/C/#resolve-a-module-specifier
   virtual KURL ResolveModuleSpecifier(const String& module_request,
                                       const KURL& base_url,
-                                      String* failure_reason = nullptr) = 0;
+                                      String* failure_reason) = 0;
 
   // https://tc39.github.io/proposal-dynamic-import/#sec-hostimportmoduledynamically
   virtual void ResolveDynamically(const ModuleRequest& module_request,
                                   const ReferrerScriptInfo&,
-                                  ScriptPromiseResolver*) = 0;
+                                  ScriptPromiseResolver<IDLAny>*) = 0;
 
   // Import maps. https://github.com/WICG/import-maps
 
@@ -211,6 +212,10 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   // https://html.spec.whatwg.org/C/#hostgetimportmetaproperties
   virtual ModuleImportMeta HostGetImportMetaProperties(
       v8::Local<v8::Module>) const = 0;
+
+  // https://html.spec.whatwg.org/C/#resolving-a-module-integrity-metadata
+  virtual String GetIntegrityMetadataString(const KURL&) const = 0;
+  virtual IntegrityMetadataSet GetIntegrityMetadata(const KURL&) const = 0;
 
   virtual bool HasValidContext() = 0;
 

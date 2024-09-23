@@ -13,8 +13,11 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.tracing.TracingController;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,11 +30,13 @@ import java.util.Set;
  * passed to the fragment via an extra (EXTRA_CATEGORY_TYPE).
  */
 public class TracingCategoriesSettings extends PreferenceFragmentCompat
-        implements Preference.OnPreferenceChangeListener {
+        implements SettingsPage, Preference.OnPreferenceChangeListener {
     public static final String EXTRA_CATEGORY_TYPE = "type";
 
     // Non-translated strings:
     private static final String MSG_CATEGORY_SELECTION_TITLE = "Select categories";
+    private static final ObservableSupplier<String> sPageTitle =
+            new ObservableSupplierImpl<>(MSG_CATEGORY_SELECTION_TITLE);
 
     private static final String SELECT_ALL_KEY = "select-all";
     private static final String SELECT_ALL_TITLE = "Select all";
@@ -43,7 +48,6 @@ public class TracingCategoriesSettings extends PreferenceFragmentCompat
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getActivity().setTitle(MSG_CATEGORY_SELECTION_TITLE);
         PreferenceScreen preferenceScreen =
                 getPreferenceManager().createPreferenceScreen(getStyledContext());
         preferenceScreen.setOrderingAsAdded(true);
@@ -73,6 +77,11 @@ public class TracingCategoriesSettings extends PreferenceFragmentCompat
         }
         mSelectAllPreference.setChecked(mEnabledCategories.size() == mAllPreferences.size());
         setPreferenceScreen(preferenceScreen);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return sPageTitle;
     }
 
     private CheckBoxPreference createPreference(String category) {

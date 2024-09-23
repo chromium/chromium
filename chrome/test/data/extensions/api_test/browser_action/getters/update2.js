@@ -4,7 +4,8 @@
 
 var pass = chrome.test.callbackPass;
 
-chrome.tabs.getSelected(null, function(tab) {
+chrome.tabs.query({active: true}, function(tabs) {
+  const tab = tabs[0];
   chrome.browserAction.setPopup({tabId: tab.id, popup: 'newPopup.html'})
   chrome.browserAction.setTitle({tabId: tab.id, title: 'newTitle'});
   chrome.browserAction.setBadgeBackgroundColor({

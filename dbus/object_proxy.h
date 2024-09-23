@@ -203,7 +203,9 @@ class CHROME_DBUS_EXPORT ObjectProxy
   // service is already available, or if connecting to the name-owner-changed
   // signal fails, |callback| will be run once asynchronously. Otherwise,
   // |callback| will be run once in the future after the service becomes
-  // available.
+  // available. |callback| will be called in the origin thread in either case.
+  //
+  // Must be called in the origin thread.
   virtual void WaitForServiceToBeAvailable(
       WaitForServiceToBeAvailableCallback callback);
 

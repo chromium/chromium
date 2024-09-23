@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -39,7 +41,7 @@ IPEndPoint GetMdnsGroupEndPoint(AddressFamily address_family) {
     case ADDRESS_FAMILY_IPV6:
       return GetMdnsIPEndPoint(dns_protocol::kMdnsMulticastGroupIPv6);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return IPEndPoint();
   }
 }
@@ -63,7 +65,7 @@ IPEndPoint GetMdnsReceiveEndPoint(AddressFamily address_family) {
       return IPEndPoint(IPAddress::IPv6AllZeros(),
                         dns_protocol::kDefaultPortMulticast);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return IPEndPoint();
   }
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -83,7 +85,7 @@ std::string GetNameForHttpsQuery(const url::SchemeHostPort& scheme_host_port,
 
   // Normalize ws/wss schemes to http/https. Note that this behavior is not
   // indicated by the draft-ietf-dnsop-svcb-https-08 spec.
-  base::StringPiece normalized_scheme = scheme_host_port.scheme();
+  std::string_view normalized_scheme = scheme_host_port.scheme();
   if (normalized_scheme == url::kWsScheme) {
     normalized_scheme = url::kHttpScheme;
   } else if (normalized_scheme == url::kWssScheme) {

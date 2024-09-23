@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/http/http_transaction_test_util.h"
 
 #include <algorithm>
@@ -22,6 +27,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/schemeful_site.h"
 #include "net/cert/x509_certificate.h"
 #include "net/disk_cache/disk_cache.h"
@@ -41,6 +47,17 @@ namespace {
 using MockTransactionMap =
     std::unordered_map<std::string, const MockTransaction*>;
 static MockTransactionMap mock_transactions;
+
+void AddMockTransaction(const MockTransaction* trans) {
+  auto result =
+      mock_transactions.insert(std::make_pair(GURL(trans->url).spec(), trans));
+  CHECK(result.second) << "Transaction already exists: " << trans->url;
+}
+
+void RemoveMockTransaction(const MockTransaction* trans) {
+  mock_transactions.erase(GURL(trans->url).spec());
+}
+
 }  // namespace
 
 TransportInfo DefaultTransportInfo() {
@@ -197,12 +214,24 @@ const MockTransaction* FindMockTransaction(const GURL& url) {
   return nullptr;
 }
 
-void AddMockTransaction(const MockTransaction* trans) {
-  mock_transactions[GURL(trans->url).spec()] = trans;
+ScopedMockTransaction::ScopedMockTransaction(const char* url)
+    : MockTransaction({nullptr}) {
+  CHECK(url);
+  this->url = url;
+  AddMockTransaction(this);
 }
 
-void RemoveMockTransaction(const MockTransaction* trans) {
-  mock_transactions.erase(GURL(trans->url).spec());
+ScopedMockTransaction::ScopedMockTransaction(const MockTransaction& t,
+                                             const char* url)
+    : MockTransaction(t) {
+  if (url) {
+    this->url = url;
+  }
+  AddMockTransaction(this);
+}
+
+ScopedMockTransaction::~ScopedMockTransaction() {
+  RemoveMockTransaction(this);
 }
 
 MockHttpRequest::MockHttpRequest(const MockTransaction& t) {
@@ -294,7 +323,7 @@ void TestTransactionConsumer::OnIOComplete(int result) {
       DidRead(result);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -364,7 +393,7 @@ bool MockNetworkTransaction::IsReadyToRestartForAuth() {
       status_line.find(" 407 ") != std::string::npos;
 }
 
-int MockNetworkTransaction::Read(net::IOBuffer* buf,
+int MockNetworkTransaction::Read(IOBuffer* buf,
                                  int buf_len,
                                  CompletionOnceCallback callback) {
   const MockTransaction* t = FindMockTransaction(current_request_.url);
@@ -409,6 +438,10 @@ int64_t MockNetworkTransaction::GetTotalReceivedBytes() const {
 
 int64_t MockNetworkTransaction::GetTotalSentBytes() const {
   return sent_bytes_;
+}
+
+int64_t MockNetworkTransaction::GetReceivedBodyBytes() const {
+  return received_body_bytes_;
 }
 
 void MockNetworkTransaction::DoneReading() {
@@ -473,6 +506,9 @@ const int64_t MockNetworkTransaction::kTotalReceivedBytes = 1000;
 
 // static
 const int64_t MockNetworkTransaction::kTotalSentBytes = 100;
+
+// static
+const int64_t MockNetworkTransaction::kReceivedBodyBytes = 500;
 
 int MockNetworkTransaction::StartInternal(HttpRequestInfo request,
                                           CompletionOnceCallback callback) {
@@ -570,6 +606,7 @@ int MockNetworkTransaction::DoSendRequest() {
 
   sent_bytes_ = kTotalSentBytes;
   received_bytes_ = kTotalReceivedBytes;
+  received_body_bytes_ = kReceivedBodyBytes;
 
   const MockTransaction* t = FindMockTransaction(current_request_.url);
   CHECK(t);
@@ -592,8 +629,14 @@ int MockNetworkTransaction::DoSendRequest() {
   response_.was_cached = false;
   response_.network_accessed = true;
   response_.remote_endpoint = t->transport_info.endpoint;
-  response_.was_fetched_via_proxy =
-      t->transport_info.type == TransportType::kProxied;
+  if (t->transport_info.type == TransportType::kDirect) {
+    response_.proxy_chain = ProxyChain::Direct();
+  } else if (t->transport_info.type == TransportType::kProxied) {
+    response_.proxy_chain = ProxyChain::FromSchemeHostAndPort(
+        ProxyServer::SCHEME_HTTP,
+        t->transport_info.endpoint.ToStringWithoutPort(),
+        t->transport_info.endpoint.port());
+  }
 
   response_.response_time = transaction_factory_->Now();
   if (!t->response_time.is_null())
@@ -615,7 +658,7 @@ int MockNetworkTransaction::DoSendRequest() {
     response_.unused_since_prefetch = true;
   }
 
-  if (current_request_.load_flags & LOAD_RESTRICTED_PREFETCH) {
+  if (current_request_.load_flags & LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME) {
     DCHECK(response_.unused_since_prefetch);
     response_.restricted_prefetch = true;
   }
@@ -685,7 +728,7 @@ int MockNetworkTransaction::DoLoop(int result) {
         rv = DoReadHeadersComplete(rv);
         break;
       default:
-        NOTREACHED() << "bad state";
+        NOTREACHED_IN_MIGRATION() << "bad state";
         rv = ERR_FAILED;
         break;
     }
@@ -708,7 +751,7 @@ void MockNetworkTransaction::SetBeforeNetworkStartCallback(
 }
 
 void MockNetworkTransaction::SetModifyRequestHeadersCallback(
-    base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback) {
+    base::RepeatingCallback<void(HttpRequestHeaders*)> callback) {
   modify_request_headers_callback_ = std::move(callback);
 }
 
@@ -840,7 +883,7 @@ int ConnectedHandler::OnConnected(const TransportInfo& info,
   if (run_callback_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), result_));
-    return net::ERR_IO_PENDING;
+    return ERR_IO_PENDING;
   }
   return result_;
 }

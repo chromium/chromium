@@ -8,8 +8,7 @@
 
 #include "base/containers/flat_map.h"
 
-namespace ash {
-namespace federated {
+namespace ash::federated {
 
 FakeServiceConnectionImpl::FakeServiceConnectionImpl() = default;
 FakeServiceConnectionImpl::~FakeServiceConnectionImpl() = default;
@@ -27,7 +26,7 @@ void FakeServiceConnectionImpl::Clone(
 }
 
 void FakeServiceConnectionImpl::ReportExample(
-    const std::string& client_name,
+    const std::string& table_name,
     chromeos::federated::mojom::ExamplePtr example) {
   LOG(INFO) << "In FakeServiceConnectionImpl::ReportExample, does nothing";
   return;
@@ -39,5 +38,18 @@ void FakeServiceConnectionImpl::StartScheduling(
   return;
 }
 
-}  // namespace federated
-}  // namespace ash
+void FakeServiceConnectionImpl::ReportExampleToTable(
+    chromeos::federated::mojom::FederatedExampleTableId table_id,
+    chromeos::federated::mojom::ExamplePtr example) {
+  LOG(INFO)
+      << "In FakeServiceConnectionImpl::ReportExampleToTable, does nothing";
+  return;
+}
+
+void FakeServiceConnectionImpl::StartSchedulingWithConfig(
+    std::vector<chromeos::federated::mojom::ClientScheduleConfigPtr>
+        client_configs) {
+  return;
+}
+
+}  // namespace ash::federated

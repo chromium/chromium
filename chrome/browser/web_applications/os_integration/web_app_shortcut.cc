@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 
 #include <functional>
@@ -23,6 +28,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -54,7 +60,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "chrome/browser/web_applications/app_shim_registry_mac.h"
+#include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #endif
 
 using content::BrowserThread;
@@ -96,24 +102,23 @@ size_t GetNumDesiredIconSizesForShortcut() {
 #endif
 }
 
-void DeleteShortcutInfoOnUIThread(std::unique_ptr<ShortcutInfo> shortcut_info,
-                                  ResultCallback callback,
-                                  Result result) {
-  shortcut_info.reset();
-  if (callback)
-    std::move(callback).Run(result);
-}
-
 void CreatePlatformShortcutsAndPostCallback(
     const base::FilePath& shortcut_data_path,
     const ShortcutLocations& creation_locations,
     ShortcutCreationReason creation_reason,
     CreateShortcutsCallback callback,
-    const ShortcutInfo& shortcut_info) {
-  bool shortcut_created = internals::CreatePlatformShortcuts(
-      shortcut_data_path, creation_locations, creation_reason, shortcut_info);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), shortcut_created));
+    std::unique_ptr<ShortcutInfo> shortcut_info) {
+  // Ownership of shortcut_info is moved into the callback.
+  const ShortcutInfo& shortcut_info_ref = *shortcut_info.get();
+  internals::CreatePlatformShortcuts(
+      shortcut_data_path, creation_locations, creation_reason,
+      shortcut_info_ref,
+      base::BindPostTask(
+          content::GetUIThreadTaskRunner({}),
+          std::move(callback)
+              // Ensure that `shortcut_info` is deleted on the UI thread.
+              .Then(base::OnceClosure(
+                  base::DoNothingWithBoundArgs(std::move(shortcut_info))))));
 }
 
 void DeletePlatformShortcutsAndPostCallback(
@@ -130,6 +135,25 @@ void DeleteMultiProfileShortcutsForAppAndPostCallback(const std::string& app_id,
   internals::DeleteMultiProfileShortcutsForApp(app_id);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
+}
+
+void UpdatePlatformShortcutsAndPostCallback(
+    const base::FilePath& shortcut_data_dir,
+    const std::u16string& old_app_title,
+    std::optional<ShortcutLocations> locations,
+    ResultCallback callback,
+    std::unique_ptr<ShortcutInfo> shortcut_info) {
+  // Ownership of shortcut_info is moved into the callback.
+  const ShortcutInfo& shortcut_info_ref = *shortcut_info.get();
+  internals::UpdatePlatformShortcuts(
+      std::move(shortcut_data_dir), std::move(old_app_title), locations,
+      base::BindPostTask(
+          content::GetUIThreadTaskRunner({}),
+          std::move(callback)
+              // Ensure that `shortcut_info` is deleted on the UI thread.
+              .Then(base::OnceClosure(
+                  base::DoNothingWithBoundArgs(std::move(shortcut_info))))),
+      shortcut_info_ref);
 }
 
 std::vector<WebAppShortcutsMenuItemInfo::Icon>
@@ -225,7 +249,7 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
     }
   }
 
-// TODO(crbug.com/1416965): Implement tests on Linux for using shortcuts_menu
+// TODO(crbug.com/40257107): Implement tests on Linux for using shortcuts_menu
 // actions.
 #if BUILDFLAG(IS_LINUX)
   const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos =
@@ -401,7 +425,7 @@ base::FilePath GetOsIntegrationResourcesDirectoryForApp(
 #if BUILDFLAG(IS_WIN)
   base::FilePath::StringType host_path(base::UTF8ToWide(host));
   base::FilePath::StringType scheme_port_path(base::UTF8ToWide(scheme_port));
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
   base::FilePath::StringType host_path(host);
   base::FilePath::StringType scheme_port_path(scheme_port);
 #else
@@ -419,7 +443,7 @@ base::span<const int> GetDesiredIconSizesForShortcut() {
 gfx::ImageSkia CreateDefaultApplicationIcon(int size) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/860581): Create web_app_browser_resources.grd with the
+  // TODO(crbug.com/40583793): Create web_app_browser_resources.grd with the
   // default app icon. Remove dependency on extensions_browser_resources.h and
   // use IDR_WEB_APP_DEFAULT_ICON here.
   gfx::Image default_icon =
@@ -455,6 +479,17 @@ void PostShortcutIOTask(base::OnceCallback<void(const ShortcutInfo&)> task,
           std::move(shortcut_info)));
 }
 
+void PostAsyncShortcutIOTask(
+    base::OnceCallback<void(std::unique_ptr<ShortcutInfo>)> task,
+    std::unique_ptr<ShortcutInfo> shortcut_info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // Ownership of |shortcut_info| is transferred to the task. The task must
+  // ensure that it is destroyed on the UI thread.
+  GetShortcutIOTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(task), std::move(shortcut_info)));
+}
+
 void ScheduleCreatePlatformShortcuts(
     const base::FilePath& shortcut_data_path,
     const ShortcutLocations& creation_locations,
@@ -463,10 +498,11 @@ void ScheduleCreatePlatformShortcuts(
     CreateShortcutsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  PostShortcutIOTask(base::BindOnce(&CreatePlatformShortcutsAndPostCallback,
-                                    shortcut_data_path, creation_locations,
-                                    reason, std::move(callback)),
-                     std::move(shortcut_info));
+  PostAsyncShortcutIOTask(
+      base::BindOnce(&CreatePlatformShortcutsAndPostCallback,
+                     shortcut_data_path, creation_locations, reason,
+                     std::move(callback)),
+      std::move(shortcut_info));
 }
 
 void ScheduleDeletePlatformShortcuts(
@@ -490,19 +526,19 @@ void ScheduleDeleteMultiProfileShortcutsForApp(const std::string& app_id,
                      std::move(callback)));
 }
 
-void PostShortcutIOTaskAndReplyWithResult(
-    base::OnceCallback<Result(const ShortcutInfo&)> task,
-    std::unique_ptr<ShortcutInfo> shortcut_info,
-    ResultCallback reply) {
+void ScheduleUpdatePlatformShortcuts(
+    const base::FilePath& shortcut_data_dir,
+    const std::u16string& old_app_title,
+    std::optional<ShortcutLocations> locations,
+    base::OnceCallback<void(Result)> on_complete,
+    std::unique_ptr<ShortcutInfo> shortcut_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Ownership of |shortcut_info| moves to the Reply, which is guaranteed to
-  // outlive the const reference.
-  const ShortcutInfo& shortcut_info_ref = *shortcut_info;
-  GetShortcutIOTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(std::move(task), std::cref(shortcut_info_ref)),
-      base::BindOnce(&DeleteShortcutInfoOnUIThread, std::move(shortcut_info),
-                     std::move(reply)));
+  internals::PostAsyncShortcutIOTask(
+      base::BindOnce(&UpdatePlatformShortcutsAndPostCallback,
+                     std::move(shortcut_data_dir), std::move(old_app_title),
+                     locations, std::move(on_complete)),
+      std::move(shortcut_info));
 }
 
 scoped_refptr<base::SequencedTaskRunner> GetShortcutIOTaskRunner() {
@@ -517,7 +553,7 @@ base::FilePath GetShortcutDataDir(const ShortcutInfo& shortcut_info) {
 #if !BUILDFLAG(IS_MAC)
 void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
   // Multi-profile shortcuts exist only on macOS.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif
 

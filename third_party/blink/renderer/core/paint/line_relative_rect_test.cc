@@ -14,7 +14,7 @@ namespace blink {
 class LineRelativeRectTest : public testing::Test {};
 
 TEST(LineRelativeRectTest, EnclosingRect) {
-  test::TaskEnvironment task_environment_;
+  test::TaskEnvironment task_environment;
   gfx::RectF r(1000, 10000, 10, 100);
   LineRelativeRect lor = LineRelativeRect::EnclosingRect(r);
   EXPECT_EQ(lor.offset.line_left, 1000) << "offset X";
@@ -34,7 +34,7 @@ TEST(LineRelativeRectTest, EnclosingRect) {
 }
 
 TEST(LineRelativeRectTest, CreateFromLineBox) {
-  test::TaskEnvironment task_environment_;
+  test::TaskEnvironment task_environment;
   PhysicalRect r(1000, 10000, 10, 100);
   LineRelativeRect lor = LineRelativeRect::CreateFromLineBox(r, true);
   EXPECT_EQ(lor.offset.line_left, 1000) << "offset X, no rotation";
@@ -50,7 +50,7 @@ TEST(LineRelativeRectTest, CreateFromLineBox) {
 }
 
 TEST(LineRelativeRectTest, ComputeRelativeToPhysicalTransformAtOrigin) {
-  test::TaskEnvironment task_environment_;
+  test::TaskEnvironment task_environment;
   LineRelativeRect r_origin = {{LayoutUnit(), LayoutUnit()},
                                {LayoutUnit(20), LayoutUnit(30)}};
 
@@ -69,7 +69,7 @@ TEST(LineRelativeRectTest, ComputeRelativeToPhysicalTransformAtOrigin) {
 }
 
 TEST(LineRelativeRectTest, ComputeRelativeToPhysicalTransformNotAtOrigin) {
-  test::TaskEnvironment task_environment_;
+  test::TaskEnvironment task_environment;
   LineRelativeRect r_origin = {{LayoutUnit(1000), LayoutUnit(10000)},
                                {LayoutUnit(10), LayoutUnit(100)}};
 
@@ -90,7 +90,7 @@ TEST(LineRelativeRectTest, ComputeRelativeToPhysicalTransformNotAtOrigin) {
 }
 
 TEST(LineRelativeRectTest, Create_kHorizontalTB) {
-  test::TaskEnvironment task_environment_;
+  test::TaskEnvironment task_environment;
   PhysicalRect r(1000, 10000, 10, 100);
 
   const WritingMode writing_mode = WritingMode::kHorizontalTb;
@@ -125,7 +125,7 @@ TEST(LineRelativeRectTest, Create_kHorizontalTB) {
 }
 
 TEST(LineRelativeRectTest, Create_kSidewaysLr) {
-  test::TaskEnvironment task_environment_;
+  test::TaskEnvironment task_environment;
   PhysicalRect r(1000, 10000, 10, 100);
 
   const WritingMode writing_mode = WritingMode::kSidewaysLr;
@@ -166,7 +166,7 @@ TEST(LineRelativeRectTest, Create_kSidewaysLr) {
 }
 
 TEST(LineRelativeRectTest, Create_kVerticalRl) {
-  test::TaskEnvironment task_environment_;
+  test::TaskEnvironment task_environment;
   PhysicalRect r(1000, 10000, 10, 100);
 
   const WritingMode writing_mode = WritingMode::kVerticalRl;
@@ -196,6 +196,83 @@ TEST(LineRelativeRectTest, Create_kVerticalRl) {
   EXPECT_EQ(rotated2.offset.line_over, 10000) << "bottom half, y";
   EXPECT_EQ(rotated2.size.inline_size, 50) << "bottom half, inline_size";
   EXPECT_EQ(rotated2.size.block_size, 10) << "bottom half, block_size";
+}
+
+TEST(LineRelativeRectTest, EnclosingLineRelativeRect) {
+  test::TaskEnvironment task_environment;
+
+  // Nothing should change
+  LineRelativeRect rect_1 = {{LayoutUnit(10), LayoutUnit(0)},
+                             {LayoutUnit(20), LayoutUnit(30)}};
+  LineRelativeRect snapped_1 = rect_1.EnclosingLineRelativeRect();
+  EXPECT_EQ(snapped_1.offset.line_left, 10);
+  EXPECT_EQ(snapped_1.offset.line_over, 0);
+  EXPECT_EQ(snapped_1.size.inline_size, 20);
+  EXPECT_EQ(snapped_1.size.block_size, 30);
+
+  // Size needs to increase size by 1 pixel, version a.
+  LineRelativeRect rect_2 = {{LayoutUnit(10.25), LayoutUnit(0.25)},
+                             {LayoutUnit(20.5), LayoutUnit(30.5)}};
+  LineRelativeRect snapped_2 = rect_2.EnclosingLineRelativeRect();
+  EXPECT_EQ(snapped_2.offset.line_left, 10);
+  EXPECT_EQ(snapped_2.offset.line_over, 0);
+  EXPECT_EQ(snapped_2.size.inline_size, 21);
+  EXPECT_EQ(snapped_2.size.block_size, 31);
+
+  // Size needs to increase size by 1 pixel, version b.
+  LineRelativeRect rect_3 = {{LayoutUnit(10.75), LayoutUnit(0.75)},
+                             {LayoutUnit(20.25), LayoutUnit(30.25)}};
+  LineRelativeRect snapped_3 = rect_3.EnclosingLineRelativeRect();
+  EXPECT_EQ(snapped_3.offset.line_left, 10);
+  EXPECT_EQ(snapped_3.offset.line_over, 0);
+  EXPECT_EQ(snapped_3.size.inline_size, 21);
+  EXPECT_EQ(snapped_3.size.block_size, 31);
+
+  // Size needs to increase size by more than 1 pixel.
+  LineRelativeRect rect_4 = {{LayoutUnit(10.75), LayoutUnit(0.75)},
+                             {LayoutUnit(20.5), LayoutUnit(30.5)}};
+  LineRelativeRect snapped_4 = rect_4.EnclosingLineRelativeRect();
+  EXPECT_EQ(snapped_4.offset.line_left, 10);
+  EXPECT_EQ(snapped_4.offset.line_over, 0);
+  EXPECT_EQ(snapped_4.size.inline_size, 22);
+  EXPECT_EQ(snapped_4.size.block_size, 32);
+}
+
+TEST(LineRelativeRectTest, Inflate) {
+  test::TaskEnvironment task_environment;
+
+  // Nothing should change
+  LineRelativeRect rect_1 = {{LayoutUnit(10), LayoutUnit(0)},
+                             {LayoutUnit(20), LayoutUnit(30)}};
+  rect_1.Inflate(LayoutUnit(1));
+  EXPECT_EQ(rect_1.offset.line_left, 9);
+  EXPECT_EQ(rect_1.offset.line_over, -1);
+  EXPECT_EQ(rect_1.size.inline_size, 22);
+  EXPECT_EQ(rect_1.size.block_size, 32);
+}
+
+TEST(LineRelativeRectTest, Unite) {
+  test::TaskEnvironment task_environment;
+
+  // Nothing should change
+  LineRelativeRect rect_1 = {{LayoutUnit(10), LayoutUnit(0)},
+                             {LayoutUnit(20), LayoutUnit(40)}};
+  LineRelativeRect rect_2 = {{LayoutUnit(0), LayoutUnit(10)},
+                             {LayoutUnit(40), LayoutUnit(20)}};
+  LineRelativeRect rect_1a = rect_1;
+  LineRelativeRect rect_2a = rect_2;
+
+  rect_1.Unite(rect_2a);
+  EXPECT_EQ(rect_1.offset.line_left, 0);
+  EXPECT_EQ(rect_1.offset.line_over, 0);
+  EXPECT_EQ(rect_1.size.inline_size, 40);
+  EXPECT_EQ(rect_1.size.block_size, 40);
+
+  rect_2.Unite(rect_1a);
+  EXPECT_EQ(rect_2.offset.line_left, 0);
+  EXPECT_EQ(rect_2.offset.line_over, 0);
+  EXPECT_EQ(rect_2.size.inline_size, 40);
+  EXPECT_EQ(rect_2.size.block_size, 40);
 }
 
 }  // namespace blink

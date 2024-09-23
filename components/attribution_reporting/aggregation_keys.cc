@@ -26,6 +26,10 @@ namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
+bool AggregationKeyIdHasValidLength(const std::string& key) {
+  return key.size() <= AggregationKeys::kMaxBytesPerAggregationKeyId;
+}
+
 bool IsValid(const AggregationKeys::Keys& keys) {
   return keys.size() <= kMaxAggregationKeysPerSource &&
          base::ranges::all_of(keys, [](const auto& key) {
@@ -61,13 +65,14 @@ AggregationKeys::FromJSON(const base::Value* value) {
 
   const base::Value::Dict* dict = value->GetIfDict();
   if (!dict)
-    return base::unexpected(SourceRegistrationError::kAggregationKeysWrongType);
+    return base::unexpected(
+        SourceRegistrationError::kAggregationKeysDictInvalid);
 
   const size_t num_keys = dict->size();
 
   if (num_keys > kMaxAggregationKeysPerSource) {
     return base::unexpected(
-        SourceRegistrationError::kAggregationKeysTooManyKeys);
+        SourceRegistrationError::kAggregationKeysDictInvalid);
   }
 
   RecordAggregatableKeysPerSource(num_keys);
@@ -83,13 +88,8 @@ AggregationKeys::FromJSON(const base::Value* value) {
 
     ASSIGN_OR_RETURN(
         absl::uint128 key, ParseAggregationKeyPiece(maybe_string_value),
-        [](AggregationKeyPieceError error) {
-          switch (error) {
-            case AggregationKeyPieceError::kWrongType:
-              return SourceRegistrationError::kAggregationKeysValueWrongType;
-            case AggregationKeyPieceError::kWrongFormat:
-              return SourceRegistrationError::kAggregationKeysValueWrongFormat;
-          }
+        [](ParseError) {
+          return SourceRegistrationError::kAggregationKeysValueInvalid;
         });
 
     keys.emplace_back(key_id, key);
@@ -99,7 +99,7 @@ AggregationKeys::FromJSON(const base::Value* value) {
 }
 
 AggregationKeys::AggregationKeys(Keys keys) : keys_(std::move(keys)) {
-  DCHECK(IsValid(keys_));
+  CHECK(IsValid(keys_));
 }
 
 AggregationKeys::AggregationKeys() = default;

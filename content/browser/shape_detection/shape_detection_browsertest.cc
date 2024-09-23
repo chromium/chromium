@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_tokenizer.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
@@ -24,12 +23,9 @@ const char kShapeDetectionTestHtml[] = "/media/shape_detection_test.html";
 struct TestParameters {
   const std::string detector_name;
   const std::string image_path;
-  // This field is not a raw_ref<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer, global-scope
-  RAW_PTR_EXCLUSION const std::vector<std::vector<float>>&
-      expected_bounding_boxes;
+  const std::vector<std::vector<float>> expected_bounding_boxes;
 } const kTestParameters[] = {
-    {"FaceDetector", "/blank.jpg", std::vector<std::vector<float>>{}},
+    {"FaceDetector", "/blank.jpg", {}},
     {"FaceDetector",
      "/single_face.jpg",
 #if BUILDFLAG(IS_ANDROID)
@@ -99,7 +95,7 @@ class ShapeDetectionBrowserTest
   }
 };
 
-// TODO(https://crbug.com/659138): Enable the test on other platforms.
+// TODO(crbug.com/41282827): Enable the test on other platforms.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_DetectShapesInImage DetectShapesInImage
 #else

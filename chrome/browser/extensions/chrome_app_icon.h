@@ -47,7 +47,7 @@ class ChromeAppIcon : public IconImage::Observer {
   static void ApplyEffects(int resource_size_in_dip,
                            const ResizeFunction& resize_function,
                            bool app_launchable,
-                           bool from_bookmark,
+                           bool rounded_corners,
                            Badge badge_type,
                            gfx::ImageSkia* image_skia);
 

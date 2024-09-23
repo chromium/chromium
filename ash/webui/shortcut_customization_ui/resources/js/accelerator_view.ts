@@ -6,13 +6,14 @@ import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
 import {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
@@ -25,7 +26,7 @@ import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {getShortcutInputProvider} from './shortcut_input_mojo_interface_provider.js';
-import {Accelerator, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, EditAction, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, EditAction, MetaKey, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
 import {areAcceleratorsEqual, canBypassErrorWithRetry, containsAccelerator, getAccelerator, getKeyDisplay, getModifiersForAcceleratorInfo, isCustomizationAllowed, isStandardAcceleratorInfo, isValidAccelerator, keyEventToAccelerator, LWIN_KEY, META_KEY, resetKeyEvent} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
@@ -52,7 +53,6 @@ const kEscapeKey: number = 27;  // Keycode for VKEY_ESCAPE
  * @fileoverview
  * 'accelerator-view' is wrapper component for an accelerator. It maintains both
  * the read-only and editable state of an accelerator.
- * TODO(jimmyxgong): Implement the edit mode.
  */
 const AcceleratorViewElementBase = I18nMixin(PolymerElement);
 
@@ -149,8 +149,13 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         reflectToAttribute: true,
       },
 
-      /** Whether to show a launcher icon or search icon for meta key. */
-      hasLauncherButton: Boolean,
+      /** The meta key on the keyboard to display to the user. */
+      metaKey: Object,
+
+      hasFunctionKey: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('hasFunctionKey'),
+      },
     };
   }
 
@@ -167,10 +172,11 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   subcategoryIsLocked: boolean;
   isFirstAccelerator: boolean;
   isDisabled: boolean;
-  hasLauncherButton: boolean;
+  metaKey: MetaKey = MetaKey.kSearch;
   pendingKeyEvent: KeyEvent|null = null;
   shortcutInput: ShortcutInputElement|null;
   defaultAccelerators: Accelerator[];
+  hasFunctionKey: boolean;
   protected isCapturing: boolean;
   protected lastAccelerator: Accelerator;
   protected lastResult: AcceleratorConfigResult;
@@ -186,7 +192,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
     this.subcategoryIsLocked = this.lookupManager.isSubcategoryLocked(
         this.lookupManager.getAcceleratorSubcategory(this.source, this.action));
-    this.hasLauncherButton = this.lookupManager.getHasLauncherButton();
+
+    this.metaKey = this.lookupManager.getMetaKeyToDisplay();
     this.defaultAccelerators =
         (await this.shortcutProvider.getDefaultAcceleratorsForId(this.action))
             .accelerators;
@@ -294,8 +301,9 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   }
 
   private handleKeyDown(e: CustomEvent): void {
-    // Announce the key pressed.
-    this.makeA11yAnnouncement(e.detail.keyEvent.keyDisplay);
+    // Announce the icon label or key pressed.
+    const keyOrIcon = e.detail.keyEvent.keyDisplay;
+    this.makeA11yAnnouncement(getKeyDisplay(keyOrIcon));
     const rewrittenKeyEvent = e.detail.keyEvent;
     const pendingAccelerator = keyEventToAccelerator(rewrittenKeyEvent);
     if (this.hasError) {
@@ -447,11 +455,16 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         this.makeA11yAnnouncement(this.statusMessage);
         return;
       }
-      // TODO(b/286268215): Localize this string.
       case AcceleratorConfigResult.kNonStandardWithSearch: {
         this.statusMessage = this.i18n(
             'nonStandardNotAllowedWithSearchMessage',
             this.lastPendingKeyEvent!.keyDisplay, this.getMetaKeyDisplay());
+        this.hasError = true;
+        this.makeA11yAnnouncement(this.statusMessage);
+        return;
+      }
+      case AcceleratorConfigResult.kBlockRightAlt: {
+        this.statusMessage = this.i18n('blockRightAltKey');
         this.hasError = true;
         this.makeA11yAnnouncement(this.statusMessage);
         return;
@@ -549,9 +562,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     }
     let keyOrIcon =
         this.acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay;
-    const metaKeyAriaLabel = this.lookupManager.getHasLauncherButton() ?
-        this.i18n('iconLabelOpenLauncher') :
-        this.i18n('iconLabelOpenSearch');
+    const metaKeyAriaLabel = this.getMetaKeyDisplay();
     // LWIN_KEY is not a modifier, but it is displayed as a meta icon.
     keyOrIcon = keyOrIcon === LWIN_KEY ? metaKeyAriaLabel : keyOrIcon;
     const modifiers =
@@ -582,9 +593,17 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   }
 
   private getMetaKeyDisplay(): string {
-    return this.lookupManager.getHasLauncherButton() ?
-        this.i18n('iconLabelOpenLauncher') :
-        this.i18n('iconLabelOpenSearch');
+    const metaKey = this.lookupManager.getMetaKeyToDisplay();
+    switch (metaKey) {
+      case MetaKey.kLauncherRefresh:
+        // TODO(b/338134189): Replace it with updated icon when finalized.
+        return this.i18n('iconLabelOpenLauncher');
+      case MetaKey.kSearch:
+        return this.i18n('iconLabelOpenSearch');
+      case MetaKey.kLauncher:
+      default:
+        return this.i18n('iconLabelOpenLauncher');
+    }
   }
 
   private getEditButtonAriaLabel(): string {

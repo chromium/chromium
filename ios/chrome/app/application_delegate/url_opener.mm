@@ -74,7 +74,7 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
       // _startupParameters will not include the command from openURL.
       // Pass the startup parameters from here.
 
-      // TODO(crbug.com/1496951): Investigate why
+      // TODO(crbug.com/40938699): Investigate why
       // connectionInformation.startupParamters can be not nil and what to do in
       // that case.
       [connectionInformation setStartupParameters:params];
@@ -82,7 +82,8 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
         [connectionInformation setStartupParameters:nil];
       };
 
-      // TODO(crbug.com/935019): Exacly the same copy of this code is present in
+      // TODO(crbug.com/41443029): Exacly the same copy of this code is present
+      // in
       // +[UserAcrtivityHandler
       // handleStartupParametersWithTabOpener:startupInformation:browserState:]
 

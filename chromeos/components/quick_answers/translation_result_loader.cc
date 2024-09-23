@@ -4,6 +4,7 @@
 
 #include "chromeos/components/quick_answers/translation_result_loader.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/json/json_writer.h"
@@ -38,9 +39,9 @@ constexpr char kTranslationAPIUrl[] =
     "https://translation.googleapis.com/language/translate/v2";
 constexpr char kApiKeyName[] = "key";
 
-constexpr base::StringPiece kQueryKey = "q";
-constexpr base::StringPiece kSourceLanguageKey = "source";
-constexpr base::StringPiece kTargetLanguageKey = "target";
+constexpr std::string_view kQueryKey = "q";
+constexpr std::string_view kSourceLanguageKey = "source";
+constexpr std::string_view kTargetLanguageKey = "target";
 
 std::string BuildTranslationRequestBody(const IntentInfo& intent_info) {
   Value::Dict payload;

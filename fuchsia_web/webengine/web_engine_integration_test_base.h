@@ -10,10 +10,10 @@
 #include <lib/sys/cpp/component_context.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/fuchsia/filtered_service_directory.h"
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -78,7 +78,7 @@ class WebEngineIntegrationTestBase : public testing::Test {
 
   // Populates |context_| with a Context with |context_params| and |frame_| with
   // a new Frame.
-  // TODO(crbug.com/1200314): Audit callers and replace them with calls to
+  // TODO(crbug.com/40761737): Audit callers and replace them with calls to
   // CreateContext()+CreateFrameWithParams(), or context()->CreateFrame(),
   // depending on what each test is intended to verify.
   void CreateContextAndFrame(fuchsia::web::CreateContextParams context_params);
@@ -86,23 +86,23 @@ class WebEngineIntegrationTestBase : public testing::Test {
   void CreateContextAndExpectError(fuchsia::web::CreateContextParams params,
                                    zx_status_t expected_error);
 
-  // TODO(crbug.com/1200314): Replace this with a LoadUrl() call that can be
+  // TODO(crbug.com/40761737): Replace this with a LoadUrl() call that can be
   // preceded by CreateContext()+CreateFrameWithParams().
   void CreateContextAndFrameAndLoadUrl(fuchsia::web::CreateContextParams params,
                                        const GURL& url);
 
   void LoadUrlAndExpectResponse(
-      base::StringPiece url,
+      std::string_view url,
       fuchsia::web::LoadUrlParams load_url_params = {});
 
   void GrantPermission(fuchsia::web::PermissionType type,
                        const std::string& origin);
 
-  std::string ExecuteJavaScriptWithStringResult(base::StringPiece script);
+  std::string ExecuteJavaScriptWithStringResult(std::string_view script);
 
-  double ExecuteJavaScriptWithDoubleResult(base::StringPiece script);
+  double ExecuteJavaScriptWithDoubleResult(std::string_view script);
 
-  bool ExecuteJavaScriptWithBoolResult(base::StringPiece script);
+  bool ExecuteJavaScriptWithBoolResult(std::string_view script);
 
  protected:
   const base::test::TaskEnvironment task_environment_;

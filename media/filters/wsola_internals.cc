@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/wsola_internals.h"
 
 #include <algorithm>
@@ -9,9 +14,9 @@
 #include <cstring>
 #include <limits>
 #include <memory>
+#include <numbers>
 
 #include "base/check_op.h"
-#include "base/numerics/math_constants.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 
@@ -309,7 +314,7 @@ int OptimalIndex(const AudioBus* search_block,
 }
 
 void GetPeriodicHanningWindow(int window_length, float* window) {
-  const float scale = 2.0f * base::kPiFloat / window_length;
+  const float scale = 2.0f * std::numbers::pi_v<float> / window_length;
   for (int n = 0; n < window_length; ++n)
     window[n] = 0.5f * (1.0f - std::cos(n * scale));
 }

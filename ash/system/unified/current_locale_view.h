@@ -28,7 +28,6 @@ class CurrentLocaleView : public TrayItemView, public LocaleModel::Observer {
   void OnLocaleListSet() override;
 
   // views::TrayItemView:
-  const char* GetClassName() const override;
   void HandleLocaleChange() override;
   void UpdateLabelOrImageViewColor(bool active) override;
 };

@@ -8,14 +8,14 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace WTF {
+class String;
 class TextStream;
-}
+}  // namespace WTF
 
 namespace blink {
 
@@ -79,6 +79,10 @@ struct CORE_EXPORT PhysicalRect {
 
   PhysicalRect operator+(const PhysicalOffset& other) const {
     return {offset + other, size};
+  }
+
+  PhysicalRect operator-(const PhysicalOffset& other) const {
+    return {offset - other, size};
   }
 
   // Returns the distance to |target| in horizontal and vertical directions.
@@ -174,15 +178,6 @@ struct CORE_EXPORT PhysicalRect {
     return offset + PhysicalOffset(size.width / 2, size.height / 2);
   }
 
-  // Conversions from/to existing code. New code prefers type safety for
-  // logical/physical distinctions.
-  constexpr explicit PhysicalRect(const DeprecatedLayoutRect& r)
-      : offset(r.X(), r.Y()), size(r.Width(), r.Height()) {}
-  constexpr DeprecatedLayoutRect ToLayoutRect() const {
-    return DeprecatedLayoutRect(offset.left, offset.top, size.width,
-                                size.height);
-  }
-
   constexpr explicit operator gfx::RectF() const {
     return gfx::RectF(offset.left, offset.top, size.width, size.height);
   }
@@ -211,7 +206,7 @@ struct CORE_EXPORT PhysicalRect {
     size.Scale(s);
   }
 
-  String ToString() const;
+  WTF::String ToString() const;
 };
 
 inline PhysicalRect UnionRect(const PhysicalRect& a, const PhysicalRect& b) {

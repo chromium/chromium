@@ -28,8 +28,8 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // Merges internal values from |metadata_source|.
   void MergeMetadataFrom(const VideoFrameMetadata& metadata_source);
 
-  // CLear metadata fields that only make sense for texture backed frames.
-  void ClearTextureFrameMedatada();
+  // Clear metadata fields that only make sense for texture backed frames.
+  void ClearTextureFrameMetadata();
 
   // Sources of VideoFrames use this marker to indicate that the associated
   // VideoFrame can be overlaid, case in which its contents do not need to be
@@ -179,7 +179,7 @@ struct MEDIA_EXPORT VideoFrameMetadata {
 
   // CompositorFrameMetadata variables associated with this frame. Used for
   // remote debugging.
-  // TODO(crbug.com/832220): Use a customized dictionary value instead of
+  // TODO(crbug.com/40571471): Use a customized dictionary value instead of
   // using these keys directly.
   std::optional<double> device_scale_factor;
   std::optional<double> page_scale_factor;

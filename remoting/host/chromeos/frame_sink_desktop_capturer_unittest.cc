@@ -616,4 +616,9 @@ TEST_F(FrameSinkDesktopCapturerTest, ShouldNotCrashIfStartIsNeverCalled) {
   my_capturer = nullptr;
 }
 
+TEST_F(FrameSinkDesktopCapturerTest, ShouldNotCrashIfSelectSourceBeforeStart) {
+  capturer_.SelectSource(kPrimarySourceId);
+  StartCapturerForTesting();
+}
+
 }  // namespace remoting

@@ -11,6 +11,7 @@
 
 namespace views {
 class ImageView;
+class InkDropContainerView;
 class Label;
 class View;
 }  // namespace views
@@ -71,6 +72,9 @@ class GameDashboardButton : public views::Button {
   void AddedToWidget() override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void OnThemeChanged() override;
+  void AddLayerToRegion(ui::Layer* new_layer,
+                        views::LayerRegion region) override;
+  void RemoveLayerFromRegions(ui::Layer* old_layer) override;
 
   // views::Button:
   void StateChanged(ButtonState old_state) override;
@@ -98,6 +102,8 @@ class GameDashboardButton : public views::Button {
   raw_ptr<views::ImageView> gamepad_icon_view_;
   raw_ptr<views::Label> title_view_;
   raw_ptr<views::ImageView> arrow_icon_view_;
+  // Ensures the ink drop is painted above the button's background.
+  raw_ptr<views::InkDropContainerView> ink_drop_container_ = nullptr;
 
   // If true, the game window is being recorded, otherwise false.
   bool is_recording_ = false;

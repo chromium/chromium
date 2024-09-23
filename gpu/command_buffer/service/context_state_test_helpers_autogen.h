@@ -62,11 +62,9 @@ void ContextStateTestHelpers::SetupInitStateExpectations(
   EXPECT_CALL(*gl, DepthMask(true)).Times(1).RetiresOnSaturation();
   EXPECT_CALL(*gl, DepthRange(0.0f, 1.0f)).Times(1).RetiresOnSaturation();
   EXPECT_CALL(*gl, FrontFace(GL_CCW)).Times(1).RetiresOnSaturation();
-  if (!feature_info->gl_version_info().is_desktop_core_profile) {
-    EXPECT_CALL(*gl, Hint(GL_GENERATE_MIPMAP_HINT, GL_DONT_CARE))
-        .Times(1)
-        .RetiresOnSaturation();
-  }
+  EXPECT_CALL(*gl, Hint(GL_GENERATE_MIPMAP_HINT, GL_DONT_CARE))
+      .Times(1)
+      .RetiresOnSaturation();
   if (feature_info->feature_flags().oes_standard_derivatives) {
     EXPECT_CALL(*gl, Hint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT_OES, GL_DONT_CARE))
         .Times(1)

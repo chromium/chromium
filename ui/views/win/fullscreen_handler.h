@@ -6,6 +6,7 @@
 #define UI_VIEWS_WIN_FULLSCREEN_HANDLER_H_
 
 #include <shobjidl.h>
+
 #include <wrl/client.h>
 
 #include "base/memory/weak_ptr.h"

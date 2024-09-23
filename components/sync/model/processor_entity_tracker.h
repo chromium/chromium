@@ -7,13 +7,15 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace sync_pb {
 class EntityMetadata;
@@ -24,14 +26,14 @@ namespace syncer {
 
 class ProcessorEntity;
 
-// This component tracks entities for ClientTagBasedModelTypeProcessor.
+// This component tracks entities for ClientTagBasedDataTypeProcessor.
 class ProcessorEntityTracker {
  public:
   // Creates tracker and fills entities data from batch metadata map. This
   // constructor must be used only if initial_sync_done returns true in
-  // |model_type_state|.
+  // |data_type_state|.
   ProcessorEntityTracker(
-      const sync_pb::ModelTypeState& model_type_state,
+      const sync_pb::DataTypeState& data_type_state,
       std::map<std::string, std::unique_ptr<sync_pb::EntityMetadata>>
           metadata_map);
 
@@ -52,20 +54,29 @@ class ProcessorEntityTracker {
   // Starts tracking new locally-created entity (must not be deleted outside
   // current object). The entity will be created unsynced with pending commit
   // data.
-  ProcessorEntity* AddUnsyncedLocal(const std::string& storage_key,
-                                    std::unique_ptr<EntityData> data,
-                                    sync_pb::EntitySpecifics trimmed_specifics);
+  ProcessorEntity* AddUnsyncedLocal(
+      const std::string& storage_key,
+      std::unique_ptr<EntityData> data,
+      sync_pb::EntitySpecifics trimmed_specifics,
+      std::optional<sync_pb::UniquePosition> unique_position);
 
   // Starts tracking new remotely-created entity (must not be deleted outside
   // current object).
-  ProcessorEntity* AddRemote(const std::string& storage_key,
-                             const UpdateResponseData& update_data,
-                             sync_pb::EntitySpecifics trimmed_specifics);
+  ProcessorEntity* AddRemote(
+      const std::string& storage_key,
+      const UpdateResponseData& update_data,
+      sync_pb::EntitySpecifics trimmed_specifics,
+      std::optional<sync_pb::UniquePosition> unique_position);
 
   // Removes item from |entities_| and |storage_key_to_tag_hash|. If entity does
   // not exist, does nothing.
   void RemoveEntityForClientTagHash(const ClientTagHash& client_tag_hash);
   void RemoveEntityForStorageKey(const std::string& storage_key);
+
+  // Removes items from |entities_| which are associated with a collaboration
+  // which is not active anymore. Returns storage keys for the deleted entities.
+  std::vector<std::string> RemoveInactiveCollaborations(
+      const base::flat_set<std::string>& active_collaborations);
 
   // Removes |storage_key| from |storage_key_to_tag_hash_| and clears it for
   // the corresponding entity. Does not remove the entity from |entities_|.
@@ -95,12 +106,12 @@ class ProcessorEntityTracker {
   // Returns true if there are any local entities to be committed.
   bool HasLocalChanges() const;
 
-  const sync_pb::ModelTypeState& model_type_state() const {
-    return model_type_state_;
+  const sync_pb::DataTypeState& data_type_state() const {
+    return data_type_state_;
   }
 
-  void set_model_type_state(const sync_pb::ModelTypeState& model_type_state) {
-    model_type_state_ = model_type_state;
+  void set_data_type_state(const sync_pb::DataTypeState& data_type_state) {
+    data_type_state_ = data_type_state;
   }
 
   // Returns number of entities, including tombstones.
@@ -126,11 +137,11 @@ class ProcessorEntityTracker {
 
   // A map of client tag hash to sync entities known to this tracker. This
   // should contain entries and metadata, although the entities may not always
-  // contain model type data/specifics.
+  // contain data type data/specifics.
   std::map<ClientTagHash, std::unique_ptr<ProcessorEntity>> entities_;
 
-  // The model type metadata (progress marker, initial sync done, etc).
-  sync_pb::ModelTypeState model_type_state_;
+  // The data type metadata (progress marker, initial sync done, etc).
+  sync_pb::DataTypeState data_type_state_;
 
   // The bridge wants to communicate entirely via storage keys that it is free
   // to define and can understand more easily. All of the sync machinery wants

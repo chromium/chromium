@@ -5,9 +5,9 @@
 #ifndef PDF_PARSED_PARAMS_H_
 #define PDF_PARSED_PARAMS_H_
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -21,8 +21,8 @@ struct ParsedParams {
   ParsedParams();
   ParsedParams(const ParsedParams& other);
   ParsedParams& operator=(const ParsedParams& other);
-  ParsedParams(ParsedParams&& other);
-  ParsedParams& operator=(ParsedParams&& other);
+  ParsedParams(ParsedParams&& other) noexcept;
+  ParsedParams& operator=(ParsedParams&& other) noexcept;
   ~ParsedParams();
 
   // The plugin source URL. Must not be empty.

@@ -16,24 +16,25 @@
 #include "extensions/common/permissions/permissions_data.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/appid_util.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/xu_camera.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
-#include "build/config/chromebox_for_meetings/buildflags.h"
-#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_impl.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_impl.h"
 #include "chromeos/ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom.h"
 #include "chromeos/ash/components/language_packs/language_packs_impl.h"
 #include "chromeos/ash/components/language_packs/public/mojom/language_packs.mojom.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/appid_util.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/xu_camera.mojom.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "chromeos/services/media_perception/public/mojom/media_perception.mojom.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
@@ -53,7 +54,6 @@
 #if BUILDFLAG(PLATFORM_CFM)
 #include "chrome/browser/ash/chromebox_for_meetings/xu_camera/xu_camera_service.h"
 #include "chromeos/ash/components/chromebox_for_meetings/features.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
 #endif
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -141,6 +141,14 @@ void BindRemoteAppsFactory(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+void BindCfmServiceContext(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext> receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  chromeos::cfm::ServiceConnection::GetInstance()->BindServiceContext(
+      std::move(receiver));
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
@@ -165,7 +173,6 @@ void PopulateChromeFrameBindersForExtension(
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  if (ash::cfm::IsChromeboxForMeetingsAppId(extension->id())) {
 // The experimentation framework used to manage the
 // `ash::cfm::features::kMojoServices` feature flag requires
 // Chrome to restart before updates are applied. Meet Devices have
@@ -176,22 +183,10 @@ void PopulateChromeFrameBindersForExtension(
 // flag will be applied to all devices across the fleet.
 // As such we proactively support the case for devices that may be
 // in a different state than expected from the kiosked process.
+// TODO(b/341493979): Deprecate after CfM LaCrOS migration is completed.
 #if BUILDFLAG(PLATFORM_CFM)
-    binder_map->Add<
-        chromeos::cfm::mojom::CfmServiceContext>(base::BindRepeating(
-        [](content::RenderFrameHost* frame_host,
-           mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>
-               receiver) {
-          if (base::FeatureList::IsEnabled(ash::cfm::features::kMojoServices)) {
-            ash::cfm::ServiceConnection::GetInstance()->BindServiceContext(
-                std::move(receiver));
-          } else {
-            receiver.ResetWithReason(
-                static_cast<uint32_t>(
-                    chromeos::cfm::mojom::DisconnectReason::kFinchDisabledCode),
-                chromeos::cfm::mojom::DisconnectReason::kFinchDisabledMessage);
-          }
-        }));
+  if (chromeos::cfm::IsChromeboxForMeetingsHashedAppId(
+          extension->hashed_id().value())) {
     binder_map->Add<ash::cfm::mojom::XuCamera>(base::BindRepeating(
         [](content::RenderFrameHost* frame_host,
            mojo::PendingReceiver<ash::cfm::mojom::XuCamera> receiver) {
@@ -205,41 +200,17 @@ void PopulateChromeFrameBindersForExtension(
                 chromeos::cfm::mojom::DisconnectReason::kFinchDisabledMessage);
           }
         }));
-
-// On first launch some older devices may be running on none-CfM
-// images. For those devices reject all requests until they are
-// rebooted to the CfM image variant for their device.
-#else
-    binder_map->Add<
-        chromeos::cfm::mojom::CfmServiceContext>(base::BindRepeating(
-        [](content::RenderFrameHost* frame_host,
-           mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>
-               receiver) {
-          receiver.ResetWithReason(
-              static_cast<uint32_t>(chromeos::cfm::mojom::DisconnectReason::
-                                        kServiceUnavailableCode),
-              chromeos::cfm::mojom::DisconnectReason::
-                  kServiceUnavailableMessage);
-        }));
-    binder_map->Add<ash::cfm::mojom::XuCamera>(base::BindRepeating(
-        [](content::RenderFrameHost* frame_host,
-           mojo::PendingReceiver<ash::cfm::mojom::XuCamera> receiver) {
-          receiver.ResetWithReason(
-              static_cast<uint32_t>(chromeos::cfm::mojom::DisconnectReason::
-                                        kServiceUnavailableCode),
-              chromeos::cfm::mojom::DisconnectReason::
-                  kServiceUnavailableMessage);
-        }));
-#endif  // BUILDFLAG(PLATFORM_CFM)
   }
+#endif  // BUILDFLAG(PLATFORM_CFM)
 
   if (extension->permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kMediaPerceptionPrivate)) {
     extensions::ExtensionsAPIClient* client =
         extensions::ExtensionsAPIClient::Get();
     extensions::MediaPerceptionAPIDelegate* delegate = nullptr;
-    if (client)
+    if (client) {
       delegate = client->GetMediaPerceptionAPIDelegate();
+    }
     if (delegate) {
       // Note that it is safe to use base::Unretained here because |delegate| is
       // owned by the |client|, which is instantiated by the
@@ -282,6 +253,32 @@ void PopulateChromeFrameBindersForExtension(
         base::BindRepeating(&BindRemoteAppsFactory));
   }
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Only allow specific extensions to bind CfmServiceContext
+  if (chromeos::cfm::IsChromeboxForMeetingsHashedAppId(
+          extension->hashed_id().value())) {
+    binder_map->Add<chromeos::cfm::mojom::CfmServiceContext>(
+        base::BindRepeating(&BindCfmServiceContext));
+
+#if !BUILDFLAG(PLATFORM_CFM)
+// On first launch some older devices may be running on none-CfM
+// images. For those devices reject all requests until they are
+// rebooted to the CfM image variant for their device.
+// This applies to LaCrOS and none CfM Ash builds
+// TODO(b/341493979): Deprecate after CfM LaCrOS migration is completed.
+    binder_map->Add<ash::cfm::mojom::XuCamera>(base::BindRepeating(
+        [](content::RenderFrameHost* frame_host,
+           mojo::PendingReceiver<ash::cfm::mojom::XuCamera> receiver) {
+          receiver.ResetWithReason(
+              static_cast<uint32_t>(chromeos::cfm::mojom::DisconnectReason::
+                                        kServiceUnavailableCode),
+              chromeos::cfm::mojom::DisconnectReason::
+                  kServiceUnavailableMessage);
+        }));
+#endif  // BUILDFLAG(PLATFORM_CFM)
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace extensions

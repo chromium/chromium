@@ -23,6 +23,7 @@ class InlineItem;
 class LogicalLineItems;
 class ShapeResultView;
 struct InlineItemResult;
+struct LogicalRubyColumn;
 
 // Fragments that require the layout position/size of ancestor are packed in
 // this struct.
@@ -83,8 +84,7 @@ struct InlineBoxState {
   // is set.
   bool has_start_edge = false;
   bool has_end_edge = false;
-  LayoutUnit margin_inline_start;
-  LayoutUnit margin_inline_end;
+  LineBoxStrut margins;
   LineBoxStrut borders;
   LineBoxStrut padding;
 
@@ -140,6 +140,14 @@ struct InlineBoxState {
   // inline box.
   bool CanAddTextOfStyle(const ComputedStyle&) const;
 
+  // Adjust `metrics` for `text-box-trim` and `text-box-edge` properties.
+  static void AdjustEdges(const ComputedStyle& style,
+                          const Font& font,
+                          FontBaseline baseline_type,
+                          bool should_apply_over,
+                          bool should_apply_under,
+                          FontHeight& metrics);
+
 #if DCHECK_IS_ON()
   void CheckSame(const InlineBoxState&) const;
 #endif
@@ -150,9 +158,10 @@ struct InlineBoxState {
 // 2) Performs layout when the positin/size of a box was computed.
 // 3) Cache common values for a box.
 class CORE_EXPORT InlineLayoutStateStack {
-  STACK_ALLOCATED();
+  DISALLOW_NEW();
 
  public:
+  void Trace(Visitor* visitor) const;
   // The box state for the line box.
   InlineBoxState& LineBoxState() { return stack_.front(); }
 
@@ -192,7 +201,21 @@ class CORE_EXPORT InlineLayoutStateStack {
 
   void OnBlockInInline(const FontHeight& metrics, LogicalLineItems* line_box);
 
+  LogicalRubyColumn& CreateRubyColumn();
+  LogicalRubyColumn& RubyColumnAt(wtf_size_t index) {
+    return *ruby_column_list_[index];
+  }
+  HeapVector<Member<LogicalRubyColumn>>& RubyColumnList() {
+    return ruby_column_list_;
+  }
+  void ClearRubyColumnList() { ruby_column_list_.Shrink(0); }
+
   bool HasBoxFragments() const { return !box_data_list_.empty(); }
+
+  // Returns a pair of line-over margin and line-under margin if the outermost
+  // element has non-zero block-axis margin, border, or padding.
+  std::optional<std::pair<LayoutUnit, LayoutUnit>>
+  AnnotationBoxBlockAxisMargins() const;
 
   // Notify when child is inserted at |index| to adjust child indexes.
   void ChildInserted(unsigned index);
@@ -212,7 +235,18 @@ class CORE_EXPORT InlineLayoutStateStack {
                                     LayoutUnit position,
                                     bool ignore_box_margin_border_padding);
 
-  void ApplyRelativePositioning(const ConstraintSpace&, LogicalLineItems*);
+  // This should be called when the corresponding LogicalLineItems are moved in
+  // the block direction, and should be called before CreateBoxFragments().
+  // This is necessary only for annotation lines, which requires to move its
+  // LogicalLineItems in the block direction before calling
+  // CreateBoxFragments().
+  void MoveBoxDataInBlockDirection(LayoutUnit diff);
+  // Same for the inline direction.
+  void MoveBoxDataInInlineDirection(LayoutUnit diff);
+
+  void ApplyRelativePositioning(const ConstraintSpace&,
+                                LogicalLineItems*,
+                                const LogicalOffset* parent_offset);
   // Create box fragments. This function turns a flat list of children into
   // a box tree.
   void CreateBoxFragments(const ConstraintSpace&,
@@ -258,9 +292,12 @@ class CORE_EXPORT InlineLayoutStateStack {
   FontHeight MetricsForTopAndBottomAlign(const InlineBoxState&,
                                          const LogicalLineItems&) const;
 
+ public:
   // Data for a box fragment. See AddBoxFragmentPlaceholder().
   // This is a transient object only while building a line box.
+  // This is public only for WTF_ALLOW_CLEAR_UNUSED_SLOTS_*.
   struct BoxData {
+    DISALLOW_NEW();
     BoxData(unsigned start,
             unsigned end,
             const InlineItem* item,
@@ -284,6 +321,8 @@ class CORE_EXPORT InlineLayoutStateStack {
     // The range of child fragments this box contains.
     unsigned fragment_start;
     unsigned fragment_end;
+    // Ruby columns in the above range.
+    Member<HeapVector<Member<LogicalRubyColumn>>> ruby_column_list;
 
     const InlineItem* item;
     LogicalRect rect;
@@ -292,6 +331,8 @@ class CORE_EXPORT InlineLayoutStateStack {
     bool has_line_right_edge = false;
     LineBoxStrut borders;
     LineBoxStrut padding;
+    LayoutUnit margin_line_over;
+    LayoutUnit margin_line_under;
     // |CreateBoxFragment()| needs margin, border+padding, and the sum of them.
     LayoutUnit margin_line_left;
     LayoutUnit margin_line_right;
@@ -301,13 +342,15 @@ class CORE_EXPORT InlineLayoutStateStack {
     unsigned parent_box_data_index = 0;
     unsigned fragmented_box_data_index = 0;
 
-    void UpdateFragmentEdges(Vector<BoxData, 4>& list);
+    void UpdateFragmentEdges(HeapVector<BoxData, 4>& list);
 
     const LayoutResult* CreateBoxFragment(const ConstraintSpace&,
                                           LogicalLineItems*,
                                           bool is_opaque = false);
+    void Trace(Visitor* visitor) const;
   };
 
+ private:
   // Update start/end of the first BoxData found at |index|.
   //
   // If inline fragmentation is found, a new BoxData is added.
@@ -316,21 +359,50 @@ class CORE_EXPORT InlineLayoutStateStack {
   // this function.
   unsigned UpdateBoxDataFragmentRange(LogicalLineItems*,
                                       unsigned index,
-                                      Vector<BoxData>* fragmented_boxes);
+                                      HeapVector<BoxData>* fragmented_boxes);
 
   // Update edges of inline fragmented boxes.
-  void UpdateFragmentedBoxDataEdges(Vector<BoxData>* fragmented_boxes);
+  void UpdateFragmentedBoxDataEdges(HeapVector<BoxData>* fragmented_boxes);
 
   HeapVector<InlineBoxState, 4> stack_;
-  Vector<BoxData, 4> box_data_list_;
+  HeapVector<BoxData, 4> box_data_list_;
+  HeapVector<Member<LogicalRubyColumn>> ruby_column_list_;
 
   bool is_empty_line_ = false;
   bool has_block_in_inline_ = false;
   bool is_svg_text_ = false;
 };
 
+// Represents a ruby column.  This associates LogicalLineItems for a ruby-base
+// and LogicalLineItems for a ruby-text.
+struct CORE_EXPORT LogicalRubyColumn
+    : public GarbageCollected<LogicalRubyColumn> {
+  // Start index of a ruby-base for the corresponding LogicalLineItems.
+  unsigned start_index;
+  // The number of ruby-base items in the corresponding LogicalLineItems.
+  unsigned size;
+  // Inset values applied after bidi reorder.
+  std::pair<LayoutUnit, LayoutUnit> base_insets;
+
+  Member<LogicalLineItems> annotation_items;
+
+  // `ruby-position` property value.
+  RubyPosition ruby_position = RubyPosition::kOver;
+
+  InlineLayoutStateStack state_stack;
+
+  void Trace(Visitor* visitor) const;
+  unsigned EndIndex() const { return start_index + size; }
+  // Nested <ruby>s in `annotation_items`.
+  HeapVector<Member<LogicalRubyColumn>>& RubyColumnList() {
+    return state_stack.RubyColumnList();
+  }
+};
+
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::InlineBoxState)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::InlineLayoutStateStack::BoxData)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_BOX_STATE_H_

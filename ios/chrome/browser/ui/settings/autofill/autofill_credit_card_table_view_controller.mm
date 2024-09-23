@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -20,10 +21,11 @@
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
@@ -33,11 +35,10 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/autofill/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_edit_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/cells/autofill_card_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller+toolbar_add.h"
@@ -50,6 +51,8 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+constexpr base::TimeDelta kUpdatePrefDelay = base::Seconds(0.3);
 
 enum SectionIdentifier : NSInteger {
   SectionIdentifierAutofillCardSwitch = kSectionIdentifierEnumZero,
@@ -139,8 +142,10 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 #pragma mark - properties
 
 - (ReauthenticationModule*)reauthenticationModule {
-  if (ScopedAutofillPaymentReauthModuleOverride::instance) {
-    return ScopedAutofillPaymentReauthModuleOverride::instance->module;
+  id<ReauthenticationProtocol> overrideModule =
+      ScopedAutofillPaymentReauthModuleOverride::Get();
+  if (overrideModule) {
+    return overrideModule;
   }
 
   if (!_reauthenticationModule) {
@@ -207,14 +212,11 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   [model setFooter:[self cardSwitchFooter]
       forSectionWithIdentifier:SectionIdentifierAutofillCardSwitch];
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnablePaymentsMandatoryReauth)) {
-    [model addSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
-    [model addItem:[self mandatoryReauthSwitchItem]
-        toSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
-    [model setFooter:[self mandatoryReauthSwitchFooter]
-        forSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
+  [model addItem:[self mandatoryReauthSwitchItem]
+      toSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
+  [model setFooter:[self mandatoryReauthSwitchFooter]
+      forSectionWithIdentifier:SectionIdentifierMandatoryReauthSwitch];
 
   [self populateCardSection];
 }
@@ -229,12 +231,12 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
   TableViewModel* model = self.tableViewModel;
   const std::vector<autofill::CreditCard*>& creditCards =
-      _personalDataManager->GetCreditCards();
+      _personalDataManager->payments_data_manager().GetCreditCards();
   if (!creditCards.empty()) {
     [model addSectionWithIdentifier:SectionIdentifierCards];
     [model setHeader:[self cardSectionHeader]
         forSectionWithIdentifier:SectionIdentifierCards];
-    for (autofill::CreditCard* creditCard : creditCards) {
+    for (const autofill::CreditCard* creditCard : creditCards) {
       DCHECK(creditCard);
       [model addItem:[self itemForCreditCard:*creditCard]
           toSectionWithIdentifier:SectionIdentifierCards];
@@ -282,8 +284,8 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   BOOL canAttemptReauth = [self.reauthenticationModule canAttemptReauth];
   switchItem.enabled = canAttemptReauth;
   switchItem.on =
-      canAttemptReauth &&
-      _personalDataManager->IsPaymentMethodsMandatoryReauthEnabled();
+      canAttemptReauth && _personalDataManager->payments_data_manager()
+                              .IsPaymentMethodsMandatoryReauthEnabled();
   return switchItem;
 }
 
@@ -302,7 +304,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   return header;
 }
 
-// TODO(crbug.com/1063426): Add egtest for server cards.
+// TODO(crbug.com/40123293): Add egtest for server cards.
 - (TableViewItem*)itemForCreditCard:(const autofill::CreditCard&)creditCard {
   std::string guid(creditCard.guid());
   NSString* creditCardName = autofill::GetCreditCardName(
@@ -325,7 +327,9 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
 - (BOOL)localCreditCardsExist {
   return !_settingsAreDismissed &&
-         !_personalDataManager->GetLocalCreditCards().empty();
+         !_personalDataManager->payments_data_manager()
+              .GetLocalCreditCards()
+              .empty();
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -366,7 +370,8 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   // If 1. reauth is not available or 2. reauth succeeded, we
   // proceed by calling the parent's editButtonPressed. Otherwise return
   // early and do nothing.
-  if (_personalDataManager->IsPaymentMethodsMandatoryReauthEnabled() &&
+  if (_personalDataManager->payments_data_manager()
+          .IsPaymentMethodsMandatoryReauthEnabled() &&
       [self.reauthenticationModule canAttemptReauth]) {
     LogMandatoryReauthSettingsPageDeleteCardEvent(
         MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
@@ -504,16 +509,27 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   [self setSwitchItemOn:[switchView isOn]
                itemType:ItemTypeAutofillCardSwitch
       sectionIdentifier:SectionIdentifierAutofillCardSwitch];
-  [self setAutofillCreditCardEnabled:[switchView isOn]];
-  self.addButtonInToolbar.enabled = [self isAutofillCreditCardEnabled];
+
+  // Delay updating the pref when VoiceOver is running to prevent a temporary
+  // focus shift due to simultaneous UI updates, see crbug.com/326923292.
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    __weak __typeof(self) weakSelf = self;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf
+              updateAutofillCreditCardPrefAndToolbarForState:[switchView isOn]];
+        }),
+        kUpdatePrefDelay);
+  } else {
+    [self updateAutofillCreditCardPrefAndToolbarForState:[switchView isOn]];
+  }
 }
 
 - (void)mandatoryReauthSwitchChanged:(UISwitch*)switchView {
   if ([self.reauthenticationModule canAttemptReauth]) {
     // Get the original value.
-    BOOL mandatoryReauthEnabled =
-        _personalDataManager->IsPaymentMethodsMandatoryReauthEnabled();
-    CHECK_NE(mandatoryReauthEnabled, switchView.isOn);
+    BOOL mandatoryReauthEnabled = _personalDataManager->payments_data_manager()
+                                      .IsPaymentMethodsMandatoryReauthEnabled();
     LogMandatoryReauthOptInOrOutUpdateEvent(
         MandatoryReauthOptInOrOutSource::kSettingsPage,
         /*opt_in=*/!mandatoryReauthEnabled,
@@ -603,10 +619,11 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
     return;
 
   const std::vector<autofill::CreditCard*>& creditCards =
-      _personalDataManager->GetCreditCards();
+      _personalDataManager->payments_data_manager().GetCreditCards();
   autofill::CreditCard selectedCard = *creditCards[indexPath.item];
   if (autofill::IsCreditCardLocal(selectedCard) &&
-      _personalDataManager->IsPaymentMethodsMandatoryReauthEnabled() &&
+      _personalDataManager->payments_data_manager()
+          .IsPaymentMethodsMandatoryReauthEnabled() &&
       [self.reauthenticationModule canAttemptReauth]) {
     [self attemptReauthenticationForEditCard:selectedCard];
   } else {
@@ -828,8 +845,8 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 // result.
 - (void)handleReauthenticationResult:(ReauthenticationResult)result {
   // Get the original value.
-  BOOL mandatoryReauthEnabled =
-      _personalDataManager->IsPaymentMethodsMandatoryReauthEnabled();
+  BOOL mandatoryReauthEnabled = _personalDataManager->payments_data_manager()
+                                    .IsPaymentMethodsMandatoryReauthEnabled();
 
   MandatoryReauthAuthenticationFlowEvent flow_event;
   if (result == ReauthenticationResult::kFailure) {
@@ -841,8 +858,8 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
   } else {
     // Upon success, update the mandatory reauth pref and the switch.
-    _personalDataManager->SetPaymentMethodsMandatoryReauthEnabled(
-        !mandatoryReauthEnabled);
+    _personalDataManager->payments_data_manager()
+        .SetPaymentMethodsMandatoryReauthEnabled(!mandatoryReauthEnabled);
     [self setSwitchItemOn:!mandatoryReauthEnabled
                  itemType:ItemTypeMandatoryReauthSwitch
         sectionIdentifier:SectionIdentifierMandatoryReauthSwitch];
@@ -851,6 +868,13 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   LogMandatoryReauthOptInOrOutUpdateEvent(
       MandatoryReauthOptInOrOutSource::kSettingsPage,
       /*opt_in=*/!mandatoryReauthEnabled, flow_event);
+}
+
+// Updates the Autofill Credit Card pref and the view controller's toolbar
+// according to the provided `enabled` state.
+- (void)updateAutofillCreditCardPrefAndToolbarForState:(BOOL)enabled {
+  [self setAutofillCreditCardEnabled:enabled];
+  self.addButtonInToolbar.enabled = [self isAutofillCreditCardEnabled];
 }
 
 #pragma mark - AutofillAddCreditCardCoordinatorDelegate

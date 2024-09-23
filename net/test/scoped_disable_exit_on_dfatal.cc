@@ -4,9 +4,10 @@
 
 #include "net/test/scoped_disable_exit_on_dfatal.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 
 namespace net::test {
 
@@ -19,8 +20,8 @@ ScopedDisableExitOnDFatal::~ScopedDisableExitOnDFatal() = default;
 void ScopedDisableExitOnDFatal::LogAssertHandler(
     const char* file,
     int line,
-    const base::StringPiece message,
-    const base::StringPiece stack_trace) {
+    const std::string_view message,
+    const std::string_view stack_trace) {
   // Simply swallow the assert.
 }
 

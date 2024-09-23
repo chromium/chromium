@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/trash_service/public/cpp/trash_service.h"
 
+#include <limits.h>
+
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -37,31 +39,24 @@ namespace {
 // with all remaining data being valid.
 struct TrashInfoContents {
   std::string header = "[Trash Info]";
-  std::string restore_path = "Path=/foo/bar.txt";
-  std::string deletion_date = "DeletionDate=2022-07-18T10:13:00.000Z";
+  std::string path_line = "Path=/foo/bar.txt";
+  std::string date_line = "DeletionDate=2022-07-18T10:13:00.000Z";
+
+  base::FilePath restore_path{"/foo/bar.txt"};
 
   std::string ToString() const {
-    return base::StrCat({header, "\n", restore_path, "\n", deletion_date});
+    return base::StrCat({header, "\n", path_line, "\n", date_line});
   }
 
   base::Time GetDeletionDate() const {
     std::vector<std::string_view> key_value =
-        base::SplitStringPiece(std::string_view(deletion_date), "=",
+        base::SplitStringPiece(std::string_view(date_line), "=",
                                base::WhitespaceHandling::TRIM_WHITESPACE,
                                base::SplitResult::SPLIT_WANT_ALL);
     EXPECT_EQ(2UL, key_value.size());
     base::Time time;
     EXPECT_TRUE(base::Time::FromUTCString(key_value[1].data(), &time));
     return time;
-  }
-
-  base::FilePath GetRestorePath() const {
-    std::vector<std::string_view> key_value =
-        base::SplitStringPiece(std::string_view(restore_path), "=",
-                               base::WhitespaceHandling::TRIM_WHITESPACE,
-                               base::SplitResult::SPLIT_WANT_ALL);
-    EXPECT_EQ(2UL, key_value.size());
-    return base::FilePath(key_value[1]);
   }
 };
 
@@ -104,7 +99,7 @@ class TrashServiceTest : public ::testing::Test {
     base::MockCallback<ParseTrashInfoCallback> complete_callback;
     base::RunLoop run_loop;
     EXPECT_CALL(complete_callback,
-                Run(base::File::FILE_OK, file_contents.GetRestorePath(),
+                Run(base::File::FILE_OK, file_contents.restore_path,
                     file_contents.GetDeletionDate()))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
 
@@ -141,10 +136,11 @@ TEST_F(TrashServiceTest, NonexistingFileShouldReturnNotFound) {
 
 TEST_F(TrashServiceTest, PathExceedingMaxAllowableLengthShouldFail) {
   // Create a valid path that exceeds `PATH_MAX`.
-  base::FilePath restore_path =
-      base::FilePath("/foo").Append(std::string(PATH_MAX, 'f')).Append("foo");
   TrashInfoContents file_contents;
-  file_contents.restore_path = base::StrCat({"Path=", restore_path.value()});
+  file_contents.restore_path =
+      base::FilePath("/foo").Append(std::string(PATH_MAX, 'f')).Append("foo");
+  file_contents.path_line =
+      base::StrCat({"Path=", file_contents.restore_path.value()});
 
   // Setup the test file as a well-formed file but with a path that will cause
   // the read buffer to go over.
@@ -165,9 +161,8 @@ TEST_F(TrashServiceTest, ValidFileWithExtraDataIgnoresOverflow) {
 
   base::MockCallback<ParseTrashInfoCallback> complete_callback;
   base::RunLoop run_loop;
-  EXPECT_CALL(complete_callback,
-              Run(base::File::FILE_OK, contents.GetRestorePath(),
-                  contents.GetDeletionDate()))
+  EXPECT_CALL(complete_callback, Run(base::File::FILE_OK, contents.restore_path,
+                                     contents.GetDeletionDate()))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   trash_impl_->ParseTrashInfoFile(std::move(trash_info_file),
@@ -194,7 +189,7 @@ TEST_F(TrashServiceTest, InvalidTrashInfoHeaderScenarios) {
   {
     TrashInfoContents contents;
     std::string file_contents =
-        base::StrCat({contents.restore_path, "\n", contents.deletion_date});
+        base::StrCat({contents.path_line, "\n", contents.date_line});
     ExpectParsingFailedForFileContents(file_contents);
   }
 }
@@ -204,21 +199,43 @@ TEST_F(TrashServiceTest, InvalidPathKeyValueScenarios) {
   {
     TrashInfoContents contents;
     std::string file_contents =
-        base::StrCat({contents.header, "\n", contents.deletion_date});
+        base::StrCat({contents.header, "\n", contents.date_line});
     ExpectParsingFailedForFileContents(file_contents);
   }
 
-  const std::vector<std::string> kInvalidPaths = {{
-      "/foo/bar.txt",            // Missing "Path=" key.
-      "Patn=/foo/bar.txt",       // Misspelled "Path=" key.
-      "Path=/foo/../bar.txt",    // Path references parent.
+  // Create a too-long path where each component is valid.
+  std::string long_path;
+  for (int i = 0; long_path.size() < PATH_MAX; ++i) {
+    long_path += '/';
+    long_path.append(200, static_cast<char>('a' + i));
+  }
+  long_path.resize(PATH_MAX);
+
+  const std::vector<std::string> lines = {{
+      "/foo/bar",                // Missing "Path=" key.
+      "Patn=/foo/bar",           // Misspelled "Path=" key.
+      "Path=/foo/../bar",        // Path references parent.
+      "Path=/foo/%2e%2E/bar",    // Path references parent in a sneaky way.
+      "Path=/foo/./bar",         // Path references current dir.
+      "Path=/foo/%2e/bar",       // Path references current dir in a sneaky way.
       "Path=relative/path.txt",  // Relative file path.
       "Path=",                   // Empty path.
       "Path=bar"                 // Relative folder path.
+      "Path=foo/bar"             // Relative path.
+      "Path=/",                  // Root path.
+      "Path=%2f",                // Root path in a sneaky way.
+      "Path=/////",              // Root path.
+      "Path=//server/foo/bar",   // UNC-style path.
+      "Path=/foo%00/bar",        // Embedded NUL byte.
+      "Path=/foo%ff/bar",        // Non UTF-8.
+      base::StrCat(
+          {"Path=/", std::string(NAME_MAX + 1, 'x')}),  // Long component.
+      base::StrCat({"Path=", long_path}),               // Long path.
   }};
-  for (const auto& path : kInvalidPaths) {
+
+  for (const std::string& line : lines) {
     TrashInfoContents contents;
-    contents.restore_path = path;
+    contents.path_line = line;
     ExpectParsingFailedForFileContents(contents.ToString());
   }
 }
@@ -228,7 +245,7 @@ TEST_F(TrashServiceTest, InvalidDeletionDateKeyValueScenarios) {
   {
     TrashInfoContents contents;
     std::string file_contents =
-        base::StrCat({contents.header, "\n", contents.restore_path});
+        base::StrCat({contents.header, "\n", contents.path_line});
     ExpectParsingFailedForFileContents(file_contents);
   }
 
@@ -243,24 +260,27 @@ TEST_F(TrashServiceTest, InvalidDeletionDateKeyValueScenarios) {
   }};
   for (const auto& date : kInvalidDeletionDates) {
     TrashInfoContents contents;
-    contents.deletion_date = date;
+    contents.date_line = date;
     ExpectParsingFailedForFileContents(contents.ToString());
   }
 }
 
 TEST_F(TrashServiceTest, ValidPathKeyValueScenarios) {
+  TrashInfoContents contents;
+
   const std::vector<std::string> kValidPaths = {{
       "Path=/foo/bar.txt",      // Happy path.
       "   Path=/foo/bar.txt",   // Leading whitespace is ignored.
       "Path=/foo/bar.txt    ",  // Trailing whitespace is ignored.
-      "Path=/foo/bar",          // Absolute folder path.
-      "Path=/foo.txt"           // Relative file path.
   }};
   for (const auto& path : kValidPaths) {
-    TrashInfoContents contents;
-    contents.restore_path = path;
+    contents.path_line = path;
     ExpectParsingSucceedsForFileContents(contents);
   }
+
+  contents.path_line = "Path=/%09new%0aline%25%20";
+  contents.restore_path = base::FilePath("/\tnew\nline% ");
+  ExpectParsingSucceedsForFileContents(contents);
 }
 
 TEST_F(TrashServiceTest, ValidDeletionDateKeyValueScenarios) {
@@ -273,7 +293,7 @@ TEST_F(TrashServiceTest, ValidDeletionDateKeyValueScenarios) {
   }};
   for (const auto& date : kValidDeletionDates) {
     TrashInfoContents contents;
-    contents.deletion_date = date;
+    contents.date_line = date;
     ExpectParsingSucceedsForFileContents(contents);
   }
 }

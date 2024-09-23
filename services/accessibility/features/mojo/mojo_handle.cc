@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/accessibility/features/mojo/mojo_handle.h"
 
 #include <memory>
 
 #include "base/logging.h"
+#include "base/types/fixed_array.h"
 #include "gin/arguments.h"
 #include "gin/array_buffer.h"
 #include "gin/converter.h"
@@ -208,23 +214,19 @@ void MojoHandle::WriteMessage(gin::Arguments* arguments) {
     return;
   }
 
-  const void* bytes = nullptr;
-  size_t num_bytes = 0;
+  base::span<const uint8_t> bytes;
   if (args[0]->IsArrayBuffer()) {
     v8::Local<v8::ArrayBuffer> array = args[0].As<v8::ArrayBuffer>();
-    bytes = array->Data();
-    num_bytes = array->ByteLength();
+    bytes = base::make_span(static_cast<const uint8_t*>(array->Data()),
+                            array->ByteLength());
   } else {
     v8::Local<v8::ArrayBufferView> view = args[0].As<v8::ArrayBufferView>();
-    num_bytes = view->ByteLength();
-    void* bites[num_bytes];
-    view->CopyContents(bites, num_bytes);
-    bytes = bites;
+    base::FixedArray<uint8_t> bites(view->ByteLength());
+    view->CopyContents(bites.data(), bites.size());
+    bytes = base::span(bites);
   }
 
-  auto message = mojo::Message(
-      base::make_span(static_cast<const uint8_t*>(bytes), num_bytes),
-      base::make_span(scoped_handles));
+  auto message = mojo::Message(bytes, base::make_span(scoped_handles));
   DCHECK(!message.IsNull());
   MojoResult result = mojo::WriteMessageNew(
       mojo::MessagePipeHandle(handle_.get().value()), message.TakeMojoMessage(),

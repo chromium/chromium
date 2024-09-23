@@ -141,7 +141,7 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
     // the `navigation`-level data, but there are sometimes discrepancies in
     // practice (e.g. see https://crbug.com/1362322).
     //
-    // TODO(https://crbug.com/1373216): Reintroduce DCHECKs that verify
+    // TODO(crbug.com/40871594): Reintroduce DCHECKs that verify
     // consistency between `navigation->referrer_url()` and
     // `entry->GetReferrer().url` (and between referrer policies restored in
     // `entry` and remembered in `navigation`).

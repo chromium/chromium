@@ -2,20 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/vr/android/arcore/arcore_gl.h"
 
 #include <algorithm>
 #include <iomanip>
 #include <limits>
 #include <utility>
+
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/jni_android.h"
+#include "base/barrier_callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -33,7 +41,6 @@
 #include "device/vr/util/transform_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gl/gl_bindings.h"
@@ -44,7 +51,7 @@
 #include "ui/gl/init/gl_factory.h"
 
 namespace {
-// TODO(https://crbug.com/1192867): Some pages can hang if we try to wait for
+// TODO(crbug.com/40757470): Some pages can hang if we try to wait for
 // the compositor to acknowledge receipt of a frame before moving it to the
 // "rendering" state of the state machine. However, not doing so could increase
 // the latency of frames under heavy load as we aren't listening to back
@@ -262,7 +269,7 @@ void ArCoreGl::Initialize(
 
   initialized_callback_ = std::move(callback);
 
-  // TODO(https://crbug.com/953503): start using the list to control the
+  // TODO(crbug.com/41453315): start using the list to control the
   // behavior of local and unbounded spaces & send appropriate data back in
   // GetFrameData().
   enabled_features_ = maybe_initialize_result->enabled_features;
@@ -445,8 +452,8 @@ bool ArCoreGl::InitializeGl(gfx::AcceleratedWidget drawing_widget) {
 
   // ARCore provides the camera image as a native GL texture and doesn't support
   // ANGLE, so disable it.
-  // TODO(crbug.com/1170580): support ANGLE with cardboard?
-  gl::init::DisableANGLE();
+  // TODO(crbug.com/40744597): support ANGLE with cardboard?
+  gl::DisableANGLE();
 
   gl::GLDisplay* display = nullptr;
   if (gl::GetGLImplementation() == gl::kGLImplementationNone) {
@@ -592,10 +599,10 @@ void ArCoreGl::RecalculateUvsAndProjection() {
 
   // VRFieldOfView wants positive angles.
   mojom::VRFieldOfViewPtr field_of_view = mojom::VRFieldOfView::New();
-  field_of_view->left_degrees = gfx::RadToDeg(atanf(-left / depth_near));
-  field_of_view->right_degrees = gfx::RadToDeg(atanf(right / depth_near));
-  field_of_view->down_degrees = gfx::RadToDeg(atanf(-bottom / depth_near));
-  field_of_view->up_degrees = gfx::RadToDeg(atanf(top / depth_near));
+  field_of_view->left_degrees = base::RadToDeg(atanf(-left / depth_near));
+  field_of_view->right_degrees = base::RadToDeg(atanf(right / depth_near));
+  field_of_view->down_degrees = base::RadToDeg(atanf(-bottom / depth_near));
+  field_of_view->up_degrees = base::RadToDeg(atanf(top / depth_near));
   DVLOG(3) << " fov degrees up=" << field_of_view->up_degrees
            << " down=" << field_of_view->down_degrees
            << " left=" << field_of_view->left_degrees
@@ -717,12 +724,15 @@ void ArCoreGl::GetFrameData(
     // Note that even though the buffers are re-used this does not leak data
     // as the decision of whether or not the renderer gets camera frames is made
     // on a per-session and not a per-frame basis.
-    gpu::MailboxHolder camera_image_buffer_holder =
+    WebXrSharedBuffer* shared_buffer =
         ar_image_transport_->TransferCameraImageFrame(
             webxr_.get(), camera_image_size_, uv_transform_);
+    CHECK(shared_buffer);
 
     if (IsFeatureEnabled(device::mojom::XRSessionFeature::CAMERA_ACCESS)) {
-      frame_data->camera_image_buffer_holder = camera_image_buffer_holder;
+      frame_data->camera_image_buffer_shared_image =
+          shared_buffer->shared_image->Export();
+      frame_data->camera_image_buffer_sync_token = shared_buffer->sync_token;
       frame_data->camera_image_size = camera_image_size_;
     }
   }
@@ -753,9 +763,11 @@ void ArCoreGl::GetFrameData(
   if (ArImageTransport::UseSharedBuffer()) {
     // Set up a shared buffer for the renderer to draw into, it'll be sent
     // alongside the frame pose.
-    gpu::MailboxHolder buffer_holder = ar_image_transport_->TransferFrame(
+    WebXrSharedBuffer* shared_buffer = ar_image_transport_->TransferFrame(
         webxr_.get(), transfer_size_, uv_transform_);
-    frame_data->buffer_holder = buffer_holder;
+    CHECK(shared_buffer);
+    frame_data->buffer_shared_image = shared_buffer->shared_image->Export();
+    frame_data->buffer_sync_token = shared_buffer->sync_token;
   }
 
   // Create the frame data to return to the renderer.
@@ -989,20 +1001,20 @@ void ArCoreGl::FinishRenderingFrame(WebXrFrame* frame) {
   // be in use. In this case, we'll have received sync tokens to wait on until
   // the GPU is *actually* done with the resources associated with the frame.
   if (!frame->reclaimed_sync_tokens.empty()) {
-    // We need one frame token for the interface to create the GPU fence (which
-    // under the covers just waits on it before creating the fence). It doesn't
-    // matter which order we wait on the tokens, as if we pick the "latest"
-    // token to Wait on first, the wait calls on the "earlier" tokens will just
-    // be a no-op. Since we have at least one token, we'll use that token to
-    // create the GPU fence and just wait on the others here and now. If we only
-    // have one token, then the loop below will just be skipped over.
-    for (size_t i = 1; i < frame->reclaimed_sync_tokens.size(); i++) {
-      ar_image_transport_->WaitSyncToken(frame->reclaimed_sync_tokens[i]);
+    auto barrier_callback =
+        base::BarrierCallback<std::unique_ptr<gfx::GpuFence>>(
+            frame->reclaimed_sync_tokens.size(),
+            base::BindOnce(&ArCoreGl::OnReclaimedGpuFenceAvailable,
+                           GetWeakPtr(), frame));
+    // We'll have to wait until the latest fence resolves and any earlier waits
+    // will simply become no-ops if they are waited on after that fence, so we
+    // don't need to try to do anything fancy with regards to the ordering of
+    // the tokens.
+    for (const auto& reclaimed_sync_token : frame->reclaimed_sync_tokens) {
+      ar_image_transport_->WaitSyncToken(reclaimed_sync_token);
+      ar_image_transport_->CreateGpuFenceForSyncToken(reclaimed_sync_token,
+                                                      barrier_callback);
     }
-    ar_image_transport_->CreateGpuFenceForSyncToken(
-        frame->reclaimed_sync_tokens[0],
-        base::BindOnce(&ArCoreGl::OnReclaimedGpuFenceAvailable, GetWeakPtr(),
-                       frame));
     frame->reclaimed_sync_tokens.clear();
   } else {
     // We didn't have any frame tokens, so just finish up this frame now.
@@ -1015,17 +1027,19 @@ void ArCoreGl::FinishRenderingFrame(WebXrFrame* frame) {
 
 void ArCoreGl::OnReclaimedGpuFenceAvailable(
     WebXrFrame* frame,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
+    std::vector<std::unique_ptr<gfx::GpuFence>> gpu_fences) {
   TRACE_EVENT1("gpu", __func__, "frame", frame->index);
   DVLOG(3) << __func__ << ": frame=" << frame->index;
 
-  ar_image_transport_->ServerWaitForGpuFence(std::move(gpu_fence));
+  for (auto& gpu_fence : gpu_fences) {
+    ar_image_transport_->ServerWaitForGpuFence(std::move(gpu_fence));
+  }
 
   // The ServerWait above is enough that we could re-use this frame now, since
   // its usage is now appropriately synchronized; however, we have no way of
   // getting the time that the gpu fence triggered, which we need for the
   // rendered frame stats that drive dynamic viewport scaling.
-  // TODO(https://crbug.com/1188302): It appears as though we are actually
+  // TODO(crbug.com/40754792): It appears as though we are actually
   // placing/waiting on this fence after the frame *after* this current frame.
   frame->render_completion_fence = gl::GLFence::CreateForGpuFence();
 
@@ -1084,7 +1098,7 @@ void ArCoreGl::GetRenderedFrameStats(WebXrFrame* frame) {
   // the WritesDone time reported via OnBeginFrame's timing_data instead, but
   // those aren't guaranteed to be available. See also the GPU load
   // estimate in rendering_time_ratio_ which uses a different calculation.
-  // TODO(https://crbug.com/1382589): revisit this calculation?
+  // TODO(crbug.com/40877379): revisit this calculation?
   base::TimeTicks completion_time = now;
   DCHECK(frame->render_completion_fence);
   completion_time = static_cast<gl::GLFenceAndroidNativeFenceSync*>(
@@ -1330,9 +1344,11 @@ void ArCoreGl::SubmitFrameDrawnIntoTexture(int16_t frame_index,
   if (!IsSubmitFrameExpected(frame_index))
     return;
 
-  // The previous sync token has been consumed by the renderer process, if we
-  // want to use this buffer again, we need to wait on this token.
+  // The previous sync token has been consumed by the renderer process, so we
+  // need to set this one for use by the compositor.
   webxr_->GetAnimatingFrame()->shared_buffer->sync_token = sync_token;
+  webxr_->GetAnimatingFrame()->camera_image_shared_buffer->sync_token =
+      sync_token;
 
   // Start processing the frame now if possible. If there's already a current
   // processing frame, defer it until that frame calls TryDeferredProcessing.
@@ -1583,7 +1599,9 @@ void ArCoreGl::ProcessFrame(
   }
 
   if (IsFeatureEnabled(device::mojom::XRSessionFeature::DEPTH)) {
-    frame_data->depth_data = arcore_->GetDepthData();
+    // We only return a single view.
+    CHECK(frame_data->views.size() > 0);
+    frame_data->views[0]->depth_data = arcore_->GetDepthData();
   }
 
   if (IsFeatureEnabled(device::mojom::XRSessionFeature::IMAGE_TRACKING)) {

@@ -126,7 +126,7 @@ inline std::string RequestTypeToString(projector::mojom::RequestType method) {
       return "DELETE";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // The maximum number of retries for the SimpleURLLoader requests. Three times

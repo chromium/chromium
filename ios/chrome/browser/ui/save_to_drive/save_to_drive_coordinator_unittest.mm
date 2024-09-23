@@ -6,9 +6,12 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/account_picker_commands.h"
@@ -18,10 +21,8 @@
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/account_picker/account_picker_configuration.h"
-#import "ios/chrome/browser/ui/account_picker/account_picker_coordinator.h"
-#import "ios/chrome/browser/ui/account_picker/account_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_coordinator.h"
@@ -51,9 +52,13 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
   void SetUp() final {
     PlatformTest::SetUp();
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     drive_service_ =
         drive::DriveServiceFactory::GetForBrowserState(browser_state_.get());
+    account_manager_service_ =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            browser_state_.get());
+    pref_service_ = browser_state_->GetPrefs();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
@@ -96,6 +101,8 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
                 manageStorageAlertHandler:[OCMArg any]
                        applicationHandler:[OCMArg any]
                      accountPickerHandler:[OCMArg any]
+                              prefService:pref_service_
+                    accountManagerService:account_manager_service_
                              driveService:drive_service_])
         .andReturn(mock_save_to_drive_mediator_);
   }
@@ -125,6 +132,8 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
   UIViewController* base_view_controller_;
   std::unique_ptr<web::FakeDownloadTask> download_task_;
   raw_ptr<drive::DriveService> drive_service_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<ChromeAccountManagerService> account_manager_service_;
 
   id mock_save_to_drive_mediator_;
   id mock_save_to_drive_commands_handler_;
@@ -155,6 +164,8 @@ TEST_F(SaveToDriveCoordinatorTest, StartsAndDisconnectsMediator) {
                        applicationHandler:static_cast<id<ApplicationCommands>>(
                                               browser_->GetCommandDispatcher())
                      accountPickerHandler:account_picker_commands
+                              prefService:pref_service_
+                    accountManagerService:account_manager_service_
                              driveService:drive_service_])
       .andReturn(mock_save_to_drive_mediator_);
   [coordinator start];

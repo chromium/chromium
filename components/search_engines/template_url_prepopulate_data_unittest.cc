@@ -2,33 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/search_engines/template_url_prepopulate_data.h"
 
 #include <stddef.h>
 
 #include <memory>
+#include <numeric>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/files/scoped_temp_dir.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
 #include "components/google/core/common/google_switches.h"
+#include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-#include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data_util.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/search_engines/testing_search_terms_data.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -153,21 +162,15 @@ void CheckTemplateUrlRefIsCryptographic(const TemplateURLRef& url_ref) {
 
 class TemplateURLPrepopulateDataTest : public testing::Test {
  public:
-  void SetUp() override {
-    TemplateURLPrepopulateData::RegisterProfilePrefs(prefs_.registry());
-    TemplateURLService::RegisterProfilePrefs(prefs_.registry());
-
-    search_engine_choice_service_ =
-        std::make_unique<search_engines::SearchEngineChoiceService>(prefs_);
+  search_engines::SearchEngineChoiceService* search_engine_choice_service() {
+    return &search_engines_test_environment_.search_engine_choice_service();
   }
 
-  search_engines::SearchEngineChoiceService* search_engine_choice_service() {
-    return search_engine_choice_service_.get();
+  sync_preferences::TestingPrefServiceSyncable* pref_service() {
+    return &search_engines_test_environment_.pref_service();
   }
 
   void SetupForChoiceScreenDisplay() {
-    feature_list_.Reset();
-    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
     // Pick any EEA country
     const int kFranceCountryId =
         country_codes::CountryCharsToCountryID('F', 'R');
@@ -187,10 +190,7 @@ class TemplateURLPrepopulateDataTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
-  sync_preferences::TestingPrefServiceSyncable prefs_;
-  std::unique_ptr<search_engines::SearchEngineChoiceService>
-      search_engine_choice_service_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
 };
 
 // Verifies the set of prepopulate data doesn't contain entries with duplicate
@@ -200,7 +200,7 @@ TEST_F(TemplateURLPrepopulateDataTest, UniqueIDs) {
     OverrideCountryId(country_id);
     std::vector<std::unique_ptr<TemplateURLData>> urls =
         TemplateURLPrepopulateData::GetPrepopulatedEngines(
-            &prefs_, search_engine_choice_service(), nullptr);
+            pref_service(), search_engine_choice_service());
     std::set<int> unique_ids;
     for (const std::unique_ptr<TemplateURLData>& url : urls) {
       ASSERT_TRUE(unique_ids.find(url->prepopulate_id) == unique_ids.end());
@@ -210,40 +210,68 @@ TEST_F(TemplateURLPrepopulateDataTest, UniqueIDs) {
 }
 
 // Verifies that the prepopulated search engines configured by country are
-// consistent with the set of countries in EeaChoiceCountry. For example, when
-// in EEA they should have more than 5, and outside of EEA not more than 5.
+// consistent with the set of countries in EeaChoiceCountry. For example, the
+// per region limits `kMaxEeaPrepopulatedEngines` and
+// `kMaxRowPrepopulatedEngines` should apply as expected.
 TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
-  const size_t kMinEea = 6;
-  const size_t kMaxEea = 12;
+  const size_t kMinEea = 8;
   const size_t kMinRow = 3;
-  const size_t kMaxRow = 5;
 
   for (int country_id : kAllCountryIds) {
     OverrideCountryId(country_id);
 
     const size_t kNumberOfSearchEngines =
         TemplateURLPrepopulateData::GetPrepopulatedEngines(
-            &prefs_, search_engine_choice_service(),
-            /*default_search_provider_index=*/nullptr)
+            pref_service(), search_engine_choice_service())
             .size();
 
     if (search_engines::IsEeaChoiceCountry(country_id)) {
       EXPECT_GE(kNumberOfSearchEngines, kMinEea)
           << " for country "
           << country_codes::CountryIDToCountryString(country_id);
-      EXPECT_LE(kNumberOfSearchEngines, kMaxEea)
+      EXPECT_LE(kNumberOfSearchEngines,
+                TemplateURLPrepopulateData::kMaxEeaPrepopulatedEngines)
           << " for country "
           << country_codes::CountryIDToCountryString(country_id);
     } else {
       EXPECT_GE(kNumberOfSearchEngines, kMinRow)
           << " for country "
           << country_codes::CountryIDToCountryString(country_id);
-      EXPECT_LE(kNumberOfSearchEngines, kMaxRow)
+      EXPECT_LE(kNumberOfSearchEngines,
+                TemplateURLPrepopulateData::kMaxRowPrepopulatedEngines)
           << " for country "
           << country_codes::CountryIDToCountryString(country_id);
     }
+  }
+}
+
+TEST_F(TemplateURLPrepopulateDataTest, EntriesPerCountryConsistency) {
+  for (int country_id : kAllCountryIds) {
+    if (!search_engines::IsEeaChoiceCountry(country_id)) {
+      // "unhandled" countries can cause some issues when inheriting a config
+      // from an EEA country. Covering them via
+      // TemplateURLPrepopulateDataTest.NumberOfEntriesPerCountryConsistency is
+      // enough, so they we exclude non-EEA countries in the rest of this test
+      // for simplicity.
+      continue;
+    }
+
+    OverrideCountryId(country_id);
+
+    // Obtained by calling the normal API to fetch engines for the current
+    // country.
+    std::vector<std::string> actual_urls =
+        base::ToVector(TemplateURLPrepopulateData::GetPrepopulatedEngines(
+                           pref_service(), search_engine_choice_service()),
+                       [](const auto& t_url) { return t_url->url(); });
+
+    // Pulled straight from the country -> engine mapping.
+    auto expected_urls = base::ToVector(
+        TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
+            country_id),
+        &TemplateURLPrepopulateData::PrepopulatedEngine::search_url);
+
+    EXPECT_THAT(actual_urls, testing::UnorderedElementsAreArray(expected_urls));
   }
 }
 
@@ -257,12 +285,10 @@ TEST_F(TemplateURLPrepopulateDataTest,
   // same.
   std::vector<std::unique_ptr<TemplateURLData>> t_urls_1 =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          &prefs_, search_engine_choice_service(),
-          /*default_search_provider_index=*/nullptr);
+          pref_service(), search_engine_choice_service());
   std::vector<std::unique_ptr<TemplateURLData>> t_urls_2 =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          &prefs_, search_engine_choice_service(),
-          /*default_search_provider_index=*/nullptr);
+          pref_service(), search_engine_choice_service());
 
   ASSERT_EQ(t_urls_1.size(), t_urls_2.size());
   for (size_t i = 0; i < t_urls_1.size(); i++) {
@@ -279,17 +305,15 @@ TEST_F(TemplateURLPrepopulateDataTest,
 
   std::vector<std::unique_ptr<TemplateURLData>> t_urls =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          &prefs_, search_engine_choice_service(),
-          /*default_search_provider_index=*/nullptr);
+          pref_service(), search_engine_choice_service());
 
   // Change the saved chrome milestone to something else.
-  prefs_.SetInteger(prefs::kDefaultSearchProviderChoiceScreenShuffleMilestone,
-                    3);
+  pref_service()->SetInteger(
+      prefs::kDefaultSearchProviderChoiceScreenShuffleMilestone, 3);
 
   std::vector<std::unique_ptr<TemplateURLData>> t_urls_after_update =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          &prefs_, search_engine_choice_service(),
-          /*default_search_provider_index=*/nullptr);
+          pref_service(), search_engine_choice_service());
 
   ASSERT_EQ(t_urls.size(), t_urls_after_update.size());
   bool is_order_same = true;
@@ -308,8 +332,8 @@ TEST_F(TemplateURLPrepopulateDataTest,
 // Verifies that default search providers from the preferences file
 // override the built-in ones.
 TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrefs) {
-  prefs_.SetUserPref(prefs::kSearchProviderOverridesVersion,
-                     std::make_unique<base::Value>(1));
+  pref_service()->SetUserPref(prefs::kSearchProviderOverridesVersion,
+                              std::make_unique<base::Value>(1));
   base::Value::List overrides;
 
   // Set only the minimal required settings for a search provider configuration.
@@ -322,15 +346,15 @@ TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrefs) {
           .Set("encoding", "UTF-8")
           .Set("id", 1001);
   overrides.Append(entry.Clone());
-  prefs_.SetUserPref(prefs::kSearchProviderOverrides, std::move(overrides));
+  pref_service()->SetUserPref(prefs::kSearchProviderOverrides,
+                              std::move(overrides));
 
-  int version = TemplateURLPrepopulateData::GetDataVersion(&prefs_);
+  int version = TemplateURLPrepopulateData::GetDataVersion(pref_service());
   EXPECT_EQ(1, version);
 
-  size_t default_index;
   std::vector<std::unique_ptr<TemplateURLData>> t_urls =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          &prefs_, search_engine_choice_service(), &default_index);
+          pref_service(), search_engine_choice_service());
 
   ASSERT_EQ(1u, t_urls.size());
   EXPECT_EQ(u"foo", t_urls[0]->short_name());
@@ -351,10 +375,11 @@ TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrefs) {
                                   "http://foo.com/alternate?q={searchTerms}"));
 
   overrides = base::Value::List().Append(entry.Clone());
-  prefs_.SetUserPref(prefs::kSearchProviderOverrides, std::move(overrides));
+  pref_service()->SetUserPref(prefs::kSearchProviderOverrides,
+                              std::move(overrides));
 
   t_urls = TemplateURLPrepopulateData::GetPrepopulatedEngines(
-      &prefs_, search_engine_choice_service(), &default_index);
+      pref_service(), search_engine_choice_service());
   ASSERT_EQ(1u, t_urls.size());
   EXPECT_EQ(u"foo", t_urls[0]->short_name());
   EXPECT_EQ(u"fook", t_urls[0]->keyword());
@@ -381,17 +406,18 @@ TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrefs) {
   entry.Set("keyword", "bazk");
   entry.Set("encoding", "UTF-8");
   overrides.Append(entry.Clone());
-  prefs_.SetUserPref(prefs::kSearchProviderOverrides, std::move(overrides));
+  pref_service()->SetUserPref(prefs::kSearchProviderOverrides,
+                              std::move(overrides));
 
   t_urls = TemplateURLPrepopulateData::GetPrepopulatedEngines(
-      &prefs_, search_engine_choice_service(), &default_index);
+      pref_service(), search_engine_choice_service());
   EXPECT_EQ(2u, t_urls.size());
 }
 
 TEST_F(TemplateURLPrepopulateDataTest, ClearProvidersFromPrefs) {
   OverrideCountryId(country_codes::kCountryIDUnknown);
-  prefs_.SetUserPref(prefs::kSearchProviderOverridesVersion,
-                     std::make_unique<base::Value>(1));
+  pref_service()->SetUserPref(prefs::kSearchProviderOverridesVersion,
+                              std::make_unique<base::Value>(1));
 
   // Set only the minimal required settings for a search provider configuration.
   base::Value::Dict entry =
@@ -403,21 +429,21 @@ TEST_F(TemplateURLPrepopulateDataTest, ClearProvidersFromPrefs) {
           .Set("encoding", "UTF-8")
           .Set("id", 1001);
   base::Value::List overrides = base::Value::List().Append(std::move(entry));
-  prefs_.SetUserPref(prefs::kSearchProviderOverrides, std::move(overrides));
+  pref_service()->SetUserPref(prefs::kSearchProviderOverrides,
+                              std::move(overrides));
 
-  int version = TemplateURLPrepopulateData::GetDataVersion(&prefs_);
+  int version = TemplateURLPrepopulateData::GetDataVersion(pref_service());
   EXPECT_EQ(1, version);
 
   // This call removes the above search engine.
-  TemplateURLPrepopulateData::ClearPrepopulatedEnginesInPrefs(&prefs_);
+  TemplateURLPrepopulateData::ClearPrepopulatedEnginesInPrefs(pref_service());
 
-  version = TemplateURLPrepopulateData::GetDataVersion(&prefs_);
+  version = TemplateURLPrepopulateData::GetDataVersion(pref_service());
   EXPECT_EQ(TemplateURLPrepopulateData::kCurrentDataVersion, version);
 
-  size_t default_index;
   std::vector<std::unique_ptr<TemplateURLData>> t_urls =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          &prefs_, search_engine_choice_service(), &default_index);
+          pref_service(), search_engine_choice_service());
   ASSERT_FALSE(t_urls.empty());
   for (size_t i = 0; i < t_urls.size(); ++i) {
     EXPECT_NE(u"foo", t_urls[i]->short_name());
@@ -426,25 +452,28 @@ TEST_F(TemplateURLPrepopulateDataTest, ClearProvidersFromPrefs) {
     EXPECT_NE("foo.com", GetHostFromTemplateURLData(*t_urls[i]));
     EXPECT_NE(1001, t_urls[i]->prepopulate_id);
   }
-  // Ensures the default URL is Google and has the optional fields filled.
-  EXPECT_EQ(u"Google", t_urls[default_index]->short_name());
-  EXPECT_FALSE(t_urls[default_index]->suggestions_url.empty());
-  EXPECT_FALSE(t_urls[default_index]->image_url.empty());
-  EXPECT_FALSE(t_urls[default_index]->contextual_search_url.empty());
-  EXPECT_FALSE(t_urls[default_index]->image_url_post_params.empty());
-  EXPECT_EQ(SEARCH_ENGINE_GOOGLE,
-            TemplateURL(*t_urls[default_index]).GetEngineType(
-                SearchTermsData()));
+
+  // Ensures the fallback URL is Google and has the optional fields filled.
+  std::unique_ptr<TemplateURLData> fallback_t_url =
+      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
+          pref_service(), search_engine_choice_service());
+  EXPECT_EQ(TemplateURLPrepopulateData::google.name,
+            fallback_t_url->short_name());
+  EXPECT_FALSE(fallback_t_url->suggestions_url.empty());
+  EXPECT_FALSE(fallback_t_url->image_url.empty());
+  EXPECT_FALSE(fallback_t_url->contextual_search_url.empty());
+  EXPECT_FALSE(fallback_t_url->image_url_post_params.empty());
+  EXPECT_EQ(TemplateURLPrepopulateData::google.type,
+            TemplateURL(*fallback_t_url).GetEngineType(SearchTermsData()));
 }
 
 // Verifies that built-in search providers are processed correctly.
 TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrepopulated) {
   // Use United States.
   OverrideCountryId(country_codes::CountryCharsToCountryID('U', 'S'));
-  size_t default_index;
   std::vector<std::unique_ptr<TemplateURLData>> t_urls =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          &prefs_, search_engine_choice_service(), &default_index);
+          pref_service(), search_engine_choice_service());
 
   // Ensure all the URLs have the required fields populated.
   ASSERT_FALSE(t_urls.empty());
@@ -460,20 +489,24 @@ TEST_F(TemplateURLPrepopulateDataTest, ProvidersFromPrepopulated) {
     EXPECT_TRUE(t_urls[0]->last_modified.is_null());
   }
 
-  // Ensures the default URL is Google and has the optional fields filled.
-  EXPECT_EQ(u"Google", t_urls[default_index]->short_name());
-  EXPECT_FALSE(t_urls[default_index]->suggestions_url.empty());
-  EXPECT_FALSE(t_urls[default_index]->image_url.empty());
-  EXPECT_FALSE(t_urls[default_index]->contextual_search_url.empty());
-  EXPECT_FALSE(t_urls[default_index]->image_url_post_params.empty());
+  // Ensures the fallback URL is Google and has the optional fields filled.
+  std::unique_ptr<TemplateURLData> fallback_t_url =
+      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
+          pref_service(), search_engine_choice_service());
+  EXPECT_EQ(TemplateURLPrepopulateData::google.name,
+            fallback_t_url->short_name());
+  EXPECT_FALSE(fallback_t_url->suggestions_url.empty());
+  EXPECT_FALSE(fallback_t_url->image_url.empty());
+  EXPECT_FALSE(fallback_t_url->contextual_search_url.empty());
+  EXPECT_FALSE(fallback_t_url->image_url_post_params.empty());
   // Expect at least 2 alternate_urls.
   // This caught a bug with static initialization of arrays, so leave this in.
-  EXPECT_GT(t_urls[default_index]->alternate_urls.size(), 1u);
-  for (size_t i = 0; i < t_urls[default_index]->alternate_urls.size(); ++i)
-    EXPECT_FALSE(t_urls[default_index]->alternate_urls[i].empty());
-  EXPECT_EQ(SEARCH_ENGINE_GOOGLE,
-            TemplateURL(*t_urls[default_index]).GetEngineType(
-                SearchTermsData()));
+  EXPECT_GT(fallback_t_url->alternate_urls.size(), 1u);
+  for (size_t i = 0; i < fallback_t_url->alternate_urls.size(); ++i) {
+    EXPECT_FALSE(fallback_t_url->alternate_urls[i].empty());
+  }
+  EXPECT_EQ(TemplateURLPrepopulateData::google.type,
+            TemplateURL(*fallback_t_url).GetEngineType(SearchTermsData()));
 }
 
 // Verifies that all built-in search providers available across all countries
@@ -484,7 +517,7 @@ TEST_F(TemplateURLPrepopulateDataTest, PrepopulatedAreHttps) {
 
     std::vector<std::unique_ptr<TemplateURLData>> t_urls =
         TemplateURLPrepopulateData::GetPrepopulatedEngines(
-            &prefs_, search_engine_choice_service(), nullptr);
+            pref_service(), search_engine_choice_service());
 
     ASSERT_FALSE(t_urls.empty());
     for (const auto& t_url : t_urls) {
@@ -504,7 +537,8 @@ TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeBasic) {
   EXPECT_EQ(SEARCH_ENGINE_OTHER, GetEngineType("http://example.com/"));
   EXPECT_EQ(SEARCH_ENGINE_ASK, GetEngineType("http://www.ask.com/"));
   EXPECT_EQ(SEARCH_ENGINE_OTHER, GetEngineType("http://search.atlas.cz/"));
-  EXPECT_EQ(SEARCH_ENGINE_GOOGLE, GetEngineType("http://www.google.com/"));
+  EXPECT_EQ(TemplateURLPrepopulateData::google.type,
+            GetEngineType("http://www.google.com/"));
 }
 
 TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeAdvanced) {
@@ -522,7 +556,8 @@ TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeAdvanced) {
     "http://www.google.ru/search?q={searchTerms}"
   };
   for (size_t i = 0; i < std::size(kGoogleURLs); ++i) {
-    EXPECT_EQ(SEARCH_ENGINE_GOOGLE, GetEngineType(kGoogleURLs[i]));
+    EXPECT_EQ(TemplateURLPrepopulateData::google.type,
+              GetEngineType(kGoogleURLs[i]));
   }
 
   // Non-Google URLs.
@@ -555,7 +590,7 @@ TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeAdvanced) {
   EXPECT_EQ(SEARCH_ENGINE_OTHER, GetEngineType(foo_url));
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kGoogleBaseURL, "http://www.foo.com/");
-  EXPECT_EQ(SEARCH_ENGINE_GOOGLE, GetEngineType(foo_url));
+  EXPECT_EQ(TemplateURLPrepopulateData::google.type, GetEngineType(foo_url));
 }
 
 TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeForAllPrepopulatedEngines) {
@@ -630,28 +665,39 @@ TEST_F(TemplateURLPrepopulateDataTest, HttpsUrls) {
   }
 }
 
-TEST_F(TemplateURLPrepopulateDataTest, FindGoogleIndex) {
-  constexpr int kGoogleId = 1;
-  size_t index;
-  std::vector<std::unique_ptr<TemplateURLData>> urls;
+TEST_F(TemplateURLPrepopulateDataTest, FindGoogleAsFallback) {
+  std::unique_ptr<TemplateURLData> fallback_url;
 
   // Google is first in US, so confirm index 0.
-  OverrideCountryId(country_codes::CountryCharsToCountryID('U', 'S'));
-  urls = TemplateURLPrepopulateData::GetPrepopulatedEngines(
-      &prefs_, search_engine_choice_service(), &index);
-  EXPECT_EQ(index, size_t{0});
-  EXPECT_EQ(urls[index]->prepopulate_id, kGoogleId);
+  int us_country_id = country_codes::CountryCharsToCountryID('U', 'S');
+  OverrideCountryId(us_country_id);
+  EXPECT_EQ(
+      TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
+          us_country_id)[0]
+          ->id,
+      TemplateURLPrepopulateData::google.id);
+
+  fallback_url = TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
+      pref_service(), search_engine_choice_service());
+  EXPECT_EQ(fallback_url->prepopulate_id,
+            TemplateURLPrepopulateData::google.id);
 
   // Google is not first in CN; confirm it is found at index > 0.
   // If Google ever does reach top in China, this test will need to be adjusted:
   // check template_url_prepopulate_data.cc reference orders (engines_CN, etc.)
   // to find a suitable country and index.
-  OverrideCountryId(country_codes::CountryCharsToCountryID('C', 'N'));
-  urls = TemplateURLPrepopulateData::GetPrepopulatedEngines(
-      &prefs_, search_engine_choice_service(), &index);
-  EXPECT_GT(index, size_t{0});
-  EXPECT_LT(index, urls.size());
-  EXPECT_EQ(urls[index]->prepopulate_id, kGoogleId);
+  int cn_country_id = country_codes::CountryCharsToCountryID('C', 'N');
+  OverrideCountryId(cn_country_id);
+  fallback_url = TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
+      pref_service(), search_engine_choice_service());
+  EXPECT_NE(
+      TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
+          cn_country_id)[0]
+          ->id,
+      TemplateURLPrepopulateData::google.id);
+  EXPECT_TRUE(fallback_url);
+  EXPECT_EQ(fallback_url->prepopulate_id,
+            TemplateURLPrepopulateData::google.id);
 }
 
 // Regression test for https://crbug.com/1500526.
@@ -660,20 +706,20 @@ TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEngineFromFullList) {
   // bing, yahoo.
   OverrideCountryId(country_codes::kCountryIDUnknown);
   ASSERT_EQ(TemplateURLPrepopulateData::GetPrepopulatedEngines(
-                &prefs_, search_engine_choice_service(), nullptr)
+                pref_service(), search_engine_choice_service())
                 .size(),
             3u);
 
   // `GetPrepopulatedEngine()` only looks in the profile country's prepopulated
   // list.
   EXPECT_FALSE(TemplateURLPrepopulateData::GetPrepopulatedEngine(
-      &prefs_, search_engine_choice_service(),
+      pref_service(), search_engine_choice_service(),
       TemplateURLPrepopulateData::ecosia.id));
 
   // Here we look in the full list.
   auto found_engine =
       TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
-          &prefs_, search_engine_choice_service(),
+          pref_service(), search_engine_choice_service(),
           TemplateURLPrepopulateData::ecosia.id);
   EXPECT_TRUE(found_engine);
   auto expected_engine =
@@ -690,9 +736,9 @@ TEST_F(TemplateURLPrepopulateDataTest, GetLocalPrepopulatedEngines) {
   // For a given country, the output from `GetLocalPrepopulatedEngines`
   // should match the template URLs obtained from `GetPrepopulatedEngines`.
   auto expected_urls = TemplateURLPrepopulateData::GetPrepopulatedEngines(
-      &prefs_, search_engine_choice_service(), nullptr);
+      pref_service(), search_engine_choice_service());
   auto actual_urls = TemplateURLPrepopulateData::GetLocalPrepopulatedEngines(
-      sample_country, prefs_);
+      sample_country, *pref_service());
 
   ASSERT_EQ(actual_urls.size(), expected_urls.size());
   for (unsigned int i = 0; i < actual_urls.size(); ++i) {
@@ -702,7 +748,222 @@ TEST_F(TemplateURLPrepopulateDataTest, GetLocalPrepopulatedEngines) {
   }
 
   EXPECT_THAT(TemplateURLPrepopulateData::GetLocalPrepopulatedEngines(
-                  "NOT A COUNTRY", prefs_),
+                  "NOT A COUNTRY", *pref_service()),
               testing::IsEmpty());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// -- Choice screen randomization checks --------------------------------------
+
+class TemplateURLPrepopulateDataListTest
+    : public TemplateURLPrepopulateDataTest,
+      public testing::WithParamInterface<int> {
+ public:
+  // The data type for prepopulate IDs
+  // (`TemplateURLPrepopulateData::PrepopulatedEngine::id`), declared explicitly
+  // for readability.
+  using prepopulate_id_t = int;
+
+  static std::string ParamToTestSuffix(
+      const ::testing::TestParamInfo<int>& info) {
+    return country_codes::CountryIDToCountryString(info.param);
+  }
+
+  TemplateURLPrepopulateDataListTest()
+      : country_id_(GetParam()),
+        country_code_(country_codes::CountryIDToCountryString(country_id_)) {}
+
+  void SetUp() override {
+    if (kSkippedCountries.contains(country_id_)) {
+      GTEST_SKIP() << "Skipping, the Default set is used for country code "
+                   << country_code_;
+    }
+
+    TemplateURLPrepopulateDataTest::SetUp();
+    OverrideCountryId(country_id_);
+    for (const auto& engine :
+         TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
+             country_id_)) {
+      id_to_engine_[engine->id] = engine;
+    }
+  }
+
+ protected:
+  void RunEeaEngineListIsRandomTest(int number_of_iterations,
+                                    double max_allowed_deviation) {
+    // `per_engine_and_index_observations` maps from search engine prepopulate
+    // ID to the number of times we saw this engine at a given position in the
+    // list of items on the choice screen (the index in the vector is the
+    // observed index in the choice screen list).
+    base::flat_map<prepopulate_id_t, std::vector<int>>
+        per_engine_and_index_observations;
+    for (const auto& entry : id_to_engine_) {
+      // Fill the map with 0s.
+      per_engine_and_index_observations[entry.first] =
+          std::vector<int>(kEeaChoiceScreenItemCount, 0);
+    }
+
+    // Gather observations, loading the search engines `number_of_iterations`
+    // times and recording the returned positions.
+    for (int current_run = 0; current_run < number_of_iterations;
+         ++current_run) {
+      // Simulate being a fresh new profile, where the shuffle seed is not set.
+      pref_service()->ClearPref(
+          prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed);
+
+      std::vector<std::unique_ptr<TemplateURLData>> actual_list =
+          TemplateURLPrepopulateData::GetPrepopulatedEngines(
+              pref_service(), search_engine_choice_service());
+
+      ASSERT_EQ(actual_list.size(), kEeaChoiceScreenItemCount);
+      for (size_t index = 0; index < kEeaChoiceScreenItemCount; ++index) {
+        per_engine_and_index_observations[actual_list[index]->prepopulate_id]
+                                         [index]++;
+      }
+    }
+
+    // variance in the appearance rate of the various engines for a given index.
+    std::vector<double> per_index_max_deviation(kEeaChoiceScreenItemCount, 0);
+    base::flat_map<prepopulate_id_t, double> per_engine_max_deviation;
+    base::flat_map<prepopulate_id_t, std::vector<double>>
+        per_engine_and_index_probabilities;
+    for (auto& entry : per_engine_and_index_observations) {
+      prepopulate_id_t engine_id = entry.first;
+      auto& per_index_observations = entry.second;
+
+      int total_engine_appearances = 0;
+      std::vector<double> probabilities(kEeaChoiceScreenItemCount, 0);
+
+      for (size_t index = 0; index < kEeaChoiceScreenItemCount; ++index) {
+        total_engine_appearances += per_index_observations[index];
+
+        double appearance_probability_at_index =
+            static_cast<double>(per_index_observations[index]) /
+            number_of_iterations;
+
+        double deviation =
+            appearance_probability_at_index - kExpectedItemProbability;
+        EXPECT_LE(deviation, max_allowed_deviation);
+
+        per_engine_max_deviation[engine_id] =
+            std::max(std::abs(deviation), per_engine_max_deviation[engine_id]);
+        per_index_max_deviation[index] =
+            std::max(std::abs(deviation), per_index_max_deviation[index]);
+        probabilities[index] = appearance_probability_at_index;
+      }
+
+      ASSERT_EQ(total_engine_appearances, number_of_iterations);
+      per_engine_and_index_probabilities[engine_id] = probabilities;
+    }
+
+    // Log the values if needed.
+    if (testing::Test::HasFailure() || VLOG_IS_ON(1)) {
+      std::string table_string = AssembleRowString(
+          /*header_text=*/"",
+          /*cell_values=*/{"0", "1", "2", "3", "4", "5", "6", "7", "max_dev"});
+
+      for (auto& id_and_engine : id_to_engine_) {
+        table_string += base::StringPrintf(
+            "\n%s| %.4f ",
+            AssembleRowString(
+                /*header_text=*/base::UTF16ToUTF8(
+                    std::u16string(id_and_engine.second->name)),
+                /*cell_values=*/per_engine_and_index_probabilities.at(
+                    id_and_engine.first))
+                .c_str(),
+            per_engine_max_deviation.at(id_and_engine.first));
+      }
+
+      table_string += "\n" + AssembleRowString(/*header_text=*/"max deviation",
+                                               per_index_max_deviation);
+
+      if (testing::Test::HasFailure()) {
+        LOG(ERROR) << "Failure in the search engine distributions:\n"
+                   << table_string;
+      } else {
+        VLOG(1) << "Search engine distributions:\n" << table_string;
+      }
+    }
+  }
+
+ private:
+  // TODO(b/341047036): Investigate how to not have to skip this here.
+  static inline const std::set<int> kSkippedCountries = {
+      country_codes::CountryCharsToCountryID('B', 'L'),  // St. Barthélemy
+      country_codes::CountryCharsToCountryID('E', 'A'),  // Ceuta & Melilla
+      country_codes::CountryCharsToCountryID('I', 'C'),  // Canary Islands
+      country_codes::CountryCharsToCountryID('M', 'F'),  // St. Martin
+  };
+
+  static constexpr size_t kEeaChoiceScreenItemCount = 8u;
+  static constexpr double kExpectedItemProbability =
+      1. / kEeaChoiceScreenItemCount;
+
+  static constexpr char row_header_format[] = "%s %20s ";
+  static constexpr char string_cell_format[] = "| %5s ";
+  static constexpr char probability_cell_format[] = "| %.3f ";
+
+  std::string AssembleRowString(std::string_view header_text,
+                                std::vector<double> cell_values) {
+    std::string row_string = base::StringPrintf(
+        row_header_format, country_code_.c_str(), header_text.data());
+    for (double& val : cell_values) {
+      row_string += base::StringPrintf(probability_cell_format, val);
+    }
+
+    return row_string;
+  }
+
+  std::string AssembleRowString(std::string_view header_text,
+                                std::vector<std::string_view> cell_values) {
+    std::string row_string = base::StringPrintf(
+        row_header_format, country_code_.c_str(), header_text.data());
+    for (std::string_view& val : cell_values) {
+      row_string += base::StringPrintf(string_cell_format, val.data());
+    }
+
+    return row_string;
+  }
+
+  const int country_id_;
+  const std::string country_code_;
+  base::flat_map<int,
+                 raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
+      id_to_engine_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TemplateURLPrepopulateDataListTest,
+    ::testing::ValuesIn(search_engines::kEeaChoiceCountriesIds.begin(),
+                        search_engines::kEeaChoiceCountriesIds.end()),
+    TemplateURLPrepopulateDataListTest::ParamToTestSuffix);
+
+// Quick version of the test intended to flag glaring issues as part of the
+// automated test suites.
+TEST_P(TemplateURLPrepopulateDataListTest,
+       QuickEeaEngineListIsRandomPerCountry) {
+  RunEeaEngineListIsRandomTest(2000, 0.05);
+}
+
+// This test is permanently disabled as it is slow. It must *not* be removed as
+// it is necessary for compliance (see b/341066703). It is used manually to
+// prove that the search engines are shuffled in a randomly distributed order
+// when they are loaded from disk.
+// To run this test, use the following command line:
+//
+//     $OUT_DIR/components_unittests --gtest_also_run_disabled_tests \
+//         --gtest_filter="*ManualEeaEngineListIsRandomPerCountry/*" \
+//         --vmodule="*unittest*=1*"
+//
+// Explanations:
+// - Since the test is marked as disabled, we need to explicitly instruct
+//   filters to not discard it.
+// - By default the test logs the stats only if it picks up an error. If we
+//   want to always get the logs for all the countries, we need to enable
+//   verbose logging for this file. The stats tables are logged to STDERR, so
+//   append `2> output.txt` if it needs to be gathered in a file.
+TEST_P(TemplateURLPrepopulateDataListTest,
+       DISABLED_ManualEeaEngineListIsRandomPerCountry) {
+  RunEeaEngineListIsRandomTest(20000, 0.01);
+}

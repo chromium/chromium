@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/test/video_bitstream.h"
 
 #include <optional>
@@ -182,16 +187,17 @@ std::unique_ptr<VideoBitstream> VideoBitstream::Create(
     return nullptr;
   }
   // We set |has_keyframeless_resolution_change| by looking at the file name.
-  const char* kKeyFrameLessResolutionChangeFiles[] = {
-      "frm_resize",
-      "sub8x8_sf",
+  base::FilePath kKeyFrameLessResolutionChangeFiles[] = {
+      base::FilePath::FromASCII("frm_resize"),
+      base::FilePath::FromASCII("sub8x8_sf"),
   };
-  metadata.has_keyframeless_resolution_change = std::find_if(
-      std::cbegin(kKeyFrameLessResolutionChangeFiles),
-      std::cend(kKeyFrameLessResolutionChangeFiles),
-      [filepath = data_file_path.value()](const char* substr) {
-        return base::Contains(base::ToLowerASCII(filepath), substr);
-      });
+  metadata.has_keyframeless_resolution_change =
+      std::find_if(std::cbegin(kKeyFrameLessResolutionChangeFiles),
+                   std::cend(kKeyFrameLessResolutionChangeFiles),
+                   [filepath = data_file_path.value()](base::FilePath substr) {
+                     return base::Contains(base::ToLowerASCII(filepath),
+                                           base::ToLowerASCII(substr.value()));
+                   });
   return base::WrapUnique(
       new VideoBitstream(std::move(memory_mapped_file), metadata));
 }

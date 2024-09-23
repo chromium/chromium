@@ -12,6 +12,7 @@
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/background_sync_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -47,7 +48,7 @@ BackgroundSyncDelegateImpl::BackgroundSyncEventKeepAliveImpl::
       new ScopedKeepAlive(KeepAliveOrigin::BACKGROUND_SYNC,
                           KeepAliveRestartOption::DISABLED));
   if (!profile->IsOffTheRecord()) {
-    // TODO(crbug.com/1153922): Remove this guard when OTR profiles become
+    // TODO(crbug.com/40159237): Remove this guard when OTR profiles become
     // refcounted and support ScopedProfileKeepAlive.
     profile_keepalive_ =
         std::unique_ptr<ScopedProfileKeepAlive,
@@ -120,7 +121,7 @@ int BackgroundSyncDelegateImpl::GetSiteEngagementPenalty(const GURL& url) {
       return kEngagementLevelHighOrMaxPenalty;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kEngagementLevelNonePenalty;
 }
 
@@ -152,7 +153,9 @@ void BackgroundSyncDelegateImpl::OnEngagementEvent(
     content::WebContents* web_contents,
     const GURL& url,
     double score,
-    site_engagement::EngagementType engagement_type) {
+    double old_score,
+    site_engagement::EngagementType engagement_type,
+    const std::optional<webapps::AppId>& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (score == 0.0)

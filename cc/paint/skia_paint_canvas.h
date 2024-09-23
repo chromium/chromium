@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
@@ -35,6 +36,7 @@ struct SkRect;
 
 namespace cc {
 class ImageProvider;
+class PaintFilter;
 class PaintFlags;
 
 // A PaintCanvas derived class that passes PaintCanvas APIs through to
@@ -76,6 +78,8 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
   int saveLayer(const SkRect& bounds, const PaintFlags& flags) override;
   int saveLayerAlphaf(float alpha) override;
   int saveLayerAlphaf(const SkRect& bounds, float alpha) override;
+  int saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
+                       const PaintFlags& flags) override;
 
   void restore() override;
   int getSaveCount() const override;
@@ -104,6 +108,10 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
                 SkScalar x1,
                 SkScalar y1,
                 const PaintFlags& flags) override;
+  void drawArc(const SkRect& oval,
+               SkScalar start_angle_degrees,
+               SkScalar sweep_angle_degrees,
+               const PaintFlags& flags) override;
   void drawRect(const SkRect& rect, const PaintFlags& flags) override;
   void drawIRect(const SkIRect& rect, const PaintFlags& flags) override;
   void drawOval(const SkRect& oval, const PaintFlags& flags) override;
@@ -150,6 +158,7 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
                     const PaintFlags& flags) override;
 
   void drawPicture(PaintRecord record) override;
+  void drawPicture(PaintRecord record, bool local_ctm) override;
 
   SkM44 getLocalToDevice() const override;
 
@@ -173,7 +182,8 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
   // raster callback.
   void drawPicture(
       PaintRecord record,
-      PlaybackParams::CustomDataRasterCallback custom_raster_callback);
+      PlaybackCallbacks::CustomDataRasterCallback custom_raster_callback,
+      bool local_ctm = true);
 
   int pendingOps() const { return num_of_ops_; }
 

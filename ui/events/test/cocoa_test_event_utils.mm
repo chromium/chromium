@@ -207,7 +207,7 @@ NSEvent* TestScrollEvent(NSPoint window_point,
       default:
         // Those are the only 4 options for CGMomentumScrollPhase. If something
         // else was provided it should probably never appear on an NSEvent.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     CGEventSetIntegerValueField(scroll.get(), kCGScrollWheelEventScrollPhase,
                                 cg_event_phase);

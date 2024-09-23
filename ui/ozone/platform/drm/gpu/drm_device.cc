@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 
 #include <fcntl.h>
@@ -79,7 +84,7 @@ bool ProcessDrmEvent(int fd, const DrmEventHandler& callback) {
       case DRM_EVENT_VBLANK:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 
@@ -137,7 +142,7 @@ class DrmDevice::PageFlipManager {
   std::vector<PageFlip> callbacks_;
 };
 
-class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
+class DrmDevice::IOWatcher : public base::MessagePumpEpoll::FdWatcher {
  public:
   IOWatcher(int fd, DrmDevice::PageFlipManager* page_flip_manager)
       : page_flip_manager_(page_flip_manager), controller_(FROM_HERE), fd_(fd) {
@@ -161,7 +166,7 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
     controller_.StopWatchingFileDescriptor();
   }
 
-  // base::MessagePumpLibevent::FdWatcher overrides:
+  // base::MessagePumpEpoll::FdWatcher overrides:
   void OnFileCanReadWithoutBlocking(int fd) override {
     DCHECK(base::CurrentIOThread::IsSet());
     TRACE_EVENT1("drm", "OnDrmEvent", "socket", fd);
@@ -172,11 +177,13 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
       Unregister();
   }
 
-  void OnFileCanWriteWithoutBlocking(int fd) override { NOTREACHED(); }
+  void OnFileCanWriteWithoutBlocking(int fd) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   raw_ptr<DrmDevice::PageFlipManager> page_flip_manager_;
 
-  base::MessagePumpLibevent::FdWatchController controller_;
+  base::MessagePumpEpoll::FdWatchController controller_;
 
   int fd_;
 };

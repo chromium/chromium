@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -21,8 +20,7 @@
   AppLaunchConfiguration config;
   config.additional_args.push_back(
       "--enable-features=" + std::string(kTabInactivityThreshold.name) + "<" +
-      std::string(kTabInactivityThreshold.name) + "," +
-      std::string(kTabPickupThreshold.name));
+      std::string(kTabInactivityThreshold.name));
   config.additional_args.push_back(
       "--force-fieldtrials=" + std::string(kTabInactivityThreshold.name) +
       "/Test");
@@ -49,17 +47,12 @@
 
 // Ensures that the tabs settings open.
 - (void)testOpenTabsSettings {
-  [self openTabsSettings];
-
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    // There is no inactive tabs on iPad.
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::SettingsTabsTableView()]
-        assertWithMatcher:grey_sufficientlyVisible()];
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
   }
 
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabPickupSettingsButton()]
+  [self openTabsSettings];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsTabsTableView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

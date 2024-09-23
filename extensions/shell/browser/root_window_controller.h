@@ -108,7 +108,7 @@ class RootWindowController : public aura::client::WindowParentingClient,
   // List of AppWindows we've created. Used to close any remaining app windows
   // when |host_| is closed or |this| is destroyed.
   // Note: Pointers are unowned. NativeAppWindow::Close() will delete them.
-  std::list<AppWindow*> app_windows_;
+  std::list<raw_ptr<AppWindow, CtnExperimental>> app_windows_;
 };
 
 }  // namespace extensions

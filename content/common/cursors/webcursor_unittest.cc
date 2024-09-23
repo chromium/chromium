@@ -2,15 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/common/cursors/webcursor.h"
+
 #include <stddef.h>
+
+#include <optional>
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/common/cursors/webcursor.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/display/screen_base.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -23,6 +31,15 @@
 
 namespace content {
 namespace {
+
+class TestScreen : public display::test::TestScreen {
+ public:
+  explicit TestScreen(display::Display display)
+      : display::test::TestScreen(/*create_display=*/false,
+                                  /*register_screen=*/true) {
+    display_list().AddDisplay(display, display::DisplayList::Type::PRIMARY);
+  }
+};
 
 TEST(WebCursorTest, DefaultConstructor) {
   WebCursor webcursor;
@@ -56,9 +73,10 @@ TEST(WebCursorTest, WebCursorCursorConstructorCustom) {
 
   EXPECT_TRUE(webcursor.has_custom_cursor_for_test());
   // Test if the rotating custom cursor works correctly.
-  display::Display display;
+  display::Display display(/*id=*/1);
   display.set_panel_rotation(display::Display::ROTATE_90);
-  webcursor.SetDisplayInfo(display);
+  TestScreen screen(display);
+  webcursor.UpdateDisplayInfoForWindow(nullptr);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(webcursor.has_custom_cursor_for_test());
@@ -95,9 +113,10 @@ TEST(WebCursorTest, CursorScaleFactor) {
   WebCursor webcursor(ui::Cursor::NewCustom(
       gfx::test::CreateBitmap(/*size=*/128), gfx::Point(0, 1), kImageScale));
 
-  display::Display display;
+  display::Display display(/*id=*/1);
   display.set_device_scale_factor(kDeviceScale);
-  webcursor.SetDisplayInfo(display);
+  TestScreen screen(display);
+  webcursor.UpdateDisplayInfoForWindow(nullptr);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // In Ash, the size of the cursor is capped at 64px unless the hardware
@@ -134,9 +153,10 @@ void ScaleCursor(float scale, int hotspot_x, int hotspot_y) {
   WebCursor webcursor(ui::Cursor::NewCustom(
       gfx::test::CreateBitmap(/*size=*/10), gfx::Point(hotspot_x, hotspot_y)));
 
-  display::Display display;
+  display::Display display(/*id=*/1);
   display.set_device_scale_factor(scale);
-  webcursor.SetDisplayInfo(display);
+  TestScreen screen(display);
+  webcursor.UpdateDisplayInfoForWindow(nullptr);
 
   HCURSOR windows_cursor_handle =
       ui::WinCursor::FromPlatformCursor(webcursor.GetNativeCursor().platform())

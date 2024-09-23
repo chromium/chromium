@@ -42,7 +42,8 @@ class TopToolbarSceneLayer : public SceneLayer {
       jfloat y_offset,
       bool show_shadow,
       bool visible,
-      bool anonymize);
+      bool anonymize,
+      const base::android::JavaParamRef<jobject>& joffset_tag);
 
   // Update the progress bar.
   void UpdateProgressBar(JNIEnv* env,

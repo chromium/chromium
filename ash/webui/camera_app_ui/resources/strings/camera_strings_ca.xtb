@@ -32,20 +32,28 @@
 <translation id="2175927920773552910">Codi QR</translation>
 <translation id="2244252133441425811">Activa el selector d'FPS per a vídeos</translation>
 <translation id="2271433936731426666">Activa la instantània del vídeo a mida completa</translation>
+<translation id="2281736597583450397">Obtén detalls més nítids amb el zoom realçat</translation>
 <translation id="2320741269052147773">Desplaça cap a l'esquerra</translation>
+<translation id="2360840973209616515">El teu administrador gestiona l'aplicació de càmera.
+        Per obtenir més detalls, contacta amb aquesta persona.</translation>
+<translation id="2442754296994859145">Copia per verificar el contingut o desplega'l per posar en pausa l'escaneig.</translation>
+<translation id="2486151619109781620">Replega el quadre de diàleg i comença a escanejar</translation>
 <translation id="2501278716633472235">Torna</translation>
 <translation id="2501853267655415902">S'ha aturat la gravació</translation>
 <translation id="2517472476991765520">Escaneja</translation>
 <translation id="2549985041256363841">Inicia la gravació</translation>
 <translation id="2577915835281444458">La gravació s'aturarà aviat. Ves a l'emmagatzematge del dispositiu per alliberar espai.</translation>
 <translation id="2599796128805996109">Càmera posterior</translation>
+<translation id="2654491636277477479">Copia el text detectat</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Tipus de cerca</translation>
 <translation id="28682968802727151">Previsualització del mirall</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> està endollada.</translation>
 <translation id="3067436040345934772">Desplaça cap a la dreta</translation>
 <translation id="3081586908890909590">Canvia al mode per gravar vídeo</translation>
+<translation id="3091480460059548935">Detecció de text a la previsualització</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3157038259444425153">Ara pots copiar directament el text de la foto</translation>
 <translation id="3158534262962737808">Uneix-te a "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Micròfon</translation>
 <translation id="3240426699337459095">S'ha copiat l'enllaç.</translation>
@@ -65,9 +73,7 @@
 <translation id="4118525110028899586">Posa en pausa la gravació</translation>
 <translation id="4121305183798804752">S'ha detectat un document</translation>
 <translation id="414641094616694804">Aquesta càmera no pot canviar la resolució</translation>
-<translation id="4176463684765177261">Desactivat</translation>
 <translation id="428234092390943511">Miniatura de la pàgina</translation>
-<translation id="4349714250734879769">Ajusta els fotogrames amb Chrome</translation>
 <translation id="4383571725254449280">Registres de rendiment d'impressió</translation>
 <translation id="4445542136948522167">No facis la foto</translation>
 <translation id="4570032796877367747">Càmera frontal</translation>
@@ -80,7 +86,6 @@
 <translation id="4864143361253542638">Llista de pàgines escanejades</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">Copia l'adreça de l'enllaç <ph name="URL" /></translation>
-<translation id="491895758387112773">Grava vídeos de diversos canals</translation>
 <translation id="495170559598752135">Accions</translation>
 <translation id="4984613436295737187">HD quàdruple (1440p)</translation>
 <translation id="5034763830503483128">Relació d'aspecte de la foto</translation>
@@ -93,6 +98,7 @@
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5320594929574852403">S'està movent cap a l'esquerra</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5634947914995388399">Desplega el quadre de diàleg i atura l'escaneig</translation>
 <translation id="5662366948659129155">S'està escanejant la pàgina <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Quadrat</translation>
 <translation id="574392208103952083">Mitja</translation>
@@ -106,6 +112,7 @@
 <translation id="5975083100439434680">Redueix</translation>
 <translation id="5976160379964388480">Altres</translation>
 <translation id="6073451960410192870">Atura la gravació</translation>
+<translation id="6165508094623778733">Més informació</translation>
 <translation id="6197807149213783179">Desa les metadades</translation>
 <translation id="6233780560267770709">3 per 3</translation>
 <translation id="6243827288366940320">Proporció àuria</translation>
@@ -115,11 +122,14 @@
 Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adjunta una foto o un vídeo de mostra i descriu quin problema hi ha. Per exemple, la foto és massa fosca o el motiu central no està enfocat.</translation>
 <translation id="6519884562954018934">Uneix-te a <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Comparteix</translation>
+<translation id="6586509689874700895">Primer, prem <ph name="BUTTON_NAME" /> per ampliar. Després, quan hagis fet una foto, veuràs detalls realçats.</translation>
+<translation id="659539649712855529">S'ha copiat <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Mostra totes les resolucions</translation>
 <translation id="6631515515009660915">Mirall desactivat</translation>
 <translation id="6652737148136672975">Mou la posició de l'extrem amb les tecles de fletxa</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6681668084120808868">Fes una foto</translation>
+<translation id="6692092766759105707">Copia per verificar el contingut.</translation>
 <translation id="6778482348691154169">No es pot fer la foto</translation>
 <translation id="6888362557094394345">S'està movent cap a la part inferior</translation>
 <translation id="695140971690006676">Reinicia-ho tot</translation>
@@ -132,8 +142,8 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="7337660886763914220">Hi ha errors al sistema de fitxers.</translation>
 <translation id="7450541714075000668">El text s'ha copiat</translation>
 <translation id="7488619942230388918">Grava un vídeo en format GIF</translation>
+<translation id="7527714402753141485">Mostra el text i el botó per copiar</translation>
 <translation id="7557677699350329807">Canvia a la càmera següent</translation>
-<translation id="7562584071994185503">Copia el text <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7608223098072244877">4 per 4</translation>
 <translation id="761421184377987513">S'està movent cap a la part inferior esquerra</translation>
@@ -153,12 +163,12 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="8145038249676204903">Canvia al mode per fer fotos</translation>
 <translation id="8167081290930651932">Desa com a foto</translation>
 <translation id="8239780215768881278">Fes una captura de vídeo</translation>
-<translation id="8346544573713510785">Ajusta els fotogrames amb la càmera HAL</translation>
 <translation id="8425673304802773841">Inclina cap avall</translation>
 <translation id="8428213095426709021">Configuració</translation>
 <translation id="8609951387004618906">Obre <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Deixa de silenciar el micròfon. La funció Silencia està activada.</translation>
+<translation id="8712637175834984815">Entesos</translation>
 <translation id="8730621377337864115">Fet</translation>
 <translation id="8732462232047530626">Previsualitza les metadades</translation>
 <translation id="874854738381978209">S'ha detectat una xarxa Wi-Fi.</translation>

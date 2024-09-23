@@ -6,9 +6,8 @@
 #define CHROME_COMMON_PRINTING_IPP_L10N_H_
 
 #include <map>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
-
-const std::map<base::StringPiece, int>& CapabilityLocalizationMap();
+const std::map<std::string_view, int>& CapabilityLocalizationMap();
 
 #endif  // CHROME_COMMON_PRINTING_IPP_L10N_H_

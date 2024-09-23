@@ -33,8 +33,6 @@
   self = [super initWithFrame:frame
                      tileType:ContentSuggestionsTileType::kMostVisited];
   if (self) {
-    // Layout subviews using a StackView if Magic Stack is enabled.
-    if (IsMagicStackEnabled()) {
       self.imageContainerView.backgroundColor =
           [UIColor colorNamed:kGrey100Color];
       self.imageContainerView.layer.cornerRadius =
@@ -61,25 +59,19 @@
 
       [self addSubview:stackView];
       AddSameConstraints(stackView, self);
-    }
 
     _faviconView = [[FaviconView alloc] init];
     _faviconView.font = [UIFont systemFontOfSize:22];
     _faviconView.translatesAutoresizingMaskIntoConstraints = NO;
-    CGFloat faviconWidth = IsMagicStackEnabled() ? kMagicStackFaviconWidth : 32;
     [NSLayoutConstraint activateConstraints:@[
-      [_faviconView.heightAnchor constraintEqualToConstant:faviconWidth],
+      [_faviconView.heightAnchor
+          constraintEqualToConstant:kMagicStackFaviconWidth],
       [_faviconView.widthAnchor
           constraintEqualToAnchor:_faviconView.heightAnchor],
     ]];
 
-    if (IsMagicStackEnabled()) {
-      [self addSubview:_faviconView];
-      AddSameCenterConstraints(_faviconView, self.imageContainerView);
-    } else {
-      [self.imageContainerView addSubview:_faviconView];
-      AddSameConstraints(self.imageContainerView, _faviconView);
-    }
+    [self addSubview:_faviconView];
+    AddSameCenterConstraints(_faviconView, self.imageContainerView);
   }
   return self;
 }

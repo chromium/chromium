@@ -7,7 +7,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -30,6 +29,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -138,8 +138,8 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest,
   testing_profile()->GetPrefs()->SetBoolean(ash::prefs::kAllowScreenLock,
                                             false);
   // Set fake serial number.
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kFakeSerialNumber);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                kFakeSerialNumber);
   // Set fake device hostname.
   ash::NetworkHandler::Get()->network_state_handler()->SetHostname(
       kFakeDeviceHostName);
@@ -188,11 +188,8 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   AshSignalsDecorator decorator(connector_, profile);
 
-  base::flat_set<std::string> user_affiliation_ids;
-  user_affiliation_ids.insert(kFakeAffilationID);
-
-  ash::ChromeUserManager::Get()->SetUserAffiliation(user->GetAccountId(),
-                                                    user_affiliation_ids);
+  user_manager::UserManager::Get()->SetUserAffiliated(user->GetAccountId(),
+                                                      /*is_affiliated=*/true);
 
   // Test for no network
   {

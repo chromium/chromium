@@ -131,8 +131,8 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   class DisplayView;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* data) override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // Initializes the menu item after its construction.
   void Init();
@@ -154,6 +154,10 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
 
   // Updates `pseudo_focus_` and children visibility.
   void SetPseudoFocus(PseudoFocus new_pseudo_focus);
+
+  // Updates the `kSelected` attribute for the current view based on current
+  // selection update.
+  void UpdateAccessiblitySelectionAttribute();
 
   // Unique identifier for the `ClipboardHistoryItem` this view represents.
   const base::UnguessableToken item_id_;

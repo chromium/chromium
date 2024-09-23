@@ -5,6 +5,7 @@
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 
 #include "base/base64.h"
+#include "base/hash/hash.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,9 +19,9 @@
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/switches.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
@@ -108,8 +109,8 @@ sync_pb::BookmarkMetadata CreateTombstoneMetadata(
 sync_pb::BookmarkModelMetadata CreateMetadataForPermanentNodes(
     const BookmarkModelView* bookmark_model) {
   sync_pb::BookmarkModelMetadata model_metadata;
-  model_metadata.mutable_model_type_state()->set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  model_metadata.mutable_data_type_state()->set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   *model_metadata.add_bookmarks_metadata() =
       CreateNodeMetadata(bookmark_model->bookmark_bar_node(),
@@ -127,7 +128,7 @@ sync_pb::BookmarkModelMetadata CreateMetadataForPermanentNodes(
 
 TEST(SyncedBookmarkTrackerTest, ShouldAddEntity) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
 
   const std::string kSyncId = "SYNC_ID";
   const std::string kTitle = "Title";
@@ -171,7 +172,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldAddEntity) {
 
 TEST(SyncedBookmarkTrackerTest, ShouldRemoveEntity) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
 
   const std::string kSyncId = "SYNC_ID";
   const int64_t kId = 1;
@@ -203,7 +204,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldRemoveEntity) {
 
 TEST(SyncedBookmarkTrackerTest, ShouldBuildBookmarkModelMetadata) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
 
   const std::string kSyncId = "SYNC_ID";
   const std::string kTitle = "Title";
@@ -229,7 +230,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldBuildBookmarkModelMetadata) {
 TEST(SyncedBookmarkTrackerTest,
      ShouldRequireCommitRequestWhenSequenceNumberIsIncremented) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
 
   const std::string kSyncId = "SYNC_ID";
   const int64_t kId = 1;
@@ -248,7 +249,7 @@ TEST(SyncedBookmarkTrackerTest,
 
 TEST(SyncedBookmarkTrackerTest, ShouldAckSequenceNumber) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
 
   const std::string kSyncId = "SYNC_ID";
   const int64_t kId = 1;
@@ -279,7 +280,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldAckSequenceNumber) {
 
 TEST(SyncedBookmarkTrackerTest, ShouldUpdateUponCommitResponseWithNewId) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
 
   const std::string kSyncId = "SYNC_ID";
   const std::string kNewSyncId = "NEW_SYNC_ID";
@@ -313,7 +314,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldUpdateUponCommitResponseWithNewId) {
 
 TEST(SyncedBookmarkTrackerTest, ShouldUpdateId) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
 
   const std::string kSyncId = "SYNC_ID";
   const std::string kNewSyncId = "NEW_SYNC_ID";
@@ -443,9 +444,9 @@ TEST(SyncedBookmarkTrackerTest,
   ASSERT_THAT(tracker, NotNull());
 
   // Mark entities deleted in that order kId2, kId4, kId1
-  tracker->MarkDeleted(tracker->GetEntityForSyncId(kId2));
-  tracker->MarkDeleted(tracker->GetEntityForSyncId(kId4));
-  tracker->MarkDeleted(tracker->GetEntityForSyncId(kId1));
+  tracker->MarkDeleted(tracker->GetEntityForSyncId(kId2), FROM_HERE);
+  tracker->MarkDeleted(tracker->GetEntityForSyncId(kId4), FROM_HERE);
+  tracker->MarkDeleted(tracker->GetEntityForSyncId(kId1), FROM_HERE);
 
   const sync_pb::BookmarkModelMetadata output_model_metadata =
       tracker->BuildBookmarkModelMetadata();
@@ -470,7 +471,7 @@ TEST(SyncedBookmarkTrackerTest,
 
 TEST(SyncedBookmarkTrackerTest, ShouldMarkDeleted) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
 
   const std::string kSyncId = "SYNC_ID";
   const int64_t kId = 1;
@@ -482,6 +483,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldMarkDeleted) {
   bookmarks::BookmarkNode node(kId, kGuid, GURL());
   const SyncedBookmarkTrackerEntity* entity = tracker->Add(
       &node, kSyncId, kServerVersion, kModificationTime, specifics);
+  const base::Location kLocation = FROM_HERE;
 
   ASSERT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(0U));
   ASSERT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
@@ -494,7 +496,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldMarkDeleted) {
   ASSERT_THAT(entity->bookmark_node(), Eq(&node));
 
   // Delete the bookmark, leading to a pending deletion (local tombstone).
-  tracker->MarkDeleted(entity);
+  tracker->MarkDeleted(entity, kLocation);
 
   EXPECT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(1U));
   EXPECT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
@@ -503,13 +505,20 @@ TEST(SyncedBookmarkTrackerTest, ShouldMarkDeleted) {
       tracker->GetEntityForClientTagHash(syncer::ClientTagHash::FromUnhashed(
           syncer::BOOKMARKS, kGuid.AsLowercaseString())),
       Eq(entity));
-  EXPECT_TRUE(entity->metadata().is_deleted());
+
   EXPECT_THAT(entity->bookmark_node(), IsNull());
+  EXPECT_TRUE(entity->metadata().is_deleted());
+  EXPECT_TRUE(entity->metadata().has_deletion_origin());
+  EXPECT_EQ(kLocation.line_number(),
+            entity->metadata().deletion_origin().file_line_number());
+  EXPECT_EQ(base::PersistentHash(kLocation.file_name()),
+            entity->metadata().deletion_origin().file_name_hash());
+  EXPECT_TRUE(entity->metadata().deletion_origin().has_chromium_version());
 }
 
 TEST(SyncedBookmarkTrackerTest, ShouldUndeleteTombstone) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
 
   const std::string kSyncId = "SYNC_ID";
   const int64_t kId = 1;
@@ -526,7 +535,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldUndeleteTombstone) {
   ASSERT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
 
   // Delete the bookmark, leading to a pending deletion (local tombstone).
-  tracker->MarkDeleted(entity);
+  tracker->MarkDeleted(entity, FROM_HERE);
   ASSERT_THAT(entity->bookmark_node(), IsNull());
   ASSERT_TRUE(entity->metadata().is_deleted());
   ASSERT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(1U));
@@ -669,8 +678,8 @@ TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfMissingMobileFolder) {
   TestBookmarkModelView model;
 
   sync_pb::BookmarkModelMetadata model_metadata;
-  model_metadata.mutable_model_type_state()->set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  model_metadata.mutable_data_type_state()->set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   // Add entries for all the permanent nodes except for the Mobile bookmarks
   // folder.
@@ -896,7 +905,9 @@ TEST(SyncedBookmarkTrackerTest,
      ShouldInvalidateMetadataIfUnsyncableNodeIsTracked) {
   auto client = std::make_unique<bookmarks::TestBookmarkClient>();
   bookmarks::BookmarkNode* managed_node = client->EnableManagedNode();
-  TestBookmarkModelView model(std::move(client));
+  TestBookmarkModelView model(
+      TestBookmarkModelView::ViewType::kLocalOrSyncableNodes,
+      std::move(client));
 
   // The model should contain the managed node now.
   ASSERT_THAT(GetBookmarkNodeByID(model.underlying_model(), managed_node->id()),
@@ -952,7 +963,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfMissingFaviconHash) {
 TEST(SyncedBookmarkTrackerTest,
      ShouldInvalidateMetadataIfPermanentFolderMissingLocally) {
   base::test::ScopedFeatureList features(
-      syncer::kEnableBookmarkFoldersForAccountStorage);
+      syncer::kSyncEnableBookmarksInTransportMode);
   std::unique_ptr<bookmarks::BookmarkModel> model =
       bookmarks::TestBookmarkClient::CreateModel();
 
@@ -983,7 +994,9 @@ TEST(SyncedBookmarkTrackerTest,
      ShouldMatchModelWithUnsyncableNodesAndMetadata) {
   auto client = std::make_unique<bookmarks::TestBookmarkClient>();
   bookmarks::BookmarkNode* managed_node = client->EnableManagedNode();
-  TestBookmarkModelView model(std::move(client));
+  TestBookmarkModelView model(
+      TestBookmarkModelView::ViewType::kLocalOrSyncableNodes,
+      std::move(client));
 
   // The model should contain the managed node now.
   ASSERT_THAT(GetBookmarkNodeByID(model.underlying_model(), managed_node->id()),
@@ -1007,7 +1020,7 @@ TEST(SyncedBookmarkTrackerTest,
 TEST(SyncedBookmarkTrackerTest,
      ShouldPopulateFaviconHashForNewlyAddedEntities) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
 
   const std::string kSyncId = "SYNC_ID";
   const std::string kTitle = "Title";
@@ -1076,11 +1089,11 @@ TEST(SyncedBookmarkTrackerTest, ShouldNotReuploadEntitiesAfterMergeAndRestart) {
   const std::string kTitle = "Title";
   const GURL kUrl("http://www.foo.com");
 
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(model_type_state);
+      SyncedBookmarkTracker::CreateEmpty(data_type_state);
   tracker->SetBookmarksReuploaded();
 
   TestBookmarkModelView model;
@@ -1118,7 +1131,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldNotReuploadEntitiesAfterMergeAndRestart) {
 TEST(SyncedBookmarkTrackerTest,
      ShouldReportZeroIgnoredUpdateDueToMissingParentForNewTracker) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
 
   EXPECT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(), Eq(0));
   EXPECT_THAT(
@@ -1147,9 +1160,9 @@ TEST(SyncedBookmarkTrackerTest,
 
   TestBookmarkModelView bookmark_model;
 
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   sync_pb::BookmarkModelMetadata initial_model_metadata =
       CreateMetadataForPermanentNodes(&bookmark_model);
   initial_model_metadata.set_bookmarks_hierarchy_fields_reuploaded(true);
@@ -1230,7 +1243,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldRecordIgnoredUpdateDueToMissingParent) {
   const int64_t kServerVersion = 123;
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
 
   ASSERT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(), Eq(0));
   ASSERT_THAT(

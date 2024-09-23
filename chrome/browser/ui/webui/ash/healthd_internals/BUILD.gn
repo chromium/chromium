@@ -1,0 +1,33 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("healthd_internals") {
+  sources = [
+    "healthd_internals_message_handler.cc",
+    "healthd_internals_message_handler.h",
+    "healthd_internals_ui.cc",
+    "healthd_internals_ui.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/common",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser/resources/chromeos/healthd_internals:resources",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+  ]
+}

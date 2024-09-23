@@ -11,7 +11,6 @@
       <if expr="not is_android">
         <!-- Incognito and Guest mode, new tab page WebUI. -->
         <structure name="IDR_INCOGNITO_TAB_HTML" file="resources\new_tab_page_incognito_guest\incognito_tab.html" flattenhtml="true" type="chrome_html" />
-        <structure name="IDR_REVAMPED_INCOGNITO_TAB_HTML" file="resources\new_tab_page_incognito_guest\revamped_incognito_tab.html" flattenhtml="true" type="chrome_html" />
         <structure name="IDR_INCOGNITO_TAB_THEME_CSS" file="resources\new_tab_page_incognito_guest\incognito_tab_theme.css" flattenhtml="true" type="chrome_html" />
         <structure name="IDR_GUEST_TAB_HTML" file="resources\new_tab_page_incognito_guest\guest_tab.html" flattenhtml="true" type="chrome_html" />
         <structure name="IDR_NEW_TAB_4_THEME_CSS" file="resources\new_tab_page_incognito_guest\new_tab_theme.css" flattenhtml="true" type="chrome_html" />
@@ -19,8 +18,17 @@
         <!-- WebAuthn Lottie resources -->
         <structure type="lottie" name="IDR_WEBAUTHN_HYBRID_CONNECTING_LIGHT" file="resources/webauthn/hybrid_connecting_light.json" compress="brotli" />
         <structure type="lottie" name="IDR_WEBAUTHN_HYBRID_CONNECTING_DARK" file="resources/webauthn/hybrid_connecting_dark.json" compress="brotli" />
-        <structure type="lottie" name="IDR_WEBAUTHN_GPM_FINGERPRINT_LIGHT" file="resources/webauthn/gpm_fingerprint_light.json" compress="brotli" />
-        <structure type="lottie" name="IDR_WEBAUTHN_GPM_LAPTOP_LIGHT" file="resources/webauthn/gpm_laptop_light.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_PASSKEY_LIGHT" file="resources/webauthn/passkey_light.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_PASSKEY_DARK" file="resources/webauthn/passkey_dark.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_PASSKEY_LIGHT" file="resources/webauthn/gpm_passkey_light.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_PASSKEY_DARK" file="resources/webauthn/gpm_passkey_dark.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_PIN_LIGHT" file="resources/webauthn/gpm_pin_light.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_PIN_DARK" file="resources/webauthn/gpm_pin_dark.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_LAPTOP_LIGHT" file="resources/webauthn/laptop_light.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_LAPTOP_DARK" file="resources/webauthn/laptop_dark.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_INCOGNITO" file="resources/webauthn/gpm_incognito.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_PIN_LOCKED_LIGHT" file="resources/webauthn/gpm_pin_locked_light.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_PIN_LOCKED_DARK" file="resources/webauthn/gpm_pin_locked_dark.json" compress="brotli" />
       </if>
     </structures>
     <includes>
@@ -82,7 +90,6 @@
         <include name="IDR_MOBILE_SETUP_PORTAL_PAGE_HTML" file="resources\chromeos\mobile_setup_portal.html" flattenhtml="true" type="BINDATA" />
 
         <include name="IDR_OS_CREDITS_HTML" file="resources\chromeos\about_os_credits.html" type="BINDATA" />
-        <include name="IDR_CERT_MANAGER_DIALOG_HTML" file="resources\chromeos\certificate_manager_dialog.html" type="BINDATA" />
         <include name="IDR_SLOW_CSS" file="resources\chromeos\slow.css" type="BINDATA" />
         <include name="IDR_SLOW_HTML" file="resources\chromeos\slow.html" type="BINDATA" />
         <include name="IDR_SLOW_JS" file="resources\chromeos\slow.js" type="BINDATA" />
@@ -124,10 +131,6 @@
         <include name="IDR_SOUND_SPOKEN_FEEDBACK_TOGGLE_COUNTDOWN_HIGH_WAV" file="resources\chromeos\sounds\spoken_feedback_toggle_countdown_high.wav" type="BINDATA" />
         <include name="IDR_SOUND_SPOKEN_FEEDBACK_TOGGLE_COUNTDOWN_LOW_WAV" file="resources\chromeos\sounds\spoken_feedback_toggle_countdown_low.wav" type="BINDATA" />
         <include name="IDR_SOUND_TOUCH_TYPE_WAV" file="resources\chromeos\sounds\touch_type.wav" type="BINDATA" />
-        <include name="IDR_SOUND_CHARGE_HIGH_BATTERY_FLAC" file="resources\chromeos\sounds\power\charging_started_high.flac" type="BINDATA" />
-        <include name="IDR_SOUND_CHARGE_MEDIUM_BATTERY_FLAC" file="resources\chromeos\sounds\power\charging_started_medium.flac" type="BINDATA" />
-        <include name="IDR_SOUND_CHARGE_LOW_BATTERY_FLAC" file="resources\chromeos\sounds\power\charging_started_low.flac" type="BINDATA" />
-        <include name="IDR_SOUND_NO_CHARGE_LOW_BATTERY_FLAC" file="resources\chromeos\sounds\power\low_battery.flac" type="BINDATA" />
         <include name="IDR_ABOUT_POWER_HTML" file="resources\chromeos\power.html" type="BINDATA" />
         <include name="IDR_ABOUT_POWER_JS" file="resources\chromeos\power.js" type="BINDATA" />
         <include name="IDR_ABOUT_POWER_CSS" file="resources\chromeos\power.css" type="BINDATA" />
@@ -180,11 +183,11 @@
         <include name="IDR_SYS_INTERNALS_IMAGE_MEMORY_SVG" file="resources\chromeos\sys_internals\img\memory.svg" type="BINDATA" />
         <include name="IDR_SYS_INTERNALS_IMAGE_ZRAM_SVG" file="resources\chromeos\sys_internals\img\zram.svg" type="BINDATA" />
         <include name="IDR_SMART_DIM_20190521_EXAMPLE_PREPROCESSOR_CONFIG_PB" file="ash\power\ml\smart_dim\20190521_example_preprocessor_config.pb" type="BINDATA" />
-        <include name="IDR_ARC_OVERVIEW_TRACING_HTML" file="resources\chromeos\arc_graphics_tracing\arc_overview_tracing.html" type="BINDATA"/>
-        <include name="IDR_ARC_OVERVIEW_TRACING_JS" file="resources\chromeos\arc_graphics_tracing\arc_overview_tracing.js" type="BINDATA" />
-        <include name="IDR_ARC_OVERVIEW_TRACING_UI_JS" file="resources\chromeos\arc_graphics_tracing\arc_overview_tracing_ui.js" type="BINDATA" />
-        <include name="IDR_ARC_TRACING_UI_JS" file="resources\chromeos\arc_graphics_tracing\arc_tracing_ui.js" type="BINDATA" />
-        <include name="IDR_ARC_TRACING_CSS" file="resources\chromeos\arc_graphics_tracing\arc_tracing.css" type="BINDATA" />
+        <include name="IDR_ARC_OVERVIEW_TRACING_HTML" file="resources\chromeos\arc_overview_tracing\arc_overview_tracing.html" type="BINDATA"/>
+        <include name="IDR_ARC_OVERVIEW_TRACING_JS" file="resources\chromeos\arc_overview_tracing\arc_overview_tracing.js" type="BINDATA" />
+        <include name="IDR_ARC_OVERVIEW_TRACING_UI_JS" file="resources\chromeos\arc_overview_tracing\arc_overview_tracing_ui.js" type="BINDATA" />
+        <include name="IDR_ARC_TRACING_UI_JS" file="resources\chromeos\arc_overview_tracing\arc_tracing_ui.js" type="BINDATA" />
+        <include name="IDR_ARC_TRACING_CSS" file="resources\chromeos\arc_overview_tracing\arc_tracing.css" type="BINDATA" />
         <include name="IDR_ARC_POWER_CONTROL_HTML" file="resources\chromeos\arc_power_control\arc_power_control.html" type="BINDATA"/>
         <include name="IDR_ARC_POWER_CONTROL_JS" file="resources\chromeos\arc_power_control\arc_power_control.js" type="BINDATA" />
         <include name="IDR_ARC_POWER_CONTROL_CSS" file="resources\chromeos\arc_power_control\arc_power_control.css" type="BINDATA" />
@@ -204,7 +207,8 @@
 
       <if expr="enable_hangout_services_extension">
         <!-- Hangout Services extension, included in Google Chrome builds only. -->
-        <include name="IDR_HANGOUT_SERVICES_MANIFEST" file="resources\hangout_services\manifest.json" type="BINDATA" />
+        <include name="IDR_HANGOUT_SERVICES_MANIFEST_V2" file="resources\hangout_services\manifest_v2.json" type="BINDATA" />
+        <include name="IDR_HANGOUT_SERVICES_MANIFEST_V3" file="resources\hangout_services\manifest_v3.json" type="BINDATA" />
       </if>
 
       <!-- Desk API extension, enabled on managed ChromeOS devices -->
@@ -217,6 +221,7 @@
       <include name="IDR_INSPECT_JS" file="resources\inspect\inspect.js" type="BINDATA" />
 
       <include name="IDR_NETWORK_SPEECH_SYNTHESIS_MANIFEST" file="resources\network_speech_synthesis\manifest.json" type="BINDATA" />
+      <include name="IDR_READING_MODE_GDOCS_HELPER_MANIFEST" file="resources\reading_mode_gdocs_helper\manifest.json" type="BINDATA" />
 
       <if expr="enable_pdf">
         <include name="IDR_PDF_MANIFEST" file="resources\pdf\manifest.json" type="BINDATA" />
@@ -229,9 +234,6 @@
         <include name="IDR_CHROME_URLS_DISABLED_PAGE_HTML" file="resources\chromeos\chrome_urls_disabled_page\app.html" type="BINDATA" />
         <include name="IDR_ECHO_MANIFEST" file="resources\chromeos\echo\manifest.json" type="BINDATA" />
         <include name="IDR_INCOGNITO_NAVIGATION_BLOCKED_PAGE_HTML" file="resources\chromeos\enterprise\incognito_navigation_blocked_page\incognito_blocked.html" flattenhtml="true" type="BINDATA" />
-        <if expr="_google_chrome">
-          <include name="IDR_QUICKOFFICE_MANIFEST" file="resources\chromeos\quickoffice\manifest.json" type="BINDATA" />
-        </if>
       </if>
       <if expr="_google_chrome">
         <include name="IDR_PREF_HASH_SEED_BIN" file="resources\settings\internal\pref_hash_seed.bin" type="BINDATA" />
@@ -245,6 +247,12 @@
         <include name="IDR_IME_WINDOW_CLOSE_H" file="resources\input_ime\ime_window_close_hover.png" type="BINDATA" />
         <!-- Chrome Cart -->
         <part file="cart/resources/cart_resources.grdp" />
+        <!-- FedCM -->
+        <part file="ui/views/webid/resources/webid_resources.grdp" />
+      </if>
+      <if expr="chrome_root_store_cert_management_ui">
+        <include name="IDR_CERT_MANAGER_DIALOG_HTML" file="resources\certificate_manager\certificate_manager_dialog.html" type="BINDATA" />
+        <include name="IDR_CERT_MANAGER_DIALOG_V2_HTML" file="resources\certificate_manager\certificate_manager_dialog_v2.html" type="BINDATA" />
       </if>
     </includes>
   </release>

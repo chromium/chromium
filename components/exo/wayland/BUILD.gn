@@ -55,6 +55,8 @@ source_set("wayland") {
     "wayland_pointer_delegate.h",
     "wayland_positioner.cc",
     "wayland_positioner.h",
+    "wayland_protocol_logger.cc",
+    "wayland_protocol_logger.h",
     "wayland_touch_delegate.cc",
     "wayland_touch_delegate.h",
     "wayland_watcher.cc",
@@ -117,6 +119,7 @@ source_set("wayland") {
     "zcr_stylus.h",
     "zcr_stylus_tools.cc",
     "zcr_stylus_tools.h",
+    "zcr_test_controller.h",
     "zcr_touchpad_haptics.cc",
     "zcr_touchpad_haptics.h",
     "zcr_ui_controls.h",
@@ -227,6 +230,26 @@ source_set("wayland") {
   }
 }
 
+static_library("test_controller") {
+  testonly = true
+  sources = [ "zcr_test_controller.cc" ]
+  deps = [
+    ":wayland",
+    "//base/test:test_support",
+    "//third_party/wayland:wayland_server",
+    "//third_party/wayland-protocols:test_controller_protocol",
+    "//ui/events",
+  ]
+}
+
+static_library("test_controller_stub") {
+  testonly = false
+  sources = [
+    "zcr_test_controller.h",
+    "zcr_test_controller_stub.cc",
+  ]
+}
+
 static_library("ui_controls_protocol") {
   testonly = true
   defines = [ "UI_CONTROLS_PROTOCOL_IMPLEMENTATION" ]
@@ -244,6 +267,7 @@ static_library("ui_controls_protocol") {
     "//ui/base:test_support",
     "//ui/base/wayland:wayland_display_util",
     "//ui/events",
+    "//ui/events:gesture_detection",
   ]
 }
 
@@ -310,6 +334,7 @@ source_set("unit_tests") {
     "wayland_display_util_unittest.cc",
     "wayland_keyboard_delegate_unittest.cc",
     "wayland_positioner_unittest.cc",
+    "wayland_protocol_logger_unittest.cc",
     "wl_data_device_manager_unittest.cc",
     "zaura_output_manager_unittest.cc",
     "zaura_output_manager_v2_unittest.cc",
@@ -426,7 +451,6 @@ source_set("client_support") {
   ]
 
   if (ozone_platform_drm) {
-    configs += [ "//ui/gl:gl_config" ]
     deps += [
       "//build/config/linux/libdrm",
       "//ui/ozone",
@@ -453,7 +477,6 @@ executable("wayland_rects_client") {
   ]
 
   if (ozone_platform_drm) {
-    configs += [ "//ui/gl:gl_config" ]
     defines = [ "USE_GBM" ]
     deps += [
       "//build/config/linux/libdrm",
@@ -480,10 +503,6 @@ source_set("simple") {
     "//ui/gfx/geometry",
     "//ui/gl",
   ]
-
-  if (ozone_platform_drm) {
-    configs += [ "//ui/gl:gl_config" ]
-  }
 }
 
 source_set("client_version_test") {
@@ -499,10 +518,6 @@ source_set("client_version_test") {
   ]
 
   public_deps = []
-
-  if (ozone_platform_drm) {
-    configs += [ "//ui/gl:gl_config" ]
-  }
 }
 
 source_set("fullscreen_shell") {
@@ -522,10 +537,6 @@ source_set("fullscreen_shell") {
     "//ui/gfx/geometry",
     "//ui/gl",
   ]
-
-  if (ozone_platform_drm) {
-    configs += [ "//ui/gl:gl_config" ]
-  }
 }
 
 executable("wayland_simple_client") {
@@ -569,10 +580,6 @@ executable("wayland_subsurface_client") {
     "//ui/gfx/geometry",
     "//ui/gl",
   ]
-
-  if (ozone_platform_drm) {
-    configs += [ "//ui/gl:gl_config" ]
-  }
 }
 
 source_set("blur") {
@@ -590,10 +597,6 @@ source_set("blur") {
     "//ui/gfx/geometry",
     "//ui/gl",
   ]
-
-  if (ozone_platform_drm) {
-    configs += [ "//ui/gl:gl_config" ]
-  }
 }
 
 executable("wayland_blur_client") {
@@ -681,6 +684,7 @@ source_set("wayland_client_test_helper") {
     "//cc:test_support",
     "//chromeos/ash/components:test_support",
     "//components/exo",
+    "//components/exo:test_support",
     "//components/exo/wayland",
     "//components/viz/test:test_support",
     "//mojo/core/embedder",
@@ -803,7 +807,6 @@ if (ozone_platform_drm) {
       "//ui/gfx/geometry",
     ]
 
-    configs += [ "//ui/gl:gl_config" ]
     deps += [ "//third_party/minigbm" ]
   }
 
@@ -822,7 +825,6 @@ if (ozone_platform_drm) {
       "//ui/gfx/geometry",
     ]
 
-    configs += [ "//ui/gl:gl_config" ]
     deps += [ "//third_party/minigbm" ]
   }
 
@@ -838,8 +840,6 @@ if (ozone_platform_drm) {
       "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
       "//ui/gl",
     ]
-
-    configs += [ "//ui/gl:gl_config" ]
   }
 
   if (enable_vulkan) {
@@ -858,7 +858,6 @@ if (ozone_platform_drm) {
         "//ui/gfx/geometry",
       ]
 
-      configs += [ "//ui/gl:gl_config" ]
       deps += [ "//third_party/minigbm" ]
     }
   }

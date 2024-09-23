@@ -1,0 +1,199 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("file_system_provider") {
+  sources = [
+    "abort_callback.h",
+    "cloud_file_info.cc",
+    "cloud_file_info.h",
+    "cloud_file_system.cc",
+    "cloud_file_system.h",
+    "extension_provider.cc",
+    "extension_provider.h",
+    "icon_set.cc",
+    "icon_set.h",
+    "mount_path_util.cc",
+    "mount_path_util.h",
+    "mount_request_handler.cc",
+    "mount_request_handler.h",
+    "notification_manager.cc",
+    "notification_manager.h",
+    "notification_manager_interface.h",
+    "observer.h",
+    "odfs_metrics.cc",
+    "odfs_metrics.h",
+    "opened_cloud_file.cc",
+    "opened_cloud_file.h",
+    "operation_request_manager.cc",
+    "operation_request_manager.h",
+    "provided_file_system.cc",
+    "provided_file_system.h",
+    "provided_file_system_info.cc",
+    "provided_file_system_info.h",
+    "provided_file_system_interface.cc",
+    "provided_file_system_interface.h",
+    "provided_file_system_observer.cc",
+    "provided_file_system_observer.h",
+    "provider_interface.h",
+    "queue.cc",
+    "queue.h",
+    "registry.cc",
+    "registry.h",
+    "registry_interface.cc",
+    "registry_interface.h",
+    "request_dispatcher.h",
+    "request_dispatcher_impl.cc",
+    "request_dispatcher_impl.h",
+    "request_manager.cc",
+    "request_manager.h",
+    "request_value.cc",
+    "request_value.h",
+    "scoped_file_opener.cc",
+    "scoped_file_opener.h",
+    "service.cc",
+    "service.h",
+    "service_factory.cc",
+    "service_factory.h",
+    "throttled_file_system.cc",
+    "throttled_file_system.h",
+    "watcher.cc",
+    "watcher.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/file_system_provider/content_cache",
+    "//chrome/browser/ash/file_system_provider/operations",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/smb_client",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/chromeos/extensions/file_system_provider",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/multi_user",
+    "//chrome/common",
+    "//chromeos/constants",
+    "//components/pref_registry",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//net",
+    "//storage/browser",
+    "//ui/base",
+    "//ui/chromeos/strings",
+    "//ui/gfx",
+    "//ui/message_center/public/cpp",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/file_system_provider/content_cache",
+    "//chrome/browser/ash/file_system_provider/operations",
+    "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/smb_client",
+    "//chrome/browser/ash/system_web_apps/apps",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_extension_provider.cc",
+    "fake_extension_provider.h",
+    "fake_provided_file_system.cc",
+    "fake_provided_file_system.h",
+  ]
+
+  deps = [
+    ":file_system_provider",
+    "//base",
+    "//components/services/filesystem/public/mojom",
+    "//extensions/browser",
+    "//extensions/common",
+    "//extensions/common",
+    "//net",
+    "//storage/browser",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cloud_file_system_unittest.cc",
+    "fake_registry.cc",
+    "fake_registry.h",
+    "logging_observer.cc",
+    "logging_observer.h",
+    "mount_path_util_unittest.cc",
+    "operation_request_manager_unittest.cc",
+    "provided_file_system_unittest.cc",
+    "queue_unittest.cc",
+    "registry_unittest.cc",
+    "scoped_file_opener_unittest.cc",
+    "service_unittest.cc",
+    "throttled_file_system_unittest.cc",
+  ]
+
+  deps = [
+    ":file_system_provider",
+    ":test_support",
+    "//base/test:test_support",
+    "//chrome/browser/ash/file_system_provider/content_cache",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/keyed_service/core",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+
+    # Gather unit tests from subdirectories.
+    "//chrome/browser/ash/file_system_provider/content_cache:unit_tests",
+    "//chrome/browser/ash/file_system_provider/fileapi:unit_tests",
+    "//chrome/browser/ash/file_system_provider/operations:unit_tests",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "cloud_file_system_browsertest.cc" ]
+
+  deps = [
+    ":file_system_provider",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/file_manager:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/constants",
+    "//content/test:test_support",
+  ]
+}

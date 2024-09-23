@@ -2,14 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/peerconnection/media_stream_remote_video_source.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -121,7 +128,7 @@ class MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate
   std::optional<base::TimeTicks> start_timestamp_;
 
   // WebRTC real time clock, needed to determine NTP offset.
-  raw_ptr<webrtc::Clock, ExperimentalRenderer> clock_;
+  raw_ptr<webrtc::Clock> clock_;
 
   // Offset between NTP clock and WebRTC clock.
   const int64_t ntp_offset_;
@@ -225,7 +232,7 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
   // through the JavaScript callback mechanism
   // video.requestVideoFrameCallback().
   video_frame->metadata().rtp_timestamp =
-      static_cast<double>(incoming_frame.timestamp());
+      static_cast<double>(incoming_frame.rtp_timestamp());
 
   if (incoming_frame.processing_time()) {
     video_frame->metadata().processing_time =
@@ -252,6 +259,9 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
             ->receive_time();
     video_frame->metadata().receive_time =
         base::TimeTicks() + base::Microseconds(last_packet_arrival.us());
+    base::UmaHistogramTimes(
+        "WebRTC.Video.TotalReceiveDelay",
+        current_time - *video_frame->metadata().receive_time);
   }
 
   // Use our computed render time as estimated capture time. If timestamp_us()
@@ -378,7 +388,7 @@ void MediaStreamRemoteVideoSource::OnChanged(
       SetReadyState(WebMediaStreamSource::kReadyStateEnded);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

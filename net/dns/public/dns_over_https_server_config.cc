@@ -4,15 +4,15 @@
 
 #include "net/dns/public/dns_over_https_server_config.h"
 
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
-#include <optional>
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/third_party/uri_template/uri_template.h"
 #include "url/url_canon.h"
@@ -25,19 +25,18 @@ std::optional<std::string> GetHttpsHost(const std::string& url) {
   // This code is used to compute a static initializer, so it runs before GURL's
   // scheme registry is initialized.  Since GURL is not ready yet, we need to
   // duplicate some of its functionality here.
-  url::Parsed parsed;
-  url::ParseStandardURL(url.data(), url.size(), &parsed);
   std::string canonical;
   url::StdStringCanonOutput output(&canonical);
   url::Parsed canonical_parsed;
-  bool is_valid = url::CanonicalizeStandardURL(
-      url.data(), parsed, url::SchemeType::SCHEME_WITH_HOST_AND_PORT, nullptr,
-      &output, &canonical_parsed);
+  bool is_valid =
+      url::CanonicalizeStandardURL(url.data(), url::ParseStandardURL(url),
+                                   url::SchemeType::SCHEME_WITH_HOST_AND_PORT,
+                                   nullptr, &output, &canonical_parsed);
   if (!is_valid)
     return std::nullopt;
   const url::Component& scheme_range = canonical_parsed.scheme;
-  base::StringPiece scheme =
-      base::StringPiece(canonical).substr(scheme_range.begin, scheme_range.len);
+  std::string_view scheme =
+      std::string_view(canonical).substr(scheme_range.begin, scheme_range.len);
   if (scheme != url::kHttpsScheme)
     return std::nullopt;
   const url::Component& host_range = canonical_parsed.host;
@@ -70,9 +69,9 @@ bool IsValidDohTemplate(const std::string& server_template, bool* use_post) {
   return true;
 }
 
-constexpr base::StringPiece kJsonKeyTemplate("template");
-constexpr base::StringPiece kJsonKeyEndpoints("endpoints");
-constexpr base::StringPiece kJsonKeyIps("ips");
+constexpr std::string_view kJsonKeyTemplate("template");
+constexpr std::string_view kJsonKeyEndpoints("endpoints");
+constexpr std::string_view kJsonKeyIps("ips");
 
 }  // namespace
 
@@ -124,7 +123,7 @@ const std::string& DnsOverHttpsServerConfig::server_template() const {
   return server_template_;
 }
 
-base::StringPiece DnsOverHttpsServerConfig::server_template_piece() const {
+std::string_view DnsOverHttpsServerConfig::server_template_piece() const {
   return server_template_;
 }
 

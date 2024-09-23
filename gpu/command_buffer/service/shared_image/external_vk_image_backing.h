@@ -42,7 +42,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       const base::flat_map<VkFormat, VkImageUsageFlags>& image_usage_cache,
       base::span<const uint8_t> pixel_data);
@@ -57,7 +57,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       std::string debug_label,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 
@@ -71,7 +71,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       gfx::BufferUsage buffer_usage);
 
@@ -83,7 +83,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       size_t estimated_size_bytes,
       scoped_refptr<SharedContextState> context_state,
@@ -117,7 +117,8 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   }
   bool use_separate_gl_texture() const { return use_separate_gl_texture_; }
   bool need_synchronization() const {
-    if (usage() & SHARED_IMAGE_USAGE_WEBGPU) {
+    if (usage().HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
+                       SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
       return true;
     }
 
@@ -125,9 +126,9 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       return !use_separate_gl_texture() && !gl_textures_.empty();
     }
 
-    if ((usage() &
-         (SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE)) &&
-        (usage() & SHARED_IMAGE_USAGE_SCANOUT)) {
+    if (usage().HasAny(SHARED_IMAGE_USAGE_RASTER_READ |
+                       SHARED_IMAGE_USAGE_RASTER_WRITE) &&
+        usage().Has(SHARED_IMAGE_USAGE_SCANOUT)) {
       return true;
     }
 
@@ -165,6 +166,9 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
 
   // Add semaphores to a pending list for reusing or being released immediately.
   void AddSemaphoresToPendingListOrRelease(
+      std::vector<ExternalSemaphore> semaphores);
+  // Release semaphores immediately.
+  void ReleaseSemaphoresWithFenceHelper(
       std::vector<ExternalSemaphore> semaphores);
   // Return |pending_semaphores_| and passed in |semaphores| to
   // ExternalSemaphorePool for reusing.

@@ -172,10 +172,8 @@ class GtkKeyBindingsHandler {
   // Handler of "move-focus" signal.
   static void MoveFocus(GtkWidget* widget, GtkDirectionType arg1);
 
-  // These fields are not a raw_ptr<> because of a static_cast not related by
-  // inheritance.
-  RAW_PTR_EXCLUSION GtkWidget* fake_window_;
-  RAW_PTR_EXCLUSION GtkWidget* handler_;
+  raw_ptr<GtkWidget> fake_window_;
+  raw_ptr<GtkWidget> handler_;
 
   // Buffer to store the match results.
   std::vector<ui::TextEditCommandAuraLinux> edit_commands_;

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/live_caption/views/caption_bubble_controller_views.h"
+
 #include <memory>
 
 #include "base/functional/callback_forward.h"
@@ -23,15 +25,17 @@
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/views/caption_bubble.h"
-#include "components/live_caption/views/caption_bubble_controller_views.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
-#include "content/public/browser/browser_accessibility_state.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -39,6 +43,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -53,7 +58,9 @@ namespace captions {
 class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
  public:
   CaptionBubbleControllerViewsTest() {
-    scoped_feature_list_.InitAndEnableFeature(media::kLiveTranslate);
+    scoped_feature_list_.InitWithFeatures(
+        {media::kLiveTranslate, media::kFeatureManagementLiveTranslateCrOS},
+        {});
   }
 
   ~CaptionBubbleControllerViewsTest() override = default;
@@ -188,16 +195,16 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     if (!button) {
       return;
     }
-    button->OnMousePressed(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0), gfx::Point(0, 0),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+    button->OnMousePressed(ui::MouseEvent(
+        ui::EventType::kMousePressed, gfx::Point(0, 0), gfx::Point(0, 0),
+        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
     button->OnMouseReleased(ui::MouseEvent(
-        ui::ET_MOUSE_RELEASED, gfx::Point(0, 0), gfx::Point(0, 0),
+        ui::EventType::kMouseReleased, gfx::Point(0, 0), gfx::Point(0, 0),
         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
   }
 
   bool OnPartialTranscription(std::string text) {
-    // TODO(crbug.com/1351722): This is a workaround for some tests which were
+    // TODO(crbug.com/40857323): This is a workaround for some tests which were
     // passing by side effect of the AccessibilityChecker's checks. The full
     // analysis can be found in the bug.
     if (auto* label = GetLabel()) {
@@ -214,7 +221,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   bool OnFinalTranscription(std::string text) {
-    // TODO(crbug.com/1351722): This is a workaround for some tests which were
+    // TODO(crbug.com/40857323): This is a workaround for some tests which were
     // passing by side effect of the AccessibilityChecker's checks. The full
     // analysis can be found in the bug.
     if (auto* label = GetLabel()) {
@@ -397,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_FALSE(GetTitle()->GetVisible());
 }
 
-// TODO(crbug.com/1427915): Flaky on Linux Tests.
+// TODO(crbug.com/40900150): Flaky on Linux Tests.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_BubblePositioning DISABLED_BubblePositioning
 #else
@@ -515,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_FALSE(IsWidgetVisible());
 }
 
-// TODO(crbug.com/1055150): Renable this test once it is passing. Tab
+// TODO(crbug.com/40119836): Renable this test once it is passing. Tab
 // traversal works in app but doesn't work in tests right now.
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        DISABLED_FocusableInTabOrder) {
@@ -549,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 #if !BUILDFLAG(IS_MAC)
   // Pressing enter should turn the expand button into a collapse button.
   // Focus should remain on the collapse button.
-  // TODO(crbug.com/1055150): Fix this for Mac.
+  // TODO(crbug.com/40119836): Fix this for Mac.
   EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       GetCaptionWidget()->GetNativeWindow(), ui::VKEY_RETURN, false, false,
       false, false));
@@ -730,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   // Set the text color to blue !important with 0.5 opacity.
   caption_style.text_color = "rgba(0,0,255,0.5) !important";
   // On Mac, we set the opacity to 90% as a workaround to a rendering issue.
-  // TODO(crbug.com/1199419): Fix the rendering issue and then remove this
+  // TODO(crbug.com/40177817): Fix the rendering issue and then remove this
   // workaround.
   int a;
 #if BUILDFLAG(IS_MAC)
@@ -778,7 +785,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   // Set the window color to red with 0.5 opacity.
   caption_style.window_color = "rgba(255,0,0,0.5)";
   // On Mac, we set the opacity to 90% as a workaround to a rendering issue.
-  // TODO(crbug.com/1199419): Fix the rendering issue and then remove this
+  // TODO(crbug.com/40177817): Fix the rendering issue and then remove this
   // workaround.
   int a;
 #if BUILDFLAG(IS_MAC)
@@ -1030,8 +1037,38 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, PinAndUnpin) {
       prefs::kLiveCaptionBubblePinned));
 
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
+  // The bubble should hide after 15 seconds.
   test_task_runner->FastForwardBy(base::Seconds(15));
   EXPECT_TRUE(IsWidgetVisible());
+
+  SetTickClockForTesting(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleProperties) {
+  base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
+  SetTickClockForTesting(test_task_runner->GetMockTickClock());
+  OnPartialTranscription(
+      "Sea otters have the densest fur of any mammal at about 1 million "
+      "hairs "
+      "per square inch.");
+  ClickButton(GetPinButton());
+
+  ui::AXNodeData data;
+  GetBubble()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kDialog);
+  EXPECT_EQ(GetBubble()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kDialog);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_TITLE));
+
+  GetBubble()->SetTitleTextForTesting(u"Sample Accessible Name");
+
+  data = ui::AXNodeData();
+  GetBubble()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Sample Accessible Name");
+  EXPECT_EQ(GetBubble()->GetViewAccessibility().GetCachedName(),
+            u"Sample Accessible Name");
 
   SetTickClockForTesting(nullptr);
 }
@@ -1049,8 +1086,12 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleTextSetUp) {
 
   // The label is a readonly document.
   ui::AXNodeData node_data;
-  GetLabel()->GetAccessibleNodeData(&node_data);
+  GetLabel()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(ax::mojom::Role::kDocument, node_data.role);
+  EXPECT_EQ(GetLabel()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kDocument);
+  EXPECT_EQ(GetLabel()->GetViewAccessibility().GetCachedName(),
+            u"Capybaras are the world's largest rodents.");
   EXPECT_EQ(ax::mojom::Restriction::kReadOnly, node_data.GetRestriction());
 
   // There is 1 staticText node in the label.
@@ -1146,7 +1187,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
   // When screen reader mode turns on on Windows, the label is focusable. It
   // remains unfocusable on other OS's.
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
 #if BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY() && !BUILDFLAG(IS_MAC)
   EXPECT_TRUE(GetLabel()->IsFocusable());
 #else
@@ -1168,7 +1209,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Bowhead whales can live for over 200 years.", GetLabelText());
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
-  // TODO(crbug.com/1055150): Change this to 5 seconds. For some reasons tests
+  // TODO(crbug.com/40119836): Change this to 5 seconds. For some reasons tests
   // need to wait 10 seconds, but testing the feature only requires a 5 second
   // wait.
   test_task_runner->FastForwardBy(base::Seconds(10));
@@ -1199,16 +1240,15 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_TRUE(IsWidgetVisible());
 
   // Test that widget doesn't hide when focused.
-  views::test::WidgetActivationWaiter waiter(GetCaptionWidget(), true);
   GetCaptionWidget()->Activate();
-  waiter.Wait();
+  views::test::WaitForWidgetActive(GetCaptionWidget(), true);
   test_task_runner->FastForwardBy(base::Seconds(10));
   EXPECT_TRUE(IsWidgetVisible());
 
   SetTickClockForTesting(nullptr);
 }
 
-// TODO(https://crbug.com/1207312): Flaky test.
+// TODO(crbug.com/40181252): Flaky test.
 #if BUILDFLAG(IS_OZONE)
 #define MAYBE_ClearsTextAfterInactivity DISABLED_ClearsTextAfterInactivity
 #else
@@ -1227,7 +1267,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Bowhead whales can live for over 200 years.", GetLabelText());
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
-  // TODO(crbug.com/1055150): Change this to 5 seconds. For some reasons tests
+  // TODO(crbug.com/40119836): Change this to 5 seconds. For some reasons tests
   // need to wait 10 seconds, but testing the feature only requires a 5 second
   // wait.
   test_task_runner->FastForwardBy(base::Seconds(10));
@@ -1263,7 +1303,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
   ClickButton(GetBackToTabButton());
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
-  // TODO(crbug.com/1055150): Test that browser window is active. It works in
+  // TODO(crbug.com/40119836): Test that browser window is active. It works in
   // app but the tests aren't working.
 }
 
@@ -1473,6 +1513,17 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   OnSodaInstalled();
   ASSERT_TRUE(GetLabel()->GetVisible());
   ASSERT_FALSE(GetDownloadProgressLabel()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       AutomaticLanguageDownload) {
+  OnLanguageIdentificationEvent("fr-FR");
+  OnSodaProgress(12);
+
+  EXPECT_TRUE(IsWidgetVisible());
+  ASSERT_TRUE(GetDownloadProgressLabel()->GetVisible());
+  ASSERT_EQ(u"Downloading French language pack\x2026 12%",
+            GetDownloadProgressLabel()->GetText());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

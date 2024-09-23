@@ -1,0 +1,138 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./profile_picker_shared.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #scheme=relative
+ * #include=profile-picker-shared cr-hidden-style-lit cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+#profileCardContainer {
+  border-radius: inherit;
+  height: 100%;
+  /* Allows descendants to be absolute positioned relatively to the
+      container */
+  position: relative;
+  width: 100%;
+}
+
+cr-button {
+  --cr-hover-background-color: transparent;
+  border: none;
+  border-radius: inherit;
+  box-shadow: none;
+  flex-direction: column;
+  height: inherit;
+  padding: 0;
+  width: inherit;
+}
+
+#gaiaName {
+  left: 0;
+}
+
+#avatarContainer {
+  height: var(--profile-card-avatar-icon-size);
+  position: relative;
+}
+
+#iconContainer {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  --domain-icon-size: 24px;
+  --domain-icon-border-size: 2px;
+  align-items: center;
+  background-color: white;
+  border:
+    var(--domain-icon-border-size) solid var(--profile-card-hover-color);
+  border-radius: 50%;
+  box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
+  display: flex;
+  height: var(--domain-icon-size);
+  inset-inline-end: -6px;
+  justify-content: center;
+  position: absolute;
+  top: calc(var(--profile-card-avatar-icon-size) - var(--domain-icon-size)
+    - var(--domain-icon-border-size));
+  width: var(--domain-icon-size);
+}
+
+cr-icon {
+  --iron-icon-fill-color: var(--google-grey-700);
+}
+
+#forceSigninContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+#forceSigninIcon {
+  height: 16px;
+  margin: 0 4px;
+  width: 16px;
+}
+
+div.profile-card-info {
+  bottom: 0;
+  font-weight: normal;
+}
+
+cr-input {
+  --cr-input-background-color: none;
+  --cr-input-hover-background-color: transparent;
+  --cr-input-border-bottom: none;
+  --cr-input-padding-top: 0;
+  top: 0;
+}
+
+#hoverUnderline {
+  border-bottom: 2px solid var(--google-grey-300);
+  border-radius: 0;
+  height: 0;
+  left: 0;
+  margin: auto;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 38px;
+  width: 0;
+}
+
+cr-input[focused_] + #hoverUnderline {
+  visibility: hidden;
+}
+
+#profileNameInputWrapper:hover #hoverUnderline {
+  opacity: 1;
+  transition: opacity 120ms ease-in, width 180ms ease-out;
+  width: 130px;
+}
+
+cr-tooltip {
+  --paper-tooltip-delay-in: 200ms;
+  --paper-tooltip-duration-in: 200ms;
+  --paper-tooltip-duration-out: 200ms;
+  --paper-tooltip-min-width: none;
+  overflow-wrap: break-word;
+}
+
+@media (prefers-color-scheme: dark) {
+  #iconContainer {
+    background-color: var(--md-background-color);
+    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px
+      rgba(60, 64, 67, 0.15);
+  }
+
+  cr-icon {
+    --iron-icon-fill-color: var(--google-grey-500);
+  }
+
+  #hoverUnderline {
+    border-color: var(--google-grey-700);
+  }
+}

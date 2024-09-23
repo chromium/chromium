@@ -5,13 +5,16 @@
 package org.chromium.content_public.browser.test.mock;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Parcel;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.blink_public.input.SelectionGranularity;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.JavaScriptCallback;
@@ -26,15 +29,13 @@ import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
-
-import java.util.Collections;
-import java.util.List;
 
 /** Mock class for {@link WebContents}. */
 @SuppressLint("ParcelCreator")
@@ -43,7 +44,7 @@ public class MockWebContents implements WebContents {
     private GURL mLastCommittedUrl;
 
     @Override
-    public void initialize(
+    public void setDelegates(
             String productVersion,
             ViewAndroidDelegate viewDelegate,
             ViewEventSink.InternalAccessDelegate accessDelegate,
@@ -117,11 +118,6 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
-    public List<? extends WebContents> getInnerWebContents() {
-        return Collections.emptyList();
-    }
-
-    @Override
     public @Visibility int getVisibility() {
         return Visibility.VISIBLE;
     }
@@ -161,6 +157,11 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
+    public boolean hasUncommittedNavigationInPrimaryMainFrame() {
+        return false;
+    }
+
+    @Override
     public void dispatchBeforeUnload(boolean autoCancel) {}
 
     @Override
@@ -180,6 +181,9 @@ public class MockWebContents implements WebContents {
 
     @Override
     public void setAudioMuted(boolean mute) {}
+
+    @Override
+    public boolean isAudioMuted() { return false; }
 
     @Override
     public boolean focusLocationBarByDefault() {
@@ -257,7 +261,17 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
+    public boolean hasViewTransitionOptIn() {
+        return false;
+    }
+
+    @Override
     public int getThemeColor() {
+        return 0;
+    }
+
+    @Override
+    public int getBackgroundColor() {
         return 0;
     }
 
@@ -354,4 +368,23 @@ public class MockWebContents implements WebContents {
     public boolean needToFireBeforeUnloadOrUnloadEvents() {
         return false;
     }
+
+    @Override
+    public void onContentForNavigationEntryShown() {}
+
+    @Override
+    public int getCurrentBackForwardTransitionStage() {
+        return AnimationStage.NONE;
+    }
+
+    @Override
+    public void captureContentAsBitmapForTesting(Callback<Bitmap> callback) {}
+
+    @Override
+    public void setLongPressLinkSelectText(boolean enabled) {}
+
+    @Override
+    public void notifyControlsConstraintsChanged(
+            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+            BrowserControlsOffsetTagsInfo offsetTagsInfo) {}
 }

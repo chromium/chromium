@@ -4,8 +4,6 @@ The test verifies functionality of querying style information for view-transitio
     result : {
         cssKeyframesRules : [
         ]
-        cssPositionFallbackRules : [
-        ]
         cssPropertyRegistrations : [
         ]
         cssPropertyRules : [
@@ -141,8 +139,8 @@ The test verifies functionality of querying style information for view-transitio
                                     [0] : {
                                         specificity : {
                                             a : 0
-                                            b : 1
-                                            c : 1
+                                            b : 0
+                                            c : 2
                                         }
                                         text : html::view-transition
                                     }
@@ -307,8 +305,8 @@ The test verifies functionality of querying style information for view-transitio
                                     [0] : {
                                         specificity : {
                                             a : 0
-                                            b : 1
-                                            c : 1
+                                            b : 0
+                                            c : 2
                                         }
                                         text : html::view-transition-group(root)
                                     }
@@ -330,27 +328,79 @@ The test verifies functionality of querying style information for view-transitio
                                         value : matrix(1, 0, 0, 1, 0, 0)
                                     }
                                     [3] : {
-                                        name : text-orientation
-                                        value : mixed
-                                    }
-                                    [4] : {
-                                        name : writing-mode
-                                        value : horizontal-tb
-                                    }
-                                    [5] : {
-                                        name : backdrop-filter
-                                        value : none
-                                    }
-                                    [6] : {
                                         name : color-scheme
                                         value : normal
                                     }
+                                    [4] : {
+                                        name : text-orientation
+                                        value : mixed
+                                    }
+                                    [5] : {
+                                        name : writing-mode
+                                        value : horizontal-tb
+                                    }
+                                    [6] : {
+                                        name : backdrop-filter
+                                        value : none
+                                    }
                                     [7] : {
+                                        name : clip-path
+                                        value : none
+                                    }
+                                    [8] : {
+                                        name : filter
+                                        value : none
+                                    }
+                                    [9] : {
                                         name : mix-blend-mode
                                         value : normal
                                     }
+                                    [10] : {
+                                        name : opacity
+                                        value : 1
+                                    }
+                                    [11] : {
+                                        name : mask-image
+                                        value : none
+                                    }
+                                    [12] : {
+                                        name : -webkit-mask-position-x
+                                        value : 0%
+                                    }
+                                    [13] : {
+                                        name : -webkit-mask-position-y
+                                        value : 0%
+                                    }
+                                    [14] : {
+                                        name : mask-size
+                                        value : auto
+                                    }
+                                    [15] : {
+                                        name : mask-repeat
+                                        value : repeat
+                                    }
+                                    [16] : {
+                                        name : mask-origin
+                                        value : border-box
+                                    }
+                                    [17] : {
+                                        name : mask-clip
+                                        value : border-box
+                                    }
+                                    [18] : {
+                                        name : mask-composite
+                                        value : add
+                                    }
+                                    [19] : {
+                                        name : mask-mode
+                                        value : match-source
+                                    }
                                 ]
                                 shorthandEntries : [
+                                    [0] : {
+                                        name : mask
+                                        value : none
+                                    }
                                 ]
                             }
                             supports : [
@@ -378,8 +428,8 @@ The test verifies functionality of querying style information for view-transitio
                                     [0] : {
                                         specificity : {
                                             a : 0
-                                            b : 1
-                                            c : 1
+                                            b : 0
+                                            c : 2
                                         }
                                         text : html::view-transition-group(root)
                                     }
@@ -541,8 +591,8 @@ The test verifies functionality of querying style information for view-transitio
                                     [0] : {
                                         specificity : {
                                             a : 0
-                                            b : 1
-                                            c : 1
+                                            b : 0
+                                            c : 2
                                         }
                                         text : html::view-transition-group(shared)
                                     }
@@ -564,27 +614,79 @@ The test verifies functionality of querying style information for view-transitio
                                         value : matrix(1, 0, 0, 1, 8, 8)
                                     }
                                     [3] : {
-                                        name : text-orientation
-                                        value : mixed
-                                    }
-                                    [4] : {
-                                        name : writing-mode
-                                        value : horizontal-tb
-                                    }
-                                    [5] : {
-                                        name : backdrop-filter
-                                        value : none
-                                    }
-                                    [6] : {
                                         name : color-scheme
                                         value : normal
                                     }
+                                    [4] : {
+                                        name : text-orientation
+                                        value : mixed
+                                    }
+                                    [5] : {
+                                        name : writing-mode
+                                        value : horizontal-tb
+                                    }
+                                    [6] : {
+                                        name : backdrop-filter
+                                        value : none
+                                    }
                                     [7] : {
+                                        name : clip-path
+                                        value : none
+                                    }
+                                    [8] : {
+                                        name : filter
+                                        value : none
+                                    }
+                                    [9] : {
                                         name : mix-blend-mode
                                         value : normal
                                     }
+                                    [10] : {
+                                        name : opacity
+                                        value : 1
+                                    }
+                                    [11] : {
+                                        name : mask-image
+                                        value : none
+                                    }
+                                    [12] : {
+                                        name : -webkit-mask-position-x
+                                        value : 0%
+                                    }
+                                    [13] : {
+                                        name : -webkit-mask-position-y
+                                        value : 0%
+                                    }
+                                    [14] : {
+                                        name : mask-size
+                                        value : auto
+                                    }
+                                    [15] : {
+                                        name : mask-repeat
+                                        value : repeat
+                                    }
+                                    [16] : {
+                                        name : mask-origin
+                                        value : border-box
+                                    }
+                                    [17] : {
+                                        name : mask-clip
+                                        value : border-box
+                                    }
+                                    [18] : {
+                                        name : mask-composite
+                                        value : add
+                                    }
+                                    [19] : {
+                                        name : mask-mode
+                                        value : match-source
+                                    }
                                 ]
                                 shorthandEntries : [
+                                    [0] : {
+                                        name : mask
+                                        value : none
+                                    }
                                 ]
                             }
                             supports : [
@@ -612,8 +714,8 @@ The test verifies functionality of querying style information for view-transitio
                                     [0] : {
                                         specificity : {
                                             a : 0
-                                            b : 1
-                                            c : 1
+                                            b : 0
+                                            c : 2
                                         }
                                         text : html::view-transition-group(shared)
                                     }
@@ -787,8 +889,8 @@ The test verifies functionality of querying style information for view-transitio
                                     [0] : {
                                         specificity : {
                                             a : 0
-                                            b : 1
-                                            c : 1
+                                            b : 0
+                                            c : 2
                                         }
                                         text : html::view-transition-image-pair(root)
                                     }
@@ -946,8 +1048,8 @@ The test verifies functionality of querying style information for view-transitio
                                     [0] : {
                                         specificity : {
                                             a : 0
-                                            b : 1
-                                            c : 1
+                                            b : 0
+                                            c : 2
                                         }
                                         text : html::view-transition-image-pair(shared)
                                     }
@@ -1105,8 +1207,8 @@ The test verifies functionality of querying style information for view-transitio
                                     [0] : {
                                         specificity : {
                                             a : 0
-                                            b : 1
-                                            c : 1
+                                            b : 0
+                                            c : 2
                                         }
                                         text : html::view-transition-old(root)
                                     }
@@ -1409,8 +1511,8 @@ The test verifies functionality of querying style information for view-transitio
                                     [0] : {
                                         specificity : {
                                             a : 0
-                                            b : 1
-                                            c : 1
+                                            b : 0
+                                            c : 2
                                         }
                                         text : html::view-transition-old(shared)
                                     }
@@ -1713,8 +1815,8 @@ The test verifies functionality of querying style information for view-transitio
                                     [0] : {
                                         specificity : {
                                             a : 0
-                                            b : 1
-                                            c : 1
+                                            b : 0
+                                            c : 2
                                         }
                                         text : html::view-transition-new(root)
                                     }
@@ -1872,8 +1974,8 @@ The test verifies functionality of querying style information for view-transitio
                                     [0] : {
                                         specificity : {
                                             a : 0
-                                            b : 1
-                                            c : 1
+                                            b : 0
+                                            c : 2
                                         }
                                         text : html::view-transition-new(shared)
                                     }
@@ -1921,8 +2023,8 @@ The test verifies functionality of querying style information for view-transitio
                                         }
                                         specificity : {
                                             a : 0
-                                            b : 1
-                                            c : 0
+                                            b : 0
+                                            c : 1
                                         }
                                         text : ::view-transition-new(shared)
                                     }
@@ -2006,8 +2108,8 @@ Dumping styles for : ::view-transition with id undefined{
                             [0] : {
                                 specificity : {
                                     a : 0
-                                    b : 1
-                                    c : 1
+                                    b : 0
+                                    c : 2
                                 }
                                 text : html::view-transition
                             }
@@ -2084,8 +2186,60 @@ Dumping styles for : ::view-transition-group with id root{
                                     name : backdrop-filter
                                     value : none
                                 }
+                                [4] : {
+                                    name : clip-path
+                                    value : none
+                                }
+                                [5] : {
+                                    name : filter
+                                    value : none
+                                }
+                                [6] : {
+                                    name : opacity
+                                    value : 1
+                                }
+                                [7] : {
+                                    name : mask-image
+                                    value : none
+                                }
+                                [8] : {
+                                    name : -webkit-mask-position-x
+                                    value : 0%
+                                }
+                                [9] : {
+                                    name : -webkit-mask-position-y
+                                    value : 0%
+                                }
+                                [10] : {
+                                    name : mask-size
+                                    value : auto
+                                }
+                                [11] : {
+                                    name : mask-repeat
+                                    value : repeat
+                                }
+                                [12] : {
+                                    name : mask-origin
+                                    value : border-box
+                                }
+                                [13] : {
+                                    name : mask-clip
+                                    value : border-box
+                                }
+                                [14] : {
+                                    name : mask-composite
+                                    value : add
+                                }
+                                [15] : {
+                                    name : mask-mode
+                                    value : match-source
+                                }
                             ]
                             shorthandEntries : [
+                                [0] : {
+                                    name : mask
+                                    value : none
+                                }
                             ]
                         }
                     }
@@ -2218,8 +2372,8 @@ Dumping styles for : ::view-transition-group with id root{
                             [0] : {
                                 specificity : {
                                     a : 0
-                                    b : 1
-                                    c : 1
+                                    b : 0
+                                    c : 2
                                 }
                                 text : html::view-transition-group(root)
                             }
@@ -2241,27 +2395,79 @@ Dumping styles for : ::view-transition-group with id root{
                                 value : matrix(1, 0, 0, 1, 0, 0)
                             }
                             [3] : {
-                                name : text-orientation
-                                value : mixed
-                            }
-                            [4] : {
-                                name : writing-mode
-                                value : horizontal-tb
-                            }
-                            [5] : {
-                                name : backdrop-filter
-                                value : none
-                            }
-                            [6] : {
                                 name : color-scheme
                                 value : normal
                             }
+                            [4] : {
+                                name : text-orientation
+                                value : mixed
+                            }
+                            [5] : {
+                                name : writing-mode
+                                value : horizontal-tb
+                            }
+                            [6] : {
+                                name : backdrop-filter
+                                value : none
+                            }
                             [7] : {
+                                name : clip-path
+                                value : none
+                            }
+                            [8] : {
+                                name : filter
+                                value : none
+                            }
+                            [9] : {
                                 name : mix-blend-mode
                                 value : normal
                             }
+                            [10] : {
+                                name : opacity
+                                value : 1
+                            }
+                            [11] : {
+                                name : mask-image
+                                value : none
+                            }
+                            [12] : {
+                                name : -webkit-mask-position-x
+                                value : 0%
+                            }
+                            [13] : {
+                                name : -webkit-mask-position-y
+                                value : 0%
+                            }
+                            [14] : {
+                                name : mask-size
+                                value : auto
+                            }
+                            [15] : {
+                                name : mask-repeat
+                                value : repeat
+                            }
+                            [16] : {
+                                name : mask-origin
+                                value : border-box
+                            }
+                            [17] : {
+                                name : mask-clip
+                                value : border-box
+                            }
+                            [18] : {
+                                name : mask-composite
+                                value : add
+                            }
+                            [19] : {
+                                name : mask-mode
+                                value : match-source
+                            }
                         ]
                         shorthandEntries : [
+                            [0] : {
+                                name : mask
+                                value : none
+                            }
                         ]
                     }
                     supports : [
@@ -2289,8 +2495,8 @@ Dumping styles for : ::view-transition-group with id root{
                             [0] : {
                                 specificity : {
                                     a : 0
-                                    b : 1
-                                    c : 1
+                                    b : 0
+                                    c : 2
                                 }
                                 text : html::view-transition-group(root)
                             }
@@ -2474,8 +2680,8 @@ Dumping styles for : ::view-transition-image-pair with id root{
                             [0] : {
                                 specificity : {
                                     a : 0
-                                    b : 1
-                                    c : 1
+                                    b : 0
+                                    c : 2
                                 }
                                 text : html::view-transition-image-pair(root)
                             }
@@ -2705,8 +2911,8 @@ Dumping styles for : ::view-transition-old with id root{
                             [0] : {
                                 specificity : {
                                     a : 0
-                                    b : 1
-                                    c : 1
+                                    b : 0
+                                    c : 2
                                 }
                                 text : html::view-transition-old(root)
                             }
@@ -3081,8 +3287,8 @@ Dumping styles for : ::view-transition-new with id root{
                             [0] : {
                                 specificity : {
                                     a : 0
-                                    b : 1
-                                    c : 1
+                                    b : 0
+                                    c : 2
                                 }
                                 text : html::view-transition-new(root)
                             }
@@ -3139,8 +3345,60 @@ Dumping styles for : ::view-transition-group with id shared{
                                     name : backdrop-filter
                                     value : none
                                 }
+                                [4] : {
+                                    name : clip-path
+                                    value : none
+                                }
+                                [5] : {
+                                    name : filter
+                                    value : none
+                                }
+                                [6] : {
+                                    name : opacity
+                                    value : 1
+                                }
+                                [7] : {
+                                    name : mask-image
+                                    value : none
+                                }
+                                [8] : {
+                                    name : -webkit-mask-position-x
+                                    value : 0%
+                                }
+                                [9] : {
+                                    name : -webkit-mask-position-y
+                                    value : 0%
+                                }
+                                [10] : {
+                                    name : mask-size
+                                    value : auto
+                                }
+                                [11] : {
+                                    name : mask-repeat
+                                    value : repeat
+                                }
+                                [12] : {
+                                    name : mask-origin
+                                    value : border-box
+                                }
+                                [13] : {
+                                    name : mask-clip
+                                    value : border-box
+                                }
+                                [14] : {
+                                    name : mask-composite
+                                    value : add
+                                }
+                                [15] : {
+                                    name : mask-mode
+                                    value : match-source
+                                }
                             ]
                             shorthandEntries : [
+                                [0] : {
+                                    name : mask
+                                    value : none
+                                }
                             ]
                         }
                     }
@@ -3273,8 +3531,8 @@ Dumping styles for : ::view-transition-group with id shared{
                             [0] : {
                                 specificity : {
                                     a : 0
-                                    b : 1
-                                    c : 1
+                                    b : 0
+                                    c : 2
                                 }
                                 text : html::view-transition-group(shared)
                             }
@@ -3296,27 +3554,79 @@ Dumping styles for : ::view-transition-group with id shared{
                                 value : matrix(1, 0, 0, 1, 8, 8)
                             }
                             [3] : {
-                                name : text-orientation
-                                value : mixed
-                            }
-                            [4] : {
-                                name : writing-mode
-                                value : horizontal-tb
-                            }
-                            [5] : {
-                                name : backdrop-filter
-                                value : none
-                            }
-                            [6] : {
                                 name : color-scheme
                                 value : normal
                             }
+                            [4] : {
+                                name : text-orientation
+                                value : mixed
+                            }
+                            [5] : {
+                                name : writing-mode
+                                value : horizontal-tb
+                            }
+                            [6] : {
+                                name : backdrop-filter
+                                value : none
+                            }
                             [7] : {
+                                name : clip-path
+                                value : none
+                            }
+                            [8] : {
+                                name : filter
+                                value : none
+                            }
+                            [9] : {
                                 name : mix-blend-mode
                                 value : normal
                             }
+                            [10] : {
+                                name : opacity
+                                value : 1
+                            }
+                            [11] : {
+                                name : mask-image
+                                value : none
+                            }
+                            [12] : {
+                                name : -webkit-mask-position-x
+                                value : 0%
+                            }
+                            [13] : {
+                                name : -webkit-mask-position-y
+                                value : 0%
+                            }
+                            [14] : {
+                                name : mask-size
+                                value : auto
+                            }
+                            [15] : {
+                                name : mask-repeat
+                                value : repeat
+                            }
+                            [16] : {
+                                name : mask-origin
+                                value : border-box
+                            }
+                            [17] : {
+                                name : mask-clip
+                                value : border-box
+                            }
+                            [18] : {
+                                name : mask-composite
+                                value : add
+                            }
+                            [19] : {
+                                name : mask-mode
+                                value : match-source
+                            }
                         ]
                         shorthandEntries : [
+                            [0] : {
+                                name : mask
+                                value : none
+                            }
                         ]
                     }
                     supports : [
@@ -3344,8 +3654,8 @@ Dumping styles for : ::view-transition-group with id shared{
                             [0] : {
                                 specificity : {
                                     a : 0
-                                    b : 1
-                                    c : 1
+                                    b : 0
+                                    c : 2
                                 }
                                 text : html::view-transition-group(shared)
                             }
@@ -3529,8 +3839,8 @@ Dumping styles for : ::view-transition-image-pair with id shared{
                             [0] : {
                                 specificity : {
                                     a : 0
-                                    b : 1
-                                    c : 1
+                                    b : 0
+                                    c : 2
                                 }
                                 text : html::view-transition-image-pair(shared)
                             }
@@ -3760,8 +4070,8 @@ Dumping styles for : ::view-transition-old with id shared{
                             [0] : {
                                 specificity : {
                                     a : 0
-                                    b : 1
-                                    c : 1
+                                    b : 0
+                                    c : 2
                                 }
                                 text : html::view-transition-old(shared)
                             }
@@ -4136,8 +4446,8 @@ Dumping styles for : ::view-transition-new with id shared{
                             [0] : {
                                 specificity : {
                                     a : 0
-                                    b : 1
-                                    c : 1
+                                    b : 0
+                                    c : 2
                                 }
                                 text : html::view-transition-new(shared)
                             }
@@ -4185,8 +4495,8 @@ Dumping styles for : ::view-transition-new with id shared{
                                 }
                                 specificity : {
                                     a : 0
-                                    b : 1
-                                    c : 0
+                                    b : 0
+                                    c : 1
                                 }
                                 text : ::view-transition-new(shared)
                             }

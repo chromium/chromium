@@ -13,6 +13,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
+#include "net/socket/connect_job_params.h"
 #include "net/socket/socks5_client_socket.h"
 #include "net/socket/socks_client_socket.h"
 #include "net/socket/transport_connect_job.h"
@@ -23,12 +24,12 @@ namespace net {
 static constexpr base::TimeDelta kSOCKSConnectJobTimeout = base::Seconds(30);
 
 SOCKSSocketParams::SOCKSSocketParams(
-    scoped_refptr<TransportSocketParams> proxy_server_params,
+    ConnectJobParams nested_params,
     bool socks_v5,
     const HostPortPair& host_port_pair,
     const NetworkAnonymizationKey& network_anonymization_key,
     const NetworkTrafficAnnotationTag& traffic_annotation)
-    : transport_params_(std::move(proxy_server_params)),
+    : transport_params_(nested_params.take_transport()),
       destination_(host_port_pair),
       socks_v5_(socks_v5),
       network_anonymization_key_(network_anonymization_key),
@@ -81,7 +82,7 @@ LoadState SOCKSConnectJob::GetLoadState() const {
     case STATE_SOCKS_CONNECT_COMPLETE:
       return LOAD_STATE_CONNECTING;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return LOAD_STATE_IDLE;
   }
 }
@@ -117,7 +118,7 @@ void SOCKSConnectJob::OnNeedsProxyAuth(
     base::OnceClosure restart_with_auth_callback,
     ConnectJob* job) {
   // A SOCKSConnectJob can't be on top of an HttpProxyConnectJob.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 int SOCKSConnectJob::DoLoop(int result) {
@@ -143,7 +144,7 @@ int SOCKSConnectJob::DoLoop(int result) {
         rv = DoSOCKSConnectComplete(rv);
         break;
       default:
-        NOTREACHED() << "bad state";
+        NOTREACHED_IN_MIGRATION() << "bad state";
         rv = ERR_FAILED;
         break;
     }

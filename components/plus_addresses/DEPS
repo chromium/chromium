@@ -1,13 +1,29 @@
 include_rules = [
-  "+components/autofill/core/browser/autofill_plus_address_delegate.h",
+  "+components/affiliations",
+  "+components/autofill/core",
+  "+components/feature_engagement/public/feature_constants.h",
   "+components/keyed_service/core",
-  "+components/signin/public",
   "+components/prefs",
+  "+components/signin/public",
+  "+components/strings/grit/components_strings.h",
+  "+components/signin/public",
   "+components/vector_icons",
+  "+components/webdata/common",
+  "+components/url_formatter",
   "+google_apis",
   "+net/base",
   "+net/http",
+  "+net/test/embedded_test_server/http_request.h",
+  "+net/test/embedded_test_server/http_response.h",
   "+services/data_decoder",
   "+services/network/public",
   "+services/network/test",
+  "+third_party/re2",
+  "+ui/base",
 ]
+
+specific_include_rules = {
+  ".*test.(cc|h)": [
+    "+components/os_crypt/async/browser/test_utils.h"
+  ],
+}

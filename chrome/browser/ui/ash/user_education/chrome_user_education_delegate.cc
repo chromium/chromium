@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
@@ -71,41 +73,12 @@ ChromeUserEducationDelegate::ChromeUserEducationDelegate() {
 
 ChromeUserEducationDelegate::~ChromeUserEducationDelegate() = default;
 
-std::unique_ptr<user_education::HelpBubble>
-ChromeUserEducationDelegate::CreateHelpBubble(
-    const AccountId& account_id,
-    ash::HelpBubbleId help_bubble_id,
-    user_education::HelpBubbleParams help_bubble_params,
-    ui::ElementIdentifier element_id,
-    ui::ElementContext element_context) {
-  // NOTE: User education in Ash is currently only supported for the primary
-  // user profile. This is a self-imposed restriction.
-  auto* const profile = GetProfile(account_id);
-  CHECK(IsPrimaryProfile(profile));
-
-  // If a tracked `element` cannot be found for the specified `element_id` and
-  // `element_context` pair, there's nothing to anchor a help bubble to.
-  ui::TrackedElement* const element =
-      ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-          element_id, element_context);
-  if (!element) {
-    return nullptr;
-  }
-
-  // Help bubble factories expect `help_bubble_id` to be provided via extended
-  // properties being as it is a ChromeOS specific platform construct.
-  help_bubble_params.extended_properties.values().Merge(std::move(
-      ash::user_education_util::CreateExtendedProperties(help_bubble_id)
-          .values()));
-
-  return UserEducationServiceFactory::GetForBrowserContext(profile)
-      ->help_bubble_factory_registry()
-      .CreateHelpBubble(element, std::move(help_bubble_params));
-}
-
 std::optional<ui::ElementIdentifier>
 ChromeUserEducationDelegate::GetElementIdentifierForAppId(
     const std::string& app_id) const {
+  if (!strcmp(file_manager::kFileManagerSwaAppId, app_id.c_str())) {
+    return ash::kFilesAppElementId;
+  }
   if (!strcmp(web_app::kHelpAppId, app_id.c_str())) {
     return ash::kExploreAppElementId;
   }
@@ -184,13 +157,16 @@ void ChromeUserEducationDelegate::AbortTutorial(
 void ChromeUserEducationDelegate::LaunchSystemWebAppAsync(
     const AccountId& account_id,
     ash::SystemWebAppType system_web_app_type,
+    apps::LaunchSource launch_source,
     int64_t display_id) {
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
   auto* const profile = GetProfile(account_id);
   CHECK(IsPrimaryProfile(profile));
-  ash::LaunchSystemWebAppAsync(profile, system_web_app_type,
-                               ash::SystemAppLaunchParams(),
+
+  ash::SystemAppLaunchParams launch_params;
+  launch_params.launch_source = launch_source;
+  ash::LaunchSystemWebAppAsync(profile, system_web_app_type, launch_params,
                                std::make_unique<apps::WindowInfo>(display_id));
 }
 

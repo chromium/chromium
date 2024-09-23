@@ -9,6 +9,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -17,21 +19,22 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.PwaRestoreBottomSheetTestUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -44,11 +47,11 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.webapps.R;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.net.test.EmbeddedTestServer;
 
 /** Test the showing of the PWA Restore Bottom Sheet dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "Function getURL for EmbeddedTestServer fails when batching")
 @EnableFeatures({
     ChromeFeatureList.PWA_RESTORE_UI,
     ChromeFeatureList.WEB_APK_BACKUP_AND_RESTORE_BACKEND
@@ -59,21 +62,29 @@ public class PwaRestoreBottomSheetIntegrationTest {
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsRule =
-            new DisableAnimationsTestRule();
-
     private static @DisplayStage int sFlagValueMissing = DisplayStage.UNKNOWN_STATUS;
+
+    private static final String ICON_URL1 = "/chrome/test/data/banners/256x256-green.png";
+    private static final String ICON_URL2 = "/chrome/test/data/banners/256x256-red.png";
+
+    private static String[][] sDefaultApps = {
+        {"https://example.com/app1/", "App 1", ICON_URL1},
+        {"https://example.com/app2/", "App 2", ICON_URL2},
+        {"https://example.com/app3/", "App 3", ICON_URL1}
+    };
+    private static int[] sDefaultLastUsed = {1, 2, 3};
 
     private static final String TAG = "PwaRestoreIntegrTest";
 
     private SharedPreferencesManager mPreferences;
+    private EmbeddedTestServer mTestServer;
 
     @Before
     public void setUp() throws Exception {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         mPreferences = ChromeSharedPreferences.getInstance();
+        mTestServer = mActivityTestRule.getTestServer();
 
         // Promos only run *after* the first run experience has completed, so we need to make sure
         // the testing environment reflects that. Note that individual tests below can set whether
@@ -87,6 +98,10 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
     private boolean setTestAppsForRestoring(String[][] appList, int[] lastUsed) {
         Assert.assertEquals(appList.length, lastUsed.length);
+
+        for (String[] app : appList) {
+            app[2] = mTestServer.getURL(app[2]);
+        }
         try {
             PwaRestoreBottomSheetTestUtils.waitForWebApkDatabaseInitialization();
             PwaRestoreBottomSheetTestUtils.setAppListForRestoring(appList, lastUsed);
@@ -201,69 +216,40 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
-    public void testOlderAppsShowSeparately() {
-        // This test is about ensuring that when an app was last used more than
-        // 30 days ago (40 specified below), it shows up in a separate ("older")
-        // list.
-        Assert.assertTrue(
-                setTestAppsForRestoring(
-                        new String[][] {
-                            {"https://example.com/app1/", "App 1"},
-                            {"https://example.com/app2/", "App 2"},
-                            {"https://example.com/app3/", "App 3"}
-                        },
-                        // Days since the apps were last used (respectively).
-                        new int[] {1, 2, 40}));
+    public void testBackButton() {
+        // This test opens the dialog, clicks the Review button to expand the bottom sheet dialog
+        // and then presses the Back in the OS twice to see what happens (first click should
+        // navigate back to the initial dialog state, second click closes the dialog).
+
+        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
 
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
 
         mActivityTestRule.startMainActivityFromLauncher();
+
+        // Verify we're in initial state for the dialog.
         assertDialogShown(true);
+        onViewWaiting(withText("Restore your web apps")).check(matches(isDisplayed()));
+
+        // Go to PWA list mode.
         onView(withId(R.id.review_button)).perform(click());
+        onViewWaiting(withText("Web apps used in the last month")).check(matches(isDisplayed()));
 
-        onView(withText("Older")).check(matches(isDisplayed()));
-    }
+        // Pressing the Back button in Android once should bring us to the initial dialog state.
+        Espresso.pressBack();
+        onViewWaiting(withText("Restore your web apps")).check(matches(isDisplayed()));
 
-    @Test
-    @SmallTest
-    @Feature({"PwaRestore"})
-    public void testNoOlderAppsShown() {
-        // This test is about ensuring that when all apps are recent,  we don't
-        // show the separate ("Older") app list.
-        Assert.assertTrue(
-                setTestAppsForRestoring(
-                        new String[][] {
-                            {"https://example.com/app1/", "App 1"},
-                            {"https://example.com/app2/", "App 2"},
-                            {"https://example.com/app3/", "App 3"}
-                        },
-                        // Days since the apps were last used (respectively).
-                        new int[] {1, 2, 3}));
-
-        // Ensure the promo dialog shows.
-        setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
-
-        mActivityTestRule.startMainActivityFromLauncher();
-        assertDialogShown(true);
-        onView(withId(R.id.review_button)).perform(click());
-
-        onView(withText("Older")).check(doesNotExist());
+        // Pressing the Back button again should close the bottom sheet.
+        Espresso.pressBack();
+        assertDialogShown(false);
     }
 
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
     public void testClickForwarding() {
-        Assert.assertTrue(
-                setTestAppsForRestoring(
-                        new String[][] {
-                            {"https://example.com/app1/", "App 1"},
-                            {"https://example.com/app2/", "App 2"},
-                            {"https://example.com/app3/", "App 3"}
-                        },
-                        // Days since the apps were last used (respectively).
-                        new int[] {1, 2, 4}));
+        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
 
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
@@ -272,25 +258,33 @@ public class PwaRestoreBottomSheetIntegrationTest {
         assertDialogShown(true);
         onView(withId(R.id.review_button)).perform(click());
 
-        assertIsComboCheckedAtIndex(1, false);
+        assertIsComboCheckedAtIndex(1, true);
         onView(withText("App 1")).check(matches(isDisplayed()));
         onView(withText("App 1")).perform(click());
-        assertIsComboCheckedAtIndex(1, true);
+        assertIsComboCheckedAtIndex(1, false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaRestore"})
+    public void testButtonsInitiallyDisabled() throws Exception {
+        // Ensure the promo dialog shows.
+        setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
+
+        mActivityTestRule.startMainActivityFromLauncher();
+        assertDialogShown(true);
+        onView(withId(R.id.review_button)).perform(click());
+
+        // Deselect and Restore buttons should now be disabled (nothing to act on).
+        onView(withId(R.id.deselect_button)).check(matches(isNotEnabled()));
+        onView(withId(R.id.restore_button)).check(matches(isNotEnabled()));
     }
 
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
     public void testDeselectAll() throws Exception {
-        Assert.assertTrue(
-                setTestAppsForRestoring(
-                        new String[][] {
-                            {"https://example.com/app1/", "App 1"},
-                            {"https://example.com/app2/", "App 2"},
-                            {"https://example.com/app3/", "App 3"}
-                        },
-                        // Days since the apps were last used (respectively).
-                        new int[] {1, 2, 4}));
+        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
 
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
@@ -299,14 +293,13 @@ public class PwaRestoreBottomSheetIntegrationTest {
         assertDialogShown(true);
         onView(withId(R.id.review_button)).perform(click());
 
-        assertIsComboCheckedAtIndex(0, false);
-        assertIsComboCheckedAtIndex(1, false);
-        assertIsComboCheckedAtIndex(2, false);
-
-        // Ensure one entry is checked.
-        onView(withText("App 1")).check(matches(isDisplayed()));
-        onView(withText("App 1")).perform(click());
+        assertIsComboCheckedAtIndex(0, true);
         assertIsComboCheckedAtIndex(1, true);
+        assertIsComboCheckedAtIndex(2, true);
+
+        // Deselect and Restore buttons should start in enabled state.
+        onView(withId(R.id.deselect_button)).check(matches(isEnabled()));
+        onView(withId(R.id.restore_button)).check(matches(isEnabled()));
 
         // Now verify the Deselect function leaves everything in unchecked state.
         onView(withId(R.id.deselect_button)).check(matches(isDisplayed()));
@@ -314,6 +307,65 @@ public class PwaRestoreBottomSheetIntegrationTest {
         assertIsComboCheckedAtIndex(0, false);
         assertIsComboCheckedAtIndex(1, false);
         assertIsComboCheckedAtIndex(2, false);
+
+        // Deselect and Restore buttons should now be disabled (nothing to act on).
+        onView(withId(R.id.deselect_button)).check(matches(isNotEnabled()));
+        onView(withId(R.id.restore_button)).check(matches(isNotEnabled()));
+
+        // Ensure one entry gets checked.
+        onView(withText("App 1")).check(matches(isDisplayed()));
+        onView(withText("App 1")).perform(click());
+        assertIsComboCheckedAtIndex(1, true);
+
+        // Deselect and Restore buttons become enabled since we have something to act on.
+        onView(withId(R.id.deselect_button)).check(matches(isEnabled()));
+        onView(withId(R.id.restore_button)).check(matches(isEnabled()));
+
+        // Ensure same entry gets unchecked again.
+        onView(withText("App 1")).perform(click());
+        assertIsComboCheckedAtIndex(1, false);
+
+        // Deselect and Restore buttons become disabled since no item remains selected.
+        onView(withId(R.id.deselect_button)).check(matches(isNotEnabled()));
+        onView(withId(R.id.restore_button)).check(matches(isNotEnabled()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaRestore"})
+    public void testRestoreClosesUi() throws Exception {
+        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
+
+        // Ensure the promo dialog shows.
+        setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
+
+        mActivityTestRule.startMainActivityFromLauncher();
+        onViewWaiting(withText("Restore your web apps")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.review_button)).perform(click());
+        onViewWaiting(withText("Web apps used in the last month")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.restore_button)).perform(click());
+        onView(withText("Restore your web apps")).check(doesNotExist());
+        onView(withText("Web apps used in the last month")).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaRestore"})
+    @DisableFeatures({ChromeFeatureList.PWA_RESTORE_UI_AT_STARTUP})
+    public void testForceFlagOff() throws Exception {
+        mActivityTestRule.startMainActivityFromLauncher();
+        assertDialogShown(false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaRestore"})
+    @EnableFeatures({ChromeFeatureList.PWA_RESTORE_UI_AT_STARTUP})
+    public void testForceFlagOn() throws Exception {
+        mActivityTestRule.startMainActivityFromLauncher();
+        assertDialogShown(true);
     }
 
     private void setAppsAvailableAndPromoStage(boolean appsAvailable, @DisplayStage int value) {

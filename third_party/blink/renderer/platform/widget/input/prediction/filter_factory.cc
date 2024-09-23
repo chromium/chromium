@@ -22,7 +22,8 @@ using input_prediction::PredictorType;
 FilterFactory::FilterFactory(
     const base::Feature& feature,
     const input_prediction::PredictorType predictor_type,
-    const input_prediction::FilterType filter_type) {
+    const input_prediction::FilterType filter_type)
+    : predictor_type_(predictor_type), filter_type_(filter_type) {
   LoadFilterParams(feature, predictor_type, filter_type);
 }
 
@@ -61,12 +62,10 @@ FilterType FilterFactory::GetFilterTypeFromName(
     return FilterType::kEmpty;
 }
 
-std::unique_ptr<ui::InputFilter> FilterFactory::CreateFilter(
-    const FilterType filter_type,
-    const PredictorType predictor_type) {
+std::unique_ptr<ui::InputFilter> FilterFactory::CreateFilter() {
   FilterParams filter_params;
-  GetFilterParams(filter_type, predictor_type, &filter_params);
-  if (filter_type == FilterType::kOneEuro) {
+  GetFilterParams(filter_type_, predictor_type_, &filter_params);
+  if (filter_type_ == FilterType::kOneEuro) {
     if (filter_params.empty()) {
       return std::make_unique<ui::OneEuroFilter>();
     } else {

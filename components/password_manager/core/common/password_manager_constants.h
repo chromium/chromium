@@ -11,6 +11,9 @@
 
 namespace password_manager::constants {
 
+// The character used to obfuscate password labels.
+inline constexpr char16_t kPasswordReplacementChar = 0x2022;
+
 inline constexpr char kAutocompleteUsername[] = "username";
 inline constexpr char kAutocompleteCurrentPassword[] = "current-password";
 inline constexpr char kAutocompleteNewPassword[] = "new-password";
@@ -62,6 +65,8 @@ inline constexpr char16_t kEmailValueRe[] =
     u"^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";
 inline constexpr char16_t kPhoneValueRe[] = u"^[0-9()+-]{6,25}$";
 inline constexpr char16_t kUsernameLikeValueRe[] = u"[A-Za-z0-9_\\-.]{7,30}";
+
+inline constexpr char16_t kSearch[] = u"search";
 
 }  // namespace password_manager::constants
 

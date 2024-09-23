@@ -15,9 +15,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.view.TouchDelegate;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
@@ -31,6 +29,7 @@ import androidx.annotation.ColorInt;
 import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
+import org.chromium.chrome.browser.readaloud.player.TouchDelegateUtil;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -62,6 +61,7 @@ public class MiniPlayerLayout extends LinearLayout {
     private MiniPlayerMediator mMediator;
     private float mFinalOpacity;
     private @ColorInt int mBackgroundColorArgb;
+    private int mYOffset;
 
     /** Constructor for inflating from XML. */
     public MiniPlayerLayout(Context context, AttributeSet attrs) {
@@ -124,16 +124,7 @@ public class MiniPlayerLayout extends LinearLayout {
         }
 
         // Make the close button touch target bigger.
-        View closeButton = findViewById(R.id.close_button);
-        Rect target = new Rect();
-        closeButton.getHitRect(target);
-        int halfWidth = target.width() / 2;
-        int halfHeight = target.height() / 2;
-        target.left -= halfWidth;
-        target.top -= halfHeight;
-        target.right += halfWidth;
-        target.bottom += halfHeight;
-        ((View) closeButton.getParent()).setTouchDelegate(new TouchDelegate(target, closeButton));
+        TouchDelegateUtil.setBiggerTouchTarget(findViewById(R.id.close_button));
     }
 
     void changeOpacity(float startValue, float endValue) {
@@ -146,8 +137,11 @@ public class MiniPlayerLayout extends LinearLayout {
         mFinalOpacity = endValue;
         setAlpha(startValue);
 
+        View nonErrorLayoutContainer = mErrorLayout.getVisibility() == View.GONE ? mContents : null;
         Runnable onFinished =
-                endValue == 1f ? mMediator::onFullOpacityReached : mMediator::onZeroOpacityReached;
+                endValue == 1f
+                        ? (() -> mMediator.onFullOpacityReached(nonErrorLayoutContainer))
+                        : mMediator::onZeroOpacityReached;
 
         if (mEnableAnimations) {
             // TODO: handle case where existing animation is incomplete and needs to be reversed
@@ -188,6 +182,21 @@ public class MiniPlayerLayout extends LinearLayout {
      */
     void setProgress(float progress) {
         mProgressBar.setProgress((int) (progress * mProgressBar.getMax()), true);
+    }
+
+    /**
+     * Set the yOffset of the mini player layout. If yOffset < 0, the view need to shift up from the
+     * bottom. It is implemented by applying a bottom margin.
+     */
+    void setYOffset(int yOffset) {
+        if (mYOffset == yOffset) return;
+
+        assert yOffset <= 0;
+
+        mYOffset = -yOffset;
+        MarginLayoutParams mlp = (MarginLayoutParams) getLayoutParams();
+        mlp.bottomMargin = mYOffset;
+        setLayoutParams(mlp);
     }
 
     void setInteractionHandler(InteractionHandler handler) {

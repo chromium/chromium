@@ -6,9 +6,23 @@
 -->
 <html>
 <body>
-<div aria-hidden="true">
-  <button id="button1">Button 1</button>
-  <button id="button2">Button 2</button>
+<div role="main" aria-hidden="true">
+  <div>
+    <div role="none">
+      <div role="none">
+        <div aria-hidden="true">
+          <div>
+            <div role="none">
+              <div>
+                <button id="button1">Button 1</button>
+                <button id="button2">Button 2</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <script>
   document.getElementById("button2").focus();

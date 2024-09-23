@@ -1,0 +1,33 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("promo_handler") {
+  sources = [
+    "default_browser_promo_display_handler.h",
+    "default_browser_promo_display_handler.mm",
+    "default_browser_remind_me_later_promo_display_handler.h",
+    "default_browser_remind_me_later_promo_display_handler.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/ui/promos_manager:promos",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources =
+      [ "default_browser_remind_me_later_promo_display_handler_unittest.mm" ]
+
+  deps = [
+    ":promo_handler",
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/shared/public/commands",
+    "//testing/gtest",
+  ]
+}

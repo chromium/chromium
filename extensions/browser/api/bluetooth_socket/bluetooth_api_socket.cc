@@ -58,8 +58,9 @@ BluetoothApiSocket::BluetoothApiSocket(
 
 BluetoothApiSocket::~BluetoothApiSocket() {
   DCHECK_CURRENTLY_ON(kThreadId);
-  if (socket_.get())
+  if (socket_.get()) {
     socket_->Disconnect(base::DoNothing());
+  }
 }
 
 void BluetoothApiSocket::AdoptConnectedSocket(
@@ -68,8 +69,9 @@ void BluetoothApiSocket::AdoptConnectedSocket(
     const device::BluetoothUUID& uuid) {
   DCHECK_CURRENTLY_ON(kThreadId);
 
-  if (socket_.get())
+  if (socket_.get()) {
     socket_->Disconnect(base::DoNothing());
+  }
 
   socket_ = socket;
   device_address_ = device_address;
@@ -82,8 +84,9 @@ void BluetoothApiSocket::AdoptListeningSocket(
     const device::BluetoothUUID& uuid) {
   DCHECK_CURRENTLY_ON(kThreadId);
 
-  if (socket_.get())
+  if (socket_.get()) {
     socket_->Disconnect(base::DoNothing());
+  }
 
   socket_ = socket;
   device_address_ = "";

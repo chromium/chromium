@@ -41,10 +41,10 @@ std::vector<crosapi::mojom::ProxyLocationPtr> TranslateProxyLocations(
   std::vector<crosapi::mojom::ProxyLocationPtr> ptr_list;
   crosapi::mojom::ProxyLocationPtr ptr;
   for (const auto& proxy_chain : proxy_list.AllChains()) {
-    // TODO(crbug.com/1491092): Remove single hop check when multi-hop proxy
+    // TODO(crbug.com/40284947): Remove single hop check when multi-hop proxy
     // chains are supported.
     CHECK(proxy_chain.is_single_proxy());
-    net::ProxyServer proxy = proxy_chain.GetProxyServer(/*chain_index=*/0);
+    net::ProxyServer proxy = proxy_chain.First();
     ptr = crosapi::mojom::ProxyLocation::New();
     ptr->host = proxy.host_port_pair().host();
     ptr->port = proxy.host_port_pair().port();

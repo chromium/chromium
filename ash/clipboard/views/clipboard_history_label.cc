@@ -47,16 +47,11 @@ ClipboardHistoryLabel::ClipboardHistoryLabel(const std::u16string& text,
   } else {
     SetPreferredSize(gfx::Size(contents_width,
                                ClipboardHistoryViews::kLabelPreferredHeight));
-    if (chromeos::features::IsJellyEnabled()) {
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody1, *this);
-    } else {
-      SetFontList(views::TypographyProvider::Get().GetFont(
-          views::style::CONTEXT_TOUCH_MENU, views::style::STYLE_PRIMARY));
-    }
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody1, *this);
   }
 }
 
-BEGIN_METADATA(ClipboardHistoryLabel, views::Label)
+BEGIN_METADATA(ClipboardHistoryLabel)
 END_METADATA
 
 }  // namespace ash

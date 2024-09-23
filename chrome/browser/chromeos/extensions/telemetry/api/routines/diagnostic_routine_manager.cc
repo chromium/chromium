@@ -8,6 +8,7 @@
 #include <memory>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/check_is_test.h"
 #include "base/containers/flat_tree.h"
@@ -104,6 +105,9 @@ DiagnosticRoutineManager::CreateRoutine(
     app_ui_observers_.emplace(extension_id, std::move(observer.value()));
   }
 
+  crosapi::TelemetryDiagnosticRoutineArgument::Tag routine_argument_tag =
+      routine_argument->which();
+
   mojo::PendingRemote<crosapi::TelemetryDiagnosticRoutineControl>
       control_remote;
   mojo::PendingReceiver<crosapi::TelemetryDiagnosticRoutineObserver>
@@ -115,7 +119,8 @@ DiagnosticRoutineManager::CreateRoutine(
       observer_receiver.InitWithNewPipeAndPassRemote());
 
   auto uuid = base::Uuid::GenerateRandomV4();
-  DiagnosticRoutineInfo routine_info(extension_id, uuid, browser_context_);
+  DiagnosticRoutineInfo routine_info(extension_id, uuid, browser_context_,
+                                     routine_argument_tag);
 
   auto it = routines_per_extension_.find(extension_id);
   if (it == routines_per_extension_.end()) {
@@ -165,11 +170,34 @@ void DiagnosticRoutineManager::CancelRoutineForExtension(
 
   // We can just remove the corresponding routine object, this will cut the
   // `RoutineControl` connection signalling to stop the routine.
-  base::EraseIf(
+  std::erase_if(
       it->second,
       [routine_id](const std::unique_ptr<DiagnosticRoutine>& routine) {
         return routine->uuid() == routine_id;
       });
+}
+
+bool DiagnosticRoutineManager::ReplyToRoutineInquiryForExtension(
+    const extensions::ExtensionId& extension_id,
+    const base::Uuid& routine_id,
+    crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr reply) {
+  auto it = routines_per_extension_.find(extension_id);
+  if (it == routines_per_extension_.end()) {
+    return false;
+  }
+
+  auto routine = std::find_if(
+      it->second.begin(), it->second.end(),
+      [routine_id](const std::unique_ptr<DiagnosticRoutine>& routine) {
+        return routine->uuid() == routine_id;
+      });
+
+  if (routine == it->second.end()) {
+    return false;
+  }
+
+  routine->get()->GetRemote()->ReplyToInquiry(std::move(reply));
+  return true;
 }
 
 void DiagnosticRoutineManager::IsRoutineArgumentSupported(
@@ -245,7 +273,7 @@ void DiagnosticRoutineManager::OnRoutineExceptionOrFinished(
     return;
   }
 
-  base::EraseIf(it->second,
+  std::erase_if(it->second,
                 [info](const std::unique_ptr<DiagnosticRoutine>& ptr) {
                   return ptr->uuid() == info.uuid;
                 });

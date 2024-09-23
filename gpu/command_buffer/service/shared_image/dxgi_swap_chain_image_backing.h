@@ -5,20 +5,20 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DXGI_SWAP_CHAIN_IMAGE_BACKING_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DXGI_SWAP_CHAIN_IMAGE_BACKING_H_
 
+#include <windows.h>
+
 #include <d3d11.h>
 #include <dxgi1_2.h>
-#include <windows.h>
 #include <wrl/client.h>
-#include <utility>
 
-#include <dawn/native/D3DBackend.h>
+#include <utility>
 
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
@@ -43,7 +43,7 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       std::string debug_label);
 
   DXGISwapChainImageBacking(const DXGISwapChainImageBacking&) = delete;
@@ -79,7 +79,7 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       std::string debug_label,
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
       Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain,
@@ -96,13 +96,12 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
   // Called by the Skia representation to indicate where it intends to draw.
   bool DidBeginWriteAccess(const gfx::Rect& swap_rect);
 
-#if BUILDFLAG(USE_DAWN)
   friend class DawnRepresentationDXGISwapChain;
   wgpu::Texture BeginAccessDawn(const wgpu::Device& device,
                                 wgpu::TextureUsage usage,
+                                wgpu::TextureUsage internal_usage,
                                 const gfx::Rect& update_rect);
   void EndAccessDawn(const wgpu::Device& device, wgpu::Texture texture);
-#endif
 
   std::optional<gfx::Rect> pending_swap_rect_;
 
@@ -112,12 +111,10 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
   // Holds a gles2::TexturePassthrough and corresponding egl image.
   scoped_refptr<D3DImageBacking::GLTextureHolder> gl_texture_holder_;
 
-#if BUILDFLAG(USE_DAWN)
-  // ExternalImageDXGI is created from DXGISwapChain's backbuffer texture. This
-  // |external_image_| wraps the ComPtr<ID3D11Texture> instead of creating from
-  // a share HANDLE.
-  std::unique_ptr<dawn::native::d3d::ExternalImageDXGI> external_image_;
-#endif
+  // SharedTextureMemory is created from DXGISwapChain's backbuffer texture.
+  // This |shared_texture_memory_| wraps the ComPtr<ID3D11Texture> instead of
+  // creating from a share HANDLE.
+  wgpu::SharedTextureMemory shared_texture_memory_;
 
   // Count of buffers in |dxgi_swap_chain_| that need to have their alpha
   // channels be cleared to opaque before use. If positive at the start of write

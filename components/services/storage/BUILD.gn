@@ -12,6 +12,8 @@ source_set("storage") {
     "dom_storage/dom_storage_constants.h",
     "dom_storage/dom_storage_database.cc",
     "dom_storage/dom_storage_database.h",
+    "dom_storage/features.cc",
+    "dom_storage/features.h",
     "dom_storage/local_storage_impl.cc",
     "dom_storage/local_storage_impl.h",
     "dom_storage/session_storage_area_impl.cc",
@@ -26,10 +28,14 @@ source_set("storage") {
     "dom_storage/session_storage_namespace_impl.h",
     "dom_storage/storage_area_impl.cc",
     "dom_storage/storage_area_impl.h",
-    "indexed_db/leveldb/leveldb_factory.cc",
-    "indexed_db/leveldb/leveldb_factory.h",
     "indexed_db/leveldb/leveldb_state.cc",
     "indexed_db/leveldb/leveldb_state.h",
+    "indexed_db/locks/partitioned_lock.cc",
+    "indexed_db/locks/partitioned_lock.h",
+    "indexed_db/locks/partitioned_lock_id.cc",
+    "indexed_db/locks/partitioned_lock_id.h",
+    "indexed_db/locks/partitioned_lock_manager.cc",
+    "indexed_db/locks/partitioned_lock_manager.h",
     "indexed_db/scopes/leveldb_scope.cc",
     "indexed_db/scopes/leveldb_scope.h",
     "indexed_db/scopes/leveldb_scope_deletion_mode.h",
@@ -83,11 +89,11 @@ source_set("storage") {
   ]
 
   public_deps = [
-    ":lock_manager",
     ":test_api_stubs",
     "//base",
     "//components/services/storage/dom_storage:local_storage_proto",
     "//components/services/storage/indexed_db/scopes:scopes_metadata_proto",
+    "//components/services/storage/privileged/cpp",
     "//components/services/storage/privileged/mojom",
     "//components/services/storage/public/mojom",
     "//components/services/storage/service_worker:service_worker_proto",
@@ -107,21 +113,7 @@ source_set("storage") {
     "//services/network/public/mojom",
     "//storage/browser",
     "//storage/common",
-    "//third_party/sqlite",
   ]
-}
-
-component("lock_manager") {
-  sources = [
-    "indexed_db/locks/partitioned_lock.cc",
-    "indexed_db/locks/partitioned_lock.h",
-    "indexed_db/locks/partitioned_lock_id.cc",
-    "indexed_db/locks/partitioned_lock_id.h",
-    "indexed_db/locks/partitioned_lock_manager.cc",
-    "indexed_db/locks/partitioned_lock_manager.h",
-  ]
-  deps = [ "//base" ]
-  defines = [ "IS_LOCK_MANAGER_IMPL" ]
 }
 
 # This is its own component target because it exposes global state to multiple
@@ -168,12 +160,13 @@ bundle_data("tests_bundle_data") {
     "//components/test/data/storage/shared_storage.v3.sql",
     "//components/test/data/storage/shared_storage.v4.filescheme.sql",
     "//components/test/data/storage/shared_storage.v4.sql",
-    "//components/test/data/storage/shared_storage.v5.empty_values_mapping.5origins.sql",
-    "//components/test/data/storage/shared_storage.v5.empty_values_mapping.6origins.sql",
-    "//components/test/data/storage/shared_storage.v5.empty_values_mapping.7origins.sql",
-    "//components/test/data/storage/shared_storage.v5.empty_values_mapping.8origins.sql",
-    "//components/test/data/storage/shared_storage.v5.single_origin.sql",
     "//components/test/data/storage/shared_storage.v5.sql",
+    "//components/test/data/storage/shared_storage.v6.empty_values_mapping.5origins.sql",
+    "//components/test/data/storage/shared_storage.v6.empty_values_mapping.6origins.sql",
+    "//components/test/data/storage/shared_storage.v6.empty_values_mapping.7origins.sql",
+    "//components/test/data/storage/shared_storage.v6.empty_values_mapping.8origins.sql",
+    "//components/test/data/storage/shared_storage.v6.single_origin.sql",
+    "//components/test/data/storage/shared_storage.v6.sql",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
@@ -200,6 +193,7 @@ source_set("tests") {
     "indexed_db/transactional_leveldb/transactional_leveldb_transaction_unittest.cc",
     "indexed_db/transactional_leveldb/transactional_leveldb_unittest.cc",
     "partition_impl_unittest.cc",
+    "privileged/mojom/bucket_client_info_mojom_traits_unittest.cc",
     "service_worker/service_worker_database_unittest.cc",
     "service_worker/service_worker_disk_cache_unittest.cc",
     "service_worker/service_worker_storage_control_impl_unittest.cc",
@@ -225,6 +219,7 @@ source_set("tests") {
     "//components/services/storage/public/mojom:tests",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
+    "//mojo/public/cpp/test_support:test_utils",
     "//net",
     "//net:test_support",
     "//sql",
@@ -233,7 +228,6 @@ source_set("tests") {
     "//storage/browser:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/sqlite",
   ]
 
   if (is_ios) {

@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import './google_apps/nux_google_apps.js';
 import './landing_view.js';
 import './ntp_background/nux_ntp_background.js';
@@ -16,12 +15,17 @@ import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_
 import {assert} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {NavigationMixin, Routes} from './navigation_mixin.js';
+import type {NuxGoogleAppsElement} from './google_apps/nux_google_apps.js';
+import {NavigationMixin} from './navigation_mixin.js';
+import type {NuxNtpBackgroundElement} from './ntp_background/nux_ntp_background.js';
+import {Routes} from './router.js';
+import type {NuxSetAsDefaultElement} from './set_as_default/nux_set_as_default.js';
 import {NuxSetAsDefaultProxyImpl} from './set_as_default/nux_set_as_default_proxy.js';
 import {BookmarkBarManager} from './shared/bookmark_proxy.js';
-import {getTemplate} from './welcome_app.html.js';
+import {getCss} from './welcome_app.css.js';
+import {getHtml} from './welcome_app.html.js';
 import {WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
 
 /**
@@ -56,7 +60,7 @@ export interface WelcomeAppElement {
   };
 }
 
-const WelcomeAppElementBase = NavigationMixin(PolymerElement);
+const WelcomeAppElementBase = NavigationMixin(CrLitElement);
 
 /** @polymer */
 export class WelcomeAppElement extends WelcomeAppElementBase {
@@ -64,13 +68,17 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
     return 'welcome-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      modulesInitialized_: Boolean,
+      modulesInitialized_: {type: Boolean},
     };
   }
   private currentRoute_: Routes|null = null;
@@ -78,7 +86,7 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
 
   // Default to false so view-manager is hidden until views are
   // initialized.
-  private modulesInitialized_: boolean = false;
+  protected modulesInitialized_: boolean = false;
 
   constructor() {
     super();
@@ -89,8 +97,7 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
     };
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.setAttribute('role', 'main');
     this.addEventListener(
         'default-browser-change', () => this.onDefaultBrowserChange_());
@@ -183,17 +190,18 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
 
           let indicatorActiveCount = 0;
           modules.forEach((elementTagName, index) => {
-            const element =
-                document.createElement(elementTagName) as PolymerElement;
+            const element = document.createElement(elementTagName) as (
+                                NuxGoogleAppsElement | NuxNtpBackgroundElement |
+                                NuxSetAsDefaultElement);
             element.id = 'step-' + (index + 1);
             element.setAttribute('slot', 'view');
-            this.$.viewManager.appendChild(element);
             if (MODULES_NEEDING_INDICATOR.has(elementTagName)) {
-              element.set('indicatorModel', {
+              element.indicatorModel = {
                 total: indicatorElementCount,
                 active: indicatorActiveCount++,
-              });
+              };
             }
+            this.$.viewManager.appendChild(element);
           });
         });
   }

@@ -116,7 +116,7 @@ class WorkerTest : public ContentBrowserTest,
             {});
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -196,10 +196,10 @@ class WorkerTest : public ContentBrowserTest,
             net::CookieOptions::SameSiteCookieContext::ContextType::
                 SAME_SITE_LAX));
     GURL cookie_url = ssl_server_.GetURL(host, "/");
-    std::unique_ptr<net::CanonicalCookie> cookie = net::CanonicalCookie::Create(
-        cookie_url, std::string(kSameSiteCookie) + "; SameSite=Lax; Secure",
-        base::Time::Now(), std::nullopt /* server_time */,
-        std::nullopt /* cookie_partition_key */);
+    std::unique_ptr<net::CanonicalCookie> cookie =
+        net::CanonicalCookie::CreateForTesting(
+            cookie_url, std::string(kSameSiteCookie) + "; SameSite=Lax; Secure",
+            base::Time::Now());
     base::RunLoop run_loop;
     cookie_manager->SetCanonicalCookie(
         *cookie, cookie_url, options,
@@ -981,6 +981,154 @@ IN_PROC_BROWSER_TEST_P(WorkerFromCredentiallessIframeNikBrowserTest,
     }
     EXPECT_EQ(1u, connection_tracker_->GetReadSocketCount());
   }
+}
+
+// Test that an "a.test" frame starting a worker without any `sameSiteCookies`
+// option sends SameSite cookies on the request.
+IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerSameDefault) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+  SetSameSiteCookie("a.test");
+  ASSERT_TRUE(NavigateToURL(
+      shell(), ssl_server()->GetURL("a.test", "/workers/simple.html")));
+  EvalJsResult result =
+      EvalJs(shell(), "new SharedWorker('/workers/worker.js');");
+  ASSERT_TRUE(result.error.empty());
+  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/worker.js"));
+  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.js"));
+  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.html"));
+}
+
+// Test that an "a.test" frame starting a worker with `sameSiteCookies: 'none'`
+// doesn't send SameSite cookies on the request.
+IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerSameNone) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+  SetSameSiteCookie("a.test");
+  ASSERT_TRUE(NavigateToURL(
+      shell(), ssl_server()->GetURL("a.test", "/workers/simple.html")));
+  EvalJsResult result = EvalJs(
+      shell(),
+      "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'none'});");
+  ASSERT_TRUE(result.error.empty());
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/worker.js"));
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.js"));
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.html"));
+}
+
+// Test that an "a.test" frame starting a worker with `sameSiteCookies: 'none'`
+// sends SameSite cookies on the request.
+IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerSameAll) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+  SetSameSiteCookie("a.test");
+  ASSERT_TRUE(NavigateToURL(
+      shell(), ssl_server()->GetURL("a.test", "/workers/simple.html")));
+  EvalJsResult result = EvalJs(
+      shell(),
+      "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'all'});");
+  ASSERT_TRUE(result.error.empty());
+  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/worker.js"));
+  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.js"));
+  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.html"));
+}
+
+// Test that an "a.test" iframe in a "b.test" frame starting a worker without
+// any `sameSiteCookies` option doesn't send SameSite cookies on the request.
+IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossDefault) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+  SetSameSiteCookie("a.test");
+  ASSERT_TRUE(NavigateToURL(
+      shell(), ssl_server()->GetURL("b.test", "/workers/frame_factory.html")));
+  content::TestNavigationObserver navigation_observer(
+      shell()->web_contents(), /*number_of_navigations*/ 1);
+  const char kSubframeName[] = "foo";
+  EvalJsResult frame_result = EvalJs(
+      shell()->web_contents()->GetPrimaryMainFrame(),
+      JsReplace(
+          "createFrame($1, $2)",
+          ssl_server()->GetURL("a.test", "/workers/simple.html").spec().c_str(),
+          kSubframeName));
+  ASSERT_TRUE(frame_result.error.empty());
+  navigation_observer.Wait();
+  RenderFrameHost* subframe_rfh = FrameMatchingPredicate(
+      shell()->web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&FrameMatchesName, kSubframeName));
+  ASSERT_TRUE(subframe_rfh);
+  EvalJsResult worker_result =
+      EvalJs(subframe_rfh, "new SharedWorker('/workers/worker.js');");
+  ASSERT_TRUE(worker_result.error.empty());
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/worker.js"));
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.js"));
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.html"));
+}
+
+// Test that an "a.test" iframe in a "b.test" frame starting a worker with
+// `sameSiteCookies: 'none'` doesn't send SameSite cookies on the request.
+IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossNone) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+  SetSameSiteCookie("a.test");
+  ASSERT_TRUE(NavigateToURL(
+      shell(), ssl_server()->GetURL("b.test", "/workers/frame_factory.html")));
+  content::TestNavigationObserver navigation_observer(
+      shell()->web_contents(), /*number_of_navigations*/ 1);
+  const char kSubframeName[] = "foo";
+  EvalJsResult frame_result = EvalJs(
+      shell()->web_contents()->GetPrimaryMainFrame(),
+      JsReplace(
+          "createFrame($1, $2)",
+          ssl_server()->GetURL("a.test", "/workers/simple.html").spec().c_str(),
+          kSubframeName));
+  ASSERT_TRUE(frame_result.error.empty());
+  navigation_observer.Wait();
+  RenderFrameHost* subframe_rfh = FrameMatchingPredicate(
+      shell()->web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&FrameMatchesName, kSubframeName));
+  ASSERT_TRUE(subframe_rfh);
+  EvalJsResult worker_result = EvalJs(
+      subframe_rfh,
+      "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'none'});");
+  ASSERT_TRUE(worker_result.error.empty());
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/worker.js"));
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.js"));
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.html"));
+}
+
+// Test that an "a.test" iframe in a "b.test" frame cannot set
+// `sameSiteCookies: 'all'` option when starting a shared worker.
+IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossAll) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+  SetSameSiteCookie("a.test");
+  ASSERT_TRUE(NavigateToURL(
+      shell(), ssl_server()->GetURL("b.test", "/workers/frame_factory.html")));
+  content::TestNavigationObserver navigation_observer(
+      shell()->web_contents(), /*number_of_navigations*/ 1);
+  const char kSubframeName[] = "foo";
+  EvalJsResult result_frame = EvalJs(
+      shell()->web_contents()->GetPrimaryMainFrame(),
+      JsReplace(
+          "createFrame($1, $2)",
+          ssl_server()->GetURL("a.test", "/workers/simple.html").spec().c_str(),
+          kSubframeName));
+  ASSERT_TRUE(result_frame.error.empty());
+  navigation_observer.Wait();
+  RenderFrameHost* subframe_rfh = FrameMatchingPredicate(
+      shell()->web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&FrameMatchesName, kSubframeName));
+  ASSERT_TRUE(subframe_rfh);
+  EvalJsResult worker_result = EvalJs(
+      subframe_rfh,
+      "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'all'});");
+  ASSERT_FALSE(worker_result.error.empty());
 }
 
 }  // namespace content

@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
@@ -42,8 +43,8 @@ enum class UserInitiatedReconnectionUISurfaces {
   kSystemTray,
 };
 // This enum is tied directly to a UMA enum defined in
-// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-// change one without changing the other).
+// //tools/metrics/histograms/metadata/bluetooth/enums.xml, and should always
+// reflect it (do not change one without changing the other).
 enum class ConnectionFailureReason {
   kUnknownError = 0,
   kSystemError = 1,
@@ -56,7 +57,20 @@ enum class ConnectionFailureReason {
   kAuthCanceled = 8,
   kAuthRejected = 9,
   kInprogress = 10,
-  kMaxValue = kInprogress
+  kNotFound = 11,
+  kBluetoothDisabled = 12,
+  kDeviceNotReady = 13,
+  kAlreadyConnected = 14,
+  kDeviceAlreadyExists = 15,
+  kInvalidArgs = 16,
+  kNonAuthTimeout = 17,
+  kNoMemory = 18,
+  kJniEnvironment = 19,
+  kJniThreadAttach = 20,
+  kWakelock = 21,
+  kUnexpectedState = 22,
+  kSocketError = 23,
+  kMaxValue = kSocketError
 };
 
 // This enum is tied directly to a UMA enum defined in
@@ -113,6 +127,10 @@ enum class BluetoothTransportType {
   kInvalid = 4,
   kMaxValue = kInvalid
 };
+
+// Converts ConnectErrorCode to ConnectionFailureReason.
+DEVICE_BLUETOOTH_EXPORT ConnectionFailureReason GetConnectionFailureReason(
+    device::BluetoothDevice::ConnectErrorCode error_code);
 
 // Return filtered devices based on the filter type and max number of devices.
 DEVICE_BLUETOOTH_EXPORT device::BluetoothAdapter::DeviceList
@@ -178,6 +196,21 @@ DEVICE_BLUETOOTH_EXPORT void RecordUserInitiatedReconnectionAttemptDuration(
 // Record each time a Bluetooth device nickname change is attempted.
 DEVICE_BLUETOOTH_EXPORT void RecordSetDeviceNickName(SetNicknameResult success);
 
+// Record the time interval between consecutive bluetooth connections.
+DEVICE_BLUETOOTH_EXPORT void RecordTimeIntervalBetweenConnections(
+    base::TimeDelta time_interval_since_last_connection);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Record the number of times the connection toast is shown to user in the
+// last 24 hours.
+DEVICE_BLUETOOTH_EXPORT void MaybeRecordConnectionToastShownCount(
+    PrefService* local_state_pref,
+    bool triggered_by_connect);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+DEVICE_BLUETOOTH_EXPORT void RecordFlossManagerClientInit(
+    bool success,
+    base::TimeDelta duration);
 }  // namespace device
 
 #endif  // DEVICE_BLUETOOTH_CHROMEOS_BLUETOOTH_UTILS_H_

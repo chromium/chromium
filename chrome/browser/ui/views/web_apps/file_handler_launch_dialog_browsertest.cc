@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/web_apps/file_handler_launch_dialog_view.h"
-
 #include <memory>
 #include <string>
 #include <utility>
@@ -22,7 +20,8 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/views/web_apps/file_handler_launch_dialog_view.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -57,28 +56,16 @@ const char kFileLaunchUrl2[] = "https://example.org/file_launch2/";
 // Tests for the `FileHandlerLaunchDialogView` as well as
 // `startup::web_app::MaybeHandleWebAppLaunch()`. As Chrome OS uses the app
 // service to launch PWAs, this test suite is not run there.
-class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
+class FileHandlerLaunchDialogTest : public WebAppBrowserTestBase {
  public:
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
-
-    // The os_hooks_suppress_ is set as part of the
-    // WebAppControllerBrowserTest to prevent OS integrations from being
-    // executed. This needs to be reset so that OS integration can be run.
-    os_hooks_suppress_.reset();
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    override_registration_ =
-        OsIntegrationTestOverrideImpl::OverrideForTesting();
+    WebAppBrowserTestBase::SetUpOnMainThread();
     test::WaitUntilReady(provider());
     InstallTestWebApp();
   }
 
   void TearDownOnMainThread() override {
     test::UninstallAllWebApps(browser()->profile());
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      override_registration_.reset();
-    }
   }
 
   void LaunchAppWithFiles(const std::vector<base::FilePath>& paths) {
@@ -97,9 +84,9 @@ class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
 
   void InstallTestWebApp() {
     const GURL example_url = GURL(kStartUrl);
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(example_url);
     web_app_info->title = u"Test app";
-    web_app_info->start_url = example_url;
     web_app_info->scope = example_url;
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
 
@@ -206,8 +193,6 @@ class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
 
  private:
   webapps::AppId app_id_;
-  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
-      override_registration_;
 };
 
 IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest,

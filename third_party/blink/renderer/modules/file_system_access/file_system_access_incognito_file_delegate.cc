@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_incognito_file_delegate.h"
 
 #include <optional>
@@ -141,8 +146,7 @@ base::FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Write(
 
   auto ref_counted_data =
       base::MakeRefCounted<base::RefCountedData<Vector<uint8_t>>>();
-  ref_counted_data->data.Append(data.data(),
-                                static_cast<wtf_size_t>(data.size()));
+  ref_counted_data->data.AppendSpan(data);
 
   // Write the data to the data pipe on another thread. This is safe to run in
   // parallel to the `Write()` call, since the browser can read from the pipe as

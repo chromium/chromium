@@ -28,19 +28,20 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteDialogDelegate.TimePeriodChangeObserver;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -66,6 +67,7 @@ public class QuickDeleteDialogDelegateUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(mTabModelSelectorMock.getCurrentTab()).thenReturn(mTabMock);
+        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncherMock);
 
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mQuickDeleteView =
@@ -87,7 +89,6 @@ public class QuickDeleteDialogDelegateUnitTest {
                         mModalDialogManager,
                         mOnDismissCallbackMock,
                         mTabModelSelectorMock,
-                        mSettingsLauncherMock,
                         mTimePeriodChangeObserverMock)
                 .showDialog();
 
@@ -96,7 +97,7 @@ public class QuickDeleteDialogDelegateUnitTest {
                         QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
                         QuickDeleteMetricsDelegate.QuickDeleteAction.LAST_HOUR_SELECTED);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Spinner spinnerView = mQuickDeleteView.findViewById(R.id.quick_delete_spinner);
                     // Set the time selection for LAST_HOUR.
@@ -116,7 +117,6 @@ public class QuickDeleteDialogDelegateUnitTest {
                         mModalDialogManager,
                         mOnDismissCallbackMock,
                         mTabModelSelectorMock,
-                        mSettingsLauncherMock,
                         mTimePeriodChangeObserverMock)
                 .showDialog();
 
@@ -134,7 +134,6 @@ public class QuickDeleteDialogDelegateUnitTest {
                         mModalDialogManager,
                         mOnDismissCallbackMock,
                         mTabModelSelectorMock,
-                        mSettingsLauncherMock,
                         mTimePeriodChangeObserverMock)
                 .showDialog();
 
@@ -156,7 +155,6 @@ public class QuickDeleteDialogDelegateUnitTest {
                         mModalDialogManager,
                         mOnDismissCallbackMock,
                         mTabModelSelectorMock,
-                        mSettingsLauncherMock,
                         mTimePeriodChangeObserverMock)
                 .showDialog();
 
@@ -189,7 +187,6 @@ public class QuickDeleteDialogDelegateUnitTest {
                         mModalDialogManager,
                         mOnDismissCallbackMock,
                         mTabModelSelectorMock,
-                        mSettingsLauncherMock,
                         mTimePeriodChangeObserverMock)
                 .showDialog();
 

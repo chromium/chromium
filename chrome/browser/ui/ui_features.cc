@@ -29,11 +29,6 @@ BASE_FEATURE(kAllowEyeDropperWGCScreenCapture,
 #endif  // BUILDFLAG(IS_WIN)
 );
 
-// Enables icon in titlebar for web apps.
-BASE_FEATURE(kWebAppIconInTitlebar,
-             "WebAppIconInTitlebar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Chrome Labs menu in the toolbar. See https://crbug.com/1145666
 BASE_FEATURE(kChromeLabs, "ChromeLabs", base::FEATURE_ENABLED_BY_DEFAULT);
 const char kChromeLabsActivationParameterName[] =
@@ -47,6 +42,45 @@ BASE_FEATURE(kCloseOmniboxPopupOnInactiveAreaClick,
              "CloseOmniboxPopupOnInactiveAreaClick",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables updated copy and modified behavior for the default browser prompt.
+BASE_FEATURE(kDefaultBrowserPromptRefresh,
+             "DefaultBrowserPromptRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Parallel feature to track the group name for the synthetic trial.
+BASE_FEATURE(kDefaultBrowserPromptRefreshTrial,
+             "DefaultBrowserPromptRefreshTrial",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kDefaultBrowserPromptRefreshStudyGroup{
+    &kDefaultBrowserPromptRefreshTrial, "group_name", ""};
+
+const base::FeatureParam<bool> kShowDefaultBrowserInfoBar{
+    &kDefaultBrowserPromptRefresh, "show_info_bar", true};
+
+const base::FeatureParam<bool> kShowDefaultBrowserAppMenuChip{
+    &kDefaultBrowserPromptRefresh, "show_app_menu_chip", false};
+
+const base::FeatureParam<bool> kShowDefaultBrowserAppMenuItem{
+    &kDefaultBrowserPromptRefresh, "show_app_menu_item", false};
+
+const base::FeatureParam<bool> kUpdatedInfoBarCopy{
+    &kDefaultBrowserPromptRefresh, "updated_info_bar_copy", true};
+
+const base::FeatureParam<base::TimeDelta> kRepromptDuration{
+    &kDefaultBrowserPromptRefresh, "reprompt_duration", base::Days(28)};
+
+const base::FeatureParam<int> kMaxPromptCount{&kDefaultBrowserPromptRefresh,
+                                              "max_prompt_count", -1};
+
+const base::FeatureParam<int> kRepromptDurationMultiplier{
+    &kDefaultBrowserPromptRefresh, "reprompt_duration_multiplier", 2};
+
+const base::FeatureParam<base::TimeDelta> kDefaultBrowserAppMenuDuration{
+    &kDefaultBrowserPromptRefresh, "app_menu_duration", base::Days(3)};
+
+const base::FeatureParam<bool> kAppMenuChipColorPrimary{
+    &kDefaultBrowserPromptRefresh, "app_menu_chip_color_primary", false};
+
 // Create new Extensions app menu option (removing "More Tools -> Extensions")
 // with submenu to manage extensions and visit chrome web store.
 BASE_FEATURE(kExtensionsMenuInAppMenu,
@@ -54,8 +88,7 @@ BASE_FEATURE(kExtensionsMenuInAppMenu,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsExtensionMenuInRootAppMenu() {
-  return base::FeatureList::IsEnabled(kExtensionsMenuInAppMenu) ||
-         features::IsChromeRefresh2023();
+  return base::FeatureList::IsEnabled(kExtensionsMenuInAppMenu);
 }
 
 #if !defined(ANDROID)
@@ -65,29 +98,64 @@ BASE_FEATURE(kAccessCodeCastUI,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-// Enables camera preview in permission bubble and site settings.
-BASE_FEATURE(kCameraMicPreview,
-             "CameraMicPreview",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-// Enables showing the EV certificate details in the Page Info bubble.
-BASE_FEATURE(kEvDetailsInPageInfo,
-             "EvDetailsInPageInfo",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Enables the feature to remove the last confirmation dialog when relaunching
+// to update Chrome.
+BASE_FEATURE(kFewerUpdateConfirmations,
+             "FewerUpdateConfirmations",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Enables showing the "Get the most out of Chrome" section in settings.
-BASE_FEATURE(kGetTheMostOutOfChrome,
-             "GetTheMostOutOfChrome",
+// This feature controls whether the user can be shown the Chrome for iOS promo
+// when saving or updating passwords.
+BASE_FEATURE(kIOSPromoRefreshedPasswordBubble,
+             "IOSPromoRefreshedPasswordBubble",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+
+// This feature controls whether the user can be shown the Chrome for iOS promo
+// when saving or updating addresses.
+BASE_FEATURE(kIOSPromoAddressBubble,
+             "IOSPromoAddressBubble",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This feature controls whether the user can be shown the Chrome for iOS promo
+// when adding to the bookmarks.
+BASE_FEATURE(kIOSPromoBookmarkBubble,
+             "IOSPromoBookmarkBubble",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This feature controls whether the user can be shown the Chrome for iOS promo
+// when saving or updating payments.
+BASE_FEATURE(kIOSPromoPaymentBubble,
+             "IOSPromoPaymentBubble",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This array lists the different activation params that can be passed in the
+// experiment config, with their corresponding string.
+constexpr base::FeatureParam<IOSPromoBookmarkBubbleActivation>::Option
+    kIOSPromoBookmarkBubbleActivationOptions[] = {
+        {IOSPromoBookmarkBubbleActivation::kContextual, "contextual"},
+        {IOSPromoBookmarkBubbleActivation::kAlwaysShowWithBookmarkBubble,
+         "always-show"},
+};
+constexpr base::FeatureParam<IOSPromoBookmarkBubbleActivation>
+    kIOSPromoBookmarkBubbleActivationParam{
+        &kIOSPromoBookmarkBubble, "activation",
+        IOSPromoBookmarkBubbleActivation::kContextual,
+        &kIOSPromoBookmarkBubbleActivationOptions};
+#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if !BUILDFLAG(IS_ANDROID)
 // Enables or disables the Happiness Tracking Surveys being delivered via chrome
 // webui, rather than a separate static website.
 BASE_FEATURE(kHaTSWebUI, "HaTSWebUI", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, requesting to use the keyboard or pointer lock API causes a
+// permission prompt to be shown.
+BASE_FEATURE(kKeyboardAndPointerLockPrompt,
+             "KeyboardAndPointerLockPrompt",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -98,16 +166,48 @@ BASE_FEATURE(kLightweightExtensionOverrideConfirmations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Preloads a WebContents with a Top Chrome WebUI on BrowserView initialization,
+// so that it can be shown instantly at a later time when necessary.
+BASE_FEATURE(kPreloadTopChromeWebUI,
+             "PreloadTopChromeWebUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kPreloadTopChromeWebUIModeName[] = "preload-mode";
+const char kPreloadTopChromeWebUIModePreloadOnWarmupName[] =
+    "preload-on-warmup";
+const char kPreloadTopChromeWebUIModePreloadOnMakeContentsName[] =
+    "preload-on-make-contents";
+constexpr base::FeatureParam<PreloadTopChromeWebUIMode>::Option
+    kPreloadTopChromeWebUIModeOptions[] = {
+        {PreloadTopChromeWebUIMode::kPreloadOnWarmup,
+         kPreloadTopChromeWebUIModePreloadOnWarmupName},
+        {PreloadTopChromeWebUIMode::kPreloadOnMakeContents,
+         kPreloadTopChromeWebUIModePreloadOnMakeContentsName},
+};
+const base::FeatureParam<PreloadTopChromeWebUIMode> kPreloadTopChromeWebUIMode{
+    &kPreloadTopChromeWebUI, kPreloadTopChromeWebUIModeName,
+    PreloadTopChromeWebUIMode::kPreloadOnMakeContents,
+    &kPreloadTopChromeWebUIModeOptions};
+const char kPreloadTopChromeWebUISmartPreloadName[] = "smart-preload";
+const base::FeatureParam<bool> kPreloadTopChromeWebUISmartPreload{
+    &kPreloadTopChromeWebUI, kPreloadTopChromeWebUISmartPreloadName, false};
+const char kPreloadTopChromeWebUIDelayPreloadName[] = "delay-preload";
+const base::FeatureParam<bool> kPreloadTopChromeWebUIDelayPreload{
+    &kPreloadTopChromeWebUI, kPreloadTopChromeWebUIDelayPreloadName, false};
+
+// Enables exiting browser fullscreen (users putting the browser itself into the
+// fullscreen mode via the browser UI or shortcuts) with press-and-hold Esc.
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
+             "PressAndHoldEscToExitBrowserFullscreen",
+             base::FEATURE_ENABLED_BY_DEFAULT
+);
+#endif
+
 // Enable responsive toolbar. Toolbar buttons overflow to a chevron button when
 // the browser width is resized smaller than normal.
 BASE_FEATURE(kResponsiveToolbar,
              "ResponsiveToolbar",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the side search feature for Google Search. Presents recent Google
 // search results in a browser side panel.
@@ -147,37 +247,11 @@ BASE_FEATURE(kSidePanelJourneysQueryless,
 BASE_FEATURE(kSidePanelCompanionDefaultPinned,
              "SidePanelCompanionDefaultPinned",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSidePanelPinning,
-             "SidePanelPinning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsSidePanelPinningEnabled() {
-  return (IsChromeRefresh2023() &&
-          base::FeatureList::IsEnabled(kSidePanelPinning));
-}
-
-BASE_FEATURE(kSidePanelMinimumWidth,
-             "SidePanelMinimumWidth",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kSidePanelMinimumWidthParameter{
-    &kSidePanelMinimumWidth, "minPanelWidth", 360};
-int GetSidePanelMinimumWidth() {
-  if (base::FeatureList::IsEnabled(kSidePanelMinimumWidth)) {
-    return kSidePanelMinimumWidthParameter.Get();
-  }
-
-  // This is the default value used without this feature.
-  return 320;
-}
-
 #endif
 
-// Enables tabs to scroll in the tabstrip. https://crbug.com/951078
-BASE_FEATURE(kScrollableTabStrip,
-             "ScrollableTabStrip",
+BASE_FEATURE(kSidePanelResizing,
+             "SidePanelResizing",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const char kMinimumTabWidthFeatureParameterName[] = "minTabWidth";
 
 // Enables buttons when scrolling the tabstrip https://crbug.com/951078
 BASE_FEATURE(kTabScrollingButtonPosition,
@@ -185,35 +259,11 @@ BASE_FEATURE(kTabScrollingButtonPosition,
              base::FEATURE_ENABLED_BY_DEFAULT);
 const char kTabScrollingButtonPositionParameterName[] = "buttonPosition";
 
-// Enables tab scrolling while dragging tabs in tabstrip
-// https://crbug.com/1145747
-BASE_FEATURE(kScrollableTabStripWithDragging,
-             "kScrollableTabStripWithDragging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const char kTabScrollingWithDraggingModeName[] = "tabScrollWithDragMode";
-
-// Enables different methods of overflow when scrolling tabs in tabstrip
-// https://crbug.com/951078
-BASE_FEATURE(kScrollableTabStripOverflow,
-             "kScrollableTabStripOverflow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const char kScrollableTabStripOverflowModeName[] = "tabScrollOverflow";
-
-// Splits pinned and unpinned tabs into separate TabStrips.
-// https://crbug.com/1346019
-BASE_FEATURE(kSplitTabStrip,
-             "SplitTabStrip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables tabs to be frozen when collapsed.
 // https://crbug.com/1110108
 BASE_FEATURE(kTabGroupsCollapseFreezing,
              "TabGroupsCollapseFreezing",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables users to explicitly save and recall tab groups.
-// https://crbug.com/1223929
-BASE_FEATURE(kTabGroupsSave, "TabGroupsSave", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables preview images in tab-hover cards.
 // https://crbug.com/928954
@@ -238,12 +288,43 @@ const char kTabHoverCardAdditionalMaxWidthDelay[] =
 
 BASE_FEATURE(kTabOrganization,
              "TabOrganization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsTabOrganization() {
-  return IsChromeRefresh2023() &&
-         base::FeatureList::IsEnabled(features::kTabOrganization);
+  return base::FeatureList::IsEnabled(features::kTabOrganization);
 }
+
+BASE_FEATURE(kTabstripDeclutter,
+             "TabstripDeclutter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTabstripDeclutterEnabled() {
+  return base::FeatureList::IsEnabled(features::kTabstripDeclutter);
+}
+
+BASE_FEATURE(kMultiTabOrganization,
+             "MultiTabOrganization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabOrganizationAppMenuItem,
+             "TabOrganizationAppMenuItem",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabReorganization,
+             "TabReorganization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabReorganizationDivider,
+             "TabReorganizationDivider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabOrganizationModelStrategy,
+             "TabOrganizationModelStrategy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabOrganizationEnableNudgeForEnterprise,
+             "TabOrganizationEnableNudgeForEnterprise",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kTabOrganizationTriggerPeriod{
     &kTabOrganization, "trigger_period", base::Hours(6)};
@@ -260,10 +341,6 @@ const base::FeatureParam<double> kTabOrganizationTriggerSensitivityThreshold{
 const base::FeatureParam<bool> KTabOrganizationTriggerDemoMode{
     &kTabOrganization, "trigger_demo_mode", false};
 
-BASE_FEATURE(kTabOrganizationRefreshButton,
-             "TabOrganizationRefreshButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabSearchChevronIcon,
              "TabSearchChevronIcon",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -273,38 +350,7 @@ BASE_FEATURE(kTabSearchFeedback,
              "TabSearchFeedback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether or not to use fuzzy search for tab search.
-BASE_FEATURE(kTabSearchFuzzySearch,
-             "TabSearchFuzzySearch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kTabSearchSearchThresholdName[] = "TabSearchSearchThreshold";
-
-const base::FeatureParam<bool> kTabSearchSearchIgnoreLocation{
-    &kTabSearchFuzzySearch, "TabSearchSearchIgnoreLocation", false};
-
-// If this feature parameter is enabled, show media tabs in both "Audio & Video"
-// section and "Open Tabs" section.
-const char kTabSearchAlsoShowMediaTabsinOpenTabsSectionParameterName[] =
-    "Also show Media Tabs in Open Tabs Section";
-
-const base::FeatureParam<int> kTabSearchSearchDistance{
-    &kTabSearchFuzzySearch, "TabSearchSearchDistance", 200};
-
-const base::FeatureParam<double> kTabSearchSearchThreshold{
-    &kTabSearchFuzzySearch, kTabSearchSearchThresholdName, 0.6};
-
-const base::FeatureParam<double> kTabSearchTitleWeight{
-    &kTabSearchFuzzySearch, "TabSearchTitleWeight", 2.0};
-
-const base::FeatureParam<double> kTabSearchHostnameWeight{
-    &kTabSearchFuzzySearch, "TabSearchHostnameWeight", 1.0};
-
-const base::FeatureParam<double> kTabSearchGroupTitleWeight{
-    &kTabSearchFuzzySearch, "TabSearchGroupTitleWeight", 1.5};
-
-const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom{
-    &kTabSearchFuzzySearch, "TabSearchMoveActiveTabToBottom", true};
 
 // Controls feature parameters for Tab Search's `Recently Closed` entries.
 BASE_FEATURE(kTabSearchRecentlyClosed,
@@ -318,10 +364,6 @@ const base::FeatureParam<int> kTabSearchRecentlyClosedDefaultItemDisplayCount{
 const base::FeatureParam<int> kTabSearchRecentlyClosedTabCountThreshold{
     &kTabSearchRecentlyClosed, "TabSearchRecentlyClosedTabCountThreshold", 100};
 
-BASE_FEATURE(kTabSearchUseMetricsReporter,
-             "TabSearchUseMetricsReporter",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables creating a web app window when tearing off a tab with a url
 // controlled by a web app.
 BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,
@@ -332,17 +374,11 @@ BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,
 BASE_FEATURE(kToolbarPinning,
              "ToolbarPinning",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsToolbarPinningEnabled() {
+  return base::FeatureList::IsEnabled(kToolbarPinning);
+}
 #endif
-
-BASE_FEATURE(kToolbarUseHardwareBitmapDraw,
-             "ToolbarUseHardwareBitmapDraw",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether top chrome pages will use the spare renderer if no top
-// chrome renderers are present.
-BASE_FEATURE(kTopChromeWebUIUsesSpareRenderer,
-             "TopChromeWebUIUsesSpareRenderer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Enables alternate update-related text to be displayed in browser app menu
@@ -357,15 +393,24 @@ const base::FeatureParam<int> kUpdateTextOptionNumber{
 #endif
 
 // Enables enterprise profile badging on the toolbar avatar and in the profile
-// menu.
+// menu. This will act as a kill switch.
 BASE_FEATURE(kEnterpriseProfileBadging,
              "EnterpriseProfileBadging",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the management button on the toolbar for all managed browsers.
+BASE_FEATURE(kManagementToolbarButton,
+             "ManagementToolbarButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This enables enables persistence of a WebContents in a 1-to-1 association
-// with the current Profile for WebUI bubbles. See https://crbug.com/1177048.
-BASE_FEATURE(kWebUIBubblePerProfilePersistence,
-             "WebUIBubblePerProfilePersistence",
+// Enables the management button on the toolbar by default for browser managed
+// by trusted sources.
+BASE_FEATURE(kManagementToolbarButtonForTrustedManagementSources,
+             "ManagementToolbarButtonForTrustedManagementSources",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnterpriseUpdatedProfileCreationScreen,
+             "EnterpriseUpdatedProfileCreationScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables a web-based tab strip. See https://crbug.com/989131. Note this
@@ -381,7 +426,7 @@ BASE_FEATURE(kWebUITabStrip,
 
 // The default value of this flag is aligned with platform behavior to handle
 // context menu with touch.
-// TODO(crbug.com/1257626): Enable this flag for all platforms after launch.
+// TODO(crbug.com/40796475): Enable this flag for all platforms after launch.
 BASE_FEATURE(kWebUITabStripContextMenuAfterTap,
              "WebUITabStripContextMenuAfterTap",
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -391,50 +436,32 @@ BASE_FEATURE(kWebUITabStripContextMenuAfterTap,
 #endif
 );
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kChromeOSTabSearchCaptionButton,
-             "ChromeOSTabSearchCaptionButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_MAC)
-// Enabled an experiment which increases the prominence to grant MacOS system
-// location permission to Chrome when location permissions have already been
-// approved. https://crbug.com/1211052
-BASE_FEATURE(kLocationPermissionsExperiment,
-             "LocationPermissionsExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-constexpr base::FeatureParam<int>
-    kLocationPermissionsExperimentBubblePromptLimit{
-        &kLocationPermissionsExperiment, "bubble_prompt_count", 3};
-constexpr base::FeatureParam<int>
-    kLocationPermissionsExperimentLabelPromptLimit{
-        &kLocationPermissionsExperiment, "label_prompt_count", 5};
-
 BASE_FEATURE(kViewsFirstRunDialog,
              "ViewsFirstRunDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kViewsTaskManager,
-             "ViewsTaskManager",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kViewsJSAppModalDialog,
              "ViewsJSAppModalDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-int GetLocationPermissionsExperimentBubblePromptLimit() {
-  return kLocationPermissionsExperimentBubblePromptLimit.Get();
-}
-int GetLocationPermissionsExperimentLabelPromptLimit() {
-  return kLocationPermissionsExperimentLabelPromptLimit.Get();
-}
 #endif
 
 // Reduce resource usage when view is hidden by not rendering loading animation.
-// TODO(crbug.com/1322081): Clean up the feature in M117.
+// TODO(crbug.com/40224168): Clean up the feature in M117.
 BASE_FEATURE(kStopLoadingAnimationForHiddenWindow,
              "StopLoadingAnimationForHiddenWindow",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kUsePortalAccentColor,
+             "UsePortalAccentColor",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
+BASE_FEATURE(kCompactMode, "CompactMode", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPageSpecificDataDialogRelatedInstalledAppsSection,
+             "PageSpecificDataDialogRelatedInstalledAppsSection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -17,16 +17,14 @@ TEST(TextCodecICUTest, IgnorableCodePoint) {
   source.push_back('a');
   source.push_back(kZeroWidthJoinerCharacter);
   std::string encoded =
-      codec->Encode(source.data(), source.size(), kEntitiesForUnencodables);
+      codec->Encode(base::span(source), kEntitiesForUnencodables);
   EXPECT_EQ("a&#8205;", encoded);
   const String source2(u"ABC~¤•★星🌟星★•¤~XYZ");
-  const std::string encoded2(codec->Encode(source2.GetCharacters<UChar>(),
-                                           source2.length(),
-                                           kEntitiesForUnencodables));
+  const std::string encoded2(
+      codec->Encode(source2.Span16(), kEntitiesForUnencodables));
   const String source3(u"ABC~&#164;&#8226;★星&#127775;星★&#8226;&#164;~XYZ");
-  const std::string encoded3(codec->Encode(source3.GetCharacters<UChar>(),
-                                           source3.length(),
-                                           kEntitiesForUnencodables));
+  const std::string encoded3(
+      codec->Encode(source3.Span16(), kEntitiesForUnencodables));
   EXPECT_EQ(encoded3, encoded2);
   EXPECT_EQ(
       "ABC~&#164;&#8226;\x1B$B!z@1\x1B(B&#127775;\x1B$B@1!z\x1B(B&#8226;&#164;~"

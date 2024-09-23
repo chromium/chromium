@@ -38,7 +38,7 @@ class MODULES_EXPORT PaymentRequestUpdateEvent : public Event,
 
   void SetPaymentRequest(PaymentRequestDelegate* request);
 
-  void updateWith(ScriptState*, ScriptPromise, ExceptionState&);
+  void updateWith(ScriptState*, ScriptPromiseUntyped, ExceptionState&);
 
   void start_waiting_for_update(bool value) { wait_for_update_ = value; }
   bool is_waiting_for_update() const { return wait_for_update_; }

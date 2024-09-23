@@ -30,6 +30,8 @@ const char kSigninAuthorizationCodeAttrName[] = "authorization_code";
 const char kSigninNoAuthorizationCodeAttrName[] = "no_authorization_code";
 const char kSigninEmailAttrName[] = "email";
 const char kSigninIdAttrName[] = "id";
+const char kSigninEligibleForTokenBindingAttrName[] =
+    "eligible_for_token_binding";
 
 // Signout response parameters.
 const char kSignoutEmailAttrName[] = "email";
@@ -109,6 +111,13 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
       } else {
         DLOG(WARNING)
             << "No authorization code header expected only with SIGNIN action";
+      }
+    } else if (key_name == kSigninEligibleForTokenBindingAttrName) {
+      if (params.signin_info) {
+        params.signin_info->supported_algorithms_for_token_binding = value;
+      } else {
+        DLOG(WARNING) << "Eligible for token binding attribute expected only "
+                         "with SIGNIN action";
       }
     } else {
       DLOG(WARNING) << "Unexpected Gaia header attribute '" << key_name << "'.";

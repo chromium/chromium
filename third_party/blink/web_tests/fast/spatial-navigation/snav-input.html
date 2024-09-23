@@ -1,84 +1,57 @@
 <!DOCTYPE html>
-  <head>
-    <script src="../../resources/js-test.js"></script>
-    <script src="resources/spatial-navigation-utils.js"></script>
-  </head>
-  <body id="some-content" xmlns="http://www.w3.org/1999/xhtml">
-    <p id="description"></p>
-    <table style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;" border="1" cellpadding="2" cellspacing="1">
-      <tbody>
-        <tr>
-          <td style="vertical-align: top; text-align: center;"></td>
-          <td style="vertical-align: top; text-align: center;"><a id="2" href="a">2</a></td>
-          <td style="vertical-align: top; text-align: center;"></td>
-        </tr>
-        <tr>
-          <td style="vertical-align: top; text-align: center;"><a id="4" href="a">4</a></td>
-          <td style="vertical-align: top; text-align: center;"><input id="start" type="text" value="text"></td>
-          <td style="vertical-align: top; text-align: center;"><a id="6" href="a">6</a></td>
-        </tr>
-        <tr>
-          <td style="vertical-align: top; text-align: center;"></td>
-          <td style="vertical-align: top; text-align: center;"><a id="8" href="a">8</a></td>
-          <td style="vertical-align: top; text-align: center;"></td>
-        </tr>
-      </tbody>
-    </table>
-    <div id="console"></div>
-    <script type="application/javascript">
-    description('This test ensures the correctness of Spatial Navigation (SNav) algorithm over input box.<br>\
-                * Pre-conditions:<br>\
-                1) DRT support for SNav enable/disable.<br>\
-                * Navigation steps:<br>\
-                1) Loads this page, focus goes to "start" automatically.<br>\
-                2) Focus moves away from input box in 4 different directions to neighbor nodes and back.<br>');
+<table style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;" border="1" cellpadding="2" cellspacing="1">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"></td>
+      <td style="vertical-align: top; text-align: center;"><a id="2" href="a">2</a></td>
+      <td style="vertical-align: top; text-align: center;"></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"><a id="4" href="a">4</a></td>
+      <td style="vertical-align: top; text-align: center;"><input id="start" type="text" value="text"></td>
+      <td style="vertical-align: top; text-align: center;"><a id="6" href="a">6</a></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"></td>
+      <td style="vertical-align: top; text-align: center;"><a id="8" href="a">8</a></td>
+      <td style="vertical-align: top; text-align: center;"></td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  This test ensures the correctness of Spatial Navigation (SNav) algorithm over input box.<br>
+  * Navigation steps:<br>
+  1) Loads this page, focus goes to "start" automatically.<br>
+  2) Focus moves away from input box in 4 different directions to neighbor nodes and back.<br>
+</p>
 
-    var resultMap = [
-      ["Down", "start"],
-      ["Down", "8"],
-      ["Up", "start"],
-      ["Up", "start"],
-      ["Up", "2"],
-      ["Down", "start"],
-      ["Right", "start"],
-      ["Right", "6"],
-      ["Left", "start"],
-      ["Left", "start"],
-      ["Left", "4"],
-      ["Right", "start"],
-      ["DONE", "DONE"]
-    ];
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Down", "start"],
+    ["Down", "8"],
+    ["Up", "start"],
+    ["Up", "start"],
+    ["Up", "2"],
+    ["Down", "start"],
+    ["Right", "start"],
+    ["Right", "6"],
+    ["Left", "start"],
+    ["Left", "start"],
+    ["Left", "4"],
+    ["Right", "start"]
+  ];
 
-    if (window.testRunner) {
-      testRunner.dumpAsText();
-      testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
-      testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
-      testRunner.waitUntilDone();
-    }
+  // Start at a known place.
+  document.getElementById("start").focus();
+  snav.assertFocusMoves(resultMap, true, postFocusMoveCheck);
 
-    function runTest()
-    {
-      // starting the test itself: get to a known place.
-      document.getElementById("start").focus();
-
-      initTest(resultMap, testCompleted);
-    }
-
-    function testCompleted()
-    {
-      if (!window.testRunner)
-        return;
-
-      var text = 'A text containing a space';
-      for (var i = 0; i < text.length; ++i)
-        eventSender.keyDown(text.charAt(i));
-      shouldBeEqualToString("document.getElementById('start').value", text);
-
-      testRunner.notifyDone();
-    }
-
-    window.onload = runTest;
-
-    </script>
-  </body>
-</html>
+  function postFocusMoveCheck() {
+    var text = "A text containing a space";
+    for (var i = 0; i < text.length; ++i)
+      eventSender.keyDown(text.charAt(i));
+    assert_equals(document.getElementById("start").value, text, "Input element should contain correct text.");
+  }
+</script>

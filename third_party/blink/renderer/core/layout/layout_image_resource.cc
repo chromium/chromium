@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
-#include "third_party/blink/renderer/platform/graphics/placeholder_image.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace blink {
@@ -141,7 +140,10 @@ IntrinsicSizingInfo LayoutImageResource::GetNaturalDimensions(
   IntrinsicSizingInfo sizing_info;
   Image& image = *cached_image_->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-    if (!svg_image->GetIntrinsicSizingInfo(sizing_info)) {
+    const SVGImageViewInfo* view_info = SVGImageForContainer::CreateViewInfo(
+        *svg_image, layout_object_->GetNode());
+    if (!SVGImageForContainer::GetNaturalDimensions(*svg_image, view_info,
+                                                    sizing_info)) {
       sizing_info = IntrinsicSizingInfo::None();
     }
   } else {
@@ -223,27 +225,19 @@ scoped_refptr<Image> LayoutImageResource::GetImage(
     return Image::NullImage();
 
   Image* image = cached_image_->GetImage();
-  if (image->IsPlaceholderImage()) {
-    static_cast<PlaceholderImage*>(image)->SetIconAndTextScaleFactor(
-        layout_object_->StyleRef().EffectiveZoom());
-  }
 
   auto* svg_image = DynamicTo<SVGImage>(image);
   if (!svg_image)
     return image;
 
-  KURL url;
-  if (auto* element = DynamicTo<Element>(layout_object_->GetNode())) {
-    const AtomicString& url_string = element->ImageSourceURL();
-    url = element->GetDocument().CompleteURL(url_string);
-  }
-
   const ComputedStyle& style = layout_object_->StyleRef();
   auto preferred_color_scheme = layout_object_->GetDocument()
                                     .GetStyleEngine()
                                     .ResolveColorSchemeForEmbedding(&style);
-  return SVGImageForContainer::Create(svg_image, container_size,
-                                      style.EffectiveZoom(), url,
+  const SVGImageViewInfo* view_info = SVGImageForContainer::CreateViewInfo(
+      *svg_image, layout_object_->GetNode());
+  return SVGImageForContainer::Create(*svg_image, container_size,
+                                      style.EffectiveZoom(), view_info,
                                       preferred_color_scheme);
 }
 

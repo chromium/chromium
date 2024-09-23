@@ -1,0 +1,123 @@
+<style include="common cros-button-style wallpaper">
+  #heading,
+  #samplePromptHeading {
+    display: flex;
+    margin-inline-end: calc(var(--personalization-app-grid-item-spacing) / 2);
+    margin-inline-start: calc(var(--personalization-app-grid-item-spacing) / 2);
+  }
+
+  #heading {
+    margin-bottom: 18px;
+  }
+
+  #heading:has(#tabContainer) {
+    margin-bottom: 0px;
+  }
+
+  #tabContainer cr-button {
+    background-color: transparent;
+    border-radius: 0 0 16px 16px;
+    height: 48px;
+    padding: 4px;
+  }
+
+  #tabContainer cr-button[aria-pressed='true'] {
+    --text-color: var(--cros-sys-primary);
+  }
+
+  /* This pseudo-element is the line above the selected tab. */
+  #tabContainer cr-button[aria-pressed='true']::before {
+    background-color: var(--cros-sys-primary);
+    border-radius: 0 0 4px 4px;
+    /* content has a zero-width space so the line is visible. */
+    content: '​';
+    height: 4px;
+    position: absolute;
+    top: 0;
+    width: 80%;
+  }
+
+  #tabContainer cr-button[aria-pressed='false'] {
+    color: var(--cros-text-color-secondary);
+  }
+
+  #tabContainer cr-button[aria-pressed='false']:hover {
+    background-color: var(--cros-sys-hover_on_subtle);
+  }
+
+  #tabContainer,
+  #promptingGuide {
+    flex-grow: 1;
+  }
+
+  #seaPenImagesHeading {
+    margin-top: 10px;
+    padding-inline-end: 0;
+  }
+
+  #shuffle {
+    --text-color: var(--cros-sys-primary);
+    background-color: transparent;
+  }
+
+  #samplePromptHeading {
+    background-color: unset;
+    font: var(--cros-button-2-font);
+  }
+
+  #promptingGuide{
+    --text-color: var(--cros-sys-secondary);
+    padding: 6px;
+    text-decoration: none;
+  }
+
+  #promptingGuide a {
+    --text-color: var(--cros-sys-primary);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  #promptingGuide a:hover {
+    text-decoration: underline;
+  }
+</style>
+<div id="heading">
+  <template is="dom-if" if="[[isTabContainerEnabled_(seaPenQuery_, thumbnailResponseStatusCode_)]]" restamp>
+    <div id="tabContainer">
+      <cr-button id="resultsTab"
+          aria-pressed="[[isResultsTabSelected_(freeformTab_)]]"
+          on-click="onTabSelected_">
+        <div class="text">[[i18n('seaPenFreeformResultsLabel')]]</div>
+      </cr-button>
+      <cr-button id="samplePromptsTab"
+          aria-pressed="[[isSamplePromptsTabSelected_(freeformTab_)]]"
+          on-click="onTabSelected_">
+        <div class="text">[[i18n('seaPenFreeformSamplePromptsLabel')]]</div>
+      </cr-button>
+    </div>
+  </template>
+  <template is="dom-if" if="[[!isSamplePromptsTabSelected_(freeformTab_)]]">
+    <h2 id="seaPenImagesHeading" class="wallpaper-collections-heading">
+      [[i18n('seaPenFreeformPoweredByGoogle')]]
+    </h2>
+  </template>
+</div>
+<div id="samplePromptHeading">
+  <template is="dom-if" if="[[isSamplePromptsTabSelected_(freeformTab_)]]">
+    <div id="promptingGuide"
+        inner-h-t-m-l="[[i18nAdvanced('seaPenFreeformPromptingGuide')]]">
+    </div>
+    <cr-button
+        id="shuffle"
+        on-click="onShuffleClicked_">
+      <p>[[i18n('seaPenFreeformShuffle')]]</p>
+    </cr-button>
+  </template>
+</div>
+<template is="dom-if" if="[[isSamplePromptsTabSelected_(freeformTab_)]]" restamp>
+  <sea-pen-samples samples="[[samples]]"></sea-pen-samples>
+  <sea-pen-recent-wallpapers></sea-pen-recent-wallpapers>
+</template>
+<template is="dom-if" if="[[isResultsTabSelected_(freeformTab_)]]" restamp>
+  <sea-pen-images template-id="Query"></sea-pen-images>
+</template>

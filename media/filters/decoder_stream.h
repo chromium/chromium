@@ -155,14 +155,14 @@ class MEDIA_EXPORT DecoderStream {
   }
 
  private:
-  enum State {
-    STATE_UNINITIALIZED,
-    STATE_INITIALIZING,
-    STATE_NORMAL,  // Includes idle, pending decoder decode/reset.
-    STATE_FLUSHING_DECODER,
-    STATE_REINITIALIZING_DECODER,
-    STATE_END_OF_STREAM,  // End of stream reached; returns EOS on all reads.
-    STATE_ERROR,
+  enum class State {
+    kStateUninitialized,
+    kStateInitializing,
+    kStateNormal,  // Includes idle, pending decoder decode/reset.
+    kStateFlushingDecoder,
+    kStateReinitializingDecoder,
+    kStateEndOfStream,  // End of stream reached; returns EOS on all reads.
+    kStateError,
   };
 
   // Returns the string representation of the StreamType for logging purpose.
@@ -170,6 +170,9 @@ class MEDIA_EXPORT DecoderStream {
 
   // Returns maximum concurrent decode requests for the current |decoder_|.
   int GetMaxDecodeRequests() const;
+
+  // Returns if current |decoder_| is a platform decoder.
+  bool IsPlatformDecoder() const;
 
   // Returns the maximum number of outputs we should keep ready at any one time.
   int GetMaxReadyOutputs() const;
@@ -196,10 +199,6 @@ class MEDIA_EXPORT DecoderStream {
 
   // Performs the heavy lifting of the decode call.
   void DecodeInternal(scoped_refptr<DecoderBuffer> buffer);
-
-  // Flushes the decoder with an EOS buffer to retrieve internally buffered
-  // decoder output.
-  void FlushDecoder();
 
   // Callback for Decoder::Decode().
   void OnDecodeDone(int buffer_size,

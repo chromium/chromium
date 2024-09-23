@@ -29,7 +29,7 @@ class PlatformSensorWin final : public PlatformSensor,
   PlatformSensorWin(
       mojom::SensorType type,
       SensorReadingSharedBuffer* reading_buffer,
-      PlatformSensorProvider* provider,
+      base::WeakPtr<PlatformSensorProvider> provider,
       scoped_refptr<base::SingleThreadTaskRunner> sensor_thread_runner,
       std::unique_ptr<PlatformSensorReaderWinBase> sensor_reader);
 

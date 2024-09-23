@@ -67,6 +67,7 @@ class ASH_EXPORT HotspotNotifier
       const std::u16string& title_id,
       const std::u16string& message_id,
       const char* notification_id,
+      const bool use_hotspot_icon,
       scoped_refptr<message_center::NotificationDelegate> delegate);
 
   void EnableHotspotHandler(const char* notification_id,
@@ -83,6 +84,9 @@ class ASH_EXPORT HotspotNotifier
       hotspot_enabled_state_observer_receiver_{this};
   mojo::Receiver<hotspot_config::mojom::CrosHotspotConfigObserver>
       hotspot_config_observer_receiver_{this};
+
+  hotspot_config::mojom::HotspotAllowStatus allow_status_ =
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoMobileData;
 
   base::WeakPtrFactory<HotspotNotifier> weak_ptr_factory_{this};
 };

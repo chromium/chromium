@@ -40,4 +40,4 @@ std::unique_ptr<QuickStartMessage> BuildBootstrapStateCompleteMessage();
 
 }  // namespace ash::quick_start::requests
 
-#endif  // CHROMEOS_ASH_COMPONENTS_QUICK_START_QUICK_START_REQUESTS_H
+#endif  // CHROMEOS_ASH_COMPONENTS_QUICK_START_QUICK_START_REQUESTS_H_

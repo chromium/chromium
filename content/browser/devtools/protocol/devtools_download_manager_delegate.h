@@ -6,9 +6,11 @@
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_DOWNLOAD_MANAGER_DELEGATE_H_
 
 #include <stdint.h>
+
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/download_manager_delegate.h"
 
@@ -93,8 +95,8 @@ class DevToolsDownloadManagerDelegate
                                download::DownloadTargetCallback callback,
                                const base::FilePath& suggested_path);
 
-  content::DownloadManager* download_manager_;
-  content::DownloadManagerDelegate* original_download_delegate_;
+  raw_ptr<content::DownloadManager> download_manager_;
+  raw_ptr<content::DownloadManagerDelegate> original_download_delegate_;
   DownloadBehavior download_behavior_ = DownloadBehavior::DEFAULT;
   std::string download_path_;
 };

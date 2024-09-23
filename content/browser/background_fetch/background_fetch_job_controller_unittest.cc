@@ -238,7 +238,7 @@ class BackgroundFetchJobControllerTest : public BackgroundFetchTestBase {
       blink::mojom::BackgroundFetchFailureReason reason_to_abort,
       base::OnceCallback<void(blink::mojom::BackgroundFetchError)> callback) {
     auto iter = pending_requests_counts_.find(registration_id);
-    DCHECK(iter != pending_requests_counts_.end());
+    CHECK(iter != pending_requests_counts_.end());
 
     finished_requests_[registration_id] = reason_to_abort;
     pending_requests_counts_.erase(iter);

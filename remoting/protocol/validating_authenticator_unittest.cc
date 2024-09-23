@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/protocol_mock_objects.h"
@@ -331,6 +332,33 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_ProtocolError) {
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
   ASSERT_EQ(Authenticator::RejectionReason::PROTOCOL_ERROR,
             validating_authenticator_->rejection_reason());
+}
+
+TEST_F(ValidatingAuthenticatorTest, StateChangeAfterAccepted_Propagated) {
+  base::MockRepeatingClosure state_changed_after_accepted;
+  validating_authenticator_->set_state_change_after_accepted_callback(
+      state_changed_after_accepted.Get());
+  EXPECT_CALL(*mock_authenticator_, ProcessMessage(_, _))
+      .WillOnce(InvokeCallbackArgument<1>());
+
+  ON_CALL(*mock_authenticator_, state())
+      .WillByDefault(Return(Authenticator::ACCEPTED));
+
+  SendMessageAndWaitForCallback();
+  ASSERT_EQ(validating_authenticator_->state(), Authenticator::ACCEPTED);
+
+  EXPECT_CALL(*mock_authenticator_, state())
+      .WillOnce(Return(Authenticator::REJECTED));
+  EXPECT_CALL(*mock_authenticator_, rejection_reason())
+      .WillOnce(
+          Return(Authenticator::RejectionReason::REAUTHZ_POLICY_CHECK_FAILED));
+  EXPECT_CALL(state_changed_after_accepted, Run());
+
+  mock_authenticator_->NotifyStateChangeAfterAccepted();
+
+  ASSERT_EQ(validating_authenticator_->state(), Authenticator::REJECTED);
+  ASSERT_EQ(validating_authenticator_->rejection_reason(),
+            Authenticator::RejectionReason::REAUTHZ_POLICY_CHECK_FAILED);
 }
 
 }  // namespace remoting::protocol

@@ -8,9 +8,9 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/nonembedded/component_updater/aw_component_updater_configurator.h"
 #include "base/android/path_utils.h"
@@ -160,7 +160,7 @@ class OnDemandNetworkFetcher : public update_client::NetworkFetcher {
 };
 
 // A NetworkFetcher that fakes downloading a CRX file.
-// TODO(crbug.com/1190310) use EmbeddedTestServer instead of Mocking the
+// TODO(crbug.com/40755924) use EmbeddedTestServer instead of Mocking the
 // NetworkFetcher.
 class FakeCrxNetworkFetcher : public update_client::NetworkFetcher {
  public:

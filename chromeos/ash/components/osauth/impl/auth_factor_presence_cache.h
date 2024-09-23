@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_AUTH_FACTOR_PRESENCE_CACHE_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_AUTH_FACTOR_PRESENCE_CACHE_H_
 
-#include "base/component_export.h"
-#include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
-#include "chromeos/ash/components/osauth/public/common_types.h"
+#include <memory>
 
+#include "base/component_export.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/user_manager/known_user.h"
 
 class PrefService;

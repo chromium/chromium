@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include <memory>
@@ -24,6 +29,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/chrome_javascript_app_modal_dialog_view_factory.h"
@@ -199,7 +206,7 @@ class NavigationCompletedObserver : public content::WebContentsObserver {
 class ProcessManagerBrowserTest : public ExtensionBrowserTest {
  public:
   ProcessManagerBrowserTest() {
-    // TODO(https://crbug.com/1110891): Remove this once Extensions are
+    // TODO(crbug.com/40142347): Remove this once Extensions are
     // supported with BackForwardCache.
     disabled_feature_list_.InitWithFeatures({}, {features::kBackForwardCache});
   }
@@ -844,14 +851,14 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_TRUE(
       policy->CanRequestURL(main_frame->GetProcess()->GetID(), extension_url));
 
-  EXPECT_TRUE(policy->CanCommitURL(extension_frame->GetProcess()->GetID(),
-                                   extension_blob_url));
-  EXPECT_FALSE(policy->CanCommitURL(main_frame->GetProcess()->GetID(),
-                                    extension_blob_url));
-  EXPECT_TRUE(policy->CanCommitURL(extension_frame->GetProcess()->GetID(),
-                                   extension_url));
-  EXPECT_FALSE(
-      policy->CanCommitURL(main_frame->GetProcess()->GetID(), extension_url));
+  EXPECT_TRUE(content::CanCommitURLForTesting(
+      extension_frame->GetProcess()->GetID(), extension_blob_url));
+  EXPECT_FALSE(content::CanCommitURLForTesting(
+      main_frame->GetProcess()->GetID(), extension_blob_url));
+  EXPECT_TRUE(content::CanCommitURLForTesting(
+      extension_frame->GetProcess()->GetID(), extension_url));
+  EXPECT_FALSE(content::CanCommitURLForTesting(
+      main_frame->GetProcess()->GetID(), extension_url));
 
   // Open a new about:blank popup from main frame.  This should stay in the web
   // process.
@@ -1262,7 +1269,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   }
 }
 
-// TODO(crbug.com/909570): This test is flaky everywhere.
+// TODO(crbug.com/41428657): This test is flaky everywhere.
 IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
                        DISABLED_NestedURLNavigationsViaNoOpenerPopupBlocked) {
   // Create a simple extension without a background page.

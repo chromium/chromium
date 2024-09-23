@@ -147,11 +147,13 @@ class TestCrosDisplayConfig
 class AppListRequestHeaderReader {
  public:
   explicit AppListRequestHeaderReader(network::ResourceRequest* request) {
-    request->headers.GetHeader("X-DFE-Sdk-Version", &sdk_version_);
-    request->headers.GetHeader("X-DFE-Device-Fingerprint",
-                               &device_fingerprint_);
-    request->headers.GetHeader("X-DFE-Chromesky-Client-Version",
-                               &play_store_version_);
+    sdk_version_ =
+        request->headers.GetHeader("X-DFE-Sdk-Version").value_or(std::string());
+    device_fingerprint_ = request->headers.GetHeader("X-DFE-Device-Fingerprint")
+                              .value_or(std::string());
+    play_store_version_ =
+        request->headers.GetHeader("X-DFE-Chromesky-Client-Version")
+            .value_or(std::string());
     DecodeDeviceConfigHeader(request);
   }
   ~AppListRequestHeaderReader() = default;
@@ -208,12 +210,12 @@ class AppListRequestHeaderReader {
 
  private:
   void DecodeDeviceConfigHeader(network::ResourceRequest* request) {
-    std::string device_config_header;
-    ASSERT_TRUE(request->headers.GetHeader("X-DFE-Device-Config",
-                                           &device_config_header));
+    std::optional<std::string> device_config_header =
+        request->headers.GetHeader("X-DFE-Device-Config");
+    ASSERT_TRUE(device_config_header);
 
     std::string decoded;
-    ASSERT_TRUE(Base64UrlDecode(device_config_header,
+    ASSERT_TRUE(Base64UrlDecode(*device_config_header,
                                 base::Base64UrlDecodePolicy::DISALLOW_PADDING,
                                 &decoded));
     std::string decompressed;
@@ -238,6 +240,11 @@ class RecommendAppsFetcherImplTest : public testing::Test {
   void SetUp() override {
     display::Screen::SetScreenInstance(&test_screen_);
     display::SetInternalDisplayIds({test_screen_.GetPrimaryDisplay().id()});
+
+    gpu_info_.gl_version = "OpenGL ES 3.2 Mesa 21.2.3";
+    gpu_info_.gl_renderer = "Mesa DRI";
+    gpu_info_.gl_extensions =
+        "GL_EXT_texture_format_BGRA8888 GL_EXT_read_format_bgra";
 
     mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
         remote_display_config;
@@ -320,7 +327,7 @@ class RecommendAppsFetcherImplTest : public testing::Test {
   void VerifyArcRequestHeaders(
       const AppListRequestHeaderReader& header_reader) {
     EXPECT_EQ(kTestArcSdkVersion, header_reader.sdk_version());
-    // TODO(crbug.com/1345149): Verify that fingerprint is only set when
+    // TODO(crbug.com/40232048): Verify that fingerprint is only set when
     // kAppDiscoveryForOobe is enabled.
     EXPECT_EQ(kTestDeviceFingerprint, header_reader.device_fingerprint());
     EXPECT_EQ(kTestArcPlayStoreVersion, header_reader.play_store_version());
@@ -341,6 +348,7 @@ class RecommendAppsFetcherImplTest : public testing::Test {
   display::test::TestScreen test_screen_;
   base::OnceCallback<void(std::optional<arc::ArcFeatures>)>
       arc_features_callback_;
+  gpu::GPUInfo gpu_info_;
 
  private:
   void InterceptRequest(const network::ResourceRequest& request) {
@@ -366,6 +374,7 @@ class RecommendAppsFetcherImplTest : public testing::Test {
 
 TEST_F(RecommendAppsFetcherImplTest, ExtraLargeScreenWithTouch) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   device_data_manager_test_api_.SetTouchscreenDevices({ui::TouchscreenDevice(
       123, ui::InputDeviceType::INPUT_DEVICE_USB,
@@ -406,6 +415,7 @@ TEST_F(RecommendAppsFetcherImplTest, ExtraLargeScreenWithTouch) {
 
 TEST_F(RecommendAppsFetcherImplTest, NoArcFeatures) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   device_data_manager_test_api_.SetTouchscreenDevices({ui::TouchscreenDevice(
       123, ui::InputDeviceType::INPUT_DEVICE_USB,
@@ -451,6 +461,7 @@ TEST_F(RecommendAppsFetcherImplTest, NoArcFeatures) {
 
 TEST_F(RecommendAppsFetcherImplTest, HasHardKeyboard) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   device_data_manager_test_api_.SetTouchscreenDevices({ui::TouchscreenDevice(
       123, ui::InputDeviceType::INPUT_DEVICE_USB,
@@ -492,6 +503,7 @@ TEST_F(RecommendAppsFetcherImplTest, HasHardKeyboard) {
 
 TEST_F(RecommendAppsFetcherImplTest, NoKeyboard) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   SetDisplaySize(gfx::Size(1920, 1200));
 
@@ -526,6 +538,7 @@ TEST_F(RecommendAppsFetcherImplTest, NoKeyboard) {
 
 TEST_F(RecommendAppsFetcherImplTest, ExtraLargeScreenWithStylus) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   device_data_manager_test_api_.SetTouchscreenDevices(
       {ui::TouchscreenDevice(123, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
@@ -568,6 +581,7 @@ TEST_F(RecommendAppsFetcherImplTest, ExtraLargeScreenWithStylus) {
 
 TEST_F(RecommendAppsFetcherImplTest, LargeScreenWithoutTouchScreen) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   device_data_manager_test_api_.SetKeyboardDevices(
       std::vector<ui::KeyboardDevice>{
@@ -605,6 +619,7 @@ TEST_F(RecommendAppsFetcherImplTest, LargeScreenWithoutTouchScreen) {
 
 TEST_F(RecommendAppsFetcherImplTest, NormalScreenWithoutTouchScreen) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   device_data_manager_test_api_.SetKeyboardDevices(
       std::vector<ui::KeyboardDevice>{
@@ -642,6 +657,7 @@ TEST_F(RecommendAppsFetcherImplTest, NormalScreenWithoutTouchScreen) {
 
 TEST_F(RecommendAppsFetcherImplTest, SmallScreenWithoutTouchScreen) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   device_data_manager_test_api_.SetKeyboardDevices(
       std::vector<ui::KeyboardDevice>{
@@ -680,6 +696,7 @@ TEST_F(RecommendAppsFetcherImplTest, SmallScreenWithoutTouchScreen) {
 
 TEST_F(RecommendAppsFetcherImplTest, ArcFeaturesReadyBeforeAsh) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   device_data_manager_test_api_.SetKeyboardDevices(
       std::vector<ui::KeyboardDevice>{
@@ -718,6 +735,7 @@ TEST_F(RecommendAppsFetcherImplTest, ArcFeaturesReadyBeforeAsh) {
 
 TEST_F(RecommendAppsFetcherImplTest, RetryCalledBeforeFirstRequest) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   device_data_manager_test_api_.SetKeyboardDevices(
       std::vector<ui::KeyboardDevice>{
@@ -744,6 +762,7 @@ TEST_F(RecommendAppsFetcherImplTest, RetryCalledBeforeFirstRequest) {
 
 TEST_F(RecommendAppsFetcherImplTest, EmptyResponse) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   SetDisplaySize(gfx::Size(512, 456));
 
@@ -766,6 +785,7 @@ TEST_F(RecommendAppsFetcherImplTest, EmptyResponse) {
 
 TEST_F(RecommendAppsFetcherImplTest, EmptyAppList) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   SetDisplaySize(gfx::Size(512, 456));
 
@@ -785,6 +805,7 @@ TEST_F(RecommendAppsFetcherImplTest, EmptyAppList) {
 
 TEST_F(RecommendAppsFetcherImplTest, ResponseWithLeadingBrackets) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   recommend_apps_fetcher_->Start();
 
@@ -801,6 +822,7 @@ TEST_F(RecommendAppsFetcherImplTest, ResponseWithLeadingBrackets) {
 
 TEST_F(RecommendAppsFetcherImplTest, MalformedJsonResponse) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   recommend_apps_fetcher_->Start();
 
@@ -822,6 +844,7 @@ TEST_F(RecommendAppsFetcherImplTest, MalformedJsonResponse) {
 
 TEST_F(RecommendAppsFetcherImplTest, UnexpectedResponseType) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   recommend_apps_fetcher_->Start();
 
@@ -840,6 +863,7 @@ TEST_F(RecommendAppsFetcherImplTest, UnexpectedResponseType) {
 
 TEST_F(RecommendAppsFetcherImplTest, ResponseWithMultipleApps) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   recommend_apps_fetcher_->Start();
 
@@ -871,6 +895,7 @@ TEST_F(RecommendAppsFetcherImplTest, ResponseWithMultipleApps) {
 
 TEST_F(RecommendAppsFetcherImplTest, InvalidAppItemsIgnored) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   recommend_apps_fetcher_->Start();
 
@@ -900,6 +925,7 @@ TEST_F(RecommendAppsFetcherImplTest, InvalidAppItemsIgnored) {
 
 TEST_F(RecommendAppsFetcherImplTest, DictionaryResponse) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   recommend_apps_fetcher_->Start();
 
@@ -918,6 +944,7 @@ TEST_F(RecommendAppsFetcherImplTest, DictionaryResponse) {
 
 TEST_F(RecommendAppsFetcherImplTest, InvalidErrorCodeType) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   recommend_apps_fetcher_->Start();
 
@@ -937,6 +964,7 @@ TEST_F(RecommendAppsFetcherImplTest, InvalidErrorCodeType) {
 
 TEST_F(RecommendAppsFetcherImplTest, ResponseWithErrorCode) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   recommend_apps_fetcher_->Start();
 
@@ -956,6 +984,7 @@ TEST_F(RecommendAppsFetcherImplTest, ResponseWithErrorCode) {
 
 TEST_F(RecommendAppsFetcherImplTest, NotEnoughAppsError) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   recommend_apps_fetcher_->Start();
 
@@ -975,6 +1004,7 @@ TEST_F(RecommendAppsFetcherImplTest, NotEnoughAppsError) {
 
 TEST_F(RecommendAppsFetcherImplTest, AppListRequestFailure) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   recommend_apps_fetcher_->Start();
 
@@ -997,6 +1027,7 @@ TEST_F(RecommendAppsFetcherImplTest, AppListRequestFailure) {
 
 TEST_F(RecommendAppsFetcherImplTest, SuccessOnRetry) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   recommend_apps_fetcher_->Start();
 
@@ -1016,6 +1047,7 @@ TEST_F(RecommendAppsFetcherImplTest, SuccessOnRetry) {
 
 TEST_F(RecommendAppsFetcherImplTest, FailureOnRetry) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   recommend_apps_fetcher_->Start();
 
@@ -1032,23 +1064,9 @@ TEST_F(RecommendAppsFetcherImplTest, FailureOnRetry) {
                                        R"({"Error code": "5"})");
 }
 
-TEST_F(RecommendAppsFetcherImplTest, GpuInfo) {
-  ASSERT_TRUE(recommend_apps_fetcher_);
-
-  gpu::GPUInfo gpu_info;
-  gpu_info.gl_version = "OpenGL ES 3.2 Mesa 21.2.3";
-  gpu_info.gl_renderer = "Mesa DRI";
-  gpu_info.gl_extensions =
-      "GL_EXT_texture_format_BGRA8888 GL_EXT_read_format_bgra";
-
-  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info);
-
-  // `gpu_info` should be parsed without causing use-after-free.
-  recommend_apps_fetcher_->Start();
-}
-
 TEST_F(RecommendAppsFetcherImplTest, AppDiscoveryValidResponse) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   recommend_apps_fetcher_->Start();
 
@@ -1070,6 +1088,7 @@ TEST_F(RecommendAppsFetcherImplTest, AppDiscoveryValidResponse) {
 
 TEST_F(RecommendAppsFetcherImplTest, AppDiscoveryParseErrorResponse) {
   ASSERT_TRUE(recommend_apps_fetcher_);
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
   recommend_apps_fetcher_->Start();
 

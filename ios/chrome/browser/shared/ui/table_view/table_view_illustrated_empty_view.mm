@@ -59,7 +59,7 @@ NSAttributedString* GetAttributedMessage(NSString* message) {
                         image:(UIImage*)image
                         title:(NSString*)title
            attributedSubtitle:(NSAttributedString*)attributedSubtitle {
-  if (self = [super initWithFrame:frame]) {
+  if ((self = [super initWithFrame:frame])) {
     _title = title;
     _subtitle = attributedSubtitle;
     _image = image;

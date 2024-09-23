@@ -343,6 +343,13 @@ class PaintPropertyTreeBuilder {
   // scroll offset transform) and ensure the context is up to date.
   void UpdateForChildren();
 
+  // Update paint properties for an @page border box fragment. This fragment is
+  // responsible for @page borders and other decorations, in addition to the
+  // document background.
+  //
+  // `page_container` is the parent fragment of the border box.
+  void UpdateForPageBorderBox(const PhysicalBoxFragment& page_container);
+
   void IssueInvalidationsAfterUpdate();
 
   bool PropertiesChanged() const {

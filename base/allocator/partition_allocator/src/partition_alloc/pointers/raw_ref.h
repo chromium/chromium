@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_RAW_REF_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_RAW_REF_H_
+// IWYU pragma: private, include "base/memory/raw_ref.h"
+
+#ifndef PARTITION_ALLOC_POINTERS_RAW_REF_H_
+#define PARTITION_ALLOC_POINTERS_RAW_REF_H_
 
 #include <memory>
 #include <type_traits>
 #include <utility>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/augmentations/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/pointers/raw_ptr.h"
 
@@ -448,4 +450,4 @@ struct pointer_traits<::raw_ref<T, Traits>> {
 
 }  // namespace std
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_RAW_REF_H_
+#endif  // PARTITION_ALLOC_POINTERS_RAW_REF_H_

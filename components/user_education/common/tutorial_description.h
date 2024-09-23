@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -156,7 +157,7 @@ struct TutorialDescription {
   ~TutorialDescription();
 
   using ContextMode = ui::InteractionSequence::ContextMode;
-  using ElementSpecifier = absl::variant<ui::ElementIdentifier, std::string>;
+  using ElementSpecifier = std::variant<ui::ElementIdentifier, std::string>;
 
   // Callback used to determine if the "then" branch of a conditional should be
   // followed. Note that `element` may be null if no matching element exists.
@@ -207,6 +208,7 @@ struct TutorialDescription {
     ui::CustomElementEventType event_type() const { return event_type_; }
     int title_text_id() const { return title_text_id_; }
     int body_text_id() const { return body_text_id_; }
+    int screenreader_text_id() const { return screenreader_text_id_; }
     HelpBubbleArrow arrow() const { return arrow_; }
     std::optional<bool> must_remain_visible() const {
       return must_remain_visible_;
@@ -253,6 +255,9 @@ struct TutorialDescription {
 
     // The body text to be populated in the bubble.
     int body_text_id_ = 0;
+
+    // The screenreader text to be populated in the bubble.
+    int screenreader_text_id_ = 0;
 
     // The positioning of the bubble arrow.
     HelpBubbleArrow arrow_ = HelpBubbleArrow::kNone;
@@ -326,6 +331,11 @@ struct TutorialDescription {
 
     BubbleStep& SetBubbleBodyText(int body_text_id) {
       body_text_id_ = body_text_id;
+      return *this;
+    }
+
+    BubbleStep& SetBubbleScreenreaderText(int screenreader_text_id) {
+      screenreader_text_id_ = screenreader_text_id;
       return *this;
     }
 

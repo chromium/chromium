@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/trees/draw_property_utils.h"
 
 #include <stddef.h>
@@ -815,26 +820,32 @@ std::pair<gfx::MaskFilterInfo, bool> GetMaskFilterInfoPair(
   if (!property_trees->GetToTarget(node->transform_id, target_id, &to_target))
     return kEmptyMaskFilterInfoPair;
 
-  auto mfi = node->mask_filter_info;
-  mfi.ApplyTransform(to_target);
+  auto result =
+      std::make_pair(node->mask_filter_info, node->is_fast_rounded_corner);
+  result.first.ApplyTransform(to_target);
 
-  auto rrect_f = gfx::RRectF::ToEnclosingRRectF(mfi.rounded_corner_bounds());
-  auto result = std::make_pair(
-      gfx::MaskFilterInfo(rrect_f,
-                          mfi.gradient_mask().value_or(gfx::LinearGradient())),
-      node->is_fast_rounded_corner);
   if (result.first.IsEmpty()) {
     return kEmptyMaskFilterInfoPair;
   }
   return result;
 }
 
-void UpdateRenderTarget(EffectTree* effect_tree) {
+void UpdateRenderTarget(LayerTreeImpl* layer_tree_impl,
+                        EffectTree* effect_tree) {
   int last_backdrop_filter = kInvalidNodeId;
+  base::flat_map<viz::ViewTransitionElementResourceId, int> resource_to_node;
 
   for (int i = kContentsRootPropertyNodeId;
        i < static_cast<int>(effect_tree->size()); ++i) {
     EffectNode* node = effect_tree->Node(i);
+
+    if (node->view_transition_element_resource_id.IsValid()) {
+      CHECK(!resource_to_node.contains(
+          node->view_transition_element_resource_id));
+      resource_to_node[node->view_transition_element_resource_id] = i;
+    }
+    node->view_transition_target_id = kInvalidPropertyNodeId;
+
     if (i == kContentsRootPropertyNodeId) {
       // Render target of the node corresponding to root is itself.
       node->target_id = kContentsRootPropertyNodeId;
@@ -847,6 +858,28 @@ void UpdateRenderTarget(EffectTree* effect_tree) {
         node->has_potential_backdrop_filter_animation)
       last_backdrop_filter = node->id;
     node->affected_by_backdrop_filter = false;
+  }
+
+  if (!resource_to_node.empty()) {
+    for (auto* layer : *layer_tree_impl) {
+      auto resource_id = layer->ViewTransitionResourceId();
+      if (!resource_id.IsValid()) {
+        continue;
+      }
+
+      auto it = resource_to_node.find(resource_id);
+      if (it == resource_to_node.end()) {
+        continue;
+      }
+
+      auto* resource_node = effect_tree->Node(it->second);
+      auto* layer_node = effect_tree->Node(layer->effect_tree_index());
+      if (layer_node->HasRenderSurface()) {
+        resource_node->view_transition_target_id = layer_node->id;
+      } else {
+        resource_node->view_transition_target_id = layer_node->target_id;
+      }
+    }
   }
 
   if (last_backdrop_filter == kInvalidNodeId)
@@ -929,6 +962,29 @@ void AddSurfaceToRenderSurfaceList(RenderSurfaceImpl* render_surface,
   RenderSurfaceImpl* target = render_surface->render_target();
   bool is_root =
       render_surface->EffectTreeIndex() == kContentsRootPropertyNodeId;
+
+  // If this node is producing a snapshot for a ViewTransition then the target
+  // surface (where its surface will be drawn) corresponds to the node where the
+  // ViewTransitionContentLayer rendering this snapshot is drawn.
+  if (render_surface->OwningEffectNode()->view_transition_target_id !=
+      kInvalidPropertyNodeId) {
+    CHECK(!is_root);
+    CHECK(render_surface->OwningEffectNode()
+              ->view_transition_element_resource_id.IsValid());
+
+    auto* vt_target = property_trees->effect_tree_mutable().GetRenderSurface(
+        render_surface->OwningEffectNode()->view_transition_target_id);
+    CHECK(vt_target);
+
+    if (!vt_target->is_render_surface_list_member()) {
+      AddSurfaceToRenderSurfaceList(vt_target, render_surface_list,
+                                    property_trees);
+    }
+  }
+
+  // TODO(vmpstr): revisit this later to see if there is a better fix, as this
+  // changes the render list in an incorrect way due to CC assumptions about how
+  // surfaces and view-transition captures interact.
   if (!is_root && !target->is_render_surface_list_member()) {
     AddSurfaceToRenderSurfaceList(target, render_surface_list, property_trees);
   }
@@ -1026,23 +1082,6 @@ void ComputeInitialRenderSurfaceList(LayerTreeImpl* layer_tree_impl,
   AddSurfaceToRenderSurfaceList(root_surface, render_surface_list,
                                 property_trees);
 
-  // Add all of the render surfaces for the transition pseudo elements early,
-  // since they will need to be added before the shared elements in the layer
-  // lists below, which isn't reflected in the dependency. This can't be done
-  // with dependency ordering because other things require correct dependency
-  // ordering (the AppendQuads pass). By adding the render surfaces right after
-  // the root, we guarantee that the pseudo element tree's render surfaces will
-  // come _after_ any render passes that they reference in the render pass
-  // order.
-  auto transition_pseudo_render_surfaces =
-      effect_tree.GetTransitionPseudoElementRenderSurfaces();
-  for (auto* surface : transition_pseudo_render_surfaces) {
-    if (!surface->is_render_surface_list_member()) {
-      AddSurfaceToRenderSurfaceList(surface, render_surface_list,
-                                    property_trees);
-    }
-  }
-
   // For all non-skipped layers, add their target to the render surface list if
   // it's not already been added, and add their content rect to the target
   // surface's accumulated content rect.
@@ -1136,12 +1175,16 @@ void ComputeListOfNonEmptySurfaces(LayerTreeImpl* layer_tree_impl,
   // surface with a non-empty content rect go into the final render surface
   // layer list. Surfaces with empty content rects or whose target isn't in
   // the final list do not get added to the final list.
+  // Surface which require copy of output (view transition captures) are exempt
+  // because their contents are required regardless of the state of the target
+  // surface.
   bool removed_surface = false;
   for (RenderSurfaceImpl* surface : *initial_surface_list) {
     bool is_root = surface->EffectTreeIndex() == kContentsRootPropertyNodeId;
     RenderSurfaceImpl* target_surface = surface->render_target();
     if (!is_root && (surface->content_rect().IsEmpty() ||
-                     !target_surface->is_render_surface_list_member())) {
+                     (!target_surface->is_render_surface_list_member() &&
+                      !surface->CopyOfOutputRequired()))) {
       surface->set_is_render_surface_list_member(false);
       removed_surface = true;
       target_surface->decrement_num_contributors();
@@ -1353,13 +1396,6 @@ void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
         LayerDrawableContentRect(layer, visible_bounds_in_target_space,
                                  layer->draw_properties().clip_rect);
   }
-
-  // Make sure that the layers push their properties. This isn't necessary for
-  // picture layers that always push their properties, but is important for
-  // other layers to invalidate the active tree.
-  for (LayerImpl* layer : *layer_list) {
-    layer->SetNeedsPushProperties();
-  }
 }
 
 #if DCHECK_IS_ON()
@@ -1469,21 +1505,7 @@ void FindLayersThatNeedUpdates(LayerTreeImpl* layer_tree_impl,
 
 void ComputeTransforms(TransformTree* transform_tree,
                        const ViewportPropertyIds& viewport_property_ids) {
-  if (!transform_tree->needs_update()) {
-#if DCHECK_IS_ON()
-    // If the transform tree does not need an update, no TransformNode should
-    // need a local transform update.
-    for (int i = kContentsRootPropertyNodeId;
-         i < static_cast<int>(transform_tree->size()); ++i) {
-      DCHECK(!transform_tree->Node(i)->needs_local_transform_update);
-    }
-#endif
-    return;
-  }
-  for (int i = kContentsRootPropertyNodeId;
-       i < static_cast<int>(transform_tree->size()); ++i)
-    transform_tree->UpdateTransforms(i, &viewport_property_ids);
-  transform_tree->set_needs_update(false);
+  transform_tree->UpdateAllTransforms(viewport_property_ids);
 }
 
 void ComputeEffects(EffectTree* effect_tree) {
@@ -1518,7 +1540,7 @@ void UpdatePropertyTreesAndRenderSurfaces(LayerTreeImpl* layer_tree_impl,
     property_trees->clip_tree_mutable().set_needs_update(true);
     property_trees->effect_tree_mutable().set_needs_update(true);
   }
-  UpdateRenderTarget(&property_trees->effect_tree_mutable());
+  UpdateRenderTarget(layer_tree_impl, &property_trees->effect_tree_mutable());
 
   ComputeTransforms(&property_trees->transform_tree_mutable(),
                     layer_tree_impl->viewport_property_ids());

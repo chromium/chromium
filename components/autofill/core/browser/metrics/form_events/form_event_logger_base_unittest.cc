@@ -3,17 +3,23 @@
 // found in the LICENSE file.
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 
+#include <string>
 #include <vector>
 
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,12 +73,13 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
 
   if (!user_saw_suggestion) {
     // Remove the profile to prevent suggestion from being shown.
-    personal_data().ClearProfiles();
+    personal_data().test_address_data_manager().ClearProfiles();
   }
 
   // Simulate interacting with the form.
   if (user_interacted_with_form) {
-    autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
+    autofill_manager().OnAskForValuesToFillTest(form,
+                                                form.fields()[0].global_id());
   }
 
   // Simulate seeing a suggestion.
@@ -153,7 +160,10 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
           {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
           {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
           {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-          {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
+          {UkmAutofillKeyMetricsType::kFormTypesName,
+           AutofillMetrics::FormTypesToBitVector(
+               {FormTypeNameForLogging::kAddressForm,
+                FormTypeNameForLogging::kPostalAddressForm})}}});
   } else {
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingReadiness.Address", 0);
@@ -202,10 +212,11 @@ TEST_F(FormEventLoggerBaseFunnelTest, AblationState) {
   SeeForm(form);
 
   // Simulate interacting with the form.
-  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields()[0].global_id());
 
   // Don't simulate a suggestion but simulate the user typing.
-  SimulateUserChangedTextField(form, form.fields[0]);
+  SimulateUserChangedTextField(form, form.fields()[0]);
 
   SubmitForm(form);
 
@@ -229,6 +240,79 @@ TEST_F(FormEventLoggerBaseFunnelTest, AblationState) {
   }
 }
 
+class FormEventLoggerBaseTest : public AutofillMetricsBaseTest,
+                                public testing::Test {
+ public:
+  void SetUp() override { SetUpHelper(); }
+  void TearDown() override { TearDownHelper(); }
+};
+
+TEST_F(FormEventLoggerBaseTest, FillingOperationCount) {
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+                  {.role = NAME_LAST, .autocomplete_attribute = "family-name"},
+                  {.role = CREDIT_CARD_NAME_FIRST,
+                   .autocomplete_attribute = "cc-name"},
+                  {.role = CREDIT_CARD_NUMBER,
+                   .autocomplete_attribute = "cc-number"}}});
+  autofill_manager().OnFormsSeen({form}, {});
+  autofill_manager().FillOrPreviewProfileForm(
+      mojom::ActionPersistence::kFill, form, form.fields()[0],
+      test::GetFullProfile(),
+      {.trigger_source = AutofillTriggerSource::kPopup});
+  autofill_manager().FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+      form, form.fields()[2], u"CC_NAME_VALUE",
+      SuggestionType::kCreditCardFieldByFieldFilling, CREDIT_CARD_NAME_FULL);
+  autofill_manager().FillOrPreviewCreditCardForm(
+      mojom::ActionPersistence::kFill, form, form.fields()[3],
+      test::GetCreditCard(), std::u16string(),
+      {.trigger_source = AutofillTriggerSource::kPopup});
+  base::HistogramTester histogram_tester;
+  ResetDriverToCommitMetrics();
+
+  histogram_tester.ExpectUniqueSample("Autofill.FillingOperationCount.Address",
+                                      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FillingOperationCount.CreditCard", 2, 1);
+}
+
+TEST_F(FormEventLoggerBaseTest, FilledFieldTypeStat) {
+  // Create a form with an unrecognized field and an unclassified field.
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = NAME_FIRST, .autocomplete_attribute = "unrecognized"},
+           {.role = NAME_LAST, .autocomplete_attribute = "family-name"},
+           {.role = ADDRESS_HOME_LINE1,
+            .autocomplete_attribute = "address_line1"},
+           {}}});
+  autofill_manager().OnFormsSeen({form}, {});
+  // The manual fallback code assumes that suggestions have been shown before
+  // they can be filled. Not showing them will result in a crash.
+  autofill_manager().DidShowSuggestions(
+      {SuggestionType::kCreditCardFieldByFieldFilling}, form, form.fields()[0]);
+  autofill_manager().FillOrPreviewProfileForm(
+      mojom::ActionPersistence::kFill, form, form.fields()[0],
+      test::GetFullProfile(),
+      {.trigger_source = AutofillTriggerSource::kManualFallback});
+  autofill_manager().FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+      form, form.fields()[3], u"SOME_VALUE",
+      SuggestionType::kCreditCardFieldByFieldFilling, CREDIT_CARD_NAME_FULL);
+
+  base::HistogramTester histogram_tester;
+  ResetDriverToCommitMetrics();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FilledFieldType.Address"),
+      BucketsAre(
+          Bucket(FilledFieldTypeMetric::kClassifiedWithRecognizedAutocomplete,
+                 2),
+          Bucket(FilledFieldTypeMetric::kClassifiedWithUnrecognizedAutocomplete,
+                 1)));
+  histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.CreditCard",
+                                      FilledFieldTypeMetric::kUnclassified, 1);
+}
+
 // Tests for Autofill.KeyMetrics.* metrics.
 class FormEventLoggerBaseKeyMetricsTest : public AutofillMetricsBaseTest,
                                           public testing::Test {
@@ -247,10 +331,11 @@ void FormEventLoggerBaseKeyMetricsTest::SetUp() {
 
   // Load a fillable form.
   form_ = CreateEmptyForm();
-  form_.fields = {
-      CreateTestFormField("State", "state", "", FormControlType::kInputText),
-      CreateTestFormField("City", "city", "", FormControlType::kInputText),
-      CreateTestFormField("Street", "street", "", FormControlType::kInputText)};
+  form_.set_fields(
+      {CreateTestFormField("State", "state", "", FormControlType::kInputText),
+       CreateTestFormField("City", "city", "", FormControlType::kInputText),
+       CreateTestFormField("Street", "street", "",
+                           FormControlType::kInputText)});
   std::vector<FieldType> field_types = {ADDRESS_HOME_STATE, ADDRESS_HOME_CITY,
                                         ADDRESS_HOME_STREET_ADDRESS};
 
@@ -265,7 +350,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
 
   // Simulate page load.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
 
   SubmitForm(form_);
 
@@ -290,7 +376,10 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
               {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
               {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
+              {UkmAutofillKeyMetricsType::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kAddressForm,
+                    FormTypeNameForLogging::kPostalAddressForm})}}});
 }
 
 // Validate Autofill.KeyMetrics.* in case the user has no address profile on
@@ -299,12 +388,13 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogNoProfile) {
   base::HistogramTester histogram_tester;
 
   // Simulate that no data is available.
-  personal_data().ClearProfiles();
+  personal_data().test_address_data_manager().ClearProfiles();
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
 
-  SimulateUserChangedTextField(form_, form_.fields[0]);
-  SimulateUserChangedTextField(form_, form_.fields[1]);
+  SimulateUserChangedTextField(form_, form_.fields()[0]);
+  SimulateUserChangedTextField(form_, form_.fields()[1]);
   SubmitForm(form_);
 
   FormInteractionsFlowId flow_id =
@@ -328,7 +418,10 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogNoProfile) {
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
               {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 2},
               {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
+              {UkmAutofillKeyMetricsType::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kAddressForm,
+                    FormTypeNameForLogging::kPostalAddressForm})}}});
 }
 
 // Validate Autofill.KeyMetrics.* in case the user does not accept a suggestion.
@@ -337,11 +430,12 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
 
   // Simulate that suggestion is shown but user does not accept it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
   DidShowAutofillSuggestions(form_);
 
-  SimulateUserChangedTextField(form_, form_.fields[0]);
-  SimulateUserChangedTextField(form_, form_.fields[1]);
+  SimulateUserChangedTextField(form_, form_.fields()[0]);
+  SimulateUserChangedTextField(form_, form_.fields()[1]);
   SubmitForm(form_);
 
   FormInteractionsFlowId flow_id =
@@ -366,7 +460,10 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
               {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 2},
               {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
+              {UkmAutofillKeyMetricsType::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kAddressForm,
+                    FormTypeNameForLogging::kPostalAddressForm})}}});
 }
 
 // Validate Autofill.KeyMetrics.* in case the user has to fix the filled data.
@@ -375,12 +472,13 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
 
   // Simulate user fixing the address.
-  SimulateUserChangedTextField(form_, form_.fields[1]);
+  SimulateUserChangedTextField(form_, form_.fields()[1]);
   SubmitForm(form_);
 
   FormInteractionsFlowId flow_id =
@@ -406,7 +504,10 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
               {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 1},
               {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
+              {UkmAutofillKeyMetricsType::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kAddressForm,
+                    FormTypeNameForLogging::kPostalAddressForm})}}});
 }
 
 // Validate Autofill.KeyMetrics.* in case the user fixes the filled data but
@@ -417,12 +518,13 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest,
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
 
   // Simulate user fixing the address.
-  SimulateUserChangedTextField(form_, form_.fields[1]);
+  SimulateUserChangedTextField(form_, form_.fields()[1]);
 
   // Don't submit form.
 
@@ -460,7 +562,8 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, NoEmailOnlyLeakage) {
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
   SubmitForm(form_);
@@ -502,7 +605,8 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, UserDoesNotAccept) {
 
   // Simulate that suggestion is shown but user does not accept it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
   DidShowAutofillSuggestions(form_);
   SubmitForm(form_);
 
@@ -517,7 +621,8 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, UserAccepts) {
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
   SubmitForm(form_);
@@ -536,7 +641,8 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, NoEmailField) {
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
   SubmitForm(form_);
@@ -556,7 +662,8 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, ServerTypeKnown) {
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
   SubmitForm(form_);
@@ -571,11 +678,12 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, NotFormTag) {
 
   // Set the form to appear outside a <form> tag, which means it is not eligible
   // for the email heuristic only metric.
-  form_.renderer_id = FormRendererId();
+  form_.set_renderer_id(FormRendererId());
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
   SubmitForm(form_);
@@ -583,6 +691,31 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, NotFormTag) {
   ResetDriverToCommitMetrics();
 
   histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 0);
+}
+
+// Tests that when `kAutofillEnableEmailHeuristicOutsideForms` is enabled, email
+// fields are supported outside of form tags and email heuristics only metrics
+// are reported.
+TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, FormTagNotRequired) {
+  base::test::ScopedFeatureList features_{
+      features::kAutofillEnableEmailHeuristicOutsideForms};
+  base::HistogramTester histogram_tester;
+
+  // Set the form to appear outside a <form> tag, which means it is not eligible
+  // for the email heuristic only metric.
+  form_.set_renderer_id(FormRendererId());
+
+  // Simulate that suggestion is shown and user accepts it.
+  SeeForm(form_);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
+  DidShowAutofillSuggestions(form_);
+  FillTestProfile(form_);
+  SubmitForm(form_);
+
+  ResetDriverToCommitMetrics();
+
+  histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 1);
 }
 
 TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, TooManyFields) {
@@ -597,7 +730,8 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, TooManyFields) {
 
   // Simulate that suggestion is shown and user accepts it.
   SeeForm(form_);
-  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+  autofill_manager().OnAskForValuesToFillTest(form_,
+                                              form_.fields()[0].global_id());
   DidShowAutofillSuggestions(form_);
   FillTestProfile(form_);
   SubmitForm(form_);
@@ -617,7 +751,8 @@ class FormEventLoggerUndoTest : public AutofillMetricsBaseTest,
     // Initialize a FormData, cache it and interact with it.
     form_ = test::CreateTestAddressFormData();
     SeeForm(form_);
-    autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
+    autofill_manager().OnAskForValuesToFillTest(form_,
+                                                form_.fields()[0].global_id());
   }
   void TearDown() override { TearDownHelper(); }
 
@@ -633,9 +768,6 @@ TEST_F(FormEventLoggerUndoTest, LogUndoMetrics_NoInitialFilling) {
 
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.UndoAfterFill.Address"),
               base::BucketsAre(Bucket(0, 0), Bucket(1, 0)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FillAfterUndo.Address"),
-              base::BucketsAre(Bucket(0, 0), Bucket(1, 0)));
 }
 
 TEST_F(FormEventLoggerUndoTest, LogUndoMetrics_FillWithNoUndo) {
@@ -646,9 +778,6 @@ TEST_F(FormEventLoggerUndoTest, LogUndoMetrics_FillWithNoUndo) {
 
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.UndoAfterFill.Address"),
               base::BucketsAre(Bucket(0, 1), Bucket(1, 0)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FillAfterUndo.Address"),
-              base::BucketsAre(Bucket(0, 0), Bucket(1, 0)));
 }
 
 TEST_F(FormEventLoggerUndoTest, LogUndoMetrics_FillThenUndo) {
@@ -659,24 +788,6 @@ TEST_F(FormEventLoggerUndoTest, LogUndoMetrics_FillThenUndo) {
   SubmitForm(form());
 
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.UndoAfterFill.Address"),
-              base::BucketsAre(Bucket(0, 0), Bucket(1, 1)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FillAfterUndo.Address"),
-              base::BucketsAre(Bucket(0, 1), Bucket(1, 0)));
-}
-
-TEST_F(FormEventLoggerUndoTest, LogUndoMetrics_FillThenUndoThenFill) {
-  FillTestProfile(form());
-  UndoAutofill(form());
-  FillTestProfile(form());
-
-  base::HistogramTester histogram_tester;
-  SubmitForm(form());
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.UndoAfterFill.Address"),
-              base::BucketsAre(Bucket(0, 0), Bucket(1, 1)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FillAfterUndo.Address"),
               base::BucketsAre(Bucket(0, 0), Bucket(1, 1)));
 }
 

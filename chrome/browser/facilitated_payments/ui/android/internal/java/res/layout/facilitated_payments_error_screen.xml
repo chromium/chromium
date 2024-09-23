@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/error_screen"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/facilitated_payments_horizontal_margin"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="@dimen/facilitated_payments_error_icon_size"
+        android:layout_height="@dimen/facilitated_payments_error_icon_size"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/facilitated_payments_error_icon_top_margin"
+        android:layout_marginBottom="@dimen/facilitated_payments_error_icon_bottom_margin"
+        android:src="@drawable/facilitated_payments_error_icon"
+        android:importantForAccessibility="no" />
+
+    <androidx.appcompat.widget.DialogTitle
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/facilitated_payments_error_screen_title_top_margin"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"
+        android:text="@string/pix_payment_error_screen_title" />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/facilitated_payments_error_screen_description_top_margin"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:text="@string/pix_payment_error_screen_description" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/primary_button"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/facilitated_payments_error_screen_button_height"
+        android:layout_marginVertical="@dimen/facilitated_payments_error_screen_button_vertical_margin"
+        android:gravity="center"
+        android:ellipsize="end"
+        android:singleLine="true"
+        style="@style/TextButton"
+        android:text="@string/facilitated_payments_ok" />
+</LinearLayout>

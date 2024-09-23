@@ -58,7 +58,6 @@ class ASH_EXPORT ScreenCaptureTrayItemView
   ~ScreenCaptureTrayItemView() override;
 
   // views::View:
-  const char* GetClassName() const override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   std::u16string GetTooltipText(const gfx::Point& point) const override;
 

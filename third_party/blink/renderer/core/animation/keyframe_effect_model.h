@@ -68,14 +68,22 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
       return keyframes_;
     }
 
+    bool IsStatic() const { return has_static_value_; }
+
     void Trace(Visitor* visitor) const { visitor->Trace(keyframes_); }
 
    private:
     void RemoveRedundantKeyframes();
+    void CheckIfStatic();
     bool AddSyntheticKeyframeIfRequired(
         scoped_refptr<TimingFunction> zero_offset_easing);
 
     PropertySpecificKeyframeVector keyframes_;
+
+    // TODO(kevers): Store CSS value if static in order to short-circuit
+    // applying the effect if set as we don't need to determine the bounding
+    // keyframes.
+    bool has_static_value_ = false;
 
     friend class KeyframeEffectModelBase;
   };
@@ -84,6 +92,10 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   bool IsReplaceOnly() const;
 
   PropertyHandleSet Properties() const;
+
+  const PropertyHandleSet& EnsureDynamicProperties() const;
+
+  bool HasStaticProperty() const;
 
   using KeyframeVector = HeapVector<Member<Keyframe>>;
   const KeyframeVector& GetFrames() const { return keyframes_; }
@@ -117,6 +129,7 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   // EffectModel implementation.
   bool Sample(int iteration,
               double fraction,
+              TimingFunction::LimitDirection,
               AnimationTimeDelta iteration_duration,
               HeapVector<Member<Interpolation>>&) const override;
 
@@ -167,8 +180,8 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
 
   // Update properties used in resolving logical properties. Returns true if
   // one or more keyframes changed as a result of the update.
-  bool SetLogicalPropertyResolutionContext(TextDirection text_direction,
-                                           WritingMode writing_mode);
+  bool SetLogicalPropertyResolutionContext(
+      WritingDirectionMode writing_direction);
 
   virtual KeyframeEffectModelBase* Clone() = 0;
 
@@ -232,6 +245,7 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   // to get the 'property-specific keyframes'. For efficiency, we cache the
   // property-specific lists.
   mutable Member<KeyframeGroupMap> keyframe_groups_;
+  mutable std::unique_ptr<PropertyHandleSet> dynamic_properties_;
   mutable Member<InterpolationEffect> interpolation_effect_;
   mutable int last_iteration_;
   mutable double last_fraction_;

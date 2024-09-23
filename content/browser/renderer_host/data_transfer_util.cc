@@ -71,7 +71,7 @@ std::vector<blink::mojom::DataTransferFilePtr> FileInfosToDataTransferFiles(
     FileSystemAccessManagerImpl::PathType path_type =
         MaybeRemapPath(&entry_path);
     file_system_access_manager->CreateFileSystemAccessDataTransferToken(
-        path_type, entry_path, child_id,
+        path_type, entry_path, file_info.display_name, child_id,
         pending_token.InitWithNewPipeAndPassReceiver());
     file->file_system_access_token = std::move(pending_token);
     result.push_back(std::move(file));
@@ -106,7 +106,7 @@ FileSystemFileInfosToDragItemFileSystemFilePtr(
     base::FilePath::StringType extension = file_system_url.path().Extension();
     if (!extension.empty()) {
       std::string mime_type;
-      // TODO(https://crbug.com/155455): Historically for blobs created from
+      // TODO(crbug.com/40291155): Historically for blobs created from
       // file system URLs we've only considered well known content types to
       // avoid leaking the presence of locally installed applications when
       // creating blobs from files in the sandboxed file system. However, since
@@ -119,7 +119,7 @@ FileSystemFileInfosToDragItemFileSystemFilePtr(
                                                  &mime_type))
         content_type = std::move(mime_type);
     }
-    // TODO(https://crbug.com/962306): Consider some kind of fallback type when
+    // TODO(crbug.com/41458368): Consider some kind of fallback type when
     // the above mime type detection fails.
 
     mojo::PendingRemote<blink::mojom::Blob> blob_remote;

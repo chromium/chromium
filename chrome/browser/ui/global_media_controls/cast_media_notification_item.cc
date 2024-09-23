@@ -20,16 +20,19 @@
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "media/base/media_switches.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/media_session/public/cpp/util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using Metadata = media_message_center::MediaNotificationViewImpl::Metadata;
 
@@ -128,6 +131,17 @@ media_session::mojom::MediaSessionInfo::SessionState ToSessionState(
 }
 
 std::u16string GetSourceTitle(const media_router::MediaRoute& route) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Never include the media sink name for updated media UI on non-CrOS.
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI)) {
+    if (route.description().empty()) {
+      return l10n_util::GetStringUTF16(
+          IDS_GLOBAL_MEDIA_CONTROLS_UNKNOWN_SOURCE_TEXT);
+    }
+    return base::UTF8ToUTF16(route.description());
+  }
+#endif
+
   if (route.media_sink_name().empty())
     return base::UTF8ToUTF16(route.description());
 
@@ -160,6 +174,7 @@ CastMediaNotificationItem::CastMediaNotificationItem(
                               base::Unretained(this))),
       session_info_(CreateSessionInfo()) {
   metadata_.source_title = GetSourceTitle(route);
+  device_name_ = route.media_sink_name();
 }
 
 CastMediaNotificationItem::~CastMediaNotificationItem() {
@@ -251,7 +266,9 @@ void CastMediaNotificationItem::OnMediaStatusUpdated(
 
 void CastMediaNotificationItem::OnRouteUpdated(
     const media_router::MediaRoute& route) {
-  DCHECK_EQ(route.media_route_id(), media_route_id_);
+  CHECK_EQ(route.media_route_id(), media_route_id_);
+  device_name_ = route.media_sink_name();
+
   bool updated = false;
   const std::u16string new_source_title = GetSourceTitle(route);
   if (metadata_.source_title != new_source_title) {

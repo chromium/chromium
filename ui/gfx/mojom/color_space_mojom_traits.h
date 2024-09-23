@@ -50,8 +50,10 @@ struct EnumTraits<gfx::mojom::ColorSpacePrimaryID, gfx::ColorSpace::PrimaryID> {
         return gfx::mojom::ColorSpacePrimaryID::WIDE_GAMUT_COLOR_SPIN;
       case gfx::ColorSpace::PrimaryID::CUSTOM:
         return gfx::mojom::ColorSpacePrimaryID::CUSTOM;
+      case gfx::ColorSpace::PrimaryID::EBU_3213_E:
+        return gfx::mojom::ColorSpacePrimaryID::EBU_3213_E;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::mojom::ColorSpacePrimaryID::INVALID;
   }
 
@@ -106,8 +108,11 @@ struct EnumTraits<gfx::mojom::ColorSpacePrimaryID, gfx::ColorSpace::PrimaryID> {
       case gfx::mojom::ColorSpacePrimaryID::CUSTOM:
         *out = gfx::ColorSpace::PrimaryID::CUSTOM;
         return true;
+      case gfx::mojom::ColorSpacePrimaryID::EBU_3213_E:
+        *out = gfx::ColorSpace::PrimaryID::EBU_3213_E;
+        return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -171,7 +176,7 @@ struct EnumTraits<gfx::mojom::ColorSpaceTransferID,
       case gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
         return gfx::mojom::ColorSpaceTransferID::SCRGB_LINEAR_80_NITS;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::mojom::ColorSpaceTransferID::INVALID;
   }
 
@@ -257,7 +262,7 @@ struct EnumTraits<gfx::mojom::ColorSpaceTransferID,
         *out = gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS;
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -285,14 +290,12 @@ struct EnumTraits<gfx::mojom::ColorSpaceMatrixID, gfx::ColorSpace::MatrixID> {
         return gfx::mojom::ColorSpaceMatrixID::YCOCG;
       case gfx::ColorSpace::MatrixID::BT2020_NCL:
         return gfx::mojom::ColorSpaceMatrixID::BT2020_NCL;
-      case gfx::ColorSpace::MatrixID::BT2020_CL:
-        return gfx::mojom::ColorSpaceMatrixID::BT2020_CL;
       case gfx::ColorSpace::MatrixID::YDZDX:
         return gfx::mojom::ColorSpaceMatrixID::YDZDX;
       case gfx::ColorSpace::MatrixID::GBR:
         return gfx::mojom::ColorSpaceMatrixID::GBR;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::mojom::ColorSpaceMatrixID::INVALID;
   }
 
@@ -326,9 +329,6 @@ struct EnumTraits<gfx::mojom::ColorSpaceMatrixID, gfx::ColorSpace::MatrixID> {
       case gfx::mojom::ColorSpaceMatrixID::BT2020_NCL:
         *out = gfx::ColorSpace::MatrixID::BT2020_NCL;
         return true;
-      case gfx::mojom::ColorSpaceMatrixID::BT2020_CL:
-        *out = gfx::ColorSpace::MatrixID::BT2020_CL;
-        return true;
       case gfx::mojom::ColorSpaceMatrixID::YDZDX:
         *out = gfx::ColorSpace::MatrixID::YDZDX;
         return true;
@@ -336,7 +336,7 @@ struct EnumTraits<gfx::mojom::ColorSpaceMatrixID, gfx::ColorSpace::MatrixID> {
         *out = gfx::ColorSpace::MatrixID::GBR;
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -354,7 +354,7 @@ struct EnumTraits<gfx::mojom::ColorSpaceRangeID, gfx::ColorSpace::RangeID> {
       case gfx::ColorSpace::RangeID::DERIVED:
         return gfx::mojom::ColorSpaceRangeID::DERIVED;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::mojom::ColorSpaceRangeID::INVALID;
   }
 
@@ -374,7 +374,7 @@ struct EnumTraits<gfx::mojom::ColorSpaceRangeID, gfx::ColorSpace::RangeID> {
         *out = gfx::ColorSpace::RangeID::DERIVED;
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };

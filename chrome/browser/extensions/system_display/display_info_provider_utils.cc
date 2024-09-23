@@ -28,7 +28,7 @@ system_display::LayoutPosition GetLayoutPositionFromMojo(
     case crosapi::mojom::DisplayLayoutPosition::kLeft:
       return system_display::LayoutPosition::kLeft;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return system_display::LayoutPosition::kLeft;
 }
 }  // namespace
@@ -78,7 +78,7 @@ crosapi::mojom::DisplayLayoutPosition GetDisplayLayoutPosition(
     case system_display::LayoutPosition::kNone:
       return crosapi::mojom::DisplayLayoutPosition::kLeft;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return crosapi::mojom::DisplayLayoutPosition::kLeft;
 }
 
@@ -108,7 +108,7 @@ crosapi::mojom::DisplayRotationOptions GetMojomDisplayRotationOptions(
     case 270:
       return crosapi::mojom::DisplayRotationOptions::k270Degrees;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return crosapi::mojom::DisplayRotationOptions::kZeroDegrees;
   }
 }

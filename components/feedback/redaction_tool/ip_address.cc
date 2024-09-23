@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // This is a copy of net/base/ip_address.cc circa 2023. It should be used only
 // by components/feedback/redaction_tool/. We need a copy because the
 // components/feedback/redaction_tool source code is shared into ChromeOS and
@@ -11,12 +16,12 @@
 
 #include <algorithm>
 #include <climits>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -60,11 +65,10 @@ bool IPAddressPrefixCheck(const IPAddressBytes& ip_address,
   return true;
 }
 
-bool ParseIPLiteralToBytes(base::StringPiece ip_literal,
-                           IPAddressBytes* bytes) {
+bool ParseIPLiteralToBytes(std::string_view ip_literal, IPAddressBytes* bytes) {
   // |ip_literal| could be either an IPv4 or an IPv6 literal. If it contains
   // a colon however, it must be an IPv6 address.
-  if (ip_literal.find(':') != base::StringPiece::npos) {
+  if (ip_literal.find(':') != std::string_view::npos) {
     // GURL expects IPv6 hostnames to be surrounded with brackets.
     std::string host_brackets = base::StrCat({"[", ip_literal, "]"});
     Component host_comp(0, host_brackets.size());
@@ -186,7 +190,7 @@ bool IPAddress::IsIPv4MappedIPv6() const {
   return IsIPv6() && IPAddressStartsWith(*this, kIPv4MappedPrefix);
 }
 
-bool IPAddress::AssignFromIPLiteral(base::StringPiece ip_literal) {
+bool IPAddress::AssignFromIPLiteral(std::string_view ip_literal) {
   bool success = ParseIPLiteralToBytes(ip_literal, &ip_address_);
   if (!success) {
     ip_address_.Resize(0);

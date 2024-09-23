@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
@@ -37,65 +36,6 @@ class CrashKeysTest : public testing::Test {
 #endif
   }
 };
-
-TEST_F(CrashKeysTest, Extensions) {
-  // Set three extensions.
-  {
-    std::set<std::string> extensions;
-    extensions.insert("ext.1");
-    extensions.insert("ext.2");
-    extensions.insert("ext.3");
-
-    crash_keys::SetActiveExtensions(extensions);
-
-    extensions.erase(GetCrashKeyValue("extension-1"));
-    extensions.erase(GetCrashKeyValue("extension-2"));
-    extensions.erase(GetCrashKeyValue("extension-3"));
-    EXPECT_EQ(0u, extensions.size());
-
-    EXPECT_EQ("3", GetCrashKeyValue("num-extensions"));
-    EXPECT_TRUE(GetCrashKeyValue("extension-4").empty());
-  }
-
-  // Set more than the max switches.
-  {
-    std::set<std::string> extensions;
-    const int kMax = 12;
-    for (int i = 1; i <= kMax; ++i)
-      extensions.insert(base::StringPrintf("ext.%d", i));
-    crash_keys::SetActiveExtensions(extensions);
-
-    for (int i = 1; i <= kMax; ++i) {
-      extensions.erase(GetCrashKeyValue(base::StringPrintf("extension-%d", i)));
-    }
-    EXPECT_EQ(2u, extensions.size());
-
-    EXPECT_EQ("12", GetCrashKeyValue("num-extensions"));
-    EXPECT_TRUE(GetCrashKeyValue("extension-13").empty());
-    EXPECT_TRUE(GetCrashKeyValue("extension-14").empty());
-  }
-
-  // Set fewer to ensure that old ones are erased.
-  {
-    std::set<std::string> extensions;
-    for (int i = 1; i <= 5; ++i)
-      extensions.insert(base::StringPrintf("ext.%d", i));
-    crash_keys::SetActiveExtensions(extensions);
-
-    extensions.erase(GetCrashKeyValue("extension-1"));
-    extensions.erase(GetCrashKeyValue("extension-2"));
-    extensions.erase(GetCrashKeyValue("extension-3"));
-    extensions.erase(GetCrashKeyValue("extension-4"));
-    extensions.erase(GetCrashKeyValue("extension-5"));
-    EXPECT_EQ(0u, extensions.size());
-
-    EXPECT_EQ("5", GetCrashKeyValue("num-extensions"));
-    for (int i = 6; i < 20; ++i) {
-      std::string key = base::StringPrintf("extension-%d", i);
-      EXPECT_TRUE(GetCrashKeyValue(key).empty()) << key;
-    }
-  }
-}
 
 TEST_F(CrashKeysTest, ShouldIgnoreBoringFlags) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -143,6 +83,48 @@ void InitFromArgv(base::CommandLine& command_line,
 }
 
 }  // namespace
+
+TEST_F(CrashKeysTest, AllocateCrashKeyInBrowserAndChildren) {
+  crash_keys::AllocateCrashKeyInBrowserAndChildren("annotation-name",
+                                                   "annotation-value");
+  crash_keys::AllocateCrashKeyInBrowserAndChildren("another-name",
+                                                   "another-value");
+
+  EXPECT_EQ("annotation-value", GetCrashKeyValue("annotation-name"));
+  EXPECT_EQ("another-value", GetCrashKeyValue("another-name"));
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  InitFromArgv(command_line, {"program_name", "--type=renderer"});
+
+  crash_keys::AppendStringAnnotationsCommandLineSwitch(&command_line);
+  EXPECT_EQ("annotation-name=annotation-value,another-name=another-value",
+            command_line.GetSwitchValueASCII("string-annotations"));
+
+}
+
+TEST_F(CrashKeysTest, SetStringAnnotationsBrowser) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  InitFromArgv(command_line, {"program_name",
+                              "--string-annotations=annotation-name=annotation-"
+                              "value,another-annotation=another-value"});
+
+  crash_keys::SetCrashKeysFromCommandLine(command_line);
+
+  EXPECT_EQ("", GetCrashKeyValue("annotation-name"));
+  EXPECT_EQ("", GetCrashKeyValue("another-annotation"));
+}
+
+TEST_F(CrashKeysTest, SetStringAnnotationsNonBrowser) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  InitFromArgv(command_line, {"program_name", "--type=renderer",
+                              "--string-annotations=annotation-name=annotation-"
+                              "value,another-annotation=another-value"});
+
+  crash_keys::SetCrashKeysFromCommandLine(command_line);
+
+  EXPECT_EQ("annotation-value", GetCrashKeyValue("annotation-name"));
+  EXPECT_EQ("another-value", GetCrashKeyValue("another-annotation"));
+}
 
 TEST_F(CrashKeysTest, EnabledDisabledFeaturesFlags) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);

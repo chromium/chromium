@@ -548,6 +548,7 @@ bool SyscallSets::IsAllowedAddressSpaceAccess(int sysno) {
     case __NR_mlock:
     case __NR_munlock:
     case __NR_munmap:
+    case __NR_mseal:
       return true;
     case __NR_madvise:
     case __NR_mincore:

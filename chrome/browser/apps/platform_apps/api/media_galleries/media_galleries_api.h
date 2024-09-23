@@ -174,7 +174,7 @@ class MediaGalleriesGetMetadataFunction : public ExtensionFunction {
 
   void GetMetadata(media_galleries::GetMetadataType metadata_type,
                    const std::string& blob_uuid,
-                   std::unique_ptr<std::string> blob_header,
+                   std::string blob_header,
                    int64_t total_blob_length);
 
   void OnSafeMediaMetadataParserDone(

@@ -1,7 +1,9 @@
 rootWebArea
 ++genericContainer ignored invisible
 ++++menuListPopup ignored invisible
-++++++menuListOption ignored
+++++++group ignored invisible
+++++++++genericContainer ignored invisible
+++++++++++menuListOption ignored invisible
 ++++dialog
 ++++++staticText name='This is the now active dialog. Of course it should be in the tree. '
 ++++++++inlineTextBox name='This is the now active dialog. Of course it should be in the tree. '

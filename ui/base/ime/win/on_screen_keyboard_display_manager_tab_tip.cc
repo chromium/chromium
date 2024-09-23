@@ -4,11 +4,11 @@
 
 #include "ui/base/ime/win/on_screen_keyboard_display_manager_tab_tip.h"
 
+#include <shobjidl.h>
 #include <windows.h>
 
 #include <shellapi.h>
 #include <shlobj.h>
-#include <shobjidl.h>  // Must be before propkey.
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -366,13 +366,12 @@ bool OnScreenKeyboardDisplayManagerTabTip::IsKeyboardVisible() {
 
 void OnScreenKeyboardDisplayManagerTabTip::NotifyKeyboardVisible(
     const gfx::Rect& occluded_rect) {
-  for (VirtualKeyboardControllerObserver& observer : observers_)
-    observer.OnKeyboardVisible(occluded_rect);
+  observers_.Notify(&VirtualKeyboardControllerObserver::OnKeyboardVisible,
+                    occluded_rect);
 }
 
 void OnScreenKeyboardDisplayManagerTabTip::NotifyKeyboardHidden() {
-  for (VirtualKeyboardControllerObserver& observer : observers_)
-    observer.OnKeyboardHidden();
+  observers_.Notify(&VirtualKeyboardControllerObserver::OnKeyboardHidden);
 }
 
 }  // namespace ui

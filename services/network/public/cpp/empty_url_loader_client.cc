@@ -97,8 +97,7 @@ void EmptyURLLoaderClient::OnComplete(const URLLoaderCompletionStatus& status) {
   MaybeDone();
 }
 
-void EmptyURLLoaderClient::OnDataAvailable(const void* data, size_t num_bytes) {
-}
+void EmptyURLLoaderClient::OnDataAvailable(base::span<const uint8_t> data) {}
 
 void EmptyURLLoaderClient::OnDataComplete() {
   response_body_drainer_.reset();

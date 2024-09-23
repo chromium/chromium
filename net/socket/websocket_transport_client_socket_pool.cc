@@ -23,6 +23,7 @@
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connect_job_factory.h"
+#include "net/socket/stream_socket_handle.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -52,7 +53,7 @@ WebSocketTransportClientSocketPool::~WebSocketTransportClientSocketPool() {
 
 // static
 void WebSocketTransportClientSocketPool::UnlockEndpoint(
-    ClientSocketHandle* handle,
+    StreamSocketHandle* handle,
     WebSocketEndpointLockManager* websocket_endpoint_lock_manager) {
   DCHECK(handle->is_initialized());
   DCHECK(handle->socket());
@@ -257,7 +258,7 @@ base::Value WebSocketTransportClientSocketPool::GetInfoAsValue(
 bool WebSocketTransportClientSocketPool::HasActiveSocket(
     const GroupId& group_id) const {
   // This method is not supported for WebSocket.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -382,7 +383,7 @@ void WebSocketTransportClientSocketPool::HandOutSocket(
     ClientSocketHandle* handle,
     const NetLogWithSource& net_log) {
   DCHECK(socket);
-  DCHECK_EQ(ClientSocketHandle::UNUSED, handle->reuse_type());
+  DCHECK_EQ(StreamSocketHandle::SocketReuseType::kUnused, handle->reuse_type());
   DCHECK_EQ(0, handle->idle_time().InMicroseconds());
 
   handle->SetSocket(std::move(socket));
@@ -489,7 +490,7 @@ void WebSocketTransportClientSocketPool::ConnectJobDelegate::OnNeedsProxyAuth(
     base::OnceClosure restart_with_auth_callback,
     ConnectJob* job) {
   // This class isn't used for proxies.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 int WebSocketTransportClientSocketPool::ConnectJobDelegate::Connect(

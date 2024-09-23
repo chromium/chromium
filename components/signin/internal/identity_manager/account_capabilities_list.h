@@ -35,6 +35,10 @@ ACCOUNT_CAPABILITY(kIsOptedInToParentalSupervisionCapabilityName,
                    IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME,
                    "accountcapabilities/guzdslldmfya")
 
+ACCOUNT_CAPABILITY(kCanFetchFamilyMemberInfoCapabilityName,
+                   CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME,
+                   "accountcapabilities/ge2dinbnmnqxa")
+
 ACCOUNT_CAPABILITY(kCanToggleAutoUpdatesName,
                    CAN_TOGGLE_AUTO_UPDATES_NAME,
                    "accountcapabilities/gu4dmlldmfya")
@@ -42,6 +46,14 @@ ACCOUNT_CAPABILITY(kCanToggleAutoUpdatesName,
 ACCOUNT_CAPABILITY(kCanUseChromeIpProtectionName,
                    CAN_USE_CHROME_IP_PROTECTION_NAME,
                    "accountcapabilities/geydgnznmnqxa")
+
+ACCOUNT_CAPABILITY(kCanUseDevToolsGenerativeAiFeaturesCapabilityName,
+                   CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME,
+                   "accountcapabilities/geztenjnmnqxa")
+
+ACCOUNT_CAPABILITY(kCanUseMantaServiceName,
+                   CAN_USE_MANTA_SERVICE_NAME,
+                   "accountcapabilities/geytcnbnmnqxa")
 
 ACCOUNT_CAPABILITY(kCanUseModelExecutionFeaturesName,
                    CAN_USE_MODEL_EXECUTION_FEATURES_NAME,
@@ -63,3 +75,7 @@ ACCOUNT_CAPABILITY(kIsSubjectToEnterprisePoliciesCapabilityName,
 ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsCapabilityName,
                    IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
                    "accountcapabilities/guydolldmfya")
+
+ACCOUNT_CAPABILITY(kCanUseEduFeaturesCapabilityName,
+                   CAN_USE_EDU_FEATURES_CAPABILITY_NAME,
+                   "accountcapabilities/gezdsmbnmnqxa")

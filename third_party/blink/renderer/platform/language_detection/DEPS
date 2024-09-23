@@ -1,0 +1,12 @@
+include_rules = [
+    # Don't depend on platform/.
+    "-third_party/blink/renderer/platform",
+
+    # Module
+    "+third_party/blink/renderer/platform/language_detection",
+
+    # Dependencies.
+    "+components/language_detection/core",
+    "+third_party/blink/renderer/platform/platform_export.h",
+    "+third_party/blink/renderer/platform/wtf",
+]

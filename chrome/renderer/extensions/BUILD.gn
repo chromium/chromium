@@ -1,0 +1,115 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
+
+assert(enable_extensions_core)
+
+source_set("extensions") {
+  # The files that can be included from other modules.
+  public = [
+    "chrome_extensions_renderer_client.h",
+    "renderer_permissions_policy_delegate.h",
+  ]
+
+  # Files that can only be included from here.
+  sources = [
+    "chrome_extensions_renderer_client.cc",
+    "chrome_resource_request_policy_delegate.cc",
+    "chrome_resource_request_policy_delegate.h",
+    "renderer_permissions_policy_delegate.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//extensions/common",
+    "//extensions/renderer",
+  ]
+
+  deps = [
+    "//chrome/common",
+    "//chrome/common:non_code_constants",
+    "//chrome/common/extensions",
+    "//chrome/renderer:process_state",
+    "//content/public/renderer",
+    "//extensions/common:common_constants",
+    "//net",
+    "//services/metrics/public/cpp:gen_ukm_builders",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/blink/public:blink_headers",
+    "//url",
+  ]
+
+  # TODO(https://crbug.com/356905053): These sources are not currently included
+  # in the experimental desktop-android configuration. Gradually include more
+  # of them, or omit them behind more targeted GN flags.
+  if (enable_extensions) {
+    public += [
+      "api/accessibility_private_hooks_delegate.h",
+      "api/chrome_extensions_renderer_api_provider.h",
+      "api/extension_hooks_delegate.h",
+      "api/identity_hooks_delegate.h",
+      "api/tabs_hooks_delegate.h",
+    ]
+
+    sources += [
+      "api/accessibility_private_hooks_delegate.cc",
+      "api/accessibility_private_hooks_delegate.h",
+      "api/app_hooks_delegate.cc",
+      "api/app_hooks_delegate.h",
+      "api/chrome_extensions_renderer_api_provider.cc",
+      "api/extension_hooks_delegate.cc",
+      "api/identity_hooks_delegate.cc",
+      "api/media_galleries_custom_bindings.cc",
+      "api/media_galleries_custom_bindings.h",
+      "api/notifications_native_handler.cc",
+      "api/notifications_native_handler.h",
+      "api/page_capture_custom_bindings.cc",
+      "api/page_capture_custom_bindings.h",
+      "api/sync_file_system_custom_bindings.cc",
+      "api/sync_file_system_custom_bindings.h",
+      "api/tabs_hooks_delegate.cc",
+    ]
+
+    public_deps += [ "//v8:v8_headers" ]
+    deps += [
+      "//base:i18n",
+      "//build:chromeos_buildflags",
+      "//chrome/renderer:resources",
+      "//chrome/renderer:resources_grit",
+      "//extensions/common:mojom",
+      "//gin",
+      "//net",
+      "//printing/buildflags",
+      "//storage/common",
+      "//ui/base",
+    ]
+
+    if (is_chromeos) {
+      sources += [
+        "api/file_browser_handler_custom_bindings.cc",
+        "api/file_browser_handler_custom_bindings.h",
+        "api/platform_keys_natives.cc",
+        "api/platform_keys_natives.h",
+      ]
+      if (use_cups) {
+        sources += [
+          "api/printing_hooks_delegate.cc",
+          "api/printing_hooks_delegate.h",
+        ]
+      }
+    }
+
+    if (is_chromeos_ash) {
+      sources += [
+        "api/file_manager_private_custom_bindings.cc",
+        "api/file_manager_private_custom_bindings.h",
+      ]
+    }
+  }
+}

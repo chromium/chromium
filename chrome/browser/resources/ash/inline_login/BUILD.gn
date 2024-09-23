@@ -22,10 +22,16 @@ build_webui("build") {
   non_web_component_files = [ "inline_login_browser_proxy.ts" ]
 
   ts_composite = true
-  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_definitions = [
+    "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_app.d.ts",
+    "//chrome/browser/resources/chromeos/arc_account_picker/arc_util.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+  ]
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
     "//ash/webui/common/resources/cr_elements:build_ts",
+    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/js:build_ts",
   ]
 
@@ -37,4 +43,6 @@ build_webui("build") {
         rebase_path("//chrome/browser/resources/chromeos/arc_account_picker/*",
                     target_gen_dir),
   ]
+
+  webui_context_type = "trusted"
 }

@@ -10,91 +10,82 @@
 
 module ash.ime.mojom;
 
-// The following enums refer to the config options used for the
-// Japanese decoder Mozc.
-// More information about this interface is documented publicly at
-// https://github.com/google/mozc/blob/master/src/protocol/config.proto
+// This file is deprecated, and this interface is never used.
 
-[Stable, Extensible]
-enum InputMode {
-    [Default] kRomaji = 0,
-    kKana = 1
+[Stable, Extensible, RenamedFrom="ash.ime.mojom.InputMode"]
+enum JpUnusedEnum0 {
+    [Default] kValue0 = 0,
+    kValue1 = 1,
 };
 
-[Stable, Extensible]
-enum PunctuationStyle {
-    [Default] kKutenTouten = 0,
-    kCommaPeriod = 1,
-    kKutenPeriod = 2,
-    kCommaTouten = 3
+[Stable, Extensible, RenamedFrom="ash.ime.mojom.PunctuationStyle"]
+enum JpUnusedEnum1 {
+    [Default] kValue0 = 0,
+    kValue1 = 1,
+    kValue2 = 2,
+    kValue3 = 3,
 };
 
-[Stable, Extensible]
-enum SymbolStyle {
-    [Default] kCornerBracketMiddleDot = 0,
-    kSquareBracketSlash = 1,
-    kCornerBracketSlash = 2,
-    kSquareBracketMiddleDot = 3
+[Stable, Extensible, RenamedFrom="ash.ime.mojom.SymbolStyle"]
+enum JpUnusedEnum2 {
+    [Default] kValue0 = 0,
+    kValue1 = 1,
+    kValue2 = 2,
+    kValue3 = 3,
 };
 
-[Stable, Extensible]
-enum SpaceInputStyle {
-    [Default] kInputMode = 0,
-    kFullwidth = 1,
-    kHalfwidth = 2
+[Stable, Extensible, RenamedFrom="ash.ime.mojom.SpaceInputStyle"]
+enum JpUnusedEnum3 {
+    [Default] kValue0 = 0,
+    kValue1 = 1,
+    kValue2 = 2,
 };
 
-[Stable, Extensible]
-enum SelectionShortcut {
-    kNoShortcut = 0,
-    [Default] kDigits123456789 = 1,
-    kAsdfghjkl = 2
+[Stable, Extensible, RenamedFrom="ash.ime.mojom.SelectionShortcut"]
+enum JpUnusedEnum4 {
+    kValue0 = 0,
+    [Default] kValue1 = 1,
+    kValue2 = 2
 };
 
-[Stable, Extensible]
-enum KeymapStyle {
-    [Default] kCustom = 0,
-    kAtok = 1,
-    kMsIme = 2,
-    kKotoeri = 3,
-    kMobile = 4,
-    kChromeOs = 5,
-    [MinVersion=2] kNone = 6
+[Stable, Extensible, RenamedFrom="ash.ime.mojom.KeymapStyle"]
+enum JpUnusedEnum5 {
+    [Default] kValue0 = 0,
+    kValue1 = 1,
+    kValue2 = 2,
+    kValue3 = 3,
+    kValue4 = 4,
+    kValue5 = 5,
+    [MinVersion=2] kValue6 = 6
 };
 
-[Stable, Extensible]
-enum ShiftKeyModeSwitch {
-    kOff = 0,
-    [Default] kAlphanumeric = 1,
-    kKatakana = 2,
+[Stable, Extensible, RenamedFrom="ash.ime.mojom.ShiftKeyModeSwitch"]
+enum JpUnusedEnum6 {
+    kValue0 = 0,
+    [Default] kValue1 = 1,
+    kValue2 = 2,
 };
 
-[Stable, RenamedFrom="ash.ime.mojom.MozcConfig"]
-struct JapaneseConfig {
-    InputMode input_mode@0;
-    PunctuationStyle punctuation_style@1;
-    SymbolStyle symbol_style@2;
-    SpaceInputStyle space_input_style@3;
-    SelectionShortcut selection_shortcut@4;
-    KeymapStyle keymap_style@5;
-    bool automatically_switch_to_halfwidth@6;
-    ShiftKeyModeSwitch shift_key_mode_switch@7;
-    bool use_input_history@8;
-    bool use_system_dictionary@9;
-    int64 number_of_suggestions@10;
-    bool disable_personalized_suggestions@11;
-    bool send_statistics_to_google@12;
+[Stable, RenamedFrom="ash.ime.mojom.JapaneseConfig"]
+struct JpUnusedStruct {
+    JpUnusedEnum0 unused0@0;
+    JpUnusedEnum1 unused1@1;
+    JpUnusedEnum2 unused2@2;
+    JpUnusedEnum3 unused3@3;
+    JpUnusedEnum4 unused4@4;
+    JpUnusedEnum5 unused5@5;
+    bool unused6@6;
+    JpUnusedEnum6 unused7@7;
+    bool unused8@8;
+    bool unused9@9;
+    int64 unused10@10;
+    bool unused11@11;
+    bool unused12@12;
 };
 
-// JapaneseDecoder is the interface used for communicating with the Mozc
-// decoder for Japanese input, which is hosted inside of ImeService.  It is
-// just going to allow access to the user's settings and user dictionary for
-// migrating the code to settings.  Once the settings migration is done, this
-// interface can be deleted.
-[Stable, RenamedFrom="ash.ime.mojom.Mozc"]
-interface JapaneseDecoder {
-    // Retrieve the config used for Mozc which is stored as a file internally.
-    // If this file does not exist, this should just return the default config.
-    FetchJapaneseConfig@0() => (JapaneseConfig config);
+// Unused interface
+[Stable, RenamedFrom="ash.ime.mojom.JapaneseDecoder"]
+interface JpUnused {
+    Unused@0() => (JpUnusedStruct unused);
 };
 

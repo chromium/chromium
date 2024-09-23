@@ -1,0 +1,46 @@
+<style include="cr-shared-style settings-shared iron-flex">
+  /* Override the default padding of a cr-row to 0. The template inside has
+     left and right padding. */
+  .cr-row-with-template {
+    padding: 0;
+  }
+
+  .language-dropdown {
+    margin-inline-start: auto;
+  }
+
+  .subsection-group {
+    padding-bottom: 10px;
+  }
+
+  /* Ensure the toggle button stretches the width of its container despite
+     removing its parent's padding. */
+  #liveTranslateToggleButton {
+    width: 100%;
+  }
+</style>
+<div class="cr-row cr-row-with-template">
+  <settings-toggle-button id="liveTranslateToggleButton"
+      pref="{{prefs.accessibility.captions.live_translate_enabled}}"
+      on-change="onLiveTranslateEnabledChange_"
+      label="$i18n{captionsEnableLiveTranslateTitle}"
+      sub-label="$i18n{captionsEnableLiveTranslateSubtitle}">
+  </settings-toggle-button>
+</div>
+<iron-collapse
+    opened="[[prefs.accessibility.captions.live_translate_enabled.value]]">
+  <div class="cr-row continuation subsection-group">
+    <div class="start cr-padded-text" aria-hidden="true">
+      $i18n{captionsLiveTranslateTargetLanguage}
+      <div class="secondary">
+        $i18n{captionsLiveTranslateTargetLanguageSubtitle}
+      </div>
+    </div>
+    <settings-dropdown-menu id="targetLanguageDropdown"
+        class="language-dropdown"
+        label="$i18n{captionsLanguage}"
+        pref="{{prefs.accessibility.captions.live_translate_target_language}}"
+        menu-options="[[translatableLanguages_]]">
+    </settings-dropdown-menu>
+  </div>
+</iron-collapse>

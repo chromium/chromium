@@ -18,7 +18,11 @@
           ]
         },
         "prefs": {
-          "profile.managed_web_usb_ask_for_urls": {}
+          "profile.managed_web_usb_ask_for_urls": {
+            "value": [
+              "[*.].com"
+            ]
+          }
         }
       }
     ]

@@ -16,6 +16,7 @@ namespace ash {
 class GameDashboardContext;
 class IconButton;
 class ToolbarDragHandler;
+class SystemShadow;
 
 // GameDashboardToolbarView is the movable toolbar that's attached to the game
 // window. It contains various quick action tiles for users to access without
@@ -86,6 +87,11 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView {
   // the default UI.
   void UpdateRecordGameButton(bool is_recording_game_window);
 
+  // Updates the 'gamepad_button_' tooltip text. If the toolbar is collapsed,
+  // the tooltip text will say "Open toolbar" and if the toolbar is expanded,
+  // the tooltip text will say "Close toolbar".
+  void UpdateGamepadButtonTooltipText();
+
   // The topmost `IconButton` in the toolbar's collection, which stays visible
   // in both the expanded and collapsed toolbar states.
   raw_ptr<IconButton> gamepad_button_ = nullptr;
@@ -104,6 +110,8 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView {
 
   // Handles all dragging logic for the toolbar.
   std::unique_ptr<ToolbarDragHandler> drag_handler_;
+
+  std::unique_ptr<SystemShadow> shadow_;
 };
 
 }  // namespace ash

@@ -25,6 +25,9 @@ found in the LICENSE file.
     <!-- Same as ?attr/colorOnPrimary. -->
     <color name="default_icon_color_on_accent1_light">@color/baseline_primary_100</color>
     <color name="default_icon_color_on_accent1_dark">@color/baseline_primary_20</color>
+    <!-- Same as ?attr/colorOnPrimaryContainer. -->
+    <color name="default_icon_color_on_accent1_container_light">@color/baseline_primary_10</color>
+    <color name="default_icon_color_on_accent1_container_dark">@color/baseline_primary_90</color>
 
     <!-- Common text colors -->
     <!-- Same as ?attr/colorOnSurface. -->
@@ -86,14 +89,14 @@ found in the LICENSE file.
     <!-- Same as ?attr/colorSurfaceVariant. -->
     <color name="divider_line_bg_color_dark">@color/baseline_neutral_variant_90</color>
     <color name="divider_line_bg_color_light">@color/baseline_neutral_variant_30</color>
-    <color name="default_bg_color_blue_dark">@color/modern_blue_600</color>
-    <color name="default_bg_color_blue_light">@color/modern_blue_300</color>
+    <color name="default_bg_color_blue_dark">@color/baseline_primary_40</color>
+    <color name="default_bg_color_blue_light">@color/baseline_primary_80</color>
     <color name="default_scrim_color">@color/black_alpha_65</color>
     <color name="incognito_card_bg_color">@color/default_bg_color_dark_elev_1_baseline</color>
 
     <!-- IPH Highlight Colors -->
-    <color name="iph_highlight_blue_dark">@color/modern_blue_600_alpha_10</color>
-    <color name="iph_highlight_blue_light">@color/modern_blue_300_alpha_50</color>
+    <color name="iph_highlight_blue_dark">@color/baseline_primary_40_alpha_10</color>
+    <color name="iph_highlight_blue_light">@color/baseline_primary_80_alpha_50</color>
 
     <!-- Colors used for Widgets (checkboxes, switches, buttons, etc)-->
     <!-- Same as ?attr/colorPrimary. -->
@@ -108,30 +111,30 @@ found in the LICENSE file.
     <color name="default_control_color_highlight_dark" tools:ignore="UnusedResources">@color/baseline_neutral_90_alpha_10</color>
 
     <!--  Filled Button  -->
-    <color name="filled_button_bg_color_dark">@color/modern_blue_600</color>
+    <color name="filled_button_bg_color_dark">@color/baseline_primary_40</color>
     <color name="filled_button_bg_color_light">@color/baseline_primary_80</color>
     <color name="filled_button_bg_color_disabled_dark">@color/baseline_neutral_10_alpha_12</color>
     <color name="filled_button_bg_color_disabled_light">@color/baseline_neutral_90_alpha_12</color>
 
     <!--  Dropdown divier  -->
-    <color name="dropdown_divider_color">@color/modern_grey_300</color>
+    <color name="dropdown_divider_color">@color/baseline_neutral_70</color>
     <color name="dropdown_dark_divider_color">@color/white_alpha_12</color>
 
     <!-- Ripple Colors -->
-    <color name="ripple_color_blue_dark">@color/modern_blue_600</color>
-    <color name="ripple_color_blue_light">@color/modern_blue_300</color>
+    <color name="ripple_color_blue_dark">@color/baseline_primary_40</color>
+    <color name="ripple_color_blue_light">@color/baseline_primary_80</color>
 
     <!-- Image loading colors -->
-    <color name="image_loading_color_dark">@color/modern_grey_300</color>
+    <color name="image_loading_color_dark">@color/baseline_neutral_70</color>
     <color name="image_loading_color_light">@color/white_alpha_12</color>
 
     <!-- Incognito icon colors -->
     <color name="incognito_icon_filled_bg_color_dark">@color/modern_grey_800</color>
-    <color name="incognito_icon_filled_bg_color_light">@color/modern_grey_300</color>
+    <color name="incognito_icon_filled_bg_color_light">@color/baseline_neutral_70</color>
     <color name="ntp_incognito_icon_color" tools:ignore="UnusedResources">@color/baseline_neutral_95</color>
 
     <!-- Illustration -->
-    <color name="promo_illustration_bg_color_light">@color/modern_grey_100_alpha_38</color>
+    <color name="promo_illustration_bg_color_light">@color/baseline_neutral_90_alpha_38</color>
     <color name="promo_illustration_bg_color_dark">@color/modern_grey_800_alpha_38</color>
 
     <!-- Omnibox bg color -->
@@ -140,7 +143,7 @@ found in the LICENSE file.
     <color name="omnibox_bg_color_incognito" tools:ignore="UnusedResources">@color/black_alpha_38</color>
 
     <!-- Settings -->
-    <color name="preference_highlighted_bg_color_dark">@color/modern_blue_600_alpha_12</color>
+    <color name="preference_highlighted_bg_color_dark">@color/baseline_primary_40_alpha_12</color>
     <color name="preference_highlighted_bg_color_light">@color/white_alpha_24</color>
 
     <!-- Snackbar colors -->
@@ -155,9 +158,9 @@ found in the LICENSE file.
     <color name="adaptive_toolbar_preference_header_background_dark">@color/baseline_neutral_10_with_surface_tint_dark_alpha_11</color>
     <color name="adaptive_toolbar_preference_header_line_light">@color/modern_grey_800</color>
     <color name="adaptive_toolbar_preference_header_line_dark">@color/modern_white</color>
-    <color name="adaptive_toolbar_preference_header_blue_light">@color/modern_blue_600</color>
-    <color name="adaptive_toolbar_preference_header_blue_dark">@color/modern_blue_300</color>
-    <color name="adaptive_toolbar_preference_header_omnibox_light">@color/modern_grey_100</color>
+    <color name="adaptive_toolbar_preference_header_blue_light">@color/baseline_primary_40</color>
+    <color name="adaptive_toolbar_preference_header_blue_dark">@color/baseline_primary_80</color>
+    <color name="adaptive_toolbar_preference_header_omnibox_light">@color/baseline_neutral_90</color>
     <color name="adaptive_toolbar_preference_header_omnibox_dark">@color/white_alpha_6</color>
 
     <!-- Price-tracking colors -->
@@ -165,8 +168,4 @@ found in the LICENSE file.
     <color name="price_drop_annotation_bg_color_dark">@color/baseline_tertiary_30</color>
     <color name="price_drop_annotation_text_green_light">@color/baseline_tertiary_40</color>
     <color name="price_drop_annotation_text_green_dark">@color/baseline_tertiary_80</color>
-
-    <!-- NTP signed-out avatar colors-->
-    <color name="signed_out_avatar_color_light">@color/modern_grey_900</color>
-    <color name="signed_out_avatar_color_dark">@color/modern_grey_100</color>
 </resources>

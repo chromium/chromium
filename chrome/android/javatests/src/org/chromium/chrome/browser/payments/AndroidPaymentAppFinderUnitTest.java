@@ -13,6 +13,7 @@ import android.content.pm.ServiceInfo;
 import android.content.pm.Signature;
 import android.os.Bundle;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -26,9 +27,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
@@ -40,13 +42,13 @@ import org.chromium.components.payments.PackageManagerDelegate;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryParams;
+import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestParser;
 import org.chromium.components.payments.PaymentManifestWebDataService;
 import org.chromium.components.payments.WebAppManifestSection;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -84,7 +86,7 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
         MockitoAnnotations.initMocks(this);
 
         mWindowAndroid =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new ActivityWindowAndroid(
                                     getActivity(),
@@ -97,7 +99,7 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWindowAndroid.destroy();
                 });
@@ -473,7 +475,20 @@ public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase
     @SmallTest
     @Test
     @UiThreadTest
+    @Features.DisableFeatures({PaymentFeatureList.SHOW_READY_TO_PAY_DEBUG_INFO})
     public void testQueryBobPayWithOneAppThatHasIsReadyToPayService() {
+        runTestForQueryBobPayWithOneAppThatHasIsReadyToPayService();
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
+    @Features.EnableFeatures({PaymentFeatureList.SHOW_READY_TO_PAY_DEBUG_INFO})
+    public void testQueryBobPayWithOneAppThatHasIsReadyToPayServiceAndShowsDebugInfo() {
+        runTestForQueryBobPayWithOneAppThatHasIsReadyToPayService();
+    }
+
+    public void runTestForQueryBobPayWithOneAppThatHasIsReadyToPayService() {
         List<ResolveInfo> activities = new ArrayList<>();
         ResolveInfo bobPay = new ResolveInfo();
         bobPay.activityInfo = new ActivityInfo();

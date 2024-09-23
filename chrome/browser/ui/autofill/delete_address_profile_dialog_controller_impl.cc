@@ -73,16 +73,16 @@ DeleteAddressProfileDialogControllerImpl::GetDeleteConfirmationText() const {
             web_contents_->GetBrowserContext());
     CHECK(account);
     return l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_SOURCE_NOTICE,
+        IDS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_RECORD_TYPE_NOTICE,
         base::UTF8ToUTF16(account->email));
   }
 
   PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
       web_contents_->GetBrowserContext());
   return l10n_util::GetStringUTF16(
-      pdm->IsSyncFeatureEnabledForAutofill()
-          ? IDS_AUTOFILL_DELETE_SYNC_ADDRESS_SOURCE_NOTICE
-          : IDS_AUTOFILL_DELETE_LOCAL_ADDRESS_SOURCE_NOTICE);
+      pdm->address_data_manager().IsSyncFeatureEnabledForAutofill()
+          ? IDS_AUTOFILL_DELETE_SYNC_ADDRESS_RECORD_TYPE_NOTICE
+          : IDS_AUTOFILL_DELETE_LOCAL_ADDRESS_RECORD_TYPE_NOTICE);
 }
 
 void DeleteAddressProfileDialogControllerImpl::OnAccepted() {

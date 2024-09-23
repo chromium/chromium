@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FittingType, PdfOcrUserSelection} from './constants.js';
+import {FittingType} from './constants.js';
 
 // Handles events specific to the PDF viewer and logs the corresponding metrics.
 
@@ -42,20 +42,6 @@ export function record(action: UserAction) {
       firstActionRecorded.add(firstAction);
     }
   }
-}
-
-/**
- * Records when the user selects to turn on or off PDF OCR.
- * @param userSelection the new UserSelection.
- */
-export function recordPdfOcrUserSelection(pdfOcrAlwaysActive: boolean) {
-  // Need to divide Object.keys().length by 2 to get the enum size due to enum
-  // reverse mapping in TypeScript.
-  const enumSize = Object.keys(PdfOcrUserSelection).length / 2;
-  const enumValue = pdfOcrAlwaysActive ?
-      PdfOcrUserSelection.TURN_ON_ALWAYS_FROM_MORE_ACTIONS :
-      PdfOcrUserSelection.TURN_OFF_FROM_MORE_ACTIONS;
-  recordEnumeration('Accessibility.PdfOcr.UserSelection', enumValue, enumSize);
 }
 
 /** Records the given enumeration to chrome.metricsPrivate. */
@@ -218,7 +204,17 @@ export enum UserAction {
   SELECT_SIDENAV_ATTACHMENT_FIRST = 65,
   SELECT_SIDENAV_ATTACHMENT = 66,
 
-  NUMBER_OF_ACTIONS = 67,
+  // Recorded cut/copy/paste commands.
+  CUT_FIRST = 67,
+  CUT = 68,
+  COPY_FIRST = 69,
+  COPY = 70,
+  PASTE_FIRST = 71,
+  PASTE = 72,
+  FIND_IN_PAGE_FIRST = 73,
+  FIND_IN_PAGE = 74,
+
+  NUMBER_OF_ACTIONS = 75,
 }
 
 function createFirstMap(): Map<UserAction, UserAction> {
@@ -230,8 +226,8 @@ function createFirstMap(): Map<UserAction, UserAction> {
   // which don't have an equivalent "_FIRST" UserAction.
   const entriesWithFirst = entries.slice(1, entries.length - 1);
   const map = new Map();
-  for (let i = 0; i < entriesWithFirst.length; i += 2) {
-    map.set(entriesWithFirst[i + 1][1], entriesWithFirst[i][1]);
+  for (let i = 0; i < entriesWithFirst.length - 1; i += 2) {
+    map.set(entriesWithFirst[i + 1]![1]!, entriesWithFirst[i]![1]!);
   }
   return map;
 }

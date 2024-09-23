@@ -21,7 +21,9 @@
 }
 
 .subsection-header {
+  color: var(--cros-sys-primary);
   height: 24px;
+  padding-bottom: 6px;
   padding-inline-start: var(--cr-section-padding);
   padding-top: 12px;
 }

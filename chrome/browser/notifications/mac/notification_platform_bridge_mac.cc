@@ -18,6 +18,8 @@
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -75,7 +77,9 @@ void NotificationPlatformBridgeMac::Display(
   NotificationDispatcherMac* dispatcher = nullptr;
 
   if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
-      notification.notifier_id().web_app_id.has_value()) {
+      notification.notifier_id().web_app_id.has_value() &&
+      AppShimRegistry::Get()->IsAppInstalledInProfile(
+          *notification.notifier_id().web_app_id, profile->GetPath())) {
     dispatcher =
         GetOrCreateDispatcherForWebApp(*notification.notifier_id().web_app_id);
   }
@@ -128,7 +132,7 @@ void NotificationPlatformBridgeMac::GetDisplayed(
     // for example a list of displayed notifications is returned via the web
     // API, additional calls to get displayed notifications for specific origins
     // happen.
-    // TODO(https://crbug.com/1486910): Figure out how we can refactor the
+    // TODO(crbug.com/40283098): Figure out how we can refactor the
     // various APIs to make this not be an issue.
     std::move(callback).Run({}, /*supports_synchronization=*/false);
     return;
@@ -171,13 +175,13 @@ void NotificationPlatformBridgeMac::GetDisplayedForOrigin(
 
   std::vector<webapps::AppId> web_app_ids;
   if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution)) {
-    web_app::WebAppProvider* web_app_provider =
-        web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
-    if (web_app_provider) {
+    if (auto* web_app_provider =
+            web_app::WebAppProvider::GetForWebApps(profile)) {
       web_app::WebAppRegistrar& registrar =
           web_app_provider->registrar_unsafe();
       for (const webapps::AppId& app_id : registrar.GetAppIds()) {
-        if (!registrar.IsLocallyInstalled(app_id)) {
+        if (!registrar.IsInstallState(
+                app_id, {web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
           continue;
         }
         if (!url::IsSameOriginWith(registrar.GetAppScope(app_id), origin)) {
@@ -238,6 +242,15 @@ void NotificationPlatformBridgeMac::DisplayServiceShutDown(Profile* profile) {
   // without a profile (Type::TRANSIENT) on macOS, so nothing to do here.
   if (profile)
     CloseAllNotificationsForProfile(profile);
+}
+
+void NotificationPlatformBridgeMac::AppShimWillTerminate(
+    const webapps::AppId& web_app_id) {
+  auto it = app_specific_dispatchers_.find(web_app_id);
+  if (it == app_specific_dispatchers_.end()) {
+    return;
+  }
+  it->second->UserInitiatedShutdown();
 }
 
 void NotificationPlatformBridgeMac::CloseAllNotificationsForProfile(

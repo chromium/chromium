@@ -21,6 +21,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -33,11 +34,12 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleUtils.ModuleNotShownReason;
@@ -63,13 +65,15 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocking GURL
 public class SearchResumptionModuleMediatorUnitTest {
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
     @Mock private Tab mTabToTrack;
     @Mock private Tab mTab;
     @Mock private ViewStub mParent;
     @Mock private SearchResumptionModuleView mModuleLayoutView;
     @Mock private SearchResumptionTileContainerView mSuggestionTilesContainerView;
-    @Mock private AutocompleteControllerProvider mAutocompleteProvider;
     @Mock private AutocompleteController mAutocompleteController;
+    @Mock private AutocompleteController.Natives mControllerJniMock;
     @Mock SearchResumptionTileBuilder mTileBuilder;
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
@@ -100,7 +104,8 @@ public class SearchResumptionModuleMediatorUnitTest {
                 ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID, false);
 
         mUserDataHost = new UserDataHost();
-        doReturn(mAutocompleteController).when(mAutocompleteProvider).get(any());
+        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mControllerJniMock);
+        doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
         mUrlToTrack = JUnitTestGURLs.EXAMPLE_URL;
         doReturn(mUrlToTrack).when(mTabToTrack).getUrl();
         GURL currentUrl = JUnitTestGURLs.NTP_URL;
@@ -142,7 +147,7 @@ public class SearchResumptionModuleMediatorUnitTest {
         List<AutocompleteMatch> list = Arrays.asList(mNonSearchSuggest1, mNonSearchSuggest1);
         doReturn(list).when(mAutocompleteResult).getSuggestionsList();
 
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", true);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, true);
         verify(mParent, times(0)).inflate();
         Assert.assertEquals(
                 0,
@@ -163,7 +168,7 @@ public class SearchResumptionModuleMediatorUnitTest {
                 Arrays.asList(mNonSearchSuggest1, mSearchSuggest1, mSearchSuggest2);
         doReturn(list).when(mAutocompleteResult).getSuggestionsList();
 
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", true);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, true);
         verify(mParent, times(1)).inflate();
         Assert.assertEquals(View.VISIBLE, mSuggestionTilesContainerView.getVisibility());
         Assert.assertEquals(
@@ -288,7 +293,6 @@ public class SearchResumptionModuleMediatorUnitTest {
         mMediator =
                 new SearchResumptionModuleMediator(
                         mParent,
-                        mAutocompleteProvider,
                         mTabToTrack,
                         mTab,
                         mProfile,
@@ -297,7 +301,12 @@ public class SearchResumptionModuleMediatorUnitTest {
         if (!useNewServiceEnabled && cachedSuggestions == null) {
             verify(mAutocompleteController).addOnSuggestionsReceivedListener(mListener.capture());
             verify(mAutocompleteController, times(1))
-                    .startZeroSuggest(any(), eq(mUrlToTrack), anyInt(), any());
+                    .startZeroSuggest(
+                            any(),
+                            eq(mUrlToTrack),
+                            anyInt(),
+                            any(),
+                            /* isOnFocusContext= */ eq(false));
         }
 
         mFeatureListValues.addFeatureFlagOverride(

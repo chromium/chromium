@@ -232,7 +232,7 @@ class AppsContainerView::ContinueContainer : public views::View {
   raw_ptr<views::Separator, DanglingUntriaged> separator_ = nullptr;
 };
 
-BEGIN_METADATA(AppsContainerView, ContinueContainer, views::View)
+BEGIN_METADATA(AppsContainerView, ContinueContainer)
 END_METADATA
 
 const int AppsContainerView::kHorizontalMargin = 24;
@@ -484,13 +484,6 @@ void AppsContainerView::ResetForShowApps() {
   }
 }
 
-void AppsContainerView::SetDragAndDropHostOfCurrentAppList(
-    ApplicationDragAndDropHost* drag_and_drop_host) {
-  apps_grid_view()->SetDragAndDropHostOfCurrentAppList(drag_and_drop_host);
-  app_list_folder_view()->items_grid_view()->SetDragAndDropHostOfCurrentAppList(
-      drag_and_drop_host);
-}
-
 void AppsContainerView::ReparentFolderItemTransit(
     AppListFolderItem* folder_item) {
   if (app_list_folder_view_->IsAnimationRunning())
@@ -562,6 +555,12 @@ void AppsContainerView::SelectedPageChanged(int old_selected,
   separator_->layer()->SetTransform(transform);
   if (toast_container_)
     toast_container_->layer()->SetTransform(transform);
+
+  if (new_selected == apps_grid_view_->pagination_model()->total_pages() - 1) {
+    RecordLauncherWorkflowMetrics(
+        AppListUserAction::kNavigatedToBottomOfAppList,
+        /*is_tablet_mode = */ true, std::nullopt);
+  }
 }
 
 void AppsContainerView::TransitionChanged() {
@@ -990,10 +989,6 @@ bool AppsContainerView::OnKeyPressed(const ui::KeyEvent& event) {
     return app_list_folder_view_->OnKeyPressed(event);
 }
 
-const char* AppsContainerView::GetClassName() const {
-  return "AppsContainerView";
-}
-
 void AppsContainerView::OnBoundsChanged(const gfx::Rect& old_bounds) {
   const bool creating_initial_config = !app_list_config_;
 
@@ -1034,13 +1029,13 @@ void AppsContainerView::OnDidChangeFocus(View* focused_before,
 
 void AppsContainerView::OnGestureEvent(ui::GestureEvent* event) {
   // Ignore tap/long-press, allow those to pass to the ancestor view.
-  if (event->type() == ui::ET_GESTURE_TAP ||
-      event->type() == ui::ET_GESTURE_LONG_PRESS) {
+  if (event->type() == ui::EventType::kGestureTap ||
+      event->type() == ui::EventType::kGestureLongPress) {
     return;
   }
 
   // Will forward events to |apps_grid_view_| if they occur in the same y-region
-  if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN &&
+  if (event->type() == ui::EventType::kGestureScrollBegin &&
       event->location().y() <= apps_grid_view_->bounds().y()) {
     return;
   }
@@ -1073,7 +1068,7 @@ void AppsContainerView::OnShown() {
   if (keyboard::KeyboardUIController::HasInstance())
     keyboard::KeyboardUIController::Get()->HideKeyboardExplicitlyBySystem();
 
-  GetViewAccessibility().OverrideIsLeaf(false);
+  GetViewAccessibility().SetIsLeaf(false);
   is_active_page_ = true;
 
   // Update the continue section.
@@ -1101,7 +1096,7 @@ void AppsContainerView::OnHidden() {
   // Apps container view is shown faded behind the search results UI - hide its
   // contents from the screen reader as the apps grid is not normally
   // actionable in this state.
-  GetViewAccessibility().OverrideIsLeaf(true);
+  GetViewAccessibility().SetIsLeaf(true);
 
   is_active_page_ = false;
 
@@ -1574,5 +1569,8 @@ views::View::DropCallback AppsContainerView::GetDropCallback(
   return apps_grid_view_->GetDropCallback(
       GetTranslatedDropTargetEvent(event, this, apps_grid_view_));
 }
+
+BEGIN_METADATA(AppsContainerView)
+END_METADATA
 
 }  // namespace ash

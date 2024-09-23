@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -39,6 +40,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -46,7 +48,6 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.javascript_dialogs.JavascriptTabModalDialog;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -114,7 +115,7 @@ public class JavascriptTabModalDialogTest {
         JavascriptTabModalDialog jsDialog = getCurrentDialog();
         Assert.assertNotNull("No dialog showing.", jsDialog);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel model =
                             mActivity.getModalDialogManager().getCurrentDialogForTest();
@@ -219,7 +220,7 @@ public class JavascriptTabModalDialogTest {
         final JavascriptTabModalDialog jsDialog = getCurrentDialog();
         Assert.assertNotNull("No dialog showing.", jsDialog);
 
-        onView(withId(R.id.modal_dialog_scroll_view))
+        onView(withId(R.id.modal_dialog_title_scroll_view))
                 .check(matches(expectedFocusability ? isFocusable() : not(isFocusable())));
 
         onView(withText(R.string.ok)).perform(click());
@@ -238,9 +239,14 @@ public class JavascriptTabModalDialogTest {
     public void testDialogDismissedAfterClosingTab() {
         executeJavaScriptAndWaitForDialog("alert('Android')");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mActivity.getCurrentTabModel().closeTab(mActivity.getActivityTab());
+                    mActivity
+                            .getCurrentTabModel()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(mActivity.getActivityTab())
+                                            .allowUndo(false)
+                                            .build());
                 });
 
         // Closing the tab should have dismissed the dialog.
@@ -275,7 +281,7 @@ public class JavascriptTabModalDialogTest {
     public void testDialogDismissedAfterUrlUpdated() {
         executeJavaScriptAndWaitForDialog("alert('Android')");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity
                             .getActivityTab()
@@ -328,7 +334,7 @@ public class JavascriptTabModalDialogTest {
      */
     private JavascriptTabModalDialog getCurrentDialog() throws ExecutionException {
         return (JavascriptTabModalDialog)
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             PropertyModel model =
                                     mActivity.getModalDialogManager().getCurrentDialogForTest();

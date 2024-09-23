@@ -6,7 +6,7 @@
 #define COMPONENTS_BROWSER_SYNC_SYNC_TO_SIGNIN_MIGRATION_H_
 
 #include "base/feature_list.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace base {
 class FilePath;
@@ -22,16 +22,18 @@ namespace browser_sync {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SyncToSigninMigrationDataTypeDecision)
 enum class SyncToSigninMigrationDataTypeDecision {
   kMigrate = 0,
   kDontMigrateTypeDisabled = 1,
   kDontMigrateTypeNotActive = 2,
   kMaxValue = kDontMigrateTypeNotActive
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationDataTypeDecision)
 
 SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
     const PrefService* pref_service,
-    syncer::ModelType type,
+    syncer::DataType type,
     const char* type_enabled_pref);
 
 // Migrates the current primary account (signed-in user) from "syncing" to

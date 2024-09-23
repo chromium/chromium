@@ -8,31 +8,21 @@
 
 namespace media {
 
-// static
-JpegAcceleratorProviderImpl* JpegAcceleratorProviderImpl::GetInstance() {
-  return base::Singleton<JpegAcceleratorProviderImpl>::get();
-}
-
-JpegAcceleratorProviderImpl::JpegAcceleratorProviderImpl()
-    : ui_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
-
-JpegAcceleratorProviderImpl::~JpegAcceleratorProviderImpl() {
-  CHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-}
-
-void JpegAcceleratorProviderImpl::Start(
+JpegAcceleratorProviderImpl::JpegAcceleratorProviderImpl(
     MojoMjpegDecodeAcceleratorFactoryCB jda_factory,
-    MojoJpegEncodeAcceleratorFactoryCB jea_factory) {
-  CHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-
-  jda_factory_ = std::move(jda_factory);
-  jea_factory_ = std::move(jea_factory);
-
+    MojoJpegEncodeAcceleratorFactoryCB jea_factory)
+    : ui_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+      jda_factory_(std::move(jda_factory)),
+      jea_factory_(std::move(jea_factory)) {
   CHECK(ash::mojo_service_manager::IsServiceManagerBound());
   auto* proxy = ash::mojo_service_manager::GetServiceManagerProxy();
   proxy->Register(
       /*service_name=*/chromeos::mojo_services::kCrosJpegAccelerator,
       provider_receiver_.BindNewPipeAndPassRemote());
+}
+
+JpegAcceleratorProviderImpl::~JpegAcceleratorProviderImpl() {
+  CHECK(ui_task_runner_->RunsTasksInCurrentSequence());
 }
 
 void JpegAcceleratorProviderImpl::GetJpegEncodeAccelerator(

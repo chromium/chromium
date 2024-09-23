@@ -1,0 +1,80 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("dialogs") {
+  sources = [
+    "files_policy_dialog.cc",
+    "files_policy_dialog.h",
+    "files_policy_dialog_utils.cc",
+    "files_policy_dialog_utils.h",
+    "files_policy_error_dialog.cc",
+    "files_policy_error_dialog.h",
+    "files_policy_warn_dialog.cc",
+    "files_policy_warn_dialog.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//ash/style",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp/dialogs",
+    "//chrome/common:chrome_features",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/strings:components_strings",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/base/metadata",
+    "//ui/chromeos/strings",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+    "//url",
+
+    # TODO: Use //chrome/browser instead after fixing cyclic dependency.
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/services/quarantine/public/mojom",
+    "//components/services/storage/public/mojom",
+    "//content/common:buildflags",
+    "//content/public/common:interfaces",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "files_policy_dialog_browsertest.cc" ]
+
+  deps = [
+    ":dialogs",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/file_manager:test_support",
+    "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support_ui",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/strings:components_strings",
+    "//content/test:test_support",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/views",
+  ]
+}

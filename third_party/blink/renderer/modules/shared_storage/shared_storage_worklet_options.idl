@@ -1,0 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum SharedStorageDataOrigin { "context-origin", "script-origin" };
+
+dictionary SharedStorageWorkletOptions : WorkletOptions {
+    // Currently only used for a use counter.
+    // TODO(348445878): Make this option live after we determine what its
+    // default should be.
+    SharedStorageDataOrigin dataOrigin = "context-origin";
+};

@@ -697,10 +697,6 @@ rollback:
  *									*
  ************************************************************************/
 
-#define TODO								\
-    xmlGenericError(xmlGenericErrorContext,				\
-	    "Unimplemented block at %s:%d\n",				\
-            __FILE__, __LINE__);
 #define CUR (*ctxt->cur)
 #define SKIP(val) ctxt->cur += (val)
 #define NXT(val) ctxt->cur[(val)]
@@ -1246,6 +1242,8 @@ xmlCompilePathPattern(xmlPatParserContextPtr ctxt) {
     if (CUR == '@') {
 	NEXT;
 	xmlCompileAttributeTest(ctxt);
+        if (ctxt->error != 0)
+            goto error;
 	SKIP_BLANKS;
 	/* TODO: check for incompleteness */
 	if (CUR != 0) {
@@ -2254,7 +2252,7 @@ xmlStreamWantsAnyNode(xmlStreamCtxtPtr streamCtxt)
  ************************************************************************/
 
 /**
- * xmlPatterncompile:
+ * xmlPatternCompileSafe:
  * @pattern: the pattern to compile
  * @dict: an optional dictionary for interned strings
  * @flags: compilation flags, see xmlPatternFlags
@@ -2262,6 +2260,8 @@ xmlStreamWantsAnyNode(xmlStreamCtxtPtr streamCtxt)
  * @patternOut: output pattern
  *
  * Compile a pattern.
+ *
+ * Available since 2.13.0.
  *
  * Returns 0 on success, 1 on error, -1 if a memory allocation failed.
  */
@@ -2275,6 +2275,9 @@ xmlPatternCompileSafe(const xmlChar *pattern, xmlDict *dict, int flags,
     int type = 0;
     int streamable = 1;
     int error;
+
+    if (patternOut == NULL)
+        return(1);
 
     if (pattern == NULL) {
         error = 1;

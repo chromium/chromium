@@ -24,6 +24,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_converter.h"
 #include "media/base/video_util.h"
+#include "media/parsers/h264_parser.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -128,12 +129,12 @@ class NdkVideoEncoderAcceleratorTest
     auto y = color & 0xFF;
     auto u = (color >> 8) & 0xFF;
     auto v = (color >> 16) & 0xFF;
-    libyuv::I420Rect(frame->writable_data(VideoFrame::kYPlane),
-                     frame->stride(VideoFrame::kYPlane),
-                     frame->writable_data(VideoFrame::kUPlane),
-                     frame->stride(VideoFrame::kUPlane),
-                     frame->writable_data(VideoFrame::kVPlane),
-                     frame->stride(VideoFrame::kVPlane),
+    libyuv::I420Rect(frame->writable_data(VideoFrame::Plane::kY),
+                     frame->stride(VideoFrame::Plane::kY),
+                     frame->writable_data(VideoFrame::Plane::kU),
+                     frame->stride(VideoFrame::Plane::kU),
+                     frame->writable_data(VideoFrame::Plane::kV),
+                     frame->stride(VideoFrame::Plane::kV),
                      0,                               // left
                      0,                               // top
                      frame->visible_rect().width(),   // right
@@ -161,8 +162,8 @@ class NdkVideoEncoderAcceleratorTest
     auto frame = VideoFrame::CreateFrame(PIXEL_FORMAT_XRGB, size,
                                          gfx::Rect(size), size, timestamp);
 
-    libyuv::ARGBRect(frame->writable_data(VideoFrame::kARGBPlane),
-                     frame->stride(VideoFrame::kARGBPlane),
+    libyuv::ARGBRect(frame->writable_data(VideoFrame::Plane::kARGB),
+                     frame->stride(VideoFrame::Plane::kARGB),
                      0,                               // left
                      0,                               // top
                      frame->visible_rect().width(),   // right
@@ -193,9 +194,10 @@ class NdkVideoEncoderAcceleratorTest
     gfx::Size frame_size(640, 480);
     uint32_t framerate = 30;
     auto bitrate = Bitrate::ConstantBitrate(1000000u);
-    auto config = VideoEncodeAccelerator::Config(pixel_format_, frame_size,
-                                                 profile_, bitrate);
-    config.initial_framerate = framerate;
+    auto config = VideoEncodeAccelerator::Config(
+        pixel_format_, frame_size, profile_, bitrate, framerate,
+        VideoEncodeAccelerator::Config::StorageType::kShmem,
+        VideoEncodeAccelerator::Config::ContentType::kCamera);
     config.gop_length = 1000;
     config.required_encoder_type =
         VideoEncodeAccelerator::Config::EncoderType::kNoPreference;
@@ -212,6 +214,53 @@ class NdkVideoEncoderAcceleratorTest
     auto runner = task_environment_.GetMainThreadTaskRunner();
     return base::WrapUnique<VideoEncodeAccelerator>(
         new NdkVideoEncodeAccelerator(runner));
+  }
+
+  void ValidateStream(base::span<uint8_t> data) {
+    EXPECT_GT(data.size(), 0u);
+    switch (codec_) {
+      case VideoCodec::kH264: {
+        H264Parser parser;
+        parser.SetStream(data.data(), data.size());
+
+        int num_parsed_nalus = 0;
+        while (true) {
+          media::H264SliceHeader shdr;
+          H264NALU nalu;
+          H264Parser::Result res = parser.AdvanceToNextNALU(&nalu);
+          if (res == H264Parser::kEOStream) {
+            EXPECT_GT(num_parsed_nalus, 0);
+            break;
+          }
+          EXPECT_EQ(res, H264Parser::kOk);
+          ++num_parsed_nalus;
+
+          int id;
+          switch (nalu.nal_unit_type) {
+            case H264NALU::kSPS: {
+              EXPECT_EQ(parser.ParseSPS(&id), H264Parser::kOk);
+              const H264SPS* sps = parser.GetSPS(id);
+              VideoCodecProfile profile =
+                  H264Parser::ProfileIDCToVideoCodecProfile(sps->profile_idc);
+              EXPECT_EQ(profile, profile_);
+              break;
+            }
+
+            case H264NALU::kPPS:
+              EXPECT_EQ(parser.ParsePPS(&id), H264Parser::kOk);
+              break;
+
+            default:
+              break;
+          }
+        }
+        break;
+      }
+      default: {
+        EXPECT_TRUE(
+            base::ranges::any_of(data, [](uint8_t x) { return x != 0; }));
+      }
+    }
   }
 
   VideoCodec codec_;
@@ -310,9 +359,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
     EXPECT_GE(mapping.size(), output.md.payload_size_bytes);
     EXPECT_GT(output.md.payload_size_bytes, 0u);
     auto span = mapping.GetMemoryAsSpan<uint8_t>();
-    bool found_not_zero =
-        base::ranges::any_of(span, [](uint8_t x) { return x != 0; });
-    EXPECT_TRUE(found_not_zero);
+    ValidateStream(span);
   }
 }
 
@@ -330,6 +377,8 @@ VideoParams kParams[] = {
     {VP8PROFILE_MIN, PIXEL_FORMAT_I420},
     {VP8PROFILE_MIN, PIXEL_FORMAT_NV12},
     {H264PROFILE_BASELINE, PIXEL_FORMAT_I420},
+    {H264PROFILE_MAIN, PIXEL_FORMAT_I420},
+    {H264PROFILE_HIGH, PIXEL_FORMAT_I420},
     {H264PROFILE_BASELINE, PIXEL_FORMAT_NV12},
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     {HEVCPROFILE_MAIN, PIXEL_FORMAT_I420},

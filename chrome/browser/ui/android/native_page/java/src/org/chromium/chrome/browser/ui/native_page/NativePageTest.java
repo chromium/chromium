@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.ui.native_page;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +14,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
+import org.chromium.url.GURL;
 
 /** Tests public methods in NativePage. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -70,9 +74,10 @@ public class NativePageTest {
     public void testPositiveIsNativePageUrl() {
         for (UrlCombo urlCombo : VALID_URLS) {
             String url = urlCombo.url;
-            Assert.assertTrue(url, NativePage.isNativePageUrl(url, false));
+            GURL gurl = new GURL(url);
+            Assert.assertTrue(url, NativePage.isNativePageUrl(gurl, false, false));
             if (isValidInIncognito(urlCombo)) {
-                Assert.assertTrue(url, NativePage.isNativePageUrl(url, true));
+                Assert.assertTrue(url, NativePage.isNativePageUrl(gurl, true, false));
             }
         }
     }
@@ -84,8 +89,32 @@ public class NativePageTest {
     @Test
     public void testNegativeIsNativePageUrl() {
         for (String invalidUrl : INVALID_URLS) {
-            Assert.assertFalse(invalidUrl, NativePage.isNativePageUrl(invalidUrl, false));
-            Assert.assertFalse(invalidUrl, NativePage.isNativePageUrl(invalidUrl, true));
+            GURL gurl = new GURL(invalidUrl);
+            Assert.assertFalse(invalidUrl, NativePage.isNativePageUrl(gurl, false, false));
+            Assert.assertFalse(invalidUrl, NativePage.isNativePageUrl(gurl, true, false));
         }
+    }
+
+    @Test
+    public void testNativePageType_Pdf() {
+        String url1 = "chrome-native://pdf/link?url=xyz";
+        String url2 = "chrome-native://pdf/link?url=abc";
+        NativePage candidatePage = mock(NativePage.class);
+        doReturn(url1).when(candidatePage).getUrl();
+        Assert.assertEquals(
+                "Candidate page should be reused when url matches",
+                NativePageType.CANDIDATE,
+                NativePage.nativePageType(url1, candidatePage, false, true));
+
+        doReturn(url2).when(candidatePage).getUrl();
+        Assert.assertEquals(
+                "Candidate page should not be reused when url does not match",
+                NativePageType.PDF,
+                NativePage.nativePageType(url1, candidatePage, false, true));
+
+        Assert.assertEquals(
+                "Native page should not be created without associated pdf download",
+                NativePageType.NONE,
+                NativePage.nativePageType(url1, candidatePage, false, false));
     }
 }

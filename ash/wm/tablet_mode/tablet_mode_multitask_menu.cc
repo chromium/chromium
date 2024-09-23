@@ -127,7 +127,8 @@ class TabletModeMultitaskMenuView : public views::View {
     layer()->SetFillsBoundsOpaquely(false);
 
     shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
-        SystemShadow::Type::kElevation12);
+        SystemShadow::Type::kElevation12,
+        SystemShadow::LayerRecreatedCallback());
     shadow_->SetRoundedCornerRadius(kCornerRadius);
     layer()->Add(shadow_->GetLayer());
   }
@@ -156,7 +157,9 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
     : controller_(controller) {
   CHECK(window);
 
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   // Use an activatable container that's guaranteed to be on top of the desk

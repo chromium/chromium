@@ -32,3 +32,7 @@ TouchEventsRecursiveViewTest.*
 -SitePerProcessInteractiveBrowserTest.FullscreenElementInABAAndExitViaEscapeKey
 -SitePerProcessInteractiveBrowserTest.FullscreenElementInSubframe
 -TooltipBrowserTest.ShowTooltipFromWebContentWithCursor
+
+# https://ci.chromium.org/ui/p/chromium/builders/ci/win-rel-cft/4789
+-WebContentsInteractionTestUtilInteractiveUiTest.NavigateMenuAndBringUpDownloadsPageThenOpenMoreActionsMenu
+-WebContentsInteractionTestUtilInteractiveUiTest.UseElementBoundsInScreenToSendInput

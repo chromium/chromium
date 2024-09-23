@@ -112,10 +112,6 @@ BLINK_EXPORT void MemoryPressureNotificationToAllIsolates(
 BLINK_EXPORT void SetBatterySaverModeForAllIsolates(
     bool battery_saver_mode_enabled);
 
-// Send isolate background/foreground notification to worker thread isolates.
-BLINK_EXPORT void IsolateInBackgroundNotification();
-BLINK_EXPORT void IsolateInForegroundNotification();
-
 // Logs stats. Intended to be called during shutdown.
 BLINK_EXPORT void LogStatsDuringShutdown();
 
@@ -158,6 +154,10 @@ BLINK_EXPORT bool IsIsolatedContext();
 // from frames.
 BLINK_EXPORT void SetCorsExemptHeaderList(
     const WebVector<WebString>& web_cors_exempt_header_list);
+
+// Notification the process hosting blink is in the foreground/background.
+BLINK_EXPORT void OnProcessForegrounded();
+BLINK_EXPORT void OnProcessBackgrounded();
 
 }  // namespace blink
 

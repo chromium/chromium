@@ -17,6 +17,7 @@
 #include "net/base/request_priority.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/socket/connect_job.h"
+#include "net/socket/connect_job_params.h"
 #include "net/socket/socks_client_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -29,7 +30,7 @@ class TransportSocketParams;
 class NET_EXPORT_PRIVATE SOCKSSocketParams
     : public base::RefCounted<SOCKSSocketParams> {
  public:
-  SOCKSSocketParams(scoped_refptr<TransportSocketParams> proxy_server_params,
+  SOCKSSocketParams(ConnectJobParams nested_params,
                     bool socks_v5,
                     const HostPortPair& host_port_pair,
                     const NetworkAnonymizationKey& network_anonymization_key,

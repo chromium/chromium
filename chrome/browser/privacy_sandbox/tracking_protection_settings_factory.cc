@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -32,12 +32,15 @@ TrackingProtectionSettingsFactory::TrackingProtectionSettingsFactory()
           "TrackingProtectionSettings",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): If `WithGuest` changes for
+              // TODO(crbug.com/40257657): If `WithGuest` changes for
               // CookieControlsServiceFactory or PrivacySandboxServiceFactory
               // it should also be reflected here.
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-  DependsOn(TrackingProtectionOnboardingFactory::GetInstance());
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -55,15 +58,16 @@ TrackingProtectionSettingsFactory::BuildServiceInstanceForBrowserContext(
     } else {
       base::UmaHistogramBoolean("Settings.TrackingProtection.Enabled", false);
     }
-    if (base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionV1)) {
-      base::UmaHistogramBoolean(
-          "Settings.IpProtection.Enabled",
-          profile->GetPrefs()->GetBoolean(prefs::kIpProtectionEnabled));
-    }
+    base::UmaHistogramBoolean(
+        "Settings.IpProtection.Enabled",
+        profile->GetPrefs()->GetBoolean(prefs::kIpProtectionEnabled));
+    base::UmaHistogramBoolean("Settings.FingerprintingProtection.Enabled",
+                              profile->GetPrefs()->GetBoolean(
+                                  prefs::kFingerprintingProtectionEnabled));
   }
 
   return std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
       profile->GetPrefs(),
-      TrackingProtectionOnboardingFactory::GetForProfile(profile),
+      HostContentSettingsMapFactory::GetForProfile(profile),
       profile->IsIncognitoProfile());
 }

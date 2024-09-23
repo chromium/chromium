@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
 @class TabGridNewTabButton;
@@ -19,14 +19,16 @@
 // Horizontal-compact and vertical-regular screen size:
 //   Small newTabButton, translucent background.
 //   Incognito & Regular page: [CloseAllButton  newTabButton  DoneButton]
+//   Tab Groups page:          [                              DoneButton]
 //   Remote page:              [                              DoneButton]
 //   Selection mode:           [CloseTabButton  shareButton  AddToButton]
 //
 // Other screen size:
 //   Large newTabButton, floating layout without UIToolbar.
-//   Normal mode:    [                                      newTabButton]
-//   Remote page:    [                                                  ]
-//   Selection mode: [CloseTabButton       shareButton       AddToButton]
+//   Normal mode:     [                                      newTabButton]
+//   Tab Groups page: [                                                  ]
+//   Remote page:     [                                                  ]
+//   Selection mode:  [CloseTabButton       shareButton       AddToButton]
 @interface TabGridBottomToolbar : UIView <KeyCommandActions>
 
 // This property together with `mode` and self.traitCollection control the items
@@ -42,31 +44,37 @@
 @property(nonatomic, assign) int selectedTabsCount;
 // Delegate to call when a button is pushed.
 @property(nonatomic, weak) id<TabGridToolbarsGridDelegate> buttonsDelegate;
+// Whether the the scrolled to edge background should be hidden.
+@property(nonatomic, assign) BOOL hideScrolledToEdgeBackground;
 
-// Set `enabled` on the new tab button.
+// Sets `enabled` on the new tab button.
 - (void)setNewTabButtonEnabled:(BOOL)enabled;
-// Set `enabled` on the done button.
+// Sets `enabled` on the done button.
 - (void)setDoneButtonEnabled:(BOOL)enabled;
-// Set `enabled` on the closeAll button.
+// Sets the visibility of the Done button.
+- (void)setDoneButtonHidden:(BOOL)hidden;
+// Sets `enabled` on the closeAll button.
 - (void)setCloseAllButtonEnabled:(BOOL)enabled;
-// use undo or closeAll text on the close all button based on `useUndo` value.
+// Uses undo or closeAll text on the close all button based on `useUndo` value.
 - (void)useUndoCloseAll:(BOOL)useUndo;
 
-// Set `enabled` on the close tabs button.
+// Sets `enabled` on the close tabs button.
 - (void)setCloseTabsButtonEnabled:(BOOL)enabled;
 
-// Set `enabled` on the close tabs button.
+// Sets `enabled` on the close tabs button.
 - (void)setShareTabsButtonEnabled:(BOOL)enabled;
 
 // Sets the `menu` displayed on tapping the Add To button.
 - (void)setAddToButtonMenu:(UIMenu*)menu;
-// Set `enabled` on the Add To button.
+// Sets `enabled` on the Add To button.
 - (void)setAddToButtonEnabled:(BOOL)enabled;
 
 // Sets the `menu` displayed on tapping the Edit button.
 - (void)setEditButtonMenu:(UIMenu*)menu;
-// Set `enabled` on the Edit button.
+// Sets `enabled` on the Edit button.
 - (void)setEditButtonEnabled:(BOOL)enabled;
+// Sets the visibility of the Edit button.
+- (void)setEditButtonHidden:(BOOL)hidden;
 
 // Hides components and uses a black background color for tab grid transition
 // animation.
@@ -78,6 +86,7 @@
 - (void)setScrollViewScrolledToEdge:(BOOL)scrolledToEdge;
 // Adds the receiver in the chain before the original next responder.
 - (void)respondBeforeResponder:(UIResponder*)nextResponder;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TOOLBARS_TAB_GRID_BOTTOM_TOOLBAR_H_

@@ -5,8 +5,9 @@
 #ifndef UI_GFX_WIN_HWND_UTIL_H_
 #define UI_GFX_WIN_HWND_UTIL_H_
 
-#include <shobjidl.h>  // Must be before propkey.
+#include <shobjidl.h>
 #include <windows.h>
+
 #include <wrl/client.h>
 
 #include <optional>

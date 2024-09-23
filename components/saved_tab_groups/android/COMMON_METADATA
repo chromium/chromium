@@ -1,0 +1,7 @@
+monorail: {
+  component: "UI>Browser>Mobile>TabSwitcher>Grid"
+}
+os: ANDROID
+buganizer_public: {
+  component_id: 1457139
+}

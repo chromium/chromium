@@ -12,6 +12,11 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "ui/native_theme/native_theme.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_factory.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 PageColors::PageColors(PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {
   theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
@@ -22,15 +27,17 @@ PageColors::~PageColors() = default;
 void PageColors::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
-      prefs::kPageColors, ui::NativeTheme::PageColors::kOff,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kApplyPageColorsOnlyOnIncreasedContrast, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+      prefs::kPageColors,
+      /*default_value=*/ui::NativeTheme::PageColors::kOff);
+  registry->RegisterListPref(prefs::kPageColorsBlockList);
 #if BUILDFLAG(IS_WIN)
-  registry->RegisterBooleanPref(
-      prefs::kIsDefaultPageColorsOnHighContrast, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kApplyPageColorsOnlyOnIncreasedContrast,
+                                /*default_value=*/true);
+  registry->RegisterBooleanPref(prefs::kIsDefaultPageColorsOnHighContrast,
+                                /*default_value=*/true);
+#else
+  registry->RegisterBooleanPref(prefs::kApplyPageColorsOnlyOnIncreasedContrast,
+                                /*default_value=*/false);
 #endif  // BUILDFLAG(IS_WIN)
 }
 
@@ -43,15 +50,20 @@ void PageColors::Init() {
       prefs::kApplyPageColorsOnlyOnIncreasedContrast,
       base::BindRepeating(&PageColors::OnPageColorsChanged,
                           weak_factory_.GetWeakPtr()));
-#if BUILDFLAG(IS_WIN)
-  profile_prefs_->SetBoolean(prefs::kApplyPageColorsOnlyOnIncreasedContrast,
-                             true);
-#endif  // BUILDFLAG(IS_WIN)
-  OnPageColorsChanged();
+  OnPreferredContrastChanged();
 }
 
 void PageColors::OnPageColorsChanged() {
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+#if BUILDFLAG(IS_LINUX)
+  // Allow the Linux native theme to update its state for page colors.
+  if (auto* linux_ui_theme = ui::GetDefaultLinuxUiTheme()) {
+    if (auto* linux_native_theme = linux_ui_theme->GetNativeTheme()) {
+      native_theme = linux_native_theme;
+    }
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
   ui::NativeTheme::PageColors previous_page_colors =
       native_theme->GetPageColors();
   ui::NativeTheme::PageColors current_page_colors = CalculatePageColors();

@@ -249,14 +249,25 @@ message ClientPhishingRequest {
   // users.
   optional VisualFeatures visual_features = 26;
 
-  // Carried over from realtime API response, this is used to identify cases
-  // where the scoring from protego requested this request.
+  // This is used to identify what process sent the ping.
   optional ClientSideDetectionType client_side_detection_type = 28;
 
   // Image embedding from model output tensor
   optional ImageFeatureEmbedding image_feature_embedding = 29;
 
-  // next available tag number: 30.
+  enum ReportType {
+    REPORT_TYPE_UNSPECIFIED = 0;
+    // Normal/full ping to Safe Browsing containing all the fields in the
+    // ClientPhishingRequest.
+    FULL_REPORT = 1;
+    // Sample ping to Safe Browsing. This will override the local model result
+    // when deciding to send the ping.
+    SAMPLE_REPORT = 2;
+  }
+
+  optional ReportType report_type = 30;
+
+  // next available tag number: 31.
 }
 
 message ClientPhishingResponse {
@@ -274,6 +285,48 @@ message ClientPhishingResponse {
   // Marked OBSOLETE because the URL is sent for all users, so the server
   // can do allowlist matching.
   repeated string OBSOLETE_allowlist_expression = 2;
+}
+
+// Enum used to keep stats about why the pre-classification check failed.
+// These values are persisted to logs and used in client_side_detection_host.
+// Entries should not be renumbered and numeric values should never be reused.
+enum PreClassificationCheckResult {
+  OBSOLETE_NO_CLASSIFY_PROXY_FETCH = 0;
+  NO_CLASSIFY_PRIVATE_IP = 1;
+  NO_CLASSIFY_OFF_THE_RECORD = 2;
+  NO_CLASSIFY_MATCH_CSD_ALLOWLIST = 3;
+  NO_CLASSIFY_TOO_MANY_REPORTS = 4;
+  NO_CLASSIFY_UNSUPPORTED_MIME_TYPE = 5;
+  NO_CLASSIFY_NO_DATABASE_MANAGER = 6;
+  NO_CLASSIFY_KILLSWITCH = 7;
+  NO_CLASSIFY_CANCEL = 8;
+  NO_CLASSIFY_RESULT_FROM_CACHE = 9;
+  DEPRECATED_NO_CLASSIFY_NOT_HTTP_URL = 10;
+  NO_CLASSIFY_SCHEME_NOT_SUPPORTED = 11;
+  NO_CLASSIFY_ALLOWLISTED_BY_POLICY = 12;
+  CLASSIFY = 13;
+  NO_CLASSIFY_HAS_DELAYED_WARNING = 14;
+  NO_CLASSIFY_LOCAL_RESOURCE = 15;
+  NO_CLASSIFY_CHROME_UI_PAGE = 16;
+  OBSOLETE_NO_CLASSIFY_NOT_ALLOWED_BY_POLICY = 17;
+  NO_CLASSIFY_MAX = 18;  // Always add before this, and update this value.
+}
+
+// This value must be kept in sync with those in
+// components/safe_browsing/content/common/safe_browsing.mojom. The enum
+// represents possible outcomes of the renderer-side classification.
+enum PhishingDetectorResult {
+  CLASSIFICATION_SUCCESS = 0;
+  CLASSIFIER_NOT_READY = 1;
+  CLASSIFICATION_CANCELLED = 2;
+  FORWARD_BACK_TRANSITION = 3;
+  INVALID_SCORE = 4;
+  INVALID_URL_FORMAT_REQUEST = 5;
+  INVALID_DOCUMENT_LOADER = 6;
+  URL_FEATURE_EXTRACTION_FAILED = 7;
+  DOM_EXTRACTION_FAILED = 8;
+  TERM_EXTRACTION_FAILED = 9;
+  VISUAL_EXTRACTION_FAILED = 10;
 }
 
 // The message is used for client request to determine whether the provided URL
@@ -350,8 +403,8 @@ message LoginReputationClientRequest {
     // Deprecated field.
     reserved 3;
 
-    // TODO(crbug/914410): Remove once ReusedPasswordAccountType is implemented.
-    // Sync account type.
+    // TODO(crbug.com/41431428): Remove once ReusedPasswordAccountType is
+    // implemented. Sync account type.
     enum SyncAccountType {
       // Not a sign-in user.
       NOT_SIGNED_IN = 0;
@@ -364,8 +417,8 @@ message LoginReputationClientRequest {
     }
     optional SyncAccountType sync_account_type = 4;
 
-    // TODO(crbug/914410): Remove once ReusedPasswordAccountType is implemented.
-    // Type of password being reused.
+    // TODO(crbug.com/41431428): Remove once ReusedPasswordAccountType is
+    // implemented. Type of password being reused.
     enum ReusedPasswordType {
       REUSED_PASSWORD_TYPE_UNKNOWN = 0;
 
@@ -504,6 +557,33 @@ message LoginReputationClientRequest {
   }
 
   optional ReferringAppInfo referring_app_info = 15;
+
+  // The debugging metadata holds information regarding the results within the
+  // CSD-Phishing process. This debugging metadata helps understand what the
+  // results were from CSD-Phishing for the same URL page, especially in cases
+  // where CSD-Phishing ping was not sent.
+  message DebuggingMetadata {
+    // Trigger model version that was used to classify for CSD-Phishing.
+    optional int32 csd_model_version = 1;
+
+    // Result to show whether preclassification check has failed or not.
+    optional PreClassificationCheckResult preclassification_check_result = 2;
+
+    // Result representing possible outcomes of renderer-side classification.
+    optional PhishingDetectorResult phishing_detector_result = 3;
+
+    // Represents the local verdict result through thresholds classification.
+    optional bool local_model_detects_phishing = 4;
+
+    // Represents whether a CSD-Phishing ping was sent forcefully based on
+    // ProLlama verdicts.
+    optional bool forced_request = 5;
+
+    // Integer value interpretation can be found at: /net/base/net_error_list.h.
+    optional int32 network_result = 6;
+  }
+
+  optional DebuggingMetadata csd_debugging_metadata = 16;
 }
 
 // The message is used for client response for login reputation requests.
@@ -888,81 +968,7 @@ message ClientDownloadRequest {
   // "Authorization: Bearer" header
   optional string access_token = 78;
 
-  // next available tag number: 85;
-  message DocumentInfo {
-    optional bool contains_macros = 1;
-  }
-
-  message DocumentProcessingInfo {
-    optional bool processing_successful = 1;
-    // The high-level error type returned from MalDocA when it cannot
-    // successfully process a document.
-    enum MaldocaErrorType {
-      // error codes for gRPC APIs
-      OK = 0;
-      CANCELLED = 1;
-      UNKNOWN = 2;
-      INVALID_ARGUMENT = 3;
-      DEADLINE_EXCEEDED = 4;
-      NOT_FOUND = 5;
-      ALREADY_EXISTS = 6;
-      PERMISSION_DENIED = 7;
-      RESOURCE_EXHAUSTED = 8;
-      FAILED_PRECONDITION = 9;
-      ABORTED = 10;
-      OUT_OF_RANGE = 11;
-      UNIMPLEMENTED = 12;
-      INTERNAL = 13;
-      UNAVAILABLE = 14;
-      DATA_LOSS = 15;
-      UNAUTHENTICATED = 16;
-
-      // MalDocA Error Codes
-      // third_party/maldoca/src/maldoca/base/status_proto.proto
-      DOC_TYPE_INFERENCE_FAILED = 1000;
-      UNSUPPORTED_DOC_TYPE = 1001;
-      SANDBOX_ERROR = 1002;
-      ARCHIVE_CORRUPTED = 1003;
-      OLE_DIR_PARSING_FAILED = 1004;
-      OLE_FAT_HEADER_PARSING_FAILED = 1005;
-      PREFIXED_ANSI_STRING_HEADER_TOO_SHORT = 1006;
-      PREFIXED_ANSI_STRING_CONTENT_TOO_SHORT = 1007;
-      CLIPBOARD_FORMAT_OR_ANSI_STRING_TOO_SHORT = 1008;
-      BOF_HEADER_TOO_SHORT = 1009;
-      NOT_BIFF_FORMAT = 1010;
-      FAIL_PARSE_BIFF_VERSION = 1011;
-      INVALID_DDE_OLE_LINK = 1012;
-      OLE_NATIVE_EMBEDDED_PARSE_SIZE_FAIL = 1013;
-      OLE_NATIVE_EMBEDDED_SIZE_MISMATCH = 1014;
-      OLE_NATIVE_EMBEDDED_PARSE_TYPE_FAIL = 1015;
-      OLE_NATIVE_EMBEDDED_PARSE_FILENAME_FAIL = 1016;
-      OLE_NATIVE_EMBEDDED_PARSE_FILEPATH_FAIL = 1017;
-      OLE_NATIVE_EMBEDDED_PARSE_RESERVED_FAIL = 1018;
-      OLE_NATIVE_EMBEDDED_PARSE_TEMPPATH_FAIL = 1019;
-      OLE_NATIVE_EMBEDDED_PARSE_FILESIZE_FAIL = 1020;
-      OLE_NATIVE_EMBEDDED_FILESIZE_MISMATCH = 1021;
-      OLE_NATIVE_EMBEDDED_PARSE_CONTENT_FAIL = 1022;
-      INVALID_OLE2_HEADER = 1023;
-      INVALID_FAT_HEADER = 1024;
-      EMPTY_FAT_HEADER = 1025;
-      INVALID_ROOT_DIR = 1026;
-      MISSING_FILE_IN_ARCHIVE = 1027;
-      INVALID_XML_DOC = 1028;
-      MISSING_PROPERTIES = 1029;
-      NOT_IMPLEMENTED_FOR_CHROME = 1030;
-      NOT_IMPLEMENTED = 1031;
-      MISSING_ENCODING = 1032;
-    }
-    optional MaldocaErrorType maldoca_error_type = 2;
-    optional string maldoca_error_message = 3;
-  }
-
-  message DocumentSummary {
-    optional DocumentInfo metadata = 1;
-    optional DocumentProcessingInfo processing_info = 2;
-  }
-
-  optional DocumentSummary document_summary = 84;
+  reserved 84;
 
   message ArchiveSummary {
     enum Status {
@@ -1003,16 +1009,20 @@ message ClientDownloadRequest {
     // Version 2: Client-side UI string/icon updates. Supported in M117.
     // Version 3: Client-side UI string update for suspicious archive warnings.
     // Supported in M120.
+    // Version 4: Client supports tailored warnings on downloads page. Client
+    // sends download reports without explicit user decision. Supported in M125.
+    // Version 5: Fixed the issue that cookie theft warnings are not bypassable.
+    // See https://crbug.com/350780005.
     optional int32 version = 1;
   }
   optional TailoredInfo tailored_info = 86;
 
-  // Fields 87-89 are reserved for server-side use and are never sent by the
+  // Fields 87-90 are reserved for server-side use and are never sent by the
   // client.
-  reserved 87 to 89;
+  reserved 87 to 90;
 
   // The token from previous requests related to this download, if any exists.
-  optional bytes previous_token = 90;
+  optional bytes previous_token = 91;
 }
 
 message ReferrerChainOptions {
@@ -1153,6 +1163,16 @@ enum ClientSideDetectionType {
   CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED = 0;
   // Send a CSD request regardless of the client side model's score values.
   FORCE_REQUEST = 1;
+  // Either the local DOM or visual model triggered.
+  TRIGGER_MODELS = 2;
+  // A Notification prompt triggered.
+  NOTIFICATION_PERMISSION_PROMPT = 3;
+  // Keyboard lock request triggered.
+  KEYBOARD_LOCK_REQUESTED = 4;
+  // Pointer lock request triggered.
+  POINTER_LOCK_REQUESTED = 5;
+  // Vibration APi is called.
+  VIBRATION_API = 6;
 }
 
 message ClientDownloadResponse {
@@ -1505,7 +1525,7 @@ message DownloadMetadata {
 // A Detailed Safebrowsing Report from clients. Chrome safebrowsing reports are
 // only sent by Chrome users who have opted into extended Safe Browsing.
 // This proto is replacing ClientMalwareReportRequest.
-// Next tag: 34
+// Next tag: 37
 message ClientSafeBrowsingReportRequest {
   // Note: A lot of the "optional" fields would make sense to be
   // "required" instead.  However, having them as optional allows the
@@ -1533,6 +1553,16 @@ message ClientSafeBrowsingReportRequest {
     HASH_PREFIX_REAL_TIME_EXPERIMENT = 21 [deprecated = true];
     PHISHY_SITE_INTERACTIONS = 22;
     WARNING_SHOWN = 23;
+    NOTIFICATION_PERMISSION_ACCEPTED = 24;
+    // This report is triggered if a download warning is not interacted in one
+    // hour and automatically deleted by Chrome.
+    DANGEROUS_DOWNLOAD_AUTO_DELETED = 25;
+    // This report is triggered if a download warning is not interacted when
+    // Chrome is closed.
+    DANGEROUS_DOWNLOAD_PROFILE_CLOSED = 26;
+    // This report is triggered by the sampled HPRT lookup where it showed
+    // different verdicts from the URL real-time lookup.
+    URL_REALTIME_AND_HASH_REALTIME_DISCREPANCY = 27;
   }
 
   message HTTPHeader {
@@ -1633,7 +1663,7 @@ message ClientSafeBrowsingReportRequest {
     PVER4_NATIVE = 2;
     // Android SafetyNet API.
     // https://developer.android.com/training/safetynet/safebrowsing.html
-    ANDROID_SAFETYNET = 3;
+    ANDROID_SAFETYNET = 3 [deprecated = true];
     // Flywheel (data compression service).
     // Deprecated as of 2021-1. Data saver has been completely turned down.
     FLYWHEEL = 4 [deprecated = true];
@@ -1645,6 +1675,8 @@ message ClientSafeBrowsingReportRequest {
     ANDROID_SAFEBROWSING_REAL_TIME = 7;
     // The Android Safe Browsing API hit in local blocklist.
     ANDROID_SAFEBROWSING = 8;
+    // Client-side phishing.
+    CLIENT_SIDE_DETECTION = 9;
   }
 
   // The information propagated from the client about various environment
@@ -1661,6 +1693,8 @@ message ClientSafeBrowsingReportRequest {
     // the user may see the page before they see a warning. See
     // go/async-sb-check-telemetry for details.
     optional bool is_async_check = 7;
+    // Whether Google Play Protect is verifying apps.
+    optional bool app_verification_enabled = 8;
   }
   optional SafeBrowsingClientProperties client_properties = 17;
 
@@ -1713,13 +1747,11 @@ message ClientSafeBrowsingReportRequest {
       // Applicable actions: DISCARD, OPEN_SUBPAGE
       BUBBLE_MAINPAGE = 1;
       // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK,
-      // PROCEED_DEEP_SCAN, OPEN_LEARN_MORE_LINK
+      // PROCEED_DEEP_SCAN, OPEN_LEARN_MORE_LINK, ACCEPT_DEEP_SCAN
       BUBBLE_SUBPAGE = 2;
-      // Applicable actions: DISCARD, KEEP, PROCEED
+      // Applicable actions: DISCARD, KEEP, PROCEED, ACCEPT_DEEP_SCAN
       DOWNLOADS_PAGE = 3;
-      // Applicable actions: PROCEED, CANCEL, CLOSE
-      // TODO(chlily): Remove CLOSE option once ImprovedDownloadPageWarnings
-      // launches.
+      // Applicable actions: PROCEED, CANCEL
       DOWNLOAD_PROMPT = 4;
       // Applicable actions: OPEN_SUBPAGE
       // Note: This only covers ChromeOS Lacros v2 notifications. CLOSE should
@@ -1756,6 +1788,8 @@ message ClientSafeBrowsingReportRequest {
       PROCEED_DEEP_SCAN = 9;
       // The user clicks the learn more link on the bubble subpage.
       OPEN_LEARN_MORE_LINK = 10;
+      // The user accepts starting a deep scan.
+      ACCEPT_DEEP_SCAN = 11;
     }
     optional Action action = 2;
 
@@ -1869,6 +1903,8 @@ message ClientSafeBrowsingReportRequest {
     SPECULATION_RULES = 26;
     // import "..." with { type: "json" }
     JSON = 27;
+    // sharedStorage.createWorklet(), sharedStorage.worklet.addModule()
+    SHARED_STORAGE_WORKLET = 28;
   }
 
   // Only populated for interstitial reports (URL_PHISHING, URL_MALWARE,
@@ -1971,6 +2007,40 @@ message ClientSafeBrowsingReportRequest {
   }
 
   optional WarningShownInfo warning_shown_info = 33;
+
+  // Information included in NOTIFICATION_PERMISSION_ACCEPTED reports.
+  message PermissionPromptInfo {
+    // The request origin of the permission prompt.
+    optional string origin = 1;
+
+    // The amount of time the user spent on the permission prompt before
+    // accepting the permission.
+    optional int64 display_duration_sec = 2;
+  }
+
+  optional PermissionPromptInfo permission_prompt_info = 34;
+
+  // Locale of the device, e.g. en, en_US.
+  optional string locale = 35;
+
+  // Information included in the URL real-time and hash real-time discrepancy
+  // info reports.
+  message UrlRealTimeAndHashRealTimeDiscrepancyInfo {
+    enum LookupThreatType {
+      SAFE_OR_OTHER = 0;
+      MALWARE = 1;
+      PHISHING = 2;
+      UNWANTED = 3;
+      BILLING = 4;
+    }
+    // The threat type determined by the hash realtime mechanism.
+    optional LookupThreatType hash_realtime_threat_type = 1;
+    // The threat type determined by the URL real-time mechanism.
+    optional LookupThreatType url_realtime_threat_type = 2;
+  }
+
+  optional UrlRealTimeAndHashRealTimeDiscrepancyInfo
+      url_real_time_and_hash_real_time_discrepancy_info = 36;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).
@@ -2053,7 +2123,8 @@ message ExtensionTelemetryReportRequest {
                                 // externally via an update url.
     }
 
-    // The state of the extension as determined by SB blocklist.
+    // The state of the extension as determined by SB blocklist, Omaha, or CRX
+    // Telemetry server.
     enum BlocklistState {
       // The extension is not in the blocklist.
       NOT_BLOCKLISTED = 0;
@@ -2067,6 +2138,20 @@ message ExtensionTelemetryReportRequest {
       BLOCKLISTED_POTENTIALLY_UNWANTED = 4;
       // Used when we couldn't connect to server, e.g. when offline.
       BLOCKLISTED_UNKNOWN = 5;
+    }
+
+    // Installation policy for the extension, default is NO_POLICY if not
+    // controlled by policy.
+    enum InstallationPolicy {
+      NO_POLICY = 0;                 // No policy for Extension.
+      INSTALLATION_ALLOWED = 1;      // Extension can be installed.
+      INSTALLATION_BLOCKED = 2;      // Extension cannot be installed.
+      INSTALLATION_FORCED = 3;       // Extension will be installed
+                                     // automatically and cannot be disabled.
+      INSTALLATION_RECOMMENDED = 4;  // Extension will be installed
+                                     // automatically but can be disabled.
+      INSTALLATION_REMOVED = 5;      // Extension cannot be installed and will
+                                     // be automatically removed.
     }
 
     optional string id = 1;
@@ -2098,6 +2183,8 @@ message ExtensionTelemetryReportRequest {
     optional bool is_converted_from_user_script = 9;
     optional Type type = 10;
     optional InstallLocation install_location = 11;
+    // The state of the extension determined by a combination of SB blocklist,
+    // Omaha, and CRX Telemetry service.
     optional BlocklistState blocklist_state = 12;
     // Bitmask of reason(s) the Chrome extension is disabled.
     // Bit positions are defined in extensions::disable_reason::DisableReason
@@ -2118,10 +2205,32 @@ message ExtensionTelemetryReportRequest {
 
     // Only populated for off-store extensions.
     repeated FileInfo file_infos = 15;
+
+    // The state of the extension determined by the CRX telemetry server only.
+    optional BlocklistState telemetry_blocklist_state = 16;
+
+    // Installation policy for the extension determined by enterprise policy.
+    optional InstallationPolicy installation_policy = 17;
+
+    // Next available tag number: 18.
   }
 
   // Information about the various telemetry signals.
   message SignalInfo {
+    // Data for one stack frame in a JS stack trace.
+    message JSCallStackFrame {
+      optional string function_name = 1;
+      optional string script_name = 2;
+      optional uint32 line = 3;
+      optional uint32 column = 4;
+    }
+    // Data for a complete JS stack trace consisting of
+    // multiple stack frames.
+    // Used to send JS call stack contents for extensions API signals.
+    message JSCallStack {
+      repeated JSCallStackFrame frames = 1;
+    }
+
     message TabsExecuteScriptInfo {
       message ScriptInfo {
         optional bytes hash = 1;
@@ -2191,12 +2300,12 @@ message ExtensionTelemetryReportRequest {
         // Restricts the retrieved cookies to those that would match the given
         // URL.
         optional string url = 7;
-
         // Number of times this set of arguments has been used.
         optional uint32 count = 8;
-
         // Filters out session vs. persistent cookies.
         optional bool is_session = 9;
+        // Up to 3 distinct JS callstacks when the API was invoked.
+        repeated JSCallStack js_callstacks = 10;
       }
 
       repeated GetAllArgsInfo get_all_args_info = 1;
@@ -2222,6 +2331,8 @@ message ExtensionTelemetryReportRequest {
         // The ID of the cookie store in which to look for the cookie. By
         // default, the current execution context's cookie store will be used.
         optional string store_id = 3;
+        // Up to 3 distinct JS callstacks when the API was invoked.
+        repeated JSCallStack js_callstacks = 4;
 
         // Number of times this set of arguments has been used.
         optional uint32 count = 8;
@@ -2327,22 +2438,54 @@ message ExtensionTelemetryReportRequest {
         CREATE = 1;
         UPDATE = 2;
         REMOVE = 3;
+        CAPTURE_VISIBLE_TAB = 4;
       }
       message CallDetails {
         // The API method invoked.
         optional ApiMethod method = 1;
-        // The URL to navigate the tab to.
+        // The URL to navigate the tab to. This field is only valid when
+        // method is one of CREATE or UPDATE.
         optional string new_url = 2;
-        // The currently committed URL for the tab. This field is not applicable
-        // when method = CREATE.
+        // The currently committed URL for the tab. This field is only
+        // valid when method is one of UPDATE, REMOVE, or CAPTURE_VISIBLE_TAB.
         optional string current_url = 3;
         // Number of times this call was made.
         optional uint32 count = 4;
+        // Up to 3 distinct JS callstacks when the API was invoked.
+        repeated JSCallStack js_callstacks = 5;
       }
       repeated CallDetails call_details = 1;
     }
 
     optional TabsApiInfo tabs_api_info = 7;
+
+    // `declarativeNetRequest` action signal information. This signal is created
+    // whenever a web request from Chrome matches a pattern specified in a
+    // DeclarativeNetRequest rules configured for an extension.
+    message DeclarativeNetRequestActionInfo {
+      enum ActionType {
+        // Convenient default value, should not be used in real signal payload.
+        ACTION_TYPE_UNSPECIFIED = 0;
+        REDIRECT = 1;
+      }
+
+      // Details about the action applied to a web request.
+      message ActionDetails {
+        // The action type applied.
+        optional ActionType type = 1;
+        // The URL from the web request.
+        optional string request_url = 2;
+        // The URL to which the web request will be redirected. This field is
+        // only valid when the ActionType is REDIRECT.
+        optional string redirect_url = 3;
+        // Number of times this action was applied.
+        optional uint32 count = 4;
+      }
+      repeated ActionDetails action_details = 1;
+    }
+
+    optional DeclarativeNetRequestActionInfo
+        declarative_net_request_action_info = 8;
   }
 
   // Single report structure consists of all the signals observed for a
@@ -2360,6 +2503,38 @@ message ExtensionTelemetryReportRequest {
   optional uint32 configuration_version = 3;
   // Tracks the current setting of developer mode in chrome://extensions page.
   optional bool developer_mode_enabled = 4;
+
+  // DEPRECATED.
+  // TODO(crbug.com/367327319): Clean up after new proto is live.
+  enum ManagementAuthorityTrustworthiness {
+    NONE = 0;           // No management authority found.
+    LOW = 1;            // Local device management authority.
+    TRUSTED = 2;        // Non-local management authority.
+    FULLY_TRUSTED = 3;  // Cryptographically verifiable policy source
+                        // e.g. CBCM, ChromeOS.
+  }
+
+  // DEPRECATED.
+  // TODO(crbug.com/367327319): Clean up after new proto is live.
+  optional ManagementAuthorityTrustworthiness
+      management_authority_trustworthiness = 5 [deprecated = true];
+
+  // Level of trustworthiness of a management authority entity.
+  enum ManagementAuthority {
+    MANAGEMENT_AUTHORITY_UNSPECIFIED = 0;
+    MANAGEMENT_AUTHORITY_NONE = 1;     // No management authority found.
+    MANAGEMENT_AUTHORITY_LOW = 2;      // Local device management authority.
+    MANAGEMENT_AUTHORITY_TRUSTED = 3;  // Non-local management authority.
+    MANAGEMENT_AUTHORITY_FULLY_TRUSTED =
+        4;  // Cryptographically verifiable policy source
+            // e.g. CBCM, ChromeOS.
+  }
+
+  // The highest level of management authority trustworthiness between the
+  // platform and the browser.
+  optional ManagementAuthority management_authority = 6;
+
+  // Next available tag number: 7.
 }
 
 message ExtensionTelemetryReportResponse {

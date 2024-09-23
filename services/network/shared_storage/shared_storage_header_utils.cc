@@ -33,7 +33,7 @@ constexpr auto kSharedStorageHeaderParamTypeMap =
 
 std::optional<mojom::SharedStorageOperationType>
 StringToSharedStorageOperationType(std::string_view operation_str) {
-  auto* operation_it =
+  auto operation_it =
       kSharedStorageOperationTypeMap.find(base::ToLowerASCII(operation_str));
   if (operation_it == kSharedStorageOperationTypeMap.end()) {
     return std::nullopt;
@@ -44,7 +44,7 @@ StringToSharedStorageOperationType(std::string_view operation_str) {
 
 std::optional<SharedStorageHeaderParamType>
 StringToSharedStorageHeaderParamType(std::string_view param_str) {
-  auto* param_it =
+  auto param_it =
       kSharedStorageHeaderParamTypeMap.find(base::ToLowerASCII(param_str));
   if (param_it == kSharedStorageHeaderParamTypeMap.end()) {
     return std::nullopt;
@@ -54,16 +54,17 @@ StringToSharedStorageHeaderParamType(std::string_view param_str) {
 }
 
 bool GetSecSharedStorageWritableHeader(const net::HttpRequestHeaders& headers) {
-  std::string value;
-  if (!headers.GetHeader(kSecSharedStorageWritableHeader, &value)) {
+  std::optional<std::string> value =
+      headers.GetHeader(kSecSharedStorageWritableHeader);
+  if (!value) {
     return false;
   }
   std::optional<net::structured_headers::Item> item =
-      net::structured_headers::ParseBareItem(value);
+      net::structured_headers::ParseBareItem(*value);
   if (!item || !item->is_boolean() || !item->GetBoolean()) {
     // We only expect the value "?1", which parses to boolean true.
     // TODO(cammie): Log a histogram to see if this ever happens.
-    LOG(ERROR) << "Unexpected value '" << value << "' found for '"
+    LOG(ERROR) << "Unexpected value '" << *value << "' found for '"
                << kSecSharedStorageWritableHeader << "' header.";
     return false;
   }

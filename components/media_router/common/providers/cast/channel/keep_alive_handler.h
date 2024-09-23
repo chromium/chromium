@@ -18,7 +18,7 @@ namespace cast_channel {
 class CastSocket;
 class Logger;
 
-using ::cast::channel::CastMessage;
+using ::openscreen::cast::proto::CastMessage;
 
 class KeepAliveHandler {
  public:

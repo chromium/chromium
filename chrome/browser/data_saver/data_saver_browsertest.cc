@@ -253,8 +253,9 @@ IN_PROC_BROWSER_TEST_F(DataSaverBrowserTest,
   prerender_helper()->AddPrerenderAsync(prerendering_url);
   observer.WaitForTrigger(prerendering_url);
 
-  int host_id = prerender_helper()->GetHostForUrl(prerendering_url);
-  EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId host_id =
+      prerender_helper()->GetHostForUrl(prerendering_url);
+  EXPECT_TRUE(host_id.is_null());
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
@@ -301,7 +302,7 @@ class DataSaverWithServerBrowserTest : public InProcessBrowserTest {
   std::string expected_save_data_header_;
 };
 
-// TODO(crbug.com/1401238): Fix and enable test.
+// TODO(crbug.com/40250644): Fix and enable test.
 IN_PROC_BROWSER_TEST_F(DataSaverWithServerBrowserTest, DISABLED_ReloadPage) {
   Init();
   ASSERT_TRUE(test_server_->Start());
@@ -365,7 +366,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 
 // Checks that the Save-Data header is sent in a request for dedicated worker
 // script when the data saver is enabled.
-// TODO(crbug.com/1401238): Fix and enable test.
+// TODO(crbug.com/40250644): Fix and enable test.
 IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
                        DISABLED_DedicatedWorker) {
   data_saver::OverrideIsDataSaverEnabledForTesting(IsEnabledDataSaver());
@@ -486,7 +487,7 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest, ServiceWorker_Update) {
 
 // Checks that Save-Data header is appropriately set to requests from fetch() in
 // a dedicated worker.
-// TODO(crbug.com/1401238): Fix and enable test.
+// TODO(crbug.com/40250644): Fix and enable test.
 IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
                        DISABLED_FetchFromWorker) {
   data_saver::OverrideIsDataSaverEnabledForTesting(IsEnabledDataSaver());
@@ -502,7 +503,7 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
 
 // Checks that Save-Data header is appropriately set to requests from fetch() in
 // a shared worker.
-// TODO(crbug.com/1401238): Fix and enable test.
+// TODO(crbug.com/40250644): Fix and enable test.
 IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
                        DISABLED_FetchFromSharedWorker) {
   data_saver::OverrideIsDataSaverEnabledForTesting(IsEnabledDataSaver());
@@ -519,7 +520,7 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
 
 // Checks that Save-Data header is appropriately set to requests from fetch() in
 // a service worker.
-// TODO(crbug.com/1401238): Fix and enable test.
+// TODO(crbug.com/40250644): Fix and enable test.
 IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
                        DISABLED_FetchFromServiceWorker) {
   data_saver::OverrideIsDataSaverEnabledForTesting(IsEnabledDataSaver());
@@ -538,7 +539,7 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
 
 // Checks that Save-Data header is appropriately set to requests from fetch() in
 // a page controlled by a service worker without fetch handler.
-// TODO(crbug.com/1401238): Fix and enable test.
+// TODO(crbug.com/40250644): Fix and enable test.
 IN_PROC_BROWSER_TEST_P(
     DataSaverForWorkerBrowserTest,
     DISABLED_FetchFromServiceWorkerControlledPage_NoFetchHandler) {
@@ -562,7 +563,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Checks that Save-Data header is appropriately set to requests from fetch() in
 // a page controlled by a service worker with fetch handler but no respondWith.
-// TODO(crbug.com/1401238): Fix and enable test.
+// TODO(crbug.com/40250644): Fix and enable test.
 IN_PROC_BROWSER_TEST_P(
     DataSaverForWorkerBrowserTest,
     DISABLED_FetchFromServiceWorkerControlledPage_PassThrough) {
@@ -588,7 +589,7 @@ IN_PROC_BROWSER_TEST_P(
 // Checks that Save-Data header is appropriately set to requests from fetch() in
 // a page controlled by a service worker with fetch handler and responds with
 // fetch().
-// TODO(crbug.com/1401238): Fix and enable test.
+// TODO(crbug.com/40250644): Fix and enable test.
 IN_PROC_BROWSER_TEST_P(
     DataSaverForWorkerBrowserTest,
     DISABLED_FetchFromServiceWorkerControlledPage_RespondWithFetch) {

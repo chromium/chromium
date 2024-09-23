@@ -53,9 +53,20 @@ enum RpContext {
   kContinue
 };
 
+// Don't change the meaning or the order of these values because they are
+// being recorded in metrics and in sync with the counterpart in enums.xml.
 enum RpMode {
   kButton,
   kWidget
+};
+
+// The result of a call to IdentityProvider.register().
+enum RegisterIdpStatus {
+  kSuccess,
+  kErrorFeatureDisabled,
+  kErrorCrossOriginConfig,
+  kErrorNoTransientActivation,
+  kErrorDeclined
 };
 
 // The details of a federated identity provider.
@@ -66,6 +77,9 @@ struct IdentityProviderConfig {
   // Indirectly references providers that have been registered in the past
   // rather than directly.
   bool use_registered_config_urls;
+
+  // When using registered IDPs, this contains the type of IDP requested.
+  string? type;
 
   // Can be an empty string to be omitted in the request sent to the provider.
   string client_id;
@@ -88,15 +102,9 @@ struct IdentityProviderRequestOptions {
   // is not sent to the provider, but rather used by the user agent.
   string domain_hint;
 
-  // The scope of the federated identity request: name/email/photo or
-  // custom ones (e.g. "access to calendar", "access to social graph", etc).
-  array<string> scope;
-
-  // The types of token the relying party wants to get back (e.g. an id token
-  // or an access token).
-  // More than one type can be requested, e.g. to support OIDC flows:
-  // https://openid.net/specs/openid-connect-core-1_0.html#code-id_token-tokenExample
-  array<string> responseType;
+  // Profile fields that the RP is requesting access for, such as "name",
+  // "email" or "picture".
+  array<string>? fields;
 
   // Additional parameters that the relying party can send to the IdP after
   // the user's permission has been gathered.
@@ -174,13 +182,15 @@ interface FederatedAuthRequest {
   // Resolve the token request from a JS call from a WebView dialog,
   // when the id_assertion_endpoint returns a continue_on rather than the
   // actual token.
-  ResolveTokenRequest(string token) => (bool success);
+  // If no account ID is provided, the account ID of the account that was
+  // selected in the account chooser will be used.
+  ResolveTokenRequest(string? account_id, string token) => (bool success);
 
   // Marks the user as logged in/out to the IDP on this origin.
   SetIdpSigninStatus(url.mojom.Origin origin, IdpSigninStatus status);
 
   // Registers the url as an IdP's configURL of the user's preference.
-  RegisterIdP(url.mojom.Url url) => (bool accepted);
+  RegisterIdP(url.mojom.Url url) => (RegisterIdpStatus status);
 
   // Unregisters the url as an IdP's configURL of the user's preference.
   UnregisterIdP(url.mojom.Url url) => (bool success);

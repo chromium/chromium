@@ -7,9 +7,10 @@ import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTru
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {entriesToURLs} from '../../common/js/entry_utils.js';
-import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import {FakeEntryImpl, type FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
-import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
+import type {MockFileSystem} from '../../common/js/mock_entry.js';
+import {MockDirectoryEntry, MockEntry} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {addVolume, convertVolumeInfoAndMetadataToVolume, updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
@@ -18,7 +19,8 @@ import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeep
 
 import type {CommandHandlerDeps, FilesCommandId} from './command_handler.js';
 import {CommandHandler, ValidMenuCommandsForUma} from './command_handler.js';
-import {CanExecuteEvent, Command} from './ui/command.js';
+import type {Command} from './ui/command.js';
+import {CanExecuteEvent} from './ui/command.js';
 
 let mockMetrics: MockMetrics;
 
@@ -28,9 +30,10 @@ function getMetricName(metricIndex: number): string|undefined {
 
 interface ExtraCanExecuteCommandProperties {
   target: {
-    entry?: DirectoryEntry,
-    classList?: {contains: () => boolean},
+    selectedItems?: Array<Entry|FilesAppEntry>,
+                 classList: {contains: () => boolean},
     parentElement?: {contextElement: null},
+    dataset?: Record<string, any>,
   };
 }
 
@@ -416,8 +419,14 @@ export async function testRenameCommand() {
       documentsRootVolumeInfo.fileSystem as MockFileSystem,
       'Documents/abc.pdf');
 
+
   // Mock `Event`.
-  const event = createMockEvent(undefined, {target: {entry: pdfEntry}});
+  const event = createMockEvent(undefined, {
+    target: {
+      classList: {contains: () => false},
+      selectedItems: [pdfEntry],
+    },
+  });
 
   // The current selection for testing.
   const currentSelection = {
@@ -436,6 +445,11 @@ export async function testRenameCommand() {
     getCurrentDirectoryEntry: () => recentEntry,
     getSelection: () => currentSelection,
     volumeManager: volumeManager,
+    ui: {
+      actionbar: {
+        contains: () => false,
+      },
+    },
   } as unknown as CommandHandlerDeps;
 
   // Check: canExecute is false and command is disabled.
@@ -454,19 +468,15 @@ async function createAndAddNonInteractiveDownloadsVolume():
   // Dispatch an action to add MyFiles volume.
   const store = setupStore();
   const {fileData, volumeInfo} = createMyFilesDataWithVolumeEntry();
-  const myFilesVolumeEntry = fileData.entry;
   const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
   const volume =
       convertVolumeInfoAndMetadataToVolume(volumeInfo, volumeMetadata);
-  store.dispatch(addVolume({
-    volumeInfo,
-    volumeMetadata,
-  }));
+  store.dispatch(addVolume(volumeInfo, volumeMetadata));
 
   // Expect the newly added volume is in the store.
   const wantNewVol = {
     allEntries: {
-      [myFilesVolumeEntry.toURL()]: fileData,
+      [fileData.key]: fileData,
     },
     volumes: {
       [volume.volumeId]: volume,
@@ -560,6 +570,7 @@ export async function testCommandsForNonInteractiveVolumeAndNoEntries() {
         parentElement: {
           contextElement: null,
         },
+        dataset: {},
       },
     });
     command.canExecute(event, fileManager);
@@ -613,6 +624,9 @@ export async function testCommandsForEntriesOnNonInteractiveVolume() {
       directoryTree: {
         contains: () => false,
       },
+      actionbar: {
+        contains: () => false,
+      },
     },
     volumeManager: volumeManager,
   } as unknown as CommandHandlerDeps;
@@ -638,7 +652,8 @@ export async function testCommandsForEntriesOnNonInteractiveVolume() {
     // Mock `Event`.
     const event = createMockEvent(commandName, {
       target: {
-        entry: nonInteractiveVolumeEntry,
+        selectedItems: currentSelection.entries,
+        classList: {contains: () => false},
       },
     });
 

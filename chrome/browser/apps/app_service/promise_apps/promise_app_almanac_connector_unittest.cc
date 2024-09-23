@@ -28,7 +28,7 @@
 
 namespace apps {
 
-const PackageId kTestPackageId(AppType::kArc, "test.package.name");
+const PackageId kTestPackageId(PackageType::kArc, "test.package.name");
 
 class PromiseAppAlmanacConnectorTest : public testing::Test {
  public:
@@ -41,7 +41,6 @@ class PromiseAppAlmanacConnectorTest : public testing::Test {
     profile_builder.SetSharedURLLoaderFactory(
         url_loader_factory_->GetSafeWeakWrapper());
     profile_ = profile_builder.Build();
-    test_shared_loader_factory_ = url_loader_factory_->GetSafeWeakWrapper();
     connector_ = std::make_unique<PromiseAppAlmanacConnector>(profile_.get());
     connector_->SetSkipApiKeyCheckForTesting(true);
   }
@@ -51,26 +50,25 @@ class PromiseAppAlmanacConnectorTest : public testing::Test {
   }
 
  private:
-  std::unique_ptr<network::TestURLLoaderFactory> url_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  std::unique_ptr<PromiseAppAlmanacConnector> connector_;
   content::BrowserTaskEnvironment task_environment_;
-  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   std::unique_ptr<Profile> profile_;
+  std::unique_ptr<network::TestURLLoaderFactory> url_loader_factory_;
+  std::unique_ptr<PromiseAppAlmanacConnector> connector_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 TEST_F(PromiseAppAlmanacConnectorTest, GetPromiseAppInfoRequest) {
   std::string method;
-  std::string method_override_header;
-  std::string content_type;
+  std::optional<std::string> method_override_header;
+  std::optional<std::string> content_type;
   std::string body;
 
   url_loader_factory()->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        request.headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                                  &content_type);
-        request.headers.GetHeader("X-HTTP-Method-Override",
-                                  &method_override_header);
+        content_type =
+            request.headers.GetHeader(net::HttpRequestHeaders::kContentType);
+        method_override_header =
+            request.headers.GetHeader("X-HTTP-Method-Override");
         method = request.method;
         body = network::GetUploadData(request);
       }));

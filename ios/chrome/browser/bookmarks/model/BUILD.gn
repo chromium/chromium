@@ -2,29 +2,33 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("bookmark_storage_type") {
+  sources = [ "bookmark_storage_type.h" ]
+}
+
 source_set("model") {
   sources = [
-    "account_bookmark_model_factory.cc",
-    "account_bookmark_model_factory.h",
     "account_bookmark_sync_service_factory.cc",
     "account_bookmark_sync_service_factory.h",
     "bookmark_client_impl.cc",
     "bookmark_client_impl.h",
     "bookmark_model_bridge_observer.h",
     "bookmark_model_bridge_observer.mm",
+    "bookmark_model_factory.cc",
+    "bookmark_model_factory.h",
     "bookmark_undo_service_factory.cc",
     "bookmark_undo_service_factory.h",
-    "local_or_syncable_bookmark_model_factory.cc",
-    "local_or_syncable_bookmark_model_factory.h",
     "local_or_syncable_bookmark_sync_service_factory.h",
     "local_or_syncable_bookmark_sync_service_factory.mm",
     "managed_bookmark_service_factory.h",
     "managed_bookmark_service_factory.mm",
   ]
   deps = [
+    ":bookmark_storage_type",
     "//base",
     "//components/bookmarks/browser",
     "//components/bookmarks/managed",
+    "//components/browser_sync:switches",
     "//components/favicon/core",
     "//components/favicon_base",
     "//components/history/core/browser",
@@ -38,15 +42,17 @@ source_set("model") {
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/web",
+    "//ios/web/public/thread",
   ]
   public_deps = [ ":model_utils" ]
   allow_circular_includes_from = [
-    "//ios/chrome/browser/history/model",
     ":model_utils",
+    "//ios/chrome/browser/history/model",
   ]
 }
 
@@ -61,9 +67,10 @@ source_set("model_utils") {
     "//base",
     "//components/bookmarks/browser",
     "//components/prefs",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
   ]
+  public_deps = [ ":bookmark_storage_type" ]
 }
 
 source_set("test_support") {
@@ -79,7 +86,7 @@ source_set("test_support") {
     "//components/bookmarks/test",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/test:test_support",
@@ -91,18 +98,21 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "bookmark_model_bridge_observer_unittest.mm",
+    "bookmark_model_factory_unittest.cc",
     "bookmark_remover_helper_unittest.cc",
     "bookmarks_utils_unittest.mm",
   ]
   deps = [
     ":model",
+    ":model_utils",
     ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",
+    "//components/bookmarks/browser:unit_tests_bundle_data",
     "//components/bookmarks/test",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

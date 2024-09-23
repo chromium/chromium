@@ -39,7 +39,6 @@ int32_t UDPSocketPrivateResource::SetSocketFeature(
       return PP_ERROR_BADARGUMENT;
     default:
       NOTREACHED();
-      return PP_ERROR_BADARGUMENT;
   }
   int32_t result = SetOptionImpl(public_name, value,
                                  true,  // Check bind() state.

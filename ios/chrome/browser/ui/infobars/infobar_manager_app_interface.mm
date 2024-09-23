@@ -5,21 +5,22 @@
 #import "ios/chrome/browser/ui/infobars/infobar_manager_app_interface.h"
 
 #import "components/infobars/core/infobar_manager.h"
-#import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/infobars/test_infobar_delegate.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
+#import "ios/web/public/web_state.h"
 
 @implementation InfobarManagerAppInterface
 
 + (BOOL)verifyInfobarCount:(NSInteger)totalInfobars {
-  MainController* mainController = chrome_test_util::GetMainController();
+  SceneState* sceneState = chrome_test_util::GetForegroundActiveScene();
   id<BrowserProvider> interface =
-      mainController.browserProviderInterface.mainBrowserProvider;
+      sceneState.browserProviderInterface.mainBrowserProvider;
   web::WebState* webState =
       interface.browser->GetWebStateList()->GetActiveWebState();
   infobars::InfoBarManager* manager =
@@ -28,9 +29,9 @@
 }
 
 + (BOOL)addTestInfoBarToCurrentTabWithMessage:(NSString*)message {
-  MainController* mainController = chrome_test_util::GetMainController();
+  SceneState* sceneState = chrome_test_util::GetForegroundActiveScene();
   id<BrowserProvider> interface =
-      mainController.browserProviderInterface.mainBrowserProvider;
+      sceneState.browserProviderInterface.mainBrowserProvider;
   web::WebState* webState =
       interface.browser->GetWebStateList()->GetActiveWebState();
   infobars::InfoBarManager* manager =

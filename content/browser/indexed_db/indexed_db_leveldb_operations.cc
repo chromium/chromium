@@ -6,9 +6,9 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -29,23 +29,25 @@
 using blink::IndexedDBKeyPath;
 using leveldb::Status;
 
-namespace content {
-namespace indexed_db {
+namespace content::indexed_db {
+
 namespace {
+
 class LDBComparator : public leveldb::Comparator {
  public:
   LDBComparator() = default;
   ~LDBComparator() override = default;
   int Compare(const leveldb::Slice& a, const leveldb::Slice& b) const override {
-    return content::Compare(leveldb_env::MakeStringView(a),
-                            leveldb_env::MakeStringView(b),
-                            /*index_keys=*/false);
+    return ::content::indexed_db::Compare(leveldb_env::MakeStringView(a),
+                                          leveldb_env::MakeStringView(b),
+                                          /*index_keys=*/false);
   }
   const char* Name() const override { return "idb_cmp1"; }
   void FindShortestSeparator(std::string* start,
                              const leveldb::Slice& limit) const override {}
   void FindShortSuccessor(std::string* key) const override {}
 };
+
 }  // namespace
 
 base::FilePath ComputeCorruptionFileName(
@@ -54,38 +56,10 @@ base::FilePath ComputeCorruptionFileName(
       .Append(FILE_PATH_LITERAL("corruption_info.json"));
 }
 
-bool IsPathTooLong(const base::FilePath& leveldb_dir) {
-  std::optional<int> limit =
-      base::GetMaximumPathComponentLength(leveldb_dir.DirName());
-  if (!limit.has_value()) {
-    DLOG(WARNING) << "GetMaximumPathComponentLength returned -1";
-// In limited testing, ChromeOS returns 143, other OSes 255.
-#if BUILDFLAG(IS_CHROMEOS)
-    limit = 143;
-#else
-    limit = 255;
-#endif
-  }
-  size_t component_length = leveldb_dir.BaseName().value().length();
-  if (component_length > static_cast<uint32_t>(*limit)) {
-    DLOG(WARNING) << "Path component length (" << component_length
-                  << ") exceeds maximum (" << *limit
-                  << ") allowed by this filesystem.";
-    const int min = 140;
-    const int max = 300;
-    const int num_buckets = 12;
-    base::UmaHistogramCustomCounts(
-        "WebCore.IndexedDB.BackingStore.OverlyLargeOriginLength",
-        component_length, min, max, num_buckets);
-    return true;
-  }
-  return false;
-}
-
 std::string ReadCorruptionInfo(const base::FilePath& path_base,
                                const storage::BucketLocator& bucket_locator) {
   const base::FilePath info_path =
-      path_base.Append(indexed_db::ComputeCorruptionFileName(bucket_locator));
+      path_base.Append(ComputeCorruptionFileName(bucket_locator));
   std::string message;
   if (IsPathTooLong(info_path)) {
     return message;
@@ -105,7 +79,8 @@ std::string ReadCorruptionInfo(const base::FilePath& path_base,
   base::File file(info_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (file.IsValid()) {
     std::string input_js(file_info.size, '\0');
-    if (file_info.size == file.Read(0, std::data(input_js), file_info.size)) {
+    if (file_info.size ==
+        UNSAFE_TODO(file.Read(0, std::data(input_js), file_info.size))) {
       std::optional<base::Value> val = base::JSONReader::Read(input_js);
       if (val && val->is_dict()) {
         std::string* s = val->GetDict().FindString("message");
@@ -243,8 +218,7 @@ Status GetMaxObjectStoreId(DBOrTransaction* db,
       database_id, DatabaseMetaDataKey::MAX_OBJECT_STORE_ID);
   *max_object_store_id = -1;
   bool found = false;
-  Status s = indexed_db::GetInt(db, max_object_store_id_key,
-                                max_object_store_id, &found);
+  Status s = GetInt(db, max_object_store_id_key, max_object_store_id, &found);
   if (!s.ok())
     return s;
   if (!found)
@@ -285,10 +259,9 @@ Status SetMaxObjectStoreId(TransactionalLevelDBTransaction* transaction,
 
   if (object_store_id <= max_object_store_id) {
     INTERNAL_CONSISTENCY_ERROR(SET_MAX_OBJECT_STORE_ID);
-    return indexed_db::InternalInconsistencyStatus();
+    return InternalInconsistencyStatus();
   }
-  return indexed_db::PutInt(transaction, max_object_store_id_key,
-                            object_store_id);
+  return PutInt(transaction, max_object_store_id_key, object_store_id);
 }
 
 Status GetNewVersionNumber(TransactionalLevelDBTransaction* transaction,
@@ -388,8 +361,8 @@ Status GetNewDatabaseId(Transaction* transaction, int64_t* new_id) {
   *new_id = -1;
   int64_t max_database_id = -1;
   bool found = false;
-  Status s = indexed_db::GetInt(transaction, MaxDatabaseIdKey::Encode(),
-                                &max_database_id, &found);
+  Status s =
+      GetInt(transaction, MaxDatabaseIdKey::Encode(), &max_database_id, &found);
   if (!s.ok()) {
     INTERNAL_READ_ERROR(GET_NEW_DATABASE_ID);
     return s;
@@ -400,7 +373,7 @@ Status GetNewDatabaseId(Transaction* transaction, int64_t* new_id) {
   DCHECK_GE(max_database_id, 0);
 
   int64_t database_id = max_database_id + 1;
-  s = indexed_db::PutInt(transaction, MaxDatabaseIdKey::Encode(), database_id);
+  s = PutInt(transaction, MaxDatabaseIdKey::Encode(), database_id);
   if (!s.ok()) {
     INTERNAL_READ_ERROR(GET_NEW_DATABASE_ID);
     return s;
@@ -540,8 +513,7 @@ Status GetEarliestSweepTime(TransactionalLevelDBDatabase* db,
   *earliest_sweep = base::Time();
   bool found = false;
   int64_t time_micros = 0;
-  Status s =
-      indexed_db::GetInt(db, earliest_sweep_time_key, &time_micros, &found);
+  Status s = GetInt(db, earliest_sweep_time_key, &time_micros, &found);
   if (!s.ok())
     return s;
   if (!found)
@@ -565,7 +537,7 @@ leveldb::Status SetEarliestSweepTime(Transaction* txn,
                                      base::Time earliest_sweep) {
   const std::string earliest_sweep_time_key = EarliestSweepKey::Encode();
   int64_t time_micros = (earliest_sweep - base::Time()).InMicroseconds();
-  return indexed_db::PutInt(txn, earliest_sweep_time_key, time_micros);
+  return PutInt(txn, earliest_sweep_time_key, time_micros);
 }
 
 Status GetEarliestCompactionTime(TransactionalLevelDBDatabase* db,
@@ -575,8 +547,7 @@ Status GetEarliestCompactionTime(TransactionalLevelDBDatabase* db,
   *earliest_compaction = base::Time();
   bool found = false;
   int64_t time_micros = 0;
-  Status s = indexed_db::GetInt(db, earliest_compaction_time_key, &time_micros,
-                                &found);
+  Status s = GetInt(db, earliest_compaction_time_key, &time_micros, &found);
   if (!s.ok())
     return s;
   if (!found)
@@ -601,7 +572,7 @@ leveldb::Status SetEarliestCompactionTime(Transaction* txn,
   const std::string earliest_compaction_time_key =
       EarliestCompactionKey::Encode();
   int64_t time_micros = (earliest_compaction - base::Time()).InMicroseconds();
-  return indexed_db::PutInt(txn, earliest_compaction_time_key, time_micros);
+  return PutInt(txn, earliest_compaction_time_key, time_micros);
 }
 
 const leveldb::Comparator* GetDefaultLevelDBComparator() {
@@ -609,5 +580,4 @@ const leveldb::Comparator* GetDefaultLevelDBComparator() {
   return ldb_comparator.get();
 }
 
-}  // namespace indexed_db
-}  // namespace content
+}  // namespace content::indexed_db

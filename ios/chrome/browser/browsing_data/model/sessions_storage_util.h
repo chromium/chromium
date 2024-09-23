@@ -5,15 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_SESSIONS_STORAGE_UTIL_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_SESSIONS_STORAGE_UTIL_H_
 
-#import <Foundation/Foundation.h>
+#include <set>
+#include <string>
 
 namespace sessions_storage_util {
 
 // Mark the sessions with `session_ids` for their files to be removed from the
 // disk at some point later.
-void MarkSessionsForRemoval(NSArray<NSString*>* session_ids);
+void MarkSessionsForRemoval(std::set<std::string> session_ids);
+
 // Get the list of session ids for the sessions that was marked for removal.
-NSArray<NSString*>* GetDiscardedSessions();
+std::set<std::string> GetDiscardedSessions();
+
 // Empties the list of sessions that are marked for removal.
 void ResetDiscardedSessions();
 

@@ -4,14 +4,18 @@
 
 package org.chromium.media;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.os.Build;
+import android.os.Process;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.compat.ApiHelperForS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +45,11 @@ class AudioDeviceSelectorPostS extends AudioDeviceSelector {
                 types.add(AudioDeviceInfo.TYPE_BUILTIN_EARPIECE);
                 break;
             case Devices.ID_BLUETOOTH_HEADSET:
+                // Add Bluteooth LE Audio devices.
+                types.add(AudioDeviceInfo.TYPE_BLE_HEADSET);
+                types.add(AudioDeviceInfo.TYPE_BLE_SPEAKER);
+
+                // Add "classic" bluetooth devices.
                 types.add(AudioDeviceInfo.TYPE_BLUETOOTH_SCO);
                 types.add(AudioDeviceInfo.TYPE_BLUETOOTH_A2DP);
                 break;
@@ -55,7 +64,13 @@ class AudioDeviceSelectorPostS extends AudioDeviceSelector {
 
     @Override
     public void init() {
-        mHasBluetoothConnectPermission = ApiHelperForS.hasBluetoothConnectPermission();
+        mHasBluetoothConnectPermission =
+                ApiCompatibilityUtils.checkPermission(
+                                ContextUtils.getApplicationContext(),
+                                Manifest.permission.BLUETOOTH_CONNECT,
+                                Process.myPid(),
+                                Process.myUid())
+                        == PackageManager.PERMISSION_GRANTED;
 
         if (!mHasBluetoothConnectPermission) {
             Log.w(TAG, "BLUETOOTH_CONNECT permission is missing.");
@@ -72,7 +87,7 @@ class AudioDeviceSelectorPostS extends AudioDeviceSelector {
     @Override
     public void setCommunicationAudioModeOn(boolean on) {
         if (on) {
-            // TODO(crbug.com/1317548): Prompt for BLUETOOTH_CONNECT permission at this point if we
+            // TODO(crbug.com/40222537): Prompt for BLUETOOTH_CONNECT permission at this point if we
             // don't have it.
         } else {
             mDeviceStates.clearRequestedDevice();
@@ -125,6 +140,8 @@ class AudioDeviceSelectorPostS extends AudioDeviceSelector {
                     availableDevices[Devices.ID_USB_AUDIO] = true;
                     break;
 
+                case AudioDeviceInfo.TYPE_BLE_HEADSET:
+                case AudioDeviceInfo.TYPE_BLE_SPEAKER:
                 case AudioDeviceInfo.TYPE_BLUETOOTH_SCO:
                 case AudioDeviceInfo.TYPE_BLUETOOTH_A2DP:
                     availableDevices[Devices.ID_BLUETOOTH_HEADSET] = true;
@@ -140,6 +157,9 @@ class AudioDeviceSelectorPostS extends AudioDeviceSelector {
     }
 
     public AudioDeviceInfo getMatchingCommunicationDevice(List<Integer> targetTypes) {
+        // Despite supporting 2 BT devices being connected at once,
+        // `getAvailableCommunicationDevices()` only seems to return the last connected BT device.
+        // There should therefore never be a conflict between choosing between BT headsets.
         List<AudioDeviceInfo> availableDevices = mAudioManager.getAvailableCommunicationDevices();
 
         for (AudioDeviceInfo device : availableDevices) {

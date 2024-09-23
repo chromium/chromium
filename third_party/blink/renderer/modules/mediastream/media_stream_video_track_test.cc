@@ -74,11 +74,12 @@ class MockEmitLogMessageCb {
 class MediaStreamVideoTrackTest
     : public testing::TestWithParam<ContentHintType> {
  public:
-  MediaStreamVideoTrackTest() : mock_source_(nullptr), source_started_(false) {}
+  MediaStreamVideoTrackTest() : mock_source_(nullptr) {}
 
   ~MediaStreamVideoTrackTest() override {}
 
   void TearDown() override {
+    mock_source_ = nullptr;
     source_ = nullptr;
     WebHeap::CollectAllGarbageForTesting();
   }
@@ -191,8 +192,8 @@ class MediaStreamVideoTrackTest
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   Persistent<MediaStreamSource> source_;
   // |mock_source_| is owned by |source_|.
-  raw_ptr<MockMediaStreamVideoSource, DanglingUntriaged> mock_source_;
-  bool source_started_;
+  raw_ptr<MockMediaStreamVideoSource> mock_source_;
+  bool source_started_ = false;
 };
 
 TEST_F(MediaStreamVideoTrackTest, AddAndRemoveSink) {
@@ -230,7 +231,7 @@ class CheckThreadHelper {
 
  private:
   base::OnceClosure callback_;
-  raw_ptr<bool, ExperimentalRenderer> correct_;
+  raw_ptr<bool> correct_;
   THREAD_CHECKER(thread_checker_);
 };
 
@@ -268,20 +269,23 @@ TEST_F(MediaStreamVideoTrackTest, SetEnabled) {
 
   DeliverDefaultSizeVideoFrameAndWaitForRenderer(&sink);
   EXPECT_EQ(1, sink.number_of_frames());
-  EXPECT_EQ(kColorValue, *sink.last_frame()->data(media::VideoFrame::kYPlane));
+  EXPECT_EQ(kColorValue,
+            *sink.last_frame()->data(media::VideoFrame::Plane::kY));
 
   video_track->SetEnabled(false);
   EXPECT_FALSE(sink.enabled());
 
   DeliverDefaultSizeVideoFrameAndWaitForRenderer(&sink);
   EXPECT_EQ(2, sink.number_of_frames());
-  EXPECT_EQ(kBlackValue, *sink.last_frame()->data(media::VideoFrame::kYPlane));
+  EXPECT_EQ(kBlackValue,
+            *sink.last_frame()->data(media::VideoFrame::Plane::kY));
 
   video_track->SetEnabled(true);
   EXPECT_TRUE(sink.enabled());
   DeliverDefaultSizeVideoFrameAndWaitForRenderer(&sink);
   EXPECT_EQ(3, sink.number_of_frames());
-  EXPECT_EQ(kColorValue, *sink.last_frame()->data(media::VideoFrame::kYPlane));
+  EXPECT_EQ(kColorValue,
+            *sink.last_frame()->data(media::VideoFrame::Plane::kY));
   sink.DisconnectFromTrack();
 }
 

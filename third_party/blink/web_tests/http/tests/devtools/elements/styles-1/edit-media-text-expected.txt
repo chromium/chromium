@@ -6,14 +6,14 @@ element.style { ()
     color: red;
 
 [expanded] 
-@media screen and (max-device-width: 100000px)
+@media screen and (max-device-width: 100000px) {
 #inspected { (<style>)
-/-- overloaded --/     color: blue;
+/-- overloaded --/         color: blue;
 
 [expanded] 
-@media screen and (max-device-width: 100000px)
+@media screen and (max-device-width: 100000px) {
 #inspected { (<style>)
-/-- overloaded --/     color: green;
+/-- overloaded --/         color: green;
 
 [expanded] 
 div { (user agent stylesheet)
@@ -26,14 +26,14 @@ element.style { ()
     color: red;
 
 [expanded] 
-@media screen and (max-device-width: 99999px)
+@media screen and (max-device-width: 99999px) {
 #inspected { (<style>)
-/-- overloaded --/     color: blue;
+/-- overloaded --/         color: blue;
 
 [expanded] 
-@media screen and (max-device-width: 99999px)
+@media screen and (max-device-width: 99999px) {
 #inspected { (<style>)
-/-- overloaded --/     color: green;
+/-- overloaded --/         color: green;
 
 [expanded] 
 div { (user agent stylesheet)
@@ -51,7 +51,7 @@ element.style { ()
 
 [expanded] 
 #inspected { (<style>)
-/-- overloaded --/     color: green;
+/-- overloaded --/         color: green;
 
 [expanded] 
 div { (user agent stylesheet)

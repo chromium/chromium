@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
+#include "chrome/browser/extensions/api/input_ime/input_ime_api_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/input_ime.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -28,10 +29,6 @@
 #include "extensions/common/extension.h"
 #include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/text_input_flags.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/extensions/api/input_ime/input_ime_api_chromeos.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class Profile;
 

@@ -43,7 +43,7 @@ class WebOptionElement;
 // Provides readonly access to some properties of a DOM input element node.
 class BLINK_EXPORT WebInputElement final : public WebFormControlElement {
  public:
-  WebInputElement() : WebFormControlElement() {}
+  WebInputElement() = default;
   WebInputElement(const WebInputElement& element) = default;
 
   WebInputElement& operator=(const WebInputElement& element) {
@@ -54,17 +54,11 @@ class BLINK_EXPORT WebInputElement final : public WebFormControlElement {
     WebFormControlElement::Assign(element);
   }
 
-  // This returns true for all of textfield-looking types such as text,
-  // password, search, email, url, and number.
+  // Returns true for all of textfield-looking types such as text, password,
+  // search, email, url, and number.
   bool IsTextField() const;
-  // This returns true only for type=text.
-  bool IsText() const;
-  bool IsEmailField() const;
-  bool IsPasswordField() const;
-  bool IsImageButton() const;
-  bool IsRadioButton() const;
-  bool IsCheckbox() const;
-  bool IsPasswordFieldForAutofill() const;
+  // Makes `FormControlType()` return `mojom::FormControlType::kInputPassword`
+  // for the rest of the element's life.
   void SetHasBeenPasswordField();
   void SetActivatedSubmit(bool);
   int size() const;
@@ -86,12 +80,6 @@ class BLINK_EXPORT WebInputElement final : public WebFormControlElement {
 
   // Returns true if the text of the element should be visible.
   bool ShouldRevealPassword() const;
-
-  // If true, forces "Strong Password" label to be visible in the field.
-  void SetShouldShowStrongPasswordLabel(bool value);
-
-  // Returns whether "Strong Password" label should be visible in the field.
-  bool ShouldShowStrongPasswordLabel() const;
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns whether this is the last element within its form.

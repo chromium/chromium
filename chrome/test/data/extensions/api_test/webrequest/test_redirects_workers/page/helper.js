@@ -49,8 +49,9 @@ function wait_for_state(worker, state) {
     return Promise.reject(new Error(
       'wait_for_state needs a ServiceWorker object to be passed.'));
   }
-  if (worker.state === state)
+  if (worker.state === state) {
     return Promise.resolve(state);
+  }
 
   if (is_state_advanced(worker.state, state)) {
     return Promise.reject(new Error(
@@ -58,8 +59,9 @@ function wait_for_state(worker, state) {
   }
   return new Promise(function(resolve, reject) {
       worker.addEventListener('statechange', function() {
-          if (worker.state === state)
+          if (worker.state === state) {
             resolve(state);
+          }
 
           if (is_state_advanced(worker.state, state)) {
             reject(new Error(

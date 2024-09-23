@@ -705,8 +705,8 @@ class BridgeIceControllerInvalidProposalTest : public BridgeIceControllerTest {
   void Recheck() { env.FastForwardBy(base::Milliseconds(recheck_delay_ms)); }
 
   const int recheck_delay_ms = 10;
-  raw_ptr<const Connection, ExperimentalRenderer> conn = nullptr;
-  raw_ptr<const Connection, ExperimentalRenderer> conn_two = nullptr;
+  raw_ptr<const Connection> conn = nullptr;
+  raw_ptr<const Connection> conn_two = nullptr;
   // This field is not vector<raw_ptr<...>> due to interaction with third_party
   // api.
   RAW_PTR_EXCLUSION const std::vector<const Connection*>
@@ -717,8 +717,8 @@ class BridgeIceControllerInvalidProposalTest : public BridgeIceControllerTest {
   scoped_refptr<IceInteractionInterface> interaction_agent;
   StrictMock<MockIceAgent> agent;
   StrictMock<MockIceControllerObserver> observer;
-  raw_ptr<StrictMock<MockIceController>, DanglingUntriaged> wrapped_controller;
   std::unique_ptr<BridgeIceController> controller;
+  raw_ptr<StrictMock<MockIceController>> wrapped_controller;
 };
 
 // Alias for verifying DCHECKs. This test suite should be used for death tests.
@@ -921,12 +921,12 @@ TEST_F(BridgeIceControllerTest, HandlesPruneRequest) {
       .WillRepeatedly(Return(connection_set));
 
   const std::vector<const Connection*> conns_to_prune{conn};
-  const std::vector<const IceConnection> valid_ice_conns_to_prune{
+  const std::vector<IceConnection> valid_ice_conns_to_prune{
       IceConnection(conn)};
   const std::vector<const Connection*> partial_conns_to_prune{conn_two};
-  const std::vector<const IceConnection> mixed_ice_conns_to_prune{
+  const std::vector<IceConnection> mixed_ice_conns_to_prune{
       IceConnection(conn_two), IceConnection(conn_three)};
-  const std::vector<const IceConnection> invalid_ice_conns_to_prune{
+  const std::vector<IceConnection> invalid_ice_conns_to_prune{
       IceConnection(conn_three)};
 
   EXPECT_CALL(agent, PruneConnections(ElementsAreArray(conns_to_prune)));

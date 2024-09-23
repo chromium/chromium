@@ -13,14 +13,15 @@
 #include "base/test/bind.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/webui/ash/web_ui_test_handler.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/ash/web_ui_test_handler.h"
 #include "chrome/test/data/grit/webui_test_resources.h"
 #include "chrome/test/data/webui/chromeos/web_ui_test.mojom.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -141,5 +142,6 @@ void MojoWebUIBrowserTest::BrowsePreload(const GURL& browse_to) {
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_WEBUI_CHROMEOS_TEST_WEB_UI_TEST_MOJOM_LITE_JS);
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(test_mojo_lite_js), base::NullCallback());
+      base::UTF8ToUTF16(test_mojo_lite_js), base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
 }

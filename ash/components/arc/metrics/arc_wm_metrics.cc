@@ -4,7 +4,6 @@
 
 #include "ash/components/arc/metrics/arc_wm_metrics.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
@@ -16,11 +15,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/timer/elapsed_timer.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -56,17 +58,17 @@ constexpr char kChromeAppHistogramName[] = "ChromeApp";
 constexpr char kSystemAppHistogramName[] = "SystemApp";
 constexpr char kCrostiniAppHistogramName[] = "CrostiniApp";
 
-std::string GetAppTypeName(ash::AppType app_type) {
+std::string GetAppTypeName(chromeos::AppType app_type) {
   switch (app_type) {
-    case ash::AppType::ARC_APP:
+    case chromeos::AppType::ARC_APP:
       return kArcHistogramName;
-    case ash::AppType::BROWSER:
+    case chromeos::AppType::BROWSER:
       return kBrowserHistogramName;
-    case ash::AppType::CHROME_APP:
+    case chromeos::AppType::CHROME_APP:
       return kChromeAppHistogramName;
-    case ash::AppType::SYSTEM_APP:
+    case chromeos::AppType::SYSTEM_APP:
       return kSystemAppHistogramName;
-    case ash::AppType::CROSTINI_APP:
+    case chromeos::AppType::CROSTINI_APP:
       return kCrostiniAppHistogramName;
     default:
       return "Others";
@@ -81,7 +83,7 @@ class ArcWmMetrics::WindowStateChangeObserver
     : public ash::WindowStateObserver {
  public:
   WindowStateChangeObserver(aura::Window* window,
-                            ui::WindowShowState old_window_show_state,
+                            ui::mojom::WindowShowState old_window_show_state,
                             base::OnceClosure callback)
       : window_(window),
         old_window_show_state_(old_window_show_state),
@@ -115,8 +117,8 @@ class ArcWmMetrics::WindowStateChangeObserver
 
  private:
   void RecordWindowStateChangeDelay(ash::WindowState* state) {
-    const ash::AppType app_type =
-        static_cast<ash::AppType>(window_->GetProperty(aura::client::kAppType));
+    const chromeos::AppType app_type =
+        window_->GetProperty(chromeos::kAppTypeKey);
     if (display::Screen::GetScreen()->InTabletMode()) {
       // When entering tablet mode, we only collect the data of visible window.
       if (state->IsMaximized() && window_->IsVisible()) {
@@ -150,7 +152,7 @@ class ArcWmMetrics::WindowStateChangeObserver
   }
 
   const raw_ptr<aura::Window> window_;
-  const ui::WindowShowState old_window_show_state_;
+  const ui::mojom::WindowShowState old_window_show_state_;
 
   // Tracks the elapsed time from the window operation happens until the window
   // state is changed.
@@ -226,8 +228,8 @@ class ArcWmMetrics::WindowRotationObserver : public aura::WindowObserver {
 
  private:
   void RecordWindowRotateDelay() {
-    const ash::AppType app_type =
-        static_cast<ash::AppType>(window_->GetProperty(aura::client::kAppType));
+    const chromeos::AppType app_type =
+        window_->GetProperty(chromeos::kAppTypeKey);
     base::UmaHistogramCustomTimes(
         ArcWmMetrics::GetWindowRotateTimeHistogramName(app_type),
         window_bounds_change_elapsed_timer_.Elapsed(),
@@ -259,27 +261,28 @@ ArcWmMetrics::~ArcWmMetrics() = default;
 
 // static
 std::string ArcWmMetrics::GetWindowMaximizedTimeHistogramName(
-    ash::AppType app_type) {
+    chromeos::AppType app_type) {
   const std::string app_type_str = GetAppTypeName(app_type);
   return base::StrCat({kWindowMaximizedTimeHistogramPrefix, app_type_str});
 }
 
 // static
 std::string ArcWmMetrics::GetWindowMinimizedTimeHistogramName(
-    ash::AppType app_type) {
+    chromeos::AppType app_type) {
   const std::string app_type_str = GetAppTypeName(app_type);
   return base::StrCat({kWindowMinimizedTimeHistogramPrefix, app_type_str});
 }
 
 // static
 std::string ArcWmMetrics::GetArcWindowClosedTimeHistogramName() {
-  const std::string arc_app_type_str = GetAppTypeName(ash::AppType::ARC_APP);
+  const std::string arc_app_type_str =
+      GetAppTypeName(chromeos::AppType::ARC_APP);
   return base::StrCat({kWindowClosedTimeHistogramPrefix, arc_app_type_str});
 }
 
 // static
 std::string ArcWmMetrics::GetWindowEnterTabletModeTimeHistogramName(
-    ash::AppType app_type) {
+    chromeos::AppType app_type) {
   const std::string app_type_str = GetAppTypeName(app_type);
   return base::StrCat(
       {kWindowEnterTabletModeTimeHistogramPrefix, app_type_str});
@@ -287,22 +290,21 @@ std::string ArcWmMetrics::GetWindowEnterTabletModeTimeHistogramName(
 
 // static
 std::string ArcWmMetrics::GetWindowExitTabletModeTimeHistogramName(
-    ash::AppType app_type) {
+    chromeos::AppType app_type) {
   const std::string app_type_str = GetAppTypeName(app_type);
   return base::StrCat({kWindowExitTabletModeTimeHistogramPrefix, app_type_str});
 }
 
 // static
 std::string ArcWmMetrics::GetWindowRotateTimeHistogramName(
-    ash::AppType app_type) {
+    chromeos::AppType app_type) {
   const std::string app_type_str = GetAppTypeName(app_type);
   return base::StrCat({kWindowRotateTimeHistogramPrefix, app_type_str});
 }
 
 void ArcWmMetrics::OnWindowInitialized(aura::Window* new_window) {
-  ash::AppType app_type = static_cast<ash::AppType>(
-      new_window->GetProperty(aura::client::kAppType));
-  if (app_type == ash::AppType::NON_APP) {
+  chromeos::AppType app_type = new_window->GetProperty(chromeos::kAppTypeKey);
+  if (app_type == chromeos::AppType::NON_APP) {
     return;
   }
 
@@ -312,7 +314,7 @@ void ArcWmMetrics::OnWindowInitialized(aura::Window* new_window) {
 
   window_observations_.AddObservation(new_window);
 
-  if (app_type == ash::AppType::ARC_APP) {
+  if (app_type == chromeos::AppType::ARC_APP) {
     auto* shell_surface_base = exo::GetShellSurfaceBaseForWindow(new_window);
 
     // |shell_surface_base| can be null in unit tests.
@@ -341,7 +343,8 @@ void ArcWmMetrics::OnWindowPropertyChanged(aura::Window* window,
 
   const auto new_window_show_state =
       window->GetProperty(aura::client::kShowStateKey);
-  const auto old_window_show_state = static_cast<ui::WindowShowState>(old);
+  const auto old_window_show_state =
+      static_cast<ui::mojom::WindowShowState>(old);
 
   // We do not measure the case that window state is maximized on the app is
   // launched.
@@ -358,9 +361,9 @@ void ArcWmMetrics::OnWindowPropertyChanged(aura::Window* window,
   const bool from_normal_to_maximized =
       IsNormalWindowStateType(
           chromeos::ToWindowStateType(old_window_show_state)) &&
-      new_window_show_state == ui::WindowShowState::SHOW_STATE_MAXIMIZED;
+      new_window_show_state == ui::mojom::WindowShowState::kMaximized;
   const bool from_any_to_minimized =
-      new_window_show_state == ui::WindowShowState::SHOW_STATE_MINIMIZED;
+      new_window_show_state == ui::mojom::WindowShowState::kMinimized;
   if (from_normal_to_maximized || from_any_to_minimized) {
     state_change_observing_windows_.emplace(
         window, std::make_unique<WindowStateChangeObserver>(

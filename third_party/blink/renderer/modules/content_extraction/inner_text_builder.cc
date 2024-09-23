@@ -8,29 +8,9 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/modules/content_extraction/document_chunker.h"
 
 namespace blink {
-
-namespace {
-
-// Returns true if the content of `iframe_element` should be added.
-bool ShouldIncludeIFrame(const HTMLIFrameElement& iframe_element) {
-  if (iframe_element.IsAdRelated()) {
-    return false;
-  }
-  LocalFrame* iframe_frame =
-      DynamicTo<LocalFrame>(iframe_element.ContentFrame());
-  if (!iframe_frame || iframe_frame->IsCrossOriginToParentOrOuterDocument()) {
-    return false;
-  }
-  auto* iframe_document = iframe_element.contentDocument();
-  if (!iframe_document->body()) {
-    return false;
-  }
-  return true;
-}
-
-}  // namespace
 
 // static
 mojom::blink::InnerTextFramePtr InnerTextBuilder::Build(
@@ -59,7 +39,7 @@ void InnerTextBuilder::Build(HTMLElement& body,
   unsigned inner_text_offset = 0;
   for (auto& child_iframe : child_iframes_) {
     const HTMLIFrameElement* iframe_element = child_iframe->iframe;
-    if (!ShouldIncludeIFrame(*iframe_element)) {
+    if (!ShouldContentExtractionIncludeIFrame(*iframe_element)) {
       continue;
     }
     AddNextNonFrameSegments(inner_text, child_iframe->offset, inner_text_offset,
@@ -67,7 +47,8 @@ void InnerTextBuilder::Build(HTMLElement& body,
 
     LocalFrame* iframe_frame =
         DynamicTo<LocalFrame>(iframe_element->ContentFrame());
-    // ShouldIncludeIFrame() only returns true if all of these are true.
+    // ShouldContentExtractionIncludeIFrame only returns true if all of these
+    // are true.
     CHECK(iframe_frame);
     auto* iframe_document = iframe_element->contentDocument();
     CHECK(iframe_document);
@@ -125,5 +106,38 @@ void InnerTextBuilder::WillVisit(const Node& element, unsigned offset) {
 void InnerTextBuilder::ChildIFrame::Trace(Visitor* visitor) const {
   visitor->Trace(iframe);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+// static
+mojom::blink::InnerTextFramePtr InnerTextPassagesBuilder::Build(
+    LocalFrame& frame,
+    const mojom::blink::InnerTextParams& params) {
+  auto inner_text_frame = mojom::blink::InnerTextFrame::New();
+  inner_text_frame->token = frame.GetLocalFrameToken();
+  Document* document = frame.GetDocument();
+  if (!document) {
+    return inner_text_frame;
+  }
+
+  // Operate on the document node instead of the body because
+  // the head may contain useful information like title.
+  DocumentChunker document_chunker(
+      params.max_words_per_aggregate_passage.value_or(200),
+      params.greedily_aggregate_sibling_nodes.value_or(true),
+      params.max_passages, params.min_words_per_passage.value_or(0));
+  auto segments = document_chunker.Chunk(*document);
+  inner_text_frame->segments.ReserveInitialCapacity(segments.size());
+  for (const String& s : segments) {
+    inner_text_frame->segments.push_back(
+        mojom::blink::InnerTextSegment::NewText(s));
+  }
+
+  return inner_text_frame;
+}
+
+InnerTextPassagesBuilder::InnerTextPassagesBuilder(
+    const mojom::blink::InnerTextParams& params)
+    : params_(params) {}
 
 }  // namespace blink

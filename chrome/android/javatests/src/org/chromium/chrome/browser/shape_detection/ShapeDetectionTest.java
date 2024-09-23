@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.shape_detection;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,17 +13,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Manual;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ChromeRestriction;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 
 import java.util.concurrent.TimeoutException;
 
@@ -45,11 +44,10 @@ public class ShapeDetectionTest {
 
     /** Verifies that QR codes are detected correctly. */
     @Test
+    @Manual(message = "https://crbug.com/40159200. Require multiple GMSCore libraries.")
     @CommandLineFlags.Add("enable-experimental-web-platform-features")
     @Feature({"ShapeDetection"})
-    @LargeTest
-    @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
-    @DisabledTest(message = "https://crbug.com/1139470")
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_20W02)
     public void testBarcodeDetection() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(
@@ -64,10 +62,10 @@ public class ShapeDetectionTest {
 
     /** Verifies that text is detected correctly. */
     @Test
+    @Manual(message = "https://crbug.com/40159200. Require multiple GMSCore libraries.")
     @CommandLineFlags.Add("enable-experimental-web-platform-features")
     @Feature({"ShapeDetection"})
-    @LargeTest
-    @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_20W02)
     public void testTextDetection() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(

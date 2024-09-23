@@ -88,6 +88,7 @@ class DeferredImageDecoderTest : public testing::Test,
     paint_image_id_ = PaintImage::GetNextId();
     ImageDecodingStore::Instance().SetCacheLimitInBytes(1024 * 1024);
     data_ = SharedBuffer::Create(kWhitePNG, sizeof(kWhitePNG));
+    original_data_ = data_->CopyAs<Vector<char>>();
     frame_count_ = 1;
     auto decoder = std::make_unique<MockImageDecoder>(this);
     actual_decoder_ = decoder.get();
@@ -147,12 +148,13 @@ class DeferredImageDecoderTest : public testing::Test,
   test::TaskEnvironment task_environment_;
   // Don't own this but saves the pointer to query states.
   PaintImage::Id paint_image_id_;
-  raw_ptr<MockImageDecoder, ExperimentalRenderer> actual_decoder_;
+  raw_ptr<MockImageDecoder> actual_decoder_;
   std::unique_ptr<DeferredImageDecoder> lazy_decoder_;
   SkBitmap bitmap_;
   std::unique_ptr<cc::PaintCanvas> canvas_;
   int decode_request_count_;
   scoped_refptr<SharedBuffer> data_;
+  Vector<char> original_data_;
   wtf_size_t frame_count_;
   int repetition_count_;
   ImageFrame::Status status_;
@@ -180,7 +182,7 @@ TEST_F(DeferredImageDecoderTest, drawIntoPaintRecord) {
 
 TEST_F(DeferredImageDecoderTest, drawIntoPaintRecordProgressive) {
   scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(data_->Data(), data_->size() - 10);
+      SharedBuffer::Create(original_data_.data(), original_data_.size() - 10);
 
   // Received only half the file.
   lazy_decoder_->SetData(partial_data, false /* all_data_received */);
@@ -216,7 +218,7 @@ TEST_F(DeferredImageDecoderTest, allDataReceivedPriorToDecodeIncrementally) {
   // The image is received in two parts, but a PaintImageGenerator is created
   // only after all the data is received.
   scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(data_->Data(), data_->size() - 10);
+      SharedBuffer::Create(original_data_.data(), original_data_.size() - 10);
   lazy_decoder_->SetData(partial_data, false /* all_data_received */);
   lazy_decoder_->SetData(data_, true /* all_data_received */);
   PaintImage image = CreatePaintImage();
@@ -231,7 +233,7 @@ TEST_F(DeferredImageDecoderTest, notAllDataReceivedPriorToDecode) {
   // for each one. In real usage, it's likely that the software image decoder
   // will start working with partial data.
   scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(data_->Data(), data_->size() - 10);
+      SharedBuffer::Create(original_data_.data(), original_data_.size() - 10);
   lazy_decoder_->SetData(partial_data, false /* all_data_received */);
   PaintImage image =
       CreatePaintImage(PaintImage::CompletionState::kPartiallyDone);
@@ -415,9 +417,10 @@ TEST_F(DeferredImageDecoderTest, frameOpacity) {
 }
 
 TEST_F(DeferredImageDecoderTest, data) {
+  Vector<char> data_binary = data_->CopyAs<Vector<char>>();
   scoped_refptr<SharedBuffer> original_buffer =
-      SharedBuffer::Create(data_->Data(), data_->size());
-  EXPECT_EQ(original_buffer->size(), data_->size());
+      SharedBuffer::Create(data_binary.data(), data_binary.size());
+  EXPECT_EQ(original_buffer->size(), data_binary.size());
   lazy_decoder_->SetData(original_buffer, false /* all_data_received */);
   scoped_refptr<SharedBuffer> new_buffer = lazy_decoder_->Data();
   EXPECT_EQ(original_buffer->size(), new_buffer->size());

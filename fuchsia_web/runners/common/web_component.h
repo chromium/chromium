@@ -8,8 +8,10 @@
 #include <fuchsia/ui/app/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -35,7 +37,7 @@ class WebComponent : public fuchsia::ui::app::ViewProvider,
   // [context| will be retained to provide component-specific services.
   //   If |context| includes an outgoing-directory request then the component
   //   will publish a ViewProvider implementation.
-  WebComponent(base::StringPiece debug_name,
+  WebComponent(std::string_view debug_name,
                WebContentRunner* runner,
                std::unique_ptr<base::StartupContext> context);
 

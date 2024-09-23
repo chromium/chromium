@@ -15,16 +15,15 @@ source_set("promo_style") {
   ]
   deps = [
     ":constants",
+    ":utils",
     "//base",
     "//base:i18n",
     "//ios/chrome/common:constants",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
-    "//ios/chrome/common/ui/promo_style/resources:promo_background_left",
-    "//ios/chrome/common/ui/promo_style/resources:promo_background_right",
-    "//ios/chrome/common/ui/promo_style/resources:promo_style_avatar_circle",
-    "//ios/chrome/common/ui/resources:help_icon",
+    "//ios/chrome/common/ui/promo_style/resources",
+    "//ios/chrome/common/ui/resources",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
     "//ios/chrome/common/ui/util:image_util",
@@ -36,6 +35,18 @@ source_set("constants") {
   sources = [
     "constants.h",
     "constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("utils") {
+  sources = [
+    "utils.h",
+    "utils.mm",
+  ]
+  deps = [
+    ":constants",
+    "//ios/chrome/common/ui/util",
   ]
   frameworks = [ "Foundation.framework" ]
 }

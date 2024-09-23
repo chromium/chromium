@@ -6,6 +6,7 @@ module cert_verifier.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
@@ -38,23 +39,32 @@ struct CertVerifierCreationParams {
   AdditionalCertificates? initial_additional_certificates;
 };
 
-// Serialized copy of the Chrome Root store.
-struct ChromeRootStore {
-  // Serialized proto of type chrome_root_store::RootStore.
-  mojo_base.mojom.BigBuffer serialized_proto_root_store;
-};
-
 // Information about a certificate in the Chrome Root Store
 struct ChromeRootCertInfo {
-  // Human-readable name for the certificate.
-  string name;
   string sha256hash_hex;
+
+  array<uint8> cert;
 };
 
 // Information about the Chrome Root Store
 struct ChromeRootStoreInfo {
   int64 version;
   array<ChromeRootCertInfo> root_cert_info;
+};
+
+enum CertificateTrust {
+  kUnspecified,
+  kDistrusted,
+  kTrusted,
+};
+
+struct PlatformCertInfo {
+  array<uint8> cert;
+  CertificateTrust trust_setting;
+};
+
+struct PlatformRootStoreInfo {
+  array<PlatformCertInfo> user_added_certs;
 };
 
 // Parent interface for the CertVerifierProcess. Hands out new
@@ -73,7 +83,7 @@ interface CertVerifierServiceFactory {
   // CRLSets (where older is determined by the sequence number). All
   // CertVerifierServices created by the CertVerifierServiceFactory, including
   // those created after this call, will use the same CRLSet.
-  // TODO(https://crbug.com/1431347): consider using ReadOnlySharedMemoryRegion
+  // TODO(crbug.com/40902260): consider using ReadOnlySharedMemoryRegion
   // or ReadOnlyFile instead of BigBuffer for this and ChromeRootStore.
   UpdateCRLSet(mojo_base.mojom.BigBuffer crl_set) => ();
 
@@ -87,7 +97,7 @@ interface CertVerifierServiceFactory {
   // new version. The callback will be run once the update has been processed
   // (regardless if it was updated successfully or the update was ignored.)
   [EnableIf=is_chrome_root_store_supported]
-  UpdateChromeRootStore(ChromeRootStore new_root_store) => ();
+  UpdateChromeRootStore(mojo_base.mojom.ProtoWrapper new_root_store) => ();
 
   // Sets whether verification should use the Chrome Root Store or not. All
   // CertVerifierServices created by the CertVerifierServiceFactory, including
@@ -98,4 +108,17 @@ interface CertVerifierServiceFactory {
   // Returns information about the current Chrome Root Store.
   [EnableIf=is_chrome_root_store_supported]
   GetChromeRootStoreInfo() => (ChromeRootStoreInfo root_store_info);
+
+  // Returns information about the current Platform Root Store.
+  [EnableIf=is_chrome_root_store_supported]
+  GetPlatformRootStoreInfo() => (PlatformRootStoreInfo root_store_info);
+
+  // Updates the time used for certificate verification. After this is called,
+  // the system time will be recorded along with a known time passed in as
+  // `current_time`. Future verification attempts will estimate the real time
+  // based on how much the system clock has advanced since the last update.
+  // This only has an effect when the built-in verifier is being used.
+  UpdateNetworkTime(mojo_base.mojom.Time system_time,
+                    mojo_base.mojom.TimeTicks system_ticks,
+                    mojo_base.mojom.Time current_time);
 };

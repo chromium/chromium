@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_tee.h"
 
 #include <string.h>
@@ -14,6 +19,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/blob_bytes_consumer.h"
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -77,7 +83,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
           has_enqueued = true;
           break;
         case Result::kShouldWait:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
         case Result::kDone:
           if (chunk) {
@@ -127,12 +133,12 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
       buffer_.ReserveInitialCapacity(size);
       buffer_.Append(data, size);
       // Report buffer size to V8 so GC can be triggered appropriately.
-      v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-          static_cast<int64_t>(buffer_.size()));
+      external_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                                          static_cast<int64_t>(buffer_.size()));
     }
     ~Chunk() {
-      v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-          -static_cast<int64_t>(buffer_.size()));
+      external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(),
+                                          static_cast<int64_t>(buffer_.size()));
     }
     const char* data() const { return buffer_.data(); }
     wtf_size_t size() const { return buffer_.size(); }
@@ -141,6 +147,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
 
    private:
     Vector<char> buffer_;
+    NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
   };
 
   class Destination final : public BytesConsumer {
@@ -173,7 +180,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
           ClearClient();
           return Result::kError;
       }
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Result::kError;
     }
 

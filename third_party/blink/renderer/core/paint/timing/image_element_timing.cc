@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 
 #include "base/time/time.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -82,7 +83,7 @@ void ImageElementTiming::NotifyBackgroundImageFinished(
 }
 
 base::TimeTicks ImageElementTiming::GetBackgroundImageLoadTime(
-    const StyleFetchedImage* style_image) {
+    const StyleImage* style_image) {
   const auto it = background_image_timestamps_.find(style_image);
   if (it == background_image_timestamps_.end())
     return base::TimeTicks();
@@ -194,7 +195,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
 
 void ImageElementTiming::NotifyBackgroundImagePainted(
     Node& node,
-    const StyleFetchedImage& background_image,
+    const StyleImage& background_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border) {
   const LayoutObject* layout_object = node.GetLayoutObject();
@@ -231,7 +232,9 @@ void ImageElementTiming::NotifyBackgroundImagePainted(
 }
 
 void ImageElementTiming::ReportImagePaintPresentationTime(
-    base::TimeTicks timestamp) {
+    const viz::FrameTimingDetails& presentation_details) {
+  base::TimeTicks timestamp =
+      presentation_details.presentation_feedback.timestamp;
   WindowPerformance* performance =
       DOMWindowPerformance::performance(*GetSupplementable());
   if (performance) {

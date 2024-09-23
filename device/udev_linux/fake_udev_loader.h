@@ -33,7 +33,6 @@ class FakeUdevLoader : public device::UdevLoader {
   void Reset();
 
  private:
-  bool Init() override;
   const char* udev_device_get_action(udev_device* device) override;
   const char* udev_device_get_devnode(udev_device* device) override;
   const char* udev_device_get_devtype(udev_device* device) override;
@@ -82,15 +81,6 @@ class FakeUdevLoader : public device::UdevLoader {
   udev_device* udev_monitor_receive_device(udev_monitor* monitor) override;
   void udev_monitor_unref(udev_monitor* monitor) override;
   udev* udev_new() override;
-  void udev_set_log_fn(struct udev* udev_context,
-                       void (*log_fn)(struct udev* udev_context,
-                                      int priority,
-                                      const char* file,
-                                      int line,
-                                      const char* fn,
-                                      const char* format,
-                                      va_list args)) override;
-  void udev_set_log_priority(struct udev* udev_context, int priority) override;
   void udev_unref(udev* udev_context) override;
 
   std::vector<std::unique_ptr<udev_device>> devices_;

@@ -4,7 +4,8 @@
 
 #include "ui/compositor/compositor_lock.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -56,7 +57,7 @@ std::unique_ptr<CompositorLock> CompositorLockManager::GetCompositorLock(
 }
 
 void CompositorLockManager::RemoveCompositorLock(CompositorLock* lock) {
-  base::Erase(active_locks_, lock);
+  std::erase(active_locks_, lock);
   if (active_locks_.empty()) {
     lock_timeout_weak_ptr_factory_.InvalidateWeakPtrs();
     scheduled_timeout_ = base::TimeTicks();

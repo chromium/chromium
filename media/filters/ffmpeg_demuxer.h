@@ -129,7 +129,7 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   // Returns true if this stream has capacity for additional data.
   bool HasAvailableCapacity();
 
-  // Returns the total buffer size FFMpegDemuxerStream is holding onto.
+  // Returns the total memory usage of FFMpegDemuxerStream.
   size_t MemoryUsage() const;
 
   // Returns the value associated with |key| in the metadata for the avstream.
@@ -229,8 +229,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   void Seek(base::TimeDelta time, PipelineStatusCallback cb) override;
   bool IsSeekable() const override;
   base::Time GetTimelineOffset() const override;
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> GetAllStreams()
-      override;
+  std::vector<DemuxerStream*> GetAllStreams() override;
   base::TimeDelta GetStartTime() const override;
   int64_t GetMemoryUsage() const override;
   std::optional<container_names::MediaContainerName> GetContainerForMetrics()
@@ -336,7 +335,6 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
                                    int result);
   void SeekOnVideoTrackChange(base::TimeDelta seek_to_time,
                               TrackChangeCB seek_completed_cb,
-                              DemuxerStream::Type stream_type,
                               const std::vector<DemuxerStream*>& streams);
 
   // Executes |init_cb_| with |status| and closes out the async trace.

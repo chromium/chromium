@@ -11,8 +11,7 @@
 CrowdDenyFakeSafeBrowsingDatabaseManager::
     CrowdDenyFakeSafeBrowsingDatabaseManager()
     : safe_browsing::TestSafeBrowsingDatabaseManager(
-          content::GetUIThreadTaskRunner({}),
-          content::GetIOThreadTaskRunner({})) {}
+          content::GetUIThreadTaskRunner({})) {}
 
 void CrowdDenyFakeSafeBrowsingDatabaseManager::SetSimulatedMetadataForUrl(
     const GURL& url,

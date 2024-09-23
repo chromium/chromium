@@ -5,10 +5,11 @@
 #ifndef BASE_THREADING_PLATFORM_THREAD_INTERNAL_POSIX_H_
 #define BASE_THREADING_PLATFORM_THREAD_INTERNAL_POSIX_H_
 
+#include <optional>
+
 #include "base/base_export.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -63,7 +64,7 @@ BASE_EXPORT void InvalidateTidCache();
 // platform-specific implementation of kThreadPriorityToNiceValueMapForTest.
 ThreadPriorityForTest NiceValueToThreadPriorityForTest(int nice_value);
 
-absl::optional<ThreadPriorityForTest>
+std::optional<ThreadPriorityForTest>
 GetCurrentThreadPriorityForPlatformForTest();
 
 int GetCurrentThreadNiceValue();

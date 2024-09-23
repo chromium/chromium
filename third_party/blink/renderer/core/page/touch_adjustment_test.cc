@@ -47,7 +47,7 @@ class TouchAdjustmentTest : public RenderingTest {
     page_scale_factor_ = page_scale_factor;
 
     GetChromeClient().SetDeviceScaleFactor(device_scale_factor);
-    GetFrame().SetPageZoomFactor(device_scale_factor * browser_zoom_factor);
+    GetFrame().SetLayoutZoomFactor(device_scale_factor * browser_zoom_factor);
     GetPage().SetPageScaleFactor(page_scale_factor);
   }
 

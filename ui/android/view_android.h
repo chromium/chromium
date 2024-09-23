@@ -180,11 +180,11 @@ class UI_ANDROID_EXPORT ViewAndroid {
   void OnCursorChanged(const Cursor& cursor);
   void NotifyHoverActionStylusWritable(bool stylus_writable);
   void OnBackgroundColorChanged(unsigned int color);
-  void OnTopControlsChanged(float top_controls_offset,
-                            float top_content_offset,
-                            float top_controls_min_height_offset);
-  void OnBottomControlsChanged(float bottom_controls_offset,
-                               float bottom_controls_min_height_offset);
+  void OnControlsChanged(float top_controls_offset,
+                         float top_content_offset,
+                         float top_controls_min_height_offset,
+                         float bottom_controls_offset,
+                         float bottom_controls_min_height_offset);
   void OnBrowserControlsHeightChanged();
   // |current_scroll_ratio| is the ratio of vertical scroll in [0, 1] range.
   // Scroll at top of page is 0, and bottom of page is 1. It is defined as 0
@@ -312,7 +312,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
   const base::android::ScopedJavaLocalRef<jobject> GetViewAndroidDelegate()
       const;
 
-  std::list<ViewAndroid*> children_;
+  std::list<raw_ptr<ViewAndroid, CtnExperimental>> children_;
   base::ObserverList<ViewAndroidObserver>::Unchecked observer_list_;
   scoped_refptr<cc::slim::Layer> layer_;
   JavaObjectWeakGlobalRef delegate_;

@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -130,44 +131,33 @@ void StreamFactory::CreateOutputStream(
                                       "device id", output_device_id, "params",
                                       params.AsHumanReadableString());
 
-  // Unretained is safe since |this| indirectly owns the OutputStream.
-  auto deleter_callback = base::BindOnce(&StreamFactory::DestroyOutputStream,
-                                         base::Unretained(this));
+  CreateOutputStreamInternal(std::move(stream_receiver), mojo::NullReceiver(),
+                             std::move(observer), std::move(log),
+                             output_device_id, params, group_id,
+                             std::move(created_callback));
+}
 
-  // This is required for multizone audio playback on Cast devices.
-  // See //chromecast/media/cast_audio_manager.h for more information.
-  //
-  // TODO(crbug.com/1336055): Determine if this condition should instead be
-  // ENABLE_CAST_RECEIVER && !IS_FUCHSIA.
-  const std::string device_id_or_group_id =
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-      (::media::AudioDeviceDescription::IsCommunicationsDevice(
-           output_device_id) ||
-       group_id.is_empty())
-          ? output_device_id
-          : group_id.ToString();
-#else
-      output_device_id;
-#endif
+void StreamFactory::CreateSwitchableOutputStream(
+    mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver,
+    mojo::PendingReceiver<media::mojom::DeviceSwitchInterface>
+        device_switch_receiver,
+    mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
+        observer,
+    mojo::PendingRemote<media::mojom::AudioLog> log,
+    const std::string& output_device_id,
+    const media::AudioParameters& params,
+    const base::UnguessableToken& group_id,
+    CreateOutputStreamCallback created_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  TRACE_EVENT_NESTABLE_ASYNC_INSTANT2("audio", "CreateSwitchableOutputStream",
+                                      this, "device id", output_device_id,
+                                      "params", params.AsHumanReadableString());
+  DCHECK(device_switch_receiver.is_valid());
 
-  // base::Unretained() is safe since |this| owns both |output_mixer_manager_|
-  // and |output_streams_|, and ensures the correct order of destruction.
-  OutputStream::ManagedDeviceOutputStreamCreateCallback
-      managed_device_output_stream_create_callback;
-
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (output_device_mixer_manager_) {
-    managed_device_output_stream_create_callback = base::BindRepeating(
-        &OutputDeviceMixerManager::MakeOutputStream,
-        base::Unretained(output_device_mixer_manager_.get()));
-  }
-#endif
-
-  output_streams_.insert(std::make_unique<OutputStream>(
-      std::move(created_callback), std::move(deleter_callback),
-      std::move(managed_device_output_stream_create_callback),
-      std::move(stream_receiver), std::move(observer), std::move(log),
-      audio_manager_, device_id_or_group_id, params, &coordinator_, group_id));
+  CreateOutputStreamInternal(
+      std::move(stream_receiver), std::move(device_switch_receiver),
+      std::move(observer), std::move(log), output_device_id, params, group_id,
+      std::move(created_callback));
 }
 
 void StreamFactory::BindMuter(
@@ -292,7 +282,7 @@ void StreamFactory::DestroyLoopbackStream(LoopbackStream* stream) {
 
   const auto it =
       base::ranges::find_if(loopback_streams_, base::MatchesUniquePtr(stream));
-  DCHECK(it != loopback_streams_.end());
+  CHECK(it != loopback_streams_.end(), base::NotFatalUntil::M130);
   loopback_streams_.erase(it);
 
   // If all LoopbackStreams have ended, stop and join the worker thread.
@@ -300,6 +290,63 @@ void StreamFactory::DestroyLoopbackStream(LoopbackStream* stream) {
     TRACE_EVENT0("audio", "Stop Loopback Worker");
     loopback_worker_thread_.Stop();
   }
+}
+
+void StreamFactory::CreateOutputStreamInternal(
+    mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver,
+    mojo::PendingReceiver<media::mojom::DeviceSwitchInterface>
+        device_switch_receiver,
+    mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
+        observer,
+    mojo::PendingRemote<media::mojom::AudioLog> log,
+    const std::string& output_device_id,
+    const media::AudioParameters& params,
+    const base::UnguessableToken& group_id,
+    CreateOutputStreamCallback created_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  TRACE_EVENT_NESTABLE_ASYNC_INSTANT2("audio", "CreateOutputStream", this,
+                                      "device id", output_device_id, "params",
+                                      params.AsHumanReadableString());
+
+  // Unretained is safe since |this| indirectly owns the OutputStream.
+  auto deleter_callback = base::BindOnce(&StreamFactory::DestroyOutputStream,
+                                         base::Unretained(this));
+
+  // This is required for multizone audio playback on Cast devices.
+  // See //chromecast/media/cast_audio_manager.h for more information.
+  //
+  // TODO(crbug.com/1336055): Determine if this condition should instead be
+  // ENABLE_CAST_RECEIVER && !IS_FUCHSIA.
+  const std::string device_id_or_group_id =
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
+      (::media::AudioDeviceDescription::IsCommunicationsDevice(
+           output_device_id) ||
+       group_id.is_empty())
+          ? output_device_id
+          : group_id.ToString();
+#else
+      output_device_id;
+#endif
+
+  // base::Unretained() is safe since |this| owns both |output_mixer_manager_|
+  // and |output_streams_|, and ensures the correct order of destruction.
+  OutputStream::ManagedDeviceOutputStreamCreateCallback
+      managed_device_output_stream_create_callback;
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (output_device_mixer_manager_) {
+    managed_device_output_stream_create_callback = base::BindRepeating(
+        &OutputDeviceMixerManager::MakeOutputStream,
+        base::Unretained(output_device_mixer_manager_.get()));
+  }
+#endif
+
+  output_streams_.insert(std::make_unique<OutputStream>(
+      std::move(created_callback), std::move(deleter_callback),
+      std::move(managed_device_output_stream_create_callback),
+      std::move(stream_receiver), std::move(device_switch_receiver),
+      std::move(observer), std::move(log), audio_manager_,
+      device_id_or_group_id, params, &coordinator_, group_id));
 }
 
 }  // namespace audio

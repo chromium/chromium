@@ -1,0 +1,28 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package org.chromium.chrome.browser.ui.google_bottom_bar.proto;
+
+option java_package = "org.chromium.chrome.browser.ui.google_bottom_bar.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message GoogleBottomBarIntentParams {
+  repeated int32 encoded_button = 1 [packed = true];
+
+  enum VariantLayoutType {
+    NO_VARIANT = 0;
+    CHROME_CONTROLLED = 1;
+    DOUBLE_DECKER = 2;
+    SINGLE_DECKER = 3;
+    SINGLE_DECKER_WITH_RIGHT_BUTTONS = 4;
+  }
+  optional VariantLayoutType variant_layout_type = 2 [default = NO_VARIANT];
+
+  optional int32 no_variant_height_dp = 3;
+
+  optional int32 single_decker_height_dp = 4;
+}

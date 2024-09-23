@@ -27,6 +27,10 @@ struct StructTraits<audio::mojom::AudioDeviceDescriptionDataView,
   static bool is_system_default(const media::AudioDeviceDescription& input) {
     return input.is_system_default;
   }
+  static bool is_communications_device(
+      const media::AudioDeviceDescription& input) {
+    return input.is_communications_device;
+  }
 
   static bool Read(audio::mojom::AudioDeviceDescriptionDataView data,
                    media::AudioDeviceDescription* output);

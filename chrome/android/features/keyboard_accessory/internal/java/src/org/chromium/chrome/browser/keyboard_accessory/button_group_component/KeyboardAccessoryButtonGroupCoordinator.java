@@ -7,13 +7,10 @@ package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.ACTIVE_TAB;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.BUTTON_SELECTION_CALLBACKS;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
-import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TAB_SELECTION_CALLBACKS;
 
 import android.view.View;
 
 import androidx.viewpager.widget.ViewPager;
-
-import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.ui.modelutil.ListModel;
@@ -25,12 +22,11 @@ import java.util.HashMap;
 
 /**
  * This component reflects the state of selected tabs in the keyboard accessory. It can be assigned
- * to multiple {@link TabLayout}s and will keep them in sync.
+ * to multiple {@link KeyboardAccessoryButtonGroupView}s and will keep them in sync.
  */
 public class KeyboardAccessoryButtonGroupCoordinator {
     private final PropertyModel mModel =
-            new PropertyModel.Builder(
-                            TABS, ACTIVE_TAB, TAB_SELECTION_CALLBACKS, BUTTON_SELECTION_CALLBACKS)
+            new PropertyModel.Builder(TABS, ACTIVE_TAB, BUTTON_SELECTION_CALLBACKS)
                     .with(TABS, new ListModel<>())
                     .with(ACTIVE_TAB, null)
                     .build();

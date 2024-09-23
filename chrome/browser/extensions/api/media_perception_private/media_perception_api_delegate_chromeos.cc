@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/chromeos/delegate_to_browser_gpu_service_accelerator_factory.h"
 #include "content/public/browser/render_frame_host.h"
@@ -35,45 +35,44 @@ std::string GetComponentNameForComponentType(
       LOG(ERROR) << "No component type requested.";
       return "";
   }
-  NOTREACHED() << "Reached component type not in switch.";
+  NOTREACHED_IN_MIGRATION() << "Reached component type not in switch.";
   return "";
 }
 
 api::media_perception_private::ComponentInstallationError
-GetComponentInstallationErrorForCrOSComponentManagerError(
-    const component_updater::CrOSComponentManager::Error error) {
+GetComponentInstallationErrorForComponentManagerAshError(
+    const component_updater::ComponentManagerAsh::Error error) {
   switch (error) {
-    case component_updater::CrOSComponentManager::Error::ERROR_MAX:
-    case component_updater::CrOSComponentManager::Error::NONE:
+    case component_updater::ComponentManagerAsh::Error::NONE:
       return api::media_perception_private::ComponentInstallationError::kNone;
-    case component_updater::CrOSComponentManager::Error::UNKNOWN_COMPONENT:
+    case component_updater::ComponentManagerAsh::Error::UNKNOWN_COMPONENT:
       return api::media_perception_private::ComponentInstallationError::
           kUnknownComponent;
-    case component_updater::CrOSComponentManager::Error::INSTALL_FAILURE:
-    case component_updater::CrOSComponentManager::Error::UPDATE_IN_PROGRESS:
+    case component_updater::ComponentManagerAsh::Error::INSTALL_FAILURE:
+    case component_updater::ComponentManagerAsh::Error::UPDATE_IN_PROGRESS:
       return api::media_perception_private::ComponentInstallationError::
           kInstallFailure;
-    case component_updater::CrOSComponentManager::Error::MOUNT_FAILURE:
+    case component_updater::ComponentManagerAsh::Error::MOUNT_FAILURE:
       return api::media_perception_private::ComponentInstallationError::
           kMountFailure;
-    case component_updater::CrOSComponentManager::Error::
+    case component_updater::ComponentManagerAsh::Error::
         COMPATIBILITY_CHECK_FAILED:
       return api::media_perception_private::ComponentInstallationError::
           kCompatibilityCheckFailed;
-    case component_updater::CrOSComponentManager::Error::NOT_FOUND:
+    case component_updater::ComponentManagerAsh::Error::NOT_FOUND:
       return api::media_perception_private::ComponentInstallationError::
           kNotFound;
   }
-  NOTREACHED() << "Reached component error type not in switch.";
+  NOTREACHED_IN_MIGRATION() << "Reached component error type not in switch.";
   return api::media_perception_private::ComponentInstallationError::kNone;
 }
 
 void OnLoadComponent(
     MediaPerceptionAPIDelegate::LoadCrOSComponentCallback load_callback,
-    component_updater::CrOSComponentManager::Error error,
+    component_updater::ComponentManagerAsh::Error error,
     const base::FilePath& mount_point) {
   std::move(load_callback)
-      .Run(GetComponentInstallationErrorForCrOSComponentManagerError(error),
+      .Run(GetComponentInstallationErrorForComponentManagerAshError(error),
            mount_point);
 }
 
@@ -87,10 +86,10 @@ MediaPerceptionAPIDelegateChromeOS::~MediaPerceptionAPIDelegateChromeOS() {}
 void MediaPerceptionAPIDelegateChromeOS::LoadCrOSComponent(
     const extensions::api::media_perception_private::ComponentType& type,
     LoadCrOSComponentCallback load_callback) {
-  g_browser_process->platform_part()->cros_component_manager()->Load(
+  g_browser_process->platform_part()->component_manager_ash()->Load(
       GetComponentNameForComponentType(type),
-      component_updater::CrOSComponentManager::MountPolicy::kMount,
-      component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
+      component_updater::ComponentManagerAsh::MountPolicy::kMount,
+      component_updater::ComponentManagerAsh::UpdatePolicy::kDontForce,
       base::BindOnce(OnLoadComponent, std::move(load_callback)));
 }
 

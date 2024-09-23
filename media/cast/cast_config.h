@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -15,35 +16,13 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "media/base/audio_codecs.h"
+#include "media/base/video_codecs.h"
 
 namespace media {
 class VideoEncodeAccelerator;
-enum class AudioCodec;
-enum class VideoCodec;
 
 namespace cast {
-
-// TODO(https://crbug.com/1363514): should be removed in favor of
-// media::VideoCodec, media::AudioCodec.
-enum class Codec {
-  kUnknown,
-  kAudioOpus,
-  kAudioPcm16,
-  kAudioAac,
-  kAudioRemote,
-
-  // For tests only.  Must set enable_fake_codec_for_tests to true.
-  kVideoFake,
-  kVideoVp8,
-  kVideoH264,
-  kVideoRemote,
-  kVideoVp9,
-  kVideoAv1,
-  kMaxValue = kVideoAv1
-};
-
-AudioCodec ToAudioCodec(Codec codec);
-VideoCodec ToVideoCodec(Codec codec);
 
 // Describes the content being transported over RTP streams.
 enum class RtpPayloadType {
@@ -115,11 +94,18 @@ enum SuggestedDefaults {
 // These parameters are only for video encoders.
 struct VideoCodecParams {
   VideoCodecParams();
+  explicit VideoCodecParams(VideoCodec codec);
   VideoCodecParams(const VideoCodecParams& other);
   VideoCodecParams(VideoCodecParams&& other);
   VideoCodecParams& operator=(const VideoCodecParams& other);
   VideoCodecParams& operator=(VideoCodecParams&& other);
   ~VideoCodecParams();
+
+  VideoCodec codec = VideoCodec::kUnknown;
+
+  // When true, allows use of VideoCodec::kUnknown.  When false,
+  // VideoCodec::kUnknown is not supported.
+  bool enable_fake_codec_for_tests = false;
 
   int max_qp = kDefaultMaxQp;
   int min_qp = kDefaultMinQp;
@@ -148,6 +134,11 @@ struct VideoCodecParams {
   int number_of_encode_threads = 1;
 };
 
+// These parameters are only for audio encoders.
+struct AudioCodecParams {
+  AudioCodec codec = AudioCodec::kUnknown;
+};
+
 struct FrameSenderConfig {
   FrameSenderConfig();
   FrameSenderConfig(uint32_t sender_ssrc,
@@ -162,10 +153,10 @@ struct FrameSenderConfig {
                     int min_bitrate,
                     int start_bitrate,
                     double max_frame_rate,
-                    Codec codec,
                     std::string aes_key,
                     std::string aes_iv_mask,
-                    VideoCodecParams video_codec_params);
+                    std::optional<VideoCodecParams> video_codec_params,
+                    std::optional<AudioCodecParams> audio_codec_params);
   FrameSenderConfig(const FrameSenderConfig& other);
   FrameSenderConfig(FrameSenderConfig&& other);
   FrameSenderConfig& operator=(const FrameSenderConfig& other);
@@ -187,15 +178,24 @@ struct FrameSenderConfig {
   //
   // All three delays are set to the same value due to adaptive latency
   // being disabled in Chrome.
-  // TODO(https://crbug.com/1363017): re-enable adaptive playout dleay.
+  // TODO(crbug.com/40238532): re-enable adaptive playout dleay.
   base::TimeDelta min_playout_delay = kDefaultTargetPlayoutDelay;
   base::TimeDelta max_playout_delay = kDefaultTargetPlayoutDelay;
 
   // RTP payload type enum: Specifies the type/encoding of frame data.
   RtpPayloadType rtp_payload_type = RtpPayloadType::UNKNOWN;
+
   bool is_audio() const {
-    return rtp_payload_type >= media::cast::RtpPayloadType::FIRST &&
-           rtp_payload_type <= media::cast::RtpPayloadType::AUDIO_LAST;
+    return rtp_payload_type >= RtpPayloadType::FIRST &&
+           rtp_payload_type <= RtpPayloadType::AUDIO_LAST;
+  }
+  bool is_video() const {
+    return rtp_payload_type >= RtpPayloadType::VIDEO_VP8 &&
+           rtp_payload_type <= RtpPayloadType::LAST;
+  }
+  bool is_remoting() const {
+    return rtp_payload_type == RtpPayloadType::REMOTE_AUDIO ||
+           rtp_payload_type == RtpPayloadType::REMOTE_VIDEO;
   }
 
   // If true, use an external HW encoder rather than the built-in
@@ -211,7 +211,7 @@ struct FrameSenderConfig {
   int channels = 0;
 
   // For now, only fixed bitrate is used for audio encoding. So for audio,
-  // |max_bitrate| is used, and the other two will be overriden if they are not
+  // |max_bitrate| is used, and the other two will be overridden if they are not
   // equal to |max_bitrate|.
   int max_bitrate = 0;
   int min_bitrate = 0;
@@ -219,69 +219,19 @@ struct FrameSenderConfig {
 
   double max_frame_rate = kDefaultMaxFrameRate;
 
-  // Codec used for the compression of signal data.
-  Codec codec = Codec::kUnknown;
-
   // The AES crypto key and initialization vector.  Each of these strings
   // contains the data in binary form, of size kAesKeySize.  If they are empty
   // strings, crypto is not being used.
   std::string aes_key;
   std::string aes_iv_mask;
-
-  // When true, allows use of Codec::kVideoFake.  When false, Codec::kVideoFake
-  // is not supported.
-  bool enable_fake_codec_for_tests = false;
 
   // These are codec specific parameters for video streams only.
-  VideoCodecParams video_codec_params;
-};
+  std::optional<VideoCodecParams> video_codec_params;
+  VideoCodec video_codec() const { return video_codec_params->codec; }
 
-struct FrameReceiverConfig {
-  FrameReceiverConfig();
-  FrameReceiverConfig(const FrameReceiverConfig& other);
-  FrameReceiverConfig(FrameReceiverConfig&& other);
-  FrameReceiverConfig& operator=(const FrameReceiverConfig& other);
-  FrameReceiverConfig& operator=(FrameReceiverConfig&& other);
-  ~FrameReceiverConfig();
-
-  // The receiver's SSRC identifier.
-  uint32_t receiver_ssrc = 0;
-
-  // The sender's SSRC identifier.
-  uint32_t sender_ssrc = 0;
-
-  // The total amount of time between a frame's capture/recording on the sender
-  // and its playback on the receiver (i.e., shown to a user).  This is fixed as
-  // a value large enough to give the system sufficient time to encode,
-  // transmit/retransmit, receive, decode, and render; given its run-time
-  // environment (sender/receiver hardware performance, network conditions,
-  // etc.).
-  int rtp_max_delay_ms = kDefaultTargetPlayoutDelay.InMilliseconds();
-
-  // RTP payload type enum: Specifies the type/encoding of frame data.
-  RtpPayloadType rtp_payload_type = RtpPayloadType::UNKNOWN;
-
-  // RTP timebase: The number of RTP units advanced per one second.  For audio,
-  // this is the sampling rate.  For video, by convention, this is 90 kHz.
-  int rtp_timebase = 0;
-
-  // Number of channels.  For audio, this is normally 2.  For video, this must
-  // be 1 as Cast does not have support for stereoscopic video.
-  int channels = 0;
-
-  // The target frame rate.  For audio, this is normally 100 (i.e., frames have
-  // a duration of 10ms each).  For video, this is normally 30, but any frame
-  // rate is supported.
-  double target_frame_rate = 0;
-
-  // Codec used for the compression of signal data.
-  Codec codec = Codec::kUnknown;
-
-  // The AES crypto key and initialization vector.  Each of these strings
-  // contains the data in binary form, of size kAesKeySize.  If they are empty
-  // strings, crypto is not being used.
-  std::string aes_key;
-  std::string aes_iv_mask;
+  // These are codec specific parameters for audio streams only.
+  std::optional<AudioCodecParams> audio_codec_params;
+  AudioCodec audio_codec() const { return audio_codec_params->codec; }
 };
 
 typedef base::OnceCallback<void(scoped_refptr<base::SingleThreadTaskRunner>,
@@ -291,6 +241,7 @@ typedef base::RepeatingCallback<void(ReceiveVideoEncodeAcceleratorCallback)>
     CreateVideoEncodeAcceleratorCallback;
 typedef base::OnceCallback<void(base::UnsafeSharedMemoryRegion)>
     ReceiveVideoEncodeMemoryCallback;
+
 }  // namespace cast
 }  // namespace media
 

@@ -7,6 +7,7 @@
     "is_debug": false,
     "proprietary_codecs": true,
     "symbol_level": 1,
+    "target_cpu": "arm",
     "target_os": "android",
     "use_remoteexec": true,
     "use_siso": true,

@@ -8,7 +8,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -26,7 +29,7 @@ class MODULES_EXPORT HTMLCanvasElementModule {
  public:
   static V8RenderingContext* getContext(
       HTMLCanvasElement& canvas,
-      const String& context_id,
+      const WTF::String& context_id,
       const CanvasContextCreationAttributesModule* attributes,
       ExceptionState& exception_state);
   static OffscreenCanvas* transferControlToOffscreen(ScriptState*,

@@ -1,0 +1,28 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module storage.mojom;
+
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+
+// Information about the browser process representation of an execution context
+// (frame or worker) acting as the client of a bucket.
+//
+// Typemapping is maintained between this and storage::BucketClientInfo.
+struct BucketClientInfo {
+  // The ID of the `RenderProcessHost` that the client belongs to.
+  int32 process_id;
+
+  // A token that uniquely identifies the client's execution context.
+  // Expected to only be a `LocalFrameToken`, `DedicatedWorkerToken`,
+  // `ServiceWorkerToken`, or `SharedWorkerToken`.
+  // This expectation is asserted in bucket_client_info_mojom_traits.cc.
+  blink.mojom.ExecutionContextToken context_token;
+
+  // The token of the document associated with the client, if there is one.
+  // Expected to be set only if `context_token` is a `LocalFrameToken` or a
+  // `DedicatedWorkerToken`.
+  // This expectation is asserted in bucket_client_info_mojom_traits.cc.
+  blink.mojom.DocumentToken? document_token;
+};

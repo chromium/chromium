@@ -38,6 +38,7 @@ class TabHandleLayer : public Layer {
                      ui::NinePatchResource* tab_handle_resource,
                      ui::NinePatchResource* tab_handle_outline_resource,
                      bool foreground,
+                     bool shouldShowTabOutline,
                      bool close_pressed,
                      float toolbar_width,
                      float x,
@@ -54,7 +55,6 @@ class TabHandleLayer : public Layer {
                      bool is_end_divider_visible,
                      bool is_loading,
                      float spinner_rotation,
-                     float brightness,
                      float opacity);
   scoped_refptr<cc::slim::Layer> layer() override;
 

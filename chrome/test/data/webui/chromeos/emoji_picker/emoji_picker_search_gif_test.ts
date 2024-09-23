@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EmojiPickerApiProxyImpl, EmojiSearch} from 'chrome://emoji-picker/emoji_picker.js';
+import {EmojiPickerApiProxy, EmojiSearch} from 'chrome://emoji-picker/emoji_picker.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertGT} from 'chrome://webui-test/chai_assert.js';
 
 import {assertEmojiImageAlt, initialiseEmojiPickerForTest, timeout, waitForCondition} from './emoji_picker_test_util.js';
-import {TestEmojiPickerApiProxyImpl} from './test_emoji_picker_api_proxy.js';
+import {TestEmojiPickerApiProxy} from './test_emoji_picker_api_proxy.js';
 
 
 suite('emoji-search-gif', () => {
-  EmojiPickerApiProxyImpl.setInstance(new TestEmojiPickerApiProxyImpl());
+  EmojiPickerApiProxy.setInstance(new TestEmojiPickerApiProxy());
   let emojiSearch: EmojiSearch;
   let findInEmojiPicker: (...path: string[]) => HTMLElement | null;
   let scrollDown: ((height: number) => void);
@@ -209,7 +209,7 @@ suite('emoji-search-gif', () => {
 
   test('Blank search queries should be prevented in API Proxy', async () => {
     // Given a real API proxy.
-    const apiProxy = new EmojiPickerApiProxyImpl();
+    const apiProxy = new EmojiPickerApiProxy();
 
     // When blank queries are sent.
     const {status, searchGifs} = await apiProxy.searchGifs('   ');

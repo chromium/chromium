@@ -9,30 +9,35 @@ namespace blink {
 
 namespace {
 
-CascadePriority AuthorPriority(uint16_t tree_order, uint32_t position) {
-  return CascadePriority(CascadeOrigin::kAuthor, false, tree_order, false,
-                         false, 0, position);
-}
-
-CascadePriority ImportantAuthorPriority(uint16_t tree_order,
-                                        uint32_t position) {
-  return CascadePriority(CascadeOrigin::kAuthor, true, tree_order, false, false,
-                         0, position);
-}
-
 struct Options {
   CascadeOrigin origin = CascadeOrigin::kAuthor;
   bool important = false;
   uint16_t tree_order = 0;
   bool is_inline_style = false;
-  bool is_fallback_style = false;
+  bool is_try_style = false;
+  bool is_try_tactics_style = false;
   uint16_t layer_order = 0;
   uint32_t position = 0;
 };
 
 CascadePriority Priority(Options o) {
   return CascadePriority(o.origin, o.important, o.tree_order, o.is_inline_style,
-                         o.is_fallback_style, o.layer_order, o.position);
+                         o.is_try_style, o.is_try_tactics_style, o.layer_order,
+                         o.position);
+}
+
+CascadePriority AuthorPriority(uint16_t tree_order, uint32_t position) {
+  return Priority({.origin = CascadeOrigin::kAuthor,
+                   .tree_order = tree_order,
+                   .position = position});
+}
+
+CascadePriority ImportantAuthorPriority(uint16_t tree_order,
+                                        uint32_t position) {
+  return Priority({.origin = CascadeOrigin::kAuthor,
+                   .important = true,
+                   .tree_order = tree_order,
+                   .position = position});
 }
 
 }  // namespace
@@ -51,12 +56,12 @@ TEST(CascadePriorityTest, EncodeOriginImportance) {
 
 TEST(CascadePriorityTest, OriginOperators) {
   std::vector<CascadePriority> priorities = {
-      CascadePriority(CascadeOrigin::kTransition, false, 0, false, false, 0, 0),
-      CascadePriority(CascadeOrigin::kAnimation, false, 0, false, false, 0, 0),
-      CascadePriority(CascadeOrigin::kAuthor, false, 0, false, false, 0, 0),
-      CascadePriority(CascadeOrigin::kUser, false, 0, false, false, 0, 0),
-      CascadePriority(CascadeOrigin::kUserAgent, false, 0, false, false, 0, 0),
-      CascadePriority(CascadeOrigin::kNone, false, 0, false, false, 0, 0)};
+      Priority({.origin = CascadeOrigin::kTransition}),
+      Priority({.origin = CascadeOrigin::kAnimation}),
+      Priority({.origin = CascadeOrigin::kAuthor}),
+      Priority({.origin = CascadeOrigin::kUser}),
+      Priority({.origin = CascadeOrigin::kUserAgent}),
+      Priority({.origin = CascadeOrigin::kNone})};
 
   for (size_t i = 0; i < priorities.size(); ++i) {
     for (size_t j = i; j < priorities.size(); ++j) {
@@ -88,15 +93,15 @@ TEST(CascadePriorityTest, OriginOperators) {
 
 TEST(CascadePriorityTest, OriginImportance) {
   std::vector<CascadePriority> priorities = {
-      CascadePriority(CascadeOrigin::kTransition, false, 0, false, false, 0, 0),
-      CascadePriority(CascadeOrigin::kUserAgent, true, 0, false, false, 0, 0),
-      CascadePriority(CascadeOrigin::kUser, true, 0, false, false, 0, 0),
-      CascadePriority(CascadeOrigin::kAuthor, true, 0, false, false, 0, 0),
-      CascadePriority(CascadeOrigin::kAnimation, false, 0, false, false, 0, 0),
-      CascadePriority(CascadeOrigin::kAuthor, false, 0, false, false, 0, 0),
-      CascadePriority(CascadeOrigin::kUser, false, 0, false, false, 0, 0),
-      CascadePriority(CascadeOrigin::kUserAgent, false, 0, false, false, 0, 0),
-      CascadePriority(CascadeOrigin::kNone, false, 0, false, false, 0, 0)};
+      Priority({.origin = CascadeOrigin::kTransition, .important = false}),
+      Priority({.origin = CascadeOrigin::kUserAgent, .important = true}),
+      Priority({.origin = CascadeOrigin::kUser, .important = true}),
+      Priority({.origin = CascadeOrigin::kAuthor, .important = true}),
+      Priority({.origin = CascadeOrigin::kAnimation, .important = false}),
+      Priority({.origin = CascadeOrigin::kAuthor, .important = false}),
+      Priority({.origin = CascadeOrigin::kUser, .important = false}),
+      Priority({.origin = CascadeOrigin::kUserAgent, .important = false}),
+      Priority({.origin = CascadeOrigin::kNone, .important = false})};
 
   for (size_t i = 0; i < priorities.size(); ++i) {
     for (size_t j = i; j < priorities.size(); ++j) {
@@ -106,33 +111,35 @@ TEST(CascadePriorityTest, OriginImportance) {
 }
 
 TEST(CascadePriorityTest, IsImportant) {
-  using Priority = CascadePriority;
   using Origin = CascadeOrigin;
 
-  EXPECT_FALSE(
-      Priority(Origin::kUserAgent, false, 0, false, false, 0, 0).IsImportant());
-  EXPECT_FALSE(
-      Priority(Origin::kUser, false, 0, false, false, 0, 0).IsImportant());
-  EXPECT_FALSE(
-      Priority(Origin::kAuthor, false, 0, false, false, 0, 0).IsImportant());
-  EXPECT_FALSE(
-      Priority(Origin::kAnimation, false, 0, false, false, 0, 0).IsImportant());
-  EXPECT_FALSE(Priority(Origin::kTransition, false, 0, false, false, 0, 0)
-                   .IsImportant());
-  EXPECT_FALSE(Priority(Origin::kAuthor, false, 1024, false, false, 2048, 4096)
+  EXPECT_FALSE(Priority({.origin = Origin::kUserAgent}).IsImportant());
+  EXPECT_FALSE(Priority({.origin = Origin::kUser}).IsImportant());
+  EXPECT_FALSE(Priority({.origin = Origin::kAuthor}).IsImportant());
+  EXPECT_FALSE(Priority({.origin = Origin::kAnimation}).IsImportant());
+  EXPECT_FALSE(Priority({.origin = Origin::kTransition}).IsImportant());
+  EXPECT_FALSE(Priority({.origin = Origin::kAuthor,
+                         .important = false,
+                         .tree_order = 1024,
+                         .layer_order = 2048,
+                         .position = 4096})
                    .IsImportant());
 
+  EXPECT_TRUE(Priority({.origin = Origin::kUserAgent, .important = true})
+                  .IsImportant());
   EXPECT_TRUE(
-      Priority(Origin::kUserAgent, true, 0, false, false, 0, 0).IsImportant());
+      Priority({.origin = Origin::kUser, .important = true}).IsImportant());
   EXPECT_TRUE(
-      Priority(Origin::kUser, true, 0, false, false, 0, 0).IsImportant());
-  EXPECT_TRUE(
-      Priority(Origin::kAuthor, true, 0, false, false, 0, 0).IsImportant());
-  EXPECT_TRUE(
-      Priority(Origin::kAnimation, true, 0, false, false, 0, 0).IsImportant());
-  EXPECT_TRUE(
-      Priority(Origin::kTransition, true, 0, false, false, 0, 0).IsImportant());
-  EXPECT_TRUE(Priority(Origin::kAuthor, true, 1024, false, false, 2048, 4096)
+      Priority({.origin = Origin::kAuthor, .important = true}).IsImportant());
+  EXPECT_TRUE(Priority({.origin = Origin::kAnimation, .important = true})
+                  .IsImportant());
+  EXPECT_TRUE(Priority({.origin = Origin::kTransition, .important = true})
+                  .IsImportant());
+  EXPECT_TRUE(Priority({.origin = Origin::kAuthor,
+                        .important = true,
+                        .tree_order = 1024,
+                        .layer_order = 2048,
+                        .position = 4096})
                   .IsImportant());
 }
 
@@ -142,7 +149,7 @@ static std::vector<CascadeOrigin> all_origins = {
 
 TEST(CascadePriorityTest, GetOrigin) {
   for (CascadeOrigin origin : all_origins) {
-    EXPECT_EQ(CascadePriority(origin, false, 0, false, false, 0, 0).GetOrigin(),
+    EXPECT_EQ(Priority({.origin = origin, .important = false}).GetOrigin(),
               origin);
   }
 
@@ -153,7 +160,7 @@ TEST(CascadePriorityTest, GetOrigin) {
     if (origin == CascadeOrigin::kTransition) {
       continue;
     }
-    EXPECT_EQ(CascadePriority(origin, true, 0, false, false, 0, 0).GetOrigin(),
+    EXPECT_EQ(Priority({.origin = origin, .important = true}).GetOrigin(),
               origin);
   }
 }
@@ -299,149 +306,188 @@ TEST(CascadePriorityTest, EncodeLayerOrder) {
 }
 
 TEST(CascadePriorityTest, LayerOrder) {
-  using Priority = CascadePriority;
-  CascadeOrigin origin = CascadeOrigin::kAuthor;
-  EXPECT_GE(Priority(origin, false, 0, false, false, 1, 0),
-            Priority(origin, false, 0, false, false, 0, 0));
-  EXPECT_GE(Priority(origin, false, 0, false, false, 7, 0),
-            Priority(origin, false, 0, false, false, 6, 0));
-  EXPECT_GE(Priority(origin, false, 0, false, false, 42, 0),
-            Priority(origin, false, 0, false, false, 42, 0));
-  EXPECT_FALSE(Priority(origin, false, 0, false, false, 1, 0) >=
-               Priority(origin, false, 0, false, false, 8, 0));
+  EXPECT_GE(Priority({.layer_order = 1}), Priority({.layer_order = 0}));
+  EXPECT_GE(Priority({.layer_order = 7}), Priority({.layer_order = 6}));
+  EXPECT_GE(Priority({.layer_order = 42}), Priority({.layer_order = 42}));
+  EXPECT_FALSE(Priority({.layer_order = 1}) >= Priority({.layer_order = 8}));
 }
 
 TEST(CascadePriorityTest, LayerOrderImportant) {
-  using Priority = CascadePriority;
-  CascadeOrigin origin = CascadeOrigin::kAuthor;
-  EXPECT_GE(Priority(origin, true, 0, false, false, 0, 0),
-            Priority(origin, true, 0, false, false, 1, 0));
-  EXPECT_GE(Priority(origin, true, 0, false, false, 6, 0),
-            Priority(origin, true, 0, false, false, 7, 0));
-  EXPECT_GE(Priority(origin, true, 0, false, false, 42, 0),
-            Priority(origin, true, 0, false, false, 42, 0));
-  EXPECT_FALSE(Priority(origin, true, 0, false, false, 8, 0) >=
-               Priority(origin, true, 0, false, false, 1, 0));
+  EXPECT_GE(Priority({.important = true, .layer_order = 0}),
+            Priority({.important = true, .layer_order = 1}));
+  EXPECT_GE(Priority({.important = true, .layer_order = 6}),
+            Priority({.important = true, .layer_order = 7}));
+  EXPECT_GE(Priority({.important = true, .layer_order = 4}),
+            Priority({.important = true, .layer_order = 4}));
+  EXPECT_FALSE(Priority({.important = true, .layer_order = 8}) >=
+               Priority({.important = true, .layer_order = 1}));
 }
 
 TEST(CascadePriorityTest, LayerOrderDifferentOrigin) {
-  using Priority = CascadePriority;
   // Layer order does not matter if the origin is different.
-  CascadeOrigin author = CascadeOrigin::kAuthor;
   CascadeOrigin transition = CascadeOrigin::kTransition;
-  EXPECT_GE(Priority(transition, false, 0, false, false, 1, 0),
-            Priority(author, false, 0, false, false, 42, 0));
-  EXPECT_GE(Priority(transition, false, 0, false, false, 1, 0),
-            Priority(author, false, 0, false, false, 1, 0));
+  EXPECT_GE(Priority({.origin = transition, .layer_order = 1}),
+            Priority({.layer_order = 42}));
+  EXPECT_GE(Priority({.origin = transition, .layer_order = 1}),
+            Priority({.layer_order = 1}));
 }
 
 TEST(CascadePriorityTest, InlineStyle) {
-  using Priority = CascadePriority;
-  CascadeOrigin author = CascadeOrigin::kAuthor;
   CascadeOrigin user = CascadeOrigin::kUser;
 
   // Non-important inline style priorities
-  EXPECT_GE(Priority(author, false, 0, true, false, 0, 0),
-            Priority(author, false, 0, false, false, 0, 1));
-  EXPECT_GE(Priority(author, false, 0, true, false, 0, 0),
-            Priority(author, false, 0, false, false, 1, 0));
-  EXPECT_GE(Priority(author, false, 1, true, false, 0, 0),
-            Priority(author, false, 0, false, false, 0, 0));
-  EXPECT_LT(Priority(author, false, 1, true, false, 0, 0),
-            Priority(author, false, 2, false, false, 0, 0));
-  EXPECT_GE(Priority(author, false, 0, true, false, 0, 0),
-            Priority(user, false, 0, false, false, 0, 0));
-  EXPECT_LT(Priority(author, false, 0, true, false, 0, 0),
-            Priority(author, true, 0, false, false, 0, 0));
+  EXPECT_GE(Priority({.is_inline_style = true}), Priority({.position = 1}));
+  EXPECT_GE(Priority({.is_inline_style = true}), Priority({.layer_order = 1}));
+  EXPECT_GE(Priority({.tree_order = 1, .is_inline_style = true}),
+            Priority({.is_inline_style = false}));
+  EXPECT_LT(Priority({.tree_order = 1, .is_inline_style = true}),
+            Priority({.tree_order = 2}));
+  EXPECT_GE(Priority({.is_inline_style = true}), Priority({.origin = user}));
+  EXPECT_LT(Priority({.is_inline_style = true}), Priority({.important = true}));
 
   // Important inline style priorities
-  EXPECT_GE(Priority(author, true, 0, true, false, 0, 0),
-            Priority(author, true, 0, false, false, 0, 1));
-  EXPECT_GE(Priority(author, true, 0, true, false, 0, 0),
-            Priority(author, true, 0, false, false, 1, 0));
-  EXPECT_LT(Priority(author, true, 1, true, false, 0, 0),
-            Priority(author, true, 0, false, false, 0, 0));
-  EXPECT_GE(Priority(author, true, 1, true, false, 0, 0),
-            Priority(author, true, 2, false, false, 0, 0));
-  EXPECT_LT(Priority(author, true, 0, true, false, 0, 0),
-            Priority(user, true, 0, false, false, 0, 0));
-  EXPECT_GE(Priority(author, true, 0, true, false, 0, 0),
-            Priority(author, false, 0, false, false, 0, 0));
+  EXPECT_GE(Priority({.important = true, .is_inline_style = true}),
+            Priority({.important = true, .position = 1}));
+  EXPECT_GE(Priority({.important = true, .is_inline_style = true}),
+            Priority({.important = true, .layer_order = 1}));
+  EXPECT_LT(
+      Priority({.important = true, .tree_order = 1, .is_inline_style = true}),
+      Priority({.important = true}));
+  EXPECT_GE(
+      Priority({.important = true, .tree_order = 1, .is_inline_style = true}),
+      Priority({.important = true, .tree_order = 2}));
+  EXPECT_LT(Priority({.important = true, .is_inline_style = true}),
+            Priority({.origin = user, .important = true}));
+  EXPECT_GE(Priority({.important = true, .is_inline_style = true}),
+            Priority({.is_inline_style = false}));
 }
 
-TEST(CascadePriorityTest, FallbackStyle) {
-  EXPECT_GE(Priority({.is_fallback_style = true}), Priority({}));
-  EXPECT_GE(Priority({.is_fallback_style = true}),
+TEST(CascadePriorityTest, TryStyle) {
+  EXPECT_GE(Priority({.is_try_style = true}), Priority({}));
+  EXPECT_GE(Priority({.is_try_style = true}),
             Priority({.is_inline_style = true}));
-  EXPECT_GE(Priority({.is_fallback_style = true}),
+  EXPECT_GE(Priority({.is_try_style = true}),
             Priority({.layer_order = static_cast<uint16_t>(
                           EncodeLayerOrder(1u, /* important */ false))}));
-  EXPECT_GE(Priority({.is_fallback_style = true}),
-            Priority({.position = 1000}));
+  EXPECT_GE(Priority({.is_try_style = true}), Priority({.position = 1000}));
 
-  EXPECT_LT(Priority({.is_fallback_style = true}),
-            Priority({.important = true}));
-  EXPECT_LT(Priority({.is_fallback_style = true}),
+  EXPECT_LT(Priority({.is_try_style = true}), Priority({.important = true}));
+  EXPECT_LT(Priority({.is_try_style = true}),
             Priority({.origin = CascadeOrigin::kAnimation}));
-  EXPECT_LT(Priority({.is_fallback_style = true}),
+  EXPECT_LT(Priority({.is_try_style = true}),
             Priority({.origin = CascadeOrigin::kTransition}));
 
-  // Fallback styles generate a separate layer.
-  EXPECT_NE(Priority({.is_fallback_style = true}).ForLayerComparison(),
+  // Try styles generate a separate layer.
+  EXPECT_NE(Priority({.is_try_style = true}).ForLayerComparison(),
             Priority({}).ForLayerComparison());
 }
 
+TEST(CascadePriorityTest, TryTacticsStyle) {
+  // Should be stronger than try-style.
+  EXPECT_GE(Priority({.is_try_tactics_style = true}),
+            Priority({.is_try_style = true}));
+
+  // Should be stronger than inline styles.
+  EXPECT_GE(Priority({.is_try_tactics_style = true}),
+            Priority({.is_inline_style = true}));
+
+  // Should be stronger than author cascade layers.
+  EXPECT_GE(Priority({.is_try_tactics_style = true}),
+            Priority({.layer_order = 1000}));
+
+  // Should be weaker than important in the same origin
+  EXPECT_LT(Priority({.is_try_tactics_style = true}),
+            Priority({.important = true}));
+
+  // Should be weaker than a stronger origin.
+  EXPECT_LT(Priority({.is_try_tactics_style = true}),
+            Priority({.origin = CascadeOrigin::kTransition}));
+
+  // Try-tactics styles generate a separate layer.
+  EXPECT_NE(Priority({.is_try_tactics_style = true}).ForLayerComparison(),
+            Priority({}).ForLayerComparison());
+  // Also a separate layer vs. the try styles.
+  EXPECT_NE(Priority({.is_try_tactics_style = true}).ForLayerComparison(),
+            Priority({.is_try_style = true}).ForLayerComparison());
+}
+
 TEST(CascadePriorityTest, ForLayerComparison) {
-  using Priority = CascadePriority;
-  CascadeOrigin author = CascadeOrigin::kAuthor;
   CascadeOrigin user = CascadeOrigin::kUser;
 
+  EXPECT_EQ(Priority({.layer_order = 1, .position = 2}).ForLayerComparison(),
+            Priority({.layer_order = 1, .position = 8}).ForLayerComparison());
   EXPECT_EQ(
-      Priority(author, false, 0, false, false, 1, 2).ForLayerComparison(),
-      Priority(author, false, 0, false, false, 1, 8).ForLayerComparison());
-  EXPECT_EQ(Priority(author, true, 1, false, false, 1, 4).ForLayerComparison(),
-            Priority(author, true, 1, false, false, 1, 8).ForLayerComparison());
-  EXPECT_EQ(
-      Priority(author, true, 1, false, false, 1, 16).ForLayerComparison(),
-      Priority(author, false, 1, false, false, 1, 32).ForLayerComparison());
-  EXPECT_EQ(
-      Priority(author, true, 1, true, false, 0, 16).ForLayerComparison(),
-      Priority(author, false, 1, true, false, 0, 32).ForLayerComparison());
+      Priority(
+          {.important = true, .tree_order = 1, .layer_order = 1, .position = 4})
+          .ForLayerComparison(),
+      Priority(
+          {.important = true, .tree_order = 1, .layer_order = 1, .position = 8})
+          .ForLayerComparison());
+  EXPECT_EQ(Priority({.important = true,
+                      .tree_order = 1,
+                      .layer_order = 1,
+                      .position = 16})
+                .ForLayerComparison(),
+            Priority({.tree_order = 1, .layer_order = 1, .position = 32})
+                .ForLayerComparison());
+  EXPECT_EQ(Priority({.important = true,
+                      .tree_order = 1,
+                      .is_inline_style = true,
+                      .position = 16})
+                .ForLayerComparison(),
+            Priority({.tree_order = 1, .is_inline_style = true, .position = 32})
+                .ForLayerComparison());
 
-  EXPECT_LT(Priority(user, false, 0, false, false, 0, 1).ForLayerComparison(),
-            Priority(user, false, 0, false, false, 1, 0).ForLayerComparison());
-  EXPECT_LT(Priority(user, false, 0, false, false, 0, 1).ForLayerComparison(),
-            Priority(user, false, 0, true, false, 0, 0).ForLayerComparison());
-  EXPECT_LT(Priority(user, false, 0, false, false, 0, 1).ForLayerComparison(),
-            Priority(user, false, 1, false, false, 0, 0).ForLayerComparison());
+  EXPECT_LT(Priority({.origin = user, .position = 1}).ForLayerComparison(),
+            Priority({.origin = user, .layer_order = 1}).ForLayerComparison());
   EXPECT_LT(
-      Priority(user, false, 0, false, false, 0, 1).ForLayerComparison(),
-      Priority(author, false, 0, false, false, 0, 0).ForLayerComparison());
-  EXPECT_LT(Priority(user, true, 0, false, false, 0, 1).ForLayerComparison(),
-            Priority(user, false, 0, false, false, 1, 0).ForLayerComparison());
-  EXPECT_LT(Priority(user, true, 0, false, false, 0, 1).ForLayerComparison(),
-            Priority(user, false, 0, true, false, 0, 0).ForLayerComparison());
-  EXPECT_LT(Priority(user, true, 0, false, false, 0, 1).ForLayerComparison(),
-            Priority(user, false, 1, false, false, 0, 0).ForLayerComparison());
+      Priority({.origin = user, .position = 1}).ForLayerComparison(),
+      Priority({.origin = user, .is_inline_style = true}).ForLayerComparison());
+  EXPECT_LT(Priority({.origin = user, .position = 1}).ForLayerComparison(),
+            Priority({.origin = user, .tree_order = 1}).ForLayerComparison());
+  EXPECT_LT(Priority({.origin = user, .position = 1}).ForLayerComparison(),
+            Priority({}).ForLayerComparison());
+  EXPECT_LT(Priority({.origin = user, .important = true, .position = 1})
+                .ForLayerComparison(),
+            Priority({.origin = user, .layer_order = 1}).ForLayerComparison());
   EXPECT_LT(
-      Priority(user, true, 0, false, false, 0, 1).ForLayerComparison(),
-      Priority(author, false, 0, false, false, 0, 0).ForLayerComparison());
-  EXPECT_LT(Priority(user, false, 0, false, false, 0, 1).ForLayerComparison(),
-            Priority(user, true, 0, false, false, 1, 0).ForLayerComparison());
-  EXPECT_LT(Priority(user, false, 0, false, false, 0, 1).ForLayerComparison(),
-            Priority(user, true, 0, true, false, 0, 0).ForLayerComparison());
-  EXPECT_LT(Priority(user, false, 0, false, false, 0, 1).ForLayerComparison(),
-            Priority(user, true, 1, false, false, 0, 0).ForLayerComparison());
-  EXPECT_LT(Priority(user, false, 0, false, false, 0, 1).ForLayerComparison(),
-            Priority(author, true, 0, false, false, 0, 0).ForLayerComparison());
-  EXPECT_LT(Priority(user, true, 0, false, false, 0, 1).ForLayerComparison(),
-            Priority(user, true, 0, false, false, 1, 0).ForLayerComparison());
-  EXPECT_LT(Priority(user, true, 0, false, false, 0, 1).ForLayerComparison(),
-            Priority(user, true, 0, true, false, 0, 0).ForLayerComparison());
-  EXPECT_LT(Priority(user, true, 0, false, false, 0, 1).ForLayerComparison(),
-            Priority(user, true, 1, false, false, 0, 0).ForLayerComparison());
-  EXPECT_LT(Priority(user, true, 0, false, false, 0, 1).ForLayerComparison(),
-            Priority(author, true, 0, false, false, 0, 0).ForLayerComparison());
+      Priority({.origin = user, .important = true, .position = 1})
+          .ForLayerComparison(),
+      Priority({.origin = user, .is_inline_style = true}).ForLayerComparison());
+  EXPECT_LT(Priority({.origin = user, .important = true, .position = 1})
+                .ForLayerComparison(),
+            Priority({.origin = user, .tree_order = 1}).ForLayerComparison());
+  EXPECT_LT(Priority({.origin = user, .important = true, .position = 1})
+                .ForLayerComparison(),
+            Priority({}).ForLayerComparison());
+  EXPECT_LT(Priority({.origin = user, .position = 1}).ForLayerComparison(),
+            Priority({.origin = user, .important = true, .layer_order = 1})
+                .ForLayerComparison());
+  EXPECT_LT(
+      Priority({.origin = user, .position = 1}).ForLayerComparison(),
+      Priority({.origin = user, .important = true, .is_inline_style = true})
+          .ForLayerComparison());
+  EXPECT_LT(Priority({.origin = user, .position = 1}).ForLayerComparison(),
+            Priority({.origin = user, .important = true, .tree_order = 1})
+                .ForLayerComparison());
+  EXPECT_LT(Priority({.origin = user, .position = 1}).ForLayerComparison(),
+            Priority({.important = true}).ForLayerComparison());
+  EXPECT_LT(Priority({.origin = user, .important = true, .position = 1})
+                .ForLayerComparison(),
+            Priority({.origin = user, .important = true, .layer_order = 1})
+                .ForLayerComparison());
+  EXPECT_LT(
+      Priority({.origin = user, .important = true, .position = 1})
+          .ForLayerComparison(),
+      Priority({.origin = user, .important = true, .is_inline_style = true})
+          .ForLayerComparison());
+  EXPECT_LT(Priority({.origin = user, .important = true, .position = 1})
+                .ForLayerComparison(),
+            Priority({.origin = user, .important = true, .tree_order = 1})
+                .ForLayerComparison());
+  EXPECT_LT(Priority({.origin = user, .important = true, .position = 1})
+                .ForLayerComparison(),
+            Priority({.important = true}).ForLayerComparison());
 }
 
 }  // namespace blink

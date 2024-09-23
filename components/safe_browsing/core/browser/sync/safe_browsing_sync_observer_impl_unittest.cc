@@ -16,26 +16,16 @@ class SafeBrowsingSyncObserverImplTest : public PlatformTest {
  public:
   SafeBrowsingSyncObserverImplTest() = default;
 
-  void SetUp() override {
-    sync_service_.SetDisableReasons(
-        {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
-    sync_service_.GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/false, {});
-  }
+  void SetUp() override { sync_service_.SetSignedOut(); }
 
  protected:
   void EnableSync() {
-    sync_service_.SetDisableReasons({});
-    sync_service_.GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/true, syncer::UserSelectableTypeSet::All());
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
     sync_service_.FireStateChanged();
   }
 
   void DisableSync() {
-    sync_service_.SetDisableReasons(
-        {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
-    sync_service_.GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/false, {});
+    sync_service_.SetSignedOut();
     sync_service_.FireStateChanged();
   }
 

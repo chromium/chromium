@@ -1,0 +1,6 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View text:"First Tab" viewIdResName:"tab-1" clickable focusable selected actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="tab", clickableScore="300", roleDescription="tab"]
+++View text:"Second Tab" viewIdResName:"tab-2" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="tab", clickableScore="300", roleDescription="tab"]
+++View text:"Third Tab" viewIdResName:"tab-3" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="tab", clickableScore="300", roleDescription="tab"]
+++View text:"First Tab" viewIdResName:"panel-1" focusable actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="tabPanel", roleDescription="tab panel"]
+++++TextView text:"Content for the first panel, this should be read." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]

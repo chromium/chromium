@@ -25,8 +25,12 @@ import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
+import org.chromium.chrome.browser.share.ShareMetricsUtils;
+import org.chromium.chrome.browser.share.ShareMetricsUtils.ShareCustomAction;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator;
+import org.chromium.chrome.browser.share.page_info_sheet.PageInfoSharingController;
+import org.chromium.chrome.browser.share.page_info_sheet.PageInfoSharingControllerImpl;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.tab.Tab;
@@ -47,16 +51,22 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
         implements ChromeCustomShareAction.Provider {
     private static final String USER_ACTION_COPY_HIGHLIGHT_TEXT_WITHOUT_LINK =
             "SharingHubAndroid.CopyHighlightTextWithoutLinkSelected";
-
-    private static final String USER_ACTION_LONG_SCREENSHOT_NO_EDITOR_SELECTED =
-            "SharingHubAndroid.LongScreenshotSelected.NoEditor";
     private static final String USER_ACTION_SHARE_COPY_IMAGE_WITH_LINK_SELECTED =
             "SharingHubAndroid.CopyImageWithLinkSelected";
+
+    private static final String USER_ACTION_PAGE_INFO_SELECTED =
+            "SharingHubAndroid.PageInfoSelected";
+
+    private static final String USER_ACTION_REMOVE_PAGE_INFO_SELECTED =
+            "SharingHubAndroid.RemovePageInfoSelected";
     private static final Integer MAX_ACTION_SUPPORTED = 5;
 
     private final ChromeShareExtras mChromeShareExtras;
     @Nullable private final LinkToTextCoordinator mLinkToTextCoordinator;
+    private final PageInfoSharingController mPageInfoSharingController;
+
     private final List<ChromeCustomShareAction> mCustomActions = new ArrayList<>();
+    private final long mShareStartTime;
 
     /**
      * Constructs a new {@link AndroidCustomActionProvider}.
@@ -69,7 +79,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
      * @param printTab A {@link Callback} that will print a given Tab.
      * @param isIncognito Whether incognito mode is enabled.
      * @param chromeOptionShareCallback A ChromeOptionShareCallback that can be used by
-     * Chrome-provided sharing options.
+     *     Chrome-provided sharing options.
      * @param featureEngagementTracker feature engagement tracker.
      * @param url Url to share.
      * @param profile The current profile of the User.
@@ -77,6 +87,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
      * @param isMultiWindow Whether the current activity is in multi-window mode.
      * @param linkToTextCoordinator Link to text generator used for this share.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
+     * @param shareStartTime The start time of the current share.
      */
     AndroidCustomActionProvider(
             Activity activity,
@@ -93,7 +104,8 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
             ChromeShareExtras chromeShareExtras,
             boolean isMultiWindow,
             @Nullable LinkToTextCoordinator linkToTextCoordinator,
-            DeviceLockActivityLauncher deviceLockActivityLauncher) {
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            long shareStartTime) {
         super(
                 activity,
                 windowAndroid,
@@ -109,6 +121,8 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                 deviceLockActivityLauncher);
         mChromeShareExtras = chromeShareExtras;
         mLinkToTextCoordinator = linkToTextCoordinator;
+        mPageInfoSharingController = PageInfoSharingControllerImpl.getInstance();
+        mShareStartTime = shareStartTime;
 
         initializeFirstPartyOptionsInOrder();
         initCustomActions(shareParams, chromeShareExtras, isMultiWindow);
@@ -150,7 +164,8 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
     protected FirstPartyOption createLongScreenshotsFirstPartyOption() {
         return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE)
                 .setIcon(R.drawable.long_screenshot, R.string.sharing_long_screenshot)
-                .setFeatureNameForMetrics(USER_ACTION_LONG_SCREENSHOT_NO_EDITOR_SELECTED)
+                .setShareActionType(ShareCustomAction.LONG_SCREENSHOT)
+                .setFeatureNameForMetrics(USER_ACTION_LONG_SCREENSHOT_SELECTED)
                 .setDisableForMultiWindow(true)
                 .setOnClickCallback(
                         (view) -> {
@@ -180,7 +195,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
         }
 
         // For Android's share sheet, only use copy image for web share.
-        // TODO(crbug/1448944): Exclude the copy action from Context menu instead.
+        // TODO(crbug.com/40269569): Exclude the copy action from Context menu instead.
         if (mChromeShareExtras != null
                 && (mChromeShareExtras.getDetailedContentType() == DetailedContentType.WEB_SHARE
                         || mChromeShareExtras.getDetailedContentType()
@@ -193,6 +208,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
     private FirstPartyOption createCopyHighlightTextWithOutLinkOption() {
         return new FirstPartyOptionBuilder(ContentType.HIGHLIGHTED_TEXT)
                 .setIcon(R.drawable.link_off, R.string.sharing_copy_highlight_without_link)
+                .setShareActionType(ShareCustomAction.COPY_HIGHLIGHT_WITHOUT_LINK)
                 .setFeatureNameForMetrics(USER_ACTION_COPY_HIGHLIGHT_TEXT_WITHOUT_LINK)
                 .setOnClickCallback(
                         (view) -> {
@@ -213,6 +229,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
     private FirstPartyOption createCopyImageWithLinkFirstPartyOption() {
         return new FirstPartyOptionBuilder(ContentType.IMAGE_AND_LINK)
                 .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_image_with_link)
+                .setShareActionType(ShareCustomAction.COPY_IMAGE_WITH_LINK)
                 .setFeatureNameForMetrics(USER_ACTION_SHARE_COPY_IMAGE_WITH_LINK_SELECTED)
                 .setOnClickCallback(
                         (view) -> {
@@ -243,11 +260,54 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                 .build();
     }
 
+    @Override
+    protected FirstPartyOption createPageInfoFirstPartyOption() {
+        if (!mTabProvider.hasValue()) {
+            return null;
+        }
+
+        if (mChromeShareExtras != null
+                && mChromeShareExtras.getDetailedContentType() == DetailedContentType.PAGE_INFO) {
+            return new FirstPartyOptionBuilder(ContentType.LINK_AND_TEXT)
+                    .setIcon(R.drawable.spark_off, R.string.sharing_remove_summary)
+                    .setShareActionType(ShareCustomAction.REMOVE_PAGE_INFO)
+                    .setFeatureNameForMetrics(USER_ACTION_REMOVE_PAGE_INFO_SELECTED)
+                    .setOnClickCallback(
+                            (view) -> {
+                                mPageInfoSharingController.shareWithoutPageInfo(
+                                        mChromeOptionShareCallback, mTabProvider.get());
+                            })
+                    .build();
+        }
+
+        if (mPageInfoSharingController.shouldShowInShareSheet(mTabProvider.get())) {
+            return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE)
+                    .setIcon(R.drawable.spark, R.string.sharing_create_summary)
+                    .setShareActionType(ShareCustomAction.PAGE_INFO)
+                    .setFeatureNameForMetrics(USER_ACTION_PAGE_INFO_SELECTED)
+                    .setOnClickCallback(
+                            (view) -> {
+                                mPageInfoSharingController.sharePageInfo(
+                                        mActivity,
+                                        mBottomSheetController,
+                                        mChromeOptionShareCallback,
+                                        mTabProvider.get());
+                            })
+                    .build();
+        }
+
+        return null;
+    }
+
     private ChromeCustomShareAction shareActionFromFirstPartyOption(FirstPartyOption option) {
         return new ChromeCustomShareAction(
                 option.featureNameForMetrics,
                 Icon.createWithResource(mActivity, option.icon),
                 mActivity.getResources().getString(option.iconLabel),
-                option.onClickCallback.bind(null));
+                () -> {
+                    ShareMetricsUtils.recordShareUserAction(
+                            option.shareActionType, mShareStartTime);
+                    option.onClickCallback.onResult(null);
+                });
     }
 }

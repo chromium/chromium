@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 
 namespace ash {
 
@@ -36,9 +36,8 @@ class ShillPropertyObserver;
 // (including once to set their initial state after Init() gets called).
 // It also observes Shill.Service for all services in Manager.ServiceWatchList.
 // This class must not outlive the ShillManagerClient instance.
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
-    : public ShillPropertyChangedObserver,
-      public base::SupportsWeakPtr<ShillPropertyHandler> {
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler final
+    : public ShillPropertyChangedObserver {
  public:
   typedef std::map<std::string, std::unique_ptr<ShillPropertyObserver>>
       ShillPropertyObserverMap;
@@ -282,6 +281,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   std::set<std::string> disabling_technologies_;
   std::set<std::string> prohibited_technologies_;
   std::set<std::string> uninitialized_technologies_;
+
+  base::WeakPtrFactory<ShillPropertyHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace internal

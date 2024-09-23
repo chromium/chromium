@@ -23,7 +23,7 @@ void WebMWebVTTParser::Parse(std::string* id,
                              std::string* content) {
   ParseLine(id);
   ParseLine(settings);
-  content->assign(ptr_, ptr_end_);
+  content->assign(ptr_.get(), ptr_end_.get());
 }
 
 bool WebMWebVTTParser::GetByte(uint8_t* byte) {

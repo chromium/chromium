@@ -27,6 +27,7 @@ suite('PrivacySandboxPage', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -54,7 +55,7 @@ suite('PrivacySandboxPage', function() {
   test('privacySandboxLinkRowsVisible', function() {
     assertTrue(isChildVisible(page, '#privacySandboxTopicsLinkRow'));
     assertTrue(isChildVisible(page, '#privacySandboxFledgeLinkRow'));
-    assertTrue(isVisible(page.$.privacySandboxAdMeasurementLinkRow));
+    assertTrue(isChildVisible(page, '#privacySandboxAdMeasurementLinkRow'));
   });
 
   test('hatsSurveyRequested', async function() {
@@ -104,19 +105,22 @@ suite('PrivacySandboxPage', function() {
   test('privacySandboxAdMeasurementRowSublabel', async function() {
     page.setPrefValue('privacy_sandbox.m1.ad_measurement_enabled', true);
     await flushTasks();
-    assertTrue(isVisible(page.$.privacySandboxAdMeasurementLinkRow));
+    const measurementRow = page.shadowRoot!.querySelector<CrLinkRowElement>(
+        '#privacySandboxAdMeasurementLinkRow');
+    assertTrue(!!measurementRow);
+    assertTrue(isVisible(measurementRow));
     assertEquals(
         loadTimeData.getString(
             'adPrivacyPageAdMeasurementLinkRowSubLabelEnabled'),
-        page.$.privacySandboxAdMeasurementLinkRow.subLabel);
+        measurementRow.subLabel);
 
     page.setPrefValue('privacy_sandbox.m1.ad_measurement_enabled', false);
     await flushTasks();
-    assertTrue(isVisible(page.$.privacySandboxAdMeasurementLinkRow));
+    assertTrue(isChildVisible(page, '#privacySandboxAdMeasurementLinkRow'));
     assertEquals(
         loadTimeData.getString(
             'adPrivacyPageAdMeasurementLinkRowSubLabelDisabled'),
-        page.$.privacySandboxAdMeasurementLinkRow.subLabel);
+        measurementRow.subLabel);
   });
 
   test('clickPrivacySandboxTopicsLinkRow', async function() {
@@ -144,13 +148,209 @@ suite('PrivacySandboxPage', function() {
   });
 
   test('clickPrivacySandboxAdMeasurementLinkRow', async function() {
-    page.$.privacySandboxAdMeasurementLinkRow.click();
+    const measurementRow = page.shadowRoot!.querySelector<HTMLElement>(
+        '#privacySandboxAdMeasurementLinkRow');
+    assertTrue(!!measurementRow);
+    measurementRow.click();
     assertEquals(
         'Settings.PrivacySandbox.AdMeasurement.Opened',
         await metricsBrowserProxy.whenCalled('recordAction'));
     assertEquals(
         routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
         Router.getInstance().getCurrentRoute());
+  });
+});
+
+suite('PrivacySandboxPageRedesignToggles', function() {
+  let page: SettingsPrivacySandboxPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+  let hatsBrowserProxy: TestHatsBrowserProxy;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+      psRedesignAdPrivacyPageEnabled: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+    hatsBrowserProxy = new TestHatsBrowserProxy();
+    HatsBrowserProxyImpl.setInstance(hatsBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    page = document.createElement('settings-privacy-sandbox-page');
+    page.prefs = settingsPrefs.prefs!;
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX);
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('privacySandboxLinkRowsVisible', function() {
+    assertTrue(isChildVisible(page, '#privacySandboxTopicsLinkRowV2'));
+    assertTrue(isChildVisible(page, '#privacySandboxFledgeLinkRowV2'));
+    assertTrue(isChildVisible(page, '#privacySandboxAdMeasurementLinkRowV2'));
+  });
+
+  test('hatsSurveyRequested', async function() {
+    const result =
+        await hatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
+    assertEquals(TrustSafetyInteraction.OPENED_AD_PRIVACY, result);
+  });
+
+  test('privacySandboxTopicsRowSublabel', async function() {
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+    await flushTasks();
+    const topicsRow = page.shadowRoot!.querySelector<CrLinkRowElement>(
+        '#privacySandboxTopicsLinkRowV2');
+    assertTrue(!!topicsRow);
+    assertTrue(isVisible(topicsRow));
+    assertEquals(
+        loadTimeData.getString('topicsPageToggleSubLabelV2'),
+        topicsRow.subLabel);
+
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', false);
+    await flushTasks();
+    assertTrue(isVisible(topicsRow));
+    assertEquals(
+        loadTimeData.getString('topicsPageToggleSubLabelV2'),
+        topicsRow.subLabel);
+  });
+
+  test('privacySandboxFledgeRowSublabel', async function() {
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', true);
+    await flushTasks();
+    const fledgeRow = page.shadowRoot!.querySelector<CrLinkRowElement>(
+        '#privacySandboxFledgeLinkRowV2');
+    assertTrue(!!fledgeRow);
+    assertTrue(isVisible(fledgeRow));
+    assertEquals(
+        loadTimeData.getString('fledgePageToggleSubLabel'), fledgeRow.subLabel);
+
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', false);
+    await flushTasks();
+    assertTrue(isVisible(fledgeRow));
+    assertEquals(
+        loadTimeData.getString('fledgePageToggleSubLabel'), fledgeRow.subLabel);
+  });
+
+  test('privacySandboxAdMeasurementRowSublabel', async function() {
+    page.setPrefValue('privacy_sandbox.m1.ad_measurement_enabled', true);
+    await flushTasks();
+    const measurementRow = page.shadowRoot!.querySelector<CrLinkRowElement>(
+        '#privacySandboxAdMeasurementLinkRowV2');
+    assertTrue(!!measurementRow);
+    assertTrue(isVisible(measurementRow));
+    assertEquals(
+        loadTimeData.getString('adMeasurementPageToggleSubLabel'),
+        measurementRow.subLabel);
+
+    page.setPrefValue('privacy_sandbox.m1.ad_measurement_enabled', false);
+    await flushTasks();
+    assertTrue(isChildVisible(page, '#privacySandboxAdMeasurementLinkRowV2'));
+    assertEquals(
+        loadTimeData.getString('adMeasurementPageToggleSubLabel'),
+        measurementRow.subLabel);
+  });
+
+  test('clickPrivacySandboxTopicsLinkRow', async function() {
+    const topicsRow = page.shadowRoot!.querySelector<HTMLElement>(
+        '#privacySandboxTopicsLinkRowV2');
+    assertTrue(!!topicsRow);
+    topicsRow.click();
+    assertEquals(
+        'Settings.PrivacySandbox.Topics.Opened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    assertEquals(
+        routes.PRIVACY_SANDBOX_TOPICS, Router.getInstance().getCurrentRoute());
+  });
+
+  test('clickPrivacySandboxFledgeLinkRow', async function() {
+    const fledgeRow = page.shadowRoot!.querySelector<HTMLElement>(
+        '#privacySandboxFledgeLinkRowV2');
+    assertTrue(!!fledgeRow);
+    fledgeRow.click();
+    assertEquals(
+        'Settings.PrivacySandbox.Fledge.Opened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    assertEquals(
+        routes.PRIVACY_SANDBOX_FLEDGE, Router.getInstance().getCurrentRoute());
+  });
+
+  test('clickPrivacySandboxAdMeasurementLinkRow', async function() {
+    const measurementRow = page.shadowRoot!.querySelector<HTMLElement>(
+        '#privacySandboxAdMeasurementLinkRowV2');
+    assertTrue(!!measurementRow);
+    measurementRow.click();
+    assertEquals(
+        'Settings.PrivacySandbox.AdMeasurement.Opened',
+        await metricsBrowserProxy.whenCalled('recordAction'));
+    assertEquals(
+        routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
+        Router.getInstance().getCurrentRoute());
+  });
+
+  test('privacySandboxTopicsLinkRowToggleCheck', async function() {
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+    const topicsRow = page.shadowRoot!.querySelector<HTMLElement>(
+        '#privacySandboxTopicsLinkRowV2');
+    assertTrue(!!topicsRow);
+    const topicsToggle = topicsRow.querySelector('cr-toggle');
+    assertTrue(!!topicsToggle);
+    assertTrue(topicsToggle.disabled);
+    assertTrue(topicsToggle.checked);
+    topicsToggle.click();
+    assertTrue(topicsToggle.checked);
+
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', false);
+    await flushTasks();
+    assertTrue(!!topicsRow);
+    assertFalse(topicsToggle.checked);
+  });
+
+  test('privacySandboxFledgeLinkRowToggleCheck', async function() {
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', true);
+    const fledgeRow = page.shadowRoot!.querySelector<HTMLElement>(
+        '#privacySandboxFledgeLinkRowV2');
+    assertTrue(!!fledgeRow);
+    const fledgeToggle = fledgeRow.querySelector('cr-toggle');
+    assertTrue(!!fledgeToggle);
+    assertTrue(fledgeToggle.disabled);
+    assertTrue(fledgeToggle.checked);
+    fledgeToggle.click();
+    assertTrue(fledgeToggle.checked);
+
+    page.setPrefValue('privacy_sandbox.m1.fledge_enabled', false);
+    await flushTasks();
+    assertTrue(!!fledgeToggle);
+    assertFalse(fledgeToggle.checked);
+  });
+
+  test('privacySandboAdMeasurementLinkRowToggleCheck', async function() {
+    page.setPrefValue('privacy_sandbox.m1.ad_measurement_enabled', true);
+    const adMeasurementRow = page.shadowRoot!.querySelector<HTMLElement>(
+        '#privacySandboxAdMeasurementLinkRowV2');
+    assertTrue(!!adMeasurementRow);
+    const adMeasurementToggle = adMeasurementRow.querySelector('cr-toggle');
+    assertTrue(!!adMeasurementToggle);
+    assertTrue(adMeasurementToggle.disabled);
+    assertTrue(adMeasurementToggle.checked);
+    adMeasurementToggle.click();
+    assertTrue(adMeasurementToggle.checked);
+
+    page.setPrefValue('privacy_sandbox.m1.ad_measurement_enabled', false);
+    await flushTasks();
+    assertTrue(!!adMeasurementToggle);
+    assertFalse(adMeasurementToggle.checked);
   });
 });
 
@@ -162,6 +362,7 @@ suite('RestrictedEnabled', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: true,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -183,11 +384,11 @@ suite('RestrictedEnabled', function() {
   test('privacySandboxLinkRowsNotVisible', function() {
     assertFalse(isChildVisible(page, '#privacySandboxTopicsLinkRow'));
     assertFalse(isChildVisible(page, '#privacySandboxFledgeLinkRow'));
-    assertTrue(isVisible(page.$.privacySandboxAdMeasurementLinkRow));
+    assertTrue(isChildVisible(page, '#privacySandboxAdMeasurementLinkRow'));
   });
 });
 
-suite('TopicsSubpage', function() {
+suite('TopicsSubpageWithProactiveTopicsBlockingDisabled', function() {
   let page: SettingsPrivacySandboxTopicsSubpageElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
   let settingsPrefs: SettingsPrefsElement;
@@ -197,6 +398,8 @@ suite('TopicsSubpage', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
+      isProactiveTopicsBlockingEnabled: false,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -204,6 +407,7 @@ suite('TopicsSubpage', function() {
 
   setup(async function() {
     testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    testPrivacySandboxBrowserProxy.setTestTopicState(getTestTopicsState());
     PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
@@ -223,6 +427,23 @@ suite('TopicsSubpage', function() {
   teardown(function() {
     Router.getInstance().resetRouteForTesting();
   });
+
+  function getTestTopicsState(): TopicsState {
+    return {
+      topTopics: [{
+        topicId: 1,
+        taxonomyVersion: 1,
+        displayString: 'test-topic-1',
+        description: '',
+      }],
+      blockedTopics: [{
+        topicId: 2,
+        taxonomyVersion: 1,
+        displayString: 'test-topic-2',
+        description: '',
+      }],
+    };
+  }
 
   function assertLearnMoreDialogClosed() {
     const dialog = page.shadowRoot!.querySelector<CrDialogElement>('#dialog');
@@ -417,6 +638,26 @@ suite('TopicsSubpage', function() {
     assertEquals(1, blockedTopics.items!.length);
     assertEquals('test-topic-2', blockedTopics.items![0].topic!.displayString);
 
+    // Set test topic state before blocking topic
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [],
+          blockedTopics: [
+            {
+              topicId: 1,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-1',
+              description: '',
+            },
+            {
+              topicId: 2,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-2',
+              description: '',
+            },
+          ],
+        },
+    );
     // Block topic.
     const item =
         currentTopicsSection.querySelector('privacy-sandbox-interest-item')!;
@@ -430,7 +671,7 @@ suite('TopicsSubpage', function() {
         await metricsBrowserProxy.whenCalled('recordAction'));
     metricsBrowserProxy.resetResolver('recordAction');
     await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
-
+    await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
     // Assert the topic is no longer visible.
     assertEquals(
         0, currentTopicsSection.querySelector('dom-repeat')!.items!.length);
@@ -447,6 +688,18 @@ suite('TopicsSubpage', function() {
     assertEquals('test-topic-1', blockedTopics.items![0].topic!.displayString);
     assertEquals('test-topic-2', blockedTopics.items![1].topic!.displayString);
 
+    // Setting test topic state before allowing first blocked topic.
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [],
+          blockedTopics: [{
+            topicId: 2,
+            taxonomyVersion: 1,
+            displayString: 'test-topic-2',
+            description: '',
+          }],
+        },
+    );
     // Allow first blocked topic.
     let blockedItems =
         blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
@@ -457,22 +710,33 @@ suite('TopicsSubpage', function() {
         allowButton!.getAttribute('aria-label'));
     allowButton!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
+    await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
     assertEquals(
         'Settings.PrivacySandbox.Topics.TopicAdded',
         await metricsBrowserProxy.whenCalled('recordAction'));
     metricsBrowserProxy.resetResolver('recordAction');
 
+    // Setting test topic state before allowing last blocked topic.
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [],
+          blockedTopics: [],
+        },
+    );
     // Allow second blocked topic.
     blockedItems =
         blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
     assertEquals(1, blockedItems.length);
-    assertEquals('test-topic-2', blockedTopics.items![0].topic!.displayString);
+    assert(!!blockedItems[0]!.shadowRoot!.querySelector('#label'));
+    assertEquals(
+        'test-topic-2',
+        blockedItems[0]!.shadowRoot!.querySelector('#label')!.textContent);
     blockedItems[0]!.shadowRoot!.querySelector('cr-button')!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
+    await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
     assertEquals(
         'Settings.PrivacySandbox.Topics.TopicAdded',
         await metricsBrowserProxy.whenCalled('recordAction'));
-
     // Assert all blocked topics are gone.
     assertEquals(
         0, blockedTopicsList.querySelector('dom-repeat')!.items!.length);
@@ -516,7 +780,7 @@ suite('TopicsSubpage', function() {
   });
 });
 
-suite('TopicsSubpageEmpty', function() {
+suite('TopicsSubpageEmptyWithProactiveTopicsBlockingDisabled', function() {
   let page: SettingsPrivacySandboxTopicsSubpageElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
@@ -525,6 +789,8 @@ suite('TopicsSubpageEmpty', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
+      isProactiveTopicsBlockingEnabled: false,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -615,6 +881,7 @@ suite('FledgeSubpageWithProactiveTopicsBlockingEnabled', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isProactiveTopicsBlockingEnabled: true,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -622,6 +889,10 @@ suite('FledgeSubpageWithProactiveTopicsBlockingEnabled', function() {
 
   setup(async function() {
     testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    testPrivacySandboxBrowserProxy.setFledgeState({
+      joiningSites: ['test-site-one.com'],
+      blockedSites: ['test-site-two.com'],
+    });
     PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(settingsPrefs);
@@ -642,8 +913,7 @@ suite('FledgeSubpageWithProactiveTopicsBlockingEnabled', function() {
         page.shadowRoot!.querySelector<HTMLElement>('#secondDescription');
     assert(secondDescription);
     assertEquals(
-        secondDescription?.innerText,
-        page.i18n('fledgePageSecondaryDescriptionV2'));
+        secondDescription?.innerText, page.i18n('fledgePageExplanation'));
   });
 
   test('footerLinks', async function() {
@@ -678,6 +948,7 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isProactiveTopicsBlockingEnabled: true,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -901,6 +1172,24 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
     idsToBeHidden.forEach(id => assertFalse(isChildVisible(page, id)));
   });
 
+  test('disclaimerLinks', async function() {
+    const disclaimer = page.shadowRoot!.querySelector('#disclaimer');
+    assertTrue(!!disclaimer);
+    assertTrue(isVisible(disclaimer));
+
+    const links = page.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
+        '#disclaimer a[href]');
+
+    assertEquals(1, links.length);
+    assertEquals(
+        links[0]!.getAttribute('aria-description'),
+        loadTimeData.getString('opensInNewTab'),
+        'the link should indicate that it will be opened in a new tab');
+
+    assertEquals(
+        links[0]!.href, 'https://support.google.com/chrome?p=ad_privacy');
+  });
+
   function assertToastOpened() {
     const toast = page.shadowRoot!.querySelector('cr-toast');
     assert(toast);
@@ -936,14 +1225,18 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
         '#currentTopicsDescriptionEmptyTextHeading')));
     assertFalse(isVisible(currentTopicsSection.querySelector(
         '#currentTopicsDescriptionEmptyTextV2')));
-    // TODO(b/322845275) - When testing privacy-sandbox-interest-item, add tests
-    // to assert that the DOM is actually displaying correctly.
+    assert(!!currentTopics[0]!.shadowRoot!.querySelector('#label'));
     assertEquals(
-        'test-topic-1', currentTopics[0]!.interest.topic!.displayString);
+        'test-topic-1',
+        currentTopics[0]!.shadowRoot!.querySelector('#label')!.textContent);
+    assert(!!currentTopics[1]!.shadowRoot!.querySelector('#label'));
     assertEquals(
-        'test-topic-3', currentTopics[1]!.interest.topic!.displayString);
+        'test-topic-3',
+        currentTopics[1]!.shadowRoot!.querySelector('#label')!.textContent);
+    assert(!!currentTopics[2]!.shadowRoot!.querySelector('#label'));
     assertEquals(
-        'test-topic-4', currentTopics[2]!.interest.topic!.displayString);
+        'test-topic-4',
+        currentTopics[2]!.shadowRoot!.querySelector('#label')!.textContent);
 
     // Check for blocked topics.
     const blockedTopicsRow =
@@ -963,11 +1256,13 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
             '#blockedTopicsDescriptionV2')!;
     assertTrue(isVisible(blockedTopicsDescription));
     assertEquals(
-        loadTimeData.getString('topicsPageBlockedTopicsDescriptionV2'),
+        loadTimeData.getString('topicsPageBlockedTopicsDescriptionNew'),
         blockedTopicsDescription.innerText);
     assertEquals(1, blockedTopics.length);
+    assert(!!blockedTopics[0]!.shadowRoot!.querySelector('#label'));
     assertEquals(
-        'test-topic-2', blockedTopics[0]!.interest.topic!.displayString);
+        'test-topic-2',
+        blockedTopics[0]!.shadowRoot!.querySelector('#label')!.textContent);
 
     // Block topic.
     const items =
@@ -992,6 +1287,34 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
         3,
         currentTopicsSection.querySelectorAll('privacy-sandbox-interest-item')
             .length);
+
+    // Setting topic state to reflect blocking parent topic
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [
+            {
+              topicId: 4,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-4',
+              description: '',
+            },
+          ],
+          blockedTopics: [
+            {
+              topicId: 1,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-1',
+              description: 'test-topic-1-description',
+            },
+            {
+              topicId: 2,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-2',
+              description: '',
+            },
+          ],
+        },
+    );
 
     // Try blocking topic again
     blockButton!.click();
@@ -1021,11 +1344,41 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
         1,
         currentTopicsSection.querySelectorAll('privacy-sandbox-interest-item')
             .length);
+    assert(!!currentTopicsSection
+                 .querySelectorAll('privacy-sandbox-interest-item')[0]!
+                 .shadowRoot!.querySelector('#label'));
     assertEquals(
         'test-topic-4',
         currentTopicsSection
-            .querySelectorAll('privacy-sandbox-interest-item')[0]!.interest
-            .topic!.displayString);
+            .querySelectorAll('privacy-sandbox-interest-item')[0]!.shadowRoot!
+            .querySelector('#label')!.textContent);
+
+    // Setting topic state to reflect blocking the last active topic
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [],
+          blockedTopics: [
+            {
+              topicId: 1,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-1',
+              description: 'test-topic-1-description',
+            },
+            {
+              topicId: 2,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-2',
+              description: '',
+            },
+            {
+              topicId: 4,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-4',
+              description: '',
+            },
+          ],
+        },
+    );
 
     testPrivacySandboxBrowserProxy.setChildTopics([]);
     blockButton = items[2]?.shadowRoot!.querySelector('cr-button');
@@ -1053,12 +1406,39 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
     blockedTopics =
         blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
     assertEquals(3, blockedTopics.length);
+    assert(!!blockedTopics[0]!.shadowRoot!.querySelector('#label'));
     assertEquals(
-        'test-topic-1', blockedTopics[0]!.interest.topic!.displayString);
+        'test-topic-1',
+        blockedTopics[0]!.shadowRoot!.querySelector('#label')!.textContent);
+    assert(!!blockedTopics[1]!.shadowRoot!.querySelector('#label'));
     assertEquals(
-        'test-topic-2', blockedTopics[1]!.interest.topic!.displayString);
+        'test-topic-2',
+        blockedTopics[1]!.shadowRoot!.querySelector('#label')!.textContent);
+    assert(!!blockedTopics[2]!.shadowRoot!.querySelector('#label'));
     assertEquals(
-        'test-topic-4', blockedTopics[2]!.interest.topic!.displayString);
+        'test-topic-4',
+        blockedTopics[2]!.shadowRoot!.querySelector('#label')!.textContent);
+
+    // Setting topic state to reflect allowing a blocked topic
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [],
+          blockedTopics: [
+            {
+              topicId: 2,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-2',
+              description: '',
+            },
+            {
+              topicId: 4,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-4',
+              description: '',
+            },
+          ],
+        },
+    );
 
     // Allow first blocked topic.
     let blockedItems =
@@ -1080,12 +1460,27 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
     metricsBrowserProxy.resetResolver('recordAction');
     assertToastOpened();
 
+    // Setting topic state to reflect allowing another blocked topic
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [],
+          blockedTopics: [{
+            topicId: 4,
+            taxonomyVersion: 1,
+            displayString: 'test-topic-4',
+            description: '',
+          }],
+        },
+    );
+
     // Allow second blocked topic.
     blockedItems =
         blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
     assertEquals(2, blockedItems.length);
+    assert(!!blockedTopics[0]!.shadowRoot!.querySelector('#label'));
     assertEquals(
-        'test-topic-2', blockedTopics[0]!.interest.topic!.displayString);
+        'test-topic-2',
+        blockedTopics[0]!.shadowRoot!.querySelector('#label')!.textContent);
     blockedItems[0]!.shadowRoot!.querySelector('cr-button')!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
     assertEquals(
@@ -1093,12 +1488,22 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
         await metricsBrowserProxy.whenCalled('recordAction'));
     assertToastOpened();
 
+    // Setting topic state to reflect allowing the last blocked topic
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [],
+          blockedTopics: [],
+        },
+    );
+
     // Allow third blocked topic
     blockedItems =
         blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
     assertEquals(1, blockedItems.length);
+    assert(!!blockedTopics[0]!.shadowRoot!.querySelector('#label'));
     assertEquals(
-        'test-topic-4', blockedTopics[0]!.interest.topic!.displayString);
+        'test-topic-4',
+        blockedTopics[0]!.shadowRoot!.querySelector('#label')!.textContent);
     blockedItems[0]!.shadowRoot!.querySelector('cr-button')!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
     assertEquals(
@@ -1197,6 +1602,7 @@ suite('ManageTopics', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isProactiveTopicsBlockingEnabled: true,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -1505,6 +1911,7 @@ suite('ManageTopicsAndAdTopicsPageState', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isProactiveTopicsBlockingEnabled: true,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -1640,8 +2047,10 @@ suite('ManageTopicsAndAdTopicsPageState', function() {
         blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
     assertTrue(!!blockedTopics);
     assertEquals(1, blockedTopics.length);
+    assert(!!blockedTopics[0]!.shadowRoot!.querySelector('#label'));
     assertEquals(
-        'test-topic-1', blockedTopics[0]!.interest.topic!.displayString);
+        'test-topic-1',
+        blockedTopics[0]!.shadowRoot!.querySelector('#label')!.textContent);
 
     // Navigate to Manage Topics Page.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -1700,8 +2109,10 @@ suite('ManageTopicsAndAdTopicsPageState', function() {
         blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
     assertTrue(!!blockedTopics);
     assertEquals(1, blockedTopics.length);
+    assert(!!blockedTopics[0]!.shadowRoot!.querySelector('#label'));
     assertEquals(
-        'test-topic-2', blockedTopics[0]!.interest.topic!.displayString);
+        'test-topic-2',
+        blockedTopics[0]!.shadowRoot!.querySelector('#label')!.textContent);
     blockedTopics[0]!.shadowRoot!.querySelector('cr-button')!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
 
@@ -1736,7 +2147,7 @@ suite('ManageTopicsAndAdTopicsPageState', function() {
   });
 });
 
-suite('FledgeSubpage', function() {
+suite('FledgeSubpageWithProactiveTopicsBlockingDisabled', function() {
   let page: SettingsPrivacySandboxFledgeSubpageElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
   let settingsPrefs: SettingsPrefsElement;
@@ -1746,6 +2157,8 @@ suite('FledgeSubpage', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
+      isProactiveTopicsBlockingEnabled: false,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -1753,6 +2166,10 @@ suite('FledgeSubpage', function() {
 
   setup(async function() {
     testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    testPrivacySandboxBrowserProxy.setFledgeState({
+      joiningSites: ['test-site-one.com'],
+      blockedSites: ['test-site-two.com'],
+    });
     PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
@@ -2056,6 +2473,7 @@ suite('FledgeSubpageEmpty', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -2150,6 +2568,7 @@ suite('FledgeSubpageSeeAllSites', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -2328,6 +2747,7 @@ suite('AdMeasurementSubpage', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
+      psRedesignAdPrivacyPageEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;

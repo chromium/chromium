@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
@@ -142,7 +143,7 @@ void FakeSensorDevice::SetChannelsEnabledWithId(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = clients_.find(id);
-  DCHECK(it != clients_.end());
+  CHECK(it != clients_.end(), base::NotFatalUntil::M130);
 
   for (int32_t index : iio_chn_indices) {
     DCHECK_LT(static_cast<size_t>(index), it->second.channels_enabled.size());

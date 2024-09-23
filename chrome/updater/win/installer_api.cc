@@ -31,6 +31,7 @@
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
+#include "components/update_client/update_client.h"
 
 namespace updater {
 namespace {
@@ -149,7 +150,7 @@ std::optional<InstallerOutcome> GetLastInstallerOutcome(
     DWORD val = 0;
     if (key->ReadValueDW(kRegValueLastInstallerResult, &val) == ERROR_SUCCESS) {
       installer_outcome.installer_result =
-          *CheckedCastToEnum<InstallerResult>(val);
+          *CheckedCastToEnum<InstallerApiResult>(val);
     }
     if (key->ReadValueDW(kRegValueLastInstallerError, &val) == ERROR_SUCCESS) {
       installer_outcome.installer_error = val;
@@ -283,7 +284,7 @@ std::optional<InstallerOutcome> GetInstallerOutcome(UpdaterScope updater_scope,
     DWORD val = 0;
     if (key->ReadValueDW(kRegValueInstallerResult, &val) == ERROR_SUCCESS) {
       installer_outcome.installer_result =
-          *CheckedCastToEnum<InstallerResult>(val);
+          *CheckedCastToEnum<InstallerApiResult>(val);
     }
     if (key->ReadValueDW(kRegValueInstallerError, &val) == ERROR_SUCCESS) {
       installer_outcome.installer_error = val;
@@ -395,9 +396,9 @@ Installer::Result MakeInstallerResult(
   } else {
     // Set the installer result based on whether this is a success or an error.
     if (exit_code == 0) {
-      outcome.installer_result = InstallerResult::kSuccess;
+      outcome.installer_result = InstallerApiResult::kSuccess;
     } else {
-      outcome.installer_result = InstallerResult::kExitCode;
+      outcome.installer_result = InstallerApiResult::kExitCode;
       outcome.installer_error = exit_code;
     }
   }
@@ -408,45 +409,43 @@ Installer::Result MakeInstallerResult(
   // can use the `installer_extracode1` to transmit a custom value even in the
   // case of success.
   if (outcome.installer_extracode1) {
-    result.extended_error = *outcome.installer_extracode1;
+    result.result.extra_ = *outcome.installer_extracode1;
   }
 
   switch (*outcome.installer_result) {
-    case InstallerResult::kSuccess:
+    case InstallerApiResult::kSuccess:
       // This is unconditional success:
       // - use the command line if available, and ignore everything else.
-      result.error = 0;
       if (outcome.installer_cmd_line) {
         result.installer_cmd_line = *outcome.installer_cmd_line;
       }
-      CHECK_EQ(result.error, 0);
       break;
 
-    case InstallerResult::kCustomError:
-    case InstallerResult::kMsiError:
-    case InstallerResult::kSystemError:
-    case InstallerResult::kExitCode:
+    case InstallerApiResult::kCustomError:
+    case InstallerApiResult::kMsiError:
+    case InstallerApiResult::kSystemError:
+    case InstallerApiResult::kExitCode:
       // These are usually unconditional errors:
       // - use the installer error, or the exit code, or report a generic
       //   error.
       // - use the installer extra code if available.
       // - use the text description of the error if available.
-      result.original_error = outcome.installer_error.value_or(exit_code);
-      if (!result.original_error) {
-        result.original_error = kErrorApplicationInstallerFailed;
+      result.result.code_ = outcome.installer_error.value_or(exit_code);
+      if (!result.result.code_) {
+        result.result.code_ = kErrorApplicationInstallerFailed;
       }
 
       // `update_client` needs to view the below codes as a success, otherwise
-      // it will consider the app as not installed. So we reset the `error` to
-      // `0` in these cases.
-      result.error =
-          result.original_error == ERROR_SUCCESS_REBOOT_INITIATED ||
-                  result.original_error == ERROR_SUCCESS_REBOOT_REQUIRED ||
-                  result.original_error == ERROR_SUCCESS_RESTART_REQUIRED
-              ? 0
-              : kErrorApplicationInstallerFailed;
+      // it will consider the app as not installed; set the error category to
+      // kNone in this case.
+      result.result.category_ =
+          result.result.code_ == ERROR_SUCCESS_REBOOT_INITIATED ||
+                  result.result.code_ == ERROR_SUCCESS_REBOOT_REQUIRED ||
+                  result.result.code_ == ERROR_SUCCESS_RESTART_REQUIRED
+              ? update_client::ErrorCategory::kNone
+              : update_client::ErrorCategory::kInstaller;
       result.installer_text = outcome.installer_text.value_or("");
-      CHECK_NE(result.original_error, 0);
+      CHECK_NE(result.result.code_, 0);
       break;
   }
 
@@ -463,7 +462,7 @@ Installer::Result MakeInstallerResult(
 // The installer progress is written by the application installer as a value
 // under the application's client state in the Windows registry and read by
 // polling in a loop, while waiting for the installer to exit.
-AppInstallerResult RunApplicationInstaller(
+InstallerResult RunApplicationInstaller(
     const AppInfo& app_info,
     const base::FilePath& app_installer,
     const std::string& arguments,
@@ -471,16 +470,10 @@ AppInstallerResult RunApplicationInstaller(
     bool usage_stats_enabled,
     const base::TimeDelta& timeout,
     InstallProgressCallback progress_callback) {
-  if (!base::PathExists(app_installer)) {
-    LOG(ERROR) << "application installer does not exist: " << app_installer;
-    return AppInstallerResult(GOOPDATEINSTALL_E_FILENAME_INVALID,
-                              kErrorMissingRunableFile);
-  }
-
   if (!app_installer.MatchesExtension(L".exe") &&
       !app_installer.MatchesExtension(L".msi")) {
-    return AppInstallerResult(GOOPDATEINSTALL_E_FILENAME_INVALID,
-                              kErrorInvalidFileExtension);
+    return InstallerResult(GOOPDATEINSTALL_E_FILENAME_INVALID,
+                           kErrorInvalidFileExtension);
   }
 
   DeleteInstallerOutput(app_info.scope, app_info.app_id);
@@ -518,8 +511,8 @@ AppInstallerResult RunApplicationInstaller(
 
       process = base::LaunchProcess(cmdline, options);
       if (!process.IsValid()) {
-        return AppInstallerResult(GOOPDATEINSTALL_E_INSTALLER_FAILED_START,
-                                  HRESULTFromLastError());
+        return InstallerResult(GOOPDATEINSTALL_E_INSTALLER_FAILED_START,
+                               HRESULTFromLastError());
       }
     }
 
@@ -531,7 +524,7 @@ AppInstallerResult RunApplicationInstaller(
     if (wait_result) {
       const Installer::Result installer_result = MakeInstallerResult(
           GetInstallerOutcome(app_info.scope, app_info.app_id), exit_code);
-      exit_code = installer_result.original_error;
+      exit_code = installer_result.result.code_;
       VLOG(1) << "Installer exit code " << exit_code;
       if (exit_code == ERROR_INSTALL_ALREADY_RUNNING) {
         continue;
@@ -540,9 +533,9 @@ AppInstallerResult RunApplicationInstaller(
     }
   } while (timer.Elapsed() < timeout && num_tries < kNumAlreadyRunningMaxTries);
 
-  return AppInstallerResult(exit_code == ERROR_INSTALL_ALREADY_RUNNING
-                                ? GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING
-                                : GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT);
+  return InstallerResult(exit_code == ERROR_INSTALL_ALREADY_RUNNING
+                             ? GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING
+                             : GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT);
 }
 
 std::string LookupString(const base::FilePath& path,

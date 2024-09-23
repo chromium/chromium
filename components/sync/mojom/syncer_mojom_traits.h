@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/mojom/syncer.mojom-shared.h"
 
@@ -16,17 +17,14 @@ template <>
 struct StructTraits<syncer::mojom::StringOrdinalDataView,
                     syncer::StringOrdinal> {
   static base::span<const uint8_t> bytes(const syncer::StringOrdinal& ordinal) {
-    return base::make_span(
-        reinterpret_cast<const uint8_t*>(ordinal.bytes_.data()),
-        ordinal.bytes_.length());
+    return base::as_byte_span(ordinal.bytes_);
   }
 
   static bool Read(syncer::mojom::StringOrdinalDataView data,
                    syncer::StringOrdinal* out) {
     mojo::ArrayDataView<uint8_t> bytes;
     data.GetBytesDataView(&bytes);
-    *out = syncer::StringOrdinal(
-        std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size()));
+    *out = syncer::StringOrdinal(std::string(base::as_string_view(bytes)));
     return true;
   }
 };

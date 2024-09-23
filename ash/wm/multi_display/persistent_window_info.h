@@ -36,9 +36,10 @@ class ASH_EXPORT PersistentWindowInfo {
 
   gfx::Rect window_bounds_in_screen() const { return window_bounds_in_screen_; }
   int64_t display_id() const { return display_id_; }
-  gfx::Rect display_bounds_in_screen() const {
-    return display_bounds_in_screen_;
+  gfx::Vector2d display_offset_from_origin_in_screen() const {
+    return display_offset_from_origin_in_screen_;
   }
+  gfx::Size display_size_in_pixel() const { return display_size_in_pixel_; }
   bool is_landscape() const { return is_landscape_; }
   gfx::Rect restore_bounds_in_parent() const {
     return restore_bounds_in_parent_.value_or(gfx::Rect());
@@ -63,8 +64,11 @@ class ASH_EXPORT PersistentWindowInfo {
   // been re-parented to a different root window on display removal.
   int64_t display_id_after_removal_ = display::kInvalidDisplayId;
 
-  // Indicates last display bounds for |display_id| in screen coordinates.
-  gfx::Rect display_bounds_in_screen_;
+  // Indicates last display's origin in the screen coordinate.
+  gfx::Vector2d display_offset_from_origin_in_screen_;
+
+  // Indicates last display's size in pixel.
+  gfx::Size display_size_in_pixel_;
 
   // True if it is in landscape orientation before screen orientation happens.
   // Note, this is only meaningful in the screen rotation scenario.

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -20,19 +21,22 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/sync/base/page_transition_conversion.h"
 #include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/history_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
-#include "components/sync/test/forwarding_model_type_change_processor.h"
+#include "components/sync/test/forwarding_data_type_local_change_processor.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history {
+
+const std::string kTestAppId = "org.chromium.dino.stegosaurus";
+const std::string kTestAppId2 = "org.chromium.dino.velociraptor";
 
 namespace {
 
@@ -48,6 +52,7 @@ sync_pb::HistorySpecifics CreateSpecifics(
     const std::string& originator_cache_guid,
     const std::vector<GURL>& urls,
     const std::vector<VisitID>& originator_visit_ids = {},
+    std::optional<std::string> app_id = std::nullopt,
     const bool has_url_keyed_image = false,
     const std::vector<VisitContentModelAnnotations::Category>& categories = {},
     const std::vector<std::string>& related_searches = {}) {
@@ -67,6 +72,9 @@ sync_pb::HistorySpecifics CreateSpecifics(
           sync_pb::SyncEnums_PageTransitionRedirectType_SERVER_REDIRECT);
     }
   }
+  if (app_id) {
+    specifics.set_app_id(*app_id);
+  }
   specifics.set_has_url_keyed_image(has_url_keyed_image);
   for (const auto& category : categories) {
     auto* category_to_sync = specifics.add_categories();
@@ -83,12 +91,13 @@ sync_pb::HistorySpecifics CreateSpecifics(
     const std::string& originator_cache_guid,
     const GURL& url,
     VisitID originator_visit_id = 0,
+    std::optional<std::string> app_id = std::nullopt,
     const bool has_url_keyed_image = false,
     const std::vector<VisitContentModelAnnotations::Category>& categories = {},
     const std::vector<std::string>& related_searches = {}) {
   return CreateSpecifics(visit_time, originator_cache_guid, std::vector{url},
-                         std::vector{originator_visit_id}, has_url_keyed_image,
-                         categories, related_searches);
+                         std::vector{originator_visit_id}, app_id,
+                         has_url_keyed_image, categories, related_searches);
 }
 
 syncer::EntityData SpecificsToEntityData(
@@ -98,10 +107,11 @@ syncer::EntityData SpecificsToEntityData(
   return data;
 }
 
-class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
+class FakeDataTypeLocalChangeProcessor
+    : public syncer::DataTypeLocalChangeProcessor {
  public:
-  FakeModelTypeChangeProcessor() = default;
-  ~FakeModelTypeChangeProcessor() override = default;
+  FakeDataTypeLocalChangeProcessor() = default;
+  ~FakeDataTypeLocalChangeProcessor() override = default;
 
   void SetIsTrackingMetadata(bool is_tracking_metadata) {
     is_tracking_metadata_ = is_tracking_metadata;
@@ -137,15 +147,16 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
   }
 
   void Delete(const std::string& storage_key,
+              const syncer::DeletionOrigin& origin,
               syncer::MetadataChangeList* metadata_change_list) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void UpdateStorageKey(
       const syncer::EntityData& entity_data,
       const std::string& storage_key,
       syncer::MetadataChangeList* metadata_change_list) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void UntrackEntityForStorageKey(const std::string& storage_key) override {
@@ -178,23 +189,23 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
     return storage_keys;
   }
 
-  bool IsEntityUnsynced(const std::string& storage_key) override {
+  bool IsEntityUnsynced(const std::string& storage_key) const override {
     return unsynced_entities_.count(storage_key) > 0;
   }
 
   base::Time GetEntityCreationTime(
       const std::string& storage_key) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return base::Time();
   }
 
   base::Time GetEntityModificationTime(
       const std::string& storage_key) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return base::Time();
   }
 
-  void OnModelStarting(syncer::ModelTypeSyncBridge* bridge) override {}
+  void OnModelStarting(syncer::DataTypeSyncBridge* bridge) override {}
 
   void ModelReadyToSync(std::unique_ptr<syncer::MetadataBatch> batch) override {
   }
@@ -223,25 +234,50 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
     return std::nullopt;
   }
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
   const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
       const std::string& storage_key) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return sync_pb::EntitySpecifics::default_instance();
   }
 
-  base::WeakPtr<syncer::ModelTypeChangeProcessor> GetWeakPtr() override {
+  sync_pb::UniquePosition UniquePositionAfter(
+      const std::string& storage_key_before,
+      const syncer::ClientTagHash& target_client_tag_hash) const override {
+    NOTREACHED();
+  }
+  sync_pb::UniquePosition UniquePositionBefore(
+      const std::string& storage_key_after,
+      const syncer::ClientTagHash& target_client_tag_hash) const override {
+    NOTREACHED();
+  }
+  sync_pb::UniquePosition UniquePositionBetween(
+      const std::string& storage_key_before,
+      const std::string& storage_key_after,
+      const syncer::ClientTagHash& target_client_tag_hash) const override {
+    NOTREACHED();
+  }
+  sync_pb::UniquePosition UniquePositionForInitialEntity(
+      const syncer::ClientTagHash& target_client_tag_hash) const override {
+    NOTREACHED();
+  }
+  sync_pb::UniquePosition GetUniquePositionForStorageKey(
+      const std::string& storage_key) const override {
+    NOTREACHED();
+  }
+
+  base::WeakPtr<syncer::DataTypeLocalChangeProcessor> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  std::unique_ptr<ModelTypeChangeProcessor> CreateForwardingProcessor() {
-    return base::WrapUnique<ModelTypeChangeProcessor>(
-        new syncer::ForwardingModelTypeChangeProcessor(this));
+  std::unique_ptr<DataTypeLocalChangeProcessor> CreateForwardingProcessor() {
+    return base::WrapUnique<DataTypeLocalChangeProcessor>(
+        new syncer::ForwardingDataTypeLocalChangeProcessor(this));
   }
 
  private:
@@ -258,7 +294,8 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
   // are pending commit).
   std::set<std::string> unsynced_entities_;
 
-  base::WeakPtrFactory<FakeModelTypeChangeProcessor> weak_ptr_factory_{this};
+  base::WeakPtrFactory<FakeDataTypeLocalChangeProcessor> weak_ptr_factory_{
+      this};
 };
 
 class HistorySyncBridgeTest : public testing::Test {
@@ -285,7 +322,7 @@ class HistorySyncBridgeTest : public testing::Test {
   }
 
   TestHistoryBackendForSync* backend() { return &backend_; }
-  FakeModelTypeChangeProcessor* processor() { return &fake_processor_; }
+  FakeDataTypeLocalChangeProcessor* processor() { return &fake_processor_; }
   HistorySyncBridge* bridge() { return bridge_.get(); }
 
   void AdvanceClock() { task_environment_.FastForwardBy(base::Seconds(1)); }
@@ -293,7 +330,8 @@ class HistorySyncBridgeTest : public testing::Test {
   std::pair<URLRow, VisitRow> AddVisitToBackendAndAdvanceClock(
       const GURL& url,
       ui::PageTransition transition,
-      VisitID referring_visit = kInvalidVisitID) {
+      VisitID referring_visit = kInvalidVisitID,
+      std::optional<std::string> app_id = std::nullopt) {
     // After grabbing the visit time, advance the mock time so that the next
     // visit will get a unique time.
     base::Time visit_time = base::Time::Now();
@@ -316,6 +354,7 @@ class HistorySyncBridgeTest : public testing::Test {
         ui::PageTransitionFromInt(transition | ui::PAGE_TRANSITION_CHAIN_START |
                                   ui::PAGE_TRANSITION_CHAIN_END);
     visit_row.referring_visit = referring_visit;
+    visit_row.app_id = app_id;
     visit_row.visit_id = backend()->AddVisit(visit_row);
 
     return {url_row, visit_row};
@@ -345,14 +384,14 @@ class HistorySyncBridgeTest : public testing::Test {
     // metadata.
     processor()->SetIsTrackingMetadata(true);
 
-    // Populate a MetadataChangeList with a ModelTypeState, and an
+    // Populate a MetadataChangeList with a DataTypeState, and an
     // EntityMetadata entry for each entity.
     std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
         bridge()->CreateMetadataChangeList();
-    sync_pb::ModelTypeState model_type_state;
-    model_type_state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
-    metadata_changes->UpdateModelTypeState(model_type_state);
+    sync_pb::DataTypeState data_type_state;
+    data_type_state.set_initial_sync_state(
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+    metadata_changes->UpdateDataTypeState(data_type_state);
     for (const sync_pb::HistorySpecifics& specifics : specifics_vector) {
       syncer::EntityData data = SpecificsToEntityData(specifics);
       data.client_tag_hash = syncer::ClientTagHash::FromUnhashed(
@@ -420,7 +459,7 @@ class HistorySyncBridgeTest : public testing::Test {
     for (const auto& [storage_key, metadata] : all_metadata.GetAllMetadata()) {
       delete_all_metadata->ClearMetadata(storage_key);
     }
-    delete_all_metadata->ClearModelTypeState();
+    delete_all_metadata->ClearDataTypeState();
 
     bridge()->ApplyDisableSyncChanges(std::move(delete_all_metadata));
 
@@ -436,12 +475,12 @@ class HistorySyncBridgeTest : public testing::Test {
     return metadata_batch->TakeAllMetadata();
   }
 
-  sync_pb::ModelTypeState GetPersistedModelTypeState() {
+  sync_pb::DataTypeState GetPersistedDataTypeState() {
     auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
     if (!metadata_db_.GetAllSyncMetadata(metadata_batch.get())) {
       ADD_FAILURE() << "Failed to read metadata from DB";
     }
-    return metadata_batch->GetModelTypeState();
+    return metadata_batch->GetDataTypeState();
   }
 
  private:
@@ -454,7 +493,7 @@ class HistorySyncBridgeTest : public testing::Test {
 
   TestHistoryBackendForSync backend_;
 
-  FakeModelTypeChangeProcessor fake_processor_;
+  FakeDataTypeLocalChangeProcessor fake_processor_;
 
   std::unique_ptr<HistorySyncBridge> bridge_;
 };
@@ -475,11 +514,13 @@ TEST_F(HistorySyncBridgeTest, AppliesRemoteChanges) {
   const std::vector<std::string> related_searches(
       {related_search_1, related_search_2});
 
-  AddVisitToBackendAndAdvanceClock(local_url, ui::PAGE_TRANSITION_LINK);
+  AddVisitToBackendAndAdvanceClock(local_url, ui::PAGE_TRANSITION_LINK,
+                                   /*referring_visit=*/kInvalidVisitID,
+                                   kTestAppId);
 
   sync_pb::HistorySpecifics remote_entity = CreateSpecifics(
       base::Time::Now() - base::Minutes(1), remote_cache_guid, remote_url, {},
-      has_url_keyed_image, categories, related_searches);
+      kTestAppId2, has_url_keyed_image, categories, related_searches);
 
   ApplyInitialSyncChanges({remote_entity});
 
@@ -494,6 +535,9 @@ TEST_F(HistorySyncBridgeTest, AppliesRemoteChanges) {
   EXPECT_EQ(backend()->GetVisits()[1].url_id, backend()->GetURLs()[1].id());
   EXPECT_EQ(backend()->GetVisits()[1].originator_cache_guid, remote_cache_guid);
   EXPECT_TRUE(backend()->GetVisits()[1].is_known_to_sync);
+  EXPECT_EQ(backend()->GetVisits()[0].app_id, kTestAppId);
+  EXPECT_EQ(backend()->GetVisits()[1].app_id, kTestAppId2);
+
   // Check that the remote visit's annotation info got synced.
   // NOTE: Annotation info is present on the last remote visit.
   const std::vector<AnnotatedVisit> annotated_visits =
@@ -531,25 +575,29 @@ TEST_F(HistorySyncBridgeTest, AppliesRemoteChanges) {
 TEST_F(HistorySyncBridgeTest, MergesRemoteChanges) {
   const GURL remote_url("https://remote.com");
 
-  sync_pb::HistorySpecifics remote_entity = CreateSpecifics(
-      base::Time::Now() - base::Minutes(1), "remote_cache_guid", remote_url);
+  sync_pb::HistorySpecifics remote_entity =
+      CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
+                      remote_url, {}, kTestAppId);
 
   // Start Sync the first time, so the remote data gets written to the local DB.
   ApplyInitialSyncChanges({remote_entity});
   ASSERT_EQ(backend()->GetURLs().size(), 1u);
   ASSERT_EQ(backend()->GetVisits().size(), 1u);
   ASSERT_EQ(backend()->GetVisits()[0].visit_duration, base::TimeDelta());
+  ASSERT_EQ(backend()->GetVisits()[0].app_id, kTestAppId);
 
   // Stop Sync, then start it again so the same data gets downloaded again.
   ApplyDisableSyncChanges();
   // ...but the data has been updated in the meantime.
   remote_entity.set_visit_duration_micros(1000);
+  remote_entity.set_app_id(kTestAppId2);
   ApplyInitialSyncChanges({remote_entity});
 
   // The entries in the local DB should have been updated (*not* duplicated).
   ASSERT_EQ(backend()->GetURLs().size(), 1u);
   ASSERT_EQ(backend()->GetVisits().size(), 1u);
   EXPECT_EQ(backend()->GetVisits()[0].visit_duration, base::Microseconds(1000));
+  ASSERT_EQ(backend()->GetVisits()[0].app_id, kTestAppId2);
 }
 
 TEST_F(HistorySyncBridgeTest, DoesNotApplyUnsyncableRemoteChanges) {
@@ -590,16 +638,16 @@ TEST_F(HistorySyncBridgeTest, ClearsDataWhenSyncStopped) {
   ASSERT_EQ(backend()->GetURLs().size(), 2u);
   ASSERT_EQ(backend()->GetVisits().size(), 2u);
 
-  // Some Sync metadata should now exist (both a non-empty ModelTypeState, and
+  // Some Sync metadata should now exist (both a non-empty DataTypeState, and
   // an EntityMetadata record for the local visit).
-  ASSERT_NE(GetPersistedModelTypeState().ByteSizeLong(), 0u);
+  ASSERT_NE(GetPersistedDataTypeState().ByteSizeLong(), 0u);
   ASSERT_FALSE(GetPersistedEntityMetadata().empty());
 
   // Stop Sync.
   ApplyDisableSyncChanges();
 
   // Any Sync metadata should have been cleared.
-  EXPECT_EQ(GetPersistedModelTypeState().ByteSizeLong(), 0u);
+  EXPECT_EQ(GetPersistedDataTypeState().ByteSizeLong(), 0u);
   EXPECT_TRUE(GetPersistedEntityMetadata().empty());
 
   // The local visit should still exist in the DB, but since Sync was stopped
@@ -1617,8 +1665,9 @@ TEST_F(HistorySyncBridgeTest, UntracksEntityOnIndividualDeletion) {
   backend()->RemoveURLAndVisits(url_row1.id());
 
   bridge()->OnVisitDeleted(visit_row1);
-  bridge()->OnURLsDeleted(/*history_backend=*/nullptr, /*all_history=*/false,
-                          /*expired=*/false, {url_row1}, /*favicon_urls=*/{});
+  bridge()->OnHistoryDeletions(
+      /*history_backend=*/nullptr, /*all_history=*/false,
+      /*expired=*/false, {url_row1}, /*favicon_urls=*/{});
   // The metadata for the first (deleted) entity should be gone, but the
   // metadata for the second entity should still exist.
   EXPECT_EQ(GetPersistedEntityMetadata().size(), 1u);
@@ -1658,8 +1707,9 @@ TEST_F(HistorySyncBridgeTest,
   backend()->RemoveURLAndVisits(url_row1.id());
 
   bridge()->OnVisitDeleted(visit_row1);
-  bridge()->OnURLsDeleted(/*history_backend=*/nullptr, /*all_history=*/false,
-                          /*expired=*/false, {url_row1}, /*favicon_urls=*/{});
+  bridge()->OnHistoryDeletions(
+      /*history_backend=*/nullptr, /*all_history=*/false,
+      /*expired=*/false, {url_row1}, /*favicon_urls=*/{});
   // The metadata for the first (deleted) entity should be gone, but the
   // metadata for the second entity should still exist.
   EXPECT_EQ(GetPersistedEntityMetadata().size(), 1u);
@@ -1692,9 +1742,10 @@ TEST_F(HistorySyncBridgeTest, UntracksAllEntitiesOnAllHistoryDeletion) {
   backend()->Clear();
   // Deleting all history does *not* result in OnVisitDeleted() calls, and also
   // does not include the actual deleted URLs in OnURLsDeleted().
-  bridge()->OnURLsDeleted(/*history_backend=*/nullptr, /*all_history=*/true,
-                          /*expired=*/false, /*deleted_rows=*/{},
-                          /*favicon_urls=*/{});
+  bridge()->OnHistoryDeletions(/*history_backend=*/nullptr,
+                               /*all_history=*/true,
+                               /*expired=*/false, /*deleted_rows=*/{},
+                               /*favicon_urls=*/{});
 
   EXPECT_TRUE(GetPersistedEntityMetadata().empty());
 }
@@ -1733,9 +1784,10 @@ TEST_F(HistorySyncBridgeTest,
   backend()->Clear();
   // Deleting all history does *not* result in OnVisitDeleted() calls, and also
   // does not include the actual deleted URLs in OnURLsDeleted().
-  bridge()->OnURLsDeleted(/*history_backend=*/nullptr, /*all_history=*/true,
-                          /*expired=*/false, /*deleted_rows=*/{},
-                          /*favicon_urls=*/{});
+  bridge()->OnHistoryDeletions(/*history_backend=*/nullptr,
+                               /*all_history=*/true,
+                               /*expired=*/false, /*deleted_rows=*/{},
+                               /*favicon_urls=*/{});
 
   EXPECT_TRUE(GetPersistedEntityMetadata().empty());
 }

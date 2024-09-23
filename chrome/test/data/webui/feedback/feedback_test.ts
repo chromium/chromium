@@ -4,7 +4,7 @@
 
 import 'chrome://feedback/app.js';
 
-import type {FeedbackAppElement} from 'chrome://feedback/app.js';
+import type {AppElement} from 'chrome://feedback/app.js';
 import {FeedbackBrowserProxyImpl} from 'chrome://feedback/js/feedback_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
@@ -17,7 +17,7 @@ import {TestFeedbackBrowserProxy} from './test_feedback_browser_proxy.js';
 const USER_EMAIL = 'dummy_user_email';
 
 suite('FeedbackTest', function() {
-  let app: FeedbackAppElement;
+  let app: AppElement;
   let browserProxy: TestFeedbackBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
 
@@ -29,12 +29,12 @@ suite('FeedbackTest', function() {
     browserProxy.setUserEmail(USER_EMAIL);
     FeedbackBrowserProxyImpl.setInstance(browserProxy);
 
-    app = await createFeedbackAppElement();
+    app = await createAppElement();
   });
 
-  async function createFeedbackAppElement(): Promise<FeedbackAppElement> {
+  async function createAppElement(): Promise<AppElement> {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const app: FeedbackAppElement = document.createElement('feedback-app');
+    const app: AppElement = document.createElement('feedback-app');
     document.body.appendChild(app);
     await eventToPromise('ready-for-testing', app);
     return app;
@@ -87,7 +87,7 @@ suite('FeedbackTest', function() {
   test('ScreenshotFailed', async function() {
     browserProxy.setUserMedia(Promise.reject(
         {name: 'error', message: 'error', constraintName: 'error'}));
-    app = await createFeedbackAppElement();
+    app = await createAppElement();
 
     const checkbox =
         app.getRequiredElement<HTMLInputElement>('#screenshot-checkbox');
@@ -160,7 +160,7 @@ suite('FeedbackTest', function() {
 
 suite('AIFeedbackTest', function() {
   const LOG_ID: string = 'TEST_LOG_ID';
-  let app: FeedbackAppElement;
+  let app: AppElement;
   let browserProxy: TestFeedbackBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
 
@@ -230,5 +230,82 @@ suite('AIFeedbackTest', function() {
     const feedbackInfo: chrome.feedbackPrivate.FeedbackInfo =
         await browserProxy.whenCalled('sendFeedback');
     assertEquals(undefined, feedbackInfo.aiMetadata);
+  });
+});
+
+suite('SeaPenFeedbackTest', function() {
+  let app: AppElement;
+  let browserProxy: TestFeedbackBrowserProxy;
+  let openWindowProxy: TestOpenWindowProxy;
+
+  setup(async function() {
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+
+    // Signal to the prod page that test setup steps have completed.
+    browserProxy = new TestFeedbackBrowserProxy();
+    browserProxy.setDialogArguments(JSON.stringify({
+      flow: chrome.feedbackPrivate.FeedbackFlow.AI,
+      categoryTag: 'test',
+      aiMetadata: JSON.stringify({'from_sea_pen': 'true'}),
+    }));
+    FeedbackBrowserProxyImpl.setInstance(browserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('feedback-app');
+    document.body.appendChild(app);
+    await eventToPromise('ready-for-testing', app);
+  });
+
+  function simulateSendReport() {
+    // Make sure description is not empty and send button is not disabled.
+    app.getRequiredElement<HTMLTextAreaElement>('#description-text').value =
+        'test';
+    const button =
+        app.getRequiredElement<HTMLButtonElement>('#send-report-button');
+    // Send button is being disabled after click in production code, but in
+    // tests we want to be able to click on the button multiple times.
+    button.disabled = false;
+    button.click();
+  }
+
+  test('Description', function() {
+    assertEquals(
+        loadTimeData.getString('freeFormTextAi'),
+        app.getRequiredElement('#free-form-text').textContent);
+  });
+
+  test('NoEmail', function() {
+    assertFalse(isVisible(app.getRequiredElement('#user-email')));
+    assertFalse(isVisible(app.getRequiredElement('#consent-container')));
+  });
+
+  test('NoScreenshots', function() {
+    assertFalse(isVisible(app.getRequiredElement('#screenshot-container')));
+  });
+
+  test('OffensiveContainerVisibility', async function() {
+    assertTrue(isVisible(app.getRequiredElement('#offensive-container')));
+    app.getRequiredElement('#offensive-checkbox').click();
+    simulateSendReport();
+    const feedbackInfo: chrome.feedbackPrivate.FeedbackInfo =
+        await browserProxy.whenCalled('sendFeedback');
+    assertTrue(feedbackInfo.isOffensiveOrUnsafe!);
+  });
+
+  test('ExcludeServerLogs', async function() {
+    assertFalse(isVisible(app.getRequiredElement('#log-id-container')));
+    simulateSendReport();
+    const feedbackInfo: chrome.feedbackPrivate.FeedbackInfo =
+        await browserProxy.whenCalled('sendFeedback');
+    assertEquals(undefined, feedbackInfo.aiMetadata);
+  });
+
+  test('ExcludeSystemInfo', async function() {
+    assertFalse(isVisible(app.getRequiredElement('#sys-info-container')));
+    simulateSendReport();
+    const feedbackInfo: chrome.feedbackPrivate.FeedbackInfo =
+        await browserProxy.whenCalled('sendFeedback');
+    assertEquals(false, feedbackInfo.sendHistograms);
   });
 });

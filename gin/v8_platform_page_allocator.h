@@ -7,13 +7,12 @@
 
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "partition_alloc/buildflags.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
-
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "gin/gin_export.h"
+#include "partition_alloc/page_allocator.h"
 #include "v8/include/v8-platform.h"
 
 namespace gin {
@@ -52,6 +51,8 @@ class GIN_EXPORT PageAllocator final : public v8::PageAllocator {
 
   bool DecommitPages(void* address, size_t size) override;
 
+  bool SealPages(void* address, size_t length) override;
+
   // For testing purposes only: Map the v8 page permissions into a page
   // configuration from base.
   ::partition_alloc::PageAccessibilityConfiguration::Permissions
@@ -59,6 +60,6 @@ class GIN_EXPORT PageAllocator final : public v8::PageAllocator {
 };
 }  // namespace gin
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 #endif  // GIN_V8_PLATFORM_PAGE_ALLOCATOR_H_

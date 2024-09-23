@@ -6,12 +6,9 @@ import("//build/config/features.gni")
 import("//media/media_options.gni")
 import("//remoting/remoting_options.gni")
 
-static_library("errors") {
-  sources = [
-    "errors.cc",
-    "errors.h",
-  ]
-  deps = [ "//remoting/base:base" ]
+source_set("errors") {
+  sources = [ "errors.h" ]
+  deps = [ "//remoting/base:errors" ]
 }
 
 static_library("transport") {
@@ -73,6 +70,7 @@ static_library("protocol") {
     "connection_to_host.h",
     "content_description.cc",
     "content_description.h",
+    "credentials_type.h",
     "data_channel_manager.cc",
     "data_channel_manager.h",
     "datagram_channel_factory.h",
@@ -87,6 +85,8 @@ static_library("protocol") {
     "frame_consumer.h",
     "frame_stats.cc",
     "frame_stats.h",
+    "host_authentication_config.cc",
+    "host_authentication_config.h",
     "host_control_dispatcher.cc",
     "host_control_dispatcher.h",
     "host_event_dispatcher.cc",
@@ -142,6 +142,7 @@ static_library("protocol") {
     "negotiating_client_authenticator.h",
     "negotiating_host_authenticator.cc",
     "negotiating_host_authenticator.h",
+    "network_settings.cc",
     "network_settings.h",
     "observing_input_filter.cc",
     "observing_input_filter.h",
@@ -160,9 +161,8 @@ static_library("protocol") {
     "performance_tracker.h",
     "port_allocator.cc",
     "port_allocator.h",
+    "port_allocator_factory.cc",
     "port_allocator_factory.h",
-    "port_range.cc",
-    "port_range.h",
     "pseudotcp_adapter.cc",
     "pseudotcp_adapter.h",
     "pseudotcp_channel_factory.cc",
@@ -178,7 +178,10 @@ static_library("protocol") {
     "session.h",
     "session_authz_authenticator.cc",
     "session_authz_authenticator.h",
+    "session_authz_reauthorizer.cc",
+    "session_authz_reauthorizer.h",
     "session_manager.h",
+    "session_observer.h",
     "session_options_provider.h",
     "session_plugin.h",
     "socket_util.cc",
@@ -195,17 +198,8 @@ static_library("protocol") {
     "stream_packet_socket.h",
     "stun_tcp_packet_processor.cc",
     "stun_tcp_packet_processor.h",
-    "third_party_authenticator_base.cc",
-    "third_party_authenticator_base.h",
-    "third_party_client_authenticator.cc",
-    "third_party_client_authenticator.h",
-    "third_party_host_authenticator.cc",
-    "third_party_host_authenticator.h",
-    "token_validator.h",
     "transport_context.cc",
     "transport_context.h",
-    "v2_authenticator.cc",
-    "v2_authenticator.h",
     "validating_authenticator.cc",
     "validating_authenticator.h",
     "video_channel_state_observer.h",
@@ -251,6 +245,8 @@ static_library("protocol") {
     "//remoting/base",
     "//remoting/base:authorization",
     "//remoting/base:logging",
+    "//remoting/base:name_value_map",
+    "//remoting/base:session_policies",
     "//remoting/codec:decoder",
     "//remoting/proto:internal_structs",
     "//remoting/proto/remoting/v1:network_traversal_proto",
@@ -266,7 +262,7 @@ static_library("protocol") {
   defines = []
 
   # Must be a subset of the platforms built in //remoting/codec/BUILD.gn
-  if (is_win) {
+  if (remoting_enable_h264 && is_win) {
     defines += [ "USE_H264_ENCODER" ]
     deps += [
       "//media",
@@ -374,6 +370,7 @@ static_library("test_support") {
     "//net/traffic_annotation:test_support",
     "//net/traffic_annotation:traffic_annotation",
     "//remoting/base:base",
+    "//remoting/base:session_policies",
     "//remoting/codec:encoder",
     "//remoting/signaling:signaling",
     "//testing/gtest:gtest",
@@ -411,17 +408,16 @@ source_set("unit_tests") {
     "monitored_video_stub_unittest.cc",
     "mouse_input_filter_unittest.cc",
     "negotiating_authenticator_unittest.cc",
+    "network_settings_unittest.cc",
     "pairing_registry_unittest.cc",
-    "port_range_unittest.cc",
     "pseudotcp_adapter_unittest.cc",
     "remoting_ice_config_request_unittest.cc",
     "sdp_message_unittest.cc",
     "session_authz_authenticator_unittest.cc",
+    "session_authz_reauthorizer_unittest.cc",
     "session_config_unittest.cc",
     "spake2_authenticator_unittest.cc",
     "ssl_hmac_channel_authenticator_unittest.cc",
-    "third_party_authenticator_unittest.cc",
-    "v2_authenticator_unittest.cc",
     "validating_authenticator_unittest.cc",
     "webrtc_event_log_data_unittest.cc",
   ]
@@ -446,6 +442,7 @@ source_set("unit_tests") {
     "//components/webrtc:thread_wrapper",
     "//net:test_support",
     "//remoting/base:base",
+    "//remoting/base:session_policies",
     "//remoting/base:test_support",
     "//remoting/codec:encoder",
     "//remoting/proto:internal_structs",

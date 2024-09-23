@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/download/model/browser_download_service_factory.h"
 
 #import "ios/chrome/browser/download/model/browser_download_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"

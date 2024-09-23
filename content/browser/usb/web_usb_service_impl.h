@@ -120,8 +120,8 @@ class CONTENT_EXPORT WebUsbServiceImpl : public blink::mojom::WebUsbService,
   mojo::AssociatedRemoteSet<device::mojom::UsbDeviceManagerClient> clients_;
 
   // A UsbDeviceClient tracks a UsbDevice pipe that has been passed to Blink.
-  std::vector<std::unique_ptr<UsbDeviceClient>> device_clients_;
   int connection_count_ = 0;
+  std::vector<std::unique_ptr<UsbDeviceClient>> device_clients_;
 
   base::WeakPtrFactory<WebUsbServiceImpl> weak_factory_{this};
 };

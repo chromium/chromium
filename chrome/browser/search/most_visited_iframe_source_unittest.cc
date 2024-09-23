@@ -77,7 +77,7 @@ class MostVisitedIframeSourceTest : public testing::Test {
 
   std::string response_string() {
     if (response_.get()) {
-      return std::string(response_->front_as<char>(), response_->size());
+      return std::string(base::as_string_view(*response_));
     }
     return "";
   }

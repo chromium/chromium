@@ -1,0 +1,31 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package history_embeddings.proto;
+
+// The packed value that encapsulates all the passages.
+message PassagesValue {
+  // The passages for the document in plaintext. Any encryption or compression
+  // is applied to the whole proto message, not to individual passage strings.
+  repeated string passages = 1;
+}
+
+// A single embedding vector for a single passage.
+message EmbeddingVector {
+  repeated float floats = 1;
+
+  // Word count of the source passage for this embedding, needed to avoid
+  // having to load and decrypt all passages for embeddings search.
+  uint32 passage_word_count = 2;
+}
+
+// The packed storable value that encapsulates all embeddings vectors for all
+// passages from a single source.
+message EmbeddingsValue {
+  repeated EmbeddingVector vectors = 1;
+}

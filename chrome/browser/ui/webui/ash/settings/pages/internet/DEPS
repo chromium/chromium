@@ -1,0 +1,28 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ui/webui/ash/settings/pages/internet",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/app_list/arc",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/tether",
+  "+chrome/browser/chromeos/extensions/vpn_provider",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/ui/webui/ash/cellular_setup",
+  "+chrome/browser/ui/webui/ash/settings/pages",
+  "+chrome/browser/ui/webui/ash/settings/search",
+  "+chrome/browser/ui/webui/extension_control_handler.h",
+  "+chrome/browser/ui/webui/settings",
+  "+chrome/browser/ui/webui/webui_util.h",
+  "+chrome/common",
+  "+chrome/grit",
+  "+chrome/test",
+]

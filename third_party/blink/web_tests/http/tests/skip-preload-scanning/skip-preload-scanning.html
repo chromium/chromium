@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>SkipPreloadScanning - Preloads are not identified when feature is enabled</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+      var SKIP_PRELOAD_SCANNING_COUNTER = 4929;
+
+  test(t => {
+    assert_false(internals.isPreloaded('resources/square20.png'), 'image was not preloaded');
+    assert_true(internals.isUseCounted(document, SKIP_PRELOAD_SCANNING_COUNTER));
+  }, 'Resources are not preloaded when SkipPreloadScanning feature is enabled.');
+</script>
+<div>This test passes if the img src is not preloaded when SkipPreloadScanning feature is enabled.</div>
+<img src="resources/square20.png">
+</body>
+
+</html>

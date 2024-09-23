@@ -1,0 +1,136 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("ash") {
+  sources = [
+    "edu_account_login_handler.cc",
+    "edu_account_login_handler.h",
+    "inline_login_dialog.cc",
+    "inline_login_dialog.h",
+    "inline_login_dialog_onboarding.cc",
+    "inline_login_dialog_onboarding.h",
+    "inline_login_handler_impl.cc",
+    "inline_login_handler_impl.h",
+    "inline_login_handler_modal_delegate.cc",
+    "inline_login_handler_modal_delegate.h",
+    "signin_helper.cc",
+    "signin_helper.h",
+    "user_cloud_signin_restriction_policy_fetcher.cc",
+    "user_cloud_signin_restriction_policy_fetcher.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:primitives",
+    "//chrome/browser/ash/account_manager",
+    "//chrome/browser/ash/arc/auth",
+    "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ash/login/signin",
+    "//chrome/browser/image_fetcher",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/edu_coexistence",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/common",
+    "//chromeos/ash/components/account_manager",
+    "//chromeos/version",
+    "//components/account_manager_core",
+    "//components/image_fetcher/core",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:fetcher",
+    "//components/user_manager",
+    "//components/web_modal",
+    "//crypto",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/gfx",
+    "//ui/views",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/account_manager",
+    "//chrome/browser/ash/arc/auth",
+    "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ash/login/signin",
+    "//chrome/browser/ui/webui/ash/edu_coexistence",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "inline_login_dialog_browsertest.cc",
+    "inline_login_handler_impl_browsertest.cc",
+    "signin_helper_browsertest.cc",
+  ]
+
+  deps = [
+    ":ash",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/account_manager",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/edu_coexistence",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/account_manager",
+    "//chromeos/ash/components/standalone_browser",
+    "//components/account_manager_core",
+    "//components/account_manager_core:test_support",
+    "//components/constrained_window",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "edu_account_login_handler_unittest.cc",
+    "user_cloud_signin_restriction_policy_fetcher_unittest.cc",
+  ]
+
+  deps = [
+    ":ash",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//components/image_fetcher/core",
+    "//components/image_fetcher/core:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:fetcher",
+    "//content/test:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+}

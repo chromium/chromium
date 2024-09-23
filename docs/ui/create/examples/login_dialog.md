@@ -212,7 +212,7 @@ LoginBubbleDialogView::LoginBubbleDialogView(
     : BubbleDialogDelegateView(anchor_view, anchor_position) {
   ...
   SetTitle(l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_TITLE));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(
+  SetButtonLabel(ui::mojom::DialogButton::kOk, l10n_util::GetStringUTF16(
       IDS_STARTER_DIALOG_OK_BUTTON_LABEL));
   ...
   username_ = AddFormRow(this, l10n_util::GetStringUTF16(
@@ -346,7 +346,7 @@ views::Textfield* AddFormRow(LoginBubbleDialogView* bubble,
 void LoginBubbleDialogView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, !username_->GetText().empty() &&
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, !username_->GetText().empty() &&
                                              !password_->GetText().empty());
   DialogModelChanged();
 }
@@ -357,7 +357,7 @@ LoginBubbleDialogView::LoginBubbleDialogView(
     LoginBubbleDialogController* controller)
     : BubbleDialogDelegateView(anchor_view, anchor_position),
       controller_(controller) {
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
   ...
   username_ = AddFormRow(
       this,
@@ -481,7 +481,7 @@ LoginBubbleDialogView::~LoginBubbleDialogView() = default;
 void LoginBubbleDialogView::ContentsChanged(
     Textfield* sender,
     const std::u16string& new_contents) {
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, !username_->GetText().empty() &&
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, !username_->GetText().empty() &&
                                              !password_->GetText().empty());
   DialogModelChanged();
 }
@@ -491,7 +491,7 @@ LoginBubbleDialogView::LoginBubbleDialogView(
     BubbleBorder::Arrow anchor_position,
     OnSubmitCallback accept_callback)
     : BubbleDialogDelegateView(anchor_view, anchor_position) {
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
 
   const auto on_submit = [](const LoginBubbleDialogView* bubble_view,
                             OnSubmitCallback accept_callback) {
@@ -504,7 +504,7 @@ LoginBubbleDialogView::LoginBubbleDialogView(
 
   SetTitle(l10n_util::GetStringUTF16(IDS_EXAMPLE_LOGIN_DIALOG_TITLE));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_EXAMPLE_LOGIN_DIALOG_OK_BUTTON_LABEL));
 
   const LayoutProvider* provider = LayoutProvider::Get();

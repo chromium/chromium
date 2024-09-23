@@ -6,7 +6,9 @@
 #define COMPONENTS_UKM_OBSERVERS_UKM_CONSENT_STATE_OBSERVER_H_
 
 #include <stdint.h>
+
 #include <map>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/scoped_multi_source_observation.h"
@@ -20,6 +22,11 @@ class PrefService;
 
 namespace ukm {
 
+// Marker type used to indicate that the initial UkmConsentState should
+// be left in an uninitialized state (i.e. std::nullopt).
+struct NoInitialUkmConsentStateTag {};
+constexpr NoInitialUkmConsentStateTag NoInitialUkmConsentState;
+
 // Observer that monitors whether UKM is allowed for all profiles.
 //
 // For one profile, UKM is allowed iff URL-keyed anonymized data collection is
@@ -29,6 +36,7 @@ class UkmConsentStateObserver
       public unified_consent::UrlKeyedDataCollectionConsentHelper::Observer {
  public:
   UkmConsentStateObserver();
+  UkmConsentStateObserver(NoInitialUkmConsentStateTag);
 
   UkmConsentStateObserver(const UkmConsentStateObserver&) = delete;
   UkmConsentStateObserver& operator=(const UkmConsentStateObserver&) = delete;
@@ -139,7 +147,10 @@ class UkmConsentStateObserver
   // Tracks what consent type is granted on all profiles after the last state
   // change. Consent is only granted when EVERY profile consents.
   // Empty means none.
-  UkmConsentState ukm_consent_state_;
+  //
+  // std::nullopt means that no profile has been loaded yet. This is only used
+  // if constructed with UkmConsentStateObserver(NoInitialUkmConsentStateTag).
+  std::optional<UkmConsentState> ukm_consent_state_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Indicate whether the device is in demo mode. If it is true,

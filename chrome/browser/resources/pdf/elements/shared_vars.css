@@ -1,0 +1,26 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=vars
+ * #css_wrapper_metadata_end */
+
+html {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  --viewer-border-color: rgb(94, 94, 94);
+<if expr="enable_pdf_ink2">
+  --viewer-icon-ink-fill-color: rgb(199, 199, 199);
+  --viewer-icon-ink-selected-fill-color: rgb(168, 199, 250);
+  --viewer-icon-ink-selected-background-color: rgba(76, 141, 246, 0.32);
+</if>
+  --viewer-pdf-toolbar-background-color: rgb(50, 54, 57);
+  --viewer-side-background-color: var(--viewer-pdf-toolbar-background-color);
+  --viewer-text-input-selection-color: rgba(255, 255, 255, 0.3);
+}
+
+html[pdfcr23enabled] {
+  --viewer-pdf-toolbar-background-color: rgb(60, 60, 60);
+  --viewer-side-background-color: rgb(40, 41, 42);
+}

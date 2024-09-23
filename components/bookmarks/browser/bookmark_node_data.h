@@ -132,7 +132,7 @@ struct BookmarkNodeData {
   bool ReadFromTuple(const GURL& url, const std::u16string& title);
 
   // Writes bookmarks to the specified clipboard.
-  void WriteToClipboard();
+  void WriteToClipboard(bool is_off_the_record);
 
   // Reads bookmarks from the specified clipboard. Prefers data written via
   // WriteToClipboard() but will also attempt to read a plain bookmark.

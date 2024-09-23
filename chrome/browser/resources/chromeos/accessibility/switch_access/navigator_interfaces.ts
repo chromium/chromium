@@ -86,6 +86,12 @@ export abstract class ItemNavigatorInterface {
   /** Saves the current focus and group, and then exits the group. */
   abstract suspendCurrentGroup(): void;
 
+  /**
+   * Called when everything has been initialized to add the listeners and find
+   * the initial focus.
+   */
+   abstract start(): void;
+
   // =============== Getter Methods ==============
 
   /** Returns the currently focused node. */

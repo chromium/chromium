@@ -8,6 +8,11 @@ namespace chrome_pdf {
 
 DocumentMetadata::DocumentMetadata() = default;
 
+DocumentMetadata::DocumentMetadata(DocumentMetadata&&) noexcept = default;
+
+DocumentMetadata& DocumentMetadata::operator=(
+    DocumentMetadata&& other) noexcept = default;
+
 DocumentMetadata::~DocumentMetadata() = default;
 
 }  // namespace chrome_pdf

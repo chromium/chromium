@@ -48,14 +48,15 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
                ReadPngCallback callback) override;
   void ReadFiles(ui::ClipboardBuffer clipboard_buffer,
                  ReadFilesCallback callback) override;
-  void ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
-                      const std::u16string& type,
-                      ReadCustomDataCallback callback) override;
+  void ReadDataTransferCustomData(
+      ui::ClipboardBuffer clipboard_buffer,
+      const std::u16string& type,
+      ReadDataTransferCustomDataCallback callback) override;
   void WriteText(const std::u16string& text) override;
   void WriteHtml(const std::u16string& markup, const GURL& url) override;
   void WriteSvg(const std::u16string& markup) override;
   void WriteSmartPasteMarker() override;
-  void WriteCustomData(
+  void WriteDataTransferCustomData(
       const base::flat_map<std::u16string, std::u16string>& data) override;
   void WriteBookmark(const std::string& url,
                      const std::u16string& title) override;

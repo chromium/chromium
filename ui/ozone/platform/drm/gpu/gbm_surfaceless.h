@@ -57,6 +57,7 @@ class GbmSurfaceless : public gl::Presenter {
               bool has_alpha) override;
   bool SupportsPlaneGpuFences() const override;
   void SetRelyOnImplicitSync() override;
+  void SetNotifyNonSimpleOverlayFailure() override;
   void Present(SwapCompletionCallback completion_callback,
                PresentationCallback presentation_callback,
                gfx::FrameData data) override;
@@ -83,10 +84,12 @@ class GbmSurfaceless : public gl::Presenter {
 
   void SubmitFrame();
 
-  EGLSyncKHR InsertFence(bool implicit);
+  EGLSyncKHR InsertFence();
   void FenceRetired(PendingFrame* frame);
 
-  void OnSubmission(gfx::SwapResult result, gfx::GpuFenceHandle release_fence);
+  void OnSubmission(bool should_handle_non_simple_overlay_failure,
+                    gfx::SwapResult result,
+                    gfx::GpuFenceHandle release_fence);
   void OnPresentation(const gfx::PresentationFeedback& feedback);
 
   EGLDisplay GetEGLDisplay();
@@ -100,10 +103,12 @@ class GbmSurfaceless : public gl::Presenter {
   std::vector<std::unique_ptr<PendingFrame>> unsubmitted_frames_;
   std::unique_ptr<PendingFrame> submitted_frame_;
   std::unique_ptr<gfx::GpuFence> submitted_frame_gpu_fence_;
-  const bool has_implicit_external_sync_;
   bool last_swap_buffers_result_ = true;
   bool supports_plane_gpu_fences_ = false;
   bool use_egl_fence_sync_ = true;
+  // Determines submission of non-simple overlays (see gfx::OverlayType) should
+  // be handled with gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED.
+  bool notify_non_simple_overlay_failure_ = false;
 
   // Conservatively assume we begin on a device that requires
   // explicit synchronization.

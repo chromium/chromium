@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/vr/android/cardboard/cardboard_image_transport.h"
 
 #include <memory>
@@ -39,12 +44,18 @@ CardboardImageTransport::CardboardImageTransport(
 
 CardboardImageTransport::~CardboardImageTransport() = default;
 
-void CardboardImageTransport::DoRuntimeInitialization() {
-  // TODO(https://crbug.com/1429088): Move this into helper classes rather than
+void CardboardImageTransport::DoRuntimeInitialization(int texture_target) {
+  CHECK(texture_target == GL_TEXTURE_EXTERNAL_OES ||
+        texture_target == GL_TEXTURE_2D);
+  // TODO(crbug.com/40900864): Move this into helper classes rather than
   // directly using the cardboard types here.
   CardboardOpenGlEsDistortionRendererConfig config = {
-      CardboardSupportedOpenGlEsTextureType::kGlTextureExternalOes,
+      texture_target == GL_TEXTURE_EXTERNAL_OES
+          ? CardboardSupportedOpenGlEsTextureType::kGlTextureExternalOes
+          : CardboardSupportedOpenGlEsTextureType::kGlTexture2D,
   };
+  eye_texture_target_ = texture_target;
+
   renderer_ = internal::ScopedCardboardObject<CardboardDistortionRenderer*>(
       CardboardOpenGlEs2DistortionRenderer_create(&config));
 
@@ -62,7 +73,7 @@ void CardboardImageTransport::DoRuntimeInitialization() {
 }
 
 void CardboardImageTransport::UpdateDistortionMesh() {
-  // TODO(https://crbug.com/1429088): Move this into helper classes rather than
+  // TODO(crbug.com/40900864): Move this into helper classes rather than
   // directly using the cardboard types here.
   auto params = CardboardDeviceParams::GetDeviceParams();
   CHECK(params.IsValid());
@@ -115,10 +126,11 @@ void CardboardImageTransport::Render(WebXrPresentationState* webxr,
     right_eye_description_.top_v = right_bounds.y();
   }
 
-  GLuint texture = GetRenderingTextureId(webxr);
+  LocalTexture texture = GetRenderingTexture(webxr);
+  CHECK_EQ(eye_texture_target_, texture.target);
 
-  left_eye_description_.texture = texture;
-  right_eye_description_.texture = texture;
+  left_eye_description_.texture = texture.id;
+  right_eye_description_.texture = texture.id;
 
   // "x" and "y" below refer to the lower left pixel coordinates, which should
   // be 0,0.

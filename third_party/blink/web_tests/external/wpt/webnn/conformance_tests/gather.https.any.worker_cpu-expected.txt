@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+[FAIL] gather float32 1D tensor and uint32 0D scalar indices default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint32) is not supported."
+[FAIL] gather float32 1D tensor and int64 0D scalar indices default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 1D tensor and int64 1D indices default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 1D tensor and int64 2D indices default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 1D tensor and int64 3D indices default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 1D tensor and int64 4D indices default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 2D tensor and 0D scalar indices default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 2D tensor and 1D indices default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 2D tensor and 2D indices default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 2D tensor and 3D indices default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 2D tensor and 4D indices default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 3D tensor and 2D indices default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 4D tensor and 2D indices default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 5D tensor and 1D indices default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 3D tensor and 1D indices options.axis=1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 3D tensor and 2D indices options.axis=2
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 4D tensor and 2D indices explict options.axis=0
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] gather float32 5D tensor and 0D scalar indices options.axis=4
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+Harness: the test ran to completion.
+

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -15,16 +14,14 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Responsible for hosting properties of BookmarkToolbar views. TODO(https://crbug.com/1435024)
- * Remove all skipEquality=true usage.
+ * Responsible for hosting properties of BookmarkToolbar views. TODO(crbug.com/40265005) Remove all
+ * skipEquality=true usage.
  */
 class BookmarkToolbarProperties {
     /** Dependencies */
-    static final WritableObjectPropertyKey<BookmarkModel> BOOKMARK_MODEL =
-            new WritableObjectPropertyKey<>();
-
     static final WritableObjectPropertyKey<BookmarkOpener> BOOKMARK_OPENER =
             new WritableObjectPropertyKey<>();
+
     static final WritableObjectPropertyKey<SelectionDelegate> SELECTION_DELEGATE =
             new WritableObjectPropertyKey<>();
 
@@ -55,12 +52,20 @@ class BookmarkToolbarProperties {
             new WritableBooleanPropertyKey();
     static final WritableIntPropertyKey CHECKED_SORT_MENU_ID = new WritableIntPropertyKey();
     static final WritableIntPropertyKey CHECKED_VIEW_MENU_ID = new WritableIntPropertyKey();
+    static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_EDIT =
+            new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB =
+            new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO =
+            new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_MOVE =
+            new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_MARK_READ =
+            new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey SELECTION_MODE_SHOW_MARK_UNREAD =
+            new WritableBooleanPropertyKey();
 
     static final WritableObjectPropertyKey<Boolean> FAKE_SELECTION_STATE_CHANGE =
-            new WritableObjectPropertyKey<>(/* skipEquality= */ true);
-
-    /** Bookmark state properties. */
-    static final WritableObjectPropertyKey<BookmarkId> CURRENT_FOLDER =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
     /** Callables to delegate business logic back to the mediator */
@@ -71,7 +76,6 @@ class BookmarkToolbarProperties {
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {
-        BOOKMARK_MODEL,
         BOOKMARK_OPENER,
         SELECTION_DELEGATE,
         TITLE,
@@ -84,13 +88,18 @@ class BookmarkToolbarProperties {
         NEW_FOLDER_BUTTON_VISIBLE,
         NEW_FOLDER_BUTTON_ENABLED,
         NAVIGATION_BUTTON_STATE,
-        CURRENT_FOLDER,
         SORT_MENU_IDS,
         SORT_MENU_IDS_ENABLED,
         CHECKED_SORT_MENU_ID,
         CHECKED_VIEW_MENU_ID,
         MENU_ID_CLICKED_FUNCTION,
         NAVIGATE_BACK_RUNNABLE,
-        FAKE_SELECTION_STATE_CHANGE
+        FAKE_SELECTION_STATE_CHANGE,
+        SELECTION_MODE_SHOW_EDIT,
+        SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB,
+        SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
+        SELECTION_MODE_SHOW_MOVE,
+        SELECTION_MODE_SHOW_MARK_READ,
+        SELECTION_MODE_SHOW_MARK_UNREAD
     };
 }

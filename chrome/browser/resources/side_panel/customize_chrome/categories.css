@@ -1,0 +1,227 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit cr-icons-lit sp-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+sp-heading {
+  margin: 0 0 8px;
+}
+
+cr-grid {
+  --cr-column-width: 1fr;
+  --cr-grid-gap: 8px;
+  display: block;
+  padding: 0 var(--sp-card-inline-padding) 16px;
+}
+
+.tile {
+  cursor: pointer;
+  grid-column: span 2;
+  outline-width: 0;
+  place-self: stretch;
+}
+
+.image-container {
+  background-color: var(--color-side-panel-customize-chrome-theme-background);
+  overflow: hidden;
+  padding-top: 100%;
+  position: relative;
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  .image-container {
+    border: 1px solid var(--google-grey-700);
+  }
+}
+
+#cornerNewTabPageTile {
+  background-color: rgb( 211, 227, 253);
+  border: solid 1px
+      var(--color-side-panel-customize-chrome-corner-ntp-border);
+}
+
+#uploadImageTile .image-container,
+#wallpaperSearchTile .image-container {
+  --cr-icon-color: var(
+      --color-side-panel-customize-chrome-custom-option-foreground);
+  background-color: var(
+      --color-side-panel-customize-chrome-custom-option-background);
+}
+
+#chromeWebStoreTile .image-container {
+  border: solid 1px
+      var(--color-side-panel-customize-chrome-web-store-border);
+}
+
+#chromeWebStoreTile .cr-icon {
+  --cr-icon-color: currentColor;
+}
+
+.image-container img,
+.image-container div,
+.image-container svg {
+  position: absolute;
+}
+
+.collection img {
+  height: 100%;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.label {
+  color: var(--cr-primary-text-color);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+  text-align: center;
+  overflow-wrap: break-word;
+}
+
+.tile:nth-of-type(-n+4) {
+  grid-column: span 3;
+  /* To result in an extra 10px vertical gap between large and small tiles. */
+  padding-block-end: 10px;
+  /* To result in an extra 8px vertical gap between first 4 tiles. */
+  padding-block-start: 4px;
+  /* To result in an extra 8px horizontal gap between first 4 tiles. */
+  padding-inline-end: 4px;
+}
+
+.tile:nth-of-type(-n+2) {
+  /* To result in an extra 8px vertical gap between first 4 tiles. */
+  padding-block-end: 4px;
+  padding-block-start: 0;
+}
+
+.tile:nth-of-type(-n+4):nth-of-type(even) {
+  padding-inline-end: 0;
+  /* To result in an extra 8px horizontal gap between first 4 tiles. */
+  padding-inline-start: 4px;
+}
+
+.tile:nth-of-type(-n+4) .image-container {
+  border-radius: 16px;
+}
+
+.tile:nth-of-type(-n+4) .label {
+  font-size: 12px;
+  line-height: 16px;
+  padding-top: 8px;
+}
+
+.image-container {
+  border-radius: 12px;
+}
+
+.label {
+  font-size: 11px;
+  line-height: 16px;
+  padding-top: 4px;
+}
+
+.icon-external {
+  --cr-icon-size: 13px;
+  display: inline-block;
+  height: 13px;
+  margin-bottom: -2px;
+  margin-inline-end: 4px;
+  margin-inline-start: 0;
+  width: 13px;
+}
+
+#uploadIcon {
+  --cr-icon-image: url(icons/upload.svg);
+  --cr-icon-size: 21px;
+  height: 21px;
+  left: 50%;
+  margin: 0;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 21px;
+}
+
+customize-chrome-wallpaper-search-tile {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#wallpaperSearchIcon {
+  --cr-icon-image: url(icons/generated_image.svg);
+  --cr-icon-size: 24px;
+  height: 24px;
+  left: 50%;
+  margin: 0;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+}
+
+#cornerNewTabPage {
+  border-radius: 4px;
+  box-shadow: var(--cr-elevation-2);
+  height: 100%;
+  left: 15.5%;
+  top: 15.5%;
+  width: 100%;
+}
+
+svg {
+  height: 100%;
+  top: 0;
+}
+
+#foreground {
+  fill: var(--google-blue-700);
+}
+
+#background {
+  fill: var(--google-blue-500);
+}
+
+#chromeWebStore {
+  height: 32px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+}
+
+.tile:nth-of-type(-n+4) customize-chrome-check-mark-wrapper {
+  --customize-chrome-check-mark-wrapper-end: -6px;
+  --customize-chrome-check-mark-wrapper-size: 28px;
+  --customize-chrome-check-mark-wrapper-top: -9px;
+}
+
+customize-chrome-check-mark-wrapper[checked] .image-container {
+  padding-top: calc(100% - 4px);
+  width: calc(100% - 4px);
+}
+
+:host-context(.focus-outline-visible) .tile:focus {
+  box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+}
+
+/* Set styles for high contrast mode in Windows. */
+@media (forced-colors: active) {
+  :host-context(.focus-outline-visible) .tile:focus {
+    /* Set outline to hcm (high contrast mode) value. */
+    outline: var(--cr-focus-outline-hcm);
+  }
+
+  #uploadIcon {
+    background-color: ButtonText;
+  }
+}

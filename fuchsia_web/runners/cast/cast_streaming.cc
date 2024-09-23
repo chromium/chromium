@@ -4,9 +4,9 @@
 
 #include "fuchsia_web/runners/cast/cast_streaming.h"
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "components/fuchsia_component_support/config_reader.h"
 
 namespace {

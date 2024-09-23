@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_CRX_CACHE_H_
 #define COMPONENTS_UPDATE_CLIENT_CRX_CACHE_H_
 
-#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"

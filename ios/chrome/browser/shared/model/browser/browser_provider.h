@@ -16,7 +16,8 @@ class Browser;
 // browser state) with the UI of the currently visible tab (the view controller)
 // and some other attributes as well.
 @protocol BrowserProvider
-// The active browser. This can never be nullptr.
+// The active browser. This can never be nullptr once the UI initialization has
+// completed, i.e. after the app init stage has passed InitStageNormalUI.
 @property(nonatomic, readonly) Browser* browser;
 // The inactive browser. This can be nullptr if in an incognito interface or if
 // Inactive Tabs is disabled.
@@ -24,14 +25,12 @@ class Browser;
 
 /*
  Properties that should be removed.
-  TODO(crbug.com/914306): The long-term goal is to reduce the size of this
+  TODO(crbug.com/40606165): The long-term goal is to reduce the size of this
   interface; this protocol allows for easy encapsulation of that process.
  */
 
 // Only used by the FirstRunSceneAgent.
 @property(nonatomic, readonly) UIViewController* viewController;
-// Only used once by MainController when clearing browsing data.
-- (void)setPrimary:(BOOL)primary;
 
 @end
 

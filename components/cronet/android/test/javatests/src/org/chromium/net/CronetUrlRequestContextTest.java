@@ -59,7 +59,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -1074,7 +1073,9 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-            reason = "Request finished listeners are only supported by native Cronet")
+            reason =
+                    "Request finished listeners not supported in Fallback, Active request count not"
+                            + " supported by AOSP.")
     public void testGetActiveRequestCountOnRequestFinishedListener() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
@@ -1099,7 +1100,9 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-            reason = "Request finished listeners are only supported by native Cronet")
+            reason =
+                    "Request finished listeners not supported in Fallback, Active request count not"
+                            + " supported by AOSP.")
     public void testGetActiveRequestCountOnThrowingRequestFinishedListener() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
@@ -1125,7 +1128,9 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-            reason = "Request finished listeners are only supported by native Cronet")
+            reason =
+                    "Request finished listeners not supported in Fallback, Active request count not"
+                            + " supported by AOSP.")
     public void testGetActiveRequestCountOnThrowingEngineRequestFinishedListener()
             throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
@@ -1150,7 +1155,9 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
-            reason = "Request finished listeners are only supported by native Cronet")
+            reason =
+                    "Request finished listeners not supported in Fallback, Active request count not"
+                            + " supported by AOSP.")
     public void testGetActiveRequestCountOnEngineRequestFinishedListener() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
@@ -2169,38 +2176,164 @@ public class CronetUrlRequestContextTest {
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
     }
 
+    @Test
+    @SmallTest
+    @RequiresMinApi(6) // setThreadPriority added in API 6: crrev.com/472449
+    public void testCronetEngineThreadPriority_invalidPriority_throwsException() {
+        CronetEngine.Builder builder =
+                mTestRule
+                        .getTestFramework()
+                        .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext());
+        // Try out of bounds thread priorities.
+        IllegalArgumentException e =
+                assertThrows(IllegalArgumentException.class, () -> builder.setThreadPriority(-21));
+        assertThat(e).hasMessageThat().isEqualTo("Thread priority invalid");
+
+        e = assertThrows(IllegalArgumentException.class, () -> builder.setThreadPriority(20));
+        assertThat(e).hasMessageThat().isEqualTo("Thread priority invalid");
+    }
+
+    @Test
+    @SmallTest
+    @RequiresMinApi(6) // setThreadPriority added in API 6: crrev.com/472449
+    public void testCronetEngineThreadPriority_viaUrlRequest_hasCorrectThreadPriority()
+            throws Exception {
+        // Test that valid thread priority range (-20..19) is working.
+        for (int threadPriority = -20; threadPriority < 20; threadPriority++) {
+            final FutureTask<Integer> task = getThreadPriorityTask();
+            CronetEngine engine =
+                    mTestRule
+                            .getTestFramework()
+                            .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext())
+                            .setThreadPriority(threadPriority)
+                            .build();
+            try {
+                postToNetworkThread(engine, task);
+                assertThat(task.get()).isEqualTo(threadPriority);
+            } finally {
+                engine.shutdown();
+            }
+        }
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "Fallback implementation doesn't support HTTP flags; AOSP doesn't have this"
+                        + " logic yet")
+    public void testCronetEngineThreadPriority_honorsHttpFlag() throws Exception {
+        final int flagValue = 13;
+        mTestRule
+                .getTestFramework()
+                .setHttpFlags(
+                        Flags.newBuilder()
+                                .putFlags(
+                                        CronetUrlRequestContext
+                                                .OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME,
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setIntValue(flagValue))
+                                                .build())
+                                .build());
+        CronetEngine engine =
+                mTestRule
+                        .getTestFramework()
+                        .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext())
+                        .build();
+        try {
+            final FutureTask<Integer> task = getThreadPriorityTask();
+            postToNetworkThread(engine, task);
+            assertThat(task.get()).isEqualTo(flagValue);
+        } finally {
+            engine.shutdown();
+        }
+    }
+
+    @Test
+    @SmallTest
+    @RequiresMinApi(6) // setThreadPriority added in API 6: crrev.com/472449
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "Fallback implementation doesn't support HTTP flags; AOSP doesn't have this"
+                        + " logic yet")
+    public void testCronetEngineThreadPriority_httpFlagOverridesBuilderOption() throws Exception {
+        final int flagValue = 13;
+        mTestRule
+                .getTestFramework()
+                .setHttpFlags(
+                        Flags.newBuilder()
+                                .putFlags(
+                                        CronetUrlRequestContext
+                                                .OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME,
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setIntValue(flagValue))
+                                                .build())
+                                .build());
+        CronetEngine engine =
+                mTestRule
+                        .getTestFramework()
+                        .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext())
+                        .setThreadPriority(flagValue - 1)
+                        .build();
+        try {
+            final FutureTask<Integer> task = getThreadPriorityTask();
+            postToNetworkThread(engine, task);
+            assertThat(task.get()).isEqualTo(flagValue);
+        } finally {
+            engine.shutdown();
+        }
+    }
+
+    @Test
+    @SmallTest
+    @RequiresMinApi(6) // setThreadPriority added in API 6: crrev.com/472449
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK},
+            reason = "BidirectionalStream not supported by fallback.")
+    public void testCronetEngineThreadPriority_viaBidirectionalStream_hasCorrectThreadPriority()
+            throws Exception {
+        // Test that valid thread priority range (-20..19) is working.
+        for (int threadPriority = -20; threadPriority < 20; threadPriority++) {
+            final FutureTask<Integer> task = getThreadPriorityTask();
+            CronetEngine engine =
+                    mTestRule
+                            .getTestFramework()
+                            .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext())
+                            .setThreadPriority(threadPriority)
+                            .build();
+            BidirectionalStream.Callback callback =
+                    new TestBidirectionalStreamCallback.SimpleSucceedingCallback() {
+                        @Override
+                        public void onFailed(
+                                BidirectionalStream request,
+                                UrlResponseInfo responseInfo,
+                                CronetException error) {
+                            task.run();
+                        }
+                    };
+            try {
+                // Request an invalid URL with a direct executor which results in onFailed()
+                // being called on the network thread.
+                engine.newBidirectionalStreamBuilder("", callback, Runnable::run).build().start();
+                assertThat(task.get()).isEqualTo(threadPriority);
+            } finally {
+                engine.shutdown();
+            }
+        }
+    }
+
     /** Runs {@code r} on {@code engine}'s network thread. */
     private static void postToNetworkThread(final CronetEngine engine, final Runnable r) {
         // Works by requesting an invalid URL which results in onFailed() being called, which is
         // done through a direct executor which causes onFailed to be run on the network thread.
-        Executor directExecutor =
-                new Executor() {
-                    @Override
-                    public void execute(Runnable runable) {
-                        runable.run();
-                    }
-                };
         UrlRequest.Callback callback =
-                new UrlRequest.Callback() {
-                    @Override
-                    public void onRedirectReceived(
-                            UrlRequest request,
-                            UrlResponseInfo responseInfo,
-                            String newLocationUrl) {}
-
-                    @Override
-                    public void onResponseStarted(
-                            UrlRequest request, UrlResponseInfo responseInfo) {}
-
-                    @Override
-                    public void onReadCompleted(
-                            UrlRequest request,
-                            UrlResponseInfo responseInfo,
-                            ByteBuffer byteBuffer) {}
-
-                    @Override
-                    public void onSucceeded(UrlRequest request, UrlResponseInfo responseInfo) {}
-
+                new TestUrlRequestCallback.SimpleSucceedingCallback() {
                     @Override
                     public void onFailed(
                             UrlRequest request,
@@ -2209,10 +2342,12 @@ public class CronetUrlRequestContextTest {
                         r.run();
                     }
                 };
-        engine.newUrlRequestBuilder("", callback, directExecutor).build().start();
+        engine.newUrlRequestBuilder("", callback, Runnable::run).build().start();
     }
 
-    /** @returns the thread priority of {@code engine}'s network thread. */
+    /**
+     * @returns the thread priority of {@code engine}'s network thread.
+     */
     private static class ApiHelper {
         public static boolean doesContextExistForNetwork(CronetEngine engine, Network network)
                 throws Exception {
@@ -2230,18 +2365,17 @@ public class CronetUrlRequestContextTest {
         }
     }
 
-    /** @returns the thread priority of {@code engine}'s network thread. */
-    private int getThreadPriority(CronetEngine engine) throws Exception {
-        FutureTask<Integer> task =
-                new FutureTask<Integer>(
-                        new Callable<Integer>() {
-                            @Override
-                            public Integer call() {
-                                return Process.getThreadPriority(Process.myTid());
-                            }
-                        });
-        postToNetworkThread(engine, task);
-        return task.get();
+    /**
+     * @returns the thread priority of {@code engine}'s network thread.
+     */
+    private FutureTask<Integer> getThreadPriorityTask() {
+        return new FutureTask<Integer>(
+                new Callable<Integer>() {
+                    @Override
+                    public Integer call() {
+                        return Process.getThreadPriority(Process.myTid());
+                    }
+                });
     }
 
     /**
@@ -2253,37 +2387,6 @@ public class CronetUrlRequestContextTest {
     private static void waitForActiveRequestCount(CronetEngine engine, int expectedCount)
             throws Exception {
         while (engine.getActiveRequestCount() != expectedCount) Thread.sleep(100);
-    }
-
-    @Test
-    @SmallTest
-    @RequiresMinApi(6) // setThreadPriority added in API 6: crrev.com/472449
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason = "ThreadPriority is not available in AOSP")
-    public void testCronetEngineThreadPriority() throws Exception {
-        ExperimentalCronetEngine.Builder builder =
-                mTestRule
-                        .getTestFramework()
-                        .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext());
-        // Try out of bounds thread priorities.
-        IllegalArgumentException e =
-                assertThrows(IllegalArgumentException.class, () -> builder.setThreadPriority(-21));
-        assertThat(e).hasMessageThat().isEqualTo("Thread priority invalid");
-
-        e = assertThrows(IllegalArgumentException.class, () -> builder.setThreadPriority(20));
-        assertThat(e).hasMessageThat().isEqualTo("Thread priority invalid");
-
-        // Test that valid thread priority range (-20..19) is working.
-        for (int threadPriority = -20; threadPriority < 20; threadPriority++) {
-            builder.setThreadPriority(threadPriority);
-            CronetEngine engine = builder.build();
-            try {
-                assertThat(getThreadPriority(engine)).isEqualTo(threadPriority);
-            } finally {
-                engine.shutdown();
-            }
-        }
     }
 
     @NativeMethods("cronet_tests")

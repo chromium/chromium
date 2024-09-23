@@ -6,7 +6,6 @@
 
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
-#include "content/browser/notification_service_impl.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -24,8 +23,6 @@ TestContentClientInitializer::TestContentClientInitializer() {
   SetNetworkConnectionTrackerForTesting(
       network::TestNetworkConnectionTracker::GetInstance());
 
-  notification_service_ = std::make_unique<NotificationServiceImpl>();
-
   content_client_ = std::make_unique<TestContentClient>();
   SetContentClient(content_client_.get());
 
@@ -39,7 +36,6 @@ TestContentClientInitializer::~TestContentClientInitializer() {
   browser_accessibility_state_.reset();
   test_render_view_host_factory_.reset();
   rph_factory_.reset();
-  notification_service_.reset();
 
   SetContentClient(nullptr);
   content_client_.reset();

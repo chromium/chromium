@@ -6,6 +6,7 @@
 
 import argparse
 import os
+import pathlib
 import sys
 
 from util import build_utils
@@ -31,6 +32,10 @@ def _FilterUnusedResources(r_text_in, r_text_out, unused_resources_config):
 
   with open(r_text_out, 'w', encoding='utf-8') as out_file:
     out_file.writelines(kept_lines)
+
+
+def _WritePaths(dest_path, lines):
+  pathlib.Path(dest_path).write_text('\n'.join(lines) + '\n')
 
 
 def main(args):
@@ -78,16 +83,26 @@ def main(args):
     for dependency_res_zip in options.dependencies_res_zips:
       dep_subdirs += resource_utils.ExtractDeps([dependency_res_zip], temp_dir)
 
+    # Use files for paths to avoid command line getting too long.
+    # https://crbug.com/362019371
+    manifests_file = os.path.join(temp_dir, 'manifests-inputs.txt')
+    resources_file = os.path.join(temp_dir, 'resources-inputs.txt')
+    dexes_file = os.path.join(temp_dir, 'dexes-inputs.txt')
+
+    _WritePaths(manifests_file, options.android_manifests)
+    _WritePaths(resources_file, dep_subdirs)
+    _WritePaths(dexes_file, options.dexes)
+
     cmd = [
         options.script,
         '--rtxts',
         options.r_text_in,
         '--manifests',
-        ':'.join(options.android_manifests),
+        manifests_file,
         '--resourceDirs',
-        ':'.join(dep_subdirs),
+        resources_file,
         '--dexes',
-        ':'.join(options.dexes),
+        dexes_file,
         '--outputConfig',
         options.output_config,
     ]

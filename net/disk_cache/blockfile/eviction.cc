@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // The eviction policy is a very simple pure LRU, so the elements at the end of
 // the list are evicted until kCleanUpMargin free space is available. There is
 // only one list in use (Rankings::NO_USE), and elements are sent to the front
@@ -419,7 +424,7 @@ void Eviction::OnCreateEntryV2(EntryImpl* entry) {
       break;
     };
     default:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED();
   }
 
   rankings_->Insert(entry->rankings(), true, GetListForEntryV2(entry));

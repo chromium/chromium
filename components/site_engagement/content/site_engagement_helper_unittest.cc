@@ -104,7 +104,7 @@ class SiteEngagementHelperTest : public content::RenderViewHostTestHarness {
         event = std::make_unique<blink::WebTouchEvent>();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     event->SetType(type);
     helper->input_tracker_.DidGetUserInteraction(*event);

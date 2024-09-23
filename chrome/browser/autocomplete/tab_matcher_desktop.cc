@@ -79,7 +79,7 @@ bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
   const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
       url, *input, template_url_service_, std::u16string(),
       keep_search_intent_params, normalize_search_terms);
-  for (auto* web_contents : GetOpenTabs()) {
+  for (auto* web_contents : GetOpenWebContents()) {
     if (IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents,
                                            keep_search_intent_params,
                                            normalize_search_terms)) {
@@ -89,7 +89,18 @@ bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
   return false;
 }
 
-std::vector<content::WebContents*> TabMatcherDesktop::GetOpenTabs() const {
+std::vector<TabMatcher::TabWrapper> TabMatcherDesktop::GetOpenTabs() const {
+  std::vector<TabMatcher::TabWrapper> open_tabs;
+  for (auto* web_contents : GetOpenWebContents()) {
+    open_tabs.emplace_back(web_contents->GetTitle(),
+                           web_contents->GetLastCommittedURL());
+  }
+
+  return open_tabs;
+}
+
+std::vector<content::WebContents*> TabMatcherDesktop::GetOpenWebContents()
+    const {
   Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
   content::WebContents* active_tab = nullptr;
   if (active_browser)

@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "android_webview/browser/permission/aw_permission_request_delegate.h"
-#include "android_webview/browser_jni_headers/AwPermissionRequest_jni.h"
 #include "base/android/jni_string.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwPermissionRequest_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
@@ -39,7 +41,7 @@ AwPermissionRequest::AwPermissionRequest(
   *java_peer = Java_AwPermissionRequest_create(
       env, reinterpret_cast<jlong>(this),
       ConvertUTF8ToJavaString(env, GetOrigin().spec()), GetResources());
-  java_ref_ = JavaObjectWeakGlobalRef(env, java_peer->obj());
+  java_ref_ = JavaObjectWeakGlobalRef(env, *java_peer);
 }
 
 AwPermissionRequest::~AwPermissionRequest() {

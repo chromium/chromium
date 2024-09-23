@@ -213,15 +213,12 @@ Image Image::CreateFrom1xBitmap(const SkBitmap& bitmap) {
 }
 
 // static
-Image Image::CreateFrom1xPNGBytes(const unsigned char* input,
-                                  size_t input_size) {
-  if (input_size == 0u)
+Image Image::CreateFrom1xPNGBytes(base::span<const uint8_t> input) {
+  if (input.empty()) {
     return Image();
-
-  scoped_refptr<base::RefCountedBytes> raw_data(new base::RefCountedBytes());
-  raw_data->data().assign(input, input + input_size);
-
-  return CreateFrom1xPNGBytes(raw_data);
+  }
+  return CreateFrom1xPNGBytes(
+      base::MakeRefCounted<base::RefCountedBytes>(input));
 }
 
 Image Image::CreateFrom1xPNGBytes(
@@ -270,7 +267,7 @@ const ImageSkia* Image::ToImageSkia() const {
       }
 #endif
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     CHECK(scoped_rep);
     rep = AddRepresentation(std::move(scoped_rep));
@@ -299,7 +296,7 @@ UIImage* Image::ToUIImage() const {
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     CHECK(scoped_rep);
     rep = AddRepresentation(std::move(scoped_rep));
@@ -328,7 +325,7 @@ NSImage* Image::ToNSImage() const {
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     CHECK(scoped_rep);
     rep = AddRepresentation(std::move(scoped_rep));
@@ -379,7 +376,7 @@ scoped_refptr<base::RefCountedMemory> Image::As1xPNGBytes() const {
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   if (!png_bytes.get() || !png_bytes->size()) {
     // Add an ImageRepPNG with no data such that the conversion is not

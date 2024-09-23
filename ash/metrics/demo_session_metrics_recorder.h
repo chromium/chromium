@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/constants/app_types.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chromeos/ui/base/app_types.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
@@ -134,7 +134,7 @@ class ASH_EXPORT DemoSessionMetricsRecorder
 
   // Records the specified app's launch, subject to the
   // restrictions of ShouldRecordAppLaunch().
-  void RecordAppLaunch(const std::string& id, AppType app_type);
+  void RecordAppLaunch(const std::string& id, chromeos::AppType app_type);
 
   // Emits various histograms for unique apps launched.
   void ReportUniqueAppsLaunched();

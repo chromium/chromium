@@ -22,12 +22,29 @@ class TokenServiceTable : public WebDatabaseTable {
     TOKEN_DB_RESULT_SUCCESS
   };
 
-  TokenServiceTable() {}
+  struct TokenWithBindingKey {
+    std::string token;
+    std::vector<uint8_t> wrapped_binding_key;
+
+    TokenWithBindingKey();
+    explicit TokenWithBindingKey(std::string token,
+                                 std::vector<uint8_t> wrapped_binding_key = {});
+
+    TokenWithBindingKey(const TokenWithBindingKey&);
+    TokenWithBindingKey& operator=(const TokenWithBindingKey&);
+
+    ~TokenWithBindingKey();
+
+    friend bool operator==(const TokenWithBindingKey&,
+                           const TokenWithBindingKey&) = default;
+  };
+
+  TokenServiceTable();
 
   TokenServiceTable(const TokenServiceTable&) = delete;
   TokenServiceTable& operator=(const TokenServiceTable&) = delete;
 
-  ~TokenServiceTable() override {}
+  ~TokenServiceTable() override;
 
   // Retrieves the TokenServiceTable* owned by |database|.
   static TokenServiceTable* FromWebDatabase(WebDatabase* db);
@@ -44,13 +61,21 @@ class TokenServiceTable : public WebDatabaseTable {
 
   // Retrieves all tokens previously set with SetTokenForService.
   // Returns true if there were tokens and we decrypted them,
-  // false if there was a failure somehow
-  Result GetAllTokens(std::map<std::string, std::string>* tokens);
+  // false if there was a failure somehow. If `should_reencrypt` is set to true,
+  // then `SetTokenForService` should be called to write newly encrypted values
+  // to storage.
+  Result GetAllTokens(std::map<std::string, TokenWithBindingKey>* tokens,
+                      bool& should_reencrypt);
 
-  // Store a token in the token_service table. Stored encrypted. May cause
-  // a mac keychain popup.
-  // True if we encrypted a token and stored it, false otherwise.
-  bool SetTokenForService(const std::string& service, const std::string& token);
+  // Stores a token with an optional binding key in the token_service table.
+  // Token is stored encrypted. May cause a mac keychain popup.
+  // Returns true if we encrypted a token and stored it, false otherwise.
+  bool SetTokenForService(const std::string& service,
+                          const std::string& token,
+                          const std::vector<uint8_t>& wrapped_binding_key);
+
+ private:
+  bool MigrateToVersion130AddBindingKeyColumn();
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_WEBDATA_TOKEN_SERVICE_TABLE_H_

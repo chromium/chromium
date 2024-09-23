@@ -5,18 +5,15 @@
 #ifndef BASE_THREADING_THREAD_RESTRICTIONS_H_
 #define BASE_THREADING_THREAD_RESTRICTIONS_H_
 
+#include <optional>
+
 #include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/dcheck_is_on.h"
+#include "base/debug/stack_trace.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
 #include "build/build_config.h"
-
-#if DCHECK_IS_ON()
-#include "base/debug/stack_trace.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#endif
 
 // -----------------------------------------------------------------------------
 // Usage documentation
@@ -140,19 +137,27 @@ class ProfileImpl;
 class ScopedAllowBlockingForProfile;
 class StartupTabProviderImpl;
 class WebEngineBrowserMainParts;
+struct StartupProfilePathInfo;
 
 namespace base {
 class Environment;
 class File;
 class FilePath;
+class CommandLine;
 namespace sequence_manager::internal {
 class WorkTracker;
 }  // namespace sequence_manager::internal
 }  // namespace base
 
-bool EnsureBrowserStateDirectoriesCreated(const base::FilePath&,
-                                          const base::FilePath&,
-                                          const base::FilePath&);
+StartupProfilePathInfo GetStartupProfilePath(
+    const base::FilePath& cur_dir,
+    const base::CommandLine& command_line,
+    bool ignore_profile_picker);
+
+#if BUILDFLAG(IS_IOS)
+class BrowserStateDirectoryBuilder;
+#endif
+
 Profile* GetLastProfileMac();
 bool HasWaylandDisplay(base::Environment* env);
 
@@ -161,6 +166,7 @@ class AwBrowserContext;
 class AwFormDatabaseService;
 class CookieManager;
 class JsSandboxIsolate;
+class OverlayProcessorWebView;
 class ScopedAllowInitGLBindings;
 class VizCompositorThreadRunnerWebView;
 }  // namespace android_webview
@@ -175,6 +181,7 @@ class MojoUtils;
 }
 namespace system {
 class StatisticsProviderImpl;
+class ProcStatFile;
 }  // namespace system
 }  // namespace ash
 namespace audio {
@@ -304,8 +311,11 @@ namespace leveldb::port {
 class CondVar;
 }  // namespace leveldb::port
 namespace nearby::chrome {
+class BleV2GattClient;
+class BleV2Medium;
 class ScheduledExecutor;
 class SubmittableExecutor;
+class WifiDirectSocket;
 }  // namespace nearby::chrome
 namespace media {
 class AudioInputDevice;
@@ -320,9 +330,10 @@ template <class WorkerInterface,
           WorkerStatus StatusWork>
 class CodecWorkerImpl;
 class FileVideoCaptureDeviceFactory;
+class GpuMojoMediaClientWin;
 class MojoVideoEncodeAccelerator;
 class PaintCanvasVideoRenderer;
-class V4L2DevicePoller;  // TODO(1513721): remove this.
+class V4L2DevicePoller;  // TODO(crbug.com/41486289): remove this.
 }  // namespace media
 namespace memory_instrumentation {
 class OSMetrics;
@@ -341,7 +352,6 @@ namespace module_installer {
 class ScopedAllowModulePakLoad;
 }
 namespace mojo {
-class CoreLibraryInitializer;
 class SyncCallRestrictions;
 namespace core {
 class ScopedIPCSupport;
@@ -360,6 +370,7 @@ class ProxyConfigServiceWin;
 class ScopedAllowBlockingForSettingGetter;
 namespace internal {
 class AddressTrackerLinux;
+class PemFileCertStore;
 }
 }  // namespace net
 namespace printing {
@@ -421,6 +432,9 @@ class SystemctlLauncherScopedAllowBaseSyncPrimitives;
 namespace viz {
 class HostGpuMemoryBufferManager;
 class ClientGpuMemoryBufferManager;
+class DisplayCompositorMemoryAndTaskController;
+class SkiaOutputSurfaceImpl;
+class SharedImageInterfaceProvider;
 }  // namespace viz
 namespace vr {
 class VrShell;
@@ -487,76 +501,66 @@ class StackSamplingProfiler;
 class TestCustomDisallow;
 class Thread;
 
-#if DCHECK_IS_ON()
-// NOT_TAIL_CALLED if dcheck-is-on so it's always evident who irrevocably
-// altered the allowance (dcheck-builds will provide the setter's stack on
-// assertion) or who made a failing Assert*() call.
-#define INLINE_OR_NOT_TAIL_CALLED NOT_TAIL_CALLED BASE_EXPORT
-#define EMPTY_BODY_IF_DCHECK_IS_OFF
-#define DEFAULT_IF_DCHECK_IS_OFF
+// NaCL doesn't support stack capture.
+// Android can hang in stack capture (crbug.com/959139).
+#if BUILDFLAG(IS_NACL) || BUILDFLAG(IS_ANDROID)
+#define CAPTURE_THREAD_RESTRICTIONS_STACK_TRACES() false
+#else
+// Stack capture is slow. Only enable it in developer builds, to avoid user
+// visible jank when thread restrictions are set.
+#define CAPTURE_THREAD_RESTRICTIONS_STACK_TRACES() EXPENSIVE_DCHECKS_ARE_ON()
+#endif
 
-class BooleanWithStack {
+// A boolean and the stack from which it was set. Note: The stack is not
+// captured in all builds, see `CAPTURE_THREAD_RESTRICTIONS_STACK_TRACES()`.
+class BooleanWithOptionalStack {
  public:
   // Default value.
-  BooleanWithStack() = default;
+  BooleanWithOptionalStack() = default;
 
   // Value when explicitly set.
-  explicit BooleanWithStack(bool value);
+  explicit BooleanWithOptionalStack(bool value);
 
   explicit operator bool() const { return value_; }
 
   friend std::ostream& operator<<(std::ostream& out,
-                                  const BooleanWithStack& bws);
+                                  const BooleanWithOptionalStack& bws);
 
  private:
   bool value_ = false;
-  absl::optional<debug::StackTrace> stack_;
+#if CAPTURE_THREAD_RESTRICTIONS_STACK_TRACES()
+  std::optional<debug::StackTrace> stack_;
+#endif
 };
-
-#else
-// inline if dcheck-is-off so it's no overhead
-#define INLINE_OR_NOT_TAIL_CALLED inline
-
-// The static_assert() eats follow-on semicolons.
-#define EMPTY_BODY_IF_DCHECK_IS_OFF \
-  {}                                \
-  static_assert(true)
-
-#define DEFAULT_IF_DCHECK_IS_OFF = default
-#endif  // DCHECK_IS_ON()
 
 namespace internal {
 
 // Asserts that blocking calls are allowed in the current scope. This is an
 // internal call, external code should use ScopedBlockingCall instead, which
 // serves as a precise annotation of the scope that may/will block.
-INLINE_OR_NOT_TAIL_CALLED void AssertBlockingAllowed()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
-INLINE_OR_NOT_TAIL_CALLED void AssertBlockingDisallowedForTesting()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void AssertBlockingAllowed();
+NOT_TAIL_CALLED BASE_EXPORT void AssertBlockingDisallowedForTesting();
 
 }  // namespace internal
 
 // Disallows blocking on the current thread.
-INLINE_OR_NOT_TAIL_CALLED void DisallowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void DisallowBlocking();
 
 // Disallows blocking calls within its scope.
-class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedDisallowBlocking {
+class BASE_EXPORT ScopedDisallowBlocking {
  public:
-  ScopedDisallowBlocking() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedDisallowBlocking();
 
   ScopedDisallowBlocking(const ScopedDisallowBlocking&) = delete;
   ScopedDisallowBlocking& operator=(const ScopedDisallowBlocking&) = delete;
 
-  ~ScopedDisallowBlocking() DEFAULT_IF_DCHECK_IS_OFF;
+  ~ScopedDisallowBlocking();
 
  private:
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> resetter_;
 };
 
-class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
+class BASE_EXPORT ScopedAllowBlocking {
  public:
   ScopedAllowBlocking(const ScopedAllowBlocking&) = delete;
   ScopedAllowBlocking& operator=(const ScopedAllowBlocking&) = delete;
@@ -586,6 +590,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   friend class ash::StartupCustomizationDocument;  // http://crosbug.com/11103
   friend class ash::StartupUtils;
   friend class ash::converters::diagnostics::MojoUtils;  // http://b/322741627
+  friend class ash::system::ProcStatFile;
   friend class base::AdjustOOMScoreHelper;
   friend class base::ChromeOSVersionInfo;
   friend class base::Process;
@@ -625,11 +630,11 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   friend class metrics::AndroidMetricsServiceClient;
   friend class metrics::CleanExitBeacon;
   friend class module_installer::ScopedAllowModulePakLoad;
-  friend class mojo::CoreLibraryInitializer;
   friend class net::GSSAPISharedLibrary;    // http://crbug.com/66702
   friend class net::ProxyConfigServiceWin;  // http://crbug.com/61453
   friend class net::
       ScopedAllowBlockingForSettingGetter;  // http://crbug.com/69057
+  friend class net::internal::PemFileCertStore;
   friend class printing::LocalPrinterHandlerDefault;
   friend class printing::PrintBackendServiceManager;
   friend class printing::PrintPreviewUIUntrusted;
@@ -653,13 +658,20 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
 #if BUILDFLAG(IS_WIN)
   friend class base::win::OSInfo;
   friend class content::WebContentsImpl;  // http://crbug.com/1262162
+  friend class media::GpuMojoMediaClientWin;  // https://crbug.com/360642944
+#endif
+#if BUILDFLAG(IS_IOS)
+  friend class ::BrowserStateDirectoryBuilder;
 #endif
 
   // Sorted by function name (with namespace), ignoring the return type.
-  friend bool ::EnsureBrowserStateDirectoriesCreated(const base::FilePath&,
-                                                     const base::FilePath&,
-                                                     const base::FilePath&);
   friend Profile* ::GetLastProfileMac();  // http://crbug.com/1176734
+  // Note: This function return syntax is required so the "::" doesn't get
+  // mis-parsed. See https://godbolt.org/z/KGhnPxfc8 for the issue.
+  friend auto ::GetStartupProfilePath(const base::FilePath& cur_dir,
+                                      const base::CommandLine& command_line,
+                                      bool ignore_profile_picker)
+      -> StartupProfilePathInfo;
   friend bool ::HasWaylandDisplay(
       base::Environment* env);  // http://crbug.com/1246928
   friend bool ash::CameraAppUIShouldEnableLocalOverride(const std::string&);
@@ -679,12 +691,10 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   ScopedAllowBlocking(const Location& from_here = Location::Current());
   ~ScopedAllowBlocking();
 
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> resetter_;
 };
 
-class [[maybe_unused, nodiscard]] ScopedAllowBlockingForTesting {
+class ScopedAllowBlockingForTesting {
  public:
   ScopedAllowBlockingForTesting() = default;
 
@@ -695,33 +705,28 @@ class [[maybe_unused, nodiscard]] ScopedAllowBlockingForTesting {
   ~ScopedAllowBlockingForTesting() = default;
 
  private:
-#if DCHECK_IS_ON()
   ScopedAllowBlocking scoped_allow_blocking_;
-#endif
 };
 
-INLINE_OR_NOT_TAIL_CALLED void DisallowBaseSyncPrimitives()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void DisallowBaseSyncPrimitives();
 
 // Disallows singletons within its scope.
-class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedDisallowBaseSyncPrimitives {
+class BASE_EXPORT ScopedDisallowBaseSyncPrimitives {
  public:
-  ScopedDisallowBaseSyncPrimitives() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedDisallowBaseSyncPrimitives();
 
   ScopedDisallowBaseSyncPrimitives(const ScopedDisallowBaseSyncPrimitives&) =
       delete;
   ScopedDisallowBaseSyncPrimitives& operator=(
       const ScopedDisallowBaseSyncPrimitives&) = delete;
 
-  ~ScopedDisallowBaseSyncPrimitives() DEFAULT_IF_DCHECK_IS_OFF;
+  ~ScopedDisallowBaseSyncPrimitives();
 
  private:
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> resetter_;
 };
 
-class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
+class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
  public:
   ScopedAllowBaseSyncPrimitives(const ScopedAllowBaseSyncPrimitives&) = delete;
   ScopedAllowBaseSyncPrimitives& operator=(
@@ -764,6 +769,9 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   friend class leveldb::port::CondVar;
   friend class nearby::chrome::ScheduledExecutor;
   friend class nearby::chrome::SubmittableExecutor;
+  friend class nearby::chrome::BleV2GattClient;
+  friend class nearby::chrome::BleV2Medium;
+  friend class nearby::chrome::WifiDirectSocket;
   friend class media::AudioOutputDevice;
   friend class media::BlockingUrlProtocol;
   template <class WorkerInterface,
@@ -788,14 +796,18 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   // Usage that should be fixed:
   // Sorted by class name (with namespace).
   friend class ::NativeBackendKWallet;  // http://crbug.com/125331
+  friend class android_webview::
+      OverlayProcessorWebView;                     // http://crbug.com/341151462
   friend class blink::VideoFrameResourceProvider;  // http://crbug.com/878070
+  friend class viz::
+      DisplayCompositorMemoryAndTaskController;  // http://crbug.com/341151462
+  friend class viz::SkiaOutputSurfaceImpl;       // http://crbug.com/341151462
+  friend class viz::SharedImageInterfaceProvider;  // http://crbug.com/341151462
 
-  ScopedAllowBaseSyncPrimitives() DEFAULT_IF_DCHECK_IS_OFF;
-  ~ScopedAllowBaseSyncPrimitives() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedAllowBaseSyncPrimitives();
+  ~ScopedAllowBaseSyncPrimitives();
 
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> resetter_;
 };
 
 class BASE_EXPORT
@@ -855,7 +867,8 @@ class BASE_EXPORT
   friend class media::AudioInputDevice;
   friend class media::AudioOutputDevice;
   friend class media::PaintCanvasVideoRenderer;
-  friend class media::V4L2DevicePoller;  // TODO(1513721): remove this.
+  friend class media::V4L2DevicePoller;  // TODO(crbug.com/41486289): remove
+                                         // this.
   friend class mojo::SyncCallRestrictions;
   friend class mojo::core::ipcz_driver::MojoTrap;
   friend class net::NetworkConfigWatcherAppleThread;
@@ -902,9 +915,7 @@ class BASE_EXPORT
 
   ~ScopedAllowBaseSyncPrimitivesOutsideBlockingScope();
 
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> resetter_;
 };
 
 // Allow base-sync-primitives in tests, doesn't require explicit friend'ing like
@@ -912,89 +923,76 @@ class BASE_EXPORT
 // Note: For WaitableEvents in the test logic, base::TestWaitableEvent is
 // exposed as a convenience to avoid the need for
 // ScopedAllowBaseSyncPrimitivesForTesting.
-class BASE_EXPORT
-    [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitivesForTesting {
+class BASE_EXPORT ScopedAllowBaseSyncPrimitivesForTesting {
  public:
-  ScopedAllowBaseSyncPrimitivesForTesting() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedAllowBaseSyncPrimitivesForTesting();
 
   ScopedAllowBaseSyncPrimitivesForTesting(
       const ScopedAllowBaseSyncPrimitivesForTesting&) = delete;
   ScopedAllowBaseSyncPrimitivesForTesting& operator=(
       const ScopedAllowBaseSyncPrimitivesForTesting&) = delete;
 
-  ~ScopedAllowBaseSyncPrimitivesForTesting() DEFAULT_IF_DCHECK_IS_OFF;
+  ~ScopedAllowBaseSyncPrimitivesForTesting();
 
  private:
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> resetter_;
 };
 
 // Counterpart to base::DisallowUnresponsiveTasks() for tests to allow them to
 // block their thread after it was banned.
-class BASE_EXPORT
-    [[maybe_unused, nodiscard]] ScopedAllowUnresponsiveTasksForTesting {
+class BASE_EXPORT ScopedAllowUnresponsiveTasksForTesting {
  public:
-  ScopedAllowUnresponsiveTasksForTesting() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedAllowUnresponsiveTasksForTesting();
 
   ScopedAllowUnresponsiveTasksForTesting(
       const ScopedAllowUnresponsiveTasksForTesting&) = delete;
   ScopedAllowUnresponsiveTasksForTesting& operator=(
       const ScopedAllowUnresponsiveTasksForTesting&) = delete;
 
-  ~ScopedAllowUnresponsiveTasksForTesting() DEFAULT_IF_DCHECK_IS_OFF;
+  ~ScopedAllowUnresponsiveTasksForTesting();
 
  private:
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> base_sync_resetter_;
-  const AutoReset<BooleanWithStack> blocking_resetter_;
-  const AutoReset<BooleanWithStack> cpu_resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> base_sync_resetter_;
+  const AutoReset<BooleanWithOptionalStack> blocking_resetter_;
+  const AutoReset<BooleanWithOptionalStack> cpu_resetter_;
 };
 
 namespace internal {
 
 // Asserts that waiting on a //base sync primitive is allowed in the current
 // scope.
-INLINE_OR_NOT_TAIL_CALLED void AssertBaseSyncPrimitivesAllowed()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void AssertBaseSyncPrimitivesAllowed();
 
 // Resets all thread restrictions on the current thread.
-INLINE_OR_NOT_TAIL_CALLED void ResetThreadRestrictionsForTesting()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
+BASE_EXPORT void ResetThreadRestrictionsForTesting();
 
 // Check whether the current thread is allowed to use singletons (Singleton /
 // LazyInstance).  DCHECKs if not.
-INLINE_OR_NOT_TAIL_CALLED void AssertSingletonAllowed()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void AssertSingletonAllowed();
 
 }  // namespace internal
 
 // Disallow using singleton on the current thread.
-INLINE_OR_NOT_TAIL_CALLED void DisallowSingleton() EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void DisallowSingleton();
 
 // Disallows singletons within its scope.
-class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedDisallowSingleton {
+class BASE_EXPORT ScopedDisallowSingleton {
  public:
-  ScopedDisallowSingleton() DEFAULT_IF_DCHECK_IS_OFF;
+  ScopedDisallowSingleton();
 
   ScopedDisallowSingleton(const ScopedDisallowSingleton&) = delete;
   ScopedDisallowSingleton& operator=(const ScopedDisallowSingleton&) = delete;
 
-  ~ScopedDisallowSingleton() DEFAULT_IF_DCHECK_IS_OFF;
+  ~ScopedDisallowSingleton();
 
  private:
-#if DCHECK_IS_ON()
-  const AutoReset<BooleanWithStack> resetter_;
-#endif
+  const AutoReset<BooleanWithOptionalStack> resetter_;
 };
 
 // Asserts that running long CPU work is allowed in the current scope.
-INLINE_OR_NOT_TAIL_CALLED void AssertLongCPUWorkAllowed()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void AssertLongCPUWorkAllowed();
 
-INLINE_OR_NOT_TAIL_CALLED void DisallowUnresponsiveTasks()
-    EMPTY_BODY_IF_DCHECK_IS_OFF;
+NOT_TAIL_CALLED BASE_EXPORT void DisallowUnresponsiveTasks();
 
 // Friend-only methods to permanently allow the current thread to use
 // blocking/sync-primitives calls. Threads start out in the *allowed* state but
@@ -1018,13 +1016,9 @@ class BASE_EXPORT PermanentThreadAllowance {
 #endif  // BUILDFLAG(IS_IOS)
   friend class web::WebMainLoop;
 
-  static void AllowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
-  static void AllowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
+  static void AllowBlocking();
+  static void AllowBaseSyncPrimitives();
 };
-
-#undef INLINE_OR_NOT_TAIL_CALLED
-#undef EMPTY_BODY_IF_DCHECK_IS_OFF
-#undef DEFAULT_IF_DCHECK_IS_OFF
 
 }  // namespace base
 

@@ -39,7 +39,7 @@ ui::EventDispatchDetails MultipleTapDetector::RewriteEvent(
   }
 
   const ui::TouchEvent& touch_event = static_cast<const ui::TouchEvent&>(event);
-  if (event.type() == ui::ET_TOUCH_PRESSED) {
+  if (event.type() == ui::EventType::kTouchPressed) {
     // If a press happened again before the minimum inter-tap interval, cancel
     // the detection.
     if (tap_state_ == MultiTapState::INTERVAL_WAIT &&
@@ -85,7 +85,7 @@ ui::EventDispatchDetails MultipleTapDetector::RewriteEvent(
   }
 
   // Finger was released while we were waiting for one, count it as a tap.
-  if (touch_event.type() == ui::ET_TOUCH_RELEASED &&
+  if (touch_event.type() == ui::EventType::kTouchReleased &&
       tap_state_ == MultiTapState::TOUCH) {
     tap_state_ = MultiTapState::INTERVAL_WAIT;
     triple_tap_timer_.Start(FROM_HERE,
@@ -101,7 +101,7 @@ ui::EventDispatchDetails MultipleTapDetector::RewriteEvent(
       ui::EventDispatchDetails details;
       for (const auto& it : stashed_events_) {
         ui::TouchEvent cancel_event(
-            ui::ET_TOUCH_CANCELLED, it.event.location_f(),
+            ui::EventType::kTouchCancelled, it.event.location_f(),
             it.event.root_location_f(), it.event.time_stamp(),
             it.event.pointer_details(), it.event.flags());
         details = SendEvent(it.continuation, &cancel_event);
@@ -126,7 +126,7 @@ void MultipleTapDetector::OnTapIntervalTimerFired() {
     if (!stashed_events_.empty()) {
       Stash& stash = stashed_events_.front();
       ui::TouchEvent cancel_event(
-          ui::ET_TOUCH_CANCELLED, stash.event.location_f(),
+          ui::EventType::kTouchCancelled, stash.event.location_f(),
           stash.event.root_location_f(), base::TimeTicks::Now(),
           stash.event.pointer_details(), stash.event.flags());
       DCHECK(

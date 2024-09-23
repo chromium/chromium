@@ -13,7 +13,6 @@ import android.content.res.Resources;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -23,23 +22,18 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwWebContentsMetricsRecorder;
 import org.chromium.android_webview.DarkModeHelper;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 
 /**
  * Junit tests for AwWebContentsMetricsRecorder.
  *
- * Due to the complexity of logging dark mode settings, that part of the class is protected by test
- * cases.
+ * <p>Due to the complexity of logging dark mode settings, that part of the class is protected by
+ * test cases.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AwWebContentsMetricsRecorderTest {
-    @Before
-    public void setUp() {
-        UmaRecorderHolder.resetForTesting();
-    }
 
     @Test
     @SmallTest

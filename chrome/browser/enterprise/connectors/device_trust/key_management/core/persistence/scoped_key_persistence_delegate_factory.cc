@@ -24,7 +24,7 @@ namespace test {
 namespace {
 
 std::unique_ptr<crypto::UnexportableSigningKey> GenerateHardwareSigningKey() {
-  auto provider = crypto::GetUnexportableKeyProvider();
+  auto provider = crypto::GetUnexportableKeyProvider(/*config=*/{});
   DCHECK(provider);
   auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
   auto signing_key = provider->GenerateSigningKeySlowly(acceptable_algorithms);

@@ -13,7 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "components/component_updater/android/loader_policies/tpcd_metadata_component_loader_policy.h"
-#include "components/tpcd/metadata/parser.h"
+#include "components/tpcd/metadata/browser/parser.h"
 #include "services/network/public/cpp/features.h"
 
 namespace android_webview {

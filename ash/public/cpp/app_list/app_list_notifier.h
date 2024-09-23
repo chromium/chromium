@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,11 +31,15 @@ class ASH_PUBLIC_EXPORT AppListNotifier {
   using Location = ash::SearchResultDisplayType;
 
   struct Result {
-    Result(const std::string& id, ash::SearchResultType type)
-        : id(id), type(type) {}
+    Result(const std::string& id,
+           ash::SearchResultType type,
+           const std::optional<ash::ContinueFileSuggestionType>&
+               continue_file_type)
+        : id(id), type(type), continue_file_type(continue_file_type) {}
 
     std::string id;
     ash::SearchResultType type = ash::SEARCH_RESULT_TYPE_BOUNDARY;
+    std::optional<ash::ContinueFileSuggestionType> continue_file_type;
   };
 
   class Observer : public base::CheckedObserver {

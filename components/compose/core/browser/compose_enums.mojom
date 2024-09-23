@@ -44,4 +44,6 @@ enum ComposeStatus {
   kNoResponse = 16,
   // If the user is offline.
   kOffline = 17,
+  // The request timed out.
+  kRequestTimeout = 18,
 };

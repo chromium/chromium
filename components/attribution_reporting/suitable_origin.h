@@ -69,17 +69,17 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
   SuitableOrigin& operator=(SuitableOrigin&&);
 
   const url::Origin& operator*() const& {
-    DCHECK(IsValid());
+    CHECK(IsValid());
     return origin_;
   }
 
   url::Origin&& operator*() && {
-    DCHECK(IsValid());
+    CHECK(IsValid());
     return std::move(origin_);
   }
 
   const url::Origin* operator->() const& {
-    DCHECK(IsValid());
+    CHECK(IsValid());
     return &origin_;
   }
 
@@ -87,7 +87,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
   // this type in places currently requiring `url::Origin`s with
   // guaranteed preconditions.
   operator const url::Origin&() const {  // NOLINT
-    DCHECK(IsValid());
+    CHECK(IsValid());
     return origin_;
   }
 

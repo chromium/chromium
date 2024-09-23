@@ -4,20 +4,71 @@
 
 syntax = "proto3";
 
-option optimize_for = LITE_RUNTIME;
-
 package webauthn_pb;
 
+option objc_class_prefix = "WAP";
+option optimize_for = LITE_RUNTIME;
+
 message EnclaveLocalState {
+  // Google Password Manager PINs are assumed to have low entropy and so cannot
+  // be validated locally. Instead the enclave can validate them and enforce
+  // rate limiting. Thus, locally and in the metadata of the virtual member of
+  // the security domain, there is a wrapped version.
+  message WrappedPIN {
+    // The PIN, encrypted to the security domain secret. The plaintext is a
+    // CBOR structure containing the scrypt-hash of the PIN, claim key,
+    // generation number, plus recovery key store counter ID and handle.
+    bytes wrapped_pin = 1;
+
+    // A key used to encrypt claimed PIN hashes for validation at the enclave.
+    // These are encrypted to ensure that the enclave has access to the local
+    // state needed to unwrap the security domain secret.
+    bytes claim_key = 2;
+
+    // The generation number of the GPM PIN. Starts from zero and increases
+    // strictly monotonically when the GPM PIN changes. The enclave enforces
+    // a high-water mark.
+    int64 generation = 3;
+
+    enum Form {
+      // Never used. Only for detecting when the form is missing.
+      FORM_UNSPECIFIED = 0;
+      // The GPM PIN is six digits.
+      FORM_SIX_DIGITS = 1;
+      // The GPM PIN is an arbitrary, alphanumeric string.
+      FORM_ARBITRARY = 2;
+    }
+    // The form of the PIN, for showing the right UI.
+    Form form = 4;
+
+    enum Hash {
+      // Never used. Only for detecting when the hash is missing.
+      HASH_UNSPECIFIED = 0;
+      // scrypt, where `hash_difficulty` is N.
+      HASH_SCRYPT = 1;
+    }
+    // Which hash is used to form the PIN hash.
+    Hash hash = 5;
+
+    // A difficulty factor for the hash.
+    int32 hash_difficulty = 6;
+
+    // Salt used when hashing the PIN.
+    bytes hash_salt = 7;
+  }
+
   // User contains state for a specific GAIA ID.
   message User {
-    // The hardware-bound, not-user-verification-interlocked device key:
+    // The not-user-verification-interlocked device key:
     //
     // These three members are either all empty or all non-empty.
-    bytes wrapped_hardware_private_key = 1;
+    bytes wrapped_identity_private_key = 1;
     // If non-empty, this contains a valid SubjectPublicKeyInfo.
-    bytes hardware_public_key = 2;
-    // This is currently SHA-256(hardware_public_key) but need not be.
+    bytes identity_public_key = 2;
+    // True if `wrapped_identity_private_key` is not hardware bound and is thus
+    // registered at the enclave as a "sw" key.
+    bool identity_key_is_software_backed = 15;
+    // This is currently SHA-256(identity_public_key) but need not be.
     bytes device_id = 5;
 
     // The hardware-bound, user-verification-interlocked device key.
@@ -29,7 +80,7 @@ message EnclaveLocalState {
     bytes uv_public_key = 4;
 
     // Whether this device has been registered with the enclave. If this is
-    // true then `hardware_public_key` and `member_public_key` must be
+    // true then `identity_public_key` and `member_public_key` must be
     // non-empty.
     bool registered = 6;
 
@@ -47,6 +98,20 @@ message EnclaveLocalState {
     // A map from security domain epoch to the enclave-wrapped security domain
     // secret for that epoch.
     map<int32, bytes> wrapped_security_domain_secrets = 10;
+
+    // The wrapped Google Password Manager PIN.
+    optional WrappedPIN wrapped_pin = 11;
+
+    // The public key of the GPM PIN member of the security domain.
+    optional bytes pin_public_key = 12;
+
+    // Flag set when the device is in a newly-registered state but the UV key
+    // has not yet been created, and should be created at the time of the first
+    // UV request.
+    optional bool deferred_uv_key_creation = 13;
+
+    // The time at which the GPM PIN was last renewed.
+    optional double last_refreshed_pin_epoch_secs = 14;
   }
 
   map<string, User> users = 1;

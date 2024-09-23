@@ -37,6 +37,8 @@ using testing::Invoke;
 using testing::_;
 
 namespace content {
+using GetSourceInfosResult =
+    video_capture::mojom::VideoSourceProvider::GetSourceInfosResult;
 
 static const std::string kStubDeviceId = "StubDevice";
 static const media::VideoCaptureParams kArbitraryParams;
@@ -105,7 +107,8 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
         .WillByDefault(Invoke([](video_capture::mojom::VideoSourceProvider::
                                      GetSourceInfosCallback& callback) {
           std::vector<media::VideoCaptureDeviceInfo> arbitrarily_empty_results;
-          std::move(callback).Run(arbitrarily_empty_results);
+          std::move(callback).Run(GetSourceInfosResult::kSuccess,
+                                  arbitrarily_empty_results);
         }));
 
     ON_CALL(mock_source_provider_, DoGetVideoSource(_, _))
@@ -116,7 +119,7 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
               source_receivers_.Add(&mock_source_, std::move(*receiver));
             }));
 
-    ON_CALL(mock_source_, DoCreatePushSubscription(_, _, _, _, _))
+    ON_CALL(mock_source_, CreatePushSubscription(_, _, _, _, _))
         .WillByDefault(Invoke(
             [this](mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
                        subscriber,
@@ -126,7 +129,7 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
                        video_capture::mojom::PushVideoStreamSubscription>
                        subscription,
                    video_capture::mojom::VideoSource::
-                       CreatePushSubscriptionCallback& callback) {
+                       CreatePushSubscriptionCallback callback) {
               subscription_receivers_.Add(&mock_subscription_,
                                           std::move(subscription));
               std::move(callback).Run(
@@ -180,7 +183,7 @@ TEST_F(ServiceVideoCaptureProviderTest,
             wait_for_call_to_arrive_at_service.Quit();
           }));
   base::RunLoop wait_for_callback_from_service;
-  EXPECT_CALL(results_cb_, Run(_, _))
+  EXPECT_CALL(results_cb_, Run)
       .WillOnce(Invoke([&wait_for_callback_from_service](
                            media::mojom::DeviceEnumerationResult result,
                            const std::vector<media::VideoCaptureDeviceInfo>&
@@ -234,7 +237,8 @@ TEST_F(ServiceVideoCaptureProviderTest,
 
   // Exercise part 2: The service responds
   std::vector<media::VideoCaptureDeviceInfo> arbitrarily_empty_results;
-  std::move(callback_to_be_called_by_service).Run(arbitrarily_empty_results);
+  std::move(callback_to_be_called_by_service)
+      .Run(GetSourceInfosResult::kSuccess, arbitrarily_empty_results);
 
   // Verification: Expect |provider_| to close the connection to the service.
   wait_for_connection_to_source_provider_to_close.Run();
@@ -358,7 +362,7 @@ TEST_F(ServiceVideoCaptureProviderTest,
   // The service now responds to the first request.
   std::vector<media::VideoCaptureDeviceInfo> arbitrarily_empty_results;
   std::move(callbacks_to_be_called_by_service[0])
-      .Run(arbitrarily_empty_results);
+      .Run(GetSourceInfosResult::kSuccess, arbitrarily_empty_results);
   {
     base::RunLoop give_provider_chance_to_disconnect;
     give_provider_chance_to_disconnect.RunUntilIdle();
@@ -376,12 +380,46 @@ TEST_F(ServiceVideoCaptureProviderTest,
 
   // The service now responds to the second request.
   std::move(callbacks_to_be_called_by_service[1])
-      .Run(arbitrarily_empty_results);
+      .Run(GetSourceInfosResult::kSuccess, arbitrarily_empty_results);
   {
     base::RunLoop give_provider_chance_to_disconnect;
     give_provider_chance_to_disconnect.RunUntilIdle();
   }
   ASSERT_TRUE(connection_has_been_closed);
+}
+
+// Tests that failures of VideoSourceProvider::GetSourceInfos are handled.
+TEST_F(ServiceVideoCaptureProviderTest, ServiceGetSourceInfosFails) {
+  video_capture::mojom::VideoSourceProvider::GetSourceInfosCallback
+      callback_to_be_called_by_service;
+  base::RunLoop wait_for_call_to_arrive_at_service;
+  EXPECT_CALL(mock_source_provider_, DoGetSourceInfos(_))
+      .WillOnce(Invoke(
+          [&wait_for_call_to_arrive_at_service](
+              video_capture::mojom::VideoSourceProvider::GetSourceInfosCallback&
+                  callback) {
+            std::move(callback).Run(GetSourceInfosResult::kErrorDroppedRequest,
+                                    {});
+            wait_for_call_to_arrive_at_service.Quit();
+          }));
+
+  provider_->GetDeviceInfosAsync(results_cb_.Get());
+  wait_for_call_to_arrive_at_service.Run();
+
+  base::RunLoop wait_for_callback_from_service;
+  EXPECT_CALL(results_cb_, Run)
+      .WillOnce(Invoke(
+          [&wait_for_callback_from_service](
+              media::mojom::DeviceEnumerationResult result,
+              const std::vector<media::VideoCaptureDeviceInfo>& results) {
+            // The error should result in a failed result code.
+            EXPECT_EQ(media::mojom::DeviceEnumerationResult::
+                          kErrorCaptureServiceDroppedRequest,
+                      result);
+            EXPECT_EQ(0u, results.size());
+            wait_for_callback_from_service.Quit();
+          }));
+  wait_for_callback_from_service.Run();
 }
 
 }  // namespace content

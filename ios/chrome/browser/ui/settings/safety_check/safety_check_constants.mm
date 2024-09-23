@@ -22,3 +22,6 @@ const char kSafetyCheckInteractions[] = "Settings.SafetyCheck.Interactions";
 
 NSString* const kSafetyCheckCheckNowButtonAccessibilityID =
     @"SafetyCheckCheckNowButtonAccessibilityID";
+
+NSString* const kSafetyCheckNotificationsOptInButtonAccessibilityID =
+    @"SafetyCheckNotificationsOptInButtonAccessibilityID";

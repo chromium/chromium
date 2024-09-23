@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/part_root.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -28,12 +29,13 @@ NodePart* NodePart::Create(PartRootUnion* root_union,
 
 NodePart::NodePart(PartRoot& root,
                    Node& node,
-                   bool add_to_parts_list,
                    Vector<String> metadata)
     : Part(root, std::move(metadata)), node_(node) {
   CHECK(IsAcceptableNodeType(node));
-  node.AddDOMPart(*this);
-  if (add_to_parts_list) {
+  if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+    node.SetHasNodePart();
+  } else {
+    node.AddDOMPart(*this);
     root.AddPart(*this);
   }
 }
@@ -44,7 +46,15 @@ void NodePart::disconnect() {
     return;
   }
   if (node_) {
-    node_->RemoveDOMPart(*this);
+    if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+      // TODO(crbug.com/40271855): This assumes that each Node has at most one
+      // NodePart attached. The consequence of that is that if you
+      // (imperatively) construct multiple Parts attached to the same Node,
+      // disconnecting one of them will disconnect all of them.
+      node_->ClearHasNodePart();
+    } else {
+      node_->RemoveDOMPart(*this);
+    }
   }
   node_ = nullptr;
   Part::disconnect();

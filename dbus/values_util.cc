@@ -175,7 +175,6 @@ base::Value PopDataAsValue(MessageReader* reader) {
     case Message::UNIX_FD: {
       // Cannot distinguish a file descriptor from an int
       NOTREACHED();
-      break;
     }
     case Message::ARRAY: {
       MessageReader sub_reader(nullptr);
@@ -207,7 +206,6 @@ base::Value PopDataAsValue(MessageReader* reader) {
     case Message::DICT_ENTRY:
       // DICT_ENTRY must be popped as an element of an array.
       NOTREACHED();
-      break;
     case Message::VARIANT: {
       MessageReader sub_reader(nullptr);
       if (reader->PopVariant(&sub_reader))
@@ -232,7 +230,9 @@ void AppendBasicTypeValueData(MessageWriter* writer, base::ValueView value) {
 
     void operator()(double value) { writer->AppendDouble(value); }
 
-    void operator()(std::string_view value) { writer->AppendString(value); }
+    void operator()(std::string_view value) {
+      writer->AppendString(std::string(value));
+    }
 
     void operator()(const base::Value::BlobStorage&) {
       DLOG(ERROR) << "Unexpected type: " << base::Value::Type::BINARY;

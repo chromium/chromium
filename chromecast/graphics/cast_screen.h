@@ -6,6 +6,7 @@
 #define CHROMECAST_GRAPHICS_CAST_SCREEN_H_
 
 #include <optional>
+
 #include "chromecast/public/graphics_types.h"
 #include "ui/display/display.h"
 #include "ui/display/screen_base.h"

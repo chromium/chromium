@@ -21,7 +21,7 @@ ParentAccessBrowserTestBase::~ParentAccessBrowserTestBase() = default;
 
 void ParentAccessBrowserTestBase::SetUp() {
   logged_in_user_mixin_ = std::make_unique<LoggedInUserMixin>(
-      &mixin_host_, GetLogInType(), embedded_test_server(), this);
+      &mixin_host_, /*test_base=*/this, embedded_test_server(), GetLogInType());
   // Setup() must be called after the mixin is instantiated because it is what
   // actually causes the tests to be run.
   MixinBasedInProcessBrowserTest::SetUp();
@@ -67,7 +67,7 @@ ParentAccessRegularUserBrowserTestBase::
 // ParentAccessBrowserTestBase methods
 LoggedInUserMixin::LogInType
 ParentAccessRegularUserBrowserTestBase::GetLogInType() {
-  return LoggedInUserMixin::LogInType::kRegular;
+  return LoggedInUserMixin::LogInType::kConsumer;
 }
 
 //  ParentAccessChildUserBrowserTestBase

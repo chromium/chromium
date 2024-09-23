@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -54,7 +55,7 @@ GoogleServiceAuthError GetGoogleServiceAuthErrorFromAuthenticationErrorCategory(
     case kAuthenticationErrorCategoryUnknownIdentityErrors:
       return GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP);
   }
-  NOTREACHED() << "unsupported error: " << static_cast<int>(error);
+  NOTREACHED_IN_MIGRATION() << "unsupported error: " << static_cast<int>(error);
 }
 
 // Converts a DeviceAccountsProvider::AccountInfo to an AccountInfo.
@@ -166,7 +167,7 @@ void ProfileOAuth2TokenServiceIOSDelegate::Shutdown() {
   ClearAuthError(std::nullopt);
 }
 
-void ProfileOAuth2TokenServiceIOSDelegate::LoadCredentials(
+void ProfileOAuth2TokenServiceIOSDelegate::LoadCredentialsInternal(
     const CoreAccountId& primary_account_id,
     bool is_syncing) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -176,7 +177,8 @@ void ProfileOAuth2TokenServiceIOSDelegate::LoadCredentials(
   set_load_credentials_state(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS);
 
-  if (primary_account_id.empty()) {
+  if (!base::FeatureList::IsEnabled(switches::kAlwaysLoadDeviceAccounts) &&
+      primary_account_id.empty()) {
     // On startup, always fire refresh token loaded even if there is nothing
     // to load (not authenticated).
     set_load_credentials_state(
@@ -186,7 +188,8 @@ void ProfileOAuth2TokenServiceIOSDelegate::LoadCredentials(
   }
 
   ReloadCredentials(primary_account_id);
-  if (RefreshTokenIsAvailable(primary_account_id)) {
+  if (primary_account_id.empty() ||
+      RefreshTokenIsAvailable(primary_account_id)) {
     set_load_credentials_state(
         signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS);
   } else {
@@ -264,15 +267,17 @@ void ProfileOAuth2TokenServiceIOSDelegate::ReloadCredentials(
   }
 }
 
-void ProfileOAuth2TokenServiceIOSDelegate::UpdateCredentials(
+void ProfileOAuth2TokenServiceIOSDelegate::UpdateCredentialsInternal(
     const CoreAccountId& account_id,
     const std::string& refresh_token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  NOTREACHED() << "Unexpected call to UpdateCredentials when using shared "
-                  "authentication.";
+  NOTREACHED_IN_MIGRATION()
+      << "Unexpected call to UpdateCredentials when using shared "
+         "authentication.";
 }
 
-void ProfileOAuth2TokenServiceIOSDelegate::RevokeAllCredentials() {
+void ProfileOAuth2TokenServiceIOSDelegate::RevokeAllCredentialsInternal(
+    signin_metrics::SourceForRefreshTokenOperation source) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   ScopedBatchChange batch(this);

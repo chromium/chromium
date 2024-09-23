@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -86,10 +87,10 @@ class FeedStream : public FeedApi,
     virtual void ClearAll() = 0;
     virtual AccountInfo GetAccountInfo() = 0;
     virtual bool IsSigninAllowed() = 0;
+    virtual bool IsSupervisedAccount() = 0;
     virtual void PrefetchImage(const GURL& url) = 0;
     virtual void RegisterExperiments(const Experiments& experiments) = 0;
-    virtual void RegisterFeedUserSettingsFieldTrial(
-        base::StringPiece group) = 0;
+    virtual void RegisterFeedUserSettingsFieldTrial(std::string_view group) = 0;
     virtual std::string GetCountry() = 0;
   };
 
@@ -150,15 +151,15 @@ class FeedStream : public FeedApi,
       std::vector<feedstore::DataOperation> operations) override;
   EphemeralChangeId CreateEphemeralChangeFromPackedData(
       SurfaceId surface_id,
-      base::StringPiece data) override;
+      std::string_view data) override;
   bool CommitEphemeralChange(SurfaceId surface_id,
                              EphemeralChangeId id) override;
   bool RejectEphemeralChange(SurfaceId surface_id,
                              EphemeralChangeId id) override;
   void ProcessThereAndBackAgain(
-      base::StringPiece data,
+      std::string_view data,
       const LoggingParameters& logging_parameters) override;
-  void ProcessViewAction(base::StringPiece data,
+  void ProcessViewAction(std::string_view data,
                          const LoggingParameters& logging_parameters) override;
   bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) override;
   void InvalidateContentCacheFor(StreamKind stream_kind) override;
@@ -209,7 +210,7 @@ class FeedStream : public FeedApi,
 
   // MetricsReporter::Delegate.
   void SubscribedWebFeedCount(base::OnceCallback<void(int)> callback) override;
-  void RegisterFeedUserSettingsFieldTrial(base::StringPiece group) override;
+  void RegisterFeedUserSettingsFieldTrial(std::string_view group) override;
 
   // StreamModel::StoreObserver.
   void OnStoreChange(StreamModel::StoreUpdate update) override;
@@ -352,6 +353,8 @@ class FeedStream : public FeedApi,
 
   bool IsEnabledAndVisible();
 
+  bool IsWebFeedEnabled();
+
   PrefService* profile_prefs() const { return profile_prefs_; }
 
   base::WeakPtr<FeedStream> GetWeakPtr() {
@@ -445,11 +448,6 @@ class FeedStream : public FeedApi,
 
   // Schedule a feed-close refresh when the user has taken some kind of action
   // on the feed.
-  void ScheduleFeedCloseRefreshOnInteraction(const StreamType& type);
-  // Schedule a feed-close refresh when the user has viewed content for the
-  // first time.
-  void ScheduleFeedCloseRefreshOnFirstView(const StreamType& type);
-  // Internal method for scheduling the feed-close refresh.
   void ScheduleFeedCloseRefresh(const StreamType& type);
 
   void CheckDuplicatedContentsOnRefresh();

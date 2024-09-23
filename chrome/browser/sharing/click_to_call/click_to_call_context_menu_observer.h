@@ -13,8 +13,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
-#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
+#include "components/sharing_message/sharing_target_device_info.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class RenderViewContextMenuProxy;

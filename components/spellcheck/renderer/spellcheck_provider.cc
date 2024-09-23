@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/spellcheck/renderer/spellcheck_provider.h"
 
 #include <unordered_map>
@@ -24,7 +29,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/service_manager/public/cpp/local_interface_provider.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -58,7 +63,7 @@ class SpellCheckProvider::DictionaryUpdateObserverImpl
   void OnDictionaryUpdated(const WebVector<WebString>& words_added) override;
 
  private:
-  raw_ptr<SpellCheckProvider, ExperimentalRenderer> owner_;
+  raw_ptr<SpellCheckProvider> owner_;
 };
 
 SpellCheckProvider::DictionaryUpdateObserverImpl::DictionaryUpdateObserverImpl(
@@ -250,7 +255,7 @@ spellcheck::mojom::SpellCheckHost& SpellCheckProvider::GetSpellCheckHost() {
   // We shodulnt't get here in tests, `spell_check_host_` should have been set.
   CHECK(render_frame());
 
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker().GetInterface(
       spell_check_host_.BindNewPipeAndPassReceiver());
   return *spell_check_host_.get();
 }

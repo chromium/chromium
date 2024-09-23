@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Rendring test for ruby + text-decoration</title>
+<style>
+body {
+  font-family: sans-serif;
+  font-size: 20px;
+}
+p {
+  text-decoration: green wavy underline;
+  border: 2px dashed lightgray;
+}
+div {
+  text-decoration: green double overline;
+  border: 2px dashed lightgray;
+}
+.atomic {
+  border: none;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: purple;
+}
+ruby {
+  color: blue;
+}
+rt {
+  color: orange;
+  font-size: 16px;
+  text-decoration: underline;
+}
+</style>
+<body>
+
+<p>Before
+<ruby>base base<rt>annotation annotation annotation</ruby>
+text
+<ruby>base base base<rt>anno anno</ruby>
+<ruby>base<rt>annotation annotation</ruby>
+text
+<ruby>base base base<rt>anno</ruby>
+text
+<!-- should be ruby-align:start -->
+<ruby>base base base<rt style="text-align:left">anno</ruby>
+text
+<!-- should be ruby-align:center -->
+<ruby>base base base<rt style="text-align:center">anno anno</ruby>
+after</p>
+
+<div>Before
+<ruby><div class="atomic"></div> <div class="atomic"></div><rt><div class="atomic"></div> <div class="atomic"></div> <div class="atomic"></div></ruby>
+text
+<ruby><div class="atomic"></div> <div class="atomic"></div> <div class="atomic"></div><rt><div class="atomic"></div> <div class="atomic"></div></ruby>
+<ruby><div class="atomic"></div><rt><div class="atomic"></div> <div class="atomic"></div></ruby>
+text
+<ruby><div class="atomic"></div> <div class="atomic"></div> <div class="atomic"></div><rt><div class="atomic"></div></ruby>
+text
+<!-- should be ruby-align:start -->
+<ruby><div class="atomic"></div> <div class="atomic"></div> <div class="atomic"></div><rt style="text-align:left"><div class="atomic"></div></ruby>
+text
+<!-- should be ruby-align:center -->
+<ruby><div class="atomic"></div> <div class="atomic"></div> <div class="atomic"></div><rt style="text-align:center"><div class="atomic"></div> <div class="atomic"></div></ruby>
+after</div>
+
+<div dir="rtl">قبل
+<ruby>الجملة الرئيسية الجملة الرئيسية<rt>حاشية. ملاحظة حاشية. ملاحظة حاشية. ملاحظة</ruby>
+نص
+<ruby>الجملة الرئيسية الجملة الرئيسية الجملة الرئيسية<rt>حاشية. ملاحظة</ruby>
+<ruby>الجملة الرئيسية<rt>حاشية. ملاحظة حاشية. ملاحظة</ruby>
+نص
+<ruby>الجملة الرئيسية الجملة الرئيسية الجملة الرئيسية<rt>حاشية. ملاحظة</ruby>
+نص
+<!-- should be ruby-align:start -->
+<ruby>الجملة الرئيسية الجملة الرئيسية الجملة الرئيسية<rt style="text-align:right">حاشية. ملاحظة</ruby>
+نص
+<!-- should be ruby-align:center -->
+<ruby>الجملة الرئيسية الجملة الرئيسية الجملة الرئيسية<rt style="text-align:center">حاشية. ملاحظة حاشية. ملاحظة</ruby>
+بعد</div>
+
+
+</body>

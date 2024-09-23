@@ -4,11 +4,12 @@
 
 #include "base/profiler/metadata_recorder.h"
 
+#include <optional>
+
 #include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -37,7 +38,7 @@ TEST(MetadataRecorderTest, GetItems_Empty) {
 TEST(MetadataRecorderTest, Set_NewNameHash) {
   MetadataRecorder recorder;
 
-  recorder.Set(10, absl::nullopt, absl::nullopt, 20);
+  recorder.Set(10, std::nullopt, std::nullopt, 20);
 
   MetadataRecorder::ItemArray items;
   size_t item_count;
@@ -52,7 +53,7 @@ TEST(MetadataRecorderTest, Set_NewNameHash) {
     EXPECT_EQ(20, items[0].value);
   }
 
-  recorder.Set(20, absl::nullopt, absl::nullopt, 30);
+  recorder.Set(20, std::nullopt, std::nullopt, 30);
 
   {
     item_count = MetadataRecorder::MetadataProvider(&recorder,
@@ -68,8 +69,8 @@ TEST(MetadataRecorderTest, Set_NewNameHash) {
 
 TEST(MetadataRecorderTest, Set_ExistingNameNash) {
   MetadataRecorder recorder;
-  recorder.Set(10, absl::nullopt, absl::nullopt, 20);
-  recorder.Set(10, absl::nullopt, absl::nullopt, 30);
+  recorder.Set(10, std::nullopt, std::nullopt, 20);
+  recorder.Set(10, std::nullopt, std::nullopt, 30);
 
   MetadataRecorder::ItemArray items;
   size_t item_count =
@@ -87,16 +88,16 @@ TEST(MetadataRecorderTest, Set_ReAddRemovedNameNash) {
   MetadataRecorder::ItemArray items;
   std::vector<MetadataRecorder::Item> expected;
   for (size_t i = 0; i < items.size(); ++i) {
-    expected.emplace_back(i, absl::nullopt, absl::nullopt, 0);
-    recorder.Set(i, absl::nullopt, absl::nullopt, 0);
+    expected.emplace_back(i, std::nullopt, std::nullopt, 0);
+    recorder.Set(i, std::nullopt, std::nullopt, 0);
   }
 
   // By removing an item from a full recorder, re-setting the same item, and
   // verifying that the item is returned, we can verify that the recorder is
   // reusing the inactive slot for the same name hash instead of trying (and
   // failing) to allocate a new slot.
-  recorder.Remove(3, absl::nullopt, absl::nullopt);
-  recorder.Set(3, absl::nullopt, absl::nullopt, 0);
+  recorder.Remove(3, std::nullopt, std::nullopt);
+  recorder.Set(3, std::nullopt, std::nullopt, 0);
 
   size_t item_count =
       MetadataRecorder::MetadataProvider(&recorder, PlatformThread::CurrentId())
@@ -109,17 +110,17 @@ TEST(MetadataRecorderTest, Set_AddPastMaxCount) {
   MetadataRecorder recorder;
   MetadataRecorder::ItemArray items;
   for (size_t i = 0; i < items.size(); ++i) {
-    recorder.Set(i, absl::nullopt, absl::nullopt, 0);
+    recorder.Set(i, std::nullopt, std::nullopt, 0);
   }
 
   // This should fail silently.
-  recorder.Set(items.size(), absl::nullopt, absl::nullopt, 0);
+  recorder.Set(items.size(), std::nullopt, std::nullopt, 0);
 }
 
 TEST(MetadataRecorderTest, Set_NulloptKeyIsIndependentOfNonNulloptKey) {
   MetadataRecorder recorder;
 
-  recorder.Set(10, 100, absl::nullopt, 20);
+  recorder.Set(10, 100, std::nullopt, 20);
 
   MetadataRecorder::ItemArray items;
   size_t item_count;
@@ -134,7 +135,7 @@ TEST(MetadataRecorderTest, Set_NulloptKeyIsIndependentOfNonNulloptKey) {
     EXPECT_EQ(20, items[0].value);
   }
 
-  recorder.Set(10, absl::nullopt, absl::nullopt, 30);
+  recorder.Set(10, std::nullopt, std::nullopt, 30);
 
   {
     item_count = MetadataRecorder::MetadataProvider(&recorder,
@@ -156,7 +157,7 @@ TEST(MetadataRecorderTest, Set_NulloptKeyIsIndependentOfNonNulloptKey) {
 TEST(MetadataRecorderTest, Set_ThreadIdIsScoped) {
   MetadataRecorder recorder;
 
-  recorder.Set(10, absl::nullopt, PlatformThread::CurrentId(), 20);
+  recorder.Set(10, std::nullopt, PlatformThread::CurrentId(), 20);
 
   MetadataRecorder::ItemArray items;
   size_t item_count;
@@ -181,8 +182,8 @@ TEST(MetadataRecorderTest, Set_ThreadIdIsScoped) {
 TEST(MetadataRecorderTest, Set_NulloptThreadAndNonNulloptThread) {
   MetadataRecorder recorder;
 
-  recorder.Set(10, absl::nullopt, PlatformThread::CurrentId(), 20);
-  recorder.Set(10, absl::nullopt, absl::nullopt, 30);
+  recorder.Set(10, std::nullopt, PlatformThread::CurrentId(), 20);
+  recorder.Set(10, std::nullopt, std::nullopt, 30);
 
   MetadataRecorder::ItemArray items;
   size_t item_count =
@@ -203,10 +204,10 @@ TEST(MetadataRecorderTest, Set_NulloptThreadAndNonNulloptThread) {
 
 TEST(MetadataRecorderTest, Remove) {
   MetadataRecorder recorder;
-  recorder.Set(10, absl::nullopt, absl::nullopt, 20);
-  recorder.Set(30, absl::nullopt, absl::nullopt, 40);
-  recorder.Set(50, absl::nullopt, absl::nullopt, 60);
-  recorder.Remove(30, absl::nullopt, absl::nullopt);
+  recorder.Set(10, std::nullopt, std::nullopt, 20);
+  recorder.Set(30, std::nullopt, std::nullopt, 40);
+  recorder.Set(50, std::nullopt, std::nullopt, 60);
+  recorder.Remove(30, std::nullopt, std::nullopt);
 
   MetadataRecorder::ItemArray items;
   size_t item_count =
@@ -223,8 +224,8 @@ TEST(MetadataRecorderTest, Remove) {
 
 TEST(MetadataRecorderTest, Remove_DoesntExist) {
   MetadataRecorder recorder;
-  recorder.Set(10, absl::nullopt, absl::nullopt, 20);
-  recorder.Remove(20, absl::nullopt, absl::nullopt);
+  recorder.Set(10, std::nullopt, std::nullopt, 20);
+  recorder.Remove(20, std::nullopt, std::nullopt);
 
   MetadataRecorder::ItemArray items;
   size_t item_count =
@@ -239,10 +240,10 @@ TEST(MetadataRecorderTest, Remove_DoesntExist) {
 TEST(MetadataRecorderTest, Remove_NulloptKeyIsIndependentOfNonNulloptKey) {
   MetadataRecorder recorder;
 
-  recorder.Set(10, 100, absl::nullopt, 20);
-  recorder.Set(10, absl::nullopt, absl::nullopt, 30);
+  recorder.Set(10, 100, std::nullopt, 20);
+  recorder.Set(10, std::nullopt, std::nullopt, 30);
 
-  recorder.Remove(10, absl::nullopt, absl::nullopt);
+  recorder.Remove(10, std::nullopt, std::nullopt);
 
   MetadataRecorder::ItemArray items;
   size_t item_count =
@@ -259,10 +260,10 @@ TEST(MetadataRecorderTest,
      Remove_NulloptThreadIsIndependentOfNonNulloptThread) {
   MetadataRecorder recorder;
 
-  recorder.Set(10, absl::nullopt, PlatformThread::CurrentId(), 20);
-  recorder.Set(10, absl::nullopt, absl::nullopt, 30);
+  recorder.Set(10, std::nullopt, PlatformThread::CurrentId(), 20);
+  recorder.Set(10, std::nullopt, std::nullopt, 30);
 
-  recorder.Remove(10, absl::nullopt, absl::nullopt);
+  recorder.Remove(10, std::nullopt, std::nullopt);
 
   MetadataRecorder::ItemArray items;
   size_t item_count =
@@ -282,25 +283,25 @@ TEST(MetadataRecorderTest, ReclaimInactiveSlots) {
   std::set<MetadataRecorder::Item> items_set;
   // Fill up the metadata map.
   for (size_t i = 0; i < MetadataRecorder::MAX_METADATA_COUNT; ++i) {
-    recorder.Set(i, absl::nullopt, absl::nullopt, i);
-    items_set.insert(MetadataRecorder::Item{i, absl::nullopt, absl::nullopt,
+    recorder.Set(i, std::nullopt, std::nullopt, i);
+    items_set.insert(MetadataRecorder::Item{i, std::nullopt, std::nullopt,
                                             static_cast<int64_t>(i)});
   }
 
   // Remove every fourth entry to fragment the data.
   size_t entries_removed = 0;
   for (size_t i = 3; i < MetadataRecorder::MAX_METADATA_COUNT; i += 4) {
-    recorder.Remove(i, absl::nullopt, absl::nullopt);
+    recorder.Remove(i, std::nullopt, std::nullopt);
     ++entries_removed;
-    items_set.erase(MetadataRecorder::Item{i, absl::nullopt, absl::nullopt,
+    items_set.erase(MetadataRecorder::Item{i, std::nullopt, std::nullopt,
                                            static_cast<int64_t>(i)});
   }
 
   // Ensure that the inactive slots are reclaimed to make room for more entries.
   for (size_t i = 1; i <= entries_removed; ++i) {
-    recorder.Set(i * 100, absl::nullopt, absl::nullopt, i * 100);
-    items_set.insert(MetadataRecorder::Item{
-        i * 100, absl::nullopt, absl::nullopt, static_cast<int64_t>(i * 100)});
+    recorder.Set(i * 100, std::nullopt, std::nullopt, i * 100);
+    items_set.insert(MetadataRecorder::Item{i * 100, std::nullopt, std::nullopt,
+                                            static_cast<int64_t>(i * 100)});
   }
 
   MetadataRecorder::ItemArray items_arr;

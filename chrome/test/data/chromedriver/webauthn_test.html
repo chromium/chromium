@@ -1,5 +1,17 @@
 <html>
   <script>
+
+function parseAuthenticatorFlags(flags) {
+  return {
+    up: !!(flags & 1 << 0),
+    uv: !!(flags & 1 << 2),
+    be: !!(flags & 1 << 3),
+    bs: !!(flags & 1 << 4),
+    at: !!(flags & 1 << 6),
+    ed: !!(flags & 1 << 7),
+  };
+}
+
 async function registerCredential(options = {}) {
   options = Object.assign({
     authenticatorSelection: {
@@ -30,6 +42,8 @@ async function registerCredential(options = {}) {
         transports: credential.response.getTransports(),
         authenticatorData: btoa(String.fromCharCode.apply(
             null, new Uint8Array(credential.response.getAuthenticatorData()))),
+        flags: parseAuthenticatorFlags(
+            new Uint8Array(credential.response.getAuthenticatorData())[32]),
       },
       extensions: credential.getClientExtensionResults(),
     };
@@ -56,6 +70,10 @@ async function getCredential(credential, options = {}) {
     if (attestation.getClientExtensionResults()?.largeBlob?.blob) {
       result.blob = new TextDecoder().decode(
           attestation.getClientExtensionResults().largeBlob.blob);
+    }
+    if (attestation.response?.authenticatorData) {
+      result.flags = parseAuthenticatorFlags(
+          new Uint8Array(attestation.response.authenticatorData)[32]);
     }
     return result;
   } catch (error) {

@@ -50,7 +50,8 @@ class ASH_EXPORT NetworkInfoBubble : public views::BubbleDialogDelegateView {
   static constexpr int kNetworkInfoBubbleLabelViewId = 1;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnMouseExited(const ui::MouseEvent& event) override;
 
   // views::OnBeforeBubbleWidgetInit:

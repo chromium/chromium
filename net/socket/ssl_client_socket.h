@@ -188,6 +188,14 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
       const net::HostPortPair& host,
       const scoped_refptr<net::X509Certificate>& certificate);
 
+  // Clears a client certificate preference, set by SetClientCertificate(),
+  // for all hosts whose cached certificate matches |certificate|.
+  //
+  // Note this method will synchronously call OnSSLConfigForServersChanged() on
+  // observers.
+  void ClearMatchingClientCertificate(
+      const scoped_refptr<net::X509Certificate>& certificate);
+
   base::flat_set<HostPortPair> GetClientCertificateCachedServersForTesting()
       const {
     return ssl_client_auth_cache_.GetCachedServers();

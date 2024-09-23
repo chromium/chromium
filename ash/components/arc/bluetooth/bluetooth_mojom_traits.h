@@ -28,7 +28,8 @@ struct EnumTraits<arc::mojom::BluetoothDeviceType, device::BluetoothTransport> {
       case device::BLUETOOTH_TRANSPORT_DUAL:
         return arc::mojom::BluetoothDeviceType::DUAL;
       default:
-        NOTREACHED() << "Invalid type: " << static_cast<uint8_t>(type);
+        DUMP_WILL_BE_NOTREACHED()
+            << "Invalid type: " << static_cast<uint8_t>(type);
         // XXX: is there a better value to return here?
         return arc::mojom::BluetoothDeviceType::DUAL;
     }
@@ -48,7 +49,6 @@ struct EnumTraits<arc::mojom::BluetoothDeviceType, device::BluetoothTransport> {
         break;
       default:
         NOTREACHED() << "Invalid type: " << static_cast<uint32_t>(mojom_type);
-        return false;
     }
     return true;
   }
@@ -71,7 +71,6 @@ struct EnumTraits<arc::mojom::BluetoothSdpAttributeType,
         return static_cast<arc::mojom::BluetoothSdpAttributeType>(input);
       default:
         NOTREACHED() << "Invalid type: " << static_cast<uint32_t>(input);
-        return arc::mojom::BluetoothSdpAttributeType::NULLTYPE;
     }
   }
 
@@ -92,7 +91,6 @@ struct EnumTraits<arc::mojom::BluetoothSdpAttributeType,
         return true;
       default:
         NOTREACHED() << "Invalid type: " << static_cast<uint32_t>(input);
-        return false;
     }
   }
 };
@@ -115,19 +113,16 @@ struct StructTraits<arc::mojom::BluetoothAdvertisementDataView,
   static arc::mojom::BluetoothAdvertisementType type(
       const std::unique_ptr<device::BluetoothAdvertisement::Data>& input) {
     NOTREACHED();
-    return arc::mojom::BluetoothAdvertisementType::ADV_TYPE_NON_CONNECTABLE;
   }
 
   static bool include_tx_power(
       const std::unique_ptr<device::BluetoothAdvertisement::Data>& input) {
     NOTREACHED();
-    return false;
   }
 
   static std::vector<arc::mojom::BluetoothAdvertisingDataPtr> data(
       const std::unique_ptr<device::BluetoothAdvertisement::Data>& input) {
     NOTREACHED();
-    return std::vector<arc::mojom::BluetoothAdvertisingDataPtr>();
   }
 };
 

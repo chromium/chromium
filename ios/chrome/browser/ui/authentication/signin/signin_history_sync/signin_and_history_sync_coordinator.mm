@@ -6,7 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -86,7 +86,7 @@ enum class SignInHistorySyncStep {
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
-  // TODO(crbug.com/1478088): Turn into CHECK.
+  // TODO(crbug.com/40929259): Turn into CHECK.
   DUMP_WILL_BE_CHECK(_childCoordinator)
       << base::SysNSStringToUTF8([self description]);
   // Interrupt `_childCoordinator` which will trigger the end of this
@@ -119,7 +119,7 @@ enum class SignInHistorySyncStep {
   }
   if (_currentStep != SignInHistorySyncStep::kCompleted) {
     _childCoordinator = [self createPresentStepChildCoordinator];
-    // TODO(crbug.com/1478088): Turn into CHECK.
+    // TODO(crbug.com/40929259): Turn into CHECK.
     DUMP_WILL_BE_CHECK(_childCoordinator)
         << base::SysNSStringToUTF8([self description]);
     [_childCoordinator start];
@@ -195,12 +195,12 @@ enum class SignInHistorySyncStep {
     case SignInHistorySyncStep::kCompleted:
       break;
   }
-  NOTREACHED_NORETURN() << base::SysNSStringToUTF8([self description]);
+  NOTREACHED() << base::SysNSStringToUTF8([self description]);
 }
 
 // Stops the child coordinator and prepares the next step to present.
 - (void)currentStepDidFinishWithResult:(SigninCoordinatorResult)result {
-  // TODO(crbug.com/1478088): Turn into CHECK.
+  // TODO(crbug.com/40929259): Turn into CHECK.
   DUMP_WILL_BE_CHECK(_childCoordinator)
       << base::SysNSStringToUTF8([self description]);
   [_childCoordinator stop];
@@ -228,7 +228,7 @@ enum class SignInHistorySyncStep {
     case SignInHistorySyncStep::kCompleted:
       break;
   }
-  NOTREACHED_NORETURN() << base::SysNSStringToUTF8([self description]);
+  NOTREACHED() << base::SysNSStringToUTF8([self description]);
 }
 
 #pragma mark - NSObject

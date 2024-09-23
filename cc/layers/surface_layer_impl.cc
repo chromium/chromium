@@ -59,6 +59,10 @@ SurfaceLayerImpl::~SurfaceLayerImpl() {
   // the right thing already.
 }
 
+mojom::LayerType SurfaceLayerImpl::GetLayerType() const {
+  return mojom::LayerType::kSurface;
+}
+
 std::unique_ptr<LayerImpl> SurfaceLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return SurfaceLayerImpl::Create(tree_impl, id(),
@@ -253,15 +257,14 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
   float border_width = DebugColors::SurfaceLayerBorderWidth(
       layer_tree_impl() ? layer_tree_impl()->device_scale_factor() : 1);
 
-  SkColor4f colors[] = {
-      {1.0f, 0.0f, 0.0f, 0.5f},     // Red.
-      {1.0f, 0.65f, 0.0f, 0.5f},    // Orange.
-      {1.0f, 1.0f, 0.0f, 0.5f},     // Yellow.
-      {0.0f, 0.5f, 0.0f, 0.5f},     // Green.
-      {0.0f, 0.0f, 1.0f, 0.50f},    // Blue.
-      {0.93f, 0.51f, 0.93f, 0.5f},  // Violet.
-  };
-  const int kNumColors = std::size(colors);
+  auto colors = std::to_array<SkColor4f>({
+      SkColor4f(1.0f, 0.0f, 0.0f, 0.5f),     // Red.
+      SkColor4f(1.0f, 0.65f, 0.0f, 0.5f),    // Orange.
+      SkColor4f(1.0f, 1.0f, 0.0f, 0.5f),     // Yellow.
+      SkColor4f(0.0f, 0.5f, 0.0f, 0.5f),     // Green.
+      SkColor4f(0.0f, 0.0f, 1.0f, 0.50f),    // Blue.
+      SkColor4f(0.93f, 0.51f, 0.93f, 0.5f),  // Violet.
+  });
 
   const int kStripeWidth = 300;
   const int kStripeHeight = 300;
@@ -287,13 +290,13 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
       bool force_anti_aliasing_off = false;
       auto* top_quad =
           render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-      top_quad->SetNew(shared_quad_state, top, top, colors[i % kNumColors],
+      top_quad->SetNew(shared_quad_state, top, top, colors[i % colors.size()],
                        force_anti_aliasing_off);
 
       auto* bottom_quad =
           render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
       bottom_quad->SetNew(shared_quad_state, bottom, bottom,
-                          colors[kNumColors - 1 - (i % kNumColors)],
+                          colors[colors.size() - 1 - (i % colors.size())],
                           force_anti_aliasing_off);
 
       if (contents_opaque()) {
@@ -303,7 +306,7 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
             render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
         // The inner fill is more transparent then the border.
         static const float kFillOpacity = 0.1f;
-        SkColor4f fill_color = colors[i % kNumColors];
+        SkColor4f fill_color = colors[i % colors.size()];
         fill_color.fA *= kFillOpacity;
         gfx::Rect fill_rect(x, 0, width, bounds().height());
         solid_quad->SetNew(shared_quad_state, fill_rect, fill_rect, fill_color,
@@ -315,13 +318,13 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
       auto* left_quad =
           render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
       left_quad->SetNew(shared_quad_state, left, left,
-                        colors[kNumColors - 1 - (i % kNumColors)],
+                        colors[colors.size() - 1 - (i % colors.size())],
                         force_anti_aliasing_off);
 
       auto* right_quad =
           render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
       right_quad->SetNew(shared_quad_state, right, right,
-                         colors[i % kNumColors], force_anti_aliasing_off);
+                         colors[i % colors.size()], force_anti_aliasing_off);
     }
   }
 }
@@ -329,10 +332,6 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
 void SurfaceLayerImpl::AsValueInto(base::trace_event::TracedValue* dict) const {
   LayerImpl::AsValueInto(dict);
   dict->SetString("surface_range", surface_range_.ToString());
-}
-
-const char* SurfaceLayerImpl::LayerTypeAsString() const {
-  return "cc::SurfaceLayerImpl";
 }
 
 }  // namespace cc

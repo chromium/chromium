@@ -62,6 +62,8 @@ class CORE_EXPORT FrameOwner : public GarbageCollectedMixin {
   virtual bool AllowPaymentRequest() const = 0;
   virtual bool IsDisplayNone() const = 0;
   virtual mojom::blink::ColorScheme GetColorScheme() const = 0;
+  virtual mojom::blink::PreferredColorScheme GetPreferredColorScheme()
+      const = 0;
 
   // Returns whether or not children of the owned frame should be lazily loaded.
   virtual bool ShouldLazyLoadChildren() const = 0;

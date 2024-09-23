@@ -1,0 +1,39 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ozone.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+assert(use_ozone)
+
+static_library("tast_support") {
+  sources = [
+    "stack_sampling_recorder.cc",
+    "stack_sampling_recorder.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/chromeos:system_stack_sampled_metrics_status_proto",
+    "//components/metrics",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "stack_sampling_recorder_unittest.cc" ]
+
+  deps = [
+    ":tast_support",
+    "//base",
+    "//chrome/browser/chromeos:system_stack_sampled_metrics_status_proto",
+    "//components/metrics",
+    "//testing/gtest",
+    "//third_party/metrics_proto",
+  ]
+}

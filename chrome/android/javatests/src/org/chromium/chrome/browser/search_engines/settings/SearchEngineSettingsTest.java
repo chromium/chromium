@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -22,7 +23,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -33,10 +34,8 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /** Tests for Search Engine Settings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -70,7 +69,7 @@ public class SearchEngineSettingsTest {
         mSearchEngineSettingsTestRule.startSettingsActivity();
 
         // Set the second search engine as the default using TemplateUrlService.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SearchEngineSettings pref = mSearchEngineSettingsTestRule.getFragment();
                     pref.setValueForTesting("1");
@@ -101,7 +100,7 @@ public class SearchEngineSettingsTest {
     @Feature({"Preferences"})
     @Policies.Add({@Policies.Item(key = "DefaultSearchProviderEnabled", string = "false")})
     public void testSearchEnginePreference_DisabledIfNoDefaultSearchEngine() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                 });
@@ -120,7 +119,7 @@ public class SearchEngineSettingsTest {
                 () -> {
                     Criteria.checkThat(searchEnginePref.getFragment(), Matchers.nullValue());
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ManagedPreferenceDelegate managedPrefDelegate =
                             mainSettings.getManagedPreferenceDelegateForTest();
@@ -144,13 +143,13 @@ public class SearchEngineSettingsTest {
         mSearchEngineSettingsTestRule.startSettingsActivity();
 
         // Set the first search engine as the default using TemplateUrlService.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SearchEngineSettings pref = mSearchEngineSettingsTestRule.getFragment();
                     pref.setValueForTesting("0");
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Ensure that the first search engine in the list is selected.
                     SearchEngineSettings pref = mSearchEngineSettingsTestRule.getFragment();
@@ -184,12 +183,12 @@ public class SearchEngineSettingsTest {
     private void ensureTemplateUrlServiceLoaded() throws Exception {
         // Make sure the template_url_service is loaded.
         final CallbackHelper onTemplateUrlServiceLoadedHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (mTemplateUrlService == null) {
                         mTemplateUrlService =
                                 TemplateUrlServiceFactory.getForProfile(
-                                        Profile.getLastUsedRegularProfile());
+                                        ProfileManager.getLastUsedRegularProfile());
                     }
                     if (mTemplateUrlService.isLoaded()) {
                         onTemplateUrlServiceLoadedHelper.notifyCalled();
@@ -208,8 +207,7 @@ public class SearchEngineSettingsTest {
     }
 
     private static Preference waitForPreference(
-            final PreferenceFragmentCompat prefFragment, final String preferenceKey)
-            throws ExecutionException {
+            final PreferenceFragmentCompat prefFragment, final String preferenceKey) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
@@ -218,7 +216,6 @@ public class SearchEngineSettingsTest {
                             Matchers.notNullValue());
                 });
 
-        return TestThreadUtils.runOnUiThreadBlocking(
-                () -> prefFragment.findPreference(preferenceKey));
+        return ThreadUtils.runOnUiThreadBlocking(() -> prefFragment.findPreference(preferenceKey));
     }
 }

@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/permissions_policy/layout_animations_policy.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
@@ -34,23 +33,6 @@
 
 namespace blink {
 namespace {
-
-// A helper method which is used to trigger a violation report for cases where
-// the |element.animate| API is used to animate a CSS property which is blocked
-// by the permissions policy 'layout-animations'.
-void ReportPermissionsPolicyViolationsIfNecessary(
-    ExecutionContext& context,
-    const KeyframeEffectModelBase& effect) {
-  for (const auto& property_handle : effect.Properties()) {
-    if (!property_handle.IsCSSProperty())
-      continue;
-    const auto& css_property = property_handle.GetCSSProperty();
-    if (LayoutAnimationsPolicy::AffectedCSSProperties().Contains(
-            &css_property)) {
-      LayoutAnimationsPolicy::ReportViolation(css_property, context);
-    }
-  }
-}
 
 V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* CoerceEffectOptions(
     const V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble* options) {
@@ -66,7 +48,7 @@ V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* CoerceEffectOptions(
           V8UnionKeyframeEffectOptionsOrUnrestrictedDouble>(
           options->GetAsUnrestrictedDouble());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -94,8 +76,6 @@ Animation* Animatable::animate(
   if (!element->GetExecutionContext())
     return nullptr;
 
-  ReportPermissionsPolicyViolationsIfNecessary(*element->GetExecutionContext(),
-                                               *effect->Model());
   if (!options->IsKeyframeAnimationOptions())
     return element->GetDocument().Timeline().Play(effect, exception_state);
 
@@ -149,8 +129,6 @@ Animation* Animatable::animate(ScriptState* script_state,
   if (!element->GetExecutionContext())
     return nullptr;
 
-  ReportPermissionsPolicyViolationsIfNecessary(*element->GetExecutionContext(),
-                                               *effect->Model());
   return element->GetDocument().Timeline().Play(effect, exception_state);
 }
 

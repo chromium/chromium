@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+namespace {
 
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -26,16 +27,12 @@ using ::testing::UnorderedElementsAre;
 using FieldSuggestion = AutofillQueryResponse::FormSuggestion::FieldSuggestion;
 using FieldPrediction = FieldSuggestion::FieldPrediction;
 
-namespace {
-
 Matcher<FieldPrediction> EqualsPrediction(int prediction) {
   return AllOf(Property("override", &FieldPrediction::override, true),
                Property("type", &FieldPrediction::type, prediction),
                Property("source", &FieldPrediction::source,
                         FieldPrediction::SOURCE_MANUAL_OVERRIDE));
 }
-
-}  // namespace
 
 TEST(ServerPredictionOverridesTest, AcceptsEmptyInput) {
   auto result = ParseServerPredictionOverrides("");
@@ -129,11 +126,10 @@ TEST(ServerPredictionOverridesTest, ParsesWellFormedOverridesCorrectly) {
                                    Key(kOverrides[2]), Key(kOverrides[3])));
 
   // General sanity checks.
-  for (int i = 0; i < 4; ++i) {
-    ASSERT_THAT(overrides.at(kOverrides[i]), SizeIs(1));
-    EXPECT_EQ(
-        FieldSignature(overrides.at(kOverrides[i]).front().field_signature()),
-        kOverrides[i].second);
+  for (const std::pair<FormSignature, FieldSignature>& override : kOverrides) {
+    ASSERT_THAT(overrides.at(override), SizeIs(1));
+    EXPECT_EQ(FieldSignature(overrides.at(override).front().field_signature()),
+              override.second);
   }
 
   // Prediction content checks.
@@ -207,4 +203,5 @@ TEST(ServerPredictionOverridesTest, AcceptsMissingPredictionFields) {
                           Property(&FieldSuggestion::predictions, IsEmpty())));
 }
 
+}  // namespace
 }  // namespace autofill

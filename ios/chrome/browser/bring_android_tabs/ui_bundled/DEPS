@@ -1,0 +1,14 @@
+specific_include_rules = {
+  "bring_android_tabs_test_utils\.mm": [
+    "+ios/chrome/browser/ui/authentication",
+    "+ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h",
+  ],
+}
+
+include_rules = [
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/net/model/crurl.h",
+  "+ios/chrome/browser/signin/model/fake_system_identity.h",
+  "+ios/chrome/browser/synced_sessions/model",
+  "+ios/chrome/browser/url_loading/model/url_loading_browser_agent.h",
+]

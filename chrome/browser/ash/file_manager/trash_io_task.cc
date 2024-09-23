@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
@@ -50,10 +51,11 @@ bool UpdateTrashInfoContents(const base::FilePath& original_path,
                               ? prefix_restore_path
                               : base::FilePath("/").Append(prefix_restore_path);
 
-  entry.trash_info_contents = base::StrCat(
-      {"[Trash Info]\nPath=", prefix.AsEndingWithSeparator().value(),
-       relative_restore_path,
-       "\nDeletionDate=", base::TimeFormatAsIso8601(entry.deletion_time)});
+  entry.trash_info_contents =
+      base::StrCat({"[Trash Info]\nPath=",
+                    base::EscapePath(prefix.AsEndingWithSeparator().value()),
+                    base::EscapePath(relative_restore_path), "\nDeletionDate=",
+                    base::TimeFormatAsIso8601(entry.deletion_time), "\n"});
   return true;
 }
 
@@ -72,7 +74,7 @@ bool WriteMetadataFileOnBlockingThread(const base::FilePath& destination_path,
   // the file has been tampered with to overwrite. Try to delete the file before
   // proceeding. `DeleteFile` will succeed if the file does not exist.
   if (!base::DeleteFile(destination_path)) {
-    LOG(ERROR) << "Failed to remove existing metadata file";
+    PLOG(ERROR) << "Failed to remove existing metadata file";
     return false;
   }
   return base::WriteFile(destination_path, contents);

@@ -4,6 +4,8 @@
 
 package org.chromium.base.cached_flags;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.base.FeatureMap;
@@ -12,6 +14,7 @@ import org.chromium.build.annotations.CheckDiscard;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,12 +48,23 @@ public abstract class CachedFieldTrialParameter {
     private final String mFeatureName;
     private final String mParameterName;
     private final @FieldTrialParameterType int mType;
+    private static HashMap<String, CachedFieldTrialParameter> sParamsCreatedForTesting =
+            new HashMap<>();
 
     CachedFieldTrialParameter(
             FeatureMap featureMap,
             String featureName,
             String parameterName,
             @FieldTrialParameterType int type) {
+        if (BuildConfig.IS_FOR_TEST) {
+            String combinedName = featureName + ":" + parameterName;
+            CachedFieldTrialParameter previous = sParamsCreatedForTesting.put(combinedName, this);
+            assert previous == null
+                    : String.format(
+                            "Feature '%s' has a duplicate parameter: '%s'",
+                            featureName, parameterName);
+        }
+
         mFeatureMap = featureMap;
         mFeatureName = featureName;
         // parameterName does not apply to ALL (because it includes all parameters).
@@ -116,10 +130,12 @@ public abstract class CachedFieldTrialParameter {
     }
 
     /**
-     * Get the current value of the parameter and cache it to disk. Calls to getValue() in a
-     * future run will return it, if native is not loaded yet.
+     * Gets the current value of the parameter and writes it to the provided SharedPreferences
+     * editor. Does not apply or commit the change, that is left up to the caller to perform. Calls
+     * to getValue() in a future run will return the value cached in this method, if native is not
+     * loaded yet.
      */
-    abstract void cacheToDisk();
+    abstract void writeCacheValueToEditor(SharedPreferences.Editor editor);
 
     /**
      * Forces a field trial parameter value for testing. This is only for the annotation processor

@@ -55,6 +55,10 @@ class ASH_EXPORT MediaControllerImpl
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  media_session::mojom::MediaSessionInfoPtr GetMediaSessionInfo() const {
+    return media_session_info_ ? media_session_info_->Clone() : nullptr;
+  }
+
   // Determine if lock screen media keys are enabled.
   bool AreLockScreenMediaKeysEnabled() const;
   void SetMediaControlsDismissed(bool media_controls_dismissed);

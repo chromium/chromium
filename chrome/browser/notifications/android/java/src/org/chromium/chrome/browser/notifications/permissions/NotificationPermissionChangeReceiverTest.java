@@ -11,23 +11,17 @@ import android.content.Intent;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Robolectric tests for {@link NotificationPermissionChangeReceiver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30, manifest = Config.NONE)
 public class NotificationPermissionChangeReceiverTest {
-    @Before
-    public void setUp() {
-        UmaRecorderHolder.resetForTesting();
-    }
 
     private void verifyPermissionChangeHistogramWasRecorded(boolean expectedPermissionState) {
         int histogramValue = expectedPermissionState ? 1 : 0;

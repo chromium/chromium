@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/borealis/borealis_util.h"
 
+#include <string_view>
+
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -250,8 +252,8 @@ TEST_F(BorealisUtilTest, LinuxTitleAfterProtonTitle) {
 
 guest_os::GuestOsRegistryService::Registration CreateRegistration(
     std::string guest_os_app_id,
-    base::StringPiece name,
-    base::StringPiece exec) {
+    std::string_view name,
+    std::string_view exec) {
   base::Value pref(base::Value::Type::DICT);
   base::Value::Dict localized_name;
   localized_name.Set("" /* locale */, base::Value(name));

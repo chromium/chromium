@@ -17,7 +17,6 @@
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
-#include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
@@ -38,7 +37,6 @@ namespace gpu {
 
 class CommandBufferDirect;
 class GpuMemoryBufferFactory;
-class MailboxManager;
 class TransferBuffer;
 
 namespace gles2 {
@@ -56,8 +54,6 @@ class GLManager : private GpuControl {
     gfx::Size size = gfx::Size(4, 4);
     // If not null will share resources with this context.
     raw_ptr<GLManager> share_group_manager = nullptr;
-    // If not null will share a mailbox manager with this context.
-    raw_ptr<GLManager> share_mailbox_manager = nullptr;
     // If not null will create a virtual manager based on this context.
     raw_ptr<GLManager> virtual_manager = nullptr;
     // Whether or not glBindXXX generates a resource.
@@ -116,8 +112,6 @@ class GLManager : private GpuControl {
     return decoder_.get();
   }
 
-  MailboxManager* mailbox_manager() const { return mailbox_manager_; }
-
   gl::GLShareGroup* share_group() const { return share_group_.get(); }
 
   gles2::GLES2Implementation* gles2_implementation() const {
@@ -174,14 +168,12 @@ class GLManager : private GpuControl {
 
   gpu::GpuPreferences gpu_preferences_;
 
-  gles2::MailboxManagerImpl owned_mailbox_manager_;
   gles2::TraceOutputter outputter_;
   std::unique_ptr<ServiceDiscardableManager> discardable_manager_;
   std::unique_ptr<PassthroughDiscardableManager>
       passthrough_discardable_manager_;
   std::unique_ptr<gles2::ShaderTranslatorCache> translator_cache_;
   gles2::FramebufferCompletenessCache completeness_cache_;
-  raw_ptr<MailboxManager> mailbox_manager_ = nullptr;
   scoped_refptr<gl::GLShareGroup> share_group_;
   std::unique_ptr<CommandBufferDirect> command_buffer_;
   std::unique_ptr<gles2::GLES2Decoder> decoder_;

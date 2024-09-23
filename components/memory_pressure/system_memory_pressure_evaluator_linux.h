@@ -18,7 +18,7 @@ namespace os_linux {
 
 // Linux memory pressure voter. Because there is no OS provided signal this
 // polls at a low frequency, and applies internal hysteresis.
-// TODO(https://crbug.com/1119396): use Pressure Stall Information (PSI) on
+// TODO(crbug.com/40714150): use Pressure Stall Information (PSI) on
 // kernels >4.20.
 class SystemMemoryPressureEvaluator
     : public memory_pressure::SystemMemoryPressureEvaluator {

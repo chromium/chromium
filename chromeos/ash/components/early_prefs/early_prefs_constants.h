@@ -19,4 +19,4 @@ constexpr char kPrefValueKey[] = "value";
 
 }  // namespace ash::early_prefs
 
-#endif  // CHROMEOS_ASH_COMPONENTS_EARLY_PREFS_EARLY_PREFS_WRITER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_EARLY_PREFS_EARLY_PREFS_CONSTANTS_H_

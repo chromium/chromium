@@ -4,6 +4,7 @@
 
 #include "ash/assistant/ui/base/stack_layout.h"
 
+#include <algorithm>
 #include <numeric>
 
 #include "base/ranges/algorithm.h"
@@ -15,22 +16,29 @@ StackLayout::StackLayout() = default;
 
 StackLayout::~StackLayout() = default;
 
-void StackLayout::Installed(views::View* host) {
-  host_ = host;
-}
-
-void StackLayout::ViewRemoved(views::View* host, views::View* view) {
+bool StackLayout::OnViewRemoved(views::View* host, views::View* view) {
   DCHECK(view);
   respect_dimension_map_.erase(view);
   vertical_alignment_map_.erase(view);
+  return views::LayoutManagerBase::OnViewRemoved(host, view);
 }
 
 gfx::Size StackLayout::GetPreferredSize(const views::View* host) const {
-  return std::accumulate(host->children().cbegin(), host->children().cend(),
-                         gfx::Size(), [](gfx::Size size, const views::View* v) {
-                           size.SetToMax(v->GetPreferredSize());
-                           return size;
-                         });
+  return GetPreferredSize(host, {});
+}
+
+gfx::Size StackLayout::GetPreferredSize(
+    const views::View* host,
+    const views::SizeBounds& available_size) const {
+  return std::transform_reduce(
+      host->children().cbegin(), host->children().cend(), gfx::Size(),
+      [](gfx::Size a, const gfx::Size b) {
+        a.SetToMax(b);
+        return a;
+      },
+      [&available_size](const views::View* v) {
+        return v->GetPreferredSize(available_size);
+      });
 }
 
 int StackLayout::GetPreferredHeightForWidth(const views::View* host,
@@ -45,11 +53,18 @@ int StackLayout::GetPreferredHeightForWidth(const views::View* host,
   return *std::max_element(heights.cbegin(), heights.cend());
 }
 
-void StackLayout::Layout(views::View* host) {
-  const int host_width = host->GetContentsBounds().width();
-  const int host_height = host->GetContentsBounds().height();
+views::ProposedLayout StackLayout::CalculateProposedLayout(
+    const views::SizeBounds& size_bounds) const {
+  const int host_width =
+      size_bounds.width().is_bounded() ? size_bounds.width().value() : 0;
+  const int host_height =
+      size_bounds.height().is_bounded() ? size_bounds.height().value() : 0;
+  views::ProposedLayout layouts;
 
-  for (views::View* child : host->children()) {
+  for (views::View* child : host_view()->children()) {
+    if (!IsChildIncludedInLayout(child)) {
+      continue;
+    }
     int child_width = host_width;
     int child_height = host_height;
 
@@ -77,19 +92,23 @@ void StackLayout::Layout(views::View* host) {
         child_y = std::max(0, (host_height - child_height) / 2);
     }
 
-    child->SetBounds(child_x, child_y, child_width, child_height);
+    layouts.child_layouts.emplace_back(
+        child, child->GetVisible(),
+        gfx::Rect(child_x, child_y, child_width, child_height), size_bounds);
   }
+  layouts.host_size = gfx::Size(host_width, host_height);
+  return layouts;
 }
 
 void StackLayout::SetRespectDimensionForView(views::View* view,
                                              RespectDimension dimension) {
-  DCHECK(host_ && view->parent() == host_);
+  CHECK(host_view() && view->parent() == host_view());
   respect_dimension_map_[view] = dimension;
 }
 
 void StackLayout::SetVerticalAlignmentForView(views::View* view,
                                               VerticalAlignment alignment) {
-  DCHECK(host_ && view->parent() == host_);
+  CHECK(host_view() && view->parent() == host_view());
   vertical_alignment_map_[view] = alignment;
 }
 

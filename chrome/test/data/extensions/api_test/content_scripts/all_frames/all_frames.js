@@ -1,1 +1,1 @@
-chrome.extension.sendRequest("all_frames");
+chrome.runtime.sendMessage("all_frames");

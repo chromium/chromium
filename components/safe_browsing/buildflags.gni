@@ -12,11 +12,14 @@ declare_args() {
   # safe browsing feature. Safe browsing can be compiled in 3 different levels:
   # 0 disables it, 1 enables it fully, and 2 enables mobile protection via an
   # external API.
-  if (is_ios || is_castos || is_cast_android) {
+  if (is_ios || is_castos || is_cast_android || is_fuchsia) {
     safe_browsing_mode = 0
   } else if (is_android) {
     safe_browsing_mode = 2
   } else {
     safe_browsing_mode = 1
   }
+
+  # Allows building without //third_party/unrar included, for license reasons
+  safe_browsing_use_unrar = true
 }

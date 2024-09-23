@@ -20,13 +20,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/constants/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/captive_portal/core/captive_portal_testing_utils.h"
 #include "components/prefs/pref_service.h"
@@ -121,8 +121,6 @@ class NetworkPortalDetectorImplBrowserTest
     EXPECT_EQ(default_network->GetPortalState(),
               NetworkState::PortalState::kOnline);
     EXPECT_FALSE(display_service_->GetNotification(kNotificationId));
-    EXPECT_EQ(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE,
-              network_portal_detector::GetInstance()->GetCaptivePortalStatus());
 
     // Setting a shill portal state should set portal detection and display a
     // notification
@@ -220,10 +218,9 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
       shill::kStatePortalSuspected, NetworkState::PortalState::kPortalSuspected,
       l10n_util::GetStringUTF16(
           IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI),
-      l10n_util::GetStringFUTF16(
-          IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_MESSAGE, u"wifi"),
-      l10n_util::GetStringUTF16(
-          IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_BUTTON));
+      l10n_util::GetStringFUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_MESSAGE,
+                                 u"wifi"),
+      l10n_util::GetStringUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON));
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
@@ -253,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
       GetNotificationButtonTitle(),
       l10n_util::GetStringUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON));
 
-  // State changes to portal-suspected and check if notification properties
+  // State changes to portal-suspected. Notification properties shouldn't
   // change.
   SetState(shill::kStatePortalSuspected);
   ASSERT_TRUE(default_network);
@@ -261,13 +258,12 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
   EXPECT_EQ(GetNotificationTitle(),
             l10n_util::GetStringUTF16(
                 IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI));
+  EXPECT_EQ(GetNotificationMessage(),
+            l10n_util::GetStringFUTF16(
+                IDS_NEW_PORTAL_DETECTION_NOTIFICATION_MESSAGE, u"wifi"));
   EXPECT_EQ(
-      GetNotificationMessage(),
-      l10n_util::GetStringFUTF16(
-          IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_MESSAGE, u"wifi"));
-  EXPECT_EQ(GetNotificationButtonTitle(),
-            l10n_util::GetStringUTF16(
-                IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_BUTTON));
+      GetNotificationButtonTitle(),
+      l10n_util::GetStringUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON));
 
   // Explicitly close the notification.
   display_service_->RemoveNotification(NotificationHandler::Type::TRANSIENT,
@@ -336,7 +332,8 @@ void NetworkPortalDetectorImplBrowserTestIgnoreProxy::TestImpl(
   SetIgnoreNoNetworkForTesting();
 
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-      prefs::kCaptivePortalAuthenticationIgnoresProxy, preference_value);
+      chromeos::prefs::kCaptivePortalAuthenticationIgnoresProxy,
+      preference_value);
 
   // User connects to portalled wifi.
   SetConnected(kWifiServicePath);
@@ -349,8 +346,6 @@ void NetworkPortalDetectorImplBrowserTestIgnoreProxy::TestImpl(
 
   // Check that the network is behind a portal and a notification is displayed.
   EXPECT_TRUE(display_service_->GetNotification(kNotificationId));
-  EXPECT_EQ(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL,
-            network_portal_detector::GetInstance()->GetCaptivePortalStatus());
   EXPECT_EQ(default_network->GetPortalState(),
             NetworkState::PortalState::kPortal);
 

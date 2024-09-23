@@ -123,7 +123,7 @@ public class CloseAllTabsDialogUnitTest {
                 CloseAllTabsDialog.getDialogDescriptionString(mContext, mTabModelSelectorMock),
                 model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
         assertEquals(
-                mContext.getString(R.string.menu_close_all_tabs),
+                mContext.getString(R.string.close_all_tabs_and_groups_action),
                 model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
         assertEquals(
                 mContext.getString(R.string.cancel),

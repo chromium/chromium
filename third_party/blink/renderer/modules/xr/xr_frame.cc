@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
@@ -209,7 +214,7 @@ XRCPUDepthInformation* XRFrame::getDepthInformation(
     return nullptr;
   }
 
-  return session_->GetCpuDepthInformation(this, exception_state);
+  return view->GetCpuDepthInformation(exception_state);
 }
 
 XRPose* XRFrame::getPose(XRSpace* space,
@@ -301,10 +306,11 @@ XRFrame::getHitTestResultsForTransientInput(
       hit_test_source->Results());
 }
 
-ScriptPromise XRFrame::createAnchor(ScriptState* script_state,
-                                    XRRigidTransform* offset_space_from_anchor,
-                                    XRSpace* space,
-                                    ExceptionState& exception_state) {
+ScriptPromise<XRAnchor> XRFrame::createAnchor(
+    ScriptState* script_state,
+    XRRigidTransform* offset_space_from_anchor,
+    XRSpace* space,
+    ExceptionState& exception_state) {
   DVLOG(2) << __func__;
 
   if (!session_->IsFeatureEnabled(device::mojom::XRSessionFeature::ANCHORS)) {
@@ -375,7 +381,7 @@ ScriptPromise XRFrame::createAnchor(ScriptState* script_state,
                                             maybe_plane_id, exception_state);
 }
 
-ScriptPromise XRFrame::CreateAnchorFromNonStationarySpace(
+ScriptPromise<XRAnchor> XRFrame::CreateAnchorFromNonStationarySpace(
     ScriptState* script_state,
     const gfx::Transform& native_origin_from_anchor,
     XRSpace* space,

@@ -41,10 +41,8 @@ class PostSaveCompromisedHelper
 
   // |compromised| contains all insecure credentials for the current site.
   // |current_username| is the username that was just saved or updated.
-  PostSaveCompromisedHelper(
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          compromised,
-      const std::u16string& current_username);
+  PostSaveCompromisedHelper(base::span<const PasswordForm> compromised,
+                            const std::u16string& current_username);
   ~PostSaveCompromisedHelper() override;
 
   PostSaveCompromisedHelper(const PostSaveCompromisedHelper&) = delete;

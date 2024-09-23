@@ -1,0 +1,58 @@
+<style include="cr-shared-style settings-shared settings-columned-section">
+  :host {
+    background-color: var(--info-card-background-color);
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 2px 0;
+    --cr-icon-size: 16px;
+    --info-card-background-color: var(--google-blue-50);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --info-card-background-color: var(--google-grey-800);
+    }
+  }
+
+  .title {
+    color: var(--cr-primary-text-color);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: .25px;
+  }
+
+  .settings-columned-section .description-header {
+    color: var(--cr-primary-text-color);
+  }
+
+  cr-icon {
+    height: var(--cr-icon-size);
+    width: var(--cr-icon-size);
+  }
+</style>
+
+<!-- TODO(crbug.com/362225975) Update colors, icons and strings. -->
+<div class="settings-columned-section">
+  <div class="column">
+    <h2 class="title first">$i18n{privacyPageTitle}</h2>
+    <h3 class="description-header">$i18n{privacyPageTitle}</h3>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:ai" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">$i18n{privacyPageTitle}</div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:googleg" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">$i18n{privacyPageTitle}</div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:ai" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">$i18n{privacyPageTitle}</div>
+      </li>
+    </ul>
+  </div>
+</div>

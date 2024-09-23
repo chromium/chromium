@@ -882,7 +882,7 @@ bool RequestCoordinator::ShouldTryNextRequest(
       // Should not be possible to receive these values.
       // Make explicit choice about new status codes that actually reach here.
       // Their default is no further processing in this service window.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

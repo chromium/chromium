@@ -10,23 +10,15 @@
 <script>
 attribution_reporting_promise_test(async t => {
   const source = {
-      source_event_id: generateSourceEventId(),
-      debug_reporting: true,
-      destination: 'https://{{host}}',
-      max_event_level_reports: 0,
-    };
-  await registerAttributionSrc({
-    cookie: attributionDebugCookie,
-    source,
-    method: 'a',
-  });
-  await waitForSourceToBeRegistered(source.source_event_id);
-
+    destination: 'https://{{host}}',
+    max_event_level_reports: 0,
+  };
   registerAttributionSrcByImg(createRedirectChain([
+    { cookie: attributionDebugCookie, source },
     {
       trigger: {
         event_trigger_data: [{
-          trigger_data: '3'
+          trigger_data: '1'
         }],
         debug_reporting: true,
       },
@@ -40,6 +32,6 @@ attribution_reporting_promise_test(async t => {
   assert_equals(debugReport.length, 1);
   assert_equals(debugReport[0].type, 'trigger-event-excessive-reports');
   assert_own_property(debugReport[0], 'body');
-  assert_equals(debugReport[0].body.trigger_data, '3');
+  assert_equals(debugReport[0].body.trigger_data, '1');
 }, 'Source with max event level reports set to 0 produces no reports');
 </script>

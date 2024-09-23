@@ -46,6 +46,7 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
   // session_manager::SessionManagerObserver:
   void OnUserProfileLoaded(const AccountId& account_id) override;
   void OnUserSessionStarted(bool is_primary_user) override;
+  void OnUserSessionStartUpTaskCompleted() override;
 
   // Called before a session begins loading.
   void PreStartSession(bool is_primary_session);

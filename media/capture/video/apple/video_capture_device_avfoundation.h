@@ -30,7 +30,7 @@ FindBestCaptureFormat(NSArray<AVCaptureDeviceFormat*>* formats,
 
 }  // namespace media
 
-// TODO(crbug.com/1126690): rename this file to be suffixed by the
+// TODO(crbug.com/40148253): rename this file to be suffixed by the
 // "next generation" moniker.
 CAPTURE_EXPORT
 @interface VideoCaptureDeviceAVFoundation
@@ -104,12 +104,16 @@ CAPTURE_EXPORT
                           captureFormat:
                               (const media::VideoCaptureFormat&)captureFormat
                              colorSpace:(const gfx::ColorSpace&)colorSpace
-                              timestamp:(const base::TimeDelta)timestamp;
+                              timestamp:(const base::TimeDelta)timestamp
+                     capture_begin_time:
+                         (std::optional<base::TimeTicks>)capture_begin_time;
 
 - (BOOL)processPixelBufferPlanes:(CVImageBufferRef)pixelBuffer
                    captureFormat:(const media::VideoCaptureFormat&)captureFormat
                       colorSpace:(const gfx::ColorSpace&)colorSpace
-                       timestamp:(const base::TimeDelta)timestamp;
+                       timestamp:(const base::TimeDelta)timestamp
+              capture_begin_time:
+                  (std::optional<base::TimeTicks>)capture_begin_time;
 
 // Returns whether the format supports the Portrait Effect feature or not.
 - (bool)isPortraitEffectSupported;

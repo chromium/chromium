@@ -29,7 +29,7 @@ namespace shell_integration {
 //     browser is asynchronous.
 //
 // Use `DefaultBrowserWorker` instead.
-// TODO(https://crbug.com/1393452): Extend `DefaultBrowserWorker` to work better
+// TODO(crbug.com/40248220): Extend `DefaultBrowserWorker` to work better
 // on the Mac and remove this function.
 bool SetAsDefaultBrowser();
 
@@ -37,7 +37,7 @@ bool SetAsDefaultBrowser();
 // for the current user). Prefer to use the `DefaultSchemeClientWorker` class
 // below since it works on all OSs.
 //
-// TODO(https://crbug.com/1393452): Extend `DefaultSchemeClientWorker` to work
+// TODO(crbug.com/40248220): Extend `DefaultSchemeClientWorker` to work
 // better on the Mac and remove this function.
 bool SetAsDefaultClientForScheme(const std::string& scheme);
 
@@ -48,11 +48,11 @@ enum DefaultWebClientSetPermission {
   // No special permission or interaction is required to set the default
   // browser. This is used in Linux and Windows 7 and under. This is returned
   // for compatibility on the Mac, even though the Mac requires interaction.
-  // TODO(https://crbug.com/1393452): Fix this.
+  // TODO(crbug.com/40248220): Fix this.
   SET_DEFAULT_UNATTENDED,
   // On the Mac and on Windows 8+, a browser can be made default only in an
   // interactive flow. This value is returned for Windows 8+.
-  // TODO(https://crbug.com/1393452): Fix it so that this value is also returned
+  // TODO(crbug.com/40248220): Fix it so that this value is also returned
   // on the Mac.
   SET_DEFAULT_INTERACTIVE,
 };
@@ -142,6 +142,13 @@ base::CommandLine CommandLineArgsForLauncher(
     const std::string& extension_app_id,
     const base::FilePath& profile_path,
     const std::string& run_on_os_login_mode);
+
+// Set up command line arguments for launching chrome at the given url using the
+// given profile. All arguments must be non-empty and valid.
+base::CommandLine CommandLineArgsForUrlShortcut(
+    const base::FilePath& chrome_exe_program,
+    const base::FilePath& profile_path,
+    const GURL& url);
 
 // Append command line arguments for launching a new chrome.exe process
 // based on the current process.
@@ -252,6 +259,8 @@ class DefaultBrowserWorker : public DefaultWebClientWorker {
   DefaultBrowserWorker(const DefaultBrowserWorker&) = delete;
   DefaultBrowserWorker& operator=(const DefaultBrowserWorker&) = delete;
 
+  static void DisableSetAsDefaultForTesting();
+
  protected:
   ~DefaultBrowserWorker() override;
 
@@ -261,6 +270,8 @@ class DefaultBrowserWorker : public DefaultWebClientWorker {
 
   // Set Chrome as the default browser.
   void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override;
+
+  static bool g_disable_set_as_default_for_testing;
 };
 
 // Worker for checking and setting the default client application

@@ -29,7 +29,15 @@
 #error File can only be included when USE_BLINK is true
 #endif
 
+namespace blink {
+namespace mojom {
+class FileChooserParams;
+}
+}  // namespace blink
+
 namespace content {
+class FileSelectListener;
+class JavaScriptDialogManager;
 class NavigationEntry;
 class NavigationHandle;
 class RenderFrameHost;
@@ -47,7 +55,8 @@ class ContentWebState : public WebState,
 
   // Constructor for ContentWebState created for deserialized sessions.
   ContentWebState(const CreateParams& params,
-                  CRWSessionStorage* session_storage);
+                  CRWSessionStorage* session_storage,
+                  NativeSessionFetcher session_fetcher);
 
   // Constructor for ContentWebState created for deserialized sessions.
   ContentWebState(BrowserState* browser_state,
@@ -63,6 +72,8 @@ class ContentWebState : public WebState,
 
   // WebState implementation.
   void SerializeToProto(proto::WebStateStorage& storage) const override;
+  void SerializeMetadataToProto(
+      proto::WebStateMetadataStorage& storage) const override;
   WebStateDelegate* GetDelegate() override;
   void SetDelegate(WebStateDelegate* delegate) override;
   std::unique_ptr<WebState> Clone() const override;
@@ -162,8 +173,14 @@ class ContentWebState : public WebState,
       content::NavigationHandle* navigation_handle) override;
   void DidStartLoading() override;
   void DidStopLoading() override;
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
+  void DidFailLoad(content::RenderFrameHost* render_frame_host,
+                   const GURL& validated_url,
+                   int error_code) override;
   void LoadProgressChanged(double progress) override;
 
+  void OnVisibilityChanged(content::Visibility visibility) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
 
   void DidUpdateFaviconURL(
@@ -181,13 +198,14 @@ class ContentWebState : public WebState,
       base::TerminationStatus status) override;
 
   // WebContentsDelegate
-  void AddNewContents(content::WebContents* source,
-                      std::unique_ptr<content::WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& window_features,
-                      bool user_gesture,
-                      bool* was_blocked) override;
+  content::WebContents* AddNewContents(
+      content::WebContents* source,
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override;
   int GetTopControlsHeight() override;
   int GetTopControlsMinHeight() override;
   int GetBottomControlsHeight() override;
@@ -195,10 +213,27 @@ class ContentWebState : public WebState,
   bool ShouldAnimateBrowserControlsHeightChanges() override;
   bool DoBrowserControlsShrinkRendererSize(
       content::WebContents* web_contents) override;
+  int GetVirtualKeyboardHeight(content::WebContents* web_contents) override;
   bool OnlyExpandTopControlsAtPageTop() override;
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
+  std::unique_ptr<content::ColorChooser> OpenColorChooser(
+      content::WebContents* web_contents,
+      SkColor color,
+      const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions)
+      override;
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      scoped_refptr<content::FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override;
+
+  content::JavaScriptDialogManager* GetJavaScriptDialogManager(
+      content::WebContents* source) override;
 
  private:
+  // Helper method to register notification observers.
+  void RegisterNotificationObservers();
+  void OnKeyboardShow(NSNotification* notification);
+  void OnKeyboardHide(NSNotification* notification);
+
   WebStateDelegate* delegate_ = nullptr;
   CRCWebViewportContainerView* web_view_;
   CRWSessionStorage* session_storage_;
@@ -216,6 +251,17 @@ class ContentWebState : public WebState,
   FaviconStatus favicon_status_;
   bool top_control_scroll_in_progress_ = false;
   bool cached_shrink_controls_ = false;
+  bool created_with_opener_ = false;
+  id keyboard_showing_observer_;
+  id keyboard_hiding_observer_;
+  int keyboard_height_ = 0;
+
+  // The time that this ContentWebState was last made active. The initial value
+  // is the ContentWebState's creation time.
+  base::Time last_active_time_;
+
+  // The ContentWebState's creation time.
+  base::Time creation_time_;
 
   base::WeakPtrFactory<ContentWebState> weak_factory_{this};
 };

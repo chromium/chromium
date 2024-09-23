@@ -56,7 +56,7 @@
 
 - (BOOL)application:(UIApplication*)application
     shouldRestoreSecureApplicationState:(NSCoder*)coder {
-  // TODO(crbug.com/710329): Make this value configurable in the settings.
+  // TODO(crbug.com/41312374): Make this value configurable in the settings.
   return YES;
 }
 

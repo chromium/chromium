@@ -27,14 +27,14 @@ component("crypto") {
     "ec_signature_creator_impl.h",
     "encryptor.cc",
     "encryptor.h",
+    "features.cc",
+    "features.h",
     "hkdf.cc",
     "hkdf.h",
     "hmac.cc",
     "hmac.h",
     "openssl_util.cc",
     "openssl_util.h",
-    "p224_spake.cc",
-    "p224_spake.h",
     "random.cc",
     "random.h",
     "rsa_private_key.cc",
@@ -61,7 +61,7 @@ component("crypto") {
     "user_verifying_key.h",
   ]
 
-  deps = [ "//base/third_party/dynamic_annotations" ]
+  deps = []
 
   public_deps = [
     ":buildflags",
@@ -72,33 +72,42 @@ component("crypto") {
   if (is_apple) {
     sources += [
       "apple_keychain.h",
+      "apple_keychain_util.h",
+      "apple_keychain_util.mm",
       "apple_keychain_v2.h",
       "apple_keychain_v2.mm",
     ]
 
     if (is_mac) {
-      sources += [ "apple_keychain_mac.cc" ]
+      sources += [
+        "apple_keychain_mac.cc",
+        "mac_security_services_lock.cc",
+        "mac_security_services_lock.h",
+        "scoped_lacontext.h",
+        "scoped_lacontext.mm",
+        "unexportable_key_mac.h",
+        "unexportable_key_mac.mm",
+        "user_verifying_key_mac.mm",
+      ]
     } else if (is_ios) {
       sources += [ "apple_keychain_ios.mm" ]
     }
 
     frameworks = [
+      "LocalAuthentication.framework",
       "CoreFoundation.framework",
+      "CryptoTokenKit.framework",
+      "Foundation.framework",
       "Security.framework",
     ]
   }
 
-  if (is_mac) {
-    sources += [
-      "mac_security_services_lock.cc",
-      "mac_security_services_lock.h",
-    ]
-  }
   if (is_win) {
     sources += [
       "scoped_capi_types.h",
       "scoped_cng_types.h",
       "unexportable_key_win.cc",
+      "unexportable_key_win.h",
       "user_verifying_key_win.cc",
     ]
     libs = [ "ncrypt.lib" ]
@@ -162,7 +171,6 @@ test("crypto_unittests") {
     "ec_signature_creator_unittest.cc",
     "encryptor_unittest.cc",
     "hmac_unittest.cc",
-    "p224_spake_unittest.cc",
     "random_unittest.cc",
     "rsa_private_key_unittest.cc",
     "secure_hash_unittest.cc",
@@ -173,8 +181,20 @@ test("crypto_unittests") {
     "unexportable_key_unittest.cc",
   ]
 
-  if (is_win) {
+  if (is_win || is_mac) {
     sources += [ "unexportable_key_metrics_unittest.cc" ]
+  }
+
+  if (is_apple) {
+    sources += [ "mock_apple_keychain_unittest.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "apple_keychain_util_unittest.mm",
+      "unexportable_key_mac_unittest.mm",
+      "user_verifying_key_mac_unittest.mm",
+    ]
   }
 
   # Some files are built when NSS is used for the platform certificate library.
@@ -195,11 +215,17 @@ test("crypto_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_apple) {
+    deps += [ ":mock_apple_keychain" ]
+  }
 }
 
 static_library("test_support") {
   testonly = true
   sources = [
+    "scoped_fake_user_verifying_key_provider.cc",
+    "scoped_fake_user_verifying_key_provider.h",
     "scoped_mock_unexportable_key_provider.cc",
     "scoped_mock_unexportable_key_provider.h",
   ]
@@ -225,8 +251,15 @@ static_library("test_support") {
     sources += [
       "fake_apple_keychain_v2.h",
       "fake_apple_keychain_v2.mm",
+      "scoped_fake_apple_keychain_v2.h",
+      "scoped_fake_apple_keychain_v2.mm",
     ]
-    frameworks = [ "Foundation.framework" ]
+    frameworks = [
+      "CoreFoundation.framework",
+      "Foundation.framework",
+      "LocalAuthentication.framework",
+      "Security.framework",
+    ]
   }
 
   deps = [

@@ -1,0 +1,27 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[Exposed=Window, RuntimeEnabled=RTCRtpTransport]
+interface RTCRtpTransport {
+  [CallWith=ScriptState, RaisesException]
+  undefined createProcessor(Worker worker, optional any options, optional sequence<object> transfer);
+};
+
+[Exposed=DedicatedWorker, RuntimeEnabled=RTCRtpTransport]
+interface RTCRtpTransportProcessor {
+  sequence<RTCRtpAcks> readReceivedAcks(long maxCount);
+  sequence<RTCRtpSent> readSentRtp(long maxCount);
+
+  attribute unsigned long customMaxBandwidth;  // bps
+};
+
+[Exposed=DedicatedWorker, RuntimeEnabled=RTCRtpTransport]
+interface RTCRtpTransportProcessorEvent : Event {
+    readonly attribute RTCRtpTransportProcessor processor;
+};
+
+[ImplementedAs=DedicatedWorkerGlobalScopeRTCRtpTransportProcessor, RuntimeEnabled=RTCRtpTransport]
+partial interface DedicatedWorkerGlobalScope {
+    attribute EventHandler onrtcrtptransportprocessor;
+};

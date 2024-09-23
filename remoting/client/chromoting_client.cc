@@ -128,7 +128,7 @@ void ChromotingClient::Start(
 
 void ChromotingClient::Close() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  connection_->Disconnect(protocol::OK);
+  connection_->Disconnect(ErrorCode::OK);
 }
 
 void ChromotingClient::SetCapabilities(
@@ -267,7 +267,7 @@ void ChromotingClient::OnSignalStrategyStateChange(
     mouse_input_scaler_.set_input_stub(nullptr);
     connection_.reset();
     user_interface_->OnConnectionState(protocol::ConnectionToHost::FAILED,
-                                       protocol::SIGNALING_ERROR);
+                                       ErrorCode::SIGNALING_ERROR);
   }
 }
 

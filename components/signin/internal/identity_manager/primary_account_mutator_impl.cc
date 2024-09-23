@@ -110,37 +110,30 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
 // IdentityManager dependencies like `chrome.identity` extension API - that
 // assume that an account will always be available at sync consent level in Ash.
 void PrimaryAccountMutatorImpl::RevokeSyncConsent(
-    signin_metrics::ProfileSignout source_metric,
-    signin_metrics::SignoutDelete delete_metric) {
+    signin_metrics::ProfileSignout source_metric) {
   // TODO(crbug.com/40066949): `RevokeSyncConsent` shouldn't be available on iOS
   //     when kSync is no longer used. See ConsentLevel::kSync documentation for
   //     details.
   DCHECK(primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  primary_account_manager_->RevokeSyncConsent(source_metric, delete_metric);
+  primary_account_manager_->RevokeSyncConsent(source_metric);
 }
 
 bool PrimaryAccountMutatorImpl::ClearPrimaryAccount(
-    signin_metrics::ProfileSignout source_metric,
-    signin_metrics::SignoutDelete delete_metric) {
+    signin_metrics::ProfileSignout source_metric) {
   if (!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin))
     return false;
 
-  primary_account_manager_->ClearPrimaryAccount(source_metric, delete_metric);
+  primary_account_manager_->ClearPrimaryAccount(source_metric);
   return true;
 }
 
 bool PrimaryAccountMutatorImpl::RemovePrimaryAccountButKeepTokens(
-    signin_metrics::ProfileSignout source_metric,
-    signin_metrics::SignoutDelete delete_metric) {
-  CHECK_EQ(
-      source_metric,
-      signin_metrics::ProfileSignout::kCancelSyncConfirmationOnWebOnlySignedIn);
+    signin_metrics::ProfileSignout source_metric) {
   if (!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin)) {
     return false;
   }
 
-  primary_account_manager_->RemovePrimaryAccountButKeepTokens(source_metric,
-                                                              delete_metric);
+  primary_account_manager_->RemovePrimaryAccountButKeepTokens(source_metric);
   return true;
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_APP_INSTALL_FEATURES_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_APP_INSTALL_FEATURES_H_
 
+#include <string_view>
+
 #include "base/auto_reset.h"
-#include "base/strings/string_piece.h"
 
 class Profile;
 
@@ -20,7 +21,7 @@ bool IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed(Profile& profile);
 // Returns the base::Feature in |kPreinstalledAppInstallFeatures| that
 // corresponds to |feature_name|. Used by external app install configs to gate
 // installation on features listed in |kPreinstalledAppInstallFeatures|.
-bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
+bool IsPreinstalledAppInstallFeatureEnabled(std::string_view feature_name,
                                             const Profile& profile);
 
 base::AutoReset<bool> SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();

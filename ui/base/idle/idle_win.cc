@@ -4,8 +4,9 @@
 
 #include "ui/base/idle/idle.h"
 
-#include <limits.h>
 #include <windows.h>
+
+#include <limits.h>
 
 #include "ui/base/idle/idle_internal.h"
 #include "ui/base/win/lock_state.h"

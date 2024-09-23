@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/server/http_server.h"
 
 #include <stdint.h>
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -15,6 +21,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -23,6 +30,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -154,7 +162,7 @@ class TestHttpClient {
   bool IsCompleteResponse(const std::string& response) {
     // Check end of headers first.
     size_t end_of_headers =
-        HttpUtil::LocateEndOfHeaders(response.data(), response.size());
+        HttpUtil::LocateEndOfHeaders(base::as_byte_span(response));
     if (end_of_headers == std::string::npos) {
       return false;
     }
@@ -164,7 +172,7 @@ class TestHttpClient {
     DCHECK_LE(0, body_size);
     auto headers =
         base::MakeRefCounted<HttpResponseHeaders>(HttpUtil::AssembleRawHeaders(
-            base::StringPiece(response.data(), end_of_headers)));
+            std::string_view(response.data(), end_of_headers)));
     return body_size >= headers->GetContentLength();
   }
 
@@ -214,11 +222,11 @@ class HttpServerTest : public TestWithTaskEnvironment,
 
   void OnWebSocketRequest(int connection_id,
                           const HttpServerRequestInfo& info) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void OnWebSocketMessage(int connection_id, std::string data) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void OnClose(int connection_id) override {
@@ -290,7 +298,7 @@ namespace {
 class WebSocketTest : public HttpServerTest {
   void OnHttpRequest(int connection_id,
                      const HttpServerRequestInfo& info) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void OnWebSocketRequest(int connection_id,
@@ -327,16 +335,18 @@ std::string EncodeFrame(std::string message,
   header.final = finish;
   header.masked = mask;
   header.payload_length = message.size();
-  const int header_size = GetWebSocketFrameHeaderSize(header);
+  const size_t header_size = GetWebSocketFrameHeaderSize(header);
   std::string frame_header;
   frame_header.resize(header_size);
   if (mask) {
     WebSocketMaskingKey masking_key = GenerateWebSocketMaskingKey();
-    WriteWebSocketFrameHeader(header, &masking_key, &frame_header[0],
-                              header_size);
-    MaskWebSocketFramePayload(masking_key, 0, &message[0], message.size());
+    WriteWebSocketFrameHeader(header, &masking_key,
+                              base::as_writable_byte_span(frame_header));
+    MaskWebSocketFramePayload(masking_key, 0,
+                              base::as_writable_byte_span(message));
   } else {
-    WriteWebSocketFrameHeader(header, nullptr, &frame_header[0], header_size);
+    WriteWebSocketFrameHeader(header, nullptr,
+                              base::as_writable_byte_span(frame_header));
   }
   return frame_header + message;
 }
@@ -942,6 +952,40 @@ TEST_F(HttpServerTest, WrongProtocolRequest) {
     // Reset the state of the connection map.
     connection_map().clear();
   }
+}
+
+// A null byte in the headers should cause the request to be rejected.
+TEST_F(HttpServerTest, NullByteInHeaders) {
+  constexpr char kNullByteInHeader[] =
+      "GET / HTTP/1.1\r\n"
+      "User-Agent: Mozilla\0/\r\n"
+      "\r\n";
+  TestHttpClient client;
+  CreateConnection(&client);
+
+  client.Send(std::string(kNullByteInHeader, std::size(kNullByteInHeader) - 1));
+  client.ExpectUsedThenDisconnectedWithNoData();
+
+  ASSERT_EQ(1u, connection_map().size());
+  ASSERT_FALSE(connection_map().begin()->second);
+  EXPECT_FALSE(HasRequest());
+}
+
+// A null byte in the body should be accepted.
+TEST_F(HttpServerTest, NullByteInBody) {
+  // We use the trailing null byte added by the compiler as the "body" of the
+  // request.
+  constexpr char kNullByteInBody[] =
+      "POST /body HTTP/1.1\r\n"
+      "User-Agent: Mozilla\r\n"
+      "Content-Length: 1\r\n"
+      "\r\n";
+  TestHttpClient client;
+  CreateConnection(&client);
+
+  client.Send(std::string(kNullByteInBody, std::size(kNullByteInBody)));
+  auto request = WaitForRequest();
+  EXPECT_EQ(request.info.data, std::string_view("\0", 1));
 }
 
 class MockStreamSocket : public StreamSocket {

@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -18,7 +19,9 @@ import java.util.Map;
 /** Reports profile settings for users in a family group. */
 @JNINamespace("chrome::android")
 public class FamilyInfoFeedbackSource implements AsyncFeedbackSource {
+    // LINT.IfChange
     private static final String FAMILY_MEMBER_ROLE = "Family_Member_Role";
+    // LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h)
     private static final String PARENTAL_CONTROL_SITES_CHILD = "Parental_Control_Sites_Child";
 
     private final Profile mProfile;
@@ -78,6 +81,6 @@ public class FamilyInfoFeedbackSource implements AsyncFeedbackSource {
 
     @NativeMethods
     interface Natives {
-        void start(FamilyInfoFeedbackSource source, Profile profile);
+        void start(FamilyInfoFeedbackSource source, @JniType("Profile*") Profile profile);
     }
 }

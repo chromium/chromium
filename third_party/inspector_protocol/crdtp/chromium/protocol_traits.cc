@@ -4,8 +4,12 @@
 
 #include "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h"
 
+#include <string_view>
 #include <utility>
+
 #include "base/base64.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,12 +27,11 @@ void Binary::AppendSerialized(std::vector<uint8_t>* out) const {
 }
 
 std::string Binary::toBase64() const {
-  return base::Base64Encode(base::StringPiece(
-      reinterpret_cast<const char*>(bytes_->front()), bytes_->size()));
+  return base::Base64Encode(base::as_string_view(*bytes_));
 }
 
 // static
-Binary Binary::fromBase64(base::StringPiece base64, bool* success) {
+Binary Binary::fromBase64(std::string_view base64, bool* success) {
   std::string decoded;
   *success = base::Base64Decode(base64, &decoded);
   return *success ? Binary::fromString(std::move(decoded)) : Binary();
@@ -41,7 +44,7 @@ Binary Binary::fromRefCounted(scoped_refptr<base::RefCountedMemory> memory) {
 
 // static
 Binary Binary::fromVector(std::vector<uint8_t> data) {
-  return Binary(base::RefCountedBytes::TakeVector(&data));
+  return Binary(base::MakeRefCounted<base::RefCountedBytes>(std::move(data)));
 }
 
 // static
@@ -50,9 +53,8 @@ Binary Binary::fromString(std::string data) {
 }
 
 // static
-Binary Binary::fromSpan(const uint8_t* data, size_t size) {
-  return Binary(scoped_refptr<base::RefCountedBytes>(
-      new base::RefCountedBytes(data, size)));
+Binary Binary::fromSpan(base::span<const uint8_t> data) {
+  return Binary(base::MakeRefCounted<base::RefCountedBytes>(data));
 }
 
 // static
@@ -60,16 +62,15 @@ bool ProtocolTypeTraits<Binary>::Deserialize(DeserializerState* state,
                                              Binary* value) {
   auto* tokenizer = state->tokenizer();
   if (tokenizer->TokenTag() == cbor::CBORTokenTag::BINARY) {
-    const span<uint8_t> bin = tokenizer->GetBinary();
-    *value = Binary::fromSpan(bin.data(), bin.size());
+    *value = Binary::fromSpan(tokenizer->GetBinary());
     return true;
   }
   if (tokenizer->TokenTag() == cbor::CBORTokenTag::STRING8) {
     const auto str_span = tokenizer->GetString8();
     bool success = false;
     *value = Binary::fromBase64(
-        base::StringPiece(reinterpret_cast<const char*>(str_span.data()),
-                          str_span.size()),
+        std::string_view(reinterpret_cast<const char*>(str_span.data()),
+                         str_span.size()),
         &success);
     if (!success)
       state->RegisterError(Error::BINDINGS_INVALID_BASE64_STRING);
@@ -173,14 +174,14 @@ bool ProtocolTypeTraits<base::Value>::Deserialize(DeserializerState* state,
       break;
     case cbor::CBORTokenTag::STRING8: {
       const auto str = tokenizer->GetString8();
-      *value = base::Value(base::StringPiece(
+      *value = base::Value(std::string_view(
           reinterpret_cast<const char*>(str.data()), str.size()));
       break;
     }
     case cbor::CBORTokenTag::STRING16: {
       const auto str = tokenizer->GetString16WireRep();
       // TODO(caseq): support big-endian architectures when needed.
-      *value = base::Value(base::StringPiece16(
+      *value = base::Value(std::u16string_view(
           reinterpret_cast<const char16_t*>(str.data()), str.size() / 2));
       break;
     }
@@ -255,7 +256,7 @@ void ProtocolTypeTraits<base::Value>::Serialize(const base::Value& value,
     }
     case base::Value::Type::BINARY:
       // TODO(caseq): support this?
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case base::Value::Type::DICT:
       SerializeDict(value.GetDict(), bytes);

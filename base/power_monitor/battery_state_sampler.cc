@@ -52,7 +52,7 @@ BatteryStateSampler::~BatteryStateSampler() {
 BatteryStateSampler* BatteryStateSampler::Get() {
   // On a platform with a BatteryLevelProvider implementation, the global
   // instance must be created before accessing it.
-  // TODO(crbug.com/1373560): ChromeOS currently doesn't define
+  // TODO(crbug.com/40871810): ChromeOS currently doesn't define
   // `HAS_BATTERY_LEVEL_PROVIDER_IMPL` but it should once the locations of the
   // providers and sampling sources are consolidated.
 #if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL) || BUILDFLAG(IS_CHROMEOS_ASH)
@@ -108,7 +108,7 @@ BatteryStateSampler::CreateSamplingEventSource() {
 #endif  // !BUILDFLAG(IS_MAC)
 
 void BatteryStateSampler::OnInitialBatteryStateSampled(
-    const absl::optional<BatteryLevelProvider::BatteryState>& battery_state) {
+    const std::optional<BatteryLevelProvider::BatteryState>& battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(!has_last_battery_state_);
@@ -128,7 +128,7 @@ void BatteryStateSampler::OnSamplingEvent() {
 }
 
 void BatteryStateSampler::OnBatteryStateSampled(
-    const absl::optional<BatteryLevelProvider::BatteryState>& battery_state) {
+    const std::optional<BatteryLevelProvider::BatteryState>& battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(has_last_battery_state_);

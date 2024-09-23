@@ -24,6 +24,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 #include <algorithm>
@@ -233,11 +238,14 @@ bool StringBuilder::DoesAppendCauseOverflow(unsigned length) const {
   if (new_length < Capacity()) {
     return false;
   }
-  // Expanding the underlying vector usually doubles its capacity.
+  // Expanding the underlying vector usually doubles its capacity—unless there
+  // is no current buffer, in which case `length` will become the capacity.
   if (is_8bit_) {
-    return buffer8_.capacity() * 2 >= buffer8_.MaxCapacity();
+    return (HasBuffer() ? buffer8_.capacity() * 2 : length) >=
+           Buffer8::MaxCapacity();
   }
-  return buffer16_.capacity() * 2 >= buffer16_.MaxCapacity();
+  return (HasBuffer() ? buffer16_.capacity() * 2 : length) >=
+         Buffer16::MaxCapacity();
 }
 
 void StringBuilder::Append(const UChar* characters, unsigned length) {

@@ -7,12 +7,14 @@
 
 #include "ash/ash_export.h"
 #include "chromeos/ash/components/phonehub/notification.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 
 namespace ash {
 
 // A LabelButton that represents an app in the launcher.
 class ASH_EXPORT AppStreamLauncherListItem : public views::LabelButton {
+  METADATA_HEADER(AppStreamLauncherListItem, views::LabelButton)
  public:
   AppStreamLauncherListItem(
       PressedCallback callback,
@@ -25,8 +27,6 @@ class ASH_EXPORT AppStreamLauncherListItem : public views::LabelButton {
   std::u16string GetAppAccessibleName(
       const phonehub::Notification::AppMetadata& app_metadata);
 
-  // views::View:
-  const char* GetClassName() const override;
 };
 
 }  // namespace ash

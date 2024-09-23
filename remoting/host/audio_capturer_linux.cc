@@ -58,13 +58,16 @@ void AudioCapturerLinux::OnDataRead(
   DCHECK(!callback_.is_null());
 
   if (silence_detector_.IsSilence(
-          reinterpret_cast<const int16_t*>(data->data().data()),
-          data->data().size() / sizeof(int16_t) / AudioPipeReader::kChannels)) {
+          // TODO(danakj): This cast can cause UB, we should copy into integers
+          // or pass it as a byte span.
+          reinterpret_cast<const int16_t*>(data->as_string().data()),
+          data->as_string().size() / sizeof(int16_t) /
+              AudioPipeReader::kChannels)) {
     return;
   }
 
-  std::unique_ptr<AudioPacket> packet(new AudioPacket());
-  packet->add_data(data->data());
+  auto packet = std::make_unique<AudioPacket>();
+  packet->add_data(data->as_string());
   packet->set_encoding(AudioPacket::ENCODING_RAW);
   packet->set_sampling_rate(AudioPipeReader::kSamplingRate);
   packet->set_bytes_per_sample(AudioPipeReader::kBytesPerSample);

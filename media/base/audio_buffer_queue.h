@@ -55,6 +55,9 @@ class MEDIA_EXPORT AudioBufferQueue {
   // frames available, the seek operation will fail.
   void SeekFrames(int frames);
 
+  // Returns the timestamp of the first frame in the queue, if any exists.
+  std::optional<base::TimeDelta> FrontTimestamp() const;
+
   // Returns the number of frames buffered beyond the current position.
   int frames() const { return frames_; }
 

@@ -65,7 +65,7 @@ void GetFontFamilyString(CC::ClosedCaptionStyle closed_caption_style,
       break;
     case CC::ClosedCaptionStyle_Default:
       // We shouldn't override with OS Styling for Default case.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       *css_font_family = std::string();
       break;
   }
@@ -91,7 +91,7 @@ std::string GetEdgeEffectString(CC::ClosedCaptionEdgeEffect edge_effect) {
       return "0px 0px 2px rgba(0, 0, 0, 0.5), 2px 2px 2px black";
     case CC::ClosedCaptionEdgeEffect_Default:
       // We shouldn't override with OS Styling for Default case.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }
@@ -110,7 +110,7 @@ std::string GetCaptionSizeString(CC::ClosedCaptionSize caption_size) {
       return "200%";
     case CC::ClosedCaptionSize_Default:
       // We shouldn't override with OS Styling for Default case.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }
@@ -155,7 +155,7 @@ SkColor GetCaptionColor(CC::ClosedCaptionColor caption_color) {
     case CC::ClosedCaptionColor_Default:
     default:
       // We shouldn't override with OS Styling for Default case.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SK_ColorWHITE;
   }
 }

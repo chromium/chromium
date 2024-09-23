@@ -11,9 +11,10 @@
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
+import './ax_annotations_section.js';
 import './bluetooth_braille_display_ui.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
@@ -300,7 +301,7 @@ export class SettingsChromeVoxSubpageElement extends
             'mediaStoppedPlaying',
             'menuEnd',
             'menuItemSelected',
-            'menuListValueChanged',
+            'menuListValueChangedDeprecated',
             'menuPopupEnd',
             'menuPopupStart',
             'menuStart',
@@ -326,6 +327,12 @@ export class SettingsChromeVoxSubpageElement extends
             'valueInTextFieldChanged',
           ];
         },
+      },
+
+      mainNodeAnnotationsFeatureEnabled_: {
+        type: String,
+        value: loadTimeData.getBoolean('mainNodeAnnotationsEnabled'),
+        readOnly: true,
       },
     };
   }

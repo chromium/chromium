@@ -4,6 +4,8 @@
 
 #include "components/cast/message_port/cast_core/message_port_core.h"
 
+#include <string_view>
+
 #include "components/cast/message_port/message_port.h"
 
 namespace cast_api_bindings {
@@ -167,7 +169,7 @@ void MessagePortCore::ProcessMessageQueue() {
   }
 }
 
-bool MessagePortCore::PostMessage(base::StringPiece message) {
+bool MessagePortCore::PostMessage(std::string_view message) {
   return PostMessageWithTransferables(message, {});
 }
 
@@ -180,7 +182,7 @@ MessagePortCore* MessagePortCore::FromMessagePort(MessagePort* port) {
 }
 
 bool MessagePortCore::PostMessageWithTransferables(
-    base::StringPiece message,
+    std::string_view message,
     std::vector<std::unique_ptr<MessagePort>> ports) {
   std::vector<std::unique_ptr<MessagePortCore>> transferables;
   for (auto& port : ports) {

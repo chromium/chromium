@@ -1,0 +1,91 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package oobe.proto;
+
+import "chrome/browser/apps/almanac_api_client/proto/client_context.proto";
+
+// This file is a mirror of the proto file maintained in the server code base at
+// go/oobe-apps-service. Changes should be made by updating the
+// server code base and then copying the result to Chromium.
+
+message OOBEListRequest {
+  // The standard Almanac Device Context for this request.
+  optional apps.proto.ClientDeviceContext device_context = 1;
+
+  // The standard Almanac User Context for this request.
+  optional apps.proto.ClientUserContext user_context = 2;
+}
+
+message OOBEListResponse {
+  // An app Icon. This will be the "best match" we have for each App for OOBE's
+  // frame size using Chrome's matching algorithm.
+  message Icon {
+    // Url to query to get the icon binary image.
+    optional string url = 1;
+
+    // Width of the icon in pixels if known.
+    // Note: Icons are always square.
+    optional int32 width_in_pixels = 2;
+
+    // Mime type of the icon.
+    // Note: this may be a generic application/octect-stream.
+    optional string mime_type = 3;
+
+    // Whether or not we have permission from the platform to mask the icon.
+    // This means that ChromeOS will put a circle around it.
+    optional bool is_masking_allowed = 4;
+  }
+
+  // An individual App that will be presented to the user for optional install.
+  message App {
+    // The AppGroup UUID that was used to derive this app.
+    optional string app_group_uuid = 1;
+
+    // The App's PackageId.
+    optional string package_id = 2;
+
+    // The name of the app to display to the user. This will be the "best match"
+    // for this app using the language from the user context.
+    optional string name = 3;
+
+    // The Icon to display to the user.
+    optional Icon icon = 4;
+
+    // The tags for this AppGroup.
+    repeated string tags = 5;
+
+    // The order of this App in the list.
+    optional uint32 order = 6;
+  }
+
+  message Tag {
+    // The tag's slug (identifier).
+    optional string tag = 1;
+
+    // The name of the tag to display to the user. This will be the "best match"
+    // for this app using the language from the user context.
+    optional string label = 2;
+
+    // The order to display this tag to the user.
+    optional uint32 order = 3;
+
+    // The URL for this tag's image.
+    optional string image_url = 4;
+
+    // A description for this tag.
+    optional string description = 5;
+  }
+
+  // The list of AppGroups returned for this request.
+  repeated App apps = 1;
+
+  // The list of Tags for OOBE. Each App returned will have one or more tags
+  // that match this list.
+  repeated Tag tags = 2;
+}

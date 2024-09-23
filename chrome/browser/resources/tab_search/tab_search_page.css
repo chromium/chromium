@@ -1,0 +1,148 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/cr_elements/mwb_shared_style_lit.css.js
+ * #import=//resources/cr_elements/mwb_shared_vars.css.js
+ * #import=./icons.html.js
+ * #scheme=relative
+ * #include=mwb-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+#searchField {
+  align-items: center;
+  background-color: var(--mwb-background-color);
+  display: flex;
+  height: 60px;
+  padding: 0 var(--mwb-list-item-horizontal-margin);
+  user-select: none;
+}
+
+#searchIcon {
+  color: var(--cr-secondary-text-color);
+  height: var(--mwb-icon-size);
+  padding-inline-end: 12px;
+  width: var(--mwb-icon-size);
+}
+
+#searchWrapper {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  position: relative;
+}
+
+:host([has-search-text]) #searchField label {
+  visibility: hidden;
+}
+
+#searchLabel {
+  align-items: center;
+  color: var(--cr-secondary-text-color);
+  cursor: text;
+  display: flex;
+  font-size: var(--mwb-primary-text-font-size);
+  font-weight: var(--mwb-secondary-text-font-weight);
+  height: 100%;
+  justify-content: space-between;
+  position: absolute;
+  width: 100%;
+}
+
+#searchResultText {
+  clip: rect(0,0,0,0);
+  display: inline-block;
+  position: fixed;
+}
+
+#searchInput {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: var(--cr-primary-text-color);
+  flex: 1;
+  font-family: inherit;
+  font-size: var(--mwb-primary-text-font-size);
+  font-style: inherit;
+  font-weight: var(--mwb-secondary-text-font-weight);
+  outline: none;
+  padding: 0;
+  text-overflow: ellipsis;
+}
+
+
+#searchInput::-webkit-search-cancel-button {
+  display: none;
+}
+
+#no-results {
+  color: var(--cr-primary-text-color);
+  font-size: var(--mwb-primary-text-font-size);
+  padding: 12px;
+  text-align: center;
+}
+
+#feedback-text {
+  color: var(--cr-primary-text-color);
+  font-size: var(--mwb-primary-text-font-size);
+  margin-inline-start: var(--mwb-list-item-horizontal-margin);
+  user-select: none;
+}
+
+#feedback-footer {
+  border: none;
+  border-top: 1px solid var(--google-grey-500);
+  height: 40px;
+  width: 100%;
+}
+
+#feedback-footer:focus {
+  background-color: var(--mwb-list-item-selected-background-color);
+  outline: none;
+}
+
+#feedback-icon {
+  --iron-icon-fill-color: var(--google-grey-700);
+  height: var(--mwb-icon-size);
+  width: var(--mwb-icon-size);
+}
+
+@media (prefers-color-scheme: dark) {
+  #feedback-icon {
+    --iron-icon-fill-color: var(--google-blue-300);
+  }
+}
+
+.list-section-title {
+  align-items: center;
+  background-color: var(--mwb-background-color);
+  color: var(--cr-secondary-text-color);
+  display: flex;
+  font-size: var(--mwb-primary-text-font-size);
+  font-weight: var(--mwb-primary-text-font-weight);
+  height: var(--mwb-list-section-title-height);
+  padding-inline-end: 28px;
+  padding-inline-start: var(--mwb-list-item-horizontal-margin);
+  position: sticky;
+  top: 0;
+  user-select: none;
+  z-index: 1000;
+}
+
+cr-expand-button {
+  --cr-expand-button-size: 24px;
+  --cr-expand-button-icon-size: 16px;
+  --cr-section-vertical-padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  color: var(--mwb-icon-button-fill-color);
+  flex-grow: 1;
+}
+
+#divider {
+  width: 100%;
+  height: 1px;
+  background-color: var(--cr-separator-color);
+}

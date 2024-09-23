@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -42,7 +43,6 @@ namespace blink {
 class FilePropertyBag;
 class FileMetadata;
 class FormControlState;
-class KURL;
 class ExecutionContext;
 
 class CORE_EXPORT File final : public Blob {

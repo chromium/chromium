@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/reading_list/reading_list_api.h"
 
 #include "base/containers/flat_set.h"
+#include "base/location.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/reading_list/reading_list_api_constants.h"
 #include "chrome/browser/extensions/api/reading_list/reading_list_util.h"
@@ -123,7 +124,7 @@ ReadingListRemoveEntryFunction::RemoveEntryFromReadingList() {
     return Error(reading_list_api_constants::kURLNotFoundError);
   }
 
-  reading_list_model_->RemoveEntryByURL(url_);
+  reading_list_model_->RemoveEntryByURL(url_, FROM_HERE);
 
   return NoArguments();
 }

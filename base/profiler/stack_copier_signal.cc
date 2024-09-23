@@ -13,7 +13,9 @@
 
 #include <atomic>
 #include <cstring>
+#include <optional>
 
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
@@ -23,7 +25,6 @@
 #include "base/time/time_override.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -129,7 +130,7 @@ struct HandlerParams {
   RAW_PTR_EXCLUSION const uint8_t** stack_copy_bottom;
 
   // The timestamp when the stack was copied.
-  RAW_PTR_EXCLUSION absl::optional<TimeTicks>* maybe_timestamp;
+  RAW_PTR_EXCLUSION std::optional<TimeTicks>* maybe_timestamp;
 
   // The delegate provided to the StackCopier.
   RAW_PTR_EXCLUSION StackCopier::Delegate* stack_copier_delegate;
@@ -148,7 +149,7 @@ void CopyStackSignalHandler(int n, siginfo_t* siginfo, void* sigcontext) {
 
   // MaybeTimeTicksNowIgnoringOverride() is implemented in terms of
   // clock_gettime on Linux, which is signal safe per the signal-safety(7) man
-  // page, but is not garanteed to succeed, in which case absl::nullopt is
+  // page, but is not garanteed to succeed, in which case std::nullopt is
   // returned. TimeTicks::Now() can't be used because it expects clock_gettime
   // to always succeed and is thus not signal-safe.
   *params->maybe_timestamp = subtle::MaybeTimeTicksNowIgnoringOverride();
@@ -234,7 +235,7 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
   bool copied = false;
   const uint8_t* stack_copy_bottom = nullptr;
   const uintptr_t stack_base_address = thread_delegate_->GetStackBaseAddress();
-  absl::optional<TimeTicks> maybe_timestamp;
+  std::optional<TimeTicks> maybe_timestamp;
   HandlerParams params = {stack_base_address, &wait_event,  &copied,
                           thread_context,     stack_buffer, &stack_copy_bottom,
                           &maybe_timestamp,   delegate};
@@ -259,15 +260,11 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
     if (syscall(SYS_tgkill, getpid(), thread_delegate_->GetThreadId(),
                 SIGURG) != 0) {
       NOTREACHED();
-      return false;
     }
     bool finished_waiting = wait_event.Wait();
     TRACE_EVENT_END0(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"),
                      "StackCopierSignal copy stack");
-    if (!finished_waiting) {
-      NOTREACHED();
-      return false;
-    }
+    CHECK(finished_waiting);
     // Ideally, an accurate timestamp is captured while the sampled thread is
     // paused. In rare cases, this may fail, in which case we resort to
     // capturing an delayed timestamp here instead.
@@ -293,6 +290,11 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
                (stack_base_address - bottom);
 
   return copied;
+}
+
+std::vector<uintptr_t*> StackCopierSignal::GetRegistersToRewrite(
+    RegisterContext* thread_context) {
+  return thread_delegate_->GetRegistersToRewrite(thread_context);
 }
 
 }  // namespace base

@@ -57,7 +57,7 @@ bool UserDelegateImpl::IsSigninContext() const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool UserDelegateImpl::IsAffiliated() const {
-  return chrome::enterprise_util::IsProfileAffiliated(profile_);
+  return enterprise_util::IsProfileAffiliated(profile_);
 }
 
 bool UserDelegateImpl::IsManagedUser() const {

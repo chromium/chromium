@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -29,12 +30,12 @@ class CONTENT_EXPORT RaceNetworkRequestWriteBufferManager {
   mojo::ScopedDataPipeConsumerHandle ReleaseConsumerHandle();
   void Abort();
   void ResetProducer();
-  void Watch(mojo::SimpleWatcher::ReadyCallback callback);
+  void Watch(mojo::SimpleWatcher::ReadyCallbackWithState callback);
   bool IsWatching() const { return watcher_.IsWatching(); }
   void CancelWatching();
   MojoResult BeginWriteData();
   MojoResult EndWriteData(uint32_t num_bytes_written);
-  std::tuple<MojoResult, size_t> WriteData(base::span<const char> read_buffer);
+  std::tuple<MojoResult, size_t> WriteData(base::span<const char> buffer);
   void ArmOrNotify();
   size_t buffer_size() const { return buffer_.size(); }
   size_t num_bytes_written() const { return num_bytes_written_; }
@@ -53,7 +54,7 @@ class CONTENT_EXPORT RaceNetworkRequestWriteBufferManager {
   bool is_data_pipe_created_;
   mojo::ScopedDataPipeProducerHandle producer_;
   mojo::ScopedDataPipeConsumerHandle consumer_;
-  base::span<char> buffer_;
+  base::raw_span<uint8_t> buffer_;
   mojo::SimpleWatcher watcher_;
   size_t num_bytes_written_ = 0;
 };

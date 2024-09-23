@@ -94,26 +94,39 @@ LacrosShelfItemTracker::AddOrUpdateShelfItemAndReturnDelegate(
     mojom::WindowDataPtr window_data) {
   std::string item_id = window_data->item_id;
   ash::ShelfID shelf_id(item_id);
-
-  ash::ShelfItem item;
-  item.id = shelf_id;
-  item.status = ash::STATUS_RUNNING;
-  item.type = ash::TYPE_APP;
-  if (!window_data->icon.isNull()) {
-    item.image = window_data->icon;
-  }
-
   ash::ShelfModel* shelf_model = ash::ShelfModel::Get();
+
   int index = ash::ShelfModel::Get()->ItemIndexByID(shelf_id);
 
   if (index == -1) {
-    // If there is no existing item by the ID in the Shelf, we add.
+    // If there is no existing item by the ID in the Shelf, we add a new item.
     mojom::InstanceType instance_type = window_data->instance_type;
     std::unique_ptr<ash::ShelfItemDelegate> created_delegate =
         CreateDelegateByInstanceType(shelf_id, instance_type);
+
+    ash::ShelfItem item;
+    item.id = shelf_id;
+    item.title = static_cast<LacrosShelfItemController*>(created_delegate.get())
+                     ->GetTitle();
+    CHECK(!item.title.empty());
+    item.status = ash::STATUS_RUNNING;
+    item.type = ash::TYPE_APP;
+    if (!window_data->icon.isNull()) {
+      item.image = window_data->icon;
+    }
+
     shelf_model->Add(item, std::move(created_delegate));
   } else {
     // If the item already exists in the Shelf, we update.
+    const ash::ShelfItem* existing_item = shelf_model->ItemByID(shelf_id);
+    CHECK(existing_item);
+
+    ash::ShelfItem item = *existing_item;
+    // Icon is the only thing we update for now.
+    if (!window_data->icon.isNull()) {
+      item.image = window_data->icon;
+    }
+
     ash::ShelfModel::Get()->Set(index, item);
   }
   return shelf_model->GetShelfItemDelegate(shelf_id);

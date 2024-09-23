@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -57,6 +58,7 @@ class ChromeContentClient : public content::ContentClient {
   void SetActiveURL(const GURL& url, std::string top_origin) override;
   void SetGpuInfo(const gpu::GPUInfo& gpu_info) override;
   void AddPlugins(std::vector<content::ContentPluginInfo>* plugins) override;
+  std::vector<url::Origin> GetPdfInternalPluginAllowedOrigins() override;
   void AddContentDecryptionModules(
       std::vector<content::CdmInfo>* cdms,
       std::vector<media::CdmHostFilePath>* cdm_host_file_paths) override;
@@ -64,7 +66,7 @@ class ChromeContentClient : public content::ContentClient {
   std::u16string GetLocalizedString(int message_id) override;
   std::u16string GetLocalizedString(int message_id,
                                     const std::u16string& replacement) override;
-  base::StringPiece GetDataResource(
+  std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;

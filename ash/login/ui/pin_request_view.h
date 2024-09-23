@@ -132,8 +132,8 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
 
   // views::View:
   void RequestFocus() override;
-  gfx::Size CalculatePreferredSize() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // views::DialogDelegateView:
   views::View* GetInitiallyFocusedView() override;
@@ -197,7 +197,7 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
   // Strings as on view construction to enable restoring the original state.
   std::u16string default_title_;
   std::u16string default_description_;
-  std::u16string default_accessible_title_;
+  const std::u16string default_accessible_title_;
 
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Label> description_label_ = nullptr;

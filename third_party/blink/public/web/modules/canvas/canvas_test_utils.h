@@ -18,4 +18,4 @@ BLINK_MODULES_EXPORT bool IsAcceleratedCanvasImageSource(
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_CANVAS_CANVAS_TEST_UTILS_H_

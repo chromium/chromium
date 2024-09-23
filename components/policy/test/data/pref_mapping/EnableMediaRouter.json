@@ -15,7 +15,9 @@
           "EnableMediaRouter": true
         },
         "prefs": {
-          "media_router.enable_media_router": {}
+          "media_router.enable_media_router": {
+            "value": true
+          }
         }
       }
     ]

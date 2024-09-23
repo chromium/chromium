@@ -11,10 +11,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "media/base/video_frame.h"
 #include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/fourcc.h"
+#include "media/gpu/chromeos/frame_resource.h"
 
 namespace base {
 class WaitableEvent;
@@ -26,9 +26,9 @@ class GpuBufferLayout;
 
 // This class is used by VdVideoDecodeAccelerator, which adapts
 // VideoDecodeAccelerator to VideoDecoder interface.
-// The mission is to allocate and manage DMA-buf VideoFrame by delegating the
+// The mission is to allocate and manage DMA-buf FrameResource by delegating the
 // requests of buffer allocation to a VideoDecodeAccelerator instance, and
-// provide VideoFrame to the VideoDecoder instance.
+// provide FrameResource to the VideoDecoder instance.
 // The communication with VdVideoDecodeAccelerator, which inherits
 // VdaDelegate, is executed on |vda_task_runner_|, and the communication with
 // VideoDecoder instance is on |parent_task_runner_|.
@@ -41,7 +41,7 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
         base::OnceCallback<void(CroStatus::Or<GpuBufferLayout>)>;
     // Callback for importing available frames to this pool.
     using ImportFrameCb =
-        base::RepeatingCallback<void(scoped_refptr<VideoFrame>)>;
+        base::RepeatingCallback<void(scoped_refptr<FrameResource>)>;
 
     // Request new frames from VDA's client. VdaDelegate has to return the
     // layout of frames by calling |notify_layout_changed_cb|.
@@ -55,6 +55,7 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
                                size_t max_num_frames,
                                NotifyLayoutChangedCb notify_layout_changed_cb,
                                ImportFrameCb import_frame_cb) = 0;
+    virtual VideoFrame::StorageType GetFrameStorageType() const = 0;
   };
 
   VdaVideoFramePool(base::WeakPtr<VdaDelegate> vda,
@@ -69,7 +70,8 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
                                             size_t max_num_frames,
                                             bool use_protected,
                                             bool use_linear_buffers) override;
-  scoped_refptr<VideoFrame> GetFrame() override;
+  scoped_refptr<FrameResource> GetFrame() override;
+  VideoFrame::StorageType GetFrameStorageType() const override;
   bool IsExhausted() override;
   void NotifyWhenFrameAvailable(base::OnceClosure cb) override;
   void ReleaseAllFrames() override;
@@ -89,9 +91,9 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
   static void ImportFrameThunk(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::optional<base::WeakPtr<VdaVideoFramePool>> weak_this,
-      scoped_refptr<VideoFrame> frame);
+      scoped_refptr<FrameResource> frame);
   // Import an available frame.
-  void ImportFrame(scoped_refptr<VideoFrame> frame);
+  void ImportFrame(scoped_refptr<FrameResource> frame);
 
   // Call |frame_available_cb_| when the pool is not exhausted.
   void CallFrameAvailableCbIfNeeded();
@@ -103,6 +105,10 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
   // Note: DmabufVideoFrame's public methods like Initialize() and GetFrame()
   // should be called on |parent_task_runner_|.
   scoped_refptr<base::SequencedTaskRunner> vda_task_runner_;
+
+  // The storage type of frames imported by |vda_|. This is set at
+  // construction time by calling |vda_->GetFrameStorageType()|.
+  const VideoFrame::StorageType vda_frame_storage_type_;
 
   // The callback which is called when the pool is not exhausted.
   base::OnceClosure frame_available_cb_;
@@ -117,7 +123,7 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
   gfx::Rect visible_rect_;
   gfx::Size natural_size_;
 
-  base::queue<scoped_refptr<VideoFrame>> frame_pool_;
+  base::queue<scoped_refptr<FrameResource>> frame_pool_;
 
   // Sequence checker for |parent_task_runner_|.
   SEQUENCE_CHECKER(parent_sequence_checker_);

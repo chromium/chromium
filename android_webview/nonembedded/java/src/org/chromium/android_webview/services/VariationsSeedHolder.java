@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * VariationsSeedHolder is a singleton which manages the local copy of the variations seed - both
@@ -34,7 +34,9 @@ import java.util.Queue;
 public class VariationsSeedHolder {
     private static final String TAG = "VariationsSeedHolder";
 
-    private static final VariationsSeedHolder sInstance = new VariationsSeedHolder();
+    private static class LazyHolder {
+        static final VariationsSeedHolder sInstance = new VariationsSeedHolder();
+    }
 
     private static void writeSeedWithoutClosing(SeedInfo seed, ParcelFileDescriptor destination) {
         // writeSeed() will close "out", but closing "out" will not close "destination".
@@ -50,8 +52,9 @@ public class VariationsSeedHolder {
     // Set true when we fail to load a seed, to prevent future loads until SeedUpdater runs.
     private boolean mFailedReadingSeed;
 
-    private SafeModeSeedUpdater mSafeModeSeedUpdater = new SafeModeSeedUpdater();
-    private Date mDate = new Date();
+    private final SafeModeSeedUpdateNotifier mSafeModeSeedUpdateNotifier =
+            new SafeModeSeedUpdateNotifier();
+    private Date mFakeDateForTesting;
 
     // A Runnable which handles an individual request for the seed. Must run on mSeedThread.
     private class SeedWriter implements Runnable {
@@ -126,6 +129,7 @@ public class VariationsSeedHolder {
                 }
                 VariationsUtils.replaceOldWithNewSeed();
                 mFailedReadingSeed = false;
+                mSafeModeSeedUpdateNotifier.reportSeedUpdateCompletion();
             } finally {
                 mOnFinished.run();
             }
@@ -140,7 +144,7 @@ public class VariationsSeedHolder {
     }
 
     public static VariationsSeedHolder getInstance() {
-        return sInstance;
+        return LazyHolder.sInstance;
     }
 
     public void writeSeedIfNewer(ParcelFileDescriptor destination, long date) {
@@ -159,13 +163,16 @@ public class VariationsSeedHolder {
     // overridden by tests
     public void onWriteFinished() {}
 
-    /** A seed updater class tailored to update Variations seeds specifically for SafeMode scenarios */
-    private class SafeModeSeedUpdater {
+    /**
+     * A seed updater class tailored to notify that Variations seeds have been updated specifically
+     * for SafeMode scenarios
+     */
+    private class SafeModeSeedUpdateNotifier {
         // Stores a list of requests to notify the requester, SafeModeVariationsSeedContentProvider,
         // as soon as the Variations Fast Fetch Mode seed is fresh, where fresh is considered to be
         // < 15 minutes old.
         private final Queue<Runnable> mSafeModeVariationsSeedContentProviderCallback =
-                new LinkedList<Runnable>();
+                new ConcurrentLinkedQueue<Runnable>();
 
         public void hasSeedUpdateCompletedAsync(Runnable r) {
             mSafeModeVariationsSeedContentProviderCallback.add(r);
@@ -175,55 +182,33 @@ public class VariationsSeedHolder {
         }
 
         public void reportSeedUpdateCompletion() {
-            while (!mSafeModeVariationsSeedContentProviderCallback.isEmpty()) {
-                mSafeModeVariationsSeedContentProviderCallback.poll().run();
+            Runnable r;
+            while ((r = mSafeModeVariationsSeedContentProviderCallback.poll()) != null) {
+                r.run();
             }
-        }
-
-        // Provides a way for the caller to update the seed files from the current thread instead of
-        // the seed thread. This allowls the caller to block its current thread and wait for the
-        // seed files to update.
-        public boolean updateSeedFilesSynchronously(SeedInfo curInfo) {
-            File newSeedFile = VariationsUtils.getNewSeedFile();
-            FileOutputStream out;
-            try {
-                out = new FileOutputStream(newSeedFile);
-                if (!VariationsUtils.writeSeed(out, curInfo)) {
-                    Log.e(TAG, "Failed to write seed file " + newSeedFile + " for update");
-                }
-                VariationsUtils.replaceOldWithNewSeed();
-            } catch (FileNotFoundException e) {
-                Log.e(TAG, "Failed to open seed file " + newSeedFile + " for update");
-                return false;
-            }
-            reportSeedUpdateCompletion();
-            return true;
         }
     }
 
     public void hasSeedUpdateCompletedAsync(Runnable r) {
-        mSafeModeSeedUpdater.hasSeedUpdateCompletedAsync(r);
-    }
-
-    public boolean updateSeedFilesSynchronously(SeedInfo curInfo) {
-        return mSafeModeSeedUpdater.updateSeedFilesSynchronously(curInfo);
+        mSafeModeSeedUpdateNotifier.hasSeedUpdateCompletedAsync(r);
     }
 
     @VisibleForTesting
     public boolean isSeedFileFresh() {
         long currTimestamp = getCurrentTimestamp();
-        return (VariationsUtils.getSeedFile().lastModified() > 0
-                && (currTimestamp - VariationsUtils.getSeedFile().lastModified())
+        long lastModified = VariationsUtils.getSeedFile().lastModified();
+        return (lastModified > 0
+                && (currTimestamp - lastModified)
                         < VariationsFastFetchModeUtils.MAX_ALLOWABLE_SEED_AGE_MS);
     }
 
     public void setDateForTesting(Date date) {
-        var oldValue = mDate;
-        mDate = date;
-        ResettersForTesting.register(() -> mDate = oldValue);
+        var oldValue = mFakeDateForTesting;
+        mFakeDateForTesting = date;
+        ResettersForTesting.register(() -> mFakeDateForTesting = oldValue);
     }
 
     private long getCurrentTimestamp() {
-        return mDate.getTime();
+        return mFakeDateForTesting != null ? mFakeDateForTesting.getTime() : new Date().getTime();
     }
 }

@@ -6,6 +6,7 @@
 #define REMOTING_HOST_CHROMEOS_FRAME_SINK_DESKTOP_CAPTURER_H_
 
 #include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"

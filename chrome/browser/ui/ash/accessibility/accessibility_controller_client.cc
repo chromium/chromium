@@ -87,6 +87,21 @@ void AccessibilityControllerClient::TriggerAccessibilityAlert(
     case ash::AccessibilityAlert::FASTER_SPLIT_SCREEN_SETUP:
       msg = IDS_A11Y_ALERT_FASTER_SPLITSCREEN_TOAST;
       break;
+    case ash::AccessibilityAlert::SNAP_GROUP_RESIZE_LEFT:
+      msg = IDS_A11Y_ALERT_SNAP_GROUP_RESIZE_LEFT;
+      break;
+    case ash::AccessibilityAlert::SNAP_GROUP_RESIZE_RIGHT:
+      msg = IDS_A11Y_ALERT_SNAP_GROUP_RESIZE_RIGHT;
+      break;
+    case ash::AccessibilityAlert::SNAP_GROUP_RESIZE_UP:
+      msg = IDS_A11Y_ALERT_SNAP_GROUP_RESIZE_UP;
+      break;
+    case ash::AccessibilityAlert::SNAP_GROUP_RESIZE_DOWN:
+      msg = IDS_A11Y_ALERT_SNAP_GROUP_RESIZE_DOWN;
+      break;
+    case ash::AccessibilityAlert::SNAP_GROUP_CREATION:
+      msg = IDS_A11Y_ALERT_SNAP_GROUP_CREATION;
+      break;
     case ash::AccessibilityAlert::NONE:
       msg = 0;
       break;
@@ -132,14 +147,6 @@ bool AccessibilityControllerClient::ToggleDictation() {
 
 void AccessibilityControllerClient::SilenceSpokenFeedback() {
   content::TtsController::GetInstance()->Stop();
-}
-
-void AccessibilityControllerClient::OnTwoFingerTouchStart() {
-  AccessibilityManager::Get()->OnTwoFingerTouchStart();
-}
-
-void AccessibilityControllerClient::OnTwoFingerTouchStop() {
-  AccessibilityManager::Get()->OnTwoFingerTouchStop();
 }
 
 bool AccessibilityControllerClient::ShouldToggleSpokenFeedbackViaTouch() const {

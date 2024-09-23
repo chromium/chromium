@@ -1,0 +1,15 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// The nodoc API. This exists to demonstrate nodoc on the main interface itself.
+[nodoc] interface NodocAPI {
+
+  // This is a valid function, but since the interface is marked nodoc, it wont
+  // be documented.
+  static void fooFunction();
+};
+
+partial interface Browser {
+  static attribute NodocAPI nodocAPI;
+};

@@ -55,6 +55,11 @@ void TestPasswordStore::CallSyncEnabledOrDisabledCallbacks() {
   sync_enabled_or_disabled_cbs_.Notify();
 }
 
+void TestPasswordStore::TriggerOnLoginsRetainedForAndroid(
+    const std::vector<PasswordForm>& password_forms) {
+  fake_backend()->TriggerOnLoginsRetainedForAndroid(password_forms);
+}
+
 TestPasswordStore::~TestPasswordStore() = default;
 
 FakePasswordStoreBackend* TestPasswordStore::fake_backend() {

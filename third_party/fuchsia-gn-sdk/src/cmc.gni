@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/fuchsia/gn_configs.gni")
+import("gn_configs.gni")
 import("gn_sdk_configs.gni")
 
 declare_args() {
@@ -99,6 +99,10 @@ template("_cmc_tool") {
 #     The input Component Framework manifest source (.cml) file.
 #     The file must have the extension ".cml".
 #
+#   output_file (optional)
+#     Full path of the output file to generate. If not provided, it will be
+#     derived from target_name and output_name.
+#
 #   output_name (optional)
 #     Name of the output file to generate. Defaults to $target_name.
 #     This should not include a file extension (.cm)
@@ -116,9 +120,17 @@ template("_cmc_tool") {
 #
 template("cmc_compile") {
   assert(defined(invoker.manifest), "manifest file required")
-  output_name = get_path_info(invoker.manifest, "name")
-  if (defined(invoker.output_name)) {
-    output_name = invoker.output_name
+  if (defined(invoker.output_file)) {
+    output_file = invoker.output_file
+  } else {
+    output_name = get_path_info(invoker.manifest, "name")
+    if (defined(invoker.output_name)) {
+      output_name = invoker.output_name
+    }
+
+    # Output in a subdir with `target_name` to avoid collisions when a
+    # manifest file is re-used for multiple component targets.
+    output_file = "$target_gen_dir/$target_name/$output_name.cm"
   }
 
   _cmc_tool(target_name) {
@@ -135,9 +147,6 @@ template("cmc_compile") {
 
     inputs = [ manifest ]
 
-    # Output in a subdir with `target_name` to avoid collisions when a
-    # manifest file is re-used for multiple component targets.
-    output_file = "$target_gen_dir/$target_name/$output_name.cm"
     outputs = [ output_file ]
 
     depfile = "$target_gen_dir/$target_name/$target_name.d"
@@ -151,6 +160,8 @@ template("cmc_compile") {
       rebase_path("//", root_build_dir),
       "--includepath",
       rebase_path("$fuchsia_sdk/pkg/", root_build_dir),
+      "--includepath",
+      get_path_info(invoker.manifest, "dir"),
       "--depfile",
       rebase_path(depfile, root_build_dir),
     ]
@@ -183,49 +194,6 @@ template("cmc_compile") {
         use_decl,
       ]
     }
-  }
-}
-
-# Validates a component manifest file
-#
-# The cmc_validate template will ensure that a given file is a valid
-# CML component manifest. A stamp file is generated to mark that a
-# given file has passed.
-#
-# Parameters:
-#
-#   manifest (required)
-#     [file] The path to the file that is to be validated
-#
-#   deps
-#   testonly
-#   visibility
-#
-template("cmc_validate") {
-  assert(defined(invoker.manifest), "manifest file required")
-
-  _cmc_tool(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "manifest",
-                             "deps",
-                             "testonly",
-                             "visibility",
-                           ])
-
-    _manifest_file = get_path_info(manifest, "file")
-    stamp_file = "$target_gen_dir/$_manifest_file.validated"
-
-    inputs = [ manifest ]
-
-    outputs = [ stamp_file ]
-
-    args = [
-      "--stamp",
-      rebase_path(stamp_file, root_build_dir),
-      "validate",
-      rebase_path(invoker.manifest),
-    ]
   }
 }
 

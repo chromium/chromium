@@ -79,8 +79,8 @@ void ContentMockCertVerifier::CertVerifier::
     GetNetworkService()->BindTestInterfaceForTesting(
         network_service_test_.BindNewPipeAndPassReceiver());
   }
-  // TODO(crbug.com/901026): Make sure the network process is started to avoid a
-  // deadlock on Android.
+  // TODO(crbug.com/41423903): Make sure the network process is started to avoid
+  // a deadlock on Android.
   network_service_test_.FlushForTesting();
 }
 

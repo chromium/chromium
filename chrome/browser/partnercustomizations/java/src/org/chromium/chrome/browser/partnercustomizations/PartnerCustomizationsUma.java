@@ -67,14 +67,12 @@ class PartnerCustomizationsUma {
     private boolean mDidCustomizationCompleteSuccessfully;
 
     /**
-     * Records whether an initial Tab was created after the customization task ran to completion.
-     * A value of {@code null} indicates that we did not yet create the initial Tab.
+     * Records whether an initial Tab was created after the customization task ran to completion. A
+     * value of {@code null} indicates that we did not yet create the initial Tab.
      */
     private @Nullable Boolean mDidCreateInitialTabAfterCustomization;
 
     private @Nullable String mHomepageUrlCreated;
-    private boolean mIsOverviewPageOrStartSurface;
-    private long mCreateInitialTabTime;
 
     /** Supplies access to HomepageManager to characterize homepages. */
     private @Nullable Supplier<HomepageCharacterizationHelper> mHomepageCharacterizationHelper;
@@ -94,33 +92,26 @@ class PartnerCustomizationsUma {
     }
 
     /**
-     * Called when Chrome is about to create an initial tab.
-     * Logs that by the time {@link PartnerBrowserCustomizations#initializeAsync} is called, whether
-     * {@link PartnerBrowserCustomizations#isInitialized}. For cases that's not initialized - due to
+     * Called when Chrome is about to create an initial tab. Logs that by the time {@link
+     * PartnerBrowserCustomizations#initializeAsync} is called, whether {@link
+     * PartnerBrowserCustomizations#isInitialized}. For cases that's not initialized - due to
      * timeout - we are at risk of creating the initial tab with homepage different than the partner
      * provided homepage.
+     *
      * @param isInitialized Whether initialization completed vs timed out.
      * @param homepageUrlCreated The URL of the initial Tab that was created or {@code null} if
-     *         something other than a Homepage was used.
-     * @param createInitialTabTime The timestamp when we started to create an initial tab.
-     * @param isOverviewPageOrStartSurface indicates that there was no created Homepage because some
-     *         kind of overview page or Start Surface was presented in place of the initial Tab.
+     *     something other than a Homepage was used.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} to use to wait for
-     *        native initialization.
+     *     native initialization.
      * @param homepageCharacterizationHelper A supplier for Homepage characterization needs in
-     *        {@link PartnerCustomizationsUma}.
+     *     {@link PartnerCustomizationsUma}.
      */
     void onCreateInitialTab(
             boolean isInitialized,
             @Nullable String homepageUrlCreated,
-            long createInitialTabTime,
-            boolean isOverviewPageOrStartSurface,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<HomepageCharacterizationHelper> homepageCharacterizationHelper) {
-        assert (isOverviewPageOrStartSurface || homepageUrlCreated != null)
-                : "Null created Homepage unexpected unless Overview Page!";
-        RecordHistogram.recordBooleanHistogram(
-                "Android.PartnerCustomizationInitializedBeforeInitialTab", isInitialized);
+        assert homepageUrlCreated != null : "Null created Homepage unexpected!";
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mHomepageCharacterizationHelper = homepageCharacterizationHelper;
 
@@ -133,9 +124,7 @@ class PartnerCustomizationsUma {
             return;
         }
 
-        mIsOverviewPageOrStartSurface = isOverviewPageOrStartSurface;
         mDidCreateInitialTabAfterCustomization = isInitialized;
-        mCreateInitialTabTime = createInitialTabTime;
         mHomepageUrlCreated = homepageUrlCreated;
         tryLogInitialTabCustomizationOutcome();
     }
@@ -220,8 +209,7 @@ class PartnerCustomizationsUma {
                     assert mDidCreateInitialTabAfterCustomization != null;
 
                     boolean isInitialTabNtpOrOverview =
-                            mHomepageCharacterizationHelper.get().isUrlNtp(mHomepageUrlCreated)
-                                    || mIsOverviewPageOrStartSurface;
+                            mHomepageCharacterizationHelper.get().isUrlNtp(mHomepageUrlCreated);
                     boolean isHomepagePartner = mHomepageCharacterizationHelper.get().isPartner();
                     boolean isHomepageNtp = mHomepageCharacterizationHelper.get().isNtp();
                     // We can be certain that our Homepage characterization is correct if the
@@ -280,7 +268,7 @@ class PartnerCustomizationsUma {
      * Whether the system has a cached Homepage. This could be a custom homepage or the system NTP.
      */
     private boolean isHomepageCached() {
-        // TODO(https://crbug.com/1456533): merge into HomepageManager.
+        // TODO(crbug.com/40273149): merge into HomepageManager.
         var sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         return (sharedPreferencesManager.readString(
                                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, null)
@@ -290,16 +278,6 @@ class PartnerCustomizationsUma {
                                         .DEPRECATED_HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
                                 null)
                         != null);
-    }
-
-    /**
-     * Logs whether we failed to create an initial tab due to the app finishing or being destroyed.
-     * @param isActivityFinishingOrDestroyed Whether the Activity is going away.
-     */
-    static void logActivityFinishingOrDestroyed(boolean isActivityFinishingOrDestroyed) {
-        RecordHistogram.recordBooleanHistogram(
-                "Android.PartnerCustomization.ActivityFinishingOrDestroyed",
-                isActivityFinishingOrDestroyed);
     }
 
     /**
@@ -319,8 +297,7 @@ class PartnerCustomizationsUma {
     @interface CustomizationProviderDelegateType {
         /**
          * No delegate was usable. Likely due to the default delegate {@link
-         * CustomizationProviderDelegateUpstreamImpl#isValid} returned false. See also
-         * DelegateUnusedReason cases for PreloadApk.
+         * CustomizationProviderDelegateUpstreamImpl#isValid} returned false.
          */
         int NONE_VALID = 0;
 
@@ -379,70 +356,6 @@ class PartnerCustomizationsUma {
                 "Android.PartnerCustomization.Usage", usage, CustomizationUsage.NUM_ENTRIES);
     }
 
-    static void logPartnerBrowserCustomizationInitDuration(long startTime, long endTime) {
-        // Legacy Histogram, do not modify name or whether written or not.
-        assert startTime > 0;
-        assert endTime > 0;
-        long duration = endTime - startTime;
-        assert duration >= 0;
-        RecordHistogram.recordTimesHistogram(
-                "Android.PartnerBrowserCustomizationInitDuration", duration);
-    }
-
-    /** Logs the duration of initialization of the async task, including notifying callbacks. */
-    static void logPartnerBrowserCustomizationInitDurationWithCallbacks(
-            long startTime, long endTime) {
-        // Legacy Histogram, do not modify name or whether written or not.
-        assert startTime > 0;
-        assert endTime > 0;
-        long duration = endTime - startTime;
-        assert duration >= 0;
-        RecordHistogram.recordTimesHistogram(
-                "Android.PartnerBrowserCustomizationInitDuration.WithCallbacks", duration);
-    }
-
-    /**
-     * Describes why a particular Customization Delegate could not be used.
-     * These correspond to PartnerDelegateUnusedReason in enums.xml.
-     * These values are recorded as histogram values. Entries should not be renumbered and numeric
-     * values should never be reused.
-     */
-    @IntDef({
-        DelegateUnusedReason.PHENOTYPE_BEFORE_PIE,
-        DelegateUnusedReason.PHENOTYPE_FLAG_CANT_COMMIT,
-        DelegateUnusedReason.PHENOTYPE_FLAG_CONFIG_EMPTY,
-        DelegateUnusedReason.GSERVICES_GET_TIMESTAMP_EXCEPTION,
-        DelegateUnusedReason.GSERVICES_TIMESTAMP_MISSING,
-        DelegateUnusedReason.PRELOAD_APK_CANNOT_RESOLVE_PROVIDER,
-        DelegateUnusedReason.PRELOAD_APK_NOT_SYSTEM_PROVIDER,
-        DelegateUnusedReason.NUM_ENTRIES,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @interface DelegateUnusedReason {
-        int PHENOTYPE_BEFORE_PIE = 0;
-        int PHENOTYPE_FLAG_CANT_COMMIT = 1;
-        int PHENOTYPE_FLAG_CONFIG_EMPTY = 2;
-        int GSERVICES_GET_TIMESTAMP_EXCEPTION = 3;
-        int GSERVICES_TIMESTAMP_MISSING = 4;
-        int PRELOAD_APK_CANNOT_RESOLVE_PROVIDER = 5;
-        int PRELOAD_APK_NOT_SYSTEM_PROVIDER = 6;
-
-        int NUM_ENTRIES = 7;
-    }
-
-    /**
-     * Logs a reason that a Partner Customization Delegate was not used.
-     * May be recorded up to 3 times when all 3 are delegates are skipped.
-     * Called from Downstream, or unused.
-     * @param reasonForDelegateNotUsed The delegate and reason it's not usable.
-     */
-    static void logDelegateUnusedReason(@DelegateUnusedReason int reasonForDelegateNotUsed) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.PartnerCustomization.DelegateUnusedReason",
-                reasonForDelegateNotUsed,
-                DelegateUnusedReason.NUM_ENTRIES);
-    }
-
     /**
      * Logs that we just tried to create a customization delegate, if that failed, and the duration.
      * Called from Downstream, or unused.
@@ -487,17 +400,11 @@ class PartnerCustomizationsUma {
         sWhichDelegate = CustomizationProviderDelegateType.NONE_VALID;
     }
 
-    /** Called when the partner customization Async Init background task completes successfully. */
-    void logAsyncInitCompleted() {
-        logAsyncInitCompleted(SystemClock.elapsedRealtime());
-    }
-
     @VisibleForTesting
-    void logAsyncInitCompleted(long initCompletedTime) {
+    void logAsyncInitCompleted() {
         mDidCustomizationCompleteSuccessfully = true;
         @TaskCompletion int taskCompletion = TaskCompletion.NONE_VALID;
         if (mAsyncCustomizationStartTime != 0) {
-            logLoadDuration(mAsyncCustomizationStartTime, initCompletedTime, sWhichDelegate);
             // Check if we've already tried to create an initial tab.
             if (mDidCreateInitialTabAfterCustomization == null
                     || mDidCreateInitialTabAfterCustomization) {
@@ -511,14 +418,6 @@ class PartnerCustomizationsUma {
             taskCompletion = TaskCompletion.TASK_SKIPPED;
         }
         logTaskCompletion(taskCompletion, sWhichDelegate, mWasHomepageCached);
-
-        // Record how much longer we would need to wait in createInitialTab in order to have this
-        // async completion done in time to pick up the customization.
-        if (mDidCreateInitialTabAfterCustomization != null
-                && !mDidCreateInitialTabAfterCustomization) {
-            logDurationNeededForAsyncCompletion(
-                    mCreateInitialTabTime, initCompletedTime, sWhichDelegate, mWasHomepageCached);
-        }
     }
 
     /**
@@ -540,9 +439,7 @@ class PartnerCustomizationsUma {
      * Called when the {@link PartnerBrowserCustomizations#initializeAsync} background task finishes
      * under any condition.
      */
-    void logAsyncInitFinalized(long startTime, long finalizedTime, boolean wasHomepageUriChanged) {
-        logPartnerBrowserCustomizationInitDurationWithCallbacks(startTime, finalizedTime);
-
+    void logAsyncInitFinalized(boolean wasHomepageUriChanged) {
         sIsAnyInitializeAsyncFinalized = true;
         mWasHomepageUriChanged = wasHomepageUriChanged;
         tryLogInitialTabCustomizationOutcome();
@@ -623,23 +520,6 @@ class PartnerCustomizationsUma {
         }
     }
 
-    /**
-     * Logs a duration for loading data from the {@link CustomizationProviderDelegateType} when
-     * successful.
-     */
-    private static void logLoadDuration(
-            long startTime,
-            long completedTime,
-            @CustomizationProviderDelegateType int whichDelegate) {
-        assert startTime > 0;
-        assert completedTime > 0;
-        long duration = completedTime - startTime;
-        assert duration >= 0;
-        RecordHistogram.recordTimesHistogram(
-                "Android.PartnerCustomization.LoadDuration." + delegateName(whichDelegate),
-                duration);
-    }
-
     /** @return the variant name for the given delegate for use in variant histograms. */
     @VisibleForTesting
     static String delegateName(@CustomizationProviderDelegateType int delegate) {
@@ -652,43 +532,6 @@ class PartnerCustomizationsUma {
                 return "PreloadApk";
             default:
                 return "None";
-        }
-    }
-
-    /**
-     * Records how much longer we would need to wait in createInitialTab to have this async task
-     * completion done in time to pick up the customization.
-     * @param createInitialTabTime The time when the initial Tab was created.
-     * @param completedTime The time when the partner customization completed.
-     * @param whichDelegate Which delegate was doing the customization.
-     * @param wasHomepageCached Whether this is effectively Chrome's first launch.
-     */
-    private static void logDurationNeededForAsyncCompletion(
-            long createInitialTabTime,
-            long completedTime,
-            @CustomizationProviderDelegateType int whichDelegate,
-            boolean wasHomepageCached) {
-        assert createInitialTabTime > 0;
-        assert completedTime > 0;
-        long duration = completedTime - createInitialTabTime;
-        assert duration >= 0
-                : String.format(
-                        "Completed time %s must be >= start time %s",
-                        completedTime, createInitialTabTime);
-        RecordHistogram.recordTimesHistogram(
-                "Android.PartnerCustomization.DurationNeededForAsyncCompletion", duration);
-        RecordHistogram.recordTimesHistogram(
-                "Android.PartnerCustomization.DurationNeededForAsyncCompletion."
-                        + delegateName(whichDelegate),
-                duration);
-        if (!wasHomepageCached) {
-            RecordHistogram.recordTimesHistogram(
-                    "Android.PartnerCustomization.DurationNeededForAsyncCompletionNotCached",
-                    duration);
-            RecordHistogram.recordTimesHistogram(
-                    "Android.PartnerCustomization.DurationNeededForAsyncCompletionNotCached."
-                            + delegateName(whichDelegate),
-                    duration);
         }
     }
 

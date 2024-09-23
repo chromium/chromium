@@ -23,6 +23,9 @@ std::string GetDeviceType(syncer::DeviceInfo::FormFactor form_factor) {
       device_type_message_id = IDS_SHARING_DEVICE_TYPE_COMPUTER;
       break;
 
+    case syncer::DeviceInfo::FormFactor::kAutomotive:
+    case syncer::DeviceInfo::FormFactor::kWearable:
+    case syncer::DeviceInfo::FormFactor::kTv:
     case syncer::DeviceInfo::FormFactor::kUnknown:
       device_type_message_id = IDS_SHARING_DEVICE_TYPE_DEVICE;
       break;

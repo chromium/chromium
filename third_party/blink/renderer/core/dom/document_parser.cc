@@ -47,7 +47,7 @@ void DocumentParser::Trace(Visitor* visitor) const {
 }
 
 void DocumentParser::SetDecoder(std::unique_ptr<TextResourceDecoder>) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DocumentParser::PrepareToStopParsing() {

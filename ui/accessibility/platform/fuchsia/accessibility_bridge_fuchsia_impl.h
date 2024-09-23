@@ -21,8 +21,8 @@
 namespace ui {
 
 class COMPONENT_EXPORT(AX_PLATFORM) AccessibilityBridgeFuchsiaImpl final
-    : public ui::AccessibilityBridgeFuchsia,
-      public ui::AXFuchsiaSemanticProvider::Delegate {
+    : public AccessibilityBridgeFuchsia,
+      public AXFuchsiaSemanticProvider::Delegate {
  public:
   using OnConnectionClosedCallback = base::RepeatingCallback<bool(zx_status_t)>;
 
@@ -88,7 +88,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AccessibilityBridgeFuchsiaImpl final
   aura::Window* root_window_;
 
   // Manages connections with the fuchsia semantics APIs.
-  std::unique_ptr<ui::AXFuchsiaSemanticProvider> semantic_provider_;
+  std::unique_ptr<AXFuchsiaSemanticProvider> semantic_provider_;
 
   // Fuchsia semantic trees require that the root node ID == 0. The
   // AXUniqueId of the chrome node corresponding to the fuchsia root will NOT be

@@ -5,6 +5,7 @@
 #include "chrome/installer/util/registry_util.h"
 
 #include <windows.h>
+
 #include <string>
 
 #include "base/command_line.h"

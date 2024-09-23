@@ -7,9 +7,7 @@ import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
-assert(is_linux || is_chromeos || is_win || is_mac || is_fuchsia)
-
-preprocess_folder = "preprocessed"
+assert(is_linux || is_chromeos || is_win || is_mac)
 
 build_webui("build") {
   grd_prefix = "tab_search"
@@ -23,35 +21,74 @@ build_webui("build") {
     "tab_search.html",
   ]
 
-  web_component_files = [
-    "app.ts",
-    "infinite_list.ts",
-    "tab_organization_failure.ts",
-    "tab_organization_in_progress.ts",
-    "tab_organization_not_started.ts",
-    "tab_organization_not_started_image.ts",
-    "tab_organization_page.ts",
-    "tab_organization_results.ts",
-    "tab_search_group_item.ts",
-    "tab_search_item.ts",
-    "tab_search_page.ts",
-  ]
+  icons_html_files = [ "icons.html" ]
 
   non_web_component_files = [
-    "bimap.ts",
-    "fuzzy_search.ts",
+    "app.html.ts",
+    "app.ts",
+    "lazy_list.ts",
+    "selectable_lazy_list.ts",
+    "search.ts",
     "tab_data.ts",
     "tab_group_color_helper.ts",
+    "auto_tab_groups/auto_tab_groups_failure.html.ts",
+    "auto_tab_groups/auto_tab_groups_failure.ts",
+    "auto_tab_groups/auto_tab_groups_group.html.ts",
+    "auto_tab_groups/auto_tab_groups_group.ts",
+    "auto_tab_groups/auto_tab_groups_in_progress.html.ts",
+    "auto_tab_groups/auto_tab_groups_in_progress.ts",
+    "auto_tab_groups/auto_tab_groups_new_badge.html.ts",
+    "auto_tab_groups/auto_tab_groups_new_badge.ts",
+    "auto_tab_groups/auto_tab_groups_not_started.html.ts",
+    "auto_tab_groups/auto_tab_groups_not_started_image.html.ts",
+    "auto_tab_groups/auto_tab_groups_not_started_image.ts",
+    "auto_tab_groups/auto_tab_groups_not_started.ts",
+    "auto_tab_groups/auto_tab_groups_page.html.ts",
+    "auto_tab_groups/auto_tab_groups_page.ts",
+    "auto_tab_groups/auto_tab_groups_results_actions.html.ts",
+    "auto_tab_groups/auto_tab_groups_results_actions.ts",
+    "auto_tab_groups/auto_tab_groups_results.html.ts",
+    "auto_tab_groups/auto_tab_groups_results.ts",
+    "declutter/declutter_page.html.ts",
+    "declutter/declutter_page.ts",
+    "tab_organization_selector_button.html.ts",
+    "tab_organization_selector_button.ts",
+    "tab_organization_selector.html.ts",
+    "tab_organization_selector.ts",
     "tab_search_api_proxy.ts",
-    "tab_search_sign_in_browser_proxy.ts",
+    "tab_search_group_item.html.ts",
+    "tab_search_group_item.ts",
+    "tab_search_item.html.ts",
+    "tab_search_item.ts",
+    "tab_search_page.html.ts",
+    "tab_search_page.ts",
+    "tab_search_sync_browser_proxy.ts",
     "tab_search.ts",
     "tab_search_utils.ts",
     "title_item.ts",
   ]
 
   css_files = [
+    "app.css",
+    "lazy_list.css",
+    "selectable_lazy_list.css",
+    "tab_search_page.css",
     "tab_group_shared_vars.css",
-    "tab_organization_shared_style.css",
+    "auto_tab_groups/auto_tab_groups_failure.css",
+    "auto_tab_groups/auto_tab_groups_group.css",
+    "auto_tab_groups/auto_tab_groups_in_progress.css",
+    "auto_tab_groups/auto_tab_groups_new_badge.css",
+    "auto_tab_groups/auto_tab_groups_not_started.css",
+    "auto_tab_groups/auto_tab_groups_not_started_image.css",
+    "auto_tab_groups/auto_tab_groups_page.css",
+    "auto_tab_groups/auto_tab_groups_results_actions.css",
+    "auto_tab_groups/auto_tab_groups_results.css",
+    "auto_tab_groups/auto_tab_groups_shared_style.css",
+    "declutter/declutter_page.css",
+    "tab_organization_selector_button.css",
+    "tab_organization_selector.css",
+    "tab_search_group_item.css",
+    "tab_search_item.css",
   ]
 
   mojo_files_deps = [
@@ -65,63 +102,26 @@ build_webui("build") {
     "$root_gen_dir/components/tab_groups/public/mojom/tab_group_types.mojom-webui.ts",
   ]
 
+  html_to_wrapper_template = "detect"
+
   ts_composite = true
   ts_definitions = [
+    "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
-    "$target_gen_dir/$preprocess_folder/fuse.d.ts",
   ]
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/cr_components/localized_link:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-  ts_extra_deps = [
-    ":copy_fuse",
-    ":copy_fuse_dts",
-    ":copy_fuse_dts_tsc",
-  ]
 
-  extra_grdp_deps = [ ":build_fuse_grdp" ]
-  extra_grdp_files = [ "$target_gen_dir/fuse_resources.grdp" ]
-
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "tab-search.top-chrome"
     optimize_webui_in_files = [ "tab_search.js" ]
-    optimize_webui_excludes = [
-      "chrome://resources/js/metrics_reporter/metrics_reporter.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js",
-      "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
-      "fuse.js",
-    ]
   }
-}
-
-generate_grd("build_fuse_grdp") {
-  grd_prefix = "tab_search"
-  out_grd = "$target_gen_dir/fuse_resources.grdp"
-  input_files = [ "fuse.js" ]
-  input_files_base_dir =
-      rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
-  deps = [ ":copy_fuse" ]
-}
-
-copy("copy_fuse") {
-  sources = [ "//third_party/fusejs/dist/fuse.basic.esm.min.js" ]
-  outputs = [ "$target_gen_dir/$preprocess_folder/fuse.js" ]
-}
-
-copy("copy_fuse_dts") {
-  sources = [ "//third_party/fusejs/dist/fuse.d.ts" ]
-  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
-}
-
-# Work-around for https://github.com/microsoft/TypeScript/issues/47035, so
-# that the manually provided fuse.d.ts file prevails.
-copy("copy_fuse_dts_tsc") {
-  sources = [ "//third_party/fusejs/dist/fuse.d.ts" ]
-  outputs = [ "$target_gen_dir/tsc/{{source_file_part}}" ]
 }

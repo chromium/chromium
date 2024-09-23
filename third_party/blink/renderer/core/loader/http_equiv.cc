@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 
@@ -97,7 +96,7 @@ void HttpEquiv::ProcessHttpEquivContentSecurityPolicy(
                                     "content-security-policy-report-only")) {
     window->GetContentSecurityPolicy()->ReportReportOnlyInMeta(content);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

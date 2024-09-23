@@ -18,6 +18,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -30,7 +32,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
@@ -69,12 +70,8 @@ public class TabModelImplTest {
 
     private void createTabs(int tabsCount, boolean isIncognito, String url) {
         for (int i = 0; i < tabsCount; i++) {
-            Tab tab =
-                    ChromeTabUtils.fullyLoadUrlInNewTab(
-                            InstrumentationRegistry.getInstrumentation(),
-                            mActivity,
-                            url,
-                            isIncognito);
+            ChromeTabUtils.fullyLoadUrlInNewTab(
+                    InstrumentationRegistry.getInstrumentation(), mActivity, url, isIncognito);
         }
     }
 
@@ -151,10 +148,10 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    public void hasOtherRelatedTabs_detectMergedTabs() throws Exception {
+    public void isTabInTabGroup_detectMergedTabs() throws Exception {
         createTabs(3, false, mTestUrl);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModel tabModel =
                             sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
@@ -162,15 +159,20 @@ public class TabModelImplTest {
                     final Tab tab2 = tabModel.getTabAt(1);
                     final Tab tab3 = tabModel.getTabAt(2);
 
-                    assertFalse(TabModelImpl.hasOtherRelatedTabs(tab1));
-                    assertFalse(TabModelImpl.hasOtherRelatedTabs(tab2));
-                    assertFalse(TabModelImpl.hasOtherRelatedTabs(tab3));
+                    assertFalse(TabModelImpl.isTabInTabGroup(tab1));
+                    assertFalse(TabModelImpl.isTabInTabGroup(tab2));
+                    assertFalse(TabModelImpl.isTabInTabGroup(tab3));
 
                     ChromeTabUtils.mergeTabsToGroup(tab2, tab3);
 
-                    assertFalse(TabModelImpl.hasOtherRelatedTabs(tab1));
-                    assertTrue(TabModelImpl.hasOtherRelatedTabs(tab2));
-                    assertTrue(TabModelImpl.hasOtherRelatedTabs(tab3));
+                    assertFalse(TabModelImpl.isTabInTabGroup(tab1));
+                    assertTrue(TabModelImpl.isTabInTabGroup(tab2));
+                    assertTrue(TabModelImpl.isTabInTabGroup(tab3));
+
+                    tab1.setTabGroupId(new Token(1L, 2L));
+                    assertTrue(TabModelImpl.isTabInTabGroup(tab1));
+
+                    tab1.setTabGroupId(null);
                 });
     }
 }

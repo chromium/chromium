@@ -11,6 +11,8 @@
 #include <string>
 
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
@@ -66,7 +68,8 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   // conditions are met (see MaybeStartClassification for details).
   // We ignore preliminary captures, since these happen before the page has
   // finished loading.
-  void PageCaptured(std::u16string* page_text, bool preliminary_capture);
+  void PageCaptured(scoped_refptr<const base::RefCountedString16> page_text,
+                    bool preliminary_capture);
 
   // RenderFrameObserver implementation, public for testing.
 
@@ -157,12 +160,7 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   // there is no Scorer yet when OnNavigate is called, or the browser has not
   // instructed us to classify the page, the page text will be cached until
   // these conditions are met.
-  std::u16string classifier_page_text_;
-
-  // Tracks whether we have stored anything in classifier_page_text_ for the
-  // most recent load.  We use this to distinguish empty text from cases where
-  // PageCaptured has not been called.
-  bool have_page_text_;
+  scoped_refptr<const base::RefCountedString16> classifier_page_text_;
 
   // Set to true if the classifier is currently running.
   bool is_classifying_;

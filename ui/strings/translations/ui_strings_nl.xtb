@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Enquête</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">Je internetverbinding controleren…</translation>
+<translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2388990488038464401">Dit nummer bellen vanaf je telefoon?</translation>
 <translation id="2435457462613246316">Wachtwoord bekijken</translation>
 <translation id="24452542372838207">Melding uitvouwen</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">NIEUW</translation>
 <translation id="2666092431469916601">Boven</translation>
 <translation id="2701330563083355633">Gedeeld vanaf <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Nieuw</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 jaar geleden}other{# jaar geleden}}</translation>
 <translation id="2878511608894704031">Alles verwijderen</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{over 1 d}other{over # d}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" />-systeem</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Pijl-links</translation>
+<translation id="5633029987065897167">Leeg</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min.}other{# min.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Vandaag actief}=1{1 dag geleden actief}other{# dagen geleden actief}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dag en }other{# dagen en }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF-content</translation>
 <translation id="6539092367496845964">Er is iets misgegaan. Probeer het later opnieuw.</translation>
 <translation id="654149438358937226">Alle meldingen blokkeren</translation>
-<translation id="6612467943526193239">Druk op Esc om de kalibratie af te sluiten.</translation>
 <translation id="6620110761915583480">Bestand opslaan</translation>
 <translation id="6699343763173986273">Volgende track voor media</translation>
 <translation id="6808150112686056157">Media stoppen</translation>

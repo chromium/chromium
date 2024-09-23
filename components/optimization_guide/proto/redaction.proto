@@ -1,0 +1,54 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "ModelExecutionProto";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/descriptors.proto";
+
+enum RedactBehavior {
+  // No redaction.
+  REDACT_BEHAVIOR_UNSPECIFIED = 0;
+
+  // Results in rejecting the output entirely.
+  REJECT = 1;
+
+  // Redacts the text if only in the output (not in the redact input string).
+  REDACT_IF_ONLY_IN_OUTPUT = 2;
+
+  // Redacts regardless of whether it occurs in the input or not.
+  REDACT_ALWAYS = 3;
+}
+
+message RedactRule {
+  RedactBehavior behavior = 1;
+  string regex = 2;
+  // If supplied, replaces the matching string.
+  string replacement_string = 3;
+  // The minimum length required for the pattern to be considered a match.
+  int32 min_pattern_length = 4;
+  // The maximum length required for the pattern to be considered a match.
+  int32 max_pattern_length = 5;
+  // Specifies a group in the regular expression to be used for matching. Note
+  // that group 0 is the whole match, so the value supplied is generally > 0.
+  int32 group_index = 6;
+  // TODO: add support for replacement character.
+}
+
+// Applies a set of rules to a field.
+message RedactRules {
+  // Identifies the field to be checked for redaction (see
+  // REDACT_IF_ONLY_IN_OUTPUT). The first ProtoField that identifies a
+  // non-empty string is used.
+  repeated ProtoField fields_to_check = 1;
+
+  // The set of regular exrepssions to check. When checking the regular
+  // expressions all are checked, unless one matches with a behavior of REJECT,
+  // in which case no need to continue.
+  repeated RedactRule rules = 2;
+}

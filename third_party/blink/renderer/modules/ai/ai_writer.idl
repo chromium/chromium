@@ -1,0 +1,44 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Writer API
+// https://github.com/explainers-by-googlers/writing-assistance-apis
+
+dictionary AIWriterWriteOptions {
+  DOMString context;
+  AbortSignal signal;
+};
+
+[
+  Exposed=(Window,Worker),
+  RuntimeEnabled=AIWriterAPI
+]
+interface AIWriter {
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<DOMString> write(
+    DOMString input,
+    optional AIWriterWriteOptions options = {});
+
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  ReadableStream writeStreaming(
+    DOMString input,
+    optional AIWriterWriteOptions options = {});
+
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  void destroy();
+
+  readonly attribute DOMString sharedContext;
+};

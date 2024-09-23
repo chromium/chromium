@@ -10,23 +10,24 @@
 
 #include "base/component_export.h"
 
-enum class WindowType {
-  // No browser found, thus no window exists.
-  kNoBrowser,
-  // Valid window types.
-  kRegularTabbed,
-  kWebApp,
-  kSystemWebApp,
-};
-
 // A report about a JavaScript error that we might want to send back to Google
 // so it can be fixed. Fill in the fields and then call
 // JsErrorReportProcessor::SendErrorReport().
 struct COMPONENT_EXPORT(JS_ERROR_REPORTING) JavaScriptErrorReport {
+  enum class WindowType {
+    // No browser found, thus no window exists.
+    kNoBrowser,
+    // Valid window types.
+    kRegularTabbed,
+    kWebApp,
+    kSystemWebApp,
+  };
+
   JavaScriptErrorReport();
   JavaScriptErrorReport(const JavaScriptErrorReport& rhs);
   JavaScriptErrorReport(JavaScriptErrorReport&& rhs) noexcept;
   ~JavaScriptErrorReport();
+
   JavaScriptErrorReport& operator=(const JavaScriptErrorReport& rhs);
   JavaScriptErrorReport& operator=(JavaScriptErrorReport&& rhs) noexcept;
 

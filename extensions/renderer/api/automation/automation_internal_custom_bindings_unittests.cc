@@ -38,7 +38,7 @@ class AutomationInternalCustomBindingsTest
     script_context->set_url(extension->url());
     bindings_system()->UpdateBindingsForContext(script_context);
 
-    // TODO(crbug/1487002) Add tests for service worker.
+    // TODO(crbug.com/40283128) Add tests for service worker.
     auto automation_internal_bindings =
         std::make_unique<AutomationInternalCustomBindings>(script_context,
                                                            bindings_system());

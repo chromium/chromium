@@ -6,7 +6,6 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_STORAGE_APP_STORAGE_FILE_HANDLER_H_
 
 #include <memory>
-#include <optional>
 #include <set>
 #include <vector>
 
@@ -16,7 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/values.h"
-#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/app.h"
 
 namespace base {
 class SequencedTaskRunner;

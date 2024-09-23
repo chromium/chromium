@@ -18,10 +18,10 @@ import '../settings_vars.css.js';
 import './home_url_input.js';
 import '../controls/settings_dropdown_menu.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CustomizeColorSchemeModeBrowserProxy} from 'chrome://resources/cr_components/customize_color_scheme_mode/browser_proxy.js';
 import type {CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerInterface} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
 import {ColorSchemeMode} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -31,6 +31,7 @@ import type {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../contr
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {AppearancePageVisibility} from '../page_visibility.js';
+import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
@@ -65,7 +66,10 @@ export interface SettingsAppearancePageElement {
     colorSchemeModeRow: HTMLElement,
     colorSchemeModeSelect: HTMLSelectElement,
     defaultFontSize: SettingsDropdownMenuElement,
+    showSavedTabGroups: SettingsToggleButtonElement,
+    autoPinNewTabGroups: SettingsToggleButtonElement,
     zoomLevel: HTMLSelectElement,
+    tabSearchPositionDropdown: SettingsDropdownMenuElement,
   };
 }
 
@@ -81,7 +85,7 @@ export enum SystemTheme {
 }
 
 const SettingsAppearancePageElementBase =
-    I18nMixin(PrefsMixin(BaseMixin(PolymerElement)));
+    RelaunchMixin(I18nMixin(PrefsMixin(BaseMixin(PolymerElement))));
 
 export class SettingsAppearancePageElement extends
     SettingsAppearancePageElementBase {
@@ -108,12 +112,6 @@ export class SettingsAppearancePageElement extends
       defaultZoom_: Number,
 
       isWallpaperPolicyControlled_: {type: Boolean, value: true},
-
-      showColorSchemeMode_: {
-        type: Boolean,
-        value: () =>
-            document.documentElement.hasAttribute('chrome-refresh-2023'),
-      },
 
       colorSchemeModeOptions_: {
         readOnly: true,
@@ -182,13 +180,6 @@ export class SettingsAppearancePageElement extends
         },
       },
 
-      showReaderModeOption_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showReaderModeOption');
-        },
-      },
-
       isForcedTheme_: {
         type: Boolean,
         computed: 'computeIsForcedTheme_(' +
@@ -207,13 +198,6 @@ export class SettingsAppearancePageElement extends
       },
       // </if>
 
-      showSidePanelOptions_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showSidePanelOptions');
-        },
-      },
-
       showHoverCardImagesOption_: {
         type: Boolean,
         value() {
@@ -221,7 +205,79 @@ export class SettingsAppearancePageElement extends
         },
       },
 
+      showSavedTabGroupsInBookmarksBar_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('tabGroupsSaveUIUpdateEnabled');
+        },
+      },
+
+      showAutoPinNewTabGroups_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('tabGroupsSaveUIUpdateEnabled');
+        },
+      },
+
+      toolbarPinningEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('toolbarPinningEnabled');
+        },
+      },
+
       showManagedThemeDialog_: Boolean,
+
+      sidePanelOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              value: 'true',
+              name: loadTimeData.getString('uiFeatureAlignRight'),
+            },
+            {
+              value: 'false',
+              name: loadTimeData.getString('uiFeatureAlignLeft'),
+            },
+          ];
+        },
+      },
+
+      showTabSearchPositionSettings_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showTabSearchPositionSettings');
+        },
+      },
+
+      showTabSearchPositionRestartButton_: {
+        type: Boolean,
+        value: false,
+      },
+
+      showResetPinnedActionsButton_: {
+        type: Boolean,
+        value: false,
+      },
+
+      tabSearchOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              value: 'true',
+              name: loadTimeData.getString('uiFeatureAlignRight'),
+            },
+            {
+              value: 'false',
+              name: loadTimeData.getString('uiFeatureAlignLeft'),
+            },
+          ];
+        },
+      },
     };
   }
 
@@ -230,19 +286,21 @@ export class SettingsAppearancePageElement extends
       'defaultFontSizeChanged_(prefs.webkit.webprefs.default_font_size.value)',
       'themeChanged_(' +
           'prefs.extensions.theme.id.value, systemTheme_, isForcedTheme_)',
-
+      'updateShowTabSearchRestartButton_(' +
+          'prefs.tab_search.is_right_aligned.value)',
       // <if expr="is_linux">
       'systemThemePrefChanged_(prefs.extensions.theme.system_theme.value)',
       // </if>
+      'toolbarPinningStateChanged_(prefs.toolbar.pinned_actions.value,' +
+          'prefs.browser.show_home_button.value,' +
+          'prefs.browser.show_forward_button.value)',
     ];
   }
 
   pageVisibility: AppearancePageVisibility;
-  private showSidePanelOptions_: boolean;
   private defaultZoom_: number;
   private isWallpaperPolicyControlled_: boolean;
   private fontSizeOptions_: DropdownMenuOptionList;
-  private showColorSchemeMode_: boolean;
   private colorSchemeModeOptions_:
       Array<{value: ColorSchemeMode, name: string}>;
   private selectedColorSchemeMode_: ColorSchemeMode|undefined;
@@ -251,15 +309,22 @@ export class SettingsAppearancePageElement extends
   private themeUrl_: string;
   private systemTheme_: SystemTheme;
   private focusConfig_: Map<string, string>;
-  private showReaderModeOption_: boolean;
   private isForcedTheme_: boolean;
   private showHoverCardImagesOption_: boolean;
+  private showSavedTabGroupsInBookmarksBar_: boolean;
+  private showAutoPinNewTabGroups_: boolean;
+  private showResetPinnedActionsButton_: boolean;
+  private toolbarPinningEnabled_: boolean;
 
   // <if expr="is_linux">
   private showCustomChromeFrame_: boolean;
   // </if>
 
+  private showTabSearchPositionSettings_: boolean;
+  private showTabSearchPositionRestartButton_: boolean;
   private showManagedThemeDialog_: boolean;
+  private sidePanelOptions_: DropdownMenuOptionList;
+  private tabSearchOptions_: DropdownMenuOptionList;
   private appearanceBrowserProxy_: AppearanceBrowserProxy =
       AppearanceBrowserProxyImpl.getInstance();
   private colorSchemeModeHandler_: CustomizeColorSchemeModeHandlerInterface =
@@ -341,11 +406,16 @@ export class SettingsAppearancePageElement extends
         value - SIZE_DIFFERENCE_FIXED_STANDARD);
   }
 
-  /**
-   * Open URL for either current theme or the theme gallery.
-   */
-  private openThemeUrl_() {
-    window.open(this.themeUrl_ || loadTimeData.getString('themesGalleryUrl'));
+  private onThemeClick_() {
+    if (this.toolbarPinningEnabled_) {
+      this.appearanceBrowserProxy_.openCustomizeChrome();
+    } else {
+      window.open(this.themeUrl_ || loadTimeData.getString('themesGalleryUrl'));
+    }
+  }
+
+  private onCustomizeToolbarClick_() {
+    this.appearanceBrowserProxy_.openCustomizeChromeToolbarSection();
   }
 
   private onUseDefaultClick_() {
@@ -354,6 +424,10 @@ export class SettingsAppearancePageElement extends
       return;
     }
     this.appearanceBrowserProxy_.useDefaultTheme();
+  }
+
+  private onResetPinnedToolbarActionsClick_() {
+    this.appearanceBrowserProxy_.resetPinnedToolbarActions();
   }
 
   // <if expr="is_linux">
@@ -375,8 +449,7 @@ export class SettingsAppearancePageElement extends
   /** @return Whether to show the "USE QT" button. */
   private showUseQt_(themeId: string): boolean {
     return (!!themeId || this.systemTheme_ !== SystemTheme.QT) &&
-        !this.appearanceBrowserProxy_.isChildAccount() &&
-        loadTimeData.getBoolean('allowQtTheme');
+        !this.appearanceBrowserProxy_.isChildAccount();
   }
 
   /**
@@ -401,6 +474,13 @@ export class SettingsAppearancePageElement extends
       return;
     }
     this.appearanceBrowserProxy_.useQtTheme();
+  }
+
+  /** @return Whether to show the color scheme mode toggle. */
+  private showColorSchemeMode_(themeId: string): boolean {
+    return !!themeId ||
+        this.systemTheme_ !== SystemTheme.GTK &&
+        this.systemTheme_ !== SystemTheme.QT;
   }
   // </if>
 
@@ -443,6 +523,10 @@ export class SettingsAppearancePageElement extends
     }
     // </if>
     // <if expr="not is_linux">
+    if (this.toolbarPinningEnabled_) {
+      this.themeSublabel_ = '';
+      return;
+    }
     i18nId = 'chooseFromWebStore';
     // </if>
     this.themeSublabel_ = this.i18n(i18nId);
@@ -451,6 +535,11 @@ export class SettingsAppearancePageElement extends
   /** @return Whether applied theme is set by policy. */
   private computeIsForcedTheme_(): boolean {
     return !!this.getPref('autogenerated.theme.policy.color').controlledBy;
+  }
+
+  private async toolbarPinningStateChanged_(): Promise<void> {
+    this.showResetPinnedActionsButton_ =
+        !await this.appearanceBrowserProxy_.pinnedToolbarActionsAreDefault();
   }
 
   private isSelectedColorSchemeMode_(colorSchemeMode: ColorSchemeMode):
@@ -467,7 +556,7 @@ export class SettingsAppearancePageElement extends
     chrome.settingsPrivate.setDefaultZoom(parseFloat(this.$.zoomLevel.value));
   }
 
-  /** @see blink::PageZoomValuesEqual(). */
+  /** @see blink::ZoomValuesEqual(). */
   private zoomValuesEqual_(zoom1: number, zoom2: number): boolean {
     return Math.abs(zoom1 - zoom2) <= 0.001;
   }
@@ -476,13 +565,24 @@ export class SettingsAppearancePageElement extends
     return previousIsVisible && nextIsVisible;
   }
 
-  private onHoverCardImagesEnabledChange_(event: Event) {
+  private onHoverCardImagesToggleChange_(event: Event) {
     const enabled = (event.target as SettingsToggleButtonElement).checked;
     this.appearanceBrowserProxy_.recordHoverCardImagesEnabledChanged(enabled);
   }
 
   private onManagedDialogClosed_() {
     this.showManagedThemeDialog_ = false;
+  }
+
+  private onTabSearchPositionRestartClick_(e: Event) {
+    // Prevent event from bubbling up to the toggle button.
+    e.stopPropagation();
+    this.performRestart(RestartType.RESTART);
+  }
+
+  private updateShowTabSearchRestartButton_(newValue: boolean): void {
+    this.showTabSearchPositionRestartButton_ = newValue !==
+        loadTimeData.getBoolean('tabSearchIsRightAlignedAtStartup');
   }
 }
 

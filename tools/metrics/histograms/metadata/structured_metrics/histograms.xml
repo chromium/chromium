@@ -9,7 +9,7 @@ found in the LICENSE file.
 <histograms>
 
 <histogram name="StructuredMetrics.ExternalMetricsDropped" units="count"
-    expires_after="2024-07-14">
+    expires_after="2025-02-09">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -21,12 +21,11 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
-<histogram name="StructuredMetrics.ExternalMetricsDropped.{Project}"
-    units="count" expires_after="2024-07-14">
+<histogram name="StructuredMetrics.ExternalMetricsDropped2.{Project}"
+    units="count" expires_after="2025-02-16">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
-  <owner>chrome-metrics-team@google.com</owner>
   <summary>
     The number of events that are dropped when processing External Metrics per
     project. Events are dropped once a threshold, 50 by default, is reached.
@@ -53,12 +52,11 @@ found in the LICENSE file.
   </token>
 </histogram>
 
-<histogram name="StructuredMetrics.ExternalMetricsProduced.{Project}"
-    units="count" expires_after="2024-07-14">
+<histogram name="StructuredMetrics.ExternalMetricsProduced2.{Project}"
+    units="count" expires_after="2025-02-16">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
-  <owner>chrome-metrics-team@google.com</owner>
   <summary>
     The number of events that are produced by Platform2 per-project. This field
     is only recorded when recording is enabled.
@@ -84,8 +82,30 @@ found in the LICENSE file.
   </token>
 </histogram>
 
+<histogram name="StructuredMetrics.FlushedMap.Error" units="FlushedMapError"
+    expires_after="2025-05-21">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <summary>
+    Logs errors that occur in FlushedMap. This metric is captured when events
+    are written to disk.
+  </summary>
+</histogram>
+
+<histogram name="StructuredMetrics.FlushedMap.LoadedFlushedKeys" units="count"
+    expires_after="2025-05-21">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <summary>
+    The number of flushed keys loaded from the previous session. This is
+    recorded once when the Structured Metrics is created.
+  </summary>
+</histogram>
+
 <histogram name="StructuredMetrics.InitSequence" enum="UmaInitSequence"
-    expires_after="2024-07-14">
+    expires_after="2025-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -100,7 +120,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.LogStore.CompressionRatio" units="%"
-    expires_after="2024-07-14">
+    expires_after="2025-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -112,7 +132,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.LogStore.Dropped" units="logs"
-    expires_after="2024-07-14">
+    expires_after="2025-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -125,7 +145,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.LogStore.DroppedSize" units="KB"
-    expires_after="2024-07-14">
+    expires_after="2025-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -137,8 +157,21 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="StructuredMetrics.OnExternalMetricsCollectedDuration"
+    units="microseconds" expires_after="2025-03-20">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <summary>
+    Messures the duration of
+    AshStructuredMetricsRecorder::OnExternalMetricsCollected in microseconds.
+    Measuring to collect information about potential UI jankiness this function
+    is causing.
+  </summary>
+</histogram>
+
 <histogram name="StructuredMetrics.Reporting.ActualUploadInterval"
-    units="minutes" expires_after="2024-07-14">
+    units="minutes" expires_after="2025-01-26">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -151,7 +184,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.HTTPErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-07-14">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-01-12">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -163,7 +196,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.HTTPResponseCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-07-14">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-01-12">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -175,7 +208,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.LogSize.OnSuccess" units="KB"
-    expires_after="2024-07-14">
+    expires_after="2025-01-26">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -187,7 +220,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.LogSize.RejectedSize" units="KB"
-    expires_after="2024-07-14">
+    expires_after="2025-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -197,8 +230,101 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="StructuredMetrics.StorageManager.DeletedBufferWhenOverQuota"
+    units="buffers" expires_after="2025-05-21">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <summary>
+    The number of flushed event buffers that were deleted when our disk quota
+    was exceeded. Recorded when flushed event buffers are deleted.
+  </summary>
+</histogram>
+
+<histogram name="StructuredMetrics.StorageManager.DiskQuotaExceededDelta"
+    units="KB" expires_after="2025-05-21">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <summary>
+    The number of Kibibytes the disk quota was exceeded by when buffers were
+    deleted. This should be proportional to the number of event buffers deleted.
+    This metric is recorded when Structured Metrics exceeds its disk space quota
+    and must delete events.
+  </summary>
+</histogram>
+
+<histogram name="StructuredMetrics.StorageManager.Flush"
+    units="StorageManagerFlushStatus" expires_after="2025-05-21">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <summary>
+    The result of flushing an in-memory event buffer to disk. Captures success
+    and errors when an event buffer is flushed.
+  </summary>
+</histogram>
+
+<histogram name="StructuredMetrics.StorageManager.FlushedBuffersAtUpload"
+    units="buffers" expires_after="2025-05-21">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <summary>
+    The number of flushed buffers when an upload occurs. Currently, all flushed
+    events are read at upload so this correlates to how many buffers were
+    flushed since the last upload. If that behaivor changes then a new histogram
+    needs to be created for the number of read buffers. This is recorded when
+    events are uploaded.
+  </summary>
+</histogram>
+
+<histogram name="StructuredMetrics.StorageManager.InMemoryEventsAtUpload"
+    units="events" expires_after="2025-05-21">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <summary>
+    The number of in-memory events read when an upload occurs. This is recorded
+    when events are uploaded.
+  </summary>
+</histogram>
+
+<histogram name="StructuredMetrics.StorageManager.MaxDiskDizeKB" units="KB"
+    expires_after="2025-05-21">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <summary>
+    The max amount of disk space flushed events can consume. This is recorded
+    when the Storage Manager is created.
+  </summary>
+</histogram>
+
+<histogram name="StructuredMetrics.StorageManager.MaxMemorySizeKB" units="KB"
+    expires_after="2025-05-21">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <summary>
+    The max amount of memory in-memory events can consume. This is recorded when
+    the Storage Manager is created.
+  </summary>
+</histogram>
+
+<histogram name="StructuredMetrics.StorageManager.RecordStatus"
+    enum="RecordStatus" expires_after="2025-05-21">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <summary>
+    Records the status of an event recording. This is recorded when an event is
+    added to the StorageManager.
+  </summary>
+</histogram>
+
 <histogram name="StructuredMetrics.UploadSize" units="bytes"
-    expires_after="2024-07-14">
+    expires_after="2025-01-19">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>

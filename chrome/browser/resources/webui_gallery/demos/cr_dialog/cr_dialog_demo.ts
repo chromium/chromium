@@ -10,80 +10,105 @@ import '//resources/cr_elements/cr_shared_vars.css.js';
 import '../demo.css.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_dialog_demo.html.js';
+import {getCss} from './cr_dialog_demo.css.js';
+import {getHtml} from './cr_dialog_demo.html.js';
 
-interface CrDialogDemoElement {
+export interface CrDialogDemoElement {
   $: {
     dialog: CrDialogElement,
   };
 }
 
-class CrDialogDemoElement extends PolymerElement {
+export class CrDialogDemoElement extends CrLitElement {
   static get is() {
     return 'cr-dialog-demo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      autofocusInputs_: Boolean,
-      isDialogOpen_: Boolean,
-      showHeader_: Boolean,
-      showFooter_: Boolean,
-      showInputs_: Boolean,
-      showScrollingBody_: Boolean,
-      statusTexts_: Array,
+      autofocusInput_: {type: Boolean},
+      isDialogOpen_: {type: Boolean},
+      showHeader_: {type: Boolean},
+      showFooter_: {type: Boolean},
+      showInputs_: {type: Boolean},
+      showScrollingBody_: {type: Boolean},
+      statusTexts_: {type: Array},
     };
   }
 
-  private autofocusInputs_: boolean = false;
-  private isDialogOpen_: boolean = false;
-  private showHeader_: boolean = false;
-  private showFooter_: boolean = false;
-  private showInputs_: boolean = false;
-  private showScrollingBody_: boolean = false;
-  private statusTexts_: string[] = [];
+  protected autofocusInput_: boolean = false;
+  protected isDialogOpen_: boolean = false;
+  protected showHeader_: boolean = false;
+  protected showFooter_: boolean = false;
+  protected showInputs_: boolean = false;
+  protected showScrollingBody_: boolean = false;
+  protected statusTexts_: string[] = [];
 
   private getDialog_(): CrDialogElement|null {
     return this.shadowRoot!.querySelector('cr-dialog');
   }
 
-  private openDialog_() {
+  protected openDialog_() {
     this.isDialogOpen_ = true;
   }
 
-  private onClickCancel_() {
+  protected onClickCancel_() {
     const dialog = this.getDialog_();
     if (dialog) {
       dialog.cancel();
     }
   }
 
-  private onClickConfirm_() {
+  protected onClickConfirm_() {
     const dialog = this.getDialog_();
     if (dialog) {
       dialog.close();
     }
   }
 
-  private onOpenDialog_() {
+  protected onOpenDialog_() {
     this.statusTexts_ =
         ['Dialog was opened and fired a `cr-dialog-open` event.'];
   }
 
-  private onCancelDialog_() {
-    this.push(
-        'statusTexts_', 'Dialog was canceled and fired a `cancel` event.');
+  protected onCancelDialog_() {
+    this.statusTexts_.push('Dialog was canceled and fired a `cancel` event.');
+    this.requestUpdate();
   }
 
-  private onCloseDialog_() {
+  protected onCloseDialog_() {
     this.isDialogOpen_ = false;
-    this.push('statusTexts_', 'Dialog was closed and fired a `close` event.');
+    this.statusTexts_.push('Dialog was closed and fired a `close` event.');
+  }
+
+  protected onShowHeaderChanged_(e: CustomEvent<{value: boolean}>) {
+    this.showHeader_ = e.detail.value;
+  }
+
+  protected onShowFooterChanged_(e: CustomEvent<{value: boolean}>) {
+    this.showFooter_ = e.detail.value;
+  }
+
+  protected onShowScrollingBodyChanged_(e: CustomEvent<{value: boolean}>) {
+    this.showScrollingBody_ = e.detail.value;
+  }
+
+  protected onShowInputsChanged_(e: CustomEvent<{value: boolean}>) {
+    this.showInputs_ = e.detail.value;
+  }
+
+  protected onAutofocusInputChanged_(e: CustomEvent<{value: boolean}>) {
+    this.autofocusInput_ = e.detail.value;
   }
 }
 

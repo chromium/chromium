@@ -20,11 +20,11 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
 #include "dbus/bus.h"
@@ -41,7 +41,7 @@ namespace {
 // |base::Feature|s should be defined with this prefix.
 // A presubmit will enforce that no |base::Feature|s will be defined with this
 // prefix.
-// TODO(https://crbug.com/1263068): Add the aforementioned presubmit.
+// TODO(crbug.com/40202807): Add the aforementioned presubmit.
 constexpr char kCrOSLateBootFeaturePrefix[] = "CrOSLateBoot";
 
 void SendResponse(dbus::MethodCall* method_call,
@@ -165,13 +165,6 @@ void ChromeFeaturesServiceProvider::Start(
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&ChromeFeaturesServiceProvider::OnExported,
                           weak_ptr_factory_.GetWeakPtr()));
-  exported_object->ExportMethod(
-      chromeos::kChromeFeaturesServiceInterface,
-      chromeos::kChromeFeaturesServiceIsSuspendToDiskEnabledMethod,
-      base::BindRepeating(&ChromeFeaturesServiceProvider::IsSuspendToDiskEnabled,
-                          weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&ChromeFeaturesServiceProvider::OnExported,
-                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ChromeFeaturesServiceProvider::OnExported(
@@ -194,6 +187,7 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
       &features::kSessionManagerLongKillTimeout,
       &features::kSessionManagerLivenessCheck,
       &features::kBorealisProvision,
+      &features::kDeferConciergeStartup,
   };
 
   dbus::MessageReader reader(method_call);
@@ -221,7 +215,7 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
   // base.
   // Separately, a presubmit will enforce that no `base::Feature` definition
   // has a name starting with this prefix.
-  // TODO(https://crbug.com/1263068): Add the aforementioned presubmit.
+  // TODO(crbug.com/40202807): Add the aforementioned presubmit.
   base::FeatureList::OverrideState state =
       base::FeatureList::OVERRIDE_USE_DEFAULT;
   if (feature_name.find(kCrOSLateBootFeaturePrefix) == 0) {
@@ -446,13 +440,6 @@ void ChromeFeaturesServiceProvider::IsDnsProxyEnabled(
     dbus::ExportedObject::ResponseSender response_sender) {
   SendResponse(method_call, std::move(response_sender),
                !base::FeatureList::IsEnabled(features::kDisableDnsProxy));
-}
-
-void ChromeFeaturesServiceProvider::IsSuspendToDiskEnabled(
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender response_sender) {
-  SendResponse(method_call, std::move(response_sender),
-               base::FeatureList::IsEnabled(features::kSuspendToDisk));
 }
 
 }  // namespace ash

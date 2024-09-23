@@ -21,9 +21,9 @@ constexpr char kDebugButton[] = "invokeDebuggerButton";
 constexpr char kDebugOverlay[] = "debuggerOverlay";
 constexpr char kScreensPanel[] = "DebuggerPanelScreens";
 
-constexpr int kCommonScreensCount = 51;
+constexpr int kCommonScreensCount = 52;
 constexpr int kOobeOnlyScreensCount = 10;
-constexpr int kLoginOnlyScreensCount = 7;
+constexpr int kLoginOnlyScreensCount = 6;
 
 constexpr int kOobeScreensCount = kCommonScreensCount + kOobeOnlyScreensCount;
 constexpr int kLoginScreensCount = kCommonScreensCount + kLoginOnlyScreensCount;
@@ -43,7 +43,9 @@ class DebugOverlayTest : public OobeBaseTest {
     feature_list_.InitWithFeatures(
         {features::kOobeChoobe, features::kOobeTouchpadScroll,
          features::kOobeDisplaySize, features::kOobeGaiaInfoScreen,
-         features::kOobeSoftwareUpdate},
+         features::kOobeSoftwareUpdate, features::kOobePersonalizedOnboarding,
+         features::kOobePerksDiscovery,
+         features::kOobeSplitModifierKeyboardInfo},
         {});
   }
 
@@ -109,7 +111,8 @@ IN_PROC_BROWSER_TEST_P(DebugOverlayScreensTest, ExpectScreenButtonsCount) {
   test::OobeJS().ExpectEQ(ElementsInPanel(kScreensPanel), screens_count);
 }
 
-INSTANTIATE_TEST_SUITE_P(All, DebugOverlayScreensTest, testing::Bool());
+/* No makes it easier to run all tests with one filter */
+INSTANTIATE_TEST_SUITE_P(, DebugOverlayScreensTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(DebugOverlayOnLoginTest, ExpectScreenButtonsCount) {
   ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());

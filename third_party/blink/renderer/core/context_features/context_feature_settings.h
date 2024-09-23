@@ -31,6 +31,10 @@ class CORE_EXPORT ContextFeatureSettings final
   // already exist for the given context, one is created.
   static ContextFeatureSettings* From(ExecutionContext*, CreationMode);
 
+  // Protected memory values require initialization before they can be used.
+  // This method is used to perform that initialization.
+  static void InitializeMojoJSAllowedProtectedMemory();
+
   // Can be used to update the protected memory bool to indicate that MojoJS is
   // allowed to be enabled for any given context of the process. Should be set
   // in legitimate code pathways that enable MojoJS bindings for a frame.
@@ -74,7 +78,7 @@ class CORE_EXPORT ContextFeatureSettings final
   // enabled for any given context of the process. Should be set to true by
   // legitimate code pathways that enable MojoJS bindings for a frame. This is
   // to reduce the ease of enabling MojoJS bindings with a data-only attack.
-  static base::ProtectedMemory<bool> mojo_js_allowed_;
+  static DECLARE_PROTECTED_DATA base::ProtectedMemory<bool> mojo_js_allowed_;
 };
 
 }  // namespace blink

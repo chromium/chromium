@@ -30,7 +30,6 @@
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/force_signin_verifier.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -52,7 +51,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/signin/public/identity_manager/scope_set.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -60,10 +58,6 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/models/tree_node_iterator.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/common/supervised_user_constants.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/signin/wait_for_network_callback_helper_ash.h"
@@ -110,7 +104,7 @@
 namespace {
 
 // List of sources for which sign out is always allowed.
-// TODO(crbug.com/1161966): core product logic should not rely on metric
+// TODO(crbug.com/40162614): core product logic should not rely on metric
 // sources/callsites.  Consider removing such logic, potentially as part of
 // introducing a cross-platform SigninManager.
 signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
@@ -135,6 +129,14 @@ signin_metrics::ProfileSignout kAlwaysAllowedSignoutSources[] = {
     // to the web only before showing the sync confirmation dialog. The account
     // was signed in to the profile in order to show the sync confirmation.
     signin_metrics::ProfileSignout::kCancelSyncConfirmationOnWebOnlySignedIn,
+    // Allowed as the user wasn't signed in initially and data has not been
+    // synced yet.
+    signin_metrics::ProfileSignout::kCancelSyncConfirmationRemoveAccount,
+    // Data not synced yet.
+    // Used when moving the primary account (e.g. profile switch).
+    signin_metrics::ProfileSignout::kMovePrimaryAccount,
+    // Allowed as the profile is being deleted anyway.
+    signin_metrics::ProfileSignout::kSignoutDuringProfileDeletion,
 };
 
 // Returns the histogram suffix name per group of `signin_metrics::AccessPoint`.
@@ -305,7 +307,7 @@ void ChromeSigninClient::PreSignOut(
   // `signin_metrics::ProfileSignout::kRevokeSyncFromSettings` when the user
   // turns off sync from the settings, we should also keep the window open at
   // this point.
-  // TODO(https://crbug.com/1478102): Check for managed accounts to be modified
+  // TODO(crbug.com/40280466): Check for managed accounts to be modified
   // when aligning Managed vs Consumer accounts.
   bool user_declines_sync_after_consenting_to_management =
       (signout_source_metric == signin_metrics::ProfileSignout::kAbortSignin ||
@@ -313,7 +315,7 @@ void ChromeSigninClient::PreSignOut(
            signin_metrics::ProfileSignout::kRevokeSyncFromSettings ||
        signout_source_metric == signin_metrics::ProfileSignout::
                                     kCancelSyncConfirmationOnWebOnlySignedIn) &&
-      chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
+      enterprise_util::UserAcceptedAccountManagement(profile_);
   // These sign out won't remove the policy cache, keep the window opened.
   bool keep_window_opened =
       signout_source_metric ==
@@ -362,7 +364,7 @@ std::unique_ptr<GaiaAuthFetcher> ChromeSigninClient::CreateGaiaAuthFetcher(
   if (BoundSessionCookieRefreshService* bound_session_cookie_refresh_service =
           BoundSessionCookieRefreshServiceFactory::GetForProfile(profile_);
       bound_session_cookie_refresh_service) {
-    CHECK(switches::IsBoundSessionCredentialsEnabled());
+    CHECK(switches::IsBoundSessionCredentialsEnabled(profile_->GetPrefs()));
     return std::make_unique<ThrottledGaiaAuthFetcher>(
         consumer, source, GetURLLoaderFactory(),
         bound_session_cookie_refresh_service->GetBoundSessionThrottlerParams(),
@@ -378,10 +380,8 @@ version_info::Channel ChromeSigninClient::GetClientChannel() {
   return chrome::GetChannel();
 }
 
-void ChromeSigninClient::OnPrimaryAccountChangedWithEventSource(
-    signin::PrimaryAccountChangeEvent event_details,
-    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
-        event_source) {
+void ChromeSigninClient::OnPrimaryAccountChanged(
+    signin::PrimaryAccountChangeEvent event_details) {
   for (signin::ConsentLevel consent_level :
        {signin::ConsentLevel::kSignin, signin::ConsentLevel::kSync}) {
     switch (event_details.GetEventTypeFor(consent_level)) {
@@ -389,10 +389,9 @@ void ChromeSigninClient::OnPrimaryAccountChangedWithEventSource(
       case signin::PrimaryAccountChangeEvent::Type::kCleared:
         break;
       case signin::PrimaryAccountChangeEvent::Type::kSet:
-        CHECK(
-            absl::holds_alternative<signin_metrics::AccessPoint>(event_source));
+        CHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
         signin_metrics::AccessPoint access_point =
-            absl::get<signin_metrics::AccessPoint>(event_source);
+            event_details.GetSetPrimaryAccountAccessPoint().value();
 
         // Only record metrics when setting the primary account.
         std::optional<size_t> all_bookmarks_count = GetAllBookmarksCount();
@@ -431,7 +430,7 @@ ChromeSigninClient::CreateBoundSessionOAuthMultiloginDelegate() const {
 SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
     bool has_sync_account,
     const std::optional<signin_metrics::ProfileSignout> signout_source) const {
-  // TODO(crbug.com/1366360): Revisit |kAlwaysAllowedSignoutSources| in general
+  // TODO(crbug.com/40239707): Revisit |kAlwaysAllowedSignoutSources| in general
   // and for Lacros main profile.
   for (const auto& always_allowed_source : kAlwaysAllowedSignoutSources) {
     if (!signout_source.has_value()) {
@@ -463,8 +462,10 @@ SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
   }
 #endif
 
+// Android allows signing out of Managed accounts.
+#if !BUILDFLAG(IS_ANDROID)
   // Check if managed user.
-  if (chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
+  if (enterprise_util::UserAcceptedAccountManagement(profile_)) {
     if (base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
       // Allow revoke sync but disallow signout regardless of consent level of
       // the primary account.
@@ -476,6 +477,7 @@ SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(
       return SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED;
     }
   }
+#endif
   return SigninClient::SignoutDecision::ALLOW;
 }
 

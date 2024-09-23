@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_INTERNAL_ALLOCATOR_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_INTERNAL_ALLOCATOR_H_
+#ifndef PARTITION_ALLOC_INTERNAL_ALLOCATOR_H_
+#define PARTITION_ALLOC_INTERNAL_ALLOCATOR_H_
 
 #include <new>
 #include <type_traits>
@@ -13,8 +13,8 @@
 #include "partition_alloc/partition_root.h"
 
 // Internal Allocator can be used to get heap allocations required to
-// implement Partition Allocator's feature.
-// As Internal Allocator being Partition Allocator with minimal configuration,
+// implement PartitionAlloc's feature.
+// As Internal Allocator being PartitionAlloc with minimal configuration,
 // it is not allowed to use this allocator for PA's core implementation to avoid
 // reentrancy issues. Also don't use this when satisfying the very first PA-E
 // allocation of the process.
@@ -26,7 +26,7 @@ PartitionRoot& InternalAllocatorRoot();
 
 // A class that meets C++ named requirements, Allocator.
 template <typename T>
-InternalAllocator<T>::value_type* InternalAllocator<T>::allocate(
+typename InternalAllocator<T>::value_type* InternalAllocator<T>::allocate(
     std::size_t count) {
   PA_CHECK(count <=
            std::numeric_limits<std::size_t>::max() / sizeof(value_type));
@@ -48,6 +48,8 @@ T* ConstructAtInternalPartition(Args&&... args) {
 }
 
 // Destroy an object on heap in the internal partition.
+// TODO(crbug.com/40274826) This is an unused function. Start using it in tests
+// and/or in production code.
 template <typename T>
 void DestroyAtInternalPartition(T* ptr) {
   // Destroying an array is not supported.
@@ -58,4 +60,4 @@ void DestroyAtInternalPartition(T* ptr) {
 
 }  // namespace partition_alloc::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_INTERNAL_ALLOCATOR_H_
+#endif  // PARTITION_ALLOC_INTERNAL_ALLOCATOR_H_

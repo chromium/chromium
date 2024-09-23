@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import android.graphics.Picture;
 import android.os.Handler;
@@ -38,7 +38,7 @@ import java.util.concurrent.Callable;
 /** Test suite for AwContentsClientCallbackHelper. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@OnlyRunIn(SINGLE_PROCESS) // These are unit tests. No need to repeat for multiprocess.
+@OnlyRunIn(EITHER_PROCESS) // These are unit tests. No need to repeat in both modes.
 @Batch(Batch.PER_CLASS)
 public class AwContentsClientCallbackHelperTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;

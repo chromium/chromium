@@ -1,0 +1,22 @@
+<html>
+  <body>
+  </body>
+  <script src="prerender-test-setup.js"></script>
+  <script>
+    // Objects starting with the "aw" prefix are injected by AwPrerenderTest.
+
+    const params = new URLSearchParams(document.location.search);
+    const iframeSrc = params.get("iframeSrc");
+    if (iframeSrc !== null) {
+      createIframe(iframeSrc);
+    }
+
+    // Post a message to Java (AwPrerenderTest.java). This should be deferred
+    // until activation.
+    awDeferredMessagePort.postMessage(
+        wasPrerendered ? "Prerendered" : "Not prerendered");
+    // Notify Java that the message was posted. This notification should not be
+    // deferred even during prerendering.
+    awPostMessageFuture.done();
+  </script>
+</html>

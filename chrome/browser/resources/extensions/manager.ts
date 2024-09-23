@@ -24,10 +24,6 @@ import './sidebar.js';
 import './site_permissions/site_permissions.js';
 import './site_permissions/site_permissions_by_site.js';
 import './toolbar.js';
-// <if expr="chromeos_ash">
-import './kiosk_dialog.js';
-
-// </if>
 
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
@@ -39,9 +35,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {ActivityLogExtensionPlaceholder} from './activity_log/activity_log.js';
 import type {ExtensionsDetailViewElement} from './detail_view.js';
 import type {ExtensionsItemListElement} from './item_list.js';
-// <if expr="chromeos_ash">
-import {KioskBrowserProxyImpl} from './kiosk_browser_proxy.js';
-// </if>
 import {getTemplate} from './manager.html.js';
 import type {PageState} from './navigation_helper.js';
 import {Dialog, navigation, Page} from './navigation_helper.js';
@@ -90,7 +83,7 @@ export interface ExtensionsManagerElement {
   };
 }
 
-// TODO(crbug.com/1450101): Always show a top shadow for the DETAILS, ERRORS and
+// TODO(crbug.com/40270029): Always show a top shadow for the DETAILS, ERRORS and
 // SITE_PERMISSIONS_ALL_SITES pages.
 const ExtensionsManagerElementBase = CrContainerShadowMixin(PolymerElement);
 
@@ -120,6 +113,11 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
       inDevMode: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('inDevMode'),
+      },
+
+      isMv2DeprecationNoticeDismissed: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('MV2DeprecationNoticeDismissed'),
       },
 
       showActivityLog: {
@@ -205,24 +203,13 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
        * page.
        */
       fromActivityLog_: Boolean,
-
-      // <if expr="chromeos_ash">
-      kioskEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-
-      showKioskDialog_: {
-        type: Boolean,
-        value: false,
-      },
-      // </if>
     };
   }
 
   canLoadUnpacked: boolean;
   delegate: Service;
   inDevMode: boolean;
+  isMv2DeprecationNoticeDismissed: boolean;
   showActivityLog: boolean;
   enableEnhancedSiteControls: boolean;
   devModeControlledByPolicy: boolean;
@@ -244,11 +231,6 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
   private showOptionsDialog_: boolean;
   private fromActivityLog_: boolean;
   private pageInitializedResolver_: PromiseResolver<void>;
-
-  // <if expr="chromeos_ash">
-  private kioskEnabled_: boolean;
-  private showKioskDialog_: boolean;
-  // </if>
 
   private currentPage_: PageState|null;
   private navigationListener_: number|null = null;
@@ -293,6 +275,8 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
               profileInfo.isDeveloperModeControlledByPolicy;
           this.inDevMode = profileInfo.inDeveloperMode;
           this.canLoadUnpacked = profileInfo.canLoadUnpacked;
+          this.isMv2DeprecationNoticeDismissed =
+              profileInfo.isMv2DeprecationNoticeDismissed;
         };
     service.getProfileStateChangedTarget().addListener(onProfileStateChanged);
     service.getProfileConfiguration().then(onProfileStateChanged);
@@ -304,13 +288,6 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
       service.getItemStateChangedTarget().addListener(
           this.onItemStateChanged_.bind(this));
     });
-
-    // <if expr="chromeos_ash">
-    KioskBrowserProxyImpl.getInstance().initializeKioskAppSettings().then(
-        params => {
-          this.kioskEnabled_ = params.kioskEnabled;
-        });
-    // </if>
   }
 
   override connectedCallback() {
@@ -409,8 +386,9 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
         this.updateItem_(
             'extensions_', index,
             Object.assign({}, this.getData_(eventData.item_id), {
-              acknowledgeSafetyCheckWarning:
-                  eventData.extensionInfo?.acknowledgeSafetyCheckWarning,
+              didAcknowledgeMV2DeprecationNotice:
+                  eventData.extensionInfo?.didAcknowledgeMV2DeprecationNotice,
+              safetyCheckText: eventData.extensionInfo?.safetyCheckText,
             }));
         break;
       default:
@@ -755,16 +733,6 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     this.installWarnings_ = null;
     this.showInstallWarningsDialog_ = false;
   }
-
-  // <if expr="chromeos_ash">
-  private onKioskClick_() {
-    this.showKioskDialog_ = true;
-  }
-
-  private onKioskDialogClose_() {
-    this.showKioskDialog_ = false;
-  }
-  // </if>
 }
 
 declare global {

@@ -55,6 +55,9 @@ std::string GetURLWithoutScheme(const GURL& url) {
   config.features_enabled.push_back(omnibox::kDefaultTypedNavigationsToHttps);
   config.features_disabled.push_back(
       security_interstitials::features::kHttpsUpgrades);
+  // TODO(crbug.com/335821156): Investigate why rich inline triggers with
+  // test_HTTPWithSlowHTTPS_ShouldFallBack and remove this.
+  config.features_disabled.push_back(omnibox::kRichAutocompletion);
   return config;
 }
 
@@ -355,7 +358,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
 
   // Try again. This time the omnibox will find a history match for the http
   // URL and navigate directly to it. Histograms shouldn't change.
-  // TODO(crbug.com/1169564): We should try the https URL after a certain
+  // TODO(crbug.com/40165447): We should try the https URL after a certain
   // time has passed.
   [ChromeEarlGreyUI typeTextInOmnibox:text andPressEnter:YES];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
@@ -394,7 +397,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
 
   // Try again. This time the omnibox will find a history match for the http
   // URL and navigate directly to it. Histograms shouldn't change.
-  // TODO(crbug.com/1169564): We should try the https URL after a certain
+  // TODO(crbug.com/40165447): We should try the https URL after a certain
   // time has passed.
   [ChromeEarlGreyUI typeTextInOmnibox:text andPressEnter:YES];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];

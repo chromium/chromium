@@ -61,8 +61,15 @@ std::u16string FormatBookmarkURLForDisplay(const GURL& url);
 // context menu.
 bool IsAppsShortcutEnabled(Profile* profile);
 
+// Returns true when the TabGroupsSave feature should be added to the
+// bookmarks bar.
+bool IsSavedTabGroupsEnabled(Profile* profile);
+
 // Returns true if the Apps shortcut should be displayed in the bookmark bar.
 bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile);
+
+// Returns true if the tab groups should be displayed in the bookmark bar.
+bool ShouldShowTabGroupsInBookmarkBar(Profile* profile);
 
 // Returns true if the reading list should be displayed in the bookmark bar.
 bool ShouldShowReadingListInBookmarkBar(Profile* profile);

@@ -49,7 +49,7 @@ class SecurityOrigin;
 // Subclass of WindowProxy that only handles LocalFrame.
 class LocalWindowProxy final : public WindowProxy {
  public:
-  LocalWindowProxy(v8::Isolate*, LocalFrame&, scoped_refptr<DOMWrapperWorld>);
+  LocalWindowProxy(v8::Isolate*, LocalFrame&, DOMWrapperWorld*);
   void Trace(Visitor*) const override;
 
   v8::Local<v8::Context> ContextIfInitialized() const {

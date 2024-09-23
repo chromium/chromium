@@ -17,10 +17,8 @@ namespace policy::test {
 // manually and auto launched kiosk sessions.
 enum class TestSessionType {
   // Kiosk sessions
-  kManuallyLaunchedArcKioskSession,
   kManuallyLaunchedWebKioskSession,
   kManuallyLaunchedKioskSession,
-  kAutoLaunchedArcKioskSession,
   kAutoLaunchedWebKioskSession,
   kAutoLaunchedKioskSession,
 

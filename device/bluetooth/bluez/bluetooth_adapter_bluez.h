@@ -26,6 +26,7 @@
 #include "device/bluetooth/bluetooth_discovery_session.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
+#include "device/bluetooth/bluetooth_local_gatt_service.h"
 #include "device/bluetooth/bluez/bluetooth_service_record_bluez.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/bluetooth_admin_policy_client.h"
@@ -34,6 +35,7 @@
 #include "device/bluetooth/dbus/bluetooth_battery_client.h"
 #include "device/bluetooth/dbus/bluetooth_device_client.h"
 #include "device/bluetooth/dbus/bluetooth_input_client.h"
+#include "device/bluetooth/dbus/bluetooth_le_advertising_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_profile_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_profile_service_provider.h"
 
@@ -95,6 +97,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
       public bluez::BluetoothDeviceClient::Observer,
       public bluez::BluetoothInputClient::Observer,
       public bluez::BluetoothAgentManagerClient::Observer,
+      public bluez::BluetoothLEAdvertisingManagerClient::Observer,
 #if BUILDFLAG(IS_CHROMEOS)
       public bluez::BluetoothAdvertisementMonitorManagerClient::Observer,
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -179,6 +182,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
 
   device::BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
+
+  base::WeakPtr<device::BluetoothLocalGattService> CreateLocalGattService(
+      const device::BluetoothUUID& uuid,
+      bool is_primary,
+      device::BluetoothLocalGattService::Delegate* delegate) override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   void SetServiceAllowList(const UUIDList& uuids,

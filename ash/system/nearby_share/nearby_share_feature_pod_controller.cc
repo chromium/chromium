@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -64,13 +65,22 @@ NearbyShareFeaturePodController::~NearbyShareFeaturePodController() {
 
 std::unique_ptr<FeatureTile> NearbyShareFeaturePodController::CreateTile(
     bool compact) {
-  auto tile = std::make_unique<FeatureTile>(
-      base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
-                          weak_ptr_factory_.GetWeakPtr()));
+  std::unique_ptr<FeatureTile> tile;
+  if (chromeos::features::IsQuickShareV2Enabled()) {
+    tile = std::make_unique<FeatureTile>(
+        base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
+                            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    tile = std::make_unique<FeatureTile>(
+        base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
+
   tile_ = tile.get();
 
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
+
   const bool target_visibility =
       nearby_share_delegate_->IsPodButtonVisible() &&
       session_controller->IsActiveUserSessionStarted() &&
@@ -81,7 +91,6 @@ std::unique_ptr<FeatureTile> NearbyShareFeaturePodController::CreateTile(
   if (target_visibility) {
     TrackVisibilityUMA();
   }
-
   const std::u16string feature_name =
       nearby_share_delegate_->GetPlaceholderFeatureName();
   tile_->SetLabel(
@@ -90,15 +99,31 @@ std::unique_ptr<FeatureTile> NearbyShareFeaturePodController::CreateTile(
                 IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL)
           : l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_PH, feature_name));
-  tile_->SetTooltipText(
-      feature_name.empty()
-          ? l10n_util::GetStringUTF16(
-                IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TOGGLE_TOOLTIP)
-          : l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TOGGLE_TOOLTIP_PH,
-                feature_name));
-  bool enabled = nearby_share_delegate_->IsHighVisibilityOn();
-  OnHighVisibilityEnabledChanged(enabled);
+
+  if (chromeos::features::IsQuickShareV2Enabled()) {
+    // TODO(brandosocarras, b/355325622):Indicate Quick Share visibility in
+    // sublabel.
+    tile_->SetSubLabel(
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL));
+    tile_->CreateDecorativeDrillInArrow();
+    tile_->SetIconClickable(true);
+    tile_->SetIconClickCallback(
+        base::BindRepeating(&NearbyShareFeaturePodController::OnIconPressed,
+                            weak_ptr_factory_.GetWeakPtr()));
+
+    // Set tile appearance.
+    UpdateQSv2Button();
+  } else {
+    tile_->SetTooltipText(
+        feature_name.empty()
+            ? l10n_util::GetStringUTF16(
+                  IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TOGGLE_TOOLTIP)
+            : l10n_util::GetStringFUTF16(
+                  IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TOGGLE_TOOLTIP_PH,
+                  feature_name));
+    bool enabled = nearby_share_delegate_->IsHighVisibilityOn();
+    OnHighVisibilityEnabledChanged(enabled);
+  }
   return tile;
 }
 
@@ -107,6 +132,11 @@ QsFeatureCatalogName NearbyShareFeaturePodController::GetCatalogName() {
 }
 
 void NearbyShareFeaturePodController::OnIconPressed() {
+  if (chromeos::features::IsQuickShareV2Enabled()) {
+    // TODO(brandosocarras, b/358691432): Toggle Quick Share on icon press.
+    return;
+  }
+
   TrackToggleUMA(
       /*target_toggle_state=*/!nearby_share_delegate_->IsHighVisibilityOn());
   if (nearby_share_delegate_->IsHighVisibilityOn()) {
@@ -117,6 +147,11 @@ void NearbyShareFeaturePodController::OnIconPressed() {
 }
 
 void NearbyShareFeaturePodController::OnLabelPressed() {
+  if (chromeos::features::IsQuickShareV2Enabled()) {
+    tray_controller_->ShowNearbyShareDetailedView();
+    return;
+  }
+
   TrackDiveInUMA();
   nearby_share_delegate_->ShowNearbyShareSettings();
 }
@@ -130,6 +165,11 @@ void NearbyShareFeaturePodController::OnHighVisibilityEnabledChanged(
     countdown_timer_.Stop();
   }
   UpdateButton(enabled);
+}
+
+void NearbyShareFeaturePodController::OnVisibilityChanged(
+    ::nearby_share::mojom::Visibility visibility) {
+  UpdateQSv2Button();
 }
 
 void NearbyShareFeaturePodController::UpdateButton(bool enabled) {
@@ -149,6 +189,50 @@ void NearbyShareFeaturePodController::UpdateButton(bool enabled) {
     tile_->SetSubLabel(l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_OFF_STATE));
   }
+}
+
+void NearbyShareFeaturePodController::UpdateQSv2Button() {
+  if (!chromeos::features::IsQuickShareV2Enabled()) {
+    return;
+  }
+
+  bool in_high_visibility = nearby_share_delegate_->IsHighVisibilityOn();
+
+  if (in_high_visibility) {
+    ToggleTileOn();
+    return;
+  }
+
+  ::nearby_share::mojom::Visibility visibility =
+      nearby_share_delegate_->GetVisibility();
+
+  switch (visibility) {
+    case ::nearby_share::mojom::Visibility::kAllContacts:
+      [[fallthrough]];
+    case ::nearby_share::mojom::Visibility::kYourDevices:
+      [[fallthrough]];
+    case ::nearby_share::mojom::Visibility::kSelectedContacts:
+      ToggleTileOn();
+      break;
+    case ::nearby_share::mojom::Visibility::kUnknown:
+      [[fallthrough]];
+    case ::nearby_share::mojom::Visibility::kNoOne:
+      ToggleTileOff();
+  }
+}
+
+void NearbyShareFeaturePodController::ToggleTileOn() {
+  auto& on_icon = nearby_share_delegate_->GetIcon(/*on_icon=*/true);
+  tile_->SetVectorIcon(on_icon.is_empty() ? kQuickSettingsNearbyShareOnIcon
+                                          : on_icon);
+  tile_->SetToggled(true);
+}
+
+void NearbyShareFeaturePodController::ToggleTileOff() {
+  auto& off_icon = nearby_share_delegate_->GetIcon(/*on_icon=*/false);
+  tile_->SetVectorIcon(off_icon.is_empty() ? kQuickSettingsNearbyShareOffIcon
+                                           : off_icon);
+  tile_->SetToggled(false);
 }
 
 base::TimeDelta NearbyShareFeaturePodController::RemainingHighVisibilityTime()

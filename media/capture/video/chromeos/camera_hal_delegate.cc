@@ -2,13 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capture/video/chromeos/camera_hal_delegate.h"
 
 #include <fcntl.h>
 #include <sys/uio.h>
 
+#include <string_view>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -19,20 +26,23 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/system/system_monitor.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
-#include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "components/device_event_log/device_event_log.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
+#include "media/capture/video/chromeos/mojom/system_event_monitor.mojom.h"
+#include "media/capture/video/chromeos/mojom/video_capture_device_info_monitor.mojom.h"
 #include "media/capture/video/chromeos/video_capture_device_chromeos_delegate.h"
 #include "media/capture/video/chromeos/video_capture_device_chromeos_halv3.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/cros_system_api/mojo/service_constants.h"
 
 namespace media {
 
@@ -79,34 +89,6 @@ const std::unordered_set<int32_t> module_id_set = {
 
 constexpr base::TimeDelta kEventWaitTimeoutSecs = base::Seconds(1);
 
-class LocalCameraClientObserver : public CameraClientObserver {
- public:
-  LocalCameraClientObserver() = delete;
-
-  explicit LocalCameraClientObserver(CameraHalDelegate* camera_hal_delegate,
-                                     cros::mojom::CameraClientType type,
-                                     base::UnguessableToken auth_token)
-      : CameraClientObserver(type, std::move(auth_token)),
-        camera_hal_delegate_(camera_hal_delegate) {}
-
-  LocalCameraClientObserver(const LocalCameraClientObserver&) = delete;
-  LocalCameraClientObserver& operator=(const LocalCameraClientObserver&) =
-      delete;
-
-  void OnChannelCreated(
-      mojo::PendingRemote<cros::mojom::CameraModule> camera_module) override {
-    camera_hal_delegate_->SetCameraModule(std::move(camera_module));
-  }
-
-  bool WaitForCameraModuleReadyForTesting() override {
-    return camera_hal_delegate_
-        ->WaitForCameraModuleReadyForTesting();  // IN-TEST
-  }
-
- private:
-  raw_ptr<CameraHalDelegate> camera_hal_delegate_;
-};
-
 // ash::system::StatisticsProvider::IsRunningOnVM() isn't available in unittest.
 bool IsRunningOnVM() {
   static bool is_vm = []() {
@@ -125,21 +107,12 @@ bool IsVividLoaded() {
     return false;
   }
 
-  std::vector<base::StringPiece> lines = base::SplitStringPieceUsingSubstr(
+  std::vector<std::string_view> lines = base::SplitStringPieceUsingSubstr(
       output, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   return base::ranges::any_of(lines, [](const auto& line) {
     return base::StartsWith(line, "vivid", base::CompareCase::SENSITIVE);
   });
-}
-
-void NotifyVideoCaptureDevicesChanged() {
-  base::SystemMonitor* monitor = base::SystemMonitor::Get();
-  // |monitor| might be nullptr in unittest.
-  if (monitor) {
-    monitor->ProcessDevicesChanged(
-        base::SystemMonitor::DeviceType::DEVTYPE_VIDEO_CAPTURE);
-  }
 }
 
 base::flat_set<int32_t> GetAvailableFramerates(
@@ -170,68 +143,169 @@ base::flat_set<int32_t> GetAvailableFramerates(
 
 }  // namespace
 
-class CameraHalDelegate::PowerManagerClientProxy
-    : public chromeos::PowerManagerClient::Observer {
+class CameraHalDelegate::SystemEventMonitorProxy
+    : public cros::mojom::CrosLidObserver {
  public:
-  PowerManagerClientProxy() = default;
-  PowerManagerClientProxy(const PowerManagerClientProxy&) = delete;
-  PowerManagerClientProxy& operator=(const PowerManagerClientProxy&) = delete;
-
-  void Init(scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
-    ui_task_runner_ = std::move(ui_task_runner);
-    ui_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&PowerManagerClientProxy::InitOnDBusThread,
-                                  GetWeakPtr()));
-  }
-
-  void Shutdown() {
+  explicit SystemEventMonitorProxy(
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
+      : ui_task_runner_(std::move(ui_task_runner)) {
     ui_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&PowerManagerClientProxy::ShutdownOnDBusThread,
+        base::BindOnce(&SystemEventMonitorProxy::InitOnUIThread, GetWeakPtr()));
+  }
+
+  SystemEventMonitorProxy(const SystemEventMonitorProxy&) = delete;
+  SystemEventMonitorProxy& operator=(const SystemEventMonitorProxy&) = delete;
+
+  ~SystemEventMonitorProxy() override {
+    DCHECK(ui_task_runner_->BelongsToCurrentThread());
+  }
+
+  void NotifyVideoCaptureDevicesChanged() {
+    ui_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SystemEventMonitorProxy::
+                           NotifyVideoCaptureDevicesChangedOnUIThread,
                        GetWeakPtr()));
   }
 
-  chromeos::PowerManagerClient::LidState GetLidState() { return lid_state_; }
-
- private:
-  void InitOnDBusThread() {
-    DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-    chromeos::PowerManagerClient* power_manager_client =
-        chromeos::PowerManagerClient::Get();
-    // power_manager_client may be NULL in unittests.
-    if (power_manager_client)
-      power_manager_client->AddObserver(this);
-  }
-
-  void ShutdownOnDBusThread() {
-    DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-    chromeos::PowerManagerClient* power_manager_client =
-        chromeos::PowerManagerClient::Get();
-    // power_manager_client may be NULL in unittests.
-    if (power_manager_client)
-      power_manager_client->RemoveObserver(this);
-  }
-
-  // chromeos::PowerManagerClient::Observer:
-  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
-                        base::TimeTicks timestamp) final {
-    if (lid_state_ != state) {
-      lid_state_ = state;
-      NotifyVideoCaptureDevicesChanged();
+  void OnLidStateChanged(cros::mojom::LidState state) override {
+    bool is_lid_state_changed = false;
+    {
+      base::AutoLock lock(lid_lock_);
+      if (lid_state_ != state) {
+        lid_state_ = state;
+        is_lid_state_changed = true;
+      }
+    }
+    if (is_lid_state_changed) {
+      NotifyVideoCaptureDevicesChangedOnUIThread();
     }
   }
 
-  base::WeakPtr<CameraHalDelegate::PowerManagerClientProxy> GetWeakPtr() {
+  cros::mojom::LidState GetLidState() {
+    base::AutoLock lock(lid_lock_);
+    return lid_state_;
+  }
+
+ private:
+  void InitOnUIThread() {
+    DCHECK(ui_task_runner_->BelongsToCurrentThread());
+    if (!ash::mojo_service_manager::IsServiceManagerBound()) {
+      return;
+    }
+    ash::mojo_service_manager::GetServiceManagerProxy()->Request(
+        /*service_name=*/chromeos::mojo_services::kCrosSystemEventMonitor,
+        std::nullopt, monitor_.BindNewPipeAndPassReceiver().PassPipe());
+    monitor_->AddLidObserver(receiver_.BindNewPipeAndPassRemote());
+  }
+
+  void NotifyVideoCaptureDevicesChangedOnUIThread() {
+    DCHECK(ui_task_runner_->BelongsToCurrentThread());
+    if (!monitor_.is_bound()) {
+      return;
+    }
+    monitor_->NotifyDeviceChanged(cros::mojom::DeviceType::kVideoCapture);
+  }
+
+  base::WeakPtr<CameraHalDelegate::SystemEventMonitorProxy> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  base::Lock lid_lock_;
+  cros::mojom::LidState lid_state_ GUARDED_BY(lid_lock_) =
+      cros::mojom::LidState::kNotPresent;
+
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
-  chromeos::PowerManagerClient::LidState lid_state_ =
-      chromeos::PowerManagerClient::LidState::OPEN;
+  mojo::Remote<cros::mojom::CrosSystemEventMonitor> monitor_;
 
-  base::WeakPtrFactory<CameraHalDelegate::PowerManagerClientProxy>
+  mojo::Receiver<cros::mojom::CrosLidObserver> receiver_{this};
+
+  base::WeakPtrFactory<CameraHalDelegate::SystemEventMonitorProxy>
       weak_ptr_factory_{this};
+};
+
+class CameraHalDelegate::VCDInfoMonitorImpl
+    : public cros::mojom::VideoCaptureDeviceInfoMonitor,
+      public chromeos::mojo_service_manager::mojom::ServiceProvider {
+ public:
+  VCDInfoMonitorImpl() {
+    if (!ash::mojo_service_manager::IsServiceManagerBound()) {
+      return;
+    }
+    vcd_info_observers_.set_disconnect_handler(base::BindRepeating(
+        &VCDInfoMonitorImpl::RemoveObserver, weak_factory_.GetWeakPtr()));
+    auto* proxy = ash::mojo_service_manager::GetServiceManagerProxy();
+    proxy->Register(/*service_name=*/chromeos::mojo_services::
+                        kVideoCaptureDeviceInfoMonitor,
+                    provider_receiver_.BindNewPipeAndPassRemote());
+  }
+
+  VCDInfoMonitorImpl(const VCDInfoMonitorImpl&) = delete;
+  VCDInfoMonitorImpl& operator=(const VCDInfoMonitorImpl&) = delete;
+
+  ~VCDInfoMonitorImpl() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  void AddCameraIdToDeviceIdMapping(int32_t camera_id, std::string device_id) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (camera_id_to_device_id_.find(camera_id) ==
+            camera_id_to_device_id_.end() ||
+        camera_id_to_device_id_[camera_id] != device_id) {
+      camera_id_to_device_id_[camera_id] = device_id;
+      for (auto& observer : vcd_info_observers_) {
+        observer->OnGetCameraIdToDeviceIdMapping(camera_id, device_id);
+      }
+    }
+  }
+
+  // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
+  void Request(
+      chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
+      mojo::ScopedMessagePipeHandle receiver) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    receiver_set_.Add(
+        this, mojo::PendingReceiver<cros::mojom::VideoCaptureDeviceInfoMonitor>(
+                  std::move(receiver)));
+  }
+
+  // cros::mojom::VideoCaptureDeviceInfoMonitor overrides.
+  void AddVideoCaptureDeviceInfoObserver(
+      mojo::PendingRemote<cros::mojom::VideoCaptureDeviceInfoObserver> observer)
+      override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    auto id = vcd_info_observers_.Add(std::move(observer));
+    for (const auto& [camera_id, device_id] : camera_id_to_device_id_) {
+      vcd_info_observers_.Get(id)->OnGetCameraIdToDeviceIdMapping(camera_id,
+                                                                  device_id);
+    }
+  }
+
+  void CleanMappings() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    camera_id_to_device_id_.clear();
+  }
+
+ private:
+  void RemoveObserver(mojo::RemoteSetElementId id) {
+    vcd_info_observers_.Remove(id);
+  }
+
+  base::flat_map<int32_t, std::string> camera_id_to_device_id_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  mojo::RemoteSet<cros::mojom::VideoCaptureDeviceInfoObserver>
+      vcd_info_observers_;
+
+  mojo::ReceiverSet<cros::mojom::VideoCaptureDeviceInfoMonitor> receiver_set_;
+
+  mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
+      provider_receiver_{this};
+
+  base::WeakPtrFactory<VCDInfoMonitorImpl> weak_factory_{this};
 };
 
 class CameraHalDelegate::VideoCaptureDeviceDelegateMap {
@@ -269,10 +343,59 @@ class CameraHalDelegate::VideoCaptureDeviceDelegateMap {
       weak_ptr_factory_{this};
 };
 
+class CameraHalDelegate::CameraModuleConnector {
+ public:
+  using OnGetCameraModuleCallback = base::RepeatingCallback<void(
+      mojo::PendingRemote<cros::mojom::CameraModule> camera_module)>;
+
+  explicit CameraModuleConnector(
+      OnGetCameraModuleCallback on_get_camera_module_callback)
+      : on_get_camera_module_callback_(on_get_camera_module_callback) {
+    mojo_service_manager_observer_ = MojoServiceManagerObserver::Create(
+        chromeos::mojo_services::kCrosCameraService,
+        base::BindRepeating(&CameraModuleConnector::ConnectToCameraService,
+                            weak_factory_.GetWeakPtr()),
+        base::DoNothing());
+  }
+
+  ~CameraModuleConnector() = default;
+
+  CameraModuleConnector(const CameraModuleConnector&) = delete;
+  CameraModuleConnector& operator=(const CameraModuleConnector&) = delete;
+
+ private:
+  void ConnectToCameraService() {
+    ash::mojo_service_manager::GetServiceManagerProxy()->Request(
+        chromeos::mojo_services::kCrosCameraService, std::nullopt,
+        camera_service_.BindNewPipeAndPassReceiver().PassPipe());
+    camera_service_.set_disconnect_handler(
+        base::BindOnce(&CameraModuleConnector::OnCameraServiceConnectionError,
+                       weak_factory_.GetWeakPtr()));
+    camera_service_->GetCameraModule(
+        cros::mojom::CameraClientType::CHROME,
+        base::BindOnce(&CameraModuleConnector::OnGetCameraModule,
+                       base::Unretained(this)));
+  }
+
+  void OnGetCameraModule(
+      mojo::PendingRemote<cros::mojom::CameraModule> camera_module) {
+    on_get_camera_module_callback_.Run(std::move(camera_module));
+  }
+
+  void OnCameraServiceConnectionError() { camera_service_.reset(); }
+
+  OnGetCameraModuleCallback on_get_camera_module_callback_;
+
+  std::unique_ptr<MojoServiceManagerObserver> mojo_service_manager_observer_;
+
+  mojo::Remote<cros::mojom::CrosCameraService> camera_service_;
+
+  base::WeakPtrFactory<CameraModuleConnector> weak_factory_{this};
+};
+
 CameraHalDelegate::CameraHalDelegate(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
-    : authenticated_(false),
-      camera_module_has_been_set_(
+    : camera_module_has_been_set_(
           base::WaitableEvent::ResetPolicy::MANUAL,
           base::WaitableEvent::InitialState::NOT_SIGNALED),
       builtin_camera_info_updated_(
@@ -288,10 +411,10 @@ CameraHalDelegate::CameraHalDelegate(
       camera_hal_ipc_thread_("CameraHalIpcThread"),
       camera_module_callbacks_(this),
       vcd_delegate_map_(new VideoCaptureDeviceDelegateMap()),
-      power_manager_client_proxy_(new PowerManagerClientProxy()),
+      system_event_monitor_proxy_(new SystemEventMonitorProxy(ui_task_runner)),
+      vcd_info_monitor_impl_(ui_task_runner),
       ui_task_runner_(std::move(ui_task_runner)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  power_manager_client_proxy_->Init(ui_task_runner_);
 }
 
 bool CameraHalDelegate::Init() {
@@ -306,14 +429,6 @@ bool CameraHalDelegate::Init() {
 }
 
 CameraHalDelegate::~CameraHalDelegate() {
-  std::vector<CameraClientObserver*> observers;
-  for (auto& client_observer : local_client_observers_) {
-    observers.emplace_back(client_observer.get());
-  }
-  auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
-  dispatcher->RemoveClientObservers(observers);
-  local_client_observers_.clear();
-
   if (ipc_task_runner_) {
     ipc_task_runner_->PostTask(
         FROM_HERE,
@@ -322,34 +437,8 @@ CameraHalDelegate::~CameraHalDelegate() {
   }
   camera_hal_ipc_thread_.Stop();
 
-  power_manager_client_proxy_->Shutdown();
   ui_task_runner_->DeleteSoon(FROM_HERE,
-                              std::move(power_manager_client_proxy_));
-}
-
-bool CameraHalDelegate::RegisterCameraClient() {
-  auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
-  auto type = cros::mojom::CameraClientType::CHROME;
-  auto client_observer = std::make_unique<LocalCameraClientObserver>(
-      this, type, dispatcher->GetTokenForTrustedClient(type));
-  dispatcher->AddClientObserver(
-      client_observer.get(),
-      base::BindOnce(&CameraHalDelegate::OnRegisteredCameraHalClient,
-                     base::Unretained(this)));
-  camera_hal_client_registered_.Wait();
-  local_client_observers_.emplace_back(std::move(client_observer));
-  return authenticated_;
-}
-
-void CameraHalDelegate::OnRegisteredCameraHalClient(int32_t result) {
-  if (result != 0) {
-    LOG(ERROR) << "Failed to register camera HAL client";
-    camera_hal_client_registered_.Signal();
-    return;
-  }
-  CAMERA_LOG(EVENT) << "Registered camera HAL client";
-  authenticated_ = true;
-  camera_hal_client_registered_.Signal();
+                              std::move(system_event_monitor_proxy_));
 }
 
 void CameraHalDelegate::SetCameraModule(
@@ -358,6 +447,28 @@ void CameraHalDelegate::SetCameraModule(
       FROM_HERE,
       base::BindOnce(&CameraHalDelegate::SetCameraModuleOnIpcThread,
                      base::Unretained(this), std::move(camera_module)));
+}
+
+void CameraHalDelegate::SetCameraModuleOnIpcThread(
+    mojo::PendingRemote<cros::mojom::CameraModule> camera_module) {
+  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
+  if (camera_module_.is_bound()) {
+    LOG(ERROR) << "CameraModule is already bound";
+    return;
+  }
+  if (!camera_module.is_valid()) {
+    LOG(ERROR) << "Invalid pending camera module remote";
+    return;
+  }
+  camera_module_.Bind(std::move(camera_module));
+  camera_module_.set_disconnect_handler(
+      base::BindOnce(&CameraHalDelegate::ResetMojoInterfaceOnIpcThread,
+                     base::Unretained(this)));
+  camera_module_has_been_set_.Signal();
+
+  // Trigger ondevicechange event to notify clients that built-in camera device
+  // info can now be queried.
+  NotifyVideoCaptureDevicesChanged();
 }
 
 std::unique_ptr<VideoCaptureDevice> CameraHalDelegate::CreateDevice(
@@ -536,8 +647,9 @@ void CameraHalDelegate::GetDevicesInfo(
       }
       desc.set_control_support(GetControlSupport(camera_info));
       device_id_to_camera_id_[desc.device_id] = camera_id;
-      auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
-      dispatcher->AddCameraIdToDeviceIdEntry(camera_id, desc.device_id);
+      vcd_info_monitor_impl_
+          .AsyncCall(&VCDInfoMonitorImpl::AddCameraIdToDeviceIdMapping)
+          .WithArgs(camera_id, desc.device_id);
       devices_info.emplace_back(desc);
       GetSupportedFormats(camera_info_[camera_id],
                           &devices_info.back().supported_formats);
@@ -549,7 +661,9 @@ void CameraHalDelegate::GetDevicesInfo(
             std::string(kVirtualPrefix) + base::NumberToString(camera_id);
         desc.set_display_name("Virtual Camera");
         device_id_to_camera_id_[desc.device_id] = camera_id;
-        dispatcher->AddCameraIdToDeviceIdEntry(camera_id, desc.device_id);
+        // We don't need to add virtual camera for mutli-stream to the camera_id
+        // <-> device_id map. Otherwise, it will overrides the device_id for the
+        // real device. Moreover, the multi-stream logic is going to be removed.
         devices_info.emplace_back(desc);
         GetSupportedFormats(camera_info_[camera_id],
                             &devices_info.back().supported_formats);
@@ -558,6 +672,7 @@ void CameraHalDelegate::GetDevicesInfo(
   }
   // TODO(jcliang): Remove this after JS API supports query camera facing
   // (http://crbug.com/543997).
+  cros::mojom::LidState lid_state = system_event_monitor_proxy_->GetLidState();
   std::sort(
       devices_info.begin(), devices_info.end(),
       [&](const VideoCaptureDeviceInfo& a, const VideoCaptureDeviceInfo& b) {
@@ -565,9 +680,7 @@ void CameraHalDelegate::GetDevicesInfo(
           return vcd_info.descriptor.facing ==
                  VideoFacingMode::MEDIA_VIDEO_FACING_NONE;
         };
-        chromeos::PowerManagerClient::LidState lid_state =
-            power_manager_client_proxy_->GetLidState();
-        if (lid_state == chromeos::PowerManagerClient::LidState::CLOSED) {
+        if (lid_state == cros::mojom::LidState::kClosed) {
           if (IsExternalCamera(a) == IsExternalCamera(b))
             return a.descriptor < b.descriptor;
           return IsExternalCamera(a);
@@ -714,28 +827,6 @@ VideoCaptureDeviceChromeOSDelegate* CameraHalDelegate::GetVCDDelegate(
   return vcd_delegate_map_->Get(camera_id);
 }
 
-void CameraHalDelegate::SetCameraModuleOnIpcThread(
-    mojo::PendingRemote<cros::mojom::CameraModule> camera_module) {
-  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
-  if (camera_module_.is_bound()) {
-    LOG(ERROR) << "CameraModule is already bound";
-    return;
-  }
-  if (!camera_module.is_valid()) {
-    LOG(ERROR) << "Invalid pending camera module remote";
-    return;
-  }
-  camera_module_.Bind(std::move(camera_module));
-  camera_module_.set_disconnect_handler(
-      base::BindOnce(&CameraHalDelegate::ResetMojoInterfaceOnIpcThread,
-                     base::Unretained(this)));
-  camera_module_has_been_set_.Signal();
-
-  // Trigger ondevicechange event to notify clients that built-in camera device
-  // info can now be queried.
-  NotifyVideoCaptureDevicesChanged();
-}
-
 void CameraHalDelegate::ResetMojoInterfaceOnIpcThread() {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   camera_module_.reset();
@@ -750,6 +841,7 @@ void CameraHalDelegate::ResetMojoInterfaceOnIpcThread() {
   base::AutoLock lock(camera_info_lock_);
   camera_info_.clear();
   pending_external_camera_info_.clear();
+  vcd_info_monitor_impl_.AsyncCall(&VCDInfoMonitorImpl::CleanMappings);
   NotifyVideoCaptureDevicesChanged();
 }
 
@@ -956,7 +1048,7 @@ void CameraHalDelegate::CameraDeviceStatusChange(
       }
       break;
     default:
-      NOTREACHED() << "Unexpected new status " << new_status;
+      NOTREACHED_IN_MIGRATION() << "Unexpected new status " << new_status;
   }
 }
 
@@ -967,11 +1059,26 @@ void CameraHalDelegate::TorchModeStatusChange(
   // Do nothing here as we don't care about torch mode status.
 }
 
+void CameraHalDelegate::BootStrapCameraServiceConnection() {
+  camera_module_connector_ = base::SequenceBound<CameraModuleConnector>(
+      ui_task_runner_,
+      base::BindPostTask(
+          ipc_task_runner_,
+          base::BindRepeating(&CameraHalDelegate::SetCameraModuleOnIpcThread,
+                              base::Unretained(this))));
+}
+
 bool CameraHalDelegate::WaitForCameraModuleReadyForTesting() {
+  DCHECK(!ipc_task_runner_->BelongsToCurrentThread());
+
   if (camera_module_has_been_set_.IsSignaled()) {
     return true;
   }
   return camera_module_has_been_set_.TimedWait(base::Seconds(10));
+}
+
+void CameraHalDelegate::NotifyVideoCaptureDevicesChanged() {
+  system_event_monitor_proxy_->NotifyVideoCaptureDevicesChanged();
 }
 
 }  // namespace media

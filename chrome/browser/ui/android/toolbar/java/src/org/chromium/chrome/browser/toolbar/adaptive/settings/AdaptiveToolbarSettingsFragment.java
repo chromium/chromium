@@ -9,9 +9,11 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
@@ -24,8 +26,8 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.lang.ref.WeakReference;
 
-/** Fragment that allows the user to configure toolbar shorcut preferences. */
-public class AdaptiveToolbarSettingsFragment extends PreferenceFragmentCompat {
+/** Fragment that allows the user to configure toolbar shortcut preferences. */
+public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment {
     /** The key for the switch taggle on the setting page. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final String PREF_TOOLBAR_SHORTCUT_SWITCH = "toolbar_shortcut_switch";
@@ -36,10 +38,11 @@ public class AdaptiveToolbarSettingsFragment extends PreferenceFragmentCompat {
 
     private @NonNull ChromeSwitchPreference mToolbarShortcutSwitch;
     private @NonNull RadioButtonGroupAdaptiveToolbarPreference mRadioButtonGroup;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        getActivity().setTitle(R.string.toolbar_shortcut);
+        mPageTitle.set(getString(R.string.toolbar_shortcut));
         SettingsUtils.addPreferencesFromResource(this, R.xml.adaptive_toolbar_preference);
 
         mToolbarShortcutSwitch =
@@ -55,14 +58,14 @@ public class AdaptiveToolbarSettingsFragment extends PreferenceFragmentCompat {
                 (RadioButtonGroupAdaptiveToolbarPreference)
                         findPreference(PREF_ADAPTIVE_RADIO_GROUP);
         mRadioButtonGroup.setCanUseVoiceSearch(getCanUseVoiceSearch());
-        mRadioButtonGroup.setCanUseTranslate(
-                AdaptiveToolbarFeatures.isAdaptiveToolbarTranslateEnabled());
-        mRadioButtonGroup.setCanUseAddToBookmarks(
-                AdaptiveToolbarFeatures.isAdaptiveToolbarAddToBookmarksEnabled());
         mRadioButtonGroup.setCanUseReadAloud(
-                AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled());
+                AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled(getProfile()));
+        mRadioButtonGroup.setCanUsePageSummary(
+                AdaptiveToolbarFeatures.isAdaptiveToolbarPageSummaryEnabled());
         mRadioButtonGroup.setStatePredictor(
                 new AdaptiveToolbarStatePredictor(
+                        getContext(),
+                        getProfile(),
                         new ActivityAndroidPermissionDelegate(new WeakReference(getActivity()))));
         mRadioButtonGroup.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
@@ -71,6 +74,11 @@ public class AdaptiveToolbarSettingsFragment extends PreferenceFragmentCompat {
                 });
         mRadioButtonGroup.setEnabled(AdaptiveToolbarPrefs.isCustomizationPreferenceEnabled());
         AdaptiveToolbarStats.recordToolbarShortcutToggleState(/* onStartup= */ true);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     /**

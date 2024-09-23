@@ -10,12 +10,15 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/notimplemented.h"
 #include "base/types/optional_util.h"
 #include "chrome/services/speech/audio_source_fetcher_impl.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"
+#include "components/live_caption/pref_names.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -83,18 +86,38 @@ void CrosSpeechRecognitionService::BindRecognizer(
 
   base::FilePath binary_path;
   base::flat_map<std::string, base::FilePath> config_paths;
-  std::string language_name = options->language
-                                  ? options->language.value()
-                                  : GetLanguageName(LanguageCode::kEnUs);
+  // The options should have locale set, but if they don't, pull from the prefs.
+  std::string language_name;
+  if (options->language) {
+    language_name = options->language.value();
+  } else {
+    PrefService* profile_prefs = user_prefs::UserPrefs::Get(context());
+    language_name = prefs::GetLiveCaptionLanguageCode(profile_prefs);
+  }
+
   PopulateFilePaths(binary_path, config_paths);
 
-  // TODO(crbug.com/1467525): Implement offensive word mask on ChromeOS so that
+  // TODO(crbug.com/40924425): Implement offensive word mask on ChromeOS so that
   // mask_offensive_words is not hard-coded.
   CrosSpeechRecognitionRecognizerImpl::Create(
       std::move(receiver), std::move(client), std::move(options), binary_path,
       config_paths, language_name, /* mask_offensive_words= */ false);
   std::move(callback).Run(
       CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
+}
+
+void CrosSpeechRecognitionService::BindWebSpeechRecognizer(
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+        session_receiver,
+    mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+        session_client,
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionAudioForwarder>
+        audio_forwarder,
+    int channel_count,
+    int sample_rate,
+    media::mojom::SpeechRecognitionOptionsPtr options,
+    bool continuous) {
+  NOTIMPLEMENTED();
 }
 
 void CrosSpeechRecognitionService::BindAudioSourceFetcher(
@@ -107,9 +130,15 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
     base::flat_map<std::string, base::FilePath> config_paths;
     PopulateFilePaths(binary_path, config_paths);
 
-    std::string language_name = options->language
-                                    ? options->language.value()
-                                    : GetLanguageName(LanguageCode::kEnUs);
+    // The options should have locale set, but if they don't, pull from the
+    // prefs.
+    std::string language_name;
+    if (options->language) {
+      language_name = options->language.value();
+    } else {
+      PrefService* profile_prefs = user_prefs::UserPrefs::Get(context());
+      language_name = prefs::GetLiveCaptionLanguageCode(profile_prefs);
+    }
     // CrosSpeechRecognitionService runs on browser UI thread.
     // Create AudioSourceFetcher on browser IO thread to avoid UI jank.
     // Note that its CrosSpeechRecognitionRecognizer must also run

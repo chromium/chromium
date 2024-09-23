@@ -21,8 +21,7 @@ namespace ui {
 // This is the actual implementation of event monitoring. It's separated from
 // UserInputMonitorLinux since it needs to be deleted on the IO thread.
 class COMPONENT_EXPORT(UI_BASE_X) XUserInputMonitor
-    : public base::SupportsWeakPtr<XUserInputMonitor>,
-      public base::CurrentThread::DestructionObserver,
+    : public base::CurrentThread::DestructionObserver,
       public x11::EventObserver {
  public:
   using WriteKeyPressCallback = base::RepeatingCallback<

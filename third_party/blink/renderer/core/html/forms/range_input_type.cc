@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -96,6 +97,33 @@ InputType::ValueMode RangeInputType::GetValueMode() const {
 
 void RangeInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeRange);
+}
+
+void RangeInputType::DidRecalcStyle(const StyleRecalcChange) {
+  if (const ComputedStyle* style = GetElement().GetComputedStyle()) {
+    if (RuntimeEnabledFeatures::
+            NonStandardAppearanceValueSliderVerticalEnabled() &&
+        style->EffectiveAppearance() == kSliderVerticalPart) {
+      UseCounter::Count(GetElement().GetDocument(),
+                        WebFeature::kInputTypeRangeVerticalAppearance);
+    } else {
+      bool is_horizontal = style->IsHorizontalWritingMode();
+      bool is_ltr = style->IsLeftToRightDirection();
+      if (is_horizontal && is_ltr) {
+        UseCounter::Count(GetElement().GetDocument(),
+                          WebFeature::kInputTypeRangeHorizontalLtr);
+      } else if (is_horizontal && !is_ltr) {
+        UseCounter::Count(GetElement().GetDocument(),
+                          WebFeature::kInputTypeRangeHorizontalRtl);
+      } else if (is_ltr) {
+        UseCounter::Count(GetElement().GetDocument(),
+                          WebFeature::kInputTypeRangeVerticalLtr);
+      } else {
+        UseCounter::Count(GetElement().GetDocument(),
+                          WebFeature::kInputTypeRangeVerticalRtl);
+      }
+    }
+  }
 }
 
 double RangeInputType::ValueAsDouble() const {
@@ -170,7 +198,7 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
   if (GetElement().IsDisabledFormControl())
     return;
 
-  const String& key = event.key();
+  const AtomicString key(event.key());
 
   const Decimal current = ParseToNumberOrNaN(GetElement().Value());
   DCHECK(current.IsFinite());
@@ -187,27 +215,64 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
   const Decimal big_step =
       std::max((step_range.Maximum() - step_range.Minimum()) / 10, step);
 
-  TextDirection dir = TextDirection::kLtr;
-  if (GetElement().GetLayoutObject()) {
-    dir = ComputedTextDirection();
+  bool is_up = false;
+  bool is_down = false;
+  if (RuntimeEnabledFeatures::VerticalInputRangeKeyOperationFixEnabled()) {
+    WritingDirectionMode writing_direction = {WritingMode::kHorizontalTb,
+                                              TextDirection::kLtr};
+    if (const auto* style = GetElement().GetComputedStyle()) {
+      writing_direction = style->GetWritingDirection();
+      // `appearance: slider-vertical` is equivalent to `writing-mode:
+      // vertical-rl; direction: rtl`.
+      if (RuntimeEnabledFeatures::
+              NonStandardAppearanceValueSliderVerticalEnabled() &&
+          writing_direction.IsHorizontal() &&
+          style->EffectiveAppearance() == kSliderVerticalPart) {
+        writing_direction = {WritingMode::kVerticalRl, TextDirection::kRtl};
+      }
+    }
+    const PhysicalToLogical<const AtomicString*> key_mapper(
+        writing_direction, &keywords::kArrowUp, &keywords::kArrowRight,
+        &keywords::kArrowDown, &keywords::kArrowLeft);
+    is_up = key == *key_mapper.InlineEnd() || key == *key_mapper.LineOver();
+    is_down =
+        key == *key_mapper.InlineStart() || key == *key_mapper.LineUnder();
+  } else {
+    TextDirection dir = TextDirection::kLtr;
+    if (GetElement().GetLayoutObject()) {
+      dir = ComputedTextDirection();
+    }
+    if (key == keywords::kArrowUp) {
+      is_up = true;
+    } else if (key == keywords::kArrowDown) {
+      is_down = true;
+    } else if (key == keywords::kArrowLeft) {
+      if (dir == TextDirection::kRtl) {
+        is_up = true;
+      } else {
+        is_down = true;
+      }
+    } else if (key == keywords::kArrowRight) {
+      if (dir == TextDirection::kRtl) {
+        is_down = true;
+      } else {
+        is_up = true;
+      }
+    }
   }
 
   Decimal new_value;
-  if (key == "ArrowUp") {
+  if (is_up) {
     new_value = current + step;
-  } else if (key == "ArrowDown") {
+  } else if (is_down) {
     new_value = current - step;
-  } else if (key == "ArrowLeft") {
-    new_value = dir == TextDirection::kRtl ? current + step : current - step;
-  } else if (key == "ArrowRight") {
-    new_value = dir == TextDirection::kRtl ? current - step : current + step;
-  } else if (key == "PageUp") {
+  } else if (key == keywords::kPageUp) {
     new_value = current + big_step;
-  } else if (key == "PageDown") {
+  } else if (key == keywords::kPageDown) {
     new_value = current - big_step;
-  } else if (key == "Home") {
+  } else if (key == keywords::kHome) {
     new_value = step_range.Minimum();
-  } else if (key == "End") {
+  } else if (key == keywords::kEnd) {
     new_value = step_range.Maximum();
   } else {
     return;  // Did not match any key binding.
@@ -246,6 +311,11 @@ void RangeInputType::CreateShadowSubtree() {
 LayoutObject* RangeInputType::CreateLayoutObject(const ComputedStyle&) const {
   // TODO(crbug.com/1131352): input[type=range] should not use flexbox.
   return MakeGarbageCollected<LayoutFlexibleBox>(&GetElement());
+}
+
+void RangeInputType::AdjustStyle(ComputedStyleBuilder& builder) {
+  builder.SetInlineBlockBaselineEdge(EInlineBlockBaselineEdge::kBorderBox);
+  InputTypeView::AdjustStyle(builder);
 }
 
 Decimal RangeInputType::ParseToNumber(const String& src,

@@ -12,26 +12,14 @@ using safe_browsing::ThreatPatternType;
 using security_interstitials::BaseSafeBrowsingErrorUI;
 using security_interstitials::UnsafeResource;
 
-void RunUnsafeResourceCallback(const UnsafeResource& resource,
-                               bool proceed,
-                               bool showed_interstitial) {
-  DCHECK(resource.callback_sequence);
-  DCHECK(!resource.callback.is_null());
-  UnsafeResource::UrlCheckResult result(
-      proceed, showed_interstitial,
-      /*has_post_commit_interstitial_skipped=*/false);
-  resource.callback_sequence->PostTask(
-      FROM_HERE, base::BindOnce(resource.callback, result));
-}
-
 BaseSafeBrowsingErrorUI::SBInterstitialReason
 GetUnsafeResourceInterstitialReason(const UnsafeResource& resource) {
   switch (resource.threat_type) {
-    case safe_browsing::SB_THREAT_TYPE_BILLING:
+    case safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING:
       return BaseSafeBrowsingErrorUI::SB_REASON_BILLING;
-    case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
+    case safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE:
       return BaseSafeBrowsingErrorUI::SB_REASON_MALWARE;
-    case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
+    case safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED:
       return BaseSafeBrowsingErrorUI::SB_REASON_HARMFUL;
     default:
       return BaseSafeBrowsingErrorUI::SB_REASON_PHISHING;
@@ -56,8 +44,6 @@ std::string GetUnsafeResourceMetricPrefix(
       break;
   }
   DCHECK(prefix.length());
-  if (resource.is_subresource)
-    prefix += "_subresource";
   return prefix;
 }
 
@@ -71,8 +57,5 @@ SafeBrowsingUrlAllowList* GetAllowListForResource(
 
 const GURL GetMainFrameUrl(
     const security_interstitials::UnsafeResource& resource) {
-  if (resource.request_destination ==
-      network::mojom::RequestDestination::kDocument)
-    return resource.url;
-  return resource.weak_web_state.get()->GetLastCommittedURL();
+  return resource.url;
 }

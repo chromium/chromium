@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
+import android.app.Activity;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
@@ -37,10 +39,11 @@ public class IncognitoReauthManager {
         void onIncognitoReauthFailure();
     }
 
-    public IncognitoReauthManager() {
-        this(ReauthenticatorBridge.create(DeviceAuthSource.INCOGNITO));
+    public IncognitoReauthManager(Activity activity, Profile profile) {
+        this(ReauthenticatorBridge.create(activity, profile, DeviceAuthSource.INCOGNITO));
     }
 
+    @VisibleForTesting
     public IncognitoReauthManager(ReauthenticatorBridge reauthenticatorBridge) {
         mReauthenticatorBridge = reauthenticatorBridge;
     }
@@ -71,14 +74,20 @@ public class IncognitoReauthManager {
     }
 
     /**
+     * Cleans up C++ objects owned by this class. Typically, called when the Activity is being
+     * destroyed.
+     */
+    public void destroy() {
+        mReauthenticatorBridge.destroy();
+    }
+
+    /**
      * @return A boolean indicating whether the platform version supports reauth and the
-     *         corresponding Chrome feature flag is on;
-     *
-     * For a more complete check, rely on the method {@link
-     * IncognitoReauthManager#isIncognitoReauthEnabled(Profile)} instead.
-     *
-     * TODO(crbug.com/1227656): Remove the check on accessibility once the GTS is fully rolled out
-     * to accessibility users.
+     *     corresponding Chrome feature flag is on;
+     *     <p>For a more complete check, rely on the method {@link
+     *     IncognitoReauthManager#isIncognitoReauthEnabled(Profile)} instead.
+     *     <p>TODO(crbug.com/40056462): Remove the check on accessibility once the GTS is fully
+     *     rolled out to accessibility users.
      */
     public static boolean isIncognitoReauthFeatureAvailable() {
         if (sIsIncognitoReauthFeatureAvailableForTesting != null) {

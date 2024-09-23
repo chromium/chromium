@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider_keyboard.h"
 
 #include <fcntl.h>
@@ -245,6 +250,7 @@ constexpr mojom::TopRowKey ConvertTopRowActionKeyToDiagnosticsTopRowKey(
     case ui::TopRowActionKey::kAllApplications:
     case ui::TopRowActionKey::kEmojiPicker:
     case ui::TopRowActionKey::kDictation:
+    case ui::TopRowActionKey::kAccessibility:
     case ui::TopRowActionKey::kUnknown:
       return mojom::TopRowKey::kUnknown;
     case ui::TopRowActionKey::kNone:
@@ -485,7 +491,7 @@ mojom::KeyEventPtr InputDataProviderKeyboard::ConstructInputKeyEvent(
   }
 
   // Do the same if F1-F15 was pressed.
-  const auto* jter = kFKeyOrder.find(event->key_code);
+  const auto jter = kFKeyOrder.find(event->key_code);
   if (event->top_row_position == -1 && jter != kFKeyOrder.end()) {
     event->top_row_position = jter->second;
   }

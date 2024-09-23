@@ -6,6 +6,7 @@
 #define REMOTING_HOST_WIN_WTS_TERMINAL_OBSERVER_H_
 
 #include <windows.h>
+
 #include <stdint.h>
 
 namespace remoting {

@@ -5,6 +5,7 @@
 #include "media/formats/hls/multivariant_playlist.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "media/formats/hls/audio_rendition.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
@@ -35,8 +35,8 @@ namespace {
 template <typename T>
 T* GetOrCreateRenditionGroup(
     base::PassKey<MultivariantPlaylist> pass_key,
-    base::flat_map<base::StringPiece, scoped_refptr<T>>& groups,
-    base::StringPiece id) {
+    base::flat_map<std::string_view, scoped_refptr<T>>& groups,
+    std::string_view id) {
   auto iter = groups.find(id);
 
   // If the group wasn't found, create it.
@@ -59,9 +59,10 @@ Playlist::Kind MultivariantPlaylist::GetKind() const {
 
 // static
 ParseStatus::Or<scoped_refptr<MultivariantPlaylist>>
-MultivariantPlaylist::Parse(base::StringPiece source,
+MultivariantPlaylist::Parse(std::string_view source,
                             GURL uri,
-                            types::DecimalInteger version) {
+                            types::DecimalInteger version,
+                            TagRecorder* tag_recorder) {
   DCHECK(version != 0);
   if (version < Playlist::kMinSupportedVersion ||
       version > Playlist::kMaxSupportedVersion) {
@@ -86,7 +87,7 @@ MultivariantPlaylist::Parse(base::StringPiece source,
   VariableDictionary::SubstitutionBuffer sub_buffer;
   std::optional<XStreamInfTag> inf_tag;
   std::vector<VariantStream> variants;
-  base::flat_map<base::StringPiece, scoped_refptr<AudioRenditionGroup>>
+  base::flat_map<std::string_view, scoped_refptr<AudioRenditionGroup>>
       audio_rendition_groups;
 
   // Get variants out of the playlist
@@ -114,6 +115,9 @@ MultivariantPlaylist::Parse(base::StringPiece source,
       }
 
       if (!tag->GetName().has_value()) {
+        if (tag_recorder) {
+          tag_recorder->SetMetric(TagRecorder::Metric::kUnknownTag);
+        }
         HandleUnknownTag(*tag);
         continue;
       }
@@ -135,11 +139,15 @@ MultivariantPlaylist::Parse(base::StringPiece source,
 
       switch (static_cast<MultivariantPlaylistTagName>(*tag->GetName())) {
         case MultivariantPlaylistTagName::kXContentSteering: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-CONTENT-STEERING tag
+          if (tag_recorder) {
+            tag_recorder->SetMetric(TagRecorder::Metric::kContentSteering);
+          }
+          // TODO(crbug.com/40057824): Implement the EXT-X-CONTENT-STEERING tag
           break;
         }
         case MultivariantPlaylistTagName::kXIFrameStreamInf: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-I-FRAME-STREAM-INF tag
+          // TODO(crbug.com/40057824): Implement the EXT-X-I-FRAME-STREAM-INF
+          // tag
           break;
         }
         case MultivariantPlaylistTagName::kXMedia: {
@@ -163,26 +171,29 @@ MultivariantPlaylist::Parse(base::StringPiece source,
               break;
             }
             case MediaType::kVideo: {
-              // TODO(crbug.com/1266991): Support alternate video renditions
+              // TODO(crbug.com/40057824): Support alternate video renditions
               break;
             }
             case MediaType::kSubtitles: {
-              // TODO(crbug.com/1266991): Support subtitle renditions
+              // TODO(crbug.com/40057824): Support subtitle renditions
               break;
             }
             case MediaType::kClosedCaptions: {
-              // TODO(crbug.com/1266991): Support closed captions renditions
+              // TODO(crbug.com/40057824): Support closed captions renditions
               break;
             }
           }
           break;
         }
         case MultivariantPlaylistTagName::kXSessionData: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-SESSION-DATA tag
+          // TODO(crbug.com/40057824): Implement the EXT-X-SESSION-DATA tag
           break;
         }
         case MultivariantPlaylistTagName::kXSessionKey: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-SESSION-KEY tag
+          if (tag_recorder) {
+            tag_recorder->SetMetric(TagRecorder::Metric::kSessionKey);
+          }
+          // TODO(crbug.com/40057824): Implement the EXT-X-SESSION-KEY tag
           break;
         }
         case MultivariantPlaylistTagName::kXStreamInf: {

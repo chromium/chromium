@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDITING_LIST_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDITING_LIST_H_
 
+#include <memory>
+
+#include "ash/style/pill_button.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
@@ -13,6 +16,8 @@
 
 namespace ash {
 class AnchoredNudge;
+class PillButton;
+class SystemShadow;
 }  // namespace ash
 
 namespace ui {
@@ -20,6 +25,7 @@ class LocatedEvent;
 }  // namespace ui
 
 namespace views {
+class Button;
 class Label;
 class LabelButton;
 class ScrollView;
@@ -27,6 +33,7 @@ class ScrollView;
 
 namespace arc::input_overlay {
 
+class ActionViewListItem;
 class DisplayOverlayController;
 
 // EditingList contains the list of controls.
@@ -50,6 +57,8 @@ class EditingList : public views::View, public TouchInjectorObserver {
   ~EditingList() override;
 
   void UpdateWidget();
+
+  ActionViewListItem* GetListItemForAction(Action* action);
 
  private:
   friend class ButtonOptionsMenuTest;
@@ -102,7 +111,8 @@ class EditingList : public views::View, public TouchInjectorObserver {
   void ClipScrollViewHeight(bool is_outside);
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
@@ -120,6 +130,7 @@ class EditingList : public views::View, public TouchInjectorObserver {
   bool IsKeyEditNudgeShownForTesting() const;
   ash::AnchoredNudge* GetKeyEditNudgeForTesting() const;
   views::LabelButton* GetAddButtonForTesting() const;
+  views::Button* GetAddContainerButtonForTesting() const;
 
   const raw_ptr<DisplayOverlayController> controller_;
 
@@ -132,6 +143,10 @@ class EditingList : public views::View, public TouchInjectorObserver {
   raw_ptr<views::Label> editing_header_label_;
 
   raw_ptr<AddContainerButton> add_container_;
+  raw_ptr<ash::PillButton> done_button_;
+
+  // Owned by this view.
+  std::unique_ptr<ash::SystemShadow> shadow_;
 
   // Used to tell if the zero state view shows up.
   bool is_zero_state_ = false;

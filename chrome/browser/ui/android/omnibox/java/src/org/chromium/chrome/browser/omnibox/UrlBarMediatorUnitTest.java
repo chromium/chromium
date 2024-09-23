@@ -37,8 +37,8 @@ import org.chromium.url.GURL;
         manifest = Config.NONE,
         shadows = {ShadowOmniboxResourceProvider.class})
 public class UrlBarMediatorUnitTest {
-    @Mock UrlBar.UrlTextChangeListener mMockUrlTextListener;
-    @Mock UrlBar.UrlTextChangeListener mAnotherUrlTextMockListener;
+    @Mock Callback<String> mMockUrlTextListener;
+    @Mock Callback<String> mAnotherUrlTextMockListener;
     @Mock Callback<Boolean> mFocusChangeCallback;
 
     PropertyModel mModel;
@@ -316,21 +316,6 @@ public class UrlBarMediatorUnitTest {
         Assert.assertEquals(
                 "https://www.test.com/foo",
                 mMediator.getReplacementCutCopyText("www.test.com/foo", 0, 16));
-    }
-
-    @Test
-    public void urlTextChangeListenerCompositeObserver() {
-        mMediator.addUrlTextChangeListener(mMockUrlTextListener);
-
-        String text = "foo";
-        String textWithAutocomplete = "foo.bar";
-        mMediator.onTextChanged(text);
-        Mockito.verify(mMockUrlTextListener, Mockito.times(1)).onTextChanged(text);
-
-        mMediator.addUrlTextChangeListener(mAnotherUrlTextMockListener);
-        mMediator.onTextChanged(text);
-        Mockito.verify(mMockUrlTextListener, Mockito.times(2)).onTextChanged(text);
-        Mockito.verify(mAnotherUrlTextMockListener, Mockito.times(1)).onTextChanged(text);
     }
 
     private static SpannableStringBuilder spannable(String text) {

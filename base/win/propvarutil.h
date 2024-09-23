@@ -4,12 +4,14 @@
 #ifndef BASE_WIN_PROPVARUTIL_H_
 #define BASE_WIN_PROPVARUTIL_H_
 
+// clang-format off
 // Check no prior poisonous defines were made.
 #include "base/win/windows_defines.inc"
 // Undefine before windows header will make the poisonous defines
 #include "base/win/windows_undefines.inc"
+// clang-format on
 
-#include <propvarutil.h>  // NOLINT(build/include_order)
+#include <propvarutil.h>
 
 // Undefine the poisonous defines
 #include "base/win/windows_undefines.inc"  // NOLINT(build/include)

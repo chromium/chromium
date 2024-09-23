@@ -28,14 +28,17 @@
 #include "components/autofill/core/browser/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/strike_database_integrator_base.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
@@ -44,29 +47,30 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+namespace autofill {
 namespace {
+
 const char kIbanForm[] = "/autofill_iban_form.html";
 constexpr char kIbanValue[] = "DE91 1000 0000 0123 4567 89";
 constexpr char kIbanValueWithoutWhitespaces[] = "DE91100000000123456789";
 constexpr char kURLGetUploadDetailsRequest[] =
     "https://payments.google.com/payments/apis/chromepaymentsservice/"
-    "getdetailsforiban";
+    "getdetailsforcreatepaymentinstrument";
 constexpr char kResponseGetUploadDetailsSuccess[] =
-    "{\"legal_message\":{\"line\":[{\"template\":\"Legal message template with "
-    "link: "
-    "{0}.\",\"template_parameter\":[{\"display_text\":\"Link\",\"url\":\"https:"
-    "//www.example.com/\"}]}]},\"context_token\":\"dummy_context_token\"}";
+    "{\"iban_details\":{\"validation_regex\":"
+    "\"^[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}[A-Z0-9]{0,18}$\"},"
+    "\"legal_message\":{\"line\":[{\"template\":\"Legal message template with"
+    " link: {0}.\",\"template_parameter\":[{\"display_text\":\"Link\","
+    "\"url\":\"https://www.example.com/\"}]}]},\"context_token\":"
+    "\"dummy_context_token\"}";
 constexpr char kURLUploadIbanRequest[] =
     "https://payments.google.com/payments/apis-secure/chromepaymentsservice/"
-    "saveiban"
+    "createpaymentinstrument"
     "?s7e_suffix=chromewallet";
 constexpr char kResponsePaymentsSuccess[] = "Success";
 constexpr char kResponsePaymentsFailure[] =
     "{\"error\":{\"code\":\"FAILED_PRECONDITION\",\"user_error_message\":\"An "
     "unexpected error has occurred. Please try again later.\"}}";
-}  // namespace
-
-namespace autofill {
 
 class IbanBubbleViewFullFormBrowserTest
     : public SyncTest,
@@ -85,8 +89,8 @@ class IbanBubbleViewFullFormBrowserTest
  protected:
   class TestAutofillManager : public BrowserAutofillManager {
    public:
-    TestAutofillManager(ContentAutofillDriver* driver, AutofillClient* client)
-        : BrowserAutofillManager(driver, client, "en-US") {}
+    explicit TestAutofillManager(ContentAutofillDriver* driver)
+        : BrowserAutofillManager(driver, "en-US") {}
 
     testing::AssertionResult WaitForFormsSeen(int min_num_awaited_calls) {
       return forms_seen_waiter_.Wait(min_num_awaited_calls);
@@ -141,7 +145,8 @@ class IbanBubbleViewFullFormBrowserTest
             &test_url_loader_factory_);
     autofill_manager()
         ->client()
-        .GetPaymentsNetworkInterface()
+        .GetPaymentsAutofillClient()
+        ->GetPaymentsNetworkInterface()
         ->set_url_loader_factory_for_testing(test_shared_loader_factory_);
 
     // Set up this class as the ObserverForTest implementation.
@@ -371,14 +376,14 @@ class IbanBubbleViewFullFormBrowserTest
 
   void ClickOnView(views::View* view) {
     CHECK(view);
-    ui::MouseEvent pressed(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                           ui::EF_LEFT_MOUSE_BUTTON);
+    ui::MouseEvent pressed(ui::EventType::kMousePressed, gfx::Point(),
+                           gfx::Point(), ui::EventTimeForNow(),
+                           ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
     view->OnMousePressed(pressed);
     ui::MouseEvent released_event =
-        ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                       ui::EF_LEFT_MOUSE_BUTTON);
+        ui::MouseEvent(ui::EventType::kMouseReleased, gfx::Point(),
+                       gfx::Point(), ui::EventTimeForNow(),
+                       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
     view->OnMouseReleased(released_event);
   }
 
@@ -428,8 +433,9 @@ class IbanBubbleViewFullFormBrowserTest
         CHECK(iban_bubble_view);
         break;
       }
+      case IbanBubbleType::kUploadCompleted:
       case IbanBubbleType::kInactive:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
     return iban_bubble_view;
   }
@@ -445,6 +451,7 @@ class IbanBubbleViewFullFormBrowserTest
 
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 
@@ -628,8 +635,9 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 
 // Tests the local save bubble. Ensures that clicking the omnibox icon opens
 // manage saved IBAN bubble with IBAN nickname.
+// crbug.com/330725101: disabled because it's flaky
 IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
-                       Local_SavedIbanHasNickname) {
+                       DISABLED_Local_SavedIbanHasNickname) {
   const std::u16string kNickname = u"My doctor's IBAN";
   FillForm();
   SubmitFormAndWaitForIbanLocalSaveBubble();
@@ -654,8 +662,9 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 
 // Tests the local save bubble. Ensures that clicking the omnibox icon opens
 // manage saved IBAN bubble without IBAN nickname.
+// crbug.com/330725101: disabled because it's flaky
 IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
-                       Local_SavedIbanNoNickname) {
+                       DISABLED_Local_SavedIbanNoNickname) {
   FillForm();
   SubmitFormAndWaitForIbanLocalSaveBubble();
 
@@ -840,4 +849,5 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewSyncTransportFullFormBrowserTest,
   ASSERT_TRUE(WaitForObservedEvent());
 }
 
+}  // namespace
 }  // namespace autofill

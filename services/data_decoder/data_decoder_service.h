@@ -6,6 +6,7 @@
 #define SERVICES_DATA_DECODER_DATA_DECODER_SERVICE_H_
 
 #include "build/chromeos_buildflags.h"
+#include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -54,6 +55,9 @@ class DataDecoderService : public mojom::DataDecoderService {
   void BindGzipper(mojo::PendingReceiver<mojom::Gzipper> receiver) override;
   void BindCborParser(
       mojo::PendingReceiver<mojom::CborParser> receiver) override;
+  void BindPixCodeValidator(
+      mojo::PendingReceiver<payments::facilitated::mojom::PixCodeValidator>
+          receiver) override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void BindBleScanParser(

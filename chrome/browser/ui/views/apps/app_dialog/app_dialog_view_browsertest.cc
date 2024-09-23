@@ -23,10 +23,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_block_dialog_view.h"
+#include "chrome/browser/ui/views/apps/app_dialog/app_local_block_dialog_view.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_pause_dialog_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 
 class AppDialogViewBrowserTest : public DialogBrowserTest {
  public:
@@ -64,8 +66,13 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
   }
 
   AppDialogView* ActiveView(const std::string& name) {
-    if (name == "block")
+    if (name == "block") {
       return AppBlockDialogView::GetActiveViewForTesting();
+    }
+
+    if (name == "localblock") {
+      return AppLocalBlockDialogView::GetActiveViewForTesting();
+    }
 
     return AppPauseDialogView::GetActiveViewForTesting();
   }
@@ -108,6 +115,13 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
       app_instance_->SendRefreshAppList(apps);
       app_service_proxy_->Launch(app_id_, ui::EF_NONE,
                                  apps::LaunchSource::kFromChromeInternal);
+    } else if (name == "localblock") {
+      app_service_proxy_->BlockApps({app_id_});
+      app_service_proxy_->SetDialogCreatedCallbackForTesting(
+          run_loop.QuitClosure());
+      app_service_proxy_->Launch(app_id_, ui::EF_NONE,
+                                 apps::LaunchSource::kFromChromeInternal);
+
     } else {
       std::map<std::string, apps::PauseData> pause_data;
       pause_data[app_id_].hours = 3;
@@ -120,7 +134,8 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
     run_loop.Run();
 
     ASSERT_NE(nullptr, ActiveView(name));
-    EXPECT_EQ(ui::DIALOG_BUTTON_OK, ActiveView(name)->GetDialogButtons());
+    EXPECT_EQ(static_cast<int>(ui::mojom::DialogButton::kOk),
+              ActiveView(name)->buttons());
 
     if (name == "block") {
       bool state_is_set = false;
@@ -131,6 +146,16 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
           });
 
       EXPECT_TRUE(state_is_set);
+    } else if (name == "localblock") {
+      bool state_is_set = false;
+      app_service_proxy_->AppRegistryCache().ForOneApp(
+          app_id_, [&state_is_set](const apps::AppUpdate& update) {
+            state_is_set = (update.Readiness() ==
+                            apps::Readiness::kDisabledByLocalSettings);
+          });
+
+      EXPECT_TRUE(state_is_set);
+
     } else {
       if (name == "pause_close")
         ActiveView(name)->Close();
@@ -148,6 +173,10 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AppDialogViewBrowserTest, InvokeUi_block) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AppDialogViewBrowserTest, InvokeUi_localblock) {
   ShowAndVerifyUi();
 }
 

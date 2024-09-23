@@ -87,7 +87,7 @@ class PrefProvider : public UserModifiableProvider {
       ContentSettingsType content_type,
       std::optional<ContentSetting> setting_to_match,
       const PartitionKey& partition_key) override;
-  void SetClockForTesting(base::Clock* clock) override;
+  void SetClockForTesting(const base::Clock* clock) override;
 
   ContentSettingsPref* GetPref(ContentSettingsType type) const;
 
@@ -137,7 +137,7 @@ class PrefProvider : public UserModifiableProvider {
 
   base::ThreadChecker thread_checker_;
 
-  raw_ptr<base::Clock> clock_;
+  raw_ptr<const base::Clock> clock_;
 };
 
 }  // namespace content_settings

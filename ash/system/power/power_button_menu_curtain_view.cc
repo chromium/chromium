@@ -94,7 +94,7 @@ PowerButtonMenuCurtainView::PowerButtonMenuCurtainView() {
       gfx::RoundedCornersF(kPowerButtonMenuCornerRadius));
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   Initialize();
 
   // Create a system shadow for current view.

@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/exception_state_matchers.h"
 
 namespace blink {
 
@@ -54,7 +54,7 @@ TEST_F(AnimationSimTest, CustomPropertyBaseComputedStyle) {
   // target.style.setProperty('--x', '100%');
   target->style()->setProperty(GetDocument().GetExecutionContext(), "--x",
                                "100%", g_empty_string, exception_state);
-  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_THAT(exception_state, HadNoException());
 
   // target.animate({'--x': '100%'}, 1000);
   auto* keyframe = MakeGarbageCollected<StringKeyframe>();
@@ -78,7 +78,7 @@ TEST_F(AnimationSimTest, CustomPropertyBaseComputedStyle) {
   // target.style.setProperty('--x', '0%');
   target->style()->setProperty(GetDocument().GetExecutionContext(), "--x", "0%",
                                g_empty_string, exception_state);
-  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_THAT(exception_state, HadNoException());
 
   // target.animate({'--x': '100%'}, 1000);
   keyframe = MakeGarbageCollected<StringKeyframe>();

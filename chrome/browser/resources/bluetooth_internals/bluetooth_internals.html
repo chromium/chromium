@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en">
 
-<!-- TODO(crbug.com/658814): Localize strings. -->
+<!-- TODO(crbug.com/40490364): Localize strings. -->
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -72,6 +72,24 @@
     <section class="services"></section>
   </div>
 </template>
+
+<if expr="chromeos_ash">
+<template id="btsnoop-template">
+  <div>
+    <div>
+      Capture a Bluetooth debug log that will be saved to Downloads.
+    </div>
+    <div>
+      Debug logs may contain sensitive information including device identifiers.
+      Only share debug logs with people you trust.
+    </div>
+    <div>
+      <button id="btmon-start-btn"></button>
+      <span id="btmon-status-bar"></span>
+    </div>
+  </div>
+</template>
+</if>
 
 <dialog id="need-location-services-on">
   Chrome needs location access to scan for devices. Location access is

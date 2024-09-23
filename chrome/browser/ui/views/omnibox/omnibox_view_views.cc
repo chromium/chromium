@@ -34,9 +34,10 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/omnibox/clipboard_utils.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -45,14 +46,13 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
-#include "chrome/grit/generated_resources.h"
+#include "chrome/grit/branded_strings.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -92,7 +92,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -193,17 +192,23 @@ OmniboxViewViews::OmniboxViewViews(std::unique_ptr<OmniboxClient> client,
         base::BindRepeating(&OmniboxViewViews::Update, base::Unretained(this)));
   }
 
-  if (features::IsChromeRefresh2023()) {
-    // Remove the default textfield hover effect. Omnibox has a custom hover
-    // effect over the entire location bar.
-    RemoveHoverEffect();
-  }
+  // Remove the default textfield hover effect. Omnibox has a custom hover
+  // effect over the entire location bar.
+  RemoveHoverEffect();
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF8(IDS_ACCNAME_LOCATION));
   // Sometimes there are additional ignored views, such as a View representing
   // the cursor, inside the address bar's text field. These should always be
   // ignored by accessibility since a plain text field should always be a leaf
   // node in the accessibility trees of all the platforms we support.
-  GetViewAccessibility().OverrideIsLeaf(true);
+  GetViewAccessibility().SetIsLeaf(true);
+  if (popup_window_mode_) {
+    GetViewAccessibility().SetReadOnly(true);
+  } else {
+    GetViewAccessibility().SetIsEditable(true);
+  }
 }
 
 OmniboxViewViews::~OmniboxViewViews() {
@@ -238,6 +243,9 @@ void OmniboxViewViews::Init() {
       popup_view_ = std::make_unique<OmniboxPopupViewViews>(
           /*omnibox_view=*/this, controller(), location_bar_view_);
     }
+    popup_view_opened_subscription_ =
+        popup_view_->AddOpenListener(base::BindRepeating(
+            &OmniboxViewViews::OnPopupOpened, base::Unretained(this)));
     // Set whether the text should be used to improve typing suggestions.
     SetShouldDoLearning(!location_bar_view_->profile()->IsOffTheRecord());
   }
@@ -301,10 +309,18 @@ void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
 }
 
 void OmniboxViewViews::ResetTabState(content::WebContents* web_contents) {
-    web_contents->SetUserData(OmniboxState::kKey, nullptr);
+  web_contents->SetUserData(OmniboxState::kKey, nullptr);
 }
 
 void OmniboxViewViews::InstallPlaceholderText() {
+  // If `keyword_placeholder()` is set, then the user is in a keyword mode that
+  // has placeholder text. Use that instead of the DSE placeholder text.
+  if (!model()->keyword_placeholder().empty()) {
+    SetPlaceholderText(model()->keyword_placeholder());
+    return;
+  }
+
+  // Otherwise, if a DSE is set, use the DSE placeholder text.
   const TemplateURL* const default_provider = controller()
                                                   ->client()
                                                   ->GetTemplateURLService()
@@ -494,7 +510,9 @@ void OmniboxViewViews::OnPaint(gfx::Canvas* canvas) {
         base::BindOnce(
             [](base::TimeTicks insert_timestamp,
                base::TimeTicks paint_timestamp,
-               base::TimeTicks presentation_timestamp) {
+               const viz::FrameTimingDetails& frame_timing_details) {
+              base::TimeTicks presentation_timestamp =
+                  frame_timing_details.presentation_feedback.timestamp;
               UMA_HISTOGRAM_TIMES(
                   "Omnibox.CharTypedToRepaintLatency.PaintToPresent",
                   presentation_timestamp - paint_timestamp);
@@ -522,6 +540,7 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
       model()->PasteAndGo(GetClipboardText(/*notify_if_restricted=*/true));
       return;
     case IDC_SHOW_FULL_URLS:
+    case IDC_SHOW_GOOGLE_LENS_SHORTCUT:
     case IDC_EDIT_SEARCH_ENGINES:
       location_bar_view_->command_updater()->ExecuteCommand(command_id);
       return;
@@ -594,14 +613,14 @@ void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
   // in about:blank URLs. Or in blob: or filesystem: URLs, which have an inner
   // origin, the URL is likely too syntax-y to be able to meaningfully draw
   // attention to any part of it.
-  auto* const location_bar_model = GetLocationBarModel();
-  if (!location_bar_model->GetURL().SchemeIsHTTPOrHTTPS())
+  if (!controller()->client()->GetNavigationEntryURL().SchemeIsHTTPOrHTTPS()) {
     return;
+  }
 
-  if (net::IsCertStatusError(location_bar_model->GetCertStatus())) {
+  if (net::IsCertStatusError(controller()->client()->GetCertStatus())) {
     if (location_bar_view_) {
       ApplyColor(location_bar_view_->GetSecurityChipColor(
-                     GetLocationBarModel()->GetSecurityLevel()),
+                     controller()->client()->GetSecurityLevel()),
                  range);
     }
     ApplyStyle(gfx::TEXT_STYLE_STRIKE, true, range);
@@ -611,12 +630,8 @@ void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
 void OmniboxViewViews::OnThemeChanged() {
   views::Textfield::OnThemeChanged();
 
-  bool gm3_text_color_enabled =
-      omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-          omnibox::kOmniboxSteadyStateTextColor);
-
-  set_placeholder_text_color(GetColorProvider()->GetColor(
-      gm3_text_color_enabled ? kColorOmniboxText : kColorOmniboxTextDimmed));
+  set_placeholder_text_color(
+      GetColorProvider()->GetColor(kColorOmniboxTextDimmed));
   SetSelectionBackgroundColor(
       GetColorProvider()->GetColor(kColorOmniboxSelectionBackground));
   SetSelectionTextColor(
@@ -827,7 +842,8 @@ void OmniboxViewViews::ClearAccessibilityLabel() {
     return;
   friendly_suggestion_text_.clear();
   friendly_suggestion_text_prefix_length_ = 0;
-  NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+
+  UpdateAccessibleValue();
 }
 
 void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
@@ -845,10 +861,15 @@ void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
     friendly_suggestion_text_ =
         model()->GetPopupAccessibilityLabelForCurrentSelection(
             display_text, true, &friendly_suggestion_text_prefix_length_);
+
+    // If the line immediately after the current selection is the
+    // informational IPH row, append its accessibility label at the end of
+    // this selection's accessibility label.
+    friendly_suggestion_text_ +=
+        model()->MaybeGetPopupAccessibilityLabelForIPHSuggestion();
   }
 
-  if (notify_text_changed)
-    NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  UpdateAccessibleValue();
 
 #if BUILDFLAG(IS_MAC)
   // On macOS, the only way to get VoiceOver to speak the friendly suggestion
@@ -972,6 +993,10 @@ bool OmniboxViewViews::OnAfterPossibleChange(bool allow_keyword_ui_change) {
     EmphasizeURLComponents();
 
   return something_changed;
+}
+
+void OmniboxViewViews::OnKeywordPlaceholderTextChange() {
+  InstallPlaceholderText();
 }
 
 gfx::NativeView OmniboxViewViews::GetNativeView() const {
@@ -1127,7 +1152,7 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
       if (IsSelectAll()) {
         SelectWordAt(event.location());
         std::u16string shown_url = GetText();
-        std::u16string full_url = GetLocationBarModel()->GetFormattedFullURL();
+        std::u16string full_url = controller()->client()->GetFormattedFullURL();
         size_t offset = full_url.find(shown_url);
         if (offset != std::u16string::npos) {
           next_double_click_selection_len_ = GetSelectedText().length();
@@ -1199,7 +1224,7 @@ void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
   PermitExternalProtocolHandler();
 
   const bool gesture_should_take_focus =
-      !HasFocus() && event->type() == ui::ET_GESTURE_TAP;
+      !HasFocus() && event->type() == ui::EventType::kGestureTap;
   if (gesture_should_take_focus) {
     select_all_on_gesture_tap_ = true;
 
@@ -1216,19 +1241,20 @@ void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
 
   views::Textfield::OnGestureEvent(event);
 
-  if (select_all_on_gesture_tap_ && event->type() == ui::ET_GESTURE_TAP) {
+  if (select_all_on_gesture_tap_ &&
+      event->type() == ui::EventType::kGestureTap) {
     // Select all in the reverse direction so as not to scroll the caret
     // into view and shift the contents jarringly.
     SelectAll(true);
   }
 
-  if (event->type() == ui::ET_GESTURE_TAP ||
-      event->type() == ui::ET_GESTURE_TAP_CANCEL ||
-      event->type() == ui::ET_GESTURE_TWO_FINGER_TAP ||
-      event->type() == ui::ET_GESTURE_SCROLL_BEGIN ||
-      event->type() == ui::ET_GESTURE_PINCH_BEGIN ||
-      event->type() == ui::ET_GESTURE_LONG_PRESS ||
-      event->type() == ui::ET_GESTURE_LONG_TAP) {
+  if (event->type() == ui::EventType::kGestureTap ||
+      event->type() == ui::EventType::kGestureTapCancel ||
+      event->type() == ui::EventType::kGestureTwoFingerTap ||
+      event->type() == ui::EventType::kGestureScrollBegin ||
+      event->type() == ui::EventType::kGesturePinchBegin ||
+      event->type() == ui::EventType::kGestureLongPress ||
+      event->type() == ui::EventType::kGestureLongTap) {
     select_all_on_gesture_tap_ = false;
   }
 }
@@ -1248,32 +1274,16 @@ bool OmniboxViewViews::SkipDefaultKeyEventProcessing(
 
 void OmniboxViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Textfield::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kTextField;
-  node_data->SetNameChecked(l10n_util::GetStringUTF8(IDS_ACCNAME_LOCATION));
   node_data->AddStringAttribute(ax::mojom::StringAttribute::kAutoComplete,
                                 "both");
 // Expose keyboard shortcut where it makes sense.
 #if BUILDFLAG(IS_MAC)
-  // Use cloverleaf symbol for command key.
   node_data->AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts,
-                                base::WideToUTF8(L"\u2318L"));
+                                "⌘L");
 #else
   node_data->AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts,
                                 "Ctrl+L");
 #endif
-  if (friendly_suggestion_text_.empty()) {
-    // While user edits text, use the exact text displayed in the omnibox.
-    node_data->SetValue(GetText());
-  } else {
-    // While user navigates omnibox suggestions, use the current editable
-    // text decorated with additional friendly labelling text, such as the
-    // title of the page and the type of autocomplete, for example:
-    // "Google https://google.com location from history".
-    // The edited text is always a substring of the friendly label, so that
-    // users can navigate to specific characters in the friendly version using
-    // Braille display routing keys or other assistive technologies.
-    node_data->SetValue(friendly_suggestion_text_);
-  }
   node_data->html_attributes.push_back(std::make_pair("type", "url"));
 
   if (model()->PopupIsOpen()) {
@@ -1296,12 +1306,6 @@ void OmniboxViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddIntAttribute(
       ax::mojom::IntAttribute::kTextSelEnd,
       entry_end + friendly_suggestion_text_prefix_length_);
-
-  if (popup_window_mode_) {
-    node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
-  } else {
-    node_data->AddState(ax::mojom::State::kEditable);
-  }
 }
 
 bool OmniboxViewViews::HandleAccessibleAction(
@@ -1357,9 +1361,10 @@ void OmniboxViewViews::OnFocus() {
 
   GetRenderText()->SetElideBehavior(gfx::NO_ELIDE);
 
-  // Focus changes can affect the visibility of any keyword hint.
-  if (location_bar_view_ && model()->is_keyword_hint())
-    location_bar_view_->DeprecatedLayoutImmediately();
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  // The text offsets are no longer valid when the elide behavior changes.
+  SetNeedsAccessibleTextOffsetsUpdate();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
   if (location_bar_view_)
     location_bar_view_->OnOmniboxFocused();
@@ -1424,18 +1429,19 @@ void OmniboxViewViews::OnBlur() {
   gfx::RenderText* render_text = GetRenderText();
   render_text->SetElideBehavior(gfx::ELIDE_TAIL);
 
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  // The text offsets are no longer valid when the elide behavior changes.
+  SetNeedsAccessibleTextOffsetsUpdate();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+
   // In cases where there's a lot of whitespace in the text being shown, we want
   // the elision marker to be at the right of the text field, so don't elide
   // whitespace to the left of the elision point.
   render_text->SetWhitespaceElision(false);
   render_text->SetDisplayOffset(0);
 
-  // Focus changes can affect the visibility of any keyword hint.
   // |location_bar_view_| can be null in tests.
   if (location_bar_view_) {
-    if (model()->is_keyword_hint())
-      location_bar_view_->DeprecatedLayoutImmediately();
-
     location_bar_view_->OnOmniboxBlurred();
 
     // The location bar needs to repaint without a focus ring.
@@ -1455,9 +1461,11 @@ bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
                GetClipboardText(/*notify_if_restricted=*/false));
   }
 
-  // Menu item is only shown when it is valid.
-  if (command_id == IDC_SHOW_FULL_URLS)
+  // These menu items are only shown when they are valid.
+  if (command_id == IDC_SHOW_FULL_URLS ||
+      command_id == IDC_SHOW_GOOGLE_LENS_SHORTCUT) {
     return true;
+  }
 
   return Textfield::IsCommandIdEnabled(command_id) ||
          (location_bar_view_ &&
@@ -1473,6 +1481,12 @@ std::u16string OmniboxViewViews::GetSelectionClipboardText() const {
 }
 
 void OmniboxViewViews::DoInsertChar(char16_t ch) {
+  // Note: Using `Textfield::GetText()` instead of the `OmniboxView`
+  // implementation because the latter makes full string copies of the former.
+  if (model()->MaybeAccelerateKeywordSelection(Textfield::GetText(), ch)) {
+    return;
+  }
+
   // When the fakebox is focused, ignore whitespace input because if the
   // fakebox is hidden and there's only whitespace in the omnibox, it's
   // difficult for the user to see that the focus moved to the omnibox.
@@ -1533,8 +1547,29 @@ void OmniboxViewViews::ExecuteTextEditCommand(ui::TextEditCommand command) {
 }
 
 bool OmniboxViewViews::ShouldShowPlaceholderText() const {
+  // The DSE placeholder text is visible only if the omnibox is blurred. The
+  // keyword placeholder text is visible even if the omnibox is focused, because
+  // users won't enter keyword mode, blur the omnibox, read the placeholder
+  // text, refocus the omnibox, and begin typing.
   return Textfield::ShouldShowPlaceholderText() &&
-         !model()->is_caret_visible() && !model()->is_keyword_selected();
+         (!model()->is_caret_visible() ||
+          !model()->keyword_placeholder().empty());
+}
+
+void OmniboxViewViews::UpdateAccessibleValue() {
+  if (friendly_suggestion_text_.empty()) {
+    // While user edits text, use the exact text displayed in the omnibox.
+    GetViewAccessibility().SetValue(GetText());
+  } else {
+    // While user navigates omnibox suggestions, use the current editable
+    // text decorated with additional friendly labelling text, such as the
+    // title of the page and the type of autocomplete, for example:
+    // "Google https://google.com location from history".
+    // The edited text is always a substring of the friendly label, so that
+    // users can navigate to specific characters in the friendly version using
+    // Braille display routing keys or other assistive technologies.
+    GetViewAccessibility().SetValue(friendly_suggestion_text_);
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1556,7 +1591,7 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
                                       const ui::KeyEvent& event) {
   PermitExternalProtocolHandler();
 
-  if (event.type() == ui::ET_KEY_RELEASED) {
+  if (event.type() == ui::EventType::kKeyReleased) {
     // The omnibox contents may change while the control key is pressed.
     if (event.key_code() == ui::VKEY_CONTROL)
       model()->OnControlKeyChanged(false);
@@ -1737,7 +1772,7 @@ void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
   ui::Clipboard* cb = ui::Clipboard::GetForCurrentThread();
   std::u16string selected_text;
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
   cb->ReadText(clipboard_buffer, &data_dst, &selected_text);
   GURL url;
   bool write_url = false;
@@ -1760,6 +1795,10 @@ void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
 
   ui::ScopedClipboardWriter scoped_clipboard_writer(clipboard_buffer);
   scoped_clipboard_writer.WriteText(selected_text);
+  if (!ShouldDoLearning()) {
+    // Data is copied from an incognito window, so mark it as off the record.
+    scoped_clipboard_writer.MarkAsOffTheRecord();
+  }
 
   // Regardless of |write_url|, don't write a hyperlink to the clipboard.
   // Plaintext URLs are simply handled more consistently than hyperlinks.
@@ -1832,12 +1871,26 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
     menu_contents->AddCheckItemWithStringId(IDC_SHOW_FULL_URLS,
                                             IDS_CONTEXT_MENU_SHOW_FULL_URLS);
   }
+
+  if (lens::features::IsOmniboxEntryPointEnabled() &&
+      location_bar_view_->browser()
+          ->GetFeatures()
+          .lens_overlay_entry_point_controller()
+          ->IsEnabled()) {
+    menu_contents->AddCheckItemWithStringId(
+        IDC_SHOW_GOOGLE_LENS_SHORTCUT,
+        IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT);
+  }
 }
 
 bool OmniboxViewViews::IsCommandIdChecked(int id) const {
   if (id == IDC_SHOW_FULL_URLS) {
     return location_bar_view_->profile()->GetPrefs()->GetBoolean(
         omnibox::kPreventUrlElisionsInOmnibox);
+  }
+  if (id == IDC_SHOW_GOOGLE_LENS_SHORTCUT) {
+    return location_bar_view_->profile()->GetPrefs()->GetBoolean(
+        omnibox::kShowGoogleLensShortcut);
   }
   return false;
 }
@@ -1864,7 +1917,9 @@ void OmniboxViewViews::OnCompositingStarted(ui::Compositor* compositor,
     latency_histogram_state_ = COMPOSITING_STARTED;
 }
 
-void OmniboxViewViews::OnCompositingEnded(ui::Compositor* compositor) {
+void OmniboxViewViews::OnDidPresentCompositorFrame(
+    uint32_t frame_token,
+    const gfx::PresentationFeedback& feedback) {
   if (latency_histogram_state_ == COMPOSITING_STARTED) {
     DCHECK(!insert_char_time_.is_null());
     UMA_HISTOGRAM_TIMES("Omnibox.CharTypedToRepaintLatency",
@@ -1897,15 +1952,13 @@ void OmniboxViewViews::PerformDrop(
 
   const ui::OSExchangeData& data = event.data();
   std::u16string text;
-  if (data.HasURL(ui::FilenameToURLPolicy::CONVERT_FILENAMES)) {
-    GURL url;
-    std::u16string title;
-    if (data.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES, &url,
-                            &title)) {
-      text = StripJavascriptSchemas(base::UTF8ToUTF16(url.spec()));
-    }
-  } else if (data.HasString() && data.GetString(&text)) {
-    text = StripJavascriptSchemas(base::CollapseWhitespace(text, true));
+  if (std::optional<ui::OSExchangeData::UrlInfo> url_result =
+          data.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+      url_result.has_value()) {
+    text = StripJavascriptSchemas(base::UTF8ToUTF16(url_result->url.spec()));
+  } else if (std::optional<std::u16string> text_result = data.GetString();
+             text_result.has_value()) {
+    text = StripJavascriptSchemas(base::CollapseWhitespace(*text_result, true));
   } else {
     output_drag_op = DragOperation::kNone;
     return;
@@ -1939,6 +1992,19 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
   menu_contents->SetIcon(index, ui::ImageModel::FromVectorIcon(kDevicesIcon));
 #endif
   menu_contents->InsertSeparatorAt(++index, ui::NORMAL_SEPARATOR);
+}
+
+void OmniboxViewViews::OnPopupOpened() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // It's not great for promos to overlap the omnibox if the user opens the
+  // drop-down after showing the promo. This especially causes issues on Mac and
+  // Linux due to z-order/rendering issues, see crbug.com/1225046 and
+  // crbug.com/332769403 for examples.
+  if (auto* const promo_controller =
+          BrowserFeaturePromoController::GetForView(this)) {
+    promo_controller->DismissNonCriticalBubbleInRegion(GetBoundsInScreen());
+  }
+#endif
 }
 
 BEGIN_METADATA(OmniboxViewViews)

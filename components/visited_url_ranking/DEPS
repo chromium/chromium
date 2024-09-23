@@ -1,0 +1,15 @@
+include_rules = [
+  "+components/bookmarks",
+  "+components/history",
+  "+components/keyed_service/core",
+  "+components/url_deduplication",
+  "+components/segmentation_platform/public",
+  "+components/segmentation_platform/embedder/default_model",
+  "+components/segmentation_platform/internal/metadata",
+  "+components/strings",
+  "+components/sessions/core",
+  "+components/sync/protocol",
+  "+components/sync_device_info",
+  "+components/sync_sessions",
+  "+ui/base",
+]

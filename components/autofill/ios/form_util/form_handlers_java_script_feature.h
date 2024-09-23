@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_HANDLERS_JAVA_SCRIPT_FEATURE_H_
 #define COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_HANDLERS_JAVA_SCRIPT_FEATURE_H_
 
-#include "base/no_destructor.h"
+#import "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
 namespace web {
@@ -14,6 +14,8 @@ class WebState;
 }  // namespace web
 
 namespace autofill {
+
+class FormUtilJavaScriptFeature;
 
 // Registers listeners that are used to handle forms, enabling autofill and the
 // replacement method to dismiss the keyboard needed because of the Autofill
@@ -24,7 +26,9 @@ class FormHandlersJavaScriptFeature : public web::JavaScriptFeature {
   // needed.
   static FormHandlersJavaScriptFeature* GetInstance();
 
-  // Toggles tracking form related changes in the frame.
+  // Toggles tracking form related changes in the frame. Will allow batching an
+  // added form activity and a removed form activity when `allowBatching` is
+  // true.
   void TrackFormMutations(web::WebFrame* frame, int mutation_tracking_delay);
 
   // Toggles tracking the source of the input events in the frame.
@@ -33,6 +37,9 @@ class FormHandlersJavaScriptFeature : public web::JavaScriptFeature {
 
  private:
   friend class base::NoDestructor<FormHandlersJavaScriptFeature>;
+  // TODO(crbug.com/359538514): Remove friend once isolated world for Autofill
+  // is launched.
+  friend class TestAutofillJavaScriptFeatureContainer;
 
   // web::JavaScriptFeature
   std::optional<std::string> GetScriptMessageHandlerName() const override;
@@ -45,6 +52,12 @@ class FormHandlersJavaScriptFeature : public web::JavaScriptFeature {
   FormHandlersJavaScriptFeature(const FormHandlersJavaScriptFeature&) = delete;
   FormHandlersJavaScriptFeature& operator=(
       const FormHandlersJavaScriptFeature&) = delete;
+
+  // For testing.
+  // TODO(crbug.com/359538514): Remove test constructor once isolated world for
+  // Autofill is launched.
+  FormHandlersJavaScriptFeature(
+      FormUtilJavaScriptFeature* form_util_java_script_feature);
 };
 
 }  // namespace autofill

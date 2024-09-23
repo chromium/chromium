@@ -42,6 +42,7 @@ constexpr char kTestDeviceAddress[] = "test_address";
 constexpr char kTestDeviceAddress2[] = "test_address_2";
 constexpr char kDeviceName[] = "test_device_name";
 constexpr char kBluetoothCanonicalizedAddress[] = "0C:0E:4C:C8:05:08";
+const uint8_t kValidPasskey = 13;
 constexpr base::TimeDelta kCancelPairingRetryDelay = base::Seconds(1);
 
 const char kFastPairRetryCountMetricName[] =
@@ -80,6 +81,7 @@ class FakeFastPairPairer : public ash::quick_pair::FastPairPairer {
       base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>,
                               ash::quick_pair::AccountKeyFailure)>
           account_key_failure_callback,
+      base::OnceCallback<void(std::u16string, uint32_t)> display_passkey,
       base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
           pairing_procedure_complete)
       : adapter_(adapter),
@@ -87,6 +89,7 @@ class FakeFastPairPairer : public ash::quick_pair::FastPairPairer {
         paired_callback_(std::move(paired_callback)),
         pair_failed_callback_(std::move(pair_failed_callback)),
         account_key_failure_callback_(std::move(account_key_failure_callback)),
+        display_passkey_(std::move(display_passkey)),
         pairing_procedure_complete_(std::move(pairing_procedure_complete)) {}
 
   ~FakeFastPairPairer() override = default;
@@ -112,6 +115,11 @@ class FakeFastPairPairer : public ash::quick_pair::FastPairPairer {
     std::move(pair_failed_callback_).Run(device_, failure);
   }
 
+  void TriggerDisplayPasskeyCallback() {
+    EXPECT_TRUE(display_passkey_);
+    std::move(display_passkey_).Run(std::u16string(), kValidPasskey);
+  }
+
  private:
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<ash::quick_pair::Device> device_;
@@ -123,6 +131,7 @@ class FakeFastPairPairer : public ash::quick_pair::FastPairPairer {
   base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>,
                           ash::quick_pair::AccountKeyFailure)>
       account_key_failure_callback_;
+  base::OnceCallback<void(std::u16string, uint32_t)> display_passkey_;
   base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
       pairing_procedure_complete_;
 };
@@ -141,12 +150,13 @@ class FakeFastPairPairerFactory
       base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>,
                               ash::quick_pair::AccountKeyFailure)>
           account_key_failure_callback,
+      base::OnceCallback<void(std::u16string, uint32_t)> display_passkey,
       base::OnceCallback<void(scoped_refptr<ash::quick_pair::Device>)>
           pairing_procedure_complete) override {
     auto fake_fast_pair_pairer = std::make_unique<FakeFastPairPairer>(
         std::move(adapter), std::move(device), std::move(paired_callback),
         std::move(pair_failed_callback),
-        std::move(account_key_failure_callback),
+        std::move(account_key_failure_callback), std::move(display_passkey),
         std::move(pairing_procedure_complete));
     fake_fast_pair_pairer_ = fake_fast_pair_pairer.get();
     return fake_fast_pair_pairer;
@@ -299,6 +309,10 @@ class PairerBrokerImplTest : public AshTestBase, public PairerBroker::Observer {
     handshake_complete_ = true;
   }
 
+  void OnDisplayPasskey(std::u16string device_name, uint32_t passkey) override {
+    display_passkey_ = passkey;
+  }
+
   void OnPairingComplete(scoped_refptr<Device> device) override {
     device_pair_complete_ = true;
   }
@@ -321,6 +335,7 @@ class PairerBrokerImplTest : public AshTestBase, public PairerBroker::Observer {
   int device_paired_count_ = 0;
   int pair_failure_count_ = 0;
   int account_key_write_count_ = 0;
+  uint32_t display_passkey_ = 0;
   bool pairing_started_ = false;
   bool handshake_complete_ = false;
   bool device_pair_complete_ = false;
@@ -874,6 +889,20 @@ TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Retroactive) {
                 kInitializePairingProcessFailureReasonRetroactive,
                 PairFailure::kCreateGattConnection),
             1);
+}
+
+TEST_F(PairerBrokerImplTest, DisplayPasskeySuccess) {
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  pairer_broker_->PairDevice(device_);
+  InvokeHandshakeLookupCallbackSuccess();
+
+  EXPECT_TRUE(pairer_broker_->IsPairing());
+
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()
+      ->TriggerDisplayPasskeyCallback();
+
+  EXPECT_EQ(display_passkey_, kValidPasskey);
 }
 
 }  // namespace quick_pair

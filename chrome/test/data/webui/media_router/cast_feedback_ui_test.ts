@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FeedbackUiBrowserProxy, FeedbackUiElement} from 'chrome://cast-feedback/cast_feedback_ui.js';
+import type {CastFeedbackUiElement, FeedbackUiBrowserProxy} from 'chrome://cast-feedback/cast_feedback_ui.js';
 import {FeedbackEvent, FeedbackUiBrowserProxyImpl} from 'chrome://cast-feedback/cast_feedback_ui.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 class TestFeedbackUiBrowserProxy extends TestBrowserProxy implements
     FeedbackUiBrowserProxy {
@@ -37,18 +39,20 @@ class TestFeedbackUiBrowserProxy extends TestBrowserProxy implements
 
 suite('Suite', function() {
   let browserProxy: TestFeedbackUiBrowserProxy;
-  let ui: FeedbackUiElement;
+  let ui: CastFeedbackUiElement;
   const TEST_COMMENT: string = 'test comment';
 
-  function submit() {
+  async function submit() {
     const textArea = ui.shadowRoot!.querySelector('textarea');
     assertTrue(!!textArea);
     textArea.value = TEST_COMMENT;
     textArea.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
 
     const submitButton =
-        ui.shadowRoot!.querySelector<HTMLElement>('.action-button');
+        ui.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!submitButton);
+    assertFalse(submitButton.disabled);
     submitButton.click();
   }
 
@@ -64,7 +68,7 @@ suite('Suite', function() {
     browserProxy.timesToFail = 1;
     ui.resendDelayMs = 50;
     ui.maxResendAttempts = 2;
-    submit();
+    await submit();
     await browserProxy.resolver.promise;
     assertEquals(2, browserProxy.getCallCount('sendFeedback'));
     assertDeepEquals(
@@ -86,7 +90,7 @@ suite('Suite', function() {
     browserProxy.timesToFail = 3;
     ui.resendDelayMs = 50;
     ui.maxResendAttempts = 2;
-    submit();
+    await submit();
     await browserProxy.resolver.promise;
     assertEquals(3, browserProxy.getCallCount('sendFeedback'));
     assertDeepEquals(

@@ -114,25 +114,25 @@ void UpdateProvisioningStatusUMA(ProvisioningStatus status,
       GetHistogramNameByUserType("Arc.Provisioning.Status", profile), status);
 }
 
-void UpdateCloudProvisionFlowErrorUMA(mojom::CloudProvisionFlowError error,
-                                      const Profile* profile) {
+void UpdateProvisioningDpcResultUMA(ArcProvisioningDpcResult result,
+                                    const Profile* profile) {
   LogStabilityUmaEnum(
-      GetHistogramNameByUserType("Arc.Provisioning.CloudFlowError", profile),
-      error);
+      GetHistogramNameByUserType("Arc.Provisioning.DpcResult", profile),
+      result);
 }
 
-void UpdateGMSSignInErrorUMA(mojom::GMSSignInError error,
-                             const Profile* profile) {
+void UpdateProvisioningSigninResultUMA(ArcProvisioningSigninResult result,
+                                       const Profile* profile) {
   LogStabilityUmaEnum(
-      GetHistogramNameByUserType("Arc.Provisioning.SignInError", profile),
-      error);
+      GetHistogramNameByUserType("Arc.Provisioning.SigninResult", profile),
+      result);
 }
 
-void UpdateGMSCheckInErrorUMA(mojom::GMSCheckInError error,
-                              const Profile* profile) {
+void UpdateProvisioningCheckinResultUMA(ArcProvisioningCheckinResult result,
+                                        const Profile* profile) {
   LogStabilityUmaEnum(
-      GetHistogramNameByUserType("Arc.Provisioning.CheckInError", profile),
-      error);
+      GetHistogramNameByUserType("Arc.Provisioning.CheckinResult", profile),
+      result);
 }
 
 void UpdateSecondarySigninResultUMA(ProvisioningStatus status) {
@@ -259,6 +259,85 @@ void UpdateSecondaryAccountSilentAuthCodeUMA(OptInSilentAuthCode state) {
   LogStabilityUmaEnum("Arc.OptInSilentAuthCode.SecondaryAccount", state);
 }
 
+ArcProvisioningDpcResult GetDpcErrorResult(
+    mojom::CloudProvisionFlowError error) {
+  switch (error) {
+    case mojom::CloudProvisionFlowError::ERROR_ENROLLMENT_TOKEN_INVALID:
+      return ArcProvisioningDpcResult::kInvalidToken;
+    case mojom::CloudProvisionFlowError::ERROR_ADD_ACCOUNT_FAILED:
+      return ArcProvisioningDpcResult::kAccountAddFail;
+    case mojom::CloudProvisionFlowError::ERROR_TIMEOUT:
+      return ArcProvisioningDpcResult::kTimeout;
+    case mojom::CloudProvisionFlowError::ERROR_NETWORK_UNAVAILABLE:
+      return ArcProvisioningDpcResult::kNetworkError;
+    case mojom::CloudProvisionFlowError::
+        ERROR_OAUTH_TOKEN_AUTHENTICATOR_EXCEPTION:
+      return ArcProvisioningDpcResult::kOAuthAuthException;
+    case mojom::CloudProvisionFlowError::ERROR_OAUTH_TOKEN_IO_EXCEPTION:
+      return ArcProvisioningDpcResult::kOAuthIOException;
+    case mojom::CloudProvisionFlowError::ERROR_OTHER:
+    case mojom::CloudProvisionFlowError::ERROR_ENTERPRISE_INVALID:
+    case mojom::CloudProvisionFlowError::ERROR_USER_CANCEL:
+    case mojom::CloudProvisionFlowError::ERROR_NO_ACCOUNT_IN_WORK_PROFILE:
+    case mojom::CloudProvisionFlowError::ERROR_INVALID_POLICY_STATE:
+    case mojom::CloudProvisionFlowError::ERROR_DPC_SUPPORT:
+    case mojom::CloudProvisionFlowError::ERROR_ACCOUNT_NOT_READY:
+    case mojom::CloudProvisionFlowError::ERROR_CHECKIN_FAILED:
+    case mojom::CloudProvisionFlowError::ERROR_ACCOUNT_NOT_ALLOWLISTED:
+    case mojom::CloudProvisionFlowError::ERROR_JSON:
+    case mojom::CloudProvisionFlowError::ERROR_MANAGED_PROVISIONING_FAILED:
+    case mojom::CloudProvisionFlowError::ERROR_INVALID_SETUP_ACTION:
+    case mojom::CloudProvisionFlowError::ERROR_SERVER:
+    case mojom::CloudProvisionFlowError::ERROR_REMOVE_ACCOUNT_FAILED:
+    case mojom::CloudProvisionFlowError::ERROR_OAUTH_TOKEN:
+    case mojom::CloudProvisionFlowError::ERROR_ACCOUNT_OTHER:
+    case mojom::CloudProvisionFlowError::ERROR_QUARANTINE:
+    case mojom::CloudProvisionFlowError::ERROR_DEVICE_QUOTA_EXCEEDED:
+    case mojom::CloudProvisionFlowError::ERROR_SERVER_TRANSIENT_ERROR:
+    case mojom::CloudProvisionFlowError::
+        ERROR_OAUTH_TOKEN_OPERATION_CANCELED_EXCEPTION:
+    case mojom::CloudProvisionFlowError::ERROR_REQUEST_ANDROID_ID_FAILED:
+      VLOG(1) << "ArcProvisioningDpcResult[kUnknownError]="
+              << static_cast<
+                     std::underlying_type_t<mojom::CloudProvisionFlowError>>(
+                     error);
+      return ArcProvisioningDpcResult::kUnknownError;
+  }
+}
+
+ArcProvisioningSigninResult GetSigninErrorResult(mojom::GMSSignInError error) {
+  switch (error) {
+    case mojom::GMSSignInError::GMS_SIGN_IN_NETWORK_ERROR:
+      return ArcProvisioningSigninResult::kNetworkError;
+    case mojom::GMSSignInError::GMS_SIGN_IN_SERVICE_UNAVAILABLE:
+      return ArcProvisioningSigninResult::kServiceUnavailable;
+    case mojom::GMSSignInError::GMS_SIGN_IN_BAD_AUTHENTICATION:
+      return ArcProvisioningSigninResult::kAuthFailure;
+    case mojom::GMSSignInError::GMS_SIGN_IN_TIMEOUT:
+      return ArcProvisioningSigninResult::kTimeout;
+    case mojom::GMSSignInError::GMS_SIGN_IN_FAILED:
+    case mojom::GMSSignInError::GMS_SIGN_IN_INTERNAL_ERROR:
+      VLOG(1) << "ArcProvisioningSigninResult[kUnknownError]="
+              << static_cast<std::underlying_type_t<mojom::GMSSignInError>>(
+                     error);
+      return ArcProvisioningSigninResult::kUnknownError;
+  }
+}
+
+ArcProvisioningCheckinResult GetCheckinErrorResult(
+    mojom::GMSCheckInError error) {
+  switch (error) {
+    case mojom::GMSCheckInError::GMS_CHECK_IN_TIMEOUT:
+      return ArcProvisioningCheckinResult::kTimeout;
+    case mojom::GMSCheckInError::GMS_CHECK_IN_FAILED:
+    case mojom::GMSCheckInError::GMS_CHECK_IN_INTERNAL_ERROR:
+      VLOG(1) << "ArcProvisioningCheckinResult[kUnknownError]="
+              << static_cast<std::underlying_type_t<mojom::GMSCheckInError>>(
+                     error);
+      return ArcProvisioningCheckinResult::kUnknownError;
+  }
+}
+
 ProvisioningStatus GetProvisioningStatus(
     const ArcProvisioningResult& provisioning_result) {
   if (provisioning_result.stop_reason())
@@ -297,7 +376,7 @@ ProvisioningStatus GetProvisioningStatus(
 #undef MAP_GENERAL_ERROR
   }
 
-  NOTREACHED() << "unexpected provisioning result";
+  NOTREACHED_IN_MIGRATION() << "unexpected provisioning result";
   return ProvisioningStatus::UNKNOWN_ERROR;
 }
 
@@ -327,7 +406,7 @@ std::ostream& operator<<(std::ostream& os, const ProvisioningStatus& status) {
 
   // Some compilers report an error even if all values of an enum-class are
   // covered exhaustively in a switch statement.
-  NOTREACHED() << "Invalid value " << static_cast<int>(status);
+  NOTREACHED_IN_MIGRATION() << "Invalid value " << static_cast<int>(status);
   return os;
 }
 

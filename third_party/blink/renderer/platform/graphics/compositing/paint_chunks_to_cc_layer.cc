@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 
+#include "base/containers/adapters.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/input/layer_selection_bound.h"
@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidation_tracking.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -48,6 +49,94 @@ class PaintOpBufferExt : public cc::PaintOpBuffer {
   }
 };
 
+// In a ConversionContext's property state switching function (e.g.
+// SwitchToClip), if a scroll translation switch is needed to finish the switch,
+// the function returns this struct with kStart or kEnd type, and
+// ConversionContext::Convert() will start a new DrawScrollingContentsOp in a
+// new ConversionContext, or end the current DrawScrollingContentsOp and return
+// to the outer ConversionContext. Then the switch will continue in the new
+// context.
+struct ScrollTranslationAction {
+  STACK_ALLOCATED();
+
+ public:
+  enum { kNone, kStart, kEnd } type = kNone;
+  const TransformPaintPropertyNode* scroll_translation_to_start = nullptr;
+
+  explicit operator bool() const { return type != kNone; }
+};
+
+// State stack of ConversionContext.
+// The size of the stack is the number of nested paired items that are
+// currently nested. Note that this is a "restore stack", i.e. the top element
+// does not represent the current state, but the state prior to applying the
+// last paired begin.
+struct StateEntry {
+  DISALLOW_NEW();
+
+ public:
+  // Remembers the type of paired begin that caused a state to be saved.
+  // This is for checking integrity of the algorithm.
+  enum PairedType { kClip, kClipOmitted, kEffect };
+  explicit StateEntry(PairedType type,
+                      const TransformPaintPropertyNode* transform,
+                      const ClipPaintPropertyNode* clip,
+                      const EffectPaintPropertyNode* effect,
+                      const TransformPaintPropertyNode* previous_transform)
+      : transform(transform),
+        clip(clip),
+        effect(effect),
+        previous_transform(previous_transform),
+        type_(type) {}
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(transform);
+    visitor->Trace(clip);
+    visitor->Trace(effect);
+    visitor->Trace(previous_transform);
+  }
+
+  bool IsClip() const { return type_ != kEffect; }
+  bool IsEffect() const { return type_ == kEffect; }
+  bool NeedsRestore() const { return type_ != kClipOmitted; }
+
+  // These fields are never nullptr. They save ConversionContext::
+  // current_transform_, current_clip_ and current_effect_, respectively.
+  Member<const TransformPaintPropertyNode> transform;
+  Member<const ClipPaintPropertyNode> clip;
+  Member<const EffectPaintPropertyNode> effect;
+  // This saves ConversionContext::previous_transform_.
+  Member<const TransformPaintPropertyNode> previous_transform;
+#if DCHECK_IS_ON()
+  bool has_effect_hierarchy_issue = false;
+#endif
+
+ private:
+  PairedType type_;
+};
+
+// This structure accumulates bounds of all chunks under an effect. When an
+// effect starts, we emit a SaveLayer[Alpha]Op with null bounds, and push a
+// new |EffectBoundsInfo| onto |effect_bounds_stack_|. When the effect ends,
+// we update the bounds of the op.
+struct EffectBoundsInfo {
+  DISALLOW_NEW();
+
+ public:
+  void Trace(Visitor* visitor) const { visitor->Trace(transform); }
+
+  // The id of the SaveLayer[Alpha]Op for this effect. It's recorded when we
+  // push the op for this effect, and used when this effect ends in
+  // UpdateSaveLayerBounds().
+  size_t save_layer_id;
+  // The transform space when the SaveLayer[Alpha]Op was emitted.
+  Member<const TransformPaintPropertyNode> transform;
+  // Records the bounds of the effect which initiated the entry. Note that
+  // the effect is not |effect| (which is the previous effect), but the
+  // |current_effect_| when this entry is the top of the stack.
+  gfx::RectF bounds;
+};
+
 template <typename Result>
 class ConversionContext {
   STACK_ALLOCATED();
@@ -55,16 +144,24 @@ class ConversionContext {
  public:
   ConversionContext(const PropertyTreeState& layer_state,
                     const gfx::Vector2dF& layer_offset,
-                    Result& result)
-      : layer_state_(layer_state),
-        layer_offset_(layer_offset),
+                    Result& result,
+                    const StateEntry* outer_state_stack_top = nullptr)
+      : chunk_to_layer_mapper_(layer_state, layer_offset),
         current_transform_(&layer_state.Transform()),
         current_clip_(&layer_state.Clip()),
         current_effect_(&layer_state.Effect()),
-        chunk_to_layer_mapper_(layer_state_, layer_offset_),
-        result_(result) {}
+        current_scroll_translation_(
+            &current_transform_->NearestScrollTranslationNode()),
+        result_(result),
+        outer_state_stack_top_(outer_state_stack_top) {}
   ~ConversionContext();
 
+ private:
+  void Convert(PaintChunkIterator& chunk_it,
+               PaintChunkIterator end_chunk,
+               const gfx::Rect* additional_cull_rect = nullptr);
+
+ public:
   // The main function of this class. It converts a list of paint chunks into
   // non-pair display items, and paint properties associated with them are
   // implemented by paired display items.
@@ -111,18 +208,19 @@ class ConversionContext {
   // At last, close all pushed states to balance pairs (this happens when the
   // context object is destructed):
   //   Output: End_C4 End_C3 End_C2 End_C1
-  void Convert(const PaintChunkSubset&,
-               const gfx::Rect* additional_cull_rect = nullptr);
+  void Convert(const PaintChunkSubset& chunks,
+               const gfx::Rect* additional_cull_rect = nullptr) {
+    auto chunk_it = chunks.begin();
+    Convert(chunk_it, chunks.end(), additional_cull_rect);
+    CHECK(chunk_it == chunks.end());
+  }
 
  private:
+  bool HasDrawing(PaintChunkIterator, const PropertyTreeState&) const;
+
   // Adjust the translation of the whole display list relative to layer offset.
   // It's only called if we actually paint anything.
   void TranslateForLayerOffsetOnce();
-
-  // Switch the current property tree state to the chunk's state. It's only
-  // called if we actually paint anything, and should execute for a chunk
-  // only once.
-  void SwitchToChunkState(const PaintChunk&);
 
   // Switch the current clip to the target state, staying in the same effect.
   // It is no-op if the context is already in the target state.
@@ -134,7 +232,8 @@ class ConversionContext {
   // The current transform may be changed.
   // The current clip will change to the target clip.
   // The current effect will not change.
-  void SwitchToClip(const ClipPaintPropertyNode&);
+  [[nodiscard]] ScrollTranslationAction SwitchToClip(
+      const ClipPaintPropertyNode&);
 
   // Switch the current effect to the target state.
   // It is no-op if the context is already in the target state.
@@ -149,14 +248,27 @@ class ConversionContext {
   // The current clip may be changed, and is guaranteed to be a descendant of
   // the output clip of the target effect.
   // The current effect will change to the target effect.
-  void SwitchToEffect(const EffectPaintPropertyNode&);
+  [[nodiscard]] ScrollTranslationAction SwitchToEffect(
+      const EffectPaintPropertyNode&);
 
   // Switch the current transform to the target state.
-  void SwitchToTransform(const TransformPaintPropertyNode&);
-  // End the transform state that is estalished by SwitchToTransform().
-  // Called when the next chunk has different property tree state and when we
-  // have processed all chunks.
+  [[nodiscard]] ScrollTranslationAction SwitchToTransform(
+      const TransformPaintPropertyNode&);
+  // End the transform state that is established by SwitchToTransform().
+  // Called when the next chunk has different property tree state or when we
+  // have processed all chunks. See `previous_transform_` for more details.
   void EndTransform();
+
+  // These functions will be specialized for cc::DisplayItemList later.
+  ScrollTranslationAction ComputeScrollTranslationAction(
+      const TransformPaintPropertyNode&) const {
+    return {};
+  }
+  void EmitDrawScrollingContentsOp(PaintChunkIterator&,
+                                   PaintChunkIterator,
+                                   const TransformPaintPropertyNode&) {
+    NOTREACHED();
+  }
 
   // Applies combined transform from |current_transform_| to |target_transform|
   // This function doesn't change |current_transform_|.
@@ -188,7 +300,8 @@ class ConversionContext {
   // Starts an effect state by adjusting clip and transform state, applying
   // the effect as a SaveLayer[Alpha]Op (whose bounds will be updated in
   // EndEffect()), and updating the current state.
-  void StartEffect(const EffectPaintPropertyNode&);
+  [[nodiscard]] ScrollTranslationAction StartEffect(
+      const EffectPaintPropertyNode&);
   // Ends the effect on the top of the state stack if the stack is not empty,
   // and update the bounds of the SaveLayer[Alpha]Op of the effect.
   void EndEffect();
@@ -198,71 +311,33 @@ class ConversionContext {
   // |combined_clip_rect| which is combined from one or more consecutive clips,
   // and updating the current state. |lowest_combined_clip_node| is the lowest
   // node of the combined clips.
-  void StartClip(const FloatRoundedRect& combined_clip_rect,
-                 const ClipPaintPropertyNode& lowest_combined_clip_node);
+  [[nodiscard]] ScrollTranslationAction StartClip(
+      const FloatRoundedRect& combined_clip_rect,
+      const ClipPaintPropertyNode& lowest_combined_clip_node);
   // Pop one clip state from the top of the stack.
   void EndClip();
   // Pop clip states from the top of the stack until the top is an effect state
   // or the stack is empty.
-  void EndClips();
+  [[nodiscard]] ScrollTranslationAction EndClips();
 
   template <typename T, typename... Args>
   size_t push(Args&&... args) {
     return result_.template push<T>(std::forward<Args>(args)...);
   }
 
-  // State stack.
-  // The size of the stack is the number of nested paired items that are
-  // currently nested. Note that this is a "restore stack", i.e. the top
-  // element does not represent the current state, but the state prior to
-  // applying the last paired begin.
-  struct StateEntry {
-    // Remembers the type of paired begin that caused a state to be saved.
-    // This is for checking integrity of the algorithm.
-    enum PairedType { kClip, kClipOmitted, kEffect };
-    explicit StateEntry(PairedType type,
-                        const TransformPaintPropertyNode* transform,
-                        const ClipPaintPropertyNode* clip,
-                        const EffectPaintPropertyNode* effect,
-                        const TransformPaintPropertyNode* previous_transform)
-        : transform(transform),
-          clip(clip),
-          effect(effect),
-          previous_transform(previous_transform),
-          type_(type) {}
-
-    bool IsClip() const { return type_ != kEffect; }
-    bool IsEffect() const { return type_ == kEffect; }
-    bool NeedsRestore() const { return type_ != kClipOmitted; }
-
-    // These fields are never nullptr.
-    //
-    // Excluded from being `raw_ptr` for visible regressions in
-    // MotionMark (crbug.com/1495275#c116).
-    RAW_PTR_EXCLUSION const TransformPaintPropertyNode* transform;
-    RAW_PTR_EXCLUSION const ClipPaintPropertyNode* clip;
-    RAW_PTR_EXCLUSION const EffectPaintPropertyNode* effect;
-    // See ConversionContext<Result>::previous_transform_.
-    RAW_PTR_EXCLUSION const TransformPaintPropertyNode* previous_transform;
-#if DCHECK_IS_ON()
-    bool has_pre_cap_effect_hierarchy_issue = false;
-#endif
-
-   private:
-    PairedType type_;
-  };
   void PushState(typename StateEntry::PairedType);
   void PopState();
-  Vector<StateEntry> state_stack_;
 
-  const PropertyTreeState& layer_state_;
-  const gfx::Vector2dF layer_offset_;
+  HeapVector<StateEntry> state_stack_;
+  HeapVector<EffectBoundsInfo> effect_bounds_stack_;
+  ChunkToLayerMapper chunk_to_layer_mapper_;
   bool translated_for_layer_offset_ = false;
 
   // These fields are never nullptr.
   const TransformPaintPropertyNode* current_transform_;
   const ClipPaintPropertyNode* current_clip_;
   const EffectPaintPropertyNode* current_effect_;
+  const TransformPaintPropertyNode* current_scroll_translation_;
 
   // The previous transform state before SwitchToTransform() within the current
   // clip/effect state. When the next chunk's transform is different from the
@@ -273,37 +348,22 @@ class ConversionContext {
   // the saved value.
   const TransformPaintPropertyNode* previous_transform_ = nullptr;
 
-  // This structure accumulates bounds of all chunks under an effect. When an
-  // effect starts, we emit a SaveLayer[Alpha]Op with null bounds, and push a
-  // new |EffectBoundsInfo| onto |effect_bounds_stack_|. When the effect ends,
-  // we update the bounds of the op.
-  struct EffectBoundsInfo {
-    // The id of the SaveLayer[Alpha]Op for this effect. It's recorded when we
-    // push the op for this effect, and used when this effect ends in
-    // UpdateSaveLayerBounds().
-    size_t save_layer_id;
-    // The transform space when the SaveLayer[Alpha]Op was emitted.
-    raw_ptr<const TransformPaintPropertyNode, ExperimentalRenderer> transform;
-    // Records the bounds of the effect which initiated the entry. Note that
-    // the effect is not |effect| (which is the previous effect), but the
-    // |current_effect_| when this entry is the top of the stack.
-    gfx::RectF bounds;
-  };
-  Vector<EffectBoundsInfo> effect_bounds_stack_;
-
-  ChunkToLayerMapper chunk_to_layer_mapper_;
-
   Result& result_;
+
+  // Points to the top of stack_stack_ of the outer ConversionContext that
+  // initiated the current ConversionContext in EmitDrawScrollingContentsOp().
+  const StateEntry* outer_state_stack_top_ = nullptr;
 };
 
 template <typename Result>
 ConversionContext<Result>::~ConversionContext() {
   // End all states.
   while (state_stack_.size()) {
-    if (state_stack_.back().IsEffect())
+    if (state_stack_.back().IsEffect()) {
       EndEffect();
-    else
+    } else {
       EndClip();
+    }
   }
   EndTransform();
   if (translated_for_layer_offset_)
@@ -312,25 +372,16 @@ ConversionContext<Result>::~ConversionContext() {
 
 template <typename Result>
 void ConversionContext<Result>::TranslateForLayerOffsetOnce() {
-  if (translated_for_layer_offset_ || layer_offset_ == gfx::Vector2dF())
+  gfx::Vector2dF layer_offset = chunk_to_layer_mapper_.LayerOffset();
+  if (translated_for_layer_offset_ || layer_offset == gfx::Vector2dF()) {
     return;
+  }
 
   result_.StartPaint();
   push<cc::SaveOp>();
-  push<cc::TranslateOp>(-layer_offset_.x(), -layer_offset_.y());
+  push<cc::TranslateOp>(-layer_offset.x(), -layer_offset.y());
   result_.EndPaintOfPairedBegin();
   translated_for_layer_offset_ = true;
-}
-
-template <typename Result>
-void ConversionContext<Result>::SwitchToChunkState(const PaintChunk& chunk) {
-  TranslateForLayerOffsetOnce();
-  chunk_to_layer_mapper_.SwitchToChunk(chunk);
-
-  const auto& chunk_state = chunk.properties;
-  SwitchToEffect(chunk_state.Effect().Unalias());
-  SwitchToClip(chunk_state.Clip().Unalias());
-  SwitchToTransform(chunk_state.Transform().Unalias());
 }
 
 // Tries to combine a clip node's clip rect into |combined_clip_rect|.
@@ -341,18 +392,26 @@ static bool CombineClip(const ClipPaintPropertyNode& clip,
     return true;
 
   // Don't combine into a clip with clip path.
-  DCHECK(clip.Parent());
-  if (clip.UnaliasedParent()->ClipPath())
+  const auto* parent = clip.UnaliasedParent();
+  CHECK(parent);
+  if (parent->ClipPath()) {
     return false;
+  }
 
   // Don't combine clips in different transform spaces.
   const auto& transform_space = clip.LocalTransformSpace().Unalias();
-  const auto& parent_transform_space =
-      clip.UnaliasedParent()->LocalTransformSpace().Unalias();
-  if (&transform_space != &parent_transform_space &&
-      (transform_space.Parent() != &parent_transform_space ||
-       !transform_space.IsIdentity()))
-    return false;
+  const auto& parent_transform_space = parent->LocalTransformSpace().Unalias();
+  if (&transform_space != &parent_transform_space) {
+    if (transform_space.Parent() != &parent_transform_space ||
+        !transform_space.IsIdentity()) {
+      return false;
+    }
+    // In RasterInducingScroll, don't combine clips across scroll translations.
+    if (RuntimeEnabledFeatures::RasterInducingScrollEnabled() &&
+        transform_space.ScrollNode()) {
+      return false;
+    }
+  }
 
   // Don't combine two rounded clip rects.
   bool clip_is_rounded = clip.PaintClipRect().IsRounded();
@@ -381,46 +440,59 @@ static bool CombineClip(const ClipPaintPropertyNode& clip,
 }
 
 template <typename Result>
-void ConversionContext<Result>::SwitchToClip(
+ScrollTranslationAction ConversionContext<Result>::SwitchToClip(
     const ClipPaintPropertyNode& target_clip) {
-  if (&target_clip == current_clip_)
-    return;
-
-  // Step 1: Exit all clips until the lowest common ancestor is found.
-  const auto* lca_clip =
-      &target_clip.LowestCommonAncestor(*current_clip_).Unalias();
-  while (current_clip_ != lca_clip) {
-    if (!state_stack_.size() || !state_stack_.back().IsClip()) {
-      // TODO(crbug.com/803649): We still have clip hierarchy issues with
-      // fragment clips. See crbug.com/1240080 for the test case. Will change
-      // the above condition to DCHECK after LayoutNGBlockFragmentation is fully
-      // launched.
-#if DCHECK_IS_ON()
-      DLOG(ERROR) << "Error: Chunk has a clip that escaped its layer's or "
-                  << "effect's clip.\ntarget_clip:\n"
-                  << target_clip.ToTreeString().Utf8() << "current_clip_:\n"
-                  << current_clip_->ToTreeString().Utf8();
-#endif
-      break;
-    }
-    DCHECK(current_clip_->Parent());
-    current_clip_ = &current_clip_->Parent()->Unalias();
-    StateEntry& previous_state = state_stack_.back();
-    if (current_clip_ == lca_clip) {
-      // |lca_clip| is an intermediate clip in a series of combined clips.
-      // Jump to the first of the combined clips.
-      current_clip_ = lca_clip = previous_state.clip;
-    }
-    if (current_clip_ == previous_state.clip)
-      EndClip();
+  if (&target_clip == current_clip_) {
+    return {};
   }
 
-  if (&target_clip == current_clip_)
-    return;
+  // Step 1: Exit all clips until the lowest common ancestor is found.
+  {
+    const auto* lca_clip =
+        &target_clip.LowestCommonAncestor(*current_clip_).Unalias();
+    const auto* clip = current_clip_;
+    while (clip != lca_clip) {
+      if (!state_stack_.size() && outer_state_stack_top_) {
+        // We are ending a clip that is started from the outer
+        // ConversionContext. outer_state_stack_top_ should be always the
+        // overflow clip of the current scroll translation.
+        CHECK(outer_state_stack_top_->IsClip());
+        return {ScrollTranslationAction::kEnd};
+      }
+      if (!state_stack_.size() || !state_stack_.back().IsClip()) {
+        // TODO(crbug.com/40558824): We still have clip hierarchy issues.
+        // See crbug.com/40558824#comment57 and crbug.com/352414643 for the
+        // test cases.
+#if DCHECK_IS_ON()
+        DLOG(ERROR) << "Error: Chunk has a clip that escaped its layer's or "
+                    << "effect's clip.\ntarget_clip:\n"
+                    << target_clip.ToTreeString().Utf8() << "current_clip_:\n"
+                    << clip->ToTreeString().Utf8();
+#endif
+        break;
+      }
+      DCHECK(clip->Parent());
+      clip = &clip->Parent()->Unalias();
+      StateEntry& previous_state = state_stack_.back();
+      if (clip == lca_clip) {
+        // |lca_clip| may be an intermediate clip in a series of combined clips.
+        // Jump to the first of the combined clips.
+        clip = lca_clip = previous_state.clip;
+      }
+      if (clip == previous_state.clip) {
+        EndClip();
+        DCHECK_EQ(current_clip_, clip);
+      }
+    }
+  }
+
+  if (&target_clip == current_clip_) {
+    return {};
+  }
 
   // Step 2: Collect all clips between the target clip and the current clip.
   // At this point the current clip must be an ancestor of the target.
-  Vector<const ClipPaintPropertyNode*, 1u> pending_clips;
+  HeapVector<Member<const ClipPaintPropertyNode>, 8> pending_clips;
   for (const auto* clip = &target_clip; clip != current_clip_;
        clip = clip->UnaliasedParent()) {
     // This should never happen unless the DCHECK in step 1 failed.
@@ -432,27 +504,34 @@ void ConversionContext<Result>::SwitchToClip(
   // Step 3: Now apply the list of clips in top-down order.
   DCHECK(pending_clips.size());
   auto pending_combined_clip_rect = pending_clips.back()->PaintClipRect();
-  const auto* lowest_combined_clip_node = pending_clips.back();
+  const auto* lowest_combined_clip_node = pending_clips.back().Get();
   for (auto i = pending_clips.size() - 1; i--;) {
-    const auto* sub_clip = pending_clips[i];
+    const auto* sub_clip = pending_clips[i].Get();
     if (CombineClip(*sub_clip, pending_combined_clip_rect)) {
       // Continue to combine.
       lowest_combined_clip_node = sub_clip;
     } else {
       // |sub_clip| can't be combined to previous clips. Output the current
       // combined clip, and start new combination.
-      StartClip(pending_combined_clip_rect, *lowest_combined_clip_node);
+      if (auto action = StartClip(pending_combined_clip_rect,
+                                  *lowest_combined_clip_node)) {
+        return action;
+      }
       pending_combined_clip_rect = sub_clip->PaintClipRect();
       lowest_combined_clip_node = sub_clip;
     }
   }
-  StartClip(pending_combined_clip_rect, *lowest_combined_clip_node);
+  if (auto action =
+          StartClip(pending_combined_clip_rect, *lowest_combined_clip_node)) {
+    return action;
+  }
 
   DCHECK_EQ(current_clip_, &target_clip);
+  return {};
 }
 
 template <typename Result>
-void ConversionContext<Result>::StartClip(
+ScrollTranslationAction ConversionContext<Result>::StartClip(
     const FloatRoundedRect& combined_clip_rect,
     const ClipPaintPropertyNode& lowest_combined_clip_node) {
   if (combined_clip_rect.Rect() == gfx::RectF(InfiniteIntRect())) {
@@ -460,8 +539,12 @@ void ConversionContext<Result>::StartClip(
   } else {
     const auto& local_transform =
         lowest_combined_clip_node.LocalTransformSpace().Unalias();
-    if (&local_transform != current_transform_)
+    if (&local_transform != current_transform_) {
       EndTransform();
+      if (auto action = ComputeScrollTranslationAction(local_transform)) {
+        return action;
+      }
+    }
     result_.StartPaint();
     push<cc::SaveOp>();
     ApplyTransform(local_transform);
@@ -483,6 +566,7 @@ void ConversionContext<Result>::StartClip(
     current_transform_ = &local_transform;
   }
   current_clip_ = &lowest_combined_clip_node;
+  return {};
 }
 
 bool HasRealEffects(const EffectPaintPropertyNode& current,
@@ -496,10 +580,11 @@ bool HasRealEffects(const EffectPaintPropertyNode& current,
 }
 
 template <typename Result>
-void ConversionContext<Result>::SwitchToEffect(
+ScrollTranslationAction ConversionContext<Result>::SwitchToEffect(
     const EffectPaintPropertyNode& target_effect) {
-  if (&target_effect == current_effect_)
-    return;
+  if (&target_effect == current_effect_) {
+    return {};
+  }
 
   // Step 1: Exit all effects until the lowest common ancestor is found.
   const auto& lca_effect =
@@ -511,12 +596,12 @@ void ConversionContext<Result>::SwitchToEffect(
 
   while (current_effect_ != &lca_effect) {
     // This EndClips() and the later EndEffect() pop to the parent effect.
-    EndClips();
+    if (auto action = EndClips()) {
+      return action;
+    }
     if (!state_stack_.size()) {
-      // TODO(crbug.com/803649): We still have clip hierarchy issues with
-      // fragment clips. See crbug.com/1240080 for the test case. Will change
-      // the above condition to DCHECK after LayoutNGBlockFragmentation is fully
-      // launched.
+      // TODO(crbug.com/40558824): We still have clip hierarchy issues.
+      // See crbug.com/40558824#comment57 for the test case.
 #if DCHECK_IS_ON()
       DLOG(ERROR) << "Error: Chunk has an effect that escapes layer's effect.\n"
                   << "target_effect:\n"
@@ -524,20 +609,19 @@ void ConversionContext<Result>::SwitchToEffect(
                   << current_effect_->ToTreeString().Utf8();
       has_effect_hierarchy_issue = true;
 #endif
-      // In pre-CompositeAfterPaint, we may squash one layer into another, but
-      // the squashing layer may create more effect nodes not for real effects,
-      // causing squashed layer's effect to escape the squashing layer's effect.
-      // We can continue because the extra effects are noop.
-      if (!HasRealEffects(*current_effect_, lca_effect))
+      // We can continue if the extra effects causing the clip hierarchy issue
+      // are no-op.
+      if (!HasRealEffects(*current_effect_, lca_effect)) {
         break;
-      return;
+      }
+      return {};
     }
     EndEffect();
   }
 
   // Step 2: Collect all effects between the target effect and the current
   // effect. At this point the current effect must be an ancestor of the target.
-  Vector<const EffectPaintPropertyNode*, 1u> pending_effects;
+  HeapVector<Member<const EffectPaintPropertyNode>, 8> pending_effects;
   for (const auto* effect = &target_effect; effect != &lca_effect;
        effect = effect->UnaliasedParent()) {
     // This should never happen unless the DCHECK in step 1 failed.
@@ -547,42 +631,46 @@ void ConversionContext<Result>::SwitchToEffect(
   }
 
   // Step 3: Now apply the list of effects in top-down order.
-  for (auto i = pending_effects.size(); i--;) {
-    const EffectPaintPropertyNode* sub_effect = pending_effects[i];
+  for (const auto& sub_effect : base::Reversed(pending_effects)) {
 #if DCHECK_IS_ON()
     if (!has_effect_hierarchy_issue)
       DCHECK_EQ(current_effect_, sub_effect->UnaliasedParent());
 #endif
-    StartEffect(*sub_effect);
+    if (auto action = StartEffect(*sub_effect)) {
+      return action;
+    }
 #if DCHECK_IS_ON()
-    state_stack_.back().has_pre_cap_effect_hierarchy_issue =
-        has_effect_hierarchy_issue;
+    state_stack_.back().has_effect_hierarchy_issue = has_effect_hierarchy_issue;
     // This applies only to the first new effect.
     has_effect_hierarchy_issue = false;
 #endif
   }
+  return {};
 }
 
 template <typename Result>
-void ConversionContext<Result>::StartEffect(
+ScrollTranslationAction ConversionContext<Result>::StartEffect(
     const EffectPaintPropertyNode& effect) {
   // Before each effect can be applied, we must enter its output clip first,
   // or exit all clips if it doesn't have one.
-  if (effect.OutputClip())
-    SwitchToClip(effect.OutputClip()->Unalias());
-  else
-    EndClips();
-
-  size_t save_layer_id = kNotFound;
-
-  // Adjust transform first. Though a non-filter effect itself doesn't depend on
-  // the transform, switching to the target transform before SaveLayer[Alpha]Op
-  // will help the rasterizer optimize a non-filter SaveLayer[Alpha]Op/
-  // DrawRecord/Restore sequence into a single DrawRecord which is much faster.
-  // This also avoids multiple Save/Concat/.../Restore pairs for multiple
-  // consecutive effects in the same transform space, by issuing only one pair
-  // around all of the effects.
-  SwitchToTransform(effect.LocalTransformSpace().Unalias());
+  if (effect.OutputClip()) {
+    if (auto action = SwitchToClip(effect.OutputClip()->Unalias())) {
+      return action;
+    }
+    // Adjust transform first. Though a non-filter effect itself doesn't depend
+    // on the transform, switching to the target transform before
+    // SaveLayer[Alpha]Op will help the rasterizer optimize a non-filter
+    // SaveLayer[Alpha]Op/DrawRecord/Restore sequence into a single DrawRecord
+    // which is much faster. This also avoids multiple Save/Concat/.../Restore
+    // pairs for multiple consecutive effects in the same transform space, by
+    // issuing only one pair around all of the effects.
+    if (auto action =
+            SwitchToTransform(effect.LocalTransformSpace().Unalias())) {
+      return action;
+    }
+  } else if (auto action = EndClips()) {
+    return action;
+  }
 
   bool has_filter = !effect.Filter().IsEmpty();
   bool has_opacity = effect.Opacity() != 1.f;
@@ -596,6 +684,7 @@ void ConversionContext<Result>::StartEffect(
   DCHECK(!has_filter || !(has_opacity || has_other_effects));
 
   // Apply effects.
+  size_t save_layer_id = kNotFound;
   result_.StartPaint();
   if (!has_filter) {
     if (has_other_effects) {
@@ -642,6 +731,7 @@ void ConversionContext<Result>::StartEffect(
     result_.EndPaintOfUnpaired(chunk_to_layer_mapper_.MapVisualRect(
         gfx::ToEnclosingRect(filtered_bounds)));
   }
+  return {};
 }
 
 template <typename Result>
@@ -663,8 +753,9 @@ void ConversionContext<Result>::EndEffect() {
 #if DCHECK_IS_ON()
   const auto& previous_state = state_stack_.back();
   DCHECK(previous_state.IsEffect());
-  if (!previous_state.has_pre_cap_effect_hierarchy_issue)
+  if (!previous_state.has_effect_hierarchy_issue) {
     DCHECK_EQ(current_effect_->UnaliasedParent(), previous_state.effect);
+  }
   DCHECK_EQ(current_clip_, previous_state.clip);
 #endif
 
@@ -693,9 +784,18 @@ void ConversionContext<Result>::EndEffect() {
 }
 
 template <typename Result>
-void ConversionContext<Result>::EndClips() {
-  while (state_stack_.size() && state_stack_.back().IsClip())
+ScrollTranslationAction ConversionContext<Result>::EndClips() {
+  while (state_stack_.size() && state_stack_.back().IsClip()) {
     EndClip();
+  }
+  if (!state_stack_.size() && outer_state_stack_top_) {
+    // outer_state_stack_top_ should be always the overflow clip of the current
+    // scroll translation. The outer ConversionState should continue to end the
+    // clips.
+    CHECK(outer_state_stack_top_->IsClip());
+    return {ScrollTranslationAction::kEnd};
+  }
+  return {};
 }
 
 template <typename Result>
@@ -729,18 +829,25 @@ void ConversionContext<Result>::PopState() {
 }
 
 template <typename Result>
-void ConversionContext<Result>::SwitchToTransform(
+ScrollTranslationAction ConversionContext<Result>::SwitchToTransform(
     const TransformPaintPropertyNode& target_transform) {
-  if (&target_transform == current_transform_)
-    return;
+  if (&target_transform == current_transform_) {
+    return {};
+  }
 
   EndTransform();
-  if (&target_transform == current_transform_)
-    return;
+  if (&target_transform == current_transform_) {
+    return {};
+  }
+
+  if (auto action = ComputeScrollTranslationAction(target_transform)) {
+    return action;
+  }
 
   gfx::Transform projection = TargetToCurrentProjection(target_transform);
-  if (projection.IsIdentity())
-    return;
+  if (projection.IsIdentity()) {
+    return {};
+  }
 
   result_.StartPaint();
   push<cc::SaveOp>();
@@ -753,6 +860,7 @@ void ConversionContext<Result>::SwitchToTransform(
   result_.EndPaintOfPairedBegin();
   previous_transform_ = current_transform_;
   current_transform_ = &target_transform;
+  return {};
 }
 
 template <typename Result>
@@ -767,21 +875,133 @@ void ConversionContext<Result>::EndTransform() {
   previous_transform_ = nullptr;
 }
 
+template <>
+void ConversionContext<cc::DisplayItemList>::EmitDrawScrollingContentsOp(
+    PaintChunkIterator& chunk_it,
+    PaintChunkIterator end_chunk,
+    const TransformPaintPropertyNode& scroll_translation) {
+  CHECK(RuntimeEnabledFeatures::RasterInducingScrollEnabled());
+  CHECK(scroll_translation.ScrollNode());
+  DCHECK_EQ(previous_transform_, nullptr);
+
+  // Switch to the parent of the scroll translation in the current context.
+  auto action = SwitchToTransform(*scroll_translation.UnaliasedParent());
+  // This should not need to switch to any other scroll translation.
+  CHECK(!action);
+
+  // The scrolling contents will be recorded into this DisplayItemList as if
+  // the scrolling contents creates a layer.
+  auto scrolling_contents_list = base::MakeRefCounted<cc::DisplayItemList>();
+  ConversionContext<cc::DisplayItemList>(
+      PropertyTreeState(scroll_translation, *current_clip_, *current_effect_),
+      gfx::Vector2dF(), *scrolling_contents_list, &state_stack_.back())
+      .Convert(chunk_it, end_chunk);
+
+  EndTransform();
+  scrolling_contents_list->Finalize();
+
+  gfx::Rect visual_rect = chunk_to_layer_mapper_.MapVisualRectFromState(
+      InfiniteIntRect(),
+      PropertyTreeState(scroll_translation,
+                        *scroll_translation.ScrollNode()->OverflowClipNode(),
+                        // The effect state doesn't matter.
+                        chunk_to_layer_mapper_.LayerState().Effect()));
+  result_.PushDrawScrollingContentsOp(
+      scroll_translation.ScrollNode()->GetCompositorElementId(),
+      std::move(scrolling_contents_list), visual_rect);
+}
+
+template <>
+ScrollTranslationAction
+ConversionContext<cc::DisplayItemList>::ComputeScrollTranslationAction(
+    const TransformPaintPropertyNode& target_transform) const {
+  if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    return {};
+  }
+
+  const auto& target_scroll_translation =
+      target_transform.NearestScrollTranslationNode();
+  if (&target_scroll_translation == current_scroll_translation_) {
+    return {};
+  }
+
+  const auto& chunk_scroll_translation = chunk_to_layer_mapper_.ChunkState()
+                                             .Transform()
+                                             .NearestScrollTranslationNode();
+  // In most real-world cases, target_scroll_translation equals
+  // chunk_scroll_translation. In less common cases, chunk_scroll_translation
+  // is deeper than target_scroll_translation (e.g. when a chunk enters
+  // multiple levels of scrolling states). In very rare case for a
+  // non-composited fixed-attachment background, target_scroll_translation of
+  // the background clip is deeper than chunk_scroll_translation, and we
+  // should emit a transform operation for the clip to avoid infinite loop of
+  // starting (by the transform of the clip) and ending (by the chunk
+  // transform) empty DrawScrollingContentsOps.
+  if (!target_scroll_translation.IsAncestorOf(chunk_scroll_translation)) {
+    return {};
+  }
+
+  if (current_scroll_translation_ ==
+      target_scroll_translation.ParentScrollTranslationNode()) {
+    // We need to enter a new level of scroll translation. If a PaintChunk
+    // enters multiple levels of scroll translations at once, this function
+    // will be called for each level of overflow clip before it's called for
+    // the scrolling contents, so we only need to check one level of scroll
+    // translation here.
+    return {ScrollTranslationAction::kStart, &target_scroll_translation};
+  }
+
+  DCHECK(target_scroll_translation.IsAncestorOf(*current_scroll_translation_));
+  return {ScrollTranslationAction::kEnd};
+}
+
 template <typename Result>
-void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks,
+bool ConversionContext<Result>::HasDrawing(
+    PaintChunkIterator chunk_it,
+    const PropertyTreeState& chunk_state) const {
+  // If we have an empty paint chunk, then we would prefer ignoring it.
+  // However, a reference filter can generate visible effect from invisible
+  // source, and we need to emit paint operations for it.
+  if (&chunk_state.Effect() != current_effect_) {
+    return true;
+  }
+  DisplayItemRange items = chunk_it.DisplayItems();
+  if (items.size() == 0) {
+    return false;
+  }
+  if (items.size() > 1) {
+    // Assume the chunk has drawing if it has more than one display items.
+    return true;
+  }
+  if (auto* drawing = DynamicTo<DrawingDisplayItem>(*items.begin())) {
+    if (drawing->GetPaintRecord().empty() &&
+        // See can_ignore_record in Convert()'s inner loop.
+        &chunk_state.Effect() == &EffectPaintPropertyNode::Root()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template <typename Result>
+void ConversionContext<Result>::Convert(PaintChunkIterator& chunk_it,
+                                        PaintChunkIterator end_chunk,
                                         const gfx::Rect* additional_cull_rect) {
-  for (auto it = chunks.begin(); it != chunks.end(); ++it) {
-    const auto& chunk = *it;
-    if (chunk.effectively_invisible)
+  for (; chunk_it != end_chunk; ++chunk_it) {
+    const auto& chunk = *chunk_it;
+    if (chunk.effectively_invisible) {
       continue;
-    const auto& chunk_state = chunk.properties;
-    bool switched_to_chunk_state = false;
+    }
+
+    PropertyTreeState chunk_state = chunk.properties.Unalias();
+    if (!HasDrawing(chunk_it, chunk_state)) {
+      continue;
+    }
+
+    TranslateForLayerOffsetOnce();
+    chunk_to_layer_mapper_.SwitchToChunkWithState(chunk, chunk_state);
 
     if (additional_cull_rect) {
-      // `SwitchToChunkState` will also update `chunk_to_layer_mapper_`'s chunk
-      // but we need to explicitly switch the state ahead of time to ensure the
-      // call to `chunk_to_layer_mapper_.MapVisualRect` uses the correct state.
-      chunk_to_layer_mapper_.SwitchToChunk(chunk);
       gfx::Rect chunk_visual_rect =
           chunk_to_layer_mapper_.MapVisualRect(chunk.drawable_bounds);
       if (additional_cull_rect &&
@@ -790,14 +1010,43 @@ void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks,
       }
     }
 
-    for (const auto& item : it.DisplayItems()) {
+    ScrollTranslationAction action = SwitchToEffect(chunk_state.Effect());
+    if (!action) {
+      action = SwitchToClip(chunk_state.Clip());
+    }
+    if (!action) {
+      action = SwitchToTransform(chunk_state.Transform());
+    }
+    if (action.type == ScrollTranslationAction::kStart) {
+      CHECK(action.scroll_translation_to_start);
+      EmitDrawScrollingContentsOp(chunk_it, end_chunk,
+                                  *action.scroll_translation_to_start);
+      // Now chunk_it points to the last chunk in the scrolling contents.
+      // We need to continue with the chunk in the next loop in case switching
+      // to the chunk state hasn't finished in EmitDrawScrollingContentsOp.
+      // The following line neutralize the ++chunk_it in the `for` statement.
+      --chunk_it;
+      continue;
+    }
+    if (action.type == ScrollTranslationAction::kEnd) {
+      if (outer_state_stack_top_) {
+        // Return to the calling EmitDrawScrollingContentsOp().
+        return;
+      } else {
+        // TODO(crbug.com/40558824): This can happen when we encounter a
+        // clip hierarchy issue. We have to continue.
+      }
+    }
+
+    for (const auto& item : chunk_it.DisplayItems()) {
       PaintRecord record;
-      if (auto* scrollbar = DynamicTo<ScrollbarDisplayItem>(item))
+      if (auto* scrollbar = DynamicTo<ScrollbarDisplayItem>(item)) {
         record = scrollbar->Paint();
-      else if (auto* drawing = DynamicTo<DrawingDisplayItem>(item))
+      } else if (auto* drawing = DynamicTo<DrawingDisplayItem>(item)) {
         record = drawing->GetPaintRecord();
-      else
+      } else {
         continue;
+      }
 
       // If we have an empty paint record, then we would prefer ignoring it.
       // However, if we also have a non-root effect, the empty paint record
@@ -808,11 +1057,6 @@ void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks,
           &chunk_state.Effect() == &EffectPaintPropertyNode::Root();
       if (record.empty() && can_ignore_record) {
         continue;
-      }
-
-      if (!switched_to_chunk_state) {
-        SwitchToChunkState(chunk);
-        switched_to_chunk_state = true;
       }
 
       gfx::Rect visual_rect =
@@ -829,17 +1073,11 @@ void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks,
       result_.EndPaintOfUnpaired(visual_rect);
     }
 
-    // If we have an empty paint chunk, then we would prefer ignoring it.
-    // However, a reference filter can generate visible effect from invisible
-    // source, and we need to emit paint operations for it.
-    if (!switched_to_chunk_state && &chunk_state.Effect() != current_effect_)
-      SwitchToChunkState(chunk);
-
     // Most effects apply to drawable contents only. Reference filters are
     // exceptions, for which we have already added the chunk bounds mapped
     // through the filter to the bounds of the effect in StartEffect().
     UpdateEffectBounds(gfx::RectF(chunk.drawable_bounds),
-                       chunk_state.Transform().Unalias());
+                       chunk_state.Transform());
   }
 }
 
@@ -861,10 +1099,10 @@ void PaintChunksToCcLayer::ConvertInto(
     PaintOpBufferExt buffer;
     ConversionContext(layer_state, layer_offset, buffer).Convert(chunks);
     recorder.getRecordingCanvas()->drawPicture(buffer.ReleaseAsRecord());
-    params.tracking->CheckUnderInvalidations(
-        params.debug_name, recorder.finishRecordingAsPicture(),
-        params.interest_rect);
-    auto under_invalidation_record = params.tracking->UnderInvalidationRecord();
+    params.tracking.CheckUnderInvalidations(params.debug_name,
+                                            recorder.finishRecordingAsPicture(),
+                                            params.interest_rect);
+    auto under_invalidation_record = params.tracking.UnderInvalidationRecord();
     if (!under_invalidation_record.empty()) {
       cc_list.StartPaint();
       cc_list.push<cc::DrawRecordOp>(std::move(under_invalidation_record));
@@ -884,6 +1122,22 @@ PaintRecord PaintChunksToCcLayer::Convert(const PaintChunkSubset& chunks,
 
 namespace {
 
+struct NonCompositedScroll {
+  DISALLOW_NEW();
+
+ public:
+  Member<const TransformPaintPropertyNode> scroll_translation;
+  // The hit-testable rect of the scroller in the layer space.
+  gfx::Rect layer_hit_test_rect;
+  // Accumulated hit test opaqueness of a) the scroller itself and b)
+  // contents after the scroller intersecting layer_hit_test_rect.
+  // If it's kMixed, scroll in some areas in the layer can't reliably scroll
+  // `scroll_translation`.
+  cc::HitTestOpaqueness hit_test_opaqueness;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(scroll_translation); }
+};
+
 class LayerPropertiesUpdater {
   STACK_ALLOCATED();
 
@@ -897,7 +1151,9 @@ class LayerPropertiesUpdater {
         layer_(layer),
         chunks_(chunks),
         layer_selection_(layer_selection),
-        selection_only_(selection_only) {}
+        selection_only_(selection_only),
+        layer_scroll_translation_(
+            layer_state.Transform().NearestScrollTranslationNode()) {}
 
   void Update();
 
@@ -905,7 +1161,13 @@ class LayerPropertiesUpdater {
   TouchAction ShouldDisableCursorControl();
   void UpdateTouchActionRegion(const HitTestData&);
   void UpdateWheelEventRegion(const HitTestData&);
-  void UpdateScrollHitTestData(DisplayItem::Type, const HitTestData&);
+
+  void UpdateScrollHitTestData(const PaintChunk&);
+  void AddNonCompositedScroll(const PaintChunk&);
+  const TransformPaintPropertyNode& TopNonCompositedScroll(
+      const TransformPaintPropertyNode&) const;
+  void UpdatePreviousNonCompositedScrolls(const PaintChunk&);
+
   void UpdateForNonCompositedScrollbar(const ScrollbarDisplayItem&);
   void UpdateRegionCaptureData(const RegionCaptureData&);
   gfx::Point MapSelectionBoundPoint(const gfx::Point&) const;
@@ -918,14 +1180,23 @@ class LayerPropertiesUpdater {
   const PaintChunkSubset& chunks_;
   cc::LayerSelection& layer_selection_;
   bool selection_only_;
+  const TransformPaintPropertyNode& layer_scroll_translation_;
 
   cc::TouchActionRegion touch_action_region_;
   TouchAction last_disable_cursor_control_ = TouchAction::kNone;
   const ScrollPaintPropertyNode* last_disable_cursor_control_scroll_ = nullptr;
 
   cc::Region wheel_event_region_;
-  cc::Region non_fast_scrollable_region_;
+  cc::Region main_thread_scroll_hit_test_region_;
   viz::RegionCaptureBounds capture_bounds_;
+
+  // Top-level (i.e., non-nested) non-composited scrolls. Nested non-composited
+  // scrollers will force the containing top non-composited scroller to hit test
+  // on the main thread, to avoid the complexity and cost of mapping the scroll
+  // hit test rect of nested scroller to the layer space, especially when the
+  // parent scroller scrolls. TODO(crbug.com/359279553): Investigate if we can
+  // optimize this.
+  HeapVector<NonCompositedScroll, 4> top_non_composited_scrolls_;
 };
 
 TouchAction LayerPropertiesUpdater::ShouldDisableCursorControl() {
@@ -987,9 +1258,8 @@ void LayerPropertiesUpdater::UpdateWheelEventRegion(
   }
 }
 
-void LayerPropertiesUpdater::UpdateScrollHitTestData(
-    DisplayItem::Type type,
-    const HitTestData& hit_test_data) {
+void LayerPropertiesUpdater::UpdateScrollHitTestData(const PaintChunk& chunk) {
+  const HitTestData& hit_test_data = *chunk.hit_test_data;
   if (hit_test_data.scroll_hit_test_rect.IsEmpty()) {
     return;
   }
@@ -1011,18 +1281,161 @@ void LayerPropertiesUpdater::UpdateScrollHitTestData(
     }
   }
 
+  if (RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled() &&
+      hit_test_data.scroll_translation) {
+    CHECK_EQ(chunk.id.type, DisplayItem::Type::kScrollHitTest);
+    AddNonCompositedScroll(chunk);
+    return;
+  }
+
   gfx::Rect rect =
       chunk_to_layer_mapper_.MapVisualRect(hit_test_data.scroll_hit_test_rect);
   if (rect.IsEmpty()) {
     return;
   }
-  non_fast_scrollable_region_.Union(rect);
+  main_thread_scroll_hit_test_region_.Union(rect);
 
   // The scroll hit test rect of scrollbar or resizer also contributes to the
   // touch action region.
-  if (type == DisplayItem::Type::kScrollbarHitTest ||
-      type == DisplayItem::Type::kResizerScrollHitTest) {
+  if (chunk.id.type == DisplayItem::Type::kScrollbarHitTest ||
+      chunk.id.type == DisplayItem::Type::kResizerScrollHitTest) {
     touch_action_region_.Union(TouchAction::kNone, rect);
+  }
+}
+
+const TransformPaintPropertyNode&
+LayerPropertiesUpdater::TopNonCompositedScroll(
+    const TransformPaintPropertyNode& scroll_translation) const {
+  const auto* node = &scroll_translation;
+  do {
+    const auto* parent = node->ParentScrollTranslationNode();
+    if (parent == &layer_scroll_translation_) {
+      return *node;
+    }
+    node = parent;
+  } while (node);
+  // TODO(crbug.com/40558824): Abnormal hierarchy.
+  return scroll_translation;
+}
+
+void LayerPropertiesUpdater::AddNonCompositedScroll(const PaintChunk& chunk) {
+  DCHECK(RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled());
+  const auto& scroll_translation = *chunk.hit_test_data->scroll_translation;
+  const auto& top_scroll = TopNonCompositedScroll(scroll_translation);
+  if (&top_scroll == &scroll_translation) {
+    auto hit_test_opaqueness = chunk.hit_test_opaqueness;
+    if (hit_test_opaqueness == cc::HitTestOpaqueness::kOpaque &&
+        !chunk_to_layer_mapper_.ClipRect().IsTight()) {
+      hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
+    }
+    top_non_composited_scrolls_.emplace_back(
+        &scroll_translation,
+        chunk_to_layer_mapper_.MapVisualRect(
+            chunk.hit_test_data->scroll_hit_test_rect),
+        hit_test_opaqueness);
+  } else {
+    // A top non-composited scroller with nested non-composited scrollers is
+    // forced to be non-fast.
+    for (auto& scroll : top_non_composited_scrolls_) {
+      if (scroll.scroll_translation == &top_scroll) {
+        scroll.hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
+        break;
+      }
+    }
+  }
+}
+
+// Updates hit_test_opaqueness on previous non-composited scrollers to be
+// HitTestOpaqueness::kMixed if the chunk is hit testable and overlaps.
+// Hit tests in these cases cannot be handled on the compositor thread.
+void LayerPropertiesUpdater::UpdatePreviousNonCompositedScrolls(
+    const PaintChunk& chunk) {
+  if (top_non_composited_scrolls_.empty()) {
+    return;
+  }
+  DCHECK(RuntimeEnabledFeatures::FastNonCompositedScrollHitTestEnabled());
+
+  if (chunk.hit_test_data && chunk.hit_test_data->scroll_translation) {
+    // ScrollHitTest has been handled in AddNonCompositedScroll().
+    return;
+  }
+
+  if (chunk.hit_test_opaqueness == cc::HitTestOpaqueness::kTransparent) {
+    return;
+  }
+
+  const auto* scroll_translation =
+      &chunk.properties.Transform().Unalias().NearestScrollTranslationNode();
+  if (scroll_translation == &layer_scroll_translation_) {
+    // The new chunk is not scrollable in the layer. Any previous scroller
+    // intersecting with the new chunk will need main thread hit test.
+    gfx::Rect chunk_hit_test_rect =
+        chunk_to_layer_mapper_.MapVisualRect(chunk.bounds);
+    for (auto& previous_scroll : base::Reversed(top_non_composited_scrolls_)) {
+      if (previous_scroll.layer_hit_test_rect.Intersects(chunk_hit_test_rect)) {
+        previous_scroll.hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
+      }
+      if (previous_scroll.layer_hit_test_rect.Contains(chunk_hit_test_rect)) {
+        break;
+      }
+    }
+    return;
+  }
+
+  const auto& top_scroll = TopNonCompositedScroll(*scroll_translation);
+  if (&top_scroll != scroll_translation) {
+    // The chunk is under a nested non-composited scroller. We should have
+    // forced or will force the top scroll to be non-fast, so we don't need
+    // to do anything here.
+    return;
+  }
+  // The chunk is in the scrolling contents of a top non-composited scroller.
+  // Find the scroller. Normally the loop runs only one iteration, unless the
+  // scrolling contents of the scroller interlace with other scrollers.
+  NonCompositedScroll* non_composited_scroll = nullptr;
+  for (auto& previous_scroll : base::Reversed(top_non_composited_scrolls_)) {
+    if (previous_scroll.scroll_translation == scroll_translation) {
+      non_composited_scroll = &previous_scroll;
+      break;
+    }
+  }
+  if (!non_composited_scroll) {
+    // The chunk appears before the ScrollHitTest chunk of top_scroll.
+    // The chunk's hit-test status doesn't matter because it will be covered
+    // by the future ScrollHitTest.
+    return;
+  }
+  if (non_composited_scroll->hit_test_opaqueness ==
+      cc::HitTestOpaqueness::kTransparent) {
+    // non_composited_scroll has pointer-events:none but the chunk is
+    // hit-testable.
+    non_composited_scroll->hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
+  }
+  if (non_composited_scroll->hit_test_opaqueness ==
+      cc::HitTestOpaqueness::kMixed) {
+    // non_composited_scroll will generate a rect in
+    // main_thread_scroll_hit_test_region_ which will disable all fast scroll
+    // in the area, so no need to check overlap with other scrollers.
+    return;
+  }
+
+  // Assume the chunk can appear anywhere in non_composited_scroll, so use
+  // non_composited_scroll->layer_hit_test_rect to check overlap.
+  const gfx::Rect& hit_test_rect = non_composited_scroll->layer_hit_test_rect;
+  // This is the same as the loop under '== &layer_scroll_translation_` but
+  // stops at scroll_translation. Normally this loop is no-op, unless the
+  // scrolling contents of the scroller interlace with other scrollers
+  // (which will be tested overlap with the hit_test_rect).
+  for (auto& previous_scroll : base::Reversed(top_non_composited_scrolls_)) {
+    if (previous_scroll.scroll_translation == scroll_translation) {
+      break;
+    }
+    if (previous_scroll.layer_hit_test_rect.Intersects(hit_test_rect)) {
+      previous_scroll.hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
+    }
+    if (previous_scroll.layer_hit_test_rect.Contains(hit_test_rect)) {
+      break;
+    }
   }
 }
 
@@ -1052,14 +1465,14 @@ void LayerPropertiesUpdater::UpdateForNonCompositedScrollbar(
   if (rect.IsEmpty()) {
     return;
   }
-  non_fast_scrollable_region_.Union(rect);
+  main_thread_scroll_hit_test_region_.Union(rect);
   touch_action_region_.Union(TouchAction::kNone, rect);
 }
 
 void LayerPropertiesUpdater::UpdateRegionCaptureData(
     const RegionCaptureData& region_capture_data) {
   for (const std::pair<RegionCaptureCropId, gfx::Rect>& pair :
-       region_capture_data) {
+       region_capture_data.map) {
     capture_bounds_.Set(pair.first.value(),
                         chunk_to_layer_mapper_.MapVisualRect(pair.second));
   }
@@ -1103,8 +1516,9 @@ void LayerPropertiesUpdater::Update() {
     const PaintChunk& chunk = *it;
     const auto* non_composited_scrollbar =
         NonCompositedScrollbarDisplayItem(it, layer_);
-    if ((!selection_only_ && (chunk.hit_test_data || non_composited_scrollbar ||
-                              chunk.region_capture_data)) ||
+    if ((!selection_only_ &&
+         (chunk.hit_test_data || non_composited_scrollbar ||
+          chunk.region_capture_data || !top_non_composited_scrolls_.empty())) ||
         chunk.layer_selection_data) {
       chunk_to_layer_mapper_.SwitchToChunk(chunk);
     }
@@ -1112,8 +1526,9 @@ void LayerPropertiesUpdater::Update() {
       if (chunk.hit_test_data) {
         UpdateTouchActionRegion(*chunk.hit_test_data);
         UpdateWheelEventRegion(*chunk.hit_test_data);
-        UpdateScrollHitTestData(chunk.id.type, *chunk.hit_test_data);
+        UpdateScrollHitTestData(chunk);
       }
+      UpdatePreviousNonCompositedScrolls(chunk);
       if (non_composited_scrollbar) {
         UpdateForNonCompositedScrollbar(*non_composited_scrollbar);
       }
@@ -1131,8 +1546,22 @@ void LayerPropertiesUpdater::Update() {
   if (!selection_only_) {
     layer_.SetTouchActionRegion(std::move(touch_action_region_));
     layer_.SetWheelEventRegion(std::move(wheel_event_region_));
-    layer_.SetNonFastScrollableRegion(std::move(non_fast_scrollable_region_));
     layer_.SetCaptureBounds(std::move(capture_bounds_));
+
+    std::vector<cc::ScrollHitTestRect> non_composited_scroll_hit_test_rects;
+    for (const auto& scroll : top_non_composited_scrolls_) {
+      if (scroll.hit_test_opaqueness == cc::HitTestOpaqueness::kMixed) {
+        main_thread_scroll_hit_test_region_.Union(scroll.layer_hit_test_rect);
+      } else if (scroll.hit_test_opaqueness == cc::HitTestOpaqueness::kOpaque) {
+        non_composited_scroll_hit_test_rects.emplace_back(
+            scroll.scroll_translation->ScrollNode()->GetCompositorElementId(),
+            scroll.layer_hit_test_rect);
+      }
+    }
+    layer_.SetMainThreadScrollHitTestRegion(
+        std::move(main_thread_scroll_hit_test_region_));
+    layer_.SetNonCompositedScrollHitTestRects(
+        std::move(non_composited_scroll_hit_test_rects));
   }
 
   if (any_selection_was_painted) {
@@ -1165,3 +1594,7 @@ void PaintChunksToCcLayer::UpdateLayerProperties(
 }
 
 }  // namespace blink
+
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::StateEntry)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::EffectBoundsInfo)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::NonCompositedScroll)

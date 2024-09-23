@@ -78,4 +78,9 @@ interface CertDatabase {
     string extension_id,
     array<CertInfo> cert_infos
   );
+
+  // Lacros calls this to notify Ash about a new PKCS#12 file that was
+  // dual-written into NSS software slot and Chaps.
+  [MinVersion=5]
+  OnPkcs12CertDualWritten@4();
 };

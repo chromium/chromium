@@ -4,6 +4,9 @@
 
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
@@ -39,8 +42,8 @@ class DataPipeDrainerTest : public testing::Test,
   ScopedDataPipeProducerHandle producer_handle_;
   base::RepeatingClosure completion_callback_;
 
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
-    data_.append(static_cast<const char*>(data), num_bytes);
+  void OnDataAvailable(base::span<const uint8_t> data) override {
+    data_.append(base::as_string_view(data));
   }
 
   void OnDataComplete() override { completion_callback_.Run(); }
@@ -57,9 +60,11 @@ TEST_F(DataPipeDrainerTest, TestCompleteIsCalledOnce) {
     EXPECT_FALSE(had_data_complete);
     had_data_complete = true;
   });
-  uint32_t size = 5;
+  size_t bytes_written = 0;
   EXPECT_EQ(MOJO_RESULT_OK, producer_handle_->WriteData(
-                                "hello", &size, MOJO_WRITE_DATA_FLAG_NONE));
+                                base::byte_span_from_cstring("hello"),
+                                MOJO_WRITE_DATA_FLAG_NONE, bytes_written));
+  EXPECT_EQ(bytes_written, 5u);
   base::RunLoop().RunUntilIdle();
   producer_handle_.reset();
   base::RunLoop().RunUntilIdle();

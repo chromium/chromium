@@ -1,6 +1,11 @@
 #ifndef _LIBCPP_CONFIG_SITE
 #define _LIBCPP_CONFIG_SITE
 
+// Dynamic libc++ configuration macros are in
+// build/config/libc++:runtime_library. This file only has defines
+// that are constant across platforms, or easily set via preprocessor checks.
+// Things that are set depending on GN args are not here.
+
 // We set a custom _LIBCPP_ABI_NAMESPACE for the following reasons:
 //
 // 1. When libcxx_is_shared is true, symbols from libc++.so are exported for all
@@ -12,6 +17,7 @@
 //    limit for PDBs (https://crbug.com/1327710#c5). To fix this, we set
 //    _LIBCPP_ABI_NAMESPACE to a shorter value.
 #define _LIBCPP_ABI_NAMESPACE __Cr
+
 #define _LIBCPP_ABI_VERSION 2
 
 /* #undef _LIBCPP_ABI_FORCE_ITANIUM */
@@ -39,14 +45,12 @@
 // TODO(thakis): Is this right?
 /* #undef _LIBCPP_HAS_NO_TIME_ZONE_DATABASE */
 
-#define _LIBCPP_INSTRUMENTED_WITH_ASAN
-
 // PSTL backends
-/* #undef _LIBCPP_PSTL_CPU_BACKEND_SERIAL */
+/* #undef _LIBCPP_PSTL_BACKEND_SERIAL */
 #if defined(__APPLE__)
-#define _LIBCPP_PSTL_CPU_BACKEND_LIBDISPATCH
+#define _LIBCPP_PSTL_BACKEND_LIBDISPATCH
 #else
-#define _LIBCPP_PSTL_CPU_BACKEND_THREAD
+#define _LIBCPP_PSTL_BACKEND_STD_THREAD
 #endif
 
 // Settings below aren't part of __config_site upstream.
@@ -59,8 +63,6 @@
 // does not match ours.  Only has an effect on Windows.
 #define _LIBCPP_NO_AUTO_LINK
 
-#define _LIBCPP_REMOVE_TRANSITIVE_INCLUDES
-
 // Don't add ABI tags to libc++ symbols. ABI tags increase mangled name sizes.
 // This only exists to allow multiple // libc++ versions to be linked into a
 // binary, which Chrome doesn't do.
@@ -70,14 +72,5 @@
 // function because by default, this macro will does not call the verbose
 // termination function on Apple platforms.
 #define _LIBCPP_VERBOSE_ABORT(...) ::std::__libcpp_verbose_abort(__VA_ARGS__)
-
-// TODO(crbug.com/1455923) Link against compiler-rt's builtins library to
-// enable 128-arithmetic.
-#if defined(_WIN32)
-#define _LIBCPP_HAS_NO_INT128
-#endif
-
-// TODO(thakis): Remove this after LLVM 19's libc++ is rolled in.
-#define _LIBCPP_CHAR_TRAITS_REMOVE_BASE_SPECIALIZATION
 
 #endif // _LIBCPP_CONFIG_SITE

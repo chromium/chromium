@@ -247,7 +247,6 @@ arc::mojom::RawIconPngDataPtr FakeAppInstance::GetFakeIcon(
       break;
     default:
       NOTREACHED();
-      return nullptr;
   }
 
   base::FilePath base_path;
@@ -462,11 +461,6 @@ void FakeAppInstance::StartPaiFlow(StartPaiFlowCallback callback) {
 void FakeAppInstance::StartFastAppReinstallFlow(
     const std::vector<std::string>& package_names) {
   ++start_fast_app_reinstall_request_count_;
-}
-
-void FakeAppInstance::RequestAssistStructure(
-    RequestAssistStructureCallback callback) {
-  std::move(callback).Run(nullptr, nullptr);
 }
 
 void FakeAppInstance::IsInstallable(const std::string& package_name,

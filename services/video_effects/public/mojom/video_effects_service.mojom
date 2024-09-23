@@ -1,0 +1,40 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module video_effects.mojom;
+
+import "media/capture/mojom/video_effects_manager.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+import "services/video_effects/public/mojom/video_effects_processor.mojom";
+import "services/viz/public/mojom/gpu.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
+
+// Entry point to the Video Effects Service API.
+// This interface is intended to be hosted in the Video Effects utility
+// process. The Browser process uses this to create video effect processors
+// and broker the created processors to the Video Capture Service.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+interface VideoEffectsService {
+  // Creates a Video Effects Processor whose effects configuration will be
+  // managed by the passed in `manager`. Note that the created processor will
+  // be bound to `processor`. This is done so that the caller can create both
+  // ends of the pipe for `VideoEffectsProcessor` & send the receiver to Video
+  // Effects Service, and the remote to Video Capture Service.
+  // The `device_id` is a string that uniquely identifies the device for which
+  // the processor is being created. If the service has already created a
+  // processor for a given device id, subsequent attempts to create one will
+  // fail. The `gpu` allows Video Effects Processor to communicate with the GPU
+  // process for all its acceleration needs.
+  // In case of failure, the remote end of the `processor` will be
+  // disconnected.
+  CreateEffectsProcessor(
+    string device_id,
+    pending_remote<viz.mojom.Gpu> gpu,
+    pending_remote<media.mojom.VideoEffectsManager> manager,
+    pending_receiver<VideoEffectsProcessor> processor);
+
+  // Passes a file containing the background segmentation model to be used by
+  // all Video Effects Processors created by this service.
+  SetBackgroundSegmentationModel(mojo_base.mojom.ReadOnlyFile model_file);
+};

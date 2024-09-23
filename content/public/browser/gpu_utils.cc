@@ -5,6 +5,7 @@
 #include "content/public/browser/gpu_utils.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -28,6 +29,7 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/gfx/switches.h"
+#include "ui/gl/gl_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
@@ -42,7 +44,7 @@ void KillGpuProcessImpl(content::GpuProcessHost* host) {
 }
 
 bool GetUintFromSwitch(const base::CommandLine* command_line,
-                       const base::StringPiece& switch_string,
+                       const std::string_view& switch_string,
                        uint32_t* value) {
   std::string switch_value(command_line->GetSwitchValueASCII(switch_string));
   return base::StringToUint(switch_value, value);
@@ -81,7 +83,8 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
       !command_line->HasSwitch(switches::kDisableNv12DxgiVideo);
 #endif
   gpu_preferences.disable_software_rasterizer =
-      command_line->HasSwitch(switches::kDisableSoftwareRasterizer);
+      command_line->HasSwitch(switches::kDisableSoftwareRasterizer) ||
+      !features::IsSwiftShaderAllowed(command_line);
   gpu_preferences.log_gpu_control_list_decisions =
       command_line->HasSwitch(switches::kLogGpuControlListDecisions);
   gpu_preferences.gpu_startup_dialog =
@@ -129,36 +132,6 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
 
   gpu_preferences.enable_native_gpu_memory_buffers =
       command_line->HasSwitch(switches::kEnableNativeGpuMemoryBuffers);
-
-#if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  // The direct VideoDecoder is disallowed on some particular SoC/platforms.
-  const bool should_use_direct_video_decoder =
-#if BUILDFLAG(USE_VAAPI)
-      true;
-#else
-      base::FeatureList::IsEnabled(media::kUseChromeOSDirectVideoDecoder);
-#endif  // BUILDFLAG(USE_VAAPI)
-
-  gpu_preferences.enable_chromeos_direct_video_decoder =
-#if BUILDFLAG(USE_VAAPI)
-      should_use_direct_video_decoder;
-#else
-      // For testing purposes, the following flag allows using the "other" video
-      // decoder implementation.
-      base::FeatureList::IsEnabled(
-          media::kUseAlternateVideoDecoderImplementation)
-          ? !should_use_direct_video_decoder
-          : should_use_direct_video_decoder;
-#endif  // BUILDFLAG(USE_VAAPI)
-
-#if BUILDFLAG(USE_VAAPI)
-  CHECK(gpu_preferences.enable_chromeos_direct_video_decoder);
-#endif  // BUILDFLAG(USE_VAAPI)
-#else   // !BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  gpu_preferences.enable_chromeos_direct_video_decoder = false;
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
   gpu_preferences.disable_oopr_debug_crash_dump =

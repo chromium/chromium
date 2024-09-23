@@ -17,7 +17,11 @@
           ]
         },
         "prefs": {
-          "profile.managed_notifications_blocked_for_urls": {}
+          "profile.managed_notifications_blocked_for_urls": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
         }
       }
     ]

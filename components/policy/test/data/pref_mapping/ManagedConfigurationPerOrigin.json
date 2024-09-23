@@ -20,7 +20,15 @@
           ]
         },
         "prefs": {
-          "profile.managed_configuration.list": {}
+          "profile.managed_configuration.list": {
+            "value": [
+              {
+                "managed_configuration_hash": "13ej89asjd1asdad",
+                "managed_configuration_url": "https://example.com/conf.json",
+                "origin": "https://example.com"
+              }
+            ]
+          }
         }
       }
     ]

@@ -11,10 +11,12 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
@@ -53,6 +55,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/cloud_devices/common/cloud_device_description.h"
 #include "components/cloud_devices/common/printer_description.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/common/cloud_print_cdd_conversion.h"
 #include "components/url_formatter/url_formatter.h"
@@ -72,7 +75,7 @@
 #include "third_party/icu/source/i18n/unicode/ulocdata.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/data_protection/print_utils.h"
 #if BUILDFLAG(IS_MAC)
 #include "chrome/grit/generated_resources.h"
@@ -85,10 +88,12 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ui/webui/print_preview/extension_printer_handler_adapter_ash.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -120,7 +125,7 @@ mojom::PrinterType GetPrinterTypeForUserAction(UserActionBuckets user_action) {
     case UserActionBuckets::kOpenInMacPreview:
       return mojom::PrinterType::kLocal;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -234,7 +239,7 @@ UserActionBuckets DetermineUserAction(const base::Value::Dict& settings) {
     case mojom::PrinterType::kLocal:
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   if (settings.FindBool(kSettingShowSystemDialog).value_or(false))
@@ -730,7 +735,6 @@ void PrintPreviewHandler::HandleDoPrint(const base::Value::List& args) {
     return;
   }
   DCHECK(data->size());
-  DCHECK(data->front());
 
   // After validating |settings|, record metrics.
   const mojom::RequestPrintPreviewParams* request_params = GetRequestParams();
@@ -746,7 +750,7 @@ void PrintPreviewHandler::HandleDoPrint(const base::Value::List& args) {
   }
   ReportUserActionHistogram(user_action);
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   std::string device_name = *settings.FindString(kSettingDeviceName);
 
   using enterprise_data_protection::PrintScanningContext;
@@ -780,10 +784,10 @@ void PrintPreviewHandler::HandleDoPrint(const base::Value::List& args) {
 
 #else
   FinishHandleDoPrint(user_action, std::move(settings), data, callback_id);
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 }
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 void PrintPreviewHandler::OnVerdictByEnterprisePolicy(
     UserActionBuckets user_action,
     base::Value::Dict settings,
@@ -800,7 +804,7 @@ void PrintPreviewHandler::OnVerdictByEnterprisePolicy(
 void PrintPreviewHandler::OnHidePreviewDialog() {
   print_preview_ui()->OnHidePreviewDialog();
 }
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 void PrintPreviewHandler::FinishHandleDoPrint(
     UserActionBuckets user_action,
@@ -980,7 +984,7 @@ void PrintPreviewHandler::SendInitialSettings(
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   initial_settings.Set(kIsInKioskAutoPrintMode,
                        cmdline->HasSwitch(switches::kKioskModePrinting));
-  initial_settings.Set(kIsInAppKioskMode, chrome::IsRunningInForcedAppMode());
+  initial_settings.Set(kIsInAppKioskMode, IsRunningInForcedAppMode());
   const std::string rules_str =
       prefs->GetString(prefs::kPrintPreviewDefaultDestinationSelectionRules);
   if (rules_str.empty()) {
@@ -1162,6 +1166,18 @@ void PrintPreviewHandler::ClearInitiatorDetails() {
 PrinterHandler* PrintPreviewHandler::GetPrinterHandler(
     mojom::PrinterType printer_type) {
   if (printer_type == mojom::PrinterType::kExtension) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // When Lacros is enabled, uses the ExtensionPrinterHandlerAdapterAsh to
+    // talk to Lacros's extension printers.
+    if (ash::features::IsLacrosExtensionPrintingEnabled() &&
+        crosapi::browser_util::IsLacrosEnabled()) {
+      if (!extension_printer_handler_adapter_) {
+        extension_printer_handler_adapter_ =
+            std::make_unique<ExtensionPrinterHandlerAdapterAsh>();
+      }
+      return extension_printer_handler_adapter_.get();
+    }
+#endif
     if (!extension_printer_handler_) {
       extension_printer_handler_ = PrinterHandler::CreateForExtensionPrinters(
           Profile::FromWebUI(web_ui()));
@@ -1183,7 +1199,7 @@ PrinterHandler* PrintPreviewHandler::GetPrinterHandler(
     }
     return local_printer_handler_.get();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PdfPrinterHandler* PrintPreviewHandler::GetPdfPrinterHandler() {
@@ -1238,16 +1254,14 @@ void PrintPreviewHandler::BadMessageReceived() {
       GetInitiator()->GetPrimaryMainFrame()->GetProcess(),
       bad_message::BadMessageReason::PPH_EXTRA_PREVIEW_MESSAGE);
 #if DCHECK_IS_ON()
-  // TODO(crbug.com/1371776): Remove this once the bug is fixed.
+  // TODO(crbug.com/40870686): Remove this once the bug is fixed.
   base::debug::StackTrace().Print();
 #endif
 }
 
 void PrintPreviewHandler::FileSelectedForTesting(const base::FilePath& path,
-                                                 int index,
-                                                 void* params) {
-  GetPdfPrinterHandler()->FileSelected(ui::SelectedFileInfo(path), index,
-                                       params);
+                                                 int index) {
+  GetPdfPrinterHandler()->FileSelected(ui::SelectedFileInfo(path), index);
 }
 
 void PrintPreviewHandler::SetPdfSavedClosureForTesting(

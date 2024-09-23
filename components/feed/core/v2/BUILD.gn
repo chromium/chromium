@@ -173,6 +173,7 @@ if (use_blink) {
       "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//third_party/zlib/google:compression_utils",
+      "//ui/base:base",
     ]
 
     public_deps = [
@@ -256,6 +257,7 @@ if (use_blink) {
       "//components/prefs:test_support",
       "//components/reading_list/features:flags",
       "//components/search_engines",
+      "//components/search_engines:test_support",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
       "//components/supervised_user/core/common:buildflags",

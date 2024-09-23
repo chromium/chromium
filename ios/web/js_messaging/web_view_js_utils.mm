@@ -68,7 +68,7 @@ std::unique_ptr<base::Value> ValueResultFromWKResult(id wk_result,
     }
     result = std::make_unique<base::Value>(std::move(list));
   } else {
-    NOTREACHED();  // Convert other types as needed.
+    NOTREACHED_IN_MIGRATION();  // Convert other types as needed.
   }
   return result;
 }
@@ -122,7 +122,7 @@ id NSObjectFromValueResult(const base::Value* value_result, int max_depth) {
     }
     result = [array copy];
   } else {
-    NOTREACHED();  // Convert other types as needed.
+    NOTREACHED_IN_MIGRATION();  // Convert other types as needed.
   }
   return result;
 }

@@ -6,6 +6,9 @@
 #define SERVICES_VIZ_PUBLIC_CPP_GPU_GPU_H_
 
 #include <stdint.h>
+
+#include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -60,6 +63,8 @@ class Gpu : public gpu::GpuChannelEstablishFactory {
   scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync() override;
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
 
+  bool gpu_remote_disconnected() { return gpu_remote_disconnected_; }
+
   void LoseChannel();
   scoped_refptr<gpu::GpuChannelHost> GetGpuChannel();
 
@@ -87,6 +92,7 @@ class Gpu : public gpu::GpuChannelEstablishFactory {
   std::unique_ptr<GpuPtrIO, base::OnTaskRunnerDeleter> gpu_;
   scoped_refptr<EstablishRequest> pending_request_;
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
+  bool gpu_remote_disconnected_ = false;
   std::vector<gpu::GpuChannelEstablishedCallback> establish_callbacks_;
 };
 

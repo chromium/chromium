@@ -8,7 +8,8 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
-#include "components/facilitated_payments/core/browser/facilitated_payments_manager.h"
+#include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
 
@@ -29,16 +30,23 @@ class FacilitatedPaymentsDriver {
       delete;
   virtual ~FacilitatedPaymentsDriver();
 
-  // Informs `FacilitatedPaymentsManager` about the finished loading. It is
-  // invoked only for the primary main frame by the platform-specific
-  // implementation.
-  void DidFinishLoad(const GURL& url) const;
+  // Informs `FacilitatedPaymentsManager` that a navigation related event has
+  // taken place. The navigation could be to the currently displayed page, or
+  // away from the currently displayed page. It is invoked only for the primary
+  // main frame by the platform-specific implementation.
+  void DidNavigateToOrAwayFromPage() const;
 
   // Trigger PIX code detection on the page. The `callback` is called after
-  // running PIX code detection and is passed a boolean informing whether or not
-  // a PIX code was found.
+  // running PIX code detection.
   virtual void TriggerPixCodeDetection(
-      base::OnceCallback<void(bool)> callback) const = 0;
+      base::OnceCallback<void(mojom::PixCodeDetectionResult,
+                              const std::string&)> callback) = 0;
+
+  // Inform the `FacilitatedPaymentsManager` about `copied_text` being copied to
+  // the clipboard. It is invoked only for the primary main frame.
+  virtual void OnTextCopiedToClipboard(const GURL& render_frame_host_url,
+                                       const std::u16string& copied_text,
+                                       ukm::SourceId ukm_source_id);
 
  private:
   std::unique_ptr<FacilitatedPaymentsManager> manager_;

@@ -19,11 +19,9 @@ const char kEnrollmentStepWorking[] = "working";
 const char kEnrollmentStepTPMChecking[] = "tpm-checking";
 const char kEnrollmentStepSuccess[] = "success";
 const char kEnrollmentStepDeviceAttributes[] = "attribute-prompt";
-const char kEnrollmentStepADJoin[] = "ad-join";
 const char kEnrollmentStepError[] = "error";
 const char kEnrollmentStepKioskEnrollment[] = "kiosk-enrollment";
 const char kEnrollmentStepDeviceAttributesError[] = "attribute-prompt-error";
-const char kEnrollmentStepADJoinError[] = "active-directory-join-error";
 
 }  // namespace ui
 
@@ -39,10 +37,10 @@ namespace {
 const char kEnrollmentUI[] = "enterprise-enrollment";
 
 const char* const kAllSteps[] = {
-    ui::kEnrollmentStepSignin,      ui::kEnrollmentStepWorking,
-    ui::kEnrollmentStepTPMChecking, ui::kEnrollmentStepDeviceAttributes,
-    ui::kEnrollmentStepSuccess,     ui::kEnrollmentStepADJoin,
-    ui::kEnrollmentStepError,       ui::kEnrollmentStepKioskEnrollment};
+    ui::kEnrollmentStepSignin,         ui::kEnrollmentStepWorking,
+    ui::kEnrollmentStepTPMChecking,    ui::kEnrollmentStepDeviceAttributes,
+    ui::kEnrollmentStepSuccess,        ui::kEnrollmentStepError,
+    ui::kEnrollmentStepKioskEnrollment};
 
 std::string StepElementID(const std::string& step) {
   return "step-" + step;

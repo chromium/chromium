@@ -5,7 +5,7 @@
 var myTabId;
 
 function pageUrl(letter) {
-  return chrome.extension.getURL(letter + ".html");
+  return chrome.runtime.getURL(letter + ".html");
 }
 
 function withTabOnReload(fn) {

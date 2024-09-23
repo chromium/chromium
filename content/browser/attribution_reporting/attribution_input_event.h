@@ -11,6 +11,9 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
+#include <stdint.h>
+
+#include <optional>
 
 #include "base/android/scoped_java_ref.h"
 #endif
@@ -28,8 +31,11 @@ struct CONTENT_EXPORT AttributionInputEvent {
   AttributionInputEvent(AttributionInputEvent&&);
   AttributionInputEvent& operator=(AttributionInputEvent&&);
 
+  bool operator==(const AttributionInputEvent& other) const;
+
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> input_event;
+  std::optional<uint32_t> input_event_id;
 #endif
 };
 

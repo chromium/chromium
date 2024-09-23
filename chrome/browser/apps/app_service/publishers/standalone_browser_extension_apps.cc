@@ -13,13 +13,12 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_restore/app_launch_info.h"
@@ -68,7 +67,7 @@ void StandaloneBrowserExtensionApps::RegisterCrosapiHost(
     mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver) {
   // At the moment the app service publisher will only accept one browser client
   // publishing apps to ash chrome. Any extra clients will be ignored.
-  // TODO(crbug.com/1174246): Support SxS lacros.
+  // TODO(crbug.com/40167449): Support SxS lacros.
   if (receiver_.is_bound()) {
     return;
   }

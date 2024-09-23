@@ -29,7 +29,6 @@
 namespace ui {
 
 struct AXActionData;
-class AXUniqueId;
 
 }  // namespace ui
 
@@ -57,10 +56,9 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   void SetPopupFocusOverride() override;
   void EndPopupFocusOverride() override;
   void FireFocusAfterMenuClose() override;
-  bool IsIgnored() const override;
-  bool IsAccessibilityEnabled() const override;
+  bool GetIsIgnored() const override;
   gfx::NativeViewAccessible GetNativeObject() const override;
-  void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
+  void FireNativeEvent(ax::mojom::Event event_type) override;
 #if BUILDFLAG(IS_MAC)
   void AnnounceTextAs(const std::u16string& text,
                       ui::AXPlatformNode::AnnouncementType announcement_type);
@@ -118,7 +116,7 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   bool IsReadOnlyOrDisabled() const override;
 
   // Also in |ViewAccessibility|.
-  const ui::AXUniqueId& GetUniqueId() const override;
+  ui::AXPlatformNodeId GetUniqueId() const override;
   std::vector<int32_t> GetColHeaderNodeIds() const override;
   std::vector<int32_t> GetColHeaderNodeIds(int col_index) const override;
   std::optional<int32_t> GetCellId(int row_index, int col_index) const override;
@@ -132,6 +130,14 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   // Return the bounds of inline text in this node's coordinate system.
   gfx::RectF GetInlineTextRect(const int start_offset,
                                const int end_offset) const;
+
+  // Return the bounds relative to the container bounds. This functions applies
+  // the horizontal scroll offset and clips the bounds to the container bounds.
+  // TODO(accessibility): Add support for vertical scroll offsets if needed.
+  // There's no known use case for this yet.
+  gfx::RectF RelativeToContainerBounds(
+      const gfx::RectF& bounds,
+      ui::AXOffscreenResult* offscreen_result) const;
 
   AtomicViewAXTreeManager* GetAtomicViewAXTreeManagerForTesting()
       const override;

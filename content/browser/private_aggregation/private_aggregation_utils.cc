@@ -5,14 +5,14 @@
 #include "content/browser/private_aggregation/private_aggregation_utils.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
-#include "content/browser/private_aggregation/private_aggregation_budget_key.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 
 namespace content::private_aggregation {
 
-std::string GetReportingPath(PrivateAggregationBudgetKey::Api api,
+std::string GetReportingPath(PrivateAggregationCallerApi api,
                              bool is_immediate_debug_report) {
   // TODO(alexmt): Consider updating or making a FeatureParam.
   static constexpr char kSharedReportingPathPrefix[] =
@@ -23,12 +23,12 @@ std::string GetReportingPath(PrivateAggregationBudgetKey::Api api,
   static constexpr char kSharedStorageReportingPathSuffix[] =
       "report-shared-storage";
 
-  base::StringPiece api_suffix;
+  std::string_view api_suffix;
   switch (api) {
-    case PrivateAggregationBudgetKey::Api::kProtectedAudience:
+    case PrivateAggregationCallerApi::kProtectedAudience:
       api_suffix = kProtectedAudienceReportingPathSuffix;
       break;
-    case PrivateAggregationBudgetKey::Api::kSharedStorage:
+    case PrivateAggregationCallerApi::kSharedStorage:
       api_suffix = kSharedStorageReportingPathSuffix;
       break;
   }
@@ -38,11 +38,11 @@ std::string GetReportingPath(PrivateAggregationBudgetKey::Api api,
        is_immediate_debug_report ? kDebugReportingPathInfix : "", api_suffix});
 }
 
-std::string GetApiIdentifier(PrivateAggregationBudgetKey::Api api) {
+std::string GetApiIdentifier(PrivateAggregationCallerApi api) {
   switch (api) {
-    case PrivateAggregationBudgetKey::Api::kProtectedAudience:
+    case PrivateAggregationCallerApi::kProtectedAudience:
       return "protected-audience";
-    case PrivateAggregationBudgetKey::Api::kSharedStorage:
+    case PrivateAggregationCallerApi::kSharedStorage:
       return "shared-storage";
   }
 }

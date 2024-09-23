@@ -148,12 +148,19 @@ class ToolbarButton : public views::LabelButton,
   bool GetVectorIconsHasValueForTesting() { return vector_icons_.has_value(); }
 
  protected:
+  struct VectorIcons {
+    // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
+    // global), so there is no benefit to using a raw_ptr, only cost.
+    RAW_PTR_EXCLUSION const gfx::VectorIcon& icon;
+    RAW_PTR_EXCLUSION const gfx::VectorIcon& touch_icon;
+  };
+
   // Returns if menu should be shown. Override this to change default behavior.
   virtual bool ShouldShowMenu();
 
   // Returns if the button inkdrop should persist after the user interacts with
   // IPH for the button. Override this to change default behavior.
-  // TODO(crbug.com/1419653): Investigate if this is still needed and if so how
+  // TODO(crbug.com/40258442): Investigate if this is still needed and if so how
   // it can be applied to all Buttons rather than just ToolbarButtons.
   virtual bool ShouldShowInkdropAfterIphInteraction();
 
@@ -192,6 +199,10 @@ class ToolbarButton : public views::LabelButton,
   // Virtual method to explicitly set the highlighted border color instead of
   // the default behavior of the HighlightColorAnimation.
   virtual std::optional<SkColor> GetHighlightBorderColor() const;
+
+  const std::optional<VectorIcons>& GetVectorIcons() const {
+    return vector_icons_;
+  }
 
   // Sets the spacing on the outer side of the label (not the side where the
   // image is). The spacing is applied only when the label is non-empty.
@@ -270,13 +281,6 @@ class ToolbarButton : public views::LabelButton,
     gfx::SlideAnimation highlight_color_animation_;
   };
 
-  struct VectorIcons {
-    // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
-    // global), so there is no benefit to using a raw_ptr, only cost.
-    RAW_PTR_EXCLUSION const gfx::VectorIcon& icon;
-    RAW_PTR_EXCLUSION const gfx::VectorIcon& touch_icon;
-  };
-
   void TouchUiChanged();
 
   // Clears the current highlight, i.e. it sets the label to an empty string and
@@ -311,7 +315,7 @@ class ToolbarButton : public views::LabelButton,
   const bool trigger_menu_on_long_press_;
 
   // Determines whether to highlight the button for in-product help.
-  // TODO(crbug.com/1419653): Remove this member after issue is addressed.
+  // TODO(crbug.com/40258442): Remove this member after issue is addressed.
   bool has_in_product_help_promo_ = false;
 
   // Y position of mouse when left mouse button is pressed.
@@ -326,13 +330,6 @@ class ToolbarButton : public views::LabelButton,
   // Optional identifier for the menu when it runs.
   ui::ElementIdentifier menu_identifier_;
 
-  // Used to ensure the button remains highlighted while the menu is active.
-  std::optional<Button::ScopedAnchorHighlight> menu_anchor_higlight_;
-
-  // Vector icons for the ToolbarButton. The icon is chosen based on touch-ui.
-  // Reacts to theme changes using default colors.
-  std::optional<VectorIcons> vector_icons_;
-
   // Layout insets to use. This is used when the ToolbarButton is not actually
   // hosted inside the toolbar. If not supplied,
   // |GetLayoutInsets(TOOLBAR_BUTTON)| is used instead which is not appropriate
@@ -341,9 +338,16 @@ class ToolbarButton : public views::LabelButton,
 
   // Delta from regular toolbar-button insets. This is necessary for buttons
   // that use smaller or larger icons than regular ToolbarButton instances.
-  // AvatarToolbarButton for instance uses smaller insets to accommodate for a
-  // larger-than-16dp avatar avatar icon outside of touchable mode.
+  // CastToolbarButton for instance uses larger insets for touchable mode to
+  // match the expected touchable UI.
   gfx::Insets layout_inset_delta_;
+
+  // Used to ensure the button remains highlighted while the menu is active.
+  std::optional<Button::ScopedAnchorHighlight> menu_anchor_higlight_;
+
+  // Vector icons for the ToolbarButton. The icon is chosen based on touch-ui.
+  // Reacts to theme changes using default colors.
+  std::optional<VectorIcons> vector_icons_;
 
   // Class responsible for animating highlight color (calling a callback on
   // |this| to refresh UI).

@@ -8,10 +8,9 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
 import("//components/compose/features.gni")
-import("//components/feed/features.gni")
 import("//components/nacl/features.gni")
 import("//components/safe_browsing/buildflags.gni")
-import("//components/services/screen_ai/buildflags/features.gni")
+import("//components/sharing_message/buildflags.gni")
 import("//components/signin/features.gni")
 import("//components/supervised_user/buildflags.gni")
 import("//crypto/features.gni")
@@ -22,6 +21,7 @@ import("//net/features.gni")
 import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/webui/webui_features.gni")
 
@@ -33,17 +33,12 @@ declare_args() {
   # This is intended for use only in developer builds.
   chrome_enable_logging_by_default = is_debug
 
-  # Platforms where Chrome x509 server certificate enterprise policies are
-  # supported. This must must match the supported_on/future_on list of the
-  # policy in the following policies stored in
-  # components/policy/resources/templates/policy_definitions/:
-  #
-  # * CertificateManagement/CACertificates.yaml
-  # * CertificateManagement/CADistrustedCertificates.yaml
-  # * CertificateManagement/CAHintCertificates.yaml
-  # * CertificateManagement/CAPlatformIntegrationEnabled.yaml
-  #
-  chrome_certificate_policies_supported = is_mac || is_win || is_linux
+  # Platforms for which Chrome supports a certificate management UI that
+  # shows the Chrome Root Store. This is specific to the v2 UI that is
+  # supported on all desktop platforms, as opposed to the v1 UI which is only
+  # supported on platforms using NSS (Linux and CrOS).
+  chrome_root_store_cert_management_ui =
+      is_win || is_mac || is_linux || is_chromeos
 
   # Enables support for background apps.
   enable_background_contents = !is_android
@@ -51,13 +46,6 @@ declare_args() {
 
   # Enables usage of notifications via Chrome's MessageCenter.
   enable_chrome_notifications = is_mac || is_win || is_linux || is_fuchsia
-
-  # Disable Click to Call on Fuchsia.
-  enable_click_to_call = !is_fuchsia
-
-  # Whether to enable the component updater. Code is in
-  # //components/component_updater.
-  enable_component_updater = true
 
   # Hangout services is an extension that adds extra features to Hangouts.
   # It is enableable separately to facilitate testing.
@@ -68,13 +56,6 @@ declare_args() {
   # Enables use of the session service, which is enabled by default.
   # Android stores them separately on the Java side.
   enable_session_service = !is_android
-
-  # Enables usage of the system-provided notification center.
-  enable_system_notifications =
-      is_android || is_mac || is_win || (is_linux && use_dbus) || is_chromeos
-
-  # Indicates if Wayland display server support is enabled.
-  enable_wayland_server = is_chromeos_ash
 
   # Enables the webui certificate viewer dialog.
   enable_webui_certificate_viewer = toolkit_views
@@ -100,13 +81,14 @@ chrome_grit_defines = [
   "enable_openxr=$enable_openxr",
   "enable_printing=$enable_printing",
   "enable_extensions=$enable_extensions",
+  "enable_extensions_core=$enable_extensions_core",
   "enable_hangout_services_extension=$enable_hangout_services_extension",
   "enable_ink=$enable_ink",
+  "enable_pdf_ink2=$enable_pdf_ink2",
   "enable_nacl=$enable_nacl",
   "enable_dice_support=$enable_dice_support",
   "enable_pdf=$enable_pdf",
   "enable_print_preview=$enable_print_preview",
-  "enable_screen_ai_service=$enable_screen_ai_service",
   "enable_supervised_users=$enable_supervised_users",
   "enable_vr=$enable_vr",
   "enable_webui_certificate_viewer=$enable_webui_certificate_viewer",
@@ -114,5 +96,6 @@ chrome_grit_defines = [
   "is_official_build=$is_official_build",
   "safe_browsing_mode=$safe_browsing_mode",
   "optimize_webui=$optimize_webui",
+  "chrome_root_store_cert_management_ui=$chrome_root_store_cert_management_ui",
   "use_nss_certs=$use_nss_certs",
 ]

@@ -175,6 +175,7 @@ void PermissionServiceContext::CreateSubscription(
     const url::Origin& origin,
     PermissionStatus current_status,
     PermissionStatus last_known_status,
+    bool should_include_device_status,
     mojo::PendingRemote<blink::mojom::PermissionObserver> observer) {
   BrowserContext* browser_context = GetBrowserContext();
   if (!browser_context) {
@@ -199,7 +200,7 @@ void PermissionServiceContext::CreateSubscription(
       PermissionControllerImpl::FromBrowserContext(browser_context)
           ->SubscribeToPermissionStatusChange(
               permission_type, render_process_host_, render_frame_host_,
-              requesting_origin,
+              requesting_origin, should_include_device_status,
               base::BindRepeating(
                   &PermissionSubscription::OnPermissionStatusChanged,
                   subscription->GetWeakPtr()));

@@ -23,7 +23,7 @@ namespace ash {
 AppListBubbleEventFilter::AppListBubbleEventFilter(
     views::Widget* bubble_widget,
     views::View* button,
-    base::RepeatingCallback<void()> on_click_outside)
+    OnClickedOutsideCallback on_click_outside)
     : BubbleEventFilter(bubble_widget, button, on_click_outside) {
   CHECK(bubble_widget);
   CHECK(on_click_outside);

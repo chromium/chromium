@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.android_webview.proto.AwVariationsSeedOuterClass.AwVariationsSeed;
 import org.chromium.base.BuildInfo;
@@ -108,7 +107,8 @@ public class VariationsUtils {
             AwVariationsSeed proto = null;
             try {
                 proto = AwVariationsSeed.parseFrom(in);
-            } catch (InvalidProtocolBufferException e) {
+            } catch (Exception e) {
+                // Could be InvalidProtocolBufferException or InvalidStateException (b/324851449).
                 return null;
             }
 

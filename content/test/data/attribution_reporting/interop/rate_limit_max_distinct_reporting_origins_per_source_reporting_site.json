@@ -1,0 +1,136 @@
+{
+  "description": "Max reporting origins per source site and reporting site counts distinct origins",
+  "api_config": {
+    "rate_limit_max_reporting_origins_per_source_reporting_site": "2"
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://a.source.test",
+          "Attribution-Reporting-Eligible": "event-source"
+        },
+        "responses": [
+          {
+            "url": "https://a.reporter.test",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "source_event_id": "111",
+                "destination": "https://destination.test"
+              }
+            }
+          }
+        ]
+      },
+      // Will be registered since the reporting origin is repeated
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://b.source.test",
+          "Attribution-Reporting-Eligible": "event-source"
+        },
+        "responses": [
+          {
+            "url": "https://a.reporter.test",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "source_event_id": "222",
+                "destination": "https://destination.test"
+              }
+            }
+          }
+        ]
+      },
+      // Will be registered since the reporting origin limit is 2
+      {
+        "timestamp": "2000",
+        "registration_request": {
+          "context_origin": "https://b.source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://b.reporter.test",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "source_event_id": "333",
+                "destination": "https://a.destination.test"
+              }
+            }
+          }
+        ]
+      },
+      // Will result in an event level report
+      {
+        "timestamp": "3000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://a.reporter.test",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "2"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      // Will result in an event level report
+      {
+        "timestamp": "4000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://b.reporter.test",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "3"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": {
+           "attribution_destination": "https://destination.test",
+           "randomized_trigger_rate": 0.0024263,
+           "scheduled_report_time": "172802",
+           "source_event_id": "333",
+           "source_type": "navigation",
+           "trigger_data": "3"
+        },
+        "report_time": "172802000",
+        "report_url": "https://b.reporter.test/.well-known/attribution-reporting/report-event-attribution"
+      },
+      {
+        "payload": {
+           "attribution_destination": "https://destination.test",
+           "randomized_trigger_rate": 0.0000025,
+           "scheduled_report_time": "2592001",
+           "source_event_id": "222",
+           "source_type": "event",
+           "trigger_data": "0"
+        },
+        "report_time": "2592001000",
+        "report_url": "https://a.reporter.test/.well-known/attribution-reporting/report-event-attribution"
+      }
+    ]
+  }
+}

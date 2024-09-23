@@ -6,8 +6,8 @@
 #define STORAGE_BROWSER_BLOB_MOJO_BLOB_READER_H_
 
 #include <memory>
-
 #include <optional>
+
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"

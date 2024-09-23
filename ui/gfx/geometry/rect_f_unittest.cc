@@ -111,6 +111,25 @@ TEST(RectFTest, BoundingRect) {
                   BoundingRect(PointF(-4.2f, -6.8f), PointF(-6.8f, -4.2f)));
   EXPECT_RECTF_EQ(RectF(-4.2f, -4.2f, 11.0f, 11.0f),
                   BoundingRect(PointF(-4.2f, 6.8f), PointF(6.8f, -4.2f)));
+  // If Point A and point B are far apart such that the exact result of
+  // A.x - B.x cannot be presented by float, then the width or height increases
+  // such that both A and B are included in the bounding rect.
+  RectF boundingRect1(
+      BoundingRect(PointF(20.0f, -1000000000.0f), PointF(20.0f, 10.0f)));
+  EXPECT_TRUE(boundingRect1.InclusiveContains(PointF(20.0f, -1000000000.0f)));
+  EXPECT_TRUE(boundingRect1.InclusiveContains(PointF(20.0f, 10.0f)));
+  RectF boundingRect2(
+      BoundingRect(PointF(20.0f, 20.0f), PointF(20.0f, 1000000000.0f)));
+  EXPECT_TRUE(boundingRect2.InclusiveContains(PointF(20.0f, 20.0f)));
+  EXPECT_TRUE(boundingRect2.InclusiveContains(PointF(20.0f, 1000000000.0f)));
+  RectF boundingRect3(
+      BoundingRect(PointF(-1000000000.0f, 20.0f), PointF(20.0f, 20.0f)));
+  EXPECT_TRUE(boundingRect3.InclusiveContains(PointF(-1000000000.0f, 20.0f)));
+  EXPECT_TRUE(boundingRect3.InclusiveContains(PointF(20.0f, 20.0f)));
+  RectF boundingRect4(
+      BoundingRect(PointF(20.0f, 20.0f), PointF(1000000000.0f, 20.0f)));
+  EXPECT_TRUE(boundingRect4.InclusiveContains(PointF(20.0f, 20.0f)));
+  EXPECT_TRUE(boundingRect4.InclusiveContains(PointF(1000000000.0f, 20.0f)));
 }
 
 TEST(RectFTest, Union) {
@@ -220,12 +239,22 @@ TEST(RectFTest, CenterPoint) {
 
 TEST(RectFTest, ScaleRect) {
   constexpr RectF input(3, 3, 3, 3);
+  constexpr SizeF size_f(2.0f, 3.0f);
+  constexpr Size size(3, 2);
   EXPECT_RECTF_EQ(RectF(4.5f, 4.5f, 4.5f, 4.5f), ScaleRect(input, 1.5f));
+  EXPECT_RECTF_EQ(RectF(6.0f, 9.0f, 6.0f, 9.0f), ScaleRect(input, size_f));
+  EXPECT_RECTF_EQ(RectF(9.0f, 6.0f, 9.0f, 6.0f), ScaleRect(input, size));
   EXPECT_RECTF_EQ(RectF(0, 0, 0, 0), ScaleRect(input, 0));
 
   constexpr float kMaxFloat = std::numeric_limits<float>::max();
+  constexpr int kMaxInt = std::numeric_limits<int>::max();
   EXPECT_RECTF_EQ(RectF(kMaxFloat, kMaxFloat, kMaxFloat, kMaxFloat),
                   ScaleRect(input, kMaxFloat));
+  EXPECT_RECTF_EQ(RectF(input.x() * static_cast<float>(kMaxInt),
+                        input.y() * static_cast<float>(kMaxInt),
+                        input.width() * static_cast<float>(kMaxInt),
+                        input.height() * static_cast<float>(kMaxInt)),
+                  ScaleRect(input, Size(kMaxInt, kMaxInt)));
 
   RectF nan_rect = ScaleRect(input, std::numeric_limits<float>::quiet_NaN());
   EXPECT_TRUE(std::isnan(nan_rect.x()));
@@ -523,6 +552,48 @@ TEST(RectFTest, MapRect) {
   EXPECT_RECTF_EQ(RectF(1, 2, 3, 4),
                   MapRect(RectF(200, 300, 300, 400), RectF(100, 200, 600, 800),
                           RectF(0, 1, 6, 8)));
+}
+
+TEST(RectFTest, ApproximatelyEqual) {
+  RectF rect1(10, 20, 1920, 1080);
+  RectF rect2(10, 20, 1920, 1080);
+  EXPECT_TRUE(rect1.ApproximatelyEqual(rect2, 0.0f, 0.0f));
+  EXPECT_TRUE(rect1.ApproximatelyEqual(rect2, 0.001f, 0.001f));
+  EXPECT_TRUE(rect1.ApproximatelyEqual(rect2, 0.001f, 0.00001f));
+  EXPECT_TRUE(rect1.ApproximatelyEqual(rect2, 0.00001f, 0.001f));
+  EXPECT_TRUE(rect1.ApproximatelyEqual(rect2, 0.00001f, 0.00001f));
+
+  RectF rect3(9.999965732, 20, 1920, 1080);
+  RectF rect4(10, 20, 1920, 1080);
+  EXPECT_FALSE(rect3.ApproximatelyEqual(rect4, 0.0f, 0.0f));
+  EXPECT_TRUE(rect3.ApproximatelyEqual(rect4, 0.001f, 0.001f));
+  EXPECT_TRUE(rect3.ApproximatelyEqual(rect4, 0.001f, 0.000001f));
+  EXPECT_FALSE(rect3.ApproximatelyEqual(rect4, 0.000001f, 0.001f));
+  EXPECT_FALSE(rect3.ApproximatelyEqual(rect4, 0.000001f, 0.000001f));
+
+  RectF rect5(10, 20.000001, 1920, 1080);
+  RectF rect6(10, 20, 1920, 1080);
+  EXPECT_FALSE(rect5.ApproximatelyEqual(rect6, 0.0f, 0.0f));
+  EXPECT_TRUE(rect5.ApproximatelyEqual(rect6, 0.001f, 0.001f));
+  EXPECT_FALSE(rect5.ApproximatelyEqual(rect6, 0.001f, 0.0000001f));
+  EXPECT_TRUE(rect5.ApproximatelyEqual(rect6, 0.0000001f, 0.001f));
+  EXPECT_FALSE(rect5.ApproximatelyEqual(rect6, 0.0000001f, 0.0000001f));
+
+  RectF rect7(10, 20, 1919.99987792969, 1080);
+  RectF rect8(10, 20, 1920, 1080);
+  EXPECT_FALSE(rect7.ApproximatelyEqual(rect8, 0.0f, 0.0f));
+  EXPECT_TRUE(rect7.ApproximatelyEqual(rect8, 0.001f, 0.001f));
+  EXPECT_TRUE(rect7.ApproximatelyEqual(rect8, 0.001f, 0.00001f));
+  EXPECT_FALSE(rect7.ApproximatelyEqual(rect8, 0.00001f, 0.001f));
+  EXPECT_FALSE(rect7.ApproximatelyEqual(rect8, 0.00001f, 0.00001f));
+
+  RectF rect9(10, 20, 1920, 1080.0001);
+  RectF rect10(10, 20, 1920, 1080);
+  EXPECT_FALSE(rect9.ApproximatelyEqual(rect10, 0.0f, 0.0f));
+  EXPECT_TRUE(rect9.ApproximatelyEqual(rect10, 0.001f, 0.001f));
+  EXPECT_FALSE(rect9.ApproximatelyEqual(rect10, 0.001f, 0.000001f));
+  EXPECT_TRUE(rect9.ApproximatelyEqual(rect10, 0.000001f, 0.001f));
+  EXPECT_FALSE(rect9.ApproximatelyEqual(rect10, 0.000001f, 0.000001f));
 }
 
 }  // namespace gfx

@@ -2,16 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/system_cpu/procfs_stat_cpu_parser.h"
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_piece.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,7 +36,7 @@ class ProcfsStatCpuParserTest : public testing::Test {
     parser_ = std::make_unique<ProcfsStatCpuParser>(fake_stat_path_);
   }
 
-  [[nodiscard]] bool WriteFakeStat(base::StringPiece contents) {
+  [[nodiscard]] bool WriteFakeStat(std::string_view contents) {
     if (!stat_file_.SetLength(0)) {
       return false;
     }

@@ -52,14 +52,14 @@ class SOCKSClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   void SetUp() override;
 
  protected:
+  std::unique_ptr<MockHostResolver> host_resolver_;
+  std::unique_ptr<SocketDataProvider> data_;
   std::unique_ptr<SOCKSClientSocket> user_sock_;
   AddressList address_list_;
   // Filled in by BuildMockSocket() and owned by its return value
   // (which |user_sock| is set to).
   raw_ptr<StreamSocket> tcp_sock_;
   TestCompletionCallback callback_;
-  std::unique_ptr<MockHostResolver> host_resolver_;
-  std::unique_ptr<SocketDataProvider> data_;
 };
 
 SOCKSClientSocketTest::SOCKSClientSocketTest()
@@ -395,6 +395,10 @@ TEST_F(SOCKSClientSocketTest, DisconnectWhileHostResolveInProgress) {
 
   EXPECT_FALSE(user_sock_->IsConnected());
   EXPECT_FALSE(user_sock_->IsConnectedAndIdle());
+
+  // Need to delete `user_sock_` before the HostResolver it references.
+  tcp_sock_ = nullptr;
+  user_sock_.reset();
 }
 
 // Tries to connect to an IPv6 IP.  Should fail, as SOCKS4 does not support
@@ -421,6 +425,10 @@ TEST_F(SOCKSClientSocketTest, NoIPv6RealResolver) {
 
   EXPECT_EQ(ERR_NAME_NOT_RESOLVED,
             callback_.GetResult(user_sock_->Connect(callback_.callback())));
+
+  // Need to delete `user_sock_` before the HostResolver it references.
+  tcp_sock_ = nullptr;
+  user_sock_.reset();
 }
 
 TEST_F(SOCKSClientSocketTest, Tag) {

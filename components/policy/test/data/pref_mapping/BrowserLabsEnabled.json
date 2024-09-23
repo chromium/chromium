@@ -8,27 +8,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "prefs": {
-          "browser_labs_enabled": {
-            "default_value": true,
-            "location": "user_profile"
-          }
-        }
-      },
-      {
-        "policies": {
-          "BrowserLabsEnabled": false
-        },
-        "prefs": {
-          "browser_labs_enabled": {
-            "location": "user_profile",
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "browser_labs_enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

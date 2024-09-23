@@ -15,7 +15,7 @@ each histogram. Maybe add here or add a new performance controls one
 <histograms>
 
 <histogram name="PerformanceControls.BatterySaver.BubbleAction"
-    enum="BatterySaverBubbleActionType" expires_after="2024-07-21">
+    enum="BatterySaverBubbleActionType" expires_after="2024-12-31">
   <owner>agale@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -29,7 +29,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.BatterySaver.IPHOpenSettings"
-    enum="BooleanOpened" expires_after="2024-07-21">
+    enum="BooleanOpened" expires_after="2025-02-10">
   <owner>agale@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -42,7 +42,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.BatterySaver.SettingsChangeMode"
-    enum="BatterySaverModeState" expires_after="2024-07-21">
+    enum="BatterySaverModeState" expires_after="2025-02-10">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -52,8 +52,192 @@ each histogram. Maybe add here or add a new performance controls one
   </summary>
 </histogram>
 
+<histogram
+    name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.BubbleAction"
+    enum="InterventionBubbleActionType" expires_after="2025-02-23">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs each time the performance intervention dialog closes. The enum logged
+    indicates the action the user took in order to close the dialog. This will
+    be used to measure the efficacy of the dialog message and the overall click
+    through rate of the performance intervention feature.
+  </summary>
+  <token key="ResourceType">
+    <variant name="Cpu"
+        summary="Performance messaging was shown because of not healthy cpu
+                 health level."/>
+    <variant name="Memory"
+        summary="Performance messaging was shown because of not healthy
+                 memory health level."/>
+  </token>
+</histogram>
+
+<histogram
+    name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.HealthStatusAfterDiscard.{Time}"
+    enum="PerformanceDetectionManagerHealthLevel" expires_after="2025-02-23">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the resource type's health level a certain duration after the user
+    discards tabs suggested by the performance intervention dialog. This will be
+    used to evaluate the impact of discarding tabs on the resource health level.
+  </summary>
+  <token key="ResourceType">
+    <variant name="Cpu"
+        summary="Performance messaging was shown because of not healthy cpu
+                 health level."/>
+    <variant name="Memory"
+        summary="Performance messaging was shown because of not healthy
+                 memory health level."/>
+  </token>
+  <token key="Time">
+    <variant name="1Min"
+        summary="One minute has elapsed since the user chose to discard the
+                 suggested tabs."/>
+    <variant name="2Min"
+        summary="Two minutes have elapsed since the user chose to discard the
+                 suggested tabs."/>
+    <variant name="4Min"
+        summary="Four minutes have elapsed since the user chose to discard
+                 the suggested tabs."/>
+  </token>
+</histogram>
+
+<histogram
+    name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.MessageShownCount"
+    units="count" expires_after="2025-02-23">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs daily the number of times the intervention message is shown to users on
+    the previous day. This will be used to understand how often a user will see
+    the performance intervention message.
+  </summary>
+  <token key="ResourceType">
+    <variant name="Cpu"
+        summary="Performance messaging was shown because of not healthy cpu
+                 health level."/>
+    <variant name="Memory"
+        summary="Performance messaging was shown because of not healthy
+                 memory health level."/>
+  </token>
+</histogram>
+
+<histogram
+    name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.MessageTriggerResult"
+    enum="InterventionMessageTriggerResult" expires_after="2025-02-23">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs an enum when the performance intervention message is triggered by the
+    Performance Detection Manager. The enum represents result of trying to
+    trigger the intervention messaging (i.e it was able to be shown or the
+    reason why it was unable to do so). This is used to understand why a message
+    is unable to be shown and how often it occurs.
+  </summary>
+  <token key="ResourceType">
+    <variant name="Cpu"
+        summary="Performance messaging was shown because of not healthy cpu
+                 health level."/>
+    <variant name="Memory"
+        summary="Performance messaging was shown because of not healthy
+                 memory health level."/>
+  </token>
+</histogram>
+
+<histogram
+    name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.RateLimitedCount"
+    units="count" expires_after="2024-12-24">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs daily the number of times the intervention message is unable to show
+    due to rate limiting on the previous day. This will be used to understand
+    how often we supress the message and whether our rate limiting threshold is
+    too low.
+  </summary>
+  <token key="ResourceType">
+    <variant name="Cpu"
+        summary="Performance messaging was shown because of not healthy cpu
+                 health level."/>
+    <variant name="Memory"
+        summary="Performance messaging was shown because of not healthy
+                 memory health level."/>
+  </token>
+</histogram>
+
+<histogram name="PerformanceControls.Intervention.Dialog.TabsAfterRemovalCount"
+    units="tabs" expires_after="2025-02-23">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs each time the user removes a tab from the suggested tab list in the
+    performance intervention dialog. This will log the number of actionable tabs
+    after the user removed one from the list. This will be used to learn the
+    distribution of number of suggested tabs a user will see.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceControls.Intervention.DiscardedTabCount"
+    units="tabs" expires_after="2025-02-23">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs after the user took the suggested action in the performance
+    intervention dialog to discard the tabs. The number of tabs the user
+    approved to be discarded will be logged. This will be used to learn how many
+    tabs are impacted by the performance intervention suggestion.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceControls.Intervention.DiscardedTabsPercentageUsage"
+    units="%" expires_after="2024-12-24">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the total CPU usage of discarded tabs suggested by performance
+    intervention right before the discard occurs. This will be used to measure
+    the impact of discarding suggested tabs by performance intervention on CPU
+    usage.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceControls.Intervention.SettingsChangeNotification"
+    enum="BooleanEnabled" expires_after="2025-02-23">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs whether the performance intervention notification pref is enabled,
+    whenever the user makes a change to it through the settings page. This will
+    be used to measure how many users opt out of seeing performance intervention
+    notifications.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceControls.Intervention.SuggestedTabShownCount"
+    units="count" expires_after="2025-02-23">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs each time the performance intervention dialog is shown to users. The
+    number of tabs shown in the dialog is recorded. This will be used to learn
+    how many tabs a user may take action on.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceControls.MemorySaver.BubbleAction"
-    enum="MemorySaverBubbleActionType" expires_after="2024-07-21">
+    enum="MemorySaverBubbleActionType" expires_after="2025-02-10">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -65,7 +249,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.MemorySaver.ChipState"
-    enum="MemorySaverChipState" expires_after="2024-07-21">
+    enum="MemorySaverChipState" expires_after="2025-02-10">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -76,8 +260,19 @@ each histogram. Maybe add here or add a new performance controls one
   </summary>
 </histogram>
 
+<histogram name="PerformanceControls.MemorySaver.DiscardRingTreatment"
+    enum="BooleanEnabled" expires_after="2025-05-07">
+  <owner>charlesmeng@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs whether the inactive tabs appearance pref is enabled, whenever the user
+    makes a change to it through the settings page. This will be used to measure
+    how many users opt out of seeing the discard ring on inactive tabs.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceControls.MemorySaver.IPHEnableMode"
-    enum="BooleanEnabled" expires_after="2024-07-21">
+    enum="BooleanEnabled" expires_after="2025-02-10">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -88,8 +283,19 @@ each histogram. Maybe add here or add a new performance controls one
   </summary>
 </histogram>
 
+<histogram name="PerformanceControls.MemorySaver.SettingsChangeAggressiveness"
+    enum="MemorySaverModeAggressiveness" expires_after="2025-05-07">
+  <owner>charlesmeng@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the state of the memory saver mode aggressiveness pref when the user
+    makes a change to it through the settings page. This will be used to measure
+    the adoption of different memory saver aggressiveness options.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceControls.MemorySaver.SettingsChangeExceptionList"
-    enum="MemorySaverModeExceptionListAction" expires_after="2024-07-21">
+    enum="MemorySaverModeExceptionListAction" expires_after="2025-02-10">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -101,7 +307,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.MemorySaver.SettingsChangeMode"
-    enum="MemorySaverModeState" expires_after="2024-07-21">
+    enum="MemorySaverModeState" expires_after="2025-02-10">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>

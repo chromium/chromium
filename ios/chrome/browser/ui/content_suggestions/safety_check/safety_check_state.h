@@ -12,10 +12,11 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
 
-@protocol ContentSuggestionsViewControllerAudience;
+@protocol SafetyCheckAudience;
 enum class UpdateChromeSafetyCheckState;
 enum class PasswordSafetyCheckState;
 enum class SafeBrowsingSafetyCheckState;
+@protocol SafetyCheckConsumerSource;
 enum class RunningSafetyCheckState;
 
 // Helper class to contain the current Safety Check state.
@@ -56,9 +57,12 @@ enum class RunningSafetyCheckState;
 // The last run time of the Safety Check.
 @property(nonatomic, assign) std::optional<base::Time> lastRunTime;
 
+// Safety Check model.
+@property(nonatomic, strong) id<SafetyCheckConsumerSource>
+    safetyCheckConsumerSource;
+
 // The object that should handle user events.
-@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
-    commandhandler;
+@property(nonatomic, weak) id<SafetyCheckAudience> audience;
 
 @end
 

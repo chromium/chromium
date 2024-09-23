@@ -26,6 +26,10 @@ namespace device_sync {
 class DeviceSyncClient;
 }
 
+namespace quick_start {
+class QuickStartMetrics;
+}
+
 class MultiDeviceSetupScreen : public BaseScreen {
  public:
   enum class Result { NEXT, NOT_APPLICABLE };
@@ -133,11 +137,16 @@ class MultiDeviceSetupScreen : public BaseScreen {
   void RecordOobeMultideviceScreenSkippedReasonHistogram(
       OobeMultideviceScreenSkippedReason reason);
 
+  // Record Quick Start ScreenClosed if the QS screen enhancements were shown.
+  void MaybeRecordQuickStartScreenClosed();
+
   static void RecordMultiDeviceSetupOOBEUserChoiceHistogram(
       MultiDeviceSetupOOBEUserChoice value);
 
   raw_ptr<multidevice_setup::MultiDeviceSetupClient> setup_client_ = nullptr;
   raw_ptr<device_sync::DeviceSyncClient> device_sync_client_ = nullptr;
+  std::unique_ptr<quick_start::QuickStartMetrics> quick_start_metrics_ =
+      nullptr;
   bool skipped_ = false;
   bool skipped_reason_determined_ = false;
 

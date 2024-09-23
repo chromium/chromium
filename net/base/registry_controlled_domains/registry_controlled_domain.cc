@@ -45,10 +45,12 @@
 
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
+#include <cstdint>
 #include <ostream>
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -67,8 +69,8 @@ namespace {
 
 // See make_dafsa.py for documentation of the generated dafsa byte array.
 
-const unsigned char* g_graph = kDafsa;
-size_t g_graph_length = sizeof(kDafsa);
+// This is mutable so that it can be overridden for testing.
+base::span<const uint8_t> g_graph = kDafsa;
 
 struct MappedHostComponent {
   size_t original_begin;
@@ -78,15 +80,27 @@ struct MappedHostComponent {
   size_t canonical_end;
 };
 
+// Used as the output of functions that calculate the registry length in a
+// hostname. |registry_length| is the length of the registry identifier (or zero
+// if none is found or the hostname is itself a registry identifier).
+// |is_registry_identifier| is true if the host is itself a match for a registry
+// identifier.
+struct RegistryLengthOutput {
+  size_t registry_length;
+  bool is_registry_identifier;
+};
+
 // This version assumes we already removed leading dots from host as well as the
-// last trailing dot if it had one.
-size_t GetRegistryLengthInTrimmedHost(std::string_view host,
-                                      UnknownRegistryFilter unknown_filter,
-                                      PrivateRegistryFilter private_filter) {
+// last trailing dot if it had one. If the host is itself a registry identifier,
+// the returned |registry_length| will be 0 and |is_registry_identifier| will be
+// true.
+RegistryLengthOutput GetRegistryLengthInTrimmedHost(
+    std::string_view host,
+    UnknownRegistryFilter unknown_filter,
+    PrivateRegistryFilter private_filter) {
   size_t length;
   int type = LookupSuffixInReversedSet(
-      g_graph, g_graph_length, private_filter == INCLUDE_PRIVATE_REGISTRIES,
-      host, &length);
+      g_graph, private_filter == INCLUDE_PRIVATE_REGISTRIES, host, &length);
 
   CHECK_LE(length, host.size());
 
@@ -96,10 +110,11 @@ size_t GetRegistryLengthInTrimmedHost(std::string_view host,
     if (unknown_filter == INCLUDE_UNKNOWN_REGISTRIES) {
       const size_t last_dot = host.find_last_of('.');
       if (last_dot != std::string_view::npos) {
-        return host.size() - last_dot - 1;
+        length = host.size() - last_dot - 1;
+        return {length, false};
       }
     }
-    return 0;
+    return {length, false};
   }
 
   // Exception rules override wildcard rules when the domain is an exact
@@ -107,8 +122,10 @@ size_t GetRegistryLengthInTrimmedHost(std::string_view host,
   if (type & kDafsaWildcardRule) {
     // If the complete host matches, then the host is the wildcard suffix, so
     // return 0.
-    if (length == host.size())
-      return 0;
+    if (length == host.size()) {
+      length = 0;
+      return {length, true};
+    }
 
     CHECK_LE(length + 2, host.size());
     CHECK_EQ('.', host[host.size() - length - 1]);
@@ -118,11 +135,11 @@ size_t GetRegistryLengthInTrimmedHost(std::string_view host,
 
     // If no preceding dot, then the host is the registry itself, so return 0.
     if (preceding_dot == std::string_view::npos) {
-      return 0;
+      return {0, true};
     }
 
     // Return suffix size plus size of subdomain.
-    return host.size() - preceding_dot - 1;
+    return {host.size() - preceding_dot - 1, false};
   }
 
   if (type & kDafsaExceptionRule) {
@@ -132,35 +149,37 @@ size_t GetRegistryLengthInTrimmedHost(std::string_view host,
       // "!foo").  This would only be valid if we had a corresponding
       // wildcard rule, which would have to be "*".  But we explicitly
       // disallow that case, so this kind of rule is invalid.
-      // TODO(https://crbug.com/459802): This assumes that all wildcard entries,
+      // TODO(crbug.com/40406311): This assumes that all wildcard entries,
       // such as *.foo.invalid, also have their parent, foo.invalid, as an entry
       // on the PSL, which is why it returns the length of foo.invalid. This
       // isn't entirely correct.
-      NOTREACHED() << "Invalid exception rule";
-      return 0;
+      NOTREACHED_IN_MIGRATION() << "Invalid exception rule";
+      return {length, false};
     }
-    return host.length() - first_dot - 1;
+    return {host.length() - first_dot - 1, false};
   }
 
   CHECK_NE(type, kDafsaNotFound);
 
   // If a complete match, then the host is the registry itself, so return 0.
-  if (length == host.size())
-    return 0;
+  if (length == host.size()) {
+    return {0, true};
+  }
 
-  return length;
+  return {length, false};
 }
 
-size_t GetRegistryLengthImpl(std::string_view host,
-                             UnknownRegistryFilter unknown_filter,
-                             PrivateRegistryFilter private_filter) {
+RegistryLengthOutput GetRegistryLengthImpl(
+    std::string_view host,
+    UnknownRegistryFilter unknown_filter,
+    PrivateRegistryFilter private_filter) {
   if (host.empty())
-    return std::string::npos;
+    return {std::string::npos, false};
 
   // Skip leading dots.
   const size_t host_check_begin = host.find_first_not_of('.');
   if (host_check_begin == std::string_view::npos) {
-    return 0;  // Host is only dots.
+    return {0, false};  // Host is only dots.
   }
 
   // A single trailing dot isn't relevant in this determination, but does need
@@ -169,14 +188,17 @@ size_t GetRegistryLengthImpl(std::string_view host,
   if (host.back() == '.')
     --host_check_end;
 
-  size_t length = GetRegistryLengthInTrimmedHost(
+  RegistryLengthOutput output = GetRegistryLengthInTrimmedHost(
       host.substr(host_check_begin, host_check_end - host_check_begin),
       unknown_filter, private_filter);
 
-  if (length == 0)
-    return 0;
+  if (output.registry_length == 0) {
+    return output;
+  }
 
-  return length + host.size() - host_check_end;
+  output.registry_length =
+      output.registry_length + host.size() - host_check_end;
+  return output;
 }
 
 std::string_view GetDomainAndRegistryImpl(
@@ -185,28 +207,32 @@ std::string_view GetDomainAndRegistryImpl(
   CHECK(!host.empty());
 
   // Find the length of the registry for this host.
-  const size_t registry_length =
+  const RegistryLengthOutput registry_length_output =
       GetRegistryLengthImpl(host, INCLUDE_UNKNOWN_REGISTRIES, private_filter);
-  if ((registry_length == std::string::npos) || (registry_length == 0))
+  if ((registry_length_output.registry_length == std::string::npos) ||
+      (registry_length_output.registry_length == 0)) {
     return std::string_view();  // No registry.
+  }
   // The "2" in this next line is 1 for the dot, plus a 1-char minimum preceding
   // subcomponent length.
   CHECK_GE(host.length(), 2u);
-  CHECK_LE(registry_length, host.length() - 2)
+  CHECK_LE(registry_length_output.registry_length, host.length() - 2)
       << "Host does not have at least one subcomponent before registry!";
 
   // Move past the dot preceding the registry, and search for the next previous
   // dot.  Return the host from after that dot, or the whole host when there is
   // no dot.
-  const size_t dot = host.rfind('.', host.length() - registry_length - 2);
+  const size_t dot = host.rfind(
+      '.', host.length() - registry_length_output.registry_length - 2);
   if (dot == std::string::npos)
     return host;
   return host.substr(dot + 1);
 }
 
 // Same as GetDomainAndRegistry, but returns the domain and registry as a
-// StringPiece that references the underlying string of the passed-in |gurl|.
-// TODO(pkalinnikov): Eliminate this helper by exposing StringPiece as the
+// std::string_view that references the underlying string of the passed-in
+// |gurl|.
+// TODO(pkalinnikov): Eliminate this helper by exposing std::string_view as the
 // interface type for all the APIs.
 std::string_view GetDomainAndRegistryAsStringPiece(
     std::string_view host,
@@ -268,7 +294,8 @@ size_t DoPermissiveGetHostRegistryLength(T host,
   canon_output.Complete();
 
   size_t canonical_rcd_len =
-      GetRegistryLengthImpl(canonical_host, unknown_filter, private_filter);
+      GetRegistryLengthImpl(canonical_host, unknown_filter, private_filter)
+          .registry_length;
   if (canonical_rcd_len == 0 || canonical_rcd_len == std::string::npos)
     return canonical_rcd_len;  // Error or no registry controlled domain.
 
@@ -321,7 +348,7 @@ size_t DoPermissiveGetHostRegistryLength(T host,
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return canonical_rcd_len;
 }
 
@@ -396,7 +423,8 @@ size_t GetRegistryLength(
     UnknownRegistryFilter unknown_filter,
     PrivateRegistryFilter private_filter) {
   return GetRegistryLengthImpl(gurl.host_piece(), unknown_filter,
-                               private_filter);
+                               private_filter)
+      .registry_length;
 }
 
 bool HostHasRegistryControlledDomain(std::string_view host,
@@ -419,13 +447,28 @@ bool HostHasRegistryControlledDomain(std::string_view host,
       break;
     case url::CanonHostInfo::NEUTRAL:
       rcd_length =
-          GetRegistryLengthImpl(canon_host, unknown_filter, private_filter);
+          GetRegistryLengthImpl(canon_host, unknown_filter, private_filter)
+              .registry_length;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
   return (rcd_length != 0) && (rcd_length != std::string::npos);
+}
+
+bool HostIsRegistryIdentifier(std::string_view canon_host,
+                              PrivateRegistryFilter private_filter) {
+  // The input is expected to be a valid, canonicalized hostname (not an IP
+  // address).
+  CHECK(!canon_host.empty());
+  url::CanonHostInfo host_info;
+  std::string canonicalized = CanonicalizeHost(canon_host, &host_info);
+  CHECK_EQ(canonicalized, canon_host);
+  CHECK_EQ(host_info.family, url::CanonHostInfo::NEUTRAL);
+  return GetRegistryLengthImpl(canon_host, EXCLUDE_UNKNOWN_REGISTRIES,
+                               private_filter)
+      .is_registry_identifier;
 }
 
 size_t GetCanonicalHostRegistryLength(std::string_view canon_host,
@@ -437,7 +480,8 @@ size_t GetCanonicalHostRegistryLength(std::string_view canon_host,
   DCHECK_EQ(net::CanonicalizeHost(canon_host, &host_info), canon_host);
 #endif
 
-  return GetRegistryLengthImpl(canon_host, unknown_filter, private_filter);
+  return GetRegistryLengthImpl(canon_host, unknown_filter, private_filter)
+      .registry_length;
 }
 
 size_t PermissiveGetHostRegistryLength(std::string_view host,
@@ -456,14 +500,11 @@ size_t PermissiveGetHostRegistryLength(std::u16string_view host,
 
 void ResetFindDomainGraphForTesting() {
   g_graph = kDafsa;
-  g_graph_length = sizeof(kDafsa);
 }
 
-void SetFindDomainGraphForTesting(const unsigned char* domains, size_t length) {
-  CHECK(domains);
-  CHECK_NE(length, 0u);
+void SetFindDomainGraphForTesting(base::span<const uint8_t> domains) {
+  CHECK(!domains.empty());
   g_graph = domains;
-  g_graph_length = length;
 }
 
 }  // namespace net::registry_controlled_domains

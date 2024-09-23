@@ -308,13 +308,13 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordNotificationViewTypeImage) {
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
 
   auto image_notification = CreateTestNotification();
-  image_notification->set_image(gfx::test::CreateImage(kImageSize));
+  image_notification->SetImage(gfx::test::CreateImage(kImageSize));
   CheckNotificationViewTypeRecorded(
       std::move(image_notification),
       metrics_utils::NotificationViewType::HAS_IMAGE);
 
   auto grouped_image_notification = CreateTestNotification();
-  grouped_image_notification->set_image(gfx::test::CreateImage(kImageSize));
+  grouped_image_notification->SetImage(gfx::test::CreateImage(kImageSize));
   CheckNotificationViewTypeRecorded(
       std::move(grouped_image_notification),
       metrics_utils::NotificationViewType::GROUPED_HAS_IMAGE);
@@ -366,14 +366,14 @@ TEST_F(MessageCenterMetricsUtilsTest,
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
 
   auto notification = CreateTestNotification();
-  notification->set_image(gfx::test::CreateImage(kImageSize));
+  notification->SetImage(gfx::test::CreateImage(kImageSize));
   notification->set_buttons({message_center::ButtonInfo(u"Test button")});
   CheckNotificationViewTypeRecorded(
       std::move(notification),
       metrics_utils::NotificationViewType::HAS_IMAGE_AND_ACTION);
 
   auto grouped_notification = CreateTestNotification();
-  grouped_notification->set_image(gfx::test::CreateImage(kImageSize));
+  grouped_notification->SetImage(gfx::test::CreateImage(kImageSize));
   grouped_notification->set_buttons(
       {message_center::ButtonInfo(u"Test button")});
   CheckNotificationViewTypeRecorded(
@@ -392,7 +392,7 @@ TEST_F(MessageCenterMetricsUtilsTest,
     return button;
   };
   auto notification = CreateTestNotification();
-  notification->set_image(gfx::test::CreateImage(kImageSize));
+  notification->SetImage(gfx::test::CreateImage(kImageSize));
   notification->set_buttons({create_inline_reply_button()});
 
   CheckNotificationViewTypeRecorded(
@@ -400,7 +400,7 @@ TEST_F(MessageCenterMetricsUtilsTest,
       metrics_utils::NotificationViewType::HAS_IMAGE_AND_INLINE_REPLY);
 
   auto grouped_notification = CreateTestNotification();
-  grouped_notification->set_image(gfx::test::CreateImage(kImageSize));
+  grouped_notification->SetImage(gfx::test::CreateImage(kImageSize));
   grouped_notification->set_buttons({create_inline_reply_button()});
   CheckNotificationViewTypeRecorded(
       std::move(grouped_notification),

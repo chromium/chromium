@@ -62,27 +62,30 @@ namespace lockScreen.data {
   interface Functions {
     // Creates a new data item reference - available only in lock screen
     // contexts.
-    [supportsPromises] static void create(DataItemCallback callback);
+    static void create(DataItemCallback callback);
 
     // Gets references to all data items available to the app.
-    [supportsPromises] static void getAll(DataItemListCallback callback);
+    static void getAll(DataItemListCallback callback);
 
     // Retrieves content of the data item identified by |id|.
-    [supportsPromises] static void getContent(DOMString id,
-                                              DataCallback callback);
+    static void getContent(
+        DOMString id,
+        DataCallback callback);
 
     // Sets contents of a data item.
     // |id| - Identifies the target data item.
     // |data| - The data item contents to set.
-    [supportsPromises] static void setContent(DOMString id,
-                                              ArrayBuffer data,
-                                              optional VoidCallback callback);
+    static void setContent(
+        DOMString id,
+        ArrayBuffer data,
+        optional VoidCallback callback);
 
     // Deletes a data item. The data item will not be available through this
     // API anymore.
     // |id| - Identifies the data item to delete.
-    [supportsPromises] static void delete(DOMString id,
-                                          optional VoidCallback callback);
+    static void delete(
+        DOMString id,
+        optional VoidCallback callback);
   };
 
   interface Events {

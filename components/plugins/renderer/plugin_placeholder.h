@@ -56,7 +56,7 @@ class PluginPlaceholderBase : public content::RenderFrameObserver,
   void OnDestruct() override;
 
   blink::WebPluginParams plugin_params_;
-  raw_ptr<WebViewPlugin, ExperimentalRenderer> plugin_;
+  raw_ptr<WebViewPlugin> plugin_;
 
   bool hidden_ = false;
 };

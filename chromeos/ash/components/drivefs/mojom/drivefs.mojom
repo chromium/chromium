@@ -5,6 +5,8 @@
 module drivefs.mojom;
 
 import "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom";
+import "chromeos/ash/components/drivefs/mojom/notifications.mojom";
+
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
@@ -170,6 +172,14 @@ interface DriveFs {
 
   // Gets counts of files in docs offline extension.
   GetDocsOfflineStats() => (FileError error, DocsOfflineStats counts);
+
+  // Gets the mirror sync status for a specific file.
+  GetMirrorSyncStatusForFile(mojo_base.mojom.FilePath path) =>
+      (MirrorItemSyncingStatus status);
+
+  // Gets the mirror sync status for a specific directory.
+  GetMirrorSyncStatusForDirectory(mojo_base.mojom.FilePath path) =>
+      (MirrorItemSyncingStatus status);
 };
 
 [Extensible]
@@ -273,6 +283,12 @@ interface DriveFsDelegate {
     string app_id,
     array<string> scopes) => (AccessTokenStatus status,
                               AccessToken? access_token);
+
+  // Invoked when a notification of interest is sent from DriveFS.
+  OnNotificationReceived(DriveFsNotification notification);
+
+  // Invoke when a mirror sync error is sent from DriveFS.
+  OnMirrorSyncError(MirrorSyncErrorList error_list);
 };
 
 [Extensible]
@@ -295,7 +311,7 @@ struct DriveFsConfiguration {
   [MinVersion=2]
   bool enable_metrics = false;
 
-  // The directory name to use for lost and found within the user's My files
+  // The directory name to use for lost and found within the user's MyFiles
   // directory.
   [MinVersion=3]
   string? lost_and_found_directory_name;
@@ -440,7 +456,7 @@ struct UserInfo {
   string display_name;
 };
 
-// Next MinVersion: 10
+// Next MinVersion: 11
 struct FileMetadata {
   [Extensible] enum Type {
     // A regular file.
@@ -536,6 +552,9 @@ struct FileMetadata {
   // metadata was last fetched with Drive FS configured using
   // false fetch_sharing_user_metadata value.
   [MinVersion=9] UserInfo? sharing_user;
+
+  // The title of the file.
+  [MinVersion=10] string? title;
 };
 
 // Details relating to the target item that a shortcut refers to.
@@ -605,8 +624,8 @@ struct SharedDriveQuota {
 };
 
 // Reason why this event occurred.
-// TODO(crbug.com/896777): Put this inside ItemEvent once the fix for the linked
-// bug is in libchrome.
+// TODO(crbug.com/41421508): Put this inside ItemEvent once the fix for the
+// linked bug is in libchrome.
 [Extensible]
 enum ItemEventReason {
   // Due to sync traffic from file transfers.
@@ -790,7 +809,7 @@ struct QueryParameters {
   [MinVersion=6] mojo_base.mojom.Time? viewed_time;
 };
 
-// TODO(crbug.com/896777): Put this inside QueryParameters once linked bug is
+// TODO(crbug.com/41421508): Put this inside QueryParameters once linked bug is
 // fixed.
 enum QueryKind {
   // Regular search.
@@ -927,4 +946,40 @@ struct DocsOfflineStats {
 
   // The number of files available offline. -1 when extension is not available.
   int32 available_offline;
+};
+
+// Mirror sync status for a specific file or directory, should match:
+// google3/apps/drive/fs/proto/mirror_sync_status.proto
+enum MirrorItemSyncingStatus {
+  kUnknown,
+  kSynced,
+  kSyncing,
+  kSyncError,
+};
+
+// Mirror sync errors received from DriveFS to be forwarded to the file manager
+// UI.
+struct MirrorSyncError {
+  [Extensible] enum Type {
+    [Default] kUnknown,
+    kGenericUploadFailure,
+    kGenericDownloadFailure,
+    kMultipleFailures,
+    kExceedsCloudDownloadQuota,
+    kNoDiskSpace,
+    kExceedsCloudStorageQuota,
+    kExceedsCloudUploadQuota,
+  };
+
+  Type type;
+
+  // The name of the file where an error was encountered.
+  string name;
+
+  // The stable id of the file where an error was encountered
+  int64 stable_id;
+};
+
+struct MirrorSyncErrorList {
+  array<MirrorSyncError> errors;
 };

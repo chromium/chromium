@@ -71,6 +71,7 @@ void OverlayPanelLayer::SetProperties(
     int bar_background_color,
     float bar_margin_side,
     float bar_margin_top,
+    float bar_margin_bottom,
     float bar_height,
     float bar_offset_y,
     float bar_text_opacity,
@@ -103,6 +104,7 @@ void OverlayPanelLayer::SetProperties(
   ui::NinePatchResource* rounded_bar_top_resource = nullptr;
   content_top_y += bar_margin_top;
   content_height -= bar_margin_top;
+  content_height -= bar_margin_bottom;
 
   rounded_bar_top_resource =
       ui::NinePatchResource::From(resource_manager_->GetStaticResourceWithTint(
@@ -176,7 +178,7 @@ void OverlayPanelLayer::SetProperties(
   bar_background_->SetBounds(background_size);
   bar_background_->SetPosition(
       gfx::PointF(0.f, bar_top_y + rounded_top_height));
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
   bar_background_->SetBackgroundColor(
       SkColor4f::FromColor(bar_background_color));
 

@@ -4,31 +4,15 @@
       "chromeos_ash",
       "chromeos_lacros"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeskAPIThirdPartyAllowlist": [
-            "https://*.example.org/*",
-            "https://*.google.com/*"
-          ]
-        },
-        "prefs": {
-          "desk_api.third_party_allowlist": {
-            "value": [
-              "https://*.example.org/*",
-              "https://*.google.com/*"
-            ]
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "desk_api.third_party_allowlist": {
-            "default_value": []
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "desk_api.third_party_allowlist",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "https://*.example.org/*",
+          "https://*.google.com/*"
+        ]
+      ]
+    }
   }
 ]

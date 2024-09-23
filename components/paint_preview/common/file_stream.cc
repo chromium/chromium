@@ -5,7 +5,10 @@
 #include "components/paint_preview/common/file_stream.h"
 
 #include <stdint.h>
+
 #include <utility>
+
+#include "base/compiler_specific.h"
 
 namespace paint_preview {
 
@@ -51,8 +54,8 @@ bool FileWStream::write(const void* buffer, size_t size) {
     has_write_failed_ = true;
     return false;
   }
-  int bytes =
-      file_.WriteAtCurrentPos(reinterpret_cast<const char*>(buffer), size);
+  int bytes = UNSAFE_TODO(
+      file_.WriteAtCurrentPos(reinterpret_cast<const char*>(buffer), size));
   if (bytes < 0) {
     has_write_failed_ = true;
     return false;
@@ -102,7 +105,8 @@ size_t FileRStream::read(void* buffer, size_t size) {
       return 0;
     num_bytes = num_bytes - origin;
   } else {
-    num_bytes = file_.ReadAtCurrentPos(reinterpret_cast<char*>(buffer), size);
+    num_bytes = UNSAFE_TODO(
+        file_.ReadAtCurrentPos(reinterpret_cast<char*>(buffer), size));
   }
   if (num_bytes < 0)
     return 0;

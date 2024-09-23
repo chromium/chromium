@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "partition_alloc/partition_alloc.h"
+
 #include <algorithm>
 #include <atomic>
 #include <limits>
@@ -10,9 +12,8 @@
 
 #include "base/debug/debugging_buildflags.h"
 #include "base/timer/lap_timer.h"
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/extended_api.h"
-#include "partition_alloc/partition_alloc.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/strings/stringprintf.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
@@ -25,7 +26,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
-#if BUILDFLAG(IS_ANDROID) || defined(ARCH_CPU_32_BITS) || BUILDFLAG(IS_FUCHSIA)
+#if PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(PA_ARCH_CPU_32_BITS) || \
+    PA_BUILDFLAG(IS_FUCHSIA)
 // Some tests allocate many GB of memory, which can cause issues on Android and
 // address-space exhaustion for any 32-bit process.
 #define MEMORY_CONSTRAINED
@@ -138,7 +140,7 @@ class PartitionAllocatorWithThreadCache : public Allocator {
  private:
   static constexpr partition_alloc::PartitionOptions kOpts = []() {
     partition_alloc::PartitionOptions opts;
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     opts.thread_cache = PartitionOptions::kEnabled;
 #endif
     return opts;
@@ -447,7 +449,15 @@ void RunTest(int thread_count,
 }
 
 class PartitionAllocMemoryAllocationPerfTest
-    : public testing::TestWithParam<std::tuple<int, bool, AllocatorType>> {};
+    : public testing::TestWithParam<std::tuple<int, bool, AllocatorType>> {
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+  void SetUp() override {
+    PartitionRoot::EnableShadowMetadata(
+        partition_alloc::internal::PoolHandleMask::kRegular |
+        partition_alloc::internal::PoolHandleMask::kBRP);
+  }
+#endif
+};
 
 // Only one partition with a thread cache: cannot use the thread cache when
 // PartitionAlloc is malloc().

@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/transition_pseudo_element_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -30,6 +31,25 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   using PseudoElementVector = HeapVector<Member<PseudoElement>, 2>;
   PseudoElementVector GetPseudoElements() const;
 
+  using ColumnPseudoElementsVector = HeapVector<Member<PseudoElement>>;
+  const ColumnPseudoElementsVector* GetColumnPseudoElements() const {
+    return column_pseudo_elements_;
+  }
+  void AddColumnPseudoElement(PseudoElement& column_pseudo_element) {
+    if (!column_pseudo_elements_) {
+      column_pseudo_elements_ =
+          MakeGarbageCollected<ColumnPseudoElementsVector>();
+    }
+    DCHECK(column_pseudo_elements_->Find(column_pseudo_element) == kNotFound);
+    column_pseudo_elements_->push_back(column_pseudo_element);
+  }
+  void ClearColumnPseudoElements() {
+    if (!column_pseudo_elements_) {
+      return;
+    }
+    column_pseudo_elements_->clear();
+  }
+
   bool HasPseudoElements() const;
   void ClearPseudoElements();
   void Trace(Visitor* visitor) const override {
@@ -37,8 +57,14 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     visitor->Trace(generated_after_);
     visitor->Trace(generated_marker_);
     visitor->Trace(generated_first_letter_);
+    visitor->Trace(generated_scroll_marker_group_before_);
+    visitor->Trace(generated_scroll_marker_group_after_);
+    visitor->Trace(generated_scroll_marker_);
+    visitor->Trace(generated_scroll_next_button_);
+    visitor->Trace(generated_scroll_prev_button_);
     visitor->Trace(backdrop_);
     visitor->Trace(transition_data_);
+    visitor->Trace(column_pseudo_elements_);
     ElementRareDataField::Trace(visitor);
   }
 
@@ -47,14 +73,29 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   Member<PseudoElement> generated_after_;
   Member<PseudoElement> generated_marker_;
   Member<PseudoElement> generated_first_letter_;
+  Member<PseudoElement> generated_scroll_marker_group_before_;
+  Member<PseudoElement> generated_scroll_marker_group_after_;
+  Member<PseudoElement> generated_scroll_marker_;
+  Member<PseudoElement> generated_scroll_next_button_;
+  Member<PseudoElement> generated_scroll_prev_button_;
   Member<PseudoElement> backdrop_;
 
   Member<TransitionPseudoElementData> transition_data_;
+
+  // Column pseudo elements are created once per column (fragmentainer)
+  // with style specified with ::column. They live here as array, since there is
+  // no Element for column (fragmentainer), and they should appear somewhere for
+  // focus and a11y.
+  Member<ColumnPseudoElementsVector> column_pseudo_elements_;
 };
 
 inline bool PseudoElementData::HasPseudoElements() const {
   return generated_before_ || generated_after_ || generated_marker_ ||
-         backdrop_ || generated_first_letter_ || transition_data_;
+         backdrop_ || generated_first_letter_ || transition_data_ ||
+         generated_scroll_marker_group_before_ ||
+         generated_scroll_marker_group_after_ || generated_scroll_marker_ ||
+         generated_scroll_next_button_ || generated_scroll_prev_button_ ||
+         (column_pseudo_elements_ && !column_pseudo_elements_->empty());
 }
 
 inline void PseudoElementData::ClearPseudoElements() {
@@ -63,6 +104,14 @@ inline void PseudoElementData::ClearPseudoElements() {
   SetPseudoElement(kPseudoIdMarker, nullptr);
   SetPseudoElement(kPseudoIdBackdrop, nullptr);
   SetPseudoElement(kPseudoIdFirstLetter, nullptr);
+  SetPseudoElement(kPseudoIdScrollMarkerGroupBefore, nullptr);
+  SetPseudoElement(kPseudoIdScrollMarkerGroupAfter, nullptr);
+  SetPseudoElement(kPseudoIdScrollMarker, nullptr);
+  SetPseudoElement(kPseudoIdScrollNextButton, nullptr);
+  SetPseudoElement(kPseudoIdScrollPrevButton, nullptr);
+  if (column_pseudo_elements_) {
+    column_pseudo_elements_->clear();
+  }
   if (transition_data_) {
     transition_data_->ClearPseudoElements();
     transition_data_ = nullptr;
@@ -87,6 +136,26 @@ inline void PseudoElementData::SetPseudoElement(
       previous_element = generated_marker_;
       generated_marker_ = element;
       break;
+    case kPseudoIdScrollMarkerGroupBefore:
+      previous_element = generated_scroll_marker_group_before_;
+      generated_scroll_marker_group_before_ = element;
+      break;
+    case kPseudoIdScrollMarkerGroupAfter:
+      previous_element = generated_scroll_marker_group_after_;
+      generated_scroll_marker_group_after_ = element;
+      break;
+    case kPseudoIdScrollMarker:
+      previous_element = generated_scroll_marker_;
+      generated_scroll_marker_ = element;
+      break;
+    case kPseudoIdScrollNextButton:
+      previous_element = generated_scroll_next_button_;
+      generated_scroll_next_button_ = element;
+      break;
+    case kPseudoIdScrollPrevButton:
+      previous_element = generated_scroll_prev_button_;
+      generated_scroll_prev_button_ = element;
+      break;
     case kPseudoIdBackdrop:
       previous_element = backdrop_;
       backdrop_ = element;
@@ -110,7 +179,7 @@ inline void PseudoElementData::SetPseudoElement(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (previous_element)
@@ -126,6 +195,21 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
     return generated_after_.Get();
   if (kPseudoIdMarker == pseudo_id)
     return generated_marker_.Get();
+  if (kPseudoIdScrollMarkerGroupBefore == pseudo_id) {
+    return generated_scroll_marker_group_before_.Get();
+  }
+  if (kPseudoIdScrollMarkerGroupAfter == pseudo_id) {
+    return generated_scroll_marker_group_after_.Get();
+  }
+  if (kPseudoIdScrollMarker == pseudo_id) {
+    return generated_scroll_marker_.Get();
+  }
+  if (kPseudoIdScrollNextButton == pseudo_id) {
+    return generated_scroll_next_button_.Get();
+  }
+  if (kPseudoIdScrollPrevButton == pseudo_id) {
+    return generated_scroll_prev_button_.Get();
+  }
 // Workaround for CPU bug. This avoids compiler optimizing
 // this group of if conditions into switch. See http://crbug.com/855390.
 #if defined(ARCH_CPU_ARMEL)
@@ -158,6 +242,24 @@ PseudoElementData::GetPseudoElements() const {
     result.push_back(backdrop_);
   if (transition_data_)
     transition_data_->AddPseudoElements(&result);
+  if (generated_scroll_marker_group_before_) {
+    result.push_back(generated_scroll_marker_group_before_);
+  }
+  if (generated_scroll_marker_group_after_) {
+    result.push_back(generated_scroll_marker_group_after_);
+  }
+  if (generated_scroll_marker_) {
+    result.push_back(generated_scroll_marker_);
+  }
+  if (generated_scroll_next_button_) {
+    result.push_back(generated_scroll_next_button_);
+  }
+  if (generated_scroll_prev_button_) {
+    result.push_back(generated_scroll_prev_button_);
+  }
+  if (column_pseudo_elements_) {
+    result.AppendVector(*column_pseudo_elements_);
+  }
   return result;
 }
 

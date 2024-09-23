@@ -142,10 +142,6 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::VIDEO> {
   void OnStreamReset(DemuxerStream* stream);
   void OnOutputReady(OutputType* output);
 
-  // Set whether or not software decoder implementations will be preferred.
-  void SetPreferNonPlatformDecoders(bool);
-  bool GetPreferNonPlatformDecoders() const;
-
  private:
   base::TimeDelta last_keyframe_timestamp_;
   base::MovingAverage<base::TimeDelta, base::TimeDelta>
@@ -162,8 +158,6 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::VIDEO> {
   PipelineStatistics stats_;
 
   VideoTransformation transform_ = kNoTransformation;
-
-  bool prefer_non_platform_decoders_ = false;
 
   base::WeakPtr<DecoderStreamTraits<DemuxerStream::VIDEO>> weak_this_;
   base::WeakPtrFactory<DecoderStreamTraits<DemuxerStream::VIDEO>> weak_factory_{

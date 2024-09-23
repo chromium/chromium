@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
@@ -35,10 +36,7 @@ IntentChipButton::IntentChipButton(Browser* browser,
   SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));
   SetProperty(views::kElementIdentifierKey, kIntentChipElementId);
-
-  if (features::IsChromeRefresh2023()) {
     label()->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
-  }
 }
 
 IntentChipButton::~IntentChipButton() = default;
@@ -71,6 +69,11 @@ void IntentChipButton::Update() {
   if (browser_->window() && was_visible && !is_visible) {
     IntentPickerBubbleView::CloseCurrentBubble();
   }
+}
+
+ui::ImageModel IntentChipButton::GetAppIconForTesting() const {
+  CHECK_IS_TEST();
+  return GetAppIcon();
 }
 
 bool IntentChipButton::GetShowChip() const {
@@ -121,40 +124,18 @@ ui::ImageModel IntentChipButton::GetIconImageModel() const {
 }
 
 const gfx::VectorIcon& IntentChipButton::GetIcon() const {
-  if (features::IsChromeRefresh2023()) {
-    // The color and size are configured in OmniboxChipButton.
     return kOpenInNewChromeRefreshIcon;
-  }
-  return kOpenInNewIcon;
 }
 
-SkColor IntentChipButton::GetBackgroundColor() const {
+ui::ColorId IntentChipButton::GetBackgroundColorId() const {
   DCHECK(GetOmniboxChipTheme() != OmniboxChipTheme::kIconStyle);
-  if (features::IsChromeRefresh2023()) {
-    return GetColorProvider()->GetColor(kColorOmniboxIntentChipBackground);
-  }
-  return GetColorProvider()->GetColor(kColorOmniboxChipBackground);
+  return kColorOmniboxIntentChipBackground;
 }
 
-SkColor IntentChipButton::GetForegroundColor() const {
-  if (features::IsChromeRefresh2023()) {
-    // Use the same color as the content setting icons.
-    if (GetOmniboxChipTheme() == OmniboxChipTheme::kIconStyle) {
-      return GetColorProvider()->GetColor(kColorOmniboxResultsIcon);
-    }
-
-    // The icon and label have the same color.
-    return GetColorProvider()->GetColor(kColorOmniboxIntentChipIcon);
-  }
-
-  if (GetOmniboxChipTheme() == OmniboxChipTheme::kIconStyle) {
-    return GetColorProvider()->GetColor(kColorOmniboxResultsIcon);
-  }
-
-  return GetColorProvider()->GetColor(
-      GetOmniboxChipTheme() == OmniboxChipTheme::kLowVisibility
-          ? kColorOmniboxChipForegroundLowVisibility
-          : kColorOmniboxChipForegroundNormalVisibility);
+ui::ColorId IntentChipButton::GetForegroundColorId() const {
+  return GetOmniboxChipTheme() == OmniboxChipTheme::kIconStyle
+             ? kColorOmniboxResultsIcon
+             : kColorOmniboxIntentChipIcon;
 }
 
 BEGIN_METADATA(IntentChipButton)

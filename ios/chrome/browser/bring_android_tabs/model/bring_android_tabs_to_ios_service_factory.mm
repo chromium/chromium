@@ -11,26 +11,31 @@
 #import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 // static
 BringAndroidTabsToIOSService*
-BringAndroidTabsToIOSServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  DCHECK(!browser_state->IsOffTheRecord());
-  return static_cast<BringAndroidTabsToIOSService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+BringAndroidTabsToIOSServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 // static
 BringAndroidTabsToIOSService*
-BringAndroidTabsToIOSServiceFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state) {
+BringAndroidTabsToIOSServiceFactory::GetForProfile(ProfileIOS* profile) {
+  DCHECK(!profile->IsOffTheRecord());
   return static_cast<BringAndroidTabsToIOSService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+      GetInstance()->GetServiceForBrowserState(profile, true));
+}
+
+// static
+BringAndroidTabsToIOSService*
+BringAndroidTabsToIOSServiceFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
+  return static_cast<BringAndroidTabsToIOSService*>(
+      GetInstance()->GetServiceForBrowserState(profile, false));
 }
 
 // static
@@ -67,14 +72,11 @@ BringAndroidTabsToIOSServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  PrefService* browser_state_prefs =
-      browser_state ? browser_state->GetPrefs() : nullptr;
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  PrefService* profile_prefs = profile ? profile->GetPrefs() : nullptr;
   return std::make_unique<BringAndroidTabsToIOSService>(
       segmentation_platform::SegmentationPlatformServiceFactory::
-          GetDispatcherForBrowserState(browser_state),
-      SyncServiceFactory::GetForBrowserState(browser_state),
-      SessionSyncServiceFactory::GetForBrowserState(browser_state),
-      browser_state_prefs);
+          GetDispatcherForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile),
+      SessionSyncServiceFactory::GetForProfile(profile), profile_prefs);
 }

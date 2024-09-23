@@ -37,6 +37,9 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
     content::BrowserContext* browser_context) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, kChromeUIMediaAppHost);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://webui-test 'self';");
 
   // Add resources from ash_media_app_resources.pak.
   source->SetDefaultResource(IDR_MEDIA_APP_INDEX_DARK_LIGHT_HTML);

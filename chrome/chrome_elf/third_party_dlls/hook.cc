@@ -4,16 +4,16 @@
 
 #include "chrome/chrome_elf/third_party_dlls/hook.h"
 
-#include <atomic>
-#include <limits>
-#include <string>
-
 #include <windows.h>
 
 #include <assert.h>
 #include <ntstatus.h>
 #include <psapi.h>
 #include <winternl.h>
+
+#include <atomic>
+#include <limits>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "chrome/chrome_elf/crash/crash_helper.h"

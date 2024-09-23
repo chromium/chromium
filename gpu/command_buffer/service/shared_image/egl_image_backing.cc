@@ -5,7 +5,9 @@
 #include "gpu/command_buffer/service/shared_image/egl_image_backing.h"
 
 #include <optional>
+
 #include "base/memory/raw_ptr.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
@@ -89,7 +91,7 @@ class EGLImageBacking::GLRepresentationShared {
         return false;
       mode_ = RepresentationAccessMode::kWrite;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     return true;
   }
@@ -104,7 +106,7 @@ class EGLImageBacking::GLRepresentationShared {
     } else if (mode_ == RepresentationAccessMode::kWrite) {
       backing_->EndWrite();
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     mode_ = RepresentationAccessMode::kNone;
   }
@@ -177,7 +179,7 @@ class EGLImageBacking::GLTexturePassthroughEGLImageRepresentation
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
       int plane_index) override {
     CHECK(format().IsValidPlaneIndex(plane_index));
-    // TODO(https://crbug.com/1172769): Remove this CHECK.
+    // TODO(crbug.com/40166788): Remove this CHECK.
     CHECK(shared_.texture_holder(plane_index)->texture_passthrough());
     return shared_.texture_holder(plane_index)->texture_passthrough();
   }
@@ -195,7 +197,7 @@ EGLImageBacking::EGLImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     size_t estimated_size,
     const std::vector<GLCommonImageBackingFactory::FormatInfo>& format_info,
@@ -237,7 +239,7 @@ SharedImageBackingType EGLImageBacking::GetType() const {
 }
 
 void EGLImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 template <class T>
@@ -320,7 +322,7 @@ std::unique_ptr<DawnImageRepresentation> EGLImageBacking::ProduceDawn(
       AutoLock auto_lock(this);
       egl_image = egl_images_[0].get();
     }
-    // TODO(1472861): Add multiplanar support to this representation.
+    // TODO(crbug.com/40278761): Add multiplanar support to this representation.
     return std::make_unique<DawnEGLImageRepresentation>(
         std::move(gl_representation), egl_image, manager, this, tracker,
         device.Get());
@@ -426,7 +428,7 @@ gl::ScopedEGLImage EGLImageBacking::GenEGLImageSibling(
   // time before we create `egl_images_` from it. If pixel data is
   // empty we only allocate memory for the texture object which is
   // required to create EGLImage.
-  if (format_info.supports_storage) {
+  if (format_info.supports_storage && IsTexStorage2DAvailable()) {
     api->glTexStorage2DEXTFn(target, 1,
                              format_info.adjusted_storage_internal_format,
                              plane_size.width(), plane_size.height());

@@ -19,7 +19,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/output_device_info.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -62,9 +62,9 @@ class NonSwitchableAudioRendererSink
       : frame_token_(frame_token), sink_params_(params) {
     auto* render_frame = GetRenderFrameForToken(frame_token);
     DCHECK(render_frame);
-    render_frame->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame->GetBrowserInterfaceBroker().GetInterface(
         pending_audio_socket_broker_.InitWithNewPipeAndPassReceiver());
-    render_frame->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame->GetBrowserInterfaceBroker().GetInterface(
         pending_app_media_info_manager_.InitWithNewPipeAndPassReceiver());
   }
 
@@ -204,6 +204,14 @@ class NonSwitchableAudioRendererSink
           NewOutputDevice(frame_token_, sink_params_, kAuthorizationTimeout);
     }
 
+    // The media info manager is only needed to query whether this is an
+    // audio-only session and session id; after this, the binding can be reset.
+    //
+    // If this is not done on the thread on which the binding was created (in
+    // Initialize()), then the destructor can run on a different thread and
+    // violate a mojo sequence checker assertion.
+    app_media_info_manager_.reset();
+
     output_device_->Initialize(params, callback);
 
     if (pending_start_) {
@@ -246,9 +254,10 @@ CastAudioDeviceFactory::~CastAudioDeviceFactory() {
 }
 
 scoped_refptr<::media::SwitchableAudioRendererSink>
-CastAudioDeviceFactory::NewSwitchableAudioRendererSink(
+CastAudioDeviceFactory::NewMixableSink(
     blink::WebAudioDeviceSourceType source_type,
     const blink::LocalFrameToken& frame_token,
+    const blink::FrameToken& main_frame_token,
     const ::media::AudioSinkParameters& params) {
   return base::MakeRefCounted<NonSwitchableAudioRendererSink>(frame_token,
                                                               params);

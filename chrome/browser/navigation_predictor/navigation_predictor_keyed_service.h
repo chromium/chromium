@@ -55,7 +55,7 @@ class NavigationPredictorKeyedService : public KeyedService {
     // The WebContents from where the navigation may happen. Do not use this
     // pointer outside the observer's call stack unless its destruction is also
     // observed.
-    raw_ptr<content::WebContents> web_contents_;
+    raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
     // TODO(spelchat): this no longer needs to be optional. Optionality was
     // required because external app predictions didn't provide this field, but
@@ -151,7 +151,8 @@ class NavigationPredictorKeyedService : public KeyedService {
   // Manages preconnecting to the user's default search engine.
   SearchEnginePreconnector search_engine_preconnector_;
 
-  std::unordered_set<content::WebContents*> visible_web_contents_;
+  std::unordered_set<raw_ptr<content::WebContents, CtnExperimental>>
+      visible_web_contents_;
 
   base::TimeTicks last_web_contents_state_change_time_;
 

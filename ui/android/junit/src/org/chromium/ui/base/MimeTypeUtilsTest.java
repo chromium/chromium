@@ -39,7 +39,7 @@ public class MimeTypeUtilsTest {
     @Test
     public void testGetMimeTypeFromUrlText() {
         updateMockGurlSpec("file://file.html");
-        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("html", "text/html");
+        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("html", "text/html");
         assertEquals(
                 "Expecting text mime type",
                 MimeTypeUtils.Type.TEXT,
@@ -49,7 +49,7 @@ public class MimeTypeUtilsTest {
     @Test
     public void testGetMimeTypeFromUrlImage() {
         updateMockGurlSpec("file://file.jpg");
-        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("jpg", "image/jpeg");
+        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("jpg", "image/jpeg");
         assertEquals(
                 "Expecting image mime type",
                 MimeTypeUtils.Type.IMAGE,
@@ -59,7 +59,7 @@ public class MimeTypeUtilsTest {
     @Test
     public void testGetMimeTypeFromUrlAudio() {
         updateMockGurlSpec("file://file.mp3");
-        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("mp3", "audio/mpeg");
+        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("mp3", "audio/mpeg");
         assertEquals(
                 "Expecting audio mime type",
                 MimeTypeUtils.Type.AUDIO,
@@ -69,7 +69,7 @@ public class MimeTypeUtilsTest {
     @Test
     public void testGetMimeTypeFromUrlVideo() {
         updateMockGurlSpec("file://file.mp4");
-        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("mp4", "video/mp4");
+        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("mp4", "video/mp4");
         assertEquals(
                 "Expecting video mime type",
                 MimeTypeUtils.Type.VIDEO,
@@ -79,7 +79,7 @@ public class MimeTypeUtilsTest {
     @Test
     public void testGetMimeTypeFromUrlPDF() {
         updateMockGurlSpec("file://file.pdf");
-        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("pdf", "application/pdf");
+        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("pdf", "application/pdf");
         assertEquals(
                 "Expecting PDF mime type",
                 MimeTypeUtils.Type.PDF,

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/quick_action_search_widget_small_height"
+    android:background="@drawable/quick_action_search_widget_background"
+    android:clipToOutline="true"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+    android:layout_gravity="center"
+    android:paddingHorizontal="@dimen/quick_action_search_widget_small_margin">
+
+    <LinearLayout
+        android:id="@+id/quick_action_search_widget_search_bar_container"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/quick_action_search_widget_small_search_bar_height"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="@dimen/quick_action_search_widget_small_button_horizontal_margin"
+        android:layout_weight="1"
+        android:background="@drawable/quick_action_search_widget_small_search_bar_background"
+        android:gravity="center_vertical"
+        android:contentDescription="@string/quick_action_search_widget_search_bar_hint"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/quick_action_search_widget_icon"
+            android:layout_width="@dimen/quick_action_search_widget_small_search_bar_icon_size"
+            android:layout_height="@dimen/quick_action_search_widget_small_search_bar_icon_size"
+            android:layout_marginTop="@dimen/quick_action_search_widget_small_search_bar_icon_margin"
+            android:layout_marginBottom="@dimen/quick_action_search_widget_small_search_bar_icon_margin"
+            android:layout_marginStart="@dimen/quick_action_search_widget_small_search_bar_icon_margin"
+            android:layout_marginEnd="@dimen/quick_action_search_widget_small_search_bar_icon_margin_text"
+            android:importantForAccessibility="no"
+            android:src="@mipmap/app_icon" />
+
+        <TextView
+            android:id="@+id/search_bar"
+            style="@style/TextAppearance.SearchBoxText.Widget"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:hint="@string/search_widget_default"
+            android:importantForAccessibility="no"
+            android:singleLine="true"
+            android:textAlignment="viewStart" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/quick_action_button_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/voice_search_quick_action_button"
+            style="@style/QuickActionSearchWidgetSmallButton"
+            android:layout_marginHorizontal="@dimen/quick_action_search_widget_small_button_horizontal_margin"
+            android:contentDescription="@string/accessibility_toolbar_btn_mic"
+            android:src="@drawable/ic_mic_white_24dp" />
+
+        <ImageButton
+            android:id="@+id/incognito_quick_action_button"
+            style="@style/QuickActionSearchWidgetSmallButton"
+            android:layout_marginHorizontal="@dimen/quick_action_search_widget_small_button_horizontal_margin"
+            android:contentDescription="@string/button_new_incognito_tab"
+            android:src="@drawable/incognito_simple" />
+
+        <ImageButton
+            android:id="@+id/lens_quick_action_button"
+            style="@style/QuickActionSearchWidget.SmallLensButton"
+            android:layout_marginHorizontal="@dimen/quick_action_search_widget_small_button_horizontal_margin"
+            android:contentDescription="@string/accessibility_btn_lens_camera"
+            android:src="@drawable/lens_camera_icon" />
+
+        <ImageButton
+            android:id="@+id/dino_quick_action_button"
+            style="@style/QuickActionSearchWidget.SmallDinoButton"
+            android:layout_marginHorizontal="@dimen/quick_action_search_widget_small_button_horizontal_margin"
+            android:contentDescription="@string/accessibility_quick_action_search_widget_start_dino_game"
+            android:src="@drawable/ic_dino" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -135,7 +134,7 @@ class AudioInputBufferImpl : public assistant_client::AudioBuffer {
   }
   const void* GetData() const override { return data_.data(); }
   void* GetWritableData() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   int GetFrameCount() const override { return frame_count_; }
@@ -183,7 +182,7 @@ class AudioCapturer : public media::AudioCapturerSource::CaptureCallback {
 
   void RemoveObserver(assistant_client::AudioInput::Observer* observer) {
     base::AutoLock lock(observers_lock_);
-    base::Erase(observers_, observer);
+    std::erase(observers_, observer);
   }
 
   int num_observers() {
@@ -198,6 +197,7 @@ class AudioCapturer : public media::AudioCapturerSource::CaptureCallback {
   // Runs on audio service thread.
   void Capture(const media::AudioBus* audio_source,
                base::TimeTicks audio_capture_time,
+               const media::AudioGlitchInfo& glitch_info,
                double volume,
                bool key_pressed) override {
     DCHECK_EQ(g_current_format.num_channels, audio_source->channels());

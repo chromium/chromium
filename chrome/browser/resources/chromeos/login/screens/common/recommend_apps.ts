@@ -12,16 +12,17 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/buttons/oobe_text_button.js';
 import '../../components/oobe_apps_list.js';
+import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeAppsList} from '../../components/oobe_apps_list.js';
 
 import {getTemplate} from './recommend_apps.html.js';
@@ -52,19 +53,8 @@ interface AppData {
   checked: boolean;
 }
 
-const RecommendAppsElementBase = mixinBehaviors(
-    [
-      OobeI18nBehavior,
-      OobeDialogHostBehavior,
-      LoginScreenBehavior,
-      MultiStepBehavior,
-    ],
-    PolymerElement) as {
-      new ():
-        PolymerElement & OobeI18nBehaviorInterface &
-        LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface &
-        MultiStepBehaviorInterface,
-  };
+const RecommendAppsElementBase = OobeDialogHostMixin(
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement))));
 
 class RecommendAppsElement extends RecommendAppsElementBase {
   static get is() {
@@ -142,11 +132,12 @@ class RecommendAppsElement extends RecommendAppsElementBase {
    * Initial UI State for screen
    */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): number {
-    return OOBE_UI_STATE.ONBOARDING;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.ONBOARDING;
   }
 
-  onBeforeHide(): void {
+  override onBeforeHide(): void {
+    super.onBeforeHide();
     this.appList = [];
   }
 

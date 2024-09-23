@@ -89,7 +89,9 @@ class CORE_EXPORT SpinButtonElement final : public HTMLDivElement,
   void StopRepeatingTimer();
   void RepeatingTimerFired(TimerBase*);
   bool ShouldRespondToMouseEvents() const;
-  bool IsFocusable(UpdateBehavior) const override { return false; }
+  FocusableState IsFocusableState(UpdateBehavior) const override {
+    return FocusableState::kNotFocusable;
+  }
   void CalculateUpDownStateByMouseLocation(Event&);
 
   Member<SpinButtonOwner> spin_button_owner_;

@@ -28,7 +28,6 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="2329392777730037872">Otvaranje URL-a <ph name="URL" /> na uređaju klijenta nije uspjelo.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2366718077645204424">Nije moguće povezati se s host računarom. Uzrok je vjerovatno konfiguracija mreže koju koristite.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Poslednji put na mreži <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Dajte odobrenje za "Pristupačnost" za <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Povezano s host računarom <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Želite li dijeliti ovaj računar da ga drugi korisnik može vidjeti ili kontrolirati?</translation>
@@ -53,7 +52,6 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="3423542133075182604">Proces uspostavljanja povezivanja sigurnosnog ključa na daljinu</translation>
 <translation id="3581045510967524389">Nije se moguće povezati na mrežu. Provjerite je li uređaj na mreži.</translation>
 <translation id="3596628256176442606">Ova usluga omogućava dolazne veze klijenata Chromotinga.</translation>
-<translation id="369442766917958684">Van mreže.</translation>
 <translation id="3695446226812920698">Saznajte kako</translation>
 <translation id="3776024066357219166">Vaša sesija Chrome udaljenog računara se završila.</translation>
 <translation id="3858860766373142691">Naziv</translation>
@@ -105,7 +103,6 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Trenutno dijelite svoju radnu površinu s korisnikom <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Prijavljeni ste kao <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Poveži ponovo</translation>
 <translation id="5810269635982033450">Ekran služi kao dodirna tabla</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> traži pristup da vidi vaš ekran i kontrolira tastaturu i miš. Pritisnite ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ako ne očekujete ovaj zahtjev. U suprotnom, odaberite ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' da omogućite povezivanje kada budete spremni.</translation>

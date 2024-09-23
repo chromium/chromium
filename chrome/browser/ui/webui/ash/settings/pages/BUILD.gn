@@ -1,0 +1,97 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("pages") {
+  sources = [
+    "os_settings_section.cc",
+    "os_settings_section.h",
+    "os_settings_sections.cc",
+    "os_settings_sections.h",
+  ]
+
+  public_deps = [
+    "//ash/webui/eche_app_ui",
+    "//ash/webui/settings/public/constants:mojom",
+    "//base",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/browser/ui/webui/ash/settings/search/mojom",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//build:branding_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/settings/pages/a11y",
+    "//chrome/browser/ui/webui/ash/settings/pages/about",
+    "//chrome/browser/ui/webui/ash/settings/pages/apps",
+    "//chrome/browser/ui/webui/ash/settings/pages/bluetooth",
+    "//chrome/browser/ui/webui/ash/settings/pages/crostini",
+    "//chrome/browser/ui/webui/ash/settings/pages/date_time",
+    "//chrome/browser/ui/webui/ash/settings/pages/device",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
+    "//chrome/browser/ui/webui/ash/settings/pages/internet",
+    "//chrome/browser/ui/webui/ash/settings/pages/kerberos",
+    "//chrome/browser/ui/webui/ash/settings/pages/languages",
+    "//chrome/browser/ui/webui/ash/settings/pages/main",
+    "//chrome/browser/ui/webui/ash/settings/pages/multidevice",
+    "//chrome/browser/ui/webui/ash/settings/pages/multitasking",
+    "//chrome/browser/ui/webui/ash/settings/pages/people",
+    "//chrome/browser/ui/webui/ash/settings/pages/personalization",
+    "//chrome/browser/ui/webui/ash/settings/pages/power",
+    "//chrome/browser/ui/webui/ash/settings/pages/printing",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+    "//chrome/browser/ui/webui/ash/settings/pages/reset",
+    "//chrome/browser/ui/webui/ash/settings/pages/search",
+    "//chrome/browser/ui/webui/ash/settings/pages/storage",
+    "//chrome/browser/ui/webui/ash/settings/pages/system_preferences",
+    "//chromeos/ash/components/phonehub",
+    "//ui/base",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ui/webui/ash/settings/pages/a11y",
+    "//chrome/browser/ui/webui/ash/settings/pages/about",
+    "//chrome/browser/ui/webui/ash/settings/pages/apps",
+    "//chrome/browser/ui/webui/ash/settings/pages/bluetooth",
+    "//chrome/browser/ui/webui/ash/settings/pages/crostini",
+    "//chrome/browser/ui/webui/ash/settings/pages/date_time",
+    "//chrome/browser/ui/webui/ash/settings/pages/device",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
+    "//chrome/browser/ui/webui/ash/settings/pages/internet",
+    "//chrome/browser/ui/webui/ash/settings/pages/kerberos",
+    "//chrome/browser/ui/webui/ash/settings/pages/languages",
+    "//chrome/browser/ui/webui/ash/settings/pages/main",
+    "//chrome/browser/ui/webui/ash/settings/pages/multidevice",
+    "//chrome/browser/ui/webui/ash/settings/pages/multitasking",
+    "//chrome/browser/ui/webui/ash/settings/pages/people",
+    "//chrome/browser/ui/webui/ash/settings/pages/personalization",
+    "//chrome/browser/ui/webui/ash/settings/pages/power",
+    "//chrome/browser/ui/webui/ash/settings/pages/printing",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+    "//chrome/browser/ui/webui/ash/settings/pages/reset",
+    "//chrome/browser/ui/webui/ash/settings/pages/search",
+    "//chrome/browser/ui/webui/ash/settings/pages/storage",
+    "//chrome/browser/ui/webui/ash/settings/pages/system_preferences",
+    "//chrome/browser/ui/webui/ash/settings/search",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "os_settings_section_unittest.cc" ]
+
+  deps = [
+    ":pages",
+    "//ash/webui/settings/public/constants:mojom",
+    "//testing/gtest",
+  ]
+}

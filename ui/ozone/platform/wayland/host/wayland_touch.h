@@ -107,11 +107,13 @@ class WaylandTouch::Delegate {
                                  wl::EventDispatchPolicy dispatch_policy) = 0;
   virtual void OnTouchReleaseEvent(base::TimeTicks timestamp,
                                    PointerId id,
-                                   wl::EventDispatchPolicy dispatch_policy) = 0;
+                                   wl::EventDispatchPolicy dispatch_policy,
+                                   bool is_synthesized) = 0;
   virtual void OnTouchMotionEvent(const gfx::PointF& location,
                                   base::TimeTicks timestamp,
                                   PointerId id,
-                                  wl::EventDispatchPolicy dispatch_policy) = 0;
+                                  wl::EventDispatchPolicy dispatch_policy,
+                                  bool is_synthesized) = 0;
   virtual void OnTouchCancelEvent() = 0;
   virtual void OnTouchFrame() = 0;
   virtual void OnTouchFocusChanged(WaylandWindow* window) = 0;

@@ -42,6 +42,10 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "url/origin.h"
 
+namespace WTF {
+class StringBuilder;
+}  // namespace WTF
+
 namespace blink {
 
 class KURL;
@@ -268,6 +272,16 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   // When using the string value, it's important to remember that it might be
   // "null". This typically happens when this SecurityOrigin is opaque (e.g. the
   // origin of a sandboxed iframe).
+  //
+  // This should be kept in sync with url::Origin::Serialize().
+  //
+  // TODO(crbug.com/40554285, crbug.com/40467682): Note that there's a subtle
+  // difference in how this function handles file: URL origins compared to
+  // url::Origin::Serialize(). url::Origin always serializes them to "file://",
+  // whereas this function serializes them to "null" or // "file://" depending
+  // on the `allow_file_access_from_file_urls` flag in WebPreferences. This
+  // difference should be cleaned up, along with the workaround for it in
+  // RenderFrameProxyHost::SerializePostMessageSourceOrigin().
   String ToString() const;
   AtomicString ToAtomicString() const;
 
@@ -416,7 +430,7 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   SecurityOrigin(NewUniqueOpaque, const SecurityOrigin* precursor_origin);
 
   // Create a tuple SecurityOrigin, with parameters via KURL
-  explicit SecurityOrigin(const KURL& url);
+  static scoped_refptr<SecurityOrigin> CreateInternal(const KURL& url);
 
   // Constructs a non-opaque tuple origin, analogously to
   // url::Origin::Origin(url::SchemeHostPort).
@@ -432,7 +446,7 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
 
   // FIXME: Rename this function to something more semantic.
   bool PassesFileCheck(const SecurityOrigin*) const;
-  void BuildRawString(StringBuilder&) const;
+  void BuildRawString(WTF::StringBuilder&) const;
 
   // Get the nonce associated with this origin, if it is opaque. This should be
   // used only when trying to send an Origin across an IPC pipe or comparing

@@ -11,21 +11,9 @@
     },
     {
       "name": "Caret",
-      "position": [200, 0],
+      "position": [212, 11],
       "bounds": [1, 15],
-      "contentsOpaque": true,
-      "transform": 1
-    }
-  ],
-  "transforms": [
-    {
-      "id": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [12, 11, 0, 1]
-      ]
+      "contentsOpaque": true
     }
   ]
 }

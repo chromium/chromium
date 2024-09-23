@@ -24,10 +24,13 @@ FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
     case FieldTypeGroup::kUsernameField:
     case FieldTypeGroup::kPasswordField:
       return FormType::kPasswordForm;
+    case FieldTypeGroup::kStandaloneCvcField:
+      return FormType::kStandaloneCvcForm;
     case FieldTypeGroup::kIban:
     case FieldTypeGroup::kNoGroup:
     case FieldTypeGroup::kTransaction:
     case FieldTypeGroup::kUnfillable:
+    case FieldTypeGroup::kPredictionImprovements:
       return FormType::kUnknownFormType;
   }
 }
@@ -42,20 +45,46 @@ std::string_view FormTypeToStringView(FormType form_type) {
       return "Password";
     case FormType::kUnknownFormType:
       return "Unknown";
+    case FormType::kStandaloneCvcForm:
+      return "StandaloneCvc";
   }
 
   NOTREACHED();
-  return "UnknownFormType";
+}
+
+// When adding a new return value, update variants "AutofillFormType.Fillable"
+// and "AutofillFormType.Address" in
+// tools/metrics/histograms/metadata/autofill/histograms.xml accordingly.
+std::string_view FormTypeNameForLoggingToStringView(
+    FormTypeNameForLogging form_type_name) {
+  switch (form_type_name) {
+    case FormTypeNameForLogging::kAddressForm:
+      return "Address";
+    case FormTypeNameForLogging::kCreditCardForm:
+      return "CreditCard";
+    case FormTypeNameForLogging::kPasswordForm:
+      return "Password";
+    case FormTypeNameForLogging::kUnknownFormType:
+      return "Unknown";
+    case FormTypeNameForLogging::kStandaloneCvcForm:
+      return "StandaloneCvc";
+    case FormTypeNameForLogging::kEmailOnlyForm:
+      return "EmailOnly";
+    case FormTypeNameForLogging::kPostalAddressForm:
+      return "PostalAddress";
+  }
+
+  NOTREACHED();
 }
 
 bool FormHasAllCreditCardFields(const FormStructure& form_structure) {
-  bool has_card_number_field = base::ranges::any_of(
+  bool has_card_number_field = std::ranges::any_of(
       form_structure, [](const std::unique_ptr<AutofillField>& autofill_field) {
         return autofill_field->Type().GetStorableType() ==
                FieldType::CREDIT_CARD_NUMBER;
       });
 
-  bool has_expiration_date_field = base::ranges::any_of(
+  bool has_expiration_date_field = std::ranges::any_of(
       form_structure, [](const std::unique_ptr<AutofillField>& autofill_field) {
         return autofill_field->HasExpirationDateType();
       });

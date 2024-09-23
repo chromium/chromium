@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src="../../resources/ahem.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+body {
+  font: 20px/1 Ahem;
+}
+rt {
+  /* background is important to generated a PhysicalBoxFragment. */
+  background: orange;
+}
+</style>
+<p>before <ruby><span>base</span><rt>annotati</ruby></p>
+<script>
+function getRect(query) {
+  return document.querySelector(query).getBoundingClientRect();
+}
+
+test(() => {
+  assert_equals(getRect('span').x, getRect('rt').x);
+}, 'Inline offset of a <rt> is same as the base text if text widths are same');
+</script>

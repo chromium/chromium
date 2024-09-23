@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_action_icon_factory.h"
+#include "extensions/browser/extension_action_icon_factory.h"
 
 #include <memory>
 #include <utility>
@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -163,11 +162,9 @@ class ExtensionActionIconFactoryTest
   }
 
   ExtensionAction* GetExtensionAction(const Extension& extension) {
-    return ExtensionActionManager::Get(profile())->GetExtensionAction(
-        extension);
+    return ExtensionActionManager::Get(profile_.get())
+        ->GetExtensionAction(extension);
   }
-
-  TestingProfile* profile() { return profile_.get(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -196,8 +193,7 @@ TEST_F(ExtensionActionIconFactoryTest, NoIcons) {
   ASSERT_FALSE(action->default_icon());
   ASSERT_TRUE(action->GetExplicitlySetIcon(0 /*tab id*/).IsEmpty());
 
-  ExtensionActionIconFactory icon_factory(profile(), extension.get(), action,
-                                          this);
+  ExtensionActionIconFactory icon_factory(extension.get(), action, this);
 
   gfx::Image icon = icon_factory.GetIcon(0);
 
@@ -228,19 +224,14 @@ TEST_F(ExtensionActionIconFactoryTest, InvisibleIcon) {
   // Set the flag for testing.
   ExtensionActionIconFactory::SetAllowInvisibleIconsForTest(false);
 
-  ExtensionActionIconFactory icon_factory(profile(), extension.get(), action,
-                                          this);
+  ExtensionActionIconFactory icon_factory(extension.get(), action, this);
 
-  base::HistogramTester histogram_tester;
   gfx::Image icon = icon_factory.GetIcon(0);
   // The default icon should not be returned, since it's invisible.
   // The placeholder icon should be returned instead.
   EXPECT_TRUE(ImageRepsAreEqual(
       action->GetPlaceholderIconImage().ToImageSkia()->GetRepresentation(1.0f),
       icon.ToImageSkia()->GetRepresentation(1.0f)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Extensions.ManifestIconSetIconWasVisibleForPacked"),
-              testing::ElementsAre(base::Bucket(0, 1)));
 
   // Reset the flag for testing.
   ExtensionActionIconFactory::SetAllowInvisibleIconsForTest(true);
@@ -267,8 +258,7 @@ TEST_F(ExtensionActionIconFactoryTest, AfterSetIcon) {
 
   ASSERT_FALSE(action->GetExplicitlySetIcon(0 /*tab id*/).IsEmpty());
 
-  ExtensionActionIconFactory icon_factory(profile(), extension.get(), action,
-                                          this);
+  ExtensionActionIconFactory icon_factory(extension.get(), action, this);
 
   gfx::Image icon = icon_factory.GetIcon(0);
 
@@ -310,8 +300,8 @@ TEST_F(ExtensionActionIconFactoryTest, DefaultIcon) {
   action = GetExtensionAction(*extension_with_icon);
   ASSERT_TRUE(action->default_icon());
 
-  ExtensionActionIconFactory icon_factory(profile(), extension_with_icon.get(),
-                                          action, this);
+  ExtensionActionIconFactory icon_factory(extension_with_icon.get(), action,
+                                          this);
 
   gfx::Image icon = icon_factory.GetIcon(0);
 

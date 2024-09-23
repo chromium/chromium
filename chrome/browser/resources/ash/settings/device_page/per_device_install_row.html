@@ -1,0 +1,37 @@
+<style include="settings-shared input-device-settings-shared">
+  .app-info-container {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: var(--cr-section-vertical-padding) var(--cr-section-padding);
+  }
+
+  .app-details {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    gap: 12px;
+  }
+
+</style>
+<div class="app-info-container bottom-divider">
+  <div class="app-info">
+    <div class="app-details" aria-hidden="true">
+      <img
+          id="app-icon"
+          is="cr-auto-img"
+          alt=""
+          width="32"
+          height="32"
+          auto-src="[[appInfo.iconUrl]]">
+      <span id="appName">[[installAppLabel]]</span>
+    </div>
+  </div>
+  <cr-button
+      role="button"
+      id="installButton"
+      on-click="onInstallCompanionAppButtonClicked"
+      aria-labelledby="appName">
+    $i18n{installAppButton}
+  </cr-button>
+</div>

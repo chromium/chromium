@@ -9,7 +9,9 @@
           "ShelfAutoHideBehavior": "Always"
         },
         "prefs": {
-          "auto_hide_behavior_local": {}
+          "auto_hide_behavior_local": {
+            "value": "Always"
+          }
         }
       }
     ]

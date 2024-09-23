@@ -38,4 +38,5 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
   html_to_wrapper_template = "native"
+  webui_context_type = "trusted"
 }

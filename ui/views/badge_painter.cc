@@ -81,18 +81,8 @@ gfx::Size BadgePainter::GetBadgeSize(const std::u16string& text,
 }
 
 gfx::FontList BadgePainter::GetBadgeFont(const gfx::FontList& context_font) {
-  if (features::IsChromeRefresh2023()) {
-    return views::TypographyProvider::Get().GetFont(
-        views::style::CONTEXT_BADGE, views::style::STYLE_SECONDARY);
-  }
-
-  // Preferred font is slightly smaller and slightly more bold than the title
-  // font. The size change is required to make it look correct in the badge; we
-  // add a small degree of bold to prevent color smearing/blurring due to font
-  // smoothing. This ensures readability on all platforms and in both light and
-  // dark modes.
-  return context_font.Derive(BadgePainter::kBadgeFontSizeAdjustment,
-                             gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM);
+  return views::TypographyProvider::Get().GetFont(
+      views::style::CONTEXT_BADGE, views::style::STYLE_SECONDARY);
 }
 
 }  // namespace views

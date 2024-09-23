@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
+#include "base/files/file_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -20,53 +20,54 @@
 namespace web_app {
 namespace {
 
-class UpdateFileHandlerCommandTest
-    : public WebAppTest,
-      public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
+class UpdateFileHandlerCommandTest : public WebAppTest {
  public:
   const char* kTestAppName = "test app";
   const GURL kTestAppUrl = GURL("https://example.com");
 
-  UpdateFileHandlerCommandTest() {
-    if (GetParam() == OsIntegrationSubManagersState::kSaveStateToDB) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{features::kOsIntegrationSubManagers, {{"stage", "write_config"}}}},
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {features::kOsIntegrationSubManagers});
-    }
-  }
-
+  UpdateFileHandlerCommandTest() = default;
   ~UpdateFileHandlerCommandTest() override = default;
 
   void SetUp() override {
     WebAppTest::SetUp();
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      test_override_ = OsIntegrationTestOverrideImpl::OverrideForTesting();
+    }
     provider_ = FakeWebAppProvider::Get(profile());
 
     auto file_handler_manager =
         std::make_unique<WebAppFileHandlerManager>(profile());
     auto protocol_handler_manager =
         std::make_unique<WebAppProtocolHandlerManager>(profile());
-    auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
-        profile(), file_handler_manager.get(), protocol_handler_manager.get());
     auto os_integration_manager = std::make_unique<OsIntegrationManager>(
-        profile(), std::move(shortcut_manager), std::move(file_handler_manager),
-        std::move(protocol_handler_manager), /*url_handler_manager=*/nullptr);
+        profile(), std::move(file_handler_manager),
+        std::move(protocol_handler_manager));
 
     provider_->SetOsIntegrationManager(std::move(os_integration_manager));
-
     test::AwaitStartWebAppProviderAndSubsystems(profile());
+  }
+
+  void TearDown() override {
+    // Blocking required due to file operations in the shortcut override
+    // destructor.
+    test::UninstallAllWebApps(profile());
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      test_override_.reset();
+    }
+    WebAppTest::TearDown();
   }
 
   WebAppProvider* provider() { return provider_; }
 
  private:
   raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
+      test_override_;
 };
 
-TEST_P(UpdateFileHandlerCommandTest, UserChoiceAllowPersisted) {
+TEST_F(UpdateFileHandlerCommandTest, UserChoiceAllowPersisted) {
   const webapps::AppId app_id =
       test::InstallDummyWebApp(profile(), kTestAppName, kTestAppUrl);
   EXPECT_EQ(
@@ -86,7 +87,7 @@ TEST_P(UpdateFileHandlerCommandTest, UserChoiceAllowPersisted) {
           app_id));
 }
 
-TEST_P(UpdateFileHandlerCommandTest, UserChoiceDisallowPersisted) {
+TEST_F(UpdateFileHandlerCommandTest, UserChoiceDisallowPersisted) {
   const webapps::AppId app_id =
       test::InstallDummyWebApp(profile(), kTestAppName, kTestAppUrl);
   EXPECT_EQ(
@@ -105,13 +106,6 @@ TEST_P(UpdateFileHandlerCommandTest, UserChoiceDisallowPersisted) {
       provider()->registrar_unsafe().ExpectThatFileHandlersAreRegisteredWithOs(
           app_id));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    UpdateFileHandlerCommandTest,
-    ::testing::Values(OsIntegrationSubManagersState::kSaveStateToDB,
-                      OsIntegrationSubManagersState::kDisabled),
-    test::GetOsIntegrationSubManagersTestName);
 
 }  // namespace
 }  // namespace web_app

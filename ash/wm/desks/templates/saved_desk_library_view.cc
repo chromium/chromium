@@ -220,10 +220,10 @@ SavedDeskLibraryView::CreateSavedDeskLibraryWidget(aura::Window* root) {
   DCHECK(root->IsRootWindow());
 
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.accept_events = true;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   // The parent should be a container that covers all the windows but is below
   // some other system UI features such as system tray and capture mode and also
   // below the system modal dialogs.
@@ -291,7 +291,7 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
 
     scroll_contents->AddChildView(std::move(group_contents));
   }
-  if (saved_desk_util::ShouldShowSavedDesksButtons()) {
+  if (saved_desk_util::ShouldShowSavedDesksOptions()) {
     auto group_contents = GetLabelAndGridGroupContents();
     save_and_recall_grid_view_ =
         group_contents->AddChildView(std::make_unique<SavedDeskGridView>());
@@ -457,20 +457,21 @@ void SavedDeskLibraryView::OnLocatedEvent(ui::LocatedEvent* event,
                       : event->root_location();
 
   switch (event->type()) {
-    case ui::ET_MOUSE_MOVED:
-    case ui::ET_MOUSE_ENTERED:
-    case ui::ET_MOUSE_RELEASED:
-    case ui::ET_MOUSE_EXITED:
-    case ui::ET_GESTURE_SCROLL_BEGIN:
-    case ui::ET_GESTURE_LONG_PRESS:
-    case ui::ET_GESTURE_LONG_TAP: {
+    case ui::EventType::kMouseMoved:
+    case ui::EventType::kMouseEntered:
+    case ui::EventType::kMouseReleased:
+    case ui::EventType::kMouseExited:
+    case ui::EventType::kGestureScrollBegin:
+    case ui::EventType::kGestureLongPress:
+    case ui::EventType::kGestureLongTap: {
       if (event->IsGestureEvent())
         SavedDeskNameView::CommitChanges(GetWidget());
 
       // For gesture scroll, we don't update hover button visibility but commit
       // name changes for grid items.
-      if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN)
+      if (event->type() == ui::EventType::kGestureScrollBegin) {
         break;
+      }
 
       for (ash::SavedDeskGridView* grid_view : grid_views()) {
         for (SavedDeskItemView* grid_item : grid_view->grid_items())
@@ -478,7 +479,7 @@ void SavedDeskLibraryView::OnLocatedEvent(ui::LocatedEvent* event,
       }
       break;
     }
-    case ui::ET_GESTURE_TAP:
+    case ui::EventType::kGestureTap:
       // When it's a tap outside grid items, it should either commit the name
       // change or exit the overview mode. Currently those are handled in
       // `OverviewGrid` for both saved desk library view and desk bar

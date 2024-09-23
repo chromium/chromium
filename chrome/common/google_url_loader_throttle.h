@@ -6,6 +6,7 @@
 #define CHROME_COMMON_GOOGLE_URL_LOADER_THROTTLE_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -40,9 +41,18 @@ class GoogleURLLoaderThrottle final : public blink::URLLoaderThrottle {
       network::mojom::NetworkContextParams* params);
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  static bool ShouldDeferRequestForBoundSession(
+  // Elements of these enum are ordered in such a way that two independent
+  // statuses can be merged together using `std::max()` function to get an
+  // aggregate status.
+  enum class RequestBoundSessionStatus {
+    kNotCovered = 0,
+    kCoveredWithFreshCookie = 1,
+    kCoveredWithMissingCookie = 2
+  };
+
+  static RequestBoundSessionStatus GetRequestBoundSessionStatus(
       const GURL& request_url,
-      chrome::mojom::BoundSessionThrottlerParams*
+      const std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>&
           bound_session_throttler_params);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -61,8 +71,8 @@ class GoogleURLLoaderThrottle final : public blink::URLLoaderThrottle {
                            network::mojom::URLResponseHead* response_head,
                            bool* defer) override;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  void WillOnCompleteWithError(const network::URLLoaderCompletionStatus& status,
-                               bool* defer) override;
+  void WillOnCompleteWithError(
+      const network::URLLoaderCompletionStatus& status) override;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
  private:
@@ -78,6 +88,7 @@ class GoogleURLLoaderThrottle final : public blink::URLLoaderThrottle {
       bound_session_request_throttled_handler_;
   std::optional<base::TimeTicks> bound_session_request_throttled_start_time_;
   bool is_main_frame_navigation_ = false;
+  bool sends_cookies_ = false;
   // `true` if at least one URL in the redirect chain was affected.
   bool is_covered_by_bound_session_ = false;
   bool is_deferred_for_bound_session_ = false;

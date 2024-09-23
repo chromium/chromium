@@ -1,0 +1,297 @@
+// Copyright 2014 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package affiliation_pb;
+
+option optimize_for = LITE_RUNTIME;
+
+// The messages below mirror the corresponding messages on the server side.
+// These should be updated once the server side changes.
+// Synced version: http://shortn/_I1RSr2qd8P
+
+// Contains a list of affiliated facets.
+// Affiliated facets are allowed to share credentials among each other.
+message Affiliation {
+  // See the top level comment.
+  repeated Facet facet = 1;
+
+  reserved 2;
+}
+
+// A website or Android app within the affiliation.
+// Next id: 6
+message Facet {
+  // URL the uniquely identifies the website or Android app.
+  optional string id = 1;
+
+  // Branding info for this Facet.
+  optional BrandingInfo branding_info = 2;
+
+  // Top private domain of a facet. Exists only if facet ID refers to a website
+  // (starts with "http://" or "https://").
+  // See go/internet-domain-name for Top Private Domain definition.
+  // If no top private domain can be calculated (e.g. for IP addresses), then
+  // the domain in the facet ID is returned without changes.
+  // Examples (facet ID -> main_domain):
+  // http://www.facebook.com -> facebook.com
+  // https://google.com -> google.com
+  // http://192.168.0.1 -> 192.168.0.1
+  // http://somethinginvalid$%#^ -> somethinginvalid$%#^
+  // android://xyz@com.facebook -> field is not populated
+  optional string main_domain = 3;
+
+  // Info about where the user can change a password stored for this Facet. This
+  // info should be considered valid for any other Facet in the same FacetGroup.
+  // Only present for Facets in a FacetGroup.
+  optional ChangePasswordInfo change_password_info = 4;
+
+  // Info about whether the url belongs to an internal network (see RFC 1918).
+  // For example, http://127.0.0.1 -> true
+  optional bool is_on_internal_network = 5;
+}
+
+// Message representing set of facets that should be grouped together in the UI.
+message FacetGroup {
+  // Set of facets that can be grouped together in the UI.
+  // Do no use this for credential sharing - Affiliation.facet field is intended
+  // for that.
+  // Also, see the top level comment of Affiliation message.
+  repeated Facet facet = 1;
+
+  // Branding info (display name and the icon info) for the Group.
+  optional GroupBrandingInfo group_branding_info = 2;
+}
+
+// Branding info (display name and the icon info) for an affiliated group.
+message GroupBrandingInfo {
+  // Display name of the group.
+  optional string name = 1;
+  // Eliding info for the name.
+  optional BrandingInfo.ElideInfo elide_info = 5;
+
+  // Icon URL of the group.
+  optional string icon_url = 2;
+
+  // Width and height of the icon. These fields are populated only when we're
+  // able to find or detect them.
+  optional int32 icon_width = 3;
+  optional int32 icon_height = 4;
+
+  // An icon URL that is not hosted on Google servers.
+  // See LookupAffiliationMask.non_google_hosted_icon
+  optional string icon_url_not_hosted_by_google = 7;
+
+  reserved 6;
+}
+
+// Branding info for a single facet.
+message BrandingInfo {
+  enum ElideInfo {
+    UNKNOWN_ELIDE = 0;
+    // Elide the name from the front if it doesn't fit.
+    // Example: "https://www.facebook.evildomain.com" -> "...ook.evildomain.com"
+    ELIDE_FROM_FRONT = 1;
+    // Elide the name from the back if it doesn't fit.
+    // Example: "Facebook - The awesome app" -> "Facebook - The awe..."
+    ELIDE_FROM_BACK = 2;
+  }
+
+  // Display name.
+  optional string name = 1;
+  // Eliding info for the name.
+  optional ElideInfo elide_info = 6;
+
+  // Icon URL.
+  optional string icon_url = 2;
+
+  // Width and height of the icon. These fields are populated only when we're
+  // able to find or detect them.
+  optional int32 icon_width = 4;
+  optional int32 icon_height = 5;
+
+  // An icon URL that is not hosted on Google servers.
+  // See LookupAffiliationMask.non_google_hosted_icon
+  optional string icon_url_not_hosted_by_google = 8;
+
+  reserved 7;
+}
+
+// Various methods through which a user can change a password for a single
+// facet.
+message ChangePasswordInfo {
+  // A URL to a change password form or flow.
+  optional string change_password_url = 1;
+}
+
+// Request mask for LookupAffiliationRequest and assorted other
+// parameters that affect the response overall.
+// Next id: 12
+message LookupAffiliationMask {
+  // If true, branding info for all facets will be returned.
+  optional bool branding_info = 1;
+
+  // Preferred size of the icon returned in BrandingInfo or
+  // GroupBrandingInfo. Applies both to width and height of the image.
+  // This field can be set only if at least one of branding_info or
+  // affiliation_branding_info is set to true.
+  optional int32 preferred_icon_size = 4;
+
+  // Whether an additional icon URL that is not hosted on Google servers should
+  // be generated for per-facet and group branding infos.
+  //
+  // One example is for website.com the https://website.com/favicon.ico could
+  // be returned.
+  //
+  // Since these URLs are generated without knowing whether there actually is
+  // an icon at that location, clients must be prepared to handle the case that
+  // loading the URL returns nothing or an error or other non-image content.
+  //
+  // Clients also  must be ready to handle the case when these URLs are not
+  // populated in the response (we might be unable to generate them in certain
+  // cases).
+  //
+  // This field can be set only when branding_info or group_branding_info
+  // is populated.
+  optional bool icon_not_hosted_by_google = 10;
+
+  // If set, the display name for the specified locale will be returned.
+  optional string locale = 2;
+
+  // If true the information required for password grouping.
+  optional bool grouping_info = 6;
+
+  // If true, an instance of GroupBrandingInfo will be populated in the
+  // grouping response. Can be set only if grouping_info and branding_info is
+  // set to true.
+  optional bool group_branding_info = 5;
+
+  // Whether to include change password infos in the response. Can be set only
+  // if grouping_info is set to true, as this is only populated for FacetGroups.
+  optional bool change_password_info = 7;
+
+  // If true, a list of "PSL extensions" will be populated in the response.
+  // This list is used as an extension to PSL (see go/internet-domain-name and
+  // go/public-suffix-list) and helps to ungroup domains that shouldn't
+  // be grouped for Password Management purposes.
+  //
+  // For example, slack.com will not be added to the main PSL, because Slack
+  // wants to be able to set cookies on all of its subdomains.
+  // However https://<some company>.slack.com hosts Some Company's login page
+  // for Slack, and these subodmains shouldn't be grouped. This makes
+  // `slack.com` a good candidate for the extension list.
+  //
+  // The server also applies some PSL-based merging on the fly, and it will use
+  // extensions regardless of the value of this flag - it only controls whether
+  // extensions will be populated in the response.
+  //
+  // Extensions are sent to the client to be able to correctly apply PSL-based
+  // merging for cases when clients are working with facets that were not seen
+  // by the server. An example is a password being saved for a new domain, and
+  // that domain could be added into an existing Affiliation - it's useful to
+  // apply the extension list when computing its main domain.
+  optional bool psl_extension_list = 8;
+
+  // If true, the `is_on_internal_network` field in Facet message will be
+  // populated. Optional field.
+  optional bool is_on_internal_network = 9;
+
+  // Which dataset the client is hinting to receive.
+  enum RequestedDataset {
+    // Not specified. Same as DEFAULT_DATASET essentially.
+    REQUESTED_DATASET_UNSPECIFIED = 0;
+    // No specific dataset requested by the client. Likely the server responds
+    // with the current production dataset.
+    DEFAULT_DATASET = 1;
+    // A way for the client to specify that they want the experimental dataset.
+    // Please reach out to the Affilitions (go/pwm-eng) team before setting this
+    // value!
+    EXPERIMENTAL_DATASET = 2;
+  }
+
+  // A hint from the client for which dataset the server should return.
+  //
+  // Please do not set this unless the Affiliations team has told you to!
+  //
+  // Affiliation Service sometimes runs multiple datasets in parallel. The
+  // chosen dataset affects both the Affiliations and FacetGroups in the
+  // response.
+  //
+  // This is a simple way to coordinate experiments with clients because the
+  // proper Mendel way doesn't quite work (yet). See b/327142690 for overall
+  // progress towards client-side experiments and metrics.
+  //
+  // This field is optional and leaving it unspecified is usually the right
+  // choice. The server does not have to honor this field. There might not even
+  // be another dataset than the default one.
+  optional RequestedDataset dataset = 11;
+
+  reserved 3;
+}
+
+// Request message for AffiliationService.Lookup.
+message LookupAffiliationRequest {
+  // Facet IDs to query.
+  repeated string facet = 1;
+
+  // Request mask.
+  optional LookupAffiliationMask mask = 2;
+}
+
+// Response message for AffiliationService.Lookup.
+message LookupAffiliationResponse {
+  // Affiliations containing the requested facets.
+  repeated Affiliation affiliation = 1;
+
+  // Information required for grouping facets in the UI.
+  repeated FacetGroup group = 2;
+
+  // The set of domains that the server uses as an extension to the PSL for
+  // grouping.
+  //
+  // This field is populated in the response only if
+  // `LookupAffiliationMask.psl_extension_list` is set to true in the request.
+  // See `LookupAffiliationMask.psl_extension_list` for more information.
+  repeated string psl_extensions = 3;
+}
+
+// Request message for AffiliationService.LookupByHashPrefix.
+message LookupAffiliationByHashPrefixRequest {
+  // Request mask.
+  optional LookupAffiliationMask mask = 1;
+
+  // Number of bits in each hash prefix. Required, request will be fail
+  // if this is not set.
+  optional uint32 hash_prefix_length = 2;
+
+  // The prefixes of the requested hashes. Encoding of the string prior to
+  // hashing should be UTF-8. SHA256 should be used to calculate the hashes. The
+  // prefix will be taken as the first 'hash_prefix_length' number of bits
+  // of this uint64. Other bits will be ignored.
+  repeated uint64 hash_prefixes = 3;
+}
+
+// Response message for AffiliationService.LookupByHashPrefix.
+message LookupAffiliationByHashPrefixResponse {
+  // Affiliations containing facets that match the requested prefixes.
+  // Affiliations will be deduplicated, i.e. if an affiliation matched multiple
+  // prefixes only one copy will be returned. No correlation should be assumed
+  // between the order of returned affiliations and the order of requested
+  // prefixes.
+  repeated Affiliation affiliations = 1;
+
+  // Information required for grouping facets in the UI. Ordering and
+  // deduplication works the same as for affiliations.
+  repeated FacetGroup groups = 2;
+
+  // The set of domains that the server uses as an extension to the PSL for
+  // grouping.
+  //
+  // This field is populated in the response only if
+  // `LookupAffiliationMask.psl_extension_list` is set to true in the request.
+  // See `LookupAffiliationMask.psl_extension_list` for more information.
+  repeated string psl_extensions = 3;
+}
+ 

@@ -76,7 +76,7 @@ enum ExamplesColorIds : ui::ColorId {
 
 // Note that this second include is not redundant. The second inclusion of the
 // .inc file serves to undefine the macros the first inclusion defined.
-#include "ui/color/color_id_macros.inc"  // NOLINT
+#include "ui/color/color_id_macros.inc"  // NOLINT(build/include)
 
 }  // namespace views::examples
 

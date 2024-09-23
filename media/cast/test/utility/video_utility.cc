@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/cast/test/utility/video_utility.h"
 
 #include <math.h>
@@ -24,18 +29,18 @@ double I420PSNR(const media::VideoFrame& frame1,
       frame1.visible_rect().height() != frame2.visible_rect().height())
     return -1;
 
-  return libyuv::I420Psnr(frame1.visible_data(VideoFrame::kYPlane),
-                          frame1.stride(VideoFrame::kYPlane),
-                          frame1.visible_data(VideoFrame::kUPlane),
-                          frame1.stride(VideoFrame::kUPlane),
-                          frame1.visible_data(VideoFrame::kVPlane),
-                          frame1.stride(VideoFrame::kVPlane),
-                          frame2.visible_data(VideoFrame::kYPlane),
-                          frame2.stride(VideoFrame::kYPlane),
-                          frame2.visible_data(VideoFrame::kUPlane),
-                          frame2.stride(VideoFrame::kUPlane),
-                          frame2.visible_data(VideoFrame::kVPlane),
-                          frame2.stride(VideoFrame::kVPlane),
+  return libyuv::I420Psnr(frame1.visible_data(VideoFrame::Plane::kY),
+                          frame1.stride(VideoFrame::Plane::kY),
+                          frame1.visible_data(VideoFrame::Plane::kU),
+                          frame1.stride(VideoFrame::Plane::kU),
+                          frame1.visible_data(VideoFrame::Plane::kV),
+                          frame1.stride(VideoFrame::Plane::kV),
+                          frame2.visible_data(VideoFrame::Plane::kY),
+                          frame2.stride(VideoFrame::Plane::kY),
+                          frame2.visible_data(VideoFrame::Plane::kU),
+                          frame2.stride(VideoFrame::Plane::kU),
+                          frame2.visible_data(VideoFrame::Plane::kV),
+                          frame2.stride(VideoFrame::Plane::kV),
                           frame1.visible_rect().width(),
                           frame1.visible_rect().height());
 }
@@ -46,18 +51,18 @@ double I420SSIM(const media::VideoFrame& frame1,
       frame1.visible_rect().height() != frame2.visible_rect().height())
     return -1;
 
-  return libyuv::I420Ssim(frame1.visible_data(VideoFrame::kYPlane),
-                          frame1.stride(VideoFrame::kYPlane),
-                          frame1.visible_data(VideoFrame::kUPlane),
-                          frame1.stride(VideoFrame::kUPlane),
-                          frame1.visible_data(VideoFrame::kVPlane),
-                          frame1.stride(VideoFrame::kVPlane),
-                          frame2.visible_data(VideoFrame::kYPlane),
-                          frame2.stride(VideoFrame::kYPlane),
-                          frame2.visible_data(VideoFrame::kUPlane),
-                          frame2.stride(VideoFrame::kUPlane),
-                          frame2.visible_data(VideoFrame::kVPlane),
-                          frame2.stride(VideoFrame::kVPlane),
+  return libyuv::I420Ssim(frame1.visible_data(VideoFrame::Plane::kY),
+                          frame1.stride(VideoFrame::Plane::kY),
+                          frame1.visible_data(VideoFrame::Plane::kU),
+                          frame1.stride(VideoFrame::Plane::kU),
+                          frame1.visible_data(VideoFrame::Plane::kV),
+                          frame1.stride(VideoFrame::Plane::kV),
+                          frame2.visible_data(VideoFrame::Plane::kY),
+                          frame2.stride(VideoFrame::Plane::kY),
+                          frame2.visible_data(VideoFrame::Plane::kU),
+                          frame2.stride(VideoFrame::Plane::kU),
+                          frame2.visible_data(VideoFrame::Plane::kV),
+                          frame2.stride(VideoFrame::Plane::kV),
                           frame1.visible_rect().width(),
                           frame1.visible_rect().height());
 }
@@ -69,8 +74,8 @@ void PopulateVideoFrame(VideoFrame* frame, int start_value) {
 
   // Set Y.
   const int height = frame_size.height();
-  const int stride_y = frame->stride(VideoFrame::kYPlane);
-  uint8_t* y_plane = frame->writable_data(VideoFrame::kYPlane);
+  const int stride_y = frame->stride(VideoFrame::Plane::kY);
+  uint8_t* y_plane = frame->writable_data(VideoFrame::Plane::kY);
   for (int j = 0; j < height; ++j) {
     const int stripe_j = (j / stripe_size) * stripe_size;
     for (int i = 0; i < stride_y; ++i) {
@@ -82,8 +87,8 @@ void PopulateVideoFrame(VideoFrame* frame, int start_value) {
 
   const int half_height = (height + 1) / 2;
   if (frame->format() == PIXEL_FORMAT_NV12) {
-    const int stride_uv = frame->stride(VideoFrame::kUVPlane);
-    uint8_t* uv_plane = frame->writable_data(VideoFrame::kUVPlane);
+    const int stride_uv = frame->stride(VideoFrame::Plane::kUV);
+    uint8_t* uv_plane = frame->writable_data(VideoFrame::Plane::kUV);
 
     // Set U and V.
     for (int j = 0; j < half_height; ++j) {
@@ -98,10 +103,10 @@ void PopulateVideoFrame(VideoFrame* frame, int start_value) {
   } else {
     DCHECK(frame->format() == PIXEL_FORMAT_I420 ||
            frame->format() == PIXEL_FORMAT_YV12);
-    const int stride_u = frame->stride(VideoFrame::kUPlane);
-    const int stride_v = frame->stride(VideoFrame::kVPlane);
-    uint8_t* u_plane = frame->writable_data(VideoFrame::kUPlane);
-    uint8_t* v_plane = frame->writable_data(VideoFrame::kVPlane);
+    const int stride_u = frame->stride(VideoFrame::Plane::kU);
+    const int stride_v = frame->stride(VideoFrame::Plane::kV);
+    uint8_t* u_plane = frame->writable_data(VideoFrame::Plane::kU);
+    uint8_t* v_plane = frame->writable_data(VideoFrame::Plane::kV);
 
     // Set U.
     for (int j = 0; j < half_height; ++j) {
@@ -126,18 +131,38 @@ void PopulateVideoFrame(VideoFrame* frame, int start_value) {
 }
 
 void PopulateVideoFrameWithNoise(VideoFrame* frame) {
-  const int height = frame->coded_size().height();
-  const int stride_y = frame->stride(VideoFrame::kYPlane);
-  const int stride_u = frame->stride(VideoFrame::kUPlane);
-  const int stride_v = frame->stride(VideoFrame::kVPlane);
-  const int half_height = (height + 1) / 2;
-  uint8_t* const y_plane = frame->writable_data(VideoFrame::kYPlane);
-  uint8_t* const u_plane = frame->writable_data(VideoFrame::kUPlane);
-  uint8_t* const v_plane = frame->writable_data(VideoFrame::kVPlane);
+  const size_t height = frame->coded_size().height();
+  const size_t half_height = (height + 1u) / 2u;
+  base::span<uint8_t> y_plane =
+      // SAFETY: The Y plane has a width specified by stride() and a height of
+      // coded_size().
+      // TODO(crbug.com/338570700): Make VideoFrame return a span instead of an
+      // unbounded pointer.
+      UNSAFE_TODO(base::span(frame->writable_data(VideoFrame::Plane::kY),
+                             height * base::checked_cast<size_t>(frame->stride(
+                                          VideoFrame::Plane::kY))));
+  base::span<uint8_t> u_plane =
+      // SAFETY: The U plane has a width specified by stride() and a height that
+      // is half of coded_size(), rounding up.
+      // TODO(crbug.com/338570700): Make VideoFrame return a span instead of an
+      // unbounded pointer.
+      UNSAFE_TODO(
+          base::span(frame->writable_data(VideoFrame::Plane::kU),
+                     half_height * base::checked_cast<size_t>(
+                                       frame->stride(VideoFrame::Plane::kU))));
+  base::span<uint8_t> v_plane =
+      // SAFETY: The V plane has a width specified by stride() and a height that
+      // is half of coded_size(), rounding up.
+      // TODO(crbug.com/338570700): Make VideoFrame return a span instead of an
+      // unbounded pointer.
+      UNSAFE_TODO(
+          base::span(frame->writable_data(VideoFrame::Plane::kV),
+                     half_height * base::checked_cast<size_t>(
+                                       frame->stride(VideoFrame::Plane::kV))));
 
-  base::RandBytes(y_plane, height * stride_y);
-  base::RandBytes(u_plane, half_height * stride_u);
-  base::RandBytes(v_plane, half_height * stride_v);
+  base::RandBytes(y_plane);
+  base::RandBytes(u_plane);
+  base::RandBytes(v_plane);
 }
 
 bool PopulateVideoFrameFromFile(VideoFrame* frame, FILE* video_file) {
@@ -146,9 +171,9 @@ bool PopulateVideoFrameFromFile(VideoFrame* frame, FILE* video_file) {
   const int half_width = (width + 1) / 2;
   const int half_height = (height + 1) / 2;
   const size_t frame_size = width * height + 2 * half_width * half_height;
-  uint8_t* const y_plane = frame->writable_data(VideoFrame::kYPlane);
-  uint8_t* const u_plane = frame->writable_data(VideoFrame::kUPlane);
-  uint8_t* const v_plane = frame->writable_data(VideoFrame::kVPlane);
+  uint8_t* const y_plane = frame->writable_data(VideoFrame::Plane::kY);
+  uint8_t* const u_plane = frame->writable_data(VideoFrame::Plane::kU);
+  uint8_t* const v_plane = frame->writable_data(VideoFrame::Plane::kV);
 
   uint8_t* const raw_data = new uint8_t[frame_size];
   const size_t count = fread(raw_data, 1, frame_size, video_file);

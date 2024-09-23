@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
+
 #include "third_party/blink/renderer/core/fileapi/file_read_type.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
@@ -22,17 +23,18 @@ FileErrorCode FileReaderAccumulator::DidStartLoading(uint64_t total_bytes) {
   return DidStartLoading();
 }
 
-FileErrorCode FileReaderAccumulator::DidReceiveData(const char* data,
-                                                    unsigned data_length) {
+FileErrorCode FileReaderAccumulator::DidReceiveData(
+    base::span<const uint8_t> data) {
   // Fill out the buffer
-  if (bytes_loaded_ + data_length > raw_data_.DataLength()) {
+  if (bytes_loaded_ + data.size() > raw_data_.DataLength()) {
     raw_data_.Reset();
     bytes_loaded_ = 0;
     return FileErrorCode::kNotReadableErr;
   }
-  memcpy(static_cast<char*>(raw_data_.Data()) + bytes_loaded_, data,
-         data_length);
-  bytes_loaded_ += data_length;
+  raw_data_.ByteSpan()
+      .subspan(base::checked_cast<size_t>(bytes_loaded_))
+      .copy_prefix_from(data);
+  bytes_loaded_ += data.size();
   return DidReceiveData();
 }
 

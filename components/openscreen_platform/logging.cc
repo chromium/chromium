@@ -6,6 +6,7 @@
 
 #include <cstring>
 #include <sstream>
+#include <string_view>
 
 #include "base/debug/debugger.h"
 #include "base/immediate_crash.h"
@@ -32,9 +33,9 @@ namespace {
 
 }  // namespace
 
-bool IsLoggingOn(LogLevel level, const char* file) {
+bool IsLoggingOn(LogLevel level, const std::string_view file) {
   if (level == LogLevel::kVerbose) {
-    return ::logging::GetVlogLevelHelper(file, strlen(file)) > 0;
+    return ::logging::GetVlogLevelHelper(file.data(), file.size()) > 0;
   }
   return ::logging::ShouldCreateLogMessage(MapLogLevel(level));
 }

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/safe_browsing/incident_reporting/binary_integrity_analyzer_win.h"
 
+#include <windows.h>
+
 #include <memory>
 #include <utility>
 
@@ -19,8 +21,6 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include <windows.h>
 
 using ::testing::_;
 using ::testing::StrictMock;
@@ -66,7 +66,7 @@ BinaryIntegrityAnalyzerWinTest::BinaryIntegrityAnalyzerWinTest() {
   // We retrieve DIR_TEST_DATA here because it is based on DIR_EXE and we are
   // about to override the path to the latter.
   if (!base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_))
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   exe_dir_override_ = std::make_unique<base::ScopedPathOverride>(
       base::DIR_EXE, temp_dir_.GetPath());

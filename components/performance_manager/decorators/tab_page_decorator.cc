@@ -9,16 +9,15 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/public/graph/node_attached_data.h"
+#include "content/public/common/content_features.h"
 
 namespace performance_manager {
 
 class TabPageDecorator::Data
-    : public NodeAttachedDataImpl<TabPageDecorator::Data> {
+    : public ExternalNodeAttachedDataImpl<TabPageDecorator::Data> {
  public:
-  struct Traits : public NodeAttachedDataInMap<PageNodeImpl> {};
-
   explicit Data(const PageNodeImpl* page_node)
       : tab_handle_(base::WrapUnique(new TabHandle(page_node))) {}
 
@@ -29,8 +28,6 @@ class TabPageDecorator::Data
   }
 
  private:
-  friend class NodeAttachedDataImpl<TabPageDecorator::Data>;
-
   std::unique_ptr<TabHandle> tab_handle_;
 };
 
@@ -111,34 +108,43 @@ void TabPageDecorator::OnAboutToBeDiscarded(const PageNode* page_node,
                                             const PageNode* new_page_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(page_node->GetType(), performance_manager::PageType::kTab);
-  CHECK_EQ(new_page_node->GetType(), performance_manager::PageType::kUnknown);
 
-  // Move the handle out of the old node's data into the new one. We do this so
-  // that users of the API can keep using the same TabHandle object
-  // transparently regardless of whether the underlying PageNode changes.
-  TabPageDecorator::Data* old_data =
-      TabPageDecorator::Data::Get(PageNodeImpl::FromNode(page_node));
+  // When kWebContentsDiscard is disabled new_page_node will be different from
+  // page node and needs handling to transfer data from the old node.
+  if (base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
+    CHECK_EQ(page_node, new_page_node);
+  } else {
+    CHECK_EQ(new_page_node->GetType(), performance_manager::PageType::kUnknown);
+    // Move the handle out of the old node's data into the new one. We do this
+    // so that users of the API can keep using the same TabHandle object
+    // transparently regardless of whether the underlying PageNode changes.
+    TabPageDecorator::Data* old_data =
+        TabPageDecorator::Data::Get(PageNodeImpl::FromNode(page_node));
 
-  // The new PageNode is created with kUnknown type, so create the data for it
-  // here. This will also prevent observers from being notified of tab creation
-  // when this PageNode's type changes to kTab.
-  CHECK(!TabPageDecorator::Data::Get(PageNodeImpl::FromNode(new_page_node)));
-  TabPageDecorator::Data* new_data = TabPageDecorator::Data::GetOrCreate(
-      PageNodeImpl::FromNode(new_page_node));
+    // The new PageNode is created with kUnknown type, so create the data for it
+    // here. This will also prevent observers from being notified of tab
+    // creation when this PageNode's type changes to kTab.
+    CHECK(!TabPageDecorator::Data::Get(PageNodeImpl::FromNode(new_page_node)));
+    TabPageDecorator::Data* new_data = TabPageDecorator::Data::GetOrCreate(
+        PageNodeImpl::FromNode(new_page_node));
 
-  CHECK(old_data);
+    CHECK(old_data);
 
-  old_data->tab_handle()->SetPageNode(new_page_node);
-  old_data->TransferTabHandleTo(new_data);
+    old_data->tab_handle()->SetPageNode(new_page_node);
+    old_data->TransferTabHandleTo(new_data);
 
-  // Destroy the old node's data so OnBeforePageNodeRemoved doesn't treat it as
-  // a tab going away
-  bool destroyed =
-      TabPageDecorator::Data::Destroy(PageNodeImpl::FromNode(page_node));
-  CHECK(destroyed);
+    // Destroy the old node's data so OnBeforePageNodeRemoved doesn't treat it
+    // as a tab going away
+    bool destroyed =
+        TabPageDecorator::Data::Destroy(PageNodeImpl::FromNode(page_node));
+    CHECK(destroyed);
+  }
 
   for (auto& obs : observers_) {
-    obs.OnTabAboutToBeDiscarded(page_node, new_data->tab_handle());
+    obs.OnTabAboutToBeDiscarded(
+        page_node,
+        TabPageDecorator::Data::Get(PageNodeImpl::FromNode(new_page_node))
+            ->tab_handle());
   }
 }
 
@@ -151,13 +157,11 @@ void TabPageDecorator::OnTypeChanged(const PageNode* page_node,
 }
 
 void TabPageDecorator::OnPassedToGraph(Graph* graph) {
-  graph->RegisterObject(this);
   graph->AddPageNodeObserver(this);
 }
 
 void TabPageDecorator::OnTakenFromGraph(Graph* graph) {
   graph->RemovePageNodeObserver(this);
-  graph->UnregisterObject(this);
 }
 
 }  // namespace performance_manager

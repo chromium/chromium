@@ -25,6 +25,7 @@
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_manager_base.h"
 
 namespace ash {
 
@@ -40,7 +41,7 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(167);
 // because callbacks that bind to a WeakPtr receiver cannot return a non-void
 // type.
 //
-// TODO(crbug.com/1506856): It would be nice if CallbackLayerAnimationObserver
+// TODO(crbug.com/40947532): It would be nice if CallbackLayerAnimationObserver
 // took a OnceCallback and used that as an implicit signal to self-delete the
 // observer on completion. Until then, this needs to use a RepeatingCallback,
 // even though the callback only runs once.
@@ -85,26 +86,33 @@ bool HasContentForSection(const HoldingSpaceItemViewsSection* section) {
 // bounds, TopAlignedBoxLayout will ensure that children still receive their
 // preferred sizes. This prevents layout jank that would otherwise occur when
 // the host view's bounds are being animated due to content changes.
-class TopAlignedBoxLayout : public views::BoxLayout {
+class TopAlignedBoxLayout : public views::LayoutManagerBase {
  public:
-  TopAlignedBoxLayout(const gfx::Insets& insets, int spacing)
-      : views::BoxLayout(views::BoxLayout::Orientation::kVertical,
-                         insets,
-                         spacing) {}
+  TopAlignedBoxLayout(const gfx::Insets& insets, int spacing) {
+    box_layout_ = AddOwnedLayout(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical, insets, spacing));
+  }
 
  private:
-  // views::BoxLayout:
-  void Layout(views::View* host) override {
-    if (host->height() >= host->GetPreferredSize().height()) {
-      views::BoxLayout::Layout(host);
-      return;
+  // views::LayoutManagerBase:
+  views::ProposedLayout CalculateProposedLayout(
+      const views::SizeBounds& size_bounds) const override {
+    if (!size_bounds.is_fully_bounded() ||
+        size_bounds.height().value() >=
+            host_view()->GetPreferredSize({}).height()) {
+      return box_layout_->GetProposedLayout(size_bounds, PassKey());
     }
 
-    gfx::Rect contents_bounds(host->GetContentsBounds());
-    contents_bounds.Inset(inside_border_insets());
+    views::ProposedLayout layout;
+    layout.host_size =
+        gfx::Size(size_bounds.width().value(), size_bounds.height().value());
+
+    gfx::Rect contents_bounds(gfx::Point(0, 0), layout.host_size);
+    contents_bounds.Inset(host_view()->GetInsets() +
+                          box_layout_->inside_border_insets());
 
     const int width = contents_bounds.width();
-    const int child_spacing = between_child_spacing();
+    const int child_spacing = box_layout_->between_child_spacing();
 
     std::vector<std::pair<views::View*, int>> children_with_heights;
 
@@ -112,12 +120,14 @@ class TopAlignedBoxLayout : public views::BoxLayout {
     // `available_height` is tracked to later determine if there will be
     // vertical overflow of `contents_bounds`.
     int available_height = contents_bounds.height();
-    for (views::View* child : host->children()) {
-      if (!child->GetVisible())
+    for (views::View* child : host_view()->children()) {
+      if (!child->GetVisible()) {
         continue;
+      }
 
-      if (!children_with_heights.empty())
+      if (!children_with_heights.empty()) {
         available_height -= child_spacing;
+      }
 
       const int preferred_height = child->GetHeightForWidth(width);
       children_with_heights.emplace_back(child, preferred_height);
@@ -130,7 +140,7 @@ class TopAlignedBoxLayout : public views::BoxLayout {
 
     // Perform child layouts, ceding height where possible to fit within
     // `contents_bounds`. Note: this does not guarantee that `contents_bounds`
-    // will not be exceeded. Overflow will be clipped by the `host` view.
+    // will not be exceeded. Overflow will be clipped by the `host_view()` view.
     for (auto& [child, height] : children_with_heights) {
       // A `child` view is willing to cede height if it does not specify a
       // minimum size. This is the case for the `PinnedFilesSection` which
@@ -143,14 +153,20 @@ class TopAlignedBoxLayout : public views::BoxLayout {
         available_height += ceded_height;
       }
 
-      if (top > contents_bounds.y())
+      if (top > contents_bounds.y()) {
         top += child_spacing;
+      }
 
-      child->SetBounds(left, top, width, height);
+      layout.child_layouts.emplace_back(child, true,
+                                        gfx::Rect(left, top, width, height));
 
       top += height;
     }
+
+    return layout;
   }
+
+  raw_ptr<views::BoxLayout> box_layout_;
 };
 
 }  // namespace
@@ -183,12 +199,26 @@ void HoldingSpaceTrayChildBubble::Init() {
   // other child bubbles in the event of overflow.
   layer()->SetMasksToBounds(true);
 
-  if (!features::IsHoldingSpaceRefreshEnabled()) {
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-    layer()->SetIsFastRoundedCorner(true);
-    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
-  }
+  // Background.
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+
+  SetBackground(views::CreateThemedSolidBackground(
+      chromeos::features::IsJellyEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
+          : kColorAshShieldAndBase80));
+
+  // Border.
+  const float corner_radius = GetBubbleCornerRadius();
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      corner_radius,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+          : views::HighlightBorder::Type::kHighlightBorder1));
+
+  // Corner radius.
+  layer()->SetIsFastRoundedCorner(true);
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{corner_radius});
 
   // Placeholder.
   if (auto placeholder = CreatePlaceholder()) {
@@ -201,22 +231,6 @@ void HoldingSpaceTrayChildBubble::Init() {
     sections_.push_back(AddChildView(std::move(section)));
     sections_.back()->Init();
   }
-
-  // When refresh is enabled, backgrounds and borders are implemented in the
-  // top-level bubble rather than per child bubble.
-  if (features::IsHoldingSpaceRefreshEnabled()) {
-    return;
-  }
-
-  SetBackground(views::CreateThemedSolidBackground(
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
-          : kColorAshShieldAndBase80));
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      kBubbleCornerRadius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1));
 }
 
 void HoldingSpaceTrayChildBubble::Reset() {
@@ -509,7 +523,7 @@ void HoldingSpaceTrayChildBubble::OnAnimateOutCompleted(bool aborted) {
   }
 }
 
-BEGIN_METADATA(HoldingSpaceTrayChildBubble, views::View)
+BEGIN_METADATA(HoldingSpaceTrayChildBubble)
 END_METADATA
 
 }  // namespace ash

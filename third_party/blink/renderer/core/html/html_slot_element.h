@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_text.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 
 namespace blink {
 
@@ -128,6 +129,9 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
     return manually_assigned_nodes_;
   }
   void RemoveManuallyAssignedNode(Node&);
+
+  // Override in order to defer this work when needed.
+  bool CalculateAndAdjustAutoDirectionality() final;
 
   void Trace(Visitor*) const override;
 

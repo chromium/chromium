@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,8 +37,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -47,7 +48,6 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.ExecutionException;
 
@@ -57,10 +57,6 @@ import java.util.concurrent.ExecutionException;
 public class MessageBannerViewTest {
     private static final String PRIMARY_BUTTON_TEXT = "PrimaryButtonText";
     private static final String SECONDARY_BUTTON_MENU_TEXT = "SecondaryActionText";
-
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsRule =
-            new DisableAnimationsTestRule();
 
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
@@ -79,7 +75,7 @@ public class MessageBannerViewTest {
     @BeforeClass
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity = sActivityTestRule.getActivity();
                     sContentView = new FrameLayout(sActivity);
@@ -89,7 +85,7 @@ public class MessageBannerViewTest {
 
     @Before
     public void setupTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sContentView.removeAllViews();
                     mMessageBannerView =
@@ -109,8 +105,11 @@ public class MessageBannerViewTest {
      */
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.TIRAMISU,
+            message = "This test seems to just be flaky on T https://crbug.com/349396848")
     public void testSecondaryActionDirectCallback() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
                             new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -139,7 +138,7 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testSecondaryActionMenu() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
                             new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -174,7 +173,7 @@ public class MessageBannerViewTest {
     @MediumTest
     public void testSecondaryActionMenuInvokesPopupMenuEventHandlers() {
         PopupMenuShownListener listener = Mockito.mock(PopupMenuShownListener.class);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
                             new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -216,7 +215,7 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testSecondaryActionMenuWithCustomDelegate() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
                     menuItems.add(
@@ -264,7 +263,7 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testPrimaryWidgetAppearanceButtonWithUnsetText() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
                             new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -291,7 +290,7 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testPrimaryWidgetAppearanceButtonWithNullText() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
                             new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -319,7 +318,7 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testPrimaryWidgetAppearanceButtonWithEmptyText() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
                             new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -347,7 +346,7 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testPrimaryWidgetAppearanceButtonWithNonEmptyText() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
                             new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -388,7 +387,7 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testPrimaryWidgetAppearanceButtonChangeTextFromEmptyToNonEmpty() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
                             new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -427,8 +426,11 @@ public class MessageBannerViewTest {
     /** Setting PRIMARY_WIDGET_APPEARANCE to PROGRESS_SPINNER should show the progress spinner. */
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.TIRAMISU,
+            message = "This test seems to just be flaky on T https://crbug.com/349396848")
     public void testPrimaryWidgetAppearanceProgressSpinner() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
                             new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -462,10 +464,13 @@ public class MessageBannerViewTest {
     /** Changing PRIMARY_WIDGET_APPEARANCE to PROGRESS_SPINNER should show the progress spinner. */
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.TIRAMISU,
+            message = "This test seems to just be flaky on T https://crbug.com/349396848")
     public void testPrimaryWidgetAppearanceChangeFromButtonToProgressSpinner()
             throws ExecutionException {
         var model =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             PropertyModel propertyModel =
                                     new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -503,7 +508,7 @@ public class MessageBannerViewTest {
         onView(withId(R.id.message_primary_button)).perform(click());
         Mockito.verify(mPrimaryActionCallback).run();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Change the PRIMARY_WIDGET_APPEARANCE to PROGRESS_SPINNER after the view has
                     // already been put together.
@@ -522,10 +527,13 @@ public class MessageBannerViewTest {
     /** Changing PRIMARY_WIDGET_APPEARANCE to BUTTON_IF_TEXT_IS_SET should show the text. */
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.TIRAMISU,
+            message = "This test seems to just be flaky on T https://crbug.com/349396848")
     public void testPrimaryWidgetAppearanceChangeFromProgressSpinnerToButton()
             throws ExecutionException {
         var model =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             PropertyModel propertyModel =
                                     new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -563,7 +571,7 @@ public class MessageBannerViewTest {
         onView(withId(R.id.message_primary_button)).perform(click());
         Mockito.verify(mPrimaryActionCallback, Mockito.never()).run();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Change the PRIMARY_WIDGET_APPEARANCE to PROGRESS_SPINNER after the view has
                     // already been put together.
@@ -585,8 +593,11 @@ public class MessageBannerViewTest {
      */
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.TIRAMISU,
+            message = "This test seems to just be flaky on T https://crbug.com/349396848")
     public void testPrimaryWidgetAppearanceProgressSpinnerWithNonEmptyButtonText() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
                             new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -627,7 +638,7 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testPrimaryWidgetAppearanceUnsetWithUnsetText() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
                             new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -651,7 +662,7 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testPrimaryWidgetAppearanceUnsetWithNonEmptyText() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
                             new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -690,7 +701,7 @@ public class MessageBannerViewTest {
     @MediumTest
     public void testSecondaryIconContentDescription() {
         PropertyModel model =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                                     .with(
@@ -699,7 +710,7 @@ public class MessageBannerViewTest {
                                     .with(MessageBannerProperties.TITLE, "42")
                                     .build();
                         });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModelChangeProcessor.create(
                             model, mMessageBannerView, MessageBannerViewBinder::bind);
@@ -709,26 +720,26 @@ public class MessageBannerViewTest {
         Assert.assertEquals(
                 res.getString(R.string.message_more_options, "42"), btn.getContentDescription());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> model.set(MessageBannerProperties.TITLE, "41"));
+        ThreadUtils.runOnUiThreadBlocking(() -> model.set(MessageBannerProperties.TITLE, "41"));
         Assert.assertEquals(
                 "Content description should be up-to-date after title is updated.",
                 res.getString(R.string.message_more_options, "41"),
                 btn.getContentDescription());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> model.set(MessageBannerProperties.TITLE_CONTENT_DESCRIPTION, "-42"));
         Assert.assertEquals(
                 "Content description should be up-to-date if title content description is set.",
                 res.getString(R.string.message_more_options, "-42"),
                 btn.getContentDescription());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> model.set(MessageBannerProperties.TITLE, "40"));
+        ThreadUtils.runOnUiThreadBlocking(() -> model.set(MessageBannerProperties.TITLE, "40"));
         Assert.assertEquals(
                 "Content description should be up-to-date if title content description is set.",
                 res.getString(R.string.message_more_options, "-42"),
                 btn.getContentDescription());
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     model.set(
                             MessageBannerProperties.SECONDARY_ICON_CONTENT_DESCRIPTION,
@@ -740,7 +751,7 @@ public class MessageBannerViewTest {
                 "secondary icon content description",
                 btn.getContentDescription());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> model.set(MessageBannerProperties.TITLE, "39"));
+        ThreadUtils.runOnUiThreadBlocking(() -> model.set(MessageBannerProperties.TITLE, "39"));
         Assert.assertEquals(
                 "Content description should be up-to-date if secondary icon content description is"
                         + " set.",

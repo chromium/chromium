@@ -81,7 +81,7 @@ interface AccessibilityServiceClient {
   BindAutomation(
     pending_associated_remote<Automation> automation);
 
-  // Binds to an AutomatoinClient implemented in the main OS process,
+  // Binds to an AutomationClient implemented in the main OS process,
   // called by the service.
   BindAutomationClient(pending_receiver<AutomationClient> automation_client);
 

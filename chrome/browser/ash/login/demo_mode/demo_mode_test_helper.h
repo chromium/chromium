@@ -17,7 +17,7 @@ class ScopedPathOverride;
 }  // namespace base
 
 namespace component_updater {
-class FakeCrOSComponentManager;
+class FakeComponentManagerAsh;
 }  // namespace component_updater
 
 namespace ash {
@@ -55,21 +55,17 @@ class DemoModeTestHelper {
   // Returns the path that fake Demo Mode resources will be mounted from.
   base::FilePath GetDemoResourcesPath();
 
-  // Returns the path that fake offline Demo Mode resources will be preinstalled
-  // at.
-  base::FilePath GetPreinstalledDemoResourcesPath();
-
  private:
-  void InitializeCrosComponentManager();
+  void InitializeComponentManager();
 
   BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
 
   base::ScopedTempDir components_temp_dir_;
   std::unique_ptr<base::ScopedPathOverride> components_path_override_;
 
-  // Raw ponter to the FakeCrOSComponentManager once created.
-  raw_ptr<component_updater::FakeCrOSComponentManager>
-      fake_cros_component_manager_ = nullptr;
+  // Raw pointer to the FakeComponentManagerAsh once created.
+  raw_ptr<component_updater::FakeComponentManagerAsh>
+      fake_component_manager_ash_ = nullptr;
 
   // True if this class initialized the ConciergeClient.
   bool concierge_client_initialized_ = false;

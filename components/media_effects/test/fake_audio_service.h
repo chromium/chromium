@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MEDIA_EFFECTS_TEST_FAKE_AUDIO_SERVICE_H_
 #define COMPONENTS_MEDIA_EFFECTS_TEST_FAKE_AUDIO_SERVICE_H_
 
+#include <string>
 #include <utility>
 
 #include "base/functional/callback_forward.h"
@@ -22,13 +23,14 @@ class FakeAudioService : public audio::mojom::AudioService {
 
   FakeAudioService(const FakeAudioService&) = delete;
   FakeAudioService& operator=(const FakeAudioService&) = delete;
-  FakeAudioService(FakeAudioService&&) = delete;
-  FakeAudioService& operator=(FakeAudioService&&) = delete;
 
   // Simulate connecting and disconnecting a mic device with the given
   // `descriptor`.
   void AddFakeInputDevice(const media::AudioDeviceDescription& descriptor);
+  bool AddFakeInputDeviceBlocking(
+      const media::AudioDeviceDescription& descriptor);
   void RemoveFakeInputDevice(const std::string& device_id);
+  bool RemoveFakeInputDeviceBlocking(const std::string& device_id);
 
   // `callback` will be triggered after the system info replies back to its
   // client in GetInputDeviceDescriptions(). Useful as a stopping point for a
@@ -66,6 +68,19 @@ class FakeAudioService : public audio::mojom::AudioService {
   FakeAudioSystemInfo fake_system_info_;
 
   base::RepeatingClosure on_bind_stream_factory_callback_ = base::DoNothing();
+};
+
+class ScopedFakeAudioService : public FakeAudioService {
+ public:
+  ScopedFakeAudioService();
+  ~ScopedFakeAudioService() override;
+
+  ScopedFakeAudioService(const ScopedFakeAudioService&) = delete;
+  ScopedFakeAudioService& operator=(const ScopedFakeAudioService&) = delete;
+
+ private:
+  std::optional<base::AutoReset<audio::mojom::AudioService*>>
+      fake_audio_service_auto_reset_;
 };
 
 }  // namespace media_effects

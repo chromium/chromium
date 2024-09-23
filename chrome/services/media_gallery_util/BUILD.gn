@@ -52,9 +52,12 @@ if (is_android) {
     sources = [ "media_parser_android_unittest.cc" ]
 
     data = [
-      "//media/test/data/bear.mp4",
+      "//media/test/data/bear-av1.mp4",
+      "//media/test/data/bear-hevc-frag.mp4",
       "//media/test/data/bear-vp8-webvtt.webm",
       "//media/test/data/bear-vp8a.webm",
+      "//media/test/data/bear-vp9.webm",
+      "//media/test/data/bear.mp4",
       "//media/test/data/sfx.mp3",
     ]
 

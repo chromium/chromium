@@ -61,10 +61,6 @@ const char kDisableImageAnimationResync[] = "disable-image-animation-resync";
 // during fast scrolling especially on slower devices.
 const char kDisableLowResTiling[] = "disable-low-res-tiling";
 
-// Disallow use of the feature NewBaseUrlInheritanceBehavior.
-const char kDisableNewBaseUrlInheritanceBehavior[] =
-    "disable-new-base-url-inheritance-behavior";
-
 // Disable partial raster in the renderer. Disabling this switch also disables
 // the use of persistent gpu memory buffers.
 const char kDisablePartialRaster[] = "disable-partial-raster";
@@ -125,6 +121,14 @@ extern const char kIntensiveWakeUpThrottlingPolicy[] =
 extern const char kIntensiveWakeUpThrottlingPolicy_ForceDisable[] = "0";
 extern const char kIntensiveWakeUpThrottlingPolicy_ForceEnable[] = "1";
 
+// Used to communicate managed policy for KeyboardFocusableScrollers feature.
+// This feature is typically controlled by a RuntimeEnabledFeature, but requires
+// an enterprise policy override.
+extern const char kKeyboardFocusableScrollersEnabled[] =
+    "keyboard-focusable-scrollers-enabled";
+extern const char kKeyboardFocusableScrollersOptOut[] =
+    "keyboard-focusable-scrollers-opt-out";
+
 // A command line to indicate if there ia any legacy tech report urls being set.
 // If so, we will send report from blink to browser process.
 extern const char kLegacyTechReportPolicyEnabled[] =
@@ -136,6 +140,18 @@ const char kMaxUntiledLayerWidth[] = "max-untiled-layer-width";
 
 // Sets the min tile height for GPU raster.
 const char kMinHeightForGpuRasterTile[] = "min-height-for-gpu-raster-tile";
+
+// Used to communicate managed policy for MutationEvents feature. This feature
+// is typically controlled by a RuntimeEnabledFeature, but requires an
+// enterprise policy override.
+extern const char kMutationEventsEnabled[] =
+    "deprecated-mutation-events-enabled";
+
+// Used to communicate managed policy for CSSCustomStateDeprecatedSynatx. This
+// feature is typically controlled by a RuntimeEnabledFeature, but requires an
+// enterprise policy override.
+extern const char kCSSCustomStateDeprecatedSyntaxEnabled[] =
+    "css-custom-state-deprecated-syntax-enabled";
 
 // Sets the timeout seconds of the network-quiet timers in IdlenessDetector.
 // Used by embedders who want to change the timeout time in order to run web
@@ -152,17 +168,16 @@ const char kShowLayoutShiftRegions[] = "show-layout-shift-regions";
 // and study painting behavior.
 const char kShowPaintRects[] = "show-paint-rects";
 
-// Used to override the ThrottleDisplayNoneAndVisibilityHiddenCrossOrigin
-// feature from an enterprise policy.
-const char kDisableThrottleNonVisibleCrossOriginIframes[] =
-    "disable-throttle-non-visible-cross-origin-iframes";
-
 // Controls how text selection granularity changes when touch text selection
 // handles are dragged. Should be "character" or "direction". If not specified,
 // the platform default is used.
 const char kTouchTextSelectionStrategy[] = "touch-selection-strategy";
 const char kTouchTextSelectionStrategy_Character[] = "character";
 const char kTouchTextSelectionStrategy_Direction[] = "direction";
+
+// Override mechanism for preserving the old non-standard behavior of CSS zoom.
+const char kDisableStandardizedBrowserZoom[] =
+    "disable-standardized-browser-zoom";
 
 // Comma-separated list of origins that can use SharedArrayBuffer without
 // enabling cross-origin isolation.
@@ -174,9 +189,6 @@ const char kConditionalFocusWindowMs[] = "conditional-focus-window-ms";
 
 // Specifies the flags passed to JS engine.
 const char kJavaScriptFlags[] = "js-flags";
-
-// Controls whether WebSQL is force enabled.
-const char kWebSQLAccess[] = "web-sql-access";
 
 }  // namespace switches
 }  // namespace blink

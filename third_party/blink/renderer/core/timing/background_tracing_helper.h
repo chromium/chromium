@@ -7,8 +7,8 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -58,7 +58,7 @@ class CORE_EXPORT BackgroundTracingHelper final
   // This is used by the "sequence number" mechanism for mark names. Returns
   // the location of the underscore if a split is to occur, otherwise returns
   // 0.
-  static size_t GetSequenceNumberPos(base::StringPiece string);
+  static size_t GetSequenceNumberPos(std::string_view string);
 
   // Generates a 32-bit MD5 hash of the given string piece. This will return a
   // value that is equivalent to the first 8 bytes of a full MD5 hash. In bash
@@ -71,13 +71,13 @@ class CORE_EXPORT BackgroundTracingHelper final
   //   echo -n <string_value> | md5sum | cut -b 1-8
   //
   // This will return the same result as MD5Hash32Constexpr as defined in
-  // base/hash/md5_constexpr.h. This uses base::StringPiece because it is
+  // base/hash/md5_constexpr.h. This uses std::string_view because it is
   // interacting with Finch code, which doesn't use WTF primitives.
-  static uint32_t MD5Hash32(base::StringPiece string);
+  static uint32_t MD5Hash32(std::string_view string);
 
   // Given a mark name with an optional sequence number suffix, parses out the
   // suffix and hashes the mark name.
-  static void GetMarkHashAndSequenceNumber(base::StringPiece mark_name,
+  static void GetMarkHashAndSequenceNumber(std::string_view mark_name,
                                            uint32_t sequence_number_offset,
                                            uint32_t* mark_hash,
                                            uint32_t* sequence_number);
@@ -92,7 +92,7 @@ class CORE_EXPORT BackgroundTracingHelper final
   // std::string because it is interacting with Finch code, which doesn't use
   // WTF primitives.
   static bool ParseBackgroundTracingPerformanceMarkHashes(
-      base::StringPiece allow_list,
+      std::string_view allow_list,
       SiteMarkHashMap& allow_listed_hashes);
 
  private:

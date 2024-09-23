@@ -8,6 +8,7 @@
 #include "ash/test/test_widget_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 namespace {
@@ -35,6 +36,20 @@ TEST_F(ArcOverlayControllerImplTest, OverlayComesOnTop) {
   // added as parent of the overlay so we compare with the parent.
   EXPECT_EQ(host_window->children().back(),
             overlay_widget->GetNativeWindow()->parent());
+}
+
+TEST_F(ArcOverlayControllerImplTest,
+       OverlayNativeViewHostAccessibleProperties) {
+  ArcOverlayControllerImpl controller(
+      TestWidgetBuilder().BuildOwnedByNativeWidget()->GetNativeWindow());
+  ui::AXNodeData data;
+
+  controller.overlay_container_for_test()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kApplication);
+  EXPECT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
 
 }  // namespace

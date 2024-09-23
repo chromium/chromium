@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/animation/interpolation_environment.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/svg/svg_number_optional_number.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -43,11 +44,15 @@ SVGPropertyBase* SVGNumberOptionalNumberInterpolationType::AppliedSVGValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*) const {
   const auto& list = To<InterpolableList>(interpolable_value);
+  // Note: using default CSSToLengthConversionData here as it's
+  // guaranteed to be a double.
+  // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
+  CSSToLengthConversionData length_resolver;
   return MakeGarbageCollected<SVGNumberOptionalNumber>(
       MakeGarbageCollected<SVGNumber>(
-          To<InterpolableNumber>(list.Get(0))->Value()),
+          To<InterpolableNumber>(list.Get(0))->Value(length_resolver)),
       MakeGarbageCollected<SVGNumber>(
-          To<InterpolableNumber>(list.Get(1))->Value()));
+          To<InterpolableNumber>(list.Get(1))->Value(length_resolver)));
 }
 
 }  // namespace blink

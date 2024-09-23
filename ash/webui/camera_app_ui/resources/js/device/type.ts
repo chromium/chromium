@@ -15,8 +15,8 @@ import {
 
 import {Camera3DeviceInfo} from './camera3_device_info.js';
 import {CaptureCandidate} from './capture_candidate.js';
+import {DeviceInfo} from './device_monitor.js';
 import {CaptureHandler} from './mode/index.js';
-import {DeviceInfo} from './stream_manager.js';
 
 /**
  * All supported constant fps options of video recording.
@@ -63,6 +63,11 @@ export class CameraInfo {
     }
     const info = this.idToCamera3DeviceInfo.get(deviceId);
     return assertInstanceof(info, Camera3DeviceInfo);
+  }
+
+  hasBuiltinPTZSupport(deviceId: string): boolean {
+    const info = this.getCamera3DeviceInfo(deviceId);
+    return info === null ? false : info.builtinPTZSupport;
   }
 }
 

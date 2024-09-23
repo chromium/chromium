@@ -104,8 +104,7 @@ class MODULES_EXPORT MojoAudioInputIPC
   mojo::Receiver<AudioInputStreamClient> stream_client_receiver_{this};
   mojo::Receiver<mojom::blink::RendererAudioInputStreamFactoryClient>
       factory_client_receiver_{this};
-  raw_ptr<media::AudioInputIPCDelegate, ExperimentalRenderer> delegate_ =
-      nullptr;
+  raw_ptr<media::AudioInputIPCDelegate> delegate_ = nullptr;
 
   base::WeakPtrFactory<MojoAudioInputIPC> weak_factory_{this};
 };

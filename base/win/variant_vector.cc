@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/win/variant_vector.h"
+
+#include <optional>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -10,7 +17,6 @@
 #include "base/process/memory.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
@@ -22,7 +28,7 @@ template <VARTYPE ElementVartype>
 int CompareAgainstSafearray(const std::vector<ScopedVariant>& vector,
                             const ScopedSafearray& safearray,
                             bool ignore_case) {
-  absl::optional<ScopedSafearray::LockScope<ElementVartype>> lock_scope =
+  std::optional<ScopedSafearray::LockScope<ElementVartype>> lock_scope =
       safearray.CreateLockScope<ElementVartype>();
   // If we fail to create a lock scope, then arbitrarily treat |this| as
   // greater. This should only happen when the SAFEARRAY fails to be locked,
@@ -165,7 +171,6 @@ VARIANT VariantVector::ReleaseAsSafearrayVariant() {
     // outside the typemask like VT_ARRAY or VT_BYREF.
     default:
       NOTREACHED();
-      break;
   }
 
   // CreateAndPopulateSafearray handles resetting |this| to VT_EMPTY because it
@@ -308,8 +313,6 @@ int VariantVector::Compare(SAFEARRAY* safearray, bool ignore_case) const {
     // outside the typemask like VT_ARRAY or VT_BYREF.
     default:
       NOTREACHED();
-      compare_result = 1;
-      break;
   }
 
   scoped_safearray.Release();
@@ -329,7 +332,7 @@ SAFEARRAY* VariantVector::CreateAndPopulateSafearray() {
                                       (Size() * kElementSize));
   }
 
-  absl::optional<ScopedSafearray::LockScope<ElementVartype>> lock_scope =
+  std::optional<ScopedSafearray::LockScope<ElementVartype>> lock_scope =
       scoped_safearray.CreateLockScope<ElementVartype>();
   DCHECK(lock_scope);
 

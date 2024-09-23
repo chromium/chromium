@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/files/file_util.h"
+
+#include <string_view>
 
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -20,13 +27,14 @@
 
 #include "base/bit_cast.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/functional/function_ref.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/strings/string_piece.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -46,8 +54,9 @@ namespace {
 void RunAndReply(OnceCallback<bool()> action_callback,
                  OnceCallback<void(bool)> reply_callback) {
   bool result = std::move(action_callback).Run();
-  if (!reply_callback.is_null())
+  if (!reply_callback.is_null()) {
     std::move(reply_callback).Run(result);
+  }
 }
 
 #endif  // !BUILDFLAG(IS_WIN)
@@ -78,8 +87,9 @@ bool ReadStreamToSpanWithMaxSize(
     LARGE_INTEGER size;
     size.HighPart = static_cast<LONG>(file_info.nFileSizeHigh);
     size.LowPart = file_info.nFileSizeLow;
-    if (size.QuadPart > 0)
+    if (size.QuadPart > 0) {
       chunk_size = static_cast<size_t>(size.QuadPart);
+    }
   }
 #else   // BUILDFLAG(IS_WIN)
   // In cases where the reported file size is 0, use a smaller chunk size to
@@ -89,8 +99,9 @@ bool ReadStreamToSpanWithMaxSize(
   constexpr size_t kSmallChunkSize = 4096;
   chunk_size = kSmallChunkSize - 1;
   stat_wrapper_t file_info = {};
-  if (!File::Fstat(fileno(stream), &file_info) && file_info.st_size > 0)
+  if (!File::Fstat(fileno(stream), &file_info) && file_info.st_size > 0) {
     chunk_size = static_cast<size_t>(file_info.st_size);
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   // We need to attempt to read at EOF for feof flag to be set so here we use
@@ -112,14 +123,16 @@ bool ReadStreamToSpanWithMaxSize(
     }
     // In case EOF was not reached, iterate again but revert to the default
     // chunk size.
-    if (bytes_read_so_far == 0)
+    if (bytes_read_so_far == 0) {
       chunk_size = kDefaultChunkSize;
+    }
 
     bytes_read_so_far += bytes_read_this_pass;
     // Last fread syscall (after EOF) can be avoided via feof, which is just a
     // flag check.
-    if (feof(stream))
+    if (feof(stream)) {
       break;
+    }
     bytes_span = resize_span(bytes_read_so_far + chunk_size);
     DCHECK_EQ(bytes_span.size(), bytes_read_so_far + chunk_size);
   }
@@ -160,14 +173,16 @@ OnceClosure GetDeletePathRecursivelyCallback(
 int64_t ComputeDirectorySize(const FilePath& root_path) {
   int64_t running_size = 0;
   FileEnumerator file_iter(root_path, true, FileEnumerator::FILES);
-  while (!file_iter.Next().empty())
+  while (!file_iter.Next().empty()) {
     running_size += file_iter.GetInfo().GetSize();
+  }
   return running_size;
 }
 
 bool Move(const FilePath& from_path, const FilePath& to_path) {
-  if (from_path.ReferencesParent() || to_path.ReferencesParent())
+  if (from_path.ReferencesParent() || to_path.ReferencesParent()) {
     return false;
+  }
   return internal::MoveUnsafe(from_path, to_path);
 }
 
@@ -210,7 +225,6 @@ bool CopyFileContents(File& infile, File& outfile) {
   }
 
   NOTREACHED();
-  return false;
 }
 
 bool ContentsEqual(const FilePath& filename1, const FilePath& filename2) {
@@ -229,8 +243,9 @@ bool ContentsEqual(const FilePath& filename1, const FilePath& filename2) {
 
   // Even if both files aren't openable (and thus, in some sense, "equal"),
   // any unusable file yields a result of "false".
-  if (!file1.is_open() || !file2.is_open())
+  if (!file1.is_open() || !file2.is_open()) {
     return false;
+  }
 
   const int BUFFER_SIZE = 2056;
   char buffer1[BUFFER_SIZE], buffer2[BUFFER_SIZE];
@@ -238,8 +253,7 @@ bool ContentsEqual(const FilePath& filename1, const FilePath& filename2) {
     file1.read(buffer1, BUFFER_SIZE);
     file2.read(buffer2, BUFFER_SIZE);
 
-    if ((file1.eof() != file2.eof()) ||
-        (file1.gcount() != file2.gcount()) ||
+    if ((file1.eof() != file2.eof()) || (file1.gcount() != file2.gcount()) ||
         (memcmp(buffer1, buffer2, static_cast<size_t>(file1.gcount())))) {
       file1.close();
       file2.close();
@@ -263,8 +277,9 @@ bool TextContentsEqual(const FilePath& filename1, const FilePath& filename2) {
 
   // Even if both files aren't openable (and thus, in some sense, "equal"),
   // any unusable file yields a result of "false".
-  if (!file1.is_open() || !file2.is_open())
+  if (!file1.is_open() || !file2.is_open()) {
     return false;
+  }
 
   do {
     std::string line1, line2;
@@ -272,26 +287,28 @@ bool TextContentsEqual(const FilePath& filename1, const FilePath& filename2) {
     getline(file2, line2);
 
     // Check for mismatched EOF states, or any error state.
-    if ((file1.eof() != file2.eof()) ||
-        file1.bad() || file2.bad()) {
+    if ((file1.eof() != file2.eof()) || file1.bad() || file2.bad()) {
       return false;
     }
 
     // Trim all '\r' and '\n' characters from the end of the line.
     std::string::size_type end1 = line1.find_last_not_of("\r\n");
-    if (end1 == std::string::npos)
+    if (end1 == std::string::npos) {
       line1.clear();
-    else if (end1 + 1 < line1.length())
+    } else if (end1 + 1 < line1.length()) {
       line1.erase(end1 + 1);
+    }
 
     std::string::size_type end2 = line2.find_last_not_of("\r\n");
-    if (end2 == std::string::npos)
+    if (end2 == std::string::npos) {
       line2.clear();
-    else if (end2 + 1 < line2.length())
+    } else if (end2 + 1 < line2.length()) {
       line2.erase(end2 + 1);
+    }
 
-    if (line1 != line2)
+    if (line1 != line2) {
       return false;
+    }
   } while (!file1.eof() || !file2.eof());
 
   return true;
@@ -322,14 +339,14 @@ bool ReadStreamToStringWithMaxSize(FILE* stream,
   return read_successs;
 }
 
-absl::optional<std::vector<uint8_t>> ReadFileToBytes(const FilePath& path) {
+std::optional<std::vector<uint8_t>> ReadFileToBytes(const FilePath& path) {
   if (path.ReferencesParent()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ScopedFILE file_stream(OpenFile(path, "rb"));
   if (!file_stream) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<uint8_t> bytes;
@@ -339,7 +356,7 @@ absl::optional<std::vector<uint8_t>> ReadFileToBytes(const FilePath& path) {
                                      bytes.resize(size);
                                      return make_span(bytes);
                                    })) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return bytes;
 }
@@ -352,21 +369,25 @@ bool ReadFileToString(const FilePath& path, std::string* contents) {
 bool ReadFileToStringWithMaxSize(const FilePath& path,
                                  std::string* contents,
                                  size_t max_size) {
-  if (contents)
+  if (contents) {
     contents->clear();
-  if (path.ReferencesParent())
+  }
+  if (path.ReferencesParent()) {
     return false;
+  }
   ScopedFILE file_stream(OpenFile(path, "rb"));
-  if (!file_stream)
+  if (!file_stream) {
     return false;
+  }
   return ReadStreamToStringWithMaxSize(file_stream.get(), max_size, contents);
 }
 
 bool IsDirectoryEmpty(const FilePath& dir_path) {
   FileEnumerator files(dir_path, false,
-      FileEnumerator::FILES | FileEnumerator::DIRECTORIES);
-  if (files.Next().empty())
+                       FileEnumerator::FILES | FileEnumerator::DIRECTORIES);
+  if (files.Next().empty()) {
     return true;
+  }
   return false;
 }
 
@@ -377,8 +398,9 @@ bool CreateTemporaryFile(FilePath* path) {
 
 ScopedFILE CreateAndOpenTemporaryStream(FilePath* path) {
   FilePath directory;
-  if (!GetTempDir(&directory))
+  if (!GetTempDir(&directory)) {
     return nullptr;
+  }
 
   return CreateAndOpenTemporaryStreamInDir(directory, path);
 }
@@ -389,8 +411,9 @@ bool CreateDirectory(const FilePath& full_path) {
 
 bool GetFileSize(const FilePath& file_path, int64_t* file_size) {
   File::Info info;
-  if (!GetFileInfo(file_path, &info))
+  if (!GetFileInfo(file_path, &info)) {
     return false;
+  }
   *file_size = info.size;
   return true;
 }
@@ -402,43 +425,55 @@ bool TouchFile(const FilePath& path,
 
 #if BUILDFLAG(IS_WIN)
   // On Windows, FILE_FLAG_BACKUP_SEMANTICS is needed to open a directory.
-  if (DirectoryExists(path))
+  if (DirectoryExists(path)) {
     flags |= File::FLAG_WIN_BACKUP_SEMANTICS;
+  }
 #elif BUILDFLAG(IS_FUCHSIA)
   // On Fuchsia, we need O_RDONLY for directories, or O_WRONLY for files.
-  // TODO(https://crbug.com/947802): Find a cleaner workaround for this.
+  // TODO(crbug.com/40620916): Find a cleaner workaround for this.
   flags |= (DirectoryExists(path) ? File::FLAG_READ : File::FLAG_WRITE);
 #endif
 
   File file(path, flags);
-  if (!file.IsValid())
+  if (!file.IsValid()) {
     return false;
+  }
 
   return file.SetTimes(last_accessed, last_modified);
 }
 
 bool CloseFile(FILE* file) {
-  if (file == nullptr)
+  if (file == nullptr) {
     return true;
+  }
   return fclose(file) == 0;
 }
 
 bool TruncateFile(FILE* file) {
-  if (file == nullptr)
+  if (file == nullptr) {
     return false;
+  }
   long current_offset = ftell(file);
-  if (current_offset == -1)
+  if (current_offset == -1) {
     return false;
+  }
 #if BUILDFLAG(IS_WIN)
   int fd = _fileno(file);
-  if (_chsize(fd, current_offset) != 0)
+  if (_chsize(fd, current_offset) != 0) {
     return false;
+  }
 #else
   int fd = fileno(file);
-  if (ftruncate(fd, current_offset) != 0)
+  if (ftruncate(fd, current_offset) != 0) {
     return false;
+  }
 #endif
   return true;
+}
+
+std::optional<uint64_t> ReadFile(const FilePath& filename,
+                                 span<uint8_t> buffer) {
+  return ReadFile(filename, base::as_writable_chars(buffer));
 }
 
 int ReadFile(const FilePath& filename, char* data, int max_size) {
@@ -453,77 +488,31 @@ int ReadFile(const FilePath& filename, char* data, int max_size) {
   return checked_cast<int>(result.value());
 }
 
-bool WriteFile(const FilePath& filename, span<const uint8_t> data) {
-  int size = checked_cast<int>(data.size());
-  return WriteFile(filename, reinterpret_cast<const char*>(data.data()),
-                   size) == size;
-}
-
-bool WriteFile(const FilePath& filename, StringPiece data) {
-  int size = checked_cast<int>(data.size());
-  return WriteFile(filename, data.data(), size) == size;
-}
-
-int GetUniquePathNumber(const FilePath& path) {
-  DCHECK(!path.empty());
-  if (!PathExists(path))
-    return 0;
-
-  std::string number;
-  for (int count = 1; count <= kMaxUniqueFiles; ++count) {
-    StringAppendF(&number, " (%d)", count);
-    if (!PathExists(path.InsertBeforeExtensionASCII(number)))
-      return count;
-    number.clear();
-  }
-
-  return -1;
+bool WriteFile(const FilePath& filename, std::string_view data) {
+  return WriteFile(filename, as_bytes(make_span(data)));
 }
 
 FilePath GetUniquePath(const FilePath& path) {
+  return GetUniquePathWithSuffixFormat(path, " (%d)");
+}
+
+FilePath GetUniquePathWithSuffixFormat(const FilePath& path,
+                                       base::cstring_view suffix_format) {
   DCHECK(!path.empty());
-  const int uniquifier = GetUniquePathNumber(path);
-  if (uniquifier > 0)
-    return path.InsertBeforeExtensionASCII(StringPrintf(" (%d)", uniquifier));
-  return uniquifier == 0 ? path : FilePath();
-}
+  DCHECK_EQ(base::ranges::count(suffix_format, '%'), 1);
+  DCHECK(base::Contains(suffix_format, "%d"));
 
-namespace internal {
-
-bool PreReadFileSlow(const FilePath& file_path, int64_t max_bytes) {
-  DCHECK_GE(max_bytes, 0);
-
-  File file(file_path, File::FLAG_OPEN | File::FLAG_READ |
-                           File::FLAG_WIN_SEQUENTIAL_SCAN |
-                           File::FLAG_WIN_SHARE_DELETE);
-  if (!file.IsValid())
-    return false;
-
-  constexpr int kBufferSize = 1024 * 1024;
-  // Ensures the buffer is deallocated at function exit.
-  std::unique_ptr<char[]> buffer_deleter(new char[kBufferSize]);
-  char* const buffer = buffer_deleter.get();
-
-  while (max_bytes > 0) {
-    // The static_cast<int> is safe because kBufferSize is int, and both values
-    // are non-negative. So, the minimum is guaranteed to fit in int.
-    const int read_size =
-        static_cast<int>(std::min<int64_t>(max_bytes, kBufferSize));
-    DCHECK_GE(read_size, 0);
-    DCHECK_LE(read_size, kBufferSize);
-
-    const int read_bytes = file.ReadAtCurrentPos(buffer, read_size);
-    if (read_bytes < 0)
-      return false;
-    if (read_bytes == 0)
-      break;
-
-    max_bytes -= read_bytes;
+  if (!PathExists(path)) {
+    return path;
   }
-
-  return true;
+  for (int count = 1; count <= kMaxUniqueFiles; ++count) {
+    FilePath candidate_path = path.InsertBeforeExtensionASCII(
+        StringPrintfNonConstexpr(suffix_format.data(), count));
+    if (!PathExists(candidate_path)) {
+      return candidate_path;
+    }
+  }
+  return FilePath();
 }
-
-}  // namespace internal
 
 }  // namespace base

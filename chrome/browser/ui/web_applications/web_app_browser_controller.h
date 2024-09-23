@@ -18,6 +18,7 @@
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/tabbed_mode_scope_matcher.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -113,6 +114,7 @@ class WebAppBrowserController : public AppBrowserController,
   bool HasReloadButton() const override;
 #if !BUILDFLAG(IS_CHROMEOS)
   bool HasProfileMenuButton() const override;
+  bool IsProfileMenuButtonVisible() const override;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const ash::SystemWebAppDelegate* system_app() const override;
@@ -176,10 +178,6 @@ class WebAppBrowserController : public AppBrowserController,
   // given the current state of dark/light mode.
   std::optional<SkColor> GetResolvedManifestBackgroundColor() const;
 
-  // Returns the set of scope patterns for the home tab scope of tabbed web
-  // apps.
-  std::optional<RE2::Set> GetTabbedHomeTabScope() const;
-
   const raw_ref<WebAppProvider> provider_;
 
   // Save the display mode at time of launch. The web app display mode may
@@ -194,7 +192,14 @@ class WebAppBrowserController : public AppBrowserController,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   mutable std::optional<ui::ImageModel> app_icon_;
 
-  mutable std::optional<RE2::Set> home_tab_scope_;
+  // Lazily initialized list of patterns to match URLs against for tabbed mode
+  // home tab navigations. If a URL matches any pattern in this list, it is
+  // considered within home tab scope.
+  //
+  // An empty list means there is no home tab scope to match against (i.e.
+  // nothing matches), whereas an uninitialized list means it has not yet been
+  // needed.
+  mutable std::unique_ptr<std::vector<TabbedModeScopeMatcher>> home_tab_scope_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // The result of digital asset link verification of the web app.

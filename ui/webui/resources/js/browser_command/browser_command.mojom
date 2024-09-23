@@ -28,6 +28,8 @@ enum Command {
   kStartPasswordManagerTutorial = 10,
   kStartSavedTabGroupTutorial = 11,
   kOpenAISettings = 12,
+  kOpenSafetyCheckFromWhatsNew = 13,
+  kOpenPaymentsSettings = 14,
 };
 
 // Click information needed to determine user's desired window disposition using

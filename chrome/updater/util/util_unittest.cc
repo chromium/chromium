@@ -4,6 +4,7 @@
 
 #include "chrome/updater/util/util.h"
 
+#include <cstdint>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -25,8 +26,8 @@
 #include "base/test/task_environment.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/tag.h"
-#include "chrome/updater/test_scope.h"
-#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/test/test_scope.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -40,7 +41,6 @@ class UtilTagArgsTest : public ::testing::TestWithParam<UtilTagArgsTestCase> {};
 INSTANTIATE_TEST_SUITE_P(UtilTagArgsTestCases,
                          UtilTagArgsTest,
                          ::testing::ValuesIn(std::vector<UtilTagArgsTestCase>{
-                             {kTagSwitch},
                              {kInstallSwitch},
                              {kHandoffSwitch},
                          }));
@@ -108,7 +108,7 @@ TEST(Util, WriteInstallerDataToTempFile) {
 
 TEST(Util, GetCrashDatabasePath) {
   std::optional<base::FilePath> crash_database_path(
-      GetCrashDatabasePath(GetTestScope()));
+      GetCrashDatabasePath(GetUpdaterScopeForTesting()));
   ASSERT_TRUE(crash_database_path);
   EXPECT_EQ(crash_database_path->BaseName().value(),
             FILE_PATH_LITERAL("Crashpad"));
@@ -116,7 +116,7 @@ TEST(Util, GetCrashDatabasePath) {
 
 TEST(Util, GetCrxDiffCacheDirectory) {
   std::optional<base::FilePath> diff_cache_directory(
-      GetCrxDiffCacheDirectory(GetTestScope()));
+      GetCrxDiffCacheDirectory(GetUpdaterScopeForTesting()));
   ASSERT_TRUE(diff_cache_directory);
   EXPECT_EQ(diff_cache_directory->BaseName().value(),
             FILE_PATH_LITERAL("crx_cache"));
@@ -190,6 +190,30 @@ TEST(Util, OptionalBaseInsertion) {
   file_path = std::make_optional<base::FilePath>(FILE_PATH_LITERAL("test"));
   os << file_path << std::endl;
   EXPECT_EQ(os.str(), "test\n");
+}
+
+TEST(WinUtil, GetDownloadProgress) {
+  EXPECT_EQ(GetDownloadProgress(0, 50), 0);
+  EXPECT_EQ(GetDownloadProgress(12, 50), 24);
+  EXPECT_EQ(GetDownloadProgress(25, 50), 50);
+  EXPECT_EQ(GetDownloadProgress(50, 50), 100);
+  EXPECT_EQ(GetDownloadProgress(50, 50), 100);
+  EXPECT_EQ(GetDownloadProgress(0, -1), -1);
+  EXPECT_EQ(GetDownloadProgress(-1, -1), -1);
+  EXPECT_EQ(GetDownloadProgress(50, 0), -1);
+}
+
+TEST(Util, ToSignedIntegral) {
+  EXPECT_EQ(ToSignedIntegral(uint8_t{0}), 0);
+  EXPECT_EQ(ToSignedIntegral(uint8_t{0x7F}), 0x7F);
+  EXPECT_EQ(ToSignedIntegral(uint8_t{0x80}), -1);
+  EXPECT_EQ(ToSignedIntegral(uint32_t{0}), 0);
+  EXPECT_EQ(ToSignedIntegral(uint32_t{1357}), 1357);
+  EXPECT_EQ(ToSignedIntegral(uint32_t{0x7FFFFFFF}), 0x7FFFFFFF);
+  EXPECT_EQ(ToSignedIntegral(uint32_t{0x80000000}), -1);
+  EXPECT_EQ(ToSignedIntegral(uint32_t{0xFFFFFFFF}), -1);
+  EXPECT_EQ(ToSignedIntegral(uint64_t{0x7FFFFFFFFFFFFFFF}), 0x7FFFFFFFFFFFFFFF);
+  EXPECT_EQ(ToSignedIntegral(uint64_t{0x8000000000000000}), -1);
 }
 
 }  // namespace updater

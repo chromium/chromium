@@ -1,10 +1,6 @@
-# tags: [ Android Fuchsia Linux Mac Mac11 Mac12 Mac13 Mac13-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
+# tags: [ Android Fuchsia Linux Mac Mac11 Mac12 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
-
-# Flaky tests.
-crbug.com/1229016 fast/canvas/canvas-composite-video.html [ Failure Pass ]
-crbug.com/1229002 fast/canvas/canvas-composite-video-shadow.html [ Failure Pass ]
 
 # One portion of the image is offset.
 crbug.com/1002522 fast/canvas/canvas-toDataURL-webp.html [ Skip ]
@@ -17,7 +13,6 @@ crbug.com/993384 css3/filters/effect-reference-colorspace.html [ Failure Pass ]
 crbug.com/993384 css3/filters/effect-reference-subregion.html [ Failure Pass ]
 
 # Off by one errors cause by SwiftShader update
-crbug.com/1266821 animations/skew-notsequential-compositor.html [ Failure ]
 crbug.com/1266821 compositing/fixed-background-after-style-recalc.html [ Failure ]
 crbug.com/1266821 compositing/geometry/clipping-foreground.html [ Failure ]
 crbug.com/1266821 compositing/lots-of-img-layers.html [ Failure ]
@@ -39,7 +34,6 @@ crbug.com/1266821 css3/blending/effect-background-blend-mode-tiled.html [ Failur
 crbug.com/1266821 css3/blending/effect-background-blend-mode.html [ Failure ]
 crbug.com/1266821 css3/blending/mix-blend-mode-isolated-group-1.html [ Failure ]
 crbug.com/1266821 css3/blending/mix-blend-mode-isolated-group-2.html [ Failure ]
-crbug.com/1266821 css3/filters/backdrop-filter-basic-blur.html [ Failure ]
 crbug.com/1266821 css3/filters/effect-brightness-clamping.html [ Failure ]
 crbug.com/1266821 css3/filters/effect-combined-hw.html [ Failure ]
 crbug.com/1266821 css3/filters/effect-combined.html [ Failure ]

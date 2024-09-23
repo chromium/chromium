@@ -18,6 +18,8 @@
         "symbol_level": 2,
         "target_cpu": "arm64",
         "target_os": "android",
+        "use_reclient": false,
+        "use_remoteexec": true,
         "use_siso": true
       }
     },

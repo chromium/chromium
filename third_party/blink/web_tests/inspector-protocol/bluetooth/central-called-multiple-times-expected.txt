@@ -1,0 +1,14 @@
+Tests that repeated Bluetooth.simulateCentral calls are avoided
+{
+    id : <number>
+    result : {
+    }
+}
+{
+    error : {
+        code : -32000
+        message : BluetoothEmulation already enabled
+    }
+    id : <number>
+}
+

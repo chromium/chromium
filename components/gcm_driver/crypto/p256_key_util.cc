@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/logging.h"
@@ -60,7 +61,7 @@ bool GetRawPrivateKey(const crypto::ECPrivateKey& key,
 }
 
 bool ComputeSharedP256Secret(crypto::ECPrivateKey& key,
-                             const base::StringPiece& peer_public_key,
+                             std::string_view peer_public_key,
                              std::string* out_shared_secret) {
   DCHECK(out_shared_secret);
 

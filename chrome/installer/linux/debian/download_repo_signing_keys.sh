@@ -45,6 +45,8 @@ KEY_FINGERS=(
   "4D64FEC119C2029067D6E791F8D2585B8783D481"
   # Debian Security Archive Automatic Signing Key (12/bookworm)
   "B0CAB9266E8C3929798B3EEEBDE6D2B9216EC7A8"
+  # Debian Stable Release Key (11/bullseye)
+  "A4285295FC7B1A81600062A9605C66F00D6C9793"
 )
 
 gpg --keyserver keyserver.ubuntu.com --recv-keys ${KEY_FINGERS[@]}

@@ -6,10 +6,10 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {CurrentWallpaper, DailyRefreshType, DisplayableImage, GooglePhotosPhoto, OnlineImageType, WallpaperFullscreenElement, WallpaperImage, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {CurrentWallpaper, DailyRefreshType, DisplayableImage, FullscreenPreviewState, GooglePhotosPhoto, OnlineImageType, setFullscreenStateAction, setShouldWaitForFullscreenOpacityTransitionsForTesting, WallpaperActionName, WallpaperFullscreenElement, WallpaperImage, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
@@ -33,6 +33,7 @@ suite('WallpaperFullscreenElementTest', function() {
       DisplayableImage = {path: '/local/image/path.jpg'};
 
   setup(() => {
+    setShouldWaitForFullscreenOpacityTransitionsForTesting(false);
     const mocks = baseSetup();
     wallpaperProvider = mocks.wallpaperProvider;
     wallpaperProvider.isInTabletModeResponse = true;
@@ -84,18 +85,27 @@ suite('WallpaperFullscreenElementTest', function() {
 
     const container =
         wallpaperFullscreenElement.shadowRoot!.getElementById('container');
-    assertTrue(container!.hidden);
+    assertTrue(container!.hidden, 'container hidden at first');
 
-    personalizationStore.data.wallpaper.fullscreen = true;
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.LOADING;
     personalizationStore.data.wallpaper.currentSelected =
         currentSelectedCustomImage;
     personalizationStore.notifyObservers();
 
     await requestFullscreenPromise;
 
-    assertFalse(container!.hidden);
+    assertTrue(
+        container!.hidden, 'container still hidden while in loading state');
 
-    personalizationStore.data.wallpaper.fullscreen = false;
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.VISIBLE;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(wallpaperFullscreenElement);
+
+    assertFalse(container!.hidden, 'container now visible');
+
+    personalizationStore.data.wallpaper.fullscreen = FullscreenPreviewState.OFF;
     personalizationStore.notifyObservers();
 
     await exitFullscreenPromise;
@@ -105,74 +115,113 @@ suite('WallpaperFullscreenElementTest', function() {
 
   test('sets default layout option on when entering preview', async () => {
     wallpaperFullscreenElement = initElement(WallpaperFullscreenElement);
-    const {requestFullscreenPromise, exitFullscreenPromise} =
-        mockFullscreenApis();
+    mockFullscreenApis();
     await waitAfterNextRender(wallpaperFullscreenElement);
 
-    assertEquals(null, wallpaperFullscreenElement['selectedLayout_']);
+    assertEquals(
+        null, wallpaperFullscreenElement['selectedLayout_'],
+        'wallpaper layout starts null');
 
-    personalizationStore.data.wallpaper.fullscreen = true;
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.VISIBLE;
     personalizationStore.data.wallpaper.currentSelected =
         currentSelectedCustomImage;
     personalizationStore.notifyObservers();
-
-    await requestFullscreenPromise;
 
     assertEquals(
         WallpaperLayout.kCenterCropped,
-        wallpaperFullscreenElement['selectedLayout_']);
+        wallpaperFullscreenElement['selectedLayout_'],
+        'wallpaper layout set to center cropped');
 
-    personalizationStore.data.wallpaper.fullscreen = false;
+    personalizationStore.data.wallpaper.fullscreen = FullscreenPreviewState.OFF;
     personalizationStore.notifyObservers();
-
-    await exitFullscreenPromise;
-
-    assertEquals(null, wallpaperFullscreenElement['selectedLayout_']);
-  });
-
-  test('sets fullscreen class on body when entering fullscreen', async () => {
-    const fullscreenClassName = 'fullscreen-preview';
-    wallpaperFullscreenElement = initElement(WallpaperFullscreenElement);
-    const {requestFullscreenPromise, exitFullscreenPromise} =
-        mockFullscreenApis();
     await waitAfterNextRender(wallpaperFullscreenElement);
 
-    assertFalse(document.body.classList.contains(fullscreenClassName));
+    assertEquals(
+        null, wallpaperFullscreenElement['selectedLayout_'],
+        'wallpaper layout set back to null');
+  });
 
-    personalizationStore.data.wallpaper.fullscreen = true;
+  test('sets fullscreen classes on body when entering fullscreen', async () => {
+    const fullscreenClassName = 'fullscreen-preview';
+    const fullscreenTransitionClassName = 'fullscreen-preview-transition';
+    wallpaperFullscreenElement = initElement(WallpaperFullscreenElement);
+    const {requestFullscreenPromise} = mockFullscreenApis();
+    await waitAfterNextRender(wallpaperFullscreenElement);
+
+    assertFalse(
+        document.body.classList.contains(fullscreenClassName),
+        `${fullscreenClassName} is not set`);
+    assertFalse(
+        document.body.classList.contains(fullscreenTransitionClassName),
+        `${fullscreenTransitionClassName} is not set`);
+
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.LOADING;
     personalizationStore.data.wallpaper.currentSelected =
         currentSelectedCustomImage;
     personalizationStore.notifyObservers();
 
     await requestFullscreenPromise;
 
-    assertTrue(document.body.classList.contains(fullscreenClassName));
+    assertFalse(
+        document.body.classList.contains(fullscreenClassName),
+        `${fullscreenClassName} is not set during loading`);
+    assertFalse(
+        document.body.classList.contains(fullscreenTransitionClassName),
+        `${fullscreenTransitionClassName} is not set during loading`);
 
-    wallpaperFullscreenElement.exitFullscreen();
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.VISIBLE;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(wallpaperFullscreenElement);
 
-    await exitFullscreenPromise;
+    assertTrue(
+        document.body.classList.contains(fullscreenClassName),
+        `${fullscreenClassName} is set for visible`);
+    assertTrue(
+        document.body.classList.contains(fullscreenTransitionClassName),
+        `${fullscreenTransitionClassName} is set for visible`);
 
-    assertFalse(document.body.classList.contains(fullscreenClassName));
+    personalizationStore.data.wallpaper.fullscreen = FullscreenPreviewState.OFF;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(wallpaperFullscreenElement);
+
+    assertFalse(
+        document.body.classList.contains(fullscreenClassName),
+        `${fullscreenClassName} is removed`);
+    assertFalse(
+        document.body.classList.contains(fullscreenTransitionClassName),
+        `${fullscreenTransitionClassName} is removed`);
   });
 
   test('exits full screen on exit button click', async () => {
     wallpaperFullscreenElement = initElement(WallpaperFullscreenElement);
-    const {requestFullscreenPromise, exitFullscreenPromise} =
-        mockFullscreenApis();
+    const {requestFullscreenPromise} = mockFullscreenApis();
     await waitAfterNextRender(wallpaperFullscreenElement);
 
-    personalizationStore.data.wallpaper.fullscreen = true;
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.LOADING;
     personalizationStore.data.wallpaper.currentSelected =
         currentSelectedCustomImage;
     personalizationStore.notifyObservers();
 
     await requestFullscreenPromise;
+
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.VISIBLE;
+    personalizationStore.notifyObservers();
+
+    personalizationStore.expectAction(WallpaperActionName.SET_FULLSCREEN_STATE);
 
     const exitButton =
         wallpaperFullscreenElement.shadowRoot!.getElementById('exit');
     exitButton!.click();
 
-    await exitFullscreenPromise;
+    const action = await personalizationStore.waitForAction(
+        WallpaperActionName.SET_FULLSCREEN_STATE);
+    assertDeepEquals(
+        setFullscreenStateAction(FullscreenPreviewState.OFF), action);
   });
 
   [{
@@ -265,10 +314,15 @@ suite('WallpaperFullscreenElementTest', function() {
         currentSelectedCustomImage;
     personalizationStore.data.wallpaper.pendingSelected =
         pendingSelectedCustomImage;
-    personalizationStore.data.wallpaper.fullscreen = true;
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.LOADING;
     personalizationStore.notifyObservers();
 
     await requestFullscreenPromise;
+
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.VISIBLE;
+    personalizationStore.notifyObservers();
 
     let button = wallpaperFullscreenElement.shadowRoot!.querySelector(
                      'cr-button[data-layout="FILL"]')! as HTMLButtonElement;
@@ -303,10 +357,15 @@ suite('WallpaperFullscreenElementTest', function() {
         currentSelectedCustomImage;
     personalizationStore.data.wallpaper.pendingSelected =
         pendingSelectedCustomImage;
-    personalizationStore.data.wallpaper.fullscreen = true;
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.LOADING;
     personalizationStore.notifyObservers();
 
     await requestFullscreenPromise;
+
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.VISIBLE;
+    personalizationStore.notifyObservers();
 
     // Current image is kCenter but initial state should reset to default.
     assertEquals(
@@ -333,7 +392,8 @@ suite('WallpaperFullscreenElementTest', function() {
     mockFullscreenApis();
     await waitAfterNextRender(wallpaperFullscreenElement);
 
-    personalizationStore.data.wallpaper.fullscreen = true;
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.LOADING;
     personalizationStore.data.wallpaper.currentSelected = {
       ...wallpaperProvider.currentWallpaper,
       type: WallpaperType.kDaily,
@@ -344,6 +404,12 @@ suite('WallpaperFullscreenElementTest', function() {
     };
     personalizationStore.data.wallpaper.pendingSelected =
         wallpaperProvider.images![1]!;
+    personalizationStore.notifyObservers();
+
+    await waitAfterNextRender(wallpaperFullscreenElement);
+
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.VISIBLE;
     personalizationStore.notifyObservers();
 
     await waitAfterNextRender(wallpaperFullscreenElement);
@@ -379,10 +445,15 @@ suite('WallpaperFullscreenElementTest', function() {
     // Add a history entry to pop later.
     window.history.pushState(null, '', window.location.href + '#test');
 
-    personalizationStore.data.wallpaper.fullscreen = true;
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.LOADING;
     personalizationStore.notifyObservers();
 
     await requestFullscreenPromise;
+
+    personalizationStore.data.wallpaper.fullscreen =
+        FullscreenPreviewState.VISIBLE;
+    personalizationStore.notifyObservers();
 
     personalizationStore.setReducersEnabled(true);
     window.history.back();

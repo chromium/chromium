@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/signin/model/pattern_account_restriction.h"
 
+#import <string_view>
+
 #import "base/strings/string_util.h"
 #import "base/values.h"
 
@@ -15,7 +17,7 @@ Pattern::Pattern(const Pattern&) = default;
 Pattern::Pattern(Pattern&& from) = default;
 Pattern& Pattern::operator=(Pattern&& from) = default;
 
-bool Pattern::Match(base::StringPiece string) const {
+bool Pattern::Match(std::string_view string) const {
   // No wildcards, the whole string should match the pattern.
   if (chunks_.size() == 1) {
     return string.compare(chunks_.front()) == 0;
@@ -63,7 +65,7 @@ PatternAccountRestriction& PatternAccountRestriction::operator=(
     PatternAccountRestriction&& from) = default;
 
 bool PatternAccountRestriction::IsAccountRestricted(
-    base::StringPiece email) const {
+    std::string_view email) const {
   if (patterns_.empty())
     return false;
   for (const auto& pattern : patterns_) {
@@ -74,7 +76,7 @@ bool PatternAccountRestriction::IsAccountRestricted(
 }
 
 bool ArePatternsValid(const base::Value* value) {
-  // TODO(crbug.com/1271066): Check if we can use regex instead.
+  // TODO(crbug.com/40205573): Check if we can use regex instead.
   if (!value->is_list())
     return false;
 
@@ -103,7 +105,7 @@ std::optional<PatternAccountRestriction> PatternAccountRestrictionFromValue(
   return PatternAccountRestriction(std::move(patterns));
 }
 
-std::optional<Pattern> PatternFromString(base::StringPiece chunk) {
+std::optional<Pattern> PatternFromString(std::string_view chunk) {
   std::vector<std::string> chunks;
   std::string current_chunk;
   bool escape = false;

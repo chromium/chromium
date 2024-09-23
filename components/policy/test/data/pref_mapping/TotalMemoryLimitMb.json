@@ -11,7 +11,8 @@
         },
         "prefs": {
           "total_memory_limit_mb": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": 2048
           }
         }
       }

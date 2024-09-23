@@ -2,21 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef DEVICE_VR_TEST_TEST_HOOK_H_
 #define DEVICE_VR_TEST_TEST_HOOK_H_
 
+#include <cstdint>
+
 #include "base/check.h"
+#include "base/component_export.h"
 #include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 
-#include <cstdint>
-
 namespace device {
 
-// Update this string whenever either interface changes.
 constexpr unsigned int kMaxTrackedDevices = 64;
 constexpr unsigned int kMaxNumAxes = 5;
+constexpr unsigned int kNumJointsForTest =
+    static_cast<unsigned int>(device::mojom::XRHandJoint::kMaxValue) + 1;
 
 // These are largely the same as the OpenVR button/axis constants, but kept
 // separate so they're more runtime-agnostic.
@@ -114,7 +121,21 @@ enum ControllerRole {
   kControllerRoleVoice  // Simulates voice input such as saying "select" in WMR.
 };
 
-struct ControllerFrameData {
+struct XRHandJointData {
+  mojom::XRHandJoint joint;
+  // The transform of pose of this joint in mojo space.
+  std::optional<gfx::Transform> mojo_from_joint;
+  // The radius of the joint in meters.
+  float radius = 0;
+};
+
+// Overall struct for all data that may be sent up for a controller per frame.
+// Note that some complex times (e.g. vectors), cannot be used, since this data
+// ends up being transferred out of the browser process and into a separate DLL.
+// This means that we need PODs that do not have complex destructors that would
+// cause issues with data being freed in a different heap than where it was
+// allocated.
+struct COMPONENT_EXPORT(VR_TEST_HOOK) ControllerFrameData {
   unsigned int packet_number = 0;
   uint64_t buttons_pressed = 0;
   uint64_t buttons_touched = 0;
@@ -122,7 +143,15 @@ struct ControllerFrameData {
   ControllerAxisData axis_data[kMaxNumAxes];
   PoseFrameData pose_data = {};
   ControllerRole role = kControllerRoleInvalid;
+  XRHandJointData hand_data[kNumJointsForTest];
+  bool has_hand_data = false;
   bool is_valid = false;
+
+  ControllerFrameData();
+  ~ControllerFrameData();
+  ControllerFrameData(const ControllerFrameData& other);
+  ControllerFrameData& operator=(const ControllerFrameData& other);
+  ControllerFrameData& operator=(ControllerFrameData&& other);
 };
 
 inline gfx::Transform PoseFrameDataToTransform(PoseFrameData data) {

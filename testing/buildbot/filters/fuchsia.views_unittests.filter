@@ -1,6 +1,6 @@
 # Being ported, https://crbug.com/1206224.
 
-# TODO(crbug.com/1231509): These tests require
+# TODO(crbug.com/40190725): These tests require
 # OSExchangeDataProviderFactory::CreateProvider to be implemented.
 -DesktopDragDropClientOzoneTest.ReceiveDrag
 -DesktopDragDropClientOzoneTest.StartDrag
@@ -15,11 +15,11 @@
 -TextfieldTest.DropCallbackRun
 -TextfieldTest.DropCallbackCancelled
 
-# TODO(crbug.com/1231516): This test require handling capture in
+# TODO(crbug.com/40190728): This test require handling capture in
 # ui::ScenicWindow
 -TooltipControllerTest.Capture
 
-# TODO(crbug.com/1231576): These tests require handling window resizing in
+# TODO(crbug.com/40190747): These tests require handling window resizing in
 # ui::ScenicWindow
 -DesktopAuraWidgetTest.TopLevelOwnedPopupResizeTest
 -DesktopNativeWidgetAuraTest.DesktopAuraWindowSizeTest
@@ -31,7 +31,7 @@
 -NativeWidgetAuraTest.CenterWindowLargeParent
 -RootViewDesktopNativeWidgetTest.SingleLayoutDuringInit
 
-# TODO(crbug.com/1231590): These tests are failing on Fuchsia and need to be
+# TODO(crbug.com/40190752): These tests are failing on Fuchsia and need to be
 # investigated.
 -CompositorAnimationRunnerDesktopTest.SwitchCompositor
 -DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura
@@ -40,6 +40,6 @@
 -LabelTest.FontPropertyArial
 -LabelTest.FontPropertySymbol
 
-# TODO(crbug.com/1233426): These tests require handling fullscreen windows.
+# TODO(crbug.com/40191539): These tests require handling fullscreen windows.
 -DesktopAuraWidgetTest.*Fullscreen*
 -DesktopWidgetTest.*Fullscreen*

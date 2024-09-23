@@ -17,7 +17,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/web_contents.h"
@@ -337,8 +336,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
 
   // Redirects can sometimes occur before the load event, so use a
   // UrlLoadObserver instead of blocking waiting for two load events.
-  ui_test_utils::UrlLoadObserver accessible_observer(
-      accessible_url, content::NotificationService::AllSources());
+  ui_test_utils::UrlLoadObserver accessible_observer(accessible_url);
   GURL accessible_client_redirect_resource(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
       "web_accessible/accessible_redirect_resource.html"));
@@ -349,8 +347,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
             controller.GetLastCommittedEntry()->GetPageType());
   EXPECT_EQ(accessible_url, web_contents->GetLastCommittedURL());
 
-  ui_test_utils::UrlLoadObserver nonaccessible_observer(
-      invalid_url, content::NotificationService::AllSources());
+  ui_test_utils::UrlLoadObserver nonaccessible_observer(invalid_url);
   GURL nonaccessible_client_redirect_resource(embedded_test_server()->GetURL(
       "/extensions/api_test/extension_resource_request_policy/"
       "web_accessible/nonaccessible_redirect_resource.html"));

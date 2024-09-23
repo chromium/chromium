@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
@@ -56,7 +57,7 @@ std::string GetConsoleErrorMessage(FederatedAuthUserInfoRequestResult error) {
     }
     case FederatedAuthUserInfoRequestResult::kUnhandledRequest:
     case FederatedAuthUserInfoRequestResult::kSuccess: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
     }
   }
@@ -75,14 +76,12 @@ FederatedAuthUserInfoRequest::Create(
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
     RenderFrameHost* render_frame_host,
-    FedCmMetrics* metrics,
     blink::mojom::IdentityProviderConfigPtr provider) {
   std::unique_ptr<FederatedAuthUserInfoRequest> request =
       base::WrapUnique<FederatedAuthUserInfoRequest>(
           new FederatedAuthUserInfoRequest(
               std::move(network_manager), permission_delegate,
-              api_permission_delegate, render_frame_host, metrics,
-              std::move(provider)));
+              api_permission_delegate, render_frame_host, std::move(provider)));
   return request;
 }
 
@@ -95,12 +94,10 @@ FederatedAuthUserInfoRequest::FederatedAuthUserInfoRequest(
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
     RenderFrameHost* render_frame_host,
-    FedCmMetrics* metrics,
     blink::mojom::IdentityProviderConfigPtr provider)
     : network_manager_(std::move(network_manager)),
       permission_delegate_(permission_delegate),
       api_permission_delegate_(api_permission_delegate),
-      metrics_(metrics),
       render_frame_host_(render_frame_host),
       client_id_(provider->client_id),
       idp_config_url_(provider->config_url),
@@ -218,10 +215,10 @@ void FederatedAuthUserInfoRequest::OnAllConfigAndWellKnownFetched(
 
 void FederatedAuthUserInfoRequest::OnAccountsResponseReceived(
     IdpNetworkRequestManager::FetchStatus fetch_status,
-    IdpNetworkRequestManager::AccountList accounts) {
+    std::vector<IdentityRequestAccountPtr> accounts) {
   webid::UpdateIdpSigninStatusForAccountsEndpointResponse(
       *render_frame_host_, idp_config_url_, fetch_status,
-      does_idp_have_failing_signin_status_, permission_delegate_, metrics_);
+      does_idp_have_failing_signin_status_, permission_delegate_);
 
   if (fetch_status.parse_status !=
       IdpNetworkRequestManager::ParseStatus::kSuccess) {
@@ -230,36 +227,40 @@ void FederatedAuthUserInfoRequest::OnAccountsResponseReceived(
     return;
   }
 
+  webid::GetPageData(render_frame_host_->GetPage())
+      ->SetUserInfoAccountsResponseTime(idp_config_url_,
+                                        base::TimeTicks::Now());
+
   // Populate the accounts login state.
   for (auto& account : accounts) {
     // We set the login state based on the IDP response if it sends
     // back an approved_clients list. If it does not, we need to set
     // it here based on browser state.
-    if (account.login_state) {
+    if (account->login_state) {
       continue;
     }
 
     LoginState login_state = LoginState::kSignUp;
     // Consider this a sign-in if we have seen a successful sign-up for
     // this account before.
-    if (permission_delegate_->HasSharingPermission(
+    if (permission_delegate_->GetLastUsedTimestamp(
             parent_frame_origin_, embedding_origin_,
-            url::Origin::Create(idp_config_url_), account.id)) {
+            url::Origin::Create(idp_config_url_), account->id)) {
       login_state = LoginState::kSignIn;
     }
-    account.login_state = login_state;
+    account->login_state = login_state;
   }
 
   MaybeReturnAccounts(std::move(accounts));
 }
 
 void FederatedAuthUserInfoRequest::MaybeReturnAccounts(
-    const IdpNetworkRequestManager::AccountList& accounts) {
+    const std::vector<IdentityRequestAccountPtr>& accounts) {
   DCHECK(!accounts.empty());
 
   bool has_returning_accounts = false;
   for (const auto& account : accounts) {
-    if (IsReturningAccount(account)) {
+    if (IsReturningAccount(*account)) {
       has_returning_accounts = true;
       break;
     }
@@ -285,14 +286,14 @@ void FederatedAuthUserInfoRequest::MaybeReturnAccounts(
   std::vector<blink::mojom::IdentityUserInfoPtr> user_info;
   std::vector<blink::mojom::IdentityUserInfoPtr> not_returning_accounts;
   for (const auto& account : accounts) {
-    if (IsReturningAccount(account)) {
+    if (IsReturningAccount(*account)) {
       user_info.push_back(blink::mojom::IdentityUserInfo::New(
-          account.email, account.given_name, account.name,
-          account.picture.spec()));
+          account->email, account->given_name, account->name,
+          account->picture.spec()));
     } else {
       not_returning_accounts.push_back(blink::mojom::IdentityUserInfo::New(
-          account.email, account.given_name, account.name,
-          account.picture.spec()));
+          account->email, account->given_name, account->name,
+          account->picture.spec()));
     }
   }
   user_info.insert(user_info.end(),

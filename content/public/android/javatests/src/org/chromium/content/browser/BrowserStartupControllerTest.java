@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
@@ -19,7 +20,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Test of BrowserStartupController */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -129,7 +129,7 @@ public class BrowserStartupControllerTest {
         final TestStartupCallback callback = new TestStartupCallback();
 
         // Kick off the asynchronous startup request.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -161,7 +161,7 @@ public class BrowserStartupControllerTest {
         final TestStartupCallback callback3 = new TestStartupCallback();
 
         // Kick off the asynchronous startup requests.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -170,7 +170,7 @@ public class BrowserStartupControllerTest {
                         Assert.fail("Browser should have started successfully");
                     }
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -179,7 +179,7 @@ public class BrowserStartupControllerTest {
                         Assert.fail("Browser should have started successfully");
                     }
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mController.addStartupCompletedObserver(callback3);
                 });
@@ -209,7 +209,7 @@ public class BrowserStartupControllerTest {
         final TestStartupCallback callback2 = new TestStartupCallback();
 
         // Kick off the asynchronous startup requests.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -218,7 +218,7 @@ public class BrowserStartupControllerTest {
                         Assert.fail("Browser should have started successfully");
                     }
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mController.addStartupCompletedObserver(callback2);
                 });
@@ -240,7 +240,7 @@ public class BrowserStartupControllerTest {
         final TestStartupCallback callback4 = new TestStartupCallback();
 
         // Kick off more asynchronous startup requests.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -249,7 +249,7 @@ public class BrowserStartupControllerTest {
                         Assert.fail("Browser should have started successfully");
                     }
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mController.addStartupCompletedObserver(callback4);
                 });
@@ -271,7 +271,7 @@ public class BrowserStartupControllerTest {
         final TestStartupCallback callback = new TestStartupCallback();
 
         // Kick off the asynchronous startup request.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -302,7 +302,7 @@ public class BrowserStartupControllerTest {
         final TestStartupCallback callback2 = new TestStartupCallback();
 
         // Kick off the asynchronous startup requests.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -311,7 +311,7 @@ public class BrowserStartupControllerTest {
                         Assert.fail("Browser should have started successfully");
                     }
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mController.addStartupCompletedObserver(callback2);
                 });
@@ -333,7 +333,7 @@ public class BrowserStartupControllerTest {
         final TestStartupCallback callback4 = new TestStartupCallback();
 
         // Kick off more asynchronous startup requests.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -342,7 +342,7 @@ public class BrowserStartupControllerTest {
                         Assert.fail("Browser should have started successfully");
                     }
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mController.addStartupCompletedObserver(callback4);
                 });
@@ -362,7 +362,7 @@ public class BrowserStartupControllerTest {
         mController.mStartupResult = BrowserStartupControllerImpl.STARTUP_SUCCESS;
         mController.mLibraryLoadSucceeds = true;
         // Kick off the synchronous startup.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesSync(
@@ -386,7 +386,7 @@ public class BrowserStartupControllerTest {
         final TestStartupCallback callback = new TestStartupCallback();
 
         // Kick off the startups.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -422,7 +422,7 @@ public class BrowserStartupControllerTest {
         final TestStartupCallback callback = new TestStartupCallback();
 
         // Do a synchronous startup first.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesSync(
@@ -438,7 +438,7 @@ public class BrowserStartupControllerTest {
                 mController.fullBrowserLaunchCounter());
 
         // Kick off the asynchronous startup request. This should just queue the callback.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -467,7 +467,7 @@ public class BrowserStartupControllerTest {
         final TestStartupCallback callback = new TestStartupCallback();
 
         // Kick off the asynchronous startup request.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -496,7 +496,7 @@ public class BrowserStartupControllerTest {
         final TestStartupCallback callback2 = new TestStartupCallback();
 
         // Kick off the asynchronous startup requests to start a minimal browser.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -505,7 +505,7 @@ public class BrowserStartupControllerTest {
                         Assert.fail("Browser should have started successfully");
                     }
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Callback2 will only be run when full browser is started.
                     mController.addStartupCompletedObserver(callback2);
@@ -532,7 +532,7 @@ public class BrowserStartupControllerTest {
         final TestStartupCallback callback4 = new TestStartupCallback();
 
         // Kick off another asynchronous startup requests to start full browser.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -541,7 +541,7 @@ public class BrowserStartupControllerTest {
                         Assert.fail("Browser should have started successfully");
                     }
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mController.addStartupCompletedObserver(callback4);
                 });
@@ -572,7 +572,7 @@ public class BrowserStartupControllerTest {
         final TestStartupCallback callback3 = new TestStartupCallback();
 
         // Kick off the asynchronous startup requests.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -587,7 +587,7 @@ public class BrowserStartupControllerTest {
                         Assert.fail("Browser should have started successfully");
                     }
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Callback3 will only be run when full browser is started.
                     mController.addStartupCompletedObserver(callback3);
@@ -623,7 +623,7 @@ public class BrowserStartupControllerTest {
         final TestStartupCallback callback3 = new TestStartupCallback();
 
         // Kick off the asynchronous startup requests.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -632,7 +632,7 @@ public class BrowserStartupControllerTest {
                         Assert.fail("Browser should have started successfully");
                     }
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -641,7 +641,7 @@ public class BrowserStartupControllerTest {
                         Assert.fail("Browser should have started successfully");
                     }
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Callback3 will only be run when full browser is started.
                     mController.addStartupCompletedObserver(callback3);
@@ -677,7 +677,7 @@ public class BrowserStartupControllerTest {
         final TestStartupCallback callback3 = new TestStartupCallback();
 
         // Kick off the asynchronous startup requests.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -692,7 +692,7 @@ public class BrowserStartupControllerTest {
                         Assert.fail("Browser should have started successfully");
                     }
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Callback3 will only be run when full browser is started.
                     mController.addStartupCompletedObserver(callback3);
@@ -726,14 +726,14 @@ public class BrowserStartupControllerTest {
         mController.mLibraryLoadSucceeds = true;
         final TestStartupCallback callback1 = new TestStartupCallback();
         final TestStartupCallback callback2 = new TestStartupCallback();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Callback2 will only be run when full browser is started.
                     mController.addStartupCompletedObserver(callback2);
                 });
 
         // Kick off the asynchronous startup requests.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -742,7 +742,7 @@ public class BrowserStartupControllerTest {
                         Assert.fail("Browser should have started successfully");
                     }
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesSync(
@@ -775,13 +775,13 @@ public class BrowserStartupControllerTest {
         mController.mLibraryLoadSucceeds = true;
         final TestStartupCallback callback1 = new TestStartupCallback();
         final TestStartupCallback callback2 = new TestStartupCallback();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Callback2 will only be run when full browser is started.
                     mController.addStartupCompletedObserver(callback2);
                 });
         // Kick off the asynchronous startup requests.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesAsync(
@@ -821,13 +821,13 @@ public class BrowserStartupControllerTest {
         mController.mLibraryLoadSucceeds = true;
         final TestStartupCallback callback1 = new TestStartupCallback();
         final TestStartupCallback callback2 = new TestStartupCallback();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Callback2 will only be run when full browser is started.
                     mController.addStartupCompletedObserver(callback2);
                 });
         // Kick off the asynchronous startup requests.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     try {
                         mController.startBrowserProcessesSync(

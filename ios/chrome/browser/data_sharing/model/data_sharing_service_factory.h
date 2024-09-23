@@ -7,8 +7,7 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace data_sharing {
 
@@ -17,7 +16,10 @@ class DataSharingService;
 // Factory for DataSharingService.
 class DataSharingServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static DataSharingService* GetForBrowserState(ChromeBrowserState* context);
+
+  static DataSharingService* GetForProfile(ProfileIOS* profile);
 
   static DataSharingServiceFactory* GetInstance();
 

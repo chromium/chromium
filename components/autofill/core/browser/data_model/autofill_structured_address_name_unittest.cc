@@ -22,10 +22,9 @@
 using base::ASCIIToUTF16;
 
 namespace autofill {
+namespace {
 
 using AddressComponentTestValues = std::vector<AddressComponentTestValue>;
-
-namespace {
 
 // A test record that contains all entries of the hybrid-structure name tree.
 struct NameParserTestRecord {
@@ -94,8 +93,6 @@ void TestLastNameParsing(const std::u16string& last_name,
   EXPECT_EQ(last_name_component.GetValueForType(NAME_LAST_SECOND),
             target_second);
 }
-
-}  // namespace
 
 // Tests the parsing of last names into their tree components:
 // * The first part, that is only used in Latinx/Hispanic names.
@@ -620,8 +617,8 @@ TEST(AutofillStructuredName, MigrationFromLegacyStructure_WithoutFullName) {
 TEST(AutofillStructuredName, MergeSubsetLastname) {
   NameFull name;
   NameFull subset_name;
-  test_api(&name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
-                               kRecursivelyMergeTokenEquivalentValues);
+  test_api(name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
+                              kRecursivelyMergeTokenEquivalentValues);
 
   AddressComponentTestValues name_values = {
       {.type = NAME_FIRST,
@@ -680,8 +677,8 @@ TEST(AutofillStructuredName, MergeSubsetLastname) {
 TEST(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
   NameFull name;
   NameFull subset_name;
-  test_api(&name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
-                               kRecursivelyMergeTokenEquivalentValues);
+  test_api(name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
+                              kRecursivelyMergeTokenEquivalentValues);
 
   AddressComponentTestValues name_values = {
       {.type = NAME_FULL,
@@ -731,8 +728,8 @@ TEST(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
   // After normalization, the two names should have a single-token-superset
   // relation.
   SortedTokenComparisonResult token_comparison_result =
-      CompareSortedTokens(test_api(&name).GetValueForComparison(subset_name),
-                          test_api(&subset_name).GetValueForComparison(name));
+      CompareSortedTokens(test_api(name).GetValueForComparison(subset_name),
+                          test_api(subset_name).GetValueForComparison(name));
   EXPECT_TRUE(token_comparison_result.IsSingleTokenSuperset());
 
   // Without normalization, the two names should be considered distinct.
@@ -751,8 +748,8 @@ TEST(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
 TEST(AutofillStructuredName, MergeSubsetLastname2) {
   NameFull name;
   NameFull subset_name;
-  test_api(&name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
-                               kRecursivelyMergeTokenEquivalentValues);
+  test_api(name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
+                              kRecursivelyMergeTokenEquivalentValues);
 
   AddressComponentTestValues name_values = {
       {.type = NAME_FIRST,
@@ -796,4 +793,5 @@ TEST(AutofillStructuredName, MergeSubsetLastname2) {
   VerifyTestValues(&name, name_values);
 }
 
+}  // namespace
 }  // namespace autofill

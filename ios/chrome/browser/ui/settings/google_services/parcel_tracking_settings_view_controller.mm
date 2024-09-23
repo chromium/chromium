@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/parcel_tracking_settings_view_controller.h"
 
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "base/notreached.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -40,7 +41,7 @@ IOSParcelTrackingOptInStatus OptInStatusForItemType(ItemType item_type) {
       return IOSParcelTrackingOptInStatus::kNeverTrack;
     }
     case kFooterItem:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return IOSParcelTrackingOptInStatus::kNeverTrack;
   }
 }
@@ -131,6 +132,15 @@ IOSParcelTrackingOptInStatus OptInStatusForItemType(ItemType item_type) {
     UITableViewCellAccessoryType desiredType =
         itemSetting == newState ? UITableViewCellAccessoryCheckmark
                                 : UITableViewCellAccessoryNone;
+
+    // If the status is not explicitly set (default), then "Ask To Track" should
+    // be selected. kStatusNotSet and kAskToTrack have the same behavior and are
+    // only differentiated for metrics.
+    if (newState == IOSParcelTrackingOptInStatus::kStatusNotSet &&
+        itemSetting == IOSParcelTrackingOptInStatus::kAskToTrack) {
+      desiredType = UITableViewCellAccessoryCheckmark;
+    }
+
     if (item.accessoryType != desiredType) {
       item.accessoryType = desiredType;
       [modifiedItems addObject:item];

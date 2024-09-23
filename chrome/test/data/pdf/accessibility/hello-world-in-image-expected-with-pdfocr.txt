@@ -1,0 +1,14 @@
+pdfRoot 'PDF document containing 1 page'
+  banner
+    status 'This PDF is inaccessible. Text extracted, powered by Google AI'
+      staticText 'This PDF is inaccessible. Text extracted, powered by Google AI'
+  region 'Page 1'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Hello, world!'
+            inlineTextBox 'Hello, world!'
+        contentInfo
+          staticText 'End of extracted text'

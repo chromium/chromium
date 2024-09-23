@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Ismeretlen termék (<ph name="PRODUCT_ID" />) <ph name="VENDOR_ID" /> szolgáltatótól (sorozatszám: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Nem sikerült lecserélni a crx-fájlt. Ellenőrizze, hogy nincs-e használatban a fájl.</translation>
 <translation id="3163201441334626963">Ismeretlen termék (<ph name="PRODUCT_ID" />) a következő forgalmazótól: <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Nem lehet kicsomagolni a bővítményt. A bővítmények biztonságos kicsomagolásához kell lennie egy olyan elérési útnak a profilkönyvtárban, amely egy meghajtó betűjelével kezdődik, és nem tartalmaz közvetett hivatkozást (junction vagy symlink) vagy csatolási pontot. Ilyen elérési út nem létezik a profiljában.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (sorozatszám: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> termék a következő forgalmazótól: <ph name="VENDOR_ID" /> (sorozatszám: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">A privát kulcs beviteli értékéhez érvényes útvonalat kell megadnia.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">A számítógép adminisztrátorának szüksége van arra, hogy a(z) <ph name="EXTENSION_NAME" /> telepítve legyen. Nem lehet eltávolítani.</translation>
 <translation id="6027032947578871493">Ismeretlen termék (<ph name="PRODUCT_ID" />) a következő szolgáltatótól: <ph name="VENDOR_NAME" /> (sorozatszám: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" />, forgalmazó: <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Nem lehet kicsomagolni a bővítményt. A bővítmények biztonságos kicsomagolásához kell lennie egy olyan elérési útnak a profilkönyvtárban, amelyben nem szerepel közvetett hivatkozás (symlink). Ilyen elérési út nem létezik a profiljában.</translation>
 <translation id="6322279351188361895">A privát kulcs olvasása sikertelen.</translation>
 <translation id="6391538222494443604">Kell lennie beviteli könyvtárnak.</translation>
 <translation id="641087317769093025">Nem sikerült a bővítmény kicsomagolása</translation>

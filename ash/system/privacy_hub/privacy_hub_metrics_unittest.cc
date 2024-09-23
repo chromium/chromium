@@ -4,8 +4,12 @@
 
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/geolocation_access_level.h"
+#include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::privacy_hub_metrics {
@@ -21,7 +25,13 @@ const auto kGeolocationAccessLevels = {
 
 using Sensor = SensorDisabledNotificationDelegate::Sensor;
 
-TEST(PrivacyHubMetricsTest, EnableFromNotification) {
+class PrivacyHubMetricsTest : public AshTestBase {
+ public:
+  PrivacyHubMetricsTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
+
+TEST_F(PrivacyHubMetricsTest, EnableFromNotification) {
   const base::HistogramTester histogram_tester;
 
   // Test Microphone and Camera:
@@ -53,7 +63,7 @@ TEST(PrivacyHubMetricsTest, EnableFromNotification) {
       GeolocationAccessLevel::kAllowed, 1);
 }
 
-TEST(PrivacyHubMetricsTest, OpenFromNotification) {
+TEST_F(PrivacyHubMetricsTest, OpenFromNotification) {
   const base::HistogramTester histogram_tester;
 
   histogram_tester.ExpectBucketCount(

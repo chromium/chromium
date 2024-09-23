@@ -71,9 +71,9 @@ class MyDelegate : public FeatureUsageMetrics::Delegate {
   bool IsEligible() const final {
     ...
   }
-  // Optional. Default implementation returns `absl::nullopt` which do not emit
+  // Optional. Default implementation returns `std::nullopt` which do not emit
   // any UMA events.
-  absl::optional<bool> IsAccessible() const final {
+  std::optional<bool> IsAccessible() const final {
     ...
   }
   // If `IsEnabled` returns true `IsEligible` must return true too.

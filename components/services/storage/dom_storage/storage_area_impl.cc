@@ -9,14 +9,18 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
-#include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 namespace storage {
+
+BASE_FEATURE(kDomStorageSmartFlushing,
+             "DomStorageSmartFlushing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 StorageAreaImpl::Delegate::~Delegate() = default;
 
@@ -74,6 +78,9 @@ StorageAreaImpl::StorageAreaImpl(AsyncDomStorageDatabase* database,
       default_commit_delay_(options.default_commit_delay),
       data_rate_limiter_(options.max_bytes_per_hour, base::Hours(1)),
       commit_rate_limiter_(options.max_commits_per_hour, base::Hours(1)) {
+  if (database_) {
+    database_->AddCommitter(this);
+  }
   receivers_.set_disconnect_handler(base::BindRepeating(
       &StorageAreaImpl::OnConnectionError, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -82,6 +89,9 @@ StorageAreaImpl::~StorageAreaImpl() {
   DCHECK(!has_pending_load_tasks());
   if (commit_batch_)
     CommitChanges();
+  if (database_) {
+    database_->RemoveCommitter(this);
+  }
 }
 
 void StorageAreaImpl::InitializeAsEmpty() {
@@ -145,20 +155,17 @@ void StorageAreaImpl::EnableAggressiveCommitDelay() {
   s_aggressive_flushing_enabled_ = true;
 }
 
-void StorageAreaImpl::ScheduleImmediateCommit(base::OnceClosure callback) {
+void StorageAreaImpl::ScheduleImmediateCommit() {
   if (!on_load_complete_tasks_.empty()) {
     LoadMap(base::BindOnce(&StorageAreaImpl::ScheduleImmediateCommit,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           std::move(callback)));
+                           weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
   if (!database_ || !commit_batch_) {
-    if (callback)
-      std::move(callback).Run();
     return;
   }
-  CommitChanges(std::move(callback));
+  CommitChanges();
 }
 
 void StorageAreaImpl::OnMemoryDump(const std::string& name,
@@ -327,6 +334,8 @@ void StorageAreaImpl::Put(
       commit_batch_->changed_values[key] = value;
     else
       commit_batch_->changed_keys.insert(key);
+
+    commit_batch_->put_timestamps.push_back(base::TimeTicks::Now());
   }
 
   if (map_state_ == MapState::LOADED_KEYS_ONLY)
@@ -474,7 +483,7 @@ void StorageAreaImpl::Get(const std::vector<uint8_t>& key,
   // TODO(ssid): Remove this method since it is not supported in only keys mode,
   // crbug.com/764127.
   if (cache_mode_ == CacheMode::KEYS_ONLY_WHEN_POSSIBLE) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   if (!IsMapLoaded() || IsMapUpgradeNeeded()) {
@@ -523,6 +532,12 @@ void StorageAreaImpl::GetAll(
     AddObserver(std::move(new_observer));
 }
 
+base::OnceCallback<void(leveldb::Status)>
+StorageAreaImpl::GetCommitCompleteCallback() {
+  return base::BindOnce(&StorageAreaImpl::OnCommitComplete,
+                        weak_ptr_factory_.GetWeakPtr());
+}
+
 void StorageAreaImpl::SetCacheMode(CacheMode cache_mode) {
   if (cache_mode_ == cache_mode ||
       (!database_ && cache_mode == CacheMode::KEYS_ONLY_WHEN_POSSIBLE)) {
@@ -538,6 +553,18 @@ void StorageAreaImpl::SetCacheMode(CacheMode cache_mode) {
   // other hand if only keys are desired, the keys and values map can still be
   // used. Consider not unloading when the map is still useful.
   UnloadMapIfPossible();
+}
+
+void StorageAreaImpl::Checkpoint() {
+  if (!base::FeatureList::IsEnabled(kDomStorageSmartFlushing)) {
+    return;
+  }
+
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time_;
+  if (commit_rate_limiter_.ComputeDelayNeeded(elapsed_time).is_zero() &&
+      data_rate_limiter_.ComputeDelayNeeded(elapsed_time).is_zero()) {
+    ScheduleImmediateCommit();
+  }
 }
 
 void StorageAreaImpl::OnConnectionError() {
@@ -692,7 +719,7 @@ void StorageAreaImpl::StartCommitTimer() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&StorageAreaImpl::CommitChanges,
-                     weak_ptr_factory_.GetWeakPtr(), base::OnceClosure()),
+                     weak_ptr_factory_.GetWeakPtr()),
       ComputeCommitDelay());
 }
 
@@ -711,13 +738,20 @@ base::TimeDelta StorageAreaImpl::ComputeCommitDelay() const {
   return delay;
 }
 
-void StorageAreaImpl::CommitChanges(base::OnceClosure callback) {
+void StorageAreaImpl::CommitChanges() {
   // Note: commit_batch_ may be null if ScheduleImmediateCommit was called
   // after a delayed commit task was scheduled.
   if (!commit_batch_) {
-    if (callback)
-      std::move(callback).Run();
     return;
+  }
+
+  database_->InitiateCommit(this);
+}
+
+std::optional<AsyncDomStorageDatabase::Commit>
+StorageAreaImpl::CollectCommit() {
+  if (!commit_batch_) {
+    return std::nullopt;
   }
 
   DCHECK(database_);
@@ -726,15 +760,8 @@ void StorageAreaImpl::CommitChanges(base::OnceClosure callback) {
   commit_rate_limiter_.add_samples(1);
 
   // Commit all our changes in a single batch.
-  struct Commit {
-    DomStorageDatabase::Key prefix;
-    bool clear_all_first;
-    std::vector<DomStorageDatabase::KeyValuePair> entries_to_add;
-    std::vector<DomStorageDatabase::Key> keys_to_delete;
-    std::optional<DomStorageDatabase::Key> copy_to_prefix;
-  };
-
-  Commit commit;
+  AsyncDomStorageDatabase::Commit commit;
+  commit.timestamps = std::move(commit_batch_->put_timestamps);
   commit.prefix = prefix_;
   commit.clear_all_first = commit_batch_->clear_all_first;
   delegate_->PrepareToCommit(&commit.entries_to_add, &commit.keys_to_delete);
@@ -782,6 +809,7 @@ void StorageAreaImpl::CommitChanges(base::OnceClosure callback) {
       }
     }
   }
+
   // Schedule the copy, and ignore if |clear_all_first| is specified and there
   // are no changing keys.
   if (commit_batch_->copy_to_prefix) {
@@ -789,37 +817,21 @@ void StorageAreaImpl::CommitChanges(base::OnceClosure callback) {
     DCHECK(!commit_batch_->clear_all_first);
     commit.copy_to_prefix = std::move(commit_batch_->copy_to_prefix);
   }
-  commit_batch_.reset();
+
+  base::UmaHistogramCustomCounts("DOMStorage.CommitSizeBytes", data_size,
+                                 /*min=*/100,
+                                 /*exclusive_max=*/12 * 1024 * 1024,
+                                 /*buckets=*/100);
 
   data_rate_limiter_.add_samples(data_size);
+  commit.data_size = data_size;
 
   ++commit_batches_in_flight_;
-
-  database_->RunDatabaseTask(
-      base::BindOnce(
-          [](Commit commit, const DomStorageDatabase& db) {
-            leveldb::WriteBatch batch;
-            if (commit.clear_all_first)
-              db.DeletePrefixed(commit.prefix, &batch);
-            for (const auto& entry : commit.entries_to_add) {
-              batch.Put(leveldb_env::MakeSlice(entry.key),
-                        leveldb_env::MakeSlice(entry.value));
-            }
-            for (const auto& key : commit.keys_to_delete)
-              batch.Delete(leveldb_env::MakeSlice(key));
-            if (commit.copy_to_prefix) {
-              db.CopyPrefixed(commit.prefix, commit.copy_to_prefix.value(),
-                              &batch);
-            }
-            return db.Commit(&batch);
-          },
-          std::move(commit)),
-      base::BindOnce(&StorageAreaImpl::OnCommitComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  commit_batch_.reset();
+  return commit;
 }
 
-void StorageAreaImpl::OnCommitComplete(base::OnceClosure callback,
-                                       leveldb::Status status) {
+void StorageAreaImpl::OnCommitComplete(leveldb::Status status) {
   has_committed_data_ = true;
   --commit_batches_in_flight_;
   StartCommitTimer();
@@ -831,8 +843,6 @@ void StorageAreaImpl::OnCommitComplete(base::OnceClosure callback,
   UnloadMapIfPossible();
 
   delegate_->DidCommit(status);
-  if (callback)
-    std::move(callback).Run();
 }
 
 void StorageAreaImpl::UnloadMapIfPossible() {

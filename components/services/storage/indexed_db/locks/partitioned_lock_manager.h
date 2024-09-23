@@ -8,28 +8,20 @@
 #include <deque>
 #include <iosfwd>
 #include <list>
+#include <map>
 #include <memory>
 #include <set>
 #include <vector>
 
-#include "base/component_export.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
-#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 
-namespace base {
-class Value;
-}
-
-namespace content {
+namespace content::indexed_db {
 
 // Used to receive and hold locks from a PartitionedLockManager. This struct
 // enables the PartitionedLock objects to always live in the destination of the
@@ -38,20 +30,16 @@ namespace content {
 //
 // This class must be used and destructed on the same sequence as the
 // PartitionedLockManager.
-struct COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockHolder
-    : public base::SupportsUserData {
+struct PartitionedLockHolder : public base::SupportsUserData {
   PartitionedLockHolder();
   PartitionedLockHolder(const PartitionedLockHolder&) = delete;
   PartitionedLockHolder& operator=(const PartitionedLockHolder&) = delete;
   ~PartitionedLockHolder() override;
 
-  base::WeakPtr<PartitionedLockHolder> AsWeakPtr() {
-    return weak_factory.GetWeakPtr();
-  }
-
-  void AbortLockRequest() { weak_factory.InvalidateWeakPtrs(); }
+  void CancelLockRequest();
 
   std::vector<PartitionedLock> locks;
+  base::OnceClosure on_cancel;
   base::WeakPtrFactory<PartitionedLockHolder> weak_factory{this};
 };
 
@@ -59,16 +47,13 @@ struct COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockHolder
 // |PartitionedLock| class.
 //
 //  Invariants for the lock management system:
-// * All calls must happen from the same sequenced task runner.
 // * Locks are granted in the order in which they are requested.
 // * Locks held by an entity must be acquired all at once. If more locks are
 //   needed (where old locks will continue to be held), then all locks must be
 //   released first, and then all necessary locks acquired in one acquisition
 //   call.
-class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
+class PartitionedLockManager {
  public:
-  using LocksAcquiredCallback = base::OnceClosure;
-
   // Shared locks can share access to a lock id, while exclusive locks
   // require that they are the only lock for their lock id.
   enum class LockType { kShared, kExclusive };
@@ -87,29 +72,25 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
 
   // Acquires locks for the given requests. Lock partitions are treated as
   // completely independent domains.
-  struct COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockRequest {
+  struct PartitionedLockRequest {
     PartitionedLockRequest(PartitionedLockId lock_id, LockType type);
     PartitionedLockId lock_id;
     LockType type;
   };
-  struct COMPONENT_EXPORT(LOCK_MANAGER) AcquireOptions {
-    AcquireOptions();
-    bool ensure_async = false;
-  };
+  // Acquires locks for the given requests.
+  // `compare_priority` must return true iff this acquisition has a *higher*
+  // priority than the one represented by the passed holder, and should skip
+  // ahead of it in line (`request_queue_`). This property need not be
+  // transitive. May be null, which is equivalent to always returning false.
   void AcquireLocks(base::flat_set<PartitionedLockRequest> lock_requests,
-                    base::WeakPtr<PartitionedLockHolder> locks_holder,
-                    LocksAcquiredCallback callback,
-                    AcquireOptions acquire_options = AcquireOptions(),
-                    const base::Location& location = FROM_HERE);
+                    PartitionedLockHolder& locks_holder,
+                    base::OnceClosure callback,
+                    base::RepeatingCallback<bool(const PartitionedLockHolder&)>
+                        compare_priority = {});
 
   enum class TestLockResult { kLocked, kFree };
   // Tests to see if the given lock request can be acquired.
   TestLockResult TestLock(PartitionedLockRequest lock_requests);
-
-  // Gets the request location of all locks currently held and queued for the
-  // given requests.
-  std::vector<base::Location> GetHeldAndQueuedLockLocations(
-      const base::flat_set<PartitionedLockRequest>& requests) const;
 
   // Filter out the list of `PartitionedLockId`s that cannot be acquired given
   // the list of `PartitionedLockRequest`.
@@ -117,13 +98,9 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
   std::vector<PartitionedLockId> GetUnacquirableLocks(
       std::vector<PartitionedLockRequest>& lock_requests);
 
-  // Remove the given lock lock_id. The lock lock_id must not be in use. Call
-  // this if the lock will never be used again.
-  void RemoveLockId(const PartitionedLockId& lock_id);
-
-  // Returns the lock requests that are blocked on the provided `lock_id`.
-  std::set<PartitionedLockHolder*> GetQueuedRequests(
-      const PartitionedLockId& lock_id) const;
+  // Returns the lock requests that are blocked on the provided lock holder.
+  std::set<PartitionedLockHolder*> GetBlockedRequests(
+      const base::flat_set<PartitionedLockId>& held_locks) const;
 
   // Outputs the lock state (held & requested locks) into a debug value,
   // suitable for printing an 'internals' or to print during debugging. The
@@ -131,73 +108,94 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
   // Note: The human-readable values MUST be unique per lock id, and if to lock
   // ids resolve to the same string, then this function will DCHECK.
   using TransformLockIdToStringFn = std::string(const PartitionedLockId&);
-  base::Value ToDebugValue(TransformLockIdToStringFn transform) const;
 
  private:
-  struct LockRequest {
-   public:
-    LockRequest();
-    LockRequest(LockRequest&&) noexcept;
-    LockRequest(LockType type,
-                base::WeakPtr<PartitionedLockHolder> locks_holder,
-                base::OnceClosure callback,
-                const base::Location& location);
-    ~LockRequest();
-
-    LockType requested_type = LockType::kShared;
-    base::WeakPtr<PartitionedLockHolder> locks_holder;
-    base::OnceClosure acquired_callback;
-    base::Location location;
-  };
-
-  // Represents a lock, which has a lock_id. To support shared access, there can
+  // Metadata representing the state of a lockable entity, which is in turn
+  // defined by an ID (`PartitionedLockId`). To support shared access, there can
   // be multiple acquisitions of this lock, represented in |acquired_count|.
-  // Also holds the pending requests for this lock.
-  struct Lock {
-    Lock();
-    Lock(const Lock&) = delete;
-    Lock(Lock&&) noexcept;
-    ~Lock();
-    Lock& operator=(const Lock&) = delete;
-    Lock& operator=(Lock&&) noexcept;
+  struct LockState {
+    LockState();
+    LockState(const LockState&) = delete;
+    LockState(LockState&&) noexcept;
+    ~LockState();
+    LockState& operator=(const LockState&) = delete;
+    LockState& operator=(LockState&&) noexcept;
 
     bool CanBeAcquired(LockType lock_type) {
-      return acquired_count == 0 ||
-             (queue.empty() && this->lock_mode == LockType::kShared &&
-              lock_type == LockType::kShared);
+      return acquired_count == 0 || (this->access_mode == LockType::kShared &&
+                                     lock_type == LockType::kShared);
     }
 
+    // The number of holders sharing the lock.
     int acquired_count = 0;
-    base::flat_set<base::Location> request_locations;
-    LockType lock_mode = LockType::kShared;
-    std::list<LockRequest> queue;
+
+    // The current access mode. If kExclusive, `acquired_count` must not be more
+    // than 1. If `acquired_count` is zero, this is meaningless.
+    LockType access_mode = LockType::kShared;
   };
 
+  // Represents a request to grab a number of locks.
+  struct AcquisitionRequest {
+    AcquisitionRequest();
+    ~AcquisitionRequest();
+
+    AcquisitionRequest(AcquisitionRequest&&);
+    AcquisitionRequest& operator=(AcquisitionRequest&&) = default;
+
+    // To be called when the locks are all acquired.
+    base::OnceClosure acquired_callback;
+
+    // The entities that the request seeks to lock.
+    base::flat_set<PartitionedLockRequest> lock_requests;
+
+    // Ownership of the locks will be transferred to this object.
+    base::WeakPtr<PartitionedLockHolder> locks_holder;
+  };
+
+  // Returns true if the requests are overlapping, i.e. they couldn't
+  // simultaneously be filled.
+  static bool RequestsAreOverlapping(
+      const base::flat_set<PartitionedLockRequest>& requests_a,
+      const base::flat_set<PartitionedLockRequest>& requests_b);
+
+  // If locks can be granted to the requester at `requests_iter`, then grant
+  // those locks and remove the requester from `request_queue_`, returning an
+  // iter pointing to the next request after where the old one was in the list.
+  // If locks can't be granted, return an iterator pointing to the next request
+  // in the queue (i.e. one after `requests_iter`).
+  std::list<AcquisitionRequest>::iterator MaybeGrantLocksAndIterate(
+      std::list<AcquisitionRequest>::iterator requests_iter,
+      bool notify_synchronously = false);
+
   void AcquireLock(PartitionedLockRequest request,
-                   base::WeakPtr<PartitionedLockHolder> locks_holder,
-                   base::OnceClosure acquired_callback,
-                   const base::Location& location);
+                   PartitionedLockHolder& locks_holder);
 
-  void LockReleased(base::Location request_location, PartitionedLockId lock_id);
+  bool CanAcquireLock(PartitionedLockId lock_id, LockType type);
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  // Called when an acquisition request is to be dropped. This corresponds to
+  // `AcquisitionRequest::locks_holder` becoming null.
+  void LockRequestCancelled();
 
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::flat_map<PartitionedLockId, Lock> locks_;
+  // Called when a granted lock has been released.
+  void LockReleased(PartitionedLockId lock_id);
+
+  // The set of all known lockable entities and their current state.
+  std::map<PartitionedLockId, LockState> locks_;
+
+  // This queue is FIFO by default, but some requests may cut ahead in line as
+  // determined by `compare_priority`.
+  std::list<AcquisitionRequest> request_queue_;
 
   base::WeakPtrFactory<PartitionedLockManager> weak_factory_{this};
 };
 
-COMPONENT_EXPORT(LOCK_MANAGER)
 bool operator<(const PartitionedLockManager::PartitionedLockRequest& x,
                const PartitionedLockManager::PartitionedLockRequest& y);
-COMPONENT_EXPORT(LOCK_MANAGER)
 bool operator==(const PartitionedLockManager::PartitionedLockRequest& x,
                 const PartitionedLockManager::PartitionedLockRequest& y);
-COMPONENT_EXPORT(LOCK_MANAGER)
 bool operator!=(const PartitionedLockManager::PartitionedLockRequest& x,
                 const PartitionedLockManager::PartitionedLockRequest& y);
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_MANAGER_H_

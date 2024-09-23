@@ -64,7 +64,7 @@ export class StateBanner extends Banner {
   override connectedCallback() {
     // Attach an onclick handler to the extra-button slot. This enables a new
     // element to leverage the href tag on the element to have a URL opened.
-    // TODO(crbug.com/1228128): Add UMA trigger to capture number of extra
+    // TODO(crbug.com/40189485): Add UMA trigger to capture number of extra
     // button clicks.
     const extraButton = this.querySelector('[slot="extra-button"]');
     if (extraButton) {

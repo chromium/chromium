@@ -23,6 +23,8 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -80,13 +82,14 @@ END_METADATA
 ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
                                                  const gfx::VectorIcon& icon,
                                                  int title_string_id)
-    : views::Button(std::move(callback)), icon_(icon) {
+    : views::Button(std::move(callback)),
+      icon_(icon),
+      title_string_id_(title_string_id) {
   // Don't use FlexLayout here because it breaks the focus ring's bounds.
   // TODO(b/193195191): Investigate why we can't use FlexLayout.
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::TLBR(16, 0, chromeos::features::IsJellyEnabled() ? 12 : 14,
-                        0)));
+      gfx::Insets::TLBR(16, 0, 12, 0)));
 
   AddChildView(
       views::Builder<views::ImageView>()
@@ -106,42 +109,29 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
                        .SetMultiLine(true)
                        .SetAllowCharacterBreak(true)
                        .Build());
-  if (chromeos::features::IsJellyEnabled()) {
-    ash::TypographyProvider::Get()->StyleLabel(
-        ash::TypographyToken::kCrosButton2, *label);
-  }
-
-  SetAccessibleName(l10n_util::GetStringUTF16(title_string_id));
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
+  ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
+                                             *label);
 
   constexpr int kBorderThicknessDp = 1;
-  const auto button_radius =
-      chromeos::features::IsJellyEnabled()
-          ? 12
-          : views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                views::Emphasis::kMedium);
+  const auto button_radius = 12;
   SetBorder(views::CreateRoundedRectBorder(kBorderThicknessDp, button_radius,
                                            gfx::kPlaceholderColor));
   SetBackground(views::CreateRoundedRectBackground(gfx::kPlaceholderColor,
                                                    button_radius));
 
-  const int focus_ring_radius =
-      chromeos::features::IsJellyEnabled()
-          ? 16
-          : views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                views::Emphasis::kMedium);
+  const int focus_ring_radius = 16;
   // With Jellyroll, the ring should have a 4dp gap from the view. Setting a
   // negative inset makes insets "outsets".
-  const int focus_ring_inset = chromeos::features::IsJellyEnabled() ? -4 : 0;
+  const int focus_ring_inset = -4;
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInstallFocusRingOnFocus(true);
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(focus_ring_inset), focus_ring_radius);
 
-  if (chromeos::features::IsJellyEnabled()) {
-    views::FocusRing::Get(this)->SetColorId(
-        static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
-  }
+  views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(title_string_id_));
 }
 
 ResizeToggleMenu::MenuButtonView::~MenuButtonView() = default;
@@ -158,63 +148,40 @@ void ResizeToggleMenu::MenuButtonView::OnThemeChanged() {
   UpdateColors();
 }
 
-gfx::Size ResizeToggleMenu::MenuButtonView::CalculatePreferredSize() const {
+gfx::Size ResizeToggleMenu::MenuButtonView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   constexpr int kWidth = 96;
-  return gfx::Size(kWidth, GetHeightForWidth(kWidth));
+  return gfx::Size(
+      kWidth, GetLayoutManager()->GetPreferredHeightForWidth(this, kWidth));
 }
 
 void ResizeToggleMenu::MenuButtonView::UpdateColors() {
   if (!GetWidget())
     return;
+
   const auto* color_provider = GetColorProvider();
 
-  if (chromeos::features::IsJellyEnabled()) {
-    const auto icon_color =
-        is_selected_ ? color_provider->GetColor(cros_tokens::kCrosSysOnPrimary)
-                     : color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
-    icon_view_->SetImage(gfx::CreateVectorIcon(*icon_, icon_color));
-
-    const auto text_color =
-        is_selected_ ? color_provider->GetColor(cros_tokens::kCrosSysOnPrimary)
-                     : color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
-    title_->SetEnabledColor(text_color);
-
-    const auto background_color =
-        is_selected_
-            ? color_provider->GetColor(cros_tokens::kCrosSysPrimary)
-            : color_provider->GetColor(cros_tokens::kCrosSysSystemOnBase);
-    background()->SetNativeControlColor(background_color);
-
-    const auto border_color = SK_ColorTRANSPARENT;
-    GetBorder()->set_color(border_color);
-
-    return;
-  }
-
-  const ui::ColorId selection_color_id = cros_tokens::kColorSelection;
-
   const auto icon_color =
-      is_selected_ ? color_provider->GetColor(selection_color_id)
-                   : color_provider->GetColor(ui::kColorLabelForeground);
+      is_selected_ ? color_provider->GetColor(cros_tokens::kCrosSysOnPrimary)
+                   : color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
   icon_view_->SetImage(gfx::CreateVectorIcon(*icon_, icon_color));
 
   const auto text_color =
-      is_selected_ ? color_provider->GetColor(selection_color_id)
-                   : color_provider->GetColor(ui::kColorLabelForeground);
+      is_selected_ ? color_provider->GetColor(cros_tokens::kCrosSysOnPrimary)
+                   : color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
   title_->SetEnabledColor(text_color);
 
   const auto background_color =
-      is_selected_ ? color_provider->GetColor(cros_tokens::kHighlightColor)
-                   : SK_ColorTRANSPARENT;
+      is_selected_
+          ? color_provider->GetColor(cros_tokens::kCrosSysPrimary)
+          : color_provider->GetColor(cros_tokens::kCrosSysSystemOnBase);
   background()->SetNativeControlColor(background_color);
 
-  const auto border_color =
-      is_selected_ ? SK_ColorTRANSPARENT
-                   : color_provider->GetColor(ui::kColorMenuBorder);
+  const auto border_color = SK_ColorTRANSPARENT;
   GetBorder()->set_color(border_color);
 }
 
-BEGIN_METADATA(ResizeToggleMenu, MenuButtonView, views::Button)
+BEGIN_METADATA(ResizeToggleMenu, MenuButtonView)
 END_METADATA
 
 ResizeToggleMenu::ResizeToggleMenu(
@@ -227,10 +194,12 @@ ResizeToggleMenu::ResizeToggleMenu(
       pref_delegate_(pref_delegate) {
   aura::Window* const window = widget->GetNativeWindow();
   // Don't show the menu in maximized or fullscreen.
-  const ui::WindowShowState state =
+  const ui::mojom::WindowShowState state =
       window->GetProperty(aura::client::kShowStateKey);
-  if (state == ui::SHOW_STATE_FULLSCREEN || state == ui::SHOW_STATE_MAXIMIZED)
+  if (state == ui::mojom::WindowShowState::kFullscreen ||
+      state == ui::mojom::WindowShowState::kMaximized) {
     return;
+  }
 
   window_observation_.Observe(window);
 
@@ -280,10 +249,12 @@ void ResizeToggleMenu::OnWindowPropertyChanged(aura::Window* window,
                                                intptr_t old) {
   DCHECK(window_observation_.IsObservingSource(window));
   if (key == aura::client::kShowStateKey) {
-    const ui::WindowShowState state =
+    const ui::mojom::WindowShowState state =
         window->GetProperty(aura::client::kShowStateKey);
-    if (state == ui::SHOW_STATE_FULLSCREEN || state == ui::SHOW_STATE_MAXIMIZED)
+    if (state == ui::mojom::WindowShowState::kFullscreen ||
+        state == ui::mojom::WindowShowState::kMaximized) {
       CloseBubble();
+    }
   } else if (key == ash::kArcResizeLockTypeKey) {
     UpdateSelectedButton();
   }
@@ -309,7 +280,7 @@ ResizeToggleMenu::MakeBubbleDelegateView(
     views::Widget* parent,
     gfx::Rect anchor_rect,
     base::RepeatingCallback<void(ash::ResizeCompatMode)> command_handler) {
-  const int kCornerRadius = chromeos::features::IsJellyEnabled() ? 12 : 16;
+  const int kCornerRadius = 12;
 
   auto delegate_view =
       std::make_unique<RoundedCornerBubbleDialogDelegateView>(kCornerRadius);
@@ -317,7 +288,7 @@ ResizeToggleMenu::MakeBubbleDelegateView(
 
   // Setup delegate.
   delegate_view->SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
-  delegate_view->SetButtons(ui::DIALOG_BUTTON_NONE);
+  delegate_view->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   delegate_view->set_parent_window(parent->GetNativeView());
   delegate_view->set_title_margins(gfx::Insets());
   delegate_view->set_margins(gfx::Insets());
@@ -326,38 +297,34 @@ ResizeToggleMenu::MakeBubbleDelegateView(
       l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TITLE));
   delegate_view->SetShowTitle(false);
   delegate_view->SetAccessibleWindowRole(ax::mojom::Role::kMenu);
-  if (chromeos::features::IsJellyEnabled()) {
-    // Clear root view's background color. We use the color in
-    // `background_view`.
-    delegate_view->set_color(SK_ColorTRANSPARENT);
-  }
+  // Clear root view's background color. We use the color in
+  // `background_view`.
+  delegate_view->set_color(SK_ColorTRANSPARENT);
 
   // Setup view.
   delegate_view->SetUseDefaultFillLayout(true);
 
-  if (chromeos::features::IsJellyEnabled()) {
-    delegate_view->SetBorder(std::make_unique<views::HighlightBorder>(
-        kCornerRadius, views::HighlightBorder::Type::kHighlightBorderNoShadow));
+  delegate_view->SetBorder(std::make_unique<views::HighlightBorder>(
+      kCornerRadius, views::HighlightBorder::Type::kHighlightBorderNoShadow));
 
-    // Add empty view for background blur.
-    views::View* background_view = nullptr;
-    delegate_view->AddChildView(
-        views::Builder<views::View>()
-            .CopyAddressTo(&background_view)
-            .SetUseDefaultFillLayout(true)
-            .SetBackground(views::CreateThemedRoundedRectBackground(
-                cros_tokens::kCrosSysSystemBaseElevated, kCornerRadius))
-            .Build());
+  // Add empty view for background blur.
+  views::View* background_view = nullptr;
+  delegate_view->AddChildView(
+      views::Builder<views::View>()
+          .CopyAddressTo(&background_view)
+          .SetUseDefaultFillLayout(true)
+          .SetBackground(views::CreateThemedRoundedRectBackground(
+              cros_tokens::kCrosSysSystemBaseElevated, kCornerRadius))
+          .Build());
 
-    background_view->SetPaintToLayer();
-    background_view->layer()->SetBackgroundBlur(
-        ash::ColorProvider::kBackgroundBlurSigma);
-    background_view->layer()->SetBackdropFilterQuality(
-        ash::ColorProvider::kBackgroundBlurQuality);
-    background_view->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(kCornerRadius));
-    background_view->layer()->SetFillsBoundsOpaquely(false);
-  }
+  background_view->SetPaintToLayer();
+  background_view->layer()->SetBackgroundBlur(
+      ash::ColorProvider::kBackgroundBlurSigma);
+  background_view->layer()->SetBackdropFilterQuality(
+      ash::ColorProvider::kBackgroundBlurQuality);
+  background_view->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kCornerRadius));
+  background_view->layer()->SetFillsBoundsOpaquely(false);
 
   auto* const container_view =
       delegate_view->AddChildView(std::make_unique<views::View>());
@@ -373,32 +340,27 @@ ResizeToggleMenu::MakeBubbleDelegateView(
     return container_view->AddChildView(std::make_unique<MenuButtonView>(
         base::BindRepeating(command_handler, command_id), icon, string_id));
   };
-  phone_button_ = add_menu_button(ash::ResizeCompatMode::kPhone,
-                                  chromeos::features::IsJellyEnabled()
-                                      ? ash::kSystemMenuPhoneIcon
-                                      : ash::kSystemMenuPhoneLegacyIcon,
-                                  IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE);
+  phone_button_ =
+      add_menu_button(ash::ResizeCompatMode::kPhone, ash::kSystemMenuPhoneIcon,
+                      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PORTRAIT);
   tablet_button_ = add_menu_button(
-      ash::ResizeCompatMode::kTablet,
-      chromeos::features::IsJellyEnabled() ? ash::kSystemMenuTabletIcon
-                                           : ash::kSystemMenuTabletLegacyIcon,
-      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET);
+      ash::ResizeCompatMode::kTablet, ash::kSystemMenuTabletIcon,
+      IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_LANDSCAPE);
   resizable_button_ = add_menu_button(
       ash::ResizeCompatMode::kResizable, ash::kAppCompatResizableIcon,
       IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE);
 
   UpdateSelectedButton();
 
-  if (chromeos::features::IsJellyEnabled()) {
-    // We need to ensure that the layer is non-opaque for popup animation.
-    delegate_view->SetPaintToLayer();
-    delegate_view->layer()->SetFillsBoundsOpaquely(false);
+  // We need to ensure that the layer is non-opaque for popup animation.
+  delegate_view->SetPaintToLayer();
+  delegate_view->layer()->SetFillsBoundsOpaquely(false);
 
-    // Note this view needs to be set to paint to layer so other view won't
-    // paint over it.
-    container_view->SetPaintToLayer();
-    container_view->layer()->SetFillsBoundsOpaquely(false);
-  }
+  // Note this view needs to be set to paint to layer so other view won't
+  // paint over it.
+  container_view->SetPaintToLayer();
+  container_view->layer()->SetFillsBoundsOpaquely(false);
+
   return delegate_view;
 }
 

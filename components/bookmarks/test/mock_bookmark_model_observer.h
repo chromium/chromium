@@ -16,39 +16,42 @@ class MockBookmarkModelObserver : public BookmarkModelObserver {
   MockBookmarkModelObserver();
   ~MockBookmarkModelObserver() override;
 
-  MOCK_METHOD2(BookmarkModelLoaded, void(BookmarkModel*, bool));
+  MOCK_METHOD(void, BookmarkModelLoaded, (bool));
 
-  MOCK_METHOD5(BookmarkNodeMoved,
-               void(BookmarkModel*,
-                    const BookmarkNode*,
-                    size_t,
-                    const BookmarkNode*,
-                    size_t));
+  MOCK_METHOD(void, BookmarkModelBeingDeleted, ());
 
-  MOCK_METHOD4(BookmarkNodeAdded,
-               void(BookmarkModel*, const BookmarkNode*, size_t, bool));
+  MOCK_METHOD(void,
+              BookmarkNodeMoved,
+              (const BookmarkNode*, size_t, const BookmarkNode*, size_t));
 
-  MOCK_METHOD4(
-      OnWillRemoveBookmarks,
-      void(BookmarkModel*, const BookmarkNode*, size_t, const BookmarkNode*));
+  MOCK_METHOD(void, BookmarkNodeAdded, (const BookmarkNode*, size_t, bool));
 
-  MOCK_METHOD5(BookmarkNodeRemoved,
-               void(BookmarkModel*,
-                    const BookmarkNode*,
-                    size_t,
-                    const BookmarkNode*,
-                    const std::set<GURL>&));
+  MOCK_METHOD(void,
+              OnWillRemoveBookmarks,
+              (const BookmarkNode*,
+               size_t,
+               const BookmarkNode*,
+               const base::Location&));
 
-  MOCK_METHOD2(BookmarkNodeChanged, void(BookmarkModel*, const BookmarkNode*));
+  MOCK_METHOD(void,
+              BookmarkNodeRemoved,
+              (const BookmarkNode*,
+               size_t,
+               const BookmarkNode*,
+               const std::set<GURL>&,
+               const base::Location&));
 
-  MOCK_METHOD2(BookmarkNodeFaviconChanged, void(BookmarkModel*,
-                                                const BookmarkNode*));
+  MOCK_METHOD(void, OnWillChangeBookmarkNode, (const BookmarkNode* node));
 
-  MOCK_METHOD2(BookmarkNodeChildrenReordered, void(BookmarkModel*,
-                                                   const BookmarkNode*));
+  MOCK_METHOD(void, BookmarkNodeChanged, (const BookmarkNode*));
 
-  MOCK_METHOD2(BookmarkAllUserNodesRemoved, void(BookmarkModel*,
-                                                 const std::set<GURL>&));
+  MOCK_METHOD(void, BookmarkNodeFaviconChanged, (const BookmarkNode*));
+
+  MOCK_METHOD(void, BookmarkNodeChildrenReordered, (const BookmarkNode*));
+
+  MOCK_METHOD(void,
+              BookmarkAllUserNodesRemoved,
+              (const std::set<GURL>&, const base::Location&));
 };
 
 }  // namespace bookmarks

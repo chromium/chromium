@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 
 #include "base/memory/ref_counted.h"
 #include "base/test/bind.h"
@@ -32,9 +33,11 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -55,7 +58,7 @@ using ::testing::Return;
 
 using Type = NewAcceptedDeviceType;
 
-constexpr base::StringPiece kUserAcceptedPrivateNetworkDeviceHistogramName =
+constexpr std::string_view kUserAcceptedPrivateNetworkDeviceHistogramName =
     "Security.PrivateNetworkAccess.PermissionNewAcceptedDeviceType";
 
 constexpr char kPrivateHost[] = "a.test";
@@ -219,318 +222,6 @@ IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkAccessTest, RequestDevices) {
                                 InsecureURL(kPnaLocalDevicePath))));
   histogram_tester.ExpectUniqueSample(
       kUserAcceptedPrivateNetworkDeviceHistogramName, Type::kValidDevice, 1);
-}
-
-class ChromePrivateNetworkAccessOriginTrialTestBase
-    : public ChromePrivateNetworkAccessTestBase {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // The public key for the default privatey key used by the
-    // tools/origin_trials/generate_token.py tool.
-    static constexpr char kOriginTrialTestPublicKey[] =
-        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=";
-    command_line->AppendSwitchASCII("origin-trial-public-key",
-                                    kOriginTrialTestPublicKey);
-  }
-
-  // Origin Trials key generated with:
-  //
-  // tools/origin_trials/generate_token.py --expire-days 5000 --version 3
-  // https://pna-permission.security:9999 PrivateNetworkAccessPermissionPrompt
-  static std::string OriginTrialToken() {
-    return "A/fzPTu9JNmk9L0nSsG6Pd/"
-           "nGW0bDTv8C1Uly7+"
-           "K6sNw6MpcQRQYqeyRHEsLjl0S0MJv7IigLYbCGkLUS2NjDwIAAAB7eyJvcmlnaW4iOi"
-           "AiaHR0cHM6Ly9wbmEtcGVybWlzc2lvbi5zZWN1cml0eTo5OTk5IiwgImZlYXR1cmUiO"
-           "iAiUHJpdmF0ZU5ldHdvcmtBY2Nlc3NQZXJtaXNzaW9uUHJvbXB0IiwgImV4cGlyeSI6"
-           "IDIxMzQwMjE3MTd9";
-  }
-
-  // The OriginTrial token is bound to a given origin. Since the
-  // EmbeddedTestServer's port changes after every test run, it can't be used.
-  // As a result, response must be served using a URLLoaderInterceptor.
-  GURL OriginTrialURL() { return GURL("https://pna-permission.security:9999"); }
-};
-
-class ChromePrivateNetworkAccessOriginTrialTest
-    : public ChromePrivateNetworkAccessOriginTrialTestBase {
- public:
-  ChromePrivateNetworkAccessOriginTrialTest() {
-    feature_list_.InitWithFeatures(
-        {features::kBlockInsecurePrivateNetworkRequests,
-         features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
-         features::kPrivateNetworkAccessSendPreflights},
-        {});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkAccessOriginTrialTest,
-                       ValidTrialToken) {
-  // Origin Trial key should be valid.
-  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess,
-            blink::TrialTokenValidator()
-                .ValidateTokenAndTrial(OriginTrialToken(),
-                                       url::Origin::Create(OriginTrialURL()),
-                                       base::Time::Now())
-                .Status());
-}
-
-IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkAccessOriginTrialTest,
-                       RequestDevicesWithoutTrialToken) {
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [&](content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.DeprecatedGetOriginAsURL() ==
-            OriginTrialURL()) {
-          content::URLLoaderInterceptor::WriteResponse(
-              "HTTP/1.1 200 OK\n"
-              "Content-type: text/html\n"
-              "Content-Security-Policy: treat-as-public-address\n\n",
-              "<html>\n"
-              "<head>\n"
-              "</head>\n"
-              "<body></body>\n"
-              "</html>\n",
-              params->client.get());
-        } else {
-          content::URLLoaderInterceptor::WriteResponse(
-              "HTTP/1.1 200 OK\n"
-              "Content-type: text/html\n"
-              "Access-Control-Allow-Origin: *\n"
-              "Access-Control-Allow-Private-Network: true\n"
-              "Private-Network-Access-ID: 01:01:01:01:01:01\n"
-              "Private-Network-Access-Name: test\n\n",
-              "", params->client.get());
-        }
-        return true;
-      }));
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), OriginTrialURL()));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Fails without Origin Trial.
-  EXPECT_EQ(false,
-            content::EvalJs(web_contents,
-                            JsReplace(
-                                R"(fetch($1, {targetAddressSpace: 'local'})
-                          .then(
-                            response =>  response.ok,
-                            error => {
-                              console.log('Error fetching ' +$1, error);
-                              return false;
-                            })
-                          .catch(e => e.toString()))",
-                                InsecureURL(kPnaLocalDevicePath))));
-}
-
-IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkAccessOriginTrialTest,
-                       RequestDevicesWithTrialTokenOnRequestHeader) {
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [&](content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.DeprecatedGetOriginAsURL() ==
-            OriginTrialURL()) {
-          content::URLLoaderInterceptor::WriteResponse(
-              "HTTP/1.1 200 OK\n"
-              "Content-type: text/html\n"
-              "Origin-Trial: " +
-                  OriginTrialToken() +
-                  "\n"
-                  "Content-Security-Policy: treat-as-public-address\n\n",
-              "", params->client.get());
-        } else {
-          content::URLLoaderInterceptor::WriteResponse(
-              "HTTP/1.1 200 OK\n"
-              "Content-type: text/html\n"
-              "Access-Control-Allow-Origin: *\n"
-              "Access-Control-Allow-Private-Network: true\n"
-              "Private-Network-Access-ID: 01:01:01:01:01:01\n"
-              "Private-Network-Access-Name: test\n\n",
-              "", params->client.get());
-        }
-        return true;
-      }));
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), OriginTrialURL()));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Succeeds with Origin Trial.
-  EXPECT_EQ(true,
-            content::EvalJs(web_contents,
-                            JsReplace(
-                                R"(fetch($1, {targetAddressSpace: 'local'})
-                          .then(
-                            response =>  response.ok,
-                            error => {
-                              console.log('Error fetching ' +$1, error);
-                              return false;
-                            })
-                          .catch(e => e.toString()))",
-                                InsecureURL(kPnaLocalDevicePath))));
-}
-
-IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkAccessOriginTrialTest,
-                       RequestDevicesWithTrialTokenOnMetaTag) {
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [&](content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.DeprecatedGetOriginAsURL() ==
-            OriginTrialURL()) {
-          content::URLLoaderInterceptor::WriteResponse(
-              "HTTP/1.1 200 OK\n"
-              "Content-type: text/html\n"
-              "Content-Security-Policy: treat-as-public-address\n\n",
-              "<html>\n"
-              "<head>\n"
-              "<meta http-equiv='origin-trial' "
-              "content='" +
-                  OriginTrialToken() +
-                  "'\n"
-                  "</head>\n"
-                  "<body></body>\n"
-                  "</html>\n",
-              params->client.get());
-        } else {
-          content::URLLoaderInterceptor::WriteResponse(
-              "HTTP/1.1 200 OK\n"
-              "Content-type: text/html\n"
-              "Access-Control-Allow-Origin: *\n"
-              "Access-Control-Allow-Private-Network: true\n"
-              "Private-Network-Access-ID: 01:01:01:01:01:01\n"
-              "Private-Network-Access-Name: test\n\n",
-              "", params->client.get());
-        }
-        return true;
-      }));
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), OriginTrialURL()));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Succeeds with Origin Trial.
-  EXPECT_EQ(true,
-            content::EvalJs(web_contents,
-                            JsReplace(
-                                R"(fetch($1, {targetAddressSpace: 'local'})
-                          .then(
-                            response =>  response.ok,
-                            error => {
-                              console.log('Error fetching ' +$1, error);
-                              return false;
-                            })
-                          .catch(e => e.toString()))",
-                                InsecureURL(kPnaLocalDevicePath))));
-}
-
-class ChromePrivateNetworkAccessOriginTrialDisabledByChromeFlagTest
-    : public ChromePrivateNetworkAccessOriginTrialTestBase {
- public:
-  ChromePrivateNetworkAccessOriginTrialDisabledByChromeFlagTest() {
-    feature_list_.InitWithFeatures(
-        {features::kBlockInsecurePrivateNetworkRequests,
-         features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
-         features::kPrivateNetworkAccessSendPreflights},
-        {network::features::kPrivateNetworkAccessPermissionPrompt});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(
-    ChromePrivateNetworkAccessOriginTrialDisabledByChromeFlagTest,
-    RequestDevicesWithTrialTokenOnRequestHeader) {
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [&](content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.DeprecatedGetOriginAsURL() ==
-            OriginTrialURL()) {
-          content::URLLoaderInterceptor::WriteResponse(
-              "HTTP/1.1 200 OK\n"
-              "Content-type: text/html\n"
-              "Origin-Trial: " +
-                  OriginTrialToken() +
-                  "\n"
-                  "Content-Security-Policy: treat-as-public-address\n\n",
-              "", params->client.get());
-        } else {
-          content::URLLoaderInterceptor::WriteResponse(
-              "HTTP/1.1 200 OK\n"
-              "Content-type: text/html\n"
-              "Access-Control-Allow-Origin: *\n"
-              "Access-Control-Allow-Private-Network: true\n"
-              "Private-Network-Access-ID: 01:01:01:01:01:01\n"
-              "Private-Network-Access-Name: test\n\n",
-              "", params->client.get());
-        }
-        return true;
-      }));
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), OriginTrialURL()));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Fails with Origin Trial, because chrome://flag is false.
-  EXPECT_EQ(false,
-            content::EvalJs(web_contents,
-                            JsReplace(
-                                R"(fetch($1, {targetAddressSpace: 'local'})
-                          .then(
-                            response =>  response.ok,
-                            error => {
-                              console.log('Error fetching ' +$1, error);
-                              return false;
-                            })
-                          .catch(e => e.toString()))",
-                                InsecureURL(kPnaLocalDevicePath))));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ChromePrivateNetworkAccessOriginTrialDisabledByChromeFlagTest,
-    RequestDevicesWithTrialTokenOnMetaTag) {
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [&](content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.DeprecatedGetOriginAsURL() ==
-            OriginTrialURL()) {
-          content::URLLoaderInterceptor::WriteResponse(
-              "HTTP/1.1 200 OK\n"
-              "Content-type: text/html\n"
-              "Content-Security-Policy: treat-as-public-address\n\n",
-              "<html>\n"
-              "<head>\n"
-              "<meta http-equiv='origin-trial' "
-              "content='" +
-                  OriginTrialToken() +
-                  "'\n"
-                  "</head>\n"
-                  "<body></body>\n"
-                  "</html>\n",
-              params->client.get());
-        } else {
-          content::URLLoaderInterceptor::WriteResponse(
-              "HTTP/1.1 200 OK\n"
-              "Content-type: text/html\n"
-              "Access-Control-Allow-Origin: *\n"
-              "Access-Control-Allow-Private-Network: true\n"
-              "Private-Network-Access-ID: 01:01:01:01:01:01\n"
-              "Private-Network-Access-Name: test\n\n",
-              "", params->client.get());
-        }
-        return true;
-      }));
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), OriginTrialURL()));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Fails with Origin Trial, because chrome://flag is false.
-  EXPECT_EQ(false,
-            content::EvalJs(web_contents,
-                            JsReplace(
-                                R"(fetch($1, {targetAddressSpace: 'local'})
-                          .then(
-                            response =>  response.ok,
-                            error => {
-                              console.log('Error fetching ' +$1, error);
-                              return false;
-                            })
-                          .catch(e => e.toString()))",
-                                InsecureURL(kPnaLocalDevicePath))));
 }
 
 }  // namespace

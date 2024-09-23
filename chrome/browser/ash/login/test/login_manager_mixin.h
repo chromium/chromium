@@ -25,8 +25,10 @@ namespace ash {
 
 namespace test {
 
-constexpr char kTestEmail[] = "test_user@gmail.com";
-constexpr char kTestGaiaId[] = "111111111";
+// These probably could be removed and replaced by
+// FakeGaiaMixin::kFakeUserEmail/kFakeUserGaiaId.
+inline constexpr char kTestEmail[] = "fake-email@gmail.com";
+inline constexpr char kTestGaiaId[] = "fake-gaia-id";
 
 }  // namespace test
 
@@ -85,6 +87,7 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
 
   // Should be called before any InProcessBrowserTestMixin functions.
   void AppendRegularUsers(int n);
+  void AppendChildUsers(int n);
   void AppendManagedUsers(int n);
 
   explicit LoginManagerMixin(InProcessBrowserTestMixinHost* host);
@@ -113,14 +116,20 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   // Should be called before mixin SetUp() is called to take effect.
   void set_session_restore_enabled() { session_restore_enabled_ = true; }
 
+
+  // By default, LoginManagerMixin will set wait for successful profile
+  // initialization. If test expects some errors during profile initialization
+  // this gives an option to bypass the wait.
+  void set_should_wait_for_profile(bool value) { wait_for_profile_ = value; }
+
+  const UserList& users() const { return initial_users_; }
+
   // By default, LoginManagerMixin will set up user session manager not to
   // launch browser as part of user session setup - use this to override that
   // behavior.
-  void set_should_launch_browser(bool value) { should_launch_browser_ = value; }
+  void SetShouldLaunchBrowser(bool value);
 
-  void set_should_obtain_handles(bool value) { should_obtain_handles_ = value; }
-
-  const UserList& users() const { return initial_users_; }
+  void SetShouldObtainHandle(bool value);
 
   // Sets the list of default policy switches to be added to command line on the
   // login screen.
@@ -143,9 +152,15 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
       std::unique_ptr<StubAuthenticatorBuilder> authenticator_builder);
 
   // Starts login attempt for a user, using actual authenticator backed by
-  // FakeUserDataAuthClient.
-  // Note that this will not wait for the login attempt to finish.
+  // FakeUserDataAuthClient. It is assumed that user already exists on the
+  // device. Note that this will not wait for the login attempt to finish.
   void AttemptLoginUsingFakeDataAuthClient(const UserContext& user_context);
+
+  // Starts login attempt for a user, assuming that user is a new user that have
+  // just completed GAIA authentication.
+  // Note that this will not wait for the login attempt to finish.
+  void AttemptNewUserLoginUsingFakeDataAuthClient(
+      const UserContext& user_context);
 
   // Waits for the session state to change to ACTIVE. Returns immediately if the
   // session is already active.
@@ -163,11 +178,8 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
 
   // Logs in a user using with CreateDefaultUserContext(user_info) context.
   // When |wait_for_profile_prepared| is true, it waits until user profile is
-  // fully initialized. This is used for regular user login. When user profile
-  // initialization is expected to never complete (i.e. restart request),
-  // |wait_for_profile_prepared| should be false.
-  void LoginWithDefaultContext(const TestUserInfo& user_info,
-                               bool wait_for_profile_prepared = true);
+  // fully initialized. This is used for regular user login.
+  void LoginWithDefaultContext(const TestUserInfo& user_info);
 
   // Logs in as a regular user with default user context. Should be used for
   // proceeding into the session from the login screen.
@@ -175,7 +187,11 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   void LoginAsNewRegularUser(
       std::optional<UserContext> user_context = std::nullopt);
 
-  // Logs in as a child user with default user context.Should be used for
+  // Logs in as an enterprise user with default user context. Should be used
+  // for proceeding into the session from the login screen.
+  void LoginAsNewEnterpriseUser();
+
+  // Logs in as a child user with default user context. Should be used for
   // proceeding into the session from the login screen.
   void LoginAsNewChildUser();
 
@@ -191,6 +207,9 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   bool session_restore_enabled_ = false;
   test::SessionFlagsManager session_flags_manager_;
 
+  // Whether `SetUpOnMainThread` was already called.
+  bool set_up_on_main_thread_ = false;
+
   // Whether the user session manager should skip browser launch steps for
   // testing.
   bool should_launch_browser_ = false;
@@ -200,6 +219,9 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
 
   // Whether the user will skip post login screens.
   bool skip_post_login_screens_ = false;
+
+  // Whether we should wait for profile creation upon login.
+  bool wait_for_profile_ = true;
 
   LocalStateMixin local_state_mixin_;
   raw_ptr<FakeGaiaMixin> fake_gaia_mixin_;

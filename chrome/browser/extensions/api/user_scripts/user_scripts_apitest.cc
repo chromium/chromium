@@ -5,10 +5,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/script_executor.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -55,23 +57,25 @@ class UserScriptsAPITest : public ExtensionApiTest {
   virtual bool ShouldEnableDevMode() { return true; }
 
   // The userScripts API is currently behind a feature restriction.
-  // TODO(crbug.com/1472902): Remove once the feature is stable for awhile.
+  // TODO(crbug.com/40926805): Remove once the feature is stable for awhile.
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 UserScriptsAPITest::UserScriptsAPITest() {
   scoped_feature_list_.InitWithFeatures(
-      {extensions_features::kApiUserScripts,
+      {extensions_features::kApiUserScriptsMultipleWorlds,
        // Also enable the dev mode restriction feature to gate the API on
        // developer mode.
-       // TODO(https://crbug.com/1495451): Remove this when the feature is
+       // TODO(crbug.com/40286550): Remove this when the feature is
        // enabled by default.
        extensions_features::kRestrictDeveloperModeAPIs},
       /*disabled_features=*/{});
 }
 
-// TODO(crbug.com/1491361): Flaky on Linux debug.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+// TODO(crbug.com/40935741, crbug.com/335421977): Flaky on Linux debug and on
+// "Linux ChromiumOS MSan Tests".
+#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || \
+    (BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER))
 #define MAYBE_RegisterUserScripts DISABLED_RegisterUserScripts
 #else
 #define MAYBE_RegisterUserScripts RegisterUserScripts
@@ -92,8 +96,24 @@ IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, UpdateUserScripts) {
   ASSERT_TRUE(RunExtensionTest("user_scripts/update")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, ConfigureWorld) {
+// TODO(crbug.com/335421977): Flaky on "Linux ChromiumOS MSan Tests".
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_ConfigureWorld DISABLED_ConfigureWorld
+#else
+#define MAYBE_ConfigureWorld ConfigureWorld
+#endif
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, MAYBE_ConfigureWorld) {
   ASSERT_TRUE(RunExtensionTest("user_scripts/configure_world")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, GetAndRemoveWorlds) {
+  ASSERT_TRUE(RunExtensionTest("user_scripts/get_and_remove_worlds"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITest,
+                       UserScriptInjectionOrderIsAlphabetical) {
+  ASSERT_TRUE(RunExtensionTest("user_scripts/injection_order")) << message_;
 }
 
 // Tests that registered user scripts are disabled when dev mode is disabled and

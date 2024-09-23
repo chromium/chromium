@@ -44,6 +44,7 @@ class MockSavedDeskDelegate : public SavedDeskDelegate {
   MOCK_METHOD(void,
               GetFaviconForUrl,
               (const std::string&,
+               uint64_t,
                base::OnceCallback<void(const gfx::ImageSkia&)>,
                base::CancelableTaskTracker*),
               (const override));

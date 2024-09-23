@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.tabpersistence;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.flatbuffers.FlatBufferBuilder;
 
+import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -27,6 +27,7 @@ import java.nio.ByteBuffer;
 
 /** {@link TabStateSerializer} backed by a FlatBuffer */
 public class FlatBufferTabStateSerializer implements TabStateSerializer {
+    private static final String TAG = "FBTSS";
     private static final String NULL_OPENER_APP_ID = " ";
     private static final long NO_TAB_GROUP_ID = 0L;
 
@@ -54,25 +55,18 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
         /** FlatBuffer deserialization failed because of an index out of bounds exception. */
         int FAILURE_INDEX_OUT_OF_BOUNDS_EXCEPTION = 2;
 
-        int NUM_ENTRIES = 3;
+        /** FlatBuffer deserialization failed because of an illegal argument exception. */
+        int FAILURE_ILLEGAL_ARGUMENT_EXCEPTION = 3;
+
+        int NUM_ENTRIES = 4;
     }
 
     @Override
-    public ByteBuffer serialize(TabState state) {
+    public ByteBuffer serialize(TabState state, byte[] contentsStateBytes) {
         FlatBufferBuilder fbb = new FlatBufferBuilder();
-        ByteBuffer byteBuffer =
-                state.contentsState.buffer() != null
-                        ? state.contentsState.buffer().asReadOnlyBuffer()
-                        : null;
-        if (byteBuffer != null) {
-            byteBuffer.rewind();
-        }
         int webContentsState =
                 TabStateFlatBufferV1.createWebContentsStateBytesVector(
-                        fbb,
-                        byteBuffer == null
-                                ? ByteBuffer.allocate(0).put(new byte[] {})
-                                : byteBuffer);
+                        fbb, ByteBuffer.wrap(contentsStateBytes));
         int openerAppId =
                 fbb.createString(
                         state.openerAppId == null ? NULL_OPENER_APP_ID : state.openerAppId);
@@ -108,6 +102,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                     TabStateFlatBufferV1.getRootAsTabStateFlatBufferV1(bytes);
 
             TabState state = new TabState();
+            state.isIncognito = mIsEncrypted;
             state.parentId = tabStateFlatBuffer.parentId();
             state.rootId = tabStateFlatBuffer.rootId();
             state.openerAppId =
@@ -147,19 +142,24 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                     "Tabs.TabState.FlatBufferDeserializeResult",
                     TabStateFlatBufferDeserializeResult.FAILURE_INDEX_OUT_OF_BOUNDS_EXCEPTION,
                     TabStateFlatBufferDeserializeResult.NUM_ENTRIES);
+        } catch (IllegalArgumentException e) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Tabs.TabState.FlatBufferDeserializeResult",
+                    TabStateFlatBufferDeserializeResult.FAILURE_ILLEGAL_ARGUMENT_EXCEPTION,
+                    TabStateFlatBufferDeserializeResult.NUM_ENTRIES);
         } catch (Exception e) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Tabs.TabState.FlatBufferDeserializeResult",
                     TabStateFlatBufferDeserializeResult.FAILURE_UNKNOWN_REASON,
                     TabStateFlatBufferDeserializeResult.NUM_ENTRIES);
+            Log.e(TAG, "Error deserializing tabState FlatBuffer", e);
             assert false : e.getMessage();
         }
         return null;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static @Nullable @TabLaunchType Integer getLaunchTypeFromFlatBuffer(
-            int flatBufferLaunchType) {
+    public static @TabLaunchType int getLaunchTypeFromFlatBuffer(int flatBufferLaunchType) {
         switch (flatBufferLaunchType) {
             case TabLaunchTypeAtCreation.FROM_LINK:
                 return TabLaunchType.FROM_LINK;
@@ -205,24 +205,27 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchType.FROM_READING_LIST;
             case TabLaunchTypeAtCreation.FROM_OMNIBOX:
                 return TabLaunchType.FROM_OMNIBOX;
+            case TabLaunchTypeAtCreation.UNSET:
+                return TabLaunchType.UNSET;
+            case TabLaunchTypeAtCreation.FROM_SYNC_BACKGROUND:
+                return TabLaunchType.FROM_SYNC_BACKGROUND;
+            case TabLaunchTypeAtCreation.FROM_RECENT_TABS_FOREGROUND:
+                return TabLaunchType.FROM_RECENT_TABS_FOREGROUND;
             case TabLaunchTypeAtCreation.SIZE:
                 return TabLaunchType.SIZE;
             case TabLaunchTypeAtCreation.UNKNOWN:
-                return null;
+                return TabLaunchType.UNSET;
             default:
                 assert false
                         : "Unexpected deserialization of LaunchAtCreationType: "
                                 + flatBufferLaunchType;
                 // shouldn't happen
-                return null;
+                return TabLaunchType.UNSET;
         }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static int getLaunchTypeToFlatBuffer(@Nullable @TabLaunchType Integer tabLaunchType) {
-        if (tabLaunchType == null) {
-            return TabLaunchTypeAtCreation.UNKNOWN;
-        }
+    public static int getLaunchTypeToFlatBuffer(@TabLaunchType int tabLaunchType) {
         switch (tabLaunchType) {
             case TabLaunchType.FROM_LINK:
                 return TabLaunchTypeAtCreation.FROM_LINK;
@@ -268,12 +271,18 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchTypeAtCreation.FROM_READING_LIST;
             case TabLaunchType.FROM_OMNIBOX:
                 return TabLaunchTypeAtCreation.FROM_OMNIBOX;
+            case TabLaunchType.UNSET:
+                return TabLaunchTypeAtCreation.UNSET;
+            case TabLaunchType.FROM_SYNC_BACKGROUND:
+                return TabLaunchTypeAtCreation.FROM_SYNC_BACKGROUND;
+            case TabLaunchType.FROM_RECENT_TABS_FOREGROUND:
+                return TabLaunchTypeAtCreation.FROM_RECENT_TABS_FOREGROUND;
             case TabLaunchType.SIZE:
                 return TabLaunchTypeAtCreation.SIZE;
             default:
                 assert false : "Unexpected serialization of LaunchAtCreationType: " + tabLaunchType;
                 // shouldn't happen
-                return TabLaunchTypeAtCreation.UNKNOWN;
+                return TabLaunchTypeAtCreation.UNSET;
         }
     }
 

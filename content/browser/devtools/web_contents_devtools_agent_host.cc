@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/web_contents_devtools_agent_host.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/io_handler.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
@@ -26,25 +27,6 @@ WebContentsDevToolsAgentHost* FindAgentHost(WebContents* wc) {
     return nullptr;
   auto it = g_agent_host_instances.Get().find(wc);
   return it == g_agent_host_instances.Get().end() ? nullptr : it->second;
-}
-
-// This implements the DevTools definition of outermost web contents,
-// which is currently the one associated to outermost frame, not
-// traversing the guest view (so for something within a guest view),
-// this returns the parent guest view. This is for compatibility,
-// as guest views were historically exposed as independent targets.
-// Note this differs from `WebContents::GetResponsibleWebContents()`
-// that traverses guest views.
-WebContents* GetRootWebContentsForDevTools(WebContents* wc) {
-  RenderFrameHost* current = wc->GetPrimaryMainFrame();
-  while (RenderFrameHost* parent = current->GetParentOrOuterDocument()) {
-    current = parent;
-  }
-  return WebContents::FromRenderFrameHost(current);
-}
-
-bool ShouldCreateDevToolsAgentHost(WebContents* wc) {
-  return wc == GetRootWebContentsForDevTools(wc);
 }
 
 }  // namespace
@@ -131,19 +113,18 @@ class WebContentsDevToolsAgentHost::AutoAttacher
     hosts.insert(RenderFrameDevToolsAgentHost::GetOrCreateFor(ftn));
   }
 
-  WebContents* web_contents_ = nullptr;
+  raw_ptr<WebContents> web_contents_ = nullptr;
 };
 
 // static
 WebContentsDevToolsAgentHost* WebContentsDevToolsAgentHost::GetFor(
     WebContents* web_contents) {
-  return FindAgentHost(GetRootWebContentsForDevTools(web_contents));
+  return FindAgentHost(web_contents);
 }
 
 // static
 WebContentsDevToolsAgentHost* WebContentsDevToolsAgentHost::GetOrCreateFor(
     WebContents* web_contents) {
-  web_contents = GetRootWebContentsForDevTools(web_contents);
   if (auto* host = FindAgentHost(web_contents))
     return host;
   return new WebContentsDevToolsAgentHost(web_contents);
@@ -160,8 +141,7 @@ bool WebContentsDevToolsAgentHost::IsDebuggerAttached(
 void WebContentsDevToolsAgentHost::AddAllAgentHosts(
     DevToolsAgentHost::List* result) {
   for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
-    if (ShouldCreateDevToolsAgentHost(wc))
-      result->push_back(GetOrCreateFor(wc));
+    result->push_back(GetOrCreateFor(wc));
   }
 }
 
@@ -323,14 +303,14 @@ base::TimeTicks WebContentsDevToolsAgentHost::GetLastActivityTime() {
 std::optional<network::CrossOriginEmbedderPolicy>
 WebContentsDevToolsAgentHost::cross_origin_embedder_policy(
     const std::string& id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 
 std::optional<network::CrossOriginOpenerPolicy>
 WebContentsDevToolsAgentHost::cross_origin_opener_policy(
     const std::string& id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 
@@ -375,7 +355,8 @@ void WebContentsDevToolsAgentHost::ReadyToCommitNavigation(
   }
 }
 
-void WebContentsDevToolsAgentHost::FrameDeleted(int frame_tree_node_id) {
+void WebContentsDevToolsAgentHost::FrameDeleted(
+    FrameTreeNodeId frame_tree_node_id) {
   for (auto* tracing : protocol::TracingHandler::ForAgentHost(this)) {
     tracing->FrameDeleted(frame_tree_node_id);
   }

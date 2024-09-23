@@ -19,7 +19,8 @@ namespace systemLog {
     // Adds a new log record.
     // |options|: The logging options.
     // |callback|: A callback to invoke once the log has been added.
-    [supportsPromises] static void add(MessageOptions options,
-                                       optional VoidCallback callback);
+    static void add(
+        MessageOptions options,
+        optional VoidCallback callback);
   };
 };

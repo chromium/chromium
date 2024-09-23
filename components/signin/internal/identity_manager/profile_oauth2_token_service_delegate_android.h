@@ -47,29 +47,11 @@ class ProfileOAuth2TokenServiceDelegateAndroid
 
   std::vector<CoreAccountId> GetAccounts() const override;
 
-  // Overridden from ProfileOAuth2TokenService to complete signout of all
-  // POA2TService aware accounts.
-  void RevokeAllCredentials() override;
-
-  void LoadCredentials(const CoreAccountId& primary_account_id,
-                       bool is_syncing) override;
-
-  void ReloadAllAccountsFromSystemWithPrimaryAccount(
-      const std::optional<CoreAccountId>& primary_account_id) override;
-
   // Seeds the accounts with |core_account_infos| then resumes the reload of
   // accounts once the account seeding is complete.
   void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
       const std::vector<CoreAccountInfo>& core_account_infos,
       const std::optional<CoreAccountId>& primary_account_id) override;
-
-  // Resumes the reload of accounts once the account seeding is complete.
-  // TODO(crbug.com/934688) Once ProfileOAuth2TokenServiceDelegate.java is
-  // internalized, use CoreAccountId instead of String.
-  void ReloadAllAccountsWithPrimaryAccountAfterSeeding(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_primary_account_id,
-      const base::android::JavaParamRef<jobjectArray>& j_device_account_names);
 
   // Takes a the signed in sync account as well as all the other
   // android account ids and check the token status of each.
@@ -99,6 +81,15 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   void FireRefreshTokensLoaded() override;
 
  private:
+  // ProfileOAuth2TokenServiceDelegate implementation:
+  // Overridden from ProfileOAuth2TokenService to complete signout of all
+  // POA2TService aware accounts.
+  void RevokeAllCredentialsInternal(
+      signin_metrics::SourceForRefreshTokenOperation source) override;
+
+  void LoadCredentialsInternal(const CoreAccountId& primary_account_id,
+                               bool is_syncing) override;
+
   std::string MapAccountIdToAccountName(const CoreAccountId& account_id) const;
   CoreAccountId MapAccountNameToAccountId(
       const std::string& account_name) const;

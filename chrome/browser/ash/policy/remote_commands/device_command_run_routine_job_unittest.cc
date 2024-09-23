@@ -44,10 +44,6 @@ constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
 constexpr char kExpectedStatusFieldName[] = "expectedStatus";
 constexpr char kExpectedPowerTypeFieldName[] = "expectedPowerType";
 
-// String constants identifying the parameter fields for the NVMe wear level
-// routine.
-constexpr char kWearLevelThresholdFieldName[] = "wearLevelThreshold";
-
 // String constants identifying the parameter fields for the NVMe self-test
 // routine.
 constexpr char kNvmeSelfTestTypeFieldName[] = "nvmeSelfTestType";
@@ -682,61 +678,6 @@ TEST_F(DeviceCommandRunRoutineJobTest,
         EXPECT_TRUE(payload);
         EXPECT_EQ(CreateInvalidParametersFailurePayload(), *payload);
       })));
-}
-
-TEST_F(DeviceCommandRunRoutineJobTest, RunNvmeWearLevelRoutineSuccess) {
-  auto run_routine_response =
-      ash::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
-  ash::cros_healthd::FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(
-      run_routine_response);
-  auto params_dict =
-      base::Value::Dict().Set(kWearLevelThresholdFieldName, kPositiveInt);
-  EXPECT_TRUE(
-      RunJob(ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel,
-             std::move(params_dict),
-             base::BindLambdaForTesting([](RemoteCommandJob* job) {
-               EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
-               std::unique_ptr<std::string> payload = job->GetResultPayload();
-               EXPECT_TRUE(payload);
-               EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
-             })));
-}
-
-// Test that the NVMe wear level routine can be run without the
-// wearLevelThreshold parameter.
-TEST_F(DeviceCommandRunRoutineJobTest,
-       RunNvmeWearLevelRoutineWithoutWearLevelThreshold) {
-  auto run_routine_response =
-      ash::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
-  ash::cros_healthd::FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(
-      run_routine_response);
-  base::Value::Dict params_dict;
-  EXPECT_TRUE(
-      RunJob(ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel,
-             std::move(params_dict),
-             base::BindLambdaForTesting([](RemoteCommandJob* job) {
-               EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
-               std::unique_ptr<std::string> payload = job->GetResultPayload();
-               EXPECT_TRUE(payload);
-               EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
-             })));
-}
-
-// Test that a negative wearLevelThreshold parameter causes the NVMe wear level
-// routine to fail.
-TEST_F(DeviceCommandRunRoutineJobTest,
-       RunNvmeWearLevelRoutineInvalidWearLevelThreshold) {
-  base::Value::Dict params_dict;
-  params_dict.Set(kWearLevelThresholdFieldName, kNegativeInt);
-  EXPECT_TRUE(
-      RunJob(ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel,
-             std::move(params_dict),
-             base::BindLambdaForTesting([](RemoteCommandJob* job) {
-               EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
-               std::unique_ptr<std::string> payload = job->GetResultPayload();
-               EXPECT_TRUE(payload);
-               EXPECT_EQ(CreateInvalidParametersFailurePayload(), *payload);
-             })));
 }
 
 TEST_F(DeviceCommandRunRoutineJobTest, RunNvmeSelfTestRoutineSuccess) {

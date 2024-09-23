@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
+#include "chrome/browser/ash/file_system_provider/cloud_file_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_observer.h"
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 #include "storage/browser/file_system/async_file_util.h"
@@ -63,6 +64,7 @@ struct EntryMetadata {
   std::unique_ptr<std::string> mime_type;
   std::unique_ptr<std::string> thumbnail;
   std::unique_ptr<CloudIdentifier> cloud_identifier;
+  std::unique_ptr<CloudFileInfo> cloud_file_info;
 };
 
 // Represents actions for either a file or a directory.
@@ -118,12 +120,15 @@ class ProvidedFileSystemInterface {
     METADATA_FIELD_MODIFICATION_TIME = 1 << 3,
     METADATA_FIELD_MIME_TYPE = 1 << 4,
     METADATA_FIELD_THUMBNAIL = 1 << 5,
-    METADATA_FIELD_CLOUD_IDENTIFIER = 1 << 6
+    METADATA_FIELD_CLOUD_IDENTIFIER = 1 << 6,
+    METADATA_FIELD_CLOUD_FILE_INFO = 1 << 7
   };
 
   // Callback for OpenFile(). In case of an error, file_handle is equal to 0
   // and result is set to an error code.
-  typedef base::OnceCallback<void(int file_handle, base::File::Error result)>
+  typedef base::OnceCallback<void(int file_handle,
+                                  base::File::Error result,
+                                  std::unique_ptr<EntryMetadata> metadata)>
       OpenFileCallback;
 
   typedef base::RepeatingCallback<

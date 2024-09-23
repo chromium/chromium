@@ -26,16 +26,26 @@ message AppPreloadListResponse {
   // A list of zero or more apps for APS to install.
   repeated App apps_to_install = 1;
 
+  // The Launcher Configuration.
+  repeated LauncherConfig launcher_config = 2;
+
+  // The Shelf Configuration.
+  repeated ShelfConfig shelf_config = 3;
+
   enum InstallReason {
     // Default for deserialization when an unexpected value is encountered.
-    // Indicates to the client that the server has a new reason and needs
-    // the proto file updated.
+    // Usually indicates to the client that the server has a new reason and
+    // needs the proto file updated.
     INSTALL_REASON_UNKNOWN = 0;
 
-    // A Default App.
+    // An app other than an OEM app. This should be pinned in the Launcher at
+    // the position that matches the PackageId or, if not specified, into the
+    // end of the "OTHER" position, as defined in the launcher config.
     INSTALL_REASON_DEFAULT = 1;
 
-    // An app installed for an OEM.
+    // An app installed for an OEM. This should be placed into the "OEM" folder
+    // defined in the launcher config.
+    // (note: position in the OEM folder itself does not matter).
     INSTALL_REASON_OEM = 2;
 
     // An app which is being returned by the server for testing purposes.
@@ -44,26 +54,12 @@ message AppPreloadListResponse {
     INSTALL_REASON_TEST = 3;
   }
 
-  message Icon {
-    // Url to query to get the icon. This will always be from the host
-    // meltingpot.googleusercontent.com.
-    optional string url = 1;
-
-    // Width of the icon in pixels. While App icons are typically square
-    // note there is no guarantee the image provided will be.
-    optional uint32 width_in_pixels = 2;
-
-    // Mime type of the icon.
-    optional string mime_type = 3;
-
-    // Whether or not we have permission from the platform to mask the icon.
-    optional bool is_masking_allowed = 4;
-  }
-
   // For Android-only metadata.
+  // Note: Once Unified App Install has been hooked up, this will be deprecated.
   message AndroidExtras {}
 
   // For Web-only metadata.
+  // Note: Once Unified App Install has been hooked up, this will be deprecated.
   message WebExtras {
     // A URL to the web app's manifest in json format. This will always be from
     // the host meltingpot.googleusercontent.com.
@@ -88,17 +84,103 @@ message AppPreloadListResponse {
     // The App's UTF-8 encoded name in the requested language (or next best).
     optional string name = 3;
 
-    // One or more Icons for this App for the requested language (or next best).
-    repeated Icon icons = 4;
+    // Icons (which are not currently used).
+    reserved 4;
 
     // The reason why this app is in the list.
     optional InstallReason install_reason = 5;
 
+    // An optional campaign code for this preload.
+    optional string campaign_code = 8;
+
+    // The localised folder name that this preload should be placed in.
+    // Note: this is not populated and should be ignored for OEM preloads.
+    optional string folder_name = 9;
+
     // Every platform has its own [Platform]Extras message to store platform
     // specific metadata.
+    // Note: Once Unified App Install has been hooked up, this will be
+    // deprecated.
     oneof extras {
       AndroidExtras android_extras = 6;
       WebExtras web_extras = 7;
     }
+  }
+
+  // Configuration defining the order of apps pinned in the Shelf.
+  message ShelfConfig {
+    // The order of the entries in this config. Sort by this value and then
+    // process in ascending order.
+    optional uint32 order = 1;
+
+    // An optional feature flag. If specified, evaluate the flag and ignore this
+    // entry if the feature is not enabled.
+    optional string feature_flag = 2;
+
+    // The identifier for the app for this slot (usually one). If more than one
+    // is specified, evaluate the entries in order and place the first app
+    // detected on the device in this slot. Ignore the remaining entries.
+    repeated string package_id = 3;
+  }
+
+  // Indicates the type of Launcher entry.
+  enum LauncherType {
+    // Default for deserialization when an unexpected value is encountered.
+    // Usually Indicates to the client that the server has a new reason and
+    // needs the proto file updated.
+    LAUNCHER_TYPE_UNKNOWN = 0;
+
+    // Indicates where the Chrome Browser (Ash or Lacross) should be placed.
+    // Note: this may be in a folder (see below).
+    LAUNCHER_TYPE_CHROME = 1;
+
+    // An App with the `package_id` should be placed in this position.
+    // Note: this may be in a folder (see below).
+    LAUNCHER_TYPE_APP = 2;
+
+    // All other apps not explicitly listed should be installed in this
+    // position in the order they are installed (ie. doesn't matter).
+    // Note: this may be in a folder (see below).
+    LAUNCHER_TYPE_OTHER = 3;
+
+    // Indicates the position of the OEM folder which should be named with the
+    // localised string in `folder_name`. Preloads marked "INSTALL_REASON_OEM"
+    // should be placed in this folder in the order they install (ie. doesn't
+    // matter).
+    LAUNCHER_TYPE_FOLDER_OEM = 4;
+
+    // Indicates an arbitrary folder should be created in this position named
+    // with the string in `folder_name`. This will have a child configuration
+    // which can only contain Apps (ie. no nested folders).
+    LAUNCHER_TYPE_FOLDER = 5;
+  }
+
+  // Configuration defining the order of items pinned in the Launcher.
+  message LauncherConfig {
+    // Indicates what type of entry this is in the config (see above).
+    optional LauncherType type = 1;
+
+    // The order of the entries in this config. Sort by this value and then
+    // process in ascending order.
+    optional uint32 order = 2;
+
+    // An optional feature flag. If specified, evaluate the flag and ignore
+    // this entry if the feature is not enabled.
+    optional string feature_flag = 3;
+
+    // The identifier for the app for this slot (usually one). If more than one
+    // is specified, evaluate the entries in order and place the first app
+    // detected on the device in this slot. Ignore the remaining entries.
+    repeated string package_id = 4;
+
+    // For LAUNCHER_TYPE_FOLDER_OEM and LAUNCHER_TYPE_FOLDER, the localised name
+    // to use for the folder.
+    optional string folder_name = 5;
+
+    // For LAUNCHER_TYPE_FOLDER the nested configuration controlling the
+    // placement of apps within the folder.
+    // Note: this is not recursive (ie. only valid for 1 level down).
+    // Install the child apps in this configuration in the order specified.
+    repeated LauncherConfig child_config = 6;
   }
 }

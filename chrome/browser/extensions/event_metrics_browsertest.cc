@@ -4,13 +4,20 @@
 
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -20,76 +27,18 @@
 namespace extensions {
 
 namespace {
-// TODO(crbug.com/1441221): Create test cases where we test "failures" like
+// TODO(crbug.com/40909770): Create test cases where we test "failures" like
 // events not acking.
 
 using ContextType = ExtensionBrowserTest::ContextType;
 using EventMetricsBrowserTest = ExtensionBrowserTest;
+using service_worker_test_utils::TestServiceWorkerTaskQueueObserver;
 
-// TODO(crbug.com/1441221): combine this observer with
-// extensions/browser/service_worker/service_worker_test_utils.h and
-// chrome/browser/extensions/service_worker_event_dispatching_browsertest.cc
-// observers.
-class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
- public:
-  TestWorkerStatusObserver(content::BrowserContext* browser_context,
-                           const ExtensionId& extension_id)
-      : extension_url_(Extension::GetBaseURLFromExtensionId(extension_id)),
-        sw_context_(service_worker_test_utils::GetServiceWorkerContext(
-            browser_context)) {
-    scoped_observation_.Observe(sw_context_);
-  }
-
-  TestWorkerStatusObserver(const TestWorkerStatusObserver&) = delete;
-  TestWorkerStatusObserver& operator=(const TestWorkerStatusObserver&) = delete;
-
-  void WaitForWorkerStarted() { started_worker_run_loop_.Run(); }
-  void WaitForWorkerStopped() { stopped_worker_run_loop_.Run(); }
-
-  int64_t test_worker_version_id() const { return test_worker_version_id_; }
-
- private:
-  // ServiceWorkerContextObserver:
-
-  // Called when a worker has entered the
-  // `blink::EmbeddedWorkerStatus::kRunning` status. Used to indicate when our
-  // test extension is now running.
-  void OnVersionStartedRunning(
-      int64_t version_id,
-      const content::ServiceWorkerRunningInfo& running_info) override {
-    if (running_info.scope != extension_url_) {
-      return;
-    }
-
-    test_worker_version_id_ = version_id;
-    started_worker_run_loop_.Quit();
-  }
-
-  // Called when a worker has entered the
-  // `blink::EmbeddedWorkerStatus::kStopping` status. Used to indicate when our
-  // test extension has stopped.
-  void OnVersionStoppedRunning(int64_t version_id) override {
-    // `test_worker_version_id_` is the previously running version's id.
-    if (test_worker_version_id_ != version_id) {
-      return;
-    }
-    stopped_worker_run_loop_.Quit();
-  }
-
-  int64_t test_worker_version_id_ =
-      blink::mojom::kInvalidServiceWorkerVersionId;
-  base::RunLoop started_worker_run_loop_;
-  base::RunLoop stopped_worker_run_loop_;
-  const GURL extension_url_;
-  const raw_ptr<content::ServiceWorkerContext> sw_context_;
-  base::ScopedObservation<content::ServiceWorkerContext,
-                          content::ServiceWorkerContextObserver>
-      scoped_observation_{this};
-};
+using service_worker_test_utils::TestServiceWorkerContextObserver;
 
 // Tests that the only the dispatch time histogram provided to the test is
 // emitted with a sane value, and that other provided metrics are not emitted.
-// TODO(crbug.com/1484659): Disabled on ASAN due to leak caused by renderer gin
+// TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
 // objects which are intended to be leaked.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_DispatchMetricTest DISABLED_DispatchMetricTest
@@ -114,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, MAYBE_DispatchMetricTest) {
        {"Extensions.Events.DispatchToAckTime.ExtensionEventPage3",
         "Extensions.Events.DispatchToAckTime."
         "ExtensionPersistentBackgroundPage"}},
-      // TODO(crbug.com/1441221): Add `event_metrics_not_emitted` when other
+      // TODO(crbug.com/40909770): Add `event_metrics_not_emitted` when other
       // versions are created.
       // DispatchToAckLongTime
       {"Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker2",
@@ -123,8 +72,8 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, MAYBE_DispatchMetricTest) {
       // DidDispatchToAckSucceed
       {"Extensions.Events.DidDispatchToAckSucceed.ExtensionPage",
        ContextType::kFromManifest,  // event page
-       {"Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2"}},
-      {"Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2",
+       {"Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3"}},
+      {"Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3",
        ContextType::kServiceWorker,
        {"Extensions.Events.DidDispatchToAckSucceed.ExtensionPage"}},
   };
@@ -258,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
       "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2",
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3",
       /*expected_count=*/0);
 }
 
@@ -420,15 +369,15 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
 
   // Call to webNavigation.onCompleted expected.
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active3",
       /*expected_count=*/1);
   // Verify that the recorded values are sane -- that is, that they are less
   // than the maximum bucket.
   histogram_tester.ExpectBucketCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active3",
       /*sample=*/base::Minutes(5).InMicroseconds(), /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive3",
       /*expected_count=*/0);
 }
 
@@ -439,8 +388,8 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   constexpr char kTestExtensionId[] = "iegclhlplifhodhkoafiokenjoapiobj";
   // Stop the service worker to make it inactive.
-  TestWorkerStatusObserver test_worker_start_stop_observer(profile(),
-                                                           kTestExtensionId);
+  TestServiceWorkerContextObserver test_worker_start_stop_observer(
+      profile(), kTestExtensionId);
   ExtensionTestMessageListener extension_oninstall_listener_fired(
       "installed listener fired");
   // We need to load an extension where we know the extensions ID so that we
@@ -452,14 +401,14 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
   // This ensures that we wait until the the browser receives the ack from the
   // renderer. This prevents unexpected histogram emits later.
   ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
-  test_worker_start_stop_observer.WaitForWorkerStarted();
+  const int64_t test_worker_version_id =
+      test_worker_start_stop_observer.WaitForWorkerStarted();
 
   browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
                                                              kTestExtensionId);
   test_worker_start_stop_observer.WaitForWorkerStopped();
-  ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
-      GetServiceWorkerContext(),
-      test_worker_start_stop_observer.test_worker_version_id()));
+  ASSERT_TRUE(content::CheckServiceWorkerIsStopped(GetServiceWorkerContext(),
+                                                   test_worker_version_id));
 
   base::HistogramTester histogram_tester;
   ExtensionTestMessageListener test_event_listener_fired("listener fired");
@@ -472,44 +421,120 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
 
   // Call to webNavigation.onCompleted expected.
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive3",
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active3",
       /*expected_count=*/0);
   // Verify that the recorded values are sane -- that is, that they are less
   // than the maximum bucket.
   histogram_tester.ExpectBucketCount(
-      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive",
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive3",
       /*sample=*/base::Minutes(5).InMicroseconds(),
       /*expected_count=*/0);
 }
 
-// TODO: refactor to be generic for this feature, then do these two metrics with
-// using to avoid code duplication.
-class ServiceWorkerRedundantWorkerStartMetricsBrowserTest
-    : public EventMetricsBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  ServiceWorkerRedundantWorkerStartMetricsBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch);
-    }
+// Tests that when an event is "late" in being acked (not acked within a certain
+// time) that we emit failure metrics for it.
+// TODO(crbug.com/338378835): test is flaky across platforms.
+IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
+                       DISABLED_ServiceWorkerLateEventAckMetricTest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  static constexpr char kManifest[] =
+      R"({
+            "name": "onBeforeNavigate never acks",
+            "manifest_version": 3,
+            "version": "0.1",
+            "background": {
+              "service_worker" : "background.js"
+            },
+            "permissions": ["webNavigation"]
+        })";
+  // The extensions script listens for runtime.onInstalled (to detect install
+  // and worker start completion) and webNavigation.onBeforeNavigate (to request
+  // worker start).
+  static constexpr char kBackgroundScript[] =
+      R"(
+            chrome.runtime.onInstalled.addListener((details) => {
+                chrome.test.sendMessage('installed listener fired');
+            });
+            chrome.webNavigation.onBeforeNavigate.addListener((details) => {
+              // Loop infinitely to prevent the acknowledgement from the
+              // renderer back to browser process.
+              while (true) {};
+            });
+        )";
+  auto test_dir = std::make_unique<TestExtensionDir>();
+  test_dir->WriteManifest(kManifest);
+  test_dir->WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundScript);
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  const Extension* extension = LoadExtension(test_dir->UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+
+  // Set the event ack timeout to be very small to avoid waiting awhile.
+  EventRouter* event_router = EventRouter::Get(profile());
+  ASSERT_TRUE(event_router);
+  event_router->SetEventAckMetricTimeLimitForTesting(base::Microseconds(1));
+
+  // Dispatch an event that the renderer will never ack (that the event was
+  // executed), and will be considered "late".
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+  {
+    // Wait a bit to ensure the late event ack task ran.
+    SCOPED_TRACE("Waiting for late acked event task to run.");
+    base::RunLoop late_ack_metric_task_waiter;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, late_ack_metric_task_waiter.QuitClosure(),
+        base::Microseconds(2));
+    late_ack_metric_task_waiter.Run();
   }
 
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3",
+      /*sample=*/false, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.ServiceWorkerDispatchFailed.Event",
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.ServiceWorkerDispatchFailed.Event",
+      /*sample=*/events::WEB_NAVIGATION_ON_BEFORE_NAVIGATE,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestOk",
+      /*expected_count=*/1);
+  // TODO(jlulejian): See if a failed
+  // ServiceWorkerContext::StartingExternalRequest() can be simulated during the
+  // test so we can test
+  // Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestResult.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestOk",
+      /*sample=*/true, /*expected_count=*/1);
 
-// Tests that a running service worker will be redundantly started when it
-// receives an event while it is already started if
-// extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch is
-// disabled. If enabled, the worker is not redundantly started.
-IN_PROC_BROWSER_TEST_P(ServiceWorkerRedundantWorkerStartMetricsBrowserTest,
+  // Verify non-late ack event metrics are not logged.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3",
+      /*sample=*/true, /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result",
+      /*expected_count=*/0);
+}
+
+// Tests that a running service worker will be unnecessarily started when it
+// receives an event while it is already started if there are no pending events
+// (the worker worker isn't in the process of starting).
+IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
                        ServiceWorkerRedundantStartCountTest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ExtensionTestMessageListener extension_oninstall_listener_fired(
@@ -530,6 +555,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRedundantWorkerStartMetricsBrowserTest,
       GetServiceWorkerContext(), /*service_worker_version_id=*/0));
 
   base::HistogramTester histogram_tester;
+  TestServiceWorkerTaskQueueObserver ready_observer;
   ExtensionTestMessageListener test_event_listener_fired("listener fired");
   // Navigate somewhere to trigger the webNavigation.onBeforeRequest event to
   // the extension listener.
@@ -538,41 +564,26 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRedundantWorkerStartMetricsBrowserTest,
       embedded_test_server()->GetURL("example.com", "/simple.html")));
   ASSERT_TRUE(test_event_listener_fired.WaitUntilSatisfied());
 
-  if (GetParam()) {
-    // extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch true.
-    // Since feature prevents starting a worker when it is running, the
-    // event/task will not be added as pending and therefore this UMA is not
-    // emitted. But as per the assertions, we still run the event successfully.
-    histogram_tester.ExpectTotalCount(
-        "Extensions.ServiceWorkerBackground."
-        "RequestedWorkerStartForStartedWorker",
-        /*expected_count=*/0);
-  } else {
-    // extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch false
-    // Since the feature is disabled, we will redundantly attempt to start the
-    // worker.
-    histogram_tester.ExpectTotalCount(
-        "Extensions.ServiceWorkerBackground."
-        "RequestedWorkerStartForStartedWorker",
-        /*expected_count=*/1);
-    // Verify that the value is `true` since the without the feature the worker
-    // will be redundantly started.
-    histogram_tester.ExpectBucketCount(
-        "Extensions.ServiceWorkerBackground."
-        "RequestedWorkerStartForStartedWorker",
-        /*sample=*/true, /*expected_count=*/1);
+  {
+    SCOPED_TRACE("Waiting for the worker to start.");
+    ready_observer.WaitForWorkerStarted(extension->id());
   }
+  // TODO(crbug.com/40276609): Once we no longer unnecessarily start the
+  // worker
+  // this will become 0.
+  // Since we don't check if a worker is ready before dispatching the the
+  // event we will attempt to start the worker.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground."
+      "RequestedWorkerStartForStartedWorker3",
+      /*expected_count=*/1);
+  // Verify that the value is `true` since the worker
+  // will be unnecessarily started.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.ServiceWorkerBackground."
+      "RequestedWorkerStartForStartedWorker3",
+      /*sample=*/true, /*expected_count=*/1);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ServiceWorkerRedundantWorkerStartMetricsBrowserTest,
-    /* extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch
-       enabled status */
-    testing::Bool());
-
-using ServiceWorkerPendingTasksForRunningWorkerMetricsBrowserTest =
-    ServiceWorkerRedundantWorkerStartMetricsBrowserTest;
 
 class EventMetricsDispatchToSenderBrowserTest
     : public ExtensionBrowserTest,
@@ -680,7 +691,7 @@ IN_PROC_BROWSER_TEST_P(EventMetricsDispatchToSenderBrowserTest,
       "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker2",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
-      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2",
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage",

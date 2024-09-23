@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -137,7 +138,7 @@ std::unique_ptr<extensions::Event> BuildOnSignatureRequestedEvent(
       return nullptr;
   }
   request.input.assign(input.begin(), input.end());
-  base::StringPiece cert_der =
+  std::string_view cert_der =
       net::x509_util::CryptoBufferAsStringPiece(certificate.cert_buffer());
   request.certificate.assign(cert_der.begin(), cert_der.end());
 
@@ -175,7 +176,7 @@ std::unique_ptr<extensions::Event> BuildOnSignDigestRequestedEvent(
       LOG(ERROR) << "Unknown signature algorithm";
       return nullptr;
   }
-  base::StringPiece cert_der =
+  std::string_view cert_der =
       net::x509_util::CryptoBufferAsStringPiece(certificate.cert_buffer());
   request.certificate.assign(cert_der.begin(), cert_der.end());
 
@@ -319,9 +320,12 @@ CertificateProviderServiceFactory::CertificateProviderServiceFactory()
           "CertificateProviderService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(extensions::EventRouterFactory::GetInstance());
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());

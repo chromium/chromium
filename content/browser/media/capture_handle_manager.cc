@@ -17,7 +17,7 @@
 namespace content {
 
 namespace {
-// TODO(crbug.com/1208868): Eliminate code duplication with
+// TODO(crbug.com/40181897): Eliminate code duplication with
 // desktop_capture_devices_util.cc.
 media::mojom::CaptureHandlePtr CreateCaptureHandle(
     RenderFrameHostImpl* capturer,

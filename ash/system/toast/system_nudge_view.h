@@ -6,6 +6,8 @@
 #define ASH_SYSTEM_TOAST_SYSTEM_NUDGE_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -35,7 +37,13 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView,
   METADATA_HEADER(SystemNudgeView, views::FlexLayoutView)
 
  public:
-  SystemNudgeView(const AnchoredNudgeData& nudge_data);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBubbleIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPrimaryButtonIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSecondaryButtonIdForTesting);
+
+  explicit SystemNudgeView(const AnchoredNudgeData& nudge_data,
+                           base::RepeatingCallback<void(bool)>
+                               hover_focus_callback = base::DoNothing());
   SystemNudgeView(const SystemNudgeView&) = delete;
   SystemNudgeView& operator=(const SystemNudgeView&) = delete;
   ~SystemNudgeView() override;
@@ -52,6 +60,20 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView,
   void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
+  class FocusableChildrenObserver;
+
+  // Handles observed child focus state changes.
+  void HandleOnChildFocusStateChanged(bool focus_entered);
+
+  // Handles mouse enter/exit events to either show or hide `close_button_`.
+  void HandleOnMouseHovered(bool mouse_entered);
+
+  // Returns true if the nudge is mouse hovered or a child is focused.
+  bool IsHoveredOrChildHasFocus();
+
+  // Sets the corner radius for the nudge view, shadow and highlight border.
+  void SetNudgeRoundedCornerRadius(const gfx::RoundedCornersF& rounded_corners);
+
   // Owned by the views hierarchy.
   raw_ptr<views::ImageButton> close_button_ = nullptr;
 
@@ -62,11 +84,17 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView,
   // Used to determine if the nudge will draw a pointy corner.
   const bool is_corner_anchored_;
 
-  // Sets the corner radius for the nudge view, shadow and highlight border.
-  void SetNudgeRoundedCornerRadius(gfx::RoundedCornersF rounded_corners);
+  // Observes focus state changes in the nudge's focusable children.
+  std::unique_ptr<FocusableChildrenObserver> focusable_children_observer_;
 
-  // Handles mouse enter/exit events to either show or hide `close_button_`.
-  void HandleOnMouseHovered(const bool mouse_entered);
+  // Custom callback triggered whenever the nudge's hover state changes. It may
+  // be empty since it's an optional parameter set in `nudge_data`.
+  const base::RepeatingCallback<void(/*is_hovered=*/bool)>
+      hover_changed_callback_;
+
+  // Callback triggered whenever the hover or focus state changes.
+  const base::RepeatingCallback<void(/*is_hovered_or_has_focus=*/bool)>
+      hover_or_focus_changed_callback_;
 };
 
 }  // namespace ash

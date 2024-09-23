@@ -4,20 +4,21 @@
 
 #include "components/autofill/core/browser/ui/address_combobox_model.h"
 
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/region_data.h"
 
 namespace autofill {
-
 namespace {
+
 const char kAppLocale[] = "fr-CA";
-}
 
 TEST(AddressComboboxModelTest, Empty) {
   TestPersonalDataManager test_personal_data_manager;
-  test_personal_data_manager.SetAutofillProfileEnabled(true);
+  test_personal_data_manager.test_address_data_manager()
+      .SetAutofillProfileEnabled(true);
 
   AddressComboboxModel model(test_personal_data_manager, kAppLocale, "");
   EXPECT_EQ(1u, model.GetItemCount());
@@ -28,9 +29,10 @@ TEST(AddressComboboxModelTest, Empty) {
 
 TEST(AddressComboboxModelTest, OneAddress) {
   TestPersonalDataManager test_personal_data_manager;
-  test_personal_data_manager.SetAutofillProfileEnabled(true);
+  test_personal_data_manager.test_address_data_manager()
+      .SetAutofillProfileEnabled(true);
   AutofillProfile profile1(test::GetFullProfile());
-  test_personal_data_manager.AddProfile(profile1);
+  test_personal_data_manager.address_data_manager().AddProfile(profile1);
 
   AddressComboboxModel model(test_personal_data_manager, kAppLocale,
                              profile1.guid());
@@ -47,14 +49,15 @@ TEST(AddressComboboxModelTest, OneAddress) {
 
 TEST(AddressComboboxModelTest, TwoAddresses) {
   TestPersonalDataManager test_personal_data_manager;
-  test_personal_data_manager.SetAutofillProfileEnabled(true);
+  test_personal_data_manager.test_address_data_manager()
+      .SetAutofillProfileEnabled(true);
   AutofillProfile profile1(test::GetFullProfile());
   AutofillProfile profile2(test::GetFullProfile2());
 
   // Force |profile1| to be shown first in the combobox.
   profile1.set_use_count(100);
-  test_personal_data_manager.AddProfile(profile1);
-  test_personal_data_manager.AddProfile(profile2);
+  test_personal_data_manager.address_data_manager().AddProfile(profile1);
+  test_personal_data_manager.address_data_manager().AddProfile(profile2);
 
   AddressComboboxModel model(test_personal_data_manager, kAppLocale,
                              profile2.guid());
@@ -73,9 +76,10 @@ TEST(AddressComboboxModelTest, TwoAddresses) {
 
 TEST(AddressComboboxModelTest, AddAnAddress) {
   TestPersonalDataManager test_personal_data_manager;
-  test_personal_data_manager.SetAutofillProfileEnabled(true);
+  test_personal_data_manager.test_address_data_manager()
+      .SetAutofillProfileEnabled(true);
   AutofillProfile profile1(test::GetFullProfile());
-  test_personal_data_manager.AddProfile(profile1);
+  test_personal_data_manager.address_data_manager().AddProfile(profile1);
 
   AddressComboboxModel model(test_personal_data_manager, kAppLocale, "");
   EXPECT_EQ(3u, model.GetItemCount());
@@ -93,4 +97,5 @@ TEST(AddressComboboxModelTest, AddAnAddress) {
   EXPECT_EQ(2u, model.GetIndexOfIdentifier(profile1.guid()));
 }
 
+}  // namespace
 }  // namespace autofill

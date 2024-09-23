@@ -1,0 +1,46 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "contextual_sheet_coordinator.h",
+    "contextual_sheet_coordinator.mm",
+    "contextual_sheet_presenter.h",
+    "panel_content_coordinator.h",
+    "panel_content_coordinator.mm",
+    "panel_content_mediator.h",
+    "panel_content_mediator.mm",
+  ]
+  deps = [
+    ":public",
+    "//ios/chrome/browser/contextual_panel/model",
+    "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/contextual_panel/sample/coordinator",
+    "//ios/chrome/browser/contextual_panel/ui",
+    "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/price_insights/coordinator",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/broadcaster",
+    "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("public") {
+  sources = [
+    "panel_block_modulator.h",
+    "panel_block_modulator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/contextual_panel/ui:public",
+    "//ios/chrome/browser/shared/model/browser",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -44,10 +44,11 @@ class PlatformSensorProviderChromeOS
       int32_t iio_device_id,
       const std::vector<chromeos::sensors::mojom::DeviceType>& types) override;
 
+  base::WeakPtr<PlatformSensorProvider> AsWeakPtr() override;
+
  protected:
   // PlatformSensorProviderLinuxBase overrides:
   void CreateSensorInternal(mojom::SensorType type,
-                            SensorReadingSharedBuffer* reading_buffer,
                             CreateSensorCallback callback) override;
   void FreeResources() override;
 

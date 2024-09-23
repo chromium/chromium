@@ -36,8 +36,8 @@ class FileSystemProviderOperationsConfigureTest : public testing::Test {
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(
-        kExtensionId, MountOptions(kFileSystemId, "" /* display_name */),
-        base::FilePath(), false /* configurable */, true /* watchable */,
+        kExtensionId, MountOptions(kFileSystemId, /*display_name=*/""),
+        base::FilePath(), /*configurable=*/false, /*watchable=*/true,
         extensions::SOURCE_FILE, IconSet());
   }
 
@@ -47,7 +47,7 @@ class FileSystemProviderOperationsConfigureTest : public testing::Test {
 TEST_F(FileSystemProviderOperationsConfigureTest, Execute) {
   using extensions::api::file_system_provider::ConfigureRequestedOptions;
 
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   Configure configure(&dispatcher, file_system_info_,
@@ -74,7 +74,7 @@ TEST_F(FileSystemProviderOperationsConfigureTest, Execute) {
 }
 
 TEST_F(FileSystemProviderOperationsConfigureTest, Execute_NoListener) {
-  util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/false);
   util::StatusCallbackLog callback_log;
 
   Configure configure(&dispatcher, file_system_info_,
@@ -84,7 +84,7 @@ TEST_F(FileSystemProviderOperationsConfigureTest, Execute_NoListener) {
 }
 
 TEST_F(FileSystemProviderOperationsConfigureTest, OnSuccess) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   Configure configure(&dispatcher, file_system_info_,
@@ -92,14 +92,14 @@ TEST_F(FileSystemProviderOperationsConfigureTest, OnSuccess) {
 
   EXPECT_TRUE(configure.Execute(kRequestId));
 
-  configure.OnSuccess(kRequestId, RequestValue(), false /* has_more */);
+  configure.OnSuccess(kRequestId, RequestValue(), /*has_more=*/false);
   ASSERT_EQ(1u, callback_log.size());
   base::File::Error event_result = callback_log[0];
   EXPECT_EQ(base::File::FILE_OK, event_result);
 }
 
 TEST_F(FileSystemProviderOperationsConfigureTest, OnError) {
-  util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
+  util::LoggingDispatchEventImpl dispatcher(/*dispatch_reply=*/true);
   util::StatusCallbackLog callback_log;
 
   Configure configure(&dispatcher, file_system_info_,

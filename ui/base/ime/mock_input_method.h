@@ -43,6 +43,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
                                 NativeEventResult* result) override;
   void OnInputLocaleChanged() override;
   bool IsInputLocaleCJK() const override;
+  void OnUrlChanged() override;
 #endif
 
   void SetFocusedTextInputClient(TextInputClient* client) override;
@@ -58,6 +59,8 @@ class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
   void AddObserver(InputMethodObserver* observer) override;
   void RemoveObserver(InputMethodObserver* observer) override;
   VirtualKeyboardController* GetVirtualKeyboardController() override;
+  void SetVirtualKeyboardControllerForTesting(
+      std::unique_ptr<VirtualKeyboardController> controller) override;
 
  private:
   raw_ptr<TextInputClient, DanglingUntriaged> text_input_client_ = nullptr;

@@ -39,7 +39,6 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
     // Initialize the file-system-site-list.
     const filePath: string = 'a/b';
     const TEST_FILE_SYSTEM_FILE_WRITE_GRANT: FileSystemGrant = {
-      origin: kTestOrigin,
       filePath: filePath,
       displayName: filePath,
       isDirectory: false,

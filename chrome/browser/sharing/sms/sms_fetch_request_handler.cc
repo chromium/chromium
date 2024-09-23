@@ -12,10 +12,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/android/chrome_jni_headers/SmsFetcherMessageHandler_jni.h"
-#include "chrome/browser/sharing/proto/sms_fetch_message_test_proto3_optional.pb.h"
-#include "chrome/browser/sharing/sharing_device_source.h"
-#include "chrome/browser/sharing/sharing_target_device_info.h"
+#include "components/sharing_message/proto/sms_fetch_message_test_proto3_optional.pb.h"
+#include "components/sharing_message/sharing_device_source.h"
+#include "components/sharing_message/sharing_target_device_info.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -23,6 +22,9 @@
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/SmsFetcherMessageHandler_jni.h"
 
 namespace {
 // To mitigate the overlapping of the notification for SMS and the one for
@@ -58,7 +60,7 @@ SmsFetchRequestHandler::~SmsFetchRequestHandler() {
 }
 
 void SmsFetchRequestHandler::OnMessage(
-    chrome_browser_sharing::SharingMessage message,
+    components_sharing_message::SharingMessage message,
     SharingMessageHandler::DoneCallback done_callback) {
   DCHECK(message.has_sms_fetch_request());
 
@@ -121,12 +123,10 @@ void SmsFetchRequestHandler::AskUserPermission(
   // overwrite that one with the new origin. In most cases where there's only
   // one pending origin, the request will be removed when |SmsRetrieverClient|
   // times out which would triggers |Request::OnFailure|.
-  // TODO(crbug.com/1138454): We should improve the infrastructure to be able to
-  // handle failures when there are multiple pending origins simultaneously.
+  // TODO(crbug.com/40153007): We should improve the infrastructure to be able
+  // to handle failures when there are multiple pending origins simultaneously.
   Java_SmsFetcherMessageHandler_showNotification(
-      env, base::android::ConvertUTF8ToJavaString(env, one_time_code),
-      top_origin, embedded_origin,
-      base::android::ConvertUTF8ToJavaString(env, client_name),
+      env, one_time_code, top_origin, embedded_origin, client_name,
       reinterpret_cast<intptr_t>(this));
 }
 
@@ -161,7 +161,7 @@ void SmsFetchRequestHandler::OnDismiss(JNIEnv* env,
   origins.push_back(top_origin);
   auto* request = GetRequest(origins);
   DCHECK(request);
-  // TODO(crbug.com/1015645): We should have a separate catergory for this type
+  // TODO(crbug.com/40103792): We should have a separate catergory for this type
   // of failure.
   request->SendFailureMessage(FailureType::kPromptCancelled);
 }
@@ -219,7 +219,8 @@ void SmsFetchRequestHandler::Request::OnReceive(
 }
 
 void SmsFetchRequestHandler::Request::SendSuccessMessage() {
-  auto response = std::make_unique<chrome_browser_sharing::ResponseMessage>();
+  auto response =
+      std::make_unique<components_sharing_message::ResponseMessage>();
   for (const auto& origin : origin_list_)
     response->mutable_sms_fetch_response()->add_origins(origin.Serialize());
   response->mutable_sms_fetch_response()->set_one_time_code(one_time_code_);
@@ -230,9 +231,10 @@ void SmsFetchRequestHandler::Request::SendSuccessMessage() {
 
 void SmsFetchRequestHandler::Request::SendFailureMessage(
     FailureType failure_type) {
-  auto response = std::make_unique<chrome_browser_sharing::ResponseMessage>();
+  auto response =
+      std::make_unique<components_sharing_message::ResponseMessage>();
   response->mutable_sms_fetch_response()->set_failure_type(
-      static_cast<chrome_browser_sharing::SmsFetchResponse::FailureType>(
+      static_cast<components_sharing_message::SmsFetchResponse::FailureType>(
           failure_type));
 
   std::move(respond_callback_).Run(std::move(response));

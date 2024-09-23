@@ -111,6 +111,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   // called on the consumer on the original thread.
   void StartAuthCodeForOAuth2TokenExchange(
       const std::string& auth_code,
+      const std::string& user_agent_full_version_list = std::string(),
       const std::string& binding_registration_token = std::string());
 
   // Start a request to exchange the authorization code for an OAuthLogin-scoped
@@ -126,6 +127,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   void StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
       const std::string& auth_code,
       const std::string& device_id,
+      const std::string& user_agent_full_version_list = std::string(),
       const std::string& binding_registration_token = std::string());
 
   // Starts a request to get the cookie for list of accounts.
@@ -201,7 +203,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   // Needed to use XmlHTTPRequest for Multilogin requeston iOS even after
   // iOS11 because WKWebView cannot read response body if content-disposition
   // header is set.
-  // TODO(https://crbug.com/889471) Remove this once requests are done using
+  // TODO(crbug.com/40595504) Remove this once requests are done using
   // NSUrlSession in iOS.
   bool IsMultiloginUrl(const GURL& url);
 

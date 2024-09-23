@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ByteOrder, ByteReader} from './byte_reader.js';
-import {ParserMetadata} from './metadata_item.js';
+import type {ByteReader} from './byte_reader.js';
+import {ByteOrder} from './byte_reader.js';
+import type {ParserMetadata} from './metadata_item.js';
 import {ImageParser, MetadataParser, type MetadataParserLogger} from './metadata_parser.js';
 
 /**

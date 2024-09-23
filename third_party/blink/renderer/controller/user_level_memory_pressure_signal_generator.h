@@ -75,15 +75,14 @@ class CONTROLLER_EXPORT UserLevelMemoryPressureSignalGenerator
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::TimeDelta inert_interval_ = base::TimeDelta();
   base::TimeDelta minimum_interval_ = base::TimeDelta();
-  raw_ptr<const base::TickClock, ExperimentalRenderer> clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   bool is_loading_ = false;
   std::optional<base::TimeTicks> last_loaded_;
   bool has_pending_request_ = false;
   base::TimeTicks last_requested_;
   std::optional<base::TimeTicks> last_generated_;
-  raw_ptr<MainThreadScheduler, ExperimentalRenderer> main_thread_scheduler_ =
-      nullptr;
+  raw_ptr<MainThreadScheduler> main_thread_scheduler_ = nullptr;
 };
 
 }  // namespace blink

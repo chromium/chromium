@@ -5,15 +5,15 @@
     ],
     "policy_pref_mapping_tests": [
       {
-        "note": "Default value (no policies set).",
+        "note": "Default value (no policies set). PH is enabled by field trial, so the underlying pref will be unaffected.",
         "prefs": {
           "arc.location_service.enabled": {
-            "value": false
+            "default_value": false
           }
         }
       },
       {
-        "note": "Default value, user decides.",
+        "note": "Default value, user decides. PH is enabled by field trial.",
         "policies": {
           "ArcGoogleLocationServicesEnabled": 1
         },
@@ -24,13 +24,13 @@
         }
       },
       {
-        "note": "Simple value, disabled.",
+        "note": "Simple value, disabled. PH is enabled by field trial.",
         "policies": {
           "ArcGoogleLocationServicesEnabled": 2
         },
         "prefs": {
           "arc.location_service.enabled": {
-            "value": true
+            "default_value": false
           }
         }
       }

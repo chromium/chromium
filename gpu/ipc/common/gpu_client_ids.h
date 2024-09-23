@@ -29,7 +29,7 @@ constexpr int32_t kGraphiteDawnClientId = -3;
 
 // This ID is used for all the renderer/browser clients which will be using
 // MappabelSharedImages.
-// TODO(crbug.com/1486934) : Use of ClientId by MappableSI will go away once we
+// TODO(crbug.com/40283108) : Use of ClientId by MappableSI will go away once we
 // stop using GpuMemoryBufferFactory in service side to create and cache GMBs.
 constexpr int32_t kMappableSIClientId = -4;
 

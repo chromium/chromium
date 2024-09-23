@@ -11,7 +11,6 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/win/control_flow_guard.gni")
 import("//build/config/win/visual_studio_version.gni")
 import("//build/timestamp.gni")
-import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 
@@ -132,8 +131,8 @@ config("compiler") {
 
     # Enable ANSI escape codes if something emulating them is around (cmd.exe
     # doesn't understand ANSI escape codes by default). Make sure to not enable
-    # this if goma/remoteexec is in use, because this will lower cache hits.
-    if (!use_goma && !use_remoteexec &&
+    # this if remoteexec is in use, because this will lower cache hits.
+    if (!use_remoteexec &&
         exec_script("//build/win/use_ansi_codes.py", [], "trim string") ==
         "True") {
       cflags += [ "-fansi-escape-codes" ]
@@ -145,7 +144,7 @@ config("compiler") {
   }
 
   # Disabled with cc_wrapper because of https://github.com/mozilla/sccache/issues/264
-  if (use_lld && !use_thin_lto && (is_clang || !use_goma) && cc_wrapper == "") {
+  if (use_lld && !use_thin_lto && cc_wrapper == "") {
     # /Brepro lets the compiler not write the mtime field in the .obj output.
     # link.exe /incremental relies on this field to work correctly, but lld
     # never looks at this timestamp, so it's safe to pass this flag with
@@ -411,10 +410,12 @@ config("cfi_linker") {
 # tests with the full browser.
 config("delayloads") {
   ldflags = [
+    "/DELAYLOAD:api-ms-win-core-synch-l1-2-0.dll",
     "/DELAYLOAD:api-ms-win-core-winrt-error-l1-1-0.dll",
     "/DELAYLOAD:api-ms-win-core-winrt-l1-1-0.dll",
     "/DELAYLOAD:api-ms-win-core-winrt-string-l1-1-0.dll",
     "/DELAYLOAD:advapi32.dll",
+    "/DELAYLOAD:bcryptprimitives.dll",
     "/DELAYLOAD:comctl32.dll",
     "/DELAYLOAD:comdlg32.dll",
     "/DELAYLOAD:credui.dll",
@@ -422,10 +423,12 @@ config("delayloads") {
     "/DELAYLOAD:d3d11.dll",
     "/DELAYLOAD:d3d12.dll",
     "/DELAYLOAD:d3d9.dll",
+    "/DELAYLOAD:dcomp.dll",
     "/DELAYLOAD:dwmapi.dll",
     "/DELAYLOAD:dxgi.dll",
     "/DELAYLOAD:dxva2.dll",
     "/DELAYLOAD:esent.dll",
+    "/DELAYLOAD:fontsub.dll",
     "/DELAYLOAD:gdi32.dll",
     "/DELAYLOAD:hid.dll",
     "/DELAYLOAD:imagehlp.dll",
@@ -509,15 +512,9 @@ config("release_crt") {
   if (is_component_build) {
     cflags = [ "/MD" ]
 
-    if (rust_prebuilt_stdlib) {
-      rustflags = [ "-Ctarget-feature=-crt-static" ]
-    } else {
-      # /MD specifies msvcrt.lib as the CRT library. Rust needs to agree, so
-      # we specify it explicitly. Once
-      # https://github.com/rust-lang/rust/issues/39016 is resolved we should
-      # instead tell rustc which CRT to use (static/dynamic + release/debug).
-      rustflags = [ "-Clink-arg=msvcrt.lib" ]
-    }
+    # /MD specifies msvcrt.lib as the CRT library, which is the dynamic+release
+    # version. Rust needs to agree, and its default mode is dynamic+release, so
+    # we do nothing here. See https://github.com/rust-lang/rust/issues/39016.
 
     if (use_custom_libcxx) {
       # On Windows, including libcpmt[d]/msvcprt[d] explicitly links the C++
@@ -527,15 +524,10 @@ config("release_crt") {
   } else {
     cflags = [ "/MT" ]
 
-    if (rust_prebuilt_stdlib) {
-      rustflags = [ "-Ctarget-feature=+crt-static" ]
-    } else {
-      # /MT specifies libcmt.lib as the CRT library. Rust needs to agree, so
-      # we specify it explicitly. Once
-      # https://github.com/rust-lang/rust/issues/39016 is resolved we should
-      # instead tell rustc which CRT to use (static/dynamic + release/debug).
-      rustflags = [ "-Clink-arg=libcmt.lib" ]
-    }
+    # /MT specifies libcmt.lib as the CRT library, which is the static+release
+    # version. Rust needs to agree, so we tell it to use the static+release CRT
+    # as well. See https://github.com/rust-lang/rust/issues/39016.
+    rustflags = [ "-Ctarget-feature=+crt-static" ]
 
     if (use_custom_libcxx) {
       ldflags = [ "/DEFAULTLIB:libcpmt.lib" ]
@@ -548,12 +540,14 @@ config("dynamic_crt") {
     # This pulls in the DLL debug CRT and defines _DEBUG
     cflags = [ "/MDd" ]
 
-    # /MDd specifies msvcrtd.lib as the CRT library. Rust needs to agree, so
-    # we specify it explicitly.
-    # Once https://github.com/rust-lang/rust/issues/39016 is resolved we should
-    # instead tell rustc which CRT to use (static/dynamic + release/debug). We
-    # can't support prebuilt stdlib in this path until then.
-    rustflags = [ "-Clink-arg=msvcrtd.lib" ]
+    # /MDd specifies msvcrtd.lib as the CRT library. Rust needs to agree, so we
+    # specify it explicitly. Rust defaults to the dynamic+release library, which
+    # we remove here, and then replace. See
+    # https://github.com/rust-lang/rust/issues/39016.
+    rustflags = [
+      "-Clink-arg=/nodefaultlib:msvcrt.lib",
+      "-Clink-arg=msvcrtd.lib",
+    ]
 
     if (use_custom_libcxx) {
       ldflags = [ "/DEFAULTLIB:msvcprtd.lib" ]
@@ -561,16 +555,9 @@ config("dynamic_crt") {
   } else {
     cflags = [ "/MD" ]
 
-    if (rust_prebuilt_stdlib) {
-      rustflags = [ "-Ctarget-feature=-crt-static" ]
-    } else {
-      # /MD specifies msvcrt.lib as the CRT library. Rust needs to agree, so
-      # we specify it explicitly.
-      # Once https://github.com/rust-lang/rust/issues/39016 is resolved we
-      # should instead tell rustc which CRT to use (static/dynamic +
-      # release/debug).
-      rustflags = [ "-Clink-arg=msvcrt.lib" ]
-    }
+    # /MD specifies msvcrt.lib as the CRT library, which is the dynamic+release
+    # version. Rust needs to agree, and its default mode is dynamic+release, so
+    # we do nothing here. See https://github.com/rust-lang/rust/issues/39016.
 
     if (use_custom_libcxx) {
       ldflags = [ "/DEFAULTLIB:msvcprt.lib" ]
@@ -583,12 +570,15 @@ config("static_crt") {
     # This pulls in the static debug CRT and defines _DEBUG
     cflags = [ "/MTd" ]
 
-    # /MTd specifies libcmtd.lib as the CRT library. Rust needs to agree, so
-    # we specify it explicitly.
-    # Once https://github.com/rust-lang/rust/issues/39016 is resolved we should
-    # instead tell rustc which CRT to use (static/dynamic + release/debug). We
-    # can't support prebuilt stdlib in this path until then.
-    rustflags = [ "-Clink-arg=libcmtd.lib" ]
+    # /MTd specifies libcmtd.lib as the CRT library. Rust needs to agree, so we
+    # specify it explicitly. We tell Rust that we're using the static CRT but
+    # remove the release library that it chooses, and replace with the debug
+    # library. See https://github.com/rust-lang/rust/issues/39016.
+    rustflags = [
+      "-Ctarget-feature=+crt-static",
+      "-Clink-arg=/nodefaultlib:libcmt.lib",
+      "-Clink-arg=libcmtd.lib",
+    ]
 
     if (use_custom_libcxx) {
       ldflags = [ "/DEFAULTLIB:libcpmtd.lib" ]
@@ -596,16 +586,10 @@ config("static_crt") {
   } else {
     cflags = [ "/MT" ]
 
-    if (rust_prebuilt_stdlib) {
-      rustflags = [ "-Ctarget-feature=+crt-static" ]
-    } else {
-      # /MT specifies libcmt.lib as the CRT library. Rust needs to agree, so
-      # we specify it explicitly.
-      # Once https://github.com/rust-lang/rust/issues/39016 is resolved we
-      # should instead tell rustc which CRT to use (static/dynamic +
-      # release/debug).
-      rustflags = [ "-Clink-arg=libcmt.lib" ]
-    }
+    # /MT specifies libcmt.lib as the CRT library, which is the static+release
+    # version. Rust needs to agree, so we tell it to use the static+release CRT
+    # as well. See https://github.com/rust-lang/rust/issues/39016.
+    rustflags = [ "-Ctarget-feature=+crt-static" ]
 
     if (use_custom_libcxx) {
       ldflags = [ "/DEFAULTLIB:libcpmt.lib" ]
@@ -645,7 +629,7 @@ config("default_incremental_linking") {
       # lld.
       ldflags += [ "/OPT:NOREF" ]
 
-      # TODO(crbug.com/1444129): Mixing incrememntal and icf produces an error
+      # TODO(crbug.com/40267564): Mixing incrememntal and icf produces an error
       # in lld-link.
       ldflags += [ "/OPT:NOICF" ]
     }

@@ -219,7 +219,8 @@ double GetScoreOfFirstClassThatDoesNotHaveName(
       return each_class.score();
     }
   }
-  NOTREACHED();  // Because there should be at least 2 predicted classes.
+  NOTREACHED_IN_MIGRATION();  // Because there should be at least 2 predicted
+                              // classes.
   return -1;
 }
 }  // namespace
@@ -344,7 +345,7 @@ std::pair<double, double> VisualClassificationAndEligibility::ClassifyImage(
       result.second = GetScoreOfFirstClassThatDoesNotHaveName(
           kNegativeSensitivityLabel, classification);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
   return result;

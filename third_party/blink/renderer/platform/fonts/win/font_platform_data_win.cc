@@ -29,10 +29,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
+
 #include <windows.h>
 
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
-#include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkTypeface.h"
@@ -40,15 +41,22 @@
 namespace blink {
 
 SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
-  SkFont font;
+  SkFont font(typeface_);
   font.setSize(SkFloatToScalar(text_size_));
-  font.setTypeface(typeface_);
   font.setEmbolden(synthetic_bold_);
   font.setSkewX(synthetic_italic_ ? -SK_Scalar1 / 4 : 0);
 
-  if (style_.use_subpixel_rendering) {
+  bool use_subpixel_rendering = style_.use_subpixel_rendering;
+  bool use_anti_alias = style_.use_anti_alias;
+
+  if (RuntimeEnabledFeatures::DisableAhemAntialiasEnabled() && IsAhem()) {
+    use_subpixel_rendering = false;
+    use_anti_alias = false;
+  }
+
+  if (use_subpixel_rendering) {
     font.setEdging(SkFont::Edging::kSubpixelAntiAlias);
-  } else if (style_.use_anti_alias) {
+  } else if (use_anti_alias) {
     font.setEdging(SkFont::Edging::kAntiAlias);
   } else {
     font.setEdging(SkFont::Edging::kAlias);
@@ -60,12 +68,14 @@ SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
   // only has non-antialiased glyphs to draw, so they necessarily get clamped at
   // pixel positions, which leads to uneven spacing, either too close or too far
   // away from adjacent glyphs. We avoid this by linking the two flags.
-  if (style_.use_anti_alias)
+  if (use_anti_alias) {
     font.setSubpixel(true);
+  }
 
   if (WebTestSupport::IsRunningWebTest() &&
-      !WebTestSupport::IsTextSubpixelPositioningAllowedForTest())
+      !WebTestSupport::IsTextSubpixelPositioningAllowedForTest()) {
     font.setSubpixel(false);
+  }
 
   font.setEmbeddedBitmaps(!avoid_embedded_bitmaps_);
   return font;
@@ -77,15 +87,17 @@ WebFontRenderStyle FontPlatformData::QuerySystemForRenderStyle() {
   style.use_subpixel_rendering = 0;
 
   if (WebTestSupport::IsRunningWebTest()) {
-    if (WebTestSupport::IsFontAntialiasingEnabledForTest())
+    if (WebTestSupport::IsFontAntialiasingEnabledForTest()) {
       style.use_anti_alias = 1;
+    }
     return style;
   }
 
   if (FontCache::Get().AntialiasedTextEnabled()) {
     style.use_anti_alias = 1;
-    if (FontCache::Get().LcdTextEnabled())
+    if (FontCache::Get().LcdTextEnabled()) {
       style.use_subpixel_rendering = 1;
+    }
   }
 
   return style;

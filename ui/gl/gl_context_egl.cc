@@ -16,6 +16,7 @@
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_display.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -154,6 +155,11 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
   // contexts are compatible
   if (!gl_display_->ext->b_EGL_KHR_no_config_context) {
     config_ = compatible_surface->GetConfig();
+    if (!config_) {
+      LOG(ERROR) << "Failed to get config for surface "
+                 << compatible_surface->GetHandle();
+      return false;
+    }
     EGLint config_renderable_type = 0;
     if (!eglGetConfigAttrib(gl_display_->GetDisplay(), config_,
                             EGL_RENDERABLE_TYPE, &config_renderable_type)) {
@@ -199,10 +205,13 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
   bool is_swangle = IsSoftwareGLImplementation(GetGLImplementationParts());
 
   if (attribs.webgl_compatibility_context && is_swangle &&
-      IsARMSwiftShaderPlatform()) {
+      IsARMSwiftShaderPlatform() &&
+      !features::IsSwiftShaderAllowedByCommandLine(
+          base::CommandLine::ForCurrentProcess())) {
     // crbug.com/1378476: LLVM 10 is used as the JIT compiler for SwiftShader,
     // which doesn't fully support ARM. Disable Swiftshader on ARM CPUs for
     // WebGL until LLVM is upgraded.
+    // Allow SwiftShader if explicitly requested by command line for testing.
     DVLOG(1) << __FUNCTION__
              << ": Software WebGL contexts are not supported on ARM CPUs.";
     return false;
@@ -285,10 +294,13 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
 
   if (gl_display_->ext->b_EGL_ANGLE_create_context_client_arrays) {
     context_attributes.push_back(EGL_CONTEXT_CLIENT_ARRAYS_ENABLED_ANGLE);
-    context_attributes.push_back(
-        attribs.angle_create_context_client_arrays ? EGL_TRUE : EGL_FALSE);
+    context_attributes.push_back(attribs.allow_client_arrays ? EGL_TRUE
+                                                             : EGL_FALSE);
   } else {
-    DCHECK(!attribs.angle_create_context_client_arrays);
+    // Client arrays are allowed by default without
+    // ANGLE_create_context_client_arrays to control it. Verify that's the
+    // requested behavior.
+    DCHECK(attribs.allow_client_arrays);
   }
 
   if (gl_display_->ext->b_EGL_ANGLE_robust_resource_initialization ||
@@ -324,7 +336,7 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
         context_attributes.push_back(EGL_HIGH_POWER_ANGLE);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -601,8 +613,7 @@ unsigned int GLContextEGL::CheckStickyGraphicsResetStatusImpl() {
   const ExtensionsGL& ext = g_current_gl_driver->ext;
   if ((graphics_reset_status_ == GL_NO_ERROR) &&
       gl_display_->ext->b_EGL_EXT_create_context_robustness &&
-      (ext.b_GL_KHR_robustness || ext.b_GL_EXT_robustness ||
-       ext.b_GL_ARB_robustness)) {
+      (ext.b_GL_KHR_robustness || ext.b_GL_EXT_robustness)) {
     graphics_reset_status_ = glGetGraphicsResetStatusARB();
   }
   return graphics_reset_status_;

@@ -16,9 +16,9 @@ class CORE_EXPORT MathRadicalLayoutAlgorithm
  public:
   explicit MathRadicalLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const LayoutResult* Layout() final;
+  const LayoutResult* Layout();
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
 
  private:
   bool HasIndex() const;

@@ -135,6 +135,10 @@ void SessionStorageAreaImpl::GetAll(
                      std::move(callback)));
 }
 
+void SessionStorageAreaImpl::Checkpoint() {
+  shared_data_map_->storage_area()->Checkpoint();
+}
+
 void SessionStorageAreaImpl::FlushForTesting() {
   receivers_.FlushForTesting();
 }

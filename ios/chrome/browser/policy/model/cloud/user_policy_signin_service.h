@@ -5,14 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_MODEL_CLOUD_USER_POLICY_SIGNIN_SERVICE_H_
 #define IOS_CHROME_BROWSER_POLICY_MODEL_CLOUD_USER_POLICY_SIGNIN_SERVICE_H_
 
-#include <memory>
+#import <memory>
 
 #import "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-
-class ChromeBrowserState;
+#import "base/scoped_observation.h"
+#import "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace policy {
 

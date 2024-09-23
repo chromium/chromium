@@ -17,8 +17,11 @@ namespace video_capture {
 
 DeviceFactoryAdapterLacros::DeviceFactoryAdapterLacros(
     mojo::PendingRemote<crosapi::mojom::VideoCaptureDeviceFactory>
-        device_factory_ash)
-    : device_factory_ash_(std::move(device_factory_ash)) {}
+        device_factory_ash,
+    base::OnceClosure cleanup_callback)
+    : device_factory_ash_(std::move(device_factory_ash)) {
+  device_factory_ash_.set_disconnect_handler(std::move(cleanup_callback));
+}
 
 DeviceFactoryAdapterLacros::~DeviceFactoryAdapterLacros() = default;
 
@@ -61,7 +64,7 @@ void DeviceFactoryAdapterLacros::WrapNewDeviceInProxy(
           kServiceDeviceLauncherServiceRespondedWithDeviceNotFound;
       break;
     default:
-      NOTREACHED() << "Unexpected device access result code";
+      NOTREACHED_IN_MIGRATION() << "Unexpected device access result code";
   }
 
   if (video_capture_result_code != media::VideoCaptureError::kNone) {
@@ -91,27 +94,27 @@ void DeviceFactoryAdapterLacros::AddSharedMemoryVirtualDevice(
     mojo::PendingRemote<mojom::Producer> producer,
     mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
         virtual_device_receiver) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DeviceFactoryAdapterLacros::AddTextureVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
     mojo::PendingReceiver<mojom::TextureVirtualDevice>
         virtual_device_receiver) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DeviceFactoryAdapterLacros::AddGpuMemoryBufferVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
     mojo::PendingReceiver<mojom::GpuMemoryBufferVirtualDevice>
         virtual_device_receiver) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DeviceFactoryAdapterLacros::RegisterVirtualDevicesChangedObserver(
     mojo::PendingRemote<mojom::DevicesChangedObserver> observer,
     bool raise_event_if_virtual_devices_already_present) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DeviceFactoryAdapterLacros::OnClientConnectionErrorOrClose(

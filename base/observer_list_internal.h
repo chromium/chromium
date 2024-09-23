@@ -5,6 +5,7 @@
 #ifndef BASE_OBSERVER_LIST_INTERNAL_H_
 #define BASE_OBSERVER_LIST_INTERNAL_H_
 
+#include <concepts>
 #include <string>
 
 #include "base/base_export.h"
@@ -24,6 +25,8 @@ namespace base {
 namespace internal {
 
 // Adapter for putting raw pointers into an ObserverList<Foo>::Unchecked.
+template <base::RawPtrTraits ptr_traits = RawPtrTraits::kEmpty,
+          bool use_raw_pointer = false>
 class BASE_EXPORT UncheckedObserverAdapter {
  public:
   explicit UncheckedObserverAdapter(const void* observer)
@@ -54,7 +57,9 @@ class BASE_EXPORT UncheckedObserverAdapter {
 #endif  // DCHECK_IS_ON()
 
  private:
-  raw_ptr<void, AcrossTasksDanglingUntriaged> ptr_;
+  using StorageType =
+      std::conditional_t<use_raw_pointer, void*, raw_ptr<void, ptr_traits>>;
+  StorageType ptr_;
 #if DCHECK_IS_ON()
   base::debug::StackTrace stack_;
 #endif  // DCHECK_IS_ON()
@@ -155,8 +160,10 @@ class WeakLinkNode : public base::LinkNode<WeakLinkNode<ObserverList>> {
   }
 
   ObserverList* get() const {
+#if EXPENSIVE_DCHECKS_ARE_ON()
     if (list_)
       DCHECK_CALLED_ON_VALID_SEQUENCE(list_->iteration_sequence_checker_);
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
     return list_;
   }
   ObserverList* operator->() const { return get(); }
@@ -167,6 +174,9 @@ class WeakLinkNode : public base::LinkNode<WeakLinkNode<ObserverList>> {
   // based on analysis of sampling profiler data and tab_search:top100:2020.
   RAW_PTR_EXCLUSION ObserverList* list_ = nullptr;
 };
+
+template <typename T>
+concept IsMoveOnly = std::move_constructible<T> && !std::copy_constructible<T>;
 
 }  // namespace internal
 }  // namespace base

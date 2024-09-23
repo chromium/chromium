@@ -1,0 +1,66 @@
+{
+  "Type": "Cellular",
+  "Name": "Test Network",
+  "Cellular": {
+    "AllowRoaming": true,
+    "APN": {
+      "AccessPointName": "test-apn-1",
+      "ApnTypes": ["Default"],
+      "IpType": "",
+      "Username": "test-username",
+      "Password": "test-password",
+      "State": "Enabled",
+      "Source": "Admin"
+    },
+    "AutoConnect": true,
+    "CustomAPNList": [
+      {
+        "AccessPointName": "test-apn-1",
+        "ApnTypes": ["Default"],
+        "IpType": "",
+        "Username": "test-username",
+        "Password": "test-password",
+        "State": "Enabled",
+        "Source": "Admin"
+      },
+      {
+        "AccessPointName": "test-apn-1",
+        "ApnTypes": ["Attach"],
+        "IpType": "",
+        "Username": "test-username",
+        "Password": "test-password",
+        "State": "Disabled",
+        "Source": "Admin"
+      },
+      {
+        "AccessPointName": "test-apn-2",
+        "ApnTypes": ["Default"],
+        "Authentication": "CHAP",
+        "Username": "test-username",
+        "Password": "test-password",
+        "State": "Enabled",
+        "Source": "Admin"
+      },
+      {
+        "AccessPointName": "test-apn-3",
+        "ApnTypes": ["Default", "Attach"],
+        "Authentication": "PAP",
+        "IpType": "IPv4orIPv6",
+        "Username": "test-username",
+        "Password": "test-password",
+        "State": "Enabled",
+        "Source": "Admin"
+      },
+      {
+        "AccessPointName": "test-apn-4",
+        "ApnTypes": ["Default", "Attach", "Tether"],
+        "Authentication": "CHAP",
+        "IpType": "IPv4orIPv6",
+        "Username": "test-username",
+        "Password": "test-password",
+        "State": "Enabled",
+        "Source": "Admin"
+      }
+    ]
+  }
+}

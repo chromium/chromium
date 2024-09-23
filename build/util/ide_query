@@ -1,0 +1,131 @@
+#!/usr/bin/env python3
+# Copyright 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+"""A script gets the information needed by lDE language services.
+
+Expected to run it at repository root,  where top DEP, .gn etc exists.
+Not intended to run by user.
+See go/reqs-for-peep
+"""
+
+import argparse
+import os
+import re
+import subprocess
+import sys
+
+def _gn_lines(output_dir, path):
+    """
+    Generator function that returns args.gn lines one at a time, following
+    import directives as needed.
+    """
+    import_re = re.compile(r'\s*import\("(.*)"\)')
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            match = import_re.match(line)
+            if match:
+                raw_import_path = match.groups()[0]
+                if raw_import_path[:2] == "//":
+                    import_path = os.path.normpath(
+                        os.path.join(output_dir, "..", "..",
+                                     raw_import_path[2:]))
+                else:
+                    import_path = os.path.normpath(
+                        os.path.join(os.path.dirname(path), raw_import_path))
+                for import_line in _gn_lines(output_dir, import_path):
+                    yield import_line
+            else:
+                yield line
+
+
+def _use_reclient(outdir):
+  use_remoteexec = False
+  use_reclient = None
+  args_gn = os.path.join(outdir, 'args.gn')
+  if not os.path.exists(args_gn):
+    return False
+  for line in _gn_lines(outdir, args_gn):
+    line_without_comment = line.split('#')[0]
+    m = re.match(r"(^|\s*)use_remoteexec\s*=\s*(true|false)\s*$",
+                 line_without_comment)
+    if m:
+      use_remoteexec = m.group(2) == 'true'
+      continue
+    m = re.match(r"(^|\s*)use_reclient\s*=\s*(true|false)\s*$",
+                 line_without_comment)
+    if m:
+      use_reclient = m.group(2) == 'true'
+  if use_reclient == None:
+      use_reclient = use_remoteexec
+  return use_reclient
+
+
+def main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument('source', nargs='+',
+    help=('The source file being analyzed.'
+          'Multiple source arguments can be passed in order to batch '
+          'process if desired.'))
+  parser.add_argument('--perform-build', action='store_true',
+    help=('If specified, actually build the target, including any generated '
+          'prerequisite files. '
+          'If --perform-build is not passed, the contents of '
+          'the GeneratedFile results will only be returned if a build has '
+          'been previously completed, and may be stale.'))
+  parser.add_argument('--out-dir',
+    help=('Output directory, containing args.gn, which specifies the build '
+          'configuration.'))
+  options = parser.parse_args()
+
+  this_dir = os.path.dirname(__file__)
+  repo_root = os.path.join(this_dir, '..', '..')
+
+  targets = []
+  for source in options.source:
+    # source is repo root (cwd) relative,
+    # but siso uses out dir relative target.
+    target = os.path.relpath(source, start=options.out_dir) + "^"
+    targets.append(target)
+
+  if _use_reclient(options.out_dir):
+    # b/335795623 ide_query compiler_arguments contain non-compiler arguments
+    sys.stderr.write(
+        'ide_query won\'t work well with "use_reclient=true"\n'
+        'Set "use_reclient=false" in args.gn.\n')
+    sys.exit(1)
+  if options.perform_build:
+    args = ['siso', 'ninja']
+    # use `-k=0` to build generated files as much as possible.
+    args.extend([
+        '-k=0',
+        '--prepare',
+        '-C',
+        options.out_dir,
+    ])
+    args.extend(targets)
+    env = os.environ.copy()
+    env['SISO_EXPERIMENTS'] = 'no-fast-deps,prepare-header-only'
+    with subprocess.Popen(
+        args,
+        cwd=repo_root,
+        env=env,
+        stderr=subprocess.STDOUT,
+        stdout=subprocess.PIPE,
+        universal_newlines=True
+    ) as p:
+      for line in p.stdout:
+          print(line, end='', file=sys.stderr)
+      # loop ends when program finishes, but must wait else returncode is None.
+      p.wait()
+      if p.returncode != 0:
+        # TODO: report error in IdeAnalysis.Status?
+        sys.stderr.write('build failed with %d\n' % p.returncode)
+        # even if build fails, it should report ideanalysis back.
+
+  args = ['siso', 'query', 'ideanalysis', '-C', options.out_dir]
+  args.extend(targets)
+  subprocess.run(args, cwd=repo_root, check=True)
+
+if __name__ == '__main__':
+  sys.exit(main())

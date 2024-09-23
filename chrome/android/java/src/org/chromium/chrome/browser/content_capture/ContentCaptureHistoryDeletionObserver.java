@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.content_capture;
 
+import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history.HistoryDeletionBridge;
 import org.chromium.chrome.browser.history.HistoryDeletionInfo;
@@ -11,6 +12,7 @@ import org.chromium.components.content_capture.PlatformContentCaptureController;
 
 /** History deletion observer that calls ContentCapture methods. */
 public class ContentCaptureHistoryDeletionObserver implements HistoryDeletionBridge.Observer {
+    private static final String TAG = "CCHistoryDeletionObs";
     Supplier<PlatformContentCaptureController> mContentCaptureControllerSupplier;
 
     public ContentCaptureHistoryDeletionObserver(
@@ -34,7 +36,11 @@ public class ContentCaptureHistoryDeletionObserver implements HistoryDeletionBri
                 try {
                     contentCaptureController.clearContentCaptureDataForURLs(deletedURLs);
                 } catch (RuntimeException e) {
-                    throw new RuntimeException("Deleted URLs length: " + deletedURLs.length, e);
+                    // If for some reason the transaction is too large, then fallback and clear all
+                    // content capture data.
+                    Log.e(TAG, "Failed to delete URLs, length:" + deletedURLs.length);
+                    Log.e(TAG, "Exception: " + e);
+                    contentCaptureController.clearAllContentCaptureData();
                 }
             }
         }

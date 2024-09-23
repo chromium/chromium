@@ -1,0 +1,66 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "privacy_hub_interactive_uitest.cc" ]
+
+    deps = [
+      "//ash/constants",
+      "//ash/webui/settings/public/constants:mojom",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//ui/base",
+    ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "os_settings_auto_screen_lock_browsertest.cc",
+    "os_settings_lock_screen_authentication_browsertest.cc",
+    "os_settings_notification_settings_browsertest.cc",
+    "os_settings_password_setup_browsertest.cc",
+    "os_settings_pin_setup_browsertest.cc",
+    "os_settings_recovery_browsertest.cc",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants:mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/settings/test_support",
+    "//chrome/common:constants",
+    "//chrome/test/data/webui/chromeos/settings:test_api_mojom",
+    "//chromeos/ash/components/osauth/impl",
+    "//chromeos/ash/components/osauth/public",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//content/test:test_support",
+  ]
+}

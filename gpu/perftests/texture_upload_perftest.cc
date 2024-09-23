@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -10,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
@@ -84,9 +90,9 @@ GLuint LoadShader(const GLenum type, const char* const src) {
     GLint len = 0;
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &len);
     if (len > 1) {
-      std::unique_ptr<char[]> error_log(new char[len]);
-      glGetShaderInfoLog(shader, len, nullptr, error_log.get());
-      LOG(ERROR) << "Error compiling shader: " << error_log.get();
+      auto error_log = base::HeapArray<char>::WithSize(len);
+      glGetShaderInfoLog(shader, len, nullptr, error_log.data());
+      LOG(ERROR) << "Error compiling shader: " << error_log.data();
     }
   }
   CHECK_NE(0, compiled);
@@ -111,7 +117,7 @@ GLenum GLFormatToStorageFormat(GLenum format) {
     case GL_RED:
       return GL_R8;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return 0;
 }
@@ -161,7 +167,7 @@ bool CompareBufferToRGBABuffer(GLenum format,
           memcpy(expected, &pixels[pixels_index], 4);
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
       if (memcmp(&rgba[rgba_index], expected, 4)) {
         return false;
@@ -216,11 +222,11 @@ class TextureUploadPerfTest : public testing::Test {
     // used to draw a quad on the offscreen surface.
     vertex_shader_ = LoadShader(GL_VERTEX_SHADER, kVertexShader);
 
-    bool is_gles = gl_context_->GetVersionInfo()->is_es;
-    fragment_shader_ = LoadShader(
-        GL_FRAGMENT_SHADER,
-        base::StringPrintf("%s%s", is_gles ? kShaderDefaultFloatPrecision : "",
-                           kFragmentShader).c_str());
+    fragment_shader_ =
+        LoadShader(GL_FRAGMENT_SHADER,
+                   base::StringPrintf("%s%s", kShaderDefaultFloatPrecision,
+                                      kFragmentShader)
+                       .c_str());
     program_object_ = glCreateProgram();
     CHECK_NE(0u, program_object_);
 

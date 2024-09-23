@@ -3,25 +3,26 @@
 // found in the LICENSE file.
 
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
-import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './check_mark_wrapper.js';
 import './strings.m.js';
 import './wallpaper_search/wallpaper_search_tile.js';
 
-import type {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
-import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
-import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
+import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
+import type {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './categories.html.js';
+import {getCss} from './categories.css.js';
+import {getHtml} from './categories.html.js';
 import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 import type {BackgroundCollection, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
@@ -46,14 +47,13 @@ export interface SelectedCategory {
   collectionId?: string;
 }
 
-const CategoriesElementBase = HelpBubbleMixin(PolymerElement) as
-    {new (): PolymerElement & HelpBubbleMixinInterface};
+const CategoriesElementBase = I18nMixinLit(HelpBubbleMixinLit(CrLitElement));
 
 export interface CategoriesElement {
   $: {
     chromeWebStoreTile: HTMLElement,
     classicChromeTile: HTMLElement,
-    heading: SpHeading,
+    heading: SpHeadingElement,
     uploadImageTile: HTMLElement,
   };
 }
@@ -63,49 +63,36 @@ export class CategoriesElement extends CategoriesElementBase {
     return 'customize-chrome-categories';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      chromeRefresh2023Enabled_: {
-        type: Boolean,
-        value: () =>
-            document.documentElement.hasAttribute('chrome-refresh-2023'),
-      },
-      collections_: Array,
-      theme_: Object,
-      selectedCategory_: {
-        type: Object,
-        computed: 'computeSelectedCategory_(theme_, collections_)',
-      },
-      isClassicChromeSelected_: {
-        type: Boolean,
-        computed: 'computeIsClassicChromeSelected_(selectedCategory_)',
-      },
-      isLocalImageSelected_: {
-        type: Boolean,
-        computed: 'computeIsLocalImageSelected_(selectedCategory_)',
-      },
-      isWallpaperSearchSelected_: {
-        type: Boolean,
-        computed: 'computeIsWallpaperSearchSelected_(selectedCategory_)',
-      },
-      isChromeColorsSelected_: {
-        type: Boolean,
-        computed: 'computeIsChromeColorsSelected_(selectedCategory_)',
-      },
-      wallpaperSearchEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('wallpaperSearchEnabled'),
-      },
+      collections_: {type: Array},
+      theme_: {type: Object},
+      selectedCategory_: {type: Object},
+      isClassicChromeSelected_: {type: Boolean},
+      isLocalImageSelected_: {type: Boolean},
+      isWallpaperSearchSelected_: {type: Boolean},
+      wallpaperSearchEnabled_: {type: Boolean},
     };
   }
 
-  private collections_: BackgroundCollection[];
-  private selectedCategory_: SelectedCategory;
-  private theme_: Theme;
+  protected collections_: BackgroundCollection[] = [];
+  private selectedCategory_: SelectedCategory = {type: CategoryType.NONE};
+  private theme_: Theme|null = null;
+  protected isClassicChromeSelected_: boolean = false;
+  protected isLocalImageSelected_: boolean = false;
+  protected isWallpaperSearchSelected_: boolean = false;
+  protected wallpaperSearchEnabled_: boolean =
+      loadTimeData.getBoolean('wallpaperSearchEnabled');
+  protected imageErrorDetectionEnabled_: boolean =
+      loadTimeData.getBoolean('imageErrorDetectionEnabled');
 
   private pageHandler_: CustomizeChromePageHandlerInterface;
   private previewImageLoadStartEpoch_: number;
@@ -137,10 +124,33 @@ export class CategoriesElement extends CategoriesElementBase {
         this.setThemeListenerId_!);
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.registerHelpBubble(
         CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID, '#classicChromeTile');
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    this.selectedCategory_ = this.computeSelectedCategory_();
+    this.isClassicChromeSelected_ =
+        this.selectedCategory_.type === CategoryType.CLASSIC;
+    this.isLocalImageSelected_ =
+        this.selectedCategory_.type === CategoryType.LOCAL;
+    this.isWallpaperSearchSelected_ =
+        this.selectedCategory_.type === CategoryType.WALLPAPER_SEARCH;
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('collections_') &&
+        this.collections_.length > 0) {
+      this.onCollectionsRendered_();
+    }
   }
 
   focusOnBackButton() {
@@ -148,14 +158,24 @@ export class CategoriesElement extends CategoriesElementBase {
   }
 
   private onCollectionsRendered_() {
-    const collections = this.root!.querySelectorAll('.collection');
+    const collections = this.shadowRoot!.querySelectorAll('.collection');
     if (collections.length >= 5) {
       this.registerHelpBubble(
-          CHROME_THEME_COLLECTION_ELEMENT_ID, collections[4]);
+          CHROME_THEME_COLLECTION_ELEMENT_ID, collections[4]!);
     }
   }
 
-  private onPreviewImageLoad_() {
+  protected shouldShowCollection_(itemLoaded: boolean) {
+    return !this.imageErrorDetectionEnabled_ || itemLoaded;
+  }
+
+  protected onPreviewImageLoad_(e: Event) {
+    if (this.imageErrorDetectionEnabled_) {
+      const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+      assert(this.collections_[index]);
+      this.collections_[index].imageVerified = true;
+      this.requestUpdate();
+    }
     chrome.metricsPrivate.recordValue(
         {
           metricName: 'NewTabPage.Images.ShownTime.CollectionPreviewImage',
@@ -167,6 +187,22 @@ export class CategoriesElement extends CategoriesElementBase {
         Math.floor(
             WindowProxy.getInstance().now() -
             this.previewImageLoadStartEpoch_));
+  }
+
+  protected onPreviewImageError_(e: Event) {
+    if (!this.imageErrorDetectionEnabled_) {
+      return;
+    }
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    assert(this.collections_[index]);
+    this.pageHandler_
+        .getReplacementCollectionPreviewImage(this.collections_[index].id)
+        .then(({previewImageUrl}) => {
+          if (previewImageUrl) {
+            this.collections_[index]!.previewImageUrl = previewImageUrl;
+            this.requestUpdate();
+          }
+        });
   }
 
   private computeSelectedCategory_() {
@@ -193,75 +229,50 @@ export class CategoriesElement extends CategoriesElementBase {
     return {type: CategoryType.NONE};
   }
 
-  private computeIsClassicChromeSelected_() {
-    return this.selectedCategory_.type === CategoryType.CLASSIC;
-  }
-
-  private computeIsLocalImageSelected_() {
-    return this.selectedCategory_.type === CategoryType.LOCAL;
-  }
-
-  private computeIsWallpaperSearchSelected_() {
-    return this.selectedCategory_.type === CategoryType.WALLPAPER_SEARCH;
-  }
-
-  private computeIsChromeColorsSelected_() {
-    return this.selectedCategory_.type === CategoryType.COLOR;
-  }
-
-  private isCollectionSelected_(id: string) {
+  protected isCollectionSelected_(id: string) {
     return this.selectedCategory_.type === CategoryType.COLLECTION &&
         this.selectedCategory_.collectionId === id;
   }
 
-  private boolToString_(value: boolean): string {
-    return value ? 'true' : 'false';
-  }
-
-  private getCollectionCheckedStatus_(id: string): string {
-    return this.boolToString_(this.isCollectionSelected_(id));
-  }
-
-  private onClassicChromeClick_() {
+  protected onClassicChromeClick_() {
     recordCustomizeChromeAction(
         CustomizeChromeAction.CATEGORIES_DEFAULT_CHROME_SELECTED);
     this.pageHandler_.setDefaultColor();
     this.pageHandler_.removeBackgroundImage();
   }
 
-  private onWallpaperSearchClick_() {
+  protected onWallpaperSearchClick_() {
     recordCustomizeChromeAction(
         CustomizeChromeAction.CATEGORIES_WALLPAPER_SEARCH_SELECTED);
     this.dispatchEvent(new Event('wallpaper-search-select'));
   }
 
-  private async onUploadImageClick_() {
+  protected async onUploadImageClick_() {
     recordCustomizeChromeAction(
         CustomizeChromeAction.CATEGORIES_UPLOAD_IMAGE_SELECTED);
     chrome.metricsPrivate.recordUserAction(
         'NTPRicherPicker.Backgrounds.UploadClicked');
     const {success} = await this.pageHandler_.chooseLocalCustomBackground();
     if (success) {
+      const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
+      announcer.announce(this.i18n('updatedToUploadedImage'));
       this.dispatchEvent(new Event('local-image-upload'));
     }
   }
 
-  private async onChromeColorsClick_() {
-    this.dispatchEvent(new Event('chrome-colors-select'));
-  }
-
-  private onCollectionClick_(e: DomRepeatEvent<BackgroundCollection>) {
+  protected onCollectionClick_(e: Event) {
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     recordCustomizeChromeAction(
         CustomizeChromeAction.CATEGORIES_FIRST_PARTY_COLLECTION_SELECTED);
     this.dispatchEvent(new CustomEvent<BackgroundCollection>(
-        'collection-select', {detail: e.model.item}));
+        'collection-select', {detail: this.collections_[index]}));
   }
 
-  private onChromeWebStoreClick_() {
+  protected onChromeWebStoreClick_() {
     this.pageHandler_.openChromeWebStore();
   }
 
-  private onBackClick_() {
+  protected onBackClick_() {
     this.dispatchEvent(new Event('back-click'));
   }
 }

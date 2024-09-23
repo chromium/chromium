@@ -82,7 +82,7 @@ def __step_config(ctx, step_config):
             "name": "android/dex",
             "command_prefix": "python3 ../../build/android/gyp/dex.py",
             "handler": "android_dex",
-            # TODO(crbug.com/1452038): include only required jar, dex files in GN config.
+            # TODO(crbug.com/40270798): include only required jar, dex files in GN config.
             "indirect_inputs": {
                 "includes": ["*.dex", "*.ijar.jar", "*.turbine.jar"],
             },
@@ -101,6 +101,15 @@ def __step_config(ctx, step_config):
             "remote": remote_run,
             "canonicalize_dir": True,
             "timeout": "2m",
+        },
+        {
+            "name": "android/proguard",
+            "command_prefix": "python3 ../../build/android/gyp/proguard.py",
+            "handler": "android_proguard",
+            "canonicalize_dir": True,
+            "remote": remote_run,
+            "platform_ref": "large",
+            "timeout": "10m",
         },
     ])
     return step_config
@@ -127,7 +136,7 @@ def __android_compile_resources_handler(ctx, cmd):
     #   https://crsrc.org/c/build/config/android/internal_rules.gni;l=2163;drc=1b15af251f8a255e44f2e3e3e7990e67e87dcc3b
     #   https://crsrc.org/c/build/config/android/system_image.gni;l=58;drc=39debde76e509774287a655285d8556a9b8dc634
     # Sample args:
-    #   --aapt2-path ../../third_party/android_build_tools/aapt2/aapt2
+    #   --aapt2-path ../../third_party/android_build_tools/aapt2/cipd/aapt2
     #   --android-manifest gen/chrome/android/trichrome_library_system_stub_apk__manifest.xml
     #   --arsc-package-name=org.chromium.trichromelibrary
     #   --arsc-path obj/chrome/android/trichrome_library_system_stub_apk.ap_
@@ -153,9 +162,7 @@ def __android_compile_resources_handler(ctx, cmd):
         for k in ["--dependencies-res-zips=", "--dependencies-res-zip-overlays=", "--extra-res-packages="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
-                fn, v = __filearg(ctx, arg)
-                if fn:
-                    inputs.append(ctx.fs.canonpath(fn))
+                _, v = __filearg(ctx, arg)
                 for f in v:
                     f = ctx.fs.canonpath(f)
                     inputs.append(f)
@@ -195,10 +202,6 @@ def __android_compile_java_handler(ctx, cmd):
 
     inputs = []
     for i, arg in enumerate(cmd.args):
-        # read .sources file.
-        if arg.startswith("@"):
-            sources = str(ctx.fs.read(ctx.fs.canonpath(arg.removeprefix("@")))).splitlines()
-            inputs += sources
         for k in ["--classpath=", "--bootclasspath=", "--processorpath="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
@@ -216,9 +219,7 @@ def __android_compile_java_handler(ctx, cmd):
 
 def __android_dex_handler(ctx, cmd):
     out = cmd.outputs[0]
-    inputs = [
-        out.replace("obj/", "gen/").replace(".dex.jar", ".build_config.json"),
-    ]
+    inputs = []
 
     # Add __dex.desugardeps to the outputs.
     outputs = [
@@ -230,9 +231,7 @@ def __android_dex_handler(ctx, cmd):
         for k in ["--class-inputs=", "--bootclasspath=", "--classpath=", "--class-inputs-filearg=", "--dex-inputs-filearg="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
-                fn, v = __filearg(ctx, arg)
-                if fn:
-                    inputs.append(ctx.fs.canonpath(fn))
+                _, v = __filearg(ctx, arg)
                 for f in v:
                     f, _, _ = f.partition(":")
                     f = ctx.fs.canonpath(f)
@@ -245,15 +244,49 @@ def __android_dex_handler(ctx, cmd):
         outputs = cmd.outputs + outputs,
     )
 
+def __android_proguard_handler(ctx, cmd):
+    inputs = []
+    outputs = []
+    for i, arg in enumerate(cmd.args):
+        for k in ["--proguard-configs=", "--input-paths="]:
+            if arg.startswith(k):
+                arg = arg.removeprefix(k)
+                fn, v = __filearg(ctx, arg)
+                if fn:
+                    inputs.append(ctx.fs.canonpath(fn))
+                for f in v:
+                    f, _, _ = f.partition(":")
+                    inputs.append(ctx.fs.canonpath(f))
+                break
+        if arg in ["--sdk-jars", "--sdk-extension-jars"]:
+            fn, v = __filearg(ctx, cmd.args[i + 1])
+            if fn:
+                inputs.append(ctx.fs.canonpath(fn))
+            for f in v:
+                f, _, _ = f.partition(":")
+                inputs.append(ctx.fs.canonpath(f))
+            break
+        if arg.startswith("--dex-dest="):
+            arg = arg.removeprefix("--dex-dest=")
+            fn, v = __filearg(ctx, arg)
+            if fn:
+                inputs.append(ctx.fs.canonpath(fn))
+            for f in v:
+                f, _, _ = f.partition(":")
+                outputs.append(ctx.fs.canonpath(f))
+
+    ctx.actions.fix(
+        inputs = cmd.inputs + inputs,
+        outputs = cmd.outputs + outputs,
+    )
+
 def __android_turbine_handler(ctx, cmd):
     inputs = []
     for i, arg in enumerate(cmd.args):
         for k in ["--classpath=", "--processorpath="]:
             if arg.startswith(k):
                 arg = arg.removeprefix(k)
-                fn, v = __filearg(ctx, arg)
-                if fn:
-                    inputs.append(ctx.fs.canonpath(fn))
+                _, v = __filearg(ctx, arg)
                 for f in v:
                     f, _, _ = f.partition(":")
                     inputs.append(ctx.fs.canonpath(f))
@@ -315,9 +348,10 @@ def __android_write_build_config_handler(ctx, cmd):
     ctx.actions.fix(inputs = cmd.inputs + inputs)
 
 __handlers = {
-    "android_compile_resources": __android_compile_resources_handler,
     "android_compile_java": __android_compile_java_handler,
+    "android_compile_resources": __android_compile_resources_handler,
     "android_dex": __android_dex_handler,
+    "android_proguard": __android_proguard_handler,
     "android_turbine": __android_turbine_handler,
     "android_write_build_config": __android_write_build_config_handler,
 }

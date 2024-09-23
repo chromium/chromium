@@ -23,7 +23,7 @@ if (enable_vulkan) {
     if (use_vulkan_xcb) {
       defines += [ "USE_VULKAN_XCB" ]
     }
-    if (ozone_platform_wayland) {
+    if (ozone_platform_wayland && !use_system_libwayland) {
       configs = [ "//third_party/wayland:wayland_config" ]
     }
   }
@@ -50,8 +50,7 @@ if (enable_vulkan) {
       "//ui/gfx",
     ]
 
-    public_deps =
-        [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers" ]
+    public_deps = [ "//third_party/vulkan-headers/src:vulkan_headers" ]
 
     if (is_fuchsia) {
       sources += [ "fuchsia/vulkan_fuchsia_ext.h" ]
@@ -219,10 +218,7 @@ if (enable_vulkan) {
 
     if (is_android) {
       sources += [ "tests/native_window_android.cc" ]
-      deps += [
-        "//ui/android:ui_java",
-        "//ui/gl",
-      ]
+      deps += [ "//ui/gl" ]
     }
   }
 
@@ -238,7 +234,7 @@ if (enable_vulkan) {
         "tests/vulkan_test.cc",
         "tests/vulkan_tests_main.cc",
 
-        # TODO(crbug.com/1234132): fix compile problem with the latest vulkan
+        # TODO(crbug.com/40781300): fix compile problem with the latest vulkan
         # headers.
         # "vulkan_cxx_unittest.cc",
         "vulkan_fence_helper_unittest.cc",

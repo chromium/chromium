@@ -200,7 +200,7 @@ static void UpdateCurrentPoint(gfx::PointF& sub_path_point,
       current_point = sub_path_point;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -275,7 +275,7 @@ bool SVGPathBlender::BlendState::BlendSegments(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   UpdateCurrentPoint(from_sub_path_point_, from_current_point_, from_seg);

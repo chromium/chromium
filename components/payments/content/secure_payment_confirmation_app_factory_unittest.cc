@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/payments/content/mock_payment_app_factory_delegate.h"
 #include "components/payments/content/mock_payment_manifest_web_data_service.h"
 #include "components/payments/core/features.h"
@@ -38,7 +39,9 @@ static constexpr char kCredentialIdBase64[] = "cccc";
 class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
  protected:
   SecurePaymentConfirmationAppFactoryTest()
-      : web_contents_(web_contents_factory_.CreateWebContents(&context_)) {}
+      : os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)),
+        web_contents_(web_contents_factory_.CreateWebContents(&context_)) {}
 
   void SetUp() override {
     ASSERT_TRUE(base::Base64Decode(kChallengeBase64, &challenge_bytes_));
@@ -69,6 +72,7 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
@@ -156,9 +160,9 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
-// icon fails.
+// instrument icon fails.
 TEST_F(SecurePaymentConfirmationAppFactoryTest,
-       SecureConfirmationPaymentRequest_EmptyIcon) {
+       SecureConfirmationPaymentRequest_EmptyInstrumentIcon) {
   auto method_data = mojom::PaymentMethodData::New();
   method_data->supported_method = "secure-payment-confirmation";
   method_data->secure_payment_confirmation =
@@ -172,9 +176,9 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an invalid
-// icon URL fails.
+// instrument icon URL fails.
 TEST_F(SecurePaymentConfirmationAppFactoryTest,
-       SecureConfirmationPaymentRequest_InvalidIcon) {
+       SecureConfirmationPaymentRequest_InvalidInstrumentIcon) {
   auto method_data = mojom::PaymentMethodData::New();
   method_data->supported_method = "secure-payment-confirmation";
   method_data->secure_payment_confirmation =
@@ -265,6 +269,122 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
   auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
       web_contents_, std::move(method_data));
 
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
+  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+}
+
+// Test that parsing a SecurePaymentConfirmationRequest with an empty
+// network name fails.
+TEST_F(SecurePaymentConfirmationAppFactoryTest,
+       SecureConfirmationPaymentRequest_EmptyNetworkName) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  mojom::SecurePaymentConfirmationRequestPtr spc_request =
+      CreateSecurePaymentConfirmationRequest();
+  spc_request->network_info = mojom::NetworkOrIssuerInformation::New();
+  spc_request->network_info->name = "";
+  spc_request->network_info->icon = GURL("https://network.example/icon.png");
+  method_data->secure_payment_confirmation = std::move(spc_request);
+
+  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+      web_contents_, std::move(method_data));
+
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
+  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+}
+
+// Test that parsing a SecurePaymentConfirmationRequest with an empty
+// network icon fails.
+TEST_F(SecurePaymentConfirmationAppFactoryTest,
+       SecureConfirmationPaymentRequest_EmptyNetworkIcon) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  mojom::SecurePaymentConfirmationRequestPtr spc_request =
+      CreateSecurePaymentConfirmationRequest();
+  spc_request->network_info = mojom::NetworkOrIssuerInformation::New();
+  spc_request->network_info->name = "Network Name";
+  spc_request->network_info->icon = GURL();
+  method_data->secure_payment_confirmation = std::move(spc_request);
+
+  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+      web_contents_, std::move(method_data));
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
+  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+}
+
+// Test that parsing a SecurePaymentConfirmationRequest with an invalid
+// network icon URL fails.
+TEST_F(SecurePaymentConfirmationAppFactoryTest,
+       SecureConfirmationPaymentRequest_InvalidNetworkIcon) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  mojom::SecurePaymentConfirmationRequestPtr spc_request =
+      CreateSecurePaymentConfirmationRequest();
+  spc_request->network_info = mojom::NetworkOrIssuerInformation::New();
+  spc_request->network_info->name = "Network Name";
+  spc_request->network_info->icon = GURL("not-a-url");
+  method_data->secure_payment_confirmation = std::move(spc_request);
+
+  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+      web_contents_, std::move(method_data));
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
+  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+}
+
+// Test that parsing a SecurePaymentConfirmationRequest with an empty
+// issuer name fails.
+TEST_F(SecurePaymentConfirmationAppFactoryTest,
+       SecureConfirmationPaymentRequest_EmptyIssuerName) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  mojom::SecurePaymentConfirmationRequestPtr spc_request =
+      CreateSecurePaymentConfirmationRequest();
+  spc_request->issuer_info = mojom::NetworkOrIssuerInformation::New();
+  spc_request->issuer_info->name = "";
+  spc_request->issuer_info->icon = GURL("https://issuer.example/icon.png");
+  method_data->secure_payment_confirmation = std::move(spc_request);
+
+  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+      web_contents_, std::move(method_data));
+
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
+  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+}
+
+// Test that parsing a SecurePaymentConfirmationRequest with an empty
+// issuer icon fails.
+TEST_F(SecurePaymentConfirmationAppFactoryTest,
+       SecureConfirmationPaymentRequest_EmptyIssuerIcon) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  mojom::SecurePaymentConfirmationRequestPtr spc_request =
+      CreateSecurePaymentConfirmationRequest();
+  spc_request->issuer_info = mojom::NetworkOrIssuerInformation::New();
+  spc_request->issuer_info->name = "Issuer Name";
+  spc_request->issuer_info->icon = GURL();
+  method_data->secure_payment_confirmation = std::move(spc_request);
+
+  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+      web_contents_, std::move(method_data));
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
+  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+}
+
+// Test that parsing a SecurePaymentConfirmationRequest with an invalid
+// issuer icon URL fails.
+TEST_F(SecurePaymentConfirmationAppFactoryTest,
+       SecureConfirmationPaymentRequest_InvalidIssuerIcon) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  mojom::SecurePaymentConfirmationRequestPtr spc_request =
+      CreateSecurePaymentConfirmationRequest();
+  spc_request->issuer_info = mojom::NetworkOrIssuerInformation::New();
+  spc_request->issuer_info->name = "Issuer Name";
+  spc_request->issuer_info->icon = GURL("not-a-url");
+  method_data->secure_payment_confirmation = std::move(spc_request);
+
+  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+      web_contents_, std::move(method_data));
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
   secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
 }

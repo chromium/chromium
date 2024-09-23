@@ -7,11 +7,12 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 
 namespace gcm {
 
@@ -59,28 +60,28 @@ class GCMMessageCryptographer {
     // Derives the pseudo random key (PRK) to use for deriving the content
     // encryption key and the nonce.
     virtual std::string DerivePseudoRandomKey(
-        const base::StringPiece& recipient_public_key,
-        const base::StringPiece& sender_public_key,
-        const base::StringPiece& ecdh_shared_secret,
-        const base::StringPiece& auth_secret) = 0;
+        std::string_view recipient_public_key,
+        std::string_view sender_public_key,
+        std::string_view ecdh_shared_secret,
+        std::string_view auth_secret) = 0;
 
     // Generates the info string used for generating the content encryption key
     // and the nonce used for the cryptographic transformation.
     virtual std::string GenerateInfoForContentEncoding(
         EncodingType type,
-        const base::StringPiece& recipient_public_key,
-        const base::StringPiece& sender_public_key) = 0;
+        std::string_view recipient_public_key,
+        std::string_view sender_public_key) = 0;
 
     // Creates an encryption record to contain the given |plaintext|.
-    virtual std::string CreateRecord(const base::StringPiece& plaintext) = 0;
+    virtual std::string CreateRecord(std::string_view plaintext) = 0;
 
     // Validates that the |ciphertext_size| is valid following the scheme.
     virtual bool ValidateCiphertextSize(size_t ciphertext_size,
                                         size_t record_size) = 0;
 
     // Verifies that the padding included in |record| is valid and removes it
-    // from the StringPiece. Returns whether the padding was valid.
-    virtual bool ValidateAndRemovePadding(base::StringPiece& record) = 0;
+    // from the std::string_view. Returns whether the padding was valid.
+    virtual bool ValidateAndRemovePadding(std::string_view& record) = 0;
   };
 
   // Creates a new cryptographer for |version| of the encryption scheme.
@@ -99,12 +100,12 @@ class GCMMessageCryptographer {
   // |plaintext|: The plaintext that is to be encrypted.
   // |*record_size|: Out parameter in which the record size will be written.
   // |*ciphertext|: Out parameter in which the ciphertext will be written.
-  [[nodiscard]] bool Encrypt(const base::StringPiece& recipient_public_key,
-                             const base::StringPiece& sender_public_key,
-                             const base::StringPiece& ecdh_shared_secret,
-                             const base::StringPiece& auth_secret,
-                             const base::StringPiece& salt,
-                             const base::StringPiece& plaintext,
+  [[nodiscard]] bool Encrypt(std::string_view recipient_public_key,
+                             std::string_view sender_public_key,
+                             std::string_view ecdh_shared_secret,
+                             std::string_view auth_secret,
+                             std::string_view salt,
+                             std::string_view plaintext,
                              size_t* record_size,
                              std::string* ciphertext) const;
 
@@ -121,12 +122,12 @@ class GCMMessageCryptographer {
   // |record_size|: Size of a single record. Must be larger than or equal to
   //                len(plaintext) plus the ciphertext's overhead (18 bytes).
   // |*plaintext|: Out parameter in which the plaintext will be written.
-  [[nodiscard]] bool Decrypt(const base::StringPiece& recipient_public_key,
-                             const base::StringPiece& sender_public_key,
-                             const base::StringPiece& ecdh_shared_secret,
-                             const base::StringPiece& auth_secret,
-                             const base::StringPiece& salt,
-                             const base::StringPiece& ciphertext,
+  [[nodiscard]] bool Decrypt(std::string_view recipient_public_key,
+                             std::string_view sender_public_key,
+                             std::string_view ecdh_shared_secret,
+                             std::string_view auth_secret,
+                             std::string_view salt,
+                             std::string_view ciphertext,
                              size_t record_size,
                              std::string* plaintext) const;
 
@@ -137,23 +138,22 @@ class GCMMessageCryptographer {
   enum class Direction { ENCRYPT, DECRYPT };
 
   // Derives the content encryption key from |ecdh_shared_secret| and |salt|.
-  std::string DeriveContentEncryptionKey(
-      const base::StringPiece& recipient_public_key,
-      const base::StringPiece& sender_public_key,
-      const base::StringPiece& ecdh_shared_secret,
-      const base::StringPiece& salt) const;
+  std::string DeriveContentEncryptionKey(std::string_view recipient_public_key,
+                                         std::string_view sender_public_key,
+                                         std::string_view ecdh_shared_secret,
+                                         std::string_view salt) const;
 
   // Derives the nonce from |ecdh_shared_secret| and |salt|.
-  std::string DeriveNonce(const base::StringPiece& recipient_public_key,
-                          const base::StringPiece& sender_public_key,
-                          const base::StringPiece& ecdh_shared_secret,
-                          const base::StringPiece& salt) const;
+  std::string DeriveNonce(std::string_view recipient_public_key,
+                          std::string_view sender_public_key,
+                          std::string_view ecdh_shared_secret,
+                          std::string_view salt) const;
 
   // Private implementation of the encryption and decryption routines.
   bool TransformRecord(Direction direction,
-                       const base::StringPiece& input,
-                       const base::StringPiece& key,
-                       const base::StringPiece& nonce,
+                       std::string_view input,
+                       std::string_view key,
+                       std::string_view nonce,
                        std::string* output) const;
 
   // Implementation of the encryption scheme. Set in the constructor depending

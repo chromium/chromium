@@ -43,4 +43,8 @@ public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLaunche
                         context, selectedAccount, requireDeviceLockReauthentication, source);
         windowAndroid.showIntent(intent, callback, null);
     }
+
+    public static void setInstanceForTesting(DeviceLockActivityLauncherImpl launcher) {
+        sLauncher = launcher;
+    }
 }

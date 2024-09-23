@@ -24,11 +24,11 @@ interface ProfilingService {
   //
   // The "client" interface will be for the instrumented process. It allows the
   // profiling process to talk to the new process. Invokes the return callback
-  // if and when profiling starts successfully.
+  // with the argument `success`: whether profiling starts successfully or not.
   AddProfilingClient(mojo_base.mojom.ProcessId pid,
                      pending_remote<ProfilingClient> client,
                      ProcessType process_type,
-                     ProfilingParams params) => ();
+                     ProfilingParams params) => (bool success);
 
   // Returns the pids of all profiled processes.
   GetProfiledPids() => (array<mojo_base.mojom.ProcessId> pids);

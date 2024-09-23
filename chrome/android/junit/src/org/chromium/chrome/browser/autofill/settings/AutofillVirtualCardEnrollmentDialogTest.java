@@ -21,7 +21,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -30,10 +29,10 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
@@ -60,10 +59,9 @@ public class AutofillVirtualCardEnrollmentDialogTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
-
     @Mock private Callback<Integer> mResultHandlerMock;
     @Mock private AutofillVirtualCardEnrollmentDialog.LinkClickCallback mOnLinkClickedMock;
+    @Mock private PersonalDataManager mPersonalDataManager;
     private FakeModalDialogManager mModalDialogManager;
     private AutofillVirtualCardEnrollmentDialog mDialog;
     private VirtualCardEnrollmentFields mVirtualCardEnrollmentFields;
@@ -79,6 +77,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 new AutofillVirtualCardEnrollmentDialog(
                         ApplicationProvider.getApplicationContext(),
                         mModalDialogManager,
+                        mPersonalDataManager,
                         mVirtualCardEnrollmentFields,
                         ACCEPT_BUTTON_TEXT,
                         DECLINE_BUTTON_TEXT,
@@ -125,6 +124,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 new AutofillVirtualCardEnrollmentDialog(
                         activity,
                         mModalDialogManager,
+                        mPersonalDataManager,
                         mVirtualCardEnrollmentFields,
                         ACCEPT_BUTTON_TEXT,
                         DECLINE_BUTTON_TEXT,
@@ -164,6 +164,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 new AutofillVirtualCardEnrollmentDialog(
                         activity,
                         mModalDialogManager,
+                        mPersonalDataManager,
                         mVirtualCardEnrollmentFields,
                         ACCEPT_BUTTON_TEXT,
                         DECLINE_BUTTON_TEXT,
@@ -204,6 +205,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 new AutofillVirtualCardEnrollmentDialog(
                         activity,
                         mModalDialogManager,
+                        mPersonalDataManager,
                         mVirtualCardEnrollmentFields,
                         ACCEPT_BUTTON_TEXT,
                         DECLINE_BUTTON_TEXT,

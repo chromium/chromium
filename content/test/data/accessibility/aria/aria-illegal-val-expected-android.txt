@@ -1,0 +1,23 @@
+android.webkit.WebView focusable focused
+++android.view.View role_description='log' name='Atomic illegal' live_region_type=1
+++android.widget.EditText clickable editable_text hint='Autocomplete illegal'
+++android.view.View role_description='log' name='Busy illegal' live_region_type=1
+++android.view.View role_description='tree item' checkable checked clickable collection_item name='Checked illegal'
+++android.view.View name='Current illegal' state_description='current item'
+++android.view.View disabled name='Disabled illegal'
+++android.view.View role_description='tree item' clickable collection_item expanded name='Expanded illegal'
+++android.widget.Button role_description='button' clickable name='Haspopup illegal'
+++android.view.View content_invalid name='Invalid illegal'
+++android.view.View role_description='log' name='Live illegal'
+++android.app.Dialog role_description='dialog' name='Modal illegal'
+++android.widget.EditText clickable editable_text multiline hint='Multiline illegal'
+++android.widget.GridView role_description='table' collection multiselectable name='Multiselectable illegal' state_description='multiselectable, none selected.'
+++android.widget.SeekBar role_description='slider' clickable range name='50, Orientation illegal' item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.widget.ToggleButton role_description='toggle button' checkable checked clickable name='Pressed illegal' state_description='On'
+++android.widget.EditText clickable disabled editable_text hint='Readonly illegal'
+++android.view.View role_description='log' name='Relevant illegal' live_region_type=1
+++android.widget.EditText clickable editable_text hint='Required illegal' state_description='Required'
+++android.view.View role_description='tree' collection hierarchical multiselectable state_description='multiselectable, 1 of 1 selected.' item_count=1 row_count=1
+++++android.view.View role_description='tree item' clickable collection_item selected name='Selected illegal'
+++android.widget.GridView role_description='table' collection
+++++android.view.View role_description='column header' collection_item table_header name='Sort illegal' row_span=1 column_span=1

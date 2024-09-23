@@ -183,7 +183,6 @@ void ScreenPowerControllerAura::OnScreenPoweredOn(bool succeeded) {
       return;
     case PendingTask::kNone:
       NOTREACHED();
-      return;
   }
 }
 
@@ -205,7 +204,6 @@ void ScreenPowerControllerAura::OnScreenPoweredOff(bool succeeded) {
       return;
     case PendingTask::kNone:
       NOTREACHED();
-      return;
   }
 }
 
@@ -220,7 +218,6 @@ void ScreenPowerControllerAura::OnDisplayOnTimeoutCompleted() {
       return;
     case PendingTask::kNone:
       NOTREACHED();
-      return;
   }
 }
 
@@ -239,7 +236,6 @@ void ScreenPowerControllerAura::OnDisplayOffTimeoutCompleted() {
       return;
     case PendingTask::kNone:
       NOTREACHED();
-      return;
   }
 }
 

@@ -227,6 +227,7 @@ void NTPTilesInternalsMessageHandler::SendTiles(
     entry.Set("source", static_cast<int>(tile.source));
     entry.Set("visitCount", tile.visit_count);
     entry.Set("lastVisitTime", base::TimeFormatHTTP(tile.last_visit_time));
+    entry.Set("score", tile.score);
     if (tile.source == TileSource::CUSTOM_LINKS) {
       entry.Set("fromMostVisited", tile.from_most_visited);
     }
@@ -302,8 +303,9 @@ void NTPTilesInternalsMessageHandler::OnFaviconLookupDone(
       result);
 
   --*num_pending_lookups;
-  if (*num_pending_lookups == 0)
+  if (*num_pending_lookups == 0) {
     SendTiles(tiles, *result_map);
+  }
 }
 
 }  // namespace ntp_tiles

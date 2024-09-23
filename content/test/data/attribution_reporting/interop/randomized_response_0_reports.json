@@ -1,0 +1,82 @@
+{
+  "description": "source with randomized response sends debug reports and 0 reports",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "randomized_response": [],
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "172800001",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "7"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "123",
+              "source_site": "https://source.test"
+            },
+            "type": "source-noised"
+          }
+        ],
+        "report_time": "0",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "source_event_id": "123",
+              "source_site": "https://source.test"
+            },
+            "type": "trigger-event-noise"
+          }
+        ],
+        "report_time": "172800001",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      }
+    ]
+  }
+}

@@ -69,7 +69,7 @@ struct StructTraits<blink::mojom::CredentialInfoDataView,
     return r.password;
   }
 
-  static const url::Origin& federation(
+  static const url::SchemeHostPort& federation(
       const password_manager::CredentialInfo& r) {
     return r.federation;
   }

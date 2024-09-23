@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/close_bubble_on_tab_activation_helper.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -72,7 +73,9 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     kEditProfileButton = 17,
     // DEPRECATED: kCreateIncognitoShortcutButton = 18,
     kEnableSyncForWebOnlyAccountButton = 19,
-    kMaxValue = kEnableSyncForWebOnlyAccountButton,
+    kProfileManagementLabel = 20,
+    kSigninReauthButton = 21,
+    kMaxValue = kSigninReauthButton,
   };
 
   struct EditButtonParams {
@@ -117,12 +120,13 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       const std::u16string& management_label = std::u16string(),
       const ui::ThemedVectorIcon& avatar_header_art = ui::ThemedVectorIcon());
   // Displays the sync info section as a rounded rectangle with text on top and
-  // a button on the bottom. Clicking the button triggers |action|.
+  // a button on the bottom. Clicking the button triggers |action|. |account| is
+  // only used for the sign-in promo for a web-only signed in account.
   void BuildSyncInfoWithCallToAction(const std::u16string& description,
                                      const std::u16string& button_text,
-                                     ui::ColorId background_color_id,
                                      const base::RepeatingClosure& action,
-                                     bool show_sync_badge);
+                                     bool show_sync_badge,
+                                     AccountInfo account = AccountInfo());
   // Displays the sync info section as a rectangle with text. Clicking the
   // rectangle triggers |action|.
   void BuildSyncInfoWithoutCallToAction(const std::u16string& text,
@@ -145,6 +149,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
                                                  base::RepeatingClosure action);
   void AddProfileManagementManagedHint(const gfx::VectorIcon& icon,
                                        const std::u16string& text);
+  void AddProfileManagementFeaturesSeparator();
   void AddProfileManagementFeatureButton(const gfx::VectorIcon& icon,
                                          const std::u16string& text,
                                          base::RepeatingClosure action);
@@ -157,7 +162,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   Browser* browser() const { return browser_; }
 
   // Return maximal height for the view after which it becomes scrollable.
-  // TODO(crbug.com/870303): remove when a general solution is available.
+  // TODO(crbug.com/40587757): remove when a general solution is available.
   int GetMaxHeight() const;
 
   views::Button* anchor_button() const { return anchor_button_; }
@@ -190,7 +195,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       const ui::ThemedVectorIcon& avatar_header_art);
 
   void BuildSyncInfoCallToActionBackground(
-      ui::ColorId background_color_id,
       const ui::ColorProvider* color_provider);
 
   // views::BubbleDialogDelegateView:
@@ -218,6 +222,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   raw_ptr<views::View> profile_mgmt_heading_container_ = nullptr;
   raw_ptr<views::View> selectable_profiles_container_ = nullptr;
   raw_ptr<views::View> profile_mgmt_shortcut_features_container_ = nullptr;
+  raw_ptr<views::View> profile_mgmt_features_separator_container_ = nullptr;
   raw_ptr<views::View> profile_mgmt_features_container_ = nullptr;
 
   // Child components of `identity_info_container_`.

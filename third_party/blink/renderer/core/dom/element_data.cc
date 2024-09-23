@@ -28,6 +28,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/dom/element_data.h"
 
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -120,6 +125,7 @@ void ElementData::Trace(Visitor* visitor) const {
 
 void ElementData::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(inline_style_);
+  visitor->Trace(class_names_);
 }
 
 ShareableElementData::ShareableElementData(

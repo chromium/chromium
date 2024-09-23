@@ -83,11 +83,11 @@ class InstallStageTracker : public KeyedService {
   };
 
   // Intermediate stage of extension installation when the Stage is CREATED.
-  // TODO(crbug.com/989526): These stages are temporary ones for investigation.
-  // Remove them after investigation will complete.
-  // Note: enum used for UMA. Do NOT reorder or remove entries. Don't forget to
-  // update enums.xml (name: InstallCreationStage) when adding new
-  // entries. Don't forget to update device_management_backend.proto (name:
+  // TODO(crbug.com/40638368): These stages are temporary ones for
+  // investigation. Remove them after investigation will complete. Note: enum
+  // used for UMA. Do NOT reorder or remove entries. Don't forget to update
+  // enums.xml (name: InstallCreationStage) when adding new entries. Don't
+  // forget to update device_management_backend.proto (name:
   // ExtensionInstallReportLogEvent::InstallCreationStage) when adding new
   // entries. Don't forget to update ConvertInstallCreationStageToProto method
   // in ExtensionInstallEventLogCollector.

@@ -23,14 +23,14 @@ CredentialCache::CredentialCache() = default;
 CredentialCache::~CredentialCache() = default;
 
 void CredentialCache::SaveCredentialsAndBlocklistedForOrigin(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        best_matches,
+    base::span<const PasswordForm> best_matches,
     IsOriginBlocklisted is_blocklisted,
     const url::Origin& origin) {
   std::vector<UiCredential> credentials;
   credentials.reserve(best_matches.size());
-  for (const PasswordForm* form : best_matches)
-    credentials.emplace_back(*form, origin);
+  for (const PasswordForm& form : best_matches) {
+    credentials.emplace_back(form, origin);
+  }
 
   // Sort by origin, then username.
   std::sort(credentials.begin(), credentials.end(),
@@ -44,19 +44,12 @@ void CredentialCache::SaveCredentialsAndBlocklistedForOrigin(
                           return credential.origin() == origin;
                         });
   // Move unnotified shared credentials to the top.
-  // Check if there are shared password before checking the feature flag to
-  // avoid unnecessarily activating the user in the experiment. This should be
-  // cleaned up together with the feature flag check.
   auto is_unnotified_shared_credential = [](const UiCredential& credential) {
     return credential.is_shared() &&
            !credential.sharing_notification_displayed();
   };
-  if (base::ranges::any_of(credentials, is_unnotified_shared_credential) &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kSharedPasswordNotificationUI)) {
-    std::stable_partition(credentials.begin(), credentials.end(),
-                          is_unnotified_shared_credential);
-  }
+  std::stable_partition(credentials.begin(), credentials.end(),
+                        is_unnotified_shared_credential);
 
   GetOrCreateCredentialStore(origin).SaveCredentials(std::move(credentials));
 
@@ -64,16 +57,13 @@ void CredentialCache::SaveCredentialsAndBlocklistedForOrigin(
       is_blocklisted.value());
 
   std::vector<PasswordForm> unnotified_shared_credentials;
-  for (const PasswordForm* form : best_matches) {
-    if (form->type == PasswordForm::Type::kReceivedViaSharing &&
-        !form->sharing_notification_displayed) {
+  for (const PasswordForm& form : best_matches) {
+    if (form.type == PasswordForm::Type::kReceivedViaSharing &&
+        !form.sharing_notification_displayed) {
       // The cache is only useful when the sharing notification UI is displayed
       // since it is used to mark those credentials as notified after the user
       // interacts with the UI.
-      if (base::FeatureList::IsEnabled(
-              password_manager::features::kSharedPasswordNotificationUI)) {
-        unnotified_shared_credentials.push_back(*form);
-      }
+        unnotified_shared_credentials.push_back(form);
     }
   }
   GetOrCreateCredentialStore(origin).SaveUnnotifiedSharedCredentials(

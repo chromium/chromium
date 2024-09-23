@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader.h"
 
 #include <memory>
@@ -353,7 +358,7 @@ TEST_F(ResponseBodyLoaderTest, Suspend) {
 TEST_F(ResponseBodyLoaderTest, ReadTooBigBuffer) {
   auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
   auto* consumer = MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
-  const uint32_t kMax = network::features::GetLoaderChunkSize();
+  const size_t kMax = network::features::GetLoaderChunkSize();
 
   consumer->Add(Command(Command::kData, std::string(kMax - 1, 'a').data()));
   consumer->Add(Command(Command::kData, std::string(2, 'b').data()));
@@ -1246,6 +1251,69 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationInOnStateChangeTest,
   task_runner->RunUntilIdle();
 
   EXPECT_TRUE(reading_client->IsOnStateChangeCalled());
+  EXPECT_FALSE(client->LoadingIsCancelled());
+  EXPECT_TRUE(client->LoadingIsFinished());
+  EXPECT_FALSE(client->LoadingIsFailed());
+}
+
+class ResponseBodyLoaderTestAllowDrainAsBytesConsumerInBFCache
+    : public ResponseBodyLoaderTest {
+ protected:
+  ResponseBodyLoaderTestAllowDrainAsBytesConsumerInBFCache() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAllowDatapipeDrainedAsBytesConsumerInBFCache,
+         features::kLoadingTasksUnfreezable},
+        {});
+    WebRuntimeFeatures::EnableBackForwardCache(true);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that when response loader is suspended for back/forward cache and the
+// datapipe is drained as bytes consumer, the data keeps processing without
+// firing `DidFinishLoadingBody()`, which will be dispatched after resume.
+TEST_F(ResponseBodyLoaderTestAllowDrainAsBytesConsumerInBFCache,
+       DrainAsBytesConsumer) {
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  auto* original_consumer =
+      MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
+  original_consumer->Add(Command(Command::kData, "he"));
+  original_consumer->Add(Command(Command::kWait));
+  original_consumer->Add(Command(Command::kData, "l"));
+  original_consumer->Add(Command(Command::kData, "lo"));
+
+  auto* client = MakeGarbageCollected<TestClient>();
+
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
+
+  BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
+
+  EXPECT_TRUE(body_loader->IsDrained());
+  EXPECT_NE(&consumer, original_consumer);
+
+  // Suspend for back-forward cache, then add some more data to |consumer|.
+  body_loader->Suspend(LoaderFreezeMode::kBufferIncoming);
+  original_consumer->Add(Command(Command::kData, "world"));
+  original_consumer->Add(Command(Command::kDone));
+
+  auto* reader = MakeGarbageCollected<BytesConsumerTestReader>(&consumer);
+
+  auto result = reader->Run(task_runner.get());
+  EXPECT_EQ(result.first, BytesConsumer::Result::kDone);
+  EXPECT_EQ(String(result.second.data(), result.second.size()), "helloworld");
+  // Check that `DidFinishLoadingBody()` has not been called.
+  EXPECT_FALSE(client->LoadingIsCancelled());
+  EXPECT_FALSE(client->LoadingIsFinished());
+  EXPECT_FALSE(client->LoadingIsFailed());
+  EXPECT_EQ("helloworld", client->GetData());
+
+  // Resume the body loader.
+  body_loader->Resume();
+  task_runner->RunUntilIdle();
+  // Check that `DidFinishLoadingBody()` has now been called.
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_TRUE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());

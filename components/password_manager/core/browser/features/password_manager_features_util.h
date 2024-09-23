@@ -123,7 +123,7 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
 // enabled, etc). |pref_service| must not be null. |sync_service| may be null
 // (commonly the case in incognito mode), in which case this will simply return
 // false. See PasswordFeatureManager::ShouldShowPasswordStorePicker.
-// TODO(crbug.com/1426783): This predicate is kinda confusing, especially on
+// TODO(crbug.com/40261471): This predicate is kinda confusing, especially on
 // mobile. Consider splitting it in two, "should offer move" and "should offer
 // store choice".
 bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
@@ -164,6 +164,7 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
     const syncer::SyncService* sync_service);
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
 // Sets opt-in to using account storage for passwords for the current
 // signed-in user (unconsented primary account).
 // |pref_service| and |sync_service| must not be null.
@@ -205,7 +206,7 @@ void KeepAccountStorageSettingsOnlyForUsers(
 
 // Migrates the old password_manager account storage opt-in pref to
 // SyncUserSettings::GetSelectedTypes(), see crbug.com/1484531.
-// TODO(crbug.com/1503112): Delete the migration when appropriate, see bug.
+// TODO(crbug.com/40943534): Delete the migration when appropriate, see bug.
 void MigrateOptInPrefToSyncSelectedTypes(PrefService* pref_service);
 
 // When the user declines the opt-in offer during saving, the default
@@ -217,6 +218,18 @@ void MigrateOptInPrefToSyncSelectedTypes(PrefService* pref_service);
 // Opt-in offers from other flows are unaffected (e.g. filling).
 // See crbug.com/1509865.
 void MigrateDeclinedSaveOptInToExplicitOptOut(PrefService* pref_service);
+
+// Whether the user toggle for account storage is shown in settings.
+bool ShouldShowAccountStorageSettingToggle(
+    const PrefService* pref_service,
+    const syncer::SyncService* sync_service);
+
+// Necessary but not sufficient condition to promote account storage opt-in
+// for users currently opted-out. In particular for
+// ShouldShowAccountStorageOptIn() and ShouldShowAccountStorageReSignin().
+// If the promos are disallowed, no reauth is required to enable the feature.
+bool AreAccountStorageOptInPromosAllowed();
+
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager::features_util

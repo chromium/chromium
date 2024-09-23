@@ -12,6 +12,7 @@ option java_outer_classname = "ModelQualityMetadataProto";
 package optimization_guide.proto;
 
 import "components/optimization_guide/proto/model_execution.proto";
+import "components/optimization_guide/proto/on_device_base_model_metadata.proto";
 import "third_party/metrics_proto/system_profile.proto";
 
 // Contains metadata about a specific feature's AiLoggingData (e.g. training
@@ -27,6 +28,17 @@ message LoggingMetadata {
   // different ID every day. It should only be used for model quality logging,
   // and should not be linked to any other data sources.
   int64 client_id = 3;
+
+  // Field id 4 is intentionally reserved for internal use.
+  reserved 4;
+
+  // Whether this Chrome installation (most likely) has a Google-managed dogfood
+  // account. Note that this will be `true` whenever at least one Chrome profile
+  // is signed into an @google.com account, regardless of whether that profile
+  // is currently active. Precisely, the reported value matches the return value
+  // of `VariationsService::IsLikelyDogfoodClient()`:
+  // https://source.chromium.org/chromium/chromium/src/+/main:components/variations/service/variations_service.h?q=symbol:%5Cbvariations::VariationsService::IsLikelyDogfoodClient%5Cb
+  bool is_likely_dogfood_client = 5;
 }
 
 message OnDeviceSystemProfile {
@@ -48,13 +60,19 @@ enum PerformanceClass {
 // done on a server or on a device. This includes an ID that can be mapped to
 // the ModelExecutionService logs on the server.
 message ModelExecutionInfo {
-  reserved 1;
+  reserved 1, 5, 6;
 
   // Information for how the on-device model execution was done.
   OnDeviceModelExecutionInfo on_device_model_execution_info = 2;
 
   // The error code returned by the model execution server, if any.
   ErrorResponse error_response = 3;
+
+  // The model execution error enum. It offers more granularity over
+  // `error_state` in `error_response`. This corresponds to the error enum:
+  // OptimizationGuideModelExecutionError::ModelExecutionError. See more in
+  // components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h
+  uint32 model_execution_error_enum = 7;
 
   // The ID for the execution.
   //
@@ -86,6 +104,13 @@ message OnDeviceModelVersions {
 message OnDeviceModelServiceVersion {
   // The version of the component used.
   string component_version = 1;
+
+  // The version metadata of the base model used.
+  OnDeviceBaseModelMetadata on_device_base_model_metadata = 2;
+
+  // The version of the model adaptation downloaded from the server, if the
+  // feature requires model adaptation.
+  int64 model_adaptation_version = 3;
 }
 
 // InternalOnDeviceModelExecutionInfo is a request/response pair from a call to
@@ -166,6 +191,9 @@ enum OnDeviceModelServiceResponseStatus {
 message TextSafetyModelRequest {
   // The text sent to the text safety model for evaluation.
   string text = 1;
+
+  // The URL sent to the text safety model for evaluation, if any.
+  string url = 2;
 }
 
 message TextSafetyModelResponse {
@@ -174,4 +202,16 @@ message TextSafetyModelResponse {
 
   // Whether the output was deemed unsafe.
   bool is_unsafe = 2;
+
+  // The ID for the execution of the text safety model if it leveraged the
+  // server for text safety evaluation.
+  string server_execution_id = 3;
+
+  // The language code of the detected language. If detection was indeterminate,
+  // this is "und" per ISO 639-2.
+  string language_code = 4;
+
+  // The confidence score for the detected language. Will be a value from
+  // [0.0, 1.0].
+  float language_confidence = 5;
 }

@@ -1,0 +1,52 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<div id="log"></div>
+<script>
+test(() => assert_selection(
+    [
+      '<div contenteditable="true">',
+        '<ol>',
+          '<li>^a</li>',
+          '<li>b',
+            '<table style="border: 1px solid blue"><tbody>',
+              '<tr>',
+                '<td>a</td>',
+                '<td><br></td>',
+              '</tr>',
+              '<tr>',
+                '<td><br></td>',
+                '<td>c</td>',
+              '</tr>',
+            '</tbody></table>',
+          '</li>',
+          '<li>c|</li>',
+        '</ol>',
+      '</div>',
+    ].join(''),
+    'indent',
+    [
+      '<div contenteditable="true">',
+        '<ol>',
+          '<ol>',
+            '<li>^a</li>',
+            '<li>b',
+              '<table style="border: 1px solid blue"><tbody>',
+                '<tr>',
+                  '<td>a</td>',
+                  '<td><br></td>',
+                '</tr>',
+                '<tr>',
+                  '<td><br></td>',
+                  '<td>c</td>',
+                '</tr>',
+              '</tbody></table>',
+            '</li>',
+          '<li>c|</li>',
+        '</ol>',
+      '</ol>',
+    '</div>'
+    ].join('')),
+    'Indent the list containing the table.');
+</script>

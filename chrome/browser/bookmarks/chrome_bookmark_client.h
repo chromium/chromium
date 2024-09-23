@@ -67,7 +67,7 @@ class ChromeBookmarkClient : public power_bookmarks::BookmarkClientBase {
   bool SupportsTypedCountForUrls() override;
   void GetTypedCountForUrls(UrlTypedCountMap* url_typed_count_map) override;
   bookmarks::LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
-  bookmarks::metrics::StorageStateForUma GetStorageStateForUma() override;
+  bool IsSyncFeatureEnabledIncludingBookmarks() override;
   bool CanSetPermanentNodeTitle(
       const bookmarks::BookmarkNode* permanent_node) override;
   bool IsNodeManaged(const bookmarks::BookmarkNode* node) override;
@@ -80,7 +80,6 @@ class ChromeBookmarkClient : public power_bookmarks::BookmarkClientBase {
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) override;
   void OnBookmarkNodeRemovedUndoable(
-      bookmarks::BookmarkModel* model,
       const bookmarks::BookmarkNode* parent,
       size_t index,
       std::unique_ptr<bookmarks::BookmarkNode> node) override;

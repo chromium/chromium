@@ -90,7 +90,7 @@ _ASAN_SYMBOLIZER_PATH = os.path.join(_SRC_ROOT, 'tools', 'valgrind', 'asan',
 
 # Number of seconds to wait for ash-chrome to start.
 ASH_CHROME_TIMEOUT_SECONDS = (
-    300 if os.environ.get('ASH_WRAPPER', None) else 10)
+    300 if os.environ.get('ASH_WRAPPER', None) else 25)
 
 # List of targets that require ash-chrome as a Wayland server in order to run.
 _TARGETS_REQUIRE_ASH_CHROME = [
@@ -281,7 +281,7 @@ def _WaitForAshChromeToStart(tmp_xdg_dir, lacros_mojo_socket_file,
   Determine whether ash-chrome is up and running by checking whether two files
   (lock file + socket) have been created in the |XDG_RUNTIME_DIR| and the lacros
   mojo socket file has been created if enabling the mojo "crosapi" interface.
-  TODO(crbug.com/1107966): Figure out a more reliable hook to determine the
+  TODO(crbug.com/40707216): Figure out a more reliable hook to determine the
   status of ash-chrome, likely through mojo connection.
 
   Args:
@@ -437,7 +437,7 @@ def _ClearDir(dirpath):
   """
   for e in os.scandir(dirpath):
     if e.is_dir():
-      shutil.rmtree(e.path)
+      shutil.rmtree(e.path, ignore_errors=True)
     elif e.is_file():
       os.remove(e.path)
 
@@ -580,6 +580,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
         '--enable-field-trial-config',
         '--enable-logging=stderr',
         '--enable-features=LacrosSupport,LacrosPrimary,LacrosOnly',
+        '--enable-lacros-for-testing',
         '--ash-ready-file-path=%s' % ash_ready_file,
         '--wayland-server-socket=%s' % ash_wayland_socket_name,
     ]
@@ -647,7 +648,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     while not ash_process_has_started and num_tries < total_tries:
       num_tries += 1
       ash_start_time = time.monotonic()
-      logging.info('Starting ash-chrome.')
+      logging.info('Starting ash-chrome: ' + ' '.join(ash_cmd))
 
       # Using preexec_fn=os.setpgrp here will detach the forked process from
       # this process group before exec-ing Ash. This prevents interactive

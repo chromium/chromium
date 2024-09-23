@@ -11,7 +11,7 @@ UNKNOWN_TYPE | :1kguests-modify | modify event | on | :27.moreactions_1
 UNKNOWN_TYPE | :1kguests-invite | invite others | on | :27.moreactions_1
 UNKNOWN_TYPE | :1kguests-see-guests | see guest list | on | :27.moreactions_1
 UNKNOWN_TYPE | :2p | Enter a location | City | :27.moreactions_1
-UNKNOWN_TYPE | :2s.pe | Add video call |  | :27.moreactions_1
+UNKNOWN_TYPE | :2s.pe | Add video call |  | -default
 UNKNOWN_TYPE | :1b.calendar | Calendar | :1b.changeowner | :27.moreactions_1
 UNKNOWN_TYPE | :2q | Description | Street Address | :27.moreactions_1
-UNKNOWN_TYPE | history_state0 |  |  | :27.moreactions_1
+UNKNOWN_TYPE | history_state0 |  |  | -default

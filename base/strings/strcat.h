@@ -6,10 +6,10 @@
 #define BASE_STRINGS_STRCAT_H_
 
 #include <initializer_list>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -36,7 +36,7 @@ namespace base {
 // StrCat can see all arguments at once, so it can allocate one return buffer
 // of exactly the right size and copy once, as opposed to a sequence of
 // operator+ which generates a series of temporary strings, copying as it goes.
-// And by using StringPiece arguments, StrCat can avoid creating temporary
+// And by using std::string_view arguments, StrCat can avoid creating temporary
 // string objects for char* constants.
 //
 // ALTERNATIVES
@@ -53,24 +53,26 @@ namespace base {
 // and the call sites look nice.
 //
 // As-written Abseil's helper class for numbers generates slightly more code
-// than the raw StringPiece version. We can de-inline the helper class'
-// constructors which will cause the StringPiece constructors to be de-inlined
-// for this call and generate slightly less code. This is something we can
-// explore more in the future.
+// than the raw std::string_view version. We can de-inline the helper class'
+// constructors which will cause the std::string_view constructors to be
+// de-inlined for this call and generate slightly less code. This is something
+// we can explore more in the future.
 
-[[nodiscard]] BASE_EXPORT std::string StrCat(span<const StringPiece> pieces);
+[[nodiscard]] BASE_EXPORT std::string StrCat(
+    span<const std::string_view> pieces);
 [[nodiscard]] BASE_EXPORT std::u16string StrCat(
-    span<const StringPiece16> pieces);
+    span<const std::u16string_view> pieces);
 [[nodiscard]] BASE_EXPORT std::string StrCat(span<const std::string> pieces);
 [[nodiscard]] BASE_EXPORT std::u16string StrCat(
     span<const std::u16string> pieces);
 
 // Initializer list forwards to the array version.
-inline std::string StrCat(std::initializer_list<StringPiece> pieces) {
+inline std::string StrCat(std::initializer_list<std::string_view> pieces) {
   return StrCat(make_span(pieces));
 }
 
-inline std::u16string StrCat(std::initializer_list<StringPiece16> pieces) {
+inline std::u16string StrCat(
+    std::initializer_list<std::u16string_view> pieces) {
   return StrCat(make_span(pieces));
 }
 
@@ -82,21 +84,22 @@ inline std::u16string StrCat(std::initializer_list<StringPiece16> pieces) {
 //   foo += StrCat(...);
 // because it avoids a temporary string allocation and copy.
 
-BASE_EXPORT void StrAppend(std::string* dest, span<const StringPiece> pieces);
+BASE_EXPORT void StrAppend(std::string* dest,
+                           span<const std::string_view> pieces);
 BASE_EXPORT void StrAppend(std::u16string* dest,
-                           span<const StringPiece16> pieces);
+                           span<const std::u16string_view> pieces);
 BASE_EXPORT void StrAppend(std::string* dest, span<const std::string> pieces);
 BASE_EXPORT void StrAppend(std::u16string* dest,
                            span<const std::u16string> pieces);
 
 // Initializer list forwards to the array version.
 inline void StrAppend(std::string* dest,
-                      std::initializer_list<StringPiece> pieces) {
+                      std::initializer_list<std::string_view> pieces) {
   StrAppend(dest, make_span(pieces));
 }
 
 inline void StrAppend(std::u16string* dest,
-                      std::initializer_list<StringPiece16> pieces) {
+                      std::initializer_list<std::u16string_view> pieces) {
   StrAppend(dest, make_span(pieces));
 }
 

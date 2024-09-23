@@ -23,7 +23,7 @@ enum class AdAuctionHeadersIsEligibleOutcomeForMetrics {
   kNoInitiatorFrame = 0,
   kInFencedFrame = 1,
   kNotPrimaryPage = 2,
-  kNotOutermostMainFrame = 3,
+  // kNotOutermostMainFrame = 3, DEPRECATED
   kOpaqueRequestOrigin = 4,
   kNotPotentiallyTrustworthy = 5,
   kDisabledByPermissionsPolicy = 6,

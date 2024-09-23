@@ -9,31 +9,37 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#include <optional>
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
+#include "base/strings/cstring_view.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "sql/internal_api_token.h"
 #include "sql/sql_features.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement_id.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 
 // Forward declaration for SQLite structures. Headers in the public sql:: API
 // must NOT include sqlite3.h.
@@ -52,7 +58,6 @@ class ChromeSqlDiagnostics;
 namespace sql {
 
 class DatabaseMemoryDumpProvider;
-class Recovery;
 class Statement;
 
 namespace test {
@@ -103,14 +108,13 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   //
   // This option is experimental and will be merged into the `exclusive_locking`
   // option above if proven to cause no OS compatibility issues.
-  // TODO(crbug.com/1429117): Merge into above option, if possible.
+  // TODO(crbug.com/40262539): Merge into above option, if possible.
   bool exclusive_database_file_lock = false;
 
   // If true, enables SQLite's Write-Ahead Logging (WAL).
   //
   // WAL integration is under development, and should not be used in shipping
-  // Chrome features yet. In particular, our custom database recovery code does
-  // not support the WAL log file.
+  // Chrome features yet.
   //
   // WAL mode is currently not fully supported on FuchsiaOS. It will only be
   // turned on if the database is also using exclusive locking mode.
@@ -203,15 +207,6 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // If this option is false, CREATE VIEW and DROP VIEW succeed, but SELECT
   // statements targeting views fail.
   bool enable_views_discouraged = false;
-
-  // If true, enables virtual tables (a discouraged feature) for this database.
-  //
-  // The use of virtual tables is discouraged for Chrome code. See README.md for
-  // details and recommended replacements.
-  //
-  // If this option is false, CREATE VIRTUAL TABLE and DROP VIRTUAL TABLE
-  // succeed, but statements targeting virtual tables fail.
-  bool enable_virtual_tables_discouraged = false;
 };
 
 // Holds database diagnostics in a structured format.
@@ -260,8 +255,10 @@ struct COMPONENT_EXPORT(SQL) DatabaseDiagnostics {
 
 // Handle to an open SQLite database.
 //
-// Instances of this class are not thread-safe. After construction, a Database
-// instance should only be accessed from one sequence.
+// Instances of this class are not thread-safe. With few exceptions, Database
+// instances should only be accessed from one sequence. Database instances may
+// be constructed on one sequence and safely used/destroyed on another. Callers
+// may explicitly use `DetachFromSequence()` before moving to another sequence.
 //
 // When a Database instance goes out of scope, any uncommitted transactions are
 // rolled back.
@@ -284,7 +281,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // DatabaseOptions::explicit_locking to true. For historical reasons, this
   // constructor results in DatabaseOptions::explicit_locking set to false.
   //
-  // TODO(crbug.com/1126968): Remove this constructor after migrating all
+  // TODO(crbug.com/40148370): Remove this constructor after migrating all
   //                          uses to the explicit constructor below.
   Database();
 
@@ -297,7 +294,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // Allows mmapping to be disabled globally by default in the calling process.
   // Must be called before any threads attempt to create a Database.
   //
-  // TODO(crbug.com/1117049): Remove this global configuration.
+  // TODO(crbug.com/40144971): Remove this global configuration.
   static void DisableMmapByDefault();
 
   // Pre-init configuration ----------------------------------------------------
@@ -390,16 +387,12 @@ class COMPONENT_EXPORT(SQL) Database {
   // is closed.
   [[nodiscard]] bool OpenInMemory();
 
-  // Alternative to Open() that creates a temporary on-disk database.
-  //
-  // Returns true in case of success, false in case of failure.
-  //
-  // The files associated with the temporary database will be deleted when the
-  // database is closed.
-  [[nodiscard]] bool OpenTemporary(base::PassKey<Recovery>);
-
   // Returns true if the database has been successfully opened.
   bool is_open() const;
+
+  // Detach from the currently-attached sequence. If already attached to a
+  // sequence, this method must be called from that sequence.
+  void DetachFromSequence();
 
   // Closes the database. This is automatically performed on destruction for
   // you, but this allows you to close the database early. You must not call
@@ -490,9 +483,15 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // Normally you should use sql::Transaction to manage a transaction, which
   // will scope it to a C++ context.
-  bool BeginTransaction();
-  void RollbackTransaction();
-  bool CommitTransaction();
+  [[nodiscard]] bool BeginTransaction(InternalApiToken);
+  void RollbackTransaction(InternalApiToken);
+  [[nodiscard]] bool CommitTransaction(InternalApiToken);
+
+  // These methods are deprecated and will be removed in the future: The
+  // `Transaction` class should be used instead.
+  bool BeginTransactionDeprecated();
+  void RollbackTransactionDeprecated();
+  bool CommitTransactionDeprecated();
 
   // Rollback all outstanding transactions.  Use with care, there may
   // be scoped transactions on the stack.
@@ -500,7 +499,7 @@ class COMPONENT_EXPORT(SQL) Database {
 
   bool HasActiveTransactions() const {
     DCHECK_GE(transaction_nesting_, 0);
-    return transaction_nesting_ > 0;
+    return is_open() && transaction_nesting_ > 0;
   }
 
   // Deprecated in favor of HasActiveTransactions().
@@ -515,15 +514,14 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // `attachment_point` must only contain lowercase letters.
   //
-  // Attachment APIs are only exposed for use in recovery. General use is
-  // discouraged in Chrome. The README has more details.
+  // Use is generally discouraged in production code. The README has more
+  // details.
   //
   // On the SQLite version shipped with Chrome (3.21+, Oct 2017), databases can
   // be attached while a transaction is opened. However, these databases cannot
   // be detached until the transaction is committed or aborted.
   bool AttachDatabase(const base::FilePath& other_db_path,
-                      base::StringPiece attachment_point,
-                      InternalApiToken);
+                      std::string_view attachment_point);
 
   // Detaches a database that was previously attached with AttachDatabase().
   //
@@ -532,7 +530,7 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // Attachment APIs are only exposed for use in recovery. General use is
   // discouraged in Chrome. The README has more details.
-  bool DetachDatabase(base::StringPiece attachment_point, InternalApiToken);
+  bool DetachDatabase(std::string_view attachment_point);
 
   // Statements ----------------------------------------------------------------
 
@@ -544,7 +542,7 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // `sql` cannot have parameters. Statements with parameters can be handled by
   // sql::Statement. See GetCachedStatement() and GetUniqueStatement().
-  [[nodiscard]] bool Execute(const char* sql);
+  [[nodiscard]] bool Execute(base::cstring_view sql);
 
   // Executes a sequence of SQL statements.
   //
@@ -554,7 +552,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // The database's error handler is not invoked when errors occur. This method
   // is a convenience for setting up a complex on-disk database state, such as
   // an old schema version with test contents.
-  [[nodiscard]] bool ExecuteScriptForTesting(const char* sql_script);
+  [[nodiscard]] bool ExecuteScriptForTesting(base::cstring_view sql_script);
 
   // Returns a statement for the given SQL using the statement cache. It can
   // take a nontrivial amount of work to parse and compile a statement, so
@@ -584,25 +582,26 @@ class COMPONENT_EXPORT(SQL) Database {
   //   if (!stmt)
   //     return false;  // Error creating statement.
   scoped_refptr<StatementRef> GetCachedStatement(StatementID id,
-                                                 const char* sql);
+                                                 base::cstring_view sql);
 
   // Used to check a |sql| statement for syntactic validity. If the statement is
   // valid SQL, returns true.
-  bool IsSQLValid(const char* sql);
+  bool IsSQLValid(base::cstring_view sql);
 
   // Returns a non-cached statement for the given SQL. Use this for SQL that
   // is only executed once or only rarely (there is overhead associated with
   // keeping a statement cached).
   //
   // See GetCachedStatement above for examples and error information.
-  scoped_refptr<StatementRef> GetUniqueStatement(const char* sql);
+  scoped_refptr<StatementRef> GetUniqueStatement(base::cstring_view sql);
 
   // Returns a non-cached statement same as `GetUniqueStatement()`, except
   // returns an invalid statement if the statement makes direct changes to the
   // database file. This readonly check does not include changes made by
   // application-defined functions. See more at:
   // https://www.sqlite.org/c3ref/stmt_readonly.html.
-  scoped_refptr<Database::StatementRef> GetReadonlyStatement(const char* sql);
+  scoped_refptr<Database::StatementRef> GetReadonlyStatement(
+      base::cstring_view sql);
 
   // Performs a passive checkpoint on the main attached database if it is in
   // WAL mode. Returns true if the checkpoint was successful and false in case
@@ -617,9 +616,10 @@ class COMPONENT_EXPORT(SQL) Database {
   // Returns true if the given structure exists.  Instead of test-then-create,
   // callers should almost always prefer the "IF NOT EXISTS" version of the
   // CREATE statement.
-  bool DoesIndexExist(base::StringPiece index_name);
-  bool DoesTableExist(base::StringPiece table_name);
-  bool DoesViewExist(base::StringPiece table_name);
+  // TODO(https://crbug.com/341639215): these should take a `base::cstring`.
+  bool DoesIndexExist(std::string_view index_name);
+  bool DoesTableExist(std::string_view table_name);
+  bool DoesViewExist(std::string_view table_name);
 
   // Returns true if a column with the given name exists in the given table.
   //
@@ -628,7 +628,8 @@ class COMPONENT_EXPORT(SQL) Database {
   // This should only be used by migration code for legacy features that do not
   // use MetaTable, and need an alternative way of figuring out the database's
   // current version.
-  bool DoesColumnExist(const char* table_name, const char* column_name);
+  bool DoesColumnExist(base::cstring_view table_name,
+                       base::cstring_view column_name);
 
   // Returns sqlite's internal ID for the last inserted row. Valid only
   // immediately after an insert.
@@ -653,8 +654,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // Returns the error code associated with the last sqlite operation.
   int GetErrorCode() const;
 
-  // Returns the errno associated with GetErrorCode().  See
-  // SQLITE_LAST_ERRNO in SQLite documentation.
+  // Returns the errno associated with GetErrorCode(). See <errno.h>.
   int GetLastErrno() const;
 
   // Returns a pointer to a statically allocated string associated with the
@@ -707,6 +707,7 @@ class COMPONENT_EXPORT(SQL) Database {
   static base::FilePath SharedMemoryFilePath(const base::FilePath& db_path);
 
   // Internal state accessed by other classes in //sql.
+  base::WeakPtr<Database> GetWeakPtr(InternalApiToken);
   sqlite3* db(InternalApiToken) const { return db_; }
   bool poisoned(InternalApiToken) const { return poisoned_; }
   base::FilePath DbPath(InternalApiToken) const { return DbPath(); }
@@ -729,27 +730,16 @@ class COMPONENT_EXPORT(SQL) Database {
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, ComputeMmapSizeForOpenAltStatus);
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, OnMemoryDump);
   FRIEND_TEST_ALL_PREFIXES(SQLDatabaseTest, RegisterIntentToUpload);
+  FRIEND_TEST_ALL_PREFIXES(SQLiteFeaturesTest, FTS3_Prefix);
   FRIEND_TEST_ALL_PREFIXES(SQLiteFeaturesTest, WALNoClose);
   FRIEND_TEST_ALL_PREFIXES(SQLEmptyPathDatabaseTest, EmptyPathTest);
 
-  // Enables a special behavior for OpenInternal().
-  enum class OpenMode {
-    // No special behavior.
-    kNone,
-
-    // Open an in-memory database. Used by OpenInMemory().
-    kInMemory,
-
-    // Open a temporary database. Used by OpenTemporary().
-    kTemporary,
-  };
-
-  // Implements Open(), OpenInMemory(), and OpenTemporary().
+  // Implements Open(), OpenInMemory().
   //
-  // `db_file_path` is a UTF-8 path to the file storing the database pages. The
-  // path must be empty if `mode` is kTemporary. The path must be the SQLite
-  // magic memory path string if `mode` is kMemory.
-  bool OpenInternal(const std::string& file_name, OpenMode mode);
+  // `db_file_path` is a UTF-8 path to the file storing the database pages. If
+  // `file_name` is the SQLite magic memory path :memory:, the database will be
+  // opened in-memory.
+  bool OpenInternal(const std::string& file_name);
 
   // Configures the underlying sqlite3* object via sqlite3_db_config().
   //
@@ -774,7 +764,7 @@ class COMPONENT_EXPORT(SQL) Database {
   }
 
   // Internal helper for Does*Exist() functions.
-  bool DoesSchemaItemExist(base::StringPiece name, base::StringPiece type);
+  bool DoesSchemaItemExist(std::string_view name, std::string_view type);
 
   // Used to implement the interface with sql::test::ScopedErrorExpecter.
   static ScopedErrorExpecterCallback* current_expecter_cb_;
@@ -881,14 +871,15 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // This method is only exposed to the Database implementation. Code that uses
   // sql::Database should not be concerned with SQLite result codes.
-  [[nodiscard]] SqliteResultCode ExecuteAndReturnResultCode(const char* sql);
+  [[nodiscard]] SqliteResultCode ExecuteAndReturnResultCode(
+      base::cstring_view sql);
 
   // Like |Execute()|, but retries if the database is locked.
-  [[nodiscard]] bool ExecuteWithTimeout(const char* sql,
+  [[nodiscard]] bool ExecuteWithTimeout(base::cstring_view sql,
                                         base::TimeDelta ms_timeout);
 
   // Implementation helper for GetUniqueStatement() and GetCachedStatement().
-  scoped_refptr<StatementRef> GetStatementImpl(const char* sql,
+  scoped_refptr<StatementRef> GetStatementImpl(base::cstring_view sql,
                                                bool is_readonly);
 
   // Release page-cache memory if memory-mapped I/O is enabled and the database
@@ -948,12 +939,14 @@ class COMPONENT_EXPORT(SQL) Database {
   // Returns a SQLite VFS interface pointer to the file storing database pages.
   //
   // Returns null if the database is not backed by a VFS file. This is always
-  // the case for in-memory databases. Temporary databases (only used by sq
-  // ::Recovery) start without a backing VFS file, and only get a file when they
-  // outgrow their page cache.
+  // the case for in-memory databases.
   //
   // This method must only be called while the database is successfully opened.
   sqlite3_file* GetSqliteVfsFile();
+
+  void SetEnableVirtualTablesForTesting(bool enable) {
+    enable_virtual_tables_ = enable;
+  }
 
   // Will eventually be checked on all methods. See https://crbug.com/1306694
   SEQUENCE_CHECKER(sequence_checker_);
@@ -966,6 +959,10 @@ class COMPONENT_EXPORT(SQL) Database {
   // setters.
   DatabaseOptions options_;
 
+  // TODO(crbug.com/340805983): Remove this once virtual tables are no longer needed for
+  // WebSQL, which requires them for fts3 support.
+  bool enable_virtual_tables_ = false;
+
   // Holds references to all cached statements so they remain active.
   //
   // flat_map is appropriate here because the codebase has ~400 cached
@@ -976,7 +973,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // A list of all StatementRefs we've given out. Each ref must register with
   // us when it's created or destroyed. This allows us to potentially close
   // any open statements when we encounter an error.
-  std::set<raw_ptr<StatementRef, SetExperimental>> open_statements_;
+  std::set<raw_ptr<StatementRef>> open_statements_;
 
   // Number of currently-nested transactions.
   int transaction_nesting_ = 0;

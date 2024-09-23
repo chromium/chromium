@@ -10,9 +10,9 @@
 #include <memory>
 
 #include "base/synchronization/lock.h"
+#include "base/types/expected.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
@@ -32,9 +32,9 @@ class RTCEncodedAudioFrameDelegate
       std::optional<uint16_t> sequence_number);
 
   uint32_t RtpTimestamp() const;
-  DOMArrayBuffer* CreateDataBuffer() const;
+  DOMArrayBuffer* CreateDataBuffer(v8::Isolate* isolate) const;
   void SetData(const DOMArrayBuffer* data);
-  void SetRtpTimestamp(uint32_t timestamp, ExceptionState& exception_state);
+  base::expected<void, String> SetRtpTimestamp(uint32_t timestamp);
   std::optional<uint32_t> Ssrc() const;
   std::optional<uint8_t> PayloadType() const;
   std::optional<std::string> MimeType() const;
@@ -48,8 +48,8 @@ class RTCEncodedAudioFrameDelegate
   mutable base::Lock lock_;
   std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame_
       GUARDED_BY(lock_);
-  Vector<uint32_t> contributing_sources_ GUARDED_BY(lock_);
-  std::optional<uint16_t> sequence_number_ GUARDED_BY(lock_);
+  const Vector<uint32_t> contributing_sources_;
+  const std::optional<uint16_t> sequence_number_;
 };
 
 class MODULES_EXPORT RTCEncodedAudioFramesAttachment

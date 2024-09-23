@@ -109,6 +109,7 @@ class TestRunnerTest(unittest.TestCase):
           '--enable-field-trial-config',
           '--enable-logging=stderr',
           '--enable-features=LacrosSupport,LacrosPrimary,LacrosOnly',
+          '--enable-lacros-for-testing',
           '--ash-ready-file-path=/tmp/ash-data/ash_ready.txt',
           '--wayland-server-socket=wayland-exo',
       ]

@@ -7,12 +7,12 @@
 #include <cstdint>
 #include <ostream>
 #include <string>
+#include <string_view>
 
 #include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "components/cbor/constants.h"
 
 namespace cbor {
@@ -55,7 +55,7 @@ bool Writer::EncodeCBOR(const Value& node,
 
     case Value::Type::INVALID_UTF8: {
       if (!allow_invalid_utf8) {
-        NOTREACHED() << constants::kUnsupportedMajorType;
+        NOTREACHED_IN_MIGRATION() << constants::kUnsupportedMajorType;
         return false;
       }
       // Encode a CBOR string with invalid UTF-8 data. This may produce invalid
@@ -92,7 +92,7 @@ bool Writer::EncodeCBOR(const Value& node,
     }
 
     case Value::Type::STRING: {
-      base::StringPiece string = node.GetString();
+      std::string_view string = node.GetString();
       StartItem(Value::Type::STRING,
                 base::strict_cast<uint64_t>(string.size()));
 
@@ -128,7 +128,7 @@ bool Writer::EncodeCBOR(const Value& node,
     }
 
     case Value::Type::TAG:
-      NOTREACHED() << constants::kUnsupportedMajorType;
+      NOTREACHED_IN_MIGRATION() << constants::kUnsupportedMajorType;
       return false;
 
     // Represents a simple value.
@@ -225,7 +225,7 @@ void Writer::SetUint(uint64_t value) {
       shift = 7;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   for (; shift >= 0; shift--) {

@@ -7,7 +7,6 @@
 
 #include <list>
 
-#include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/widget/input/input_handler_proxy.h"
@@ -39,17 +38,14 @@ class PLATFORM_EXPORT EventWithCallback {
   using OriginalEventList = std::list<OriginalEventWithCallback>;
 
   EventWithCallback(std::unique_ptr<WebCoalescedInputEvent> event,
-                    base::TimeTicks timestamp_now,
                     InputHandlerProxy::EventDispositionCallback callback,
                     std::unique_ptr<cc::EventMetrics> metrics);
   EventWithCallback(std::unique_ptr<WebCoalescedInputEvent> event,
-                    base::TimeTicks creation_timestamp,
-                    base::TimeTicks last_coalesced_timestamp,
                     OriginalEventList original_events);
   ~EventWithCallback();
 
   [[nodiscard]] bool CanCoalesceWith(const EventWithCallback& other) const;
-  void CoalesceWith(EventWithCallback* other, base::TimeTicks timestamp_now);
+  void CoalesceWith(EventWithCallback* other);
 
   void RunCallbacks(InputHandlerProxy::EventDisposition,
                     const ui::LatencyInfo& latency,
@@ -60,10 +56,6 @@ class PLATFORM_EXPORT EventWithCallback {
   WebInputEvent* event_pointer() { return event_->EventPointer(); }
   const ui::LatencyInfo& latency_info() const { return event_->latency_info(); }
   ui::LatencyInfo& latency_info() { return event_->latency_info(); }
-  base::TimeTicks creation_timestamp() const { return creation_timestamp_; }
-  base::TimeTicks last_coalesced_timestamp() const {
-    return last_coalesced_timestamp_;
-  }
   void set_coalesced_scroll_and_pinch() { coalesced_scroll_and_pinch_ = true; }
   bool coalesced_scroll_and_pinch() const {
     return coalesced_scroll_and_pinch_;
@@ -99,9 +91,6 @@ class PLATFORM_EXPORT EventWithCallback {
   std::unique_ptr<WebCoalescedInputEvent> event_;
   OriginalEventList original_events_;
   bool coalesced_scroll_and_pinch_ = false;
-
-  base::TimeTicks creation_timestamp_;
-  base::TimeTicks last_coalesced_timestamp_;
 };
 
 }  // namespace blink

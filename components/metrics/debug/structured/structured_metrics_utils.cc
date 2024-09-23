@@ -10,13 +10,23 @@
 namespace metrics::structured {
 
 base::Value GetStructuredMetricsSummary(StructuredMetricsService* service) {
-  base::Value::Dict result;
-  result.Set("enabled", service->recording_enabled());
-  auto id =
-      service->recorder()->key_data_provider()->GetSecondaryId("CrOSEvents");
-  if (id.has_value()) {
-    result.Set("crosDeviceId", base::NumberToString(id.value()));
+  base::Value::Dict result = base::Value::Dict().Set("enabled", false);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  result.Set("crosDeviceId", "-");
+#endif
+
+  if (service && service->recording_enabled()) {
+    result.Set("enabled", true);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    auto id =
+        service->recorder()->key_data_provider()->GetSecondaryId("CrOSEvents");
+    if (id.has_value()) {
+      result.Set("crosDeviceId", base::NumberToString(id.value()));
+    }
+#endif
   }
+
   return base::Value(std::move(result));
 }
 

@@ -18,6 +18,11 @@ OverlayTransformToTransform(OverlayTransform overlay_transform,
 
 GFX_EXPORT OverlayTransform InvertOverlayTransform(OverlayTransform transform);
 
+// Returns result of applying `t1`, followed by `t2`. May return invalid if
+// there inputs contain invalid.
+GFX_EXPORT OverlayTransform OverlayTransformsConcat(OverlayTransform t1,
+                                                    OverlayTransform t2);
+
 }  // namespace gfx
 
 #endif  // UI_GFX_OVERLAY_TRANSFORM_UTILS_H_

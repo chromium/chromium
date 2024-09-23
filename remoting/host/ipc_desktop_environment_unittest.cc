@@ -377,7 +377,7 @@ void IpcDesktopEnvironmentTest::SetUp() {
   input_injector_ = desktop_environment_->CreateInputInjector();
 
   // Create the screen capturer.
-  video_capturer_ = desktop_environment_->CreateVideoCapturer();
+  video_capturer_ = desktop_environment_->CreateVideoCapturer(0);
 
   desktop_environment_->SetCapabilities(std::string());
 
@@ -416,7 +416,7 @@ IpcDesktopEnvironmentTest::CreateDesktopEnvironment() {
       .Times(AtMost(1))
       .WillOnce(Invoke(this, &IpcDesktopEnvironmentTest::CreateInputInjector));
   EXPECT_CALL(*desktop_environment, CreateScreenControls()).Times(AtMost(1));
-  EXPECT_CALL(*desktop_environment, CreateVideoCapturer())
+  EXPECT_CALL(*desktop_environment, CreateVideoCapturer(_))
       .Times(AtMost(1))
       .WillOnce(
           Return(ByMove(std::make_unique<protocol::FakeDesktopCapturer>())));
@@ -457,7 +457,12 @@ void IpcDesktopEnvironmentTest::DeleteDesktopEnvironment() {
   url_forwarder_configurator_.reset();
 
   // Trigger CloseDesktopSession().
-  desktop_environment_.reset();
+  // `desktop_environment_` should be torn down asynchronously. Many of these
+  // tests pass DeleteDesktopEnvironment() inside callbacks that are run by
+  // DesktopSessionProxy, and these should not synchronously delete
+  // DesktopSessionProxy.
+  task_environment_.GetMainThreadTaskRunner()->DeleteSoon(
+      FROM_HERE, desktop_environment_.release());
 }
 
 void IpcDesktopEnvironmentTest::ReflectClipboardEvent(
@@ -563,7 +568,7 @@ TEST_F(IpcDesktopEnvironmentTest, TouchEventsCapabilities) {
       new protocol::MockClipboardStub());
   EXPECT_CALL(*clipboard_stub, InjectClipboardEvent(_)).Times(0);
 
-  std::string expected_capabilities = "rateLimitResizeRequests";
+  std::string expected_capabilities = "rateLimitResizeRequests multiStream";
   if (InputInjector::SupportsTouchEvents()) {
     expected_capabilities += " touchEvents";
   }

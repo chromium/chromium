@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
@@ -15,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -32,8 +32,8 @@
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/ash/login/ui/fake_login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ui/ash/login/fake_login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -64,7 +64,7 @@ class TestDataReceiver {
 
   void OnDataReceived(scoped_refptr<base::RefCountedMemory> bytes) {
     data_received_ = true;
-    data_ = std::string(base::StringPiece(
+    data_ = std::string(std::string_view(
         reinterpret_cast<const char*>(bytes->front()), bytes->size()));
   }
 

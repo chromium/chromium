@@ -111,6 +111,13 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
  protected:
   // Stores animation related state of a popup.
   struct PopupItem {
+    PopupItem();
+    PopupItem(const PopupItem&) = delete;
+    PopupItem(PopupItem&& other);
+    PopupItem& operator=(const PopupItem&) = delete;
+    PopupItem& operator=(PopupItem&&);
+    ~PopupItem();
+
     // Notification ID.
     std::string id;
 
@@ -126,7 +133,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
     bool is_animating = false;
 
     // Unowned.
-    raw_ptr<MessagePopupView> popup = nullptr;
+    raw_ptr<MessagePopupView, DanglingUntriaged> popup = nullptr;
+
+    std::unique_ptr<views::Widget> widget;
   };
 
   // Returns the x-origin for the given popup bounds in the current work area.
@@ -186,7 +195,7 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   bool IsNextEdgeOutsideWorkArea(const PopupItem& item) const;
 
   // Called to close a particular popup item.
-  virtual void ClosePopupItem(const PopupItem& item);
+  virtual void ClosePopupItem(PopupItem& item);
 
   // Marks `is_animating` flag of all popups for `kMoveDown` animation.
   void MoveDownPopups();
@@ -203,6 +212,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   const std::vector<PopupItem>& popup_items() { return popup_items_; }
 
  private:
+  friend class MessagePopupCollectionTest;
+
   // MessagePopupCollection always runs single animation at one time.
   // State is an enum of which animation is running right now.
   // If |state_| is kIdle, animation_->is_animating() is always false and vice
@@ -261,6 +272,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   bool CloseTransparentPopups();
   void ClosePopupsOutsideWorkArea();
   void RemoveClosedPopupItems();
+  void CloseAndRemovePopupFromPopupItem(MessagePopupView* popup,
+                                        bool remove_only = false);
 
   // Collapse all existing popups. Return true if size of any popup is actually
   // changed.

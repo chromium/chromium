@@ -26,7 +26,7 @@ bool BackgroundSyncRegistration::IsFiring() const {
     case blink::mojom::BackgroundSyncState::PENDING:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

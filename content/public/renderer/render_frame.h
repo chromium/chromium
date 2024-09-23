@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
+#include "content/public/common/bindings_policy.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -38,7 +39,6 @@ struct WebPreferences;
 class AssociatedInterfaceProvider;
 class AssociatedInterfaceRegistry;
 class BrowserInterfaceBrokerProxy;
-class WebElement;
 class WebFrame;
 class WebLocalFrame;
 class WebPlugin;
@@ -49,7 +49,6 @@ class WebView;
 namespace gfx {
 class Range;
 class Rect;
-class RectF;
 }  // namespace gfx
 
 namespace content {
@@ -166,7 +165,8 @@ class CONTENT_EXPORT RenderFrame :
 
   // Returns the BrowserInterfaceBrokerProxy that this process can use to bind
   // interfaces exposed to it by the application running in this frame.
-  virtual blink::BrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() = 0;
+  virtual const blink::BrowserInterfaceBrokerProxy&
+  GetBrowserInterfaceBroker() = 0;
 
   // Returns the AssociatedInterfaceRegistry this frame can use to expose
   // frame-specific Channel-associated interfaces to the remote RenderFrameHost.
@@ -214,9 +214,8 @@ class CONTENT_EXPORT RenderFrame :
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       blink::TaskType task_type) = 0;
 
-  // Bitwise-ORed set of extra bindings that have been enabled.  See
-  // BindingsPolicy for details.
-  virtual int GetEnabledBindings() = 0;
+  // The extra bindings that have been enabled.
+  virtual BindingsPolicySet GetEnabledBindings() = 0;
 
   // Set the accessibility mode to force creation of RenderAccessibility.
   virtual void SetAccessibilityModeForTest(ui::AXMode new_mode) = 0;
@@ -230,16 +229,11 @@ class CONTENT_EXPORT RenderFrame :
   // Sets that cross browsing instance frame lookup is allowed.
   virtual void SetAllowsCrossBrowsingInstanceFrameLookup() = 0;
 
-  // Returns the bounds of |element| in Window coordinates which are device
-  // scale independent. The bounds have been adjusted to include any
-  // transformations, including page scale. This function will update the layout
-  // if required.
-  virtual gfx::RectF ElementBoundsInWindow(
-      const blink::WebElement& element) = 0;
-
   // Converts the |rect| to Window coordinates which are device scale
-  // independent.
-  virtual void ConvertViewportToWindow(gfx::Rect* rect) = 0;
+  // independent. The bounds have been adjusted to include any transformations,
+  // including page scale.
+  [[nodiscard]] virtual gfx::Rect ConvertViewportToWindow(
+      const gfx::Rect& rect) = 0;
 
   // Returns the device scale factor of the display the render frame is in.
   virtual float GetDeviceScaleFactor() = 0;

@@ -8,14 +8,13 @@
 #include <fidl/fuchsia.logger/cpp/fidl.h>
 #include <lib/syslog/structured_backend/cpp/fuchsia_syslog.h>
 #include <lib/zx/socket.h>
-
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -34,22 +33,22 @@ class BASE_EXPORT ScopedFxLogger {
   // some way (e.g. by Component or process name).
   // Additional tags may optionally be specified via `tags`.
   static ScopedFxLogger CreateForProcess(
-      std::vector<base::StringPiece> tags = {});
+      std::vector<std::string_view> tags = {});
 
   // Returns an instance connected to the specified LogSink.
   static ScopedFxLogger CreateFromLogSink(
       fidl::ClientEnd<fuchsia_logger::LogSink> client_end,
-      std::vector<base::StringPiece> tags = {});
+      std::vector<std::string_view> tags = {});
 
-  void LogMessage(base::StringPiece file,
+  void LogMessage(std::string_view file,
                   uint32_t line_number,
-                  base::StringPiece msg,
+                  std::string_view msg,
                   FuchsiaLogSeverity severity);
 
   bool is_valid() const { return socket_.is_valid(); }
 
  private:
-  ScopedFxLogger(std::vector<base::StringPiece> tags, zx::socket socket);
+  ScopedFxLogger(std::vector<std::string_view> tags, zx::socket socket);
 
   // For thread-safety these members should be treated as read-only.
   // They are non-const only to allow move-assignment of ScopedFxLogger.

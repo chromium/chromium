@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] log float32 positive 0D scalar
+  assert_array_approx_equals: test log float32 property 0, expected 4.15615177154541 +/- 0.0009765625, expected 4.15615177154541 but got 4.15234375
+[FAIL] log float32 positive 1D constant tensor
+  assert_array_approx_equals: test log float32 property 0, expected 4.15615177154541 +/- 0.0009765625, expected 4.15615177154541 but got 4.15234375
+[FAIL] log float32 positive 1D tensor
+  assert_array_approx_equals: test log float32 property 0, expected 4.15615177154541 +/- 0.0009765625, expected 4.15615177154541 but got 4.15234375
+[FAIL] log float32 positive 2D tensor
+  assert_array_approx_equals: test log float32 property 0, expected 4.15615177154541 +/- 0.0009765625, expected 4.15615177154541 but got 4.15234375
+[FAIL] log float32 positive 3D tensor
+  assert_array_approx_equals: test log float32 property 0, expected 4.15615177154541 +/- 0.0009765625, expected 4.15615177154541 but got 4.15234375
+[FAIL] log float32 positive 4D tensor
+  assert_array_approx_equals: test log float32 property 0, expected 4.15615177154541 +/- 0.0009765625, expected 4.15615177154541 but got 4.15234375
+[FAIL] log float32 positive 5D tensor
+  assert_array_approx_equals: test log float32 property 0, expected 4.15615177154541 +/- 0.0009765625, expected 4.15615177154541 but got 4.15234375
+Harness: the test ran to completion.
+

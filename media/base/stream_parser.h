@@ -13,6 +13,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -58,7 +59,7 @@ class MEDIA_EXPORT StreamParser {
   // calls while keeping each parse iteration's duration within ~5-15ms range.
   // This value may change in future updates as platform capabilities have
   // generally improved.
-  // TODO(crbug.com/1379177): Tune this experimentally.
+  // TODO(crbug.com/40244251): Tune this experimentally.
   static constexpr int kMaxPendingBytesPerParse = 128 * 1024;  // 128KiB
 
   // Stream parameters passed in InitCB.
@@ -157,8 +158,8 @@ class MEDIA_EXPORT StreamParser {
   // `QuotaExceededErr` exception per the MSE specification. App could use a
   // back-off and retry strategy or otherwise alter their behavior to attempt to
   // buffer media for further playback.
-  [[nodiscard]] virtual bool AppendToParseBuffer(const uint8_t* buf,
-                                                 size_t size) = 0;
+  [[nodiscard]] virtual bool AppendToParseBuffer(
+      base::span<const uint8_t> buf) = 0;
 
   // Attempts to parse more data previously provided via AppendToParseBuffer().
   // May not attempt to parse all of it in one pass;

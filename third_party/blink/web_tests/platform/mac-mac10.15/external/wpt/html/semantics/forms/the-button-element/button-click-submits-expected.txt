@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] clicking the child of a button by dispatching a non-bubbling event should not trigger submit
-  assert_unreached: Form should not be submitted Reached unreachable code
-Harness: the test ran to completion.
-

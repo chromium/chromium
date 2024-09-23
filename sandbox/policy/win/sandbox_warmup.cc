@@ -34,7 +34,7 @@ decltype(&ProcessPrng) GetProcessPrng() {
 
 void WarmupRandomnessInfrastructure() {
   BYTE data[1];
-  // TODO(crbug.com/74242) Call a warmup function exposed by boringssl.
+  // TODO(crbug.com/40088338) Call a warmup function exposed by boringssl.
   static decltype(&ProcessPrng) process_prng_fn = GetProcessPrng();
   BOOL success = process_prng_fn(data, sizeof(data));
   // ProcessPrng is documented to always return TRUE.

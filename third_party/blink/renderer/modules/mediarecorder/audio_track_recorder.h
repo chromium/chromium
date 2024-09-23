@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/weak_cell.h"
 #include "third_party/blink/renderer/platform/wtf/sequence_bound.h"
 
 namespace media {
@@ -62,6 +63,10 @@ class MODULES_EXPORT AudioTrackRecorder
         std::optional<media::AudioEncoder::CodecDescription> codec_description,
         base::TimeTicks capture_time) = 0;
 
+    // Called when an error occurs during encoding. Once it is called, there
+    // is no more calling of `OnEncodedAudio()`.
+    virtual void OnAudioEncodingError(media::EncoderStatus error_status) = 0;
+
     // Called when a track's ready state changes.
     virtual void OnSourceReadyStateChanged() = 0;
   };
@@ -72,13 +77,15 @@ class MODULES_EXPORT AudioTrackRecorder
       std::optional<media::AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks capture_time)>;
 
+  using OnEncodedAudioErrorCB = media::EncoderStatus::Callback;
+
   static CodecId GetPreferredCodecId(MediaTrackContainerType container_type);
 
   AudioTrackRecorder(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       CodecId codec,
       MediaStreamComponent* track,
-      CallbackInterface* callback_interface,
+      WeakCell<CallbackInterface>* callback_interface,
       uint32_t bits_per_second,
       BitrateMode bitrate_mode,
       scoped_refptr<base::SequencedTaskRunner> encoder_task_runner =
@@ -98,6 +105,10 @@ class MODULES_EXPORT AudioTrackRecorder
   void Pause();
   void Resume();
 
+  WeakCell<CallbackInterface>* callback_interface_for_testing() {
+    return callback_interface_;
+  }
+
  private:
   // Creates an audio encoder from |codec|. Returns nullptr if the codec is
   // invalid.
@@ -105,6 +116,7 @@ class MODULES_EXPORT AudioTrackRecorder
       CodecId codec,
       scoped_refptr<base::SequencedTaskRunner> encoder_task_runner,
       OnEncodedAudioCB on_encoded_audio_cb,
+      OnEncodedAudioErrorCB on_encoded_audio_error_cb,
       uint32_t bits_per_second,
       BitrateMode bitrate_mode);
 
@@ -131,6 +143,7 @@ class MODULES_EXPORT AudioTrackRecorder
 #if DCHECK_IS_ON()
   std::atomic<int> race_checker_{0};
 #endif
+  Persistent<WeakCell<CallbackInterface>> callback_interface_;
 };
 
 }  // namespace blink

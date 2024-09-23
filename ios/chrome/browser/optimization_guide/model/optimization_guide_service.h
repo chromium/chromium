@@ -52,7 +52,7 @@ class PrefService;
 // in //chrome/browser that is used for non-iOS. It cannot be directly used due
 // to the platform differences of the common data structures -
 // NavigationContext vs NavigationHandle, BrowserState vs Profile, etc.
-// TODO(crbug.com/1240907): Add support for clearing the hints when browsing
+// TODO(crbug.com/40785700): Add support for clearing the hints when browsing
 // data is cleared.
 class OptimizationGuideService
     : public KeyedService,
@@ -124,6 +124,15 @@ class OptimizationGuideService
     return optimization_guide_logger_.get();
   }
 
+  // Adds hints for a URL with provided metadata to the optimization guide. For
+  // testing purposes only. This will flush any callbacks for `url` that were
+  // registered via `CanApplyOptimization`. If no applicable callbacks were
+  // registered, this will just add the hint for later use.
+  void AddHintForTesting(
+      const GURL& url,
+      optimization_guide::proto::OptimizationType optimization_type,
+      const std::optional<optimization_guide::OptimizationMetadata>& metadata);
+
  private:
   friend class OptimizationGuideServiceTest;
   friend class OptimizationGuideTabHelper;
@@ -141,7 +150,7 @@ class OptimizationGuideService
   // KeyedService implementation:
   void Shutdown() override;
 
-  // optimization_guide::NewOptimizationGuideDecider implementation:
+  // optimization_guide::OptimizationGuideDecider implementation:
   void CanApplyOptimizationOnDemand(
       const std::vector<GURL>& urls,
       const base::flat_set<optimization_guide::proto::OptimizationType>&
@@ -149,7 +158,7 @@ class OptimizationGuideService
       optimization_guide::proto::RequestContext request_context,
       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
           callback,
-      optimization_guide::proto::RequestContextMetadata*
+      std::optional<optimization_guide::proto::RequestContextMetadata>
           request_context_metadata) override;
 
   // The store of hints.
@@ -167,7 +176,7 @@ class OptimizationGuideService
   // tabs. Will be null if the user is off the record.
   std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
 
-  std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   // Manages the storing, loading, and evaluating of optimization target
   // prediction models.

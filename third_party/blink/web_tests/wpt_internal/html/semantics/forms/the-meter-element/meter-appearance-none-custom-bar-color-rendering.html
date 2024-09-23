@@ -1,0 +1,13 @@
+<!doctype html>
+<title>meter appearance none rendering</title>
+<link rel="match" href="reference/meter-appearance-none-custom-bar-color-rendering-ref.html">
+<style>
+  #target {
+    appearance: none;
+  }
+
+  #target::-webkit-meter-bar {
+    background: cornflowerblue;
+  }
+</style>
+<meter id="target"></meter>

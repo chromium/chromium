@@ -213,7 +213,7 @@ int SQLiteStatement::BindValue(int index, const SQLValue& value) {
       return BindNull(index);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SQLITE_ERROR;
 }
 
@@ -272,7 +272,7 @@ SQLValue SQLiteStatement::GetColumnValue(int col) {
     case SQLITE_NULL:
       return SQLValue();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SQLValue();
 }
 

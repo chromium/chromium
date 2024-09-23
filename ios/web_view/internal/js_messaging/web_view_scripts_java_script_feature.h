@@ -35,7 +35,7 @@ class WebViewScriptsJavaScriptFeature : public base::SupportsUserData::Data,
                   std::optional<std::string> main_frame_script);
 
  private:
-  const std::vector<const FeatureScript> GetScripts() const override;
+  std::vector<FeatureScript> GetScripts() const override;
 
   // The browser state associated with this feature.
   web::BrowserState* browser_state_;

@@ -4,12 +4,10 @@
 
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 
-#include <algorithm>
 #include <array>
-#include <utility>
+#include <optional>
 
-#include "base/check.h"
-#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 
 namespace syncer {
@@ -21,10 +19,8 @@ CrossUserSharingPublicKey& CrossUserSharingPublicKey::operator=(
 CrossUserSharingPublicKey::~CrossUserSharingPublicKey() = default;
 
 CrossUserSharingPublicKey::CrossUserSharingPublicKey(
-    base::span<const uint8_t> public_key) {
-  CHECK_EQ(static_cast<size_t>(X25519_PUBLIC_VALUE_LEN), public_key.size());
-
-  std::copy(public_key.begin(), public_key.end(), public_key_);
+    base::span<const uint8_t, X25519_PUBLIC_VALUE_LEN> public_key) {
+  base::span(public_key_).copy_from(public_key);
 }
 
 // static
@@ -34,15 +30,12 @@ CrossUserSharingPublicKey::CreateByImport(
   if (public_key.size() != X25519_PUBLIC_VALUE_LEN) {
     return {};
   }
-  return CrossUserSharingPublicKey(public_key);
+  return CrossUserSharingPublicKey(public_key.first<X25519_PUBLIC_VALUE_LEN>());
 }
 
 std::array<uint8_t, X25519_PUBLIC_VALUE_LEN>
 CrossUserSharingPublicKey::GetRawPublicKey() const {
-  std::array<uint8_t, X25519_PUBLIC_VALUE_LEN> raw_public_key;
-  std::copy(public_key_, public_key_ + X25519_PUBLIC_VALUE_LEN,
-            raw_public_key.begin());
-  return raw_public_key;
+  return public_key_;
 }
 
 CrossUserSharingPublicKey CrossUserSharingPublicKey::Clone() const {

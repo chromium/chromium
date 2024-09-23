@@ -68,10 +68,10 @@ TEST_P(ExtensionActionAPIUnitTest, MultiIcons) {
   const ExtensionIconSet& icons = action_info->default_icon;
 
   EXPECT_EQ(4u, icons.map().size());
-  EXPECT_EQ("icon19.png", icons.Get(19, ExtensionIconSet::MATCH_EXACTLY));
-  EXPECT_EQ("icon24.png", icons.Get(24, ExtensionIconSet::MATCH_EXACTLY));
-  EXPECT_EQ("icon24.png", icons.Get(31, ExtensionIconSet::MATCH_EXACTLY));
-  EXPECT_EQ("icon38.png", icons.Get(38, ExtensionIconSet::MATCH_EXACTLY));
+  EXPECT_EQ("icon19.png", icons.Get(19, ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icon24.png", icons.Get(24, ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icon24.png", icons.Get(31, ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("icon38.png", icons.Get(38, ExtensionIconSet::Match::kExactly));
 }
 
 // Test that localization in the manifest properly applies to the "action"
@@ -99,7 +99,7 @@ TEST_P(ExtensionActionAPIUnitTest, ActionLocalization) {
            }
          })";
   {
-    // TODO(https://crbug.com/1135378): It's a bit clunky to write to nested
+    // TODO(crbug.com/40151844): It's a bit clunky to write to nested
     // files in a TestExtensionDir. It'd be nice to provide better support for
     // this.
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -125,9 +125,9 @@ TEST_P(ExtensionActionAPIUnitTest, ActionLocalization) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ExtensionActionAPIUnitTest,
-                         testing::Values(ActionInfo::TYPE_BROWSER,
-                                         ActionInfo::TYPE_PAGE,
-                                         ActionInfo::TYPE_ACTION));
+                         testing::Values(ActionInfo::Type::kBrowser,
+                                         ActionInfo::Type::kPage,
+                                         ActionInfo::Type::kAction));
 
 }  // namespace
 }  // namespace extensions

@@ -208,7 +208,7 @@ void FullscreenKeyboardBrowserTestBase::SendFullscreenShortcutAndWait() {
 // Mac fullscreen is simulated in tests and is performed synchronously with the
 // keyboard events. As a result, content doesn't actually know it has entered
 // fullscreen. For more details, see ScopedFakeNSWindowFullscreen.
-// TODO(crbug.com/837438): Remove this once ScopedFakeNSWindowFullscreen fires
+// TODO(crbug.com/41385780): Remove this once ScopedFakeNSWindowFullscreen fires
 // OnFullscreenStateChanged.
 #if !BUILDFLAG(IS_MAC)
   waiter.Wait();

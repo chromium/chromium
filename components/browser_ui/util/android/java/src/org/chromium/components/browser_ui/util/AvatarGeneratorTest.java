@@ -116,7 +116,7 @@ public class AvatarGeneratorTest {
                         AvatarGenerator.makeRoundAvatar(mResources, mergedAvatar, IMAGE_SIZE_PX);
 
         assertTrue(separateAvatarsOutput.getBitmap().sameAs(mergedAvatarOutput.getBitmap()));
-        // TODO(crbug.com/1504098): Add another test that compares the result of  makeRoundAvatar()
+        // TODO(crbug.com/40944605): Add another test that compares the result of  makeRoundAvatar()
         // with a pre-computed Bitmap.
     }
 

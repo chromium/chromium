@@ -5,10 +5,11 @@
 #ifndef UI_COMPOSITOR_PRESENTATION_TIME_RECORDER_H_
 #define UI_COMPOSITOR_PRESENTATION_TIME_RECORDER_H_
 
+#include <optional>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "ui/compositor/compositor.h"
 
@@ -24,6 +25,29 @@ namespace ui {
 class COMPOSITOR_EXPORT PresentationTimeRecorder {
  public:
   class PresentationTimeRecorderInternal;
+
+  struct COMPOSITOR_EXPORT BucketParams {
+    BucketParams();
+    BucketParams(base::TimeDelta min_latency,
+                 base::TimeDelta max_latency,
+                 int num_buckets);
+    BucketParams(const BucketParams&);
+    BucketParams& operator=(const BucketParams&);
+    ~BucketParams();
+
+    static BucketParams CreateWithMaximum(base::TimeDelta max_latency);
+
+    // Minimum expected latency. All samples less than this will go in underflow
+    // bucket.
+    base::TimeDelta min_latency = base::Milliseconds(1);
+    // Maximum expected latency. All samples greater than this will go in
+    // overflow bucket.
+    base::TimeDelta max_latency = base::Milliseconds(200);
+    // Number of buckets between `min_latency` and `max_latency` (uses default
+    // exponential bucketing).
+    int num_buckets = 50;
+  };
+
   class COMPOSITOR_EXPORT TestApi {
    public:
     explicit TestApi(PresentationTimeRecorder* recorder);
@@ -34,14 +58,14 @@ class COMPOSITOR_EXPORT PresentationTimeRecorder {
     void OnCompositingDidCommit(ui::Compositor* compositor);
     void OnPresented(int count,
                      base::TimeTicks requested_time,
-                     base::TimeTicks presentation_timestamp);
+                     const viz::FrameTimingDetails& frame_timing_details);
 
    private:
     raw_ptr<PresentationTimeRecorder> recorder_;
   };
 
   explicit PresentationTimeRecorder(
-      std::unique_ptr<PresentationTimeRecorderInternal> internal);
+      raw_ptr<PresentationTimeRecorderInternal> internal);
 
   PresentationTimeRecorder(const PresentationTimeRecorder&) = delete;
   PresentationTimeRecorder& operator=(const PresentationTimeRecorder&) = delete;
@@ -52,12 +76,18 @@ class COMPOSITOR_EXPORT PresentationTimeRecorder {
   // false if the previous frame has not been committed yet.
   bool RequestNext();
 
+  // Returns the average latency of all recordings thus far. Returns `nullopt`
+  // if no recordings have been made.
+  std::optional<base::TimeDelta> GetAverageLatency() const;
+
   // Enable this to report the presentation time immediately with
   // fake value when RequestNext is called.
   static void SetReportPresentationTimeImmediatelyForTest(bool enable);
 
  private:
-  std::unique_ptr<PresentationTimeRecorderInternal> recorder_internal_;
+  // `PresentationTimeRecorderInternal` owns itself. Self destruct when
+  // recording is done or on shutdown (whichever comes first).
+  raw_ptr<PresentationTimeRecorderInternal> recorder_internal_ = nullptr;
 };
 
 // Creates a PresentationTimeRecorder that records timing histograms of
@@ -68,7 +98,9 @@ CreatePresentationTimeHistogramRecorder(
     ui::Compositor* compositor,
     const char* presentation_time_histogram_name,
     const char* max_latency_histogram_name = "",
-    base::TimeDelta maximum = base::Milliseconds(200));
+    PresentationTimeRecorder::BucketParams bucket_params =
+        PresentationTimeRecorder::BucketParams(),
+    bool emit_trace_event = false);
 
 }  // namespace ui
 

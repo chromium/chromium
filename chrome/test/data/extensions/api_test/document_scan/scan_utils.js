@@ -54,11 +54,14 @@ async function getScannerHandle() {
   return openResponse.scannerHandle;
 }
 
-async function startScan(scannerHandle) {
+async function startScan(scannerHandle, maxReadSize) {
   return new Promise(resolve => {
-    const options = {
+    let options = {
       format: 'format',
     };
+    if (maxReadSize != undefined) {
+      options['maxReadSize'] = maxReadSize;
+    }
     chrome.documentScan.startScan(scannerHandle, options, resolve);
   });
 }

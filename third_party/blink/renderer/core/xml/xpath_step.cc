@@ -236,7 +236,7 @@ static inline bool NodeMatchesBasicTest(Node* node,
              namespace_uri == element->namespaceURI();
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -468,7 +468,7 @@ void Step::NodesInAxis(EvaluationContext& evaluation_context,
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace xpath

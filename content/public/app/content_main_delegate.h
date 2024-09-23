@@ -139,6 +139,14 @@ class CONTENT_EXPORT ContentMainDelegate {
   // VariationsIdsProvider is a singleton.
   virtual variations::VariationsIdsProvider* CreateVariationsIdsProvider();
 
+  // Called when it's time to create a base::ThreadPoolInstance for the
+  // browser process. This is not exposed in ContentBrowserClient
+  // because it needs to happen before ContentBrowserClient is created.
+  //
+  // Note: The embedder must *not* start the created ThreadPoolInstance. That
+  // will be done by //content when appropriate.
+  virtual void CreateThreadPool(std::string_view name);
+
   // Allows the embedder to perform its own initialization after early content
   // initialization.
   //

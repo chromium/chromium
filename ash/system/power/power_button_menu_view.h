@@ -8,7 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/shutdown_reason.h"
 #include "ash/system/power/power_button_controller.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/view.h"
@@ -71,13 +71,11 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
   // constructed. Adds/removes menu items as needed.
   void RecreateItems();
 
-  // views::View:
-  const char* GetClassName() const override;
-
  private:
   // views::View:
   void Layout(PassKey) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
@@ -86,21 +84,11 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
                      base::RepeatingClosure callback);
 
   // Items in the menu. Owned by views hierarchy.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION PowerButtonMenuItemView* power_off_item_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION PowerButtonMenuItemView* sign_out_item_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION PowerButtonMenuItemView* lock_screen_item_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION PowerButtonMenuItemView* capture_mode_item_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION PowerButtonMenuItemView* feedback_item_ = nullptr;
+  raw_ptr<PowerButtonMenuItemView> power_off_item_ = nullptr;
+  raw_ptr<PowerButtonMenuItemView> sign_out_item_ = nullptr;
+  raw_ptr<PowerButtonMenuItemView> lock_screen_item_ = nullptr;
+  raw_ptr<PowerButtonMenuItemView> capture_mode_item_ = nullptr;
+  raw_ptr<PowerButtonMenuItemView> feedback_item_ = nullptr;
 
   ShutdownReason shutdown_reason_;
   // The physical display side of power button in landscape primary.

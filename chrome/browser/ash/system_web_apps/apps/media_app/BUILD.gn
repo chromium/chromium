@@ -1,0 +1,125 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("media_app") {
+  sources = [
+    "chrome_media_app_ui_delegate.cc",
+    "chrome_media_app_ui_delegate.h",
+    "media_app_guest_ui_config.cc",
+    "media_app_guest_ui_config.h",
+    "media_web_app_info.cc",
+    "media_web_app_info.h",
+  ]
+
+  public_deps = [
+    "//ash/webui/media_app_ui",
+    "//ash/webui/media_app_ui:mojo_bindings_untrusted",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/system_web_apps/types",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//storage/browser",
+    "//third_party/blink/public/mojom:mojom_platform",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/webui/media_app_ui:buildflags",
+    "//ash/webui/resources:media_app_bundle_resources",
+    "//ash/webui/resources:media_app_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/hats",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/feedback",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chrome/common",
+    "//chrome/common:channel_info",
+    "//chrome/common:constants",
+    "//chromeos/components/mahi/public/cpp",
+    "//chromeos/strings",
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/services/app_service",
+    "//components/services/app_service/public/cpp:instance_update",
+    "//components/version_info:channel",
+    "//skia",
+    "//ui/base",
+    "//ui/chromeos/styles:cros_styles_views",
+    "//ui/chromeos/styles:cros_styles_views_generator",
+    "//ui/events:event_constants",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "media_app_integration_browsertest.cc",
+    "media_app_ocr_integration_browsertest.cc",
+  ]
+
+  deps = [
+    ":media_app",
+    "//ash/constants",
+    "//ash/webui/media_app_ui",
+    "//ash/webui/media_app_ui:browser_test_support",
+    "//ash/webui/media_app_ui:buildflags",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/file_manager:test_support",
+    "//chrome/browser/ash/hats",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/error_reporting:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/web_applications",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/dbus/cros_disks",
+    "//chromeos/ash/components/settings",
+    "//chromeos/constants",
+    "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
+    "//components/services/app_service",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//media",
+    "//services/media_session/public/mojom",
+    "//storage/browser",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//ui/aura",
+    "//ui/gfx:color_utils",
+    "//ui/message_center/public/cpp",
+  ]
+}

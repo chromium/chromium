@@ -19,17 +19,19 @@ PictureDrawQuad::PictureDrawQuad(const PictureDrawQuad& other) = default;
 
 PictureDrawQuad::~PictureDrawQuad() = default;
 
-void PictureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
-                             const gfx::Rect& rect,
-                             const gfx::Rect& visible_rect,
-                             bool needs_blending,
-                             const gfx::RectF& tex_coord_rect,
-                             const gfx::Size& texture_size,
-                             bool nearest_neighbor,
-                             const gfx::Rect& content,
-                             float scale,
-                             ImageAnimationMap animation_map,
-                             scoped_refptr<cc::DisplayItemList> display_items) {
+void PictureDrawQuad::SetNew(
+    const SharedQuadState* shared_quad_state,
+    const gfx::Rect& rect,
+    const gfx::Rect& visible_rect,
+    bool needs_blending,
+    const gfx::RectF& tex_coord_rect,
+    const gfx::Size& texture_size,
+    bool nearest_neighbor,
+    const gfx::Rect& content,
+    float scale,
+    ImageAnimationMap animation_map,
+    scoped_refptr<const cc::DisplayItemList> display_items,
+    cc::ScrollOffsetMap raster_inducing_scrolls) {
   ContentDrawQuadBase::SetNew(shared_quad_state,
                               DrawQuad::Material::kPictureContent, rect,
                               visible_rect, needs_blending, tex_coord_rect,
@@ -38,6 +40,7 @@ void PictureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
   contents_scale = scale;
   image_animation_map = std::move(animation_map);
   display_item_list = std::move(display_items);
+  raster_inducing_scroll_offsets = std::move(raster_inducing_scrolls);
 }
 
 const PictureDrawQuad* PictureDrawQuad::MaterialCast(const DrawQuad* quad) {

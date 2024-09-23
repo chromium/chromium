@@ -33,7 +33,6 @@ arc::mojom::PrintDuplexMode ToArcDuplexMode(printing::mojom::DuplexMode mode) {
     default:
       NOTREACHED();
   }
-  return arc::mojom::PrintDuplexMode::NONE;
 }
 
 }  // namespace

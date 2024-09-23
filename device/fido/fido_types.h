@@ -88,17 +88,21 @@ enum class LargeBlobSupportType {
   // The `largeBlob` extension that includes blob data directly in getAssertion
   // commands.
   kExtension,
+  // An authenticator-specific, non-CTAP way to support large blobs. E.g. the
+  // Windows API large blob options.
+  kBespoke,
 };
 
 // AuthenticatorType enumerates the different types of authenticators that this
 // code handles.
 enum class AuthenticatorType {
-  kWinNative,       // i.e. webauthn.dll
-  kTouchID,         // the Chrome-native Touch ID integration on macOS
-  kChromeOS,        // the platform authenticator on Chrome OS
-  kPhone,           // the credential can be exercised via hybrid CTAP
-  kICloudKeychain,  // iCloud Keychain on macOS
-  kEnclave,         // cloud enclave service
+  kWinNative,         // i.e. webauthn.dll
+  kTouchID,           // the Chrome-native Touch ID integration on macOS
+  kChromeOS,          // the u2fd-based platform authenticator on Chrome OS
+  kPhone,             // the credential can be exercised via hybrid CTAP
+  kICloudKeychain,    // iCloud Keychain on macOS
+  kEnclave,           // cloud enclave service
+  kChromeOSPasskeys,  // GPM Passkeys on ChromeOS
   kOther,
 };
 

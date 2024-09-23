@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab.tab_restore;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -14,9 +16,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBulkEvent;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
@@ -27,6 +35,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.TabTestUtils;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -34,7 +43,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabRestoreServiceUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +62,7 @@ import java.util.Map;
     ChromeSwitches.DISABLE_STARTUP_PROMOS
 })
 @Batch(Batch.PER_CLASS)
+@DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
 public class HistoricalTabSaverImplTest {
     private static final String TEST_PAGE_1 = "/chrome/test/data/android/about.html";
     private static final String TEST_PAGE_2 = "/chrome/test/data/android/simple.html";
@@ -88,6 +98,7 @@ public class HistoricalTabSaverImplTest {
     @After
     public void tearDown() {
         TabRestoreServiceUtils.clearEntries(mTabModelSelector);
+        mHistoricalTabSaver.destroy();
     }
 
     /**
@@ -136,8 +147,7 @@ public class HistoricalTabSaverImplTest {
                 sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /* incognito= */ false);
         final Tab frozenTab = freezeTab(tab);
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> TabTestUtils.setWebContentsState(frozenTab, null));
+        runOnUiThreadBlocking(() -> TabTestUtils.setWebContentsState(frozenTab, null));
         // Clear the entry created by freezing the tab.
         TabRestoreServiceUtils.clearEntries(mTabModelSelector);
 
@@ -157,7 +167,12 @@ public class HistoricalTabSaverImplTest {
                 sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_2), /* incognito= */ false);
 
         HistoricalEntry group =
-                new HistoricalEntry(0, "Foo", Arrays.asList(new Tab[] {tab0, tab1}));
+                new HistoricalEntry(
+                        0,
+                        null,
+                        "Foo",
+                        TabGroupColorId.GREY,
+                        Arrays.asList(new Tab[] {tab0, tab1}));
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
 
         ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
@@ -185,7 +200,12 @@ public class HistoricalTabSaverImplTest {
         TabRestoreServiceUtils.clearEntries(mTabModelSelector);
 
         HistoricalEntry group =
-                new HistoricalEntry(0, "Foo", Arrays.asList(new Tab[] {frozenTab0, frozenTab1}));
+                new HistoricalEntry(
+                        0,
+                        null,
+                        "Foo",
+                        TabGroupColorId.GREY,
+                        Arrays.asList(new Tab[] {frozenTab0, frozenTab1}));
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
 
         ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
@@ -209,15 +229,18 @@ public class HistoricalTabSaverImplTest {
         final Tab frozenTab0 = freezeTab(tab0);
         final Tab frozenTab1 = freezeTab(tab1);
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> TabTestUtils.setWebContentsState(frozenTab0, null));
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> TabTestUtils.setWebContentsState(frozenTab1, null));
+        runOnUiThreadBlocking(() -> TabTestUtils.setWebContentsState(frozenTab0, null));
+        runOnUiThreadBlocking(() -> TabTestUtils.setWebContentsState(frozenTab1, null));
         // Clear the entry created by freezing the tab.
         TabRestoreServiceUtils.clearEntries(mTabModelSelector);
 
         HistoricalEntry group =
-                new HistoricalEntry(0, "Foo", Arrays.asList(new Tab[] {frozenTab0, frozenTab1}));
+                new HistoricalEntry(
+                        0,
+                        null,
+                        "Foo",
+                        TabGroupColorId.GREY,
+                        Arrays.asList(new Tab[] {frozenTab0, frozenTab1}));
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
 
         List<List<HistoricalEntry>> empty = new ArrayList<List<HistoricalEntry>>();
@@ -236,7 +259,9 @@ public class HistoricalTabSaverImplTest {
         final Tab tab1 =
                 sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_2), /* incognito= */ false);
 
-        HistoricalEntry group = new HistoricalEntry(0, null, Arrays.asList(new Tab[] {tab0, tab1}));
+        HistoricalEntry group =
+                new HistoricalEntry(
+                        0, null, null, TabGroupColorId.GREY, Arrays.asList(new Tab[] {tab0, tab1}));
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
 
         ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
@@ -262,7 +287,13 @@ public class HistoricalTabSaverImplTest {
 
         ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
         expectedEntries.add(new HistoricalEntry(tab0));
-        expectedEntries.add(new HistoricalEntry(1, "baz", Arrays.asList(new Tab[] {tab1, tab2})));
+        expectedEntries.add(
+                new HistoricalEntry(
+                        1,
+                        null,
+                        "baz",
+                        TabGroupColorId.GREY,
+                        Arrays.asList(new Tab[] {tab1, tab2})));
         expectedEntries.add(new HistoricalEntry(tab3));
         TabRestoreServiceUtils.createWindowEntry(mTabModel, expectedEntries);
 
@@ -312,10 +343,8 @@ public class HistoricalTabSaverImplTest {
         final Tab frozenTab0 = freezeTab(tab0);
         final Tab frozenTab1 = freezeTab(tab1);
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> TabTestUtils.setWebContentsState(frozenTab0, null));
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> TabTestUtils.setWebContentsState(frozenTab1, null));
+        runOnUiThreadBlocking(() -> TabTestUtils.setWebContentsState(frozenTab0, null));
+        runOnUiThreadBlocking(() -> TabTestUtils.setWebContentsState(frozenTab1, null));
         // Clear the entry created by freezing the tab.
         TabRestoreServiceUtils.clearEntries(mTabModelSelector);
 
@@ -345,12 +374,23 @@ public class HistoricalTabSaverImplTest {
 
         ArrayList<HistoricalEntry> window = new ArrayList<>();
         window.add(new HistoricalEntry(tab0));
-        window.add(new HistoricalEntry(5, "baz", Arrays.asList(new Tab[] {tab1, tab2})));
+        window.add(
+                new HistoricalEntry(
+                        5,
+                        null,
+                        "baz",
+                        TabGroupColorId.GREY,
+                        Arrays.asList(new Tab[] {tab1, tab2})));
         TabRestoreServiceUtils.createWindowEntry(mTabModel, window);
         expectedEntries.add(window);
 
         HistoricalEntry group =
-                new HistoricalEntry(3, "group", Arrays.asList(new Tab[] {tab3, tab2}));
+                new HistoricalEntry(
+                        3,
+                        null,
+                        "group",
+                        TabGroupColorId.BLUE,
+                        Arrays.asList(new Tab[] {tab3, tab2}));
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
         expectedEntries.add(Arrays.asList(new HistoricalEntry[] {group}));
 
@@ -382,12 +422,55 @@ public class HistoricalTabSaverImplTest {
         assertEntriesAre(empty);
 
         HistoricalEntry group =
-                new HistoricalEntry(0, "bar", Arrays.asList(new Tab[] {tab1, tab2}));
+                new HistoricalEntry(
+                        0,
+                        null,
+                        "bar",
+                        TabGroupColorId.GREY,
+                        Arrays.asList(new Tab[] {tab1, tab2}));
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
         assertEntriesAre(empty);
 
         TabRestoreServiceUtils.createWindowEntry(
                 mTabModel, Arrays.asList(new HistoricalEntry[] {new HistoricalEntry(tab0), group}));
+        assertEntriesAre(empty);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
+    public void testArchivedTabsAreExcluded() {
+        ArchivedTabModelOrchestrator archivedTabModelOrchestrator =
+                runOnUiThreadBlocking(
+                        () ->
+                                ArchivedTabModelOrchestrator.getForProfile(
+                                        sActivityTestRule
+                                                .getActivity()
+                                                .getProfileProviderSupplier()
+                                                .get()
+                                                .getOriginalProfile()));
+        CriteriaHelper.pollUiThread(() -> archivedTabModelOrchestrator.getTabArchiver() != null);
+
+        Supplier<TabModel> archivedTabModelSupplier = archivedTabModelOrchestrator::getTabModel;
+        mHistoricalTabSaver.addSecodaryTabModelSupplier(archivedTabModelSupplier);
+
+        runOnUiThreadBlocking(
+                () -> {
+                    archivedTabModelOrchestrator
+                            .getTabArchiver()
+                            .archiveAndRemoveTab(mTabModel, mTabModel.getTabAt(0));
+                });
+        List<List<HistoricalEntry>> empty = new ArrayList<List<HistoricalEntry>>();
+        assertEntriesAre(empty);
+
+        runOnUiThreadBlocking(
+                () -> {
+                    archivedTabModelOrchestrator
+                            .getTabArchiver()
+                            .unarchiveAndRestoreTab(
+                                    mActivity.getTabCreator(/* incognito= */ false),
+                                    archivedTabModelSupplier.get().getTabAt(0));
+                });
         assertEntriesAre(empty);
     }
 
@@ -490,7 +573,7 @@ public class HistoricalTabSaverImplTest {
         Assert.assertEquals(
                 "Entry " + i + " group count mismatch.",
                 new HashSet<String>(groupTitles.values()).size(),
-                recentBulk.getGroupIdToTitleMap().size());
+                recentBulk.getTabGroupIdToTitleMap().size());
         for (int j = 0; j < expectedTabs.size(); j++) {
             Assert.assertEquals(
                     "Entry " + i + " tab " + j + " title mismatch.",
@@ -504,17 +587,19 @@ public class HistoricalTabSaverImplTest {
                     "Entry " + i + " tab " + j + " group mismatch.",
                     groupTitles.get(expectedTabs.get(j)),
                     recentBulk
-                            .getGroupIdToTitleMap()
-                            .get(recentBulk.getTabs().get(j).getGroupId()));
+                            .getTabGroupIdToTitleMap()
+                            .get(recentBulk.getTabs().get(j).getTabGroupId()));
         }
     }
 
     private Tab freezeTab(Tab tab) {
         Tab[] frozen = new Tab[1];
-        TestThreadUtils.runOnUiThreadBlocking(
+        runOnUiThreadBlocking(
                 () -> {
                     TabState state = TabStateExtractor.from(tab);
-                    mActivity.getCurrentTabModel().closeTab(tab);
+                    mActivity
+                            .getCurrentTabModel()
+                            .closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
                     frozen[0] =
                             mActivity.getCurrentTabCreator().createFrozenTab(state, tab.getId(), 1);
                 });
@@ -526,11 +611,9 @@ public class HistoricalTabSaverImplTest {
     }
 
     private void selectFirstTab() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        runOnUiThreadBlocking(
                 () -> {
-                    mTabModelSelector
-                            .getCurrentModel()
-                            .setIndex(0, TabSelectionType.FROM_USER, false);
+                    mTabModelSelector.getCurrentModel().setIndex(0, TabSelectionType.FROM_USER);
                 });
     }
 }

@@ -36,6 +36,10 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kIpProtectionAuthScope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kParentApprovalOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPeopleApiReadOnlyOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kPeopleApiReadWriteOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kProfileLanguageReadOnlyOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kProgrammaticChallengeOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAccountsReauthOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAuditRecordingOAuth2Scope[];
@@ -59,7 +63,7 @@ extern const char kExperimentsAndConfigsOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kDriveReadOnlyOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAssistantOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
-extern const char kCloudPlatformProjectsOAuth2Scope[];
+extern const char kNearbyDevicesOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kNearbyShareOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kNearbyPresenceOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGCMGroupServerOAuth2Scope[];
@@ -75,11 +79,17 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kFeedOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kKAnonymityServiceOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kCalendarReadOnlyOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPasskeysEnclaveOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kCloudSearchQueryOAuth2Scope[];
 
 // OAuth 2 scopes for Google Tasks API.
 // https://developers.google.com/identity/protocols/oauth2/scopes#tasks
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTasksReadOnlyOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTasksOAuth2Scope[];
+
+// OAuth 2 scope for YouTube Music API.
+// https://developers.google.com/youtube/mediaconnect/guides/authentication#identify-access-scopes
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kYouTubeMusicOAuth2Scope[];
 
 // OAuth 2 scopes for Google Classroom API.
 // https://developers.google.com/identity/protocols/oauth2/scopes#classroom
@@ -88,17 +98,22 @@ extern const char kClassroomReadOnlyCoursesOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kClassroomReadOnlyCourseWorkSelfOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
-extern const char kClassroomReadOnlyCourseWorkStudentsOAuth2Scope[];
-COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
-extern const char kClassroomReadOnlyStudentSubmissionsStudentsOAuth2Scope[];
+extern const char kClassroomReadOnlyRostersOAuth2Scope[];
 
 // OAuth2 scopes for Optimization Guide.
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kOptimizationGuideServiceGetHintsOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kOptimizationGuideServiceModelExecutionOAuth2Scope[];
+
+// OAuth2 scopes for Lens.
+COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kLensOAuth2Scope[];
+
+// OAuth2 scope for DevTools GenAI features.
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAidaOAuth2Scope[];
 
 // Used by wallet sign in helper.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kClientOAuthEmailKey[];

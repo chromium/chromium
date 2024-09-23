@@ -634,6 +634,20 @@ not branching a builder that runs tests on a very small set of machines: with
 limited capacity, it would be overwhelmed with additional builds happening on
 the branch.
 
+## Testing your new builder
+
+The builder must be registered before it can be tested with `led`. The best
+practice is to create the builder with no gardening rotation, no tree closing,
+and no `tryjob()` entry.
+
+After the CL lands and the builder is registered it can be tested with
+[`led`][33].
+
+Once the builder is green then gardening rotation, tree closing, and/or tryjob
+settings can be changed. The gardening rotation can be unset if there is a
+module-level default with `sheriff_rotations = args.ignore_default(None)` and
+tree closing can be disabled with `tree_closing = False`.
+
 ## Questions? Feedback?
 
 If you're in need of further assistance, if you're not sure about
@@ -669,3 +683,4 @@ reach out to infra-dev@chromium.org or [file a bug][19]!
 [30]: /docs/infra/glossary.md
 [31]: https://chrome-internal.googlesource.com/infradata/config/+/refs/heads/main/configs/chromium-swarm/starlark/bots/chromium/ci/ci.star
 [32]: https://chrome-internal.googlesource.com/infradata/config/+/refs/heads/main/configs/chromium-swarm/starlark/bots/chromium/try.star
+[33]: chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/infra/using_led.md

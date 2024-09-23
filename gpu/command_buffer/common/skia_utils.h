@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <optional>
+
 #include "gpu/raster_export.h"
 
 class GrDirectContext;

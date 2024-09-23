@@ -63,7 +63,6 @@ class DCompSurfaceSkiaGaneshImageRepresentation
   scoped_refptr<SharedContextState> context_state_;
 };
 
-#if BUILDFLAG(USE_DAWN)
 // See DCompSurfaceImageBacking::ProduceSkiaGraphite for more information.
 class DCompSurfaceDawnImageRepresentation : public DawnImageRepresentation {
  public:
@@ -75,15 +74,16 @@ class DCompSurfaceDawnImageRepresentation : public DawnImageRepresentation {
   ~DCompSurfaceDawnImageRepresentation() override;
 
   wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                            wgpu::TextureUsage internal_usage,
                             const gfx::Rect& update_rect) override;
-  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override;
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                            wgpu::TextureUsage internal_usage) override;
   void EndAccess() override;
 
  private:
   const wgpu::Device device_;
   wgpu::Texture texture_;
 };
-#endif  // BUILDFLAG(USE_DAWN)
 
 }  // namespace gpu
 

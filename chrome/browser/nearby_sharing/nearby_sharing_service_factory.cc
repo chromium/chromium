@@ -16,14 +16,14 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
-#include "chrome/browser/nearby_sharing/nearby_connections_manager_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 #include "chrome/browser/nearby_sharing/power_client_chromeos.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/wifi_network_configuration/wifi_network_configuration_handler.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager_impl.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -56,8 +56,7 @@ bool NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
     return *IsSupportedTesting();
   }
 
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kAllowCrossDeviceFeatureSuite)) {
+  if (!ash::features::IsCrossDeviceFeatureSuiteAllowed()) {
     return false;
   }
 
@@ -100,7 +99,14 @@ void NearbySharingServiceFactory::
 
 NearbySharingServiceFactory::NearbySharingServiceFactory()
     // Nearby Sharing features are disabled in incognito.
-    : ProfileKeyedServiceFactory(kServiceName) {
+    : ProfileKeyedServiceFactory(
+          kServiceName,
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ash::nearby::NearbyProcessManagerFactory::GetInstance());
   DependsOn(NotificationDisplayServiceFactory::GetInstance());

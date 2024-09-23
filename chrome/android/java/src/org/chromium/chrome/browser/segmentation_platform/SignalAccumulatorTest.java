@@ -51,12 +51,14 @@ public class SignalAccumulatorTest {
     @Test
     public void testAllSignalsBeforeTimeout() throws TimeoutException {
         List<ActionProvider> actionProviders = new ArrayList<>();
-        ActionProvider dummyProvider =
+        ActionProvider actionProvider =
                 (tab, accumulator) -> {
                     accumulator.setHasPriceTracking(true);
                     accumulator.setHasReaderMode(false);
+                    accumulator.setHasPriceInsights(true);
+                    accumulator.setHasDiscounts(true);
                 };
-        actionProviders.add(dummyProvider);
+        actionProviders.add(actionProvider);
         final CallbackHelper callbackHelper = new CallbackHelper();
         int callCount = callbackHelper.getCallCount();
         SignalAccumulator accumulator = new SignalAccumulator(mHandler, mMockTab, actionProviders);
@@ -64,6 +66,8 @@ public class SignalAccumulatorTest {
         callbackHelper.waitForCallback(callCount);
         Assert.assertTrue(accumulator.hasPriceTracking());
         Assert.assertFalse(accumulator.hasReaderMode());
+        Assert.assertTrue(accumulator.hasPriceInsights());
+        Assert.assertTrue(accumulator.hasDiscounts());
     }
 
     @Test
@@ -76,5 +80,7 @@ public class SignalAccumulatorTest {
         callbackHelper.waitForCallback(callCount);
         Assert.assertFalse(accumulator.hasPriceTracking());
         Assert.assertFalse(accumulator.hasReaderMode());
+        Assert.assertFalse(accumulator.hasPriceInsights());
+        Assert.assertFalse(accumulator.hasDiscounts());
     }
 }

@@ -1,0 +1,33 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_phase_latencies_metadata.proto";
+
+message LensOverlayClientLogs {
+  // The phase latency metadata for any image preprocessing required for the
+  // request.
+  optional LensOverlayPhaseLatenciesMetadata phase_latencies_metadata = 1;
+
+  enum LensOverlayEntryPoint {
+    UNKNOWN_ENTRY_POINT = 0;
+    APP_MENU = 1;
+    PAGE_CONTEXT_MENU = 2;
+    IMAGE_CONTEXT_MENU = 3;
+    OMNIBOX_BUTTON = 4;
+    TOOLBAR_BUTTON = 5;
+    FIND_IN_PAGE = 6;
+  }
+
+  // The Lens Overlay entry point used to access lens.
+  optional LensOverlayEntryPoint lens_overlay_entry_point = 2;
+
+  // A unique identifier for associating events logged by lens asynchronously.
+  optional uint64 paella_id = 3;
+}

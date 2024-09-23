@@ -230,6 +230,12 @@ ASH_EXPORT chromeos::FrameHeader* GetWindowFrameHeader(aura::Window* window);
 // the given non-root `window` is being captured.
 ASH_EXPORT gfx::Rect GetCaptureWindowConfineBounds(aura::Window* window);
 
+// Returns the `partial_region_bounds` clamped to the bounds of the the
+// `root_window`. It should only be called if in region video recording mode.
+gfx::Rect GetEffectivePartialRegionBounds(
+    const gfx::Rect& partial_region_bounds,
+    aura::Window* root_window);
+
 }  // namespace capture_mode_util
 
 }  // namespace ash

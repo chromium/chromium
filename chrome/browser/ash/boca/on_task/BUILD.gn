@@ -1,0 +1,90 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "OnTask is only supported in Ash")
+
+static_library("on_task") {
+  sources = [
+    "locked_session_window_tracker_factory.cc",
+    "locked_session_window_tracker_factory.h",
+    "on_task_locked_session_navigation_throttle.cc",
+    "on_task_locked_session_navigation_throttle.h",
+    "on_task_locked_session_window_tracker.cc",
+    "on_task_locked_session_window_tracker.h",
+    "on_task_system_web_app_manager_impl.cc",
+    "on_task_system_web_app_manager_impl.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/boca_ui",
+    "//base",
+    "//chrome/browser/apps/app_service",
+
+    # Explicitly depend on boca to get around with circular dependency on
+    # //chrome/browser/apps/almanac_api_client:almanac_api_client
+    "//chrome/browser/ash/boca",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/chromeos",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca/on_task",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/keyed_service/content",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/user_prefs",
+    "//ui/base",
+    "//ui/chromeos",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/boca" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "on_task_locked_session_window_tracker_unittest.cc" ]
+
+  deps = [
+    ":on_task",
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash:test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "on_task_system_web_app_manager_impl_browsertest.cc" ]
+
+  deps = [
+    ":on_task",
+    "//base/test:test_support",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/test:test_support",
+  ]
+}

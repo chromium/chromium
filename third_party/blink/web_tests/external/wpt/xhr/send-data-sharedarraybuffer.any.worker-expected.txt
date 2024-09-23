@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] sending a Float16Array backed by a SharedArrayBuffer
+  self[type] is not a constructor
+Harness: the test ran to completion.
+

@@ -414,10 +414,11 @@ IDBTransaction* TransactionForDatabase(
   DummyExceptionStateForTesting exception_state;
   V8UnionStringOrStringSequence* scope =
       MakeGarbageCollected<V8UnionStringOrStringSequence>(object_store_name);
-  IDBTransactionOptions options;
-  options.setDurability("relaxed");
+  IDBTransactionOptions* options =
+      MakeGarbageCollected<IDBTransactionOptions>();
+  options->setDurability("relaxed");
   IDBTransaction* idb_transaction = idb_database->transaction(
-      script_state, scope, mode, &options, exception_state);
+      script_state, scope, mode, options, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }
@@ -465,7 +466,7 @@ std::unique_ptr<KeyPath> KeyPathFromIDBKeyPath(const IDBKeyPath& idb_key_path) {
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return key_path;
@@ -715,7 +716,7 @@ class OpenCursorCallback final : public NativeEventListener {
   }
 
  private:
-  raw_ptr<v8_inspector::V8InspectorSession, ExperimentalRenderer> v8_session_;
+  raw_ptr<v8_inspector::V8InspectorSession> v8_session_;
   Member<ScriptState> script_state_;
   std::unique_ptr<RequestDataCallback> request_callback_;
   int skip_count_;
@@ -796,7 +797,7 @@ class DataLoader final : public ExecutableWithDatabase<RequestDataCallback> {
         skip_count_(skip_count),
         page_size_(page_size) {}
 
-  raw_ptr<v8_inspector::V8InspectorSession, ExperimentalRenderer> v8_session_;
+  raw_ptr<v8_inspector::V8InspectorSession> v8_session_;
   std::unique_ptr<RequestDataCallback> request_callback_;
   String object_store_name_;
   String index_name_;
@@ -958,7 +959,7 @@ class GetMetadataListener final : public NativeEventListener {
   void NotifySubtaskDone(scoped_refptr<GetMetadata> owner,
                          const String& error) const;
   scoped_refptr<GetMetadata> owner_;
-  raw_ptr<int64_t, ExperimentalRenderer> result_;
+  raw_ptr<int64_t> result_;
 };
 
 class GetMetadata final : public ExecutableWithDatabase<GetMetadataCallback> {

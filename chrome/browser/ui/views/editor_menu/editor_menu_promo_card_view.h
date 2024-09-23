@@ -5,27 +5,29 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_PROMO_CARD_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_PROMO_CARD_VIEW_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
 class Label;
 class MdTextButton;
-}
+}  // namespace views
 
 namespace chromeos::editor_menu {
 
 class EditorMenuViewDelegate;
-class PreTargetHandler;
 
 // A view which shows a promo card to introduce the Editor Menu feature.
 class EditorMenuPromoCardView : public views::View,
-                                public views::WidgetObserver {
+                                public views::WidgetObserver,
+                                public PreTargetHandler::Delegate {
   METADATA_HEADER(EditorMenuPromoCardView, views::View)
 
  public:
@@ -37,22 +39,29 @@ class EditorMenuPromoCardView : public views::View,
 
   ~EditorMenuPromoCardView() override;
 
-  static views::UniqueWidgetPtr CreateWidget(
+  static std::unique_ptr<views::Widget> CreateWidget(
       const gfx::Rect& anchor_view_bounds,
       EditorMenuViewDelegate* delegate);
 
   // views::View:
   void AddedToWidget() override;
   void RequestFocus() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  int GetHeightForWidth(int width) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
+
+  // chromeos::editor_menu::PreTargetHandler::Delegate:
+  views::View* GetRootView() override;
+  std::vector<views::View*> GetTraversableViewsByUpDownKeys() override;
+
+  views::Label* title_for_testing() { return title_; }
 
  private:
   void InitLayout();
@@ -73,6 +82,8 @@ class EditorMenuPromoCardView : public views::View,
   raw_ptr<views::Label> description_ = nullptr;
   raw_ptr<views::MdTextButton> dismiss_button_ = nullptr;
   raw_ptr<views::MdTextButton> try_it_button_ = nullptr;
+
+  bool queued_announcement_ = false;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

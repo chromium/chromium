@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"

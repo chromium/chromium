@@ -1,0 +1,103 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("system_info") {
+  sources = [
+    "battery_answer_result.cc",
+    "battery_answer_result.h",
+    "cpu_answer_result.cc",
+    "cpu_answer_result.h",
+    "memory_answer_result.cc",
+    "memory_answer_result.h",
+    "system_info_answer_result.cc",
+    "system_info_answer_result.h",
+    "system_info_card_provider.cc",
+    "system_info_card_provider.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash/settings/calculator",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//ash/strings",
+    "//ash/webui/diagnostics_ui:url_constants",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/ash/app_list/vector_icons",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/webui/ash/settings/pages/storage",
+    "//chrome/common:channel_info",
+    "//chromeos/ash/components/dbus/cicerone",
+    "//chromeos/ash/components/launcher_search",
+    "//chromeos/ash/components/string_matching",
+    "//chromeos/ash/components/system_info",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/dbus/power",
+    "//components/strings:components_strings",
+    "//components/version_info",
+    "//components/version_info:version_string",
+    "//dbus",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list/search" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "system_info_answer_result_unittest.cc",
+    "system_info_card_provider_unittest.cc",
+  ]
+
+  deps = [
+    ":system_info",
+    "//ash/components/arc/session",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/settings/pages/storage",
+    "//chrome/common:channel_info",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/spaced",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/launcher_search",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/components/system_info",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//components/version_info",
+    "//components/version_info:version_string",
+    "//content/test:test_support",
+    "//skia:skia_core_public_headers",
+    "//storage/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/gfx:gfx_skia",
+  ]
+}

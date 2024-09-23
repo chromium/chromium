@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/h265_decoder.h"
+
 #include <cstring>
 #include <memory>
 #include <string>
 
 #include "base/check.h"
+#include "base/containers/extend.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/optional_util.h"
 #include "media/base/test_data_util.h"
-#include "media/gpu/h265_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -151,7 +154,7 @@ class H265DecoderTest : public ::testing::Test {
 
  private:
   base::queue<std::string> input_frame_files_;
-  std::string bitstream_;
+  std::vector<uint8_t> bitstream_;
   scoped_refptr<DecoderBuffer> decoder_buffer_;
 };
 
@@ -194,9 +197,9 @@ AcceleratedVideoDecoder::DecodeResult H265DecoderTest::Decode(
       return result;
     auto input_file = GetTestDataFilePath(input_frame_files_.front());
     input_frame_files_.pop();
-    CHECK(base::ReadFileToString(input_file, &bitstream_));
-    decoder_buffer_ = DecoderBuffer::CopyFrom(
-        reinterpret_cast<const uint8_t*>(bitstream_.data()), bitstream_.size());
+    CHECK(
+        base::OptionalUnwrapTo(base::ReadFileToBytes(input_file), bitstream_));
+    decoder_buffer_ = DecoderBuffer::CopyFrom(bitstream_);
     EXPECT_NE(decoder_buffer_.get(), nullptr);
     if (set_stream_expect)
       EXPECT_CALL(*accelerator_, SetStream(_, _));
@@ -351,12 +354,13 @@ TEST_F(H265DecoderTest, OutputPictureFailureCausesDecodeToFail) {
 
 // Verify that the decryption config is passed to the accelerator.
 TEST_F(H265DecoderTest, SetEncryptedStream) {
-  std::string bitstream, bitstream1, bitstream2;
+  std::vector<uint8_t> bitstream1, bitstream2;
   auto input_file1 = GetTestDataFilePath(kSpsPps);
-  CHECK(base::ReadFileToString(input_file1, &bitstream1));
+  CHECK(base::OptionalUnwrapTo(base::ReadFileToBytes(input_file1), bitstream1));
   auto input_file2 = GetTestDataFilePath(kFrame0);
-  CHECK(base::ReadFileToString(input_file2, &bitstream2));
-  bitstream = bitstream1 + bitstream2;
+  CHECK(base::OptionalUnwrapTo(base::ReadFileToBytes(input_file2), bitstream2));
+  std::vector<uint8_t> bitstream = bitstream1;
+  base::Extend(bitstream, bitstream2);
 
   const char kAnyKeyId[] = "any_16byte_keyid";
   const char kAnyIv[] = "any_16byte_iv___";
@@ -376,8 +380,7 @@ TEST_F(H265DecoderTest, SetEncryptedStream) {
               SubmitDecode(DecryptConfigMatches(decrypt_config.get())))
       .WillOnce(Return(H265Decoder::H265Accelerator::Status::kOk));
 
-  auto buffer = DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(bitstream.data()), bitstream.size());
+  auto buffer = DecoderBuffer::CopyFrom(bitstream);
   ASSERT_NE(buffer.get(), nullptr);
   buffer->set_decrypt_config(std::move(decrypt_config));
   decoder_->SetStream(0, *buffer);

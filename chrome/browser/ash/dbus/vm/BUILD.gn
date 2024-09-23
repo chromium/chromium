@@ -1,0 +1,80 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("vm") {
+  sources = [
+    "plugin_vm_service_provider.cc",
+    "plugin_vm_service_provider.h",
+    "vm_applications_service_provider.cc",
+    "vm_applications_service_provider.h",
+    "vm_launch_service_provider.cc",
+    "vm_launch_service_provider.h",
+    "vm_permission_service_provider.cc",
+    "vm_permission_service_provider.h",
+    "vm_sk_forwarding_service_provider.cc",
+    "vm_sk_forwarding_service_provider.h",
+    "vm_wl_service_provider.cc",
+    "vm_wl_service_provider.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos/ash/components/dbus/services",
+    "//dbus",
+    "//ui/shell_dialogs",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/borealis",
+    "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/exo",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/views/select_file_dialog_extension",
+    "//chrome/browser/ui/webui/ash/settings/app_management",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus:plugin_vm_service_proto",
+    "//chromeos/ash/components/dbus:vm_applications_apps_proto",
+    "//chromeos/ash/components/dbus:vm_launch_proto",
+    "//chromeos/ash/components/dbus:vm_permission_service_proto",
+    "//chromeos/ash/components/dbus:vm_sk_forwarding_proto",
+    "//chromeos/ash/components/dbus:vm_wl_proto",
+    "//chromeos/ash/components/dbus/cicerone",
+    "//chromeos/ash/components/dbus/cicerone:cicerone_proto_lib",
+    "//components/prefs",
+    "//components/user_manager",
+    "//media/capture:capture_lib",
+    "//ui/base/clipboard:file_info",
+    "//ui/base/data_transfer_policy",
+    "//ui/display/types",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "vm_applications_service_provider_unittest.cc" ]
+
+  deps = [
+    ":vm",
+    "//testing/gtest",
+    "//ui/shell_dialogs",
+  ]
+}

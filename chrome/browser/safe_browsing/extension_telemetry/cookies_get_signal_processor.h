@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_js_callstacks.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal_processor.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
@@ -43,23 +44,33 @@ class CookiesGetSignalProcessor : public ExtensionSignalProcessor {
   // Max number of API arguments stored per extension.
   size_t max_arg_sets_;
 
-  // Maps concated string of arguments to GetArgsInfos.
-  using GetArgsInfos = base::flat_map<std::string, GetArgsInfo>;
+  struct CallData {
+    CallData();
+    ~CallData();
+    CallData(const CallData&);
 
-  // Stores get() arguments. If |max_arg_sets_| exceeded, arguments will not
+    // Arguments passed to the API call.
+    GetArgsInfo args_info;
+    // Multiple JS callstacks. Each stack represents an API
+    // invocation  with the same `args_info` arguments.
+    ExtensionJSCallStacks js_callstacks;
+  };
+  // Stores a map of API calls with unique argument sets.
+  // The key used is a string concatenation of the call arguments.
+  using CallDataMap = base::flat_map<std::string, CallData>;
+
+  // Stores get() arguments. If `max_arg_sets_` is exceeded, arguments will not
   // be recorded.
   struct CookiesGetStoreEntry {
     CookiesGetStoreEntry();
     ~CookiesGetStoreEntry();
     CookiesGetStoreEntry(const CookiesGetStoreEntry&);
 
-    GetArgsInfos get_args_infos;
-    // Records count of new unique arg sets after |max_arg_sets_| limit is
-    // reached.
+    CallDataMap call_data_map;
+    // Records how many unique arg sets were ignored because the
+    // `max_arg_sets_` limit was exceeded.
     size_t max_exceeded_arg_sets_count = 0;
   };
-  // Records how many unique arg sets were not recorded because |max_arg_sets_|
-  // limit was exceeded.
   using CookiesGetStore =
       base::flat_map<extensions::ExtensionId, CookiesGetStoreEntry>;
   CookiesGetStore cookies_get_store_;

@@ -1,0 +1,169 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// These Mojo structs are converted from
+// third_party/lens_server_proto/lens_overlay_text.proto and
+// third_party/lens_server_proto/lens_overlay_deep_gleam_data.proto.
+module lens.mojom;
+
+import "chrome/browser/lens/core/mojom/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "skia/public/mojom/skcolor.mojom";
+
+// The text reading order.
+enum WritingDirection {
+  kLeftToRight = 0,
+  kRightToLeft = 1,
+  kTopToBottom = 2,
+};
+
+// The text alignment.
+enum Alignment {
+  kDefaultLeftAlgined = 0,
+  kRightAligned = 1,
+  kCenterAligned = 2,
+};
+
+struct Text {
+  // Information regarding the layout and position of text.
+  TextLayout text_layout;
+
+  // Dominant content language of the text. Language code is CLDR/BCP-47.
+  string? content_language;
+};
+
+// Nested text structure.
+struct TextLayout {
+  // The actual detected text on the page in an array of paragraphs and the
+  // translated text if provided.
+  array<Paragraph> paragraphs;
+};
+
+struct Word {
+  // Required. The text in a plain text, which can be an empty string.
+  string plain_text;
+
+  // Optional. The text separator that should be appended after this word when
+  // it is concatenated with the subsequent word in the same or next
+  // line/paragraph into a single-line string.
+  string? text_separator;
+
+  // Optional. The geometry of the word.
+  Geometry? geometry;
+
+  // Optional. The text writing direction (aka reading order). All words in a
+  // paragraph must have the same writing direction.
+  WritingDirection? writing_direction;
+
+  // Optional. Metadata for formulas. This is populated for entities of
+  // `type=FORMULA`.
+  FormulaMetadata? formula_metadata;
+};
+
+struct Line {
+  // Optional. List of words in natural reading order.
+  array<Word> words;
+
+  // Optional. The geometry of the line.
+  Geometry? geometry;
+};
+
+struct BackgroundImageData {
+  // Image bytes to inpaint the source text.
+  mojo_base.mojom.BigBuffer background_image;
+
+  // Size of background_image in pixels.
+  gfx.mojom.Size image_size;
+
+  // Vertical padding to apply to the text box before drawing the background
+  // image. Expressed as a fraction of the text box height, i.e. 1.0 means
+  // that the height should be doubled. Half of the padding should be added on
+  // the top and half on the bottom.
+  float vertical_padding;
+
+  // Horizontal padding to apply to the text box before drawing the background
+  // image. Expressed as a fraction of the text box height. Half of the
+  // padding should be added on the left and half on the right.
+  float horizontal_padding;
+
+  // Text mask for the generated background image.
+  mojo_base.mojom.BigBuffer text_mask;
+};
+
+struct TranslatedLine {
+  // Optional. List of words in natural reading order.
+  array<Word> words;
+
+  // Full translation of the line.
+  string translation;
+
+  // Required. The color of the text to render.
+  skia.mojom.SkColor text_color;
+
+  // Required. The color of the background used to mask the actual text.
+  skia.mojom.SkColor background_primary_color;
+
+  // Optional. The background image data used to mask the text underneath the
+  // line.
+  BackgroundImageData? background_image_data;
+
+  // Optional. The geometry of the line.
+  Geometry? geometry;
+};
+
+// This struct is used to transport a response from a trusted server to be
+// displayed/consumed in WebUI. Specifically, any detected text that was
+// requested to be translated in the server request.
+struct TranslatedParagraph {
+  // Optional. List of lines in natural reading order (see also
+  // `writing_direction`). The amount of translated lines should be equal to the
+  // amount of lines returned in the detected text. See comment in `Paragraph`
+  // struct.
+  array<TranslatedLine> lines;
+
+  // Optional. The alignment of the text in the paragraph.
+  Alignment? alignment;
+
+  // Optional. The text writing direction (aka reading order).
+  WritingDirection? writing_direction;
+
+  // Optional. BCP-47 language code of the dominant language in this
+  // paragraph.
+  string? content_language;
+};
+
+// This struct is used to transport a response from a trusted server to be
+// displayed/consumed in WebUI.  Specifically, any detected text that was found
+// on the full page screenshot sent in the original server request.
+struct Paragraph {
+  // Optional. List of lines in natural reading order (see also
+  // `writing_direction`).
+  array<Line> lines;
+
+  // Optional. A paragraph struct corresponding to this one containing the
+  // translated text if provided. When present, the number of elements in
+  // translation.lines must match the number of elements in lines. This is
+  // normally discouraged in Mojo, but there isn't a good way to
+  // represent/enforce this sort of invariant purely through struct definitions.
+  // This is considered acceptable here, since this data only flows from a
+  // trusted source to an untrusted sink.
+  TranslatedParagraph? translation;
+
+  // Optional. Geometry of the paragraph.
+  Geometry? geometry;
+
+  // Optional. The text writing direction (aka reading order).
+  WritingDirection? writing_direction;
+
+  // Optional. BCP-47 language code of the dominant language in this
+  // paragraph.
+  string? content_language;
+};
+
+struct FormulaMetadata {
+  // Optional. LaTeX representation of a formula. Can be the same as
+  // `plain_text`. Example: "\frac{2}{x}=y".
+  string? latex;
+};

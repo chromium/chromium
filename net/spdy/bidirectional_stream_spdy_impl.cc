@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/spdy/bidirectional_stream_spdy_impl.h"
 
 #include <utility>
@@ -16,7 +21,6 @@
 #include "net/spdy/spdy_buffer.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/spdy/spdy_stream.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 
 namespace net {
 
@@ -76,7 +80,7 @@ void BidirectionalStreamSpdyImpl::Start(
 
 void BidirectionalStreamSpdyImpl::SendRequestHeaders() {
   // Request headers will be sent automatically.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 int BidirectionalStreamSpdyImpl::ReadData(IOBuffer* buf, int buf_len) {
@@ -196,13 +200,13 @@ void BidirectionalStreamSpdyImpl::OnHeadersSent() {
 }
 
 void BidirectionalStreamSpdyImpl::OnEarlyHintsReceived(
-    const spdy::Http2HeaderBlock& headers) {
+    const quiche::HttpHeaderBlock& headers) {
   DCHECK(stream_);
-  // TODO(crbug.com/671310): Plumb Early Hints to `delegate_` if needed.
+  // TODO(crbug.com/40496584): Plumb Early Hints to `delegate_` if needed.
 }
 
 void BidirectionalStreamSpdyImpl::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers) {
+    const quiche::HttpHeaderBlock& response_headers) {
   DCHECK(stream_);
 
   if (delegate_)
@@ -240,7 +244,7 @@ void BidirectionalStreamSpdyImpl::OnDataSent() {
 }
 
 void BidirectionalStreamSpdyImpl::OnTrailers(
-    const spdy::Http2HeaderBlock& trailers) {
+    const quiche::HttpHeaderBlock& trailers) {
   DCHECK(stream_);
   DCHECK(!stream_closed_);
 
@@ -285,7 +289,7 @@ NetLogSource BidirectionalStreamSpdyImpl::source_dependency() const {
 }
 
 int BidirectionalStreamSpdyImpl::SendRequestHeadersHelper() {
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   HttpRequestInfo http_request_info;
   http_request_info.url = request_info_->url;
   http_request_info.method = request_info_->method;

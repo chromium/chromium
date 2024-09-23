@@ -13,9 +13,11 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h"
 #include "components/cronet/android/cronet_url_request_adapter.h"
 #include "components/cronet/android/io_buffer_with_byte_buffer.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/cronet/android/cronet_jni_headers/CronetUploadDataStream_jni.h"
 
 using base::android::JavaParamRef;
 

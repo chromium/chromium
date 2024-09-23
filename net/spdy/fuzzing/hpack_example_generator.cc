@@ -4,12 +4,14 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/spdy/fuzzing/hpack_fuzz_util.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_constants.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_encoder.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
+#include "net/third_party/quiche/src/quiche/http2/hpack/hpack_constants.h"
+#include "net/third_party/quiche/src/quiche/http2/hpack/hpack_encoder.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 
 namespace {
@@ -58,15 +60,14 @@ int main(int argc, char** argv) {
   spdy::HpackEncoder encoder;
 
   for (int i = 0; i != example_count; ++i) {
-    spdy::Http2HeaderBlock headers =
+    quiche::HttpHeaderBlock headers =
         HpackFuzzUtil::NextGeneratedHeaderSet(&context);
 
     std::string buffer = encoder.EncodeHeaderBlock(headers);
-
     std::string prefix = HpackFuzzUtil::HeaderBlockPrefix(buffer.size());
 
-    CHECK_LT(0, file_out.WriteAtCurrentPos(prefix.data(), prefix.size()));
-    CHECK_LT(0, file_out.WriteAtCurrentPos(buffer.data(), buffer.size()));
+    CHECK(file_out.WriteAtCurrentPos(base::as_byte_span(prefix)).has_value());
+    CHECK(file_out.WriteAtCurrentPos(base::as_byte_span(buffer)).has_value());
   }
   CHECK(file_out.Flush());
   DVLOG(1) << "Generated " << example_count << " blocks.";

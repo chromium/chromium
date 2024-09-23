@@ -57,7 +57,6 @@ bool OutputStreamFileWriter::WriteIoVec(std::vector<WritableIoVec>* iovecs) {
 
 FileOffset OutputStreamFileWriter::Seek(FileOffset offset, int whence) {
   NOTREACHED();
-  return -1;
 }
 
 bool OutputStreamFileWriter::Flush() {

@@ -19,6 +19,10 @@ proto_library("key_pinning_proto") {
   ]
 }
 
+proto_library("server_certificate_database_proto") {
+  sources = [ "server_certificate_database.proto" ]
+}
+
 if (is_android) {
   java_cpp_enum("secure_dns_management_mode_generated_enum") {
     sources = [ "secure_dns_config.h" ]

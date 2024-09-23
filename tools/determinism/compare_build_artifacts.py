@@ -63,7 +63,7 @@ def get_files_to_compare(build_dir, recursive=False):
 
 def get_files_to_compare_using_isolate(build_dir):
   # First, find all .runtime_deps files in build_dir.
-  # TODO(crbug.com/1066213): This misses some files.
+  # TODO(crbug.com/40124452): This misses some files.
   runtime_deps_files = glob.glob(os.path.join(build_dir, '*.runtime_deps'))
 
   # Then, extract their contents.

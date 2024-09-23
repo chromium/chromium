@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_APPS_PLATFORM_APPS_APP_TERMINATION_OBSERVER_H_
 #define CHROME_BROWSER_APPS_PLATFORM_APPS_APP_TERMINATION_OBSERVER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -28,12 +30,15 @@ class AppTerminationObserver : public KeyedService {
 
   static BrowserContextKeyedServiceFactory* GetFactoryInstance();
 
+  // KeyedService:
+  void Shutdown() override;
+
  private:
   void OnAppTerminating();
 
   raw_ptr<content::BrowserContext> browser_context_;
 
-  base::CallbackListSubscription subscription_;
+  std::optional<base::CallbackListSubscription> subscription_;
 };
 
 }  // namespace chrome_apps

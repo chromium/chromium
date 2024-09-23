@@ -1,0 +1,58 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.ime.mojom;
+
+import "chromeos/ash/services/ime/public/mojom/user_data_japanese_dictionary.mojom";
+import "chromeos/ash/services/ime/public/mojom/user_data_japanese_legacy_config.mojom";
+
+struct Status {
+  bool success;
+  // Reason is usually given for an error response.
+  string? reason;
+};
+
+union JapaneseLegacyConfigResponse {
+  string error_reason;
+  JapaneseLegacyConfig response;
+};
+
+union JapaneseDictionaryResponse {
+  string error_reason;
+  array<JapaneseDictionary> dictionaries;
+};
+
+// InputMethodUserDataService is used to manage user data that requires the
+// IME shared library to manage.
+interface InputMethodUserDataService {
+  // Fetches the Japanese legacy config used in the extension JP system.
+  FetchJapaneseLegacyConfig() => (JapaneseLegacyConfigResponse response);
+
+  // Fetches the Japanese user dictionaries used by Japanese IME.
+  FetchJapaneseDictionary() => (JapaneseDictionaryResponse response);
+
+  // Adds an entry into the Japanese dictionary specified by the dict_id.
+  AddJapaneseDictionaryEntry(uint64 dict_id, JapaneseDictionaryEntry entry)
+      => (Status status);
+
+  // Edits an entry in the Japanese dictionary specified by the dict_id.
+  EditJapaneseDictionaryEntry(
+      uint64 dict_id, uint32 entry_index, JapaneseDictionaryEntry entry)
+      => (Status status);
+
+  // Deletes an entry at entry_index in the Japanese dictionary specified by the
+  // dict_id.
+  DeleteJapaneseDictionaryEntry(uint64 dict_id, uint32 entry_index)
+      => (Status status);
+
+  // Create a new Japanese dictionary with the name provided.
+  CreateJapaneseDictionary(string dictionary_name) => (Status status);
+
+  // Rename the Japanese dictionary specified by the dict_id.
+  RenameJapaneseDictionary(uint64 dict_id, string dictionary_name)
+      => (Status status);
+
+  // Delete the Japanese dictionary specified by the dict_id.
+  DeleteJapaneseDictionary(uint64 dict_id) => (Status status);
+};

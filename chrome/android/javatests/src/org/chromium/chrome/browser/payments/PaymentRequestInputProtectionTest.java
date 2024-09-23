@@ -11,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -19,7 +20,6 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -48,7 +48,7 @@ public class PaymentRequestInputProtectionTest {
         Assert.assertFalse(mPaymentRequestTestRule.getPaymentRequestUI().isAcceptingUserInput());
 
         // Interacting with the UI does nothing.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
                             .getPaymentRequestUI()
@@ -66,7 +66,7 @@ public class PaymentRequestInputProtectionTest {
 
         // Advance the clock and then close the UI.
         mPaymentRequestTestRule.advanceInputProtectorClock();
-        mPaymentRequestTestRule.getReadyForInput().waitForFirst();
+        mPaymentRequestTestRule.getReadyForInput().waitForOnly();
         Assert.assertTrue(mPaymentRequestTestRule.getPaymentRequestUI().isAcceptingUserInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());

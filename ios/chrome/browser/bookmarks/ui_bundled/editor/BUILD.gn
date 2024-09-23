@@ -1,0 +1,105 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("editor") {
+  sources = [
+    "bookmarks_editor_coordinator.h",
+    "bookmarks_editor_coordinator.mm",
+    "bookmarks_editor_coordinator_delegate.h",
+    "bookmarks_editor_mediator.h",
+    "bookmarks_editor_mediator.mm",
+    "bookmarks_editor_mediator_delegate.h",
+  ]
+  deps = [
+    ":editor_ui",
+    "//components/bookmarks/browser",
+    "//components/prefs",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/ui_bundled:core",
+    "//ios/chrome/browser/bookmarks/ui_bundled:utils",
+    "//ios/chrome/browser/bookmarks/ui_bundled/folder_chooser",
+    "//ios/chrome/browser/bookmarks/ui_bundled/folder_editor",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("editor_ui") {
+  sources = [
+    "bookmarks_editor_consumer.h",
+    "bookmarks_editor_mutator.h",
+    "bookmarks_editor_view_controller.h",
+    "bookmarks_editor_view_controller.mm",
+    "bookmarks_editor_view_controller_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/bookmarks/browser",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/ui_bundled:constants",
+    "//ios/chrome/browser/bookmarks/ui_bundled:core",
+    "//ios/chrome/browser/bookmarks/ui_bundled:utils",
+    "//ios/chrome/browser/bookmarks/ui_bundled/cells",
+    "//ios/chrome/browser/bookmarks/ui_bundled/folder_chooser",
+    "//ios/chrome/browser/bookmarks/ui_bundled/folder_editor",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols:icons",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view:views",
+    "//ios/chrome/browser/shared/ui/util/image",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "bookmarks_editor_view_controller_unittest.mm" ]
+  deps = [
+    ":editor",
+    ":editor_ui",
+    "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/model:test_support",
+    "//ios/chrome/browser/bookmarks/ui_bundled:constants",
+    "//ios/chrome/browser/bookmarks/ui_bundled:core",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock:ocmock",
+  ]
+}

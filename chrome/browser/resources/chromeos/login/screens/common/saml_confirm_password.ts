@@ -18,13 +18,13 @@ import '../../components/buttons/oobe_text_button.js';
 import {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {addSubmitListener} from '../../login_ui_tools.js';
 
 import {getTemplate} from './saml_confirm_password.html.js';
@@ -35,12 +35,7 @@ enum SamlConfirmPasswordState {
 }
 
 const SamlConfirmPasswordBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 interface SamlConfirmPasswordScreenData {
   email: string;
@@ -100,15 +95,16 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
 
   /** Initial UI State for screen */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): number {
-    return OOBE_UI_STATE.SAML_PASSWORD_CONFIRM;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.SAML_PASSWORD_CONFIRM;
   }
 
   /**
    * Event handler that is invoked just before the screen is shown.
    * @param data Screen init payload
    */
-  onBeforeShow(data: SamlConfirmPasswordScreenData) {
+  override onBeforeShow(data: SamlConfirmPasswordScreenData) {
+    super.onBeforeShow(data);
     this.reset();
     this.email = data['email'];
     this.isManualInput = data['manualPasswordInput'];
@@ -166,7 +162,7 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
         return;
       }
 
-      if (confirmPasswordInput.value != passwordInput.value) {
+      if (confirmPasswordInput.value !== passwordInput.value) {
         passwordInput.invalid = true;
         confirmPasswordInput.invalid = true;
         return;

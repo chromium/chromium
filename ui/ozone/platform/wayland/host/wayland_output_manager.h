@@ -42,7 +42,6 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
   void RemoveWaylandOutput(WaylandOutput::Id output_id);
 
   void InitializeAllXdgOutputs();
-  void InitializeAllZAuraOutputs();
   void InitializeAllColorManagementOutputs();
 
   // Creates a platform screen.

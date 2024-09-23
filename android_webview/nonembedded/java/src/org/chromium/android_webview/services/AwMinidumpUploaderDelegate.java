@@ -82,7 +82,7 @@ public class AwMinidumpUploaderDelegate implements MinidumpUploaderDelegate {
     public CrashReportingPermissionManager createCrashReportingPermissionManager() {
         return new CrashReportingPermissionManager() {
             @Override
-            public boolean isClientInMetricsSample() {
+            public boolean isClientInSampleForCrashes() {
                 // Downsample unknown channel as a precaution in case it ends up being shipped.
                 if (mSamplingDelegate.getChannel() == Channel.STABLE
                         || mSamplingDelegate.getChannel() == Channel.DEFAULT) {

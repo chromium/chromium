@@ -21,7 +21,7 @@ import wrapper_utils
 
 def CollectSONAME(args):
   """Replaces: readelf -d $sofile | grep SONAME"""
-  # TODO(crbug.com/1259067): Come up with a way to get this info without having
+  # TODO(crbug.com/40797404): Come up with a way to get this info without having
   # to bundle readelf in the toolchain package.
   toc = ''
   readelf = subprocess.Popen(wrapper_utils.CommandToRun(

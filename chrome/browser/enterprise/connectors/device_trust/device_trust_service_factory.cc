@@ -57,10 +57,7 @@ bool IsProfileManaged(Profile* profile) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 policy::CloudPolicyStore* GetUserCloudPolicyStore(Profile* profile) {
   policy::CloudPolicyManager* user_policy_manager =
-      profile->GetUserCloudPolicyManager();
-  if (!user_policy_manager) {
-    user_policy_manager = profile->GetProfileCloudPolicyManager();
-  }
+      profile->GetCloudPolicyManager();
   if (user_policy_manager) {
     auto* core = user_policy_manager->core();
     if (core) {
@@ -100,7 +97,12 @@ DeviceTrustService* DeviceTrustServiceFactory::GetForProfile(Profile* profile) {
 DeviceTrustServiceFactory::DeviceTrustServiceFactory()
     : ProfileKeyedServiceFactory(
           "DeviceTrustService",
-          ProfileSelections::BuildForRegularAndIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
+              .Build()) {
   DependsOn(DeviceTrustConnectorServiceFactory::GetInstance());
   DependsOn(policy::ManagementServiceFactory::GetInstance());
 

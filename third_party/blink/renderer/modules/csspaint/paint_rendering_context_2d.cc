@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
 
 #include <memory>
+
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 
 namespace blink {
@@ -99,7 +101,7 @@ sk_sp<PaintFilter> PaintRenderingContext2D::StateGetFilter() {
 PredefinedColorSpace PaintRenderingContext2D::GetDefaultImageDataColorSpace()
     const {
   // PaintRenderingContext2D does not call getImageData or createImageData.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PredefinedColorSpace::kSRGB;
 }
 

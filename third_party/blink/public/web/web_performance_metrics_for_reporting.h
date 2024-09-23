@@ -19,12 +19,16 @@ namespace blink {
 
 class WindowPerformance;
 
+struct ResourceLoadTimingsForReporting {
+  std::optional<base::TimeDelta> discovery_time = std::nullopt;
+  std::optional<base::TimeDelta> load_start = std::nullopt;
+  std::optional<base::TimeDelta> load_end = std::nullopt;
+};
+
 struct LargestContentfulPaintDetailsForReporting {
   double image_paint_time = 0;
   uint64_t image_paint_size = 0;
-  std::optional<base::TimeDelta> image_discovery_time = std::nullopt;
-  std::optional<base::TimeDelta> image_load_start = std::nullopt;
-  std::optional<base::TimeDelta> image_load_end = std::nullopt;
+  ResourceLoadTimingsForReporting resource_load_timings = {};
   blink::LargestContentfulPaintType type =
       blink::LargestContentfulPaintType::kNone;
   double image_bpp = 0.0;
@@ -32,8 +36,6 @@ struct LargestContentfulPaintDetailsForReporting {
   uint64_t text_paint_size = 0;
   base::TimeTicks paint_time = base::TimeTicks();
   std::optional<WebURLRequest::Priority> image_request_priority = std::nullopt;
-  bool is_loaded_from_memory_cache = false;
-  bool is_preloaded_with_early_hints = false;
   // The unclamped paint time of the largest content (image/text).
   std::optional<base::TimeTicks> merged_unclamped_paint_time = std::nullopt;
 };
@@ -82,10 +84,16 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
   WebNavigationType GetNavigationType() const;
 
   // These functions return time in seconds (not milliseconds) since the epoch.
+  //
+  // TODO (crbug.com/355962211): Update the methods which return double for
+  // timing information to return `base::TimeTicks`.
   double InputForNavigationStart() const;
   double NavigationStart() const;
   base::TimeTicks NavigationStartAsMonotonicTime() const;
   BackForwardCacheRestoreTimings BackForwardCacheRestore() const;
+  double DomainLookupStart() const;
+  double DomainLookupEnd() const;
+  double ConnectStart() const;
   double ResponseStart() const;
   double DomContentLoadedEventStart() const;
   double DomContentLoadedEventEnd() const;
@@ -118,11 +126,12 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
   double ParseBlockedOnScriptLoadFromDocumentWriteDuration() const;
   double ParseBlockedOnScriptExecutionDuration() const;
   double ParseBlockedOnScriptExecutionFromDocumentWriteDuration() const;
-  std::optional<base::TimeTicks> LastPortalActivatedPaint() const;
   std::optional<base::TimeDelta> PrerenderActivationStart() const;
   std::optional<base::TimeDelta> UserTimingMarkFullyLoaded() const;
   std::optional<base::TimeDelta> UserTimingMarkFullyVisible() const;
   std::optional<base::TimeDelta> UserTimingMarkInteractive() const;
+  std::optional<std::tuple<std::string, base::TimeDelta>> CustomUserTimingMark()
+      const;
 
 #if INSIDE_BLINK
   explicit WebPerformanceMetricsForReporting(WindowPerformance*);

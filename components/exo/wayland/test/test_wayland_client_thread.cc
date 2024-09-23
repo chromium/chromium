@@ -60,7 +60,7 @@ void TestWaylandClientThread::RunAndWait(base::OnceClosure closure) {
       base::BindOnce(&TestWaylandClientThread::DoRun, base::Unretained(this),
                      std::move(closure)),
       run_loop.QuitClosure());
-  // TODO(crbug.com/1424930): Use busy loop to workaround RunLoop::Run()
+  // TODO(crbug.com/40260645): Use busy loop to workaround RunLoop::Run()
   // erroneously advancing mock time.
   while (!run_loop.AnyQuitCalled()) {
     run_loop.RunUntilIdle();
@@ -105,7 +105,7 @@ void TestWaylandClientThread::DoInit(
 
   const bool result = base::CurrentIOThread::Get().WatchFileDescriptor(
       wl_display_get_fd(client_->display()), /*persistent=*/true,
-      base::MessagePumpLibevent::WATCH_READ, &controller_, this);
+      base::MessagePumpEpoll::WATCH_READ, &controller_, this);
 
   if (!result)
     client_.reset();

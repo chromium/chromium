@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_receiver.h"
 
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -33,8 +33,8 @@ PresentationReceiver::PresentationReceiver(LocalDOMWindow* window)
       presentation_receiver_receiver_.BindNewPipeAndPassRemote(task_runner));
 }
 
-ScriptPromiseTyped<PresentationConnectionList>
-PresentationReceiver::connectionList(ScriptState* script_state) {
+ScriptPromise<PresentationConnectionList> PresentationReceiver::connectionList(
+    ScriptState* script_state) {
   if (!connection_list_property_) {
     connection_list_property_ = MakeGarbageCollected<ConnectionListProperty>(
         ExecutionContext::From(script_state));

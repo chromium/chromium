@@ -35,6 +35,7 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
+#include "components/reporting/util/reporting_errors.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -67,23 +68,15 @@ static bool RecordMayGoToDestination(const std::string& record_data,
   return true;
 }
 
-// Calls |record_producer|, checks the result and in case of success, forwards
-// it to the storage. In production code should be invoked asynchronously, on
-// a thread pool (no synchronization expected).
-void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
-                        Priority priority,
-                        WrappedRateLimiter::AsyncAcquireCb acquire_cb,
-                        std::string dm_token,
-                        Destination destination,
-                        int64_t reserved_space,
-                        std::optional<SourceInfo> source_info,
-                        ReportQueue::RecordProducer record_producer,
-                        StorageModuleInterface::EnqueueCallback callback) {
+StatusOr<Record> ProduceRecord(std::string dm_token,
+                               Destination destination,
+                               int64_t reserved_space,
+                               std::optional<SourceInfo> source_info,
+                               ReportQueue::RecordProducer record_producer) {
   // Generate record data.
-  const auto record_result = std::move(record_producer).Run();
+  auto record_result = std::move(record_producer).Run();
   if (!record_result.has_value()) {
-    std::move(callback).Run(record_result.error());
-    return;
+    return base::unexpected(record_result.error());
   }
 
   CHECK(RecordMayGoToDestination(record_result.value(), destination));
@@ -134,20 +127,43 @@ void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
     // problem without leaving timestamp-related bugs in the ERP undiscovered
     // (should there be any).
     base::UmaHistogramBoolean("Browser.ERP.UnusualEnqueueTimestamp", true);
-    std::move(callback).Run(Status(
+    return base::unexpected(Status(
         error::FAILED_PRECONDITION,
         base::StrCat(
             {"Abnormal system timestamp obtained. Microseconds since epoch: ",
              base::NumberToString(time_since_epoch_us)})));
-    return;
   }
   record.set_timestamp_us(time_since_epoch_us);
+  return std::move(record);
+}
 
-  const auto record_size = record.ByteSizeLong();
+// Calls |record_producer|, checks the result and in case of success, forwards
+// it to the storage. In production code should be invoked asynchronously, on
+// a thread pool (no synchronization expected).
+void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
+                        Priority priority,
+                        WrappedRateLimiter::AsyncAcquireCb acquire_cb,
+                        std::string dm_token,
+                        Destination destination,
+                        int64_t reserved_space,
+                        std::optional<SourceInfo> source_info,
+                        ReportQueue::RecordProducer record_producer,
+                        StorageModuleInterface::EnqueueCallback callback) {
+  auto record_result =
+      ProduceRecord(dm_token, destination, reserved_space, source_info,
+                    std::move(record_producer));
+
+  if (!record_result.has_value()) {
+    std::move(callback).Run(record_result.error());
+    return;
+  }
+
+  const auto record_size = record_result.value().ByteSizeLong();
 
   // Prepare `Storage::AddRecord` as a callback.
-  auto add_record_cb = base::BindOnce(&StorageModuleInterface::AddRecord,
-                                      storage, priority, std::move(record));
+  auto add_record_cb =
+      base::BindOnce(&StorageModuleInterface::AddRecord, storage, priority,
+                     std::move(record_result.value()));
 
   // Rate-limit event, if required.
   if (!acquire_cb) {
@@ -231,7 +247,7 @@ void ReportQueueImpl::Flush(Priority priority, FlushCallback callback) {
 
 base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>
 ReportQueueImpl::PrepareToAttachActualQueue() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::DoNothing();
 }
 
@@ -303,6 +319,10 @@ void SpeculativeReportQueueImpl::Flush(Priority priority,
             if (!self) {
               std::move(callback).Run(
                   Status(error::UNAVAILABLE, "Queue has been destructed"));
+              base::UmaHistogramEnumeration(
+                  reporting::kUmaUnavailableErrorReason,
+                  UnavailableErrorReason::REPORT_QUEUE_DESTRUCTED,
+                  UnavailableErrorReason::MAX_VALUE);
               return;
             }
             DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
@@ -389,6 +409,10 @@ void SpeculativeReportQueueImpl::EnqueuePendingRecordProducers() const {
                 if (!self) {
                   std::move(callback).Run(
                       Status(error::UNAVAILABLE, "Queue has been destructed"));
+                  base::UmaHistogramEnumeration(
+                      reporting::kUmaUnavailableErrorReason,
+                      UnavailableErrorReason::REPORT_QUEUE_DESTRUCTED,
+                      UnavailableErrorReason::MAX_VALUE);
                   return;
                 }
                 std::move(callback).Run(status);
@@ -435,6 +459,11 @@ void SpeculativeReportQueueImpl::PurgePendingProducers(Status status) const {
   while (!pending_record_producers_.empty()) {
     auto head = std::move(pending_record_producers_.front());
     pending_record_producers_.pop();
+    base::UmaHistogramEnumeration(
+        reporting::kUmaDataLossErrorReason,
+        DataLossErrorReason::
+            SPECULATIVE_REPORT_QUEUE_DESTRUCTED_BEFORE_RECORDS_ENQUEUED,
+        DataLossErrorReason::MAX_VALUE);
     std::move(head.record_callback).Run(status);
   }
 }

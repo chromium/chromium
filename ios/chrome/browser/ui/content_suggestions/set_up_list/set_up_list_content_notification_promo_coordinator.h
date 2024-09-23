@@ -47,7 +47,8 @@ enum class ContentNotificationSetUpListPromoEvent {
 enum class ContentNotificationPromptAction {
   kGoToSettingsTapped = 0,
   kNoThanksTapped = 1,
-  kMaxValue = kNoThanksTapped,
+  kAccepted = 2,
+  kMaxValue = kAccepted,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
 

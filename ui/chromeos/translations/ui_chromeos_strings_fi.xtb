@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-isäntä</translation>
 <translation id="3104793765551262433">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan estämä, lisätietoja</translation>
-<translation id="3113153474486991170">"<ph name="PATH" />" ei avaudu tästä sijainnista. Kopioi se omiin tiedostoihin, jotta voit avata sen.</translation>
 <translation id="3113592018909187986">Sinulla on 1 yritys jäljellä. Et voi käyttää tätä verkkoa ennen kuin luot uuden PIN-koodin.</translation>
 <translation id="3124404833828281817">Haaveileva henkilö</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Peru <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ei aktivoitu, <ph name="CONNECTION_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, tiedot</translation>
 <translation id="3691184985318546178">sinhala</translation>
+<translation id="3702842351052426940">SIM-kortti tai eSIM-profiili saatetaan poistaa käytöstä. Kokeile vaihtaa SIM-kortti tai eSIM-profiili.</translation>
 <translation id="3722341589402358578">Tapahtui virhe. Kaikkia kohteita ei välttämättä poistettu.</translation>
 <translation id="3726463242007121105">Tätä laitetta ei voi avata, sillä sen tiedostojärjestelmää ei tueta.</translation>
 <translation id="3727148787322499904">Tämän asetuksen muuttaminen vaikuttaa kaikkiin jaettuihin verkkoihin.</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Järjestelmänvalvojasi edellyttää tämän välityspalvelimen käyttöä.</translation>
 <translation id="3830674330436234648">Toistoa ei ole saatavilla.</translation>
 <translation id="383652340667548381">serbia</translation>
+<translation id="3839045880592694915">Operaattori ei salli modeemin yhdistämistä. Pyydä lisätietoa operaattoriltasi.</translation>
 <translation id="385051799172605136">Takaisin</translation>
-<translation id="3851491607336266896">Yhdistetty, rajoitettu yhteys</translation>
 <translation id="3855472144336161447">saksa, Neo 2</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3866249974567520381">Kuvaus</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Äskettäin avatut Microsoft-tiedostot on siirretty OneDriveen</translation>
 <translation id="4002066346123236978">Nimi</translation>
 <translation id="4017788180641807848">englanti (Yhdysvallat), Workman-näppäimistö</translation>
-<translation id="4019998208269143058">Kiinnitä pikatiedostoihin</translation>
 <translation id="4040753847560036377">Väärä PUK-koodi</translation>
 <translation id="4057991113334098539">Aktivoidaan...</translation>
 <translation id="4092890906744441904">iiri</translation>
+<translation id="4101601646343868113">Kirjaudu mobiiliverkkoon ja varmista, että mobiilidatapaketti on aktiivinen</translation>
 <translation id="4124731372776320263">Synkronoidaan 1 Drive-tiedosto</translation>
 <translation id="4124935795427217608">Yksisarvinen</translation>
 <translation id="4131235941541910880">Siirrä tarpeettomat kohteet roskakoriin</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">tamil, tamil99-näppäimistö</translation>
 <translation id="5633226425545095130">Kun tämä siirretään, se jaetaan kaikille, jotka voivat nähdä jaetun kansion "<ph name="DESTINATION_NAME" />"</translation>
 <translation id="5649768706273821470">Kuuntele</translation>
+<translation id="5650895901941743674">Tarkista APN-määritykset</translation>
 <translation id="5669691691057771421">Anna uusi PIN-koodi</translation>
 <translation id="5678784840044122290">Linux-sovellus on saatavilla terminaalissa. Käynnistysohjelmassa saattaa myös näkyä kuvake.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Arkiston tai virtuaalilevyn yhteyden katkaisu epäonnistui<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, puhelimen akun varaus <ph name="BATTERY_STATUS" /> %, yhdistä</translation>
 <translation id="6269630227984243955">malaiji</translation>
 <translation id="6271903698064569429">Tiedostoja ei voi ladata, koska "<ph name="SHARED_DRIVE_NAME" />" on liian täynnä eikä tallennustilaa ole tarpeeksi.</translation>
+<translation id="6279140785485544797">Mobiilidatapakettisi saattaa olla vanhentunut. Pyydä tukea operaattoriltasi.</translation>
 <translation id="6287852322318138013">Valitse sovellus, jolla haluat avata tämän tiedoston</translation>
 <translation id="6295542640242147836">Lukitse SIM-kortti</translation>
 <translation id="6296410173147755564">Väärä PUK-koodi</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-arkisto</translation>
 <translation id="6321303798550928047">Vilkuttaa</translation>
 <translation id="6327785803543103246">Verkkovälityspalvelimen automaattinen tunnistaminen</translation>
-<translation id="6337014272874260727">Irrota pikatiedostoista</translation>
 <translation id="6339145975392024142">US, kansainvälinen (PC)</translation>
 <translation id="6356685157277930264">Tiedostojen tietoikkuna</translation>
 <translation id="6358884629796491903">Lohikäärme</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Nykyinen hakemisto</translation>
 <translation id="6751256176799620176">1 kansio valittu</translation>
 <translation id="6755827872271341378">ChromeOS Flex ‑laite</translation>
+<translation id="6777029074498310250">Lisätietoja on osoitteessa <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" />.</translation>
 <translation id="6790428901817661496">Toista</translation>
 <translation id="6794539005637808366">Palauta kohde tai vedä se uuteen kansioon roskakorin ulkopuolelle</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">tamil, InScript-näppäimistö</translation>
 <translation id="7088615885725309056">Vanhempi</translation>
 <translation id="7103992300314999525">makedonia</translation>
+<translation id="7104338189998813914">OneDrive-tilillesi pääsyssä on ongelma</translation>
 <translation id="7106346894903675391">Osta lisää tallennustilaa...</translation>
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; – &lt;em&gt;hae Drivesta&lt;/em&gt;</translation>
 <translation id="7135561821015524160">foneettinen kannada</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Odota hetki</translation>
 <translation id="7600126690270271294">serbia</translation>
 <translation id="7603724359189955920">Ruudukot</translation>
+<translation id="7624010287655004652">Toisen mobiilioperaattorin lukitsema</translation>
 <translation id="7627790789328695202">Hups, <ph name="FILE_NAME" /> on jo olemassa. Anna kohteelle toinen nimi ja yritä uudelleen.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" /> % valmis</translation>
 <translation id="7649070708921625228">Ohje</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Tiedostot näkyvät nyt pikkukuvina.</translation>
 <translation id="8601932370724196034">Crostini-kuvatiedosto</translation>
 <translation id="8609695766746872526">islanti</translation>
+<translation id="8630384863424041081">Lisää SIM-kortin PIN-koodi tai operaattorin antama oletusarvoinen PIN-koodi. Pyydä tukea operaattoriltasi.</translation>
 <translation id="863903787380594467">Väärä PIN-koodi. Sinulla on <ph name="RETRIES" /> yritystä jäljellä.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – portti</translation>
 <translation id="8656407365183407932">Offline-tiedostot oli poistettava</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Tiedosto on luottamuksellinen, ja siihen sovelletaan järjestelmänvalvojakäytännön rajoituksia.</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="8713112442029511308">malta</translation>
-<translation id="8714138378966541668">Palveluntarjoajan lukitsema</translation>
 <translation id="8714406895390098252">Polkupyörä</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> valittiin.</translation>
 <translation id="872537912056138402">kroaatti</translation>

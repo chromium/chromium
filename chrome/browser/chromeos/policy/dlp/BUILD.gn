@@ -1,0 +1,379 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("dlp") {
+  sources = [
+    "clipboard_bubble.cc",
+    "clipboard_bubble.h",
+    "data_transfer_dlp_controller.cc",
+    "data_transfer_dlp_controller.h",
+    "dlp_clipboard_bubble_constants.h",
+    "dlp_clipboard_notifier.cc",
+    "dlp_clipboard_notifier.h",
+    "dlp_confidential_contents.cc",
+    "dlp_confidential_contents.h",
+    "dlp_confidential_file.cc",
+    "dlp_confidential_file.h",
+    "dlp_content_manager.cc",
+    "dlp_content_manager.h",
+    "dlp_content_manager_observer.h",
+    "dlp_content_observer.cc",
+    "dlp_content_observer.h",
+    "dlp_content_restriction_set.cc",
+    "dlp_content_restriction_set.h",
+    "dlp_content_tab_helper.cc",
+    "dlp_content_tab_helper.h",
+    "dlp_copy_or_move_hook_delegate.cc",
+    "dlp_copy_or_move_hook_delegate.h",
+    "dlp_data_transfer_notifier.cc",
+    "dlp_data_transfer_notifier.h",
+    "dlp_download_observer.cc",
+    "dlp_download_observer.h",
+    "dlp_download_observer_factory.cc",
+    "dlp_download_observer_factory.h",
+    "dlp_drag_drop_notifier.cc",
+    "dlp_drag_drop_notifier.h",
+    "dlp_file_access_copy_or_move_delegate_factory.cc",
+    "dlp_file_access_copy_or_move_delegate_factory.h",
+    "dlp_file_destination.cc",
+    "dlp_file_destination.h",
+    "dlp_files_controller.cc",
+    "dlp_files_controller.h",
+    "dlp_files_utils.cc",
+    "dlp_files_utils.h",
+    "dlp_notification_helper.cc",
+    "dlp_notification_helper.h",
+    "dlp_policy_constants.h",
+    "dlp_rules_manager.cc",
+    "dlp_rules_manager.h",
+    "dlp_rules_manager_factory.cc",
+    "dlp_rules_manager_factory.h",
+    "dlp_rules_manager_impl.cc",
+    "dlp_rules_manager_impl.h",
+    "dlp_scoped_file_access_delegate.cc",
+    "dlp_scoped_file_access_delegate.h",
+  ]
+
+  if (is_chromeos_lacros) {
+    sources += [
+      "dlp_browser_helper_lacros.cc",
+      "dlp_browser_helper_lacros.h",
+      "dlp_content_manager_lacros.cc",
+      "dlp_content_manager_lacros.h",
+      "dlp_files_controller_lacros.cc",
+      "dlp_files_controller_lacros.h",
+    ]
+  }
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/chromeos/policy/dlp/dialogs",
+    "//chrome/browser/favicon",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chromeos/constants",
+    "//chromeos/dbus/dlp",
+    "//chromeos/dbus/dlp:dlp_proto",
+    "//chromeos/ui/base",
+    "//components/download/content/public",
+    "//components/download/public/common:public",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
+    "//components/file_access",
+    "//components/keyed_service/core",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//components/url_matcher",
+    "//components/user_manager",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/browser",
+    "//extensions/common:common_constants",
+    "//storage/browser",
+    "//third_party/abseil-cpp:absl",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base/clipboard",
+    "//ui/base/data_transfer_policy",
+    "//ui/base/ime",
+    "//ui/base/metadata",
+    "//ui/chromeos/styles:cros_styles_views",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/color",
+    "//ui/compositor",
+    "//ui/display",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/message_center/public/cpp",
+    "//ui/native_theme",
+    "//ui/views",
+    "//url",
+  ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/chromeos/policy/dlp/dialogs" ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//ash",
+      "//ash/constants",
+      "//ash/public/cpp",
+      "//ash/resources/vector_icons",
+      "//ash/webui/file_manager:constants",
+      "//chrome/browser/ash/profiles",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/lacros",
+      "//ui/platform_window",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "data_transfer_dlp_controller_unittest.cc",
+    "dlp_clipboard_notifier_unittest.cc",
+    "dlp_confidential_contents_unittest.cc",
+    "dlp_confidential_file_unittest.cc",
+    "dlp_content_tab_helper_unittest.cc",
+    "dlp_copy_or_move_hook_delegate_unittest.cc",
+    "dlp_download_observer_unittest.cc",
+    "dlp_drag_drop_notifier_unittest.cc",
+    "dlp_file_access_copy_or_move_delegate_factory_unittest.cc",
+    "dlp_file_destination_unittest.cc",
+    "dlp_files_controller_unittest.cc",
+    "dlp_files_utils_unittest.cc",
+    "dlp_rules_manager_impl_unittest.cc",
+    "dlp_scoped_file_access_delegate_unittest.cc",
+  ]
+
+  if (is_chromeos_lacros) {
+    sources += [ "dlp_files_controller_lacros_unittest.cc" ]
+  }
+
+  deps = [
+    ":dlp",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/browser",
+    "//chrome/browser/chromeos/policy/dlp/test:test_support",
+    "//chrome/browser/enterprise/data_controls",
+    "//chrome/browser/enterprise/data_controls:test_support",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//chromeos/constants",
+    "//chromeos/dbus/dlp",
+    "//chromeos/dbus/dlp:dlp_proto",
+    "//components/account_id",
+    "//components/download/public/common:public",
+    "//components/download/public/common:test_support",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
+    "//components/file_access",
+    "//components/keyed_service/core",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/reporting/client:test_support",
+    "//components/reporting/storage:test_support",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/common:common_constants",
+    "//storage/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+    "//ui/base",
+    "//ui/base/clipboard",
+    "//ui/base/data_transfer_policy",
+    "//ui/views",
+    "//url",
+  ]
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/lacros",
+      "//chromeos/startup",
+      "//components/reporting/metrics:metrics_data_collection",
+      "//components/reporting/metrics/fakes:test_support",
+      "//components/reporting/util:rate_limiter_interface",
+      "//components/reporting/util:rate_limiter_slide_window",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
+  }
+}
+
+if (is_chromeos_ash) {
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "dlp_content_restriction_set_browsertest.cc",
+      "dlp_content_tab_helper_browsertest.cc",
+      "dlp_data_transfer_notifier_browsertest.cc",
+      "dlp_rules_manager_impl_browsertest.cc",
+      "dlp_scoped_file_access_delegate_browsertest.cc",
+    ]
+
+    deps = [
+      ":dlp",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/chromeos/policy/dlp/test:test_support",
+      "//chrome/browser/file_system_access",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//chromeos/dbus/dlp",
+      "//chromeos/dbus/dlp:dlp_proto",
+      "//components/enterprise/data_controls/core/browser",
+      "//components/file_access",
+      "//components/file_access:test_support",
+      "//components/keyed_service/core",
+      "//components/policy:generated",
+      "//components/policy/core/common",
+      "//components/policy/core/common:common_constants",
+      "//components/prefs",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//extensions:test_support",
+      "//net:test_support",
+      "//storage/browser",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base/metadata",
+      "//ui/shell_dialogs",
+      "//ui/views",
+      "//ui/views:test_support",
+    ]
+  }
+}
+
+if (is_chromeos_lacros) {
+  source_set("lacros_chrome_browsertests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "dlp_files_controller_lacros_browsertest.cc",
+
+      # dlp_content_manager_lacros_browsertest.cc should become a unit test.
+      "dlp_content_manager_lacros_browsertest.cc",
+    ]
+
+    deps = [
+      ":dlp",
+      "//base/test:test_support",
+      "//chrome/browser/chromeos/policy/dlp/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+      "//chromeos/startup",
+      "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "data_transfer_dlp_controller_browsertest.cc",
+      "dlp_content_manager_browsertest.cc",
+      "dlp_scoped_file_access_delegate_interactive_uitest.cc",
+    ]
+
+    deps = [
+      ":dlp",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/chromeos/policy/dlp/test:test_support",
+      "//chrome/browser/enterprise/data_controls",
+      "//chrome/browser/enterprise/data_controls:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/test:print_preview_test_support",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//chromeos/dbus/dlp",
+      "//components/enterprise/data_controls/core/browser",
+      "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
+      "//components/policy/core/common:common_constants",
+      "//components/prefs",
+      "//components/reporting/client:report_queue",
+      "//components/reporting/client:test_support",
+      "//components/reporting/storage:test_support",
+      "//components/reporting/util:test_callbacks_support",
+      "//content/public/browser",
+      "//content/test:browsertest_support",
+      "//content/test:test_support",
+      "//net",
+      "//net:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/aura",
+      "//ui/base",
+      "//ui/base/clipboard",
+      "//ui/base/clipboard:clipboard_types",
+      "//ui/base/data_transfer_policy",
+      "//ui/base/dragdrop:types",
+      "//ui/events:test_support",
+      "//ui/gfx/geometry",
+      "//ui/views",
+      "//ui/views:test_support",
+      "//url",
+    ]
+  }
+}

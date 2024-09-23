@@ -12,13 +12,15 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/android/chrome_jni_headers/NearOomInfoBar_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/interventions/intervention_delegate.h"
 #include "chrome/browser/ui/interventions/intervention_infobar_delegate.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/NearOomInfoBar_jni.h"
 
 NearOomInfoBar::NearOomInfoBar(InterventionDelegate* delegate)
     : infobars::InfoBarAndroid(std::make_unique<InterventionInfoBarDelegate>(
@@ -42,7 +44,7 @@ void NearOomInfoBar::OnLinkClicked(
 }
 
 void NearOomInfoBar::ProcessButton(int action) {
-  NOTREACHED();  // No button on this infobar.
+  NOTREACHED_IN_MIGRATION();  // No button on this infobar.
 }
 
 base::android::ScopedJavaLocalRef<jobject> NearOomInfoBar::CreateRenderInfoBar(

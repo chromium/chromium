@@ -26,6 +26,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -76,7 +77,7 @@ class ColorPickerElementView : public views::Button {
         color_name_(color_name) {
     DCHECK(selected_callback_);
 
-    SetAccessibleName(color_name);
+    GetViewAccessibility().SetName(color_name);
     SetInstallFocusRingOnFocus(true);
     views::HighlightPathGenerator::Install(
         this, std::make_unique<ColorPickerHighlightPathGenerator>());
@@ -95,6 +96,10 @@ class ColorPickerElementView : public views::Button {
 
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
     SetAnimateOnStateChange(true);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kRadioButton);
+    GetViewAccessibility().SetCheckedState(
+        selected_ ? ax::mojom::CheckedState::kTrue
+                  : ax::mojom::CheckedState::kFalse);
   }
 
   ~ColorPickerElementView() override = default;
@@ -104,6 +109,9 @@ class ColorPickerElementView : public views::Button {
       return;
     }
     selected_ = selected;
+    GetViewAccessibility().SetCheckedState(
+        selected_ ? ax::mojom::CheckedState::kTrue
+                  : ax::mojom::CheckedState::kFalse);
     SchedulePaint();
   }
 
@@ -120,18 +128,12 @@ class ColorPickerElementView : public views::Button {
     return parent()->GetSelectedViewForGroup(group);
   }
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    views::Button::GetAccessibleNodeData(node_data);
-    node_data->role = ax::mojom::Role::kRadioButton;
-    node_data->SetCheckedState(GetSelected() ? ax::mojom::CheckedState::kTrue
-                                             : ax::mojom::CheckedState::kFalse);
-  }
-
   std::u16string GetTooltipText(const gfx::Point& p) const override {
     return color_name_;
   }
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     const gfx::Insets insets = GetInsets();
     // The size of the color element circle is adaptive, to improve the hit
     // target size on touch devices.
@@ -142,8 +144,6 @@ class ColorPickerElementView : public views::Button {
     size.Enlarge(insets.width(), insets.height());
     return size;
   }
-
-  int GetHeightForWidth(int width) const override { return width; }
 
   void PaintButtonContents(gfx::Canvas* canvas) override {
     // Paint a colored circle surrounded by a bit of empty space.
@@ -191,7 +191,7 @@ class ColorPickerElementView : public views::Button {
   void ButtonPressed() {
     // Pressing this a second time shouldn't do anything.
     if (!selected_) {
-      selected_ = true;
+      SetSelected(true);
       SchedulePaint();
       selected_callback_.Run(this);
     }

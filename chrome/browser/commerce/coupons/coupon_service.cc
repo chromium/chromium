@@ -113,8 +113,6 @@ void CouponService::DeleteAllFreeListingCoupons() {
 
 base::Time CouponService::GetCouponDisplayTimestamp(
     const autofill::AutofillOfferData& offer) {
-  DCHECK_EQ(offer.GetOfferType(),
-            autofill::AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER);
   for (auto origin : offer.GetMerchantOrigins()) {
     auto iter =
         coupon_time_map_.find(std::make_pair(origin, offer.GetOfferId()));
@@ -126,8 +124,6 @@ base::Time CouponService::GetCouponDisplayTimestamp(
 
 void CouponService::RecordCouponDisplayTimestamp(
     const autofill::AutofillOfferData& offer) {
-  DCHECK_EQ(offer.GetOfferType(),
-            autofill::AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER);
   base::Time timestamp = base::Time::Now();
   for (auto origin : offer.GetMerchantOrigins()) {
     auto iter =
@@ -154,8 +150,6 @@ void CouponService::MaybeFeatureStatusChanged(bool enabled) {
 
 CouponService::Coupons CouponService::GetFreeListingCouponsForUrl(
     const GURL& url) {
-  if (!url.is_valid())
-    return {};
   const GURL& origin(url.DeprecatedGetOriginAsURL());
   if (coupon_map_.find(origin) == coupon_map_.end()) {
     return {};

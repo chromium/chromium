@@ -31,6 +31,7 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "url/gurl.h"
 
 namespace app_list {
@@ -41,18 +42,8 @@ using ::ash::string_matching::TokenizedString;
 
 // Returns true if the match is an answer, including calculator answers.
 bool IsAnswer(const AutocompleteMatch& match) {
-  return match.answer.has_value() ||
+  return match.answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED ||
          match.type == AutocompleteMatchType::CALCULATOR;
-}
-
-int ProviderTypes() {
-  // We use all the default providers except for the document provider, which
-  // suggests Drive files on enterprise devices. This is disabled to avoid
-  // duplication with search results from DriveFS.
-  int providers = AutocompleteClassifier::DefaultOmniboxProviders() &
-                  ~AutocompleteProvider::TYPE_DOCUMENT;
-  providers |= AutocompleteProvider::TYPE_OPEN_TAB;
-  return providers;
 }
 
 }  //  namespace
@@ -60,7 +51,8 @@ int ProviderTypes() {
 // Control category is kept default intentionally as we always need to get
 // answer cards results from Omnibox.
 OmniboxProvider::OmniboxProvider(Profile* profile,
-                                 AppListControllerDelegate* list_controller)
+                                 AppListControllerDelegate* list_controller,
+                                 int provider_types)
     : SearchProvider(SearchCategory::kOmnibox),
       profile_(profile),
       list_controller_(list_controller),
@@ -72,7 +64,7 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
                          ServiceAccessType::EXPLICIT_ACCESS)) {
   controller_ = std::make_unique<AutocompleteController>(
       std::make_unique<ChromeAutocompleteProviderClient>(profile),
-      ProviderTypes(), /*is_cros_launcher=*/true),
+      provider_types, /*is_cros_launcher=*/true),
   controller_->AddObserver(this);
 }
 

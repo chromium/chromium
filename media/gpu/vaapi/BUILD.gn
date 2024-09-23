@@ -42,6 +42,7 @@ source_set("vaapi") {
     "h264_vaapi_video_decoder_delegate.h",
     "h264_vaapi_video_encoder_delegate.cc",
     "h264_vaapi_video_encoder_delegate.h",
+    "vaapi_decode_surface_handler.h",
     "vaapi_dmabuf_video_frame_mapper.cc",
     "vaapi_dmabuf_video_frame_mapper.h",
     "vaapi_image_decode_accelerator_worker.cc",
@@ -80,10 +81,7 @@ source_set("vaapi") {
     ]
   }
 
-  configs += [
-    "//build/config/linux/libva",
-    "//third_party/libvpx:libvpx_config",
-  ]
+  configs += [ "//build/config/linux/libva" ]
 
   deps = [
     ":common",
@@ -97,7 +95,6 @@ source_set("vaapi") {
     "//media/gpu:common",
     "//media/gpu:video_frame_mapper_common",
     "//media/gpu/chromeos:common",
-    "//media/parsers",
     "//mojo/public/cpp/bindings",
     "//third_party/libaom:libaomrc",
     "//third_party/libvpx:libvpxrc",
@@ -143,8 +140,6 @@ source_set("vaapi_status") {
 source_set("common") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
-    "va_surface.cc",
-    "va_surface.h",
     "vaapi_common.cc",
     "vaapi_common.h",
     "vaapi_utils.cc",
@@ -164,6 +159,7 @@ source_set("common") {
   deps = [
     ":libva_stubs",
     "//build:chromeos_buildflags",
+    "//media/gpu/chromeos:video_frame_resource",
     "//third_party/libyuv",
     "//ui/base:features",
     "//ui/gfx:memory_buffer",
@@ -200,7 +196,6 @@ source_set("unit_test") {
     "vaapi_wrapper_unittest.cc",
     "vp9_vaapi_video_encoder_delegate_unittest.cc",
   ]
-  configs += [ "//third_party/libvpx:libvpx_config" ]
   deps = [
     ":common",
     ":vaapi",
@@ -218,6 +213,11 @@ source_set("unit_test") {
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
   ]
+  if (is_chromeos_ash) {
+    sources += [ "vaapi_video_decoder_unittest.cc" ]
+    deps +=
+        [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
+  }
 }
 
 source_set("vaapi_image_decoder_test_common") {
@@ -235,7 +235,7 @@ source_set("vaapi_image_decoder_test_common") {
   ]
 }
 
-# TODO(https://crbug.com/1043007): remove is_chromeos.
+# TODO(crbug.com/40115082): remove is_chromeos.
 if (is_chromeos_ash) {
   source_set("jpeg_decoder_unit_test") {
     testonly = true
@@ -247,7 +247,6 @@ if (is_chromeos_ash) {
       ":vaapi_test_utils",
       "//base",
       "//media/gpu/test:local_gpu_memory_buffer_manager",
-      "//media/parsers",
       "//testing/gtest",
       "//third_party/libyuv:libyuv",
       "//ui/gfx:memory_buffer",
@@ -266,7 +265,6 @@ if (is_chromeos_ash) {
       ":vaapi_test_utils",
       "//base",
       "//media/gpu/test:local_gpu_memory_buffer_manager",
-      "//media/parsers",
       "//testing/gtest",
       "//third_party/libwebp",
       "//ui/gfx:memory_buffer",
@@ -308,7 +306,7 @@ test("vaapi_unittest") {
   # that ChromeOS can build the vaapi_unittest without building the fake driver.
   data_deps = [ "//media/gpu/vaapi/test/fake_libva_driver:fake_drv_video" ]
 
-  # TODO(https://crbug.com/1043007): remove is_chromeos.
+  # TODO(crbug.com/40115082): remove is_chromeos.
   if (is_chromeos_ash) {
     deps += [
       ":jpeg_decoder_unit_test",
@@ -370,7 +368,6 @@ executable("decode_test") {
     "//media",
     "//media:test_support",
     "//media/gpu:common",
-    "//media/parsers:parsers",
     "//third_party/libgav1:libgav1_parser",
     "//third_party/libyuv",
     "//ui/gfx/codec:codec",

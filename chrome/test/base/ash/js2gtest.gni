@@ -18,7 +18,7 @@ js2gtest_js_input_libraries = [
 
 # Additional libraries loaded at test runtime.
 js2gtest_runtime_js_libraries =
-    [ "//third_party/node/node_modules/chai/chai.js" ]
+    [ "//chrome/test/data/webui/chromeos/chai_v4.js" ]
 
 js2gtest_js_libraries =
     js2gtest_js_input_libraries + js2gtest_runtime_js_libraries
@@ -132,6 +132,9 @@ template("js2gtest") {
   if (defined(invoker.extra_js_files)) {
     copy_target_name = target_name + "_copy"
     copy(copy_target_name) {
+      if (defined(invoker.deps)) {
+        deps = invoker.deps
+      }
       visibility = [ ":$source_set_name" ]
       sources = invoker.extra_js_files
       outputs = [ copied_source_pattern ]
@@ -155,6 +158,7 @@ template("js2gtest") {
       ":$action_name",
 
       # The generator implicitly makes includes from these targets.
+      "//build/config/coverage:buildflags",
       "//chrome/test:test_support",
       "//testing/gmock",
       "//testing/gtest",

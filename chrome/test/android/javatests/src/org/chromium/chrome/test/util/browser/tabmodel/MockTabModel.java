@@ -5,6 +5,7 @@
 package org.chromium.chrome.test.util.browser.tabmodel;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -125,6 +126,11 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
+    public @Nullable Tab getTabById(int tabId) {
+        return mTabs.stream().filter(t -> t.getId() == tabId).findAny().orElse(null);
+    }
+
+    @Override
     public int indexOf(Tab tab) {
         return mTabs.indexOf(tab);
     }
@@ -140,7 +146,7 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
-    public void setIndex(int i, @TabSelectionType int type, boolean skipLoadingTab) {
+    public void setIndex(int i, @TabSelectionType int type) {
         int lastIndex = mIndex;
         mIndex = i;
         mCurrentTabSupplier.set(TabModelUtils.getCurrentTab(this));

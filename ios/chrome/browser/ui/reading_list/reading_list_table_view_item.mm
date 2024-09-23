@@ -57,7 +57,7 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
 @synthesize attributes = _attributes;
 
 - (instancetype)initWithType:(NSInteger)type {
-  if (self = [super initWithType:type]) {
+  if ((self = [super initWithType:type])) {
     self.cellClass = [TableViewURLCell class];
   }
   return self;

@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 // clang-format on
 
@@ -27,22 +27,48 @@ suite('cr-button', function() {
     button.dispatchEvent(new KeyboardEvent('keyup', {key}));
   }
 
-  test('label is displayed', async () => {
+  test('label is displayed', () => {
     const widthWithoutLabel = button.offsetWidth;
     document.body.innerHTML = getTrustedHTML`<cr-button>Long Label</cr-button>`;
     button = document.body.querySelector('cr-button')!;
     assertTrue(widthWithoutLabel < button.offsetWidth);
   });
 
-  test('tabindex and aria-disabled', () => {
+  test('tabindex and aria-disabled', async () => {
     assertFalse(button.disabled);
     assertFalse(button.hasAttribute('disabled'));
     assertEquals('0', button.getAttribute('tabindex'));
     assertEquals('false', button.getAttribute('aria-disabled'));
     button.disabled = true;
+    await microtasksFinished();
     assertTrue(button.hasAttribute('disabled'));
     assertEquals('-1', button.getAttribute('tabindex'));
     assertEquals('true', button.getAttribute('aria-disabled'));
+  });
+
+  // This test documents previously undefined behavior of cr-button when a
+  // 'tabindex' attribute is set by the parent, which seems to be actually
+  // relied upon by cr-button client code. The behavior below should possibly be
+  // improved to preserve the original tabindex upon re-enabling.
+  test('external tabindex', async () => {
+    document.body.innerHTML =
+        getTrustedHTML`<cr-button tabindex="10"></cr-button>`;
+    button = document.body.querySelector('cr-button')!;
+
+    // Check that initial tabindex value is preserved post-initialization.
+    assertFalse(button.disabled);
+    assertEquals('10', button.getAttribute('tabindex'));
+
+    // Check that tabindex updates when disabled.
+    button.disabled = true;
+    await microtasksFinished();
+    assertEquals('-1', button.getAttribute('tabindex'));
+
+    // Check that tabindex resets to 0 and not the initial value after
+    // re-enabling.
+    button.disabled = false;
+    await microtasksFinished();
+    assertEquals('0', button.getAttribute('tabindex'));
   });
 
   test('enter/space/click events and programmatic click() calls', async () => {
@@ -63,31 +89,13 @@ suite('cr-button', function() {
 
     checkClicks(4);
     button.disabled = true;
+    await microtasksFinished();
     checkClicks(0);
     button.disabled = false;
+    await microtasksFinished();
     checkClicks(4);
 
     button.removeEventListener('click', clickHandler);
-  });
-
-  test('when tabindex is -1, it stays -1', async () => {
-    document.body.innerHTML =
-        getTrustedHTML`<cr-button custom-tab-index="-1"></cr-button>`;
-    button = document.body.querySelector('cr-button')!;
-    assertEquals('-1', button.getAttribute('tabindex'));
-    button.disabled = true;
-    assertEquals('-1', button.getAttribute('tabindex'));
-    button.disabled = false;
-    assertEquals('-1', button.getAttribute('tabindex'));
-  });
-
-  test('tabindex update', async () => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    button = document.createElement('cr-button');
-    document.body.appendChild(button);
-    assertEquals('0', button.getAttribute('tabindex'));
-    button.customTabIndex = 1;
-    assertEquals('1', button.getAttribute('tabindex'));
   });
 
   test('hidden', () => {
@@ -139,11 +147,7 @@ suite('cr-button', function() {
     await whenPrefixSlotchange;
 
     assertEquals('8px', buttonStyle.gap);
-    assertEquals('8px', buttonStyle.padding);
-
-    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
     assertEquals('8px 16px 8px 12px', buttonStyle.padding);
-    document.documentElement.removeAttribute('chrome-refresh-2023');
 
     const whenPrefixSlotRemoved =
         eventToPromise('slotchange', button.$.prefixIcon);
@@ -160,10 +164,6 @@ suite('cr-button', function() {
     await whenSuffixSlotchange;
 
     assertEquals('8px', buttonStyle.gap);
-    assertEquals('8px', buttonStyle.padding);
-
-    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
     assertEquals('8px 12px 8px 16px', buttonStyle.padding);
-    document.documentElement.removeAttribute('chrome-refresh-2023');
   });
 });

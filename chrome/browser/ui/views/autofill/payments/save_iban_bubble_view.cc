@@ -14,9 +14,12 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/vector_icon_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -35,11 +38,13 @@ const int kMaxNicknameChars = 25;
 SaveIbanBubbleView::SaveIbanBubbleView(views::View* anchor_view,
                                        content::WebContents* web_contents,
                                        IbanBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
   DCHECK(controller);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller->GetAcceptButtonText());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller->GetDeclineButtonText());
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 controller->GetAcceptButtonText());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                 controller->GetDeclineButtonText());
   SetAcceptCallback(base::BindOnce(&SaveIbanBubbleView::OnDialogAccepted,
                                    base::Unretained(this)));
 
@@ -197,7 +202,7 @@ void SaveIbanBubbleView::CreateMainContentView() {
   // Adds nickname textfield.
   nickname_textfield_ = nickname_input_textfield_view->AddChildView(
       std::make_unique<views::Textfield>());
-  nickname_textfield_->SetAccessibleName(
+  nickname_textfield_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_NICKNAME));
   nickname_textfield_->SetTextInputType(
       ui::TextInputType::TEXT_INPUT_TYPE_TEXT);
@@ -297,5 +302,8 @@ void SaveIbanBubbleView::UpdateNicknameLengthLabel() {
       base::NumberToString16(nickname_textfield_->GetText().length()),
       base::NumberToString16(kMaxNicknameChars)));
 }
+
+BEGIN_METADATA(SaveIbanBubbleView)
+END_METADATA
 
 }  // namespace autofill

@@ -18,7 +18,7 @@ bool StructTraits<arc::mojom::KeyEventDataDataView, KeyEventUniquePtr>::Read(
     arc::mojom::KeyEventDataDataView data,
     KeyEventUniquePtr* out) {
   const ui::EventType type =
-      data.pressed() ? ui::ET_KEY_PRESSED : ui::ET_KEY_RELEASED;
+      data.pressed() ? ui::EventType::kKeyPressed : ui::EventType::kKeyReleased;
   ui::DomCode dom_code = ui::UsLayoutKeyboardCodeToDomCode(
       static_cast<ui::KeyboardCode>(data.key_code()));
   if (data.scan_code() != 0)

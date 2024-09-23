@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -17,6 +18,7 @@
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_time_conversion.h"
 #include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/test/mock_trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,46 +43,6 @@ MATCHER_P(DegradedRecoverabilityStateEq, expected_state, "") {
          given_state.last_refresh_time_millis_since_unix_epoch() ==
              expected_state.last_refresh_time_millis_since_unix_epoch();
 }
-
-class MockTrustedVaultConnection : public TrustedVaultConnection {
- public:
-  MockTrustedVaultConnection() = default;
-  ~MockTrustedVaultConnection() override = default;
-  MOCK_METHOD(std::unique_ptr<Request>,
-              RegisterAuthenticationFactor,
-              (const CoreAccountInfo& account_info,
-               const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
-               int last_trusted_vault_key_version,
-               const SecureBoxPublicKey& authentication_factor_public_key,
-               AuthenticationFactorType authentication_factor_type,
-               std::optional<int> authentication_factor_type_hint,
-               RegisterAuthenticationFactorCallback callback),
-              (override));
-  MOCK_METHOD(std::unique_ptr<Request>,
-              RegisterDeviceWithoutKeys,
-              (const CoreAccountInfo& account_info,
-               const SecureBoxPublicKey& device_public_key,
-               RegisterDeviceWithoutKeysCallback callback),
-              (override));
-  MOCK_METHOD(
-      std::unique_ptr<Request>,
-      DownloadNewKeys,
-      (const CoreAccountInfo& account_info,
-       const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
-       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
-       DownloadNewKeysCallback callback),
-      (override));
-  MOCK_METHOD(std::unique_ptr<Request>,
-              DownloadIsRecoverabilityDegraded,
-              (const CoreAccountInfo& account_info,
-               IsRecoverabilityDegradedCallback callback),
-              (override));
-  MOCK_METHOD(std::unique_ptr<Request>,
-              DownloadAuthenticationFactorsRegistrationState,
-              (const CoreAccountInfo& account_info,
-               DownloadAuthenticationFactorsRegistrationStateCallback callback),
-              (override));
-};
 
 class MockDelegate
     : public TrustedVaultDegradedRecoverabilityHandler::Delegate {

@@ -78,7 +78,7 @@ struct GtkPrimarySelectionSource : public TestSelectionSource::Delegate {
   }
 
   void SendFinished() override {
-    NOTREACHED() << "The interface does not support this method.";
+    NOTREACHED_IN_MIGRATION() << "The interface does not support this method.";
   }
 
   void SendCancelled() override {
@@ -86,7 +86,11 @@ struct GtkPrimarySelectionSource : public TestSelectionSource::Delegate {
   }
 
   void SendDndAction(uint32_t action) override {
-    NOTREACHED() << "The interface does not support this method.";
+    NOTREACHED_IN_MIGRATION() << "The interface does not support this method.";
+  }
+
+  void SendDndDropPerformed() override {
+    NOTREACHED_IN_MIGRATION() << "The interface does not support this method.";
   }
 
   raw_ptr<TestSelectionSource> source = nullptr;

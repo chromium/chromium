@@ -1,0 +1,63 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("search") {
+  sources = [
+    "hierarchy.cc",
+    "hierarchy.h",
+    "search_concept.h",
+    "search_handler.cc",
+    "search_handler.h",
+    "search_tag_registry.cc",
+    "search_tag_registry.h",
+  ]
+
+  public_deps = [
+    "//ash/webui/settings/public/constants:mojom",
+    "//base",
+    "//chrome/browser/ui/webui/ash/settings/search/mojom",
+    "//chromeos/ash/components/local_search_service/public/cpp",
+    "//chromeos/ash/components/local_search_service/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash/settings/constants",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "hierarchy_unittest.cc",
+    "search_handler_unittest.cc",
+    "search_tag_registry_unittest.cc",
+  ]
+
+  deps = [
+    ":search",
+    "//ash/constants",
+    "//ash/webui/settings/public/constants:mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ui/webui/ash/settings/search/mojom",
+    "//chrome/browser/ui/webui/ash/settings/test_support",
+    "//chromeos/ash/components/local_search_service/public/cpp",
+    "//chromeos/ash/components/local_search_service/public/mojom",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

@@ -177,6 +177,10 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
       desktop.addEventListener(
           EventType.MOUSE_RELEASED, evt => this.onAutomationHitTest_(evt),
           true);
+      // Chrome PDF Viewer with PDF OCR sends a layout complete event when
+      // finishing extracting text from inaccessible PDF pages.
+      desktop.addEventListener(
+          EventType.LAYOUT_COMPLETE, evt => this.onLayoutComplete_(evt), true);
 
       if (this.onLoadDesktopCallbackForTest_) {
         this.onLoadDesktopCallbackForTest_();
@@ -236,6 +240,57 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
   }
 
   /**
+   * Read the status message under the status node in a PDF accessibility tree
+   * if PDF content is still being loaded. In the loading phase, the PDF a11y
+   * tree will have one child node with the banner role, which contains the
+   * loading status message as follows:
+   * pdfRoot
+   * - banner
+   * -- status
+   * --- staticText: "Loading PDF"
+   */
+  private readPdfStatusNodeIfStillLoading_(pdfRoot: AutomationNode): boolean {
+    if (pdfRoot.role === RoleType.PDF_ROOT && pdfRoot.children.length === 1 &&
+        pdfRoot.firstChild!.role === RoleType.BANNER &&
+        pdfRoot.firstChild!.children.length === 1 &&
+        pdfRoot.firstChild!.firstChild!.role === RoleType.STATUS &&
+        pdfRoot.firstChild!.firstChild!.children.length === 1 &&
+        pdfRoot.firstChild!.firstChild!.firstChild!.role ===
+            RoleType.STATIC_TEXT) {
+      this.startSpeechQueue_([pdfRoot.firstChild!.firstChild!.firstChild!], {
+        clearFocusRing: true,
+      });
+      return true;
+    }
+    return false;
+  }
+
+  private onLayoutComplete_(evt: AutomationEvent): void {
+    const root: AutomationNode = evt.target;
+    if (!root.url || !root.url.endsWith('.pdf')) {
+      return;
+    }
+
+    // Check if it's Chrome PDF Viewer with PDF OCR in the full-page view.
+    const pdfRoot: AutomationNode|null = root.find({role: RoleType.PDF_ROOT});
+    if (!pdfRoot) {
+      return;
+    }
+
+    this.recordOcredPagesInPdf_(pdfRoot);
+  }
+
+  /**
+   * Record the number of OCRed pages in the PDF accessibility tree.
+   */
+  private recordOcredPagesInPdf_(pdfRoot: AutomationNode): void {
+    // When PDF OCR successfully extracts text from inaccessible PDF pages, PDF
+    // pages with OCRed content will have the "ocred_page" class name.
+    const orcedPages = pdfRoot.findAll({attributes: {className: 'ocred_page'}});
+    MetricsUtils.recordNumPdfPagesOcred(orcedPages.length);
+  }
+
+  /**
    * Called in response to our hit test after the mouse is released,
    * when the user is in a mode where Select-to-speak is capturing
    * mouse events (for example holding down Search).
@@ -247,6 +302,19 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     // container. In the future we might include other container-like
     // roles here.
     var root = evt.target;
+
+    // In Chrome PDF Viewer, PDF content for a large PDF might be still being
+    // loaded into a PDF accessibility tree when the user selects text on a PDF
+    // page. In this case, the PDF root has only one child node, which is the
+    // status node that contains a loading status message. Read this status
+    // message if the user tries selecting text during this loading phase.
+    if (root.role === RoleType.EMBEDDED_OBJECT && root.children.length === 1 &&
+        root.firstChild!.role === RoleType.PDF_ROOT &&
+        root.firstChild!.children.length === 1 &&
+        this.readPdfStatusNodeIfStillLoading_(root.firstChild!)) {
+      return;
+    }
+
     // TODO: Use AutomationPredicate.root instead?
     while (root.parent && root.role !== RoleType.WINDOW &&
            root.role !== RoleType.ROOT_WEB_AREA &&

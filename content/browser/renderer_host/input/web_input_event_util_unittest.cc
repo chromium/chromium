@@ -4,7 +4,8 @@
 
 #include <stddef.h>
 
-#include "base/numerics/math_constants.h"
+#include <numbers>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "ui/events/blink/blink_event_util.h"
@@ -33,7 +34,7 @@ TEST(WebInputEventUtilTest, MotionEventConversion) {
   pointer.raw_y = 25;
   pointer.pressure = 30;
   pointer.touch_minor = 35;
-  pointer.orientation = -base::kPiFloat / 2;
+  pointer.orientation = -std::numbers::pi_v<float> / 2;
   pointer.tilt_x = 60;
   pointer.tilt_y = 70;
   pointer.twist = 160;
@@ -89,9 +90,8 @@ TEST(WebInputEventUtilTest, ScrollUpdateConversion) {
   size_t touch_points = 1;
   gfx::RectF rect(pos, gfx::SizeF());
   int flags = 0;
-  ui::GestureEventDetails details(ui::ET_GESTURE_SCROLL_UPDATE,
-                                  delta.x(),
-                                  delta.y());
+  ui::GestureEventDetails details(ui::EventType::kGestureScrollUpdate,
+                                  delta.x(), delta.y());
   details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEventData event(details,
                              motion_event_id,

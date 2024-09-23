@@ -5,7 +5,10 @@
 // https://w3c.github.io/webauthn/#dictdef-authenticatorattestationresponsejson
 
 dictionary AuthenticatorAttestationResponseJSON {
-    Base64URLString clientDataJSON;
-    Base64URLString attestationObject;
-    sequence<DOMString> transports;
+    required Base64URLString clientDataJSON;
+    required Base64URLString authenticatorData;
+    required sequence<DOMString> transports;
+    Base64URLString publicKey;
+    required long long publicKeyAlgorithm;
+    required Base64URLString attestationObject;
 };

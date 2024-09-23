@@ -11,20 +11,20 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/values.h"
+#import "components/language_detection/ios/browser/language_detection_model_loader_service_ios.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/translate/core/browser/translate_metrics_logger.h"
 #import "components/translate/core/common/translate_util.h"
 #import "components/translate/core/language_detection/language_detection_model.h"
-#import "components/translate/ios/browser/language_detection_model_service.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
+#import "ios/chrome/browser/language_detection/model/language_detection_model_loader_service_ios_factory.h"
+#import "ios/chrome/browser/language_detection/model/language_detection_model_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/translate/model/language_detection_model_service_factory.h"
-#import "ios/chrome/browser/translate/model/translate_model_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/translate/model/translate_ranker_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -41,16 +41,16 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
     scoped_feature_list_.InitWithFeatures(
         {translate::kTFLiteLanguageDetectionEnabled}, {});
     OptimizationGuideServiceFactory::InitializePredictionModelStore();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
 
-    browser_state_ = builder.Build();
+    profile_ = std::move(builder).Build();
 
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
-    web_state_.SetBrowserState(browser_state_.get());
+    web_state_.SetBrowserState(profile_.get());
     auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
     web::ContentWorld content_world =
         translate::TranslateJavaScriptFeature::GetInstance()
@@ -74,7 +74,7 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
 };
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_delegate.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/no_destructor.h"
@@ -100,17 +101,15 @@ void ChromeStructuredMetricsDelegate::Initialize() {
   auto* service = g_browser_process->GetMetricsServicesManager()
                       ->GetStructuredMetricsService();
 
-  // Adds CrOSEvents processor if feature is enabled.
-  if (base::FeatureList::IsEnabled(kEventSequenceLogging)) {
-    Recorder::GetInstance()->AddEventsProcessor(
-        std::make_unique<cros_event::CrOSEventsProcessor>(
-            cros_event::kResetCounterPath));
+  // Adds CrOSEvents processor.
+  Recorder::GetInstance()->AddEventsProcessor(
+      std::make_unique<cros_event::CrOSEventsProcessor>(
+          cros_event::kResetCounterPath));
 
-    if (!ash::StartupUtils::IsOobeCompleted()) {
-      Recorder::GetInstance()->AddEventsProcessor(
-          std::make_unique<OobeStructuredMetricsWatcher>(
-              service, GetOobeEventUploadCount()));
-    }
+  if (!ash::StartupUtils::IsOobeCompleted()) {
+    Recorder::GetInstance()->AddEventsProcessor(
+        std::make_unique<OobeStructuredMetricsWatcher>(
+            service, GetOobeEventUploadCount()));
   }
 
   Recorder::GetInstance()->AddEventsProcessor(

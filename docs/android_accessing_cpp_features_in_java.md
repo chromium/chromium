@@ -98,8 +98,12 @@ This outputs Java String constants which represent the name of the
     }
     ```
 
-3. Add a `deps` entry to `"common_java"` in `"//android_webview/BUILD.gn"` if
-   creating a new `android_library` in the previous step:
+3. If you need to expose your flag in WebView, and you created a new
+   `android_library` in the previous step, then add a `deps` entry to
+   `common_java` in `//android_webview/BUILD.gn`.
+
+   If you don't need to expose a flag in WebView, then skip this and go to the
+   next step.
 
    ```gn
    android_library("common_java") {

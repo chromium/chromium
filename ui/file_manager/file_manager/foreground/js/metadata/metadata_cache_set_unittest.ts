@@ -4,7 +4,8 @@
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {MetadataCacheSet, MetadataSetEvent} from './metadata_cache_set.js';
+import type {MetadataSetEvent} from './metadata_cache_set.js';
+import {MetadataCacheSet} from './metadata_cache_set.js';
 import type {MetadataKey} from './metadata_item.js';
 
 const entryA = {

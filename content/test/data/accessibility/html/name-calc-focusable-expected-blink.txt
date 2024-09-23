@@ -1,0 +1,54 @@
+rootWebArea focusable name='not-focusable-no-name'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored
+++++++++paragraph
+++++++++++staticText name='Cats'
+++++++++++++inlineTextBox name='Cats'
+++++++++paragraph
+++++++++++staticText name='Dogs'
+++++++++++++inlineTextBox name='Dogs'
+=== Start Continuation ===
+rootWebArea focusable name='tabindex-0-has-name'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer focusable name='Cats Dogs'
+++++++++paragraph
+++++++++++staticText name='Cats'
+++++++++++++inlineTextBox name='Cats'
+++++++++paragraph
+++++++++++staticText name='Dogs'
+++++++++++++inlineTextBox name='Dogs'
+=== Start Continuation ===
+rootWebArea focusable name='tabindex-minus-1-no-name'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer focusable
+++++++++paragraph
+++++++++++staticText name='Cats'
+++++++++++++inlineTextBox name='Cats'
+++++++++paragraph
+++++++++++staticText name='Dogs'
+++++++++++++inlineTextBox name='Dogs'
+=== Start Continuation ===
+rootWebArea focusable name='focus-has-name'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer focusable name='Cats Dogs'
+++++++++paragraph
+++++++++++staticText name='Cats'
+++++++++++++inlineTextBox name='Cats'
+++++++++paragraph
+++++++++++staticText name='Dogs'
+++++++++++++inlineTextBox name='Dogs'
+=== Start Continuation ===
+rootWebArea focusable name='remove-tabindex-no-name'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored
+++++++++paragraph
+++++++++++staticText name='Cats'
+++++++++++++inlineTextBox name='Cats'
+++++++++paragraph
+++++++++++staticText name='Dogs'
+++++++++++++inlineTextBox name='Dogs'

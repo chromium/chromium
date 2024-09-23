@@ -78,7 +78,7 @@ public abstract class AsyncInitTaskRunner {
             if (VersionInfo.isDevBuild()) {
                 return "dev";
             }
-            // TODO(crbug.com/1493502): Remove this if block after automotive beta ends.
+            // TODO(crbug.com/40936710): Remove this if block after automotive beta ends.
             if (VersionInfo.isBetaBuild() && BuildInfo.getInstance().isAutomotive) {
                 return "stable";
             }
@@ -180,7 +180,8 @@ public abstract class AsyncInitTaskRunner {
             if (mNumPendingSuccesses == 0) {
                 // All tasks succeeded: Finish tasks, call onSuccess(), and reach terminal state.
                 if (mAllocateChildConnection) {
-                    ChildProcessLauncherHelper.warmUp(ContextUtils.getApplicationContext(), true);
+                    ChildProcessLauncherHelper.warmUpOnAnyThread(
+                            ContextUtils.getApplicationContext(), true);
                 }
                 onSuccess();
                 mNumPendingSuccesses = -1;

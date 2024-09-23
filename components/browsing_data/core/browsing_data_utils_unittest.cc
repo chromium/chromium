@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browsing_data/core/counters/autofill_counter.h"
 #include "components/browsing_data/core/counters/history_counter.h"
@@ -21,6 +22,7 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/webdata/common/web_database_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace browsing_data {
@@ -31,7 +33,10 @@ class FakeWebDataService : public autofill::AutofillWebDataService {
  public:
   FakeWebDataService()
       : AutofillWebDataService(
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
+            base::MakeRefCounted<WebDatabaseService>(
+                base::FilePath(),
+                base::SingleThreadTaskRunner::GetCurrentDefault(),
+                base::SingleThreadTaskRunner::GetCurrentDefault()),
             base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
  protected:
@@ -57,7 +62,9 @@ class BrowsingDataUtilsTest : public testing::Test {
 
 // Tests the complex output of the Autofill counter.
 TEST_F(BrowsingDataUtilsTest, AutofillCounterResult) {
-  AutofillCounter counter(base::MakeRefCounted<FakeWebDataService>(), nullptr);
+  autofill::TestPersonalDataManager test_personal_data_manager;
+  AutofillCounter counter(&test_personal_data_manager,
+                          base::MakeRefCounted<FakeWebDataService>(), nullptr);
 
   // Test all configurations of zero and nonzero partial results for datatypes.
   // Test singular and plural for each datatype.

@@ -24,7 +24,7 @@
 void OptimizationGuideTestAppInterfaceWrapper::SetOptimizationGuideServiceUrl(
     NSString* url) {
   OptimizationGuideService* service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
+      OptimizationGuideServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
   GURL gurl(base::SysNSStringToUTF8(url));
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -61,7 +61,7 @@ optimization_guide::testing::TestHintsComponentCreator
 + (void)registerOptimizationType:
     (optimization_guide::proto::OptimizationType)type {
   OptimizationGuideService* service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
+      OptimizationGuideServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
   service->RegisterOptimizationTypes({type});
 }
@@ -71,10 +71,33 @@ optimization_guide::testing::TestHintsComponentCreator
                     metadata:
                         (optimization_guide::OptimizationMetadata*)metadata {
   OptimizationGuideService* service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
+      OptimizationGuideServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
   service->CanApplyOptimization(GURL(base::SysNSStringToUTF8(url)), type,
                                 metadata);
+}
+
++ (void)addHintForTesting:(NSString*)url
+                     type:(optimization_guide::proto::OptimizationType)type
+           serialized_any:(NSData*)serialized_any
+                 type_url:(NSString*)type_url
+
+{
+  std::string serialized = std::string(
+      static_cast<const char*>(serialized_any.bytes), serialized_any.length);
+
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(base::SysNSStringToUTF8(type_url).c_str());
+  any_metadata.set_value(serialized);
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_any_metadata(any_metadata);
+
+  OptimizationGuideService* service =
+      OptimizationGuideServiceFactory::GetForProfile(
+          chrome_test_util::GetOriginalBrowserState());
+  DCHECK(service);
+  service->AddHintForTesting(GURL(base::SysNSStringToUTF8(url)), type,
+                             metadata);
 }
 
 @end

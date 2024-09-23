@@ -54,29 +54,32 @@
           margin: auto;
         }
 
-        /* Center-align vertically in landscape mode */
-        :host-context([orientation=horizontal]) .landscape-vertical-centered {
-          margin: auto 0;
+        @media (orientation: landscape) {
+          /* Center-align vertically in landscape mode */
+          .landscape-vertical-centered {
+            margin: auto 0;
+          }
+
+          /* Align with header in landscape mode */
+          .landscape-header-aligned {
+            padding-top: calc(var(--oobe-adaptive-dialog-header-top-padding)
+                + var(--oobe-adaptive-dialog-icon-size)
+                + var(--oobe-adaptive-dialog-title-top-padding));
+          }
+          :host-context(.jelly-enabled) .landscape-header-aligned {
+            padding-top: calc(var(--oobe-adaptive-dialog-icon-size)
+                + var(--oobe-adaptive-dialog-item-vertical-padding));
+          }
         }
 
-        /* Align with header in landscape mode */
-        :host-context([orientation=horizontal]) .landscape-header-aligned {
-          padding-top: calc(var(--oobe-adaptive-dialog-header-top-padding)
-              + var(--oobe-adaptive-dialog-icon-size)
-              + var(--oobe-adaptive-dialog-title-top-padding));
-        }
-        :host-context(.jelly-enabled[orientation=horizontal])
-        .landscape-header-aligned {
-          padding-top: calc(var(--oobe-adaptive-dialog-icon-size)
-              + var(--oobe-adaptive-dialog-item-vertical-padding));
-        }
-        :host-context(.jelly-enabled[orientation=vertical])
-        .landscape-header-aligned {
-          padding-top: var(--oobe-adaptive-dialog-item-vertical-padding);
-        }
+        @media (orientation: portrait) {
+          :host-context(.jelly-enabled) .landscape-header-aligned {
+            padding-top: var(--oobe-adaptive-dialog-item-vertical-padding);
+          }
 
-        /* TODO(b/268463435) Remove during Jelly cleanup */
-        /* Center-align horizontally in portrait mode */
-        :host-context([orientation=vertical]) .portrait-horizontal-centered {
-          margin: 0 auto;
+          /* TODO(b/268463435) Remove during Jelly cleanup */
+          /* Center-align horizontally in portrait mode */
+          .portrait-horizontal-centered {
+            margin: 0 auto;
+          }
         }

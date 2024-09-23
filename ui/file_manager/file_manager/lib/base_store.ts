@@ -386,7 +386,7 @@ export class BaseStore<State> {
 }
 
 /** Returns true when the error is a ConcurrentActionInvalidatedError. */
-function isInvalidationError(error: unknown): boolean {
+export function isInvalidationError(error: unknown): boolean {
   if (!error) {
     return false;
   }

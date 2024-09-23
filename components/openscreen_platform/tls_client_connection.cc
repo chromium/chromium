@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -50,7 +51,7 @@ void TlsClientConnection::SetClient(Client* client) {
   client_ = client;
 }
 
-bool TlsClientConnection::Send(const void* data, size_t len) {
+bool TlsClientConnection::Send(openscreen::ByteView data) {
   if (!send_stream_.is_valid()) {
     if (client_) {
       client_->OnError(this, Error(Error::Code::kSocketClosedFailure,
@@ -59,9 +60,7 @@ bool TlsClientConnection::Send(const void* data, size_t len) {
     return false;
   }
 
-  uint32_t num_bytes = base::checked_cast<uint32_t>(len);
-  const MojoResult result = send_stream_->WriteData(
-      data, &num_bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+  const MojoResult result = send_stream_->WriteAllData(data);
   mojo::HandleSignalsState state = send_stream_->QuerySignalsState();
   return ProcessMojoResult(result, state.peer_closed()
                                        ? Error::Code::kSocketClosedFailure
@@ -84,14 +83,14 @@ void TlsClientConnection::ReceiveMore(MojoResult result,
   }
 
   if (result == MOJO_RESULT_OK) {
-    uint32_t num_bytes = 0;
-    result = receive_stream_->ReadData(nullptr, &num_bytes,
-                                       MOJO_READ_DATA_FLAG_QUERY);
+    size_t num_bytes = 0;
+    result = receive_stream_->ReadData(MOJO_READ_DATA_FLAG_QUERY,
+                                       base::span<uint8_t>(), num_bytes);
     if (result == MOJO_RESULT_OK) {
       num_bytes = std::min(num_bytes, kMaxBytesPerRead);
       std::vector<uint8_t> buffer(num_bytes);
-      result = receive_stream_->ReadData(buffer.data(), &num_bytes,
-                                         MOJO_READ_DATA_FLAG_NONE);
+      result = receive_stream_->ReadData(MOJO_READ_DATA_FLAG_NONE, buffer,
+                                         num_bytes);
       if (result == MOJO_RESULT_OK && client_) {
         buffer.resize(num_bytes);
         client_->OnRead(this, std::move(buffer));
@@ -134,6 +133,6 @@ Error::Code TlsClientConnection::ProcessMojoResult(
 }
 
 // static
-constexpr uint32_t TlsClientConnection::kMaxBytesPerRead;
+constexpr size_t TlsClientConnection::kMaxBytesPerRead;
 
 }  // namespace openscreen_platform

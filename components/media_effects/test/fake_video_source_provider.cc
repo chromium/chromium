@@ -7,6 +7,9 @@
 
 namespace media_effects {
 
+using GetSourceInfosResult =
+    video_capture::mojom::VideoSourceProvider::GetSourceInfosResult;
+
 FakeVideoSourceProvider::FakeVideoSourceProvider() = default;
 FakeVideoSourceProvider::~FakeVideoSourceProvider() = default;
 
@@ -54,7 +57,9 @@ void FakeVideoSourceProvider::GetSourceInfos(GetSourceInfosCallback callback) {
   // Simulate the asynchronously behavior of the actual VideoSourceProvider
   // which does a lot of asynchronous and mojo calls.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReply(
-      FROM_HERE, base::BindOnce(std::move(callback), devices),
+      FROM_HERE,
+      base::BindOnce(std::move(callback), GetSourceInfosResult::kSuccess,
+                     devices),
       std::move(reply_callback));
 }
 

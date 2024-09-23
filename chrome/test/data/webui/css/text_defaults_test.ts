@@ -24,7 +24,7 @@ function getExpectedFontFamily(expectingSystemFont: boolean): string {
       'Roboto';
       // </if>
       // <if expr="chromeos_lacros">
-      // TODO(crbug.com/1427641): Change to 'Roboto' once bug is fixed.
+      // TODO(crbug.com/40261940): Change to 'Roboto' once bug is fixed.
       'sans';
       // </if>
       // <if expr="is_fuchsia">

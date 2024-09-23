@@ -8,6 +8,7 @@
 
 #import "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/test/ui_controls.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
@@ -15,6 +16,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/test/test_widget_observer.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
 
@@ -79,9 +81,8 @@ TEST_P(NativeWidgetMacInteractiveUITest, ShowAttainsKeyStatus) {
   EXPECT_FALSE(widget->IsActive());
   EXPECT_EQ(0, activation_count_);
   {
-    WidgetActivationWaiter wait_for_first_active(widget, true);
     widget->Show();
-    wait_for_first_active.Wait();
+    WaitForWidgetActive(widget, true);
   }
   EXPECT_TRUE(widget->IsActive());
   EXPECT_TRUE(widget->GetNativeWindow().GetNativeNSWindow().keyWindow);
@@ -93,18 +94,16 @@ TEST_P(NativeWidgetMacInteractiveUITest, ShowAttainsKeyStatus) {
   Widget* widget2 = MakeWidget();  // Note: not observed.
   EXPECT_EQ(0, deactivation_count_);
   {
-    WidgetActivationWaiter wait_for_deactivate(widget, false);
     widget2->Show();
-    wait_for_deactivate.Wait();
+    WaitForWidgetActive(widget2, true);
   }
   EXPECT_EQ(1, deactivation_count_);
   EXPECT_FALSE(widget->IsActive());
   EXPECT_EQ(1, activation_count_);
 
   {
-    WidgetActivationWaiter wait_for_external_activate(widget, true);
     [widget->GetNativeWindow().GetNativeNSWindow() makeKeyAndOrderFront:nil];
-    wait_for_external_activate.Wait();
+    WaitForWidgetActive(widget, true);
   }
   EXPECT_TRUE(widget->IsActive());
   EXPECT_EQ(1, deactivation_count_);
@@ -260,7 +259,7 @@ TEST_F(NativeWidgetMacInteractiveUITest,
   params.native_widget =
       CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
   // Start the window off in the dock.
-  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
   // "{}" in base64encode, to create some dummy restoration data.
   const std::string kDummyWindowRestorationData = "e30=";
   params.workspace = kDummyWindowRestorationData;
@@ -370,9 +369,8 @@ TEST_F(NativeWidgetMacInteractiveUITest, GlobalNSTextInputContextUpdates) {
   widget->GetContentsView()->AddChildView(textfield);
   textfield->RequestFocus();
   {
-    WidgetActivationWaiter wait_for_first_active(widget, true);
     widget->Show();
-    wait_for_first_active.Wait();
+    WaitForWidgetActive(widget, true);
   }
   EXPECT_TRUE(widget->GetNativeView().GetNativeNSView().inputContext);
   EXPECT_EQ(widget->GetNativeView().GetNativeNSView().inputContext,

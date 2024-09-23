@@ -6,6 +6,7 @@
 #define SERVICES_PROXY_RESOLVER_WIN_WINDOWS_SYSTEM_PROXY_RESOLVER_IMPL_H_
 
 #include <windows.h>
+
 #include <winhttp.h>
 
 #include <memory>

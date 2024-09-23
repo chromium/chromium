@@ -4,9 +4,19 @@
 
 // Utilities that are used in multiple tests.
 
-import type {Bookmark, DocumentDimensions, LayoutOptions} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// <if expr="enable_pdf_ink2">
+import {BeforeUnloadProxyImpl} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {BeforeUnloadProxy, PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+// </if>
+import {assert} from 'chrome://resources/js/assert.js';
+import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+// <if expr="enable_pdf_ink2">
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+// </if>
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 export class MockElement {
   dir: string = '';
@@ -191,26 +201,24 @@ export function createMockPdfPluginForTest(): MockPdfPluginElement {
       MockPdfPluginElement;
 }
 
-class TestBookmarksElement extends PolymerElement {
+class TestBookmarksElement extends CrLitElement {
   static get is() {
     return 'test-bookmarks';
   }
 
-  static get template() {
-    return html`
-      <template is="dom-repeat" items="[[bookmarks]]">
-        <viewer-bookmark bookmark="[[item]]" depth="0"></viewer-bookmark>
-      </template>
-    `;
+  override render() {
+    return this.bookmarks.map(
+        item => html`<viewer-bookmark .bookmark="${item}" depth="0">
+             </viewer-bookmark>`);
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      bookmarks: Array,
+      bookmarks: {type: Array},
     };
   }
 
-  bookmarks: Bookmark[];
+  bookmarks: Bookmark[] = [];
 }
 
 declare global {
@@ -227,6 +235,24 @@ customElements.define(TestBookmarksElement.is, TestBookmarksElement);
  */
 export function createBookmarksForTest(): TestBookmarksElement {
   return document.createElement('test-bookmarks');
+}
+
+/**
+ * Checks if the PDF title matches the expected title.
+ * @param expectedTitle The expected title of the PDF.
+ * @return True if the PDF title matches the expected title, false otherwise.
+ */
+export function checkPdfTitleIsExpectedTitle(expectedTitle: string): boolean {
+  const viewer = document.body.querySelector<PdfViewerElement>('#viewer')!;
+  // Tab title is updated only when document.title is called in a top-level
+  // document (`main_frame` of `WebContents`). For OOPIF PDF viewer, the current
+  // document is the child of a top-level document, hence document.title is not
+  // set and therefore validation is unnecessary.
+  if (!viewer.isPdfOopifEnabled && expectedTitle !== document.title) {
+    return false;
+  }
+
+  return expectedTitle === viewer.pdfTitle;
 }
 
 /**
@@ -280,3 +306,105 @@ export function createWheelEvent(
     cancelable: true,
   });
 }
+
+/**
+ * Helper to always get a non-null child element of `parent`. The element must
+ * exist.
+ * @param parent The parent to get the child element from.
+ * @param query  The query to get the child element.
+ * @returns A non-null element that matches `query`.
+ */
+export function getRequiredElement<K extends keyof HTMLElementTagNameMap>(
+    parent: HTMLElement, query: K): HTMLElementTagNameMap[K];
+export function getRequiredElement<E extends HTMLElement = HTMLElement>(
+    parent: HTMLElement, query: string): E;
+export function getRequiredElement(parent: HTMLElement, query: string) {
+  const element = parent.shadowRoot!.querySelector(query);
+  assert(element);
+  return element;
+}
+
+/**
+ * Open the toolbar menu. Does nothing if the menu is already open.
+ * @param toolbar The toolbar containing the menu to open.
+ */
+export async function openToolbarMenu(toolbar: ViewerToolbarElement) {
+  const menu = toolbar.$.menu;
+  if (menu.open) {
+    return;
+  }
+
+  getRequiredElement(toolbar, '#more').click();
+  await microtasksFinished();
+  assert(menu.open);
+}
+
+/**
+ * Check that the checkbox menu `button` in `toolbar` matches the `checked`
+ * state.
+ */
+export function assertCheckboxMenuButton(
+    toolbar: ViewerToolbarElement, button: HTMLElement, checked: boolean) {
+  chrome.test.assertTrue(toolbar.$.menu.open);
+
+  // Check that the check mark visibility matches `checked`.
+  chrome.test.assertEq(String(checked), button.getAttribute('aria-checked'));
+  chrome.test.assertEq(
+      checked, isVisible(button.querySelector('.check-container cr-icon')));
+}
+
+export async function ensureFullscreen(): Promise<void> {
+  const viewer = document.body.querySelector('pdf-viewer');
+  assert(viewer);
+
+  if (document.fullscreenElement !== null) {
+    return;
+  }
+
+  const toolbar = viewer.shadowRoot!.querySelector('viewer-toolbar');
+  assert(toolbar);
+  toolbar.dispatchEvent(new CustomEvent('present-click'));
+  await eventToPromise('fullscreenchange', viewer.$.scroller);
+}
+
+// Subsequent calls to requestFullScreen() fail with an "API can only be
+// initiated by a user gesture" error, so we need to run with user
+// gesture.
+export function enterFullscreenWithUserGesture(): Promise<void> {
+  return new Promise(res => {
+    chrome.test.runWithUserGesture(() => {
+      ensureFullscreen().then(res);
+    });
+  });
+}
+
+// <if expr="enable_pdf_ink2">
+/**
+ * Helper to simulate the PDF content sending a message to the PDF extension
+ * to indicate that a new ink stroke has been drawn.
+ */
+export function finishInkStroke(controller: PluginController) {
+  const eventTarget = controller.getEventTarget();
+  const message = {type: 'finishInkStroke'};
+
+  eventTarget.dispatchEvent(new CustomEvent(
+      PluginControllerEventType.PLUGIN_MESSAGE, {detail: message}));
+}
+
+export class TestBeforeUnloadProxy extends TestBrowserProxy implements
+    BeforeUnloadProxy {
+  constructor() {
+    super(['preventDefault']);
+  }
+
+  preventDefault() {
+    this.methodCalled('preventDefault');
+  }
+}
+
+export function getNewTestBeforeUnloadProxy(): TestBeforeUnloadProxy {
+  const testProxy = new TestBeforeUnloadProxy();
+  BeforeUnloadProxyImpl.setInstance(testProxy);
+  return testProxy;
+}
+// </if>

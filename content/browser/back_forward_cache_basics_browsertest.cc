@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/back_forward_cache_browsertest.h"
+#include <array>
 
+#include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/render_frame_host.h"
@@ -1271,7 +1272,7 @@ class BackForwardCacheStillNavigatingBrowserTest
   std::string GetMainFramePath() {
     switch (GetParam()) {
       case TestFrameType::kMainFrame:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return "";
       case TestFrameType::kSubFrame:
         return "/back_forward_cache/controllable_subframe.html";
@@ -1420,8 +1421,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_FALSE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
-      {NotRestoredReason::kHTTPStatusNotOK, NotRestoredReason::kNoResponseHead,
-       NotRestoredReason::kErrorDocument},
+      {NotRestoredReason::kHTTPStatusNotOK, NotRestoredReason::kErrorDocument},
       {}, {}, {}, {}, FROM_HERE);
 }
 
@@ -1575,18 +1575,17 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        EventsForPageIneligibleAfterPagehidePersisted) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
-  GURL url_1(https_server()->GetURL("a.com", "/title1.html"));
+  GURL url_1(https_server()->GetURL("a.com", kBlockingPagePath));
   GURL url_2(https_server()->GetURL("a.com", "/title2.html"));
 
   // 1) Navigate to |url_1|.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
   RenderFrameHostImpl* rfh_1 = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_1(rfh_1);
-  // 2) Use BroadcastChannel (a non-sticky blocklisted feature), so that we
+  // 2) The page uses a non-sticky blocklisted feature, so that we
   // would still do a RFH swap on same-site navigation and fire the 'pagehide'
   // event during commit of the new page with 'persisted' set to true, but the
   // page will not be eligible for back-forward cache after commit.
-  EXPECT_TRUE(ExecJs(rfh_1, "window.foo = new BroadcastChannel('foo');"));
 
   EXPECT_TRUE(ExecJs(rfh_1, R"(
     window.onpagehide = (e) => {
@@ -1650,8 +1649,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // "pagehide", "visibilitychange", and "unload" events will be dispatched.
   int num_messages_received = 0;
-  std::string expected_messages[] = {"\"pagehide.not_persisted\"",
-                                     "\"visibilitychange.hidden\""};
+  const auto expected_messages = std::to_array<std::string>({
+      "\"pagehide.not_persisted\"",
+      "\"visibilitychange.hidden\"",
+  });
   std::string message;
   while (dom_message_queue.PopMessage(&message)) {
     EXPECT_EQ(expected_messages[num_messages_received], message);
@@ -1681,7 +1682,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Test pagehide's persisted value and whether the page can be BFCached when a
 // sticky/non-sticky feature is used on the mainframe/subframe.
 //
-// TODO(crbug.com/1446474): Flaky on all platforms.
+// TODO(crbug.com/40913015): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheBrowserTestWithVaryingFrameAndFeatureStickinessType,
     DISABLED_TestPagehidePersistedValue) {
@@ -1852,8 +1853,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // On windows, the expected value is off by ~20ms. In order to get the
 // feature out to canary, the test is disabled for WIN.
-// TODO(crbug.com/1022191): Fix this for Win.
-// TODO(crbug.com/1211428): Flaky on other platforms.
+// TODO(crbug.com/40657468): Fix this for Win.
+// TODO(crbug.com/40767606): Flaky on other platforms.
 // Make sure we are exposing the duration between back navigation's
 // navigationStart and the page's original navigationStart through pageshow
 // event's timeStamp, and that we aren't modifying

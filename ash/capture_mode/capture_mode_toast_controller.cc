@@ -11,7 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/system_toast_style.h"
+#include "ash/system/toast/system_toast_view.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -32,7 +32,7 @@ constexpr base::TimeDelta kCaptureToastVisibilityChangeDuration =
 // dismissed.
 constexpr base::TimeDelta kDelayToDismissToast = base::Seconds(6);
 
-std::u16string GetCaptureToastLabelOnToastType(
+std::u16string GetCaptureToastTextOnToastType(
     CaptureToastType capture_toast_type) {
   const int nudge_message_id =
       IDS_ASH_SCREEN_CAPTURE_SHOW_DEMO_TOOLS_USER_NUDGE;
@@ -46,7 +46,9 @@ std::u16string GetCaptureToastLabelOnToastType(
 
 // Returns the init params that will be used for the toast widget.
 views::Widget::InitParams CreateWidgetParams(aura::Window* parent) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent = parent;
   params.name = "CaptureModeToastWidget";
@@ -61,24 +63,27 @@ CaptureModeToastController::CaptureModeToastController(
     : capture_session_(session) {}
 
 CaptureModeToastController::~CaptureModeToastController() {
-  if (capture_toast_widget_)
+  // Widget needs to be closed immediately so it does not show in the
+  // screenshot.
+  if (capture_toast_widget_) {
     capture_toast_widget_->CloseNow();
+  }
 }
 
 void CaptureModeToastController::ShowCaptureToast(
     CaptureToastType capture_toast_type) {
   current_toast_type_ = capture_toast_type;
-  const std::u16string capture_toast_label =
-      GetCaptureToastLabelOnToastType(capture_toast_type);
+  const std::u16string capture_toast_text =
+      GetCaptureToastTextOnToastType(capture_toast_type);
 
   if (!capture_toast_widget_) {
-    BuildCaptureToastWidget(capture_toast_label);
+    BuildCaptureToastWidget(capture_toast_text);
   } else {
-    toast_contents_view_->SetText(capture_toast_label);
+    toast_contents_view_->SetText(capture_toast_text);
   }
 
   capture_mode_util::TriggerAccessibilityAlertSoon(
-      base::UTF16ToUTF8(capture_toast_label));
+      base::UTF16ToUTF8(capture_toast_text));
 
   MaybeRepositionCaptureToast();
   const bool did_visibility_change = capture_mode_util::SetWidgetVisibility(
@@ -160,18 +165,24 @@ ui::Layer* CaptureModeToastController::MaybeGetToastLayer() {
   return capture_toast_widget_ ? capture_toast_widget_->GetLayer() : nullptr;
 }
 
+void CaptureModeToastController::OnWidgetDestroying(views::Widget* widget) {
+  toast_contents_view_ = nullptr;
+  if (capture_toast_widget_) {
+    capture_toast_widget_->RemoveObserver(this);
+  }
+}
+
 void CaptureModeToastController::BuildCaptureToastWidget(
-    const std::u16string& label) {
+    const std::u16string& text) {
   // Create the widget before init it to ensure that the `capture_toast_widget_`
   // is available when the window gets added to the parent container.
   capture_toast_widget_ = std::make_unique<views::Widget>();
   capture_toast_widget_->Init(
       CreateWidgetParams(capture_session_->current_root()->GetChildById(
           kShellWindowId_MenuContainer)));
-  toast_contents_view_ =
-      capture_toast_widget_->SetContentsView(std::make_unique<SystemToastStyle>(
-          /*dismiss_callback=*/base::DoNothing(), label,
-          /*dismiss_text=*/std::u16string()));
+  capture_toast_widget_->AddObserver(this);
+  toast_contents_view_ = capture_toast_widget_->SetContentsView(
+      std::make_unique<SystemToastView>(text));
 
   // We animate the `capture_toast_widget_` explicitly in `ShowCaptureToast()`
   // and `MaybeDismissCaptureToast()`. Any default visibility animations added

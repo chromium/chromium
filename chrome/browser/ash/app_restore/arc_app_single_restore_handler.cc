@@ -61,8 +61,10 @@ void ArcAppSingleRestoreHandler::LaunchGhostWindowWithApp(
     arc::mojom::WindowInfoPtr window_info) {
   // Activate ARC in case still not active. ArcSessionManager may null in test
   // env.
-  if (arc::ArcSessionManager::Get())
-    arc::ArcSessionManager::Get()->AllowActivation();
+  if (arc::ArcSessionManager::Get()) {
+    arc::ArcSessionManager::Get()->AllowActivation(
+        arc::ArcSessionManager::AllowActivationReason::kRestoreApps);
+  }
 
   // The ghost window and corresponding shelf item need to be added after ash
   // shelf ready.

@@ -6,9 +6,11 @@
 #define ASH_PUBLIC_CPP_LOGIN_SCREEN_MODEL_H_
 
 #include <string>
+#include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 
 class AccountId;
 
@@ -38,10 +40,21 @@ class ASH_PUBLIC_EXPORT LoginScreenModel {
   // and does not correspond to every user on the device.
   virtual void SetUserList(const std::vector<LoginUserInfo>& users) = 0;
 
+  // Update the auth factors (password, pin and challenge-response
+  // authentication) availability for the given user.
+  virtual void SetAuthFactorsForUser(
+      const AccountId& user,
+      cryptohome::AuthFactorsSet auth_factors,
+      cryptohome::PinLockAvailability pin_available_at) = 0;
+
   // Notification if pin is enabled or disabled for the given user.
-  // |account_id|:   The account id of the user in the user pod.
-  // |is_enabled|:   True if pin unlock is enabled.
-  virtual void SetPinEnabledForUser(const AccountId& user, bool enabled) = 0;
+  // |user|:         The account id of the user in the user pod.
+  // |enabled|:      True if pin unlock is enabled.
+  // |available_at|: The time when the pin will be available.
+  virtual void SetPinEnabledForUser(
+      const AccountId& user,
+      bool enabled,
+      cryptohome::PinLockAvailability available_at) = 0;
 
   // Update the status of the challenge-response authentication against a
   // security token for the given user.

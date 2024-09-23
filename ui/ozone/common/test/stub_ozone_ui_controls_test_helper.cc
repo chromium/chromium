@@ -9,36 +9,20 @@
 
 namespace ui {
 
-namespace {
-OzoneUIControlsTestHelper* PrintErrorAndReturnNullptr() {
-  NOTREACHED()
-      << "Notimplemented or not supported by the underlaying platform.";
-  return nullptr;
-}
-}  // namespace
-
-OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperWindows() {
-  return PrintErrorAndReturnNullptr();
-}
-
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperDrm() {
-  return PrintErrorAndReturnNullptr();
-}
-
-OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperScenic() {
-  return PrintErrorAndReturnNullptr();
+  NOTREACHED();
 }
 
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperFlatland() {
-  return PrintErrorAndReturnNullptr();
+  NOTREACHED();
 }
 
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperHeadless() {
-  return PrintErrorAndReturnNullptr();
+  NOTREACHED();
 }
 
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperCast() {
-  return PrintErrorAndReturnNullptr();
+  NOTREACHED();
 }
 
 }  // namespace ui

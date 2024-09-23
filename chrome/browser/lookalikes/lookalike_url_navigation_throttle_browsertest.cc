@@ -39,7 +39,6 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/url_formatter/spoof_checks/top_domains/test_top_bucket_domains.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -243,22 +242,12 @@ class LookalikeUrlNavigationThrottleBrowserTest
  protected:
   LookalikeUrlNavigationThrottleBrowserTest()
       : https_server_(
-            new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS)) {}
-
-  void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.emplace_back(features::kSignedHTTPExchange);
-
+            new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS)) {
     if (GetParam() == PrewarmLookalike::kPrewarm) {
-      enabled_features.emplace_back(kPrewarmLookalikeCheck);
+      feature_list_.InitAndEnableFeature(kPrewarmLookalikeCheck);
     } else {
-      disabled_features.emplace_back(kPrewarmLookalikeCheck);
+      feature_list_.InitAndDisableFeature(kPrewarmLookalikeCheck);
     }
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -1022,8 +1011,8 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   test_helper()->CheckNoLookalikeUkm();
 }
 
-// TODO(https://crbug.com/1122078): Enable test when MacOS flake is fixed.
-// TODO(https://crbug.com/1106402): Enable test when Win/Linux flake is fixed.
+// TODO(crbug.com/40146482): Enable test when MacOS flake is fixed.
+// TODO(crbug.com/40706320): Enable test when Win/Linux flake is fixed.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_Idn_SiteEngagement_Match DISABLED_Idn_SiteEngagement_Match
 #else
@@ -1875,7 +1864,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottlePrerenderBrowserTest,
                        ShowInterstitialAfterActivation) {
-  // TODO(crbug.com/1176054): Cross-origin prerender isn't yet supported, so we
+  // TODO(crbug.com/40168192): Cross-origin prerender isn't yet supported, so we
   // trigger prerendering a page that needs to show an interstitial like this.
   // Once cross-origin prerender is supported, this should be updated to more
   // realistic use-case. i.e. navigate to an primary page with a normal URL and

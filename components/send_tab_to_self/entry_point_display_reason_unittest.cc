@@ -52,7 +52,7 @@ class EntryPointDisplayReasonTest : public ::testing::Test {
  public:
   EntryPointDisplayReasonTest() {
     pref_service_.registry()->RegisterBooleanPref(prefs::kSigninAllowed, true);
-    sync_service_.SetAccountInfo(CoreAccountInfo());
+    sync_service_.SetSignedOut();
   }
 
   syncer::TestSyncService* sync_service() { return &sync_service_; }
@@ -61,13 +61,7 @@ class EntryPointDisplayReasonTest : public ::testing::Test {
   }
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
-  void SignIn() {
-    CoreAccountInfo account;
-    account.gaia = "gaia_id";
-    account.email = "email@test.com";
-    account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-    sync_service_.SetAccountInfo(account);
-  }
+  void SignIn() { sync_service_.SetSignedIn(signin::ConsentLevel::kSignin); }
 
  private:
   syncer::TestSyncService sync_service_;
@@ -86,9 +80,7 @@ TEST_F(EntryPointDisplayReasonTest, ShouldShowPromoIfSignedOut) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(EntryPointDisplayReasonTest, ShouldHidePromoIfSyncDisabledByPolicy) {
-  sync_service()->SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN,
-       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+  sync_service()->SetAllowedByEnterprisePolicy(false);
 
   EXPECT_FALSE(GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
                                           send_tab_to_self_model(),

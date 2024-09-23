@@ -53,6 +53,7 @@
     <settings-animated-pages id="pages" section="people"
         focus-config="[[focusConfig_]]">
       <div route-path="default">
+<if expr="not chromeos_ash">
         <template is="dom-if" if="[[shouldShowSyncAccountControl_(
             syncStatus.syncSystemEnabled)]]">
           <settings-sync-account-control
@@ -66,6 +67,7 @@
                   "$i18n{peopleSignInPromptSecondaryWithNoAccount}">
           </settings-sync-account-control>
         </template>
+</if>
         <template is="dom-if" if="[[!shouldShowSyncAccountControl_(
             syncStatus.syncSystemEnabled, signinAllowed_)]]" restamp>
           <div id="profile-row" class="cr-row first two-line"
@@ -81,7 +83,8 @@
 <!-- When the user is signed-in, the settings-sync-account-control is always
 shown on non-ChromeOS platforms -->
 <if expr="chromeos_ash">
-                <div class="secondary" hidden="[[!syncStatus.signedIn]]">
+                <div class="secondary" hidden="[[!isSyncing_(
+                      syncStatus.signedInState)]]">
                   [[syncStatus.signedInUsername]]
                 </div>
 </if>
@@ -161,6 +164,16 @@ shown on non-ChromeOS platforms -->
         </settings-subpage>
       </template>
 
+      <template is="dom-if" if="[[showHistorySearchControl_]]">
+        <template is="dom-if" route-path="/historySearch">
+          <settings-subpage page-title="$i18n{historySearchSettingLabel}"
+              associated-control="[[$$('#sync-setup')]]">
+            <settings-history-search-page prefs="{{prefs}}">
+            </settings-history-search-page>
+          </settings-subpage>
+        </template>
+      </template>
+
 <if expr="not chromeos_ash">
       <template is="dom-if" route-path="/manageProfile">
         <settings-subpage
@@ -175,6 +188,7 @@ shown on non-ChromeOS platforms -->
 </if>
     </settings-animated-pages>
 
+<if expr="not chromeos_ash">
     <template is="dom-if" if="[[showSignoutDialog_]]" restamp>
       <settings-signout-dialog sync-status="[[syncStatus]]"
           on-close="onDisconnectDialogClosed_">
@@ -186,6 +200,7 @@ shown on non-ChromeOS platforms -->
           on-close="onImportDataDialogClosed_">
       </settings-import-data-dialog>
     </template>
+</if>
     <cr-toast duration="3000" id="toast">
       <span>$i18n{syncSettingsSavedToast}</span>
     </cr-toast>

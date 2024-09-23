@@ -11,6 +11,18 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/ui/browser.h"
 
+// Do not introduce new uses of this class. Instead use BrowserWindowFeatures.
+// BrowserWindowFeatures is functionally identical but has two benefits: it does
+// not force a dependency onto class Browser, and the lifetime semantics are
+// explicit rather than implicit.
+//
+// For example, the following two getters are equivalent:
+//   (1) FooFeature::GetOrCreateForBrowser(browser)
+//   (2) browser->browser_window_features()->get_foo_feature().
+// In (1), FooFeature depends on Browser. As Browser depends on everything, this
+// is a circular dependency. In (2), FooFeature does not have to depend on
+// Browser.
+//
 // A base class for classes attached to, and scoped to, the lifetime of a
 // Browser. For example:
 //

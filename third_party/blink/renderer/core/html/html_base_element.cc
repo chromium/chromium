@@ -82,9 +82,7 @@ String HTMLBaseElement::href() const {
                  GetDocument().Encoding());
 
   if (!url.IsValid()) {
-    return RuntimeEnabledFeatures::DocumentBaseURIFixEnabled()
-               ? stripped_attribute_value
-               : KURL();
+    return stripped_attribute_value;
   }
 
   return url;

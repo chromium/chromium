@@ -13,6 +13,7 @@ source_set("browser") {
     "//base",
     "//components/client_hints/common",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
     "//components/embedder_support:browser_util",
     "//content/public/browser",

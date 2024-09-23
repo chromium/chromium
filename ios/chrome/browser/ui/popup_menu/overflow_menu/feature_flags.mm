@@ -12,7 +12,7 @@ BASE_FEATURE(kNewOverflowMenu,
 
 BASE_FEATURE(kOverflowMenuCustomization,
              "OverflowMenuCustomization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsNewOverflowMenuEnabled() {
   return base::FeatureList::IsEnabled(kNewOverflowMenu);

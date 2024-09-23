@@ -130,6 +130,7 @@ suite('UserPreviewElementTest', function() {
         },
         title: stringToMojoString16('the remains of the day'),
         index: 1,
+        sourceInfo: null,
       },
     };
 

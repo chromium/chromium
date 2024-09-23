@@ -113,7 +113,7 @@ void StartupPagesHandler::HandleAddStartupPage(const base::Value::List& args) {
   const base::Value& callback_id = args[0];
 
   if (!args[1].is_string()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -139,7 +139,7 @@ void StartupPagesHandler::HandleEditStartupPage(const base::Value::List& args) {
   if (index < 0 || static_cast<size_t>(index) >=
                        startup_custom_pages_table_model_.RowCount()) {
     RejectJavascriptCallback(callback_id, base::Value());
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -166,14 +166,14 @@ void StartupPagesHandler::HandleRemoveStartupPage(
     const base::Value::List& args) {
   CHECK_EQ(args.size(), 1u);
   if (!args[0].is_int()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   int selected_index = args[0].GetInt();
 
   if (selected_index < 0 || static_cast<size_t>(selected_index) >=
                                 startup_custom_pages_table_model_.RowCount()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

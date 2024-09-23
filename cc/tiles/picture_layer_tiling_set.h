@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "cc/base/region.h"
 #include "cc/tiles/picture_layer_tiling.h"
+#include "cc/tiles/tiling_set_coverage_iterator.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -87,6 +88,12 @@ class CC_EXPORT PictureLayerTilingSet {
                                 scoped_refptr<RasterSource> raster_source,
                                 bool can_use_lcd_text = false);
   size_t num_tilings() const { return tilings_.size(); }
+  // all_tiles_done() can return false negatives because:
+  //   1) PictureLayerTiling::all_tiles_done() could return false negatives;
+  //   2) it's not re-computed when a PictureLayerTiling is removed from
+  //      the set.
+  bool all_tiles_done() const { return all_tiles_done_; }
+  void set_all_tiles_done(bool done) { all_tiles_done_ = done; }
   int NumHighResTilings() const;
   PictureLayerTiling* tiling_at(size_t idx) { return tilings_[idx].get(); }
   const PictureLayerTiling* tiling_at(size_t idx) const {
@@ -141,57 +148,10 @@ class CC_EXPORT PictureLayerTilingSet {
   void GetAllPrioritizedTilesForTracing(
       std::vector<PrioritizedTile>* prioritized_tiles) const;
 
-  // For a given rect, iterates through tiles that can fill it.  If no
-  // set of tiles with resources can fill the rect, then it will iterate
-  // through null tiles with valid geometry_rect() until the rect is full.
-  // If all tiles have resources, the union of all geometry_rects will
-  // exactly fill rect with no overlap.
-  class CC_EXPORT CoverageIterator {
-   public:
-    // |coverage_scale| is the scale at which we want to produce the coverage.
-    // This is the scale at which |coverage_rect| is specified (relative to
-    // identity).
-    // |coverage_rect| is a rect that we want to cover during this iteration.
-    // |ideal_contents_scale| is the ideal scale that we want, which determines
-    // the order in which tilings are processed to get the best ("crispest")
-    // coverage.
-    CoverageIterator(const PictureLayerTilingSet* set,
-                     float coverage_scale,
-                     const gfx::Rect& coverage_rect,
-                     float ideal_contents_scale);
-    ~CoverageIterator();
-
-    // Visible rect (no borders), in the space of |coverage_rect| (ie at
-    // |coverage_scale| from identity). This is clipped to the coverage_rect.
-    gfx::Rect geometry_rect() const;
-    // A geometry_rect scaled to the tiling's contents scale, which represents
-    // the texture rect in texels.
-    gfx::RectF texture_rect() const;
-
-    Tile* operator->() const;
-    Tile* operator*() const;
-
-    CoverageIterator& operator++();
-    operator bool() const;
-
-    TileResolution resolution() const;
-    PictureLayerTiling* CurrentTiling() const;
-
-   private:
-    size_t NextTiling() const;
-
-    // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
-    // stacks.
-    RAW_PTR_EXCLUSION const PictureLayerTilingSet* set_;
-    float coverage_scale_;
-    PictureLayerTiling::CoverageIterator tiling_iter_;
-    size_t current_tiling_;
-    size_t ideal_tiling_;
-
-    Region current_region_;
-    Region missing_region_;
-    Region::Iterator region_iter_;
-  };
+  using CoverageIterator = TilingSetCoverageIterator<PictureLayerTiling>;
+  CoverageIterator Cover(const gfx::Rect& coverage_rect,
+                         float coverage_scale,
+                         float ideal_contents_scale);
 
   void AsValueInto(base::trace_event::TracedValue* array) const;
   size_t GPUMemoryUsageInBytes() const;
@@ -258,6 +218,8 @@ class CC_EXPORT PictureLayerTilingSet {
 
   std::vector<std::unique_ptr<PictureLayerTiling>> tilings_;
 
+  bool all_tiles_done_ : 1 = true;
+
   const int tiling_interest_area_padding_;
   const float skewport_target_time_in_seconds_;
   const int skewport_extrapolation_limit_in_screen_pixels_;
@@ -272,7 +234,7 @@ class CC_EXPORT PictureLayerTilingSet {
   scoped_refptr<RasterSource> raster_source_;
 
   gfx::Rect visible_rect_in_layer_space_;
-  gfx::Rect skewport_in_layer_space_;
+  gfx::Rect skewport_rect_in_layer_space_;
   gfx::Rect soon_border_rect_in_layer_space_;
   gfx::Rect eventually_rect_in_layer_space_;
 

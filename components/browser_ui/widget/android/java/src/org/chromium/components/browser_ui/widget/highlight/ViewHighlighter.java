@@ -5,7 +5,6 @@
 package org.chromium.components.browser_ui.widget.highlight;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.View;
@@ -14,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.core.view.ViewCompat;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.components.browser_ui.widget.R;
 
 /**
@@ -172,10 +170,9 @@ public class ViewHighlighter {
                         : false;
         if (highlighted) return;
 
-        Resources resources = view.getContext().getResources();
         Drawable background = view.getBackground();
         if (background != null) {
-            background = background.getConstantState().newDrawable();
+            background = background.mutate();
         }
 
         Drawable[] layers =
@@ -233,13 +230,11 @@ public class ViewHighlighter {
         if (!highlighted) return;
         view.setTag(R.id.highlight_state, false);
 
-        Resources resources = ContextUtils.getApplicationContext().getResources();
         Drawable existingBackground = view.getBackground();
         if (existingBackground instanceof LayerDrawable) {
             LayerDrawable layerDrawable = (LayerDrawable) existingBackground;
             if (layerDrawable.getNumberOfLayers() >= 2) {
-                view.setBackground(
-                        layerDrawable.getDrawable(0).getConstantState().newDrawable(resources));
+                view.setBackground(layerDrawable.getDrawable(0));
             } else {
                 view.setBackground(null);
             }

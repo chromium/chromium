@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_COMMON_IMAGE_BACKING_FACTORY_H_
 
 #include "base/memory/raw_ptr.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -63,7 +64,7 @@ class GPU_GLES2_EXPORT GLCommonImageBackingFactory
   };
 
  protected:
-  GLCommonImageBackingFactory(uint32_t supported_usages,
+  GLCommonImageBackingFactory(SharedImageUsageSet supported_usages,
                               const GpuPreferences& gpu_preferences,
                               const GpuDriverBugWorkarounds& workarounds,
                               const gles2::FeatureInfo* feature_info,

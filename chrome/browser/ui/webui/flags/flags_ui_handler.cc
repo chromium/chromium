@@ -42,11 +42,15 @@ bool ExtractKeyValue(const base::Value::List& args,
 FlagsUIHandler::FlagsUIHandler()
     : access_(flags_ui::kGeneralAccessFlagsOnly),
       experimental_features_callback_id_(""),
-      deprecated_features_only_(false) {}
+      deprecated_features_callback_id_("") {}
 
 FlagsUIHandler::~FlagsUIHandler() {}
 
 void FlagsUIHandler::RegisterMessages() {
+  web_ui()->RegisterMessageCallback(
+      "requestDeprecatedFeatures",
+      base::BindRepeating(&FlagsUIHandler::HandleRequestDeprecatedFeatures,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       flags_ui::kRequestExperimentalFeatures,
       base::BindRepeating(&FlagsUIHandler::HandleRequestExperimentalFeatures,
@@ -85,8 +89,28 @@ void FlagsUIHandler::Init(std::unique_ptr<flags_ui::FlagsStorage> flags_storage,
   flags_storage_ = std::move(flags_storage);
   access_ = access;
 
-  if (!experimental_features_callback_id_.empty())
-    SendExperimentalFeatures();
+  if (!experimental_features_callback_id_.empty()) {
+    SendExperimentalFeatures(/*deprecated_features_only=*/false);
+  }
+
+  if (!deprecated_features_callback_id_.empty()) {
+    SendExperimentalFeatures(/*deprecated_features_only=*/true);
+  }
+}
+
+void FlagsUIHandler::HandleRequestDeprecatedFeatures(
+    const base::Value::List& args) {
+  AllowJavascript();
+  const base::Value& callback_id = args[0];
+
+  deprecated_features_callback_id_ = callback_id.GetString();
+  // Bail out if the handler hasn't been initialized yet. The request will be
+  // handled after the initialization.
+  if (!flags_storage_) {
+    return;
+  }
+
+  SendExperimentalFeatures(/*deprecated_features_only=*/true);
 }
 
 void FlagsUIHandler::HandleRequestExperimentalFeatures(
@@ -101,16 +125,16 @@ void FlagsUIHandler::HandleRequestExperimentalFeatures(
     return;
   }
 
-  SendExperimentalFeatures();
+  SendExperimentalFeatures(/*deprecated_features_only=*/false);
 }
 
-void FlagsUIHandler::SendExperimentalFeatures() {
+void FlagsUIHandler::SendExperimentalFeatures(bool deprecated_features_only) {
   base::Value::Dict results;
 
   base::Value::List supported_features;
   base::Value::List unsupported_features;
 
-  if (deprecated_features_only_) {
+  if (deprecated_features_only) {
     about_flags::GetFlagFeatureEntriesForDeprecatedPage(
         flags_storage_.get(), access_, supported_features,
         unsupported_features);
@@ -138,17 +162,23 @@ void FlagsUIHandler::SendExperimentalFeatures() {
   version_info::Channel channel = chrome::GetChannel();
   results.Set(
       flags_ui::kShowBetaChannelPromotion,
-      channel == version_info::Channel::STABLE && !deprecated_features_only_);
+      channel == version_info::Channel::STABLE && !deprecated_features_only);
   results.Set(
       flags_ui::kShowDevChannelPromotion,
-      channel == version_info::Channel::BETA && !deprecated_features_only_);
+      channel == version_info::Channel::BETA && !deprecated_features_only);
 #else
   results.Set(flags_ui::kShowBetaChannelPromotion, false);
   results.Set(flags_ui::kShowDevChannelPromotion, false);
 #endif
-  ResolveJavascriptCallback(base::Value(experimental_features_callback_id_),
-                            results);
-  experimental_features_callback_id_.clear();
+  if (deprecated_features_only) {
+    ResolveJavascriptCallback(base::Value(deprecated_features_callback_id_),
+                              results);
+    deprecated_features_callback_id_.clear();
+  } else {
+    ResolveJavascriptCallback(base::Value(experimental_features_callback_id_),
+                              results);
+    experimental_features_callback_id_.clear();
+  }
 }
 
 void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
@@ -159,13 +189,13 @@ void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
     return;
 
   if (!args[0].is_string() || !args[1].is_string()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   const std::string& entry_internal_name = args[0].GetString();
   const std::string& enable_str = args[1].GetString();
   if (entry_internal_name.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -178,7 +208,7 @@ void FlagsUIHandler::HandleSetOriginListFlagMessage(
   DCHECK(flags_storage_);
   std::string entry_internal_name, value_str;
   if (!ExtractKeyValue(args, entry_internal_name, value_str)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -190,7 +220,7 @@ void FlagsUIHandler::HandleSetStringFlagMessage(const base::Value::List& args) {
   DCHECK(flags_storage_);
   std::string entry_internal_name, value_str;
   if (!ExtractKeyValue(args, entry_internal_name, value_str)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

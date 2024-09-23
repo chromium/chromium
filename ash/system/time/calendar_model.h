@@ -72,14 +72,9 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
 
   class Observer : public base::CheckedObserver {
    public:
-    // Invoked when a set of events has been fetched.
-    virtual void OnEventsFetched(
-        const FetchingStatus status,
-        const base::Time start_time,
-        const google_apis::calendar::EventList* events) {}
-
-    // Invoked when an internal timeout has occurred.
-    virtual void OnTimeout(base::Time start_of_month) {}
+    // Invoked when a month of events has been fetched.
+    virtual void OnEventsFetched(const FetchingStatus status,
+                                 const base::Time start_time) {}
   };
 
   void AddObserver(Observer* observer);
@@ -92,6 +87,10 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // Clears out all events that start in a non-prunable month.
   void ClearAllPrunableEvents();
 
+  // Returns true if the event storage for a given month is populated with at
+  // least one event.
+  bool MonthHasEvents(const base::Time start_of_month);
+
   // Logs to UMA all event fetch metrics recorded over the lifetime of a
   // calendar session.
   void UploadLifetimeMetrics();
@@ -102,8 +101,18 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // Adds every month in `months` to the set of non-prunable months.
   void AddNonPrunableMonths(const std::set<base::Time>& months);
 
-  // Requests events that of the passed in `start_of_month`.
+  // Requests events for the month starting at `start_of_month` if there is not
+  // currently a calendar list fetch in progress.
+  void MaybeFetchEvents(base::Time start_of_month);
+
+  // Requests events for the month starting at `start_of_month`. If there is no
+  // calendar list, or Multi-Calendar is disabled, only primary calendar events
+  // are fetched.
   void FetchEvents(base::Time start_of_month);
+
+  // Requests events for the month starting at `start_of_month` for the primary
+  // calendar.
+  void FetchPrimaryCalendarEvents(const base::Time start_of_month);
 
   // Cancels any pending event fetch for `start_of_month`.
   void CancelFetch(const base::Time& start_of_month);
@@ -127,7 +136,7 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
       base::Time now_local) const;
 
   // Checks the `FetchingStatus` of a given start time.
-  FetchingStatus FindFetchingStatus(base::Time start_time) const;
+  FetchingStatus FindFetchingStatus(base::Time start_time);
 
   // Redistributes all the fetched events to the date map with the
   // time difference. This method is only called when there's a timezone change.
@@ -143,10 +152,11 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   friend class CalendarUpNextViewTest;
   friend class CalendarViewPixelTest;
   friend class CalendarViewAnimationTest;
-  friend class CalendarViewAnimationWithJellyEnabledTest;
+  friend class CalendarViewEventListViewFetchTest;
   friend class CalendarViewEventListViewTest;
   friend class CalendarViewTest;
-  friend class CalendarViewWithJellyEnabledTest;
+  friend class CalendarViewWithUpNextViewAnimationTest;
+  friend class CalendarViewWithUpNextViewTest;
 
   // Checks if the event has allowed statuses and is eligible for insertion.
   bool ShouldInsertEvent(
@@ -175,14 +185,19 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // most-recently-used to least-recently-used.
   void PromoteMonth(base::Time start_of_month);
 
+  // Based on error(s) received during a month's fetch(es), notify observers.
+  void NotifyObservers(base::Time start_of_month);
+
   // Actual callback invoked when an event fetch is complete.
   void OnEventsFetched(base::Time start_of_month,
+                       std::string calendar_id,
                        google_apis::ApiErrorCode error,
                        const google_apis::calendar::EventList* events);
 
   // Callback invoked when an event fetch failed with an internal error.
   void OnEventFetchFailedInternalError(
       base::Time start_of_month,
+      std::string calendar_id,
       CalendarEventFetchInternalErrorCode error);
 
   // Internal storage for fetched events, with each fetched month having a
@@ -198,8 +213,24 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // Set of months we've already fetched.
   std::set<base::Time> months_fetched_;
 
-  // All fetch requests that are still in-progress.
-  std::map<base::Time, std::unique_ptr<CalendarEventFetch>> pending_fetches_;
+  // All fetch requests that are still in-progress. Maps each start of month
+  // timestamp to a map linking each calendar ID to a CalendarEventFetch
+  // object.
+  std::map<base::Time,
+           std::map<std::string, std::unique_ptr<CalendarEventFetch>>>
+      pending_fetches_;
+
+  // Maps a month to a set of error codes returned by the month's event
+  // fetches.
+  std::map<base::Time, std::set<google_apis::ApiErrorCode>> fetch_error_codes_;
+
+  // Timestamp of the start of the first event fetch created, for use in
+  // duration metrics when Multi-Calendar is enabled.
+  base::TimeTicks fetches_start_time_;
+
+  // Maps a non-prunable month to an indicator that equals true if new event
+  // fetches for the month have completed successfully.
+  std::map<base::Time, bool> events_have_fetched_;
 
   ScopedSessionObserver session_observer_;
 

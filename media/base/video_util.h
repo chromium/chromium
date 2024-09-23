@@ -18,8 +18,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-class GrDirectContext;
-
 namespace base {
 class TimeDelta;
 }
@@ -30,6 +28,10 @@ namespace raster {
 class RasterInterface;
 }  // namespace raster
 }  // namespace gpu
+
+namespace libyuv {
+struct YuvConstants;
+}
 
 namespace media {
 
@@ -154,13 +156,12 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
 // |txt_frame| and creates a new CPU memory backed frame. It's needed because
 // existing video encoders can't handle texture backed frames.
 //
-// TODO(crbug.com/1162530): Combine this function with
+// TODO(crbug.com/40162806): Combine this function with
 // media::ConvertAndScaleFrame and put it into a new class
 // media:FrameSizeAndFormatConverter.
 MEDIA_EXPORT scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
     VideoFrame& txt_frame,
     gpu::raster::RasterInterface* ri,
-    GrDirectContext* gr_context,
     const gpu::Capabilities& caps,
     VideoFramePool* pool = nullptr);
 
@@ -173,7 +174,6 @@ MEDIA_EXPORT bool ReadbackTexturePlaneToMemorySync(
     uint8_t* dest_pixels,
     size_t dest_stride,
     gpu::raster::RasterInterface* ri,
-    GrDirectContext* gr_context,
     const gpu::Capabilities& caps);
 
 // Converts a frame with I420A format into I420 by dropping alpha channel.
@@ -181,9 +181,9 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
     scoped_refptr<VideoFrame> frame);
 
 // Copy I420 video frame to match the required coded size and pad the region
-// outside the visible rect repeatly with the last column / row up to the coded
-// size of |dst_frame|. Return false when |dst_frame| is empty or visible rect
-// is empty.
+// outside the visible rect repeatedly with the last column / row up to the
+// coded size of |dst_frame|. Return false when |dst_frame| is empty or visible
+// rect is empty.
 // One application is content mirroring using HW encoder. As the required coded
 // size for encoder is unknown before capturing, memory copy is needed when the
 // coded size does not match the requirement. Padding can improve the encoding
@@ -221,6 +221,16 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> CreateFromSkImage(
 // Utility to convert a media pixel format to SkYUVAInfo.
 MEDIA_EXPORT std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>
 VideoPixelFormatToSkiaValues(VideoPixelFormat video_format);
+
+// Returns the libyuv RGB conversion matrix for a given skia YUV color space.
+// If `output_argb_matrix` is true a ARGB matrix will be provided, if false a
+// ABGR matrix will be provided.
+//
+// NOTE: When using the ABGR matrix, you must also swap the V,U parameters to
+// whichever libyuv function you're using.
+MEDIA_EXPORT const libyuv::YuvConstants* GetYuvContantsForColorSpace(
+    SkYUVColorSpace cs,
+    bool output_argb_matrix);
 
 }  // namespace media
 

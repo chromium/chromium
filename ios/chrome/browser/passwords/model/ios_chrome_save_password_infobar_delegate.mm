@@ -12,6 +12,7 @@
 #import "base/notreached.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -121,7 +122,8 @@ void RecordDismissalMetrics(
         infobar_response);
   } else {
     password_manager::metrics_util::LogSaveUIDismissalReason(
-        infobar_response, account_storage_user_state);
+        infobar_response, account_storage_user_state,
+        /*log_adoption_metric=*/false);
   }
 }
 
@@ -151,7 +153,7 @@ std::string DurationHistogramName(bool is_update,
       return base::StrCat({base_name, ".OnDeletion"});
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Records the infobar duration metric for a given `moment`.
@@ -224,8 +226,12 @@ IOSChromeSavePasswordInfoBarDelegate::GetAccountToStorePassword() const {
 
 bool IOSChromeSavePasswordInfoBarDelegate::ShouldExpire(
     const NavigationDetails& details) const {
+  const bool from_user_gesture =
+      !base::FeatureList::IsEnabled(kAutofillStickyInfobarIos) ||
+      details.has_user_gesture;
+
   return !details.is_form_submission && !details.is_redirect &&
-         ConfirmInfoBarDelegate::ShouldExpire(details);
+         from_user_gesture && ConfirmInfoBarDelegate::ShouldExpire(details);
 }
 
 std::u16string IOSChromeSavePasswordInfoBarDelegate::GetMessageText() const {
@@ -249,9 +255,8 @@ std::u16string IOSChromeSavePasswordInfoBarDelegate::GetButtonLabel(
                  : l10n_util::GetStringUTF16(
                        IDS_IOS_PASSWORD_MANAGER_MODAL_BLOCK_BUTTON);
     }
-    case BUTTON_EXTRA:
     case BUTTON_NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
 }

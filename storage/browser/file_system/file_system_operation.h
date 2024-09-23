@@ -285,7 +285,7 @@ class FileSystemOperation {
   //   CopyInForeignFile and CreateDirectory on dest filesystem
   //   for cross-filesystem case.
   //
-  // TODO(crbug.com/171284): Restore directory timestamps after the Move
+  // TODO(crbug.com/40960653): Restore directory timestamps after the Move
   //                         operation.
   virtual void Move(
       const FileSystemURL& src_path,

@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/dom/live_node_list_base.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/live_node_list.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 
@@ -38,7 +39,7 @@ void LiveNodeListBase::InvalidateCacheForAttribute(
 
 ContainerNode& LiveNodeListBase::RootNode() const {
   if (IsRootedAtTreeScope() && owner_node_->IsInTreeScope())
-    return owner_node_->ContainingTreeScope().RootNode();
+    return owner_node_->GetTreeScope().RootNode();
   return *owner_node_;
 }
 

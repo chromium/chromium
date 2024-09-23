@@ -31,7 +31,7 @@ std::unique_ptr<ProvidedFileSystemInterface>
 FakeExtensionProvider::CreateProvidedFileSystem(
     Profile* profile,
     const ProvidedFileSystemInfo& file_system_info,
-    ContentCache* content_cache) {
+    CacheManager* cache_manager) {
   DCHECK(profile);
   return std::make_unique<FakeProvidedFileSystem>(file_system_info);
 }
@@ -53,7 +53,7 @@ const IconSet& FakeExtensionProvider::GetIconSet() const {
 }
 
 RequestManager* FakeExtensionProvider::GetRequestManager() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

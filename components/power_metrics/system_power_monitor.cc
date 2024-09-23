@@ -98,7 +98,7 @@ int64_t CalculateNanojoulesDeltaFromSamples(
     return static_cast<int64_t>(new_sample.apu_nanojoules -
                                 old_sample.apu_nanojoules);
   }
-  NOTREACHED_NORETURN() << "Unexpected metric: " << metric;
+  NOTREACHED() << "Unexpected metric: " << metric;
 }
 
 }  // namespace

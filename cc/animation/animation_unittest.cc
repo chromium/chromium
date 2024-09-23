@@ -603,5 +603,72 @@ TEST_F(AnimationTest, ToString) {
             animation_->ToString());
 }
 
+TEST_F(AnimationTest, AnimationReplacementDeletesKeyframeModels) {
+  host_->AddAnimationTimeline(timeline_);
+  timeline_->AttachAnimation(animation_);
+  animation_->AttachElement(element_id_);
+
+  int group_id = 1;
+  int original_model_id = AddOpacityTransitionToAnimation(
+      animation_.get(), /*duration=*/1., /*start_opacity=*/1.0f,
+      /*end_opacity=*/0.3f, /*use_timing_function=*/false, /*id=*/std::nullopt,
+      group_id);
+
+  host_->PushPropertiesTo(host_impl_, client_.GetPropertyTrees());
+
+  timeline_impl_ = host_impl_->GetTimelineById(timeline_id_);
+  ASSERT_TRUE(timeline_impl_);
+  animation_impl_ = timeline_impl_->GetAnimationById(animation_id_);
+  ASSERT_TRUE(animation_impl_);
+
+  KeyframeModel* original_model_impl = KeyframeModel::ToCcKeyframeModel(
+      animation_impl_->keyframe_effect()->keyframe_models().front().get());
+
+  ASSERT_EQ(original_model_impl->id(), original_model_id);
+
+  host_impl_->ActivateAnimations(nullptr);
+
+  base::TimeTicks time;
+  time += base::Seconds(0.1);
+  TickAnimationsTransferEvents(time, 1u);
+
+  ASSERT_EQ(animation_impl_->keyframe_effect()->keyframe_models().size(), 1ul);
+  ASSERT_EQ(original_model_impl->run_state(), gfx::KeyframeModel::RUNNING);
+
+  // An animation replacement reuses the impl-side Animation and KeyframeEffect
+  // objects. Ensure that the old keyframe models are cleared out when this
+  // happens.
+  auto replacing_animation = CancelAndReplaceAnimation(*animation_);
+  int replacing_model_id = AddOpacityTransitionToAnimation(
+      replacing_animation.get(), /*duration=*/1., /*start_opacity=*/1.0f,
+      /*end_opacity=*/0.3f, /*use_timing_function=*/false, /*id=*/std::nullopt,
+      group_id);
+
+  // The push properties appends the new keyframe model and notices the
+  // original keyframe model no longer exists on the main thread so marks it as
+  // not affecting pending elements.
+  host_->PushPropertiesTo(host_impl_, client_.GetPropertyTrees());
+  EXPECT_EQ(animation_impl_->keyframe_effect()->keyframe_models().size(), 2ul);
+  EXPECT_EQ(original_model_impl->run_state(), gfx::KeyframeModel::RUNNING);
+  EXPECT_FALSE(original_model_impl->affects_pending_elements());
+  EXPECT_TRUE(original_model_impl->affects_active_elements());
+
+  // Activating it marks it as not affecting any elements and so marks it as
+  // finished.
+  host_impl_->ActivateAnimations(nullptr);
+  EXPECT_EQ(original_model_impl->run_state(),
+            gfx::KeyframeModel::WAITING_FOR_DELETION);
+  EXPECT_FALSE(original_model_impl->affects_active_elements());
+  EXPECT_EQ(animation_impl_->keyframe_effect()->keyframe_models().size(), 2ul);
+
+  // The next time the effect is updated from the main thread, the commit will
+  // cause the keyframe model to be purged.
+  replacing_animation->keyframe_effect()->SetNeedsPushProperties();
+  host_->PushPropertiesTo(host_impl_, client_.GetPropertyTrees());
+  EXPECT_EQ(animation_impl_->keyframe_effect()->keyframe_models().size(), 1ul);
+  EXPECT_EQ(animation_impl_->keyframe_effect()->keyframe_models().front()->id(),
+            replacing_model_id);
+}
+
 }  // namespace
 }  // namespace cc

@@ -14,19 +14,7 @@ import argparse
 import json
 import logging
 import sys
-
-import six  # pylint: disable=import-error
-
-# //content/test/gpu is Python 3-only at this point, but
-# //testing/scripts/test_buildbucket_api_gpu_use_cases.py does import this file
-# via Python 2 on bots during the "get compile targets for scripts" step. So,
-# keep this compatibility in for now.
-# pylint: disable=wrong-import-position
-if six.PY3:
-  import urllib.request as ulib
-else:
-  import urllib2 as ulib  # pylint: disable=import-error
-# pylint: enable=wrong-import-position
+import urllib.request as ulib
 
 
 def GetBuildData(method, request):

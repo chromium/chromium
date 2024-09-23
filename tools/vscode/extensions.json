@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "Google.cros-ide",
+    "solomonkinard.chromium-context",
+    "ms-vscode.cpptools",
+    "llvm-vs-code-extensions.vscode-clangd",
+    "bbenoist.togglehs",
+    "zxh404.vscode-proto3",
+    "Google.vscode-mojom",
+    "msedge-dev.gnls",
+    "stkb.rewrap",
+    "ms-vscode-remote.remote-ssh",
+    "eamodio.gitlens",
+    "ms-python.python",
+  ]
+}

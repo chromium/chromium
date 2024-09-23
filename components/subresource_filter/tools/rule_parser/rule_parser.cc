@@ -9,7 +9,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/subresource_filter/tools/rule_parser/rule_options.h"
@@ -68,8 +71,8 @@ class KeywordMap {
 
     // Creates a generic option.
     OptionDetails(OptionType type, int flags) : type(type), flags(flags) {
-      DCHECK_NE(type, OPTION_ELEMENT_TYPE);
-      DCHECK_NE(type, OPTION_ACTIVATION_TYPE);
+      CHECK_NE(type, OPTION_ELEMENT_TYPE, base::NotFatalUntil::M129);
+      CHECK_NE(type, OPTION_ACTIVATION_TYPE, base::NotFatalUntil::M129);
     }
 
     bool requires_value() const { return flags & FLAG_REQUIRES_VALUE; }
@@ -165,7 +168,7 @@ const KeywordMap::OptionDetails* KeywordMap::Lookup(
 void KeywordMap::AddOption(std::string_view name,
                            const OptionDetails& details) {
   auto inserted = options_.insert(std::make_pair(std::string(name), details));
-  DCHECK(inserted.second);
+  CHECK(inserted.second, base::NotFatalUntil::M129);
 }
 
 KeywordMap* GetKeywordsMapSingleton() {
@@ -321,7 +324,7 @@ bool RuleParser::ParseUrlRuleOptions(std::string_view origin,
   bool has_seen_element_or_activation_type = false;
   for (std::string_view piece : base::SplitStringPiece(
            options, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    DCHECK(!piece.empty());
+    CHECK(!piece.empty(), base::NotFatalUntil::M129);
 
     TriState tri_state = TriState::YES;
     if (base::StartsWith(piece, "~", base::CompareCase::SENSITIVE)) {
@@ -383,7 +386,7 @@ bool RuleParser::ParseUrlRuleOptions(std::string_view origin,
             url_rule_.type_mask = 0;
           url_rule_.type_mask |= type_mask_for(option_details->element_type);
         } else {
-          DCHECK(tri_state == TriState::NO);
+          CHECK(tri_state == TriState::NO, base::NotFatalUntil::M129);
           url_rule_.type_mask &= ~type_mask_for(option_details->element_type);
         }
         has_seen_element_or_activation_type = true;
@@ -422,12 +425,13 @@ RuleType RuleParser::ParseCssRule(std::string_view origin,
 
   // Check for a list of domains.
   if (css_section_start) {
-    DCHECK(css_section_start != std::string_view::npos);
+    CHECK(css_section_start != std::string_view::npos,
+          base::NotFatalUntil::M129);
     auto pieces = base::SplitStringPiece(part.substr(0, css_section_start), ",",
                                          base::TRIM_WHITESPACE,
                                          base::SPLIT_WANT_NONEMPTY);
     for (std::string_view domain : pieces) {
-      DCHECK(!domain.empty());
+      CHECK(!domain.empty(), base::NotFatalUntil::M129);
       css_rule_.domains.push_back(std::string(domain));
     }
   }
@@ -460,8 +464,8 @@ RuleType RuleParser::ParseCssRule(std::string_view origin,
 void RuleParser::SetParseError(ParseError::ErrorCode code,
                                std::string_view origin,
                                const char* error_begin) {
-  DCHECK(code != ParseError::NONE);
-  DCHECK(error_begin >= origin.data());
+  CHECK(code != ParseError::NONE, base::NotFatalUntil::M129);
+  CHECK(error_begin >= origin.data(), base::NotFatalUntil::M129);
 
   parse_error_.error_code = code;
   parse_error_.line = std::string(origin);

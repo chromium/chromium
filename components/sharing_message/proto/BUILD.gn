@@ -1,0 +1,22 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//third_party/protobuf/proto_library.gni")
+group("proto_lite") {
+  public_deps = [
+    ":proto",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+proto_library("proto") {
+  sources = [
+    "click_to_call_message.proto",
+    "optimization_guide_push_notification.proto",
+    "peer_connection_messages.proto",
+    "remote_copy_message.proto",
+    "shared_clipboard_message.proto",
+    "sharing_message.proto",
+    "sharing_message_type.proto",
+    "sms_fetch_message_test_proto3_optional.proto",
+  ]
+}

@@ -6,6 +6,7 @@
 #define CC_METRICS_SCROLL_JANK_DROPPED_FRAME_TRACKER_H_
 
 #include <optional>
+
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
@@ -28,7 +29,7 @@ class CC_EXPORT ScrollJankDroppedFrameTracker {
   void OnScrollStarted();
 
   void set_scroll_jank_ukm_reporter(
-      raw_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter) {
+      ScrollJankUkmReporter* scroll_jank_ukm_reporter) {
     scroll_jank_ukm_reporter_ = scroll_jank_ukm_reporter;
   }
 

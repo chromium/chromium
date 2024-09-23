@@ -94,6 +94,19 @@ void IOSChromeLocalSessionEventRouter::Observer::WebStateListDidChange(
       insert_change.inserted_web_state()->AddObserver(this);
       break;
     }
+    case WebStateListChange::Type::kGroupCreate:
+      // TODO(crbug.com/329640035): Notify the router about the group creation.
+      break;
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+      // TODO(crbug.com/329640035): Notify the router about the group's visual
+      // data update.
+      break;
+    case WebStateListChange::Type::kGroupMove:
+      // Do nothing when a tab group is moved.
+      break;
+    case WebStateListChange::Type::kGroupDelete:
+      // TODO(crbug.com/329640035): Notify the router about the group deletion.
+      break;
   }
 }
 
@@ -118,9 +131,7 @@ void IOSChromeLocalSessionEventRouter::Observer::PageLoaded(
 
 void IOSChromeLocalSessionEventRouter::Observer::WasShown(
     web::WebState* web_state) {
-  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
-    router_->OnWebStateChange(web_state);
-  }
+  router_->OnWebStateChange(web_state);
 }
 
 void IOSChromeLocalSessionEventRouter::Observer::DidChangeBackForwardState(

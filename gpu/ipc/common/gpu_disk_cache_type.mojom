@@ -8,6 +8,7 @@ module gpu.mojom;
 enum GpuDiskCacheType {
   kGlShaders,
   kDawnWebGPU,
+  kDawnGraphite,
 };
 
 //
@@ -24,6 +25,11 @@ struct GpuDiskCacheDawnWebGPUHandle {
   int32 value;
 };
 
+// Corresponds to C++ type gpu::GpuDiskCacheDawnGraphiteHandle
+struct GpuDiskCacheDawnGraphiteHandle {
+  int32 value;
+};
+
 //
 // Union handle
 //
@@ -32,4 +38,5 @@ struct GpuDiskCacheDawnWebGPUHandle {
 union GpuDiskCacheHandle {
   GpuDiskCacheGlShaderHandle gl_shader_handle;
   GpuDiskCacheDawnWebGPUHandle dawn_webgpu_handle;
+  GpuDiskCacheDawnGraphiteHandle dawn_graphite_handle;
 };

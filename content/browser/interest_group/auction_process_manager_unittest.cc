@@ -14,8 +14,10 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -24,11 +26,13 @@
 #include "content/public/browser/site_isolation_mode.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -42,6 +46,9 @@
 
 namespace content {
 namespace {
+
+using RequestWorkletServiceOutcome =
+    AuctionProcessManager::RequestWorkletServiceOutcome;
 
 // Alias constants to improve readability.
 const size_t kMaxSellerProcesses = AuctionProcessManager::kMaxSellerProcesses;
@@ -62,8 +69,9 @@ class TestAuctionProcessManager
   void LoadBidderWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
           bidder_worklet_receiver,
-      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>
-          shared_storage_host_remote,
+      std::vector<
+          mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
+          shared_storage_hosts,
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
@@ -76,15 +84,17 @@ class TestAuctionProcessManager
       const url::Origin& top_window_origin,
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
-      std::optional<uint16_t> experiment_id) override {
-    NOTREACHED();
+      std::optional<uint16_t> experiment_id,
+      auction_worklet::mojom::TrustedSignalsPublicKeyPtr public_key) override {
+    NOTREACHED_IN_MIGRATION();
   }
 
   void LoadSellerWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
           seller_worklet,
-      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>
-          shared_storage_host_remote,
+      std::vector<
+          mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
+          shared_storage_hosts,
       bool should_pause_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
@@ -95,7 +105,7 @@ class TestAuctionProcessManager
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
       std::optional<uint16_t> experiment_id) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   size_t NumReceivers() {
@@ -316,12 +326,19 @@ TEST_P(AuctionProcessManagerTest, LimitExceeded) {
     // handles, but having it explcitly in the struct makes sure the test cases
     // are testing what they're expected to.
     size_t expected_total_handles;
+
+    // If `num_handles` is set, this represents whether each request caused us
+    // to hit the limit for the number of processes.
+    std::vector<bool> hit_limit_after_requesting_handles = {};
   };
 
   const Operation kOperationList[] = {
-      {Operation::Op::kRequestHandles, /*num_handles=*/GetMaxProcesses(),
+      {Operation::Op::kRequestHandles,
+       /*num_handles=*/GetMaxProcesses(),
        /*index=*/std::nullopt,
-       /*expected_total_handles=*/GetMaxProcesses()},
+       /*expected_total_handles=*/
+       GetMaxProcesses(), /*hit_limit_after_requesting_handles=*/
+       {false, false, false}},
 
       // Check destroying intermediate, last, and first handle when there are no
       // queued requests. Keep exactly GetMaxProcesses() requests, to ensure
@@ -329,26 +346,38 @@ TEST_P(AuctionProcessManagerTest, LimitExceeded) {
       // GetMaxProcesses() is at least 3).
       {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/1u, /*expected_total_handles=*/GetMaxProcesses() - 1},
-      {Operation::Op::kRequestHandles, /*num_handles=*/1,
+      {Operation::Op::kRequestHandles,
+       /*num_handles=*/1,
        /*index=*/std::nullopt,
-       /*expected_total_handles=*/GetMaxProcesses()},
+       /*expected_total_handles=*/
+       GetMaxProcesses(), /*hit_limit_after_requesting_handles=*/
+       {false}},
       {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/0u, /*expected_total_handles=*/GetMaxProcesses() - 1},
-      {Operation::Op::kRequestHandles, /*num_handles=*/1,
+      {Operation::Op::kRequestHandles,
+       /*num_handles=*/1,
        /*index=*/std::nullopt,
-       /*expected_total_handles=*/GetMaxProcesses()},
+       /*expected_total_handles=*/
+       GetMaxProcesses(), /*hit_limit_after_requesting_handles=*/
+       {false}},
       {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/GetMaxProcesses() - 1,
        /*expected_total_handles=*/GetMaxProcesses() - 1},
-      {Operation::Op::kRequestHandles, /*num_handles=*/1,
+      {Operation::Op::kRequestHandles,
+       /*num_handles=*/1,
        /*index=*/std::nullopt,
-       /*expected_total_handles=*/GetMaxProcesses()},
+       /*expected_total_handles=*/
+       GetMaxProcesses(), /*hit_limit_after_requesting_handles=*/
+       {false}},
 
       // Queue 3 more requests, but delete the last and first of them, to test
       // deleting queued requests.
-      {Operation::Op::kRequestHandles, /*num_handles=*/3,
+      {Operation::Op::kRequestHandles,
+       /*num_handles=*/3,
        /*index=*/std::nullopt,
-       /*expected_total_handles=*/GetMaxProcesses() + 3},
+       /*expected_total_handles=*/GetMaxProcesses() +
+           3, /*hit_limit_after_requesting_handles=*/
+       {true, true, true}},
       {Operation::Op::kDestroyHandle, /*num_handles=*/std::nullopt,
        /*index=*/GetMaxProcesses(),
        /*expected_total_handles=*/GetMaxProcesses() + 2},
@@ -357,9 +386,12 @@ TEST_P(AuctionProcessManagerTest, LimitExceeded) {
        /*expected_total_handles=*/GetMaxProcesses() + 1},
 
       // Request 4 more processes.
-      {Operation::Op::kRequestHandles, /*num_handles=*/4,
+      {Operation::Op::kRequestHandles,
+       /*num_handles=*/4,
        /*index=*/std::nullopt,
-       /*expected_total_handles=*/GetMaxProcesses() + 5},
+       /*expected_total_handles=*/GetMaxProcesses() +
+           5, /*hit_limit_after_requesting_handles=*/
+       {true, true, true, true}},
 
       // Destroy the first handle and the first pending in the queue immediately
       // afterwards. The next pending request should get a process.
@@ -397,11 +429,25 @@ TEST_P(AuctionProcessManagerTest, LimitExceeded) {
           data.emplace_back(ProcessHandleData());
           url::Origin distinct_origin = url::Origin::Create(
               GURL(base::StringPrintf("https://%i.test", ++num_origins)));
+          base::HistogramTester histogram_tester;
           ASSERT_EQ(original_size < GetMaxProcesses(),
                     auction_process_manager_.RequestWorkletService(
                         GetParam(), distinct_origin, site_instance_,
                         data.back().process_handle.get(),
                         data.back().run_loop->QuitClosure()));
+          RequestWorkletServiceOutcome expected_result =
+              operation.hit_limit_after_requesting_handles[i]
+                  ? RequestWorkletServiceOutcome::kHitProcessLimit
+                  : RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess;
+          histogram_tester.ExpectUniqueSample(
+              base::StrCat(
+                  {"Ads.InterestGroup.Auction.",
+                   GetParam() == AuctionProcessManager::WorkletType::kSeller
+                       ? "Seller."
+                       : "Buyer.",
+                   "RequestWorkletServiceOutcome"}),
+              expected_result,
+              /*expected_bucket_count=*/1);
         }
         break;
 
@@ -471,6 +517,7 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
        ++origin_index) {
     url::Origin origin = url::Origin::Create(
         GURL(base::StringPrintf("https://%zu.test", origin_index)));
+    base::HistogramTester histogram_tester;
     for (size_t i = 0; i < 2 * GetMaxProcesses(); ++i) {
       processes[origin_index].emplace_back(GetServiceExpectSuccess(origin));
       // All requests for the same origin share a process.
@@ -478,6 +525,21 @@ TEST_P(AuctionProcessManagerTest, ProcessSharing) {
                 processes[origin_index].front()->GetService());
       EXPECT_EQ(origin_index + 1, auction_process_manager_.NumReceivers());
     }
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"Ads.InterestGroup.Auction.",
+                      GetParam() == AuctionProcessManager::WorkletType::kSeller
+                          ? "Seller."
+                          : "Buyer.",
+                      "RequestWorkletServiceOutcome"}),
+        RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess, 1);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"Ads.InterestGroup.Auction.",
+                      GetParam() == AuctionProcessManager::WorkletType::kSeller
+                          ? "Seller."
+                          : "Buyer.",
+                      "RequestWorkletServiceOutcome"}),
+        RequestWorkletServiceOutcome::kUsedExistingDedicatedProcess,
+        2 * GetMaxProcesses() - 1);
 
     // Each origin should have a different process.
     for (size_t origin_index2 = 0; origin_index2 < origin_index;
@@ -767,9 +829,23 @@ class PartialSiteIsolationContentBrowserClient
   }
 };
 
-class InRendererAuctionProcessManagerTest : public ::testing::Test {
- protected:
-  InRendererAuctionProcessManagerTest() {
+// A base class for AuctionProcessManager tests that sets up the basic test
+// environment. Since this class creates SiteInstances and (implicitly)
+// BrowsingInstances, it's important that it knows whether to use
+// kOriginKeyedProcessesByDefault at the time it's constructed.
+class InRendererAuctionProcessManagerTestBase : public ::testing::Test {
+ public:
+  explicit InRendererAuctionProcessManagerTestBase(
+      bool disable_origin_keyed_processes_by_default) {
+    // Note: if we're going to disable kOriginKeyedProcessesByDefault, it's
+    // important to do it here before we create any SiteInstances, since that
+    // will create BrowsingInstances, and each BrowsingInstance will create
+    // a default isolation state based on kOriginKeyedProcessesByDefault.
+    if (disable_origin_keyed_processes_by_default) {
+      feature_list_.InitAndDisableFeature(
+          features::kOriginKeyedProcessesByDefault);
+    }
+
     SiteInstance::StartIsolatingSite(
         &test_browser_context_, kIsolatedOrigin.GetURL(),
         ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
@@ -819,21 +895,70 @@ class InRendererAuctionProcessManagerTest : public ::testing::Test {
   const url::Origin kOriginB = url::Origin::Create(GURL("https://b.test"));
   const url::Origin kIsolatedOrigin =
       url::Origin::Create(GURL("https://bank.test"));
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(InRendererAuctionProcessManagerTest, AndroidLike) {
-  PartialSiteIsolationContentBrowserClient browser_client;
-  ContentBrowserClient* orig_browser_client =
-      content::SetBrowserClientForTesting(&browser_client);
+// A test class for AuctionProcessManager tests that require desktop-like
+// behavior, i.e. site-per-process is enabled, and
+// kOriginKeyedProcessesByDefault and process sharing for non-default
+// SiteInstances is allowed.
+class InRendererAuctionProcessManagerTest
+    : public InRendererAuctionProcessManagerTestBase {
+ public:
+  InRendererAuctionProcessManagerTest()
+      : InRendererAuctionProcessManagerTestBase(
+            /*disable_origin_keyed_processes_by_default=*/false) {}
+  void SetUp() override {
+    InRendererAuctionProcessManagerTestBase::SetUp();
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kSitePerProcess);
+  }
 
+ private:
+  base::test::ScopedCommandLine scoped_command_line_;
+};
+
+// A test class for AuctionProcessManager tests that require Android-like
+// behavior, i.e. site-per-process is disabled, kOriginKeyedProcessesByDefault
+// is disabled, and process sharing is set for default SiteInstances only.
+class InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault
+    : public InRendererAuctionProcessManagerTestBase {
+ public:
+  InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault()
+      : InRendererAuctionProcessManagerTestBase(
+            /*disable_origin_keyed_processes_by_default=*/true) {
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::
+                                  kProcessSharingWithDefaultSiteInstances},
+        /*disabled_features=*/{
+            features::kProcessSharingWithStrictSiteInstances});
+  }
+
+  void SetUp() override {
+    InRendererAuctionProcessManagerTestBase::SetUp();
+    original_browser_client_ =
+        content::SetBrowserClientForTesting(&browser_client_);
+    scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
+        switches::kSitePerProcess);
+  }
+
+  void TearDown() override {
+    content::SetBrowserClientForTesting(original_browser_client_);
+    InRendererAuctionProcessManagerTestBase::TearDown();
+  }
+
+ private:
+  base::test::ScopedCommandLine scoped_command_line_;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kProcessSharingWithDefaultSiteInstances},
-      /*disabled_features=*/{features::kProcessSharingWithStrictSiteInstances});
+  PartialSiteIsolationContentBrowserClient browser_client_;
+  raw_ptr<ContentBrowserClient> original_browser_client_;
+};
 
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
-      switches::kSitePerProcess);
+TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
+       AndroidLike) {
+  base::HistogramTester histogram_tester;
 
   // Launch some services in different origins and browsing instances.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
@@ -864,6 +989,9 @@ TEST_F(InRendererAuctionProcessManagerTest, AndroidLike) {
   EXPECT_NE(id_a2, id_b1);
   EXPECT_EQ(id_a2, id_b2);
   EXPECT_NE(id_b1, id_b2);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcome::kUsedSharedProcess, 4);
 
   // Site-isolation requiring origins are distinct from non-isolated ones, but
   // can share across browsing instances.
@@ -882,15 +1010,16 @@ TEST_F(InRendererAuctionProcessManagerTest, AndroidLike) {
   EXPECT_NE(id_i1, id_a2);
   EXPECT_NE(id_i1, id_b1);
   EXPECT_NE(id_i1, id_b2);
-
-  content::SetBrowserClientForTesting(orig_browser_client);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcome::kUsedExistingDedicatedProcess, 1);
 }
 
 TEST_F(InRendererAuctionProcessManagerTest, DesktopLike) {
-  // Use a site-per-process mode.
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      switches::kSitePerProcess);
+  base::HistogramTester histogram_tester;
 
   // Launch some services in different origins and browsing instances.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
@@ -920,6 +1049,12 @@ TEST_F(InRendererAuctionProcessManagerTest, DesktopLike) {
   EXPECT_NE(id_a2, id_b1);
   EXPECT_NE(id_a2, id_b2);
   EXPECT_EQ(id_b1, id_b2);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess, 2);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcome::kUsedExistingDedicatedProcess, 2);
 
   // Stuff that's also isolated by explicit requests gets the same treatment.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_i1 =
@@ -937,22 +1072,16 @@ TEST_F(InRendererAuctionProcessManagerTest, DesktopLike) {
   EXPECT_NE(id_i1, id_a2);
   EXPECT_NE(id_i1, id_b1);
   EXPECT_NE(id_i1, id_b2);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess, 3);
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+      RequestWorkletServiceOutcome::kUsedExistingDedicatedProcess, 3);
 }
 
-TEST_F(InRendererAuctionProcessManagerTest, PolicyChange) {
-  PartialSiteIsolationContentBrowserClient browser_client;
-  ContentBrowserClient* orig_browser_client =
-      content::SetBrowserClientForTesting(&browser_client);
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kProcessSharingWithDefaultSiteInstances},
-      /*disabled_features=*/{features::kProcessSharingWithStrictSiteInstances});
-
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
-      switches::kSitePerProcess);
-
+TEST_F(InRendererAuctionProcessManagerTest_NoOriginKeyedProcessesByDefault,
+       PolicyChange) {
   // Launch site in default instance.
   std::unique_ptr<AuctionProcessManager::ProcessHandle> handle_a1 =
       GetServiceOfTypeExpectSuccess(AuctionProcessManager::WorkletType::kSeller,
@@ -990,8 +1119,6 @@ TEST_F(InRendererAuctionProcessManagerTest, PolicyChange) {
   // can share it, too.
   EXPECT_EQ(handle_a2->worklet_process_for_testing(),
             handle_a3->worklet_process_for_testing());
-
-  content::SetBrowserClientForTesting(orig_browser_client);
 }
 
 }  // namespace

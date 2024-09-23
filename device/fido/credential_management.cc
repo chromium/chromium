@@ -312,12 +312,15 @@ std::optional<EnumerateCredentialsResponse> EnumerateCredentialsResponse::Parse(
   it = response_map.find(cbor::Value(
       static_cast<int>(CredentialManagementResponseKey::kLargeBlobKey)));
   if (it != response_map.end()) {
-    if (!it->second.is_bytestring() ||
-        it->second.GetBytestring().size() != kLargeBlobKeyLength) {
+    if (!it->second.is_bytestring()) {
       return std::nullopt;
     }
-    large_blob_key = fido_parsing_utils::Materialize(
-        base::make_span<kLargeBlobKeyLength>(it->second.GetBytestring()));
+    auto sized_large_blob_span = base::span(it->second.GetBytestring())
+                                     .to_fixed_extent<kLargeBlobKeyLength>();
+    if (!sized_large_blob_span) {
+      return std::nullopt;
+    }
+    large_blob_key = fido_parsing_utils::Materialize(*sized_large_blob_span);
   }
 
   size_t credential_count = 0;

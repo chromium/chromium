@@ -7,13 +7,16 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/net_buildflags.h"
 #include "net/proxy_resolution/proxy_info.h"
 
 namespace net {
@@ -24,18 +27,25 @@ namespace {
 void AddProxyListToValue(const char* name,
                          const ProxyList& proxies,
                          base::Value::Dict* dict) {
-  if (!proxies.IsEmpty())
+  if (!proxies.IsEmpty()) {
     dict->Set(name, proxies.ToValue());
+  }
 }
 
 // Split the |uri_list| on commas and add each entry to |proxy_list| in turn.
 void AddProxyURIListToProxyList(std::string uri_list,
                                 ProxyList* proxy_list,
-                                ProxyServer::Scheme default_scheme) {
+                                ProxyServer::Scheme default_scheme,
+                                bool allow_bracketed_proxy_chains,
+                                bool is_quic_allowed) {
   base::StringTokenizer proxy_uri_list(uri_list, ",");
   while (proxy_uri_list.GetNext()) {
     proxy_list->AddProxyChain(
-        ProxyUriToProxyChain(proxy_uri_list.token(), default_scheme));
+        allow_bracketed_proxy_chains
+            ? MultiProxyUrisToProxyChain(proxy_uri_list.token(), default_scheme,
+                                         is_quic_allowed)
+            : ProxyUriToProxyChain(proxy_uri_list.token(), default_scheme,
+                                   is_quic_allowed));
   }
 }
 
@@ -76,13 +86,15 @@ void ProxyConfig::ProxyRules::Apply(const GURL& url, ProxyInfo* result) const {
     }
     default: {
       result->UseDirect();
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
   }
 }
 
-void ProxyConfig::ProxyRules::ParseFromString(const std::string& proxy_rules) {
+void ProxyConfig::ProxyRules::ParseFromString(const std::string& proxy_rules,
+                                              bool allow_bracketed_proxy_chains,
+                                              bool is_quic_allowed) {
   // Reset.
   type = Type::EMPTY;
   single_proxies = ProxyList();
@@ -90,6 +102,15 @@ void ProxyConfig::ProxyRules::ParseFromString(const std::string& proxy_rules) {
   proxies_for_https = ProxyList();
   proxies_for_ftp = ProxyList();
   fallback_proxies = ProxyList();
+
+#if !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+  // `allow_multi_proxy_chains` can only be true in non-release builds;
+  CHECK(!allow_bracketed_proxy_chains);
+#endif  // !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+
+#if !BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+  CHECK(!is_quic_allowed);
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
   base::StringTokenizer proxy_server_list(proxy_rules, ";");
   while (proxy_server_list.GetNext()) {
@@ -103,11 +124,12 @@ void ProxyConfig::ProxyRules::ParseFromString(const std::string& proxy_rules) {
       // this is a regular proxy server configuration, i.e. proxies
       // are not configured per protocol.
       if (!proxy_server_for_scheme.GetNext()) {
-        if (type == Type::PROXY_LIST_PER_SCHEME)
+        if (type == Type::PROXY_LIST_PER_SCHEME) {
           continue;  // Unexpected.
-        AddProxyURIListToProxyList(url_scheme,
-                                   &single_proxies,
-                                   ProxyServer::SCHEME_HTTP);
+        }
+        AddProxyURIListToProxyList(
+            url_scheme, &single_proxies, ProxyServer::SCHEME_HTTP,
+            allow_bracketed_proxy_chains, is_quic_allowed);
         type = Type::PROXY_LIST;
         return;
       }
@@ -132,9 +154,9 @@ void ProxyConfig::ProxyRules::ParseFromString(const std::string& proxy_rules) {
       }
 
       if (entry) {
-        AddProxyURIListToProxyList(proxy_server_for_scheme.token(),
-                                   entry,
-                                   default_scheme);
+        AddProxyURIListToProxyList(proxy_server_for_scheme.token(), entry,
+                                   default_scheme, allow_bracketed_proxy_chains,
+                                   is_quic_allowed);
       }
     }
   }
@@ -142,14 +164,18 @@ void ProxyConfig::ProxyRules::ParseFromString(const std::string& proxy_rules) {
 
 const ProxyList* ProxyConfig::ProxyRules::MapUrlSchemeToProxyList(
     const std::string& url_scheme) const {
-  const ProxyList* proxy_server_list = const_cast<ProxyRules*>(this)->
-      MapUrlSchemeToProxyListNoFallback(url_scheme);
-  if (proxy_server_list && !proxy_server_list->IsEmpty())
+  const ProxyList* proxy_server_list =
+      const_cast<ProxyRules*>(this)->MapUrlSchemeToProxyListNoFallback(
+          url_scheme);
+  if (proxy_server_list && !proxy_server_list->IsEmpty()) {
     return proxy_server_list;
-  if (url_scheme == "ws" || url_scheme == "wss")
+  }
+  if (url_scheme == "ws" || url_scheme == "wss") {
     return GetProxyListForWebSocketScheme();
-  if (!fallback_proxies.IsEmpty())
+  }
+  if (!fallback_proxies.IsEmpty()) {
     return &fallback_proxies;
+  }
   return nullptr;  // No mapping for this scheme. Use direct.
 }
 
@@ -166,12 +192,15 @@ bool ProxyConfig::ProxyRules::Equals(const ProxyRules& other) const {
 ProxyList* ProxyConfig::ProxyRules::MapUrlSchemeToProxyListNoFallback(
     const std::string& scheme) {
   DCHECK_EQ(Type::PROXY_LIST_PER_SCHEME, type);
-  if (scheme == "http")
+  if (scheme == "http") {
     return &proxies_for_http;
-  if (scheme == "https")
+  }
+  if (scheme == "https") {
     return &proxies_for_https;
-  if (scheme == "ftp")
+  }
+  if (scheme == "ftp") {
     return &proxies_for_ftp;
+  }
   return nullptr;  // No mapping for this scheme.
 }
 
@@ -198,12 +227,15 @@ const ProxyList* ProxyConfig::ProxyRules::GetProxyListForWebSocketScheme()
   // including non-SOCKS. In this case "fallback_proxies" is
   // still prioritized over proxies_for_http and
   // proxies_for_https.
-  if (!fallback_proxies.IsEmpty())
+  if (!fallback_proxies.IsEmpty()) {
     return &fallback_proxies;
-  if (!proxies_for_https.IsEmpty())
+  }
+  if (!proxies_for_https.IsEmpty()) {
     return &proxies_for_https;
-  if (!proxies_for_http.IsEmpty())
+  }
+  if (!proxies_for_http.IsEmpty()) {
     return &proxies_for_http;
+  }
   return nullptr;
 }
 
@@ -211,9 +243,13 @@ ProxyConfig::ProxyConfig() = default;
 
 ProxyConfig::ProxyConfig(const ProxyConfig& config) = default;
 
-ProxyConfig::~ProxyConfig() = default;
+ProxyConfig::ProxyConfig(ProxyConfig&& config) = default;
 
 ProxyConfig& ProxyConfig::operator=(const ProxyConfig& config) = default;
+
+ProxyConfig& ProxyConfig::operator=(ProxyConfig&& config) = default;
+
+ProxyConfig::~ProxyConfig() = default;
 
 bool ProxyConfig::Equals(const ProxyConfig& other) const {
   return auto_detect_ == other.auto_detect_ && pac_url_ == other.pac_url_ &&
@@ -235,12 +271,14 @@ base::Value ProxyConfig::ToValue() const {
   base::Value::Dict dict;
 
   // Output the automatic settings.
-  if (auto_detect_)
+  if (auto_detect_) {
     dict.Set("auto_detect", auto_detect_);
+  }
   if (has_pac_url()) {
     dict.Set("pac_url", pac_url_.possibly_invalid_spec());
-    if (pac_mandatory_)
+    if (pac_mandatory_) {
       dict.Set("pac_mandatory", pac_mandatory_);
+    }
   }
   if (from_system_) {
     dict.Set("from_system", from_system_);
@@ -262,19 +300,21 @@ base::Value ProxyConfig::ToValue() const {
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     // Output the bypass rules.
     const ProxyBypassRules& bypass = proxy_rules_.bypass_rules;
     if (!bypass.rules().empty()) {
-      if (proxy_rules_.reverse_bypass)
+      if (proxy_rules_.reverse_bypass) {
         dict.Set("reverse_bypass", true);
+      }
 
       base::Value::List list;
 
-      for (const auto& bypass_rule : bypass.rules())
+      for (const auto& bypass_rule : bypass.rules()) {
         list.Append(bypass_rule->ToString());
+      }
 
       dict.Set("bypass_list", std::move(list));
     }

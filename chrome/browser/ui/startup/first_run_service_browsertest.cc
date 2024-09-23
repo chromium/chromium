@@ -5,58 +5,45 @@
 #include "chrome/browser/ui/startup/first_run_service.h"
 
 #include <optional>
+#include <string_view>
 
-#include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/profiles/profile_customization_util.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/startup/first_run_test_util.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/metrics/metrics_service.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/views/controls/webview/webview.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/lacros/device_settings_lacros.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
@@ -97,7 +84,7 @@ class PolicyUpdateObserver : public policy::PolicyService::Observer {
 };
 
 // Converts JSON string to `base::Value` object.
-static base::Value GetJSONAsValue(base::StringPiece json) {
+static base::Value GetJSONAsValue(std::string_view json) {
   std::string error;
   auto value = JSONStringValueDeserializer(json).Deserialize(nullptr, &error);
   EXPECT_EQ("", error);
@@ -144,7 +131,7 @@ class FirstRunServiceBrowserTest : public FirstRunServiceBrowserTestBase {
       identity_test_env_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
 
-  // TODO(https://crbug.com/1324886): Needed because SyncService startup hangs
+  // TODO(crbug.com/40839518): Needed because SyncService startup hangs
   // otherwise. Find a way to get it not to hang instead?
   profiles::testing::ScopedNonEnterpriseDomainSetterForTesting
       non_enterprise_domain_setter_;
@@ -159,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   expected_fre_finished = false;  // QuitEarly
 #else
-  expected_proceed = kForYouFreCloseShouldProceed.Get();
+  expected_proceed = true;
 #endif
 
   ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
@@ -171,20 +158,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 
   histogram_tester.ExpectUniqueSample("ProfilePicker.FirstRun.ServiceCreated",
                                       true, 1);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  histogram_tester.ExpectUniqueSample(
-      "Profile.LacrosPrimaryProfileFirstRunEntryPoint",
-      FirstRunService::EntryPoint::kOther, 1);
-#endif
   histogram_tester.ExpectUniqueSample("ProfilePicker.FirstRun.EntryPoint",
                                       FirstRunService::EntryPoint::kOther, 1);
-
-  // We don't expect synthetic trials to be registered here, since no group
-  // is configured with the feature. For the positive test case, see
-  // `FirstRunServiceCohortBrowserTest.GroupRegisteredAfterFre`.
-  PrefService* local_state = g_browser_process->local_state();
-  EXPECT_FALSE(local_state->HasPrefPath(prefs::kFirstRunStudyGroup));
-  EXPECT_FALSE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
 
   ProfilePicker::Hide();
   EXPECT_EQ(expected_proceed, proceed_future.Get());
@@ -192,8 +167,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   EXPECT_EQ(expected_fre_finished, GetFirstRunFinishedPrefValue());
   EXPECT_NE(expected_fre_finished, fre_service()->ShouldOpenFirstRun());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  histogram_tester.ExpectTotalCount(
-      "Profile.LacrosPrimaryProfileFirstRunOutcome", 0);
   histogram_tester.ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kQuitEarly, 1);
@@ -263,9 +236,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   // The FRE should be finished silently during the creation of the service.
   EXPECT_TRUE(GetFirstRunFinishedPrefValue());
   EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
-  histogram_tester.ExpectUniqueSample(
-      "Profile.LacrosPrimaryProfileFirstRunOutcome",
-      ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedAlreadySyncing, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
@@ -289,9 +259,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  histogram_tester.ExpectUniqueSample(
-      "Profile.LacrosPrimaryProfileFirstRunOutcome",
-      ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
@@ -315,31 +282,33 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  histogram_tester.ExpectUniqueSample(
-      "Profile.LacrosPrimaryProfileFirstRunOutcome",
-      ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies, 1);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest, CloseProceeds) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<bool> proceed_future;
 
-class FirstRunServiceNotForYouBrowserTest : public FirstRunServiceBrowserTest {
- public:
-  FirstRunServiceNotForYouBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(kForYouFre);
-  }
+  ASSERT_TRUE(fre_service());
+  EXPECT_TRUE(fre_service()->ShouldOpenFirstRun());
+  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
+                                      proceed_future.GetCallback());
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+  profiles::testing::WaitForPickerWidgetCreated();
+  EXPECT_FALSE(GetFirstRunFinishedPrefValue());
 
-IN_PROC_BROWSER_TEST_F(FirstRunServiceNotForYouBrowserTest,
-                       ShouldOpenFirstRunNeverOnDice) {
-  // Even though the FRE could be open, we should not create the service for it.
-  EXPECT_TRUE(ShouldOpenFirstRun(profile()));
-  EXPECT_EQ(nullptr, fre_service());
+  ProfilePicker::Hide();
+  EXPECT_TRUE(proceed_future.Get());
+
+  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
+  EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
+
+  // We log `QuitAtEnd`, whether proceed is overridden or not.
+  histogram_tester.ExpectUniqueSample(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kQuitAtEnd, 1);
 }
-
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 struct PolicyTestParam {
@@ -382,7 +351,7 @@ class FirstRunServicePolicyBrowserTest
       public testing::WithParamInterface<PolicyTestParam> {
  public:
   FirstRunServicePolicyBrowserTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {kForYouFre};
+    std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features;
     if (GetParam().with_force_signin_in_profile_picker) {
       enabled_features.push_back(kForceSigninFlowInProfilePicker);
@@ -463,17 +432,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
 
   EXPECT_NE(GetParam().should_open_fre, GetFirstRunFinishedPrefValue());
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (GetParam().should_open_fre) {
-    histogram_tester.ExpectTotalCount(
-        "Profile.LacrosPrimaryProfileFirstRunOutcome", 0);
-  } else {
-    histogram_tester.ExpectUniqueSample(
-        "Profile.LacrosPrimaryProfileFirstRunOutcome",
-        ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies, 1);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   ProfilePicker::Hide();
   run_loop.Run();
 
@@ -508,70 +466,3 @@ INSTANTIATE_TEST_SUITE_P(,
                          FirstRunServicePolicyBrowserTest,
                          testing::ValuesIn(kPolicyTestParams),
                          &PolicyParamToTestSuffix);
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-struct FeatureTestParams {
-  const base::FieldTrialParams feature_params;
-  const bool expected_proceed;
-};
-
-const FeatureTestParams kFeatureTestParams[] = {
-    {.feature_params = {{"close_should_proceed", "false"}},
-     .expected_proceed = false},
-    {.feature_params = {{"close_should_proceed", "true"}},
-     .expected_proceed = true},
-};
-
-std::string FeatureParamToTestSuffix(
-    const ::testing::TestParamInfo<FeatureTestParams>& info) {
-  std::vector<std::string> pieces;
-  for (const auto& feature_param : info.param.feature_params) {
-    pieces.push_back(feature_param.first);
-    pieces.push_back(feature_param.second);
-  }
-
-  return base::JoinString(pieces, "_");
-}
-
-class FirstRunServiceFeatureParamsBrowserTest
-    : public FirstRunServiceBrowserTest,
-      public testing::WithParamInterface<FeatureTestParams> {
- public:
-  FirstRunServiceFeatureParamsBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kForYouFre, GetParam().feature_params);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(FirstRunServiceFeatureParamsBrowserTest, CloseProceeds) {
-  base::HistogramTester histogram_tester;
-  base::test::TestFuture<bool> proceed_future;
-
-  ASSERT_TRUE(fre_service());
-  EXPECT_TRUE(fre_service()->ShouldOpenFirstRun());
-  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
-                                      proceed_future.GetCallback());
-
-  profiles::testing::WaitForPickerWidgetCreated();
-  EXPECT_FALSE(GetFirstRunFinishedPrefValue());
-
-  ProfilePicker::Hide();
-  EXPECT_EQ(GetParam().expected_proceed, proceed_future.Get());
-
-  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
-  EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
-
-  // We log `QuitAtEnd`, whether proceed is overridden or not.
-  histogram_tester.ExpectUniqueSample(
-      "ProfilePicker.FirstRun.ExitStatus",
-      ProfilePicker::FirstRunExitStatus::kQuitAtEnd, 1);
-}
-
-INSTANTIATE_TEST_SUITE_P(,
-                         FirstRunServiceFeatureParamsBrowserTest,
-                         testing::ValuesIn(kFeatureTestParams),
-                         &FeatureParamToTestSuffix);
-#endif

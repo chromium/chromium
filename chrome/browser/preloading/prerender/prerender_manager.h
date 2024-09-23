@@ -24,8 +24,15 @@ extern const char kHistogramPrerenderPredictionStatusDefaultSearchEngine[];
 extern const char kHistogramPrerenderPredictionStatusDirectUrlInput[];
 }  // namespace internal
 
+// If you change this, please follow the process in
+// go/preloading-dashboard-updates to update the mapping reflected in dashboard,
+// or if you are not a Googler, please file an FYI bug on https://crbug.new with
+// component Internals>Preload.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange
 enum class PrerenderPredictionStatus {
   // The prerender was not started at all for this omnibox interaction.
   kNotStarted = 0,
@@ -37,6 +44,7 @@ enum class PrerenderPredictionStatus {
   kHitFinished = 3,
   kMaxValue = kHitFinished,
 };
+// LINT.ThenChange()
 
 // Manages running prerenders in the //chrome.
 // Chrome manages running prerenders separately, as it prioritizes the latest
@@ -50,8 +58,6 @@ class PrerenderManager : public content::WebContentsObserver,
   ~PrerenderManager() override;
 
   // content::WebContentsObserver
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -64,7 +70,7 @@ class PrerenderManager : public content::WebContentsObserver,
 
   // Cancels the prerender that is prerendering the given
   // `canonical_search_url`.
-  // TODO(https://crbug.com/1295170): Use the creator's address to identify the
+  // TODO(crbug.com/40214220): Use the creator's address to identify the
   // owner that can cancels the corresponding prerendering?
   void StopPrerenderSearchResult(const GURL& canonical_search_url);
 
@@ -96,8 +102,6 @@ class PrerenderManager : public content::WebContentsObserver,
   // will return the weak pointer to the on-going prerender handle.
   // PreloadingAttempt represents the attempt corresponding to this prerender to
   // log the necessary metrics.
-  // TODO(https://crbug.com/1278634): Merge the start method with DSE interface
-  // using AutocompleteMatch as the parameter instead of GURL.
   base::WeakPtr<content::PrerenderHandle> StartPrerenderDirectUrlInput(
       const GURL& prerendering_url,
       content::PreloadingAttempt& preloading_attempt);
@@ -132,9 +136,8 @@ class PrerenderManager : public content::WebContentsObserver,
       base::WeakPtr<content::PreloadingAttempt> attempt);
 
   // Stores the prerender which serves for search results. It is responsible for
-  // tracking a started search prerender, and it keeps alive even if the
-  // prerender has been destroyed by the timer. With its help, PrerenderManager
-  // can record the prediction regardless whether a prerender is expired or not.
+  // tracking a started search prerender, and informing `SearchPrefetchService`
+  // of the prerender status.
   std::unique_ptr<SearchPrerenderTask> search_prerender_task_;
 
   std::unique_ptr<content::PrerenderHandle> bookmark_prerender_handle_;

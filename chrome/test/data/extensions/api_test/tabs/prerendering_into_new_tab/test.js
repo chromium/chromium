@@ -62,7 +62,6 @@ async function testGetTitleForAllFrames() {
 // new tab frames).
 async function testGetAllInWindow() {
   await setup();
-  console.log('testGetAllInWindow called');
   chrome.tabs.getAllInWindow(null, function(tabs) {
     chrome.test.assertEq(1, tabs.length);
     chrome.test.assertEq(getUrl('initiator.html'), tabs[0].url);
@@ -122,6 +121,84 @@ async function testGetTabByTabId() {
   });
 }
 
+// Tests that OnAttached is not called because chrome.tabs.move doesn't interact
+// with invisible tabs.
+async function testOnAttachedWithoutActivation() {
+  await setup();
+  let windowId = -1;
+  let secondWindowId = -1;
+
+  chrome.tabs.getSelected(
+      null, pass(function(tab) {
+        windowId = tab.windowId;
+        waitForAllTabs(pass(function() {
+          createWindow(
+              [''], {}, pass(function(winId, tabIds) {
+                secondWindowId = winId;
+                chrome.test.assertNe(windowId, -1);
+                chrome.test.assertNe(secondWindowId, -1);
+                chrome.tabs.move(
+                    prerenderingTabId, {'windowId': secondWindowId, 'index': 0},
+                    function() {
+                      chrome.test.assertEq(
+                          chrome.runtime.lastError.message,
+                          'No tab with id: ' + prerenderingTabId + '.');
+                    });
+              }));
+        }));
+      }));
+
+  chrome.test.succeed();
+}
+
+// Tests that OnAttached is aware of the newly created prerendering into a new
+// tab after activation.
+async function testOnAttachedAfterActivation() {
+  const activationCallback = details => {
+    if (details.documentLifecycle === 'prerender') {
+      chrome.tabs.executeScript(tabId, {
+        code: `document.getElementById(\'link\').click();`,
+        runAt: 'document_idle'
+      });
+
+      let windowId = -1;
+      let secondWindowId = -1;
+      chrome.tabs.getSelected(
+          null, pass(function(tab) {
+            windowId = tab.windowId;
+
+            waitForAllTabs(pass(function() {
+              createWindow([''], {}, pass(function(winId, tabIds) {
+                             secondWindowId = winId;
+                             chrome.test.listenOnce(
+                                 chrome.tabs.onAttached,
+                                 function(testTabId, info) {
+                                   // Ensure notification is correct.
+                                   assertEq(testTabId, prerenderingTabId);
+                                   assertEq(winId, info.newWindowId);
+                                   chrome.test.succeed();
+                                 });
+
+                             chrome.test.assertNe(windowId, -1);
+                             chrome.test.assertNe(secondWindowId, -1);
+                             chrome.tabs.move(
+                                 prerenderingTabId,
+                                 {'windowId': secondWindowId, 'index': 0},
+                                 function() {});
+                           }));
+            }));
+          }));
+    }
+  };
+
+  chrome.webRequest.onCompleted.addListener(
+      activationCallback, {urls: [getUrl('empty.js')]}, []);
+
+  // This test is intended to check the behavior after activation, so it is
+  // needed to set up activationCallback before calling setup function.
+  await setup();
+}
+
 chrome.test.getConfig(async config => {
   testServerPort = config.testServer.port;
   chrome.test.assertNe(0, testServerPort);
@@ -131,14 +208,19 @@ chrome.test.getConfig(async config => {
   chrome.test.assertEq(1, tabs.length);
   tabId = tabs[0].id;
 
-  // TODO(https://crbug.com/1350676): add more tests for tabs.on* event listeners.
+  await chrome.test.loadScript(
+      '_test_resources/api_test/tabs/basics/tabs_util.js');
+
+  // TODO(crbug.com/40234240): add more tests for tabs.on* event listeners.
   chrome.test.runTests([
-    // TODO(crbug.com/1501760): Flaky on multiple platforms.
+    // TODO(crbug.com/40942071): Flaky on multiple platforms.
     // testGetTitleForAllFrames,
     // testGetAllInWindow,
     // testQuery,
     // testGetTitleByFrameId,
     // testGetTitleByDocumentId,
     testGetTabByTabId,
+    testOnAttachedWithoutActivation,
+    testOnAttachedAfterActivation,
   ]);
 });

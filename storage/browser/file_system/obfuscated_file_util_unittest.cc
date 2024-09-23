@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "storage/browser/file_system/obfuscated_file_util.h"
 
 #include <stddef.h>
@@ -300,7 +305,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
 
     is_non_default_bucket()
         ? sandbox_file_system_.SetUp(file_system_context_, custom_bucket_)
-        : sandbox_file_system_.SetUp(file_system_context_, storage_key_);
+        : sandbox_file_system_.SetUp(file_system_context_, default_bucket_);
 
     change_observers_ = MockFileChangeObserver::CreateList(&change_observer_);
 
@@ -1379,7 +1384,7 @@ TEST_P(ObfuscatedFileUtilTest, TestReadDirectoryOnFile) {
   EXPECT_TRUE(ofu()->IsDirectoryEmpty(context.get(), url));
 }
 
-// TODO(https://crbug.com/702990): Remove this test once last_access_time has
+// TODO(crbug.com/40511450): Remove this test once last_access_time has
 // been removed after PPAPI has been deprecated. Fuchsia does not support touch,
 // which breaks this test that relies on it. Since PPAPI is being deprecated,
 // this test is excluded from the Fuchsia build.
@@ -2474,7 +2479,7 @@ TEST_P(ObfuscatedFileUtilTest, TestQuotaOnOpen) {
       ofu()->Truncate(AllowUsageIncrease(length)->context(), url, length));
   ASSERT_EQ(length, ComputeTotalFileSize());
 
-  // TODO(https://crbug.com/936722): After CreateOrOpen is modified to return
+  // TODO(crbug.com/41444071): After CreateOrOpen is modified to return
   // file error instead of file, the in-memory test can proceed through the next
   // steps.
   if (is_incognito())

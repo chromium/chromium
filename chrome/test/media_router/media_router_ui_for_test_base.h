@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
@@ -86,9 +85,9 @@ class MediaRouterUiForTestBase {
   explicit MediaRouterUiForTestBase(content::WebContents* web_contents);
   void WaitForAnyDialogShown();
 
-  static void ClickOnView(views::View* view);
+  static void ClickOnButton(views::Button* button);
 
-  virtual views::View* GetSinkButton(const std::string& sink_name) const = 0;
+  virtual views::Button* GetSinkButton(const std::string& sink_name) const = 0;
 
   // Registers itself as an observer to the dialog, and waits until an event
   // of |watch_type| is observed. |sink_name| should be set only if observing

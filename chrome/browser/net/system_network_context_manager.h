@@ -12,6 +12,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "chrome/browser/net/cert_verifier_service_time_updater.h"
+#include "chrome/browser/net/cookie_encryption_provider_impl.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
@@ -26,10 +28,6 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/ssl_config.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/net/cookie_encryption_provider_impl.h"
-#endif  // BUILDFLAG(IS_WIN)
 
 class NetworkAnnotationMonitor;
 class PrefRegistrySimple;
@@ -121,12 +119,10 @@ class SystemNetworkContextManager {
   mojo::PendingReceiver<network::mojom::SSLConfigClient>
   GetSSLConfigClientReceiver();
 
-#if BUILDFLAG(IS_WIN)
   // Adds a CookieEncryptionManager mojo remote to the specified
   // `network_context_params`.
   void AddCookieEncryptionManagerToNetworkContextParams(
       network::mojom::NetworkContextParams* network_context_params);
-#endif  // BUILDFLAG(IS_WIN)
 
   // Populates |initial_ssl_config| and |ssl_config_client_receiver| members of
   // |network_context_params|. As long as the SystemNetworkContextManager
@@ -167,8 +163,10 @@ class SystemNetworkContextManager {
   // use only.
   void FlushNetworkInterfaceForTesting();
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Call |FlushForTesting()| on NetworkAnnotationMonitor. For test use only.
   void FlushNetworkAnnotationMonitorForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   static network::mojom::HttpAuthStaticParamsPtr
   GetHttpAuthStaticParamsForTesting();
@@ -191,10 +189,6 @@ class SystemNetworkContextManager {
       StubResolverConfigReader* reader) {
     stub_resolver_config_reader_for_testing_ = reader;
   }
-
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  static bool IsUsingChromeRootStore();
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
@@ -239,13 +233,6 @@ class SystemNetworkContextManager {
   // the network process.
   void UpdateExplicitlyAllowedNetworkPorts();
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  // Applies the current value of the kEnforceLocalAnchorConstraintsEnabled
-  // pref to the enforcement state.
-  void UpdateEnforceLocalAnchorConstraintsEnabled();
-#endif
-
   void UpdateIPv6ReachabilityOverrideEnabled();
 
   // The PrefService to retrieve all the pref values.
@@ -288,15 +275,17 @@ class SystemNetworkContextManager {
 
   static std::optional<bool> certificate_transparency_enabled_for_testing_;
 
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<NetworkAnnotationMonitor> network_annotation_monitor_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX)
   GssapiLibraryLoadObserver gssapi_library_loader_observer_{this};
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_WIN)
   CookieEncryptionProviderImpl cookie_encryption_provider_;
-#endif  // BUILDFLAG(IS_WIN)
+
+  std::unique_ptr<CertVerifierServiceTimeUpdater> cert_verifier_time_updater_;
 };
 
 #endif  // CHROME_BROWSER_NET_SYSTEM_NETWORK_CONTEXT_MANAGER_H_

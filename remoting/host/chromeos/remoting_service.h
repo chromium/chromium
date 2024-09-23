@@ -6,6 +6,7 @@
 #define REMOTING_HOST_CHROMEOS_REMOTING_SERVICE_H_
 
 #include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "remoting/host/chromeos/session_id.h"
 

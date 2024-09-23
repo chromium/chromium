@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO: crbug.com/352691908 - Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/variations/field_trial_config/field_trial_util.h"
 
 #include <stddef.h>
 
 #include <map>
-#include <optional>
 #include <set>
 #include <string>
 #include <utility>

@@ -11,6 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom.h"
 
 namespace ash {
 
@@ -18,8 +20,13 @@ class PackagedLicenseView;
 
 // Screen which is shown before login and enterprise screens.
 // It advertises the packaged license which allows user enroll device.
-class PackagedLicenseScreen : public BaseScreen {
+class PackagedLicenseScreen
+    : public BaseScreen,
+      public OobeMojoBinder<screens_oobe::mojom::PackagedLicensePageHandler>,
+      public screens_oobe::mojom::PackagedLicensePageHandler {
  public:
+  using TView = PackagedLicenseView;
+
   enum class Result {
     // Show login screen
     DONT_ENROLL,
@@ -59,8 +66,11 @@ class PackagedLicenseScreen : public BaseScreen {
   // BaseScreen
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
+
+  // screens_oobe::mojom::PackagedLicensePageHandler
+  void OnDontEnrollClicked() override;
+  void OnEnrollClicked() override;
 
  private:
   base::WeakPtr<PackagedLicenseView> view_;

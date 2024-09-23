@@ -18,7 +18,6 @@
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -38,17 +37,15 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
-#include "components/feature_engagement/test/mock_tracker.h"
-#include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/live_caption/caption_util.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "content/public/test/browser_test.h"
-#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -75,28 +72,32 @@ GetReplacementsForFeature(const base::Feature& feature) {
 
 }  // namespace
 
-class FeaturePromoDialogTest : public DialogBrowserTest {
+using TestBase = InteractiveFeaturePromoTestT<DialogBrowserTest>;
+
+class FeaturePromoDialogTest : public TestBase {
  public:
   FeaturePromoDialogTest()
-      : update_dialog_scope_(web_app::SetIdentityUpdateDialogActionForTesting(
+      // Specifying features to enable is not important because a mock
+      // FeatureEngagementTracker is used.
+      : TestBase(UseMockTracker()),
+        update_dialog_scope_(web_app::SetIdentityUpdateDialogActionForTesting(
             web_app::AppIdentityUpdate::kSkipped)) {
     feature_ = GetFeatureForTest();
-    scoped_feature_list_.InitAndEnableFeatures(
-        /* allow_and_enable_features =*/{*feature_},
-        /* disable_features =*/
-        {media::kLiveCaption, feature_engagement::kIPHLiveCaptionFeature});
+    scoped_feature_list_.InitWithFeatures(
+        /* enabled_features =*/{*feature_},
+        /* disabled_features =*/
+        {feature_engagement::kIPHLiveCaptionFeature});
 
-    // TODO(crbug.com/1141984): fix cause of bubbles overflowing the
+    // TODO(crbug.com/40727458): fix cause of bubbles overflowing the
     // screen and remove this.
     set_should_verify_dialog_bounds(false);
   }
   void SetUp() override {
     webapps::TestAppBannerManagerDesktop::SetUp();
-
-    DialogBrowserTest::SetUp();
+    TestBase::SetUp();
   }
   void SetUpOnMainThread() override {
-    DialogBrowserTest::SetUpOnMainThread();
+    TestBase::SetUpOnMainThread();
     browser()->window()->Activate();
     ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
   }
@@ -112,18 +113,13 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
       app_readiness_waiter.Await();
     }
 
-    DialogBrowserTest::TearDownOnMainThread();
+    TestBase::TearDownOnMainThread();
   }
 
   ~FeaturePromoDialogTest() override = default;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    auto* mock_tracker = static_cast<feature_engagement::test::MockTracker*>(
-        feature_engagement::TrackerFactory::GetForBrowserContext(
-            browser()->profile()));
-    ASSERT_TRUE(mock_tracker);
-
     auto* const promo_controller =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->GetFeaturePromoController();
@@ -137,12 +133,15 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
           *feature_, user_education::EndFeaturePromoReason::kAbortPromo);
 
     // Set up mock tracker to allow the IPH, then attempt to show it.
-    EXPECT_CALL(*mock_tracker, ShouldTriggerHelpUI(Ref(*feature_)))
+    EXPECT_CALL(*GetMockTrackerFor(browser()),
+                ShouldTriggerHelpUI(Ref(*feature_)))
         .Times(1)
         .WillOnce(Return(true));
     user_education::FeaturePromoParams params(*feature_);
     params.body_params = GetReplacementsForFeature(*feature_);
-    ASSERT_TRUE(promo_controller->MaybeShowPromo(std::move(params)));
+    const auto result = promo_controller->MaybeShowPromo(std::move(params));
+    LOG_IF(ERROR, !result) << "Got unexpected result: " << result;
+    ASSERT_TRUE(result);
   }
 
  private:
@@ -161,32 +160,9 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
   }
 
   raw_ptr<const base::Feature> feature_ = nullptr;
-  feature_engagement::test::ScopedIphFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::AutoReset<std::optional<web_app::AppIdentityUpdate>>
       update_dialog_scope_;
-
-  static void RegisterMockTracker(content::BrowserContext* context) {
-    feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(CreateMockTracker));
-  }
-
-  static std::unique_ptr<KeyedService> CreateMockTracker(
-      content::BrowserContext* context) {
-    auto mock_tracker =
-        std::make_unique<NiceMock<feature_engagement::test::MockTracker>>();
-
-    // Allow calls for other IPH.
-    EXPECT_CALL(*mock_tracker, ShouldTriggerHelpUI(_))
-        .Times(AnyNumber())
-        .WillRepeatedly(Return(false));
-
-    return mock_tracker;
-  }
-
-  base::CallbackListSubscription subscription_{
-      BrowserContextDependencyManager::GetInstance()
-          ->RegisterCreateServicesCallbackForTesting(
-              base::BindRepeating(RegisterMockTracker))};
 };
 
 // Adding new tests for your promo
@@ -230,20 +206,6 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
   browser()->window()->Activate();
   ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
 
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_LiveCaption) {
-  if (!captions::IsLiveCaptionFeatureSupported())
-    return;
-
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->toolbar()
-      ->media_button()
-      ->Show();
-  RunScheduledLayouts();
-
-  set_baseline("2936082");
   ShowAndVerifyUi();
 }
 

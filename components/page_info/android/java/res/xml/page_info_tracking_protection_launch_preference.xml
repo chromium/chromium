@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="cookie_summary"
+        android:layout="@layout/page_info_summary" />
+
+    <org.chromium.components.browser_ui.settings.ChromeImageViewPreference
+        android:key="storage_in_use" />
+
+    <org.chromium.components.browser_ui.settings.ChromeImageViewPreference
+        android:key="rws_in_use"
+        app:allowDividerBelow="true" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="tp_title"
+        android:layout="@layout/page_info_title"
+        app:allowDividerAbove="true" />
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="tp_switch"
+        android:persistent="false"
+        app:allowDividerAbove="false" />
+
+    <org.chromium.components.page_info.TrackingProtectionStatusPreference
+        android:key="tp_status" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="managed_title"
+        android:layout="@layout/tracking_protection_managed_title"
+        android:title="@string/page_info_tracking_protection_managed_title"
+        app:allowDividerAbove="true"
+        app:isPreferenceVisible="false" />
+
+    <org.chromium.components.page_info.TrackingProtectionStatusPreference
+        android:key="managed_status"
+        app:isPreferenceVisible="false" />
+
+</PreferenceScreen>

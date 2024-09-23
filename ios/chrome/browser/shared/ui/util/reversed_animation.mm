@@ -198,7 +198,7 @@ CAAnimation* CAAnimationMakeReverse(CAAnimation* animation,
                                                         parent:parent
                                                parentBeginTime:parentBeginTime];
   } else {
-    // TODO(crbug.com/546202): Investigate possible general-case reversals.  It
+    // TODO(crbug.com/41211316): Investigate possible general-case reversals. It
     // may be possible to implement this by manipulating the CAMediaTiming
     // properties.
   }

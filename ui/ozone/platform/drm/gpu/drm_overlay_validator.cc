@@ -143,30 +143,10 @@ OverlayStatusList DrmOverlayValidator::TestPageFlip(
     plane_indices.push_back(i);
   }
 
-  int test_page_flip_count = 0;
-
   // Test the whole list, then gradually remove the last plane and retest until
   // we have success, or no more planes to test.
   while (!test_list.empty()) {
-    test_page_flip_count++;
-    base::ElapsedTimer timer;
-
     bool test_result = controller->TestPageFlip(test_list);
-
-    auto time = timer.Elapsed();
-    static constexpr base::TimeDelta kMinTime = base::Microseconds(1);
-    static constexpr base::TimeDelta kMaxTime = base::Milliseconds(10);
-    static constexpr int kTimeBuckets = 50;
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Compositing.Display.DrmOverlayManager.TestPageFlipUs", time, kMinTime,
-        kMaxTime, kTimeBuckets);
-
-    if (test_page_flip_count == 1) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "Compositing.Display.DrmOverlayManager.FirstTestPageFlipPassed",
-          test_result);
-    }
-
     if (test_result) {
       break;
     }
@@ -188,10 +168,6 @@ OverlayStatusList DrmOverlayValidator::TestPageFlip(
   for (size_t index : plane_indices) {
     returns[index] = OVERLAY_STATUS_ABLE;
   }
-
-  UMA_HISTOGRAM_COUNTS_100(
-      "Compositing.Display.DrmOverlayManager.TestPageFlipCount",
-      test_page_flip_count);
 
   return returns;
 }

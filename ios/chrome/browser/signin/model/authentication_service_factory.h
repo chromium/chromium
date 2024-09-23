@@ -5,10 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_AUTHENTICATION_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_AUTHENTICATION_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -16,15 +17,16 @@ class PrefRegistrySyncable;
 
 class AuthenticationService;
 class AuthenticationServiceDelegate;
-class ChromeBrowserState;
 
 // Singleton that owns all `AuthenticationServices` and associates them with
 // browser states. Listens for the `BrowserState`'s destruction notification and
 // cleans up the associated `AuthenticationService`.
 class AuthenticationServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static AuthenticationService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static AuthenticationService* GetForBrowserState(ProfileIOS* profile);
+
+  static AuthenticationService* GetForProfile(ProfileIOS* profile);
   static AuthenticationServiceFactory* GetInstance();
 
   // Force the instantiation of AuthenticationService and initialize it with

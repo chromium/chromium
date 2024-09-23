@@ -4,7 +4,11 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
@@ -33,6 +37,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interaction_sequence_test_util.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -41,6 +46,7 @@
 
 namespace {
 constexpr char kTestTutorialId[] = "TutorialInteractiveUitest Tutorial";
+constexpr char kTestTutorialMetricPrefix[] = "Test";
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
 }  // namespace
 
@@ -63,6 +69,13 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
     service->tutorial_registry()->RemoveTutorialForTesting(kTestTutorialId);
   }
 
+  static void ClearEventQueue() {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
  protected:
   TutorialService* GetTutorialService() {
     return static_cast<FeaturePromoControllerCommon*>(
@@ -76,22 +89,19 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
   }
 
   TutorialDescription GetDefaultTutorialDescription() {
-    TutorialDescription description;
-    description.steps.emplace_back(
+    return TutorialDescription::Create<kTestTutorialMetricPrefix>(
         TutorialDescription::BubbleStep(kToolbarAppMenuButtonElementId)
             .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)
-            .SetBubbleArrow(HelpBubbleArrow::kTopRight));
-    description.steps.emplace_back(
-        TutorialDescription::EventStep(kCustomEventType1));
-    description.steps.emplace_back(
+            .SetBubbleArrow(HelpBubbleArrow::kTopRight),
+        TutorialDescription::EventStep(kCustomEventType1),
         TutorialDescription::HiddenStep::WaitForActivated(
-            kToolbarAppMenuButtonElementId));
-    description.steps.emplace_back(
+            kToolbarAppMenuButtonElementId),
         TutorialDescription::BubbleStep(kToolbarAppMenuButtonElementId)
             .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)
             .SetBubbleArrow(HelpBubbleArrow::kTopRight));
-    return description;
   }
+
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
@@ -101,17 +111,20 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
   GetTutorialService()->StartTutorial(kTestTutorialId,
                                       browser()->window()->GetElementContext(),
                                       completed.Get(), aborted.Get());
+  ClearEventQueue();
   EXPECT_TRUE(GetTutorialService()->IsRunningTutorial());
 
   ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
       GetElement(kTabStripElementId), kCustomEventType1);
+  ClearEventQueue();
 
   InteractionTestUtilBrowser test_util;
   EXPECT_EQ(ui::test::ActionResult::kSucceeded,
             test_util.PressButton(GetElement(kToolbarAppMenuButtonElementId)));
+  ClearEventQueue();
 
   // Simulate click on close button.
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       views::test::InteractionTestUtilSimulatorViews::PressButton(
           static_cast<HelpBubbleViews*>(
@@ -119,6 +132,11 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
               ->bubble_view()
               ->GetDefaultButtonForTesting(),
           ui::test::InteractionTestUtil::InputType::kKeyboard));
+
+  const auto histogram_name =
+      base::StringPrintf("Tutorial.%s.Completion", kTestTutorialMetricPrefix);
+  histogram_tester_.ExpectBucketCount(histogram_name, 0, 0);
+  histogram_tester_.ExpectBucketCount(histogram_name, 1, 1);
 }
 
 class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
@@ -168,7 +186,7 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
                 service->StartTutorial(
                     kTestTutorialId, browser()->window()->GetElementContext());
               }),
-              WaitForStateChange(page_id, help_bubble_shown), FlushEvents());
+              WaitForStateChange(page_id, help_bubble_shown));
     AddDescription(steps, "StartTutorial( %s )");
     return steps;
   }
@@ -180,12 +198,11 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
     help_bubble_hidden.where = {"ntp-app", "help-bubble"};
     help_bubble_hidden.event = kHelpBubbleHiddenEvent;
 
-    auto steps =
-        Steps(Do([this]() {
-                auto* const service = GetTutorialService();
-                service->CancelTutorialIfRunning(kTestTutorialId);
-              }),
-              WaitForStateChange(page_id, help_bubble_hidden), FlushEvents());
+    auto steps = Steps(Do([this]() {
+                         auto* const service = GetTutorialService();
+                         service->CancelTutorialIfRunning(kTestTutorialId);
+                       }),
+                       WaitForStateChange(page_id, help_bubble_hidden));
     AddDescription(steps, "CancelTutorial( %s )");
     return steps;
   }

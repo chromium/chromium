@@ -1,0 +1,40 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/magic_boost",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+
+  # UI implementation is in ash.
+  "+ash",
+
+  # Magic Boost needs to access Orca code in input_method.
+  "+chrome/browser/ash/input_method",
+
+  # Magic Boost needs to access Mahi code.
+  "+chrome/browser/ash/mahi",
+
+  "+chrome/browser/profiles",
+]
+
+specific_include_rules = {
+  "magic_boost_browsertest.cc": [
+      "+chrome/browser/ash/mahi/mahi_test_util.h",
+      "+chrome/browser/ash/mahi/mahi_ui_browser_test_base.h",
+      "+chrome/browser/ui/browser.h",
+      "+chrome/browser/ui/chromeos/magic_boost",
+      "+chrome/browser/ui/views/mahi/mahi_menu_view.h",
+      "+chrome/browser/ui/webui/ash/mako",
+      "+chrome/test/base",
+  ],
+}

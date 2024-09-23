@@ -4,6 +4,8 @@
 
 package org.chromium.base.cached_flags;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.AnyThread;
 
 import org.chromium.base.FeatureMap;
@@ -58,18 +60,20 @@ public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter {
     }
 
     @Override
-    void cacheToDisk() {
-        double value =
-                mFeatureMap.getFieldTrialParamByFeatureAsDouble(
-                        getFeatureName(), getParameterName(), getDefaultValue());
-        CachedFlagsSharedPreferences.getInstance().writeDouble(getSharedPreferenceKey(), value);
+    void writeCacheValueToEditor(final SharedPreferences.Editor editor) {
+        // Matches the conversion used in SharedPreferencesManager#writeDouble().
+        final long value =
+                Double.doubleToRawLongBits(
+                        mFeatureMap.getFieldTrialParamByFeatureAsDouble(
+                                getFeatureName(), getParameterName(), getDefaultValue()));
+        editor.putLong(getSharedPreferenceKey(), value);
     }
 
     /**
      * Forces the parameter to return a specific value for testing.
      *
-     * Caveat: this does not affect the value returned by native, only by
-     * {@link CachedFieldTrialParameter}.
+     * <p>Caveat: this does not affect the value returned by native, only by {@link
+     * CachedFieldTrialParameter}.
      *
      * @param overrideValue the value to be returned
      */

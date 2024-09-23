@@ -15,6 +15,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_endpoint.h"
+#include "net/reporting/reporting_target_type.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -49,7 +50,8 @@ struct NET_EXPORT ReportingReport {
                   base::Value::Dict body,
                   int depth,
                   base::TimeTicks queued,
-                  int attempts);
+                  int attempts,
+                  ReportingTargetType target_type);
 
   // Do NOT use this constructor outside of mojo deserialization context.
   ReportingReport();
@@ -59,11 +61,11 @@ struct NET_EXPORT ReportingReport {
   ReportingReport& operator=(ReportingReport&& other);
   ~ReportingReport();
 
-  // Bundles together the NAK, origin of the report URL, and group name.
-  // This is not exactly the same as the group key of the endpoint that the
-  // report will be delivered to. The origin may differ if the endpoint is
-  // configured for a superdomain of the report's origin. The NAK and group name
-  // will be the same.
+  // Bundles together the NAK, reporting source, origin of the report URL, group
+  // name, and target type. This is not exactly the same as the group key of the
+  // endpoint that the report will be delivered to. The origin may differ if the
+  // endpoint is configured for a superdomain of the report's origin. The NAK,
+  // group name, and target type will be the same.
   ReportingEndpointGroupKey GetGroupKey() const;
 
   static void RecordReportDiscardedForNoURLRequestContext();
@@ -122,6 +124,11 @@ struct NET_EXPORT ReportingReport {
   int attempts = 0;
 
   Status status = Status::QUEUED;
+
+  // Used to distinguish web developer and enterprise entities so that
+  // enterprise reports aren’t sent to web developer endpoints and web developer
+  // reports aren’t sent to enterprise endpoints
+  ReportingTargetType target_type = ReportingTargetType::kDeveloper;
 };
 
 }  // namespace net

@@ -1019,4 +1019,89 @@ TEST_F(ImageAnimationControllerNoResyncTest, SkipsLoopsAfterFirstIteration) {
   controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
+TEST_F(ImageAnimationControllerNoResyncTest,
+       ComputeConsistentContentFrameDuration) {
+  PaintImage::Id id1 = PaintImage::GetNextId();
+  FakeAnimationDriver driver;
+
+  {
+    std::vector<FrameMetadata> frames = {
+        FrameMetadata(true, base::Milliseconds(2)),
+        FrameMetadata(true, base::Milliseconds(3)),
+        FrameMetadata(true, base::Milliseconds(4)),
+        FrameMetadata(true, base::Milliseconds(5))};
+
+    DiscardableImageMap::AnimatedImageMetadata data(
+        id1, PaintImage::CompletionState::kPartiallyDone, frames,
+        kAnimationLoopInfinite, 0);
+    controller_->UpdateAnimatedImage(data);
+
+    controller_->RegisterAnimationDriver(id1, &driver);
+    controller_->UpdateStateFromDrivers();
+
+    EXPECT_EQ(controller_->GetConsistentContentFrameDuration(), std::nullopt);
+  }
+
+  {
+    std::vector<FrameMetadata> frames = {
+        FrameMetadata(true, base::Milliseconds(3)),
+        FrameMetadata(true, base::Milliseconds(3)),
+        FrameMetadata(true, base::Milliseconds(3)),
+        FrameMetadata(true, base::Milliseconds(3))};
+    DiscardableImageMap::AnimatedImageMetadata data(
+        id1, PaintImage::CompletionState::kPartiallyDone, frames,
+        kAnimationLoopInfinite, 0);
+    controller_->UpdateAnimatedImage(data);
+
+    controller_->UpdateStateFromDrivers();
+
+    std::optional<ImageAnimationController::ConsistentFrameDuration>
+        consistent_duration = controller_->GetConsistentContentFrameDuration();
+    ASSERT_TRUE(consistent_duration.has_value());
+    EXPECT_EQ(consistent_duration->frame_duration, base::Milliseconds(3));
+    EXPECT_EQ(consistent_duration->num_images, 1u);
+  }
+
+  PaintImage::Id id2 = PaintImage::GetNextId();
+  {
+    std::vector<FrameMetadata> frames = {
+        FrameMetadata(true, base::Milliseconds(4)),
+        FrameMetadata(true, base::Milliseconds(4)),
+        FrameMetadata(true, base::Milliseconds(4)),
+        FrameMetadata(true, base::Milliseconds(4))};
+    DiscardableImageMap::AnimatedImageMetadata data(
+        id2, PaintImage::CompletionState::kPartiallyDone, frames,
+        kAnimationLoopInfinite, 0);
+    controller_->UpdateAnimatedImage(data);
+
+    controller_->RegisterAnimationDriver(id2, &driver);
+    controller_->UpdateStateFromDrivers();
+
+    EXPECT_EQ(controller_->GetConsistentContentFrameDuration(), std::nullopt);
+  }
+
+  {
+    std::vector<FrameMetadata> frames = {
+        FrameMetadata(true, base::Milliseconds(3)),
+        FrameMetadata(true, base::Milliseconds(3)),
+        FrameMetadata(true, base::Milliseconds(3)),
+        FrameMetadata(true, base::Milliseconds(3))};
+    DiscardableImageMap::AnimatedImageMetadata data(
+        id2, PaintImage::CompletionState::kPartiallyDone, frames,
+        kAnimationLoopInfinite, 0);
+    controller_->UpdateAnimatedImage(data);
+
+    controller_->UpdateStateFromDrivers();
+
+    std::optional<ImageAnimationController::ConsistentFrameDuration>
+        consistent_duration = controller_->GetConsistentContentFrameDuration();
+    ASSERT_TRUE(consistent_duration.has_value());
+    EXPECT_EQ(consistent_duration->frame_duration, base::Milliseconds(3));
+    EXPECT_EQ(consistent_duration->num_images, 2u);
+  }
+
+  controller_->UnregisterAnimationDriver(id1, &driver);
+  controller_->UnregisterAnimationDriver(id2, &driver);
+}
+
 }  // namespace cc

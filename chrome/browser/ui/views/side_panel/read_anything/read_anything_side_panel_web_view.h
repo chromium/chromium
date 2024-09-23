@@ -8,6 +8,10 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 
+namespace content {
+class NavigationHandle;
+}
+
 class ReadAnythingSidePanelWebView
     : public SidePanelWebUIViewT<ReadAnythingUntrustedUI> {
   using SidePanelWebUIViewT_ReadAnythingUntrustedUI =
@@ -21,8 +25,15 @@ class ReadAnythingSidePanelWebView
       delete;
   ~ReadAnythingSidePanelWebView() override;
 
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
+
+  base::WeakPtr<ReadAnythingSidePanelWebView> GetWeakPtr();
 
  private:
   base::WeakPtrFactory<ReadAnythingSidePanelWebView> weak_factory_{this};

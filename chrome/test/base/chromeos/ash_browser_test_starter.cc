@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/rand_util.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/fake_device_ownership_waiter.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/chrome_switches.h"
@@ -28,6 +28,7 @@
 #include "chromeos/ash/components/standalone_browser/test_util.h"
 #include "components/exo/wm_helper.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/user_manager/fake_device_ownership_waiter.h"
 #include "content/public/common/content_switches.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -179,6 +180,7 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
 
   scoped_feature_list_.InitWithFeatures(
       ash::standalone_browser::GetFeatureRefs(), {});
+  command_line->AppendSwitch(ash::switches::kEnableLacrosForTesting);
   command_line->AppendSwitch(ash::switches::kAshEnableWaylandServer);
   command_line->AppendSwitch(
       views::switches::kDisableInputEventActivationProtectionForTesting);
@@ -211,6 +213,22 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
   return true;
 }
 
+void AshBrowserTestStarter::EnableFeaturesInLacros(
+    const std::vector<base::test::FeatureRef>& features) {
+  CHECK(HasLacrosArgument());
+
+  std::vector<std::string> feature_strings = base::ToVector(  // IN-TEST
+      features, [](base::test::FeatureRef feature) -> std::string {
+        return feature->name;
+      });
+
+  std::string features_arg =
+      "--enable-features=" + base::JoinString(feature_strings, ",");
+  std::vector<std::string> lacros_args = {features_arg};
+  ash::standalone_browser::AddLacrosArguments(
+      lacros_args, base::CommandLine::ForCurrentProcess());
+}
+
 void AshBrowserTestStarter::StartLacros(InProcessBrowserTest* test_class_obj) {
   DCHECK(HasLacrosArgument());
 
@@ -231,7 +249,7 @@ void AshBrowserTestStarter::SetUpBrowserManager() {
   DCHECK(HasLacrosArgument());
 
   crosapi::BrowserManager::Get()->set_device_ownership_waiter_for_testing(
-      std::make_unique<crosapi::FakeDeviceOwnershipWaiter>());
+      std::make_unique<user_manager::FakeDeviceOwnershipWaiter>());
 }
 
 void AshBrowserTestStarter::OnWindowDestroying(aura::Window* window) {

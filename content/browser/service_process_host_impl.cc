@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
@@ -65,7 +66,7 @@ class ServiceProcessTracker {
   void NotifyTerminated(ServiceProcessId id) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     auto iter = processes_.find(id);
-    DCHECK(iter != processes_.end());
+    CHECK(iter != processes_.end(), base::NotFatalUntil::M130);
 
     for (auto& observer : observers_)
       observer.OnServiceProcessTerminatedNormally(iter->second.Duplicate());
@@ -75,7 +76,7 @@ class ServiceProcessTracker {
   void NotifyCrashed(ServiceProcessId id) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     auto iter = processes_.find(id);
-    DCHECK(iter != processes_.end());
+    CHECK(iter != processes_.end(), base::NotFatalUntil::M130);
     for (auto& observer : observers_)
       observer.OnServiceProcessCrashed(iter->second.Duplicate());
     processes_.erase(iter);
@@ -154,7 +155,7 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
   }
 
   void OnProcessCrashed() override {
-    // TODO(https://crbug.com/1016027): It is unclear how we can observe
+    // TODO(crbug.com/40654042): It is unclear how we can observe
     // |OnProcessCrashed()| without observing |OnProcessLaunched()| first, but
     // it can happen on Android. Ignore the notification in this case.
     if (!process_info_)
@@ -174,7 +175,7 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
   std::optional<ServiceProcessInfo> process_info_;
 };
 
-// TODO(crbug.com/977637): Once UtilityProcessHost is used only by service
+// TODO(crbug.com/40633267): Once UtilityProcessHost is used only by service
 // processes, its logic can be inlined here.
 void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
                           ServiceProcessHost::Options options,
@@ -199,10 +200,11 @@ void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
   if (!options.preload_libraries.empty()) {
     host->SetPreloadLibraries(options.preload_libraries);
   }
-  if (options.pin_user32) {
-    host->SetPinUser32();
-  }
 #endif  // BUILDFLAG(IS_WIN)
+  if (options.allow_gpu_client.has_value() &&
+      options.allow_gpu_client.value()) {
+    host->SetAllowGpuClient();
+  }
   host->Start();
   host->GetChildProcess()->BindServiceInterface(std::move(receiver));
 }

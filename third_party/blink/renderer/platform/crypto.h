@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
@@ -25,8 +26,11 @@ enum HashAlgorithm {
 };
 
 PLATFORM_EXPORT bool ComputeDigest(HashAlgorithm,
-                                   const char* digestable,
-                                   size_t length,
+                                   base::span<const uint8_t> digestable,
+                                   DigestValue& digest_result);
+
+PLATFORM_EXPORT bool ComputeDigest(HashAlgorithm,
+                                   const SegmentedBuffer* buffer,
                                    DigestValue& digest_result);
 
 class PLATFORM_EXPORT Digestor {

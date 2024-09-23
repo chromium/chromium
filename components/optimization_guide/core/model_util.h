@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_UTIL_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_UTIL_H_
 
+#include <map>
 #include <optional>
+#include <set>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "components/optimization_guide/core/model_enums.h"
@@ -74,6 +78,10 @@ bool IsPredictionModelVersionInKillSwitch(
         killswitch_model_versions,
     proto::OptimizationTarget opt_target,
     int64_t model_version);
+
+// Returns the model info parsed from |model_info_path|.
+std::optional<proto::ModelInfo> ParseModelInfoFromFile(
+    const base::FilePath& model_info_path);
 
 }  // namespace optimization_guide
 

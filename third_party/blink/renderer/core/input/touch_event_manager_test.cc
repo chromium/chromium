@@ -90,7 +90,7 @@ TEST_F(TouchEventManagerTest, AbosolutePosWithScrollAndZoom) {
       position: absolute; left:100px; top:100px; width:200px; height:200px;'>
     </body>
   )HTML");
-  GetDocument().GetFrame()->SetPageZoomFactor(2);
+  GetDocument().GetFrame()->SetLayoutZoomFactor(2);
   Window().scrollTo(100, 100);
 
   GetEventHandler().HandlePointerEvent(

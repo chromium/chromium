@@ -28,24 +28,31 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DATABASE_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DATABASE_CONTEXT_H_
 
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/webdatabase/database_error.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
+class Database;
 class DatabaseContext;
 class DatabaseThread;
+class ExceptionState;
 class ExecutionContext;
 class SecurityOrigin;
+class V8DatabaseCallback;
 
 class DatabaseContext final : public GarbageCollected<DatabaseContext>,
+                              public Supplement<ExecutionContext>,
                               public ExecutionContextLifecycleObserver {
  public:
-  friend class DatabaseManager;
+  static const char kSupplementName[];
 
-  static DatabaseContext* Create(ExecutionContext*);
+  static DatabaseContext* From(ExecutionContext&);
 
-  explicit DatabaseContext(ExecutionContext*);
+  explicit DatabaseContext(ExecutionContext&, base::PassKey<DatabaseContext>);
   ~DatabaseContext() override;
   void Trace(Visitor*) const override;
 
@@ -53,11 +60,9 @@ class DatabaseContext final : public GarbageCollected<DatabaseContext>,
   // ExecutionContextLifecycleObserver):
   void ContextDestroyed() override;
 
-  DatabaseContext* Backend();
   DatabaseThread* GetDatabaseThread();
   bool DatabaseThreadAvailable();
 
-  void SetHasOpenDatabases() { has_open_databases_ = true; }
   // Blocks the caller thread until cleanup tasks are completed.
   void StopDatabases();
 
@@ -66,7 +71,29 @@ class DatabaseContext final : public GarbageCollected<DatabaseContext>,
   const SecurityOrigin* GetSecurityOrigin() const;
   bool IsContextThread() const;
 
+  Database* OpenDatabase(const WTF::String& name,
+                         const WTF::String& expected_version,
+                         const WTF::String& display_name,
+                         V8DatabaseCallback*,
+                         DatabaseError&,
+                         WTF::String& error_message);
+
+  static void ThrowExceptionForDatabaseError(DatabaseError,
+                                             const WTF::String& error_message,
+                                             ExceptionState&);
+
  private:
+  Database* OpenDatabaseInternal(const WTF::String& name,
+                                 const WTF::String& expected_version,
+                                 const WTF::String& display_name,
+                                 V8DatabaseCallback*,
+                                 bool set_version_in_new_database,
+                                 DatabaseError&,
+                                 WTF::String& error_message);
+  void SetHasOpenDatabases() { has_open_databases_ = true; }
+
+  static void LogErrorMessage(ExecutionContext*, const WTF::String& message);
+
   Member<DatabaseThread> database_thread_;
   bool has_open_databases_;  // This never changes back to false, even after the
                              // database thread is closed.

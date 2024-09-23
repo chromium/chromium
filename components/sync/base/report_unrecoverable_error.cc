@@ -21,11 +21,13 @@ void ReportUnrecoverableError(version_info::Channel channel) {
   // investigating a specific datatype error. In that event, a specific bug
   // should be referenced here.
   const double kErrorUploadRatio = 0.00;
-  if (kErrorUploadRatio <= 0.0)
+  if (kErrorUploadRatio <= 0.0) {
     return;  // We are not allowed to upload errors.
+  }
   double random_number = base::RandDouble();
-  if (random_number > kErrorUploadRatio)
+  if (random_number > kErrorUploadRatio) {
     return;
+  }
 
   base::debug::DumpWithoutCrashing();
 }

@@ -22,6 +22,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -55,7 +56,7 @@ SharesheetTargetButton::SharesheetTargetButton(
     bool is_dlp_blocked)
     : Button(std::move(callback)), vector_icon_(vector_icon) {
   SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  // TODO(crbug.com/1097623) Margins shouldn't be within
+  // TODO(crbug.com/40136695) Margins shouldn't be within
   // SharesheetTargetButton as the margins are different in |expanded_view_|.
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(kButtonPadding),
@@ -80,12 +81,7 @@ SharesheetTargetButton::SharesheetTargetButton(
   label->SetID(SharesheetViewID::TARGET_LABEL_VIEW_ID);
   label->SetEnabledColorId(cros_tokens::kTextColorSecondary);
 
-  if (chromeos::features::IsJellyEnabled()) {
-    bubble_utils::ApplyStyle(label, TypographyToken::kCrosButton1);
-  } else {
-    label->SetTextContext(CONTEXT_SHARESHEET_BUBBLE_BODY);
-    label->SetTextStyle(STYLE_SHARESHEET);
-  }
+  bubble_utils::ApplyStyle(label, TypographyToken::kCrosButton1);
   SetLabelProperties(label);
 
   std::u16string accessible_name = display_name;
@@ -95,12 +91,7 @@ SharesheetTargetButton::SharesheetTargetButton(
         std::make_unique<views::Label>(secondary_display_name));
     secondary_label->SetEnabledColorId(cros_tokens::kTextColorSecondary);
 
-    if (chromeos::features::IsJellyEnabled()) {
-      bubble_utils::ApplyStyle(secondary_label, TypographyToken::kCrosBody2);
-    } else {
-      secondary_label->SetTextContext(CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY);
-      secondary_label->SetTextStyle(STYLE_SHARESHEET);
-    }
+    bubble_utils::ApplyStyle(secondary_label, TypographyToken::kCrosBody2);
     SetLabelProperties(secondary_label);
     accessible_name =
         base::StrCat({display_name, u" ", secondary_display_name});
@@ -113,7 +104,7 @@ SharesheetTargetButton::SharesheetTargetButton(
   }
 
   AddChildView(std::move(label_view));
-  SetAccessibleName(accessible_name);
+  GetViewAccessibility().SetName(accessible_name);
 
   if (is_dlp_blocked) {
     SetState(ButtonState::STATE_DISABLED);
@@ -128,14 +119,9 @@ void SharesheetTargetButton::OnThemeChanged() {
 
   // TODO(b/284175205): Convert this to an ImageModel after Jelly launches.
   auto* color_provider = GetColorProvider();
-  SkColor icon_color = color_provider->GetColor(
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary)
-          : cros_tokens::kIconColorProminent);
-  SkColor circle_color = color_provider->GetColor(
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimaryContainer)
-          : cros_tokens::kBgColorElevation1);
+  SkColor icon_color = color_provider->GetColor(cros_tokens::kCrosSysPrimary);
+  SkColor circle_color =
+      color_provider->GetColor(cros_tokens::kCrosSysPrimaryContainer);
 
   gfx::ImageSkia icon = gfx::CreateVectorIcon(
       *vector_icon_, ::sharesheet::kIconSize / 2, icon_color);
@@ -143,21 +129,17 @@ void SharesheetTargetButton::OnThemeChanged() {
       gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
           ::sharesheet::kIconSize / 2, circle_color, icon);
 
-  if (chromeos::features::IsJellyEnabled()) {
-    gfx::ShadowValues shadow_values;
-    const SkColor shadow_color =
-        GetColorProvider()->GetColor(kColorSharesheetTargetButtonIconShadow);
-    shadow_values.push_back(
-        gfx::ShadowValue(gfx::Vector2d(0, 1), 0, shadow_color));
-    shadow_values.push_back(
-        gfx::ShadowValue(gfx::Vector2d(0, 1), 2, shadow_color));
-    gfx::ImageSkia circle_icon_with_shadow =
-        gfx::ImageSkiaOperations::CreateImageWithDropShadow(circle_icon,
-                                                            shadow_values);
-    image_->SetImage(circle_icon_with_shadow);
-  } else {
-    image_->SetImage(circle_icon);
-  }
+  gfx::ShadowValues shadow_values;
+  const SkColor shadow_color =
+      GetColorProvider()->GetColor(kColorSharesheetTargetButtonIconShadow);
+  shadow_values.push_back(
+      gfx::ShadowValue(gfx::Vector2d(0, 1), 0, shadow_color));
+  shadow_values.push_back(
+      gfx::ShadowValue(gfx::Vector2d(0, 1), 2, shadow_color));
+  gfx::ImageSkia circle_icon_with_shadow =
+      gfx::ImageSkiaOperations::CreateImageWithDropShadow(circle_icon,
+                                                          shadow_values);
+  image_->SetImage(circle_icon_with_shadow);
 }
 
 void SharesheetTargetButton::SetLabelProperties(views::Label* label) {

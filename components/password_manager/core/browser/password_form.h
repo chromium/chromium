@@ -15,12 +15,13 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "url/gurl.h"
-#include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 namespace password_manager {
 
@@ -37,8 +38,8 @@ struct AlternativeElement {
       base::StrongAlias<class AlternativeElementNameTag, std::u16string>;
 
   AlternativeElement(const Value& value,
-               autofill::FieldRendererId field_renderer_id,
-               const Name& name);
+                     autofill::FieldRendererId field_renderer_id,
+                     const Name& name);
   explicit AlternativeElement(const Value& value);
   AlternativeElement(const AlternativeElement& rhs);
   AlternativeElement(AlternativeElement&& rhs);
@@ -107,7 +108,6 @@ struct InsecurityMetadata {
   // the user hasn't already been notified (e.g. via a leak check prompt).
   TriggerBackendNotification trigger_notification_from_backend{false};
 };
-
 
 // Represents a note attached to a particular credential.
 struct PasswordNote {
@@ -417,7 +417,7 @@ struct PasswordForm {
   GURL icon_url;
 
   // The origin of identity provider used for federated login.
-  url::Origin federation_origin;
+  url::SchemeHostPort federation_origin;
 
   // If true, Chrome will not return this credential to a site in response to
   // 'navigator.credentials.request()' without user interaction.
@@ -442,12 +442,6 @@ struct PasswordForm {
   // saved or filled only with the fallback.
   bool only_for_fallback = false;
 
-  // True iff the new password field was found with server hints or autocomplete
-  // attributes.
-  // Only set on form parsing for filling, and not persisted. Used as signal for
-  // password generation eligibility.
-  bool is_new_password_reliable = false;
-
   // True iff the form may be filled with webauthn credentials from an active
   // webauthn request.
   bool accepts_webauthn_credentials = false;
@@ -467,7 +461,7 @@ struct PasswordForm {
 
   // Please use IsUsingAccountStore and IsUsingProfileStore to check in which
   // store the form is present.
-  // TODO(crbug.com/1201643): Rename to in_stores to reflect possibility of
+  // TODO(crbug.com/40178769): Rename to in_stores to reflect possibility of
   // password presence in both stores.
   Store in_store = Store::kNotSet;
 
@@ -525,6 +519,11 @@ struct PasswordForm {
   // It's based on heuristics and may be inaccurate.
   bool IsLikelyResetPasswordForm() const;
 
+  // Returns the `PasswordFormClassification::Type` classification of this form.
+  // Note that just as `IsLikelyLoginForm()`, `IsLikelySignupForm()`, etc. this
+  // prediction is based on heuristics and may be inaccurate.
+  autofill::PasswordFormClassification::Type GetPasswordFormType() const;
+
   // Returns true if current password element is set.
   bool HasUsernameElement() const;
 
@@ -564,6 +563,14 @@ struct PasswordForm {
 
   PasswordForm& operator=(const PasswordForm& form);
   PasswordForm& operator=(PasswordForm&& form);
+
+#if defined(UNIT_TEST)
+  // An exact equality comparison of all the fields is only useful for tests.
+  // Production code should be using `ArePasswordFormUniqueKeysEqual` instead.
+  friend bool operator==(const PasswordForm&, const PasswordForm&) = default;
+  friend bool operator!=(const PasswordForm& lhs,
+                         const PasswordForm& rhs) = default;
+#endif
 };
 
 // True if the unique keys for the forms are the same. The unique key is
@@ -577,14 +584,10 @@ bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,
 
 // For testing.
 #if defined(UNIT_TEST)
-// An exact equality comparison of all the fields is only useful for tests.
-// Production code should be using `ArePasswordFormUniqueKeysEqual` instead.
-bool operator==(const PasswordForm& lhs, const PasswordForm& rhs);
-
 std::ostream& operator<<(std::ostream& os, PasswordForm::Scheme scheme);
 std::ostream& operator<<(std::ostream& os, const PasswordForm& form);
 std::ostream& operator<<(std::ostream& os, PasswordForm* form);
-#endif
+#endif  // defined(UNIT_TEST)
 
 constexpr PasswordForm::Store operator&(PasswordForm::Store lhs,
                                         PasswordForm::Store rhs) {

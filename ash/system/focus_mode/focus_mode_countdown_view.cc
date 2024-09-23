@@ -15,6 +15,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/progress_bar.h"
@@ -31,7 +32,6 @@ constexpr int kBarHeight = 8;
 constexpr int kAboveBarSpace = 8;
 constexpr int kAboveBarSpaceInBubble = 12;
 constexpr int kBelowBarSpace = 8;
-constexpr int kSpaceBetweenContainers = 16;
 
 std::unique_ptr<views::Label> CreateTimerLabel(
     gfx::HorizontalAlignment alignment,
@@ -49,7 +49,8 @@ std::unique_ptr<views::View> CreateSpacerView() {
   auto spacer_view = std::make_unique<views::View>();
   spacer_view->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
   return spacer_view;
 }
@@ -75,11 +76,9 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
   timer_container->SetPreferredSize(gfx::Size(kBarWidth, kCountdownViewHeight));
   timer_container->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred,
                                /*adjust_height_for_width =*/false));
-  timer_container->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(0, 0, 0, kSpaceBetweenContainers)));
 
   time_remaining_label_ = timer_container->AddChildView(
       CreateTimerLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosDisplay6Regular,
@@ -127,6 +126,9 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
       views::BoxLayout::CrossAxisAlignment::kStretch);
   button_container->SetBetweenChildSpacing(kSpaceBetweenButtons);
 
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  button_container->SetLayoutManagerUseConstrainedSpace(false);
+
   FocusModeController* focus_mode_controller = FocusModeController::Get();
   if (include_end_button_) {
     end_button_ = button_container->AddChildView(std::make_unique<PillButton>(
@@ -135,8 +137,10 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
             base::Unretained(focus_mode_controller),
             focus_mode_histogram_names::ToggleSource::kContextualPanel),
         l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON),
+            IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_LABEL),
         PillButton::Type::kPrimaryWithoutIcon, /*icon=*/nullptr));
+    end_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME));
   }
 
   extend_session_duration_button_ =
@@ -148,8 +152,10 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
           include_end_button_ ? PillButton::Type::kSecondaryWithoutIcon
                               : PillButton::Type::kSecondaryLargeWithoutIcon,
           /*icon=*/nullptr));
-  extend_session_duration_button_->SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME));
+  extend_session_duration_button_->SetUseLabelAsDefaultTooltip(false);
+  extend_session_duration_button_->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_INCREASE_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME));
   views::InkDrop::Get(extend_session_duration_button_)
       ->SetMode(views::InkDropHost::InkDropMode::OFF);
 }

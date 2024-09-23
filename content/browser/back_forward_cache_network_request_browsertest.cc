@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, FetchWhileStoring) {
 
 // Eviction is triggered when a normal fetch request gets redirected while the
 // page is in back-forward cache.
-// TODO(https://crbug.com/1494692): Disabled due to flakiness.
+// TODO(crbug.com/40937269): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        DISABLED_FetchRedirectedWhileStoring) {
   net::test_server::ControllableHttpResponse fetch_response(
@@ -115,9 +115,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // Eviction is triggered when a keepalive fetch request gets redirected while
 // the page is in back-forward cache.
-// TODO(https://crbug.com/1137682): We should not trigger eviction on redirects
+// TODO(crbug.com/40724916): We should not trigger eviction on redirects
 // of keepalive fetches.
-// TODO(https://crbug.com/1377737): Disabled for flakiness.
+// TODO(crbug.com/40874525): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        DISABLED_KeepAliveFetchRedirectedWhileStoring) {
   net::test_server::ControllableHttpResponse fetch_response(
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Ensure that the request to /fetch2 was never sent (because the page is
   // immediately evicted) by checking after 3 seconds.
-  // TODO(https://crbug.com/1137682): We should not trigger eviction on
+  // TODO(crbug.com/40724916): We should not trigger eviction on
   // redirects of keepalive fetches and the redirect request should be sent.
   base::RunLoop loop;
   base::OneShotTimer timer;
@@ -170,12 +170,83 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                     {}, FROM_HERE);
 }
 
+class BackForwardCacheDrainedAsBytesConsumerTest
+    : public BackForwardCacheBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  static constexpr int kMaxBufferedBytesPerProcess = 10000;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(
+        blink::features::kAllowDatapipeDrainedAsBytesConsumerInBFCache, "", "");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kLoadingTasksUnfreezable,
+          {{"max_buffered_bytes_per_process",
+            base::NumberToString(kMaxBufferedBytesPerProcess)}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests the case when the header was received before the page is frozen,
 // but parts of the response body is received when the page is frozen.
-// TODO(https://crbug.com/1494692): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTest,
-    DISABLED_PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted) {
+    BackForwardCacheDrainedAsBytesConsumerTest,
+    PageWithDrainedDatapipeRequestsForFetchShouldBeEvictedOrNot) {
+  net::test_server::ControllableHttpResponse fetch_response(
+      embedded_test_server(), "/fetch");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // Call fetch before navigating away.
+  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+    var fetch_response_promise = my_fetch = fetch('/fetch').then(response => {
+        return response.text();
+    });
+  )"));
+  // Send response header and a piece of the body before navigating away.
+  fetch_response.WaitForRequest();
+  fetch_response.Send(net::HTTP_OK, "text/plain");
+  fetch_response.Send("hello");
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  fetch_response.Send("world");
+  fetch_response.Done();
+
+  // 3) Go back to A.
+  // Note that we cannot reliably wait for the datapipe to be drained as bytes
+  // consumer, so sometimes this is not testing the case in question, but the
+  // page will be restored in either way, and the test will not be flaky.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  // Ensure that the fetch response is complete, having both of the parts from
+  // before entering back/forward cache and after.
+  EXPECT_EQ("helloworld",
+            content::EvalJs(current_frame_host(), "fetch_response_promise"));
+}
+
+// If too much data is processed while in bfcache, evict the entry.
+// TODO(crbug.com/325558875): Flaky on Mac and ChromeOS bots.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PageWithDrainedDatapipeAsBytesConsumerCannotProcessTooMuchData \
+  DISABLED_PageWithDrainedDatapipeAsBytesConsumerCannotProcessTooMuchData
+#else
+#define MAYBE_PageWithDrainedDatapipeAsBytesConsumerCannotProcessTooMuchData \
+  PageWithDrainedDatapipeAsBytesConsumerCannotProcessTooMuchData
+#endif
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheDrainedAsBytesConsumerTest,
+    MAYBE_PageWithDrainedDatapipeAsBytesConsumerCannotProcessTooMuchData) {
   net::test_server::ControllableHttpResponse fetch_response(
       embedded_test_server(), "/fetch");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -196,18 +267,25 @@ IN_PROC_BROWSER_TEST_F(
   // Send response header and a piece of the body before navigating away.
   fetch_response.WaitForRequest();
   fetch_response.Send(net::HTTP_OK, "text/plain");
-  fetch_response.Send("body");
+  fetch_response.Send("start sending body");
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
 
+  // Complete the response after navigating away.
+  // Data over the limit is processed, so the bfcache entry should be evicted.
+  std::string body(kMaxBufferedBytesPerProcess * 10, '*');
+  fetch_response.Send(body);
+  fetch_response.Done();
   ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 3) Go back to A.
+  // Note that we cannot reliably wait for the datapipe to be drained as bytes
+  // consumer, so sometimes this is not testing the case in question.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored(
-      {NotRestoredReason::kNetworkRequestDatapipeDrainedAsBytesConsumer}, {},
-      {}, {}, {}, FROM_HERE);
+  ExpectNotRestored({NotRestoredReason::kNetworkExceedsBufferLimit}, {}, {}, {},
+                    {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] quantizeLinear float32 0D scalar tensor with int8 scalar zeroPoint
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'quantizeLinear' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] quantizeLinear float32 1D constant tensor broadcasting zeroPoint
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'quantizeLinear' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] quantizeLinear float32 4D constant tensor broadcasting scale and zeroPoint
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'quantizeLinear' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+Harness: the test ran to completion.
+

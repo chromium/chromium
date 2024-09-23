@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
@@ -63,7 +64,7 @@ void CheckboxInputType::HandleKeyupEvent(KeyboardEvent& event) {
   // Use Enter key simulated click when Spatial Navigation enabled.
   if (event.key() == " " ||
       (IsSpatialNavigationEnabled(GetElement().GetDocument().GetFrame()) &&
-       event.key() == "Enter")) {
+       event.key() == keywords::kCapitalEnter)) {
     DispatchSimulatedClickIfActive(event);
   }
 }

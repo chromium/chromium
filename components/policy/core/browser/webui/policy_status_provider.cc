@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/time_formatting.h"
 #include "base/no_destructor.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -18,6 +19,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
@@ -25,19 +27,6 @@
 namespace em = enterprise_management;
 
 namespace policy {
-
-const char kPolicyDescriptionKey[] = "policyDescriptionKey";
-const char kFlexOrgWarningKey[] = "flexOrgWarning";
-
-const char kAssetIdKey[] = "assetId";
-const char kLocationKey[] = "location";
-const char kDirectoryApiIdKey[] = "directoryApiId";
-const char kGaiaIdKey[] = "gaiaId";
-const char kClientIdKey[] = "clientId";
-const char kUsernameKey[] = "username";
-const char kEnterpriseDomainManagerKey[] = "enterpriseDomainManager";
-const char kDomainKey[] = "domain";
-const char kEnrollmentTokenKey[] = "enrollmentToken";
 
 namespace {
 
@@ -55,7 +44,7 @@ std::u16string FormatAssociationState(const em::PolicyData* data) {
         return l10n_util::GetStringUTF16(
             IDS_POLICY_ASSOCIATION_STATE_DEPROVISIONED);
     }
-    NOTREACHED() << "Unknown state " << data->state();
+    NOTREACHED_IN_MIGRATION() << "Unknown state " << data->state();
   }
 
   // Default to UNMANAGED for the case of missing policy or bad state enum.
@@ -180,6 +169,22 @@ base::Value::Dict PolicyStatusProvider::GetStatusFromPolicyData(
   }
 #endif
   return dict;
+}
+
+// static
+void PolicyStatusProvider::UpdateLastReportTimestamp(
+    base::Value::Dict& status,
+    PrefService* prefs,
+    const std::string& report_timestamp_pref_path) {
+  if (prefs->HasPrefPath(report_timestamp_pref_path)) {
+    base::Time last_report_timestamp =
+        prefs->GetTime(report_timestamp_pref_path);
+    status.Set("lastCloudReportSentTimestamp",
+               base::UnlocalizedTimeFormatWithPattern(last_report_timestamp,
+                                                      "yyyy-LL-dd HH:mm zzz"));
+    status.Set("timeSinceLastCloudReportSent",
+               GetTimeSinceLastActionString(last_report_timestamp));
+  }
 }
 
 // CloudPolicyStore errors take precedence to show in the status message.

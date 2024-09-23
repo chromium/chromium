@@ -5,7 +5,6 @@
 #include "media/gpu/vaapi/vaapi_image_processor_backend.h"
 
 #include <stdint.h>
-
 #include <va/va.h>
 
 #include "base/containers/contains.h"
@@ -20,10 +19,10 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "media/base/format_utils.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "ui/gfx/native_pixmap.h"
@@ -71,16 +70,16 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
   if (!IsSupported(input_config) || !IsSupported(output_config))
     return nullptr;
 
-  if (!base::Contains(input_config.preferred_storage_types,
-                      VideoFrame::STORAGE_GPU_MEMORY_BUFFER)) {
-    VLOGF(2) << "VaapiImageProcessorBackend supports GpuMemoryBuffer based"
-                "FrameResource only for input";
+  if (input_config.storage_type != VideoFrame::STORAGE_GPU_MEMORY_BUFFER &&
+      input_config.storage_type != VideoFrame::STORAGE_DMABUFS) {
+    VLOGF(2) << "VaapiImageProcessorBackend supports GpuMemoryBuffer or DMABuf "
+                "based FrameResource only for input";
     return nullptr;
   }
-  if (!base::Contains(output_config.preferred_storage_types,
-                      VideoFrame::STORAGE_GPU_MEMORY_BUFFER)) {
-    VLOGF(2) << "VaapiImageProcessorBackend supports GpuMemoryBuffer based"
-                "FrameResource only for output";
+  if (output_config.storage_type != VideoFrame::STORAGE_GPU_MEMORY_BUFFER &&
+      output_config.storage_type != VideoFrame::STORAGE_DMABUFS) {
+    VLOGF(2) << "VaapiImageProcessorBackend supports GpuMemoryBuffer or DMABuf "
+                "based FrameResource only for output";
     return nullptr;
   }
 
@@ -111,11 +110,11 @@ VaapiImageProcessorBackend::VaapiImageProcessorBackend(
 VaapiImageProcessorBackend::~VaapiImageProcessorBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
-  DCHECK(vaapi_wrapper_ || allocated_va_surfaces_.empty());
+  DCHECK(vaapi_wrapper_ || allocated_va_surfaces_.IsEmpty());
   if (vaapi_wrapper_) {
     // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
     vaapi_wrapper_->DestroyContext();
-    allocated_va_surfaces_.clear();
+    allocated_va_surfaces_.Clear();
   }
 }
 
@@ -123,40 +122,34 @@ std::string VaapiImageProcessorBackend::type() const {
   return "VaapiImageProcessor";
 }
 
-const VASurface* VaapiImageProcessorBackend::GetSurfaceForVideoFrame(
-    scoped_refptr<FrameResource> frame,
+const ScopedVASurface* VaapiImageProcessorBackend::GetOrCreateSurfaceForFrame(
+    const FrameResource& frame,
     bool use_protected) {
-  if (!frame->HasGpuMemoryBuffer())
-    return nullptr;
-  DCHECK_EQ(frame->storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-
-  const gfx::GpuMemoryBufferId gmb_id = frame->GetGpuMemoryBuffer()->GetId();
-  if (base::Contains(allocated_va_surfaces_, gmb_id)) {
-    const VASurface* surface = allocated_va_surfaces_[gmb_id].get();
-    CHECK_EQ(frame->GetGpuMemoryBuffer()->GetSize(), surface->size());
-    const unsigned int format = VaapiWrapper::BufferFormatToVARTFormat(
-        frame->GetGpuMemoryBuffer()->GetFormat());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
+  const auto shared_memory_id = frame.GetSharedMemoryId().id;
+  const auto* surface = allocated_va_surfaces_.Lookup(shared_memory_id);
+  if (surface) {
+    CHECK_EQ(frame.coded_size(), surface->size());
+    const auto buffer_format =
+        VideoPixelFormatToGfxBufferFormat(frame.format());
+    CHECK(buffer_format.has_value());
+    const unsigned int format =
+        VaapiWrapper::BufferFormatToVARTFormat(*buffer_format);
     CHECK_NE(format, 0u);
     CHECK_EQ(format, surface->format());
     return surface;
   }
 
-  scoped_refptr<gfx::NativePixmap> pixmap = frame->CreateNativePixmapDmaBuf();
-  if (!pixmap) {
-    VLOGF(1) << "Failed to create NativePixmap from FrameResource";
-    return nullptr;
-  }
-
   DCHECK(vaapi_wrapper_);
-  auto va_surface = vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(pixmap),
-                                                             use_protected);
+  auto va_surface =
+      vaapi_wrapper_->CreateVASurfaceForFrameResource(frame, use_protected);
   if (!va_surface) {
-    VLOGF(1) << "Failed to create VASurface from NativePixmap";
+    VLOGF(1) << "Failed to create VASurface from frame";
     return nullptr;
   }
 
-  allocated_va_surfaces_[gmb_id] = std::move(va_surface);
-  return allocated_va_surfaces_[gmb_id].get();
+  allocated_va_surfaces_.AddWithID(std::move(va_surface), shared_memory_id);
+  return allocated_va_surfaces_.Lookup(shared_memory_id);
 }
 
 void VaapiImageProcessorBackend::ProcessFrame(
@@ -174,11 +167,13 @@ void VaapiImageProcessorBackend::ProcessFrame(
     // where the VPP is needed for processing protected content after decoding.
     // That's because when calling VaapiWrapper::BlitSurface(), we re-use the
     // protected session ID created at decoding time.
-    auto vaapi_wrapper = VaapiWrapper::Create(
-        VaapiWrapper::kVideoProcess, VAProfileNone,
-        EncryptionScheme::kUnencrypted,
-        base::BindRepeating(&ReportVaapiErrorToUMA,
-                            "Media.VaapiImageProcessorBackend.VAAPIError"));
+    auto vaapi_wrapper =
+        VaapiWrapper::Create(
+            VaapiWrapper::kVideoProcess, VAProfileNone,
+            EncryptionScheme::kUnencrypted,
+            base::BindRepeating(&ReportVaapiErrorToUMA,
+                                "Media.VaapiImageProcessorBackend.VAAPIError"))
+            .value_or(nullptr);
     if (!vaapi_wrapper) {
       VLOGF(1) << "Failed to create VaapiWrapper";
       error_cb_.Run();
@@ -221,21 +216,22 @@ void VaapiImageProcessorBackend::ProcessFrame(
 
   DCHECK(input_frame);
   DCHECK(output_frame);
-  const VASurface* src_va_surface =
-      GetSurfaceForVideoFrame(input_frame, use_protected);
+  const ScopedVASurface* src_va_surface =
+      GetOrCreateSurfaceForFrame(*input_frame, use_protected);
   if (!src_va_surface) {
     error_cb_.Run();
     return;
   }
-  const VASurface* dst_va_surface =
-      GetSurfaceForVideoFrame(output_frame, use_protected);
+  const ScopedVASurface* dst_va_surface =
+      GetOrCreateSurfaceForFrame(*output_frame, use_protected);
   if (!dst_va_surface) {
     error_cb_.Run();
     return;
   }
 
   // VA-API performs pixel format conversion and scaling without any filters.
-  if (!vaapi_wrapper_->BlitSurface(*src_va_surface, *dst_va_surface,
+  if (!vaapi_wrapper_->BlitSurface(src_va_surface->id(), src_va_surface->size(),
+                                   dst_va_surface->id(), dst_va_surface->size(),
                                    input_frame->visible_rect(),
                                    output_frame->visible_rect()
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -274,11 +270,11 @@ void VaapiImageProcessorBackend::Reset() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
-  DCHECK(vaapi_wrapper_ || allocated_va_surfaces_.empty());
+  DCHECK(vaapi_wrapper_ || allocated_va_surfaces_.IsEmpty());
   if (vaapi_wrapper_) {
     // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
     vaapi_wrapper_->DestroyContext();
-    allocated_va_surfaces_.clear();
+    allocated_va_surfaces_.Clear();
   }
   needs_context_ = true;
 }

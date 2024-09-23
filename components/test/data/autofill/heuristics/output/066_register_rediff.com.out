@@ -1,18 +1,18 @@
-UNKNOWN_TYPE | name | Create a Rediffmail account |  | name_1
-NAME_FULL | login | Full Name:Enter your first name & last nameEg. Sameer Bhagwat |  | name_1
-UNKNOWN_TYPE | passwd | Choose a Rediffmail ID:@rediffmail.com |  | name_1
-UNKNOWN_TYPE | confirm_passwd | Password:6-12 characters allowed |  | name_1
-EMAIL_ADDRESS | altemail |  |  | name_1
+NAME_FULL | name | Full Name |  | name_1
+UNKNOWN_TYPE | login | Choose a Rediffmail ID |  | name_1
+UNKNOWN_TYPE | passwd | Password |  | name_1
+UNKNOWN_TYPE | confirm_passwd | Retype password |  | name_1
+EMAIL_ADDRESS | altemail | Alternate Email Address |  | name_1
 UNKNOWN_TYPE | chk_altemail |  | on | name_1
-UNKNOWN_TYPE | hintq |  |  | name_1
-UNKNOWN_TYPE | hinta | Select a Security Question: |  | name_1
-UNKNOWN_TYPE | mothername | Enter an Answer: |  | name_1
-UNKNOWN_TYPE | DOB_Day | Select a Security QuestionEnter an Answer |  | name_1
-UNKNOWN_TYPE | DOB_Month | Select a Security QuestionEnter an Answer |  | name_1
-UNKNOWN_TYPE | DOB_Year | Select a Security QuestionEnter an Answer |  | name_1
+UNKNOWN_TYPE | hintq | Select a Security Question |  | -default
+UNKNOWN_TYPE | hinta | Enter an Answer |  | -default
+UNKNOWN_TYPE | mothername | Mother's Maiden Name |  | -default
+UNKNOWN_TYPE | DOB_Day | Date of Birth |  | name_1
+UNKNOWN_TYPE | DOB_Month | Date of Birth |  | name_1
+UNKNOWN_TYPE | DOB_Year | Date of Birth |  | name_1
 UNKNOWN_TYPE | gender | Male | m | name_1
 UNKNOWN_TYPE | gender | Female | f | name_1
-ADDRESS_HOME_COUNTRY | country | Gender: | 99 | name_1
-ADDRESS_HOME_CITY | city |  |  | name_1
-UNKNOWN_TYPE | othercity | City : |  | name_1
-ADDRESS_HOME_CITY | 75cd7feb6ce926e1efbb8b96c0fb71c0 | City : |  | name_1
+ADDRESS_HOME_COUNTRY | country | I live inCountry | 99 | name_1
+ADDRESS_HOME_CITY | city | City |  | name_1
+UNKNOWN_TYPE | othercity | City : |  | -default
+UNKNOWN_TYPE | 75cd7feb6ce926e1efbb8b96c0fb71c0 | Enter the text shown above |  | name_1

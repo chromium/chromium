@@ -8,12 +8,15 @@
 #include <memory>
 
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
+#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
@@ -32,8 +35,20 @@ namespace page_image_service {
 class ImageServiceHandler;
 }
 
+class BookmarksSidePanelUI;
+
+class BookmarksSidePanelUIConfig
+    : public DefaultTopChromeWebUIConfig<BookmarksSidePanelUI> {
+ public:
+  BookmarksSidePanelUIConfig();
+
+  // DefaultTopChromeWebUIConfig:
+  bool IsPreloadable() override;
+  std::optional<int> GetCommandIdForTesting() override;
+};
+
 class BookmarksSidePanelUI
-    : public ui::MojoBubbleWebUIController,
+    : public TopChromeWebUIController,
       public side_panel::mojom::BookmarksPageHandlerFactory,
       public shopping_service::mojom::ShoppingServiceHandlerFactory {
  public:

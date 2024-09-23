@@ -61,7 +61,7 @@ class TestBinarySizes(unittest.TestCase):
 
 
   def testReadAndWritePackageBlobs(self):
-    # TODO(1309977): Disabled on Windows because Windows doesn't allow opening a
+    # TODO(crbug.com/40219667): Disabled on Windows because Windows doesn't allow opening a
     # NamedTemporaryFile by name.
     if os.name == 'nt':
       return
@@ -82,7 +82,7 @@ class TestBinarySizes(unittest.TestCase):
       os.remove(tmp_package_file.name)
 
   def testReadAndWritePackageSizes(self):
-    # TODO(1309977): Disabled on Windows because Windows doesn't allow opening a
+    # TODO(crbug.com/40219667): Disabled on Windows because Windows doesn't allow opening a
     # NamedTemporaryFile by name.
     if os.name == 'nt':
       return
@@ -101,7 +101,7 @@ class TestBinarySizes(unittest.TestCase):
       self.assertIn('web_engine', new_sizes)
 
   def testGetPackageSizesUsesBlobMerklesForCount(self):
-    # TODO(1309977): Disabled on Windows because Windows doesn't allow opening a
+    # TODO(crbug.com/40219667): Disabled on Windows because Windows doesn't allow opening a
     # NamedTemporaryFile by name.
     if os.name == 'nt':
       return

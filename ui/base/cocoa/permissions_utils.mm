@@ -23,6 +23,43 @@ BASE_FEATURE(kWarmScreenCaptureSonoma,
              "WarmScreenCaptureSonoma",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWarmScreenCaptureSequoia,
+             "WarmScreenCaptureSequoia",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool ShouldWarmScreenCapture() {
+  const int macos_version = base::mac::MacOSVersion();
+  // On macOS < 14, we're using CGWindowListCreateImage to capture a screenshot.
+  // Starting in macOS 14, CGWindowListCreateImage causes a "your screen is
+  // being captured" chip to show in the menu bar while an app is capturing the
+  // screen, and if it's a one-time image capture, it shows for ten seconds.
+  if (macos_version < 14'00'00) {
+    return true;
+  }
+
+  // Kill switch, Sonoma.
+  if (macos_version < 15'00'00 &&
+      !base::FeatureList::IsEnabled(kWarmScreenCaptureSonoma)) {
+    return false;
+  }
+
+  // Feature disabled by default for Sequoia unless explicitly enabled.
+  if (macos_version >= 15'00'00 &&
+      !base::FeatureList::IsEnabled(kWarmScreenCaptureSequoia)) {
+    return false;
+  }
+
+  // On macOS >= 14, Apple introduced SCScreenshotManager that can be used to
+  // capture a screenshot without any notification shown to the user. There's a
+  // bug in this API that was fixed in 14.4.
+  if (macos_version >= 14'04'00) {
+    return true;
+  }
+
+  // macOS 14-14.3.
+  return false;
+}
+
 // Capture a screenshot and throw away the result.
 void CaptureScreenshot() {
   if (@available(macOS 14.0, *)) {
@@ -69,75 +106,16 @@ void CaptureScreenshot() {
 
 }  // namespace
 
-// Note that the SDK has `CGPreflightScreenCaptureAccess()` and
-// `CGRequestScreenCaptureAccess()` listed as available on 10.15, but using
-// them yields link errors in testing. Therefore, use them on 11.0 and
-// heuristic methods on 10.15.
-
 bool IsScreenCaptureAllowed() {
-  if (@available(macOS 11.0, *)) {
     return CGPreflightScreenCaptureAccess();
-  } else {
-    // Screen Capture is considered allowed if the name of at least one normal
-    // or dock window running on another process is visible.
-    // See https://crbug.com/993692.
-    NSArray* window_list = base::apple::CFToNSOwnershipCast(
-        CGWindowListCopyWindowInfo(kCGWindowListOptionAll, kCGNullWindowID));
-    int current_pid = NSProcessInfo.processInfo.processIdentifier;
-    for (NSDictionary* window in window_list) {
-      NSNumber* window_pid =
-          [window objectForKey:base::apple::CFToNSPtrCast(kCGWindowOwnerPID)];
-      if (!window_pid || window_pid.integerValue == current_pid) {
-        continue;
-      }
-
-      NSString* window_name =
-          [window objectForKey:base::apple::CFToNSPtrCast(kCGWindowName)];
-      if (!window_name)
-        continue;
-
-      NSNumber* layer =
-          [window objectForKey:base::apple::CFToNSPtrCast(kCGWindowLayer)];
-      if (!layer)
-        continue;
-
-      NSInteger layer_integer = layer.integerValue;
-      if (layer_integer == CGWindowLevelForKey(kCGNormalWindowLevelKey) ||
-          layer_integer == CGWindowLevelForKey(kCGDockWindowLevelKey)) {
-        return true;
-      }
-    }
-    return false;
-  }
 }
 
 bool TryPromptUserForScreenCapture() {
-  if (@available(macOS 11.0, *)) {
     return CGRequestScreenCaptureAccess();
-  } else {
-    // On 10.15+, macOS will show the permissions prompt for Screen Recording
-    // if we request to create a display stream and our application is not
-    // in the applications list in System permissions. Stream creation will
-    // fail if the user denies permission, or if our application is already
-    // in the system permission and is unchecked.
-    base::apple::ScopedCFTypeRef<CGDisplayStreamRef> stream(
-        CGDisplayStreamCreate(
-            CGMainDisplayID(), 1, 1, 'BGRA', nullptr,
-            ^(CGDisplayStreamFrameStatus status, uint64_t displayTime,
-              IOSurfaceRef frameSurface, CGDisplayStreamUpdateRef updateRef){
-            }));
-    return !!stream;
-  }
 }
 
 void WarmScreenCapture() {
-  if (base::mac::MacOSMajorVersion() >= 14 &&
-      !base::FeatureList::IsEnabled(kWarmScreenCaptureSonoma)) {
-    // Starting in macOS 14, a "your screen is being captured" chip shows in the
-    // menu bar while an app is capturing the screen, and if it's a one-time
-    // image capture, it shows for ten seconds. Doing the warmup below would
-    // cause the chip to show on every app start. Therefore, skip the warmup as
-    // the benefit isn't worth the cost of startling the user with the chip.
+  if (!ShouldWarmScreenCapture()) {
     return;
   }
 

@@ -5,9 +5,9 @@
 #ifndef CHROMECAST_DEVICE_BLUETOOTH_LE_SCAN_FILTER_H_
 #define CHROMECAST_DEVICE_BLUETOOTH_LE_SCAN_FILTER_H_
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "chromecast/device/bluetooth/le/le_scan_result.h"
 #include "chromecast/public/bluetooth/bluetooth_types.h"
 

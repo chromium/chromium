@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
-<translation id="101606685846791463">brisanje predpomnilnika brskalnika, čiščenje zgodovine, brisanje piškotkov, brisanje zgodovine brskanja</translation>
 <translation id="132297926492792130">nadziranje mojega računa google, popravljanje računa google, upravljanje računa google, upravljanje mojega računa google</translation>
 <translation id="1455865776268085776">odpri anonimni način, novo anonimno okno, odpiranje anonimnega zavihka</translation>
 <translation id="1545931455576308147">deljenje te strani, deljenje tega zavihka</translation>
@@ -28,6 +27,7 @@
 <translation id="7153639895359139570">dodajanje naslova, spreminjanje naslova za dostavo, urejanje naslovov, upravljanje naslovov</translation>
 <translation id="7242693601647412075">upravljanje varnostnih nastavitev</translation>
 <translation id="7441773108452086364">spremeni geslo za gmail, spremeni geslo za moj gmail, sprememba gesla za google, ponastavi geslo za račun za gmail</translation>
+<translation id="7469628627013714019">brisanje predpomnilnika brskalnika, brisanje zgodovine, brisanje piškotkov, brisanje zgodovine brskanja</translation>
 <translation id="7660956169713698963">prilagajanje funkcij za ljudi s posebnimi potrebami v sistemu chrome os, upravljanje nastavitev funkcij za ljudi s posebnimi potrebami</translation>
 <translation id="7700496593710078083">ogled zgodovine uporabe chroma, prikaz zgodovine brskanja</translation>
 <translation id="7739523284295786564">upravljanje prenosov v chromu, ogled prenosov</translation>

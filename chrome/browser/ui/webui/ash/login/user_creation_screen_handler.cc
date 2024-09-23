@@ -102,12 +102,20 @@ void UserCreationScreenHandler::Show() {
   ShowInWebUI();
 }
 
+void UserCreationScreenHandler::SetDefaultStep() {
+  CallExternalAPI("setDefaultStep");
+}
+
 void UserCreationScreenHandler::SetTriageStep() {
   CallExternalAPI("setTriageStep");
 }
 
 void UserCreationScreenHandler::SetChildSetupStep() {
   CallExternalAPI("setChildSetupStep");
+}
+
+base::WeakPtr<UserCreationView> UserCreationScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void UserCreationScreenHandler::SetIsBackButtonVisible(bool value) {

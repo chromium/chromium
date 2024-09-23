@@ -21,6 +21,7 @@
 #include <cstring>
 #include <limits>
 #include <string>
+#include <utility>
 
 #include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
@@ -367,7 +368,7 @@ std::string CEscapeInternal(absl::string_view src, bool use_hex,
 }
 
 /* clang-format off */
-constexpr unsigned char c_escaped_len[256] = {
+constexpr unsigned char kCEscapedLen[256] = {
     4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 4, 4, 2, 4, 4,  // \t, \n, \r
     4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
     1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1,  // ", '
@@ -392,8 +393,23 @@ constexpr unsigned char c_escaped_len[256] = {
 // that UTF-8 bytes are not handled specially.
 inline size_t CEscapedLength(absl::string_view src) {
   size_t escaped_len = 0;
-  for (char c : src)
-    escaped_len += c_escaped_len[static_cast<unsigned char>(c)];
+  // The maximum value of kCEscapedLen[x] is 4, so we can escape any string of
+  // length size_t_max/4 without checking for overflow.
+  size_t unchecked_limit =
+      std::min<size_t>(src.size(), std::numeric_limits<size_t>::max() / 4);
+  size_t i = 0;
+  while (i < unchecked_limit) {
+    // Common case: No need to check for overflow.
+    escaped_len += kCEscapedLen[static_cast<unsigned char>(src[i++])];
+  }
+  while (i < src.size()) {
+    // Beyond unchecked_limit we need to check for overflow before adding.
+    size_t char_len = kCEscapedLen[static_cast<unsigned char>(src[i++])];
+    ABSL_INTERNAL_CHECK(
+        escaped_len <= std::numeric_limits<size_t>::max() - char_len,
+        "escaped_len overflow");
+    escaped_len += char_len;
+  }
   return escaped_len;
 }
 
@@ -406,12 +422,15 @@ void CEscapeAndAppendInternal(absl::string_view src,
   }
 
   size_t cur_dest_len = dest->size();
+  ABSL_INTERNAL_CHECK(
+      cur_dest_len <= std::numeric_limits<size_t>::max() - escaped_len,
+      "std::string size overflow");
   strings_internal::STLStringResizeUninitialized(dest,
                                                  cur_dest_len + escaped_len);
   char* append_ptr = &(*dest)[cur_dest_len];
 
   for (char c : src) {
-    size_t char_len = c_escaped_len[static_cast<unsigned char>(c)];
+    size_t char_len = kCEscapedLen[static_cast<unsigned char>(c)];
     if (char_len == 1) {
       *append_ptr++ = c;
     } else if (char_len == 2) {
@@ -837,6 +856,24 @@ constexpr char kHexValueLenient[256] = {
     0,  0,  0,  0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
+constexpr signed char kHexValueStrict[256] = {
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+     0,  1,  2,  3,  4,  5,  6,  7,  8,  9, -1, -1, -1, -1, -1, -1,  // '0'..'9'
+    -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 'A'..'F'
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,  // 'a'..'f'
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+};
 /* clang-format on */
 
 // This is a templated function so that T can be either a char*
@@ -929,6 +966,32 @@ std::string WebSafeBase64Escape(absl::string_view src) {
       reinterpret_cast<const unsigned char*>(src.data()), src.size(), &dest,
       false, strings_internal::kWebSafeBase64Chars);
   return dest;
+}
+
+bool HexStringToBytes(absl::string_view hex,
+                      absl::Nonnull<std::string*> bytes) {
+  std::string output;
+
+  size_t num_bytes = hex.size() / 2;
+  if (hex.size() != num_bytes * 2) {
+    return false;
+  }
+
+  absl::strings_internal::STLStringResizeUninitialized(&output, num_bytes);
+  auto hex_p = hex.cbegin();
+  for (std::string::iterator bin_p = output.begin(); bin_p != output.end();
+       ++bin_p) {
+    int h1 = absl::kHexValueStrict[static_cast<size_t>(*hex_p++)];
+    int h2 = absl::kHexValueStrict[static_cast<size_t>(*hex_p++)];
+    if (h1 == -1 || h2 == -1) {
+      output.resize(static_cast<size_t>(bin_p - output.begin()));
+      return false;
+    }
+    *bin_p = static_cast<char>((h1 << 4) + h2);
+  }
+
+  *bytes = std::move(output);
+  return true;
 }
 
 std::string HexStringToBytes(absl::string_view from) {

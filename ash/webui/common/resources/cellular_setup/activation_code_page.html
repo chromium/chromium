@@ -11,7 +11,7 @@
     transition-duration: 200ms;
   }
   :host(:not([expanded_])) #esimQrCodeDetection {
-    height: 140px;
+    height: 120px;
     transition-duration: 150ms;
   }
 
@@ -21,10 +21,12 @@
 
   #esimQrCodeDetection {
     background-color: var(--cros-bg-color-dropped-elevation-1);
-    border-radius: 4px;
-    margin: 20px 0 15px 0;
+    border-radius: 8px;
+    margin: 28px 0 16px 0;
     overflow: hidden;
-    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   paper-spinner-lite {
@@ -54,17 +56,6 @@
   .animate {
     transition-property: height;
     transition-timing-function: cubic-bezier(0.00, 0.00, 0.20, 1.00);
-  }
-
-  .center {
-    left: 50%;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%) translateX(-50%);
-  }
-
-  .width-92 {
-    width: 92%;
   }
 
   .label {
@@ -114,7 +105,12 @@
     width: 1px;
   }
 
-  #scanSucessHeader {
+  #activationCode {
+    --cr-input-border-radius: 8px;
+    --cr-input-border-bottom: none;
+  }
+
+  #scanSuccessHeader {
     --iron-icon-fill-color: var(--cros-icon-color-positive);
     margin-bottom: 8px;
   }
@@ -129,12 +125,14 @@
   }
 
   #useCameraAgainButton {
+    color: var(--cros-sys-on_primary_container);
     display: block;
     font-weight: 500;
     text-align: center;
   }
 
   #tryAgainButton {
+    color: var(--cros-sys-on_primary_container);
     display: block;
     text-align: center;
   }
@@ -161,7 +159,7 @@
     font-size: var(--cr-form-field-label-font-size);
     letter-spacing: .4px;
     line-height: var(--cr-form-field-label-line-height);
-    margin-top: -16px;
+    margin-top: -8px;
   }
 
   #video {
@@ -174,6 +172,7 @@
   }
 
   #startScanningButton {
+    color: var(--cros-sys-on_primary_container);
     max-width: 470px;
     min-width: 345px;
     text-align: center;
@@ -181,6 +180,7 @@
   }
 
   #carrierLockWarningContainer {
+    color: var(--cros-text-color-alert);
     display: flex;
     margin-bottom: 24px;
     margin-top: 20px;
@@ -192,7 +192,6 @@
     --iron-icon-width: 24px;
     margin-inline-end: 4px;
   }
-
 </style>
 <base-page>
   <div slot="page-body" id="pageBody" class="animate">
@@ -202,8 +201,8 @@
     <template is="dom-if"
         if="[[shouldShowCarrierLockWarning_(isDeviceCarrierLocked_)]]" restamp>
       <div id="carrierLockWarningContainer" aria-live="polite" role="alert">
-          <iron-icon id="carrierLockWarningIcon" icon="cellular-setup:warning">
-          </iron-icon>
+        <iron-icon id="carrierLockWarningIcon" icon="cellular-setup:warning">
+        </iron-icon>
         [[i18n('eSimCarrierLockedDevice')]]
       </div>
     </template>
@@ -213,7 +212,7 @@
         <cr-button id="switchCameraButton"
             on-click="onSwitchCameraButtonPressed_"
             hidden$="[[isUiElementHidden_(UiElement.SWITCH_CAMERA, state_, cameraCount_)]]"
-            disabled="[[isUiElementDisabled_(UiElement.SWITCH_CAMERA, state_, showBusy)]]">
+            disabled="[[isUiElementDisabled_(UiElement.SWITCH_CAMERA, state_)]]">
           <iron-icon class="button-image" icon="cellular-setup:switch-camera"></iron-icon>
           [[i18n('switchCamera')]]
         </cr-button>
@@ -230,7 +229,7 @@
           <cr-button class="label"
               id="startScanningButton"
               on-click="startScanning_"
-              disabled="[[isUiElementDisabled_(UiElement.START_SCANNING, state_, showBusy)]]">
+              disabled="[[isUiElementDisabled_(UiElement.START_SCANNING, state_)]]">
             <iron-icon class="button-image" icon="cellular-setup:camera"></iron-icon>
             [[i18n('useCamera')]]
           </cr-button>
@@ -240,7 +239,7 @@
           <div>
             <div id="scanSuccessContainer"
                 hidden$="[[isUiElementHidden_(UiElement.SCAN_SUCCESS, state_)]]">
-              <div id=scanSucessHeader
+              <div id=scanSuccessHeader
                   hidden$="[[isUiElementHidden_(UiElement.CODE_DETECTED, state_)]]">
                 <iron-icon class="scan-finish-image" icon="cellular-setup:checked"></iron-icon>
                 <span class="label scan-finish-message" id="scanSuccessMessage">
@@ -274,7 +273,7 @@
               </div>
               <cr-button id="tryAgainButton" class="blue-icon"
                   on-click="startScanning_"
-                  disabled="[[isUiElementDisabled_(UiElement.SCAN_FAILURE, state_, showBusy)]]">
+                  disabled="[[isUiElementDisabled_(UiElement.SCAN_FAILURE, state_)]]">
                 <iron-icon class="button-image" icon="cellular-setup:try-again"></iron-icon>
                 [[i18n('qrCodeRetry')]]
               </cr-button>
@@ -288,23 +287,16 @@
       <cr-input id="activationCode"
           label="[[i18n('activationCode')]]"
           value="{{activationCode}}"
-          disabled="[[showBusy]]"
           on-keydown="onKeyDown_"
           invalid="[[shouldActivationCodeInputBeInvalid_(state_,
               isActivationCodeInvalidFormat_)]]"
           error-message="[[getInputErrorMessage_()]]"
-          aria-description="[[getInputSubtitle_(showBusy)]]">
-        <template is="dom-if" if="[[showBusy]]">
-          <div slot="suffix">
-            <paper-spinner-lite active>
-            </paper-spinner-lite>
-          </div>
-        </template>
+          aria-description="[[getInputSubtitle_()]]">
       </cr-input>
       <div id="inputSubtitle"
           hidden$="[[shouldActivationCodeInputBeInvalid_(state_,
               isActivationCodeInvalidFormat_)]]">
-        [[getInputSubtitle_(showBusy)]]
+        [[getInputSubtitle_()]]
       </div>
     </div>
   </div>

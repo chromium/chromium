@@ -18,7 +18,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
-#include "components/viz/host/hit_test/hit_test_query.h"
+#include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/host/host_frame_sink_client.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/renderer_host/dip_util.h"
@@ -52,7 +52,7 @@ class CONTENT_EXPORT DelegatedFrameHostClient {
                                    base::TimeTicks activation_time) = 0;
   virtual float GetDeviceScaleFactor() const = 0;
   virtual void InvalidateLocalSurfaceIdOnEviction() = 0;
-  virtual std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() = 0;
+  virtual viz::FrameEvictorClient::EvictIds CollectSurfaceIdsForEviction() = 0;
   virtual bool ShouldShowStaleContentOnEviction() = 0;
 };
 
@@ -209,6 +209,11 @@ class CONTENT_EXPORT DelegatedFrameHost
 
   void SetIsFrameSinkIdOwner(bool is_owner);
 
+  // This is used to evict also the UI compositor if native occlusion is
+  // enabled. This only makes sense on desktop platforms where the UI compositor
+  // corresponds to a browser window, and native occlusion is supported.
+  static bool ShouldIncludeUiCompositorForEviction();
+
  private:
   friend class DelegatedFrameHostClient;
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraBrowserTest,
@@ -223,7 +228,8 @@ class CONTENT_EXPORT DelegatedFrameHost
   // FrameEvictorClient implementation.
   void EvictDelegatedFrame(
       const std::vector<viz::SurfaceId>& surface_ids) override;
-  std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() const override;
+  viz::FrameEvictorClient::EvictIds CollectSurfaceIdsForEviction()
+      const override;
   viz::SurfaceId GetPreNavigationSurfaceId() const override;
 
   void DidCopyStaleContent(std::unique_ptr<viz::CopyOutputResult> result);
@@ -250,7 +256,7 @@ class CONTENT_EXPORT DelegatedFrameHost
 
   // The LocalSurfaceId of the currently embedded surface.
   //
-  // TODO(https://crbug.com/1459238): this value is a copy of what the browser
+  // TODO(crbug.com/40274223): this value is a copy of what the browser
   // wants to embed. The source of truth is stored else where. We should
   // consider de-dup this ID.
   viz::LocalSurfaceId local_surface_id_;

@@ -31,18 +31,15 @@ PrivacySandboxSettingsFactory::PrivacySandboxSettingsFactory()
           "PrivacySandboxSettings",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-  // This service implicitly DependsOn the CookieSettingsFactory,
-  // HostContentSettingsMapFactory, and through the delegate, the
-  // IdentityManagerFactory but for reasons, cannot explicitly depend on them
-  // here. Instead, a scoped_refptr is held on CookieSettings, which itself
-  // holds a scoped_refptr for the HostContentSettingsMap (and so this service
-  // holds a raw ptr).
-  // TODO (crbug.com/1400663): Unwind these "reasons" and improve this so that
-  // the services can be explicitly depended on.
+  DependsOn(CookieSettingsFactory::GetInstance());
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }
 

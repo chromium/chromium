@@ -38,6 +38,20 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Enabled"/>
 </enum>
 
+<enum name="InterventionBubbleActionType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Ignore"/>
+  <int value="2" label="Accept"/>
+  <int value="3" label="Dismiss"/>
+  <int value="4" label="Close"/>
+</enum>
+
+<enum name="InterventionMessageTriggerResult">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Rate Limited"/>
+  <int value="2" label="Mixed Profile Suggestion"/>
+</enum>
+
 <enum name="MemorySaverBubbleActionType">
   <int value="0" label="Open settings"/>
   <int value="1" label="Dismiss dialog"/>
@@ -48,6 +62,12 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Collapsed chip"/>
   <int value="1" label="Expanded educational chip"/>
   <int value="2" label="Expanded chip with savings"/>
+</enum>
+
+<enum name="MemorySaverModeAggressiveness">
+  <int value="0" label="Conservative"/>
+  <int value="1" label="Medium"/>
+  <int value="2" label="Aggressive"/>
 </enum>
 
 <enum name="MemorySaverModeExceptionListAction">
@@ -61,6 +81,12 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Disabled"/>
   <int value="1" label="Enabled"/>
   <int value="2" label="Enabled on timer"/>
+</enum>
+
+<enum name="PerformanceDetectionManagerHealthLevel">
+  <int value="0" label="Healthy"/>
+  <int value="1" label="Degraded"/>
+  <int value="2" label="Unhealthy"/>
 </enum>
 
 </enums>

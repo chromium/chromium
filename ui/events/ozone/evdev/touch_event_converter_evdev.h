@@ -25,12 +25,13 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/message_loop/message_pump_libevent.h"
+#include "base/message_loop/message_pump_epoll.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
+#include "ui/events/ozone/evdev/heatmap_palm_detector.h"
 #include "ui/events/ozone/evdev/touch_evdev_debug_buffer.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_detection_filter.h"
 #include "ui/events/types/event_type.h"
@@ -135,7 +136,7 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
 
   friend class MockTouchEventConverterEvdev;
 
-  // Overidden from base::MessagePumpLibevent::FdWatcher.
+  // Overridden from base::MessagePumpEpoll::FdWatcher.
   void OnFileCanReadWithoutBlocking(int fd) override;
 
   virtual void Reinitialize();
@@ -146,8 +147,8 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   void ProcessAbs(const input_event& input);
   void ProcessSyn(const input_event& input);
 
-  // Returns an EventType to dispatch for |touch|. Returns ET_UNKNOWN if an
-  // event should not be dispatched.
+  // Returns an EventType to dispatch for |touch|. Returns EventType::kUnknown
+  // if an event should not be dispatched.
   EventType GetEventTypeForTouch(const InProgressTouchEvdev& touch);
 
   void ReportTouchEvent(const InProgressTouchEvdev& event,
@@ -315,6 +316,9 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
 
   // Not owned!
   const raw_ptr<SharedPalmDetectionFilterState> shared_palm_state_;
+
+  // Whether device supports hidraw spi and heatmap palm detection.
+  bool support_heatmap_palm_detection_ = false;
 
   base::WeakPtrFactory<TouchEventConverterEvdev> weak_factory_{this};
 };

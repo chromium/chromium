@@ -1,0 +1,129 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+# Public API.
+static_library("account_storage_notice") {
+  public = [ "account_storage_notice.h" ]
+  sources = [
+    "account_storage_notice.cc",
+    "account_storage_notice.h",
+    "coordinator_observer.h",
+  ]
+  deps = [
+    ":jni",
+    "//base",
+    "//chrome/android:chrome_jni_headers",
+    "//components/password_manager/core/browser",
+    "//components/prefs",
+    "//components/sync/service",
+    "//ui/android",
+  ]
+}
+
+# This target cannot be private because Java must be hooked separately from
+# the native library [1]. But it is *effectively* private: all classes are
+# package-private and only used by account_storage_notice.cc.
+#
+# [1] https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/BUILD.gn;l=3932;drc=29634f0b343c5874147170bb4b5d06d17e0be57b
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/account_storage_notice/AccountStorageNoticeCoordinator.java",
+    "java/src/org/chromium/chrome/browser/password_manager/account_storage_notice/AccountStorageNoticeView.java",
+  ]
+  deps = [
+    ":resources",
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/password_manager/android/account_storage_toggle:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/settings:factory_java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/prefs/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
+  ]
+  srcjar_deps = [ ":jni" ]
+  visibility = [
+    ":*",
+    "//chrome/browser/password_manager/android:java",
+  ]
+  resources_package =
+      "org.chromium.chrome.browser.password_manager.account_storage_notice"
+}
+
+# Private.
+android_resources("resources") {
+  sources = [
+    "java/res/drawable-night/account_storage_notice_illustration.xml",
+    "java/res/drawable/account_storage_notice_illustration.xml",
+    "java/res/layout/account_storage_notice_layout.xml",
+    "java/res/values/dimens.xml",
+  ]
+  visibility = [ ":*" ]
+}
+
+# Private.
+generate_jni("jni") {
+  sources = [ "java/src/org/chromium/chrome/browser/password_manager/account_storage_notice/AccountStorageNoticeCoordinator.java" ]
+  visibility = [ ":*" ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  sources = [ "junit/src/org/chromium/chrome/browser/password_manager/account_storage_notice/AccountStorageNoticeCoordinatorUnitTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/prefs/android:java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/chrome/browser/password_manager/account_storage_notice/AccountStorageNoticeCoordinatorIntegrationTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:factory_java",
+    "//chrome/browser/sync/android:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+  ]
+  resources_package =
+      "org.chromium.chrome.browser.password_manager.account_storage_notice"
+}

@@ -23,7 +23,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.share.BitmapDownloadRequest;
-import org.chromium.chrome.browser.share.qrcode.QRCodeGenerationRequest;
+import org.chromium.chrome.browser.share.qrcode.QRCodeGenerator;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -31,7 +31,13 @@ import org.chromium.ui.modelutil.PropertyModel;
  * QrCodeShareMediator is in charge of calculating and setting values for QrCodeShareViewProperties.
  */
 class QrCodeShareMediator {
-    private static final int MAX_URL_LENGTH = 122;
+    // QR code version 40 with M-level error correction can encode binary inputs of up to 2331
+    // bytes, and digit-only inputs of up to 5596 bytes.  See
+    // https://www.qrcode.com/en/about/version.html.
+    //
+    // See also `kMaxInputLength` in
+    // `//chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.cc`.
+    private static final int MAX_URL_LENGTH = 2331;
 
     private final Context mContext;
     private final PropertyModel mPropertyModel;
@@ -80,30 +86,20 @@ class QrCodeShareMediator {
             return;
         }
 
-        QRCodeGenerationRequest.QRCodeServiceCallback callback =
-                new QRCodeGenerationRequest.QRCodeServiceCallback() {
-                    @Override
-                    public void onQRCodeAvailable(Bitmap bitmap) {
-                        if (bitmap != null) {
-                            mPropertyModel.set(QrCodeShareViewProperties.QRCODE_BITMAP, bitmap);
-                            return;
-                        }
-                        String errorMessage;
-                        if (data != null && data.length() > MAX_URL_LENGTH) {
-                            errorMessage =
-                                    mContext.getResources()
-                                            .getString(
-                                                    R.string.qr_code_error_too_long,
-                                                    MAX_URL_LENGTH);
-                        } else {
-                            errorMessage =
-                                    mContext.getResources()
-                                            .getString(R.string.qr_code_error_unknown);
-                        }
-                        mPropertyModel.set(QrCodeShareViewProperties.ERROR_STRING, errorMessage);
-                    }
-                };
-        new QRCodeGenerationRequest(data, callback);
+        Bitmap bitmap = QRCodeGenerator.generateBitmap(data);
+        if (bitmap != null) {
+            mPropertyModel.set(QrCodeShareViewProperties.QRCODE_BITMAP, bitmap);
+            return;
+        }
+        String errorMessage;
+        if (data != null && data.length() > MAX_URL_LENGTH) {
+            errorMessage =
+                    mContext.getResources()
+                            .getString(R.string.qr_code_error_too_long, MAX_URL_LENGTH);
+        } else {
+            errorMessage = mContext.getResources().getString(R.string.qr_code_error_unknown);
+        }
+        mPropertyModel.set(QrCodeShareViewProperties.ERROR_STRING, errorMessage);
     }
 
     /** Triggers download for the generated QR code bitmap if available. */

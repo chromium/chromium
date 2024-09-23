@@ -9,7 +9,9 @@
           "SpokenFeedbackEnabled": true
         },
         "prefs": {
-          "settings.accessibility": {}
+          "settings.accessibility": {
+            "value": true
+          }
         }
       }
     ]

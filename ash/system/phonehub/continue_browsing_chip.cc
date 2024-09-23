@@ -21,9 +21,11 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -124,7 +126,7 @@ ContinueBrowsingChip::ContinueBrowsingChip(
       base::NumberToString16(index_ + 1), base::NumberToString16(total_count_),
       metadata.title, base::UTF8ToUTF16(url_.spec()));
   SetTooltipText(card_label);
-  SetAccessibleName(card_label);
+  GetViewAccessibility().SetName(card_label);
 }
 
 void ContinueBrowsingChip::OnPaintBackground(gfx::Canvas* canvas) {
@@ -138,10 +140,6 @@ void ContinueBrowsingChip::OnPaintBackground(gfx::Canvas* canvas) {
 }
 
 ContinueBrowsingChip::~ContinueBrowsingChip() = default;
-
-const char* ContinueBrowsingChip::GetClassName() const {
-  return "ContinueBrowsingChip";
-}
 
 void ContinueBrowsingChip::ButtonPressed() {
   PA_LOG(INFO) << "Opening browser tab: " << url_;
@@ -167,5 +165,8 @@ void ContinueBrowsingChip::ButtonPressed() {
       ->phone_hub_tray()
       ->CloseBubble();
 }
+
+BEGIN_METADATA(ContinueBrowsingChip)
+END_METADATA
 
 }  // namespace ash

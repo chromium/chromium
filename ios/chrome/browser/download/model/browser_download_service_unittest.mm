@@ -16,8 +16,8 @@
 #import "ios/chrome/browser/download/model/mime_type_util.h"
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/download/model/vcard_tab_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/ui/download/features.h"
+#import "ios/chrome/browser/download/ui_bundled/features.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
@@ -110,12 +110,12 @@ class BrowserDownloadServiceTest : public PlatformTest {
 
   StubTabHelper<PassKitTabHelper>* pass_kit_tab_helper() {
     return static_cast<StubTabHelper<PassKitTabHelper>*>(
-        PassKitTabHelper::FromWebState(&web_state_));
+        PassKitTabHelper::GetOrCreateForWebState(&web_state_));
   }
 
   StubTabHelper<ARQuickLookTabHelper>* ar_quick_look_tab_helper() {
     return static_cast<StubTabHelper<ARQuickLookTabHelper>*>(
-        ARQuickLookTabHelper::FromWebState(&web_state_));
+        ARQuickLookTabHelper::GetOrCreateForWebState(&web_state_));
   }
 
   StubTabHelper<VcardTabHelper>* vcard_tab_helper() {

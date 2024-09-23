@@ -30,16 +30,34 @@
 #include "third_party/blink/renderer/platform/graphics/path.h"
 
 #include <math.h>
-#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
+
+namespace {
+
+bool PathQuadIntersection(const SkPath& path, const gfx::QuadF& quad) {
+  SkPath quad_path, intersection;
+  quad_path.moveTo(FloatPointToSkPoint(quad.p1()))
+      .lineTo(FloatPointToSkPoint(quad.p2()))
+      .lineTo(FloatPointToSkPoint(quad.p3()))
+      .lineTo(FloatPointToSkPoint(quad.p4()))
+      .close();
+  if (!Op(path, quad_path, kIntersect_SkPathOp, &intersection)) {
+    return false;
+  }
+  return !intersection.isEmpty();
+}
+
+}  // namespace
 
 Path::Path() : path_() {}
 
@@ -81,6 +99,20 @@ bool Path::Contains(const gfx::PointF& point, WindRule rule) const {
     return tmp.contains(x, y);
   }
   return path_.contains(x, y);
+}
+
+bool Path::Intersects(const gfx::QuadF& quad) const {
+  return PathQuadIntersection(path_, quad);
+}
+
+bool Path::Intersects(const gfx::QuadF& quad, WindRule rule) const {
+  SkPathFillType fill_type = WebCoreWindRuleToSkFillType(rule);
+  if (path_.getFillType() != fill_type) {
+    SkPath tmp(path_);
+    tmp.setFillType(fill_type);
+    return PathQuadIntersection(tmp, quad);
+  }
+  return PathQuadIntersection(path_, quad);
 }
 
 SkPath Path::StrokePath(const StrokeData& stroke_data,
@@ -125,65 +157,70 @@ gfx::RectF Path::StrokeBoundingRect(const StrokeData& stroke_data) const {
       StrokePath(stroke_data, kStrokePrecision).computeTightBounds());
 }
 
-static gfx::PointF* ConvertPathPoints(gfx::PointF dst[],
-                                      const SkPoint src[],
-                                      int count) {
-  for (int i = 0; i < count; i++) {
-    dst[i].set_x(SkScalarToFloat(src[i].fX));
-    dst[i].set_y(SkScalarToFloat(src[i].fY));
+static base::span<gfx::PointF> ConvertPathPoints(
+    std::array<gfx::PointF, 3>& dst,
+    base::span<const SkPoint> src) {
+  for (size_t i = 0; i < src.size(); ++i) {
+    const SkPoint& src_point = src[i];
+    dst[i].set_x(SkScalarToFloat(src_point.fX));
+    dst[i].set_y(SkScalarToFloat(src_point.fY));
   }
-  return dst;
+  return base::span(dst).first(src.size());
 }
 
 void Path::Apply(void* info, PathApplierFunction function) const {
   SkPath::RawIter iter(path_);
-  SkPoint pts[4];
+  std::array<SkPoint, 4> pts;
+  std::array<gfx::PointF, 3> path_points;
   PathElement path_element;
-  gfx::PointF path_points[3];
 
   for (;;) {
-    switch (iter.next(pts)) {
+    switch (iter.next(pts.data())) {
       case SkPath::kMove_Verb:
         path_element.type = kPathElementMoveToPoint;
-        path_element.points = ConvertPathPoints(path_points, &pts[0], 1);
+        path_element.points =
+            ConvertPathPoints(path_points, base::span(pts).first(1u));
         break;
       case SkPath::kLine_Verb:
         path_element.type = kPathElementAddLineToPoint;
-        path_element.points = ConvertPathPoints(path_points, &pts[1], 1);
+        path_element.points =
+            ConvertPathPoints(path_points, base::span(pts).subspan(1, 1));
         break;
       case SkPath::kQuad_Verb:
         path_element.type = kPathElementAddQuadCurveToPoint;
-        path_element.points = ConvertPathPoints(path_points, &pts[1], 2);
+        path_element.points =
+            ConvertPathPoints(path_points, base::span(pts).subspan(1, 2));
         break;
       case SkPath::kCubic_Verb:
         path_element.type = kPathElementAddCurveToPoint;
-        path_element.points = ConvertPathPoints(path_points, &pts[1], 3);
+        path_element.points =
+            ConvertPathPoints(path_points, base::span(pts).subspan(1, 3));
         break;
       case SkPath::kConic_Verb: {
         // Approximate with quads.  Use two for now, increase if more precision
         // is needed.
         const int kPow2 = 1;
         const unsigned kQuadCount = 1 << kPow2;
-        SkPoint quads[1 + 2 * kQuadCount];
+        std::array<SkPoint, 1 + 2 * kQuadCount> quads;
         SkPath::ConvertConicToQuads(pts[0], pts[1], pts[2], iter.conicWeight(),
-                                    quads, kPow2);
+                                    quads.data(), kPow2);
 
         path_element.type = kPathElementAddQuadCurveToPoint;
         for (unsigned i = 0; i < kQuadCount; ++i) {
-          path_element.points =
-              ConvertPathPoints(path_points, &quads[1 + 2 * i], 2);
-          function(info, &path_element);
+          path_element.points = ConvertPathPoints(
+              path_points, base::span(quads).subspan(1 + 2 * i, 2));
+          function(info, path_element);
         }
         continue;
       }
       case SkPath::kClose_Verb:
         path_element.type = kPathElementCloseSubpath;
-        path_element.points = ConvertPathPoints(path_points, nullptr, 0);
+        path_element.points = ConvertPathPoints(path_points, {});
         break;
       case SkPath::kDone_Verb:
         return;
     }
-    function(info, &path_element);
+    function(info, path_element);
   }
 }
 
@@ -386,6 +423,9 @@ void Path::AddEllipse(const gfx::PointF& p,
   // nothing.
   SkScalar s180 = SkIntToScalar(180);
   if (SkScalarNearlyEqual(sweep_degrees, s360)) {
+    // incReserve() results in a single allocation instead of multiple as is
+    // done by multiple calls to arcTo().
+    path_.incReserve(10, 5, 4);
     // SkPath::arcTo can't handle the sweepAngle that is equal to or greater
     // than 2Pi.
     path_.arcTo(oval, start_degrees, s180, false);
@@ -393,6 +433,9 @@ void Path::AddEllipse(const gfx::PointF& p,
     return;
   }
   if (SkScalarNearlyEqual(sweep_degrees, -s360)) {
+    // incReserve() results in a single allocation instead of multiple as is
+    // done by multiple calls to arcTo().
+    path_.incReserve(10, 5, 4);
     path_.arcTo(oval, start_degrees, -s180, false);
     path_.arcTo(oval, start_degrees - s180, -s180, false);
     return;

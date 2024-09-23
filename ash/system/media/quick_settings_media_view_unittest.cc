@@ -10,7 +10,6 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/media_message_center/mock_media_notification_item.h"
@@ -27,8 +26,6 @@ class QuickSettingsMediaViewTest : public NoSessionAshTestBase {
   ~QuickSettingsMediaViewTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({media::kGlobalMediaControlsCrOSUpdatedUI},
-                                   {});
     NoSessionAshTestBase::SetUp();
 
     MediaTray::SetPinnedToShelf(false);
@@ -50,7 +47,6 @@ class QuickSettingsMediaViewTest : public NoSessionAshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<media_message_center::test::MockMediaNotificationItem> item_;
 };
 
@@ -89,7 +85,7 @@ TEST_F(QuickSettingsMediaViewTest, NoCrashOnScrollFlingStart) {
   ui::GestureEvent fling_start(
       gesture_start_point.x(), gesture_start_point.y(), /*flags=*/0,
       /*time_stamp=*/base::TimeTicks(),
-      ui::GestureEventDetails(ui::ET_SCROLL_FLING_START, /*delta_x=*/900,
+      ui::GestureEventDetails(ui::EventType::kScrollFlingStart, /*delta_x=*/900,
                               /*delta_y=*/0));
   // Perform the gesture on the media view. There should be no crash.
   view()->OnGestureEvent(&fling_start);

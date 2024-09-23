@@ -36,6 +36,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/mojom/themes.mojom.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/font_list.h"
@@ -60,7 +61,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/win/titlebar_config.h"
+#include "chrome/browser/win/mica_titlebar.h"
 #endif
 
 namespace {
@@ -251,18 +252,19 @@ bool BrowserFrame::ShouldDrawFrameHeader() const {
   return true;
 }
 
-void BrowserFrame::GetWindowPlacement(gfx::Rect* bounds,
-                                      ui::WindowShowState* show_state) const {
+void BrowserFrame::GetWindowPlacement(
+    gfx::Rect* bounds,
+    ui::mojom::WindowShowState* show_state) const {
   return native_browser_frame_->GetWindowPlacement(bounds, show_state);
 }
 
 content::KeyboardEventProcessingResult BrowserFrame::PreHandleKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return native_browser_frame_->PreHandleKeyboardEvent(event);
 }
 
 bool BrowserFrame::HandleKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return native_browser_frame_->HandleKeyboardEvent(event);
 }
 
@@ -282,7 +284,7 @@ void BrowserFrame::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
   // ThemeChanged(), regardless of whether the frame was regenerated or not.
   // Ensure that ThemeChanged() is called for this Widget if no implicit call
   // occurred.
-  // TODO(crbug.com/1476898): The entire theme propagation system needs to be
+  // TODO(crbug.com/40280130): The entire theme propagation system needs to be
   // moved to scheduling theme changes rather than synchronously demanding a
   // ThemeChange() event take place. This will reduce a ton of churn resulting
   // from independent clients increasingly issuing theme change requests.
@@ -386,8 +388,9 @@ void BrowserFrame::OnNativeWidgetWorkspaceChanged() {
 void BrowserFrame::ShowContextMenuForViewImpl(views::View* source,
                                               const gfx::Point& p,
                                               ui::MenuSourceType source_type) {
-  if (chrome::IsRunningInForcedAppMode())
+  if (IsRunningInForcedAppMode()) {
     return;
+  }
 
   // Do not show context menu for Document picture-in-picture browser. Context:
   // http://b/274862709.
@@ -598,7 +601,7 @@ void BrowserFrame::OnTouchUiChanged() {
   } else {
     non_client_view()->InvalidateLayout();
   }
-  GetRootView()->DeprecatedLayoutImmediately();
+  GetRootView()->InvalidateLayout();
 }
 
 bool BrowserFrame::RegenerateFrameOnThemeChange(

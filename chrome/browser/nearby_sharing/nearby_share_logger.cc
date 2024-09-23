@@ -74,6 +74,13 @@ void NearbyShareLogger::OnTransferCompleted(const ShareTarget& share_target,
       << TransferMetadata::StatusToString(status);
 }
 
+void NearbyShareLogger::OnInitialMedium(
+    const ShareTarget& share_target,
+    nearby::connections::mojom::Medium medium) {
+  CD_LOG(INFO, Feature::NS) << share_target << "Initial connection medium is "
+                            << GetMediumName(medium) << ".";
+}
+
 void NearbyShareLogger::OnBandwidthUpgrade(
     const ShareTarget& share_target,
     nearby::connections::mojom::Medium medium) {

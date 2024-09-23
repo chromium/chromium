@@ -8,11 +8,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 using testing::ElementsAre;
 
@@ -72,10 +72,10 @@ TEST_P(BoxFragmentPainterTest, ScrollHitTestOrder) {
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(text_fragment.Id(), kForegroundType)));
-  HitTestData scroll_hit_test;
-  scroll_hit_test.scroll_translation =
+  auto* scroll_hit_test = MakeGarbageCollected<HitTestData>();
+  scroll_hit_test->scroll_translation =
       scroller.FirstFragment().PaintProperties()->ScrollTranslation();
-  scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 40, 40);
+  scroll_hit_test->scroll_hit_test_rect = gfx::Rect(0, 0, 40, 40);
   EXPECT_THAT(
       ContentPaintChunks(),
       ElementsAre(
@@ -87,7 +87,7 @@ TEST_P(BoxFragmentPainterTest, ScrollHitTestOrder) {
               1, 1,
               PaintChunk::Id(root_fragment.Id(), DisplayItem::kScrollHitTest),
               scroller.FirstFragment().LocalBorderBoxProperties(),
-              &scroll_hit_test, gfx::Rect(0, 0, 40, 40)),
+              scroll_hit_test, gfx::Rect(0, 0, 40, 40)),
           IsPaintChunk(1, 2)));
 }
 
@@ -115,15 +115,15 @@ TEST_P(BoxFragmentPainterTest, AddUrlRects) {
 
   paint_preview::PaintPreviewTracker tracker(base::UnguessableToken::Create(),
                                              std::nullopt, true);
-  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
-  builder->Context().SetPaintPreviewTracker(&tracker);
+  PaintRecordBuilder builder;
+  builder.Context().SetPaintPreviewTracker(&tracker);
 
   GetDocument().View()->PaintOutsideOfLifecycle(
-      builder->Context(),
+      builder.Context(),
       PaintFlag::kAddUrlMetadata | PaintFlag::kOmitCompositingInfo,
       CullRect::Infinite());
 
-  auto record = builder->EndRecording();
+  auto record = builder.EndRecording();
   std::vector<GURL> links;
   ExtractLinks(record, &links);
   ASSERT_EQ(links.size(), 2U);
@@ -175,13 +175,13 @@ TEST_P(BoxFragmentPainterTest, SelectionTablePainting) {
   GetDocument().View()->GetFrame().Selection().SelectAll();
   GetDocument().GetLayoutView()->CommitPendingSelection();
   UpdateAllLifecyclePhasesForTest();
-  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+  PaintRecordBuilder builder;
   GetDocument().View()->PaintOutsideOfLifecycle(
-      builder->Context(),
+      builder.Context(),
       PaintFlag::kSelectionDragImageOnly | PaintFlag::kOmitCompositingInfo,
       CullRect::Infinite());
 
-  auto record = builder->EndRecording();
+  auto record = builder.EndRecording();
 }
 
 TEST_P(BoxFragmentPainterTest, ClippedText) {
@@ -226,6 +226,15 @@ TEST_P(BoxFragmentPainterTest, NodeAtPointWithSvgInline) {
                     PhysicalOffset(0, 0), HitTestPhase::kForeground);
   EXPECT_EQ(GetDocument().getElementById(AtomicString("pass")),
             result.InnerElement());
+}
+
+TEST_P(BoxFragmentPainterTest, TextareaBoxDecorationBackground) {
+  SetBodyInnerHTML("<textarea id=textarea style='resize: none'>");
+
+  auto* textarea = GetLayoutObjectByElementId("textarea");
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+                          IsSameId(textarea->Id(), kBackgroundType)));
 }
 
 }  // namespace blink

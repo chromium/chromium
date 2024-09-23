@@ -20,7 +20,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/ui/ash/screenshot_area.h"
+#include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
 #include "components/exo/window_properties.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"

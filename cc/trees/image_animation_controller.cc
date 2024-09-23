@@ -8,7 +8,9 @@
 #include <sstream>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -60,7 +62,7 @@ void ImageAnimationController::RegisterAnimationDriver(
     PaintImage::Id paint_image_id,
     AnimationDriver* driver) {
   auto it = animation_state_map_.find(paint_image_id);
-  DCHECK(it != animation_state_map_.end());
+  CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
   it->second.AddDriver(driver);
   registered_animations_.insert(paint_image_id);
 }
@@ -69,10 +71,14 @@ void ImageAnimationController::UnregisterAnimationDriver(
     PaintImage::Id paint_image_id,
     AnimationDriver* driver) {
   auto it = animation_state_map_.find(paint_image_id);
-  DCHECK(it != animation_state_map_.end());
+  CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
   it->second.RemoveDriver(driver);
   if (!it->second.has_drivers())
     registered_animations_.erase(paint_image_id);
+}
+
+bool ImageAnimationController::IsRegistered(PaintImage::Id paint_image_id) {
+  return animation_state_map_.contains(paint_image_id);
 }
 
 const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
@@ -87,7 +93,7 @@ const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
 
   for (auto id : registered_animations_) {
     auto it = animation_state_map_.find(id);
-    DCHECK(it != animation_state_map_.end());
+    CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
     AnimationState& state = it->second;
 
     // Is anyone still interested in animating this image?
@@ -139,7 +145,7 @@ void ImageAnimationController::UpdateStateFromDrivers() {
   std::optional<base::TimeTicks> next_invalidation_time;
   for (auto image_id : registered_animations_) {
     auto it = animation_state_map_.find(image_id);
-    DCHECK(it != animation_state_map_.end());
+    CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
     AnimationState& state = it->second;
     state.UpdateStateFromDrivers();
 
@@ -168,7 +174,7 @@ void ImageAnimationController::DidActivate() {
 
   for (auto id : images_animated_on_sync_tree_) {
     auto it = animation_state_map_.find(id);
-    DCHECK(it != animation_state_map_.end());
+    CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
     it->second.PushPendingToActive();
   }
   images_animated_on_sync_tree_.clear();
@@ -192,7 +198,7 @@ size_t ImageAnimationController::GetFrameIndexForImage(
     PaintImage::Id paint_image_id,
     WhichTree tree) const {
   const auto& it = animation_state_map_.find(paint_image_id);
-  DCHECK(it != animation_state_map_.end());
+  CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
   return tree == WhichTree::PENDING_TREE ? it->second.pending_index()
                                          : it->second.active_index();
 }
@@ -202,19 +208,49 @@ void ImageAnimationController::WillBeginImplFrame(
   scheduler_.WillBeginImplFrame(args);
 }
 
-const base::flat_set<ImageAnimationController::AnimationDriver*>&
+const base::flat_set<
+    raw_ptr<ImageAnimationController::AnimationDriver, CtnExperimental>>&
 ImageAnimationController::GetDriversForTesting(
     PaintImage::Id paint_image_id) const {
   const auto& it = animation_state_map_.find(paint_image_id);
-  DCHECK(it != animation_state_map_.end());
+  CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
   return it->second.drivers_for_testing();
 }
 
 size_t ImageAnimationController::GetLastNumOfFramesSkippedForTesting(
     PaintImage::Id paint_image_id) const {
   const auto& it = animation_state_map_.find(paint_image_id);
-  DCHECK(it != animation_state_map_.end());
+  CHECK(it != animation_state_map_.end(), base::NotFatalUntil::M130);
   return it->second.last_num_frames_skipped_for_testing();
+}
+
+std::optional<ImageAnimationController::ConsistentFrameDuration>
+ImageAnimationController::GetConsistentContentFrameDuration() {
+  if (animation_state_map_.empty()) {
+    return std::nullopt;
+  }
+  std::optional<base::TimeDelta> frame_duration;
+  uint32_t num_images = 0u;
+  for (auto& [id, state] : animation_state_map_) {
+    if (!state.ShouldAnimate()) {
+      continue;
+    }
+    std::optional<base::TimeDelta> image_frame_duration =
+        state.GetConsistentContentFrameDuration();
+    if (!image_frame_duration) {
+      return std::nullopt;
+    }
+    if (frame_duration &&
+        frame_duration.value() != image_frame_duration.value()) {
+      return std::nullopt;
+    }
+    frame_duration = image_frame_duration.value();
+    num_images++;
+  }
+  if (!frame_duration) {
+    return std::nullopt;
+  }
+  return ConsistentFrameDuration{frame_duration.value(), num_images};
 }
 
 ImageAnimationController::AnimationState::AnimationState() = default;
@@ -250,7 +286,8 @@ bool ImageAnimationController::AnimationState::ShouldAnimate(
         return false;
       break;
     case kAnimationNone:
-      NOTREACHED() << "We shouldn't be tracking kAnimationNone images";
+      NOTREACHED_IN_MIGRATION()
+          << "We shouldn't be tracking kAnimationNone images";
       break;
     case kAnimationLoopInfinite:
       break;
@@ -455,6 +492,7 @@ void ImageAnimationController::AnimationState::UpdateMetadata(
   DCHECK(frames_.size() <= data.frames.size())
       << "Updated recordings can only append frames";
   frames_ = data.frames;
+  cached_consistent_frame_duration_valid_ = false;
   DCHECK_GT(frames_.size(), 1u);
 
   DCHECK(completion_state_ != PaintImage::CompletionState::kDone ||
@@ -482,6 +520,34 @@ void ImageAnimationController::AnimationState::PushPendingToActive() {
   active_index_ = current_state_.pending_index;
 }
 
+std::optional<base::TimeDelta>
+ImageAnimationController::AnimationState::GetConsistentContentFrameDuration() {
+  if (!cached_consistent_frame_duration_valid_) {
+    ComputeConsistentContentFrameDuration();
+  }
+  cached_consistent_frame_duration_valid_ = true;
+  if (!cached_has_consistent_frame_duration_) {
+    return std::nullopt;
+  }
+  return cached_consistent_frame_duration_;
+}
+
+void ImageAnimationController::AnimationState::
+    ComputeConsistentContentFrameDuration() {
+  cached_has_consistent_frame_duration_ = false;
+  std::optional<base::TimeDelta> frame_duration;
+  for (const auto& metadata : frames_) {
+    if (frame_duration && frame_duration.value() != metadata.duration) {
+      return;
+    }
+    frame_duration = metadata.duration;
+  }
+  if (frame_duration) {
+    cached_has_consistent_frame_duration_ = true;
+    cached_consistent_frame_duration_ = frame_duration.value();
+  }
+}
+
 void ImageAnimationController::AnimationState::AddDriver(
     AnimationDriver* driver) {
   drivers_.insert(driver);
@@ -494,7 +560,7 @@ void ImageAnimationController::AnimationState::RemoveDriver(
 
 void ImageAnimationController::AnimationState::UpdateStateFromDrivers() {
   should_animate_from_drivers_ = false;
-  for (auto* driver : drivers_) {
+  for (AnimationDriver* driver : drivers_) {
     if (driver->ShouldAnimate(paint_image_id_)) {
       should_animate_from_drivers_ = true;
       break;

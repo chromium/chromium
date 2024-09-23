@@ -75,7 +75,7 @@ export class CrCheckboxWithPolicyElement extends PolymerElement {
 
   // Public API: Downwards data flow.
   policyTooltip: string;
-  ariaDescription: string;
+  override ariaDescription: string|null;
   disabled: boolean;
   override tabIndex: number;
 

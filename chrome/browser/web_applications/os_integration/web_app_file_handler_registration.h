@@ -53,7 +53,7 @@ void UnregisterFileHandlersWithOs(const webapps::AppId& app_id,
 // Example: If the mime-type supported is text/plain and the file types
 // specified in the manifest are only .csv and .md, .txt files are also
 // registered as file handlers, and the file is launched.
-// TODO(crbug.com/1431463): Implement stricter handling w.r.t file extensions.
+// TODO(crbug.com/40263546): Implement stricter handling w.r.t file extensions.
 void InstallMimeInfoOnLinux(const webapps::AppId& app_id,
                             const base::FilePath& profile_path,
                             const apps::FileHandlers& file_handlers,

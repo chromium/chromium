@@ -1,5 +1,6 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  var {page, session, dp} = await testRunner.startBlank('Tests that reloading while paused at a breakpoint doesn\'t execute code after the breakpoint.');
+  var {page, session, dp} = await testRunner.startBlank(
+      'Tests that reloading while paused at a breakpoint doesn\'t execute code after the breakpoint.');
 
   await Promise.all([
     dp.Runtime.enable(),
@@ -20,9 +21,9 @@
   await dp.Debugger.oncePaused();
 
   testRunner.log('Reloading page...');
+  const loadEvent = dp.Page.onceLoadEventFired();
   await dp.Page.reload();
-  dp.Page.setLifecycleEventsEnabled({enabled: true});
-  await dp.Page.onceLifecycleEvent(event => event.params.name === 'load');
+  await loadEvent;
 
   testRunner.log('Page reloaded successfully');
   testRunner.completeTest();

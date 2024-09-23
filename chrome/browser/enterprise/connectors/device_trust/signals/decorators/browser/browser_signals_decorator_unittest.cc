@@ -14,8 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/dependency_factory.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/mock_dependency_factory.h"
+#include "chrome/browser/enterprise/core/mock_dependency_factory.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "components/device_signals/core/browser/mock_signals_aggregator.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
@@ -23,6 +22,7 @@
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/enterprise/core/dependency_factory.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -180,10 +180,10 @@ class BrowserSignalsDecoratorTest : public testing::Test {
         std::move(policy_data));
   }
 
-  std::unique_ptr<DependencyFactory> CreateDependencyFactory(
+  std::unique_ptr<enterprise_core::DependencyFactory> CreateDependencyFactory(
       bool valid_manager = true) {
     auto mock_dependency_factory =
-        std::make_unique<test::MockDependencyFactory>();
+        std::make_unique<enterprise_core::test::MockDependencyFactory>();
     EXPECT_CALL(*mock_dependency_factory, GetUserCloudPolicyManager())
         .WillOnce(Return(valid_manager ? mock_user_cloud_policy_manager_.get()
                                        : nullptr));

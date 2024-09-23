@@ -39,8 +39,8 @@ class Browser;
 // block the UI, when the sign-out flow is in progress. The UI needs to be
 // blocked and unblocked using methods from
 // SignoutActionSheetCoordinatorDelegate.
-// When `kReplaceSyncPromosWithSignInPromos` will be removed, the sync feature
-// won't be enabled anymore.
+// TODO(crbug.com/40066949): Update this comment when syncing users no longer
+// exist on iOS.
 @interface SignoutActionSheetCoordinator : ChromeCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -65,11 +65,18 @@ class Browser;
 @property(nonatomic, strong, readonly) NSString* message;
 
 // Required callback to be used after sign-out is completed.
-@property(nonatomic, copy) signin_ui::CompletionCallback completion;
+@property(nonatomic, copy)
+    signin_ui::SignoutCompletionCallback signoutCompletion;
 
 // Whether to warns feature won’t be available anymore when user is not
 // synced.
 @property(nonatomic, assign) BOOL showUnavailableFeatureDialogHeader;
+
+// Whether the sign-out action is part of an account switch or not. If YES, no
+// signout snackbar will be displayed, and signout dialog strings will indicate
+// an account switch. Default is NO.
+@property(nonatomic, assign) BOOL accountSwitch;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNOUT_ACTION_SHEET_SIGNOUT_ACTION_SHEET_COORDINATOR_H_

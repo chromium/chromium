@@ -13,8 +13,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -27,11 +27,7 @@ namespace {
 // This method and its dependencies must remain constant time, thus not branch
 // based on the value of |buffer| while encoding, assuming a known length.
 String ToBase64URLWithoutPadding(DOMArrayBuffer* buffer) {
-  String value = WTF::Base64URLEncode(
-      static_cast<const char*>(buffer->Data()),
-      // The size of {buffer} should always fit into into {wtf_size_t}, because
-      // the buffer content itself origins from a WTF::Vector.
-      base::checked_cast<wtf_size_t>(buffer->ByteLength()));
+  String value = WTF::Base64URLEncode(buffer->ByteSpan());
   DCHECK_GT(value.length(), 0u);
 
   unsigned padding_to_remove = 0;
@@ -87,11 +83,8 @@ PushSubscription::PushSubscription(
       options_(MakeGarbageCollected<PushSubscriptionOptions>(
           user_visible_only,
           application_server_key)),
-      p256dh_(
-          DOMArrayBuffer::Create(p256dh.data(),
-                                 base::checked_cast<unsigned>(p256dh.size()))),
-      auth_(DOMArrayBuffer::Create(auth.data(),
-                                   base::checked_cast<unsigned>(auth.size()))),
+      p256dh_(DOMArrayBuffer::Create(p256dh)),
+      auth_(DOMArrayBuffer::Create(auth)),
       expiration_time_(expiration_time),
       service_worker_registration_(service_worker_registration) {}
 
@@ -113,10 +106,10 @@ DOMArrayBuffer* PushSubscription::getKey(const AtomicString& name) const {
   return nullptr;
 }
 
-ScriptPromiseTyped<IDLBoolean> PushSubscription::unsubscribe(
+ScriptPromise<IDLBoolean> PushSubscription::unsubscribe(
     ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLBoolean>>(
-      script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
   auto promise = resolver->Promise();
 
   PushProvider* push_provider =
@@ -132,7 +125,7 @@ ScriptValue PushSubscription::toJSONForBinding(ScriptState* script_state) {
   DCHECK(p256dh_);
 
   V8ObjectBuilder result(script_state);
-  result.AddString("endpoint", endpoint());
+  result.AddString("endpoint", endpoint().GetString());
 
   if (expiration_time_) {
     result.AddNumber("expirationTime", *expiration_time_);

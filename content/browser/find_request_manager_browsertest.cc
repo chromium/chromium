@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,6 +26,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/find_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -91,6 +97,12 @@ class FindRequestManagerTestBase : public ContentBrowserTest {
     EXPECT_TRUE(
         NavigateToURL(shell(), embedded_test_server()->GetURL("a.com", url)));
     ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
+
+    // crbug.com/330147459: Ensure a frame has been produced in the renderer so
+    // the active match is set correctly.
+    ASSERT_TRUE(
+        EvalJsAfterLifecycleUpdate(contents()->GetPrimaryMainFrame(), "", "")
+            .error.empty());
   }
 
   // Loads a multi-frame page. The page will have a full binary frame tree of
@@ -113,7 +125,7 @@ class FindRequestManagerTestBase : public ContentBrowserTest {
             blink::mojom::FindOptionsPtr options) {
     delegate()->UpdateLastRequest(++last_request_id_);
     contents()->Find(last_request_id_, base::UTF8ToUTF16(search_text),
-                     std::move(options));
+                     std::move(options), /*skip_delay=*/false);
   }
 
   WebContentsImpl* contents() const {
@@ -177,7 +189,7 @@ INSTANTIATE_TEST_SUITE_P(FindRequestManagerTests,
                          FindRequestManagerTest,
                          testing::Bool());
 
-// TODO(crbug.com/615291): These tests frequently fail on Android.
+// TODO(crbug.com/40470937): These tests frequently fail on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE(x) DISABLED_##x
 #else
@@ -378,9 +390,9 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE(CharacterByCharacter)) {
   EXPECT_EQ(1, results.active_match_ordinal);
 }
 
-// TODO(crbug.com/615291): This test frequently fails on Android.
-// TODO(crbug.com/674742): This test is flaky on Win
-// TODO(crbug.com/850286): Flaky on CrOS MSan
+// TODO(crbug.com/40470937): This test frequently fails on Android.
+// TODO(crbug.com/41291496): This test is flaky on Win
+// TODO(crbug.com/41393143): Flaky on CrOS MSan
 // Tests sending a large number of find requests subsequently.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_RapidFire) {
   LoadAndWait("/find_in_page.html");
@@ -404,7 +416,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_RapidFire) {
 }
 
 // Tests removing a frame during a find session.
-// TODO(crbug.com/657331): Test is flaky on all platforms.
+// TODO(crbug.com/40489609): Test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_RemoveFrame) {
   LoadMultiFramePage(2 /* height */, test_with_oopif() /* cross_process */);
 
@@ -456,7 +468,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, RemoveMainFrame) {
 }
 
 // Tests adding a frame during a find session.
-// TODO(crbug.com/657331): Test is flaky on all platforms.
+// TODO(crbug.com/40489609): Test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_AddFrame) {
   LoadMultiFramePage(2 /* height */, test_with_oopif() /* cross_process */);
 
@@ -632,7 +644,14 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, MAYBE(HiddenFrame)) {
 }
 
 // Tests that new matches can be found in dynamically added text.
-IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE(FindNewMatches)) {
+// TODO(crbug.com/330194342): Deflake and re-enable.
+#if BUILDFLAG(IS_ANDROID) || \
+    (BUILDFLAG(IS_LINUX) && !defined(UNDEFINED_SANITIZER))
+#define MAYBE_FindNewMatches DISABLED_FindNewMatches
+#else
+#define MAYBE_FindNewMatches FindNewMatches
+#endif
+IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE_FindNewMatches) {
   LoadAndWait("/find_in_dynamic_page.html");
 
   auto options = blink::mojom::FindOptions::New();
@@ -661,9 +680,9 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE(FindNewMatches)) {
   EXPECT_EQ(4, results.active_match_ordinal);
 }
 
-// TODO(crbug.com/615291): These tests frequently fail on Android.
-// TODO(crbug.com/779912): Flaky timeout on Win7 (dbg).
-// TODO(crbug.com/875306): Flaky on Win10.
+// TODO(crbug.com/40470937): These tests frequently fail on Android.
+// TODO(crbug.com/41352658): Flaky timeout on Win7 (dbg).
+// TODO(crbug.com/41408666): Flaky on Win10.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_FindInPage_Issue627799 DISABLED_FindInPage_Issue627799
 #else
@@ -1003,7 +1022,7 @@ class ZoomToFindInPageRectMessageFilter
 }  // namespace
 
 // Tests activating the find match nearest to a given point.
-// TODO(crbug.com/1362116): Fix flaky failures.
+// TODO(crbug.com/40864045): Fix flaky failures.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest,
                        DISABLED_ActivateNearestFindMatch) {
   LoadAndWait("/find_in_page.html");
@@ -1628,7 +1647,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests that the previous results from old document are removed and we get the
 // new results from the new document when we navigate the subframe that
 // hasn't finished the find-in-page session to the new document.
-// TODO(crbug.com/1311444): Fix flakiness and reenable the test.
+// TODO(crbug.com/40220234): Fix flakiness and reenable the test.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
 #define MAYBE_NavigateFrameDuringFind DISABLED_NavigateFrameDuringFind

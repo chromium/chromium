@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 
 #include <algorithm>
@@ -48,8 +53,8 @@ bool ShouldAutoReload(content::NavigationHandle* handle) {
          handle->GetURL().SchemeIsHTTPOrHTTPS() &&
          // Don't auto reload if the error was a secure DNS network error, since
          // the reload may interfere with the captive portal probe state.
-         // TODO(crbug.com/1016164): Explore how to allow reloads for secure DNS
-         // network errors without interfering with the captive portal probe
+         // TODO(crbug.com/40104002): Explore how to allow reloads for secure
+         // DNS network errors without interfering with the captive portal probe
          // state.
          !handle->GetResolveErrorInfo().is_secure_network_error &&
          // Don't auto reload if the error is caused by the server returning a

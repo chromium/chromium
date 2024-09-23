@@ -24,6 +24,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.android_webview.test.util.JavascriptEventObserver;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
@@ -31,7 +32,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.url.GURL;
 
@@ -425,7 +425,7 @@ public class AwContentsClientFullScreenTest extends AwParameterizedTest {
 
     private boolean getKeepScreenOnOnInstrumentationThread(final View view) {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(() -> getKeepScreenOnOnUiThread(view));
+            return ThreadUtils.runOnUiThreadBlocking(() -> getKeepScreenOnOnUiThread(view));
         } catch (Exception e) {
             Assert.fail(e.getMessage());
             return false;
@@ -514,7 +514,7 @@ public class AwContentsClientFullScreenTest extends AwParameterizedTest {
 
     private WebContents getWebContentsOnUiThread() {
         try {
-            return TestThreadUtils.runOnUiThreadBlocking(() -> mTestContainerView.getWebContents());
+            return ThreadUtils.runOnUiThreadBlocking(() -> mTestContainerView.getWebContents());
         } catch (Exception e) {
             Assert.fail(e.getMessage());
             return null;

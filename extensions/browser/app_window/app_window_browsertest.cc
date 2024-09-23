@@ -5,8 +5,11 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "third_party/skia/include/core/SkRegion.h"
 
 namespace extensions {
 
@@ -17,7 +20,7 @@ using AppWindowBrowserTest = PlatformAppBrowserTest;
 // This test is disabled on Linux because of the unpredictable nature of native
 // windows. We cannot assume that the window manager will insert any title bar
 // at all, so the test may fail on certain window managers.
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_FrameInsetsForDefaultFrame DISABLED_FrameInsetsForDefaultFrame
@@ -79,7 +82,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, IncognitoOpenUrl) {
   content::OpenURLParams params(GURL(url::kAboutBlankURL), {},
                                 WindowOpenDisposition::OFF_THE_RECORD,
                                 ui::PAGE_TRANSITION_LINK, false);
-  content::WebContents* new_contents = app_contents->OpenURL(params);
+  content::WebContents* new_contents =
+      app_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 
   Profile* profile =
       Profile::FromBrowserContext(new_contents->GetBrowserContext());
@@ -92,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, DraggableFramelessWindow) {
   AppWindow* app_window = CreateTestAppWindow(R"({ "frame": "none" })");
 
   base::RunLoop run_loop;
-  app_window->SetOnUpdateDraggableRegionsForTesting(run_loop.QuitClosure());
+  app_window->SetOnDraggableRegionsChangedForTesting(run_loop.QuitClosure());
 
   static constexpr char kTestScript[] =
       "window.document.body.style.height = '50px';"
@@ -126,8 +130,9 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest,
   // eviction.
   content::RenderFrameSubmissionObserver submission_observer(
       app_window->web_contents());
-  if (!submission_observer.render_frame_count())
+  if (!submission_observer.render_frame_count()) {
     submission_observer.WaitForAnyFrameSubmission();
+  }
 
   // Helper function as this test requires inspecting a number of content::
   // internal objects.

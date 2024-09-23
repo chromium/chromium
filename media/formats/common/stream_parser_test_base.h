@@ -47,9 +47,8 @@ class StreamParserTestBase {
   //
   std::string ParseFile(const std::string& filename, int append_bytes);
 
-  // Similar to ParseFile() except parses the given |data| in a single append of
-  // size |length|.
-  std::string ParseData(const uint8_t* data, size_t length);
+  // Similar to ParseFile() except parses the given |data| in a single append.
+  std::string ParseData(base::span<const uint8_t> data);
 
   // The last AudioDecoderConfig handed to OnNewConfig().
   const AudioDecoderConfig& last_audio_config() const {
@@ -57,8 +56,7 @@ class StreamParserTestBase {
   }
 
  private:
-  bool AppendAllDataThenParseInPieces(const uint8_t* data,
-                                      size_t length,
+  bool AppendAllDataThenParseInPieces(base::span<const uint8_t> data,
                                       size_t piece_size);
   void OnInitDone(const StreamParser::InitParameters& params);
   bool OnNewConfig(std::unique_ptr<MediaTracks> tracks);

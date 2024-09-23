@@ -32,7 +32,6 @@ struct ParsedFaviconPath {
   // The device scale factor of the requested favicon.
   float device_scale_factor = 1.0f;
 
-  // TODO(victorvianna): Remove this parameter.
   // The index of the first character (relative to the path) where the the URL
   // from which the favicon is being requested is located.
   size_t path_index = std::string::npos;
@@ -95,7 +94,6 @@ struct ParsedFaviconPath {
 //      Specifies the requested favicon's size in DIP. If unspecified, defaults
 //      to 16.
 //    Example: chrome://favicon2/?size=32
-// TODO(victorvianna): Refactor to remove scaleFactor parameter.
 //  'scaleFactor'  Optional
 //      Values: ['SCALEx']
 //      Specifies the requested favicon's scale factor. If unspecified, defaults

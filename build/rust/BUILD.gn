@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//build/config/rust.gni")
 
 if (toolchain_has_rust) {
@@ -18,13 +17,19 @@ if (toolchain_has_rust) {
     rustflags = [ "--edition=2015" ]
   }
 
-  if (enable_cxx) {
+  if (enable_rust_cxx) {
+    import("//build/rust/cxx_version.gni")
+
+    config("cxx_include_path") {
+      defines = [ "CR_CXX_INCLUDE=\"third_party/rust/chromium_crates_io/vendor/cxx-${cxx_version}/include/cxx.h\"" ]
+    }
+
     # The required dependencies for cxx-generated bindings, that must be included
     # on the C++ side.
     static_library("cxx_cppdeps") {
       sources = [
-        "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.115/include/cxx.h",
-        "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.115/src/cxx.cc",
+        "//third_party/rust/chromium_crates_io/vendor/cxx-${cxx_version}/include/cxx.h",
+        "//third_party/rust/chromium_crates_io/vendor/cxx-${cxx_version}/src/cxx.cc",
 
         # Our version-independent forwarding header, which we patch cxx.cc to
         # use since we want it to use an absolute path for its include.
@@ -32,6 +37,7 @@ if (toolchain_has_rust) {
       ]
 
       defines = [ "RUST_CXX_NO_EXCEPTIONS" ]
+      public_configs = [ ":cxx_include_path" ]
 
       # We cannot depend on base/base_export.h because base depends on us.
       if (is_component_build) {
@@ -45,15 +51,17 @@ if (toolchain_has_rust) {
         defines += [ "CXX_RS_EXPORT=" ]
       }
 
-      # Depending on the C++ bindings side of cxx then requires also depending
-      # on the Rust bindings, since one calls the other. And the Rust bindings
-      # require the Rust standard library.
-      deps = [ ":cxx_rustdeps" ]
+      deps = [
+        # Depending on the C++ bindings side of cxx then requires also depending
+        # on the Rust bindings, since one calls the other. And the Rust bindings
+        # require the Rust standard library.
+        ":cxx_rustdeps",
+      ]
     }
 
-    # The required dependencies for cxx-generated bindings, that must be included
-    # on the Rust side.
     group("cxx_rustdeps") {
+      # The required dependencies for cxx-generated bindings, that must be
+      # included on the Rust side.
       public_deps = [ "//third_party/rust/cxx/v1:lib" ]
     }
   }

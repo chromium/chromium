@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_TERMINATION_INFO_H_
 #define CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_TERMINATION_INFO_H_
 
+#include <optional>
+
 #include "base/process/kill.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -63,8 +65,8 @@ struct CONTENT_EXPORT ChildProcessTerminationInfo {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-  // The cumulative CPU usage of this process.
-  base::TimeDelta cpu_usage;
+  // The cumulative CPU usage of this process, if available.
+  std::optional<base::TimeDelta> cpu_usage;
 #endif
 };
 

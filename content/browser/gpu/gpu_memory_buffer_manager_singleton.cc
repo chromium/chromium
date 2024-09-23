@@ -38,14 +38,6 @@ viz::mojom::GpuService* GetGpuService(
   return nullptr;
 }
 
-#if BUILDFLAG(IS_OZONE_X11)
-bool ShouldSetBufferFormatsFromGpuExtraInfo() {
-  return ui::OzonePlatform::GetInstance()
-      ->GetPlatformProperties()
-      .fetch_buffer_formats_for_gmb_on_gpu;
-}
-#endif  // BUILDFLAG(IS_OZONE_X11)
-
 scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
 #if BUILDFLAG(IS_MAC)
   return ui::WindowResizeHelperMac::Get()->task_runner();
@@ -106,17 +98,6 @@ GpuMemoryBufferManagerSingleton::GetInstance() {
 }
 
 void GpuMemoryBufferManagerSingleton::OnGpuExtraInfoUpdate() {
-#if BUILDFLAG(IS_OZONE_X11)
-  // X11 fetches buffer formats on gpu and passes them via gpu extra info.
-  if (ShouldSetBufferFormatsFromGpuExtraInfo()) {
-    gpu::GpuMemoryBufferConfigurationSet configs;
-    for (const auto& config : gpu_data_manager_impl_->GetGpuExtraInfo()
-                                  .gpu_memory_buffer_support_x11) {
-      configs.insert(config);
-    }
-    SetNativeConfigurations(std::move(configs));
-  }
-#endif  // BUILDFLAG(IS_OZONE_X11)
 #if BUILDFLAG(IS_LINUX)
   // Dynamic check whether the NV12 format is supported as it may be
   // inconsistent between the system GBM (Generic Buffer Management) and

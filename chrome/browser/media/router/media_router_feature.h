@@ -49,13 +49,18 @@ BASE_DECLARE_FEATURE(kAllowAllSitesToInitiateMirroring);
 // It sends a discovery SSDP message every 120 seconds.
 BASE_DECLARE_FEATURE(kDialMediaRouteProvider);
 
+// If enabled, the browser delays background discovery of Cast and DIAL devices
+// until explicit user interaction with the Cast feature.
+BASE_DECLARE_FEATURE(kDelayMediaSinkDiscovery);
+
+// If enabled, the Cast or Global Media Controls UI shows error messages when
+// Chrome doesn't have necessary permission for discovery devices connected to
+// the local network.
+BASE_DECLARE_FEATURE(kShowCastPermissionRejectedError);
+
 // If enabled, sinks that do not support presentation or remote playback, will
 // fall back to audio tab mirroring when casting from the Global Media Controls.
 BASE_DECLARE_FEATURE(kFallbackToAudioTabMirroring);
-
-// If enabled, mirroring sessions use the playout delay specified by
-// `kCastMirroringPlayoutDelayMs`.
-BASE_DECLARE_FEATURE(kCastMirroringPlayoutDelay);
 
 // When enabled, Cast virtual connections are removed without explicitly sending
 // a close connection request to the receiver when the sender webpage navigates
@@ -63,6 +68,12 @@ BASE_DECLARE_FEATURE(kCastMirroringPlayoutDelay);
 // TODO(crbug.com/1508704): Remove the flag when confident that the default-
 // enabled feature is not causing a regression.
 BASE_DECLARE_FEATURE(kCastSilentlyRemoveVcOnNavigation);
+
+#if BUILDFLAG(IS_MAC)
+// If enabled, Chrome uses the Network Framework API for local device discovery
+// on Mac.
+BASE_DECLARE_FEATURE(kUseNetworkFrameworkForLocalDiscovery);
+#endif
 
 extern const base::FeatureParam<int> kCastMirroringPlayoutDelayMs;
 

@@ -4,6 +4,7 @@ include_rules = [
   "+ash",
   "+content/browser/speech",
   "+chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h",
+  "+chrome/browser/ui/views/editor_menu/utils/editor_types.h",
   "+chrome/browser/ui/views/editor_menu/utils/focus_search.h",
   "+chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h",
   "+chrome/browser/ui/views/mahi/mahi_menu_controller.h",

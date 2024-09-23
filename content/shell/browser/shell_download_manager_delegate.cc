@@ -7,11 +7,13 @@
 #include <algorithm>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_target_info.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include <commdlg.h>
 #endif
 
@@ -69,8 +71,12 @@ bool ShellDownloadManagerDelegate::DetermineDownloadTarget(
   // This assignment needs to be here because even at the call to
   // SetDownloadManager, the system is not fully initialized.
   if (default_download_path_.empty()) {
-    default_download_path_ = download_manager_->GetBrowserContext()->GetPath().
-        Append(FILE_PATH_LITERAL("Downloads"));
+    default_download_path_ = download_manager_->GetBrowserContext()
+                                 ->GetPath()
+#if BUILDFLAG(IS_CHROMEOS)
+                                 .Append(FILE_PATH_LITERAL("MyFiles"))
+#endif
+                                 .Append(FILE_PATH_LITERAL("Downloads"));
   }
 
   if (!download->GetForcedFilePath().empty()) {

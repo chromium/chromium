@@ -43,8 +43,9 @@ class FastCheckoutControllerImpl : public FastCheckoutController {
       delete;
 
   // FastCheckoutController:
-  void Show(const std::vector<autofill::AutofillProfile*>& autofill_profiles,
-            const std::vector<autofill::CreditCard*>& credit_cards) override;
+  void Show(
+      const std::vector<const autofill::AutofillProfile*>& autofill_profiles,
+      const std::vector<autofill::CreditCard*>& credit_cards) override;
   void OnOptionsSelected(
       std::unique_ptr<autofill::AutofillProfile> profile,
       std::unique_ptr<autofill::CreditCard> credit_card) override;

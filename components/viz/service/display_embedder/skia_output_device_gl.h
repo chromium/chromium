@@ -43,16 +43,10 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   ~SkiaOutputDeviceGL() override;
 
   // SkiaOutputDevice implementation:
-  bool Reshape(const SkImageInfo& image_info,
-               const gfx::ColorSpace& color_space,
-               int sample_count,
-               float device_scale_factor,
-               gfx::OverlayTransform transform) override;
+  bool Reshape(const ReshapeParams& params) override;
   void Present(const std::optional<gfx::Rect>& update_rect,
                BufferPresentedCallback feedback,
                OutputSurfaceFrame frame) override;
-  void EnsureBackbuffer() override;
-  void DiscardBackbuffer() override;
   SkSurface* BeginPaint(
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;

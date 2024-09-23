@@ -32,6 +32,8 @@ class HardwareDisplayPlaneManagerLegacy : public HardwareDisplayPlaneManager {
   bool Commit(HardwareDisplayPlaneList* plane_list,
               scoped_refptr<PageFlipRequest> page_flip_request,
               gfx::GpuFenceHandle* release_fence) override;
+  bool TestSeamlessMode(int32_t crtc_id, const drmModeModeInfo& mode) override;
+
   bool DisableOverlayPlanes(HardwareDisplayPlaneList* plane_list) override;
 
   bool ValidatePrimarySize(const DrmOverlayPlane& primary,
@@ -47,11 +49,12 @@ class HardwareDisplayPlaneManagerLegacy : public HardwareDisplayPlaneManager {
                     HardwareDisplayPlane* hw_plane,
                     const DrmOverlayPlane& overlay,
                     uint32_t crtc_id,
+                    std::optional<gfx::Point> crtc_offset,
                     const gfx::Rect& src_rect) override;
   bool IsCompatible(HardwareDisplayPlane* plane,
                     const DrmOverlayPlane& overlay,
                     uint32_t crtc_id) const override;
-  bool CommitPendingCrtcState(CrtcState* state) override;
+  bool CommitPendingCrtcState(CrtcState& state) override;
 };
 
 }  // namespace ui

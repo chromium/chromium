@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -1178,7 +1177,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Test that a domain entered as punycode is decoded to unicode if safe,
 // otherwise is left in punycode.
 //
-// TODO(crbug.com/1036523): This should also check if a domain entered as
+// TODO(crbug.com/40664864): This should also check if a domain entered as
 // unicode is properly decoded or not-decoded. This is important in cases where
 // certain unicode characters are canonicalized to other characters.
 // E.g. Mathematical Monospace Small A (U+1D68A) is canonicalized to "a" when

@@ -1,0 +1,55 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("accessibility") {
+  sources = [
+    "accessibility_controller_client.cc",
+    "accessibility_controller_client.h",
+    "chrome_accessibility_delegate.cc",
+    "chrome_accessibility_delegate.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ui/aura/accessibility",
+    "//chromeos/ash/components/audio",
+    "//content/public/browser",
+    "//ui/aura",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "accessibility_controller_client_unittest.cc",
+    "ax_tree_source_aura_unittest.cc",
+  ]
+
+  deps = [
+    ":accessibility",
+    "//ash",
+    "//ash:test_support",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/audio",
+    "//testing/gtest",
+    "//ui/accessibility",
+    "//ui/aura",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

@@ -19,6 +19,10 @@
 class Browser;
 class Profile;
 
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
+
 // An interface implemented by an object that performs actions on the actual
 // menu for the controller.
 class BookmarkContextMenuControllerDelegate {

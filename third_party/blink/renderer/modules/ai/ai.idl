@@ -1,0 +1,40 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/explainers-by-googlers/prompt-api
+
+enum AICapabilityAvailability {
+  "readily",
+  "after-download",
+  "no"
+};
+
+[
+  Exposed=(Window,Worker),
+  RuntimeEnabled=BuiltInAIAPI
+]
+interface AI {
+  [
+    Measure,
+    RuntimeEnabled=AIPromptAPI
+  ]
+  readonly attribute AIAssistantFactory assistant;
+  [
+    Measure,
+    RuntimeEnabled=AISummarizationAPI
+  ]
+  readonly attribute AISummarizerFactory summarizer;
+
+  [
+    Measure,
+    RuntimeEnabled=AIWriterAPI
+  ]
+  readonly attribute AIWriterFactory writer;
+
+  [
+    Measure,
+    RuntimeEnabled=AIRewriterAPI
+  ]
+  readonly attribute AIRewriterFactory rewriter;
+};

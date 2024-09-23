@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "sandbox/linux/services/scoped_process.h"
 
 #include <fcntl.h>
@@ -53,7 +58,7 @@ ScopedProcess::ScopedProcess(base::OnceClosure child_callback)
     // Notify the parent that the closure has run.
     CHECK_EQ(1, HANDLE_EINTR(write(pipe_fds_[1], kSynchronisationChar, 1)));
     WaitForever();
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     _exit(1);
   }
 

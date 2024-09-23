@@ -1,0 +1,29 @@
+caption: Enable QR Code Generator
+desc: |-
+  This policy enables the QR Code generator feature in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+
+  If you enable this policy or don't configure it, the QR Code Generator feature is enabled.
+
+  If you disable this policy, the QR Code Generator feature is disabled.
+example_value: false
+features:
+  can_be_mandatory: true
+  can_be_recommended: false
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: The QR Code Generator feature is enabled.
+  value: true
+- caption: The QR Code Generator feature is disabled.
+  value: false
+owners:
+- file://chrome/browser/ui/qrcode_generator/OWNERS
+schema:
+  type: boolean
+supported_on:
+- android:128-
+- chrome.*:128-
+- chrome_os:128-
+- fuchsia:128-
+tags: []
+type: main

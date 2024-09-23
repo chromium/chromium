@@ -50,8 +50,7 @@ struct ASH_PUBLIC_EXPORT DefaultUserImage {
 
   int index;
   std::u16string title;
-  // If the AvatarsCloudMigration feature flag is turned on, this is the gstatic
-  // URL of the image. Otherwise, this is the local resources URL of the image.
+  // The gstatic URL of the avatar image.
   GURL url;
   // Deprecated. Only used for older avatar images that users can no longer
   // select.

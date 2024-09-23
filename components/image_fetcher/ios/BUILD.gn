@@ -12,7 +12,7 @@ source_set("ios") {
   deps = [
     "//base",
     "//components/image_fetcher/core",
-    "//ios/web",
+    "//ios/web/public/thread",
     "//net",
     "//ui/gfx",
   ]

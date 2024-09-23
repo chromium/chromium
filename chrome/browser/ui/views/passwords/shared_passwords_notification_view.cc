@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/styled_label.h"
@@ -28,7 +29,7 @@ SharedPasswordsNotificationView::SharedPasswordsNotificationView(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   SetShowIcon(true);
 
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(
                      IDS_SHARED_PASSWORDS_NOTIFICATION_GOT_IT_BUTTON));
   SetAcceptCallback(base::BindOnce(
@@ -36,7 +37,7 @@ SharedPasswordsNotificationView::SharedPasswordsNotificationView(
       base::Unretained(&controller_)));
 
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON));
   SetCancelCallback(base::BindOnce(
       &SharedPasswordsNotificationBubbleController::OnManagePasswordsClicked,

@@ -9,13 +9,18 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/no_destructor.h"
-#include "components/sync/android/jni_headers/SyncFeatureMap_jni.h"
 #include "components/sync/base/features.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/sync/android/jni_headers/SyncFeatureMap_jni.h"
+
+namespace syncer {
+
 namespace {
+
 // Array of features exposed through the Java SyncFeatureMap.
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &syncer::kEnableBookmarkFoldersForAccountStorage};
+    &kSyncEnableBookmarksInTransportMode};
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
@@ -29,3 +34,5 @@ base::android::FeatureMap* GetFeatureMap() {
 static jlong JNI_SyncFeatureMap_GetNativeMap(JNIEnv* env) {
   return reinterpret_cast<jlong>(GetFeatureMap());
 }
+
+}  // namespace syncer

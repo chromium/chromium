@@ -62,8 +62,16 @@ function isStatBlocklisted(report, statName) {
   }
   // The mid/rid and ssrcs associated with a sender/receiver do not change
   // over time; plotting uninteresting.
-  if (['inbound-rtp', 'outbound-rtp'].includes(report.type) &&
+  if (['inbound-rtp', 'outbound-rtp',
+        'remote-inbound-rtp', 'remote-outbound-rtp'].includes(report.type) &&
       ['mid', 'rid', 'ssrc', 'rtxSsrc', 'fecSsrc'].includes(statName)) {
+    return true;
+  }
+  // Last packet sent/received timestamps on candidate-pair and inbound-rtp
+  // do not plot nicely.
+  if (['candidate-pair', 'inbound-rtp'].includes(report.type) &&
+      ['lastPacketSentTimestamp',
+        'lastPacketReceivedTimestamp'].includes(statName)) {
     return true;
   }
   return false;

@@ -16,9 +16,7 @@ import android.graphics.Bitmap;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -29,7 +27,6 @@ import org.robolectric.shadows.ShadowPendingIntent;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
@@ -45,8 +42,6 @@ public class WebApkInstallBroadcastReceiverTest {
     private static final String URL = "https://test.com";
     private final Bitmap mIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
     private final byte[] mSerializedProto = new byte[] {1, 2};
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private Context mContext;
     private ShadowNotificationManager mShadowNotificationManager;

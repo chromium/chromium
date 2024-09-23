@@ -13,6 +13,7 @@
 #include "base/version.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/test_activity_data_service.h"
+#include "components/update_client/update_client_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace update_client {
@@ -232,6 +233,26 @@ TEST(PersistedDataTest, ActivityData) {
   EXPECT_EQ(1234, metadata->GetInstallDate("id1"));
   EXPECT_EQ(1234, metadata->GetInstallDate("id2"));
   EXPECT_EQ(1234, metadata->GetInstallDate("id3"));
+}
+
+TEST(PersistedDataTest, LastUpdateCheckError) {
+  base::test::TaskEnvironment env;
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  RegisterPersistedDataPrefs(pref->registry());
+  auto metadata = CreatePersistedData(
+      pref.get(), std::make_unique<TestActivityDataService>());
+
+  metadata->SetLastUpdateCheckError(
+      {.category_ = ErrorCategory::kDownload, .code_ = 5, .extra_ = 10});
+  EXPECT_EQ(pref->GetInteger(kLastUpdateCheckErrorCategoryPreference), 1);
+  EXPECT_EQ(pref->GetInteger(kLastUpdateCheckErrorPreference), 5);
+  EXPECT_EQ(pref->GetInteger(kLastUpdateCheckErrorExtraCode1Preference), 10);
+
+  metadata->SetLastUpdateCheckError(
+      {.category_ = ErrorCategory::kNone, .code_ = 0, .extra_ = 0});
+  EXPECT_EQ(pref->GetInteger(kLastUpdateCheckErrorCategoryPreference), 0);
+  EXPECT_EQ(pref->GetInteger(kLastUpdateCheckErrorPreference), 0);
+  EXPECT_EQ(pref->GetInteger(kLastUpdateCheckErrorExtraCode1Preference), 0);
 }
 
 }  // namespace update_client

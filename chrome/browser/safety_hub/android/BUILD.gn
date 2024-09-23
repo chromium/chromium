@@ -1,0 +1,272 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/safety_hub/MagicStackBridge.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/MagicStackEntry.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissionReviewBridge.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissions.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/PermissionsData.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubHatsBridge.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/UnusedSitePermissionsBridge.java",
+  ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/safety_hub/MagicStackBridge.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/MagicStackEntry.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissionReviewBridge.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissions.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/PermissionsData.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubBaseFragment.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubExpandablePreference.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubExpandablePreferenceCategory.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchService.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchTask.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFragment.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubHatsBridge.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackBuilder.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackCoordinator.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackMediator.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackView.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackViewBinder.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackViewProperties.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMetricUtils.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegate.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegateImpl.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleProperties.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleViewBinder.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubNotificationsFragment.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubNotificationsPreference.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsFragment.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsPreference.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubSubpageFragment.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubUtils.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/UnusedSitePermissionsBridge.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/magic_stack/android:java",
+    "//chrome/browser/omaha/android:java",
+    "//chrome/browser/password_manager/android:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/safe_browsing/android:java",
+    "//chrome/browser/settings:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/signin:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
+    "//components/background_task_scheduler:factory_java",
+    "//components/background_task_scheduler:public_java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/site_settings/android:java",
+    "//components/browser_ui/util/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/content_settings/core/common:content_settings_types_java",
+    "//components/favicon/android:java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
+    "//components/prefs/android:java",
+    "//components/safe_browsing/android:safe_browsing_java",
+    "//components/sync/android:sync_java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
+    "//url:url_java",
+  ]
+  srcjar_deps = [ ":jni_headers" ]
+  resources_package = "org.chromium.chrome.browser.safety_hub"
+}
+
+robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.safety_hub"
+  sources = [
+    "junit/src/org/chromium/chrome/browser/safety_hub/MagicStackBridgeTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchServiceTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchTaskTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackViewBinderTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegateTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleViewBinderTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubTestRule.java",
+  ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/magic_stack/android:java",
+    "//chrome/browser/omaha/android:java",
+    "//chrome/browser/password_manager/android:java",
+    "//chrome/browser/password_manager/android:settings_interface_java",
+    "//chrome/browser/password_manager/android:test_support_java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/safe_browsing/android:java",
+    "//chrome/browser/settings:factory_java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/signin:java",
+    "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
+    "//components/background_task_scheduler:factory_java",
+    "//components/background_task_scheduler:public_java",
+    "//components/browser_ui/settings/android:java",
+    "//components/prefs/android:java",
+    "//components/sync/android:sync_java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.safety_hub"
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/safety_hub/FakeNotificationPermissionReviewBridge.java",
+    "javatests/src/org/chromium/chrome/browser/safety_hub/FakeUnusedSitePermissionsBridge.java",
+    "javatests/src/org/chromium/chrome/browser/safety_hub/SafetyHubHatsBridgeTest.java",
+    "javatests/src/org/chromium/chrome/browser/safety_hub/SafetyHubTest.java",
+  ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//base:supplier_java",
+    "//base:tasks_java",
+    "//build/android:build_java",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/password_manager/android:java",
+    "//chrome/browser/password_manager/android:test_support_java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/safe_browsing/android:java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//components/content_settings/core/common:content_settings_types_java",
+    "//components/policy/android:policy_java_test_support",
+    "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
+  ]
+}
+
+source_set("android") {
+  sources = [
+    "magic_stack_bridge.cc",
+    "magic_stack_bridge.h",
+    "notification_permission_review_bridge.cc",
+    "notification_permission_review_bridge.h",
+    "safety_hub_hats_bridge.cc",
+    "unused_site_permissions_bridge.cc",
+    "unused_site_permissions_bridge.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/hats",
+    "//chrome/common:constants",
+    "//components/content_settings/core/common",
+    "//components/page_info:page_info",
+    "//components/pref_registry",
+    "//components/prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "notification_permission_review_bridge_unittest.cc",
+    "unused_site_permissions_bridge_unittest.cc",
+  ]
+
+  deps = [
+    ":android",
+    "//base/test:test_support",
+    "//chrome/browser/permissions:permissions",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/permissions:permissions_common",
+    "//content/test:test_support",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/safety_hub_magic_stack_icon_background.xml",
+    "java/res/drawable/safety_hub_notifications_icon.xml",
+    "java/res/drawable/safety_hub_safety_tips_icon.xml",
+    "java/res/layout/safety_hub_bottom_elements.xml",
+    "java/res/layout/safety_hub_button_widget.xml",
+    "java/res/layout/safety_hub_expandable_preference.xml",
+    "java/res/layout/safety_hub_list_menu_widget.xml",
+    "java/res/layout/safety_hub_magic_stack_view.xml",
+    "java/res/values/dimens.xml",
+    "java/res/values/ids.xml",
+    "java/res/xml/safety_hub_preferences.xml",
+    "java/res/xml/safety_hub_subpage_preferences.xml",
+  ]
+  deps = [
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/settings/android:java_resources",
+  ]
+}

@@ -7,13 +7,13 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -28,7 +28,6 @@
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/webui/web_ui_main_frame_observer.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -44,7 +43,7 @@ namespace content {
 namespace {
 
 template <typename Range>
-std::u16string GetJavascriptCallImpl(base::StringPiece function_name,
+std::u16string GetJavascriptCallImpl(std::string_view function_name,
                                      const Range& args) {
   std::vector<std::u16string> json_args;
   for (const auto& arg : args) {
@@ -65,20 +64,19 @@ const WebUI::TypeID WebUI::kNoWebUI = nullptr;
 
 // static
 std::u16string WebUI::GetJavascriptCall(
-    base::StringPiece function_name,
+    std::string_view function_name,
     base::span<const base::ValueView> arg_list) {
   return GetJavascriptCallImpl(function_name, arg_list);
 }
 
 // static
-std::u16string WebUI::GetJavascriptCall(base::StringPiece function_name,
+std::u16string WebUI::GetJavascriptCall(std::string_view function_name,
                                         const base::Value::List& arg_list) {
   return GetJavascriptCallImpl(function_name, arg_list);
 }
 
 WebUIImpl::WebUIImpl(WebContents* web_contents)
-    : bindings_(BINDINGS_POLICY_WEB_UI),
-      requestable_schemes_({kChromeUIScheme, url::kFileScheme}),
+    : requestable_schemes_({kChromeUIScheme, url::kFileScheme}),
       web_contents_(web_contents),
       web_contents_observer_(
           std::make_unique<WebUIMainFrameObserver>(this, web_contents_)) {
@@ -142,14 +140,6 @@ void WebUIImpl::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {
   controller_->WebUIRenderFrameCreated(render_frame_host);
 }
 
-void WebUIImpl::RenderFrameReused(RenderFrameHost* render_frame_host) {
-  // This is expected to be called only for outermost main frames.
-  if (!render_frame_host->GetParentOrOuterDocument()) {
-    GURL site_url = render_frame_host->GetSiteInstance()->GetSiteURL();
-    GetContentClient()->browser()->LogWebUIUrl(site_url);
-  }
-}
-
 void WebUIImpl::RenderFrameHostUnloading() {
   DisallowJavascriptOnAllHandlers();
 }
@@ -195,11 +185,11 @@ void WebUIImpl::OverrideTitle(const std::u16string& title) {
   overridden_title_ = title;
 }
 
-int WebUIImpl::GetBindings() {
+BindingsPolicySet WebUIImpl::GetBindings() {
   return bindings_;
 }
 
-void WebUIImpl::SetBindings(int bindings) {
+void WebUIImpl::SetBindings(BindingsPolicySet bindings) {
   bindings_ = bindings;
 }
 
@@ -236,21 +226,14 @@ bool WebUIImpl::CanCallJavascript() {
           frame_host_->GetLastCommittedURL().spec() == url::kAboutBlankURL);
 }
 
-void WebUIImpl::CallJavascriptFunctionUnsafe(base::StringPiece function_name) {
-  DCHECK(base::IsStringASCII(function_name));
-  std::u16string javascript =
-      base::ASCIIToUTF16(base::StrCat({function_name, "();"}));
-  ExecuteJavascript(javascript);
-}
-
 void WebUIImpl::CallJavascriptFunctionUnsafe(
-    base::StringPiece function_name,
+    std::string_view function_name,
     base::span<const base::ValueView> args) {
   DCHECK(base::IsStringASCII(function_name));
   ExecuteJavascript(GetJavascriptCall(function_name, args));
 }
 
-void WebUIImpl::RegisterMessageCallback(base::StringPiece message,
+void WebUIImpl::RegisterMessageCallback(std::string_view message,
                                         MessageCallback callback) {
   message_callbacks_.emplace(message, std::move(callback));
 }
@@ -268,9 +251,8 @@ void WebUIImpl::ProcessWebUIMessage(const GURL& source_url,
     return;
   }
 
-  DUMP_WILL_BE_NOTREACHED_NORETURN()
-      << "Unhandled chrome.send(\"" << message << "\", " << args << "); from "
-      << source_url;
+  DUMP_WILL_BE_NOTREACHED() << "Unhandled chrome.send(\"" << message << "\", "
+                            << args << "); from " << source_url;
 }
 
 std::vector<std::unique_ptr<WebUIMessageHandler>>*

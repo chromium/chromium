@@ -18,6 +18,8 @@ const HatsConfig& GetHatsConfig(CrasAudioHandler::SurveyType type) {
       return kHatsAudioSurvey;
     case CrasAudioHandler::SurveyType::kBluetooth:
       return kHatsBluetoothAudioSurvey;
+    case CrasAudioHandler::SurveyType::kOutputProc:
+      return kHatsAudioOutputProcSurvey;
   }
 }
 
@@ -68,6 +70,7 @@ AudioSurveyHandler::AudioSurveyHandler()
 AudioSurveyHandler::AudioSurveyHandler(std::unique_ptr<Delegate> delegate)
     : delegate_(std::move(delegate)) {
   if (!base::FeatureList::IsEnabled(kHatsAudioSurvey.feature) &&
+      !base::FeatureList::IsEnabled(kHatsAudioOutputProcSurvey.feature) &&
       !base::FeatureList::IsEnabled(kHatsBluetoothAudioSurvey.feature)) {
     VLOG(1) << "Audio survey feature is not enabled";
     return;

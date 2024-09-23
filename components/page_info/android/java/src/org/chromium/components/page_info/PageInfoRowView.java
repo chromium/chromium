@@ -62,7 +62,7 @@ public class PageInfoRowView extends FrameLayout {
             // All icons are 24dp but some are effectively 20dp because fill the side with padding.
             // Add 2dp padding for the images that are otherwise too large to make them
             // equal size.
-            // TODO(crbug.com/1135124): Figure out why we have these differences.
+            // TODO(crbug.com/40723471): Figure out why we have these differences.
             int p = ViewUtils.dpToPx(displayMetrics, 2);
             mIcon.setPadding(p, p, p, p);
         }

@@ -89,7 +89,7 @@ interface PrintBackendService {
        [EnableIf=is_win]
        pending_remote<PrinterXmlParser>? remote);
 
-  // TODO(crbug.com/1225111)  Message with no arguments and no reply that is
+  // TODO(crbug.com/40775634)  Message with no arguments and no reply that is
   // useful to ensure that an idle timeout change takes effect.
   Poke();
 
@@ -115,7 +115,7 @@ interface PrintBackendService {
   // workaround for the high cost of trying to get printable area for all paper
   // sizes in `FetchCapabilities()`.  Returns an empty area if there is any
   // error in retrieving the printable area.
-  // TODO(crbug.com/1424368):  Remove this if
+  // TODO(crbug.com/40260379):  Remove this if
   // `PrintBackendWin::GetPrinterSemanticCapsAndDefaults()` can be made to
   // fetch the all printable areas in a performant manner.
   [EnableIf=is_win]
@@ -162,7 +162,7 @@ interface PrintBackendService {
   //     may be possible if all of UI is moved out of the browser process.  See
   //     https://docs.google.com/document/d/1uAxz9pk3twwkzamchxHTQiImIbKrc0cuKVDpzbn2wsQ
   //     for discussion on such an effort.
-  //   - TODO(crbug.com/809738):  Determine if Linux Wayland can be made to
+  //   - TODO(crbug.com/40561724):  Determine if Linux Wayland can be made to
   //     have a system dialog be modal against an application window in the
   //     browser process.
   //   - Platforms other than those identified above do not support a system

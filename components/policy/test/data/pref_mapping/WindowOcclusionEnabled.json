@@ -10,7 +10,8 @@
         },
         "prefs": {
           "policy.native_window_occlusion_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

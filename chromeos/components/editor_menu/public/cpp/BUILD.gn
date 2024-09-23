@@ -8,10 +8,30 @@ component("cpp") {
   defines = [ "IS_EDITOR_MENU_PUBLIC_CPP_IMPL" ]
 
   sources = [
-    "read_write_card_controller.h",
-    "read_write_cards_manager.cc",
-    "read_write_cards_manager.h",
+    "editor_helpers.cc",
+    "editor_helpers.h",
+    "icon.cc",
+    "icon.h",
+    "preset_text_query.cc",
+    "preset_text_query.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chromeos/ui/vector_icons",
+    "//components/vector_icons",
+    "//ui/gfx",
+    "//ui/gfx/range",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":cpp",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+  sources = [ "editor_helpers_unittest.cc" ]
 }

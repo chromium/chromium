@@ -33,7 +33,8 @@ class DistillerViewerInterface : public DomDistillerRequestViewBase {
       base::OnceCallback<void(const GURL& url,
                               const std::string& html,
                               const std::vector<ImageInfo>& images,
-                              const std::string& title)>;
+                              const std::string& title,
+                              const std::string& csp_nonce)>;
 
   DistillerViewerInterface(PrefService* prefs)
       : DomDistillerRequestViewBase(new DistilledPagePrefs(prefs)) {}
@@ -105,6 +106,8 @@ class DistillerViewer : public DistillerViewerInterface {
   DistillationFinishedCallback callback_;
   // Keep reference of the distiller_ during distillation.
   std::unique_ptr<Distiller> distiller_;
+
+  base::WeakPtrFactory<DistillerViewer> weak_ptr_factory_{this};
 };
 
 }  // namespace dom_distiller

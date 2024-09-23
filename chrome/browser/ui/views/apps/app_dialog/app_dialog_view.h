@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_APPS_APP_DIALOG_APP_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_APPS_APP_DIALOG_APP_DIALOG_VIEW_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -24,15 +25,30 @@ class AppDialogView : public views::BubbleDialogDelegateView {
  public:
   explicit AppDialogView(const ui::ImageModel& image);
   ~AppDialogView() override;
+  std::optional<std::u16string> GetTitleTextForTesting() const;
 
  protected:
-  void InitializeView(const std::u16string& heading_text);
+  // Initializes the view with an image, a label and a close button.
+  void InitializeView();
 
-  // Can only be called after InitializeView().
-  void SetLabelText(const std::u16string& text);
+  // Can only be called after `InitializeView()`.
+  void AddTitle(const std::u16string& title_text);
+
+  // Can only be called after `InitializeView()`.
+  void AddSubtitle(const std::u16string& subtitle_text);
+
+  // Can only be called after `InitializeView()` and `AddTitle()`.
+  void SetTitleText(const std::u16string& text);
+
+  // Can only be called after `InitializeView()` and `AddSubtitle()`.
+  void SetSubtitleText(const std::u16string& text);
 
  private:
-  raw_ptr<views::Label> label_ = nullptr;
+  // BubbleDialogDelegateView:
+  std::u16string GetAccessibleWindowTitle() const override;
+
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::Label> subtitle_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_DIALOG_APP_DIALOG_VIEW_H_

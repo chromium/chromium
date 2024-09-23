@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/disk_cache/simple/simple_version_upgrade.h"
 
 #include <stdint.h>
@@ -40,7 +45,7 @@ bool WriteFakeIndexFileV5(const base::FilePath& cache_path) {
   data.zero = 0;
   data.zero2 = 0;
   const base::FilePath file_name = cache_path.AppendASCII("index");
-  return base::WriteFile(file_name, base::as_bytes(base::make_span(&data, 1u)));
+  return base::WriteFile(file_name, base::byte_span_from_ref(data));
 }
 
 TEST(SimpleVersionUpgradeTest, FailsToMigrateBackwards) {
@@ -54,8 +59,7 @@ TEST(SimpleVersionUpgradeTest, FailsToMigrateBackwards) {
   data.zero = 0;
   data.zero2 = 0;
   const base::FilePath file_name = cache_path.AppendASCII(kFakeIndexFileName);
-  ASSERT_TRUE(
-      base::WriteFile(file_name, base::as_bytes(base::make_span(&data, 1u))));
+  ASSERT_TRUE(base::WriteFile(file_name, base::byte_span_from_ref(data)));
   disk_cache::TrivialFileOperations file_operations;
   EXPECT_EQ(disk_cache::SimpleCacheConsistencyResult::kVersionFromTheFuture,
             disk_cache::UpgradeSimpleCacheOnDisk(&file_operations,
@@ -73,8 +77,7 @@ TEST(SimpleVersionUpgradeTest, ExperimentBacktoDefault) {
   data.zero = 2;
   data.zero2 = 4;
   const base::FilePath file_name = cache_path.AppendASCII(kFakeIndexFileName);
-  ASSERT_TRUE(
-      base::WriteFile(file_name, base::as_bytes(base::make_span(&data, 1u))));
+  ASSERT_TRUE(base::WriteFile(file_name, base::byte_span_from_ref(data)));
 
   disk_cache::TrivialFileOperations file_operations;
   // The cache needs to transition from a deprecated experiment back to not

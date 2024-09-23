@@ -56,9 +56,8 @@ class PdfAXActionTarget : public ui::AXActionTarget {
   bool ScrollToGlobalPoint(const gfx::Point& point) const;
   bool StitchChildTree(const ui::AXTreeID& child_tree_id) const;
 
-  const raw_ref<const ui::AXNode, ExperimentalRenderer> target_plugin_node_;
-  raw_ptr<PdfAccessibilityTree, ExperimentalRenderer>
-      pdf_accessibility_tree_source_;
+  const raw_ref<const ui::AXNode> target_plugin_node_;
+  raw_ptr<PdfAccessibilityTree> pdf_accessibility_tree_source_;
 };
 
 }  // namespace pdf

@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './dlp_restricted_banner.js';
+
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {RootType} from '../../../../common/js/volume_manager_types.js';
 
-import {DlpRestrictedBanner} from './dlp_restricted_banner.js';
+import type {DlpRestrictedBanner} from './dlp_restricted_banner.js';
 
 let dlpRestrictedBanner: DlpRestrictedBanner;
 

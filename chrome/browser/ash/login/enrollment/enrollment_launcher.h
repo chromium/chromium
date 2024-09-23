@@ -14,7 +14,6 @@ class GoogleServiceAuthError;
 
 namespace policy {
 struct EnrollmentConfig;
-enum class LicenseType;
 class EnrollmentStatus;
 }  // namespace policy
 
@@ -38,8 +37,7 @@ class EnrollmentLauncher {
   using Factory = base::RepeatingCallback<std::unique_ptr<EnrollmentLauncher>(
       EnrollmentStatusConsumer*,
       const policy::EnrollmentConfig&,
-      const std::string&,
-      policy::LicenseType)>;
+      const std::string&)>;
 
   // Enumeration of the possible errors that can occur during enrollment which
   // are not covered by GoogleServiceAuthError or EnrollmentStatus.
@@ -79,8 +77,7 @@ class EnrollmentLauncher {
   static std::unique_ptr<EnrollmentLauncher> Create(
       EnrollmentStatusConsumer* status_consumer,
       const policy::EnrollmentConfig& enrollment_config,
-      const std::string& enrolling_user_domain,
-      policy::LicenseType license_type);
+      const std::string& enrolling_user_domain);
 
   EnrollmentLauncher(const EnrollmentLauncher&) = delete;
   EnrollmentLauncher& operator=(const EnrollmentLauncher&) = delete;
@@ -98,12 +95,21 @@ class EnrollmentLauncher {
   // This flow is used when enrollment is controlled by the paired device.
   // EnrollUsingToken can be called only once during this object's lifetime, and
   // only if none of the EnrollUsing* was called before.
+  //
+  // TODO(b/331285209): Rename this method to EnrollUsingOAuthToken, to
+  // distinguish from EnrollUsingEnrollmentToken.
   virtual void EnrollUsingToken(const std::string& token) = 0;
 
   // Starts enterprise enrollment using PCA attestation.
   // EnrollUsingAttestation can be called only once during the object's
   // lifetime, and only if none of the EnrollUsing* was called before.
   virtual void EnrollUsingAttestation() = 0;
+
+  // Starts enterprise enrollment using the enrollment token passed via
+  // `EnrollmentConfig`.
+  // EnrollUsingEnrollmentToken can be called only once during this object's
+  // lifetime, and only if none of the EnrollUsing* was called before.
+  virtual void EnrollUsingEnrollmentToken() = 0;
 
   // Starts device attribute update process. First tries to get
   // permission to update device attributes for current user
@@ -118,13 +124,18 @@ class EnrollmentLauncher {
                                       const std::string& location) = 0;
 
   // Clears authentication data from the profile (if EnrollUsingProfile was
-  // used) and revokes fetched tokens.
+  // used) and conditionally revokes fetched tokens.
   // Does not revoke the additional token if enrollment finished successfully.
   // Calls `callback` on completion.
-  virtual void ClearAuth(base::OnceClosure callback) = 0;
+  virtual void ClearAuth(base::OnceClosure callback,
+                         bool revoke_oauth2_tokens) = 0;
 
   // Returns true if enrollment is in progress.
   virtual bool InProgress() const = 0;
+
+  // Returns the OAuth2 Refresh Token fetched during enrollment.
+  // Make sure to call this after OnDeviceEnrolled() and before ClearAuth().
+  virtual std::string GetOAuth2RefreshToken() const = 0;
 
  protected:
   // The user of this class is responsible for clearing auth data in some cases
@@ -133,8 +144,7 @@ class EnrollmentLauncher {
 
   // This method is called once from Create method.
   virtual void Setup(const policy::EnrollmentConfig& enrollment_config,
-                     const std::string& enrolling_user_domain,
-                     policy::LicenseType license_type) = 0;
+                     const std::string& enrolling_user_domain) = 0;
 };
 
 class ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting {

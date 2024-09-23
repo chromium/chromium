@@ -1,28 +1,28 @@
-From b0d78772a044284949bd93d6ab5a70b7908a5123 Mon Sep 17 00:00:00 2001
-From: Sophie Chang <sophiechang@chromium.org>
-Date: Tue, 2 Jan 2024 21:40:54 +0000
-Subject: [PATCH] patch
+From a9bc54a3a92c437b101794a062fb6c28404f929d Mon Sep 17 00:00:00 2001
+From: Ahmed Moussa <ahmedmoussa@google.com>
+Date: Tue, 27 Aug 2024 21:28:32 +0000
+Subject: [PATCH 2/2] no-consume
 
 ---
  .../src/mediapipe/framework/packet.h          | 73 +------------------
  1 file changed, 3 insertions(+), 70 deletions(-)
 
 diff --git a/third_party/mediapipe/src/mediapipe/framework/packet.h b/third_party/mediapipe/src/mediapipe/framework/packet.h
-index 0b660f0d7fde6..bd0050d1678fa 100644
+index ef0b5d113925b..a5501848e9f2b 100644
 --- a/third_party/mediapipe/src/mediapipe/framework/packet.h
 +++ b/third_party/mediapipe/src/mediapipe/framework/packet.h
-@@ -635,53 +635,14 @@ inline Packet& Packet::operator=(const Packet& packet) {
- 
+@@ -691,53 +691,14 @@ inline Packet& Packet::operator=(const Packet& packet) {
+
  template <typename T>
  inline absl::StatusOr<std::unique_ptr<T>> Packet::Consume() {
 -  // If type validation fails, returns error.
 -  MP_RETURN_IF_ERROR(ValidateAsType<T>());
 -  // Clients who use this function are responsible for ensuring that no
 -  // other thread is doing anything with this Packet.
--  if (!holder_->HasForeignOwner() && holder_.unique()) {
+-  if (!holder_->HasForeignOwner() && holder_.use_count() == 1) {
 -    VLOG(2) << "Consuming the data of " << DebugString();
 -    absl::StatusOr<std::unique_ptr<T>> release_result =
--        holder_->As<T>()->Release();
+-        holder_->AsMutable<T>()->Release();
 -    if (release_result.ok()) {
 -      VLOG(2) << "Setting " << DebugString() << " to empty.";
 -      holder_.reset();
@@ -35,17 +35,17 @@ index 0b660f0d7fde6..bd0050d1678fa 100644
 -                      "Packet isn't the sole owner of the holder.");
 +  return absl::InternalError("Consume isn't supported.");
  }
- 
+
  template <typename T>
  inline absl::StatusOr<std::unique_ptr<T>> Packet::ConsumeOrCopy(
      bool* was_copied,
      typename std::enable_if<!std::is_array<T>::value>::type*) {
 -  MP_RETURN_IF_ERROR(ValidateAsType<T>());
 -  // If holder is the sole owner of the underlying data, consumes this packet.
--  if (!holder_->HasForeignOwner() && holder_.unique()) {
+-  if (!holder_->HasForeignOwner() && holder_.use_count() == 1) {
 -    VLOG(2) << "Consuming the data of " << DebugString();
 -    absl::StatusOr<std::unique_ptr<T>> release_result =
--        holder_->As<T>()->Release();
+-        holder_->AsMutable<T>()->Release();
 -    if (release_result.ok()) {
 -      VLOG(2) << "Setting " << DebugString() << " to empty.";
 -      holder_.reset();
@@ -65,18 +65,18 @@ index 0b660f0d7fde6..bd0050d1678fa 100644
 -  return std::move(data_ptr);
 +  return absl::InternalError("ConsumeOrCopy isn't supported.");
  }
- 
+
  template <typename T>
-@@ -689,35 +650,7 @@ inline absl::StatusOr<std::unique_ptr<T>> Packet::ConsumeOrCopy(
+@@ -745,35 +706,7 @@ inline absl::StatusOr<std::unique_ptr<T>> Packet::ConsumeOrCopy(
      bool* was_copied,
      typename std::enable_if<std::is_array<T>::value &&
                              std::extent<T>::value != 0>::type*) {
 -  MP_RETURN_IF_ERROR(ValidateAsType<T>());
 -  // If holder is the sole owner of the underlying data, consumes this packet.
--  if (!holder_->HasForeignOwner() && holder_.unique()) {
+-  if (!holder_->HasForeignOwner() && holder_.use_count() == 1) {
 -    VLOG(2) << "Consuming the data of " << DebugString();
 -    absl::StatusOr<std::unique_ptr<T>> release_result =
--        holder_->As<T>()->Release();
+-        holder_->AsMutable<T>()->Release();
 -    if (release_result.ok()) {
 -      VLOG(2) << "Setting " << DebugString() << " to empty.";
 -      holder_.reset();
@@ -102,8 +102,7 @@ index 0b660f0d7fde6..bd0050d1678fa 100644
 -  return std::move(data_ptr);
 +  return absl::InternalError("ConsumeOrCopy isn't supported.");
  }
- 
- template <typename T>
--- 
-2.43.0.195.gebba966016-goog
 
+ template <typename T>
+--
+2.46.0.295.g3b9ea8a38a-goog

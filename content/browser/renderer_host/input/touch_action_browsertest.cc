@@ -8,10 +8,12 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -204,7 +206,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
 
   void JankMainThread(base::TimeDelta delta) {
     std::string script = "var end = performance.now() + ";
-    script.append(std::to_string(delta.InMilliseconds()));
+    script.append(base::NumberToString(delta.InMilliseconds()));
     script.append("; while (performance.now() < end) ; ");
     EXPECT_TRUE(ExecJs(shell(), script));
   }
@@ -394,9 +396,9 @@ class TouchActionBrowserTest : public ContentBrowserTest {
         }]
         )HTML";
 
-    ASSERT_OK_AND_ASSIGN(
+    UNSAFE_BUFFERS(ASSERT_OK_AND_ASSIGN(
         auto parsed_json,
-        base::JSONReader::ReadAndReturnValueWithError(pointer_actions_json));
+        base::JSONReader::ReadAndReturnValueWithError(pointer_actions_json)));
     ActionsParser actions_parser(std::move(parsed_json));
 
     ASSERT_TRUE(actions_parser.Parse());
@@ -463,7 +465,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
     // It seems that even if the compositor frame has scrolled half of the
     // expected scroll offset, the Blink side scroll offset may not yet be
     // updated, so here we expect it to at least have scrolled.
-    // TODO(crbug.com/902446): this can be resolved by fixing this bug.
+    // TODO(crbug.com/40601223): this can be resolved by fixing this bug.
     if (expected_scroll_position_after_scroll.y() > 0)
       EXPECT_GT(scroll_top, 0);
     if (expected_scroll_position_after_scroll.x() > 0)
@@ -475,7 +477,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
@@ -523,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, MAYBE_TouchActionNone) {
   EXPECT_EQ(0, EvalJs(shell(), "eventCounts.touchcancel"));
 }
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
@@ -540,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, MAYBE_PanYMainThreadJanky) {
                                     gfx::Vector2d(0, 45), kShortJankTime);
 }
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
@@ -587,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
   DoTwoFingerTouchScroll(true, gfx::Vector2d(20, 0));
 }
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
@@ -604,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, MAYBE_PanXYMainThreadJanky) {
                                     gfx::Vector2d(45, 45), kShortJankTime);
 }
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
@@ -621,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
                                     kShortJankTime);
 }
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
@@ -638,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
                                     kShortJankTime);
 }
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
@@ -657,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
                                     kShortJankTime);
 }
 
-// TODO(crbug.com/1357167): Fix Mac failures.
+// TODO(crbug.com/40236573): Fix Mac failures.
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \
     defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
@@ -676,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
                                     kShortJankTime);
 }
 
-// TODO(crbug.com/899005): Make this test work on Android.
+// TODO(crbug.com/41422733): Make this test work on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TwoFingerPanYDisallowed DISABLED_TwoFingerPanYDisallowed
 #else

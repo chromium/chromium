@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/extensions/media_galleries_dialog_views.h"
+
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller_mock.h"
-#include "chrome/browser/ui/views/extensions/media_galleries_dialog_views.h"
 #include "chrome/browser/ui/views/extensions/media_gallery_checkbox_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/storage_monitor/storage_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/test/button_test_api.h"
 
@@ -62,15 +64,17 @@ class MediaGalleriesDialogTest : public ChromeViewsTestBase {
   }
 
   views::Widget::InitParams CreateParams(
+      views::Widget::InitParams::Ownership ownership,
       views::Widget::InitParams::Type type) override {
     // This relies on the setup done in the ToggleCheckboxes test below.
     auto dialog = std::make_unique<MediaGalleriesDialogViews>(controller());
-    dialog->SetModalType(ui::MODAL_TYPE_WINDOW);
+    dialog->SetModalType(ui::mojom::ModalType::kWindow);
     EXPECT_EQ(1U, dialog->checkbox_map_.size());
     checkbox_ = dialog->checkbox_map_[1]->checkbox();
     EXPECT_TRUE(checkbox_->GetChecked());
 
-    views::Widget::InitParams params = ChromeViewsTestBase::CreateParams(type);
+    views::Widget::InitParams params =
+        ChromeViewsTestBase::CreateParams(ownership, type);
     params.delegate = dialog.release();
     params.delegate->SetOwnedByWidget(true);
     return params;
@@ -119,11 +123,12 @@ TEST_F(MediaGalleriesDialogTest, ToggleCheckboxes) {
   EXPECT_CALL(*controller(), GetSectionEntries(0)).
       WillRepeatedly(Return(attached_permissions));
 
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   EXPECT_CALL(*controller(), DidToggleEntry(1, false));
   views::test::ButtonTestApi test_api(checkbox());
-  ui::KeyEvent dummy_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  ui::KeyEvent dummy_event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
   test_api.NotifyClick(dummy_event);  // Toggles to unchecked before notifying.
 
   EXPECT_CALL(*controller(), DidToggleEntry(1, true));

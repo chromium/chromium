@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 
 #include <errno.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -36,6 +43,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
@@ -97,7 +105,7 @@ void BrowserDataBackMigrator::Migrate(
 
   DCHECK(!running_);
   DCHECK(IsBackMigrationEnabled(
-      crosapi::browser_util::PolicyInitState::kBeforeInit));
+      ash::standalone_browser::migrator_util::PolicyInitState::kBeforeInit));
 
   browser_data_back_migrator_metrics::RecordNumberOfLacrosSecondaryProfiles(
       ash_profile_dir_);
@@ -917,7 +925,7 @@ bool BrowserDataBackMigrator::MergePreferences(
     } else {
       if (lacros_value->is_dict() && ash_value->is_dict()) {
         for (const auto entry : lacros_value->GetDict()) {
-          const base::StringPiece extension_id = entry.first;
+          const std::string_view extension_id = entry.first;
           if (IsLacrosOnlyExtension(extension_id)) {
             ash_value->GetDict().Set(extension_id, entry.second.Clone());
           }
@@ -927,7 +935,7 @@ bool BrowserDataBackMigrator::MergePreferences(
           if (!item.is_string())
             return false;
 
-          const base::StringPiece extension_id = item.GetString();
+          const std::string_view extension_id = item.GetString();
           return IsLacrosOnlyExtension(extension_id);
         });
 
@@ -1024,7 +1032,7 @@ bool BrowserDataBackMigrator::MergeLacrosPreferences(
 
 // static
 bool BrowserDataBackMigrator::IsLacrosOnlyExtension(
-    const base::StringPiece extension_id) {
+    const std::string_view extension_id) {
   return !base::Contains(browser_data_migrator_util::kExtensionsAshOnly,
                          extension_id) &&
          !base::Contains(
@@ -1256,7 +1264,7 @@ bool BrowserDataBackMigrator::IsBackMigrationForceEnabled() {
 
 // static
 bool BrowserDataBackMigrator::IsBackMigrationEnabled(
-    crosapi::browser_util::PolicyInitState policy_init_state) {
+    ash::standalone_browser::migrator_util::PolicyInitState policy_init_state) {
   if (IsBackMigrationForceEnabled()) {
     VLOG(1) << "Lacros backward migration is force enabled";
     return true;
@@ -1275,7 +1283,7 @@ bool BrowserDataBackMigrator::IsBackMigrationEnabled(
   crosapi::browser_util::LacrosDataBackwardMigrationMode migration_mode =
       crosapi::browser_util::LacrosDataBackwardMigrationMode::kNone;
   if (policy_init_state ==
-      crosapi::browser_util::PolicyInitState::kBeforeInit) {
+      ash::standalone_browser::migrator_util::PolicyInitState::kBeforeInit) {
     std::optional<crosapi::browser_util::LacrosDataBackwardMigrationMode>
         parsed = std::nullopt;
 
@@ -1293,8 +1301,9 @@ bool BrowserDataBackMigrator::IsBackMigrationEnabled(
             ? parsed.value()
             : crosapi::browser_util::LacrosDataBackwardMigrationMode::kNone;
   } else {
-    DCHECK_EQ(policy_init_state,
-              crosapi::browser_util::PolicyInitState::kAfterInit);
+    DCHECK_EQ(
+        policy_init_state,
+        ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit);
     migration_mode =
         crosapi::browser_util::GetCachedLacrosDataBackwardMigrationMode();
   }
@@ -1325,7 +1334,7 @@ bool BrowserDataBackMigrator::IsBackMigrationEnabled(
 bool BrowserDataBackMigrator::ShouldMigrateBack(
     const AccountId& account_id,
     const std::string& user_id_hash,
-    crosapi::browser_util::PolicyInitState policy_init_state) {
+    ash::standalone_browser::migrator_util::PolicyInitState policy_init_state) {
   if (IsBackMigrationForceEnabled()) {
     LOG(WARNING) << "Lacros backward migration has been force enabled";
     // Skipping other checks, except for lacros folder presence.
@@ -1412,18 +1421,6 @@ bool BrowserDataBackMigrator::RestartToMigrateBack(
 
   AttemptRestart();
   return true;
-}
-
-// static
-bool BrowserDataBackMigrator::MaybeRestartToMigrateBack(
-    const AccountId& account_id,
-    const std::string& user_id_hash,
-    crosapi::browser_util::PolicyInitState policy_init_state) {
-  if (!ShouldMigrateBack(account_id, user_id_hash, policy_init_state)) {
-    return false;
-  }
-
-  return RestartToMigrateBack(account_id);
 }
 
 // static

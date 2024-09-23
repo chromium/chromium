@@ -47,6 +47,7 @@ import org.chromium.net.test.FailurePhase;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.ServerSocket;
 import java.nio.ByteBuffer;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -576,10 +578,9 @@ public class CronetUrlRequestTest {
         builder.addHeader("header:name", "headervalue");
         IllegalArgumentException e =
                 assertThrows(IllegalArgumentException.class, () -> builder.build().start());
-        if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM) {
-            // TODO(b/307234565): Remove check once AOSP propagates this change. Not using
-            // @IgnoreFor so this test fails when the propagation happens hence, serving as a
-            // notification.
+        if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM
+                && !mTestRule.isRunningInAOSP()) {
+            // TODO(b/307234565): Remove check once chromium Android 14 emulator has latest changes.
             assertThat(e).hasMessageThat().isEqualTo("Invalid header header:name=headervalue");
         } else {
             assertThat(e).hasMessageThat().isEqualTo("Invalid header with headername: header:name");
@@ -617,10 +618,9 @@ public class CronetUrlRequestTest {
         builder.addHeader("headername", "bad header\r\nvalue");
         IllegalArgumentException e =
                 assertThrows(IllegalArgumentException.class, () -> builder.build().start());
-        if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM) {
-            // TODO(b/307234565): Remove check once AOSP propagates this change. Not using
-            // @IgnoreFor so this test fails when the propagation happens hence, serving as a
-            // notification.
+        if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM
+                && !mTestRule.isRunningInAOSP()) {
+            // TODO(b/307234565): Remove check once chromium Android 14 emulator has latest changes.
             assertThat(e)
                     .hasMessageThat()
                     .isEqualTo("Invalid header headername=bad header\r\nvalue");
@@ -1368,6 +1368,124 @@ public class CronetUrlRequestTest {
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEmpty();
         dataProvider.assertClosed();
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "Platform does not support empty buffers yet.")
+    public void testUploadWithEmptyBuffersShouldFailUpload() throws Exception {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest.Builder builder =
+                mTestRule
+                        .getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(
+                                NativeTestServer.getEchoBodyURL(),
+                                callback,
+                                callback.getExecutor());
+
+        TestUploadDataProvider dataProvider =
+                new TestUploadDataProvider(
+                        TestUploadDataProvider.SuccessCallbackMode.SYNC, callback.getExecutor());
+        dataProvider.addRead("test".getBytes());
+        dataProvider.addRead("".getBytes());
+        dataProvider.addRead("test".getBytes());
+        builder.setUploadDataProvider(dataProvider, callback.getExecutor());
+        builder.addHeader("Content-Type", "useless/string");
+        builder.build().start();
+        callback.blockForDone();
+        dataProvider.assertClosed();
+        assertThat(dataProvider.getNumReadCalls()).isEqualTo(2);
+
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception received from UploadDataProvider");
+        assertThat(callback.mError)
+                .hasCauseThat()
+                .hasMessageThat()
+                .contains("Bytes read can't be zero except for last chunk!");
+        assertThat(callback.getResponseInfo()).isNull();
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "Platform does not support empty buffers yet.")
+    public void testUploadWithEmptyBuffersAsyncShouldFailUpload() throws Exception {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest.Builder builder =
+                mTestRule
+                        .getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(
+                                NativeTestServer.getEchoBodyURL(),
+                                callback,
+                                callback.getExecutor());
+
+        TestUploadDataProvider dataProvider =
+                new TestUploadDataProvider(
+                        TestUploadDataProvider.SuccessCallbackMode.ASYNC, callback.getExecutor());
+        dataProvider.addRead("test".getBytes());
+        dataProvider.addRead("".getBytes());
+        dataProvider.addRead("test".getBytes());
+        builder.setUploadDataProvider(dataProvider, callback.getExecutor());
+        builder.addHeader("Content-Type", "useless/string");
+        builder.build().start();
+        callback.blockForDone();
+        dataProvider.assertClosed();
+
+        assertThat(dataProvider.getNumReadCalls()).isEqualTo(2);
+
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception received from UploadDataProvider");
+        assertThat(callback.mError)
+                .hasCauseThat()
+                .hasMessageThat()
+                .contains("Bytes read can't be zero except for last chunk!");
+        assertThat(callback.getResponseInfo()).isNull();
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "Platform does not support empty buffers yet.")
+    public void testUploadWithEmptyBuffersAtEndShouldSucceed() throws Exception {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest.Builder builder =
+                mTestRule
+                        .getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(
+                                NativeTestServer.getEchoBodyURL(),
+                                callback,
+                                callback.getExecutor());
+
+        TestUploadDataProvider dataProvider =
+                new TestUploadDataProvider(
+                        TestUploadDataProvider.SuccessCallbackMode.SYNC, callback.getExecutor());
+        dataProvider.addRead("test".getBytes());
+        dataProvider.addRead("test".getBytes());
+        dataProvider.addRead("".getBytes());
+        builder.setUploadDataProvider(dataProvider, callback.getExecutor());
+        builder.addHeader("Content-Type", "useless/string");
+        builder.build().start();
+        callback.blockForDone();
+        dataProvider.assertClosed();
+
+        assertThat(dataProvider.getUploadedLength()).isEqualTo(8);
+        // There are only 2 reads because the last read will never be executed
+        // because from the networking stack perspective, we read all the content
+        // after executing the second read.
+        assertThat(dataProvider.getNumReadCalls()).isEqualTo(2);
+        assertThat(dataProvider.getNumRewindCalls()).isEqualTo(0);
+
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback.mResponseAsString).isEqualTo("testtest");
     }
 
     @Test
@@ -2201,7 +2319,7 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
-    public void testFailures() throws Exception {
+    public void testThrowOrCancelInOnRedirect() {
         throwOrCancel(FailureType.CANCEL_SYNC, ResponseStep.ON_RECEIVED_REDIRECT, false, false);
         throwOrCancel(FailureType.CANCEL_ASYNC, ResponseStep.ON_RECEIVED_REDIRECT, false, false);
         throwOrCancel(
@@ -2210,7 +2328,11 @@ public class CronetUrlRequestTest {
                 false,
                 false);
         throwOrCancel(FailureType.THROW_SYNC, ResponseStep.ON_RECEIVED_REDIRECT, false, true);
+    }
 
+    @Test
+    @SmallTest
+    public void testThrowOrCancelInOnResponseStarted() {
         throwOrCancel(FailureType.CANCEL_SYNC, ResponseStep.ON_RESPONSE_STARTED, true, false);
         throwOrCancel(FailureType.CANCEL_ASYNC, ResponseStep.ON_RESPONSE_STARTED, true, false);
         throwOrCancel(
@@ -2219,7 +2341,11 @@ public class CronetUrlRequestTest {
                 true,
                 false);
         throwOrCancel(FailureType.THROW_SYNC, ResponseStep.ON_RESPONSE_STARTED, true, true);
+    }
 
+    @Test
+    @SmallTest
+    public void testThrowOrCancelInOnReadCompleted() {
         throwOrCancel(FailureType.CANCEL_SYNC, ResponseStep.ON_READ_COMPLETED, true, false);
         throwOrCancel(FailureType.CANCEL_ASYNC, ResponseStep.ON_READ_COMPLETED, true, false);
         throwOrCancel(
@@ -2228,6 +2354,30 @@ public class CronetUrlRequestTest {
                 true,
                 false);
         throwOrCancel(FailureType.THROW_SYNC, ResponseStep.ON_READ_COMPLETED, true, true);
+    }
+
+    @Test
+    @SmallTest
+    public void testCancelBeforeResponse() throws IOException {
+        // Use a hanging server to prevent race between getting a response and cancel().
+        // Cronet only records the responseInfo once onResponseStarted is called.
+        try (ServerSocket hangingServer = new ServerSocket(0)) {
+            String url = "http://localhost:" + hangingServer.getLocalPort();
+            TestUrlRequestCallback callback = new TestUrlRequestCallback();
+            UrlRequest.Builder builder =
+                    mTestRule
+                            .getTestFramework()
+                            .getEngine()
+                            .newUrlRequestBuilder(url, callback, callback.getExecutor());
+            UrlRequest urlRequest = builder.build();
+            urlRequest.start();
+            hangingServer.accept();
+            urlRequest.cancel();
+            callback.blockForDone();
+
+            assertResponseStepCanceled(callback);
+            assertThat(callback.getResponseInfo()).isNull();
+        }
     }
 
     @Test
@@ -2555,6 +2705,7 @@ public class CronetUrlRequestTest {
         QuicException quicException = (QuicException) callback.mError;
         // 1 is QUIC_INTERNAL_ERROR
         assertThat(quicException.getQuicDetailedErrorCode()).isEqualTo(1);
+        assertThat(quicException.getConnectionCloseSource()).isEqualTo(ConnectionCloseSource.SELF);
         assertThat(quicException.getErrorCode())
                 .isEqualTo(NetworkException.ERROR_QUIC_PROTOCOL_FAILED);
     }
@@ -2578,6 +2729,7 @@ public class CronetUrlRequestTest {
         // URLRequestFailedJob::PopulateNetErrorDetails for this test.
         final int quicErrorCode = 83;
         assertThat(quicException.getQuicDetailedErrorCode()).isEqualTo(quicErrorCode);
+        assertThat(quicException.getConnectionCloseSource()).isEqualTo(ConnectionCloseSource.SELF);
         assertThat(quicException.getErrorCode()).isEqualTo(NetworkException.ERROR_NETWORK_CHANGED);
     }
 
@@ -2929,7 +3081,7 @@ public class CronetUrlRequestTest {
             // given a fake networkHandle.
             assertThrows(
                     IllegalArgumentException.class,
-                    () -> builder.bindToNetwork(-150 /* invalid network handle */));
+                    () -> builder.bindToNetwork(-150 /* invalid network handle */).build());
             return;
         }
 
@@ -2962,6 +3114,188 @@ public class CronetUrlRequestTest {
         builder.build().start();
         callback.blockForDone();
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+    }
+
+    // While our documentation does not specify that the request passed to the callbacks is the same
+    // object, it is an implicit expectation by our users that we should not break.
+    // See b/328442628 for an example regression.
+    @Test
+    public void testCallbackMethod_onRedirect_receivesSameRequestObject() {
+        AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
+        TestUrlRequestCallback callback =
+                new TestUrlRequestCallback() {
+                    @Override
+                    public void onRedirectReceived(
+                            UrlRequest request, UrlResponseInfo info, String newLocationUrl) {
+                        callbackRequest.set(request);
+                        super.onRedirectReceived(request, info, newLocationUrl);
+                    }
+                };
+
+        startRequestAndAssertCallback(NativeTestServer.getRedirectURL(), callback, callbackRequest);
+    }
+
+    // While our documentation does not specify that the request passed to the callbacks is the same
+    // object, it is an implicit expectation by our users that we should not break.
+    // See b/328442628 for an example regression.
+    @Test
+    public void testCallbackMethod_onResponseStarted_receivesSameRequestObject() {
+        AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
+        TestUrlRequestCallback callback =
+                new TestUrlRequestCallback() {
+                    @Override
+                    public void onResponseStarted(UrlRequest request, UrlResponseInfo info) {
+                        callbackRequest.set(request);
+                        super.onResponseStarted(request, info);
+                    }
+                };
+
+        startRequestAndAssertCallback(NativeTestServer.getSuccessURL(), callback, callbackRequest);
+    }
+
+    // While our documentation does not specify that the request passed to the callbacks is the same
+    // object, it is an implicit expectation by our users that we should not break.
+    // See b/328442628 for an example regression.
+    @Test
+    public void testCallbackMethod_onReadCompleted_receivesSameRequestObject() {
+        AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
+        TestUrlRequestCallback callback =
+                new TestUrlRequestCallback() {
+                    @Override
+                    public void onReadCompleted(
+                            UrlRequest request, UrlResponseInfo info, ByteBuffer byteBuffer) {
+                        callbackRequest.set(request);
+                        super.onReadCompleted(request, info, byteBuffer);
+                    }
+                };
+
+        startRequestAndAssertCallback(
+                NativeTestServer.getEchoMethodURL(), callback, callbackRequest);
+    }
+
+    // While our documentation does not specify that the request passed to the callbacks is the same
+    // object, it is an implicit expectation by our users that we should not break.
+    // See b/328442628 for an example regression.
+    @Test
+    public void testCallbackMethod_onSucceeded_receivesSameRequestObject() {
+        AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
+        TestUrlRequestCallback callback =
+                new TestUrlRequestCallback() {
+                    @Override
+                    public void onSucceeded(UrlRequest request, UrlResponseInfo info) {
+                        callbackRequest.set(request);
+                        super.onSucceeded(request, info);
+                    }
+                };
+
+        startRequestAndAssertCallback(NativeTestServer.getSuccessURL(), callback, callbackRequest);
+    }
+
+    // While our documentation does not specify that the request passed to the callbacks is the same
+    // object, it is an implicit expectation by our users that we should not break.
+    // See b/328442628 for an example regression.
+    @Test
+    public void testCallbackMethod_onCanceled_receivesSameRequestObject() {
+        AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
+        TestUrlRequestCallback callback =
+                new TestUrlRequestCallback() {
+                    @Override
+                    public void onCanceled(UrlRequest request, UrlResponseInfo info) {
+                        callbackRequest.set(request);
+                        super.onCanceled(request, info);
+                    }
+                };
+        callback.setFailure(FailureType.CANCEL_SYNC, ResponseStep.ON_RESPONSE_STARTED);
+
+        startRequestAndAssertCallback(NativeTestServer.getSuccessURL(), callback, callbackRequest);
+    }
+
+    // While our documentation does not specify that the request passed to the callbacks is the same
+    // object, it is an implicit expectation by our users that we should not break.
+    // See b/328442628 for an example regression.
+    @Test
+    public void testCallbackMethod_onFailed_receivesSameRequestObject() {
+        AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
+        TestUrlRequestCallback callback =
+                new TestUrlRequestCallback() {
+                    @Override
+                    public void onFailed(
+                            UrlRequest request, UrlResponseInfo info, CronetException error) {
+                        callbackRequest.set(request);
+                        super.onFailed(request, info, error);
+                    }
+                };
+        callback.setFailure(FailureType.THROW_SYNC, ResponseStep.ON_RESPONSE_STARTED);
+
+        startRequestAndAssertCallback(NativeTestServer.getSuccessURL(), callback, callbackRequest);
+    }
+
+    private void startRequestAndAssertCallback(
+            String url,
+            TestUrlRequestCallback callback,
+            AtomicReference<UrlRequest> callbackRequest) {
+        UrlRequest request =
+                mTestRule
+                        .getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(url, callback, callback.getExecutor())
+                        .build();
+        request.start();
+        callback.blockForDone();
+
+        assertThat(callbackRequest.get() == request).isTrue();
+    }
+
+    @Test
+    public void testCallback_twoRequestsFromOneBuilder_receivesCorrectRequestObject() {
+        AtomicReference<UrlRequest> onResponseStartedRequest = new AtomicReference<>();
+        AtomicReference<UrlRequest> onReadCompletedRequest = new AtomicReference<>();
+        AtomicReference<UrlRequest> onSucceededRequest = new AtomicReference<>();
+        TestUrlRequestCallback.SimpleSucceedingCallback callback =
+                new TestUrlRequestCallback.SimpleSucceedingCallback() {
+
+                    @Override
+                    public void onResponseStarted(UrlRequest request, UrlResponseInfo info) {
+                        onResponseStartedRequest.set(request);
+                        super.onResponseStarted(request, info);
+                    }
+
+                    @Override
+                    public void onReadCompleted(
+                            UrlRequest request, UrlResponseInfo info, ByteBuffer byteBuffer) {
+                        onReadCompletedRequest.set(request);
+                        super.onReadCompleted(request, info, byteBuffer);
+                    }
+
+                    @Override
+                    public void onSucceeded(UrlRequest request, UrlResponseInfo info) {
+                        onSucceededRequest.set(request);
+                        super.onSucceeded(request, info);
+                    }
+                };
+
+        UrlRequest.Builder builder =
+                mTestRule
+                        .getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(
+                                NativeTestServer.getSuccessURL(), callback, callback.getExecutor());
+        UrlRequest request1 = builder.build();
+        UrlRequest request2 = builder.build();
+        request1.start();
+        callback.done.block();
+
+        assertThat(onResponseStartedRequest.get() == request1).isTrue();
+        assertThat(onReadCompletedRequest.get() == request1).isTrue();
+        assertThat(onSucceededRequest.get() == request1).isTrue();
+
+        callback.done.close();
+        request2.start();
+        callback.done.block();
+
+        assertThat(onResponseStartedRequest.get() == request2).isTrue();
+        assertThat(onReadCompletedRequest.get() == request2).isTrue();
+        assertThat(onSucceededRequest.get() == request2).isTrue();
     }
 
     @NativeMethods("cronet_tests")

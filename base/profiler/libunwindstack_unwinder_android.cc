@@ -72,7 +72,6 @@ std::unique_ptr<unwindstack::Regs> CreateFromRegisterContext(
       reinterpret_cast<void*>(&thread_context->regs[0])));
 #else   // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
   NOTREACHED();
-  return nullptr;
 #endif  // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
 }
 
@@ -86,6 +85,18 @@ void WriteLibunwindstackTraceEventArgs(unwindstack::ErrorCode error_code,
   if (num_frames.has_value()) {
     libunwindstack_unwinder->set_num_frames(*num_frames);
   }
+}
+
+bool IsJavaModule(const base::ModuleCache::Module* module) {
+  if (!module) {
+    return false;
+  }
+
+  const auto path = module->GetDebugBasename();
+  const std::string& debug_basename = path.value();
+
+  return debug_basename.find("chrome.apk") != std::string::npos ||
+         debug_basename.find("base.apk") != std::string::npos;
 }
 
 }  // namespace
@@ -129,6 +140,7 @@ unwindstack::DexFiles* LibunwindstackUnwinderAndroid::GetOrCreateDexFiles(
 }
 
 UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
+    UnwinderStateCapture* capture_state,
     RegisterContext* thread_context,
     uintptr_t stack_top,
     std::vector<Frame>* stack) {
@@ -212,7 +224,8 @@ UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
                             });
       }
     }
-    stack->emplace_back(frame.pc, module, frame.function_name);
+    std::string function_name = IsJavaModule(module) ? frame.function_name : "";
+    stack->emplace_back(frame.pc, module, std::move(function_name));
   }
   return UnwindResult::kCompleted;
 }

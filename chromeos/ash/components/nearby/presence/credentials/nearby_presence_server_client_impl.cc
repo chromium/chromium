@@ -13,7 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow_impl.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
-#include "chromeos/ash/components/nearby/presence/proto/list_public_certificates_rpc.pb.h"
+#include "chromeos/ash/components/nearby/presence/proto/list_shared_credentials_rpc.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/update_device_rpc.pb.h"
 #include "components/signin/public/base/consent_level.h"
@@ -32,11 +32,10 @@ const char kDefaultNearbyPresenceV1HTTPHost[] =
 
 const char kNearbyPresenceV1Path[] = "v1/presence/";
 
-const char kListPublicCertificatesPath[] = "publicCertificates";
+const char kListSharedCredentialsPath[] = "listSharedCredentials";
 
-const char kPageSize[] = "page_size";
-const char kPageToken[] = "page_token";
-const char kSecretIds[] = "secret_ids";
+const char kDusi[] = "dusi";
+const char kIdentityType[] = "identity_type";
 
 const char kNearbyPresenceOAthConsumerName[] = "nearby_presence_server_client";
 
@@ -48,23 +47,12 @@ GURL CreateV1RequestUrl(const std::string& request_path) {
 }
 
 ash::nearby::NearbyApiCallFlow::QueryParameters
-ListPublicCertificatesRequestToQueryParameters(
-    const ash::nearby::proto::ListPublicCertificatesRequest& request) {
+ListSharedCredentialsRequestToQueryParameters(
+    const ash::nearby::proto::ListSharedCredentialsRequest& request) {
   ash::nearby::NearbyApiCallFlow::QueryParameters query_parameters;
-  if (request.page_size() > 0) {
-    query_parameters.emplace_back(kPageSize,
-                                  base::NumberToString(request.page_size()));
-  }
-  if (!request.page_token().empty()) {
-    query_parameters.emplace_back(kPageToken, request.page_token());
-  }
-  for (const std::string& id : request.secret_ids()) {
-    // NOTE: One Platform requires that byte fields be URL-safe base64 encoded.
-    std::string encoded_id;
-    base::Base64UrlEncode(id, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                          &encoded_id);
-    query_parameters.emplace_back(kSecretIds, encoded_id);
-  }
+  query_parameters.emplace_back(kDusi, request.dusi());
+  query_parameters.emplace_back(kIdentityType,
+                                base::NumberToString(request.identity_type()));
   return query_parameters;
 }
 
@@ -128,10 +116,10 @@ const net::PartialNetworkTrafficAnnotationTag& GetUpdateDeviceAnnotation() {
 }
 
 const net::PartialNetworkTrafficAnnotationTag&
-GetListPublicCertificatesAnnotation() {
+GetListSharedCredentialsAnnotation() {
   static const net::PartialNetworkTrafficAnnotationTag annotation =
       net::DefinePartialNetworkTrafficAnnotation(
-          "nearby_presence_list_public_certificates", "oauth2_api_call_flow",
+          "nearby_presence_list_shared_credentials", "oauth2_api_call_flow",
           R"(
       semantics {
         sender: "Nearby Presence"
@@ -231,16 +219,17 @@ void NearbyPresenceServerClientImpl::UpdateDevice(
               std::move(error_callback), GetUpdateDeviceAnnotation());
 }
 
-void NearbyPresenceServerClientImpl::ListPublicCertificates(
-    const ash::nearby::proto::ListPublicCertificatesRequest& request,
-    ListPublicCertificatesCallback callback,
+void NearbyPresenceServerClientImpl::ListSharedCredentials(
+    const ash::nearby::proto::ListSharedCredentialsRequest& request,
+    ListSharedCredentialsCallback callback,
     ErrorCallback error_callback) {
-  MakeApiCall(
-      CreateV1RequestUrl(request.parent() + "/" + kListPublicCertificatesPath),
-      RequestType::kGet, /*serialized_request=*/std::nullopt,
-      ListPublicCertificatesRequestToQueryParameters(request),
-      std::move(callback), std::move(error_callback),
-      GetListPublicCertificatesAnnotation());
+  MakeApiCall(CreateV1RequestUrl(request.dusi() + "/" +
+                                 base::NumberToString(request.identity_type()) +
+                                 "/" + kListSharedCredentialsPath),
+              RequestType::kGet, /*serialized_request=*/std::nullopt,
+              ListSharedCredentialsRequestToQueryParameters(request),
+              std::move(callback), std::move(error_callback),
+              GetListSharedCredentialsAnnotation());
 }
 
 std::string NearbyPresenceServerClientImpl::GetAccessTokenUsed() {

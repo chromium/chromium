@@ -54,6 +54,32 @@ load("@rules_foreign_cc//foreign_cc:repositories.bzl", "rules_foreign_cc_depende
 rules_foreign_cc_dependencies()
 
 http_archive(
+    name = "rules_java",
+    sha256 = "c73336802d0b4882e40770666ad055212df4ea62cfa6edf9cb0f9d29828a0934",
+    url = "https://github.com/bazelbuild/rules_java/releases/download/5.3.5/rules_java-5.3.5.tar.gz",
+)
+
+http_archive(
+    name = "rules_python",
+    sha256 = "9d04041ac92a0985e344235f5d946f71ac543f1b1565f2cdbc9a2aaee8adf55b",
+    strip_prefix = "rules_python-0.26.0",
+    url = "https://github.com/bazelbuild/rules_python/releases/download/0.26.0/rules_python-0.26.0.tar.gz",
+)
+
+load("@rules_python//python:repositories.bzl", "py_repositories")
+
+py_repositories()
+
+http_archive(
+    name = "rules_android_ndk",
+    sha256 = "d230a980e0d3a42b85d5fce2cb17ec3ac52b88d2cff5aaf86bae0f05b48adc55",
+    strip_prefix = "rules_android_ndk-d5c9d46a471e8fcd80e7ec5521b78bb2df48f4e0",
+    url = "https://github.com/bazelbuild/rules_android_ndk/archive/d5c9d46a471e8fcd80e7ec5521b78bb2df48f4e0.zip",
+)
+
+load("@rules_android_ndk//:rules.bzl", "android_ndk_repository")
+
+http_archive(
     name = "com_google_protobuf",
     sha256 = "87407cd28e7a9c95d9f61a098a53cf031109d451a7763e7dd1253abf8b4df422",
     strip_prefix = "protobuf-3.19.1",
@@ -64,6 +90,34 @@ http_archive(
     patch_args = [
         "-p1",
     ],
+)
+
+http_archive(
+    name = "cpuinfo",
+    sha256 = "ea028ced757dbc3309518ae7038ed625b02d58190078a5801d30e7b28f8b9e9c",
+    strip_prefix = "cpuinfo-ca678952a9a8eaa6de112d154e8e104b22f9ab3f",
+    urls = [
+        "https://github.com/pytorch/cpuinfo/archive/ca678952a9a8eaa6de112d154e8e104b22f9ab3f.zip"
+    ],
+)
+
+# KleidiAI is needed to get the best possible performance out of XNNPack
+http_archive(
+    name = "KleidiAI",
+    sha256 = "88233e427be6579560073267575f00f3b5fc370a31a43bbdd87a1810bd4bf1b6",
+    strip_prefix = "kleidiai-cddf991af5de49fd34949fa39690e4e906e04074",
+    urls = [
+        "https://gitlab.arm.com/kleidi/kleidiai/-/archive/cddf991af5de49fd34949fa39690e4e906e04074/kleidiai-cddf991af5de49fd34949fa39690e4e906e04074.zip",
+    ],
+)
+
+# XNNPACK on 2024-07-16
+http_archive(
+    name = "XNNPACK",
+    # `curl -L <url> | shasum -a 256`
+    sha256 = "0e5d5c16686beff813e3946b26ca412f28acaf611228d20728ffb6479264fe19",
+    strip_prefix = "XNNPACK-9ddeb74f9f6866174d61888947e4aa9ffe963b1b",
+    url = "https://github.com/google/XNNPACK/archive/9ddeb74f9f6866174d61888947e4aa9ffe963b1b.zip",
 )
 
 # TODO: This is an are indirect depedency. We should factor it out.
@@ -247,17 +301,18 @@ http_archive(
     build_file = "@//third_party:pffft.BUILD",
 )
 
-# sentencepiece
+# Sentencepiece
 http_archive(
     name = "com_google_sentencepiece",
     strip_prefix = "sentencepiece-0.1.96",
+    add_prefix = "sentencepiece",
     sha256 = "8409b0126ebd62b256c685d5757150cf7fcb2b92a2f2b98efb3f38fc36719754",
     urls = [
         "https://github.com/google/sentencepiece/archive/refs/tags/v0.1.96.zip"
     ],
     build_file = "@//third_party:sentencepiece.BUILD",
     patches = ["@//third_party:com_google_sentencepiece.diff"],
-    patch_args = ["-p1"],
+    patch_args = ["-d", "sentencepiece", "-p1"],
 )
 
 http_archive(
@@ -381,7 +436,7 @@ http_archive(
     build_file = "@//third_party:opencv_android.BUILD",
     strip_prefix = "OpenCV-android-sdk",
     type = "zip",
-    url = "https://github.com/opencv/opencv/releases/download/3.4.3/opencv-3.4.3-android-sdk.zip",
+    url = "https://github.com/opencv/opencv/releases/download/4.10.0/opencv-4.10.0-android-sdk.zip",
 )
 
 # After OpenCV 3.2.0, the pre-compiled opencv2.framework has google protobuf symbols, which will
@@ -505,24 +560,22 @@ http_archive(
 )
 
 # TensorFlow repo should always go after the other external dependencies.
-# TF on 2023-07-26.
-_TENSORFLOW_GIT_COMMIT = "e92261fd4cec0b726692081c4d2966b75abf31dd"
-# curl -L https://github.com/tensorflow/tensorflow/archive/<TENSORFLOW_GIT_COMMIT>.tar.gz | shasum -a 256
-_TENSORFLOW_SHA256 = "478a229bd4ec70a5b568ac23b5ea013d9fca46a47d6c43e30365a0412b9febf4"
+# TF on 2024-07-18.
+_TENSORFLOW_GIT_COMMIT = "117a62ac439ed87eb26f67208be60e01c21960de"
+# curl -L https://github.com/tensorflow/tensorflow/archive/117a62ac439ed87eb26f67208be60e01c21960de.tar.gz | shasum -a 256
+_TENSORFLOW_SHA256 = "2a1e56f9f83f99e2b9d01a184bc6f409209b36c98fb94b6d5db3f0ab20ec33f2"
 http_archive(
     name = "org_tensorflow",
     urls = [
       "https://github.com/tensorflow/tensorflow/archive/%s.tar.gz" % _TENSORFLOW_GIT_COMMIT,
     ],
     patches = [
-        "@//third_party:org_tensorflow_compatibility_fixes.diff",
         "@//third_party:org_tensorflow_system_python.diff",
         # Diff is generated with a script, don't update it manually.
         "@//third_party:org_tensorflow_custom_ops.diff",
         # Works around Bazel issue with objc_library.
         # See https://github.com/bazelbuild/bazel/issues/19912
         "@//third_party:org_tensorflow_objc_build_fixes.diff",
-        "@//third_party:org_tensorflow_absl_import_fixes.diff",
     ],
     patch_args = [
         "-p1",
@@ -638,4 +691,18 @@ http_archive(
     strip_prefix = "Halide-15.0.1-x86-64-windows",
     urls = ["https://github.com/halide/Halide/releases/download/v15.0.1/Halide-15.0.1-x86-64-windows-4c63f1befa1063184c5982b11b6a2cc17d4e5815.zip"],
     build_file = "@//third_party:halide.BUILD",
+)
+
+http_archive(
+    name = "pybind11_abseil",
+    sha256 = "0223b647b8cc817336a51e787980ebc299c8d5e64c069829bf34b69d72337449",
+    strip_prefix = "pybind11_abseil-2c4932ed6f6204f1656e245838f4f5eae69d2e29",
+    urls = ["https://github.com/pybind/pybind11_abseil/archive/2c4932ed6f6204f1656e245838f4f5eae69d2e29.tar.gz"],
+)
+
+http_archive(
+    name = "com_github_nlohmann_json",
+    sha256 = "6bea5877b1541d353bd77bdfbdb2696333ae5ed8f9e8cc22df657192218cad91",
+    urls = ["https://github.com/nlohmann/json/releases/download/v3.9.1/include.zip"],
+    build_file = "@//third_party:nlohmann.BUILD",
 )

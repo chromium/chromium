@@ -10,7 +10,7 @@
 #include <string>
 #include <string_view>
 
-namespace content {
+namespace content::indexed_db {
 
 // Encodes the given number into the given string using VarInt encoding. VarInts
 // try to compress the number into the smallest number of bytes possible. It
@@ -24,6 +24,6 @@ void EncodeVarInt(int64_t from, std::string* into);
 // set). This function does NOT check to see if move than 64 bits were read.
 [[nodiscard]] bool DecodeVarInt(std::string_view* from, int64_t* into);
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_VARINT_CODING_H_

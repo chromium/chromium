@@ -46,6 +46,8 @@
 #include "third_party/blink/renderer/core/svg/svg_point_list.h"
 #include "third_party/blink/renderer/core/svg/svg_preserve_aspect_ratio.h"
 #include "third_party/blink/renderer/core/svg/svg_rect.h"
+#include "third_party/blink/renderer/core/svg/svg_script_element.h"
+#include "third_party/blink/renderer/core/svg/svg_set_element.h"
 #include "third_party/blink/renderer/core/svg/svg_string.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -69,7 +71,7 @@ String ComputeCSSPropertyValue(SVGElement* element, CSSPropertyID id) {
   if (!style)
     return "";
   const CSSValue* value = CSSProperty::Get(id).CSSValueFromComputedStyle(
-      *style, element->GetLayoutObject(), false);
+      *style, element->GetLayoutObject(), false, CSSValuePhase::kResolvedValue);
   return value ? value->CssText() : "";
 }
 
@@ -292,7 +294,7 @@ SVGPropertyBase* SVGAnimateElement::CreateUnderlyingValueForAttributeAnimation()
     case kAnimatedTransform:
     case kAnimatedTransformList:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -348,7 +350,7 @@ SVGPropertyBase* SVGAnimateElement::CreatePropertyForCSSAnimation(
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -441,6 +443,18 @@ void SVGAnimateElement::CalculateAnimationValue(
       to_at_end_of_duration_value, targetElement());
 }
 
+AnimationMode SVGAnimateElement::CalculateAnimationMode() {
+  AnimationMode animation_mode = SVGAnimationElement::CalculateAnimationMode();
+  if (animation_mode == kByAnimation || animation_mode == kFromByAnimation) {
+    // by/from-by animation may only be used with attributes that support addition
+    // (e.g. most numeric attributes).
+    if (!AnimatedPropertyTypeSupportsAddition()) {
+      return kNoAnimation;
+    }
+  }
+  return animation_mode;
+}
+
 bool SVGAnimateElement::CalculateToAtEndOfDurationValue(
     const String& to_at_end_of_duration_string) {
   if (to_at_end_of_duration_string.empty())
@@ -449,27 +463,21 @@ bool SVGAnimateElement::CalculateToAtEndOfDurationValue(
   return true;
 }
 
-bool SVGAnimateElement::CalculateFromAndToValues(const String& from_string,
+void SVGAnimateElement::CalculateFromAndToValues(const String& from_string,
                                                  const String& to_string) {
   DCHECK(targetElement());
   from_property_ = ParseValue(from_string);
   from_property_value_type_ = PropertyValueType(AttributeName(), from_string);
   to_property_ = ParseValue(to_string);
   to_property_value_type_ = PropertyValueType(AttributeName(), to_string);
-  return true;
 }
 
-bool SVGAnimateElement::CalculateFromAndByValues(const String& from_string,
+void SVGAnimateElement::CalculateFromAndByValues(const String& from_string,
                                                  const String& by_string) {
   DCHECK(targetElement());
   DCHECK(GetAnimationMode() == kByAnimation ||
          GetAnimationMode() == kFromByAnimation);
-
-  // by/from-by animation may only be used with attributes that support addition
-  // (e.g. most numeric attributes).
-  if (!AnimatedPropertyTypeSupportsAddition())
-    return false;
-
+  DCHECK(AnimatedPropertyTypeSupportsAddition());
   DCHECK(!IsA<SVGSetElement>(*this));
 
   from_property_ = ParseValue(from_string);
@@ -477,7 +485,6 @@ bool SVGAnimateElement::CalculateFromAndByValues(const String& from_string,
   to_property_ = ParseValue(by_string);
   to_property_value_type_ = PropertyValueType(AttributeName(), by_string);
   to_property_->Add(from_property_, targetElement());
-  return true;
 }
 
 SVGPropertyBase* SVGAnimateElement::CreateUnderlyingValueForAnimation() const {

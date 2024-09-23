@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/data_collection/training_data_collector_impl.h"
 
 #include <map>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -44,6 +45,7 @@
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -361,7 +363,7 @@ class TrainingDataCollectorImplTest
 
   // TODO(xingliu): Share this test code with SegmentationUkmHelperTest, or test
   // with mock SegmentationUkmHelperTest.
-  void ExpectUkm(std::vector<base::StringPiece> metric_names,
+  void ExpectUkm(std::vector<std::string_view> metric_names,
                  std::vector<int64_t> expected_values) {
     const auto& entries = test_recorder_.GetEntriesByName(
         Segmentation_ModelExecution::kEntryName);
@@ -1006,7 +1008,8 @@ TEST_P(TrainingDataCollectorImplTest, DataCollectionWithTriggerAPI) {
   TrainingLabels label;
   label.output_metric = {{kHistogramName0, kSample}};
   // Trigger output collection and ukm data recording.
-  collector()->CollectTrainingData(kTestOptimizationTarget0, request_id, label,
+  collector()->CollectTrainingData(kTestOptimizationTarget0, request_id,
+                                   ukm::kInvalidSourceId, label,
                                    base::DoNothing());
   run_loop.Run();
   ExpectUkmCount(1u);
@@ -1038,7 +1041,8 @@ TEST_P(TrainingDataCollectorImplTest,
   TrainingLabels label;
   label.output_metric = {{kHistogramName0, kSample}};
   // Trigger output collection and ukm data recording.
-  collector()->CollectTrainingData(kTestOptimizationTarget1, request_id, label,
+  collector()->CollectTrainingData(kTestOptimizationTarget1, request_id,
+                                   ukm::kInvalidSourceId, label,
                                    base::DoNothing());
 
   // No histogram recorded for data collection.
@@ -1081,7 +1085,8 @@ TEST_P(TrainingDataCollectorImplTest,
   TrainingLabels label;
   label.output_metric = {{kHistogramName0, kSample}};
   // Trigger output collection and ukm data recording.
-  collector()->CollectTrainingData(kTestOptimizationTarget0, request_id, label,
+  collector()->CollectTrainingData(kTestOptimizationTarget0, request_id,
+                                   ukm::kInvalidSourceId, label,
                                    base::DoNothing());
   run_loop.Run();
   ExpectUkmCount(1u);
@@ -1118,7 +1123,8 @@ TEST_P(TrainingDataCollectorImplTest,
   TrainingLabels label;
   label.output_metric = {{kHistogramName0, kSample}};
   // Trigger output collection and ukm data recording.
-  collector()->CollectTrainingData(kTestOptimizationTarget0, request_id, label,
+  collector()->CollectTrainingData(kTestOptimizationTarget0, request_id,
+                                   ukm::kInvalidSourceId, label,
                                    base::DoNothing());
   ExpectUkmCount(0u);
   // A histogram should have been recorded.

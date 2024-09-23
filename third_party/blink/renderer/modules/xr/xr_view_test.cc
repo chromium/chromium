@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/modules/xr/xr_test_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
@@ -51,14 +52,19 @@ TEST(XRViewTest, ViewMatrices) {
   xr_view->mojo_from_view = mojo_from_view;
   xr_view->viewport = gfx::Rect(0, 0, kRenderSize, kRenderSize);
 
-  XRViewData* view_data =
-      MakeGarbageCollected<XRViewData>(xr_view, kDepthNear, kDepthFar);
-  XRView view(nullptr, view_data, ref_space_from_mojo);
+  auto device_config = device::mojom::blink::XRSessionDeviceConfig::New();
+  HashSet<device::mojom::XRSessionFeature> features = {
+      device::mojom::XRSessionFeature::REF_SPACE_VIEWER};
+  XRViewData* view_data = MakeGarbageCollected<XRViewData>(
+      /*index=*/0, std::move(xr_view), kDepthNear, kDepthFar, *device_config,
+      features);
+  XRView* view =
+      MakeGarbageCollected<XRView>(nullptr, view_data, ref_space_from_mojo);
 
   AssertMatrixEquals(GetMatrixDataForTest(view_data->MojoFromView()),
                      GetMatrixDataForTest(mojo_from_view));
   AssertMatrixEquals(
-      GetMatrixDataForTest(view.refSpaceFromView()->TransformMatrix()),
+      GetMatrixDataForTest(view->refSpaceFromView()->TransformMatrix()),
       GetMatrixDataForTest(ref_space_from_view));
   AssertMatrixEquals(GetMatrixDataForTest(view_data->ProjectionMatrix()),
                      GetMatrixDataForTest(gfx::Transform::ColMajor(

@@ -94,7 +94,7 @@ bool FilesCleanupHandler::CleanupTaskOnTaskRunner(Profile* profile) {
   base::FilePath downloads_path =
       my_files_path.AppendASCII(kFolderNameDownloads);
 
-  // Delete all files and directories under My Files other than Downloads.
+  // Delete all files and directories under MyFiles other than Downloads.
   bool success =
       DeleteFilesAndDirectoriesUnderPath(my_files_path, downloads_path);
 

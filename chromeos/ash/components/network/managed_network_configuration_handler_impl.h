@@ -118,6 +118,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       const std::string& guid,
       ::onc::ONCSource* onc_source) const override;
 
+  void ResetDNSProperties(const std::string& service_path) override;
+
   bool HasAnyPolicyNetwork(const std::string& userhash) const override;
 
   const base::Value::Dict* GetGlobalConfigFromPolicy(
@@ -152,6 +154,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   void OnCellularPoliciesApplied(const NetworkProfile& profile) override;
 
   PolicyTextMessageSuppressionState GetAllowTextMessages() const override;
+  bool AllowApnModification() const override;
   bool AllowCellularSimLock() const override;
   bool AllowCellularHotspot() const override;
   bool AllowOnlyPolicyCellularNetworks() const override;
@@ -294,6 +297,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
                              const std::string& service_path,
                              std::optional<base::Value::Dict> shill_properties);
 
+  // Implemented as a callback for GetProperties, fetches Type,
+  // IPAddressConfig, StaticIPConfig, and changes the
+  // NameServersConfigType ONC property to be automatically set by DHCP and
+  // applies it to a specific network device.
+  void ResetDNSPropertiesCallback(
+      const std::string& service_path,
+      std::optional<base::Value::Dict> network_properties,
+      std::optional<std::string> error);
+
   void OnGetDeviceProperties(
       PropertiesType properties_type,
       const std::string& userhash,
@@ -334,13 +346,28 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
                             bool can_affect_other_networks,
                             PolicyApplicator::Options options);
 
+  // Called in SetPolicy, sets shill DisconnectWiFiOnEthernet Manager property
+  // base on value of DisconnectWiFiOnEthernet GlobalNetworkConfiguration.
+  void ApplyDisconnectWiFiOnEthernetPolicy();
+
   void SchedulePolicyApplication(const std::string& userhash);
   void StartPolicyApplication(const std::string& userhash);
+
+  // Based on the admin policy to allow usage of custom APNs, this method sets
+  // or clears custom apn list in shill properties.
+  void ModifyCustomAPNs();
 
   void set_ui_proxy_config_service(
       UIProxyConfigService* ui_proxy_config_service);
 
   void set_user_prefs(PrefService* user_prefs);
+
+  NetworkMetadataStore* GetNetworkMetadataStore();
+
+  void set_network_metadata_store_for_testing(
+      NetworkMetadataStore* network_metadata_store_for_testing) {
+    network_metadata_store_for_testing_ = network_metadata_store_for_testing;
+  }
 
   // Returns the device policy GlobalNetworkConfiguration boolean value under
   // `key` or `std::nullopt` if such a value doesn't exist or is not of type
@@ -373,6 +400,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   raw_ptr<UIProxyConfigService, DanglingUntriaged> ui_proxy_config_service_ =
       nullptr;
   raw_ptr<HotspotController, DanglingUntriaged> hotspot_controller_ = nullptr;
+  raw_ptr<NetworkMetadataStore> network_metadata_store_for_testing_ = nullptr;
 
   // Initialized to null and set once SetUserPrefs() is called.
   raw_ptr<PrefService> user_prefs_ = nullptr;

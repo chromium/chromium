@@ -81,17 +81,28 @@ DisplayItemList::DisplayItemList() {
 
 DisplayItemList::~DisplayItemList() = default;
 
+void DisplayItemList::Raster(
+    SkCanvas* canvas,
+    ImageProvider* image_provider,
+    const ScrollOffsetMap* raster_inducing_scroll_offsets) const {
+  PlaybackParams params(image_provider);
+  params.raster_inducing_scroll_offsets = raster_inducing_scroll_offsets;
+  Raster(canvas, params);
+}
+
 void DisplayItemList::Raster(SkCanvas* canvas,
-                             ImageProvider* image_provider) const {
-  gfx::Rect canvas_playback_rect;
-  if (!GetCanvasClipBounds(canvas, &canvas_playback_rect))
-    return;
+                             const PlaybackParams& params) const {
+#if DCHECK_IS_ON()
+  DCHECK(IsFinalized());
+#endif
 
   TRACE_EVENT_BEGIN1("cc", "DisplayItemList::Raster", "total_op_count",
                      TotalOpCount());
-  std::vector<size_t> offsets;
-  rtree_.Search(canvas_playback_rect, &offsets);
-  paint_op_buffer_.Playback(canvas, PlaybackParams(image_provider), &offsets);
+  std::vector<size_t> offsets = OffsetsOfOpsToRaster(canvas);
+  if (offsets.empty()) {
+    return;
+  }
+  paint_op_buffer_.Playback(canvas, params, /*local_ctm=*/true, &offsets);
 
   bool trace_enabled = false;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("cc", &trace_enabled);
@@ -106,8 +117,22 @@ void DisplayItemList::Raster(SkCanvas* canvas,
   }
 }
 
+std::vector<size_t> DisplayItemList::OffsetsOfOpsToRaster(
+    SkCanvas* canvas) const {
+  std::vector<size_t> offsets;
+  gfx::Rect canvas_playback_rect;
+  if (GetCanvasClipBounds(canvas, &canvas_playback_rect)) {
+    rtree_.Search(canvas_playback_rect, &offsets);
+  }
+  return offsets;
+}
+
 void DisplayItemList::CaptureContent(const gfx::Rect& rect,
                                      std::vector<NodeInfo>* content) const {
+#if DCHECK_IS_ON()
+  DCHECK(IsFinalized());
+#endif
+
   if (!paint_op_buffer_.has_draw_text_ops())
     return;
   std::vector<size_t> offsets;
@@ -178,11 +203,6 @@ void DisplayItemList::EndPaintOfPairedEnd() {
 }
 
 void DisplayItemList::Finalize() {
-  FinalizeImpl();
-  paint_op_buffer_.ShrinkToFit();
-}
-
-void DisplayItemList::FinalizeImpl() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "DisplayItemList::Finalize");
 #if DCHECK_IS_ON()
@@ -192,6 +212,7 @@ void DisplayItemList::FinalizeImpl() {
   // to EndPaintOfPairedEnd().
   DCHECK(paired_begin_stack_.empty());
   DCHECK_EQ(visual_rects_.size(), offsets_.size());
+  current_range_start_ = kFinalized;
 #endif
 
   rtree_.Build(
@@ -203,13 +224,12 @@ void DisplayItemList::FinalizeImpl() {
   offsets_.clear();
   offsets_.shrink_to_fit();
   paired_begin_stack_.shrink_to_fit();
+  paint_op_buffer_.ShrinkToFit();
 }
 
-PaintRecord DisplayItemList::FinalizeAndReleaseAsRecord() {
-  FinalizeImpl();
-  PaintRecord record = paint_op_buffer_.ReleaseAsRecord();
-  Reset();
-  return record;
+PaintRecord DisplayItemList::FinalizeAndReleaseAsRecordForTesting() {
+  Finalize();
+  return paint_op_buffer_.ReleaseAsRecord();
 }
 
 void DisplayItemList::EmitTraceSnapshot() const {
@@ -241,6 +261,12 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
                                  bool include_items) const {
   state->BeginDictionary("params");
 
+  // DisplayItemList doesn't know the current scroll offsets, so use zero.
+  ScrollOffsetMap zero_scroll_offsets;
+  for (auto [element_id, _] : raster_inducing_scrolls()) {
+    zero_scroll_offsets[element_id] = gfx::PointF();
+  }
+
   // For tracing code, just use the entire positive quadrant if the |rtree_|
   // has invalid bounds.
   gfx::Rect bounds = rtree_.bounds().value_or(kMaxBounds);
@@ -248,6 +274,7 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
     state->BeginArray("items");
 
     PlaybackParams params(nullptr, SkM44());
+    params.raster_inducing_scroll_offsets = &zero_scroll_offsets;
     std::map<size_t, gfx::Rect> visual_rects = rtree_.GetAllBoundsForTracing();
     for (const PaintOp& op : paint_op_buffer_) {
       state->BeginDictionary();
@@ -282,7 +309,7 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
     SkCanvas* canvas = recorder.beginRecording(gfx::RectToSkRect(bounds));
     canvas->translate(-bounds.x(), -bounds.y());
     canvas->clipRect(gfx::RectToSkRect(bounds));
-    Raster(canvas);
+    Raster(canvas, /*image_provider=*/nullptr, &zero_scroll_offsets);
     sk_sp<SkPicture> picture = recorder.finishRecordingAsPicture();
 
     std::string b64_picture;
@@ -291,46 +318,25 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
   }
 }
 
-void DisplayItemList::GenerateDiscardableImagesMetadataForTesting() const {
-  base::AutoLock lock(image_generation_lock_);
-  if (image_map_) {
-    return;
-  }
-  GenerateDiscardableImagesMetadata();
-}
-
-void DisplayItemList::GenerateDiscardableImagesMetadata() const {
-  image_generation_lock_.AssertAcquired();
-  CHECK(!image_map_);
-
-  image_map_.emplace();
-  // Bounds are only used to size an SkNoDrawCanvas.
-  image_map_->Generate(paint_op_buffer_, bounds().value_or(kMaxBounds));
-}
-
-void DisplayItemList::Reset() {
+scoped_refptr<DiscardableImageMap> DisplayItemList::GenerateDiscardableImageMap(
+    const ScrollOffsetMap& raster_inducing_scroll_offsets) const {
 #if DCHECK_IS_ON()
-  DCHECK(!IsPainting());
-  DCHECK(paired_begin_stack_.empty());
+  DCHECK(IsFinalized());
 #endif
 
-  rtree_.Reset();
-  {
-    base::AutoLock lock(image_generation_lock_);
-    image_map_.reset();
-  }
-  paint_op_buffer_.Reset();
-  visual_rects_.clear();
-  visual_rects_.shrink_to_fit();
-  offsets_.clear();
-  offsets_.shrink_to_fit();
-  paired_begin_stack_.clear();
-  paired_begin_stack_.shrink_to_fit();
+  // Bounds are only used to size an SkNoDrawCanvas.
+  return DiscardableImageMap::Generate(paint_op_buffer_,
+                                       bounds().value_or(kMaxBounds),
+                                       raster_inducing_scroll_offsets);
 }
 
 bool DisplayItemList::GetColorIfSolidInRect(const gfx::Rect& rect,
                                             SkColor4f* color,
-                                            int max_ops_to_analyze) {
+                                            int max_ops_to_analyze) const {
+#if DCHECK_IS_ON()
+  DCHECK(IsFinalized());
+#endif
+
   std::vector<size_t>* offsets_to_use = nullptr;
   std::vector<size_t> offsets;
   if (rtree_.has_valid_bounds() && !rect.Contains(*bounds())) {
@@ -439,7 +445,32 @@ DirectlyCompositedImageInfoForPaintOpBuffer(const PaintOpBuffer& op_buffer) {
 
 std::optional<DirectlyCompositedImageInfo>
 DisplayItemList::GetDirectlyCompositedImageInfo() const {
+#if DCHECK_IS_ON()
+  DCHECK(IsFinalized());
+#endif
   return DirectlyCompositedImageInfoForPaintOpBuffer(paint_op_buffer_);
+}
+
+void DisplayItemList::PushDrawScrollingContentsOp(
+    ElementId scroll_element_id,
+    scoped_refptr<DisplayItemList> display_item_list,
+    const gfx::Rect& visual_rect) {
+  StartPaint();
+  push<DrawScrollingContentsOp>(scroll_element_id, display_item_list);
+  for (auto& [nested_scroll_element_id, info] :
+       std::move(display_item_list->raster_inducing_scrolls_)) {
+    // For a nested scroller, we use the parent scroller's visual rect (which
+    // will eventually use the top-level scroller's visual rect in the layer).
+    // This will cause over-invalidation when the nested scroller scrolls, but
+    // avoids the complexity and cost of mapping the visual rect of nested
+    // scroller to the layer space, especially when the parent scroller scrolls.
+    // TODO(crbug.com/359279553): Evaluate if the optimization is worth it.
+    raster_inducing_scrolls_[nested_scroll_element_id] =
+        RasterInducingScrollInfo{visual_rect, info.has_discardable_images};
+  }
+  raster_inducing_scrolls_[scroll_element_id] = RasterInducingScrollInfo{
+      visual_rect, display_item_list->has_discardable_images()};
+  EndPaintOfUnpaired(visual_rect);
 }
 
 }  // namespace cc

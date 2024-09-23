@@ -39,7 +39,7 @@ void DisconnectWindowAura::Start(
     const base::WeakPtr<ClientSessionControl>& client_session_control) {
   ash::Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStart(
       base::BindRepeating(&ClientSessionControl::DisconnectSession,
-                          client_session_control, protocol::OK));
+                          client_session_control, ErrorCode::OK));
 }
 
 }  // namespace

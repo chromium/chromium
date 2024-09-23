@@ -44,8 +44,8 @@ HRESULT ExecuteTest(const base::CommandLine& cmd_line) {
 
   if (cmd_line.HasSwitch(switches::kAppBoundTestModeEncrypt)) {
     input_data.insert(0, kTestHeader);
-    hr = EncryptAppBoundString(ProtectionLevel::PATH_VALIDATION, input_data,
-                               output_data, last_error);
+    hr = EncryptAppBoundString(ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                               input_data, output_data, last_error);
   } else if (cmd_line.HasSwitch(switches::kAppBoundTestModeDecrypt)) {
     hr = DecryptAppBoundString(input_data, output_data, last_error);
     if (SUCCEEDED(hr)) {
@@ -53,7 +53,7 @@ HRESULT ExecuteTest(const base::CommandLine& cmd_line) {
       output_data.erase(0, kTestHeader.length());
     }
   } else {
-    NOTREACHED_NORETURN() << "A valid mode must be specified";
+    NOTREACHED() << "A valid mode must be specified";
   }
 
   if (SUCCEEDED(hr)) {

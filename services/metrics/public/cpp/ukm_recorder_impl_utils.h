@@ -5,7 +5,8 @@
 #ifndef SERVICES_METRICS_PUBLIC_CPP_UKM_RECORDER_IMPL_UTILS_H_
 #define SERVICES_METRICS_PUBLIC_CPP_UKM_RECORDER_IMPL_UTILS_H_
 
-#include "base/metrics/histogram_macros.h"
+#include <stdint.h>
+
 #include "services/metrics/public/cpp/metrics_export.h"
 
 namespace ukm {
@@ -36,6 +37,8 @@ enum class DroppedDataReason {
 
 void METRICS_EXPORT RecordDroppedEntry(uint64_t event_hash,
                                        DroppedDataReason reason);
+
+void METRICS_EXPORT RecordDroppedWebDXFeaturesSet(DroppedDataReason reason);
 
 }  // namespace ukm
 

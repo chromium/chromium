@@ -19,7 +19,7 @@ class MockDeviceSystemTrayIcon : public DeviceSystemTrayIcon {
   MOCK_METHOD(void, ProfileAdded, (Profile*), (override));
   MOCK_METHOD(void, ProfileRemoved, (Profile*), (override));
   MOCK_METHOD(void, NotifyConnectionCountUpdated, (Profile*), (override));
-  MOCK_METHOD(gfx::ImageSkia, GetIcon, (), (override));
+  MOCK_METHOD(const gfx::VectorIcon&, GetIcon, (), (override));
   MOCK_METHOD(std::u16string, GetTitleLabel, (size_t, size_t), (override));
   MOCK_METHOD(std::u16string, GetContentSettingsLabel, (), (override));
   MOCK_METHOD(DeviceConnectionTracker*,

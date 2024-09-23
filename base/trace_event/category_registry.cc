@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/trace_event/category_registry.h"
 
 #include <string.h>
@@ -12,7 +17,7 @@
 #include "base/check.h"
 #include "base/debug/leak_annotations.h"
 #include "base/notreached.h"
-#include "base/third_party/dynamic_annotations/dynamic_annotations.h"
+#include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
 namespace base {
 namespace trace_event {
@@ -35,7 +40,6 @@ std::atomic<size_t> CategoryRegistry::category_index_{
     BuiltinCategories::Size()};
 
 // static
-TraceCategory* const CategoryRegistry::kCategoryExhausted = &categories_[0];
 TraceCategory* const CategoryRegistry::kCategoryAlreadyShutdown =
     &categories_[1];
 TraceCategory* const CategoryRegistry::kCategoryMetadata = &categories_[2];
@@ -47,8 +51,8 @@ void CategoryRegistry::Initialize() {
   // traced or not, so we allow races on the enabled flag to keep the trace
   // macros fast.
   for (size_t i = 0; i < kMaxCategories; ++i) {
-    ANNOTATE_BENIGN_RACE(categories_[i].state_ptr(),
-                         "trace_event category enabled");
+    ABSL_ANNOTATE_BENIGN_RACE(categories_[i].state_ptr(),
+                              "trace_event category enabled");
     // If this DCHECK is hit in a test it means that ResetForTesting() is not
     // called and the categories state leaks between test fixtures.
     DCHECK(!categories_[i].is_enabled());
@@ -96,8 +100,6 @@ bool CategoryRegistry::GetOrCreateCategoryLocked(
   size_t category_index = category_index_.load(std::memory_order_acquire);
   if (category_index >= kMaxCategories) {
     NOTREACHED() << "must increase kMaxCategories";
-    *category = kCategoryExhausted;
-    return false;
   }
 
   // TODO(primiano): this strdup should be removed. The only documented reason

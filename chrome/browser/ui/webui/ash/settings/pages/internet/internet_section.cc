@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/ash/settings/pages/internet/internet_section.h"
 
 #include "ash/constants/ash_features.h"
@@ -484,13 +489,17 @@ const std::vector<SearchConcept>& GetInstantTetheringSearchConcepts() {
 
 const std::vector<SearchConcept>& GetInstantTetheringOnSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF,
+      {features::IsInstantHotspotRebrandEnabled()
+           ? IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF
+           : IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF_LEGACY,
        mojom::kMobileDataNetworksSubpagePath,
        mojom::SearchResultIcon::kInstantTethering,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kInstantTetheringOnOff},
-       {IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF_ALT1,
+       {features::IsInstantHotspotRebrandEnabled()
+            ? IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF_ALT1
+            : IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF_ALT1_LEGACY,
         SearchConcept::kAltTagEnd}},
   });
   return *tags;
@@ -498,13 +507,17 @@ const std::vector<SearchConcept>& GetInstantTetheringOnSearchConcepts() {
 
 const std::vector<SearchConcept>& GetInstantTetheringOffSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON,
+      {features::IsInstantHotspotRebrandEnabled()
+           ? IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON
+           : IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON_LEGACY,
        mojom::kMobileDataNetworksSubpagePath,
        mojom::SearchResultIcon::kInstantTethering,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kInstantTetheringOnOff},
-       {IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON_ALT1,
+       {features::IsInstantHotspotRebrandEnabled()
+            ? IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON_ALT1
+            : IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON_ALT1_LEGACY,
         SearchConcept::kAltTagEnd}},
   });
   return *tags;
@@ -512,13 +525,17 @@ const std::vector<SearchConcept>& GetInstantTetheringOffSearchConcepts() {
 
 const std::vector<SearchConcept>& GetInstantTetheringConnectedSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_DISCONNECT,
+      {features::IsInstantHotspotRebrandEnabled()
+           ? IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_DISCONNECT
+           : IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_DISCONNECT_LEGACY,
        mojom::kTetherDetailsSubpagePath,
        mojom::SearchResultIcon::kInstantTethering,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kDisconnectTetherNetwork}},
-      {IDS_OS_SETTINGS_TAG_INSTANT_TETHERING,
+      {features::IsInstantHotspotRebrandEnabled()
+           ? IDS_OS_SETTINGS_TAG_INSTANT_TETHERING
+           : IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_LEGACY,
        mojom::kTetherDetailsSubpagePath,
        mojom::SearchResultIcon::kInstantTethering,
        mojom::SearchResultDefaultRank::kMedium,
@@ -735,12 +752,10 @@ InternetSection::InternetSection(Profile* profile,
   cros_network_config_->AddObserver(
       network_config_receiver_.BindNewPipeAndPassRemote());
 
-  if (ash::features::IsHotspotEnabled()) {
-    // Receive updates when hotspot info changed.
-    GetHotspotConfigService(cros_hotspot_config_.BindNewPipeAndPassReceiver());
-    cros_hotspot_config_->AddObserver(
-        hotspot_config_receiver_.BindNewPipeAndPassRemote());
-  }
+  // Receive updates when hotspot info changed.
+  GetHotspotConfigService(cros_hotspot_config_.BindNewPipeAndPassReceiver());
+  cros_hotspot_config_->AddObserver(
+      hotspot_config_receiver_.BindNewPipeAndPassRemote());
 
   // Fetch initial list of devices and active networks.
   FetchDeviceList();
@@ -791,10 +806,20 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"internetConfigName", IDS_SETTINGS_INTERNET_CONFIG_NAME},
       {"internetDetailPageTitle", IDS_SETTINGS_INTERNET_DETAIL},
       {"internetDeviceBusy", IDS_SETTINGS_INTERNET_DEVICE_BUSY},
+      {"internetDeviceFlashing", IDS_SETTINGS_INTERNET_DEVICE_FLASHING},
       {"internetJoinType", IDS_SETTINGS_INTERNET_JOIN_TYPE},
       {"internetKnownNetworksPageTitle", IDS_SETTINGS_INTERNET_KNOWN_NETWORKS},
+      {"internetYourDeviceHotspots",
+       IDS_SETTINGS_INTERNET_YOUR_DEVICE_HOTSPOTS},
+      {"internetTetherNotificationControlTitle",
+       IDS_SETTINGS_INTERNET_TETHER_NOTIFICATION_CONTROL_TITLE},
+      {"internetTetherNotificationControlDescription",
+       IDS_SETTINGS_INTERNET_TETHER_NOTIFICATION_CONTROL_DESCRIPTION},
       {"internetNoNetworks", IDS_SETTINGS_INTERNET_NO_NETWORKS},
-      {"internetPageTitle", IDS_SETTINGS_INTERNET},
+      {"internetNoTetherHosts", IDS_SETTINGS_INTERNET_NO_TETHER_HOSTS},
+      {"internetPageTitle", features::IsInstantHotspotRebrandEnabled()
+                                ? IDS_SETTINGS_INTERNET
+                                : IDS_SETTINGS_INTERNET_LEGACY},
       {"internetSummaryButtonA11yLabel",
        IDS_SETTINGS_INTERNET_SUMMARY_BUTTON_ACCESSIBILITY_LABEL},
       {"internetToggleTetherA11yLabel",
@@ -1132,22 +1157,15 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "showMeteredToggle",
       base::FeatureList::IsEnabled(::features::kMeteredShowToggle));
   html_source->AddBoolean(
+      "trafficCountersForWifiTesting",
+      ash::features::IsTrafficCountersForWiFiTestingEnabled());
+  html_source->AddBoolean(
       "showHiddenToggle",
       base::FeatureList::IsEnabled(::features::kShowHiddenNetworkToggle));
-  html_source->AddBoolean("isSmdsSupportEnabled",
-                          ash::features::IsSmdsSupportEnabled());
-  html_source->AddBoolean("isHotspotEnabled",
-                          ash::features::IsHotspotEnabled());
   html_source->AddBoolean("isInstantHotspotRebrandEnabled",
                           ash::features::IsInstantHotspotRebrandEnabled());
-  html_source->AddBoolean("isPasspointEnabled",
-                          ash::features::IsPasspointARCSupportEnabled());
   html_source->AddBoolean("isPasspointSettingsEnabled",
-                          ash::features::IsPasspointSettingsEnabled() &&
-                              ash::features::IsPasspointARCSupportEnabled());
-
-  html_source->AddBoolean("isSuppressTextMessagesEnabled",
-                          ash::features::IsSuppressTextMessagesEnabled());
+                          ash::features::IsPasspointSettingsEnabled());
 
   html_source->AddString("networkGoogleNameserversLearnMoreUrl",
                          chrome::kGoogleNameserversLearnMoreURL);
@@ -1233,7 +1251,9 @@ void InternetSection::AddHandlers(content::WebUI* web_ui) {
 }
 
 int InternetSection::GetSectionNameMessageId() const {
-  return IDS_SETTINGS_INTERNET;
+  return features::IsInstantHotspotRebrandEnabled()
+             ? IDS_SETTINGS_INTERNET
+             : IDS_SETTINGS_INTERNET_LEGACY;
 }
 
 mojom::Section InternetSection::GetSection() const {
@@ -1359,7 +1379,9 @@ void InternetSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Instant Tethering. Although this is a multi-device feature, its UI resides
   // in the network section.
   generator->RegisterNestedSubpage(
-      IDS_SETTINGS_INTERNET_INSTANT_TETHERING_DETAILS,
+      features::IsInstantHotspotRebrandEnabled()
+          ? IDS_SETTINGS_INTERNET_INSTANT_TETHERING_DETAILS
+          : IDS_SETTINGS_INTERNET_INSTANT_TETHERING_DETAILS_LEGACY,
       mojom::Subpage::kTetherDetails, mojom::Subpage::kMobileDataNetworks,
       mojom::SearchResultIcon::kInstantTethering,
       mojom::SearchResultDefaultRank::kMedium,
@@ -1423,10 +1445,8 @@ void InternetSection::OnHotspotInfoChanged() {
 }
 
 void InternetSection::FetchHotspotInfo() {
-  if (ash::features::IsHotspotEnabled()) {
-    cros_hotspot_config_->GetHotspotInfo(base::BindOnce(
-        &InternetSection::OnHotspotInfo, base::Unretained(this)));
-  }
+  cros_hotspot_config_->GetHotspotInfo(
+      base::BindOnce(&InternetSection::OnHotspotInfo, base::Unretained(this)));
 }
 
 void InternetSection::OnHotspotInfo(

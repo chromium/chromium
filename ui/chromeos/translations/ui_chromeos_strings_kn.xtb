@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS ಹೋಸ್ಟ್</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್,<ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
-<translation id="3113153474486991170">ಈ ಸ್ಥಳದಿಂದ "<ph name="PATH" />" ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ತೆರೆಯಲು "ನನ್ನ ಫೈಲ್‌ಗಳಿಗೆ" ನಕಲಿಸಿ.</translation>
 <translation id="3113592018909187986">ನೀವು 1 ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನವನ್ನು ಹೊಂದಿರುವಿರಿ. ಹೊಸ ಪಿನ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡುವವರೆಗೆ ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಬಳಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="3124404833828281817">ಹಗಲುಗನಸು ಕಾಣುತ್ತಿರುವ ವ್ಯಕ್ತಿ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ಅನ್ನು ರದ್ದುಮಾಡಿ.</translation>
 <translation id="3690128548376345212">ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ವಿವರಗಳು</translation>
 <translation id="3691184985318546178">ಸಿಂಹಳ</translation>
+<translation id="3702842351052426940">ನಿಮ್ಮ SIM ಕಾರ್ಡ್ ಅಥವಾ eSIM ಪ್ರೊಫೈಲ್ ನಿಷ್ಕ್ರಿಯಗೊಂಡಿರಬಹುದು. ನಿಮ್ಮ SIM ಕಾರ್ಡ್ ಅನ್ನು ಬದಲಿಸಲು ಅಥವಾ eSIM ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3722341589402358578">ದೋಷ ಎದುರಾಗಿದೆ. ಕೆಲವು ಐಟಂಗಳನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸದೇ ಇರಬಹುದು.</translation>
 <translation id="3726463242007121105">ಇದರ ಫೈಲ್‌ಸಿಸ್ಟಂ ಅನ್ನು ಬೆಂಬಲಿಸದ ಕಾರಣ ಈ ಸಾಧನವನ್ನು ತೆರೆಯಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="3727148787322499904">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸುವುದರಿಂದ ಎಲ್ಲಾ ಹಂಚಿತ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗೆ ಪರಿಣಾಮ ಬೀರುತ್ತದೆ</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">ಈ ಪ್ರಾಕ್ಸಿಯನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಜಾರಿಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="3830674330436234648">ಯಾವುದೇ ಪ್ಲೇಬ್ಯಾಕ್ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="383652340667548381">ಸೆರ್ಬಿಯನ್</translation>
+<translation id="3839045880592694915">ನಿಮ್ಮ ಮೋಡೆಮ್ ಅನ್ನು ನಿಮ್ಮ ವಾಹಕದಿಂದ ಕನೆಕ್ಟ್ ಮಾಡಲು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ. ಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ ನಿಮ್ಮ ವಾಹಕವನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="385051799172605136">ಹಿಂದೆ</translation>
-<translation id="3851491607336266896">ಕನೆಕ್ಟ್ ಆಗಿದೆ, ಕನೆಕ್ಷನ್ ಸೀಮಿತವಾಗಿದೆ</translation>
 <translation id="3855472144336161447">ಜರ್ಮನ್ ನಿಯೊ 2</translation>
 <translation id="3858860766373142691">ಹೆಸರು</translation>
 <translation id="3866249974567520381">ವಿವರಣೆ</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">ಇತ್ತೀಚೆಗೆ ತೆರೆದಿರುವ Microsoft ಫೈಲ್‌ಗಳನ್ನು OneDrive ಗೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="4002066346123236978">ಶೀರ್ಷಿಕೆ</translation>
 <translation id="4017788180641807848">ವರ್ಕ್‌ಮ್ಯಾನ್ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಇಂಗ್ಲಿಷ್ (ಯುಎಸ್)</translation>
-<translation id="4019998208269143058">ತ್ವರಿತ ಫೈಲ್‌ಗಳಿಗೆ ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="4040753847560036377">ತಪ್ಪಾದ PUK</translation>
 <translation id="4057991113334098539">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4092890906744441904">ಐರಿಷ್</translation>
+<translation id="4101601646343868113">ನಿಮ್ಮ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ ಮತ್ತು ನಿಮ್ಮ ಮೊಬೈಲ್ ಡೇಟಾ ಪ್ಲಾನ್ ಸಕ್ರಿಯವಾಗಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="4124731372776320263">1 ಡ್ರೈವ್ ಫೈಲ್ ಸಿಂಕ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="4124935795427217608">ಯುನಿಕಾರ್ನ್</translation>
 <translation id="4131235941541910880">ನಿಮಗೆ ಬೇಡದ ಐಟಂಗಳನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಿ</translation>
@@ -530,7 +530,7 @@
 <translation id="5109254780565519649">ದೋಷ ಎದುರಾಗಿದೆ. ಕೆಲವು ಐಟಂಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲು ಆಗದೇ ಇರಬಹುದು.</translation>
 <translation id="5110329002213341433">ಇಂಗ್ಲಿಷ್ (ಕೆನಡಾ)</translation>
 <translation id="5119780910075847424">ಸಿಂಕ್ ಮಾಡುವುದನ್ನು ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
-<translation id="5123433949759960244">ಬ್ಯಾಸ್ಕೆಟ್‌ಬಾಲ್‌</translation>
+<translation id="5123433949759960244">ಬಾಸ್ಕೆಟ್‌ಬಾಲ್‌</translation>
 <translation id="5129662217315786329">ಪೋಲಿಶ್</translation>
 <translation id="5144820558584035333">ಹಂಗುಲ್ 3 ಸೆಟ್ (390)</translation>
 <translation id="5145331109270917438">ದಿನಾಂಕ ಮಾರ್ಪಡಿಸಿದೆ</translation>
@@ -607,6 +607,7 @@
 <translation id="5625294776298156701">ತಮಿಳು99 ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ತಮಿಳು</translation>
 <translation id="5633226425545095130">ಈ ಐಟಂ ಅನ್ನು ಸರಿಸುವುದರಿಂದ ಹಂಚಿಕೊಂಡ ಫೋಲ್ಡರ್ '<ph name="DESTINATION_NAME" />' ಅನ್ನು ನೋಡುವ ಪ್ರತಿಯೊಬ್ಬರ ಜೊತೆಗೂ ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ.</translation>
 <translation id="5649768706273821470">ಆಲಿಸು</translation>
+<translation id="5650895901941743674">ನಿಮ್ಮ APN ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="5669691691057771421">ಹೊಸ ಪಿನ್ ನಮೂದಿಸಿ</translation>
 <translation id="5678784840044122290">ನಿಮ್ಮ ಟರ್ಮಿನಲ್‌ ಒಳಗೇ Linux ಅಪ್ಲಿಕೇಶನ್ ಲಭ್ಯವಿರುತ್ತದೆ ಮತ್ತು ಅದು ನಿಮ್ಮ ಲಾಂಚರ್‌ನಲ್ಲಿ ಐಕಾನ್ ಒಂದನ್ನು ಸಹ ತೋರಿಸಬಹುದು.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ಆರ್ಕೈವ್ ಅಥವಾ ವರ್ಚುವಲ್ ಡಿಸ್ಕ್‌ನಿಂದ ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲಾಗುವುದಿಲ್ಲ<ph name="END_BOLD" /> <ph name="LINE_BREAKS" />ಆರ್ಕೈವ್ ಅಥವಾ ವರ್ಚುವಲ್ ಡಿಸ್ಕ್‌ನಲ್ಲಿ ಎಲ್ಲಾ ಫೈಲ್‌ಗಳನ್ನು ಮುಚ್ಚಿ, ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="PHONE_NAME" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_STATUS" />%, ಕನೆಕ್ಟ್</translation>
 <translation id="6269630227984243955">ಮಲೈ</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />" ಸಾಕಷ್ಟು ಸಂಗ್ರಹಣೆಯನ್ನು ಹೊಂದಿರದ ಕಾರಣ ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
+<translation id="6279140785485544797">ನಿಮ್ಮ ಮೊಬೈಲ್ ಡೇಟಾ ಪ್ಲಾನ್ ಅವಧಿ ಮುಕ್ತಾಯಗೊಂಡಿರಬಹುದು. ಬೆಂಬಲಕ್ಕಾಗಿ ನಿಮ್ಮ ವಾಹಕವನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="6287852322318138013">ಈ ಫೈಲ್ ತೆರೆಯಲು ಒಂದು ಅಪ್ಲಿಕೇಶನ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6295542640242147836">SIM ಅನ್ನು ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="6296410173147755564">ಅಮಾನ್ಯ PUK</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> ಆರ್ಕೈವ್</translation>
 <translation id="6321303798550928047">ಕೈ ಬೀಸುತ್ತಿರುವುದು</translation>
 <translation id="6327785803543103246">ವೆಬ್‌ ಪ್ರಾಕ್ಸಿಯ ಸ್ವಯಂಅನ್ವೇಷಣೆ</translation>
-<translation id="6337014272874260727">ತ್ವರಿತ ಫೈಲ್‌ಗಳಿಂದ ಅನ್‌ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="6339145975392024142">US ಅಂತರಾಷ್ಟ್ರೀಯ (PC)</translation>
 <translation id="6356685157277930264">ಫೈಲ್‌ಗಳ ಪ್ರತಿಕ್ರಿಯೆ ವಿಂಡೋ</translation>
 <translation id="6358884629796491903">ಡ್ರ್ಯಾಗನ್‌</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">ಪ್ರಸ್ತುತ ಡೈರೆಕ್ಟರಿ</translation>
 <translation id="6751256176799620176">1 ಫೋಲ್ಡರ್ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6755827872271341378">ChromeOS Flex ಸಾಧನ</translation>
+<translation id="6777029074498310250">ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="6790428901817661496">ಪ್ಲೇ ಮಾಡು</translation>
 <translation id="6794539005637808366">ಐಟಂ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಿ ಅಥವಾ ಅದನ್ನು ಅನುಪಯುಕ್ತದ ಹೊರಗಿನ ಹೊಸ ಫೋಲ್ಡರ್‌ಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="6795884519221689054">ಪಾಂಡಾ</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">ಇನ್‌ಸ್ಕ್ರಿಪ್ಟ್ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ತಮಿಳು</translation>
 <translation id="7088615885725309056">ಹಳೆಯದು</translation>
 <translation id="7103992300314999525">ಮೆಸೆಡೋನಿಯನ್</translation>
+<translation id="7104338189998813914">ನಿಮ್ಮ OneDrive ಖಾತೆಯನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡುವುದಕ್ಕೆ ಸಮಸ್ಯೆಯಿದೆ</translation>
 <translation id="7106346894903675391">ಇನ್ನಷ್ಟು ಸಂಗ್ರಹಣೆಯನ್ನು ಖರೀದಿಸಿ...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ಡ್ರೈವ್ ಹುಡುಕಿ&lt;/em&gt;</translation>
 <translation id="7135561821015524160">ಕನ್ನಡ ಫೋನೆಟಿಕ್</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">ಸ್ವಲ್ಪ ಕಾಯಿರಿ</translation>
 <translation id="7600126690270271294">ಸೆರ್ಬಿಯನ್</translation>
 <translation id="7603724359189955920">ಗ್ರಿಡ್‌ಗಳು</translation>
+<translation id="7624010287655004652">ಮತ್ತೊಬ್ಬ ಮೊಬೈಲ್ ಪೂರೈಕೆದಾರರು ಲಾಕ್ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="7627790789328695202">ಓಹ್, <ph name="FILE_NAME" /> ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ. ಅದನ್ನು ಮರುಹೆಸರಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
 <translation id="7649070708921625228">ಸಹಾಯ</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">ಫೈಲ್ ಪಟ್ಟಿಯನ್ನು, ಥಂಬ್‌ನೇಲ್ ವೀಕ್ಷಣೆಗೆ ಬದಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="8601932370724196034">Crostini ಚಿತ್ರದ ಫೈಲ್</translation>
 <translation id="8609695766746872526">ಐಸ್‌ಲ್ಯಾಂಡಿಕ್</translation>
+<translation id="8630384863424041081">ನಿಮ್ಮ ಸಿಮ್ ಕಾರ್ಡ್ ಪಿನ್ ಅಥವಾ ನಿಮ್ಮ ವಾಹಕ ಒದಗಿಸಿದ ಡಿಫಾಲ್ಟ್ ಪಿನ್ ಅನ್ನು ನಮೂದಿಸಿ. ಬೆಂಬಲಕ್ಕಾಗಿ ನಿಮ್ಮ ವಾಹಕವನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="863903787380594467">ತಪ್ಪಾದ ಪಿನ್. ನೀವು <ph name="RETRIES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನಗಳನ್ನು ಹೊಂದಿರುವಿರಿ.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ಪೋರ್ಟ್</translation>
 <translation id="8656407365183407932">ನಿಮ್ಮ ಆಫ್‌ಲೈನ್ ಫೈಲ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಬೇಕಾಗಿದೆ</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">ಈ ಫೈಲ್ ಅನ್ನು ಗೌಪ್ಯವಾಗಿರಿಸಲಾಗಿದೆ ಮತ್ತು ನಿರ್ವಾಹಕರ ನೀತಿಯ ನಿರ್ಬಂಧಗಳಿಗೆ ಒಳಪಟ್ಟಿರುತ್ತದೆ.</translation>
 <translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8713112442029511308">ಮಾಲ್ಟೇಸ್</translation>
-<translation id="8714138378966541668">ಪೂರೈಕೆದಾರರು ಲಾಕ್ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="8714406895390098252">ಬೈಸಿಕಲ್</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="872537912056138402">ಕ್ರೋಯೇಶಿಯನ್</translation>

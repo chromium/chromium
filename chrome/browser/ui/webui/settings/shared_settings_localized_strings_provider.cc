@@ -31,6 +31,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
 #include "media/base/media_switches.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
@@ -57,6 +58,24 @@ std::u16string GetHelpUrlWithBoard(const std::u16string& original_url) {
 
 }  // namespace
 #endif
+
+void AddAxAnnotationsSectionStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"mainNodeAnnotationsDownloadErrorLabel",
+       IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOAD_ERROR},
+      {"mainNodeAnnotationsDownloadProgressLabel",
+       IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOAD_PROGRESS},
+      {"mainNodeAnnotationsDownloadingLabel",
+       IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOADING},
+      {"mainNodeAnnotationsTitle", IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_TITLE},
+      {"mainNodeAnnotationsSubtitle",
+       IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_SUBTITLE},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddBoolean(
+      "mainNodeAnnotationsEnabled",
+      base::FeatureList::IsEnabled(features::kMainNodeAnnotations));
+}
 
 void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -98,8 +117,12 @@ void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CAPTIONS_MANAGE_LANGUAGES_SUBTITLE},
       {"captionsLiveTranslateTargetLanguage",
        IDS_SETTINGS_CAPTIONS_LIVE_TRANSLATE_TARGET_LANGUAGE},
-      {"removeLanguageAriaLabel",
-       IDS_SETTINGS_CAPTIONS_REMOVE_LANGUAGE_ARIA_LABEL},
+      {"captionsLiveTranslateTargetLanguageSubtitle",
+       IDS_SETTINGS_CAPTIONS_LIVE_TRANSLATE_TARGET_LANGUAGE_SUBTITLE},
+      {"removeLanguageLabel", IDS_SETTINGS_CAPTIONS_REMOVE_LANGUAGE_LABEL},
+      {"makeDefaultLanguageLabel",
+       IDS_SETTINGS_CAPTIONS_MAKE_DEFAULT_LANGUAGE_LABEL},
+      {"defaultLanguageLabel", IDS_SETTINGS_CAPTIONS_DEFAULT_LANGUAGE_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -138,8 +161,7 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
   const bool liveCaptionMultiLanguageEnabled =
       base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage);
 
-  const bool liveTranslateEnabled =
-      base::FeatureList::IsEnabled(media::kLiveTranslate);
+  const bool liveTranslateEnabled = media::IsLiveTranslateEnabled();
 
   const int live_caption_subtitle_message =
       GetLiveCaptionSubtitle(liveCaptionMultiLanguageEnabled);
@@ -256,48 +278,53 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
 }
 
 void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-#endif
-
   webui::LocalizedString kLocalizedStrings[] = {
-    {"secureDns", IDS_SETTINGS_SECURE_DNS},
-    {"secureDnsDescription", IDS_SETTINGS_SECURE_DNS_DESCRIPTION},
+      {"secureDns", IDS_SETTINGS_SECURE_DNS},
+      {"secureDnsDescription", IDS_SETTINGS_SECURE_DNS_DESCRIPTION},
+      {"secureDnsDisabledForManagedEnvironment",
+       IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_MANAGED_ENVIRONMENT},
+      {"secureDnsDisabledForParentalControl",
+       IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_PARENTAL_CONTROL},
+      {"secureDnsAutomaticModeDescription",
+       IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION},
+      {"secureDnsCustomProviderDescription",
+       IDS_SETTINGS_SECURE_DNS_CUSTOM_DESCRIPTION},
+      {"secureDnsDropdownA11yLabel",
+       IDS_SETTINGS_SECURE_DNS_DROPDOWN_ACCESSIBILITY_LABEL},
+      {"secureDnsSecureDropdownModeDescription",
+       IDS_SETTINGS_SECURE_DROPDOWN_MODE_DESCRIPTION},
+      {"secureDnsSecureDropdownModePrivacyPolicy",
+       IDS_SETTINGS_SECURE_DROPDOWN_MODE_PRIVACY_POLICY},
+      {"secureDnsCustomPlaceholder",
+       IDS_SETTINGS_SECURE_DNS_CUSTOM_PLACEHOLDER},
+      {"secureDnsCustomFormatError",
+       IDS_SETTINGS_SECURE_DNS_CUSTOM_FORMAT_ERROR},
+      {"secureDnsCustomConnectionError",
+       IDS_SETTINGS_SECURE_DNS_CUSTOM_CONNECTION_ERROR},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"secureDnsOsSettingsTitle", kIsRevampEnabled
-                                     ? IDS_OS_SETTINGS_REVAMP_SECURE_DNS
-                                     : IDS_SETTINGS_SECURE_DNS},
-    {"secureDnsOsSettingsDescription",
-     kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DESCRIPTION
-                      : IDS_SETTINGS_SECURE_DNS_DESCRIPTION},
-    {"secureDnsWithIdentifiersDescription",
-     IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
-    {"secureDnsDialogTitle", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE},
-    {"secureDnsDialogBody", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_BODY},
-    {"secureDnsDialogCancel", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_CANCEL},
-    {"secureDnsDialogTurnOff",
-     IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TURN_OFF},
+      {"secureDnsOsSettingsTitle", IDS_OS_SETTINGS_SECURE_DNS_TITLE},
+      {"secureDnsWithIdentifiersDescription",
+       IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
+      {"secureDnsDialogTitle", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE},
+      {"secureDnsDialogBody", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_BODY},
+      {"secureDnsDialogCancel",
+       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_CANCEL},
+      {"secureDnsDialogTurnOff",
+       IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TURN_OFF},
+      {"secureDnsAutomaticModeDescription",
+       IDS_OS_SETTINGS_SECURE_DNS_AUTOMATIC_MODE_DESCRIPTION},
+      {"secureDnsSecureDropdownModeNetworkDefaultDescription",
+       IDS_OS_SETTINGS_SECURE_DNS_NETWORK_DEFAULT_MODE_DESCRIPTION},
 #endif
-    {"secureDnsDisabledForManagedEnvironment",
-     IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_MANAGED_ENVIRONMENT},
-    {"secureDnsDisabledForParentalControl",
-     IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_PARENTAL_CONTROL},
-    {"secureDnsAutomaticModeDescription",
-     IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION},
-    {"secureDnsCustomProviderDescription",
-     IDS_SETTINGS_SECURE_DNS_CUSTOM_DESCRIPTION},
-    {"secureDnsDropdownA11yLabel",
-     IDS_SETTINGS_SECURE_DNS_DROPDOWN_ACCESSIBILITY_LABEL},
-    {"secureDnsSecureDropdownModeDescription",
-     IDS_SETTINGS_SECURE_DROPDOWN_MODE_DESCRIPTION},
-    {"secureDnsSecureDropdownModePrivacyPolicy",
-     IDS_SETTINGS_SECURE_DROPDOWN_MODE_PRIVACY_POLICY},
-    {"secureDnsCustomPlaceholder", IDS_SETTINGS_SECURE_DNS_CUSTOM_PLACEHOLDER},
-    {"secureDnsCustomFormatError", IDS_SETTINGS_SECURE_DNS_CUSTOM_FORMAT_ERROR},
-    {"secureDnsCustomConnectionError",
-     IDS_SETTINGS_SECURE_DNS_CUSTOM_CONNECTION_ERROR},
   };
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const std::u16string product_os_name =
+      l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME);
+  html_source->AddString(
+      "secureDnsOsSettingsDescription",
+      l10n_util::GetStringFUTF16(IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION,
+                                 product_os_name));
+#endif
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 

@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/bluetooth/bluetooth_task_manager_win.h"
 
-#include <stddef.h>
 #include <winsock2.h>
+
+#include <stddef.h>
 
 #include <memory>
 #include <string>
@@ -273,6 +279,10 @@ void BluetoothTaskManagerWin::PollAdapter() {
     if (handle) {
       GetKnownDevices();
       classic_wrapper_->FindRadioClose(handle);
+    } else {
+      // If `handle` is null, reset `classic_wrapper_` to avoid stale data
+      // coming from the opened radio handle in the `classic_wrapper_`.
+      classic_wrapper_ = std::make_unique<win::BluetoothClassicWrapper>();
     }
 
     PostAdapterStateToUi();

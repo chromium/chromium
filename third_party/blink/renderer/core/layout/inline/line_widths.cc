@@ -52,13 +52,12 @@ bool LineWidths::Set(const InlineNode& node,
   for (const InlineItem& item : items) {
     switch (item.Type()) {
       case InlineItem::kText: {
-        if (UNLIKELY(!item.Length())) {
+        if (!item.Length()) [[unlikely]] {
           break;
         }
         const ShapeResult* shape_result = item.TextShapeResult();
         DCHECK(shape_result);
-        if (shape_result->PrimaryFont() != primary_font ||
-            shape_result->HasFallbackFonts()) {
+        if (shape_result->HasFallbackFonts(primary_font)) {
           // Compute the metrics. It may have different metrics if fonts are
           // different.
           DCHECK(item.Style());
@@ -82,7 +81,7 @@ bool LineWidths::Set(const InlineNode& node,
       case InlineItem::kOpenTag: {
         DCHECK(item.Style());
         const ComputedStyle& style = *item.Style();
-        if (UNLIKELY(style.VerticalAlign() != EVerticalAlign::kBaseline)) {
+        if (style.VerticalAlign() != EVerticalAlign::kBaseline) [[unlikely]] {
           return false;
         }
         break;
@@ -91,6 +90,9 @@ bool LineWidths::Set(const InlineNode& node,
       case InlineItem::kControl:
       case InlineItem::kOutOfFlowPositioned:
       case InlineItem::kBidiControl:
+      case InlineItem::kOpenRubyColumn:
+      case InlineItem::kCloseRubyColumn:
+      case InlineItem::kRubyLinePlaceholder:
         // These items don't affect line heights.
         break;
       case InlineItem::kFloating:
@@ -125,7 +127,7 @@ bool LineWidths::Set(const InlineNode& node,
   // All lines have the same line height.
   // Compute the number of lines that have the exclusion.
   const LayoutUnit line_height = line_box.metrics.LineHeight();
-  if (UNLIKELY(line_height <= LayoutUnit())) {
+  if (line_height <= LayoutUnit()) [[unlikely]] {
     return false;
   }
   DCHECK_GE(opportunities.size(), 2u);

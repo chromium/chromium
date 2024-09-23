@@ -4,6 +4,7 @@
 
 #include "base/memory/safe_ref.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -14,7 +15,6 @@
 #include "base/test/memory/dangling_ptr_instrumentation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace {
@@ -53,6 +53,14 @@ TEST(SafeRefTest, Operators) {
   EXPECT_EQ((*safe).self->i, 1);  // Will crash if not live.
 }
 
+TEST(SafeRefTest, ThreeWayComparison) {
+  WithWeak with1;
+  SafeRef<WithWeak> safe1(with1.factory.GetSafeRef());
+  WithWeak with2;
+  SafeRef<WithWeak> safe2(with2.factory.GetSafeRef());
+  EXPECT_EQ(&with1 <=> &with2, safe1 <=> safe2);
+}
+
 TEST(SafeRefTest, CanCopyAndMove) {
   WithWeak with;
   SafeRef<WithWeak> safe(with.factory.GetSafeRef());
@@ -83,14 +91,14 @@ TEST(SafeRefTest, AssignCopyAndMove) {
 }
 
 TEST(SafeRefDeathTest, ArrowOperatorCrashIfBadPointer) {
-  absl::optional<WithWeak> with(absl::in_place);
+  std::optional<WithWeak> with(std::in_place);
   SafeRef<WithWeak> safe(with->factory.GetSafeRef());
   with.reset();
   EXPECT_CHECK_DEATH(safe.operator->());  // Will crash since not live.
 }
 
 TEST(SafeRefDeathTest, StarOperatorCrashIfBadPointer) {
-  absl::optional<WithWeak> with(absl::in_place);
+  std::optional<WithWeak> with(std::in_place);
   SafeRef<WithWeak> safe(with->factory.GetSafeRef());
   with.reset();
   EXPECT_CHECK_DEATH(safe.operator*());  // Will crash since not live.

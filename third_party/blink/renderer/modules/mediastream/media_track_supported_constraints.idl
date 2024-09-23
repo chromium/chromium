@@ -19,7 +19,7 @@ dictionary MediaTrackSupportedConstraints {
     boolean echoCancellation = true;
     boolean autoGainControl = true;
     boolean noiseSuppression = true;
-    [RuntimeEnabled=MediaCaptureVoiceIsolation] boolean voiceIsolation = true;
+    boolean voiceIsolation = true;
     boolean latency = true;
     boolean channelCount = true;
     boolean deviceId = true;
@@ -49,6 +49,7 @@ dictionary MediaTrackSupportedConstraints {
 
     // W3C Media Capture Extensions
     [RuntimeEnabled=MediaCaptureBackgroundBlur] boolean backgroundBlur = true;
+    [RuntimeEnabled=MediaCaptureCameraControls] boolean backgroundSegmentationMask = true;
     [RuntimeEnabled=MediaCaptureCameraControls] boolean eyeGazeCorrection = true;
     [RuntimeEnabled=MediaCaptureCameraControls] boolean faceFraming = true;
 

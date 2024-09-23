@@ -7,7 +7,7 @@ import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
-import {KeyInputState} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
+import {KeyInputState, MetaKey} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -94,10 +94,10 @@ suite('ShortcutInputKey', function() {
   test('MetaKeyShowLauncherIcon', async () => {
     shortcutInputKeyElement = initInputKeyElement();
     shortcutInputKeyElement.key = 'meta';
-    shortcutInputKeyElement.hasLauncherButton = true;
+    shortcutInputKeyElement.metaKey = MetaKey.kLauncher;
     await flushTasks();
 
-    // Should show launcher icon when hasLauncherButton is true.
+    // Should show launcher icon when metaKey is kLauncher.
     const iconElement = shortcutInputKeyElement.shadowRoot!.querySelector(
                             '#key-icon') as IronIconElement;
     const iconWrapperElement =
@@ -116,10 +116,10 @@ suite('ShortcutInputKey', function() {
   test('MetaKeyShowSearchIcon', async () => {
     shortcutInputKeyElement = initInputKeyElement();
     shortcutInputKeyElement.key = 'meta';
-    shortcutInputKeyElement.hasLauncherButton = false;
+    shortcutInputKeyElement.metaKey = MetaKey.kSearch;
     await flushTasks();
 
-    // Should show search icon when hasLauncherButton is false.
+    // Should show search icon when metaKey is kSearch.
     const iconElement = shortcutInputKeyElement.shadowRoot!.querySelector(
                             '#key-icon') as IronIconElement;
     const iconWrapperElement =
@@ -139,10 +139,10 @@ suite('ShortcutInputKey', function() {
     shortcutInputKeyElement = initInputKeyElement();
     shortcutInputKeyElement.key = 'Meta';
     shortcutInputKeyElement.keyState = KeyInputState.ALPHANUMERIC_SELECTED;
-    shortcutInputKeyElement.hasLauncherButton = true;
+    shortcutInputKeyElement.metaKey = MetaKey.kLauncher;
     await flushTasks();
 
-    // Should show launcher icon when hasLauncherButton is true.
+    // Should show launcher icon when metaKey is kLauncher.
     const iconElement = shortcutInputKeyElement.shadowRoot!.querySelector(
                             '#key-icon') as IronIconElement;
     assertEquals('shortcut-input-keys:launcher', iconElement.icon);
@@ -155,7 +155,7 @@ suite('ShortcutInputKey', function() {
     shortcutInputKeyElement = initInputKeyElement();
     shortcutInputKeyElement.key = 'a';
     shortcutInputKeyElement.keyState = KeyInputState.ALPHANUMERIC_SELECTED;
-    shortcutInputKeyElement.hasLauncherButton = true;
+    shortcutInputKeyElement.metaKey = MetaKey.kLauncher;
     await flushTasks();
 
     // other keys should keep their original state.

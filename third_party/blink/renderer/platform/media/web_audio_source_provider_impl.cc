@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -123,7 +122,7 @@ WebAudioSourceProviderImpl::WebAudioSourceProviderImpl(
     media::MediaLog* media_log,
     base::OnceClosure on_set_client_callback /* = base::OnceClosure()*/)
     : sink_(std::move(sink)),
-      tee_filter_(new TeeFilter()),
+      tee_filter_(std::make_unique<TeeFilter>()),
       media_log_(media_log),
       on_set_client_callback_(std::move(on_set_client_callback)) {}
 
@@ -287,7 +286,8 @@ bool WebAudioSourceProviderImpl::SetVolume(double volume) {
 }
 
 media::OutputDeviceInfo WebAudioSourceProviderImpl::GetOutputDeviceInfo() {
-  NOTREACHED();  // The blocking API is intentionally not supported.
+  NOTREACHED_IN_MIGRATION();  // The blocking API is intentionally not
+                              // supported.
   return media::OutputDeviceInfo();
 }
 

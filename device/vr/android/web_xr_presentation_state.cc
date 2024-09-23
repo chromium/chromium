@@ -6,12 +6,11 @@
 
 #include <iomanip>
 #include <sstream>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "ui/gl/gl_fence.h"
 
 namespace device {
@@ -125,7 +124,7 @@ WebXrPresentationState::FrameIndexType
 WebXrPresentationState::StartFrameAnimating() {
   DCHECK(!HaveAnimatingFrame());
   DCHECK(!idle_frames_.empty());
-  animating_frame_ = idle_frames_.front();
+  animating_frame_ = idle_frames_.front().get();
   idle_frames_.pop();
 
   animating_frame_->index = next_frame_index_++;
@@ -148,7 +147,7 @@ void WebXrPresentationState::TransitionFrameAnimatingToProcessing() {
 void WebXrPresentationState::RecycleUnusedAnimatingFrame() {
   DCHECK(HaveAnimatingFrame());
   animating_frame_->Recycle();
-  idle_frames_.push(animating_frame_);
+  idle_frames_.push(animating_frame_.get());
   animating_frame_ = nullptr;
   DVLOG(3) << DebugState() << __func__;
 }
@@ -200,7 +199,7 @@ void WebXrPresentationState::EndFrameRendering(WebXrFrame* frame) {
   // Remove it from the list, and then recycle the frame.
   DVLOG(3) << DebugState() << __func__;
   DCHECK_EQ(state_machine_type_, StateMachineType::kVizComposited);
-  auto erased = base::EraseIf(rendering_frames_,
+  auto erased = std::erase_if(rendering_frames_,
                               [frame](const WebXrFrame* rendering_frame) {
                                 return frame == rendering_frame;
                               });
@@ -218,7 +217,7 @@ void WebXrPresentationState::EndFrameRendering() {
   DCHECK(HaveRenderingFrame());
   DCHECK(rendering_frame_->IsValid());
   rendering_frame_->Recycle();
-  idle_frames_.push(rendering_frame_);
+  idle_frames_.push(rendering_frame_.get());
   rendering_frame_ = nullptr;
   DVLOG(3) << DebugState() << __func__;
 }
@@ -228,7 +227,7 @@ bool WebXrPresentationState::RecycleProcessingFrameIfPossible() {
   bool can_cancel = !processing_frame_->state_locked;
   if (can_cancel) {
     processing_frame_->Recycle();
-    idle_frames_.push(processing_frame_);
+    idle_frames_.push(processing_frame_.get());
     processing_frame_ = nullptr;
   } else {
     processing_frame_->recycle_once_unlocked = true;
@@ -254,7 +253,7 @@ void WebXrPresentationState::EndPresentation() {
 
   if (HaveRenderingFrame()) {
     rendering_frame_->Recycle();
-    idle_frames_.push(rendering_frame_);
+    idle_frames_.push(rendering_frame_.get());
     rendering_frame_ = nullptr;
   }
   for (device::WebXrFrame* frame : rendering_frames_) {

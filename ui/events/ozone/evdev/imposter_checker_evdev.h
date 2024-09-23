@@ -8,8 +8,10 @@
 #include <map>
 
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
+#include "ui/events/ozone/evdev/imposter_checker_evdev_state.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/events/ozone/evdev/fake_keyboard_heuristic_metrics.h"
@@ -33,7 +35,6 @@ class COMPONENT_EXPORT(EVDEV) ImposterCheckerEvdev {
 
  private:
   std::vector<int> GetIdsOnSamePhys(const std::string& phys_path);
-  std::string StandardizedPhys(const std::string& phys_path);
   bool IsSuspectedKeyboardImposter(EventConverterEvdev* converter,
                                    bool shared_phys);
   bool IsSuspectedMouseImposter(EventConverterEvdev* converter,
@@ -41,6 +42,7 @@ class COMPONENT_EXPORT(EVDEV) ImposterCheckerEvdev {
 
   // Number of devices per phys path.
   std::multimap<std::string, int> devices_on_phys_path_;
+  std::unique_ptr<ImposterCheckerEvdevState> imposter_checker_evdev_state_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   FakeKeyboardHeuristicMetrics fake_keyboard_heuristic_metrics_;

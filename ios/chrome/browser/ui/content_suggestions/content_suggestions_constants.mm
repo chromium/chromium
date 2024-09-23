@@ -20,12 +20,6 @@ NSString* const kContentSuggestionsShortcutsAccessibilityIdentifierPrefix =
 NSString* const kMagicStackScrollViewAccessibilityIdentifier =
     @"MagicStackScrollViewAccessibilityIdentifier";
 
-NSString* const kMagicStackEditButtonContainerAccessibilityIdentifier =
-    @"MagicStackEditButtonContainerAccessibilityIdentifier";
-
-NSString* const kMagicStackEditButtonAccessibilityIdentifier =
-    @"MagicStackEditButtonAccessibilityIdentifier";
-
 NSString* const kMagicStackEditHalfSheetDoneButtonAccessibilityIdentifier =
     @"MagicStackEditHalfSheetDoneButtonAccessibilityIdentifier";
 
@@ -57,18 +51,20 @@ ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(
     case SetUpListItemType::kNotifications:
       return ContentSuggestionsModuleType::kSetUpListNotifications;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
 bool IsSetUpListModuleType(ContentSuggestionsModuleType type) {
   switch (type) {
+    case ContentSuggestionsModuleType::kInvalid:
     case ContentSuggestionsModuleType::kTabResumption:
     case ContentSuggestionsModuleType::kSafetyCheck:
     case ContentSuggestionsModuleType::kParcelTracking:
     case ContentSuggestionsModuleType::kMostVisited:
     case ContentSuggestionsModuleType::kShortcuts:
     case ContentSuggestionsModuleType::kPlaceholder:
+    case ContentSuggestionsModuleType::kPriceTrackingPromo:
       return false;
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:

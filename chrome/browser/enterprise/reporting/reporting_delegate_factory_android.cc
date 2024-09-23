@@ -36,7 +36,7 @@ ReportingDelegateFactoryAndroid::GetReportSchedulerDelegate() const {
 
 std::unique_ptr<RealTimeReportGenerator::Delegate>
 ReportingDelegateFactoryAndroid::GetRealTimeReportGeneratorDelegate() const {
-  // TODO(crbug.com/1228845) Implement RealTimeReportGenerator::Delegate for
+  // TODO(crbug.com/40189722) Implement RealTimeReportGenerator::Delegate for
   // Android
   return nullptr;
 }

@@ -17,17 +17,14 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 suite(
     'FileSystemSettings_EnablePersistentPermissions_SiteEntryItem', function() {
       let testElement: FileSystemSiteEntryItemElement;
-      const origin: string = 'https://a.com/';
       const directoryFilePath: string = 'a/';
       const TEST_FILE_SYSTEM_DIRECTORY_GRANT: FileSystemGrant = {
-        origin: origin,
         filePath: directoryFilePath,
         displayName: directoryFilePath,
         isDirectory: true,
       };
       const filePath: string = 'a/b';
       const TEST_FILE_SYSTEM_FILE_GRANT: FileSystemGrant = {
-        origin: origin,
         filePath: filePath,
         displayName: filePath,
         isDirectory: false,
@@ -79,8 +76,7 @@ suite(
             const whenFired = eventToPromise('revoke-grant', testElement);
             testElement.$.removeGrant.click();
             const permissionRemovedEvent = await whenFired;
-            const {origin, filePath} = permissionRemovedEvent.detail;
-            assertEquals(TEST_FILE_SYSTEM_FILE_GRANT.origin, origin);
+            const {filePath} = permissionRemovedEvent.detail;
             assertEquals(TEST_FILE_SYSTEM_FILE_GRANT.filePath, filePath);
           });
     });

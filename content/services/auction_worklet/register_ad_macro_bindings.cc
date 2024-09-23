@@ -73,14 +73,11 @@ void RegisterAdMacroBindings::RegisterAdMacro(
         str, [](char c) { return !url::IsURIComponentChar(c) && c != '%'; });
   };
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesM120FeaturesPart1)) {
-    if (ContainsDisallowedCharacters(macro_name) ||
-        ContainsDisallowedCharacters(macro_value)) {
-      args.GetIsolate()->ThrowException(
-          v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
-              "registerAdMacro macro key and value must be URL-encoded")));
-    }
+  if (ContainsDisallowedCharacters(macro_name) ||
+      ContainsDisallowedCharacters(macro_value)) {
+    args.GetIsolate()->ThrowException(
+        v8::Exception::TypeError(v8_helper->CreateStringFromLiteral(
+            "registerAdMacro macro key and value must be URL-encoded")));
   }
 
   bindings->ad_macro_map_[macro_name] = macro_value;

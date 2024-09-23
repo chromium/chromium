@@ -7,7 +7,6 @@ package org.chromium.components.omnibox;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 
 /** Utility class to get security state info for the omnibox. */
@@ -26,9 +25,7 @@ public class SecurityStatusIcon {
             case ConnectionSecurityLevel.WARNING:
                 return R.drawable.omnibox_not_secure_warning;
             case ConnectionSecurityLevel.DANGEROUS:
-                return ChromeFeatureList.isEnabled(ChromeFeatureList.RED_INTERSTITIAL_FACELIFT)
-                        ? R.drawable.omnibox_dangerous
-                        : R.drawable.omnibox_not_secure_warning;
+                return R.drawable.omnibox_dangerous;
             case ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT:
             case ConnectionSecurityLevel.SECURE:
                 return useUpdatedConnectionSecurityIndicators

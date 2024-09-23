@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CDM_RENDERER_WIDEVINE_KEY_SYSTEM_INFO_H_
 #define COMPONENTS_CDM_RENDERER_WIDEVINE_KEY_SYSTEM_INFO_H_
 
-#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"

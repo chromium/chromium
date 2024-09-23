@@ -16,8 +16,6 @@ namespace ash {
 CrashRecoveryLauncher::CrashRecoveryLauncher(Profile& profile,
                                              const KioskAppId& kiosk_app_id)
     : kiosk_app_id_(kiosk_app_id), profile_(profile) {
-  CHECK(kiosk_app_id.type != KioskAppType::kArcApp);
-
   if (kiosk_app_id.type == KioskAppType::kChromeApp) {
     app_launcher_ = std::make_unique<StartupAppLauncher>(
         &profile, *kiosk_app_id.app_id, /*should_skip_install=*/true,

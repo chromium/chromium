@@ -6,7 +6,7 @@
   {
     "namespace":"wallpaper",
     "compiler_options": {
-      "implemented_in": "chrome/browser/chromeos/extensions/wallpaper_api.h"
+      "implemented_in": "chrome/browser/chromeos/extensions/wallpaper/wallpaper_api.h"
     },
     "description": "Use the <code>chrome.wallpaper</code> API to change the ChromeOS wallpaper.",
     "platforms": ["chromeos", "lacros"],

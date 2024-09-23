@@ -60,6 +60,17 @@ class ASH_PUBLIC_EXPORT MockInputDeviceSettingsController
               GetGraphicsTabletSettings,
               (DeviceId id),
               (override));
+  MOCK_METHOD(const mojom::Keyboard*, GetKeyboard, (DeviceId id), (override));
+  MOCK_METHOD(const mojom::Mouse*, GetMouse, (DeviceId id), (override));
+  MOCK_METHOD(const mojom::Touchpad*, GetTouchpad, (DeviceId id), (override));
+  MOCK_METHOD(const mojom::PointingStick*,
+              GetPointingStick,
+              (DeviceId id),
+              (override));
+  MOCK_METHOD(const mojom::GraphicsTablet*,
+              GetGraphicsTablet,
+              (DeviceId id),
+              (override));
   MOCK_METHOD(const mojom::KeyboardPolicies&,
               GetKeyboardPolicies,
               (),
@@ -103,6 +114,13 @@ class ASH_PUBLIC_EXPORT MockInputDeviceSettingsController
               OnGraphicsTabletButtonPressed,
               (DeviceId device_id, const mojom::Button& button),
               (override));
+  MOCK_METHOD(
+      void,
+      GetDeviceImageDataUrl,
+      (const std::string& device_key,
+       base::OnceCallback<void(const std::optional<std::string>&)> callback),
+      (override));
+  MOCK_METHOD(void, ResetNotificationDeviceTracking, (), (override));
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
 };

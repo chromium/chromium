@@ -9,9 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/multidevice/remote_device.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 // static
 TetherHostFetcherImpl::Factory*
@@ -43,7 +41,7 @@ TetherHostFetcherImpl::TetherHostFetcherImpl(
   device_sync_client_->AddObserver(this);
   multidevice_setup_client_->AddObserver(this);
 
-  CacheCurrentTetherHosts();
+  CacheCurrentTetherHost();
 }
 
 TetherHostFetcherImpl::~TetherHostFetcherImpl() {
@@ -51,64 +49,46 @@ TetherHostFetcherImpl::~TetherHostFetcherImpl() {
   multidevice_setup_client_->RemoveObserver(this);
 }
 
-bool TetherHostFetcherImpl::HasSyncedTetherHosts() {
-  return !current_remote_device_list_.empty();
-}
-
-void TetherHostFetcherImpl::FetchAllTetherHosts(
-    TetherHostListCallback callback) {
-  ProcessFetchAllTetherHostsRequest(current_remote_device_list_,
-                                    std::move(callback));
-}
-
-void TetherHostFetcherImpl::FetchTetherHost(const std::string& device_id,
-                                            TetherHostCallback callback) {
-  ProcessFetchSingleTetherHostRequest(device_id, current_remote_device_list_,
-                                      std::move(callback));
-}
-
 void TetherHostFetcherImpl::OnNewDevicesSynced() {
-  CacheCurrentTetherHosts();
+  CacheCurrentTetherHost();
 }
 
 void TetherHostFetcherImpl::OnHostStatusChanged(
     const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
         host_status_with_device) {
-  CacheCurrentTetherHosts();
+  CacheCurrentTetherHost();
 }
 
 void TetherHostFetcherImpl::OnFeatureStatesChanged(
     const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map) {
-  CacheCurrentTetherHosts();
+  CacheCurrentTetherHost();
 }
 
 void TetherHostFetcherImpl::OnReady() {
-  CacheCurrentTetherHosts();
+  CacheCurrentTetherHost();
 }
 
-void TetherHostFetcherImpl::CacheCurrentTetherHosts() {
-  multidevice::RemoteDeviceRefList updated_list = GenerateHostDeviceList();
-  if (updated_list == current_remote_device_list_)
+void TetherHostFetcherImpl::CacheCurrentTetherHost() {
+  std::optional<multidevice::RemoteDeviceRef> updated_tether_host =
+      GenerateTetherHost();
+  if (updated_tether_host == tether_host_) {
     return;
+  }
 
-  current_remote_device_list_.swap(updated_list);
-  NotifyTetherHostsUpdated();
+  tether_host_ = updated_tether_host;
+  NotifyTetherHostUpdated();
 }
 
-multidevice::RemoteDeviceRefList
-TetherHostFetcherImpl::GenerateHostDeviceList() {
-  multidevice::RemoteDeviceRefList host_list;
-
+std::optional<multidevice::RemoteDeviceRef>
+TetherHostFetcherImpl::GenerateTetherHost() {
   multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice
       host_status_with_device = multidevice_setup_client_->GetHostStatus();
   if (host_status_with_device.first ==
       multidevice_setup::mojom::HostStatus::kHostVerified) {
-    host_list.push_back(*host_status_with_device.second);
+    return *host_status_with_device.second;
   }
-  return host_list;
+  return std::nullopt;
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

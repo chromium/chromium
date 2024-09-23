@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Enquête</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> To/s</translation>
 <translation id="2353636109065292463">Vérifier votre connexion Internet</translation>
+<translation id="2359808026110333948">Continuer</translation>
 <translation id="2388990488038464401">Appeler ce numéro depuis votre téléphone ?</translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
 <translation id="24452542372838207">Développer la notification</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">NOUVEAU</translation>
 <translation id="2666092431469916601">En haut</translation>
 <translation id="2701330563083355633">Partagé par <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Nouveau</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Il y a 1 an}one{Il y a # an}other{Il y a # ans}}</translation>
 <translation id="2878511608894704031">Tout supprimer</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{dans 1 j}one{dans # j}other{dans # j}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">Système <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Retour</translation>
 <translation id="5613020302032141669">Gauche</translation>
+<translation id="5633029987065897167">Vide</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}one{# min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Actif aujourd'hui}=1{Actif il y a 1 jour}one{Actif il y a # jour}other{Actif il y a # jours}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 jour et  }one{# jour et  }other{# jours et  }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">Contenu au format RTF</translation>
 <translation id="6539092367496845964">Un problème est survenu. Réessayez plus tard.</translation>
 <translation id="654149438358937226">Bloquer toutes les notifications</translation>
-<translation id="6612467943526193239">Pour quitter le mode Étalonnage, appuyez sur Échap.</translation>
 <translation id="6620110761915583480">Enregistrer le fichier</translation>
 <translation id="6699343763173986273">Contenu multimédia : titre suivant</translation>
 <translation id="6808150112686056157">Contenu multimédia : arrêt</translation>

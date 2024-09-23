@@ -6,28 +6,20 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_RESET_SCREEN_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
 namespace ash {
 
 // Interface for dependency injection between ResetScreen and its actual
 // representation, either views based or WebUI.
-class ResetView : public base::SupportsWeakPtr<ResetView> {
+class ResetView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"reset", "ResetScreen"};
 
   virtual ~ResetView() = default;
 
   virtual void Show() = 0;
-
-  enum class State {
-    kRestartRequired = 0,
-    kRevertPromise,
-    kPowerwashProposal,
-    kError,
-  };
-
   virtual void SetIsRollbackAvailable(bool value) = 0;
   virtual void SetIsRollbackRequested(bool value) = 0;
   virtual void SetIsTpmFirmwareUpdateAvailable(bool value) = 0;
@@ -35,19 +27,11 @@ class ResetView : public base::SupportsWeakPtr<ResetView> {
   virtual void SetIsTpmFirmwareUpdateEditable(bool value) = 0;
   virtual void SetTpmFirmwareUpdateMode(tpm_firmware_update::Mode value) = 0;
   virtual void SetShouldShowConfirmationDialog(bool value) = 0;
-  virtual void SetConfirmationDialogClosed() = 0;
-  virtual void SetScreenState(State value) = 0;
-
-  virtual State GetScreenState() = 0;
-  virtual tpm_firmware_update::Mode GetTpmFirmwareUpdateMode() = 0;
-  virtual bool GetIsRollbackAvailable() = 0;
-  virtual bool GetIsRollbackRequested() = 0;
-  virtual bool GetIsTpmFirmwareUpdateChecked() = 0;
+  virtual void SetScreenState(int value) = 0;
+  virtual base::WeakPtr<ResetView> AsWeakPtr() = 0;
 };
 
-// WebUI implementation of ResetScreenActor.
-class ResetScreenHandler : public ResetView,
-                           public BaseScreenHandler {
+class ResetScreenHandler final : public ResetView, public BaseScreenHandler {
  public:
   using TView = ResetView;
 
@@ -58,11 +42,9 @@ class ResetScreenHandler : public ResetView,
 
   ~ResetScreenHandler() override;
 
+ private:
+  // ResetView:
   void Show() override;
-
-  // BaseScreenHandler implementation:
-  void DeclareLocalizedValues(
-      ::login::LocalizedValuesBuilder* builder) override;
   void SetIsRollbackAvailable(bool value) override;
   void SetIsRollbackRequested(bool value) override;
   void SetIsTpmFirmwareUpdateAvailable(bool value) override;
@@ -70,23 +52,14 @@ class ResetScreenHandler : public ResetView,
   void SetIsTpmFirmwareUpdateEditable(bool value) override;
   void SetTpmFirmwareUpdateMode(tpm_firmware_update::Mode value) override;
   void SetShouldShowConfirmationDialog(bool value) override;
-  void SetConfirmationDialogClosed() override;
-  void SetScreenState(State value) override;
-  State GetScreenState() override;
-  tpm_firmware_update::Mode GetTpmFirmwareUpdateMode() override;
-  bool GetIsRollbackAvailable() override;
-  bool GetIsRollbackRequested() override;
-  bool GetIsTpmFirmwareUpdateChecked() override;
+  void SetScreenState(int value) override;
+  base::WeakPtr<ResetView> AsWeakPtr() override;
 
- private:
-  void HandleSetTpmFirmwareUpdateChecked(bool value);
+  // BaseScreenHandler:
+  void DeclareLocalizedValues(
+      ::login::LocalizedValuesBuilder* builder) override;
 
-  ResetView::State state_ = ResetView::State::kRestartRequired;
-  tpm_firmware_update::Mode mode_ = tpm_firmware_update::Mode::kNone;
-  bool is_rollback_available_ = false;
-  bool is_rollback_requested_ = false;
-  bool is_tpm_firmware_update_checked_ = false;
-  bool is_showing_confirmation_dialog_ = false;
+  base::WeakPtrFactory<ResetView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

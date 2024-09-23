@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef MEDIA_BASE_BYTE_QUEUE_H_
 #define MEDIA_BASE_BYTE_QUEUE_H_
 
@@ -10,6 +15,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/process/memory.h"
 #include "media/base/media_export.h"
 
@@ -36,7 +42,7 @@ class MEDIA_EXPORT ByteQueue {
   // Appends new bytes onto the end of the queue. If allocation failure occurs,
   // then the append of `data` is not done and returns false. Otherwise, returns
   // true.
-  [[nodiscard]] bool Push(const uint8_t* data, int size);
+  [[nodiscard]] bool Push(base::span<const uint8_t> data);
 
   // Get a pointer to the front of the queue and the queue size. These values
   // are only valid until the next Push() or Pop() call.
@@ -44,6 +50,12 @@ class MEDIA_EXPORT ByteQueue {
 
   // Remove |count| bytes from the front of the queue.
   void Pop(int count);
+
+  // Get a read-only span view of the data. This is only valid until the next
+  // Push() or Pop() call.
+  base::span<const uint8_t> Data() {
+    return {Front(), base::checked_cast<size_t>(used_)};
+  }
 
  private:
   // Default starting size for the queue.

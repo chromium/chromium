@@ -52,7 +52,7 @@ function nonDraggableRegions() {
 function startTest() {
     // Verify that app regions are correctly collected when the frame supports
     // app regions.
-    internals.SetSupportsAppRegion(true);
+    internals.SetSupportsDraggableRegions(true);
 
     shouldBe("draggableRegions()", "''");
     shouldBe("nonDraggableRegions()", "''");
@@ -75,7 +75,7 @@ function startTest() {
 
     // Verify that app regions are reset when the frame does not support
     // app regions.
-    internals.SetSupportsAppRegion(false);
+    internals.SetSupportsDraggableRegions(false);
     shouldBe("draggableRegions()", "''");
     shouldBe("nonDraggableRegions()", "''");
 

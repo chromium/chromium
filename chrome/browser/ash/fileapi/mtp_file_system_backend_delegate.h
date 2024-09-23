@@ -57,8 +57,6 @@ class MTPFileSystemBackendDelegate : public FileSystemBackendDelegate {
       storage::FileSystemContext* context) override;
   storage::WatcherManager* GetWatcherManager(
       storage::FileSystemType type) override;
-  void GetRedirectURLForContents(const storage::FileSystemURL& url,
-                                 storage::URLCallback callback) override;
 
  private:
   std::unique_ptr<DeviceMediaAsyncFileUtil> device_media_async_file_util_;

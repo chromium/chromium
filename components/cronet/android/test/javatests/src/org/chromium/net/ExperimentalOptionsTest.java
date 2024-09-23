@@ -69,7 +69,7 @@ public class ExperimentalOptionsTest {
     @Before
     public void setUp() throws Exception {
         mHangingUrlLatch = new CountDownLatch(1);
-        // TODO(crbug/1490552): Fallback to MockCertVerifier when custom CAs are not supported.
+        // TODO(crbug.com/40284777): Fallback to MockCertVerifier when custom CAs are not supported.
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             mTestRule
                     .getTestFramework()

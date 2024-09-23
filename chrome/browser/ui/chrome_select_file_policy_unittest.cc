@@ -47,23 +47,21 @@ class FileSelectionUser : public ui::SelectFileDialog::Listener {
     const std::u16string title = std::u16string();
 
     file_selection_initialisation_in_progress = true;
-    select_file_dialog_->SelectFile(
-        ui::SelectFileDialog::SELECT_OPEN_FILE, title, file_path, nullptr, 0,
-        base::FilePath::StringType(), nullptr, nullptr);
+    select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE,
+                                    title, file_path, nullptr, 0,
+                                    base::FilePath::StringType(), nullptr);
     file_selection_initialisation_in_progress = false;
   }
 
   // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override {
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override {
     ASSERT_FALSE(file_selection_initialisation_in_progress);
   }
-  void MultiFilesSelected(const std::vector<ui::SelectedFileInfo>& files,
-                          void* params) override {
+  void MultiFilesSelected(
+      const std::vector<ui::SelectedFileInfo>& files) override {
     ASSERT_FALSE(file_selection_initialisation_in_progress);
   }
-  void FileSelectionCanceled(void* params) override {
+  void FileSelectionCanceled() override {
     ASSERT_FALSE(file_selection_initialisation_in_progress);
   }
 

@@ -67,6 +67,8 @@ UrlLoadParams UrlLoadParams::SwitchToTab(
 
 UrlLoadParams::UrlLoadParams() = default;
 
+UrlLoadParams::~UrlLoadParams() = default;
+
 UrlLoadParams::UrlLoadParams(const UrlLoadParams& other) = default;
 
 UrlLoadParams& UrlLoadParams::operator=(const UrlLoadParams& other) = default;

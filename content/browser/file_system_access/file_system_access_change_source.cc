@@ -96,7 +96,7 @@ void FileSystemAccessChangeSource::NotifyOfChange(
   CHECK(changed_url.is_valid());
 
   for (RawChangeObserver& observer : observers_) {
-    observer.OnRawChange(changed_url, error, change_info);
+    observer.OnRawChange(changed_url, error, change_info, scope());
   }
 }
 
@@ -114,7 +114,7 @@ void FileSystemAccessChangeSource::NotifyOfChange(
   for (RawChangeObserver& observer : observers_) {
     observer.OnRawChange(
         ToFileSystemURL(*file_system_context_, root_url, relative_path), error,
-        change_info);
+        change_info, scope());
   }
 }
 

@@ -18,8 +18,7 @@ namespace {
 
 // Computes a SHA-1 hash of |data| and returns it as a hex string.
 std::string ComputeSHA1(const std::string& data) {
-  return base::HexEncode(
-      base::SHA1HashSpan(base::as_bytes(base::make_span(data))));
+  return base::HexEncode(base::SHA1Hash(base::as_byte_span(data)));
 }
 
 }  // namespace

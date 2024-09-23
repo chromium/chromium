@@ -14,12 +14,12 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForShortcutCustomizationSystemWebApp() {
-  auto info = std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUIShortcutCustomizationAppURL);
+  GURL start_url(ash::kChromeUIShortcutCustomizationAppURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeUIShortcutCustomizationAppURL);
   info->title =
       l10n_util::GetStringUTF16(IDS_ASH_SHORTCUT_CUSTOMIZATION_APP_TITLE);
@@ -30,7 +30,7 @@ CreateWebAppInfoForShortcutCustomizationSystemWebApp() {
   info->background_color = info->theme_color;
   info->dark_mode_background_color = info->dark_mode_theme_color;
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {{"app_icon_192.png", 192,
         IDR_ASH_SHORTCUT_CUSTOMIZATION_APP_APP_ICON_192_PNG}},
       *info);
@@ -53,7 +53,7 @@ ShortcutCustomizationSystemAppDelegate::GetWebAppInfo() const {
 }
 
 bool ShortcutCustomizationSystemAppDelegate::IsAppEnabled() const {
-  return features::IsShortcutCustomizationAppEnabled();
+  return true;
 }
 
 gfx::Size ShortcutCustomizationSystemAppDelegate::GetMinimumWindowSize() const {

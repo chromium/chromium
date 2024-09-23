@@ -9,7 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 
 namespace content {
 

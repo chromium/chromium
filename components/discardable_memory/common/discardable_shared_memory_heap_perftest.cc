@@ -5,7 +5,9 @@
 #include "components/discardable_memory/common/discardable_shared_memory_heap.h"
 
 #include <stddef.h>
+
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdlib>
 #include <memory>
@@ -49,8 +51,8 @@ TEST(DiscardableSharedMemoryHeapTest, SearchFreeLists) {
   srand(kSeed);
 
   // Pre-compute random values.
-  int random_span[kTimeCheckInterval];
-  size_t random_blocks[kTimeCheckInterval];
+  std::array<int, kTimeCheckInterval> random_span;
+  std::array<size_t, kTimeCheckInterval> random_blocks;
   for (int i = 0; i < kTimeCheckInterval; ++i) {
     random_span[i] = std::rand();
     // Exponentially distributed block size.

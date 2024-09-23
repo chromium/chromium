@@ -129,7 +129,9 @@ enum InstallStatus {
                                          // key due to missing permissions.
   ROTATE_DTKEY_FAILED_CONFLICT = 77,  // Failed to rotate the device trust key
                                       // due to a conflict during upload.
-  MAX_INSTALL_STATUS = 78,  // When adding a new result, bump this and update
+  CONFIGURE_APP_CONTAINER_SANDBOX_SUCCESS = 78,
+  CONFIGURE_APP_CONTAINER_SANDBOX_FAILED = 79,
+  MAX_INSTALL_STATUS = 80,  // When adding a new result, bump this and update
                             // the SetupInstallResult enum in enums.xml.
 };
 
@@ -181,7 +183,6 @@ extern const char kDoNotRemoveSharedItems[];
 extern const char kEnableLogging[];
 extern const char kForceConfigureUserSettings[];
 extern const char kForceUninstall[];
-extern const char kInputFile[];
 extern const char kInstallArchive[];
 extern const char kInstallerData[];
 extern const char kInstallLevel[];
@@ -191,9 +192,6 @@ extern const char kMsi[];
 extern const char kNewSetupExe[];
 extern const char kNonce[];
 extern const char kOnOsUpgrade[];
-extern const char kOutputFile[];
-extern const char kPatch[];
-extern const char kPatchFile[];
 extern const char kPreviousVersion[];
 extern const char kReenableAutoupdates[];
 extern const char kRegisterChromeBrowser[];

@@ -1,0 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "home_customization_collection_configurator.h",
+    "home_customization_collection_configurator.mm",
+    "home_customization_discover_consumer.h",
+    "home_customization_discover_view_controller.h",
+    "home_customization_discover_view_controller.mm",
+    "home_customization_header_view.h",
+    "home_customization_header_view.mm",
+    "home_customization_link_cell.h",
+    "home_customization_link_cell.mm",
+    "home_customization_magic_stack_consumer.h",
+    "home_customization_magic_stack_view_controller.h",
+    "home_customization_magic_stack_view_controller.mm",
+    "home_customization_main_consumer.h",
+    "home_customization_main_view_controller.h",
+    "home_customization_main_view_controller.mm",
+    "home_customization_mutator.h",
+    "home_customization_toggle_cell.h",
+    "home_customization_toggle_cell.mm",
+    "home_customization_view_controller_protocol.h",
+  ]
+  deps = [
+    "//ios/chrome/app/strings:ios_strings",
+    "//ios/chrome/browser/home_customization/utils",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:dynamic_type_util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

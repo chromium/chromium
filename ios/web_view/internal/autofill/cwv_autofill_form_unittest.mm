@@ -38,7 +38,7 @@ TEST_F(CWVAutofillFormTest, Initialization) {
                                           nullptr);
   CWVAutofillForm* form =
       [[CWVAutofillForm alloc] initWithFormStructure:*form_structure];
-  EXPECT_NSEQ(base::SysUTF16ToNSString(form_data.name), form.name);
+  EXPECT_NSEQ(base::SysUTF16ToNSString(form_data.name()), form.name);
   EXPECT_TRUE(form.type & CWVAutofillFormTypeAddresses);
   EXPECT_FALSE(form.type & CWVAutofillFormTypeCreditCards);
   EXPECT_FALSE(form.type & CWVAutofillFormTypePasswords);

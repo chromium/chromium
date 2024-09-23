@@ -1,0 +1,172 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("birch") {
+  sources = [
+    "birch_calendar_fetcher.cc",
+    "birch_calendar_fetcher.h",
+    "birch_calendar_provider.cc",
+    "birch_calendar_provider.h",
+    "birch_file_suggest_provider.cc",
+    "birch_file_suggest_provider.h",
+    "birch_keyed_service.cc",
+    "birch_keyed_service.h",
+    "birch_keyed_service_factory.cc",
+    "birch_keyed_service_factory.h",
+    "birch_last_active_provider.cc",
+    "birch_last_active_provider.h",
+    "birch_lost_media_provider.cc",
+    "birch_lost_media_provider.h",
+    "birch_most_visited_provider.cc",
+    "birch_most_visited_provider.h",
+    "birch_recent_tabs_provider.cc",
+    "birch_recent_tabs_provider.h",
+    "birch_release_notes_provider.cc",
+    "birch_release_notes_provider.h",
+    "birch_self_share_provider.cc",
+    "birch_self_share_provider.h",
+    "refresh_token_waiter.cc",
+    "refresh_token_waiter.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/app/theme:chrome_unscaled_resources",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/calendar",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/file_suggest",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/release_notes",
+    "//chrome/browser/ash/video_conference",
+    "//chrome/browser/favicon",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
+    "//chrome/common",
+    "//components/favicon_base",
+    "//components/history/core/browser",
+    "//components/prefs",
+    "//components/send_tab_to_self",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/sync/service",
+    "//components/sync_sessions",
+    "//net/traffic_annotation",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chrome/browser/resources:preinstalled_web_apps_resources" ]
+  }
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "birch_calendar_fetcher_unittest.cc",
+    "birch_calendar_provider_unittest.cc",
+    "birch_keyed_service_factory_unittest.cc",
+    "birch_keyed_service_unittest.cc",
+    "birch_last_active_provider_unittest.cc",
+    "birch_most_visited_provider_unittest.cc",
+    "refresh_token_waiter_unittest.cc",
+  ]
+
+  deps = [
+    ":birch",
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//base/version_info",
+    "//chrome/browser",
+    "//chrome/browser/ash/file_suggest",
+    "//chrome/browser/ash/file_suggest:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/release_notes",
+    "//chrome/browser/favicon",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui/ash/holding_space:test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/favicon/core/test:test_support",
+    "//components/prefs",
+    "//components/send_tab_to_self",
+    "//components/send_tab_to_self:test_support",
+    "//components/sessions:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/sync_sessions",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//services/media_session/public/cpp/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "birch_test_util.cc",
+    "birch_test_util.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//base",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "birch_browsertest.cc",
+    "birch_coral_provider_browsertest.cc",
+  ]
+
+  deps = [
+    ":birch",
+    ":test_support",
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/main_extra_parts",
+    "//chrome/test:test_support",
+    "//chrome/test/base/ash/util:test_support",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events:test_support",
+    "//ui/views",
+  ]
+}

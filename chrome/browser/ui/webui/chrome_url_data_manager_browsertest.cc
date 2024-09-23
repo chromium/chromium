@@ -4,8 +4,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
+#include <utility>
 
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -15,9 +16,9 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
-#include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
@@ -26,7 +27,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/search/ntp_features.h"
-#include "components/user_notes/user_notes_features.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/url_data_source.h"
@@ -35,17 +36,23 @@
 #include "media/base/media_switches.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
+#include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #else
-#include "chrome/browser/signin/signin_features.h"
+#include "components/signin/public/base/signin_switches.h"
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #endif
 
 namespace {
@@ -113,7 +120,7 @@ class ChromeURLDataManagerTest : public InProcessBrowserTest {
 
 // Makes sure navigating to the new tab page results in a http status code
 // of 200.
-// TODO(crbug.com/1473471) Test Failing on Mac11 tests
+// TODO(crbug.com/40927037) Test Failing on Mac11 tests
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_200 DISABLED_200
 #else
@@ -180,32 +187,31 @@ class ChromeURLDataManagerWebUITrustedTypesTest
  public:
   ChromeURLDataManagerWebUITrustedTypesTest() {
     std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.push_back(whats_new::kForceEnabled);
     enabled_features.push_back(history_clusters::kSidePanelJourneys);
     enabled_features.push_back(features::kSupportTool);
-    enabled_features.push_back(features::kCustomizeChromeSidePanel);
     enabled_features.push_back(ntp_features::kCustomizeChromeWallpaperSearch);
     enabled_features.push_back(
         optimization_guide::features::kOptimizationGuideModelExecution);
-    enabled_features.push_back(features::kReadAnything);
-    enabled_features.push_back(user_notes::kUserNotes);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    enabled_features.push_back(whats_new::kForceEnabled);
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
-    if (GetParam() == base::StringPiece("chrome://welcome")) {
+    if (GetParam() == std::string_view("chrome://welcome")) {
       enabled_features.push_back(welcome::kForceEnabled);
     }
 #endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     enabled_features.push_back(ash::features::kDriveFsMirroring);
     enabled_features.push_back(ash::features::kShimlessRMAOsUpdate);
     enabled_features.push_back(chromeos::features::kUploadOfficeToCloud);
-#else
-    enabled_features.push_back(kForYouFre);
 #endif
     feature_list_.InitWithFeatures(enabled_features, {});
   }
 
-  void CheckNoTrustedTypesViolation(base::StringPiece url) {
+  void CheckNoTrustedTypesViolation(std::string_view url) {
     const std::string kMessageFilter =
         "*Refused to create a TrustedTypePolicy*";
     content::WebContents* content =
@@ -219,7 +225,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     EXPECT_TRUE(console_observer.messages().empty());
   }
 
-  void CheckTrustedTypesEnabled(base::StringPiece url) {
+  void CheckTrustedTypesEnabled(std::string_view url) {
     content::WebContents* content =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -251,20 +257,43 @@ class ChromeURLDataManagerWebUITrustedTypesTest
   }
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    if (GetParam() ==
+        std::string_view(chrome::kChromeUISearchEngineChoiceURL)) {
+      // Command line arguments needed to render chrome://search-engine-choice.
+      command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry,
+                                      "BE");
+      command_line->AppendSwitch(switches::kForceSearchEngineChoiceScreen);
+      command_line->AppendSwitch(
+          switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
+    }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitchASCII(ash::switches::kSamlPasswordChangeUrl,
                                     "http://password-change.example");
-    if (GetParam() == base::StringPiece("chrome://shimless-rma")) {
+    if (GetParam() == std::string_view("chrome://shimless-rma")) {
       command_line->AppendSwitchASCII(ash::switches::kLaunchRma, "");
     }
+#endif
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUpOnMainThread() override {
     browser()->profile()->GetPrefs()->SetBoolean(
         ash::prefs::kSamlInSessionPasswordChangeEnabled, true);
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // This is needed to simulate the presence of the ODFS extension, which is
+    // checked in `IsMicrosoftOfficeOneDriveIntegrationAllowedAndOdfsInstalled`.
+    auto fake_provider =
+        ash::file_system_provider::FakeExtensionProvider::Create(
+            extension_misc::kODFSExtensionId);
+    auto* service =
+        ash::file_system_provider::Service::Get(browser()->profile());
+    service->RegisterProvider(std::move(fake_provider));
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -302,13 +331,13 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://components",
     "chrome://connection-help",
     "chrome://connection-monitoring-detected",
-// TODO(crbug.com/1446612): Re-enable this test
+// TODO(crbug.com/40913109): Re-enable this test
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
     "chrome://credits",
 #endif
     "chrome://customize-chrome-side-panel.top-chrome",
     "chrome://device-log",
-    // TODO(crbug.com/1113446): Test failure due to excessive output.
+    // TODO(crbug.com/40710256): Test failure due to excessive output.
     // "chrome://discards",
     "chrome://download-internals",
     "chrome://downloads",
@@ -333,7 +362,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://media-internals",
     "chrome://media-router-internals",
     "chrome://metrics-internals",
-    // TODO(crbug.com/1217395): DCHECK failure
+    // TODO(crbug.com/40185163): DCHECK failure
     // "chrome://memory-internals",
     "chrome://net-export",
     "chrome://net-internals",
@@ -354,20 +383,21 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://read-later.top-chrome",
     "chrome://reset-password",
     "chrome://safe-browsing",
+    "chrome://search-engine-choice",
     "chrome://serviceworker-internals",
     "chrome://segmentation-internals",
     "chrome://settings",
     "chrome://signin-internals",
     "chrome://site-engagement",
     "chrome://support-tool",
-    // TODO(crbug.com/1099564): Navigating to chrome://sync-confirmation and
+    // TODO(crbug.com/40137561): Navigating to chrome://sync-confirmation and
     // quickly navigating away cause DCHECK failure.
     // "chrome://sync-confirmation",
     "chrome://sync-internals",
     "chrome://syncfs-internals",
     "chrome://system",
     "chrome://tab-search.top-chrome",
-    // TODO(crbug.com/1099565): Navigating to chrome://tab-strip and quickly
+    // TODO(crbug.com/40137562): Navigating to chrome://tab-strip and quickly
     // navigating away cause DCHECK failure.
     // "chrome://tab-strip",
     "chrome://terms",
@@ -376,13 +406,15 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://ukm",
     "chrome://usb-internals",
     "chrome://user-actions",
-    "chrome://user-notes-side-panel.top-chrome",
     "chrome://version",
     "chrome://web-app-internals",
     "chrome://webrtc-internals",
     "chrome://webrtc-logs",
     "chrome://webui-gallery",
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     "chrome://whats-new",
+#endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     "chrome://cast-feedback",
@@ -398,7 +430,7 @@ static constexpr const char* const kChromeUrls[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(crbug.com/1400799): Add CrOS-only WebUI URLs here as TrustedTypes
+    // TODO(crbug.com/40250441): Add CrOS-only WebUI URLs here as TrustedTypes
     // are deployed to more WebUIs.
 
     "chrome://accessory-update",
@@ -482,23 +514,23 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://nacl",
 #endif
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(https://crbug.com/1219651): this test is flaky on mac.
+    // TODO(crbug.com/40772380): this test is flaky on mac.
     "chrome://bluetooth-internals",
 #endif
 #if BUILDFLAG(IS_WIN)
     "chrome://conflicts",
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    "chrome://signin-dice-web-intercept/?debug",
+    "chrome://signin-dice-web-intercept.top-chrome/?debug",
     // Note: Disabled because a DCHECK fires when directly visiting the URL.
     // "chrome://signin-reauth",
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1399912): Uncomment when TrustedTypes are enabled.
+// TODO(crbug.com/40250068): Uncomment when TrustedTypes are enabled.
 // "chrome://chrome-signin",
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1399912): Uncomment when TrustedTypes are enabled.
+// TODO(crbug.com/40250068): Uncomment when TrustedTypes are enabled.
 // "chrome://chrome-signin/?reason=5",
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

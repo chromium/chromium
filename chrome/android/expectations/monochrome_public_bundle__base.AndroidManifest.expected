@@ -164,19 +164,12 @@
     <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
     <meta-data android:name="com.google.ar.core" android:value="optional"/>
     <meta-data android:name="com.google.ar.core.load_32bit_so_from_split_module" android:value="optional"/>
-    <meta-data android:name="com.google.ar.core.min_apk_version" android:value="231450000"/>
+    <meta-data android:name="com.google.ar.core.min_apk_version" android:value="240920000"/>
     <meta-data android:name="com.google.ar.core.session_settings" android:value="allow_front_facing_motion_tracking_6dof,"/>
     <meta-data android:name="com.samsung.android.sdk.multiwindow.enable" android:value="true"/>
     <meta-data android:name="com.samsung.android.sdk.multiwindow.penwindow.enable" android:value="true"/>
     <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES" android:value="5"/>
     <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES" android:value="40"/>
-    <provider  # DIFF-ANCHOR: bc0a9a7a
-        android:name="com.google.firebase.provider.FirebaseInitProvider"
-        android:authorities="$PACKAGE.firebaseinitprovider"
-        android:directBootAware="true"
-        android:exported="false"
-        android:initOrder="100">
-    </provider>  # DIFF-ANCHOR: bc0a9a7a
     <provider  # DIFF-ANCHOR: a5e78e63
         android:name="org.chromium.android_webview.nonembedded.LicenseContentProvider"
         android:authorities="$PACKAGE.LicenseContentProvider"
@@ -333,6 +326,7 @@
         android:name="org.chromium.android_webview.services.StartupFeatureMetadataHolder"
         android:enabled="false"
         android:exported="true">
+      <meta-data android:name="STARTUP_FEATURE_CONFIGURE_PARTITIONED_COOKIES" android:value="true"/>
       <meta-data android:name="STARTUP_FEATURE_SET_DATA_DIRECTORY_SUFFIX" android:value="true"/>
       <meta-data android:name="STARTUP_FEATURE_SET_DIRECTORY_BASE_PATH" android:value="true"/>
     </service>  # DIFF-ANCHOR: c52936d7

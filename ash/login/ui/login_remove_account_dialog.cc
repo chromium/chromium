@@ -97,7 +97,7 @@ class RemoveUserButton : public PillButton {
 
  private:
   void OnKeyEvent(ui::KeyEvent* event) override {
-    if (event->type() != ui::ET_KEY_PRESSED ||
+    if (event->type() != ui::EventType::kKeyPressed ||
         event->key_code() == ui::VKEY_PROCESSKEY) {
       return;
     }
@@ -242,6 +242,10 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
   set_positioning_strategy(PositioningStrategy::kTryAfterThenBefore);
   SetPadding(kHorizontalPaddingRemoveAccountDialogDp,
              kVerticalPaddingRemoveAccountDialogDp);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  UpdateAccessibleName();
+  UpdateAccessibleDescription();
 }
 
 LoginRemoveAccountDialog::~LoginRemoveAccountDialog() = default;
@@ -262,28 +266,8 @@ bool LoginRemoveAccountDialog::HasFocus() const {
   return remove_user_button_ && remove_user_button_->HasFocus();
 }
 
-const char* LoginRemoveAccountDialog::GetClassName() const {
-  return "LoginRemoveAccountDialog";
-}
-
 void LoginRemoveAccountDialog::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
-  if (remove_user_button_) {
-    node_data->SetName(l10n_util::GetStringUTF16(
-        IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME));
-    node_data->SetDescription(l10n_util::GetStringUTF16(
-        IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_DIALOG_ACCESSIBLE_DESCRIPTION));
-  } else {
-    node_data->SetName(username_label_->GetText());
-    if (management_disclosure_label_) {
-      node_data->SetDescription(
-          base::StrCat({email_label_->GetText(), u" ",
-                        management_disclosure_label_->GetText()}));
-    } else {
-      node_data->SetDescription(email_label_->GetText());
-    }
-  }
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
 }
 
@@ -317,7 +301,7 @@ void LoginRemoveAccountDialog::RemoveUserButtonPressed() {
 
     // Change the node's description to force assistive technologies, like
     // ChromeVox, to report the updated description.
-    remove_user_button_->GetViewAccessibility().OverrideDescription(
+    remove_user_button_->GetViewAccessibility().SetDescription(
         warning_message_);
     if (on_remove_user_warning_shown_) {
       std::move(on_remove_user_warning_shown_).Run();
@@ -332,6 +316,36 @@ void LoginRemoveAccountDialog::RemoveUserButtonPressed() {
 
   if (on_remove_user_requested_) {
     std::move(on_remove_user_requested_).Run();
+  }
+}
+
+void LoginRemoveAccountDialog::UpdateAccessibleDescription() {
+  if (remove_user_button_) {
+    GetViewAccessibility().SetDescription(l10n_util::GetStringUTF16(
+        IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_DIALOG_ACCESSIBLE_DESCRIPTION));
+  } else {
+    if (management_disclosure_label_) {
+      GetViewAccessibility().SetDescription(
+          base::StrCat({email_label_->GetText(), u" ",
+                        management_disclosure_label_->GetText()}));
+    } else {
+      GetViewAccessibility().SetDescription(email_label_->GetText());
+    }
+  }
+}
+
+void LoginRemoveAccountDialog::UpdateAccessibleName() {
+  if (remove_user_button_) {
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+        IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME));
+  } else {
+    std::u16string accessible_name = username_label_->GetText();
+    if (!accessible_name.empty()) {
+      GetViewAccessibility().SetName(accessible_name);
+    } else {
+      GetViewAccessibility().SetName(
+          std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    }
   }
 }
 

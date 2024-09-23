@@ -11,7 +11,12 @@
 #include "third_party/blink/renderer/core/animation/path_interpolation_functions.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_inherited_value.h"
+#include "third_party/blink/renderer/core/css/css_initial_value.h"
+#include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
+#include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_deferred_image.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
@@ -52,11 +57,13 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
       const Vector<double>& offsets,
       Vector<std::unique_ptr<gfx::TimingFunction>> timing_functions,
       const std::optional<double>& progress,
+      const SkPath static_shape,
       cc::PaintWorkletInput::PropertyKeys property_keys)
       : PaintWorkletInput(clip_area_size, worklet_id, std::move(property_keys)),
         offsets_(offsets),
         timing_functions_(std::move(timing_functions)),
-        progress_(progress) {
+        progress_(progress),
+        static_shape_(static_shape) {
     std::optional<BasicShape::ShapeType> prev_type = std::nullopt;
     for (const auto& basic_shape : animated_shapes) {
       Path path;
@@ -73,6 +80,7 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
 
   const std::optional<double>& MainThreadProgress() const { return progress_; }
   const Vector<SkPath>& Paths() const { return paths_; }
+  const SkPath StaticPath() const { return static_shape_; }
 
   // Returns TRUE if the BasicShape::ShapeType of the keyframe and its following
   // keyframe are equal, FALSE otherwise. Not defined for the last keyframe.
@@ -108,9 +116,13 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
         (progress - offsets_[result_index]) /
         (offsets_[result_index + 1] - offsets_[result_index]);
     // Adjust for that keyframe's timing function
+    // TODO(crbug.com/347958668): Correct limit direction for phase and
+    // direction in order to make the correct evaluation at the boundary of a
+    // step-timing function.
     return AnimationProgress(
         result_index,
-        timing_functions_[result_index]->GetValue(local_progress));
+        timing_functions_[result_index]->GetValue(
+            local_progress, TimingFunction::LimitDirection::RIGHT));
   }
 
   bool ValueChangeShouldCauseRepaint(const PropertyValue& val1,
@@ -135,6 +147,7 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
   // properties exist in both this and Background Color paint worklet input
   Vector<std::unique_ptr<gfx::TimingFunction>> timing_functions_;
   std::optional<double> progress_;
+  SkPath static_shape_;
 };
 
 scoped_refptr<BasicShape> CreateBasicShape(
@@ -148,6 +161,14 @@ scoped_refptr<BasicShape> CreateBasicShape(
   CSSToLengthConversionData conversion_data;
   return basic_shape_interpolation_functions::CreateBasicShape(
       interpolable_value, untyped_non_interpolable_value, conversion_data);
+}
+
+bool CanExtractShapeOrPath(const CSSValue* computed_value) {
+  // TODO(pdr): Support <geometry-box> (alone, or with a shape).
+  if (const auto* list = DynamicTo<CSSValueList>(computed_value)) {
+    return list->First().IsBasicShapeValue() || list->First().IsPathValue();
+  }
+  return false;
 }
 
 scoped_refptr<BasicShape> GetAnimatedShapeFromKeyframe(
@@ -167,10 +188,9 @@ scoped_refptr<BasicShape> GetAnimatedShapeFromKeyframe(
                              *const_cast<Element*>(element));
 
     // TODO(pdr): Support <geometry-box> (alone, or with a shape).
-    if (const auto* list = DynamicTo<CSSValueList>(computed_value)) {
-      if (list->First().IsBasicShapeValue() || list->First().IsPathValue()) {
-        basic_shape = BasicShapeForValue(state, list->First());
-      }
+    if (CanExtractShapeOrPath(computed_value)) {
+      basic_shape = BasicShapeForValue(
+          state, DynamicTo<CSSValueList>(computed_value)->First());
     }
   } else {
     DCHECK(frame->IsTransitionPropertySpecificKeyframe());
@@ -198,17 +218,12 @@ bool ValidateClipPathValue(const Element* element,
                            const CSSValue* value,
                            const InterpolableValue* interpolable_value) {
   if (value) {
-    auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-    // Don't try to composite animations with clip-path: none, as this is not
-    // compatible with the method used to paint composite clip path animations:
-    // A mask image would potentially clip content unless if it was the size of
-    // the entire viewport.
-    if (identifier_value &&
-        identifier_value->GetValueID() == CSSValueID::kNone) {
-      return false;
+    // Don't try to composite animations where we can't extract a shape or path
+    if (CanExtractShapeOrPath(value)) {
+      return true;
     }
 
-    return true;
+    return false;
   } else if (interpolable_value) {
     // There is no need to check for clip-path: none here, as transitions are
     // not defined for this non-interpolable value. See
@@ -257,6 +272,7 @@ struct DowncastTraits<ClipPathPaintWorkletInput> {
 
 // TODO(crbug.com/1248605): Introduce helper functions commonly used by
 // background-color and clip-path animations.
+// static
 Animation* ClipPathPaintDefinition::GetAnimationIfCompositable(
     const Element* element) {
   return GetAnimationForProperty(element, GetCSSPropertyClipPath(),
@@ -282,24 +298,27 @@ PaintRecord ClipPathPaintDefinition::Paint(
 
   const Vector<SkPath>& paths = input->Paths();
 
-  // TODO(crbug.com/1188760): We should handle the case when it is null, and
-  // paint the original clip-path retrieved from its style.
-  float progress = input->MainThreadProgress().has_value()
-                       ? input->MainThreadProgress().value()
-                       : 0;
-  // This would mean that the animation started on compositor, so we override
-  // the progress that we obtained from the main thread.
-  if (!animated_property_values.empty()) {
-    DCHECK_EQ(animated_property_values.size(), 1u);
-    const auto& entry = animated_property_values.begin();
-    progress = entry->second.float_value.value();
+  SkPath cur_path = input->StaticPath();
+
+  if (input->MainThreadProgress().has_value() ||
+      !animated_property_values.empty()) {
+    float progress = 0;
+
+    if (!animated_property_values.empty()) {
+      DCHECK_EQ(animated_property_values.size(), 1u);
+      const auto& entry = animated_property_values.begin();
+      progress = entry->second.float_value.value();
+    } else {
+      CHECK(input->MainThreadProgress().has_value());
+      progress = input->MainThreadProgress().value();
+    }
+
+    auto [result_index, adjusted_progress] =
+        input->GetAdjustedProgress(progress);
+    cur_path = InterpolatePaths(input->CanAttemptInterpolation(result_index),
+                                paths[result_index], paths[result_index + 1],
+                                adjusted_progress);
   }
-
-  auto [result_index, adjusted_progress] = input->GetAdjustedProgress(progress);
-
-  SkPath path = InterpolatePaths(input->CanAttemptInterpolation(result_index),
-                                 paths[result_index], paths[result_index + 1],
-                                 adjusted_progress);
 
   cc::InspectablePaintRecorder paint_recorder;
   const gfx::Size clip_area_size(gfx::ToRoundedSize(input->ContainerSize()));
@@ -307,7 +326,7 @@ PaintRecord ClipPathPaintDefinition::Paint(
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  canvas->drawPath(path, flags);
+  canvas->drawPath(cur_path, flags);
 
   return paint_recorder.finishRecordingAsPicture();
 }
@@ -315,11 +334,13 @@ PaintRecord ClipPathPaintDefinition::Paint(
 // Creates a deferred image of size clip_area_size that will be painted via
 // paint worklet. The clip paths will be scaled and translated according to
 // reference_box.
+// static
 scoped_refptr<Image> ClipPathPaintDefinition::Paint(
     float zoom,
     const gfx::RectF& reference_box,
     const gfx::SizeF& clip_area_size,
-    const Node& node) {
+    const Node& node,
+    int worklet_id) {
   DCHECK(node.IsElementNode());
   const Element* element = To<Element>(&node);
 
@@ -329,7 +350,7 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
 
   Animation* animation = GetAnimationIfCompositable(element);
   // If we are here the animation must be compositable.
-  DCHECK(animation);
+  CHECK(animation);
 
   const AnimationEffect* effect = animation->effect();
   DCHECK(effect->IsKeyframeEffect());
@@ -358,6 +379,24 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
   }
   progress = effect->Progress();
 
+  SkPath static_path;
+
+  switch (effect->SpecifiedTiming().fill_mode) {
+    case Timing::FillMode::AUTO:
+    case Timing::FillMode::NONE:
+    case Timing::FillMode::FORWARDS: {
+      ClipPathOperation* static_shape =
+          element->GetLayoutObject()->StyleRef().ClipPath();
+      DCHECK_EQ(static_shape->GetType(), ClipPathOperation::kShape);
+      Path path = To<ShapeClipPathOperation>(static_shape)
+                      ->GetPath(reference_box, zoom);
+      static_path = path.GetSkPath();
+      break;
+    }
+    default:
+      break;
+  }
+
   node.GetLayoutObject()->GetMutableForPainting().EnsureId();
   CompositorElementId element_id = CompositorElementIdFromUniqueObjectId(
       node.GetLayoutObject()->UniqueId(),
@@ -368,13 +407,14 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
       CompositorPaintWorkletInput::NativePropertyType::kClipPath, element_id);
   scoped_refptr<ClipPathPaintWorkletInput> input =
       base::MakeRefCounted<ClipPathPaintWorkletInput>(
-          reference_box, clip_area_size, worklet_id_, zoom, animated_shapes,
-          offsets, std::move(timing_functions), progress,
+          reference_box, clip_area_size, worklet_id, zoom, animated_shapes,
+          offsets, std::move(timing_functions), progress, static_path,
           std::move(input_property_keys));
 
   return PaintWorkletDeferredImage::Create(std::move(input), clip_area_size);
 }
 
+// static
 gfx::RectF ClipPathPaintDefinition::ClipAreaRect(
     const Node& node,
     const gfx::RectF& reference_box,

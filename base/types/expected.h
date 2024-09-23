@@ -6,6 +6,7 @@
 #define BASE_TYPES_EXPECTED_H_
 
 #include <concepts>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
@@ -35,7 +36,7 @@
 // Example Usage:
 //
 // Before:
-//   bool ParseInt32(base::StringPiece input,
+//   bool ParseInt32(std::string_view input,
 //                   int32_t* output,
 //                   ParseIntError* error);
 //   ...
@@ -50,7 +51,7 @@
 //
 // After:
 //
-//   base::expected<int32_t, ParseIntError> ParseInt32(base::StringPiece input);
+//   base::expected<int32_t, ParseIntError> ParseInt32(std::string_view input);
 //   ...
 //
 //   if (auto parsed = ParseInt32("..."); parsed.has_value()) {
@@ -141,11 +142,11 @@ class ok final {
   constexpr explicit ok(U&& val) noexcept : value_(std::forward<U>(val)) {}
 
   template <typename... Args>
-  constexpr explicit ok(absl::in_place_t, Args&&... args) noexcept
+  constexpr explicit ok(std::in_place_t, Args&&... args) noexcept
       : value_(std::forward<Args>(args)...) {}
 
   template <typename U, typename... Args>
-  constexpr explicit ok(absl::in_place_t,
+  constexpr explicit ok(std::in_place_t,
                         std::initializer_list<U> il,
                         Args&&... args) noexcept
       : value_(il, std::forward<Args>(args)...) {}
@@ -212,11 +213,11 @@ class unexpected final {
       : error_(std::forward<Err>(err)) {}
 
   template <typename... Args>
-  constexpr explicit unexpected(absl::in_place_t, Args&&... args) noexcept
+  constexpr explicit unexpected(std::in_place_t, Args&&... args) noexcept
       : error_(std::forward<Args>(args)...) {}
 
   template <typename U, typename... Args>
-  constexpr explicit unexpected(absl::in_place_t,
+  constexpr explicit unexpected(std::in_place_t,
                                 std::initializer_list<U> il,
                                 Args&&... args) noexcept
       : error_(il, std::forward<Args>(args)...) {}
@@ -346,11 +347,11 @@ class [[nodiscard]] expected final {
       : impl_(kErrTag, std::move(e.error())) {}
 
   template <typename... Args>
-  constexpr explicit expected(absl::in_place_t, Args&&... args) noexcept
+  constexpr explicit expected(std::in_place_t, Args&&... args) noexcept
       : impl_(kValTag, std::forward<Args>(args)...) {}
 
   template <typename U, typename... Args>
-  constexpr explicit expected(absl::in_place_t,
+  constexpr explicit expected(std::in_place_t,
                               std::initializer_list<U> il,
                               Args&&... args) noexcept
       : impl_(kValTag, il, std::forward<Args>(args)...) {}
@@ -704,7 +705,7 @@ class [[nodiscard]] expected<T, E> final {
       constexpr expected(unexpected<G>&& e) noexcept
       : impl_(kErrTag, std::move(e.error())) {}
 
-  constexpr explicit expected(absl::in_place_t) noexcept {}
+  constexpr explicit expected(std::in_place_t) noexcept {}
 
   template <typename... Args>
   constexpr explicit expected(unexpect_t, Args&&... args) noexcept

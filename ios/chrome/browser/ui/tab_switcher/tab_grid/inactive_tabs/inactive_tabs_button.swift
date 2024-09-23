@@ -32,11 +32,6 @@ struct InactiveTabsButton: View {
       }
     }
     .buttonStyle(InactiveTabsButtonStyle())
-    // Make the accessibility label explicit.
-    .accessibilityElement(children: .ignore)
-    .accessibilityLabel([titleString, subtitleString, counterString]
-                          .compactMap { $0 }
-                          .joined(separator: ", "))
     .accessibilityIdentifier(kInactiveTabsButtonAccessibilityIdentifier)
   }
 
@@ -104,16 +99,9 @@ struct InactiveTabsButton: View {
   /// Displays the disclosure indicator.
   @ViewBuilder
   private func disclosure() -> some View {
-    if #available(iOS 16.0, *) {
-      Image(systemName: kChevronForwardSymbol)
-        .foregroundColor(.textTertiary)
-        .fontWeight(.semibold)
-    } else {
-      // fontWeight is not available on Image. Wrap it in a Text.
-      Text(Image(systemName: kChevronForwardSymbol))
-        .foregroundColor(.textTertiary)
-        .fontWeight(.semibold)
-    }
+    Image(systemName: kChevronForwardSymbol)
+      .foregroundColor(.textTertiary)
+      .fontWeight(.semibold)
   }
 
   /// VStack displaying its contents from the leading edge. Textual content is also leading aligned

@@ -28,7 +28,7 @@ MockCertProvisioningWorkerFactory::ExpectCreateReturnMock(
   auto mock_worker = std::make_unique<MockCertProvisioningWorker>();
   MockCertProvisioningWorker* pointer = mock_worker.get();
 
-  EXPECT_CALL(*this, Create(cert_scope, _, _, cert_profile, _, _, _, _))
+  EXPECT_CALL(*this, Create(_, cert_scope, _, _, cert_profile, _, _, _, _))
       .Times(1)
       .WillOnce(Return(testing::ByMove(std::move(mock_worker))));
 

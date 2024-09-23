@@ -8,10 +8,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/glanceables/common/glanceables_util.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_detailed_view.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
+#include "ash/system/focus_mode/focus_mode_task_test_utils.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -19,6 +22,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/user_manager/user_type.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -36,11 +40,21 @@ class FocusModeFeaturePodControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
+    // In order to create a detailed view, we need to check the network.
+    // `g_network_handler` is null in tests, so we need to manually set the
+    // network connected state.
+    glanceables_util::SetIsNetworkConnectedForTest(true);
+
     // Focus Mode considers it to be a first time user flow if
     // `kFocusModeDoNotDisturb` has never been set by the user before. For
     // normal feature testing purposes, we will intentionally set it so that the
     // pref will not be marked as using the default value.
     prefs()->SetBoolean(prefs::kFocusModeDoNotDisturb, true);
+
+    auto& tasks_client =
+        CreateFakeTasksClient(AccountId::FromUserEmail("user0@tray"));
+    AddFakeTaskList(tasks_client, "default");
+    AddFakeTask(tasks_client, "default", "task1", "Task 1");
 
     CreateFakeFocusModeTile();
   }
@@ -95,6 +109,32 @@ TEST_F(FocusModeFeaturePodControllerTest, TileVisibility) {
 
   // Verify that the tile should not be visible at the lock screen.
   EXPECT_FALSE(tile_->GetVisible());
+}
+
+// Tests tile visibility for all different user types. This was added for
+// b/344040908 to prevent crashes when ephemeral accounts try to use Focus Mode.
+TEST_F(FocusModeFeaturePodControllerTest, TileVisibilityForUserTypes) {
+  struct {
+    std::string trace;
+    user_manager::UserType user_type;
+    bool is_tile_visible;
+  } kUserTypeTestCases[] = {
+      {"regular user", user_manager::UserType::kRegular, true},
+      {"child", user_manager::UserType::kChild, true},
+      {"guest", user_manager::UserType::kGuest, false},
+      {"public account", user_manager::UserType::kPublicAccount, false},
+      {"kiosk app", user_manager::UserType::kKioskApp, false},
+      {"web kiosk app", user_manager::UserType::kWebKioskApp, false},
+  };
+
+  for (const auto& test_case : kUserTypeTestCases) {
+    SCOPED_TRACE(test_case.trace);
+    ClearLogin();
+    SimulateUserLogin("example@gmail.com", test_case.user_type);
+
+    CreateFakeFocusModeTile();
+    EXPECT_EQ(test_case.is_tile_visible, tile_->GetVisible());
+  }
 }
 
 // Tests that pressing the icon works and toggles a Focus Mode Session.

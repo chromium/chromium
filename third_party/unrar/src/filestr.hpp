@@ -2,7 +2,7 @@
 #define _RAR_FILESTR_
 
 bool ReadTextFile(
-  const wchar *Name,
+  const std::wstring &Name,
   StringList *List,
   bool Config,
   bool AbortOnError=false,

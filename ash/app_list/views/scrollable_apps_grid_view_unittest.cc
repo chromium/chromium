@@ -4,6 +4,7 @@
 
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 
+#include <cstddef>
 #include <limits>
 #include <list>
 #include <memory>
@@ -25,6 +26,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
@@ -34,7 +36,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -69,16 +70,13 @@ class ShelfItemFactoryFake : public ShelfModel::ShelfItemFactory {
 
 }  // namespace
 
-class ScrollableAppsGridViewTest : public AshTestBase,
-                                   public testing::WithParamInterface<bool> {
+class ScrollableAppsGridViewTest : public AshTestBase {
  public:
   ScrollableAppsGridViewTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~ScrollableAppsGridViewTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        app_list_features::kDragAndDropRefactor, GetParam());
     AshTestBase::SetUp();
 
     shelf_item_factory_ = std::make_unique<ShelfItemFactoryFake>();
@@ -151,7 +149,6 @@ class ScrollableAppsGridViewTest : public AshTestBase,
     gfx::Point outside_view = folder_view->GetBoundsInScreen().bottom_right();
     GetEventGenerator()->MoveMouseTo(outside_view);
     GetEventGenerator()->MoveMouseBy(10, 10);
-    folder_view->items_grid_view()->FireFolderItemReparentTimerForTest();
   }
 
   ScrollableAppsGridView* GetScrollableAppsGridView() {
@@ -172,12 +169,9 @@ class ScrollableAppsGridViewTest : public AshTestBase,
   // Cache some view pointers to make the tests more concise.
   raw_ptr<ScrollableAppsGridView, DanglingUntriaged> apps_grid_view_ = nullptr;
   raw_ptr<views::ScrollView, DanglingUntriaged> scroll_view_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, ScrollableAppsGridViewTest, testing::Bool());
-
-TEST_P(ScrollableAppsGridViewTest, ClickOnApp) {
+TEST_F(ScrollableAppsGridViewTest, ClickOnApp) {
   AddAppListItem("id");
 
   ShowAppList();
@@ -193,7 +187,7 @@ TEST_P(ScrollableAppsGridViewTest, ClickOnApp) {
   EXPECT_EQ("id", GetTestAppListClient()->activate_item_last_id());
 }
 
-TEST_P(ScrollableAppsGridViewTest, DragApp) {
+TEST_F(ScrollableAppsGridViewTest, DragApp) {
   base::HistogramTester histogram_tester;
   AddAppListItem("id1");
   AddAppListItem("id2");
@@ -230,7 +224,7 @@ TEST_P(ScrollableAppsGridViewTest, DragApp) {
                                      kReorderByDragInTopLevel, 1);
 }
 
-TEST_P(ScrollableAppsGridViewTest, SearchBoxHasFocusAfterDrag) {
+TEST_F(ScrollableAppsGridViewTest, SearchBoxHasFocusAfterDrag) {
   PopulateApps(2);
   ShowAppList();
 
@@ -253,7 +247,7 @@ TEST_P(ScrollableAppsGridViewTest, SearchBoxHasFocusAfterDrag) {
   EXPECT_TRUE(search_box_view->is_search_box_active());
 }
 
-TEST_P(ScrollableAppsGridViewTest, DragAppAfterScrollingDown) {
+TEST_F(ScrollableAppsGridViewTest, DragAppAfterScrollingDown) {
   // Simulate data from another device.
   PopulateApps(20);
   AddAppListItem("aaa");
@@ -291,7 +285,7 @@ TEST_P(ScrollableAppsGridViewTest, DragAppAfterScrollingDown) {
   EXPECT_EQ("aaa", item_list->item_at(21)->id()) << item_list->ToString();
 }
 
-TEST_P(ScrollableAppsGridViewTest, AutoScrollDown) {
+TEST_F(ScrollableAppsGridViewTest, AutoScrollDown) {
   PopulateApps(30);
   ShowAppList();
 
@@ -338,7 +332,7 @@ TEST_P(ScrollableAppsGridViewTest, AutoScrollDown) {
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 }
 
-TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollUpWhenAtTop) {
+TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollUpWhenAtTop) {
   PopulateApps(30);
   ShowAppList();
 
@@ -361,7 +355,7 @@ TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollUpWhenAtTop) {
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 }
 
-TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollDownWhenAtBottom) {
+TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollDownWhenAtBottom) {
   PopulateApps(30);
   ShowAppList();
 
@@ -391,7 +385,7 @@ TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollDownWhenAtBottom) {
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 }
 
-TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenDraggedToTheRight) {
+TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenDraggedToTheRight) {
   PopulateApps(30);
   ShowAppList();
 
@@ -417,7 +411,7 @@ TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenDraggedToTheRight) {
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 }
 
-TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenAboveWidget) {
+TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenAboveWidget) {
   PopulateApps(30);
   ShowAppList();
 
@@ -448,7 +442,7 @@ TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenAboveWidget) {
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
 }
 
-TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenBelowWidget) {
+TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenBelowWidget) {
   PopulateApps(30);
   ShowAppList();
 
@@ -475,7 +469,7 @@ TEST_P(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenBelowWidget) {
 }
 
 // Regression test for https://crbug.com/1258954
-TEST_P(ScrollableAppsGridViewTest, DragItemIntoEmptySpaceWillReorderToEnd) {
+TEST_F(ScrollableAppsGridViewTest, DragItemIntoEmptySpaceWillReorderToEnd) {
   AddAppListItem("id1");
   AddAppListItem("id2");
   AddAppListItem("id3");
@@ -508,7 +502,7 @@ TEST_P(ScrollableAppsGridViewTest, DragItemIntoEmptySpaceWillReorderToEnd) {
   EXPECT_EQ("id1", item_list->item_at(2)->id());
 }
 
-TEST_P(ScrollableAppsGridViewTest, ChangingAppListModelUpdatesAppsGridHeight) {
+TEST_F(ScrollableAppsGridViewTest, ChangingAppListModelUpdatesAppsGridHeight) {
   // Start with 4 rows of 5.
   PopulateApps(20);
   ShowAppList();
@@ -526,7 +520,7 @@ TEST_P(ScrollableAppsGridViewTest, ChangingAppListModelUpdatesAppsGridHeight) {
   EXPECT_LT(apps_grid_view_->height(), height_before_removing);
 }
 
-TEST_P(ScrollableAppsGridViewTest, SmallFolderHasCorrectWidth) {
+TEST_F(ScrollableAppsGridViewTest, SmallFolderHasCorrectWidth) {
   CreateAndPopulateFolderWithApps(2);
   ShowAppList();
 
@@ -549,7 +543,7 @@ TEST_P(ScrollableAppsGridViewTest, SmallFolderHasCorrectWidth) {
             items_grid_view->GetLocalBounds().right());
 }
 
-TEST_P(ScrollableAppsGridViewTest, DragItemToReorderInFolderRecordsHistogram) {
+TEST_F(ScrollableAppsGridViewTest, DragItemToReorderInFolderRecordsHistogram) {
   base::HistogramTester histogram_tester;
   // Create a folder with 3 apps.
   AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(3);
@@ -581,7 +575,7 @@ TEST_P(ScrollableAppsGridViewTest, DragItemToReorderInFolderRecordsHistogram) {
                                      kReorderByDragInFolder, 1);
 }
 
-TEST_P(ScrollableAppsGridViewTest, DragItemIntoFolderRecordsHistogram) {
+TEST_F(ScrollableAppsGridViewTest, DragItemIntoFolderRecordsHistogram) {
   base::HistogramTester histogram_tester;
   // Create a folder and an app.
   AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(3);
@@ -608,7 +602,7 @@ TEST_P(ScrollableAppsGridViewTest, DragItemIntoFolderRecordsHistogram) {
                                      kMoveByDragIntoFolder, 1);
 }
 
-TEST_P(ScrollableAppsGridViewTest, DragItemOutOfFolderRecordsHistogram) {
+TEST_F(ScrollableAppsGridViewTest, DragItemOutOfFolderRecordsHistogram) {
   base::HistogramTester histogram_tester;
   // Create a folder with 3 apps.
   AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(3);
@@ -649,7 +643,7 @@ TEST_P(ScrollableAppsGridViewTest, DragItemOutOfFolderRecordsHistogram) {
                                      kMoveByDragOutOfFolder, 1);
 }
 
-TEST_P(ScrollableAppsGridViewTest,
+TEST_F(ScrollableAppsGridViewTest,
        DragItemFromOneFolderToAnotherRecordsHistogram) {
   base::HistogramTester histogram_tester;
   // Create two folders.
@@ -687,7 +681,7 @@ TEST_P(ScrollableAppsGridViewTest,
                                      kMoveIntoAnotherFolder, 1);
 }
 
-TEST_P(ScrollableAppsGridViewTest, ReparentDragToNewRow) {
+TEST_F(ScrollableAppsGridViewTest, ReparentDragToNewRow) {
   const int kInitialItems = 20;
   AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(3);
   PopulateApps(kInitialItems - 1);
@@ -739,7 +733,7 @@ TEST_P(ScrollableAppsGridViewTest, ReparentDragToNewRow) {
   EXPECT_EQ(2u, folder_item->ChildItemCount());
 }
 
-TEST_P(ScrollableAppsGridViewTest, CanceledReparentDragToNewRow) {
+TEST_F(ScrollableAppsGridViewTest, CanceledReparentDragToNewRow) {
   const int kInitialItems = 20;
   AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(3);
   PopulateApps(kInitialItems - 1);
@@ -792,7 +786,7 @@ TEST_P(ScrollableAppsGridViewTest, CanceledReparentDragToNewRow) {
   EXPECT_EQ(3u, folder_item->ChildItemCount());
 }
 
-TEST_P(ScrollableAppsGridViewTest, LeftAndRightArrowKeysMoveSelection) {
+TEST_F(ScrollableAppsGridViewTest, LeftAndRightArrowKeysMoveSelection) {
   PopulateApps(2);
   ShowAppList();
 
@@ -812,7 +806,7 @@ TEST_P(ScrollableAppsGridViewTest, LeftAndRightArrowKeysMoveSelection) {
   EXPECT_FALSE(item2->HasFocus());
 }
 
-TEST_P(ScrollableAppsGridViewTest, ArrowKeysCanMoveFocusOutOfGrid) {
+TEST_F(ScrollableAppsGridViewTest, ArrowKeysCanMoveFocusOutOfGrid) {
   PopulateApps(2);
   ShowAppList();
 
@@ -846,7 +840,7 @@ TEST_P(ScrollableAppsGridViewTest, ArrowKeysCanMoveFocusOutOfGrid) {
 }
 
 // Tests that histograms are recorded when apps are moved with control+arrow.
-TEST_P(ScrollableAppsGridViewTest, ControlArrowRecordsHistogramBasic) {
+TEST_F(ScrollableAppsGridViewTest, ControlArrowRecordsHistogramBasic) {
   base::HistogramTester histogram_tester;
   PopulateApps(20);
   ShowAppList();
@@ -885,7 +879,7 @@ TEST_P(ScrollableAppsGridViewTest, ControlArrowRecordsHistogramBasic) {
 }
 
 // Test that histograms do not record when the keyboard move is a no-op.
-TEST_P(ScrollableAppsGridViewTest,
+TEST_F(ScrollableAppsGridViewTest,
        ControlArrowDoesNotRecordHistogramWithNoOpMove) {
   base::HistogramTester histogram_tester;
   PopulateApps(20);
@@ -912,7 +906,7 @@ TEST_P(ScrollableAppsGridViewTest,
 
 // Tests that histograms are recorded in folder view when apps are moved with
 // control+arrow.
-TEST_P(ScrollableAppsGridViewTest, ControlArrowRecordsHistogramInFolderBasic) {
+TEST_F(ScrollableAppsGridViewTest, ControlArrowRecordsHistogramInFolderBasic) {
   base::HistogramTester histogram_tester;
   CreateAndPopulateFolderWithApps(4);
   ShowAppList();
@@ -961,7 +955,7 @@ TEST_P(ScrollableAppsGridViewTest, ControlArrowRecordsHistogramInFolderBasic) {
 
 // Tests that histograms do not record when the keyboard move is a no-op in the
 // folder view.
-TEST_P(ScrollableAppsGridViewTest,
+TEST_F(ScrollableAppsGridViewTest,
        ControlArrowDoesNotRecordHistogramWithNoOpMoveInFolder) {
   base::HistogramTester histogram_tester;
   CreateAndPopulateFolderWithApps(4);
@@ -1003,7 +997,7 @@ TEST_P(ScrollableAppsGridViewTest,
 }
 
 // Tests that control + shift + arrow moves selected item out of a folder.
-TEST_P(ScrollableAppsGridViewTest, ControlShiftArrowMovesItemOutOfFolder) {
+TEST_F(ScrollableAppsGridViewTest, ControlShiftArrowMovesItemOutOfFolder) {
   base::HistogramTester histogram_tester;
   AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(5);
   ShowAppList();
@@ -1058,7 +1052,7 @@ TEST_P(ScrollableAppsGridViewTest, ControlShiftArrowMovesItemOutOfFolder) {
 }
 
 // Verify on the apps grid with zero scroll offset.
-TEST_P(ScrollableAppsGridViewTest, VerifyVisibleRangeByDefault) {
+TEST_F(ScrollableAppsGridViewTest, VerifyVisibleRangeByDefault) {
   PopulateApps(33);
   ShowAppList();
 
@@ -1074,7 +1068,7 @@ TEST_P(ScrollableAppsGridViewTest, VerifyVisibleRangeByDefault) {
 }
 
 // Verify on the apps grid whose first row is unfilled.
-TEST_P(ScrollableAppsGridViewTest, VerifyVisibleRangeFirstRowUnfilled) {
+TEST_F(ScrollableAppsGridViewTest, VerifyVisibleRangeFirstRowUnfilled) {
   PopulateApps(4);
   ShowAppList();
 
@@ -1089,7 +1083,7 @@ TEST_P(ScrollableAppsGridViewTest, VerifyVisibleRangeFirstRowUnfilled) {
 }
 
 // Verify on the apps grid whose first row is filled.
-TEST_P(ScrollableAppsGridViewTest, VerifyVisibleRangeFirstRowFilled) {
+TEST_F(ScrollableAppsGridViewTest, VerifyVisibleRangeFirstRowFilled) {
   PopulateApps(5);
   ShowAppList();
 
@@ -1103,7 +1097,7 @@ TEST_P(ScrollableAppsGridViewTest, VerifyVisibleRangeFirstRowFilled) {
 }
 
 // Verify on the apps grid with a non-zero scroll offset.
-TEST_P(ScrollableAppsGridViewTest, VerifyVisibleRangeAfterScrolling) {
+TEST_F(ScrollableAppsGridViewTest, VerifyVisibleRangeAfterScrolling) {
   PopulateApps(33);
   ShowAppList();
 
@@ -1131,7 +1125,7 @@ TEST_P(ScrollableAppsGridViewTest, VerifyVisibleRangeAfterScrolling) {
 
 // Verify visible items' index range by scrolling to the end on a partially
 // filled apps grid.
-TEST_P(ScrollableAppsGridViewTest,
+TEST_F(ScrollableAppsGridViewTest,
        VerifyVisibleRangeAfterScrollingToEndPartiallyFilled) {
   constexpr int populated_app_count = 33;
   PopulateApps(populated_app_count);
@@ -1154,7 +1148,7 @@ TEST_P(ScrollableAppsGridViewTest,
 
 // Verify visible items' item index range by scrolling to the end on a full
 // apps grid.
-TEST_P(ScrollableAppsGridViewTest,
+TEST_F(ScrollableAppsGridViewTest,
        VerifyVisibleRangeAfterScrollingToEndFilled) {
   constexpr int populated_app_count = 35;
   PopulateApps(populated_app_count);
@@ -1186,7 +1180,7 @@ class ScrollableAppsGridViewWithNudgeTest : public ScrollableAppsGridViewTest {
 };
 
 // Verify on the apps grid with zero scroll offset.
-TEST_P(ScrollableAppsGridViewWithNudgeTest, VerifyVisibleRangeByDefault) {
+TEST_F(ScrollableAppsGridViewWithNudgeTest, VerifyVisibleRangeByDefault) {
   PopulateApps(33);
   ShowAppList();
 
@@ -1201,8 +1195,95 @@ TEST_P(ScrollableAppsGridViewWithNudgeTest, VerifyVisibleRangeByDefault) {
   EXPECT_TRUE(
       IsIndexRangeExpected(/*first_index=*/0, /*last_index=*/4 * cols - 1));
 }
-INSTANTIATE_TEST_SUITE_P(All,
-                         ScrollableAppsGridViewWithNudgeTest,
-                         testing::Bool());
+
+TEST_F(ScrollableAppsGridViewTest, RecordMetricsForAppLaunchByEntity) {
+  base::HistogramTester histograms;
+  GetAppListTestHelper()->AddAppListItemsWithCollection(
+      AppCollection::kEntertainment, 1);
+  AddAppListItem("id1");
+  ShowAppList();
+
+  histograms.ExpectUniqueSample(
+      "Apps.AppListBubble.AppsPage.AppLaunchesByEntity", AppEntity::kDefaultApp,
+      0);
+  histograms.ExpectUniqueSample(
+      "Apps.AppListBubble.AppsPage.AppLaunchesByEntity",
+      AppEntity::kThirdPartyApp, 0);
+
+  LeftClickOn(apps_grid_view_->GetItemViewAt(0));
+  histograms.ExpectBucketCount(
+      "Apps.AppListBubble.AppsPage.AppLaunchesByEntity", AppEntity::kDefaultApp,
+      1);
+  histograms.ExpectBucketCount(
+      "Apps.AppListBubble.AppsPage.AppLaunchesByEntity",
+      AppEntity::kThirdPartyApp, 0);
+
+  LeftClickOn(apps_grid_view_->GetItemViewAt(1));
+  histograms.ExpectBucketCount(
+      "Apps.AppListBubble.AppsPage.AppLaunchesByEntity", AppEntity::kDefaultApp,
+      1);
+  histograms.ExpectBucketCount(
+      "Apps.AppListBubble.AppsPage.AppLaunchesByEntity",
+      AppEntity::kThirdPartyApp, 1);
+}
+
+// Verifies that apps visibility is correctly calculated.
+TEST_F(ScrollableAppsGridViewTest, AppsVisibility) {
+  // Create enough apps so that the launcher can be scrolled.
+  PopulateApps(50);
+  ShowAppList();
+
+  ASSERT_NE(scroll_view_->GetVisibleBounds(),
+            scroll_view_->contents()->GetLocalBounds());
+
+  EXPECT_EQ(0, GetTestAppListClient()->activate_item_above_the_fold());
+  EXPECT_EQ(0, GetTestAppListClient()->activate_item_below_the_fold());
+
+  AppListItemView* above_the_fold_item = apps_grid_view_->GetItemViewAt(0);
+  GetEventGenerator()->MoveMouseTo(
+      above_the_fold_item->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_TRUE(apps_grid_view_->IsAboveTheFold(above_the_fold_item));
+  EXPECT_EQ(1, GetTestAppListClient()->activate_item_above_the_fold());
+  EXPECT_EQ(0, GetTestAppListClient()->activate_item_below_the_fold());
+
+  AppListItemView* below_the_fold_item = apps_grid_view_->GetItemViewAt(49);
+
+  // Scroll the apps page to the end.
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(), INT_MAX);
+  GetEventGenerator()->MoveMouseTo(
+      below_the_fold_item->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_FALSE(apps_grid_view_->IsAboveTheFold(below_the_fold_item));
+  EXPECT_EQ(1, GetTestAppListClient()->activate_item_above_the_fold());
+  EXPECT_EQ(1, GetTestAppListClient()->activate_item_below_the_fold());
+}
+
+// Verifies that apps visibility is correctly calculated.
+TEST_F(ScrollableAppsGridViewTest, AppsVisibilityOnShow) {
+  // Create enough apps so that the launcher can be scrolled.
+  PopulateApps(50);
+  ShowAppList();
+
+  ASSERT_NE(scroll_view_->GetVisibleBounds(),
+            scroll_view_->contents()->GetLocalBounds());
+
+  int apps_above = 0;
+  int apps_below = 0;
+
+  for (size_t index = 0; index < 50; index++) {
+    if (apps_grid_view_->IsAboveTheFold(
+            apps_grid_view_->GetItemViewAt(index))) {
+      ++apps_above;
+    } else {
+      ++apps_below;
+    }
+  }
+
+  EXPECT_EQ(apps_above, GetTestAppListClient()->items_above_the_fold_count());
+  EXPECT_EQ(apps_below, GetTestAppListClient()->items_below_the_fold_count());
+}
 
 }  // namespace ash

@@ -26,6 +26,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -86,12 +87,18 @@ namespace ash {
 class TestGeolocationAPILoaderFactory : public network::TestURLLoaderFactory {
  public:
   TestGeolocationAPILoaderFactory(const GURL& url,
+                                  const net::HttpStatusCode http_status,
                                   const std::string& response,
                                   const size_t require_retries)
-      : url_(url), response_(response), require_retries_(require_retries) {
+      : url_(url),
+        http_status_(http_status),
+        response_(response),
+        require_retries_(require_retries) {
     SetInterceptor(base::BindRepeating(
         &TestGeolocationAPILoaderFactory::Intercept, base::Unretained(this)));
-    AddResponseWithCode(net::HTTP_INTERNAL_SERVER_ERROR);
+    // Default response. In most tests it is overridden by the subsequent calls
+    // of `AddResponse()`.
+    AddResponse(url_.spec(), std::string(), net::HTTP_INTERNAL_SERVER_ERROR);
   }
 
   TestGeolocationAPILoaderFactory(const TestGeolocationAPILoaderFactory&) =
@@ -100,9 +107,11 @@ class TestGeolocationAPILoaderFactory : public network::TestURLLoaderFactory {
       const TestGeolocationAPILoaderFactory&) = delete;
 
   void Configure(const GURL& url,
+                 const net::HttpStatusCode http_status,
                  const std::string& response,
                  const size_t require_retries) {
     url_ = url;
+    http_status_ = http_status;
     response_ = response;
     require_retries_ = require_retries;
   }
@@ -126,23 +135,14 @@ class TestGeolocationAPILoaderFactory : public network::TestURLLoaderFactory {
         base_retry_interval);
 
     if (++attempts_ > require_retries_)
-      AddResponseWithCode(net::OK);
+      AddResponse(url_.spec(), response_, http_status_);
   }
 
   size_t attempts() const { return attempts_; }
 
  private:
-  void AddResponseWithCode(int error_code) {
-    auto response_head = network::mojom::URLResponseHead::New();
-    response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
-    response_head->headers->SetHeader("Content-Type", "application/json");
-    // If AddResponse() is called multiple times for the same URL, the last
-    // one is the one used so there is no need for ClearResponses().
-    AddResponse(url_, std::move(response_head), response_,
-                network::URLLoaderCompletionStatus(error_code));
-  }
-
   GURL url_;
+  net::HttpStatusCode http_status_;
   std::string response_;
   size_t require_retries_;
   size_t attempts_ = 0;
@@ -203,6 +203,7 @@ class SimpleGeolocationTestBase {
  public:
   SimpleGeolocationTestBase()
       : url_factory_(GURL(kTestGeolocationProviderUrl),
+                     net::HTTP_OK,
                      kSimpleResponseBody,
                      0 /* require_retries */) {}
 
@@ -259,8 +260,8 @@ TEST_F(SimpleGeolocationTest, ResponseOK) {
 }
 
 TEST_F(SimpleGeolocationTest, ResponseOKWithRetries) {
-  url_factory_.Configure(GURL(kTestGeolocationProviderUrl), kSimpleResponseBody,
-                         3 /* require_retries */);
+  url_factory_.Configure(GURL(kTestGeolocationProviderUrl), net::HTTP_OK,
+                         kSimpleResponseBody, 3 /* require_retries */);
 
   // Set user permission to granted.
   EnableGeolocationUsage();
@@ -276,8 +277,31 @@ TEST_F(SimpleGeolocationTest, ResponseOKWithRetries) {
   EXPECT_EQ(4U, url_factory_.attempts());
 }
 
-TEST_F(SimpleGeolocationTest, InvalidResponse) {
+TEST_F(SimpleGeolocationTest, ResponseWithErrorTooManyRequestsIsNotRetried) {
   url_factory_.Configure(GURL(kTestGeolocationProviderUrl),
+                         net::HTTP_TOO_MANY_REQUESTS, kSimpleResponseBody,
+                         0 /* require_retries */);
+
+  // Set user permission to granted.
+  EnableGeolocationUsage();
+
+  GeolocationReceiver receiver;
+  SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
+      base::Seconds(1), false, false,
+      base::BindOnce(&GeolocationReceiver::OnRequestDone,
+                     base::Unretained(&receiver)));
+  receiver.WaitUntilRequestDone();
+
+  // Check that Geoposition is not populated.
+  EXPECT_FALSE(receiver.position().Valid());
+  EXPECT_EQ(Geoposition::Status::STATUS_SERVER_ERROR,
+            receiver.position().status);
+  // Check that the request was not retried.
+  EXPECT_EQ(1U, url_factory_.attempts());
+}
+
+TEST_F(SimpleGeolocationTest, InvalidResponse) {
+  url_factory_.Configure(GURL(kTestGeolocationProviderUrl), net::HTTP_OK,
                          "invalid JSON string", 0 /* require_retries */);
   EnableGeolocationUsage();
 
@@ -322,8 +346,8 @@ TEST_F(SimpleGeolocationTest, NoWiFi) {
   WirelessTestMonitor requests_monitor;
   SimpleGeolocationRequest::SetTestMonitor(&requests_monitor);
 
-  url_factory_.Configure(GURL(kTestGeolocationProviderUrl), kSimpleResponseBody,
-                         0 /* require_retries */);
+  url_factory_.Configure(GURL(kTestGeolocationProviderUrl), net::HTTP_OK,
+                         kSimpleResponseBody, 0 /* require_retries */);
   EnableGeolocationUsage();
 
   GeolocationReceiver receiver;
@@ -347,8 +371,8 @@ TEST_F(SimpleGeolocationTest, SystemGeolocationPermissionDenied) {
   WirelessTestMonitor requests_monitor;
 
   SimpleGeolocationRequest::SetTestMonitor(&requests_monitor);
-  url_factory_.Configure(GURL(kTestGeolocationProviderUrl), kSimpleResponseBody,
-                         0);
+  url_factory_.Configure(GURL(kTestGeolocationProviderUrl), net::HTTP_OK,
+                         kSimpleResponseBody, 0);
 
   // Set system geolocation permission to disabled.
   DisableGeolocatioUsage();
@@ -456,8 +480,8 @@ TEST_P(SimpleGeolocationWirelessTest, WiFiExists) {
   WirelessTestMonitor requests_monitor;
   SimpleGeolocationRequest::SetTestMonitor(&requests_monitor);
 
-  url_factory_.Configure(GURL(kTestGeolocationProviderUrl), kSimpleResponseBody,
-                         0 /* require_retries */);
+  url_factory_.Configure(GURL(kTestGeolocationProviderUrl), net::HTTP_OK,
+                         kSimpleResponseBody, 0 /* require_retries */);
   // Set system geolocation permission to allowed. This permission is tested
   // separately.
   EnableGeolocationUsage();
@@ -520,8 +544,8 @@ TEST_P(SimpleGeolocationWirelessTest, CellularExists) {
   WirelessTestMonitor requests_monitor;
   SimpleGeolocationRequest::SetTestMonitor(&requests_monitor);
 
-  url_factory_.Configure(GURL(kTestGeolocationProviderUrl), kSimpleResponseBody,
-                         0 /* require_retries */);
+  url_factory_.Configure(GURL(kTestGeolocationProviderUrl), net::HTTP_OK,
+                         kSimpleResponseBody, 0 /* require_retries */);
   // Enable system permission for geolocation usage.
   EnableGeolocationUsage();
 

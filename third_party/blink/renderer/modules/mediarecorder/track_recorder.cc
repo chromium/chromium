@@ -10,7 +10,7 @@ namespace blink {
 
 // static.
 MediaTrackContainerType GetMediaContainerTypeFromString(const String& type) {
-  if (!type.empty()) {
+  if (type.empty()) {
     return MediaTrackContainerType::kNone;
   }
 

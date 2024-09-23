@@ -23,6 +23,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 
 #include <limits>
@@ -41,7 +46,7 @@ static inline void Append(Vector<char>& buffer, const char* string) {
 }
 
 static inline void Append(Vector<char>& buffer, const std::string& string) {
-  buffer.Append(string.data(), base::checked_cast<wtf_size_t>(string.length()));
+  buffer.AppendSpan(base::span(string));
 }
 
 static inline void AppendPercentEncoded(Vector<char>& buffer, unsigned char c) {
@@ -147,10 +152,10 @@ Vector<char> FormDataEncoder::GenerateUniqueBoundaryString() {
 
   // Append 16 random 7bit ascii AlphaNumeric characters.
   char random_bytes[16];
-  base::RandBytes(random_bytes, sizeof(random_bytes));
+  base::RandBytes(base::as_writable_byte_span(random_bytes));
   for (char& c : random_bytes)
     c = kAlphaNumericEncodingMap[c & 0x3F];
-  boundary.Append(random_bytes, sizeof(random_bytes));
+  boundary.AppendSpan(base::span(random_bytes));
 
   boundary.push_back(
       0);  // Add a 0 at the end so we can use this as a C-style string.

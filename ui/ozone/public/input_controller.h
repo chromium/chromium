@@ -31,6 +31,17 @@ namespace ui {
 
 enum class DomCode : uint32_t;
 
+// Disables all input devices until it is destroyed.
+// You should not create this yourself but instead get it from
+// `InputController::DisableInputDevices()`.
+class ScopedDisableInputDevices {
+ public:
+  virtual ~ScopedDisableInputDevices() = default;
+
+ protected:
+  ScopedDisableInputDevices() = default;
+};
+
 // Platform-specific interface for controlling input devices.
 //
 // The object provides methods for the preference page to configure input
@@ -46,12 +57,12 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   using GetStylusSwitchStateReply = base::OnceCallback<void(ui::StylusState)>;
   using DescribeForLogReply = base::OnceCallback<void(const std::string&)>;
 
-  InputController() {}
+  InputController() = default;
 
   InputController(const InputController&) = delete;
   InputController& operator=(const InputController&) = delete;
 
-  virtual ~InputController() {}
+  virtual ~InputController() = default;
 
   // Functions for checking devices existence.
   virtual bool HasMouse() = 0;
@@ -69,7 +80,10 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
                                  const base::TimeDelta& interval) = 0;
   virtual void GetAutoRepeatRate(base::TimeDelta* delay,
                                  base::TimeDelta* interval) = 0;
-  virtual void SetCurrentLayoutByName(const std::string& layout_name) = 0;
+  // Callback is invoked when the keyboard layout is available and initialized.
+  virtual void SetCurrentLayoutByName(
+      const std::string& layout_name,
+      base::OnceCallback<void(bool)> callback) = 0;
   virtual void SetKeyboardKeyBitsMapping(
       base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) = 0;
   virtual std::vector<uint64_t> GetKeyboardKeyBits(int id) = 0;
@@ -183,6 +197,25 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
           receiver) = 0;
 
   virtual bool AreAnyKeysPressed() = 0;
+
+  // Blocks all modifiers from being emitted on devices with the given device
+  // ids.
+  virtual void BlockModifiersOnDevices(std::vector<int> device_ids) = 0;
+
+  // Disable all input devices until the returned object is destroyed.
+  // When called multiple times the input devices remain disabled until all
+  // scoped return values are destroyed.
+  [[nodiscard]] virtual std::unique_ptr<ScopedDisableInputDevices>
+  DisableInputDevices() = 0;
+
+  virtual bool AreInputDevicesEnabled() const = 0;
+
+  // Disable imposter check when a keyboard is connected to the device. When a
+  // new keyboard is connected to the device it is checked for being an
+  // imposter which which triggers the device to use a virtual keyboard when
+  // input is required until a physical key is pressed on the physical keyboard
+  // connected.
+  virtual void DisableKeyboardImposterCheck() = 0;
 };
 
 // Create an input controller that does nothing.

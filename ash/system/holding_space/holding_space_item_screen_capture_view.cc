@@ -47,11 +47,6 @@ std::optional<const gfx::VectorIcon*> GetOverlayIcon(
     case HoldingSpaceItem::Type::kScreenRecordingGif:
       return &kGifIcon;
     case HoldingSpaceItem::Type::kArcDownload:
-    case HoldingSpaceItem::Type::kCameraAppPhoto:
-    case HoldingSpaceItem::Type::kCameraAppScanJpg:
-    case HoldingSpaceItem::Type::kCameraAppScanPdf:
-    case HoldingSpaceItem::Type::kCameraAppVideoGif:
-    case HoldingSpaceItem::Type::kCameraAppVideoMp4:
     case HoldingSpaceItem::Type::kDiagnosticsLog:
     case HoldingSpaceItem::Type::kDriveSuggestion:
     case HoldingSpaceItem::Type::kDownload:
@@ -64,7 +59,6 @@ std::optional<const gfx::VectorIcon*> GetOverlayIcon(
     case HoldingSpaceItem::Type::kPrintedPdf:
     case HoldingSpaceItem::Type::kScan:
       NOTREACHED();
-      [[fallthrough]];
     case HoldingSpaceItem::Type::kScreenshot:
       return std::nullopt;
   }
@@ -124,8 +118,7 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
                       views::MaximumFlexSizeRule::kUnbounded)))
               .AddChild(
                   CreatePrimaryActionBuilder(
-                      /*apply_accent_colors=*/chromeos::features::
-                          IsJellyEnabled(),
+                      /*apply_accent_colors=*/true,
                       /*min_size=*/kPrimaryActionSize)
                       .SetBackground(holding_space_util::CreateCircleBackground(
                           kColorAshShieldAndBase80))))
@@ -185,7 +178,7 @@ void HoldingSpaceItemScreenCaptureView::UpdateImage() {
   SchedulePaint();
 }
 
-BEGIN_METADATA(HoldingSpaceItemScreenCaptureView, HoldingSpaceItemView)
+BEGIN_METADATA(HoldingSpaceItemScreenCaptureView)
 END_METADATA
 
 }  // namespace ash

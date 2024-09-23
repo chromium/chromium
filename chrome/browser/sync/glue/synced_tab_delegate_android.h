@@ -13,7 +13,7 @@ namespace content {
 class WebContents;
 }
 
-class TabAndroid;
+class TabAndroidDataProvider;
 
 namespace browser_sync {
 // On Android a tab can exist even without web contents.
@@ -23,7 +23,8 @@ namespace browser_sync {
 // when the tab is brought to memory.
 class SyncedTabDelegateAndroid : public TabContentsSyncedTabDelegate {
  public:
-  explicit SyncedTabDelegateAndroid(TabAndroid* owning_tab_);
+  explicit SyncedTabDelegateAndroid(
+      TabAndroidDataProvider* tab_android_data_provider);
 
   SyncedTabDelegateAndroid(const SyncedTabDelegateAndroid&) = delete;
   SyncedTabDelegateAndroid& operator=(const SyncedTabDelegateAndroid&) = delete;
@@ -34,8 +35,8 @@ class SyncedTabDelegateAndroid : public TabContentsSyncedTabDelegate {
   SessionID GetWindowId() const override;
   SessionID GetSessionId() const override;
   bool IsPlaceholderTab() const override;
-  std::unique_ptr<SyncedTabDelegate> CreatePlaceholderTabSyncedTabDelegate()
-      override;
+  std::unique_ptr<SyncedTabDelegate> ReadPlaceholderTabSnapshotIfItShouldSync(
+      sync_sessions::SyncSessionsClient* sessions_client) override;
 
   // Set the web contents for this tab.
   void SetWebContents(content::WebContents* web_contents);
@@ -46,7 +47,7 @@ class SyncedTabDelegateAndroid : public TabContentsSyncedTabDelegate {
   static SessionID SessionIdFromAndroidId(int android_tab_id);
 
  private:
-  const raw_ptr<TabAndroid> tab_android_;
+  const raw_ptr<TabAndroidDataProvider> tab_android_data_provider_;
 };
 }  // namespace browser_sync
 

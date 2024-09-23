@@ -93,9 +93,9 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
     textfield_ = nullptr;
     test_cursor_client_.reset();
 
-    auto close_widget = [](raw_ptr<Widget>& widget) {
+    auto close_widget = [](std::unique_ptr<Widget>& widget) {
       if (widget && !widget->IsClosed()) {
-        widget.ExtractAsDangling()->Close();
+        widget->Close();
       }
     };
     close_widget(textfield_widget_);
@@ -105,9 +105,10 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
   }
 
   void CreateTextfield() {
-    textfield_widget_ = new Widget;
+    textfield_widget_ = std::make_unique<Widget>();
     Widget::InitParams params =
-        CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 200, 200);
     textfield_widget_->Init(std::move(params));
     // Focusable views must have an accessible name in order to pass the
@@ -125,8 +126,9 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
   }
 
   void CreateWidget() {
-    widget_ = new Widget;
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+    widget_ = std::make_unique<Widget>();
+    Widget::InitParams params = CreateParams(
+        Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
     params.bounds = gfx::Rect(0, 0, 200, 200);
     widget_->Init(std::move(params));
     widget_->Show();
@@ -174,21 +176,21 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
         gfx::Point(handle->size().width() / 2, handle->size().height() / 2);
     base::TimeTicks time_stamp = base::TimeTicks();
     {
-      ui::GestureEventDetails details(ui::ET_GESTURE_SCROLL_BEGIN);
+      ui::GestureEventDetails details(ui::EventType::kGestureScrollBegin);
       ui::GestureEvent scroll_begin(grip_location.x(), grip_location.y(), 0,
                                     time_stamp, details);
       handle->OnGestureEvent(&scroll_begin);
     }
     test_cursor_client_->DisableMouseEvents();
     {
-      ui::GestureEventDetails details(ui::ET_GESTURE_SCROLL_UPDATE);
+      ui::GestureEventDetails details(ui::EventType::kGestureScrollUpdate);
       gfx::Point update_location = grip_location + v;
       ui::GestureEvent scroll_update(update_location.x(), update_location.y(),
                                      0, time_stamp, details);
       handle->OnGestureEvent(&scroll_update);
     }
     {
-      ui::GestureEventDetails details(ui::ET_GESTURE_SCROLL_END);
+      ui::GestureEventDetails details(ui::EventType::kGestureScrollEnd);
       ui::GestureEvent scroll_end(grip_location.x(), grip_location.y(), 0,
                                   time_stamp, details);
       handle->OnGestureEvent(&scroll_end);
@@ -318,7 +320,7 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
     textfield_->SetText(ASCIIToUTF16(textfield_text));
 
     // Tap the textfield to invoke selection.
-    ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+    ui::GestureEventDetails details(ui::EventType::kGestureTap);
     details.set_tap_count(1);
     ui::GestureEvent tap(0, 0, 0, base::TimeTicks(), details);
     textfield_->OnGestureEvent(&tap);
@@ -340,8 +342,8 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
         views::Widget::ClosedReason::kUnspecified);
   }
 
-  raw_ptr<Widget> textfield_widget_ = nullptr;
-  raw_ptr<Widget> widget_ = nullptr;
+  std::unique_ptr<Widget> textfield_widget_;
+  std::unique_ptr<Widget> widget_;
 
   raw_ptr<Textfield> textfield_ = nullptr;
   std::unique_ptr<aura::test::TestCursorClient> test_cursor_client_;
@@ -353,7 +355,7 @@ TEST_F(TouchSelectionControllerImplTest, SelectionInTextfieldTest) {
   CreateTextfield();
   textfield_->SetText(u"some text");
   // Tap the textfield to invoke touch selection.
-  ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails details(ui::EventType::kGestureTap);
   details.set_tap_count(1);
   ui::GestureEvent tap(0, 0, 0, base::TimeTicks(), details);
   textfield_->OnGestureEvent(&tap);
@@ -386,7 +388,7 @@ TEST_F(TouchSelectionControllerImplTest, SelectionInBidiTextfieldTest) {
   CreateTextfield();
   textfield_->SetText(u"abc\x05d0\x05d1\x05d2");
   // Tap the textfield to invoke touch selection.
-  ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails details(ui::EventType::kGestureTap);
   details.set_tap_count(1);
   ui::GestureEvent tap(0, 0, 0, base::TimeTicks(), details);
   textfield_->OnGestureEvent(&tap);
@@ -438,7 +440,7 @@ TEST_F(TouchSelectionControllerImplTest, SelectionUpdateCallbackTest) {
   CreateTextfield();
   textfield_->SetText(u"textfield with selected text");
   // Tap the textfield to invoke touch selection.
-  ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails details(ui::EventType::kGestureTap);
   details.set_tap_count(1);
   ui::GestureEvent tap(0, 0, 0, base::TimeTicks(), details);
   textfield_->OnGestureEvent(&tap);
@@ -482,7 +484,7 @@ TEST_F(TouchSelectionControllerImplTest, SelectionUpdateInBidiCallbackTest) {
       u"abc\x05e1\x05e2\x05e3"
       u"def");
   // Tap the textfield to invoke touch selection.
-  ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails details(ui::EventType::kGestureTap);
   details.set_tap_count(1);
   ui::GestureEvent tap(0, 0, 0, base::TimeTicks(), details);
   textfield_->OnGestureEvent(&tap);
@@ -726,7 +728,7 @@ TEST_F(TouchSelectionControllerImplTest,
       /*steps=*/5,
       base::BindLambdaForTesting(
           [&](ui::EventType event_type, const gfx::Vector2dF& offset) {
-            if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
+            if (event_type == ui::EventType::kGestureScrollUpdate) {
               EXPECT_TRUE(IsMagnifierVisible());
             }
           }));
@@ -760,7 +762,7 @@ TEST_F(TouchSelectionControllerImplTest,
       /*steps=*/5,
       base::BindLambdaForTesting(
           [&](ui::EventType event_type, const gfx::Vector2dF& offset) {
-            if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
+            if (event_type == ui::EventType::kGestureScrollUpdate) {
               EXPECT_TRUE(IsMagnifierVisible());
             }
           }));
@@ -773,7 +775,7 @@ TEST_F(TouchSelectionControllerImplTest,
       /*steps=*/5,
       base::BindLambdaForTesting(
           [&](ui::EventType event_type, const gfx::Vector2dF& offset) {
-            if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
+            if (event_type == ui::EventType::kGestureScrollUpdate) {
               EXPECT_TRUE(IsMagnifierVisible());
             }
           }));
@@ -805,7 +807,7 @@ TEST_F(TouchSelectionControllerImplTest, MagnifierShownWhenDraggingCursor) {
       /*steps=*/5,
       base::BindLambdaForTesting(
           [&](ui::EventType event_type, const gfx::Vector2dF& offset) {
-            if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
+            if (event_type == ui::EventType::kGestureScrollUpdate) {
               EXPECT_TRUE(IsMagnifierVisible());
             }
           }));
@@ -836,7 +838,7 @@ TEST_F(TouchSelectionControllerImplTest, DraggingCursorShowsHandle) {
       /*steps=*/5,
       base::BindLambdaForTesting(
           [&](ui::EventType event_type, const gfx::Vector2dF& offset) {
-            if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
+            if (event_type == ui::EventType::kGestureScrollUpdate) {
               EXPECT_FALSE(IsCursorHandleVisible());
               EXPECT_FALSE(IsSelectionHandle1Visible());
               EXPECT_FALSE(IsSelectionHandle2Visible());
@@ -956,7 +958,7 @@ TEST_F(TouchSelectionControllerImplTest, MenuHiddenWhenDraggingCursor) {
       /*steps=*/5,
       base::BindLambdaForTesting(
           [&](ui::EventType event_type, const gfx::Vector2dF& offset) {
-            if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
+            if (event_type == ui::EventType::kGestureScrollUpdate) {
               EXPECT_FALSE(IsQuickMenuVisible());
             }
           }));
@@ -1090,13 +1092,13 @@ class TestTouchEditable : public ui::TouchEditable {
 
  private:
   // Overridden from ui::TouchEditable.
-  void MoveCaret(const gfx::Point& position) override { NOTREACHED_NORETURN(); }
+  void MoveCaret(const gfx::Point& position) override { NOTREACHED(); }
   void MoveRangeSelectionExtent(const gfx::Point& extent) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   void SelectBetweenCoordinates(const gfx::Point& base,
                                 const gfx::Point& extent) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   void GetSelectionEndPoints(gfx::SelectionBound* anchor,
                              gfx::SelectionBound* focus) override {
@@ -1117,20 +1119,14 @@ class TestTouchEditable : public ui::TouchEditable {
     if (screen_position_client)
       screen_position_client->ConvertPointFromScreen(window_, point);
   }
-  void OpenContextMenu(const gfx::Point& anchor) override {
-    NOTREACHED_NORETURN();
-  }
-  void DestroyTouchSelection() override { NOTREACHED_NORETURN(); }
+  void OpenContextMenu(const gfx::Point& anchor) override { NOTREACHED(); }
+  void DestroyTouchSelection() override { NOTREACHED(); }
 
   // Overridden from ui::SimpleMenuModel::Delegate.
-  bool IsCommandIdChecked(int command_id) const override {
-    NOTREACHED_NORETURN();
-  }
-  bool IsCommandIdEnabled(int command_id) const override {
-    NOTREACHED_NORETURN();
-  }
+  bool IsCommandIdChecked(int command_id) const override { NOTREACHED(); }
+  bool IsCommandIdEnabled(int command_id) const override { NOTREACHED(); }
   void ExecuteCommand(int command_id, int event_flags) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   raw_ptr<aura::Window> window_;
@@ -1204,7 +1200,7 @@ TEST_F(TouchSelectionControllerImplTest, HandlesStackAboveParent) {
   // end touch editing.
   StartTouchEditing();
   gfx::Point test_point = GetCursorHandleDragPoint();
-  ui::MouseEvent test_event1(ui::ET_MOUSE_MOVED, test_point, test_point,
+  ui::MouseEvent test_event1(ui::EventType::kMouseMoved, test_point, test_point,
                              ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
   EXPECT_EQ(GetCursorHandleNativeView(),
             targeter->FindTargetForEvent(root, &test_event1));
@@ -1217,14 +1213,14 @@ TEST_F(TouchSelectionControllerImplTest, HandlesStackAboveParent) {
   // Start touch editing (in the first window) and check that the handle is not
   // above the second window.
   StartTouchEditing();
-  ui::MouseEvent test_event2(ui::ET_MOUSE_MOVED, test_point, test_point,
+  ui::MouseEvent test_event2(ui::EventType::kMouseMoved, test_point, test_point,
                              ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
   EXPECT_EQ(window2, targeter->FindTargetForEvent(root, &test_event2));
 
   // Move the first window to top and check that the handle is kept above the
   // first window.
   window1->GetRootWindow()->StackChildAtTop(window1);
-  ui::MouseEvent test_event3(ui::ET_MOUSE_MOVED, test_point, test_point,
+  ui::MouseEvent test_event3(ui::EventType::kMouseMoved, test_point, test_point,
                              ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
   EXPECT_EQ(GetCursorHandleNativeView(),
             targeter->FindTargetForEvent(root, &test_event3));
@@ -1283,8 +1279,9 @@ TEST_F(TouchSelectionControllerImplTest, MouseCaptureChangedEventIgnored) {
   // it does not deactivate touch selection.
   StartTouchEditing();
   EXPECT_TRUE(GetSelectionController());
-  ui::MouseEvent capture_changed(ui::ET_MOUSE_CAPTURE_CHANGED, gfx::Point(5, 5),
-                                 gfx::Point(5, 5), base::TimeTicks(), 0, 0);
+  ui::MouseEvent capture_changed(ui::EventType::kMouseCaptureChanged,
+                                 gfx::Point(5, 5), gfx::Point(5, 5),
+                                 base::TimeTicks(), 0, 0);
   generator.Dispatch(&capture_changed);
   RunPendingMessages();
   EXPECT_TRUE(GetSelectionController());

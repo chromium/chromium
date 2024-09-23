@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <iterator>
+
 #include "base/android/feature_map.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "device/fido/features.h"
 #include "services/device/public/cpp/device_features.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "services/device/public/java/device_feature_list_jni/DeviceFeatureMap_jni.h"
 
 namespace features {
@@ -19,10 +23,6 @@ namespace {
 // code base.
 const base::Feature* const kFeaturesExposedToJava[] = {
     &device::kWebAuthnAndroidCredMan,
-    &device::kWebAuthnAndroidCredManForHybrid,
-    &device::kWebAuthnAndroidFidoJson,
-    &device::kWebAuthnAndroidIncognitoConfirmation,
-    &device::kWebAuthnHybridLinkWithoutNotifications,
     &kGenericSensorExtraClasses,
 };
 

@@ -210,9 +210,6 @@ _EXTENSIBLE_ENUMS_MISSING_DEFAULT = (
     'x:chromeos.network_config.mojom.OncSource',
     'x:chromeos.network_config.mojom.PolicySource',
     'x:chromeos.network_config.mojom.PortalState',
-    'x:chromeos.wilco_dtc_supportd.mojom.WilcoDtcSupportdEvent',
-    'x:chromeos.wilco_dtc_supportd.mojom.WilcoDtcSupportdWebRequestHttpMethod',
-    'x:chromeos.wilco_dtc_supportd.mojom.WilcoDtcSupportdWebRequestStatus',
     'x:cros.mojom.CameraClientType',
     'x:cros.mojom.CameraMetadataSectionStart',
     'x:cros.mojom.CameraMetadataTag',
@@ -945,7 +942,7 @@ def _Enum(module, parsed_enum, parent_kind):
         map(lambda field: _EnumField(module, enum, field),
             parsed_enum.enum_value_list))
     _ResolveNumericEnumValues(enum)
-    # TODO(https://crbug.com/731893): Require a default value to be
+    # TODO(crbug.com/40525166): Require a default value to be
     # specified.
     for field in enum.fields:
       if field.default:

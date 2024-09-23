@@ -195,7 +195,7 @@ export class SettingsPasspointSubpageElement extends PasspointListenerMixin
 
   private getProviderName_(): string {
     if (this.app_ && this.app_.title !== undefined) {
-      return this.app_.title;
+      return this.app_.title!;
     }
     return this.subscription_!.provisioningSource;
   }

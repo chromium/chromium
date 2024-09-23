@@ -132,7 +132,7 @@ void FileBackedBlobFactoryBase::RegisterBlobSync(
                      std::move(file),
                      GetAccessCallback(url_for_file_access_checks),
                      security_check_success,
-                     base::BindPostTask(content::GetUIThreadTaskRunner({}),
+                     base::BindPostTask(GetUIThreadTaskRunner({}),
                                         GetBadMessageCallback()),
                      blob_storage_context_, std::move(finish_callback)));
 }

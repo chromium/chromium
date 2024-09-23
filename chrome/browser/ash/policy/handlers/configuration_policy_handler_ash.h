@@ -253,6 +253,45 @@ class ArcServicePolicyHandler : public IntRangePolicyHandlerBase {
   const std::string pref_;
 };
 
+// Instantiated for the `ArcGoogleLocationServicesEnabled` policy. This
+// overrides the old handling of the `ArcGoogleLocationServicesEnabled` policy
+// when the Privacy Hub location is rolled out.
+class ArcLocationServicePolicyHandler : public ArcServicePolicyHandler {
+ public:
+  explicit ArcLocationServicePolicyHandler(const char* policy,
+                                           const char* pref);
+
+  ArcLocationServicePolicyHandler(const ArcLocationServicePolicyHandler&) =
+      delete;
+  ArcLocationServicePolicyHandler& operator=(
+      const ArcLocationServicePolicyHandler&) = delete;
+
+  // IntRangePolicyHandlerBase:
+  void ApplyPolicySettings(const PolicyMap& policies,
+                           PrefValueMap* prefs) override;
+};
+
+// Maps Chrome Compose policy into ChromeOS Orca settings
+class HelpMeWritePolicyHandler : public IntRangePolicyHandlerBase {
+ public:
+  enum class HelpMeWritePolicyValue {
+    kEnabledWithModelImprovement = 0,
+    kEnabledWithoutModelImprovement = 1,
+    kDisabled = 2,
+  };
+
+  HelpMeWritePolicyHandler();
+
+  HelpMeWritePolicyHandler(const HelpMeWritePolicyHandler&) = delete;
+  HelpMeWritePolicyHandler& operator=(const HelpMeWritePolicyHandler&) = delete;
+
+  ~HelpMeWritePolicyHandler() override = default;
+
+  // IntRangePolicyHandlerBase:
+  void ApplyPolicySettings(const PolicyMap& policies,
+                           PrefValueMap* prefs) override;
+};
+
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_ASH_POLICY_HANDLERS_CONFIGURATION_POLICY_HANDLER_ASH_H_

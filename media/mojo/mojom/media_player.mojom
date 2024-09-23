@@ -55,6 +55,14 @@ interface MediaPlayer {
   // Request the media player to start Media Remoting when there are available
   // sinks.
   RequestMediaRemoting();
+
+  // Request the media player to check if it has a video that meets the
+  // visibility threshold defined by |HTMLVideoElement| (kVisibilityThreshold).
+  // The answer is computed by the |MediaVideoVisibilityTracker|.
+  //
+  // If this method is called multiple times in a row, the newest callback
+  // always takes precedence. Previous ones are immediately run with `false`.
+  RequestVisibility() => (bool has_sufficiently_visible_video);
 };
 
 // Implemented by the MediaWebContentsObserver. The remote lives in the renderer
@@ -111,6 +119,9 @@ interface MediaPlayerObserver {
   // Notifies that the RemotePlayback metadata of the media player has changed.
   OnRemotePlaybackMetadataChange(media_session.mojom.RemotePlaybackMetadata
                              remote_playback_metadata);
+
+  // Notifies that the video visibility has changed.
+  OnVideoVisibilityChanged(bool meets_visibility_threshold);
 };
 
 // Implemented by MediaWebContentsObserver::MediaPlayerHostImpl in the browser

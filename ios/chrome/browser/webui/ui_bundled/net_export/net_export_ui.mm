@@ -11,6 +11,7 @@
 #import "base/functional/bind.h"
 #import "base/location.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/strings/string_util.h"
 #import "base/values.h"
@@ -18,7 +19,7 @@
 #import "components/net_log/net_export_file_writer.h"
 #import "components/net_log/net_export_ui_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper.h"
 #import "ios/chrome/browser/webui/model/show_mail_composer_context.h"
@@ -49,7 +50,6 @@ web::WebUIIOSDataSource* CreateNetExportHTMLSource() {
 // this class's member methods are expected to run on the UI thread.
 class NetExportMessageHandler
     : public web::WebUIIOSMessageHandler,
-      public base::SupportsWeakPtr<NetExportMessageHandler>,
       public net_log::NetExportFileWriter::StateObserver {
  public:
   NetExportMessageHandler();
@@ -86,12 +86,11 @@ class NetExportMessageHandler
                           net_log::NetExportFileWriter::StateObserver>
       state_observation_manager_{this};
 
-  base::WeakPtrFactory<NetExportMessageHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<NetExportMessageHandler> weak_factory_{this};
 };
 
 NetExportMessageHandler::NetExportMessageHandler()
-    : file_writer_(GetApplicationContext()->GetNetExportFileWriter()),
-      weak_ptr_factory_(this) {
+    : file_writer_(GetApplicationContext()->GetNetExportFileWriter()) {
   file_writer_->Initialize();
 }
 
@@ -163,7 +162,7 @@ void NetExportMessageHandler::OnStopNetLog(const base::Value::List& list) {
 void NetExportMessageHandler::OnSendNetLog(const base::Value::List& list) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   file_writer_->GetFilePathToCompletedLog(base::BindOnce(
-      &NetExportMessageHandler::SendEmail, base::Unretained(this)));
+      &NetExportMessageHandler::SendEmail, weak_factory_.GetWeakPtr()));
 }
 
 void NetExportMessageHandler::OnNewState(const base::Value::Dict& state) {
@@ -190,7 +189,8 @@ void NetExportMessageHandler::SendEmail(const base::FilePath& file_to_send) {
   context.textFileToAttach = file_to_send;
 
   web::WebState* web_state = web_ui()->GetWebState();
-  NetExportTabHelper::FromWebState(web_state)->ShowMailComposer(context);
+  NetExportTabHelper::GetOrCreateForWebState(web_state)->ShowMailComposer(
+      context);
 }
 
 void NetExportMessageHandler::NotifyUIWithState(
@@ -208,6 +208,6 @@ void NetExportMessageHandler::NotifyUIWithState(
 NetExportUI::NetExportUI(web::WebUIIOS* web_ui, const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
   web_ui->AddMessageHandler(std::make_unique<NetExportMessageHandler>());
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui),
                                CreateNetExportHTMLSource());
 }

@@ -27,6 +27,9 @@ group("wpt_tests_isolate") {
     "//third_party/blink/web_tests/VirtualTestSuites",
     "//third_party/blink/web_tests/TestLists/",
 
+    # exception reporting protos
+    "//build/util/lib/proto",
+
     # Include the root vpython spec.
     "//.vpython3",
   ]

@@ -53,9 +53,9 @@ component("clipboard_types") {
     frameworks += [ "Foundation.framework" ]
   }
   if (is_mac) {
-    frameworks += [ "AppKit.framework" ]
-    weak_frameworks = [
-      "UniformTypeIdentifiers.framework",  # macOS 11
+    frameworks += [
+      "AppKit.framework",
+      "UniformTypeIdentifiers.framework",
     ]
   }
 }
@@ -178,7 +178,7 @@ component("clipboard") {
   }
 
   if (is_android) {
-    deps += [ "//ui/base:ui_base_jni_headers" ]
+    deps += [ "//ui/base:clipboard_jni_headers" ]
   }
 
   if (is_mac) {
@@ -186,9 +186,7 @@ component("clipboard") {
     frameworks = [
       "AppKit.framework",
       "CoreFoundation.framework",
-    ]
-    weak_frameworks = [
-      "UniformTypeIdentifiers.framework",  # macOS 11
+      "UniformTypeIdentifiers.framework",
     ]
   }
 }

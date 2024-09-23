@@ -4,7 +4,6 @@
 
 #include "content/browser/payments/payment_manager.h"
 
-#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"

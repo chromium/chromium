@@ -65,7 +65,7 @@ class ThumbnailCacheTest : public ::testing::Test {
   std::unique_ptr<ThumbnailCache> thumbnail_cache_;
 };
 
-// TODO(crbug.com/1402843): Tests are being added in the process of refactoring
+// TODO(crbug.com/40885026): Tests are being added in the process of refactoring
 // and optimizing the ThumbnailCache for modern usage add more tests here.
 
 TEST_F(ThumbnailCacheTest, PruneCache) {

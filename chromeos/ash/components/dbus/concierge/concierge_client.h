@@ -10,8 +10,8 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "dbus/object_proxy.h"
 
 namespace ash {
@@ -62,9 +62,9 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
   // operations, e.g. importing.
   class DiskImageObserver {
    public:
-    // OnDiskImageProgress is signaled by Concierge after an ImportDiskImage
-    // call has been made and an update about the status of the import
-    // is available.
+    // OnDiskImageProgress is signaled by Concierge after an
+    // {Import,Export}DiskImage call has been made and an update about the
+    // status of the import/export is available.
     virtual void OnDiskImageProgress(
         const vm_tools::concierge::DiskImageStatusResponse& signal) = 0;
 
@@ -131,6 +131,14 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
       chromeos::DBusMethodCallback<vm_tools::concierge::ImportDiskImageResponse>
           callback) = 0;
 
+  // Exports a VM disk image.
+  // |callback| is called after the method call finishes.
+  virtual void ExportDiskImage(
+      std::vector<base::ScopedFD> fds,
+      const vm_tools::concierge::ExportDiskImageRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::ExportDiskImageResponse>
+          callback) = 0;
+
   // Cancels a VM disk image operation (import or export) that is being
   // executed.
   // |callback| is called after the method call finishes.
@@ -165,16 +173,6 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
   // |callback| is called after the method call finishes.
   virtual void StartVmWithFd(
       base::ScopedFD fd,
-      const vm_tools::concierge::StartVmRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
-          callback) = 0;
-
-  // Starts a Termina VM if there is not already one running.
-  // |fds| contains any number of file descriptors to be passed to concierge in
-  // |the order they appear in the vector.
-  // |callback| is called after the method call finishes.
-  virtual void StartVmWithFds(
-      std::vector<base::ScopedFD> fds,
       const vm_tools::concierge::StartVmRequest& request,
       chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
           callback) = 0;

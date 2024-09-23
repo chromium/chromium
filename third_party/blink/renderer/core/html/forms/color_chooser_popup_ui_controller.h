@@ -58,7 +58,7 @@ class CORE_EXPORT ColorChooserPopupUIController final
   AXObject* RootAXObject(Element* popup_owner) override;
 
   // PagePopupClient functions:
-  void WriteDocument(SharedBuffer*) override;
+  void WriteDocument(SegmentedBuffer&) override;
   Locale& GetLocale() override;
   void SetValueAndClosePopup(int, const String&) override;
   void SetValue(const String&) override;
@@ -71,15 +71,13 @@ class CORE_EXPORT ColorChooserPopupUIController final
   void OpenEyeDropper();
   void EyeDropperResponseHandler(bool success, uint32_t color);
 
-  void OpenSystemColorChooser();
-
  private:
   ChromeClient& GetChromeClient() override;
 
   void OpenPopup();
 
-  void WriteColorPickerDocument(SharedBuffer*);
-  void WriteColorSuggestionPickerDocument(SharedBuffer*);
+  void WriteColorPickerDocument(SegmentedBuffer&);
+  void WriteColorSuggestionPickerDocument(SegmentedBuffer&);
 
   Member<ChromeClient> chrome_client_;
   PagePopup* popup_;

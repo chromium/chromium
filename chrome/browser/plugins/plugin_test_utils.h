@@ -6,8 +6,7 @@
 #define CHROME_BROWSER_PLUGINS_PLUGIN_TEST_UTILS_H_
 
 #include <string>
-
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace content {
 class WebContents;
@@ -22,7 +21,7 @@ class PluginTestUtils {
   // Runs the JavaScript |test_script|, which is provided 'plugin' as a variable
   // referencing the |element_id| element. Returns the string extracted from
   // window.domAutomationController.
-  static std::string RunTestScript(base::StringPiece test_script,
+  static std::string RunTestScript(std::string_view test_script,
                                    content::WebContents* contents,
                                    const std::string& element_id);
 

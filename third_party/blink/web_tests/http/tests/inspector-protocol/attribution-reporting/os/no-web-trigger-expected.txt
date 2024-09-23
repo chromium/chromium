@@ -1,0 +1,11 @@
+Test that an attributionsrc request that is eligible for trigger triggers an issue when web is preferred but there is no web trigger registration.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            request : <object>
+            violationType : NoRegisterTriggerHeader
+        }
+    }
+}
+

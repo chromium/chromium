@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/command_line.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -22,63 +22,60 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/test_launcher_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/certificate_transparency/certificate_transparency_config.pb.h"
-#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/sha2.h"
-#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "net/cert/test_root_certs.h"
+#include "net/cert/x509_certificate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/network/public/mojom/network_service.mojom.h"
-#include "services/network/public/mojom/network_service_test.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "chrome/browser/ssl/ssl_browsertest_util.h"
 #include "net/base/features.h"
 #include "net/cert/internal/trust_store_chrome.h"
-#include "net/cert/test_root_certs.h"
-#include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"
-#include "net/test/cert_test_util.h"
 #endif
 
 namespace {
 
-enum class CTEnforcement { kEnabled, kDisabled };
+enum class CTEnforcement { kEnabled, kDisabledByProto, kDisabledByFeature };
 
-void SetRequireCTForTesting() {
-  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  content::GetNetworkService()->BindTestInterfaceForTesting(
-      network_service_test.BindNewPipeAndPassReceiver());
-
-  mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-  network_service_test->SetRequireCT(
-      network::mojom::NetworkServiceTest::RequireCT::REQUIRE);
-  return;
+int64_t SecondsSinceEpoch(base::Time t) {
+  return (t - base::Time::UnixEpoch()).InSeconds();
 }
 
 }  // namespace
 
 namespace component_updater {
 
-// TODO(crbug.com/1286121): add tests for pinning enforcement.
+// TODO(crbug.com/341136041): add tests for pinning enforcement.
 class PKIMetadataComponentUpdaterTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<CTEnforcement>,
       public PKIMetadataComponentInstallerService::Observer {
  public:
+  PKIMetadataComponentUpdaterTest() {
+    if (GetParam() == CTEnforcement::kDisabledByFeature) {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kCertificateTransparencyAskBeforeEnabling);
+    } else {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kCertificateTransparencyAskBeforeEnabling);
+    }
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     PKIMetadataComponentInstallerService::GetInstance()->AddObserver(this);
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        true);
     ASSERT_TRUE(component_dir_.CreateUniqueTempDir());
     host_resolver()->AddRule("*", "127.0.0.1");
 
@@ -86,9 +83,9 @@ class PKIMetadataComponentUpdaterTest
     // depending on the test parameter.
     chrome_browser_certificate_transparency::CTConfig ct_config;
     ct_config.set_disable_ct_enforcement(GetParam() ==
-                                         CTEnforcement::kDisabled);
+                                         CTEnforcement::kDisabledByProto);
     ct_config.mutable_log_list()->mutable_timestamp()->set_seconds(
-        (base::Time::Now() - base::Time::UnixEpoch()).InSeconds());
+        SecondsSinceEpoch(base::Time::Now()));
     ASSERT_TRUE(PKIMetadataComponentInstallerService::GetInstance()
                     ->WriteCTDataForTesting(component_dir_.GetPath(),
                                             ct_config.SerializeAsString()));
@@ -98,24 +95,30 @@ class PKIMetadataComponentUpdaterTest
     PKIMetadataComponentInstallerService::GetInstance()->RemoveObserver(this);
   }
 
- protected:
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);
-    InProcessBrowserTest::SetUpDefaultCommandLine(&default_command_line);
-    test_launcher_utils::RemoveCommandLineSwitch(
-        default_command_line, switches::kDisableComponentUpdate, command_line);
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    // Wait for configuration set in `SetUpInProcessBrowserTestFixture` to load.
+    WaitForPKIConfiguration(1);
   }
 
+ protected:
   // Waits for the PKI to have been configured at least |expected_times|.
   void WaitForPKIConfiguration(int expected_times) {
-    expected_pki_metadata_configured_times_ = expected_times;
-    if (pki_metadata_configured_times_ >=
-        expected_pki_metadata_configured_times_) {
-      return;
+    if (GetParam() == CTEnforcement::kDisabledByFeature) {
+      // When CT is disabled by the feature flag there are no callbacks to
+      // wait on, so just spin the runloop.
+      base::RunLoop().RunUntilIdle();
+      EXPECT_EQ(pki_metadata_configured_times_, 0);
+    } else {
+      expected_pki_metadata_configured_times_ = expected_times;
+      if (pki_metadata_configured_times_ >=
+          expected_pki_metadata_configured_times_) {
+        return;
+      }
+      base::RunLoop run_loop;
+      pki_metadata_config_closure_ = run_loop.QuitClosure();
+      run_loop.Run();
     }
-    base::RunLoop run_loop;
-    pki_metadata_config_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
   }
 
   const base::FilePath& GetComponentDirPath() const {
@@ -132,8 +135,7 @@ class PKIMetadataComponentUpdaterTest
     }
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kCertificateTransparencyAskBeforeEnabling};
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir component_dir_;
 
   base::OnceClosure pki_metadata_config_closure_;
@@ -150,16 +152,20 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
     return;
   }
 
-  // CT enforcement is disabled by default on tests. Override this behaviour.
-  SetRequireCTForTesting();
-  WaitForPKIConfiguration(1);
+  // Make the test root be interpreted as a known root so that CT will be
+  // required.
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+  net::ScopedTestKnownRoot scoped_known_root(root_cert.get());
 
   net::EmbeddedTestServer https_server_ok(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server_ok.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  constexpr char kHostname[] = "example.com";
+  https_server_ok.SetCertHostnames({kHostname});
   https_server_ok.ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(https_server_ok.Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_ok.GetURL("/simple.html")));
+      browser(), https_server_ok.GetURL(kHostname, "/simple.html")));
 
   // Check that the page is blocked depending on CT enforcement.
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
@@ -172,12 +178,13 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
 
   // Restart the network service.
   SimulateNetworkServiceCrash();
-  SetRequireCTForTesting();
+  // Wait for the restarted network service to load the component update data
+  // that is already on disk.
   WaitForPKIConfiguration(2);
 
   // Check that the page is still blocked depending on CT enforcement.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_ok.GetURL("/simple.html")));
+      browser(), https_server_ok.GetURL(kHostname, "/simple.html")));
   ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
   if (GetParam() == CTEnforcement::kEnabled) {
     EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
@@ -208,24 +215,24 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
   const std::string log2_id_base64 = base::Base64Encode(log2_id);
 
   const int64_t kLogStart =
-      (base::Time::Now() - base::Days(1) - base::Time::UnixEpoch()).InSeconds();
-  const int64_t kLogEnd =
-      (base::Time::Now() + base::Days(1) - base::Time::UnixEpoch()).InSeconds();
+      SecondsSinceEpoch(base::Time::Now() - base::Days(1));
+  const int64_t kLogEnd = SecondsSinceEpoch(base::Time::Now() + base::Days(1));
 
-  // CT enforcement is disabled by default on tests. Override this behaviour.
-  SetRequireCTForTesting();
-  WaitForPKIConfiguration(1);
+  // Make the test root be interpreted as a known root so that CT will be
+  // required.
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+  net::ScopedTestKnownRoot scoped_known_root(root_cert.get());
 
   // Start a test server that uses a certificate with SCTs for the above test
   // logs.
   net::EmbeddedTestServer https_server_ok(net::EmbeddedTestServer::TYPE_HTTPS);
   net::EmbeddedTestServer::ServerCertificateConfig server_config;
-  // TODO(https://crbug.com/1211074): Need to use a separate hostname for each
-  // request since the current code does not flush verifier caches on CT log
-  // updates. When log updates switch to the new path, change the test to use
-  // the same hostname for each request to test that caches are cleared as
-  // expected.
-  server_config.dns_names = {"*.example.com"};
+  // The same hostname is used for each request, which verifies that the CT log
+  // updates cause verifier caches and socket pool invalidation, so that the
+  // next request for the same host will use the updated CT state.
+  server_config.dns_names = {"example.com"};
   server_config.embedded_scts.emplace_back(
       log1_id, bssl::UpRef(log1_private_key->key()), base::Time::Now());
   server_config.embedded_scts.emplace_back(
@@ -237,7 +244,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
 
   // Check that the page is blocked depending on CT enforcement.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_ok.GetURL("a.example.com", "/simple.html")));
+      browser(), https_server_ok.GetURL("example.com", "/simple.html")));
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
   if (GetParam() == CTEnforcement::kEnabled) {
@@ -251,9 +258,10 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
   // Set up a configuration that will enable or disable CT enforcement
   // depending on the test parameter.
   chrome_browser_certificate_transparency::CTConfig ct_config;
-  ct_config.set_disable_ct_enforcement(GetParam() == CTEnforcement::kDisabled);
+  ct_config.set_disable_ct_enforcement(GetParam() ==
+                                       CTEnforcement::kDisabledByProto);
   ct_config.mutable_log_list()->mutable_timestamp()->set_seconds(
-      (base::Time::Now() - base::Time::UnixEpoch()).InSeconds());
+      SecondsSinceEpoch(base::Time::Now()));
   {
     chrome_browser_certificate_transparency::CTLog* log =
         ct_config.mutable_log_list()->add_logs();
@@ -302,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
       ->ReconfigureAfterNetworkRestart();
   WaitForPKIConfiguration(2);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_ok.GetURL("b.example.com", "/simple.html")));
+      browser(), https_server_ok.GetURL("example.com", "/simple.html")));
   EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
 
   // Update CT configuration again with the same CT logs but mark the 1st log
@@ -342,7 +350,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
       ->ReconfigureAfterNetworkRestart();
   WaitForPKIConfiguration(3);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
+      browser(), https_server_ok.GetURL("example.com", "/simple.html")));
   if (GetParam() == CTEnforcement::kEnabled) {
     EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
   } else {
@@ -353,7 +361,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
 INSTANTIATE_TEST_SUITE_P(PKIMetadataComponentUpdater,
                          PKIMetadataComponentUpdaterTest,
                          testing::Values(CTEnforcement::kEnabled,
-                                         CTEnforcement::kDisabled));
+                                         CTEnforcement::kDisabledByProto,
+                                         CTEnforcement::kDisabledByFeature));
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
@@ -411,13 +420,6 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
   }
 
  protected:
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);
-    InProcessBrowserTest::SetUpDefaultCommandLine(&default_command_line);
-    test_launcher_utils::RemoveCommandLineSwitch(
-        default_command_line, switches::kDisableComponentUpdate, command_line);
-  }
-
   base::ScopedTempDir component_dir_;
 
  private:
@@ -426,11 +428,6 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
       std::move(crs_config_closure_).Run();
     }
   }
-
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  base::test::ScopedFeatureList scoped_feature_list_{
-      net::features::kChromeRootStoreUsed};
-#endif
 
   base::OnceClosure crs_config_closure_;
   int64_t last_used_crs_version_ = net::CompiledChromeRootStoreVersion();
@@ -565,15 +562,419 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
       ssl_test_util::AuthState::SHOWING_INTERSTITIAL);
 }
 
-// TODO(https://crbug.com/1287211) additional Chrome Root Store browser tests to
+// Test suite for tests that depend on both Certificate Transparency and Chrome
+// Root Store updates.
+class PKIMetadataComponentCtAndCrsUpdaterTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<CTEnforcement>,
+      public PKIMetadataComponentInstallerService::Observer {
+ public:
+  PKIMetadataComponentCtAndCrsUpdaterTest() {
+    if (GetParam() == CTEnforcement::kDisabledByFeature) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+              net::features::kChromeRootStoreUsed
+#endif
+          },
+          /*disabled_features=*/{
+              features::kCertificateTransparencyAskBeforeEnabling});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {features::kCertificateTransparencyAskBeforeEnabling,
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+           net::features::kChromeRootStoreUsed
+#endif
+          },
+          /*disabled_features=*/{});
+    }
+  }
+  void SetUpInProcessBrowserTestFixture() override {
+    PKIMetadataComponentInstallerService::GetInstance()->AddObserver(this);
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    ASSERT_TRUE(component_dir_.CreateUniqueTempDir());
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    PKIMetadataComponentInstallerService::GetInstance()->RemoveObserver(this);
+  }
+
+ protected:
+  // Waits for the CT log lists to have been configured at least
+  // |expected_times|.
+  void WaitForCtConfiguration(int expected_times) {
+    if (GetParam() == CTEnforcement::kDisabledByFeature) {
+      // When CT is disabled by the feature flag there are no callbacks to
+      // wait on, so just spin the runloop.
+      base::RunLoop().RunUntilIdle();
+      EXPECT_EQ(ct_log_list_configured_times_, 0);
+    } else {
+      expected_ct_log_list_configured_times_ = expected_times;
+      if (ct_log_list_configured_times_ >=
+          expected_ct_log_list_configured_times_) {
+        return;
+      }
+      base::RunLoop run_loop;
+      pki_metadata_config_closure_ = run_loop.QuitClosure();
+      run_loop.Run();
+    }
+  }
+
+  const base::FilePath& GetComponentDirPath() const {
+    return component_dir_.GetPath();
+  }
+
+  void InstallCRSUpdate(chrome_root_store::RootStore root_store_proto) {
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(
+          PKIMetadataComponentInstallerService::GetInstance()
+              ->WriteCRSDataForTesting(component_dir_.GetPath(),
+                                       root_store_proto.SerializeAsString()));
+    }
+
+    CRSWaiter waiter(this);
+    PKIMetadataComponentInstallerService::GetInstance()
+        ->ConfigureChromeRootStore();
+    waiter.Wait();
+  }
+
+ private:
+  void OnCTLogListConfigured() override {
+    ++ct_log_list_configured_times_;
+    if (pki_metadata_config_closure_ &&
+        ct_log_list_configured_times_ >=
+            expected_ct_log_list_configured_times_) {
+      std::move(pki_metadata_config_closure_).Run();
+    }
+  }
+
+  void OnChromeRootStoreConfigured() override {
+    if (crs_config_closure_) {
+      std::move(crs_config_closure_).Run();
+    }
+  }
+
+  class CRSWaiter {
+   public:
+    explicit CRSWaiter(PKIMetadataComponentCtAndCrsUpdaterTest* test) {
+      test_ = test;
+      test_->crs_config_closure_ = run_loop_.QuitClosure();
+    }
+    void Wait() { run_loop_.Run(); }
+
+   private:
+    base::RunLoop run_loop_;
+    raw_ptr<PKIMetadataComponentCtAndCrsUpdaterTest> test_;
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedTempDir component_dir_;
+
+  base::OnceClosure pki_metadata_config_closure_;
+  int expected_ct_log_list_configured_times_ = 0;
+  int ct_log_list_configured_times_ = 0;
+  base::OnceClosure crs_config_closure_;
+  int64_t last_used_crs_version_ = net::CompiledChromeRootStoreVersion();
+};
+
+IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
+                       TestChromeRootStoreConstraintsSct) {
+  const std::string kLog1OperatorName = "log operator 1";
+  std::unique_ptr<crypto::ECPrivateKey> log1_private_key =
+      crypto::ECPrivateKey::Create();
+  std::vector<uint8_t> log1_spki;
+  ASSERT_TRUE(log1_private_key->ExportPublicKey(&log1_spki));
+  const std::string log1_spki_base64 = base::Base64Encode(log1_spki);
+  const std::string log1_id =
+      crypto::SHA256HashString(std::string(log1_spki.begin(), log1_spki.end()));
+  const std::string log1_id_base64 = base::Base64Encode(log1_id);
+
+  const std::string kLog2OperatorName = "log operator 2";
+  std::unique_ptr<crypto::ECPrivateKey> log2_private_key =
+      crypto::ECPrivateKey::Create();
+  std::vector<uint8_t> log2_spki;
+  ASSERT_TRUE(log2_private_key->ExportPublicKey(&log2_spki));
+  const std::string log2_spki_base64 = base::Base64Encode(log2_spki);
+  const std::string log2_id =
+      crypto::SHA256HashString(std::string(log2_spki.begin(), log2_spki.end()));
+  const std::string log2_id_base64 = base::Base64Encode(log2_id);
+
+  const std::string kUnknownLogOperatorName = "unknown log operator";
+  std::unique_ptr<crypto::ECPrivateKey> unknown_log_private_key =
+      crypto::ECPrivateKey::Create();
+  std::vector<uint8_t> unknown_log_spki;
+  ASSERT_TRUE(unknown_log_private_key->ExportPublicKey(&unknown_log_spki));
+  const std::string unknown_log_spki_base64 =
+      base::Base64Encode(unknown_log_spki);
+  const std::string unknown_log_id = crypto::SHA256HashString(
+      std::string(unknown_log_spki.begin(), unknown_log_spki.end()));
+  const std::string unknown_log_id_base64 = base::Base64Encode(unknown_log_id);
+
+  const int64_t kLogStart =
+      SecondsSinceEpoch(base::Time::Now() - base::Days(1));
+  const int64_t kLogEnd = SecondsSinceEpoch(base::Time::Now() + base::Days(1));
+
+  const base::Time kSctTime0UnknownLog = base::Time::Now() - base::Minutes(30);
+  const base::Time kSctTime1 = base::Time::Now() - base::Minutes(20);
+  const base::Time kSctTime2 = base::Time::Now() - base::Minutes(10);
+
+  // Start a test server that uses a certificate with SCTs for the above test
+  // logs.
+  net::EmbeddedTestServer https_server_ok(net::EmbeddedTestServer::TYPE_HTTPS);
+  net::EmbeddedTestServer::ServerCertificateConfig server_config;
+  server_config.dns_names = {"*.example.com"};
+  server_config.embedded_scts.emplace_back(
+      log1_id, bssl::UpRef(log1_private_key->key()), kSctTime1);
+  server_config.embedded_scts.emplace_back(
+      log2_id, bssl::UpRef(log2_private_key->key()), kSctTime2);
+  server_config.embedded_scts.emplace_back(
+      unknown_log_id, bssl::UpRef(unknown_log_private_key->key()),
+      kSctTime0UnknownLog);
+  https_server_ok.SetSSLConfig(server_config);
+
+  https_server_ok.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server_ok.Start());
+
+  // Clear test roots so that cert validation only happens with
+  // what's in Chrome Root Store.
+  net::TestRootCerts::GetInstance()->Clear();
+
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+  int64_t crs_version = net::CompiledChromeRootStoreVersion();
+
+  // Install CRS update that trusts root without constraints.
+  {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    anchor->set_der(std::string(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
+
+    InstallCRSUpdate(std::move(root_store_proto));
+  }
+
+  // Install CT configuration that trusts log1 and log2.
+  //
+  // Set up a configuration that will enable or disable CT enforcement
+  // depending on the test parameter.
+  chrome_browser_certificate_transparency::CTConfig ct_config;
+  ct_config.set_disable_ct_enforcement(GetParam() ==
+                                       CTEnforcement::kDisabledByProto);
+  ct_config.mutable_log_list()->mutable_timestamp()->set_seconds(
+      SecondsSinceEpoch(base::Time::Now()));
+  {
+    chrome_browser_certificate_transparency::CTLog* log =
+        ct_config.mutable_log_list()->add_logs();
+    log->set_log_id(log1_id_base64);
+    log->set_key(log1_spki_base64);
+    log->set_purpose(chrome_browser_certificate_transparency::CTLog::PROD);
+    log->mutable_temporal_interval()->mutable_start()->set_seconds(kLogStart);
+    log->mutable_temporal_interval()->mutable_end()->set_seconds(kLogEnd);
+    chrome_browser_certificate_transparency::CTLog_State* log_state =
+        log->add_state();
+    log_state->set_current_state(
+        chrome_browser_certificate_transparency::CTLog::USABLE);
+    log_state->mutable_state_start()->set_seconds(kLogStart);
+    chrome_browser_certificate_transparency::CTLog_OperatorChange*
+        operator_history = log->add_operator_history();
+    operator_history->set_name(kLog1OperatorName);
+    operator_history->mutable_operator_start()->set_seconds(kLogStart);
+  }
+  {
+    chrome_browser_certificate_transparency::CTLog* log =
+        ct_config.mutable_log_list()->add_logs();
+    log->set_log_id(log2_id_base64);
+    log->set_key(log2_spki_base64);
+    log->set_purpose(chrome_browser_certificate_transparency::CTLog::PROD);
+    log->mutable_temporal_interval()->mutable_start()->set_seconds(kLogStart);
+    log->mutable_temporal_interval()->mutable_end()->set_seconds(kLogEnd);
+    chrome_browser_certificate_transparency::CTLog_State* log_state =
+        log->add_state();
+    log_state->set_current_state(
+        chrome_browser_certificate_transparency::CTLog::USABLE);
+    log_state->mutable_state_start()->set_seconds(kLogStart);
+    chrome_browser_certificate_transparency::CTLog_OperatorChange*
+        operator_history = log->add_operator_history();
+    operator_history->set_name(kLog2OperatorName);
+    operator_history->mutable_operator_start()->set_seconds(kLogStart);
+  }
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(PKIMetadataComponentInstallerService::GetInstance()
+                    ->WriteCTDataForTesting(GetComponentDirPath(),
+                                            ct_config.SerializeAsString()));
+  }
+
+  PKIMetadataComponentInstallerService::GetInstance()
+      ->ReconfigureAfterNetworkRestart();
+  WaitForCtConfiguration(1);
+
+  // Should be trusted.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("b.example.com", "/simple.html")));
+  EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+
+  // Install CRS update that trusts root with a SCTNotAfter constraint.
+  {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    anchor->set_der(std::string(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
+    anchor->add_constraints()->set_sct_not_after_sec(
+        SecondsSinceEpoch(kSctTime1 + base::Seconds(1)));
+
+    InstallCRSUpdate(std::move(root_store_proto));
+  }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
+  switch (GetParam()) {
+    case CTEnforcement::kEnabled:
+    case CTEnforcement::kDisabledByFeature:
+      // Should be trusted if CT is enabled since the SCTNotAfter constraint is
+      // satisfied by the SCT from log1. Should be trusted if CT feature is
+      // disabled since SCTNotAfter fails open when CT is disabled.
+      EXPECT_EQ(u"OK",
+                chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+      break;
+    case CTEnforcement::kDisabledByProto:
+      // Should be distrusted if CT is disabled by proto kill switch since the
+      // proto kill switch short-circuits the loading of the rest of the proto,
+      // so the test configured CT logs are not trusted.
+      EXPECT_NE(u"OK",
+                chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+      break;
+  }
+
+  // Install CRS update that trusts root with a SCTNotAfter constraint that is
+  // before both of the valid SCTs.
+  {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    anchor->set_der(std::string(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
+    anchor->add_constraints()->set_sct_not_after_sec(
+        SecondsSinceEpoch(kSctTime0UnknownLog + base::Seconds(1)));
+
+    InstallCRSUpdate(std::move(root_store_proto));
+  }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
+  switch (GetParam()) {
+    case CTEnforcement::kEnabled:
+    case CTEnforcement::kDisabledByProto:
+      // Should be distrusted if CT is enabled. The SCTNotAfter constraint is
+      // not satisfied by any valid SCT. The SCT from the unknown log is not
+      // counted even though the timestamp matches the constraint.
+      // Should be distrusted if CT is disabled by proto kill switch since the
+      // proto kill switch short-circuits the loading of the rest of the proto,
+      // so the test configured CT logs are not trusted.
+      EXPECT_NE(u"OK",
+                chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+      break;
+    case CTEnforcement::kDisabledByFeature:
+      // Should be trusted if CT feature is disabled since SCTNotAfter fails
+      // open when CT is disabled.
+      EXPECT_EQ(u"OK",
+                chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+      break;
+  }
+
+  // Install CRS update that trusts root with a SCTAllAfter constraint that is
+  // before both of the valid SCTs.
+  {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    anchor->set_der(std::string(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
+    anchor->add_constraints()->set_sct_all_after_sec(
+        SecondsSinceEpoch(kSctTime1 - base::Seconds(1)));
+
+    InstallCRSUpdate(std::move(root_store_proto));
+  }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
+  switch (GetParam()) {
+    case CTEnforcement::kEnabled:
+    case CTEnforcement::kDisabledByFeature:
+      // Should be trusted if CT is enabled since the SCTAlltAfter constraint is
+      // satisfied by the SCT from both logs.
+      // Should be trusted if CT feature is disabled since SCTAllAfter fails
+      // open when CT is disabled.
+      EXPECT_EQ(u"OK",
+                chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+      break;
+    case CTEnforcement::kDisabledByProto:
+      // Should be distrusted if CT is disabled by proto kill switch since the
+      // proto kill switch short-circuits the loading of the rest of the proto,
+      // so the test configured CT logs are not trusted.
+      EXPECT_NE(u"OK",
+                chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+      break;
+  }
+
+  // Install CRS update that trusts root with a SCTAllAfter constraint that is
+  // before one of the SCTs but after the other.
+  {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    anchor->set_der(std::string(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
+    anchor->add_constraints()->set_sct_all_after_sec(
+        SecondsSinceEpoch(kSctTime1 + base::Seconds(1)));
+
+    InstallCRSUpdate(std::move(root_store_proto));
+  }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
+  switch (GetParam()) {
+    case CTEnforcement::kEnabled:
+    case CTEnforcement::kDisabledByProto:
+      // Should be distrusted since one of the SCTs was before the SCTAllAfter
+      // constraint.
+      // Should be distrusted if CT is disabled by proto kill switch since the
+      // proto kill switch short-circuits the loading of the rest of the proto,
+      // so the test configured CT logs are not trusted.
+      EXPECT_NE(u"OK",
+                chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+      break;
+    case CTEnforcement::kDisabledByFeature:
+      // Should be trusted if CT feature is disabled since SCTAllAfter fails
+      // open when CT is disabled.
+      EXPECT_EQ(u"OK",
+                chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+      break;
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(PKIMetadataComponentUpdater,
+                         PKIMetadataComponentCtAndCrsUpdaterTest,
+                         testing::Values(CTEnforcement::kEnabled,
+                                         CTEnforcement::kDisabledByProto,
+                                         CTEnforcement::kDisabledByFeature));
+
+// TODO(crbug.com/40816087) additional Chrome Root Store browser tests to
 // add:
 //
 // * Test that AIA fetching still works after updating CRS.
-// * Test with the kChromeRootStoreUsed feature disabled: configuring a CRS
-//   update with the test root should not cause the page to load successfully.
-// * Test that updates propagate into TrialComparisonCertVerifier too. Testing
-//   that loading the root in CRS would cause it to succeed with the trial
-//   verifier but not with primary.
-#endif
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 }  // namespace component_updater

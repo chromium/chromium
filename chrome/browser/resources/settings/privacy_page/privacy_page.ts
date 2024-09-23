@@ -7,8 +7,8 @@
  * 'settings-privacy-page' is the settings page containing privacy and
  * security settings.
  */
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import '/shared/settings/prefs/prefs.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -16,16 +16,19 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/settings_toggle_button.js';
+import '../privacy_icons.html.js';
 import '../safety_hub/safety_hub_module.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
+import '../site_settings/offer_writing_help_page.js';
 import '../site_settings/settings_category_default_radio_group.js';
+import '../site_settings/smart_card_readers_page.js';
 import './privacy_guide/privacy_guide_dialog.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -126,6 +129,13 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
+      enableHandTrackingContentSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableHandTrackingContentSetting');
+        },
+      },
+
       enableFederatedIdentityApiContentSetting_: {
         type: Boolean,
         value() {
@@ -147,6 +157,14 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         readOnly: true,
         value() {
           return loadTimeData.getBoolean('enableSecurityKeysSubpage');
+        },
+      },
+
+      enableSmartCardReadersContentSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'enableSmartCardReadersContentSetting');
         },
       },
 
@@ -179,8 +197,10 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
       is3pcdRedesignEnabled_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
+        value() {
+            return loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')
+             && loadTimeData.getBoolean('isTrackingProtectionUxEnabled');
+        },
       },
 
       privateStateTokensEnabled_: {
@@ -188,15 +208,19 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('privateStateTokensEnabled'),
       },
 
-      enablePermissionStorageAccessApi_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enablePermissionStorageAccessApi'),
-      },
-
       autoPictureInPictureEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
+      },
+
+      capturedSurfaceControlEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
+      },
+
+      enableComposeProactiveNudge_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableComposeProactiveNudge'),
       },
 
       /**
@@ -215,6 +239,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         type: Boolean,
         value: () =>
             loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled'),
+      },
+
+      enableAutomaticFullscreenContentSetting_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableAutomaticFullscreenContentSetting'),
       },
 
       focusConfig_: {
@@ -290,20 +320,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: ChooserType,
       },
 
-      safetyCheckNotificationPermissionsEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'safetyCheckNotificationPermissionsEnabled');
-        },
-      },
-
-      notificationsDefaultBehaviorLabel_: {
-        type: String,
-        computed:
-            'computeNotificationsDefaultBehaviorLabel_(safetyCheckNotificationPermissionsEnabled_)',
-      },
-
       enableSafetyHub_: {
         type: Boolean,
         value() {
@@ -317,6 +333,27 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value() {
           return loadTimeData.getBoolean('permissionDedicatedCpssSettings');
         },
+      },
+
+      // <if expr="chrome_root_store_cert_management_ui">
+      enableCertManagementUIV2_: {
+        type: Boolean,
+        readOnly: true,
+        value: function() {
+          return loadTimeData.getBoolean('enableCertManagementUIV2');
+        },
+      },
+      // </if>
+
+      enableKeyboardAndPointerLockPrompt_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
+      },
+
+      enableWebAppInstallation_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableWebAppInstallation'),
       },
 
       isNotificationAllowed_: Boolean,
@@ -335,20 +372,24 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private blockAutoplayStatus_: BlockAutoplayStatus;
   private enableFederatedIdentityApiContentSetting_: boolean;
   private enablePaymentHandlerContentSetting_: boolean;
+  private enableHandTrackingContentSetting_: boolean;
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableSecurityKeysSubpage_: boolean;
+  private enableSmartCardReadersContentSetting_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private enableWebPrintingContentSetting_: boolean;
   private showNotificationPermissionsReview_: boolean;
   private isPrivacySandboxRestricted_: boolean;
   private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
   private isProactiveTopicsBlockingEnabled_: boolean;
+  private enableAutomaticFullscreenContentSetting_: boolean;
   private is3pcdRedesignEnabled_: boolean;
   private privateStateTokensEnabled_: boolean;
   private autoPictureInPictureEnabled_: boolean;
-  private safetyCheckNotificationPermissionsEnabled_: boolean;
-  private enablePermissionStorageAccessApi_: boolean;
+  private capturedSurfaceControlEnabled_: boolean;
+  private enableComposeProactiveNudge_: boolean;
   private enableSafetyHub_: boolean;
+  private enableWebAppInstallation_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
   private notificationPermissionsReviewHeader_: string;
@@ -364,6 +405,10 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private isNotificationAllowed_: boolean;
   private isLocationAllowed_: boolean;
   private showDedicatedCpssSetting_: boolean;
+  // <if expr="chrome_root_store_cert_management_ui">
+  private enableCertManagementUIV2_: boolean;
+  // </if>
+  private enableKeyboardAndPointerLockPrompt_: boolean;
 
   override ready() {
     super.ready();
@@ -382,7 +427,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         (status: BlockAutoplayStatus) =>
             this.onBlockAutoplayStatusChanged_(status));
 
-    if (this.safetyCheckNotificationPermissionsEnabled_ && !this.isGuest_) {
+    if (!this.isGuest_) {
       this.addWebUiListener(
           SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
           (sites: NotificationPermission[]) =>
@@ -549,7 +594,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       return;
     }
     this.showNotificationPermissionsReview_ = !this.isGuest_ &&
-        this.safetyCheckNotificationPermissionsEnabled_ &&
         permissions.length > 0;
 
     this.notificationPermissionsReviewHeader_ =
@@ -573,12 +617,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         this.isPrivacySandboxRestrictedNoticeEnabled_;
     return restricted ? this.i18n('adPrivacyRestrictedLinkRowSubLabel') :
                         this.i18n('adPrivacyLinkRowSubLabel');
-  }
-
-  private computeNotificationsDefaultBehaviorLabel_(): string {
-    return this.safetyCheckNotificationPermissionsEnabled_ ?
-        this.i18n('siteSettingsNotificationsDefaultBehaviorDescription') :
-        this.i18n('siteSettingsDefaultBehaviorDescription');
   }
 
   private computeThirdPartyCookiesSublabel_(): string {

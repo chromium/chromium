@@ -23,7 +23,7 @@ public class ChromeLauncherActivity extends Activity {
         TraceEvent.begin("ChromeLauncherActivity.onCreate");
         super.onCreate(savedInstanceState);
 
-        // TODO(https://crbug.com/1225066): Figure out a scalable way to apply overlays to
+        // TODO(crbug.com/40775606): Figure out a scalable way to apply overlays to
         // activities like this.
         applyThemeOverlays();
 

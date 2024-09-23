@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
@@ -30,12 +31,14 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
 
     private TouchToFillBridge(
             long nativeView,
+            Profile profile,
             WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController) {
         mNativeView = nativeView;
         mTouchToFillComponent = new TouchToFillCoordinator();
         mTouchToFillComponent.initialize(
                 windowAndroid.getContext().get(),
+                profile,
                 bottomSheetController,
                 this,
                 new BottomSheetFocusHelper(bottomSheetController, windowAndroid));
@@ -43,11 +46,11 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
 
     @CalledByNative
     private static @Nullable TouchToFillBridge create(
-            long nativeView, WindowAndroid windowAndroid) {
+            long nativeView, Profile profile, WindowAndroid windowAndroid) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
         if (bottomSheetController == null) return null;
-        return new TouchToFillBridge(nativeView, windowAndroid, bottomSheetController);
+        return new TouchToFillBridge(nativeView, profile, windowAndroid, bottomSheetController);
     }
 
     @CalledByNative

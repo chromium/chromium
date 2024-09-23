@@ -25,6 +25,14 @@ Recorder* Recorder::GetInstance() {
 }
 
 void Recorder::RecordEvent(Event&& event) {
+  // If the recorder is null, this doesn't need to be run on the same sequence.
+  if (recorder_ == nullptr) {
+    // Other values of EventRecordingState are recorded in
+    // StructuredMetricsProvider::OnRecord.
+    LogEventRecordingState(EventRecordingState::kProviderMissing);
+    return;
+  }
+
   // All calls to StructuredMetricsProvider (the observer) must be on the UI
   // sequence, so re-call Record if needed. If a UI task runner hasn't been set
   // yet, ignore this Record.
@@ -43,37 +51,12 @@ void Recorder::RecordEvent(Event&& event) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   delegating_events_processor_.OnEventsRecord(&event);
-
-  // Make a copy of an event that all observers can share.
-  const auto event_clone = event.Clone();
-  for (auto& observer : observers_) {
-    observer.OnEventRecord(event_clone);
-  }
-
-  if (observers_.empty()) {
-    // Other values of EventRecordingState are recorded in
-    // StructuredMetricsProvider::OnRecord.
-    LogEventRecordingState(EventRecordingState::kProviderMissing);
-  }
-}
-
-void Recorder::ProfileAdded(const base::FilePath& profile_path) {
-  // All calls to the StructuredMetricsProvider (the observer) must be on the UI
-  // sequence.
-  DCHECK(base::CurrentUIThread::IsSet());
-  // TODO(crbug.com/1016655 ): investigate whether we can verify that
-  // |profile_path| corresponds to a valid (non-guest, non-signin) profile.
-  for (auto& observer : observers_) {
-    observer.OnProfileAdded(profile_path);
-  }
-
-  // Notify the event processors.
-  delegating_events_processor_.OnProfileAdded(profile_path);
+  recorder_->OnEventRecord(event);
 }
 
 void Recorder::OnSystemProfileInitialized() {
-  for (auto& observer : observers_) {
-    observer.OnSystemProfileInitialized();
+  if (recorder_) {
+    recorder_->OnSystemProfileInitialized();
   }
 }
 
@@ -82,12 +65,16 @@ void Recorder::SetUiTaskRunner(
   ui_task_runner_ = ui_task_runner;
 }
 
-void Recorder::AddObserver(RecorderImpl* observer) {
-  observers_.AddObserver(observer);
+void Recorder::SetRecorder(RecorderImpl* recorder) {
+  recorder_ = recorder;
 }
 
-void Recorder::RemoveObserver(RecorderImpl* observer) {
-  observers_.RemoveObserver(observer);
+void Recorder::UnsetRecorder(RecorderImpl* recorder) {
+  // Only reset if this is the same recorder. Otherwise, changing the recorder
+  // isn't needed.
+  if (recorder_ == recorder) {
+    recorder_ = nullptr;
+  }
 }
 
 void Recorder::AddEventsProcessor(

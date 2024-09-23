@@ -48,7 +48,7 @@ TEST_F(ChallengeResponseCertUtilsTest, Success) {
       certificate(), kSignatureAlgorithms, &challenge_response_key));
 
   EXPECT_EQ(base::SHA1HashString(challenge_response_key.public_key_spki_der()),
-            std::string(kNistSPKIHash, kNistSPKIHash + base::kSHA1Length));
+            kNistSPKIHash);
   EXPECT_EQ(challenge_response_key.signature_algorithms(),
             kSignatureAlgorithms);
 }

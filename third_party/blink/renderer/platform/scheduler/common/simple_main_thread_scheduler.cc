@@ -97,6 +97,12 @@ v8::Isolate* SimpleMainThreadScheduler::Isolate() {
   return isolate_;
 }
 
+void SimpleMainThreadScheduler::ExecuteAfterCurrentTaskForTesting(
+    base::OnceClosure on_completion_task,
+    ExecuteAfterCurrentTaskRestricted) {}
+
 void SimpleMainThreadScheduler::StartIdlePeriodForTesting() {}
+
+void SimpleMainThreadScheduler::SetRendererBackgroundedForTesting(bool) {}
 
 }  // namespace blink::scheduler

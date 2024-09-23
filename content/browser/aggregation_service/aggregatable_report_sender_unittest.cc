@@ -5,11 +5,18 @@
 #include "content/browser/aggregation_service/aggregatable_report_sender.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 
+#include "base/containers/enum_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
@@ -23,17 +30,65 @@
 namespace content {
 
 namespace {
-const char kExampleURL[] = "https://a.com/";
+using DelayTypeEnumSet =
+    base::EnumSet<AggregatableReportRequest::DelayType,
+                  AggregatableReportRequest::DelayType::kMinValue,
+                  AggregatableReportRequest::DelayType::kMaxValue>;
 
-constexpr char kReportSenderStatusHistogramName[] =
-    "PrivacySandbox.AggregationService.ReportSender.Status";
-constexpr char kReportSenderHttpResponseOrNetErrorCodeHistogramName[] =
-    "PrivacySandbox.AggregationService.ReportSender.HttpResponseOrNetErrorCode";
+constexpr std::string_view kExampleURL = "https://a.com/";
 
 base::Value GetExampleContents() {
   base::Value::Dict contents;
   contents.Set("id", "1234");
   return base::Value(std::move(contents));
+}
+
+void ExpectHistograms(
+    const base::HistogramTester& histograms,
+    std::optional<AggregatableReportRequest::DelayType> delay_type,
+    AggregatableReportSender::RequestStatus request_status,
+    int http_response_or_net_error) {
+  auto GetName = [](auto... pieces) -> std::string {
+    constexpr std::string_view kHistogramPrefix =
+        "PrivacySandbox.AggregationService.ReportSender";
+    return base::JoinString({kHistogramPrefix, pieces...}, ".");
+  };
+
+  // The combined variants of the Status and HttpResponseOrNetErrorCode
+  // histograms should be recorded regardless of `delay_type`.
+  histograms.ExpectUniqueSample(GetName("Status"), request_status,
+                                /*expected_bucket_count=*/1);
+  histograms.ExpectUniqueSample(GetName("HttpResponseOrNetErrorCode"),
+                                http_response_or_net_error,
+                                /*expected_bucket_count=*/1);
+
+  if (!delay_type.has_value()) {
+    return;
+  }
+
+  // Only one delay-specific variant should be recorded for the Status and
+  // HttpResponseOrNetErrorCode histograms.
+  const std::string_view delay_type_str =
+      AggregatableReportRequest::DelayTypeToString(*delay_type);
+
+  histograms.ExpectUniqueSample(GetName(delay_type_str, "Status"),
+                                request_status, /*expected_bucket_count=*/1);
+
+  histograms.ExpectUniqueSample(
+      GetName(delay_type_str, "HttpResponseOrNetErrorCode"),
+      http_response_or_net_error,
+      /*expected_bucket_count=*/1);
+
+  DelayTypeEnumSet other_delay_types = DelayTypeEnumSet::All();
+  other_delay_types.Remove(*delay_type);
+
+  for (const auto other_delay_type : other_delay_types) {
+    const std::string_view other_delay_type_str =
+        AggregatableReportRequest::DelayTypeToString(other_delay_type);
+    histograms.ExpectTotalCount(GetName(other_delay_type_str, "Status"), 0);
+    histograms.ExpectTotalCount(
+        GetName(other_delay_type_str, "HttpResponseOrNetErrorCode"), 0);
+  }
 }
 
 }  // namespace
@@ -53,8 +108,10 @@ class AggregatableReportSenderTest : public testing::Test {
 };
 
 TEST_F(AggregatableReportSenderTest, ReportSent_RequestAttributesSet) {
-  sender_->SendReport(GURL(kExampleURL), GetExampleContents(),
-                      base::DoNothing());
+  sender_->SendReport(
+      GURL(kExampleURL), GetExampleContents(),
+      AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
+      base::DoNothing());
 
   const network::ResourceRequest* pending_request;
   EXPECT_TRUE(
@@ -71,10 +128,14 @@ TEST_F(AggregatableReportSenderTest, ReportSent_RequestAttributesSet) {
 }
 
 TEST_F(AggregatableReportSenderTest, ReportSent_IsolationKeyDifferent) {
-  sender_->SendReport(GURL(kExampleURL), GetExampleContents(),
-                      base::DoNothing());
-  sender_->SendReport(GURL(kExampleURL), GetExampleContents(),
-                      base::DoNothing());
+  sender_->SendReport(
+      GURL(kExampleURL), GetExampleContents(),
+      AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
+      base::DoNothing());
+  sender_->SendReport(
+      GURL(kExampleURL), GetExampleContents(),
+      AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
+      base::DoNothing());
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 2);
 
@@ -98,8 +159,10 @@ TEST_F(AggregatableReportSenderTest, ReportSent_IsolationKeyDifferent) {
 }
 
 TEST_F(AggregatableReportSenderTest, ReportSent_UploadDataCorrect) {
-  sender_->SendReport(GURL(kExampleURL), GetExampleContents(),
-                      base::DoNothing());
+  sender_->SendReport(
+      GURL(kExampleURL), GetExampleContents(),
+      AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
+      base::DoNothing());
 
   const network::ResourceRequest* pending_request;
   EXPECT_TRUE(
@@ -112,6 +175,7 @@ TEST_F(AggregatableReportSenderTest, ReportSent_StatusOk) {
 
   sender_->SendReport(
       GURL(kExampleURL), GetExampleContents(),
+      AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
       base::BindLambdaForTesting(
           [&](AggregatableReportSender::RequestStatus status) {
             EXPECT_EQ(status, AggregatableReportSender::RequestStatus::kOk);
@@ -121,16 +185,16 @@ TEST_F(AggregatableReportSenderTest, ReportSent_StatusOk) {
       kExampleURL, ""));
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 
-  histograms.ExpectUniqueSample(kReportSenderStatusHistogramName,
-                                AggregatableReportSender::RequestStatus::kOk,
-                                1);
-  histograms.ExpectUniqueSample(
-      kReportSenderHttpResponseOrNetErrorCodeHistogramName, net::HTTP_OK, 1);
+  ExpectHistograms(histograms,
+                   AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
+                   AggregatableReportSender::RequestStatus::kOk, net::HTTP_OK);
 }
 
 TEST_F(AggregatableReportSenderTest, SenderDeletedDuringRequest_NoCrash) {
-  sender_->SendReport(GURL(kExampleURL), GetExampleContents(),
-                      base::DoNothing());
+  sender_->SendReport(
+      GURL(kExampleURL), GetExampleContents(),
+      AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
+      base::DoNothing());
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
   sender_.reset();
   EXPECT_FALSE(test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -142,6 +206,7 @@ TEST_F(AggregatableReportSenderTest, ReportRequestHangs_Timeout) {
 
   sender_->SendReport(
       GURL(kExampleURL), GetExampleContents(),
+      AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
       base::BindLambdaForTesting(
           [&](AggregatableReportSender::RequestStatus status) {
             EXPECT_EQ(status,
@@ -154,12 +219,10 @@ TEST_F(AggregatableReportSenderTest, ReportRequestHangs_Timeout) {
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 
-  histograms.ExpectUniqueSample(
-      kReportSenderStatusHistogramName,
-      AggregatableReportSender::RequestStatus::kNetworkError, 1);
-  histograms.ExpectUniqueSample(
-      kReportSenderHttpResponseOrNetErrorCodeHistogramName, net::ERR_TIMED_OUT,
-      1);
+  ExpectHistograms(histograms,
+                   AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
+                   AggregatableReportSender::RequestStatus::kNetworkError,
+                   net::ERR_TIMED_OUT);
 }
 
 TEST_F(AggregatableReportSenderTest,
@@ -170,6 +233,7 @@ TEST_F(AggregatableReportSenderTest,
 
     sender_->SendReport(
         GURL(kExampleURL), GetExampleContents(),
+        AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
         base::BindLambdaForTesting(
             [&](AggregatableReportSender::RequestStatus status) {
               EXPECT_EQ(status,
@@ -195,12 +259,11 @@ TEST_F(AggregatableReportSenderTest,
     // We should not retry again.
     EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 
-    histograms.ExpectUniqueSample(
-        kReportSenderStatusHistogramName,
-        AggregatableReportSender::RequestStatus::kNetworkError, 1);
-    histograms.ExpectUniqueSample(
-        kReportSenderHttpResponseOrNetErrorCodeHistogramName,
-        net::ERR_NETWORK_CHANGED, 1);
+    ExpectHistograms(
+        histograms,
+        AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
+        AggregatableReportSender::RequestStatus::kNetworkError,
+        net::ERR_NETWORK_CHANGED);
   }
 
   // Retry succeeds
@@ -209,6 +272,7 @@ TEST_F(AggregatableReportSenderTest,
 
     sender_->SendReport(
         GURL(kExampleURL), GetExampleContents(),
+        AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
         base::BindLambdaForTesting(
             [&](AggregatableReportSender::RequestStatus status) {
               EXPECT_EQ(status, AggregatableReportSender::RequestStatus::kOk);
@@ -228,11 +292,10 @@ TEST_F(AggregatableReportSenderTest,
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kExampleURL, ""));
 
-    histograms.ExpectUniqueSample(kReportSenderStatusHistogramName,
-                                  AggregatableReportSender::RequestStatus::kOk,
-                                  1);
-    histograms.ExpectUniqueSample(
-        kReportSenderHttpResponseOrNetErrorCodeHistogramName, net::HTTP_OK, 1);
+    ExpectHistograms(
+        histograms,
+        AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
+        AggregatableReportSender::RequestStatus::kOk, net::HTTP_OK);
   }
 }
 
@@ -242,6 +305,7 @@ TEST_F(AggregatableReportSenderTest, HttpError_CallbackRuns) {
   bool callback_run = false;
   sender_->SendReport(
       GURL(kExampleURL), GetExampleContents(),
+      AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
       base::BindLambdaForTesting(
           [&](AggregatableReportSender::RequestStatus status) {
             EXPECT_EQ(status,
@@ -255,12 +319,10 @@ TEST_F(AggregatableReportSenderTest, HttpError_CallbackRuns) {
 
   EXPECT_TRUE(callback_run);
 
-  histograms.ExpectUniqueSample(
-      kReportSenderStatusHistogramName,
-      AggregatableReportSender::RequestStatus::kServerError, 1);
-  histograms.ExpectUniqueSample(
-      kReportSenderHttpResponseOrNetErrorCodeHistogramName,
-      net::HTTP_BAD_REQUEST, 1);
+  ExpectHistograms(histograms,
+                   AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
+                   AggregatableReportSender::RequestStatus::kServerError,
+                   net::HTTP_BAD_REQUEST);
 }
 
 TEST_F(AggregatableReportSenderTest, ManyReports_AllSentSuccessfully) {
@@ -269,6 +331,7 @@ TEST_F(AggregatableReportSenderTest, ManyReports_AllSentSuccessfully) {
   for (int i = 0; i < 10; i++) {
     sender_->SendReport(
         url, GetExampleContents(),
+        AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
         base::BindLambdaForTesting(
             [&](AggregatableReportSender::RequestStatus status) {
               EXPECT_EQ(status, AggregatableReportSender::RequestStatus::kOk);
@@ -287,51 +350,58 @@ TEST_F(AggregatableReportSenderTest, ManyReports_AllSentSuccessfully) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 }
 
-TEST_F(AggregatableReportSenderTest, StatusHistoram_Expected) {
-  // All OK.
-  {
-    base::HistogramTester histograms;
-    sender_->SendReport(GURL(kExampleURL), GetExampleContents(),
-                        base::DoNothing());
-    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-        kExampleURL, ""));
-    histograms.ExpectUniqueSample(kReportSenderStatusHistogramName,
-                                  AggregatableReportSender::RequestStatus::kOk,
-                                  1);
-    histograms.ExpectUniqueSample(
-        kReportSenderHttpResponseOrNetErrorCodeHistogramName, net::HTTP_OK, 1);
-  }
+TEST_F(AggregatableReportSenderTest, StatusHistogram_Expected) {
+  static const std::optional<AggregatableReportRequest::DelayType>
+      kDelayTypeValues[] = {
+          std::nullopt,
+          AggregatableReportRequest::DelayType::Unscheduled,
+          AggregatableReportRequest::DelayType::ScheduledWithFullDelay,
+          AggregatableReportRequest::DelayType::ScheduledWithReducedDelay,
+      };
+  for (const auto delay_type : kDelayTypeValues) {
+    SCOPED_TRACE(testing::Message()
+                 << "delay_type = "
+                 << (delay_type ? AggregatableReportRequest::DelayTypeToString(
+                                      *delay_type)
+                                : "std::nullopt"));
+    // All OK.
+    {
+      base::HistogramTester histograms;
+      sender_->SendReport(GURL(kExampleURL), GetExampleContents(), delay_type,
+                          base::DoNothing());
+      EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+          kExampleURL, ""));
 
-  // Network error.
-  {
-    base::HistogramTester histograms;
-    sender_->SendReport(GURL(kExampleURL), GetExampleContents(),
-                        base::DoNothing());
-    network::URLLoaderCompletionStatus completion_status(net::ERR_FAILED);
-    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-        GURL(kExampleURL), completion_status,
-        network::mojom::URLResponseHead::New(), std::string()));
-    histograms.ExpectUniqueSample(
-        kReportSenderStatusHistogramName,
-        AggregatableReportSender::RequestStatus::kNetworkError, 1);
-    histograms.ExpectUniqueSample(
-        kReportSenderHttpResponseOrNetErrorCodeHistogramName, net::ERR_FAILED,
-        1);
-  }
+      ExpectHistograms(histograms, delay_type,
+                       AggregatableReportSender::RequestStatus::kOk,
+                       net::HTTP_OK);
+    }
 
-  // Server error.
-  {
-    base::HistogramTester histograms;
-    sender_->SendReport(GURL(kExampleURL), GetExampleContents(),
-                        base::DoNothing());
-    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-        kExampleURL, std::string(), net::HTTP_UNAUTHORIZED));
-    histograms.ExpectUniqueSample(
-        kReportSenderStatusHistogramName,
-        AggregatableReportSender::RequestStatus::kServerError, 1);
-    histograms.ExpectUniqueSample(
-        kReportSenderHttpResponseOrNetErrorCodeHistogramName,
-        net::HTTP_UNAUTHORIZED, 1);
+    // Network error.
+    {
+      base::HistogramTester histograms;
+      sender_->SendReport(GURL(kExampleURL), GetExampleContents(), delay_type,
+                          base::DoNothing());
+      network::URLLoaderCompletionStatus completion_status(net::ERR_FAILED);
+      EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+          GURL(kExampleURL), completion_status,
+          network::mojom::URLResponseHead::New(), std::string()));
+      ExpectHistograms(histograms, delay_type,
+                       AggregatableReportSender::RequestStatus::kNetworkError,
+                       net::ERR_FAILED);
+    }
+
+    // Server error.
+    {
+      base::HistogramTester histograms;
+      sender_->SendReport(GURL(kExampleURL), GetExampleContents(), delay_type,
+                          base::DoNothing());
+      EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+          kExampleURL, std::string(), net::HTTP_UNAUTHORIZED));
+      ExpectHistograms(histograms, delay_type,
+                       AggregatableReportSender::RequestStatus::kServerError,
+                       net::HTTP_UNAUTHORIZED);
+    }
   }
 }
 

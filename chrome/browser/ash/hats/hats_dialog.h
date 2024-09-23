@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 namespace ash {

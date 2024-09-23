@@ -17,6 +17,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/synchronize_visual_properties_interceptor.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/test/render_document_feature.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -730,8 +731,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   gesture_event.SetPositionInWidget(gfx::PointF(1, 1));
   gesture_event.data.scroll_update.delta_x = 0.0f;
   gesture_event.data.scroll_update.delta_y = 6.0f;
-  gesture_event.data.scroll_update.velocity_x = 0;
-  gesture_event.data.scroll_update.velocity_y = 0;
   rwhv_nested->GetRenderWidgetHost()->ForwardGestureEvent(gesture_event);
 
   gesture_event =
@@ -777,8 +776,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
 // Tests that scrolling with the keyboard will bubble unused scroll to the
 // OOPIF's parent.
+// Disabled on Android due to flakes; see b/338341090.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_KeyboardScrollBubblingFromOOPIF \
+  DISABLED_KeyboardScrollBubblingFromOOPIF
+#else
+#define MAYBE_KeyboardScrollBubblingFromOOPIF KeyboardScrollBubblingFromOOPIF
+#endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       KeyboardScrollBubblingFromOOPIF) {
+                       MAYBE_KeyboardScrollBubblingFromOOPIF) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/frame_tree/page_with_iframe_in_scrollable_div.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -820,7 +826,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
              "initial_y;")
           .ExtractDouble());
 
-  NativeWebKeyboardEvent key_event(
+  input::NativeWebKeyboardEvent key_event(
       blink::WebKeyboardEvent::Type::kRawKeyDown,
       blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());

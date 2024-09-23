@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -28,7 +29,6 @@ import org.chromium.chrome.browser.lifecycle.RecreateObserver;
 import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
@@ -59,7 +59,7 @@ public class TabletPhoneLayoutChangeTest {
         // Pretend the device is in another mode.
         config.smallestScreenWidthDp =
                 DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + (isTestOnTablet ? -1 : 1);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()
@@ -82,7 +82,7 @@ public class TabletPhoneLayoutChangeTest {
                             outState.getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE));
                 });
 
-        helper.waitForFirst("Activity should be restart");
+        helper.waitForOnly("Activity should be restart");
         Configuration newConfig = cta.getResources().getConfiguration();
         config = cta.getSavedConfigurationForTesting();
         Assert.assertEquals(

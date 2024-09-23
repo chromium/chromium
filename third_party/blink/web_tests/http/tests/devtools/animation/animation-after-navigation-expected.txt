@@ -1,4 +1,0 @@
-Tests that animation view works post navigation.
-
-SUCCESS (size = 1, expecting 1)
-

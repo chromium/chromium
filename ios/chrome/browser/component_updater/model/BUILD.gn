@@ -18,6 +18,6 @@ source_set("model") {
     "//components/update_client:common_impl",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/common",
-    "//ios/web",
+    "//services/network/public/cpp",
   ]
 }

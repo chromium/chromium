@@ -11,8 +11,9 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -20,15 +21,15 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.WebSigninAccountPickerDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.GAIAServiceType;
@@ -41,6 +42,28 @@ import java.util.List;
 
 /** The bridge regroups methods invoked by native code to interact with Android Signin UI. */
 final class SigninBridge {
+    /** Used for dependency injection in unit tests. */
+    @VisibleForTesting
+    static class AccountPickerBottomSheetCoordinatorFactory {
+        AccountPickerBottomSheetCoordinator create(
+                WindowAndroid windowAndroid,
+                BottomSheetController bottomSheetController,
+                AccountPickerDelegate accountPickerDelegate,
+                AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
+                DeviceLockActivityLauncher deviceLockActivityLauncher,
+                @AccountPickerLaunchMode int accountPickerLaunchMode) {
+            return new AccountPickerBottomSheetCoordinator(
+                    windowAndroid,
+                    bottomSheetController,
+                    accountPickerDelegate,
+                    accountPickerBottomSheetStrings,
+                    deviceLockActivityLauncher,
+                    accountPickerLaunchMode,
+                    /* isWebSignin= */ true,
+                    SigninAccessPoint.WEB_SIGNIN);
+        }
+    }
+
     @VisibleForTesting static final int ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT = 3;
 
     /**
@@ -69,11 +92,24 @@ final class SigninBridge {
     }
 
     /** Opens account picker bottom sheet. */
-    @VisibleForTesting
     @CalledByNative
+    private static void openAccountPickerBottomSheet(Tab tab, String continueUrl) {
+        openAccountPickerBottomSheet(
+                tab, continueUrl, new AccountPickerBottomSheetCoordinatorFactory());
+    }
+
+    /** Opens account picker bottom sheet. */
+    @VisibleForTesting
     static void openAccountPickerBottomSheet(
-            Profile profile, WindowAndroid windowAndroid, String continueUrl) {
+            Tab tab, String continueUrl, AccountPickerBottomSheetCoordinatorFactory factory) {
         ThreadUtils.assertOnUiThread();
+        WindowAndroid windowAndroid = tab.getWindowAndroid();
+        if (windowAndroid == null || !tab.isUserInteractable()) {
+            // The page is opened in the background, ignore the header. See
+            // https://crbug.com/1145031#c5 and https://crbug.com/323424409 for details.
+            return;
+        }
+        Profile profile = tab.getProfile();
         SigninManager signinManager =
                 IdentityServicesProvider.get().getSigninManager(profile.getOriginalProfile());
         if (!signinManager.isSyncOptInAllowed()) {
@@ -106,22 +142,31 @@ final class SigninBridge {
             // bottom sheet.
             return;
         }
-        // To close the current regular tab after the user clicks on "Continue" in the incognito
-        // interstitial.
-        final Supplier<TabModelSelector> tabModelSelectorSupplier =
-                TabModelSelectorSupplier.from(windowAndroid);
-        assert tabModelSelectorSupplier.hasValue() : "No TabModelSelector available.";
-        final TabModel regularTabModel =
-                tabModelSelectorSupplier.get().getModel(/* incognito= */ false);
-        new AccountPickerBottomSheetCoordinator(
+        // TODO(b/41493784): Update this when the new sign-in flow will be used for the web signin
+        // entry point.
+        int titleId =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        ? R.string.signin_account_picker_bottom_sheet_title
+                        : R.string.signin_account_picker_dialog_title;
+        int subtitleId =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        ? R.string.signin_account_picker_bottom_sheet_subtitle_for_web_signin
+                        : R.string.signin_account_picker_bottom_sheet_subtitle;
+        AccountPickerBottomSheetStrings strings =
+                new AccountPickerBottomSheetStrings.Builder(titleId)
+                        .setSubtitleStringId(subtitleId)
+                        .setDismissButtonStringId(R.string.signin_account_picker_dismiss_button)
+                        .build();
+
+        factory.create(
                 windowAndroid,
                 bottomSheetController,
-                new WebSigninAccountPickerDelegate(
-                        TabModelUtils.getCurrentTab(regularTabModel),
-                        new WebSigninBridge.Factory(),
-                        continueUrl),
-                new AccountPickerBottomSheetStrings() {},
-                DeviceLockActivityLauncherImpl.get());
+                new WebSigninAccountPickerDelegate(tab, new WebSigninBridge.Factory(), continueUrl),
+                strings,
+                DeviceLockActivityLauncherImpl.get(),
+                AccountPickerLaunchMode.DEFAULT);
     }
 
     private SigninBridge() {}

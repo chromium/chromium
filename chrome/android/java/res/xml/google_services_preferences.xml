@@ -16,6 +16,13 @@ found in the LICENSE file.
         android:title="@string/allow_chrome_signin_title"
         android:summary="@string/allow_chrome_signin_summary"
         android:persistent="false"/>
+    <!-- Shown for some user states and hidden for others, so hide by default
+         to avoid flickering. -->
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="passwords_account_storage"
+        android:title="@string/passwords_account_storage_toggle_title"
+        app:isPreferenceVisible="false"
+        android:persistent="false"/>
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="usage_and_crash_reports"
         android:title="@string/usage_and_crash_reports_title"

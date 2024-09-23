@@ -423,38 +423,38 @@ var availableTests = [
     chrome.passwordsPrivate.requestExportProgressStatus(callback);
   },
 
-  function isNotOptedInForAccountStorage() {
-    var callback = function(optedIn) {
-      chrome.test.assertEq(optedIn, false);
+  function accountStorageIsDisabled() {
+    var callback = function(enabled) {
+      chrome.test.assertEq(enabled, false);
       // Ensure that the callback is invoked.
       chrome.test.succeed();
     };
 
-    chrome.passwordsPrivate.isOptedInForAccountStorage(callback);
+    chrome.passwordsPrivate.isAccountStorageEnabled(callback);
   },
 
-  function isOptedInForAccountStorage() {
-    var callback = function(optedIn) {
-      chrome.test.assertEq(optedIn, true);
+  function accountStorageIsEnabled() {
+    var callback = function(enabled) {
+      chrome.test.assertEq(enabled, true);
       // Ensure that the callback is invoked.
       chrome.test.succeed();
     };
 
-    chrome.passwordsPrivate.isOptedInForAccountStorage(callback);
+    chrome.passwordsPrivate.isAccountStorageEnabled(callback);
   },
 
-  function optInForAccountStorage() {
-    chrome.passwordsPrivate.optInForAccountStorage(true);
-    chrome.passwordsPrivate.isOptedInForAccountStorage(function(optedIn) {
-      chrome.test.assertEq(optedIn, true);
+  function enableAccountStorage() {
+    chrome.passwordsPrivate.setAccountStorageEnabled(true);
+    chrome.passwordsPrivate.isAccountStorageEnabled(function(enabled) {
+      chrome.test.assertEq(enabled, true);
       chrome.test.succeed();
     });
   },
 
-  function optOutForAccountStorage() {
-    chrome.passwordsPrivate.optInForAccountStorage(false);
-    chrome.passwordsPrivate.isOptedInForAccountStorage(function(optedIn) {
-      chrome.test.assertEq(optedIn, false);
+  function disableAccountStorage() {
+    chrome.passwordsPrivate.setAccountStorageEnabled(false);
+    chrome.passwordsPrivate.isAccountStorageEnabled(function(enabled) {
+      chrome.test.assertEq(enabled, false);
       chrome.test.succeed();
     });
   },
@@ -653,9 +653,10 @@ var availableTests = [
   },
 
   function switchBiometricAuthBeforeFillingState() {
-    chrome.passwordsPrivate.switchBiometricAuthBeforeFillingState();
-    chrome.test.assertNoLastError();
-    chrome.test.succeed();
+    chrome.passwordsPrivate.switchBiometricAuthBeforeFillingState(_ => {
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    });
   },
 
   function showAddShortcutDialog() {
@@ -685,6 +686,7 @@ var availableTests = [
       var passkey = group.entries[group.entries.length - 1];
       chrome.test.assertTrue(passkey.isPasskey);
       chrome.test.assertEq(passkey.displayName, 'displayName');
+      chrome.test.assertEq(passkey.creationTime, 1000);
 
       // Ensure that all entry ids are unique.
       chrome.test.assertEq(group.entries.length, idSet.size);
@@ -737,6 +739,48 @@ var availableTests = [
     chrome.test.assertNoLastError();
     chrome.test.succeed();
   },
+
+  function changePasswordManagerPin() {
+    chrome.passwordsPrivate.changePasswordManagerPin(success => {
+      chrome.test.assertFalse(success);
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    });
+  },
+
+  function isPasswordManagerPinAvailable() {
+    var callback = function(available) {
+      chrome.test.assertFalse(available);
+      chrome.test.succeed();
+    };
+
+    chrome.passwordsPrivate.isPasswordManagerPinAvailable(callback);
+  },
+
+  function disconnectCloudAuthenticator() {
+    chrome.passwordsPrivate.disconnectCloudAuthenticator(success => {
+      chrome.test.assertFalse(success);
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    });
+  },
+
+  function deleteAllPasswordManagerData() {
+    chrome.passwordsPrivate.deleteAllPasswordManagerData(success => {
+      chrome.test.assertTrue(success);
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    });
+  },
+
+  function isConnectedToCloudAuthenticator() {
+    var callback = function(connected) {
+      chrome.test.assertFalse(connected);
+      chrome.test.succeed();
+    };
+
+    chrome.passwordsPrivate.isConnectedToCloudAuthenticator(callback);
+  }
 ];
 
 var testToRun = window.location.search.substring(1);

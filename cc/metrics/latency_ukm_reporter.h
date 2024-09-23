@@ -12,6 +12,11 @@
 #include "cc/cc_export.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/event_metrics.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+
+namespace ukm {
+class UkmRecorder;
+}
 
 namespace cc {
 class UkmManager;
@@ -43,18 +48,15 @@ class CC_EXPORT LatencyUkmReporter {
       const CompositorFrameReporter::ProcessedVizBreakdown&
           processed_viz_breakdown);
 
-  void set_ukm_manager(UkmManager* manager) { ukm_manager_ = manager; }
+  void InitializeUkmManager(std::unique_ptr<ukm::UkmRecorder> recorder);
+  void SetSourceId(ukm::SourceId source_id);
+
+  UkmManager* ukm_manager() { return ukm_manager_.get(); }
 
  private:
   class SamplingController;
 
-  // This is pointing to the LayerTreeHostImpl::ukm_manager_, which is
-  // initialized right after the LayerTreeHostImpl is created. So when this
-  // pointer is initialized, there should be no trackers yet. Moreover, the
-  // LayerTreeHostImpl::ukm_manager_ lives as long as the LayerTreeHostImpl, so
-  // this pointer should never be null as long as LayerTreeHostImpl is alive.
-  raw_ptr<UkmManager> ukm_manager_ = nullptr;
-
+  std::unique_ptr<UkmManager> ukm_manager_;
   std::unique_ptr<SamplingController> compositor_latency_sampling_controller_;
   std::unique_ptr<SamplingController> event_latency_sampling_controller_;
 };

@@ -96,10 +96,10 @@ class AppPlatformInputMetrics : public ui::EventHandler,
 
   ukm::SourceId GetSourceId(const std::string& app_id);
 
-  void RecordInputEventsUkm();
+  void RecordInputEventsAppKM();
 
-  void RecordInputEventsUkmForApp(const std::string& app_id,
-                                  const EventSourceToCounts& event_counts);
+  void RecordInputEventsAppKMForApp(const std::string& app_id,
+                                    const EventSourceToCounts& event_counts);
 
   // Saves the input events in `app_id_to_event_count_per_two_hours_` to the
   // user pref each 2 hours. For example:
@@ -116,11 +116,11 @@ class AppPlatformInputMetrics : public ui::EventHandler,
   // },
   void SaveInputEvents();
 
-  // Records the input events UKM saved in the user pref.
-  void RecordInputEventsUkmFromPref();
+  // Records the input events AppKM saved in the user pref.
+  void RecordInputEventsAppKMFromPref();
 
   // Returns true if recording is allowed for this app.
-  bool ShouldRecordUkmForApp(const std::string& app_id);
+  bool ShouldRecordAppKMForApp(const std::string& app_id);
 
   raw_ptr<Profile> profile_;
 

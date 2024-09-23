@@ -17,7 +17,6 @@ std::string Keychain::KeyToString(Key key) {
       return "PairingInfo";
     default:
       NOTREACHED();
-      return "";
   }
 }
 

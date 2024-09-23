@@ -51,18 +51,16 @@ public class TabReparentingController {
     }
 
     /**
+     * Prepares the tabs for reparenting by, 1. Informing the {@link TabModelSelector} that
+     * reparenting is in progress. 2. Detaching each tab from the models. 3. For each tab that's
+     * detached, it's added to {@link AsyncTabParamsManager}. These tabs are held in memory until an
+     * application restart.
      *
-     * Prepares the tabs for reparenting by,
-     * 1. Informing the {@link TabModelSelector} that reparenting is in progress.
-     * 2. Detaching each tab from the models.
-     * 3. For each tab that's detached, it's added to {@link AsyncTabParamsManager}.
-     *    These tabs are held in memory until an application restart.
-     *
-     * On app restart, the tabs from AsyncTabParamsManager are reattached/enabled in
-     * {@link ChromeTabCreator}.
+     * <p>On app restart, the tabs from AsyncTabParamsManager are reattached/enabled in {@link
+     * ChromeTabCreator}.
      */
     public void prepareTabsForReparenting() {
-        // TODO(crbug.com/1065201): Make tab models detachable.
+        // TODO(crbug.com/40124038): Make tab models detachable.
         TabModelSelector selector = mDelegate.getTabModelSelector();
 
         // Close tabs pending closure before saving params.
@@ -103,7 +101,7 @@ public class TabReparentingController {
             tabsAwaitingReparenting++;
         }
 
-        // TODO(https://crbug.com/1252526): Remove logging once root cause of bug is identified &
+        // TODO(crbug.com/40793204): Remove logging once root cause of bug is identified &
         //  fixed.
         Log.i(
                 TAG,

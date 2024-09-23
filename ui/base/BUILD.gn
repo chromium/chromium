@@ -123,6 +123,10 @@ source_set("types") {
   if (!is_ios) {
     sources += [ "ui_base_types.h" ]
   }
+
+  # Need to be removed once all clients of `MenuSourceType` have been migrated.
+  public_deps = [ "//ui/base/mojom:ui_base_types" ]
+
   deps = [ "//build:chromeos_buildflags" ]
 }
 
@@ -176,6 +180,8 @@ component("base") {
     "models/dialog_model_menu_model_adapter.h",
     "models/image_model.cc",
     "models/image_model.h",
+    "models/image_model_utils.cc",
+    "models/image_model_utils.h",
     "models/list_model.h",
     "models/list_model_observer.h",
     "models/list_selection_model.cc",
@@ -317,8 +323,8 @@ component("base") {
       "cocoa/command_dispatcher.mm",
       "cocoa/constrained_window/constrained_window_animation.h",
       "cocoa/constrained_window/constrained_window_animation.mm",
-      "cocoa/cursor_accessibility_scale_factor_observer.h",
-      "cocoa/cursor_accessibility_scale_factor_observer.mm",
+      "cocoa/cursor_accessibility_scale_factor.h",
+      "cocoa/cursor_accessibility_scale_factor.mm",
       "cocoa/cursor_utils.h",
       "cocoa/cursor_utils.mm",
       "cocoa/defaults_utils.h",
@@ -433,6 +439,13 @@ component("base") {
       ]
     }
 
+    if (is_chromeos) {
+      sources += [
+        "accelerators/ash/right_alt_event_property.cc",
+        "accelerators/ash/right_alt_event_property.h",
+      ]
+    }
+
     if (is_mac) {
       sources += [
         "accelerators/platform_accelerator_cocoa.h",
@@ -493,6 +506,7 @@ component("base") {
     "//base",
     "//skia",
     "//third_party/abseil-cpp:absl",
+    "//ui/base/mojom:ui_base_types",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
@@ -502,7 +516,7 @@ component("base") {
     "//base",
     "//base:base_static",
     "//base:i18n",
-    "//base/third_party/dynamic_annotations",
+    "//build:blink_buildflags",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//net",
@@ -528,6 +542,7 @@ component("base") {
   if (use_blink) {
     public_deps += [
       "//ui/base/clipboard:file_info",
+      "//ui/base/mojom:ui_base_types",
       "//ui/events:dom_keycode_converter",
       "//ui/events:events_base",
       "//ui/events/platform",
@@ -783,6 +798,8 @@ static_library("test_support") {
     "interaction/interactive_test_internal.h",
     "interaction/polling_state_observer.h",
     "interaction/state_observer.h",
+    "pointer/mock_touch_ui_controller.cc",
+    "pointer/mock_touch_ui_controller.h",
     "resource/mock_resource_bundle_delegate.cc",
     "resource/mock_resource_bundle_delegate.h",
     "test/idle_test_utils.cc",
@@ -853,6 +870,11 @@ static_library("test_support") {
     ":base",
     "//ui/base/idle",
   ]
+
+  if (!is_ios) {
+    public_deps += [ "//ui/base/mojom:ui_base_types" ]
+  }
+
   deps = [
     "//base",
     "//base/test:test_config",
@@ -861,6 +883,7 @@ static_library("test_support") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/clipboard:file_info",
     "//ui/base/data_transfer_policy",
     "//ui/display:test_support",
     "//ui/events:events_base",
@@ -923,14 +946,19 @@ static_library("test_support") {
 if (is_android) {
   generate_jni("ui_base_jni_headers") {
     sources = [
-      "../android/java/src/org/chromium/ui/base/Clipboard.java",
       "../android/java/src/org/chromium/ui/base/DeviceFormFactor.java",
       "../android/java/src/org/chromium/ui/base/IdleDetector.java",
       "../android/java/src/org/chromium/ui/base/LocalizationUtils.java",
       "../android/java/src/org/chromium/ui/base/ResourceBundle.java",
-      "../android/java/src/org/chromium/ui/base/SelectFileDialog.java",
       "../android/java/src/org/chromium/ui/base/TouchDevice.java",
     ]
+  }
+  generate_jni("select_file_dialog_jni_headers") {
+    sources =
+        [ "../android/java/src/org/chromium/ui/base/SelectFileDialog.java" ]
+  }
+  generate_jni("clipboard_jni_headers") {
+    sources = [ "../android/java/src/org/chromium/ui/base/Clipboard.java" ]
   }
 }
 
@@ -1017,8 +1045,6 @@ test("ui_base_unittests") {
     "models/tree_node_iterator_unittest.cc",
     "pointer/touch_ui_controller_unittest.cc",
     "prediction/empty_filter_unittests.cc",
-    "prediction/input_filter_unittest_helpers.cc",
-    "prediction/input_filter_unittest_helpers.h",
     "prediction/input_predictor_unittest_helpers.cc",
     "prediction/input_predictor_unittest_helpers.h",
     "prediction/kalman_predictor_unittest.cc",
@@ -1139,7 +1165,7 @@ test("ui_base_unittests") {
     sources += [ "accelerators/menu_label_accelerator_util_linux_unittest.cc" ]
   }
 
-  # TODO(crbug.com/1091985): Support CrOS.
+  # TODO(crbug.com/40134424): Support CrOS.
   if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     sources += [
       "test/skia_gold_matching_algorithm_unittest.cc",
@@ -1154,10 +1180,13 @@ test("ui_base_unittests") {
       "ime/composition_text_unittest.cc",
       "ime/input_method_base_unittest.cc",
       "ime/mojom/ime_mojom_traits_unittest.cc",
+      "ime/mojom/text_edit_command_mojom_traits_unittest.cc",
       "ime/surrounding_text_tracker_unittest.cc",
     ]
     deps += [
+      "//mojo/public/cpp/test_support:test_utils",
       "//ui/base/ime",
+      "//ui/base/ime:text_edit_commands",
       "//ui/base/ime/mojom:test_interfaces",
     ]
     if (is_win) {
@@ -1274,7 +1303,7 @@ test("ui_base_unittests") {
       "$root_out_dir/ui_test.pak",  # TODO(brettw): remove this line.
     ]
     data_deps += [
-      "//third_party/mesa_headers",
+      "//third_party/angle:includes",
       "//ui/resources:ui_test_pak",  # TODO(brettw): this does nothing.
     ]
   }

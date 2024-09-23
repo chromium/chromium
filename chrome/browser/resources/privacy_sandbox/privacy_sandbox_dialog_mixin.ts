@@ -39,6 +39,17 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
             this.onContentSizeChanging_(/*expanding=*/ true);
             this.promptActionOccurred(
                 PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
+            // If the iframe hasn't been loaded yet, load it the first time the
+            // learn more expand section is clicked.
+            const iframe = this.shadowRoot!.querySelector<HTMLIFrameElement>(
+                '#privacyPolicy');
+            if (iframe && iframe!.src === '') {
+              this.shadowRoot!.querySelector<HTMLElement>(
+                                  '.iframe-container')!.style.display = 'block';
+              this.shadowRoot!
+                  .querySelector<HTMLIFrameElement>('#privacyPolicy')!.src =
+                  'chrome-untrusted://privacy-sandbox-dialog/privacy-policy';
+            }
           }
           if (!newValue && oldValue) {
             this.onContentSizeChanging_(/*expanding=*/ false);
@@ -112,6 +123,16 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
             scrollable!.classList.toggle(
                 'hide-scrollbar', !this.didStartWithScrollbar_);
           }
+        }
+
+        updateScrollableContents() {
+          requestAnimationFrame(() => {
+            const scrollable =
+                this.shadowRoot!.querySelector<HTMLElement>('[scrollable]')!;
+            scrollable.classList.toggle(
+                'can-scroll',
+                scrollable.clientHeight < scrollable.scrollHeight);
+          });
         }
 
         // Checks if #lastTextElement is in the viewport of the [scrollable]
@@ -213,4 +234,5 @@ export interface PrivacySandboxDialogMixinInterface {
   maybeShowMoreButton(): Promise<void>;
   whenWasScrolledToBottomForTest(): Promise<void>;
   promptActionOccurred(action: PrivacySandboxPromptAction): void;
+  updateScrollableContents(): void;
 }

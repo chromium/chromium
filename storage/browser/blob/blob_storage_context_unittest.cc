@@ -2,16 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "storage/browser/blob/blob_storage_context.h"
 
 #include <stdint.h>
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
-#include <optional>
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_host.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/features.h"
@@ -86,7 +87,23 @@ void LCPCriticalPathPredictorHost::SetPreconnectOrigins(
   }
 }
 
-void LCPCriticalPathPredictorHost::NotifyFetchedFont(const GURL& font_url) {
+void LCPCriticalPathPredictorHost::SetUnusedPreloads(
+    const std::vector<GURL>& unused_preloads) {
+  if (!base::FeatureList::IsEnabled(blink::features::kLCPPDeferUnusedPreload)) {
+    return;
+  }
+  if (auto* page_data =
+          LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetForPage(
+              render_frame_host().GetPage())) {
+    if (auto* plmo =
+            page_data->GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
+      plmo->SetUnusedPreloads(unused_preloads);
+    }
+  }
+}
+
+void LCPCriticalPathPredictorHost::NotifyFetchedFont(const GURL& font_url,
+                                                     bool hit) {
   if (!base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor)) {
     ReportBadMessageAndDeleteThis(
         "NotifyFetchedFont can be called only if kLCPPFontURLPredictor is "
@@ -113,7 +130,7 @@ void LCPCriticalPathPredictorHost::NotifyFetchedFont(const GURL& font_url) {
     return;
   }
 
-  plmo->AppendFetchedFontUrl(font_url);
+  plmo->AppendFetchedFontUrl(font_url, hit);
 }
 
 void LCPCriticalPathPredictorHost::NotifyFetchedSubresource(

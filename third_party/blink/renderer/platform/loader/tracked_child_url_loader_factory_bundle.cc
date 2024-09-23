@@ -122,7 +122,8 @@ void TrackedChildURLLoaderFactoryBundle::AddObserverOnMainThread() {
           main_thread_host_bundle_->first, reinterpret_cast<ObserverKey>(this),
           std::make_unique<
               HostChildURLLoaderFactoryBundle::ObserverPtrAndTaskRunner>(
-              AsWeakPtr(), base::SequencedTaskRunner::GetCurrentDefault())));
+              weak_ptr_factory_.GetWeakPtr(),
+              base::SequencedTaskRunner::GetCurrentDefault())));
 }
 
 void TrackedChildURLLoaderFactoryBundle::RemoveObserverOnMainThread() {
@@ -161,8 +162,8 @@ HostChildURLLoaderFactoryBundle::Clone() {
 
   DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
   auto main_thread_host_bundle_clone = std::make_unique<
-      TrackedChildURLLoaderFactoryBundle::HostPtrAndTaskRunner>(AsWeakPtr(),
-                                                                task_runner_);
+      TrackedChildURLLoaderFactoryBundle::HostPtrAndTaskRunner>(
+      weak_ptr_factory_.GetWeakPtr(), task_runner_);
 
   return std::make_unique<TrackedChildPendingURLLoaderFactoryBundle>(
       std::move(pending_factories->pending_default_factory()),

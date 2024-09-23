@@ -8,8 +8,8 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/chrome_features.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
@@ -89,7 +89,7 @@ void CheckSecurityState(content::WebContents* tab,
                         security_state::SecurityLevel expected_security_level,
                         int expected_authentication_state) {
   ASSERT_FALSE(tab->IsCrashed());
-  // TODO(crbug.com/1077074): Check if this can be replaced with
+  // TODO(crbug.com/40688528): Check if this can be replaced with
   // GetLastCommittedEntry.
   content::NavigationEntry* entry = tab->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
@@ -132,11 +132,9 @@ void SecurityStateWebContentsObserver::DidChangeVisibleSecurityState() {
 }
 
 bool UsingBuiltinCertVerifier() {
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(CHROME_ROOT_STORE_ONLY)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   return true;
-#elif BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  return base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
 #else
   return false;
 #endif

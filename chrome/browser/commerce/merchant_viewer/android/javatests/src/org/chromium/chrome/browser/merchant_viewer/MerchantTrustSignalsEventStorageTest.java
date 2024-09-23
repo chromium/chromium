@@ -21,10 +21,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,11 +55,11 @@ public class MerchantTrustSignalsEventStorageTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStorage =
                             new MerchantTrustSignalsEventStorage(
-                                    Profile.getLastUsedRegularProfile());
+                                    ProfileManager.getLastUsedRegularProfile());
                 });
 
         mEvent1 = new MerchantTrustSignalsEvent(KEY_1, TIMESTAMP_1);
@@ -70,7 +69,7 @@ public class MerchantTrustSignalsEventStorageTest {
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStorage.deleteAll();
                 });
@@ -117,7 +116,7 @@ public class MerchantTrustSignalsEventStorageTest {
     private void save(MerchantTrustSignalsEvent event) throws TimeoutException {
         CallbackHelper ch = new CallbackHelper();
         int chCount = ch.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStorage.saveWithCallback(
                             event,

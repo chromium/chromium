@@ -6,8 +6,6 @@
 
 #include <stdint.h>
 
-#include "ui/aura/env.h"
-#include "ui/aura/window.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -23,7 +21,7 @@ HeadlessScreen* HeadlessScreen::Create(const gfx::Size& size) {
 HeadlessScreen::~HeadlessScreen() = default;
 
 gfx::Point HeadlessScreen::GetCursorScreenPoint() {
-  return aura::Env::GetInstance()->last_mouse_location();
+  return gfx::Point();
 }
 
 bool HeadlessScreen::IsWindowUnderCursor(gfx::NativeWindow window) {

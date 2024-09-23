@@ -41,7 +41,8 @@ void LockLayoutManager::OnWindowAddedToLayout(aura::Window* child) {
   child->AddObserver(this);
 
   // LockWindowState replaces default WindowState of a child.
-  WindowState* window_state = LockWindowState::SetLockWindowState(child);
+  WindowState* window_state =
+      LockWindowState::SetLockWindowState(child, /*shelf_excluded=*/false);
   WMEvent event(WM_EVENT_ADDED_TO_WORKSPACE);
   window_state->OnWMEvent(&event);
 

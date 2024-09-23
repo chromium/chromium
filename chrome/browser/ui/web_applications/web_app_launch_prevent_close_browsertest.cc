@@ -6,7 +6,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
 namespace web_app {
@@ -25,7 +26,7 @@ constexpr char kCalculatorAppUrl[] = "https://calculator.apps.chrome/";
 
 }  // namespace
 
-class PreventCloseControllerBrowserTest : public WebAppControllerBrowserTest {
+class PreventCloseControllerBrowserTest : public WebAppBrowserTestBase {
  public:
   PreventCloseControllerBrowserTest() { BuildAndInitFeatureList(); }
 

@@ -9,9 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
+
+class GURL;
 
 namespace updater::test {
 
@@ -29,14 +32,17 @@ using MatcherGroup = std::list<Matcher>;
 // matches the request path.
 [[nodiscard]] Matcher GetPathMatcher(const std::string& expected_path_regex);
 
-// Returns a matcher which returns true if the `expected_header_regex` fully
-// matches the specified header in request.
+// Returns a matcher which returns true if all the `expected_headers` are
+// found. `expected_headers` is a map of (header_name, header_content_regex).
 [[nodiscard]] Matcher GetHeaderMatcher(
-    const std::string& header_name,
-    const std::string& expected_header_regex);
+    const base::flat_map<std::string, std::string> expected_headers);
 
 // Returns a matcher which returns true if the request has updater's user-agent.
 Matcher GetUpdaterUserAgentMatcher();
+
+// Returns a matcher which returns true if the request is actually intended
+// for the `target_url` (uses current server as a proxy).
+Matcher GetTargetURLMatcher(GURL target_url);
 
 // Returns a matcher which returns true if all regexex are found in the given
 // order.
@@ -51,6 +57,9 @@ Matcher GetUpdaterUserAgentMatcher();
 // the given value.
 [[nodiscard]] Matcher GetAppPriorityMatcher(const std::string& app_id,
                                             UpdateService::Priority priority);
+
+// Returns a matcher which checks that update is enabled for updater itself.
+[[nodiscard]] Matcher GetUpdaterEnableUpdatesMatcher();
 
 // Defines the expectations of a form in a multipart content.
 struct FormExpectations {

@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/page_load_metrics/observers/core/ukm_page_load_metrics_observer.h"
 
 #include <cmath>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -36,7 +42,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_utils.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
-#include "components/no_state_prefetch/common/prerender_origin.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -77,6 +83,9 @@ const char kOfflinePreviewsMimeType[] = "multipart/related";
 
 static constexpr uint64_t kInstantPageLoadEventsTraceTrackId = 14878427190820;
 
+const char kHistogramSoftNavigationCount[] =
+    "PageLoad.Expermental.SoftNavigations.Count";
+
 template <size_t N>
 uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
   static_assert(N <= 8u,
@@ -88,9 +97,9 @@ uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
   return result;
 }
 
-uint64_t StrToHash64Bit(base::StringPiece str) {
+uint64_t StrToHash64Bit(std::string_view str) {
   auto bytes = base::as_bytes(base::make_span(str));
-  const base::SHA1Digest digest = base::SHA1HashSpan(bytes);
+  const base::SHA1Digest digest = base::SHA1Hash(bytes);
   return PackBytes(base::make_span(digest).subspan<0, 8>());
 }
 
@@ -352,6 +361,16 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
     main_frame_resource_has_no_store_ =
         response_headers->HasHeaderValue("cache-control", "no-store");
   }
+
+  navigation_trigger_type_ =
+      page_load_metrics::NavigationHandleUserData::InitiatorLocation::kOther;
+  auto* navigation_userdata =
+      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+          *navigation_handle);
+  if (navigation_userdata) {
+    navigation_trigger_type_ = navigation_userdata->navigation_type();
+  }
+
   // The PageTransition for the navigation may be updated on commit.
   page_transition_ = navigation_handle->GetPageTransition();
   was_cached_ = navigation_handle->WasResponseCached();
@@ -544,7 +563,7 @@ void UkmPageLoadMetricsObserver::RecordNavigationTimingMetrics() {
       timing.navigation_commit_sent_time.is_null()) {
     return;
   }
-  // TODO(https://crbug.com/1076710): Change these early-returns to DCHECKs
+  // TODO(crbug.com/40688345): Change these early-returns to DCHECKs
   // after the issue 1076710 is fixed.
   if (navigation_start_time > timing.first_request_start_time ||
       timing.first_request_start_time > timing.first_response_start_time ||
@@ -635,6 +654,8 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
           largest_contentful_paint.Time(), GetDelegate())) {
     builder.SetPaintTiming_LargestContentfulPaint(
         largest_contentful_paint.Time().value().InMilliseconds());
+    PAGE_LOAD_HISTOGRAM("PageLoad.SoftNavigation.LargestContentfulPaint",
+                        largest_contentful_paint.Time().value());
 
     builder.SetPaintTiming_LargestContentfulPaintType(
         LargestContentfulPaintTypeToUKMFlags(largest_contentful_paint.Type()));
@@ -682,6 +703,10 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
         .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
             inp->interaction_latency.InMilliseconds());
 
+    UmaHistogramCustomTimes("PageLoad.SoftNavigation.InteractionToNextPaint",
+                            inp->interaction_latency, base::Milliseconds(1),
+                            base::Seconds(60), 50);
+
     // For soft navigations, the interaction offset is the offset _after_ the
     // soft navigation occurred. So we want to start the offset at the number
     // of interactions which had occurred before this soft navigation.
@@ -717,6 +742,13 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
       builder
           .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
               page_load_metrics::LayoutShiftUkmValue(*cwv_cls_value));
+      // Report UMA using same binning as all WebVitals.CumulativeLayoutShift
+      // histograms; the binning ensures changes close to zero can accurately
+      // be measured.
+      base::UmaHistogramCustomCounts(
+          "PageLoad.SoftNavigation.CumulativeLayoutShift",
+          page_load_metrics::LayoutShiftUmaValue10000(*cwv_cls_value), 1, 24000,
+          50);
     }
   }
 
@@ -737,6 +769,9 @@ void UkmPageLoadMetricsObserver::
     builder
         .SetInteractiveTimingBeforeSoftNavigation_UserInteractionLatency_HighPercentile2_MaxEventDuration(
             inp->interaction_latency.InMilliseconds());
+    UmaHistogramCustomTimes(
+        "PageLoad.BeforeSoftNavigation.InteractionToNextPaint",
+        inp->interaction_latency, base::Milliseconds(1), base::Seconds(60), 50);
     builder.SetInteractiveTimingBeforeSoftNavigation_INPOffset(
         inp->interaction_offset);
     base::TimeDelta interaction_time =
@@ -767,6 +802,13 @@ void UkmPageLoadMetricsObserver::
     builder
         .SetLayoutInstabilityBeforeSoftNavigation_MaxCumulativeShiftScore_MainFrame_SessionWindow_Gap1000ms_Max5000ms(
             page_load_metrics::LayoutShiftUkmValue(*cwv_cls_value));
+    // Report UMA using same binning as all WebVitals.CumulativeLayoutShift
+    // histograms; the binning ensures changes close to zero can accurately
+    // be measured.
+    base::UmaHistogramCustomCounts(
+        "PageLoad.BeforeSoftNavigation.CumulativeLayoutShift",
+        page_load_metrics::LayoutShiftUmaValue10000(*cwv_cls_value), 1, 24000,
+        50);
   }
   builder.Record(ukm::UkmRecorder::Get());
 }
@@ -877,6 +919,11 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
       auto priority = cwv_lcp_timing_info.ImageRequestPriority();
       if (priority)
         builder.SetPaintTiming_LargestContentfulPaintRequestPriority(*priority);
+      bool is_cross_origin = cwv_lcp_timing_info.Type() ==
+                             (cwv_lcp_timing_info.Type() |
+                              blink::LargestContentfulPaintType::kCrossOrigin);
+      builder.SetPaintTiming_LargestContentfulPaintImageIsCrossOrigin(
+          is_cross_origin);
     }
     if (cwv_lcp_timing_info.ImageDiscoveryTime().has_value()) {
       builder.SetPaintTiming_LargestContentfulPaintImageDiscoveryTime(
@@ -993,6 +1040,10 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
     RecordSoftNavigationMetrics(GetDelegate().GetUkmSourceIdForSoftNavigation(),
                                 GetDelegate().GetSoftNavigationMetrics());
   }
+
+  // Record soft navigation count histogram to UMA.
+  base::UmaHistogramCounts100(kHistogramSoftNavigationCount,
+                              GetDelegate().GetSoftNavigationMetrics().count);
 }
 
 void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(
@@ -1163,6 +1214,16 @@ void UkmPageLoadMetricsObserver::ReportMainResourceTimingMetrics(
   builder.SetMainFrameResource_RequestStartToReceiveHeadersEnd(
       request_start_to_receive_headers_end_ms);
 
+  if (!main_frame_timing_->connect_timing.connect_start.is_null() &&
+      !GetDelegate().GetNavigationStart().is_null()) {
+    base::TimeDelta navigation_start_to_connect_start =
+        main_frame_timing_->connect_timing.connect_start -
+        GetDelegate().GetNavigationStart();
+
+    builder.SetMainFrameResource_NavigationStartToConnectStart(
+        navigation_start_to_connect_start.InMilliseconds());
+  }
+
   if (!main_frame_timing_->request_start.is_null() &&
       !GetDelegate().GetNavigationStart().is_null()) {
     base::TimeDelta navigation_start_to_request_start =
@@ -1250,10 +1311,6 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
     builder
         .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
             page_load_metrics::LayoutShiftUkmValue(*cwv_cls_value));
-    base::UmaHistogramCounts100(
-        "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
-        "Gap1000ms.Max5000ms",
-        page_load_metrics::LayoutShiftUmaValue(*cwv_cls_value));
     base::UmaHistogramCustomCounts(
         "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
         "Gap1000ms.Max5000ms2",
@@ -1271,7 +1328,7 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
   }
   builder.Record(ukm::UkmRecorder::Get());
 
-  // TODO(crbug.com/1064483): We should move UMA recording to components/
+  // TODO(crbug.com/40681312): We should move UMA recording to components/
 
   const float layout_shift_score =
       GetDelegate().GetPageRenderData().layout_shift_score;
@@ -1497,6 +1554,9 @@ void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
   // page_transition_ fits in a uint32_t, so we can safely cast to int64_t.
   builder.SetNavigation_PageTransition(static_cast<int64_t>(page_transition_));
+
+  builder.SetNavigation_InitiatorLocation(
+      static_cast<int64_t>(navigation_trigger_type_));
 
   // GetDelegate().GetPageEndReason() fits in a uint32_t, so we can safely cast
   // to int64_t.

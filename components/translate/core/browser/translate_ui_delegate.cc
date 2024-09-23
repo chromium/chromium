@@ -294,7 +294,7 @@ void TranslateUIDelegate::SetAlwaysTranslate(bool value) {
     if (IsSiteOnNeverPromptList())
       SetNeverPromptSite(false);
   } else {
-    prefs_->RemoveLanguagePairFromAlwaysTranslateList(source_lang, target_lang);
+    prefs_->RemoveLanguagePairFromAlwaysTranslateList(source_lang);
   }
 
   UIInteraction interaction =

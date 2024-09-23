@@ -13,7 +13,6 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/test/ash_test_base.h"
 #include "base/base_switches.h"
@@ -27,6 +26,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/testing_pref_service.h"
@@ -151,17 +151,14 @@ TEST_F(ArcUtilTest, IsArcAvailable_Installed) {
 
   // Not available, by-default.
   EXPECT_FALSE(IsArcAvailable());
-  EXPECT_FALSE(IsArcKioskAvailable());
 
   {
     ScopedArcFeature feature(true);
     EXPECT_FALSE(IsArcAvailable());
-    EXPECT_FALSE(IsArcKioskAvailable());
   }
   {
     ScopedArcFeature feature(false);
     EXPECT_FALSE(IsArcAvailable());
-    EXPECT_FALSE(IsArcKioskAvailable());
   }
 
   // If ARC is installed, IsArcAvailable() should return true when EnableARC
@@ -171,18 +168,13 @@ TEST_F(ArcUtilTest, IsArcAvailable_Installed) {
   // Not available, by-default, too.
   EXPECT_FALSE(IsArcAvailable());
 
-  // ARC is available in kiosk mode if installed.
-  EXPECT_TRUE(IsArcKioskAvailable());
-
   {
     ScopedArcFeature feature(true);
     EXPECT_TRUE(IsArcAvailable());
-    EXPECT_TRUE(IsArcKioskAvailable());
   }
   {
     ScopedArcFeature feature(false);
     EXPECT_FALSE(IsArcAvailable());
-    EXPECT_TRUE(IsArcKioskAvailable());
   }
 
   // If ARC is installed, IsArcAvailable() should return true when EnableARC
@@ -192,18 +184,13 @@ TEST_F(ArcUtilTest, IsArcAvailable_Installed) {
   // Not available, by-default, too.
   EXPECT_FALSE(IsArcAvailable());
 
-  // ARC is available in kiosk mode if installed.
-  EXPECT_TRUE(IsArcKioskAvailable());
-
   {
     ScopedArcFeature feature(true);
     EXPECT_TRUE(IsArcAvailable());
-    EXPECT_TRUE(IsArcKioskAvailable());
   }
   {
     ScopedArcFeature feature(false);
     EXPECT_FALSE(IsArcAvailable());
-    EXPECT_TRUE(IsArcKioskAvailable());
   }
 }
 
@@ -212,11 +199,9 @@ TEST_F(ArcUtilTest, IsArcAvailable_OfficiallySupported) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv({"", "--enable-arc"});
   EXPECT_TRUE(IsArcAvailable());
-  EXPECT_TRUE(IsArcKioskAvailable());
 
   command_line->InitFromArgv({"", "--arc-availability=officially-supported"});
   EXPECT_TRUE(IsArcAvailable());
-  EXPECT_TRUE(IsArcKioskAvailable());
 }
 
 TEST_F(ArcUtilTest, IsArcVmEnabled) {
@@ -310,28 +295,6 @@ TEST_F(ArcUtilTest, GetArcUreadaheadModeContainerSwitch) {
   EXPECT_EQ(ArcUreadaheadMode::DISABLED, GetArcUreadaheadMode(mode));
 }
 
-TEST_F(ArcUtilTest, UreadaheadDefault) {
-  EXPECT_FALSE(IsUreadaheadDisabled());
-}
-
-TEST_F(ArcUtilTest, UreadaheadDisabled) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv({"", "--arc-disable-ureadahead"});
-  EXPECT_TRUE(IsUreadaheadDisabled());
-}
-
-TEST_F(ArcUtilTest, HostUreadaheadGenerationDefault) {
-  EXPECT_FALSE(IsHostUreadaheadGeneration());
-  EXPECT_FALSE(IsUreadaheadDisabled());
-}
-
-TEST_F(ArcUtilTest, HostUreadaheadGenerationSet) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv({"", "--arc-host-ureadahead-generation"});
-  EXPECT_TRUE(IsHostUreadaheadGeneration());
-  EXPECT_FALSE(IsUreadaheadDisabled());
-}
-
 TEST_F(ArcUtilTest, UseDevCachesDefault) {
   EXPECT_FALSE(IsArcUseDevCaches());
 }
@@ -341,10 +304,6 @@ TEST_F(ArcUtilTest, UseDevCachesSet) {
   command_line->InitFromArgv({"", "--arc-use-dev-caches"});
   EXPECT_TRUE(IsArcUseDevCaches());
 }
-
-// TODO(hidehiko): Add test for IsArcKioskMode().
-// It depends on UserManager, but a utility to inject fake instance is
-// available only in chrome/. To use it in components/, refactoring is needed.
 
 TEST_F(ArcUtilTest, IsArcOptInVerificationDisabled) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -357,6 +316,9 @@ TEST_F(ArcUtilTest, IsArcOptInVerificationDisabled) {
 
 TEST_F(ArcUtilTest, IsArcAllowedForUser) {
   TestingPrefServiceSimple local_state;
+  ash::ScopedStubInstallAttributes install_attributes(
+      ash::StubInstallAttributes::CreateCloudManaged("test-domain",
+                                                     "FAKE_DEVICE_ID"));
   user_manager::TypedScopedUserManager fake_user_manager(
       std::make_unique<user_manager::FakeUserManager>(&local_state));
 
@@ -370,8 +332,6 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
       AccountId::FromUserEmailGaiaId("user4@test.com", "1234567890-4"))));
   EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddChildUser(
       AccountId::FromUserEmailGaiaId("user5@test.com", "1234567890-5"))));
-  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddArcKioskAppUser(
-      AccountId::FromUserEmailGaiaId("user6@test.com", "1234567890-6"))));
 
   // An ephemeral user is a logged in user but unknown to UserManager when
   // ephemeral policy is set.
@@ -387,9 +347,6 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
   ASSERT_TRUE(ephemeral_user);
   ASSERT_TRUE(fake_user_manager->IsUserCryptohomeDataEphemeral(
       ephemeral_user->GetAccountId()));
-
-  // Ephemeral user is also allowed for ARC.
-  EXPECT_TRUE(IsArcAllowedForUser(ephemeral_user));
 }
 
 TEST_F(ArcUtilTest, ArcStartModeDefault) {
@@ -826,6 +783,84 @@ TEST_F(ArcUtilTest, EnsureStaleArcVmAndArcVmUpstartJobsStopped_Success) {
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(jobs_to_be_stopped.empty());
   EXPECT_EQ(ash::FakeConciergeClient::Get()->stop_vm_call_count(), 1);
+}
+
+TEST_F(ArcUtilTest,
+       ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletionDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      kDeferArcActivationUntilUserSessionStartUpTaskCompletion);
+
+  EXPECT_FALSE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
+
+  RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), true);
+  EXPECT_FALSE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
+
+  RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), false);
+  EXPECT_FALSE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
+}
+
+TEST_F(ArcUtilTest,
+       ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletionAlways) {
+  std::map<std::string, std::string> params = {
+      {"history_window", "0"},
+      {"history_threshold", "1"},
+  };
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kDeferArcActivationUntilUserSessionStartUpTaskCompletion, params);
+
+  // ARC should be deferred always.
+  EXPECT_TRUE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
+
+  RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), true);
+  EXPECT_TRUE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
+
+  RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), false);
+  EXPECT_TRUE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
+}
+
+TEST_F(ArcUtilTest,
+       ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletionEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kDeferArcActivationUntilUserSessionStartUpTaskCompletion);
+  constexpr int kProductionWindowSize = 5;
+  constexpr int kProductionThreshold = 3;
+
+  // First, we should wait for the session start.
+  EXPECT_TRUE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
+  for (int i = 0; i < kProductionThreshold - 1; ++i) {
+    RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), true);
+    EXPECT_TRUE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+        profile_prefs()));
+  }
+
+  // Try to cross the threshold.
+  for (int i = 0; i < kProductionWindowSize - kProductionThreshold + 1; ++i) {
+    RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), true);
+    EXPECT_FALSE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+        profile_prefs()));
+  }
+
+  // Emulate ARC app is not launched in session start up.
+  for (int i = 0; i < kProductionWindowSize - kProductionThreshold; ++i) {
+    RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), false);
+    EXPECT_FALSE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+        profile_prefs()));
+  }
+
+  // Cross the threshold.
+  RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), false);
+  EXPECT_TRUE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
 }
 
 }  // namespace

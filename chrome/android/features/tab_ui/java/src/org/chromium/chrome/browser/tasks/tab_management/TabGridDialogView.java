@@ -9,11 +9,15 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -31,9 +35,11 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -75,14 +81,17 @@ public class TabGridDialogView extends FrameLayout {
     }
 
     private final Context mContext;
-    private final int mToolbarHeight;
     private final float mTabGridCardPadding;
+    private FrameLayout mAnimationClip;
+    private FrameLayout mToolbarContainer;
+    private FrameLayout mRecyclerViewContainer;
     private View mBackgroundFrame;
     private View mAnimationCardView;
     private View mItemView;
     private View mUngroupBar;
     private ViewGroup mSnackBarContainer;
     private ViewGroup mParent;
+    private ImageView mHairline;
     private TextView mUngroupBarTextView;
     private RelativeLayout mDialogContainerView;
     private PropertyModel mScrimPropertyModel;
@@ -119,8 +128,6 @@ public class TabGridDialogView extends FrameLayout {
         super(context, attrs);
         mContext = context;
         mTabGridCardPadding = TabUiThemeProvider.getTabGridCardMargin(mContext);
-        mToolbarHeight =
-                (int) mContext.getResources().getDimension(R.dimen.tab_group_toolbar_height);
         mBackgroundDrawableColor =
                 ContextCompat.getColor(mContext, R.color.tab_grid_dialog_background_color);
 
@@ -136,6 +143,27 @@ public class TabGridDialogView extends FrameLayout {
                         mContext, false);
     }
 
+    void forceAnimationToFinish() {
+        if (mCurrentDialogAnimator != null) {
+            mCurrentDialogAnimator.end();
+        }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = findViewById(R.id.title);
+            if (v != null && v.isFocused()) {
+                Rect rect = new Rect();
+                v.getGlobalVisibleRect(rect);
+                if (!rect.contains((int) event.getRawX(), (int) event.getRawY())) {
+                    v.clearFocus();
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event);
+    }
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -149,9 +177,11 @@ public class TabGridDialogView extends FrameLayout {
                             .isKeyboardShowing(mContext, this)) {
                         mParentWidth = mParent.getWidth();
                         mParentHeight = mParent.getHeight();
+                        updateDialogWithOrientation(mOrientation);
                     }
                 };
         mParent.getViewTreeObserver().addOnGlobalLayoutListener(mParentGlobalLayoutListener);
+        updateDialogWithOrientation(mOrientation);
         setVisibility(GONE);
     }
 
@@ -176,16 +206,19 @@ public class TabGridDialogView extends FrameLayout {
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         mDialogContainerView = findViewById(R.id.dialog_container_view);
         mDialogContainerView.setLayoutParams(mContainerParams);
+        mToolbarContainer = findViewById(R.id.tab_grid_dialog_toolbar_container);
+        mRecyclerViewContainer = findViewById(R.id.tab_grid_dialog_recycler_view_container);
         mUngroupBar = findViewById(R.id.dialog_ungroup_bar);
         mUngroupBarTextView = mUngroupBar.findViewById(R.id.dialog_ungroup_bar_text);
+        mAnimationClip = findViewById(R.id.dialog_animation_clip);
         mBackgroundFrame = findViewById(R.id.dialog_frame);
         mBackgroundFrame.setLayoutParams(mContainerParams);
         mAnimationCardView = findViewById(R.id.dialog_animation_card_view);
         mSnackBarContainer = findViewById(R.id.dialog_snack_bar_container_view);
+        mHairline = findViewById(R.id.tab_grid_dialog_hairline);
         updateDialogWithOrientation(mContext.getResources().getConfiguration().orientation);
 
         prepareAnimation();
-        mDialogContainerView.setClipToOutline(true);
     }
 
     private void prepareAnimation() {
@@ -239,7 +272,7 @@ public class TabGridDialogView extends FrameLayout {
                         mDialogContainerView.requestFocus();
                         mDialogContainerView.sendAccessibilityEvent(
                                 AccessibilityEvent.TYPE_VIEW_FOCUSED);
-                        // TODO(crbug.com/1101561): Move clear/restore accessibility importance
+                        // TODO(crbug.com/40138401): Move clear/restore accessibility importance
                         // logic to ScrimView so that it can be shared by all components using
                         // ScrimView.
                         clearBackgroundViewAccessibilityImportance();
@@ -328,7 +361,9 @@ public class TabGridDialogView extends FrameLayout {
             if (view == TabGridDialogView.this) {
                 continue;
             }
-            assert mAccessibilityImportanceMap.containsKey(view);
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+                assert mAccessibilityImportanceMap.containsKey(view);
+            }
             Integer importance = mAccessibilityImportanceMap.get(view);
             view.setImportantForAccessibility(
                     importance == null ? IMPORTANT_FOR_ACCESSIBILITY_AUTO : importance);
@@ -366,10 +401,10 @@ public class TabGridDialogView extends FrameLayout {
         mItemView = sourceView;
         Rect rect = new Rect();
         mItemView.getGlobalVisibleRect(rect);
-        // Offset by CompositeViewHolder top offset.
-        Rect parentRect = new Rect();
-        mParent.getGlobalVisibleRect(parentRect);
-        rect.offset(0, -parentRect.top);
+        // Offset for status bar (top) and nav bar when landscape (left).
+        Rect dialogParentRect = new Rect();
+        mParent.getGlobalVisibleRect(dialogParentRect);
+        rect.offset(-dialogParentRect.left, -dialogParentRect.top);
         // Setup a stand-in animation card that looks the same as the original tab grid card for
         // animation.
         updateAnimationCardView(mItemView);
@@ -378,10 +413,61 @@ public class TabGridDialogView extends FrameLayout {
         int dialogHeight = mParentHeight - 2 * mTopMargin;
         int dialogWidth = mParentWidth - 2 * mSideMargin;
 
+        // Calculate a clip mask to avoid any source view that is not fully visible from drawing
+        // over other UI.
+        Rect itemViewParentRect = new Rect();
+        ((View) mItemView.getParent()).getGlobalVisibleRect(itemViewParentRect);
+        int clipTop = itemViewParentRect.top - dialogParentRect.top;
+        FrameLayout.LayoutParams params =
+                (FrameLayout.LayoutParams) mAnimationClip.getLayoutParams();
+        params.setMargins(0, clipTop, 0, 0);
+        mAnimationClip.setLayoutParams(params);
+
+        // Because the mAnimationCardView is offset by clip top we need to compensate in the
+        // opposite direction for its animation only.
+        float yClipCompensation = clipTop;
+
+        // If the item view is clipped by being offsceen the height of the visible rect and the
+        // item view will differ. This is the `yClip`. If this amount is less than the card's
+        // padding we need to still apply the part of the padding that is visible otherwise we
+        // can ignore the padding entirely.
+        int yClip = mItemView.getHeight() - rect.height();
+
+        // The dialog and mBackgroundFrame are not clipped by the mAnimationClip (the math would be
+        // broken due to those object relying on MATCH_PARENT for dimensions). So we need to use the
+        // clipped height of the mItemView. Here we apply one side of the mTabGridCardPadding. The
+        // other side might be clipped.
+        float clippedSourceHeight = rect.height() - mTabGridCardPadding;
+
+        // Apply the remaining tab grid card padding if the `yClip` doesn't result in it being
+        // entirely occluded.
+        boolean isYClipLessThanPadding = yClip < mTabGridCardPadding;
+        if (isYClipLessThanPadding) {
+            clippedSourceHeight += yClip - mTabGridCardPadding;
+        }
+
         // Calculate position and size info about the original tab grid card.
+        float sourceTop = rect.top;
         float sourceLeft = rect.left + mTabGridCardPadding;
-        float sourceTop = rect.top + mTabGridCardPadding;
-        float sourceHeight = rect.height() - 2 * mTabGridCardPadding;
+        if (rect.top == clipTop) {
+            // If the clipping is off the "top" of the screen i.e. the rect is touching the clip
+            // bound. Then we need to add clip compensation when animating the card by starting it
+            // in its original position. However, if the clip is less than padding we also need to
+            // take whatever top padding is visible into account.
+            if (isYClipLessThanPadding) {
+                float clipDelta = mTabGridCardPadding - yClip;
+                sourceTop += clipDelta;
+                yClipCompensation += clipDelta + yClip;
+            } else {
+                yClipCompensation += yClip;
+            }
+        } else {
+            // If the clipping either doesn't exist or is off the bottom of the screen we can assume
+            // the clipping is to the bottom of the card and include the full padding.
+            sourceTop += mTabGridCardPadding;
+            yClipCompensation += mTabGridCardPadding;
+        }
+        float unclippedSourceHeight = mItemView.getHeight() - 2 * mTabGridCardPadding;
         float sourceWidth = rect.width() - 2 * mTabGridCardPadding;
         if (sSourceRectCallbackForTesting != null) {
             sSourceRectCallbackForTesting.onResult(
@@ -389,32 +475,31 @@ public class TabGridDialogView extends FrameLayout {
                             sourceLeft,
                             sourceTop,
                             sourceLeft + sourceWidth,
-                            sourceTop + sourceHeight));
+                            sourceTop + unclippedSourceHeight));
         }
 
         // Setup animation position info and scale ratio of the background frame.
-        float frameInitYPosition = -(dialogHeight / 2 + mTopMargin - sourceHeight / 2 - sourceTop);
+        float frameInitYPosition =
+                -(dialogHeight / 2 + mTopMargin - clippedSourceHeight / 2 - sourceTop);
         float frameInitXPosition = -(dialogWidth / 2 + mSideMargin - sourceWidth / 2 - sourceLeft);
-        float frameScaleY = sourceHeight / dialogHeight;
+        float frameScaleY = clippedSourceHeight / dialogHeight;
         float frameScaleX = sourceWidth / dialogWidth;
 
         // Setup scale ratio of card and dialog. Height and Width for both dialog and card scale at
         // the same rate during scaling animations.
-        float cardScale =
-                mOrientation == Configuration.ORIENTATION_PORTRAIT
-                        ? (float) dialogWidth / rect.width()
-                        : (float) dialogHeight / rect.height();
+        float cardScale = (float) dialogWidth / rect.width();
         float dialogScale = frameScaleX;
 
         // Setup animation position info of the animation card.
-        float cardScaledYPosition = mTopMargin + ((cardScale - 1f) / 2) * sourceHeight;
+        float cardScaledYPosition =
+                mTopMargin + ((cardScale - 1f) / 2) * unclippedSourceHeight - clipTop;
         float cardScaledXPosition = mSideMargin + ((cardScale - 1f) / 2) * sourceWidth;
-        float cardInitYPosition = sourceTop - mTabGridCardPadding;
+        float cardInitYPosition = sourceTop - yClipCompensation;
         float cardInitXPosition = sourceLeft - mTabGridCardPadding;
 
         // Setup animation position info of the dialog.
         float dialogInitYPosition =
-                frameInitYPosition - (sourceHeight - (dialogHeight * dialogScale)) / 2f;
+                frameInitYPosition - (clippedSourceHeight - (dialogHeight * dialogScale)) / 2f;
         float dialogInitXPosition = frameInitXPosition;
 
         // In the first half of the dialog showing animation, the animation card scales up and moves
@@ -518,6 +603,7 @@ public class TabGridDialogView extends FrameLayout {
                         // frame and the animation card should be above the the dialog view, and
                         // their alpha should be set to 1.
                         mBackgroundFrame.bringToFront();
+                        mAnimationClip.bringToFront();
                         mAnimationCardView.bringToFront();
                         mDialogContainerView.setAlpha(0f);
                         mBackgroundFrame.setAlpha(1f);
@@ -637,6 +723,7 @@ public class TabGridDialogView extends FrameLayout {
                         // At the beginning of the second half of the hiding animation, the white
                         // frame and the animation card should be above the the dialog view.
                         mBackgroundFrame.bringToFront();
+                        mAnimationClip.bringToFront();
                         mAnimationCardView.bringToFront();
                     }
 
@@ -702,83 +789,85 @@ public class TabGridDialogView extends FrameLayout {
 
     @VisibleForTesting
     void updateDialogWithOrientation(int orientation) {
+        Resources res = mContext.getResources();
+        int minMargin = res.getDimensionPixelSize(R.dimen.tab_grid_dialog_min_margin);
+        int maxMargin = res.getDimensionPixelSize(R.dimen.tab_grid_dialog_max_margin);
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mSideMargin =
-                    (int) mContext.getResources().getDimension(R.dimen.tab_grid_dialog_side_margin);
-            mTopMargin =
-                    (int) mContext.getResources().getDimension(R.dimen.tab_grid_dialog_top_margin);
+            mSideMargin = minMargin;
+            mTopMargin = clampMargin(Math.round(mParentHeight * 0.1f), minMargin, maxMargin);
         } else {
-            mSideMargin =
-                    (int) mContext.getResources().getDimension(R.dimen.tab_grid_dialog_top_margin);
-            mTopMargin =
-                    (int) mContext.getResources().getDimension(R.dimen.tab_grid_dialog_side_margin);
+            mSideMargin = clampMargin(Math.round(mParentWidth * 0.1f), minMargin, maxMargin);
+            mTopMargin = minMargin;
         }
         mContainerParams.setMargins(mSideMargin, mTopMargin, mSideMargin, mTopMargin);
         mOrientation = orientation;
     }
 
+    private int clampMargin(int sizeAdjustedValue, int lowerBound, int upperBound) {
+        // In the event the parent isn't laid out yet just default to the upper bound.
+        if (sizeAdjustedValue == 0) return upperBound;
+
+        return MathUtils.clamp(sizeAdjustedValue, lowerBound, upperBound);
+    }
+
     private void updateAnimationCardView(View view) {
+        View animationCard = mAnimationCardView;
+        TextView cardTitle = animationCard.findViewById(R.id.tab_title);
+        ImageView cardFavicon = animationCard.findViewById(R.id.tab_favicon);
+        TabThumbnailView cardThumbnail = animationCard.findViewById(R.id.tab_thumbnail);
+        ImageView cardActionButton = animationCard.findViewById(R.id.action_button);
+        View cardBackground = animationCard.findViewById(R.id.background_view);
+        cardBackground.setBackground(null);
+
         if (view == null) {
-            ((ImageView) mAnimationCardView.findViewById(R.id.tab_favicon)).setImageDrawable(null);
-            ((TextView) (mAnimationCardView.findViewById(R.id.tab_title))).setText("");
-            ((ImageView) (mAnimationCardView.findViewById(R.id.tab_thumbnail)))
-                    .setImageDrawable(null);
-            ((ImageView) mAnimationCardView.findViewById(R.id.action_button))
-                    .setImageDrawable(null);
-            mAnimationCardView.findViewById(R.id.background_view).setBackground(null);
+            cardFavicon.setImageDrawable(null);
+            cardTitle.setText("");
+            cardThumbnail.setImageDrawable(null);
+            cardActionButton.setImageDrawable(null);
             return;
         }
 
         // Update the stand-in animation card view with the actual item view from grid tab switcher
         // recyclerView.
         FrameLayout.LayoutParams params =
-                (FrameLayout.LayoutParams) mAnimationCardView.getLayoutParams();
+                (FrameLayout.LayoutParams) animationCard.getLayoutParams();
         params.width = view.getWidth();
         params.height = view.getHeight();
-        if (view.findViewById(R.id.tab_title) == null) return;
+        animationCard.setLayoutParams(params);
+        TextView viewTitle = view.findViewById(R.id.tab_title);
+        if (viewTitle == null) {
+            return;
+        }
 
-        mAnimationCardView
-                .findViewById(R.id.card_view)
-                .setBackground(view.findViewById(R.id.card_view).getBackground());
+        // Sometimes we get clip artifacting when sharing a drawable, unclear why, so make a copy.
+        Drawable backgroundCopy =
+                view.findViewById(R.id.card_view).getBackground().getConstantState().newDrawable();
+        animationCard.findViewById(R.id.card_view).setBackground(backgroundCopy);
 
-        ImageView sourceCardFavicon = view.findViewById(R.id.tab_favicon);
-        ImageView animationCardFavicon = mAnimationCardView.findViewById(R.id.tab_favicon);
-        if (sourceCardFavicon.getDrawable() != null) {
+        Drawable faviconDrawable = ((ImageView) view.findViewById(R.id.tab_favicon)).getDrawable();
+        cardFavicon.setImageDrawable(faviconDrawable);
+        if (faviconDrawable != null) {
             int padding = (int) TabUiThemeProvider.getTabCardTopFaviconPadding(mContext);
-            animationCardFavicon.setPadding(padding, padding, padding, padding);
-            animationCardFavicon.setImageDrawable(sourceCardFavicon.getDrawable());
-        } else {
-            animationCardFavicon.setImageDrawable(null);
+            cardFavicon.setPadding(padding, padding, padding, padding);
         }
 
-        ((TextView) (mAnimationCardView.findViewById(R.id.tab_title)))
-                .setText(((TextView) (view.findViewById(R.id.tab_title))).getText());
-        ApiCompatibilityUtils.setTextAppearance(
-                (TextView) (mAnimationCardView.findViewById(R.id.tab_title)),
-                R.style.TextAppearance_TextMediumThick_Primary);
-        ((TextView) (mAnimationCardView.findViewById(R.id.tab_title)))
-                .setTextColor(((TextView) (view.findViewById(R.id.tab_title))).getTextColors());
+        cardTitle.setText(viewTitle.getText());
+        cardTitle.setTextAppearance(R.style.TextAppearance_TextMediumThick_Primary);
+        cardTitle.setTextColor(viewTitle.getTextColors());
 
-        TabThumbnailView originalThumbnailView =
-                (TabThumbnailView) view.findViewById(R.id.tab_thumbnail);
-        TabThumbnailView animationThumbnailView =
-                (TabThumbnailView) mAnimationCardView.findViewById(R.id.tab_thumbnail);
+        TabThumbnailView originalThumbnailView = view.findViewById(R.id.tab_thumbnail);
         if (originalThumbnailView.isPlaceholder()) {
-            animationThumbnailView.setImageDrawable(null);
+            cardThumbnail.setImageDrawable(null);
         } else {
-            animationThumbnailView.setImageDrawable(originalThumbnailView.getDrawable());
-            animationThumbnailView.setImageMatrix(originalThumbnailView.getImageMatrix());
-            animationThumbnailView.setScaleType(originalThumbnailView.getScaleType());
+            cardThumbnail.setImageDrawable(originalThumbnailView.getDrawable());
+            cardThumbnail.setImageMatrix(originalThumbnailView.getImageMatrix());
+            cardThumbnail.setScaleType(originalThumbnailView.getScaleType());
         }
 
-        ImageView actionButton = mAnimationCardView.findViewById(R.id.action_button);
-        actionButton.setImageDrawable(
-                ((ImageView) (view.findViewById(R.id.action_button))).getDrawable());
+        ImageView originalActionButton = view.findViewById(R.id.action_button);
+        cardActionButton.setImageDrawable(originalActionButton.getDrawable());
         ImageViewCompat.setImageTintList(
-                actionButton,
-                ImageViewCompat.getImageTintList((view.findViewById(R.id.action_button))));
-
-        mAnimationCardView.findViewById(R.id.background_view).setBackground(null);
+                cardActionButton, ImageViewCompat.getImageTintList(originalActionButton));
     }
 
     /**
@@ -809,15 +898,17 @@ public class TabGridDialogView extends FrameLayout {
      * @param recyclerView The recyclerview to be added to dialog.
      */
     void resetDialog(View toolbarView, View recyclerView) {
-        mDialogContainerView.removeAllViews();
-        mDialogContainerView.addView(toolbarView);
-        mDialogContainerView.addView(recyclerView);
-        mDialogContainerView.addView(mUngroupBar);
-        mDialogContainerView.addView(mSnackBarContainer);
-        RelativeLayout.LayoutParams params =
-                (RelativeLayout.LayoutParams) recyclerView.getLayoutParams();
-        params.setMargins(0, mToolbarHeight, 0, 0);
+        mToolbarContainer.removeAllViews();
+        mToolbarContainer.addView(toolbarView);
+        mRecyclerViewContainer.removeAllViews();
+        mRecyclerViewContainer.addView(recyclerView);
+
         recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    void refreshScrim() {
+        assert mScrimCoordinator != null && mScrimPropertyModel != null;
+        mScrimCoordinator.showScrim(mScrimPropertyModel);
     }
 
     /** Show {@link PopupWindow} for dialog with animation. */
@@ -892,8 +983,13 @@ public class TabGridDialogView extends FrameLayout {
                 isHovered ? mUngroupBarHoveredTextColor : mUngroupBarTextColor);
     }
 
+    void updateUngroupBarText(String ungroupBarText) {
+        mUngroupBarTextView.setText(ungroupBarText);
+    }
+
     /**
      * Update the dialog container background color.
+     *
      * @param backgroundColor The new background color to use.
      */
     void updateDialogContainerBackgroundColor(int backgroundColor) {
@@ -902,8 +998,30 @@ public class TabGridDialogView extends FrameLayout {
         DrawableCompat.setTint(mBackgroundFrame.getBackground(), backgroundColor);
     }
 
+    void updateHairlineColor(@ColorInt int hairlineColor) {
+        mHairline.setImageTintList(ColorStateList.valueOf(hairlineColor));
+    }
+
+    void setHairlineVisibility(boolean visible) {
+        mHairline.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * Updates the background color for the animation card.
+     *
+     * @param colorInt The new color to use.
+     */
+    void updateAnimationBackgroundColor(@ColorInt int colorInt) {
+        assert TabUiFeatureUtilities.shouldUseListMode();
+        updateAnimationCardView(null);
+        Drawable animationBackground =
+                mAnimationCardView.findViewById(R.id.card_view).getBackground();
+        DrawableCompat.setTint(animationBackground, colorInt);
+    }
+
     /**
      * Update the ungroup bar background color.
+     *
      * @param colorInt The new background color to use when ungroup bar is visible.
      */
     void updateUngroupBarBackgroundColor(int colorInt) {

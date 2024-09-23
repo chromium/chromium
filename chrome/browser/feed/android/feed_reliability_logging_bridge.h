@@ -62,6 +62,7 @@ class FeedReliabilityLoggingBridge : public ::feed::ReliabilityLoggingBridge {
                                    int64_t server_send_timestamp_ns) override;
   void LogLoadMoreRequestFinished(int combined_network_status_code) override;
   void LogLoadMoreEnded(bool success) override;
+  void ReportExperiments(const std::vector<int32_t>& experiment_ids) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

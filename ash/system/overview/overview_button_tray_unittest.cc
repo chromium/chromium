@@ -32,6 +32,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
@@ -351,7 +352,7 @@ TEST_F(OverviewButtonTrayTest, HideAnimationAlwaysCompletesOnDelete) {
 TEST_F(OverviewButtonTrayTest, VisibilityChangesForSystemModalWindow) {
   std::unique_ptr<aura::Window> window =
       CreateTestWindow(gfx::Rect(), aura::client::WINDOW_TYPE_NORMAL);
-  window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+  window->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kSystem);
   window->Show();
   ParentWindowInPrimaryRootWindow(window.get());
 
@@ -447,18 +448,22 @@ TEST_F(OverviewButtonTrayTest, ForDevTabletModeForcesTheButtonShown) {
   EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());
 
-  // When there is a window, a screenshot will be taken and entering tablet mode
-  // becomes asynchronous, but the display tablet state is synchronously
-  // updated.
+  // When there is a window, a screenshot will be taken before shelf enters
+  // tablet mode state.
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
 
   EXPECT_FALSE(GetTray()->GetVisible());
+  TabletMode::Waiter waiter(/*enable=*/true);
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(true);
+  EXPECT_FALSE(GetTray()->GetVisible());
+
+  waiter.Wait();
+
   EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_TRUE(GetTray()->GetVisible());
 
-  // Disabling tablet mode is always synchronous.
+  // When disabling tablet mode, shelf state updates synchronously.
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(false);
   EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_FALSE(GetTray()->GetVisible());

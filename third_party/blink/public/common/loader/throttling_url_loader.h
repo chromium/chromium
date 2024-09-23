@@ -7,12 +7,12 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -43,6 +43,41 @@ namespace blink {
 class BLINK_COMMON_EXPORT ThrottlingURLLoader
     : public network::mojom::URLLoaderClient {
  public:
+  // A delegate to override the handling actions to some of the URL loading
+  // stages from the calls of `network::mojom::URLLoaderClient`, received by
+  // `client_receiver_`. For the stages not provided by this delegate, e.g.
+  // `OnTransferSizeUpdated()`, `OnReceiveEarlyHints()`, `OnUploadProgress()`,
+  // they follow the default implementation within ThrottlingURLLoader.
+  // See also
+  // https://docs.google.com/document/d/1RKPgoLBrrLZBPn01XtwHJiLlH9rA7nIRXQJIR7BUqJA/edit#heading=h.y1og20bzkuf7
+  class ClientReceiverDelegate {
+   public:
+    // Called at the end of `ThrottlingURLLoader::OnReceiveRedirect()`.
+    // It allows the delegate to decide how to proceed with the redirect instead
+    // of simply calling `forwarding_client_`.
+    virtual void EndReceiveRedirect(
+        const net::RedirectInfo& redirect_info,
+        network::mojom::URLResponseHeadPtr response_head) = 0;
+    // Called at the beginning of `ThrottlingURLLoader::OnReceiveResponse()`,
+    // and overrides all of its behavior.
+    // This method receive the same params as if they are coming directly from
+    // network::mojom::URLLoaderClient.
+    virtual void OnReceiveResponse(
+        network::mojom::URLResponseHeadPtr response_head,
+        mojo::ScopedDataPipeConsumerHandle body,
+        std::optional<mojo_base::BigBuffer> cached_metadata) = 0;
+    // Called at the beginning of `ThrottlingURLLoader::OnComplete()`, and
+    // overrides all of its behavior.
+    // This method receive the same params as if they are coming directly from
+    // network::mojom::URLLoaderClient.
+    virtual void OnComplete(
+        const network::URLLoaderCompletionStatus& status) = 0;
+    // Called when a loading stage is cancelled by throttles or due to mojo
+    // disconnection. `status` is internally constructed by ThrottlingURLLoader
+    // when the latter decides to terminate.
+    virtual void CancelWithStatus(
+        const network::URLLoaderCompletionStatus& status) = 0;
+  };
   // Reason used when resetting the URLLoader to follow a redirect.
   static const char kFollowRedirectReason[];
 
@@ -52,6 +87,22 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // |client| must stay alive during the lifetime of the returned object. Please
   // note that the request may not start immediately since it could be deferred
   // by throttles.
+  //
+  // |client_receiver_delegate| if provided, must stay alive during the lifetime
+  // of the returned object. When set, the following behaviors of the returned
+  // object will be overridden by the delegate:
+  // - `OnReceiveRedirect()` will execute custom logic at its end, instead of
+  //   calling `forwarding_client_`.
+  // - `OnReceiveResponse()` and `OnComplete()` will be entirely replaced by the
+  //   delegate's ones.
+  // - `CancelWithExtendedError()` will execute custom logic at its end, instead
+  //   of calling `forwarding_client_`.
+  // In addition, |client_receiver_delegate| is not orthogonal to |client|, in
+  // that the latter is still necessary for the returned object to run the
+  // throttle-related logic.
+  // Note that once |client_receiver_delegate| is set, the relevant throttle
+  // callbacks like BeforeWillProcessResponse(), WillProcessResponse(), and
+  // WillOnCompleteWithError(), will not be triggered by the returned object.
   static std::unique_ptr<ThrottlingURLLoader> CreateLoaderAndStart(
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
@@ -62,7 +113,8 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::optional<std::vector<std::string>> cors_exempt_header_list =
-          std::nullopt);
+          std::nullopt,
+      ClientReceiverDelegate* client_receiver_delegate = nullptr);
 
   ThrottlingURLLoader(const ThrottlingURLLoader&) = delete;
   ThrottlingURLLoader& operator=(const ThrottlingURLLoader&) = delete;
@@ -109,16 +161,11 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // datapipe endpoints.
   network::mojom::URLLoaderClientEndpointsPtr Unbind();
 
-  void CancelWithError(int error_code, base::StringPiece custom_reason);
+  void CancelWithError(int error_code, std::string_view custom_reason);
 
   void CancelWithExtendedError(int error_code,
                                int extended_reason_code,
-                               base::StringPiece custom_reason);
-
-  // Sets the forwarding client to receive all subsequent notifications.
-  void set_forwarding_client(network::mojom::URLLoaderClient* client) {
-    forwarding_client_ = client;
-  }
+                               std::string_view custom_reason);
 
   bool response_intercepted() const { return response_intercepted_; }
 
@@ -133,7 +180,8 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   ThrottlingURLLoader(
       std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
       network::mojom::URLLoaderClient* client,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation);
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      ClientReceiverDelegate* client_receiver_delegate);
 
   void Start(scoped_refptr<network::SharedURLLoaderFactory> factory,
              int32_t request_id,
@@ -143,28 +191,20 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
              std::optional<std::vector<std::string>> cors_exempt_header_list);
 
   void StartNow();
-  void RestartWithFlagsNow();
+  void RestartWithURLResetNow();
 
-  // Processes the result of a URLLoaderThrottle call, adding the throttle to
-  // the blocking set if it deferred and updating |*should_defer| accordingly.
+  // Processes the result of a URLLoaderThrottle call. If it's deferred, adds
+  // the throttle to the blocking set and updates |*should_defer| accordingly.
   // Returns |true| if the request should continue to be processed (regardless
   // of whether it's been deferred) or |false| if it's been cancelled.
   bool HandleThrottleResult(URLLoaderThrottle* throttle,
-                            bool throttle_deferred,
-                            bool* should_defer);
+                            bool throttle_deferred = false,
+                            bool* should_defer = nullptr);
 
   // Stops a given throttle from deferring the request. If this was not the last
   // deferring throttle, the request remains deferred. Otherwise it resumes
   // progress.
   void StopDeferringForThrottle(URLLoaderThrottle* throttle);
-
-  void RestartWithFlags(int additional_load_flags);
-
-  // Restart the request using |original_url_|.
-  void RestartWithURLResetAndFlags(int additional_load_flags);
-
-  // Restart the request immediately if the response has not started yet.
-  void RestartWithURLResetAndFlagsNow(int additional_load_flags);
 
   // network::mojom::URLLoaderClient implementation:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -185,15 +225,10 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
 
   void Resume();
   void SetPriority(net::RequestPriority priority);
-  void UpdateDeferredRequestHeaders(
-      const net::HttpRequestHeaders& modified_request_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_request_headers);
   void UpdateRequestHeaders(network::ResourceRequest& resource_request);
   void UpdateDeferredResponseHead(
       network::mojom::URLResponseHeadPtr new_response_head,
       mojo::ScopedDataPipeConsumerHandle body);
-  void PauseReadingBodyFromNet(URLLoaderThrottle* throttle);
-  void ResumeReadingBodyFromNet(URLLoaderThrottle* throttle);
   void InterceptResponse(
       mojo::PendingRemote<network::mojom::URLLoader> new_loader,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>
@@ -204,15 +239,13 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       mojo::ScopedDataPipeConsumerHandle* body);
 
   // Disconnects the client connection and releases the URLLoader.
-  void DisconnectClient(base::StringPiece custom_description);
+  void DisconnectClient(std::string_view custom_description);
 
   enum DeferredStage {
     DEFERRED_NONE,
     DEFERRED_START,
     DEFERRED_REDIRECT,
-    DEFERRED_BEFORE_RESPONSE,
     DEFERRED_RESPONSE,
-    DEFERRED_COMPLETE
   };
   const char* GetStageNameForHistogram(DeferredStage stage);
 
@@ -233,19 +266,19 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
 
   std::vector<ThrottleEntry> throttles_;
   std::map<URLLoaderThrottle*, /*start=*/base::Time> deferring_throttles_;
-  // nullptr is used when this loader is directly requested to pause reading
-  // body from net by calling PauseReadingBodyFromNet().
-  std::set<raw_ptr<URLLoaderThrottle, SetExperimental>>
-      pausing_reading_body_from_net_throttles_;
 
   // NOTE: This may point to a native implementation (instead of a Mojo proxy
   // object). And it is possible that the implementation of |forwarding_client_|
   // destroys this object synchronously when this object is calling into it.
-  raw_ptr<network::mojom::URLLoaderClient, DanglingUntriaged>
+  const raw_ptr<network::mojom::URLLoaderClient, DanglingUntriaged>
       forwarding_client_;
   mojo::Remote<network::mojom::URLLoader> url_loader_;
 
   mojo::Receiver<network::mojom::URLLoaderClient> client_receiver_{this};
+
+  // A delegate to override some of the message handling for `client_receiver_`.
+  // If provided, its lifetime must be >= `this`.
+  raw_ptr<ClientReceiverDelegate> client_receiver_delegate_;
 
   struct StartInfo {
     StartInfo(
@@ -302,15 +335,21 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // Set if request is deferred and SetPriority() is called.
   std::unique_ptr<PriorityInfo> priority_info_;
 
-  // Set if a throttle changed the URL in WillStartRequest.
+  // If
+  // - A throttle changed the URL in WillStartRequest(), or
+  // - `RestartWithURLReset` is set to true in `BeforeWillProcessResponse()` or
+  //   `BeforeWillRedirectRequest()`,
+  // a synthesized redirect to the modified URL is dispatched.
+  // 1. `throttle_will_start_redirect_url_` is set when the synthesized redirect
+  //    is scheduled.
+  // 2. The actual redirect is started in the first half of `StartNow()`.
+  // 3. `throttle_will_start_redirect_url_` is reset when the redirect is done.
   GURL throttle_will_start_redirect_url_;
 
   // Set if a throttle changed the URL in WillRedirectRequest.
   // Only supported with the network service.
   GURL throttle_will_redirect_redirect_url_;
 
-  // Set if the request should be made using the |original_url_|.
-  bool throttle_will_start_original_url_ = false;
   // The first URL seen by the throttle.
   GURL original_url_;
 
@@ -326,9 +365,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   std::vector<std::string> removed_headers_;
   net::HttpRequestHeaders modified_headers_;
   net::HttpRequestHeaders modified_cors_exempt_headers_;
-
-  int pending_restart_flags_ = 0;
-  bool has_pending_restart_ = false;
 
   base::TimeTicks critical_ch_restart_time_;
 

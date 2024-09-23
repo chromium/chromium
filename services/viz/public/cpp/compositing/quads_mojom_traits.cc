@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/viz/public/cpp/compositing/quads_mojom_traits.h"
 
 #include <optional>
@@ -51,16 +56,12 @@ viz::DrawQuad* AllocateAndConstruct(
       quad = list->AllocateAndConstruct<viz::VideoHoleDrawQuad>();
       quad->material = viz::DrawQuad::Material::kVideoHole;
       return quad;
-    case viz::mojom::DrawQuadStateDataView::Tag::kYuvVideoQuadState:
-      quad = list->AllocateAndConstruct<viz::YUVVideoDrawQuad>();
-      quad->material = viz::DrawQuad::Material::kYuvVideoContent;
-      return quad;
     case viz::mojom::DrawQuadStateDataView::Tag::kSharedElementQuadState:
       quad = list->AllocateAndConstruct<viz::SharedElementDrawQuad>();
       quad->material = viz::DrawQuad::Material::kSharedElement;
       return quad;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -165,7 +166,6 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
   if (!data.ReadUvTopLeft(&quad->uv_top_left) ||
       !data.ReadUvBottomRight(&quad->uv_bottom_right) ||
       !data.ReadProtectedVideoType(&protected_video_type) ||
-      !data.ReadHdrMetadata(&quad->hdr_metadata) ||
       !data.ReadOverlayPriorityHint(&overlay_priority_hint) ||
       !data.ReadRoundedDisplayMasksInfo(&quad->rounded_display_masks_info)) {
     return false;
@@ -173,9 +173,6 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
   quad->protected_video_type = protected_video_type;
   quad->overlay_priority_hint = overlay_priority_hint;
   if (!data.ReadBackgroundColor(&quad->background_color))
-    return false;
-  base::span<float> vertex_opacity_array(quad->vertex_opacity);
-  if (!data.ReadVertexOpacity(&vertex_opacity_array))
     return false;
 
   quad->y_flipped = data.y_flipped();
@@ -225,58 +222,6 @@ bool StructTraits<viz::mojom::VideoHoleQuadStateDataView, viz::DrawQuad>::Read(
   viz::VideoHoleDrawQuad* video_hole_quad =
       static_cast<viz::VideoHoleDrawQuad*>(out);
   return data.ReadOverlayPlaneId(&video_hole_quad->overlay_plane_id);
-}
-
-// static
-bool StructTraits<viz::mojom::YUVVideoQuadStateDataView, viz::DrawQuad>::Read(
-    viz::mojom::YUVVideoQuadStateDataView data,
-    viz::DrawQuad* out) {
-  viz::YUVVideoDrawQuad* quad = static_cast<viz::YUVVideoDrawQuad*>(out);
-  if (!data.ReadCodedSize(&quad->coded_size) ||
-      !data.ReadVideoVisibleRect(&quad->video_visible_rect) ||
-      !data.ReadVideoColorSpace(&quad->video_color_space) ||
-      !data.ReadProtectedVideoType(&quad->protected_video_type) ||
-      !data.ReadHdrMetadata(&quad->hdr_metadata) ||
-      !data.ReadYPlaneResourceId(
-          &quad->resources
-               .ids[viz::YUVVideoDrawQuad::kYPlaneResourceIdIndex]) ||
-      !data.ReadUPlaneResourceId(
-          &quad->resources
-               .ids[viz::YUVVideoDrawQuad::kUPlaneResourceIdIndex]) ||
-      !data.ReadVPlaneResourceId(
-          &quad->resources
-               .ids[viz::YUVVideoDrawQuad::kVPlaneResourceIdIndex]) ||
-      !data.ReadAPlaneResourceId(
-          &quad->resources
-               .ids[viz::YUVVideoDrawQuad::kAPlaneResourceIdIndex])) {
-    return false;
-  }
-  static_assert(viz::YUVVideoDrawQuad::kAPlaneResourceIdIndex ==
-                    viz::DrawQuad::Resources::kMaxResourceIdCount - 1,
-                "The A plane resource should be the last resource ID.");
-
-  quad->u_scale = data.u_scale();
-  quad->v_scale = data.v_scale();
-
-  quad->resources.count =
-      quad->resources.ids[viz::YUVVideoDrawQuad::kAPlaneResourceIdIndex] ? 4
-                                                                         : 3;
-
-  quad->resource_offset = data.resource_offset();
-  quad->resource_multiplier = data.resource_multiplier();
-  quad->bits_per_channel = data.bits_per_channel();
-  if (quad->bits_per_channel < viz::YUVVideoDrawQuad::kMinBitsPerChannel) {
-    viz::SetDeserializationCrashKeyString("Bits per channel too small");
-    return false;
-  }
-  if (quad->bits_per_channel > viz::YUVVideoDrawQuad::kMaxBitsPerChannel) {
-    viz::SetDeserializationCrashKeyString("Bits per channel too big");
-    return false;
-  }
-  if (!data.ReadDamageRect(&quad->damage_rect))
-    return false;
-
-  return true;
 }
 
 // static

@@ -1,0 +1,95 @@
+This is a testharness.js-based test.
+[FAIL] cast float32 0D tensor to int32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int32) is not supported."
+[FAIL] cast float32 1D tensor to int32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int32) is not supported."
+[FAIL] cast float32 2D tensor to int32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int32) is not supported."
+[FAIL] cast float32 3D tensor to int32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int32) is not supported."
+[FAIL] cast float32 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int32) is not supported."
+[FAIL] cast float32 5D tensor to int32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int32) is not supported."
+[FAIL] cast float32 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (cast) is not supported."
+[FAIL] cast float32 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint32) is not supported."
+[FAIL] cast float32 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] cast float32 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int8) is not supported."
+[FAIL] cast float32 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] cast float16 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (cast) is not supported."
+[FAIL] cast float16 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int32) is not supported."
+[FAIL] cast float16 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint32) is not supported."
+[FAIL] cast float16 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] cast float16 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int8) is not supported."
+[FAIL] cast float16 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] cast int32 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int32) is not supported."
+[FAIL] cast int32 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int32) is not supported."
+[FAIL] cast int32 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] cast int32 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int8) is not supported."
+[FAIL] cast int32 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] cast uint32 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint32) is not supported."
+[FAIL] cast uint32 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint32) is not supported."
+[FAIL] cast uint32 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int32) is not supported."
+[FAIL] cast uint32 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] cast uint32 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int8) is not supported."
+[FAIL] cast uint32 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] cast int64 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] cast int64 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] cast int64 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int32) is not supported."
+[FAIL] cast int64 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint32) is not supported."
+[FAIL] cast int64 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int8) is not supported."
+[FAIL] cast int64 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] cast int8 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int8) is not supported."
+[FAIL] cast int8 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int8) is not supported."
+[FAIL] cast int8 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int32) is not supported."
+[FAIL] cast int8 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint32) is not supported."
+[FAIL] cast int8 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] cast int8 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] cast uint8 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] cast uint8 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] cast uint8 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int32) is not supported."
+[FAIL] cast uint8 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint32) is not supported."
+[FAIL] cast uint8 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] cast uint8 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int8) is not supported."
+Harness: the test ran to completion.
+

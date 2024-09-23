@@ -152,6 +152,9 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   // Returns true if the converter is a keyboard and has an assistant key.
   virtual bool HasAssistantKey() const;
 
+  // Returns true if the converter is a keyboard and has a function key.
+  virtual bool HasFunctionKey() const;
+
   // Returns the current state of the stylus garage switch, indicating whether a
   // stylus is inserted in (or attached) to a stylus dock or garage, or has been
   // removed.
@@ -179,6 +182,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   // false, all keys are allowed and |allowed_keys| is ignored.
   virtual void SetKeyFilter(bool enable_filter,
                             std::vector<DomCode> allowed_keys);
+
+  // Set that modifier keys should not be allowed to be produced from this
+  // converter.
+  virtual void SetBlockModifiers(bool block_modifiers);
 
   // Update caps lock LED state.
   virtual void SetCapsLockLed(bool enabled);

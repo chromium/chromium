@@ -4,6 +4,8 @@
 
 #include "gin/arguments.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "gin/converter.h"
 #include "gin/object_template_builder.h"
@@ -121,7 +123,7 @@ TEST_F(ArgumentsTest, TestGetAll) {
   v8::Local<v8::Object> object =
       object_template->NewInstance(context).ToLocalChecked();
 
-  auto do_check = [object, context](V8List& args, base::StringPiece key) {
+  auto do_check = [object, context](V8List& args, std::string_view key) {
     v8::Local<v8::Value> val;
     ASSERT_TRUE(
         object->Get(context, gin::StringToSymbol(context->GetIsolate(), key))

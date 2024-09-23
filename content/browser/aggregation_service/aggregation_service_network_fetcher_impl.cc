@@ -35,8 +35,8 @@ AggregationServiceNetworkFetcherImpl::AggregationServiceNetworkFetcherImpl(
     const base::Clock* clock,
     StoragePartition* storage_partition)
     : clock_(*clock), storage_partition_(storage_partition) {
-  DCHECK(clock);
-  DCHECK(storage_partition_);
+  CHECK(clock);
+  CHECK(storage_partition_);
 }
 
 AggregationServiceNetworkFetcherImpl::AggregationServiceNetworkFetcherImpl(
@@ -46,8 +46,8 @@ AggregationServiceNetworkFetcherImpl::AggregationServiceNetworkFetcherImpl(
     : clock_(*clock),
       url_loader_factory_(std::move(url_loader_factory)),
       enable_debug_logging_(enable_debug_logging) {
-  DCHECK(clock);
-  DCHECK(url_loader_factory_);
+  CHECK(clock);
+  CHECK(url_loader_factory_);
 }
 
 AggregationServiceNetworkFetcherImpl::~AggregationServiceNetworkFetcherImpl() =
@@ -66,7 +66,7 @@ AggregationServiceNetworkFetcherImpl::CreateForTesting(
 void AggregationServiceNetworkFetcherImpl::FetchPublicKeys(
     const GURL& url,
     NetworkFetchCallback callback) {
-  DCHECK(storage_partition_ || url_loader_factory_);
+  CHECK(storage_partition_ || url_loader_factory_);
 
   // The browser process URLLoaderFactory is not created by default, so don't
   // create it until it is directly needed.
@@ -192,7 +192,7 @@ void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
       base::TimeDelta freshness =
           headers->GetFreshnessLifetimes(response_time).freshness;
       if (!freshness.is_zero()) {
-        DCHECK(freshness.is_positive());
+        CHECK(freshness.is_positive());
         // Uses `response_time` as current time to get the age at response time
         // as an offset. `expiry_time` is calculated in the same way as
         // `HttpResponseHeaders::RequiresValidation`.
@@ -249,11 +249,11 @@ void AggregationServiceNetworkFetcherImpl::OnError(
     const GURL& url,
     NetworkFetchCallback callback,
     FetchStatus error,
-    const std::string& error_msg) {
-  DCHECK_NE(error, FetchStatus::kSuccess);
+    std::string_view error_msg) {
+  CHECK_NE(error, FetchStatus::kSuccess);
   RecordFetchStatus(error);
 
-  // TODO(crbug.com/1232601): Look into better backoff logic for fetching and
+  // TODO(crbug.com/40191195): Look into better backoff logic for fetching and
   // parsing error.
 
   if (enable_debug_logging_) {

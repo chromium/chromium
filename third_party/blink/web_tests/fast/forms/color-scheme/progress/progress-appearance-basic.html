@@ -7,6 +7,12 @@ progress.vertical {
 progress.rtl {
   direction: rtl;
 }
+progress.srl {
+  writing-mode: sideways-rl;
+}
+progress.slr {
+  writing-mode: sideways-lr;
+}
 </style>
 
 <progress max="100" value="0"></progress><br><br>
@@ -30,4 +36,9 @@ progress.rtl {
 <progress max="100" value="99" class="vertical"></progress>
 <progress max="100" value="100" class="vertical"></progress>
 <progress max="100" value="50" style="width:30px" class="vertical rtl"></progress>
-<progress max="100" value="50" style="width:30px" class="vertical"></progress></progress><br><br>
+<progress max="100" value="50" style="width:30px" class="vertical"></progress></progress>
+
+<progress max="100" value="33" class="srl rtl"></progress>
+<progress max="100" value="33" class="srl"></progress>
+<progress max="100" value="33" class="slr rtl"></progress>
+<progress max="100" value="33" class="slr"></progress>

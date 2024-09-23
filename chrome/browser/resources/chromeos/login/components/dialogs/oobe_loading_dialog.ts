@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../buttons/oobe_text_button.js';
 import '../common_styles/oobe_common_styles.css.js';
 import '../common_styles/oobe_dialog_host_styles.css.js';
@@ -12,20 +11,16 @@ import './oobe_content_dialog.js';
 
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../behaviors/oobe_i18n_behavior.js';
+import {OobeDialogHostMixin} from '../mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../mixins/oobe_i18n_mixin.js';
 import {OobeCrLottie} from '../oobe_cr_lottie.js';
 
 import {getTemplate} from './oobe_loading_dialog.html.js';
 
 const OobeLoadingDialogBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, OobeDialogHostBehavior], PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          OobeDialogHostBehaviorInterface,
-    };
+    OobeDialogHostMixin(OobeI18nMixin(PolymerElement));
 
 export class OobeLoadingDialog extends OobeLoadingDialogBase {
   static get is() {
@@ -73,10 +68,12 @@ export class OobeLoadingDialog extends OobeLoadingDialogBase {
   }
 
   override onBeforeShow(): void {
+    super.onBeforeShow();
     this.getSpinner().playing = true;
   }
 
-  onBeforeHide(): void {
+  override onBeforeHide(): void {
+    super.onBeforeHide();
     this.getSpinner().playing = false;
   }
 

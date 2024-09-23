@@ -1,0 +1,342 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./feedback_shared_styles.css.js
+ * #scheme=relative
+ * #include=feedback-shared-styles
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0;
+  width: 100%;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.title-bar {
+  -webkit-align-items: center;
+  -webkit-app-region: drag;
+  background-color: var(--feedback-bg-color);
+  box-shadow: 0 1px var(--feedback-box-shadow-color);
+  color: var(--feedback-primary-color);
+  display: flex;
+  flex-grow: 0;
+  font-size: 15px;
+  min-height: 48px;
+}
+
+.title-bar #page-title {
+  flex: 1 1 auto;
+  margin-inline-start: 20px;
+}
+
+.title-bar .button-bar {
+  flex: 0 1 auto;
+}
+
+#content-pane {
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: auto;
+  padding: 20px;
+}
+
+<if expr="is_chromeos">
+:host-context(.jelly-enabled),
+:host-context(.jelly-enabled) .text-field-container > select,
+:host-context(.jelly-enabled) .content {
+  background-color: var(--feedback-bg-color);
+  color: var(--cros-sys-on_surface_variant);
+  font: var(--cros-body-2-font);
+}
+
+:host-context(.jelly-enabled) textarea,
+:host-context(.jelly-enabled) input {
+  background-color: var(--cros-sys-input_field_on_shaded);
+  font: var(--cros-body-2-font);
+}
+
+:host-context(.jelly-enabled) .checkbox-field-container,
+:host-context(.jelly-enabled) .text-field-container {
+  color: var(--cros-sys-on_surface);
+  font: var(--cros-body-2-font);
+}
+
+:host-context(.jelly-enabled) a {
+  color: var(--cros-sys-primary);
+}
+
+:host-context(.jelly-enabled) .attach-file-notification,
+:host-context(.jelly-enabled) .description-empty-notification {
+  color: var(--cros-sys-error);
+  font: var(--cros-annotation-2-font);
+}
+
+:host-context(.jelly-enabled) textarea[aria-invalid="true"] {
+  color: var(--cros-sys-error);
+  outline: 2px solid var(--cros-sys-error);
+}
+
+:host-context(.jelly-enabled) #free-form-text,
+:host-context(.jelly-enabled) #additional-info-label {
+  font: var(--cros-headline-1-font);
+}
+
+:host-context(.jelly-enabled) .bottom-buttons button {
+  border-radius: 18px;
+  font: var(--cros-button-2-font);
+}
+
+:host-context(.jelly-enabled) #send-report-button {
+  background-color: var(--cros-sys-primary);
+  color: var(--cros-sys-on_primary);
+}
+
+:host-context(.jelly-enabled) #cancel-button {
+  background-color: var(--cros-sys-primary_container);
+  color: var(--cros-sys-on_primary_container);
+}
+
+:host-context(.jelly-enabled) #send-report-button:hover > #send-button-hover-bg {
+  background-color: var(--cros-sys-hover_on_prominent);
+  display: block;
+}
+
+:host-context(.jelly-enabled) #cancel-button:hover > #cancel-button-hover-bg {
+  background-color: var(--cros-sys-hover_on_subtle);
+  display: block;
+}
+</if>
+
+#cancel-button-hover-bg,
+#send-button-hover-bg {
+  border-radius: 18px;
+  content: '';
+  display: none;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.content {
+  color: var(--feedback-primary-color);
+  font-size: 12px;
+}
+
+.content #free-form-text {
+  margin-top: 0;  /* the content frame already gives enough margin. */
+}
+
+.content #description-text {
+  border-color: var(--feedback-separator-color);
+  box-sizing: border-box;
+  height: 120px;
+  line-height: 18px;
+  padding: 10px;
+  resize: none;
+  width: 100%;
+}
+
+.content #additional-info-label {
+  margin-inline-start: 10px;
+}
+
+.content .text-field-container {
+  -webkit-align-items: center;
+  display: flex;
+  height: 29px;
+  margin-top: 10px;
+  padding-inline-start: 10px;
+}
+
+:is(input:not([type=file]), select, textarea) {
+  background-color: var(--feedback-textfield-bg-color);
+}
+
+:is(input, select, textarea):active,
+:is(input, select, textarea):focus {
+  caret-color: var(--feedback-prominent-color);
+  outline: 2px solid var(--feedback-focus-color);
+}
+
+.content .text-field-container > label {
+  flex: 0 1 auto;
+  width: 100px;
+}
+
+.content .text-field-container > select {
+  border: 1px solid var(--feedback-separator-color);
+  color: var(--feedback-primary-color);
+  flex: 1 1 auto;
+  height: 100%;
+  padding-inline-start: 5px;
+}
+
+.content .text-field-container > input[type=text] {
+  border: 1px solid;
+  border-color: var(--feedback-separator-color);
+  color: var(--feedback-secondary-color);
+  flex: 1 1 auto;
+  height: 100%;
+  padding-inline-start: 5px;
+}
+
+.content .text-field-container > input:focus {
+  color: var(--feedback-primary-color);
+}
+
+.content .text-field-container > input[type=checkbox] {
+  margin-inline-end: 9px;
+}
+
+.content .description-empty-notification {
+  color: var(--feedback-alert-color);
+  font-weight: bold;
+}
+
+.content .checkbox-field-container {
+  -webkit-align-items: center;
+  display: flex;
+  height: 29px;
+}
+
+#consent-container {
+  margin-top: 10px;
+}
+
+.content #screenshot-image {
+  display: block;
+  height: 60px;
+  margin-inline-end: 25px;
+  margin-top: 40px;
+  transition: all 250ms ease;
+}
+
+.content #screenshot-image:hover {
+  height: 125px;
+  margin-inline-end: 0;
+  margin-top: 80px;
+  z-index: 1;
+}
+
+.content #screenshot-image.wide-screen {
+  height: auto;
+  width: 100px;
+}
+
+.content #screenshot-image.wide-screen:hover {
+  height: auto;
+  width: 200px;
+}
+
+.content #screenshot-chk-label {
+  flex: auto;
+}
+
+.content #sys-info-container {
+  margin-inline-end: 130px;
+}
+
+.content .privacy-note {
+  font-size: 12px;
+  line-height: 20px;
+  margin-bottom: 0;
+  margin-top: 20px;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.content .buttons-pane {
+  bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+  left: 20px;
+  position: absolute;
+  right: 20px;
+}
+
+.content .top-buttons {
+  position: absolute;
+}
+
+#bottom-buttons-container {
+  box-shadow: 0 -1px #d0d0d0;
+  margin: 0;
+  padding: 0 20px;
+}
+
+.content .bottom-buttons {
+  margin: 20px;
+  position: static;
+}
+
+.content .remove-file-button {
+  background-color: transparent;
+  background-image: image-set(
+      url(../images/button_butter_bar_close.png) 1x,
+      url(../images/2x/button_butter_bar_close.png) 2x);
+  background-position: 50% 80%;
+  background-repeat: no-repeat;
+  border: none;
+  height: 16px;
+  margin-inline-start: 5px;
+  pointer-events: auto;
+  width: 16px;
+}
+
+.content .remove-file-button:hover {
+  background-image: image-set(
+      url(../images/button_butter_bar_close_hover.png) 1x,
+      url(../images/2x/button_butter_bar_close_hover.png) 2x);
+}
+
+.content .remove-file-button:active {
+  background-image: image-set(
+      url(../images/button_butter_bar_close_pressed.png) 1x,
+      url(../images/2x/button_butter_bar_close_pressed.png) 2x);
+}
+
+.content #attach-file-note {
+  margin-bottom: 10px;
+  margin-inline-start: 112px;
+  margin-top: 10px;
+}
+
+.content .attach-file-notification {
+  color: var(--feedback-alert-color);
+  font-weight: bold;
+}
+
+/* Used for elements that are hidden but not ignored by screen reader. */
+.off-screen {
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  top: -1000px;
+  width: 1px;
+}
+
+#autofill-checkbox-container {
+  align-items: flex-start;
+  display: flex;
+}
+
+#autofill-metadata-label {
+  margin-top: 1px;
+}
+
+option {
+  background: var(--feedback-bg-color) linear-gradient(
+      rgba(255,255,255, 0.06),rgba(255,255,255, 0.06));
+  box-shadow: 0 1px 2px rgba(var(--feedback-box-shadow-color), 0.3),
+              0 1px 6px rgba(var(--feedback-box-shadow-color), 0.15);
+}

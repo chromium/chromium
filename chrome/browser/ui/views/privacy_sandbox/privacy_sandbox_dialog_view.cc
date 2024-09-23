@@ -23,6 +23,8 @@
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace {
@@ -46,19 +48,7 @@ GURL GetDialogURL(PrivacySandboxService::PromptType prompt_type) {
       return base_url.Resolve(
           chrome::kChromeUIPrivacySandboxDialogNoticeRestrictedPath);
     case PrivacySandboxService::PromptType::kNone:
-      NOTREACHED_NORETURN();
-  }
-}
-
-int GetDialogWidth(PrivacySandboxService::PromptType prompt_type) {
-  switch (prompt_type) {
-    case PrivacySandboxService::PromptType::kM1Consent:
-    case PrivacySandboxService::PromptType::kM1NoticeROW:
-    case PrivacySandboxService::PromptType::kM1NoticeEEA:
-    case PrivacySandboxService::PromptType::kM1NoticeRestricted:
-      return kM1DialogWidth;
-    case PrivacySandboxService::PromptType::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -104,8 +94,8 @@ bool CanWindowHeightFitPrivacySandboxPrompt(Browser* browser) {
 void ShowPrivacySandboxDialog(Browser* browser,
                               PrivacySandboxService::PromptType prompt_type) {
   auto delegate = std::make_unique<PrivacySandboxDialogDelegate>(browser);
-  delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
-  delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
+  delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  delegate->SetModalType(ui::mojom::ModalType::kWindow);
   delegate->SetShowCloseButton(false);
   delegate->SetOwnedByWidget(true);
 
@@ -124,6 +114,7 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
     Browser* browser,
     PrivacySandboxService::PromptType prompt_type)
     : browser_(browser) {
+  CHECK_NE(PrivacySandboxService::PromptType::kNone, prompt_type);
   // Create the web view in the native bubble.
   dialog_created_time_ = base::TimeTicks::Now();
   web_view_ =
@@ -136,14 +127,14 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
   auto* rfh = web_contents->GetPrimaryMainFrame();
   auto* zoom_map = content::HostZoomMap::GetForWebContents(web_contents);
   zoom_map->SetTemporaryZoomLevel(rfh->GetGlobalId(),
-                                  blink::PageZoomFactorToZoomLevel(1.0f));
+                                  blink::ZoomFactorToZoomLevel(1.0f));
 
   const int max_width = browser_->window()
                             ->GetWebContentsModalDialogHost()
                             ->GetMaximumDialogSize()
                             .width();
-  const int width = views::LayoutProvider::Get()->GetSnappedDialogWidth(
-      GetDialogWidth(prompt_type));
+  const int width =
+      views::LayoutProvider::Get()->GetSnappedDialogWidth(kM1DialogWidth);
   web_view_->SetPreferredSize(
       gfx::Size(std::min(width, max_width), kDefaultDialogHeight));
 

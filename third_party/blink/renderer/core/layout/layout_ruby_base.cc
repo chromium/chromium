@@ -6,7 +6,8 @@
 
 namespace blink {
 
-LayoutRubyBase::LayoutRubyBase() : LayoutNGBlockFlow(nullptr) {
+LayoutRubyBase::LayoutRubyBase() : LayoutBlockFlow(nullptr) {
+  DCHECK(!RuntimeEnabledFeatures::RubyLineBreakableEnabled());
   SetInline(false);
 }
 
@@ -14,7 +15,7 @@ LayoutRubyBase::~LayoutRubyBase() = default;
 
 bool LayoutRubyBase::IsChildAllowed(LayoutObject*, const ComputedStyle&) const {
   NOT_DESTROYED();
-  NOTREACHED();  // Because LayoutRubyColumn manages child types.
+  NOTREACHED_IN_MIGRATION();  // Because LayoutRubyColumn manages child types.
   return true;
 }
 
@@ -65,7 +66,7 @@ void LayoutRubyBase::MoveInlineChildrenTo(LayoutRubyBase& to_base,
   }
   // Move our inline children into the target block we determined above.
   MoveChildrenTo(to_block, FirstChild(), before_child,
-                 RuntimeEnabledFeatures::RubySimplePairingEnabled());
+                 /* full_remove_insert */ true);
 }
 
 void LayoutRubyBase::MoveBlockChildrenTo(LayoutRubyBase& to_base,
@@ -98,19 +99,10 @@ void LayoutRubyBase::MoveBlockChildrenTo(LayoutRubyBase& to_base,
   // Move all remaining children normally. If moving all children, include our
   // float list.
   if (!before_child) {
-    bool full_remove_insert = to_base.HasLayer() || HasLayer();
-    // TODO(kojii): |this| is |!ChildrenInline()| when we enter this function,
-    // but it may turn to |ChildrenInline()| when |anon_block_here| is destroyed
-    // above. Probably the correct fix is to do it earlier and switch to
-    // |MoveInlineChildren()| if this happens. For the short term safe fix,
-    // using |full_remove_insert| can prevent inconsistent LayoutObject tree
-    // that leads to CHECK failures.
-    full_remove_insert |= ChildrenInline();
-    full_remove_insert |= RuntimeEnabledFeatures::RubySimplePairingEnabled();
-    MoveAllChildrenIncludingFloatsTo(&to_base, full_remove_insert);
+    MoveAllChildrenIncludingFloatsTo(&to_base, /* full_remove_insert */ true);
   } else {
     MoveChildrenTo(&to_base, FirstChild(), before_child,
-                   RuntimeEnabledFeatures::RubySimplePairingEnabled());
+                   /* full_remove_insert */ true);
   }
 }
 

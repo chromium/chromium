@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
@@ -81,6 +82,11 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   bool CanCheckSafeBrowsingHighConfidenceAllowlist() const override;
   void Shutdown() override;
   bool CanSendRTSampleRequest() const override;
+  std::string GetUserEmail() const override;
+  std::string GetBrowserDMTokenString() const override;
+  std::string GetProfileDMTokenString() const override;
+  std::unique_ptr<enterprise_connectors::ClientMetadata> GetClientMetadata()
+      const override;
   std::string GetMetricSuffix() const override;
 
 #if defined(UNIT_TEST)
@@ -101,7 +107,8 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   void GetAccessToken(
       const GURL& url,
       RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override;
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      SessionID tab_id) override;
   std::optional<std::string> GetDMTokenString() const override;
   bool ShouldIncludeCredentials() const override;
   void OnResponseUnauthorized(const std::string& invalid_access_token) override;
@@ -121,6 +128,7 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::TimeTicks get_token_start_time,
+      SessionID tab_id,
       const std::string& access_token);
 
   // Unowned object used for getting preference settings.

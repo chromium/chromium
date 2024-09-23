@@ -211,7 +211,7 @@ export class WebViewLoader {
   setUrl(url: string) {
     assert(/^https?:\/\//.test(url));
 
-    if (url != this.url) {
+    if (url !== this.url) {
       // Clear the internal state and start with a new URL.
       this.clearInternalState();
       this.url = url;
@@ -261,7 +261,7 @@ export class WebViewLoader {
       return;
     }
 
-    if (details && details.error == 'net::ERR_ABORTED') {
+    if (details && details.error === 'net::ERR_ABORTED') {
       // Retry triggers net::ERR_ABORTED, so ignore it.
       // TODO(crbug.com/1327977): Load an embedded offline copy as a fallback.
       return;
@@ -290,7 +290,7 @@ export class WebViewLoader {
     }
 
     // Http errors such as 4xx, 5xx hit here instead of 'onErrorOccurred'.
-    if (details.statusCode != 200) {
+    if (details.statusCode !== 200) {
       // Not a successful request. Perform a reload if requested.
       console.info('Loading ' + this.url + ' has completed with HTTP error.');
       if (!this.loadResultRecorded) {

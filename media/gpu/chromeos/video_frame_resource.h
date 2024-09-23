@@ -35,10 +35,11 @@ class VideoFrameResource : public FrameResource {
   uint8_t* GetWritableVisibleData(size_t plane) override;
   size_t NumDmabufFds() const override;
   int GetDmabufFd(size_t i) const override;
-  scoped_refptr<gfx::NativePixmapDmaBuf> CreateNativePixmapDmaBuf()
+  scoped_refptr<const gfx::NativePixmapDmaBuf> GetNativePixmapDmaBuf()
       const override;
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const override;
-  gfx::GpuMemoryBuffer* GetGpuMemoryBuffer() const override;
+  std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage()
+      const override;
   gfx::GenericSharedMemoryId GetSharedMemoryId() const override;
   const VideoFrameLayout& layout() const override;
   VideoPixelFormat format() const override;
@@ -48,9 +49,6 @@ class VideoFrameResource : public FrameResource {
   const gfx::Size& coded_size() const override;
   const gfx::Rect& visible_rect() const override;
   const gfx::Size& natural_size() const override;
-  const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info() const override;
-  void set_ycbcr_info(
-      const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) override;
   const VideoFrameMetadata& metadata() const override;
   VideoFrameMetadata& metadata() override;
   void set_metadata(const VideoFrameMetadata& metadata) override;
@@ -66,11 +64,16 @@ class VideoFrameResource : public FrameResource {
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size) override;
   std::string AsHumanReadableString() const override;
+  gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandleForTesting()
+      const override;
 
   // GetMutableVideoFrame() and GetVideoFrame() return a pointer to the
   // underlying VideoFrame. This lets VideoFrameResource be used to adapt code
   // to work on both VideoFrame and FrameResource types without code
-  // duplication.
+  // duplication. The methods share ownership of the underlying VideoFrame, so
+  // the VideoFrame pointed to by the returned scoped_refptr can outlive |this|.
+  // Conversely, the underlying VideoFrame is guaranteed to remain alive as long
+  // as |this| lives.
   scoped_refptr<VideoFrame> GetMutableVideoFrame();
   scoped_refptr<const VideoFrame> GetVideoFrame() const;
 

@@ -28,6 +28,8 @@ bool ArcGraphicsJankDetector::IsEnoughSamplesToDetect(size_t num_samples) {
 
 void ArcGraphicsJankDetector::Reset() {
   stage_ = Stage::kWarmUp;
+  // TODO(matvore): do not use Now directly, as this forces unit tests to use it
+  // also.
   last_sample_time_ = base::Time::Now();
   warm_up_sample_cnt_ = kWarmUpSamples;
   period_fixed_ = false;
@@ -39,18 +41,15 @@ void ArcGraphicsJankDetector::SetPeriodFixed(const base::TimeDelta& period) {
   stage_ = Stage::kActive;
 }
 
-void ArcGraphicsJankDetector::OnSample() {
-  OnSample(base::Time::Now());
-}
-
-void ArcGraphicsJankDetector::OnSample(const base::Time& timestamp) {
+void ArcGraphicsJankDetector::OnSample(base::Time timestamp) {
   const base::TimeDelta delta = timestamp - last_sample_time_;
   last_sample_time_ = timestamp;
 
   // Try to detect pause and switch to warm-up stage.
   if (delta >= kPauseDetectionThreshold) {
-    if (period_fixed_)
+    if (period_fixed_) {
       return;
+    }
     warm_up_sample_cnt_ = kWarmUpSamples;
     stage_ = Stage::kWarmUp;
     return;
@@ -58,8 +57,9 @@ void ArcGraphicsJankDetector::OnSample(const base::Time& timestamp) {
 
   if (stage_ == Stage::kWarmUp) {
     DCHECK(warm_up_sample_cnt_);
-    if (--warm_up_sample_cnt_)
+    if (--warm_up_sample_cnt_) {
       return;
+    }
     // Switch to rate detection.
     intervals_.clear();
     stage_ = Stage::kRateDetection;
@@ -68,8 +68,9 @@ void ArcGraphicsJankDetector::OnSample(const base::Time& timestamp) {
 
   if (stage_ == Stage::kRateDetection) {
     intervals_.emplace_back(std::move(delta));
-    if (intervals_.size() < kSamplesForRateDetection)
+    if (intervals_.size() < kSamplesForRateDetection) {
       return;
+    }
     std::sort(intervals_.begin(), intervals_.end());
     period_ = intervals_[intervals_.size() / 3];
     stage_ = Stage::kActive;
@@ -77,8 +78,9 @@ void ArcGraphicsJankDetector::OnSample(const base::Time& timestamp) {
   }
 
   DCHECK_EQ(Stage::kActive, stage_);
-  if (delta >= period_ * kJankDetectionThresholdPercent / 100)
+  if (delta >= period_ * kJankDetectionThresholdPercent / 100) {
     callback_.Run(timestamp - delta + period_);
+  }
 }
 
 }  // namespace arc

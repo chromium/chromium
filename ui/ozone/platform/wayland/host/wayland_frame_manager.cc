@@ -11,6 +11,8 @@
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -122,6 +124,18 @@ WaylandFrameManager::~WaylandFrameManager() {
 
 void WaylandFrameManager::RecordFrame(std::unique_ptr<WaylandFrame> frame) {
   DCHECK_LE(pending_frames_.size(), 6u);
+  TRACE_EVENT(
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+      perfetto::Flow::Global(frame->trace_id),
+      [swap_trace_id = frame->trace_id,
+       frame_id = frame->frame_id](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                           StepName::STEP_BACKEND_SEND_BUFFER_SWAP);
+        data->set_display_trace_id(swap_trace_id),
+            data->set_backend_frame_id(frame_id);
+      });
 
   bool buffer_pending_creation = false;
   // The |frame| may have buffers to be sent for submission, which might not
@@ -155,6 +169,8 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
   // Frame callback hasn't been acked, need to wait.
   if (!submitted_frames_.empty() &&
       submitted_frames_.back()->wl_frame_callback) {
+    TRACE_EVENT_INSTANT("wayland", "WaitForFrameCallback", "cb_owner_frame_id",
+                        submitted_frames_.back()->frame_id);
     return;
   }
 
@@ -232,6 +248,19 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
   DCHECK(!frame->buffer_lost);
   DCHECK(window_->IsSurfaceConfigured());
 
+  TRACE_EVENT(
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+      perfetto::Flow::Global(frame->trace_id),
+      [swap_trace_id = frame->trace_id,
+       frame_id = frame->frame_id](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                           StepName::STEP_BACKEND_SEND_BUFFER_POST_SUBMIT);
+        data->set_display_trace_id(swap_trace_id),
+            data->set_backend_frame_id(frame_id);
+      });
+
   auto* root_surface = frame->root_surface.get();
   auto& root_config = frame->root_config;
   bool empty_frame = !root_config.buffer_id;
@@ -283,7 +312,7 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
         }
       }
     } else {
-      // TODO(crbug.com/1457446): Remove clip_rect when
+      // TODO(crbug.com/40273618): Remove clip_rect when
       // augmented_surface_set_clip_rect become supported widely enough.
       bool needs_commit = subsurface->ConfigureAndShowSurface(
           config.bounds_rect, root_config.bounds_rect, config.clip_rect,
@@ -306,6 +335,8 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
 
   DCHECK(empty_frame || !connection_->presentation() ||
          frame->pending_feedback || frame->feedback.has_value());
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "wayland", "WaylandFrameManager.PlaybackFrame", frame->frame_id);
   root_surface->Commit(true);
 
   frame->root_config = wl::WaylandOverlayConfig();
@@ -448,6 +479,8 @@ bool WaylandFrameManager::ApplySurfaceConfigure(
     if (!frame->wl_frame_callback) {
       static constexpr wl_callback_listener kFrameCallbackListener = {
           .done = &OnFrameDone};
+      TRACE_EVENT_INSTANT("wayland", "CreateFrameCallback", "cb_owner_frame_id",
+                          frame->frame_id);
       frame->wl_frame_callback.reset(wl_surface_frame(surface->surface()));
       wl_callback_add_listener(frame->wl_frame_callback.get(),
                                &kFrameCallbackListener, this);
@@ -513,6 +546,8 @@ void WaylandFrameManager::OnFrameDone(void* data,
 void WaylandFrameManager::HandleFrameCallback(wl_callback* callback) {
   DCHECK(submitted_frames_.back()->wl_frame_callback.get() == callback);
   submitted_frames_.back()->wl_frame_callback.reset();
+  TRACE_EVENT("wayland", "HandleFrameCallback", "cb_owner_frame_id",
+              submitted_frames_.back()->frame_id);
   MaybeProcessPendingFrame();
 }
 
@@ -558,8 +593,12 @@ void WaylandFrameManager::HandlePresentationFeedback(
     struct wp_presentation_feedback* presentation_feedback,
     const gfx::PresentationFeedback& feedback,
     bool discarded) {
+  TRACE_EVENT("wayland", "WaylandFrameManager::HandleFeedback", "discarded",
+              discarded);
   for (auto& frame : submitted_frames_) {
     if (frame->pending_feedback.get() == presentation_feedback) {
+      TRACE_EVENT_INSTANT("wayland", "StoreFeedback", "frame_id",
+                          frame->frame_id, "feedback_flags", feedback.flags);
       frame->feedback = feedback;
       break;
     } else if (!frame->feedback.has_value() && !discarded) {
@@ -670,6 +709,8 @@ void WaylandFrameManager::OnExplicitBufferRelease(WaylandSurface* surface,
         DCHECK(frame->merged_release_fence_fd.is_valid());
       }
 
+      TRACE_EVENT_INSTANT("wayland", "OnExplicitBufferRelease", "frame_id",
+                          frame->frame_id, "buffer_id", result->second->id());
       frame->submitted_buffers.erase(result);
       break;
     }
@@ -706,6 +747,8 @@ void WaylandFrameManager::OnWlBufferRelease(WaylandSurface* surface,
         }
       }
 
+      TRACE_EVENT_INSTANT("wayland", "OnWlBufferRelease", "frame_id",
+                          frame->frame_id, "buffer_id", result->second->id());
       frame->submitted_buffers.erase(result);
       break;
     }
@@ -719,6 +762,8 @@ void WaylandFrameManager::OnWlBufferRelease(WaylandSurface* surface,
 void WaylandFrameManager::MaybeProcessSubmittedFrames() {
   if (submitted_frames_.empty())
     return;
+
+  TRACE_EVENT0("wayland", "WaylandFrameManager::MaybeProcessSubmittedFrames");
 
   // Determine the range of frames in `submitted_frames_` that we want to send
   // OnSubmission. The range is specified by
@@ -767,6 +812,9 @@ void WaylandFrameManager::MaybeProcessSubmittedFrames() {
     on_submission_count++;
   }
 
+  TRACE_EVENT_INSTANT("wayland", "Submission count", "count",
+                      on_submission_count);
+
   if (on_submission_count > 0) {
     std::vector<wl::WaylandPresentationInfo> presentation_infos =
         GetReadyPresentations();
@@ -783,8 +831,24 @@ void WaylandFrameManager::MaybeProcessSubmittedFrames() {
         }
       }
 
+      TRACE_EVENT(
+          "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+          perfetto::Flow::Global((*iter)->trace_id),
+          [swap_trace_id = (*iter)->trace_id,
+           frame_id = (*iter)->frame_id](perfetto::EventContext ctx) {
+            auto* event =
+                ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+            auto* data = event->set_chrome_graphics_pipeline();
+            data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                               StepName::STEP_BACKEND_FINISH_BUFFER_SWAP);
+            data->set_display_trace_id(swap_trace_id),
+                data->set_backend_frame_id(frame_id);
+          });
+
       // The presentation info entries are sent with the last OnSubmission()
       // call.
+      TRACE_EVENT_NESTABLE_ASYNC_END0(
+          "wayland", "WaylandFrameManager.PlaybackFrame", (*iter)->frame_id);
       connection_->buffer_manager_host()->OnSubmission(
           window_->GetWidget(), (*iter)->frame_id, gfx::SwapResult::SWAP_ACK,
           std::move(release_fence_handle),
@@ -868,11 +932,13 @@ void WaylandFrameManager::FreezeTimeout() {
   for (auto& frame : submitted_frames_) {
     if (frame->submitted_buffers.empty())
       continue;
+    TRACE_EVENT_INSTANT("wayland", "FreezeTimeout", "frame_id",
+                        frame->frame_id);
     frame->submitted_buffers.clear();
     MaybeProcessSubmittedFrames();
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WaylandFrameManager::Hide() {

@@ -308,7 +308,7 @@ void DialRegistry::OnError(DialService::DialServiceErrorCode code) {
       client_->OnDialError(DIAL_NO_INTERFACES);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       client_->OnDialError(DIAL_UNKNOWN);
       break;
   }

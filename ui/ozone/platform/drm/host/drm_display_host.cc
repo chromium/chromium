@@ -106,6 +106,11 @@ void DrmDisplayHost::SetColorTemperatureAdjustment(
   sender_->GpuSetColorTemperatureAdjustment(snapshot_->display_id(), cta);
 }
 
+void DrmDisplayHost::SetColorCalibration(
+    const display::ColorCalibration& calibration) {
+  sender_->GpuSetColorCalibration(snapshot_->display_id(), calibration);
+}
+
 void DrmDisplayHost::SetGammaAdjustment(
     const display::GammaAdjustment& adjustment) {
   sender_->GpuSetGammaAdjustment(snapshot_->display_id(), adjustment);
@@ -116,6 +121,12 @@ void DrmDisplayHost::SetPrivacyScreen(
     display::SetPrivacyScreenCallback callback) {
   sender_->GpuSetPrivacyScreen(snapshot_->display_id(), enabled,
                                std::move(callback));
+}
+
+void DrmDisplayHost::GetSeamlessRefreshRates(
+    display::GetSeamlessRefreshRatesCallback callback) const {
+  sender_->GpuGetSeamlessRefreshRates(snapshot_->display_id(),
+                                      std::move(callback));
 }
 
 void DrmDisplayHost::OnGpuProcessLaunched() {}

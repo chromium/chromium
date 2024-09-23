@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
+#include "content/public/browser/browsing_instance_id.h"
 #include "content/public/common/process_type.h"
 
 namespace performance_manager {
@@ -19,6 +20,12 @@ namespace performance_manager {
 class FrameNodeImpl;
 class PageNodeImpl;
 class SystemNodeImpl;
+
+// The browsing instance for all frames on `page` in graphs defined below.
+extern const content::BrowsingInstanceId kBrowsingInstanceForPage;
+
+// The browsing instance for all frames on `other_page` in graphs defined below.
+extern const content::BrowsingInstanceId kBrowsingInstanceForOtherPage;
 
 // A for-testing subclass of the process node that allows mocking the
 // process' PID.

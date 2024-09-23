@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/css/parser/sizes_attribute_parser.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -102,7 +107,8 @@ TEST_F(SizesAttributeParserTest, Basic) {
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
     SizesAttributeParser parser(media_values, test_cases[i].input, nullptr);
-    ASSERT_EQ(test_cases[i].effective_size, parser.Size());
+    EXPECT_EQ(test_cases[i].effective_size, parser.Size())
+        << test_cases[i].input;
   }
 }
 
@@ -169,7 +175,8 @@ TEST_F(SizesAttributeParserTest, FloatViewportWidth) {
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
     SizesAttributeParser parser(media_values, test_cases[i].input, nullptr);
-    ASSERT_EQ(test_cases[i].effective_size, parser.Size());
+    EXPECT_EQ(test_cases[i].effective_size, parser.Size())
+        << test_cases[i].input;
   }
 }
 
@@ -220,11 +227,8 @@ TEST_F(SizesAttributeParserTest, AutoSizesNonLazyImg) {
   ASSERT_TRUE(parser.IsAuto());
   ASSERT_EQ(500, parser.Size());
 }
-// TODO(tcaptan):
-// Disabled the size check for images with no width for now because of:
-// crbug.com/1522175
-// Will re-enable or modify after the UA style sheet issue is resolved.
-TEST_F(SizesAttributeParserTest, DISABLED_AutoSizesLazyImgNoWidth) {
+
+TEST_F(SizesAttributeParserTest, AutoSizesLazyImgNoWidth) {
   SetBodyInnerHTML(R"HTML(
     <img id="target" sizes="auto" loading="lazy">
   )HTML");

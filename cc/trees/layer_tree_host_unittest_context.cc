@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -21,11 +26,11 @@
 #include "cc/resources/ui_resource_manager.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_layer_tree_host_client.h"
-#include "cc/test/fake_painted_scrollbar_layer.h"
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/fake_picture_layer_impl.h"
 #include "cc/test/fake_scoped_ui_resource.h"
 #include "cc/test/fake_scrollbar.h"
+#include "cc/test/fake_scrollbar_layer.h"
 #include "cc/test/fake_video_frame_provider.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/test/render_pass_test_utils.h"
@@ -38,7 +43,6 @@
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
-#include "components/viz/test/test_shared_bitmap_manager.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/media.h"
@@ -160,7 +164,7 @@ class LayerTreeHostContextTest : public LayerTreeTest {
   // CreateDisplayLayerTreeFrameSink can both use it on different threads.
   base::Lock gl_lock_;
   raw_ptr<viz::TestGLES2Interface, AcrossTasksDanglingUntriaged> gl_ = nullptr;
-  raw_ptr<viz::TestSharedImageInterface, AcrossTasksDanglingUntriaged> sii_ =
+  raw_ptr<gpu::TestSharedImageInterface, AcrossTasksDanglingUntriaged> sii_ =
       nullptr;
 
   int times_to_fail_create_;
@@ -792,7 +796,7 @@ class LayerTreeHostContextTestLayersNotified : public LayerTreeHostContextTest {
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -814,7 +818,6 @@ class LayerTreeHostContextTestDontUseLostResources
     child_context_provider_ = viz::TestContextProvider::CreateRaster();
     auto result = child_context_provider_->BindToCurrentSequence();
     CHECK_EQ(result, gpu::ContextResult::kSuccess);
-    shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
     child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
   }
 
@@ -824,7 +827,8 @@ class LayerTreeHostContextTestDontUseLostResources
   void SetupTree() override {
     auto* ri = child_context_provider_->RasterInterface();
 
-    gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+    scoped_refptr<gpu::ClientSharedImage> shared_image =
+        gpu::ClientSharedImage::CreateForTesting();
 
     gpu::SyncToken sync_token;
     ri->GenSyncTokenCHROMIUM(sync_token.GetData());
@@ -844,7 +848,7 @@ class LayerTreeHostContextTestDontUseLostResources
     texture->SetIsDrawable(true);
     constexpr gfx::Size size(64, 64);
     auto resource = viz::TransferableResource::MakeGpu(
-        mailbox, GL_TEXTURE_2D, sync_token, size,
+        shared_image, GL_TEXTURE_2D, sync_token, size,
         viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
     texture->SetTransferableResource(
         resource, base::BindOnce(&LayerTreeHostContextTestDontUseLostResources::
@@ -883,15 +887,13 @@ class LayerTreeHostContextTestDontUseLostResources
     color_video_frame_ = VideoFrame::CreateColorFrame(
         gfx::Size(4, 4), 0x80, 0x80, 0x80, base::TimeDelta());
     ASSERT_TRUE(color_video_frame_);
-    gpu::MailboxHolder holders[media::VideoFrame::kMaxPlanes] = {
-        gpu::MailboxHolder(mailbox, sync_token, GL_TEXTURE_2D)};
-    hw_video_frame_ = VideoFrame::WrapNativeTextures(
-        media::PIXEL_FORMAT_ARGB, holders,
+    hw_video_frame_ = VideoFrame::WrapSharedImage(
+        media::PIXEL_FORMAT_ARGB, shared_image, sync_token, GL_TEXTURE_2D,
         media::VideoFrame::ReleaseMailboxCB(), gfx::Size(4, 4),
         gfx::Rect(0, 0, 4, 4), gfx::Size(4, 4), base::TimeDelta());
     ASSERT_TRUE(hw_video_frame_);
-    scaled_hw_video_frame_ = VideoFrame::WrapNativeTextures(
-        media::PIXEL_FORMAT_ARGB, holders,
+    scaled_hw_video_frame_ = VideoFrame::WrapSharedImage(
+        media::PIXEL_FORMAT_ARGB, shared_image, sync_token, GL_TEXTURE_2D,
         media::VideoFrame::ReleaseMailboxCB(), gfx::Size(4, 4),
         gfx::Rect(0, 0, 3, 2), gfx::Size(4, 4), base::TimeDelta());
     ASSERT_TRUE(scaled_hw_video_frame_);
@@ -966,7 +968,6 @@ class LayerTreeHostContextTestDontUseLostResources
   bool lost_context_;
 
   scoped_refptr<viz::TestContextProvider> child_context_provider_;
-  std::unique_ptr<viz::SharedBitmapManager> shared_bitmap_manager_;
   std::unique_ptr<viz::ClientResourceProvider> child_resource_provider_;
 
   scoped_refptr<VideoFrame> color_video_frame_;
@@ -1015,10 +1016,15 @@ class ScrollbarLayerLostContext : public LayerTreeHostContextTest {
  public:
   ScrollbarLayerLostContext() : commits_(0) {}
 
+  void SetupTree() override {
+    SetInitialRootBounds(gfx::Size(256, 256));
+    LayerTreeTest::SetupTree();
+  }
+
   void BeginTest() override {
     scoped_refptr<Layer> scroll_layer = Layer::Create();
-    scrollbar_layer_ = FakePaintedScrollbarLayer::Create(
-        false, true, scroll_layer->element_id());
+    scrollbar_layer_ = base::MakeRefCounted<FakePaintedScrollbarLayer>(
+        scroll_layer->element_id());
     scrollbar_layer_->SetBounds(gfx::Size(10, 100));
     layer_tree_host()->root_layer()->AddChild(scrollbar_layer_);
     layer_tree_host()->root_layer()->AddChild(scroll_layer);
@@ -1043,7 +1049,7 @@ class ScrollbarLayerLostContext : public LayerTreeHostContextTest {
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1127,7 +1133,7 @@ class UIResourceLostAfterCommit : public UIResourceLostTestSimple {
         EndTest();
         break;
       case 5:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -1221,7 +1227,7 @@ class UIResourceLostBeforeCommit : public UIResourceLostTestSimple {
         EndTest();
         break;
       case 6:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -1296,7 +1302,7 @@ class UIResourceLostBeforeActivateTree : public UIResourceLostTest {
         break;
       case 6:
         // Make sure no extra commits happened.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1398,7 +1404,7 @@ class UIResourceLostEviction : public UIResourceLostTestSimple {
         EndTest();
         break;
       case 4:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1558,7 +1564,7 @@ class TileResourceFreedIfLostWhileExported : public LayerTreeHostContextTest {
   void DrawLayersOnThread(LayerTreeHostImpl* impl) override {
     auto* context_provider = static_cast<viz::TestContextProvider*>(
         impl->layer_tree_frame_sink()->worker_context_provider());
-    viz::TestSharedImageInterface* sii =
+    gpu::TestSharedImageInterface* sii =
         context_provider->SharedImageInterface();
     switch (impl->active_tree()->source_frame_number()) {
       case 0:

@@ -1,0 +1,126 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=/signin_shared.css.js
+ # #import=/signin_vars.css.js
+ * #scheme=relative
+ * #include=signin-shared
+ * #css_wrapper_metadata_end */
+
+#interceptDialog {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  overflow-wrap: break-word;  /* For very long names/emails/strings*/
+}
+
+#product-logo {
+  width: 24px;
+  height: 24px;
+}
+
+#title,
+#name {
+  color: var(--cr-primary-text-color);
+  font-weight: 500;
+  line-height: 24px;
+  margin-bottom: 0px;
+  margin-top: 8px;
+}
+
+#title {
+  font-size: 1.125rem;
+}
+
+#subtitle,
+#email {
+  color: var(--cr-secondary-text-color);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+#subtitle {
+  margin-top: 8px;
+}
+
+#contents-container {
+  margin-top: 16px;
+  padding: 20px;
+  border-radius: 16px;
+  background-color: var(--color-chrome-signin-bubble-info-background);
+}
+
+#name {
+  font-size: 1rem;
+}
+
+#button-container {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+}
+
+#accept-button,
+#cancel-button {
+  width: 100%;
+}
+
+#acceppt-button-content {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#cancel-button {
+  border: none;
+}
+
+.account-icon-container {
+  --avatar-image-width: 60px;
+  height: var(--avatar-image-width);
+  left: calc(50% - var(--avatar-image-width)/2);
+  position: relative;
+  width: var(--avatar-image-width);
+}
+
+.account-icon {
+  /** The user icon may be transparent, add a background */
+  background-color: var(--md-background-color);
+  border-radius: 50%;
+  height: var(--avatar-image-width);
+  top: 43px;
+  width: var(--avatar-image-width);
+}
+
+.managed-user-badge {
+  --badge-width: 20px;
+  --badge-offset: -4px;
+  background-color: var(--signin-work-badge-background-color);
+  border: 2px solid var(--md-background-color);
+  border-radius: 50%;
+  bottom: var(--badge-offset);
+  height: var(--badge-width);
+  inset-inline-end: var(--badge-offset);
+  position: absolute;
+  width: var(--badge-width);
+}
+
+.managed-user-badge > cr-icon {
+  --work-icon-size: 15px;
+  bottom: 0;
+  color: var(--signin-work-badge-foreground-color);
+  height: var(--work-icon-size);
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: var(--work-icon-size);
+}

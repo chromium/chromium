@@ -7,6 +7,8 @@
 #include "base/no_destructor.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/web/public/browser_state.h"
 
 // static
@@ -18,10 +20,15 @@ BreadcrumbManagerKeyedServiceFactory::GetInstance() {
 
 // static
 breadcrumbs::BreadcrumbManagerKeyedService*
-BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-    web::BrowserState* browser_state) {
+BreadcrumbManagerKeyedServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<breadcrumbs::BreadcrumbManagerKeyedService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
+}
+
+// static
+breadcrumbs::BreadcrumbManagerKeyedService*
+BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 BreadcrumbManagerKeyedServiceFactory::BreadcrumbManagerKeyedServiceFactory()
@@ -40,6 +47,5 @@ BreadcrumbManagerKeyedServiceFactory::BuildServiceInstanceFor(
 
 web::BrowserState* BreadcrumbManagerKeyedServiceFactory::GetBrowserStateToUse(
     web::BrowserState* browser_state) const {
-  // Create the service for both normal and incognito browser states.
-  return browser_state;
+  return GetBrowserStateOwnInstanceInIncognito(browser_state);
 }

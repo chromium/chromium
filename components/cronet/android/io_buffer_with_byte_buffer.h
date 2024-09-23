@@ -18,17 +18,14 @@ namespace cronet {
 class IOBufferWithByteBuffer : public net::WrappedIOBuffer {
  public:
   // Creates a buffer wrapping the Java ByteBuffer |jbyte_buffer|.
-  // |byte_buffer_data| points to the memory backed by the ByteBuffer, and
   // |position| is the index of the first byte of data inside of the buffer.
   // |limit| is the the index of the first element that should not be read or
   // written, preserved to verify that buffer is not changed externally during
   // networking operations.
-  IOBufferWithByteBuffer(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jbyte_buffer,
-      void* byte_buffer_data,
-      jint position,
-      jint limit);
+  IOBufferWithByteBuffer(JNIEnv* env,
+                         const base::android::JavaRef<jobject>& jbyte_buffer,
+                         jint position,
+                         jint limit);
 
   IOBufferWithByteBuffer(const IOBufferWithByteBuffer&) = delete;
   IOBufferWithByteBuffer& operator=(const IOBufferWithByteBuffer&) = delete;

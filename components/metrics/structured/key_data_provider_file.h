@@ -28,7 +28,6 @@ class KeyDataProviderFile : public KeyDataProvider, KeyDataProvider::Observer {
 
   // KeyDataProvider:
   bool IsReady() override;
-  void OnProfileAdded(const base::FilePath& profile_path) override;
   std::optional<uint64_t> GetId(const std::string& project_name) override;
   std::optional<uint64_t> GetSecondaryId(
       const std::string& project_name) override;

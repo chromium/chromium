@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UI_QUICK_ANSWERS_QUICK_ANSWERS_BROWSERTEST_BASE_H_
 #define CHROME_BROWSER_UI_QUICK_ANSWERS_QUICK_ANSWERS_BROWSERTEST_BASE_H_
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 
 namespace quick_answers {
-class QuickAnswersBrowserTestBase : public InProcessBrowserTest {
+class QuickAnswersBrowserTestBase : public InProcessBrowserTest,
+                                    public testing::WithParamInterface<bool> {
  public:
   struct ShowMenuParams {
     std::string selected_text;
@@ -24,9 +26,14 @@ class QuickAnswersBrowserTestBase : public InProcessBrowserTest {
   // InProcessBrowserTest:
   void SetUpOnMainThread() override;
 
+  bool IsMagicBoostEnabled() const;
+
  protected:
   void ShowMenu(const ShowMenuParams& params);
   QuickAnswersController* controller() { return QuickAnswersController::Get(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 }  // namespace quick_answers
 

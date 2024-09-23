@@ -9,18 +9,18 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/extensions/extension_install_ui_default.h"
+#include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/browser/ui/extensions/extension_installed_bubble_model.h"
 #include "chrome/browser/ui/extensions/extension_installed_waiter.h"
 #include "chrome/browser/ui/signin/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/sync/sync_promo_ui.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -34,6 +34,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
@@ -169,7 +170,7 @@ ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
                                    : views::BubbleBorder::TOP_RIGHT),
       browser_(browser),
       model_(std::move(model)) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   if (model_->show_sign_in_promo()) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     SetFootnoteView(CreateSigninPromoView(browser->profile(), this));
@@ -179,7 +180,9 @@ ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
   SetShowIcon(true);
   SetShowCloseButton(true);
 
-  std::u16string extension_name = base::UTF8ToUTF16(model_->extension_name());
+  std::u16string extension_name =
+      extensions::util::GetFixupExtensionNameForUIDisplay(
+          model_->extension_name());
   base::i18n::AdjustStringForLocaleDirection(&extension_name);
   SetTitle(l10n_util::GetStringFUTF16(IDS_EXTENSION_INSTALLED_HEADING,
                                       extension_name));
@@ -219,11 +222,12 @@ void ExtensionInstalledBubbleView::Init() {
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL));
   layout->set_minimum_cross_axis_size(kRightColumnWidth);
   // Indent by the size of the icon.
-  layout->set_inside_border_insets(gfx::Insets::TLBR(
-      0,
-      GetWindowIcon().Size().width() +
-          provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL),
-      0, 0));
+  layout->set_inside_border_insets(
+      gfx::Insets::TLBR(0,
+                        GetWindowIcon().Size().width() +
+                            provider->GetDistanceMetric(
+                                views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL),
+                        0, 0));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
   SetLayoutManager(std::move(layout));
@@ -270,7 +274,7 @@ void ShowUiOnToolbarMenu(scoped_refptr<const extensions::Extension> extension,
                    browser->profile(), extension.get(), icon));
 }
 
-void ExtensionInstallUIDefault::ShowPlatformBubble(
+void ExtensionInstallUI::ShowBubble(
     scoped_refptr<const extensions::Extension> extension,
     Browser* browser,
     const SkBitmap& icon) {

@@ -60,9 +60,9 @@ struct BLINK_COMMON_EXPORT
     return r.screen_orientation_angle;
   }
 
-  static const std::vector<gfx::Rect>& window_segments(
+  static const std::vector<gfx::Rect>& viewport_segments(
       const blink::DeviceEmulationParams& r) {
-    return r.window_segments;
+    return r.viewport_segments;
   }
 
   static blink::mojom::DevicePostureType device_posture(

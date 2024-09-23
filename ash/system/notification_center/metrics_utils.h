@@ -179,6 +179,13 @@ void LogExpandButtonClickAction(ExpandButtonClickAction action);
 // Logs the type of group notification added to the system.
 void LogGroupNotificationAddedType(GroupNotificationType type);
 
+// Logs when an ongoing process was shown without having provided a
+// `vector_small_image`.
+void LogOngoingProcessShownWithoutIcon(NotificationCatalogName catalog_name);
+
+// Logs when an ongoing process was shown without having provided a `title`.
+void LogOngoingProcessShownWithoutTitle(NotificationCatalogName catalog_name);
+
 }  // namespace metrics_utils
 
 }  // namespace ash

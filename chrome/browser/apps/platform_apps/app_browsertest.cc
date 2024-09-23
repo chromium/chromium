@@ -16,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -85,6 +84,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "chrome/browser/printing/test_print_preview_observer.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #endif
 
@@ -99,8 +99,7 @@ namespace {
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 bool ExpectChromeAppsDefaultEnabled() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   return false;
 #else
   return true;
@@ -124,16 +123,15 @@ class PlatformAppContextMenu : public RenderViewContextMenu {
 
 // This class keeps track of tabs as they are added to the browser. It will be
 // "done" (i.e. won't block on Wait()) once |observations| tabs have been added.
-class TabsAddedNotificationObserver : public TabStripModelObserver {
+class TabsAddedObserver : public TabStripModelObserver {
  public:
-  TabsAddedNotificationObserver(Browser* browser, size_t observations)
+  TabsAddedObserver(Browser* browser, size_t observations)
       : observations_(observations) {
     browser->tab_strip_model()->AddObserver(this);
   }
-  TabsAddedNotificationObserver(const TabsAddedNotificationObserver&) = delete;
-  TabsAddedNotificationObserver& operator=(
-      const TabsAddedNotificationObserver&) = delete;
-  ~TabsAddedNotificationObserver() override = default;
+  TabsAddedObserver(const TabsAddedObserver&) = delete;
+  TabsAddedObserver& operator=(const TabsAddedObserver&) = delete;
+  ~TabsAddedObserver() override = default;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -161,54 +159,6 @@ class TabsAddedNotificationObserver : public TabStripModelObserver {
   size_t observations_;
   std::vector<raw_ptr<content::WebContents, VectorExperimental>> observed_tabs_;
 };
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-class ScopedPreviewTestDelegate : printing::PrintPreviewUI::TestDelegate {
- public:
-  ScopedPreviewTestDelegate() {
-    printing::PrintPreviewUI::SetDelegateForTesting(this);
-  }
-
-  ~ScopedPreviewTestDelegate() override {
-    printing::PrintPreviewUI::SetDelegateForTesting(nullptr);
-  }
-
-  // PrintPreviewUI::TestDelegate implementation.
-  void DidGetPreviewPageCount(uint32_t page_count) override {
-    total_page_count_ = page_count;
-  }
-
-  // PrintPreviewUI::TestDelegate implementation.
-  void DidRenderPreviewPage(content::WebContents* preview_dialog) override {
-    dialog_size_ = preview_dialog->GetContainerBounds().size();
-    ++rendered_page_count_;
-    CHECK(rendered_page_count_ <= total_page_count_);
-    if (rendered_page_count_ == total_page_count_ && run_loop_) {
-      run_loop_->Quit();
-    }
-  }
-
-  void WaitUntilPreviewIsReady() {
-    if (rendered_page_count_ >= total_page_count_)
-      return;
-
-    base::RunLoop run_loop;
-    base::AutoReset<base::RunLoop*> auto_reset(&run_loop_, &run_loop);
-    run_loop.Run();
-  }
-
-  gfx::Size dialog_size() { return dialog_size_; }
-
- private:
-  uint32_t total_page_count_ = 1;
-  uint32_t rendered_page_count_ = 0;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
-  gfx::Size dialog_size_;
-};
-
-#endif  // ENABLE_PRINT_PREVIEW
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_WIN)
 bool CopyTestDataAndGetTestFilePath(const base::FilePath& test_data_file,
@@ -502,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenuClicked) {
 
 // https://crbug.com/1155013
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DISABLED_DisallowNavigation) {
-  TabsAddedNotificationObserver observer(browser(), 1);
+  TabsAddedObserver observer(browser(), 1);
 
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("platform_apps/navigation",
@@ -519,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   // The test will try to open in app urls and external urls via clicking links
   // and window.open(). Only the external urls should succeed in opening tabs.
   const size_t kExpectedNumberOfTabs = 2u;
-  TabsAddedNotificationObserver observer(browser(), kExpectedNumberOfTabs);
+  TabsAddedObserver observer(browser(), kExpectedNumberOfTabs);
   ASSERT_TRUE(RunExtensionTest("platform_apps/background_page_navigation",
                                {.launch_as_platform_app = true}))
       << message_;
@@ -536,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 }
 
 // Failing on some Win and Linux buildbots.  See crbug.com/354425.
-// TODO(crbug.com/1334427): Fix flakiness on macOS and re-enable this test.
+// TODO(crbug.com/40846460): Fix flakiness on macOS and re-enable this test.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
 #define MAYBE_Iframes DISABLED_Iframes
@@ -581,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PlatformAppsOnly) {
       << message_;
 }
 
-// TODO(https://crbug.com/1246088): Flaky.
+// TODO(crbug.com/40789006): Flaky.
 // Tests that platform apps have isolated storage by default.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DISABLED_Isolation) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -950,7 +900,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 
 namespace {
 
-// TODO(crbug.com/1487630): flaky on Linux dbg.
+// TODO(crbug.com/40283343): flaky on Linux dbg.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_PlatformAppDevToolsBrowserTest \
   DISABLED_PlatformAppDevToolsBrowserTest
@@ -1084,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/1288199): Run these tests on Chrome OS with both Ash and
+// TODO(crbug.com/40211465): Run these tests on Chrome OS with both Ash and
 // Lacros processes active.
 
 class PlatformAppChromeAppsDeprecationTest
@@ -1315,21 +1265,21 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DISABLED_WebContentsHasFocus) {
 
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
                        WindowDotPrintShouldBringUpPrintPreview) {
-  ScopedPreviewTestDelegate preview_delegate;
+  printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
   ASSERT_TRUE(RunExtensionTest("platform_apps/print_api",
                                {.launch_as_platform_app = true}))
       << message_;
-  preview_delegate.WaitUntilPreviewIsReady();
+  print_observer.WaitUntilPreviewIsReady();
 }
 
 // This test verifies that http://crbug.com/297179 is fixed.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
                        DISABLED_ClosingWindowWhilePrintingShouldNotCrash) {
-  ScopedPreviewTestDelegate preview_delegate;
+  printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
   ASSERT_TRUE(RunExtensionTest("platform_apps/print_api",
                                {.launch_as_platform_app = true}))
       << message_;
-  preview_delegate.WaitUntilPreviewIsReady();
+  print_observer.WaitUntilPreviewIsReady();
   GetFirstAppWindow()->GetBaseWindow()->Close();
 }
 
@@ -1569,7 +1519,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   ASSERT_TRUE(synthetic_wheel_listener.WaitUntilSatisfied());
 }
 
-// TODO(crbug.com/961017): Fix memory leaks in tests and re-enable on LSAN.
+// TODO(crbug.com/41457618): Fix memory leaks in tests and re-enable on LSAN.
 #if defined(LEAK_SANITIZER)
 #define MAYBE_VideoPictureInPicture DISABLED_VideoPictureInPicture
 #else

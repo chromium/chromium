@@ -6,6 +6,8 @@
 
 #import <dispatch/dispatch.h>
 
+#import <string_view>
+
 #import "base/apple/bundle_locations.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
@@ -77,7 +79,7 @@ std::string WebViewWebClient::GetUserAgent(web::UserAgentType type) const {
   }
 }
 
-base::StringPiece WebViewWebClient::GetDataResource(
+std::string_view WebViewWebClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) const {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
@@ -131,9 +133,7 @@ void WebViewWebClient::PrepareErrorPage(
     SafeBrowsingUnsafeResourceContainer* container =
         SafeBrowsingUnsafeResourceContainer::FromWebState(web_state);
     const security_interstitials::UnsafeResource* resource =
-        container->GetMainFrameUnsafeResource()
-            ?: container->GetSubFrameUnsafeResource(
-                   web_state->GetNavigationManager()->GetLastCommittedItem());
+        container->GetMainFrameUnsafeResource();
     CWVUnsafeURLHandler* handler =
         [[CWVUnsafeURLHandler alloc] initWithWebState:web_state
                                        unsafeResource:*resource
@@ -175,12 +175,6 @@ bool WebViewWebClient::EnableLongPressUIContextMenu() const {
 bool WebViewWebClient::EnableWebInspector(
     web::BrowserState* browser_state) const {
   return CWVWebView.webInspectorEnabled;
-}
-
-bool WebViewWebClient::IsMixedContentAutoupgradeEnabled(
-    web::BrowserState* browser_state) const {
-  return base::FeatureList::IsEnabled(
-      security_interstitials::features::kMixedContentAutoupgrade);
 }
 
 bool WebViewWebClient::IsInsecureFormWarningEnabled(

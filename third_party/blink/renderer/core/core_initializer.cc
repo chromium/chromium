@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
@@ -56,9 +55,10 @@
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
+#include "third_party/blink/renderer/core/preferences/preference_names.h"
+#include "third_party/blink/renderer/core/preferences/preference_values.h"
 #include "third_party/blink/renderer/core/script_type_names.h"
 #include "third_party/blink/renderer/core/securitypolicyviolation_disposition_names.h"
-#include "third_party/blink/renderer/core/style/inset_area.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/timezone/timezone_controller.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
@@ -117,7 +117,8 @@ void CoreInitializer::Initialize() {
       http_names::kNamesCount + input_type_names::kNamesCount +
       keywords::kNamesCount + media_feature_names::kNamesCount +
       media_type_names::kNamesCount + performance_entry_names::kNamesCount +
-      pointer_type_names::kNamesCount + shadow_element_names::kNamesCount;
+      pointer_type_names::kNamesCount + shadow_element_names::kNamesCount +
+      preference_names::kNamesCount + preference_values::kNamesCount;
 
   StringImpl::ReserveStaticStringsCapacityForSize(
       kCoreStaticStringsCount + StringImpl::AllStaticStrings().size());
@@ -146,20 +147,19 @@ void CoreInitializer::Initialize() {
   media_type_names::Init();
   performance_entry_names::Init();
   pointer_type_names::Init();
+  preference_names::Init();
+  preference_values::Init();
   shadow_element_names::Init();
   script_type_names::Init();
   securitypolicyviolation_disposition_names::Init();
 
   MediaQueryEvaluator::Init();
-  CSSParserTokenRange::InitStaticEOFToken();
 
   style_change_extra_data::Init();
 
   RegisterEventFactory();
 
   StringImpl::FreezeStaticStrings();
-
-  InsetArea::InitializeAnchorLengths();
 
   V8ThrowDOMException::Init();
 

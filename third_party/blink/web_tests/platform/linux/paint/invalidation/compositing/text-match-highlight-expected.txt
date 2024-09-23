@@ -15,6 +15,12 @@
         [89, 60, 44, 19],
         [51, 80, 44, 19]
       ]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 60],
+      "bounds": [15, 485],
+      "contentsOpaque": true
     }
   ]
 }

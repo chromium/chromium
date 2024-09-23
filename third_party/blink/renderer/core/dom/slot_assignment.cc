@@ -251,7 +251,8 @@ void SlotAssignment::RecalcAssignment() {
     // tree children in order to clean up soon to be stale relationships.
     // Any <slot> within this shadow root may lose or gain flat tree children
     // during slot reassignment, so call ChildrenChanged() on all of them.
-    if (AXObjectCache* cache = owner_->GetDocument().ExistingAXObjectCache()) {
+    AXObjectCache* cache = owner_->GetDocument().ExistingAXObjectCache();
+    if (cache) {
       for (Member<HTMLSlotElement> slot : Slots())
         cache->SlotAssignmentWillChange(slot);
     }
@@ -288,6 +289,13 @@ void SlotAssignment::RecalcAssignment() {
               slottable->parentElement() == owner_->host()) {
             slot->AppendAssignedNode(*slottable);
             children_to_clear.erase(slottable);
+            // If changing tree scope, recompute the a11y subtree.
+            // This normally occurs when the slottable node is removed
+            // from the flat tree via the below call to RemovedFromFlatTree(),
+            // which calls DetachLayoutTree().
+            if (cache) {
+              cache->RemoveSubtree(slottable);
+            }
           }
         }
       }
@@ -331,6 +339,14 @@ void SlotAssignment::RecalcAssignment() {
     }
   }
 
+  // We need to update any slots with dir=auto for two reasons:
+  //  (1) because this call might have assigned them different assigned nodes
+  //      and changed the result of the dir=auto, or
+  //  (2) because an earlier call to the slot's
+  //      CalculateAndAdjustAutoDirectionality method was deferred because the
+  //      slot needed assignment recalc (which is necessary because some such
+  //      calls happen when it's not safe to recalc assignment).
+  //
   // This needs to happen outside of the scope above, when flat tree traversal
   // is allowed, because Element::UpdateDescendantHasDirAutoAttribute uses
   // FlatTreeTraversal.

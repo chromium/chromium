@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
 #include "third_party/blink/renderer/core/editing/text_offset_mapping.h"
+
+#include <string>
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/editing/position.h"
@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -189,9 +188,11 @@ TEST_F(TextOffsetMappingTest, RangeOfBlockWithPRE) {
 }
 
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRUBY) {
-  EXPECT_EQ("<ruby>^abc|<rt>123</rt></ruby>",
+  const char* whole_text_selected = "^<ruby>abc<rt>123|</rt></ruby>";
+  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>123</rt></ruby>",
             GetRange("<ruby>|abc<rt>123</rt></ruby>"));
-  EXPECT_EQ("<ruby>abc<rt>^123|</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>abc<rt>^123|</rt></ruby>",
             GetRange("<ruby>abc<rt>1|23</rt></ruby>"));
 }
 
@@ -200,7 +201,7 @@ TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsBlock) {
   // We should not make <ruby> as |InlineContent| container because "XYZ" comes
   // before "abc" but in DOM tree, order is "abc" then "XYZ".
   // Layout tree:
-  //  LayoutNGBlockFlow {BODY} at (8,8) size 784x27
+  //  LayoutBlockFlow {BODY} at (8,8) size 784x27
   //   LayoutRubyAsBlock {RUBY} at (0,0) size 784x27
   //     LayoutRubyColumn (anonymous) at (0,7) size 22x20
   //       LayoutRubyText {RT} at (0,-10) size 22x12
@@ -209,30 +210,39 @@ TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsBlock) {
   //       LayoutRubyBase (anonymous) at (0,0) size 22x20
   //         LayoutText {#text} at (0,0) size 22x19
   //           text run at (0,0) width 22: "abc"
+  const char* whole_text_selected = "<ruby>^abc<rt>XYZ|</rt></ruby>";
+  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
   InsertStyleElement("ruby { display: block; }");
-  EXPECT_EQ("<ruby>^abc|<rt>XYZ</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
             GetRange("|<ruby>abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ("<ruby>^abc|<rt>XYZ</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
             GetRange("<ruby>|abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ("<ruby>abc<rt>^XYZ|</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>abc<rt>^XYZ|</rt></ruby>",
             GetRange("<ruby>abc<rt>|XYZ</rt></ruby>"));
 }
 
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsInlineBlock) {
+  const char* whole_text_selected = "^<ruby>abc<rt>XYZ|</rt></ruby>";
+  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
   InsertStyleElement("ruby { display: inline-block; }");
-  EXPECT_EQ("<ruby>^abc|<rt>XYZ</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
             GetRange("|<ruby>abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ("<ruby>^abc|<rt>XYZ</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>^abc|<rt>XYZ</rt></ruby>",
             GetRange("<ruby>|abc<rt>XYZ</rt></ruby>"));
-  EXPECT_EQ("<ruby>abc<rt>^XYZ|</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected : "<ruby>abc<rt>^XYZ|</rt></ruby>",
             GetRange("<ruby>abc<rt>|XYZ</rt></ruby>"));
 }
 
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRUBYandBR) {
-  EXPECT_EQ("<ruby>^abc<br>def|<rt>123<br>456</rt></ruby>",
+  const char* whole_text_selected =
+      "^<ruby>abc<br>def<rt>123<br>456|</rt></ruby>";
+  const bool is_ruby_lb = RuntimeEnabledFeatures::RubyLineBreakableEnabled();
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected
+                       : "<ruby>^abc<br>def|<rt>123<br>456</rt></ruby>",
             GetRange("<ruby>|abc<br>def<rt>123<br>456</rt></ruby>"))
       << "RT(LayoutRubyColumn) is a block";
-  EXPECT_EQ("<ruby>abc<br>def<rt>^123<br>456|</rt></ruby>",
+  EXPECT_EQ(is_ruby_lb ? whole_text_selected
+                       : "<ruby>abc<br>def<rt>^123<br>456|</rt></ruby>",
             GetRange("<ruby>abc<br>def<rt>123|<br>456</rt></ruby>"))
       << "RUBY introduce LayoutRuleBase for 'abc'";
 }
@@ -255,7 +265,7 @@ TEST_F(TextOffsetMappingTest, RangeOfEmptyBlock) {
   const PositionInFlatTree position = ToPositionInFlatTree(
       SetSelectionTextToBody(
           "<div><p>abc</p><p id='target'>|</p><p>ghi</p></div>")
-          .Base());
+          .Anchor());
   const LayoutObject* const target_layout_object =
       GetDocument().getElementById(AtomicString("target"))->GetLayoutObject();
   const TextOffsetMapping::InlineContents inline_contents =
@@ -445,15 +455,27 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect1) {
   Element* select = GetDocument().QuerySelector(AtomicString("select"));
   const auto& expected_outer =
       "^<select>"
-      "<slot id=\"select-button\"><div aria-hidden=\"true\"></div></slot>"
-      "<slot id=\"select-datalist\"></slot>"
+      "<div aria-hidden=\"true\"></div>"
       "<slot id=\"select-options\"></slot>"
+      "<slot id=\"select-button\"></slot>"
+      "<div popover=\"auto\" pseudo=\"picker(select)\">"
+      "<slot id=\"select-popover-options\"></slot>"
+      "</div>"
+      "<div popover=\"manual\" pseudo=\"-internal-select-autofill-preview\">"
+      "<div pseudo=\"-internal-select-autofill-preview-text\"></div>"
+      "</div>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
-      "<slot id=\"select-button\"><div aria-hidden=\"true\">^|</div></slot>"
-      "<slot id=\"select-datalist\"></slot>"
+      "<div aria-hidden=\"true\">^|</div>"
       "<slot id=\"select-options\"></slot>"
+      "<slot id=\"select-button\"></slot>"
+      "<div popover=\"auto\" pseudo=\"picker(select)\">"
+      "<slot id=\"select-popover-options\"></slot>"
+      "</div>"
+      "<div popover=\"manual\" pseudo=\"-internal-select-autofill-preview\">"
+      "<div pseudo=\"-internal-select-autofill-preview-text\"></div>"
+      "</div>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));
@@ -465,15 +487,27 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect2) {
   Element* select = GetDocument().QuerySelector(AtomicString("select"));
   const auto& expected_outer =
       "^<select>"
-      "<slot id=\"select-button\"><div aria-hidden=\"true\"></div></slot>"
-      "<slot id=\"select-datalist\"></slot>"
+      "<div aria-hidden=\"true\"></div>"
       "<slot id=\"select-options\"></slot>"
+      "<slot id=\"select-button\"></slot>"
+      "<div popover=\"auto\" pseudo=\"picker(select)\">"
+      "<slot id=\"select-popover-options\"></slot>"
+      "</div>"
+      "<div popover=\"manual\" pseudo=\"-internal-select-autofill-preview\">"
+      "<div pseudo=\"-internal-select-autofill-preview-text\"></div>"
+      "</div>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
-      "<slot id=\"select-button\"><div aria-hidden=\"true\">^|</div></slot>"
-      "<slot id=\"select-datalist\"></slot>"
+      "<div aria-hidden=\"true\">^|</div>"
       "<slot id=\"select-options\"></slot>"
+      "<slot id=\"select-button\"></slot>"
+      "<div popover=\"auto\" pseudo=\"picker(select)\">"
+      "<slot id=\"select-popover-options\"></slot>"
+      "</div>"
+      "<div popover=\"manual\" pseudo=\"-internal-select-autofill-preview\">"
+      "<div pseudo=\"-internal-select-autofill-preview-text\"></div>"
+      "</div>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));

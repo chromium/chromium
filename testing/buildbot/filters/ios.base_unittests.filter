@@ -1,3 +1,3 @@
-# TODO(crbug.com/1520736): iOS Blink port doesn't support to get a task for a
+# TODO(crbug.com/41493712): iOS Blink port doesn't support to get a task for a
 # child process.
 -SystemMetricsTest.MeasureChildCpuUsage

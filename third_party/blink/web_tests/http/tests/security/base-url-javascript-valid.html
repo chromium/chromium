@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<head>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <base href="javascript: // This is a valid JavaScript URL">
+</head>
+<body>
+  <script>
+    async_test(t => {
+      const base = document.querySelector('base');
+      const img = new Image();
+      img.onload = t.step_func_done(_ => {
+        assert_equals(img.naturalWidth, 76, "Image loaded correctly.");
+        assert_equals(img.src, "http://127.0.0.1:8000/security/resources/abe.png");
+        assert_equals(base.href, 'javascript: // This is a valid JavaScript URL');
+      });
+      img.onerror = t.unreached_func("Image should have loaded.");
+
+      img.src = "/security/resources/abe.png";
+    }, "A base URL is a valid 'javascript:' URL.");
+  </script>
+</body>

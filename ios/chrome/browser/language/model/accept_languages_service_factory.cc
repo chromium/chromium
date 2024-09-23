@@ -11,7 +11,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
 
@@ -54,10 +54,16 @@ AcceptLanguagesServiceFactory* AcceptLanguagesServiceFactory::GetInstance() {
 
 // static
 language::AcceptLanguagesService*
-AcceptLanguagesServiceFactory::GetForBrowserState(ChromeBrowserState* state) {
+AcceptLanguagesServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+language::AcceptLanguagesService* AcceptLanguagesServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   AcceptLanguagesServiceForBrowserState* service =
       static_cast<AcceptLanguagesServiceForBrowserState*>(
-          GetInstance()->GetServiceForBrowserState(state, true));
+          GetInstance()->GetServiceForBrowserState(profile, true));
   return &service->accept_languages();
 }
 

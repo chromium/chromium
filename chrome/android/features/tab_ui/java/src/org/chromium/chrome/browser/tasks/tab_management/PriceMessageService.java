@@ -8,8 +8,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -145,32 +145,27 @@ public class PriceMessageService extends MessageService {
     }
 
     private static final int MAX_PRICE_MESSAGE_SHOW_COUNT = 10;
-    // TODO(crbug.com/1148020): Currently every time entering the tab switcher, {@link
-    // ResetHandler.resetWithTabs} will be called twice if {@link
-    // TabUiFeatureUtilities#isTabToGtsAnimationEnabled} returns true, see {@link
-    // TabSwitcherMediator#prepareOverview}.
-    private static final int PREPARE_MESSAGE_TIMES_ENTERING_TAB_SWITCHER =
-            TabUiFeatureUtilities.isTabToGtsAnimationEnabled(ContextUtils.getApplicationContext())
-                    ? 2
-                    : 1;
 
     private final Profile mProfile;
-    private final PriceWelcomeMessageProvider mPriceWelcomeMessageProvider;
-    private final PriceWelcomeMessageReviewActionProvider mPriceWelcomeMessageReviewActionProvider;
+    private final Supplier<PriceWelcomeMessageProvider> mPriceWelcomeMessageProviderSupplier;
+    private final Supplier<PriceWelcomeMessageReviewActionProvider>
+            mPriceWelcomeMessageReviewActionProviderSupplier;
     private final PriceDropNotificationManager mNotificationManager;
 
     private PriceTabData mPriceTabData;
 
     PriceMessageService(
             Profile profile,
-            PriceWelcomeMessageProvider priceWelcomeMessageProvider,
-            PriceWelcomeMessageReviewActionProvider priceWelcomeMessageReviewActionProvider,
+            Supplier<PriceWelcomeMessageProvider> priceWelcomeMessageProviderSupplier,
+            Supplier<PriceWelcomeMessageReviewActionProvider>
+                    priceWelcomeMessageReviewActionProviderSupplier,
             PriceDropNotificationManager notificationManager) {
         super(MessageType.PRICE_MESSAGE);
         mProfile = profile;
         mPriceTabData = null;
-        mPriceWelcomeMessageProvider = priceWelcomeMessageProvider;
-        mPriceWelcomeMessageReviewActionProvider = priceWelcomeMessageReviewActionProvider;
+        mPriceWelcomeMessageProviderSupplier = priceWelcomeMessageProviderSupplier;
+        mPriceWelcomeMessageReviewActionProviderSupplier =
+                priceWelcomeMessageReviewActionProviderSupplier;
         mNotificationManager = notificationManager;
     }
 
@@ -185,7 +180,7 @@ public class PriceMessageService extends MessageService {
         if (type == PriceMessageType.PRICE_WELCOME) {
             PriceTrackingUtilities.increasePriceWelcomeMessageCardShowCount();
             if (PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount()
-                    > MAX_PRICE_MESSAGE_SHOW_COUNT * PREPARE_MESSAGE_TIMES_ENTERING_TAB_SWITCHER) {
+                    > MAX_PRICE_MESSAGE_SHOW_COUNT) {
                 logMessageDisableMetrics(
                         WELCOME_MESSAGE_METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_IGNORED);
                 PriceTrackingUtilities.disablePriceWelcomeMessageCard();
@@ -200,7 +195,7 @@ public class PriceMessageService extends MessageService {
         } else if (type == PriceMessageType.PRICE_ALERTS) {
             PriceTrackingUtilities.increasePriceAlertsMessageCardShowCount();
             if (PriceTrackingUtilities.getPriceAlertsMessageCardShowCount()
-                    > MAX_PRICE_MESSAGE_SHOW_COUNT * PREPARE_MESSAGE_TIMES_ENTERING_TAB_SWITCHER) {
+                    > MAX_PRICE_MESSAGE_SHOW_COUNT) {
                 logMessageDisableMetrics(
                         ALERTS_MESSAGE_METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_IGNORED);
                 PriceTrackingUtilities.disablePriceAlertsMessageCard();
@@ -234,10 +229,17 @@ public class PriceMessageService extends MessageService {
     public void review(@PriceMessageType int type) {
         if (type == PriceMessageType.PRICE_WELCOME) {
             assert mPriceTabData != null;
+            PriceWelcomeMessageProvider priceWelcomeMessageProvider =
+                    mPriceWelcomeMessageProviderSupplier.get();
+            assert priceWelcomeMessageProvider != null;
             int bindingTabIndex =
-                    mPriceWelcomeMessageProvider.getTabIndexFromTabId(mPriceTabData.bindingTabId);
-            mPriceWelcomeMessageReviewActionProvider.scrollToTab(bindingTabIndex);
-            mPriceWelcomeMessageProvider.showPriceDropTooltip(bindingTabIndex);
+                    priceWelcomeMessageProvider.getTabIndexFromTabId(mPriceTabData.bindingTabId);
+
+            PriceWelcomeMessageReviewActionProvider priceWelcomeMessageReviewActionProvider =
+                    mPriceWelcomeMessageReviewActionProviderSupplier.get();
+            assert priceWelcomeMessageReviewActionProvider != null;
+            priceWelcomeMessageReviewActionProvider.scrollToTab(bindingTabIndex);
+            priceWelcomeMessageProvider.showPriceDropTooltip(bindingTabIndex);
             logMessageDisableMetrics(
                     WELCOME_MESSAGE_METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_ACCEPTED);
             PriceTrackingUtilities.disablePriceWelcomeMessageCard();

@@ -41,8 +41,10 @@ IdentityLaunchWebAuthFlowFunction::Error WebAuthFlowFailureToError(
       return IdentityLaunchWebAuthFlowFunction::Error::kPageLoadTimedOut;
     case WebAuthFlow::CANNOT_CREATE_WINDOW:
       return IdentityLaunchWebAuthFlowFunction::Error::kCannotCreateWindow;
+
     default:
-      NOTREACHED() << "Unexpected error from web auth flow: " << failure;
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected error from web auth flow: " << failure;
       return IdentityLaunchWebAuthFlowFunction::Error::kUnexpectedError;
   }
 }
@@ -50,7 +52,7 @@ IdentityLaunchWebAuthFlowFunction::Error WebAuthFlowFailureToError(
 std::string ErrorToString(IdentityLaunchWebAuthFlowFunction::Error error) {
   switch (error) {
     case IdentityLaunchWebAuthFlowFunction::Error::kNone:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "This function is not expected to be called with no error";
       return std::string();
     case IdentityLaunchWebAuthFlowFunction::Error::kOffTheRecord:
@@ -69,6 +71,8 @@ std::string ErrorToString(IdentityLaunchWebAuthFlowFunction::Error error) {
       return identity_constants::kCannotCreateWindow;
     case IdentityLaunchWebAuthFlowFunction::Error::kInvalidURLScheme:
       return identity_constants::kInvalidURLScheme;
+    case IdentityLaunchWebAuthFlowFunction::Error::kBrowserContextShutDown:
+      return identity_constants::kBrowserContextShutDown;
   }
 }
 
@@ -185,6 +189,15 @@ bool IdentityLaunchWebAuthFlowFunction::ShouldKeepWorkerAliveIndefinitely() {
   return true;
 }
 
+void IdentityLaunchWebAuthFlowFunction::OnBrowserContextShutdown() {
+  if (auth_flow_) {
+    auth_flow_->Stop();
+  }
+  RecordHistogramFunctionResult(Error::kBrowserContextShutDown);
+  CompleteAsyncRun(
+      ExtensionFunction::Error(ErrorToString(Error::kBrowserContextShutDown)));
+}
+
 void IdentityLaunchWebAuthFlowFunction::InitFinalRedirectURLDomainsForTest(
     const std::string& extension_id) {
   InitFinalRedirectURLDomains(extension_id, nullptr);
@@ -213,10 +226,7 @@ void IdentityLaunchWebAuthFlowFunction::OnAuthFlowFailure(
   Error error = WebAuthFlowFailureToError(failure);
 
   RecordHistogramFunctionResult(error);
-  RespondWithError(ErrorToString(error));
-  if (auth_flow_)
-    auth_flow_.release()->DetachDelegateAndDelete();
-  Release();  // Balanced in Run.
+  CompleteAsyncRun(ExtensionFunction::Error(ErrorToString(error)));
 }
 
 void IdentityLaunchWebAuthFlowFunction::OnAuthFlowURLChange(
@@ -226,11 +236,16 @@ void IdentityLaunchWebAuthFlowFunction::OnAuthFlowURLChange(
   }
   RecordHistogramFunctionResult(
       IdentityLaunchWebAuthFlowFunction::Error::kNone);
-  Respond(WithArguments(redirect_url.spec()));
+  CompleteAsyncRun(WithArguments(redirect_url.spec()));
+}
+
+void IdentityLaunchWebAuthFlowFunction::CompleteAsyncRun(
+    ResponseValue response) {
+  Respond(std::move(response));
   if (auth_flow_) {
     auth_flow_.release()->DetachDelegateAndDelete();
   }
-  Release();  // Balanced in RunAsync.
+  Release();  // Balanced in Run.
 }
 
 WebAuthFlow* IdentityLaunchWebAuthFlowFunction::GetWebAuthFlowForTesting() {

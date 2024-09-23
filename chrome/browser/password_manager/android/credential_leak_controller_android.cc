@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/passwords/credential_leak_dialog_view_android.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "ui/android/window_android.h"
@@ -22,6 +23,7 @@ CredentialLeakControllerAndroid::CredentialLeakControllerAndroid(
     password_manager::CredentialLeakType leak_type,
     const GURL& origin,
     const std::u16string& username,
+    Profile* profile,
     ui::WindowAndroid* window_android,
     std::unique_ptr<PasswordCheckupLauncherHelper> checkup_launcher,
     std::unique_ptr<LeakDialogMetricsRecorder> metrics_recorder,
@@ -29,6 +31,7 @@ CredentialLeakControllerAndroid::CredentialLeakControllerAndroid(
     : leak_type_(leak_type),
       origin_(origin),
       username_(username),
+      profile_(profile),
       window_android_(window_android),
       leak_dialog_traits_(CreateDialogTraits(leak_type)),
       checkup_launcher_(std::move(checkup_launcher)),
@@ -73,8 +76,8 @@ void CredentialLeakControllerAndroid::OnAcceptDialog() {
     case LeakDialogType::kCheckup:
     case LeakDialogType::kCheckupAndChange:
       checkup_launcher_->LaunchCheckupOnDevice(
-          env, window_android_, PasswordCheckReferrerAndroid::kLeakDialog,
-          account_email_);
+          env, profile_, window_android_,
+          PasswordCheckReferrerAndroid::kLeakDialog, account_email_);
       break;
   }
 

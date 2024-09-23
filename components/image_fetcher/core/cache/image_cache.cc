@@ -46,8 +46,7 @@ namespace image_fetcher {
 
 // static
 std::string ImageCache::HashUrlToKey(const std::string& input) {
-  return base32::Base32Encode(
-      base::SHA1HashSpan(base::as_bytes(base::make_span(input))));
+  return base32::Base32Encode(base::SHA1Hash(base::as_byte_span(input)));
 }
 
 // static

@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
 
+#import "base/debug/dump_without_crashing.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -20,13 +20,10 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
-#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -37,7 +34,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator.h"
@@ -74,11 +70,6 @@ using password_manager::WarningType;
 // Reauthentication module used by passwords export and password details.
 @property(nonatomic, strong) ReauthenticationModule* reauthModule;
 
-// The dispatcher used by `viewController`.
-@property(nonatomic, weak)
-    id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>
-        dispatcher;
-
 // Coordinator for Password Checkup.
 @property(nonatomic, strong)
     PasswordCheckupCoordinator* passwordCheckupCoordinator;
@@ -99,9 +90,6 @@ using password_manager::WarningType;
 // Coordinator for blocking password manager until successful Local
 // Authentication.
 @property(nonatomic, strong) ReauthenticationCoordinator* reauthCoordinator;
-
-// Modal alert for interactions with passwords list.
-@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 
 // Coordinator that presents the instructions on how to install the Password
 // Manager widget.
@@ -128,9 +116,6 @@ using password_manager::WarningType;
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
-    _dispatcher = static_cast<
-        id<BrowserCommands, ApplicationCommands, BrowsingDataCommands>>(
-        browser->GetCommandDispatcher());
   }
   return self;
 }
@@ -180,8 +165,6 @@ using password_manager::WarningType;
       HandlerForProtocol(dispatcher, ApplicationCommands);
   passwordsViewController.browserHandler =
       HandlerForProtocol(dispatcher, BrowserCommands);
-  passwordsViewController.browsingDataHandler =
-      HandlerForProtocol(dispatcher, BrowsingDataCommands);
   passwordsViewController.settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   passwordsViewController.snackbarHandler =
@@ -240,7 +223,6 @@ using password_manager::WarningType;
   self.reauthCoordinator.delegate = nil;
   self.reauthCoordinator = nil;
   [self dismissActionSheetCoordinator];
-  [self dismissAlertCoordinator];
 
   [self.mediator disconnect];
 }
@@ -248,7 +230,11 @@ using password_manager::WarningType;
 #pragma mark - PasswordsSettingsCommands
 
 - (void)showPasswordCheckup {
-  DCHECK(!self.passwordCheckupCoordinator);
+  if (self.passwordCheckupCoordinator &&
+      self.baseNavigationController.topViewController !=
+          self.passwordsViewController) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
@@ -264,7 +250,11 @@ using password_manager::WarningType;
 
 - (void)showDetailedViewForCredential:
     (const password_manager::CredentialUIEntry&)credential {
-  DCHECK(!self.passwordDetailsCoordinator);
+  if (self.passwordDetailsCoordinator &&
+      self.baseNavigationController.topViewController !=
+          self.passwordsViewController) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
@@ -280,9 +270,11 @@ using password_manager::WarningType;
 
 - (void)showDetailedViewForAffiliatedGroup:
     (const password_manager::AffiliatedGroup&)affiliatedGroup {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!self.passwordDetailsCoordinator);
+  if (self.passwordDetailsCoordinator &&
+      self.baseNavigationController.topViewController !=
+          self.passwordsViewController) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
   self.passwordDetailsCoordinator = [[PasswordDetailsCoordinator alloc]
@@ -296,15 +288,16 @@ using password_manager::WarningType;
 }
 
 - (void)showAddPasswordSheet {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!self.addPasswordCoordinator);
+  if (self.addPasswordCoordinator &&
+      self.baseNavigationController.topViewController !=
+          self.passwordsViewController) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
   self.addPasswordCoordinator = [[AddPasswordCoordinator alloc]
       initWithBaseViewController:self.viewController
-                         browser:self.browser
-                    reauthModule:self.reauthModule];
+                         browser:self.browser];
   self.addPasswordCoordinator.delegate = self;
   [self.addPasswordCoordinator start];
 }
@@ -345,39 +338,6 @@ using password_manager::WarningType;
   [self.actionSheetCoordinator start];
 }
 
-- (void)showSetupPasscodeDialog {
-  NSString* title =
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE);
-  NSString* message =
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_CONTENT);
-  self.alertCoordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:self.viewController
-                                                   browser:self.browser
-                                                     title:title
-                                                   message:message];
-
-  __weak __typeof(self) weakSelf = self;
-  OpenNewTabCommand* command =
-      [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
-
-  [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                                   action:^{
-                                     [weakSelf dismissAlertCoordinator];
-                                   }
-                                    style:UIAlertActionStyleCancel];
-
-  [self.alertCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
-                action:^{
-                  [weakSelf.dispatcher closeSettingsUIAndOpenURL:command];
-                  [weakSelf dismissAlertCoordinator];
-                }
-                 style:UIAlertActionStyleDefault];
-
-  [self.alertCoordinator start];
-}
-
 #pragma mark - PasswordManagerViewControllerPresentationDelegate
 
 - (void)PasswordManagerViewControllerDismissed {
@@ -385,7 +345,11 @@ using password_manager::WarningType;
 }
 
 - (void)showPasswordSettingsSubmenu {
-  DCHECK(!self.passwordSettingsCoordinator);
+  if (self.passwordSettingsCoordinator &&
+      self.baseNavigationController.topViewController !=
+          self.passwordsViewController) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
@@ -401,9 +365,11 @@ using password_manager::WarningType;
 }
 
 - (void)showPasswordManagerWidgetPromoInstructions {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!self.widgetPromoInstructionsCoordinator);
+  if (self.widgetPromoInstructionsCoordinator &&
+      self.baseNavigationController.topViewController !=
+          self.passwordsViewController) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
@@ -495,13 +461,6 @@ using password_manager::WarningType;
 
   [self.mediator askFETToShowPasswordManagerWidgetPromo];
 
-  // Cleanup reauthCoordinator if scene state monitoring is not enabled.
-  if (!password_manager::features::IsAuthOnEntryV2Enabled()) {
-    [_reauthCoordinator stop];
-    _reauthCoordinator.delegate = nil;
-    _reauthCoordinator = nil;
-  }
-
   // Make sure that the Password Manager's toolbar is in the correct state once
   // the reauthentication view controller is dismissed. This is a fix for
   // crbug.com/1503081 that works well in pratice, but isn't perfect due to
@@ -520,7 +479,6 @@ using password_manager::WarningType;
 }
 
 - (void)willPushReauthenticationViewController {
-  [self dismissAlertCoordinator];
   [self dismissActionSheetCoordinator];
 }
 
@@ -586,19 +544,12 @@ using password_manager::WarningType;
 - (void)restartReauthCoordinator {
   // Restart reauth coordinator so it monitors scene state changes and requests
   // local authentication after the scene goes to the background.
-  if (password_manager::features::IsAuthOnEntryV2Enabled()) {
-    [self startReauthCoordinatorWithAuthOnStart:NO];
-  }
+  [self startReauthCoordinatorWithAuthOnStart:NO];
 }
 
 - (void)dismissActionSheetCoordinator {
   [self.actionSheetCoordinator stop];
   self.actionSheetCoordinator = nil;
-}
-
-- (void)dismissAlertCoordinator {
-  [self.alertCoordinator stop];
-  self.alertCoordinator = nil;
 }
 
 @end

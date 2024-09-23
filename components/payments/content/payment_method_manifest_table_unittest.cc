@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -492,10 +493,9 @@ TEST_F(PaymentMethodManifestTableTest, CredentialTableUserIdMigration) {
        " 'relying-party.example',"
        " '',"
        " x''," +
-       std::to_string(
+       base::NumberToString(
            base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds()) +
-       ")")
-          .c_str()));
+       ")")));
 
   EXPECT_FALSE(payment_method_manifest_table->DoesColumnExistForTest(
       "secure_payment_confirmation_instrument", "user_id"));

@@ -23,8 +23,11 @@
 #include "services/device/usb/usb_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/memory/memory_pressure_monitor.h"
+#include "base/process/process_metrics.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"  // nogncheck
-
+#include "components/crash/core/common/crash_key.h"
+#include "services/device/public/cpp/device_features.h"
 namespace {
 constexpr uint32_t kAllInterfacesMask = ~0U;
 }  // namespace
@@ -53,6 +56,38 @@ void UsbDeviceLinux::Open(OpenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(features::kUsbDeviceLinuxOpenCrashKey)) {
+    // Opening a USB device on ChromeOS sometimes crashes with signatures seen
+    // in crbug.com/40069034 and crbug.com/332722607. The crash is caused by a
+    // CHECK failure in MessageWriter::AppendBasic when
+    // dbus_message_iter_append_basic fails (returns false). DBus documentation
+    // indicates this only happens on OOM, but it can also happen on file
+    // descriptor exhaustion.
+    //
+    // Record crash keys with the current memory pressure and open file
+    // descriptor counts to aid in debugging these crashes.
+    static crash_reporter::CrashKeyString<6> memory_pressure_critical(
+        "memory-pressure-critical");
+    static crash_reporter::CrashKeyString<12> open_fd_count("open-fd-count");
+    static crash_reporter::CrashKeyString<12> open_fd_soft_limit(
+        "open-fd-soft-limit");
+    auto* memory_pressure_monitor = base::MemoryPressureMonitor::Get();
+    if (memory_pressure_monitor) {
+      memory_pressure_critical.Set(
+          (memory_pressure_monitor->GetCurrentPressureLevel() ==
+           base::MemoryPressureMonitor::MemoryPressureLevel::
+               MEMORY_PRESSURE_LEVEL_CRITICAL)
+              ? "true"
+              : "false");
+    }
+    auto process_metrics = base::ProcessMetrics::CreateCurrentProcessMetrics();
+    if (process_metrics) {
+      open_fd_count.Set(
+          base::NumberToString(process_metrics->GetOpenFdCount()));
+      open_fd_soft_limit.Set(
+          base::NumberToString(process_metrics->GetOpenFdSoftLimit()));
+    }
+  }
   // create the pipe used as a lifetime to re-attach the original kernel driver
   // to the USB device in permission_broker.
   base::ScopedFD read_end, write_end;

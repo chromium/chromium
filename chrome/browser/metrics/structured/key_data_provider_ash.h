@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/metrics/structured/profile_observer.h"
 #include "components/metrics/structured/lib/key_data_provider.h"
 
 namespace metrics::structured {
@@ -23,7 +24,9 @@ namespace metrics::structured {
 //
 // InitializeProfileKey should only be called once for the primary user. All
 // subsequent calls will no-op.
-class KeyDataProviderAsh : public KeyDataProvider, KeyDataProvider::Observer {
+class KeyDataProviderAsh : public KeyDataProvider,
+                           public KeyDataProvider::Observer,
+                           public ProfileObserver {
  public:
   KeyDataProviderAsh();
   KeyDataProviderAsh(const base::FilePath& device_key_path,
@@ -32,7 +35,6 @@ class KeyDataProviderAsh : public KeyDataProvider, KeyDataProvider::Observer {
 
   // KeyDataProvider:
   bool IsReady() override;
-  void OnProfileAdded(const base::FilePath& profile_path) override;
   std::optional<uint64_t> GetId(const std::string& project_name) override;
   std::optional<uint64_t> GetSecondaryId(
       const std::string& project_name) override;
@@ -41,6 +43,9 @@ class KeyDataProviderAsh : public KeyDataProvider, KeyDataProvider::Observer {
 
   // KeyDataProvider::Observer:
   void OnKeyReady() override;
+
+  // ProfileObserver:
+  void ProfileAdded(const Profile& profile) override;
 
  private:
   KeyDataProvider* GetKeyDataProvider(const std::string& project_name);

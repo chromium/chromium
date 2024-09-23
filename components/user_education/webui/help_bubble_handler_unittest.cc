@@ -83,7 +83,7 @@ class TestHelpBubbleHandler : public HelpBubbleHandlerBase {
   }
 
   content::WebUIController* GetController() override {
-    NOTREACHED() << "Should not call this in tests.";
+    NOTREACHED_IN_MIGRATION() << "Should not call this in tests.";
     return nullptr;
   }
 

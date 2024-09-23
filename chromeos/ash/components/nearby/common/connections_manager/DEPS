@@ -1,0 +1,12 @@
+include_rules = [
+  '+components/cross_device/nearby/nearby_features.h',
+  "+components/cross_device/logging",
+  "+third_party/nearby",
+]
+
+specific_include_rules = {
+  ".*_unittest.cc": [
+    "+chrome/test/base/testing_browser_process.h",
+    "+content/public/test",
+  ],
+}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+        android:id="@+id/radio_button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+      <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+          android:id="@+id/one"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="@dimen/min_touch_target_size" />
+
+      <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+          android:id="@+id/two"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="@dimen/min_touch_target_size" />
+
+      <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+          android:id="@+id/three"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="@dimen/min_touch_target_size" />
+
+      <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+          android:id="@+id/four"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="@dimen/min_touch_target_size" />
+
+    </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
+</LinearLayout>

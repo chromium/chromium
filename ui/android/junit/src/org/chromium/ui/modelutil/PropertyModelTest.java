@@ -23,11 +23,13 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableTransformingObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 /** Tests to ensure/validate the interactions with the PropertyModel. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -55,6 +57,13 @@ public class PropertyModelTest {
             new WritableObjectPropertyKey<>();
     public static WritableObjectPropertyKey<Object> OBJECT_PROPERTY_SKIP_EQUALITY =
             new WritableObjectPropertyKey<>(true);
+
+    public static WritableTransformingObjectPropertyKey<Object, Object>
+            TRANSFORMING_OBJECT_PROPERTY_A = new WritableTransformingObjectPropertyKey<>();
+    public static WritableTransformingObjectPropertyKey<String, Object>
+            TRANSFORMING_OBJECT_PROPERTY_B = new WritableTransformingObjectPropertyKey<>();
+    public static WritableTransformingObjectPropertyKey<List<Integer>, Object>
+            TRANSFORMING_OBJECT_PROPERTY_C = new WritableTransformingObjectPropertyKey<>();
 
     @Test
     public void getAllSetProperties() {
@@ -184,16 +193,78 @@ public class PropertyModelTest {
     }
 
     @Test
+    public void transformingObjectUpdates() {
+        Function identityFunction = o -> o;
+        Function duplicateStringFunction =
+                o -> {
+                    if (o == null) return "really_null";
+                    return o.toString() + o.toString();
+                };
+        Function listLengthFunction = o -> ((List) o).size();
+        PropertyModel model =
+                new PropertyModel.Builder()
+                        .withTransformingKey(TRANSFORMING_OBJECT_PROPERTY_A, identityFunction)
+                        .withTransformingKey(
+                                TRANSFORMING_OBJECT_PROPERTY_B, duplicateStringFunction)
+                        .withTransformingKey(TRANSFORMING_OBJECT_PROPERTY_C, listLengthFunction)
+                        .build();
+
+        Object obj1 = new Object();
+        verifyTransformingObjectUpdate(model, TRANSFORMING_OBJECT_PROPERTY_A, obj1, obj1);
+        verifyTransformingObjectUpdate(model, TRANSFORMING_OBJECT_PROPERTY_A, null, null);
+
+        verifyTransformingObjectUpdate(model, TRANSFORMING_OBJECT_PROPERTY_B, "Test", "TestTest");
+        verifyTransformingObjectUpdate(
+                model, TRANSFORMING_OBJECT_PROPERTY_B, "Test1", "Test1Test1");
+        verifyTransformingObjectUpdate(model, TRANSFORMING_OBJECT_PROPERTY_B, null, "really_null");
+        verifyTransformingObjectUpdate(model, TRANSFORMING_OBJECT_PROPERTY_B, "Test", "TestTest");
+
+        List<Integer> list = new ArrayList<>();
+        verifyTransformingObjectUpdate(model, TRANSFORMING_OBJECT_PROPERTY_C, list, 0);
+        list = new ArrayList<>(list);
+        list.add(1);
+        verifyTransformingObjectUpdate(model, TRANSFORMING_OBJECT_PROPERTY_C, list, 1);
+        list = new ArrayList<>(list);
+        list.add(2);
+        verifyTransformingObjectUpdate(model, TRANSFORMING_OBJECT_PROPERTY_C, list, 2);
+    }
+
+    private <T, V> void verifyTransformingObjectUpdate(
+            PropertyModel model,
+            WritableTransformingObjectPropertyKey<T, V> key,
+            T value,
+            V transformedValue) {
+        @SuppressWarnings("unchecked")
+        PropertyObserver<PropertyKey> observer = Mockito.mock(PropertyObserver.class);
+        model.addObserver(observer);
+        Mockito.<PropertyObserver>reset(observer);
+
+        model.set(key, value);
+        verify(observer).onPropertyChanged(model, key);
+        assertThat(model.get(key), equalTo(transformedValue));
+
+        model.removeObserver(observer);
+    }
+
+    @Test
     public void duplicateSetChangeSuppression() {
         PropertyModel model =
-                new PropertyModel(
-                        BOOLEAN_PROPERTY_A, FLOAT_PROPERTY_A, INT_PROPERTY_A, OBJECT_PROPERTY_A);
+                new PropertyModel.Builder(
+                                BOOLEAN_PROPERTY_A,
+                                FLOAT_PROPERTY_A,
+                                INT_PROPERTY_A,
+                                OBJECT_PROPERTY_A)
+                        .withTransformingKey(TRANSFORMING_OBJECT_PROPERTY_A, o -> o)
+                        .build();
         model.set(BOOLEAN_PROPERTY_A, true);
         model.set(FLOAT_PROPERTY_A, 1f);
         model.set(INT_PROPERTY_A, -1);
 
-        Object obj = new Object();
-        model.set(OBJECT_PROPERTY_A, obj);
+        Object obj1 = new Object();
+        model.set(OBJECT_PROPERTY_A, obj1);
+
+        Object obj2 = new Object();
+        model.set(TRANSFORMING_OBJECT_PROPERTY_A, obj2);
 
         @SuppressWarnings("unchecked")
         PropertyObserver<PropertyKey> observer = Mockito.mock(PropertyObserver.class);
@@ -203,7 +274,8 @@ public class PropertyModelTest {
         model.set(BOOLEAN_PROPERTY_A, true);
         model.set(FLOAT_PROPERTY_A, 1f);
         model.set(INT_PROPERTY_A, -1);
-        model.set(OBJECT_PROPERTY_A, obj);
+        model.set(OBJECT_PROPERTY_A, obj1);
+        model.set(TRANSFORMING_OBJECT_PROPERTY_A, obj2);
 
         Mockito.verifyNoMoreInteractions(observer);
     }
@@ -332,5 +404,45 @@ public class PropertyModelTest {
         Assert.assertFalse(
                 "OBJECT_PROPERTY_A should not be equal",
                 model1.compareValue(model2, OBJECT_PROPERTY_SKIP_EQUALITY));
+    }
+
+    @Test
+    public void testCompareValue_TransformingObject() {
+        Object sharedObject = new Object();
+
+        Function toStringFunction = o -> o.toString();
+        PropertyModel model1 =
+                new PropertyModel.Builder()
+                        .withTransformingKey(TRANSFORMING_OBJECT_PROPERTY_A, toStringFunction)
+                        .withTransformingKey(TRANSFORMING_OBJECT_PROPERTY_B, toStringFunction)
+                        .withTransformingKey(TRANSFORMING_OBJECT_PROPERTY_C, toStringFunction)
+                        .build();
+        model1.set(TRANSFORMING_OBJECT_PROPERTY_A, sharedObject);
+        model1.set(TRANSFORMING_OBJECT_PROPERTY_B, "Test");
+        model1.set(TRANSFORMING_OBJECT_PROPERTY_C, new ArrayList<>());
+
+        PropertyModel model2 =
+                new PropertyModel.Builder()
+                        .withTransformingKey(TRANSFORMING_OBJECT_PROPERTY_A, toStringFunction)
+                        .withTransformingKey(TRANSFORMING_OBJECT_PROPERTY_B, toStringFunction)
+                        .withTransformingKey(TRANSFORMING_OBJECT_PROPERTY_C, toStringFunction)
+                        .build();
+        model2.set(TRANSFORMING_OBJECT_PROPERTY_A, sharedObject);
+        model2.set(TRANSFORMING_OBJECT_PROPERTY_B, "Test");
+
+        Assert.assertTrue(
+                "TRANSFORMING_OBJECT_PROPERTY_A should be equal",
+                model1.compareValue(model2, TRANSFORMING_OBJECT_PROPERTY_A));
+        Assert.assertTrue(
+                "TRANSFORMING_OBJECT_PROPERTY_B should be equal",
+                model1.compareValue(model2, TRANSFORMING_OBJECT_PROPERTY_B));
+        Assert.assertFalse(
+                "TRANSFORMING_OBJECT_PROPERTY_C should not be equal",
+                model1.compareValue(model2, TRANSFORMING_OBJECT_PROPERTY_C));
+
+        model2.set(TRANSFORMING_OBJECT_PROPERTY_B, "Test2");
+        Assert.assertFalse(
+                "TRANSFORMING_OBJECT_PROPERTY_B should not be equal",
+                model1.compareValue(model2, TRANSFORMING_OBJECT_PROPERTY_B));
     }
 }

@@ -8,6 +8,7 @@ found in the LICENSE file.
 <TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/account_picker_add_account_text"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
@@ -18,5 +19,6 @@ found in the LICENSE file.
     android:paddingBottom="4dp"
     android:gravity="center_vertical"
     android:text="@string/signin_add_account_to_device"
+    android:textDirection="locale"
     android:textAppearance="@style/TextAppearance.TextLarge.Primary"
     app:drawableStartCompat="@drawable/ic_person_add_40dp" />

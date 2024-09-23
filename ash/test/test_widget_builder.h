@@ -10,17 +10,18 @@
 #include "ash/ash_export.h"
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
-// A builder to create a views::Widget for testing purpose. There are two ways
-// to create a widget, 'BuildOwnedByNativeWidget()' and
-// 'BuildOwnsNativeWidget()'.  Please refer to the documentation of each methods
-// to find out which is better for your test cases as there are subtle
-// differences.
+// A builder to create a views::Widget for testing purpose. There are three
+// ways to create a widget: `BuildOwnedByNativeWidget()`,
+// `BuildOwnsNativeWidget()`, and `BuildClientOwnsWidget()`.  Please refer
+// to the documentation of each methods to find out which is better for your
+// test cases as there are subtle differences.
 class ASH_EXPORT TestWidgetBuilder {
  public:
   TestWidgetBuilder();
@@ -36,7 +37,7 @@ class ASH_EXPORT TestWidgetBuilder {
   TestWidgetBuilder& SetParent(aura::Window* parent);
   TestWidgetBuilder& SetContext(aura::Window* context);
   TestWidgetBuilder& SetActivatable(bool activatable);
-  TestWidgetBuilder& SetShowState(ui::WindowShowState show_state);
+  TestWidgetBuilder& SetShowState(ui::mojom::WindowShowState show_state);
 
   // Sets the window property to be set on the window of a widget.
   template <typename T>
@@ -83,12 +84,25 @@ class ASH_EXPORT TestWidgetBuilder {
   // (aura::Window on ChromeOS). It will be closed and deleted immediately when
   // the object exits its scope.  The important difference is that a widget
   // won't be deleted when the window is deleted first and
-  // Widget::GetNativeWindow() may return nullptr. Use this if there is a clear
-  // owner of the widget that controls the lifetime of the widget.
+  // Widget::GetNativeWindow() may return nullptr. Prefer
+  // BuildClientOwnsWidget() to this.
   [[nodiscard]] std::unique_ptr<views::Widget> BuildOwnsNativeWidget();
 
+  // Creates a widget that can live independently of the native widget,
+  // and where the native widget can live independently of the widget. The
+  // native widget will be owned by the native window. When
+  // the widget is closed, it requests that the native widget also be
+  // closed and deleted, but that is allowed to happen asynchronously.
+  [[nodiscard]] std::unique_ptr<views::Widget> BuildClientOwnsWidget();
+
  private:
-  views::Widget::InitParams widget_init_params_;
+  // Both BuildOwnsNativeWidget() and BuildClientOwnsWidget() are just
+  // wrappers around this.
+  [[nodiscard]] std::unique_ptr<views::Widget> BuildWidgetWithOwnership(
+      views::Widget::InitParams::Ownership ownership);
+
+  views::Widget::InitParams widget_init_params_{
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET};
   int window_id_ = aura::Window::kInitialId;
   std::u16string window_title_ = std::u16string();
   bool show_ = true;

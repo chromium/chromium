@@ -63,7 +63,7 @@ class CORE_EXPORT DOMURLUtilsReadOnly {
   static String port(const KURL&);
   String port() { return port(Url()); }
 
-  static String pathname(const KURL& url) { return url.GetPath(); }
+  static String pathname(const KURL& url) { return url.GetPath().ToString(); }
   String pathname() { return pathname(Url()); }
 
   static String search(const KURL&);

@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_lacros",
+      "chromeos_ash"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "lens.policy.lens_overlay_settings",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1
+      ]
+    }
+  }
+]
+

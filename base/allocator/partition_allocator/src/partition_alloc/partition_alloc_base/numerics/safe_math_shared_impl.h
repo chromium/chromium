@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NUMERICS_SAFE_MATH_SHARED_IMPL_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NUMERICS_SAFE_MATH_SHARED_IMPL_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_NUMERICS_SAFE_MATH_SHARED_IMPL_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_NUMERICS_SAFE_MATH_SHARED_IMPL_H_
 
 #include <cassert>
 #include <climits>
@@ -14,10 +14,10 @@
 #include <limits>
 #include <type_traits>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 
-#if BUILDFLAG(IS_ASMJS)
+#if PA_BUILDFLAG(IS_ASMJS)
 // Optimized safe math instructions are incompatible with asmjs.
 #define PA_BASE_HAS_OPTIMIZED_SAFE_MATH (0)
 // Where available use builtin math overflow support on Clang and GCC.
@@ -209,4 +209,4 @@ struct MathWrapper {
 
 }  // namespace partition_alloc::internal::base::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_NUMERICS_SAFE_MATH_SHARED_IMPL_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_NUMERICS_SAFE_MATH_SHARED_IMPL_H_

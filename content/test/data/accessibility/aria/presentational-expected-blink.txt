@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++section
+++++++sectionWithoutName
 ++++++++heading name='Heading with link'
 ++++++++++staticText name='Heading '
 ++++++++++++inlineTextBox name='Heading '

@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable name='Table example'
+android.webkit.WebView focusable focused name='Table example'
 ++android.widget.GridView role_description='table' collection row_count=3 column_count=2
 ++++android.view.View
 ++++++android.view.View role_description='column header' collection_item table_header name='Pair' row_span=1 column_span=1

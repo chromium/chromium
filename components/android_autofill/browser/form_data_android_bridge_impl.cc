@@ -7,28 +7,20 @@
 #include <memory>
 #include <vector>
 
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
-#include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "components/android_autofill/browser/form_field_data_android.h"
-#include "components/android_autofill/browser/jni_headers/FormData_jni.h"
 #include "components/autofill/core/common/form_data.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/android_autofill/browser/jni_headers/FormData_jni.h"
 
 namespace autofill {
 
 namespace {
 
-using base::android::AttachCurrentThread;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::GetClass;
-using base::android::ScopedJavaLocalRef;
-using base::android::ToJavaArrayOfObjects;
-
-constexpr char kFormFieldDataAndroidClassname[] =
-    "org/chromium/components/autofill/FormFieldData";
+using jni_zero::ScopedJavaLocalRef;
 
 }  // namespace
 
@@ -36,12 +28,11 @@ FormDataAndroidBridgeImpl::FormDataAndroidBridgeImpl() = default;
 
 FormDataAndroidBridgeImpl::~FormDataAndroidBridgeImpl() = default;
 
-base::android::ScopedJavaLocalRef<jobject>
-FormDataAndroidBridgeImpl::GetOrCreateJavaPeer(
+ScopedJavaLocalRef<jobject> FormDataAndroidBridgeImpl::GetOrCreateJavaPeer(
     const FormData& form,
     SessionId session_id,
     base::span<const std::unique_ptr<FormFieldDataAndroid>> fields_android) {
-  JNIEnv* env = AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   if (ScopedJavaLocalRef<jobject> obj = java_ref_.get(env); !obj.is_null()) {
     return obj;
   }
@@ -53,11 +44,9 @@ FormDataAndroidBridgeImpl::GetOrCreateJavaPeer(
   }
 
   ScopedJavaLocalRef<jobject> obj = Java_FormData_createFormData(
-      env, session_id.value(), ConvertUTF16ToJavaString(env, form.name),
+      env, session_id.value(), form.name(),
       /*origin=*/
-      ConvertUTF8ToJavaString(env, form.url.DeprecatedGetOriginAsURL().spec()),
-      ToJavaArrayOfObjects(env, GetClass(env, kFormFieldDataAndroidClassname),
-                           android_objects));
+      form.url().DeprecatedGetOriginAsURL().spec(), android_objects);
   java_ref_ = JavaObjectWeakGlobalRef(env, obj);
   return obj;
 }

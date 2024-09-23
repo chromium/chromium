@@ -180,7 +180,7 @@ void MojoDemuxerStreamAdapter::UpdateConfig(
           "NewConfig", video_config_.AsHumanReadableString());
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

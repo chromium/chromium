@@ -15,6 +15,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
@@ -41,7 +42,7 @@ public class OptionalButtonCoordinator {
     private final OptionalButtonMediator mMediator;
     private final OptionalButtonView mView;
     private final UserEducationHelper mUserEducationHelper;
-    private final Tracker mFeatureEngagementTracker;
+    private final Supplier<Tracker> mFeatureEngagementTrackerSupplier;
     private Callback<Integer> mTransitionFinishedCallback;
     private IPHCommandBuilder mIphCommandBuilder;
 
@@ -63,19 +64,21 @@ public class OptionalButtonCoordinator {
 
     /**
      * Creates a new instance of OptionalButtonCoordinator
+     *
      * @param view An instance of OptionalButtonView to bind to.
      * @param userEducationHelper Used to display highlight the button with IPH if needed.
      * @param transitionRoot ViewGroup that contains all the views that will be affected by our
-     *         transitions.
+     *     transitions.
      * @param isAnimationAllowedPredicate A BooleanProvider that is called before all transitions to
-     *         determine if said transition should be animated or not.
+     *     determine if said transition should be animated or not.
+     * @param featureEngagementTrackerSupplier Provides a {@Tracker} when available.
      */
     public OptionalButtonCoordinator(
             View view,
             UserEducationHelper userEducationHelper,
             ViewGroup transitionRoot,
             BooleanSupplier isAnimationAllowedPredicate,
-            Tracker featureEngagementTracker) {
+            Supplier<Tracker> featureEngagementTrackerSupplier) {
         mUserEducationHelper = userEducationHelper;
         PropertyModel model =
                 new PropertyModel.Builder(OptionalButtonProperties.ALL_KEYS)
@@ -95,7 +98,7 @@ public class OptionalButtonCoordinator {
         PropertyModelChangeProcessor.create(model, mView, OptionalButtonViewBinder::bind);
 
         mMediator = new OptionalButtonMediator(model);
-        mFeatureEngagementTracker = featureEngagementTracker;
+        mFeatureEngagementTrackerSupplier = featureEngagementTrackerSupplier;
     }
 
     public void setPaddingStart(int paddingStart) {
@@ -153,10 +156,12 @@ public class OptionalButtonCoordinator {
                             && AdaptiveToolbarFeatures.shouldShowActionChip(
                                     buttonData.getButtonSpec().getButtonVariant());
             // And if feature engagement allows it.
+            Tracker featureEngagementTracker = mFeatureEngagementTrackerSupplier.get();
             boolean shouldShowActionChip =
                     isActionChipVariant
-                            && mFeatureEngagementTracker.isInitialized()
-                            && mFeatureEngagementTracker.shouldTriggerHelpUI(
+                            && featureEngagementTracker != null
+                            && featureEngagementTracker.isInitialized()
+                            && featureEngagementTracker.shouldTriggerHelpUI(
                                     FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
 
             if (!shouldShowActionChip) {
@@ -239,13 +244,15 @@ public class OptionalButtonCoordinator {
             mTransitionFinishedCallback.onResult(transitionType);
         }
 
-        if (transitionType == TransitionType.EXPANDING_ACTION_CHIP) {
+        if (transitionType == TransitionType.EXPANDING_ACTION_CHIP
+                && mFeatureEngagementTrackerSupplier.hasValue()) {
             // Record an event in feature engagement to limit the amount of times we show the action
             // chip.
-            mFeatureEngagementTracker.addOnInitializedCallback(
+            Tracker featureEngagementTracker = mFeatureEngagementTrackerSupplier.get();
+            featureEngagementTracker.addOnInitializedCallback(
                     isReady -> {
                         if (!isReady) return;
-                        mFeatureEngagementTracker.dismissed(
+                        featureEngagementTracker.dismissed(
                                 FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
                     });
         }

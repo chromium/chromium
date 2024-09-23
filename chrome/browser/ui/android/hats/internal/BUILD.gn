@@ -28,10 +28,12 @@ android_library("java") {
     "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/privacy:privacy_preference_manager_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/hats:java",
     "//chrome/browser/ui/android/hats:message_ui_delegate_java",
+    "//chrome/browser/ui/android/signin:java_resources",
     "//components/browser_ui/util/android:java",
     "//components/messages/android:java",
     "//components/prefs/android:java",
@@ -41,6 +43,7 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
+  resources_package = "org.chromium.chrome.browser.ui.hats"
 }
 
 robolectric_library("junit") {
@@ -61,6 +64,7 @@ robolectric_library("junit") {
     "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/privacy:privacy_preference_manager_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/hats:java",

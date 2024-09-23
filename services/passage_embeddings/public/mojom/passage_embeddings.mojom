@@ -1,0 +1,61 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module passage_embeddings.mojom;
+
+import "mojo/public/mojom/base/read_only_file.mojom";
+import "sandbox/policy/mojom/context.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// Model parameters needed to run the passage embedder.
+struct PassageEmbeddingsLoadModelsParams {
+  // The tflite model for generating text embeddings.
+  mojo_base.mojom.ReadOnlyFile embeddings_model;
+  // The sentencepiece model to tokenize string input before embeddings
+  // generation.
+  mojo_base.mojom.ReadOnlyFile sp_model;
+  // The input window size expected by the embeddings model.
+  uint32 input_window_size;
+};
+
+// The embeddings generated with a single input passage, contains both the raw
+// embeddings and the original passage.
+struct PassageEmbeddingsResult {
+  array<float> embeddings;
+  string passage;
+};
+
+// Classfies the priority of embeddings generation requests. Execution of user
+// initiated requests will cost more system resources and run faster, while
+// execution of passive requests will be more efficient but slower.
+enum PassagePriority {
+  kUnknown,
+  kUserInitiated,
+  kPassive,
+};
+
+// A loaded model which can be queried to generate embeddings for passages.
+// Functions in this interface will be called from the browser process.
+[ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
+ RequireContext=sandbox.mojom.Context.kBrowser]
+interface PassageEmbedder {
+  // Execute the model to generate embeddings(array<float>) for each string
+  // in `inputs`. If successful, the returned `results` will match the number of
+  // elements in `inputs` and be in the same order. If not successful, an empty
+  // `results` array will be returned.
+  GenerateEmbeddings(array<string> passages, PassagePriority priority) =>
+      (array<PassageEmbeddingsResult> results);
+};
+
+// Service for executing on-device embeddings model.
+// Functions in this interface will be called from the browser process.
+[ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
+ RequireContext=sandbox.mojom.Context.kBrowser]
+interface PassageEmbeddingsService {
+  // Load the given models for generating embeddings.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
+  LoadModels(
+      PassageEmbeddingsLoadModelsParams params,
+      pending_receiver<PassageEmbedder> model) => (bool success);
+};

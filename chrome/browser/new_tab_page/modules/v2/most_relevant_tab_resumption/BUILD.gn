@@ -1,0 +1,35 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [
+    "most_relevant_tab_resumption.mojom",
+    "url_visit_types.mojom",
+  ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/base/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  webui_module_path = ""
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ntp.most_relevant_tab_resumption.mojom.FormFactor"
+          cpp = "::syncer::DeviceInfo::FormFactor"
+        },
+      ]
+      traits_headers = [
+        "//components/sync_device_info/device_info.h",
+        "url_visit_types_mojom_traits.h",
+      ]
+      traits_public_deps = [ "//components/sync_device_info" ]
+    },
+  ]
+}

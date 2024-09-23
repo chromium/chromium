@@ -9,6 +9,8 @@
 #include "base/containers/contains.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothDevice_jni.h"
 
 using base::android::AttachCurrentThread;
@@ -79,7 +81,7 @@ uint16_t BluetoothDeviceAndroid::GetDeviceID() const {
 }
 
 uint16_t BluetoothDeviceAndroid::GetAppearance() const {
-  // TODO(crbug.com/588083): Implementing GetAppearance()
+  // TODO(crbug.com/41240161): Implementing GetAppearance()
   // on mac, win, and android platforms for chrome
   NOTIMPLEMENTED();
   return 0;

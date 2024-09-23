@@ -1,0 +1,47 @@
+<style include="cr-shared-style">
+  .app-title {
+    border-top: none;
+    color: var(--cros-sys-primary);
+    font-weight: var(--cros-button-2-font-weight);
+    font-size: var(--cros-button-2-font-size);
+    margin: 0;
+    min-height: 36px;
+    outline: none;
+    padding-bottom: 8px;
+    padding-top: 8px;
+  }
+
+  .bottom-separator {
+    border-bottom: var(--cr-separator-line);
+  }
+
+  #blockedAppsCount {
+    border-top: none;
+  }
+
+  #noAppsLabel {
+    text-align: center;
+  }
+</style>
+
+<template is="dom-if" if="[[isVerified]]">
+  <div id="appParentalControlsList">
+    <div class="cr-row bottom-separator app-title">
+      $i18n{appParentalControlsHeaderText}
+    </div>
+    <template is="dom-if" if="[[shouldShowBlockedAppsCountString_(appList_, searchTerm)]]">
+      <div id="blockedAppsCount" class="cr-row bottom-separator">
+        [[getBlockedAppsCountString_(appList_)]]
+      </div>
+    </template>
+    <template is="dom-repeat" items="[[filteredAppList_]]" as="app"
+      sort="alphabeticalSort_">
+      <block-app-item app="[[app]]"></block-app-item>
+    </template>
+    <template is="dom-if" if="[[isAppListEmpty_(filteredAppList_)]]">
+      <div id="noAppsLabel" class="cr-secondary-text">
+        $i18n{appParentalControlsNoAppsText}
+      </div>
+    </template>
+  </div>
+</template>

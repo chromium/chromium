@@ -74,6 +74,7 @@ class SerialPortManagerImpl : public mojom::SerialPortManager,
   // SerialDeviceEnumerator::Observer methods:
   void OnPortAdded(const mojom::SerialPortInfo& port) override;
   void OnPortRemoved(const mojom::SerialPortInfo& port) override;
+  void OnPortConnectedStateChanged(const mojom::SerialPortInfo& port) override;
 
   void OpenBluetoothSerialPortOnUI(
       const std::string& address,

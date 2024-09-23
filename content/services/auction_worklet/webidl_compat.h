@@ -103,6 +103,7 @@ class CONTENT_EXPORT IdlConvert {
     Type type() const { return static_cast<Type>(value_.index()); }
 
     bool is_success() const { return type() == Type::kSuccess; }
+    bool is_timeout() const { return type() == Type::kTimeout; }
 
     // Serializes the conversion error message. This can only be called if
     // the status is not a success.
@@ -175,6 +176,13 @@ class CONTENT_EXPORT IdlConvert {
                         v8::Local<v8::Value> value,
                         int32_t& out);
 
+  // For values that should be converted to WebIDL "unsigned long" type.
+  static Status Convert(v8::Isolate* isolate,
+                        std::string_view error_prefix,
+                        std::initializer_list<std::string_view> error_subject,
+                        v8::Local<v8::Value> value,
+                        uint32_t& out);
+
   // For values that should be converted to WebIDL "(bigint or long)" type.
   static Status Convert(v8::Isolate* isolate,
                         std::string_view error_prefix,
@@ -191,16 +199,37 @@ class CONTENT_EXPORT IdlConvert {
                         v8::Local<v8::Value> value,
                         v8::Local<v8::Value>& out);
 
-  // Tries to convert the passed in value to a sequence. Entries will be
-  // provided one-by-one to `item_callback` (0 to kSequenceLengthLimit times).
+  // Tries to use `iterator_factory` returned by CheckForSequence to iterate
+  // over `iterable`. Entries will be provided one-by-one to `item_callback`
+  // (0 to kSequenceLengthLimit times).
+  //
   // `item_callback` is expected to typecheck its input and return the status,
   // with failures interrupting the conversion and propagated up.
   static Status ConvertSequence(
       AuctionV8Helper* v8_helper,
       std::string_view error_prefix,
       std::initializer_list<std::string_view> error_subject,
-      v8::Local<v8::Value> value,
+      v8::Local<v8::Object> iterable,
+      v8::Local<v8::Object> iterator_factory,
       base::RepeatingCallback<Status(v8::Local<v8::Value>)> item_callback);
+
+  // Check if given `maybe_iterable` can be treated as a sequence.
+  // If it can be, sets `result` to the value of the @@iterator property and
+  // returns success.
+  //
+  // If trying to look up the @@iterator property throws an exception or times
+  // out, or returns in a non-null-or-undefined value that's not a callable
+  // object, returns a failure.
+  //
+  // Otherwise, returns success and keeps `result` unchanged. This denotes
+  // `maybe_iterable` not being a sequence, and that it can be used as some
+  // other type in a union containing a sequence.
+  static Status CheckForSequence(
+      v8::Isolate* isolate,
+      std::string_view error_prefix,
+      std::initializer_list<std::string_view> error_subject,
+      v8::Local<v8::Object> maybe_iterable,
+      v8::Local<v8::Object>& result);
 
   // Makes a failure result based on state of `catcher`. If nothing is set on
   // `catcher`, will report a conversion failure.

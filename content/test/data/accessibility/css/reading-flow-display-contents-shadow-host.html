@@ -1,0 +1,24 @@
+<style>
+.wrapper {
+  display: flex;
+  reading-flow: flex-visual;
+}
+</style>
+
+<!---Test reading flow for flex items re-ordered using CSS property order.
+Items are inside a shadow host that is a reading flow container.
+
+Expect order to be:
+3 -> (contents) -> 1 -> 2
+-->
+
+<div class=wrapper>
+  <div style="display: contents">
+    <template shadowrootmode=open>
+      <slot></slot>
+    </template>
+    <button style="order: 2">2</button>
+    <button style="order: 1">1</button>
+  </div>
+  <button style="order: 3">3</button>
+</div>

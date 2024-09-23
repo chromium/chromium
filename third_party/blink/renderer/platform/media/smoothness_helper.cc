@@ -65,7 +65,7 @@ class SmoothnessWindowMonitor {
   }
 
  private:
-  raw_ptr<SmoothnessHelper::Client, ExperimentalRenderer> player_ = nullptr;
+  raw_ptr<SmoothnessHelper::Client> player_ = nullptr;
   WindowCB cb_;
   base::RepeatingTimer update_timer_;
   // Current dropped, decoded frames at the start of the segment.
@@ -218,7 +218,7 @@ class SmoothnessHelperImpl : public SmoothnessHelper {
   int max_num_consecutive_nnrs_ = 0;
 
   // WebMediaPlayer which will tell us about the decoded / dropped frame counts.
-  raw_ptr<Client, ExperimentalRenderer> player_;
+  raw_ptr<Client> player_;
 
   std::unique_ptr<SmoothnessWindowMonitor> monitor_;
 };

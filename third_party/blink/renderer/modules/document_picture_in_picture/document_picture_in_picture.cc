@@ -43,7 +43,7 @@ ExecutionContext* DocumentPictureInPicture::GetExecutionContext() const {
   return GetSupplementable();
 }
 
-ScriptPromise DocumentPictureInPicture::requestWindow(
+ScriptPromise<DOMWindow> DocumentPictureInPicture::requestWindow(
     ScriptState* script_state,
     DocumentPictureInPictureOptions* options,
     ExceptionState& exception_state) {
@@ -51,7 +51,7 @@ ScriptPromise DocumentPictureInPicture::requestWindow(
   if (!dom_window) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Internal error: no window");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   if (dom_window->GetFrame() &&
@@ -59,23 +59,23 @@ ScriptPromise DocumentPictureInPicture::requestWindow(
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Opening a PiP window is only allowed "
                                       "from a top-level browsing context");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   if (dom_window->IsPictureInPictureWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Opening a PiP window from a PiP window is not allowed");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
                                       "Document not attached");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<DOMWindow>>(
       script_state, exception_state.GetContext());
   // |dom_window->document()| should always exist after document construction.
   auto* document = dom_window->document();
@@ -84,7 +84,7 @@ ScriptPromise DocumentPictureInPicture::requestWindow(
   auto promise = resolver->Promise();
   PictureInPictureControllerImpl::From(*document)
       .CreateDocumentPictureInPictureWindow(script_state, *dom_window, options,
-                                            resolver, exception_state);
+                                            resolver);
 
   return promise;
 }

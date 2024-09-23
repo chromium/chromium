@@ -101,7 +101,7 @@ class SelfDeleteInstaller
       option.update_via_cache =
           blink::mojom::ServiceWorkerUpdateViaCache::kNone;
     }
-    // TODO(crbug.com/1199077): Because this function can be called in a 3p
+    // TODO(crbug.com/40177656): Because this function can be called in a 3p
     // context we will need to generate a full StorageKey (origin + top-level
     // site) once StorageKey is expanded with the top-level site.
     service_worker_context_->RegisterServiceWorker(

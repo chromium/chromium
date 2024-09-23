@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_canon.h"
 
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_component.h"
@@ -31,7 +36,7 @@ String MaybeStripSuffix(const String& value, StringView suffix) {
 
 String StringFromCanonOutput(const url::CanonOutput& output,
                              const url::Component& component) {
-  return String::FromUTF8(output.data() + component.begin, component.len);
+  return String::FromUTF8(output.view().substr(component.begin, component.len));
 }
 
 }  // anonymous namespace
@@ -152,8 +157,7 @@ String CanonicalizePort(const String& input,
   int default_port = url::PORT_UNSPECIFIED;
   if (!input.empty()) {
     StringUTF8Adaptor protocol_utf8(protocol);
-    default_port =
-        url::DefaultPortForScheme(protocol_utf8.data(), protocol_utf8.size());
+    default_port = url::DefaultPortForScheme(protocol_utf8.AsStringView());
   }
 
   // Since ports only consist of digits there should be no encoding needed.

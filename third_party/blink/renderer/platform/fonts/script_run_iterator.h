@@ -18,7 +18,7 @@ namespace blink {
 class ScriptData;
 
 class PLATFORM_EXPORT ScriptRunIterator {
-  USING_FAST_MALLOC(ScriptRunIterator);
+  STACK_ALLOCATED();
 
  public:
   ScriptRunIterator(const UChar* text, wtf_size_t length);

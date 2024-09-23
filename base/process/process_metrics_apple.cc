@@ -11,14 +11,18 @@
 #include <stdint.h>
 #include <sys/sysctl.h>
 
+#include <optional>
+
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_port.h"
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_math.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -42,16 +46,21 @@ namespace base {
 
 namespace {
 
-bool GetTaskInfo(mach_port_t task, task_basic_info_64* task_info_data) {
+base::expected<task_basic_info_64, ProcessCPUUsageError> GetTaskInfo(
+    mach_port_t task) {
   if (task == MACH_PORT_NULL) {
-    return false;
+    return base::unexpected(ProcessCPUUsageError::kProcessNotFound);
   }
+  task_basic_info_64 task_info_data{};
   mach_msg_type_number_t count = TASK_BASIC_INFO_64_COUNT;
   kern_return_t kr =
       task_info(task, TASK_BASIC_INFO_64,
-                reinterpret_cast<task_info_t>(task_info_data), &count);
+                reinterpret_cast<task_info_t>(&task_info_data), &count);
   // Most likely cause for failure: |task| is a zombie.
-  return kr == KERN_SUCCESS;
+  if (kr != KERN_SUCCESS) {
+    return base::unexpected(ProcessCPUUsageError::kSystemError);
+  }
+  return base::ok(task_info_data);
 }
 
 MachVMRegionResult ParseOutputFromMachVMRegion(kern_return_t kr) {
@@ -93,10 +102,11 @@ mach_port_t ProcessMetrics::TaskForHandle(ProcessHandle process_handle) const {
   return task;
 }
 
-TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
+base::expected<TimeDelta, ProcessCPUUsageError>
+ProcessMetrics::GetCumulativeCPUUsage() {
   mach_port_t task = TaskForHandle(process_);
   if (task == MACH_PORT_NULL) {
-    return TimeDelta();
+    return base::unexpected(ProcessCPUUsageError::kProcessNotFound);
   }
 
   // Libtop explicitly loops over the threads (libtop_pinfo_update_cpu_usage()
@@ -108,12 +118,13 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
                                &thread_info_count);
   if (kr != KERN_SUCCESS) {
     // Most likely cause: |task| is a zombie.
-    return TimeDelta();
+    return base::unexpected(ProcessCPUUsageError::kSystemError);
   }
 
-  task_basic_info_64 task_info_data;
-  if (!GetTaskInfo(task, &task_info_data)) {
-    return TimeDelta();
+  const base::expected<task_basic_info_64, ProcessCPUUsageError>
+      task_info_data = GetTaskInfo(task);
+  if (!task_info_data.has_value()) {
+    return base::unexpected(task_info_data.error());
   }
 
   /* Set total_time. */
@@ -124,8 +135,8 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
   timeradd(&user_timeval, &system_timeval, &task_timeval);
 
   // ... task info contains terminated time.
-  TIME_VALUE_TO_TIMEVAL(&task_info_data.user_time, &user_timeval);
-  TIME_VALUE_TO_TIMEVAL(&task_info_data.system_time, &system_timeval);
+  TIME_VALUE_TO_TIMEVAL(&task_info_data->user_time, &user_timeval);
+  TIME_VALUE_TO_TIMEVAL(&task_info_data->system_time, &system_timeval);
   timeradd(&user_timeval, &task_timeval, &task_timeval);
   timeradd(&system_timeval, &task_timeval, &task_timeval);
 
@@ -137,10 +148,10 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
     // a lag before it shows up in the terminated thread times returned by
     // GetTaskInfo(). Make sure CPU usage doesn't appear to go backwards if
     // GetCumulativeCPUUsage() is called in the interval.
-    return last_measured_cpu_;
+    return base::ok(last_measured_cpu_);
   }
   last_measured_cpu_ = measured_cpu;
-  return measured_cpu;
+  return base::ok(measured_cpu);
 }
 
 int ProcessMetrics::GetPackageIdleWakeupsPerSecond() {
@@ -210,14 +221,37 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
   }
   DCHECK_EQ(HOST_VM_INFO64_COUNT, count);
 
-#if defined(ARCH_CPU_ARM64) || \
-    MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_16
-  // PAGE_SIZE is vm_page_size on arm or for deployment targets >= 10.16,
-  // and vm_page_size isn't constexpr.
+#if !(BUILDFLAG(IS_IOS) && defined(ARCH_CPU_X86_FAMILY))
+  // PAGE_SIZE (aka vm_page_size) isn't constexpr, so this check needs to be
+  // done at runtime.
   DCHECK_EQ(PAGE_SIZE % 1024, 0u) << "Invalid page size";
 #else
+  // On x86/x64, PAGE_SIZE used to be just a signed constant, I386_PGBYTES. When
+  // Arm Macs started shipping, PAGE_SIZE was defined from day one to be
+  // vm_page_size (an extern uintptr_t value), and the SDK, for x64, switched
+  // PAGE_SIZE to be vm_page_size for binaries targeted for macOS 11+:
+  //
+  // #if !defined(__MAC_OS_X_VERSION_MIN_REQUIRED) ||
+  //     (__MAC_OS_X_VERSION_MIN_REQUIRED < 101600)
+  //   #define PAGE_SIZE    I386_PGBYTES
+  // #else
+  //   #define PAGE_SIZE    vm_page_size
+  // #endif
+  //
+  // When building for Mac Catalyst or the iOS Simulator, this targeting
+  // switcharoo breaks. Because those apps do not have a
+  // __MAC_OS_X_VERSION_MIN_REQUIRED set, the SDK assumes that those apps are so
+  // old that they are implicitly targeting some ancient version of macOS, and a
+  // signed constant value is used for PAGE_SIZE.
+  //
+  // Therefore, when building for "iOS on x86", which is either Mac Catalyst or
+  // the iOS Simulator, use a static assert that assumes that PAGE_SIZE is a
+  // signed constant value.
+  //
+  // TODO(Chrome iOS team): Remove this entire #else branch when the Mac
+  // Catalyst and the iOS Simulator builds only target Arm Macs.
   static_assert(PAGE_SIZE % 1024 == 0, "Invalid page size");
-#endif
+#endif  // !(defined(IS_IOS) && defined(ARCH_CPU_X86_FAMILY))
 
   if (vm_info.speculative_count <= vm_info.free_count) {
     meminfo->free = saturated_cast<int>(
@@ -317,8 +351,9 @@ int ProcessMetrics::GetOpenFdCount() const {
     return -1;
   }
 
-  std::unique_ptr<char[]> buffer(new char[static_cast<size_t>(rv)]);
-  rv = proc_pidinfo(process_, PROC_PIDLISTFDS, 0, buffer.get(), rv);
+  base::HeapArray<char> buffer =
+      base::HeapArray<char>::WithSize(static_cast<size_t>(rv));
+  rv = proc_pidinfo(process_, PROC_PIDLISTFDS, 0, buffer.data(), rv);
   if (rv < 0) {
     return -1;
   }

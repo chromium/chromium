@@ -52,6 +52,13 @@ struct StructTraits<gpu::mojom::GpuDiskCacheDawnWebGPUHandleDataView,
           gpu::GpuDiskCacheDawnWebGPUHandle> {};
 
 template <>
+struct StructTraits<gpu::mojom::GpuDiskCacheDawnGraphiteHandleDataView,
+                    gpu::GpuDiskCacheDawnGraphiteHandle>
+    : public internal::GpuDiskCacheHandleMojomTraitsHelper<
+          gpu::mojom::GpuDiskCacheDawnGraphiteHandleDataView,
+          gpu::GpuDiskCacheDawnGraphiteHandle> {};
+
+template <>
 struct GPU_EXPORT UnionTraits<gpu::mojom::GpuDiskCacheHandleDataView,
                               gpu::GpuDiskCacheHandle> {
   static bool IsNull(const gpu::GpuDiskCacheHandle& handle);
@@ -64,6 +71,8 @@ struct GPU_EXPORT UnionTraits<gpu::mojom::GpuDiskCacheHandleDataView,
   static gpu::GpuDiskCacheGlShaderHandle gl_shader_handle(
       const gpu::GpuDiskCacheHandle& handle);
   static gpu::GpuDiskCacheDawnWebGPUHandle dawn_webgpu_handle(
+      const gpu::GpuDiskCacheHandle& handle);
+  static gpu::GpuDiskCacheDawnGraphiteHandle dawn_graphite_handle(
       const gpu::GpuDiskCacheHandle& handle);
 };
 

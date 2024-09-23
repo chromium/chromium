@@ -29,7 +29,6 @@ namespace ash {
 namespace test {
 class SearchResultListViewTest;
 class SearchResultViewWidgetTest;
-class SearchResultViewPixelTest;
 }  // namespace test
 
 class AppListViewDelegate;
@@ -223,7 +222,6 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
  private:
   friend class test::SearchResultListViewTest;
-  friend class SearchResultViewPixelTest;
   friend class SearchResultListView;
   friend class SearchResultViewWidgetTest;
 
@@ -262,13 +260,13 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   void OnSelectedResultChanged();
 
   // views::View overrides:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
-  void VisibilityChanged(View* starting_from, bool is_visible) override;
   void OnThemeChanged() override;
 
   // ui::EventHandler overrides:
@@ -365,10 +363,6 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   // Used to insert a `progress_bar_container_` within the
   // `title_and_details_container_` when the result has a set bar chart.
   bool is_progress_bar_answer_card_ = false;
-
-  // Whether the app should show icon halo and the mothership host badge (i.e.
-  // an App Shortcut).
-  bool use_webapp_shortcut_style_ = false;
 
   SearchResultViewType view_type_;
 

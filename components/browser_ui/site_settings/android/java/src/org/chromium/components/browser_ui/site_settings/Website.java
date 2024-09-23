@@ -12,6 +12,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.StorageInfoClearedCallback;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
@@ -40,7 +41,7 @@ public final class Website implements WebsiteEntry {
     private Map<Integer, List<ContentSettingException>> mEmbeddedPermissionInfos = new HashMap<>();
 
     private LocalStorageInfo mLocalStorageInfo;
-    private FPSCookieInfo mFPSCookieInfo;
+    private RWSCookieInfo mRWSCookieInfo;
     private CookiesInfo mCookiesInfo;
     private double mZoomFactor;
     private final List<StorageInfo> mStorageInfo = new ArrayList<>();
@@ -51,14 +52,14 @@ public final class Website implements WebsiteEntry {
     // built this list could contain multiple types of objects.
     private final List<ChosenObjectInfo> mObjectInfo = new ArrayList<ChosenObjectInfo>();
 
+    private boolean mIsDomainImportant;
+
     private static final String SCHEME_SUFFIX = "://";
 
     /**
      * Removes the scheme in a given URL, if present.
      *
-     * Examples:
-     * - "google.com" -> "google.com"
-     * - "https://google.com" -> "google.com"
+     * <p>Examples: - "google.com" -> "google.com" - "https://google.com" -> "google.com"
      */
     public static String omitProtocolIfPresent(String url) {
         if (url.indexOf(SCHEME_SUFFIX) == -1) return url;
@@ -281,7 +282,7 @@ public final class Website implements WebsiteEntry {
                                 ContentSettingsType.ADS,
                                 getAddress().getOrigin(),
                                 ContentSettingValues.BLOCK,
-                                "",
+                                ProviderType.NONE,
                                 /* isEmbargoed= */ false);
                 setContentSettingException(type, exception);
             }
@@ -295,7 +296,7 @@ public final class Website implements WebsiteEntry {
                                 ContentSettingsType.JAVASCRIPT,
                                 getAddress().getHost(),
                                 value,
-                                "",
+                                ProviderType.NONE,
                                 /* isEmbargoed= */ false);
                 setContentSettingException(type, exception);
             }
@@ -315,7 +316,7 @@ public final class Website implements WebsiteEntry {
                                 ContentSettingsType.SOUND,
                                 getAddress().getHost(),
                                 value,
-                                "",
+                                ProviderType.NONE,
                                 /* isEmbargoed= */ false);
                 setContentSettingException(type, exception);
             }
@@ -375,12 +376,12 @@ public final class Website implements WebsiteEntry {
         return mLocalStorageInfo;
     }
 
-    public FPSCookieInfo getFPSCookieInfo() {
-        return mFPSCookieInfo;
+    public RWSCookieInfo getRWSCookieInfo() {
+        return mRWSCookieInfo;
     }
 
-    public void setFPSCookieInfo(FPSCookieInfo fpsCookieInfo) {
-        mFPSCookieInfo = fpsCookieInfo;
+    public void setRWSCookieInfo(RWSCookieInfo rwsCookieInfo) {
+        mRWSCookieInfo = rwsCookieInfo;
     }
 
     public void addStorageInfo(StorageInfo info) {
@@ -417,27 +418,46 @@ public final class Website implements WebsiteEntry {
     }
 
     public void clearAllStoredData(
-            BrowserContextHandle browserContextHandle, final StoredDataClearedCallback callback) {
-        // Wait for callbacks from each mStorageInfo and mSharedDictionaryInfo
-        // and a callback from mLocalStorageInfo.
-        int[] storageInfoCallbacksLeft = {mStorageInfo.size() + mSharedDictionaryInfo.size() + 1};
-        StorageInfoClearedCallback clearedCallback =
-                () -> {
-                    if (--storageInfoCallbacksLeft[0] == 0) callback.onStoredDataCleared();
-                };
-        if (mLocalStorageInfo != null) {
-            mLocalStorageInfo.clear(browserContextHandle, clearedCallback);
-            mLocalStorageInfo = null;
-        } else {
-            clearedCallback.onStorageInfoCleared();
-        }
-        for (StorageInfo info : mStorageInfo) info.clear(browserContextHandle, clearedCallback);
-        mStorageInfo.clear();
+            SiteSettingsDelegate siteSettingsDelegate, final StoredDataClearedCallback callback) {
+        var browserContextHandle = siteSettingsDelegate.getBrowserContextHandle();
 
-        for (SharedDictionaryInfo info : mSharedDictionaryInfo) {
-            info.clear(browserContextHandle, clearedCallback);
+        if (siteSettingsDelegate.isBrowsingDataModelFeatureEnabled()) {
+            siteSettingsDelegate.getBrowsingDataModel(
+                    (model) -> {
+                        String host = getAddress().getHost();
+                        model.removeBrowsingData(
+                                host,
+                                () -> {
+                                    callback.onStoredDataCleared();
+                                    mStorageInfo.clear();
+                                });
+                    });
+        } else {
+            // Here we need to delete localstorage e cookie info.
+
+            // Wait for callbacks from each mStorageInfo and mSharedDictionaryInfo
+            // and a callback from mLocalStorageInfo.
+            int[] storageInfoCallbacksLeft = {
+                mStorageInfo.size() + mSharedDictionaryInfo.size() + 1
+            };
+            StorageInfoClearedCallback clearedCallback =
+                    () -> {
+                        if (--storageInfoCallbacksLeft[0] == 0) callback.onStoredDataCleared();
+                    };
+            if (mLocalStorageInfo != null) {
+                mLocalStorageInfo.clear(browserContextHandle, clearedCallback);
+                mLocalStorageInfo = null;
+            } else {
+                clearedCallback.onStorageInfoCleared();
+            }
+            for (StorageInfo info : mStorageInfo) info.clear(browserContextHandle, clearedCallback);
+            mStorageInfo.clear();
+
+            for (SharedDictionaryInfo info : mSharedDictionaryInfo) {
+                info.clear(browserContextHandle, clearedCallback);
+            }
+            mSharedDictionaryInfo.clear();
         }
-        mSharedDictionaryInfo.clear();
     }
 
     /** An interface to implement to get a callback when storage info has been cleared. */
@@ -457,6 +477,14 @@ public final class Website implements WebsiteEntry {
 
     public String getTitleForEmbeddedPreferenceRow() {
         return omitProtocolIfPresent(mEmbedder.getTitle());
+    }
+
+    public void setDomainImportant(boolean isImportant) {
+        mIsDomainImportant = isImportant;
+    }
+
+    public boolean isDomainImportant() {
+        return mIsDomainImportant;
     }
 
     // WebsiteEntry implementation.
@@ -492,6 +520,24 @@ public final class Website implements WebsiteEntry {
     @Override
     public boolean matches(String search) {
         return getTitle().contains(search);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isPartOfRws() {
+        return getRWSCookieInfo() != null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getRwsOwner() {
+        return isPartOfRws() ? getRWSCookieInfo().getOwner() : null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int getRwsSize() {
+        return isPartOfRws() ? getRWSCookieInfo().getMembersCount() : 0;
     }
 
     @Override

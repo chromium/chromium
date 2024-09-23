@@ -120,7 +120,7 @@ void FileWriterSync::DoWrite(const KURL& path,
 }
 
 void FileWriterSync::DoCancel() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 FileWriterSync::FileWriterSync(ExecutionContext* context)

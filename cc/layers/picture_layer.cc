@@ -45,10 +45,11 @@ void PictureLayer::PushPropertiesTo(
     LayerImpl* base_layer,
     const CommitState& commit_state,
     const ThreadUnsafeCommitState& unsafe_state) {
-  // TODO(enne): http://crbug.com/918126 debugging
-  CHECK(this);
-
   PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(base_layer);
+
+  if (!update_rect().IsEmpty()) {
+    layer_impl->set_has_non_animated_image_update_rect();
+  }
 
   Layer::PushPropertiesTo(base_layer, commit_state, unsafe_state);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
@@ -60,29 +61,13 @@ void PictureLayer::PushPropertiesTo(
       commit_state.device_viewport_rect.size());
   layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
 
-  // TODO(enne): http://crbug.com/918126 debugging
-  CHECK(this);
-  if (!recording_source_.Read(*this)) {
-    bool valid_host = layer_tree_host();
-    bool has_parent = parent();
-    bool parent_has_host = parent() && parent()->layer_tree_host();
-
-    auto str = base::StringPrintf("vh: %d, hp: %d, phh: %d", valid_host,
-                                  has_parent, parent_has_host);
-    static auto* crash_key = base::debug::AllocateCrashKeyString(
-        "issue918126", base::debug::CrashKeySize::Size32);
-    base::debug::SetCrashKeyString(crash_key, str);
-    base::debug::DumpWithoutCrashing();
-  }
-
   layer_impl->UpdateRasterSource(CreateRasterSource(),
-                                 &last_updated_invalidation_.Write(*this),
-                                 nullptr, nullptr);
+                                 &last_updated_invalidation_.Write(*this));
   DCHECK(last_updated_invalidation_.Read(*this).IsEmpty());
 }
 
 scoped_refptr<RasterSource> PictureLayer::CreateRasterSource() const {
-  return recording_source_.Read(*this)->CreateRasterSource();
+  return recording_source_.Read(*this).CreateRasterSource();
 }
 
 void PictureLayer::SetLayerTreeHost(LayerTreeHost* host) {
@@ -91,9 +76,7 @@ void PictureLayer::SetLayerTreeHost(LayerTreeHost* host) {
   if (!host)
     return;
 
-  if (!recording_source_.Read(*this))
-    recording_source_.Write(*this) = std::make_unique<RecordingSource>();
-  recording_source_.Write(*this)->SetSlowdownRasterScaleFactor(
+  recording_source_.Write(*this).SetSlowdownRasterScaleFactor(
       host->GetDebugState().slow_down_raster_scale_factor);
 
   // Source frame numbers are relative the LayerTreeHost, so this needs
@@ -103,17 +86,13 @@ void PictureLayer::SetLayerTreeHost(LayerTreeHost* host) {
 
 void PictureLayer::SetNeedsDisplayRect(const gfx::Rect& layer_rect) {
   DCHECK(IsPropertyChangeAllowed());
-  if (recording_source_.Read(*this))
-    recording_source_.Write(*this)->SetNeedsDisplayRect(layer_rect);
+  recording_source_.Write(*this).SetNeedsDisplayRect(layer_rect);
   Layer::SetNeedsDisplayRect(layer_rect);
 }
 
 bool PictureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
-  const DisplayItemList* display_list = GetDisplayItemList();
-  if (display_list &&
-      display_list->discardable_image_map().content_color_usage() ==
-          gfx::ContentColorUsage::kHDR) {
-    return true;
+  if (const DisplayItemList* display_list = GetDisplayItemList()) {
+    return display_list->content_color_usage() == gfx::ContentColorUsage::kHDR;
   }
   return false;
 }
@@ -124,10 +103,11 @@ bool PictureLayer::Update() {
   bool updated = Layer::Update();
 
   auto& recording_source = recording_source_.Write(*this);
-  recording_source->SetBackgroundColor(SafeOpaqueBackgroundColor());
-  recording_source->SetRequiresClear(!contents_opaque() &&
-                                     !client_->FillsBoundsCompletely());
-  recording_source->SetCanUseRecordedBounds(CanUseRecordedBoundsForTiling());
+  recording_source.SetBackgroundColor(SafeOpaqueBackgroundColor());
+  recording_source.SetRequiresClear(!contents_opaque() &&
+                                    !client_->FillsBoundsCompletely());
+  recording_source.SetCanUseRecordedBounds(
+      layer_tree_host()->GetSettings().enable_hit_test_opaqueness);
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"), "PictureLayer::Update",
                "source_frame_number", layer_tree_host()->SourceFrameNumber());
@@ -140,7 +120,7 @@ bool PictureLayer::Update() {
   // for them.
   DCHECK(client_);
 
-  updated |= recording_source->Update(
+  updated |= recording_source.Update(
       bounds(), layer_tree_host()->recording_scale_factor(), *client_,
       last_updated_invalidation_.Write(*this));
 
@@ -150,31 +130,6 @@ bool PictureLayer::Update() {
 
   SetNeedsPushProperties();
   IncreasePaintCount();
-  return true;
-}
-
-bool PictureLayer::CanUseRecordedBoundsForTiling() const {
-  // For now the feature is for blink (using layer list mode) only.
-  if (!IsUsingLayerLists()) {
-    return false;
-  }
-  if (!base::FeatureList::IsEnabled(features::kUseRecordedBoundsForTiling)) {
-    return false;
-  }
-
-  // For a mask layer, we must include the empty areas in tilings because they
-  // mask off the drawings of the masked layer.
-  if (is_backdrop_filter_mask_) {
-    return false;
-  }
-  if (const EffectNode* node =
-          layer_tree_host()->property_trees()->effect_tree().Node(
-              effect_tree_index())) {
-    if (node->blend_mode == SkBlendMode::kDstIn) {
-      return false;
-    }
-  }
-
   return true;
 }
 
@@ -188,7 +143,15 @@ sk_sp<const SkPicture> PictureLayer::GetPicture() const {
   SkCanvas* canvas =
       recorder.beginRecording(bounds().width(), bounds().height());
   canvas->clear(SK_ColorTRANSPARENT);
-  display_list->Raster(canvas);
+  ScrollOffsetMap raster_inducing_scroll_offsets;
+  const ScrollTree& scroll_tree =
+      layer_tree_host()->property_trees()->scroll_tree();
+  for (auto [element_id, _] : display_list->raster_inducing_scrolls()) {
+    raster_inducing_scroll_offsets[element_id] =
+        scroll_tree.current_scroll_offset(element_id);
+  }
+  display_list->Raster(canvas, /*image_provider=*/nullptr,
+                       &raster_inducing_scroll_offsets);
   return recorder.finishRecordingAsPicture();
 }
 
@@ -258,7 +221,7 @@ void PictureLayer::CaptureContent(const gfx::Rect& rect,
 
 void PictureLayer::DropRecordingSourceContentIfInvalid(
     int source_frame_number) {
-  gfx::Size recording_source_size = recording_source_.Read(*this)->size();
+  gfx::Size recording_source_size = recording_source_.Read(*this).size();
 
   gfx::Size layer_bounds = bounds();
 
@@ -274,13 +237,12 @@ void PictureLayer::DropRecordingSourceContentIfInvalid(
     // Update may not get called for the layer (if it's not in the viewport
     // for example), even though it has resized making the recording source no
     // longer valid. In this case just destroy the recording source.
-    recording_source_.Write(*this)->SetEmptyBounds();
+    recording_source_.Write(*this).SetEmptyBounds();
   }
 }
 
 const DisplayItemList* PictureLayer::GetDisplayItemList() const {
-  const RecordingSource* recording_source = recording_source_.Read(*this);
-  return recording_source ? recording_source->display_list() : nullptr;
+  return recording_source_.Read(*this).display_list();
 }
 
 }  // namespace cc

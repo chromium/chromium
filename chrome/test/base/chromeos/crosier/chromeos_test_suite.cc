@@ -10,7 +10,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ui_controls_ash.h"
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/time/time.h"
+#include "chrome/test/base/chromeos/crosier/helper/switches.h"
+#include "chrome/test/base/chromeos/crosier/helper/test_sudo_helper_client.h"
 #include "content/public/common/content_switches.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/check.h"
@@ -25,11 +29,21 @@ ChromeOSTestSuite::~ChromeOSTestSuite() = default;
 
 void ChromeOSTestSuite::Initialize() {
   content::ContentTestSuiteBase::Initialize();
+
   // chromeos_integration_tests must use functions in ui_controls.h.
   ui::test::EventGenerator::BanEventGenerator();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ui::test::EnableUIControlsSystemInputInjector();
+
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  // Wait for test_sudo_helper server socket if it is used.
+  // See b/342392752.
+  if (cmdline->HasSwitch(crosier::kSwitchSocketPath)) {
+    CHECK(TestSudoHelperClient().WaitForServer(base::Minutes(2)))
+        << "Unable to connect to test_sudo_helper.py's socket";
+  }
+
   cmdline->AppendSwitch(switches::kDisableMojoBroker);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // The lacros binary receives certain paths from ash very early in startup.
@@ -41,6 +55,7 @@ void ChromeOSTestSuite::Initialize() {
       /*documents_dir=*/temp_path,
       /*downloads_dir=*/temp_path,
       /*drivefs=*/base::FilePath(),
+      /*onedrive=*/base::FilePath(),
       /*removable_media_dir=*/base::FilePath(),
       /*android_files_dir=*/base::FilePath(),
       /*linux_files_dir=*/base::FilePath(),

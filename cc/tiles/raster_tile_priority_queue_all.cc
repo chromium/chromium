@@ -67,19 +67,24 @@ void CreateTilingSetRasterQueues(
     std::vector<std::unique_ptr<TilingSetRasterQueueAll>>* queues) {
   DCHECK(queues->empty());
 
+  const bool cc_slimming_enabled = features::IsCCSlimmingEnabled();
   for (PictureLayerImpl* layer : layers) {
     if (!layer->HasValidTilePriorities())
       continue;
 
     PictureLayerTilingSet* tiling_set = layer->picture_layer_tiling_set();
+    if (cc_slimming_enabled && tiling_set->all_tiles_done()) {
+      continue;
+    }
     bool prioritize_low_res = tree_priority == SMOOTHNESS_TAKES_PRIORITY;
     std::unique_ptr<TilingSetRasterQueueAll> tiling_set_queue =
-        std::make_unique<TilingSetRasterQueueAll>(
+        TilingSetRasterQueueAll::Create(
             tiling_set, prioritize_low_res,
             layer->contributes_to_drawn_render_surface());
     // Queues will only contain non empty tiling sets.
-    if (!tiling_set_queue->IsEmpty())
+    if (tiling_set_queue && !tiling_set_queue->IsEmpty()) {
       queues->push_back(std::move(tiling_set_queue));
+    }
   }
   std::make_heap(queues->begin(), queues->end(),
                  RasterOrderComparator(tree_priority));
@@ -177,7 +182,7 @@ RasterTilePriorityQueueAll::GetNextQueues() const {
 
   // Then, use the IsHigherPriorityThan condition for
   // SAME_PRIORITY_FOR_BOTH_TREES and the rest of the priority bins.
-  // TODO(crbug.com/1380831): For SAME_PRIORITY_FOR_BOTH_TREES mode and both
+  // TODO(crbug.com/40244895): For SAME_PRIORITY_FOR_BOTH_TREES mode and both
   // being NOW, should we give the priority to Active NOW instead?
   if (active_priority.IsHigherPriorityThan(pending_priority)) {
     return active_queues_;

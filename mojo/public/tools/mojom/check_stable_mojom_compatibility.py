@@ -47,7 +47,8 @@ def _ValidateDelta(root, delta):
   old_files = {}
   new_files = {}
   for change in delta:
-    # TODO(crbug.com/953884): Use pathlib once we're migrated fully to Python 3.
+    # TODO(crbug.com/40623602): Use pathlib once we're migrated fully to
+    # Python 3.
     filename = change['filename'].replace('\\', '/')
     affected_files.add(filename)
     if change['old']:

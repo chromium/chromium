@@ -9,9 +9,11 @@
 
 #include "base/format_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
+#include "url/url_features.h"
 #include "url/url_util.h"
 
 using base::ASCIIToUTF16;
@@ -544,47 +546,57 @@ void PrintTo(const NonUniqueNameTestData& data, std::ostream* os) {
 }
 
 const NonUniqueNameTestData kNonUniqueNameTestData[] = {
+    // eTLDs
+    {true, "com"},
+    {true, "com."},
+    {true, ".com"},
+    {true, "co.uk"},
+    {true, "co.uk."},
+    {true, ".co.uk"},
+    {false, "notarealtld"},
+    {false, ".notarealtld"},
+    {false, "notarealtld."},
     // Domains under ICANN-assigned domains.
-    { true, "google.com" },
-    { true, "google.co.uk" },
+    {true, "google.com"},
+    {true, "google.co.uk"},
     // Domains under private registries.
-    { true, "appspot.com" },
-    { true, "test.appspot.com" },
+    {true, "appspot.com"},
+    {true, "test.appspot.com"},
     // Unreserved IPv4 addresses (in various forms).
-    { true, "8.8.8.8" },
-    { true, "99.64.0.0" },
-    { true, "212.15.0.0" },
-    { true, "212.15" },
-    { true, "212.15.0" },
-    { true, "3557752832" },
+    {true, "8.8.8.8"},
+    {true, "99.64.0.0"},
+    {true, "212.15.0.0"},
+    {true, "212.15"},
+    {true, "212.15.0"},
+    {true, "3557752832"},
     // Reserved IPv4 addresses (in various forms).
-    { false, "192.168.0.0" },
-    { false, "192.168.0.6" },
-    { false, "10.0.0.5" },
-    { false, "10.0" },
-    { false, "10.0.0" },
-    { false, "3232235526" },
+    {false, "192.168.0.0"},
+    {false, "192.168.0.6"},
+    {false, "10.0.0.5"},
+    {false, "10.0"},
+    {false, "10.0.0"},
+    {false, "3232235526"},
     // Unreserved IPv6 addresses.
-    { true, "FFC0:ba98:7654:3210:FEDC:BA98:7654:3210" },
-    { true, "2000:ba98:7654:2301:EFCD:BA98:7654:3210" },
+    {true, "FFC0:ba98:7654:3210:FEDC:BA98:7654:3210"},
+    {true, "2000:ba98:7654:2301:EFCD:BA98:7654:3210"},
     // Reserved IPv6 addresses.
-    { false, "::192.9.5.5" },
-    { false, "FEED::BEEF" },
-    { false, "FEC0:ba98:7654:3210:FEDC:BA98:7654:3210" },
+    {false, "::192.9.5.5"},
+    {false, "FEED::BEEF"},
+    {false, "FEC0:ba98:7654:3210:FEDC:BA98:7654:3210"},
     // 'internal'/non-IANA assigned domains.
-    { false, "intranet" },
-    { false, "intranet." },
-    { false, "intranet.example" },
-    { false, "host.intranet.example" },
+    {false, "intranet"},
+    {false, "intranet."},
+    {false, "intranet.example"},
+    {false, "host.intranet.example"},
     // gTLDs under discussion, but not yet assigned.
-    { false, "intranet.corp" },
-    { false, "intranet.internal" },
+    {false, "intranet.corp"},
+    {false, "intranet.internal"},
     // Invalid host names are treated as unique - but expected to be
     // filtered out before then.
-    { true, "junk)(£)$*!@~#" },
-    { true, "w$w.example.com" },
-    { true, "nocolonsallowed:example" },
-    { true, "[::4.5.6.9]" },
+    {true, "junk)(£)$*!@~#"},
+    {true, "w$w.example.com"},
+    {true, "nocolonsallowed:example"},
+    {true, "[::4.5.6.9]"},
 };
 
 class UrlUtilNonUniqueNameTest
@@ -660,6 +672,28 @@ TEST(UrlUtilTest, IsLocalhost) {
   EXPECT_TRUE(IsLocalhost(localhost6));
 }
 
+class UrlUtilTypedTest : public ::testing::TestWithParam<bool> {
+ public:
+  UrlUtilTypedTest()
+      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
+    if (use_standard_compliant_non_special_scheme_url_parsing_) {
+      scoped_feature_list_.InitAndEnableFeature(
+          url::kStandardCompliantNonSpecialSchemeURLParsing);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          url::kStandardCompliantNonSpecialSchemeURLParsing);
+    }
+  }
+
+ protected:
+  bool use_standard_compliant_non_special_scheme_url_parsing_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, UrlUtilTypedTest, ::testing::Bool());
+
 TEST(UrlUtilTest, SimplifyUrlForRequest) {
   struct {
     const char* const input_url;
@@ -691,16 +725,37 @@ TEST(UrlUtilTest, SimplifyUrlForRequest) {
       "ftp://user:pass@google.com:80/sup?yo#X#X",
       "ftp://google.com:80/sup?yo",
     },
-    { // Try a nonstandard URL
-      "foobar://user:pass@google.com:80/sup?yo#X#X",
-      "foobar://user:pass@google.com:80/sup?yo",
-    },
   };
   for (const auto& test : tests) {
     SCOPED_TRACE(test.input_url);
     GURL input_url(GURL(test.input_url));
     GURL expected_url(GURL(test.expected_simplified_url));
     EXPECT_EQ(expected_url, SimplifyUrlForRequest(input_url));
+  }
+}
+
+TEST_P(UrlUtilTypedTest, SimplifyUrlForRequest) {
+  static constexpr struct {
+    const char* const input_url;
+    const char* const expected_when_compliant;
+    const char* const expected_when_non_compliant;
+  } tests[] = {
+      {
+          // Try a non-special URL
+          "foobar://user:pass@google.com:80/sup?yo#X#X",
+          "foobar://google.com:80/sup?yo",
+          "foobar://user:pass@google.com:80/sup?yo",
+      },
+  };
+
+  for (const auto& test : tests) {
+    SCOPED_TRACE(test.input_url);
+    GURL simplified = SimplifyUrlForRequest(GURL(test.input_url));
+    if (use_standard_compliant_non_special_scheme_url_parsing_) {
+      EXPECT_EQ(simplified, GURL(test.expected_when_compliant));
+    } else {
+      EXPECT_EQ(simplified, GURL(test.expected_when_non_compliant));
+    }
   }
 }
 

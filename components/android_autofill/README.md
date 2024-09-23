@@ -5,7 +5,7 @@ Autofill providers, such as the
 [Android Autofill framework](https://developer.android.com/guide/topics/text/autofill).
 
 It is used exclusively by the [`//android_webview`](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/)
-embedder (and some deprecated uses inside of Weblayer).
+embedder.
 
 # High-level architecture
 
@@ -27,7 +27,7 @@ The below diagram shows the main classes involved in `//android_autofill`.
     │                                  │                                     │
     │owns                              │owns                                 │owns
 ┌───▼──────────────────┐           ┌───▼───────────────────┐              ┌──▼──────────────────────┐     ┌────────────────────────────┐
-│                      │           │AutofillProviderAndroid├─events──────►│                         │     │AutofillManagerWrapper.java │
+│                      │           │AndroidAutofillProvider├─events──────►│                         │     │AutofillManagerWrapper.java │
 │AndroidAutofillManager├─events───►│implements             │              │AutofillProvider.java    │owns─►(wraps Android's            │
 │                      │           │AutofillProvider       │◄─ask-to-fill─┤                         │     │ AutofillManager)           │
 └──────────────────────┘           └───┬───────────────────┘              └──┬──────────────────────┘     └────────────────────────────┘
@@ -65,7 +65,7 @@ To edit the diagram, copy-paste it to asciiflow.com.
     * Forward all information from various `OnX()` implementations to the
       `AutofillProvider` of the `WebContents` (if one exists).
     * Conversely, receive fill requests from `AutofillProvider` and forward them to `ContentAutofillDriver`.
-* [`AutofillProviderAndroid`](https://source.chromium.org/chromium/chromium/src/+/main:components/android_autofill/browser/autofill_provider_android.h;bpv=0;bpt=0):
+* [`AndroidAutofillProvider`](https://source.chromium.org/chromium/chromium/src/+/main:components/android_autofill/browser/android_autofill_provider.h;bpv=0;bpt=0):
   * One instance per `WebContents`.
   * Implements `AutofillProvider` (and is currently the only class to do).
   * Owns at most one `FormDataAndroid`, the one related to the current autofill session
@@ -80,7 +80,7 @@ To edit the diagram, copy-paste it to asciiflow.com.
     * Forward information from `OnX()` methods to its `AutofillProvider.java` sibling.
 * [`FormDataAndroid`](https://source.chromium.org/chromium/chromium/src/+/main:components/android_autofill/browser/form_data_android.h;bpv=0;bpt=0):
   * Is created based from a `FormData` object and creates a copy of it, which continues to be
-    updated by its parent `AutofillProviderAndroid`.
+    updated by its parent `AndroidAutofillProvider`.
   * Owns 0 to N `FormFieldDataAndroid` objects that represent the form field elements in the form.
   * Responsibilities:
     * Form a wrapper around `FormData` and propagate updates to and from its sibling class

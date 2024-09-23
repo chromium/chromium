@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -18,6 +17,7 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Optional;
 
 /** This class collects a variety of different Omnibox related metrics. */
 public class OmniboxMetrics {
@@ -371,16 +371,18 @@ public class OmniboxMetrics {
      */
     public static void recordTouchDownPrefetchResult(
             @NonNull AutocompleteMatch navSuggestion,
-            @Nullable AutocompleteMatch prefetchSuggestion) {
-        @PrefetchResult int result = PrefetchResult.NO_PREFETCH;
-        if (prefetchSuggestion != null) {
-            result =
-                    navSuggestion.getNativeObjectRef() != 0
-                                    && navSuggestion.getNativeObjectRef()
-                                            == prefetchSuggestion.getNativeObjectRef()
-                            ? PrefetchResult.HIT
-                            : PrefetchResult.MISS;
-        }
+            @NonNull Optional<AutocompleteMatch> prefetchSuggestion) {
+        @PrefetchResult
+        int result =
+                prefetchSuggestion
+                        .map(
+                                match ->
+                                        navSuggestion.getNativeObjectRef() != 0
+                                                        && navSuggestion.getNativeObjectRef()
+                                                                == match.getNativeObjectRef()
+                                                ? PrefetchResult.HIT
+                                                : PrefetchResult.MISS)
+                        .orElse(PrefetchResult.NO_PREFETCH);
 
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT, result, PrefetchResult.COUNT);
@@ -397,14 +399,22 @@ public class OmniboxMetrics {
         String suffix = "Other";
 
         switch (pageClass) {
-            case PageClassification.NTP_VALUE:
             case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE:
-            case PageClassification.INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS_VALUE:
+            case PageClassification.NTP_REALBOX_VALUE:
+            case PageClassification.NTP_VALUE:
+            case PageClassification.NTP_ZPS_PREFETCH_VALUE:
+            case PageClassification.SEARCH_BUTTON_AS_STARTING_FOCUS_VALUE:
+            case PageClassification.START_SURFACE_HOMEPAGE_VALUE:
+            case PageClassification.START_SURFACE_NEW_TAB_VALUE:
                 suffix = "NTP";
                 break;
 
+            case PageClassification.LENS_SIDE_PANEL_SEARCHBOX_VALUE:
             case PageClassification.SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT_VALUE:
             case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE:
+            case PageClassification.SEARCH_RESULT_PAGE_ON_CCT_VALUE:
+            case PageClassification.SEARCH_SIDE_PANEL_SEARCHBOX_VALUE:
+            case PageClassification.SRP_ZPS_PREFETCH_VALUE:
                 suffix = "SRP";
                 break;
 
@@ -414,16 +424,31 @@ public class OmniboxMetrics {
                 break;
 
             case PageClassification.BLANK_VALUE:
+            case PageClassification.CONTEXTUAL_SEARCHBOX_VALUE:
             case PageClassification.HOME_PAGE_VALUE:
+            case PageClassification.JOURNEYS_VALUE:
+            case PageClassification.OTHER_ON_CCT_VALUE:
             case PageClassification.OTHER_VALUE:
+            case PageClassification.OTHER_ZPS_PREFETCH_VALUE:
                 // use default value for websites.
                 break;
 
+            case PageClassification.OBSOLETE_INSTANT_NTP_VALUE:
+            case PageClassification.OBSOLETE_INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS_VALUE:
+                assert false
+                        : "Obsolete page classification. Please use the OMNIBOX variant instead.";
+                break;
+
             default:
-                // Report an error, but fall back to a default value.
-                // Use this to detect missing new cases.
-                // TODO(crbug.com/1314765): This assert fails persistently on tablets.
-                // assert false : "Unknown page classification: " + pageClass;
+                // May trigger if nev PageClassifications were added to
+                // third_party/metrics_proto/omnibox_event.proto file,
+                // but have not been reflected here. If that's the case, file a bug for the
+                // author of the new PageClassification.
+                // Last supported value: OTHER_ON_CCT.
+                assert false
+                        : "b/40221519: Invalid page classification: "
+                                + pageClass
+                                + ". Please re-open bug, and attach captured stack trace.";
                 break;
         }
 

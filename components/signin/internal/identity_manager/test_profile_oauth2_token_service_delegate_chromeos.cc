@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/functional/callback_helpers.h"
 #include "components/account_manager_core/account_manager_facade_impl.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -37,13 +38,15 @@ TestProfileOAuth2TokenServiceDelegateChromeOS::
       client, account_tracker_service,
       network::TestNetworkConnectionTracker::GetInstance(),
       account_manager_facade_.get(), is_regular_profile);
-  delegate_->AddObserver(this);
+  // This still mimics in product behavior as the `delegate_` 's only
+  // observer is this class. When `OnRefreshTokenRevoked()` is called, `This`
+  // calls `FireRefreshTokenAvailable()` which has the callback set correctly.
+  delegate_->SetOnRefreshTokenRevokedNotified(base::DoNothing());
+  token_service_observation_.Observe(delegate_.get());
 }
 
 TestProfileOAuth2TokenServiceDelegateChromeOS::
-    ~TestProfileOAuth2TokenServiceDelegateChromeOS() {
-  delegate_->RemoveObserver(this);
-}
+    ~TestProfileOAuth2TokenServiceDelegateChromeOS() = default;
 
 std::unique_ptr<OAuth2AccessTokenFetcher>
 TestProfileOAuth2TokenServiceDelegateChromeOS::CreateAccessTokenFetcher(
@@ -92,7 +95,7 @@ void TestProfileOAuth2TokenServiceDelegateChromeOS::ResetBackOffEntry() {
   delegate_->ResetBackOffEntry();
 }
 
-void TestProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentials(
+void TestProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentialsInternal(
     const CoreAccountId& primary_account_id,
     bool is_syncing) {
   // In tests |LoadCredentials| may be called twice, in this case we call
@@ -113,7 +116,7 @@ void TestProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentials(
   delegate_->LoadCredentials(primary_account_id, is_syncing);
 }
 
-void TestProfileOAuth2TokenServiceDelegateChromeOS::UpdateCredentials(
+void TestProfileOAuth2TokenServiceDelegateChromeOS::UpdateCredentialsInternal(
     const CoreAccountId& account_id,
     const std::string& refresh_token) {
   delegate_->UpdateCredentials(account_id, refresh_token);
@@ -124,13 +127,15 @@ TestProfileOAuth2TokenServiceDelegateChromeOS::GetURLLoaderFactory() const {
   return delegate_->GetURLLoaderFactory();
 }
 
-void TestProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentials(
+void TestProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentialsInternal(
     const CoreAccountId& account_id) {
   delegate_->RevokeCredentials(account_id);
 }
 
-void TestProfileOAuth2TokenServiceDelegateChromeOS::RevokeAllCredentials() {
-  delegate_->RevokeAllCredentials();
+void TestProfileOAuth2TokenServiceDelegateChromeOS::
+    RevokeAllCredentialsInternal(
+        signin_metrics::SourceForRefreshTokenOperation source) {
+  delegate_->RevokeAllCredentials(source);
 }
 
 const net::BackoffEntry*
@@ -160,7 +165,8 @@ void TestProfileOAuth2TokenServiceDelegateChromeOS::OnRefreshTokensLoaded() {
 
 void TestProfileOAuth2TokenServiceDelegateChromeOS::OnAuthErrorChanged(
     const CoreAccountId& account_id,
-    const GoogleServiceAuthError& auth_error) {
+    const GoogleServiceAuthError& auth_error,
+    signin_metrics::SourceForRefreshTokenOperation source) {
   FireAuthErrorChanged(account_id, auth_error);
 }
 

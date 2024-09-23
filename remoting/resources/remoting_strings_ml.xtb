@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">ക്ലയന്റ് ഉപകരണത്തിൽ <ph name="URL" /> തുറക്കാനായില്ല.</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2366718077645204424">ഹോസ്റ്റിൽ എത്തിച്ചേരാനായില്ല. ഇത് നിങ്ങൾ ഉപയോഗിക്കുന്ന നെറ്റ്‌വർക്കിന്റെ കോൺഫിഗറേഷൻ കാരണമാകാം.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> അവസാനമായി ഓൺലൈനിൽ കണ്ടത് <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> എന്നതിന് 'ഉപയോഗസഹായി' അനുമതി നൽകുക</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> എന്നതിലേക്ക് കണക്റ്റുചെയ്‌തു</translation>
 <translation id="2540992418118313681">ഈ കമ്പ്യൂട്ടർ കാണുന്നതിനും നിയന്ത്രിക്കുന്നതിനും മറ്റൊരു ഉപയോക്താവിന് പങ്കിടാൻ നിങ്ങൾക്ക് താൽപ്പര്യമുണ്ടോ?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">സുരക്ഷാ കീ റിമോട്ടിംഗ് പ്രോസസ്</translation>
 <translation id="3581045510967524389">നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്യാനായില്ല. നിങ്ങളുടെ ഉപകരണം കണക്റ്റ് ചെയ്‌തിട്ടുണ്ടോ എന്ന് പരിശോധിക്കുക.</translation>
 <translation id="3596628256176442606">ക്രോമോട്ടിംഗ് ക്ലയന്റുകളിൽ നിന്നുള്ള ഇൻകമിംഗ് കണക്ഷനുകളെ ഈ സേവനം പ്രവർത്തനക്ഷമമാക്കുന്നു.</translation>
-<translation id="369442766917958684">ഓഫ്‌ലൈൻ.</translation>
 <translation id="3695446226812920698">എങ്ങനെയെന്നറിയുക</translation>
 <translation id="3776024066357219166">നിങ്ങളുടെ Chrome വിദൂര ഡെസ്‌ക്‌ടോപ്പ് സെഷന്‍ അവസാനിച്ചു.</translation>
 <translation id="3858860766373142691">പേര്</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">നിങ്ങളുടെ ഡെസ്‌ക്‌ടോപ്പ് <ph name="USER" /> എന്നയാളുമായി നിലവിൽ പങ്കിടുന്നു.</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു.</translation>
 <translation id="579702532610384533">വീണ്ടും ബന്ധിപ്പിക്കുക</translation>
 <translation id="5810269635982033450">ട്രാക്ക്‌പാഡ് പോലെ ‌സ്‌ക്രീൻ പ്രവർത്തിക്കുന്നു</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> നിങ്ങളുടെ സ്ക്രീൻ കാണാനും കീബോർഡും മൗസും നിയന്ത്രിക്കാനും ആക്‌സസ് അഭ്യർത്ഥിച്ചു. ഈ അഭ്യർത്ഥന നിങ്ങൾ പ്രതീക്ഷിക്കുന്നില്ലെങ്കിൽ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' അമർത്തുക. അല്ലെങ്കിൽ കണക്ഷൻ തയ്യാറാകുമ്പോൾ അനുവദിക്കാൻ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' അമർത്തുക.</translation>

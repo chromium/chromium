@@ -84,7 +84,8 @@ TEST_F(ErrorMapUnitTest, AddAndRemoveErrors) {
   EXPECT_EQ(kNumNonIncognitoErrors + 1,
             errors_.GetErrorsForExtension(kId).size());
   errors_.RemoveErrors(ErrorMap::Filter::ErrorsForExtensionWithType(
-      kId, ExtensionError::MANIFEST_ERROR), nullptr);
+                           kId, ExtensionError::Type::kManifestError),
+                       nullptr);
   EXPECT_EQ(kNumNonIncognitoErrors, errors_.GetErrorsForExtension(kId).size());
 
   const ExtensionError* added_error =

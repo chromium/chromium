@@ -20,7 +20,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "components/device_signals/core/common/common_types.h"
@@ -70,11 +69,11 @@ std::pair<std::optional<std::string>, std::optional<std::string>> GetSPKIHash(
 
   // Get the hash and subject.
   if (cert_context->pbCertEncoded) {
-    base::StringPiece der_bytes(
+    std::string_view der_bytes(
         reinterpret_cast<const char*>(cert_context->pbCertEncoded),
         cert_context->cbCertEncoded);
 
-    base::StringPiece spki;
+    std::string_view spki;
     if (net::asn1::ExtractSPKIFromDERCert(der_bytes, &spki)) {
       ret.first = crypto::SHA256HashString(spki);
     }

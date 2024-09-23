@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {ViewerThumbnailElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 function createThumbnail() {
   document.body.innerHTML = '';
@@ -12,52 +12,91 @@ function createThumbnail() {
   return thumbnail;
 }
 
+function createPdfCanvas(
+    thumbnail: ViewerThumbnailElement, imageSize: number[]) {
+  thumbnail.image = new ImageData(imageSize[0]!, imageSize[1]!);
+  const divId = '#pdf-canvas';
+  return thumbnail.shadowRoot!.querySelector<HTMLCanvasElement>(divId)!;
+}
+
+// <if expr="enable_pdf_ink2">
+function createInk2Canvas(
+    thumbnail: ViewerThumbnailElement, imageSize: number[]) {
+  thumbnail.ink2Image = new ImageData(imageSize[0]!, imageSize[1]!);
+  const divId = '#ink2-canvas';
+  return thumbnail.shadowRoot!.querySelector<HTMLCanvasElement>(divId)!;
+}
+// </if>
+
+function checkThumbnailAncestorDivSize(
+    canvas: HTMLCanvasElement, divSize: number[]) {
+  // The parent <div> is only there to handle opacity, so ignore it.
+  // The ancestor <div> to test is the grandparent.
+  const div = canvas.parentElement!.parentElement!;
+  chrome.test.assertEq(divSize[0], div.offsetWidth);
+  chrome.test.assertEq(divSize[1], div.offsetHeight);
+}
+
+function checkThumbnailSize(canvas: HTMLCanvasElement, canvasSize: number[]) {
+  chrome.test.assertEq(`${canvasSize[0]}px`, canvas.style.width);
+  chrome.test.assertEq(`${canvasSize[1]}px`, canvas.style.height);
+}
+
 function testThumbnailSize(
     thumbnail: ViewerThumbnailElement, imageSize: number[],
     canvasSize: number[]) {
-  const imageData = new ImageData(imageSize[0]!, imageSize[1]!);
-  thumbnail.image = imageData;
+  const canvas = createPdfCanvas(thumbnail, imageSize);
+  checkThumbnailSize(canvas, canvasSize);
 
-  const canvas = thumbnail.shadowRoot!.querySelector('canvas')!;
-  chrome.test.assertEq(`${canvasSize[0]}px`, canvas.style.width);
-  chrome.test.assertEq(`${canvasSize[1]}px`, canvas.style.height);
-
-  // The div containing the canvas should be resized to fit.
-  const div = canvas.parentElement!;
-  chrome.test.assertEq(canvasSize[0], div.offsetWidth);
-  chrome.test.assertEq(canvasSize[1], div.offsetHeight);
+  // The thumbnail div ancestor containing the canvas should be resized to fit.
+  checkThumbnailAncestorDivSize(canvas, canvasSize);
 }
 
-function testThumbnailRotation(
-    thumbnail: ViewerThumbnailElement, clockwiseRotations: number,
-    divSize: number[]) {
-  thumbnail.clockwiseRotations = clockwiseRotations;
+// <if expr="enable_pdf_ink2">
+function testInk2ThumbnailSize(
+    thumbnail: ViewerThumbnailElement, imageSize: number[],
+    canvasSize: number[]) {
+  const canvas = createInk2Canvas(thumbnail, imageSize);
+  checkThumbnailSize(canvas, canvasSize);
 
-  const canvas = thumbnail.shadowRoot!.querySelector('canvas')!;
+  // The thumbnail div ancestor containing the canvas should be resized to fit.
+  checkThumbnailAncestorDivSize(canvas, canvasSize);
+}
+// </if>
+
+function checkRotatedThumbnailSizeAndTransform(
+    canvas: HTMLCanvasElement, clockwiseRotations: number, divSize: number[]) {
   const halfTurn = clockwiseRotations % 2 === 0;
   chrome.test.assertEq(
       `${halfTurn ? divSize[0] : divSize[1]}px`, canvas.style.width);
   chrome.test.assertEq(
       `${halfTurn ? divSize[1] : divSize[0]}px`, canvas.style.height);
 
-  // The div containing the rotated canvas should be resized to fit.
-  const div = canvas.parentElement!;
-  chrome.test.assertEq(divSize[0], div.offsetWidth);
-  chrome.test.assertEq(divSize[1], div.offsetHeight);
+  // The thumbnail div ancestor containing the canvas should be resized to fit.
+  checkThumbnailAncestorDivSize(canvas, divSize);
 
   chrome.test.assertEq(
       `rotate(${clockwiseRotations * 90}deg)`, canvas.style.transform);
 }
 
-function testThumbnailRotations(
+async function testThumbnailRotations(
     imageSize: number[], rotatedDivSizes: number[][]) {
   const thumbnail = createThumbnail();
-  const imageData = new ImageData(imageSize[0]!, imageSize[1]!);
-  thumbnail.image = imageData;
+  const canvas = createPdfCanvas(thumbnail, imageSize);
+  // <if expr="enable_pdf_ink2">
+  const inkCanvas = createInk2Canvas(thumbnail, imageSize);
+  // </if>
 
   chrome.test.assertEq(4, rotatedDivSizes.length);
   for (let rotations = 0; rotations < rotatedDivSizes.length; rotations++) {
-    testThumbnailRotation(thumbnail, rotations, rotatedDivSizes[rotations]!);
+    thumbnail.clockwiseRotations = rotations;
+    await microtasksFinished();
+    checkRotatedThumbnailSizeAndTransform(
+        canvas, rotations, rotatedDivSizes[rotations]!);
+    // <if expr="enable_pdf_ink2">
+    checkRotatedThumbnailSizeAndTransform(
+        inkCanvas, rotations, rotatedDivSizes[rotations]!);
+    // </if>
   }
 }
 
@@ -78,7 +117,12 @@ const tests = [
     ].forEach(({
                 imageSize,
                 canvasSize,
-              }) => testThumbnailSize(thumbnail, imageSize, canvasSize));
+              }) => {
+      testThumbnailSize(thumbnail, imageSize, canvasSize);
+      // <if expr="enable_pdf_ink2">
+      testInk2ThumbnailSize(thumbnail, imageSize, canvasSize);
+      // </if>
+    });
 
     chrome.test.succeed();
   },
@@ -134,44 +178,44 @@ const tests = [
 
     chrome.test.succeed();
   },
-  function testRotateNormalLowRes() {
+  async function testRotateNormalLowRes() {
     window.devicePixelRatio = 1;
 
     // Letter
-    testThumbnailRotations(
+    await testThumbnailRotations(
         [108, 140], [[108, 140], [140, 108], [108, 140], [140, 108]]);
 
     // A4
-    testThumbnailRotations(
+    await testThumbnailRotations(
         [108, 152], [[108, 152], [140, 99], [108, 152], [140, 99]]);
 
     chrome.test.succeed();
   },
-  function testRotateNormalHighRes() {
+  async function testRotateNormalHighRes() {
     window.devicePixelRatio = 2;
 
     // Letter
-    testThumbnailRotations(
+    await testThumbnailRotations(
         [216, 280], [[108, 140], [140, 108], [108, 140], [140, 108]]);
 
     // A4
-    testThumbnailRotations(
+    await testThumbnailRotations(
         [216, 304], [[108, 152], [140, 99], [108, 152], [140, 99]]);
 
     chrome.test.succeed();
   },
-  function testRotateNormalHighRes() {
+  async function testRotateNormalHighRes() {
     window.devicePixelRatio = 1;
 
-    testThumbnailRotations(
+    await testThumbnailRotations(
         [50, 1500], [[50, 1500], [140, 4], [50, 1500], [140, 4]]);
 
     chrome.test.succeed();
   },
-  function testRotateNormalHighRes() {
+  async function testRotateNormalHighRes() {
     window.devicePixelRatio = 2;
 
-    testThumbnailRotations(
+    await testThumbnailRotations(
         [50, 1500], [[25, 750], [140, 4], [25, 750], [140, 4]]);
 
     chrome.test.succeed();
@@ -179,14 +223,26 @@ const tests = [
   async function testContextMenuDisabled() {
     // Set some image data so a canvas is created inside the thumbnail.
     const thumbnail = createThumbnail();
-    thumbnail.image = new ImageData(108, 140);
-    const canvas = thumbnail.shadowRoot!.querySelector('canvas')!;
+    {
+      const canvas = createPdfCanvas(thumbnail, [108, 140]);
 
-    const whenContextMenu = eventToPromise('contextmenu', canvas);
-    canvas.dispatchEvent(new CustomEvent('contextmenu', {cancelable: true}));
-    const e = await whenContextMenu;
+      const whenContextMenu = eventToPromise('contextmenu', canvas);
+      canvas.dispatchEvent(new CustomEvent('contextmenu', {cancelable: true}));
+      const e = await whenContextMenu;
 
-    chrome.test.assertTrue(e.defaultPrevented);
+      chrome.test.assertTrue(e.defaultPrevented);
+    }
+    // <if expr="enable_pdf_ink2">
+    {
+      const canvas = createInk2Canvas(thumbnail, [108, 140]);
+
+      const whenContextMenu = eventToPromise('contextmenu', canvas);
+      canvas.dispatchEvent(new CustomEvent('contextmenu', {cancelable: true}));
+      const e = await whenContextMenu;
+
+      chrome.test.assertTrue(e.defaultPrevented);
+    }
+    // </if>
     chrome.test.succeed();
   },
 ];

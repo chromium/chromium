@@ -31,7 +31,7 @@ void DispatchPressedEvent(const ui::KeyEvent& key_event,
 void PostPressedEvent(ui::KeyEvent* event) {
   // Modify RELEASED event to PRESSED event.
   const ui::KeyEvent pressed_event(
-      ui::ET_KEY_PRESSED, event->key_code(), event->code(),
+      ui::EventType::kKeyPressed, event->key_code(), event->code(),
       event->flags() | ui::EF_SHIFT_DOWN | ui::EF_IS_SYNTHESIZED);
   std::unique_ptr<aura::WindowTracker> tracker(new aura::WindowTracker);
   tracker->Add(static_cast<aura::Window*>(event->target()));
@@ -62,8 +62,9 @@ void KeyHoldDetector::OnKeyEvent(ui::KeyEvent* event) {
         }
         state_ = PRESSED;
         if (delegate_->ShouldStopEventPropagation()) {
-          // Don't process ET_KEY_PRESSED event yet. The ET_KEY_PRESSED
-          // event will be generated upon ET_KEY_RELEASEED event below.
+          // Don't process EventType::kKeyPressed event yet. The
+          // EventType::kKeyPressed event will be generated upon
+          // EventType::kKeyReleaseed event below.
           event->StopPropagation();
         }
         break;
@@ -76,7 +77,7 @@ void KeyHoldDetector::OnKeyEvent(ui::KeyEvent* event) {
           event->StopPropagation();
         break;
     }
-  } else if (event->type() == ui::ET_KEY_RELEASED) {
+  } else if (event->type() == ui::EventType::kKeyReleased) {
     switch (state_) {
       case INITIAL:
         break;

@@ -6,6 +6,7 @@
 #define BASE_WIN_POST_ASYNC_RESULTS_H_
 
 #include <unknwn.h>
+
 #include <windows.foundation.h>
 #include <wrl/async.h>
 #include <wrl/client.h>
@@ -39,7 +40,6 @@ constexpr const char* ToCString(AsyncStatus async_status) {
   }
 
   NOTREACHED();
-  return "";
 }
 
 template <typename T>

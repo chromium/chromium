@@ -90,9 +90,9 @@ build/test content, instead of all of chrome.
 We have a separate target for `content`'s unit tests in `content_unittests`, and
 integration tests in `content_browsertests`.
 
-`content` is build at a separate dll to speed up the build.
+`content` is built as a separate dll to speed up the build.
 
-We've created an API around `content`, similar to our WebKit API. This isolates
+We've created an API around `content`, similar to our Blink API. This isolates
 embedders from content's inner workings, and makes it clear to people working on
 content which methods are used by embedders.
 

@@ -20,7 +20,7 @@ test_invalid_value('animation',
 test_invalid_value('animation',
   '1s linear 1s 2 reverse forwards paused anim view()');
 test_invalid_value('animation',
-  '1s linear 1s 2 reverse forwards paused anim timeline');
+  '1s linear 1s 2 reverse forwards paused anim --timeline');
 
 test_computed_value('animation',
   '1s linear 1s 2 reverse forwards paused anim');
@@ -72,36 +72,6 @@ test((t) => {
   target.style.animationTimeline = 'auto, auto';
   assert_equals(getComputedStyle(target).animation, '');
 }, 'Animation shorthand can not represent non-initial timelines (computed)');
-
-test((t) => {
-  t.add_cleanup(() => {
-    target.style = '';
-  });
-
-  target.style.animation = 'anim 1s';
-  target.style.animationDelayEnd = '42s';
-  assert_equals(target.style.animation, '');
-  assert_equals(target.style.animationName, 'anim');
-  assert_equals(target.style.animationDuration, '1s');
-
-  target.style.animationDelayEnd = '0s, 0s';
-  assert_equals(target.style.animation, '');
-}, 'Animation shorthand can not represent non-initial animation-delay-end (specified)');
-
-test((t) => {
-  t.add_cleanup(() => {
-    target.style = '';
-  });
-
-  target.style.animation = 'anim 1s';
-  target.style.animationDelayEnd = '42s';
-  assert_equals(getComputedStyle(target).animation, '');
-  assert_equals(getComputedStyle(target).animationName, 'anim');
-  assert_equals(getComputedStyle(target).animationDuration, '1s');
-
-  target.style.animationDelayEnd = '0s, 0s';
-  assert_equals(getComputedStyle(target).animation, '');
-}, 'Animation shorthand can not represent non-initial animation-delay-end (computed)');
 
 test((t) => {
   t.add_cleanup(() => {
@@ -162,5 +132,41 @@ test((t) => {
   target.style.animationRangeEnd = 'normal, normal';
   assert_equals(getComputedStyle(target).animation, '');
 }, 'Animation shorthand can not represent non-initial animation-range-end (computed)');
+
+test((t) => {
+  t.add_cleanup(() => {
+    target.style = '';
+  });
+
+  target.style.animationName = "bounce, roll";
+  target.style.animationDuration = "1s, 0.2s";
+  target.style.animationTimingFunction = "ease-in, linear";
+  target.style.animationDelay = "0s, 1s";
+  target.style.animationDirection = "normal, reverse";
+  target.style.animationFillMode = "forwards, backwards";
+  target.style.animationIterationCount = "infinite, 2";
+  target.style.animationPlayState = "paused, running";
+  // animation-timeline and animation-range-{start|end} are initial values.
+  assert_equals(target.style.animation, '');
+}, 'Animation shorthand can not be represented with same list length (specified)');
+
+test((t) => {
+  t.add_cleanup(() => {
+    target.style = '';
+  });
+
+  target.style.animationName = "bounce, roll";
+  target.style.animationDuration = "1s, 0.2s";
+  target.style.animationTimingFunction = "ease-in, linear";
+  target.style.animationDelay = "0s, 1s";
+  target.style.animationDirection = "normal, reverse";
+  target.style.animationFillMode = "forwards, backwards";
+  target.style.animationIterationCount = "infinite, 2";
+  target.style.animationPlayState = "paused, running";
+  // animation-timeline and animation-range-{start|end} are initial values.
+  assert_equals(getComputedStyle(target).animation,
+      '1s ease-in infinite forwards paused bounce, ' +
+      '0.2s linear 1s 2 reverse backwards roll');
+}, 'Animation shorthand can be represented with same list length (computed)');
 
 </script>

@@ -20,9 +20,10 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/service_worker/service_worker_container_host.h"
+#include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -45,7 +46,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-// TODO(https://crbug.com/824858): Much of this file, which dealt with thread
+// TODO(crbug.com/40568315): Much of this file, which dealt with thread
 // hops between UI and IO, can likely be simplified now that service worker code
 // is on the UI thread.
 
@@ -64,7 +65,7 @@ using OpenURLCallback = base::OnceCallback<void(GlobalRenderFrameHostId)>;
 class OpenURLObserver : public WebContentsObserver {
  public:
   OpenURLObserver(WebContents* web_contents,
-                  int frame_tree_node_id,
+                  FrameTreeNodeId frame_tree_node_id,
                   OpenURLCallback callback)
       : WebContentsObserver(web_contents),
         frame_tree_node_id_(frame_tree_node_id),
@@ -117,7 +118,7 @@ class OpenURLObserver : public WebContentsObserver {
     task_runner->DeleteSoon(FROM_HERE, this);
   }
 
-  int frame_tree_node_id_;
+  FrameTreeNodeId frame_tree_node_id_;
   OpenURLCallback callback_;
 };
 
@@ -176,45 +177,50 @@ void DidOpenURL(OpenURLCallback callback, WebContents* web_contents) {
 }
 
 void AddWindowClient(
-    const ServiceWorkerContainerHost* container_host,
+    const ServiceWorkerClient& service_worker_client,
     std::vector<
         std::tuple<GlobalRenderFrameHostId, base::TimeTicks, std::string>>*
         client_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!container_host->IsContainerForWindowClient()) {
+  if (!service_worker_client.IsContainerForWindowClient()) {
     return;
   }
-  if (!container_host->is_execution_ready())
+  if (!service_worker_client.is_execution_ready()) {
     return;
-  client_info->push_back(std::make_tuple(container_host->GetRenderFrameHostId(),
-                                         container_host->create_time(),
-                                         container_host->client_uuid()));
+  }
+  client_info->push_back(
+      std::make_tuple(service_worker_client.GetRenderFrameHostId(),
+                      service_worker_client.create_time(),
+                      service_worker_client.client_uuid()));
 }
 
 void AddNonWindowClient(
-    const ServiceWorkerContainerHost* container_host,
+    const ServiceWorkerClient& service_worker_client,
     blink::mojom::ServiceWorkerClientType client_type,
     std::vector<blink::mojom::ServiceWorkerClientInfoPtr>* out_clients) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  blink::mojom::ServiceWorkerClientType host_client_type =
-      container_host->GetClientType();
-  if (host_client_type == blink::mojom::ServiceWorkerClientType::kWindow)
+  if (service_worker_client.GetClientType() ==
+      blink::mojom::ServiceWorkerClientType::kWindow) {
     return;
+  }
   if (client_type != blink::mojom::ServiceWorkerClientType::kAll &&
-      client_type != host_client_type)
+      client_type != service_worker_client.GetClientType()) {
     return;
-  if (!container_host->is_execution_ready())
+  }
+  if (!service_worker_client.is_execution_ready()) {
     return;
+  }
 
   // TODO(dtapuska): Need to get frozen state for dedicated workers from
   // DedicatedWorkerHost. crbug.com/968417
   auto client_info = blink::mojom::ServiceWorkerClientInfo::New(
-      container_host->url(), blink::mojom::RequestContextFrameType::kNone,
-      container_host->client_uuid(), host_client_type,
+      service_worker_client.url(), blink::mojom::RequestContextFrameType::kNone,
+      service_worker_client.client_uuid(),
+      service_worker_client.GetClientType(),
       /*page_hidden=*/true,
       /*is_focused=*/false,
       blink::mojom::ServiceWorkerClientLifecycleState::kActive,
-      base::TimeTicks(), container_host->create_time());
+      base::TimeTicks(), service_worker_client.create_time());
   out_clients->push_back(std::move(client_info));
 }
 
@@ -258,18 +264,19 @@ void GetNonWindowClients(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (options->include_uncontrolled) {
     if (controller->context()) {
-      for (auto it = controller->context()->GetClientContainerHostIterator(
-               controller->key(), false /* include_reserved_clients */,
-               false /* include_back_forward_cached_clients */);
-           !it->IsAtEnd(); it->Advance()) {
-        AddNonWindowClient(it->GetContainerHost(), options->client_type,
-                           &clients);
+      for (auto it =
+               controller->context()
+                   ->service_worker_client_owner()
+                   .GetServiceWorkerClients(
+                       controller->key(), false /* include_reserved_clients */,
+                       false /* include_back_forward_cached_clients */);
+           !it.IsAtEnd(); ++it) {
+        AddNonWindowClient(*it, options->client_type, &clients);
       }
     }
   } else {
     for (const auto& controllee : controller->controllee_map()) {
-      AddNonWindowClient(controllee.second.get(), options->client_type,
-                         &clients);
+      AddNonWindowClient(*controllee.second, options->client_type, &clients);
     }
   }
   DidGetClients(std::move(callback), std::move(clients));
@@ -305,16 +312,19 @@ void GetWindowClients(
       clients_info;
   if (options->include_uncontrolled) {
     if (controller->context()) {
-      for (auto it = controller->context()->GetClientContainerHostIterator(
-               controller->key(), false /* include_reserved_clients */,
-               false /* include_back_forward_cached_clients */);
-           !it->IsAtEnd(); it->Advance()) {
-        AddWindowClient(it->GetContainerHost(), &clients_info);
+      for (auto it =
+               controller->context()
+                   ->service_worker_client_owner()
+                   .GetServiceWorkerClients(
+                       controller->key(), false /* include_reserved_clients */,
+                       false /* include_back_forward_cached_clients */);
+           !it.IsAtEnd(); ++it) {
+        AddWindowClient(*it, &clients_info);
       }
     }
   } else {
     for (const auto& controllee : controller->controllee_map()) {
-      AddWindowClient(controllee.second.get(), &clients_info);
+      AddWindowClient(*controllee.second, &clients_info);
     }
   }
 
@@ -328,7 +338,7 @@ void GetWindowClients(
     blink::mojom::ServiceWorkerClientInfoPtr info =
         GetWindowClientInfo(std::get<0>(it), std::get<1>(it), std::get<2>(it));
 
-    // If the request to the container_host returned a null
+    // If the request to the service_worker_client returned a null
     // ServiceWorkerClientInfo, that means that it wasn't possible to associate
     // it with a valid RenderFrameHost. It might be because the frame was killed
     // or navigated in between.
@@ -364,9 +374,10 @@ void DidGetExecutionReadyClient(
     return;
   }
 
-  ServiceWorkerContainerHost* container_host =
-      context->GetContainerHostByClientID(client_uuid);
-  if (!container_host || !container_host->is_execution_ready()) {
+  ServiceWorkerClient* service_worker_client =
+      context->service_worker_client_owner().GetServiceWorkerClientByClientID(
+          client_uuid);
+  if (!service_worker_client || !service_worker_client->is_execution_ready()) {
     // The page was destroyed before it became execution ready.  Tell the
     // renderer the page opened but it doesn't have access to it.
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kOk,
@@ -376,23 +387,27 @@ void DidGetExecutionReadyClient(
 
   // In a scenario where "--disable-web-security" is specified the |script_url|
   // may be cross-origin
-  CHECK_EQ(container_host->GetCorrectStorageKeyForWebSecurityState(script_url),
-           key);
+  CHECK_EQ(
+      service_worker_security_utils::GetCorrectStorageKeyForWebSecurityState(
+          service_worker_client->key(), script_url),
+      key);
 
-  blink::mojom::ServiceWorkerClientInfoPtr info = GetWindowClientInfo(
-      container_host->GetRenderFrameHostId(), container_host->create_time(),
-      container_host->client_uuid());
+  blink::mojom::ServiceWorkerClientInfoPtr info =
+      GetWindowClientInfo(service_worker_client->GetRenderFrameHostId(),
+                          service_worker_client->create_time(),
+                          service_worker_client->client_uuid());
   std::move(callback).Run(blink::ServiceWorkerStatusCode::kOk, std::move(info));
 }
 
 }  // namespace
 
-void FocusWindowClient(ServiceWorkerContainerHost* container_host,
+void FocusWindowClient(ServiceWorkerClient* service_worker_client,
                        ClientCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(container_host->IsContainerForWindowClient());
+  DCHECK(service_worker_client->IsContainerForWindowClient());
 
-  GlobalRenderFrameHostId rfh_id = container_host->GetRenderFrameHostId();
+  GlobalRenderFrameHostId rfh_id =
+      service_worker_client->GetRenderFrameHostId();
   auto* render_frame_host = RenderFrameHostImpl::FromID(rfh_id);
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromRenderFrameHost(render_frame_host));
@@ -403,7 +418,7 @@ void FocusWindowClient(ServiceWorkerContainerHost* container_host,
   }
 
   // Avoid focusing on inactive pages.
-  // TODO(https://crbug.com/1239553): Running the callback with nullptr
+  // TODO(crbug.com/40193903): Running the callback with nullptr
   // results in NotFoundError whereas TypeError should be invoked
   // according to the specification.
   // https://w3c.github.io/ServiceWorker/#client-focus
@@ -424,8 +439,9 @@ void FocusWindowClient(ServiceWorkerContainerHost* container_host,
   // Move the web contents to the foreground.
   web_contents->Activate();
 
-  blink::mojom::ServiceWorkerClientInfoPtr info = GetWindowClientInfo(
-      rfh_id, container_host->create_time(), container_host->client_uuid());
+  blink::mojom::ServiceWorkerClientInfoPtr info =
+      GetWindowClientInfo(rfh_id, service_worker_client->create_time(),
+                          service_worker_client->client_uuid());
   std::move(callback).Run(std::move(info));
 }
 
@@ -523,7 +539,8 @@ void NavigateClient(const GURL& url,
     return;
   }
 
-  int frame_tree_node_id = rfhi->frame_tree_node()->frame_tree_node_id();
+  FrameTreeNodeId frame_tree_node_id =
+      rfhi->frame_tree_node()->frame_tree_node_id();
   Navigator& navigator = rfhi->frame_tree_node()->navigator();
   // Service workers don't have documents, so it's ok to use nullopt for
   // `initiator_base_url` in the following call.
@@ -538,23 +555,22 @@ void NavigateClient(const GURL& url,
       false /* should_replace_current_entry */, false /* user_gesture */,
       blink::mojom::TriggeringEventInfo::kUnknown,
       std::string() /* href_translate */, nullptr /* blob_url_loader_factory */,
-      std::nullopt);
+      std::nullopt, false /* has_rel_opener */);
   new OpenURLObserver(web_contents, frame_tree_node_id,
                       base::BindOnce(&DidNavigate, context, script_url, key,
                                      std::move(callback)));
 }
 
-void GetClient(ServiceWorkerContainerHost* container_host,
+void GetClient(ServiceWorkerClient* service_worker_client,
                ClientCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(container_host->IsContainerForClient());
 
-  blink::mojom::ServiceWorkerClientType host_client_type =
-      container_host->GetClientType();
-  if (host_client_type == blink::mojom::ServiceWorkerClientType::kWindow) {
-    blink::mojom::ServiceWorkerClientInfoPtr info = GetWindowClientInfo(
-        container_host->GetRenderFrameHostId(), container_host->create_time(),
-        container_host->client_uuid());
+  if (service_worker_client->GetClientType() ==
+      blink::mojom::ServiceWorkerClientType::kWindow) {
+    blink::mojom::ServiceWorkerClientInfoPtr info =
+        GetWindowClientInfo(service_worker_client->GetRenderFrameHostId(),
+                            service_worker_client->create_time(),
+                            service_worker_client->client_uuid());
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(info)));
     return;
@@ -563,12 +579,14 @@ void GetClient(ServiceWorkerContainerHost* container_host,
   // TODO(dtapuska): Need to get frozen state for dedicated workers from
   // DedicatedWorkerHost. crbug.com/968417
   auto client_info = blink::mojom::ServiceWorkerClientInfo::New(
-      container_host->url(), blink::mojom::RequestContextFrameType::kNone,
-      container_host->client_uuid(), host_client_type,
+      service_worker_client->url(),
+      blink::mojom::RequestContextFrameType::kNone,
+      service_worker_client->client_uuid(),
+      service_worker_client->GetClientType(),
       /*page_hidden=*/true,
       /*is_focused=*/false,
       blink::mojom::ServiceWorkerClientLifecycleState::kActive,
-      base::TimeTicks(), container_host->create_time());
+      base::TimeTicks(), service_worker_client->create_time());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(client_info)));
 }
@@ -615,36 +633,36 @@ void DidNavigate(const base::WeakPtr<ServiceWorkerContextCore>& context,
     return;
   }
 
-  for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
-           context->GetClientContainerHostIterator(
-               key, true /* include_reserved_clients */,
-               false /* include_back_forward_cached_clients */);
-       !it->IsAtEnd(); it->Advance()) {
-    ServiceWorkerContainerHost* container_host = it->GetContainerHost();
-    if (!container_host->IsContainerForWindowClient())
+  for (auto it = context->service_worker_client_owner().GetServiceWorkerClients(
+           key, true /* include_reserved_clients */,
+           false /* include_back_forward_cached_clients */);
+       !it.IsAtEnd(); ++it) {
+    if (!it->IsContainerForWindowClient()) {
       continue;
+    }
 
-    if (container_host->GetRenderFrameHostId() != rfh_id)
+    if (it->GetRenderFrameHostId() != rfh_id) {
       continue;
+    }
 
     // DidNavigate must be called with a preparation complete client (the
     // navigation was committed), but the client might not be execution ready
     // yet (Blink hasn't yet created the Document).
-    DCHECK(container_host->is_response_committed());
-    if (!container_host->is_execution_ready()) {
-      container_host->AddExecutionReadyCallback(base::BindOnce(
-          &DidGetExecutionReadyClient, context, container_host->client_uuid(),
-          script_url, key, std::move(callback)));
+    DCHECK(it->is_response_committed());
+    if (!it->is_execution_ready()) {
+      it->AddExecutionReadyCallback(base::BindOnce(
+          &DidGetExecutionReadyClient, context, it->client_uuid(), script_url,
+          key, std::move(callback)));
       return;
     }
 
-    DidGetExecutionReadyClient(context, container_host->client_uuid(),
-                               script_url, key, std::move(callback));
+    DidGetExecutionReadyClient(context, it->client_uuid(), script_url, key,
+                               std::move(callback));
     return;
   }
 
-  // If here, it means that no container_host was found, in which case, the
-  // renderer should still be informed that the window was opened.
+  // If here, it means that no service_worker_client was found, in which case,
+  // the renderer should still be informed that the window was opened.
   std::move(callback).Run(blink::ServiceWorkerStatusCode::kOk,
                           nullptr /* client_info */);
 }

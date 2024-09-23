@@ -1,0 +1,9 @@
+Tests setPressureStateOverride delivers updates
+PASS: Set pressure state override to 'critical'
+[
+    [0] : [
+        [0] : cpu
+        [1] : critical
+    ]
+]
+

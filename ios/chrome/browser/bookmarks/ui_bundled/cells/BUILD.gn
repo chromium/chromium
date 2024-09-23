@@ -1,0 +1,56 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("cells") {
+  sources = [
+    "bookmark_home_node_item.h",
+    "bookmark_home_node_item.mm",
+    "bookmark_parent_folder_item.h",
+    "bookmark_parent_folder_item.mm",
+    "bookmark_table_cell_title_edit_delegate.h",
+    "bookmark_table_cell_title_editing.h",
+    "bookmark_text_field_item.h",
+    "bookmark_text_field_item.mm",
+    "table_view_bookmarks_folder_item.h",
+    "table_view_bookmarks_folder_item.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/bookmarks/browser",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/ui_bundled:constants",
+    "//ios/chrome/browser/bookmarks/ui_bundled:utils",
+    "//ios/chrome/browser/ntp/ui_bundled:logo",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols:icons",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/common/ui/util",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "bookmark_parent_folder_item_unittest.mm",
+    "bookmark_text_field_item_unittest.mm",
+  ]
+
+  deps = [
+    ":cells",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/third_party/material_components_ios",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

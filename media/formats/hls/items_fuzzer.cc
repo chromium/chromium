@@ -2,21 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/formats/hls/items.h"
 
 #include <cstddef>
 #include <cstdint>
 #include <optional>
+#include <string_view>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace {
 
-bool IsSubstring(base::StringPiece sub, base::StringPiece base) {
-  return base.data() <= sub.data() &&
-         base.data() + base.size() >= sub.data() + sub.size();
+bool IsSubstring(std::string_view sub, std::string_view base) {
+  return sub.empty() || (base.data() <= sub.data() &&
+                         base.data() + base.size() >= sub.data() + sub.size());
 }
 
 std::optional<media::hls::SourceString> GetItemContent(
@@ -48,7 +53,7 @@ size_t GetItemLineNumber(media::hls::UriItem uri) {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Create a StringPiece from the given input
-  const base::StringPiece source(reinterpret_cast<const char*>(data), size);
+  const std::string_view source(reinterpret_cast<const char*>(data), size);
   media::hls::SourceLineIterator iterator{source};
 
   while (true) {
@@ -90,8 +95,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                       prev_iterator.SourceForTesting()));
 
     // Ensure that the content associated with this item is NOT a substring of
-    // the updated iterator
-    if (content) {
+    // the updated iterator, if the content has any associated data.
+    if (content && content->Size()) {
       CHECK(!IsSubstring(content->Str(), iterator.SourceForTesting()));
     }
   }

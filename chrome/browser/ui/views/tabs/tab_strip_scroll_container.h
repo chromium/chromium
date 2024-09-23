@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/tabs/overflow_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -62,6 +63,8 @@ class TabStripScrollContainer : public views::View, views::ViewObserver {
   // enable or disable the scroll buttons based on the scroll position
   void MaybeUpdateScrollButtonState();
 
+  TabStrip* tab_strip() { return tab_strip_observation_.GetSource(); }
+
   // Subscription for scrolling of content view
   base::CallbackListSubscription on_contents_scrolled_subscription_;
 
@@ -76,7 +79,8 @@ class TabStripScrollContainer : public views::View, views::ViewObserver {
 
   // Actually scrolls |tab_strip_|.
   raw_ptr<views::ScrollView> scroll_view_;
-  raw_ptr<TabStrip, DanglingUntriaged> tab_strip_;
+  base::ScopedObservation<TabStrip, views::ViewObserver> tab_strip_observation_{
+      this};
 
   // The buttons that allow users to manually scroll |tab_strip_|.
   raw_ptr<views::ImageButton> leading_scroll_button_;

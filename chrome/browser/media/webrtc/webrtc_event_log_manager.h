@@ -417,7 +417,8 @@ class WebRtcEventLogManager final
 
   // This allows unit tests that do not wish to change the task runner to still
   // check when certain operations are finished.
-  // TODO(crbug.com/775415): Remove this and use PostNullTaskForTesting instead.
+  // TODO(crbug.com/40545136): Remove this and use PostNullTaskForTesting
+  // instead.
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForTesting();
 
   void PostNullTaskForTesting(base::OnceClosure reply);
@@ -440,7 +441,7 @@ class WebRtcEventLogManager final
   // Indicates whether remote-bound logging is generally allowed, although
   // possibly not for all profiles. This makes it possible for remote-bound to
   // be disabled through Finch.
-  // TODO(crbug.com/775415): Remove this kill-switch.
+  // TODO(crbug.com/40545136): Remove this kill-switch.
   const bool remote_logging_feature_enabled_;
 
   // Observer which will be informed whenever a local log file is started or
@@ -475,7 +476,8 @@ class WebRtcEventLogManager final
   // observation. Allows us to register for each RPH only once, and get notified
   // when it exits (cleanly or due to a crash).
   // This object is only to be accessed on the UI thread.
-  base::flat_set<content::RenderProcessHost*> observed_render_process_hosts_;
+  base::flat_set<raw_ptr<content::RenderProcessHost, CtnExperimental>>
+      observed_render_process_hosts_;
 
   // In production, this holds a small object that just tells WebRTC (via
   // PeerConnectionTracker) to start/stop producing event logs for a specific

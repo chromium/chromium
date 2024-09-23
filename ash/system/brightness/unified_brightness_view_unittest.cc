@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/slider.h"
 
@@ -133,7 +134,7 @@ TEST_F(UnifiedBrightnessViewTest, SliderButtonComponents) {
   auto* night_light_button =
       static_cast<IconButton*>(unified_brightness_view()->children()[1]);
   EXPECT_STREQ(night_light_button->GetClassName(), "IconButton");
-  EXPECT_EQ(night_light_button->GetAccessibleName(),
+  EXPECT_EQ(night_light_button->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_TOGGLE_TOOLTIP,
                 l10n_util::GetStringUTF16(
@@ -144,9 +145,10 @@ TEST_F(UnifiedBrightnessViewTest, SliderButtonComponents) {
   auto* display_subpage_drill_in_button =
       static_cast<IconButton*>(unified_brightness_view()->children()[2]);
   EXPECT_STREQ(display_subpage_drill_in_button->GetClassName(), "IconButton");
-  EXPECT_EQ(display_subpage_drill_in_button->GetAccessibleName(),
-            l10n_util::GetStringUTF16(
-                IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_SETTINGS_TOOLTIP));
+  EXPECT_EQ(
+      display_subpage_drill_in_button->GetViewAccessibility().GetCachedName(),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_SETTINGS_TOOLTIP));
   EXPECT_EQ(display_subpage_drill_in_button->GetTooltipText(),
             u"Show display settings");
 

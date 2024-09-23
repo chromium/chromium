@@ -80,6 +80,8 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   void HangUp() override;
   void PreviousSlide() override;
   void NextSlide() override;
+  void SetOnWindowCreatedNotifyObserversCallback(
+      base::OnceClosure on_window_created_notify_observers_callback) override;
 
   const gfx::Rect& GetSourceBounds() const override;
   std::optional<gfx::Rect> GetWindowBounds() override;
@@ -140,12 +142,13 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
     return active_session_.get();
   }
 
- private:
-  friend class WebContentsUserData<VideoPictureInPictureWindowControllerImpl>;
-
+ protected:
   // Use VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents()
   // to create an instance.
   explicit VideoPictureInPictureWindowControllerImpl(WebContents* web_contents);
+
+ private:
+  friend class WebContentsUserData<VideoPictureInPictureWindowControllerImpl>;
 
   // Recompute the playback state and update the window accordingly.
   void UpdatePlaybackState();
@@ -207,6 +210,9 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
 
   // The origin of the initiator.
   std::optional<url::Origin> origin_;
+
+  // Callback to notify the observers about the video PiP window creation event.
+  base::OnceClosure on_window_created_notify_observers_callback_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

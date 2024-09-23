@@ -5,21 +5,34 @@
 #include "components/user_manager/user_directory_integrity_manager.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/values.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/account_id_util.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 
 namespace user_manager {
-
 namespace {
 
+// Initial version of the preference, contained String value of user's e-mail.
+// This value is not written by the code, but we need to read it in case when
+// device restart also resulted in applying OS update.
 const char kUserDirectoryIntegrityAccountPref[] =
     "incomplete_login_user_account";
 
+// Updated version of the preference, contains a Dict that is used to serialize
+// AccountId, and might contain additional information.
+const char kUserDirectoryIntegrityAccountPrefV2[] =
+    "incomplete_login_user_account_v2";
+const char kCleanupStrategyKey[] = "cleanup_strategy";
+
 }  // namespace
+
+using CleanupStrategy = UserDirectoryIntegrityManager::CleanupStrategy;
 
 UserDirectoryIntegrityManager::UserDirectoryIntegrityManager(
     PrefService* local_state)
@@ -30,13 +43,18 @@ UserDirectoryIntegrityManager::~UserDirectoryIntegrityManager() = default;
 void UserDirectoryIntegrityManager::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kUserDirectoryIntegrityAccountPref, {});
+  registry->RegisterDictionaryPref(kUserDirectoryIntegrityAccountPrefV2, {});
 }
 
 void UserDirectoryIntegrityManager::RecordCreatingNewUser(
-    const AccountId& account_id) {
+    const AccountId& account_id,
+    CleanupStrategy strategy) {
   LOG(WARNING) << "Creating new user, don't have credentials yet.";
-  local_state_->SetString(kUserDirectoryIntegrityAccountPref,
-                          account_id.GetUserEmail());
+  base::Value::Dict serialized_account;
+  StoreAccountId(account_id, serialized_account);
+  serialized_account.Set(kCleanupStrategyKey, static_cast<int>(strategy));
+  local_state_->SetDict(kUserDirectoryIntegrityAccountPrefV2,
+                        std::move(serialized_account));
   local_state_->CommitPendingWrite();
 }
 
@@ -48,11 +66,37 @@ void UserDirectoryIntegrityManager::RemoveUser(const AccountId& account_id) {
 void UserDirectoryIntegrityManager::ClearPrefs() {
   LOG(WARNING) << "Created user have credentials now.";
   local_state_->ClearPref(kUserDirectoryIntegrityAccountPref);
+  local_state_->ClearPref(kUserDirectoryIntegrityAccountPrefV2);
   local_state_->CommitPendingWrite();
 }
 
 std::optional<AccountId>
 UserDirectoryIntegrityManager::GetMisconfiguredUserAccountId() {
+  const base::Value::Dict& account_dict =
+      local_state_->GetDict(kUserDirectoryIntegrityAccountPrefV2);
+  std::optional<AccountId> result = LoadAccountId(account_dict);
+  if (result) {
+    return result;
+  }
+  return GetMisconfiguredUserAccountIdLegacy();
+}
+
+CleanupStrategy
+UserDirectoryIntegrityManager::GetMisconfiguredUserCleanupStrategy() {
+  const base::Value::Dict& account_dict =
+      local_state_->GetDict(kUserDirectoryIntegrityAccountPrefV2);
+  std::optional<int> raw_strategy = account_dict.FindInt(kCleanupStrategyKey);
+  if (raw_strategy) {
+    CHECK(0 <= *raw_strategy);
+    CHECK(*raw_strategy <= static_cast<int>(CleanupStrategy::kMaxValue));
+    return static_cast<CleanupStrategy>(*raw_strategy);
+  }
+  // Default value
+  return CleanupStrategy::kRemoveUser;
+}
+
+std::optional<AccountId>
+UserDirectoryIntegrityManager::GetMisconfiguredUserAccountIdLegacy() {
   std::optional<std::string> misconfigured_user_email =
       GetMisconfiguredUserEmail();
 
@@ -86,7 +130,7 @@ UserDirectoryIntegrityManager::GetMisconfiguredUserAccountId() {
   // Since we only record `incomplete_login_user_account` pref in
   // `auth_session_authenticator` for regular and kiosk users, it should be
   // impossible to reach here after checking for both types of users above.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 
@@ -101,6 +145,12 @@ UserDirectoryIntegrityManager::GetMisconfiguredUserEmail() {
 
 bool UserDirectoryIntegrityManager::IsUserMisconfigured(
     const AccountId& account_id) {
+  const base::Value::Dict& account_dict =
+      local_state_->GetDict(kUserDirectoryIntegrityAccountPrefV2);
+  if (!account_dict.empty()) {
+    return AccountIdMatches(account_id, account_dict);
+  }
+  // Legacy option.
   std::optional<std::string> incomplete_user_email =
       GetMisconfiguredUserEmail();
   return incomplete_user_email.has_value() &&

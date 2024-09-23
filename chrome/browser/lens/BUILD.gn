@@ -14,6 +14,7 @@ android_library("java") {
     "//base:base_java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/embedder_support/android:context_menu_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
@@ -38,6 +39,7 @@ android_library("delegate_java") {
     "//base:base_java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/embedder_support/android:context_menu_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]

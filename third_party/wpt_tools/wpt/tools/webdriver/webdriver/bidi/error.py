@@ -12,14 +12,14 @@ class BidiException(Exception):
     error_code: ClassVar[str]
 
     def __init__(self, message: str, stacktrace: Optional[str] = None):
-        super()
+        super().__init__()
 
         self.message = message
         self.stacktrace = stacktrace
 
     def __repr__(self):
         """Return the object representation in string format."""
-        return f"{self.__class__.__name__}({self.error}, {self.message}, {self.stacktrace})"
+        return f"{self.__class__.__name__}({self.error_code}, {self.message}, {self.stacktrace})"
 
     def __str__(self):
         """Return the string representation of the object."""
@@ -93,6 +93,10 @@ class UnableToCaptureScreenException(BidiException):
 
 class UnableToSetCookieException(BidiException):
     error_code = "unable to set cookie"
+
+
+class UnableToSetFileInputException(BidiException):
+    error_code = "unable to set file input"
 
 
 class UnderspecifiedStoragePartitionException(BidiException):

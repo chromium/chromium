@@ -1,0 +1,22 @@
+include_rules = [
+  "+ios/chrome/browser/drag_and_drop/model",
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/metrics/model/new_tab_page_uma.h",
+  "+ios/chrome/browser/net/model/crurl.h",
+  "+ios/chrome/browser/policy/model/policy_util.h",
+  "+ios/chrome/browser/sync/model/sync_service_factory.h",
+  "+ios/chrome/browser/ui/settings/clear_browsing_data",
+  "+ios/chrome/browser/ui/sharing",
+  "+ios/chrome/browser/ui/menu",
+  "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
+  "+ios/chrome/browser/url_loading/model",
+  "+ios/chrome/browser/window_activities/model/window_activity_helpers.h",
+]
+
+specific_include_rules = {
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "history_ui_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+}

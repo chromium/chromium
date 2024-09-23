@@ -18,7 +18,7 @@
     (ManageSyncSettingsCoordinator*)coordinator;
 
 // Title for the Sync Settings coordinator.
-// TODO(crbug.com/1222632): Remove property following the MICE Settings launch.
+// TODO(crbug.com/40774188): Remove property following the MICE Settings launch.
 @property(nonatomic, readonly) NSString* manageSyncSettingsCoordinatorTitle;
 
 @optional
@@ -36,13 +36,6 @@
 
 // Delegate.
 @property(nonatomic, weak) id<ManageSyncSettingsCoordinatorDelegate> delegate;
-
-// Initializes ManageSyncSettingsCoordinator to present its controller modally.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                              accountState:
-                                  (SyncSettingsAccountState)accountState
-    NS_DESIGNATED_INITIALIZER;
 
 // Initializes ManageSyncSettingsCoordinator to view its controller by pushing
 // it on top of the navigation stack.

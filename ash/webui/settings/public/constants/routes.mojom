@@ -118,6 +118,7 @@ enum Subpage {
   kArcVmUsbPreferences = 707,
   kManageIsolatedWebApps = 708,
   kAppNotificationsManager = 709,
+  kAppParentalControls = 710,
 
   // Crostini section.
   kCrostiniDetails = 800,
@@ -145,6 +146,7 @@ enum Subpage {
   kPrivacyHubMicrophone = 1105,
   kPrivacyHubCamera = 1106,
   kPrivacyHubGeolocation = 1107,
+  kPrivacyHubGeolocationAdvanced = 1108,
 
   // Languages and Input section.
   // 1200 was used for kLanguagesAndInputDetails. Do not reuse.
@@ -178,14 +180,14 @@ enum Subpage {
   kAudioAndCaptions = 1509,
   kSelectToSpeak = 1510,
   kChromeVox = 1511,
-  kFaceGazeCursorSettings = 1512,
-  kFaceGazeFacialExpressionsSettings = 1513,
+  kFaceGazeSettings = 1512,
 
   // Note: Reset section has no subpages.
 
   // About Chrome OS section.
   // 1700 was used for kAboutChromeOsDetails. Do not reuse.
   kDetailedBuildInfo = 1701,
+  kInternalStorybook = 1702,
 
   // Kerberos section.
   kKerberosAccountsV2 = 1800,
@@ -271,6 +273,7 @@ const string kPluginVmUsbPreferencesSubpagePath =
 const string kArcVmUsbPreferencesSubpagePath =
      "androidAppsDetails/sharedUsbDevices";
 const string kManageIsolatedWebAppsSubpagePath = "manage-isolated-web-apps";
+const string kAppParentalControlsSubpagePath = "app-parental-controls";
 
 // Crostini section.
 const string kCrostiniSectionPath = "crostini";
@@ -303,6 +306,8 @@ const string kPrivacyHubMicrophoneSubpagePath =
 const string kPrivacyHubCameraSubpagePath = "osPrivacy/privacyHub/camera";
 const string kPrivacyHubGeolocationSubpagePath =
       "osPrivacy/privacyHub/geolocation";
+const string kPrivacyHubGeolocationAdvancedSubpagePath =
+      "osPrivacy/privacyHub/geolocation/advanced";
 
 // Languages and Input section.
 const string kLanguagesAndInputSectionPath = "osLanguages";
@@ -338,10 +343,8 @@ const string kAudioAndCaptionsSubpagePath = "audioAndCaptions";
 const string kTextToSpeechSubpagePath = "manageAccessibility/tts";
 const string kSwitchAccessOptionsSubpagePath =
     "manageAccessibility/switchAccess";
-const string kFaceGazeCursorSettingsSubpagePath =
-    "manageAccessibility/faceGazeCursor";
-const string kFaceGazeFacialExpressionsSettingsSubpagePath =
-    "manageAccessibility/faceGazeExpressions";
+const string kFaceGazeSettingsSubpagePath =
+    "manageAccessibility/faceGaze";
 
 // Reset section.
 const string kResetSectionPath = "osReset";
@@ -356,3 +359,6 @@ const string kKerberosAccountsV2SubpagePath = "kerberos/kerberosAccounts";
 
 // System Preferences section.
 const string kSystemPreferencesSectionPath = "systemPreferences";
+
+// Internal pages (under About section).
+const string kInternalStorybookSubpagePath = "_internal/_storybook";

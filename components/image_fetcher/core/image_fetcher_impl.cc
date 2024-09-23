@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -83,7 +84,7 @@ void ImageFetcherImpl::OnImageURLFetched(const GURL& image_url,
                                          const std::string& image_data,
                                          const RequestMetadata& metadata) {
   auto it = pending_net_requests_.find(image_url);
-  DCHECK(it != pending_net_requests_.end());
+  CHECK(it != pending_net_requests_.end(), base::NotFatalUntil::M130);
   ImageRequest* request = &it->second;
   DCHECK(request->image_data.empty());
   DCHECK_EQ(RequestMetadata::RESPONSE_CODE_INVALID,
@@ -113,7 +114,7 @@ void ImageFetcherImpl::OnImageDecoded(const GURL& image_url,
                                       const gfx::Image& image) {
   // Get request for the given image_url from the request queue.
   auto image_iter = pending_net_requests_.find(image_url);
-  DCHECK(image_iter != pending_net_requests_.end());
+  CHECK(image_iter != pending_net_requests_.end(), base::NotFatalUntil::M130);
   ImageRequest* request = &image_iter->second;
 
   // Run all image callbacks.

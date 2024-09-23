@@ -6,6 +6,7 @@
 #define REMOTING_HOST_BASE_SCREEN_CONTROLS_H_
 
 #include <optional>
+
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {

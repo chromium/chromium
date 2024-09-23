@@ -11,9 +11,11 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/input_event_activation_protector.h"
+#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/dialog_observer.h"
@@ -38,7 +40,9 @@ class Widget;
 // You must not directly depend on or use DialogClientView; it is internal to
 // //ui/views. Access it through the public interfaces on DialogDelegate. It is
 // only VIEWS_EXPORT to make it available to views_unittests.
-class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
+class VIEWS_EXPORT DialogClientView : public ClientView,
+                                      public DialogObserver,
+                                      public LayoutDelegate {
   METADATA_HEADER(DialogClientView, ClientView)
 
  public:
@@ -61,7 +65,8 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   void SetButtonRowInsets(const gfx::Insets& insets);
 
   // View implementation:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
@@ -83,7 +88,6 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // this view is visible).
   void TriggerInputProtection(bool force_early = false);
 
-  void Layout(PassKey) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
@@ -108,6 +112,10 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   }
 
   bool IsPossiblyUnintendedInteraction(const ui::Event& event);
+
+  // LayoutDelegate:
+  ProposedLayout CalculateProposedLayout(
+      const SizeBounds& size_bounds) const override;
 
  private:
   enum {
@@ -134,9 +142,10 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // (which must be pointed to by `member`).  Which action is chosen is based on
   // whether DialogDelegate::GetDialogButtons() includes `type`, and whether
   // `member` points to a button that already exists.
-  void UpdateDialogButton(raw_ptr<MdTextButton>* member, ui::DialogButton type);
+  void UpdateDialogButton(raw_ptr<MdTextButton>* member,
+                          ui::mojom::DialogButton type);
 
-  void ButtonPressed(ui::DialogButton type, const ui::Event& event);
+  void ButtonPressed(ui::mojom::DialogButton type, const ui::Event& event);
 
   // Returns the spacing between the extra view and the ok/cancel buttons. 0 if
   // no extra view. Otherwise uses the default padding.

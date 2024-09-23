@@ -10,16 +10,14 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
+#include "net/base/io_buffer.h"
 #include "net/base/net_export.h"
-
-namespace base {
-class BigEndianReader;
-}  // namespace base
 
 namespace net {
 
@@ -87,7 +85,7 @@ class NET_EXPORT_PRIVATE DnsQuery {
 
   // Returns the Question section of the query.  Used when matching the
   // response.
-  base::StringPiece question() const;
+  std::string_view question() const;
 
   // Returns the size of the question section.
   size_t question_size() const;
@@ -102,11 +100,27 @@ class NET_EXPORT_PRIVATE DnsQuery {
   DnsQuery(const DnsQuery& orig, uint16_t id);
   void CopyFrom(const DnsQuery& orig);
 
-  bool ReadHeader(base::BigEndianReader* reader, dns_protocol::Header* out);
+  bool ReadHeader(base::SpanReader<const uint8_t>* reader,
+                  dns_protocol::Header* out);
   // After read, |out| is in the DNS format, e.g.
   // "\x03""www""\x08""chromium""\x03""com""\x00". Use DNSDomainToString to
   // convert to the dotted format "www.chromium.com" with no trailing dot.
-  bool ReadName(base::BigEndianReader* reader, std::string* out);
+  bool ReadName(base::SpanReader<const uint8_t>* reader, std::string* out);
+
+  // Returns the Header pointer into the `io_buffer_`. Only valid to call on a
+  // DNSQuery has a valid IOBuffer, so this never returns null.
+  //
+  // TODO(davidben): Dereferencing the returned pointer will be UB. The correct
+  // shape of this function would be to do a memcpy into/out of a Header to read
+  // out of/into the buffer.
+  const dns_protocol::Header* header_in_io_buffer() const {
+    CHECK(io_buffer_ && !io_buffer_->span().empty());
+    return reinterpret_cast<dns_protocol::Header*>(io_buffer_->span().data());
+  }
+  dns_protocol::Header* header_in_io_buffer() {
+    CHECK(io_buffer_ && !io_buffer_->span().empty());
+    return reinterpret_cast<dns_protocol::Header*>(io_buffer_->span().data());
+  }
 
   // Size of the DNS name (*NOT* hostname) we are trying to resolve; used
   // to calculate offsets.
@@ -114,9 +128,6 @@ class NET_EXPORT_PRIVATE DnsQuery {
 
   // Contains query bytes to be consumed by higher level Write() call.
   scoped_refptr<IOBufferWithSize> io_buffer_;
-
-  // Pointer to the dns header section.
-  raw_ptr<dns_protocol::Header> header_ = nullptr;
 };
 
 }  // namespace net

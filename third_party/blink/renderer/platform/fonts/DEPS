@@ -10,6 +10,7 @@ include_rules = [
     "+base/mac",
     "+base/win",
     "+cc",
+    "+third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h",
     "+third_party/blink/renderer/platform/font_family_names.h",
     "+third_party/blink/renderer/platform/geometry",
     "+third_party/blink/renderer/platform/graphics/color.h",
@@ -30,3 +31,11 @@ include_rules = [
     "+third_party/blink/renderer/platform/wtf",
     "+ui/base/mojom/attributed_string.mojom-blink.h",
 ]
+
+specific_include_rules = {
+    "font_cache.cc" : [
+        "+base/strings/escape.h",
+        "+third_party/blink/renderer/platform/json/json_parser.h",
+        "+third_party/blink/renderer/platform/json/json_values.h"
+    ],
+}

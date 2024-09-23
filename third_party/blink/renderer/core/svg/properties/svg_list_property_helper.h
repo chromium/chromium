@@ -28,11 +28,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_LIST_PROPERTY_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_LIST_PROPERTY_HELPER_H_
 
 #include "third_party/blink/renderer/core/svg/properties/svg_list_property.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -106,7 +115,7 @@ class SVGListPropertyHelper : public SVGListPropertyBase {
     return svg_list;
   }
 
-  SVGPropertyBase* CloneForAnimation(const String& value) const override {
+  SVGPropertyBase* CloneForAnimation(const WTF::String& value) const override {
     auto* property = MakeGarbageCollected<Derived>();
     property->SetValueAsString(value);
     return property;

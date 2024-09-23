@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1192844206376121885">Будут удалены все данные и файлы cookie, которые сохранены сайтом <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Далее</translation>
+<translation id="1240190568154816272">Советы по работе с Chrome</translation>
 <translation id="1242008676835033345">Встроено на сайте <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Остановить</translation>
 <translation id="1289742167380433257">В целях экономии трафика изображения на странице были оптимизированы.</translation>
@@ -21,9 +22,9 @@
 <translation id="1383876407941801731">Поиск</translation>
 <translation id="1384959399684842514">Скачивание приостановлено.</translation>
 <translation id="1415402041810619267">URL укорочен</translation>
-<translation id="1434873037477293673">Оповещение о скидках</translation>
 <translation id="1448064542941920355">Уменьшить масштаб</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}one{<ph name="SITE_COUNT" /> сайт}few{<ph name="SITE_COUNT" /> сайта}many{<ph name="SITE_COUNT" /> сайтов}other{<ph name="SITE_COUNT" /> сайта}}</translation>
+<translation id="1500473259453106018">Скрыть карточку "Скидки на вкладках"</translation>
 <translation id="1510341833810331442">Сайтам запрещено сохранять данные на вашем устройстве</translation>
 <translation id="1547123415014299762">Сторонние файлы cookie разрешены</translation>
 <translation id="1568470248891039841">На страницах, которые вы просматриваете, может быть встроенный контент с других сайтов, например изображения, реклама и текст. Такие сайты могут запрашивать разрешение на использование информации о вас, которая сохраняется при работе с ними. Подробнее <ph name="BEGIN_LINK" />о встроенном контенте<ph name="END_LINK" />…</translation>
@@ -31,7 +32,6 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1633720957382884102">Связанные сайты</translation>
 <translation id="1644574205037202324">История</translation>
-<translation id="1647582022260550163">Разрешения будут сброшены, а файлы cookie и другие данные этого сайта – удалены.</translation>
 <translation id="1652197001188145583">Когда этот параметр включен, сайты могут запрашивать разрешение на использование устройств с NFC. Когда параметр отключен, сайтам запрещено использовать такие устройства.</translation>
 <translation id="1660204651932907780">Разрешить сайтам воспроизводить звуки (рекомендуется)</translation>
 <translation id="1677097821151855053">Файлы cookie и другие данные сайтов используются чтобы хранить информацию о вас, в том числе для входа в систему и персонализации рекламы. Управлять файлами cookie можно в <ph name="BEGIN_LINK" />разделе настроек<ph name="END_LINK" />.</translation>
@@ -40,6 +40,7 @@
 <translation id="1743802530341753419">Запрашивать разрешение на подключение к устройству (рекомендуется)</translation>
 <translation id="1779089405699405702">Дешифратор изображений</translation>
 <translation id="1785415724048343560">Рекомендуется для максимального удобства</translation>
+<translation id="1799920918471566157">Советы по работе с Chrome</translation>
 <translation id="1818308510395330587">Чтобы браузер "<ph name="APP_NAME" />" мог использовать дополненную реальность, также предоставьте ему доступ к камере в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Для устройства отключено определение местоположения. Включите эту функцию в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Закрыть</translation>
@@ -69,7 +70,6 @@
 <translation id="2241587408274973373">Карточки страницы быстрого доступа</translation>
 <translation id="2241634353105152135">Однократно</translation>
 <translation id="2253414712144136228">Удалить пункт "<ph name="NAME_OF_LIST_ITEM" />"</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 заблокированный сайт}one{# заблокированный сайт}few{# заблокированных сайта}many{# заблокированных сайтов}other{# заблокированного сайта}}</translation>
 <translation id="228293613124499805">Большинство сайтов, которые вы посещаете, скорее всего, сохраняют на устройстве такую информацию, как ваши предпочтения или данные, которыми вы делитесь с ними. Чаще всего это делается для вашего удобства. Мы рекомендуем не отключать этот параметр.</translation>
 <translation id="2289270750774289114">Запрашивать для сайтов разрешение на поиск Bluetooth-устройств поблизости (рекомендуется)</translation>
 <translation id="2315043854645842844">Сертификат, выбранный клиентом, не поддерживается операционной системой.</translation>
@@ -93,10 +93,10 @@
 <translation id="2498359688066513246">Справка/отзыв</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2546283357679194313">Файлы сookie и данные сайтов</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Заблокирован 1 файл cookie}one{Заблокирован # файл cookie}few{Заблокировано # файла cookie}many{Заблокировано # файлов cookie}other{Заблокировано # файла cookie}}</translation>
 <translation id="2570922361219980984">Определение местоположения отключено и для самого устройства. Включите эту функцию в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Развернуто. Нажмите, чтобы свернуть.</translation>
 <translation id="2586657967955657006">Буфер обмена</translation>
+<translation id="2588271083332682494">Поддерживайте порядок с помощью групп вкладок</translation>
 <translation id="2597457036804169544">Тёмная тема не используется для сайтов.</translation>
 <translation id="2606760465469169465">Автоматическая проверка</translation>
 <translation id="2621115761605608342">Разрешить JavaScript для конкретного сайта</translation>
@@ -106,7 +106,7 @@
 <translation id="2683434792633810741">Удалить и сбросить?</translation>
 <translation id="2713106313042589954">Выключить камеру</translation>
 <translation id="2717722538473713889">Адреса электронной почты</translation>
-<translation id="2750481671343847896">Сайты могут показывать предложения войти в аккаунт от сервисов подтверждения личности.</translation>
+<translation id="2750481671343847896">Сайты могут показывать предложения войти в аккаунт от сервисов идентификации.</translation>
 <translation id="2790501146643349491">Когда этот параметр включен, недавно закрытые сайты могут завершать отправку и получение данных. Когда параметр отключен, недавно закрытым сайтам запрещено это делать.</translation>
 <translation id="2822354292072154809">Сбросить разрешения для сайта <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Запрашивать мобильную версию</translation>
@@ -115,15 +115,14 @@
 <translation id="2891975107962658722">Запретить сайту сохранять данные на вашем устройстве</translation>
 <translation id="2903493209154104877">Адреса</translation>
 <translation id="2910701580606108292">Запрашивать разрешение на воспроизведение защищенного контента</translation>
+<translation id="2918484639460781603">Перейти к настройкам</translation>
 <translation id="2932883381142163287">Сообщить о нарушении</translation>
 <translation id="2939338015096024043">Когда этот параметр включен, сайты могут запрашивать разрешение на отслеживание положения камеры и получение доступа к информации о вашем окружении. Когда параметр отключен, им запрещено отслеживать положение камеры и получать доступ к информации об окружении.</translation>
 <translation id="2968755619301702150">Просмотр сертификатов</translation>
 <translation id="2979365474350987274">Использование сторонних файлов cookie ограничено</translation>
 <translation id="3008272652534848354">Сбросить разрешения</translation>
 <translation id="301521992641321250">Заблокировано автоматически</translation>
-<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Разрешить вход через сторонние сервисы для определенного сайта.</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{Срок действия истекает завтра}one{Срок действия истекает через # день}few{Срок действия истекает через # дня}many{Срок действия истекает через # дней}other{Срок действия истекает через # дня}}</translation>
 <translation id="310297983047869047">Предыдущий слайд</translation>
 <translation id="3109724472072898302">Свернуто</translation>
 <translation id="3114012059975132928">Видеопроигрыватель</translation>
@@ -135,7 +134,9 @@
 <translation id="3198916472715691905">В памяти занято: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Чтобы получать уведомления из приложения "<ph name="APP_NAME" />", включите их в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
+<translation id="3232293466644486101">Удалить данные о работе в браузере…</translation>
 <translation id="3242646949159196181">Когда этот параметр включен, сайты могут воспроизводить звук. Когда параметр отключен, сайтам запрещено это делать.</translation>
+<translation id="3273479183583863618">Скидки на вкладках</translation>
 <translation id="3277252321222022663">Предоставить сайтам доступ к датчикам (рекомендуется)</translation>
 <translation id="3285500645985761267">Разрешить связанным сайтам отслеживать действия внутри группы</translation>
 <translation id="3295019059349372795">Глава 11. Изумрудный город страны Оз</translation>
@@ -149,6 +150,7 @@
 <translation id="3448554387819310837">Когда этот параметр включен, сайты могут запрашивать разрешение на использование камеры. Когда параметр отключен, им запрещено использовать вашу камеру.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Завтра Chrome снова начнет блокировать файлы cookie}one{Через # день Chrome снова начнет блокировать файлы cookie}few{Через # дня Chrome снова начнет блокировать файлы cookie}many{Через # дней Chrome снова начнет блокировать файлы cookie}other{Через # дня Chrome снова начнет блокировать файлы cookie}}</translation>
 <translation id="3521663503435878242">Сайты с доменом <ph name="DOMAIN" /></translation>
+<translation id="3523447078673133727">Запретить сайтам отслеживать движения рук</translation>
 <translation id="3536227077203206203">Дано разовое разрешение</translation>
 <translation id="3538390592868664640">Запретить сайтам создавать 3D-карту места, в котором вы находитесь, и отслеживать положение камеры</translation>
 <translation id="3544058026430919413">Компания может определить группу сайтов, которым разрешено использовать файлы cookie для передачи друг другу информации о действиях пользователя. В режиме инкогнито эта функция не работает.</translation>
@@ -159,11 +161,13 @@
 <translation id="3600792891314830896">Отключить звуки на сайтах</translation>
 <translation id="3602290021589620013">Предварительный просмотр</translation>
 <translation id="3628308229821498208">Варианты поисковых запросов</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> сайт в группе сайтов <ph name="RWS_OWNER" />, на которых отслеживаются ваши действия}one{<ph name="RWS_MEMBERS_COUNT" /> сайт в группе сайтов <ph name="RWS_OWNER" />, на которых отслеживаются ваши действия}few{<ph name="RWS_MEMBERS_COUNT" /> сайта в группе сайтов <ph name="RWS_OWNER" />, на которых отслеживаются ваши действия}many{<ph name="RWS_MEMBERS_COUNT" /> сайтов в группе сайтов <ph name="RWS_OWNER" />, на которых отслеживаются ваши действия}other{<ph name="RWS_MEMBERS_COUNT" /> сайта в группе сайтов <ph name="RWS_OWNER" />, на которых отслеживаются ваши действия}}</translation>
 <translation id="3697164069658504920">Когда этот параметр включен, сайты могут запрашивать разрешение на использование USB-устройств. Когда параметр отключен, сайтам запрещено использовать такие устройства.</translation>
 <translation id="3707034683772193706">Сайт, который вы посещаете, может сохранять небольшой объем информации в Chrome, в основном для подтверждения того, что вы не бот.</translation>
 <translation id="3721953990244350188">Закрыть и показать следующее доступное действие</translation>
 <translation id="3744111561329211289">Фоновая синхронизация</translation>
 <translation id="3763247130972274048">Чтобы пропустить 10 секунд, дважды нажмите слева или справа.</translation>
+<translation id="3779154269823594982">Сменить пароли</translation>
 <translation id="3797520601150691162">Не использовать тёмную тему для конкретного сайта</translation>
 <translation id="3803367742635802571">Посещаемые сайты могут перестать работать должным образом</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -174,8 +178,11 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Перемотать вперед</translation>
 <translation id="3895926599014793903">Принудительно изменять масштаб</translation>
+<translation id="3905475044299942653">Получайте меньше уведомлений</translation>
 <translation id="3908288065506437185">Блокировать сторонние файлы cookie в режиме инкогнито</translation>
+<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Некоторые функции могут не работать. При этом связанные сайты по-прежнему смогут использовать сторонние файлы cookie.</translation>
+<translation id="3933121352599513978">Свернуть ненужные запросы (рекомендуется)</translation>
 <translation id="3955193568934677022">Разрешить сайтам воспроизводить защищенный контент (рекомендуется)</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
 <translation id="3974105241379491420">Сайты могут запрашивать разрешение на использование сохраненной информации о вас</translation>
@@ -188,16 +195,15 @@
 <translation id="4149994727733219643">Упрощенный просмотр веб-страниц</translation>
 <translation id="4151930093518524179">Масштаб по умолчанию</translation>
 <translation id="4165986682804962316">Настройки сайта</translation>
-<translation id="4169019654293892025">Скрыть модуль "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="4169549551965910670">Выполнено подключение к USB-устройству</translation>
 <translation id="4194328954146351878">Запрашивать для сайтов разрешение на доступ к информации и ее изменение через NFC (рекомендуется)</translation>
 <translation id="4200726100658658164">Открыть настройки геолокации</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> с устройства "<ph name="FROM_DEVICE" />"</translation>
 <translation id="4226663524361240545">Вибрация при получении уведомлений</translation>
 <translation id="4259722352634471385">Навигация заблокирована: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Разрешены</translation>
 <translation id="429312253194641664">На сайте воспроизводятся медиафайлы</translation>
 <translation id="42981349822642051">Развернуть</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{Срок действия истекает завтра}one{Срок действия истекает через # день}few{Срок действия истекает через # дня}many{Срок действия истекает через # дней}other{Срок действия истекает через # дня}}</translation>
 <translation id="4336566011000459927">Сегодня Chrome снова ограничит использование файлов cookie</translation>
 <translation id="4338831206024587507">Все сайты с доменом <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Блокировать передачу на сайты информации об использовании устройства</translation>
@@ -213,17 +219,21 @@
 <translation id="4566417217121906555">Отключить микрофон</translation>
 <translation id="4570913071927164677">Подробнее…</translation>
 <translation id="4598549027014564149">В режиме инкогнито сайты не могут использовать файлы cookie, чтобы отслеживать ваши действия на других сайтах, даже связанных. Информация о действиях в браузере не используется для таких целей, как показ персонализированной рекламы. Функции некоторых сайтов могут быть недоступны.</translation>
+<translation id="4619615317237390068">Вкладки с других устройств</translation>
 <translation id="4644713492825682049">Удалить и сбросить</translation>
-<translation id="4645575059429386691">Управляется вашими родителями</translation>
+<translation id="4645575059429386691">Управляется твоим родителем</translation>
 <translation id="4670064810192446073">Виртуальная реальность</translation>
+<translation id="4676059169848868271">Чтобы приложение "<ph name="APP_NAME" />" могло отслеживать движения рук, включите этот параметр в <ph name="BEGIN_LINK" />системных настройках<ph name="END_LINK" />.</translation>
 <translation id="4751476147751820511">Датчики движения и освещенности</translation>
 <translation id="4755971844837804407">Когда этот параметр включен, сайты могут показывать вам любую рекламу. Когда параметр отключен, им запрещено показывать навязчивую или вводящую в заблуждение рекламу.</translation>
 <translation id="4779083564647765204">Масштаб</translation>
+<translation id="4807122856660838973">Включите Безопасный просмотр</translation>
 <translation id="4811450222531576619">Сведения об источнике и теме</translation>
 <translation id="4836046166855586901">Спрашивать перед передачей на сайт информации об использовании устройства</translation>
 <translation id="483914009762354899">Включить все сайты с этим доменом</translation>
 <translation id="4883854917563148705">Управляемые настройки сбросить нельзя</translation>
 <translation id="4887024562049524730">Запрашивать для сайтов разрешение на использование устройства и данных виртуальной реальности (рекомендуется)</translation>
+<translation id="4936863036653376783">Вы найдете группы вкладок в предназначенном для них разделе на всех ваших устройствах.</translation>
 <translation id="4953688446973710931">Когда этот параметр включен, сайты могут запрашивать разрешение на автоматическое скачивание нескольких файлов. Когда параметр отключен, сайтам запрещено автоматически скачивать несколько файлов.</translation>
 <translation id="4962975101802056554">Отозвать все разрешения для устройства</translation>
 <translation id="497421865427891073">Вперед</translation>
@@ -232,8 +242,11 @@
 <translation id="4994033804516042629">Контакты не найдены</translation>
 <translation id="4996978546172906250">Способ отправки</translation>
 <translation id="5001526427543320409">Сторонние файлы cookie</translation>
+<translation id="5007392906805964215">Посмотреть</translation>
+<translation id="5014182796621173645">Вы посещали <ph name="RECENCY" /></translation>
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5048398596102334565">Предоставить сайтам доступ к датчикам движения (рекомендуется)</translation>
+<translation id="5048841907079026162">Управляйте данными о работе в браузере</translation>
 <translation id="5050380848339752099">Этот сайт передает информацию стороннему приложению, пока вы находитесь в режиме инкогнито.</translation>
 <translation id="5063480226653192405">Использование</translation>
 <translation id="5091013926750941408">Мобильная версия</translation>
@@ -241,6 +254,7 @@
 <translation id="5091663350197390230">Когда этот параметр включен, сайты могут использовать JavaScript. Когда параметр отключен, сайтам запрещено это делать.</translation>
 <translation id="5099358668261120049">Будут удалены все данные и файлы cookie, которые сохранены сайтом <ph name="ORIGIN" /> или его приложением, добавленным на главный экран.</translation>
 <translation id="5100237604440890931">Свернуто. Нажмите, чтобы развернуть.</translation>
+<translation id="5116239826668864748">При переходе по ссылкам в сообщениях, документах и других приложениях будет открываться Chrome.</translation>
 <translation id="5123685120097942451">Вкладка инкогнито</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Скидка на открытых вкладках}one{Скидки на открытых вкладках}few{Скидки на открытых вкладках}many{Скидки на открытых вкладках}other{Скидки на открытых вкладках}}</translation>
 <translation id="5186036860380548585">Действие доступно вверху экрана</translation>
@@ -258,6 +272,7 @@
 <translation id="5335288049665977812">Разрешить сайтам использовать JavaScript (рекомендуется)</translation>
 <translation id="534295439873310000">Устройства с NFC</translation>
 <translation id="5344522958567249764">Настройки конфиденциальности в рекламе</translation>
+<translation id="5373874281522292782">Ваши группы вкладок сохраняются</translation>
 <translation id="5389626883706033615">Сайтам запрещено запрашивать разрешение на использование сохраненной информации о вас</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и ещё 1)}one{(и ещё #)}few{(и ещё #)}many{(и ещё #)}other{(и ещё #)}}</translation>
 <translation id="5403592356182871684">Имена</translation>
@@ -272,9 +287,10 @@
 <translation id="5553374991681107062">Дата</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
 <translation id="5591840828808741583">Заблокировано для сайта <ph name="SITE_NAME" /></translation>
+<translation id="5632485077360054581">Показать</translation>
 <translation id="5649053991847567735">Автоматическое скачивание</translation>
 <translation id="5668404140385795438">Игнорировать запросы сайтов на запрет масштабирования</translation>
-<translation id="5677928146339483299">Заблокированы</translation>
+<translation id="5677928146339483299">Заблокировано</translation>
 <translation id="5689516760719285838">Геоданные</translation>
 <translation id="5690795753582697420">Камера выключена в настройках Android.</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> может использовать ваши данные при просмотре сайтов</translation>
@@ -282,12 +298,14 @@
 <translation id="5706552988683188916">Будут удалены файлы cookie и другие данные сайта <ph name="WEBSITE" />.</translation>
 <translation id="5723967018671998714">Сторонние файлы cookie заблокированы в режиме инкогнито</translation>
 <translation id="5740126560802162366">Сайты могут сохранять данные на вашем устройстве</translation>
+<translation id="5750869797196646528">Отслеживание рук</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />: заблокировано</translation>
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="5844448279347999754">Когда этот параметр включен, сайты могут запрашивать разрешение на доступ к тексту и изображениям, скопированным в буфер обмена. Когда параметр отключен, сайтам запрещен доступ к такому тексту и изображениям.</translation>
 <translation id="5853982612236235577">Когда этот параметр включен, сайты могут запрашивать разрешение на отправку уведомлений. Когда параметр отключен, сайтам запрещено их отправлять.</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
 <translation id="5876056640971328065">Приостановить видео</translation>
+<translation id="5877248419911025165">Свернуть все запросы</translation>
 <translation id="5884085660368669834">Параметр сайта</translation>
 <translation id="5887687176710214216">Последнее посещение: вчера</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
@@ -305,6 +323,7 @@
 <translation id="6064125863973209585">Завершенные скачивания</translation>
 <translation id="6071501408666570960">Возможно, вам потребуется повторно войти в аккаунт на этом сайте.</translation>
 <translation id="6120483543004435978">Когда этот параметр включен, сайтам разрешено запрашивать информацию о том, используете ли вы сейчас устройство. Когда параметр отключен, сайтам запрещен доступ к таким сведениям.</translation>
+<translation id="6140839633433422817">Разрешения будут сброшены, а файлы cookie и другие данные этого сайта – удалены.</translation>
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6171020522141473435">Когда этот параметр включен, сайты могут запрашивать разрешение на использование устройств Bluetooth. Когда параметр отключен, сайтам запрещено использовать такие устройства.</translation>
 <translation id="6177111841848151710">Закрыт доступ для текущей поисковой системы</translation>
@@ -338,27 +357,35 @@
 <translation id="6545864417968258051">Поиск Bluetooth-устройств</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{Заблокировано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Последнее посещение: <ph name="NUM_DAYS" /> дн. назад</translation>
+<translation id="656065428026159829">Ещё</translation>
 <translation id="6561560012278703671">Не прерывать мою работу при запросе разрешения на показ уведомлений</translation>
 <translation id="6593061639179217415">Версия для ПК</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{Файлы cookie разрешены для <ph name="RWS_MEMBERS_COUNT" /> сайта <ph name="RWS_OWNER" />}one{Файлы cookie разрешены для <ph name="RWS_MEMBERS_COUNT" /> сайта <ph name="RWS_OWNER" />}few{Файлы cookie разрешены для <ph name="RWS_MEMBERS_COUNT" /> сайтов <ph name="RWS_OWNER" />}many{Файлы cookie разрешены для <ph name="RWS_MEMBERS_COUNT" /> сайтов <ph name="RWS_OWNER" />}other{Файлы cookie разрешены для <ph name="RWS_MEMBERS_COUNT" /> сайта <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Защищенный контент</translation>
 <translation id="662080504995468778">Остаться</translation>
 <translation id="6653342741369270081">Чтобы выйти из полноэкранного режима, нажмите кнопку "Назад".</translation>
+<translation id="6683865262523156564">Этот сайт может отслеживать ваши действия. Он входит в группу <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Фото профиля</translation>
 <translation id="6697925417670533197">Текущие скачивания</translation>
-<translation id="6722828510648505498">Вы можете запретить предложения войти в аккаунт от сервисов подтверждения личности.</translation>
+<translation id="6709432001666529933">Спрашивать, прежде чем разрешать сайтам отслеживать движения рук (рекомендуется)</translation>
+<translation id="6722828510648505498">Вы можете запретить предложения войти в аккаунт от сервисов идентификации.</translation>
 <translation id="6746124502594467657">Переместить вниз</translation>
 <translation id="6749077623962119521">Сбросить разрешения?</translation>
 <translation id="6766622839693428701">Проведите вниз, чтобы закрыть панель.</translation>
 <translation id="6787751205395685251">Выберите значение для сайта <ph name="SITE_NAME" />.</translation>
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="6818926723028410516">Выберите объекты</translation>
+<translation id="6838525730752203626">Используйте Chrome по умолчанию</translation>
+<translation id="6840760312327750441">Чтобы сгруппировать вкладки: нажмите и удерживайте одну вкладку, затем перетащите ее на другую.</translation>
 <translation id="6864395892908308021">Это устройство не поддерживает NFC.</translation>
-<translation id="6867014948848323204">Источник: <ph name="FROM_DEVICE" /></translation>
+<translation id="6870169401250095575">Скрыть карточку "Проверка безопасности"</translation>
+<translation id="6900883974539674431">Группы вкладок автоматически сохраняются и обновляются на всех ваших устройствах.</translation>
 <translation id="6912998170423641340">Блокировать сайтам доступ к тексту и изображениям, скопированным в буфер обмена</translation>
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="6950072572526089586">Для обеспечения правильной работы сайты могут сохранять информацию о ваших действиях на них. Например, это делается, чтобы вам не приходилось вновь входить в аккаунт или повторно добавлять товары в корзину. Часто такая информация временно хранится на вашем устройстве.</translation>
 <translation id="6965382102122355670">ОК</translation>
+<translation id="6980861169612950611">Удалить данные сайта? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="6992289844737586249">Запрашивать разрешение на доступ к микрофону (рекомендуется)</translation>
 <translation id="7000754031042624318">Отключено в настройках Android</translation>
@@ -366,6 +393,7 @@
 <translation id="702275896380648118">Этот сайт определяет ваши интересы и затем предлагает другим сайтам рекламу для вас. Кроме того, он использует темы рекламы из Chrome, чтобы показывать вам более подходящие объявления.</translation>
 <translation id="7053983685419859001">Блокировать</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Выбран 1 объект}one{Выбран # объект}few{Выбрано # объекта}many{Выбрано # объектов}other{Выбрано # объекта}}</translation>
+<translation id="708014373017851679">Приложение "<ph name="APP_NAME" />" устарело. Обновите его.</translation>
 <translation id="7087918508125750058">Выбрано: <ph name="ITEM_COUNT" />. Меню находится в верхней части экрана.</translation>
 <translation id="7141896414559753902">Блокировать всплывающие окна и переадресацию на сайтах (рекомендуется)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
@@ -385,6 +413,7 @@
 <translation id="7366415735885268578">Добавление сайта</translation>
 <translation id="7368695150573390554">Офлайн-данные будут удалены.</translation>
 <translation id="7383715096023715447">Настройки домена <ph name="DOMAIN" /></translation>
+<translation id="7399802613464275309">Проверка безопасности</translation>
 <translation id="7406113532070524618">Ваши персональные данные не раскрываются, а сайтам не разрешается просматривать историю браузера. Однако сайты могут передавать небольшой объем информации для проверки вашей личности.</translation>
 <translation id="7423098979219808738">Сначала спрашивать</translation>
 <translation id="7423538860840206698">Доступ к данным в буфере обмена заблокирован</translation>
@@ -396,11 +425,12 @@
 <translation id="7561196759112975576">Всегда</translation>
 <translation id="757524316907819857">Запретить сайтам воспроизводить защищенный контент</translation>
 <translation id="7594634374516752650">Подключено устройство Bluetooth</translation>
-<translation id="7641339528570811325">Очистить историю...</translation>
+<translation id="7617547684249261169">Вы можете полностью или частично удалить историю, данные сайтов, файлы cookie и не только.</translation>
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7667547420449112975">Удивительный волшебник из страны Оз</translation>
 <translation id="7684642910516280563">Запретите сайту использовать сторонние файлы cookie.</translation>
+<translation id="7688240020069572972">Скрыть карточку с советами Chrome</translation>
 <translation id="7719367874908701697">Масштабирование страницы</translation>
 <translation id="7759147511335618829">Управление/программирование MIDI</translation>
 <translation id="7781829728241885113">Вчера</translation>
@@ -416,10 +446,10 @@
 <translation id="7882806643839505685">Включить звуки на определенном сайте</translation>
 <translation id="789180354981963912">Блокировать сторонние файлы cookie в режиме инкогнито</translation>
 <translation id="7940722705963108451">Напомнить</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> сайт в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}one{<ph name="FPS_MEMBERS_COUNT" /> сайт в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}few{<ph name="FPS_MEMBERS_COUNT" /> сайта в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}many{<ph name="FPS_MEMBERS_COUNT" /> сайтов в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}other{<ph name="FPS_MEMBERS_COUNT" /> сайта в группе сайтов <ph name="FPS_OWNER" />, на которых отслеживаются ваши действия}}</translation>
 <translation id="7986741934819883144">Выберите контакт</translation>
 <translation id="7990211076305263060">Когда этот параметр включен, сайты могут запрашивать разрешение на использование микрофона. Когда параметр отключен, им запрещено использовать ваш микрофон.</translation>
 <translation id="8007176423574883786">Отключено для этого устройства</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Скрыть карточку "Продолжить просмотр этой вкладки"}one{Скрыть карточку "Продолжить просмотр этих вкладок"}few{Скрыть карточку "Продолжить просмотр этих вкладок"}many{Скрыть карточку "Продолжить просмотр этих вкладок"}other{Скрыть карточку "Продолжить просмотр этих вкладок"}}</translation>
 <translation id="802154636333426148">Ошибка скачивания</translation>
 <translation id="8042586301629853791">Упорядочить:</translation>
 <translation id="8067883171444229417">Смотреть видео</translation>
@@ -437,7 +467,7 @@
 <translation id="8197286292360124385"><ph name="PERMISSION_1" />: разрешено</translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="8206354486702514201">Этот параметр включен администратором.</translation>
-<translation id="8211406090763984747">Безопасное подключение</translation>
+<translation id="8211406090763984747">Подключение защищено</translation>
 <translation id="8249310407154411074">Переместить в начало</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8284326494547611709">Субтитры</translation>
@@ -454,7 +484,7 @@
 <translation id="8441146129660941386">Перемотать назад</translation>
 <translation id="8444433999583714703">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к данным о местоположении, включите геолокацию в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Отключить доступ к устройству</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Используется 1 файл cookie}one{Используется # файл cookie}few{Используются # файла cookie}many{Используются # файлов cookie}other{Используется # файла cookie}}</translation>
+<translation id="8473055640493819707">Приложение "<ph name="APP_NAME" />" устарело. Переустановите его.</translation>
 <translation id="8487700953926739672">Доступно в автономном режиме</translation>
 <translation id="848952951823693243">Всегда запрашивать мобильную версию</translation>
 <translation id="8499083585497694743">Включить микрофон</translation>
@@ -462,20 +492,20 @@
 <translation id="851751545965956758">Не разрешать сайтам подключаться к устройствам</translation>
 <translation id="8525306231823319788">Полноэкранный режим</translation>
 <translation id="8541410041357371550">Этот сайт использует темы из Chrome, чтобы показывать вам более подходящую рекламу</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайта <ph name="FPS_OWNER" />}one{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайта <ph name="FPS_OWNER" />}few{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайтов <ph name="FPS_OWNER" />}many{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайтов <ph name="FPS_OWNER" />}other{Файлы cookie разрешены для <ph name="FPS_MEMBERS_COUNT" /> сайта <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Разрешено (рекомендуется)</translation>
 <translation id="8609465669617005112">Переместить вверх</translation>
 <translation id="8617611086246832542">Когда этот параметр включен, показываются версии сайтов для ПК. Когда параметр отключен, показываются мобильные версии сайтов.</translation>
 <translation id="8649036394979866943">Chrome ограничивает большинству сайтов возможность использовать сторонние файлы cookie для отслеживания ваших действий в интернете. <ph name="BEGIN_LINK" />Управлять параметрами защиты от слежения<ph name="END_LINK" /> можно в настройках.</translation>
+<translation id="8676316391139423634">Когда этот параметр включен, сайты могут запрашивать разрешение на отслеживание движений рук. В противном случае сайтам запрещено отслеживать такие движения.</translation>
 <translation id="8676374126336081632">Очистить</translation>
 <translation id="8681886425883659911">Объявления блокируются на сайтах, где есть навязчивая или вводящая в заблуждение реклама</translation>
 <translation id="868929229000858085">Поиск контактов</translation>
 <translation id="8712637175834984815">OK</translation>
+<translation id="8715862698998036666">Чтобы выйти из полноэкранного режима, проведите пальцем по экрану сверху вниз, а затем пролистните от левого или правого края.</translation>
 <translation id="8719283222052720129">Предоставьте приложению "<ph name="APP_NAME" />" разрешение в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Когда этот параметр включен, сайты могут запрашивать разрешение на поиск устройств Bluetooth. Когда параметр отключен, сайтам запрещено искать такие устройства.</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>
 <translation id="8730621377337864115">Готово</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Разрешено 1 сайту}one{Разрешено # сайту}few{Разрешено # сайтам}many{Разрешено # сайтам}other{Разрешено # сайта}}</translation>
 <translation id="8751914237388039244">Выберите фото</translation>
 <translation id="8800034312320686233">Сайт не работает?</translation>
 <translation id="8801436777607969138">Блокировать код JavaScript на определенном сайте</translation>
@@ -494,12 +524,12 @@
 <translation id="8959122750345127698">Страница не найдена: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Удалить</translation>
 <translation id="8990043154272859344">Вы выйдете из аккаунта на всех сайтах</translation>
+<translation id="8993853206419610596">Развернуть все запросы</translation>
 <translation id="9002538116239926534">Когда этот параметр включен, сайты могут сохранять данные на вашем устройстве. Когда параметр отключен, сайтам запрещено это делать.</translation>
 <translation id="9011903857143958461">Действует для сайта <ph name="SITE_NAME" /></translation>
-<translation id="9019902583201351841">Управляется вашими родителями</translation>
+<translation id="9019902583201351841">Управляется твоими родителями</translation>
 <translation id="9039697262778250930">Возможно, вам потребуется повторно войти в аккаунт на этих сайтах.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Этот сайт может отслеживать ваши действия. Он входит в группу <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Удалить файлы cookie</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Предоставьте приложению "<ph name="APP_NAME" />" разрешения в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
@@ -507,5 +537,6 @@
 <translation id="9162462602695099906">Опасная страница</translation>
 <translation id="930525582205581608">Удалить этот сайт?</translation>
 <translation id="947156494302904893">Сайты, которые вы посещаете, могут получать данные о том, что вы реальный человек</translation>
+<translation id="959682366969460160">Организация работы</translation>
 <translation id="967624055006145463">Объем памяти</translation>
 </translationbundle>

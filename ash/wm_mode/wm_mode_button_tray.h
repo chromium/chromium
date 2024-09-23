@@ -39,7 +39,7 @@ class WmModeButtonTray : public TrayBackgroundView, public SessionObserver {
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
-  void ClickedOutsideBubble() override {}
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override {}
   // No need to override since the icon and activation state of this tray will
   // change and get updated simultaneously in `UpdateButtonVisuals()`.
   void UpdateTrayItemColor(bool is_active) override {}

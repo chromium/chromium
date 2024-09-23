@@ -15,10 +15,10 @@ class FakeProvider : public EnergyMetricsProvider {
  public:
   void set_metrics(EnergyMetrics metrics) { metrics_ = metrics; }
 
-  absl::optional<EnergyMetrics> CaptureMetrics() override { return metrics_; }
+  std::optional<EnergyMetrics> CaptureMetrics() override { return metrics_; }
 
  private:
-  absl::optional<EnergyMetrics> metrics_;
+  std::optional<EnergyMetrics> metrics_;
 };
 
 class FakeDelegate : public SystemPowerMonitorDelegate {
@@ -140,7 +140,7 @@ TEST_F(SystemPowerMonitorHelperTest, MonitorHelperStartStop) {
 
 TEST_F(SystemPowerMonitorHelperTest, TimerStartFailed_InvalidSample) {
   // We haven't set metrics for provider, so monitor gets an
-  // absl::nullopt sample at the beginning and it will not start.
+  // std::nullopt sample at the beginning and it will not start.
   helper()->Start();
   ASSERT_FALSE(helper()->IsTimerRunningForTesting());
 }

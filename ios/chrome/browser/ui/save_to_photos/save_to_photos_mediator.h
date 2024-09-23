@@ -98,6 +98,9 @@ extern NSString* const kGooglePhotosAppURLScheme;
 // Shows the "Manage Storage" web page for `identity` in a new tab.
 - (void)showManageStorageForIdentity:(id<SystemIdentity>)identity;
 
+// Called when the user taps "Cancel" in the "Manage Storage" alert.
+- (void)manageStorageAlertDidCancel;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SAVE_TO_PHOTOS_SAVE_TO_PHOTOS_MEDIATOR_H_

@@ -114,7 +114,7 @@ constexpr base::FeatureParam<RenderDocumentLevel>::Option
         {RenderDocumentLevel::kAllFrames, "all-frames"}};
 const base::FeatureParam<RenderDocumentLevel> render_document_level{
     &features::kRenderDocument, kRenderDocumentLevelParameterName,
-    RenderDocumentLevel::kCrashedFrame, &render_document_levels};
+    RenderDocumentLevel::kSubframe, &render_document_levels};
 
 RenderDocumentLevel GetRenderDocumentLevel() {
   if (base::FeatureList::IsEnabled(features::kRenderDocument))
@@ -185,15 +185,6 @@ NavigationQueueingFeatureLevel GetNavigationQueueingFeatureLevel() {
 }
 
 bool ShouldAvoidRedundantNavigationCancellations() {
-  // If the experimental early RenderFrameHost swap for history navigations is
-  // turned on, this must return true so that when the old RFH is unloaded as
-  // part of the early swap, this doesn't cancel the navigation that's still
-  // ongoing in the new RFH.
-  if (base::FeatureList::IsEnabled(
-          features::kEarlyDocumentSwapForBackForwardTransitions)) {
-    return true;
-  }
-
   return GetNavigationQueueingFeatureLevel() >=
          NavigationQueueingFeatureLevel::kAvoidRedundantCancellations;
 }
@@ -204,18 +195,8 @@ bool ShouldQueueNavigationsWhenPendingCommitRFHExists() {
 }
 
 bool ShouldRestrictCanAccessDataForOriginToUIThread() {
-  // Only restrict calls to the UI thread if:
-  // - the feature is enabled
-  // - the new blob URL support is enabled
-  // - ChildProcessSecurityPolicy's requested file set is checked in
-  //   CanRequestURL() rather than CanCommitURL(). This feature is required for
-  //   some tests for pass with Citadel checks.
   return base::FeatureList::IsEnabled(
-             features::kRestrictCanAccessDataForOriginToUIThread) &&
-         base::FeatureList::IsEnabled(
-             net::features::kSupportPartitionedBlobUrl) &&
-         base::FeatureList::IsEnabled(
-             features::kRequestFileSetCheckedInCanRequestURL);
+      features::kRestrictCanAccessDataForOriginToUIThread);
 }
 
 bool ShouldCreateSiteInstanceForDataUrls() {

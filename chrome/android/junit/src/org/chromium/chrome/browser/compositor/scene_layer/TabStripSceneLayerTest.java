@@ -4,6 +4,7 @@
 
 package chrome.android.junit.src.org.chromium.chrome.browser.compositor.scene_layer;
 
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -19,30 +20,26 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
-import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
+import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab.StripLayoutTabDelegate;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -50,15 +47,13 @@ import org.chromium.ui.resources.ResourceManager;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, qualifiers = "sw600dp")
 public class TabStripSceneLayerTest {
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private TabStripSceneLayer.Natives mTabStripSceneMock;
     @Mock private StripLayoutHelperManager mStripLayoutHelperManager;
     @Mock private ResourceManager mResourceManager;
     @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private SceneLayer mSceneLayer;
-    @Mock private CompositorOnClickHandler mCompositorOnClickHandler;
-    @Mock private StripLayoutTabDelegate mStripLayoutTabDelegate;
+    @Mock private StripLayoutViewOnClickHandler mOnClickHandler;
     @Mock private TabLoadTrackerCallback mTabLoadTrackerCallback;
     @Mock private LayoutRenderHost mLayoutRenderHost;
     @Mock private LayoutUpdateHost mLayoutUpdateHost;
@@ -92,23 +87,31 @@ public class TabStripSceneLayerTest {
     }
 
     private void initializeTest() {
-        mTabStripSceneLayer = new TabStripSceneLayer(mContext);
+        mTabStripSceneLayer = new TabStripSceneLayer(mDpToPx);
         when(mTabStripSceneMock.init(mTabStripSceneLayer)).thenReturn(1L);
         mModelSelectorButton =
                 new TintedCompositorButton(
-                        mContext, 32.f, 32.f, mCompositorOnClickHandler, R.drawable.ic_incognito);
+                        mContext,
+                        ButtonType.INCOGNITO_SWITCHER,
+                        null,
+                        32.f,
+                        32.f,
+                        mOnClickHandler,
+                        R.drawable.ic_incognito);
         mNewTabButton =
                 new TintedCompositorButton(
                         mContext,
+                        ButtonType.NEW_TAB,
+                        null,
                         32.f,
                         32.f,
-                        mCompositorOnClickHandler,
+                        mOnClickHandler,
                         R.drawable.ic_new_tab_button);
         mStripLayoutTab =
                 new StripLayoutTab(
                         mContext,
                         1,
-                        mStripLayoutTabDelegate,
+                        mOnClickHandler,
                         mTabLoadTrackerCallback,
                         mLayoutUpdateHost,
                         false);
@@ -125,40 +128,63 @@ public class TabStripSceneLayerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
     public void testPushAndUpdateStrip() {
+        float leftPadding = 10f;
+        float rightPadding = 20f;
+        float topPadding = 5f;
         // Call the method being tested.
         mTabStripSceneLayer.pushAndUpdateStrip(
                 mStripLayoutHelperManager,
                 mLayerTitleCache,
                 mResourceManager,
                 mStripLayoutTabs,
+                null,
                 1.f,
                 0,
                 -1,
                 Color.YELLOW,
-                0.3f);
+                0.3f,
+                leftPadding,
+                rightPadding,
+                topPadding);
 
         // Verify JNI calls.
         verify(mTabStripSceneMock)
-                .updateModelSelectorButtonBackground(
+                .updateModelSelectorButton(
                         1L,
                         mTabStripSceneLayer,
                         mModelSelectorButton.getResourceId(),
                         ((TintedCompositorButton) mModelSelectorButton).getBackgroundResourceId(),
                         mModelSelectorButton.getDrawX(),
                         mModelSelectorButton.getDrawY(),
-                        mModelSelectorButton.getWidth() * mDpToPx,
-                        mModelSelectorButton.getHeight() * mDpToPx,
-                        false,
                         true,
+                        false,
                         ((TintedCompositorButton) mModelSelectorButton).getTint(),
                         ((TintedCompositorButton) mModelSelectorButton).getBackgroundTint(),
-                        false,
                         mModelSelectorButton.getOpacity(),
                         mResourceManager);
         verify(mTabStripSceneMock)
-                .updateTabStripLeftFade(1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0);
+                .updateNewTabButton(
+                        eq(1L),
+                        eq(mTabStripSceneLayer),
+                        /* resourceId= */ anyInt(),
+                        /* backgroundResourceId= */ anyInt(),
+                        /* x= */ eq(mNewTabButton.getDrawX() * mDpToPx),
+                        /* y= */ eq(mNewTabButton.getDrawY() * mDpToPx),
+                        /* topPadding= */ eq(topPadding),
+                        /* touchTargetOffset= */ anyFloat(),
+                        /* visible= */ eq(mNewTabButton.isVisible()),
+                        /* isHovered= */ eq(mNewTabButton.isHovered()),
+                        /* tint= */ anyInt(),
+                        /* backgroundTint= */ anyInt(),
+                        /* buttonAlpha= */ anyFloat(),
+                        /* backgroundTint= */ eq(mResourceManager));
+        verify(mTabStripSceneMock)
+                .updateTabStripLeftFade(
+                        1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0, leftPadding);
+        verify(mTabStripSceneMock)
+                .updateTabStripRightFade(
+                        1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0, rightPadding);
         verify(mTabStripSceneMock)
                 .updateTabStripLayer(
                         eq(1L),
@@ -168,6 +194,9 @@ public class TabStripSceneLayerTest {
                         /* yOffset= */ eq(1.f),
                         anyInt(),
                         /* scrimColor= */ eq(Color.YELLOW),
-                        /* scrimOpacity= */ eq(0.3f));
+                        /* scrimOpacity= */ eq(0.3f),
+                        eq(leftPadding),
+                        eq(rightPadding),
+                        eq(topPadding));
     }
 }

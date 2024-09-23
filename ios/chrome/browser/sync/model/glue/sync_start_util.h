@@ -5,11 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SYNC_MODEL_GLUE_SYNC_START_UTIL_H_
 #define IOS_CHROME_BROWSER_SYNC_MODEL_GLUE_SYNC_START_UTIL_H_
 
-#include "components/sync/model/syncable_service.h"
-
-namespace base {
-class FilePath;
-}
+#import "components/sync/model/syncable_service.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 // Various utilities for kicking off sync initialization from data types or
 // other services.
@@ -22,11 +19,8 @@ namespace sync_start_util {
 //
 // The flare built by this function is designed to be Run()able from any thread
 // so that non-UI types don't have to deal with posting tasks.
-//
-// `browser_state_path` is used to get a hold of the actual ChromeBrowserState*
-// once the request to start sync is safely in UI Thread land.
 syncer::SyncableService::StartSyncFlare GetFlareForSyncableService(
-    const base::FilePath& browser_state_path);
+    ChromeBrowserState* browser_state);
 
 }  // namespace sync_start_util
 }  // namespace ios

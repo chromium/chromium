@@ -13,6 +13,21 @@
 
 class AccountCapabilitiesTest : public testing::Test {};
 
+TEST_F(AccountCapabilitiesTest, CanFetchFamilyMemberInfo) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_fetch_family_member_info(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_fetch_family_member_info(true);
+  EXPECT_EQ(capabilities.can_fetch_family_member_info(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_fetch_family_member_info(false);
+  EXPECT_EQ(capabilities.can_fetch_family_member_info(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, CanHaveEmailAddressDisplayed) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_have_email_address_displayed(),
@@ -107,6 +122,45 @@ TEST_F(AccountCapabilitiesTest, CanUseChromeIpProtection) {
   mutator.set_can_use_chrome_ip_protection(false);
   EXPECT_EQ(capabilities.can_use_chrome_ip_protection(),
             signin::Tribool::kFalse);
+}
+
+TEST_F(AccountCapabilitiesTest, CanUseDevToolsGenerativeAiFeatures) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_devtools_generative_ai_features(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_devtools_generative_ai_features(true);
+  EXPECT_EQ(capabilities.can_use_devtools_generative_ai_features(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_use_devtools_generative_ai_features(false);
+  EXPECT_EQ(capabilities.can_use_devtools_generative_ai_features(),
+            signin::Tribool::kFalse);
+}
+
+TEST_F(AccountCapabilitiesTest, CanUseEduFeatures) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_edu_features(), signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_edu_features(true);
+  EXPECT_EQ(capabilities.can_use_edu_features(), signin::Tribool::kTrue);
+
+  mutator.set_can_use_edu_features(false);
+  EXPECT_EQ(capabilities.can_use_edu_features(), signin::Tribool::kFalse);
+}
+
+TEST_F(AccountCapabilitiesTest, CanUseMantaService) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_manta_service(), signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_manta_service(true);
+  EXPECT_EQ(capabilities.can_use_manta_service(), signin::Tribool::kTrue);
+
+  mutator.set_can_use_manta_service(false);
+  EXPECT_EQ(capabilities.can_use_manta_service(), signin::Tribool::kFalse);
 }
 
 TEST_F(AccountCapabilitiesTest, CanUseModelExecutionFeatures) {

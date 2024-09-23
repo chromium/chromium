@@ -1,0 +1,69 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  background-color: white;
+  border-bottom: 1px solid var(--google-grey-300);
+  bottom: 0;
+  color: var(--cr-primary-text-color);
+  display: flex;
+  left: 0;
+  opacity: 0;
+  padding-inline-start: var(--cr-toolbar-field-margin, 0);
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: opacity var(--cr-toolbar-overlay-animation-duration),
+              visibility var(--cr-toolbar-overlay-animation-duration);
+  visibility: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    background-color: var(--google-grey-900);
+    background-image: linear-gradient(rgba(255, 255, 255, .04),
+                                      rgba(255, 255, 255, .04));
+    border-bottom-color: var(--cr-separator-color);
+  }
+}
+
+:host([show]) {
+  opacity: 1;
+  pointer-events: initial;
+  visibility: initial;
+}
+
+#overlay-content {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  margin: 0 auto;
+  max-width: var(--cr-toolbar-selection-overlay-max-width, initial);
+  padding: 0 var(--cr-toolbar-selection-overlay-padding, 24px);
+}
+
+#number-selected {
+  flex: 1;
+}
+
+cr-icon-button {
+  height: 36px;
+  margin-inline-end: 24px;
+  margin-inline-start: 2px;
+  width: 36px;
+}
+
+#slot {
+  align-items: center;
+  display: flex;
+  gap: var(--cr-toolbar-selection-overlay-slot-gap, 16px);
+  margin-inline-start: 8px;
+}

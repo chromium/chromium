@@ -6,23 +6,26 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/base_paths.h"
+#include "base/check.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/function_ref.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
-#include "components/aggregation_service/features.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -32,6 +35,7 @@
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
+#include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/common/content_paths.h"
@@ -40,12 +44,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 namespace {
+
+using ::attribution_reporting::SuitableOrigin;
+using ::blink::mojom::AggregatableReportHistogramContribution;
 
 constexpr char kKeyAggregationServicePayloads[] =
     "aggregation_service_payloads";
@@ -66,14 +74,9 @@ base::Value ParseJsonFromFile(const base::FilePath& file) {
 
 // See
 // //content/test/data/attribution_reporting/aggregatable_report_goldens/README.md.
-class AttributionAggregatableReportGoldenLatestVersionTest
-    : public testing::Test {
+class AggregatableReportGoldenLatestVersionTest : public testing::Test {
  public:
   void SetUp() override {
-    base::PathService::Get(content::DIR_TEST_DATA, &input_dir_);
-    input_dir_ = input_dir_.AppendASCII(
-        "attribution_reporting/aggregatable_report_goldens/latest");
-
     ASSERT_OK_AND_ASSIGN(
         PublicKeyset keyset,
         aggregation_service::ReadAndParsePublicKeys(
@@ -81,14 +84,12 @@ class AttributionAggregatableReportGoldenLatestVersionTest
     ASSERT_EQ(keyset.keys.size(), 1u);
 
     aggregation_service().SetPublicKeysForTesting(
-        GetAggregationServiceProcessingUrl(url::Origin::Create(
-            GURL(::aggregation_service::kAggregationServiceCoordinatorAwsCloud
-                     .Get()))),
+        GetAggregationServiceProcessingUrl(url::Origin::Create(GURL(
+            ::aggregation_service::kDefaultAggregationCoordinatorAwsCloud))),
         keyset);
     aggregation_service().SetPublicKeysForTesting(
-        GetAggregationServiceProcessingUrl(url::Origin::Create(
-            GURL(::aggregation_service::kAggregationServiceCoordinatorGcpCloud
-                     .Get()))),
+        GetAggregationServiceProcessingUrl(url::Origin::Create(GURL(
+            ::aggregation_service::kDefaultAggregationCoordinatorGcpCloud))),
         keyset);
 
     std::optional<std::vector<uint8_t>> private_key =
@@ -103,9 +104,16 @@ class AttributionAggregatableReportGoldenLatestVersionTest
   }
 
  protected:
-  void AssembleAndVerifyReport(AttributionReport report,
-                               base::StringPiece report_file,
-                               base::StringPiece cleartext_payloads_file) {
+  // Assembles the report for `request`, and verifies that the assembled report
+  // matches the expected report specified in `report_file` and
+  //`cleartext_payloads_file`.
+  // `get_report_body` is a function ref to create report body from the
+  // assembled report.
+  void AssembleAndVerifyReport(
+      AggregatableReportRequest request,
+      base::FunctionRef<base::Value::Dict(AggregatableReport)> get_report_body,
+      std::string_view report_file,
+      std::string_view cleartext_payloads_file) {
     base::Value expected_report =
         ParseJsonFromFile(input_dir_.AppendASCII(report_file));
     ASSERT_TRUE(expected_report.is_dict());
@@ -119,47 +127,34 @@ class AttributionAggregatableReportGoldenLatestVersionTest
         expected_cleartext_payloads.GetList().front().GetIfString();
     ASSERT_TRUE(base64_encoded_expected_cleartext_payload);
 
-    std::optional<AggregatableReportRequest> request =
-        CreateAggregatableReportRequest(report);
-    ASSERT_TRUE(request);
-
     base::RunLoop run_loop;
 
     aggregation_service().AssembleReport(
-        std::move(*request),
+        std::move(request),
         base::BindLambdaForTesting(
             [&](AggregatableReportRequest,
                 std::optional<AggregatableReport> assembled_report,
                 AggregationService::AssemblyStatus status) {
               EXPECT_EQ(status, AggregationService::AssemblyStatus::kOk);
               ASSERT_TRUE(assembled_report);
-              auto* data =
-                  absl::get_if<AttributionReport::AggregatableAttributionData>(
-                      &report.data());
-              if (data) {
-                data->common_data.assembled_report =
-                    std::move(*assembled_report);
-              } else {
-                auto* null_data =
-                    absl::get_if<AttributionReport::NullAggregatableData>(
-                        &report.data());
-                ASSERT_TRUE(null_data);
-                null_data->common_data.assembled_report =
-                    std::move(*assembled_report);
-              }
+
+              base::Value::Dict report_body =
+                  get_report_body(*std::move(assembled_report));
+
               EXPECT_TRUE(VerifyReport(
-                  report.ReportBody(), std::move(expected_report).TakeDict(),
+                  report_body.Clone(), std::move(expected_report).TakeDict(),
                   *base64_encoded_expected_cleartext_payload))
-                  << "There was an error, consider bumping "
-                     "AttributionReport::AggregatableAttributionData::kVersion,"
+                  << "There was an error, consider bumping report version, "
                      " actual output for "
                   << report_file << " is:\n"
-                  << report.ReportBody();
+                  << report_body;
               run_loop.Quit();
             }));
 
     run_loop.Run();
   }
+
+  base::FilePath input_dir_;
 
  private:
   AggregationServiceImpl& aggregation_service() {
@@ -202,20 +197,21 @@ class AttributionAggregatableReportGoldenLatestVersionTest
              << kKeySharedInfo << " not present in the report";
     }
 
-    if (!actual_payloads->is_list()) {
+    base::Value::List* actual_payloads_list = actual_payloads->GetIfList();
+    if (!actual_payloads_list) {
       return testing::AssertionFailure() << kKeyAggregationServicePayloads
                                          << " not a list in the actual report";
     }
 
-    if (!expected_payloads->is_list()) {
+    base::Value::List* expected_payloads_list = expected_payloads->GetIfList();
+    if (!expected_payloads_list) {
       return testing::AssertionFailure()
              << kKeyAggregationServicePayloads
              << " not a list in the expected report";
     }
 
     return VerifyAggregationServicePayloads(
-        std::move(*actual_payloads).TakeList(),
-        std::move(*expected_payloads).TakeList(),
+        std::move(*actual_payloads_list), std::move(*expected_payloads_list),
         base64_encoded_expected_cleartext_payload, *shared_info);
   }
 
@@ -321,77 +317,121 @@ class AttributionAggregatableReportGoldenLatestVersionTest
 
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
-  base::FilePath input_dir_;
   bssl::ScopedEVP_HPKE_KEY full_hpke_key_;
+};
+
+class AttributionAggregatableReportGoldenLatestVersionTest
+    : public AggregatableReportGoldenLatestVersionTest {
+ public:
+  void SetUp() override {
+    base::PathService::Get(content::DIR_TEST_DATA, &input_dir_);
+    input_dir_ = input_dir_.AppendASCII(
+        "attribution_reporting/aggregatable_report_goldens/latest");
+
+    AggregatableReportGoldenLatestVersionTest::SetUp();
+  }
+
+ protected:
+  void VerifyAttributionReport(AttributionReport report,
+                               std::string_view report_file,
+                               std::string_view cleartext_payloads_file) {
+    std::optional<AggregatableReportRequest> request =
+        CreateAggregatableReportRequest(report);
+    ASSERT_TRUE(request);
+
+    const auto get_report_body = [&](AggregatableReport assembled_report) {
+      auto* data = absl::get_if<AttributionReport::AggregatableAttributionData>(
+          &report.data());
+      if (data) {
+        data->common_data.assembled_report = std::move(assembled_report);
+      } else {
+        auto* null_data = absl::get_if<AttributionReport::NullAggregatableData>(
+            &report.data());
+        CHECK(null_data);
+        null_data->common_data.assembled_report = std::move(assembled_report);
+      }
+      return report.ReportBody();
+    };
+
+    AssembleAndVerifyReport(*std::move(request), get_report_body, report_file,
+                            cleartext_payloads_file);
+  }
 };
 
 TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
        VerifyGoldenReport) {
-  const auto kGcpCoordinatorOrigin =
-      *attribution_reporting::SuitableOrigin::Deserialize(
-          ::aggregation_service::kAggregationServiceCoordinatorGcpCloud.Get());
+  const auto kGcpCoordinatorOrigin = *SuitableOrigin::Deserialize(
+      ::aggregation_service::kDefaultAggregationCoordinatorGcpCloud);
 
   struct {
     AttributionReport report;
-    base::StringPiece report_file;
-    base::StringPiece cleartext_payloads_file;
+    std::string_view report_file;
+    std::string_view cleartext_payloads_file;
   } kTestCases[] = {
-      {.report =
-           ReportBuilder(
-               AttributionInfoBuilder().SetDebugKey(456).Build(),
-               SourceBuilder(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234483200000))
-                   .SetDebugKey(123)
-                   .SetDebugCookieSet(true)
-                   .BuildStored())
-               .SetAggregatableHistogramContributions(
-                   {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
-               .SetReportTime(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234486400000))
-               .BuildAggregatableAttribution(),
+      {.report = ReportBuilder(
+                     AttributionInfoBuilder().SetDebugKey(456).Build(),
+                     SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
+                                       1234483200000))
+                         .SetDebugKey(123)
+                         .SetDebugCookieSet(true)
+                         .BuildStored())
+                     .SetAggregatableHistogramContributions(
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/1,
+                             /*value=*/2, /*filtering_id=*/std::nullopt)})
+                     .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
+                         1234486400000))
+                     .BuildAggregatableAttribution(),
        .report_file = "report_1.json",
        .cleartext_payloads_file = "report_1_cleartext_payloads.json"},
-      {.report =
-           ReportBuilder(
-               AttributionInfoBuilder().Build(),
-               SourceBuilder(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234483200000))
-                   .BuildStored())
-               .SetAggregatableHistogramContributions(
-                   {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
-               .SetReportTime(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234486400000))
-               .BuildAggregatableAttribution(),
+      {.report = ReportBuilder(
+                     AttributionInfoBuilder().Build(),
+                     SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
+                                       1234483200000))
+                         .BuildStored())
+                     .SetAggregatableHistogramContributions(
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/1,
+                             /*value=*/2, /*filtering_id=*/std::nullopt)})
+                     .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
+                         1234486400000))
+                     .BuildAggregatableAttribution(),
        .report_file = "report_2.json",
        .cleartext_payloads_file = "report_2_cleartext_payloads.json"},
-      {.report =
-           ReportBuilder(
-               AttributionInfoBuilder().SetDebugKey(456).Build(),
-               SourceBuilder(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234483300000))
-                   .SetDebugKey(123)
-                   .SetDebugCookieSet(true)
-                   .BuildStored())
-               .SetAggregatableHistogramContributions(
-                   {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
-                    AggregatableHistogramContribution(/*key=*/3, /*value=*/4)})
-               .SetReportTime(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234486500000))
-               .BuildAggregatableAttribution(),
+      {.report = ReportBuilder(
+                     AttributionInfoBuilder().SetDebugKey(456).Build(),
+                     SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
+                                       1234483300000))
+                         .SetDebugKey(123)
+                         .SetDebugCookieSet(true)
+                         .BuildStored())
+                     .SetAggregatableHistogramContributions(
+                         {AggregatableReportHistogramContribution(
+                              /*bucket=*/1,
+                              /*value=*/2, /*filtering_id=*/std::nullopt),
+                          AggregatableReportHistogramContribution(
+                              /*bucket=*/3,
+                              /*value=*/4, /*filtering_id=*/std::nullopt)})
+                     .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
+                         1234486500000))
+                     .BuildAggregatableAttribution(),
        .report_file = "report_3.json",
        .cleartext_payloads_file = "report_3_cleartext_payloads.json"},
-      {.report =
-           ReportBuilder(
-               AttributionInfoBuilder().Build(),
-               SourceBuilder(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234483300000))
-                   .BuildStored())
-               .SetAggregatableHistogramContributions(
-                   {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
-                    AggregatableHistogramContribution(/*key=*/3, /*value=*/4)})
-               .SetReportTime(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234486500000))
-               .BuildAggregatableAttribution(),
+      {.report = ReportBuilder(
+                     AttributionInfoBuilder().Build(),
+                     SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
+                                       1234483300000))
+                         .BuildStored())
+                     .SetAggregatableHistogramContributions(
+                         {AggregatableReportHistogramContribution(
+                              /*bucket=*/1,
+                              /*value=*/2, /*filtering_id=*/std::nullopt),
+                          AggregatableReportHistogramContribution(
+                              /*bucket=*/3,
+                              /*value=*/4, /*filtering_id=*/std::nullopt)})
+                     .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
+                         1234486500000))
+                     .BuildAggregatableAttribution(),
        .report_file = "report_4.json",
        .cleartext_payloads_file = "report_4_cleartext_payloads.json"},
       {.report = ReportBuilder(
@@ -402,8 +442,9 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                          .SetDebugCookieSet(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableHistogramContribution(
-                             /*key=*/absl::Uint128Max(), /*value=*/1000)})
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/absl::Uint128Max(), /*value=*/1000,
+                             /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486600000))
                      .BuildAggregatableAttribution(),
@@ -415,27 +456,29 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                                        1234483400000))
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableHistogramContribution(
-                             /*key=*/absl::Uint128Max(), /*value=*/1000)})
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/absl::Uint128Max(), /*value=*/1000,
+                             /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486600000))
                      .BuildAggregatableAttribution(),
        .report_file = "report_6.json",
        .cleartext_payloads_file = "report_6_cleartext_payloads.json"},
-      {.report =
-           ReportBuilder(
-               AttributionInfoBuilder().Build(),
-               SourceBuilder(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234483200000))
-                   .BuildStored())
-               .SetAggregatableHistogramContributions(
-                   {AggregatableHistogramContribution(/*key=*/0, /*value=*/1)})
-               .SetReportTime(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234486400000))
-               .SetSourceRegistrationTimeConfig(
-                   attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                       kExclude)
-               .BuildAggregatableAttribution(),
+      {.report = ReportBuilder(
+                     AttributionInfoBuilder().Build(),
+                     SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
+                                       1234483200000))
+                         .BuildStored())
+                     .SetAggregatableHistogramContributions(
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/0,
+                             /*value=*/1, /*filtering_id=*/std::nullopt)})
+                     .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
+                         1234486400000))
+                     .SetSourceRegistrationTimeConfig(
+                         attribution_reporting::mojom::
+                             SourceRegistrationTimeConfig::kExclude)
+                     .BuildAggregatableAttribution(),
        .report_file = "report_7.json",
        .cleartext_payloads_file = "report_7_cleartext_payloads.json"},
       {.report = ReportBuilder(
@@ -451,83 +494,113 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      .BuildNullAggregatable(),
        .report_file = "report_8.json",
        .cleartext_payloads_file = "report_8_cleartext_payloads.json"},
-      {.report =
-           ReportBuilder(
-               AttributionInfoBuilder().Build(),
-               SourceBuilder(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234483200000))
-                   .BuildStored())
-               .SetAggregatableHistogramContributions(
-                   {AggregatableHistogramContribution(/*key=*/0, /*value=*/1)})
-               .SetReportTime(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234486400000))
-               .SetSourceRegistrationTimeConfig(
-                   attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                       kExclude)
-               .SetTriggerContextId("example")
-               .BuildAggregatableAttribution(),
+      {.report = ReportBuilder(
+                     AttributionInfoBuilder().Build(),
+                     SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
+                                       1234483200000))
+                         .BuildStored())
+                     .SetAggregatableHistogramContributions(
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/0,
+                             /*value=*/1, /*filtering_id=*/std::nullopt)})
+                     .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
+                         1234486400000))
+                     .SetSourceRegistrationTimeConfig(
+                         attribution_reporting::mojom::
+                             SourceRegistrationTimeConfig::kExclude)
+                     .SetTriggerContextId("example")
+                     .BuildAggregatableAttribution(),
        .report_file = "report_9.json",
        .cleartext_payloads_file = "report_9_cleartext_payloads.json"},
-      {.report =
-           ReportBuilder(
-               AttributionInfoBuilder().SetDebugKey(456).Build(),
-               SourceBuilder(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234483200000))
-                   .SetDebugKey(123)
-                   .SetDebugCookieSet(true)
-                   .BuildStored())
-               .SetAggregatableHistogramContributions(
-                   {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
-               .SetReportTime(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234486400000))
-               .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
-               .BuildAggregatableAttribution(),
+      {.report = ReportBuilder(
+                     AttributionInfoBuilder().Build(),
+                     SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
+                                       1234483200000))
+                         .BuildStored())
+                     .SetAggregatableHistogramContributions(
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/0,
+                             /*value=*/33, /*filtering_id=*/257)})
+                     .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
+                         1234486400000))
+                     .SetSourceRegistrationTimeConfig(
+                         attribution_reporting::mojom::
+                             SourceRegistrationTimeConfig::kExclude)
+                     .SetTriggerContextId("example")
+                     .SetAggregatableFilteringIdsMaxBytes(
+                         *attribution_reporting::
+                             AggregatableFilteringIdsMaxBytes::Create(2))
+                     .BuildAggregatableAttribution(),
+       .report_file = "report_10.json",
+       .cleartext_payloads_file = "report_10_cleartext_payloads.json"},
+      {.report = ReportBuilder(
+                     AttributionInfoBuilder().SetDebugKey(456).Build(),
+                     SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
+                                       1234483200000))
+                         .SetDebugKey(123)
+                         .SetDebugCookieSet(true)
+                         .BuildStored())
+                     .SetAggregatableHistogramContributions(
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/1,
+                             /*value=*/2, /*filtering_id=*/std::nullopt)})
+                     .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
+                         1234486400000))
+                     .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
+                     .BuildAggregatableAttribution(),
        .report_file = "report_gcp_1.json",
        .cleartext_payloads_file = "report_gcp_1_cleartext_payloads.json"},
-      {.report =
-           ReportBuilder(
-               AttributionInfoBuilder().Build(),
-               SourceBuilder(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234483200000))
-                   .BuildStored())
-               .SetAggregatableHistogramContributions(
-                   {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
-               .SetReportTime(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234486400000))
-               .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
-               .BuildAggregatableAttribution(),
+      {.report = ReportBuilder(
+                     AttributionInfoBuilder().Build(),
+                     SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
+                                       1234483200000))
+                         .BuildStored())
+                     .SetAggregatableHistogramContributions(
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/1,
+                             /*value=*/2, /*filtering_id=*/std::nullopt)})
+                     .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
+                         1234486400000))
+                     .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
+                     .BuildAggregatableAttribution(),
        .report_file = "report_gcp_2.json",
        .cleartext_payloads_file = "report_gcp_2_cleartext_payloads.json"},
-      {.report =
-           ReportBuilder(
-               AttributionInfoBuilder().SetDebugKey(456).Build(),
-               SourceBuilder(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234483300000))
-                   .SetDebugKey(123)
-                   .SetDebugCookieSet(true)
-                   .BuildStored())
-               .SetAggregatableHistogramContributions(
-                   {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
-                    AggregatableHistogramContribution(/*key=*/3, /*value=*/4)})
-               .SetReportTime(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234486500000))
-               .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
-               .BuildAggregatableAttribution(),
+      {.report = ReportBuilder(
+                     AttributionInfoBuilder().SetDebugKey(456).Build(),
+                     SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
+                                       1234483300000))
+                         .SetDebugKey(123)
+                         .SetDebugCookieSet(true)
+                         .BuildStored())
+                     .SetAggregatableHistogramContributions(
+                         {AggregatableReportHistogramContribution(
+                              /*bucket=*/1,
+                              /*value=*/2, /*filtering_id=*/std::nullopt),
+                          AggregatableReportHistogramContribution(
+                              /*bucket=*/3,
+                              /*value=*/4, /*filtering_id=*/std::nullopt)})
+                     .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
+                         1234486500000))
+                     .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
+                     .BuildAggregatableAttribution(),
        .report_file = "report_gcp_3.json",
        .cleartext_payloads_file = "report_gcp_3_cleartext_payloads.json"},
-      {.report =
-           ReportBuilder(
-               AttributionInfoBuilder().Build(),
-               SourceBuilder(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234483300000))
-                   .BuildStored())
-               .SetAggregatableHistogramContributions(
-                   {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
-                    AggregatableHistogramContribution(/*key=*/3, /*value=*/4)})
-               .SetReportTime(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234486500000))
-               .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
-               .BuildAggregatableAttribution(),
+      {.report = ReportBuilder(
+                     AttributionInfoBuilder().Build(),
+                     SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
+                                       1234483300000))
+                         .BuildStored())
+                     .SetAggregatableHistogramContributions(
+                         {AggregatableReportHistogramContribution(
+                              /*bucket=*/1,
+                              /*value=*/2, /*filtering_id=*/std::nullopt),
+                          AggregatableReportHistogramContribution(
+                              /*bucket=*/3,
+                              /*value=*/4, /*filtering_id=*/std::nullopt)})
+                     .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
+                         1234486500000))
+                     .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
+                     .BuildAggregatableAttribution(),
        .report_file = "report_gcp_4.json",
        .cleartext_payloads_file = "report_gcp_4_cleartext_payloads.json"},
       {.report = ReportBuilder(
@@ -538,8 +611,9 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                          .SetDebugCookieSet(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableHistogramContribution(
-                             /*key=*/absl::Uint128Max(), /*value=*/1000)})
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/absl::Uint128Max(), /*value=*/1000,
+                             /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486600000))
                      .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
@@ -552,29 +626,31 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                                        1234483400000))
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
-                         {AggregatableHistogramContribution(
-                             /*key=*/absl::Uint128Max(), /*value=*/1000)})
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/absl::Uint128Max(), /*value=*/1000,
+                             /*filtering_id=*/std::nullopt)})
                      .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
                          1234486600000))
                      .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
                      .BuildAggregatableAttribution(),
        .report_file = "report_gcp_6.json",
        .cleartext_payloads_file = "report_gcp_6_cleartext_payloads.json"},
-      {.report =
-           ReportBuilder(
-               AttributionInfoBuilder().Build(),
-               SourceBuilder(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234483200000))
-                   .BuildStored())
-               .SetAggregatableHistogramContributions(
-                   {AggregatableHistogramContribution(/*key=*/0, /*value=*/1)})
-               .SetReportTime(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234486400000))
-               .SetSourceRegistrationTimeConfig(
-                   attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                       kExclude)
-               .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
-               .BuildAggregatableAttribution(),
+      {.report = ReportBuilder(
+                     AttributionInfoBuilder().Build(),
+                     SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
+                                       1234483200000))
+                         .BuildStored())
+                     .SetAggregatableHistogramContributions(
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/0,
+                             /*value=*/1, /*filtering_id=*/std::nullopt)})
+                     .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
+                         1234486400000))
+                     .SetSourceRegistrationTimeConfig(
+                         attribution_reporting::mojom::
+                             SourceRegistrationTimeConfig::kExclude)
+                     .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
+                     .BuildAggregatableAttribution(),
        .report_file = "report_gcp_7.json",
        .cleartext_payloads_file = "report_gcp_7_cleartext_payloads.json"},
       {.report = ReportBuilder(
@@ -591,49 +667,160 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      .BuildNullAggregatable(),
        .report_file = "report_gcp_8.json",
        .cleartext_payloads_file = "report_gcp_8_cleartext_payloads.json"},
-      {.report =
-           ReportBuilder(
-               AttributionInfoBuilder().Build(),
-               SourceBuilder(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234483200000))
-                   .BuildStored())
-               .SetAggregatableHistogramContributions(
-                   {AggregatableHistogramContribution(/*key=*/0, /*value=*/1)})
-               .SetReportTime(
-                   base::Time::FromMillisecondsSinceUnixEpoch(1234486400000))
-               .SetSourceRegistrationTimeConfig(
-                   attribution_reporting::mojom::SourceRegistrationTimeConfig::
-                       kExclude)
-               .SetTriggerContextId("example")
-               .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
-               .BuildAggregatableAttribution(),
+      {.report = ReportBuilder(
+                     AttributionInfoBuilder().Build(),
+                     SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
+                                       1234483200000))
+                         .BuildStored())
+                     .SetAggregatableHistogramContributions(
+                         {AggregatableReportHistogramContribution(
+                             /*bucket=*/0,
+                             /*value=*/1, /*filtering_id=*/std::nullopt)})
+                     .SetReportTime(base::Time::FromMillisecondsSinceUnixEpoch(
+                         1234486400000))
+                     .SetSourceRegistrationTimeConfig(
+                         attribution_reporting::mojom::
+                             SourceRegistrationTimeConfig::kExclude)
+                     .SetTriggerContextId("example")
+                     .SetAggregationCoordinatorOrigin(kGcpCoordinatorOrigin)
+                     .BuildAggregatableAttribution(),
        .report_file = "report_gcp_9.json",
        .cleartext_payloads_file = "report_gcp_9_cleartext_payloads.json"},
   };
 
   for (auto& test_case : kTestCases) {
-    AssembleAndVerifyReport(std::move(test_case.report), test_case.report_file,
+    VerifyAttributionReport(std::move(test_case.report), test_case.report_file,
                             test_case.cleartext_payloads_file);
   }
 }
 
-std::vector<base::FilePath> GetLegacyVersions() {
-  base::FilePath input_dir;
-  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &input_dir);
-  input_dir = input_dir.AppendASCII(
-      "content/test/data/attribution_reporting/aggregatable_report_goldens");
+class AggregatableDebugReportGoldenLatestVersionTest
+    : public AggregatableReportGoldenLatestVersionTest {
+ public:
+  void SetUp() override {
+    base::PathService::Get(content::DIR_TEST_DATA, &input_dir_);
+    input_dir_ = input_dir_.AppendASCII(
+        "attribution_reporting/aggregatable_debug_report_goldens/latest");
 
+    AggregatableReportGoldenLatestVersionTest::SetUp();
+  }
+
+ protected:
+  void VerifyAggregatableDebugReport(AggregatableDebugReport report,
+                                     std::string_view report_file,
+                                     std::string_view cleartext_payloads_file) {
+    std::optional<AggregatableReportRequest> request =
+        report.CreateAggregatableReportRequest();
+    ASSERT_TRUE(request);
+
+    const auto get_report_body = [](AggregatableReport assembled_report) {
+      return assembled_report.GetAsJson();
+    };
+
+    AssembleAndVerifyReport(*std::move(request), get_report_body, report_file,
+                            cleartext_payloads_file);
+  }
+};
+
+TEST_F(AggregatableDebugReportGoldenLatestVersionTest, VerifyGoldenReport) {
+  const auto kGcpCoordinatorOrigin = *SuitableOrigin::Deserialize(
+      ::aggregation_service::kDefaultAggregationCoordinatorGcpCloud);
+
+  const auto context_site =
+      net::SchemefulSite::Deserialize("https://context.test");
+  const auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://report.test");
+  const auto effective_destination =
+      net::SchemefulSite::Deserialize("https://conversion.test");
+  const auto time = base::Time::FromMillisecondsSinceUnixEpoch(1234486400000);
+
+  struct {
+    std::vector<AggregatableReportHistogramContribution> contributions;
+    std::optional<SuitableOrigin> aggregation_coordinator_origin;
+    std::string_view report_file;
+    std::string_view cleartext_payloads_file;
+  } kTestCases[] = {
+      {
+          .contributions = {AggregatableReportHistogramContribution(
+              /*bucket=*/123, /*value=*/456,
+              /*filtering_id=*/std::nullopt)},
+          .report_file = "report_1.json",
+          .cleartext_payloads_file = "report_1_cleartext_payloads.json",
+      },
+      {
+          .contributions = {AggregatableReportHistogramContribution(
+                                /*bucket=*/123, /*value=*/456,
+                                /*filtering_id=*/std::nullopt),
+                            AggregatableReportHistogramContribution(
+                                /*bucket=*/321, /*value=*/654,
+                                /*filtering_id=*/std::nullopt)},
+          .report_file = "report_2.json",
+          .cleartext_payloads_file = "report_2_cleartext_payloads.json",
+      },
+      {
+          // null report
+          .report_file = "report_3.json",
+          .cleartext_payloads_file = "report_3_cleartext_payloads.json",
+      },
+      {
+          .contributions = {AggregatableReportHistogramContribution(
+              /*bucket=*/123, /*value=*/456,
+              /*filtering_id=*/std::nullopt)},
+          .aggregation_coordinator_origin = kGcpCoordinatorOrigin,
+          .report_file = "report_gcp_1.json",
+          .cleartext_payloads_file = "report_gcp_1_cleartext_payloads.json",
+      },
+      {
+          .contributions = {AggregatableReportHistogramContribution(
+                                /*bucket=*/123, /*value=*/456,
+                                /*filtering_id=*/std::nullopt),
+                            AggregatableReportHistogramContribution(
+                                /*bucket=*/321, /*value=*/654,
+                                /*filtering_id=*/std::nullopt)},
+          .aggregation_coordinator_origin = kGcpCoordinatorOrigin,
+          .report_file = "report_gcp_2.json",
+          .cleartext_payloads_file = "report_gcp_2_cleartext_payloads.json",
+      },
+      {
+          // null report
+          .aggregation_coordinator_origin = kGcpCoordinatorOrigin,
+          .report_file = "report_gcp_3.json",
+          .cleartext_payloads_file = "report_gcp_3_cleartext_payloads.json",
+      },
+  };
+
+  for (auto& test_case : kTestCases) {
+    auto report = AggregatableDebugReport::CreateForTesting(
+        test_case.contributions, context_site, reporting_origin,
+        effective_destination, test_case.aggregation_coordinator_origin, time);
+    report.set_report_id(DefaultExternalReportID());
+    VerifyAggregatableDebugReport(std::move(report), test_case.report_file,
+                                  test_case.cleartext_payloads_file);
+  }
+}
+
+// Returns the legacy versions of attribution and debug aggregatable reports.
+std::vector<base::FilePath> GetLegacyVersions() {
   std::vector<base::FilePath> input_paths;
 
-  base::FileEnumerator e(input_dir, /*recursive=*/false,
-                         base::FileEnumerator::DIRECTORIES);
+  for (const std::string& relative_path :
+       {"content/test/data/attribution_reporting/aggregatable_report_goldens",
+        "content/test/data/attribution_reporting/"
+        "aggregatable_debug_report_goldens"}) {
+    base::FilePath input_dir;
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &input_dir);
+    input_dir = input_dir.AppendASCII(relative_path);
 
-  for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
-    if (name.BaseName() == base::FilePath(FILE_PATH_LITERAL("latest"))) {
-      continue;
+    base::FileEnumerator e(input_dir, /*recursive=*/false,
+                           base::FileEnumerator::DIRECTORIES);
+
+    for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
+      if (name.BaseName() == base::FilePath(FILE_PATH_LITERAL("latest"))) {
+        continue;
+      }
+
+      input_paths.push_back(std::move(name));
     }
-
-    input_paths.push_back(std::move(name));
   }
 
   return input_paths;
@@ -642,12 +829,12 @@ std::vector<base::FilePath> GetLegacyVersions() {
 // Verifies that legacy versions are properly labeled/stored. Note that there
 // is an implicit requirement that "version" is located in the "shared_info"
 // field in the report.
-class AttributionAggregatableReportGoldenLegacyVersionTest
+class AttributionAndDebugAggregatableReportGoldenLegacyVersionTest
     : public ::testing::TestWithParam<base::FilePath> {};
 
-TEST_P(AttributionAggregatableReportGoldenLegacyVersionTest,
+TEST_P(AttributionAndDebugAggregatableReportGoldenLegacyVersionTest,
        HasExpectedVersion) {
-  static constexpr base::StringPiece prefix = "version_";
+  static constexpr std::string_view prefix = "version_";
 
   base::FilePath dir = GetParam();
 
@@ -685,9 +872,10 @@ TEST_P(AttributionAggregatableReportGoldenLegacyVersionTest,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         AttributionAggregatableReportGoldenLegacyVersionTest,
-                         ::testing::ValuesIn(GetLegacyVersions()));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AttributionAndDebugAggregatableReportGoldenLegacyVersionTest,
+    ::testing::ValuesIn(GetLegacyVersions()));
 
 }  // namespace
 }  // namespace content

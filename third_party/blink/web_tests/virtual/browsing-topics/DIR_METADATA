@@ -1,0 +1,6 @@
+monorail: {
+  component: "Chromium > Blink > TopicsAPI"
+}
+buganizer_public: {
+  component_id: 1456494
+}

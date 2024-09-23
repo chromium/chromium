@@ -60,7 +60,7 @@ class BackgroundDownloadTaskHelperTest
 };
 
 // Verifies download can be finished.
-// TODO(crbug/1367306): Re-enable the test.
+// TODO(crbug.com/40239993): Re-enable the test.
 TEST_F(BackgroundDownloadTaskHelperTest, DISABLED_DownloadComplete) {
   base::RunLoop loop;
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
@@ -86,7 +86,7 @@ TEST_F(BackgroundDownloadTaskHelperTest, DISABLED_DownloadComplete) {
 }
 
 // Verifies non success http code is treated as error.
-// TODO(crbug/1367306): Re-enable the test.
+// TODO(crbug.com/40239993): Re-enable the test.
 TEST_F(BackgroundDownloadTaskHelperTest,
        DISABLED_DownloadErrorNonSuccessHttpCode) {
   base::RunLoop loop;
@@ -104,7 +104,7 @@ TEST_F(BackgroundDownloadTaskHelperTest,
 }
 
 // Verifies data URL should result in failure.
-// TODO(crbug/1367306): Re-enable the test.
+// TODO(crbug.com/40239993): Re-enable the test.
 TEST_F(BackgroundDownloadTaskHelperTest, DISABLED_DataURL) {
   base::RunLoop loop;
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();

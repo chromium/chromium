@@ -5,6 +5,7 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -84,6 +85,24 @@ views::View* GetShutDownButton() {
   return shelf_view->GetViewByID(LoginShelfView::kShutdown);
 }
 
+views::View* GetShutDownButtonContainer() {
+  LoginShelfView* shelf_view = GetLoginShelfView();
+  if (!shelf_view) {
+    return nullptr;
+  }
+
+  return shelf_view->GetButtonContainerByID(LoginShelfView::kShutdown);
+}
+
+views::View* GetAppsButton() {
+  LoginShelfView* shelf_view = GetLoginShelfView();
+  if (!shelf_view) {
+    return nullptr;
+  }
+
+  return shelf_view->GetViewByID(LoginShelfView::kApps);
+}
+
 LoginBigUserView* GetBigUserView(const AccountId& account_id) {
   LockScreen::TestApi lock_screen_test(LockScreen::Get());
   LockContentsViewTestApi lock_contents_test(lock_screen_test.contents_view());
@@ -102,7 +121,7 @@ bool SimulateButtonPressedForTesting(LoginShelfView::ButtonId button_id) {
   }
 
   views::test::ButtonTestApi(views::Button::AsButton(button))
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::PointF(),
                                   gfx::PointF(), base::TimeTicks(), 0, 0));
   return true;
 }
@@ -627,7 +646,7 @@ bool LoginScreenTestApi::ExpandPublicSessionPod(const AccountId& account_id) {
   }
   views::test::ButtonTestApi(
       views::Button::AsButton(public_account_test.arrow_button()))
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::PointF(),
                                   gfx::PointF(), base::TimeTicks(), 0, 0));
   return lock_contents_test.expanded_view();
 }
@@ -680,7 +699,7 @@ void LoginScreenTestApi::ClickPublicExpandedAdvancedViewButton() {
       lock_contents_test.expanded_view());
   views::test::ButtonTestApi(
       views::Button::AsButton(expanded_test.advanced_view_button()))
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::PointF(),
                                   gfx::PointF(), base::TimeTicks(), 0, 0));
 }
 
@@ -692,7 +711,7 @@ void LoginScreenTestApi::ClickPublicExpandedSubmitButton() {
       lock_contents_test.expanded_view());
   views::test::ButtonTestApi(
       views::Button::AsButton(expanded_test.submit_button()))
-      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::PointF(),
                                   gfx::PointF(), base::TimeTicks(), 0, 0));
 }
 
@@ -844,12 +863,27 @@ gfx::Rect LoginScreenTestApi::GetShutDownButtonTargetBounds() {
 
 // static
 gfx::Rect LoginScreenTestApi::GetShutDownButtonMirroredBounds() {
+  views::View* button_container = GetShutDownButtonContainer();
   views::View* button = GetShutDownButton();
   if (!button) {
     return gfx::Rect();
   }
+  gfx::Point button_container_origin =
+      button_container->GetMirroredBounds().origin();
+  gfx::Rect button_mirrored_bounds = button->GetMirroredBounds();
+  button_mirrored_bounds.set_origin(button_container_origin +
+                                    button_mirrored_bounds.OffsetFromOrigin());
+  return button_mirrored_bounds;
+}
 
-  return button->GetMirroredBounds();
+// static
+std::string LoginScreenTestApi::GetAppsButtonClassName() {
+  views::View* button = GetAppsButton();
+  if (!button) {
+    return "";
+  }
+
+  return button->GetClassName();
 }
 
 // static

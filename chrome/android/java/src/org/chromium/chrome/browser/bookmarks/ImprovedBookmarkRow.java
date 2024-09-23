@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -26,7 +27,11 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListU
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuButton.PopupMenuShownListener;
 import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.util.ValueUtils;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /** Common logic for improved bookmark and folder rows. */
 public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
@@ -36,6 +41,15 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
      * design (this is the minimum time a user is guaranteed to pay attention to something).
      */
     @VisibleForTesting static final int BASE_ANIMATION_DURATION_MS = 218;
+
+    @IntDef({Location.TOP, Location.MIDDLE, Location.BOTTOM, Location.SOLO})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Location {
+        int TOP = 0;
+        int MIDDLE = 1;
+        int BOTTOM = 2;
+        int SOLO = 3;
+    }
 
     private ViewGroup mContainer;
     // The start image view which is shows the favicon.
@@ -132,6 +146,13 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
 
         mMoreButton = findViewById(R.id.more);
         mEndImageView = findViewById(R.id.end_image);
+    }
+
+    void setRowEnabled(boolean enabled) {
+        setEnabled(enabled);
+        int alphaRes = enabled ? R.dimen.default_enabled_alpha : R.dimen.default_disabled_alpha;
+        float alpha = ValueUtils.getFloat(getResources(), alphaRes);
+        mContainer.setAlpha(alpha);
     }
 
     void setTitle(String title) {
@@ -272,7 +293,17 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         return mFolderIconView;
     }
 
-    void setStartImageViewForTesting(ImageView startImageView) {
+    // Testing specific methods below.
+
+    public void setStartImageViewForTesting(ImageView startImageView) {
         mStartImageView = startImageView;
+    }
+
+    public boolean isSelectedForTesting() {
+        return mIsSelected;
+    }
+
+    public String getTitleForTesting() {
+        return mTitleView.getText().toString();
     }
 }

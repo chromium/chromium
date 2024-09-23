@@ -1,13 +1,13 @@
 // Feature test to avoid timeouts
 function assert_permissions_policy_supported() {
-  assert_not_equals(document.featurePolicy, undefined,
-                    'permissions policy is supported');
+  assert_true("allow" in HTMLIFrameElement.prototype, 'permissions policy is supported');
 }
 // Tests whether a feature that is enabled/disabled by permissions policy works
 // as expected.
 // Arguments:
-//    feature_description: a short string describing what feature is being
-//        tested. Examples: "usb.GetDevices()", "PaymentRequest()".
+//    feature_descriptionOrObject: either and object, containing the following
+//        properties, or a string describing what feature is being tested.
+//        Examples: "usb.GetDevices()", "PaymentRequest()".
 //    test: test created by testharness. Examples: async_test, promise_test.
 //    src: URL where a feature's availability is checked. Examples:
 //        "/permissions-policy/resources/permissions-policy-payment.html",
@@ -24,13 +24,38 @@ function assert_permissions_policy_supported() {
 //      feature (https://w3c.github.io/webappsec-permissions-policy/#features).
 //      See examples at:
 //      https://github.com/w3c/webappsec-permissions-policy/blob/main/features.md
-//    allow_attribute: Optional argument, only used for testing fullscreen
+//    allowfullscreen: Optional argument, only used for testing fullscreen
 //      by passing "allowfullscreen".
 //    is_promise_test: Optional argument, true if this call should return a
 //    promise. Used by test_feature_availability_with_post_message_result()
 function test_feature_availability(
-    feature_description, test, src, expect_feature_available, feature_name,
-    allow_attribute, is_promise_test = false) {
+    feature_descriptionOrObject, test, src, expect_feature_available, feature_name,
+    allowfullscreen, is_promise_test = false, needs_focus = false) {
+
+  if (feature_descriptionOrObject && feature_descriptionOrObject instanceof Object) {
+    const {
+      feature_description,
+      test,
+      src,
+      expect_feature_available,
+      feature_name,
+      allowfullscreen,
+      is_promise_test,
+      needs_focus,
+    } = feature_descriptionOrObject;
+    return test_feature_availability(
+      feature_description,
+      test,
+      src,
+      expect_feature_available,
+      feature_name,
+      allowfullscreen,
+      is_promise_test,
+      needs_focus,
+    );
+  }
+
+  const feature_description = feature_descriptionOrObject;
   let frame = document.createElement('iframe');
   frame.src = src;
 
@@ -38,8 +63,8 @@ function test_feature_availability(
     frame.allow = frame.allow.concat(";" + feature_name);
   }
 
-  if (typeof allow_attribute !== 'undefined') {
-    frame.setAttribute(allow_attribute, true);
+  if (typeof allowfullscreen !== 'undefined') {
+    frame.setAttribute(allowfullscreen, true);
   }
 
   function expectFeatureAvailable(evt) {
@@ -61,6 +86,9 @@ function test_feature_availability(
                     window.addEventListener('message', resolve);
                   }).then(expectFeatureAvailable);
   document.body.appendChild(frame);
+  if (needs_focus) {
+    frame.focus();
+  }
   return promise;
 }
 

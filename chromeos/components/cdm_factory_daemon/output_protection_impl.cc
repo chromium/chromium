@@ -327,7 +327,8 @@ void OutputProtectionImpl::OnDisplayMetricsChanged(
   HandleDisplayChange();
 }
 
-void OutputProtectionImpl::OnDisplayRemoved(const display::Display& display) {
+void OutputProtectionImpl::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
   HandleDisplayChange();
 }
 

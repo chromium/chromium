@@ -6,8 +6,7 @@
 
 #include <algorithm>
 #include <utility>
-
-#include "base/containers/cxx20_erase.h"
+#include <vector>
 
 namespace zucchini {
 
@@ -83,7 +82,7 @@ AddressTranslator::Status AddressTranslator::Initialize(
   }
 
   // Remove all empty units.
-  base::EraseIf(units, [](const Unit& unit) { return unit.IsEmpty(); });
+  std::erase_if(units, [](const Unit& unit) { return unit.IsEmpty(); });
 
   // Sort |units| by RVA, then uniquefy.
   std::sort(units.begin(), units.end(), [](const Unit& a, const Unit& b) {

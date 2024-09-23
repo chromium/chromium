@@ -4,15 +4,15 @@
 
 #include "partition_alloc/spinning_mutex.h"
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#if BUILDFLAG(IS_POSIX)
+#if PA_BUILDFLAG(IS_POSIX)
 #include <pthread.h>
 #endif
 
@@ -24,38 +24,37 @@
 #include <cerrno>
 #endif  // PA_CONFIG(HAS_LINUX_KERNEL)
 
-#if !PA_CONFIG(HAS_FAST_MUTEX)
+#if !PA_CONFIG(HAS_LINUX_KERNEL) && !PA_BUILDFLAG(IS_WIN) && \
+    !PA_BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(IS_POSIX) &&    \
+    !PA_BUILDFLAG(IS_FUCHSIA)
 #include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
 
-#if BUILDFLAG(IS_POSIX)
+#if PA_BUILDFLAG(IS_POSIX)
 #include <sched.h>
-
 #define PA_YIELD_THREAD sched_yield()
-
 #else  // Other OS
-
 #warning "Thread yield not supported on this OS."
 #define PA_YIELD_THREAD ((void)0)
 #endif
 
-#endif  // !PA_CONFIG(HAS_FAST_MUTEX)
+#endif
 
 namespace partition_alloc::internal {
 
 void SpinningMutex::Reinit() {
-#if !BUILDFLAG(IS_APPLE)
+#if !PA_BUILDFLAG(IS_APPLE)
   // On most platforms, no need to re-init the lock, can just unlock it.
   Release();
 #else
   unfair_lock_ = OS_UNFAIR_LOCK_INIT;
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // PA_BUILDFLAG(IS_APPLE)
 }
 
 void SpinningMutex::AcquireSpinThenBlock() {
   int tries = 0;
   int backoff = 1;
   do {
-    if (PA_LIKELY(Try())) {
+    if (Try()) [[likely]] {
       return;
     }
     // Note: Per the intel optimization manual
@@ -82,8 +81,6 @@ void SpinningMutex::AcquireSpinThenBlock() {
 
   LockSlow();
 }
-
-#if PA_CONFIG(HAS_FAST_MUTEX)
 
 #if PA_CONFIG(HAS_LINUX_KERNEL)
 
@@ -137,36 +134,34 @@ void SpinningMutex::LockSlow() {
   }
 }
 
-#elif BUILDFLAG(IS_WIN)
+#elif PA_BUILDFLAG(IS_WIN)
 
 void SpinningMutex::LockSlow() {
   ::AcquireSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
 }
 
-#elif BUILDFLAG(IS_APPLE)
+#elif PA_BUILDFLAG(IS_APPLE)
 
 void SpinningMutex::LockSlow() {
   return os_unfair_lock_lock(&unfair_lock_);
 }
 
-#elif BUILDFLAG(IS_POSIX)
+#elif PA_BUILDFLAG(IS_POSIX)
 
 void SpinningMutex::LockSlow() {
   int retval = pthread_mutex_lock(&lock_);
   PA_DCHECK(retval == 0);
 }
 
-#elif BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_FUCHSIA)
 
 void SpinningMutex::LockSlow() {
   sync_mutex_lock(&lock_);
 }
 
-#endif
+#else
 
-#else  // PA_CONFIG(HAS_FAST_MUTEX)
-
-void SpinningMutex::LockSlowSpinLock() {
+void SpinningMutex::LockSlow() {
   int yield_thread_count = 0;
   do {
     if (yield_thread_count < 10) {
@@ -179,9 +174,9 @@ void SpinningMutex::LockSlowSpinLock() {
       // progress.
       base::PlatformThread::Sleep(base::Milliseconds(1));
     }
-  } while (!TrySpinLock());
+  } while (!Try());
 }
 
-#endif  // PA_CONFIG(HAS_FAST_MUTEX)
+#endif
 
 }  // namespace partition_alloc::internal

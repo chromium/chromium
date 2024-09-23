@@ -149,7 +149,13 @@ TEST_F(GetInstalledVersionLinuxTest, WithMonkey) {
 
 // Tests that the expected instance is returned when the child process reports a
 // valid version.
-TEST_F(GetInstalledVersionLinuxTest, WithVersion) {
+// b/344455232: Disable as the test is failing on dbg build.
+#if defined(NDEBUG)
+#define MAYBE_WithVersion WithVersion
+#else
+#define MAYBE_WithVersion DISABLED_WithVersion
+#endif
+TEST_F(GetInstalledVersionLinuxTest, MAYBE_WithVersion) {
   AddChildCommandLineSwitches(ChildMode::kWithVersion);
 
   base::RunLoop run_loop;

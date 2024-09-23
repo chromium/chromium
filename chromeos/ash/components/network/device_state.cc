@@ -156,6 +156,8 @@ bool DeviceState::PropertyChanged(const std::string& key,
     return GetStringValue(key, value, &device_bus_type_);
   } else if (key == shill::kUsbEthernetMacAddressSourceProperty) {
     return GetStringValue(key, value, &mac_address_source_);
+  } else if (key == shill::kFlashingProperty) {
+    return GetBooleanValue(key, value, &flashing_);
   }
   return false;
 }
@@ -232,8 +234,7 @@ bool DeviceState::IsSimLocked() const {
       sim_lock_type_ == shill::kSIMLockPuk) {
     return true;
   }
-  return features::IsCellularCarrierLockEnabled() &&
-         sim_lock_type_ == shill::kSIMLockNetworkPin;
+  return sim_lock_type_ == shill::kSIMLockNetworkPin;
 }
 
 bool DeviceState::IsSimCarrierLocked() const {

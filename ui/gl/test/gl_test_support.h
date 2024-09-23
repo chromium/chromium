@@ -9,6 +9,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gl/gl_implementation.h"
 
@@ -32,7 +33,7 @@ class GLTestSupport {
                                    int stride,
                                    int plane,
                                    gfx::BufferFormat format,
-                                   const uint8_t color[4],
+                                   base::span<const uint8_t, 4> color,
                                    uint8_t* data);
 };
 

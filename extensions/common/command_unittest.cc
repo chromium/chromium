@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "extensions/common/command.h"
 
 #include <stddef.h>
@@ -14,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -201,7 +207,15 @@ TEST(CommandTest, ExtensionCommandParsing) {
     CheckParse(kTests[i], i, false, all_platforms);
 }
 
-TEST(CommandTest, ExtensionCommandParsingFallback) {
+// TODO(https://crbug.com/356905053): Add/adjust command key support on
+// desktop-android platform.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#define MAYBE_ExtensionCommandParsingFallback \
+  DISABLED_ExtensionCommandParsingFallback
+#else
+#define MAYBE_ExtensionCommandParsingFallback ExtensionCommandParsingFallback
+#endif
+TEST(CommandTest, MAYBE_ExtensionCommandParsingFallback) {
   std::string description = "desc";
   std::string command_name = "foo";
 
@@ -238,7 +252,7 @@ TEST(CommandTest, ExtensionCommandParsingFallback) {
   ui::Accelerator accelerator(ui::VKEY_L,
                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
 #elif BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/1312215): Change this once we decide on a unique platform
+  // TODO(crbug.com/40220501): Change this once we decide on a unique platform
   // key for Fuchsia.
   ui::Accelerator accelerator(ui::VKEY_L,
                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);

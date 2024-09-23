@@ -52,45 +52,38 @@ TEST(NTPFeaturesTest, ModulesOrder) {
   EXPECT_TRUE(GetModulesOrder().empty());
 }
 
-TEST(NTPFeaturesTest, CustomizeChromeSupportsChromeRefresh2023) {
-  {
-    // Chrome Refresh 2023 should be off when Customize Chrome is on but
-    // Customize Chrome No Refresh is on, too.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {features::kCustomizeChromeSidePanel,
-         features::kCustomizeChromeSidePanelNoChromeRefresh2023},
-        {});
-    EXPECT_FALSE(features::CustomizeChromeSupportsChromeRefresh2023());
-  }
+TEST(NTPFeaturesTest, WallpaperSearchButtonAnimationShownThreshold) {
+  base::test::ScopedFeatureList scoped_feature_list_;
 
-  {
-    // Chrome Refresh 2023 should be on when Customize Chrome is on and
-    // Customize Chrome No Refresh is off.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {features::kCustomizeChromeSidePanel},
-        {features::kCustomizeChromeSidePanelNoChromeRefresh2023});
-    EXPECT_TRUE(features::CustomizeChromeSupportsChromeRefresh2023());
-  }
+  // If the param is unset, the default value is used.
+  int threshold = GetWallpaperSearchButtonAnimationShownThreshold();
+  EXPECT_EQ(15, threshold);
 
-  {
-    // Chrome Refresh 2023 should be off when Customize Chrome is off.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {}, {features::kCustomizeChromeSidePanel,
-             features::kCustomizeChromeSidePanelNoChromeRefresh2023});
-    EXPECT_FALSE(features::CustomizeChromeSupportsChromeRefresh2023());
-  }
+  // Unsigned integers override the default value.
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kNtpWallpaperSearchButtonAnimationShownThreshold,
+        {{kNtpWallpaperSearchButtonAnimationShownThresholdParam, "20"}}}},
+      {});
+  threshold = GetWallpaperSearchButtonAnimationShownThreshold();
+  EXPECT_EQ(20, threshold);
 
-  {
-    // Chrome Refresh 2023 should be off when Customize Chrome is off.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {features::kCustomizeChromeSidePanelNoChromeRefresh2023},
-        {features::kCustomizeChromeSidePanel});
-    EXPECT_FALSE(features::CustomizeChromeSupportsChromeRefresh2023());
-  }
+  // Signed integers override the default value.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kNtpWallpaperSearchButtonAnimationShownThreshold,
+        {{kNtpWallpaperSearchButtonAnimationShownThresholdParam, "-20"}}}},
+      {});
+  threshold = GetWallpaperSearchButtonAnimationShownThreshold();
+  EXPECT_EQ(-20, threshold);
+
+  // If the param is not parsable to an integer, the default value is
+  // used.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kNtpWallpaperSearchButtonAnimationShownThreshold,
+        {{kNtpWallpaperSearchButtonAnimationShownThresholdParam, "j"}}}},
+      {});
+  threshold = GetWallpaperSearchButtonAnimationShownThreshold();
+  EXPECT_EQ(15, threshold);
 }
-
 }  // namespace ntp_features

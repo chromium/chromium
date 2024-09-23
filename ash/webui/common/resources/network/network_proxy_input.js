@@ -13,8 +13,8 @@ import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import './network_shared.css.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
+import {ManagedProxyLocation} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ManagedProxyLocation} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {getTemplate} from './network_proxy_input.html.js';
 import {OncMojo} from './onc_mojo.js';

@@ -176,6 +176,8 @@ enum Setting {
   kQuickAnswersDefinition = 609,
   kQuickAnswersTranslation = 610,
   kQuickAnswersUnitConversion = 611,
+  kMahiOnOff = 612,
+  kMagicBoostOnOff = 613,
 
   // Apps section.
   kManageAndroidPreferences = 700,
@@ -185,6 +187,10 @@ enum Setting {
   kDoNotDisturbOnOff = 704,
   kAppBadgingOnOff = 705,
   kEnableIsolatedWebAppsOnOff = 706,
+  kAppNotificationOnOff = 707,
+  kAppPinToShelfOnOff = 708,
+  kAppResizeLockOnOff = 709,
+  kAppParentalControls = 710,
 
   // Crostini section.
   kSetUpCrostini= 800,
@@ -195,6 +201,9 @@ enum Setting {
   kCrostiniDiskResize = 805,
   kCrostiniMicAccess = 806,
   kCrostiniContainerUpgrade = 807,
+  kBruschettaMicAccess = 808,
+  kGuestUsbNotification = 809,
+  kGuestUsbPersistentPassthrough = 810,
 
   // Note: Plugin VM section is omitted (see https://crbug.com/1074101).
 
@@ -227,6 +236,7 @@ enum Setting {
   kSpeakOnMuteDetectionOnOff = 1120,
   kDataRecovery = 1121,
   kRevenEnableHwDataUsage = 1122,
+  kGeolocationAdvanced = 1123,
 
   // Languages and Input section.
   kAddLanguage = 1200,
@@ -237,14 +247,26 @@ enum Setting {
   kChangeDeviceLanguage = 1204,
   kOfferTranslation = 1205,
   kAddInputMethod = 1206,
-  kSpellCheck = 1207,
+  kSpellCheckOnOff = 1207,
   // Note: Value 1208 was for deprecated kShowPredictiveWriting.
   // Do not reuse.
-  // TODO(crbug/1058552): Add [Deprecated] attribute once implemented.
+  // TODO(crbug.com/40121199): Add [Deprecated] attribute once implemented.
   kShowPKAutoCorrection = 1209,
   kShowVKAutoCorrection = 1210,
   kShowDiacritic = 1211,
   kShowOrca = 1212,
+  kRemoveInputMethod = 1213,
+  kSetCurrentInputMethod = 1214,
+  kAddSpellCheckLanguage = 1215,
+  kRemoveSpellCheckLanguage = 1216,
+  kAddSpellCheckWord = 1217,
+  kRemoveSpellCheckWord = 1218,
+  kRemoveLanguage = 1219,
+  kMoveLanguageToFront = 1220,
+  kMoveLanguageUp = 1221,
+  kMoveLanguageDown = 1222,
+  kEnableTranslateLanguage = 1223,
+  kDisableTranslateLanguage = 1224,
 
   // Files section.
   kGoogleDriveConnection = 1300,
@@ -256,6 +278,7 @@ enum Setting {
   kSavedPrinters = 1401,
   kPrintJobs = 1402,
   kScanningApp = 1403,
+  kRemovePrinter = 1404,
 
   // Accessibility section.
   kA11yQuickSettings = 1500,
@@ -295,6 +318,21 @@ enum Setting {
   kColorCorrectionEnabled = 1534,
   kColorCorrectionFilterType = 1535,
   kColorCorrectionFilterAmount = 1536,
+  kReducedAnimationsEnabled = 1537,
+  kMouseKeysEnabled = 1538,
+  kMouseKeysShortcutToPauseEnabled = 1539,
+  kMouseKeysDisableInTextFields = 1540,
+  kMouseKeysAcceleration = 1541,
+  kMouseKeysMaxSpeed = 1542,
+  kMouseKeysDominantHand = 1543,
+  kCaretBlinkInterval = 1544,
+  kAccessibilityMagnifierFollowsSts = 1545,
+  // [Deprecated] kPdfOcrOnOff = 1546,
+  kOverscrollEnabled = 1547,
+  kCaretBrowsing = 1548,
+  kMagnifierFollowsChromeVox = 1549,
+  kMainNodeAnnotationsEnabled = 1550,
+  kFlashNotifications = 1551,
 
   // Reset section.
   kPowerwash = 1600,

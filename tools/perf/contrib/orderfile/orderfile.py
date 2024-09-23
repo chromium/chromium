@@ -39,7 +39,7 @@ that is useful for debugging hardware and test setup problems.
 
 import random
 
-from benchmarks import system_health
+from benchmarks import system_health, speedometer3
 from page_sets.system_health import platforms
 from page_sets.system_health import system_health_stories
 from telemetry import benchmark
@@ -62,28 +62,23 @@ class OrderfileStorySet(story.StorySet):
 
   _PLATFORM = 'mobile'
 
-  _BLACKLIST = set([
-      'background:news:nytimes',
-      'background:tools:gmail',
-      'browse:chrome:newtab',
-      'browse:chrome:omnibox',
-      'browse:news:cnn:2018',
-      'browse:news:globo',
-      'browse:news:toi',
-      'browse:shopping:avito',
-      'browse:shopping:flipkart',
-      'long_running:tools:gmail-foreground',
-      'browse:social:facebook',
-      'browse:social:facebook_infinite_scroll',
-      'browse:social:pinterest_infinite_scroll',
-      'browse:social:tumblr_infinite_scroll',
+  _BLOCKLIST = set([
+      # 0% success rate on arm (measured 2024 June).
+      'browse:chrome:newtab:2019',
+      # 0% success rate on arm (measured 2024 June).
+      'browse:chrome:omnibox:2019',
+      # 0% success rate on arm64, 2% on arm (measured 2024 June).
+      'browse:news:globo:2019',
+      # 35% success rate on arm64, 64% on arm (measured 2024 June).
+      'browse:news:washingtonpost:2019',
+      # 1% success rate on arm64, 17% on arm (measured 2024 June).
+      'browse:shopping:amazon:2019',
+      # Carried over from previous blocklist.
       'browse:tech:discourse_infinite_scroll:2018',
-      'load:media:soundcloud',
-      'load:news:cnn',
-      'load:news:washingtonpost',
-      'load:tools:drive',
-      'load:tools:gmail',
+      # Carried over from previous blocklist.
       'long_running:tools:gmail-background',
+      # Carried over from previous blocklist.
+      'long_running:tools:gmail-foreground',
   ])
 
   # The random seed used for reproducible runs.
@@ -137,9 +132,9 @@ class OrderfileStorySet(story.StorySet):
   def RunSetStories(self):
     possible_stories = [
         s for s in system_health_stories.IterAllSystemHealthStoryClasses()
-        if (s.NAME not in self._BLACKLIST and
-            not s.ABSTRACT_STORY and
-            self._PLATFORM in s.SUPPORTED_PLATFORMS)]
+        if (s.NAME not in self._BLOCKLIST and not s.ABSTRACT_STORY
+            and self._PLATFORM in s.SUPPORTED_PLATFORMS)
+    ]
     assert (self._num_training + self._num_variations * self._num_testing
             <= len(possible_stories)), \
         'We only have {} stories to work with, but want {} + {}*{}'.format(
@@ -268,12 +263,12 @@ class OrderfileMemory(system_health.MobileMemorySystemHealth):
           cloud_storage_bucket=story.PARTNER_BUCKET)
 
       assert platform in platforms.ALL_PLATFORMS
-      for story_class in system_health_stories.IterAllSystemHealthStoryClasses():
-        if (story_class.ABSTRACT_STORY or
-            platform not in story_class.SUPPORTED_PLATFORMS or
-            story_class.NAME not in self._STORY_SET):
+      for story_cls in system_health_stories.IterAllSystemHealthStoryClasses():
+        if (story_cls.ABSTRACT_STORY
+            or platform not in story_cls.SUPPORTED_PLATFORMS
+            or story_cls.NAME not in self._STORY_SET):
           continue
-        self.AddStory(story_class(self, take_memory_measurement))
+        self.AddStory(story_cls(self, take_memory_measurement))
 
 
   def CreateStorySet(self, options):
@@ -293,3 +288,64 @@ class OrderfileMemory(system_health.MobileMemorySystemHealth):
   @classmethod
   def Name(cls):
     return 'orderfile.memory_mobile'
+
+
+@benchmark.Owner(emails=['rasikan@google.com'])
+class OrderfileWebViewStartup(system_health.WebviewStartupSystemHealthBenchmark
+                              ):
+  """Benchmark for orderfile generation with WebView startup profiles.
+
+  We need this class to wrap the system_health.webview_startup benchmark so
+  we can apply the additional configs that trigger the devtools memory dump.
+  We rely on the devtools memory dump to collect the profiles, even though
+  this is a startup profile. The reason for this is so we can avoid rebuilding
+  the native library between benchmarks, as the memory_mobile based benchmarks
+  use this. Rebuilidng/relinking would make it difficult to merge the offsets.
+  TODO(b/326927766): remove the devtools_instrumentation_dumping compiler flag
+  so we can switch to startup profiling for webview startup.
+  """
+
+  def CreateStorySet(self, options):
+    return system_health_stories.SystemHealthBlankStorySet(
+        take_memory_measurement=True)
+
+  def CreateCoreTimelineBasedMeasurementOptions(self):
+    cat_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
+        filter_string='-*,disabled-by-default-memory-infra')
+    options = timeline_based_measurement.Options(cat_filter)
+    return options
+
+  @classmethod
+  def Name(cls):
+    return 'orderfile_generation.webview_startup'
+
+
+@benchmark.Owner(emails=['rasikan@google.com'])
+class OrderfileWebViewDebugging(OrderfileWebViewStartup):
+  """A very short benchmark for debugging metrics collection."""
+  options = {'pageset_repeat': 1}
+
+  @classmethod
+  def Name(cls):
+    return 'orderfile_generation.webview_startup_debugging'
+
+
+@benchmark.Owner(emails=['rasikan@google.com'])
+class OrderfileSpeedometer3(speedometer3.Speedometer3):
+  enable_systrace = True
+  take_memory_measurement = True
+  options = {'pageset_repeat': 5}
+
+  @classmethod
+  def Name(cls):
+    return 'orderfile_generation.speedometer3'
+
+
+@benchmark.Owner(emails=['rasikan@google.com'])
+class OrderfileSpeedometer3Debugging(OrderfileSpeedometer3):
+  iteration_count = 1
+  options = {'pageset_repeat': 1}
+
+  @classmethod
+  def Name(cls):
+    return 'orderfile_generation.speedometer3_debugging'

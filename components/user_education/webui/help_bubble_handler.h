@@ -7,11 +7,13 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/webui/tracked_element_webui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -27,7 +29,6 @@ class WebContents;
 
 namespace user_education {
 
-class HelpBubble;
 class HelpBubbleWebUI;
 
 // Base class abstracting away IPC so that handler functionality can be tested
@@ -112,7 +113,7 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   ClientProvider* client_provider() { return client_provider_.get(); }
 
   // Override to use mojo error handling; defaults to NOTREACHED().
-  virtual void ReportBadMessage(base::StringPiece error);
+  virtual void ReportBadMessage(std::string_view error);
 
  private:
   friend class VisibilityProvider;
@@ -136,7 +137,8 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   void OnFloatingHelpBubbleCreated(ui::ElementIdentifier anchor_id,
                                    HelpBubble* help_bubble);
   void OnFloatingHelpBubbleClosed(ui::ElementIdentifier anchor_id,
-                                  HelpBubble* help_bubble);
+                                  HelpBubble* help_bubble,
+                                  HelpBubble::CloseReason);
   void OnWebContentsVisibilityChanged(std::optional<bool> visibility);
 
   // mojom::HelpBubbleHandler:
@@ -212,7 +214,7 @@ class HelpBubbleHandler : public HelpBubbleHandlerBase {
   class ClientProvider;
   class VisibilityProvider;
 
-  void ReportBadMessage(base::StringPiece error) override;
+  void ReportBadMessage(std::string_view error) override;
 
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandler> receiver_;
   const raw_ptr<content::WebUIController> controller_;

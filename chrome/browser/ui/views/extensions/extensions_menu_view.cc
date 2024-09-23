@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -27,7 +28,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -97,7 +98,7 @@ ExtensionsMenuView::ExtensionsMenuView(
   browser_->tab_strip_model()->AddObserver(this);
   set_margins(gfx::Insets(0));
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(true);
   SetTitle(IDS_EXTENSIONS_MENU_TITLE);
 
@@ -110,7 +111,7 @@ ExtensionsMenuView::ExtensionsMenuView(
       GetAccessibleWindowTitle().empty()
           ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
           : ax::mojom::NameFrom::kAttribute;
-  GetViewAccessibility().OverrideName(GetAccessibleWindowTitle(), name_from);
+  GetViewAccessibility().SetName(GetAccessibleWindowTitle(), name_from);
 
   SetEnableArrowKeyTraversal(true);
 
@@ -180,14 +181,12 @@ void ExtensionsMenuView::Populate() {
   footer->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
       footer->GetInsets().top(), dialog_insets.left() + icon_spacing)));
   footer->SetImageLabelSpacing(footer->GetImageLabelSpacing() + icon_spacing);
-  footer->SetImageModel(views::Button::STATE_NORMAL,
-                        ui::ImageModel::FromVectorIcon(
-                            features::IsChromeRefresh2023()
-                                ? vector_icons::kSettingsChromeRefreshIcon
-                                : vector_icons::kSettingsIcon,
-                            ui::kColorIcon,
-                            provider->GetDistanceMetric(
-                                DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE)));
+  footer->SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(
+          vector_icons::kSettingsChromeRefreshIcon, ui::kColorIcon,
+          provider->GetDistanceMetric(
+              DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE)));
 
   manage_extensions_button_ = footer.get();
   AddChildView(std::move(footer));
@@ -453,7 +452,7 @@ void ExtensionsMenuView::OnToolbarActionRemoved(
                                  [](const ExtensionMenuItemView* item) {
                                    return item->view_controller()->GetId();
                                  });
-  DCHECK(iter != extensions_menu_items_.end());
+  CHECK(iter != extensions_menu_items_.end(), base::NotFatalUntil::M130);
   ExtensionMenuItemView* const view = *iter;
   DCHECK(Contains(view));
   view->parent()->RemoveChildViewT(view);
@@ -475,7 +474,7 @@ void ExtensionsMenuView::OnToolbarModelInitialized() {
 }
 
 void ExtensionsMenuView::OnToolbarPinnedActionsChanged() {
-  for (auto* menu_item : extensions_menu_items_) {
+  for (ExtensionMenuItemView* menu_item : extensions_menu_items_) {
     extensions::ExtensionId extension_id =
         GetAsMenuItemView(menu_item)->view_controller()->GetId();
     bool is_force_pinned =

@@ -1534,13 +1534,6 @@ GLES2DrawElementsInstancedBaseVertexBaseInstanceANGLE(GLenum mode,
 void GL_APIENTRY GLES2VertexAttribDivisorANGLE(GLuint index, GLuint divisor) {
   gles2::GetGLContext()->VertexAttribDivisorANGLE(index, divisor);
 }
-void GL_APIENTRY GLES2ProduceTextureDirectCHROMIUM(GLuint texture,
-                                                   GLbyte* mailbox) {
-  gles2::GetGLContext()->ProduceTextureDirectCHROMIUM(texture, mailbox);
-}
-GLuint GL_APIENTRY GLES2CreateAndConsumeTextureCHROMIUM(const GLbyte* mailbox) {
-  return gles2::GetGLContext()->CreateAndConsumeTextureCHROMIUM(mailbox);
-}
 void GL_APIENTRY GLES2BindUniformLocationCHROMIUM(GLuint program,
                                                   GLint location,
                                                   const char* name) {
@@ -1563,9 +1556,6 @@ void GL_APIENTRY GLES2LoseContextCHROMIUM(GLenum current, GLenum other) {
 }
 void GL_APIENTRY GLES2DrawBuffersEXT(GLsizei count, const GLenum* bufs) {
   gles2::GetGLContext()->DrawBuffersEXT(count, bufs);
-}
-void GL_APIENTRY GLES2DiscardBackbufferCHROMIUM() {
-  gles2::GetGLContext()->DiscardBackbufferCHROMIUM();
 }
 void GL_APIENTRY GLES2FlushDriverCachesCHROMIUM() {
   gles2::GetGLContext()->FlushDriverCachesCHROMIUM();
@@ -1654,45 +1644,6 @@ void GL_APIENTRY GLES2BeginSharedImageAccessDirectCHROMIUM(GLuint texture,
 void GL_APIENTRY GLES2EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
   gles2::GetGLContext()->EndSharedImageAccessDirectCHROMIUM(texture);
 }
-void GL_APIENTRY
-GLES2ConvertRGBAToYUVAMailboxesINTERNAL(GLenum planes_yuv_color_space,
-                                        GLenum plane_config,
-                                        GLenum subsampling,
-                                        const GLbyte* mailboxes) {
-  gles2::GetGLContext()->ConvertRGBAToYUVAMailboxesINTERNAL(
-      planes_yuv_color_space, plane_config, subsampling, mailboxes);
-}
-void GL_APIENTRY
-GLES2ConvertYUVAMailboxesToRGBINTERNAL(GLint src_x,
-                                       GLint src_y,
-                                       GLsizei width,
-                                       GLsizei height,
-                                       GLenum planes_yuv_color_space,
-                                       GLenum plane_config,
-                                       GLenum subsampling,
-                                       const GLbyte* mailboxes) {
-  gles2::GetGLContext()->ConvertYUVAMailboxesToRGBINTERNAL(
-      src_x, src_y, width, height, planes_yuv_color_space, plane_config,
-      subsampling, mailboxes);
-}
-void GL_APIENTRY
-GLES2ConvertYUVAMailboxesToTextureINTERNAL(GLuint texture,
-                                           GLenum target,
-                                           GLuint internal_format,
-                                           GLenum type,
-                                           GLint src_x,
-                                           GLint src_y,
-                                           GLsizei width,
-                                           GLsizei height,
-                                           GLboolean flip_y,
-                                           GLenum planes_yuv_color_space,
-                                           GLenum plane_config,
-                                           GLenum subsampling,
-                                           const GLbyte* mailboxes) {
-  gles2::GetGLContext()->ConvertYUVAMailboxesToTextureINTERNAL(
-      texture, target, internal_format, type, src_x, src_y, width, height,
-      flip_y, planes_yuv_color_space, plane_config, subsampling, mailboxes);
-}
 void GL_APIENTRY GLES2CopySharedImageINTERNAL(GLint xoffset,
                                               GLint yoffset,
                                               GLint x,
@@ -1719,7 +1670,7 @@ GLES2CopySharedImageToTextureINTERNAL(GLuint texture,
       texture, target, internal_format, type, src_x, src_y, width, height,
       flip_y, src_mailbox);
 }
-void GL_APIENTRY
+GLboolean GL_APIENTRY
 GLES2ReadbackARGBImagePixelsINTERNAL(const GLbyte* mailbox,
                                      const void* dst_color_space,
                                      GLuint dst_color_space_size,
@@ -1733,7 +1684,7 @@ GLES2ReadbackARGBImagePixelsINTERNAL(const GLbyte* mailbox,
                                      GLint src_y,
                                      GLint plane_index,
                                      void* pixels) {
-  gles2::GetGLContext()->ReadbackARGBImagePixelsINTERNAL(
+  return gles2::GetGLContext()->ReadbackARGBImagePixelsINTERNAL(
       mailbox, dst_color_space, dst_color_space_size, dst_size, dst_width,
       dst_height, dst_color_type, dst_alpha_type, dst_row_bytes, src_x, src_y,
       plane_index, pixels);
@@ -3072,15 +3023,6 @@ extern const NameToFunc g_gles2_function_table[] = {
         reinterpret_cast<GLES2FunctionPointer>(glVertexAttribDivisorANGLE),
     },
     {
-        "glProduceTextureDirectCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(glProduceTextureDirectCHROMIUM),
-    },
-    {
-        "glCreateAndConsumeTextureCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(
-            glCreateAndConsumeTextureCHROMIUM),
-    },
-    {
         "glBindUniformLocationCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(glBindUniformLocationCHROMIUM),
     },
@@ -3103,10 +3045,6 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glDrawBuffersEXT",
         reinterpret_cast<GLES2FunctionPointer>(glDrawBuffersEXT),
-    },
-    {
-        "glDiscardBackbufferCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(glDiscardBackbufferCHROMIUM),
     },
     {
         "glFlushDriverCachesCHROMIUM",
@@ -3208,21 +3146,6 @@ extern const NameToFunc g_gles2_function_table[] = {
         "glEndSharedImageAccessDirectCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(
             glEndSharedImageAccessDirectCHROMIUM),
-    },
-    {
-        "glConvertRGBAToYUVAMailboxesINTERNAL",
-        reinterpret_cast<GLES2FunctionPointer>(
-            glConvertRGBAToYUVAMailboxesINTERNAL),
-    },
-    {
-        "glConvertYUVAMailboxesToRGBINTERNAL",
-        reinterpret_cast<GLES2FunctionPointer>(
-            glConvertYUVAMailboxesToRGBINTERNAL),
-    },
-    {
-        "glConvertYUVAMailboxesToTextureINTERNAL",
-        reinterpret_cast<GLES2FunctionPointer>(
-            glConvertYUVAMailboxesToTextureINTERNAL),
     },
     {
         "glCopySharedImageINTERNAL",

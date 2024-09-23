@@ -8,27 +8,24 @@
 #include <stdint.h>
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "content/browser/attribution_reporting/attribution_beacon_id.h"
+#include "components/attribution_reporting/data_host.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 
 namespace content {
 
 struct AttributionInputEvent;
 class RenderFrameHost;
-class RenderFrameHostImpl;
 class WebContents;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -62,25 +59,6 @@ class CONTENT_EXPORT AttributionHost
   }
 #endif
 
-  // This should be called when the fenced frame reporting beacon was initiated
-  // for reportEvent or for an automatic beacon. It may be cached and sent
-  // later. This should be called before the navigation committed for a
-  // navigation beacon.
-  // This function should only be invoked if Attribution Reporting API is
-  // enabled on the page, and for the instance associated with the navigation
-  // initiator's web contents.
-  // `navigation_id` will be set if this beacon is being sent as the result of a
-  // top navigation initiated by a fenced frame. This is used to track
-  // attributions that occur on a navigated page after the current page has been
-  // unloaded. Otherwise `std::nullopt`.
-  // Returns whether fenced frame reporting beacons can support Attribution
-  // Reporting API.
-  bool NotifyFencedFrameReportingBeaconStarted(
-      BeaconId beacon_id,
-      std::optional<int64_t> navigation_id,
-      RenderFrameHostImpl* initiator_frame_host,
-      std::string devtools_request_id);
-
  private:
   friend class AttributionHostTestPeer;
   friend class WebContentsUserData<AttributionHost>;
@@ -90,10 +68,11 @@ class CONTENT_EXPORT AttributionHost
       const blink::AttributionSrcToken& attribution_src_token,
       uint32_t expected_registrations) override;
   void RegisterDataHost(
-      mojo::PendingReceiver<blink::mojom::AttributionDataHost>,
-      attribution_reporting::mojom::RegistrationEligibility) override;
+      mojo::PendingReceiver<attribution_reporting::mojom::DataHost>,
+      attribution_reporting::mojom::RegistrationEligibility,
+      bool is_for_background_requests) override;
   void RegisterNavigationDataHost(
-      mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+      mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token) override;
 
   // WebContentsObserver:

@@ -20,6 +20,24 @@ enum class PendingCredentialsState {
   EQUAL_TO_SAVED_MATCH
 };
 
+struct PendingCredentialsStates {
+  PendingCredentialsState profile_store_state = PendingCredentialsState::NONE;
+  PendingCredentialsState account_store_state = PendingCredentialsState::NONE;
+
+  raw_ptr<const PasswordForm> similar_saved_form_from_profile_store = nullptr;
+  raw_ptr<const PasswordForm> similar_saved_form_from_account_store = nullptr;
+};
+
+// From all |matches| returns those that are stored in the account store.
+// |matches| point to forms held by |form_fetcher_|.
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+AccountStoreMatches(base::span<const PasswordForm> matches);
+
+// From all |matches| returns those that are stored in the profile store.
+// |matches| point to forms held by |form_fetcher_|.
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+ProfileStoreMatches(base::span<const PasswordForm> matches);
+
 class PasswordSaveManagerImpl : public PasswordSaveManager {
  public:
   PasswordSaveManagerImpl(std::unique_ptr<FormSaver> profile_form_saver,
@@ -55,10 +73,6 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   void Save(const autofill::FormData* observed_form,
             const PasswordForm& parsed_submitted_form) override;
 
-  void Update(const PasswordForm& credentials_to_update,
-              const autofill::FormData* observed_form,
-              const PasswordForm& parsed_submitted_form) override;
-
   void Blocklist(const PasswordFormDigest& form_digest) override;
   void Unblocklist(const PasswordFormDigest& form_digest) override;
 
@@ -88,6 +102,9 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
   void UsernameUpdatedInBubble() override;
 
+  PasswordForm::Store GetPasswordStoreForSaving(
+      const PasswordForm& password_form) const override;
+
   std::unique_ptr<PasswordSaveManager> Clone() override;
 
  private:
@@ -106,7 +123,10 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   void SavePendingToStore(const autofill::FormData* observed_form,
                           const PasswordForm& parsed_submitted_form);
 
-  void SavePendingToStoreImpl(const PasswordForm& parsed_submitted_form);
+  void SavePendingToStoreImpl(PendingCredentialsState state,
+                              const PasswordForm* similar_saved_form,
+                              FormSaver* form_saver,
+                              PasswordForm::Store store_to_save);
 
   std::u16string GetOldPassword(
       const PasswordForm& parsed_submitted_form) const;
@@ -125,10 +145,9 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
 
   // Returns the forms in |matches| that should be taken into account for
   // conflict resolution during generation. Will be overridden in subclasses.
+  // |matches| point to forms held by |form_fetcher_|.
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-  GetRelevantMatchesForGeneration(
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          matches);
+  GetRelevantMatchesForGeneration(base::span<const PasswordForm> matches);
 
   // Clones the current object into |clone|. |clone| must not be null.
   void CloneInto(PasswordSaveManagerImpl* clone);
@@ -136,6 +155,8 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   bool IsOptedInForAccountStorage() const;
   bool AccountStoreIsDefault() const;
   bool ShouldStoreGeneratedPasswordsInAccountStore() const;
+  PasswordForm::Store GetPasswordStoreForSavingImpl(
+      const PendingCredentialsStates& states) const;
 
   // FormSaver instances for all tasks related to storing credentials - one
   // for the profile store, one for the account store.

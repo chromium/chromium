@@ -22,6 +22,14 @@ class SimpleURLLoader;
 
 namespace policy {
 
+enum class EnterpriseUserInfoFetchStatus {
+  kSuccess,
+  kFailedWithNetworkError,
+  kCantParseJsonInResponse,
+  kResponseIsNotDict,
+  kMaxValue = kResponseIsNotDict
+};
+
 // Class that makes a UserInfo request, parses the response, and notifies
 // a provided Delegate when the request is complete.
 class POLICY_EXPORT UserInfoFetcher {

@@ -63,6 +63,15 @@ void CommonStartupMetricRecorder::RecordChromeMainEntryTime(
   DCHECK(!chrome_main_entry_ticks_.is_null());
 }
 
+void CommonStartupMetricRecorder::RecordPreReadTime(base::TimeTicks start_ticks,
+                                                    base::TimeTicks end_ticks) {
+  preread_begin_ticks_ = start_ticks;
+  preread_end_ticks_ = end_ticks;
+  // These aren't necessarily non-null after setting, because if the process in
+  // question did not PreRead (if `--no-pre-read-main-dll` was passed, for
+  // example), they will be null.
+}
+
 void CommonStartupMetricRecorder::ResetSessionForTesting() {
 #if DCHECK_IS_ON()
   GetSessionLog().clear();
@@ -83,8 +92,8 @@ base::TimeTicks CommonStartupMetricRecorder::StartupTimeToTimeTicks(
   std::optional<base::ScopedBoostPriority> scoped_boost_priority;
 
   // Enabling this logic on OS X causes a significant performance regression.
-  // TODO(crbug.com/601270): Remove IS_APPLE ifdef once priority changes are
-  // ignored on Mac main thread.
+  // TODO(crbug.com/40464036): Remove IS_APPLE ifdef once utility processes
+  // set their desired main thread priority.
 #if !BUILDFLAG(IS_APPLE)
   static bool statics_initialized = false;
   if (!statics_initialized) {
@@ -130,6 +139,35 @@ void CommonStartupMetricRecorder::AssertFirstCallInSession(
 #if DCHECK_IS_ON()
   DCHECK(GetSessionLog().insert(from_here.program_counter()).second);
 #endif  // DCHECK_IS_ON()
+}
+
+void CommonStartupMetricRecorder::EmitHistogramWithTraceEvent(
+    HistogramTimeFunction* histogram_function,
+    const char* name,
+    base::TimeTicks begin_ticks,
+    base::TimeTicks end_ticks) {
+  (*histogram_function)(name, end_ticks - begin_ticks);
+  EmitTraceEvent(name, begin_ticks, end_ticks);
+}
+
+void CommonStartupMetricRecorder::EmitTraceEvent(const char* name,
+                                                 base::TimeTicks begin_ticks,
+                                                 base::TimeTicks end_ticks) {
+  // TODO(325307453): Emit the trace events asynchronously onto a
+  // perfetto::Track. Ordering is a problem if doing it simplistically as
+  // the async events are emitted out-of-order with identical start times
+  // and thus Perfetto is unable to sort them in a reasonable parent-child
+  // relationship.
+  TRACE_EVENT_BEGIN("startup", perfetto::StaticString(name),
+                    perfetto::Track(reinterpret_cast<uintptr_t>(name)),
+                    begin_ticks);
+  TRACE_EVENT_END("startup", perfetto::Track(reinterpret_cast<uintptr_t>(name)),
+                  end_ticks);
+}
+
+void CommonStartupMetricRecorder::EmitInstantEvent(const char* name) {
+  TRACE_EVENT_INSTANT("startup", perfetto::StaticString(name),
+                      perfetto::Track(reinterpret_cast<uintptr_t>(name)));
 }
 
 }  // namespace startup_metric_utils

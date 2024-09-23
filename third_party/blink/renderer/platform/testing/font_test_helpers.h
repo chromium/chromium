@@ -22,6 +22,7 @@ Font CreateTestFont(const AtomicString& family_name,
                     const String& font_path,
                     float size,
                     const FontDescription::VariantLigatures* = nullptr,
+                    const FontVariantEmoji variant_emoji = kNormalVariantEmoji,
                     void (*init_font_description)(FontDescription*) = nullptr);
 
 // Reads a font from raw font data, for use in fuzzing test only.
@@ -55,7 +56,7 @@ class ScopedTestFontPrewarmer {
 
  private:
   TestFontPrewarmer current_;
-  raw_ptr<WebFontPrewarmer, ExperimentalRenderer> saved_;
+  raw_ptr<WebFontPrewarmer> saved_;
 };
 #endif
 

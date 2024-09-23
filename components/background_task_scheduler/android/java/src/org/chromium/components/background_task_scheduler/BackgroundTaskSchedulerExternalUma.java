@@ -42,8 +42,10 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public static final int BACKGROUND_TASK_ATTRIBUTION_PROVIDER_FLUSH = 28;
     public static final int BACKGROUND_TASK_DOWNLOAD_AUTO_RESUMPTION_UNMETERED = 29;
     public static final int BACKGROUND_TASK_DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK = 30;
+    public static final int BACKGROUND_TASK_NOTIFICATION_PRE_UNSUBSCRIBE = 31;
+    public static final int BACKGROUND_SAFETY_HUB = 32;
     // Keep this one at the end and increment appropriately when adding new tasks.
-    public static final int BACKGROUND_TASK_COUNT = 31;
+    public static final int BACKGROUND_TASK_COUNT = 33;
 
     protected BackgroundTaskSchedulerExternalUma() {}
 
@@ -56,12 +58,21 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public abstract void reportTaskStartedNative(int taskId);
 
     /**
-     * Reports metrics of how Chrome is launched, either in minimal browser mode or as full
-     * browser, as well as either cold start or warm start.
-     * See {@link org.chromium.content.browser.ServicificationStartupUma} for more details.
+     * Reports metrics of how Chrome is launched, either in minimal browser mode or as full browser,
+     * as well as either cold start or warm start. See {@link
+     * org.chromium.content.browser.ServicificationStartupUma} for more details.
+     *
      * @param startupMode Chrome's startup mode.
      */
     public abstract void reportStartupMode(int startupMode);
+
+    /**
+     * Reports metrics for the time taken for a BackgroundTask.
+     *
+     * @param taskId An id from {@link TaskIds}.
+     * @param taskDurationMs Time taken in milliseconds.
+     */
+    public abstract void reportTaskFinished(int taskId, long taskDurationMs);
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public static int toUmaEnumValueFromTaskId(int taskId) {
@@ -116,6 +127,10 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_DOWNLOAD_AUTO_RESUMPTION_UNMETERED;
             case TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID:
                 return BACKGROUND_TASK_DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK;
+            case TaskIds.NOTIFICATION_SERVICE_PRE_UNSUBSCRIBE_JOB_ID:
+                return BACKGROUND_TASK_NOTIFICATION_PRE_UNSUBSCRIBE;
+            case TaskIds.SAFETY_HUB_JOB_ID:
+                return BACKGROUND_SAFETY_HUB;
         }
         // Returning a value that is not expected to ever be reported.
         return BACKGROUND_TASK_NOT_FOUND;
@@ -179,6 +194,10 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return "DownloadAutoResumptionUnmetered";
             case TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID:
                 return "DownloadAutoResumptionAnyNetwork";
+            case TaskIds.NOTIFICATION_SERVICE_PRE_UNSUBSCRIBE_JOB_ID:
+                return "NotificationServicePreUnsubscribe";
+            case TaskIds.SAFETY_HUB_JOB_ID:
+                return "SafetyHub";
         }
         assert false;
         return null;

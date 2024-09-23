@@ -14,18 +14,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -36,7 +35,6 @@ import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.Arrays;
@@ -51,8 +49,9 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_ALL_IPH})
 @EnableFeatures(ChromeFeatureList.CCT_MINIMIZED)
+@Batch(Batch.PER_CLASS)
 public class IncognitoStorageLeakageTest {
     private static final String SITE_DATA_HTML_PATH =
             "/content/test/data/browsing_data/site_data.html";
@@ -63,8 +62,6 @@ public class IncognitoStorageLeakageTest {
 
     private String mSiteDataTestPage;
     private EmbeddedTestServer mTestServer;
-
-    @Rule public TestRule mProcessor = new JUnitProcessor();
 
     @Rule
     public ChromeTabbedActivityTestRule mChromeActivityTestRule =
@@ -84,14 +81,13 @@ public class IncognitoStorageLeakageTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> IncognitoDataTestUtils.closeTabs(mChromeActivityTestRule));
     }
 
     @Test
     @LargeTest
     @UseMethodParameter(TestParams.AllTypesToAllTypes.class)
-    @DisabledTest(message = "crbug.com/1489541")
     public void testSessionStorageDoesNotLeakFromActivityToActivity(
             String activityType1, String activityType2) throws TimeoutException {
         ActivityType activity1 = ActivityType.valueOf(activityType1);
@@ -159,8 +155,7 @@ public class IncognitoStorageLeakageTest {
             // Due to which tab1 could potentially be marked as frozen and invoking
             // getWebContents on it may return null. Please see the javadoc for
             // TabImpl#getWebContents.
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> tab1.loadIfNeeded(TabLoadIfNeededCaller.OTHER));
+            ThreadUtils.runOnUiThreadBlocking(() -> tab1.loadIfNeeded(TabLoadIfNeededCaller.OTHER));
             CriteriaHelper.pollUiThread(
                     () -> Criteria.checkThat(tab1.getWebContents(), Matchers.notNullValue()));
             // Set the storage in tab1
@@ -174,8 +169,7 @@ public class IncognitoStorageLeakageTest {
                     JavaScriptUtils.runJavascriptWithAsyncResult(
                             tab1.getWebContents(), "has" + type + "Async()"));
 
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> tab2.loadIfNeeded(TabLoadIfNeededCaller.OTHER));
+            ThreadUtils.runOnUiThreadBlocking(() -> tab2.loadIfNeeded(TabLoadIfNeededCaller.OTHER));
             CriteriaHelper.pollUiThread(
                     () -> Criteria.checkThat(tab2.getWebContents(), Matchers.notNullValue()));
             // Access the storage from tab2

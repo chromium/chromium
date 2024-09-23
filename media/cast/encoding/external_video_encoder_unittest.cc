@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/cast/encoding/external_video_encoder.h"
 
 #include <stdint.h>
@@ -19,8 +24,8 @@ scoped_refptr<VideoFrame> CreateFrame(const uint8_t* y_plane_data,
   scoped_refptr<VideoFrame> result = VideoFrame::CreateFrame(
       PIXEL_FORMAT_I420, size, gfx::Rect(size), size, base::TimeDelta());
   for (int y = 0, y_end = size.height(); y < y_end; ++y) {
-    memcpy(result->GetWritableVisibleData(VideoFrame::kYPlane) +
-               y * result->stride(VideoFrame::kYPlane),
+    memcpy(result->GetWritableVisibleData(VideoFrame::Plane::kY) +
+               y * result->stride(VideoFrame::Plane::kY),
            y_plane_data + y * size.width(), size.width());
   }
   return result;

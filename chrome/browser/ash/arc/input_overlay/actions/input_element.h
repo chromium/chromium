@@ -94,9 +94,9 @@ class InputElement {
   // Tap action: PRIMARY_CLICK and SECONDARY_CLICK.
   // Move action: HOVER_MOVE, PRIMARY_DRAG_MOVE and SECONDARY_DRAG_MOVE.
   MouseAction mouse_action_ = MouseAction::NONE;
-  // Tap action for mouse primary/secondary click: ET_MOUSE_PRESSED,
-  // ET_MOUSE_RELEASED. Move action for primary/secondary drag move:
-  // ET_MOUSE_PRESSED, ET_MOUSE_DRAGGED, ET_MOUSE_RELEASED.
+  // Tap action for mouse primary/secondary click: kMousePressed,
+  // EventType::kMouseReleased. Move action for primary/secondary drag move:
+  // kMousePressed, kMouseDragged, EventType::kMouseReleased.
   base::flat_set<ui::EventType> mouse_types_;
   // Mouse primary button flag: EF_LEFT_MOUSE_BUTTON. Secondary button flag:
   // EF_RIGHT_MOUSE_BUTTON.

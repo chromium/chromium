@@ -24,7 +24,7 @@ namespace {
 
 static ThreadType kAllThreadTypes[] = {
     ThreadType::kRealtimeAudio, ThreadType::kDisplayCritical,
-    ThreadType::kCompositing, ThreadType::kDefault, ThreadType::kBackground};
+    ThreadType::kDefault, ThreadType::kBackground};
 
 static_assert(static_cast<int>(ThreadType::kBackground) == 0,
               "kBackground isn't lowest");
@@ -35,6 +35,7 @@ class ScopedThreadPriorityTest : public testing::Test {
  protected:
   void SetUp() override {
     // Ensures the default thread priority is set.
+    PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
     ASSERT_EQ(ThreadPriorityForTest::kNormal,
               PlatformThread::GetCurrentThreadPriorityForTest());
   }

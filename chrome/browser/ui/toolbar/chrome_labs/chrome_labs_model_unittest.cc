@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
+
 #include "base/i18n/case_conversion.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/icu_test_util.h"
 #include "chrome/browser/about_flags.h"

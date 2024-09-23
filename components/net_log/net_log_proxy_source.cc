@@ -84,7 +84,7 @@ void NetLogProxySource::UpdateCaptureModes(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void NetLogProxySource::SendNetLogEntry(net::NetLogEventType type,

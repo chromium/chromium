@@ -23,23 +23,19 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.widget.MoreProgressButton.State;
 import org.chromium.components.browser_ui.widget.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Tests for {@link MoreProgressButton}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class MoreProgressButtonTest {
-    @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
-
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -56,7 +52,7 @@ public class MoreProgressButtonTest {
     @BeforeClass
     public static void setupSuite() {
         activityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity = activityTestRule.getActivity();
                     sContentView = new FrameLayout(sActivity);
@@ -66,7 +62,7 @@ public class MoreProgressButtonTest {
 
     @Before
     public void setupTest() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sContentView.removeAllViews();
 
@@ -96,7 +92,7 @@ public class MoreProgressButtonTest {
     @Feature({"MoreProgressButton"})
     public void testInitialStates() {
         // Verify the default status for the views are correct
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
                             "Button should not be shown after init",
@@ -111,7 +107,7 @@ public class MoreProgressButtonTest {
     @SmallTest
     @Feature({"MoreProgressButton"})
     public void testSetStateToButton() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMoreProgressButton.setState(State.BUTTON);
 
@@ -128,7 +124,7 @@ public class MoreProgressButtonTest {
     @SmallTest
     @Feature({"MoreProgressButton"})
     public void testSetStateToSpinner() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMoreProgressButton.setState(State.LOADING);
 
@@ -146,7 +142,7 @@ public class MoreProgressButtonTest {
     @Feature({"MoreProgressButton"})
     public void testSetStateToHidden() {
         // Change state for the button first, then hide it
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMoreProgressButton.setState(State.BUTTON);
                     mMoreProgressButton.setState(State.HIDDEN);
@@ -164,7 +160,7 @@ public class MoreProgressButtonTest {
     @SmallTest
     @Feature({"MoreProgressButton"})
     public void testStateAfterBindAction() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     boolean buttonShownBefore =
                             sActivity.findViewById(R.id.action_button).isShown();
@@ -190,7 +186,7 @@ public class MoreProgressButtonTest {
     public void testClickAfterBindAction() {
         final String str = "Some Test String";
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     String textViewStr =
                             ((TextView) sActivity.findViewById(mIdTextView)).getText().toString();

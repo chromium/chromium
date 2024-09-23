@@ -59,8 +59,12 @@ size_t VideoFrameLayout::NumPlanes(VideoPixelFormat format) {
     case PIXEL_FORMAT_RGBAF16:
       return 1;
     case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_NV16:
     case PIXEL_FORMAT_NV21:
-    case PIXEL_FORMAT_P016LE:
+    case PIXEL_FORMAT_NV24:
+    case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE:
       return 2;
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_YV12:
@@ -89,7 +93,7 @@ size_t VideoFrameLayout::NumPlanes(VideoPixelFormat format) {
       // Set its NumPlanes() to zero to avoid NOTREACHED().
       return 0;
   }
-  NOTREACHED() << "Unsupported video frame format: " << format;
+  NOTREACHED_IN_MIGRATION() << "Unsupported video frame format: " << format;
   return 0;
 }
 
@@ -120,9 +124,9 @@ std::optional<VideoFrameLayout> VideoFrameLayout::CreateWithPlanes(
     size_t buffer_addr_align,
     uint64_t modifier) {
   // NOTE: Even if format is UNKNOWN, it is valid if coded_sizes is not Empty().
-  // TODO(crbug.com/896135): Return std::nullopt,
+  // TODO(crbug.com/41421131): Return std::nullopt,
   // if (format != PIXEL_FORMAT_UNKNOWN || !coded_sizes.IsEmpty())
-  // TODO(crbug.com/896135): Return std::nullopt,
+  // TODO(crbug.com/41421131): Return std::nullopt,
   // if (planes.size() != NumPlanes(format))
   return VideoFrameLayout(format, coded_size, std::move(planes),
                           false /*is_multi_planar */, buffer_addr_align,
@@ -136,9 +140,9 @@ std::optional<VideoFrameLayout> VideoFrameLayout::CreateMultiPlanar(
     size_t buffer_addr_align,
     uint64_t modifier) {
   // NOTE: Even if format is UNKNOWN, it is valid if coded_sizes is not Empty().
-  // TODO(crbug.com/896135): Return std::nullopt,
+  // TODO(crbug.com/41421131): Return std::nullopt,
   // if (format != PIXEL_FORMAT_UNKNOWN || !coded_sizes.IsEmpty())
-  // TODO(crbug.com/896135): Return std::nullopt,
+  // TODO(crbug.com/41421131): Return std::nullopt,
   // if (planes.size() != NumPlanes(format))
   return VideoFrameLayout(format, coded_size, std::move(planes),
                           true /*is_multi_planar */, buffer_addr_align,

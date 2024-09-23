@@ -28,7 +28,7 @@ class ThreadWithCustomScheduler : public MainThread {
   }
 
  private:
-  raw_ptr<ThreadScheduler, ExperimentalRenderer> scheduler_;
+  raw_ptr<ThreadScheduler> scheduler_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 

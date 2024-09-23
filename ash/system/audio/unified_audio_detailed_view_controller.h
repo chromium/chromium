@@ -42,6 +42,7 @@ class ASH_EXPORT UnifiedAudioDetailedViewController
   void OnActiveOutputNodeChanged() override;
   void OnActiveInputNodeChanged() override;
   void OnNoiseCancellationStateChanged() override;
+  void OnStyleTransferStateChanged() override;
 
  private:
   // Used in observers to call `AudioDetailedView::Update` on `view_`.

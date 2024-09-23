@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/json/values_util.h"
@@ -16,9 +17,11 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/safety_hub/card_data_helper.h"
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
@@ -26,6 +29,9 @@
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_hats_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
@@ -36,39 +42,42 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/permissions/constants.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_prefs_factory.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/manifest.h"
+#include "safety_hub_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
 
+using extensions::ExtensionPrefs;
+using extensions::ExtensionRegistry;
 using safety_hub::SafetyHubCardState;
 
 namespace {
-// Key of the expiration time in the |UnusedSitePermissions| object. Indicates
-// the time after which the associated origin and permissions are no longer
-// shown in the UI.
-constexpr char kExpirationKey[] = "expiration";
-// Key of the lifetime in the |UnusedSitePermissions| object.
-constexpr char kLifetimeKey[] = "lifetime";
 
 // Get values from |UnusedSitePermission| object in
 // safety_hub_browser_proxy.ts.
-SafetyHubHandler::PermissionsData GetUnusedSitePermissionsFromDict(
+PermissionsData GetUnusedSitePermissionsFromDict(
     const base::Value::Dict& unused_site_permissions) {
-  SafetyHubHandler::PermissionsData permissions_data;
+  PermissionsData permissions_data;
   const std::string* origin_str =
       unused_site_permissions.FindString(site_settings::kOrigin);
   CHECK(origin_str);
-  const auto url = GURL(*origin_str);
-  CHECK(url.is_valid());
-  permissions_data.origin = url::Origin::Create(url);
+  permissions_data.primary_pattern =
+      ContentSettingsPattern::FromString(*origin_str);
 
   const base::Value::List* permissions =
       unused_site_permissions.FindList(site_settings::kPermissions);
@@ -80,7 +89,7 @@ SafetyHubHandler::PermissionsData GetUnusedSitePermissionsFromDict(
         site_settings::ContentSettingsTypeFromGroupName(type_string);
     CHECK(type != ContentSettingsType::DEFAULT)
         << type_string << " is not expected to have a UI representation.";
-    permissions_data.permissions.insert(type);
+    permissions_data.permission_types.insert(type);
   }
 
   const base::Value::Dict* chooser_permissions_data =
@@ -90,52 +99,35 @@ SafetyHubHandler::PermissionsData GetUnusedSitePermissionsFromDict(
       chooser_permissions_data ? chooser_permissions_data->Clone()
                                : base::Value::Dict();
 
-  const base::Value* js_expiration =
-      unused_site_permissions.Find(kExpirationKey);
-  CHECK(js_expiration);
-  base::Time expiration = base::ValueToTime(js_expiration).value();
+  // Handle expiration and lifetime for both revoked unused permissions and
+  // revoked abusive notifications.
+  std::vector<std::tuple<std::string, std::string,
+                         content_settings::ContentSettingConstraints*>>
+      keys = {{safety_hub::kExpirationKey, safety_hub::kLifetimeKey,
+               &permissions_data.constraints}};
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
+    keys.push_back({safety_hub::kAbusiveRevocationExpirationKey,
+                    safety_hub::kAbusiveRevocationLifetimeKey,
+                    &permissions_data.abusive_revocation_constraints});
+  }
+  for (const auto& [expiration_key, lifetime_key, constraints] : keys) {
+    const base::Value* js_expiration =
+        unused_site_permissions.Find(expiration_key);
+    CHECK(js_expiration);
+    base::Time expiration = base::ValueToTime(js_expiration).value();
 
-  const base::Value* js_lifetime = unused_site_permissions.Find(kLifetimeKey);
-  // Users may edit the stored fields directly, so we cannot assume their
-  // presence and validity.
-  base::TimeDelta lifetime = content_settings::RuleMetaData::ComputeLifetime(
-      /*lifetime=*/
-      base::ValueToTimeDelta(js_lifetime).value_or(base::TimeDelta()),
-      /*expiration=*/expiration);
-
-  permissions_data.constraints =
-      content_settings::ContentSettingConstraints(expiration - lifetime);
-  permissions_data.constraints.set_lifetime(lifetime);
+    const base::Value* js_lifetime = unused_site_permissions.Find(lifetime_key);
+    base::TimeDelta lifetime = content_settings::RuleMetaData::ComputeLifetime(
+        /*lifetime=*/
+        base::ValueToTimeDelta(js_lifetime).value_or(base::TimeDelta()),
+        /*expiration=*/expiration);
+    *constraints =
+        content_settings::ContentSettingConstraints(expiration - lifetime);
+    constraints->set_lifetime(lifetime);
+  }
 
   return permissions_data;
-}
-
-// Returns the state of Safe Browsing setting.
-SafeBrowsingState GetSafeBrowsingState(PrefService* pref_service) {
-  // TODO(crbug.com/1443466): Use SafeBrowsingResult from Safety Hub instead.
-  if (safe_browsing::IsEnhancedProtectionEnabled(*pref_service))
-    return SafeBrowsingState::kEnabledEnhanced;
-  if (safe_browsing::IsSafeBrowsingEnabled(*pref_service))
-    return SafeBrowsingState::kEnabledStandard;
-  if (safe_browsing::IsSafeBrowsingPolicyManaged(*pref_service))
-    return SafeBrowsingState::kDisabledByAdmin;
-  if (safe_browsing::IsSafeBrowsingExtensionControlled(*pref_service))
-    return SafeBrowsingState::kDisabledByExtension;
-  return SafeBrowsingState::kDisabledByUser;
-}
-
-base::Value::Dict CardDataToValue(int header_id,
-                                  int subheader_id,
-                                  SafetyHubCardState card_state) {
-  base::Value::Dict sb_card_info;
-
-  sb_card_info.Set(safety_hub::kCardHeaderKey,
-                   l10n_util::GetStringUTF16(header_id));
-  sb_card_info.Set(safety_hub::kCardSubheaderKey,
-                   l10n_util::GetStringUTF16(subheader_id));
-  sb_card_info.Set(safety_hub::kCardStateKey, static_cast<int>(card_state));
-
-  return sb_card_info;
 }
 
 // Returns true if the card dict indicates there is something actionable for the
@@ -167,17 +159,27 @@ void AppendModuleNameToString(std::u16string& str,
   str.append(u" ");
   str.append(l10n_util::GetStringUTF16(lowercase_id));
 }
+
+// Converts the entry point data into a base::Value::Dict.
+base::Value::Dict EntryPointDataToValue(bool has_recommendations,
+                                        std::string header,
+                                        std::string subheader) {
+  base::Value::Dict dict_data;
+
+  dict_data.Set("hasRecommendations", has_recommendations);
+  dict_data.Set("header", header);
+  dict_data.Set("subheader", subheader);
+
+  return dict_data;
+}
 }  // namespace
 
 SafetyHubHandler::SafetyHubHandler(Profile* profile)
-    : profile_(profile), clock_(base::DefaultClock::GetInstance()) {}
+    : profile_(profile), clock_(base::DefaultClock::GetInstance()) {
+  prefs_observation_.Observe(ExtensionPrefs::Get(profile_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
+}
 SafetyHubHandler::~SafetyHubHandler() = default;
-
-SafetyHubHandler::PermissionsData::PermissionsData() = default;
-SafetyHubHandler::PermissionsData::~PermissionsData() = default;
-SafetyHubHandler::PermissionsData::PermissionsData(PermissionsData&&) = default;
-SafetyHubHandler::PermissionsData& SafetyHubHandler::PermissionsData::operator=(
-    PermissionsData&&) = default;
 
 // static
 std::unique_ptr<SafetyHubHandler> SafetyHubHandler::GetForProfile(
@@ -224,9 +226,7 @@ void SafetyHubHandler::HandleUndoAllowPermissionsAgainForUnusedSite(
       UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
   CHECK(service);
 
-  service->UndoRegrantPermissionsForOrigin(
-      permissions_data.permissions, permissions_data.chooser_permissions_data,
-      permissions_data.constraints, permissions_data.origin);
+  service->UndoRegrantPermissionsForOrigin(permissions_data);
 
   SendUnusedSitePermissionsReviewList();
 }
@@ -255,9 +255,37 @@ void SafetyHubHandler::HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
     CHECK(unused_site_permissions_js.is_dict());
     PermissionsData permissions_data =
         GetUnusedSitePermissionsFromDict(unused_site_permissions_js.GetDict());
-    service->StorePermissionInRevokedPermissionSetting(
-        permissions_data.permissions, permissions_data.chooser_permissions_data,
-        permissions_data.constraints, permissions_data.origin);
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
+      HostContentSettingsMap* map =
+          HostContentSettingsMapFactory::GetForProfile(profile_);
+      // This pattern is origin-scoped, so this conversion is safe.
+      GURL permission_url =
+          permissions_data.primary_pattern.ToRepresentativeUrl();
+      DCHECK(permission_url.is_valid());
+      // If the permission_types includes `NOTIFICATIONS`, then the revocation
+      // is for a site that should have a
+      // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting.
+      if (permissions_data.permission_types.contains(
+              ContentSettingsType::NOTIFICATIONS)) {
+        safety_hub_util::SetRevokedAbusiveNotificationPermission(
+            map, permission_url, /*is_ignored=*/false,
+            permissions_data.abusive_revocation_constraints);
+        // Remove `NOTIFICATIONS` from permission type list for handling unused
+        // permission revocation below.
+        permissions_data.permission_types.erase(
+            ContentSettingsType::NOTIFICATIONS);
+      }
+
+      // If the permission_types include any permission type that is not
+      // `NOTIFICATIONS`, then the revocation is for an unused site that should
+      // have a `REVOKED_UNUSED_SITE_PERMISSIONS` setting.
+      if (!permissions_data.permission_types.empty()) {
+        service->StorePermissionInRevokedPermissionSetting(permissions_data);
+      }
+    } else {
+      service->StorePermissionInRevokedPermissionSetting(permissions_data);
+    }
   }
 
   SendUnusedSitePermissionsReviewList();
@@ -266,31 +294,26 @@ void SafetyHubHandler::HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
 base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
   base::Value::List result;
   if (!base::FeatureList::IsEnabled(
-          content_settings::features::kSafetyCheckUnusedSitePermissions)) {
+          content_settings::features::kSafetyCheckUnusedSitePermissions) &&
+      !base::FeatureList::IsEnabled(
+          safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
     return result;
   }
 
-  HostContentSettingsMap* hcsm =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-
-  for (const auto& revoked_permissions : hcsm->GetSettingsForOneType(
-           ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS)) {
+  UnusedSitePermissionsService* service =
+      UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
+  CHECK(service);
+  std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
+      service_result = service->GetRevokedPermissions();
+  for (const auto& permissions_data : service_result->GetRevokedPermissions()) {
     base::Value::Dict revoked_permission_value;
-    revoked_permission_value.Set(
-        site_settings::kOrigin, revoked_permissions.primary_pattern.ToString());
-    const base::Value& stored_value = revoked_permissions.setting_value;
-    DCHECK(stored_value.is_dict());
+    revoked_permission_value.Set(site_settings::kOrigin,
+                                 permissions_data.primary_pattern.ToString());
 
-    // The revoked permissions list should be reachable by given key.
-    DCHECK(stored_value.GetDict().FindList(permissions::kRevokedKey));
-
-    auto type_list =
-        stored_value.GetDict().FindList(permissions::kRevokedKey)->Clone();
     base::Value::List permissions_value_list;
-    for (base::Value& type : type_list) {
-      base::StringPiece permission_str =
-          site_settings::ContentSettingsTypeToGroupName(
-              static_cast<ContentSettingsType>(type.GetInt()));
+    for (ContentSettingsType type : permissions_data.permission_types) {
+      std::string_view permission_str =
+          site_settings::ContentSettingsTypeToGroupName(type);
       if (!permission_str.empty()) {
         permissions_value_list.Append(permission_str);
       }
@@ -299,7 +322,7 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
     // Some permissions have no readable name, although Safety Hub revokes them.
     // To prevent crashes, if there is no permission to be shown in the UI, the
     // origin will not be added to the revoked permissions list.
-    // TODO(crbug.com/1459305): Remove this after adding check for
+    // TODO(crbug.com/40066645): Remove this after adding check for
     // ContentSettingsTypeToGroupName.
     if (permissions_value_list.empty()) {
       continue;
@@ -310,23 +333,33 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
         base::Value(std::move(permissions_value_list)));
 
     revoked_permission_value.Set(
-        kExpirationKey,
-        base::TimeToValue(revoked_permissions.metadata.expiration()));
+        safety_hub::kExpirationKey,
+        base::TimeToValue(permissions_data.constraints.expiration()));
 
     revoked_permission_value.Set(
-        kLifetimeKey,
-        base::TimeDeltaToValue(revoked_permissions.metadata.lifetime()));
+        safety_hub::kLifetimeKey,
+        base::TimeDeltaToValue(permissions_data.constraints.lifetime()));
 
-    auto* chooser_permissions_data_dict = stored_value.GetDict().FindDict(
-        permissions::kRevokedChooserPermissionsKey);
-    if (chooser_permissions_data_dict) {
+    revoked_permission_value.Set(
+        safety_hub::kSafetyHubChooserPermissionsData,
+        base::Value(permissions_data.chooser_permissions_data.Clone()));
+
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kSafetyHubAbusiveNotificationRevocation)) {
       revoked_permission_value.Set(
-          safety_hub::kSafetyHubChooserPermissionsData,
-          base::Value(chooser_permissions_data_dict->Clone()));
+          safety_hub::kAbusiveRevocationExpirationKey,
+          base::TimeToValue(
+              permissions_data.abusive_revocation_constraints.expiration()));
+
+      revoked_permission_value.Set(
+          safety_hub::kAbusiveRevocationLifetimeKey,
+          base::TimeDeltaToValue(
+              permissions_data.abusive_revocation_constraints.lifetime()));
     }
 
     result.Append(std::move(revoked_permission_value));
   }
+
   return result;
 }
 
@@ -372,17 +405,15 @@ void SafetyHubHandler::HandleIgnoreOriginsForNotificationPermissionReview(
 void SafetyHubHandler::HandleResetNotificationPermissionForOrigins(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-
   const base::Value::List& origins = args[0].GetList();
 
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
+  NotificationPermissionsReviewService* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
+  CHECK(service);
 
   for (const auto& origin : origins) {
-    map->SetContentSettingCustomScope(
-        ContentSettingsPattern::FromString(origin.GetString()),
-        ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-        CONTENT_SETTING_DEFAULT);
+    service->SetNotificationPermissionsForOrigin(origin.GetString(),
+                                                 CONTENT_SETTING_DEFAULT);
   }
 
   SendNotificationPermissionReviewList();
@@ -413,13 +444,13 @@ void SafetyHubHandler::HandleBlockNotificationPermissionForOrigins(
   CHECK_EQ(1U, args.size());
   const base::Value::List& origins = args[0].GetList();
 
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
+  NotificationPermissionsReviewService* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
+  CHECK(service);
+
   for (const auto& origin : origins) {
-    map->SetContentSettingCustomScope(
-        ContentSettingsPattern::FromString(origin.GetString()),
-        ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-        CONTENT_SETTING_BLOCK);
+    service->SetNotificationPermissionsForOrigin(origin.GetString(),
+                                                 CONTENT_SETTING_BLOCK);
   }
 
   SendNotificationPermissionReviewList();
@@ -430,14 +461,13 @@ void SafetyHubHandler::HandleAllowNotificationPermissionForOrigins(
   CHECK_EQ(1U, args.size());
   const base::Value::List& origins = args[0].GetList();
 
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
+  NotificationPermissionsReviewService* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
+  CHECK(service);
 
   for (const auto& origin : origins) {
-    map->SetContentSettingCustomScope(
-        ContentSettingsPattern::FromString(origin.GetString()),
-        ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-        CONTENT_SETTING_ALLOW);
+    service->SetNotificationPermissionsForOrigin(origin.GetString(),
+                                                 CONTENT_SETTING_ALLOW);
   }
 
   SendNotificationPermissionReviewList();
@@ -467,46 +497,16 @@ void SafetyHubHandler::HandleGetSafeBrowsingCardData(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(callback_id, GetSafeBrowsingCardData());
+  ResolveJavascriptCallback(callback_id,
+                            safety_hub::GetSafeBrowsingCardData(profile_));
 }
 
-base::Value::Dict SafetyHubHandler::GetSafeBrowsingCardData() {
-  SafeBrowsingState result = GetSafeBrowsingState(profile_->GetPrefs());
-
-  base::Value::Dict sb_card_info;
-
-  switch (result) {
-    case SafeBrowsingState::kEnabledEnhanced:
-      sb_card_info =
-          CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_HEADER,
-                          IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_SUBHEADER,
-                          SafetyHubCardState::kSafe);
-      break;
-    case SafeBrowsingState::kEnabledStandard:
-      sb_card_info =
-          CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_HEADER,
-                          IDS_SETTINGS_SAFETY_HUB_SB_ON_STANDARD_SUBHEADER,
-                          SafetyHubCardState::kSafe);
-      break;
-    case SafeBrowsingState::kDisabledByAdmin:
-      sb_card_info =
-          CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
-                          IDS_SETTINGS_SAFETY_HUB_SB_OFF_MANAGED_SUBHEADER,
-                          SafetyHubCardState::kInfo);
-      break;
-    case SafeBrowsingState::kDisabledByExtension:
-      sb_card_info =
-          CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
-                          IDS_SETTINGS_SAFETY_HUB_SB_OFF_EXTENSION_SUBHEADER,
-                          SafetyHubCardState::kInfo);
-      break;
-    default:
-      sb_card_info =
-          CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_OFF_HEADER,
-                          IDS_SETTINGS_SAFETY_HUB_SB_OFF_USER_SUBHEADER,
-                          SafetyHubCardState::kWarning);
-  }
-  return sb_card_info;
+void SafetyHubHandler::HandleGetNumberOfExtensionsThatNeedReview(
+    const base::Value::List& args) {
+  const base::Value& callback_id = args[0];
+  AllowJavascript();
+  ResolveJavascriptCallback(callback_id,
+                            base::Value(GetNumberOfExtensionsThatNeedReview()));
 }
 
 void SafetyHubHandler::HandleGetPasswordCardData(
@@ -516,19 +516,8 @@ void SafetyHubHandler::HandleGetPasswordCardData(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(callback_id, base::Value(GetPasswordCardData()));
-}
-
-base::Value::Dict SafetyHubHandler::GetPasswordCardData() {
-  PasswordStatusCheckService* service =
-      PasswordStatusCheckServiceFactory::GetForProfile(profile_);
-  CHECK(service);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-  bool signed_in = identity_manager && identity_manager->HasPrimaryAccount(
-                                           signin::ConsentLevel::kSignin);
-
-  return service->GetPasswordCardData(signed_in);
+  ResolveJavascriptCallback(
+      callback_id, base::Value(safety_hub::GetPasswordCardData(profile_)));
 }
 
 void SafetyHubHandler::HandleGetVersionCardData(const base::Value::List& args) {
@@ -537,47 +526,11 @@ void SafetyHubHandler::HandleGetVersionCardData(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(callback_id, base::Value(GetVersionCardData()));
+  ResolveJavascriptCallback(callback_id,
+                            base::Value(safety_hub::GetVersionCardData()));
 }
 
-base::Value::Dict SafetyHubHandler::GetVersionCardData() {
-  base::Value::Dict result;
-  switch (g_browser_process->GetBuildState()->update_type()) {
-    case BuildState::UpdateType::kNone:
-      result.Set(safety_hub::kCardHeaderKey,
-                 l10n_util::GetStringUTF16(
-                     IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_UPDATED));
-      result.Set(safety_hub::kCardSubheaderKey,
-                 VersionUI::GetAnnotatedVersionStringForUi());
-      result.Set(safety_hub::kCardStateKey,
-                 static_cast<int>(SafetyHubCardState::kSafe));
-      break;
-    case BuildState::UpdateType::kNormalUpdate:
-    // kEnterpriseRollback and kChannelSwitchRollback are fairly rare state,
-    // they will be handled same as there is waiting updates.
-    case BuildState::UpdateType::kEnterpriseRollback:
-    case BuildState::UpdateType::kChannelSwitchRollback:
-      result = CardDataToValue(
-          IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_RESTART,
-          IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART,
-          SafetyHubCardState::kWarning);
-  }
-  return result;
-}
-
-void SafetyHubHandler::HandleGetSafetyHubHasRecommendations(
-    const base::Value::List& args) {
-  AllowJavascript();
-
-  CHECK_EQ(1U, args.size());
-  const base::Value& callback_id = args[0];
-
-  bool has_recommendations = !GetSafetyHubModulesWithRecommendations().empty();
-
-  ResolveJavascriptCallback(callback_id, has_recommendations);
-}
-
-void SafetyHubHandler::HandleGetSafetyHubEntryPointSubheader(
+void SafetyHubHandler::HandleGetSafetyHubEntryPointData(
     const base::Value::List& args) {
   AllowJavascript();
 
@@ -590,8 +543,11 @@ void SafetyHubHandler::HandleGetSafetyHubEntryPointSubheader(
   // for the subheader.
   if (modules.empty()) {
     ResolveJavascriptCallback(
-        callback_id, base::Value(l10n_util::GetStringUTF16(
-                         IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_NOTHING_TO_DO)));
+        callback_id,
+        base::Value(EntryPointDataToValue(
+            false, "",
+            l10n_util::GetStringUTF8(
+                IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_NOTHING_TO_DO))));
     return;
   }
 
@@ -633,7 +589,12 @@ void SafetyHubHandler::HandleGetSafetyHubEntryPointSubheader(
         IDS_SETTINGS_SAFETY_HUB_PERMISSIONS_MODULE_LOWERCASE_NAME);
   }
 
-  ResolveJavascriptCallback(callback_id, base::Value(subheader));
+  ResolveJavascriptCallback(
+      callback_id,
+      base::Value(EntryPointDataToValue(
+          true,
+          l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_HEADER),
+          base::UTF16ToUTF8(subheader))));
 }
 
 std::set<SafetyHubHandler::SafetyHubModule>
@@ -641,15 +602,15 @@ SafetyHubHandler::GetSafetyHubModulesWithRecommendations() {
   std::set<SafetyHubModule> modules;
 
   // Passwords module
-  if (CardHasRecommendations(GetPasswordCardData())) {
+  if (CardHasRecommendations(safety_hub::GetPasswordCardData(profile_))) {
     modules.insert(SafetyHubModule::kPasswords);
   }
   // Version module
-  if (CardHasRecommendations(GetVersionCardData())) {
+  if (CardHasRecommendations(safety_hub::GetVersionCardData())) {
     modules.insert(SafetyHubModule::kVersion);
   }
   // SafeBrowsing module
-  if (CardHasRecommendations(GetSafeBrowsingCardData())) {
+  if (CardHasRecommendations(safety_hub::GetSafeBrowsingCardData(profile_))) {
     modules.insert(SafetyHubModule::kSafeBrowsing);
   }
   // Extensions module
@@ -669,6 +630,22 @@ SafetyHubHandler::GetSafetyHubModulesWithRecommendations() {
   }
 
   return modules;
+}
+
+void SafetyHubHandler::HandleRecordSafetyHubVisit(
+    const base::Value::List& args) {
+  if (SafetyHubHatsService* hats_service =
+          SafetyHubHatsServiceFactory::GetForProfile(profile_)) {
+    hats_service->SafetyHubVisited();
+  }
+}
+
+void SafetyHubHandler::HandleRecordSafetyHubInteraction(
+    const base::Value::List& args) {
+  if (SafetyHubHatsService* hats_service =
+          SafetyHubHatsServiceFactory::GetForProfile(profile_)) {
+    hats_service->SafetyHubModuleInteracted();
+  }
 }
 
 void SafetyHubHandler::RegisterMessages() {
@@ -759,15 +736,22 @@ void SafetyHubHandler::RegisterMessages() {
       base::BindRepeating(&SafetyHubHandler::HandleGetVersionCardData,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getSafetyHubHasRecommendations",
+      "getSafetyHubEntryPointData",
+      base::BindRepeating(&SafetyHubHandler::HandleGetSafetyHubEntryPointData,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getNumberOfExtensionsThatNeedReview",
       base::BindRepeating(
-          &SafetyHubHandler::HandleGetSafetyHubHasRecommendations,
+          &SafetyHubHandler::HandleGetNumberOfExtensionsThatNeedReview,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getSafetyHubEntryPointSubheader",
-      base::BindRepeating(
-          &SafetyHubHandler::HandleGetSafetyHubEntryPointSubheader,
-          base::Unretained(this)));
+      "recordSafetyHubPageVisit",
+      base::BindRepeating(&SafetyHubHandler::HandleRecordSafetyHubVisit,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "recordSafetyHubInteraction",
+      base::BindRepeating(&SafetyHubHandler::HandleRecordSafetyHubInteraction,
+                          base::Unretained(this)));
 }
 
 void SafetyHubHandler::SendUnusedSitePermissionsReviewList() {
@@ -793,22 +777,90 @@ void SafetyHubHandler::SendNotificationPermissionReviewList() {
       service->PopulateNotificationPermissionReviewData());
 }
 
-int SafetyHubHandler::GetNumberOfExtensionsThatNeedReview() {
-  extensions::CWSInfoService* cws_info_service =
-      extensions::CWSInfoServiceFactory::GetForProfile(profile_);
+void SafetyHubHandler::InitSafetyHubExtensionResults() {
   std::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
-      SafetyHubExtensionsResult::GetResult(cws_info_service, profile_, false);
-  if (!sh_result.has_value()) {
+      SafetyHubExtensionsResult::GetResult(profile_, false);
+  if (sh_result.has_value()) {
+    extension_sh_result_ = std::make_unique<SafetyHubExtensionsResult>(
+        *static_cast<SafetyHubExtensionsResult*>(sh_result->get()));
+  }
+}
+
+int SafetyHubHandler::GetNumberOfExtensionsThatNeedReview() {
+  if (!extension_sh_result_) {
+    InitSafetyHubExtensionResults();
+  }
+  if (extension_sh_result_) {
+    return extension_sh_result_->GetNumTriggeringExtensions();
+  } else {
     return 0;
   }
+}
 
-  auto* result = static_cast<SafetyHubExtensionsResult*>(sh_result->get());
+void SafetyHubHandler::UpdateNumberOfExtensionsThatNeedReview(
+    int num_extension_need_review_before,
+    int num_extension_need_review_after) {
+  if (num_extension_need_review_before != num_extension_need_review_after) {
+    AllowJavascript();
+    FireWebUIListener("extensions-review-list-maybe-changed",
+                      num_extension_need_review_after);
+  }
+}
 
-  return result->GetNumTriggeringExtensions();
+void SafetyHubHandler::OnExtensionPrefsUpdated(
+    const std::string& extension_id) {
+  if (!extension_sh_result_) {
+    return;
+  }
+  int num_extension_need_review_before = GetNumberOfExtensionsThatNeedReview();
+  extension_sh_result_->OnExtensionPrefsUpdated(extension_id, profile_);
+  int num_extension_need_review_after = GetNumberOfExtensionsThatNeedReview();
+  UpdateNumberOfExtensionsThatNeedReview(num_extension_need_review_before,
+                                         num_extension_need_review_after);
+}
+
+void SafetyHubHandler::OnExtensionUninstalled(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    extensions::UninstallReason reason) {
+  if (!extension_sh_result_) {
+    return;
+  }
+  int num_extension_need_review_before = GetNumberOfExtensionsThatNeedReview();
+  extension_sh_result_->OnExtensionUninstalled(browser_context, extension,
+                                               reason);
+  int num_extension_need_review_after = GetNumberOfExtensionsThatNeedReview();
+  UpdateNumberOfExtensionsThatNeedReview(num_extension_need_review_before,
+                                         num_extension_need_review_after);
+}
+
+void SafetyHubHandler::OnExtensionPrefsWillBeDestroyed(ExtensionPrefs* prefs) {
+  DCHECK(prefs_observation_.IsObservingSource(prefs));
+  prefs_observation_.Reset();
+}
+
+void SafetyHubHandler::OnShutdown(extensions::ExtensionRegistry* registry) {
+  extension_registry_observation_.Reset();
 }
 
 void SafetyHubHandler::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
+}
+
+void SafetyHubHandler::ClearExtensionResultsForTesting() {
+  GetNumberOfExtensionsThatNeedReview();
+  if (extension_sh_result_) {
+    extension_sh_result_->ClearTriggeringExtensionsForTesting();  // IN-TEST
+  }
+}
+
+void SafetyHubHandler::SetTriggeringExtensionForTesting(
+    std::string extension_id) {
+  GetNumberOfExtensionsThatNeedReview();
+  if (extension_sh_result_) {
+    extension_sh_result_->SetTriggeringExtensionForTesting(  // IN-TEST
+        extension_id);                                       // IN-TEST
+  }
 }
 
 void SafetyHubHandler::OnJavascriptAllowed() {}

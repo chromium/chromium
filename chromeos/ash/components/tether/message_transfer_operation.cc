@@ -11,118 +11,34 @@
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
-#include "components/cross_device/timer_factory/timer_factory_impl.h"
+#include "chromeos/ash/components/timer_factory/timer_factory_impl.h"
 
-namespace ash {
-
-namespace tether {
-
-namespace {
-
-const char kTetherFeature[] = "magic_tether";
-
-multidevice::RemoteDeviceRefList RemoveDuplicatesFromVector(
-    const multidevice::RemoteDeviceRefList& remote_devices) {
-  multidevice::RemoteDeviceRefList updated_remote_devices;
-  std::set<multidevice::RemoteDeviceRef> remote_devices_set;
-  for (const auto& remote_device : remote_devices) {
-    // Only add the device to the output vector if it has not already been put
-    // into the set.
-    if (!base::Contains(remote_devices_set, remote_device)) {
-      remote_devices_set.insert(remote_device);
-      updated_remote_devices.push_back(remote_device);
-    }
-  }
-  return updated_remote_devices;
-}
-
-}  // namespace
-
-MessageTransferOperation::ConnectionAttemptDelegate::ConnectionAttemptDelegate(
-    MessageTransferOperation* operation,
-    multidevice::RemoteDeviceRef remote_device,
-    std::unique_ptr<secure_channel::ConnectionAttempt> connection_attempt)
-    : operation_(operation),
-      remote_device_(remote_device),
-      connection_attempt_(std::move(connection_attempt)) {
-  connection_attempt_->SetDelegate(this);
-}
-
-MessageTransferOperation::ConnectionAttemptDelegate::
-    ~ConnectionAttemptDelegate() = default;
-
-void MessageTransferOperation::ConnectionAttemptDelegate::
-    OnConnectionAttemptFailure(
-        secure_channel::mojom::ConnectionAttemptFailureReason reason) {
-  operation_->OnConnectionAttemptFailure(remote_device_, reason);
-}
-
-void MessageTransferOperation::ConnectionAttemptDelegate::OnConnection(
-    std::unique_ptr<secure_channel::ClientChannel> channel) {
-  operation_->OnConnection(remote_device_, std::move(channel));
-}
-
-MessageTransferOperation::ClientChannelObserver::ClientChannelObserver(
-    MessageTransferOperation* operation,
-    multidevice::RemoteDeviceRef remote_device,
-    std::unique_ptr<secure_channel::ClientChannel> client_channel)
-    : operation_(operation),
-      remote_device_(remote_device),
-      client_channel_(std::move(client_channel)) {
-  client_channel_->AddObserver(this);
-}
-
-MessageTransferOperation::ClientChannelObserver::~ClientChannelObserver() {
-  client_channel_->RemoveObserver(this);
-}
-
-void MessageTransferOperation::ClientChannelObserver::OnDisconnected() {
-  operation_->OnDisconnected(remote_device_);
-}
-
-void MessageTransferOperation::ClientChannelObserver::OnMessageReceived(
-    const std::string& payload) {
-  operation_->OnMessageReceived(remote_device_.GetDeviceId(), payload);
-}
+namespace ash::tether {
 
 MessageTransferOperation::MessageTransferOperation(
-    const multidevice::RemoteDeviceRefList& devices_to_connect,
-    secure_channel::ConnectionPriority connection_priority,
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client)
-    : remote_devices_(RemoveDuplicatesFromVector(devices_to_connect)),
-      device_sync_client_(device_sync_client),
-      secure_channel_client_(secure_channel_client),
+    const TetherHost& tether_host,
+    HostConnection::Factory::ConnectionPriority connection_priority,
+    raw_ptr<HostConnection::Factory> host_connection_factory)
+    : tether_host_(tether_host),
       connection_priority_(connection_priority),
-      timer_factory_(cross_device::TimerFactoryImpl::Factory::Create()) {}
+      host_connection_factory_(host_connection_factory),
+      timer_factory_(ash::timer_factory::TimerFactoryImpl::Factory::Create()) {}
 
 MessageTransferOperation::~MessageTransferOperation() {
   // If initialization never occurred, devices were never registered.
-  if (!initialized_)
+  if (!initialized_) {
     return;
+  }
 
   shutting_down_ = true;
 
-  // Unregister any devices that are still registered; otherwise, Bluetooth
-  // connections will continue to stay alive until the Tether component is shut
-  // down (see crbug.com/761106). Note that a copy of |remote_devices_| is used
-  // here because UnregisterDevice() will modify |remote_devices_| internally.
-  multidevice::RemoteDeviceRefList remote_devices_copy = remote_devices_;
-  for (const auto& remote_device : remote_devices_copy)
-    UnregisterDevice(remote_device);
+  // Stop the operation if it's in flight, as the operation itself
+  // will be destroyed.
+  StopOperation();
 }
 
 void MessageTransferOperation::Initialize() {
   if (initialized_) {
-    return;
-  }
-
-  std::optional<multidevice::RemoteDeviceRef> local_device =
-      device_sync_client_->GetLocalDeviceMetadata();
-  if (!local_device) {
-    PA_LOG(ERROR) << "MessageTransferOperation::" << __func__
-                  << ": Local device unexpectedly null.";
     return;
   }
 
@@ -137,173 +53,118 @@ void MessageTransferOperation::Initialize() {
 
   OnOperationStarted();
 
-  for (const auto& remote_device : remote_devices_) {
-    StartConnectionTimerForDevice(remote_device);
-    remote_device_to_connection_attempt_delegate_map_[remote_device] =
-        std::make_unique<ConnectionAttemptDelegate>(
-            this, remote_device,
-            secure_channel_client_->ListenForConnectionFromDevice(
-                remote_device, *local_device, kTetherFeature,
-                secure_channel::ConnectionMedium::kBluetoothLowEnergy,
-                connection_priority_));
-  }
+  StartConnectionTimerForDevice();
+  host_connection_factory_->Create(
+      tether_host_, connection_priority_, /*payload_listener=*/this,
+      base::BindOnce(&MessageTransferOperation::OnDisconnected,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&MessageTransferOperation::OnConnectionAttemptComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void MessageTransferOperation::OnMessageReceived(const std::string& device_id,
-                                                 const std::string& payload) {
-  std::optional<multidevice::RemoteDeviceRef> remote_device =
-      GetRemoteDevice(device_id);
-  if (!remote_device) {
-    // If the device from which the message has been received does not
-    // correspond to any of the devices passed to this MessageTransferOperation
-    // instance, ignore the message.
-    return;
-  }
-
-  std::unique_ptr<MessageWrapper> message_wrapper =
-      MessageWrapper::FromRawMessage(payload);
-  if (message_wrapper) {
-    OnMessageReceived(std::move(message_wrapper), *remote_device);
-  }
-}
-
-void MessageTransferOperation::UnregisterDevice(
-    multidevice::RemoteDeviceRef remote_device) {
+void MessageTransferOperation::StopOperation() {
   // Note: This function may be called from the destructor. It is invalid to
   // invoke any virtual methods if |shutting_down_| is true.
 
-  // Make a copy of |remote_device| before continuing, since the code below may
-  // cause the original reference to be deleted.
-  multidevice::RemoteDeviceRef remote_device_copy = remote_device;
+  StopTimerForDeviceIfRunning();
 
-  remote_devices_.erase(std::remove(remote_devices_.begin(),
-                                    remote_devices_.end(), remote_device_copy),
-                        remote_devices_.end());
-  StopTimerForDeviceIfRunning(remote_device_copy);
+  host_connection_.reset();
 
-  remote_device_to_connection_attempt_delegate_map_.erase(remote_device);
-
-  if (base::Contains(remote_device_to_client_channel_observer_map_,
-                     remote_device)) {
-    remote_device_to_client_channel_observer_map_.erase(remote_device);
-  }
-
-  if (!shutting_down_ && remote_devices_.empty())
+  if (!shutting_down_) {
     OnOperationFinished();
+  }
 }
 
-int MessageTransferOperation::SendMessageToDevice(
-    multidevice::RemoteDeviceRef remote_device,
-    std::unique_ptr<MessageWrapper> message_wrapper) {
-  DCHECK(base::Contains(remote_device_to_client_channel_observer_map_,
-                        remote_device));
-  int sequence_number = next_message_sequence_number_++;
-  bool success =
-      remote_device_to_client_channel_observer_map_[remote_device]
-          ->channel()
-          ->SendMessage(
-              message_wrapper->ToRawMessage(),
-              base::BindOnce(&MessageTransferOperation::OnMessageSent,
-                             weak_ptr_factory_.GetWeakPtr(), sequence_number));
-  return success ? sequence_number : -1;
+void MessageTransferOperation::SendMessage(
+    std::unique_ptr<MessageWrapper> message_wrapper,
+    HostConnection::OnMessageSentCallback on_message_sent) {
+  CHECK(host_connection_);
+  host_connection_->SendMessage(std::move(message_wrapper),
+                                std::move(on_message_sent));
 }
 
 uint32_t MessageTransferOperation::GetMessageTimeoutSeconds() {
   return MessageTransferOperation::kDefaultMessageTimeoutSeconds;
 }
 
-void MessageTransferOperation::OnConnectionAttemptFailure(
-    multidevice::RemoteDeviceRef remote_device,
-    secure_channel::mojom::ConnectionAttemptFailureReason reason) {
-  PA_LOG(WARNING) << "Failed to connect to device "
-                  << remote_device.GetTruncatedDeviceIdForLogs()
-                  << ", error: " << reason;
-  UnregisterDevice(remote_device);
+void MessageTransferOperation::OnConnectionAttemptComplete(
+    std::unique_ptr<HostConnection> host_connection) {
+  if (!host_connection) {
+    PA_LOG(WARNING) << "Failed to connect to device ["
+                    << GetDeviceId(/*truncate_for_logs=*/true) << "].";
+    StopOperation();
+  } else {
+    host_connection_ = std::move(host_connection);
+
+    // Stop the timer which was started from StartConnectionTimerForDevice()
+    // since the connection has now been established. Start another timer now
+    // via StartMessageTimerForDevice() while waiting for messages to be sent to
+    // and received by |remote_device|.
+    StopTimerForDeviceIfRunning();
+    StartMessageTimerForDevice();
+
+    PA_LOG(INFO) << "Successfully opened connection to ["
+                 << GetDeviceId(/*truncate_for_logs=*/true) << "].";
+    OnDeviceAuthenticated();
+  }
 }
 
-void MessageTransferOperation::OnConnection(
-    multidevice::RemoteDeviceRef remote_device,
-    std::unique_ptr<secure_channel::ClientChannel> channel) {
-  remote_device_to_client_channel_observer_map_[remote_device] =
-      std::make_unique<ClientChannelObserver>(this, remote_device,
-                                              std::move(channel));
-
-  // Stop the timer which was started from StartConnectionTimerForDevice() since
-  // the connection has now been established. Start another timer now via
-  // StartMessageTimerForDevice() while waiting for messages to be sent to and
-  // received by |remote_device|.
-  StopTimerForDeviceIfRunning(remote_device);
-  StartMessageTimerForDevice(remote_device);
-
-  OnDeviceAuthenticated(remote_device);
-}
-
-void MessageTransferOperation::OnDisconnected(
-    multidevice::RemoteDeviceRef remote_device) {
+void MessageTransferOperation::OnDisconnected() {
   PA_LOG(VERBOSE) << "Remote device disconnected from this device: "
-                  << remote_device.GetTruncatedDeviceIdForLogs();
-  UnregisterDevice(remote_device);
+                  << GetDeviceId(/*truncate_for_logs=*/true);
+  StopOperation();
 }
 
-void MessageTransferOperation::StartConnectionTimerForDevice(
-    multidevice::RemoteDeviceRef remote_device) {
-  StartTimerForDevice(remote_device, kConnectionTimeoutSeconds);
+void MessageTransferOperation::StartConnectionTimerForDevice() {
+  StartTimerForDevice(kConnectionTimeoutSeconds);
 }
 
-void MessageTransferOperation::StartMessageTimerForDevice(
-    multidevice::RemoteDeviceRef remote_device) {
-  StartTimerForDevice(remote_device, GetMessageTimeoutSeconds());
+void MessageTransferOperation::StartMessageTimerForDevice() {
+  StartTimerForDevice(GetMessageTimeoutSeconds());
 }
 
-void MessageTransferOperation::StartTimerForDevice(
-    multidevice::RemoteDeviceRef remote_device,
-    uint32_t timeout_seconds) {
+void MessageTransferOperation::StartTimerForDevice(uint32_t timeout_seconds) {
   PA_LOG(VERBOSE) << "Starting timer for operation with message type "
                   << message_type_for_connection_ << " from device with ID "
-                  << remote_device.GetTruncatedDeviceIdForLogs() << ".";
+                  << GetDeviceId(/*truncate_for_logs=*/true) << ".";
 
-  remote_device_to_timer_map_.emplace(remote_device,
-                                      timer_factory_->CreateOneShotTimer());
-  remote_device_to_timer_map_[remote_device]->Start(
+  remote_device_timer_ = timer_factory_->CreateOneShotTimer();
+  remote_device_timer_->Start(
       FROM_HERE, base::Seconds(timeout_seconds),
       base::BindOnce(&MessageTransferOperation::OnTimeout,
-                     weak_ptr_factory_.GetWeakPtr(), remote_device));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void MessageTransferOperation::StopTimerForDeviceIfRunning(
-    multidevice::RemoteDeviceRef remote_device) {
-  if (!remote_device_to_timer_map_[remote_device])
+void MessageTransferOperation::StopTimerForDeviceIfRunning() {
+  if (!remote_device_timer_) {
     return;
-
-  remote_device_to_timer_map_[remote_device]->Stop();
-  remote_device_to_timer_map_.erase(remote_device);
-}
-
-void MessageTransferOperation::OnTimeout(
-    multidevice::RemoteDeviceRef remote_device) {
-  PA_LOG(WARNING) << "Timed out operation for message type "
-                  << message_type_for_connection_ << " from device with ID "
-                  << remote_device.GetTruncatedDeviceIdForLogs() << ".";
-
-  remote_device_to_timer_map_.erase(remote_device);
-  UnregisterDevice(remote_device);
-}
-
-std::optional<multidevice::RemoteDeviceRef>
-MessageTransferOperation::GetRemoteDevice(const std::string& device_id) {
-  for (auto& remote_device : remote_devices_) {
-    if (remote_device.GetDeviceId() == device_id)
-      return remote_device;
   }
 
-  return std::nullopt;
+  remote_device_timer_->Stop();
+  remote_device_timer_.reset();
+}
+
+void MessageTransferOperation::OnTimeout() {
+  PA_LOG(WARNING) << "Timed out operation for message type "
+                  << message_type_for_connection_ << " from device with ID "
+                  << GetDeviceId(/*truncate_for_logs=*/true) << ".";
+
+  remote_device_timer_.reset();
+  StopOperation();
 }
 
 void MessageTransferOperation::SetTimerFactoryForTest(
-    std::unique_ptr<cross_device::TimerFactory> timer_factory_for_test) {
+    std::unique_ptr<ash::timer_factory::TimerFactory> timer_factory_for_test) {
   timer_factory_ = std::move(timer_factory_for_test);
 }
 
-}  // namespace tether
+const std::string MessageTransferOperation::GetDeviceId(
+    bool truncate_for_logs) const {
+  if (truncate_for_logs) {
+    return tether_host_.GetTruncatedDeviceIdForLogs();
+  } else {
+    return tether_host_.GetDeviceId();
+  }
+}
 
-}  // namespace ash
+}  // namespace ash::tether

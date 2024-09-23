@@ -1,0 +1,26 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("core") {
+  public = [ "dependency_factory_impl.h" ]
+
+  public_deps = [
+    "//base",
+    "//components/enterprise/core:core",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_dependency_factory.cc",
+    "mock_dependency_factory.h",
+  ]
+
+  public_deps = [
+    ":core",
+    "//components/enterprise/core",
+    "//testing/gmock",
+  ]
+}

@@ -23,8 +23,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -52,7 +52,6 @@ import org.chromium.components.webapk.proto.WebApkProto;
 import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.components.webapps.WebApkUpdateReason;
 import org.chromium.components.webapps.WebappsIconUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -266,6 +265,7 @@ public class WebApkUpdateManagerTest {
         public WebappIcon splashIcon;
         public String name;
         public String shortName;
+        public boolean hasCustomName;
         public String manifestId;
         public String appKey;
         public Map<String, String> iconUrlToMurmur2HashMap;
@@ -336,7 +336,7 @@ public class WebApkUpdateManagerTest {
             throws Exception {
         CallbackHelper waiter = new CallbackHelper();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TestWebApkUpdateManager updateManager =
                             new TestWebApkUpdateManager(
@@ -357,6 +357,7 @@ public class WebApkUpdateManagerTest {
                                     creationData.splashIcon,
                                     creationData.name,
                                     creationData.shortName,
+                                    creationData.hasCustomName,
                                     creationData.displayMode,
                                     creationData.orientation,
                                     0,
@@ -419,7 +420,7 @@ public class WebApkUpdateManagerTest {
      * the URLs in the Web Manifest have been modified by the WebAPK server prior to being stored in
      * the WebAPK Android Manifest. Chrome and the WebAPK server used to parse URLs differently.
      *
-     * <p>TODO(https://crbug.com/1475509): We probably no longer need this test because
+     * <p>TODO(crbug.com/40279669): We probably no longer need this test because
      * https://crbug.com/1252531 was fixed. Someone familiar with the context of this test might
      * want to update or remove this test.
      */
@@ -520,13 +521,11 @@ public class WebApkUpdateManagerTest {
                     Integer.toString(WEBAPK_SHELL_VERSION));
         }
 
+        FeatureList.setTestValues(mTestValues);
+
         // The same icon is always used for tests, but the threshold is raised or lowered, depending
         // on the outcome we want.
-        String threshold = iconChangeSignificant ? "0" : "101";
-        mTestValues.addFieldTrialParamOverride(
-                ChromeFeatureList.WEB_APK_ICON_UPDATE_THRESHOLD, "change_threshold", threshold);
-
-        FeatureList.setTestValues(mTestValues);
+        WebApkUpdateManager.setIconThresholdForTesting(iconChangeSignificant ? 0 : 101);
     }
 
     @Test
@@ -908,15 +907,6 @@ public class WebApkUpdateManagerTest {
         WebappTestPage.navigateToServiceWorkerPageWithManifest(
                 mTestServer, mTab, WEBAPK_MANIFEST_URL);
         Assert.assertTrue(checkUpdateNeeded(legacyWebApkData, /* acceptDialogIfAppears= */ false));
-
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "WebApk.Update.UniqueIdEmpty.ManifestUrl", 0 /* False */));
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "WebApk.Update.UniqueIdEmpty.StartUrl", 1 /* True */));
     }
 
     /*
@@ -935,15 +925,6 @@ public class WebApkUpdateManagerTest {
         WebappTestPage.navigateToServiceWorkerPageWithManifest(
                 mTestServer, mTab, WEBAPK_MANIFEST_URL);
         Assert.assertTrue(checkUpdateNeeded(legacyWebApkData, /* acceptDialogIfAppears= */ false));
-
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "WebApk.Update.UniqueIdEmpty.ManifestUrl", 1 /* True */));
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "WebApk.Update.UniqueIdEmpty.StartUrl", 0 /* False */));
     }
 
     /*
@@ -1035,5 +1016,27 @@ public class WebApkUpdateManagerTest {
         histograms = HistogramWatcher.newBuilder().expectIntRecord(HISTOGRAM, 50).build();
         TestWebApkUpdateManager.logIconDiffs(CHECKERED_2X2, WHITE_2X2);
         histograms.assertExpected();
+    }
+
+    /*
+     * Test update when old WebAPK contains a custom name.
+     */
+    @Test
+    @MediumTest
+    @Feature({"WebApk"})
+    public void testUpdateWithCustomName() throws Exception {
+        CreationData creationData = defaultCreationData();
+        creationData.name = "custom name";
+        creationData.shortName = "custom short name";
+        creationData.hasCustomName = true;
+        creationData.shellVersion = -1;
+
+        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+                mTestServer, mTab, WEBAPK_MANIFEST_URL);
+
+        Assert.assertTrue(checkUpdateNeeded(creationData, /* acceptDialogIfAppears= */ false));
+
+        assertUpdateReasonsEqual(WebApkUpdateReason.OLD_SHELL_APK);
+        Assert.assertFalse(mIconOrNameUpdateDialogShown);
     }
 }

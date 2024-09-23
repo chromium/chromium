@@ -190,7 +190,7 @@
 <translation id="2278490101488436824">Stryg til venstre med tre fingre</translation>
 <translation id="2303873575703885770">Aktivér et element</translation>
 <translation id="2305942658236913680">Der er ikke flere overskrifter</translation>
-<translation id="2311237334957139798">Gå til forrige ved granularitet</translation>
+<translation id="2311237334957139798">Gå til forrige ved detaljeniveau</translation>
 <translation id="2314393392395134769">Ikke sænket skrift</translation>
 <translation id="2318372665160196757">Hoved</translation>
 <translation id="2329324941084714723">Fanepanel</translation>
@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Rosabrun</translation>
 <translation id="249330843868392562">Åbn indstillinger for oplæsning</translation>
 <translation id="2497706219848005458">Grøngul</translation>
+<translation id="2512979179176933762">se vinduer</translation>
 <translation id="2523609930580546572">ChromeVox-vejledning</translation>
 <translation id="2525706221823668172">Tastaturgenveje på Chromebook</translation>
 <translation id="2553108862507765288">grammatisk fejl</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Du kan også stryge med én finger fra højre mod venstre for at gå til det forrige element. Prøv det nu.</translation>
 <translation id="280499067616661124">ChromeVox-fund på siden</translation>
-<translation id="2811019999044652585">Tryk på Ctrl+frem for at gå til andre områder på skærmen, som f.eks. værktøjslinjer eller systembakken. På Chromebook finder du tasten Frem lige over tasten med totallet.</translation>
 <translation id="2811204574343810641">Række</translation>
 <translation id="2816868829355607410">Øveområde: Hoppekommandoer</translation>
 <translation id="2841013758207633010">Tid</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Stålblå</translation>
 <translation id="4253168017788158739">Note</translation>
 <translation id="4254798249533888099">Træ</translation>
+<translation id="4259220820964911921">Vil du aktivere ansigtsstyring?</translation>
 <translation id="4271220233568730077">Næste matematiske udtryk</translation>
 <translation id="4275397969489577657">Aktivér logning af begivenhedsstreaming</translation>
 <translation id="4278486392851938658">Der er ingen forrige besøgte links</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Murstensrød</translation>
 <translation id="4432896207833262240">Markeret indhold</translation>
 <translation id="4437615272777527928">Skriv for at søge i menuerne. Brug pil op og pil ned for at gennemse resultaterne. Brug venstre- og højrepilen for at justere tekstmarkøren og vælge menuer.</translation>
+<translation id="4453530046591759283">Hvis du vil gå til andre områder på skærmen, f.eks. værktøjslinjer eller systembakken, skal du trykke på Ctrl+F1. F1 er den første tast til højre for Esc-tasten.</translation>
 <translation id="4457472090507035117">Vælg den aktuelle stemme:</translation>
 <translation id="4476183483923481720">ny linje</translation>
 <translation id="4479068155583208887">Ildfast sten</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Bilag</translation>
 <translation id="5761219715606611783">Flot! Du har lært det grundlæggende om ChromeVox-berøringer. Du kan gennemgå vejledningen igen eller afslutte det ved hjælp af knapperne nedenfor.</translation>
 <translation id="5776001898637896684">Udvidelsen Google Enhanced Network til oplæsning</translation>
+<translation id="5783252477644995371">Ansigtsstyring giver dig kontrol over markøren ved at pege med ansigtet samt mulighed for at udføre handlinger såsom at venstreklikke med ansigtsbevægelser, f.eks. et smil</translation>
 <translation id="5805940204952508776">Tryk med to fingre</translation>
 <translation id="5819072574982403430">Træelement</translation>
 <translation id="5822819874379903994">Mørk turkis</translation>
@@ -814,7 +817,7 @@
 <translation id="6561818612645211875">Gå til starten af ​​den aktuelle række</translation>
 <translation id="6563126228219321999">Der er ikke noget ugyldigt element</translation>
 <translation id="6579990219486187401">Lys pink</translation>
-<translation id="6583174818554398774">Gå til næste ved granularitet</translation>
+<translation id="6583174818554398774">Gå til næste ved detaljeniveau</translation>
 <translation id="6584162722998608255">Nu skal du lære, hvordan du bevæger dig rundt på skærmen. Du kan stryge med én finger fra venstre mod højre for at gå til næste element. Prøv det nu for at gå videre til næste trin.</translation>
 <translation id="6609828810966525877">Find flere bevægelser i indlæringstilstanden og Hjælp til Chromebook</translation>
 <translation id="6628427060004938651">Del</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Navajohvid</translation>
 <translation id="7095834689119144465">Rediger kun tal i tekst</translation>
 <translation id="7096001299300236431">Forrige medie</translation>
+<translation id="7096668131290451939">Tryk på Escape igen for at afslutte Indlæringstilstand</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">ordekko</translation>
 <translation id="7137397390322864165">Laksefarvet</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">Der er ikke flere afkrydsningsfelter</translation>
 <translation id="8473540203671727883">Oplæs teksten under markøren</translation>
 <translation id="8476408756881832830">Sæt afspilning på pause, når ChromeVox taler</translation>
-<translation id="8476508772960940536">vinduesoversigt</translation>
 <translation id="8480873377842220259">Nu får du flere oplysninger om grundlæggende navigation. Naviger rundt på skærmen ved at holde søgetasten nede og trykke på piletasterne. Tryk på søgetasten+højrepil for at fortsætte.</translation>
 <translation id="8503360654911991865">Mindsk detaljegraden for navigation</translation>
 <translation id="8520472399088452386">Skalafelt</translation>

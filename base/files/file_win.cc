@@ -4,11 +4,14 @@
 
 #include "base/files/file.h"
 
+#include <windows.h>
+
 #include <io.h>
 #include <stdint.h>
 
 #include <tuple>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/immediate_crash.h"
@@ -16,8 +19,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
-
-#include <windows.h>
 
 namespace base {
 
@@ -81,7 +82,7 @@ int File::Read(int64_t offset, char* data, int size) {
   DWORD bytes_read;
   if (::ReadFile(file_.get(), data, static_cast<DWORD>(size), &bytes_read,
                  &overlapped)) {
-    // TODO(crbug.com/1333521): Change to return some type with a uint64_t size
+    // TODO(crbug.com/40227936): Change to return some type with a uint64_t size
     // and eliminate this cast.
     return checked_cast<int>(bytes_read);
   }
@@ -103,7 +104,7 @@ int File::ReadAtCurrentPos(char* data, int size) {
   DWORD bytes_read;
   if (::ReadFile(file_.get(), data, static_cast<DWORD>(size), &bytes_read,
                  NULL)) {
-    // TODO(crbug.com/1333521): Change to return some type with a uint64_t size
+    // TODO(crbug.com/40227936): Change to return some type with a uint64_t size
     // and eliminate this cast.
     return checked_cast<int>(bytes_read);
   }
@@ -115,12 +116,14 @@ int File::ReadAtCurrentPos(char* data, int size) {
 
 int File::ReadNoBestEffort(int64_t offset, char* data, int size) {
   // TODO(dbeam): trace this separately?
-  return Read(offset, data, size);
+  // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE in header.
+  return UNSAFE_BUFFERS(Read(offset, data, size));
 }
 
 int File::ReadAtCurrentPosNoBestEffort(char* data, int size) {
   // TODO(dbeam): trace this separately?
-  return ReadAtCurrentPos(data, size);
+  // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE in header.
+  return UNSAFE_BUFFERS(ReadAtCurrentPos(data, size));
 }
 
 int File::Write(int64_t offset, const char* data, int size) {
@@ -165,10 +168,11 @@ int File::WriteAtCurrentPos(const char* data, int size) {
 }
 
 int File::WriteAtCurrentPosNoBestEffort(const char* data, int size) {
-  return WriteAtCurrentPos(data, size);
+  // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE in header.
+  return UNSAFE_BUFFERS(WriteAtCurrentPos(data, size));
 }
 
-int64_t File::GetLength() {
+int64_t File::GetLength() const {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
 
@@ -237,7 +241,7 @@ bool File::GetInfo(Info* info) {
   ULARGE_INTEGER size;
   size.HighPart = file_info.nFileSizeHigh;
   size.LowPart = file_info.nFileSizeLow;
-  // TODO(crbug.com/1333521): Change Info::size to uint64_t and eliminate this
+  // TODO(crbug.com/40227936): Change Info::size to uint64_t and eliminate this
   // cast.
   info->size = checked_cast<int64_t>(size.QuadPart);
   info->is_directory =
@@ -396,12 +400,7 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     disposition = TRUNCATE_EXISTING;
   }
 
-  if (!disposition) {
-    ::SetLastError(ERROR_INVALID_PARAMETER);
-    error_details_ = FILE_ERROR_FAILED;
-    NOTREACHED();
-    return;
-  }
+  CHECK(disposition);
 
   DWORD access = 0;
   if (flags & FLAG_WRITE)

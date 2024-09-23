@@ -95,9 +95,8 @@ V8DOMActivityLogger* V8DOMActivityLogger::CurrentActivityLogger(
     return nullptr;
 
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-
-  V8PerContextData* context_data = ScriptState::From(context)->PerContextData();
+  V8PerContextData* context_data =
+      ScriptState::ForCurrentRealm(isolate)->PerContextData();
   if (!context_data)
     return nullptr;
 
@@ -109,7 +108,7 @@ V8DOMActivityLogger* V8DOMActivityLogger::CurrentActivityLoggerIfIsolatedWorld(
   if (!isolate->InContext())
     return nullptr;
 
-  ScriptState* script_state = ScriptState::From(isolate->GetCurrentContext());
+  ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);
   if (!script_state->World().IsIsolatedWorld())
     return nullptr;
 

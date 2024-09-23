@@ -18,12 +18,12 @@ import '../components/dialogs/oobe_content_dialog.js';
 import './assistant_icons.html.js';
 import './assistant_common_styles.css.js';
 
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MultiStepBehavior} from '../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior} from '../components/behaviors/oobe_i18n_behavior.js';
+import {MultiStepMixin} from '../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../components/mixins/oobe_i18n_mixin.js';
 
-import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 
 
 const AssistantLoadingUIState = {
@@ -36,8 +36,7 @@ const AssistantLoadingUIState = {
  * @constructor
  * @extends {PolymerElement}
  */
-const AssistantLoadingBase =
-    mixinBehaviors([OobeI18nBehavior, MultiStepBehavior], PolymerElement);
+const AssistantLoadingBase = MultiStepMixin(OobeI18nMixin(PolymerElement));
 
 /**
  * @polymer
@@ -66,8 +65,6 @@ class AssistantLoading extends AssistantLoadingBase {
   constructor() {
     super();
 
-    this.UI_STEPS = AssistantLoadingUIState;
-
     /**
      * Whether an error occurs while the page is loading.
      * @type {boolean}
@@ -91,6 +88,11 @@ class AssistantLoading extends AssistantLoadingBase {
 
     /** @private {?BrowserProxy} */
     this.browserProxy_ = BrowserProxyImpl.getInstance();
+  }
+
+  /** @override */
+  UI_STEPS() {
+    return AssistantLoadingUIState;
   }
 
   defaultUIStep() {

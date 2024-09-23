@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.download.DownloadNotificationService;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
 import org.chromium.chrome.browser.profiles.ProfileKey;
+import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 import org.chromium.components.download.DownloadTaskType;
@@ -109,7 +110,7 @@ public class DownloadBackgroundTask extends NativeBackgroundTask {
 
     @VisibleForTesting()
     protected ProfileKey getProfileKey() {
-        return ProfileKey.getLastUsedRegularProfileKey();
+        return ProfileKeyUtil.getLastUsedRegularProfileKey();
     }
 
     @VisibleForTesting

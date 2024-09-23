@@ -80,6 +80,11 @@ class UserPermissionServiceImplTest : public testing::Test,
     test_prefs_.SetBoolean(prefs::kDeviceSignalsConsentReceived, true);
   }
 
+  void SetPermanentUserConsentGiven() {
+    // Fake as if user has given permanent consent.
+    test_prefs_.SetBoolean(prefs::kDeviceSignalsPermanentConsentReceived, true);
+  }
+
   void SetPolicyScopesNeedingSignals(bool machine_scope, bool user_scope) {
     std::set<policy::PolicyScope> scopes;
     if (machine_scope) {
@@ -115,6 +120,11 @@ class UserPermissionServiceImplTest : public testing::Test,
 // Tests that consent does not need to be collected if it was already given.
 TEST_P(UserPermissionServiceImplTest, ShouldCollectConsent_ConsentGiven) {
   SetUserConsentGiven();
+  EXPECT_FALSE(permission_service_->ShouldCollectConsent());
+}
+TEST_P(UserPermissionServiceImplTest,
+       ShouldCollectConsent_PermanentConsentGiven) {
+  SetPermanentUserConsentGiven();
   EXPECT_FALSE(permission_service_->ShouldCollectConsent());
 }
 
@@ -398,6 +408,10 @@ TEST_P(UserPermissionServiceImplTest, CanCollectSignals_AlreadyConsented) {
   SetUserConsentGiven();
   EXPECT_EQ(permission_service_->CanCollectSignals(), UserPermission::kGranted);
 }
+TEST_P(UserPermissionServiceImplTest, CanCollectSignals_PermanentConsent) {
+  SetPermanentUserConsentGiven();
+  EXPECT_EQ(permission_service_->CanCollectSignals(), UserPermission::kGranted);
+}
 
 // Tests that consent is required before allowing to collect signals from an
 // unmanaged browser.
@@ -463,59 +477,6 @@ TEST_P(UserPermissionServiceImplTest,
     EXPECT_EQ(permission_service_->CanCollectSignals(),
               test_case.can_collect ? UserPermission::kGranted
                                     : UserPermission::kMissingConsent);
-  }
-}
-
-// Tests that the consent flow policy is being observed and can cause the
-// consent received pref to reset.
-TEST_P(UserPermissionServiceImplTest, ResetConsentIfNeeded_PolicyPrefObserver) {
-  SetUserConsentGiven();
-
-  // Enabling the policy should not clear consent.
-  SetPolicyScopesNeedingSignals(/*machine_scope=*/false, /*user_scope=*/false);
-  EnableConsentFlowPolicy();
-
-  EXPECT_TRUE(test_prefs_.GetBoolean(prefs::kDeviceSignalsConsentReceived));
-
-  // Disabling the policy should clear consent.
-  SetPolicyScopesNeedingSignals(/*machine_scope=*/false, /*user_scope=*/false);
-  test_prefs_.SetBoolean(prefs::kUnmanagedDeviceSignalsConsentFlowEnabled,
-                         false);
-
-  EXPECT_FALSE(test_prefs_.GetBoolean(prefs::kDeviceSignalsConsentReceived));
-}
-
-struct ResetDependentPolicyTestCase {
-  bool machine_scope = false;
-  bool user_scope = false;
-  bool expect_consent_reset = false;
-};
-
-// Tests that the consent received policy can be reset based on changes in
-// dependent user-level policies.
-TEST_P(UserPermissionServiceImplTest,
-       ResetConsentIfNeeded_DependentPolicyChanged) {
-  std::array<ResetDependentPolicyTestCase, 4> test_cases = {
-      ResetDependentPolicyTestCase{/*machine_scope=*/true, /*user_scope=*/true,
-                                   /*expect_consent_reset=*/false},
-      ResetDependentPolicyTestCase{/*machine_scope=*/false, /*user_scope=*/true,
-                                   /*expect_consent_reset=*/false},
-      ResetDependentPolicyTestCase{/*machine_scope=*/true, /*user_scope=*/false,
-                                   /*expect_consent_reset=*/true},
-      ResetDependentPolicyTestCase{/*machine_scope=*/false,
-                                   /*user_scope=*/false,
-                                   /*expect_consent_reset=*/true},
-  };
-
-  for (const auto& test_case : test_cases) {
-    SetUserConsentGiven();
-    SetPolicyScopesNeedingSignals(test_case.machine_scope,
-                                  test_case.user_scope);
-
-    permission_service_->ResetUserConsentIfNeeded();
-
-    EXPECT_EQ(test_prefs_.GetBoolean(prefs::kDeviceSignalsConsentReceived),
-              !test_case.expect_consent_reset);
   }
 }
 

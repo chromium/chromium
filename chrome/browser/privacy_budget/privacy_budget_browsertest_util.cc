@@ -129,6 +129,11 @@ bool PrivacyBudgetBrowserTestBaseWithUkmRecording::DisableUkmRecording() {
   return !ukm::UkmTestHelper(ukm_service()).IsRecordingEnabled();
 }
 
+content::WebContents*
+PrivacyBudgetBrowserTestBaseWithUkmRecording::web_contents() {
+  return chrome_test_utils::GetActiveWebContents(this);
+}
+
 void PrivacyBudgetBrowserTestBaseWithUkmRecording::TearDown() {
   if (is_metrics_reporting_enabled_) {
     ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(

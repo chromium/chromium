@@ -18,6 +18,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/progress_ring_utils.h"
 
 namespace {
@@ -25,7 +26,10 @@ constexpr float kStrokeWidth = 4;
 constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(200);
 }  // namespace
 
-RingProgressBar::RingProgressBar() = default;
+RingProgressBar::RingProgressBar() {
+  GetViewAccessibility().SetRole(ax::mojom::Role::kProgressIndicator);
+}
+
 RingProgressBar::~RingProgressBar() = default;
 
 void RingProgressBar::SetValue(double initial, double target) {
@@ -34,10 +38,6 @@ void RingProgressBar::SetValue(double initial, double target) {
   animation_ = std::make_unique<gfx::LinearAnimation>(this);
   animation_->SetDuration(kAnimationDuration);
   animation_->Start();
-}
-
-void RingProgressBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kProgressIndicator;
 }
 
 void RingProgressBar::OnPaint(gfx::Canvas* canvas) {

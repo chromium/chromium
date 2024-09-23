@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/cert/x509_util_apple.h"
 
 #include <CommonCrypto/CommonDigest.h>
@@ -150,7 +155,7 @@ base::apple::ScopedCFTypeRef<CFArrayRef> CertificateChainFromSecTrust(
         SecTrustCopyCertificateChain(trust));
   }
 
-// TODO(crbug.com/1426476): Remove code when it is no longer needed.
+// TODO(crbug.com/40899365): Remove code when it is no longer needed.
 #if (BUILDFLAG(IS_MAC) &&                                    \
      MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_12_0) || \
     (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0)
@@ -165,7 +170,7 @@ base::apple::ScopedCFTypeRef<CFArrayRef> CertificateChainFromSecTrust(
 #else
   // The other logic paths should be used, this is just to make the compiler
   // happy.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::apple::ScopedCFTypeRef<CFArrayRef>(nullptr);
 #endif  // (BUILDFLAG(IS_MAC) && MAC_OS_X_VERSION_MIN_REQUIRED <
         // MAC_OS_VERSION_12_0)

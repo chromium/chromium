@@ -34,7 +34,7 @@ namespace content {
 // dependencies. Supports configuring public keys at runtime.
 class TestAggregationService {
  public:
-  // TODO(crbug.com/1260388): Consider exposing AggregatableReportRequest in
+  // TODO(crbug.com/40201850): Consider exposing AggregatableReportRequest in
   // content/public to avoid this translation.
 
   // This is 1-1 mapping of AggregationServicePayloadContents::Operation.

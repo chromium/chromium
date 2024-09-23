@@ -28,10 +28,10 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageCommitVisibleHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.TimeUnit;
@@ -160,11 +160,11 @@ public class WebKitHitTestTest extends AwParameterizedTest {
                             && stringEquals(expectedImageSrc, data.imgSrc);
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Handler dummyHandler = new Handler();
-                    Message focusNodeHrefMsg = dummyHandler.obtainMessage();
-                    Message imageRefMsg = dummyHandler.obtainMessage();
+                    Handler placeholderHandler = new Handler();
+                    Message focusNodeHrefMsg = placeholderHandler.obtainMessage();
+                    Message imageRefMsg = placeholderHandler.obtainMessage();
 
                     mAwContents.requestFocusNodeHref(focusNodeHrefMsg);
                     mAwContents.requestImageRef(imageRefMsg);
@@ -476,9 +476,9 @@ public class WebKitHitTestTest extends AwParameterizedTest {
         String html =
                 CommonResources.makeHtmlPageFrom(
                         "<meta name=\"viewport\""
-                                + " content=\"width=device-width,height=device-height\" /><style"
-                                + " type=\"text/css\">.full_width { width:100%; position:absolute; }"
-                                + "</style>",
+                            + " content=\"width=device-width,height=device-height\" /><style"
+                            + " type=\"text/css\">.full_width { width:100%; position:absolute; }"
+                            + "</style>",
                         "<form><input class=\"full_width\" style=\"height:25%;\" "
                                 + "type=\"text\" name=\"test\"></form>"
                                 + "<img class=\"full_width\" style=\"height:50%;top:25%;\" "

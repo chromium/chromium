@@ -1,0 +1,95 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_client_context.proto";
+import "lens_overlay_cluster_info.proto";
+import "lens_overlay_deep_gleam_data.proto";
+import "lens_overlay_image_crop.proto";
+import "lens_overlay_image_data.proto";
+import "lens_overlay_interaction_request_metadata.proto";
+import "lens_overlay_overlay_object.proto";
+import "lens_overlay_request_id.proto";
+import "lens_overlay_text.proto";
+
+// Request context for a Lens Overlay request.
+message LensOverlayRequestContext {
+  // Required. Identifiers for this request.
+  LensOverlayRequestId request_id = 3;
+
+  // The client context for the request.
+  LensOverlayClientContext client_context = 4;
+
+  reserved 1, 2;
+}
+
+message LensOverlayObjectsRequest {
+  // Required. Basic information and context for the request.
+  LensOverlayRequestContext request_context = 1;
+
+  // Required. Image Data to process.
+  ImageData image_data = 3;
+
+  // Optional. Data payload of the request.
+  // TODO(b/359638436): Mark required when clients have migrated to use Payload
+  // field.
+  Payload payload = 4;
+
+  reserved 2;
+}
+
+message LensOverlayObjectsResponse {
+  // Overlay objects.
+  repeated OverlayObject overlay_objects = 2;
+
+  // Text.
+  Text text = 3;
+
+  // Gleams.
+  repeated DeepGleamData deep_gleams = 4;
+
+  // The cluster info.
+  LensOverlayClusterInfo cluster_info = 7;
+
+  reserved 1, 5, 6;
+}
+
+message LensOverlayInteractionRequest {
+  // Basic information and context for the request.
+  LensOverlayRequestContext request_context = 1;
+
+  // Metadata associated with an interaction request.
+  LensOverlayInteractionRequestMetadata interaction_request_metadata = 2;
+
+  // The image crop data.
+  ImageCrop image_crop = 3;
+}
+
+message LensOverlayInteractionResponse {
+  string encoded_response = 3;
+
+  reserved 1, 2;
+}
+
+// Next ID: 5
+message Payload {
+  // Currently unset, use image_data in ObjectsRequest.
+  // TODO(b/359638436): Move ObjectsRequest clients onto Payload.ImageData.
+  ImageData image_data = 2;
+
+  // Data for non-image payloads. May be sent with or without an image in the
+  // image_data field. If content_data is set, content_type must also be set.
+  bytes content_data = 3;
+
+  // The media type/MIME type of the data represented i content_data, e.g.
+  // "application/pdf". If content_type is set, content_data should also be set.
+  string content_type = 4;
+
+  reserved 1;
+}

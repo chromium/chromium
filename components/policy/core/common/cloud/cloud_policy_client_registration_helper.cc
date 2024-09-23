@@ -127,12 +127,36 @@ void CloudPolicyClientRegistrationHelper::StartRegistrationWithEnrollmentToken(
     bool is_mandatory,
     base::OnceClosure callback) {
   DVLOG_POLICY(1, POLICY_AUTH)
-      << "Starting device registration with enrollment token = " << token;
+      << "Starting browser registration with enrollment token = " << token;
   DCHECK(!client_->is_registered());
   callback_ = std::move(callback);
   client_->AddObserver(this);
-  client_->RegisterWithToken(token, client_id, client_data_delegate,
-                             is_mandatory);
+  client_->RegisterBrowserWithEnrollmentToken(
+      token, client_id, client_data_delegate, is_mandatory);
+}
+
+void CloudPolicyClientRegistrationHelper::StartRegistrationWithOidcTokens(
+    const std::string& oauth_token,
+    const std::string& id_token,
+    const std::string& client_id,
+    const std::string& state,
+    const base::TimeDelta& timeout_duration,
+    base::OnceClosure callback) {
+  DVLOG_POLICY(1, POLICY_AUTH)
+      << "Starting profile registration with Oidc tokens";
+  CHECK(!client_->is_registered());
+  callback_ = std::move(callback);
+  client_->AddObserver(this);
+
+  CloudPolicyClient::RegistrationParameters register_user(
+      enterprise_management::DeviceRegisterRequest::USER,
+      enterprise_management::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
+  if (!state.empty()) {
+    register_user.oidc_state = state;
+  }
+
+  client_->RegisterWithOidcResponse(register_user, oauth_token, id_token,
+                                    client_id, timeout_duration);
 }
 
 void CloudPolicyClientRegistrationHelper::OnTokenFetched(
@@ -181,7 +205,7 @@ void CloudPolicyClientRegistrationHelper::OnGetUserInfoSuccess(
   // CloudPolicyClient and make requests to DMServer.
   if (client_->is_registered()) {
     // Client should not be registered yet.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     RequestCompleted();
     return;
   }

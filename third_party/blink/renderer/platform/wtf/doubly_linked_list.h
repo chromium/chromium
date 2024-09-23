@@ -28,6 +28,7 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace WTF {
@@ -126,15 +127,23 @@ class DoublyLinkedList {
  protected:
   PointerType head_;
   PointerType tail_;
+
+ private:
+  struct TypeConstraints {
+    constexpr TypeConstraints() {
+      static_assert(!IsStackAllocatedType<T>);
+      static_assert(
+          !IsGarbageCollectedType<T>::value ||
+              !std::is_same<PointerType, T*>::value,
+          "Cannot use DoublyLinkedList<> with garbage collected types.");
+    }
+  };
+  NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
 template <typename T, typename PointerType>
 inline DoublyLinkedList<T, PointerType>::DoublyLinkedList()
-    : head_(nullptr), tail_(nullptr) {
-  static_assert(!IsGarbageCollectedType<T>::value ||
-                    !std::is_same<PointerType, T*>::value,
-                "Cannot use DoublyLinkedList<> with garbage collected types.");
-}
+    : head_(nullptr), tail_(nullptr) {}
 
 template <typename T, typename PointerType>
 inline bool DoublyLinkedList<T, PointerType>::empty() const {

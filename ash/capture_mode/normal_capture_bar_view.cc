@@ -36,7 +36,8 @@ NormalCaptureBarView::NormalCaptureBarView(
   separator_2->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   separator_2->SetPreferredLength(kSeparatorHeight);
 
-  AppendCommonElements();
+  AppendSettingsButton();
+  AppendCloseButton();
 }
 
 NormalCaptureBarView::~NormalCaptureBarView() = default;

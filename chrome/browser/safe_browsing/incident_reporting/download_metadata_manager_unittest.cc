@@ -13,11 +13,13 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/download/public/common/simple_download_manager_coordinator.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
@@ -47,6 +49,7 @@ namespace {
 const uint32_t kTestDownloadId = 47;
 const uint32_t kOtherDownloadId = 48;
 const uint32_t kCrazyDowloadId = 655;
+const uint32_t kUninitializedDowloadId = 963;
 const int64_t kTestDownloadTimeMsec = 84;
 const char kTestUrl[] = "http://test.test/foo";
 const uint64_t kTestDownloadLength = 1000;
@@ -83,8 +86,10 @@ class MockDownloadMetadataManager : public DownloadMetadataManager {
  public:
   MockDownloadMetadataManager() = default;
 
-  MOCK_METHOD1(GetDownloadManagerForBrowserContext,
-               content::DownloadManager*(content::BrowserContext*));
+  MOCK_METHOD(download::SimpleDownloadManagerCoordinator*,
+              GetCoordinatorForBrowserContext,
+              (content::BrowserContext*),
+              (override));
 };
 
 // A helper function that returns the download URL from a DownloadDetails.
@@ -98,6 +103,13 @@ int64_t GetDetailsOpenTime(
     const ClientIncidentReport_DownloadDetails* details) {
   return details->open_time_msec();
 }
+
+class MockDownloadManager : public content::MockDownloadManager {
+ public:
+  // Protected methods of SimpleDownloadManager called by the tests.
+  using download::SimpleDownloadManager::OnInitialized;
+  using download::SimpleDownloadManager::OnNewDownloadCreated;
+};
 
 }  // namespace
 
@@ -165,38 +177,40 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
   // observer is stashed for later use. Only call once per call to
   // ShutdownDownloadManager.
   void AddDownloadManager() {
-    ASSERT_EQ(nullptr, dm_observer_);
-    // Shove the manager into the browser context.
+    // Tell the MockDownloadManager that it is in the initialized state.
+    download_manager_.OnInitialized();
+    // Connect the TestingProfile to the MockDownloadManager.
     ON_CALL(download_manager_, GetBrowserContext())
         .WillByDefault(Return(&profile_));
-    ON_CALL(manager_, GetDownloadManagerForBrowserContext(Eq(&profile_)))
-        .WillByDefault(Return(&download_manager_));
-    // Capture the metadata manager's observer on the download manager.
-    EXPECT_CALL(download_manager_, AddObserver(&manager_))
-        .WillOnce(SaveArg<0>(&dm_observer_));
+    // Create the SimpleDownloadManagerCoordinator.
+    coordinator_.emplace(base::NullCallback());
+    // Connect the coordinator to the MockDownloadMetadataManager.
+    ON_CALL(manager_, GetCoordinatorForBrowserContext(Eq(&profile_)))
+        .WillByDefault(Return(&*coordinator_));
+    // Connect the MockDownloadManager to the coordinator.
+    coordinator_->SetSimpleDownloadManager(
+        &download_manager_, /*manages_all_history_downloads=*/false);
+    // Add the MockDownloadManager to the MockDownloadMetadataManager.
     manager_.AddDownloadManager(&download_manager_);
   }
 
   // Shuts down the DownloadManager. Safe to call any number of times.
   void ShutdownDownloadManager() {
-    if (dm_observer_) {
-      dm_observer_->ManagerGoingDown(&download_manager_);
-      // Note: these calls may result in "Uninteresting mock function call"
-      // warnings as a result of MockDownloadItem invoking observers in its
-      // dtor. This happens after the NiceMock wrapper has removed its niceness
-      // hook. These can safely be ignored, as they are entirely expected. The
-      // values specified by ON_CALL invocations in AddDownloadItems are
-      // returned as desired.
-      other_item_.reset();
-      test_item_.reset();
-      zero_item_.reset();
-      dm_observer_ = nullptr;
-    }
+    // Note: these calls may result in "Uninteresting mock function call"
+    // warnings as a result of MockDownloadItem invoking observers in its
+    // dtor. This happens after the NiceMock wrapper has removed its niceness
+    // hook. These can safely be ignored, as they are entirely expected. The
+    // values specified by ON_CALL invocations in AddDownloadItems are
+    // returned as desired.
+    other_item_.reset();
+    test_item_.reset();
+    zero_item_.reset();
+    uninitialized_item_.reset();
+    coordinator_.reset();
   }
 
   // Adds two test DownloadItems to the DownloadManager.
   void AddDownloadItems() {
-    ASSERT_NE(nullptr, dm_observer_);
     // Add the item under test.
     test_item_ = std::make_unique<NiceMock<download::MockDownloadItem>>();
     ON_CALL(*test_item_, GetId())
@@ -208,7 +222,7 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
         .WillByDefault(Return(download::DownloadItem::COMPLETE));
     content::DownloadItemUtils::AttachInfoForTesting(test_item_.get(),
                                                      &profile_, nullptr);
-    dm_observer_->OnDownloadCreated(&download_manager_, test_item_.get());
+    download_manager_.OnNewDownloadCreated(test_item_.get());
 
     // Add another item.
     other_item_ = std::make_unique<NiceMock<download::MockDownloadItem>>();
@@ -219,7 +233,7 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
             kTestDownloadEndTimeMs)));
     content::DownloadItemUtils::AttachInfoForTesting(other_item_.get(),
                                                      &profile_, nullptr);
-    dm_observer_->OnDownloadCreated(&download_manager_, other_item_.get());
+    download_manager_.OnNewDownloadCreated(other_item_.get());
 
     // Add an item with an id of zero.
     zero_item_ = std::make_unique<NiceMock<download::MockDownloadItem>>();
@@ -232,17 +246,37 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
         .WillByDefault(Return(download::DownloadItem::COMPLETE));
     content::DownloadItemUtils::AttachInfoForTesting(zero_item_.get(),
                                                      &profile_, nullptr);
-    dm_observer_->OnDownloadCreated(&download_manager_, zero_item_.get());
+    download_manager_.OnNewDownloadCreated(zero_item_.get());
 
     ON_CALL(download_manager_, GetAllDownloads(_))
         .WillByDefault(
             Invoke(this, &DownloadMetadataManagerTestBase::GetAllDownloads));
   }
 
+  // Adds an uninitialized active download.
+  void AddUninitializedActiveItem() {
+    // Add the item under test.
+    uninitialized_item_ =
+        std::make_unique<NiceMock<download::MockDownloadItem>>();
+    ON_CALL(*uninitialized_item_, GetId())
+        .WillByDefault(Return(kUninitializedDowloadId));
+    ON_CALL(*uninitialized_item_, GetEndTime())
+        .WillByDefault(Return(base::Time::FromMillisecondsSinceUnixEpoch(
+            kTestDownloadEndTimeMs)));
+    ON_CALL(*uninitialized_item_, GetState())
+        .WillByDefault(Return(download::DownloadItem::COMPLETE));
+    content::DownloadItemUtils::AttachInfoForTesting(uninitialized_item_.get(),
+                                                     &profile_, nullptr);
+    download_manager_.OnNewDownloadCreated(uninitialized_item_.get());
+
+    ON_CALL(download_manager_, GetUninitializedActiveDownloadsIfAny(_))
+        .WillByDefault(Invoke(this, &DownloadMetadataManagerTestBase::
+                                        GetUninitializedActiveDownloadsIfAny));
+  }
+
   // An implementation of the MockDownloadManager's
   // DownloadManager::GetAllDownloads method that returns all items.
   void GetAllDownloads(content::DownloadManager::DownloadVector* downloads) {
-    downloads->clear();
     if (test_item_)
       downloads->push_back(test_item_.get());
     if (other_item_)
@@ -251,19 +285,25 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
       downloads->push_back(zero_item_.get());
   }
 
+  // An implementation of the MockDownloadManager's
+  // DownloadManager::GetUninitializedActiveDownloadsIfAny method that returns
+  // the uninitialized item.
+  void GetUninitializedActiveDownloadsIfAny(
+      content::DownloadManager::DownloadVector* downloads) {
+    if (uninitialized_item_) {
+      downloads->push_back(uninitialized_item_.get());
+    }
+  }
+
   content::BrowserTaskEnvironment task_environment_;
+  std::optional<download::SimpleDownloadManagerCoordinator> coordinator_;
   NiceMock<MockDownloadMetadataManager> manager_;
   TestingProfile profile_;
-  NiceMock<content::MockDownloadManager> download_manager_;
+  NiceMock<MockDownloadManager> download_manager_;
   std::unique_ptr<download::MockDownloadItem> test_item_;
   std::unique_ptr<download::MockDownloadItem> other_item_;
   std::unique_ptr<download::MockDownloadItem> zero_item_;
-
-  // The DownloadMetadataManager's content::DownloadManager::Observer. Captured
-  // by download_manager_'s AddObserver action.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION content::DownloadManager::Observer* dm_observer_ = nullptr;
+  std::unique_ptr<download::MockDownloadItem> uninitialized_item_;
 };
 
 // A parameterized test that exercises GetDownloadDetails. The parameters
@@ -620,6 +660,20 @@ TEST_F(DownloadMetadataManagerTestBase, OpenItemWithZeroId) {
   // Open the zero-id item.
   zero_item_->NotifyObserversDownloadOpened();
 
+  ShutdownDownloadManager();
+}
+
+// Regression test for https://crbug.com/40072145, where observers weren't being
+// removed at shutdown from uninitialized active downloads.
+TEST_F(DownloadMetadataManagerTestBase, UninitializedActiveDownload) {
+  ASSERT_NO_FATAL_FAILURE(AddDownloadManager());
+  ASSERT_NO_FATAL_FAILURE(AddUninitializedActiveItem());
+
+  // Allow everything to load into steady-state.
+  RunAllTasks();
+
+  // There should be no crash when destroying the ManagerContext from it still
+  // observing a DownloadItem.
   ShutdownDownloadManager();
 }
 

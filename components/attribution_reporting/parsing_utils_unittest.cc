@@ -17,7 +17,6 @@
 #include "components/attribution_reporting/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
 namespace {
@@ -25,15 +24,13 @@ namespace {
 TEST(AttributionReportingParsingUtilsTest, ParseAggregationKeyPiece) {
   const struct {
     base::Value value;
-    base::expected<absl::uint128, AggregationKeyPieceError> expected;
+    base::expected<absl::uint128, ParseError> expected;
   } kTestCases[] = {
-      {base::Value(), base::unexpected(AggregationKeyPieceError::kWrongType)},
-      {base::Value("123"),
-       base::unexpected(AggregationKeyPieceError::kWrongFormat)},
+      {base::Value(), base::unexpected(ParseError())},
+      {base::Value("123"), base::unexpected(ParseError())},
       {base::Value("0x123"), 291},
       {base::Value("0X123"), 291},
-      {base::Value("0xG"),
-       base::unexpected(AggregationKeyPieceError::kWrongFormat)},
+      {base::Value("0xG"), base::unexpected(ParseError())},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -41,18 +38,11 @@ TEST(AttributionReportingParsingUtilsTest, ParseAggregationKeyPiece) {
   }
 }
 
-TEST(AttributionReportingParsingUtilsTest, AggregationKeyIdHasValidLength) {
-  EXPECT_TRUE(AggregationKeyIdHasValidLength(
-      std::string(kMaxBytesPerAggregationKeyId, 'a')));
-  EXPECT_FALSE(AggregationKeyIdHasValidLength(
-      std::string(kMaxBytesPerAggregationKeyId + 1, 'a')));
-}
-
 TEST(AttributionReportingParsingUtilsTest, ParseUint64) {
   const struct {
     const char* description;
     const char* json;
-    base::expected<std::optional<uint64_t>, absl::monostate> expected;
+    base::expected<std::optional<uint64_t>, ParseError> expected;
   } kTestCases[] = {
       {
           "missing_key",
@@ -62,17 +52,17 @@ TEST(AttributionReportingParsingUtilsTest, ParseUint64) {
       {
           "not_string",
           R"json({"key":123})json",
-          base::unexpected(absl::monostate()),
+          base::unexpected(ParseError()),
       },
       {
           "invalid_format",
           R"json({"key":"0x123"})json",
-          base::unexpected(absl::monostate()),
+          base::unexpected(ParseError()),
       },
       {
           "negative",
           R"json({"key":"-1"})json",
-          base::unexpected(absl::monostate()),
+          base::unexpected(ParseError()),
       },
       {
           "zero",
@@ -87,7 +77,7 @@ TEST(AttributionReportingParsingUtilsTest, ParseUint64) {
       {
           "out_of_range",
           R"json({"key":"18446744073709551616"})json",
-          base::unexpected(absl::monostate()),
+          base::unexpected(ParseError()),
       },
   };
 
@@ -102,7 +92,7 @@ TEST(AttributionReportingParsingUtilsTest, ParseInt64) {
   const struct {
     const char* description;
     const char* json;
-    base::expected<std::optional<int64_t>, absl::monostate> expected;
+    base::expected<std::optional<int64_t>, ParseError> expected;
   } kTestCases[] = {
       {
           "missing_key",
@@ -112,12 +102,12 @@ TEST(AttributionReportingParsingUtilsTest, ParseInt64) {
       {
           "not_string",
           R"json({"key":123})json",
-          base::unexpected(absl::monostate()),
+          base::unexpected(ParseError()),
       },
       {
           "invalid_format",
           R"json({"key":"0x123"})json",
-          base::unexpected(absl::monostate()),
+          base::unexpected(ParseError()),
       },
       {
           "zero",
@@ -137,7 +127,7 @@ TEST(AttributionReportingParsingUtilsTest, ParseInt64) {
       {
           "out_of_range",
           R"json({"key":"9223372036854775808"})json",
-          base::unexpected(absl::monostate()),
+          base::unexpected(ParseError()),
       },
   };
 

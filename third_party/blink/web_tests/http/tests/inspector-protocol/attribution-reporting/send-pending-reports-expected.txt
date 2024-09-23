@@ -1,0 +1,5 @@
+Test that Storage.sendPendingAttributionReports succeeds.
+{
+    numSent : 1
+}
+

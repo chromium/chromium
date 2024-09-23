@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "base/callback_list.h"
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -25,27 +27,28 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "chrome/browser/ash/attestation/mock_machine_certificate_uploader.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
-#include "chrome/browser/ash/http_auth_dialog.h"
+#include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
-#include "chrome/browser/ash/login/test/feature_parameter_interface.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
@@ -55,9 +58,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_challenge_key_handler.h"
@@ -67,24 +71,31 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
+#include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -108,8 +119,9 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -249,6 +261,13 @@ class SamlTestBase : public OobeBaseTest {
 
     // TODO(crbug.com/1177416) - Fix this with a proper SSL solution.
     command_line->AppendSwitch(::switches::kIgnoreCertificateErrors);
+
+    // This will change the verification key to be used by the
+    // CloudPolicyValidator. It will allow for the policy provided by the
+    // PolicyBuilder to pass the signature validation.
+    command_line->AppendSwitchASCII(
+        policy::switches::kPolicyVerificationKey,
+        policy::PolicyBuilder::GetEncodedPolicyVerificationKey());
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -260,6 +279,9 @@ class SamlTestBase : public OobeBaseTest {
   }
 
   void SetUpOnMainThread() override {
+    // Without this tests are flaky. TODO(b/333450354): Determine why and fix.
+    SetDelayNetworkCallsForTesting(true);
+
     // Allowlist the default EMK to sign enterprise challenge.
     ::attestation::SignEnterpriseChallengeRequest
         sign_enterprise_challenge_request;
@@ -770,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(SamlTestWithoutImprovedScraping, ScrapedMultiple) {
 }
 
 // Tests the multiple password scraped flow.
-// TODO(crbug.com/1295294): This feature was deprioritized in mid-2022.
+// TODO(crbug.com/40214270): This feature was deprioritized in mid-2022.
 // Restore test once work resumes, or feel free to clean it up if you
 // step on it past mid-2024.
 IN_PROC_BROWSER_TEST_F(SamlTestWithImprovedScraping, DISABLED_ScrapedMultiple) {
@@ -1217,7 +1239,7 @@ class SAMLPolicyTest : public SamlTestBase {
 
   std::string GetCookieValue(const std::string& name);
 
-  void GetCookies();
+  void GetCookies(Profile* profile = nullptr);
 
  protected:
   NiceMock<policy::MockConfigurationPolicyProvider> provider_;
@@ -1274,23 +1296,23 @@ void SAMLPolicyTest::SetUpOnMainThread() {
       user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
 
   // Give affiliated users appropriate affiliation IDs.
-  const base::flat_set<std::string> user_affiliation_ids = {kAffiliationID};
-  ChromeUserManager::Get()->SetUserAffiliation(
+  auto* user_manager = user_manager::UserManager::Get();
+  user_manager->SetUserAffiliated(
       AccountId::FromUserEmailGaiaId(
           saml_test_users::kFirstUserCorpExampleComEmail, kFirstSAMLUserGaiaId),
-      user_affiliation_ids);
-  ChromeUserManager::Get()->SetUserAffiliation(
+      /*is_affiliated=*/true);
+  user_manager->SetUserAffiliated(
       AccountId::FromUserEmailGaiaId(
           saml_test_users::kSecondUserCorpExampleComEmail,
           kSecondSAMLUserGaiaId),
-      user_affiliation_ids);
-  ChromeUserManager::Get()->SetUserAffiliation(
+      /*is_affiliated=*/true);
+  user_manager->SetUserAffiliated(
       AccountId::FromUserEmailGaiaId(
           saml_test_users::kThirdUserCorpExampleComEmail, kThirdSAMLUserGaiaId),
-      user_affiliation_ids);
-  ChromeUserManager::Get()->SetUserAffiliation(
+      /*is_affiliated=*/true);
+  user_manager->SetUserAffiliated(
       AccountId::FromUserEmailGaiaId(kNonSAMLUserEmail, kNonSAMLUserGaiaId),
-      user_affiliation_ids);
+      /*is_affiliated=*/true);
 
   // Set up fake networks.
   ShillManagerClient::Get()->GetTestInterface()->SetupDefaultEnvironment();
@@ -1458,10 +1480,11 @@ std::string SAMLPolicyTest::GetCookieValue(const std::string& name) {
   return std::string();
 }
 
-void SAMLPolicyTest::GetCookies() {
-  Profile* profile = ProfileHelper::Get()->GetProfileByUser(
-      user_manager::UserManager::Get()->GetActiveUser());
-  ASSERT_TRUE(profile);
+void SAMLPolicyTest::GetCookies(Profile* profile) {
+  if (!profile) {
+    profile = ProfileManager::GetActiveUserProfile();
+    ASSERT_TRUE(profile);
+  }
   base::RunLoop run_loop;
   profile->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
@@ -1578,9 +1601,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SamlReauthWithSamlRedirect) {
 
   // Since this is a reauth of existing user, we expect them to use reauth
   // endpoint regardless of LoginAuthenticationBehavior policy.
-  EXPECT_EQ(GaiaPath(), features::IsGaiaReauthEndpointEnabled()
-                            ? WizardContext::GaiaPath::kReauth
-                            : WizardContext::GaiaPath::kSamlRedirect);
+  EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kReauth);
 }
 
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_PRE_TransferCookiesAffiliated) {
@@ -1675,6 +1696,27 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLChangeAccount) {
   // Verify Gaia path used by the Gaia screen.
   EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kSamlRedirect);
 
+  // Adding a cookie to the signin profile.
+  // After the "Enter Google Account info" button is pressed, all the
+  // cookies must be deleted.
+  net::CookieOptions options;
+  options.set_include_httponly();
+  auto* profile = ProfileHelper::Get()->GetSigninProfile();
+  ASSERT_TRUE(profile);
+  profile->GetDefaultStoragePartition()
+      ->GetCookieManagerForBrowserProcess()
+      ->SetCanonicalCookie(
+          *net::CanonicalCookie::CreateSanitizedCookie(
+              fake_saml_idp()->GetSamlPageUrl(), kSAMLIdPCookieName,
+              kSAMLIdPCookieValue1, ".example.com", /*path=*/std::string(),
+              /*creation_time=*/base::Time(),
+              /*expiration_time=*/base::Time(),
+              /*last_access_time=*/base::Time(), /*secure=*/true,
+              /*http_only=*/false, net::CookieSameSite::NO_RESTRICTION,
+              net::COOKIE_PRIORITY_DEFAULT,
+              /*partition_key=*/std::nullopt, /*status=*/nullptr),
+          fake_saml_idp()->GetSamlPageUrl(), options, base::DoNothing());
+
   // Click the "Enter Google Account info" button on the SAML page.
   test::OobeJS().TapOnPath(kChangeIdPButton);
 
@@ -1685,11 +1727,10 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLChangeAccount) {
   test::OobeJS().ExpectAttributeEQ("isSamlAuthFlowForTesting()",
                                    {"gaia-signin"}, false);
 
-  // TODO(b/259181755): change this to expect
-  // `WizardContext::GaiaPath::kDefault` once we change the implementation of
-  // the "Enter Google Account info" button to fully reload the flow through cpp
-  // code.
-  EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kSamlRedirect);
+  EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kDefault);
+
+  GetCookies(profile);
+  EXPECT_EQ("", GetCookieValue(kSAMLIdPCookieName));
 }
 
 // Tests that clicking back on the SAML page successfully closes the oobe
@@ -2085,7 +2126,8 @@ IN_PROC_BROWSER_TEST_P(SAMLPasswordAttributesTest, LoginSucceeded) {
 }
 
 // Verify that no password attributes are stored when login fails.
-IN_PROC_BROWSER_TEST_P(SAMLPasswordAttributesTest, LoginFailed) {
+// TODO(crbug.com/325657256): Test is flaky.
+IN_PROC_BROWSER_TEST_P(SAMLPasswordAttributesTest, DISABLED_LoginFailed) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   fake_saml_idp()->SetSamlResponseFile("saml_with_password_attributes.xml");
   ShowGAIALoginForm();

@@ -2,17 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 
 #include <string>
 #include <utility>
 
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
-#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
-#include "chrome/browser/image_service/image_service_factory.h"
+#include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -23,7 +29,6 @@
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_bookmarks_resources.h"
 #include "chrome/grit/side_panel_bookmarks_resources_map.h"
@@ -52,8 +57,20 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
+BookmarksSidePanelUIConfig::BookmarksSidePanelUIConfig()
+    : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
+                                  chrome::kChromeUIBookmarksSidePanelHost) {}
+
+bool BookmarksSidePanelUIConfig::IsPreloadable() {
+  return true;
+}
+
+std::optional<int> BookmarksSidePanelUIConfig::GetCommandIdForTesting() {
+  return IDC_SHOW_BOOKMARK_SIDE_PANEL;
+}
+
 BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui, true) {
+    : TopChromeWebUIController(web_ui, true) {
   Profile* const profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIBookmarksSidePanelHost);
@@ -181,6 +198,9 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean("guestMode", profile->IsGuestSession());
   source->AddBoolean("incognitoMode", profile->IsIncognitoProfile());
   source->AddBoolean("isIncognitoModeAvailable", IsIncognitoModeAvailable());
+  source->AddBoolean(
+      "bookmarksTreeViewEnabled",
+      base::FeatureList::IsEnabled(features::kBookmarksTreeView));
   source->AddInteger(
       "sortOrder",
       prefs->GetInteger(bookmarks_webui::prefs::kBookmarksSortOrder));
@@ -192,24 +212,25 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       BookmarkModelFactory::GetForBrowserContext(profile);
   source->AddString(
       "bookmarksBarId",
-      base::NumberToString(
-          bookmark_model ? bookmark_model->bookmark_bar_node()->id() : -1));
+      base::NumberToString(bookmark_model && bookmark_model->bookmark_bar_node()
+                               ? bookmark_model->bookmark_bar_node()->id()
+                               : -1));
   source->AddString(
       "otherBookmarksId",
-      base::NumberToString(bookmark_model ? bookmark_model->other_node()->id()
-                                          : -1));
+      base::NumberToString(bookmark_model && bookmark_model->other_node()
+                               ? bookmark_model->other_node()->id()
+                               : -1));
   source->AddString(
       "mobileBookmarksId",
-      base::NumberToString(bookmark_model ? bookmark_model->mobile_node()->id()
-                                          : -1));
+      base::NumberToString(bookmark_model && bookmark_model->mobile_node()
+                               ? bookmark_model->mobile_node()->id()
+                               : -1));
   bookmarks::ManagedBookmarkService* managed =
       ManagedBookmarkServiceFactory::GetForProfile(profile);
   source->AddString("managedBookmarksFolderId",
                     managed && managed->managed_node()
                         ? base::NumberToString(managed->managed_node()->id())
                         : "");
-
-  webui::SetupChromeRefresh2023(source);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
@@ -296,8 +317,7 @@ void BookmarksSidePanelUI::CreateShoppingServiceHandler(
   shopping_service_handler_ =
       std::make_unique<commerce::ShoppingServiceHandler>(
           std::move(page), std::move(receiver), bookmark_model,
-          shopping_service, profile->GetPrefs(), tracker,
-          g_browser_process->GetApplicationLocale(), nullptr);
+          shopping_service, profile->GetPrefs(), tracker, nullptr, nullptr);
   shopping_list_context_menu_controller_ =
       std::make_unique<commerce::ShoppingListContextMenuController>(
           bookmark_model, shopping_service, shopping_service_handler_.get());

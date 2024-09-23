@@ -84,6 +84,19 @@ TEST(CookieUtilTest, GetCookieDomainWithString_Empty) {
   EXPECT_EQ(result, "example.com");
 }
 
+// An empty domain string results in the domain from the URL, which has been
+// canonicalized. Regression test for https://crbug.com/362535230.
+TEST(CookieUtilTest, GetCookieDomainWithString_EmptyNonCanonical) {
+  // `GURL` doesn't canonicalize the below URL, since it doesn't recognize the
+  // scheme. So we ensure that `GetCookieDomainWithString` recanonicalizes it.
+  CookieInclusionStatus status;
+  std::string result;
+  EXPECT_TRUE(cookie_util::GetCookieDomainWithString(GURL("foo://LOCALhost"),
+                                                     "", status, &result));
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_EQ(result, "localhost");
+}
+
 // A cookie domain string equal to the URL host, when that is an IP, results in
 // the IP.
 TEST(CookieUtilTest, GetCookieDomainWithString_IP) {
@@ -586,18 +599,12 @@ TEST(CookieUtilTest, SimulatedCookieSource) {
   for (const auto& test : kTests) {
     std::vector<std::unique_ptr<CanonicalCookie>> cookies;
     // It shouldn't depend on the cookie's secureness or actual source scheme.
-    cookies.push_back(
-        CanonicalCookie::Create(insecure_url, test.cookie, base::Time::Now(),
-                                std::nullopt /* server_time */,
-                                std::nullopt /* cookie_partition_key */));
-    cookies.push_back(
-        CanonicalCookie::Create(secure_url, test.cookie, base::Time::Now(),
-                                std::nullopt /* server_time */,
-                                std::nullopt /* cookie_partition_key */));
-    cookies.push_back(CanonicalCookie::Create(
-        secure_url, test.cookie + "; Secure", base::Time::Now(),
-        std::nullopt /* server_time */,
-        std::nullopt /* cookie_partition_key */));
+    cookies.push_back(CanonicalCookie::CreateForTesting(
+        insecure_url, test.cookie, base::Time::Now()));
+    cookies.push_back(CanonicalCookie::CreateForTesting(secure_url, test.cookie,
+                                                        base::Time::Now()));
+    cookies.push_back(CanonicalCookie::CreateForTesting(
+        secure_url, test.cookie + "; Secure", base::Time::Now()));
     for (const auto& cookie : cookies) {
       GURL simulated_source =
           cookie_util::SimulatedCookieSource(*cookie, test.source_scheme);

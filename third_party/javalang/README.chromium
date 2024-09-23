@@ -2,6 +2,7 @@ Name: Pure Python Java parser and tools
 Short Name: javalang
 URL: https://github.com/c2nes/javalang
 Version: 0.13.0
+Revision: 0664afb7f4d40254312693f2e833c1ed4ac551c7
 License: MIT
 License File: LICENSE
 Security Critical: no

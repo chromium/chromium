@@ -30,6 +30,7 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
     bool suppress_local_audio_playback,
     bool display_notification,
     const std::u16string& application_title,
+    bool captured_surface_control_active,
     blink::mojom::StreamDevices& out_devices);
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_CAPTURE_DEVICES_UTIL_H_

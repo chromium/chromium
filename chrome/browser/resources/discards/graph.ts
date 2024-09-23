@@ -800,11 +800,11 @@ export class Graph implements GraphChangeStreamInterface {
     this.render_();
   }
 
-  nodeDescriptions(nodeDescriptions: {[key: string]: any}) {
-    for (const nodeId in nodeDescriptions) {
-      const node = this.nodes_.get(BigInt(nodeId));
+  nodeDescriptions(nodeDescriptions: Map<bigint, any>) {
+    for (const [nodeId, nodeDescription] of nodeDescriptions) {
+      const node = this.nodes_.get(nodeId);
       if (node && node.tooltip) {
-        node.tooltip.onDescription(nodeDescriptions[nodeId]);
+        node.tooltip.onDescription(nodeDescription);
       }
     }
     this.render_();

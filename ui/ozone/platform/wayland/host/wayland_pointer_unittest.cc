@@ -178,7 +178,7 @@ TEST_F(WaylandPointerTest, Enter) {
   ASSERT_TRUE(event);
   ASSERT_TRUE(event->IsMouseEvent());
   auto* mouse_event = event->AsMouseEvent();
-  EXPECT_EQ(ET_MOUSE_ENTERED, mouse_event->type());
+  EXPECT_EQ(EventType::kMouseEntered, mouse_event->type());
   EXPECT_EQ(0, mouse_event->button_flags());
   EXPECT_EQ(0, mouse_event->changed_button_flags());
   EXPECT_EQ(gfx::PointF(0, 0), mouse_event->location_f());
@@ -247,7 +247,7 @@ TEST_F(WaylandPointerTest, Motion) {
   ASSERT_TRUE(event);
   ASSERT_TRUE(event->IsMouseEvent());
   auto* mouse_event = event->AsMouseEvent();
-  EXPECT_EQ(ET_MOUSE_MOVED, mouse_event->type());
+  EXPECT_EQ(EventType::kMouseMoved, mouse_event->type());
   EXPECT_EQ(0, mouse_event->button_flags());
   EXPECT_EQ(0, mouse_event->changed_button_flags());
   EXPECT_EQ(gfx::PointF(10.75, 20.375), mouse_event->location_f());
@@ -280,7 +280,7 @@ TEST_F(WaylandPointerTest, MotionDragged) {
   ASSERT_TRUE(event);
   ASSERT_TRUE(event->IsMouseEvent());
   auto* mouse_event = event->AsMouseEvent();
-  EXPECT_EQ(ET_MOUSE_DRAGGED, mouse_event->type());
+  EXPECT_EQ(EventType::kMouseDragged, mouse_event->type());
   EXPECT_EQ(EF_MIDDLE_MOUSE_BUTTON, mouse_event->button_flags());
   EXPECT_EQ(0, mouse_event->changed_button_flags());
   EXPECT_EQ(gfx::PointF(400, 500), mouse_event->location_f());
@@ -313,8 +313,9 @@ TEST_F(WaylandPointerTest, MotionDraggedWithStylus) {
     wl_pointer_send_frame(pointer);
   });
 
-  CheckEventType(ui::ET_MOUSE_PRESSED, event.get(), ui::EventPointerType::kPen,
-                 1.0f /* force */, -45.0f /* tilt_x */, 45.0f /* tilt_y */);
+  CheckEventType(ui::EventType::kMousePressed, event.get(),
+                 ui::EventPointerType::kPen, 1.0f /* force */,
+                 -45.0f /* tilt_x */, 45.0f /* tilt_y */);
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* const pointer = server->seat()->pointer()->resource();
@@ -327,7 +328,7 @@ TEST_F(WaylandPointerTest, MotionDraggedWithStylus) {
   ASSERT_TRUE(event);
   ASSERT_TRUE(event->IsMouseEvent());
   auto* mouse_event = event->AsMouseEvent();
-  EXPECT_EQ(ET_MOUSE_DRAGGED, mouse_event->type());
+  EXPECT_EQ(EventType::kMouseDragged, mouse_event->type());
   EXPECT_EQ(EF_LEFT_MOUSE_BUTTON, mouse_event->button_flags());
   EXPECT_EQ(0, mouse_event->changed_button_flags());
   EXPECT_EQ(gfx::PointF(400, 500), mouse_event->location_f());
@@ -608,7 +609,7 @@ TEST_F(WaylandPointerTest, FlingVertical) {
   ASSERT_TRUE(event3);
   ASSERT_TRUE(event3->IsScrollEvent());
   auto* scroll_event = event3->AsScrollEvent();
-  EXPECT_EQ(ET_SCROLL_FLING_START, scroll_event->type());
+  EXPECT_EQ(EventType::kScrollFlingStart, scroll_event->type());
   EXPECT_EQ(gfx::PointF(50, 75), scroll_event->location_f());
   EXPECT_EQ(0.0f, scroll_event->x_offset());
   EXPECT_EQ(0.0f, scroll_event->x_offset_ordinal());
@@ -659,7 +660,7 @@ TEST_F(WaylandPointerTest, FlingHorizontal) {
   ASSERT_TRUE(event3);
   ASSERT_TRUE(event3->IsScrollEvent());
   auto* scroll_event = event3->AsScrollEvent();
-  EXPECT_EQ(ET_SCROLL_FLING_START, scroll_event->type());
+  EXPECT_EQ(EventType::kScrollFlingStart, scroll_event->type());
   EXPECT_EQ(gfx::PointF(50, 75), scroll_event->location_f());
   EXPECT_EQ(0.0f, scroll_event->y_offset());
   EXPECT_EQ(0.0f, scroll_event->y_offset_ordinal());
@@ -725,17 +726,17 @@ TEST_F(WaylandPointerTest, FlingCancel) {
   // Two usual axis events should follow before the fling event.
   ASSERT_TRUE(event1);
   ASSERT_TRUE(event1->IsScrollEvent());
-  EXPECT_EQ(ET_SCROLL, event1->type());
+  EXPECT_EQ(EventType::kScroll, event1->type());
 
   ASSERT_TRUE(event2);
   ASSERT_TRUE(event2->IsScrollEvent());
-  EXPECT_EQ(ET_SCROLL, event2->type());
+  EXPECT_EQ(EventType::kScroll, event2->type());
 
   // The 3rd event will be fling start with vertical velocity.
   ASSERT_TRUE(event3);
   ASSERT_TRUE(event3->IsScrollEvent());
   auto* fling_start_event = event3->AsScrollEvent();
-  EXPECT_EQ(ET_SCROLL_FLING_START, fling_start_event->type());
+  EXPECT_EQ(EventType::kScrollFlingStart, fling_start_event->type());
   EXPECT_EQ(0.0f, fling_start_event->x_offset());
   EXPECT_GT(0.0f, fling_start_event->y_offset());
   EXPECT_EQ(0.0f, fling_start_event->x_offset_ordinal());
@@ -745,7 +746,7 @@ TEST_F(WaylandPointerTest, FlingCancel) {
   ASSERT_TRUE(event4);
   ASSERT_TRUE(event4->IsScrollEvent());
   auto* fling_cancel_event = event4->AsScrollEvent();
-  EXPECT_EQ(ET_SCROLL_FLING_CANCEL, fling_cancel_event->type());
+  EXPECT_EQ(EventType::kScrollFlingCancel, fling_cancel_event->type());
   EXPECT_EQ(gfx::PointF(50, 75), fling_cancel_event->location_f());
   EXPECT_EQ(0.0f, fling_cancel_event->x_offset());
   EXPECT_EQ(0.0f, fling_cancel_event->y_offset());
@@ -755,7 +756,7 @@ TEST_F(WaylandPointerTest, FlingCancel) {
   // The 5th event will be yet another axis event.
   ASSERT_TRUE(event5);
   ASSERT_TRUE(event5);
-  EXPECT_EQ(ET_SCROLL, event5->type());
+  EXPECT_EQ(EventType::kScroll, event5->type());
 }
 
 TEST_F(WaylandPointerTest, FlingDiagonal) {
@@ -797,7 +798,7 @@ TEST_F(WaylandPointerTest, FlingDiagonal) {
   ASSERT_TRUE(event3);
   ASSERT_TRUE(event3->IsScrollEvent());
   auto* scroll_event = event3->AsScrollEvent();
-  EXPECT_EQ(ET_SCROLL_FLING_START, scroll_event->type());
+  EXPECT_EQ(EventType::kScrollFlingStart, scroll_event->type());
   EXPECT_EQ(gfx::PointF(50, 75), scroll_event->location_f());
   // Check the offset direction. It should non-zero in both axes.
   EXPECT_GT(0.0f, scroll_event->x_offset());
@@ -831,7 +832,7 @@ TEST_F(WaylandPointerTest, FlingVelocityWithoutLeadingAxis) {
   ASSERT_TRUE(event);
   ASSERT_TRUE(event->IsScrollEvent());
   auto* scroll_event = event->AsScrollEvent();
-  EXPECT_EQ(ET_SCROLL_FLING_START, scroll_event->type());
+  EXPECT_EQ(EventType::kScrollFlingStart, scroll_event->type());
 
   // Check the offset direction. It should be zero in both axes.
   EXPECT_EQ(0.0f, scroll_event->x_offset());
@@ -872,7 +873,7 @@ TEST_F(WaylandPointerTest, FlingVelocityWithSingleLeadingAxis) {
   ASSERT_TRUE(event2);
   ASSERT_TRUE(event2->IsScrollEvent());
   auto* scroll_event2 = event2->AsScrollEvent();
-  EXPECT_EQ(ET_SCROLL_FLING_START, scroll_event2->type());
+  EXPECT_EQ(EventType::kScrollFlingStart, scroll_event2->type());
 
   // Check the offset direction. Horizontal axis should be negative. Vertical
   // axis should be positive.

@@ -10,6 +10,7 @@
 
 #include "media/base/media_log.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/video/video_encode_accelerator.h"
 
 namespace media {
 
@@ -35,6 +36,8 @@ class VideoRateControlWrapper {
     int64_t target_bandwidth;
     // Frame rate.
     double framerate;
+    // Content type, camera or display.
+    VideoEncodeAccelerator::Config::ContentType content_type;
     // Target bitrate for svc layers.
     int layer_target_bitrate[kMaxLayers];
     // Rate decimator for temporal layers.
@@ -57,6 +60,7 @@ class VideoRateControlWrapper {
     FrameType frame_type;
     int spatial_layer_id;
     int temporal_layer_id;
+    unsigned int timestamp;
   };
 
   virtual ~VideoRateControlWrapper() = default;

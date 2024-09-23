@@ -42,8 +42,8 @@ class FakeExternallyManagedAppManager : public ExternallyManagedAppManager {
       base::RepeatingCallback<ExternallyManagedAppManager::InstallResult(
           const ExternalInstallOptions&)>;
 
-  using HandleUninstallRequestCallback =
-      base::RepeatingCallback<bool(const GURL&, ExternalInstallSource)>;
+  using HandleUninstallRequestCallback = base::RepeatingCallback<
+      webapps::UninstallResultCode(const GURL&, ExternalInstallSource)>;
 
   // Set a callback to handle install requests. If set, this callback will be
   // used in place of the real installation process. The callback takes a const

@@ -2,10 +2,51 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
--- Helper functions for scroll_jank_v3 metric computation.
-
-INCLUDE PERFETTO MODULE common.slices;
-
+-- Finds all slices with a direct parent with the given parent_id.
+CREATE PERFETTO FUNCTION _direct_children_slice(
+  -- Id of the parent slice.
+  parent_id LONG)
+RETURNS TABLE(
+  -- Alias for `slice.id`.
+  id LONG,
+  -- Alias for `slice.type`.
+  type STRING,
+  -- Alias for `slice.ts`.
+  ts LONG,
+  -- Alias for `slice.dur`.
+  dur LONG,
+  -- Alias for `slice.category`.
+  category LONG,
+  -- Alias for `slice.name`.
+  name STRING,
+  -- Alias for `slice.track_id`.
+  track_id LONG,
+  -- Alias for `slice.depth`.
+  depth LONG,
+  -- Alias for `slice.parent_id`.
+  parent_id LONG,
+  -- Alias for `slice.arg_set_id`.
+  arg_set_id LONG,
+  -- Alias for `slice.thread_ts`.
+  thread_ts LONG,
+  -- Alias for `slice.thread_dur`.
+  thread_dur LONG
+) AS
+SELECT
+  slice.id,
+  slice.type,
+  slice.ts,
+  slice.dur,
+  slice.category,
+  slice.name,
+  slice.track_id,
+  slice.depth,
+  slice.parent_id,
+  slice.arg_set_id,
+  slice.thread_ts,
+  slice.thread_dur
+FROM slice
+WHERE parent_id = $parent_id;
 
 -- Given two slice Ids A and B, find the maximum difference
 -- between the durations of it's direct children with matching names
@@ -26,12 +67,12 @@ WITH
   current_breakdowns AS (
     SELECT
       *
-    FROM direct_children_slice($janky_slice_id)
+    FROM _direct_children_slice($janky_slice_id)
   ),
   prev_breakdowns AS (
     SELECT
       *
-    FROM direct_children_slice($prev_slice_id)
+    FROM _direct_children_slice($prev_slice_id)
   ),
   joint_breakdowns AS (
     SELECT

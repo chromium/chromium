@@ -1,7 +1,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/cast.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/test.gni")
@@ -9,7 +8,7 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//ui/base/ui_features.gni")
 
-assert(enable_extensions)
+assert(enable_extensions_core)
 
 if (is_component_build) {
   component("extensions") {
@@ -79,22 +78,16 @@ static_library("test_support") {
   sources = [
     "browser/api/declarative/test_rules_registry.cc",
     "browser/api/declarative/test_rules_registry.h",
-    "browser/api/storage/settings_test_util.cc",
-    "browser/api/storage/settings_test_util.h",
     "browser/api_test_utils.cc",
     "browser/api_test_utils.h",
     "browser/api_unittest.cc",
     "browser/api_unittest.h",
-    "browser/app_window/test_app_window_contents.cc",
-    "browser/app_window/test_app_window_contents.h",
     "browser/content_verifier/test_utils.cc",
     "browser/content_verifier/test_utils.h",
     "browser/extension_error_test_util.cc",
     "browser/extension_error_test_util.h",
     "browser/extensions_test.cc",
     "browser/extensions_test.h",
-    "browser/guest_view/mime_handler_view/test_mime_handler_view_guest.cc",
-    "browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h",
     "browser/mock_extension_system.cc",
     "browser/mock_extension_system.h",
     "browser/mock_external_provider.cc",
@@ -111,8 +104,6 @@ static_library("test_support") {
     "browser/test_image_loader.h",
     "browser/test_management_policy.cc",
     "browser/test_management_policy.h",
-    "browser/test_runtime_api_delegate.cc",
-    "browser/test_runtime_api_delegate.h",
     "common/extension_builder.cc",
     "common/extension_builder.h",
     "common/manifest_test.cc",
@@ -158,18 +149,20 @@ static_library("test_support") {
     "//build:chromeos_buildflags",
     "//chrome/common:buildflags",
     "//components/crx_file",
-    "//components/guest_view/browser:test_support",
     "//components/keyed_service/content",
     "//components/pref_registry",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//components/update_client",
+    "//components/user_annotations",
+    "//components/user_annotations:test_support",
     "//components/user_prefs",
     "//content/public/common",
     "//content/test:test_support",
     "//extensions/browser",
     "//extensions/browser:test_support",
     "//extensions/browser/api",
+    "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/updater",
     "//extensions/common",
     "//extensions/common:core_api_provider",
@@ -183,6 +176,34 @@ static_library("test_support") {
     "//third_party/cld_3/src/src:cld_3",
     "//third_party/zlib/google:zip",
   ]
+
+  if (enable_platform_apps) {
+    sources += [
+      "browser/app_window/test_app_window_contents.cc",
+      "browser/app_window/test_app_window_contents.h",
+    ]
+  }
+
+  if (enable_guest_view) {
+    sources += [
+      "browser/guest_view/mime_handler_view/test_mime_handler_view_guest.cc",
+      "browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h",
+    ]
+
+    deps += [ "//components/guest_view/browser:test_support" ]
+  }
+
+  # TODO(https://crbug.com/356905053): The following files don't compile cleanly
+  # with desktop-android. Either make them compile, or determine they should
+  # not be included and place them under a more appropriate if-block.
+  if (enable_extensions) {
+    sources += [
+      "browser/api/storage/settings_test_util.cc",
+      "browser/api/storage/settings_test_util.h",
+      "browser/test_runtime_api_delegate.cc",
+      "browser/test_runtime_api_delegate.h",
+    ]
+  }
 
   # Generally, //extensions should not depend on //chromeos. However, a number
   # of the APIs and the extensions shell already do. We should try to avoid
@@ -202,14 +223,11 @@ repack("shell_and_test_pak") {
   testonly = true
 
   sources = [
-    "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/content/shell/shell_resources.pak",
-    "$root_gen_dir/device/bluetooth/strings/bluetooth_strings_en-US.pak",
     "$root_gen_dir/extensions/extensions_browser_resources_100_percent.pak",
     "$root_gen_dir/extensions/extensions_renderer_resources.pak",
     "$root_gen_dir/extensions/extensions_resources.pak",
-    "$root_gen_dir/extensions/shell/app_shell_resources.pak",
     "$root_gen_dir/extensions/strings/extensions_strings_en-US.pak",
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
@@ -226,10 +244,7 @@ repack("shell_and_test_pak") {
   deps = [
     ":extensions_resources",
     "//content:content_resources",
-    "//content/browser/devtools:devtools_resources",
     "//content/shell:resources",
-    "//device/bluetooth/strings",
-    "//extensions/shell:resources",
     "//extensions/strings",
     "//mojo/public/js:resources",
     "//third_party/blink/public:resources",
@@ -238,6 +253,21 @@ repack("shell_and_test_pak") {
     "//ui/resources",
     "//ui/strings",
   ]
+
+  # The following resources are not used by desktop-android build.
+  if (enable_extensions) {
+    sources += [
+      "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
+      "$root_gen_dir/device/bluetooth/strings/bluetooth_strings_en-US.pak",
+      "$root_gen_dir/extensions/shell/app_shell_resources.pak",
+    ]
+
+    deps += [
+      "//content/browser/devtools:devtools_resources",
+      "//device/bluetooth/strings",
+      "//extensions/shell:resources",
+    ]
+  }
 }
 
 test("extensions_unittests") {
@@ -257,17 +287,16 @@ test("extensions_unittests") {
   ]
 
   deps = [
-    ":extensions_resources",
     ":shell_and_test_pak",
     ":test_support",
     "//base/test:test_support",
+    "//build:android_buildflags",
     "//content/public/common",
     "//content/test:test_support",
     "//extensions/browser:unit_tests",
     "//extensions/common",
     "//extensions/common:unit_tests",
     "//extensions/renderer:unit_tests",
-    "//extensions/shell:unit_tests",
     "//services/data_decoder/public/cpp:test_support",
     "//services/service_manager/public/cpp/test:test_support",
     "//ui/gl:test_support",
@@ -275,7 +304,7 @@ test("extensions_unittests") {
 
   data_deps = [
     "//testing/buildbot/filters:extensions_unittests_filters",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
   ]
 
   if (is_chromeos) {
@@ -283,97 +312,115 @@ test("extensions_unittests") {
       "//chrome/browser/chromeos/extensions/telemetry/api:extensions_unittests",
     ]
   }
+
+  if (is_android) {
+    deps += [
+      "//content/public/android:content_full_java",
+      "//gin:v8_snapshot_assets",
+      "//services/data_decoder/public/cpp/android:safe_json_java",
+      "//ui/android:ui_full_java",
+    ]
+  }
+
+  # TODO(https://crbug.com/356905053): Gradually include more of these sources
+  # in the desktop-android build.
+  if (enable_extensions) {
+    deps += [ "//extensions/shell:unit_tests" ]
+  }
 }
 
-test("extensions_browsertests") {
-  use_xvfb = use_xvfb_in_this_config
+if (enable_extensions) {
+  # Browser tests are not currently supported in desktop-android builds.
+  test("extensions_browsertests") {
+    use_xvfb = use_xvfb_in_this_config
 
-  data = [
-    "//extensions/test/data/",
-    "//net/tools/testserver/",
-    "//third_party/pywebsocket3/src/mod_pywebsocket/",
-    "$root_out_dir/extensions_shell_and_test.pak",
-  ]
+    data = [
+      "//extensions/test/data/",
+      "//net/tools/testserver/",
+      "//third_party/pywebsocket3/src/mod_pywebsocket/",
+      "$root_out_dir/extensions_shell_and_test.pak",
+    ]
 
-  deps = [
-    "//extensions/browser:browser_tests",
-    "//extensions/renderer:browser_tests",
-    "//extensions/shell:browser_tests",
-  ]
+    deps = [
+      "//extensions/browser:browser_tests",
+      "//extensions/renderer:browser_tests",
+      "//extensions/shell:browser_tests",
+    ]
 
-  data_deps = [ "//third_party/mesa_headers" ]
-}
+    data_deps = [ "//third_party/angle:includes" ]
+  }
 
-# TODO(rockot) bug 505926: These should be moved to extensions_browsertests but have
-# old dependencies on chrome files. The chrome dependencies should be removed
-# and these moved to the extensions_browsertests target. Currently, we solve
-# the problem by making this a source set and linking it into
-# //chrome/test:browser_tests.
-source_set("chrome_extensions_browsertests_sources") {
-  testonly = true
-  sources = [
-    "browser/api/app_window/app_window_apitest.cc",
-    "browser/api/bluetooth/bluetooth_apitest.cc",
-    "browser/api/bluetooth/bluetooth_private_apitest.cc",
-    "browser/api/serial/serial_apitest.cc",
-    "browser/api/usb/usb_manual_apitest.cc",
-    "browser/app_window/app_window_browsertest.cc",
-  ]
+  # TODO(rockot) bug 505926: These should be moved to extensions_browsertests but have
+  # old dependencies on chrome files. The chrome dependencies should be removed
+  # and these moved to the extensions_browsertests target. Currently, we solve
+  # the problem by making this a source set and linking it into
+  # //chrome/test:browser_tests.
+  source_set("chrome_extensions_browsertests_sources") {
+    testonly = true
+    sources = [
+      "browser/api/app_window/app_window_apitest.cc",
+      "browser/api/bluetooth/bluetooth_apitest.cc",
+      "browser/api/bluetooth/bluetooth_private_apitest.cc",
+      "browser/api/serial/serial_apitest.cc",
+      "browser/api/usb/usb_manual_apitest.cc",
+      "browser/app_window/app_window_browsertest.cc",
+    ]
 
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  # These are the deps from browser_tests minus some internal Chrome ones that
-  # aren't allowed to be included here and that aren't needed.
-  deps = [
-    "//base",
-    "//base:i18n",
-    "//base/test:test_support",
-    "//build:chromeos_buildflags",
-    "//chrome/browser",
-    "//chrome/common/extensions/api",
-    "//chrome/renderer",
-    "//chrome/test:test_support",
-    "//components/autofill/content/browser:risk_proto",
-    "//components/autofill/content/renderer:test_support",
-    "//components/captive_portal/core:test_support",
-    "//components/dom_distiller/content/browser",
-    "//components/dom_distiller/core:test_support",
-    "//components/guest_view/browser:test_support",
-    "//components/javascript_dialogs",
-    "//components/resources",
-    "//components/strings",
-    "//components/sync",
-    "//components/sync:test_support",
-    "//components/translate/core/common",
-    "//crypto:test_support",
-    "//device/bluetooth:mocks",
-    "//extensions/browser/api/bluetooth",
-    "//extensions/common/api",
-    "//extensions/renderer",
-    "//google_apis:test_support",
-    "//media:test_support",
-    "//net",
-    "//net:test_support",
-    "//skia",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//testing/perf",
-    "//third_party/blink/public:blink",
-    "//third_party/icu",
-    "//third_party/leveldatabase",
-    "//third_party/libaddressinput",
-    "//third_party/webrtc_overrides:webrtc_component",
-    "//third_party/widevine/cdm:headers",
-    "//ui/accessibility:test_support",
-    "//ui/base:test_support",
-    "//ui/base/idle:test_support",
-    "//ui/compositor:test_support",
-    "//ui/resources",
-    "//ui/web_dialogs:test_support",
-    "//v8",
-  ]
+    # These are the deps from browser_tests minus some internal Chrome ones that
+    # aren't allowed to be included here and that aren't needed.
+    deps = [
+      "//base",
+      "//base:i18n",
+      "//base/test:test_support",
+      "//build:chromeos_buildflags",
+      "//chrome/browser",
+      "//chrome/common/extensions/api",
+      "//chrome/renderer",
+      "//chrome/test:test_support",
+      "//components/autofill/content/browser:risk_proto",
+      "//components/autofill/content/renderer:test_support",
+      "//components/captive_portal/core:test_support",
+      "//components/dom_distiller/content/browser",
+      "//components/dom_distiller/core:test_support",
+      "//components/guest_view/browser:test_support",
+      "//components/javascript_dialogs",
+      "//components/resources",
+      "//components/strings",
+      "//components/sync",
+      "//components/sync:test_support",
+      "//components/translate/core/common",
+      "//crypto:test_support",
+      "//device/bluetooth:mocks",
+      "//extensions/browser/api/bluetooth",
+      "//extensions/common/api",
+      "//extensions/renderer",
+      "//google_apis:test_support",
+      "//media:test_support",
+      "//net",
+      "//net:test_support",
+      "//skia",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//testing/perf",
+      "//third_party/blink/public:blink",
+      "//third_party/icu",
+      "//third_party/leveldatabase",
+      "//third_party/libaddressinput",
+      "//third_party/webrtc_overrides:webrtc_component",
+      "//third_party/widevine/cdm:headers",
+      "//ui/accessibility:test_support",
+      "//ui/base:test_support",
+      "//ui/base/idle:test_support",
+      "//ui/compositor:test_support",
+      "//ui/resources",
+      "//ui/web_dialogs:test_support",
+      "//v8",
+    ]
 
-  if (is_chromeos_ash) {
-    deps += [ "//components/user_manager:test_support" ]
+    if (is_chromeos_ash) {
+      deps += [ "//components/user_manager:test_support" ]
+    }
   }
 }

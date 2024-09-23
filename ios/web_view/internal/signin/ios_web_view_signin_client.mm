@@ -87,12 +87,10 @@ std::unique_ptr<GaiaAuthFetcher> IOSWebViewSigninClient::CreateGaiaAuthFetcher(
 }
 
 version_info::Channel IOSWebViewSigninClient::GetClientChannel() {
-  // TODO(crbug.com/1299888): pass the correct channel information once
+  // TODO(crbug.com/40216038): pass the correct channel information once
   // implemented.
   return version_info::Channel::STABLE;
 }
 
-void IOSWebViewSigninClient::OnPrimaryAccountChangedWithEventSource(
-    signin::PrimaryAccountChangeEvent event_details,
-    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
-        event_source) {}
+void IOSWebViewSigninClient::OnPrimaryAccountChanged(
+    signin::PrimaryAccountChangeEvent event_details) {}

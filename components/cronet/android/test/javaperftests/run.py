@@ -17,10 +17,10 @@ Prerequisites:
    to the host machine (i.e. the computer running this script).
 2. quic_server has been built for the host machine, e.g. via:
      gn gen out/Release --args="is_debug=false"
-     ninja -C out/Release quic_server
+     autoninja -C out/Release quic_server
 3. cronet_perf_test_apk has been built for the Android device, e.g. via:
      ./components/cronet/tools/cr_cronet.py gn -r
-     ninja -C out/Release cronet_perf_test_apk
+     autoninja -C out/Release cronet_perf_test_apk
 4. If "sudo ufw status" doesn't say "Status: inactive", run "sudo ufw disable".
 5. sudo apt-get install lighttpd
 6. If the usb0 interface on the host keeps losing it's IPv4 address

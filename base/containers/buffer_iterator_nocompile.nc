@@ -55,4 +55,20 @@ void ComplexSpan() {
   base::span<const Complex> s = iterator.Span<Complex>();  // expected-error {{no matching member function for call to 'Span'}}
 }
 
+void OverflowCompileTime() {
+  char buffer[64];
+
+  BufferIterator<char> iterator(
+      // SAFETY: This intentionally makes an incorrectly-sized span. The span
+      // pointer, stored in the BufferIterator is never moved past the start in
+      // this test, as that would cause Undefined Behaviour.
+      UNSAFE_BUFFERS(span(buffer, std::numeric_limits<size_t>::max())));
+
+  constexpr size_t kInvalidU64Size =
+      (std::numeric_limits<size_t>::max() / sizeof(uint64_t)) + 1u;
+
+  iterator.Span<uint64_t, kInvalidU64Size>(); // expected-error {{no matching member function}}
+  iterator.Span<uint64_t, std::numeric_limits<size_t>::max()>();  // expected-error {{no matching member function}}
+}
+
 }  // namespace base

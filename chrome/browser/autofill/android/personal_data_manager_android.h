@@ -13,6 +13,8 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 
+class PrefService;
+
 namespace autofill {
 
 // Android wrapper of the PersonalDataManager which provides access from the
@@ -20,11 +22,17 @@ namespace autofill {
 // therefore a single instance of this wrapper.
 class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
  public:
-  PersonalDataManagerAndroid(JNIEnv* env, jobject obj);
+  PersonalDataManagerAndroid(JNIEnv* env,
+                             const jni_zero::JavaRef<jobject>& obj,
+                             PersonalDataManager* personal_data_manager,
+                             PrefService* prefs);
 
   PersonalDataManagerAndroid(const PersonalDataManagerAndroid&) = delete;
   PersonalDataManagerAndroid& operator=(const PersonalDataManagerAndroid&) =
       delete;
+
+  // Trigger the destruction of the C++ object from Java.
+  void Destroy(JNIEnv* env);
 
   static base::android::ScopedJavaLocalRef<jobject>
   CreateJavaCreditCardFromNative(JNIEnv* env, const CreditCard& card);
@@ -34,49 +42,40 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       CreditCard* card);
 
   // Returns true if personal data manager has loaded the initial data.
-  jboolean IsDataLoaded(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj) const;
+  jboolean IsDataLoaded(JNIEnv* env) const;
 
   // These functions act on "web profiles" aka "LOCAL_PROFILE" profiles.
   // -------------------------
 
   // Returns the GUIDs of all profiles.
   base::android::ScopedJavaLocalRef<jobjectArray> GetProfileGUIDsForSettings(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj);
+      JNIEnv* env);
 
   // Returns the GUIDs of the profiles to suggest to the user. See
   // PersonalDataManager::GetProfilesToSuggest for more details.
   base::android::ScopedJavaLocalRef<jobjectArray> GetProfileGUIDsToSuggest(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj);
+      JNIEnv* env);
 
   // Returns the profile with the specified |jguid|, or NULL if there is no
   // profile with the specified |jguid|. Both web and auxiliary profiles may
   // be returned.
   base::android::ScopedJavaLocalRef<jobject> GetProfileByGUID(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid);
 
   // Determines whether the logged in user (if any) is eligible to store
   // Autofill address profiles to their account.
-  jboolean IsEligibleForAddressAccountStorage(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj);
+  jboolean IsEligibleForAddressAccountStorage(JNIEnv* env);
 
   // Determines the country for for the newly created address profile.
   base::android::ScopedJavaLocalRef<jstring> GetDefaultCountryCodeForNewAddress(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj) const;
+      JNIEnv* env) const;
 
   // Users based in unsupported countries and profiles with a country value set
   // to an unsupported country are not eligible for account storage. This
   // function determines if the `country_code` is eligible.
   bool IsCountryEligibleForAccountStorage(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& country_code) const;
 
   // Adds or modifies a profile.  If |jguid| is an empty string, we are creating
@@ -84,14 +83,12 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // the GUID for this profile; the GUID it may have just been created.
   base::android::ScopedJavaLocalRef<jstring> SetProfile(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jobject>& jprofile,
       const base::android::JavaParamRef<jstring>& jguid);
   // Adds or modifies a profile like SetProfile interface if |jprofile| is
   // local. Otherwise it creates a local copy of it.
   base::android::ScopedJavaLocalRef<jstring> SetProfileToLocal(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jobject>& jprofile,
       const base::android::JavaParamRef<jstring>& jguid);
 
@@ -100,8 +97,7 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   //
   // The labels never contain the full name and include at least 2 fields.
   base::android::ScopedJavaLocalRef<jobjectArray> GetProfileLabelsForSettings(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj);
+      JNIEnv* env);
 
   // Gets the labels for the profiles to suggest to the user. These labels are
   // useful for distinguishing the profiles from one another.
@@ -111,7 +107,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // All other fields are included in the label.
   base::android::ScopedJavaLocalRef<jobjectArray> GetProfileLabelsToSuggest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       jboolean include_name_in_label,
       jboolean include_organization_in_label,
       jboolean include_country_in_label);
@@ -123,7 +118,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   base::android::ScopedJavaLocalRef<jstring>
   GetShippingAddressLabelForPaymentRequest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jobject>& jprofile,
       const base::android::JavaParamRef<jstring>& jguid,
       bool include_country_in_label);
@@ -133,20 +127,17 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
 
   // Returns the GUIDs of all the credit cards.
   base::android::ScopedJavaLocalRef<jobjectArray> GetCreditCardGUIDsForSettings(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj);
+      JNIEnv* env);
 
   // Returns the GUIDs of the credit cards to suggest to the user. See
   // PersonalDataManager::GetCreditCardsToSuggest for more details.
   base::android::ScopedJavaLocalRef<jobjectArray> GetCreditCardGUIDsToSuggest(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj);
+      JNIEnv* env);
 
   // Returns the credit card with the specified |jguid|, or NULL if there is
   // no credit card with the specified |jguid|.
   base::android::ScopedJavaLocalRef<jobject> GetCreditCardByGUID(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid);
 
   // Returns a credit card with the specified |jcard_number|. This is used for
@@ -155,7 +146,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // used for cards that are not saved.
   base::android::ScopedJavaLocalRef<jobject> GetCreditCardForNumber(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jcard_number);
 
   // Adds or modifies a local credit card.  If |jguid| is an empty string, we
@@ -163,52 +153,32 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // returns the GUID for this profile; the GUID it may have just been created.
   base::android::ScopedJavaLocalRef<jstring> SetCreditCard(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jobject>& jcard);
 
   // Updates the billing address of a server credit card |jcard|.
   void UpdateServerCardBillingAddress(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jobject>& jcard);
-
-  // Returns the issuer network string according to PaymentRequest spec, or an
-  // empty string if the given card number is not valid and |jempty_if_invalid|
-  // is true.
-  base::android::ScopedJavaLocalRef<jstring> GetBasicCardIssuerNetwork(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
-      const base::android::JavaParamRef<jstring>& jcard_number,
-      const jboolean jempty_if_invalid);
 
   // Adds a server credit card. Used only in tests.
   void AddServerCreditCardForTest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jobject>& jcard);
 
   // Adds a server credit card and sets the additional fields, for example,
   // card_issuer, nickname. Used only in tests.
   void AddServerCreditCardForTestWithAdditionalFields(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jobject>& jcard,
       const base::android::JavaParamRef<jstring>& jnickname,
       jint jcard_issuer);
 
   // Removes the profile or credit card represented by |jguid|.
   void RemoveByGUID(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& unused_obj,
                     const base::android::JavaParamRef<jstring>& jguid);
 
   // Delete all local credit cards.
   void DeleteAllLocalCreditCards(JNIEnv* env);
-
-  // Resets the given unmasked card back to the masked state.
-  void ClearUnmaskedCache(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
-      const base::android::JavaParamRef<jstring>& jguid);
 
   // PersonalDataManagerObserver:
   void OnPersonalDataChanged() override;
@@ -221,7 +191,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // the current time.
   void RecordAndLogProfileUse(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid);
 
   // Sets the use count and number of days since last use of the profile
@@ -230,7 +199,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // since the profile was last used.
   void SetProfileUseStatsForTesting(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid,
       jint count,
       jint days_since_last_used);
@@ -238,7 +206,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // Returns the use count of the profile associated to the |jguid|.
   jint GetProfileUseCountForTesting(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid);
 
   // Returns the use date of the profile associated to the |jguid|. It
@@ -247,7 +214,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // the comment header in time.h.
   jlong GetProfileUseDateForTesting(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid);
 
   // Records the use and log usage metrics for the credit card associated with
@@ -255,7 +221,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // date to the current time.
   void RecordAndLogCreditCardUse(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid);
 
   // Sets the use count and number of days since last use of the credit card
@@ -264,7 +229,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // the card was last used.
   void SetCreditCardUseStatsForTesting(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid,
       jint count,
       jint days_since_last_used);
@@ -272,7 +236,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // Returns the use count of the credit card associated to the |jguid|.
   jint GetCreditCardUseCountForTesting(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid);
 
   // Returns the use date of the credit card associated to the |jguid|. It
@@ -281,28 +244,22 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // the comment header in time.h.
   jlong GetCreditCardUseDateForTesting(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid);
 
   // Returns the current date represented as an absolute point in coordinated
   // universal time (UTC) represented as microseconds since the Unix epoch. For
   // more details see the comment header in time.h
-  jlong GetCurrentDateForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj);
+  jlong GetCurrentDateForTesting(JNIEnv* env);
 
   // Calculates a point in time `days` days ago from the current
   // time. Returns the result as an absolute point in coordinated universal time
   // (UTC) represented as microseconds since the Windows epoch.
   jlong GetDateNDaysAgoForTesting(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       jint days);
 
   // Clears server profiles and cards, to be used in tests only.
-  void ClearServerDataForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj);
+  void ClearServerDataForTesting(JNIEnv* env);
 
   // Checks whether the Autofill PersonalDataManager has profiles.
   jboolean HasProfiles(JNIEnv* env);
@@ -332,24 +289,60 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // the specified `jguid`.
   base::android::ScopedJavaLocalRef<jobject> GetIbanByGuid(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jstring>& jguid);
+
+  // Returns an array of stored local IBANs.
+  base::android::ScopedJavaLocalRef<jobjectArray> GetLocalIbansForSettings(
+      JNIEnv* env);
 
   // Adds or modifies a local IBAN. If `jiban`'s GUID is an empty string we
   // create a new IBAN, otherwise we update the existing IBAN. Always returns
   // the GUID for this IBAN; the GUID may have just been created.
   base::android::ScopedJavaLocalRef<jstring> AddOrUpdateLocalIban(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jobject>& jiban);
+
+  // Checks if `jiban_value` is a valid IBAN.
+  static jboolean IsValidIban(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& jiban_value);
+
+  // Returns whether the Autofill feature is managed.
+  jboolean IsAutofillManaged(JNIEnv* env);
+
+  // Returns whether the Autofill feature for profiles is managed.
+  jboolean IsAutofillProfileManaged(JNIEnv* env);
+
+  // Returns whether the Autofill feature for credit cards is managed.
+  jboolean IsAutofillCreditCardManaged(JNIEnv* env);
+
+  // Returns an array of BankAccount objects retrieved from the
+  // PersonalDataManager.
+  base::android::ScopedJavaLocalRef<jobjectArray> GetMaskedBankAccounts(
+      JNIEnv* env);
+
+  // Add a BankAccount object to the existing list of BankAccounts stored in
+  // PersonalDataManager.
+  void AddMaskedBankAccountForTest(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jbank_account);
+
+  // Create an object of Java BankAccount from native BankAccount.
+  static base::android::ScopedJavaLocalRef<jobject>
+  CreateJavaBankAccountFromNative(JNIEnv* env, const BankAccount& bank_account);
 
  private:
   ~PersonalDataManagerAndroid() override;
 
+  // Create an object of native BankAccount from Java BankAccount.
+  static BankAccount CreateNativeBankAccountFromJava(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jbank_account);
+
   // Returns the GUIDs of the |profiles| passed as parameter.
   base::android::ScopedJavaLocalRef<jobjectArray> GetProfileGUIDs(
       JNIEnv* env,
-      const std::vector<AutofillProfile*>& profiles);
+      const std::vector<const AutofillProfile*>& profiles);
 
   // Returns the GUIDs of the |credit_cards| passed as parameter.
   base::android::ScopedJavaLocalRef<jobjectArray> GetCreditCardGUIDs(
@@ -369,13 +362,15 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       bool include_name_in_label,
       bool include_organization_in_label,
       bool include_country_in_label,
-      std::vector<AutofillProfile*> profiles);
+      std::vector<const AutofillProfile*> profiles);
 
   // Pointer to the java counterpart.
   JavaObjectWeakGlobalRef weak_java_obj_;
 
   // Pointer to the PersonalDataManager for the main profile.
   raw_ptr<PersonalDataManager> personal_data_manager_;
+
+  raw_ptr<PrefService> prefs_;
 };
 
 }  // namespace autofill

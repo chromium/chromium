@@ -1,0 +1,53 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ash/webui/projector_app/projector_app.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("annotator") {
+  sources = [
+    "untrusted_annotator_ui_config.cc",
+    "untrusted_annotator_ui_config.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/webui/annotator",
+    "//ash/webui/projector_app/public/cpp",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/projector",
+    "//chrome/common",
+    "//chrome/common:channel_info",
+    "//components/version_info",
+    "//content/public/browser",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  if (enable_cros_projector_app && enable_cros_media_app) {
+    sources = [ "annotator_ui_integration_browsertest.cc" ]
+
+    deps = [
+      "//ash/webui/annotator",
+      "//ash/webui/annotator/public/cpp",
+      "//ash/webui/media_app_ui:browser_test_support",
+      "//ash/webui/projector_app/public/cpp",
+      "//base",
+      "//chrome/test:test_support",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+}

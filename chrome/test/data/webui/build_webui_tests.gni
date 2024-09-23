@@ -4,7 +4,7 @@
 
 import("//chrome/common/features.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 template("build_webui_tests") {
@@ -56,14 +56,34 @@ template("build_webui_tests") {
     }
   }
 
-  ts_library("build_ts") {
-    visibility = [ ":build_grdp" ]
+  webui_ts_library("build_ts") {
+    composite = false
+    if (defined(invoker.ts_composite)) {
+      composite = invoker.ts_composite
+    }
+    if (!composite) {
+      visibility = [ ":build_grdp" ]
+    }
     root_dir = preprocess_dir
     out_dir = tsc_dir
-    tsconfig_base = "//chrome/test/data/webui/tsconfig_base.json"
 
+    # Default tsconfig is set to
+    # //chrome/test/data/webui/tsconfig_base_polymer.json for targets
+    # with a Polymer or Lit dependency, and
+    # //chrome/test/data/webui/tsconfig_base_polymer.json) for other targets.
+    tsconfig_base = "//chrome/test/data/webui/tsconfig_base.json"
     if (defined(invoker.ts_tsconfig_base)) {
       tsconfig_base = invoker.ts_tsconfig_base
+    } else if (defined(invoker.ts_deps)) {
+      has_polymer_or_lit =
+          filter_include(invoker.ts_deps,
+                         [
+                           "//third_party/polymer/v3_0:library",
+                           "//third_party/lit/v3_0:build_ts",
+                         ]) != []
+      if (has_polymer_or_lit) {
+        tsconfig_base = "//chrome/test/data/webui/tsconfig_base_polymer.json"
+      }
     }
 
     path_mappings = []
@@ -77,10 +97,12 @@ template("build_webui_tests") {
       path_mappings += [ "chrome-untrusted://webui-test/*|" + rebase_path(
                              "$root_gen_dir/chrome/test/data/webui/tsc/*",
                              target_gen_dir) ]
+      webui_context_type = "untrusted"
     } else {
       path_mappings += [ "chrome://webui-test/*|" + rebase_path(
                              "$root_gen_dir/chrome/test/data/webui/tsc/*",
                              target_gen_dir) ]
+      webui_context_type = "trusted"
     }
     in_files = files
 

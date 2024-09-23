@@ -42,13 +42,6 @@ class WebsiteSettingsInfo {
     // right and often result in surprising UX.
     REQUESTING_ORIGIN_WITH_TOP_ORIGIN_EXCEPTIONS_SCOPE,
 
-    // Settings scoped to the origin of the requesting frame and the top-level
-    // frame.
-    // Use only after strongly considering if this is the right choice;
-    // presenting settings that are scoped on two origins is difficult to get
-    // right and often result in surprising UX.
-    REQUESTING_AND_TOP_ORIGIN_SCOPE,
-
     // Settings scoped to the schemeful site of the requesting frame and the
     // top-level frame.
     // Use only after strongly considering if this is the right choice;

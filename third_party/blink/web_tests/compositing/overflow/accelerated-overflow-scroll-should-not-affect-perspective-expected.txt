@@ -7,13 +7,13 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "bounds": [200, 200],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "bounds": [185, 185],
       "drawsContent": false,
       "transform": 1
@@ -32,20 +32,20 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "bounds": [185, 290],
       "drawsContent": false,
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='child first'",
+      "name": "LayoutBlockFlow (positioned) DIV class='child first'",
       "bounds": [60, 200],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 4
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='child second'",
+      "name": "LayoutBlockFlow (positioned) DIV class='child second'",
       "bounds": [60, 200],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",

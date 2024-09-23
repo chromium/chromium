@@ -49,16 +49,17 @@ void ForwardSmoothness(base::TimeTicks start_tick,
   bool animation_in_test =
       ui::ScopedAnimationDurationScaleMode::duration_multiplier() !=
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION;
-  // Do not report if tracker is started and stopped closely in time.
-  // There are 2 cases:
-  // *   frame_expected == 0
-  //        when there is no BeginFrame between start and stop.
-  // *   frame_expected == 1 && frames_produced == 0
-  //        when there is one BeginFrame but no frame generated between
-  //        start and stop; should not included this case in tests.
-  if (!data.frames_expected_v3 ||
-      (!animation_in_test && data.frames_expected_v3 == 1 &&
-       data.frames_expected_v3 == data.frames_dropped_v3)) {
+
+  // Always report smoothness data for test. If tests care whether frames
+  // are presented, they should check whether the reported smoothness.
+  if (animation_in_test) {
+    callback.Run(data.frames_expected_v3 ? CalculateSmoothnessV3(data) : 0);
+    return;
+  }
+
+  // Do not report if a tracker is started and stopped closely in time that
+  // frame_expected == 0 when there is no BeginFrame between start and stop.
+  if (!data.frames_expected_v3) {
     return;
   }
 

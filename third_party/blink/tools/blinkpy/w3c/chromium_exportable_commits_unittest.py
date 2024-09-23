@@ -68,7 +68,7 @@ class ChromiumExportableCommitsTest(unittest.TestCase):
                 '/mock-checkout/' + RELATIVE_WEB_TESTS + 'external/wpt'
             ],
             [
-                'git', 'format-patch', '-1', '--stdout',
+                'git', 'format-patch', '-1', '--no-renames', '--stdout',
                 'add087a97844f4b9e307d9a216940582d96db306', '--',
                 RELATIVE_WEB_TESTS + 'external/wpt/some',
                 RELATIVE_WEB_TESTS + 'external/wpt/files'

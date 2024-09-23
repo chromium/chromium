@@ -12,6 +12,7 @@
 #include "net/base/hex_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace autofill {
 namespace {
 
 constexpr size_t kBitsPerByte = 8;
@@ -102,10 +103,8 @@ const EncodeParams kEncodeParams[] = {
 
 using RandomizedEncoderTest = ::testing::TestWithParam<EncodeParams>;
 
-}  // namespace
-
 // As described in randomized_encoder.cc
-// TODO(https://crbug.com/831123): resolve circular dependency and remove
+// TODO(crbug.com/40570965): resolve circular dependency and remove
 // hardcoded constant
 TEST(RandomizedEncoderTest, CorrectUrlConsentFlag) {
   EXPECT_STREQ(
@@ -402,3 +401,6 @@ TEST_P(RandomizedDecoderTest, Decode) {
 INSTANTIATE_TEST_SUITE_P(All,
                          RandomizedDecoderTest,
                          ::testing::ValuesIn(kDecodeParams));
+
+}  // namespace
+}  // namespace autofill

@@ -19,6 +19,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/guest_view_histogram_value.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/guest_view_manager_factory.h"
@@ -31,6 +32,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/context_menu_interceptor.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
@@ -358,6 +360,10 @@ void WebViewDPIAPITest::SetUp() {
 
 // This test verifies that hiding the embedder also hides the guest.
 IN_PROC_BROWSER_TEST_F(WebViewAPITest, EmbedderVisibilityChanged) {
+  // In this test, we also sanity-check that guest view metrics are being
+  // recorded.
+  base::HistogramTester histogram_tester;
+
   LaunchApp("web_view/visibility_changed");
 
   base::RunLoop run_loop;
@@ -371,6 +377,12 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, EmbedderVisibilityChanged) {
   SendMessageToEmbedder("hide-embedder");
   if (!observer.hidden_observed())
     run_loop.Run();
+
+  // We should have created a webview, and should not have records for any other
+  // guest view type (`ExpectUniqueSample` guarantees both of these).
+  histogram_tester.ExpectUniqueSample(
+      "GuestView.GuestViewCreated",
+      guest_view::GuestViewHistogramValue::kWebView, 1);
 }
 
 // Test for http://crbug.com/419611.

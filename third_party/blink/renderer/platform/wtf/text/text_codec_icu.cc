@@ -24,6 +24,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_icu.h"
 
 #include <memory>
@@ -83,8 +88,6 @@ void TextCodecICU::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   // apart; ICU treats these names as synonyms.
   registrar("ISO-8859-8-I", "ISO-8859-8-I");
 
-  const bool is_text_codec_cjk_enabled =
-      base::FeatureList::IsEnabled(blink::features::kTextCodecCJKEnabled);
   int32_t num_encodings = ucnv_countAvailable();
   for (int32_t i = 0; i < num_encodings; ++i) {
     const char* name = ucnv_getAvailableName(i);
@@ -117,7 +120,7 @@ void TextCodecICU::RegisterEncodingNames(EncodingNameRegistrar registrar) {
     }
 #endif
     // Avoid codecs supported by `TextCodecCJK`.
-    if (is_text_codec_cjk_enabled && TextCodecCJK::IsSupported(standard_name)) {
+    if (TextCodecCJK::IsSupported(standard_name)) {
       continue;
     }
 
@@ -150,8 +153,7 @@ void TextCodecICU::RegisterEncodingNames(EncodingNameRegistrar registrar) {
 
     // Avoid registering codecs registered by
     // `TextCodecCJK::RegisterEncodingNames`.
-    if (!is_text_codec_cjk_enabled ||
-        !TextCodecCJK::IsSupported(standard_name)) {
+    if (!TextCodecCJK::IsSupported(standard_name)) {
       registrar(standard_name, standard_name);
     }
 
@@ -272,8 +274,6 @@ void TextCodecICU::RegisterCodecs(TextCodecRegistrar registrar) {
   // See comment above in registerEncodingNames.
   registrar("ISO-8859-8-I", Create, nullptr);
 
-  const bool is_text_codec_cjk_enabled =
-      base::FeatureList::IsEnabled(blink::features::kTextCodecCJKEnabled);
   int32_t num_encodings = ucnv_countAvailable();
   for (int32_t i = 0; i < num_encodings; ++i) {
     const char* name = ucnv_getAvailableName(i);
@@ -295,7 +295,7 @@ void TextCodecICU::RegisterCodecs(TextCodecRegistrar registrar) {
     }
 #endif
     // Avoid codecs supported by `TextCodecCJK`.
-    if (is_text_codec_cjk_enabled && TextCodecCJK::IsSupported(standard_name)) {
+    if (TextCodecCJK::IsSupported(standard_name)) {
       continue;
     }
     registrar(standard_name, Create, nullptr);
@@ -342,7 +342,7 @@ void TextCodecICU::CreateICUConverter() const {
   }
 
   err = U_ZERO_ERROR;
-  converter_icu_ = ucnv_open(encoding_.GetName(), &err);
+  converter_icu_ = ucnv_open(encoding_.GetName().Utf8().c_str(), &err);
   DLOG_IF(ERROR, err == U_AMBIGUOUS_ALIAS_WARNING)
       << "ICU ambiguous alias warning for encoding: " << encoding_.GetName();
   if (converter_icu_)
@@ -396,8 +396,7 @@ class ErrorCallbackSetter final {
   UConverterToUCallback saved_action_;
 };
 
-String TextCodecICU::Decode(const char* bytes,
-                            wtf_size_t length,
+String TextCodecICU::Decode(base::span<const uint8_t> data,
                             FlushBehavior flush,
                             bool stop_on_error,
                             bool& saw_error) {
@@ -418,8 +417,8 @@ String TextCodecICU::Decode(const char* bytes,
 
   UChar buffer[kConversionBufferSize];
   UChar* buffer_limit = buffer + kConversionBufferSize;
-  const char* source = reinterpret_cast<const char*>(bytes);
-  const char* source_limit = source + length;
+  const char* source = reinterpret_cast<const char*>(data.data());
+  const char* source_limit = source + data.size();
   int32_t* offsets = nullptr;
   UErrorCode err = U_ZERO_ERROR;
 
@@ -641,7 +640,7 @@ static void NotReachedEntityCallback(const void* context,
                                      UChar32 code_point,
                                      UConverterCallbackReason reason,
                                      UErrorCode* err) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 class TextCodecInput final {
@@ -649,16 +648,15 @@ class TextCodecInput final {
 
  public:
   TextCodecInput(const TextEncoding& encoding,
-                 const UChar* characters,
-                 wtf_size_t length)
-      : begin_(characters), end_(characters + length) {}
+                 base::span<const UChar> characters)
+      : begin_(characters.data()),
+        end_(characters.data() + characters.size()) {}
 
   TextCodecInput(const TextEncoding& encoding,
-                 const LChar* characters,
-                 wtf_size_t length) {
-    buffer_.ReserveInitialCapacity(length);
-    for (wtf_size_t i = 0; i < length; ++i)
-      buffer_.push_back(characters[i]);
+                 base::span<const LChar> characters) {
+    buffer_.ReserveInitialCapacity(
+        base::checked_cast<wtf_size_t>(characters.size()));
+    buffer_.AppendSpan(characters);
     begin_ = buffer_.data();
     end_ = begin_ + buffer_.size();
   }
@@ -745,31 +743,29 @@ std::string TextCodecICU::EncodeInternal(const TextCodecInput& input,
 }
 
 template <typename CharType>
-std::string TextCodecICU::EncodeCommon(const CharType* characters,
-                                       wtf_size_t length,
+std::string TextCodecICU::EncodeCommon(base::span<const CharType> characters,
                                        UnencodableHandling handling) {
-  if (!length)
+  if (characters.empty()) {
     return "";
+  }
 
   if (!converter_icu_)
     CreateICUConverter();
   if (!converter_icu_)
     return std::string();
 
-  TextCodecInput input(encoding_, characters, length);
+  const TextCodecInput input(encoding_, characters);
   return EncodeInternal(input, handling);
 }
 
-std::string TextCodecICU::Encode(const UChar* characters,
-                                 wtf_size_t length,
+std::string TextCodecICU::Encode(base::span<const UChar> characters,
                                  UnencodableHandling handling) {
-  return EncodeCommon(characters, length, handling);
+  return EncodeCommon(characters, handling);
 }
 
-std::string TextCodecICU::Encode(const LChar* characters,
-                                 wtf_size_t length,
+std::string TextCodecICU::Encode(base::span<const LChar> characters,
                                  UnencodableHandling handling) {
-  return EncodeCommon(characters, length, handling);
+  return EncodeCommon(characters, handling);
 }
 
 }  // namespace WTF

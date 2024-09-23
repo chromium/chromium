@@ -186,20 +186,17 @@
     }
   }
 
-  async loadAndDumpCSSPositionFallbacksForNode(nodeId) {
-    var {result} =
+  async loadAndDumpCSSPositionTryForNode(nodeId) {
+    const {result} =
         await this._dp.CSS.getMatchedStylesForNode({'nodeId': nodeId});
-    this._testRunner.log('Dumping CSS position-fallback rules: ');
-    for (var cssPositionFallbackRule of result.cssPositionFallbackRules) {
-      this._testRunner.log(
-          '@position-fallback ' + cssPositionFallbackRule.name.text + ' {');
-      for (var tryRule of cssPositionFallbackRule.tryRules) {
-        this._indentLog(4, '@try {');
-        this.dumpStyle(tryRule.style, 4);
-        this._indentLog(4, '}');
-      }
+    this._testRunner.log('Dumping CSS position-try rules: ');
+    for (const cssPositionTryRule of result.cssPositionTryRules) {
+      const status = Boolean(cssPositionTryRule.active) ? 'active' : 'inactive';
+      this._testRunner.log(`@position-try ${cssPositionTryRule.name.text} (${status}) {`);
+      this.dumpStyle(cssPositionTryRule.style, 0);
       this._testRunner.log('}');
     }
+    this._testRunner.log('index of active position-try-fallback: ' + result.activePositionFallbackIndex);
   }
 
   async loadAndDumpCSSAnimationsForNode(nodeId) {

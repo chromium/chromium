@@ -23,8 +23,9 @@ import json
 import logging
 import os
 import subprocess
-import sys
 from typing import Any, Dict, List, Optional, Tuple, Union
+
+from gpu_tests.util import host_information
 
 SummaryType = Dict[str, Dict[str, float]]
 ResultType = Dict[str, Any]
@@ -32,7 +33,7 @@ MetricType = Dict[str, Union[List[str], List[float]]]
 
 
 def LocateIPG() -> str:
-  if sys.platform == 'win32':
+  if host_information.IsWindows():
     ipg_dir = os.getenv('IPG_Dir')
     if not ipg_dir:
       raise Exception('No env IPG_Dir')
@@ -40,7 +41,7 @@ def LocateIPG() -> str:
     if not os.path.isfile(gadget_path):
       raise Exception("Can't locate Intel Power Gadget at " + gadget_path)
     return gadget_path
-  if sys.platform == 'darwin':
+  if host_information.IsMac():
     return '/Applications/Intel Power Gadget/PowerLog'
   raise Exception('Only supported on Windows/Mac')
 

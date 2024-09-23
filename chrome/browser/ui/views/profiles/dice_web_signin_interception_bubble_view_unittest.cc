@@ -30,7 +30,8 @@ std::string SigninInterceptTypeToString(SigninInterceptionType type) {
     case SigninInterceptionType::kChromeSignin:
       return "ChromeSignin";
     default:
-      NOTREACHED() << "Interception type not supported in the tests.";
+      NOTREACHED_IN_MIGRATION()
+          << "Interception type not supported in the tests.";
       return std::string();
   }
 }
@@ -49,7 +50,8 @@ std::string SigninInterceptResultToString(SigninInterceptionResult result) {
     case SigninInterceptionResult::kNotDisplayed:
       return "NotDisplayed";
     default:
-      NOTREACHED() << "Interception result not supported in the tests.";
+      NOTREACHED_IN_MIGRATION()
+          << "Interception result not supported in the tests.";
       return std::string();
   }
 }
@@ -72,6 +74,8 @@ class DiceWebSigninInterceptionBubbleViewTestBase : public testing::Test {
     identity_test_env->UpdateAccountInfoForAccount(enterprise_account_);
     personal_account_ =
         identity_test_env->MakeAccountAvailable("alice@gmail.com");
+    personal_account_2_ =
+        identity_test_env->MakeAccountAvailable("carol@gmail.com");
   }
 
   signin::IdentityTestEnvironment* identity_test_env() {
@@ -91,6 +95,7 @@ class DiceWebSigninInterceptionBubbleViewTestBase : public testing::Test {
 
   AccountInfo enterprise_account_;
   AccountInfo personal_account_;
+  AccountInfo personal_account_2_;
 };
 
 class DiceWebSigninInterceptionBubbleViewSyncParamTest
@@ -237,5 +242,37 @@ TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, EnterpriseHistograms) {
         "Signin.InterceptResult.Enterprise.NewIsEnterprise", 0);
     histogram_tester.ExpectUniqueSample(
         "Signin.InterceptResult.Enterprise.PrimaryIsEnterprise", result, 1);
+  }
+}
+
+TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, SigninPendingHistograms) {
+  // The primary account is in sign in pending state. We are already signed into
+  // web with different account, therefore inducing an inconsistent state.
+  identity_test_env()->SetPrimaryAccount(personal_account_.email,
+                                         signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+
+  {
+    base::HistogramTester histogram_tester;
+    SigninInterceptionResult result = SigninInterceptionResult::kAccepted;
+    WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+        SigninInterceptionType::kMultiUser, personal_account_2_,
+        personal_account_);
+    DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
+        bubble_parameters, profile(), result);
+    histogram_tester.ExpectUniqueSample(
+        "Signin.InterceptResult.MultiUser.SigninPending", result, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    SigninInterceptionResult result = SigninInterceptionResult::kDismissed;
+    WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+        SigninInterceptionType::kMultiUser, personal_account_2_,
+        personal_account_);
+    DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
+        bubble_parameters, profile(), result);
+    histogram_tester.ExpectUniqueSample(
+        "Signin.InterceptResult.MultiUser.SigninPending", result, 1);
   }
 }

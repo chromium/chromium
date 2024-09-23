@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -45,6 +47,10 @@
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/models/menu_model.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/chromeos/window_pin_util.h"
+#endif
 
 using content::WebContents;
 using extensions::ContextMenuMatcher;
@@ -172,7 +178,7 @@ class ExtensionContextMenuBrowserTest
     if (!FindCommandId(menu, id, &command_id))
       return false;
 
-    MenuModel* model = nullptr;
+    raw_ptr<MenuModel> model = nullptr;
     size_t index = 0;
     if (!menu->GetMenuModelAndItemIndex(command_id, &model, &index)) {
       return false;
@@ -244,7 +250,7 @@ class ExtensionContextMenuLazyTest
 
  protected:
   const extensions::Extension* LoadContextMenuExtension(
-      base::StringPiece subdirectory) {
+      std::string_view subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
     return LoadExtension(extension_dir);
   }
@@ -252,14 +258,14 @@ class ExtensionContextMenuLazyTest
   // Helper to load an extension from context_menus/top_level/|subdirectory| in
   // the extensions test data dir.
   const extensions::Extension* LoadTopLevelContextMenuExtension(
-      base::StringPiece subdirectory) {
+      std::string_view subdirectory) {
     base::FilePath extension_dir =
         GetRootDir().AppendASCII("top_level").AppendASCII(subdirectory);
     return LoadExtension(extension_dir, {});
   }
 
   const extensions::Extension* LoadContextMenuExtensionWithIncognitoFlags(
-      base::StringPiece subdirectory) {
+      std::string_view subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
     return LoadExtension(extension_dir, {.allow_in_incognito = true});
   }
@@ -305,7 +311,7 @@ class ExtensionContextMenuPersistentTest
   // Helper to load an extension from context_menus/|subdirectory| in the
   // extensions test data dir.
   const extensions::Extension* LoadContextMenuExtension(
-      base::StringPiece subdirectory) {
+      std::string_view subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
     return LoadExtension(extension_dir);
   }
@@ -608,7 +614,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, TopLevel) {
       TestRenderViewContextMenu::Create(GetWebContents(), url));
 
   size_t index = 0;
-  MenuModel* model = nullptr;
+  raw_ptr<MenuModel> model = nullptr;
 
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0), &model,
@@ -697,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
 
   // The top-level item should be an "automagic parent" with the extension's
   // name.
-  MenuModel* model = nullptr;
+  raw_ptr<MenuModel> model = nullptr;
   size_t index = 0;
   std::u16string label;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
@@ -711,6 +717,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
   MenuModel* submenu = model->GetSubmenuModelAt(index);
   ASSERT_TRUE(submenu);
   VerifyMenuForSeparatorsTest(*submenu);
+  // Depends on `menu` so must be cleared before it is destroyed below.
+  model = nullptr;
 
   // Now run our second test - navigate to test2.html which creates an explicit
   // parent node and populates that with the same items as in test1.
@@ -914,7 +922,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, EventPage) {
 #endif
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest,
                        MAYBE_IncognitoSplitContextMenuCount) {
-  // TODO(crbug.com/939664): Not yet implemented.
+  // TODO(crbug.com/40617251): Not yet implemented.
   if (GetParam() == ContextType::kServiceWorker)
     return;
   ExtensionTestMessageListener created("created item regular");
@@ -968,6 +976,45 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, UpdateCheckboxes) {
   VerifyRadioItemSelectionState(menu.get(), extension->id(), "checkbox2",
                                 false);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Extension context menu tests in locked fullscreen when locked and not locked
+// for OnTask. Only relevant for non-web browser scenarios.
+class ExtensionContextMenuLockedFullscreenTest
+    : public ExtensionContextMenuBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool IsLockedForOnTask() { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLockedFullscreenTest,
+                       VerifyItemStateInLockedFullscreenForOnTask) {
+  browser()->SetLockedForOnTask(IsLockedForOnTask());
+
+  // Enter locked fullscreen.
+  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+
+  // Load test extension and wait for js test code to create context menu with
+  // one item.
+  ExtensionTestMessageListener listener("created context menu");
+  base::FilePath extension_dir = GetRootDir().AppendASCII("locked_fullscreen");
+  ASSERT_TRUE(
+      LoadExtension(extension_dir, {.wait_for_registration_stored = true}));
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  // Create / build the context menu and verify item state is enabled if the
+  // instance is locked for OnTask. False otherwise.
+  const GURL page_url("http://www.google.com");
+  const std::unique_ptr<TestRenderViewContextMenu> menu(
+      TestRenderViewContextMenu::Create(GetWebContents(), page_url));
+  int command_id = ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
+  ASSERT_EQ(IsLockedForOnTask(), menu->IsCommandIdEnabled(command_id));
+}
+
+INSTANTIATE_TEST_SUITE_P(ExtensionContextMenuLockedFullscreenTests,
+                         ExtensionContextMenuLockedFullscreenTest,
+                         ::testing::Bool());
+#endif
 
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          ExtensionContextMenuLazyTest,

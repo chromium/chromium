@@ -42,6 +42,7 @@ HttpProxyClientSocket::HttpProxyClientSocket(
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : io_callback_(base::BindRepeating(&HttpProxyClientSocket::OnIOComplete,
                                        base::Unretained(this))),
+      user_agent_(user_agent),
       socket_(std::move(socket)),
       endpoint_(endpoint),
       auth_(std::move(http_auth_controller)),
@@ -53,9 +54,6 @@ HttpProxyClientSocket::HttpProxyClientSocket(
   // Synthesize the bits of a request that are actually used.
   request_.url = GURL("https://" + endpoint.ToString());
   request_.method = "CONNECT";
-  if (!user_agent.empty())
-    request_.extra_headers.SetHeader(HttpRequestHeaders::kUserAgent,
-                                     user_agent);
 }
 
 HttpProxyClientSocket::~HttpProxyClientSocket() {
@@ -129,7 +127,7 @@ const NetLogWithSource& HttpProxyClientSocket::NetLog() const {
 bool HttpProxyClientSocket::WasEverUsed() const {
   if (socket_)
     return socket_->WasEverUsed();
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -309,7 +307,7 @@ int HttpProxyClientSocket::DoLoop(int last_io_result) {
       case STATE_DONE:
         break;
       default:
-        NOTREACHED() << "bad state";
+        NOTREACHED_IN_MIGRATION() << "bad state";
         rv = ERR_UNEXPECTED;
         break;
     }
@@ -348,17 +346,16 @@ int HttpProxyClientSocket::DoSendRequest() {
 
     if (proxy_delegate_) {
       HttpRequestHeaders proxy_delegate_headers;
-      proxy_delegate_->OnBeforeTunnelRequest(proxy_chain_, proxy_chain_index_,
-                                             &proxy_delegate_headers);
+      int result = proxy_delegate_->OnBeforeTunnelRequest(
+          proxy_chain_, proxy_chain_index_, &proxy_delegate_headers);
+      if (result < 0) {
+        return result;
+      }
+
       extra_headers.MergeFrom(proxy_delegate_headers);
     }
 
-    std::string user_agent;
-    if (!request_.extra_headers.GetHeader(HttpRequestHeaders::kUserAgent,
-                                          &user_agent)) {
-      user_agent.clear();
-    }
-    BuildTunnelRequest(endpoint_, extra_headers, user_agent, &request_line_,
+    BuildTunnelRequest(endpoint_, extra_headers, user_agent_, &request_line_,
                        &request_headers_);
 
     NetLogRequestHeaders(net_log_,
@@ -368,7 +365,8 @@ int HttpProxyClientSocket::DoSendRequest() {
 
   parser_buf_ = base::MakeRefCounted<GrowableIOBuffer>();
   http_stream_parser_ = std::make_unique<HttpStreamParser>(
-      socket_.get(), is_reused_, &request_, parser_buf_.get(), net_log_);
+      socket_.get(), is_reused_, request_.url, request_.method,
+      /*upload_data_stream=*/nullptr, parser_buf_.get(), net_log_);
   return http_stream_parser_->SendRequest(request_line_, request_headers_,
                                           traffic_annotation_, &response_,
                                           io_callback_);

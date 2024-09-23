@@ -4,10 +4,11 @@
 
 #include "content/browser/web_package/signed_exchange_utils.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -19,7 +20,6 @@
 #include "content/common/features.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_info.h"
@@ -51,16 +51,11 @@ void ReportErrorAndTraceEvent(
 }
 
 bool IsSignedExchangeHandlingEnabled(BrowserContext* context) {
-  if (!GetContentClient()->browser()->AllowSignedExchange(context))
-    return false;
-
-  return base::FeatureList::IsEnabled(features::kSignedHTTPExchange);
+  return GetContentClient()->browser()->AllowSignedExchange(context);
 }
 
 bool IsSignedExchangeReportingForDistributorsEnabled() {
-  return base::FeatureList::IsEnabled(network::features::kReporting) &&
-         base::FeatureList::IsEnabled(
-             features::kSignedExchangeReportingForDistributors);
+  return base::FeatureList::IsEnabled(network::features::kReporting);
 }
 
 bool ShouldHandleAsSignedHTTPExchange(
@@ -68,7 +63,7 @@ bool ShouldHandleAsSignedHTTPExchange(
     const network::mojom::URLResponseHead& head) {
   // Currently we don't support the signed exchange which is returned from a
   // service worker.
-  // TODO(crbug/803774): Decide whether we should support it or not.
+  // TODO(crbug.com/40558902): Decide whether we should support it or not.
   if (head.was_fetched_via_service_worker)
     return false;
   if (!SignedExchangeRequestHandler::IsSupportedMimeType(head.mime_type))
@@ -100,11 +95,11 @@ std::optional<SignedExchangeVersion> GetSignedExchangeVersion(
 
   // Step 4.Let params be mimeType's parameters. [spec text]
   std::map<std::string, std::string> params;
-  if (semicolon != base::StringPiece::npos) {
+  if (semicolon != std::string_view::npos) {
     net::HttpUtil::NameValuePairsIterator parser(
         content_type.begin() + semicolon + 1, content_type.end(), ';');
     while (parser.GetNext()) {
-      const base::StringPiece name = parser.name_piece();
+      const std::string_view name = parser.name_piece();
       params[base::ToLowerASCII(name)] = parser.value();
     }
     if (!parser.valid())
@@ -196,11 +191,11 @@ SignedExchangeLoadResult GetLoadResultFromSignatureVerifierResult(
         kErrInvalidSignatureIntegrity_deprecated:
     case SignedExchangeSignatureVerifier::Result::
         kErrInvalidTimestamp_deprecated:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SignedExchangeLoadResult::kSignatureVerificationError;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SignedExchangeLoadResult::kSignatureVerificationError;
 }
 

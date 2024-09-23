@@ -190,7 +190,7 @@ class GCMDriver {
   // |callback| will be called asynchronously when |message| has been decrypted.
   // A dispatchable message will be used in case of success, an empty message in
   // case of failure.
-  // TODO(crbug/1045907): Decouple this from GCMDriver.
+  // TODO(crbug.com/40116239): Decouple this from GCMDriver.
   virtual void DecryptMessage(const std::string& app_id,
                               const std::string& authorized_entity,
                               const std::string& message,

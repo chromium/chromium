@@ -73,7 +73,7 @@ class ScreenshotDataCollector : public DataCollector,
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Is called when a screenshot attempt has been made by
-  // ui::GrabWindowSnapshotAsyncJPEG. Stores the captured image in
+  // ui::GrabWindowSnapshotAsJPEG. Stores the captured image in
   // `screenshot_base64_`.
   void OnScreenshotTaken(scoped_refptr<base::RefCountedMemory> data);
 #else

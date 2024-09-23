@@ -18,7 +18,7 @@ api::audio::StreamType ConvertStreamTypeFromMojom(
     case crosapi::mojom::StreamType::kOutput:
       return api::audio::StreamType::kOutput;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return api::audio::StreamType::kNone;
 }
 
@@ -32,7 +32,7 @@ crosapi::mojom::StreamType ConvertStreamTypeToMojom(
     case api::audio::StreamType::kOutput:
       return crosapi::mojom::StreamType::kOutput;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return crosapi::mojom::StreamType::kNone;
 }
 
@@ -74,7 +74,7 @@ api::audio::DeviceType ConvertDeviceTypeFromMojom(
     case crosapi::mojom::DeviceType::kOther:
       return api::audio::DeviceType::kOther;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return api::audio::DeviceType::kNone;
 }
 
@@ -116,7 +116,7 @@ crosapi::mojom::DeviceType ConvertDeviceTypeToMojom(
     case api::audio::DeviceType::kOther:
       return crosapi::mojom::DeviceType::kOther;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return crosapi::mojom::DeviceType::kNone;
 }
 

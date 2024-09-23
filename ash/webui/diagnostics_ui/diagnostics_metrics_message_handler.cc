@@ -49,13 +49,12 @@ void EmitScreenOpenDuration(const NavigationView screen,
            "ChromeOS.DiagnosticsUi.System.OpenDuration"},
       });
 
-  auto* iter = kOpenDurationMetrics.find(screen);
+  auto iter = kOpenDurationMetrics.find(screen);
   if (iter == kOpenDurationMetrics.end()) {
     NOTREACHED() << "Unknown NavigationView requested";
-    return;
   }
 
-  base::UmaHistogramLongTimes100(std::string(iter->second), time_elapsed);
+  base::UmaHistogramLongTimes100(iter->second, time_elapsed);
 }
 
 }  // namespace

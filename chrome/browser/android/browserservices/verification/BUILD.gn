@@ -65,6 +65,7 @@ robolectric_binary("verification_junit_tests") {
     ":junit_test_support",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:tasks_java",
     "//chrome/browser/profiles/android:java",
     "//components/content_relationship_verification:java",
     "//components/content_relationship_verification/android:java",

@@ -12,10 +12,13 @@ import java.nio.ByteBuffer;
 public interface TabStateSerializer {
 
     /**
-     * @param tabState {@link TabState} to be serializsed
+     * @param tabState {@link TabState} to be serialized
+     * @param contentsStateBytes copy of the {@link
+     *     org.chromium.chrome.browser.tab.WebContentsState} bytes. WebContentsState should not be
+     *     written to the file directly because it could be memory mapped from the same file.
      * @return serialized {@link TabState} in the form of a ByteBuffer
      */
-    ByteBuffer serialize(TabState tabState);
+    ByteBuffer serialize(TabState tabState, byte[] contentsStateBytes);
 
     /**
      * @param byteBuffer serialized {@link TabState}

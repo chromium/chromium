@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {VolumeManager} from '../../background/js/volume_manager.js';
+import type {UniversalDirectory} from '../../common/js/files_app_entry_types.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {RootTypesForUMA} from '../../common/js/volume_manager_types.js';
 
@@ -17,7 +18,12 @@ export class NavigationUma {
    *
    * @param entry the new directory
    */
-  onDirectoryChanged(entry: Entry) {
+  onDirectoryChanged(entry: UniversalDirectory|undefined) {
+    // TOOD(b/327533814): Refactor to work with FileData.
+    if (!entry) {
+      return;
+    }
+
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     if (locationInfo) {
       recordEnum(

@@ -14,10 +14,10 @@
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "base/version.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/upgrade_detector/build_state_observer.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 
 class PrefRegistrySimple;
 

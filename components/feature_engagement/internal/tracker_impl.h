@@ -15,6 +15,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "components/feature_engagement/public/session_controller.h"
 #include "components/feature_engagement/public/tracker.h"
 
 namespace base {
@@ -39,7 +41,8 @@ class TrackerImpl : public Tracker {
               std::unique_ptr<DisplayLockController> display_lock_controller,
               std::unique_ptr<ConditionValidator> condition_validator,
               std::unique_ptr<TimeProvider> time_provider,
-              base::WeakPtr<TrackerEventExporter> event_exporter);
+              std::unique_ptr<TrackerEventExporter> event_exporter,
+              std::unique_ptr<SessionController> session_controller);
 
   TrackerImpl(const TrackerImpl&) = delete;
   TrackerImpl& operator=(const TrackerImpl&) = delete;
@@ -73,9 +76,13 @@ class TrackerImpl : public Tracker {
                                            base::OnceClosure callback) override;
   void UnregisterPriorityNotificationHandler(
       const base::Feature& feature) override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void UpdateConfig(const base::Feature& feature,
+                    const ConfigurationProvider* provider) override;
+#endif
   const Configuration* GetConfigurationForTesting() const override;
   void SetClockForTesting(const base::Clock& clock,
-                          base::Time& initial_now) override;
+                          base::Time initial_now) override;
 
  private:
   // Invoked by the EventModel when it has been initialized.
@@ -132,7 +139,10 @@ class TrackerImpl : public Tracker {
   std::unique_ptr<TimeProvider> time_provider_;
 
   // The exporter for any new events to migrate into the tracker.
-  base::WeakPtr<TrackerEventExporter> event_exporter_;
+  std::unique_ptr<TrackerEventExporter> event_exporter_;
+
+  // The session controller that manages the life time of a session.
+  std::unique_ptr<SessionController> session_controller_;
 
   // Whether the initialization of the underlying EventModel has finished.
   bool event_model_initialization_finished_;

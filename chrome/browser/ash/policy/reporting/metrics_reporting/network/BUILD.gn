@@ -1,0 +1,151 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("network") {
+  sources = [
+    "https_latency_event_detector.cc",
+    "https_latency_event_detector.h",
+    "https_latency_sampler.cc",
+    "https_latency_sampler.h",
+    "network_events_observer.cc",
+    "network_events_observer.h",
+    "network_info_sampler.cc",
+    "network_info_sampler.h",
+    "network_telemetry_sampler.cc",
+    "network_telemetry_sampler.h",
+    "wifi_signal_strength_rssi_fetcher.cc",
+    "wifi_signal_strength_rssi_fetcher.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/net/network_health",
+    "//chromeos/ash/components/dbus/hermes",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/services/network_health/public/mojom",
+    "//chromeos/services/network_health/public/mojom:types",
+    "//components/onc",
+    "//components/reporting/metrics:metrics_data_collection",
+    "//components/reporting/proto:metric_data_proto",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_network_diagnostics_util.cc",
+    "fake_network_diagnostics_util.h",
+  ]
+
+  deps = [
+    ":network",
+    "//base",
+    "//chrome/browser/ash/net/network_diagnostics",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/services/network_health/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "https_latency_event_detector_unittest.cc",
+    "https_latency_events_unittest.cc",
+    "https_latency_sampler_unittest.cc",
+    "network_events_observer_unittest.cc",
+    "network_info_sampler_unittest.cc",
+    "network_telemetry_sampler_unittest.cc",
+    "wifi_signal_strength_rssi_fetcher_unittest.cc",
+  ]
+
+  deps = [
+    ":network",
+    ":test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/net/network_diagnostics",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/chromeos/reporting",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/hermes",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/services/network_health/public/mojom",
+    "//chromeos/services/network_health/public/mojom:types",
+    "//components/reporting/metrics/fakes:test_support",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/util:test_callbacks_support",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//dbus",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "network_events_observer_browsertest.cc",
+    "network_info_sampler_browsertest.cc",
+    "network_telemetry_sampler_browsertest.cc",
+  ]
+
+  deps = [
+    ":network",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/affiliation:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/chromeos/reporting",
+    "//chromeos/ash/components/dbus/hermes",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/dbus/missive:test_support",
+    "//chromeos/services/network_health/public/mojom:types",
+    "//components/policy/proto",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

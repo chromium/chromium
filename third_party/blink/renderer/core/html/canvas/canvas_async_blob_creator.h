@@ -58,7 +58,7 @@ class CORE_EXPORT CanvasAsyncBlobCreator
                          base::TimeTicks start_time,
                          ExecutionContext*,
                          const IdentifiableToken& input_digest,
-                         ScriptPromiseResolverTyped<Blob>*);
+                         ScriptPromiseResolver<Blob>*);
   CanvasAsyncBlobCreator(scoped_refptr<StaticBitmapImage>,
                          const ImageEncodeOptions*,
                          ToBlobFunctionType,
@@ -66,7 +66,7 @@ class CORE_EXPORT CanvasAsyncBlobCreator
                          base::TimeTicks start_time,
                          ExecutionContext*,
                          const IdentifiableToken& input_digest,
-                         ScriptPromiseResolverTyped<Blob>* = nullptr);
+                         ScriptPromiseResolver<Blob>* = nullptr);
   virtual ~CanvasAsyncBlobCreator();
 
   // Methods are virtual for mocking in unit tests
@@ -127,7 +127,7 @@ class CORE_EXPORT CanvasAsyncBlobCreator
   Member<V8BlobCallback> callback_;
 
   // Used for OffscreenCanvas only
-  Member<ScriptPromiseResolverTyped<Blob>> script_promise_resolver_;
+  Member<ScriptPromiseResolver<Blob>> script_promise_resolver_;
 
   static bool EncodeImage(std::unique_ptr<ImageDataBuffer>,
                           ImageEncodingMimeType,

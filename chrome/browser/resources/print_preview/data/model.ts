@@ -74,6 +74,7 @@ export interface Settings {
   pin: Setting;
   pinValue: Setting;
   // </if>
+  recentDestinations: Setting;
 }
 
 export interface SerializedSettings {
@@ -232,7 +233,7 @@ export function whenReady(): Promise<void> {
 /**
  * Sticky setting names in alphabetical order.
  */
-const STICKY_SETTING_NAMES: string[] = [
+const STICKY_SETTING_NAMES: Array<keyof Settings> = [
   'recentDestinations',
   'borderless',
   'collate',
@@ -331,6 +332,294 @@ function getDuplexPolicyDefaultValueAvailable(
 }
 // </if>
 
+function createSettings(): Settings {
+  return {
+    pages: {
+      value: [1],
+      unavailableValue: [],
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: '',
+      updatesPreview: false,
+    },
+    copies: {
+      value: 1,
+      unavailableValue: 1,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: '',
+      updatesPreview: false,
+    },
+    collate: {
+      value: true,
+      unavailableValue: false,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'isCollateEnabled',
+      updatesPreview: false,
+    },
+    layout: {
+      value: false, /* portrait */
+      unavailableValue: false,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'isLandscapeEnabled',
+      updatesPreview: true,
+    },
+    color: {
+      value: true, /* color */
+      unavailableValue: false,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'isColorEnabled',
+      updatesPreview: true,
+    },
+    mediaSize: {
+      value: {},
+      unavailableValue: {
+        width_microns: 215900,
+        height_microns: 279400,
+        imageable_area_left_microns: 0,
+        imageable_area_bottom_microns: 0,
+        imageable_area_right_microns: 215900,
+        imageable_area_top_microns: 279400,
+      },
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'mediaSize',
+      updatesPreview: true,
+    },
+    borderless: {
+      value: false,
+      unavailableValue: false,
+      valid: true,
+      available: false,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'borderless',
+      updatesPreview: true,
+    },
+    mediaType: {
+      value: '',
+      unavailableValue: '',
+      valid: true,
+      available: false,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'mediaType',
+      updatesPreview: false,
+    },
+    margins: {
+      value: MarginsType.DEFAULT,
+      unavailableValue: MarginsType.DEFAULT,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'marginsType',
+      updatesPreview: true,
+    },
+    customMargins: {
+      value: {},
+      unavailableValue: {},
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'customMargins',
+      updatesPreview: true,
+    },
+    dpi: {
+      value: {},
+      unavailableValue: {},
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'dpi',
+      updatesPreview: false,
+    },
+    scaling: {
+      value: '100',
+      unavailableValue: '100',
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'scaling',
+      updatesPreview: true,
+    },
+    scalingType: {
+      value: ScalingType.DEFAULT,
+      unavailableValue: ScalingType.DEFAULT,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'scalingType',
+      updatesPreview: true,
+    },
+    scalingTypePdf: {
+      value: ScalingType.DEFAULT,
+      unavailableValue: ScalingType.DEFAULT,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'scalingTypePdf',
+      updatesPreview: true,
+    },
+    duplex: {
+      value: true,
+      unavailableValue: false,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'isDuplexEnabled',
+      updatesPreview: false,
+    },
+    duplexShortEdge: {
+      value: false,
+      unavailableValue: false,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'isDuplexShortEdge',
+      updatesPreview: false,
+    },
+    cssBackground: {
+      value: false,
+      unavailableValue: false,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'isCssBackgroundEnabled',
+      updatesPreview: true,
+    },
+    selectionOnly: {
+      value: false,
+      unavailableValue: false,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: '',
+      updatesPreview: true,
+    },
+    headerFooter: {
+      value: true,
+      unavailableValue: false,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'isHeaderFooterEnabled',
+      updatesPreview: true,
+    },
+    rasterize: {
+      value: false,
+      unavailableValue: false,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: '',
+      updatesPreview: true,
+    },
+    vendorItems: {
+      value: {},
+      unavailableValue: {},
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'vendorOptions',
+      updatesPreview: false,
+    },
+    pagesPerSheet: {
+      value: 1,
+      unavailableValue: 1,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: '',
+      updatesPreview: true,
+    },
+    // This does not represent a real setting value, and is used only to
+    // expose the availability of the other options settings section.
+    otherOptions: {
+      value: null,
+      unavailableValue: null,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: '',
+      updatesPreview: false,
+    },
+    // This does not represent a real settings value, but is used to
+    // propagate the correctly formatted ranges for print tickets.
+    ranges: {
+      value: [],
+      unavailableValue: [],
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: '',
+      updatesPreview: true,
+    },
+    recentDestinations: {
+      value: [],
+      unavailableValue: [],
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'recentDestinations',
+      updatesPreview: false,
+    },
+    // <if expr="is_chromeos">
+    pin: {
+      value: false,
+      unavailableValue: false,
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'isPinEnabled',
+      updatesPreview: false,
+    },
+    pinValue: {
+      value: '',
+      unavailableValue: '',
+      valid: true,
+      available: true,
+      setByPolicy: false,
+      setFromUi: false,
+      key: 'pinValue',
+      updatesPreview: false,
+    },
+    // </if>
+  };
+}
+
 
 export class PrintPreviewModelElement extends PolymerElement {
   static get is() {
@@ -353,293 +642,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       settings: {
         type: Object,
         notify: true,
-        value() {
-          return {
-            pages: {
-              value: [1],
-              unavailableValue: [],
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: '',
-              updatesPreview: false,
-            },
-            copies: {
-              value: 1,
-              unavailableValue: 1,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: '',
-              updatesPreview: false,
-            },
-            collate: {
-              value: true,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isCollateEnabled',
-              updatesPreview: false,
-            },
-            layout: {
-              value: false, /* portrait */
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isLandscapeEnabled',
-              updatesPreview: true,
-            },
-            color: {
-              value: true, /* color */
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isColorEnabled',
-              updatesPreview: true,
-            },
-            mediaSize: {
-              value: {},
-              unavailableValue: {
-                width_microns: 215900,
-                height_microns: 279400,
-                imageable_area_left_microns: 0,
-                imageable_area_bottom_microns: 0,
-                imageable_area_right_microns: 215900,
-                imageable_area_top_microns: 279400,
-              },
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'mediaSize',
-              updatesPreview: true,
-            },
-            borderless: {
-              value: false,
-              unavailableValue: false,
-              valid: true,
-              available: false,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'borderless',
-              updatesPreview: true,
-            },
-            mediaType: {
-              value: '',
-              unavailableValue: '',
-              valid: true,
-              available: false,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'mediaType',
-              updatesPreview: false,
-            },
-            margins: {
-              value: MarginsType.DEFAULT,
-              unavailableValue: MarginsType.DEFAULT,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'marginsType',
-              updatesPreview: true,
-            },
-            customMargins: {
-              value: {},
-              unavailableValue: {},
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'customMargins',
-              updatesPreview: true,
-            },
-            dpi: {
-              value: {},
-              unavailableValue: {},
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'dpi',
-              updatesPreview: false,
-            },
-            scaling: {
-              value: '100',
-              unavailableValue: '100',
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'scaling',
-              updatesPreview: true,
-            },
-            scalingType: {
-              value: ScalingType.DEFAULT,
-              unavailableValue: ScalingType.DEFAULT,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'scalingType',
-              updatesPreview: true,
-            },
-            scalingTypePdf: {
-              value: ScalingType.DEFAULT,
-              unavailableValue: ScalingType.DEFAULT,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'scalingTypePdf',
-              updatesPreview: true,
-            },
-            duplex: {
-              value: true,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isDuplexEnabled',
-              updatesPreview: false,
-            },
-            duplexShortEdge: {
-              value: false,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isDuplexShortEdge',
-              updatesPreview: false,
-            },
-            cssBackground: {
-              value: false,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isCssBackgroundEnabled',
-              updatesPreview: true,
-            },
-            selectionOnly: {
-              value: false,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: '',
-              updatesPreview: true,
-            },
-            headerFooter: {
-              value: true,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isHeaderFooterEnabled',
-              updatesPreview: true,
-            },
-            rasterize: {
-              value: false,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: '',
-              updatesPreview: true,
-            },
-            vendorItems: {
-              value: {},
-              unavailableValue: {},
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'vendorOptions',
-              updatesPreview: false,
-            },
-            pagesPerSheet: {
-              value: 1,
-              unavailableValue: 1,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: '',
-              updatesPreview: true,
-            },
-            // This does not represent a real setting value, and is used only to
-            // expose the availability of the other options settings section.
-            otherOptions: {
-              value: null,
-              unavailableValue: null,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: '',
-              updatesPreview: false,
-            },
-            // This does not represent a real settings value, but is used to
-            // propagate the correctly formatted ranges for print tickets.
-            ranges: {
-              value: [],
-              unavailableValue: [],
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: '',
-              updatesPreview: true,
-            },
-            recentDestinations: {
-              value: [],
-              unavailableValue: [],
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'recentDestinations',
-              updatesPreview: false,
-            },
-            // <if expr="is_chromeos">
-            pin: {
-              value: false,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isPinEnabled',
-              updatesPreview: false,
-            },
-            pinValue: {
-              value: '',
-              unavailableValue: '',
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'pinValue',
-              updatesPreview: false,
-            },
-            // </if>
-          };
-        },
+        value: () => createSettings(),
       },
 
       settingsManaged: {
@@ -711,7 +714,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  getSetting(settingName: string): Setting {
+  getSetting(settingName: keyof Settings): Setting {
     const setting = (this.get(settingName, this.settings) as Setting);
     assert(setting, 'Setting is missing: ' + settingName);
     return setting;
@@ -721,7 +724,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    * @param settingName Name of the setting to get the value for.
    * @return The value of the setting, accounting for availability.
    */
-  getSettingValue(settingName: string): any {
+  getSettingValue(settingName: keyof Settings): any {
     const setting = this.getSetting(settingName);
     return setting.available ? setting.value : setting.unavailableValue;
   }
@@ -732,7 +735,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    * getSettingValue().
    */
   private setSettingPath_(settingPath: string, value: any) {
-    const settingName = settingPath.split('.')[0];
+    const settingName = settingPath.split('.')[0] as keyof Settings;
     const setting = this.getSetting(settingName);
     const oldValue = this.getSettingValue(settingName);
     this.set(`settings.${settingPath}`, value);
@@ -751,7 +754,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    * @param value The value to set the setting to.
    * @param noSticky Whether to avoid stickying the setting. Defaults to false.
    */
-  setSetting(settingName: string, value: any, noSticky?: boolean) {
+  setSetting(settingName: keyof Settings, value: any, noSticky?: boolean) {
     const setting = this.getSetting(settingName);
     if (setting.setByPolicy) {
       return;
@@ -774,7 +777,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    * @param noSticky Whether to avoid stickying the setting. Defaults to false.
    */
   setSettingSplice(
-      settingName: string, start: number, end: number, newValue: any,
+      settingName: keyof Settings, start: number, end: number, newValue: any,
       noSticky?: boolean) {
     const setting = this.getSetting(settingName);
     if (setting.setByPolicy) {
@@ -799,7 +802,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    * @param settingName Name of the setting to set
    * @param valid Whether the setting value is currently valid.
    */
-  setSettingValid(settingName: string, valid: boolean) {
+  setSettingValid(settingName: keyof Settings, valid: boolean) {
     const setting = this.getSetting(settingName);
     // Should not set the setting to invalid if it is not available, as there
     // is no way for the user to change the value in this case.
@@ -1550,7 +1553,8 @@ export class PrintPreviewModelElement extends PolymerElement {
         }
         if (policyEntry.value !== undefined &&
             !policyEntry.applyOnDestinationUpdate) {
-          this.setSetting(settingName, policyEntry.value, true);
+          this.setSetting(
+              settingName as keyof Settings, policyEntry.value, true);
           if (policyEntry.managed) {
             this.set(`settings.${settingName}.setByPolicy`, true);
           }
@@ -1667,7 +1671,8 @@ export class PrintPreviewModelElement extends PolymerElement {
   }
 
   private updateManaged_() {
-    let managedSettings = ['cssBackground', 'headerFooter'];
+    let managedSettings: Array<keyof Settings> =
+        ['cssBackground', 'headerFooter'];
     // <if expr="is_chromeos">
     managedSettings =
         managedSettings.concat(['color', 'duplex', 'duplexShortEdge', 'pin']);

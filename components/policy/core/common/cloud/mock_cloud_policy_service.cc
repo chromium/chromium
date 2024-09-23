@@ -29,4 +29,8 @@ MockCloudPolicyServiceObserver::MockCloudPolicyServiceObserver() = default;
 
 MockCloudPolicyServiceObserver::~MockCloudPolicyServiceObserver() = default;
 
+std::string_view MockCloudPolicyServiceObserver::name() const {
+  return "MockCloudPolicyServiceObserver";
+}
+
 }  // namespace policy

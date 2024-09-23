@@ -18,24 +18,23 @@ import androidx.test.filters.SmallTest;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButton;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
@@ -48,7 +47,6 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
     private static final String ASSERT_MSG_MENU_SIZE =
             "ContextMenu has a different size than test setting.";
 
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
     @Mock private SettingsLauncher mSettingsLauncher;
@@ -66,7 +64,7 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
         // By default, the homepage is <b>enabled</b> and with customized URL.
         mHomepageTestRule.useCustomizedHomepageForTest("https://www.chromium.org/");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FrameLayout content = new FrameLayout(getActivity());
                     getActivity().setContentView(content);
@@ -87,7 +85,7 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
                                     homeButton,
                                     HomepageManager.getInstance()::onMenuClick,
                                     () -> false);
-                    HomepageManager.getInstance().setSettingsLauncherForTesting(mSettingsLauncher);
+                    SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
 
                     content.addView(homeButton);
                 });

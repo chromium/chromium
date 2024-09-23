@@ -30,94 +30,33 @@ std::string VideoDecodeAccelerator::Config::AsHumanReadableString() const {
 
 void VideoDecodeAccelerator::Client::NotifyInitializationComplete(
     DecoderStatus status) {
-  NOTREACHED() << "By default deferred initialization is not supported.";
-}
-
-void VideoDecodeAccelerator::Client::ProvidePictureBuffersWithVisibleRect(
-    uint32_t requested_num_of_buffers,
-    VideoPixelFormat format,
-    const gfx::Size& dimensions,
-    const gfx::Rect& visible_rect,
-    uint32_t texture_target) {
-  if (texture_target == GL_TEXTURE_EXTERNAL_OES) {
-    // In ALLOCATE mode and when the texture target is GL_TEXTURE_EXTERNAL_OES,
-    // |video_decode_accelerator_| is responsible for allocating storage for the
-    // result of the decode. However, we are responsible for creating the GL
-    // texture to which we'll attach the decoded image. The decoder needs the
-    // buffer to be of size = coded size, but for the purposes of working with a
-    // graphics API (e.g., GL), the client does not need to know about the
-    // non-visible area. For example, for a 360p H.264 video with a visible
-    // rectangle of 0,0,640x360, the coded size is 640x368, but the GL texture
-    // that the client uses should be only 640x360. Therefore, we pass
-    // |visible_rect|.size() here as the requested size of the picture buffers.
-    //
-    // Note that we use GetRectSizeFromOrigin() to handle the unusual case in
-    // which the visible rectangle does not start at (0, 0). For example, for an
-    // H.264 video with a visible rectangle of 2,2,635x360, the coded size is
-    // 640x360, but the GL texture that the client uses should be 637x362. This
-    // is because we want the texture to include the non-visible area to the
-    // left and on the top of the visible rectangle so that the compositor can
-    // calculate the UV coordinates to omit the non-visible area.
-    ProvidePictureBuffers(requested_num_of_buffers, format,
-                          GetRectSizeFromOrigin(visible_rect), texture_target);
-  } else {
-    ProvidePictureBuffers(requested_num_of_buffers, format, dimensions,
-                          texture_target);
-  }
-}
-
-gpu::SharedImageStub* VideoDecodeAccelerator::Client::GetSharedImageStub()
-    const {
-  return nullptr;
-}
-
-CommandBufferHelper* VideoDecodeAccelerator::Client::GetCommandBufferHelper()
-    const {
-  return nullptr;
+  NOTREACHED_IN_MIGRATION()
+      << "By default deferred initialization is not supported.";
 }
 
 VideoDecodeAccelerator::~VideoDecodeAccelerator() = default;
 
 void VideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,
                                     int32_t bitstream_id) {
-  NOTREACHED() << "By default DecoderBuffer is not supported.";
+  NOTREACHED_IN_MIGRATION() << "By default DecoderBuffer is not supported.";
 }
 
 bool VideoDecodeAccelerator::TryToSetupDecodeOnSeparateSequence(
     const base::WeakPtr<Client>& decode_client,
     const scoped_refptr<base::SequencedTaskRunner>& decode_task_runner) {
   // Implementations in the process that VDA runs in must override this.
-  NOTREACHED_NORETURN()
-      << "This may only be called in the same process as VDA impl.";
+  NOTREACHED() << "This may only be called in the same process as VDA impl.";
 }
 
 void VideoDecodeAccelerator::ImportBufferForPicture(
     int32_t picture_buffer_id,
     VideoPixelFormat pixel_format,
     gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle) {
-  NOTREACHED() << "Buffer import not supported.";
+  NOTREACHED_IN_MIGRATION() << "Buffer import not supported.";
 }
 
 void VideoDecodeAccelerator::SetOverlayInfo(const OverlayInfo& overlay_info) {
-  NOTREACHED() << "Overlays are not supported.";
-}
-
-GLenum VideoDecodeAccelerator::GetSurfaceInternalFormat() const {
-  return GL_RGBA;
-}
-
-bool VideoDecodeAccelerator::SupportsSharedImagePictureBuffers() const {
-  return false;
-}
-
-VideoDecodeAccelerator::TextureAllocationMode
-VideoDecodeAccelerator::GetSharedImageTextureAllocationMode() const {
-#if BUILDFLAG(IS_APPLE)
-  return VideoDecodeAccelerator::TextureAllocationMode::
-      kDoNotAllocateGLTextures;
-#else
-  return VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures;
-#endif
+  NOTREACHED_IN_MIGRATION() << "Overlays are not supported.";
 }
 
 VideoDecodeAccelerator::SupportedProfile::SupportedProfile()

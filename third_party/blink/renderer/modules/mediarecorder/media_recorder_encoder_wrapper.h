@@ -43,9 +43,6 @@ class MODULES_EXPORT MediaRecorderEncoderWrapper final
   MediaRecorderEncoderWrapper& operator=(const MediaRecorderEncoderWrapper&) =
       delete;
 
-  base::WeakPtr<Encoder> GetWeakPtr() override {
-    return weak_factory_.GetWeakPtr();
-  }
   bool IsScreenContentEncodingForTesting() const override;
 
  private:
@@ -98,8 +95,7 @@ class MODULES_EXPORT MediaRecorderEncoderWrapper final
       media::VideoEncoderOutput output,
       std::optional<media::VideoEncoder::CodecDescription> description);
 
-  const raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_;
+  const raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
   const media::VideoCodecProfile profile_;
   const media::VideoCodec codec_;

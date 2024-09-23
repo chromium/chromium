@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/buildflag.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -25,6 +26,16 @@
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 
 namespace commerce {
+
+namespace {
+bool IsTrackByDefaultEnabled() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(kTrackByDefaultOnMobile);
+#else
+  return true;
+#endif
+}
+}  // namespace
 
 ShoppingBookmarkModelObserver::ShoppingBookmarkModelObserver(
     bookmarks::BookmarkModel* model,
@@ -40,7 +51,6 @@ ShoppingBookmarkModelObserver::~ShoppingBookmarkModelObserver() = default;
 void ShoppingBookmarkModelObserver::BookmarkModelChanged() {}
 
 void ShoppingBookmarkModelObserver::OnWillChangeBookmarkNode(
-    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {
   // Since the node is about to change, map its current known URL.
   node_to_url_map_[node->uuid()] = node->url();
@@ -52,8 +62,10 @@ void ShoppingBookmarkModelObserver::OnWillChangeBookmarkNode(
 }
 
 void ShoppingBookmarkModelObserver::BookmarkNodeChanged(
-    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {
+  bookmarks::BookmarkModel* model = scoped_observation_.GetSource();
+  CHECK(model);
+
   if (IsShoppingCollectionBookmarkFolder(node) &&
       shopping_collection_name_before_change_.value() != node->GetTitle()) {
     base::RecordAction(base::UserMetricsAction(
@@ -97,29 +109,33 @@ void ShoppingBookmarkModelObserver::BookmarkNodeChanged(
 }
 
 void ShoppingBookmarkModelObserver::BookmarkNodeAdded(
-    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* parent,
     size_t index,
     bool added_by_user) {
   const bookmarks::BookmarkNode* node = parent->children()[index].get();
+  bookmarks::BookmarkModel* model = scoped_observation_.GetSource();
+  CHECK(model);
 
   if (IsShoppingCollectionBookmarkFolder(node)) {
     base::RecordAction(base::UserMetricsAction(
         "Commerce.PriceTracking.ShoppingCollection.Created"));
   }
 
+  if (model->IsLocalOnlyNode(*node)) {
+    return;
+  }
+
   // TODO(b:287289351): We should consider listening to metadata changes
   //                    instead. Presumably, shopping data is primarily being
   //                    added to new bookmarks, so we could potentially use the
   //                    node change event.
-  if (added_by_user) {
+  if (added_by_user && IsTrackByDefaultEnabled()) {
     SetPriceTrackingStateForBookmark(shopping_service_, model, node, true,
                                      base::DoNothing());
   }
 }
 
 void ShoppingBookmarkModelObserver::BookmarkNodeMoved(
-    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* old_parent,
     size_t old_index,
     const bookmarks::BookmarkNode* new_parent,
@@ -141,20 +157,19 @@ void ShoppingBookmarkModelObserver::BookmarkNodeMoved(
 }
 
 void ShoppingBookmarkModelObserver::OnWillRemoveBookmarks(
-    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
-    const bookmarks::BookmarkNode* node) {
+    const bookmarks::BookmarkNode* node,
+    const base::Location& location) {
   if (node->is_folder()) {
     std::set<uint64_t> unsubscribed_ids;
-    HandleFolderDeletion(model, node, &unsubscribed_ids);
+    HandleFolderDeletion(node, &unsubscribed_ids);
   } else {
-    HandleNodeDeletion(model, node, nullptr, nullptr);
+    HandleNodeDeletion(node, nullptr, nullptr);
   }
 }
 
 void ShoppingBookmarkModelObserver::HandleFolderDeletion(
-    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node,
     std::set<uint64_t>* unsubscribed_ids) {
   CHECK(node && node->is_folder());
@@ -166,20 +181,22 @@ void ShoppingBookmarkModelObserver::HandleFolderDeletion(
 
   for (const auto& child : node->children()) {
     if (child->is_folder()) {
-      HandleFolderDeletion(model, child.get(), unsubscribed_ids);
+      HandleFolderDeletion(child.get(), unsubscribed_ids);
     } else {
-      HandleNodeDeletion(model, child.get(), node, unsubscribed_ids);
+      HandleNodeDeletion(child.get(), node, unsubscribed_ids);
     }
   }
 }
 
 void ShoppingBookmarkModelObserver::HandleNodeDeletion(
-    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* folder_being_deleted,
     std::set<uint64_t>* unsubscribed_ids) {
   CHECK(node && !node->is_folder());
   CHECK(!folder_being_deleted || (folder_being_deleted && unsubscribed_ids));
+
+  bookmarks::BookmarkModel* model = scoped_observation_.GetSource();
+  CHECK(model);
 
   // If the number of bookmarks with the node's cluster ID is 1, we can
   // unsubscribe from the product since deleting this node will result in 0.
@@ -224,8 +241,10 @@ void ShoppingBookmarkModelObserver::HandleNodeDeletion(
 }
 
 void ShoppingBookmarkModelObserver::BookmarkMetaInfoChanged(
-    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {
+  bookmarks::BookmarkModel* model = scoped_observation_.GetSource();
+  CHECK(model);
+
   std::optional<int64_t> last_subscription_change_time =
       GetBookmarkLastSubscriptionChangeTime(model, node);
   if (last_subscription_change_time.has_value() && subscriptions_manager_) {

@@ -362,13 +362,11 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
           ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
       return;
     }
-    remote_->OnHostStateError(error_code);
+    remote_->OnHostStateError(static_cast<int64_t>(error_code));
   } else if (*new_state == kHostStateDomainError) {
     remote_->OnInvalidDomainError();
   } else {
     NOTREACHED() << "Unknown state: " << *new_state;
-    CloseChannel(ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
-    return;
   }
 }
 
@@ -422,7 +420,7 @@ void It2MeNativeMessageHostAsh::HandleErrorMessage(base::Value::Dict message) {
     return;
   }
 
-  remote_->OnHostStateError(error_code);
+  remote_->OnHostStateError(static_cast<int64_t>(error_code));
 }
 
 }  // namespace remoting

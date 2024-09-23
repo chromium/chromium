@@ -1,0 +1,63 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("assistant_optin") {
+  sources = [
+    "assistant_optin_ui.cc",
+    "assistant_optin_ui.h",
+    "assistant_optin_utils.cc",
+    "assistant_optin_utils.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/common",
+    "//chromeos/ash/services/assistant/public/proto",
+    "//components/sync/protocol",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/web_dialogs",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/constants",
+    "//ash/webui/common:trusted_types_util",
+    "//build:buildflag_header_h",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:resources",
+    "//chrome/browser/ash/assistant",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/assistant_optin:resources",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chromeos/ash/components/assistant:buildflags",
+    "//chromeos/ash/components/audio",
+    "//chromeos/ash/services/assistant/public/cpp",
+    "//components/consent_auditor",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//net",
+    "//services/network/public/mojom:url_loader_base",
+    "//ui/base",
+    "//ui/chromeos/resources",
+    "//ui/display",
+    "//ui/gfx/geometry",
+    "//ui/views",
+    "//ui/wm",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ui/webui/ash/login" ]
+}

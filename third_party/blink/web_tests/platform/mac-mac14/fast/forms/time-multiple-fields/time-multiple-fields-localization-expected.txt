@@ -1,0 +1,23 @@
+Tests the time format for various locales.
+
+On success, you will see no "FAIL" messages, followed by "TEST COMPLETE".
+
+The following lines depend on the locale data in the system.
+en: 01:23:45.100 PM
+ar: ٠١:٢٣:٤٥٫١٠٠ م
+ar-EG: ٠١:٢٣:٤٥٫١٠٠ م
+fr: 13:23:45,100
+ja: 13:23:45.100
+ko: 오후 01:23:45.100
+zh: 13:23:45.100
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+
+
+
+
+
+
+

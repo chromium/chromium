@@ -1,0 +1,6 @@
+CONSOLE ERROR: The includeShadowRoots parameter to parseFromString has been deprecated and removed. Please use parseHTMLUnsafe() or setHTMLUnsafe() instead.
+This is a testharness.js-based test.
+[FAIL] The includeShadowRoots parameter to parseFromString is use counted.
+  assert_true: Use counter should trigger if the flag is true expected true got false
+Harness: the test ran to completion.
+

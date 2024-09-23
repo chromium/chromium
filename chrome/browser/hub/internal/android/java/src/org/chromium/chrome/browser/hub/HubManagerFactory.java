@@ -9,9 +9,12 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
@@ -21,6 +24,7 @@ public class HubManagerFactory {
      * Creates a new instance of {@link HubManagerImpl}.
      *
      * @param context The {@link Context} hosting the Hub.
+     * @param profileProviderSupplier Used to fetch dependencies.
      * @param paneListBuilder The {@link PaneListBuilder} which is consumed to build a {@link
      *     PaneManager}.
      * @param backPressManager The {@link BackPressManager} for the activity.
@@ -29,23 +33,30 @@ public class HubManagerFactory {
      * @param snackbarManager The primary {@link SnackbarManager} for the activity.
      * @param tabSupplier The supplier of the current tab in the current tab model.
      * @param menuButtonCoordinator Root component for the app menu.
+     * @param edgeToEdgeSupplier A supplier to the {@link EdgeToEdgeController}.
      * @return an instance of {@link HubManagerImpl}.
      */
     public static HubManager createHubManager(
             @NonNull Context context,
+            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull PaneListBuilder paneListBuilder,
             @NonNull BackPressManager backPressManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ObservableSupplier<Tab> tabSupplier,
-            @NonNull MenuButtonCoordinator menuButtonCoordinator) {
+            @NonNull MenuButtonCoordinator menuButtonCoordinator,
+            @NonNull HubShowPaneHelper hubShowPaneHelper,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         return new HubManagerImpl(
                 context,
+                profileProviderSupplier,
                 paneListBuilder,
                 backPressManager,
                 menuOrKeyboardActionController,
                 snackbarManager,
                 tabSupplier,
-                menuButtonCoordinator);
+                menuButtonCoordinator,
+                hubShowPaneHelper,
+                edgeToEdgeSupplier);
     }
 }

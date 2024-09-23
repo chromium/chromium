@@ -43,7 +43,7 @@ CSSPositionAxisListInterpolationType::ConvertPositionAxisCSSValue(
     case CSSValueID::kCenter:
       return InterpolationValue(InterpolableLength::CreatePercent(50));
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

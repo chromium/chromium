@@ -107,8 +107,7 @@ AttestationFlowIntegrated::AttestationFlowIntegrated()
 // |AttestationFlow|.
 AttestationFlowIntegrated::AttestationFlowIntegrated(
     ::attestation::ACAType aca_type)
-    : AttestationFlow(/*server_proxy=*/nullptr),
-      aca_type_(aca_type),
+    : aca_type_(aca_type),
       attestation_client_(AttestationClient::Get()),
       ready_timeout_(kReadyTimeout),
       retry_delay_(kRetryDelay) {}

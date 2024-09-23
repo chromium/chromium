@@ -135,19 +135,15 @@ std::optional<const CSSValue*> PropertyRegistration::ConvertInitial(
   if (!initial_value) {
     return syntax.IsUniversal() ? std::make_optional(nullptr) : std::nullopt;
   }
-  scoped_refptr<CSSVariableData> initial_variable_data =
+  CSSVariableData* initial_variable_data =
       To<CSSUnparsedDeclarationValue>(*initial_value).VariableDataValue();
 
   // Parse initial value, if we have it.
   const CSSValue* initial = nullptr;
   if (initial_variable_data) {
     const bool is_animation_tainted = false;
-    CSSTokenizer tokenizer(initial_variable_data->OriginalText());
-    Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    initial = syntax.Parse(
-        CSSTokenizedValue{range, initial_variable_data->OriginalText()},
-        parser_context, is_animation_tainted);
+    initial = syntax.Parse(initial_variable_data->OriginalText(),
+                           parser_context, is_animation_tainted);
     if (!initial) {
       return {};
     }
@@ -229,13 +225,9 @@ void PropertyRegistration::registerProperty(
 
   const CSSValue* initial = nullptr;
   if (property_definition->hasInitialValue()) {
-    CSSTokenizer tokenizer(property_definition->initialValue());
-    const auto tokens = tokenizer.TokenizeToEOF();
     bool is_animation_tainted = false;
-    initial = syntax_definition->Parse(
-        CSSTokenizedValue{CSSParserTokenRange(tokens),
-                          property_definition->initialValue()},
-        *parser_context, is_animation_tainted);
+    initial = syntax_definition->Parse(property_definition->initialValue(),
+                                       *parser_context, is_animation_tainted);
     if (!initial) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,

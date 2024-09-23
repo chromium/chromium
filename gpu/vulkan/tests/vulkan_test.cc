@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include <memory>
-
 #include <optional>
+
 #include "gpu/vulkan/tests/basic_vulkan_test.h"
 #include "gpu/vulkan/vulkan_command_buffer.h"
 #include "gpu/vulkan/vulkan_command_pool.h"

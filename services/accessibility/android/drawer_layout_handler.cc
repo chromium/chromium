@@ -70,9 +70,11 @@ DrawerLayoutHandler::CreateIfNecessary(
     }
     return std::make_pair(
         child->GetId(),
-        std::make_unique<DrawerLayoutHandler>(base::JoinString(
-            event_data.event_text.value_or<std::vector<std::string>>({}),
-            " ")));
+        std::make_unique<DrawerLayoutHandler>(
+            child->GetId(),
+            base::JoinString(
+                event_data.event_text.value_or<std::vector<std::string>>({}),
+                " ")));
   }
   return std::nullopt;
 }
@@ -88,6 +90,11 @@ void DrawerLayoutHandler::PostSerializeNode(ui::AXNodeData* out_data) const {
   if (!name_.empty()) {
     out_data->SetName(name_);
   }
+}
+
+bool DrawerLayoutHandler::ShouldDestroy(
+    AXTreeSourceAndroid* tree_source) const {
+  return tree_source->GetFromId(node_id_) == nullptr;
 }
 
 }  // namespace ax::android

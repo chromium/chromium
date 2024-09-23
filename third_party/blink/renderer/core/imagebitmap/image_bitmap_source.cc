@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -16,7 +17,7 @@ namespace blink {
 
 constexpr const char* kImageBitmapOptionNone = "none";
 
-ScriptPromise ImageBitmapSource::FulfillImageBitmap(
+ScriptPromise<ImageBitmap> ImageBitmapSource::FulfillImageBitmap(
     ScriptState* script_state,
     ImageBitmap* image_bitmap,
     const ImageBitmapOptions* options,
@@ -25,7 +26,7 @@ ScriptPromise ImageBitmapSource::FulfillImageBitmap(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The ImageBitmap could not be allocated.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   // imageOrientation: 'from-image' will be used to replace imageOrientation:
@@ -39,19 +40,15 @@ ScriptPromise ImageBitmapSource::FulfillImageBitmap(
         WebFeature::kObsoleteCreateImageBitmapImageOrientationNone);
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
-  resolver->Resolve(image_bitmap);
-  return promise;
+  return ToResolvedPromise<ImageBitmap>(script_state, image_bitmap);
 }
 
-ScriptPromise ImageBitmapSource::CreateImageBitmap(
+ScriptPromise<ImageBitmap> ImageBitmapSource::CreateImageBitmap(
     ScriptState* script_state,
     std::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
-  return ScriptPromise();
+  return EmptyPromise();
 }
 
 }  // namespace blink

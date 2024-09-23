@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/check.h"
@@ -15,8 +16,6 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/api/array_view.h"
 #include "third_party/webrtc/api/rtc_error.h"
 #include "third_party/webrtc/p2p/base/connection.h"
@@ -220,7 +219,7 @@ void BridgeIceController::DoPerformPing(
 }
 
 void BridgeIceController::DoPerformPing(const cricket::Connection* connection,
-                                        absl::optional<int> recheck_delay_ms) {
+                                        std::optional<int> recheck_delay_ms) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
 
   if (connection) {
@@ -234,7 +233,7 @@ void BridgeIceController::DoPerformPing(const cricket::Connection* connection,
 // of recheck activity every recheck interval. Going further, ping proposals
 // could probably also be batched to optimize the JS round trip.
 void BridgeIceController::DoSchedulePingRecheck(
-    absl::optional<int> recheck_delay_ms) {
+    std::optional<int> recheck_delay_ms) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
   if (recheck_delay_ms.has_value()) {
     network_task_runner_->PostDelayedTask(
@@ -341,7 +340,7 @@ void BridgeIceController::OnSwitchProposalAccepted(
     return;
   }
 
-  absl::optional<cricket::IceRecheckEvent> recheck_event = absl::nullopt;
+  std::optional<cricket::IceRecheckEvent> recheck_event = std::nullopt;
   if (proposal.recheck_event().has_value()) {
     recheck_event.emplace(
         ConvertToWebrtcIceSwitchReason(proposal.recheck_event()->reason),
@@ -375,7 +374,7 @@ void BridgeIceController::OnSwitchProposalRejected(
   RTC_LOG(LS_INFO) << "Rejected proposal to switch connection";
 
   // Don't switch, but schedule a recheck if it was proposed.
-  absl::optional<cricket::IceRecheckEvent> recheck_event = absl::nullopt;
+  std::optional<cricket::IceRecheckEvent> recheck_event = std::nullopt;
   if (proposal.recheck_event().has_value()) {
     recheck_event.emplace(
         ConvertToWebrtcIceSwitchReason(proposal.recheck_event()->reason),
@@ -399,7 +398,7 @@ void BridgeIceController::DoPerformSwitch(
 void BridgeIceController::DoPerformSwitch(
     cricket::IceSwitchReason reason_for_switch,
     const cricket::Connection* connection,
-    absl::optional<cricket::IceRecheckEvent> recheck_event,
+    std::optional<cricket::IceRecheckEvent> recheck_event,
     base::span<const cricket::Connection* const>
         connections_to_forget_state_on) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
@@ -419,7 +418,7 @@ void BridgeIceController::DoPerformSwitch(
 }
 
 void BridgeIceController::DoScheduleSwitchRecheck(
-    absl::optional<cricket::IceRecheckEvent> recheck_event) {
+    std::optional<cricket::IceRecheckEvent> recheck_event) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
 
   if (recheck_event.has_value()) {
@@ -541,7 +540,7 @@ webrtc::RTCError BridgeIceController::OnPingRequested(
     return webrtc::RTCError(webrtc::RTCErrorType::INVALID_PARAMETER);
   }
 
-  DoPerformPing(connection, /*recheck_delay_ms=*/absl::nullopt);
+  DoPerformPing(connection, /*recheck_delay_ms=*/std::nullopt);
   return webrtc::RTCError::OK();
 }
 
@@ -561,8 +560,7 @@ webrtc::RTCError BridgeIceController::OnSwitchRequested(
   }
 
   DoPerformSwitch(cricket::IceSwitchReason::APPLICATION_REQUESTED, connection,
-                  absl::nullopt,
-                  base::span<const cricket::Connection* const>());
+                  std::nullopt, base::span<const cricket::Connection* const>());
   return webrtc::RTCError::OK();
 }
 

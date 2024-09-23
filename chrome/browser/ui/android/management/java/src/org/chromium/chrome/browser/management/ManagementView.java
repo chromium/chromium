@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.management;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.text.SpannableString;
-import android.text.TextUtils;
+import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
@@ -21,15 +21,15 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 
 /**
- * The View that renders the ManagementPage (chrome://management).
- * Consists of an medium size image icon over title and descriptive text.
+ * The View that renders the ManagementPage (chrome://management). Consists of an medium size image
+ * icon over title and descriptive text.
  */
 public class ManagementView extends ScrollView {
-    private boolean mIsManaged;
-    private boolean mIsReportingEnabled;
+    private boolean mIsBrowserManaged;
+    private boolean mIsProfileManaged;
+    private boolean mIsBrowserReportingEnabled;
+    private boolean mIsProfileReportingEnabled;
     private boolean mIsLegacyTechReportingEnabled;
-
-    private @Nullable String mManagerName;
 
     private LinearLayout mManagementContainer;
 
@@ -38,8 +38,10 @@ public class ManagementView extends ScrollView {
     @VisibleForTesting TextView mLearnMore;
     @VisibleForTesting TextView mBrowserReporting;
     @VisibleForTesting TextView mBrowserReportingExplanation;
+    @VisibleForTesting TextView mProfileReportingExplanation;
     @VisibleForTesting TextView mReportUsername;
     @VisibleForTesting TextView mReportVersion;
+    @VisibleForTesting TextView mProfileReportDetails;
     @VisibleForTesting TextView mReportLegacyTech;
 
     @Nullable private UiConfig mUiConfig;
@@ -61,14 +63,17 @@ public class ManagementView extends ScrollView {
         mBrowserReportingExplanation = (TextView) findViewById(R.id.browser_reporting_explanation);
         mReportUsername = (TextView) findViewById(R.id.report_username);
         mReportVersion = (TextView) findViewById(R.id.report_version);
+        mProfileReportingExplanation = (TextView) findViewById(R.id.profile_reporting_explanation);
+        mProfileReportDetails = (TextView) findViewById(R.id.profile_report_details);
         mReportLegacyTech = (TextView) findViewById(R.id.report_legacy_tech);
 
         // Set default management status
-        mIsManaged = false;
-        mIsReportingEnabled = false;
+        mIsBrowserManaged = false;
+        mIsProfileManaged = false;
+        mIsBrowserReportingEnabled = false;
+        mIsProfileReportingEnabled = false;
         mIsLegacyTechReportingEnabled = false;
 
-        mManagerName = null;
         adjustView();
 
         // Making the view focusable ensures that it will be presented to the user once they select
@@ -88,30 +93,56 @@ public class ManagementView extends ScrollView {
         configureWideDisplayStyle();
     }
 
-    /** Sets whether account is managed. Then updates view accordingly. */
-    public void setManaged(boolean isManaged) {
-        if (mIsManaged != isManaged) {
-            mIsManaged = isManaged;
+    /** Sets whether browser is managed. Then updates view accordingly. */
+    public void setBrowserManaged(boolean isManaged) {
+        if (mIsBrowserManaged != isManaged) {
+            mIsBrowserManaged = isManaged;
             adjustView();
         }
     }
 
-    /** Gets whether account is managed. */
+    /** Sets whether profile is managed. Then updates view accordingly. */
+    public void setProfileManaged(boolean isManaged) {
+        if (mIsProfileManaged != isManaged) {
+            mIsProfileManaged = isManaged;
+            adjustView();
+        }
+    }
+
+    /** Gets whether browser or profile is managed. */
     public boolean isManaged() {
-        return mIsManaged;
+        return mIsBrowserManaged || mIsProfileManaged;
     }
 
     /** Sets whether status reporting is enabled. Then updates view accordingly. */
-    public void setReportingEnabled(boolean isEnabled) {
-        if (mIsReportingEnabled != isEnabled) {
-            mIsReportingEnabled = isEnabled;
+    public void setBrowserReportingEnabled(boolean isEnabled) {
+        if (mIsBrowserReportingEnabled != isEnabled) {
+            mIsBrowserReportingEnabled = isEnabled;
             adjustView();
         }
     }
 
     /** Gets whether status reporting is enabled. */
-    public boolean isReportingEnabled() {
-        return mIsReportingEnabled;
+    public boolean isBrowserReportingEnabled() {
+        return mIsBrowserReportingEnabled;
+    }
+
+    /** Sets whether profile reporting is enabled. Then updates view accordingly. */
+    public void setProfileReportingEnabled(boolean isEnabled) {
+        if (mIsProfileReportingEnabled != isEnabled) {
+            mIsProfileReportingEnabled = isEnabled;
+            adjustView();
+        }
+    }
+
+    /** Gets whether profile reporting is enabled. */
+    public boolean isProfileReportingEnabled() {
+        return mIsProfileReportingEnabled;
+    }
+
+    public void setProfileReportingText(SpannableStringBuilder text) {
+        mProfileReportDetails.setText(text);
+        mProfileReportDetails.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /** Sets whether legacy tech reporting is enabled. Then updates view accordingly. */
@@ -127,19 +158,6 @@ public class ManagementView extends ScrollView {
         return mIsLegacyTechReportingEnabled;
     }
 
-    /** Sets account manager name. Then updates view accordingly.  */
-    public void setManagerName(@Nullable String managerName) {
-        if (!TextUtils.equals(mManagerName, managerName)) {
-            mManagerName = managerName;
-            adjustView();
-        }
-    }
-
-    /** Gets account manager name. */
-    public @Nullable String getManagerName() {
-        return mManagerName;
-    }
-
     public void setLearnMoreText(SpannableString learnMoreText) {
         mLearnMore.setText(learnMoreText);
         mLearnMore.setMovementMethod(LinkMovementMethod.getInstance());
@@ -150,30 +168,51 @@ public class ManagementView extends ScrollView {
         mReportLegacyTech.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
+    public void setTitleText(String title) {
+        mTitle.setText(title);
+    }
+
+    public void setDescriptionText(String description) {
+        mDescription.setText(description);
+    }
+
     /** Adjusts Title, Description, and Learn More link based on management status. */
     private void adjustView() {
-        if (mIsManaged) {
-            if (TextUtils.isEmpty(mManagerName)) {
-                mTitle.setText(getResources().getString(R.string.management_subtitle));
-            } else {
-                mTitle.setText(
-                        getResources()
-                                .getString(R.string.management_subtitle_managed_by, mManagerName));
-            }
-        } else {
-            mTitle.setText(getResources().getString(R.string.management_not_managed_subtitle));
+        mDescription.setVisibility(isManaged() ? VISIBLE : GONE);
+        if (isManaged()) {
+            mDescription.setText(
+                    getContext()
+                            .getResources()
+                            .getString(
+                                    mIsBrowserManaged
+                                            ? R.string.management_browser_notice
+                                            : R.string.management_profile_notice));
         }
-
-        mDescription.setVisibility(mIsManaged ? VISIBLE : GONE);
-        mLearnMore.setVisibility(mIsManaged ? VISIBLE : GONE);
-
+        mLearnMore.setVisibility(isManaged() ? VISIBLE : GONE);
         mBrowserReporting.setVisibility(
-                mIsReportingEnabled || mIsLegacyTechReportingEnabled ? VISIBLE : GONE);
-        mBrowserReportingExplanation.setVisibility(
-                mIsReportingEnabled || mIsLegacyTechReportingEnabled ? VISIBLE : GONE);
+                mIsBrowserReportingEnabled
+                                || mIsLegacyTechReportingEnabled
+                                || mIsProfileReportingEnabled
+                        ? VISIBLE
+                        : GONE);
 
-        mReportUsername.setVisibility(mIsReportingEnabled ? VISIBLE : GONE);
-        mReportVersion.setVisibility(mIsReportingEnabled ? VISIBLE : GONE);
+        mBrowserReportingExplanation.setVisibility(mIsBrowserReportingEnabled ? VISIBLE : GONE);
+
+        mReportUsername.setVisibility(mIsBrowserReportingEnabled ? VISIBLE : GONE);
+        mReportVersion.setVisibility(mIsBrowserReportingEnabled ? VISIBLE : GONE);
+
+        mProfileReportingExplanation.setVisibility(
+                !mIsBrowserReportingEnabled && mIsProfileReportingEnabled ? VISIBLE : GONE);
+        mProfileReportDetails.setVisibility(
+                !mIsBrowserReportingEnabled && mIsProfileReportingEnabled ? VISIBLE : GONE);
+
+        // If Legacy tech report is enabled without browser or profile status report, show browser
+        // report explanations as default.
+        if (mIsLegacyTechReportingEnabled
+                && !mIsBrowserReportingEnabled
+                && !mIsProfileReportingEnabled) {
+            mBrowserReportingExplanation.setVisibility(VISIBLE);
+        }
         mReportLegacyTech.setVisibility(mIsLegacyTechReportingEnabled ? VISIBLE : GONE);
     }
 

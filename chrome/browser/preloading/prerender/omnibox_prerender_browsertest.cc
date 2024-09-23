@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
@@ -24,6 +25,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -45,12 +47,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/toolbar_manager_test_helper_android.h"
-#include "chrome/test/base/android/android_browser_test.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #endif
 
 namespace {
@@ -151,8 +149,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
 
   // Since preload setting is disabled, prerender shouldn't be triggered.
   base::RunLoop().RunUntilIdle();
-  int host_id = prerender_helper().GetHostForUrl(prerender_url);
-  EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(prerender_url);
+  EXPECT_TRUE(host_id.is_null());
 
   {
     // Navigate to a different URL other than the prerender_url to flush the
@@ -193,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
   // successfully.
   registry_observer.WaitForTrigger(prerender_url);
   host_id = prerender_helper().GetHostForUrl(prerender_url);
-  EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  EXPECT_TRUE(host_id);
 
   {
     // Navigate to prerender_url.
@@ -227,12 +226,8 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
     : public OmniboxPrerenderBrowserTest {
  public:
   PrerenderOmniboxSearchSuggestionBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSupportSearchSuggestionForPrerender2,
-          {
-              {"implementation_type", "use_prefetch"},
-          }}},
-        {});
+    feature_list_.InitAndEnableFeature(
+        features::kSupportSearchSuggestionForPrerender2);
   }
 
   void SetUp() override {
@@ -260,7 +255,7 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
  protected:
   GURL GetCanonicalSearchURL(const GURL& prefetch_url) {
     GURL canonical_search_url;
-    HasCanoncialPreloadingOmniboxSearchURL(prefetch_url,
+    HasCanonicalPreloadingOmniboxSearchURL(prefetch_url,
                                            chrome_test_utils::GetProfile(this),
                                            &canonical_search_url);
     return canonical_search_url;
@@ -297,12 +292,14 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
 
   void NavigateToPrerenderedResult(const GURL& expected_prerender_url) {
     content::TestNavigationObserver observer(GetActiveWebContents());
-    GetActiveWebContents()->OpenURL(content::OpenURLParams(
-        expected_prerender_url, content::Referrer(),
-        WindowOpenDisposition::CURRENT_TAB,
-        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
-                                  ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-        /*is_renderer_initiated=*/false));
+    GetActiveWebContents()->OpenURL(
+        content::OpenURLParams(
+            expected_prerender_url, content::Referrer(),
+            WindowOpenDisposition::CURRENT_TAB,
+            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+            /*is_renderer_initiated=*/false),
+        /*navigation_handle_callback=*/{});
     observer.Wait();
   }
 
@@ -341,12 +338,12 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
     TemplateURLData data;
     data.SetShortName(kSearchDomain16);
     data.SetKeyword(data.short_name());
-    data.SetURL(
-        search_engine_server_
-            .GetURL(kSearchDomain,
-                    prerender_page_target_ +
-                        "?q={searchTerms}&{google:prefetchSource}type=test")
-            .spec());
+    data.SetURL(search_engine_server_
+                    .GetURL(kSearchDomain,
+                            prerender_page_target_ +
+                                "?q={searchTerms}&{google:assistedQueryStats}{"
+                                "google:prefetchSource}type=test")
+                    .spec());
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
     ASSERT_TRUE(template_url);
     model->SetUserSelectedDefaultSearchProvider(template_url);
@@ -365,26 +362,15 @@ class PrerenderOmniboxSearchSuggestionReloadBrowserTest
     : public PrerenderOmniboxSearchSuggestionBrowserTest {
  public:
   PrerenderOmniboxSearchSuggestionReloadBrowserTest() {
-#if BUILDFLAG(IS_ANDROID)
-    // Skips recreating the Android ChromeTabbedActivity when
-    // homepage settings are changed.
-    // This happens when the feature chrome::android::kStartSurfaceAndroid is
-    // enabled (currently enabled by default).
-    toolbar_manager::setSkipRecreateForTesting(true);
-#endif  // BUILDFLAG(IS_ANDROID)
-
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSupportSearchSuggestionForPrerender2,
-          {
-              {"implementation_type", "use_prefetch"},
-          }},
+        {{features::kSupportSearchSuggestionForPrerender2, {{}}},
          {kSearchPrefetchServicePrefetching,
           {{"device_memory_threshold_MB", "0"}}}},
         // Disable BFCache, to test the HTTP Cache path.
         {features::kBackForwardCache});
   }
 
-  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  // TODO(crbug.com/40285326): This fails with the field trial testing config.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PrerenderOmniboxSearchSuggestionBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch("disable-field-trial-config");
@@ -438,25 +424,14 @@ class PrerenderOmniboxSearchSuggestionExpiryBrowserTest
     : public PrerenderOmniboxSearchSuggestionBrowserTest {
  public:
   PrerenderOmniboxSearchSuggestionExpiryBrowserTest() {
-#if BUILDFLAG(IS_ANDROID)
-    // Skips recreating the Android ChromeTabbedActivity when
-    // homepage settings are changed.
-    // This happens when the feature chrome::android::kStartSurfaceAndroid is
-    // enabled (currently enabled by default).
-    toolbar_manager::setSkipRecreateForTesting(true);
-#endif  // BUILDFLAG(IS_ANDROID)
-
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSupportSearchSuggestionForPrerender2,
-          {
-              {"implementation_type", "use_prefetch"},
-          }},
+        {{features::kSupportSearchSuggestionForPrerender2, {{}}},
          {kSearchPrefetchServicePrefetching,
           {{"device_memory_threshold_MB", "0"}}}},
         {});
   }
 
-  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  // TODO(crbug.com/40285326): This fails with the field trial testing config.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PrerenderOmniboxSearchSuggestionBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch("disable-field-trial-config");
@@ -471,8 +446,9 @@ class PrerenderOmniboxSearchSuggestionExpiryBrowserTest
         GetSearchSuggestionUrl(search_terms, /*with_parameter=*/false);
     registry_observer.WaitForTrigger(prerendered_url);
 
-    int host_id = prerender_helper().GetHostForUrl(prerendered_url);
-    ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+    content::FrameTreeNodeId host_id =
+        prerender_helper().GetHostForUrl(prerendered_url);
+    ASSERT_TRUE(host_id);
     content::test::PrerenderHostObserver prerender_observer(
         *GetActiveWebContents(), host_id);
 
@@ -509,24 +485,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionExpiryBrowserTest,
   histogram_tester.ExpectUniqueSample(
       internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
       PrerenderPredictionStatus::kCancelled, 1);
-
-  // Select the prerender hint. The prerendered result has been deleted, so
-  // browser loads the search result over again.
-  content::TestNavigationObserver observer(GetActiveWebContents());
-  GetActiveWebContents()->OpenURL(content::OpenURLParams(
-      GetSearchSuggestionUrl("prerender222", /*with_parameter=*/false),
-      content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
-                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-      /*is_renderer_initiated=*/false));
-  observer.Wait();
-
-  // This metric is recorded only when prerendering is alive on primary page
-  // changed.
-  histogram_tester.ExpectTotalCount(
-      "Prerender.Experimental.Search."
-      "FirstCorrectPrerenderHintReceivedToRealSearchNavigationStartedDuration",
-      0);
 }
 
 // Tests that kCanceled is correctly recorded in the case that PrerenderManager

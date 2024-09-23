@@ -9,7 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,10 +46,10 @@ class SyncFeatureStatusForMigrationsRecorderTest : public testing::Test {
             prefs::internal::kSyncFeatureStatusForSyncToSigninMigration));
   }
 
-  bool GetDataTypeStatus(ModelType type) const {
+  bool GetDataTypeStatus(DataType type) const {
     return pref_service_.GetBoolean(base::StrCat(
         {prefs::internal::kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
-         ".", GetModelTypeLowerCaseRootTag(type)}));
+         ".", DataTypeToStableLowerCaseString(type)}));
   }
 
   TestSyncService& sync_service() { return sync_service_; }
@@ -81,7 +81,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, AllEnabled) {
 TEST_F(SyncFeatureStatusForMigrationsRecorderTest, NoSyncConsent) {
   // Sync-the-feature is disabled, but all the data types are active (in
   // transport mode).
-  sync_service().SetHasSyncConsent(false);
+  sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
   ASSERT_FALSE(sync_service().IsSyncFeatureEnabled());
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::BOOKMARKS));
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::PASSWORDS));
@@ -92,7 +92,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, NoSyncConsent) {
   // The recorder should have marked everything as disabled (even though the
   // data types were active!)
   EXPECT_EQ(GetSyncFeatureStatus(),
-            SyncFeatureStatusForSyncToSigninMigration::kDisabledOrPaused);
+            SyncFeatureStatusForSyncToSigninMigration::kDisabled);
   EXPECT_FALSE(GetDataTypeStatus(syncer::BOOKMARKS));
   EXPECT_FALSE(GetDataTypeStatus(syncer::PASSWORDS));
   EXPECT_FALSE(GetDataTypeStatus(syncer::READING_LIST));
@@ -101,11 +101,11 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, NoSyncConsent) {
 TEST_F(SyncFeatureStatusForMigrationsRecorderTest, Initializing) {
   // Sync-the-feature is enabled, but the SyncService is still in the process
   // of initializing.
-  sync_service().SetTransportState(
+  sync_service().SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
   ASSERT_TRUE(sync_service().IsSyncFeatureEnabled());
   ASSERT_FALSE(sync_service().IsSyncFeatureActive());
-  ASSERT_TRUE(sync_service().GetActiveDataTypes().Empty());
+  ASSERT_TRUE(sync_service().GetActiveDataTypes().empty());
 
   CreateRecorder();
 
@@ -159,7 +159,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, SyncPaused) {
 
   // The recorder should have marked everything as disabled.
   EXPECT_EQ(GetSyncFeatureStatus(),
-            SyncFeatureStatusForSyncToSigninMigration::kDisabledOrPaused);
+            SyncFeatureStatusForSyncToSigninMigration::kPaused);
   EXPECT_FALSE(GetDataTypeStatus(syncer::BOOKMARKS));
   EXPECT_FALSE(GetDataTypeStatus(syncer::PASSWORDS));
   EXPECT_FALSE(GetDataTypeStatus(syncer::READING_LIST));
@@ -167,11 +167,11 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, SyncPaused) {
 
 TEST_F(SyncFeatureStatusForMigrationsRecorderTest, StartupSequence) {
   // Initially, everything is enabled, but SyncService is still initializing.
-  sync_service().SetTransportState(
+  sync_service().SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
   ASSERT_TRUE(sync_service().IsSyncFeatureEnabled());
   ASSERT_FALSE(sync_service().IsSyncFeatureActive());
-  ASSERT_TRUE(sync_service().GetActiveDataTypes().Empty());
+  ASSERT_TRUE(sync_service().GetActiveDataTypes().empty());
 
   CreateRecorder();
 
@@ -185,7 +185,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, StartupSequence) {
 
   // The SyncService moves on to "configuring". This shouldn't make a difference
   // to the recorder.
-  sync_service().SetTransportState(
+  sync_service().SetMaxTransportState(
       syncer::SyncService::TransportState::CONFIGURING);
   sync_service().FireStateChanged();
 
@@ -196,7 +196,8 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, StartupSequence) {
   EXPECT_FALSE(GetDataTypeStatus(syncer::READING_LIST));
 
   // Finally, the SyncService becomes active.
-  sync_service().SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service().SetMaxTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::BOOKMARKS));
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::PASSWORDS));
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::READING_LIST));
@@ -212,11 +213,11 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, StartupSequence) {
 TEST_F(SyncFeatureStatusForMigrationsRecorderTest, RecordsMetricsOnStartup) {
   // First run of Chrome: No pre-existing status is recorded in prefs yet.
   // Initially, everything is enabled, but SyncService is still initializing.
-  sync_service().SetTransportState(
+  sync_service().SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
   ASSERT_TRUE(sync_service().IsSyncFeatureEnabled());
   ASSERT_FALSE(sync_service().IsSyncFeatureActive());
-  ASSERT_TRUE(sync_service().GetActiveDataTypes().Empty());
+  ASSERT_TRUE(sync_service().GetActiveDataTypes().empty());
 
   // Once the recorder gets created, it should record the pre-existing state,
   // which is "undefined".
@@ -239,7 +240,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, RecordsMetricsOnStartup) {
   {
     base::HistogramTester histograms;
 
-    sync_service().SetTransportState(
+    sync_service().SetMaxTransportState(
         syncer::SyncService::TransportState::ACTIVE);
     sync_service().FireStateChanged();
     ASSERT_EQ(GetSyncFeatureStatus(),
@@ -260,7 +261,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, RecordsMetricsOnStartup) {
   // were active at the end of the previous run, that should be recorded in the
   // histograms.
   DestroyRecorder();
-  sync_service().SetTransportState(
+  sync_service().SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
   {
     base::HistogramTester histograms;

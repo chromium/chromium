@@ -29,8 +29,8 @@ using TargetProperties = std::bitset<kMaxTargetPropertyId>;
 // For background on the name of this class, please refer to the WebAnimations
 // spec: https://www.w3.org/TR/web-animations-1/#the-keyframeeffect-interface
 //
-// TODO(crbug.com/747185): Make cc::KeyframeEffect a subclass of KeyframeEffect
-// and share common code.
+// TODO(crbug.com/40531111): Make cc::KeyframeEffect a subclass of
+// KeyframeEffect and share common code.
 class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeEffect {
  public:
   static int GetNextKeyframeModelId();

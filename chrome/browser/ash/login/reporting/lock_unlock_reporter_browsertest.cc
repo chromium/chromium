@@ -82,7 +82,7 @@ class LockUnlockReporterBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    login_manager_mixin_.set_should_launch_browser(true);
+    login_manager_mixin_.SetShouldLaunchBrowser(true);
     FakeSessionManagerClient::Get()->set_supports_browser_restart(true);
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
   }

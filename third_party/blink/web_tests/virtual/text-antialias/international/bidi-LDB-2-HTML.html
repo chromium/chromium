@@ -30,6 +30,9 @@ p.pair { margin: 0; }
 div.box { border:1px green solid; display:inline-block; padding:3px; margin:3px; vertical-align:middle; }
 
 span[dir] { unicode-bidi: embed; }
+
+/* simulate old behavior for the <bdo> element that this test is based on */
+bdo { unicode-bidi: bidi-override; }
 </STYLE>
 </HEAD>
 <BODY>

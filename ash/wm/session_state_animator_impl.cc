@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/utility/layer_copy_animator.h"
 #include "ash/wm/desks/desks_util.h"
@@ -195,53 +194,6 @@ class CallbackAnimationObserver : public ui::LayerAnimationObserver {
   base::OnceClosure callback_;
 };
 
-bool IsLayerAnimated(ui::Layer* layer,
-                     SessionStateAnimator::AnimationType type) {
-  switch (type) {
-    case SessionStateAnimator::ANIMATION_FADE_IN:
-      if (layer->GetTargetOpacity() < 0.9999)
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_FADE_OUT:
-      if (layer->GetTargetOpacity() > 0.0001)
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_HIDE_IMMEDIATELY:
-      if (layer->GetTargetOpacity() > 0.0001)
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_GRAYSCALE_BRIGHTNESS:
-      if ((layer->GetTargetBrightness() < 0.9999) ||
-          (layer->GetTargetGrayscale() < 0.9999))
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_UNDO_GRAYSCALE_BRIGHTNESS:
-      if ((layer->GetTargetBrightness() > 0.0001) ||
-          (layer->GetTargetGrayscale() > 0.0001))
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_DROP:
-    case SessionStateAnimator::ANIMATION_UNDO_LIFT:
-      // ToDo(antim) : check other effects
-      if (layer->GetTargetOpacity() < 0.9999)
-        return false;
-      break;
-    // ToDo(antim) : check other effects
-    case SessionStateAnimator::ANIMATION_LIFT:
-      if (layer->GetTargetOpacity() > 0.0001)
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_RAISE_TO_SCREEN:
-      // ToDo(antim) : check other effects
-      if (layer->GetTargetOpacity() < 0.9999)
-        return false;
-      break;
-    case SessionStateAnimator::ANIMATION_COPY_LAYER:
-      return true;
-  }
-  return true;
-}
-
 void GetContainersInRootWindow(int container_mask,
                                aura::Window* root_window,
                                aura::Window::Windows* containers) {
@@ -258,24 +210,18 @@ void GetContainersInRootWindow(int container_mask,
         Shell::GetContainer(root_window, kShellWindowId_ShelfContainer));
   }
   if (container_mask & SessionStateAnimator::NON_LOCK_SCREEN_CONTAINERS) {
-    // TODO(antrim): Figure out a way to eliminate a need to exclude shelf
-    // in such way.
-    aura::Window* non_lock_screen_containers = Shell::GetContainer(
-        root_window, kShellWindowId_NonLockScreenContainersContainer);
-    // |non_lock_screen_containers| may already be removed in some tests.
-    constexpr int ContainersToAnimate[] = {
-        kShellWindowId_HomeScreenContainer,
-        kShellWindowId_AlwaysOnTopContainer,
-        kShellWindowId_PipContainer,
-        kShellWindowId_SystemModalContainer,
-    };
-    if (non_lock_screen_containers) {
-      for (aura::Window* window : non_lock_screen_containers->children()) {
-        if ((base::Contains(ContainersToAnimate, window->GetId()) ||
-             desks_util::IsActiveDeskContainer(window))) {
-          containers->push_back(window);
-        }
+    // `non_lock_screen_containers` may already be removed in some tests.
+    if (aura::Window* non_lock_screen_containers = Shell::GetContainer(
+            root_window, kShellWindowId_NonLockScreenContainersContainer);
+        non_lock_screen_containers) {
+      for (const int id : SessionStateAnimatorImpl::
+               ContainersToAnimateInNonLockScreenContainer) {
+        containers->push_back(Shell::GetContainer(root_window, id));
       }
+      // The active desk container should be animated as well besides the ones
+      // inside `ContainersToAnimateInNonLockScreenContainer`.
+      containers->push_back(
+          desks_util::GetActiveDeskContainerForRoot(root_window));
     }
   }
   if (container_mask & SessionStateAnimator::LOCK_SCREEN_WALLPAPER) {
@@ -398,28 +344,6 @@ class SessionStateAnimatorImpl::AnimationSequence
   // Number of sequences either ended or aborted.
   int sequences_completed_;
 };
-
-bool SessionStateAnimatorImpl::TestApi::ContainersAreAnimated(
-    int container_mask,
-    AnimationType type) const {
-  aura::Window::Windows containers;
-  animator_->GetContainers(container_mask, &containers);
-  for (aura::Window::Windows::const_iterator it = containers.begin();
-       it != containers.end(); ++it) {
-    aura::Window* window = *it;
-    ui::Layer* layer = window->layer();
-    if (!IsLayerAnimated(layer, type))
-      return false;
-  }
-  return true;
-}
-
-bool SessionStateAnimatorImpl::TestApi::RootWindowIsAnimated(
-    AnimationType type) const {
-  aura::Window* root_window = Shell::GetPrimaryRootWindow();
-  ui::Layer* layer = root_window->layer();
-  return IsLayerAnimated(layer, type);
-}
 
 SessionStateAnimatorImpl::SessionStateAnimatorImpl() = default;
 

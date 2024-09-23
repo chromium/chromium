@@ -14,6 +14,8 @@ option java_package = "org.chromium.components.sync.protocol";
 
 option optimize_for = LITE_RUNTIME;
 
+import "components/sync/protocol/unencrypted_sharing_message.proto";
+
 package sync_pb;
 
 message SharingMessageSpecifics {
@@ -33,6 +35,33 @@ message SharingMessageSpecifics {
       optional int32 priority = 3;
     }
 
+    message ChimeChannelConfiguration {
+      // The channels supported for delivery in the notifications pipeline.
+      // Numbering should be kept in sync with
+      // google3/notifications/backend/proto/common/channel_types.proto.
+      enum ChimeChannelType {
+        CHANNEL_TYPE_UNSPECIFIED = 0;
+        // This uses the AppleSelection for selecting targets.
+        APPLE_PUSH = 2;
+      }
+      // The device registration token. For iOS, this should be the
+      // Apple device token.
+      optional bytes device_token = 1;
+
+      // Channel for delivery.
+      optional ChimeChannelType channel_type = 2;
+
+      // Identifies the type of this notification within Chime.
+      // The value of this field must correspond to a previously
+      // configured type for the "chrome_chime" client id at
+      // google3/googledata/notifications/config/clients/chrome_chime.
+      optional string type_id = 3;
+
+      // RTID provided by Chime after user is registered. Required if message
+      // should target specific device, otherwise optional.
+      optional string representative_target_id = 4;
+    }
+
     oneof channel_configuration {
       // FCM channel configuration. Message will be delivered as a FCM message.
       FCMChannelConfiguration fcm = 1;
@@ -40,6 +69,9 @@ message SharingMessageSpecifics {
       // Opaque server channel configuration. Message will be delivered through
       // server channel.
       bytes server = 2;
+
+      // Chime channel configuration. Message will be delivered through Chime.
+      ChimeChannelConfiguration chime = 3;
     }
   }
 
@@ -47,9 +79,12 @@ message SharingMessageSpecifics {
 
   // Payload encrypted using the target user keys according to WebPush
   // encryption scheme. The payload has to be a valid
-  // chrome/browser/sharing/proto/sharing_message.proto serialized using
+  // components/sharing_message/proto/sharing_message.proto serialized using
   // SerializeToString.
   optional bytes payload = 3;
+
+  // Payload NOT encrypted. For encrypted payloads, use payload field.
+  optional UnencryptedSharingMessage unencrypted_payload = 4;
 }
 
 // Used for the server to return fine grained commit errors back to the client.
@@ -57,6 +92,7 @@ message SharingMessageCommitError {
   // This enum is used in histograms. Entries should not be renumbered and
   // numeric values should never be reused. Also remember to update in
   // tools/metrics/histograms/enums.xml SyncSharingMessageCommitErrorCode enum.
+  // LINT.IfChange(SyncSharingMessageCommitErrorCode)
   enum ErrorCode {
     NONE = 0;
     INVALID_ARGUMENT = 1;
@@ -80,6 +116,7 @@ message SharingMessageCommitError {
     // Auth error when communicating with the server.
     SYNC_AUTH_ERROR = 13;
   }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncSharingMessageCommitErrorCode)
 
   optional ErrorCode error_code = 1;
 }

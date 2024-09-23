@@ -4,7 +4,9 @@
 
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import './shared_style.css.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -16,14 +18,9 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ExtensionsHatsBrowserProxyImpl} from './extension_hats_browser_proxy.js';
 import type {ItemDelegate} from './item.js';
+import {convertSafetyCheckReason, SAFETY_HUB_EXTENSION_KEPT_HISTOGRAM_NAME, SAFETY_HUB_EXTENSION_REMOVED_HISTOGRAM_NAME, SAFETY_HUB_EXTENSION_SHOWN_HISTOGRAM_NAME, SAFETY_HUB_WARNING_REASON_MAX_SIZE} from './item_util.js';
 import {getTemplate} from './review_panel.html.js';
-
-export interface ReviewItemDelegate {
-  setItemSafetyCheckWarningAcknowledged(id: string): void;
-  uninstallItem(id: string): Promise<void>;
-}
 
 export interface ExtensionsReviewPanelElement {
   $: {
@@ -53,6 +50,11 @@ export class ExtensionsReviewPanelElement extends
     return {
       delegate: Object,
 
+      /**
+       * List of potentially unsafe extensions. If this list is empty, all the
+       * unsafe extensions were reviewed and the completion info should be
+       * visible.
+       */
       extensions: {
         type: Array,
         notify: true,
@@ -74,14 +76,19 @@ export class ExtensionsReviewPanelElement extends
       completionMessage_: String,
 
       /**
-       * List of potentially unsafe extensions. This list being empty
-       * indicates that there are no unsafe extensions to review.
+       * Indicates whether to show the Remove All button.
        */
-      unsafeExtensions_: Array,
-
-      shouldShowSafetyHubHeader_: {
+      shouldShowSafetyHubRemoveAllButton_: {
         type: Boolean,
-        computed: 'computeShouldShowSafetyHubHeader_(shouldHideUnsafePanel_)',
+        computed: 'computeShouldShowSafetyHubRemoveAllButton_(extensions.*)',
+      },
+
+      /**
+       * Indicates whether to show the potentially unsafe extensions or not.
+       */
+      shouldShowUnsafeExtensions_: {
+        type: Boolean,
+        computed: 'computeShouldShowUnsafeExtensions_(extensions.*)',
       },
 
       /**
@@ -95,20 +102,11 @@ export class ExtensionsReviewPanelElement extends
       },
 
       /**
-       * Indicates whether to show the potentially unsafe extensions or not.
+       * Indicates whether to show the panel header.
        */
-      shouldShowUnsafeExtensions_: {
+      shouldShowSafetyHubHeader_: {
         type: Boolean,
-        computed: 'computeShouldShowUnsafeExtensions_(extensions.*)',
-      },
-
-      /**
-       * Indicates whether to show any part of the Review Panel.
-       */
-      shouldHideUnsafePanel_: {
-        type: Boolean,
-        computed:
-            'computeShouldHideUnsafePanel_(shouldShowUnsafeExtensions_, shouldShowCompletionInfo_)',
+        computed: 'computeShouldShowSafetyHubHeader_(extensions.*)',
       },
 
       /**
@@ -120,11 +118,16 @@ export class ExtensionsReviewPanelElement extends
       },
 
       /**
-       * Indicates if any potential unsafe extensions has been kept or removed.
+       * Tracks if the last action that led to the number of extensions
+       * under review going to 0 was taken in the review panel. If it was
+       * the completion state is shown. If not the review panel is removed.
+       * This prevents actions like toggling dev mode or removing a
+       * extension using the item card's Remove button from triggering the
+       * completion message.
        */
-      numberOfExtensionsChanged_: {
+      numberOfExtensionsChangedByLastReviewPanelAction_: {
         type: Number,
-        value: 1,
+        value: 0,
       },
 
       /**
@@ -147,54 +150,43 @@ export class ExtensionsReviewPanelElement extends
     return ['onExtensionsChanged_(extensions.*)'];
   }
 
-  delegate: ItemDelegate&ReviewItemDelegate;
+  delegate: ItemDelegate;
   extensions: chrome.developerPrivate.ExtensionInfo[];
-  private numberOfExtensionsChanged_: number;
+  private numberOfExtensionsChangedByLastReviewPanelAction_: number;
   private reviewPanelShown_: boolean;
   private completionMetricLogged_: boolean;
-  private unsafeExtensions_: chrome.developerPrivate.ExtensionInfo[];
   private headerString_: string;
   private subtitleString_: string;
   private unsafeExtensionsReviewListExpanded_: boolean;
   private completionMessage_: string;
   private shouldShowSafetyHubHeader_: boolean;
+  private shouldShowSafetyHubRemoveAllButton_: boolean;
   private shouldShowCompletionInfo_: boolean;
   private shouldShowUnsafeExtensions_: boolean;
-  private shouldHideUnsafePanel_: boolean;
   private lastClickedExtensionId_: string;
+  private lastClickedExtensionTriggerReason_:
+      chrome.developerPrivate.SafetyCheckWarningReason;
 
   private async onExtensionsChanged_() {
-    this.unsafeExtensions_ = this.getUnsafeExtensions_(this.extensions);
     this.headerString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckTitle', this.unsafeExtensions_.length);
+            'safetyCheckTitle', this.extensions.length);
     this.subtitleString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckDescription', this.unsafeExtensions_.length);
+            'safetyCheckDescription', this.extensions.length);
     this.completionMessage_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckAllDoneForNow', this.numberOfExtensionsChanged_);
-  }
-
-  private getUnsafeExtensions_(extensions:
-                                   chrome.developerPrivate.ExtensionInfo[]):
-      chrome.developerPrivate.ExtensionInfo[] {
-    return extensions?.filter(
-        extension =>
-            !!(extension.safetyCheckText &&
-               extension.safetyCheckText.panelString &&
-               !extension.controlledInfo &&
-               extension.acknowledgeSafetyCheckWarning !== true));
+            'safetyCheckAllDoneForNow',
+            this.numberOfExtensionsChangedByLastReviewPanelAction_);
   }
 
   /**
-   * Determines whether or not to show the completion info after the user
-   * finished reviewing extensions.
+   * Determines whether or not to show the completion info when there are no
+   * unsafe extensions left.
    */
   private computeShouldShowCompletionInfo_(): boolean {
-    const updatedUnsafeExtensions =
-        this.getUnsafeExtensions_(this.extensions) || [];
-    if (this.reviewPanelShown_ && updatedUnsafeExtensions.length === 0) {
+    if (this.extensions?.length === 0 &&
+        this.numberOfExtensionsChangedByLastReviewPanelAction_ !== 0) {
       if (!this.completionMetricLogged_) {
         this.completionMetricLogged_ = true;
         chrome.metricsPrivate.recordUserAction('SafetyCheck.ReviewCompletion');
@@ -206,30 +198,36 @@ export class ExtensionsReviewPanelElement extends
   }
 
   private computeShouldShowUnsafeExtensions_(): boolean {
-    const updatedUnsafeExtensions =
-        this.getUnsafeExtensions_(this.extensions) || [];
-    if (updatedUnsafeExtensions.length !== 0) {
+    if (this.extensions?.length !== 0) {
       if (!this.shouldShowUnsafeExtensions_) {
         chrome.metricsPrivate.recordUserAction('SafetyCheck.ReviewPanelShown');
+        for (const extension of this.extensions) {
+          chrome.metricsPrivate.recordEnumerationValue(
+              SAFETY_HUB_EXTENSION_SHOWN_HISTOGRAM_NAME,
+              convertSafetyCheckReason(extension.safetyCheckWarningReason),
+              SAFETY_HUB_WARNING_REASON_MAX_SIZE);
+        }
       }
       this.completionMetricLogged_ = false;
-      this.reviewPanelShown_ = true;
-      ExtensionsHatsBrowserProxyImpl.getInstance().panelShown(true);
+      // Reset the `numberOfExtensionsChangedByLastReviewPanelAction_` if
+      // the last action completed the review, i.e., a completion message
+      // will be shown. Resetting ensures that the completion message is
+      // only shown once after a review panel action.
+      if (this.shouldShowCompletionInfo_) {
+        this.numberOfExtensionsChangedByLastReviewPanelAction_ = 0;
+      }
       return true;
-    } else {
-      ExtensionsHatsBrowserProxyImpl.getInstance().panelShown(false);
-      return false;
     }
+    return false;
   }
 
   private computeShouldShowSafetyHubHeader_(): boolean {
     return loadTimeData.getBoolean('safetyHubShowReviewPanel') &&
-        !this.shouldHideUnsafePanel_;
+        (this.shouldShowUnsafeExtensions_ || this.shouldShowCompletionInfo_);
   }
 
-  private computeShouldHideUnsafePanel_(): boolean {
-    return !(
-        this.shouldShowUnsafeExtensions_ || this.shouldShowCompletionInfo_);
+  private computeShouldShowSafetyHubRemoveAllButton_(): boolean {
+    return this.extensions?.length !== 1;
   }
 
   /**
@@ -238,6 +236,8 @@ export class ExtensionsReviewPanelElement extends
   private onMakeExceptionMenuClick_(
       e: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>) {
     this.lastClickedExtensionId_ = e.model.item.id;
+    this.lastClickedExtensionTriggerReason_ =
+        e.model.item.safetyCheckWarningReason;
     this.$.makeExceptionMenu.showAt(e.target as HTMLElement);
   }
 
@@ -247,11 +247,18 @@ export class ExtensionsReviewPanelElement extends
   private onKeepExtensionClick_() {
     chrome.metricsPrivate.recordUserAction(
         'SafetyCheck.ReviewPanelKeepClicked');
-    ExtensionsHatsBrowserProxyImpl.getInstance().extensionKeptAction();
+    chrome.metricsPrivate.recordEnumerationValue(
+        SAFETY_HUB_EXTENSION_KEPT_HISTOGRAM_NAME,
+        convertSafetyCheckReason(this.lastClickedExtensionTriggerReason_),
+        SAFETY_HUB_WARNING_REASON_MAX_SIZE);
+    if (this.extensions?.length === 1) {
+      this.numberOfExtensionsChangedByLastReviewPanelAction_ = 1;
+    }
     this.$.makeExceptionMenu.close();
     if (this.lastClickedExtensionId_) {
       this.delegate.setItemSafetyCheckWarningAcknowledged(
-          this.lastClickedExtensionId_);
+          this.lastClickedExtensionId_,
+          this.lastClickedExtensionTriggerReason_);
     }
   }
 
@@ -269,29 +276,41 @@ export class ExtensionsReviewPanelElement extends
       e: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>): Promise<void> {
     chrome.metricsPrivate.recordUserAction(
         'SafetyCheck.ReviewPanelRemoveClicked');
-    ExtensionsHatsBrowserProxyImpl.getInstance().extensionRemovedAction();
+    chrome.metricsPrivate.recordEnumerationValue(
+        SAFETY_HUB_EXTENSION_REMOVED_HISTOGRAM_NAME,
+        convertSafetyCheckReason(e.model.item.safetyCheckWarningReason),
+        SAFETY_HUB_WARNING_REASON_MAX_SIZE);
+    if (this.extensions?.length === 1) {
+      this.numberOfExtensionsChangedByLastReviewPanelAction_ = 1;
+    }
     try {
       await this.delegate.uninstallItem(e.model.item.id);
     } catch (_) {
-      // The error was almost certainly the user cancelling the dialog.
-      // Do nothing.
+      // The error was almost certainly the user canceling the dialog.
+      // Update the number of changed extensions.
+      this.numberOfExtensionsChangedByLastReviewPanelAction_ = 0;
     }
   }
 
   private async onRemoveAllClick_(event: Event): Promise<void> {
     chrome.metricsPrivate.recordUserAction(
         'SafetyCheck.ReviewPanelRemoveAllClicked');
-    ExtensionsHatsBrowserProxyImpl.getInstance().removeAllAction(
-        this.unsafeExtensions_.length);
     event.stopPropagation();
+    this.numberOfExtensionsChangedByLastReviewPanelAction_ =
+        this.extensions.length;
     try {
-      this.numberOfExtensionsChanged_ = this.unsafeExtensions_.length;
+      this.extensions.forEach(extension => {
+        chrome.metricsPrivate.recordEnumerationValue(
+            SAFETY_HUB_EXTENSION_REMOVED_HISTOGRAM_NAME,
+            convertSafetyCheckReason(extension.safetyCheckWarningReason),
+            SAFETY_HUB_WARNING_REASON_MAX_SIZE);
+      });
       await this.delegate.deleteItems(
-          this.unsafeExtensions_.map(extension => extension.id));
+          this.extensions.map(extension => extension.id));
     } catch (_) {
-      // The error was almost certainly the user cancelling the dialog.
-      // Reset `numberOfExtensionsChanged_`.
-      this.numberOfExtensionsChanged_ = 1;
+      // The error was almost certainly the user canceling the dialog.
+      // Reset `numberOfExtensionsChangedByLastReviewPanelAction_`.
+      this.numberOfExtensionsChangedByLastReviewPanelAction_ = 0;
     }
   }
 }

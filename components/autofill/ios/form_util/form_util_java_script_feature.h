@@ -22,15 +22,23 @@ class FormUtilJavaScriptFeature : public web::JavaScriptFeature {
   // needed.
   static FormUtilJavaScriptFeature* GetInstance();
 
-  // Sets up the next available unique ID value in a document.
-  void SetUpForUniqueIDsWithInitialState(web::WebFrame* frame,
-                                         uint32_t next_available_id);
-
   // Enables/disables the AutofillAcrossIframes feature in `frame`.
   void SetAutofillAcrossIframes(web::WebFrame* frame, bool enabled);
 
+  // Enables/disables the renderer side behaviours in `frame` needed for
+  // Autofill features to work in an isolated content world.
+  void SetAutofillIsolatedContentWorld(web::WebFrame* frame, bool enabled);
+
  private:
   friend class base::NoDestructor<FormUtilJavaScriptFeature>;
+  // Friend test fixture so it can create instances of this class. This JS
+  // feature is injected in different content worlds depending on a feature
+  // flag. Tests need to create new instances of the JS feature when the feature
+  // flag changes.
+  // TODO(crbug.com/359538514): Remove friend once isolated world for Autofill
+  // is launched.
+  friend class FillJsTest;
+  friend class TestAutofillJavaScriptFeatureContainer;
 
   FormUtilJavaScriptFeature();
   ~FormUtilJavaScriptFeature() override;

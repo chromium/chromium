@@ -4,14 +4,21 @@
 
 #include <thread>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
+#include "base/task/common/task_annotator.h"
 #include "base/test/test_trace_processor.h"
 #include "base/test/trace_test_utils.h"
 #include "build/build_config.h"
+#include "components/variations/active_field_trials.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
+#include "services/tracing/public/cpp/perfetto/metadata_data_source.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -24,7 +31,6 @@
 #include "third_party/perfetto/protos/perfetto/common/tracing_service_state.gen.h"
 #endif
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 namespace content {
 
 namespace {
@@ -71,6 +77,29 @@ perfetto::protos::gen::TraceConfig TraceConfigWithMemoryDumps(
   return perfetto_config;
 }
 
+perfetto::protos::gen::TraceConfig TraceConfigWithMetadata(
+    const std::string& category_filter_string) {
+  auto perfetto_config =
+      base::test::DefaultTraceConfig(category_filter_string, false);
+
+  auto* data_source = perfetto_config.add_data_sources();
+  auto* source_config = data_source->mutable_config();
+  source_config->set_name("org.chromium.trace_metadata");
+
+  return perfetto_config;
+}
+
+perfetto::protos::gen::TraceConfig TraceConfigWithMetadataMultisession(
+    const std::string& category_filter_string) {
+  auto perfetto_config =
+      base::test::DefaultTraceConfig(category_filter_string, false);
+
+  auto* data_source = perfetto_config.add_data_sources();
+  auto* source_config = data_source->mutable_config();
+  source_config->set_name("org.chromium.trace_metadata2");
+
+  return perfetto_config;
+}
 }  // namespace
 
 class TracingEndToEndBrowserTest : public ContentBrowserTest {};
@@ -95,6 +124,142 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, SimpleTraceEvent) {
   EXPECT_THAT(result.value(),
               ::testing::ElementsAre(std::vector<std::string>{"name"},
                                      std::vector<std::string>{"test_event"}));
+}
+
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, Metadata) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace(TraceConfigWithMetadata("-*"));
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  auto result = ttp.RunQuery(
+      "SELECT str_value IS NOT NULL AS has_os_name "
+      "FROM metadata WHERE name = 'cr-os-name'");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"has_os_name"},
+                                     std::vector<std::string>{"1"}));
+
+  result = ttp.RunQuery(
+      "SELECT str_value IS NOT NULL AS has_revision "
+      "FROM metadata WHERE name = 'cr-revision'");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"has_revision"},
+                                     std::vector<std::string>{"1"}));
+
+  result = ttp.RunQuery(
+      "SELECT int_value > 0 AS has_num_cpus "
+      "FROM metadata WHERE name = 'cr-num-cpus'");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"has_num_cpus"},
+                                     std::vector<std::string>{"1"}));
+}
+
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, MetadataMultisession) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace(TraceConfigWithMetadataMultisession("-*"));
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  base::expected<base::test::TestTraceProcessor::QueryResult,
+    std::string> result;
+
+  std::vector<variations::ActiveGroupId> active_group_ids;
+  variations::GetFieldTrialActiveGroupIds(std::string_view(),
+                                            &active_group_ids);
+  if (!active_group_ids.empty()) {
+    result = ttp.RunQuery(R"(
+      SELECT
+        str_value IS NOT NULL AS has_field_trial_hashes
+      FROM metadata
+      WHERE name = 'cr-a-field_trial_hashes'
+    )");
+    ASSERT_TRUE(result.has_value()) << result.error();
+    EXPECT_THAT(
+        result.value(),
+        ::testing::ElementsAre(std::vector<std::string>{"has_field_trial_hashes"},
+                               std::vector<std::string>{"1"}));
+  }
+
+#if BUILDFLAG(IS_ANDROID) && defined(OFFICIAL_BUILD)
+  result = ttp.RunQuery(R"(
+    SELECT
+      int_value IS NOT NULL AS has_version_code
+    FROM metadata
+    WHERE name = 'cr-a-playstore_version_code'
+  )");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), ::testing::ElementsAre(
+                                  std::vector<std::string>{"has_version_code"},
+                                  std::vector<std::string>{"1"}));
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, TaskExecutionEvent) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("toplevel");
+
+  {
+    base::TaskAnnotator task_annotator;
+    base::PendingTask task;
+    task.task = base::DoNothing();
+    task.posted_from = base::Location::CreateForTesting(
+        "my_func", "my_file", 0, /*program_counter=*/&task);
+    // TaskAnnotator::RunTask is responsible for emitting the task execution
+    // event.
+    task_annotator.RunTask("RunTaskForTesting", task);
+  }
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  std::string query =
+      "SELECT "
+      "EXTRACT_ARG(arg_set_id, 'task.posted_from.file_name') AS file_name, "
+      "EXTRACT_ARG(arg_set_id, 'task.posted_from.function_name') AS func_name "
+      "FROM slice WHERE cat = 'toplevel' AND name = 'RunTaskForTesting'";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+
+  EXPECT_THAT(
+      result.value(),
+      ::testing::ElementsAre(std::vector<std::string>{"file_name", "func_name"},
+                             std::vector<std::string>{"my_file", "my_func"}));
+}
+
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, ThreadAndProcessName) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("foo");
+
+  {
+    base::PlatformThread::SetName("FooThread");
+    TRACE_EVENT("foo", "test_event");
+  }
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  std::string query =
+      "SELECT "
+      "thread.name AS thread_name, "
+      "process.name AS process_name "
+      "FROM slice "
+      "JOIN thread_track ON thread_track.id = slice.track_id "
+      "JOIN thread ON thread.utid = thread_track.utid "
+      "JOIN process_track ON process_track.id = thread_track.parent_id "
+      "JOIN process ON process.upid = process_track.upid "
+      "WHERE slice.cat = 'foo'";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(
+                  std::vector<std::string>{"thread_name", "process_name"},
+                  std::vector<std::string>{"FooThread", "Browser"}));
 }
 
 #if defined(TEST_TRACE_PROCESSOR_ENABLED)
@@ -431,6 +596,79 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
               ::testing::ElementsAre(std::vector<std::string>{"detail_level"}));
 }
 
+IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, TwoSessionsMetadata) {
+  base::test::TestTraceProcessor ttp1, ttp2;
+  ttp1.StartTrace(TraceConfigWithMetadataMultisession("-*"));
+  ttp2.StartTrace(TraceConfigWithMetadataMultisession("-*"));
+
+  absl::Status status = ttp1.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  base::expected<base::test::TestTraceProcessor::QueryResult,
+    std::string> result;
+
+  std::vector<variations::ActiveGroupId> active_group_ids;
+  variations::GetFieldTrialActiveGroupIds(std::string_view(),
+                                            &active_group_ids);
+
+  if (!active_group_ids.empty()) {
+    result = ttp1.RunQuery(R"(
+      SELECT
+        str_value IS NOT NULL AS has_field_trial_hashes
+      FROM metadata
+      WHERE name = 'cr-a-field_trial_hashes'
+    )");
+    ASSERT_TRUE(result.has_value()) << result.error();
+    EXPECT_THAT(
+        result.value(),
+        ::testing::ElementsAre(std::vector<std::string>{"has_field_trial_hashes"},
+                               std::vector<std::string>{"1"}));
+  }
+
+#if BUILDFLAG(IS_ANDROID) && defined(OFFICIAL_BUILD)
+  result = ttp1.RunQuery(R"(
+    SELECT
+      int_value IS NOT NULL AS has_version_code
+    FROM metadata
+    WHERE name = 'cr-a-playstore_version_code'
+  )");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), ::testing::ElementsAre(
+                                  std::vector<std::string>{"has_version_code"},
+                                  std::vector<std::string>{"1"}));
+#endif
+
+  status = ttp2.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  if (!active_group_ids.empty()) {
+    result = ttp2.RunQuery(R"(
+      SELECT
+        str_value IS NOT NULL AS has_field_trial_hashes
+      FROM metadata
+      WHERE name = 'cr-a-field_trial_hashes'
+    )");
+    ASSERT_TRUE(result.has_value()) << result.error();
+    EXPECT_THAT(
+        result.value(),
+        ::testing::ElementsAre(std::vector<std::string>{"has_field_trial_hashes"},
+                               std::vector<std::string>{"1"}));
+  }
+
+#if BUILDFLAG(IS_ANDROID) && defined(OFFICIAL_BUILD)
+  result = ttp2.RunQuery(R"(
+    SELECT
+      int_value IS NOT NULL AS has_version_code
+    FROM metadata
+    WHERE name = 'cr-a-playstore_version_code'
+  )");
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), ::testing::ElementsAre(
+                                  std::vector<std::string>{"has_version_code"},
+                                  std::vector<std::string>{"1"}));
+#endif
+}
+
 #if BUILDFLAG(IS_POSIX)
 class SystemTracingEndToEndBrowserTest : public ContentBrowserTest {
  public:
@@ -614,4 +852,3 @@ IN_PROC_BROWSER_TEST_F(SystemTracingEndToEndBrowserTest,
 #endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace content
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)

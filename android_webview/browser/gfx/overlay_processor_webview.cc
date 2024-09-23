@@ -4,17 +4,23 @@
 
 #include "android_webview/browser/gfx/overlay_processor_webview.h"
 
+#include <cstdlib>
+
 #include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/build_info.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/not_fatal_until.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/threading/thread_restrictions.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/resolved_frame_data.h"
@@ -66,8 +72,12 @@ class OverlayProcessorWebView::Manager
              gpu::MemoryTypeTracker* memory_tracker,
              const gpu::Mailbox& mailbox,
              const gfx::RectF& uv_rect,
+             const gfx::ColorSpace& color_space,
+             float frame_rate,
              base::ScopedClosureRunner return_resource)
-        : return_resource(std::move(return_resource)) {
+        : color_space_(color_space),
+          frame_rate_(frame_rate),
+          return_resource(std::move(return_resource)) {
       representation_ =
           shared_image_manager->ProduceOverlay(mailbox, memory_tracker);
       if (!representation_) {
@@ -145,9 +155,13 @@ class OverlayProcessorWebView::Manager
     }
 
     const gfx::Rect& crop_rect() { return crop_rect_; }
+    const gfx::ColorSpace& color_space() { return color_space_; }
+    float frame_rate() const { return frame_rate_; }
 
    private:
     gfx::Rect crop_rect_;
+    gfx::ColorSpace color_space_;
+    float frame_rate_;
     base::ScopedClosureRunner return_resource;
     std::unique_ptr<gpu::OverlayImageRepresentation> representation_;
     std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess>
@@ -183,9 +197,11 @@ class OverlayProcessorWebView::Manager
                  "overlay_id", overlay_id);
 
     auto& transaction = GetHWUITransaction();
-    std::unique_ptr<Resource> resource =
-        CreateResource(candidate.mailbox, candidate.unclipped_uv_rect,
-                       std::move(return_resource));
+    // Use 0.f as unspecified frame rate will set proper frame rate on buffer
+    // update.
+    std::unique_ptr<Resource> resource = CreateResource(
+        candidate.mailbox, candidate.unclipped_uv_rect, candidate.color_space,
+        /*frame_rate=*/0.f, std::move(return_resource));
 
     {
       base::AutoLock lock(lock_);
@@ -231,7 +247,9 @@ class OverlayProcessorWebView::Manager
   // Thread.
   void UpdateOverlayBuffer(uint64_t overlay_id,
                            gpu::Mailbox mailbox,
+                           const gfx::ColorSpace& color_space,
                            const gfx::RectF& uv_rect,
+                           float frame_rate,
                            base::ScopedClosureRunner return_resource) {
     DCHECK_CALLED_ON_VALID_THREAD(gpu_thread_checker_);
     TRACE_EVENT1("gpu,benchmark,android_webview",
@@ -248,8 +266,8 @@ class OverlayProcessorWebView::Manager
       return;
     }
 
-    std::unique_ptr<Resource> resource =
-        CreateResource(mailbox, uv_rect, std::move(return_resource));
+    std::unique_ptr<Resource> resource = CreateResource(
+        mailbox, uv_rect, color_space, frame_rate, std::move(return_resource));
 
     // If there is already transaction with buffer update in-flight, store this
     // one. This will return any previous stored resource if any.
@@ -506,19 +524,21 @@ class OverlayProcessorWebView::Manager
   OverlaySurface& GetOverlaySurfaceLocked(uint64_t id) {
     lock_.AssertAcquired();
     auto surface = overlay_surfaces_.find(id);
-    DCHECK(surface != overlay_surfaces_.end());
+    CHECK(surface != overlay_surfaces_.end(), base::NotFatalUntil::M130);
     return surface->second;
   }
 
   std::unique_ptr<Resource> CreateResource(
       const gpu::Mailbox& mailbox,
       const gfx::RectF uv_rect,
+      const gfx::ColorSpace color_space,
+      float frame_rate,
       base::ScopedClosureRunner return_resource) {
     if (mailbox.IsZero())
       return nullptr;
-    return std::make_unique<Resource>(shared_image_manager_,
-                                      memory_tracker_.get(), mailbox, uv_rect,
-                                      std::move(return_resource));
+    return std::make_unique<Resource>(
+        shared_image_manager_, memory_tracker_.get(), mailbox, uv_rect,
+        color_space, frame_rate, std::move(return_resource));
   }
 
   // Because we update different parts of geometry on different threads we use
@@ -584,7 +604,12 @@ class OverlayProcessorWebView::Manager
                                          -ceil(crop_rect.y() * scale_y)));
       transaction.SetScale(surface, scale_x, scale_y);
       transaction.SetCrop(surface, crop_rect);
+      transaction.SetColorSpace(surface, resource->color_space(), std::nullopt);
       transaction.SetBuffer(surface, buffer, resource->TakeBeginReadFence());
+
+      if (gfx::SurfaceControl::SupportsSetFrameRate()) {
+        transaction.SetFrameRate(surface, resource->frame_rate());
+      }
     } else {
       // Android T has a bug where setting empty buffer to ASurfaceControl will
       // result in surface completely missing from ASurfaceTransactionStats in
@@ -672,6 +697,7 @@ OverlayProcessorWebView::OverlayProcessorWebView(
                              NextCommandBufferId()),
       render_thread_sequence_(display_controller->gpu_task_scheduler()),
       frame_sink_manager_(frame_sink_manager) {
+  base::ScopedAllowBaseSyncPrimitives allow_wait;
   base::WaitableEvent event;
   render_thread_sequence_->ScheduleGpuTask(
       base::BindOnce(&OverlayProcessorWebView::CreateManagerOnRT,
@@ -865,7 +891,7 @@ void OverlayProcessorWebView::UpdateOverlayResource(
     const gfx::RectF& uv_rect) {
   DCHECK(resource_provider_);
   auto overlay = overlays_.find(frame_sink_id);
-  DCHECK(overlay != overlays_.end());
+  CHECK(overlay != overlays_.end(), base::NotFatalUntil::M130);
 
   DCHECK(resource_provider_->IsOverlayCandidate(new_resource_id));
 
@@ -873,10 +899,14 @@ void OverlayProcessorWebView::UpdateOverlayResource(
     overlay->second.resource_id = new_resource_id;
     auto result = LockResource(overlay->second);
 
+    gfx::ColorSpace color_space =
+        OverlayProcessorSurfaceControl::GetOverrideColorSpace().value_or(
+            resource_provider_->GetColorSpace(new_resource_id));
+
     gpu_thread_sequence_->ScheduleTask(
         base::BindOnce(&Manager::UpdateOverlayBuffer, manager_,
-                       overlay->second.id, result.mailbox, uv_rect,
-                       std::move(result.unlock_cb)),
+                       overlay->second.id, result.mailbox, color_space, uv_rect,
+                       frame_rate_, std::move(result.unlock_cb)),
         {result.sync_token, overlay->second.create_sync_token});
   }
 }
@@ -891,7 +921,7 @@ void OverlayProcessorWebView::ReturnResource(viz::ResourceId resource_id,
   // OverlayManager return resources. When we delete last lock resource will be
   // return to the client.
   auto it = locked_resources_.find(resource_id);
-  DCHECK(it != locked_resources_.end());
+  CHECK(it != locked_resources_.end(), base::NotFatalUntil::M130);
   locked_resources_.erase(it);
 
   DCHECK(resource_lock_count_.contains(surface_id.frame_sink_id()));
@@ -920,7 +950,7 @@ bool OverlayProcessorWebView::ProcessForFrameSinkId(
     const viz::FrameSinkId& frame_sink_id,
     const viz::ResolvedFrameData* frame_data) {
   auto it = overlays_.find(frame_sink_id);
-  DCHECK(it != overlays_.end());
+  CHECK(it != overlays_.end(), base::NotFatalUntil::M130);
   auto& overlay = it->second;
 
   const auto& passes = frame_data->GetResolvedPasses();
@@ -941,6 +971,33 @@ bool OverlayProcessorWebView::ProcessForFrameSinkId(
     // aggregator refactoring will be finished.
     const auto& frame = surface->GetActiveFrame();
     auto* quad = frame.render_pass_list.back()->quad_list.front();
+
+    if (gfx::SurfaceControl::SupportsSetFrameRate() &&
+        base::FeatureList::IsEnabled(features::kWebViewFrameRateHints)) {
+      float frame_rate = 0.f;
+      const viz::FrameIntervalInputs& frame_interval_inputs =
+          frame.metadata.frame_interval_inputs;
+      std::optional<base::TimeDelta> frame_interval;
+      for (const viz::ContentFrameIntervalInfo& content_info :
+           frame_interval_inputs.content_interval_info) {
+        if (!frame_interval) {
+          frame_interval = content_info.frame_interval;
+          continue;
+        }
+        if (frame_interval.value() != content_info.frame_interval) {
+          frame_interval.reset();
+          break;
+        }
+      }
+      if (frame_interval &&
+          frame_interval_inputs.has_only_content_frame_interval_updates) {
+        frame_rate = frame_interval->ToHz();
+      }
+      constexpr float kEpsilon = 0.005;
+      if (std::abs(frame_rate - frame_rate_) > kEpsilon) {
+        frame_rate_ = frame_rate;
+      }
+    }
 
     // We overlay only TextureDrawQuads and only if resource
     // IsOverlayCandidate(), return false otherwise so we would trigger

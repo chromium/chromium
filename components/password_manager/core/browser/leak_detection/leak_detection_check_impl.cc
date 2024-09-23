@@ -192,11 +192,8 @@ bool LeakDetectionCheckImpl::HasAccountForRequest(
     const signin::IdentityManager* identity_manager) {
   // On desktop HasPrimaryAccount(signin::ConsentLevel::kSignin) will
   // always return something if the user is signed in.
-  // On Android it will be empty if the user isn't syncing. Thus,
-  // GetAccountsWithRefreshTokens() check is necessary.
   return identity_manager &&
-         (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
-          !identity_manager->GetAccountsWithRefreshTokens().empty());
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 void LeakDetectionCheckImpl::Start(LeakDetectionInitiator initiator,
@@ -226,6 +223,7 @@ void LeakDetectionCheckImpl::Start(LeakDetectionInitiator initiator,
 // static
 bool LeakDetectionCheck::CanStartLeakCheck(
     const PrefService& prefs,
+    const GURL& form_url,
     std::unique_ptr<autofill::SavePasswordProgressLogger> logger) {
   const bool is_leak_protection_on =
       prefs.GetBoolean(prefs::kPasswordLeakDetectionEnabled);
@@ -246,10 +244,11 @@ bool LeakDetectionCheck::CanStartLeakCheck(
         logger->LogMessage(autofill::SavePasswordProgressLogger::
                                STRING_LEAK_DETECTION_DISABLED_FEATURE);
       }
-      return is_leak_protection_on;
+      return is_leak_protection_on && !LeakDetectionCheck::IsURLBlockedByPolicy(
+                                          prefs, form_url, logger.get());
     case safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION:
-      // feature is on.
-      return true;
+      return !LeakDetectionCheck::IsURLBlockedByPolicy(prefs, form_url,
+                                                       logger.get());
   }
 }
 
@@ -319,6 +318,18 @@ void LeakDetectionCheckImpl::OnAnalyzeSingleLeakResponse(
   DVLOG(0) << "Leak check result=" << is_leaked;
   delegate_->OnLeakDetectionDone(is_leaked, std::move(url_),
                                  std::move(username_), std::move(password_));
+}
+
+bool LeakDetectionCheck::IsURLBlockedByPolicy(
+    const PrefService& prefs,
+    const GURL& form_url,
+    autofill::SavePasswordProgressLogger* logger) {
+  bool is_blocked = safe_browsing::IsURLAllowlistedByPolicy(form_url, prefs);
+  if (is_blocked && logger) {
+    logger->LogMessage(autofill::SavePasswordProgressLogger::
+                           STRING_LEAK_DETECTION_URL_BLOCKED);
+  }
+  return is_blocked;
 }
 
 }  // namespace password_manager

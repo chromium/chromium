@@ -33,7 +33,7 @@ namespace background_fetch {
 
 namespace {
 
-// TODO(crbug.com/889401): Consider making this configurable by finch.
+// TODO(crbug.com/40595478): Consider making this configurable by finch.
 constexpr size_t kRegistrationLimitPerStorageKey = 5u;
 
 // Finds the number of active registrations associated with the provided storage

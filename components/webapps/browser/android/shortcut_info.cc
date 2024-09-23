@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/android_buildflags.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/features.h"
 #include "shortcut_info.h"
@@ -78,34 +79,36 @@ std::unique_ptr<ShortcutInfo> ShortcutInfo::CreateShortcutInfo(
   return shortcut_info;
 }
 
-std::vector<WebappIcon> ShortcutInfo::GetWebApkIcons() {
-  std::vector<WebappIcon> icons;
-  icons.emplace_back(best_primary_icon_url, is_primary_icon_maskable,
-                     webapk::Image::PRIMARY_ICON);
+std::map<GURL, std::unique_ptr<WebappIcon>> ShortcutInfo::GetWebApkIcons()
+    const {
+  std::map<GURL, std::unique_ptr<WebappIcon>> icons;
+  if (best_primary_icon_url.is_valid()) {
+    icons.emplace(best_primary_icon_url,
+                  std::make_unique<WebappIcon>(best_primary_icon_url,
+                                               is_primary_icon_maskable,
+                                               webapk::Image::PRIMARY_ICON));
+  }
 
-  if (!splash_image_url.is_empty()) {
-    auto it = std::find_if(icons.begin(), icons.end(), [&](auto& icon) {
-      return icon.url() == splash_image_url;
-    });
-    if (it == icons.end()) {
-      icons.emplace_back(splash_image_url, is_splash_image_maskable,
-                         webapk::Image::SPLASH_ICON);
+  if (splash_image_url.is_valid()) {
+    auto it = icons.find(splash_image_url);
+    if (it != icons.end()) {
+      it->second->AddUsage(webapk::Image::SPLASH_ICON);
     } else {
-      it->AddUsage(webapk::Image::SPLASH_ICON);
+      icons.emplace(splash_image_url,
+                    std::make_unique<WebappIcon>(splash_image_url,
+                                                 is_splash_image_maskable,
+                                                 webapk::Image::SPLASH_ICON));
     }
   }
 
   for (const auto& shortcut_icon_url : best_shortcut_icon_urls) {
-    if (shortcut_icon_url.is_valid()) {
-      auto it = std::find_if(icons.begin(), icons.end(), [&](auto& icon) {
-        return icon.url() == shortcut_icon_url;
-      });
-      if (it == icons.end()) {
-        icons.emplace_back(shortcut_icon_url, false,
-                           webapk::Image::SHORTCUT_ICON);
-      } else {
-        it->AddUsage(webapk::Image::SHORTCUT_ICON);
-      }
+    auto it = icons.find(shortcut_icon_url);
+    if (it != icons.end()) {
+      it->second->AddUsage(webapk::Image::SHORTCUT_ICON);
+    } else {
+      icons.emplace(shortcut_icon_url,
+                    std::make_unique<WebappIcon>(shortcut_icon_url, false,
+                                                 webapk::Image::SHORTCUT_ICON));
     }
   }
 
@@ -299,13 +302,19 @@ void ShortcutInfo::UpdateBestSplashIcon(
 }
 
 void ShortcutInfo::UpdateDisplayMode(bool webapk_compatible) {
-  if (!base::FeatureList::IsEnabled(features::kUniversalInstallManifest)) {
-    return;
-  }
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  constexpr bool is_desktop_android = true;
+#else
+  constexpr bool is_desktop_android = false;
+#endif
 
   if (webapk_compatible) {
     if (!IsWebApkDisplayMode(display)) {
       display = DisplayMode::kMinimalUi;
+    }
+  } else if (is_desktop_android) {
+    if (!IsWebApkDisplayMode(display)) {
+      display = DisplayMode::kStandalone;
     }
   } else {
     if (IsWebApkDisplayMode(display)) {

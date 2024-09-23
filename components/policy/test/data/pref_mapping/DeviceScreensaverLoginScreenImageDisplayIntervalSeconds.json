@@ -1,30 +1,15 @@
 [
   {
-    "can_be_recommended": false,
     "os": [
       "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "ash.ambient.managed_screensaver.image_display_interval_seconds": {
-            "default_value": 60,
-            "location": "signin_profile"
-          }
-        }
-      },
-      {
-        "policies": {
-          "DeviceScreensaverLoginScreenImageDisplayIntervalSeconds": 128
-        },
-        "prefs": {
-          "ash.ambient.managed_screensaver.image_display_interval_seconds": {
-            "location": "signin_profile",
-            "value": 128
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.ambient.managed_screensaver.image_display_interval_seconds",
+      "pref_location": "signin_profile",
+      "default_value": 60,
+      "values_to_test": [
+        128
+      ]
+    }
   }
 ]

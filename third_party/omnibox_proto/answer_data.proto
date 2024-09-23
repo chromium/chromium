@@ -1,0 +1,77 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'AnswerDataProto';
+
+package omnibox;
+
+// Data to render an individual answer block.
+// Next ID: 7
+message AnswerData {
+  optional FormattedString headline = 1;
+  optional FormattedString subhead = 2;
+  optional Image image = 5;
+
+  reserved 3, 4;
+}
+
+message FormattedString {
+  // The full text to show. The formatting and indices used are all based off
+  // UTF-16 code units.
+  optional string text = 1;
+
+  // The readaloud text for accessibility. Only filled out if it is different
+  // than the text (i.e. for cases with unicode chars like stars).
+  optional string a11y_text = 3;
+
+  // A list of fragments with the styling data. Each platform can choose to
+  // concatenate the fragments or use the full text above for simplicity.
+  repeated FormattedStringFragment fragments = 2;
+
+  // A substring of the full text with styling data. The concatenation of
+  // all these fragments will be the full string.
+  message FormattedStringFragment {
+    // The start index of the fragment within the full text. The index is
+    // based off UTF-16 code units.
+    optional uint32 start_index = 1;
+    // The text of the fragment.
+    optional string text = 2;
+    optional ColorType color = 3;
+
+    reserved 4 to 9;
+  }
+  enum ColorType {
+    COLOR_UNKNOWN = 0;
+    COLOR_CANVAS = 1;
+    COLOR_SURFACE = 2;
+    COLOR_PRIMARY = 3;
+    COLOR_TERTIARY = 4;
+    COLOR_ON_TERTIARY = 5;
+    COLOR_ON_SURFACE_LINK_VISITED = 6;
+    COLOR_ON_SURFACE_DEFAULT = 7;
+    COLOR_ON_SURFACE_POSITIVE = 8;
+    COLOR_ON_SURFACE_NEGATIVE = 9;
+    COLOR_ON_SURFACE_EMPHASIS = 10;
+    COLOR_ON_SURFACE_DEEMPHASIS = 11;
+    COLOR_OUTLINE_DEFAULT = 12;
+    COLOR_SUBTITLE_TEXT = 13;
+  }
+}
+
+message Image {
+  optional string url = 1;
+  optional ImageType type = 2;
+
+  enum ImageType {
+    TYPE_UNKNOWN = 0;
+    TYPE_LARGE = 1;
+    TYPE_SMALL = 2;
+  }
+
+  reserved 3, 4;
+}

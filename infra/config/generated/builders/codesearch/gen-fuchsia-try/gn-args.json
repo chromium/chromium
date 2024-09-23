@@ -7,7 +7,9 @@
     "enable_kythe_annotations": true,
     "is_component_build": false,
     "is_debug": false,
+    "target_cpu": "x64",
     "target_os": "fuchsia",
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

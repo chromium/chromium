@@ -52,7 +52,6 @@ component("wtf") {
     "bit_field.h",
     "bloom_filter.h",
     "casting.h",
-    "conditional_destructor.h",
     "container_annotations.h",
     "cross_thread_copier.cc",
     "cross_thread_copier.h",
@@ -181,6 +180,7 @@ component("wtf") {
     "text/text_stream.h",
     "text/unicode.h",
     "text/unicode_string.h",
+    "text/utf16.h",
     "text/utf8.cc",
     "text/utf8.h",
     "text/wtf_string.cc",
@@ -222,6 +222,7 @@ component("wtf") {
     "//build:chromeos_buildflags",
     "//third_party/blink/public/common:common",
     "//third_party/modp_b64",
+    "//third_party/rapidhash",
 
     # TODO(tkent): WTF should not depend on it.
     "//third_party/blink/public/common:headers",
@@ -296,6 +297,7 @@ source_set("wtf_unittests_sources") {
     "atomic_operations_test.cc",
     "bit_field_test.cc",
     "bloom_filter_test.cc",
+    "casting_test.cc",
     "cross_thread_functional_test.cc",
     "decimal_test.cc",
     "deque_test.cc",

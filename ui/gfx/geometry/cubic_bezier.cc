@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gfx/geometry/cubic_bezier.h"
 
 #include <algorithm>
@@ -21,7 +26,7 @@ const int kMaxNewtonIterations = 4;
 static const double kBezierEpsilon = 1e-7;
 
 double CubicBezier::ToFinite(double value) {
-  // TODO(crbug.com/1275541): We can clamp this in numeric operation helper
+  // TODO(crbug.com/40808348): We can clamp this in numeric operation helper
   // function like ClampedNumeric.
   if (std::isinf(value)) {
     if (value > 0)
@@ -244,7 +249,7 @@ double CubicBezier::SlopeWithEpsilon(double x, double epsilon) const {
   double t = SolveCurveX(x, epsilon);
   double dx = SampleCurveDerivativeX(t);
   double dy = SampleCurveDerivativeY(t);
-  // TODO(crbug.com/1275534): We should clamp NaN to a proper value.
+  // TODO(crbug.com/40207101): We should clamp NaN to a proper value.
   // Please see the issue for detail.
   if (!dx && !dy)
     return 0;

@@ -13,6 +13,10 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
+namespace viz {
+struct FrameTimingDetails;
+}
+
 namespace blink {
 
 // `PaintTimingCallbackManager` is an interface between
@@ -72,7 +76,7 @@ class CORE_EXPORT PaintTimingCallbackManagerImpl final
   void ReportPaintTime(
       std::unique_ptr<std::queue<
           PaintTimingCallbackManager::LocalThreadCallback>> frame_callbacks,
-      base::TimeTicks paint_time);
+      const viz::FrameTimingDetails& presentation_details);
 
   void Trace(Visitor* visitor) const override;
 

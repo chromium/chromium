@@ -4,31 +4,28 @@
 
 #include "chrome/browser/ui/views/title_origin_label.h"
 
-#include "ui/base/ui_base_features.h"
-
 std::unique_ptr<views::Label> CreateTitleOriginLabel(
-    const std::u16string& text) {
+    const std::u16string& text,
+    const std::vector<std::pair<size_t, size_t>> bolded_ranges) {
   auto label =
       std::make_unique<views::Label>(text, views::style::CONTEXT_DIALOG_TITLE);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetCollapseWhenHidden(true);
 
-  // Elide from head in order to keep the most significant part of the origin
-  // and avoid spoofing. Note that in English, GetWindowTitle() returns a
-  // string
-  // "$ORIGIN wants to", so the "wants to" will not be elided. In other
-  // languages, the non-origin part may appear fully or partly before the
-  // origin (e.g., in Filipino, "Gusto ng $ORIGIN na"), which means it may be
-  // elided. This is not optimal, but it is necessary to avoid origin
-  // spoofing. See crbug.com/774438.
-  label->SetElideBehavior(gfx::ELIDE_HEAD);
+  // Show the full origin in multiple lines. Breaking characters in the middle
+  // of a word are explicitly allowed, as long origins are treated as one word.
+  // Note that in English, GetWindowTitle() returns a string "$ORIGIN wants to".
+  // In other languages, the non-origin part may appear before the
+  // origin (e.g., in Filipino, "Gusto ng $ORIGIN na"). See crbug.com/40095827.
+  label->SetElideBehavior(gfx::NO_ELIDE);
+  label->SetMultiLine(true);
+  label->SetAllowCharacterBreak(true);
+  label->SetTextStyle(views::style::STYLE_HEADLINE_4);
 
-  // Multiline breaks elision, which would mean a very long origin gets
-  // truncated from the least significant side. Explicitly disable multiline.
-  label->SetMultiLine(false);
-
-  if (features::IsChromeRefresh2023()) {
-    label->SetTextStyle(views::style::STYLE_HEADLINE_4);
+  for (auto bolded_range : bolded_ranges) {
+    label->SetTextStyleRange(
+        views::style::STYLE_HEADLINE_4_BOLD,
+        gfx::Range(bolded_range.first, bolded_range.second));
   }
 
   return label;

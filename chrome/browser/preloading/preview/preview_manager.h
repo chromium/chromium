@@ -25,6 +25,19 @@ class PreviewManager final
     : public content::WebContentsObserver,
       public content::WebContentsUserData<PreviewManager> {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class Usage {
+    // LinkPreview feature is not used in the page at all.
+    kNotUsed = 0,
+    // Preview windows are opened for the page at least once,
+    // but they are not promoted.
+    kUsedButNotPromoted = 1,
+    // Preview windows are opened for the page and one of them is promoted.
+    kUsedAndPromoted = 2,
+
+    kMaxValue = kUsedAndPromoted,
+  };
   PreviewManager(const PreviewManager&) = delete;
   PreviewManager& operator=(const PreviewManager&) = delete;
 
@@ -37,6 +50,8 @@ class PreviewManager final
   void Cancel(content::PreviewCancelReason reason);
   void PromoteToNewTab();
 
+  Usage usage() { return usage_; }
+
   base::WeakPtr<content::WebContents> GetWebContentsForPreviewTab();
 
   // This method closes a preview page, and used for testing until the primary
@@ -48,6 +63,8 @@ class PreviewManager final
   friend class content::WebContentsUserData<PreviewManager>;
 
   explicit PreviewManager(content::WebContents* web_contents);
+
+  Usage usage_ = Usage::kNotUsed;
 
   std::unique_ptr<PreviewTab> tab_;
 

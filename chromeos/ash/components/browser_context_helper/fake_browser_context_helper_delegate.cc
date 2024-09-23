@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/ranges/algorithm.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/test_browser_context.h"
 
@@ -39,6 +41,17 @@ FakeBrowserContextHelperDelegate::GetBrowserContextByPath(
     }
   }
   return nullptr;
+}
+
+content::BrowserContext*
+FakeBrowserContextHelperDelegate::GetBrowserContextByAccountId(
+    const AccountId& account_id) {
+  auto it = base::ranges::find_if(
+      browser_context_list_, [&account_id](const auto& candidate) {
+        auto* annotated_id = AnnotatedAccountId::Get(candidate.get());
+        return annotated_id && *annotated_id == account_id;
+      });
+  return it != browser_context_list_.end() ? it->get() : nullptr;
 }
 
 content::BrowserContext*

@@ -154,14 +154,14 @@ class SequenceBound {
   template <typename U>
   // NOLINTNEXTLINE(google-explicit-constructor): Intentionally implicit.
   SequenceBound(SequenceBound<U, CrossThreadTraits>&& other) {
-    // TODO(https://crbug.com/1382549): static_assert that U* is convertible to
+    // TODO(crbug.com/40245687): static_assert that U* is convertible to
     // T*.
     MoveRecordFrom(other);
   }
 
   template <typename U>
   SequenceBound& operator=(SequenceBound<U, CrossThreadTraits>&& other) {
-    // TODO(https://crbug.com/1382549): static_assert that U* is convertible to
+    // TODO(crbug.com/40245687): static_assert that U* is convertible to
     // T*.
     Reset();
     MoveRecordFrom(other);
@@ -257,7 +257,7 @@ class SequenceBound {
   // object. This allows arbitrary logic to be safely executed on the object's
   // task runner. The object is guaranteed to remain alive for the duration of
   // the task.
-  // TODO(crbug.com/1182140): Consider checking whether the task runner can run
+  // TODO(crbug.com/40170667): Consider checking whether the task runner can run
   // tasks in current sequence, and using "plain" binds and task posting (here
   // and other places that `CrossThreadTraits::PostTask`).
   using ConstPostTaskCallback = CrossThreadTask<void(const UnwrappedT&)>;
@@ -667,7 +667,7 @@ class SequenceBound {
 
   // Helper to support move construction and move assignment.
   //
-  // TODO(https://crbug.com/1382549): Constrain this so converting between
+  // TODO(crbug.com/40245687): Constrain this so converting between
   // std::unique_ptr<T> and T are explicitly forbidden (rather than simply
   // failing to build in spectacular ways).
   template <typename From>

@@ -21,10 +21,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -43,12 +41,8 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
-import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
-import org.chromium.components.content_settings.CookieControlsStatus;
-import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -118,7 +112,8 @@ public class StatusMediator
     private int mPermissionIconDisplayTimeoutMs = PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS;
 
     private CookieControlsBridge mCookieControlsBridge;
-    private int mCookieBlockingStatus;
+    private boolean mCookieControlsVisible;
+    private boolean mThirdPartyCookiesBlocked;
     private int mBlockingStatus3pcd;
     private int mLastTabId;
     private boolean mCurrentTabCrashed;
@@ -178,7 +173,7 @@ public class StatusMediator
         mPermissionDialogController.addObserver(this);
 
         updateColorTheme();
-        setStatusIconShown(/* show= */ !mLocationBarDataProvider.isIncognito());
+        setStatusIconShown(/* show= */ !mLocationBarDataProvider.isIncognitoBranded());
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
@@ -316,11 +311,11 @@ public class StatusMediator
         // This logic doesn't apply to tablets.
         if (mIsTablet) return;
 
-        boolean shouldShowLogo = !mLocationBarDataProvider.isIncognito();
+        boolean shouldShowLogo = !mLocationBarDataProvider.isIncognitoBranded();
         setShowIconsWhenUrlFocused(shouldShowLogo);
         if (!shouldShowLogo) return;
 
-        if (mProfileSupplier.hasValue() && isNTPOrStartSurfaceVisible()) {
+        if (mProfileSupplier.hasValue() && isNtpVisible()) {
             setStatusIconShown(shouldShowLogo && (mUrlHasFocus || mUrlFocusPercent > 0));
         } else {
             setStatusIconShown(true);
@@ -351,8 +346,8 @@ public class StatusMediator
         mUrlFocusPercent = percent;
         updateStatusVisibility();
 
-        // Only fade the animation on the new tab page or start surface.
-        if (mProfileSupplier.hasValue() && isNTPOrStartSurfaceVisible()) {
+        // Only fade the animation on the new tab page.
+        if (mProfileSupplier.hasValue() && isNtpVisible()) {
             setStatusIconAlpha(percent);
         } else {
             setStatusIconAlpha(1f);
@@ -456,9 +451,8 @@ public class StatusMediator
         return mPageIsOffline || mPageIsPaintPreview;
     }
 
-    private boolean isNTPOrStartSurfaceVisible() {
-        return mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()
-                || mLocationBarDataProvider.isInOverviewAndShowingOmnibox();
+    private boolean isNtpVisible() {
+        return mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible();
     }
 
     /**
@@ -539,7 +533,7 @@ public class StatusMediator
      * independent from alpha/visibility.
      */
     boolean shouldDisplaySearchEngineIcon() {
-        if (mLocationBarDataProvider.isIncognito()) {
+        if (mLocationBarDataProvider.isIncognitoBranded()) {
             return false;
         }
 
@@ -548,7 +542,7 @@ public class StatusMediator
         }
 
         return (mUrlHasFocus || mUrlFocusPercent > 0)
-                && isNTPOrStartSurfaceVisible()
+                && isNtpVisible()
                 && mProfileSupplier.hasValue();
     }
 
@@ -569,7 +563,7 @@ public class StatusMediator
 
     /** Return the resource id for the accessibility description or 0 if none apply. */
     private int getAccessibilityDescriptionRes() {
-        if (mUrlHasFocus && !mLocationBarDataProvider.isIncognito()) {
+        if (mUrlHasFocus && !mLocationBarDataProvider.isIncognitoBranded()) {
             return 0;
         }
         return (mSecurityIconRes != 0) ? mSecurityIconDescriptionRes : 0;
@@ -595,7 +589,7 @@ public class StatusMediator
             // autocomplete text still pointing at the previous url's autocomplete text.
             urlTextWithAutocomplete = "";
         } else if (TextUtils.indexOf(currentAutocompleteText, urlBarText) > -1) {
-            // TODO(crbug.com/1015147): This is to workaround the UrlBar text pointing to the
+            // TODO(crbug.com/40103581): This is to workaround the UrlBar text pointing to the
             // "current" url and the the autocomplete text pointing to the "previous" url.
             urlTextWithAutocomplete = currentAutocompleteText;
         } else {
@@ -607,9 +601,7 @@ public class StatusMediator
     }
 
     public void onIncognitoStateChanged() {
-        boolean showIncognitoStatus = !mIsTablet || OmniboxFeatures.showIncognitoStatusForTablet();
-        boolean incognitoBadgeVisible =
-                mLocationBarDataProvider.isIncognito() && showIncognitoStatus;
+        boolean incognitoBadgeVisible = mLocationBarDataProvider.isIncognitoBranded();
         mModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, incognitoBadgeVisible);
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
         setStatusIconAlpha(1f);
@@ -632,12 +624,12 @@ public class StatusMediator
         resetCustomIconsStatus();
         mLastPermission = permission;
 
-        boolean isIncognito = mLocationBarDataProvider.isIncognito();
+        boolean isIncognitoBranded = mLocationBarDataProvider.isIncognitoBranded();
         Drawable permissionDrawable =
                 ContentSettingsResources.getIconForOmnibox(
-                        mContext, mLastPermission, result, isIncognito);
+                        mContext, mLastPermission, result, isIncognitoBranded);
         PermissionIconResource permissionIconResource =
-                new PermissionIconResource(permissionDrawable, isIncognito);
+                new PermissionIconResource(permissionDrawable, isIncognitoBranded);
         permissionIconResource.setTransitionType(IconTransitionType.ROTATE);
         // We only want to notify the IPH controller after the icon transition is finished.
         // IPH is controlled by the FeatureEngagement system through finch with a field trial
@@ -652,8 +644,8 @@ public class StatusMediator
 
     // CookieControlsObserver interface
     @Override
-    public void onBreakageConfidenceLevelChanged(int level) {
-        if (level == CookieControlsBreakageConfidenceLevel.HIGH) {
+    public void onHighlightCookieControl(boolean shouldHighlight) {
+        if (shouldHighlight) {
             animateCookieControlsIcon(
                     () -> {
                         if (mBlockingStatus3pcd == CookieBlocking3pcdStatus.NOT_IN3PCD) {
@@ -665,25 +657,36 @@ public class StatusMediator
     }
 
     @Override
-    public void onStatusChanged(int status, int enforcement, int blockingStatus, long expiration) {
-        mCookieBlockingStatus = status;
+    public void onStatusChanged(
+            boolean controlsVisible,
+            boolean protectionsOn,
+            int enforcement,
+            int blockingStatus,
+            long expiration) {
+        mCookieControlsVisible = controlsVisible;
+        mThirdPartyCookiesBlocked = protectionsOn;
         mBlockingStatus3pcd = blockingStatus;
     }
 
     private void animateCookieControlsIcon(Runnable onAnimationFinished) {
+        // Check if the web content is valid before attempting to animate.
+        if (mLocationBarDataProvider.getTab().getWebContents() == null) {
+            return;
+        }
         resetCustomIconsStatus();
 
-        boolean isIncognito = mLocationBarDataProvider.isIncognito();
+        boolean isIncognitoBranded = mLocationBarDataProvider.isIncognitoBranded();
         Drawable eyeCrossedIcon =
                 SettingsUtils.getTintedIcon(
                         mContext,
                         R.drawable.ic_eye_crossed,
-                        isIncognito
+                        isIncognitoBranded
                                 ? R.color.default_icon_color_blue_light
                                 : R.color.default_icon_color_accent1_tint_list);
 
         PermissionIconResource permissionIconResource =
-                new PermissionIconResource(eyeCrossedIcon, isIncognito, COOKIE_CONTROLS_ICON);
+                new PermissionIconResource(
+                        eyeCrossedIcon, isIncognitoBranded, COOKIE_CONTROLS_ICON);
         permissionIconResource.setTransitionType(IconTransitionType.ROTATE);
         permissionIconResource.setAnimationFinishedCallback(
                 () -> {
@@ -723,7 +726,7 @@ public class StatusMediator
             boolean canShowIph) {
         if ((window != mWindowAndroid)
                 || (!url.equals(mLocationBarDataProvider.getCurrentGurl().getSpec()))
-                || (mLocationBarDataProvider.isIncognito())) {
+                || (mLocationBarDataProvider.isOffTheRecord())) {
             return;
         }
         resetCustomIconsStatus();
@@ -838,21 +841,14 @@ public class StatusMediator
             return;
         }
         if (mBlockingStatus3pcd != CookieBlocking3pcdStatus.NOT_IN3PCD) {
-            if (mCookieBlockingStatus != CookieControlsStatus.ENABLED) return;
+            if (!mCookieControlsVisible || !mThirdPartyCookiesBlocked) return;
 
             if (UserPrefs.get(profile).getInteger(Pref.TRACKING_PROTECTION_ONBOARDING_ACK_ACTION)
                     == 0) {
                 return;
             }
 
-            Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-            if (!tracker.wouldTriggerHelpUI(FeatureConstants.COOKIE_CONTROLS_3PCD_FEATURE)) return;
-
-            animateCookieControlsIcon(
-                    () ->
-                            mPageInfoIPHController.showCookieControlsReminderIPH(
-                                    getIPHTimeout(),
-                                    R.string.cookie_controls_reminder_iph_message));
+            animateCookieControlsIcon(() -> {});
         }
     }
 

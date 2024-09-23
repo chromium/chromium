@@ -48,7 +48,7 @@ struct StitchedAnchorReference
   LogicalAnchorReference* GetStitchedAnchorReference() const {
     DCHECK(layout_object);
     return MakeGarbageCollected<LogicalAnchorReference>(
-        *layout_object, StitchedRect(), /* is_out_of_flow */ false);
+        *layout_object, StitchedRect(), /* is_out_of_flow */ false, nullptr);
   }
 
   void Unite(const LogicalRect& other_rect,
@@ -363,18 +363,6 @@ struct StitchedAnchorQueries {
 LogicalAnchorQueryMap::LogicalAnchorQueryMap(
     const LayoutBox& root_box,
     const LogicalFragmentLinkVector& children,
-    const FragmentItemsBuilder::ItemWithOffsetList* items,
-    const WritingModeConverter& converter)
-    : root_box_(root_box),
-      converter_(converter),
-      writing_direction_(converter.GetWritingDirection()) {
-  DCHECK(&root_box);
-  SetChildren(children, items);
-}
-
-LogicalAnchorQueryMap::LogicalAnchorQueryMap(
-    const LayoutBox& root_box,
-    const LogicalFragmentLinkVector& children,
     WritingDirectionMode writing_direction)
     : root_box_(root_box), writing_direction_(writing_direction) {
   DCHECK(&root_box);
@@ -382,10 +370,8 @@ LogicalAnchorQueryMap::LogicalAnchorQueryMap(
 }
 
 void LogicalAnchorQueryMap::SetChildren(
-    const LogicalFragmentLinkVector& children,
-    const FragmentItemsBuilder::ItemWithOffsetList* items) {
+    const LogicalFragmentLinkVector& children) {
   children_ = &children;
-  items_ = items;
 
   // Invalidate the cache when children may have changed.
   computed_for_ = nullptr;

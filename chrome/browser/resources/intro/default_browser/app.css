@@ -1,0 +1,135 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://intro/tangible_sync_style_shared_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=tangible-sync-style-shared-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-button-height: 36px;
+  --btn-container-height:
+      calc(2 * var(--btn-margin) + var(--cr-button-height));
+  --btn-margin: 24px;
+  --default-browser-frame-image-url: url(images/default_browser_frame.svg);
+  --left-background-image-url: url(images/left_illustration.svg);
+  --right-background-image-url: url(images/right_illustration.svg);
+  color: var(--cr-primary-text-color);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --default-browser-frame-image-url:
+        url(images/default_browser_frame_dark.svg);
+    --left-background-image-url: url(images/left_illustration_dark.svg);
+    --right-background-image-url: url(images/right_illustration_dark.svg);
+  }
+}
+
+.title {
+  margin: 36px 0 12px;
+}
+
+.subtitle {
+  margin: 0;
+}
+
+.tangible-sync-style-left-banner {
+  content: var(--left-background-image-url);
+}
+
+.tangible-sync-style-right-banner {
+  content: var(--right-background-image-url);
+}
+
+.tangible-sync-style-left-banner,
+.tangible-sync-style-right-banner {
+  position: fixed;
+}
+
+#safe-zone {
+  box-sizing: border-box;
+  display: flex;
+  height: calc(100% - var(--btn-container-height));
+  justify-content: center;
+  overflow-y: auto;
+  position: fixed;
+  width: 100vw;
+}
+
+#content-area {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  text-align: center;
+}
+
+#illustration-container {
+  --illustration-height: 110px;
+  --illustration-margin-top: 50px;
+  --illustration-width: 185px;
+  --product-logo-size: 52px;
+  --product-logo-top: 26px;
+  height: var(--illustration-height);
+  margin-top: var(--illustration-margin-top);
+  position: relative;
+  width: var(--illustration-width);
+}
+
+@media screen and ((max-width: 780px) or (max-height: 600px)) {
+  #illustration-container {
+    --illustration-height: 73px;
+    --illustration-width: 123px;
+    --product-logo-size: 34px;
+    --product-logo-top: 17px;
+  }
+}
+
+#default-browser-frame {
+  content: var(--default-browser-frame-image-url);
+  height: var(--illustration-height);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--illustration-width);
+}
+
+#product-logo {
+  height: var(--product-logo-size);
+  position: absolute;
+  top: var(--product-logo-top);
+  left: calc((var(--illustration-width) - var(--product-logo-size)) / 2);
+  width: var(--product-logo-size);
+}
+
+#button-row {
+  bottom: 0;
+  display: flex;
+  height: var(--btn-container-height);
+  justify-content: flex-end;
+  position: fixed;
+  width: 100vw;
+}
+
+#button-container {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 0 var(--btn-margin);
+}
+
+<if expr="is_win">
+#button-container {
+  flex-flow: row-reverse;
+}
+</if>
+
+#button-container > cr-button {
+  margin-top: var(--btn-margin);
+}

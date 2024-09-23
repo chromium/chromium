@@ -10,8 +10,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/rand_util.h"
-#include "base/synchronization/lock.h"
-#include "base/thread_annotations.h"
 
 namespace base {
 
@@ -25,16 +23,16 @@ BASE_FEATURE(kReduceCpuUtilization,
 
 class CpuReductionExperimentSubSampler {
  public:
-  CpuReductionExperimentSubSampler() = default;
+  CpuReductionExperimentSubSampler() : counter_(base::RandUint64()) {}
 
   bool ShouldLogHistograms() {
-    AutoLock hold(lock_);
-    return sub_sampler_.ShouldSample(0.001);
+    // Relaxed memory order since there is no dependent memory access.
+    uint64_t val = counter_.fetch_add(1, std::memory_order_relaxed);
+    return val % 1000 == 0;
   }
 
  private:
-  Lock lock_;
-  MetricsSubSampler sub_sampler_ GUARDED_BY(lock_);
+  std::atomic<uint64_t> counter_{0};
 };
 
 // Singleton instance of CpuReductionExperimentSubSampler. This is only set when
@@ -51,7 +49,8 @@ std::atomic_bool g_accessed_subsampler = false;
 
 bool IsRunningCpuReductionExperiment() {
 #if DCHECK_IS_ON()
-  g_accessed_subsampler.store(true, std::memory_order_seq_cst);
+  // Relaxed memory order since there is no dependent memory access.
+  g_accessed_subsampler.store(true, std::memory_order_relaxed);
 #endif
   return !!g_subsampler;
 }
@@ -60,7 +59,9 @@ void InitializeCpuReductionExperiment() {
 #if DCHECK_IS_ON()
   // TSAN should generate an error if InitializeCpuReductionExperiment() races
   // with IsRunningCpuReductionExperiment().
-  DCHECK(!g_accessed_subsampler.load(std::memory_order_seq_cst));
+  //
+  // Relaxed memory order since there is no dependent memory access.
+  DCHECK(!g_accessed_subsampler.load(std::memory_order_relaxed));
 #endif
   if (FeatureList::IsEnabled(kReduceCpuUtilization)) {
     g_subsampler = new CpuReductionExperimentSubSampler();

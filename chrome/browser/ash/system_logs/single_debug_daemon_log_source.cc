@@ -30,7 +30,7 @@ std::string GetLogName(SupportedSource source_type) {
     case SupportedSource::kUptime:
       return "uptime";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

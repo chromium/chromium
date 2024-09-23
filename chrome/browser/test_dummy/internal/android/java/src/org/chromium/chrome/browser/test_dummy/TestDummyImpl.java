@@ -61,7 +61,7 @@ public class TestDummyImpl implements TestDummy {
 
     @NativeMethods("test_dummy")
     interface Natives {
-        int execute();
+        int execute(boolean testArg);
 
         String loadResource();
     }
@@ -82,7 +82,7 @@ public class TestDummyImpl implements TestDummy {
     }
 
     private void executeNative(Activity activity) {
-        int value = TestDummyImplJni.get().execute();
+        int value = TestDummyImplJni.get().execute(true);
         boolean pass = (value == 123);
         showDoneDialog(activity, TestCase.EXECUTE_NATIVE, pass);
     }

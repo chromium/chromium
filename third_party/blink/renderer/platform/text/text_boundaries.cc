@@ -32,26 +32,27 @@
 
 namespace blink {
 
-int FindNextWordForward(const UChar* chars, unsigned len, int position) {
-  TextBreakIterator* it = WordBreakIterator({chars, len});
+int FindNextWordForward(base::span<const UChar> chars, int position) {
+  TextBreakIterator* it = WordBreakIterator(chars);
 
+  int len = base::checked_cast<int>(chars.size());
   position = it->following(position);
   while (position != kTextBreakDone) {
     // We stop searching when the character preceeding the break
     // is alphanumeric or underscore.
-    if (position < static_cast<int>(len) &&
-        (WTF::unicode::IsAlphanumeric(chars[position - 1]) ||
-         chars[position - 1] == kLowLineCharacter))
+    if (position < len && (WTF::unicode::IsAlphanumeric(chars[position - 1]) ||
+                           chars[position - 1] == kLowLineCharacter)) {
       return position;
+    }
 
     position = it->following(position);
   }
 
-  return static_cast<int>(len);
+  return len;
 }
 
-int FindNextWordBackward(const UChar* chars, unsigned len, int position) {
-  TextBreakIterator* it = WordBreakIterator({chars, len});
+int FindNextWordBackward(base::span<const UChar> chars, int position) {
+  TextBreakIterator* it = WordBreakIterator(chars);
 
   position = it->preceding(position);
   while (position != kTextBreakDone) {
@@ -67,14 +68,14 @@ int FindNextWordBackward(const UChar* chars, unsigned len, int position) {
   return 0;
 }
 
-int FindWordStartBoundary(const UChar* chars, unsigned len, int position) {
-  TextBreakIterator* it = WordBreakIterator({chars, len});
+int FindWordStartBoundary(base::span<const UChar> chars, int position) {
+  TextBreakIterator* it = WordBreakIterator(chars);
   it->following(position);
   return it->previous();
 }
 
-int FindWordEndBoundary(const UChar* chars, unsigned len, int position) {
-  TextBreakIterator* it = WordBreakIterator({chars, len});
+int FindWordEndBoundary(base::span<const UChar> chars, int position) {
+  TextBreakIterator* it = WordBreakIterator(chars);
   int end = it->following(position);
   return end < 0 ? it->last() : end;
 }

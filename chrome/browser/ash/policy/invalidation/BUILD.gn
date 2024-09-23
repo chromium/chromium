@@ -1,0 +1,87 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("invalidation") {
+  sources = [
+    "affiliated_cloud_policy_invalidator.cc",
+    "affiliated_cloud_policy_invalidator.h",
+    "affiliated_invalidation_service_provider.cc",
+    "affiliated_invalidation_service_provider.h",
+    "affiliated_invalidation_service_provider_impl.cc",
+    "affiliated_invalidation_service_provider_impl.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//components/gcm_driver/instance_id",
+    "//components/invalidation/impl",
+    "//components/invalidation/public",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//services/network/public/cpp",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_affiliated_invalidation_service_provider.cc",
+    "fake_affiliated_invalidation_service_provider.h",
+  ]
+
+  deps = [ ":invalidation" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "affiliated_cloud_policy_invalidator_unittest.cc",
+    "affiliated_invalidation_service_provider_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":invalidation",
+    ":test_support",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//components/invalidation/impl",
+    "//components/invalidation/impl:test_support",
+    "//components/invalidation/public",
+    "//components/keyed_service/core",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto:",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//services/data_decoder/public/cpp",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

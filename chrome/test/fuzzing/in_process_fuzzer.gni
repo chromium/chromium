@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/fuzzers/mojolpm.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -11,9 +12,19 @@ import("//third_party/protobuf/proto_library.gni")
 #
 # It accepts all the same arguments as //testing/libfuzzer/fuzzer_test.gni's
 # fuzzer_test template.
+#
+# This template also accepts the argument `target_type`. This defaults to
+# `fuzzer_test`.
 template("in_process_fuzzer") {
   if (fuzzing_engine_supports_custom_main) {
-    fuzzer_test(target_name) {
+    if (defined(invoker.target_type)) {
+      target_type = invoker.target_type
+    } else {
+      target_type = "fuzzer_test"
+    }
+    target(target_type, target_name) {
+      # Those tests are big, they need a lot of resources.
+      high_end_job_required = true
       deps = [ "//chrome/test/fuzzing:in_process_fuzzer_runner" ]
       if (defined(invoker.deps)) {
         deps += invoker.deps
@@ -24,6 +35,8 @@ template("in_process_fuzzer") {
                                "deps",
                                "exclude_main",
                                "asan_options",
+                               "libfuzzer_options",
+                               "centipede_options",
                              ])
 
       # As these are full browser tests, we have crashpad running,
@@ -56,14 +69,25 @@ template("in_process_fuzzer") {
       libfuzzer_options = [
         "rss_limit_mb=8192",
 
-        # This is for test-only. Remove once crbug.com/1471427 is fixed.
+        # We can't allow libfuzzer to fork because these fuzzers may have
+        # pre-existing threads. See crbug.com/325928325
         "fork=0",
       ]
 
       centipede_options = [
-        # Provide plenty of capacity for test cases to flow between centipede
-        # and the fuzz target.
-        "shmem_size_mb=4096",
+        # As for now, CF machines only have 8GB. Centipede allocates two
+        # buffers of `shmem_size_mb`, one for the input test cases, one for the
+        # output (features, cmps, stats). Because those fuzzers are big, this
+        # means we are very likely to fill-up the output buffers, and thus
+        # running out of memory if `shmem_size_mb` value is too big.
+        # Note that 1024 is currently the default value in Centipede.
+        "shmem_size_mb=1024",
+
+        # Since `shmem_size_mb` is fairly low, we want not to lose features
+        # that would overflow Centipede's output buffer. For this reason, we
+        # are lowering `batch_size`. This number has been chosen after some
+        # experiments. This might not be 100% accurate.
+        "batch_size=400",
 
         # Browser tests are big
         "address_space_limit_mb=0",
@@ -203,6 +227,12 @@ template("in_process_proto_fuzzer") {
         seed_corpus = seed_corpus_path
         seed_corpus_deps = [ ":${protoc_convert_target_name}" ]
       }
+
+      forward_variables_from(invoker,
+                             [
+                               "libfuzzer_options",
+                               "centipede_options",
+                             ])
     }
   } else {
     # noop if the fuzzer harness always provides its own main
@@ -210,5 +240,40 @@ template("in_process_proto_fuzzer") {
 
     group(target_name) {
     }
+  }
+}
+
+# This template aims at mirroring what `mojolpm_fuzzer_test` does, except that
+# it embeds InProcessFuzzer internals in order to function correctly.
+#
+# Parameters:
+#  see parameters for //mojo/public/tools/fuzzers/mojolpm.gni:mojolpm_fuzzer_test
+template("in_process_mojolpm_fuzzer") {
+  in_process_fuzzer(target_name) {
+    target_type = "mojolpm_fuzzer_test"
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
+  }
+}
+
+# This template aims at mirroring what `mojolpm_generated_fuzzer` does, except
+# that it embeds InProcessFuzzer internals in order to function correctly.
+#
+# Parameters:
+#  see parameters for //mojo/public/tools/fuzzers/mojolpm.gni:mojolpm_generated_fuzzer
+template("in_process_mojolpm_generated_fuzzer") {
+  in_process_fuzzer(target_name) {
+    target_type = "mojolpm_generated_fuzzer"
+    ensure_remote = true
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
   }
 }

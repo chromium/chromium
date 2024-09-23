@@ -16,12 +16,12 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.strictmode.test.disk_write_helper.DiskWriteHelper;
 import org.chromium.components.strictmode.test.disk_write_proxy.DiskWriteProxy;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests for {@link ThreadStrictModeInterceptor}. */
 @Batch(Batch.PER_CLASS)
@@ -37,7 +37,7 @@ public class ThreadStrictModeInterceptorTest {
         threadInterceptor.addAllowedMethod(
                 Violation.DETECT_DISK_IO,
                 "org.chromium.components.strictmode.test.disk_write_helper.DiskWriteHelper#doDiskWrite");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     installThreadInterceptor(threadInterceptor, strictModeDetector);
                     DiskWriteHelper.doDiskWrite();
@@ -56,7 +56,7 @@ public class ThreadStrictModeInterceptorTest {
         CallbackHelper strictModeDetector = new CallbackHelper();
         ThreadStrictModeInterceptor.Builder threadInterceptor =
                 new ThreadStrictModeInterceptor.Builder();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     installThreadInterceptor(threadInterceptor, strictModeDetector);
                     DiskWriteHelper.doDiskWrite();
@@ -83,7 +83,7 @@ public class ThreadStrictModeInterceptorTest {
         threadInterceptor.onlyDetectViolationsForPackage(
                 "org.chromium.components.strictmode.test.disk_write_proxy",
                 "org.chromium.components.strictmode.test.disk_write_helper");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     installThreadInterceptor(threadInterceptor, strictModeDetector);
                     DiskWriteProxy.callDiskWriteHelper();
@@ -111,7 +111,7 @@ public class ThreadStrictModeInterceptorTest {
         threadInterceptor.onlyDetectViolationsForPackage(
                 "org.chromium.components.strictmode.test.disk_write_helper",
                 "org.chromium.components.strictmode.test.disk_write_proxy");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     installThreadInterceptor(threadInterceptor, strictModeDetector);
                     DiskWriteProxy.callDiskWriteHelper();
@@ -136,7 +136,7 @@ public class ThreadStrictModeInterceptorTest {
         threadInterceptor.onlyDetectViolationsForPackage(
                 "org.chromium.components.strictmode.test.non_existent",
                 "org.chromium.components.strictmode.test.non_existent2");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     installThreadInterceptor(threadInterceptor, strictModeDetector);
                     DiskWriteProxy.callDiskWriteHelper();

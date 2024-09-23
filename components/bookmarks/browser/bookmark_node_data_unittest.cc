@@ -158,12 +158,11 @@ TEST_F(BookmarkNodeDataTest, MAYBE_URL) {
               nullptr);
 
   // Writing should also put the URL and title on the clipboard.
-  GURL read_url;
-  std::u16string read_title;
-  EXPECT_TRUE(data2.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES,
-                                   &read_url, &read_title));
-  EXPECT_EQ(url, read_url);
-  EXPECT_EQ(title, read_title);
+  std::optional<ui::OSExchangeData::UrlInfo> url_info =
+      data2.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+  ASSERT_TRUE(url_info.has_value());
+  EXPECT_EQ(url, url_info->url);
+  EXPECT_EQ(title, url_info->title);
 }
 
 // Tests writing a folder to the clipboard.
@@ -318,7 +317,7 @@ TEST_F(BookmarkNodeDataTest, WriteToClipboardURL) {
   const std::u16string title(u"blah");
 
   data.ReadFromTuple(url, title);
-  data.WriteToClipboard();
+  data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
   std::u16string clipboard_result;
@@ -346,7 +345,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardMultipleURLs) {
   nodes.push_back(url_node2);
 
   data.ReadFromVector(nodes);
-  data.WriteToClipboard();
+  data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
   std::u16string combined_text;
@@ -377,7 +376,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardEmptyFolder) {
   nodes.push_back(folder);
 
   data.ReadFromVector(nodes);
-  data.WriteToClipboard();
+  data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
   std::u16string clipboard_result;
@@ -406,7 +405,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderWithChildren) {
   nodes.push_back(folder);
 
   data.ReadFromVector(nodes);
-  data.WriteToClipboard();
+  data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
   std::u16string clipboard_result;
@@ -415,7 +414,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderWithChildren) {
   EXPECT_EQ(u"g1", clipboard_result);
 }
 
-// TODO(https://crbug.com/1010415): This test is failing on mac.
+// TODO(crbug.com/40651106): This test is failing on mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_WriteToClipboardFolderAndURL DISABLED_WriteToClipboardFolderAndURL
 #else
@@ -433,7 +432,7 @@ TEST_F(BookmarkNodeDataTest, MAYBE_WriteToClipboardFolderAndURL) {
   nodes.push_back(folder);
 
   data.ReadFromVector(nodes);
-  data.WriteToClipboard();
+  data.WriteToClipboard(/*is_off_the_record=*/false);
 
   // Now read the data back in.
   std::u16string combined_text;
@@ -487,8 +486,7 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickleTooManyNodes) {
   // Test case determined by a fuzzer. See https://crbug.com/956583.
   const uint8_t pickled_data[] = {0x08, 0x00, 0x00, 0x00, 0x00, 0x00,
                                   0x00, 0x00, 0xff, 0x03, 0x03, 0x41};
-  base::Pickle pickle(reinterpret_cast<const char*>(pickled_data),
-                      sizeof(pickled_data));
+  base::Pickle pickle = base::Pickle::WithUnownedBuffer(pickled_data);
   BookmarkNodeData bookmark_node_data;
   EXPECT_FALSE(bookmark_node_data.ReadFromPickle(&pickle));
 }

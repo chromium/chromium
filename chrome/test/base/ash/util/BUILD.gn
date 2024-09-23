@@ -1,0 +1,37 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "ash_test_util.cc",
+    "ash_test_util.h",
+  ]
+
+  deps = [
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//storage/browser",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/events",
+    "//ui/events:test_support",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}

@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.metrics;
 
-import android.Manifest;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.view.InputDevice;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
@@ -17,15 +18,18 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
-import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AudioPermissionState;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.DeviceUtils;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
@@ -50,6 +54,12 @@ public class UmaSessionStats {
 
     private boolean mKeyboardConnected;
 
+    private static final String TABBED_SESSION_CONTAINED_GOOGLE_SEARCH_HISTOGRAM =
+            "Session.Android.TabbedSessionContainedGoogleSearch";
+    private @ActivityType int mCurrentActivityType = ActivityType.PRE_FIRST_TAB;
+
+    private boolean mTabbedSessionContainedGoogleSearch;
+
     public UmaSessionStats(Context context) {
         mContext = context;
     }
@@ -70,6 +80,10 @@ public class UmaSessionStats {
         if (connectedDevices.contains(InputDevice.SOURCE_MOUSE)) {
             UmaSessionStatsJni.get().recordPageLoadedWithMouse();
         }
+        if (EdgeToEdgeUtils.isLegacyWebsiteOptInEnabled()
+                && EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(tab)) {
+            UmaSessionStatsJni.get().recordPageLoadedWithToEdge();
+        }
 
         // If the session has ended (i.e. chrome is in the background), escape early. Ideally we
         // could track this number as part of either the previous or next session but this isn't
@@ -86,14 +100,20 @@ public class UmaSessionStats {
 
     /**
      * Starts a new session for logging.
+     *
+     * @param activityType The type of the Activity.
      * @param tabModelSelector A TabModelSelector instance for recording tab counts on page loads.
-     *        If null, UmaSessionStats does not record page loads and tab counts.
+     *     If null, UmaSessionStats does not record page loads and tab counts.
      * @param permissionDelegate The AndroidPermissionDelegate used for querying permission status.
-     *        If null, UmaSessionStats will not record permission status.
+     *     If null, UmaSessionStats will not record permission status.
      */
     public void startNewSession(
-            TabModelSelector tabModelSelector, AndroidPermissionDelegate permissionDelegate) {
+            @ActivityType int activityType,
+            TabModelSelector tabModelSelector,
+            AndroidPermissionDelegate permissionDelegate) {
         ensureNativeInitialized();
+        mTabbedSessionContainedGoogleSearch = false;
+        mCurrentActivityType = activityType;
 
         mTabModelSelector = tabModelSelector;
         if (mTabModelSelector != null) {
@@ -120,6 +140,15 @@ public class UmaSessionStats {
                         public void onPageLoadFinished(Tab tab, GURL url) {
                             recordPageLoadStats(tab);
                         }
+
+                        @Override
+                        public void onDidFinishNavigationInPrimaryMainFrame(
+                                Tab tab, NavigationHandle navigation) {
+                            if (!navigation.hasCommitted()) return;
+                            if (UrlUtilitiesJni.get().isGoogleSearchUrl(tab.getUrl().getSpec())) {
+                                mTabbedSessionContainedGoogleSearch = true;
+                            }
+                        }
                     };
         }
 
@@ -127,24 +156,6 @@ public class UmaSessionStats {
         updatePreferences();
         updateMetricsServiceState();
         DefaultBrowserInfo.logDefaultBrowserStats();
-        if (permissionDelegate != null) {
-            recordAudioPermissionState(permissionDelegate);
-        }
-    }
-
-    private void recordAudioPermissionState(AndroidPermissionDelegate permissionDelegate) {
-        @AudioPermissionState int permissionState;
-        if (permissionDelegate.hasPermission(Manifest.permission.RECORD_AUDIO)) {
-            permissionState = AudioPermissionState.GRANTED;
-        } else if (permissionDelegate.canRequestPermission(Manifest.permission.RECORD_AUDIO)) {
-            permissionState = AudioPermissionState.DENIED_CAN_ASK_AGAIN;
-        } else {
-            permissionState = AudioPermissionState.DENIED_CANNOT_ASK_AGAIN;
-        }
-        RecordHistogram.recordEnumeratedHistogram(
-                "VoiceInteraction.AudioPermissionEvent.SessionStart",
-                permissionState,
-                AudioPermissionState.NUM_ENTRIES);
     }
 
     private static void ensureNativeInitialized() {
@@ -161,6 +172,11 @@ public class UmaSessionStats {
             mContext.unregisterComponentCallbacks(mComponentCallbacks);
             mTabModelSelectorTabObserver.destroy();
             mTabModelSelector = null;
+        }
+        if (mCurrentActivityType == ActivityType.TABBED) {
+            RecordHistogram.recordBooleanHistogram(
+                    TABBED_SESSION_CONTAINED_GOOGLE_SEARCH_HISTOGRAM,
+                    mTabbedSessionContainedGoogleSearch);
         }
 
         UmaSessionStatsJni.get().umaEndSession(sNativeUmaSessionStats, UmaSessionStats.this);
@@ -218,23 +234,26 @@ public class UmaSessionStats {
 
         // Update the metrics sampling state so it's available before the native feature list is
         // available.
-        prefManager.setClientInMetricsSample(UmaUtils.isClientInMetricsReportingSample());
+        prefManager.setClientInSampleForMetrics(UmaUtils.isClientInSampleForMetrics());
+
+        // Update the crash sampling state so it's available before the native feature list is
+        // available.
+        prefManager.setClientInSampleForCrashes(UmaUtils.isClientInSampleForCrashes());
 
         // Make sure preferences are in sync.
         prefManager.syncUsageAndCrashReportingPrefs();
     }
 
     public static void registerExternalExperiment(String fallbackStudyName, int[] experimentIds) {
-        // TODO(https://crbug.com/1111941): Remove this method once all callers have moved onto
+        // TODO(crbug.com/40142802): Remove this method once all callers have moved onto
         // the overload below.
-        registerExternalExperiment(fallbackStudyName, experimentIds, true);
+        registerExternalExperiment(experimentIds, true);
     }
 
     public static void registerExternalExperiment(
-            String fallbackStudyName, int[] experimentIds, boolean overrideExistingIds) {
+            int[] experimentIds, boolean overrideExistingIds) {
         assert isMetricsServiceAvailable();
-        UmaSessionStatsJni.get()
-                .registerExternalExperiment(fallbackStudyName, experimentIds, overrideExistingIds);
+        UmaSessionStatsJni.get().registerExternalExperiment(experimentIds, overrideExistingIds);
     }
 
     public static void registerSyntheticFieldTrial(String trialName, String groupName) {
@@ -271,8 +290,9 @@ public class UmaSessionStats {
         return ApplicationStatus.hasVisibleActivities();
     }
 
+    @VisibleForTesting
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init();
 
         void changeMetricsReportingConsent(boolean consent, int calledFrom);
@@ -289,8 +309,7 @@ public class UmaSessionStats {
 
         void umaEndSession(long nativeUmaSessionStats, UmaSessionStats caller);
 
-        void registerExternalExperiment(
-                String studyName, int[] experimentIds, boolean overrideExistingIds);
+        void registerExternalExperiment(int[] experimentIds, boolean overrideExistingIds);
 
         void registerSyntheticFieldTrial(
                 String trialName,
@@ -306,5 +325,7 @@ public class UmaSessionStats {
         void recordPageLoadedWithMouse();
 
         void recordPageLoadedWithAccessory();
+
+        void recordPageLoadedWithToEdge();
     }
 }

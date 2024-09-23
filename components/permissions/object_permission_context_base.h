@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -42,7 +43,7 @@ class ObjectPermissionContextBase : public KeyedService {
            content_settings::SettingSource source,
            bool incognito);
     // DEPRECATED.
-    // TODO(https://crbug.com/1187001): Migrate value to base::Value::Dict.
+    // TODO(crbug.com/40172729): Migrate value to base::Value::Dict.
     Object(const url::Origin& origin,
            base::Value value,
            content_settings::SettingSource source,
@@ -96,7 +97,7 @@ class ObjectPermissionContextBase : public KeyedService {
   // This method may be extended by a subclass to return
   // objects not stored in |host_content_settings_map_|.
   virtual std::unique_ptr<Object> GetGrantedObject(const url::Origin& origin,
-                                                   const base::StringPiece key);
+                                                   const std::string_view key);
 
   // Returns the list of objects that |origin| has been granted permission to
   // access. This method may be extended by a subclass to return objects not
@@ -118,7 +119,7 @@ class ObjectPermissionContextBase : public KeyedService {
 
   // Grants |origin| access to |object| by writing it into
   // |host_content_settings_map_|.
-  // TODO(https://crbug.com/1189682): Combine GrantObjectPermission and
+  // TODO(crbug.com/40755589): Combine GrantObjectPermission and
   // UpdateObjectPermission methods into key-based GrantOrUpdateObjectPermission
   // once backend is updated to make key-based methods more efficient.
   void GrantObjectPermission(const url::Origin& origin,
@@ -135,7 +136,7 @@ class ObjectPermissionContextBase : public KeyedService {
   // This method may be extended by a subclass to revoke permission to access
   // objects returned by GetGrantedObjects but not stored in
   // |host_content_settings_map_|.
-  // TODO(https://crbug.com/1189682): Remove this method once backend is updated
+  // TODO(crbug.com/40755589): Remove this method once backend is updated
   // to make key-based methods more efficient.
   virtual void RevokeObjectPermission(const url::Origin& origin,
                                       const base::Value::Dict& object);
@@ -148,7 +149,7 @@ class ObjectPermissionContextBase : public KeyedService {
   // objects returned by GetGrantedObjects but not stored in
   // |host_content_settings_map_|.
   virtual void RevokeObjectPermission(const url::Origin& origin,
-                                      const base::StringPiece key);
+                                      const std::string_view key);
 
   // Revokes a given `origin`'s permissions for access to all of its
   // corresponding objects.

@@ -25,6 +25,7 @@
 #include "components/component_updater/installer_policies/tpcd_metadata_component_installer_policy.h"
 #include "components/component_updater/installer_policies/trust_token_key_commitments_component_installer_policy.h"
 #include "components/update_client/update_client.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 
 namespace android_webview {
 
@@ -47,8 +48,8 @@ void RegisterComponentsForUpdate(
           component_updater::MaskedDomainListComponentInstallerPolicy>(
           /*on_list_ready=*/base::BindRepeating(
               [](base::Version version,
-                 const absl::optional<std::string>& raw_mdl) {
-                if (raw_mdl.has_value()) {
+                 std::optional<mojo_base::ProtoWrapper> masked_domain_list) {
+                if (masked_domain_list.has_value()) {
                   VLOG(1) << "Received Masked Domain List version " << version;
                 } else {
                   LOG(ERROR) << "Could not read Masked Domain List file";
@@ -88,7 +89,7 @@ void RegisterComponentsForUpdate(
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebViewEnableTrustTokensComponent)) {
-    // TODO(https://crbug.com/1170468): decide if this component is still
+    // TODO(crbug.com/40165770): decide if this component is still
     // needed. Note: We're using a command-line switch because finch features
     // isn't supported in nonembedded WebView.
     // After setting this flag, it may be necessary to force restart the

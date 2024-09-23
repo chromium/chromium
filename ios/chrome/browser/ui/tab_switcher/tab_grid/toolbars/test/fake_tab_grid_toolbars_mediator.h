@@ -18,7 +18,6 @@
 
 @property(nonatomic, strong) TabGridToolbarsConfiguration* configuration;
 @property(nonatomic, weak) id<TabGridToolbarsGridDelegate> delegate;
-@property(nonatomic, assign) TabGridMode mode;
 @property(nonatomic, assign) BOOL enabled;
 
 @end

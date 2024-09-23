@@ -13,12 +13,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list_types.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/animation_delegate_views.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 
 namespace base {
@@ -38,6 +38,7 @@ class View;
 
 namespace ash::video_conference {
 
+class ReturnToAppExpandButton;
 class ReturnToAppPanel;
 
 using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
@@ -47,14 +48,6 @@ class ASH_EXPORT ReturnToAppButton : public ReturnToAppButtonBase {
   METADATA_HEADER(ReturnToAppButton, ReturnToAppButtonBase)
 
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    ~Observer() override = default;
-
-    // Called when the expanded state is changed.
-    virtual void OnExpandedStateChanged(bool expanded) = 0;
-  };
-
   // `is_top_row` specifies if the button is in the top row of `panel`. If the
   // button is in the top row, it might represent the only media app running or
   // the summary row if there are multiple media apps.
@@ -72,27 +65,24 @@ class ASH_EXPORT ReturnToAppButton : public ReturnToAppButtonBase {
 
   ~ReturnToAppButton() override;
 
-  // Observer functions.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
   // ReturnToAppButtonBase:
   void OnButtonClicked(
       const base::UnguessableToken& id,
       crosapi::mojom::VideoConferenceAppType app_type) override;
 
   bool expanded() const { return expanded_; }
-  views::ImageView* expand_indicator() { return expand_indicator_; }
+  void HideExpandIndicator();
+  const views::ImageView* expand_indicator_for_testing() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ReturnToAppPanelTest, ExpandCollapse);
 
+  // Creates an expand button for the top row and adds it as a child view.
+  ReturnToAppExpandButton* CreateExpandIndicator();
+
   void UpdateAccessibleName();
 
-  // Registered observers.
-  base::ObserverList<Observer> observer_list_;
-
-  const bool is_top_row_;
+  bool is_top_row() const { return expand_indicator_ != nullptr; }
 
   // Indicates if this button (and also the parent panel) is in the expanded
   // state. Note that `expanded_` is only meaningful in the case that the button
@@ -105,17 +95,16 @@ class ASH_EXPORT ReturnToAppButton : public ReturnToAppButtonBase {
   const raw_ptr<ReturnToAppPanel> panel_;
 
   // The indicator showing if the panel is in expanded or collapsed state. Only
-  // available if the button is in the top row.
-  raw_ptr<views::ImageView> expand_indicator_ = nullptr;
+  // available if there are multiple rows and `this` is the top row.
+  const raw_ptr<ReturnToAppExpandButton> expand_indicator_;
 };
 
 // The "return to app" panel that resides in the video conference bubble. The
 // user selects from a list of apps that are actively capturing audio/video
 // and/or sharing the screen, and the selected app is brought to the top and
 // focused.
-class ASH_EXPORT ReturnToAppPanel : public views::View,
-                                    ReturnToAppButton::Observer {
-  METADATA_HEADER(ReturnToAppPanel, views::View)
+class ASH_EXPORT ReturnToAppPanel : public views::FlexLayoutView {
+  METADATA_HEADER(ReturnToAppPanel, views::FlexLayoutView)
 
  public:
   explicit ReturnToAppPanel(const MediaApps& apps);
@@ -126,7 +115,10 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
   // True if the container is running its expand/collapse animation.
   bool IsExpandCollapseAnimationRunning();
 
-  int max_capturing_count() { return max_capturing_count_; }
+  int max_capturing_count() const { return max_capturing_count_; }
+
+  // Updates the expanded state and repaint the view if needed.
+  void OnExpandedStateChanged(bool expanded);
 
  private:
   friend class ReturnToAppPanelTest;
@@ -170,7 +162,8 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
     void AnimationCanceled(const gfx::Animation* animation) override;
 
     // views::View:
-    gfx::Size CalculatePreferredSize() const override;
+    gfx::Size CalculatePreferredSize(
+        const views::SizeBounds& available_size) const override;
 
     // Layout manager of this view. Owned by the views hierarchy.
     raw_ptr<views::FlexLayout> layout_manager_ = nullptr;
@@ -188,9 +181,6 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
     // Measure animation smoothness metrics for all the animations.
     std::optional<ui::ThroughputTracker> throughput_tracker_;
   };
-
-  // ReturnToAppButton::Observer:
-  void OnExpandedStateChanged(bool expanded) override;
 
   // views::View:
   void ChildPreferredSizeChanged(View* child) override;

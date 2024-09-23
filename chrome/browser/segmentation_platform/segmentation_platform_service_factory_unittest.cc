@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+
 #include <memory>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -11,14 +13,18 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/segmentation_platform/ukm_data_manager_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/commerce/core/mock_shopping_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/default_model/contextual_page_actions_model.h"
+#include "components/segmentation_platform/embedder/default_model/metrics_clustering.h"
 #include "components/segmentation_platform/embedder/default_model/most_visited_tiles_user.h"
+#include "components/segmentation_platform/embedder/home_modules/ephemeral_home_module_backend.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
@@ -29,9 +35,13 @@
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/segmentation_platform/public/service_proxy.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/visited_url_ranking/public/test_support.h"
+#include "components/visited_url_ranking/public/url_visit_schema.h"
+#include "components/visited_url_ranking/public/url_visit_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace segmentation_platform {
 namespace {
@@ -108,7 +118,10 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
          {features::kSegmentationPlatformTimeDelaySampling,
           {{"SamplingRate", "1"}}},
          {features::kSegmentationPlatformTabResumptionRanker, {}},
-         {features::kSegmentationPlatformAndroidHomeModuleRanker, {}}},
+         {features::kSegmentationPlatformAndroidHomeModuleRanker, {}},
+         {features::kSegmentationPlatformURLVisitResumptionRanker, {}},
+         {features::kSegmentationPlatformEphemeralCardRanker, {}},
+         {features::kSegmentationSurveyPage, {}}},
         {});
 
     // Creating profile and initialising segmentation service.
@@ -140,7 +153,8 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
       PredictionStatus expected_status,
       std::optional<std::vector<std::string>> expected_labels,
       const ClassificationResult& actual_result) {
-    EXPECT_EQ(actual_result.status, expected_status);
+    EXPECT_EQ(static_cast<int>(actual_result.status),
+              static_cast<int>(expected_status));
     if (expected_labels.has_value()) {
       EXPECT_EQ(actual_result.ordered_labels, expected_labels.value());
     }
@@ -213,7 +227,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
     pref_registrar_.RemoveAll();
   }
 
-  void ExpectUkm(std::vector<base::StringPiece> metric_names,
+  void ExpectUkm(std::vector<std::string_view> metric_names,
                  std::vector<int64_t> expected_values) {
     const auto& entries = test_recorder_.GetEntriesByName(
         Segmentation_ModelExecutionUkmRecorder::kEntryName);
@@ -263,7 +277,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
 
     // Check for inputs in the model.
     // Append more if required.
-    std::vector<base::StringPiece> inputs_ukm_metrics = {
+    std::vector<std::string_view> inputs_ukm_metrics = {
         Segmentation_ModelExecutionUkmRecorder::kInput0Name,
         Segmentation_ModelExecutionUkmRecorder::kInput1Name,
         Segmentation_ModelExecutionUkmRecorder::kInput2Name,
@@ -277,7 +291,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
         Segmentation_ModelExecutionUkmRecorder::kInput10Name,
     };
     if (inputs.size() > 0) {
-      std::vector<base::StringPiece> input_metric_name(
+      std::vector<std::string_view> input_metric_name(
           inputs_ukm_metrics.begin(),
           inputs_ukm_metrics.begin() + inputs.size());
       ExpectUkm({input_metric_name}, {inputs});
@@ -285,7 +299,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
 
     // Check for output in the model.
     // Append more if required.
-    std::vector<base::StringPiece> outputs_ukm_metrics = {
+    std::vector<std::string_view> outputs_ukm_metrics = {
         Segmentation_ModelExecutionUkmRecorder::kActualResultName,
         Segmentation_ModelExecutionUkmRecorder::kActualResult2Name,
         Segmentation_ModelExecutionUkmRecorder::kActualResult3Name,
@@ -293,7 +307,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
         Segmentation_ModelExecutionUkmRecorder::kActualResult5Name,
         Segmentation_ModelExecutionUkmRecorder::kActualResult6Name};
     if (outputs.size() > 0) {
-      std::vector<base::StringPiece> output_metric_name(
+      std::vector<std::string_view> output_metric_name(
           outputs_ukm_metrics.begin(),
           outputs_ukm_metrics.begin() + outputs.size());
       ExpectUkm({output_metric_name}, {outputs});
@@ -303,7 +317,15 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
   struct ProfileData {
     explicit ProfileData(UkmDataManagerTestUtils* test_utils,
                          const std::string& result_pref)
-        : test_utils(test_utils), profile(TestingProfile::Builder().Build()) {
+        : test_utils(test_utils) {
+      TestingProfile::Builder profile_builder;
+      profile_builder.AddTestingFactory(
+          commerce::ShoppingServiceFactory::GetInstance(),
+          base::BindRepeating([](content::BrowserContext* context) {
+            return commerce::MockShoppingService::Build();
+          }));
+      profile = profile_builder.Build();
+
       profile->GetPrefs()->SetString(kSegmentationClientResultPrefs,
                                      result_pref);
       test_utils->SetupForProfile(profile.get());
@@ -426,6 +448,23 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestDeviceSwitcherModel) {
       /*expected_labels=*/std::vector<std::string>(1, "NotSynced"));
 }
 
+TEST_F(SegmentationPlatformServiceFactoryTest, URLVisitResumptionRanker) {
+  InitService();
+
+  visited_url_ranking::URLVisitAggregate visit_aggregate =
+      visited_url_ranking::CreateSampleURLVisitAggregate(
+          GURL("https://google.com/search?q=sample"));
+  scoped_refptr<InputContext> input_context =
+      visited_url_ranking::AsInputContext(
+          visited_url_ranking::kURLVisitAggregateSchema, visit_aggregate);
+
+  PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+  ExpectGetAnnotatedNumericResult(kURLVisitResumptionRankerKey,
+                                  prediction_options, input_context,
+                                  PredictionStatus::kSucceeded);
+}
+
 // Segmentation Ukm Engine is disabled on CrOS.
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(SegmentationPlatformServiceFactoryTest, TabResupmtionRanker) {
@@ -445,6 +484,18 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TabResupmtionRanker) {
                                   PredictionStatus::kSucceeded);
 }
 #endif  //! BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(SegmentationPlatformServiceFactoryTest, MetricsClustering) {
+  InitServiceAndCacheResults(
+      segmentation_platform::MetricsClustering::kMetricsClusteringKey);
+
+  segmentation_platform::PredictionOptions prediction_options =
+      PredictionOptions::ForCached();
+
+  ExpectGetAnnotatedNumericResult(
+      segmentation_platform::MetricsClustering::kMetricsClusteringKey,
+      prediction_options, nullptr, PredictionStatus::kSucceeded);
+}
 
 #if BUILDFLAG(IS_ANDROID)
 // Tests for models in android platform.
@@ -480,8 +531,14 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestContextualPageActionsShare) {
 
   auto input_context = base::MakeRefCounted<InputContext>();
   input_context->metadata_args.emplace(
-      segmentation_platform::kContextualPageActionModelInputPriceTracking,
+      segmentation_platform::kContextualPageActionModelInputDiscounts,
       segmentation_platform::processing::ProcessedValue::FromFloat(1));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kContextualPageActionModelInputPriceInsights,
+      segmentation_platform::processing::ProcessedValue::FromFloat(0));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kContextualPageActionModelInputPriceTracking,
+      segmentation_platform::processing::ProcessedValue::FromFloat(0));
   input_context->metadata_args.emplace(
       segmentation_platform::kContextualPageActionModelInputReaderMode,
       segmentation_platform::processing::ProcessedValue::FromFloat(0));
@@ -490,11 +547,11 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestContextualPageActionsShare) {
       kContextualPageActionsKey, prediction_options, input_context,
       /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/
-      std::vector<std::string>(1,
-                               kContextualPageActionModelLabelPriceTracking));
+      std::vector<std::string>(1, kContextualPageActionModelLabelDiscounts));
   clock()->Advance(base::Seconds(
       ContextualPageActionsModel::kShareOutputCollectionDelayInSec));
 
+  // TODO(crbug.com/40254472): Clean this up.
   WaitAndCheckUkmRecord(
       proto::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
       /*inputs=*/
@@ -565,20 +622,59 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestFeedUserModel) {
 }
 
 TEST_F(SegmentationPlatformServiceFactoryTest, TestAndroidHomeModuleRanker) {
-  InitServiceAndCacheResults(
-      segmentation_platform::kAndroidHomeModuleRankerKey);
+  InitService();
   PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+
+  auto input_context = base::MakeRefCounted<InputContext>();
+  input_context->metadata_args.emplace(
+      segmentation_platform::kSingleTabFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(-1));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kPriceChangeFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(-1));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kTabResumptionForAndroidHomeFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(-1));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kSafetyHubFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(-1));
 
   std::vector<std::string> result = {kPriceChange, kSingleTab,
-                                     kTabResumptionForAndroidHome};
+                                     kTabResumptionForAndroidHome, kSafetyHub};
   ExpectGetClassificationResult(
       segmentation_platform::kAndroidHomeModuleRankerKey, prediction_options,
-      nullptr,
+      input_context,
       /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
       /*expected_labels=*/result);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeMdouleBackend) {
+  InitService();
+
+  home_modules::HomeModulesCardRegistry* registry =
+      SegmentationPlatformServiceFactory::GetHomeModulesCardRegistry(
+          profile_->profile.get());
+  ASSERT_TRUE(registry);
+  // Update this test when adding new cards with inputs.
+  // Each card's feature flag should be enabled by test framework for this
+  // integration test.
+  EXPECT_TRUE(registry->get_all_cards_by_priority().empty());
+
+  PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+
+  auto input_context = base::MakeRefCounted<InputContext>();
+
+  // No cards are added, the model fetches no results and fails.
+  std::vector<std::string> result = {};
+  ExpectGetClassificationResult(
+      kEphemeralHomeModuleBackendKey, prediction_options, input_context,
+      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      /*expected_labels=*/result);
+}
 
 }  // namespace
 }  // namespace segmentation_platform

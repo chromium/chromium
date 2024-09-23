@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M4,0C1.791,0 0,1.791 0,4V14C0,16.209 1.791,18 4,18H5V16H4C2.895,16 2,15.105 2,14V4C2,2.895 2.895,2 4,2H14C15.105,2 16,2.895 16,4V5H18V4C18,1.791 16.209,0 14,0H4Z"
+      android:fillColor="@macro/default_icon_color_accent1"/>
+  <path
+      android:pathData="M8,9C8,8.448 8.448,8 9,8H11V6H9C7.343,6 6,7.343 6,9V11H8V9Z"
+      android:fillColor="@macro/default_icon_color_accent1"/>
+  <path
+      android:pathData="M13,8H17V6H13V8Z"
+      android:fillColor="@macro/default_icon_color_accent1"/>
+  <path
+      android:pathData="M19,8H21C21.552,8 22,8.448 22,9V11H24V9C24,7.343 22.657,6 21,6H19V8Z"
+      android:fillColor="@macro/default_icon_color_accent1"/>
+  <path
+      android:pathData="M8,17V13H6V17H8Z"
+      android:fillColor="@macro/default_icon_color_accent1"/>
+  <path
+      android:pathData="M22,13V17H24V13H22Z"
+      android:fillColor="@macro/default_icon_color_accent1"/>
+  <path
+      android:pathData="M8,21V19H6V21C6,22.657 7.343,24 9,24H11V22H9C8.448,22 8,21.552 8,21Z"
+      android:fillColor="@macro/default_icon_color_accent1"/>
+  <path
+      android:pathData="M22,19V21C22,21.552 21.552,22 21,22H19V24H21C22.657,24 24,22.657 24,21V19H22Z"
+      android:fillColor="@macro/default_icon_color_accent1"/>
+  <path
+      android:pathData="M17,22H13V24H17V22Z"
+      android:fillColor="@macro/default_icon_color_accent1"/>
+</vector>

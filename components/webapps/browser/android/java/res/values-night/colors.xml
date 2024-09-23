@@ -6,6 +6,9 @@ found in the LICENSE file.
 -->
 
 <resources>
+    <!-- PWA Bottom Sheet general colors -->
+    <color name="pwa_bottom_sheet_card_background">@color/default_bg_color_secondary_dark</color>
+
     <!-- PWA Restore illustration colors -->
     <color name="pwa_restore_illustration_primary">@color/material_primary_80</color>
     <color name="pwa_restore_illustration_secondary">@color/material_primary_40</color>

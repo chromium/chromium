@@ -243,10 +243,11 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, InstallAndRunningState) {
 
   // With --site-per-process, the iframe on nonapp.com will currently swap
   // processes and go into the hosted app process.
-  if (content::AreAllSitesIsolatedForTesting())
+  if (content::AreAllSitesIsolatedForTesting()) {
     EXPECT_TRUE(IsAppInstalledInIFrame());
-  else
+  } else {
     EXPECT_FALSE(IsAppInstalledInIFrame());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, InstallAndRunningStateFrame) {

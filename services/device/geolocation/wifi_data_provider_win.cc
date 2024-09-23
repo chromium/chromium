@@ -2,13 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/device/geolocation/wifi_data_provider_win.h"
 
 #include <windows.h>
+
 #include <winioctl.h>
 #include <wlanapi.h>
 
 #include "base/logging.h"
+#include "base/win/win_util.h"
 #include "services/device/geolocation/wifi_data_provider_common.h"
 #include "services/device/geolocation/wifi_data_provider_common_win.h"
 #include "services/device/geolocation/wifi_data_provider_handle.h"
@@ -100,12 +107,18 @@ class WindowsWlanApi : public WifiDataProviderCommon::WlanApiInterface {
 // static
 std::unique_ptr<WindowsWlanApi> WindowsWlanApi::Create() {
   // Use an absolute path to load the DLL to avoid DLL preloading attacks.
-  static const wchar_t* const kDLL = L"%WINDIR%\\system32\\wlanapi.dll";
-  wchar_t path[MAX_PATH] = {0};
-  ExpandEnvironmentStrings(kDLL, path, std::size(path));
-  HINSTANCE library = LoadLibraryEx(path, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
-  if (!library)
+  auto path =
+      base::win::ExpandEnvironmentVariables(L"%WINDIR%\\system32\\wlanapi.dll");
+  if (!path) {
     return nullptr;
+  }
+
+  HINSTANCE library =
+      LoadLibraryEx(path->c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+  if (!library) {
+    return nullptr;
+  }
+
   return std::make_unique<WindowsWlanApi>(library);
 }
 

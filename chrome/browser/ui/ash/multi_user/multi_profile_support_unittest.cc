@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/ash/multi_user/multi_profile_support.h"
+
 #include <stddef.h>
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "ash/display/screen_orientation_controller.h"
@@ -33,19 +36,17 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/ui/ash/chrome_new_window_client.h"
-#include "chrome/browser/ui/ash/multi_user/multi_profile_support.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#include "chrome/browser/ui/ash/session_controller_client_impl.h"
-#include "chrome/browser/ui/ash/session_util.h"
+#include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
+#include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -63,6 +64,7 @@
 #include "ui/aura/test/env_test_helper.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
@@ -278,6 +280,8 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
   // TODO: convert to vector<std::unique_ptr<aura::Window>>.
   aura::Window::Windows windows_;
 
+  std::unique_ptr<ash::CrosSettingsHolder> cros_settings_holder_;
+
   // Owned by |user_manager_enabler_|.
   raw_ptr<FakeChromeUserManager, DanglingUntriaged> fake_user_manager_ =
       nullptr;
@@ -292,7 +296,8 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
 
 void MultiProfileSupportTest::SetUp() {
   ash::DeviceSettingsService::Initialize();
-  ash::CrosSettings::Initialize(
+  cros_settings_holder_ = std::make_unique<ash::CrosSettingsHolder>(
+      ash::DeviceSettingsService::Get(),
       TestingBrowserProcess::GetGlobal()->local_state());
   ChromeAshTestBase::SetUp(std::make_unique<TestShellDelegateChromeOS>());
   ash_test_helper()
@@ -333,7 +338,8 @@ MultiProfileSupportTest::SetUpOneWindowEachDeskForUser(AccountId account_id) {
   const int kActiveDeskIndex = 0;
   for (int i = 0; i < desks_controller->GetNumberOfDesks(); i++) {
     widgets.push_back(
-        CreateTestWidget(nullptr, container_ids[i], gfx::Rect(700, 0, 50, 50)));
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                         nullptr, container_ids[i], gfx::Rect(700, 0, 50, 50)));
     aura::Window* win = widgets[i]->GetNativeWindow();
     windows_.push_back(win);
     // `TargetVisibility` is the local visibility of the window
@@ -361,7 +367,7 @@ void MultiProfileSupportTest::TearDown() {
   ::MultiUserWindowManagerHelper::DeleteInstance();
   ChromeAshTestBase::TearDown();
   profile_manager_.reset();
-  ash::CrosSettings::Shutdown();
+  cros_settings_holder_.reset();
   ash::DeviceSettingsService::Shutdown();
 }
 
@@ -396,7 +402,7 @@ std::string MultiProfileSupportTest::GetOwnersOfVisibleWindowsAsString() {
   std::set<AccountId> owners =
       multi_user_window_manager()->GetOwnersOfVisibleWindows();
 
-  std::vector<base::StringPiece> owner_list;
+  std::vector<std::string_view> owner_list;
   for (auto& owner : owners)
     owner_list.push_back(owner.GetUserEmail());
   return base::JoinString(owner_list, " ");
@@ -1418,10 +1424,12 @@ TEST_F(MultiProfileSupportTest, TransientWindowActivationTest) {
   multi_user_window_manager()->SetWindowOwner(window(0), account_id_A);
 
   ::wm::AddTransientChild(window(0), window(1));
-  window(1)->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  window(1)->SetProperty(aura::client::kModalKey,
+                         ui::mojom::ModalType::kWindow);
 
   ::wm::AddTransientChild(window(1), window(2));
-  window(2)->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  window(2)->SetProperty(aura::client::kModalKey,
+                         ui::mojom::ModalType::kWindow);
 
   ::wm::ActivationClient* activation_client =
       ::wm::GetActivationClient(window(0)->GetRootWindow());
@@ -1442,11 +1450,11 @@ TEST_F(MultiProfileSupportTest, TransientWindowActivationTest) {
   EXPECT_FALSE(::wm::CanActivateWindow(window(1)));
 
   // Test that switching user doesn't change the property of the windows.
-  EXPECT_EQ(ui::MODAL_TYPE_NONE,
+  EXPECT_EQ(ui::mojom::ModalType::kNone,
             window(0)->GetProperty(aura::client::kModalKey));
-  EXPECT_EQ(ui::MODAL_TYPE_WINDOW,
+  EXPECT_EQ(ui::mojom::ModalType::kWindow,
             window(1)->GetProperty(aura::client::kModalKey));
-  EXPECT_EQ(ui::MODAL_TYPE_WINDOW,
+  EXPECT_EQ(ui::mojom::ModalType::kWindow,
             window(2)->GetProperty(aura::client::kModalKey));
 
   ::wm::RemoveTransientChild(window(0), window(1));

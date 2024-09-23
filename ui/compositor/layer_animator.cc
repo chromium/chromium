@@ -7,9 +7,9 @@
 #include <stddef.h>
 
 #include <memory>
+#include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/animation/animation.h"
@@ -399,10 +399,11 @@ void LayerAnimator::AddOwnedObserver(
 
 void LayerAnimator::RemoveAndDestroyOwnedObserver(
     ImplicitAnimationObserver* animation_observer) {
-  base::EraseIf(owned_observer_list_,[animation_observer](
-      const std::unique_ptr<ImplicitAnimationObserver>& other) {
-    return other.get() == animation_observer;
-  });
+  std::erase_if(owned_observer_list_,
+                [animation_observer](
+                    const std::unique_ptr<ImplicitAnimationObserver>& other) {
+                  return other.get() == animation_observer;
+                });
 }
 
 base::CallbackListSubscription LayerAnimator::AddSequenceScheduledCallback(
@@ -589,7 +590,7 @@ LayerAnimationSequence* LayerAnimator::RemoveAnimation(
 
   // Do not continue and attempt to start other sequences if the delegate is
   // nullptr.
-  // TODO(crbug.com/1247769): Guard other uses of delegate_ in this class.
+  // TODO(crbug.com/40790139): Guard other uses of delegate_ in this class.
   if (!delegate())
     return to_return.release();
 

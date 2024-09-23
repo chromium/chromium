@@ -23,7 +23,7 @@ bool IsWebContentsCandidateForRefresh(
     content::WebContents* web_contents,
     const base::TimeDelta& duration_since_last_shown) {
   return web_contents &&
-         (base::TimeTicks::Now() - web_contents->GetLastActiveTime()) <
+         (base::TimeTicks::Now() - web_contents->GetLastActiveTimeTicks()) <
              duration_since_last_shown;
 }
 
@@ -45,7 +45,7 @@ const std::vector<GURL> OptimizationGuideTabUrlProvider::GetUrlsOfActiveTabs(
                                          duration_since_last_shown)) {
       urls_and_active_time.emplace_back(
           std::make_pair(web_contents->GetLastCommittedURL(),
-                         web_contents->GetLastActiveTime()));
+                         web_contents->GetLastActiveTimeTicks()));
     }
   }
   std::sort(urls_and_active_time.begin(), urls_and_active_time.end(),
@@ -65,7 +65,7 @@ const std::vector<GURL> OptimizationGuideTabUrlProvider::GetUrlsOfActiveTabs(
 const std::vector<content::WebContents*>
 OptimizationGuideTabUrlProvider::GetAllWebContentsForProfile(Profile* profile) {
 #if BUILDFLAG(IS_ANDROID)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 #else
   std::vector<content::WebContents*> web_contents_list;

@@ -4,15 +4,17 @@
 
 #include "components/drive/drive_notification_manager.h"
 
+#include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/drive/drive_notification_observer.h"
 #include "components/invalidation/public/invalidation.h"
@@ -75,7 +77,7 @@ void DriveNotificationManager::OnInvalidatorStateChange(
   if (AreInvalidationsEnabled()) {
     DVLOG(1) << "XMPP Notifications enabled";
   } else {
-    DVLOG(1) << "XMPP Notifications disabled (state=" << state << ")";
+    DVLOG(1) << "XMPP Notifications disabled";
   }
   for (auto& observer : observers_) {
     observer.OnPushNotificationEnabled(AreInvalidationsEnabled());
@@ -104,11 +106,6 @@ void DriveNotificationManager::OnIncomingInvalidation(
   } else if (invalidation.version() > it->second) {
     it->second = invalidation.version();
   }
-
-  // This effectively disables 'local acks'.  It tells the invalidations system
-  // to not bother saving invalidations across restarts for us.
-  // See crbug.com/320878.
-  invalidation.Acknowledge();
 
   if (!batch_timer_.IsRunning() && !invalidated_change_ids_.empty()) {
     // Stop the polling timer as we'll be sending a batch soon.
@@ -191,14 +188,20 @@ bool DriveNotificationManager::IsRegistered() const {
 
 bool DriveNotificationManager::AreInvalidationsEnabled() const {
   return IsRegistered() && invalidation_service_->GetInvalidatorState() ==
-                               invalidation::INVALIDATIONS_ENABLED;
+                               invalidation::InvalidatorState::kEnabled;
 }
 
 void DriveNotificationManager::RestartPollingTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const int interval_secs =
-      (AreInvalidationsEnabled() ? kSlowPollingIntervalInSecs
-                                 : kFastPollingIntervalInSecs);
+  int interval_secs = (AreInvalidationsEnabled() ? kSlowPollingIntervalInSecs
+                                                 : kFastPollingIntervalInSecs);
+
+  // Override polling interval if feature is enabled. Added to update polling
+  // frequency for versions where the invalidation service may no longer
+  // receive notifications (crbug.com/338254621).
+  if (base::FeatureList::IsEnabled(features::kEnablePollingInterval)) {
+    interval_secs = features::kPollingIntervalInSecs.Get();
+  }
 
   int jitter = base::RandInt(0, interval_secs);
 
@@ -206,7 +209,7 @@ void DriveNotificationManager::RestartPollingTimer() {
   polling_timer_.Start(
       FROM_HERE, base::Seconds(interval_secs + jitter),
       base::BindOnce(&DriveNotificationManager::NotifyObserversToUpdate,
-                     weak_ptr_factory_.GetWeakPtr(), NOTIFICATION_POLLING,
+                     weak_ptr_factory_.GetWeakPtr(), kNotificationPolling,
                      std::map<std::string, int64_t>()));
 }
 
@@ -228,7 +231,10 @@ void DriveNotificationManager::NotifyObserversToUpdate(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Notifying observers: " << NotificationSourceToString(source);
 
-  if (source == NOTIFICATION_XMPP) {
+  base::UmaHistogramEnumeration("Storage.SyncFileSystem.NotificationSource",
+                                source);
+
+  if (source == kNotificationXMPP) {
     auto my_drive_invalidation = invalidations.find("");
     if (my_drive_invalidation != invalidations.end()) {
       // The invalidation version for My Drive is smaller than what's expected
@@ -287,7 +293,7 @@ void DriveNotificationManager::OnBatchTimerExpired() {
   std::map<std::string, int64_t> change_ids_to_update;
   invalidated_change_ids_.swap(change_ids_to_update);
   if (!change_ids_to_update.empty()) {
-    NotifyObserversToUpdate(NOTIFICATION_XMPP, std::move(change_ids_to_update));
+    NotifyObserversToUpdate(kNotificationXMPP, std::move(change_ids_to_update));
   }
 }
 
@@ -295,13 +301,13 @@ void DriveNotificationManager::OnBatchTimerExpired() {
 std::string DriveNotificationManager::NotificationSourceToString(
     NotificationSource source) {
   switch (source) {
-    case NOTIFICATION_XMPP:
+    case kNotificationXMPP:
       return "NOTIFICATION_XMPP";
-    case NOTIFICATION_POLLING:
+    case kNotificationPolling:
       return "NOTIFICATION_POLLING";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -316,8 +322,8 @@ invalidation::Topic DriveNotificationManager::GetTeamDriveInvalidationTopic(
 }
 
 std::string DriveNotificationManager::ExtractTeamDriveId(
-    base::StringPiece topic_name) const {
-  base::StringPiece prefix = kTeamDriveChangePrefix;
+    std::string_view topic_name) const {
+  std::string_view prefix = kTeamDriveChangePrefix;
   if (!base::StartsWith(topic_name, prefix)) {
     return {};
   }

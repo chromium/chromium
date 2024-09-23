@@ -88,7 +88,7 @@
 }
 
 - (NSString*)matchTypeIconAccessibilityIdentifier {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nil;
 }
 
@@ -106,6 +106,10 @@
 
 - (NSAttributedString*)omniboxPreviewText {
   return self.text;
+}
+
+- (NSMutableArray*)actionsInSuggest {
+  return nil;
 }
 
 @end

@@ -37,11 +37,16 @@
 
 namespace base {
 
-// This can be replaced with std::aligned_alloc when we have C++17.
-// Caveat: std::aligned_alloc requires the size parameter be an integral
-// multiple of alignment.
+// Allocate memory of size `size` aligned to `alignment`.
+//
+// TODO(https://crbug.com/40255447): Convert usage to / convert to use
+// `std::aligned_alloc` to the extent that it can be done (since
+// `std::aligned_alloc` can't be used on Windows). When that happens, note that
+// `std::aligned_alloc` requires the `size` parameter be an integral multiple of
+// `alignment` while this implementation does not.
 BASE_EXPORT void* AlignedAlloc(size_t size, size_t alignment);
 
+// Deallocate memory allocated by `AlignedAlloc`.
 inline void AlignedFree(void* ptr) {
 #if defined(COMPILER_MSVC)
   _aligned_free(ptr);

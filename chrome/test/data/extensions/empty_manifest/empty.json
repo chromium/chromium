@@ -1,5 +1,5 @@
 {
   "name": "A generic empty manifest to use for testing",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "1.0"
 }

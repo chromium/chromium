@@ -10,11 +10,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/uuid.h"
 #include "chrome/browser/android/historical_tab_saver.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/tab/web_contents_state.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
 #include "components/sessions/core/live_tab.h"
+#include "components/sessions/core/tab_restore_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 
@@ -27,19 +29,23 @@ class AndroidLiveTabContextCloseWrapper : public AndroidLiveTabContext {
   // closing tabs. In this mode:
   // - `closed_tabs` is the list of tabs closed in a particular close event
   //   handled by the delegate
-  // - `id_to_tab_group` is a mapping from a closed Android Tab's ID to a
+  // - `tab_id_to_tab_group` is a mapping from a closed Android Tab's ID to a
   //   TabGroupId if it is part of a group. This TabGroupId is not the same ID
   //   as an Android Group ID and is used as a proxy. However, it is a 1:1
   //   relationship.
-  // - `tab_group_visual_data` is used to supply `title()` of a tab group. One
-  //   of these entries must exist for every unique TabGroupId in
-  //   `id_to_tab_group`. If the title is null in Java use "".
+  // - `tab_group_visual_data` is used to supply a title and color of a tab
+  //   group. One of these entries must exist for every unique TabGroupId in
+  //   `tab_id_to_tab_group`. If the title is null in Java use "".
+  // - `saved_tab_group_ids` is used to supply a saved tab group id for each
+  //   tab group. If an entry does not exist a null value will be used.
   AndroidLiveTabContextCloseWrapper(
       TabModel* tab_model,
       std::vector<raw_ptr<TabAndroid, VectorExperimental>>&& closed_tabs,
       std::map<int, tab_groups::TabGroupId>&& tab_id_to_tab_group,
       std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>&&
           tab_group_visual_data,
+      std::map<tab_groups::TabGroupId, std::optional<base::Uuid>>&&
+          saved_tab_group_ids,
       std::vector<WebContentsStateByteBuffer>&& web_contents_state);
   ~AndroidLiveTabContextCloseWrapper() override;
 
@@ -69,7 +75,12 @@ class AndroidLiveTabContextCloseWrapper : public AndroidLiveTabContext {
 
   // Gets the visual data for `group_id` if it exists or nullptr otherwise.
   const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
-      const tab_groups::TabGroupId& group) const override;
+      const tab_groups::TabGroupId& group_id) const override;
+
+  // Gets the saved tab group id for `group_id` if it exists or std::nullopt
+  // otherwise.
+  const std::optional<base::Uuid> GetSavedTabGroupIdForGroup(
+      const tab_groups::TabGroupId& group_id) const override;
 
  private:
   TabAndroid* GetTabAt(int relative_index) const;
@@ -84,6 +95,10 @@ class AndroidLiveTabContextCloseWrapper : public AndroidLiveTabContext {
   // Maps a group ID to its visual data (only a title on Android).
   std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>
       tab_group_visual_data_;
+
+  // Maps a group ID to its saved tab group ID.
+  std::map<tab_groups::TabGroupId, std::optional<base::Uuid>>
+      saved_tab_group_ids_;
 
   // List of webContentStates to close linked by tab index for bulk closure.
   std::vector<WebContentsStateByteBuffer> web_contents_state_;
@@ -122,24 +137,19 @@ class AndroidLiveTabContextRestoreWrapper : public AndroidLiveTabContext {
 
     // Android Tab IDs for members of the group.
     std::vector<int> tab_ids;
+
+    // The saved tab group ID of the tab group.
+    std::optional<base::Uuid> saved_tab_group_id;
   };
 
   void SetVisualDataForGroup(
       const tab_groups::TabGroupId& group,
       const tab_groups::TabGroupVisualData& visual_data) override;
   sessions::LiveTab* AddRestoredTab(
-      const std::vector<sessions::SerializedNavigationEntry>& navigations,
+      const sessions::tab_restore::Tab& tab,
       int tab_index,
-      int selected_navigation,
-      const std::string& extension_app_id,
-      std::optional<tab_groups::TabGroupId> group,
-      const tab_groups::TabGroupVisualData& group_visual_data,
       bool select,
-      bool pin,
-      const sessions::PlatformSpecificTabData* storage_namespace,
-      const sessions::SerializedUserAgentOverride& user_agent_override,
-      const std::map<std::string, std::string>& extra_data,
-      const SessionID* tab_id) override;
+      sessions::tab_restore::Type original_session_type) override;
 
   // Returns the TabGroup data aggregated via AddRestoredTab.
   const std::map<tab_groups::TabGroupId, TabGroup>& GetTabGroups();

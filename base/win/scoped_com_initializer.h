@@ -6,6 +6,7 @@
 #define BASE_WIN_SCOPED_COM_INITIALIZER_H_
 
 #include <objbase.h>
+
 #include <wrl/client.h>
 
 #include "base/base_export.h"

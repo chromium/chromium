@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
+#include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -79,7 +80,7 @@ class EnrollmentScreen
   void SetEnrollmentConfig(const policy::EnrollmentConfig& enrollment_config);
 
   // EnrollmentScreenView::Controller implementation:
-  void OnLoginDone(const std::string& user,
+  void OnLoginDone(login::OnlineSigninArtifacts signin_artifacts,
                    int license_type,
                    const std::string& auth_code) override;
   void OnRetry() override;
@@ -124,6 +125,11 @@ class EnrollmentScreen
                           weak_ptr_factory_.GetWeakPtr());
   }
 
+  void set_tpm_updater_for_testing(
+      base::RepeatingClosure tpm_updater_for_testing) {
+    tpm_updater_ = std::move(tpm_updater_for_testing);
+  }
+
   // Changes network state. Useful for simulating network issues in tests.
   void SetNetworkStateForTesting(const NetworkState* state);
 
@@ -139,8 +145,7 @@ class EnrollmentScreen
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
 
  private:
-  friend class EnrollmentScreenUnitTest;
-  friend class AutomaticReenrollmentScreenUnitTest;
+  friend class EnrollmentScreenBaseTest;
   friend class test::EnrollmentHelperMixin;
 
   FRIEND_TEST_ALL_PREFIXES(AttestationAuthEnrollmentScreenTest, TestCancel);
@@ -156,6 +161,7 @@ class EnrollmentScreen
   enum Auth {
     AUTH_ATTESTATION,
     AUTH_OAUTH,
+    AUTH_ENROLLMENT_TOKEN,
   };
 
   // Updates view GAIA flow type which is used to modify visual appearance
@@ -176,7 +182,7 @@ class EnrollmentScreen
   // Clears auth in `enrollment_launcher_`. Deletes
   // `enrollment_launcher_` and runs `callback` on completion. See the
   // comment for EnrollmentLauncher::ClearAuth for details.
-  void ClearAuth(base::OnceClosure callback);
+  void ClearAuth(base::OnceClosure callback, bool revoke_oauth2_tokens = true);
 
   // Used as a callback for EnrollmentLauncher::ClearAuth.
   virtual void OnAuthCleared(base::OnceClosure callback);
@@ -191,6 +197,8 @@ class EnrollmentScreen
 
   // Do attestation based enrollment.
   void AuthenticateUsingAttestation();
+
+  void AuthenticateUsingEnrollmentToken();
 
   // Shows the interactive screen. Resets auth then shows the signin screen.
   void ShowInteractiveScreen();
@@ -245,16 +253,24 @@ class EnrollmentScreen
   void HideOfflineMessage(NetworkStateInformer::State state,
                           NetworkError::ErrorReason reason);
 
+  // Stores the signin artifacts and the refresh token in the wizard context
+  // if the appropriate conditions are met.
+  bool MaybeStoreUserContextInWizardContext();
+
   base::WeakPtr<EnrollmentScreenView> view_;
   raw_ptr<ErrorScreen> error_screen_ = nullptr;
   ScreenExitCallback exit_callback_;
   std::optional<TpmStatusCallback> tpm_ownership_callback_for_testing_;
-  policy::EnrollmentConfig config_;
-  policy::EnrollmentConfig enrollment_config_;
-  policy::LicenseType license_type_to_use_ = policy::LicenseType::kEnterprise;
+  // Evaluates device policy TPMFirmwareUpdateSettings and updates the TPM if
+  // the policy is set to "auto-update vulnerable TPM firmware at enrollment".
+  base::RepeatingClosure tpm_updater_;
+  policy::EnrollmentConfig prescribed_config_;
+  policy::EnrollmentConfig effective_config_;
   ErrorScreensHistogramHelper histogram_helper_;
 
   // 'Current' and 'Next' authentication mechanisms to be used.
+  // TODO(b/332529631): Consider moving these values and the corresponding enum
+  // to EnrollmentConfig.
   Auth current_auth_ = AUTH_OAUTH;
   Auth next_auth_ = AUTH_OAUTH;
 
@@ -267,9 +283,6 @@ class EnrollmentScreen
   int install_state_retries_ = 0;
   // Timer for install attribute to resolve.
   base::OneShotTimer wait_state_timer_;
-
-  // Whether the ongoing flow belongs to an enterprise rollback.
-  bool is_rollback_flow_ = false;
 
   // Network state informer used to keep signin screen up.
   scoped_refptr<NetworkStateInformer> network_state_informer_;
@@ -287,6 +300,9 @@ class EnrollmentScreen
   int num_retries_ = 0;
   std::unique_ptr<EnrollmentLauncher> enrollment_launcher_;
   std::unique_ptr<policy::AccountStatusCheckFetcher> status_checker_;
+
+  std::unique_ptr<login::OnlineSigninArtifacts> signin_artifacts_;
+  bool using_saml_api_ = false;
 
   base::WeakPtrFactory<EnrollmentScreen> weak_ptr_factory_{this};
 };

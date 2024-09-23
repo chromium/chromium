@@ -80,13 +80,14 @@ ReportingServerConnector::TestEnvironment::TestEnvironment()
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   fake_statistics_provider_ =
       std::make_unique<ash::system::ScopedFakeStatisticsProvider>();
-  fake_statistics_provider_->SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, "fake-serial-number");
+  fake_statistics_provider_->SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                 "fake-serial-number");
 #endif
   device_management_service_ =
       std::make_unique<policy::DeviceManagementService>(
           std::make_unique<policy::DeviceManagementServiceConfiguration>(
-              "", "", kServerUrl));
+              /*dm_server_url=*/"", /*realtime_reporting_server_url=*/"",
+              /*encrypted_reporting_server_url=*/kServerUrl));
   device_management_service_->ScheduleInitialization(0);
   TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
       url_loader_factory_.GetSafeWeakWrapper());

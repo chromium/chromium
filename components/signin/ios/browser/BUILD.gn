@@ -15,6 +15,7 @@ source_set("browser") {
 
   deps = [
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/google/core/common",
     "//components/prefs",
     "//components/signin/core/browser",

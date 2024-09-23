@@ -71,6 +71,7 @@ class PLATFORM_EXPORT LayerTreeView
   cc::AnimationHost* animation_host() { return animation_host_.get(); }
 
   void SetVisible(bool visible);
+  void SetShouldWarmUp();
 
   // cc::LayerTreeHostClient implementation.
   // NOTE: LayerTreeView allows re-attaching itself to a different delegate.
@@ -104,18 +105,16 @@ class PLATFORM_EXPORT LayerTreeView
                  base::TimeTicks commit_start_time,
                  base::TimeTicks commit_finish_time) override;
   void DidCommitAndDrawFrame(int source_frame_number) override;
-  void DidReceiveCompositorFrameAck() override {}
   void DidCompletePageScaleAnimation(int source_frame_number) override;
   void DidPresentCompositorFrame(
       uint32_t frame_token,
-      const gfx::PresentationFeedback& feedback) override;
+      const viz::FrameTimingDetails& frame_timing_details) override;
   void RecordStartOfFrameMetrics() override;
   void RecordEndOfFrameMetrics(
       base::TimeTicks frame_begin_time,
       cc::ActiveFrameSequenceTrackers trackers) override;
   std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics()
       override;
-  std::unique_ptr<cc::WebVitalMetrics> GetWebVitalMetrics() override;
   void NotifyThroughputTrackerResults(
       cc::CustomTrackerResults results) override;
   void DidObserveFirstScrollDelay(
@@ -124,6 +123,7 @@ class PLATFORM_EXPORT LayerTreeView
       base::TimeTicks first_scroll_timestamp) override;
   void RunPaintBenchmark(int repeat_count,
                          cc::PaintBenchmarkResult& result) override;
+  std::string GetPausedDebuggerLocalizedMessage() override;
 
   // cc::LayerTreeHostSingleThreadClient implementation.
   void DidSubmitCompositorFrame() override;
@@ -137,7 +137,7 @@ class PLATFORM_EXPORT LayerTreeView
   // for `frame_token` or a following frame.
   void AddPresentationCallback(
       uint32_t frame_token,
-      base::OnceCallback<void(base::TimeTicks)> callback);
+      base::OnceCallback<void(const viz::FrameTimingDetails&)> callback);
 
 #if BUILDFLAG(IS_APPLE)
   void AddCoreAnimationErrorCodeCallback(
@@ -173,7 +173,7 @@ class PLATFORM_EXPORT LayerTreeView
   // class should do nothing in calls from the LayerTreeHost, and just wait to
   // be destroyed. It is not expected to be used at all after Disconnect()
   // outside of handling/dropping LayerTreeHost client calls.
-  raw_ptr<LayerTreeViewDelegate, ExperimentalRenderer> delegate_;
+  raw_ptr<LayerTreeViewDelegate> delegate_;
   std::unique_ptr<cc::LayerTreeHost> layer_tree_host_;
 
   enum class FrameSinkState {
@@ -185,9 +185,9 @@ class PLATFORM_EXPORT LayerTreeView
   };
   FrameSinkState frame_sink_state_ = FrameSinkState::kNoFrameSink;
 
-  base::circular_deque<
-      std::pair<uint32_t,
-                std::vector<base::OnceCallback<void(base::TimeTicks)>>>>
+  base::circular_deque<std::pair<
+      uint32_t,
+      std::vector<base::OnceCallback<void(const viz::FrameTimingDetails&)>>>>
       presentation_callbacks_;
 
 #if BUILDFLAG(IS_APPLE)

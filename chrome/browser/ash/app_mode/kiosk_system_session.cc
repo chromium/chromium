@@ -3,16 +3,23 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
+
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
 #include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
-#include "chrome/browser/ash/app_mode/device_weekly_scheduled_suspend_policy_handler.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
@@ -28,8 +35,10 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
 
@@ -128,7 +137,11 @@ KioskSystemSession::KioskSystemSession(
       network_metrics_service_(
           std::make_unique<NetworkConnectivityMetricsService>()),
       periodic_metrics_service_(std::make_unique<PeriodicMetricsService>(
-          g_browser_process->local_state())) {
+          g_browser_process->local_state())),
+      device_weekly_scheduled_suspend_controller_(
+          std::make_unique<DeviceWeeklyScheduledSuspendController>(
+              g_browser_process->local_state())),
+      network_state_observer_(profile->GetPrefs()) {
   switch (kiosk_app_id_.type) {
     case KioskAppType::kChromeApp:
       InitForChromeAppKiosk();
@@ -136,8 +149,10 @@ KioskSystemSession::KioskSystemSession(
     case KioskAppType::kWebApp:
       InitForWebKiosk(app_name);
       break;
-    case KioskAppType::kArcApp:
-      NOTREACHED();
+    case KioskAppType::kIsolatedWebApp:
+      // TODO(crbug.com/361017777): call InitForIwaKiosk or reus existing init.
+      NOTIMPLEMENTED();
+      break;
   }
   if (IsLacrosEnabled()) {
     lacros_watcher_ = std::make_unique<LacrosWatcher>(profile, kiosk_app_id_);
@@ -145,12 +160,6 @@ KioskSystemSession::KioskSystemSession(
 }
 
 KioskSystemSession::~KioskSystemSession() = default;
-
-// static
-void KioskSystemSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  policy::DeviceWeeklyScheduledSuspendPolicyHandler::RegisterLocalStatePrefs(
-      registry);
-}
 
 void KioskSystemSession::InitForChromeAppKiosk() {
   const std::string& app_id = kiosk_app_id_.app_id.value();
@@ -196,7 +205,7 @@ void KioskSystemSession::SetRebootAfterUpdateIfNecessary() {
       g_browser_process->platform_part()->browser_policy_connector_ash();
   if (!connector->IsDeviceEnterpriseManaged()) {
     PrefService* local_state = g_browser_process->local_state();
-    local_state->SetBoolean(prefs::kRebootAfterUpdate, true);
+    local_state->SetBoolean(::prefs::kRebootAfterUpdate, true);
     KioskModeIdleAppNameNotification::Initialize();
   }
 }
@@ -204,6 +213,12 @@ void KioskSystemSession::SetRebootAfterUpdateIfNecessary() {
 void KioskSystemSession::OnGuestAdded(
     content::WebContents* guest_web_contents) {
   browser_session_.OnGuestAdded(guest_web_contents);
+}
+
+void KioskSystemSession::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(
+      prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled, false);
 }
 
 Profile* KioskSystemSession::profile() const {

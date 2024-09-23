@@ -51,6 +51,12 @@ struct CONTENT_EXPORT InterestGroupUpdate {
   std::optional<blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode>
       trusted_bidding_signals_slot_size_mode;
   std::optional<int32_t> max_trusted_bidding_signals_url_length;
+  // The trusted_bidding_signals_coordinator field in the interest group
+  // configuration is optional and indicates whether the interest group is using
+  // Key-Value v1 or v2. In this update, it has the capability to be cleared
+  // when the value is `null` in JSON, allowing for a downgrade from KVv2 to
+  // KVv1.
+  std::optional<std::optional<url::Origin>> trusted_bidding_signals_coordinator;
   std::optional<std::string> user_bidding_signals;
   std::optional<std::vector<blink::InterestGroup::Ad>> ads, ad_components;
   std::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes;
@@ -74,6 +80,22 @@ struct CONTENT_EXPORT InterestGroupUpdateParameter {
   blink::InterestGroupKey interest_group_key;
   GURL update_url;
   url::Origin joining_origin;
+};
+
+struct CONTENT_EXPORT InterestGroupKanonUpdateParameter {
+  explicit InterestGroupKanonUpdateParameter(base::Time update_time);
+  InterestGroupKanonUpdateParameter(const InterestGroupKanonUpdateParameter&) =
+      delete;
+  InterestGroupKanonUpdateParameter(InterestGroupKanonUpdateParameter&& other);
+  ~InterestGroupKanonUpdateParameter();
+
+  base::Time update_time;
+  // All an interest group's keys, including those that are not k-anonymous or
+  // have never been joined.
+  std::vector<std::string> hashed_keys;
+  // Which keys have been newly added in the join or update that triggered this
+  // k-anon update.
+  std::vector<std::string> newly_added_hashed_keys;
 };
 
 }  // namespace content

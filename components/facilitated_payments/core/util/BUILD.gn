@@ -2,13 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/test.gni")
 
 static_library("util") {
   sources = [
+    "payment_link_validator.cc",
+    "payment_link_validator.h",
     "pix_code_validator.cc",
     "pix_code_validator.h",
+  ]
+
+  public_deps = [
+    "//components/facilitated_payments/core/mojom:pix_code_validator_mojom",
   ]
 
   deps = [
@@ -20,6 +25,7 @@ static_library("util") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "payment_link_validator_unittest.cc",
     "pix_code_validator_fuzzer_util_unittest.cc",
     "pix_code_validator_unittest.cc",
   ]
@@ -40,16 +46,15 @@ static_library("fuzzer_util") {
   ]
 }
 
-if (fuzztest_supported) {
-  test("pix_code_validator_fuzzer") {
-    sources = [ "pix_code_validator_fuzzer.cc" ]
+test("pix_code_validator_fuzzer") {
+  sources = [ "pix_code_validator_fuzzer.cc" ]
 
-    testonly = true
+  testonly = true
+  fuzztests = [ "IsValidPixCodeTest.IsValidPixCodeCanParseAnyString" ]
 
-    deps = [
-      ":fuzzer_util",
-      ":util",
-      "//third_party/fuzztest:fuzztest_gtest_main",
-    ]
-  }
+  deps = [
+    ":fuzzer_util",
+    ":util",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
 }

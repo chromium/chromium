@@ -52,7 +52,7 @@ class CrosAppsApiInfo {
   // API isn't gated behind any feature, and will be enabled if other conditions
   // match (e.g. the origin is allowlisted).
   CrosAppsApiInfo& SetRequiredFeatures(
-      std::initializer_list<const std::reference_wrapper<const base::Feature>>
+      std::initializer_list<std::reference_wrapper<const base::Feature>>
           features);
 
   // Returns the enum that represents this API.
@@ -71,7 +71,7 @@ class CrosAppsApiInfo {
 
   // Returns the list of `base::Feature`s that must all be enabled for the API
   // to be enabled.
-  const std::vector<const std::reference_wrapper<const base::Feature>>&
+  const std::vector<std::reference_wrapper<const base::Feature>>&
   required_features() const {
     return required_features_;
   }
@@ -83,8 +83,7 @@ class CrosAppsApiInfo {
   EnableBlinkRuntimeFeatureFunction enable_blink_runtime_feature_fn_;
 
   base::flat_set<url::Origin> allowed_origins_;
-  std::vector<const std::reference_wrapper<const base::Feature>>
-      required_features_;
+  std::vector<std::reference_wrapper<const base::Feature>> required_features_;
 };
 
 #endif  // CHROME_BROWSER_CHROMEOS_CROS_APPS_API_CROS_APPS_API_INFO_H_

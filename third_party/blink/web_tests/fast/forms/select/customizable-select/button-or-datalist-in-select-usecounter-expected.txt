@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] UseCounter is counted when putting button in select.
+  assert_true: button in select expected true got false
+[FAIL] UseCounter is counted when putting datalist in select.
+  assert_true: datalist in select expected true got false
+[FAIL] UseCounter for <div> in <select>.
+  assert_true: select parser dropped tag expected true got false
+[FAIL] UseCounter is counted when putting input in select.
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

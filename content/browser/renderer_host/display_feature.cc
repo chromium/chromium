@@ -15,32 +15,41 @@ bool DisplayFeature::operator!=(const DisplayFeature& other) const {
   return !(*this == other);
 }
 
-std::vector<gfx::Rect> DisplayFeature::ComputeWindowSegments(
-    const gfx::Size& visible_viewport_size) const {
-  std::vector<gfx::Rect> window_segments;
+std::vector<gfx::Rect> DisplayFeature::ComputeViewportSegments(
+    const gfx::Size& visible_viewport_size,
+    int root_view_offset_from_origin) const {
+  std::vector<gfx::Rect> viewport_segments;
 
   int display_feature_end = offset + mask_length;
   if (orientation == DisplayFeature::Orientation::kVertical) {
     // If the display feature is vertically oriented, it splits or masks
     // the widget into two side-by-side segments. Note that in the masking
     // scenario, there is an area of the widget that are not covered by the
-    // union of the window segments - this area's pixels will not be visible
+    // union of the viewport segments - this area's pixels will not be visible
     // to the user.
-    window_segments.emplace_back(0, 0, offset, visible_viewport_size.height());
-    window_segments.emplace_back(
+    viewport_segments.emplace_back(0, 0, offset,
+                                   visible_viewport_size.height());
+    viewport_segments.emplace_back(
         display_feature_end, 0,
         visible_viewport_size.width() - display_feature_end,
         visible_viewport_size.height());
   } else {
     // If the display feature is offset in the y direction, it splits or masks
     // the widget into two stacked segments.
-    window_segments.emplace_back(0, 0, visible_viewport_size.width(), offset);
-    window_segments.emplace_back(
+    // We need to offset the display feature by the browser controls top height.
+    display_feature_end = display_feature_end - root_view_offset_from_origin;
+    int final_offset = offset - root_view_offset_from_origin;
+    if (final_offset < 0 || display_feature_end < 0) {
+      return viewport_segments;
+    }
+    viewport_segments.emplace_back(0, 0, visible_viewport_size.width(),
+                                   final_offset);
+    viewport_segments.emplace_back(
         0, display_feature_end, visible_viewport_size.width(),
         visible_viewport_size.height() - display_feature_end);
   }
 
-  return window_segments;
+  return viewport_segments;
 }
 
 // static

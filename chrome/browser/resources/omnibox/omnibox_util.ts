@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Signals} from './omnibox.mojom-webui.js';
+import type {Signals} from './omnibox_internals.mojom-webui.js';
 
 export function clearChildren(element: Element) {
   while (element.firstChild) {
@@ -24,15 +24,20 @@ export function createEl<K extends keyof HTMLElementTagNameMap>(
 
 // Keep consistent:
 // - omnibox_event.proto `ScoringSignals`
+// - omnibox_scoring_signals.proto `OmniboxScoringSignals`
 // - autocomplete_scoring_model_handler.cc
 //   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
 // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
+// - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
+// - omnibox_metrics_provider.cc `GetScoringSignalsForLogging()`
 // - omnibox.mojom `struct Signals`
-// - omnibox_page_handler.cc `TypeConverter<AutocompleteMatch::ScoringSignals,
-//   mojom::SignalsPtr>`
+// - omnibox_page_handler.cc
+//   `TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr>`
 // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
 //   AutocompleteMatch::ScoringSignals>`
 // - omnibox_util.ts `signalNames`
+// - omnibox/histograms.xml
+//   `Omnibox.URLScoringModelExecuted.ScoringSignalCoverage`
 export const signalNames: Array<keyof Signals> = [
   'typedCount',
   'visitCount',
@@ -58,6 +63,13 @@ export const signalNames: Array<keyof Signals> = [
   'lengthOfUrl',
   'siteEngagement',
   'allowedToBeDefaultMatch',
+  'searchSuggestRelevance',
+  'isSearchSuggestEntity',
+  'isVerbatim',
+  'isNavsuggest',
+  'isSearchSuggestTail',
+  'isAnswerSuggest',
+  'isCalculatorSuggest',
 ];
 
 export function clamp(value: number, min: number, max: number) {

@@ -24,19 +24,17 @@ import android.graphics.drawable.Drawable;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
@@ -44,6 +42,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.ui.modelutil.ListObservable;
 
@@ -53,20 +52,22 @@ import org.chromium.ui.modelutil.ListObservable;
         manifest = Config.NONE,
         shadows = {CustomShadowAsyncTask.class})
 public class CreditCardAccessorySheetControllerTest {
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock private AccessorySheetTabView mMockView;
     @Mock private ListObservable.ListObserver<Void> mMockItemListObserver;
+    @Mock private Profile mMockProfile;
+    @Mock private PersonalDataManager mMockPersonalDataManager;
 
     private CreditCardAccessorySheetCoordinator mCoordinator;
     private AccessorySheetTabItemsModel mSheetDataPieces;
 
     @Before
     public void setUp() {
-        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));
+        PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
         mCoordinator =
-                new CreditCardAccessorySheetCoordinator(RuntimeEnvironment.application, null);
+                new CreditCardAccessorySheetCoordinator(
+                        RuntimeEnvironment.application, mMockProfile, null);
         assertNotNull(mCoordinator);
         mSheetDataPieces = mCoordinator.getSheetDataPiecesForTesting();
     }
@@ -115,13 +116,21 @@ public class CreditCardAccessorySheetControllerTest {
 
         // If the coordinator receives a set of initial items, the model should report an insertion.
         testProvider.notifyObservers(
-                new AccessorySheetData(AccessoryTabType.CREDIT_CARDS, "Payments", ""));
+                new AccessorySheetData(
+                        AccessoryTabType.CREDIT_CARDS,
+                        /* userInfoTitle= */ "Payments",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ ""));
         verify(mMockItemListObserver).onItemRangeInserted(mSheetDataPieces, 0, 1);
         assertThat(mSheetDataPieces.size(), is(1));
 
         // If the coordinator receives a new set of items, the model should report a change.
         testProvider.notifyObservers(
-                new AccessorySheetData(AccessoryTabType.CREDIT_CARDS, "Other Payments", ""));
+                new AccessorySheetData(
+                        AccessoryTabType.CREDIT_CARDS,
+                        /* userInfoTitle= */ "Other Payments",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ ""));
         verify(mMockItemListObserver).onItemRangeChanged(mSheetDataPieces, 0, 1, null);
         assertThat(mSheetDataPieces.size(), is(1));
 
@@ -139,7 +148,11 @@ public class CreditCardAccessorySheetControllerTest {
     public void testSplitsTabDataToList() {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
-                new AccessorySheetData(AccessoryTabType.CREDIT_CARDS, "Payments", "");
+                new AccessorySheetData(
+                        AccessoryTabType.CREDIT_CARDS,
+                        /* userInfoTitle= */ "",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
         testData.getUserInfoList().add(new UserInfo("", false));
         testData.getUserInfoList()
                 .get(0)
@@ -173,7 +186,11 @@ public class CreditCardAccessorySheetControllerTest {
     public void testUsesTitleElementForEmptyState() {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
-                new AccessorySheetData(AccessoryTabType.CREDIT_CARDS, "Payments", "");
+                new AccessorySheetData(
+                        AccessoryTabType.CREDIT_CARDS,
+                        /* userInfoTitle= */ "Payments",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
         mCoordinator.registerDataProvider(testProvider);
 
         testProvider.notifyObservers(testData);
@@ -181,26 +198,17 @@ public class CreditCardAccessorySheetControllerTest {
         assertThat(mSheetDataPieces.size(), is(1));
         assertThat(getType(mSheetDataPieces.get(0)), is(TITLE));
         assertThat(mSheetDataPieces.get(0).getDataPiece(), is(equalTo("Payments")));
-
-        // As soon UserInfo is available, discard the title.
-        testData.getUserInfoList().add(new UserInfo("", false));
-        testData.getUserInfoList()
-                .get(0)
-                .addField(new UserInfoField("Todd", "Todd", "", false, field -> {}));
-        testData.getUserInfoList()
-                .get(0)
-                .addField(new UserInfoField("**** 9219", "**** 9219", "", true, field -> {}));
-        testProvider.notifyObservers(testData);
-
-        assertThat(mSheetDataPieces.size(), is(1));
-        assertThat(getType(mSheetDataPieces.get(0)), is(CREDIT_CARD_INFO));
     }
 
     @Test
     public void testShowsNoCreditCardsMessageBelowPromoCodes() {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
-                new AccessorySheetData(AccessoryTabType.CREDIT_CARDS, "No payment methods", "");
+                new AccessorySheetData(
+                        AccessoryTabType.CREDIT_CARDS,
+                        /* userInfoTitle= */ "No payment methods",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
 
         testData.getPromoCodeInfoList().add(new PromoCodeInfo());
         testData.getPromoCodeInfoList()

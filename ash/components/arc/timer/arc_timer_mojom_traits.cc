@@ -18,7 +18,6 @@ arc::mojom::ClockId EnumTraits<arc::mojom::ClockId, clockid_t>::ToMojom(
       return arc::mojom::ClockId::BOOTTIME_ALARM;
   }
   NOTREACHED();
-  return arc::mojom::ClockId::BOOTTIME_ALARM;
 }
 
 // static
@@ -34,7 +33,6 @@ bool EnumTraits<arc::mojom::ClockId, clockid_t>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 }  // namespace mojo

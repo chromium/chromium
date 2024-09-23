@@ -8,6 +8,7 @@
 #include <SensorsApi.h>
 #include <wrl/client.h>
 
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 
@@ -30,6 +31,8 @@ class PlatformSensorProviderWin final : public PlatformSensorProvider {
 
   ~PlatformSensorProviderWin() override;
 
+  base::WeakPtr<PlatformSensorProvider> AsWeakPtr() override;
+
   // Overrides ISensorManager COM interface provided by the system, used
   // only for testing purposes.
   void SetSensorManagerForTesting(
@@ -40,24 +43,22 @@ class PlatformSensorProviderWin final : public PlatformSensorProvider {
  protected:
   // PlatformSensorProvider interface implementation.
   void CreateSensorInternal(mojom::SensorType type,
-                            SensorReadingSharedBuffer* reading_buffer,
                             CreateSensorCallback callback) override;
 
  private:
   void InitSensorManager();
   void OnInitSensorManager(mojom::SensorType type,
-                           SensorReadingSharedBuffer* reading_buffer,
                            CreateSensorCallback callback);
   std::unique_ptr<PlatformSensorReaderWinBase> CreateSensorReader(
       mojom::SensorType type);
   void SensorReaderCreated(
       mojom::SensorType type,
-      SensorReadingSharedBuffer* reading_buffer,
       CreateSensorCallback callback,
       std::unique_ptr<PlatformSensorReaderWinBase> sensor_reader);
 
   scoped_refptr<base::SingleThreadTaskRunner> com_sta_task_runner_;
   Microsoft::WRL::ComPtr<ISensorManager> sensor_manager_;
+  base::WeakPtrFactory<PlatformSensorProviderWin> weak_factory_{this};
 };
 
 }  // namespace device

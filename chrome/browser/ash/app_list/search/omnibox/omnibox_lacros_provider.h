@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
@@ -19,17 +20,23 @@ class AppListControllerDelegate;
 class Profile;
 
 namespace crosapi {
-class CrosapiManager;
+class SearchControllerAsh;
 class SearchProviderAsh;
 }  // namespace crosapi
 
 namespace app_list {
 
+// `OmniboxLacrosProvider` wraps `crosapi::SearchControllerAsh` - an ash-chrome
+// interface to a lacros-chrome `AutocompleteController` - to provide omnibox
+// results.
 class OmniboxLacrosProvider : public SearchProvider {
  public:
+  using SearchControllerCallback =
+      base::RepeatingCallback<crosapi::SearchControllerAsh*()>;
+
   OmniboxLacrosProvider(Profile* profile,
                         AppListControllerDelegate* list_controller,
-                        crosapi::CrosapiManager* crosapi_manager);
+                        SearchControllerCallback search_controller_callback);
   ~OmniboxLacrosProvider() override;
 
   // SearchProvider:
@@ -37,11 +44,19 @@ class OmniboxLacrosProvider : public SearchProvider {
   void StopQuery() override;
   ash::AppListSearchResultType ResultType() const override;
 
+  // Returns a `SearchControllerCallback` which returns a shared
+  // `crosapi::SearchControllerAsh` from the singleton
+  // `crosapi::SearchProviderAsh`.
+  // As the controller may be shared among other `OmniboxLacrosProvider`
+  // instances, calling `Start` will interrupt any unfinished searches in other
+  // instances which also use `crosapi::SearchProviderAsh`'s controller.
+  static SearchControllerCallback GetSingletonControllerCallback();
+
  private:
   void OnResultsReceived(std::vector<crosapi::mojom::SearchResultPtr> results);
   void StartWithoutSearchProvider(const std::u16string& query);
 
-  raw_ptr<crosapi::SearchProviderAsh> search_provider_;
+  SearchControllerCallback search_controller_callback_;
   const raw_ptr<Profile> profile_;
   const raw_ptr<AppListControllerDelegate> list_controller_;
 

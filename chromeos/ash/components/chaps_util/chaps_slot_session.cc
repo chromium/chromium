@@ -50,15 +50,13 @@ struct ChapsFunctions {
     functions.open_session = function_list->C_OpenSession;
     functions.close_session = function_list->C_CloseSession;
     functions.create_object = function_list->C_CreateObject;
-    functions.generate_key = function_list->C_GenerateKey;
     functions.generate_key_pair = function_list->C_GenerateKeyPair;
     functions.get_attribute_value = function_list->C_GetAttributeValue;
     functions.set_attribute_value = function_list->C_SetAttributeValue;
 
     if (functions.open_session && functions.close_session &&
-        functions.create_object && functions.generate_key &&
-        functions.generate_key_pair && functions.get_attribute_value &&
-        functions.set_attribute_value) {
+        functions.create_object && functions.generate_key_pair &&
+        functions.get_attribute_value && functions.set_attribute_value) {
       return functions;
     }
     return std::nullopt;
@@ -67,7 +65,6 @@ struct ChapsFunctions {
   CK_C_OpenSession open_session = nullptr;
   CK_C_CloseSession close_session = nullptr;
   CK_C_CreateObject create_object = nullptr;
-  CK_C_GenerateKey generate_key = nullptr;
   CK_C_GenerateKeyPair generate_key_pair = nullptr;
   CK_C_GetAttributeValue get_attribute_value = nullptr;
   CK_C_SetAttributeValue set_attribute_value = nullptr;
@@ -178,16 +175,6 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
         FROM_HERE, base::BlockingType::WILL_BLOCK);
     return functions_.create_object(session_handle_, pTemplate, ulCount,
                                     phObject);
-  }
-
-  CK_RV GenerateKey(CK_MECHANISM_PTR pMechanism,
-                    CK_ATTRIBUTE_PTR pTemplate,
-                    CK_ULONG ulCount,
-                    CK_OBJECT_HANDLE_PTR phKey) override {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::WILL_BLOCK);
-    return functions_.generate_key(session_handle_, pMechanism, pTemplate,
-                                   ulCount, phKey);
   }
 
   CK_RV GenerateKeyPair(CK_MECHANISM_PTR pMechanism,

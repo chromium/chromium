@@ -39,7 +39,7 @@ std::string GetOriginName(Profile* profile, const url::Origin& origin) {
     return extension->name();
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

@@ -8,6 +8,8 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
@@ -21,6 +23,7 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
     private ChromeBasePreference mTopicsPref;
     private ChromeBasePreference mFledgePref;
     private ChromeBasePreference mAdMeasurementPref;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
@@ -28,11 +31,11 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
 
         // This view should not be shown when PS is restricted, unless the
         // isRestrictedNoticeEnabled flag is enabled.
-        assert !PrivacySandboxBridge.isPrivacySandboxRestricted()
-                || PrivacySandboxBridge.isRestrictedNoticeEnabled();
+        assert !getPrivacySandboxBridge().isPrivacySandboxRestricted()
+                || getPrivacySandboxBridge().isRestrictedNoticeEnabled();
 
         // Add all preferences and set the title
-        getActivity().setTitle(R.string.ad_privacy_page_title);
+        mPageTitle.set(getString(R.string.ad_privacy_page_title));
         if (showRestrictedView()) {
             SettingsUtils.addPreferencesFromResource(
                     this, R.xml.privacy_sandbox_preferences_restricted);
@@ -47,6 +50,11 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
     }
 
     @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -54,7 +62,7 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
     }
 
     private boolean showRestrictedView() {
-        return PrivacySandboxBridge.isPrivacySandboxRestricted();
+        return getPrivacySandboxBridge().isPrivacySandboxRestricted();
     }
 
     private void updatePrefDescription() {

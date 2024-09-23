@@ -10,7 +10,6 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
@@ -49,7 +48,6 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_icon_loader.h"
-#include "chrome/browser/ash/app_list/app_service/app_service_shortcut_icon_loader.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -60,16 +58,15 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
-#include "chrome/browser/ui/ash/app_icon_color_cache.h"
+#include "chrome/browser/ui/ash/app_icon_color_cache/app_icon_color_cache.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#include "chrome/browser/ui/ash/session_controller_client_impl.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_arc_tracker.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_service/shelf_app_service_app_updater.h"
 #include "chrome/browser/ui/ash/shelf/app_service/shelf_app_service_promise_app_updater.h"
-#include "chrome/browser/ui/ash/shelf/app_service/shelf_app_service_shortcut_updater.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
@@ -107,8 +104,7 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
-#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
-#include "components/services/app_service/public/cpp/shortcut/shortcut_update.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/user_manager.h"
@@ -835,14 +831,7 @@ void ChromeShelfController::PinAppAtIndex(const std::string& app_id,
   if (target_index < 0 || model_->IsAppPinned(app_id))
     return;
 
-  ash::ShelfItem item;
-  item.type = ash::TYPE_PINNED_APP;
-  item.id = ash::ShelfID(app_id);
-
-  model_->AddAt(target_index, item,
-                std::make_unique<AppShortcutShelfItemController>(item.id));
-
-  ReportUpdateShelfIconList(model_);
+  EnsureAppPinnedInModelAtIndex(app_id, /*current_index=*/-1, target_index);
 }
 
 int ChromeShelfController::PinnedItemIndexByAppID(const std::string& app_id) {
@@ -1078,8 +1067,7 @@ void ChromeShelfController::OnAppUninstalledPrepared(
         app_id, [&show_in_shelf_changed,
                  &is_app_disabled](const apps::AppUpdate& update) {
           show_in_shelf_changed = update.ShowInShelfChanged();
-          is_app_disabled =
-              update.Readiness() == apps::Readiness::kDisabledByPolicy;
+          is_app_disabled = apps_util::IsDisabled(update.Readiness());
         });
     // If the app is hidden and disabled, we need to update the app pin state.
     // We don't remove the pin position from the preferences, in case we want to
@@ -1152,50 +1140,6 @@ void ChromeShelfController::OnPromiseAppRemoved(
   UnpinShelfItemInternal(item.id);
 }
 
-void ChromeShelfController::OnShortcutUpdated(
-    const apps::ShortcutUpdate& update) {
-  // When shortcut got initialized in the AppService, we update the
-  // pin location from sync.
-  if (update.ShortcutInitialized()) {
-    UpdatePinnedAppsFromSync();
-  }
-
-  int index = model_->ItemIndexByAppID(update.ShortcutId().value());
-  if (index == kInvalidIndex) {
-    return;
-  }
-  ash::ShelfItem item = model_->items()[index];
-
-  if (update.IconKeyChanged()) {
-    AppIconLoader* app_icon_loader =
-        GetAppIconLoaderForApp(update.ShortcutId().value());
-    if (app_icon_loader) {
-      app_icon_loader->FetchImage(update.ShortcutId().value());
-    }
-  }
-
-  std::u16string title = base::UTF8ToUTF16(update.Name());
-  if (item.title != title) {
-    item.title = title;
-    model_->Set(index, item);
-  }
-
-  std::u16string accessible_name =
-      ShelfControllerHelper::GetAppServiceShortcutAccessibleLabel(
-          latest_active_profile_, update.ShortcutId());
-  if (accessible_name != item.accessible_name) {
-    item.accessible_name = accessible_name;
-    model_->Set(index, item);
-  }
-}
-
-void ChromeShelfController::OnShortcutRemoved(const apps::ShortcutId& id) {
-  ash::ShelfID shelf_id(id.value());
-  if (model_->ItemByID(shelf_id)) {
-    UnpinShelfItemInternal(shelf_id);
-  }
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // AppIconLoaderDelegate:
 
@@ -1208,9 +1152,7 @@ void ChromeShelfController::OnAppImageUpdated(
   bool is_standard_icon = true;
   if (!AppServiceAppIconLoader::CanLoadImage(latest_active_profile_, app_id) &&
       !AppServicePromiseAppIconLoader::CanLoadImage(latest_active_profile_,
-                                                    app_id) &&
-      !AppServiceShortcutIconLoader::CanLoadImage(latest_active_profile_,
-                                                  app_id)) {
+                                                    app_id)) {
     is_standard_icon = false;
   }
 
@@ -1669,11 +1611,6 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
       app_updaters_for_profile.emplace_back(
           std::make_unique<ShelfPromiseAppUpdater>(this, profile));
     }
-
-    if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
-      app_updaters_for_profile.emplace_back(
-          std::make_unique<ShelfAppServiceShortcutUpdater>(this, profile));
-    }
   }
 
   if (!base::Contains(app_icon_loaders_, profile)) {
@@ -1687,15 +1624,6 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
       app_icon_loaders_[profile].emplace_back(
           std::make_unique<AppServicePromiseAppIconLoader>(
               profile, extension_misc::EXTENSION_ICON_MEDIUM, this));
-    }
-
-    if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
-      app_icon_loaders_for_profile.emplace_back(
-          std::make_unique<AppServiceShortcutIconLoader>(
-              profile, extension_misc::EXTENSION_ICON_MEDIUM,
-              // TODO(crbug.com/1480423): Update the size after the effects
-              // visual done.
-              extension_misc::EXTENSION_ICON_SMALLISH, this));
     }
 
     // Some special extensions open new windows, and on Chrome OS, those windows
@@ -1811,17 +1739,6 @@ void ChromeShelfController::ShelfItemAdded(int index) {
           ShelfControllerHelper::GetPromiseAppAccessibleName(
               latest_active_profile_, id.app_id);
       if (is_promise_app && accessible_name != item.accessible_name) {
-        needs_update = true;
-        item.accessible_name = accessible_name;
-      }
-    }
-
-    if (ShelfControllerHelper::IsAppServiceShortcut(latest_active_profile_,
-                                                    id.app_id)) {
-      std::u16string accessible_name =
-          ShelfControllerHelper::GetAppServiceShortcutAccessibleLabel(
-              latest_active_profile_, apps::ShortcutId(id.app_id));
-      if (accessible_name != item.accessible_name) {
         needs_update = true;
         item.accessible_name = accessible_name;
       }

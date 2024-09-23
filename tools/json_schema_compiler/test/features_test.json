@@ -4,13 +4,13 @@
 {
   "alpha": {
     "channel": "stable",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "dependencies": ["permission:alpha"],
     "max_manifest_version": 1
   },
   "beta": {
     "channel": "dev",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "extension_types": ["extension", "platform_app"],
     "location": "component",
     "allowlist": [
@@ -26,7 +26,7 @@
   "gamma": {
     "channel": "beta",
     "platforms": ["win", "mac"],
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "dependencies": ["permission:gamma"],
     "extension_types": ["extension"],
     "internal": true
@@ -39,21 +39,21 @@
   "gamma.unparented": {
     "channel": "dev",
     "blocklist": ["0123456789ABCDEF0123456789ABCDEF01234567"],
-    "contexts": ["unblessed_extension"],
+    "contexts": ["unprivileged_extension"],
     "noparent": true
   },
   "gamma.complex_unparented": [{
     "channel": "stable",
-    "contexts": ["unblessed_extension"],
+    "contexts": ["unprivileged_extension"],
     "noparent": true
   }, {
     "channel": "stable",
-    "contexts": ["unblessed_extension"],
+    "contexts": ["unprivileged_extension"],
     "noparent": true
   }],
   "delta": {
     "channel": "dev",
-    "contexts": ["blessed_extension", "webui"],
+    "contexts": ["privileged_extension", "webui"],
     "matches": ["*://example.com/*"],
     "min_manifest_version": 2
   },
@@ -64,14 +64,14 @@
   },
   "complex": [{
     "channel": "beta",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "extension_types": ["extension"],
     "allowlist": ["0123456789ABCDEF0123456789ABCDEF01234567"],
     "developer_mode_only": false,
     "disallow_for_service_workers": false
   }, {
     "channel": "stable",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "extension_types": ["extension"],
     "default_parent": true
   }],
@@ -85,22 +85,22 @@
     "contexts": "all"
   },
   "uncompiled": {
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "nocompile": true
   },
   "alias": {
     "channel": "stable",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "source": "alias_source"
   },
   "alias_source": {
     "channel": "stable",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "alias": "alias"
   },
   "complex_alias": [{
     "channel": "beta",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "source": "complex_alias_source"
   }, {
     "channel": "dev",
@@ -108,7 +108,7 @@
   }],
   "complex_alias_source": [{
     "channel": "beta",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "alias": "complex_alias"
   }, {
     "channel": "dev",
@@ -116,40 +116,40 @@
   }],
   "parent_source" : {
     "channel": "beta",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "alias": "parent_source_alias"
   },
   "parent_source.child" : {
     "channel": "beta",
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "parent_source.child_source" : {
     "channel": "beta",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "alias": "parent_source_child_alias"
   },
   "parent_source_alias": {
     "channel": "beta",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "source": "parent_source"
   },
   "parent_source_child_alias": {
     "channel": "beta",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "source": "parent_source.child_source"
   },
   "alias_parent": {
     "channel": "beta",
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "alias_parent.child": {
     "channel": "beta",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "source": "child_source"
   },
   "child_source": {
     "channel": "beta",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "alias": "alias_parent.child"
   },
   "empty_contexts": {

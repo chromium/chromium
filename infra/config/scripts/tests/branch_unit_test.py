@@ -54,44 +54,49 @@ class BranchUnitTest(unittest.TestCase):
     self.assertEqual(args.branch, 'BBBB')
 
   def test_initial_settings(self):
-    output = branch.initial_settings(milestone='MM', branch='BBBB')
+    output = branch.initial_settings(
+        milestone='MM',
+        branch='BBBB',
+        chromium_project='CHROMIUM',
+        chrome_project='CHROME',
+    )
     self.assertEqual(
         output,
         textwrap.dedent("""\
             {
-                "project": "chromium-mMM",
+                "project": "CHROMIUM",
                 "project_title": "Chromium MMM",
                 "ref": "refs/branch-heads/BBBB",
-                "chrome_project": "chrome-mMM",
+                "chrome_project": "CHROME",
                 "is_main": false,
                 "platforms": {
                     "android": {
                         "description": "beta/stable",
-                        "sheriff_rotation": "chrome_browser_release"
+                        "gardener_rotation": "chrome_browser_release"
                     },
                     "cros": {
                         "description": "beta/stable",
-                        "sheriff_rotation": "chrome_browser_release"
+                        "gardener_rotation": "chrome_browser_release"
                     },
                     "fuchsia": {
                         "description": "beta/stable",
-                        "sheriff_rotation": "chrome_browser_release"
+                        "gardener_rotation": "chrome_browser_release"
                     },
                     "ios": {
                         "description": "beta/stable",
-                        "sheriff_rotation": "chrome_browser_release"
+                        "gardener_rotation": "chrome_browser_release"
                     },
                     "linux": {
                         "description": "beta/stable",
-                        "sheriff_rotation": "chrome_browser_release"
+                        "gardener_rotation": "chrome_browser_release"
                     },
                     "mac": {
                         "description": "beta/stable",
-                        "sheriff_rotation": "chrome_browser_release"
+                        "gardener_rotation": "chrome_browser_release"
                     },
                     "windows": {
                         "description": "beta/stable",
-                        "sheriff_rotation": "chrome_browser_release"
+                        "gardener_rotation": "chrome_browser_release"
                     }
                 }
             }
@@ -110,20 +115,20 @@ class BranchUnitTest(unittest.TestCase):
     ])
     self.assertEqual(args.platform, 'fake-platform')
     self.assertEqual(args.description, 'fake-description')
-    self.assertIsNone(args.sheriff_rotation)
+    self.assertIsNone(args.gardener_rotation)
 
-  def test_enable_platform_parse_args_sheriff_rotation(self):
+  def test_enable_platform_parse_args_gardener_rotation(self):
     args = branch.parse_args([
         'enable-platform',
         'fake-platform',
         '--description',
         'fake-description',
-        '--sheriff-rotation',
-        'fake-sheriff-rotation',
+        '--gardener-rotation',
+        'fake-gardener-rotation',
     ])
     self.assertEqual(args.platform, 'fake-platform')
     self.assertEqual(args.description, 'fake-description')
-    self.assertEqual(args.sheriff_rotation, 'fake-sheriff-rotation')
+    self.assertEqual(args.gardener_rotation, 'fake-gardener-rotation')
 
   def test_enable_platform(self):
     input = textwrap.dedent("""\
@@ -155,7 +160,7 @@ class BranchUnitTest(unittest.TestCase):
             }
             """))
 
-  def test_enable_platform_sheriff_rotation(self):
+  def test_enable_platform_gardener_rotation(self):
     input = textwrap.dedent("""\
         {
             "project": "chromium-mMM",
@@ -167,7 +172,7 @@ class BranchUnitTest(unittest.TestCase):
         input,
         'fake-platform',
         'fake-description',
-        'fake-sheriff-rotation',
+        'fake-gardener-rotation',
     )
     self.assertEqual(
         output,
@@ -180,7 +185,7 @@ class BranchUnitTest(unittest.TestCase):
                 "platforms": {
                     "fake-platform": {
                         "description": "fake-description",
-                        "sheriff_rotation": "fake-sheriff-rotation"
+                        "gardener_rotation": "fake-gardener-rotation"
                     }
                 }
             }

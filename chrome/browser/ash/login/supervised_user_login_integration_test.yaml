@@ -1,0 +1,24 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Schema can be found at: platform/dev/test/gtest/gtest_schema.yaml
+---
+name: "SupervisedUserLoginIntegrationTest"
+harness: "crosier"
+category: "integration"
+owners:
+  - email: "courtneywong@chromium.org"
+  - email: "chromeos-sw-engprod@google.com"
+hw_agnostic: False
+criteria: |
+  Tests CrOS login using prod GAIA with the different types of
+  supervised accounts.
+cases:
+  - id: "DISABLED_TestUnicornLogin"
+    tags: []
+  - id: "DISABLED_TestGellerLogin"
+    tags: []
+  - id: "DISABLED_TestGriffinLogin"
+    tags: []
+...

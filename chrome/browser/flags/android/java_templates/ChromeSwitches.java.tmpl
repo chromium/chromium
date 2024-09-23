@@ -30,6 +30,9 @@ public abstract class ChromeSwitches {{
     /** Don't restore persistent state from saved files on startup. */
     public static final String NO_RESTORE_STATE = "no-restore-state";
 
+    /** Prevents all IPHs from showing. */
+    public static final String DISABLE_ALL_IPH = "propagate-iph-for-testing";
+
     /** Disable the First Run Experience. */
     public static final String DISABLE_FIRST_RUN_EXPERIENCE = "disable-fre";
 
@@ -44,9 +47,6 @@ public abstract class ChromeSwitches {{
 
     /** Enable Contextual Search. */
     public static final String ENABLE_CONTEXTUAL_SEARCH = "enable-contextual-search";
-
-    /** Disable FRE sign-in on automotive devices. */
-    public static final String DISABLE_FRE_SIGNIN_ON_AUTOMOTIVE = "disable-fre-signin-on-automotive";
 
     // How many thumbnails should we allow in the cache (per tab stack)?
     public static final String THUMBNAILS = "thumbnails";
@@ -79,6 +79,11 @@ public abstract class ChromeSwitches {{
      * Disable native initialization for testing.
      */
     public static final String DISABLE_NATIVE_INITIALIZATION = "disable-native-initialization";
+
+    /**
+     * Force enable the popup context menu to unblock drag and drop from web contents on phones.
+     */
+    public static final String FORCE_CONTEXT_MENU_POPUP = "force-context-menu-popup";
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Native Switches

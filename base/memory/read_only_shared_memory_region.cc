@@ -32,7 +32,7 @@ MappedReadOnlyRegion ReadOnlySharedMemoryRegion::Create(
   WritableSharedMemoryMapping mapping(result.value(), size, handle.GetGUID(),
                                       mapper);
 #if BUILDFLAG(IS_MAC)
-  handle.ConvertToReadOnly(mapping.memory());
+  handle.ConvertToReadOnly(mapping.data());
 #else
   handle.ConvertToReadOnly();
 #endif  // BUILDFLAG(IS_MAC)

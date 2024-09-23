@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='stacking-context'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='stacking-context'",
       "position": [8, 8],
       "bounds": [160, 90],
       "contentsOpaque": true,
@@ -19,7 +19,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='stacking-context'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='stacking-context'",
       "bounds": [160, 90],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
@@ -31,7 +31,7 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
+      "name": "LayoutBlockFlow HTML",
       "position": [8, 8],
       "bounds": [784, 579]
     }

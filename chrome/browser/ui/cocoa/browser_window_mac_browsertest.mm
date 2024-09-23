@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/browser_window.h"
 
-#include <memory>
-
 #import <Cocoa/Cocoa.h>
+
+#include <memory>
 
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -16,6 +16,7 @@
 #include "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "ui/accessibility/accessibility_switches.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/test/ns_ax_tree_validator.h"
 
@@ -54,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, MenuCommandsAfterDestroy) {
 
 // Test that mainMenu commands from child windows are validated by the window
 // chain.
-// TODO(crbug.com/1425317): Disabled because this test is flaky.
+// TODO(crbug.com/40898643): Disabled because this test is flaky.
 IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest,
                        DISABLED_MenuCommandsFromChildWindow) {
   NativeWidgetMacNSWindow* window =

@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 import("//ui/webui/webui_features.gni")
@@ -22,7 +22,7 @@ if (!optimize_webui) {
     outputs = [ "$target_gen_dir/{{source_target_relative}}" ]
   }
 
-  ts_library("labs_build_ts") {
+  webui_ts_library("labs_build_ts") {
     root_dir = target_gen_dir
     out_dir = "$target_gen_dir/tsc"
     enable_source_maps = true

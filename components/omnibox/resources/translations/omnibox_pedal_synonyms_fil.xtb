@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
-<translation id="101606685846791463">i-clear ang cache ng browser, i-clear ang history, i-delete ang cookies, burahin ang history ng pag-browse</translation>
 <translation id="132297926492792130">kontrolin ang google account ko, ayusin ang google account, pamahalaan ang google account, pamahalaan ang google account ko</translation>
 <translation id="1455865776268085776">pumasok sa incognito mode, bagong incognito window, magbukas ng tab na incognito</translation>
 <translation id="1545931455576308147">ibahagi ang page na ito, ibahagi ang tab na ito</translation>
@@ -28,6 +27,7 @@
 <translation id="7153639895359139570">magdagdag ng address, baguhin ang address sa pagpapadala, i-edit ang mga address, pamahalaan ang mga address</translation>
 <translation id="7242693601647412075">pamahalaan ang mga setting ng seguridad</translation>
 <translation id="7441773108452086364">baguhin ang password ng gmail, baguhin ang password ng gmail ko, pagbabago ng password sa google, i-reset ang password ng gmail account</translation>
+<translation id="7469628627013714019">i-delete ang cache ng browser, i-delete ang history, i-delete ang cookies, i-delete ang history ng pag-browse, burahin ang cache ng browser, burahin ang history, burahin ang cookies, burahin ang history ng pag-browse, i-clear ang cache ng browser, i-clear ang history, i-clear ang cookies, i-clear ang history ng pag-browse</translation>
 <translation id="7660956169713698963">i-customize ang accessibility ng chromeos, pamahalaan ang mga setting ng accessibility</translation>
 <translation id="7700496593710078083">tingnan ang history ng chrome, tingnan ang history ng pagba-browse</translation>
 <translation id="7739523284295786564">pamahalaan ang mga download sa chrome, tingnan ang mga download</translation>

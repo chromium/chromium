@@ -16,6 +16,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LevelListDrawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -40,6 +42,7 @@ import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
+import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData;
@@ -53,7 +56,9 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.Toast;
@@ -85,7 +90,7 @@ public class ToolbarTablet extends ToolbarLayout
     private ImageButton mReloadButton;
     private ImageButton mBookmarkButton;
     private ImageButton mSaveOfflineButton;
-    private ToggleTabStackButton mSwitcherButton;
+    private View mIncognitoIndicator;
 
     private OnClickListener mBookmarkListener;
 
@@ -97,7 +102,7 @@ public class ToolbarTablet extends ToolbarLayout
 
     private NavigationPopup mNavigationPopup;
 
-    private Boolean mIsIncognito;
+    private Boolean mIsIncognitoBranded;
     private LocationBarCoordinator mLocationBar;
 
     private final int mStartPaddingWithButtons;
@@ -109,6 +114,8 @@ public class ToolbarTablet extends ToolbarLayout
     private ObservableSupplier<Integer> mTabCountSupplier;
     private TabletCaptureStateToken mLastCaptureStateToken;
     private @DrawableRes int mBookmarkButtonImageRes;
+    private OnTouchListener mReloadButtonTouchListener;
+    private boolean mIsShiftDownForReload;
 
     /**
      * Constructs a ToolbarTablet object.
@@ -166,9 +173,9 @@ public class ToolbarTablet extends ToolbarLayout
         reloadIcon.addLevel(stopLevel, stopLevel, stopLevelDrawable);
         mReloadButton.setImageDrawable(reloadIcon);
 
-        mSwitcherButton = findViewById(R.id.tab_switcher_button);
         mBookmarkButton = findViewById(R.id.bookmark_button);
         mSaveOfflineButton = findViewById(R.id.save_offline_button);
+        setIncognitoIndicatorVisibility();
 
         // Initialize values needed for showing/hiding toolbar buttons when the activity size
         // changes.
@@ -317,6 +324,7 @@ public class ToolbarTablet extends ToolbarLayout
                         }
                     }
                 });
+        initReloadButtonTouchListener();
 
         mBookmarkButton.setOnClickListener(this);
         mBookmarkButton.setOnLongClickListener(this);
@@ -342,6 +350,28 @@ public class ToolbarTablet extends ToolbarLayout
 
         mSaveOfflineButton.setOnClickListener(this);
         mSaveOfflineButton.setOnLongClickListener(this);
+    }
+
+    /**
+     * Initializes the reload button's touch listener, which exists to detect shift clicks for
+     * reload ignoring cache. Suppress lint ClickableViewAccessibility for the call to
+     * setOnTouchListener.
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    private void initReloadButtonTouchListener() {
+        mReloadButtonTouchListener =
+                new OnTouchListener() {
+                    @Override
+                    @SuppressLint("ClickableViewAccessibility")
+                    public boolean onTouch(View view, MotionEvent event) {
+                        // For mouse clicks the framework calls onTouch() before onClick(). Capture
+                        // the shift key state to determine reload vs. reload ignoring cache.
+                        mIsShiftDownForReload =
+                                (event.getMetaState() & KeyEvent.META_SHIFT_ON) != 0;
+                        return false;
+                    }
+                };
+        mReloadButton.setOnTouchListener(mReloadButtonTouchListener);
     }
 
     @Override
@@ -399,7 +429,7 @@ public class ToolbarTablet extends ToolbarLayout
             forward();
             RecordUserAction.record("MobileToolbarForward");
         } else if (mReloadButton == v) {
-            stopOrReloadCurrentTab();
+            stopOrReloadCurrentTab(/* ignoreCache= */ mIsShiftDownForReload);
         } else if (mBookmarkButton == v) {
             if (mBookmarkListener != null) {
                 mBookmarkListener.onClick(mBookmarkButton);
@@ -470,10 +500,22 @@ public class ToolbarTablet extends ToolbarLayout
     }
 
     private TabletCaptureStateToken generateCaptureStateToken() {
-        UrlBarData urlBarData = getToolbarDataProvider().getUrlBarData();
-        @DrawableRes
-        int securityIconResource =
-                getToolbarDataProvider().getSecurityIconResource(/* isTablet= */ true);
+        UrlBarData urlBarData;
+        final @DrawableRes int securityIconResource;
+
+        if (ToolbarFeatures.shouldSuppressCaptures()) {
+            urlBarData = mLocationBar.getUrlBarData();
+            if (urlBarData == null) urlBarData = getToolbarDataProvider().getUrlBarData();
+            StatusCoordinator statusCoordinator = mLocationBar.getStatusCoordinator();
+            securityIconResource =
+                    statusCoordinator == null
+                            ? getToolbarDataProvider().getSecurityIconResource(false)
+                            : statusCoordinator.getSecurityIconResource();
+        } else {
+            urlBarData = getToolbarDataProvider().getUrlBarData();
+            securityIconResource = getToolbarDataProvider().getSecurityIconResource(false);
+        }
+
         VisibleUrlText visibleUrlText =
                 new VisibleUrlText(
                         urlBarData.displayText, mLocationBar.getOmniboxVisibleTextPrefixHint());
@@ -496,31 +538,38 @@ public class ToolbarTablet extends ToolbarLayout
     @Override
     void onTabOrModelChanged() {
         super.onTabOrModelChanged();
-        final boolean incognito = isIncognito();
-        if (mIsIncognito == null || mIsIncognito != incognito) {
+        final boolean incognitoBranded = isIncognitoBranded();
+        if (mIsIncognitoBranded == null || mIsIncognitoBranded != incognitoBranded) {
             // TODO (amaralp): Have progress bar observe theme color and incognito changes directly.
             getProgressBar()
                     .setThemeColor(
-                            ChromeColors.getDefaultThemeColor(getContext(), incognito),
-                            isIncognito());
+                            ChromeColors.getDefaultThemeColor(getContext(), incognitoBranded),
+                            incognitoBranded);
 
-            mIsIncognito = incognito;
+            mIsIncognitoBranded = incognitoBranded;
         }
+        setIncognitoIndicatorVisibility();
 
         updateNtp();
     }
 
     @Override
-    public void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
-        ImageViewCompat.setImageTintList(mHomeButton, tint);
-        ImageViewCompat.setImageTintList(mBackButton, tint);
-        ImageViewCompat.setImageTintList(mForwardButton, tint);
+    public void onTintChanged(
+            ColorStateList tint,
+            ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {
+        ImageViewCompat.setImageTintList(mHomeButton, activityFocusTint);
+        ImageViewCompat.setImageTintList(mBackButton, activityFocusTint);
+        ImageViewCompat.setImageTintList(mForwardButton, activityFocusTint);
+        // The tint of the |mSaveOfflineButton| should not be affected by an activity focus change.
         ImageViewCompat.setImageTintList(mSaveOfflineButton, tint);
-        ImageViewCompat.setImageTintList(mReloadButton, tint);
-        mSwitcherButton.setBrandedColorScheme(brandedColorScheme);
+        ImageViewCompat.setImageTintList(mReloadButton, activityFocusTint);
+        ImageViewCompat.setImageTintList(
+                (ImageView) getTabSwitcherButtonCoordinator().getContainerView(),
+                activityFocusTint);
 
         if (mOptionalButton != null && mOptionalButtonUsesTint) {
-            ImageViewCompat.setImageTintList(mOptionalButton, tint);
+            ImageViewCompat.setImageTintList(mOptionalButton, activityFocusTint);
         }
     }
 
@@ -529,17 +578,14 @@ public class ToolbarTablet extends ToolbarLayout
         setBackgroundColor(color);
         final @ColorInt int textBoxColor =
                 ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
-                        getContext(), color, isIncognito());
+                        getContext(), color, isIncognitoBranded(), /* isCustomTab= */ false);
         mLocationBar.getTabletCoordinator().tintBackground(textBoxColor);
         mLocationBar.updateVisualsForState();
         setToolbarHairlineColor(color);
 
         // Notify the StatusBarColorController of the toolbar color change. This is to match the
-        // status bar's color with the toolbar color when the tab strip is hidden on a tablet when
-        // DYNAMIC_TOP_CHROME is enabled.
-        if (ToolbarFeatures.shouldUseToolbarBgColorForStripTransitionScrim()) {
-            notifyToolbarColorChanged(color);
-        }
+        // status bar's color with the toolbar color when the tab strip is hidden on a tablet.
+        notifyToolbarColorChanged(color);
     }
 
     /** Called when the currently visible New Tab Page changes. */
@@ -603,7 +649,7 @@ public class ToolbarTablet extends ToolbarLayout
             mBookmarkButtonImageRes = R.drawable.btn_star_filled;
             mBookmarkButton.setImageResource(R.drawable.btn_star_filled);
             final @ColorRes int tint =
-                    isIncognito()
+                    isIncognitoBranded()
                             ? R.color.default_icon_color_blue_light
                             : R.color.default_icon_color_accent1_tint_list;
             ImageViewCompat.setImageTintList(
@@ -622,7 +668,6 @@ public class ToolbarTablet extends ToolbarLayout
     @Override
     void setTabSwitcherMode(boolean inTabSwitcherMode) {
         mIsInTabSwitcherMode = inTabSwitcherMode;
-        mSwitcherButton.setClickable(!inTabSwitcherMode);
         int importantForAccessibility =
                 inTabSwitcherMode
                         ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
@@ -640,16 +685,22 @@ public class ToolbarTablet extends ToolbarLayout
             ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController,
             MenuButtonCoordinator menuButtonCoordinator,
+            ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
             HistoryDelegate historyDelegate,
             BooleanSupplier partnerHomepageEnabledSupplier,
-            OfflineDownloader offlineDownloader) {
+            OfflineDownloader offlineDownloader,
+            UserEducationHelper userEducationHelper,
+            ObservableSupplier<Tracker> trackerSupplier) {
         super.initialize(
                 toolbarDataProvider,
                 tabController,
                 menuButtonCoordinator,
+                tabSwitcherButtonCoordinator,
                 historyDelegate,
                 partnerHomepageEnabledSupplier,
-                offlineDownloader);
+                offlineDownloader,
+                userEducationHelper,
+                trackerSupplier);
         mHistoryDelegate = historyDelegate;
         mOfflineDownloader = offlineDownloader;
         menuButtonCoordinator.setVisibility(true);
@@ -667,25 +718,12 @@ public class ToolbarTablet extends ToolbarLayout
 
     @Override
     void setTabCountSupplier(ObservableSupplier<Integer> tabCountSupplier) {
-        mSwitcherButton.setTabCountSupplier(tabCountSupplier, this::isIncognito);
         mTabCountSupplier = tabCountSupplier;
     }
 
     @Override
     void setBookmarkClickHandler(OnClickListener listener) {
         mBookmarkListener = listener;
-    }
-
-    @Override
-    void setOnTabSwitcherClickHandler(OnClickListener listener) {
-        mSwitcherButton.setOnTabSwitcherClickHandler(listener);
-    }
-
-    @Override
-    void setOnTabSwitcherLongClickHandler(OnLongClickListener listener) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TABLET_TAB_SWITCHER_LONG_PRESS_MENU)) {
-            mSwitcherButton.setOnTabSwitcherLongClickHandler(listener);
-        }
     }
 
     @Override
@@ -792,9 +830,17 @@ public class ToolbarTablet extends ToolbarLayout
         return mHomeButton;
     }
 
-    @Override
-    public ToggleTabStackButton getTabSwitcherButton() {
-        return mSwitcherButton;
+    private void setIncognitoIndicatorVisibility() {
+        if (mIsIncognitoBranded == null
+                || !ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()) return;
+        if (mIncognitoIndicator == null && mIsIncognitoBranded) {
+            ViewStub stub = findViewById(R.id.incognito_indicator_stub);
+            mIncognitoIndicator = stub.inflate();
+        }
+        if (mIncognitoIndicator != null) {
+            mIncognitoIndicator.setVisibility(
+                    mIsIncognitoBranded && mToolbarButtonsVisible ? VISIBLE : GONE);
+        }
     }
 
     private void setToolbarButtonsVisible(boolean visible) {
@@ -810,6 +856,7 @@ public class ToolbarTablet extends ToolbarLayout
             }
             mLocationBar.setShouldShowButtonsWhenUnfocusedForTablet(visible);
             setStartPaddingBasedOnButtonVisibility(visible);
+            setIncognitoIndicatorVisibility();
         }
     }
 
@@ -821,8 +868,7 @@ public class ToolbarTablet extends ToolbarLayout
     private void setStartPaddingBasedOnButtonVisibility(boolean buttonsVisible) {
         buttonsVisible = buttonsVisible || mHomeButton.getVisibility() == View.VISIBLE;
 
-        ViewCompat.setPaddingRelative(
-                this,
+        this.setPaddingRelative(
                 buttonsVisible ? mStartPaddingWithButtons : mStartPaddingWithoutButtons,
                 getPaddingTop(),
                 ViewCompat.getPaddingEnd(this),
@@ -875,6 +921,7 @@ public class ToolbarTablet extends ToolbarLayout
                         // Set the padding at the start of the animation so the toolbar buttons
                         // don't jump when the animation ends.
                         setStartPaddingBasedOnButtonVisibility(true);
+                        setIncognitoIndicatorVisibility();
                     }
 
                     @Override
@@ -912,6 +959,8 @@ public class ToolbarTablet extends ToolbarLayout
                     @Override
                     public void onAnimationStart(Animator animation) {
                         keepControlsShownForAnimation();
+
+                        setIncognitoIndicatorVisibility();
                     }
 
                     @Override
@@ -946,5 +995,13 @@ public class ToolbarTablet extends ToolbarLayout
 
     void setToolbarButtonsVisibleForTesting(boolean value) {
         mToolbarButtonsVisible = value;
+    }
+
+    public ImageButton getBookmarkButtonForTesting() {
+        return mBookmarkButton;
+    }
+
+    OnTouchListener getReloadButtonTouchListenerForTest() {
+        return mReloadButtonTouchListener;
     }
 }

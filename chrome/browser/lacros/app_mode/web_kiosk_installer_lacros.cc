@@ -4,28 +4,13 @@
 
 #include "chrome/browser/lacros/app_mode/web_kiosk_installer_lacros.h"
 
-#include <memory>
 #include <utility>
 
-#include "chrome/browser/chromeos/app_mode/web_kiosk_app_installer.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "url/gurl.h"
-
-namespace {
-
-template <typename T>
-auto GetDeletePointerCallback(std::unique_ptr<T> ptr) {
-  return base::BindOnce(
-      [](std::unique_ptr<T>) {
-        // Do nothing. Callback is solely here to ensure the unique pointer gets
-        // deleted.
-      },
-      std::move(ptr));
-}
-
-}  // namespace
 
 WebKioskInstallerLacros::WebKioskInstallerLacros(Profile& profile)
     : profile_(profile) {
@@ -43,12 +28,9 @@ WebKioskInstallerLacros::~WebKioskInstallerLacros() = default;
 void WebKioskInstallerLacros::GetWebKioskInstallState(
     const GURL& url,
     GetWebKioskInstallStateCallback callback) {
-  // web_installer is a self-owned object so that multiple parallel calls can be
-  // handled.
-  auto web_installer =
-      std::make_unique<chromeos::WebKioskAppInstaller>(profile_.get(), url);
-  web_installer->GetInstallState(std::move(callback).Then(
-      GetDeletePointerCallback(std::move(web_installer))));
+  auto [state, app_id] =
+      chromeos::GetKioskWebAppInstallState(profile_.get(), url);
+  std::move(callback).Run(state, std::move(app_id));
 
   KioskSessionServiceLacros::Get()->SetInstallUrl(url);
 }
@@ -56,10 +38,5 @@ void WebKioskInstallerLacros::GetWebKioskInstallState(
 void WebKioskInstallerLacros::InstallWebKiosk(
     const GURL& url,
     InstallWebKioskCallback callback) {
-  // web_installer is a self-owned object so that multiple parallel calls can be
-  // handled.
-  auto web_installer =
-      std::make_unique<chromeos::WebKioskAppInstaller>(profile_.get(), url);
-  web_installer->InstallApp(std::move(callback).Then(
-      GetDeletePointerCallback(std::move(web_installer))));
+  chromeos::InstallKioskWebApp(profile_.get(), url, std::move(callback));
 }

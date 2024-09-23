@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/strings/escape.h"
 
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
-#include "base/feature_list.h"
-#include "base/features.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,7 +40,7 @@ struct Charmap {
 // to +, otherwise, if spaces are in the charmap, they are converted to
 // %20. And if keep_escaped is true, %XX will be kept as it is, otherwise, if
 // '%' is in the charmap, it is converted to %25.
-std::string Escape(StringPiece text,
+std::string Escape(std::string_view text,
                    const Charmap& charmap,
                    bool use_plus,
                    bool keep_escaped = false) {
@@ -65,7 +68,7 @@ template <class str>
 void AppendEscapedCharForHTMLImpl(typename str::value_type c, str* output) {
   static constexpr struct {
     char key;
-    StringPiece replacement;
+    std::string_view replacement;
   } kCharsToEscape[] = {
       {'<', "&lt;"},   {'>', "&gt;"},   {'&', "&amp;"},
       {'"', "&quot;"}, {'\'', "&#39;"},
@@ -181,7 +184,7 @@ const char kUrlUnescape[128] = {
 // Attempts to unescape the sequence at |index| within |escaped_text|.  If
 // successful, sets |value| to the unescaped value.  Returns whether
 // unescaping succeeded.
-bool UnescapeUnsignedByteAtIndex(StringPiece escaped_text,
+bool UnescapeUnsignedByteAtIndex(std::string_view escaped_text,
                                  size_t index,
                                  unsigned char* value) {
   if ((index + 2) >= escaped_text.size())
@@ -203,7 +206,7 @@ bool UnescapeUnsignedByteAtIndex(StringPiece escaped_text,
 // the character's code point and |unescaped_out| to be the unescaped UTF-8
 // string. |unescaped_out| will always be 1/3rd the length of the substring of
 // |escaped_text| that corresponds to the unescaped character.
-bool UnescapeUTF8CharacterAtIndex(StringPiece escaped_text,
+bool UnescapeUTF8CharacterAtIndex(std::string_view escaped_text,
                                   size_t index,
                                   base_icu::UChar32* code_point_out,
                                   std::string* unescaped_out) {
@@ -266,7 +269,7 @@ bool ShouldUnescapeCodePoint(UnescapeRule::Type rules,
   //
   // Can't use icu to make this cleaner, because Cronet cannot depend on
   // icu, and currently uses this file.
-  // TODO(https://crbug.com/829873): Try to make this use icu, both to
+  // TODO(crbug.com/41381359): Try to make this use icu, both to
   // protect against regressions as the Unicode standard is updated and to
   // reduce the number of long lists of characters.
   return !(
@@ -382,7 +385,7 @@ bool ShouldUnescapeCodePoint(UnescapeRule::Type rules,
 // character.  The resulting |adjustments| will always be sorted by increasing
 // offset.
 std::string UnescapeURLWithAdjustmentsImpl(
-    StringPiece escaped_text,
+    std::string_view escaped_text,
     UnescapeRule::Type rules,
     OffsetAdjuster::Adjustments* adjustments) {
   if (adjustments)
@@ -408,7 +411,7 @@ std::string UnescapeURLWithAdjustmentsImpl(
       // character. In that case, just unescaped and write the non-sense
       // character.
       //
-      // TODO(https://crbug.com/829868): Do not unescape illegal UTF-8
+      // TODO(crbug.com/40570496): Do not unescape illegal UTF-8
       // sequences.
       unsigned char non_utf8_byte;
       if (UnescapeUnsignedByteAtIndex(escaped_text, i, &non_utf8_byte)) {
@@ -456,37 +459,37 @@ std::string UnescapeURLWithAdjustmentsImpl(
 
 }  // namespace
 
-std::string EscapeAllExceptUnreserved(StringPiece text) {
+std::string EscapeAllExceptUnreserved(std::string_view text) {
   return Escape(text, kUnreservedCharmap, false);
 }
 
-std::string EscapeQueryParamValue(StringPiece text, bool use_plus) {
+std::string EscapeQueryParamValue(std::string_view text, bool use_plus) {
   return Escape(text, kQueryCharmap, use_plus);
 }
 
-std::string EscapePath(StringPiece path) {
+std::string EscapePath(std::string_view path) {
   return Escape(path, kPathCharmap, false);
 }
 
 #if BUILDFLAG(IS_APPLE)
-std::string EscapeNSURLPrecursor(StringPiece precursor) {
+std::string EscapeNSURLPrecursor(std::string_view precursor) {
   return Escape(precursor, kNSURLCharmap, false, true);
 }
 #endif  // BUILDFLAG(IS_APPLE)
 
-std::string EscapeUrlEncodedData(StringPiece path, bool use_plus) {
+std::string EscapeUrlEncodedData(std::string_view path, bool use_plus) {
   return Escape(path, kUrlEscape, use_plus);
 }
 
-std::string EscapeNonASCIIAndPercent(StringPiece input) {
+std::string EscapeNonASCIIAndPercent(std::string_view input) {
   return Escape(input, kNonASCIICharmapAndPercent, false);
 }
 
-std::string EscapeNonASCII(StringPiece input) {
+std::string EscapeNonASCII(std::string_view input) {
   return Escape(input, kNonASCIICharmap, false);
 }
 
-std::string EscapeExternalHandlerValue(StringPiece text) {
+std::string EscapeExternalHandlerValue(std::string_view text) {
   return Escape(text, kExternalHandlerCharmap, false, true);
 }
 
@@ -494,21 +497,21 @@ void AppendEscapedCharForHTML(char c, std::string* output) {
   AppendEscapedCharForHTMLImpl(c, output);
 }
 
-std::string EscapeForHTML(StringPiece input) {
+std::string EscapeForHTML(std::string_view input) {
   return EscapeForHTMLImpl(input);
 }
 
-std::u16string EscapeForHTML(StringPiece16 input) {
+std::u16string EscapeForHTML(std::u16string_view input) {
   return EscapeForHTMLImpl(input);
 }
 
-std::string UnescapeURLComponent(StringPiece escaped_text,
+std::string UnescapeURLComponent(std::string_view escaped_text,
                                  UnescapeRule::Type rules) {
   return UnescapeURLWithAdjustmentsImpl(escaped_text, rules, nullptr);
 }
 
 std::u16string UnescapeAndDecodeUTF8URLComponentWithAdjustments(
-    StringPiece text,
+    std::string_view text,
     UnescapeRule::Type rules,
     OffsetAdjuster::Adjustments* adjustments) {
   std::u16string result;
@@ -528,28 +531,16 @@ std::u16string UnescapeAndDecodeUTF8URLComponentWithAdjustments(
   return UTF8ToUTF16WithAdjustments(text, adjustments);
 }
 
-std::string UnescapeBinaryURLComponent(StringPiece escaped_text,
+std::string UnescapeBinaryURLComponent(std::string_view escaped_text,
                                        UnescapeRule::Type rules) {
   // Only NORMAL and REPLACE_PLUS_WITH_SPACE are supported.
   DCHECK(rules != UnescapeRule::NONE);
   DCHECK(!(rules &
            ~(UnescapeRule::NORMAL | UnescapeRule::REPLACE_PLUS_WITH_SPACE)));
 
-  // It is not possible to read the feature state when this function is invoked
-  // before FeatureList initialization. In that case, fallback to the feature's
-  // default state.
-  //
-  // TODO(crbug.com/1321924): Cleanup this feature.
-  const bool optimize_data_urls_feature_is_enabled =
-      base::FeatureList::GetInstance()
-          ? base::FeatureList::IsEnabled(features::kOptimizeDataUrls)
-          : features::kOptimizeDataUrls.default_state ==
-                base::FEATURE_ENABLED_BY_DEFAULT;
-
   // If there are no '%' characters in the string, there will be nothing to
   // unescape, so we can take the fast path.
-  if (optimize_data_urls_feature_is_enabled &&
-      escaped_text.find('%') == StringPiece::npos) {
+  if (escaped_text.find('%') == std::string_view::npos) {
     std::string unescaped_text(escaped_text);
     if (rules & UnescapeRule::REPLACE_PLUS_WITH_SPACE)
       std::replace(unescaped_text.begin(), unescaped_text.end(), '+', ' ');
@@ -593,7 +584,7 @@ std::string UnescapeBinaryURLComponent(StringPiece escaped_text,
   return unescaped_text;
 }
 
-bool UnescapeBinaryURLComponentSafe(StringPiece escaped_text,
+bool UnescapeBinaryURLComponentSafe(std::string_view escaped_text,
                                     bool fail_on_path_separators,
                                     std::string* unescaped_text) {
   unescaped_text->clear();
@@ -613,7 +604,7 @@ bool UnescapeBinaryURLComponentSafe(StringPiece escaped_text,
   return true;
 }
 
-bool ContainsEncodedBytes(StringPiece escaped_text,
+bool ContainsEncodedBytes(std::string_view escaped_text,
                           const std::set<unsigned char>& bytes) {
   for (size_t i = 0, max = escaped_text.size(); i < max;) {
     unsigned char byte;
@@ -633,7 +624,7 @@ bool ContainsEncodedBytes(StringPiece escaped_text,
   return false;
 }
 
-std::u16string UnescapeForHTML(StringPiece16 input) {
+std::u16string UnescapeForHTML(std::u16string_view input) {
   static const struct {
     const char* ampersand_code;
     const char16_t replacement;

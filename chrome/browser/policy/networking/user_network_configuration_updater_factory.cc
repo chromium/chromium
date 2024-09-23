@@ -79,7 +79,7 @@ UserNetworkConfigurationUpdaterFactory::BuildServiceInstanceForBrowserContext(
   // expect to have UserNetworkConfigurationUpdater, because
   // ManagedNetworkConfigurationHandler requires a (possibly empty) policy to be
   // set for all user sessions.
-  // TODO(https://crbug.com/1001490): Evaluate if this is can be solved in a
+  // TODO(crbug.com/40097732): Evaluate if this is can be solved in a
   // more elegant way.
   return UserNetworkConfigurationUpdaterAsh::CreateForUserPolicy(
       profile, *user, profile->GetProfilePolicyConnector()->policy_service(),
@@ -105,7 +105,7 @@ std::unique_ptr<KeyedService>
   // expect to have UserNetworkConfigurationUpdater, because
   // ManagedNetworkConfigurationHandler requires a (possibly empty) policy to be
   // set for all user sessions.
-  // TODO(https://crbug.com/1001490): Evaluate if this is can be solved in a
+  // TODO(crbug.com/40097732): Evaluate if this is can be solved in a
   // more elegant way.
   return UserNetworkConfigurationUpdater::CreateForUserPolicy(
       profile->GetProfilePolicyConnector()->policy_service());

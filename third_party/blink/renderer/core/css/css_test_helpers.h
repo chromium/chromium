@@ -51,6 +51,7 @@ class TestStyleSheet {
 };
 
 CSSStyleSheet* CreateStyleSheet(Document& document);
+RuleSet* CreateRuleSet(Document& document, String text);
 
 // Create a PropertyRegistration with the given name. An initial value must
 // be provided when the syntax is not "*".
@@ -81,7 +82,7 @@ void DeclareProperty(Document& document,
                      const std::optional<String>& initial_value,
                      bool is_inherited);
 
-scoped_refptr<CSSVariableData> CreateVariableData(String);
+CSSVariableData* CreateVariableData(String);
 const CSSValue* CreateCustomIdent(const char*);
 const CSSValue* ParseLonghand(Document& document,
                               const CSSProperty&,
@@ -103,17 +104,6 @@ CSSSelectorList* ParseSelectorList(const String&,
                                    CSSNestingType,
                                    const StyleRule* parent_rule_for_nesting,
                                    bool is_within_scope);
-
-// Make the incoming StyleRule carry the specified signal.
-StyleRule* MakeSignalingRule(StyleRule&&, CSSSelector::Signal);
-
-// Make the incoming StyleRule invisible. (See CSSSelector::IsInvisible).
-StyleRule* MakeInvisibleRule(StyleRule&&);
-
-StyleRule* ParseSignalingRule(Document& document,
-                              String text,
-                              CSSSelector::Signal);
-StyleRule* ParseInvisibleRule(Document& document, String text);
 
 }  // namespace css_test_helpers
 }  // namespace blink

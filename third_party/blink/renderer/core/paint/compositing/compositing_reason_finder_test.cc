@@ -112,14 +112,12 @@ TEST_P(CompositingReasonFinderTest, UndoOverscroll) {
 // Tests that an anchored-positioned fixpos element should overscroll if the
 // anchor cab be overscrolled, so that it keeps "attached" to the anchor.
 TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosOverscroll) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       body { height: 200vh; }
       div { width: 100px; height: 100px; }
       #anchor { anchor-name: --a; position: absolute; background: orange; }
-      #target { anchor-default: --a; top: anchor(top);
+      #target { position-anchor: --a; top: anchor(top);
                 position: fixed; background: lime; }
     </style>
     <div id="anchor"></div>
@@ -149,8 +147,6 @@ TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosOverscroll) {
 // Tests that an anchored-positioned fixpos element should not overscroll if
 // the anchor does not overscroll.
 TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosUndoOverscroll) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       body { height: 200vh; }
@@ -160,7 +156,7 @@ TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosUndoOverscroll) {
       #anchor, #target { width: 100px; height: 100px; }
       #anchor { anchor-name: --a; position: absolute;
                 top: 300px; background: orange; }
-      #target { anchor-default: --a; top: anchor(top);
+      #target { position-anchor: --a; top: anchor(top);
                 position: fixed; background: lime; }
     </style>
     <div id="scroller">

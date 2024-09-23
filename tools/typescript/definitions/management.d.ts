@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** @fileoverview Definitions for chrome.management API. */
-// TODO(crbug.com/1203307): Auto-generate this file.
+// TODO(crbug.com/40179454): Auto-generate this file.
 
 declare namespace chrome {
   export namespace management {
@@ -17,7 +17,7 @@ declare namespace chrome {
       mayDisable: boolean;
       mayEnable?: boolean;
       enabled: boolean;
-      // TODO(crbug.com/1189595): Define commented out fields as needed.
+      // TODO(crbug.com/40173780): Define commented out fields as needed.
       //disabledReason?: ExtensionDisabledReason;
       isApp: boolean;
       //type: ExtensionType;

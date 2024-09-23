@@ -14,10 +14,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "components/user_manager/user_manager.h"
 
 class AccountId;
 namespace policy {
@@ -33,10 +34,13 @@ namespace policy {
 // external data to be fetched.
 class CloudExternalDataPolicyObserver
     : public session_manager::SessionManagerObserver,
+      public user_manager::UserManager::Observer,
       public DeviceLocalAccountPolicyService::Observer {
  public:
   class Delegate {
    public:
+    virtual ~Delegate() = default;
+
     // Invoked when an external data reference is set for |user_id|.
     virtual void OnExternalDataSet(const std::string& policy,
                                    const std::string& user_id);
@@ -55,8 +59,8 @@ class CloudExternalDataPolicyObserver
                                        std::unique_ptr<std::string> data,
                                        const base::FilePath& file_path);
 
-   protected:
-    virtual ~Delegate();
+    // Removes the data for the given `account_id`.
+    virtual void RemoveForAccountId(const AccountId& account_id) = 0;
   };
 
   // |device_local_account_policy_service| may be nullptr if unavailable (e.g.
@@ -65,7 +69,8 @@ class CloudExternalDataPolicyObserver
       ash::CrosSettings* cros_settings,
       DeviceLocalAccountPolicyService* device_local_account_policy_service,
       const std::string& policy,
-      Delegate* delegate);
+      user_manager::UserManager* user_manager,
+      std::unique_ptr<Delegate> delegate);
 
   CloudExternalDataPolicyObserver(const CloudExternalDataPolicyObserver&) =
       delete;
@@ -79,9 +84,14 @@ class CloudExternalDataPolicyObserver
   // session_manager::SessionManagerObserver:
   void OnUserProfileLoaded(const AccountId& account_id) override;
 
+  // user_manager::UserManager::Observer:
+  void OnUserToBeRemoved(const AccountId& account_id) override;
+
   // DeviceLocalAccountPolicyService::Observer:
   void OnPolicyUpdated(const std::string& user_id) override;
   void OnDeviceLocalAccountsChanged() override;
+
+  static AccountId GetAccountId(const std::string& user_id);
 
  private:
   // Helper class that observes |policy_| for a logged-in user.
@@ -117,8 +127,11 @@ class CloudExternalDataPolicyObserver
   // The policy that |this| observes.
   std::string policy_;
 
-  raw_ptr<Delegate> delegate_;
+  std::unique_ptr<Delegate> delegate_;
 
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      user_manager_observation_{this};
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};

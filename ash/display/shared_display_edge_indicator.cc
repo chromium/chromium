@@ -26,10 +26,11 @@ std::unique_ptr<views::Widget> CreateWidget(const gfx::Rect& bounds) {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayMatching(bounds);
   auto widget = std::make_unique<views::Widget>();
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.context = Shell::GetRootWindowControllerWithDisplayId(display.id())
                        ->GetRootWindow();
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.layer_type = ui::LAYER_SOLID_COLOR;

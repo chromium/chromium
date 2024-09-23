@@ -1,0 +1,42 @@
+caption: Change Memory Saver Mode Savings
+default: null
+desc: |-
+  This policy changes the savings level of Memory Saver.
+
+  This only takes effect when Memory Saver is enabled through settings or through the <ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME">HighEfficiencyModeEnabled</ph> policy, and will affect how heuristics are used to determine when to discard tabs. For example, reducing the lifetime of an inactive tab before discarding it can save memory, but it also means that tabs will be reloaded more frequently which can lead to bad user experience and cost more network traffic.
+
+  Setting the policy to 0 - Memory Saver will get moderate memory savings. Tabs become inactive after a longer period of time
+
+  Setting the policy to 1 - Memory Saver will get balanced memory savings. Tabs become inactive after an optimal period of time.
+
+  Setting the policy to 2 - Memory Saver will get maximum memory savings. Tabs become inactive after a shorter period of time.
+
+  If this policy is unset, the end user can control this setting in chrome://settings/performance.
+example_value: 0
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Moderate memory savings.
+  name: Moderate
+  value: 0
+- caption: Balanced memory savings.
+  name: Balanced
+  value: 1
+- caption: Maximum memory savings.
+  name: Maximum
+  value: 2
+owners:
+- charlesmeng@chromium.org
+- file://chrome/browser/ui/performance_controls/OWNERS
+schema:
+  type: integer
+  enum:
+  - 0
+  - 1
+  - 2
+supported_on:
+- chrome.*:126-
+- chrome_os:126-
+tags: []
+type: int-enum

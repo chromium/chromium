@@ -5,11 +5,11 @@
 #include "content/browser/browser_plugin/browser_plugin_embedder.h"
 
 #include "base/functional/bind.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/browser/browser_plugin/browser_plugin_guest.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace content {
@@ -44,7 +44,7 @@ BrowserPluginEmbedder::GetBrowserPluginGuestManager() const {
 }
 
 bool BrowserPluginEmbedder::HandleKeyboardEvent(
-    const NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   if ((event.windows_key_code != ui::VKEY_ESCAPE) ||
       (event.GetModifiers() & blink::WebInputEvent::kInputModifiers)) {
     return false;

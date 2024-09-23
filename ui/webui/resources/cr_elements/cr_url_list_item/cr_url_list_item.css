@@ -1,0 +1,405 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_shared_vars.css.js
+ * #import=../cr_hidden_style_lit.css.js
+ * #import=../cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  box-sizing: border-box;
+  display: block;
+  position: relative;
+  width: 100%;
+}
+
+#item {
+  --cr-url-list-item-image-container-border_: 2px solid white;
+  /* Intentionally 1px higher than the inherited border radius to avoid
+   * anti-aliasing issues.
+   */
+   --cr-url-list-item-image-container-border-radius_: 5px;
+  align-items: center;
+  box-sizing: border-box;
+  cursor: default;
+  display: flex;
+  height: var(--cr-url-list-item-height, 48px);
+  padding: var(--cr-url-list-item-padding, 4px 16px);
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  #item {
+    --cr-url-list-item-image-container-border_: 2px solid black;
+  }
+}
+
+:host([size=compact]) #item {
+  padding: var(--cr-url-list-item-padding, 6px 16px);
+  height: var(--cr-url-list-item-height, 36px);
+}
+
+:host([size=large]) #item {
+  padding: var(--cr-url-list-item-padding, 6px 16px);
+  height: var(--cr-url-list-item-height, 68px);
+}
+
+:host([size=medium]) #item,
+:host([size=large]) #item {
+  --cr-url-list-item-image-container-border-radius_: 9px;
+}
+
+:host(.hovered),
+:host([force-hover]) {
+  background: var(--cr-hover-background-color);
+}
+
+:host(.active),
+:host-context(.focus-outline-visible):host(:focus-within) {
+  background: var(--cr-active-background-color);
+}
+
+#anchor,
+#button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  position: absolute;
+  inset: 0;
+}
+
+#anchor:focus,
+#button:focus {
+  outline: 0;
+}
+
+::slotted([slot=prefix]) {
+  margin-inline-end: 16px;
+}
+
+#iconContainer {
+  align-items: center;
+  background: var(--color-list-item-url-favicon-background,
+      var(--cr-fallback-color-neutral-container));
+  border-radius: 4px;
+  display: flex;
+  flex-shrink: 0;
+  height: var(--cr-url-list-item-container-height, 40px);
+  justify-content: center;
+  margin-inline-end: var(--cr-url-list-item-icon-margin-end, 16px);
+  overflow: hidden;
+  width: var(--cr-url-list-item-container-width, 40px);
+}
+
+:host([size=compact]) #iconContainer {
+  height: 24px;
+  margin-inline-end: 8px;
+  width: 24px;
+}
+
+:host([is-folder_]) #iconContainer {
+  background: var(--color-list-item-folder-icon-background,
+      var(--cr-fallback-color-primary-container));
+  color: var(--color-list-item-folder-icon-foreground,
+      var(--cr-fallback-color-on-primary-container));
+}
+
+:host([size=large]) #iconContainer {
+  height: 56px;
+  margin-inline-end: 16px;
+  width: 56px;
+}
+
+:host([size=medium]) #iconContainer,
+:host([size=large]) #iconContainer {
+  border-radius: 8px;
+}
+
+#folder-icon {
+  display: flex;
+}
+
+.favicon {
+  background-position: center center;
+  background-repeat: no-repeat;
+  height: 16px;
+  width: 16px;
+}
+
+:host([size=large]) .folder-and-count {
+  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, 50%);
+  grid-template-rows: repeat(2, 50%);
+  height: 100%;
+  justify-items: center;
+  width: 100%;
+}
+
+.folder-and-count .image-container {
+  border-bottom: var(--cr-url-list-item-image-container-border_);
+  border-radius: 0 var(--cr-url-list-item-image-container-border-radius_)
+      0 0;
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+}
+
+:host-context([dir=rtl]) .folder-and-count .image-container {
+  border-radius: var(--cr-url-list-item-image-container-border-radius_)
+      0 0 0;
+}
+
+.folder-and-count .image-container img {
+  height: 100%;
+  object-fit: cover;
+  opacity: 95%;
+  width: 100%;
+}
+
+/* If there is only 2 imgs, span the 1st image across both rows. */
+.folder-and-count:not(:has(div:nth-child(3)))
+.image-container:first-of-type {
+  border-bottom: none;
+  border-inline-end: var(--cr-url-list-item-image-container-border_);
+  border-radius: var(--cr-url-list-item-image-container-border-radius_) 0 0
+      var(--cr-url-list-item-image-container-border-radius_);
+  grid-row: 1 / span 2;
+}
+
+:host-context([dir=rtl]) .folder-and-count:not(:has(div:nth-child(3)))
+.image-container:first-of-type {
+  border-radius: 0 var(--cr-url-list-item-image-container-border-radius_)
+      var(--cr-url-list-item-image-container-border-radius_) 0;
+}
+
+/* If there is only 1 img, span the entire grid. */
+.folder-and-count:not(:has(div:nth-child(2))) .image-container:first-of-type {
+  border: none;
+  border-radius: var(--cr-url-list-item-image-container-border-radius_);
+  grid-column: 1 / span 2;
+  grid-row: 1 / span 2;
+}
+
+.folder {
+  --cr-icon-color: currentColor;
+  --cr-icon-size: 20px;
+  height: var(--cr-icon-size);
+  margin: 0;
+  width: var(--cr-icon-size);
+}
+
+:host([size=compact]) .folder {
+  --cr-icon-size: 16px;
+}
+
+.count {
+  --cr-url-list-item-count-border-radius: 4px;
+  display: none;
+}
+
+:host([size=large]) .count {
+  align-items: center;
+  background: var(--color-list-item-folder-icon-background,
+      var(--cr-fallback-color-primary-container));
+  border-radius: var(--cr-url-list-item-count-border-radius) 0 0 0;
+  color: var(--color-list-item-folder-icon-foreground,
+      var(--cr-fallback-color-on-primary-container));
+  display: flex;
+  font-weight: 500;
+  grid-column: 2;
+  grid-row: 2;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+  z-index: 1;
+}
+
+:host-context([dir=rtl]):host([size=large]) .count {
+  border-radius: 0 var(--cr-url-list-item-count-border-radius) 0 0;
+}
+
+.folder-and-count:has(div:nth-child(2)) .count {
+  border-radius: 0;
+}
+
+:host([size=large])
+    .folder-and-count:not(:has(div:nth-child(2))):has(.image-container)
+    .count {
+  border-inline-start: var(--cr-url-list-item-image-container-border_);
+  border-top: var(--cr-url-list-item-image-container-border_);
+}
+
+.image-container {
+  /*
+   * Acts as an overlay to images with some transparency, to ensure contrast
+   * against the row background.
+   */
+  background: black;
+  border-radius: var(--cr-url-list-item-image-container-border-radius_);
+  height: 100%;
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  .image-container {
+    background: transparent;
+  }
+}
+
+.metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+}
+
+:host([has-slotted-content_]) .metadata {
+  display: none;
+}
+
+:host([size=compact]) .metadata {
+  align-items: center;
+  flex-direction: row;
+}
+
+:host([size=compact]) .metadata,
+:host([size=medium]) .metadata {
+  gap: var(--cr-url-list-item-metadata-gap, 4px);
+}
+
+:host([size=large]) .metadata {
+  gap: var(--cr-url-list-item-metadata-gap, 2px);
+}
+
+.title {
+  color: var(--cr-primary-text-color);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.title:focus {
+  outline: none;
+}
+
+.descriptions {
+  align-items: center;
+  display: flex;
+  gap: 3px;
+  height: 14px;
+}
+
+:host([size=compact]) .descriptions {
+  display: contents;
+}
+
+:host([size=large]) .descriptions {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 4px;
+  height: auto;
+}
+
+:host(:not([has-descriptions_])) .descriptions {
+  display: none;
+}
+
+.description {
+  color: var(--cr-secondary-text-color);
+  display: flex;
+  font-size: 11px;
+  font-weight: 400;
+  max-width: 100%;
+}
+
+.description-text:has(+ .description-meta:not([hidden])) {
+  /* Prioritize description meta and let description shrink. */
+  flex-shrink: 1;
+}
+
+:host([reverse-elide-description]) .description-text {
+  /* Flip so the ellipsis appears at the front, typically for URLs. */
+  direction: rtl;
+}
+
+:host([size=compact]) .description {
+  font-size: 12px;
+}
+
+.title,
+.description-text,
+.description-meta {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.description-meta {
+  flex-shrink: 0;
+  padding-inline-start: 4px;
+}
+
+.badges {
+  align-items: flex-start;
+  display: flex;
+  gap: 4px;
+  min-width: fit-content;
+}
+
+:host(:not([has-badges])) .badges {
+  display: none;
+}
+
+:host([has-badges]) .badges {
+  margin-inline-start: 4px;
+}
+
+.suffix {
+  align-items: center;
+  color: var(--cr-secondary-text-color);
+  display: flex;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 20px;
+  margin-inline-end: -4px;
+  margin-inline-start: auto;
+}
+
+::slotted([slot=suffix]) {
+  display: none;
+}
+
+::slotted(cr-icon-button[slot=suffix]) {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 24px;
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+}
+
+::slotted([slot=suffix]:not(cr-icon-button)) {
+  margin-inline-end: 16px;
+}
+
+:host(.hovered) ::slotted([slot=suffix]),
+:host-context(.focus-outline-visible):host(:focus-within)
+    ::slotted([slot=suffix]),
+:host([always-show-suffix]) ::slotted([slot=suffix]) {
+  display: block;
+}
+
+.url-image {
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  opacity: 95%;
+  width: 100%;
+}

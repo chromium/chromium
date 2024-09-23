@@ -1,0 +1,250 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/chrome_build.gni")
+
+source_set("model") {
+  sources = [
+    "off_the_record_profile_ios_impl.h",
+    "off_the_record_profile_ios_impl.mm",
+    "off_the_record_profile_ios_io_data.h",
+    "off_the_record_profile_ios_io_data.mm",
+    "profile_ios_impl.h",
+    "profile_ios_impl.mm",
+    "profile_ios_impl_io_data.h",
+    "profile_ios_impl_io_data.mm",
+    "profile_manager_ios_impl.h",
+    "profile_manager_ios_impl.mm",
+  ]
+
+  deps = [
+    ":constants",
+    ":ios_thread",
+    ":profile_ios_io_data",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/content_settings/core/browser",
+    "//components/keyed_service/ios",
+    "//components/net_log",
+    "//components/policy/core/common",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/profile_metrics",
+    "//components/proxy_config",
+    "//components/proxy_config/ios",
+    "//components/signin/public/base:signin_switches",
+    "//components/signin/public/identity_manager",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common:features",
+    "//components/sync_preferences",
+    "//components/user_prefs",
+    "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/net/model",
+    "//ios/chrome/browser/net/model:net_types",
+    "//ios/chrome/browser/net/model:network_delegate",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/prefs/model",
+    "//ios/chrome/browser/profile_metrics/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:forward",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/supervised_user/model",
+    "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
+    "//ios/components/cookie_util",
+    "//ios/net",
+    "//ios/web/public/thread",
+    "//net",
+  ]
+}
+
+source_set("profile_ios_io_data") {
+  sources = [
+    "ios_chrome_url_request_context_getter.cc",
+    "ios_chrome_url_request_context_getter.h",
+    "profile_ios_io_data.h",
+    "profile_ios_io_data.mm",
+  ]
+  deps = [
+    ":ios_thread",
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/metrics:metrics_pref_names",
+    "//components/net_log",
+    "//components/prefs",
+    "//components/proxy_config/ios",
+    "//components/signin/public/base:signin_switches",
+    "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/net/model",
+    "//ios/chrome/browser/net/model:net_types",
+    "//ios/chrome/browser/net/model:network_delegate",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/net",
+    "//ios/web/public/browsing_data",
+    "//ios/web/public/thread",
+    "//net",
+    "//net/traffic_annotation",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("ios_thread") {
+  sources = [
+    "ios_chrome_io_thread.h",
+    "ios_chrome_io_thread.mm",
+  ]
+
+  deps = [
+    "//components/variations/net",
+    "//ios/chrome/browser/net/model:network_delegate",
+    "//ios/chrome/common",
+    "//ios/components/io_thread",
+    "//ios/web/public/init",
+    "//ios/web/public/thread",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+}
+
+source_set("keyed_service_factories") {
+  sources = [
+    "keyed_service_factories.h",
+    "keyed_service_factories.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/browser/affiliations/model",
+    "//ios/chrome/browser/autocomplete/model",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bring_android_tabs/model",
+    "//ios/chrome/browser/browsing_data/model",
+    "//ios/chrome/browser/commerce/model:session_proto_db",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/consent_auditor/model",
+    "//ios/chrome/browser/content_notification/model:content_notification_service_factory",
+    "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/contextual_panel/model",
+    "//ios/chrome/browser/contextual_panel/sample/model",
+    "//ios/chrome/browser/crash_report/model/breadcrumbs",
+    "//ios/chrome/browser/credential_provider/model:buildflags",
+    "//ios/chrome/browser/data_sharing/model",
+    "//ios/chrome/browser/device_reauth",
+    "//ios/chrome/browser/device_sharing/model",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/dom_distiller/model",
+    "//ios/chrome/browser/download/model",
+    "//ios/chrome/browser/download/model/background_service",
+    "//ios/chrome/browser/drive/model:drive_service_factory",
+    "//ios/chrome/browser/enterprise/model/idle",
+    "//ios/chrome/browser/external_files/model",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/follow/model:service_factory",
+    "//ios/chrome/browser/gcm/model",
+    "//ios/chrome/browser/gcm/model/instance_id",
+    "//ios/chrome/browser/google/model:google_logo",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/https_upgrades/model",
+    "//ios/chrome/browser/invalidation/model",
+    "//ios/chrome/browser/language/model",
+    "//ios/chrome/browser/language_detection/model",
+    "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",
+    "//ios/chrome/browser/metrics/model",
+    "//ios/chrome/browser/metrics/model:google_groups_updater",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/page_content_annotations/model",
+    "//ios/chrome/browser/page_image/model",
+    "//ios/chrome/browser/page_info:model",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/passwords/model:sharing_factory",
+    "//ios/chrome/browser/passwords/model:store_factory",
+    "//ios/chrome/browser/photos/model:photos_service_factory",
+    "//ios/chrome/browser/plus_addresses/model",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy_url_blocking/model",
+    "//ios/chrome/browser/power_bookmarks/model",
+    "//ios/chrome/browser/prerender/model",
+    "//ios/chrome/browser/price_insights/model",
+    "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/push_notification/model:browser_state_service_factory",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/safe_browsing/model",
+    "//ios/chrome/browser/safe_browsing/model/tailored_security",
+    "//ios/chrome/browser/safety_check/model:factory",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/screen_time/model:buildflags",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/sessions/model",
+    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
+    "//ios/chrome/browser/sessions/model:session_state",
+    "//ios/chrome/browser/share_extension/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/sharing_message/model",
+    "//ios/chrome/browser/sharing_message/model:sharing_message_bridge_factory",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:trusted_vault_factory",
+    "//ios/chrome/browser/supervised_user/model",
+    "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:data_type_store_service_factory",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
+    "//ios/chrome/browser/sync/model:sync_invalidations_service_factory",
+    "//ios/chrome/browser/tabs_search/model:model_factory",
+    "//ios/chrome/browser/text_selection/model",
+    "//ios/chrome/browser/translate/model",
+    "//ios/chrome/browser/trusted_vault/model",
+    "//ios/chrome/browser/unified_consent/model",
+    "//ios/chrome/browser/unit_conversion:unit_conversion_factory",
+    "//ios/chrome/browser/visited_url_ranking/model",
+    "//ios/chrome/browser/voice/ui_bundled:voice",
+    "//ios/chrome/browser/web/model/java_script_console",
+    "//ios/chrome/browser/webauthn/model",
+    "//ios/chrome/browser/webdata_services/model",
+  ]
+
+  if (ios_enable_credential_provider_extension) {
+    deps += [ "//ios/chrome/browser/credential_provider/model" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "profile_manager_ios_impl_unittest.mm" ]
+  deps = [
+    ":constants",
+    ":ios_thread",
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/variations:test_support",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/thread",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+  ]
+}

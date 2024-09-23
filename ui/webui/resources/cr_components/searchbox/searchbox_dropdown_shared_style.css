@@ -1,0 +1,22 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+.action-icon {
+  --cr-icon-button-active-background-color:
+      var(--color-new-tab-page-active-background);
+  --cr-icon-button-fill-color: var(--color-searchbox-results-icon);
+  --cr-icon-button-focus-outline-color:
+      var(--color-searchbox-results-icon-focused-outline);
+  --cr-icon-button-hover-background-color:
+      var(--color-searchbox-results-button-hover);
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-size: 24px;
+}

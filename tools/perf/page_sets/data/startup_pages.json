@@ -15,8 +15,8 @@
         "intent:warm:bbc": {
             "DEFAULT": "startup_pages_000.wprgo"
         },
-        "maps_pwa:with_http_cache": {
-            "DEFAULT": "startup_pages_b689e9a47f.wprgo"
+        "mobile_pwa:with_http_cache": {
+            "DEFAULT": "startup_pages_8965cb1ef7.wprgo"
         }
     },
     "description": "Describes the Web Page Replay archives for a story set. Don't edit by hand! Use record_wpr for updating.",

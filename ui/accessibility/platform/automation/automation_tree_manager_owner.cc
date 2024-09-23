@@ -41,9 +41,9 @@ bool AutomationTreeManagerOwner::SendTreeChangeEvent(
     AXNode* node) {
   // Notify custom bindings when there's an unloaded tree; js will enable the
   // renderer and wait for it to load.
-  std::string child_tree_id_str;
-  if (node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                               &child_tree_id_str)) {
+  if (node->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
+    const std::string& child_tree_id_str =
+        node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
     AXTreeID child_tree_id = AXTreeID::FromString(child_tree_id_str);
     auto* tree_wrapper = GetAutomationAXTreeWrapperFromTreeID(child_tree_id);
     if (!tree_wrapper || !tree_wrapper->ax_tree()->data().loaded)
@@ -371,12 +371,7 @@ bool AutomationTreeManagerOwner::GetFocusInternal(
 
   while (true) {
     // If the focused node is the owner of a child tree, that indicates
-    // a node within the child tree is the one that actually has focus. This
-    // doesn't apply to portals: portals have a child tree, but nothing in the
-    // tree can have focus.
-    if (focus->GetRole() == ax::mojom::Role::kPortal)
-      break;
-
+    // a node within the child tree is the one that actually has focus.
     const std::string& child_tree_id_str =
         focus->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
     const std::string& child_tree_node_app_id_str = focus->GetStringAttribute(
@@ -503,19 +498,20 @@ gfx::Rect AutomationTreeManagerOwner::ComputeGlobalNodeBounds(
 
 std::vector<AXNode*> AutomationTreeManagerOwner::GetRootsOfChildTree(
     AXNode* node) const {
-  // Account for two types of links to child trees.
-  // An explicit tree id to a child tree.
-  std::string child_tree_id_str;
-
-  // A node attribute pointing to a node in a descendant tree.
-  std::string child_tree_node_app_id_str;
-
-  if (!node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                &child_tree_id_str) &&
-      !node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId,
-                                &child_tree_node_app_id_str)) {
+  if (!node->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId) &&
+      !node->HasStringAttribute(
+          ax::mojom::StringAttribute::kChildTreeNodeAppId)) {
     return std::vector<AXNode*>();
   }
+
+  // Account for two types of links to child trees.
+  // An explicit tree id to a child tree.
+  const std::string& child_tree_id_str =
+      node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
+
+  // A node attribute pointing to a node in a descendant tree.
+  const std::string& child_tree_node_app_id_str =
+      node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId);
 
   if (!child_tree_node_app_id_str.empty()) {
     std::vector<AXNode*> child_app_nodes =
@@ -772,17 +768,6 @@ bool AutomationTreeManagerOwner::GetBoundsForRange(
 }
 
 const char* AutomationTreeManagerOwner::GetName(AXNode* node) const {
-  if (node->GetRole() == ax::mojom::Role::kPortal &&
-      node->data().GetNameFrom() == ax::mojom::NameFrom::kNone) {
-    // Portals are not expected to have multiple child roots.
-    if (const auto& child_roots = GetRootsOfChildTree(node);
-        !child_roots.empty()) {
-      return child_roots[0]
-          ->GetStringAttribute(ax::mojom::StringAttribute::kName)
-          .c_str();
-    }
-  }
-
   if (node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
     return node->GetStringAttribute(ax::mojom::StringAttribute::kName).c_str();
   }
@@ -811,10 +796,12 @@ bool AutomationTreeManagerOwner::GetNextTextMatch(
     if (!node)
       return false;
 
-    std::u16string name;
-    if (!node->GetString16Attribute(ax::mojom::StringAttribute::kName, &name))
+    if (!node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
       continue;
+    }
 
+    std::u16string name =
+        node->GetString16Attribute(ax::mojom::StringAttribute::kName);
     if (base::i18n::StringSearchIgnoringCaseAndAccents(search_str_16, name,
                                                        nullptr, nullptr)) {
       *result_tree_id = (*target_tree_wrapper)->GetTreeID();
@@ -1077,15 +1064,15 @@ void AutomationTreeManagerOwner::UpdateOverallTreeChangeObserverFilter() {
 }
 
 void AutomationTreeManagerOwner::DispatchTreeDestroyedEvent(
-    const ui::AXTreeID& tree_id) {
+    const AXTreeID& tree_id) {
   GetAutomationV8Bindings()->SendTreeDestroyedEvent(tree_id);
 }
 
 void AutomationTreeManagerOwner::DispatchAccessibilityEvents(
-    const ui::AXTreeID& tree_id,
-    const std::vector<ui::AXTreeUpdate>& updates,
+    const AXTreeID& tree_id,
+    const std::vector<AXTreeUpdate>& updates,
     const gfx::Point& mouse_location,
-    const std::vector<ui::AXEvent>& events) {
+    const std::vector<AXEvent>& events) {
   AutomationAXTreeWrapper* tree_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(tree_id);
   bool is_new_tree = tree_wrapper == nullptr;
@@ -1117,9 +1104,9 @@ void AutomationTreeManagerOwner::DispatchAccessibilityEvents(
 }
 
 void AutomationTreeManagerOwner::DispatchAccessibilityLocationChange(
-    const ui::AXTreeID& tree_id,
+    const AXTreeID& tree_id,
     int32_t node_id,
-    const ui::AXRelativeBounds& bounds) {
+    const AXRelativeBounds& bounds) {
   AutomationAXTreeWrapper* tree_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(tree_id);
   if (!tree_wrapper) {
@@ -1144,15 +1131,14 @@ void AutomationTreeManagerOwner::DispatchAccessibilityLocationChange(
   }
 }
 
-void AutomationTreeManagerOwner::DispatchActionResult(
-    const ui::AXActionData& data,
-    bool result) {
+void AutomationTreeManagerOwner::DispatchActionResult(const AXActionData& data,
+                                                      bool result) {
   GetAutomationV8Bindings()->SendActionResultEvent(data, result);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void AutomationTreeManagerOwner::DispatchGetTextLocationResult(
-    const ui::AXActionData& data,
+    const AXActionData& data,
     const std::optional<gfx::Rect>& rect) {
   GetAutomationV8Bindings()->SendGetTextLocationResult(data, rect);
 }

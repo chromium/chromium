@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "base/check.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -12,7 +13,11 @@ namespace {
 
 // TODO(thakis): Remove _LIBCPP_ENABLE_ASSERTIONS here once
 // pnacl-saigo's libc++ is new enough.
-#if !_LIBCPP_ENABLE_ASSERTIONS && \
+#if defined(__GLIBCXX__)
+#if !defined(_GLIBCXX_ASSERTIONS)
+#error "libstdc++ assertions should be enabled"
+#endif
+#elif !_LIBCPP_ENABLE_ASSERTIONS && \
     _LIBCPP_HARDENING_MODE != _LIBCPP_HARDENING_MODE_EXTENSIVE
 #error "_LIBCPP_HARDENING_MODE not defined"
 #endif
@@ -34,7 +39,9 @@ using ::testing::Not;
 //    presence or absence of the above string.
 TEST(LibcppHardeningTest, Assertions) {
   std::vector<int> vec = {0, 1, 2};
-#ifdef NDEBUG
+#if CHECK_WILL_STREAM()
+  EXPECT_DEATH_IF_SUPPORTED(vec[3], ".*assertion.*failed:");
+#else
 // We have to explicitly check for the GTEST_HAS_DEATH_TEST macro instead of
 // using EXPECT_DEATH_IF_SUPPORTED(...) for the following reasons:
 //
@@ -52,9 +59,7 @@ TEST(LibcppHardeningTest, Assertions) {
 #else
   GTEST_UNSUPPORTED_DEATH_TEST(vec[3], "", );
 #endif  // GTEST_HAS_DEATH_TEST && !GTEST_OS_LINUX_ANDROID
-#else
-  EXPECT_DEATH_IF_SUPPORTED(vec[3], ".*assertion.*failed:");
-#endif  // ifdef NDEBUG
+#endif  // CHECK_WILL_STREAM()
 }
 
 }  // namespace

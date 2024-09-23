@@ -15,52 +15,102 @@ build_webui("build") {
     "webui_gallery.html",
   ]
 
-  css_files = [ "demos/demo.css" ]
+  css_files = [
+    "app.css",
+    "demos/buttons/buttons_demo.css",
+    "demos/card/card_demo.css",
+    "demos/cr_a11y_announcer/cr_a11y_announcer_demo.css",
+    "demos/cr_action_menu/cr_action_menu_demo.css",
+    "demos/cr_dialog/cr_dialog_demo.css",
+    "demos/cr_icons/cr_icons_demo.css",
+    "demos/cr_input/cr_input_demo.css",
+    "demos/cr_slider/cr_slider_demo.css",
+    "demos/cr_tabs/cr_tabs_demo.css",
+    "demos/cr_toast/cr_toast_demo.css",
+    "demos/cr_toolbar/cr_toolbar_demo.css",
+    "demos/cr_tooltip/cr_tooltip_demo.css",
+    "demos/cr_url_list_item/cr_url_list_item_demo.css",
+    "demos/demo.css",
+    "demos/md_select/md_select_demo.css",
+    "demos/nav_menu/nav_menu_demo.css",
+    "demos/progress_indicators/progress_indicator_demo.css",
+    "demos/scroll_view/scroll_view_demo.css",
+    "demos/side_panel/sp_components_demo.css",
+  ]
 
   # Files holding a Polymer or native custom element definition AND have an
   # equivalent .html template file.
   web_component_files = [
-    "app.ts",
-    "demos/buttons/buttons_demo.ts",
-    "demos/card/card_demo.ts",
-    "demos/cr_a11y_announcer/cr_a11y_announcer_demo.ts",
-    "demos/cr_action_menu/cr_action_menu_demo.ts",
-    "demos/cr_checkbox/cr_checkbox_demo.ts",
-    "demos/cr_chip/cr_chip_demo.ts",
-    "demos/cr_dialog/cr_dialog_demo.ts",
-    "demos/cr_icons/cr_icons_demo.ts",
-    "demos/cr_input/cr_input_demo.ts",
-    "demos/cr_radio/cr_radio_demo.ts",
-    "demos/cr_slider/cr_slider_demo.ts",
-    "demos/cr_tabs/cr_tabs_demo.ts",
-    "demos/cr_toast/cr_toast_demo.ts",
-    "demos/cr_toggle/cr_toggle_demo.ts",
-    "demos/cr_toolbar/cr_toolbar_demo.ts",
-    "demos/cr_url_list_item/cr_url_list_item_demo.ts",
-    "demos/md_select/md_select_demo.ts",
-    "demos/nav_menu/nav_menu_demo.ts",
-    "demos/nav_menu/nav_menu.ts",
-    "demos/progress_indicators/progress_indicator_native_demo.ts",
-    "demos/progress_indicators/progress_indicator_polymer_demo.ts",
-    "demos/scroll_view/scroll_view_demo.ts",
-    "demos/side_panel/sp_components_demo.ts",
     "demos/cr_tab_box/cr_tab_box_demo.ts",
     "demos/cr_tree/cr_tree_demo.ts",
+  ]
+
+  non_web_component_files = [
+    "app.html.ts",
+    "app.ts",
+    "demos/cr_a11y_announcer/cr_a11y_announcer_demo.html.ts",
+    "demos/cr_a11y_announcer/cr_a11y_announcer_demo.ts",
+    "demos/buttons/buttons_demo.html.ts",
+    "demos/buttons/buttons_demo.ts",
+    "demos/card/card_demo.html.ts",
+    "demos/card/card_demo.ts",
+    "demos/cr_action_menu/cr_action_menu_demo.html.ts",
+    "demos/cr_action_menu/cr_action_menu_demo.ts",
+    "demos/cr_checkbox/cr_checkbox_demo.html.ts",
+    "demos/cr_checkbox/cr_checkbox_demo.ts",
+    "demos/cr_chip/cr_chip_demo.html.ts",
+    "demos/cr_chip/cr_chip_demo.ts",
+    "demos/cr_dialog/cr_dialog_demo.html.ts",
+    "demos/cr_dialog/cr_dialog_demo.ts",
+    "demos/cr_icons/cr_icons_demo.html.ts",
+    "demos/cr_icons/cr_icons_demo.ts",
+    "demos/cr_input/cr_input_demo.html.ts",
+    "demos/cr_input/cr_input_demo.ts",
+    "demos/cr_radio/cr_radio_demo.html.ts",
+    "demos/cr_radio/cr_radio_demo.ts",
+    "demos/cr_slider/cr_slider_demo.html.ts",
+    "demos/cr_slider/cr_slider_demo.ts",
+    "demos/cr_tabs/cr_tabs_demo.html.ts",
+    "demos/cr_tabs/cr_tabs_demo.ts",
+    "demos/cr_toast/cr_toast_demo.html.ts",
+    "demos/cr_toast/cr_toast_demo.ts",
+    "demos/cr_toggle/cr_toggle_demo.html.ts",
+    "demos/cr_toggle/cr_toggle_demo.ts",
+    "demos/cr_toolbar/cr_toolbar_demo.html.ts",
+    "demos/cr_toolbar/cr_toolbar_demo.ts",
+    "demos/cr_tooltip/cr_tooltip_demo.html.ts",
+    "demos/cr_tooltip/cr_tooltip_demo.ts",
+    "demos/cr_url_list_item/cr_url_list_item_demo.html.ts",
+    "demos/cr_url_list_item/cr_url_list_item_demo.ts",
+    "demos/md_select/md_select_demo.html.ts",
+    "demos/md_select/md_select_demo.ts",
+    "demos/nav_menu/nav_menu_demo.html.ts",
+    "demos/nav_menu/nav_menu_demo.ts",
+    "demos/nav_menu/nav_menu.html.ts",
+    "demos/nav_menu/nav_menu.ts",
+    "demos/progress_indicators/progress_indicator_demo.html.ts",
+    "demos/progress_indicators/progress_indicator_demo.ts",
+    "demos/scroll_view/scroll_view_demo.html.ts",
+    "demos/scroll_view/scroll_view_demo.ts",
+    "demos/side_panel/sp_components_demo.html.ts",
+    "demos/side_panel/sp_components_demo.ts",
   ]
 
   html_to_wrapper_template = "detect"
 
   ts_deps = [
     "//chrome/browser/resources/side_panel/shared:build_ts",
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 
   ts_path_mappings =
-      [ "chrome://webui-gallery/shared/*|" +
+      [ "//webui-gallery/shared/*|" +
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
             target_gen_dir) ]
+
+  webui_context_type = "trusted"
 }

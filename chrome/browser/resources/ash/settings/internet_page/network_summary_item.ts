@@ -124,7 +124,14 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       return this.i18n('internetDeviceBusy');
     }
 
+    if (OncMojo.deviceIsFlashing(this.deviceState)) {
+      return this.i18n('internetDeviceFlashing');
+    }
+
     if (this.isPortalState_(this.activeNetworkState!.portalState)) {
+      if (this.deviceState && this.deviceState.type === NetworkType.kCellular) {
+        return this.i18n('networkListItemCellularSignIn');
+      }
       return this.i18n('networkListItemSignIn');
     }
 
@@ -221,10 +228,25 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
    */
   private deviceIsEnabled_(deviceState: OncMojo.DeviceStateProperties|
                            undefined): boolean {
-    return !!deviceState &&
-        (deviceState.type === NetworkType.kVPN ||
-         deviceState.deviceState === DeviceStateType.kEnabled ||
-         OncMojo.deviceIsInhibited(deviceState));
+    if (!deviceState) {
+      return false;
+    }
+
+    if (this.isInstantHotspotRebrandEnabled_() &&
+        deviceState.type === NetworkType.kTether) {
+      return true;
+    }
+    if (deviceState.type === NetworkType.kVPN) {
+      return true;
+    }
+    if (deviceState.deviceState === DeviceStateType.kEnabled) {
+      return true;
+    }
+    if (OncMojo.deviceIsFlashing(deviceState)) {
+      return false;
+    }
+
+    return OncMojo.deviceIsInhibited(deviceState);
   }
 
   /**
@@ -265,7 +287,8 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
     return this.enableToggleIsVisible_(deviceState) &&
         deviceState!.deviceState !== DeviceStateType.kProhibited &&
         !OncMojo.deviceIsInhibited(deviceState) &&
-        !OncMojo.deviceStateIsIntermediate(deviceState!.deviceState);
+        !OncMojo.deviceStateIsIntermediate(deviceState!.deviceState) &&
+        !OncMojo.deviceIsFlashing(deviceState);
   }
 
   private getToggleA11yString_(deviceState: OncMojo.DeviceStateProperties|
@@ -582,12 +605,9 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
     return this.i18n('OncType' + OncMojo.getNetworkTypeString(type));
   }
 
-  /**
-   * Return true if portalState is either kPortal or kProxyAuthRequired.
-   */
   private isPortalState_(portalState: PortalState): boolean {
     return portalState === PortalState.kPortal ||
-        portalState === PortalState.kProxyAuthRequired;
+        portalState === PortalState.kPortalSuspected;
   }
 }
 

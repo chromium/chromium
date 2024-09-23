@@ -55,7 +55,7 @@ public class OriginVerifierHelper {
             Set<Origin> parsedOrigins = new HashSet<>();
             for (int i = 0; i < statements.length(); i++) {
                 JSONObject statement = statements.getJSONObject(i);
-                // TODO(crbug.com/1376958): Check if lower/upper case is important.
+                // TODO(crbug.com/40243409): Check if lower/upper case is important.
 
                 JSONArray relations = statement.getJSONArray(STATEMENT_RELATION_KEY);
                 boolean foundRelation = false;

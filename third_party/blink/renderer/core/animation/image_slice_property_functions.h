@@ -34,7 +34,7 @@ class ImageSlicePropertyFunctions {
                                   const ComputedStyle& style) {
     switch (property.PropertyID()) {
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         [[fallthrough]];
       case CSSPropertyID::kBorderImageSlice:
         return ImageSlice(style.BorderImageSlices(),
@@ -58,7 +58,7 @@ class ImageSlicePropertyFunctions {
         builder.SetMaskBoxImageSlicesFill(slice.fill);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 };

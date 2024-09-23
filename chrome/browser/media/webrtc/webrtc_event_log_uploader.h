@@ -103,7 +103,7 @@ class WebRtcEventLogUploaderImpl : public WebRtcEventLogUploader {
   // Primes the log file for uploading. Returns true if the file could be read,
   // in which case |upload_data| will be populated with the data to be uploaded
   // (both the log file's contents as well as history for Crash).
-  // TODO(crbug.com/775415): Avoid reading the entire file into memory.
+  // TODO(crbug.com/40545136): Avoid reading the entire file into memory.
   bool PrepareUploadData(std::string* upload_data);
 
   // Initiates the file's upload.

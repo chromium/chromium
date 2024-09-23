@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/webui/ui_bundled/policy/policy_ui_handler.h"
 
 #import <UIKit/UIKit.h>
+
 #import <algorithm>
 #import <utility>
 #import <vector>
@@ -42,9 +43,10 @@
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/policy/model/policy_conversions_client_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/webui/ui_bundled/policy/policy_ui.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -55,7 +57,7 @@ PolicyUIHandler::PolicyUIHandler() = default;
 
 PolicyUIHandler::~PolicyUIHandler() {
   GetPolicyService()->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
-  policy::SchemaRegistry* registry = ChromeBrowserState::FromWebUIIOS(web_ui())
+  policy::SchemaRegistry* registry = ProfileIOS::FromWebUIIOS(web_ui())
                                          ->GetPolicyConnector()
                                          ->GetSchemaRegistry();
   registry->RemoveObserver(this);
@@ -100,6 +102,9 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
       {"reportUploaded", IDS_REPORT_UPLOADED},
       {"copyPoliciesDone", IDS_COPY_POLICIES_DONE},
       {"exportPoliciesDone", IDS_EXPORT_POLICIES_JSON_DONE},
+      {"sort", IDS_POLICY_TABLE_COLUMN_SORT},
+      {"sortAscending", IDS_POLICY_TABLE_COLUMN_SORT_ASCENDING},
+      {"sortDescending", IDS_POLICY_TABLE_COLUMN_SORT_DESCENDING},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddLocalizedStrings(policy::kPolicySources);
@@ -131,15 +136,15 @@ void PolicyUIHandler::RegisterMessages() {
 
   GetPolicyService()->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromWebUIIOS(web_ui());
-  browser_state->GetPolicyConnector()->GetSchemaRegistry()->AddObserver(this);
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
+  profile->GetPolicyConnector()->GetSchemaRegistry()->AddObserver(this);
 
   policy::UserCloudPolicyManager* user_cloud_policy_manager =
-      browser_state->GetUserCloudPolicyManager();
-  if (user_cloud_policy_manager && user_cloud_policy_manager->core()) {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForBrowserState(browser_state);
+      profile->GetUserCloudPolicyManager();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (user_cloud_policy_manager && user_cloud_policy_manager->core() &&
+      identity_manager) {
     user_policy_status_provider_ =
         std::make_unique<UserCloudPolicyStatusProvider>(
             this, user_cloud_policy_manager->core(), identity_manager);
@@ -168,6 +173,10 @@ void PolicyUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "setLocalTestPolicies",
       base::BindRepeating(&PolicyUIHandler::HandleSetLocalTestPolicies,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getAppliedTestPolicies",
+      base::BindRepeating(&PolicyUIHandler::HandleGetAppliedTestPolicies,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "revertLocalTestPolicies",
@@ -216,6 +225,11 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
     const base::Value::List& args) {
   std::string json_policies_string = args[1].GetString();
 
+  if (!PolicyUI::ShouldLoadTestPage(ProfileIOS::FromWebUIIOS(web_ui()))) {
+    web_ui()->ResolveJavascriptCallback(args[0], true);
+    return;
+  }
+
   policy::LocalTestPolicyProvider* local_test_provider =
       static_cast<policy::LocalTestPolicyProvider*>(
           GetApplicationContext()
@@ -224,7 +238,7 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
 
   CHECK(local_test_provider);
 
-  ChromeBrowserState::FromWebUIIOS(web_ui())
+  ProfileIOS::FromWebUIIOS(web_ui())
       ->GetPolicyConnector()
       ->UseLocalTestPolicyProvider();
 
@@ -234,7 +248,11 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
 
 void PolicyUIHandler::HandleRevertLocalTestPolicies(
     const base::Value::List& args) {
-  ChromeBrowserState::FromWebUIIOS(web_ui())
+  if (!PolicyUI::ShouldLoadTestPage(ProfileIOS::FromWebUIIOS(web_ui()))) {
+    return;
+  }
+
+  ProfileIOS::FromWebUIIOS(web_ui())
       ->GetPolicyConnector()
       ->RevertUseLocalTestPolicyProvider();
 }
@@ -261,6 +279,19 @@ void PolicyUIHandler::HandleSetUserAffiliation(const base::Value::List& args) {
   web_ui()->ResolveJavascriptCallback(args[0], true);
 }
 
+void PolicyUIHandler::HandleGetAppliedTestPolicies(
+    const base::Value::List& args) {
+  CHECK_EQ(static_cast<int>(args.size()), 1);
+
+  auto* local_test_provider = static_cast<policy::LocalTestPolicyProvider*>(
+      GetApplicationContext()
+          ->GetBrowserPolicyConnector()
+          ->local_test_policy_provider());
+
+  web_ui()->ResolveJavascriptCallback(args[0],
+                                      local_test_provider->GetPolicies());
+}
+
 void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {
   web_ui()->ResolveJavascriptCallback(
       args[0], policy::PolicyLogger::GetInstance()->GetAsList());
@@ -270,7 +301,7 @@ std::string PolicyUIHandler::GetPoliciesAsJson() {
   return policy::GenerateJson(
       /*policy_values=*/policy::PolicyConversions(
           std::make_unique<PolicyConversionsClientIOS>(
-              ChromeBrowserState::FromWebUIIOS(web_ui())))
+              ProfileIOS::FromWebUIIOS(web_ui())))
           .ToValueDict(),
       GetStatusValue(),
       policy::JsonGenerationParams()
@@ -285,6 +316,7 @@ void PolicyUIHandler::OnSchemaRegistryUpdated(bool has_new_schemas) {
   // Update UI when new schema is added.
   if (has_new_schemas) {
     SendPolicies();
+    SendSchema();
   }
 }
 
@@ -311,10 +343,9 @@ void PolicyUIHandler::OnReportUploaded(const std::string& callback_id) {
 }
 
 base::Value::Dict PolicyUIHandler::GetPolicyNames() const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromWebUIIOS(web_ui());
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
   policy::SchemaRegistry* registry =
-      browser_state->GetPolicyConnector()->GetSchemaRegistry();
+      profile->GetPolicyConnector()->GetSchemaRegistry();
   scoped_refptr<policy::SchemaMap> schema_map = registry->schema_map();
 
   // Add Chrome policy names.
@@ -341,7 +372,7 @@ base::Value::Dict PolicyUIHandler::GetPolicyValues() const {
 
   base::Value::Dict policy_values =
       policy::PolicyConversions(std::make_unique<PolicyConversionsClientIOS>(
-                                    ChromeBrowserState::FromWebUIIOS(web_ui())))
+                                    ProfileIOS::FromWebUIIOS(web_ui())))
           .EnableConvertValues(true)
           .UseChromePolicyConversions()
           .ToValueDict();
@@ -371,6 +402,15 @@ void PolicyUIHandler::SendPolicies() {
   web_ui()->FireWebUIListener("policies-updated", names, values);
 }
 
+void PolicyUIHandler::SendSchema() {
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
+  if (!PolicyUI::ShouldLoadTestPage(profile)) {
+    return;
+  }
+
+  web_ui()->FireWebUIListener("schema-updated", PolicyUI::GetSchema(profile));
+}
+
 base::Value::Dict PolicyUIHandler::GetStatusValue() const {
   base::Value::Dict machine_status = machine_status_provider_->GetStatus();
   // Given that it's usual for users to bring their own devices and the fact
@@ -396,7 +436,6 @@ void PolicyUIHandler::OnRefreshPoliciesDone() {
 }
 
 policy::PolicyService* PolicyUIHandler::GetPolicyService() const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromWebUIIOS(web_ui());
-  return browser_state->GetPolicyConnector()->GetPolicyService();
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
+  return profile->GetPolicyConnector()->GetPolicyService();
 }

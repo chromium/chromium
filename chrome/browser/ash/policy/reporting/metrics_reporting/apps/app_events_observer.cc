@@ -123,9 +123,7 @@ AppEventsObserver::AppEventsObserver(
       app_platform_metrics_retriever_(
           std::move(app_platform_metrics_retriever)),
       reporting_settings_(reporting_settings) {
-  if (!base::FeatureList::IsEnabled(::apps::kAppServiceStorage)) {
-    app_install_tracker_ = std::make_unique<AppInstallTracker>(profile);
-  }
+  app_install_tracker_ = std::make_unique<AppInstallTracker>(profile);
 
   CHECK(app_platform_metrics_retriever_);
   app_platform_metrics_retriever_->GetAppPlatformMetrics(base::BindOnce(
@@ -171,23 +169,13 @@ void AppEventsObserver::OnAppInstalled(const std::string& app_id,
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(::apps::kAppServiceStorage)) {
-    // The app was already installed (likely in a prior session). Skip
-    if (app_install_tracker_->Contains(app_id)) {
-      return;
-    }
-
-    // Track app install to prevent future install event reports.
-    app_install_tracker_->Add(app_id);
-  } else {
-    // Skip the installed apps during the app type initialized stage.
-    const auto& cache =
-        ::apps::AppServiceProxyFactory::GetForProfile(profile_.get())
-            ->AppRegistryCache();
-    if (!cache.IsAppTypeInitialized(app_type)) {
-      return;
-    }
+  // The app was already installed (likely in a prior session). Skip
+  if (app_install_tracker_->Contains(app_id)) {
+    return;
   }
+
+  // Track app install to prevent future install event reports.
+  app_install_tracker_->Add(app_id);
 
   if (!::ash::reporting::IsAppTypeAllowed(
           app_type, reporting_settings_.get(),

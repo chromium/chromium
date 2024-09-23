@@ -15,9 +15,11 @@ const fakeTimestamp: TimeTicks = {
 const newTabAcceleratorInfo: MojoAcceleratorInfo = {
   type: AcceleratorType.kDefault,
   state: AcceleratorState.kEnabled,
+  acceleratorLocked: false,
   locked: true,
   layoutProperties: {
     standardAccelerator: {
+      originalAccelerator: null,
       keyDisplay: stringToMojoString16('t'),
       accelerator: {
         modifiers: Modifier.CONTROL,
@@ -34,6 +36,7 @@ const newTabAcceleratorInfo: MojoAcceleratorInfo = {
 const cycleTabsAcceleratorInfo: MojoAcceleratorInfo = {
   type: AcceleratorType.kDefault,
   state: AcceleratorState.kEnabled,
+  acceleratorLocked: false,
   locked: true,
   layoutProperties: {
     textAccelerator: {
@@ -70,9 +73,11 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
     [0]: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
+      acceleratorLocked: false,
       locked: true,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('['),
           accelerator: {
             modifiers: Modifier.ALT,
@@ -88,9 +93,11 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
     [1]: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
+      acceleratorLocked: false,
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16(']'),
           accelerator: {
             modifiers: Modifier.ALT,
@@ -106,9 +113,11 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
     [2]: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
+      acceleratorLocked: false,
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('+'),
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
@@ -124,9 +133,11 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
     [3]: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
+      acceleratorLocked: false,
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('-'),
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
@@ -142,9 +153,11 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
     [4]: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kDisabledByUnavailableKeys,
+      acceleratorLocked: false,
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('LaunchApplication2'),
           accelerator: {
             modifiers: Modifier.NONE,
@@ -160,9 +173,11 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
     [5]: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
+      acceleratorLocked: false,
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('esc'),
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.CONTROL,
@@ -179,9 +194,11 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       {
         type: AcceleratorType.kDefault,
         state: AcceleratorState.kEnabled,
+        acceleratorLocked: false,
         locked: false,
         layoutProperties: {
           standardAccelerator: {
+            originalAccelerator: null,
             keyDisplay: stringToMojoString16('a'),
             accelerator: {
               modifiers: Modifier.COMMAND,
@@ -196,9 +213,11 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
       {
         type: AcceleratorType.kDefault,
         state: AcceleratorState.kDisabledByUnavailableKeys,
+        acceleratorLocked: false,
         locked: false,
         layoutProperties: {
           standardAccelerator: {
+            originalAccelerator: null,
             keyDisplay: stringToMojoString16('LaunchAssistant'),
             accelerator: {
               modifiers: Modifier.NONE,
@@ -315,9 +334,11 @@ export const fakeSearchResults: MojoSearchResult[] = [
     acceleratorInfos: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
+      acceleratorLocked: false,
       locked: true,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('['),
           accelerator: {
             modifiers: Modifier.ALT,
@@ -343,9 +364,11 @@ export const fakeSearchResults: MojoSearchResult[] = [
     acceleratorInfos: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
+      acceleratorLocked: false,
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16(']'),
           accelerator: {
             modifiers: Modifier.ALT,
@@ -371,9 +394,11 @@ export const fakeSearchResults: MojoSearchResult[] = [
     acceleratorInfos: [{
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
+      acceleratorLocked: false,
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('+'),
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
@@ -406,9 +431,11 @@ export const TakeScreenshotSearchResult: MojoSearchResult = {
     {
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
+      acceleratorLocked: false,
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('LaunchApplication1'),  // overview
           accelerator: {
             modifiers: Modifier.CONTROL,
@@ -423,9 +450,11 @@ export const TakeScreenshotSearchResult: MojoSearchResult = {
     {
       type: AcceleratorType.kDefault,
       state: AcceleratorState.kEnabled,
+      acceleratorLocked: false,
       locked: false,
       layoutProperties: {
         standardAccelerator: {
+          originalAccelerator: null,
           keyDisplay: stringToMojoString16('PrintScreen'),  // screenshot
           accelerator: {
             modifiers: 0,
@@ -472,9 +501,11 @@ export const createFakeMojoAccelInfo =
       return {
         type: AcceleratorType.kDefault,
         state: AcceleratorState.kEnabled,
+        acceleratorLocked: false,
         locked: true,
         layoutProperties: {
           standardAccelerator: {
+            originalAccelerator: null,
             keyDisplay: stringToMojoString16(keyDisplay),
             accelerator: {
               modifiers: 0,

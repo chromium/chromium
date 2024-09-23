@@ -95,8 +95,8 @@ void DownloadClient::OnDownloadStarted(
     const std::string& guid,
     const std::vector<GURL>& url_chain,
     const scoped_refptr<const net::HttpResponseHeaders>& headers) {
-  // TODO(crbug.com/884672): Validate the chain/headers and cancel the download
-  // if invalid.
+  // TODO(crbug.com/40593934): Validate the chain/headers and cancel the
+  // download if invalid.
   auto response =
       std::make_unique<content::BackgroundFetchResponse>(url_chain, headers);
   GetDelegate()->OnDownloadStarted(guid, std::move(response));
@@ -121,10 +121,11 @@ void DownloadClient::OnDownloadFailed(const std::string& guid,
 
 void DownloadClient::OnDownloadSucceeded(const std::string& guid,
                                          const download::CompletionInfo& info) {
-  if (browser_context_->IsOffTheRecord())
+  if (browser_context_->IsOffTheRecord()) {
     DCHECK(info.blob_handle);
-  else
+  } else {
     DCHECK(!info.path.empty());
+  }
 
   auto response = std::make_unique<content::BackgroundFetchResponse>(
       info.url_chain, info.response_headers);

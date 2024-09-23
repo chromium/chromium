@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
+#include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
@@ -23,11 +26,13 @@ LayoutFlexibleBox::LayoutFlexibleBox(Element* element) : LayoutBlock(element) {}
 bool LayoutFlexibleBox::HasTopOverflow() const {
   const auto& style = StyleRef();
   bool is_wrap_reverse = StyleRef().FlexWrap() == EFlexWrap::kWrapReverse;
-  if (style.IsHorizontalWritingMode()) {
+  if (style.GetWritingDirection().BlockStart() == PhysicalDirection::kUp) {
     return style.ResolvedIsColumnReverseFlexDirection() ||
            (style.ResolvedIsRowFlexDirection() && is_wrap_reverse);
   }
-  return style.IsLeftToRightDirection() ==
+
+  return (style.GetWritingDirection().InlineStart() ==
+          PhysicalDirection::kUp) ==
          (style.ResolvedIsRowReverseFlexDirection() ||
           (style.ResolvedIsColumnFlexDirection() && is_wrap_reverse));
 }
@@ -40,7 +45,8 @@ bool LayoutFlexibleBox::HasLeftOverflow() const {
            (style.ResolvedIsRowReverseFlexDirection() ||
             (style.ResolvedIsColumnFlexDirection() && is_wrap_reverse));
   }
-  return (style.GetWritingMode() == WritingMode::kVerticalLr) ==
+  return (style.GetWritingDirection().BlockStart() ==
+          PhysicalDirection::kLeft) ==
          (style.ResolvedIsColumnReverseFlexDirection() ||
           (style.ResolvedIsRowFlexDirection() && is_wrap_reverse));
 }
@@ -67,17 +73,38 @@ void MergeAnonymousFlexItems(LayoutObject* remove_child) {
 bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
                                        const ComputedStyle& style) const {
   const auto* select = DynamicTo<HTMLSelectElement>(GetNode());
-  if (UNLIKELY(select && select->UsesMenuList())) {
-    // For a size=1 <select>, we only render the active option label through the
-    // InnerElement. We do not allow adding layout objects for options and
-    // optgroups.
-    if (select->SlottedButton()) {
-      // For stylable select, we want children to be renderable so that we can
-      // render the author provided <button> element. However, we don't want the
-      // <option>s to be rendered if they will be displayed in a native popup.
-      CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
-      return !IsA<HTMLOptionElement>(object->GetNode());
+  if (select && select->UsesMenuList()) [[unlikely]] {
+    if (select->IsAppearanceBaseButton()) {
+      CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+      if (IsA<HTMLOptionElement>(object->GetNode()) ||
+          IsA<HTMLOptGroupElement>(object->GetNode()) ||
+          IsA<HTMLHRElement>(object->GetNode())) {
+        // TODO(crbug.com/1511354): Remove this when <option>s are slotted into
+        // the UA <datalist>, which will be hidden by default as a popover.
+        return false;
+      }
+      // For appearance:base-select <select>, we want to render all children.
+      // However, the InnerElement is only used for rendering in
+      // appearance:auto, so don't include that one.
+      Node* child = object->GetNode();
+      if (child == &select->InnerElement() && select->SlottedButton()) {
+        // If the author doesn't provide a button, then we still want to display
+        // the InnerElement.
+        return false;
+      }
+      if (auto* popover = select->PopoverForAppearanceBase()) {
+        if (child == popover && !popover->popoverOpen()) {
+          // This is needed in order to keep the popover hidden after the UA
+          // sheet is forcing it to be display:block in order to get a computed
+          // style.
+          return false;
+        }
+      }
+      return true;
     } else {
+      // For a size=1 appearance:auto <select>, we only render the active option
+      // label through the InnerElement. We do not allow adding layout objects
+      // for options and optgroups.
       return object->GetNode() == &select->InnerElement();
     }
   }

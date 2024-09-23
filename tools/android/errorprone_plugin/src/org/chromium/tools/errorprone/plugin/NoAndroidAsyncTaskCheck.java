@@ -4,7 +4,6 @@
 
 package org.chromium.tools.errorprone.plugin;
 
-import com.google.auto.service.AutoService;
 import com.google.errorprone.BugPattern;
 import com.google.errorprone.VisitorState;
 import com.google.errorprone.bugpatterns.BugChecker;
@@ -13,8 +12,10 @@ import com.google.errorprone.util.ASTHelpers;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.tools.javac.code.Symbol;
 
+import org.chromium.build.annotations.ServiceImpl;
+
 /** Triggers an error for any occurrence of android.os.AsyncTask. */
-@AutoService(BugChecker.class)
+@ServiceImpl(BugChecker.class)
 @BugPattern(
         name = "NoAndroidAsyncTaskCheck",
         summary = "Do not use android.os.AsyncTask - use org.chromium.base.task.AsyncTask instead",

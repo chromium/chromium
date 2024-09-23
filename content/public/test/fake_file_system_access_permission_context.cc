@@ -110,4 +110,11 @@ void FakeFileSystemAccessPermissionContext::OnFileCreatedFromShowSaveFilePicker(
     const GURL& file_picker_binding_context,
     const storage::FileSystemURL& url) {}
 
+void FakeFileSystemAccessPermissionContext::CheckPathsAgainstEnterprisePolicy(
+    std::vector<PathInfo> entries,
+    GlobalRenderFrameHostId frame_id,
+    EntriesAllowedByEnterprisePolicyCallback callback) {
+  std::move(callback).Run(std::move(entries));
+}
+
 }  // namespace content

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
 #include <vector>
 
@@ -107,7 +112,6 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearFormat(
       return ClearWebSmartPaste();
   }
   NOTREACHED();
-  return *this;
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetText(
@@ -218,7 +222,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetFileSystemData(
       &custom_data);
 
   return SetCustomData(
-      ui::ClipboardFormatType::WebCustomDataType(),
+      ui::ClipboardFormatType::DataTransferCustomType(),
       std::string(custom_data.data_as_char(), custom_data.size()));
 }
 

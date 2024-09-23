@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -34,12 +35,13 @@ AddressEditorController::AddressEditorController(
       is_validatable_(is_validatable) {
   base::RepeatingCallback<bool(const std::string&)> filter;
   if (should_filter_out_unsupported_countries()) {
-    // TODO(crbug.com/1432505): remove temporary unsupported countries
+    // TODO(crbug.com/40263955): remove temporary unsupported countries
     // filtering.
     filter = base::BindRepeating(
         [](const PersonalDataManager* personal_data,
            const std::string& country) {
-          return personal_data->IsCountryEligibleForAccountStorage(country);
+          return personal_data->address_data_manager()
+              .IsCountryEligibleForAccountStorage(country);
         },
         &pdm_.get());
   }

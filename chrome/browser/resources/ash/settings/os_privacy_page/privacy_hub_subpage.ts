@@ -14,21 +14,21 @@ import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import './metrics_consent_toggle_button.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {MediaDevicesProxy} from '../common/media_devices_proxy.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, Router, routes} from '../router.js';
 
-import {MediaDevicesProxy} from './media_devices_proxy.js';
 import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
+import {GeolocationAccessLevel} from './privacy_hub_geolocation_subpage.js';
 import {PrivacyHubSensorSubpageUserAction} from './privacy_hub_metrics_util.js';
 import {getTemplate} from './privacy_hub_subpage.html.js';
 
@@ -66,6 +66,12 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         value: function() {
           return loadTimeData.getBoolean('showPrivacyHubLocationControl');
         },
+      },
+
+      locationSubLabel_: {
+        type: String,
+        computed: 'computeLocationRowSubtext_(' +
+            'prefs.ash.user.geolocation_access_level.value)',
       },
 
       cameraSubLabel_: String,
@@ -186,6 +192,8 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   }
 
   private browserProxy_: PrivacyHubBrowserProxy;
+  private showPrivacyHubLocationControl_: boolean;
+  private locationSublabel_: string;
   private cameraFallbackMechanismEnabled_: boolean;
   private cameraRowSubtext_: string;
   private cameraSubLabel_: string;
@@ -200,7 +208,6 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   private cameraSwitchForceDisabled_: boolean;
   private shouldDisableCameraToggle_: boolean;
   private showAppPermissions_: boolean;
-  private showPrivacyHubLocationControl_: boolean;
   private showSpeakOnMuteDetectionPage_: boolean;
 
   constructor() {
@@ -211,7 +218,6 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
 
   override ready(): void {
     super.ready();
-    assert(loadTimeData.getBoolean('showPrivacyHubPage'));
 
     this.addWebUiListener(
         'microphone-hardware-toggle-changed', (enabled: boolean) => {
@@ -354,6 +360,26 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         Object.keys(PrivacyHubSensorSubpageUserAction).length);
 
     Router.getInstance().navigateTo(routes.PRIVACY_HUB_GEOLOCATION);
+  }
+
+  private computeLocationRowSubtext_(): string {
+    if (!this.prefs) {
+      return '';
+    }
+
+    const locationAccessLevel: GeolocationAccessLevel =
+        this.getPref<GeolocationAccessLevel>(
+                'ash.user.geolocation_access_level')
+            .value;
+
+    switch (locationAccessLevel) {
+      case GeolocationAccessLevel.ALLOWED:
+        return this.i18n('geolocationAreaAllowedSubtext');
+      case GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM:
+        return this.i18n('geolocationAreaOnlyAllowedForSystemSubtext');
+      case GeolocationAccessLevel.DISALLOWED:
+        return this.i18n('geolocationAreaDisallowedSubtext');
+    }
   }
 
   private computeCameraRowSubtext_(): string {

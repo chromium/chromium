@@ -1,0 +1,16 @@
+# This file lists WPTs that should run against headless shell via chromedriver.
+# It is only used for migrating from RWT to Wptrunner, and will be deleted
+# after the migration is done. WPTs should by default run with headless shell,
+# except those listed in chrome.filter eventually.
+#
+# Further documentation:
+# https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
+
+external/wpt/longtask-timing/*
+external/wpt/webauthn/*
+
+virtual/gpu/external/wpt/*
+virtual/longtask-from-loaf/external/wpt/*
+virtual/single-renderer-process/external/wpt/*
+virtual/webauthn-remote-desktop-client-override/*
+

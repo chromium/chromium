@@ -48,8 +48,9 @@ const perLayoutTests: {[name: string]: Array<() => void>} = {
   ],
 };
 
-if (document.title in perLayoutTests) {
-  chrome.test.runTests(tests.concat(perLayoutTests[document.title]!));
+const viewer = document.body.querySelector<PdfViewerElement>('#viewer')!;
+if (viewer.pdfTitle in perLayoutTests) {
+  chrome.test.runTests(tests.concat(perLayoutTests[viewer.pdfTitle]!));
 } else {
-  chrome.test.fail(document.title);
+  chrome.test.fail(viewer.pdfTitle);
 }

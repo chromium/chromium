@@ -6,6 +6,8 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/webui/url_data_manager_backend.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
@@ -19,6 +21,7 @@ void StartNetworkErrorsURLLoader(
   int net_error = net::ERR_INVALID_URL;
   if (request.url.host() == kChromeUIDinoHost) {
     net_error = net::Error::ERR_INTERNET_DISCONNECTED;
+    GetContentClient()->browser()->LogWebUIUrl(request.url);
   } else {
     std::string error_code_string = request.url.path().substr(1);
 

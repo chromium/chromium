@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_SESSION_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -15,10 +16,9 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/demo_mode/demo_extensions_external_loader.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
-#include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -44,7 +44,6 @@ class DemoComponents;
 // started and the state of demo mode resources.
 class DemoSession : public session_manager::SessionManagerObserver,
                     public user_manager::UserManager::UserSessionStateObserver,
-                    public extensions::AppWindowRegistry::Observer,
                     public chromeos::PowerManagerClient::Observer {
  public:
   // Type of demo mode configuration.
@@ -70,14 +69,24 @@ class DemoSession : public session_manager::SessionManagerObserver,
   enum class AppLaunchSource {
     // Logged when apps are launched from the Shelf in Demo Mode.
     kShelf = 0,
+
     // Logged when apps are launched from the App List in Demo Mode.
     kAppList = 1,
-    // Logged by any Extension APIs used by the Highlights App to launch apps in
+
+    // Obsolete. Logged by any Extension APIs used by the Highlights App to
+    // launch apps in Demo Mode.
+    // kExtensionApi = 2, OBSOLETE
+
+    // Logged when apps are launched from the demo mode app.
+    kDemoModeApp = 3,
+
+    // Logged when apps are launched from the search result in the App List in
     // Demo Mode.
-    kExtensionApi = 2,
+    kAppListQuery = 4,
+
     // Add future entries above this comment, in sync with enums.xml.
     // Update kMaxValue to the last value.
-    kMaxValue = kExtensionApi
+    kMaxValue = kAppListQuery
   };
 
   // The list of countries that Demo Mode supports, ie the countries we have
@@ -95,6 +104,11 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   static std::string DemoConfigToString(DemoModeConfig config);
 
+  // TODO(b/366092466): Refactor demo code that not related to ChromeOS UI to
+  // //chromeos/ash/components/demo_mode.
+
+  // DO NOT USE. Please use `IsDeviceInDemoMode()` in
+  // chromeos/ash/components/demo_mode/utils/demo_session_utils.h
   // Whether the device is set up to run demo sessions.
   static bool IsDeviceInDemoMode();
 
@@ -143,21 +157,16 @@ class DemoSession : public session_manager::SessionManagerObserver,
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Records the launch of an app in Demo mode from the specified source.
-  static void RecordAppLaunchSourceIfInDemoMode(AppLaunchSource source);
+  static void RecordAppLaunchSource(AppLaunchSource source);
 
   // Ensures that the load of demo session resources is requested.
   // `load_callback` will be run once the resource load finishes.
   void EnsureResourcesLoaded(base::OnceClosure load_callback);
 
-  // Returns false if the Chrome app or ARC++ package, which is normally pinned
-  // by policy, should actually not be force-pinned because the device is
-  // in Demo Mode and offline.
-  bool ShouldShowAndroidOrChromeAppInShelf(
-      const std::string& app_id_or_package);
-
-  // Sets `extensions_external_loader_` and starts installing the screensaver.
-  void SetExtensionsExternalLoader(
-      scoped_refptr<DemoExtensionsExternalLoader> extensions_external_loader);
+  // Returns false if the app, which is normally pinned by policy, should
+  // actually not be force-pinned because the device is in Demo Mode and
+  // offline.
+  bool ShouldShowAppInShelf(const std::string& app_id_or_package);
 
   // Sets app IDs and package names that shouldn't be pinned by policy when the
   // device is offline in Demo Mode.
@@ -168,9 +177,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
-
-  // extensions::AppWindowRegistry::Observer:
-  void OnAppWindowActivated(extensions::AppWindow* app_window) override;
 
   bool started() const { return started_; }
 
@@ -183,6 +189,10 @@ class DemoSession : public session_manager::SessionManagerObserver,
   base::FilePath GetDemoAppComponentPath();
 
   const DemoComponents* components() const { return components_.get(); }
+
+  // Removes the splash screen and stops the fallback timeout. It has no effect
+  // if the splash screen is already removed or never shown.
+  void RemoveSplashScreen();
 
  private:
   DemoSession();
@@ -204,14 +214,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   // Show, and set the fallback timeout to remove, the splash screen.
   void ShowSplashScreen(base::FilePath image_path);
-
-  // Removes the splash screen.
-  void RemoveSplashScreen();
-
-  // Returns whether splash screen should be removed. The splash screen should
-  // be removed when both active session starts (i.e. login screen is destroyed)
-  // and screensaver is shown, to ensure a smooth transition.
-  bool ShouldRemoveSplashScreen();
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
@@ -238,12 +240,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
 
-  base::ScopedMultiSourceObservation<extensions::AppWindowRegistry,
-                                     extensions::AppWindowRegistry::Observer>
-      app_window_registry_observations_{this};
-
-  scoped_refptr<DemoExtensionsExternalLoader> extensions_external_loader_;
-
   // The fallback timer that ensures the splash screen is removed in case the
   // screensaver app takes an extra long time to be shown.
   std::unique_ptr<base::OneShotTimer> remove_splash_screen_fallback_timer_;
@@ -251,8 +247,10 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // Constructed when the demo mode user session starts.
   std::unique_ptr<DemoModeWindowCloser> window_closer_;
 
-  bool splash_screen_removed_ = false;
-  bool screensaver_activated_ = false;
+  bool splash_screen_activated_ = false;
+
+  // Keep track of which app has been installed in demo mode.
+  std::set<std::string> installed_app_;
 
   base::WeakPtrFactory<DemoSession> weak_ptr_factory_{this};
 };

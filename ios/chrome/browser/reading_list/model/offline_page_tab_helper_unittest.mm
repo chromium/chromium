@@ -18,7 +18,7 @@
 #import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -49,7 +49,7 @@ class OfflinePageTabHelperTest : public PlatformTest {
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::move(initial_entries)));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     fake_web_state_.SetBrowserState(browser_state_.get());
     fake_web_state_.SetNavigationManager(
@@ -92,7 +92,7 @@ class OfflinePageTabHelperDelayedModelTest : public PlatformTest {
                   base::DefaultClock::GetInstance());
             },
             base::OwnedRef(std::move(storage))));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     fake_web_state_.SetBrowserState(browser_state_.get());
     fake_web_state_.SetNavigationManager(

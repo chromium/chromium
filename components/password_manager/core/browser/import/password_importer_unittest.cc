@@ -13,12 +13,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -48,9 +49,11 @@ class FakePasswordParserService : public mojom::CSVPasswordParser {
     CSVPasswordSequence seq(raw_json);
     if (seq.result() == CSVPassword::Status::kOK) {
       result = mojom::CSVPasswordSequence::New();
-      if (result)
-        for (const auto& pwd : seq)
+      if (result) {
+        for (const auto& pwd : seq) {
           result->csv_passwords.push_back(pwd);
+        }
+      }
     }
     std::move(callback).Run(std::move(result));
   }
@@ -174,7 +177,7 @@ class PasswordImporterTest : public testing::Test {
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   scoped_refptr<TestPasswordStore> account_store_ =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
-  FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, profile_store_,
                                      account_store_};
   password_manager::PasswordImporter importer_;
@@ -745,8 +748,6 @@ TEST_F(PasswordImporterTest, CSVImportEmptyPasswordReported) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 0, 1);
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.Import.PerFile.OnlyPasswordMissing", 1, 1);
-  histogram_tester.ExpectUniqueSample(
       "PasswordManager.Import.PerFile.PasswordAndUsernameMissing", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.Import.PerFile.AllLoginFieldsEmtpy", 1, 1);
@@ -1038,10 +1039,11 @@ TEST_F(PasswordImporterTest, CSVImportHitMaxPasswordsLimit) {
   base::HistogramTester histogram_tester;
   std::string content = "url,login,password\n";
   std::string row = "http://a.b,c,d\n";
-  const size_t EXCEEDS_LIMIT = PasswordImporter::MAX_PASSWORDS_PER_IMPORT + 1;
+  const size_t EXCEEDS_LIMIT = constants::kMaxPasswordsPerCSVFile + 1;
   content.reserve(row.size() * EXCEEDS_LIMIT);
-  for (size_t i = 0; i < EXCEEDS_LIMIT; i++)
+  for (size_t i = 0; i < EXCEEDS_LIMIT; i++) {
     content.append(row);
+  }
 
   base::FilePath temp_file_path;
   ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path));

@@ -52,6 +52,10 @@ class CastDecoderBuffer {
   // Indicates if this is a special frame that indicates the end of the stream.
   // If true, functions to access the frame content cannot be called.
   virtual bool end_of_stream() const = 0;
+
+  // Indicates if this is a key frame. Only relevant to buffers containing video
+  // data.
+  virtual bool is_key_frame() const = 0;
 };
 
 }  // namespace media

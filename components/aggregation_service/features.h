@@ -13,16 +13,18 @@
 
 namespace aggregation_service {
 
+// This feature is no longer checked, and only the feature param is used.
 COMPONENT_EXPORT(AGGREGATION_SERVICE)
 BASE_DECLARE_FEATURE(kAggregationServiceMultipleCloudProviders);
 
+// Comma-separated origins. The first origin will be used as default. When
+// empty, the default coordinator origins will be used.
+//
+// TODO(linnan): Consider replacing this with a command-line switch since it
+// isn't needed in production.
 COMPONENT_EXPORT(AGGREGATION_SERVICE)
 extern const base::FeatureParam<std::string>
-    kAggregationServiceCoordinatorAwsCloud;
-
-COMPONENT_EXPORT(AGGREGATION_SERVICE)
-extern const base::FeatureParam<std::string>
-    kAggregationServiceCoordinatorGcpCloud;
+    kAggregationServiceCoordinatorAllowlist;
 
 }  // namespace aggregation_service
 

@@ -5,11 +5,18 @@
 #ifndef COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_MANAGER_IMPL_H_
 #define COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_MANAGER_IMPL_H_
 
+#include <optional>
+
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_manager.h"
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace compose {
 
@@ -23,9 +30,6 @@ class ComposeManagerImpl : public ComposeManager {
   ~ComposeManagerImpl() override;
 
   // AutofillComposeDelegate
-  bool ShouldOfferComposePopup(
-      const autofill::FormFieldData& trigger_field) override;
-  bool HasSavedState(const autofill::FieldGlobalId& trigger_field_id) override;
   void OpenCompose(autofill::AutofillDriver& driver,
                    autofill::FormGlobalId form_id,
                    autofill::FieldGlobalId field_id,
@@ -37,10 +41,23 @@ class ComposeManagerImpl : public ComposeManager {
       const autofill::FormFieldData& trigger_field,
       std::optional<PopupScreenLocation> popup_screen_location,
       ComposeCallback callback) override;
+  std::optional<autofill::Suggestion> GetSuggestion(
+      const autofill::FormData& form,
+      const autofill::FormFieldData& field,
+      autofill::AutofillSuggestionTriggerSource trigger_source) override;
+  void NeverShowComposeForOrigin(const url::Origin& origin) override;
+  void DisableCompose() override;
+  void GoToSettings() override;
+  bool ShouldAnchorNudgeOnCaret() override;
 
  private:
   bool IsEnabled() const;
-  void GetBrowserFormHandler(
+  void OpenComposeWithFormData(
+      autofill::FieldGlobalId field_id,
+      compose::ComposeManagerImpl::UiEntryPoint ui_entry_point,
+      autofill::AutofillDriver* driver,
+      const std::optional<autofill::FormData>& form_data);
+  void OpenComposeWithUpdatedSelection(
       autofill::FieldGlobalId field_id,
       compose::ComposeManagerImpl::UiEntryPoint ui_entry_point,
       autofill::AutofillDriver* driver,

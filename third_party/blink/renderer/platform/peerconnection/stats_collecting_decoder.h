@@ -67,8 +67,7 @@ class PLATFORM_EXPORT StatsCollectingDecoder
                std::optional<uint8_t> qp) override;
 
   const std::unique_ptr<webrtc::VideoDecoder> decoder_;
-  raw_ptr<webrtc::DecodedImageCallback, ExperimentalRenderer> decoded_callback_{
-      nullptr};
+  raw_ptr<webrtc::DecodedImageCallback> decoded_callback_{nullptr};
 
   // Lock for variables that are accessed in both Decode() and Decoded(). This
   // is needed because Decode() and Decoded() may be called simultaneously on

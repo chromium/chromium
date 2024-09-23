@@ -12,6 +12,8 @@
 
 namespace blink {
 
+class CSSProperty;
+
 // Represents a blink::NGGridTrackRepeater, converted into a form that can be
 // interpolated from/to.
 class CORE_EXPORT InterpolableGridTrackRepeater final
@@ -22,6 +24,7 @@ class CORE_EXPORT InterpolableGridTrackRepeater final
   static InterpolableGridTrackRepeater* Create(
       const NGGridTrackRepeater& repeater,
       const Vector<GridTrackSize, 1>& repeater_track_sizes,
+      const CSSProperty& property,
       float zoom);
 
   Vector<GridTrackSize, 1> CreateTrackSizes(

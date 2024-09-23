@@ -7,6 +7,7 @@
 #include <dlfcn.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/android/build_info.h"
@@ -21,6 +22,8 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "net/base/net_errors.h"
 #include "net/dns/public/dns_protocol.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "net/net_jni_headers/AndroidNetworkLibrary_jni.h"
 #include "net/net_jni_headers/DnsStatus_jni.h"
 
@@ -45,8 +48,8 @@ std::vector<std::string> GetUserAddedRoots() {
 }
 
 void VerifyX509CertChain(const std::vector<std::string>& cert_chain,
-                         base::StringPiece auth_type,
-                         base::StringPiece host,
+                         std::string_view auth_type,
+                         std::string_view host,
                          CertVerifyStatusAndroid* status,
                          bool* is_issued_by_known_root,
                          std::vector<std::string>* verified_chain) {
@@ -72,9 +75,9 @@ void VerifyX509CertChain(const std::vector<std::string>& cert_chain,
                           verified_chain);
 }
 
-void AddTestRootCertificate(const uint8_t* cert, size_t len) {
+void AddTestRootCertificate(base::span<const uint8_t> cert) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jbyteArray> cert_array = ToJavaByteArray(env, cert, len);
+  ScopedJavaLocalRef<jbyteArray> cert_array = ToJavaByteArray(env, cert);
   DCHECK(!cert_array.is_null());
   Java_AndroidNetworkLibrary_addTestRootCertificate(env, cert_array);
 }
@@ -84,7 +87,7 @@ void ClearTestRootCertificates() {
   Java_AndroidNetworkLibrary_clearTestRootCertificates(env);
 }
 
-bool IsCleartextPermitted(base::StringPiece host) {
+bool IsCleartextPermitted(std::string_view host) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> host_string = ConvertUTF8ToJavaString(env, host);
   return Java_AndroidNetworkLibrary_isCleartextPermitted(env, host_string);
@@ -97,8 +100,7 @@ bool HaveOnlyLoopbackAddresses() {
   return Java_AndroidNetworkLibrary_haveOnlyLoopbackAddresses(env);
 }
 
-bool GetMimeTypeFromExtension(base::StringPiece extension,
-                              std::string* result) {
+bool GetMimeTypeFromExtension(std::string_view extension, std::string* result) {
   JNIEnv* env = AttachCurrentThread();
 
   ScopedJavaLocalRef<jstring> extension_string =
@@ -165,7 +167,7 @@ bool GetDnsServersInternal(JNIEnv* env,
   base::android::JavaArrayOfByteArrayToBytesVector(
       env, Java_DnsStatus_getDnsServers(env, dns_status), &dns_servers_data);
   for (const std::vector<uint8_t>& dns_address_data : dns_servers_data) {
-    IPAddress dns_address(dns_address_data.data(), dns_address_data.size());
+    IPAddress dns_address(dns_address_data);
     IPEndPoint dns_server(dns_address, dns_protocol::kDefaultPort);
     dns_servers->push_back(dns_server);
   }

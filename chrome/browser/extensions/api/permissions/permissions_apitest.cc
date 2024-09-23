@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
@@ -16,6 +17,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -99,7 +101,7 @@ IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType,
       << message_;
 }
 
-// TODO(crbug/1065399): Flaky on ChromeOS, Linux, and Mac non-dbg builds.
+// TODO(crbug.com/40124130): Flaky on ChromeOS, Linux, and Mac non-dbg builds.
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)) && \
     defined(NDEBUG)
 #define MAYBE_FaviconPermission DISABLED_FaviconPermission
@@ -278,5 +280,37 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          PermissionsApiTestWithContextType,
                          testing::Values(ContextType::kServiceWorker));
+
+class PermissionsApiSiteAccessRequestsTest : public PermissionsApiTest {
+ public:
+  PermissionsApiSiteAccessRequestsTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kApiPermissionsSiteAccessRequests);
+  }
+  ~PermissionsApiSiteAccessRequestsTest() override = default;
+  PermissionsApiSiteAccessRequestsTest(
+      const PermissionsApiSiteAccessRequestsTest&) = delete;
+  PermissionsApiSiteAccessRequestsTest& operator=(
+      const PermissionsApiSiteAccessRequestsTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PermissionsApiSiteAccessRequestsTest,
+                       InvalidAddSiteAccessRequests) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  ASSERT_TRUE(RunExtensionTest("permissions/add_site_access_request"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionsApiSiteAccessRequestsTest,
+                       InvalidRemoveSiteAccessRequests) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  ASSERT_TRUE(RunExtensionTest("permissions/remove_site_access_request"))
+      << message_;
+}
 
 }  // namespace extensions

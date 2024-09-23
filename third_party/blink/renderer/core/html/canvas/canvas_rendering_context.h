@@ -77,7 +77,6 @@ class Element;
 class ExceptionState;
 class ExecutionContext;
 class ImageBitmap;
-class NoAllocDirectCallHost;
 class ScriptState;
 class StaticBitmapImage;
 class
@@ -129,8 +128,6 @@ class CORE_EXPORT CanvasRenderingContext
     return canvas_rendering_type_ == CanvasRenderingAPI::kWebgpu;
   }
 
-  virtual NoAllocDirectCallHost* AsNoAllocDirectCallHost();
-
   // ActiveScriptWrappable
   // As this class inherits from ActiveScriptWrappable, as long as
   // HasPendingActivity returns true, we can ensure that the Garbage Collector
@@ -139,7 +136,7 @@ class CORE_EXPORT CanvasRenderingContext
   bool HasPendingActivity() const override { return false; }
   ExecutionContext* GetExecutionContext() const {
     const CanvasRenderingContextHost* host = Host();
-    if (UNLIKELY(host == nullptr)) {
+    if (host == nullptr) [[unlikely]] {
       return nullptr;
     }
     return host->GetTopExecutionContext();
@@ -156,12 +153,16 @@ class CORE_EXPORT CanvasRenderingContext
   CanvasRenderingContextHost* Host() const { return host_.Get(); }
 
   const CanvasResourceProvider* ResourceProvider() const {
-    const CanvasRenderingContextHost* host = Host();
-    return UNLIKELY(host == nullptr) ? nullptr : host->ResourceProvider();
+    if (const CanvasRenderingContextHost* host = Host()) [[likely]] {
+      return host->ResourceProvider();
+    }
+    return nullptr;
   }
   CanvasResourceProvider* ResourceProvider() {
-    CanvasRenderingContextHost* host = Host();
-    return UNLIKELY(host == nullptr) ? nullptr : host->ResourceProvider();
+    if (const CanvasRenderingContextHost* host = Host()) [[likely]] {
+      return host->ResourceProvider();
+    }
+    return nullptr;
   }
 
   virtual SkColorInfo CanvasRenderingContextSkColorInfo() const;
@@ -174,7 +175,6 @@ class CORE_EXPORT CanvasRenderingContext
     // coordinates in the bottom left corner.
     return Host()->GetRasterMode() == RasterMode::kCPU;
   }
-  virtual bool ShouldAntialias() const { return false; }
   // Called when the entire tab is backgrounded or unbackgrounded.
   // The page's visibility status can be queried at any time via
   // Host()->IsPageVisible().
@@ -187,12 +187,12 @@ class CORE_EXPORT CanvasRenderingContext
   // TODO(fserb): remove AsV8RenderingContext and AsV8OffscreenRenderingContext.
   virtual V8UnionCanvasRenderingContext2DOrGPUCanvasContextOrImageBitmapRenderingContextOrWebGL2RenderingContextOrWebGLRenderingContext*
   AsV8RenderingContext() {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   virtual V8UnionGPUCanvasContextOrImageBitmapRenderingContextOrOffscreenCanvasRenderingContext2DOrWebGL2RenderingContextOrWebGLRenderingContext*
   AsV8OffscreenRenderingContext() {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   virtual bool IsPaintable() const = 0;
@@ -267,26 +267,28 @@ class CORE_EXPORT CanvasRenderingContext
   virtual void ResetUsageTracking() {}
   virtual int LayerCount() const { return 0; }
 
-  virtual void setFontForTesting(const String&) { NOTREACHED(); }
+  virtual void setFontForTesting(const String&) { NOTREACHED_IN_MIGRATION(); }
 
   // WebGL-specific interface
   virtual bool UsingSwapChain() const { return false; }
-  virtual void MarkLayerComposited() { NOTREACHED(); }
+  virtual void MarkLayerComposited() { NOTREACHED_IN_MIGRATION(); }
   virtual sk_sp<SkData> PaintRenderingResultsToDataArray(SourceDrawingBuffer) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   virtual gfx::Size DrawingBufferSize() const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::Size(0, 0);
   }
 
   // WebGL & WebGPU-specific interface
   virtual void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {}
-  virtual void SetFilterQuality(cc::PaintFlags::FilterQuality) { NOTREACHED(); }
+  virtual void SetFilterQuality(cc::PaintFlags::FilterQuality) {
+    NOTREACHED_IN_MIGRATION();
+  }
   virtual void Reshape(int width, int height) {}
   virtual int ExternallyAllocatedBufferCountPerPixel() {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 

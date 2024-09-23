@@ -16,9 +16,11 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "components/feature_engagement/internal/jni_headers/TrackerImpl_jni.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/tracker.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/feature_engagement/internal/jni_headers/TrackerImpl_jni.h"
 
 namespace feature_engagement {
 

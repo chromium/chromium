@@ -37,12 +37,12 @@ RenditionManager::CodecSupportType VariantTypeSupported(
 }
 
 std::string GetVariantDisplayString(const VariantStream* variant) {
-  // TODO(crbug/1266991): implement.
+  // TODO(crbug.com/40057824): implement.
   return "variant";
 }
 
 std::string GetAudioRenditionDisplayString(const AudioRendition* rendition) {
-  // TODO(crbug/1266991): Consider displaying characteristics / channels /
+  // TODO(crbug.com/40057824): Consider displaying characteristics / channels /
   // language and other things rather than just the name.
   return rendition->GetName();
 }
@@ -141,23 +141,29 @@ void RenditionManager::Reselect(SelectedCallonce callback) {
 void RenditionManager::SetPreferredVariant(
     std::optional<RenditionManager::VariantID> id) {
   preferred_variant_ = id;
-  Reselect(on_variant_selected_);
+  Reselect(
+      base::BindOnce(on_variant_selected_, AdaptationReason::kUserSelection));
 }
 
 void RenditionManager::SetPreferredAudioRendition(
     std::optional<RenditionManager::RenditionID> id) {
   preferred_audio_rendition_ = id;
-  Reselect(on_variant_selected_);
+  Reselect(
+      base::BindOnce(on_variant_selected_, AdaptationReason::kUserSelection));
 }
 
 void RenditionManager::UpdatePlayerResolution(const gfx::Size& resolution) {
   player_resolution_ = resolution;
-  Reselect(on_variant_selected_);
+  Reselect(base::BindOnce(on_variant_selected_,
+                          AdaptationReason::kResolutionChange));
 }
 
 void RenditionManager::UpdateNetworkSpeed(uint64_t network_bps) {
+  AdaptationReason reason = network_bps_ > network_bps
+                                ? AdaptationReason::kNetworkDowngrade
+                                : AdaptationReason::kNetworkUpgrade;
   network_bps_ = network_bps;
-  Reselect(on_variant_selected_);
+  Reselect(base::BindOnce(on_variant_selected_, reason));
 }
 
 bool RenditionManager::HasAnyVariants() const {
@@ -178,9 +184,9 @@ void RenditionManager::InitializeVariantMaps(
   // finding any audio-only variants, drop all the audio-specific variants and
   // renditions. If we find any audio-only variants after a video variant, do
   // not consider it.
-  // TODO(crbug/1266991): Is this correct? The spec does not say anything about
-  // playlists which have audio-only variants next to variants with video. It
-  // might be used in the wild to play only video if the network is truly in
+  // TODO(crbug.com/40057824): Is this correct? The spec does not say anything
+  // about playlists which have audio-only variants next to variants with video.
+  // It might be used in the wild to play only video if the network is truly in
   // bad shape, but it's not clear. I've not run into any playlists in the wild
   // which have this.
   for (const VariantStream& variant : playlist_->GetVariants()) {

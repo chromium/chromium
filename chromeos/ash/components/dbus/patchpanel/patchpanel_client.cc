@@ -11,7 +11,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/patchpanel/fake_patchpanel_client.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_service.pb.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -136,8 +138,69 @@ class PatchPanelClientImpl : public PatchPanelClient {
                                   base::DoNothing());
   }
 
+  void TagSocket(int socket_fd,
+                 std::optional<int> network_id,
+                 std::optional<VpnRoutingPolicy> vpn_policy,
+                 TagSocketCallback callback) override {
+    using patchpanel::TagSocketRequest;
+
+    dbus::MethodCall method_call(patchpanel::kPatchPanelInterface,
+                                 patchpanel::kTagSocketMethod);
+    dbus::MessageWriter writer(&method_call);
+
+    TagSocketRequest::VpnRoutingPolicy proto_vpn_policy =
+        TagSocketRequest::DEFAULT_ROUTING;
+    if (vpn_policy.has_value()) {
+      switch (*vpn_policy) {
+        case VpnRoutingPolicy::kRouteOnVpn:
+          proto_vpn_policy = TagSocketRequest::ROUTE_ON_VPN;
+          break;
+        case VpnRoutingPolicy::kBypassVpn:
+          proto_vpn_policy = TagSocketRequest::BYPASS_VPN;
+          break;
+      }
+    }
+
+    TagSocketRequest request;
+    if (network_id.has_value()) {
+      request.set_network_id(*network_id);
+    }
+    request.set_vpn_policy(proto_vpn_policy);
+
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to serialize TagSocketRequest proto";
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), /*success=*/false));
+      return;
+    }
+    writer.AppendFileDescriptor(socket_fd);
+
+    patchpanel_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&PatchPanelClientImpl::HandleTagSocketResponse,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void SetFeatureFlag(patchpanel::SetFeatureFlagRequest::FeatureFlag flag,
                       bool enabled) override {
+    // SetFeatureFlag is be called on Chrome starts and it's very likely that
+    // patchpanel D-Bus service is not ready at that time, so we want to use
+    // WaitForServiceToBeAvailable() to post the task here. Note that if the
+    // service is already ready, it will behave similar to a PostTask() so this
+    // won't be harmful here.
+    patchpanel_proxy_->WaitForServiceToBeAvailable(
+        base::BindOnce(&PatchPanelClientImpl::SetFeatureFlagImpl,
+                       weak_factory_.GetWeakPtr(), flag, enabled));
+  }
+
+  void SetFeatureFlagImpl(patchpanel::SetFeatureFlagRequest::FeatureFlag flag,
+                          bool enabled,
+                          bool patchpanel_service_ready) {
+    if (!patchpanel_service_ready) {
+      LOG(ERROR) << "Patchpanel service is not ready";
+      return;
+    }
+
     dbus::MethodCall method_call(patchpanel::kPatchPanelInterface,
                                  patchpanel::kSetFeatureFlagMethod);
     dbus::MessageWriter writer(&method_call);
@@ -163,6 +226,12 @@ class PatchPanelClientImpl : public PatchPanelClient {
     ConnectToSignals();
   }
 
+  void WaitForServiceToBeAvailable(
+      dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback)
+      override {
+    patchpanel_proxy_->WaitForServiceToBeAvailable(std::move(callback));
+  }
+
   void AddObserver(Observer* observer) override {
     observer_list_.AddObserver(observer);
   }
@@ -184,6 +253,18 @@ class PatchPanelClientImpl : public PatchPanelClient {
     std::move(callback).Run(std::vector<patchpanel::NetworkDevice>(
         std::make_move_iterator(response.devices().begin()),
         std::make_move_iterator(response.devices().end())));
+  }
+
+  void HandleTagSocketResponse(TagSocketCallback callback,
+                               dbus::Response* dbus_response) {
+    patchpanel::TagSocketResponse response;
+    dbus::MessageReader reader(dbus_response);
+    if (!reader.PopArrayOfBytesAsProto(&response)) {
+      LOG(ERROR) << "Failed to parse TagSocketResponse proto";
+      std::move(callback).Run({});
+      return;
+    }
+    std::move(callback).Run(response.success());
   }
 
   void OnNetworkConfigurationChanged(dbus::Signal* signal) {

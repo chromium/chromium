@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://read-later.top-chrome/app.js';
+import 'chrome://read-later.top-chrome/reading_list_app.js';
 
-import type {ReadingListAppElement} from 'chrome://read-later.top-chrome/app.js';
 import type {ReadLaterEntriesByStatus} from 'chrome://read-later.top-chrome/reading_list.mojom-webui.js';
 import {ReadingListApiProxyImpl} from 'chrome://read-later.top-chrome/reading_list_api_proxy.js';
+import type {ReadingListAppElement} from 'chrome://read-later.top-chrome/reading_list_app.js';
 import type {ReadingListItemElement} from 'chrome://read-later.top-chrome/reading_list_item.js';
-import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestReadingListApiProxy} from './test_reading_list_api_proxy.js';
 
@@ -85,7 +85,7 @@ suite('ReadingListAppTest', () => {
 
     readingListApp = document.createElement('reading-list-app');
     document.body.appendChild(readingListApp);
-    await flushTasks();
+    await microtasksFinished();
   });
 
   test('return all entries', async () => {
@@ -269,14 +269,14 @@ suite('ReadingListAppTest', () => {
     Object.defineProperty(
         document, 'visibilityState', {value: 'hidden', writable: true});
     document.dispatchEvent(new Event('visibilitychange'));
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(1, testProxy.getCallCount('getReadLaterEntries'));
 
     // When visible visibilitychange should trigger the data callback.
     Object.defineProperty(
         document, 'visibilityState', {value: 'visible', writable: true});
     document.dispatchEvent(new Event('visibilitychange'));
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(2, testProxy.getCallCount('getReadLaterEntries'));
   });
 });

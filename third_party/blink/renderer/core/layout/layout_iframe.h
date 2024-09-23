@@ -41,8 +41,6 @@ class CORE_EXPORT LayoutIFrame : public LayoutEmbeddedContent {
   }
 
  private:
-  void UpdateLayout() override;
-
   bool IsLayoutIFrame() const final {
     NOT_DESTROYED();
     return true;

@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -94,7 +95,7 @@ TEST_F(DeleteWithRetryTest, DeleteNoFile) {
 // Tests that deleting a file succeeds.
 TEST_F(DeleteWithRetryTest, DeleteFile) {
   const base::FilePath path = TestDir().Append(FILE_PATH_LITERAL("file"));
-  ASSERT_TRUE(base::WriteFile(path, base::StringPiece()));
+  ASSERT_TRUE(base::WriteFile(path, std::string_view()));
   int attempts = 0;
   ASSERT_TRUE(DeleteWithRetry(path.value().c_str(), attempts));
   EXPECT_GE(attempts, 1);
@@ -104,7 +105,7 @@ TEST_F(DeleteWithRetryTest, DeleteFile) {
 // Tests that deleting a read-only file succeeds.
 TEST_F(DeleteWithRetryTest, DeleteReadonlyFile) {
   const base::FilePath path = TestDir().Append(FILE_PATH_LITERAL("file"));
-  ASSERT_TRUE(base::WriteFile(path, base::StringPiece()));
+  ASSERT_TRUE(base::WriteFile(path, std::string_view()));
   DWORD attributes = ::GetFileAttributes(path.value().c_str());
   ASSERT_NE(attributes, INVALID_FILE_ATTRIBUTES) << ::GetLastError();
   ASSERT_NE(::SetFileAttributes(path.value().c_str(),
@@ -132,7 +133,7 @@ TEST_F(DeleteWithRetryTest, DeleteNonEmptyDir) {
   const base::FilePath path = TestDir().Append(FILE_PATH_LITERAL("dir"));
   ASSERT_TRUE(base::CreateDirectory(path));
   ASSERT_TRUE(base::WriteFile(path.Append(FILE_PATH_LITERAL("file")),
-                              base::StringPiece()));
+                              std::string_view()));
   {
     ::testing::StrictMock<MockSleepHook> mock_hook;
     ScopedSleepHook hook(&mock_hook);
@@ -150,7 +151,7 @@ TEST_F(DeleteWithRetryTest, DeleteDirThatEmpties) {
   const base::FilePath path = TestDir().Append(FILE_PATH_LITERAL("dir"));
   ASSERT_TRUE(base::CreateDirectory(path));
   const base::FilePath file = path.Append(FILE_PATH_LITERAL("file"));
-  ASSERT_TRUE(base::WriteFile(file, base::StringPiece()));
+  ASSERT_TRUE(base::WriteFile(file, std::string_view()));
   {
     ::testing::NiceMock<MockSleepHook> mock_hook;
     ScopedSleepHook hook(&mock_hook);
@@ -168,7 +169,7 @@ TEST_F(DeleteWithRetryTest, DeleteDirThatEmpties) {
 // a retry that succeeds after the file is closed.
 TEST_F(DeleteWithRetryTest, DeleteMappedFile) {
   const base::FilePath path = TestDir().Append(FILE_PATH_LITERAL("file"));
-  ASSERT_TRUE(base::WriteFile(path, base::StringPiece("i miss you")));
+  ASSERT_TRUE(base::WriteFile(path, std::string_view("i miss you")));
 
   // Open the file for read-only access; allowing others to do anything.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
@@ -198,7 +199,7 @@ TEST_F(DeleteWithRetryTest, DeleteMappedFile) {
 // closed.
 TEST_F(DeleteWithRetryTest, DeleteInUseFile) {
   const base::FilePath path = TestDir().Append(FILE_PATH_LITERAL("file"));
-  ASSERT_TRUE(base::WriteFile(path, base::StringPiece("i miss you")));
+  ASSERT_TRUE(base::WriteFile(path, std::string_view("i miss you")));
 
   // Open the file for read-only access; allowing others to do anything.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
@@ -222,7 +223,7 @@ TEST_F(DeleteWithRetryTest, DeleteInUseFile) {
 // one retry.
 TEST_F(DeleteWithRetryTest, DeleteReadOnlyNoSharing) {
   const base::FilePath path = TestDir().Append(FILE_PATH_LITERAL("file"));
-  ASSERT_TRUE(base::WriteFile(path, base::StringPiece("i miss you")));
+  ASSERT_TRUE(base::WriteFile(path, std::string_view("i miss you")));
 
   // Make it read-only.
   DWORD attributes = ::GetFileAttributes(path.value().c_str());
@@ -253,7 +254,7 @@ TEST_F(DeleteWithRetryTest, DeleteReadOnlyNoSharing) {
 // Tests that deleting fails after all retries are used up.
 TEST_F(DeleteWithRetryTest, MaxRetries) {
   const base::FilePath path = TestDir().Append(FILE_PATH_LITERAL("file"));
-  ASSERT_TRUE(base::WriteFile(path, base::StringPiece("i miss you")));
+  ASSERT_TRUE(base::WriteFile(path, std::string_view("i miss you")));
 
   // Open the file for read-only access without allowing deletes.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
@@ -274,7 +275,7 @@ TEST_F(DeleteWithRetryTest, MaxRetries) {
 // Test that success on the last retry is reported correctly.
 TEST_F(DeleteWithRetryTest, LastRetrySucceeds) {
   const base::FilePath path = TestDir().Append(FILE_PATH_LITERAL("file"));
-  ASSERT_TRUE(base::WriteFile(path, base::StringPiece("i miss you")));
+  ASSERT_TRUE(base::WriteFile(path, std::string_view("i miss you")));
 
   // Open the file for read-only access; allowing others to do anything.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |

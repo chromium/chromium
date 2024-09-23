@@ -18,6 +18,7 @@
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::base::test::TestFuture;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
@@ -67,7 +68,7 @@ void AddNewReadingAndExpectReadingChangedEvent(
 class PlatformSensorAndProviderTest : public testing::Test {
  public:
   PlatformSensorAndProviderTest() {
-    provider_ = std::make_unique<FakePlatformSensorProvider>();
+    provider_ = std::make_unique<NiceMock<FakePlatformSensorProvider>>();
   }
 
   PlatformSensorAndProviderTest(const PlatformSensorAndProviderTest&) = delete;
@@ -76,7 +77,7 @@ class PlatformSensorAndProviderTest : public testing::Test {
 
  protected:
   scoped_refptr<FakePlatformSensor> CreateSensorSync(mojom::SensorType type) {
-    base::test::TestFuture<scoped_refptr<PlatformSensor>> future;
+    TestFuture<scoped_refptr<PlatformSensor>> future;
     provider_->CreateSensor(type, future.GetCallback());
     scoped_refptr<FakePlatformSensor> fake_sensor =
         static_cast<FakePlatformSensor*>(future.Get().get());
@@ -92,7 +93,7 @@ class PlatformSensorAndProviderTest : public testing::Test {
     return fake_sensor;
   }
 
-  std::unique_ptr<FakePlatformSensorProvider> provider_;
+  std::unique_ptr<NiceMock<FakePlatformSensorProvider>> provider_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -104,9 +105,9 @@ TEST_F(PlatformSensorAndProviderTest, ResourcesAreFreed) {
       mojom::SensorType::AMBIENT_LIGHT,
       base::BindOnce([](scoped_refptr<PlatformSensor> s) { EXPECT_TRUE(s); }));
   // Failure.
-  EXPECT_CALL(*provider_, DoCreateSensorInternal(_, _, _))
+  EXPECT_CALL(*provider_, CreateSensorInternal)
       .WillOnce(
-          Invoke([](mojom::SensorType, scoped_refptr<PlatformSensor>,
+          Invoke([](mojom::SensorType,
                     PlatformSensorProvider::CreateSensorCallback callback) {
             std::move(callback).Run(nullptr);
           }));
@@ -119,17 +120,26 @@ TEST_F(PlatformSensorAndProviderTest, ResourcesAreFreed) {
 TEST_F(PlatformSensorAndProviderTest, ResourcesAreNotFreedOnPendingRequest) {
   EXPECT_CALL(*provider_, FreeResources()).Times(0);
   // Suspend.
-  EXPECT_CALL(*provider_, DoCreateSensorInternal(_, _, _))
-      .WillOnce(Invoke([](mojom::SensorType, scoped_refptr<PlatformSensor>,
+  EXPECT_CALL(*provider_, CreateSensorInternal)
+      .WillOnce(Invoke([](mojom::SensorType,
                           PlatformSensorProvider::CreateSensorCallback) {}));
 
-  provider_->CreateSensor(
-      mojom::SensorType::AMBIENT_LIGHT,
-      base::BindOnce([](scoped_refptr<PlatformSensor> s) { NOTREACHED(); }));
+  TestFuture<scoped_refptr<PlatformSensor>> sensor_future;
+  provider_->CreateSensor(mojom::SensorType::AMBIENT_LIGHT,
+                          sensor_future.GetCallback());
 
-  provider_->CreateSensor(
-      mojom::SensorType::AMBIENT_LIGHT,
-      base::BindOnce([](scoped_refptr<PlatformSensor> s) { NOTREACHED(); }));
+  TestFuture<scoped_refptr<PlatformSensor>> sensor_future2;
+  provider_->CreateSensor(mojom::SensorType::AMBIENT_LIGHT,
+                          sensor_future2.GetCallback());
+
+  // CreateSensor callbacks are not invoked while the provider is suspended.
+  EXPECT_FALSE(sensor_future.IsReady());
+  EXPECT_FALSE(sensor_future2.IsReady());
+
+  // When the provider is destroyed, both callbacks are invoked with nullptr.
+  provider_.reset();
+  EXPECT_FALSE(sensor_future.Get());
+  EXPECT_FALSE(sensor_future2.Get());
 }
 
 // This test verifies that the shared buffer's default values are 0.
@@ -137,11 +147,10 @@ TEST_F(PlatformSensorAndProviderTest, SharedBufferDefaultValue) {
   base::ReadOnlySharedMemoryRegion region =
       provider_->CloneSharedMemoryRegion();
   base::ReadOnlySharedMemoryMapping mapping = region.MapAt(
-      SensorReadingSharedBuffer::GetOffset(mojom::SensorType::AMBIENT_LIGHT),
+      GetSensorReadingSharedBufferOffset(mojom::SensorType::AMBIENT_LIGHT),
       sizeof(SensorReadingSharedBuffer));
 
-  const SensorReadingSharedBuffer* buffer =
-      static_cast<const SensorReadingSharedBuffer*>(mapping.memory());
+  const auto* buffer = mapping.GetMemoryAs<SensorReadingSharedBuffer>();
   EXPECT_THAT(buffer->reading.als.value, 0);
 }
 
@@ -173,7 +182,8 @@ TEST_F(PlatformSensorAndProviderTest, SensorValueValidityCheckAmbientLight) {
   scoped_refptr<FakePlatformSensor> fake_sensor =
       CreateSensorSync(SensorType::AMBIENT_LIGHT);
 
-  auto client = std::make_unique<MockPlatformSensorClient>(fake_sensor);
+  auto client =
+      std::make_unique<NiceMock<MockPlatformSensorClient>>(fake_sensor);
   EXPECT_TRUE(fake_sensor->StartListening(client.get(),
                                           PlatformSensorConfiguration(10)));
 
@@ -226,7 +236,8 @@ TEST_F(PlatformSensorAndProviderTest, ResetLastReadingsOnStop) {
       CreateSensorSync(SensorType::AMBIENT_LIGHT);
   ASSERT_EQ(fake_sensor->GetReportingMode(), mojom::ReportingMode::ON_CHANGE);
 
-  auto client = std::make_unique<MockPlatformSensorClient>(fake_sensor);
+  auto client =
+      std::make_unique<NiceMock<MockPlatformSensorClient>>(fake_sensor);
   EXPECT_TRUE(fake_sensor->StartListening(client.get(),
                                           PlatformSensorConfiguration(10)));
 
@@ -255,7 +266,8 @@ TEST_F(PlatformSensorAndProviderTest, DoNotStoreReadingsWhenInactive) {
       CreateSensorSync(SensorType::AMBIENT_LIGHT);
   ASSERT_EQ(fake_sensor->GetReportingMode(), mojom::ReportingMode::ON_CHANGE);
 
-  auto client = std::make_unique<MockPlatformSensorClient>(fake_sensor);
+  auto client =
+      std::make_unique<NiceMock<MockPlatformSensorClient>>(fake_sensor);
   EXPECT_TRUE(fake_sensor->StartListening(client.get(),
                                           PlatformSensorConfiguration(10)));
   EXPECT_TRUE(fake_sensor->IsActiveForTesting());
@@ -280,46 +292,6 @@ TEST_F(PlatformSensorAndProviderTest, DoNotStoreReadingsWhenInactive) {
   AddNewReadingAndExpectReadingChangedEvent(client.get(), reading);
 }
 
-// No rounding of values. Any change in values reported in significance test.
-TEST_F(PlatformSensorAndProviderTest, SensorValueValidityCheckPressure) {
-  const double kTestValue = 10.0;  // Made up test value.
-  scoped_refptr<FakePlatformSensor> fake_sensor =
-      CreateSensorSync(SensorType::PRESSURE);
-
-  auto client = std::make_unique<MockPlatformSensorClient>(fake_sensor);
-  EXPECT_TRUE(fake_sensor->StartListening(client.get(),
-                                          PlatformSensorConfiguration(10)));
-
-  // Test cases:
-  // 1. Initial value is set to 10.
-  // 2. As new reading is exactly same as old new reading event is not
-  //    triggered.
-  // 3. New value set and reading event is triggered as new value is
-  //    significantly different compared to old.
-  const struct {
-    const double pressure_value;
-    const bool expect_reading_changed_event;
-  } kTestSteps[] = {
-      {kTestValue, true},
-      {kTestValue, false},
-      {kTestValue + kEpsilon, true},
-  };
-
-  for (const auto& test_case : kTestSteps) {
-    SensorReading reading;
-    reading.raw.timestamp = 1.0;
-    reading.pressure.value = test_case.pressure_value;
-
-    if (test_case.expect_reading_changed_event)
-      AddNewReadingAndExpectReadingChangedEvent(client.get(), reading);
-    else
-      AddNewReadingAndExpectNoReadingChangedEvent(client.get(), reading);
-
-    fake_sensor->GetLatestReading(&reading);
-    EXPECT_DOUBLE_EQ(reading.pressure.value, test_case.pressure_value);
-  }
-}
-
 // Rounding to nearest 0.1 (see kAccelerometerRoundingMultiple). New reading
 // event is triggered if rounded values differs from previous rounded value.
 TEST_F(PlatformSensorAndProviderTest, SensorValueValidityCheckAccelerometer) {
@@ -327,7 +299,8 @@ TEST_F(PlatformSensorAndProviderTest, SensorValueValidityCheckAccelerometer) {
   scoped_refptr<FakePlatformSensor> fake_sensor =
       CreateSensorSync(SensorType::ACCELEROMETER);
 
-  auto client = std::make_unique<MockPlatformSensorClient>(fake_sensor);
+  auto client =
+      std::make_unique<NiceMock<MockPlatformSensorClient>>(fake_sensor);
   EXPECT_TRUE(fake_sensor->StartListening(client.get(),
                                           PlatformSensorConfiguration(10)));
 
@@ -368,7 +341,8 @@ TEST_F(PlatformSensorAndProviderTest, IsSignificantlyDifferentAmbientLight) {
   scoped_refptr<FakePlatformSensor> fake_sensor =
       CreateSensorSync(SensorType::AMBIENT_LIGHT);
 
-  auto client = std::make_unique<MockPlatformSensorClient>(fake_sensor);
+  auto client =
+      std::make_unique<NiceMock<MockPlatformSensorClient>>(fake_sensor);
   EXPECT_TRUE(fake_sensor->StartListening(client.get(),
                                           PlatformSensorConfiguration(10)));
 
@@ -414,41 +388,13 @@ TEST_F(PlatformSensorAndProviderTest, IsSignificantlyDifferentAmbientLight) {
   }
 }
 
-TEST_F(PlatformSensorAndProviderTest, IsSignificantlyDifferentPressure) {
-  // Test for standard sensor with single value.
-  scoped_refptr<FakePlatformSensor> fake_sensor =
-      CreateSensorSync(SensorType::PRESSURE);
-
-  auto client = std::make_unique<MockPlatformSensorClient>(fake_sensor);
-  EXPECT_TRUE(fake_sensor->StartListening(client.get(),
-                                          PlatformSensorConfiguration(10)));
-
-  const double kTestValue = 100.0;  // Made up test value.
-  SensorReading last_reading;
-  SensorReading new_reading;
-
-  // No difference in values does not count as a significant change.
-  last_reading.pressure.value = kTestValue;
-  EXPECT_FALSE(fake_sensor->IsSignificantlyDifferent(last_reading, last_reading,
-                                                     SensorType::PRESSURE));
-
-  // Check that different values are reported as significantly different.
-  new_reading.pressure.value = last_reading.pressure.value + kEpsilon;
-  EXPECT_TRUE(fake_sensor->IsSignificantlyDifferent(last_reading, new_reading,
-                                                    SensorType::PRESSURE));
-
-  // Check that different values are reported as significantly different.
-  new_reading.pressure.value = last_reading.pressure.value - kEpsilon;
-  EXPECT_TRUE(fake_sensor->IsSignificantlyDifferent(last_reading, new_reading,
-                                                    SensorType::PRESSURE));
-}
-
 TEST_F(PlatformSensorAndProviderTest, IsSignificantlyDifferentMagnetometer) {
   // Test for standard sensor with three values.
   scoped_refptr<FakePlatformSensor> fake_sensor =
       CreateSensorSync(SensorType::MAGNETOMETER);
 
-  auto client = std::make_unique<MockPlatformSensorClient>(fake_sensor);
+  auto client =
+      std::make_unique<NiceMock<MockPlatformSensorClient>>(fake_sensor);
   EXPECT_TRUE(fake_sensor->StartListening(client.get(),
                                           PlatformSensorConfiguration(10)));
 

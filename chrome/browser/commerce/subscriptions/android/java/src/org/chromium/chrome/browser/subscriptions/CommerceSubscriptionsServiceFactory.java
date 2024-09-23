@@ -26,7 +26,9 @@ public class CommerceSubscriptionsServiceFactory {
 
     /** Creates new instance. */
     private CommerceSubscriptionsServiceFactory() {
-        mProfileToSubscriptionsService = ProfileKeyedMap.createMapOfDestroyables();
+        mProfileToSubscriptionsService =
+                ProfileKeyedMap.createMapOfDestroyables(
+                        ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL);
     }
 
     /**
@@ -39,16 +41,15 @@ public class CommerceSubscriptionsServiceFactory {
      */
     public CommerceSubscriptionsService getForProfile(Profile profile) {
         if (sSubscriptionsServiceForTesting != null) return sSubscriptionsServiceForTesting;
-        Profile originalProfile = profile.getOriginalProfile();
         return mProfileToSubscriptionsService.getForProfile(
-                originalProfile,
-                () -> {
-                    PriceDropNotificationManager priceDropNotificationManager =
-                            PriceDropNotificationManagerFactory.create();
-                    return new CommerceSubscriptionsService(
-                            ShoppingServiceFactory.getForProfile(originalProfile),
-                            priceDropNotificationManager);
-                });
+                profile, CommerceSubscriptionsServiceFactory::buildForProfile);
+    }
+
+    private static CommerceSubscriptionsService buildForProfile(Profile profile) {
+        PriceDropNotificationManager priceDropNotificationManager =
+                PriceDropNotificationManagerFactory.create(profile);
+        return new CommerceSubscriptionsService(
+                ShoppingServiceFactory.getForProfile(profile), priceDropNotificationManager);
     }
 
     /** Sets the CommerceSubscriptionsService for testing. */

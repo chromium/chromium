@@ -36,7 +36,7 @@ compatible. Then follow the below instructions to re-generate the code in both P
 
 ### Python Instruction
 
-*TODO(crbug.com/1355899): instead of manually generating the python files every time,*
+*TODO(crbug.com/40236071): instead of manually generating the python files every time,*
 *add support for generating them in the grpc_library gn template so that*
 *they are auto-generated during build time*
 

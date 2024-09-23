@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/unguessable_token.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.mojom.h"
@@ -124,7 +125,8 @@ class MockFrameHost : public mojom::FrameHost {
   // mojom::FrameHost:
   void CreateNewWindow(mojom::CreateNewWindowParamsPtr,
                        CreateNewWindowCallback) override {
-    NOTREACHED() << "We should never dispatch to the service side signature.";
+    NOTREACHED_IN_MIGRATION()
+        << "We should never dispatch to the service side signature.";
   }
 
   bool CreateNewWindow(mojom::CreateNewWindowParamsPtr params,
@@ -184,7 +186,7 @@ class MockFrameHost : public mojom::FrameHost {
       blink::mojom::BeginNavigationParamsPtr begin_params,
       mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
       mojo::PendingAssociatedRemote<mojom::NavigationClient>,
-      mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>,
+      mojo::PendingRemote<blink::mojom::NavigationStateKeepAliveHandle>,
       mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>)
       override {}
 
@@ -269,7 +271,9 @@ void TestRenderFrame::Navigate(
       /*subresource_proxying_loader_factory=*/mojo::NullRemote(),
       /*keep_alive_loader_factory=*/mojo::NullRemote(),
       /*fetch_later_loader_factory=*/mojo::NullAssociatedRemote(),
-      blink::DocumentToken(), base::UnguessableToken::Create(),
+      /*document_token=*/blink::DocumentToken(),
+      /*devtools_navigation_token=*/base::UnguessableToken::Create(),
+      /*base_auction_nonce=*/base::Uuid::GenerateRandomV4(),
       blink::ParsedPermissionsPolicy(),
       blink::mojom::PolicyContainer::New(
           blink::mojom::PolicyContainerPolicies::New(),

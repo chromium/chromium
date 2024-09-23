@@ -14,15 +14,15 @@ enum class AddAccountSigninIntent {
   // user is signed out.
   kAddAccount,
   // Reauthenticates with the current primary account, using the SSOAuth add
-  // account dialog. The sync consent screen will not be presented to the user.
+  // account dialog.
   // This intent can only be used when there is a primary account with sync
   // consent.
   kPrimaryAccountReauth,
-  // Reauthenticates with the previous primary account, using the SSOAuth add
-  // account dialog. After that dialog, the sign-in+sync consent dialog will be
+  // Signs in again with the previous primary account, using the SSOAuth add
+  // account dialog. After that dialog, the history sync consent dialog will be
   // presented to the user. This intent can only be used when there is no
   // primary account.
-  kSigninAndSyncReauth,
+  kResignin,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_ADD_ACCOUNT_SIGNIN_ADD_ACCOUNT_SIGNIN_ENUMS_H_

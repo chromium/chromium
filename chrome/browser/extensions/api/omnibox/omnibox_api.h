@@ -11,14 +11,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/omnibox/suggestion_parser.h"
-#include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/common/extensions/api/omnibox.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/search_engines/template_url_service.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_icon_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 #include "ui/base/window_open_disposition.h"
 
 class Profile;
@@ -45,32 +46,30 @@ class ExtensionOmniboxEventRouter {
 
   // The user has just typed the omnibox keyword. This is sent exactly once in
   // a given input session, before any OnInputChanged events.
-  static void OnInputStarted(
-      Profile* profile, const std::string& extension_id);
+  static void OnInputStarted(Profile* profile, const ExtensionId& extension_id);
 
   // The user has changed what is typed into the omnibox while in an extension
   // keyword session. Returns true if someone is listening to this event, and
   // thus we have some degree of confidence we'll get a response.
-  static bool OnInputChanged(
-      Profile* profile,
-      const std::string& extension_id,
-      const std::string& input, int suggest_id);
+  static bool OnInputChanged(Profile* profile,
+                             const ExtensionId& extension_id,
+                             const std::string& input,
+                             int suggest_id);
 
   // The user has accepted the omnibox input.
-  static void OnInputEntered(
-      content::WebContents* web_contents,
-      const std::string& extension_id,
-      const std::string& input,
-      WindowOpenDisposition disposition);
+  static void OnInputEntered(content::WebContents* web_contents,
+                             const ExtensionId& extension_id,
+                             const std::string& input,
+                             WindowOpenDisposition disposition);
 
   // The user has cleared the keyword, or closed the omnibox popup. This is
   // sent at most once in a give input session, after any OnInputChanged events.
-  static void OnInputCancelled(
-      Profile* profile, const std::string& extension_id);
+  static void OnInputCancelled(Profile* profile,
+                               const ExtensionId& extension_id);
 
   // The user has deleted an extension omnibox suggestion result.
   static void OnDeleteSuggestion(Profile* profile,
-                                 const std::string& extension_id,
+                                 const ExtensionId& extension_id,
                                  const std::string& suggestion_text);
 };
 
@@ -118,7 +117,7 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
 
   // Returns the icon to display in the location bar or omnibox popup for the
   // given extension.
-  gfx::Image GetOmniboxIcon(const std::string& extension_id);
+  gfx::Image GetOmniboxIcon(const ExtensionId& extension_id);
 
  private:
   friend class BrowserContextKeyedAPIFactory<OmniboxAPI>;

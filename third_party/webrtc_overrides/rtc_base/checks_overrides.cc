@@ -8,14 +8,14 @@
 
 namespace rtc::webrtc_checks_impl {
 
-RTC_NORETURN void WriteFatalLog(absl::string_view output) {
+RTC_NORETURN void WriteFatalLog(std::string_view output) {
   LOG(FATAL) << output;
   __builtin_unreachable();
 }
 
 RTC_NORETURN void WriteFatalLog(const char* file,
                                 int line,
-                                absl::string_view output) {
+                                std::string_view output) {
   {
     logging::LogMessage msg(file, line, logging::LOGGING_FATAL);
     msg.stream() << output;

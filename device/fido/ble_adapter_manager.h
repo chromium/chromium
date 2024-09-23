@@ -32,8 +32,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) BleAdapterManager
 
   void SetAdapterPower(bool set_power_on);
 
+  // Queries the OS for the status of the Bluetooth adapter. On macOS, this will
+  // trigger a bluetooth permission prompt if Chrome has never asked before.
+  void RequestBluetoothPermission(
+      FidoRequestHandlerBase::BlePermissionCallback callback);
+
  private:
   friend class FidoBleAdapterManagerTest;
+
+  void OnHaveBluetoothPermission(
+      FidoRequestHandlerBase::BlePermissionCallback callback);
 
   // BluetoothAdapter::Observer:
   void AdapterPoweredChanged(BluetoothAdapter* adapter, bool powered) override;

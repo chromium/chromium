@@ -42,7 +42,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/session_crashed_bubble.h"
-#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -358,6 +357,7 @@ void SessionService::WindowOpened(Browser* browser) {
   RestoreIfNecessary(StartupTabs(), browser, /* restore_apps */ false);
   SetWindowType(browser->session_id(), browser->type());
   SetWindowAppName(browser->session_id(), browser->app_name());
+  SetWindowUserTitle(browser->session_id(), browser->user_title());
 
   // Save a browser workspace after window is created in `Browser()`.
   // Bento desks restore feature in ash requires this line to restore correctly
@@ -501,7 +501,7 @@ void SessionService::DidScheduleCommand() {
     return;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(https://crbug.com/1245816): for debugging, remove once tracked down
+  // TODO(crbug.com/40196304): for debugging, remove once tracked down
   // source of problem.
   // A command has been scheduled for a SessionService other than the first.
   // Recreating the SessionService happens if shutdown is canceled, which is
@@ -574,7 +574,6 @@ bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
       browser_creator.LaunchBrowser(*command_line, profile(), base::FilePath(),
                                     chrome::startup::IsProcessStartup::kYes,
                                     chrome::startup::IsFirstRun::kNo,
-                                    std::make_unique<OldLaunchModeRecorder>(),
                                     /*restore_tabbed_browser=*/true);
       return true;
     } else {

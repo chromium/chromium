@@ -4,6 +4,8 @@
 
 #include "ash/display/cursor_window_controller.h"
 
+#include <optional>
+
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -22,7 +24,6 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -41,15 +42,13 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_utils.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_util.h"
 
 namespace ash {
 
 namespace {
-
-const int kMinLargeCursorSize = 25;
-const int kMaxLargeCursorSize = 64;
-const int kMaxExtraLargeCursorSize = 128;
 
 SkBitmap GetColorAdjustedBitmap(const gfx::ImageSkiaRep& image_rep,
                                 SkColor cursor_color) {
@@ -58,7 +57,7 @@ SkBitmap GetColorAdjustedBitmap(const gfx::ImageSkiaRep& image_rep,
   // cursor_color_. Do not recolor pure white or tinted portions of the image,
   // this ensures we do not impact the colored portions of cursors or the
   // transition between the colored portion and white outline.
-  // TODO(crbug.com/1085442): Programmatically find a way to recolor the white
+  // TODO(crbug.com/40693635): Programmatically find a way to recolor the white
   // parts in order to draw a black outline, but without impacting cursors
   // like noDrop which contained tinted portions. Or, add new assets with
   // black and white inverted for easier re-coloring.
@@ -108,11 +107,11 @@ std::vector<gfx::ImageSkia> GetCursorImages(
   // Rotation is handled in viz (for aura::Window based cursor)
   // or fast ink canvas (for fast ink based cursor), so don't do any
   // rotation here.
-  absl::optional<ui::CursorData> cursor_data = wm::GetCursorData(
+  std::optional<ui::CursorData> cursor_data = wm::GetCursorData(
       type, cursor_size, dsf,
       cursor_size == ui::CursorSize::kLarge
           ? std::make_optional(target_cursor_size_in_dip * dsf)
-          : absl::nullopt,
+          : std::nullopt,
       display::Display::ROTATE_0);
   if (!cursor_data) {
     return images;
@@ -260,10 +259,7 @@ void CursorWindowController::RemoveObserver(Observer* observer) {
 void CursorWindowController::SetLargeCursorSizeInDip(
     int large_cursor_size_in_dip) {
   large_cursor_size_in_dip =
-      std::min(large_cursor_size_in_dip,
-               ::features::IsAccessibilityExtraLargeCursorEnabled()
-                   ? kMaxExtraLargeCursorSize
-                   : kMaxLargeCursorSize);
+      std::min(large_cursor_size_in_dip, kMaxLargeCursorSize);
   large_cursor_size_in_dip =
       std::max(large_cursor_size_in_dip, kMinLargeCursorSize);
 
@@ -412,14 +408,29 @@ void CursorWindowController::OnDockedMagnifierResizingStateChanged(
 }
 
 void CursorWindowController::UpdateLocation() {
-  if (!cursor_window_)
+  if (cursor_view_widget_) {
+    gfx::Point cursor_location =
+        aura::Env::GetInstance()->last_mouse_location();
+    aura::Window* root_window = views::GetRootWindow(cursor_view_widget_.get());
+    // Convert cursor location point in screen coordinate to root window
+    // coordinate.
+    wm::ConvertPointFromScreen(root_window, &cursor_location);
+    static_cast<CursorView*>(cursor_view_widget_->GetContentsView())
+        ->SetLocation(cursor_location);
     return;
-  gfx::Point point = aura::Env::GetInstance()->last_mouse_location();
-  point.Offset(-bounds_in_screen_.x(), -bounds_in_screen_.y());
-  point.Offset(-hot_point_.x(), -hot_point_.y());
-  gfx::Rect bounds = cursor_window_->bounds();
-  bounds.set_origin(point);
-  cursor_window_->SetBounds(bounds);
+  }
+  if (cursor_window_) {
+    gfx::Point point = aura::Env::GetInstance()->last_mouse_location();
+    // Calculate the new origin.
+    // new_origin.x() + bounds_in_screen_.x() + hot_point_.x() = x value of
+    // the mouse location in the screen coordinates.
+    point.Offset(-bounds_in_screen_.x(), -bounds_in_screen_.y());
+    point.Offset(-hot_point_.x(), -hot_point_.y());
+    gfx::Rect bounds = cursor_window_->bounds();
+    bounds.set_origin(point);
+    cursor_window_->SetBounds(bounds);
+    return;
+  }
 }
 
 void CursorWindowController::SetCursor(gfx::NativeCursor cursor) {
@@ -466,8 +477,24 @@ SkColor CursorWindowController::GetCursorColorForTest() const {
   return cursor_color_;
 }
 
-gfx::Rect CursorWindowController::GetBoundsForTest() const {
-  return cursor_window_->GetBoundsInScreen();
+gfx::Rect CursorWindowController::GetCursorBoundsInScreenForTest() const {
+  if (cursor_view_widget_) {
+    gfx::Rect cursor_rect =
+        static_cast<CursorView*>(cursor_view_widget_->GetContentsView())
+            ->get_cursor_rect_for_test();  // IN-TEST
+    // Convert cursor rect in root window to screen coordinate.
+    wm::ConvertRectToScreen(views::GetRootWindow(cursor_view_widget_.get()),
+                            &cursor_rect);
+    return cursor_rect;
+  }
+  return cursor_window_ ? cursor_window_->GetBoundsInScreen() : gfx::Rect();
+}
+
+const aura::Window* CursorWindowController::GetCursorHostWindowForTest() const {
+  if (cursor_view_widget_) {
+    return cursor_view_widget_->GetNativeWindow();
+  }
+  return cursor_window_ ? cursor_window_.get() : nullptr;
 }
 
 void CursorWindowController::SetContainer(aura::Window* container) {

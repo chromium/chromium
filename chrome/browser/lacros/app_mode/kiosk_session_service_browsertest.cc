@@ -3,23 +3,44 @@
 // found in the LICENSE file.
 
 #include <memory>
-
-#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
+#include <optional>
+#include <string>
+#include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/scoped_observation.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
+#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/app_mode/web_kiosk_installer_lacros.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/crosapi/mojom/browser_service.mojom-shared.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom-forward.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/crosapi/mojom/web_kiosk_service.mojom-shared.h"
 #include "chromeos/startup/browser_init_params.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 
 using crosapi::mojom::BrowserInitParams;
@@ -72,10 +93,40 @@ void SetBrowserInitParamsForWebKiosk() {
 void CreateKioskAppWindowAndWaitInitialized() {
   base::test::TestFuture<void> kiosk_initialized;
   KioskWebSessionInitializedWaiter waiter(kiosk_initialized.GetCallback());
-  web_app::CreateWebApplicationWindow(&GetProfile(), kWebAppUrl,
-                                      WindowOpenDisposition::NEW_POPUP,
-                                      /*restore_id=*/0);
+  Browser::CreateParams params = web_app::CreateParamsForApp(
+      kWebAppUrl,
+      /*is_popup*/ true,
+      /*trusted_source=*/true, /*window_bounds=*/gfx::Rect(), &GetProfile(),
+      /*user_gesture=*/true);
+  web_app::CreateWebAppWindowMaybeWithHomeTab(kWebAppUrl, params);
   EXPECT_TRUE(kiosk_initialized.Wait());
+  EXPECT_NE(
+      KioskSessionServiceLacros::Get()->GetKioskBrowserSessionForTesting(),
+      nullptr);
+}
+
+[[nodiscard]] bool WaitUntilBrowserClosed(Browser* browser) {
+  TestBrowserClosedWaiter waiter(browser);
+  return waiter.WaitUntilClosed();
+}
+
+bool DidSessionCloseNewWindow() {
+  chromeos::KioskBrowserSession* session =
+      KioskSessionServiceLacros::Get()->GetKioskBrowserSessionForTesting();
+  base::test::TestFuture<bool> future;
+  session->SetOnHandleBrowserCallbackForTesting(future.GetRepeatingCallback());
+  return future.Take();
+}
+
+Browser* CreateBrowserWithWindowOfType(WindowOpenDisposition window_type) {
+  Browser::CreateParams params = web_app::CreateParamsForApp(
+      kWebAppUrl, window_type == WindowOpenDisposition::NEW_POPUP,
+      /*trusted_source=*/true, /*window_bounds=*/gfx::Rect(), &GetProfile(),
+      /*user_gesture=*/true);
+  Browser* browser =
+      web_app::CreateWebAppWindowMaybeWithHomeTab(kWebAppUrl, params);
+  browser->window()->Show();
+  return browser;
 }
 
 }  // namespace
@@ -96,9 +147,8 @@ class WebKioskSessionServiceBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    kiosk_session_service_lacros_ = KioskSessionServiceLacros::Get();
     attempt_user_exit_reset_ =
-        kiosk_session_service_lacros_->SetAttemptUserExitCallbackForTesting(
+        KioskSessionServiceLacros::Get()->SetAttemptUserExitCallbackForTesting(
             base::DoNothing());
 
     installer_ = std::make_unique<WebKioskInstallerLacros>(GetProfile());
@@ -125,31 +175,25 @@ class WebKioskSessionServiceBrowserTest : public InProcessBrowserTest {
     return install_result.Get();
   }
 
-  KioskSessionServiceLacros* kiosk_session_service_lacros() const {
-    return kiosk_session_service_lacros_;
-  }
-
  private:
   std::unique_ptr<WebKioskInstallerLacros> installer_;
-  raw_ptr<KioskSessionServiceLacros> kiosk_session_service_lacros_;
   std::unique_ptr<base::AutoReset<base::OnceClosure>> attempt_user_exit_reset_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
                        BrowserKioskSessionIsCreated) {
-  EXPECT_EQ(kiosk_session_service_lacros()->GetKioskBrowserSessionForTesting(),
-            nullptr);
+  EXPECT_EQ(
+      KioskSessionServiceLacros::Get()->GetKioskBrowserSessionForTesting(),
+      nullptr);
 
   CreateKioskAppWindowAndWaitInitialized();
-
-  EXPECT_NE(kiosk_session_service_lacros()->GetKioskBrowserSessionForTesting(),
-            nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest, VerifyInstallUrl) {
   CreateKioskAppWindowAndWaitInitialized();
 
-  EXPECT_EQ(kiosk_session_service_lacros()->GetInstallURL(), GURL(kWebAppUrl));
+  EXPECT_EQ(KioskSessionServiceLacros::Get()->GetInstallURL(),
+            GURL(kWebAppUrl));
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
@@ -157,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
   // Closing all browser windows should trigger `AttemptUserExit`.
   base::test::TestFuture<void> did_attempt_user_exit;
   auto auto_reset =
-      kiosk_session_service_lacros()->SetAttemptUserExitCallbackForTesting(
+      KioskSessionServiceLacros::Get()->SetAttemptUserExitCallbackForTesting(
           did_attempt_user_exit.GetCallback());
 
   CreateKioskAppWindowAndWaitInitialized();
@@ -176,4 +220,46 @@ IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
   EXPECT_TRUE(
       GetProfile().GetExtensionSpecialStoragePolicy()->IsStorageUnlimited(
           GURL(kWebAppUrl)));
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
+                       AnyNewBrowsersInKioskNotAllowedByDefault) {
+  EXPECT_FALSE(
+      GetProfile().GetPrefs()->GetBoolean(prefs::kNewWindowsInKioskAllowed));
+  CreateKioskAppWindowAndWaitInitialized();
+
+  Browser* popup_browser =
+      CreateBrowserWithWindowOfType(WindowOpenDisposition::NEW_POPUP);
+  EXPECT_TRUE(WaitUntilBrowserClosed(popup_browser));
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+
+  Browser* const new_browser =
+      CreateBrowserWithWindowOfType(WindowOpenDisposition::NEW_WINDOW);
+  EXPECT_TRUE(WaitUntilBrowserClosed(new_browser));
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
+                       NewPopupBrowserInKioskAllowedByPolicy) {
+  GetProfile().GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
+  CreateKioskAppWindowAndWaitInitialized();
+
+  CreateBrowserWithWindowOfType(WindowOpenDisposition::NEW_POPUP);
+
+  EXPECT_FALSE(DidSessionCloseNewWindow());
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskSessionServiceBrowserTest,
+                       NewRegularBrowserInKioskNotAllowedEvenByPolicy) {
+  GetProfile().GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
+  CreateKioskAppWindowAndWaitInitialized();
+
+  // `kNewWindowsInKioskAllowed` policy allows to open only popup windows. All
+  // other windows will be closed.
+  Browser* const new_browser =
+      CreateBrowserWithWindowOfType(WindowOpenDisposition::NEW_WINDOW);
+
+  EXPECT_TRUE(WaitUntilBrowserClosed(new_browser));
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 }

@@ -1,0 +1,53 @@
+<!doctype html>
+<title>Blink Scheduler Prioritize Input - Click</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/utils.js"></script>
+
+<h1>Test Page</h1>
+<button id=button>Click me!</button>
+
+<script>
+'use strict';
+
+window.onload = () => {
+  promise_test(async t => {
+    const taskCountDuringInputEvent = await new Promise(async resolve => {
+      let taskCount = 0;
+      const blockingTask = () => {
+        ++taskCount;
+        spin(50);
+      };
+
+      const button = document.getElementById('button');
+      button.addEventListener('pointerdown', () => {
+        resolve(taskCount);
+      });
+
+      await requestAnimationFramePromise();
+      await scheduler.yield();
+
+      const controller = new TaskController({priority: "user-blocking"});
+      t.add_cleanup(() => controller.abort());
+
+      for (let i = 0; i < 50; i++) {
+        const p = scheduler.postTask(blockingTask, {signal: controller.signal});
+        ignoreUnhandledRejection(p);
+        const id = setTimeout(blockingTask, 0);
+        t.add_cleanup(() => clearTimeout(id));
+      }
+
+      test_driver.click(button);
+    });
+
+    // There's lag in sending the event from test_driver, so we need to be careful
+    // races with the other scheduled tasks. Conservatively using 10 (500 ms)
+    // should be sufficient for a regression test, esepcially with tighter bounds
+    // in the keyboard version of this test.
+    assert_less_than_equal(taskCountDuringInputEvent, 10);
+  }, 'Test that pointer input is prioritized');
+};
+
+</script>

@@ -5,8 +5,8 @@
 #include "remoting/host/file_transfer/local_file_operations.h"
 
 #include <cstdint>
-
 #include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_proxy.h"
 #include "base/files/file_util.h"
@@ -277,7 +277,6 @@ void LocalFileReader::SetState(FileOperations::State state) {
   switch (state) {
     case FileOperations::kCreated:
       NOTREACHED();  // Can never return to initial state.
-      break;
     case FileOperations::kReady:
       DCHECK_EQ(FileOperations::kBusy, state_);
       break;
@@ -525,7 +524,6 @@ void LocalFileWriter::SetState(FileOperations::State state) {
   switch (state) {
     case FileOperations::kCreated:
       NOTREACHED();  // Can never return to initial state.
-      break;
     case FileOperations::kReady:
       DCHECK(state_ == FileOperations::kBusy);
       break;

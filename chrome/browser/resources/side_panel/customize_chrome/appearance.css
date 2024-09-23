@@ -1,0 +1,113 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit cr-icons-lit sp-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+#editButtonsContainer {
+  display: flex;
+  gap: 8px;
+  margin: 0 16px 16px;
+  width: calc(100% - 32px);
+}
+
+#thirdPartyManageLinkButton {
+  display: block;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+#editThemeButton {
+  flex-grow: 1;
+}
+
+#wallpaperSearchButton {
+  flex-grow: 1.5;
+}
+
+.edit-theme-icon {
+  --cr-icon-color: currentColor;
+  margin-inline-end: 0;
+  margin-inline-start: 0;
+}
+
+#editThemeIcon {
+  --cr-icon-image: url(icons/image.svg);
+  --cr-icon-size: 12px;
+  height: 12px;
+  width: 12px;
+}
+
+#wallpaperSearchIcon {
+  --cr-icon-image: url(icons/sparkle.svg);
+  --cr-icon-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+#setClassicChromeButton {
+  --cr-icon-image: url(icons/reset.svg);
+}
+
+#uploadedImageButton {
+  --cr-icon-image: url(icons/upload.svg);
+}
+
+#searchedImageButton {
+  --cr-icon-image: url(icons/generated_image.svg);
+}
+
+managed-dialog {
+  --cr-dialog-width: min(calc(100% - 32px), 512px);
+}
+
+customize-color-scheme-mode,
+.sp-hr {
+  width: calc(100% - 32px);
+}
+
+.sp-hr {
+  margin: 0 16px;
+}
+
+customize-color-scheme-mode {
+  display: block;
+  margin: 16px;
+}
+
+cr-theme-color-picker {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.theme-button {
+  margin-top: 16px;
+}
+
+.theme-button:not([hidden]) ~ #editButtonsContainer {
+  margin: 20px 16px;
+}
+
+.link-out-button {
+  --cr-icon-image: url('chrome://resources/images/open_in_new.svg');
+}
+
+#followThemeToggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+  padding: 10px var(--sp-card-inline-padding);
+}
+
+#followThemeToggleTitle {
+  font-size: inherit;
+  line-height: inherit;
+}

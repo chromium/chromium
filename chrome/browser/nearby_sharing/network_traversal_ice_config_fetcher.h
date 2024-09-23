@@ -15,7 +15,7 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 class NetworkTraversalIceConfigFetcher
-    : public sharing::mojom::IceConfigFetcher {
+    : public ::sharing::mojom::IceConfigFetcher {
  public:
   explicit NetworkTraversalIceConfigFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -26,7 +26,7 @@ class NetworkTraversalIceConfigFetcher
   NetworkTraversalIceConfigFetcher& operator=(
       const NetworkTraversalIceConfigFetcher& other) = delete;
 
-  // TODO(crbug.com/1124392) - Cache configs fetched from server.
+  // TODO(crbug.com/40147375) - Cache configs fetched from server.
   void GetIceServers(GetIceServersCallback callback) override;
 
  private:

@@ -89,7 +89,7 @@ void CertIterator::OnGetAttributeForKeyDone(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(wait_counter_ > 0);
 
-  // TODO(crbug.com/1073512): Currently if GetAttributeForKey fails to get the
+  // TODO(crbug.com/40127595): Currently if GetAttributeForKey fails to get the
   // attribute (because it was not set or any other reason), it will return
   // nullopt for cert_profile_id and empty error message. When
   // PlatformKeysService switches to error codes, a code for such situation

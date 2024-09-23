@@ -382,11 +382,38 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Second use of a script resource"/>
   <int value="16" label="Worker script"/>
   <int value="17" label="Module script"/>
+  <int value="18" label="No data pipe"/>
+  <int value="19" label="Loading cancelled"/>
+  <int value="20" label="Non JavaScript module"/>
+  <int value="21" label="Disabled by feature list"/>
+  <int value="22" label="Script type missmatch"/>
+  <int value="23" label="BackgroundResponseProcessor will be used"/>
+  <int value="24" label="Non JavaScript module (background)"/>
+  <int value="25" label="Code-cache available for script (background)"/>
+  <int value="26" label="Script too small (background)"/>
+  <int value="27" label="An error had occurred (background)"/>
+  <int value="28" label="Encoding not supported (background)"/>
 </enum>
 
 <enum name="ResourceHasClient">
   <int value="0" label="No client"/>
   <int value="1" label="Has client"/>
+</enum>
+
+<enum name="V8CodeCacheGetMetadataType">
+  <int value="0" label="None"/>
+  <int value="1" label="Hot timestamp"/>
+  <int value="2" label="Cold timestamp"/>
+  <int value="3" label="Local compile hints with hot timestamp"/>
+  <int value="4" label="Local compile hints with cold timestamp"/>
+  <int value="5" label="Code cache"/>
+</enum>
+
+<enum name="V8CodeCacheSetMetadataType">
+  <int value="0" label="Timestamp"/>
+  <int value="1" label="Local compile hints at FMP"/>
+  <int value="2" label="Local compile hints at interactive"/>
+  <int value="3" label="Code cache"/>
 </enum>
 
 <enum name="V8CompileHintsModelQuality">
@@ -410,6 +437,26 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Consume local compile hints, streaming"/>
   <int value="9" label="Consume crowdsourced compile hints streaming"/>
   <int value="10" label="Produce compile hints, streaming"/>
+  <int value="11" label="No compile hints, classic script, no streaming"/>
+  <int value="12" label="No compile hints, module, no streaming"/>
+  <int value="13" label="No compile hints, streaming"/>
+</enum>
+
+<enum name="V8LocalCompileHintsGenerated">
+  <int value="0" label="Non-final"/>
+  <int value="1" label="Final"/>
+</enum>
+
+<enum name="WebsiteStateAtFullscreenRequest">
+  <int value="0" label="Not allowlisted, not visited"/>
+  <int value="1" label="Not allowlisted, visited"/>
+  <int value="2" label="Not allowlisted, visit state unknown"/>
+  <int value="3" label="Allowlisted, not visited"/>
+  <int value="4" label="Allowlisted, visited"/>
+  <int value="5" label="Allowlisted, visit state unknown"/>
+  <int value="6" label="Allowlist state unknown, not visited"/>
+  <int value="7" label="Allowlist state unknown, visited"/>
+  <int value="8" label="Allowlist state unknown, visit state unknown"/>
 </enum>
 
 </enums>

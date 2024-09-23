@@ -14,18 +14,20 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
-#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
 #include "chrome/browser/bookmarks/android/bookmark_bridge.h"
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class BrowserContext;
@@ -36,19 +38,17 @@ class BackgroundDownloadService;
 }  // namespace download
 
 namespace optimization_guide {
-namespace android {
-class OptimizationGuideBridge;
-}  // namespace android
 class ChromeHintsManager;
 class ModelExecutionEnabledBrowserTest;
 class ModelExecutionLiveTest;
 class ModelExecutionManager;
 class ModelInfo;
-class ModelQualityLogEntry;
 class ModelQualityLogsUploaderService;
 class ModelValidatorKeyedService;
+class OnDeviceModelAvailabilityObserver;
 class OnDeviceModelComponentStateManager;
 class OptimizationGuideStore;
+class OptimizationGuideKeyedServiceBrowserTest;
 class PredictionManager;
 class PredictionManagerBrowserTestBase;
 class PredictionModelDownloadClient;
@@ -56,6 +56,12 @@ class PredictionModelStoreBrowserTestBase;
 class PushNotificationManager;
 class TabUrlProvider;
 class TopHostProvider;
+
+#if BUILDFLAG(IS_ANDROID)
+namespace android {
+class OptimizationGuideBridge;
+}  // namespace android
+#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace optimization_guide
 
 class ChromeBrowserMainExtraPartsOptimizationGuide;
@@ -80,7 +86,6 @@ class OptimizationGuideKeyedService
       public optimization_guide::OptimizationGuideDecider,
       public optimization_guide::OptimizationGuideModelProvider,
       public optimization_guide::OptimizationGuideModelExecutor,
-      public optimization_guide::ModelQualityLogsUploader,
       public ProfileObserver {
  public:
   explicit OptimizationGuideKeyedService(
@@ -91,6 +96,10 @@ class OptimizationGuideKeyedService
       const OptimizationGuideKeyedService&) = delete;
 
   ~OptimizationGuideKeyedService() override;
+
+#if BUILDFLAG(IS_ANDROID)
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+#endif
 
   // optimization_guide::OptimizationGuideDecider implementation:
   void RegisterOptimizationTypes(
@@ -115,33 +124,42 @@ class OptimizationGuideKeyedService
       optimization_guide::OptimizationTargetModelObserver* observer) override;
 
   // optimization_guide::OptimizationGuideModelExecutor implementation:
+  bool CanCreateOnDeviceSession(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      optimization_guide::OnDeviceModelEligibilityReason*
+          on_device_model_eligibility_reason) override;
   std::unique_ptr<Session> StartSession(
-      optimization_guide::proto::ModelExecutionFeature feature) override;
+      optimization_guide::ModelBasedCapabilityKey feature,
+      const std::optional<optimization_guide::SessionConfigParams>&
+          config_params) override;
   void ExecuteModel(
-      optimization_guide::proto::ModelExecutionFeature feature,
+      optimization_guide::ModelBasedCapabilityKey feature,
       const google::protobuf::MessageLite& request_metadata,
       optimization_guide::OptimizationGuideModelExecutionResultCallback
           callback) override;
-
-  // optimization_guide::ModelQualityLogsUploader implementation.
-  //
-  // It passes ownership of ModelQualityLogEntry, which is reset after upload
-  // has been completed.
-  void UploadModelQualityLogs(
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry)
-      override;
+  void AddOnDeviceModelAvailabilityChangeObserver(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      optimization_guide::OnDeviceModelAvailabilityObserver* observer) override;
+  void RemoveOnDeviceModelAvailabilityChangeObserver(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      optimization_guide::OnDeviceModelAvailabilityObserver* observer) override;
 
   // Returns true if the `feature` should be currently enabled for this user.
   // Note that the return value here may not match the feature enable state on
   // chrome settings page since the latter takes effect on browser restart.
   // Virtualized for testing.
   virtual bool ShouldFeatureBeCurrentlyEnabledForUser(
-      optimization_guide::proto::ModelExecutionFeature feature) const;
+      optimization_guide::UserVisibleFeatureKey feature) const;
 
-  // Returns whether the `feature` should be currently allowed for logging model
-  // quality logs.
-  virtual bool ShouldFeatureBeCurrentlyAllowedForLogging(
-      optimization_guide::proto::ModelExecutionFeature feature) const;
+  // Returns whether the `feature` should be currently allowed for showing the
+  // Feedback UI (and sending Feedback reports).
+  virtual bool ShouldFeatureBeCurrentlyAllowedForFeedback(
+      optimization_guide::proto::LogAiDataRequest::FeatureCase feature) const;
+
+  // Returns true if the opt-in setting should be shown for this profile for
+  // given `feature`. This should only be called by settings UX.
+  bool IsSettingVisible(
+      optimization_guide::UserVisibleFeatureKey feature) const;
 
   // Adds `observer` which can observe the change in feature settings.
   void AddModelExecutionSettingsEnabledObserver(
@@ -167,6 +185,10 @@ class OptimizationGuideKeyedService
       optimization_guide::proto::OptimizationTarget optimization_target,
       std::unique_ptr<optimization_guide::ModelInfo> model_info);
 
+  void SetModelQualityLogsUploaderServiceForTesting(
+      std::unique_ptr<optimization_guide::ModelQualityLogsUploaderService>
+          uploader);
+
   // Creates the platform specific push notification manager. May returns
   // nullptr for desktop or when the push notification feature is disabled.
   static std::unique_ptr<optimization_guide::PushNotificationManager>
@@ -176,24 +198,32 @@ class OptimizationGuideKeyedService
     return optimization_guide_logger_.get();
   }
 
+  optimization_guide::ModelQualityLogsUploaderService*
+  GetModelQualityLogsUploaderService() {
+    return model_quality_logs_uploader_service_.get();
+  }
+
  private:
   friend class BrowserView;
   friend class ChromeBrowserMainExtraPartsOptimizationGuide;
   friend class ChromeBrowsingDataRemoverDelegate;
   friend class HintsFetcherBrowserTest;
   friend class OptimizationGuideInternalsUI;
-  friend class OptimizationGuideKeyedServiceBrowserTest;
   friend class OptimizationGuideMessageHandler;
   friend class OptimizationGuideWebContentsObserver;
   friend class optimization_guide::ModelExecutionEnabledBrowserTest;
   friend class optimization_guide::ModelExecutionLiveTest;
   friend class optimization_guide::ModelValidatorKeyedService;
+  friend class optimization_guide::OptimizationGuideKeyedServiceBrowserTest;
   friend class optimization_guide::PredictionManagerBrowserTestBase;
   friend class optimization_guide::PredictionModelDownloadClient;
   friend class optimization_guide::PredictionModelStoreBrowserTestBase;
-  friend class optimization_guide::android::OptimizationGuideBridge;
   friend class PersonalizedHintsFetcherBrowserTest;
   friend class settings::SettingsUI;
+
+#if BUILDFLAG(IS_ANDROID)
+  friend class optimization_guide::android::OptimizationGuideBridge;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Evaluates and logs the device performance class.
   static void DeterminePerformanceClass(
@@ -241,13 +271,8 @@ class OptimizationGuideKeyedService
       optimization_guide::proto::RequestContext request_context,
       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
           callback,
-      optimization_guide::proto::RequestContextMetadata*
-          request_context_metadata = nullptr) override;
-
-  // Returns true if the opt-in setting should be shown for this profile for
-  // given `feature`. This should only be called by settings UX.
-  bool IsSettingVisible(
-      optimization_guide::proto::ModelExecutionFeature feature) const;
+      std::optional<optimization_guide::proto::RequestContextMetadata>
+          request_context_metadata = std::nullopt) override;
 
   // Returns whether all conditions are met to show the IPH promo for
   // experimental AI.
@@ -257,6 +282,12 @@ class OptimizationGuideKeyedService
 
   bool ComponentUpdatesEnabledProvider() const;
 
+  // Records synthetic field trial for `feature` with trial name appended with
+  // `feature_name`.
+  void RecordModelExecutionFeatureSyntheticFieldTrial(
+      optimization_guide::UserVisibleFeatureKey feature,
+      const std::string_view feature_name);
+
   raw_ptr<content::BrowserContext> browser_context_;
 
   // The store of hints.
@@ -264,7 +295,7 @@ class OptimizationGuideKeyedService
 
   // The logger that plumbs the debug logs to the optimization guide
   // internals page. Must outlive `prediction_manager_` and `hints_manager_`.
-  std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   // Keep a reference to this so it stays alive.
   scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>
@@ -297,6 +328,13 @@ class OptimizationGuideKeyedService
   // record profiles.
   std::unique_ptr<optimization_guide::ModelQualityLogsUploaderService>
       model_quality_logs_uploader_service_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Manage and fetch the java object that wraps this OptimizationGuide on
+  // android.
+  std::unique_ptr<optimization_guide::android::OptimizationGuideBridge>
+      android_bridge_;
+#endif
 
   // Used to observe profile initialization event.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};

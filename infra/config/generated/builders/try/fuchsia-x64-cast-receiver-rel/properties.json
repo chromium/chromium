@@ -45,7 +45,9 @@
           "builder": "fuchsia-x64-cast-receiver-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "retry_without_patch": false,
+      "targets_spec_directory": "src/infra/config/generated/builders/try/fuchsia-x64-cast-receiver-rel/targets"
     }
   },
   "$build/code_coverage": {
@@ -59,6 +61,11 @@
     "check_for_flakiness": true,
     "check_for_flakiness_with_resultdb": true
   },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
+  },
   "$build/siso": {
     "configs": [
       "builder"
@@ -66,7 +73,8 @@
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "project": "rbe-chromium-untrusted"
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": -1
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

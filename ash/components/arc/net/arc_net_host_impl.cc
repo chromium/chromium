@@ -86,8 +86,9 @@ std::vector<const ash::NetworkState*> GetHostActiveNetworks() {
 }
 
 bool IsActiveNetworkState(const ash::NetworkState* network) {
-  if (!network)
+  if (!network) {
     return false;
+  }
 
   const std::string& state = network->connection_state();
   return state == shill::kStateReady || state == shill::kStateOnline ||
@@ -100,17 +101,20 @@ bool IsActiveNetworkState(const ash::NetworkState* network) {
 
 const ash::NetworkState* GetShillBackedNetwork(
     const ash::NetworkState* network) {
-  if (!network)
+  if (!network) {
     return nullptr;
+  }
 
   // Non-Tether networks are already backed by Shill.
   const std::string type = network->type();
-  if (type.empty() || !ash::NetworkTypePattern::Tether().MatchesType(type))
+  if (type.empty() || !ash::NetworkTypePattern::Tether().MatchesType(type)) {
     return network;
+  }
 
   // Tether networks which are not connected are also not backed by Shill.
-  if (!network->IsConnectedState())
+  if (!network->IsConnectedState()) {
     return nullptr;
+  }
 
   // Connected Tether networks delegate to an underlying Wi-Fi network.
   DCHECK(!network->tether_guid().empty());
@@ -323,8 +327,9 @@ void ArcNetHostImpl::OnConnectionReady() {
 void ArcNetHostImpl::SetUpFlags() {
   auto* net_instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->net(), SetUpFlag);
-  if (!net_instance)
+  if (!net_instance) {
     return;
+  }
 
   // arc::mojom::Flag::DEPRECATE_ENABLE_ARC_HOST_VPN no longer passed to ARC,
   // see b/257889534
@@ -333,10 +338,11 @@ void ArcNetHostImpl::SetUpFlags() {
 void ArcNetHostImpl::OnConnectionClosed() {
   // Make sure shill doesn't leave an ARC VPN connected after Android
   // goes down.
-  AndroidVpnStateChanged(arc::mojom::ConnectionStateType::NOT_CONNECTED);
+  AndroidVpnDisconnected();
 
-  if (!observing_network_state_)
+  if (!observing_network_state_) {
     return;
+  }
 
   GetStateHandler()->RemoveObserver(this, FROM_HERE);
   GetNetworkConnectionHandler()->RemoveObserver(this);
@@ -524,7 +530,7 @@ void ArcNetHostImpl::CreateNetworkWithEapTranslated(
   }
 
   std::string user_id_hash = ash::LoginState::Get()->primary_user_hash();
-  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
+  // TODO(crbug.com/40524549): Remove SplitOnceCallback() by updating
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetManagedConfigurationHandler()->CreateConfiguration(
@@ -565,7 +571,7 @@ void ArcNetHostImpl::ForgetNetwork(const std::string& guid,
   }
 
   cached_guid_.clear();
-  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
+  // TODO(crbug.com/40524549): Remove SplitOnceCallback() by updating
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetManagedConfigurationHandler()->RemoveConfigurationFromCurrentProfile(
@@ -597,7 +603,7 @@ void ArcNetHostImpl::UpdateWifiNetwork(const std::string& guid,
   }
   properties.Set(onc::network_config::kWiFi, std::move(wifi_dict));
 
-  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
+  // TODO(crbug.com/40524549): Remove SplitOnceCallback() by updating
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetManagedConfigurationHandler()->SetProperties(
@@ -618,7 +624,7 @@ void ArcNetHostImpl::StartConnect(const std::string& guid,
     return;
   }
 
-  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
+  // TODO(crbug.com/40524549): Remove SplitOnceCallback() by updating
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetNetworkConnectionHandler()->ConnectToNetwork(
@@ -640,7 +646,7 @@ void ArcNetHostImpl::StartDisconnect(const std::string& guid,
     return;
   }
 
-  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
+  // TODO(crbug.com/40524549): Remove SplitOnceCallback() by updating
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetNetworkConnectionHandler()->DisconnectNetwork(
@@ -685,8 +691,9 @@ void ArcNetHostImpl::StartScan() {
 void ArcNetHostImpl::ScanCompleted(const ash::DeviceState* /*unused*/) {
   auto* net_instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->net(), ScanCompleted);
-  if (!net_instance)
+  if (!net_instance) {
     return;
+  }
 
   net_instance->ScanCompleted();
 }
@@ -694,8 +701,9 @@ void ArcNetHostImpl::ScanCompleted(const ash::DeviceState* /*unused*/) {
 void ArcNetHostImpl::DeviceListChanged() {
   auto* net_instance = ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->net(),
                                                    WifiEnabledStateChanged);
-  if (!net_instance)
+  if (!net_instance) {
     return;
+  }
 
   bool is_enabled =
       GetStateHandler()->IsTechnologyEnabled(ash::NetworkTypePattern::WiFi());
@@ -710,11 +718,13 @@ std::string ArcNetHostImpl::LookupArcVpnServicePath() {
 
   for (const ash::NetworkState* state : state_list) {
     const auto* shill_backed_network = GetShillBackedNetwork(state);
-    if (!shill_backed_network)
+    if (!shill_backed_network) {
       continue;
+    }
 
-    if (shill_backed_network->GetVpnProviderType() == shill::kProviderArcVpn)
+    if (shill_backed_network->GetVpnProviderType() == shill::kProviderArcVpn) {
       return shill_backed_network->path();
+    }
   }
   return std::string();
 }
@@ -740,8 +750,9 @@ base::Value::List ArcNetHostImpl::TranslateStringListToValue(
 base::Value::List ArcNetHostImpl::TranslateLongListToStringValue(
     const std::vector<uint64_t>& long_list) {
   base::Value::List result;
-  for (const auto& item : long_list)
+  for (const auto& item : long_list) {
     result.Append(base::NumberToString(item));
+  }
 
   return result;
 }
@@ -773,6 +784,7 @@ base::Value::Dict ArcNetHostImpl::TranslateVpnConfigurationToOnc(
               TranslateStringListToValue(cfg.split_include));
   ip_dict.Set(onc::ipconfig::kExcludedRoutes,
               TranslateStringListToValue(cfg.split_exclude));
+  ip_dict.Set(onc::ipconfig::kMTU, cfg.mtu);
 
   top_dict.Set(onc::network_config::kStaticIPConfig, std::move(ip_dict));
 
@@ -783,8 +795,6 @@ base::Value::Dict ArcNetHostImpl::TranslateVpnConfigurationToOnc(
 
   // ARCVPN dictionary
   base::Value::Dict arcvpn_dict;
-  arcvpn_dict.Set(onc::arc_vpn::kTunnelChrome,
-                  cfg.tunnel_chrome_traffic ? "true" : "false");
   vpn_dict.Set(onc::vpn::kArcVpn, std::move(arcvpn_dict));
 
   top_dict.Set(onc::network_config::kVPN, std::move(vpn_dict));
@@ -797,18 +807,9 @@ base::Value::Dict ArcNetHostImpl::TranslateVpnConfigurationToOnc(
 
 void ArcNetHostImpl::AndroidVpnConnected(
     mojom::AndroidVpnConfigurationPtr cfg) {
-  std::string service_path = LookupArcVpnServicePath();
-  if (!service_path.empty()) {
-    GetManagedConfigurationHandler()->SetProperties(
-        service_path, TranslateVpnConfigurationToOnc(*cfg),
-        base::BindOnce(&ArcNetHostImpl::ConnectArcVpn,
-                       weak_factory_.GetWeakPtr(), service_path, std::string()),
-        base::BindOnce(&ArcVpnErrorCallback,
-                       "reconnecting ARC VPN " + service_path));
-    return;
-  }
-
   std::string user_id_hash = ash::LoginState::Get()->primary_user_hash();
+
+  // TODO(b/333809009): Skip ONC translation step.
   GetManagedConfigurationHandler()->CreateConfiguration(
       user_id_hash, TranslateVpnConfigurationToOnc(*cfg),
       base::BindOnce(&ArcNetHostImpl::ConnectArcVpn,
@@ -816,9 +817,28 @@ void ArcNetHostImpl::AndroidVpnConnected(
       base::BindOnce(&ArcVpnErrorCallback, "connecting new ARC VPN"));
 }
 
-void ArcNetHostImpl::AndroidVpnStateChanged(mojom::ConnectionStateType state) {
-  if (state != arc::mojom::ConnectionStateType::NOT_CONNECTED ||
-      arc_vpn_service_path_.empty()) {
+void ArcNetHostImpl::AndroidVpnUpdated(mojom::AndroidVpnConfigurationPtr cfg) {
+  std::string service_path = LookupArcVpnServicePath();
+  if (service_path.empty()) {
+    NET_LOG(ERROR) << __func__ << ": ARC VPN (" << cfg->app_label << ", "
+                   << cfg->app_name << ") doesn't exist";
+    return;
+  }
+
+  // TODO(b/333809009): Skip ONC translation step.
+  GetManagedConfigurationHandler()->SetProperties(
+      service_path, TranslateVpnConfigurationToOnc(*cfg),
+      /*callback=*/base::DoNothing(),
+      base::BindOnce(&ArcVpnErrorCallback, "updating ARC VPN " + service_path));
+}
+
+void ArcNetHostImpl::DEPRECATED_AndroidVpnStateChanged(
+    mojom::ConnectionStateType state) {
+  AndroidVpnDisconnected();
+}
+
+void ArcNetHostImpl::AndroidVpnDisconnected() {
+  if (arc_vpn_service_path_.empty()) {
     return;
   }
 
@@ -962,11 +982,13 @@ void ArcNetHostImpl::TranslateEapCredentialsToShillDictWithCertID(
     dict.Set(shill::kEapAnonymousIdentityProperty,
              cred->anonymous_identity.value());
   }
-  if (cred->identity.has_value())
+  if (cred->identity.has_value()) {
     dict.Set(shill::kEapIdentityProperty, cred->identity.value());
+  }
 
-  if (cred->password.has_value())
+  if (cred->password.has_value()) {
     dict.Set(shill::kEapPasswordProperty, cred->password.value());
+  }
 
   dict.Set(shill::kEapKeyMgmtProperty,
            net_utils::TranslateKeyManagement(cred->key_management));
@@ -1094,9 +1116,6 @@ base::Value::Dict ArcNetHostImpl::TranslateProxyConfiguration(
 
 void ArcNetHostImpl::AddPasspointCredentials(
     mojom::PasspointCredentialsPtr credentials) {
-  if (!ash::features::IsPasspointARCSupportEnabled()) {
-    return;
-  }
   TranslatePasspointCredentialsToDict(
       std::move(credentials),
       base::BindOnce(&ArcNetHostImpl::AddPasspointCredentialsWithProperties,
@@ -1133,12 +1152,6 @@ aura::Window* ArcNetHostImpl::GetAppWindow(const std::string& package_name) {
 void ArcNetHostImpl::RequestPasspointAppApproval(
     mojom::PasspointApprovalRequestPtr request,
     RequestPasspointAppApprovalCallback callback) {
-  if (!ash::features::IsPasspointARCSupportEnabled()) {
-    std::move(callback).Run(
-        mojom::PasspointApprovalResponse::New(/*allow=*/false));
-    return;
-  }
-
   aura::Window* window = GetAppWindow(request->package_name);
   if (!window) {
     NET_LOG(ERROR) << __func__ << ": Failed to get app window";
@@ -1229,15 +1242,17 @@ void ArcNetHostImpl::DisconnectArcVpn() {
 
   auto* net_instance = ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->net(),
                                                    DisconnectAndroidVpn);
-  if (!net_instance)
+  if (!net_instance) {
     return;
+  }
 
   net_instance->DisconnectAndroidVpn();
 }
 
 void ArcNetHostImpl::DisconnectRequested(const std::string& service_path) {
-  if (arc_vpn_service_path_ != service_path)
+  if (arc_vpn_service_path_ != service_path) {
     return;
+  }
 
   // This code path is taken when a user clicks the blue Disconnect button
   // in Chrome OS.  Chrome is about to send the Disconnect call to shill,
@@ -1248,8 +1263,9 @@ void ArcNetHostImpl::DisconnectRequested(const std::string& service_path) {
 void ArcNetHostImpl::NetworkConnectionStateChanged(
     const ash::NetworkState* network) {
   const auto* shill_backed_network = GetShillBackedNetwork(network);
-  if (!shill_backed_network)
+  if (!shill_backed_network) {
     return;
+  }
 
   if (arc_vpn_service_path_ != shill_backed_network->path() ||
       shill_backed_network->IsConnectingOrConnected()) {
@@ -1306,12 +1322,28 @@ void ArcNetHostImpl::UpdateHostNetworks(
     const std::vector<patchpanel::NetworkDevice>& devices) {
   auto* net_instance = ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->net(),
                                                    ActiveNetworksChanged);
-  if (!net_instance)
+  if (!net_instance) {
     return;
+  }
 
-  net_instance->ActiveNetworksChanged(net_utils::TranslateNetworkDevices(
-      devices, arc_vpn_service_path_, GetHostActiveNetworks(),
-      shill_network_properties_));
+  std::vector<arc::mojom::NetworkConfigurationPtr> latest_networks =
+      net_utils::TranslateNetworkDevices(devices, arc_vpn_service_path_,
+                                         GetHostActiveNetworks(),
+                                         shill_network_properties_);
+
+  if (net_utils::AreConfigurationsEquivalent(latest_networks,
+                                             cached_arc_networks_)) {
+    NET_LOG(USER) << "Host networks are considered equivalent to ARC, not "
+                  << "forwarding update to ARC";
+    return;
+  }
+
+  // Create clones since the mojo structs are move-only
+  cached_arc_networks_.clear();
+  for (auto& network : latest_networks) {
+    cached_arc_networks_.push_back(network->Clone());
+  }
+  net_instance->ActiveNetworksChanged(std::move(latest_networks));
 }
 
 void ArcNetHostImpl::NetworkListChanged() {
@@ -1328,8 +1360,9 @@ void ArcNetHostImpl::NetworkListChanged() {
         &ArcNetHostImpl::UpdateHostNetworks, weak_factory_.GetWeakPtr()));
     return;
   }
-  for (const auto* network : active_networks)
+  for (const auto* network : active_networks) {
     NetworkPropertiesUpdated(network);
+  }
 }
 
 void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,

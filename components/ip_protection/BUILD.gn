@@ -1,0 +1,172 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+# General IP Protection functionality and support, with few dependencies. This
+# should be safe to include in most builds.
+source_set("ip_protection") {
+  sources = [
+    "common/ip_protection_config_getter.h",
+    "common/ip_protection_config_getter_mojo_impl.cc",
+    "common/ip_protection_config_getter_mojo_impl.h",
+    "common/ip_protection_control.h",
+    "common/ip_protection_control_mojo.cc",
+    "common/ip_protection_control_mojo.h",
+    "common/ip_protection_core.h",
+    "common/ip_protection_core_impl.cc",
+    "common/ip_protection_core_impl.h",
+    "common/ip_protection_data_types.cc",
+    "common/ip_protection_data_types.h",
+    "common/ip_protection_proxy_config_fetcher.cc",
+    "common/ip_protection_proxy_config_fetcher.h",
+    "common/ip_protection_proxy_config_manager.h",
+    "common/ip_protection_proxy_config_manager_impl.cc",
+    "common/ip_protection_proxy_config_manager_impl.h",
+    "common/ip_protection_telemetry.h",
+    "common/ip_protection_telemetry_uma.cc",
+    "common/ip_protection_telemetry_uma.h",
+    "common/ip_protection_token_manager.h",
+    "common/ip_protection_token_manager_impl.cc",
+    "common/ip_protection_token_manager_impl.h",
+    "common/masked_domain_list_manager.cc",
+    "common/masked_domain_list_manager.h",
+    "common/url_matcher_with_bypass.cc",
+    "common/url_matcher_with_bypass.h",
+  ]
+
+  defines = [ "IS_IP_PROTECTION_IMPL" ]
+
+  deps = [
+    "//base",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
+    "//mojo/public/cpp/bindings:bindings",
+    "//net:net",
+    "//services/network/public/cpp:cpp",
+    "//services/network/public/mojom:mojom",
+    "//url",
+  ]
+}
+
+# IP Protection functionality implemented in the browser process. This contains
+# browser-specific dependencies.
+source_set("browser") {
+  sources = [
+    "common/ip_protection_config_http.cc",
+    "common/ip_protection_config_http.h",
+    "common/ip_protection_core_host_helper.cc",
+    "common/ip_protection_core_host_helper.h",
+    "common/ip_protection_proxy_config_direct_fetcher.cc",
+    "common/ip_protection_proxy_config_direct_fetcher.h",
+    "common/ip_protection_token_direct_fetcher.cc",
+    "common/ip_protection_token_direct_fetcher.h",
+    "common/ip_protection_token_fetcher.cc",
+    "common/ip_protection_token_fetcher.h",
+  ]
+  if (is_android) {
+    sources += [
+      "android/blind_sign_message_android_impl.cc",
+      "android/blind_sign_message_android_impl.h",
+      "android/ip_protection_token_ipc_fetcher.cc",
+      "android/ip_protection_token_ipc_fetcher.h",
+    ]
+  }
+
+  defines = [ "IS_IP_PROTECTION_IMPL" ]
+
+  deps = [
+    ":get_proxy_config_proto",
+    ":ip_protection",
+    "//base",
+    "//build:branding_buildflags",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
+    "//mojo/public/cpp/bindings:bindings",
+    "//net:net",
+    "//net/third_party/quiche:blind_sign_auth",
+    "//services/network/public/cpp:cpp",
+    "//services/network/public/mojom:mojom",
+    "//url",
+  ]
+
+  public_deps = [ "//third_party/anonymous_tokens:anonymous_tokens_cc_proto" ]
+
+  if (is_android) {
+    deps += [
+      "//components/ip_protection/android/android_auth_client_lib/cpp:jni_headers",
+      "//components/ip_protection/android/android_auth_client_lib/cpp:native",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "common/ip_protection_config_http_unittest.cc",
+    "common/ip_protection_core_impl_unittest.cc",
+    "common/ip_protection_data_types_unittest.cc",
+    "common/ip_protection_proxy_config_direct_fetcher_unittest.cc",
+    "common/ip_protection_proxy_config_manager_impl_unittest.cc",
+    "common/ip_protection_token_manager_impl_unittest.cc",
+    "common/masked_domain_list_manager_unittest.cc",
+    "common/mock_blind_sign_auth.cc",
+    "common/mock_blind_sign_auth.h",
+    "common/url_matcher_with_bypass_unittest.cc",
+  ]
+
+  if (is_android) {
+    sources += [ "android/blind_sign_message_android_impl_unittest.cc" ]
+  }
+
+  deps = [
+    ":browser",
+    ":get_proxy_config_proto",
+    ":ip_protection",
+    "//base",
+    "//base/test:test_support",
+    "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
+    "//google_apis/common:test_support",
+    "//net/third_party/quiche:blind_sign_auth",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  if (is_android) {
+    deps += [
+      "//components/ip_protection/android/android_auth_client_lib/cpp:jni_headers",
+      "//components/ip_protection/android/android_auth_client_lib/cpp:native",
+    ]
+  }
+}
+
+# A unit test binary that only runs tests for this component. This is useful
+# during development, but these tests are typically run as part of
+# `//components:components_unittests`.
+test("components_ip_protection_unittests") {
+  sources = [ "test/run_all_unittests.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/ip_protection:unit_tests",
+    "//mojo/core/embedder",
+    "//testing/gtest",
+  ]
+}
+
+proto_library("get_proxy_config_proto") {
+  sources = [ "get_proxy_config.proto" ]
+}
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  proto_java_library("get_proxy_config_proto_java") {
+    sources = [ "get_proxy_config.proto" ]
+    proto_path = "./"
+  }
+}

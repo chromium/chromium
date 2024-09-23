@@ -7,7 +7,6 @@
  */
 
 import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
 
 import {CrButtonElement} from '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assert} from '//resources/js/assert.js';

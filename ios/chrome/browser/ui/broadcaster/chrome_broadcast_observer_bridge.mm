@@ -13,7 +13,7 @@ ChromeBroadcastObserverInterface::~ChromeBroadcastObserverInterface() = default;
 @synthesize observer = _observer;
 
 - (instancetype)initWithObserver:(ChromeBroadcastObserverInterface*)observer {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _observer = observer;
     DCHECK(_observer);
   }

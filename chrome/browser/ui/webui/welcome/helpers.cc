@@ -16,16 +16,11 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/search.h"
 #include "components/policy/core/common/policy_map.h"
-#include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 
 namespace welcome {
@@ -147,19 +142,6 @@ std::vector<std::string> GetAvailableModules(Profile* profile) {
     available_modules.push_back("signin-view");
 
   return available_modules;
-}
-
-bool HasModulesToShow(Profile* profile) {
-  // Modules won't have lasting effect if profile is ephemeral, so we can skip.
-  ProfileAttributesStorage& storage =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry =
-      storage.GetProfileAttributesWithPath(profile->GetPath());
-  if (entry && entry->IsEphemeral()) {
-    return false;
-  }
-
-  return !GetAvailableModules(profile).empty();
 }
 
 std::string FilterModules(const std::string& requested_modules,

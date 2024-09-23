@@ -43,7 +43,7 @@
 <translation id="134645005685694099">您设备的存储空间不足，无法继续进行文件同步。新文件将不再自动同步。</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />：<ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">该文件或目录无法使用。</translation>
-<translation id="1363028406613469049">曲目</translation>
+<translation id="1363028406613469049">跟踪</translation>
 <translation id="1378727793141957596">欢迎使用 Google 云端硬盘！</translation>
 <translation id="1379911846207762492">您可将文件设为“可离线使用”，以便在未联网的情况下访问。</translation>
 <translation id="1383876407941801731">搜索</translation>
@@ -125,7 +125,7 @@
 <translation id="2001796770603320721">在云端硬盘中管理</translation>
 <translation id="2004942826429452291">文件将同时存储在云端和此 Chromebook 上。</translation>
 <translation id="2009067268969781306">将驱动器格式化会删除其中存储的所有数据。此操作无法撤消。</translation>
-<translation id="2025955442973426285">蒂格尼亚语</translation>
+<translation id="2025955442973426285">提格里尼亚语</translation>
 <translation id="2037845485764049925">俄语</translation>
 <translation id="2044023416777079300">调制解调器未注册</translation>
 <translation id="2046702855113914483">拉面</translation>
@@ -163,7 +163,7 @@
 <translation id="2288278176040912387">电唱机</translation>
 <translation id="2291538123825441971">正在打开 <ph name="NUMBER_OF_FILES" /> 个文件。</translation>
 <translation id="2303301624314357662">正在打开文件“<ph name="FILE_NAME" />”</translation>
-<translation id="2304820083631266885">星球</translation>
+<translation id="2304820083631266885">行星</translation>
 <translation id="2305020378527873881">已移除 <ph name="VOLUME_NAME" />。</translation>
 <translation id="2307462900900812319">配置网络</translation>
 <translation id="2312704192806647271">{COUNT,plural, =1{找不到以下 ID 对应的扩展程序：<ph name="BEGIN_LIST" /><ph name="END_LIST" />。请联系您的管理员。}other{找不到以下 ID 对应的扩展程序：<ph name="BEGIN_LIST" /><ph name="END_LIST" />。请联系您的管理员。}}</translation>
@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS 主机</translation>
 <translation id="3104793765551262433">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，已被您的管理员禁用，详细信息</translation>
-<translation id="3113153474486991170">无法从此处打开“<ph name="PATH" />”。您需要将它复制到“我的文件”，才能打开它。</translation>
 <translation id="3113592018909187986">您还有 1 次尝试机会。在设置新 PIN 码之前，您将无法使用此网络。</translation>
 <translation id="3124404833828281817">一个人在做白日梦</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">取消<ph name="ACTIVITY_DESCRIPTION" />。</translation>
 <translation id="3690128548376345212">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，未激活，<ph name="CONNECTION_STATUS" />，信号强度 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="3691184985318546178">僧伽罗语</translation>
+<translation id="3702842351052426940">您的 SIM 卡或 eSIM 卡配置文件可能已停用。请尝试更换 SIM 卡或切换 eSIM 卡配置文件。</translation>
 <translation id="3722341589402358578">出错了。某些内容可能未成功移至回收站。</translation>
 <translation id="3726463242007121105">系统不支持此设备的文件系统，因此无法打开此设备。</translation>
 <translation id="3727148787322499904">更改此设置将会影响所有共享网络</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">此代理已由您的管理员强制启用</translation>
 <translation id="3830674330436234648">无法播放</translation>
 <translation id="383652340667548381">塞尔维亚语</translation>
+<translation id="3839045880592694915">您的运营商不允许连接到您的调制解调器。如需了解详情，请与运营商联系。</translation>
 <translation id="385051799172605136">返回</translation>
-<translation id="3851491607336266896">已连接，但连接受限</translation>
 <translation id="3855472144336161447">德语Neo 2</translation>
 <translation id="3858860766373142691">名称</translation>
 <translation id="3866249974567520381">说明</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">最近打开的 Microsoft 文件已移至 OneDrive</translation>
 <translation id="4002066346123236978">标题</translation>
 <translation id="4017788180641807848">英语（美国）Workman 键盘</translation>
-<translation id="4019998208269143058">固定到“快捷文件”空间</translation>
 <translation id="4040753847560036377">PUK 不正确</translation>
 <translation id="4057991113334098539">正在激活...</translation>
 <translation id="4092890906744441904">爱尔兰语</translation>
+<translation id="4101601646343868113">请登录您的移动网络并确认您的移动流量套餐处于有效状态</translation>
 <translation id="4124731372776320263">正在同步 1 个云端硬盘文件</translation>
 <translation id="4124935795427217608">独角兽</translation>
 <translation id="4131235941541910880">将不需要的内容移至回收站</translation>
@@ -487,7 +487,7 @@
 <translation id="4826849268470072925">泰米尔语 ITRANS</translation>
 <translation id="482932175346970750">在浏览器中输入 <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4843566743023903107">Chromebase</translation>
-<translation id="4850886885716139402">视图</translation>
+<translation id="4850886885716139402">查看</translation>
 <translation id="485316830061041779">德语</translation>
 <translation id="4862885579661885411">“文件”相关设置</translation>
 <translation id="4867079195717347957">点击即可按降序对此列排序。</translation>
@@ -600,6 +600,7 @@
 <translation id="5625294776298156701">泰米尔语 Tamil99 键盘</translation>
 <translation id="5633226425545095130">移动此内容会将其分享给所有能看到共享文件夹“<ph name="DESTINATION_NAME" />”的人。</translation>
 <translation id="5649768706273821470">收听</translation>
+<translation id="5650895901941743674">请检查您的 APN 配置</translation>
 <translation id="5669691691057771421">请输入新的 PIN 码</translation>
 <translation id="5678784840044122290">此 Linux 应用将可以在您的终端上使用，且可能在启动器中显示图标。</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />无法断开与档案或虚拟磁盘的连接<ph name="END_BOLD" />
@@ -679,6 +680,7 @@
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="PHONE_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，剩余电量为 <ph name="BATTERY_STATUS" />%，连接</translation>
 <translation id="6269630227984243955">马来语</translation>
 <translation id="6271903698064569429">无法上传文件，因为“<ph name="SHARED_DRIVE_NAME" />”的存储空间不足。</translation>
+<translation id="6279140785485544797">您的移动流量套餐可能已过期。请向您的运营商寻求支持。</translation>
 <translation id="6287852322318138013">选择用于打开此文件的应用</translation>
 <translation id="6295542640242147836">锁定 SIM 卡</translation>
 <translation id="6296410173147755564">PUK 无效</translation>
@@ -688,7 +690,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> 归档文件</translation>
 <translation id="6321303798550928047">挥手</translation>
 <translation id="6327785803543103246">网络代理自动发现</translation>
-<translation id="6337014272874260727">取消固定到“快捷文件”空间</translation>
 <translation id="6339145975392024142">美式国际 (PC) 键盘</translation>
 <translation id="6356685157277930264">文件反馈窗口</translation>
 <translation id="6358884629796491903">龙</translation>
@@ -734,6 +735,7 @@
 <translation id="6750737795876287924">当前目录</translation>
 <translation id="6751256176799620176">已选择 1 个文件夹</translation>
 <translation id="6755827872271341378">ChromeOS Flex 设备</translation>
+<translation id="6777029074498310250">如需了解详情，请访问 <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /></translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6794539005637808366">请恢复这项内容，或将它拖至回收站之外的一个新文件夹中</translation>
 <translation id="6795884519221689054">熊猫</translation>
@@ -787,6 +789,7 @@
 <translation id="7086590977277044826">泰米尔语 InScript 键盘</translation>
 <translation id="7088615885725309056">往前</translation>
 <translation id="7103992300314999525">马其顿语</translation>
+<translation id="7104338189998813914">访问您的 OneDrive 账号时出现问题</translation>
 <translation id="7106346894903675391">购买更多存储空间...</translation>
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; - 搜索云端硬盘&lt;em&gt;&lt;/em&gt;</translation>
 <translation id="7135561821015524160">卡纳达语注音</translation>
@@ -847,6 +850,7 @@
 <translation id="7589661784326793847">请稍候</translation>
 <translation id="7600126690270271294">塞尔维亚语</translation>
 <translation id="7603724359189955920">网格</translation>
+<translation id="7624010287655004652">已被其他移动服务商锁定</translation>
 <translation id="7627790789328695202">糟糕，<ph name="FILE_NAME" />已存在。请改用其他名称并重试。</translation>
 <translation id="7628656427739290098">已完成 <ph name="PERCENT" />%。</translation>
 <translation id="7649070708921625228">帮助</translation>
@@ -1004,6 +1008,7 @@
 <translation id="8600173386174225982">文件列表已切换到缩略图视图。</translation>
 <translation id="8601932370724196034">Crostini 映像文件</translation>
 <translation id="8609695766746872526">冰岛语</translation>
+<translation id="8630384863424041081">请输入您的 SIM 卡 PIN 码或运营商提供的默认 PIN 码，也可联系运营商寻求支持。</translation>
 <translation id="863903787380594467">PIN 码不正确。您还有 <ph name="RETRIES" /> 次尝试机会。</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 端口</translation>
 <translation id="8656407365183407932">您必须移除一些离线文件</translation>
@@ -1013,7 +1018,6 @@
 <translation id="8698877009525468705">此文件属于机密信息，受管理员政策的限制。</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8713112442029511308">马耳他语</translation>
-<translation id="8714138378966541668">已被提供商锁定</translation>
 <translation id="8714406895390098252">自行车</translation>
 <translation id="8719721339511222681">已选择<ph name="ENTRY_NAME" />。</translation>
 <translation id="872537912056138402">克罗地亚语</translation>

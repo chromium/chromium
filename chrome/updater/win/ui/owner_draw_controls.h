@@ -8,9 +8,6 @@
 #include <windows.h>
 
 #include "base/win/atl.h"
-
-#include <atltypes.h>
-
 #include "chrome/updater/win/ui/ui_constants.h"
 #include "third_party/wtl/include/atlapp.h"
 #pragma clang diagnostic push

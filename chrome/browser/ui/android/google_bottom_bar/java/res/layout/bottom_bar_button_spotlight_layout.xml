@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/google_bottom_bar_button_size"
+    android:layout_height="@dimen/google_bottom_bar_button_size"
+    android:scaleType="centerInside"
+    android:layout_gravity="center_vertical"
+    android:importantForAccessibility="yes"
+    android:contentDescription="@null"
+    android:visibility="visible"
+    android:padding="@dimen/google_bottom_bar_button_padding"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?android:attr/actionBarItemBackground"  />

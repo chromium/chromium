@@ -6,38 +6,25 @@
 
 #include <algorithm>
 #include <memory>
-#include <set>
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
-#include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_candidate_factory.h"
+#include "components/viz/service/display/overlay_processor_delegated_support.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
-#include "components/viz/service/display/overlay_strategy_fullscreen.h"
-#include "components/viz/service/display/overlay_strategy_single_on_top.h"
-#include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/ozone/public/overlay_manager_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 
@@ -108,8 +95,7 @@ OverlayProcessorDelegated::OverlayProcessorDelegated(
   supports_out_of_window_clip_rect_ =
       runtime_props.supports_out_of_window_clip_rect;
   needs_background_image_ = runtime_props.needs_background_image;
-  supports_affine_transform_ = features::ShouldDelegateTransforms() &&
-                               runtime_props.supports_affine_transform;
+  supports_affine_transform_ = runtime_props.supports_affine_transform;
   has_transformation_fix_ = runtime_props.has_transformation_fix;
 }
 
@@ -124,14 +110,12 @@ bool OverlayProcessorDelegated::DisableSplittingQuads() const {
 
 constexpr size_t kTooManyQuads = 64;
 
-DBG_FLAG_FBOOL("delegated.disable.delegation", disable_delegation)
-
 bool OverlayProcessorDelegated::AttemptWithStrategies(
     const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
-    DisplayResourceProvider* resource_provider,
+    const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
     OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
@@ -147,7 +131,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
     return false;
   }
 
-  if (disable_delegation()) {
+  if (ForceDisableDelegation()) {
     delegated_status_ = DelegationStatus::kCompositedFeatureDisabled;
     return false;
   }
@@ -170,14 +154,14 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
     return false;
   }
 
-  const OverlayCandidateFactory::OverlayContext context = {
-      .is_delegated_context = true,
-      .supports_clip_rect = supports_clip_rect_,
-      .supports_out_of_window_clip_rect = supports_out_of_window_clip_rect_,
-      .supports_arbitrary_transform = supports_affine_transform_,
-      .supports_mask_filter = true,
-      .transform_and_clip_rpdq = has_transformation_fix_,
-  };
+  OverlayCandidateFactory::OverlayContext context;
+  context.is_delegated_context = true;
+  context.supports_clip_rect = supports_clip_rect_;
+  context.supports_out_of_window_clip_rect = supports_out_of_window_clip_rect_;
+  context.supports_arbitrary_transform = supports_affine_transform_;
+  context.supports_mask_filter = true;
+  context.transform_and_clip_rpdq = has_transformation_fix_;
+  context.supports_flip_rotate_transform = SupportsFlipRotateTransform();
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
@@ -191,97 +175,16 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   int num_quads_skipped = 0;
 
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
-    OverlayCandidate candidate;
-    auto& transform = it->shared_quad_state->quad_to_target_transform;
-    auto display_rect = transform.MapRect(gfx::RectF(it->rect));
-    DBG_DRAW_TEXT(
-        "delegated.overlay.type",
-        gfx::Vector2dF(display_rect.origin().x(), display_rect.origin().y()),
-        base::StringPrintf("m=%d rid=%d", static_cast<int>(it->material),
-                           it->resources.begin()->value()));
-    auto candidate_status = candidate_factory.FromDrawQuad(*it, candidate);
-    if (candidate_status == OverlayCandidate::CandidateStatus::kSuccess) {
-      if (it->material == DrawQuad::Material::kSolidColor) {
-        DBG_DRAW_RECT("delegated.overlay.color", candidate.display_rect);
-      } else if (it->material == DrawQuad::Material::kAggregatedRenderPass) {
-        DBG_DRAW_RECT("delegated.overlay.aggregated", candidate.display_rect);
+    if (auto result = TryPromoteDrawQuadForDelegation(candidate_factory, *it);
+        result.has_value()) {
+      if (const auto& candidate = result.value(); candidate.has_value()) {
+        candidates->push_back(candidate.value());
       } else {
-        DBG_DRAW_RECT("delegated.overlay.candidate", candidate.display_rect);
-
-        if (!candidate.rounded_corners.IsEmpty()) {
-          DBG_DRAW_RECT_OPT("delegated.overlay.candidate_rounded_corners",
-                            DBG_OPT_BLUE, candidate.rounded_corners.rect());
-
-          using Corner = gfx::RRectF::Corner;
-          const Corner corners[] = {Corner::kUpperLeft, Corner::kUpperRight,
-                                    Corner::kLowerRight, Corner::kLowerLeft};
-          for (auto corner : corners) {
-            auto corner_rect =
-                candidate.rounded_corners.CornerBoundingRect(corner);
-            DBG_DRAW_RECT_OPT("delegated.overlay.candidate_rounded_corners",
-                              DBG_OPT_RED, corner_rect);
-          }
-        }
+        // This quad can be intentionally skipped.
+        num_quads_skipped++;
       }
-      candidates->push_back(candidate);
-    } else if (candidate_status ==
-               OverlayCandidate::CandidateStatus::kFailVisible) {
-      // This quad can be intentionally skipped.
-      num_quads_skipped++;
     } else {
-      DBG_DRAW_RECT("delegated.overlay.failed", display_rect);
-      DBG_LOG("delegated.overlay.failed", "error code %d",
-              static_cast<int>(candidate_status));
-
-      switch (candidate_status) {
-        case OverlayCandidate::CandidateStatus::kFailNotAxisAligned:
-          delegated_status_ = DelegationStatus::kCompositedNotAxisAligned;
-          break;
-        case OverlayCandidate::CandidateStatus::kFailNotAxisAligned3dTransform:
-          delegated_status_ = DelegationStatus::kCompositedHas3dTransform;
-          break;
-        case OverlayCandidate::CandidateStatus::kFailNotAxisAligned2dShear:
-          delegated_status_ = DelegationStatus::kCompositedHas2dShear;
-          break;
-        case OverlayCandidate::CandidateStatus::kFailNotAxisAligned2dRotation:
-          delegated_status_ = DelegationStatus::kCompositedHas2dRotation;
-          break;
-        case OverlayCandidate::CandidateStatus::kFailNotOverlay:
-          delegated_status_ = DelegationStatus::kCompositedNotOverlay;
-          break;
-        case OverlayCandidate::CandidateStatus::kFailBlending:
-          delegated_status_ = DelegationStatus::kCompositedCandidateBlending;
-          break;
-        case OverlayCandidate::CandidateStatus::kFailQuadNotSupported:
-          delegated_status_ =
-              DelegationStatus::kCompositedCandidateQuadMaterial;
-          break;
-        case OverlayCandidate::CandidateStatus::kFailBufferFormat:
-          delegated_status_ =
-              DelegationStatus::kCompositedCandidateBufferFormat;
-          break;
-        case OverlayCandidate::CandidateStatus::kFailNearFilter:
-          delegated_status_ = DelegationStatus::kCompositedCandidateNearFilter;
-          break;
-        case OverlayCandidate::CandidateStatus::kFailNotSharedImage:
-          delegated_status_ =
-              DelegationStatus::kCompositedCandidateNotSharedImage;
-          break;
-        case OverlayCandidate::CandidateStatus::kFailMaskFilterNotSupported:
-          delegated_status_ = DelegationStatus::kCompositedCandidateMaskFilter;
-          break;
-        case OverlayCandidate::CandidateStatus::kFailHasTransformButCantClip:
-          delegated_status_ =
-              DelegationStatus::kCompositedCandidateTransformCantClip;
-          break;
-        case OverlayCandidate::CandidateStatus::kFailRpdqWithTransform:
-          delegated_status_ =
-              DelegationStatus::kCompositedCandidateRpdqWithTransform;
-          break;
-        default:
-          delegated_status_ = DelegationStatus::kCompositedCandidateFailed;
-          break;
-      }
+      delegated_status_ = result.error();
     }
   }
 
@@ -342,10 +245,7 @@ void OverlayProcessorDelegated::ProcessForOverlays(
   RecordFDUsageUMA();
 #endif
 
-  DBG_DRAW_RECT("delegated.incoming.damage", (*damage_rect));
-  for (auto&& each : surface_damage_rect_list) {
-    DBG_DRAW_RECT("delegated.surface.damage", each);
-  }
+  DebugLogBeforeDelegation(*damage_rect, surface_damage_rect_list);
 
   success = AttemptWithStrategies(
       output_color_matrix, render_pass_filters, render_pass_backdrop_filters,
@@ -369,18 +269,7 @@ void OverlayProcessorDelegated::ProcessForOverlays(
     unassigned_damage_ = gfx::RectF();
   }
 
-  UMA_HISTOGRAM_ENUMERATION("Viz.DelegatedCompositing.Status",
-                            delegated_status_);
-  DBG_LOG("delegation_status", "delegation status: %d",
-          static_cast<int>(delegated_status_));
-  DBG_DRAW_RECT("delegated.outgoing.damage", (*damage_rect));
-
-  TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"),
-                 "Scheduled overlay planes", candidates->size());
-
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"),
-                       "DelegatedCompositingStatus", TRACE_EVENT_SCOPE_THREAD,
-                       "delegated_status", delegated_status_);
+  DebugLogAfterDelegation(delegated_status_, *candidates, *damage_rect);
 }
 
 void OverlayProcessorDelegated::AdjustOutputSurfaceOverlay(
@@ -388,7 +277,7 @@ void OverlayProcessorDelegated::AdjustOutputSurfaceOverlay(
   if (!output_surface_plane->has_value())
     return;
 
-  // TODO(https://crbug.com/1224991) : Damage propagation will allow us to
+  // TODO(crbug.com/40775556) : Damage propagation will allow us to
   // remove the primary plan entirely in the case of full delegation.
   // In that case we will do "output_surface_plane->reset()" like the existing
   // fullscreen overlay code.
@@ -404,7 +293,7 @@ bool OverlayProcessorDelegated::BlockForCopyRequests(
     const AggregatedRenderPassList* render_pass_list) {
   bool has_copy = false;
   for (auto& pass : *render_pass_list) {
-    if (!pass->copy_requests.empty()) {
+    if (pass->HasCapture()) {
       has_copy = true;
       break;
     }

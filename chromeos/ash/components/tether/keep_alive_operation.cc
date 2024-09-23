@@ -10,11 +10,8 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 // static
 KeepAliveOperation::Factory* KeepAliveOperation::Factory::factory_instance_ =
@@ -22,16 +19,15 @@ KeepAliveOperation::Factory* KeepAliveOperation::Factory::factory_instance_ =
 
 // static
 std::unique_ptr<KeepAliveOperation> KeepAliveOperation::Factory::Create(
-    multidevice::RemoteDeviceRef device_to_connect,
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client) {
+    const TetherHost& tether_host,
+    raw_ptr<HostConnection::Factory> host_connection_factory) {
   if (factory_instance_) {
-    return factory_instance_->CreateInstance(
-        device_to_connect, device_sync_client, secure_channel_client);
+    return factory_instance_->CreateInstance(tether_host,
+                                             host_connection_factory);
   }
 
-  return base::WrapUnique(new KeepAliveOperation(
-      device_to_connect, device_sync_client, secure_channel_client));
+  return base::WrapUnique(
+      new KeepAliveOperation(tether_host, host_connection_factory));
 }
 
 // static
@@ -42,15 +38,12 @@ void KeepAliveOperation::Factory::SetFactoryForTesting(Factory* factory) {
 KeepAliveOperation::Factory::~Factory() = default;
 
 KeepAliveOperation::KeepAliveOperation(
-    multidevice::RemoteDeviceRef device_to_connect,
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client)
+    const TetherHost& tether_host,
+    raw_ptr<HostConnection::Factory> host_connection_factory)
     : MessageTransferOperation(
-          multidevice::RemoteDeviceRefList{device_to_connect},
-          secure_channel::ConnectionPriority::kMedium,
-          device_sync_client,
-          secure_channel_client),
-      remote_device_(device_to_connect),
+          tether_host,
+          HostConnection::Factory::ConnectionPriority::kMedium,
+          host_connection_factory),
       clock_(base::DefaultClock::GetInstance()) {}
 
 KeepAliveOperation::~KeepAliveOperation() = default;
@@ -63,25 +56,17 @@ void KeepAliveOperation::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void KeepAliveOperation::OnDeviceAuthenticated(
-    multidevice::RemoteDeviceRef remote_device) {
-  DCHECK(remote_devices().size() == 1u && remote_devices()[0] == remote_device);
+void KeepAliveOperation::OnDeviceAuthenticated() {
   keep_alive_tickle_request_start_time_ = clock_->Now();
-  SendMessageToDevice(remote_device,
-                      std::make_unique<MessageWrapper>(KeepAliveTickle()));
+  SendMessage(std::make_unique<MessageWrapper>(KeepAliveTickle()),
+              /*on_message_sent=*/base::DoNothing());
 }
 
 void KeepAliveOperation::OnMessageReceived(
-    std::unique_ptr<MessageWrapper> message_wrapper,
-    multidevice::RemoteDeviceRef remote_device) {
+    std::unique_ptr<MessageWrapper> message_wrapper) {
   if (message_wrapper->GetMessageType() !=
       MessageType::KEEP_ALIVE_TICKLE_RESPONSE) {
     // If another type of message has been received, ignore it.
-    return;
-  }
-
-  if (!(remote_device == remote_device_)) {
-    // If the message came from another device, ignore it.
     return;
   }
 
@@ -95,7 +80,7 @@ void KeepAliveOperation::OnMessageReceived(
       clock_->Now() - keep_alive_tickle_request_start_time_);
 
   // Now that a response has been received, the device can be unregistered.
-  UnregisterDevice(remote_device);
+  StopOperation();
 }
 
 void KeepAliveOperation::OnOperationFinished() {
@@ -103,9 +88,8 @@ void KeepAliveOperation::OnOperationFinished() {
     // Note: If the operation did not complete successfully, |device_status_|
     // will still be null.
     observer.OnOperationFinished(
-        remote_device_, device_status_
-                            ? std::make_unique<DeviceStatus>(*device_status_)
-                            : nullptr);
+        device_status_ ? std::make_unique<DeviceStatus>(*device_status_)
+                       : nullptr);
   }
 }
 
@@ -117,6 +101,4 @@ void KeepAliveOperation::SetClockForTest(base::Clock* clock_for_test) {
   clock_ = clock_for_test;
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

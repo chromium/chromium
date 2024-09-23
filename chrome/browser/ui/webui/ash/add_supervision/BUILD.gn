@@ -11,3 +11,94 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
   sources = [ "add_supervision.mojom" ]
 }
+
+static_library("add_supervision") {
+  sources = [
+    "add_supervision_handler.cc",
+    "add_supervision_handler.h",
+    "add_supervision_handler_utils.cc",
+    "add_supervision_handler_utils.h",
+    "add_supervision_metrics_recorder.cc",
+    "add_supervision_metrics_recorder.h",
+    "add_supervision_ui.cc",
+    "add_supervision_ui.h",
+    "confirm_signout_dialog.cc",
+    "confirm_signout_dialog.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/common",
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/webui",
+    "//url",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:resources",
+    "//chrome/browser:resources_grit",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/add_supervision:resources",
+    "//chrome/browser/resources/chromeos/add_supervision:resources_grit",
+    "//chrome/browser/resources/chromeos/supervision:resources",
+    "//chrome/browser/resources/chromeos/supervision:resources_grit",
+    "//chrome/browser/ui/webui:webui_util",
+    "//components/constrained_window",
+    "//components/google/core/common",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/signin/public/base",
+    "//components/supervised_user/core/browser",
+    "//components/user_manager",
+    "//google_apis",
+    "//ui/resources:ui_resources_grd",
+    "//ui/resources:ui_resources_grd_grit",
+    "//ui/web_dialogs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "add_supervision_handler_utils_unittest.cc" ]
+  deps = [
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/add_supervision",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "add_supervision_metrics_recorder_browsertest.cc",
+    "add_supervision_ui_browsertest.cc",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/add_supervision",
+    "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
+    "//chrome/common",
+    "//chrome/test:test_support_ui",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net:test_support",
+  ]
+}

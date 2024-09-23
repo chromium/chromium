@@ -25,6 +25,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_MARKUP_TOKENIZER_INLINES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_MARKUP_TOKENIZER_INLINES_H_
 
@@ -62,8 +67,8 @@ inline void AdvanceStringAndASSERT(SegmentedString& source,
   case prefix::stateName:              \
   stateName:
 #define BEGIN_STATE_NOLABEL(prefix, stateName) case prefix::stateName:
-#define END_STATE() \
-  NOTREACHED();     \
+#define END_STATE()          \
+  NOTREACHED_IN_MIGRATION(); \
   break;
 
 // We use this macro when the HTML5 spec says "reconsume the current input

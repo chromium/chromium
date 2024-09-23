@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Преглед</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> ТБ/с</translation>
 <translation id="2353636109065292463">Се проверува вашата интернет-врска</translation>
+<translation id="2359808026110333948">Продолжи</translation>
 <translation id="2388990488038464401">Сакате ли да го повикате бројов од вашиот телефон?</translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
 <translation id="24452542372838207">Прошири го известувањето</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">НОВО</translation>
 <translation id="2666092431469916601">Горе</translation>
 <translation id="2701330563083355633">Споделено од <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Ново</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Пред 1 година}one{Пред # година}other{Пред # години}}</translation>
 <translation id="2878511608894704031">Избриши ги сите</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{за 1 д.}one{за # д.}other{за # д.}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">Систем <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace-копче</translation>
 <translation id="5613020302032141669">Стрелка налево</translation>
+<translation id="5633029987065897167">Празно</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин.}one{# мин.}other{# мин.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Активен денес}=1{Активен пред 1 ден}one{Активен пред # ден}other{Активен пред # дена}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ден и }one{# ден и }other{# дена и }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">Содржини во RTF-формат</translation>
 <translation id="6539092367496845964">Нешто тргна наопаку. Обидете се повторно подоцна.</translation>
 <translation id="654149438358937226">Блокирај ги сите известувања</translation>
-<translation id="6612467943526193239">За да излезете од калибрацијата, притиснете Esc.</translation>
 <translation id="6620110761915583480">Зачувај ја датотеката</translation>
 <translation id="6699343763173986273">Следна нумера на медиум</translation>
 <translation id="6808150112686056157">Сопри медиум</translation>

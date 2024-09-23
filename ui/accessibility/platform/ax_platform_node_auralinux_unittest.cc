@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <atk/atk.h>
-#include <dlfcn.h>
 #include <utility>
 #include <vector>
 
@@ -16,7 +20,7 @@
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 
-// TODO(https://crbug.com/1394423): Remove this again.
+// TODO(crbug.com/40248581): Remove this again.
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 namespace {
@@ -880,17 +884,6 @@ typedef bool (*ScrollToPointFunc)(AtkComponent* component,
 typedef bool (*ScrollToFunc)(AtkComponent* component, AtkScrollType type);
 
 TEST_F(AXPlatformNodeAuraLinuxTest, AtkComponentScrollToPoint) {
-  // There's a chance we may be compiled with a newer version of ATK and then
-  // run with an older one, so we need to do a runtime check for this method
-  // that is available in ATK 2.30 instead of linking directly.
-  ScrollToPointFunc scroll_to_point = reinterpret_cast<ScrollToPointFunc>(
-      dlsym(RTLD_DEFAULT, "atk_component_scroll_to_point"));
-  if (!scroll_to_point) {
-    LOG(WARNING) << "Skipping AtkComponentScrollToPoint"
-                    " because ATK version < 2.30 detected.";
-    return;
-  }
-
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
@@ -918,7 +911,8 @@ TEST_F(AXPlatformNodeAuraLinuxTest, AtkComponentScrollToPoint) {
   EXPECT_EQ(10, width);
   EXPECT_EQ(10, height);
 
-  scroll_to_point(ATK_COMPONENT(child_obj), ATK_XY_SCREEN, 600, 650);
+  atk_component_scroll_to_point(ATK_COMPONENT(child_obj), ATK_XY_SCREEN, 600,
+                                650);
   atk_component_get_extents(ATK_COMPONENT(child_obj), &x_left, &y_top, &width,
                             &height, ATK_XY_SCREEN);
   EXPECT_EQ(610, x_left);
@@ -926,7 +920,8 @@ TEST_F(AXPlatformNodeAuraLinuxTest, AtkComponentScrollToPoint) {
   EXPECT_EQ(10, width);
   EXPECT_EQ(10, height);
 
-  scroll_to_point(ATK_COMPONENT(child_obj), ATK_XY_PARENT, 10, 10);
+  atk_component_scroll_to_point(ATK_COMPONENT(child_obj), ATK_XY_PARENT, 10,
+                                10);
   atk_component_get_extents(ATK_COMPONENT(child_obj), &x_left, &y_top, &width,
                             &height, ATK_XY_SCREEN);
   // The test wrapper scrolls every element when scrolling, so this should be
@@ -943,17 +938,6 @@ TEST_F(AXPlatformNodeAuraLinuxTest, AtkComponentScrollToPoint) {
 }
 
 TEST_F(AXPlatformNodeAuraLinuxTest, AtkComponentScrollTo) {
-  // There's a chance we may be compiled with a newer version of ATK and then
-  // run with an older one, so we need to do a runtime check for this method
-  // that is available in ATK 2.30 instead of linking directly.
-  ScrollToFunc scroll_to = reinterpret_cast<ScrollToFunc>(
-      dlsym(RTLD_DEFAULT, "atk_component_scroll_to"));
-  if (!scroll_to) {
-    LOG(WARNING) << "Skipping AtkComponentScrollTo"
-                    " because ATK version < 2.30 detected.";
-    return;
-  }
-
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
@@ -981,7 +965,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, AtkComponentScrollTo) {
   EXPECT_EQ(10, width);
   EXPECT_EQ(10, height);
 
-  scroll_to(ATK_COMPONENT(child_obj), ATK_SCROLL_ANYWHERE);
+  atk_component_scroll_to(ATK_COMPONENT(child_obj), ATK_SCROLL_ANYWHERE);
   atk_component_get_extents(ATK_COMPONENT(child_obj), &x_left, &y_top, &width,
                             &height, ATK_XY_SCREEN);
   EXPECT_EQ(0, x_left);
@@ -1866,7 +1850,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestPostponedAtkWindowActive) {
   g_object_ref(root_atk_object);
   EXPECT_TRUE(ATK_IS_WINDOW(root_atk_object));
 
-  AtkUtilAuraLinux* atk_util = ui::AtkUtilAuraLinux::GetInstance();
+  AtkUtilAuraLinux* atk_util = AtkUtilAuraLinux::GetInstance();
 
   {
     ActivationTester tester(root_atk_object);
@@ -2132,7 +2116,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkPopupWindowActive) {
 }
 
 TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkSelectionInterface) {
-  ui::TestAXTreeUpdate update(std::string(R"HTML(
+  TestAXTreeUpdate update(std::string(R"HTML(
     ++1 kListBox states=kFocusable,kMultiselectable
     ++++2 kListBoxOption
     ++++3 kListBoxOption
@@ -2267,7 +2251,8 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkRelations) {
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
-  root.AddIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds, {2});
+  // Add 999 as a target relation id to test that invalid relations are dropped.
+  root.AddIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds, {2, 999});
 
   AXNodeData child1;
   child1.id = 2;
@@ -2278,7 +2263,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkRelations) {
   AXNodeData child2;
   child2.id = 3;
   child2.role = ax::mojom::Role::kStaticText;
-  std::vector<int32_t> labelledby_ids = {1, 4};
+  std::vector<int32_t> labelledby_ids = {1, 999, 4};
   child2.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
                              labelledby_ids);
 

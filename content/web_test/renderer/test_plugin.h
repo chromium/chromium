@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef CONTENT_WEB_TEST_RENDERER_TEST_PLUGIN_H_
 #define CONTENT_WEB_TEST_RENDERER_TEST_PLUGIN_H_
 
@@ -35,6 +40,7 @@ class CrossThreadSharedBitmap;
 namespace gpu {
 
 class ClientSharedImage;
+class ClientSharedImageInterface;
 
 namespace gles2 {
 class GLES2Interface;
@@ -99,10 +105,9 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
                               const gfx::PointF& position,
                               const gfx::PointF& screen_position) override;
   void DidReceiveResponse(const blink::WebURLResponse& response) override {}
-  void DidReceiveData(const char* data, size_t data_length) override {}
+  void DidReceiveData(base::span<const char> data) override {}
   void DidFinishLoading() override {}
   void DidFailLoading(const blink::WebURLError& error) override {}
-  bool IsPlaceholder() override;
   v8::Local<v8::Object> V8ScriptableObject(v8::Isolate*) override;
 
   // cc::TextureLayerClient methods:
@@ -170,21 +175,21 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
       const gpu::SyncToken& sync_token,
       bool lost);
   static void ReleaseSharedImage(
-      scoped_refptr<ContextProviderRef> context_provider,
       scoped_refptr<gpu::ClientSharedImage> shared_image,
       const gpu::SyncToken& sync_token,
       bool lost);
 
-  raw_ptr<TestRunner, ExperimentalRenderer> test_runner_;
-  raw_ptr<blink::WebPluginContainer, ExperimentalRenderer> container_;
-  raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> web_local_frame_;
+  raw_ptr<TestRunner> test_runner_;
+  raw_ptr<blink::WebPluginContainer> container_;
+  raw_ptr<blink::WebLocalFrame> web_local_frame_;
 
   gfx::Rect rect_;
   scoped_refptr<ContextProviderRef> context_provider_;
-  raw_ptr<gpu::gles2::GLES2Interface, ExperimentalRenderer> gl_;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   gpu::SyncToken sync_token_;
   scoped_refptr<cc::CrossThreadSharedBitmap> shared_bitmap_;
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
   bool content_changed_ = false;
   GLuint framebuffer_ = 0;
   Scene scene_;

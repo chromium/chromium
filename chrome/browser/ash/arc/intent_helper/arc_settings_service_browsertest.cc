@@ -15,6 +15,7 @@
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_backup_settings_instance.h"
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -216,7 +217,9 @@ void RunUntilIdle() {
 
 class ArcSettingsServiceTest : public InProcessBrowserTest {
  public:
-  ArcSettingsServiceTest() = default;
+  ArcSettingsServiceTest() {
+    feature_list_.InitAndDisableFeature(ash::features::kCrosPrivacyHub);
+  }
   ArcSettingsServiceTest(const ArcSettingsServiceTest&) = delete;
   ArcSettingsServiceTest& operator=(const ArcSettingsServiceTest&) = delete;
 
@@ -332,6 +335,7 @@ class ArcSettingsServiceTest : public InProcessBrowserTest {
   }
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, BackupRestorePolicyTest) {

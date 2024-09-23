@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+[FAIL] where float32 0D scalars
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 1D constant tensors
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 1D tensors
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 2D tensors
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 3D tensors
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 4D tensors
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 5D tensors
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 4D tensors only broadcast condition 0D to 4D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 4D tensors only broadcast condition 1D to 4D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 4D tensors only broadcast condition 2D to 4D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 4D tensors only broadcast condition 3D to 4D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 4D tensors only broadcast condition 4D to 4D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 4D tensors only broadcast trueValues 2D to 4D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 4D tensors only broadcast trueValues 4D to 4D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 4D tensors only broadcast falseValues 3D to 4D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 4D tensors only broadcast falseValues 4D to 4D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+[FAIL] where float32 4D tensors all broadcast 4D
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (uint8) is not supported."
+Harness: the test ran to completion.
+

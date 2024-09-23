@@ -115,7 +115,8 @@ def CopyConfigs(src_dir, dest_dir):
 
 def GenerateConfig(config_dir, env, special_args=[]):
     temp_dir = tempfile.mkdtemp()
-    PrintAndCheckCall(MESON + DEFAULT_BUILD_ARGS + special_args + [temp_dir],
+    PrintAndCheckCall(MESON + ['setup'] + DEFAULT_BUILD_ARGS + special_args +
+                      [temp_dir],
                       cwd='libdav1d',
                       env=env)
 
@@ -137,16 +138,30 @@ def GenerateConfig(config_dir, env, special_args=[]):
 
     config_asm_path = os.path.join(temp_dir, 'config.asm')
     if (os.path.exists(config_asm_path)):
-        RewriteFile(config_asm_path,
-                    # Clang LTO doesn't respect stack alignment, so we must use
-                    # the platform's default stack alignment;
-                    # https://crbug.com/928743.
-                    [(r'(%define STACK_ALIGNMENT \d{1,2})',
-                      r'; \1 -- Stack alignment is controlled by Chromium')])
+        RewriteFile(
+            config_asm_path,
+            # Clang LTO doesn't respect stack alignment, so we must use
+            # the platform's default stack alignment;
+            # https://crbug.com/928743.
+            [(r'(%define STACK_ALIGNMENT \d{1,2})',
+              r'; \1 -- Stack alignment is controlled by Chromium')])
 
     CopyConfigs(temp_dir, config_dir)
 
     shutil.rmtree(temp_dir)
+
+
+def GenerateAppleConfig(src_dir, dest_dir):
+    CopyConfigs(src_dir, dest_dir)
+
+    RewriteFile(
+        os.path.join(dest_dir, 'config.h'),
+        [
+            # Apple doesn't have the <sys/auxv.h> header.
+            (r'#define HAVE_GETAUXVAL 1', r'#define HAVE_GETAUXVAL 0'),
+            # Apple doesn't have the memalign() function.
+            (r'#define HAVE_MEMALIGN 1', r'#define HAVE_MEMALIGN 0'),
+        ])
 
 
 def GenerateWindowsArm64Config(src_dir):
@@ -180,14 +195,12 @@ def CopyVersions(src_dir, dest_dir):
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
 
-    shutil.copy(os.path.join(src_dir, 'include', 'dav1d', 'version.h'),
-                dest_dir)
     shutil.copy(os.path.join(src_dir, 'include', 'vcs_version.h'), dest_dir)
 
 
 def GenerateVersion(version_dir, env):
     temp_dir = tempfile.mkdtemp()
-    PrintAndCheckCall(MESON + DEFAULT_BUILD_ARGS + [temp_dir],
+    PrintAndCheckCall(MESON + ['setup'] + DEFAULT_BUILD_ARGS + [temp_dir],
                       cwd='libdav1d',
                       env=env)
     PrintAndCheckCall(['ninja', '-C', temp_dir, 'include/vcs_version.h'],
@@ -234,6 +247,12 @@ def main():
     # Sadly meson doesn't support arm64 + clang-cl, so we need to create the
     # Windows arm64 config from the Windows x64 config.
     GenerateWindowsArm64Config(win_x64_dir)
+
+    # Create the Apple configs from the Linux configs.
+    GenerateAppleConfig('config/linux/arm', 'config/apple/arm')
+    GenerateAppleConfig('config/linux/arm64', 'config/apple/arm64')
+    GenerateAppleConfig('config/linux/x64', 'config/apple/x64')
+    GenerateAppleConfig('config/linux/x86', 'config/apple/x86')
 
     GenerateVersion('version', linux_env)
 

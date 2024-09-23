@@ -17,10 +17,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/omnibox/browser/jni_headers/AutocompleteResult_jni.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
-#include "components/query_tiles/android/tile_conversion_bridge.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/omnibox/browser/jni_headers/AutocompleteResult_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -74,7 +75,7 @@ const char* MatchVerificationPointToString(int verification_point) {
     case MatchVerificationPoint::INVALID:
       return "Invalid";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool sInvalidMatchMetricsUploaded = false;
@@ -144,27 +145,6 @@ ScopedJavaLocalRef<jobjectArray> AutocompleteResult::BuildJavaMatches(
   }
 
   return j_matches;
-}
-
-void AutocompleteResult::GroupSuggestionsBySearchVsURL(JNIEnv* env,
-                                                       int first_index,
-                                                       int last_index) {
-  if (first_index == last_index)
-    return;
-  const int num_elements = matches_.size();
-  if (first_index < 0 || last_index <= first_index ||
-      last_index > num_elements) {
-    DCHECK(false) << "Range [" << first_index << "; " << last_index
-                  << ") is not valid for grouping; accepted range: [0; "
-                  << num_elements << ").";
-    return;
-  }
-
-  auto range_start = const_cast<ACMatches&>(matches_).begin();
-  GroupSuggestionsBySearchVsURL(range_start + first_index,
-                                range_start + last_index);
-  Java_AutocompleteResult_updateMatches(env, java_result_,
-                                        BuildJavaMatches(env));
 }
 
 bool AutocompleteResult::VerifyCoherency(

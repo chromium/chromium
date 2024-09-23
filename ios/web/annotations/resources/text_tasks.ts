@@ -34,7 +34,7 @@ const TASK_ACTIVITY_DELAY_MS = 300;
 
 // Task manager wrapper `TaskTimer`. It also monitors user's activity and pushes
 // back the timer if needed.
-// TODO(crbug.com/1492506): replace by requestIdleCallback when available or
+// TODO(crbug.com/40936184): replace by requestIdleCallback when available or
 // move to general ts utilities.
 class IdleTaskTracker {
   // The events to monitor for user activity.

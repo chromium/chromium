@@ -108,7 +108,6 @@ center {
 hr {
     display: block;
     overflow: hidden;
-    unicode-bidi: isolate;
     margin-block-start: 0.5em;
     margin-block-end: 0.5em;
     margin-inline-start: auto;
@@ -394,27 +393,35 @@ label {
     cursor: default;
 }
 
-legend {
-    display: block;
-    padding-inline-start: 2px;
-    padding-inline-end: 2px;
-    border: none
-}
-
 fieldset {
     display: block;
-    margin-inline-start: 2px;
-    margin-inline-end: 2px;
-    padding-block-start: 0.35em;
-    padding-inline-start: 0.75em;
-    padding-inline-end: 0.75em;
-    padding-block-end: 0.625em;
-    border: 2px groove #C0C0C0;
+    margin-inline: 2px;
+    border: groove 2px ThreeDFace;
+    padding-block: 0.35em 0.625em;
+    padding-inline: 0.75em;
     min-inline-size: min-content;
+}
+
+legend {
+    display: block;
+    padding-inline: 2px;
+}
+
+legend[align=left i] {
+    justify-self: left;
+}
+
+legend[align=center i] {
+    justify-self: center;
+}
+
+legend[align=right i] {
+    justify-self: right;
 }
 
 button {
     appearance: auto;
+    -internal-align-content-block: center;
 }
 
 input, textarea, select, button {
@@ -596,12 +603,6 @@ input[type="password" i]::-internal-input-suggested.reveal-password {
     -webkit-text-security: none;
 }
 
-input[type="password" i]::-internal-input-suggested.fade-out-password {
-    width: fit-content;
-    -webkit-mask: linear-gradient(to right, #000 50%, #0000);
-    mask: linear-gradient(to right, #000 50%, #0000);
-}
-
 input[type="password" i]::-internal-reveal {
   width: 1.3em;
   height: 1.3em;
@@ -625,12 +626,6 @@ input[type="password" i]::-internal-reveal:focus {
   cursor: pointer;
 }
 
-input[type="password" i]::-internal-strong {
-  color: light-dark(#0B57D0, #A8C7FA);
-  font-family: roboto;
-  -webkit-text-security: none;
-}
-
 input[type="hidden" i], input[type="image" i], input[type="file" i] {
     appearance: none;
     padding: initial;
@@ -642,7 +637,6 @@ input[type="hidden" i], input[type="image" i], input[type="file" i] {
 input[type="file" i] {
     align-items: baseline;
     color: inherit;
-    overflow: hidden !important;
     text-align: start !important;
     text-overflow: ellipsis;
     white-space: pre;
@@ -785,6 +779,11 @@ option:-internal-spatial-navigation-focus {
     outline-offset: -1px;
 }
 
+input:not([type="image" i], [type="range" i], [type="checkbox" i], [type="radio" i]) {
+  overflow: clip !important;
+  overflow-clip-margin: 0px !important;
+}
+
 /* https://html.spec.whatwg.org/multipage/rendering.html#hidden-elements */
 /* TODO(crbug.com/1231263): <area> should be display:none. */
 area {
@@ -793,9 +792,6 @@ area {
 base, basefont, datalist, head, link, meta, noembed,
 noframes, param, rp, script, style, template, title {
   display: none;
-}
-select:-internal-select-author-datalist > datalist:popover-open {
-  display: block;
 }
 input[type="hidden" i] {
   display: none !important;
@@ -913,7 +909,7 @@ input[type="week" i], select {
     text-autospace: no-autospace !important;
 }
 
-select:not(:-internal-select-author-button) {
+select {
     appearance: auto;
     box-sizing: border-box;
     align-items: center;
@@ -924,90 +920,6 @@ select:not(:-internal-select-author-button) {
     border: 1px solid light-dark(#767676, #858585);
     cursor: default;
     border-radius: 0;
-}
-
-select:-internal-select-author-datalist > datalist {
-  box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
-  box-sizing: border-box;
-  overflow: auto;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 0.25em;
-  padding: 0.25em 0;
-  background-color: Field;
-  margin: 0;
-  inset: auto;
-  min-inline-size: anchor-size(self-inline);
-  min-block-size: 1lh;
-  position-fallback: -internal-select-datalist-default-fallbacks;
-}
-
-/* TODO(crbug.com/40279608): Use automatic fallbacks */
-@position-fallback -internal-select-datalist-default-fallbacks {
-  /* Fallbacks without vertical scrolling */
-  @try {
-    inset-block-start: anchor(self-end);
-    inset-inline-start: anchor(self-start);
-  }
-  /* Reverse block axis */
-  @try {
-    inset-block-end: anchor(self-start);
-    inset-inline-start: anchor(self-start);
-  }
-  /* Reverse inline axis */
-  @try {
-    inset-block-start: anchor(self-end);
-    inset-inline-end: anchor(self-end);
-  }
-  /* Reverse both axes */
-  @try {
-    inset-block-end: anchor(self-start);
-    inset-inline-end: anchor(self-end);
-  }
-
-  /* Fallbacks with vertical scrolling */
-  @try {
-    inset-block-start: anchor(self-end);
-    inset-inline-start: anchor(self-start);
-    block-size: -webkit-fill-available;
-  }
-  /* Reverse block axis */
-  @try {
-    inset-block-end: anchor(self-start);
-    inset-inline-start: anchor(self-start);
-    block-size: -webkit-fill-available;
-  }
-  /* Reverse inline axis */
-  @try {
-    inset-block-start: anchor(self-end);
-    inset-inline-end: anchor(self-end);
-    block-size: -webkit-fill-available;
-  }
-  /* Reverse both axes */
-  @try {
-    inset-block-end: anchor(self-start);
-    inset-inline-end: anchor(self-end);
-    block-size: -webkit-fill-available;
-  }
-}
-
-/* This is a copy of the [popover] styles. It may be combined after
- * removing the StylableSelect flag. */
-select:-internal-select-author-datalist > datalist {
-  position: fixed;
-  width: fit-content;
-  height: fit-content;
-  color: CanvasText;
-}
-select:-internal-select-author-datalist > datalist:popover-open {
-  overlay: auto !important;
-}
-select:-internal-select-author-datalist > datalist:-internal-popover-in-top-layer::backdrop {
-  /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
-  position: fixed;
-  inset: 0;
-  /* Specific to [popover]: */
-  pointer-events: none !important;
-  background-color: transparent;
 }
 
 select:disabled {
@@ -1095,9 +1007,11 @@ optgroup {
 option {
     font-weight: normal;
     display: block;
-    padding: 0 2px 1px 2px;
+    padding-inline: 2px;
+    padding-block-start: 0;
+    padding-block-end: 1px;
     white-space: nowrap;
-    min-height: 1.2em;
+    min-block-size: 1.2em;
 }
 
 /* The following select style rules have to go after the other
@@ -1136,7 +1050,8 @@ output {
 
 /* meter */
 
-meter {
+@supports not blink-feature(MeterAppearanceNoneFallbackStyle) {
+  meter {
     appearance: auto;
     box-sizing: border-box;
     display: inline-block;
@@ -1144,28 +1059,28 @@ meter {
     inline-size: 5em;
     vertical-align: -0.2em;
     -webkit-user-modify: read-only !important;
-}
+  }
 
-meter::-webkit-meter-inner-element {
+  meter::-webkit-meter-inner-element {
     appearance: inherit;
     box-sizing: inherit;
     display: none;
     -webkit-user-modify: read-only !important;
     block-size: 100%;
     inline-size: 100%;
-}
+  }
 
-meter::-webkit-meter-inner-element:-internal-shadow-host-has-appearance {
+  meter::-webkit-meter-inner-element:-internal-shadow-host-has-non-auto-appearance {
     display: grid;
     grid-template-rows: 1fr [line1] 2fr [line2] 1fr;
     position: relative;
-}
+  }
 
-meter::-internal-fallback:-internal-shadow-host-has-appearance {
+  meter::-internal-fallback:-internal-shadow-host-has-non-auto-appearance {
     display: none;
-}
+  }
 
-meter::-webkit-meter-bar {
+  meter::-webkit-meter-bar {
     block-size: 100%;
     inline-size: 100%;
     -webkit-user-modify: read-only !important;
@@ -1178,27 +1093,103 @@ meter::-webkit-meter-bar {
     align-self: unsafe center;
     position: absolute;
     overflow: hidden;
-}
+  }
 
-meter::-webkit-meter-optimum-value {
+  meter::-webkit-meter-optimum-value {
     block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
-    background: light-dark(#107c10, #74b374)
-}
+    background: light-dark(#107c10, #74b374);
+  }
 
-meter::-webkit-meter-suboptimum-value {
+  meter::-webkit-meter-suboptimum-value {
     block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
-    background: light-dark(#ffb900, #f2c812)
-}
+    background: light-dark(#ffb900, #f2c812);
+  }
 
-meter::-webkit-meter-even-less-good-value {
+  meter::-webkit-meter-even-less-good-value {
     block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
-    background: light-dark(#d83b01, #e98f6d)
+    background: light-dark(#d83b01, #e98f6d);
+  }
+}
+
+@supports blink-feature(MeterAppearanceNoneFallbackStyle) {
+  meter {
+    -webkit-user-modify: read-only !important;
+    appearance: auto;
+    block-size: 1em;
+    box-sizing: border-box;
+    display: inline-block;
+    inline-size: 5em;
+    vertical-align: -0.2em;
+  }
+
+  meter::-webkit-meter-inner-element {
+    -webkit-user-modify: read-only !important;
+    appearance: inherit;
+    block-size: 100%;
+    box-sizing: inherit;
+    display: grid;
+    grid-template-rows: 1fr [line1] 2fr [line2] 1fr;
+    inline-size: 100%;
+    position: relative;
+  }
+
+  meter::-webkit-meter-bar {
+    -webkit-user-modify: read-only !important;
+    align-self: unsafe center;
+    background: linear-gradient(to bottom, #ddd, #eee 20%, #ccc 45%, #ccc 55%, #ddd);
+    block-size: 100%;
+    box-sizing: border-box;
+    grid-row-end: line2;
+    grid-row-start: line1;
+    inline-size: 100%;
+    overflow: hidden;
+    position: absolute;
+  }
+
+  meter::-webkit-meter-bar:-internal-shadow-host-has-non-auto-appearance {
+    background: light-dark(#efefef, #3B3B3B);
+    border-radius: 20px;
+    border: thin solid light-dark(rgba(118, 118, 118, 0.3), #858585);
+  }
+
+  meter::-webkit-meter-optimum-value {
+    -webkit-user-modify: read-only !important;
+    background: linear-gradient(to bottom, #ad7, #cea 20%, #7a3 45%, #7a3 55%, #ad7);
+    block-size: 100%;
+    box-sizing: border-box;
+  }
+
+  meter::-webkit-meter-optimum-value:-internal-shadow-host-has-non-auto-appearance {
+    background: light-dark(#107c10, #74b374);
+  }
+
+  meter::-webkit-meter-suboptimum-value {
+    -webkit-user-modify: read-only !important;
+    background: linear-gradient(to bottom, #fe7, #ffc 20%, #db3 45%, #db3 55%, #fe7);
+    block-size: 100%;
+    box-sizing: border-box;
+  }
+
+  meter::-webkit-meter-suboptimum-value:-internal-shadow-host-has-non-auto-appearance {
+    background: light-dark(#ffb900, #f2c812);
+  }
+
+  meter::-webkit-meter-even-less-good-value {
+    -webkit-user-modify: read-only !important;
+    background: linear-gradient(to bottom, #f77, #fcc 20%, #d44 45%, #d44 55%, #f77);
+    block-size: 100%;
+    box-sizing: border-box;
+  }
+
+  meter::-webkit-meter-even-less-good-value:-internal-shadow-host-has-non-auto-appearance {
+    background: light-dark(#d83b01, #e98f6d);
+  }
 }
 
 /* progress */
@@ -1430,13 +1421,17 @@ ruby, rt {
     text-indent: 0; /* blocks used for ruby rendering should not trigger this */
 }
 
+ruby {
+    display: ruby;
+}
+
 rt {
     line-height: normal;
     text-emphasis: none;
 }
 
 ruby > rt {
-    display: block;
+    display: ruby-text;
     font-size: 50%;
     text-align: start;
 }
@@ -1496,15 +1491,13 @@ address, blockquote, center, div, figure, figcaption, footer, form, header, hr,
 legend, listing, main, p, plaintext, pre, summary, xmp, article, aside, h1, h2,
 h3, h4, h5, h6, hgroup, nav, section, search, table, caption, colgroup, col,
 thead, tbody, tfoot, tr, td, th, dir, dd, dl, dt, menu, ol, ul, li, bdi,
-output {
+output, [dir=ltr i], [dir=rtl i], [dir=auto i] {
     unicode-bidi: isolate;
 }
-
-bdo {
-    unicode-bidi: bidi-override;
+bdo, bdo[dir] {
+    unicode-bidi: isolate-override;
 }
-
-textarea[dir=auto i] {
+textarea[dir=auto i], pre[dir=auto i] {
     unicode-bidi: plaintext;
 }
 
@@ -1582,10 +1575,12 @@ dialog:popover-open {
   display:block;
 }
 
-/* Popovers using anchor positioning get their inset properties reset, to make
- * it easier to position them. */
-[popover][anchor] {
-  inset:auto;
+@supports blink-feature(HTMLAnchorAttribute) {
+  /* Popovers using anchor positioning get their inset properties reset, to make
+  * it easier to position them. */
+  [popover][anchor] {
+    inset:auto;
+  }
 }
 
 /* This rule matches popovers (dialog or not) that are currently open as a
@@ -1603,20 +1598,81 @@ dialog:popover-open {
   background-color: transparent;
 }
 
-/* page */
+/* Pagination */
 
-@page {
-    /* FIXME: Define the right default values for page properties. */
-    size: auto;
-    margin: auto;
-    padding: 0px;
-    border-width: 0px;
-}
-
-/* Allows thead sections to print at the top of each page. */
 @media print {
-    thead { break-inside:avoid; }
-    tfoot { break-inside:avoid; }
+  @page {
+    /* https://drafts.csswg.org/css-page-3/#margin-text-alignment */
+    @top-left-corner {
+      text-align: right;
+      vertical-align: middle;
+    }
+    @top-left {
+      text-align: left;
+      vertical-align: middle;
+    }
+    @top-center {
+      text-align: center;
+      vertical-align: middle;
+    }
+    @top-right {
+      text-align: right;
+      vertical-align: middle;
+    }
+    @top-right-corner {
+      text-align: left;
+      vertical-align: middle;
+    }
+    @right-top {
+      text-align: center;
+      vertical-align: top;
+    }
+    @right-middle {
+      text-align: center;
+      vertical-align: middle;
+    }
+    @right-bottom {
+      text-align: center;
+      vertical-align: bottom;
+    }
+    @bottom-right-corner {
+      text-align: left;
+      vertical-align: middle;
+    }
+    @bottom-right {
+      text-align: right;
+      vertical-align: middle;
+    }
+    @bottom-center {
+      text-align: center;
+      vertical-align: middle;
+    }
+    @bottom-left {
+      text-align: left;
+      vertical-align: middle;
+    }
+    @bottom-left-corner {
+      text-align: right;
+      vertical-align: middle;
+    }
+    @left-bottom {
+      text-align: center;
+      vertical-align: bottom;
+    }
+    @left-middle {
+      text-align: center;
+      vertical-align: middle;
+    }
+    @left-top {
+      text-align: center;
+      vertical-align: top;
+    }
+  }
+
+  /* Allows table headers and footers to print at the top / bottom of each
+     page. */
+  thead { break-inside: avoid; }
+  tfoot { break-inside: avoid; }
 }
 
 /* spelling/grammar error pseudos */
@@ -1627,6 +1683,11 @@ html::spelling-error {
 
 html::grammar-error {
     text-decoration: -internal-grammar-error-color grammar-error;
+}
+
+img:is([sizes="auto" i], [sizes^="auto," i]) {
+  contain: size !important;
+  contain-intrinsic-size: 300px 150px;
 }
 
 /* noscript is handled internally, as it depends on settings. */

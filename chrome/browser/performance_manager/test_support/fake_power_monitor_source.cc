@@ -6,12 +6,14 @@
 
 namespace performance_manager {
 
-bool FakePowerMonitorSource::IsOnBatteryPower() {
-  return on_battery_power_;
+base::PowerStateObserver::BatteryPowerStatus
+FakePowerMonitorSource::GetBatteryPowerStatus() const {
+  return battery_power_status_;
 }
 
-void FakePowerMonitorSource::SetOnBatteryPower(bool on_battery_power) {
-  on_battery_power_ = on_battery_power;
+void FakePowerMonitorSource::SetBatteryPowerStatus(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+  battery_power_status_ = battery_power_status;
   ProcessPowerEvent(POWER_STATE_EVENT);
 }
 

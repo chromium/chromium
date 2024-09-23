@@ -13,7 +13,6 @@
 #import "components/reading_list/core/reading_list_model.h"
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -113,7 +112,7 @@ void ReadingListWebStateObserver::StartCheckingLoading() {
   bool is_reload = false;
 
   // Manager->GetPendingItem() returns null on reload.
-  // TODO(crbug.com/676129): Remove this workaround once GetPendingItem()
+  // TODO(crbug.com/41292269): Remove this workaround once GetPendingItem()
   // returns the correct value on reload.
   if (!item) {
     item = manager->GetLastCommittedItem();
@@ -150,7 +149,7 @@ void ReadingListWebStateObserver::StartCheckingLoading() {
       FROM_HERE, kDelayUntilLoadingProgressIsChecked,
       base::BindRepeating(
           &ReadingListWebStateObserver::VerifyIfReadingListEntryStartedLoading,
-          base::Unretained(this)));
+          weak_factory_.GetWeakPtr()));
 }
 
 void ReadingListWebStateObserver::PageLoaded(
@@ -200,7 +199,7 @@ void ReadingListWebStateObserver::VerifyIfReadingListEntryStartedLoading() {
   web::NavigationItem* item = manager->GetPendingItem();
 
   // Manager->GetPendingItem() returns null on reload.
-  // TODO(crbug.com/676129): Remove this workaround once GetPendingItem()
+  // TODO(crbug.com/41292269): Remove this workaround once GetPendingItem()
   // returns the correct value on reload.
   if (!item) {
     item = manager->GetLastCommittedItem();
@@ -245,7 +244,7 @@ void ReadingListWebStateObserver::LoadOfflineReadingListEntry() {
     // or the page is being reloaded and due to crbug.com/676129. there is no
     // pending item. Either way, the correct item to reuse is the last committed
     // item.
-    // TODO(crbug.com/676129): this case can be removed.
+    // TODO(crbug.com/41292269): this case can be removed.
     item = navigationManager->GetLastCommittedItem();
     item->SetURL(url);
     item->SetVirtualURL(pending_url_);
@@ -263,10 +262,10 @@ void ReadingListWebStateObserver::LoadOfflineReadingListEntry() {
                  navigationManager->GetPendingItemIndex()) == item) {
     // The navigation corresponds to a back/forward. The item on the stack can
     // be reused for the offline navigation.
-    // TODO(crbug.com/665189): GetPendingItemIndex() will return currentEntry()
-    // if navigating to a new URL. Test the addresses to verify that
-    // GetPendingItemIndex() actually returns the pending item index. Remove
-    // this extra test on item addresses once bug 665189 is fixed.
+    // TODO(crbug.com/41286168): GetPendingItemIndex() will return
+    // currentEntry() if navigating to a new URL. Test the addresses to verify
+    // that GetPendingItemIndex() actually returns the pending item index.
+    // Remove this extra test on item addresses once bug 665189 is fixed.
     item->SetURL(url);
     item->SetVirtualURL(pending_url_);
     navigationManager->GoToIndex(navigationManager->GetPendingItemIndex());

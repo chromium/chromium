@@ -28,12 +28,12 @@
 
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 
-#include "base/sys_byteorder.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -244,7 +244,7 @@ NotShared<DOMArrayBufferView> ImageData::AllocateAndValidateDataArray(
                           : DOMFloat32Array::CreateUninitializedOrNull(length));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   size_t expected_size;
@@ -289,14 +289,15 @@ ImageData* ImageData::CreateForTest(const gfx::Size& size,
                                          storage_format);
 }
 
-ScriptPromise ImageData::CreateImageBitmap(ScriptState* script_state,
-                                           std::optional<gfx::Rect> crop_rect,
-                                           const ImageBitmapOptions* options,
-                                           ExceptionState& exception_state) {
+ScriptPromise<ImageBitmap> ImageData::CreateImageBitmap(
+    ScriptState* script_state,
+    std::optional<gfx::Rect> crop_rect,
+    const ImageBitmapOptions* options,
+    ExceptionState& exception_state) {
   if (IsBufferBaseDetached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The source data has been detached.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
   return ImageBitmapSource::FulfillImageBitmap(
       script_state, MakeGarbageCollected<ImageBitmap>(this, crop_rect, options),
@@ -329,7 +330,7 @@ bool ImageData::IsBufferBaseDetached() const {
       return data_->GetAsUint8ClampedArray()->BufferBase()->IsDetached();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -380,8 +381,7 @@ v8::Local<v8::Object> ImageData::AssociateWithWrapper(
     //
     // This is a perf hack breaking the web interop.
 
-    ScriptState* script_state =
-        ScriptState::From(wrapper->GetCreationContextChecked());
+    ScriptState* script_state = ScriptState::ForRelevantRealm(isolate, wrapper);
     v8::Local<v8::Value> v8_data =
         ToV8Traits<V8ImageDataArray>::ToV8(script_state, data_);
     bool defined_property;
@@ -451,7 +451,7 @@ ImageData::ImageData(const gfx::Size& size,
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

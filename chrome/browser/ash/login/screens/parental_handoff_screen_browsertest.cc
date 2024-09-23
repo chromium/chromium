@@ -30,7 +30,7 @@
 #include "chrome/browser/ui/webui/ash/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_test.h"
@@ -190,7 +190,9 @@ class ParentalHandoffScreenChildBrowserTest
       &policy_server_mixin_};
 };
 
-IN_PROC_BROWSER_TEST_F(ParentalHandoffScreenChildBrowserTest, ChildUserLogin) {
+// TODO(crbug.com/353692644): Test is flaky
+IN_PROC_BROWSER_TEST_F(ParentalHandoffScreenChildBrowserTest,
+                       DISABLED_ChildUserLogin) {
   LoginAsNewChildUser();
 
   WizardController* wizard = WizardController::default_controller();

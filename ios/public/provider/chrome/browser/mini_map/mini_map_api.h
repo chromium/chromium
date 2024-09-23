@@ -55,4 +55,4 @@ id<MiniMapController> CreateMiniMapController(
 }  // namespace provider
 }  // namespace ios
 
-#endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_PARTIAL_TRANSLATE_PARTIAL_TRANSLATE_API_H_
+#endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_MINI_MAP_MINI_MAP_API_H_

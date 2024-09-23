@@ -20,10 +20,10 @@ class ChromiumPhotosService final : public PhotosService {
                    id<SystemIdentity> identity,
                    UploadProgressCallback progress_callback,
                    UploadCompletionCallback completion_callback) final {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
-  void CancelUpload() final { NOTREACHED_NORETURN(); }
+  void CancelUpload() final { NOTREACHED(); }
 };
 
 namespace ios {

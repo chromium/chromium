@@ -37,14 +37,18 @@ bool HasMultipleItems(const Items items) {
 
 inline bool MayHaveMultipleFragmentItems(const FragmentItem& item,
                                          const LayoutObject& layout_object) {
-  return !item.IsFirstForNode() || !item.IsLastForNode() ||
-         // TODO(crbug.com/1061423): InlineCursor is currently unable to deal
-         // with objects split into multiple fragmentainers (e.g. columns). Just
-         // return true if it's possible that this object participates in a
-         // fragmentation context. This will give false positives, but that
-         // should be harmless, given the way the return value is used by the
-         // caller.
-         UNLIKELY(layout_object.IsInsideFlowThread());
+  if (!item.IsFirstForNode() || !item.IsLastForNode()) {
+    return true;
+  }
+  // TODO(crbug.com/40122434): InlineCursor is currently unable to deal with
+  // objects split into multiple fragmentainers (e.g. columns). Just return true
+  // if it's possible that this object participates in a fragmentation context.
+  // This will give false positives, but that should be harmless, given the way
+  // the return value is used by the caller.
+  if (layout_object.IsInsideFlowThread()) [[unlikely]] {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -87,7 +91,7 @@ void InlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
 void InlineBoxFragmentPainter::PaintMask(const PaintInfo& paint_info,
                                          const PhysicalOffset& paint_offset) {
   DCHECK_EQ(PaintPhase::kMask, paint_info.phase);
-  if (!style_.HasMask() || style_.Visibility() != EVisibility::kVisible) {
+  if (!style_.HasMask() || style_.UsedVisibility() != EVisibility::kVisible) {
     return;
   }
 
@@ -142,9 +146,10 @@ void InlineBoxFragmentPainterBase::PaintBackgroundBorderShadow(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
   DCHECK(paint_info.phase == PaintPhase::kForeground);
-  if (inline_box_fragment_.Style().Visibility() != EVisibility::kVisible ||
-      inline_box_fragment_.IsOpaque())
+  if (inline_box_fragment_.Style().UsedVisibility() != EVisibility::kVisible ||
+      inline_box_fragment_.IsOpaque()) {
     return;
+  }
 
   // You can use p::first-line to specify a background. If so, the direct child
   // inline boxes of line boxes may actually have to paint a background.
@@ -207,8 +212,9 @@ void LineBoxFragmentPainter::PaintBackgroundBorderShadow(
   DCHECK_NE(paint_info.context.GetPaintController().CurrentFragment(), 0u);
 
   if (line_style_ == style_ ||
-      line_style_.Visibility() != EVisibility::kVisible)
+      line_style_.UsedVisibility() != EVisibility::kVisible) {
     return;
+  }
 
   const DisplayItemClient& display_item_client = GetDisplayItemClient();
   if (DrawingRecorder::UseCachedDrawingIfPossible(
@@ -492,8 +498,9 @@ void InlineBoxFragmentPainter::PaintAllFragments(
   // TODO(kojii): If the block flow is dirty, children of these fragments
   // maybe already deleted. crbug.com/963103
   const LayoutBlockFlow* block_flow = layout_inline.FragmentItemsContainer();
-  if (UNLIKELY(block_flow->NeedsLayout()))
+  if (block_flow->NeedsLayout()) [[unlikely]] {
     return;
+  }
 
   ScopedPaintState paint_state(layout_inline, paint_info, &fragment_data);
   PhysicalOffset paint_offset = paint_state.PaintOffset();

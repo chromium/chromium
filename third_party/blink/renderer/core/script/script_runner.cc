@@ -41,7 +41,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -146,7 +145,6 @@ void ScriptRunner::QueueScriptForExecution(PendingScript* pending_script,
   switch (pending_script->GetSchedulingType()) {
     case ScriptSchedulingType::kAsync:
       pending_async_scripts_.insert(pending_script, delay_reasons);
-      number_of_async_scripts_not_evaluated_yet_++;
       break;
 
     case ScriptSchedulingType::kInOrder:
@@ -159,7 +157,7 @@ void ScriptRunner::QueueScriptForExecution(PendingScript* pending_script,
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -198,7 +196,7 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
   if (it->value &= ~static_cast<DelayReasons>(delay_reason)) {
     // The delay must be less than a few seconds because some scripts times out
     // otherwise. This is only applied to milestone based delay.
-    static const base::TimeDelta delay_limit =
+    const base::TimeDelta delay_limit =
         features::kDelayAsyncScriptExecutionDelayLimitParam.Get();
     if (!delay_limit.is_zero() && delay_reason == DelayReason::kLoad &&
         (it->value & static_cast<DelayReasons>(DelayReason::kMilestone))) {
@@ -244,17 +242,7 @@ void ScriptRunner::ExecuteAsyncPendingScript(
   base::UmaHistogramMediumTimes(
       "Blink.Script.AsyncScript.FromReadyToStartExecution.Time",
       base::TimeTicks::Now() - ready_to_evaluate_time);
-  DCHECK_GT(number_of_async_scripts_not_evaluated_yet_, 0u);
   ExecutePendingScript(pending_script);
-  number_of_async_scripts_not_evaluated_yet_--;
-  if (base::FeatureList::IsEnabled(
-          features::kDOMContentLoadedWaitForAsyncScript) &&
-      !HasAsyncScripts()) {
-    if (ScriptableDocumentParser* parser =
-            document_->GetScriptableDocumentParser()) {
-      parser->NotifyNoRemainingAsyncScripts();
-    }
-  }
 }
 
 void ScriptRunner::ExecuteForceInOrderPendingScript(
@@ -312,7 +300,7 @@ void ScriptRunner::PendingScriptFinished(PendingScript* pending_script) {
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

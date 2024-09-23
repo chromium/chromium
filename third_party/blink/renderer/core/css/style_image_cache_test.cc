@@ -138,12 +138,12 @@ TEST_F(StyleImageCacheTest, ComputedValueRelativePath) {
       CSSProperty::Get(CSSPropertyID::kBackgroundImage);
   EXPECT_EQ(property
                 .CSSValueFromComputedStyle(target1->ComputedStyleRef(), nullptr,
-                                           false)
+                                           false, CSSValuePhase::kComputedValue)
                 ->CssText(),
             "url(\"http://test.com/url.png\")");
   EXPECT_EQ(property
                 .CSSValueFromComputedStyle(target2->ComputedStyleRef(), nullptr,
-                                           false)
+                                           false, CSSValuePhase::kComputedValue)
                 ->CssText(),
             "url(\"http://test.com/url.png\")");
 }

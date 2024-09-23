@@ -6,10 +6,10 @@
 #define UI_BASE_CLIPBOARD_FILE_INFO_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 
 namespace ui {
 
@@ -35,7 +35,7 @@ std::string COMPONENT_EXPORT(UI_BASE_FILE_INFO)
 // https://www.iana.org/assignments/media-types/text/uri-list
 // URLs which cannot be parsed are ignored.
 std::vector<FileInfo> COMPONENT_EXPORT(UI_BASE_FILE_INFO)
-    URIListToFileInfos(const base::StringPiece& uri_list);
+    URIListToFileInfos(std::string_view uri_list);
 
 // Returns UTF8 text/uri-list CRLF-separated file:// URLs from filenames.
 std::string COMPONENT_EXPORT(UI_BASE_FILE_INFO)

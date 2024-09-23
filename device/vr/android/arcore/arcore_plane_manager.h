@@ -110,7 +110,7 @@ class ArCorePlaneManager {
   // to track if |Update()| was called twice in a row w/o a call to
   // |GetDetectedPlanesData()| in between. Initially true since we expect the
   // call to |Update()| to happen next.
-  // TODO(https://crbug.com/1192844): remove the assumption that the calls to
+  // TODO(crbug.com/40757459): remove the assumption that the calls to
   // |Update()| will always be followed by at least one call to
   // |GetDetectedPlanesData()| before the next call to |Update()| happens.
   mutable bool was_plane_data_retrieved_in_current_frame_ = true;

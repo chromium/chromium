@@ -49,10 +49,10 @@ component("gpu") {
     "//media/mojo/*",
     "//remoting/codec:encoder",
     "//third_party/blink/renderer/modules:unit_tests",
-    "//third_party/blink/renderer/modules:unit_tests_v2",
+    "//third_party/blink/renderer/modules/mediarecorder",
     "//ui/gl:gl_unittests",
 
-    # TODO(crbug.com/1184041): Remove //remoting/host:common when the usage is removed.
+    # TODO(crbug.com/40752360): Remove //remoting/host:common when the usage is removed.
     "//remoting/host:common",
   ]
 
@@ -85,7 +85,7 @@ component("gpu") {
     "//base",
     "//gpu",
     "//media",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
     "//ui/gfx/geometry",
   ]
   deps = [
@@ -175,10 +175,11 @@ component("gpu") {
       "mediandk",
     ]
     deps += [
-      # TODO(crbug.com/789435): This can be removed once CdmManager is removed.
+      # TODO(crbug.com/40552063): This can be removed once CdmManager is removed.
       "//gpu/ipc/common",
       "//media/mojo:buildflags",
       "//services/service_manager/public/cpp:cpp",
+      "//third_party/libgav1:libgav1_parser",
       "//ui/gl:gl_jni_headers",
     ]
     if (enable_vulkan) {
@@ -206,7 +207,6 @@ component("gpu") {
       "windows/av1_guids.h",
       "windows/d3d11_av1_accelerator.cc",
       "windows/d3d11_av1_accelerator.h",
-      "windows/d3d11_com_defs.h",
       "windows/d3d11_copying_texture_wrapper.cc",
       "windows/d3d11_copying_texture_wrapper.h",
       "windows/d3d11_decoder_configurator.cc",
@@ -235,19 +235,28 @@ component("gpu") {
       "windows/d3d11_vp9_accelerator.h",
       "windows/d3d11_vp9_picture.cc",
       "windows/d3d11_vp9_picture.h",
+      "windows/d3d12_fence.cc",
+      "windows/d3d12_fence.h",
       "windows/d3d12_helpers.cc",
       "windows/d3d12_helpers.h",
       "windows/d3d12_video_decoder_wrapper.cc",
       "windows/d3d12_video_decoder_wrapper.h",
-      "windows/d3d_accelerator.cc",
-      "windows/d3d_accelerator.h",
+      "windows/d3d12_video_processor_wrapper.cc",
+      "windows/d3d12_video_processor_wrapper.h",
+      "windows/d3d_com_defs.h",
       "windows/d3d_video_decoder_wrapper.cc",
       "windows/d3d_video_decoder_wrapper.h",
+      "windows/format_utils.cc",
+      "windows/format_utils.h",
+      "windows/h264_video_rate_control_wrapper.cc",
+      "windows/h264_video_rate_control_wrapper.h",
       "windows/init_guid.cc",
       "windows/media_foundation_video_encode_accelerator_win.cc",
       "windows/media_foundation_video_encode_accelerator_win.h",
       "windows/mf_audio_encoder.cc",
       "windows/mf_audio_encoder.h",
+      "windows/mf_video_processor_accelerator.cc",
+      "windows/mf_video_processor_accelerator.h",
       "windows/scoped_d3d_buffers.cc",
       "windows/scoped_d3d_buffers.h",
       "windows/supported_profile_helpers.cc",
@@ -267,17 +276,11 @@ component("gpu") {
         "windows/av1_video_rate_control_wrapper.cc",
         "windows/av1_video_rate_control_wrapper.h",
       ]
-      configs += [ "//third_party/libaom:libaom_config" ]
       deps += [ "//third_party/libaom:libaomrc" ]
     }
-    configs += [
-      "//third_party/khronos:khronos_headers",
-      "//third_party/libvpx:libvpx_config",
-    ]
     deps += [
       "//gpu/ipc/common:common",
       "//media/base/win:color_space_util_win",
-      "//media/parsers",
       "//third_party/angle:includes",
       "//third_party/libvpx:libvpxrc",
       "//ui/display",
@@ -286,6 +289,7 @@ component("gpu") {
       "d3d9.lib",
       "d3d11.lib",
       "d3d12.lib",
+      "dxgi.lib",
       "dxva2.lib",
       "strmiids.lib",
       "mf.lib",
@@ -329,6 +333,8 @@ source_set("common") {
     "h264_rate_control_util.h",
     "h264_rate_controller.cc",
     "h264_rate_controller.h",
+    "h264_ratectrl_rtc.cc",
+    "h264_ratectrl_rtc.h",
     "hrd_buffer.cc",
     "hrd_buffer.h",
     "macros.h",
@@ -357,7 +363,6 @@ source_set("common") {
   # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
   if (use_v4l2_codec || use_vaapi) {
     sources += [
-      "decode_surface_handler.h",
       "vp8_decoder.cc",
       "vp8_decoder.h",
       "vp8_picture.cc",
@@ -373,7 +378,6 @@ source_set("common") {
     "//base",
     "//build:chromeos_buildflags",
     "//media",
-    "//media/parsers",
     "//ui/gfx:buffer_types",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
@@ -381,14 +385,19 @@ source_set("common") {
 
   if (is_win || use_vaapi) {
     sources += [
+      "av1_builder.cc",
+      "av1_builder.h",
+      "h264_builder.cc",
+      "h264_builder.h",
       "vp9_svc_layers.cc",
       "vp9_svc_layers.h",
     ]
-    configs += [ "//third_party/libvpx:libvpx_config" ]
-    deps += [
-      "//third_party/libaom:libaomrc",
-      "//third_party/libvpx:libvpxrc",
-    ]
+    if (enable_hevc_parser_and_hw_decoder) {
+      sources += [
+        "h265_builder.cc",
+        "h265_builder.h",
+      ]
+    }
   }
 
   if (use_av1_hw_decoder) {
@@ -416,14 +425,6 @@ component("buffer_validation") {
     "//base",
     "//media",
   ]
-
-  if (is_linux || is_chromeos) {
-    deps = [ "//build/config/linux/libdrm" ]
-  }
-
-  if (is_chromeos) {
-    deps += [ "//ui/gfx:gfx_switches" ]
-  }
 }
 
 source_set("command_buffer_helper") {
@@ -432,15 +433,6 @@ source_set("command_buffer_helper") {
     "command_buffer_helper.cc",
     "command_buffer_helper.h",
   ]
-
-  if (!is_android) {
-    # This code is used only by the legacy VDA implementation, which is not
-    # supported on Android.
-    sources += [
-      "gles2_decoder_helper.cc",
-      "gles2_decoder_helper.h",
-    ]
-  }
 
   public_deps = [
     "//base",
@@ -511,6 +503,7 @@ if (is_android) {
       "//media/test:run_all_unittests",
       "//mojo/core/embedder",
       "//testing/gtest",
+      "//third_party/angle:includes",
       "//ui/android:ui_java",
       "//ui/base",
       "//ui/gfx",
@@ -520,8 +513,6 @@ if (is_android) {
       "//ui/gl:test_support",
       "//ui/gl/init",
     ]
-
-    configs += [ "//third_party/khronos:khronos_headers" ]
   }
 }
 
@@ -597,7 +588,6 @@ source_set("unit_tests") {
     "//media:test_support",
     "//media/gpu",
     "//media/gpu:test_support",
-    "//media/gpu/ipc/service:unit_tests",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gl:test_support",
@@ -608,6 +598,7 @@ source_set("unit_tests") {
     "h264_decoder_unittest.cc",
     "h264_rate_control_util_unittest.cc",
     "h264_rate_controller_unittest.cc",
+    "h264_ratectrl_rtc_unittest.cc",
     "hrd_buffer_unittest.cc",
   ]
   if (enable_hevc_parser_and_hw_decoder) {
@@ -654,6 +645,8 @@ source_set("unit_tests") {
       "windows/d3d11_video_device_format_support_unittest.cc",
       "windows/d3d11_video_processor_proxy_unittest.cc",
       "windows/d3d12_helpers_unittest.cc",
+      "windows/mf_audio_encoder_unittest.cc",
+      "windows/mf_video_processor_accelerator_unittest.cc",
       "windows/scoped_d3d_buffers_unittest.cc",
       "windows/supported_profile_helpers_unittest.cc",
     ]
@@ -665,17 +658,21 @@ source_set("unit_tests") {
   }
 
   if (is_win || use_vaapi) {
-    sources += [ "vp9_svc_layers_unittest.cc" ]
+    sources += [
+      "av1_builder_unittest.cc",
+      "h264_builder_unittest.cc",
+      "vp9_svc_layers_unittest.cc",
+    ]
   }
 }
 
 if (enable_hevc_parser_and_hw_decoder) {
   fuzzer_test("media_h265_decoder_fuzzer") {
-    sources = [ "h265_decoder_fuzzertest.cc" ]
+    sources = [ "h265_decoder_fuzzer.cc" ]
     deps = [
       ":gpu",
       "//base",
-      "//media",
+      "//media:test_support",
     ]
   }
 }
@@ -685,9 +682,23 @@ fuzzer_test("media_h264_decoder_fuzzer") {
   deps = [
     ":gpu",
     "//base",
-    "//media",
+    "//media:test_support",
   ]
   seed_corpuses = [ "//media/test/data" ]
+}
+
+# TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
+if (use_v4l2_codec || use_vaapi) {
+  fuzzer_test("media_vp8_decoder_fuzzer") {
+    sources = [ "vp8_decoder_fuzzer.cc" ]
+    deps = [
+      ":common",
+      ":gpu",
+      "//base",
+      "//media:test_support",
+    ]
+    seed_corpuses = [ "//media/test/data" ]
+  }
 }
 
 if (use_av1_hw_decoder) {
@@ -696,7 +707,17 @@ if (use_av1_hw_decoder) {
     deps = [
       ":common",
       "//base",
-      "//media",
+      "//media:test_support",
     ]
   }
+}
+
+fuzzer_test("media_vp9_decoder_fuzzer") {
+  sources = [ "vp9_decoder_fuzzer.cc" ]
+  deps = [
+    ":gpu",
+    "//base",
+    "//media:test_support",
+  ]
+  seed_corpuses = [ "//media/test/data" ]
 }

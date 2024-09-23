@@ -7,10 +7,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -38,7 +38,6 @@ const char kUUID[] = "uuid";
 const char kPpdResource[] = "ppd_resource";
 const char kAutoconf[] = "autoconf";
 const char kGuid[] = "guid";
-const char kUserSuppliedPpdUri[] = "user_supplied_ppd_uri";
 
 // Populates the |printer| object with corresponding fields from |value|.
 // Returns false if |value| is missing a required field.
@@ -115,52 +114,6 @@ std::string PrinterAddress(const Uri& uri) {
   return uri.GetHostEncoded();
 }
 
-bool ValidateAndSetPpdReference(const base::Value::Dict& ppd_resource,
-                                Printer& printer) {
-  std::optional<bool> autoconf = ppd_resource.FindBool(kAutoconf);
-  const std::string* effective_model = ppd_resource.FindString(kEffectiveModel);
-  const std::string* user_supplied_ppd_uri =
-      ppd_resource.FindString(kUserSuppliedPpdUri);
-
-  const bool is_autoconf = autoconf.value_or(false);
-  const bool has_effective_model = effective_model && !effective_model->empty();
-  const bool has_user_supplied_ppd_uri =
-      user_supplied_ppd_uri && !user_supplied_ppd_uri->empty();
-
-  const bool has_exactly_one_ppd_resource =
-      is_autoconf + has_effective_model + has_user_supplied_ppd_uri == 1;
-  if (!has_exactly_one_ppd_resource) {
-    LOG(WARNING) << base::StringPrintf(
-        "Managed printer '%s' must have exactly one %s value: is_autoconf: %d, "
-        "has_effective_model: %d, has_user_supplied_ppd_uri: %d",
-        printer.display_name().c_str(), kPpdResource, is_autoconf,
-        has_effective_model, has_user_supplied_ppd_uri);
-    return false;
-  }
-
-  if (is_autoconf) {
-    printer.mutable_ppd_reference()->autoconf = true;
-  }
-  if (has_effective_model) {
-    printer.mutable_ppd_reference()->effective_make_and_model =
-        *effective_model;
-  }
-  if (has_user_supplied_ppd_uri) {
-    GURL url(*user_supplied_ppd_uri);
-    if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
-      LOG(WARNING) << base::StringPrintf(
-          "Managed printer '%s' has invalid %s.%s: '%s'",
-          printer.display_name().c_str(), kPpdResource, kUserSuppliedPpdUri,
-          user_supplied_ppd_uri->c_str());
-      return false;
-    }
-    printer.mutable_ppd_reference()->user_supplied_ppd_url =
-        *user_supplied_ppd_uri;
-  }
-
-  return true;
-}
-
 }  // namespace
 
 const char kPrinterId[] = "id";
@@ -213,55 +166,6 @@ std::unique_ptr<Printer> RecommendedPrinterToPrinter(
     return nullptr;
   }
 
-  return printer;
-}
-
-std::unique_ptr<Printer> ManagedPrinterToPrinter(
-    const base::Value::Dict& managed_printer) {
-  static auto LogRequiredFieldMissing = [](base::StringPiece field) {
-    LOG(WARNING) << "Managed printer is missing required field: " << field;
-  };
-
-  const std::string* guid = managed_printer.FindString(kGuid);
-  const std::string* display_name = managed_printer.FindString(kDisplayName);
-  const std::string* uri = managed_printer.FindString(kUri);
-  const base::Value::Dict* ppd_resource =
-      managed_printer.FindDict(kPpdResource);
-  const std::string* description = managed_printer.FindString(kDescription);
-  if (!guid) {
-    LogRequiredFieldMissing(kGuid);
-    return nullptr;
-  }
-  if (!display_name) {
-    LogRequiredFieldMissing(kDisplayName);
-    return nullptr;
-  }
-  if (!uri) {
-    LogRequiredFieldMissing(kUri);
-    return nullptr;
-  }
-  if (!ppd_resource) {
-    LogRequiredFieldMissing(kPpdResource);
-    return nullptr;
-  }
-
-  auto printer = std::make_unique<Printer>(*guid);
-  printer->set_source(Printer::SRC_POLICY);
-  printer->set_display_name(*display_name);
-  std::string set_uri_error_message;
-  if (!printer->SetUri(*uri, &set_uri_error_message)) {
-    LOG(WARNING) << base::StringPrintf(
-        "Managed printer '%s' has invalid %s value: %s, error: %s",
-        display_name->c_str(), kUri, uri->c_str(),
-        set_uri_error_message.c_str());
-    return nullptr;
-  }
-  if (!ValidateAndSetPpdReference(*ppd_resource, *printer)) {
-    return nullptr;
-  }
-  if (description) {
-    printer->set_description(*description);
-  }
   return printer;
 }
 

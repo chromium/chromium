@@ -35,8 +35,8 @@ class DecoderTemplateTest : public testing::Test {
   ~DecoderTemplateTest() override = default;
 
   typename T::ConfigType* CreateConfig();
-  typename T::InitType* CreateInit(v8::Local<v8::Function> output_callback,
-                                   v8::Local<v8::Function> error_callback);
+  typename T::InitType* CreateInit(ScriptFunction* output_callback,
+                                   ScriptFunction* error_callback);
 
   T* CreateDecoder(ScriptState*, const typename T::InitType*, ExceptionState&);
   test::TaskEnvironment task_environment_;
@@ -62,11 +62,13 @@ AudioDecoder* DecoderTemplateTest<AudioDecoder>::CreateDecoder(
 
 template <>
 AudioDecoderInit* DecoderTemplateTest<AudioDecoder>::CreateInit(
-    v8::Local<v8::Function> output_callback,
-    v8::Local<v8::Function> error_callback) {
+    ScriptFunction* output_callback,
+    ScriptFunction* error_callback) {
   auto* init = MakeGarbageCollected<AudioDecoderInit>();
-  init->setOutput(V8AudioDataOutputCallback::Create(output_callback));
-  init->setError(V8WebCodecsErrorCallback::Create(error_callback));
+  init->setOutput(
+      V8AudioDataOutputCallback::Create(output_callback->V8Function()));
+  init->setError(
+      V8WebCodecsErrorCallback::Create(error_callback->V8Function()));
   return init;
 }
 
@@ -79,11 +81,13 @@ VideoDecoderConfig* DecoderTemplateTest<VideoDecoder>::CreateConfig() {
 
 template <>
 VideoDecoderInit* DecoderTemplateTest<VideoDecoder>::CreateInit(
-    v8::Local<v8::Function> output_callback,
-    v8::Local<v8::Function> error_callback) {
+    ScriptFunction* output_callback,
+    ScriptFunction* error_callback) {
   auto* init = MakeGarbageCollected<VideoDecoderInit>();
-  init->setOutput(V8VideoFrameOutputCallback::Create(output_callback));
-  init->setError(V8WebCodecsErrorCallback::Create(error_callback));
+  init->setOutput(
+      V8VideoFrameOutputCallback::Create(output_callback->V8Function()));
+  init->setError(
+      V8WebCodecsErrorCallback::Create(error_callback->V8Function()));
   return init;
 }
 

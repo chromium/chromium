@@ -73,7 +73,8 @@ using MockRegisterBlobCallback = base::OnceCallback<
     void(const String&, const KURL&, uint64_t, std::optional<base::Time>)>;
 class MockFileSystemManager : public mojom::blink::FileSystemManager {
  public:
-  explicit MockFileSystemManager(blink::BrowserInterfaceBrokerProxy& broker)
+  explicit MockFileSystemManager(
+      const blink::BrowserInterfaceBrokerProxy& broker)
       : broker_(broker) {
     broker.SetBinderForTesting(
         mojom::blink::FileSystemManager::Name_,
@@ -160,7 +161,7 @@ class MockFileSystemManager : public mojom::blink::FileSystemManager {
                              std::move(handle)));
   }
 
-  BrowserInterfaceBrokerProxy& broker_;
+  const BrowserInterfaceBrokerProxy& broker_;
   mojo::ReceiverSet<mojom::blink::FileSystemManager> receivers_;
   MockRegisterBlobCallback mock_register_blob_callback_;
 };

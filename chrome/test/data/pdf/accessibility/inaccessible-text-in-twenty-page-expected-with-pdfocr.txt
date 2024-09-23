@@ -1,0 +1,210 @@
+pdfRoot 'PDF document containing 20 pages'
+  banner
+    status 'This PDF is inaccessible. Text extracted, powered by Google AI'
+      staticText 'This PDF is inaccessible. Text extracted, powered by Google AI'
+  region 'Page 1'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Hello, world!'
+            inlineTextBox 'Hello, world!'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 2'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph 1 on Page 2'
+            inlineTextBox 'Paragraph 1 on Page 2'
+        paragraph
+          staticText 'Paragraph 2 on Page 2'
+            inlineTextBox 'Paragraph 2 on Page 2'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 3'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph 1 on Page 3'
+            inlineTextBox 'Paragraph 1 on Page 3'
+        paragraph
+          staticText 'Paragraph 2 on Page 3'
+            inlineTextBox 'Paragraph 2 on Page 3'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 4'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 4'
+            inlineTextBox 'Paragraph on Page 4'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 5'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 5'
+            inlineTextBox 'Paragraph on Page 5'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 6'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 6'
+            inlineTextBox 'Paragraph on Page 6'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 7'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 7'
+            inlineTextBox 'Paragraph on Page 7'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 8'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 8'
+            inlineTextBox 'Paragraph on Page 8'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 9'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 9'
+            inlineTextBox 'Paragraph on Page 9'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 10'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 10'
+            inlineTextBox 'Paragraph on Page 10'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 11'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 11'
+            inlineTextBox 'Paragraph on Page 11'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 12'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 12'
+            inlineTextBox 'Paragraph on Page 12'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 13'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 13'
+            inlineTextBox 'Paragraph on Page 13'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 14'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 14'
+            inlineTextBox 'Paragraph on Page 14'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 15'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 15'
+            inlineTextBox 'Paragraph on Page 15'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 16'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 16'
+            inlineTextBox 'Paragraph on Page 16'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 17'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 17'
+            inlineTextBox 'Paragraph on Page 17'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 18'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 18'
+            inlineTextBox 'Paragraph on Page 18'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 19'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 19'
+            inlineTextBox 'Paragraph on Page 19'
+        contentInfo
+          staticText 'End of extracted text'
+  region 'Page 20'
+    genericContainer
+      region
+        banner
+          staticText 'Start of extracted text'
+        paragraph
+          staticText 'Paragraph on Page 20'
+            inlineTextBox 'Paragraph on Page 20'
+        contentInfo
+          staticText 'End of extracted text'

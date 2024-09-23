@@ -28,6 +28,7 @@ namespace net {
 
 struct CommonConnectJobParams;
 struct NetworkTrafficAnnotationTag;
+class StreamSocketHandle;
 
 // Identifier for a ClientSocketHandle to scope the lifetime of references.
 // ClientSocketHandleID are derived from ClientSocketHandle*, used in
@@ -58,7 +59,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   // need to explicitly check for this. Instead, ensure that dead sockets are
   // returned to ReleaseSocket() in a timely fashion.
   static void UnlockEndpoint(
-      ClientSocketHandle* handle,
+      StreamSocketHandle* handle,
       WebSocketEndpointLockManager* websocket_endpoint_lock_manager);
 
   // ClientSocketPool implementation.

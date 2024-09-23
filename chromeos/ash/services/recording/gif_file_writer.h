@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "chromeos/ash/services/recording/recording_file_io_helper.h"
 
@@ -30,9 +31,8 @@ class GifFileWriter {
   // Writes the given `bytes` to the `gif_file_`.
   void WriteByte(uint8_t byte);
 
-  // Writes the contents of the given `buffer` whose length is `buffer_size` to
-  // the `gif_file_`.
-  void WriteBuffer(const uint8_t* const buffer, size_t buffer_size);
+  // Writes the contents of the given `buffer` to the `gif_file_`.
+  void WriteBuffer(base::span<const uint8_t> buffer);
 
   // Writes the given `string` to the `gif_file_`.
   void WriteString(std::string_view string);

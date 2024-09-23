@@ -48,6 +48,8 @@ class HTMLSelectListElement;
 class KeyboardEvent;
 class TextControlElement;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedScript;
+class V8UnionBooleanOrTogglePopoverOptions;
+class ShowPopoverOptions;
 
 enum TranslateAttributeMode {
   kTranslateAttributeYes,
@@ -113,6 +115,8 @@ class CORE_EXPORT HTMLElement : public Element {
     return HasLocalName(name.LocalName());
   }
 
+  const char* NameInHeapSnapshot() const override;
+
   String title() const final;
 
   void setInnerText(const String&);
@@ -162,7 +166,10 @@ class CORE_EXPORT HTMLElement : public Element {
 
   static bool IsValidDirAttribute(const AtomicString& value);
   static bool ElementAffectsDirectionality(const Node* node);
-  static bool ElementInheritsDirectionality(const Node* node);
+  static bool ElementInheritsDirectionality(const Node* node) {
+    return !HTMLElement::ElementAffectsDirectionality(node);
+  }
+
   static const TextControlElement*
   ElementIfAutoDirectionalityFormAssociatedOrNull(const Element* element);
   static TextControlElement* ElementIfAutoDirectionalityFormAssociatedOrNull(
@@ -177,6 +184,7 @@ class CORE_EXPORT HTMLElement : public Element {
   // origin trial is over.
   virtual bool IsHTMLFencedFrameElement() const { return false; }
   virtual bool IsHTMLFrameSetElement() const { return false; }
+  virtual bool IsHTMLPermissionElement() const { return false; }
   virtual bool IsHTMLUnknownElement() const { return false; }
   virtual bool IsPluginElement() const { return false; }
 
@@ -184,6 +192,7 @@ class CORE_EXPORT HTMLElement : public Element {
   virtual bool IsLabelable() const;
   // |labels| IDL attribute implementation for IsLabelable()==true elements.
   LabelsNodeList* labels();
+  bool HasActiveLabel() const;
 
   // https://html.spec.whatwg.org/C/#interactive-content
   virtual bool IsInteractiveContent() const;
@@ -225,7 +234,7 @@ class CORE_EXPORT HTMLElement : public Element {
   void UpdateDirectionalityAfterInputTypeChange(const AtomicString& old_value,
                                                 const AtomicString& new_value);
   void AdjustDirectionAutoAfterRecalcAssignedNodes();
-  bool CalculateAndAdjustAutoDirectionality();
+  virtual bool CalculateAndAdjustAutoDirectionality();
 
   V8UnionBooleanOrStringOrUnrestrictedDouble* hidden() const;
   void setHidden(const V8UnionBooleanOrStringOrUnrestrictedDouble*);
@@ -253,16 +262,20 @@ class CORE_EXPORT HTMLElement : public Element {
                       bool include_event_handler_text,
                       Document* expected_document) const;
   bool togglePopover(ExceptionState& exception_state);
-  bool togglePopover(bool force, ExceptionState& exception_state);
+  bool togglePopover(V8UnionBooleanOrTogglePopoverOptions* options_or_force,
+                     ExceptionState& exception_state);
   void showPopover(ExceptionState& exception_state);
+  void showPopover(ShowPopoverOptions* options,
+                   ExceptionState& exception_state);
   void hidePopover(ExceptionState& exception_state);
   // |exception_state| can be nullptr when exceptions can't be thrown, such as
   // when the browser hides a popover during light dismiss or shows a popover in
   // response to clicking a button with popovershowtarget.
-  void ShowPopoverInternal(Element* invoker, ExceptionState* exception_state);
-  void HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
-                           HidePopoverTransitionBehavior event_firing,
-                           ExceptionState* exception_state);
+  virtual void ShowPopoverInternal(Element* invoker,
+                                   ExceptionState* exception_state);
+  virtual void HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
+                                   HidePopoverTransitionBehavior event_firing,
+                                   ExceptionState* exception_state);
   void PopoverHideFinishIfNeeded(bool immediate);
   static const HTMLElement* FindTopmostPopoverAncestor(
       Element& new_popover_or_top_layer_element,
@@ -288,26 +301,28 @@ class CORE_EXPORT HTMLElement : public Element {
   void MaybeQueuePopoverHideEvent();
   static void HoveredElementChanged(Element* old_element, Element* new_element);
 
-  void SetPopoverOwnerSelectListElement(HTMLSelectListElement* element);
-  HTMLSelectListElement* popoverOwnerSelectListElement() const;
+  void SetInternalImplicitAnchor(HTMLElement* element);
+  HTMLElement* internalImplicitAnchor() const;
 
   bool DispatchFocusEvent(
       Element* old_focused_element,
       mojom::blink::FocusType,
       InputDeviceCapabilities* source_capabilities) override;
 
-  // This allows customization of how Invokes are handled, per element.
-  // The default HTMLElement behavior handles popovers, and specific
+  // This allows customization of how Invoker Commands are handled, per
+  // element. The default HTMLElement behavior handles popovers, and specific
   // element subclasses - such as HTMLDialogElement - can handle
-  // other invocation actions such as showModal. Implementations should return
+  // other commands such as showModal. Implementations should return
   // `true` if they have handled, so that overrides can exit early.
   // Additionally, override implementations should not execute their own
-  // behavior before calling `HTMLElement::HandleInvokeInternal` as that
+  // behavior before calling `HTMLElement::HandleCommandInternal` as that
   // override governs the logic for global attributes such as `popover`;
   // for example a `<dialog popover>` should run `popover` invocation steps
   // before `<dialog>` invocation steps.
   // See: crbug.com/1490919, https://open-ui.org/components/invokers.explainer/
-  virtual bool HandleInvokeInternal(HTMLElement& invoker, AtomicString& action);
+  bool IsValidCommand(HTMLElement& invoker, CommandEventType command) override;
+  bool HandleCommandInternal(HTMLElement& invoker,
+                             CommandEventType command) override;
 
   // This allows developers to enable or disable browser-provided writing
   // suggestions. If the attribute is not explicitly set on an element, it
@@ -317,8 +332,7 @@ class CORE_EXPORT HTMLElement : public Element {
   void setWritingSuggestions(const AtomicString& value);
 
  protected:
-  bool SupportsFocus(UpdateBehavior update_behavior =
-                         UpdateBehavior::kStyleAndLayout) const override;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
 
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };
   enum AllowZero { kDontAllowZeroValues, kAllowZeroValues };
@@ -406,19 +420,12 @@ class CORE_EXPORT HTMLElement : public Element {
   int OffsetTopOrLeft(bool top);
 };
 
-template <typename T>
-bool IsElementOfType(const HTMLElement&);
-template <>
-inline bool IsElementOfType<const HTMLElement>(const HTMLElement&) {
-  return true;
-}
-template <>
-inline bool IsElementOfType<const HTMLElement>(const Node& node) {
-  return IsA<HTMLElement>(node);
-}
 template <>
 struct DowncastTraits<HTMLElement> {
   static bool AllowFrom(const Node& node) { return node.IsHTMLElement(); }
+  static bool AllowFrom(const Element& element) {
+    return element.IsHTMLElement();
+  }
 };
 
 inline HTMLElement::HTMLElement(const QualifiedName& tag_name,

@@ -14,7 +14,7 @@ struct PasswordForm;
 
 // This is a delegate of the ExportFlow interface used to retrieve exportable
 // passwords.
-// TODO(1047726): Merge this interface with SavedPasswordsPresenter.
+// TODO(crbug.com/40116992): Merge this interface with SavedPasswordsPresenter.
 class CredentialProviderInterface {
  public:
   // Gets all password entries.

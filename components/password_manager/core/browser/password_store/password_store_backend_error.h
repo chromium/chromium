@@ -5,6 +5,13 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_BACKEND_ERROR_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_BACKEND_ERROR_H_
 
+#include "build/build_config.h"
+#include "build/buildflag.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include <optional>
+#endif
+
 namespace password_manager {
 
 // List of constants describing the types of Android backend errors.
@@ -27,22 +34,15 @@ enum class PasswordStoreBackendErrorType {
   // Error related only to on-device encryption users when the encryption
   // key is missing. Used on Android.
   kKeyRetrievalRequired = 4,
-  kMaxValue = kKeyRetrievalRequired,
-};
-
-enum class PasswordStoreBackendErrorRecoveryType {
-  // Recoverable which can be fixed by either automated or user-driven
-  // resolution specific for this error.
-  kRecoverable,
-  // Unrecoverable errors which can't be fixed easily. It may indicate broken
-  // database or other persistent errors.
-  kUnrecoverable,
+  // Saving new credentials is disabled due to an outdated GMSCore version.
+  kGMSCoreOutdatedSavingDisabled = 5,
+  // Credentials are saved only on device due to an outdated GMSCore version.
+  kGMSCoreOutdatedSavingPossible = 6,
+  kMaxValue = kGMSCoreOutdatedSavingPossible,
 };
 
 struct PasswordStoreBackendError {
-  PasswordStoreBackendError(
-      PasswordStoreBackendErrorType error_type,
-      PasswordStoreBackendErrorRecoveryType recovery_type);
+  PasswordStoreBackendError(PasswordStoreBackendErrorType error_type);
 
   friend bool operator==(const PasswordStoreBackendError&,
                          const PasswordStoreBackendError&) = default;
@@ -50,10 +50,13 @@ struct PasswordStoreBackendError {
   // The type of the error.
   PasswordStoreBackendErrorType type;
 
-  // Whether the error is considered recoverable or not.
-  PasswordStoreBackendErrorRecoveryType recovery_type;
+#if BUILDFLAG(IS_ANDROID)
+  // Android API Error.
+  // TODO(crbug.com/342993480) Remove this once UPM migration errors are no
+  // longer needed.
+  std::optional<int> android_backend_api_error;
+#endif
 };
-
 
 }  // namespace password_manager
 

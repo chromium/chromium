@@ -19,9 +19,8 @@ import org.chromium.components.commerce.core.ShoppingService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Commerce Subscriptions Service.
- * TODO(crbug.com/1382191): This service is now only used to manage implicit tracking and to record
- * notification metrics, both of which are Android-specific. The
+ * Commerce Subscriptions Service. TODO(crbug.com/40245507): This service is now only used to manage
+ * implicit tracking and to record notification metrics, both of which are Android-specific. The
  * ImplicitPriceDropSubscriptionsManager should be profile-independent and we should decouple
  * subscriptions and notifications. Some logic here like observing Android activity lifecycle can be
  * moved to ShoppingServiceFactory.

@@ -84,11 +84,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatter {
       const AXTreeSelector&) const = 0;
 
   // Build an accessibility tree for an application with |node| as the root.
-  virtual base::Value::Dict BuildTreeForNode(ui::AXNode* node) const = 0;
+  virtual base::Value::Dict BuildTreeForNode(AXNode* node) const = 0;
 
   // Returns a string representing the internal tree represented by |tree_id|.
   virtual std::string DumpInternalAccessibilityTree(
-      ui::AXTreeID tree_id,
+      AXTreeID tree_id,
       const std::vector<AXPropertyFilter>& property_filters) = 0;
 
   // Dumps accessibility tree.

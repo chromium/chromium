@@ -131,7 +131,7 @@
     border-bottom-color: var(--scrollable-border-color);
   }
 
-  iron-collapse {
+  cr-collapse {
     --iron-collapse-transition-duration: 300ms;
   }
 </style>
@@ -176,7 +176,7 @@
         <cr-expand-button expanded="{{expanded_}}">
           <div class="cr-secondary-text">$i18n{consentLearnMoreLabel}</div>
         </cr-expand-button>
-        <iron-collapse opened="[[expanded_]]">
+        <cr-collapse opened="[[expanded_]]">
           <div>$i18n{consentLearnMoreSection1Header}</div>
           <ul class="cr-secondary-text">
             <li>$i18nRaw{consentLearnMoreSection1BulletPoint1}</li>
@@ -190,7 +190,7 @@
             <li>$i18nRaw{consentLearnMoreSection2BulletPoint2}</li>
             <li>$i18nRaw{consentLearnMoreSection2BulletPoint3}</li>
           </ul>
-        </iron-collapse>
+        </cr-collapse>
       </template>
     </div>
     <template is="dom-if" if="[[isConsent_]]">

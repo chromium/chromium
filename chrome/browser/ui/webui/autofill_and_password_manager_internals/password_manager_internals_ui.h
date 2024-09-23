@@ -12,15 +12,13 @@ namespace content {
 class WebUI;
 }
 
-class PasswordManagerInternalsUIConfig : public content::WebUIConfig {
+class PasswordManagerInternalsUI;
+
+class PasswordManagerInternalsUIConfig
+    : public content::DefaultWebUIConfig<PasswordManagerInternalsUI> {
  public:
   PasswordManagerInternalsUIConfig();
   ~PasswordManagerInternalsUIConfig() override;
-
-  // content::WebUIConfig:
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 class PasswordManagerInternalsUI : public content::WebUIController {

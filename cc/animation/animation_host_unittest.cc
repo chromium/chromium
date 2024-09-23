@@ -295,7 +295,6 @@ void CreateScrollingNodeForElement(ElementId element_id,
       transform_node_id, element_id);
 
   ScrollNode scroll_node;
-  scroll_node.scrollable = true;
   // Setup scroll dimention to be 100x100.
   scroll_node.bounds = gfx::Size(200, 200);
   scroll_node.container_bounds = gfx::Size(100, 100);

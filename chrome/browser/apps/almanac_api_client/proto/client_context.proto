@@ -44,14 +44,19 @@ message ClientDeviceContext {
 
   // Version info about the OS, Browser and other platforms.
   message Versions {
-    // Required. Chrome OS operating system itself.
+    // No longer used. Need to figure out to properly deprecate this without
+    // causing issues with one platform.
     optional string chrome_os_platform = 1;
+    optional string chrome_lacros = 3;
 
     // Required. Chrome version for Ash on the device.
     optional string chrome_ash = 2;
 
-    // Optional. Chrome version for Lacros on the device if present.
-    optional string chrome_lacros = 3;
+    // Optional. Arc SDK version if enabled and present. Otherwise, 0 or unset.
+    optional int32 arc_sdk = 4;
+
+    // Optional. Steam client version if present.
+    optional string steam_client = 5;
   }
 
   // The board identifier for the device sending the request.
@@ -73,6 +78,10 @@ message ClientDeviceContext {
   // distinguish between variations of a device which have different branding
   // but the same hardware. Only set for devices with custom-label variants.
   optional string custom_label_tag = 7;
+
+  // Instructs the server to bypass any response cache is configured on the
+  // endpoint and always return a fresh response. This is useful for debugging.
+  optional bool bypass_response_cache = 8;
 }
 
 // Context about the user of the client device making this request.
@@ -80,7 +89,7 @@ message ClientUserContext {
   // The type of the User account making this request.
   enum UserType {
     // Default for deserialization when an unexpected value is encountered.
-    // Indicates to the client that the server has a new platform and needs
+    // Indicates to the client that the server has a new user type and needs
     // the proto file updated.
     USERTYPE_UNKNOWN = 0;
 
@@ -98,6 +107,9 @@ message ClientUserContext {
 
     // A managed user who has a @google.com account.
     USERTYPE_GOOGLE = 5;
+
+    // A managed guest account on the device.
+    USERTYPE_MANAGED_GUEST = 6;
   }
 
   // The language-country identifier for the user in language in
@@ -111,4 +123,13 @@ message ClientUserContext {
 
   // The type of user account making this request.
   optional UserType user_type = 2;
+}
+
+// Wrapper message for ClientDeviceContext and ClientUserContext.
+message ClientContext {
+  // Context about the client device making this request.
+  optional ClientDeviceContext device_context = 1;
+
+  // Context about the user of the client device making this request.
+  optional ClientUserContext user_context = 2;
 }

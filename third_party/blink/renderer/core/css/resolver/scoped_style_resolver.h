@@ -67,8 +67,9 @@ class CORE_EXPORT ScopedStyleResolver final
   CounterStyleMap* GetCounterStyleMap() { return counter_style_map_.Get(); }
   static void CounterStyleRulesChanged(TreeScope& scope);
 
-  StyleRulePositionFallback* PositionFallbackForName(
-      const AtomicString& fallback_name);
+  StyleRulePositionTry* PositionTryForName(const AtomicString& try_name);
+
+  StyleRuleFunction* FunctionForName(StringView name);
 
   const FontFeatureValuesStorage* FontFeatureValuesForFamily(
       AtomicString font_family);
@@ -83,11 +84,12 @@ class CORE_EXPORT ScopedStyleResolver final
   }
 
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);
-  void CollectMatchingElementScopeRules(ElementRuleCollector&);
+  void CollectMatchingElementScopeRules(ElementRuleCollector&,
+                                        PartNames* part_names);
   void CollectMatchingShadowHostRules(ElementRuleCollector&);
   void CollectMatchingSlottedRules(ElementRuleCollector&);
   void CollectMatchingPartPseudoRules(ElementRuleCollector&,
-                                      PartNames& part_names,
+                                      PartNames* part_names,
                                       bool for_shadow_pseudo);
   void MatchPageRules(PageRuleCollector&);
   void CollectFeaturesTo(RuleFeatureSet&,
@@ -116,7 +118,8 @@ class CORE_EXPORT ScopedStyleResolver final
   bool KeyframeStyleShouldOverride(
       const StyleRuleKeyframes* new_rule,
       const StyleRuleKeyframes* existing_rule) const;
-  void AddPositionFallbackRules(const RuleSet&);
+  void AddPositionTryRules(const RuleSet&);
+  void AddFunctionRules(const RuleSet&);
 
   CounterStyleMap& EnsureCounterStyleMap();
 
@@ -135,9 +138,12 @@ class CORE_EXPORT ScopedStyleResolver final
       HeapHashMap<AtomicString, Member<StyleRuleKeyframes>>;
   KeyframesRuleMap keyframes_rule_map_;
 
-  using PositionFallbackRuleMap =
-      HeapHashMap<AtomicString, Member<StyleRulePositionFallback>>;
-  PositionFallbackRuleMap position_fallback_rule_map_;
+  using PositionTryRuleMap =
+      HeapHashMap<AtomicString, Member<StyleRulePositionTry>>;
+  PositionTryRuleMap position_try_rule_map_;
+
+  using FunctionRuleMap = HeapHashMap<String, Member<StyleRuleFunction>>;
+  FunctionRuleMap function_rule_map_;
 
   // Multiple entries are created pointing to the same
   // StyleRuleFontFeatureValues for each mentioned family name in the

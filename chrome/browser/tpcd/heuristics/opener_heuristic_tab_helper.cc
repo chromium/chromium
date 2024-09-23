@@ -66,7 +66,8 @@ void OpenerHeuristicTabHelper::InitPopup(
   popup_observer_ =
       std::make_unique<PopupObserver>(web_contents(), popup_url, opener);
 
-  DIPSService* dips = DIPSService::Get(web_contents()->GetBrowserContext());
+  DIPSServiceImpl* dips =
+      DIPSServiceImpl::Get(web_contents()->GetBrowserContext());
   if (!dips) {
     // If DIPS is disabled, we can't look up past interaction.
     // TODO(rtarpine): consider falling back to SiteEngagementService.
@@ -243,7 +244,7 @@ void OpenerHeuristicTabHelper::PopupObserver::DidFinishNavigation(
     if (navigation_handle->GetRedirectChain().size() > 1) {
       // Get a source id for the URL the popup was originally opened with,
       // even though the user was redirected elsewhere.
-      initial_source_id_ = GetInitialRedirectSourceId(navigation_handle);
+      initial_source_id_ = dips::GetInitialRedirectSourceId(navigation_handle);
     } else {
       // No redirect happened, get the source id for the committed page.
       initial_source_id_ = navigation_handle->GetNextPageUkmSourceId();
@@ -318,7 +319,8 @@ void OpenerHeuristicTabHelper::OnCookiesAccessed(
 void OpenerHeuristicTabHelper::OnCookiesAccessed(
     const ukm::SourceId& source_id,
     const content::CookieAccessDetails& details) {
-  DIPSService* dips = DIPSService::Get(web_contents()->GetBrowserContext());
+  DIPSServiceImpl* dips =
+      DIPSServiceImpl::Get(web_contents()->GetBrowserContext());
   if (!dips) {
     // If DIPS is disabled, we can't look up past popup events.
     // TODO(rtarpine): consider falling back to SiteEngagementService.
@@ -350,10 +352,12 @@ void OpenerHeuristicTabHelper::EmitPostPopupCookieAccess(
       GetClock()->Now() - value->last_popup_time, base::Days(30),
       base::BindRepeating(&base::TimeDelta::InHours)
           .Then(base::BindRepeating([](int64_t t) { return t; })));
+  OptionalBool is_ad_tagged_cookie = IsAdTaggedCookieForHeuristics(details);
 
   ukm::builders::OpenerHeuristic_PostPopupCookieAccess(source_id)
       .SetAccessId(value->access_id)
       .SetAccessSucceeded(!details.blocked_by_policy)
+      .SetIsAdTagged(static_cast<int64_t>(is_ad_tagged_cookie))
       .SetHoursSincePopupOpened(hours_since_opener)
       .Record(ukm::UkmRecorder::Get());
 }
@@ -367,8 +371,8 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevelAndCreateGrant(
   uint64_t access_id = base::RandUint64();
 
   if (should_record_popup_and_maybe_grant) {
-    if (DIPSService* dips =
-            DIPSService::Get(web_contents()->GetBrowserContext())) {
+    if (DIPSServiceImpl* dips =
+            DIPSServiceImpl::Get(web_contents()->GetBrowserContext())) {
       dips->storage()
           ->AsyncCall(&DIPSStorage::WritePopup)
           .WithArgs(GetSiteForDIPS(opener_url_), GetSiteForDIPS(popup_url),
@@ -397,7 +401,9 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevelAndCreateGrant(
 void OpenerHeuristicTabHelper::PopupObserver::MaybeCreateOpenerHeuristicGrant(
     const GURL& url,
     base::TimeDelta grant_duration) {
-  if (!grant_duration.is_positive()) {
+  if (!base::FeatureList::IsEnabled(
+          content_settings::features::kTpcdHeuristicsGrants) ||
+      !grant_duration.is_positive()) {
     return;
   }
 

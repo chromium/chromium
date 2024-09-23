@@ -47,10 +47,10 @@ TEST_F(ScopedServicePublisherTest, OutgoingDirectory) {
   // Existing channels remain valid after the publisher goes out of scope.
   EXPECT_EQ(VerifyTestInterface(client_a), ZX_OK);
 
-  // New connections attempts will be dropped.
+  // Verify that the service is no longer published.
   auto client_b =
       test_context_.published_services()->Connect<testfidl::TestInterface>();
-  EXPECT_EQ(VerifyTestInterface(client_b), ZX_ERR_PEER_CLOSED);
+  EXPECT_EQ(VerifyTestInterface(client_b), ZX_ERR_NOT_FOUND);
 }
 
 TEST_F(ScopedServicePublisherTest, PseudoDir) {
@@ -73,9 +73,9 @@ TEST_F(ScopedServicePublisherTest, PseudoDir) {
   // Existing channels remain valid after the publisher goes out of scope.
   EXPECT_EQ(VerifyTestInterface(client_a), ZX_OK);
 
-  // New connection attempts will be dropped.
+  // Verify that the service is no longer published.
   auto client_b = services.Connect<testfidl::TestInterface>();
-  EXPECT_EQ(VerifyTestInterface(client_b), ZX_ERR_PEER_CLOSED);
+  EXPECT_EQ(VerifyTestInterface(client_b), ZX_ERR_NOT_FOUND);
 }
 
 }  // namespace base

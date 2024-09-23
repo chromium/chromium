@@ -4,9 +4,10 @@
 
 #include "chrome/updater/win/setup/setup_util.h"
 
+#include <windows.h>
+
 #include <regstr.h>
 #include <shlobj.h>
-#include <windows.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
@@ -39,7 +40,9 @@
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/task_scheduler.h"
+#include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
+#include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/win_constants.h"
 
 namespace updater {
@@ -48,8 +51,8 @@ namespace {
 std::wstring CreateRandomTaskName(UpdaterScope scope) {
   GUID random_guid = {0};
   return SUCCEEDED(::CoCreateGuid(&random_guid))
-             ? base::StrCat({GetTaskNamePrefix(scope),
-                             base::win::WStringFromGUID(random_guid)})
+             ? base::StrCat(
+                   {GetTaskNamePrefix(scope), StringFromGuid(random_guid)})
              : std::wstring();
 }
 
@@ -71,7 +74,7 @@ void AddInstallComProgIdWorkItems(UpdaterScope scope,
                                   WorkItem::kWow64Default);
     list->AddSetRegValueWorkItem(root, progid_reg_path + L"\\CLSID",
                                  WorkItem::kWow64Default, L"",
-                                 base::win::WStringFromGUID(clsid), true);
+                                 StringFromGuid(clsid), true);
   }
 }
 
@@ -148,6 +151,7 @@ std::vector<std::pair<IID, std::wstring>> GetActiveInterfaces(
                 INTERFACE_PAIR(IPolicyStatusUser),
                 INTERFACE_PAIR(IPolicyStatus2User),
                 INTERFACE_PAIR(IPolicyStatus3User),
+                INTERFACE_PAIR(IPolicyStatus4User),
                 INTERFACE_PAIR(IPolicyStatusValueUser),
             };
           case UpdaterScope::kSystem:
@@ -170,9 +174,12 @@ std::vector<std::pair<IID, std::wstring>> GetActiveInterfaces(
                 INTERFACE_PAIR(IPolicyStatusSystem),
                 INTERFACE_PAIR(IPolicyStatus2System),
                 INTERFACE_PAIR(IPolicyStatus3System),
+                INTERFACE_PAIR(IPolicyStatus4System),
                 INTERFACE_PAIR(IPolicyStatusValueSystem),
                 INTERFACE_PAIR(IProcessLauncher),
+                INTERFACE_PAIR(IProcessLauncherSystem),
                 INTERFACE_PAIR(IProcessLauncher2),
+                INTERFACE_PAIR(IProcessLauncher2System),
             };
         }
       }(),
@@ -301,7 +308,7 @@ void AddInstallComInterfaceWorkItems(HKEY root,
       const std::wstring path = iid_reg_path + L"\\TypeLib";
       list->AddCreateRegKeyWorkItem(root, path, key_flag);
       list->AddSetRegValueWorkItem(root, path, key_flag, L"",
-                                   base::win::WStringFromGUID(iid), true);
+                                   StringFromGuid(iid), true);
       list->AddSetRegValueWorkItem(root, path, key_flag, L"Version", L"1.0",
                                    true);
     }
@@ -348,9 +355,6 @@ void AddInstallServerWorkItems(HKEY root,
       kServerServiceSwitch, internal_service
                                 ? kServerUpdateServiceInternalSwitchValue
                                 : kServerUpdateServiceSwitchValue);
-  run_com_server_command.AppendSwitch(kEnableLoggingSwitch);
-  run_com_server_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                           kLoggingModuleSwitchValue);
   list->AddSetRegValueWorkItem(
       root, local_server32_reg_path, WorkItem::kWow64Default, L"",
       run_com_server_command.GetCommandLineString(), true);
@@ -397,9 +401,6 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
       kServerServiceSwitch, internal_service
                                 ? kServerUpdateServiceInternalSwitchValue
                                 : kServerUpdateServiceSwitchValue);
-  com_service_command.AppendSwitch(kEnableLoggingSwitch);
-  com_service_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                        kLoggingModuleSwitchValue);
 
   base::CommandLine com_switch(base::CommandLine::NO_PROGRAM);
   com_switch.AppendSwitch(kComServiceSwitch);
@@ -422,8 +423,12 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
 
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       GetServiceName(internal_service).c_str(),
-      GetServiceDisplayName(internal_service).c_str(), SERVICE_AUTO_START,
-      com_service_command, com_switch, UPDATER_KEY, clsids, {}));
+      GetLocalizedString(internal_service
+                             ? IDS_INTERNAL_UPDATER_SERVICE_DISPLAY_NAME_BASE
+                             : IDS_UPDATER_SERVICE_DISPLAY_NAME_BASE),
+      GetLocalizedString(IDS_UPDATER_SERVICE_DESCRIPTION_BASE),
+      SERVICE_AUTO_START, com_service_command, com_switch, UPDATER_KEY, clsids,
+      {}));
 
   for (const auto& clsid : clsids) {
     AddInstallComProgIdWorkItems(UpdaterScope::kSystem, clsid, list);
@@ -458,23 +463,19 @@ std::wstring GetComProgIdRegistryPath(const std::wstring& progid) {
 }
 
 std::wstring GetComServerClsidRegistryPath(REFCLSID clsid) {
-  return base::StrCat(
-      {L"Software\\Classes\\CLSID\\", base::win::WStringFromGUID(clsid)});
+  return base::StrCat({L"Software\\Classes\\CLSID\\", StringFromGuid(clsid)});
 }
 
 std::wstring GetComServerAppidRegistryPath(REFGUID appid) {
-  return base::StrCat(
-      {L"Software\\Classes\\AppID\\", base::win::WStringFromGUID(appid)});
+  return base::StrCat({L"Software\\Classes\\AppID\\", StringFromGuid(appid)});
 }
 
 std::wstring GetComIidRegistryPath(REFIID iid) {
-  return base::StrCat(
-      {L"Software\\Classes\\Interface\\", base::win::WStringFromGUID(iid)});
+  return base::StrCat({L"Software\\Classes\\Interface\\", StringFromGuid(iid)});
 }
 
 std::wstring GetComTypeLibRegistryPath(REFIID iid) {
-  return base::StrCat(
-      {L"Software\\Classes\\TypeLib\\", base::win::WStringFromGUID(iid)});
+  return base::StrCat({L"Software\\Classes\\TypeLib\\", StringFromGuid(iid)});
 }
 
 HRESULT RegisterTypeLibs(UpdaterScope scope, bool is_internal) {
@@ -580,6 +581,7 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       {__uuidof(IPolicyStatus), updater_legacy_index},
       {__uuidof(IPolicyStatus2), updater_legacy_index},
       {__uuidof(IPolicyStatus3), updater_legacy_index},
+      {__uuidof(IPolicyStatus4), updater_legacy_index},
       {__uuidof(IPolicyStatusValue), updater_legacy_index},
       {__uuidof(IProcessLauncher), updater_legacy_index},
       {__uuidof(IProcessLauncher2), updater_legacy_index},
@@ -594,6 +596,7 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       {__uuidof(IPolicyStatusUser), kUpdaterLegacyUserIndex},
       {__uuidof(IPolicyStatus2User), kUpdaterLegacyUserIndex},
       {__uuidof(IPolicyStatus3User), kUpdaterLegacyUserIndex},
+      {__uuidof(IPolicyStatus4User), kUpdaterLegacyUserIndex},
       {__uuidof(IPolicyStatusValueUser), kUpdaterLegacyUserIndex},
 
       // Updater legacy system typelib.
@@ -606,10 +609,13 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       {__uuidof(IPolicyStatusSystem), kUpdaterLegacySystemIndex},
       {__uuidof(IPolicyStatus2System), kUpdaterLegacySystemIndex},
       {__uuidof(IPolicyStatus3System), kUpdaterLegacySystemIndex},
+      {__uuidof(IPolicyStatus4System), kUpdaterLegacySystemIndex},
       {__uuidof(IPolicyStatusValueSystem), kUpdaterLegacySystemIndex},
+      {__uuidof(IProcessLauncherSystem), kUpdaterLegacySystemIndex},
+      {__uuidof(IProcessLauncher2System), kUpdaterLegacySystemIndex},
   };
   const auto index = kTypeLibIndexes.find(iid);
-  CHECK(index != kTypeLibIndexes.end()) << base::win::WStringFromGUID(iid);
+  CHECK(index != kTypeLibIndexes.end()) << StringFromGuid(iid);
   return index->second;
 }
 
@@ -636,13 +642,15 @@ bool DeleteLegacyEntriesPerUser() {
   // registered for system since r1154562. So the code below removes these
   // interfaces from the user hive.
   bool success = true;
-  for (const auto& iid :
-       {__uuidof(IProcessLauncher), __uuidof(IProcessLauncher2)}) {
-    for (const auto& reg_path :
-         {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
-      if (!installer::DeleteRegistryKey(HKEY_CURRENT_USER, reg_path,
-                                        WorkItem::kWow64Default)) {
-        success = false;
+  for (REGSAM bitness : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+    for (const auto& iid :
+         {__uuidof(IProcessLauncher), __uuidof(IProcessLauncher2)}) {
+      for (const auto& reg_path :
+           {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
+        if (!installer::DeleteRegistryKey(HKEY_CURRENT_USER, reg_path,
+                                          bitness)) {
+          success = false;
+        }
       }
     }
   }

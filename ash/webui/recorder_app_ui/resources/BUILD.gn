@@ -1,0 +1,142 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ash/webui/recorder_app_ui/resources/components/components.gni")
+import("//ash/webui/recorder_app_ui/resources/core/core.gni")
+import("//ash/webui/recorder_app_ui/resources/images/images.gni")
+import("//ash/webui/recorder_app_ui/resources/pages/pages.gni")
+import("//ash/webui/recorder_app_ui/resources/platforms/platforms.gni")
+import("//ash/webui/recorder_app_ui/resources/static/static.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash)
+
+action("gen_images_js") {
+  script = "scripts/gen_images_js.py"
+
+  image_paths = []
+  foreach(image, images) {
+    image_paths += [ "images/$image" ]
+  }
+
+  inputs = image_paths
+
+  outputs = [ "$target_gen_dir/images/images.js" ]
+  response_file_contents = rebase_path(image_paths)
+  args = [
+    "--output_file",
+    rebase_path(outputs[0], root_build_dir),
+    "--images_file={{response_file_name}}",
+    "--root_dir",
+    rebase_path("images"),
+  ]
+}
+
+generated_grdp_file = "$target_gen_dir/generated.grdp"
+
+generate_grd("build_generated_grdp") {
+  deps = [ ":gen_images_js" ]
+  grd_prefix = "generated"
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+  input_files = [ "images/images.js" ]
+  out_grd = generated_grdp_file
+}
+
+static_grdp_file = "$target_gen_dir/static.grdp"
+
+# Static files without any processing. Note that we don't use the static_files
+# in build_webui, since that would run preprocess step on anything that is not
+# .jpg, .png or .svg.
+generate_grd("build_static_grdp") {
+  grd_prefix = "static"
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = []
+  foreach(file, static_files) {
+    input_files += [ "static/$file" ]
+  }
+  out_grd = static_grdp_file
+}
+
+build_webui("build") {
+  grd_prefix = "recorder_app"
+
+  # The name collide with static_files from static.gni, so we need to set to []
+  # first before assigning new value...
+  static_files = []
+  static_files = [ "index.html" ]
+  non_web_component_files = [ "init.ts" ]
+
+  # Note that since we don't use separate .html/.css file for template in
+  # components, all components/pages files are under non_web_component_files
+  # even though they're actually lit components.
+
+  foreach(file, component_files) {
+    non_web_component_files += [ "components/$file" ]
+  }
+
+  foreach(file, page_files) {
+    non_web_component_files += [ "pages/$file" ]
+  }
+
+  foreach(file, platform_files) {
+    non_web_component_files += [ "platforms/$file" ]
+  }
+
+  foreach(file, core_files) {
+    non_web_component_files += [ "core/$file" ]
+  }
+
+  ts_definitions = [
+    "core/externs.d.ts",
+    "images/images.d.ts",
+  ]
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//third_party/cros-components:cros_components_ts",
+    "//third_party/material_web_components:bundle_lit_ts",
+    "//third_party/material_web_components:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  ts_tsconfig_base = "tsconfig_base.json"
+
+  images_dir = rebase_path("images", target_gen_dir)
+
+  # This is needed so the build_ts compilation can use the images.d.ts file as
+  # dependency, and don't need to refer to the generated images.js file.
+  ts_path_mappings = [ "/images/*|$images_dir/*" ]
+
+  mojo_files = [
+    "$root_gen_dir/services/on_device_model/public/mojom/on_device_model.mojom-webui.ts",
+    "$root_gen_dir/services/on_device_model/public/mojom/on_device_model_service.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/recorder_app_ui/mojom/recorder_app.mojom-webui.ts",
+    "$root_gen_dir/chromeos/services/machine_learning/public/mojom/soda.mojom-webui.ts",
+  ]
+
+  mojo_files_deps = [
+    "//ash/webui/recorder_app_ui/mojom:mojom_ts__generator",
+    "//chromeos/services/machine_learning/public/mojom:soda_ts__generator",
+    "//services/on_device_model/public/mojom:mojom_ts__generator",
+  ]
+
+  mojo_base_path = "/mojom/"
+
+  extra_grdp_deps = [
+    ":build_generated_grdp",
+    ":build_static_grdp",
+  ]
+  extra_grdp_files = [
+    generated_grdp_file,
+    static_grdp_file,
+  ]
+
+  grit_output_dir = target_gen_dir
+
+  webui_context_type = "trusted"
+}

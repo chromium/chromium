@@ -70,6 +70,7 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
   void FlushProtocolNotifications();
   void DebuggerPaused();
   void DebuggerResumed();
+  void BringDevToolsWindowToFocus();
   // For workers, we use the IO thread similar to DevToolsSession::IOSession to
   // ensure that we can always interrupt a worker that is stuck in JS. We don't
   // use an associated channel for workers, meaning we don't have the ordering
@@ -133,6 +134,7 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
       bool client_is_trusted,
       const WTF::String& session_id,
       bool session_waits_for_debugger);
+  void DetachDevToolsSession(DevToolsSession* session);
   void InspectElementImpl(const gfx::Point& point);
   void ReportChildTargetsImpl(bool report,
                               bool wait_for_debugger,

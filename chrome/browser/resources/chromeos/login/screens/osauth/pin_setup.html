@@ -10,14 +10,20 @@ found in the LICENSE file.
     margin-top: 37px;
   }
 </style>
+
 <oobe-adaptive-dialog id="setup" role="dialog" for-step="start,confirm">
   <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>
-  <h1 slot="title" for-step="start" aria-live="polite">
-    <div hidden="[[isChildAccount]]">
-      [[i18nDynamic(locale, 'discoverPinSetupTitle1')]]
+  <h1 id="setupTitle" slot="title" for-step="start" aria-live="polite">
+    <div hidden="[[!usingPinAsMainSignInFactor]]">
+      [[i18nDynamic(locale, 'discoverPinSetupPinAsMainFactorTitle')]]
     </div>
-    <div hidden="[[!isChildAccount]]">
-      [[i18nDynamic(locale, 'discoverPinSetupTitle1ForChild')]]
+    <div hidden="[[usingPinAsMainSignInFactor]]">
+      <div hidden="[[isChildAccount]]">
+        [[i18nDynamic(locale, 'discoverPinSetupTitle1')]]
+      </div>
+      <div hidden="[[!isChildAccount]]">
+        [[i18nDynamic(locale, 'discoverPinSetupTitle1ForChild')]]
+      </div>
     </div>
   </h1>
   <h1 slot="title" for-step="confirm" aria-live="polite">
@@ -28,12 +34,17 @@ found in the LICENSE file.
       [[i18nDynamic(locale, 'discoverPinSetupTitle2ForChild')]]
     </div>
   </h1>
-  <div slot="subtitle" for-step="start">
-    <div hidden="[[isChildAccount]]">
-      [[i18nDynamic(locale, 'discoverPinSetupSubtitle1')]]
+  <div id="setupSubtitle" slot="subtitle" for-step="start">
+    <div hidden="[[!usingPinAsMainSignInFactor]]">
+      [[i18nDynamic(locale, 'discoverPinSetupPinAsMainFactorSubtitle')]]
     </div>
-    <div hidden="[[!isChildAccount]]">
-      [[i18nDynamic(locale, 'discoverPinSetupSubtitle1ForChild')]]
+    <div hidden="[[usingPinAsMainSignInFactor]]">
+      <div hidden="[[isChildAccount]]">
+        [[i18nDynamic(locale, 'discoverPinSetupSubtitle1')]]
+      </div>
+      <div hidden="[[!isChildAccount]]">
+        [[i18nDynamic(locale, 'discoverPinSetupSubtitle1ForChild')]]
+      </div>
     </div>
   </div>
   <div slot="content" class="flex-grow layout vertical center
@@ -56,7 +67,7 @@ found in the LICENSE file.
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="setupSkipButton" on-click="onSkipButton"
-        text-key="discoverPinSetupSkip"
+        text-key="[[getSkipButtonLabel(usingPinAsMainSignInFactor)]]"
         for-step="start, confirm">
     </oobe-text-button>
     <oobe-next-button inverse
@@ -66,6 +77,7 @@ found in the LICENSE file.
         for-step="start, confirm"></oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
+
 <oobe-adaptive-dialog id="doneDialog" role="dialog" for-step="done"
     footer-shrinkable>
   <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>

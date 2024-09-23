@@ -5,11 +5,11 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_table_view_controller.h"
 
 #import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -18,9 +18,8 @@
 class MagicStackHalfSheetTableViewControllerUnittest : public PlatformTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({kMagicStack, kSafetyCheckMagicStack,
-                                           kTabResumption, kIOSParcelTracking},
-                                          {});
+    scoped_feature_list_.InitWithFeatures(
+        {kSafetyCheckMagicStack, kTabResumption}, {});
 
     view_controller_ = [[MagicStackHalfSheetTableViewController alloc] init];
   }
@@ -28,7 +27,7 @@ class MagicStackHalfSheetTableViewControllerUnittest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  IOSChromeScopedTestingLocalState local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   MagicStackHalfSheetTableViewController* view_controller_;
 };
 
@@ -40,6 +39,10 @@ TEST_F(MagicStackHalfSheetTableViewControllerUnittest, TestLoadModel) {
   [view_controller_ setSafetyCheckDisabled:NO];
   [view_controller_ setTabResumptionDisabled:NO];
   [view_controller_ setParcelTrackingDisabled:NO];
+
+  // Parcel tracking is only enabled in the US.
+  IOSChromeScopedTestingVariationsService scoped_variations_service;
+  scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
 
   [view_controller_ loadViewIfNeeded];
 

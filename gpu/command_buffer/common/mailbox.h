@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef GPU_COMMAND_BUFFER_COMMON_MAILBOX_H_
 #define GPU_COMMAND_BUFFER_COMMON_MAILBOX_H_
 
@@ -17,19 +22,7 @@
 #define GL_MAILBOX_SIZE_CHROMIUM 16
 #endif
 
-namespace content {
-class PPB_Graphics3D_Impl;
-}
-
-namespace media {
-class GLES2DecoderHelperImpl;
-}
-
 namespace gpu {
-
-namespace gles2 {
-class GLES2Implementation;
-}
 
 // Importance to use in tracing. Higher values get the memory cost attributed,
 // and equal values share the cost. We want the client to "win" over the
@@ -40,13 +33,11 @@ enum class TracingImportance : int {
   kClientOwner = 2,
 };
 
-// A mailbox is an unguessable name that references texture image data.
-// This name can be passed across processes permitting one context to share
-// texture image data with another. The mailbox name consists of a random
+// A mailbox is an unguessable name that references a SharedImage.
+// This name can be passed across processes permitting one process to share
+// a SharedImage with another. The mailbox name consists of a random
 // set of bytes, optionally with a checksum (in debug mode) to verify the
 // name is valid.
-// See src/gpu/GLES2/extensions/CHROMIUM/CHROMIUM_texture_mailbox.txt for more
-// details.
 struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
   using Name = int8_t[GL_MAILBOX_SIZE_CHROMIUM];
 
@@ -61,18 +52,8 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
   void SetZero();
   void SetName(const int8_t* name);
 
-  // Indicates whether this mailbox is used with the SharedImage system.
-  bool IsSharedImage() const;
-
-  // Generate a unique unguessable mailbox name for use with the SharedImage
-  // system.
-  static Mailbox GenerateForSharedImage();
-
-  // A temporary solution until when kSharedBitmapToSharedImage is enabled by
-  // default and the legacy ShareBitmap path is removed.
-  static Mailbox GenerateLegacyMailboxForSharedBitmap() {
-    return GenerateLegacyMailbox();
-  }
+  // Generate a unique unguessable mailbox name.
+  static Mailbox Generate();
 
   // Verify that the mailbox was created through Mailbox::Generate. This only
   // works in Debug (always returns true in Release). This is not a secure
@@ -81,38 +62,24 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
 
   std::string ToDebugString() const;
 
+  bool operator==(const Mailbox& other) const;
+  std::strong_ordering operator<=>(const Mailbox& other) const;
+
   Name name;
-
-  bool operator<(const Mailbox& other) const {
-    return memcmp(this, &other, sizeof other) < 0;
-  }
-  bool operator==(const Mailbox& other) const {
-    return memcmp(this, &other, sizeof other) == 0;
-  }
-  bool operator!=(const Mailbox& other) const {
-    return !operator==(other);
-  }
-
- private:
-  // Generate a unique unguessable mailbox name for use with the legacy mailbox
-  // system.
-  // NOTE: We are in the process of eliminating this method. DO NOT ADD ANY NEW
-  // USAGES - instead, reach out to shared-image-team@ with your use case. See
-  // crbug.com/1273084.
-  static Mailbox GenerateLegacyMailbox();
-
-  friend class content::PPB_Graphics3D_Impl;
-  friend class gles2::GLES2Implementation;
-  friend class media::GLES2DecoderHelperImpl;
-
- public:
-  // Generate a legacy mailbox for usage in tests of production code that
-  // still interacts with the legacy mailbox system.
-  static Mailbox GenerateLegacyMailboxForTesting() {
-    return GenerateLegacyMailbox();
-  }
 };
 
 }  // namespace gpu
+
+template <>
+struct std::hash<gpu::Mailbox> {
+  std::size_t operator()(const gpu::Mailbox& m) const noexcept {
+    // As the name is cryptographically random bytes, the first few bytes
+    // should be more than sufficient as a hash.
+    return static_cast<size_t>(m.name[0]) |
+           (static_cast<size_t>(m.name[1]) << 8) |
+           (static_cast<size_t>(m.name[2]) << 16) |
+           (static_cast<size_t>(m.name[3]) << 24);
+  }
+};
 
 #endif  // GPU_COMMAND_BUFFER_COMMON_MAILBOX_H_

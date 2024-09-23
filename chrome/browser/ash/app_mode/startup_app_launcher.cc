@@ -230,7 +230,7 @@ void StartupAppLauncher::OnInstallSuccess() {
 
 void StartupAppLauncher::LaunchApp() {
   if (state_ != LaunchState::kReadyToLaunch) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     SYSLOG(ERROR) << "LaunchApp() called but launcher is not initialized.";
   }
 

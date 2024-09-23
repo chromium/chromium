@@ -1,0 +1,111 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.screens_common.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+
+// Interface for the AI intro screen. Lives in the browser process.
+// A renderer uses this to invoke methods that are implemented in
+// the browser process.
+interface AiIntroPageHandler {
+  // Emits a continue button clicked.
+  OnNextClicked();
+};
+
+// Interface for the AI intro screen. Lives in the render process.
+// Implemented in Typescript and used by the page handler
+// to set information.
+interface AiIntroPage {
+  // Invoked to set play and pause the carousel element animation depending on
+  // cvox status.
+  SetAutoTransition(bool value);
+};
+
+// Interface for the app downloading screen. Lives in the browser process.
+// A renderer uses this to invoke methods that are implemented in
+// the browser process.
+interface AppDownloadingPageHandler {
+  // Emits a continue button clicked.
+  OnContinueClicked();
+};
+
+// Interface for the drive pinning screen. Lives in the browser process.
+// A renderer uses this to invoke methods that are implemented in
+// the browser process.
+interface DrivePinningPageHandler {
+  // Emits a Return button clicked specifying the user toggle choice.
+  OnReturnClicked(bool enable_drive_pinning);
+
+  // Emits a Next Button clicked specifying the user toggle choice.
+  OnNextClicked(bool enable_drive_pinning);
+};
+
+// Interface for the drive pinning screen. Lives in the render process.
+// Implemented in Typescript and used by the page handler
+// to set information.
+interface DrivePinningPage {
+  // Invoked to set the required and available space on the drive
+  // pinning screen.
+  SetRequiredSpaceInfo(mojo_base.mojom.String16 required_space,
+                       mojo_base.mojom.String16 free_space);
+};
+
+// Interface for the gaia info screen. Lives in the browser process.
+// A renderer uses this to invoke methods that are implemented in
+// the browser process.
+interface GaiaInfoPageHandler {
+  // Describes the selected flow type in gaia info screen.
+  enum UserCreationFlowType {
+    kManual = 0,
+    kQuickstart = 1,
+  };
+
+  // Emits a Back button clicked.
+  OnBackClicked();
+
+  // Emits a Next Button clicked specifying the user flow choice.
+  OnNextClicked(UserCreationFlowType user_flow);
+};
+
+// Interface for the Gaia info screen. Lives in the render process.
+// Implemented in Typescript and used by the page handler
+// to send updates.
+interface GaiaInfoPage {
+  // Invoked to set a quickstart entry point to gaia_info screen.
+  SetQuickStartVisible();
+};
+
+// Interface for the gesture navigation screen. Lives in the browser process.
+// A renderer uses this to invoke methods that are implemented in
+// the browser process.
+interface GestureNavigationPageHandler {
+  // Describes the steps of gesture navigation pages.
+  enum GesturePages {
+    kIntro = 0,
+    kHome = 1,
+    kOverview = 2,
+    kBack = 3,
+  };
+
+  // Emits a Page change event with the gesture page.
+  OnPageChange(GesturePages page);
+
+  // Emits a Next button clicked.
+  OnSkipClicked();
+
+  // Emits a Exit Button clicked.
+  OnExitClicked();
+};
+
+// Interface for the gemini intro screen. Lives in the browser process.
+// A renderer uses this to invoke methods that are implemented in
+// the browser process.
+interface GeminiIntroPageHandler {
+  // Emits a Back button clicked.
+  OnBackClicked();
+
+  // Emits a Next Button clicked.
+  OnNextClicked();
+};

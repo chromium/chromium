@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Pajisjet Chromebit</translation>
 <translation id="3085752524577180175">Strehuesi i protokollit SOCKS</translation>
 <translation id="3104793765551262433">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bllokuar nga administratori yt, detajet</translation>
-<translation id="3113153474486991170">"<ph name="PATH" />" nuk mund të hapej nga kjo vendndodhje. Kopjoje te "Skedarët e mi" për ta hapur.</translation>
 <translation id="3113592018909187986">Ke 1 përpjekje të mbetur. Nuk do të mund ta përdorësh këtë rrjet derisa të konfigurosh një kod të ri PIN.</translation>
 <translation id="3124404833828281817">Person duke ëndërruar me sy hapur</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Anuloje <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, i paaktivizuar, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detajet</translation>
 <translation id="3691184985318546178">Sinhala</translation>
+<translation id="3702842351052426940">Karta SIM ose profili i kartës eSIM mund të jetë çaktivizuar. Provo ta zëvendësosh kartën SIM ose të ndërrosh profilet e kartës eSIM.</translation>
 <translation id="3722341589402358578">Ndodhi një gabim. Disa artikuj mund të mos jenë zhvendosur te koshi.</translation>
 <translation id="3726463242007121105">Kjo pajisje nuk mund të hapet sepse sistemi i saj i skedarëve nuk mbështetet.</translation>
 <translation id="3727148787322499904">Ndryshimi i këtij cilësimi do të ndikojë në të gjitha rrjetet e ndara</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Ky përfaqësues zbatohet nga administratori yt</translation>
 <translation id="3830674330436234648">Luajtja e padisponueshme</translation>
 <translation id="383652340667548381">Serbisht</translation>
+<translation id="3839045880592694915">Modemi yt nuk lejohet që të lidhet nga operatori celular. Kontakto me operatorin celular për më shumë detaje.</translation>
 <translation id="385051799172605136">Prapa</translation>
-<translation id="3851491607336266896">Lidhur, me lidhshmëri të kufizuar</translation>
 <translation id="3855472144336161447">Gjermanisht Neo 2</translation>
 <translation id="3858860766373142691">Emri</translation>
 <translation id="3866249974567520381">Përshkrimi</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Skedarët e Microsoft të hapur së fundi janë zhvendosur tek OneDrive</translation>
 <translation id="4002066346123236978">Titulli</translation>
 <translation id="4017788180641807848">Anglisht (SHBA) me tastierën Workman</translation>
-<translation id="4019998208269143058">Gozhdo te skedarët e shpejtë</translation>
 <translation id="4040753847560036377">Kodi PUK i pasaktë</translation>
 <translation id="4057991113334098539">Po aktivizohet...</translation>
 <translation id="4092890906744441904">Irlandisht</translation>
+<translation id="4101601646343868113">Identifikohu në rrjetin tënd celular dhe konfirmo që plani i të dhënave celulare është aktiv</translation>
 <translation id="4124731372776320263">Po sinkronizohet 1 skedar i "Diskut"</translation>
 <translation id="4124935795427217608">Njëbrirësh</translation>
 <translation id="4131235941541910880">Zhvendosi artikujt që nuk të duhen te koshi.</translation>
@@ -458,7 +458,7 @@
 <translation id="4656777537938206294">Bëji skedarët të disponueshëm offline</translation>
 <translation id="4658782175094886150">Person në dëborë</translation>
 <translation id="4669606053856530811">Anëtarët e "<ph name="SOURCE_NAME" />" do të humbin qasjen në rast se këta artikuj nuk ndahen me ta.</translation>
-<translation id="467809019005607715">Google Slides</translation>
+<translation id="467809019005607715">Diapozitivat e Google</translation>
 <translation id="4690246192099372265">Suedisht</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Majmun</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Tamilisht me tastierë Tamil99</translation>
 <translation id="5633226425545095130">Zhvendosja e këtij artikulli do ta ndajë atë me të gjithë ata që mund ta shikojnë dosjen e ndarë "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Dëgjo</translation>
+<translation id="5650895901941743674">Kontrollo konfigurimin e APN-së</translation>
 <translation id="5669691691057771421">Fut kodin e ri PIN</translation>
 <translation id="5678784840044122290">Aplikacioni për Linux do të ofrohet në "Terminalin" tënd dhe mund dhe të shfaqë një ikonë te "Nisësi" yt.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nuk mund të shkëputet nga një arkiv ose disk virtual<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bateria e telefonit <ph name="BATTERY_STATUS" />%, lidhu</translation>
 <translation id="6269630227984243955">Malajzisht</translation>
 <translation id="6271903698064569429">Skedarët nuk mund të ngarkohen sepse nuk ka hapësirë ruajtëse të mjaftueshme te "<ph name="SHARED_DRIVE_NAME" />".</translation>
+<translation id="6279140785485544797">Plani yt i të dhënave celulare mund të ketë skaduar. Kontakto me operatorin celular për mbështetje.</translation>
 <translation id="6287852322318138013">Zgjidh një aplikacion për ta hapur këtë skedar</translation>
 <translation id="6295542640242147836">Kyç kartën SIM</translation>
 <translation id="6296410173147755564">Kodi PUK i pavlefshëm</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423">Arkiv <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Përshëndetje me dorë</translation>
 <translation id="6327785803543103246">Zbulimi automatik i përfaqësuesit të uebit</translation>
-<translation id="6337014272874260727">Zhgozhdo nga skedarët e shpejtë</translation>
 <translation id="6339145975392024142">Amerikane ndërkombëtare (PC)</translation>
 <translation id="6356685157277930264">Dritarja e komenteve për skedarët</translation>
 <translation id="6358884629796491903">Dragua</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Direktoria aktuale</translation>
 <translation id="6751256176799620176">U zgjodh 1 dosje</translation>
 <translation id="6755827872271341378">Pajisja Chrome OS Flex</translation>
+<translation id="6777029074498310250">Vizito <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> për më shumë informacione</translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6794539005637808366">Restauroje artikullin ose zvarrite te një dosje e re jashtë koshit</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Tamilisht me tastierë InScript</translation>
 <translation id="7088615885725309056">Më të vjetër</translation>
 <translation id="7103992300314999525">Maqedonisht</translation>
+<translation id="7104338189998813914">Ka një problem me qasjen te llogaria jote e OneDrive</translation>
 <translation id="7106346894903675391">Bli më shumë hapësirë ruajtëse...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;kërko në "Disk"&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kanadisht fonetike</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Prit vetëm një sekondë</translation>
 <translation id="7600126690270271294">Serbisht</translation>
 <translation id="7603724359189955920">Rrjeta</translation>
+<translation id="7624010287655004652">Kyçur nga një operator tjetër celular</translation>
 <translation id="7627790789328695202">Mos, <ph name="FILE_NAME" /> ekziston tashmë. Riemërtoje dhe provo sërish.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% i përfunduar.</translation>
 <translation id="7649070708921625228">Ndihma</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Lista e skedarëve ka ndryshuar në pamjen e miniaturës.</translation>
 <translation id="8601932370724196034">Skedar imazhi Crostini</translation>
 <translation id="8609695766746872526">Islandisht</translation>
+<translation id="8630384863424041081">Fut kodin PIN të kartës SIM ose kodin e parazgjedhur PIN të dhënë nga operatori yt celular. Kontakto me operatorin celular për mbështetje.</translation>
 <translation id="863903787380594467">Kodi PIN është i pasaktë. Të kanë mbetur edhe <ph name="RETRIES" /> përpjekje.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - porta</translation>
 <translation id="8656407365183407932">Skedarët e tu offline duhej të hiqeshin</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Ky skedar është konfidencial dhe objekt i kufizimeve nga politika e administratorit.</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8713112442029511308">Maltisht</translation>
-<translation id="8714138378966541668">Kyçur nga ofruesi</translation>
 <translation id="8714406895390098252">Biçikleta</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> u zgjodh.</translation>
 <translation id="872537912056138402">Kroatisht</translation>

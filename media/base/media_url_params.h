@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "media/base/media_export.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/storage_access_api/status.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -20,7 +21,7 @@ struct MEDIA_EXPORT MediaUrlParams {
   MediaUrlParams(const GURL& media_url,
                  const net::SiteForCookies& site_for_cookies,
                  const url::Origin& top_frame_origin,
-                 bool has_storage_access,
+                 net::StorageAccessApiStatus storage_access_api_status,
                  bool allow_credentials,
                  bool is_hls);
   MediaUrlParams(const MediaUrlParams& other);
@@ -39,7 +40,7 @@ struct MEDIA_EXPORT MediaUrlParams {
   url::Origin top_frame_origin;
 
   // Used to check for cookie access.
-  bool has_storage_access;
+  net::StorageAccessApiStatus storage_access_api_status;
 
   // True when the crossorigin mode is unspecified or set to "use-credentials",
   // false when it's "anonymous".

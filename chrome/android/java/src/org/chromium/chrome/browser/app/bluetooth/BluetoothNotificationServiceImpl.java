@@ -11,7 +11,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManagerDelegate;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 
 /**
  * Service that manages the Web Bluetooth notification when a website is either connected
@@ -43,7 +43,8 @@ public class BluetoothNotificationServiceImpl extends BluetoothNotificationServi
     public void onCreate() {
         mManager =
                 new BluetoothNotificationManager(
-                        new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()),
+                        BaseNotificationManagerProxyFactory.create(
+                                ContextUtils.getApplicationContext()),
                         mManagerDelegate);
         super.onCreate();
     }

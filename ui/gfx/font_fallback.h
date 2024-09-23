@@ -6,9 +6,9 @@
 #define UI_GFX_FONT_FALLBACK_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/gfx_export.h"
@@ -25,7 +25,7 @@ GFX_EXPORT std::vector<Font> GetFallbackFonts(const Font& font);
 // |true| if a fallback font was found.
 bool GFX_EXPORT GetFallbackFont(const Font& font,
                                 const std::string& locale,
-                                base::StringPiece16 text,
+                                std::u16string_view text,
                                 Font* result);
 
 }  // namespace gfx

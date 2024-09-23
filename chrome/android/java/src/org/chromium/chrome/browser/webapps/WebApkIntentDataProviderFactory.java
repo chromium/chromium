@@ -296,6 +296,7 @@ public class WebApkIntentDataProviderFactory {
                 shortNameId != 0
                         ? res.getString(shortNameId)
                         : IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.SHORT_NAME);
+        boolean hasCustomName = bundle.getBoolean(WebApkMetaDataKeys.HAS_CUSTOM_NAME, false);
 
         String scope = IntentUtils.safeGetString(bundle, WebApkMetaDataKeys.SCOPE);
 
@@ -399,6 +400,7 @@ public class WebApkIntentDataProviderFactory {
                 new WebappIcon(webApkPackageName, splashIconId),
                 name,
                 shortName,
+                hasCustomName,
                 displayMode,
                 orientation,
                 source,
@@ -478,6 +480,7 @@ public class WebApkIntentDataProviderFactory {
             WebappIcon splashIcon,
             String name,
             String shortName,
+            boolean hasCustomName,
             @DisplayMode.EnumType int displayMode,
             int orientation,
             int source,
@@ -564,7 +567,8 @@ public class WebApkIntentDataProviderFactory {
                         isSplashProvidedByWebApk,
                         shortcutItems,
                         webApkVersionCode,
-                        lastUpdateTime);
+                        lastUpdateTime,
+                        hasCustomName);
         boolean hasCustomToolbarColor = WebappIntentUtils.isLongColorValid(themeColor);
         int toolbarColor =
                 hasCustomToolbarColor
@@ -594,8 +598,7 @@ public class WebApkIntentDataProviderFactory {
             return ShortcutSource.UNKNOWN;
         }
         if (source == ShortcutSource.EXTERNAL_INTENT
-                && IntentHandler.determineExternalIntentSource(intent)
-                        == IntentHandler.ExternalAppId.CHROME) {
+                && IntentHandler.isExternalIntentSourceChrome(intent)) {
             return ShortcutSource.EXTERNAL_INTENT_FROM_CHROME;
         }
 

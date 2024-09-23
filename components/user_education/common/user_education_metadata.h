@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 
 namespace user_education {
 
@@ -39,7 +40,8 @@ struct Metadata {
       Platforms::kWindows, Platforms::kMac, Platforms::kLinux,
       Platforms::kChromeOSAsh, Platforms::kChromeOSLacros};
 
-  using FeatureSet = base::flat_set<const base::Feature*>;
+  using FeatureSet =
+      base::flat_set<raw_ptr<const base::Feature, CtnExperimental>>;
   using PlatformSet = base::flat_set<Platforms>;
 
   Metadata(int launch_milestone,

@@ -22,6 +22,16 @@ namespace device {
 // request.
 class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialUserEntity {
  public:
+  // Optional parameters used when serializing the request to CBOR.
+  struct SerializationOpts {
+    // If true, include an empty display name as a member of the public key
+    // credential user entity when serializing to CBOR.
+    // Empty display names result in CTAP1_ERR_INVALID_LENGTH on some security
+    // keys, but iPhones will refuse to make a passkey if they don't receive the
+    // display name.
+    bool include_empty_display_name = false;
+  };
+
   static std::optional<PublicKeyCredentialUserEntity> CreateFromCBORValue(
       const cbor::Value& cbor);
 
@@ -42,6 +52,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialUserEntity {
   std::vector<uint8_t> id;
   std::optional<std::string> name;
   std::optional<std::string> display_name;
+
+  // Options governing the serialization of the request to CBOR.
+  SerializationOpts serialization_options;
 };
 
 cbor::Value AsCBOR(const PublicKeyCredentialUserEntity&);

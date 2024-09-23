@@ -11,11 +11,14 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/metrics/power/power_metrics_constants.h"
@@ -58,11 +61,8 @@ std::unique_ptr<base::ProcessMetrics> CreateProcessMetrics(
 ProcessMonitor::Metrics SampleMetrics(base::ProcessMetrics& process_metrics) {
   ProcessMonitor::Metrics metrics;
 
-#if BUILDFLAG(IS_WIN)
-  metrics.cpu_usage = process_metrics.GetPreciseCPUUsage();
-#else
-  metrics.cpu_usage = process_metrics.GetPlatformIndependentCPUUsage();
-#endif
+  metrics.cpu_usage = base::OptionalFromExpected(
+      process_metrics.GetPlatformIndependentCPUUsage());
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)
@@ -78,7 +78,9 @@ ProcessMonitor::Metrics SampleMetrics(base::ProcessMetrics& process_metrics) {
 
 // Scales every metrics by |factor|.
 void ScaleMetrics(ProcessMonitor::Metrics* metrics, double factor) {
-  metrics->cpu_usage *= factor;
+  if (metrics->cpu_usage.has_value()) {
+    metrics->cpu_usage.value() *= factor;
+  }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)
@@ -94,16 +96,9 @@ ProcessMonitor::Metrics GetLastIntervalMetrics(
     base::ProcessMetrics& process_metrics,
     base::TimeDelta cumulative_cpu_usage) {
   ProcessMonitor::Metrics metrics;
-
-#if BUILDFLAG(IS_WIN)
-  metrics.cpu_usage = process_metrics.GetPreciseCPUUsage(cumulative_cpu_usage);
-#else
   metrics.cpu_usage =
       process_metrics.GetPlatformIndependentCPUUsage(cumulative_cpu_usage);
-#endif
-
   // TODO: Add other values in ProcessMonitor::Metrics.
-
   return metrics;
 }
 
@@ -117,25 +112,12 @@ MonitoredProcessType GetMonitoredProcessTypeForRenderProcess(
     return MonitoredProcessType::kRenderer;
   }
 
-  extensions::ProcessMap* extension_process_map =
-      extensions::ProcessMap::Get(browser_context);
-  DCHECK(extension_process_map);
-  std::set<std::string> extension_ids =
-      extension_process_map->GetExtensionsInProcess(host->GetID());
-
-  // We only collect more granular metrics when there's only one extension
-  // running in a given renderer, to reduce noise.
-  if (extension_ids.size() != 1)
-    return MonitoredProcessType::kRenderer;
-
-  extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(browser_context);
-
   const extensions::Extension* extension =
-      extension_registry->enabled_extensions().GetByID(*extension_ids.begin());
-
-  if (!extension)
-    return MonitoredProcessType::kRenderer;
+      extensions::ProcessMap::Get(browser_context)
+          ->GetEnabledExtensionByProcessID(host->GetID());
+  if (!extension) {
+    return kRenderer;
+  }
 
   return extensions::BackgroundInfo::HasPersistentBackgroundPage(extension)
              ? MonitoredProcessType::kExtensionPersistent
@@ -151,7 +133,7 @@ MonitoredProcessType GetMonitoredProcessTypeForNonRendererChildProcess(
     case content::PROCESS_TYPE_BROWSER:
     case content::PROCESS_TYPE_RENDERER:
       // Not a non-renderer child process.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kCount;
     case content::PROCESS_TYPE_GPU:
       return MonitoredProcessType::kGpu;
@@ -166,10 +148,14 @@ MonitoredProcessType GetMonitoredProcessTypeForNonRendererChildProcess(
   }
 }
 
-// Adds the values from |rhs| to |lhs|.
+// Adds the values from |rhs| to |lhs|. If both parameters have nullopt for
+// `cpu_usage`, the result will also have nullopt, otherwise the result will
+// have the sum of all non-nullopt `cpu_usage`.
 ProcessMonitor::Metrics& operator+=(ProcessMonitor::Metrics& lhs,
                                     const ProcessMonitor::Metrics& rhs) {
-  lhs.cpu_usage += rhs.cpu_usage;
+  if (lhs.cpu_usage.has_value() || rhs.cpu_usage.has_value()) {
+    lhs.cpu_usage = lhs.cpu_usage.value_or(0.0) + rhs.cpu_usage.value_or(0.0);
+  }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)
@@ -322,10 +308,12 @@ void ProcessMonitor::RenderProcessExited(
     return;
   }
 
-  // Remember the metrics from when the process exited.
-  const ProcessInfo& process_info = it->second;
-  exited_processes_metrics_[process_info.type] +=
-      GetLastIntervalMetrics(*process_info.process_metrics, info.cpu_usage);
+  // Remember the metrics from when the process exited, if available.
+  if (info.cpu_usage.has_value()) {
+    const ProcessInfo& process_info = it->second;
+    exited_processes_metrics_[process_info.type] += GetLastIntervalMetrics(
+        *process_info.process_metrics, info.cpu_usage.value());
+  }
 
   render_process_infos_.erase(it);
 }
@@ -415,11 +403,13 @@ void ProcessMonitor::OnBrowserChildProcessExited(
     return;
   }
 
-  DCHECK(it != browser_child_process_infos_.end());
-  // Remember the metrics from when the process exited.
-  const ProcessInfo& process_info = it->second;
-  exited_processes_metrics_[process_info.type] +=
-      GetLastIntervalMetrics(*process_info.process_metrics, info.cpu_usage);
+  CHECK(it != browser_child_process_infos_.end(), base::NotFatalUntil::M130);
+  // Remember the metrics from when the process exited, if available.
+  if (info.cpu_usage.has_value()) {
+    const ProcessInfo& process_info = it->second;
+    exited_processes_metrics_[process_info.type] += GetLastIntervalMetrics(
+        *process_info.process_metrics, info.cpu_usage.value());
+  }
 
   browser_child_process_infos_.erase(it);
 }

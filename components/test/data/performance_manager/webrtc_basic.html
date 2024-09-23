@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html language="en">
+
+<head>
+  <title>a.com</title>
+  <script language="javascript">
+    function onLoad() {
+      local_connection = new RTCPeerConnection();
+      send_channel = local_connection.createDataChannel("send_channel");
+
+      remote_connection = new RTCPeerConnection();
+
+      local_connection.onicecandidate = (e) =>
+        !e.candidate || remote_connection.addIceCandidate(e.candidate);
+
+      remote_connection.onicecandidate = (e) =>
+        !e.candidate || local_connection.addIceCandidate(e.candidate);
+
+      local_connection
+        .createOffer()
+        .then((offer) => local_connection.setLocalDescription(offer))
+        .then(() => remote_connection.setRemoteDescription(local_connection.localDescription))
+        .then(() => remote_connection.createAnswer())
+        .then((answer) => remote_connection.setLocalDescription(answer))
+        .then(() => local_connection.setRemoteDescription(remote_connection.localDescription));
+    }
+  </script>
+</head>
+
+<body onload="onLoad();">
+  A page that sets up a WebRTC connection with a "connected" RTCDataChannel.
+</body>
+
+</html>

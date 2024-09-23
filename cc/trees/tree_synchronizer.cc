@@ -55,7 +55,7 @@ static bool LayerHasValidPropertyTreeIndices(const LayerImpl* layer) {
 static bool LayerWillPushProperties(const LayerTreeImpl* tree,
                                     const LayerImpl* layer) {
   return base::Contains(tree->LayersThatShouldPushProperties(), layer) ||
-         // TODO(crbug.com/303943): Stop always pushing PictureLayerImpl
+         // TODO(crbug.com/40335690): Stop always pushing PictureLayerImpl
          // properties.
          base::Contains(tree->picture_layers(), layer);
 }
@@ -81,7 +81,7 @@ void PushLayerList(OwnedLayerImplMap* old_layers,
   for (const auto* layer : unsafe_state) {
     std::unique_ptr<LayerImpl> layer_impl(
         ReuseOrCreateLayerImpl(old_layers, layer, tree_impl));
-    // TODO(crbug.com/1229805): remove diagnostic CHECK
+    // TODO(crbug.com/40778609): remove diagnostic CHECK
     CHECK(layer_impl);
 
 #if DCHECK_IS_ON()
@@ -106,7 +106,7 @@ void PushLayerList(OwnedLayerImplMap* old_layers,
   for (const auto* layer : *host) {
     std::unique_ptr<LayerImpl> layer_impl(
         ReuseOrCreateLayerImpl(old_layers, layer, tree_impl));
-    // TODO(crbug.com/1229805): remove diagnostic CHECK
+    // TODO(crbug.com/40778609): remove diagnostic CHECK
     CHECK(layer_impl);
 
 #if DCHECK_IS_ON()
@@ -195,13 +195,20 @@ static void PushLayerPropertiesInternal(Iterator source_layers_begin,
 void TreeSynchronizer::PushLayerProperties(LayerTreeImpl* pending_tree,
                                            LayerTreeImpl* active_tree) {
   const auto& layers = pending_tree->LayersThatShouldPushProperties();
-  // TODO(crbug.com/303943): Stop always pushing PictureLayerImpl properties.
   const auto& picture_layers = pending_tree->picture_layers();
+  const size_t push_count =
+      layers.size() + (pending_tree->always_push_properties_on_picture_layers()
+                           ? picture_layers.size()
+                           : 0);
   TRACE_EVENT1("cc", "TreeSynchronizer::PushLayerPropertiesTo.Impl",
-               "layer_count", layers.size() + picture_layers.size());
+               "layer_count", push_count);
   PushLayerPropertiesInternal(layers.begin(), layers.end(), active_tree);
-  PushLayerPropertiesInternal(picture_layers.begin(), picture_layers.end(),
-                              active_tree);
+  if (pending_tree->always_push_properties_on_picture_layers()) {
+    // TODO(crbug.com/40335690): Stop always pushing PictureLayerImpl
+    // properties.
+    PushLayerPropertiesInternal(picture_layers.begin(), picture_layers.end(),
+                                active_tree);
+  }
   pending_tree->ClearLayersThatShouldPushProperties();
 }
 

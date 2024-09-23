@@ -18,6 +18,10 @@ namespace permissions {
 class PermissionDecisionAutoBlocker;
 }
 
+namespace url {
+class Origin;
+}
+
 // Context for storing user permission to use the browser FedCM API's auto
 // sign-in feature.
 class FederatedIdentityAutoReauthnPermissionContext
@@ -44,15 +48,15 @@ class FederatedIdentityAutoReauthnPermissionContext
       const url::Origin& relying_party_embedder) override;
   void RemoveEmbargoForAutoReauthn(
       const url::Origin& relying_party_embedder) override;
-  void SetRequiresUserMediation(const GURL& rp_url,
+  void SetRequiresUserMediation(const url::Origin& rp_origin,
                                 bool requires_user_mediation) override;
-  bool RequiresUserMediation(const GURL& rp_url) override;
+  bool RequiresUserMediation(const url::Origin& rp_origin) override;
 
  private:
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   const raw_ptr<permissions::PermissionDecisionAutoBlocker, DanglingUntriaged>
       permission_autoblocker_;
-  const raw_ptr<PasswordManagerSettingsService> password_settings_service_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION_CONTEXT_H_

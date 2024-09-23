@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/apple/foundation_util.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -66,6 +65,9 @@ base::Value ConvertedResultFromScriptResult(const base::Value* value,
       DCHECK_EQ(result.type(), base::Value::Type::DOUBLE);
     }
     // End of different implementation.
+  } else if (value->is_int()) {
+    result = base::Value(value->GetInt());
+    DCHECK_EQ(result.type(), base::Value::Type::INTEGER);
   } else if (value->is_bool()) {
     result = base::Value(value->GetBool());
     DCHECK_EQ(result.type(), base::Value::Type::BOOLEAN);
@@ -97,7 +99,7 @@ base::Value ConvertedResultFromScriptResult(const base::Value* value,
     result = base::Value(std::move(list));
     DCHECK_EQ(result.type(), base::Value::Type::LIST);
   } else {
-    NOTREACHED();  // Convert other types as needed.
+    NOTREACHED_IN_MIGRATION();  // Convert other types as needed.
   }
   return result;
 }
@@ -198,7 +200,7 @@ void DistillerPageIOS::DistillPageImpl(const GURL& url,
   web_state_->SetKeepRenderProcessAlive(true);
   web_state_->GetNavigationManager()->LoadURLWithParams(params);
   // LoadIfNecessary is needed because the view is not created (but needed) when
-  // loading the page. TODO(crbug.com/705819): Remove this call.
+  // loading the page. TODO(crbug.com/41309809): Remove this call.
   web_state_->GetNavigationManager()->LoadIfNecessary();
 }
 
@@ -207,9 +209,6 @@ void DistillerPageIOS::OnLoadURLDone(
   if (!distilling_navigation_) {
     // This is a second navigation after the distillation request.
     // Distillation was already requested, so ignore this one.
-    // This is a tentative fix for (crbug/1216307), so create a dump here.
-    // Remove once the bug fix is validated.
-    base::debug::DumpWithoutCrashing();
     return;
   }
   distilling_navigation_ = false;
@@ -273,7 +272,7 @@ void DistillerPageIOS::WebStateDestroyed(web::WebState* web_state) {
   // The DistillerPageIOS owns the WebState that it observe and unregister
   // itself from the WebState before destroying it, so this method should
   // never be called.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace dom_distiller

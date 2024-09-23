@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/browsing_topics/browsing_topics_calculator.h"
+
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
@@ -58,8 +64,40 @@ Topic ExpectedRandomTopic(size_t index) {
     return kExpectedRandomTopicsForTaxonomyV2[index];
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
+
+class TestHistoryService : public history::HistoryService {
+ public:
+  void SetQueryResultDelay(base::TimeDelta query_result_delay) {
+    query_result_delay_ = query_result_delay;
+  }
+
+  base::CancelableTaskTracker::TaskId QueryHistory(
+      const std::u16string& text_query,
+      const history::QueryOptions& options,
+      QueryHistoryCallback callback,
+      base::CancelableTaskTracker* tracker) override {
+    auto run_callback_after_delay =
+        base::BindLambdaForTesting([callback = std::move(callback), this](
+                                       history::QueryResults results) mutable {
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+              FROM_HERE,
+              base::BindLambdaForTesting(
+                  [callback = std::move(callback),
+                   results = std::move(results)]() mutable {
+                    std::move(callback).Run(std::move(results));
+                  }),
+              query_result_delay_);
+        });
+
+    return history::HistoryService::QueryHistory(
+        text_query, options, std::move(run_callback_after_delay), tracker);
+  }
+
+ private:
+  base::TimeDelta query_result_delay_;
+};
 
 }  // namespace
 
@@ -78,11 +116,13 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
         /*restore_session=*/false, /*should_record_metrics=*/false);
     tracking_protection_settings_ =
         std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
-            &prefs_,
-            /*onboarding_service=*/nullptr, /*is_incognito=*/false);
+            &prefs_, host_content_settings_map_.get(),
+            /*is_incognito=*/false);
     cookie_settings_ = base::MakeRefCounted<content_settings::CookieSettings>(
         host_content_settings_map_.get(), &prefs_,
-        tracking_protection_settings_.get(), false, "chrome-extension");
+        tracking_protection_settings_.get(), false,
+        content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
+        /*tpcd_metadata_manager=*/nullptr, "chrome-extension");
     auto privacy_sandbox_delegate = std::make_unique<
         privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
     privacy_sandbox_delegate->SetUpIsPrivacySandboxRestrictedResponse(
@@ -100,7 +140,7 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
         std::make_unique<content::TesterBrowsingTopicsSiteDataManager>(
             temp_dir_.GetPath());
 
-    history_service_ = std::make_unique<history::HistoryService>();
+    history_service_ = std::make_unique<TestHistoryService>();
     history_service_->Init(
         history::TestHistoryDatabaseParamsForPath(temp_dir_.GetPath()));
 
@@ -113,7 +153,9 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
     tracking_protection_settings_->Shutdown();
   }
 
-  EpochTopics CalculateTopics(base::circular_deque<EpochTopics> epochs = {}) {
+  EpochTopics CalculateTopics(base::circular_deque<EpochTopics> epochs = {},
+                              base::Time session_start_time = base::Time(),
+                              int previous_timeout_count = 0) {
     EpochTopics result = EpochTopics(base::Time());
 
     base::RunLoop run_loop;
@@ -121,7 +163,8 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
     TesterBrowsingTopicsCalculator topics_calculator =
         TesterBrowsingTopicsCalculator(
             privacy_sandbox_settings_.get(), history_service_.get(),
-            topics_site_data_manager_.get(), &test_annotator_, epochs,
+            topics_site_data_manager_.get(), &test_annotator_,
+            previous_timeout_count, session_start_time, epochs,
             base::BindLambdaForTesting([&](EpochTopics epoch_topics) {
               result = std::move(epoch_topics);
               run_loop.Quit();
@@ -132,6 +175,17 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
     run_loop.Run();
 
     return result;
+  }
+
+  TesterBrowsingTopicsCalculator CreateCalculator(
+      BrowsingTopicsCalculator::CalculateCompletedCallback callback) {
+    return TesterBrowsingTopicsCalculator(
+        privacy_sandbox_settings_.get(), history_service_.get(),
+        topics_site_data_manager_.get(), &test_annotator_,
+        /*previous_timeout_count=*/0, /*session_start_time=*/base::Time(),
+        /*epochs=*/base::circular_deque<EpochTopics>(), std::move(callback),
+        /*rand_uint64_queue=*/
+        base::queue<uint64_t>{{100, 101, 102, 103, 104}});
   }
 
   void AddHistoryEntries(const std::vector<std::string>& hosts,
@@ -197,7 +251,7 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
   std::unique_ptr<content::TesterBrowsingTopicsSiteDataManager>
       topics_site_data_manager_;
 
-  std::unique_ptr<history::HistoryService> history_service_;
+  std::unique_ptr<TestHistoryService> history_service_;
 
   base::ScopedTempDir temp_dir_;
 };
@@ -209,10 +263,12 @@ TEST_F(BrowsingTopicsCalculatorTest, PermissionDenied) {
 
   EpochTopics result = CalculateTopics();
   EXPECT_TRUE(result.empty());
+  EXPECT_EQ(result.calculator_result_status(),
+            CalculatorResultStatus::kFailurePermissionDenied);
 
   histograms.ExpectUniqueSample(
-      "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus",
-      /*kFailurePermissionDenied*/ 1,
+      "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
+      CalculatorResultStatus::kFailurePermissionDenied,
       /*expected_bucket_count=*/1);
 }
 
@@ -223,10 +279,12 @@ TEST_F(BrowsingTopicsCalculatorTest, ApiUsageContextQueryError) {
 
   EpochTopics result = CalculateTopics();
   EXPECT_TRUE(result.empty());
+  EXPECT_EQ(result.calculator_result_status(),
+            CalculatorResultStatus::kFailureApiUsageContextQueryError);
 
   histograms.ExpectUniqueSample(
-      "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus",
-      /*kFailureApiUsageContextQueryError*/ 2,
+      "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
+      CalculatorResultStatus::kFailureApiUsageContextQueryError,
       /*expected_bucket_count=*/1);
 }
 
@@ -235,10 +293,12 @@ TEST_F(BrowsingTopicsCalculatorTest, AnnotationExecutionError) {
 
   EpochTopics result = CalculateTopics();
   EXPECT_TRUE(result.empty());
+  EXPECT_EQ(result.calculator_result_status(),
+            CalculatorResultStatus::kFailureAnnotationExecutionError);
 
   histograms.ExpectUniqueSample(
-      "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus",
-      /*kFailureAnnotationExecutionError*/ 3,
+      "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
+      CalculatorResultStatus::kFailureAnnotationExecutionError,
       /*expected_bucket_count=*/1);
 }
 
@@ -264,10 +324,235 @@ TEST_F(BrowsingTopicsCalculatorUnsupporedTaxonomyVersionTest,
 
   EpochTopics result = CalculateTopics();
   EXPECT_TRUE(result.empty());
+  EXPECT_EQ(
+      result.calculator_result_status(),
+      CalculatorResultStatus::kFailureTaxonomyVersionNotSupportedInBinary);
 
   histograms.ExpectUniqueSample(
-      "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus",
-      /*kFailureTaxonomyVersionNotSupportedInBinary*/ 4,
+      "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
+      CalculatorResultStatus::kFailureTaxonomyVersionNotSupportedInBinary,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(BrowsingTopicsCalculatorTest, HangingAfterApiUsageRequested) {
+  base::HistogramTester histograms;
+
+  topics_site_data_manager_->SetQueryResultDelay(base::Seconds(35));
+
+  test_annotator_.UseModelInfo(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build());
+
+  base::ElapsedTimer timer;
+  EpochTopics result = CalculateTopics();
+
+  // At the hanging detection timeout, the calculation should fail and the
+  // hanging metrics should be recorded.
+  EXPECT_EQ(timer.Elapsed(), base::Seconds(30));
+  EXPECT_TRUE(result.empty());
+  EXPECT_EQ(result.calculator_result_status(),
+            CalculatorResultStatus::kHangingAfterApiUsageRequested);
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
+      CalculatorResultStatus::kHangingAfterApiUsageRequested,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(BrowsingTopicsCalculatorTest, HangingAfterHistoryRequested) {
+  base::HistogramTester histograms;
+
+  history_service_->SetQueryResultDelay(base::Seconds(35));
+
+  test_annotator_.UseModelInfo(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build());
+
+  base::ElapsedTimer timer;
+  EpochTopics result = CalculateTopics();
+
+  // At the hanging detection timeout, the calculation should fail and the
+  // hanging metrics should be recorded.
+  EXPECT_EQ(timer.Elapsed(), base::Seconds(30));
+  EXPECT_TRUE(result.empty());
+  EXPECT_EQ(result.calculator_result_status(),
+            CalculatorResultStatus::kHangingAfterHistoryRequested);
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
+      CalculatorResultStatus::kHangingAfterHistoryRequested,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(BrowsingTopicsCalculatorTest, HangingAfterModelRequested) {
+  base::HistogramTester histograms;
+
+  test_annotator_.SetModelRequestDelay(base::Seconds(35));
+  test_annotator_.UseModelInfo(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build());
+
+  base::ElapsedTimer timer;
+  EpochTopics result = CalculateTopics();
+
+  // At the hanging detection timeout, the calculation should fail and the
+  // hanging metrics should be recorded.
+  EXPECT_EQ(timer.Elapsed(), base::Seconds(30));
+  EXPECT_TRUE(result.empty());
+  EXPECT_EQ(result.calculator_result_status(),
+            CalculatorResultStatus::kHangingAfterModelRequested);
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
+      CalculatorResultStatus::kHangingAfterModelRequested,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(BrowsingTopicsCalculatorTest, HangingAfterAnnotationRequested) {
+  base::HistogramTester histograms;
+
+  // Add some history entries, as otherwise the annotation will be skipped.
+  AddHistoryEntries({kHost1, kHost2, kHost3, kHost4, kHost5},
+                    base::Time::Now());
+  AddApiUsageContextEntries(
+      {{kHost1, {}},
+       {kHost2, {}},
+       {kHost3, {HashedDomain(2)}},
+       {kHost4, {HashedDomain(3)}},
+       {kHost5, {HashedDomain(1), HashedDomain(2), HashedDomain(3)}}});
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  test_annotator_.SetAnnotationRequestDelay(base::Seconds(35));
+  test_annotator_.UseModelInfo(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build());
+
+  base::ElapsedTimer timer;
+  EpochTopics result = CalculateTopics();
+
+  // At the hanging detection timeout, the calculation should fail and the
+  // hanging metrics should be recorded.
+  EXPECT_EQ(timer.Elapsed(), base::Seconds(30));
+  EXPECT_TRUE(result.empty());
+  EXPECT_EQ(result.calculator_result_status(),
+            CalculatorResultStatus::kHangingAfterAnnotationRequested);
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
+      CalculatorResultStatus::kHangingAfterAnnotationRequested,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(BrowsingTopicsCalculatorTest,
+       SlowHistoryQueryAndHangingAfterModelRequested) {
+  base::HistogramTester histograms;
+
+  history_service_->SetQueryResultDelay(base::Seconds(20));
+
+  test_annotator_.SetModelRequestDelay(base::Seconds(35));
+  test_annotator_.UseModelInfo(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build());
+
+  base::ElapsedTimer timer;
+  EpochTopics result = CalculateTopics();
+
+  // The calculation timed out at 50 seconds. This implies that the timeout
+  // timer was reset after the history query.
+  EXPECT_EQ(timer.Elapsed(), base::Seconds(50));
+  EXPECT_TRUE(result.empty());
+  EXPECT_EQ(result.calculator_result_status(),
+            CalculatorResultStatus::kHangingAfterModelRequested);
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
+      CalculatorResultStatus::kHangingAfterModelRequested,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(BrowsingTopicsCalculatorTest, TimeoutRetrySuccessMetrics) {
+  base::HistogramTester histograms;
+
+  test_annotator_.UseModelInfo(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build());
+
+  base::ElapsedTimer timer;
+  EpochTopics result = CalculateTopics(
+      /*epochs=*/{},
+      /*session_start_time=*/base::Time::Now() - base::Seconds(10),
+      /*previous_timeout_count=*/2);
+
+  EXPECT_EQ(timer.Elapsed(), base::Seconds(0));
+  EXPECT_FALSE(result.empty());
+  EXPECT_EQ(result.calculator_result_status(),
+            CalculatorResultStatus::kSuccess);
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.EpochTopicsCalculation.Started.RetryNumber",
+      /*sample=*/2, /*expected_bucket_count=*/1);
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.EpochTopicsCalculation.TimeoutRetry."
+      "CalculatorResultStatus",
+      CalculatorResultStatus::kSuccess,
+      /*expected_bucket_count=*/1);
+  histograms.ExpectTotalCount(
+      "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
+      /*expected_count=*/0);
+  histograms.ExpectTotalCount(
+      "BrowsingTopics.EpochTopicsCalculation.Hanging.RetryNumber",
+      /*expected_count=*/0);
+}
+
+TEST_F(BrowsingTopicsCalculatorTest, TimeoutRetryHangingMetrics) {
+  base::HistogramTester histograms;
+
+  test_annotator_.SetModelRequestDelay(base::Seconds(35));
+  test_annotator_.UseModelInfo(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build());
+
+  base::ElapsedTimer timer;
+  EpochTopics result = CalculateTopics(
+      /*epochs=*/{},
+      /*session_start_time=*/base::Time::Now() - base::Seconds(10),
+      /*previous_timeout_count=*/2);
+
+  EXPECT_EQ(timer.Elapsed(), base::Seconds(30));
+  EXPECT_TRUE(result.empty());
+  EXPECT_EQ(result.calculator_result_status(),
+            CalculatorResultStatus::kHangingAfterModelRequested);
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.EpochTopicsCalculation.Started.RetryNumber",
+      /*sample=*/2, /*expected_bucket_count=*/1);
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.EpochTopicsCalculation.Hanging.RetryNumber",
+      /*sample=*/2, /*expected_bucket_count=*/1);
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.EpochTopicsCalculation.TimeoutRetry."
+      "CalculatorResultStatus",
+      CalculatorResultStatus::kHangingAfterModelRequested,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(BrowsingTopicsCalculatorTest, TerminatedBeforeComplete) {
+  base::HistogramTester histograms;
+
+  history_service_->SetQueryResultDelay(base::Seconds(35));
+
+  test_annotator_.UseModelInfo(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build());
+
+  bool completed = false;
+
+  {
+    TesterBrowsingTopicsCalculator calculator =
+        CreateCalculator(base::BindLambdaForTesting(
+            [&](EpochTopics epoch_topics) { completed = true; }));
+
+    task_environment_.RunUntilIdle();
+
+    EXPECT_FALSE(completed);
+  }
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
+      CalculatorResultStatus::kTerminated,
       /*expected_bucket_count=*/1);
 }
 
@@ -280,13 +565,15 @@ TEST_F(BrowsingTopicsCalculatorTest, TopicsMetadata) {
 
   EpochTopics result1 = CalculateTopics();
   EXPECT_FALSE(result1.empty());
+  EXPECT_EQ(result1.calculator_result_status(),
+            CalculatorResultStatus::kSuccess);
   EXPECT_EQ(result1.taxonomy_version(), kTaxonomyVersion);
   EXPECT_EQ(result1.model_version(), 1);
   EXPECT_EQ(result1.calculation_time(), begin_time);
 
   histograms.ExpectUniqueSample(
-      "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus",
-      /*kSuccess*/ 0,
+      "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
+      CalculatorResultStatus::kSuccess,
       /*expected_bucket_count=*/1);
 
   task_environment_.AdvanceClock(base::Seconds(2));
@@ -296,14 +583,15 @@ TEST_F(BrowsingTopicsCalculatorTest, TopicsMetadata) {
 
   EpochTopics result2 = CalculateTopics();
   EXPECT_FALSE(result2.empty());
-
+  EXPECT_EQ(result1.calculator_result_status(),
+            CalculatorResultStatus::kSuccess);
   EXPECT_EQ(result2.taxonomy_version(), kTaxonomyVersion);
   EXPECT_EQ(result2.model_version(), 50);
   EXPECT_EQ(result2.calculation_time(), begin_time + base::Seconds(2));
 
   histograms.ExpectUniqueSample(
-      "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus",
-      /*kSuccess*/ 0,
+      "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
+      CalculatorResultStatus::kSuccess,
       /*expected_bucket_count=*/2);
 }
 

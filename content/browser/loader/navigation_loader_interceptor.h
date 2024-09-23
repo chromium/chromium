@@ -83,9 +83,7 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   };
 
   using LoaderCallback = base::OnceCallback<void(std::optional<Result>)>;
-  using FallbackCallback =
-      base::OnceCallback<void(bool /* reset_subresource_loader_params */,
-                              ResponseHeadUpdateParams)>;
+  using FallbackCallback = base::OnceCallback<void(ResponseHeadUpdateParams)>;
 
   // Asks this interceptor to handle this resource load request.
   // The interceptor must always invoke `callback`.
@@ -109,14 +107,12 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   // fallback to the network after initially electing to intercept the request.
   // It must be called after `callback` is called with non-null
   // `single_request_factory` and prior to the interceptor making any
-  // URLLoaderClient calls. The `reset_subresource_loader_params` parameter to
-  // |fallback_callback| indicates whether to discard the subresource loader
-  // params previously returned by `Result::subresource_loader_params`.
+  // URLLoaderClient calls.
   //
   // `callback` and `fallback_callback_for_service_worker` must not be invoked
   // after the destruction of this interceptor.
   //
-  // TODO(crbug.com/1403746): Possibly remove
+  // TODO(crbug.com/40251638): Possibly remove
   // `fallback_callback_for_service_worker` to simplify the ServiceWorker
   // interception.
   virtual void MaybeCreateLoader(

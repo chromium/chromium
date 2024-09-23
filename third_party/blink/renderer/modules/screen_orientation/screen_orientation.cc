@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation.h"
 
 #include <memory>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -35,7 +41,8 @@ STATIC_ASSERT_ENUM(
 namespace blink {
 
 struct ScreenOrientationInfo {
-  const AtomicString& name;
+  // RAW_PTR_EXCLUSION: #global-scope
+  RAW_PTR_EXCLUSION const AtomicString& name;
   device::mojom::blink::ScreenOrientationLockType orientation;
 };
 
@@ -81,7 +88,7 @@ const AtomicString& ScreenOrientation::OrientationTypeToString(
       return orientation_map[i].name;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_null_atom;
 }
 
@@ -94,7 +101,7 @@ static device::mojom::blink::ScreenOrientationLockType StringToOrientationLock(
       return orientation_map[i].orientation;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return device::mojom::blink::ScreenOrientationLockType::DEFAULT;
 }
 
@@ -138,14 +145,15 @@ void ScreenOrientation::SetAngle(uint16_t angle) {
   angle_ = angle;
 }
 
-ScriptPromise ScreenOrientation::lock(ScriptState* state,
-                                      const AtomicString& lock_string,
-                                      ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> ScreenOrientation::lock(
+    ScriptState* state,
+    const AtomicString& lock_string,
+    ExceptionState& exception_state) {
   if (!state->ContextIsValid() || !Controller()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The object is no longer associated to a window.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   if (GetExecutionContext()->IsSandboxed(
@@ -157,11 +165,12 @@ ScriptPromise ScreenOrientation::lock(ScriptState* state,
             ? "The window is in a fenced frame tree."
             : "The window is sandboxed and lacks the 'allow-orientation-lock' "
               "flag.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(state);
+  auto promise = resolver->Promise();
   Controller()->lock(StringToOrientationLock(lock_string),
                      std::make_unique<LockOrientationCallback>(resolver));
   return promise;

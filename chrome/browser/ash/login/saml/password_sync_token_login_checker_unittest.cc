@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ash/login/saml/password_sync_token_login_checker.h"
 
-#include "base/memory/raw_ptr.h"
+#include <memory>
+
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -13,6 +16,8 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/backoff_entry.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace {

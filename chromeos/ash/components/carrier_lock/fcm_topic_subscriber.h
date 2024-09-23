@@ -22,13 +22,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK)
   FcmTopicSubscriber() = default;
   virtual ~FcmTopicSubscriber() = default;
 
+  // Initialize notification handler
+  virtual bool Initialize(NotificationCallback notification) = 0;
+
   // Register to FCM and request a Token
-  virtual void RequestToken(NotificationCallback notification,
-                            Callback callback) = 0;
+  virtual void RequestToken(Callback callback) = 0;
 
   // Verify Token and subscribe to notification topic
   virtual void SubscribeTopic(const std::string& topic,
-                              NotificationCallback notification,
                               Callback callback) = 0;
 
   // Return the Token received in response

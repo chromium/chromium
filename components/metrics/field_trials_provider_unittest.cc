@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/metrics/field_trials_provider.h"
+
+#include <string_view>
 
 #include "base/metrics/field_trial.h"
 #include "base/test/scoped_feature_list.h"
@@ -110,7 +117,7 @@ class FieldTrialsProviderTest : public ::testing::Test {
 };
 
 TEST_F(FieldTrialsProviderTest, ProvideSyntheticTrials) {
-  FieldTrialsProvider provider(&registry_, base::StringPiece());
+  FieldTrialsProvider provider(&registry_, std::string_view());
 
   RegisterExpectedSyntheticTrials();
   // Make sure these trials are older than the log.
@@ -134,7 +141,7 @@ TEST_F(FieldTrialsProviderTest, ProvideSyntheticTrials) {
 }
 
 TEST_F(FieldTrialsProviderTest, NoSyntheticTrials) {
-  FieldTrialsProvider provider(nullptr, base::StringPiece());
+  FieldTrialsProvider provider(nullptr, std::string_view());
 
   metrics::SystemProfileProto proto;
   provider.ProvideSystemProfileMetricsWithLogCreationTime(base::TimeTicks(),
@@ -157,7 +164,7 @@ TEST_F(FieldTrialsProviderTest, ProvideCurrentSessionData) {
   trial->set_name_id(1);
   trial->set_group_id(1);
 
-  FieldTrialsProvider provider(&registry_, base::StringPiece());
+  FieldTrialsProvider provider(&registry_, std::string_view());
   RegisterExpectedSyntheticTrials();
   WaitUntilTimeChanges(base::TimeTicks::Now());
   provider.SetLogCreationTimeForTesting(base::TimeTicks::Now());

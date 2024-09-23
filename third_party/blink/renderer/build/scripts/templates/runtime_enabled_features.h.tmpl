@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-blink-forward.h"
+#include "base/memory/protected_memory.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -21,17 +21,7 @@
 
 namespace blink {
 
-class RuntimeFeatureStateOverrideContext;
-
-// A pure virtual interface for checking the availability of origin trial
-// features in a context as well as whether a feature's state has been
-// overridden.
-class PLATFORM_EXPORT FeatureContext {
- public:
-  virtual bool FeatureEnabled(mojom::blink::OriginTrialFeature) const = 0;
-  virtual RuntimeFeatureStateOverrideContext*
-  GetRuntimeFeatureStateOverrideContext() const = 0;
-};
+class FeatureContext;
 
 // A class that stores static enablers for all experimental features.
 
@@ -49,6 +39,14 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
     {% endfor %}
   };
 
+  // Simple getter methods for protected memory values that ensure they are
+  // properly initialized before first access.
+  {% for feature in features %}
+  {% if feature.is_protected_feature %}
+  static bool get_{{feature.data_member_name}}();
+  {% endif %}
+  {% endfor %}
+
   {% for feature in features %}
   {% if not feature.in_origin_trial %}
   static bool {{feature.name}}Enabled() {
@@ -60,7 +58,11 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
     if ({{implied_by}}Enabled())
       return true;
     {% endfor %}
+    {% if feature.is_protected_feature %}
+    return get_{{feature.data_member_name}}();
+    {% else %}
     return {{feature.data_member_name}};
+    {% endif %}
   }
 
   {% if feature.is_overridable_feature %}
@@ -88,6 +90,8 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
 
   {% endfor %}
 
+  static bool IsFeatureEnabledFromString(const std::string& name);
+
  protected:
   // See the comment in RuntimeEnabledFeatures for why these are protected.
   {% for feature_set in feature_sets %}
@@ -99,14 +103,26 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
   static void UpdateStatusFromBaseFeatures();
 
   {% for feature in features %}
+  {% if feature.is_protected_feature %}
+  static void Set{{feature.name}}Enabled(bool enabled);
+  {% else %}
   static void Set{{feature.name}}Enabled(bool enabled) { {{feature.data_member_name}} = enabled; }
+  {%endif %}
   {% endfor %}
 
  private:
   friend class RuntimeEnabledFeaturesTestHelpers;
 
   {% for feature in features %}
+  {% if not feature.is_protected_feature %}
   static bool {{feature.data_member_name}};
+  {% endif %}
+  {% endfor %}
+
+  {% for feature in features %}
+  {% if feature.is_protected_feature %}
+  static DECLARE_PROTECTED_DATA base::ProtectedMemory<bool> {{feature.data_member_name}};
+  {% endif %}
   {% endfor %}
 };
 
@@ -123,9 +139,8 @@ class PLATFORM_EXPORT RuntimeEnabledFeatures : public RuntimeEnabledFeaturesBase
   friend class WebRuntimeFeaturesBase;
   friend class WebRuntimeFeatures;
   friend class WebView;
-  FRIEND_TEST_ALL_PREFIXES(RuntimeEnabledFeaturesTest, Relationship);
-  FRIEND_TEST_ALL_PREFIXES(RuntimeEnabledFeaturesTest, BackupRestore);
-  FRIEND_TEST_ALL_PREFIXES(RuntimeEnabledFeaturesTest, OriginTrialsByRuntimeEnabled);
+  friend class RuntimeEnabledFeaturesTestTraits;
+  friend class RuntimeProtectedEnabledFeaturesTestTraits;
 };
 
 }  // namespace blink

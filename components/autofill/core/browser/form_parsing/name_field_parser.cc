@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/form_parsing/name_field_parser.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
@@ -20,15 +21,10 @@
 namespace autofill {
 namespace {
 
-base::span<const MatchPatternRef> GetMatchPatterns(base::StringPiece name,
+base::span<const MatchPatternRef> GetMatchPatterns(std::string_view name,
                                                    ParsingContext& context) {
-  return GetMatchPatterns(name, context.page_language, context.pattern_source);
+  return GetMatchPatterns(name, context.page_language, context.pattern_file);
 }
-
-constexpr MatchParams kNameIgnoredMatchParams =
-    kDefaultMatchParamsWith<FormControlType::kSelectOne,
-                            FormControlType::kSelectList,
-                            FormControlType::kInputSearch>;
 
 // A form field that can parse a full name field.
 class FullNameField : public NameFieldParser {
@@ -158,14 +154,10 @@ std::unique_ptr<FullNameField> FullNameField::Parse(ParsingContext& context,
   base::span<const MatchPatternRef> address_name_ignored_patterns =
       GetMatchPatterns("ADDRESS_NAME_IGNORED", context);
   bool should_ignore =
-      ParseFieldSpecifics(context, scanner, kNameIgnoredRe,
-                          kNameIgnoredMatchParams, name_ignored_patterns,
-                          nullptr, "kNameIgnoredRe") ||
-      // This pattern fully migrated to the MatchPattern mechanism. There
-      // is no regular expression in autofill_regex_constants.h anymore.
-      ParseField(context, scanner, kNoLegacyPattern,
-                 address_name_ignored_patterns, nullptr,
-                 "kAddressNameIgnoredRe");
+      ParseField(context, scanner, name_ignored_patterns, nullptr,
+                 "NAME_IGNORED") ||
+      ParseField(context, scanner, address_name_ignored_patterns, nullptr,
+                 "ADDRESS_NAME_IGNORED");
   scanner->Rewind();
   if (should_ignore) {
     return nullptr;
@@ -178,8 +170,7 @@ std::unique_ptr<FullNameField> FullNameField::Parse(ParsingContext& context,
 
   base::span<const MatchPatternRef> name_patterns =
       GetMatchPatterns("FULL_NAME", context);
-  if (ParseField(context, scanner, kFullNameRe, name_patterns, &field,
-                 "kFullNameRe")) {
+  if (ParseField(context, scanner, name_patterns, &field, "FULL_NAME")) {
     return std::make_unique<FullNameField>(field);
   }
 
@@ -228,55 +219,47 @@ FirstTwoLastNamesField::ParseComponentNames(ParsingContext& context,
   while (!scanner->IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
-    // This pattern fully migrated to the MatchPattern mechanism. There is no
-    // regular expression in autofill_regex_constants.h anymore.
-    if (ParseField(context, scanner, kNoLegacyPattern,
-                   address_name_ignored_patterns, nullptr,
-                   "kAddressNameIgnoredRe")) {
+    if (ParseField(context, scanner, address_name_ignored_patterns, nullptr,
+                   "ADDRESS_NAME_IGNORED")) {
       continue;
     }
 
     // Scan for the honorific prefix before checking for unrelated name fields
     // because a honorific prefix field is expected to have very specific labels
     // including "Title:". The latter is matched with |kNameIgnoredRe|.
-    // TODO(crbug.com/1098943): Remove check once feature is launched or
+    // TODO(crbug.com/40137264): Remove check once feature is launched or
     // removed.
     if (!v->honorific_prefix_ &&
-        ParseField(context, scanner, kHonorificPrefixRe,
-                   honorific_prefix_patterns, &v->honorific_prefix_,
-                   "kHonorificPrefixRe")) {
+        ParseField(context, scanner, honorific_prefix_patterns,
+                   &v->honorific_prefix_, "HONORIFIC_PREFIX")) {
       continue;
     }
 
     // Skip over any unrelated fields, e.g. "username" or "nickname".
-    if (ParseFieldSpecifics(context, scanner, kNameIgnoredRe,
-                            kNameIgnoredMatchParams, name_ignored_patterns,
-                            nullptr, "kNameIgnoredRe")) {
+    if (ParseField(context, scanner, name_ignored_patterns, nullptr,
+                   "NAME_IGNORED")) {
       continue;
     }
 
-    if (!v->first_name_ &&
-        ParseField(context, scanner, kFirstNameRe, first_name_patterns,
-                   &v->first_name_, "kFirstNameRe")) {
+    if (!v->first_name_ && ParseField(context, scanner, first_name_patterns,
+                                      &v->first_name_, "FIRST_NAME")) {
       continue;
     }
 
-    if (!v->middle_name_ &&
-        ParseField(context, scanner, kMiddleNameRe, middle_name_patterns,
-                   &v->middle_name_, "kMiddleNameRe")) {
+    if (!v->middle_name_ && ParseField(context, scanner, middle_name_patterns,
+                                       &v->middle_name_, "MIDDLE_NAME")) {
       continue;
     }
 
     if (!v->first_last_name_ &&
-        ParseField(context, scanner, kNameLastFirstRe, first_last_name_patterns,
-                   &v->first_last_name_, "kNameLastFirstRe")) {
+        ParseField(context, scanner, first_last_name_patterns,
+                   &v->first_last_name_, "LAST_NAME_FIRST")) {
       continue;
     }
 
     if (!v->second_last_name_ &&
-        ParseField(context, scanner, kNameLastSecondRe,
-                   second_last_name_patterns, &v->second_last_name_,
-                   "kNameLastSecondtRe")) {
+        ParseField(context, scanner, second_last_name_patterns,
+                   &v->second_last_name_, "LAST_NAME_SECOND")) {
       continue;
     }
 
@@ -321,8 +304,6 @@ FirstLastNameField::ParseNameSurnameLabelSequence(ParsingContext& context,
       GetMatchPatterns("MIDDLE_NAME", context);
   base::span<const MatchPatternRef> last_name_patterns =
       GetMatchPatterns("LAST_NAME", context);
-  // Check that the field should not be ignored.
-
   base::span<const MatchPatternRef> name_ignored_patterns =
       GetMatchPatterns("NAME_IGNORED", context);
   base::span<const MatchPatternRef> address_name_ignored_patterns =
@@ -330,14 +311,10 @@ FirstLastNameField::ParseNameSurnameLabelSequence(ParsingContext& context,
   scanner->SaveCursor();
 
   bool should_ignore =
-      ParseFieldSpecifics(context, scanner, kNameIgnoredRe,
-                          kNameIgnoredMatchParams, name_ignored_patterns,
-                          nullptr, "kNameIgnoredRe") ||
-      // This pattern fully migrated to the MatchPattern mechanism. There is no
-      // regular expression in autofill_regex_constants.h anymore.
-      ParseField(context, scanner, kNoLegacyPattern,
-                 address_name_ignored_patterns, nullptr,
-                 "kAddressNameIgnoredRe");
+      ParseField(context, scanner, name_ignored_patterns, nullptr,
+                 "NAME_IGNORED") ||
+      ParseField(context, scanner, address_name_ignored_patterns, nullptr,
+                 "ADDRESS_NAME_IGNORED");
   scanner->Rewind();
 
   scanner->SaveCursor();
@@ -346,13 +323,13 @@ FirstLastNameField::ParseNameSurnameLabelSequence(ParsingContext& context,
     return nullptr;
   }
 
-  if (ParseField(context, scanner, kNameGenericRe, name_specific_patterns,
-                 &v->first_name_, "kNameGenericRe")) {
+  if (ParseField(context, scanner, name_specific_patterns, &v->first_name_,
+                 "NAME_GENERIC")) {
     // Check for an optional middle name field.
-    ParseField(context, scanner, kMiddleNameRe, middle_name_patterns,
-               &v->middle_name_, "kMiddleNameRe");
-    if (ParseField(context, scanner, kLastNameRe, last_name_patterns,
-                   &v->last_name_, "kLastNameRe")) {
+    ParseField(context, scanner, middle_name_patterns, &v->middle_name_,
+               "MIDDLE_NAME");
+    if (ParseField(context, scanner, last_name_patterns, &v->last_name_,
+                   "LAST_NAME")) {
       return v;
     }
   }
@@ -372,9 +349,8 @@ FirstLastNameField::ParseSharedNameLabelSequence(ParsingContext& context,
   raw_ptr<AutofillField> next = nullptr;
   base::span<const MatchPatternRef> name_specific_patterns =
       GetMatchPatterns("NAME_GENERIC", context);
-
-  if (ParseField(context, scanner, kNameGenericRe, name_specific_patterns,
-                 &v->first_name_, "kNameGenericRe") &&
+  if (ParseField(context, scanner, name_specific_patterns, &v->first_name_,
+                 "NAME_GENERIC") &&
       ParseEmptyLabel(context, scanner, &next)) {
     if (ParseEmptyLabel(context, scanner, &v->last_name_)) {
       // There are three name fields; assume that the middle one is a
@@ -429,11 +405,8 @@ FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
   while (!scanner->IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
-    // This pattern fully migrated to the MatchPattern mechanism. There is no
-    // regular expression in autofill_regex_constants.h anymore.
-    if (ParseField(context, scanner, kNoLegacyPattern,
-                   address_name_ignored_patterns, nullptr,
-                   "kAddressNameIgnoredRe")) {
+    if (ParseField(context, scanner, address_name_ignored_patterns, nullptr,
+                   "ADDRESS_NAME_IGNORED")) {
       continue;
     }
 
@@ -441,22 +414,19 @@ FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
     // because a honorific prefix field is expected to have very specific labels
     // including "Title:". The latter is matched with |kNameIgnoredRe|.
     if (!v->honorific_prefix_ &&
-        ParseField(context, scanner, kHonorificPrefixRe,
-                   honorific_prefix_patterns, &v->honorific_prefix_,
-                   "kHonorificPrefixRe")) {
+        ParseField(context, scanner, honorific_prefix_patterns,
+                   &v->honorific_prefix_, "HONORIFIC_PREFIX")) {
       continue;
     }
 
     // Skip over any unrelated name fields, e.g. "username" or "nickname".
-    if (ParseFieldSpecifics(context, scanner, kNameIgnoredRe,
-                            kNameIgnoredMatchParams, name_ignored_patterns,
-                            nullptr, "kNameIgnoredRe")) {
+    if (ParseField(context, scanner, name_ignored_patterns, nullptr,
+                   "NAME_IGNORED")) {
       continue;
     }
 
-    if (!v->first_name_ &&
-        ParseField(context, scanner, kFirstNameRe, first_name_patterns,
-                   &v->first_name_, "kFirstNameRe")) {
+    if (!v->first_name_ && ParseField(context, scanner, first_name_patterns,
+                                      &v->first_name_, "FIRST_NAME")) {
       continue;
     }
 
@@ -465,22 +435,20 @@ FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
     // as both (the label text is "MI" and the element name is
     // "txtmiddlename"); such a field probably actually represents a
     // middle initial.
-    if (!v->middle_name_ && ParseField(context, scanner, kMiddleInitialRe,
-                                       middle_name_initial_patterns,
-                                       &v->middle_name_, "kMiddleInitialRe")) {
+    if (!v->middle_name_ &&
+        ParseField(context, scanner, middle_name_initial_patterns,
+                   &v->middle_name_, "MIDDLE_INITIAL")) {
       v->middle_initial_ = true;
       continue;
     }
 
-    if (!v->middle_name_ &&
-        ParseField(context, scanner, kMiddleNameRe, middle_name_patterns,
-                   &v->middle_name_, "kMiddleNameRe")) {
+    if (!v->middle_name_ && ParseField(context, scanner, middle_name_patterns,
+                                       &v->middle_name_, "MIDDLE_NAME")) {
       continue;
     }
 
-    if (!v->last_name_ &&
-        ParseField(context, scanner, kLastNameRe, last_name_patterns,
-                   &v->last_name_, "kLastNameRe")) {
+    if (!v->last_name_ && ParseField(context, scanner, last_name_patterns,
+                                     &v->last_name_, "LAST_NAME")) {
       continue;
     }
 

@@ -7,7 +7,7 @@
 "backgroundColor": "#FFFFFF"
 },
 {
-"name": "LayoutNGBlockFlow DIV id='multicol'",
+"name": "LayoutBlockFlow DIV id='multicol'",
 "bounds": [200, 100],
 "drawsContent": false,
 "transform": 1

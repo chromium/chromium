@@ -1,0 +1,15 @@
+Tests DOM.getDetachedDomNodes command.
+Amount of Nodes should be 1:
+1
+Verify Children Count:
+true
+3
+Verify Retained IDs match
+true
+true
+Verify we aren't getting every child, but every detached node
+2
+Verify that the return node is the Top Level Node: Detached Paragraph:
+b
+P
+

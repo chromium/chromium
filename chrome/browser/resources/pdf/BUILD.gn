@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/services/screen_ai/buildflags/features.gni")
 import("//pdf/features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -20,44 +19,54 @@ build_webui("build") {
     static_files += [ "ink/index.html" ]
   }
 
+  # TODO(crbug.com/362783117): Check in the .html.ts files for these two
+  # elements, once the bug with <if expr> breaking UIs when JS code coverage
+  # is enabled has been fixed.
   web_component_files = [
-    "elements/viewer-attachment.ts",
-    "elements/viewer-attachment-bar.ts",
-    "elements/viewer-bookmark.ts",
-    "elements/viewer-document-outline.ts",
-    "elements/viewer-download-controls.ts",
-    "elements/viewer-error-dialog.ts",
-    "elements/viewer-page-selector.ts",
-    "elements/viewer-password-dialog.ts",
-    "elements/viewer-pdf-sidenav.ts",
-    "elements/viewer-properties-dialog.ts",
-    "elements/viewer-thumbnail-bar.ts",
-    "elements/viewer-thumbnail.ts",
-    "elements/viewer-toolbar.ts",
     "pdf_viewer.ts",
-
-    # Files only used in Print Preview's PDF Viewer UI.
-    "elements/viewer-page-indicator.ts",
-    "elements/viewer-zoom-button.ts",
-    "elements/viewer-zoom-toolbar.ts",
-    "pdf_viewer_print.ts",
+    "elements/viewer_toolbar.ts",
   ]
 
   if (enable_ink) {
     web_component_files += [
-      "elements/viewer-annotations-bar.ts",
-      "elements/viewer-annotations-mode-dialog.ts",
-      "elements/viewer-ink-host.ts",
-      "elements/viewer-pen-options.ts",
-      "elements/viewer-toolbar-dropdown.ts",
+      "elements/viewer_annotations_bar.ts",
+      "elements/viewer_annotations_mode_dialog.ts",
+      "elements/viewer_ink_host.ts",
+      "elements/viewer_pen_options.ts",
+      "elements/viewer_toolbar_dropdown.ts",
     ]
   }
 
   non_web_component_files = [
+    "before_unload_proxy.ts",
     "bookmark_type.ts",
     "browser_api.ts",
     "constants.ts",
     "controller.ts",
+    "elements/viewer_attachment.html.ts",
+    "elements/viewer_attachment.ts",
+    "elements/viewer_attachment_bar.html.ts",
+    "elements/viewer_attachment_bar.ts",
+    "elements/viewer_bookmark.html.ts",
+    "elements/viewer_bookmark.ts",
+    "elements/viewer_document_outline.html.ts",
+    "elements/viewer_document_outline.ts",
+    "elements/viewer_download_controls.html.ts",
+    "elements/viewer_download_controls.ts",
+    "elements/viewer_error_dialog.html.ts",
+    "elements/viewer_error_dialog.ts",
+    "elements/viewer_page_selector.html.ts",
+    "elements/viewer_page_selector.ts",
+    "elements/viewer_password_dialog.html.ts",
+    "elements/viewer_password_dialog.ts",
+    "elements/viewer_pdf_sidenav.html.ts",
+    "elements/viewer_pdf_sidenav.ts",
+    "elements/viewer_properties_dialog.html.ts",
+    "elements/viewer_properties_dialog.ts",
+    "elements/viewer_thumbnail_bar.html.ts",
+    "elements/viewer_thumbnail_bar.ts",
+    "elements/viewer_thumbnail.html.ts",
+    "elements/viewer_thumbnail.ts",
     "gesture_detector.ts",
     "internal_plugin.ts",
     "local_storage_proxy.ts",
@@ -68,16 +77,24 @@ build_webui("build") {
     "pdf_print_wrapper.ts",
     "pdf_scripting_api.ts",
     "pdf_viewer_base.ts",
+    "pdf_viewer_private_proxy.ts",
     "pdf_viewer_utils.ts",
     "pdf_viewer_wrapper.ts",
     "pdf_internal_plugin_wrapper.ts",
     "swipe_detector.ts",
     "viewport.ts",
-    "viewport_scroller.ts",
     "zoom_manager.ts",
 
     # Files only used in Print Preview's PDF viewer UI.
+    "elements/viewer_page_indicator.html.ts",
+    "elements/viewer_page_indicator.ts",
+    "elements/viewer_zoom_button.html.ts",
+    "elements/viewer_zoom_button.ts",
+    "elements/viewer_zoom_toolbar.html.ts",
+    "elements/viewer_zoom_toolbar.ts",
     "main_print.ts",
+    "pdf_viewer_print.html.ts",
+    "pdf_viewer_print.ts",
     "toolbar_manager.ts",
   ]
 
@@ -89,19 +106,46 @@ build_webui("build") {
     ]
   }
 
-  if (enable_screen_ai_service) {
-    non_web_component_files += [ "pdf_viewer_private_proxy.ts" ]
+  if (enable_pdf_ink2) {
+    non_web_component_files += [
+      "elements/viewer_side_panel.html.ts",
+      "elements/viewer_side_panel.ts",
+    ]
   }
 
   css_files = [
-    "elements/pdf-shared.css",
-    "elements/shared-vars.css",
+    "elements/pdf_shared.css",
+    "elements/shared_vars.css",
+    "elements/viewer_attachment.css",
+    "elements/viewer_attachment_bar.css",
+    "elements/viewer_bookmark.css",
+    "elements/viewer_document_outline.css",
+    "elements/viewer_download_controls.css",
+    "elements/viewer_page_selector.css",
+    "elements/viewer_password_dialog.css",
+    "elements/viewer_pdf_sidenav.css",
+    "elements/viewer_properties_dialog.css",
+    "elements/viewer_thumbnail.css",
+    "elements/viewer_thumbnail_bar.css",
+    "elements/viewer_toolbar.css",
+    "pdf_viewer.css",
     "pdf_viewer_shared_style.css",
+
+    # Files only used in Print Preview's PDF Viewer UI.
+    "elements/viewer_page_indicator.css",
+    "elements/viewer_zoom_button.css",
+    "elements/viewer_zoom_toolbar.css",
+    "pdf_viewer_print.css",
   ]
+
+  if (enable_pdf_ink2) {
+    css_files += [ "elements/viewer_side_panel.css" ]
+  }
 
   icons_html_files = [ "elements/icons.html" ]
 
   html_to_wrapper_scheme = "chrome"
+  html_to_wrapper_template = "detect"
 
   # TypeScript Compiler parameters
   ts_composite = true
@@ -123,10 +167,13 @@ build_webui("build") {
         [ "//chrome/browser/resources/pdf/ink/drawing_canvas.d.ts" ]
   }
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+  if (enable_ink) {
+    ts_deps += [ "//third_party/polymer/v3_0:library" ]
+  }
 
   # grd file generation parameters
   grd_prefix = "pdf"
@@ -135,6 +182,7 @@ build_webui("build") {
   grd_resource_path_prefix = "pdf"
 
   # Optimization parameters
+  webui_context_type = "trusted_only"
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai"

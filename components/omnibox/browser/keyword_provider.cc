@@ -5,15 +5,14 @@
 #include "components/omnibox/browser/keyword_provider.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -180,7 +179,7 @@ const TemplateURL* KeywordProvider::GetSubstitutingTemplateURLForInput(
 }
 
 // static
-std::pair<AutocompleteInput, const TemplateURL*>
+KeywordProvider::AdjustedInputAndStarterPackEngine
 KeywordProvider::AdjustInputForStarterPackEngines(
     const AutocompleteInput& input,
     TemplateURLService* model) {
@@ -272,7 +271,7 @@ void KeywordProvider::DeleteMatch(const AutocompleteMatch& match) {
     return i.keyword == match.keyword &&
            i.fill_into_edit == match.fill_into_edit;
   };
-  base::EraseIf(matches_, pred);
+  std::erase_if(matches_, pred);
 
   std::u16string keyword, remaining_input;
   if (!ExtractKeywordFromInput(keyword_input_, GetTemplateURLService(),
@@ -389,7 +388,8 @@ void KeywordProvider::Start(const AutocompleteInput& input,
     //   consider deleting the keyword provider; it's matches are scored to low
     //   to appear usually anyways.
     if (!remaining_input.empty() && !is_extension_keyword &&
-        !omnibox_feature_configs::VitalizeAutocompletedKeywords::Get().enabled) {
+        !omnibox_feature_configs::VitalizeAutocompletedKeywords::Get()
+             .enabled) {
       return;
     }
     // TODO(pkasting): We should probably check that if the user explicitly
@@ -594,7 +594,7 @@ std::u16string KeywordProvider::CleanUserInputKeyword(
   url::Component scheme_component;
   if (url::ExtractScheme(result.c_str(), static_cast<int>(result.length()),
                          &scheme_component)) {
-    const base::StringPiece16 scheme = base::StringPiece16(result).substr(
+    const std::u16string_view scheme = std::u16string_view(result).substr(
         scheme_component.begin, scheme_component.len);
     if (scheme == url::kHttpScheme16 || scheme == url::kHttpsScheme16) {
       // Remove the scheme and the trailing ':'.
@@ -602,7 +602,7 @@ std::u16string KeywordProvider::CleanUserInputKeyword(
       if (template_url_service->GetTemplateURLForKeyword(result) != nullptr)
         return result;
       // Many schemes usually have "//" after them, so strip it too.
-      constexpr base::StringPiece16 kAfterScheme(u"//");
+      constexpr std::u16string_view kAfterScheme(u"//");
       if (base::StartsWith(result, kAfterScheme))
         result.erase(0, kAfterScheme.length());
       if (template_url_service->GetTemplateURLForKeyword(result) != nullptr)
@@ -614,7 +614,7 @@ std::u16string KeywordProvider::CleanUserInputKeyword(
   // The 'www.' stripping is done directly here instead of calling
   // url_formatter::StripWWW because we're not assuming that the keyword is a
   // hostname.
-  constexpr base::StringPiece16 kWww(u"www.");
+  constexpr std::u16string_view kWww(u"www.");
   result = base::StartsWith(result, kWww, base::CompareCase::SENSITIVE)
                ? result.substr(kWww.length())
                : result;

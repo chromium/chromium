@@ -65,7 +65,7 @@ class FakeSessionSyncService : public sync_sessions::SessionSyncService {
     return subscriber_list_.Add(cb);
   }
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override {
     return nullptr;
   }
@@ -95,11 +95,12 @@ class ForeignSessionHandlerTest : public ChromeRenderViewHostTestHarness {
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {
-        {SessionSyncServiceFactory::GetInstance(),
-         base::BindRepeating([](content::BrowserContext* context)
-                                 -> std::unique_ptr<KeyedService> {
-           return std::make_unique<FakeSessionSyncService>();
-         })},
+        TestingProfile::TestingFactory{
+            SessionSyncServiceFactory::GetInstance(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<FakeSessionSyncService>();
+            })},
     };
   }
 

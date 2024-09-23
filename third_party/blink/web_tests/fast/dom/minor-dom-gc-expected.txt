@@ -1,6 +1,0 @@
-PASS num2 is num1 + 4
-PASS num3 is num1
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

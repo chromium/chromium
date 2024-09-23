@@ -1,3 +1,5 @@
 include_rules = [
+  "+ios/chrome/browser/ui/fullscreen/fullscreen_controller.h",
   "+ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h",
+  "+ios/chrome/browser/ui/tab_switcher/tab_utils.h",
 ]

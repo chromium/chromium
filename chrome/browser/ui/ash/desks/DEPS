@@ -1,0 +1,51 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ui/ash/desks",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor ash codes in //chrome to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/app/vector_icons/vector_icons.h",
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/apps/browser_instance",
+  "+chrome/browser/apps/icon_standardizer.h",
+  "+chrome/browser/apps/platform_apps",
+  "+chrome/browser/ash/app_restore",
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/floating_workspace",
+  "+chrome/browser/ash/login/login_manager_test.h",
+  "+chrome/browser/ash/login/test",
+  "+chrome/browser/ash/login/users",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/system_web_apps/apps",
+  "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
+  "+chrome/browser/chromeos/extensions/wm",
+  "+chrome/browser/extensions/extension_apitest.h",
+  "+chrome/browser/favicon",
+  "+chrome/browser/policy",
+  "+chrome/browser/prefs",
+  "+chrome/browser/profiles",
+  "+chrome/browser/sync",
+  "+chrome/browser/ui/ash/login",
+  "+chrome/browser/ui/ash/multi_user",
+  "+chrome/browser/ui/ash/shelf",
+  "+chrome/browser/ui/ash/system_web_apps",
+  "+chrome/browser/ui/browser_finder.h",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_tabstrip.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/tabs",
+  "+chrome/browser/ui/views/frame/browser_view.h",
+  "+chrome/browser/ui/web_applications/test",
+  "+chrome/browser/web_applications/test",
+  "+chrome/browser/web_applications/web_app_id_constants.h",
+  "+chrome/common",
+  "+chrome/grit",
+  "+chrome/test",
+]

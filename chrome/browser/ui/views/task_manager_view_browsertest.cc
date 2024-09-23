@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
+#include "chrome/browser/ui/views/task_manager_view.h"
+
 #include <stddef.h>
 
 #include "base/functional/callback.h"
@@ -22,7 +29,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
-#include "chrome/browser/ui/views/task_manager_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -44,6 +50,12 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/test/widget_test.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "ui/aura/window.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace task_manager {
 
@@ -449,4 +461,15 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, CloseByAccelerator) {
 
   EXPECT_TRUE(GetView()->GetWidget()->IsClosed());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, AppType) {
+  chrome::ShowTaskManager(browser());
+
+  EXPECT_EQ(chromeos::AppType::SYSTEM_APP,
+            GetView()->GetWidget()->GetNativeWindow()->GetProperty(
+                chromeos::kAppTypeKey));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace task_manager

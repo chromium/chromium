@@ -8,6 +8,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.webapps.R;
 
@@ -20,8 +21,19 @@ public class PwaUniversalInstallBottomSheetContent implements BottomSheetContent
     // priority should be high.
     private @ContentPriority int mPriority = ContentPriority.HIGH;
 
-    public PwaUniversalInstallBottomSheetContent(PwaUniversalInstallBottomSheetView view) {
+    // A callback to run when the Back button is pressed.
+    private final Runnable mRecordBackButtonCallback;
+
+    // Helps keep track of whether the Back button was pressed.
+    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
+            new ObservableSupplierImpl<>();
+
+    public PwaUniversalInstallBottomSheetContent(
+            PwaUniversalInstallBottomSheetView view, Runnable recordBackButtonCallback) {
         mView = view;
+        mRecordBackButtonCallback = recordBackButtonCallback;
+
+        mBackPressStateChangedSupplier.set(true);
     }
 
     public void setPriority(@ContentPriority int priority) {
@@ -72,6 +84,16 @@ public class PwaUniversalInstallBottomSheetContent implements BottomSheetContent
     @Override
     public boolean swipeToDismissEnabled() {
         return true;
+    }
+
+    @Override
+    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+        return mBackPressStateChangedSupplier;
+    }
+
+    @Override
+    public void onBackPressed() {
+        mRecordBackButtonCallback.run();
     }
 
     @Override

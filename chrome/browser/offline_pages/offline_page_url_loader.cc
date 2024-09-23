@@ -5,9 +5,11 @@
 #include "chrome/browser/offline_pages/offline_page_url_loader.h"
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
@@ -27,14 +29,6 @@ namespace offline_pages {
 namespace {
 
 constexpr uint32_t kBufferSize = 4096;
-
-content::WebContents* GetWebContents(int frame_tree_node_id) {
-  return content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-}
-
-bool GetTabId(content::WebContents* web_contents, int* tab_id) {
-  return OfflinePageUtils::GetTabId(web_contents, tab_id);
-}
 
 net::RedirectInfo CreateRedirectInfo(const GURL& redirected_url,
                                      int response_code) {
@@ -70,7 +64,7 @@ bool ShouldCreateLoader(const network::ResourceRequest& resource_request) {
 // static
 std::unique_ptr<OfflinePageURLLoader> OfflinePageURLLoader::Create(
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     const network::ResourceRequest& tentative_resource_request,
     content::URLLoaderRequestInterceptor::LoaderCallback callback) {
   if (ShouldCreateLoader(tentative_resource_request)) {
@@ -85,14 +79,14 @@ std::unique_ptr<OfflinePageURLLoader> OfflinePageURLLoader::Create(
 
 OfflinePageURLLoader::OfflinePageURLLoader(
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     const network::ResourceRequest& tentative_resource_request,
     content::URLLoaderRequestInterceptor::LoaderCallback callback)
     : navigation_ui_data_(navigation_ui_data),
       frame_tree_node_id_(frame_tree_node_id),
       transition_type_(tentative_resource_request.transition_type),
       loader_callback_(std::move(callback)) {
-  // TODO(crbug.com/876527): Figure out how offline page interception should
+  // TODO(crbug.com/40590410): Figure out how offline page interception should
   // interact with URLLoaderThrottles. It might be incorrect to use
   // |tentative_resource_request.headers| here, since throttles can rewrite
   // headers between now and when the request handler passed to
@@ -114,7 +108,7 @@ void OfflinePageURLLoader::FollowRedirect(
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const std::optional<GURL>& new_url) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void OfflinePageURLLoader::SetPriority(net::RequestPriority priority,
@@ -158,7 +152,7 @@ void OfflinePageURLLoader::NotifyReadRawDataComplete(int bytes_read) {
     return;
   }
 
-  bytes_of_raw_data_to_transfer_ = bytes_read;
+  bytes_of_raw_data_to_transfer_ = base::checked_cast<size_t>(bytes_read);
   write_position_ = 0;
 
   TransferRawData();
@@ -166,18 +160,18 @@ void OfflinePageURLLoader::NotifyReadRawDataComplete(int bytes_read) {
 
 void OfflinePageURLLoader::TransferRawData() {
   while (true) {
-    DCHECK_GE(bytes_of_raw_data_to_transfer_, write_position_);
-    uint32_t write_size =
-        static_cast<uint32_t>(bytes_of_raw_data_to_transfer_ - write_position_);
+    base::span<const uint8_t> bytes = base::as_bytes(buffer_->span())
+                                          .first(bytes_of_raw_data_to_transfer_)
+                                          .subspan(write_position_);
     // If all the read data have been transferred, read more.
-    if (write_size == 0) {
+    if (bytes.empty()) {
       ReadRawData();
       return;
     }
 
-    MojoResult result =
-        producer_handle_->WriteData(buffer_->data() + write_position_,
-                                    &write_size, MOJO_WRITE_DATA_FLAG_NONE);
+    size_t bytes_written = 0;
+    MojoResult result = producer_handle_->WriteData(
+        bytes, MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       handle_watcher_->ArmOrNotify();
       return;
@@ -188,7 +182,7 @@ void OfflinePageURLLoader::TransferRawData() {
       return;
     }
 
-    write_position_ += write_size;
+    write_position_ += bytes_written;
   }
 }
 
@@ -210,14 +204,16 @@ int OfflinePageURLLoader::GetPageTransition() const {
 
 OfflinePageRequestHandler::Delegate::WebContentsGetter
 OfflinePageURLLoader::GetWebContentsGetter() const {
-  return base::BindRepeating(&GetWebContents, frame_tree_node_id_);
+  return base::BindRepeating(&content::WebContents::FromFrameTreeNodeId,
+                             frame_tree_node_id_);
 }
 
 OfflinePageRequestHandler::Delegate::TabIdGetter
 OfflinePageURLLoader::GetTabIdGetter() const {
-  if (!tab_id_getter_.is_null())
+  if (!tab_id_getter_.is_null()) {
     return tab_id_getter_;
-  return base::BindRepeating(&GetTabId);
+  }
+  return base::BindRepeating(&OfflinePageUtils::GetTabId);
 }
 
 void OfflinePageURLLoader::ReadRawData() {
@@ -243,7 +239,7 @@ void OfflinePageURLLoader::OnReceiveResponse(
     const network::ResourceRequest& /* resource_request */,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  // TODO(crbug.com/876527): Figure out how offline page interception should
+  // TODO(crbug.com/40590410): Figure out how offline page interception should
   // interact with URLLoaderThrottles. It might be incorrect to ignore
   // |resource_request| here, since it's the current request after
   // throttles.

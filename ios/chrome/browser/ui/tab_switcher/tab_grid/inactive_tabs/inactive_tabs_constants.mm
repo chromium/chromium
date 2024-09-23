@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 
-NSString* const kInactiveTabsButtonAccessibilityIdentifier =
-    @"InactiveTabsButtonAccessibilityIdentifier";
 
 NSString* const kInactiveTabsUserEducationAccessibilityIdentifier =
     @"InactiveTabsUserEducationAccessibilityIdentifier";

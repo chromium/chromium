@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Enquesta</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">S'està comprovant la connexió a Internet</translation>
+<translation id="2359808026110333948">Continua</translation>
 <translation id="2388990488038464401">Vols trucar a aquest número des del telèfon?</translation>
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
 <translation id="24452542372838207">Desplega la notificació</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">NOVETAT</translation>
 <translation id="2666092431469916601">Superior</translation>
 <translation id="2701330563083355633">S'ha compartit des del dispositiu <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Nou</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Fa 1 any}other{Fa # anys}}</translation>
 <translation id="2878511608894704031">Suprimeix-ho tot</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{d'aquí a 1 d}other{d'aquí a # d}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">Sistema <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Retrocés</translation>
 <translation id="5613020302032141669">Fletxa esquerra</translation>
+<translation id="5633029987065897167">Buit</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Actiu avui}=1{Actiu fa 1 dia}other{Actiu fa # dies}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dia i }other{# dies i }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">Contingut en RTF</translation>
 <translation id="6539092367496845964">S'ha produït un error. Torna-ho a provar més tard.</translation>
 <translation id="654149438358937226">Bloqueja totes les notificacions</translation>
-<translation id="6612467943526193239">Prem Esc per sortir del calibratge.</translation>
 <translation id="6620110761915583480">Desa el fitxer</translation>
 <translation id="6699343763173986273">Fitxer multimèdia: pista següent</translation>
 <translation id="6808150112686056157">Fitxer multimèdia: atura</translation>

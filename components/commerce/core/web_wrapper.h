@@ -28,6 +28,9 @@ class WebWrapper {
   // Get the URL that is currently being displayed for the page.
   virtual const GURL& GetLastCommittedURL() = 0;
 
+  // Gets the title for the current page.
+  virtual const std::u16string& GetTitle() = 0;
+
   // Whether the first load after a navigation has completed. This is useful
   // for determining if it is safe to run javascript and whether a navigation
   // was inside of a single-page webapp.

@@ -11,7 +11,6 @@
 #include "base/base_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace base {
 
@@ -64,10 +63,10 @@ class BASE_EXPORT SupportsUserData {
   void ClearAllUserData();
 
  private:
-  // Externally-defined data accessible by key.
-  absl::flat_hash_map<const void*, std::unique_ptr<Data>> user_data_;
-  bool in_destructor_ = false;
-  // Guards usage of |user_data_|
+  struct Impl;
+  std::unique_ptr<Impl> impl_;
+  bool in_clear_ = false;
+  // Guards usage of |impl_|
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

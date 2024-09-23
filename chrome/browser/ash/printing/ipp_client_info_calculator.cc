@@ -15,7 +15,7 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/policy/core/device_attributes.h"
 #include "chrome/browser/ash/policy/core/device_attributes_impl.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/version_info/version_info.h"
 #include "printing/mojom/print.mojom.h"

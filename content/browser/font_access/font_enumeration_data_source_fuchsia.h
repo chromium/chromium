@@ -14,7 +14,7 @@
 namespace content {
 
 // Fuchsia implementation of FontEnumerationDataSource.
-// TODO(crbug.com/1265639): Use fuchsia.font API when it provides enumeration.
+// TODO(crbug.com/42050376): Use fuchsia.font API when it provides enumeration.
 class FontEnumerationDataSourceFuchsia : public FontEnumerationDataSource {
  public:
   FontEnumerationDataSourceFuchsia();

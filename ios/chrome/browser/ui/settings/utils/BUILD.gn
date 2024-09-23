@@ -40,7 +40,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/content_settings/model",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/utils:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

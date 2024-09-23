@@ -20,6 +20,7 @@
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -91,7 +92,7 @@ class TabletModeWatcher : public display::DisplayObserver {
 
 void ChromeOSBrowserUITest::SetUpDefaultCommandLine(
     base::CommandLine* command_line) {
-  InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+  MixinBasedInProcessBrowserTest::SetUpDefaultCommandLine(command_line);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   command_line->AppendSwitch(ash::switches::kAshEnableTabletMode);
 #endif
@@ -101,7 +102,7 @@ void ChromeOSBrowserUITest::TearDownOnMainThread() {
   if (InTabletMode()) {
     ExitTabletMode();
   }
-  InProcessBrowserTest::TearDownOnMainThread();
+  MixinBasedInProcessBrowserTest::TearDownOnMainThread();
 }
 
 bool ChromeOSBrowserUITest::InTabletMode() {
@@ -235,12 +236,9 @@ bool ChromeOSBrowserUITest::IsShelfVisible() {
 }
 
 void ChromeOSBrowserUITest::DeactivateWidget(views::Widget* widget) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  views::test::WidgetActivationWaiter waiter(widget, false);
-#endif
   widget->Deactivate();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  waiter.Wait();
+  views::test::WaitForWidgetActive(widget, false);
 #endif
 }
 
@@ -253,7 +251,7 @@ void ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(Browser* browser) {
   ASSERT_FALSE(immersive_mode_controller->IsEnabled());
 
   ui_test_utils::ToggleFullscreenModeAndWait(browser);
-  // TODO(crbug.com/1501757): Simplify waiting once the two states are merged.
+  // TODO(crbug.com/40942067): Simplify waiting once the two states are merged.
   ImmersiveModeTester(browser).WaitForFullscreenToEnter();
   ASSERT_TRUE(immersive_mode_controller->IsEnabled());
   ASSERT_TRUE(browser_view->IsFullscreen());
@@ -268,7 +266,7 @@ void ChromeOSBrowserUITest::ExitImmersiveFullscreenMode(Browser* browser) {
   ASSERT_TRUE(immersive_mode_controller->IsEnabled());
 
   ui_test_utils::ToggleFullscreenModeAndWait(browser);
-  // TODO(crbug.com/1501757): Simplify waiting once the two states are merged.
+  // TODO(crbug.com/40942067): Simplify waiting once the two states are merged.
   ImmersiveModeTester(browser).WaitForFullscreenToExit();
   ASSERT_FALSE(immersive_mode_controller->IsEnabled());
   ASSERT_FALSE(browser_view->IsFullscreen());

@@ -9,6 +9,8 @@
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_notification_permission_callback.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -16,10 +18,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
-class ScriptPromise;
-class ScriptPromiseResolver;
+class Notification;
 class ScriptState;
+class V8NotificationPermission;
 
 // The notification manager, unique to the execution context, is responsible for
 // connecting and communicating with the Mojo notification service.
@@ -43,7 +44,12 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
   // method is synchronous to support the Notification.permission getter.
   mojom::blink::PermissionStatus GetPermissionStatus();
 
-  ScriptPromise RequestPermission(
+  // Async version of the above method, used to gather some metrics where we
+  // don't need to pay the cost of a sync IPC.
+  void GetPermissionStatusAsync(
+      base::OnceCallback<void(mojom::blink::PermissionStatus)> callback);
+
+  ScriptPromise<V8NotificationPermission> RequestPermission(
       ScriptState* script_state,
       V8NotificationPermissionCallback* deprecated_callback);
 
@@ -67,7 +73,7 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
       int64_t service_worker_registration_id,
       mojom::blink::NotificationDataPtr notification_data,
       mojom::blink::NotificationResourcesPtr notification_resources,
-      ScriptPromiseResolver* resolver);
+      ScriptPromiseResolver<IDLUndefined>* resolver);
 
   // Closes a persistent notification identified by its notification id.
   void ClosePersistentNotification(const WebString& notification_id);
@@ -76,20 +82,21 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
   // Worker Registration. If |filter_tag| is not an empty string, only the
   // notification with the given tag will be considered. If |include_triggered|
   // is true, this will include scheduled notifications.
-  void GetNotifications(int64_t service_worker_registration_id,
-                        const WebString& filter_tag,
-                        bool include_triggered,
-                        ScriptPromiseResolver* resolver);
+  void GetNotifications(
+      int64_t service_worker_registration_id,
+      const WebString& filter_tag,
+      bool include_triggered,
+      ScriptPromiseResolver<IDLSequence<Notification>>* resolver);
 
   void Trace(Visitor* visitor) const override;
 
  private:
   void DidDisplayPersistentNotification(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolver<IDLUndefined>* resolver,
       mojom::blink::PersistentNotificationError error);
 
   void DidGetNotifications(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolver<IDLSequence<Notification>>* resolver,
       const Vector<String>& notification_ids,
       Vector<mojom::blink::NotificationDataPtr> notification_datas);
 
@@ -98,7 +105,7 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
   mojom::blink::NotificationService* GetNotificationService();
 
   void OnPermissionRequestComplete(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolver<V8NotificationPermission>* resolver,
       V8NotificationPermissionCallback* deprecated_callback,
       mojom::blink::PermissionStatus status);
 

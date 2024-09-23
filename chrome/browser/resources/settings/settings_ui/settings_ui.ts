@@ -14,16 +14,15 @@ import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import '../icons.html.js';
 import '../settings_main/settings_main.js';
 import '../settings_menu/settings_menu.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
-import type {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import type {SettingsPrefsElement} from '/shared/settings/prefs/prefs.js';
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
@@ -182,15 +181,17 @@ export class SettingsUiElement extends SettingsUiElementBase {
     if (route === routes.PRIVACY_GUIDE) {
       // Privacy guide has a multi-card layout, which only needs shadows to
       // show when there is more content to scroll.
-      this.enableShadowBehavior(true);
+      this.setForceDropShadows(false);
+      this.enableScrollObservation(true);
     } else if (route.depth <= 1) {
       // Main page uses scroll position to determine whether a shadow should
       // be shown.
-      this.enableShadowBehavior(true);
+      this.setForceDropShadows(false);
+      this.enableScrollObservation(true);
     } else if (!route.isNavigableDialog) {
       // Sub-pages always show the top shadow, regardless of scroll position.
-      this.enableShadowBehavior(false);
-      this.showDropShadows();
+      this.enableScrollObservation(false);
+      this.setForceDropShadows(true);
     }
 
     const urlSearchQuery =

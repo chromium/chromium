@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/cdm/library_cdm/clear_key_cdm/cdm_video_decoder.h"
 
 #include <memory>
@@ -104,13 +109,13 @@ bool ToCdmVideoFrame(const VideoFrame& video_frame,
   cdm_video_frame->SetSize(
       {video_frame.coded_size().width(), video_frame.coded_size().height()});
   cdm_video_frame->SetTimestamp(video_frame.timestamp().InMicroseconds());
-  // TODO(crbug.com/707127): Set ColorSpace here. It's not trivial to convert
+  // TODO(crbug.com/40513452): Set ColorSpace here. It's not trivial to convert
   // a gfx::ColorSpace (from VideoFrame) to another other ColorSpace like
   // cdm::ColorSpace.
 
-  static_assert(VideoFrame::kYPlane == cdm::kYPlane && cdm::kYPlane == 0, "");
-  static_assert(VideoFrame::kUPlane == cdm::kUPlane && cdm::kUPlane == 1, "");
-  static_assert(VideoFrame::kVPlane == cdm::kVPlane && cdm::kVPlane == 2, "");
+  static_assert(VideoFrame::Plane::kY == cdm::kYPlane && cdm::kYPlane == 0, "");
+  static_assert(VideoFrame::Plane::kU == cdm::kUPlane && cdm::kUPlane == 1, "");
+  static_assert(VideoFrame::Plane::kV == cdm::kVPlane && cdm::kVPlane == 2, "");
 
   uint8_t* dst = buffer->Data();
   uint32_t offset = 0;

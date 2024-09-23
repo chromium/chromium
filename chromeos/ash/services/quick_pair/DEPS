@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/quick_pair",
+  "+components/cross_device/logging/logging.h",
   "+crypto/openssl_util.h",
   "+device/bluetooth/public/cpp",
   "+mojo/core/embedder",

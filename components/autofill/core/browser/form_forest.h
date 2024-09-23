@@ -29,7 +29,7 @@ namespace autofill::internal {
 // the renderers of these frames. The *browser form* of a frame-transcending
 // form is its root FormData, with all fields of its descendant FormDatas moved
 // into the root.
-// See ContentAutofillDriverRouter for further details on the terminology and
+// See AutofillDriverRouter for further details on the terminology and
 // motivation.
 //
 // Consider the following main frame with two frame-transcending forms:
@@ -59,7 +59,7 @@ namespace autofill::internal {
 // The three key functions of FormForest are:
 // - UpdateTreeOfRendererForm()
 // - GetBrowserForm()
-// - GetRendererFormsOfBrowserForm()
+// - GetRendererFormsOfBrowserFields()
 //
 // UpdateTreeOfRendererForm() incrementally builds up a graph of frames, forms,
 // and fields.
@@ -103,10 +103,10 @@ namespace autofill::internal {
 // |renderer_form| and returns the root form, along with its field children. For
 // example, if |renderer_form| is form B, it returns form A with fields 1–4.
 //
-// GetRendererFormsOfBrowserForm(browser_form) returns the individual renderer
-// forms that constitute |browser_form|, with their fields reinstated. For
-// example, if |browser_form| has fields 1–4, it returns form A with fields 1
-// and 4, and form B with fields 2 and 3.
+// GetRendererFormsOfBrowserFields(browser_fields) returns the individual
+// renderer forms that constitute `browser_fields`, with their fields
+// reinstated. For example, if `browser_fields` has fields 1–4, it returns form
+// A with fields 1 and 4, and form B with fields 2 and 3.
 //
 // The node types in the forest always alternate as follows:
 // - The root nodes are frames.
@@ -134,12 +134,12 @@ namespace autofill::internal {
 //    seen to make FormForest aware of the (new or potentially changed) form.
 // 2. Call GetBrowserForm(renderer_form.global_id()) directly afterwards (as
 //    long as the renderer form is known to the FormForest).
-// 3. Call GetRendererFormsOfBrowserForm(browser_form) only if |browser_form|
-//    was previously returned by GetBrowserForm(), perhaps with
+// 3. Call GetRendererFormsOfBrowserFields(browser_fields) only if
+//    `browser_fields` was previously returned by GetBrowserForm(), perhaps with
 //    different FormFieldData::value, FormFieldData::is_autofilled.
 //
 // For FormForest to be memory safe,
-// 1. UpdateTreeOfRendererForm() and GetRendererFormsOfBrowserForm() must only
+// 1. UpdateTreeOfRendererForm() and GetRendererFormsOfBrowserFields() must only
 //    be called for forms which have the following attributes set:
 //    - FormData::host_frame
 //    - FormData::renderer_id
@@ -229,31 +229,35 @@ class FormForest {
   // |driver| must be the AutofillDriver of `renderer_form.host_frame`.
   // Afterwards, `renderer_form.global_id()` is a known renderer form.
   void UpdateTreeOfRendererForm(FormData renderer_form,
-                                AutofillDriver* driver) {
+                                AutofillDriver& driver) {
     UpdateTreeOfRendererForm(&renderer_form, driver);
   }
 
   // Returns the browser form of a known |renderer_form|.
   const FormData& GetBrowserForm(FormGlobalId renderer_form) const;
 
-  // Parameter type of GetRendererFormsOfBrowserForm().
+  // Parameter type of GetRendererFormsOfBrowserFields().
   class SecurityOptions {
    public:
-    // Dangerous: only use this if you know what you're doing. See
-    // GetRendererFormsOfBrowserForm() to understand the consequences.
+    // Dangerous: only use this if you know what you're doing.
+    // See GetRendererFormsOfBrowserFields() to understand the consequences.
     static constexpr SecurityOptions TrustAllOrigins() { return {}; }
 
     SecurityOptions(
+        const url::Origin* main_origin,
         const url::Origin* triggered_origin,
         const base::flat_map<FieldGlobalId, FieldType>* field_type_map);
 
-    bool all_origins_are_trusted() const { return !triggered_origin_; }
+    bool all_origins_are_trusted() const { return !main_origin_; }
+    const url::Origin& main_origin() const { return *main_origin_; }
     const url::Origin& triggered_origin() const { return *triggered_origin_; }
     FieldType GetFieldType(const FieldGlobalId& field) const;
 
    private:
     constexpr SecurityOptions() = default;
 
+    // The main frame's origin. If null, all (!) origins are trusted.
+    const raw_ptr<const url::Origin> main_origin_ = nullptr;
     // The origin of the field from which Autofill was queried.
     const raw_ptr<const url::Origin> triggered_origin_ = nullptr;
     // Contains the field types of the fields in the browser form.
@@ -261,7 +265,7 @@ class FormForest {
         field_type_map_ = nullptr;
   };
 
-  // Return type of GetRendererFormsOfBrowserForm().
+  // Return type of GetRendererFormsOfBrowserFields().
   struct RendererForms {
     RendererForms();
     RendererForms(RendererForms&&);
@@ -271,16 +275,14 @@ class FormForest {
     base::flat_set<FieldGlobalId> safe_fields;
   };
 
-  // Returns the renderer forms of |browser_form| and the fields that are safe
-  // to be filled according to the security policy for cross-frame previewing
-  // and filling. The security policy depends on the origin Autofill was
-  // triggered on and the types of |browser_form|'s fields.
+  // Returns the renderer forms that host the `browser_fields`. The field values
+  // are subject to the security policy for cross-frame previewing and filling.
   //
-  // The function reinstates each field from |browser_form| in the renderer form
-  // it originates from. These reinstated fields hold the (possibly autofilled)
-  // values from |browser_form|, provided that they are considered safe to fill
-  // according to the security policy defined below. The FormFieldData::value of
-  // unsafe fields is reset to the empty string.
+  // The function reinstates each of the `browser_fields` in the renderer form
+  // it originates from. These reinstated fields have the (possibly autofilled)
+  // value from `browser_fields`, provided that they are considered safe to fill
+  // according to the security policy defined below. The FormFieldData::value
+  // of unsafe fields is reset to the empty string.
   //
   // A field is *safe to fill* iff at least one of the conditions (1–4) and
   // additionally condition (5) hold:
@@ -303,7 +305,8 @@ class FormForest {
   // The *triggered origin* is the origin of the field from which Autofill was
   // queried, `security_options.triggered_origin()`.
   //
-  // The *main origin* is `browser_form.main_frame_origin`.
+  // The *main origin* is the origin of the main frame of the frame of the field
+  // from which Autofill was queried, `security_options.main_origin()`.
   //
   // A *type of a field* is determined by `security_options.GetFieldType()`. The
   // non-sensitive field types are credit card types, cardholder names, and
@@ -312,8 +315,8 @@ class FormForest {
   // The "allow" attribute of the <iframe> element controls whether the
   // *policy-controlled feature shared-autofill* is enabled in a document
   // (see https://www.w3.org/TR/permissions-policy-1/).
-  RendererForms GetRendererFormsOfBrowserForm(
-      const FormData& browser_form,
+  RendererForms GetRendererFormsOfBrowserFields(
+      base::span<const FormFieldData> browser_fields,
       const SecurityOptions& security_options) const;
 
   // Deletes all forms and fields that originate from the |renderer_forms| and
@@ -397,7 +400,7 @@ class FormForest {
   // Leaves `*renderer_form` in a valid but unspecified state (like after a
   // move). In particular, `*renderer_form` and its members can be reassigned.
   void UpdateTreeOfRendererForm(FormData* renderer_form,
-                                AutofillDriver* driver);
+                                AutofillDriver& driver);
 
   // The FrameData nodes of the forest.
   // Note that since the elements are (smart) pointers, they are not invalidated

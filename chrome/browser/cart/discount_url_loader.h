@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents.h"
 
-// TODO(crbug.com/1218979): This is a workaround to try to override navigation
+// TODO(crbug.com/40185906): This is a workaround to try to override navigation
 // from context menu. Investigate if there are better ways to handle the second
 // navigation.
 class DiscountURLLoader : public BrowserListObserver,

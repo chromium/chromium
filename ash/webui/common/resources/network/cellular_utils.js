@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/ash/common/network/onc_mojo.js';
+import '//resources/ash/common/network/onc_mojo.js';
 
-import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {ApnProperties, DeviceStateProperties, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
+import {ApnProperties, ApnType, DeviceStateProperties, FilterType, ManagedProperties, NetworkStateProperties, NO_LIMIT} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+
+import {OncMojo} from './onc_mojo.js';
 
 /**
  * TODO(b/162365553): Implement Edit mode.
@@ -172,6 +173,53 @@ export function processDeviceState(type, devices, deviceState) {
 }
 
 /**
+ * Returns whether or not the network associated with |managedProperties| is
+ * carrier locked.
+ * @param {?OncMojo.DeviceStateProperties} deviceState
+ * @param {ManagedProperties|undefined} managedProperties
+ */
+export function isCarrierLockedActiveSim(managedProperties, deviceState) {
+  if (!deviceState || deviceState.type !== NetworkType.kCellular) {
+    return false;
+  }
+  if (!managedProperties) {
+    return false;
+  }
+  const networkState =
+      OncMojo.managedPropertiesToNetworkState(managedProperties);
+
+  if (!isActiveSim(networkState, deviceState)) {
+    return false;
+  }
+  const simLockStatus = deviceState.simLockStatus;
+  if (!simLockStatus) {
+    return false;
+  }
+  return simLockStatus.lockType === 'network-pin';
+}
+
+/**
+ * Returns whether or not the network associated with |managedProperties| should
+ * allow modification of its properties via the UI.
+ * @param {?OncMojo.DeviceStateProperties} deviceState
+ * @param {ManagedProperties|undefined} managedProperties
+ */
+export function shouldDisallowNetworkModifications(
+    deviceState, managedProperties) {
+  if (!deviceState || deviceState.type !== NetworkType.kCellular) {
+    return false;
+  }
+  // If device is carrier locked, all the settings should be
+  // disabled for non compatible SIMs.
+  if (isCarrierLockedActiveSim(managedProperties, deviceState)) {
+    return true;
+  }
+  // If this is a cellular device and inhibited, state cannot be changed, so
+  // the page's inputs should be disabled.
+  return OncMojo.deviceIsInhibited(deviceState);
+}
+
+/**
  * Returns the display name for |apn|.
  * @param {function(string)} i18nFunction
  * @param {!ApnProperties} apn
@@ -184,4 +232,22 @@ export function getApnDisplayName(i18nFunction, apn) {
 
   // If APN has no name, it's an APN detected by the modem (b/295588352).
   return i18nFunction('apnNameModem');
+}
+
+/**
+ * Returns true if the |apn| can be used as a attach APN.
+ * @param {ApnProperties} apn
+ * @return {boolean}
+ */
+export function isAttachApn(apn) {
+  return !!apn.apnTypes && apn.apnTypes.includes(ApnType.kAttach);
+}
+
+/**
+ * Returns true if the |apn| can be used as a default APN.
+ * @param {ApnProperties} apn
+ * @return {boolean}
+ */
+export function isDefaultApn(apn) {
+  return !!apn.apnTypes && apn.apnTypes.includes(ApnType.kDefault);
 }

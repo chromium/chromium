@@ -12,7 +12,7 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:minHeight="52dp"
     android:orientation="horizontal">
-  <!-- TODO(crbug/1486401): Remove touch_to_fill_more_passkeys_icon and replace
+  <!-- TODO(crbug.com/40282881): Remove touch_to_fill_more_passkeys_icon and replace
                             with the equivalent in androidx.credentials
                             library. -->
   <ImageView

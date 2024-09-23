@@ -1,0 +1,10 @@
+simple-std-search.cpp:16:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it;  // Invalid access.
+   ^
+simple-std-search.cpp:21:61: error: [iterator-checker] Potentially iterator mismatch.
+  std::search(std::begin(v1), std::end(v2), std::begin(v2), std::end(v1));
+                                                            ^
+simple-std-search.cpp:21:31: error: [iterator-checker] Potentially iterator mismatch.
+  std::search(std::begin(v1), std::end(v2), std::begin(v2), std::end(v1));
+                              ^
+3 errors generated.

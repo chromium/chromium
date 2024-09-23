@@ -1,0 +1,96 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("contact_center_insights") {
+  sources = [
+    "contact_center_insights_extension_manager.cc",
+    "contact_center_insights_extension_manager.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//extensions/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "contact_center_insights_extension_manager_unittest.cc" ]
+
+  deps = [
+    ":contact_center_insights",
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+if (is_chromeos_ash) {
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "contact_center_insights_extension_manager_ash_browsertest.cc" ]
+
+    deps = [
+      "//chrome/browser/ash/login/test:test_support",
+      "//chrome/browser/ash/policy/affiliation:test_support",
+      "//chrome/browser/ash/policy/core:test_support",
+      "//chrome/browser/ash/profiles",
+      "//chrome/browser/extensions",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common",
+      "//chrome/common:constants",
+      "//content/test:test_support",
+      "//extensions/browser",
+      "//testing/gtest",
+    ]
+  }
+}
+
+if (is_chromeos_lacros) {
+  source_set("lacros_chrome_browsertests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources =
+        [ "contact_center_insights_extension_manager_lacros_browsertest.cc" ]
+
+    deps = [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chromeos/startup",
+      "//components/policy/core/common",
+      "//components/prefs",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//extensions/browser",
+      "//testing/gtest",
+    ]
+  }
+}

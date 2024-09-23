@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "mojo/core/ipcz_driver/mojo_trap.h"
 
 #include <cstdint>
@@ -12,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -326,7 +332,7 @@ MojoResult MojoTrap::Arm(MojoTrapEvent* blocking_events,
   };
 
   TriggerMap::iterator next_trigger = next_trigger_;
-  DCHECK(next_trigger != triggers_.end());
+  CHECK(next_trigger != triggers_.end(), base::NotFatalUntil::M130);
 
   // We iterate over all triggers, starting just beyond wherever we started last
   // time we were armed. This guards against any single trigger being starved.
@@ -344,7 +350,6 @@ MojoResult MojoTrap::Arm(MojoTrapEvent* blocking_events,
 
     if (result != IPCZ_RESULT_FAILED_PRECONDITION) {
       NOTREACHED();
-      return result;
     }
 
     // The ipcz trap failed to install, so this trigger's conditions are already

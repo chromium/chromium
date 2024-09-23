@@ -13,20 +13,6 @@ ChromeVoxSmartStickyModeTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
-      importModule(
-          'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
-      importModule(
-          'SmartStickyMode',
-          '/chromevox/background/input/smart_sticky_mode.js'),
-      importModule('ChromeVoxPrefs', '/chromevox/background/prefs.js'),
-      importModule('EarconId', '/chromevox/common/earcon_id.js'),
-      importModule('CursorRange', '/common/cursors/range.js'),
-    ]);
-
     this.ssm_ = new SmartStickyMode();
     // Deregister from actual range changes.
     ChromeVoxRange.removeObserver(this.ssm_);

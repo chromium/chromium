@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -16,6 +17,7 @@
 class Browser;
 class BrowserNonClientFrameView;
 class BrowserView;
+class Profile;
 class GURL;
 class WebAppFrameToolbarView;
 class WebAppOriginText;
@@ -45,6 +47,15 @@ class WebAppFrameToolbarTestHelper {
       delete;
   ~WebAppFrameToolbarTestHelper();
 
+  // Installs but does not launch a web app with the given `start_url`. This
+  // does not modify state of this test helper.
+  webapps::AppId InstallWebApp(Profile* profile, const GURL& start_url);
+
+  // These methods install and launch the given web app; additionally the
+  // various getters in this test helper will start returning objects and
+  // views related to this latest launched web app.
+  webapps::AppId InstallAndLaunchWebApp(Profile* profile,
+                                        const GURL& start_url);
   webapps::AppId InstallAndLaunchWebApp(Browser* browser,
                                         const GURL& start_url);
   webapps::AppId InstallAndLaunchCustomWebApp(
@@ -55,7 +66,7 @@ class WebAppFrameToolbarTestHelper {
   GURL LoadTestPageWithDataAndGetURL(
       net::test_server::EmbeddedTestServer* embedded_test_server,
       base::ScopedTempDir* temp_dir,
-      base::StringPiece test_html);
+      std::string_view test_html);
 
   GURL LoadWindowControlsOverlayTestPageWithDataAndGetURL(
       net::test_server::EmbeddedTestServer* embedded_test_server,
@@ -99,6 +110,7 @@ class WebAppFrameToolbarTestHelper {
     return web_app_frame_toolbar_;
   }
   WebAppOriginText* origin_text_view();
+  void SetOriginTextLabelForTesting(std::u16string label_text);
 
  private:
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;

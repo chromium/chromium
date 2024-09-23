@@ -5,11 +5,12 @@
 #ifndef GPU_IPC_SERVICE_RASTER_COMMAND_BUFFER_STUB_H_
 #define GPU_IPC_SERVICE_RASTER_COMMAND_BUFFER_STUB_H_
 
+#include "base/memory/weak_ptr.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 
 namespace gpu {
 
-class GPU_IPC_SERVICE_EXPORT RasterCommandBufferStub
+class GPU_IPC_SERVICE_EXPORT RasterCommandBufferStub final
     : public CommandBufferStub {
  public:
   RasterCommandBufferStub(GpuChannel* channel,
@@ -32,10 +33,13 @@ class GPU_IPC_SERVICE_EXPORT RasterCommandBufferStub
       const mojom::CreateCommandBufferParams& init_params,
       base::UnsafeSharedMemoryRegion shared_state_shm) override;
   MemoryTracker* GetContextGroupMemoryTracker() const override;
+  base::WeakPtr<CommandBufferStub> AsWeakPtr() override;
 
  private:
   void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
   void SetActiveURL(GURL url) override;
+
+  base::WeakPtrFactory<RasterCommandBufferStub> weak_ptr_factory_{this};
 };
 
 }  // namespace gpu

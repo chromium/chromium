@@ -137,8 +137,9 @@ criteria for flushing is met, the policy invokes the mechanism by rendezvousing
 to a process-associated mojo interface and invoking on it.
 
 If the mojo interface is accessible through a content entity (e.g.
-content::WebContents), the mechanism invocation is posted to the main thread
-where the relevant content proxy (e.g. performance_manager::WebContentsProxy)
-makes it easy and safe to retrieve the content entity on the main thread.
-Should the corresponding content entity have been deleted after the task was
-posted, the content proxy will simply return nullptr.
+`content::WebContents` or `content::RenderFrameHost`), the mechanism invocation
+is posted to the main thread where the relevant content proxy (e.g.
+`WeakPtr<WebContents>` or `performance_manager::RenderFrameHostProxy`) makes it
+easy and safe to retrieve the content entity on the main thread. Should the
+corresponding content entity have been deleted after the task was posted, the
+content proxy will simply return nullptr.

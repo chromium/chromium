@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_view_delegate.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_prompt.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -52,6 +53,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLabelViewId1);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLabelViewId2);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTitleViewId);
 
   EmbeddedPermissionPromptBaseView(
       Browser* browser,
@@ -66,6 +68,8 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
   void UpdateAnchor(views::Widget* widget);
   void ClosingPermission();
   void PrepareToClose();
+  permissions::feature_params::PermissionElementPromptPosition
+  GetPromptPosition() const;
 
   // views::BubbleDialogDelegateView:
   bool ShouldShowCloseButton() const override;
@@ -122,8 +126,8 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
   void AddButton(views::View& buttons_container,
                  const ButtonConfiguration& button);
   std::unique_ptr<views::FlexLayoutView> CreateLoadingIcon();
-
-  const raw_ptr<Browser> browser_;
+  gfx::Rect GetBubbleBounds() override;
+  gfx::Rect element_rect_;
   base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate_;
 };
 

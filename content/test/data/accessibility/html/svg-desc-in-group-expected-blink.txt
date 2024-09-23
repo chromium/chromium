@@ -1,5 +1,5 @@
 rootWebArea htmlTag='#document'
-++genericContainer ignored htmlTag='html'
+++genericContainer ignored
 ++++genericContainer htmlTag='body'
 ++++++svgRoot htmlTag='svg'
 ++++++++group description='Group with circle and text' htmlTag='g' descriptionFrom=svgDescElement

@@ -5,6 +5,7 @@
 #include "services/device/usb/scoped_winusb_handle.h"
 
 #include <windows.h>
+
 #include <winusb.h>
 
 namespace device {

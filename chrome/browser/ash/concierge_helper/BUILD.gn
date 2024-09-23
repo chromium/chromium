@@ -1,0 +1,44 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("concierge_helper") {
+  sources = [
+    "concierge_helper_service.cc",
+    "concierge_helper_service.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+  ]
+
+  deps = [
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "concierge_helper_service_unittest.cc" ]
+
+  deps = [
+    ":concierge_helper",
+    "//base",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
+    "//content/test:test_support",
+    "//dbus",
+    "//testing/gtest",
+  ]
+}

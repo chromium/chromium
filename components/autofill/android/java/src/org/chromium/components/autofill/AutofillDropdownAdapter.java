@@ -134,8 +134,7 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
             // WRAP_CONTENT, defined above for multiline labels, leaves none.
             int existingStart = ViewCompat.getPaddingStart(labelView);
             int existingEnd = ViewCompat.getPaddingEnd(labelView);
-            ViewCompat.setPaddingRelative(
-                    labelView, existingStart, mLabelMargin, existingEnd, mLabelMargin);
+            labelView.setPaddingRelative(existingStart, mLabelMargin, existingEnd, mLabelMargin);
         }
 
         if (item.isGroupHeader() || item.isBoldLabel()) {
@@ -255,7 +254,7 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         }
         iconView.setImageDrawable(item.getIconDrawable());
         iconView.setVisibility(View.VISIBLE);
-        // TODO(crbug.com/874077): Add accessible text for this icon.
+        // TODO(crbug.com/40589327): Add accessible text for this icon.
         return iconView;
     }
 

@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/onc/onc_constants.h"
 #include "content/public/test/browser_test.h"

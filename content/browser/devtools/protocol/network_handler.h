@@ -73,8 +73,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                  const base::UnguessableToken& devtools_token,
                  DevToolsIOContext* io_context,
                  base::RepeatingClosure update_loader_factories_callback,
-                 bool allow_file_access,
-                 bool client_is_trusted);
+                 DevToolsAgentHostClient* client);
 
   NetworkHandler(const NetworkHandler&) = delete;
   NetworkHandler& operator=(const NetworkHandler&) = delete;
@@ -141,7 +140,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                      Maybe<std::string> url,
                      Maybe<std::string> domain,
                      Maybe<std::string> path,
-                     Maybe<std::string> partition_key,
+                     Maybe<Network::CookiePartitionKey> partition_key,
                      std::unique_ptr<DeleteCookiesCallback> callback) override;
   void SetCookie(const std::string& name,
                  const std::string& value,
@@ -156,7 +155,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                  Maybe<bool> same_party,
                  Maybe<std::string> source_scheme,
                  Maybe<int> source_port,
-                 Maybe<std::string> partition_key,
+                 Maybe<Network::CookiePartitionKey> partition_key,
                  std::unique_ptr<SetCookieCallback> callback) override;
   void SetCookies(
       std::unique_ptr<protocol::Array<Network::CookieParam>> cookies,
@@ -170,7 +169,10 @@ class NetworkHandler : public DevToolsDomainHandler,
       double latency,
       double download_throughput,
       double upload_throughput,
-      Maybe<protocol::Network::ConnectionType> connection_type) override;
+      Maybe<protocol::Network::ConnectionType> connection_type,
+      Maybe<double> packet_loss,
+      Maybe<int> packet_queue_length,
+      Maybe<bool> packet_reordering) override;
   Response SetBypassServiceWorker(bool bypass) override;
 
   DispatchResponse SetRequestInterception(
@@ -229,6 +231,10 @@ class NetworkHandler : public DevToolsDomainHandler,
 
   void NavigationRequestWillBeSent(const NavigationRequest& nav_request,
                                    base::TimeTicks timestamp);
+  void FencedFrameReportRequestSent(const std::string& request_id,
+                                    const network::ResourceRequest& request,
+                                    const std::string& event_data,
+                                    base::TimeTicks timestamp);
   void RequestSent(const std::string& request_id,
                    const std::string& loader_id,
                    const net::HttpRequestHeaders& request_headers,
@@ -288,6 +294,10 @@ class NetworkHandler : public DevToolsDomainHandler,
       network::mojom::IPAddressSpace resource_address_space,
       int32_t http_status_code,
       const std::optional<net::CookiePartitionKey>& cookie_partition_key);
+  void OnResponseReceivedEarlyHints(
+      const std::string& devtools_request_id,
+      const std::vector<network::mojom::HttpRawHeaderPairPtr>&
+          response_headers);
   void OnTrustTokenOperationDone(
       const std::string& devtools_request_id,
       const network::mojom::TrustTokenOperationResult& result);
@@ -306,6 +316,7 @@ class NetworkHandler : public DevToolsDomainHandler,
       const std::string& error_message,
       const std::optional<std::string>& bundle_request_devtools_id);
 
+  void OnPolicyContainerHostUpdated();
   bool enabled() const { return enabled_; }
 
   Network::Frontend* frontend() const { return frontend_.get(); }
@@ -313,7 +324,9 @@ class NetworkHandler : public DevToolsDomainHandler,
   static std::string ExtractFragment(const GURL& url, std::string* fragment);
   static std::unique_ptr<Network::Request> CreateRequestFromResourceRequest(
       const network::ResourceRequest& request,
-      const std::string& cookie_line);
+      const std::string& cookie_line,
+      std::vector<base::expected<std::vector<uint8_t>, std::string>>
+          request_bodies);
 
   void LoadNetworkResource(
       Maybe<content::protocol::String> frameId,
@@ -351,18 +364,20 @@ class NetworkHandler : public DevToolsDomainHandler,
       mojo::ScopedDataPipeConsumerHandle pipe,
       const std::string& mime_type);
 
+  void GotAllCookies(std::unique_ptr<GetAllCookiesCallback> callback,
+                     const std::vector<net::CanonicalCookie>& cookies);
+
   // TODO(dgozman): Remove this.
   const std::string host_id_;
 
   const base::UnguessableToken devtools_token_;
-  DevToolsIOContext* const io_context_;
-  const bool allow_file_access_;
-  const bool client_is_trusted_;
+  const raw_ptr<DevToolsIOContext> io_context_;
+  raw_ptr<DevToolsAgentHostClient> client_;
 
   std::unique_ptr<Network::Frontend> frontend_;
   raw_ptr<BrowserContext> browser_context_;
-  StoragePartition* storage_partition_;
-  RenderFrameHostImpl* host_;
+  raw_ptr<StoragePartition> storage_partition_;
+  raw_ptr<RenderFrameHostImpl> host_;
   bool enabled_;
 #if BUILDFLAG(ENABLE_REPORTING)
   mojo::Receiver<network::mojom::ReportingApiObserver> reporting_receiver_;

@@ -102,13 +102,7 @@ TEST_F(MediaEngagementPreloadedListTest, LoadMissingFile) {
   EXPECT_TRUE(IsEmpty());
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// ".." is not a file that can be opened on Fuchsia.
-#define MAYBE_LoadFileReadFailed DISABLED_LoadFileReadFailed
-#else
-#define MAYBE_LoadFileReadFailed LoadFileReadFailed
-#endif  // BUILDFLAG(IS_FUCHSIA)
-TEST_F(MediaEngagementPreloadedListTest, MAYBE_LoadFileReadFailed) {
+TEST_F(MediaEngagementPreloadedListTest, LoadFileReadFailed) {
   ASSERT_FALSE(LoadFromFile(kFileReadFailedPath));
   EXPECT_FALSE(IsLoaded());
   EXPECT_TRUE(IsEmpty());

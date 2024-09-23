@@ -7,19 +7,19 @@ package org.chromium.components.sync;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
 import org.json.JSONArray;
 
 import org.chromium.base.Callback;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 
-import java.util.Date;
+import java.util.HashMap;
 import java.util.Set;
 
 /**
  * Java version of the native SyncService interface. Must only be used on the UI thread.
- * TODO(crbug.com/1451811): Update to no reference UI thread.
- * TODO(crbug.com/1158816): Document the remaining methods.
+ * TODO(crbug.com/40161455): Document the remaining methods.
  */
 public interface SyncService {
     /** Listener for the underlying sync status. */
@@ -47,24 +47,17 @@ public interface SyncService {
     public boolean isTransportStateActive();
 
     /**
-     * Checks whether Sync-the-feature can (attempt to) start. This means that there is a primary
-     * account and no disable reasons. Note that the Sync machinery may start up in transport-only
-     * mode even if this is false.
+     * Returns whether all conditions are satisfied for Sync-the-feature to start. This means that
+     * there is a Sync-consented account, no disable reasons, and first-time Sync setup has been
+     * completed by the user.
      *
-     * @return true if Sync can start, false otherwise.
-     */
-    public boolean canSyncFeatureStart();
-
-    /**
-     * Returns whether all conditions are satisfied for Sync-the-feature to start.
-     * This means that there is a Sync-consented account, no disable reasons, and
-     * first-time Sync setup has been completed by the user.
-     *
-     * Note: This does not imply that Sync is actually running. Check
-     * IsSyncFeatureActive or GetTransportState to get the current state.
+     * <p>Note: This does not imply that Sync is actually running. Check IsSyncFeatureActive or
+     * GetTransportState to get the current state.
      *
      * @return true if the sync feature is enabled.
      */
+    // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
+    // codebase. See ConsentLevel::kSync documentation for details.
     public boolean isSyncFeatureEnabled();
 
     /**
@@ -73,6 +66,8 @@ public interface SyncService {
      *
      * @return true if Sync is active, false otherwise.
      */
+    // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
+    // codebase. See ConsentLevel::kSync documentation for details.
     public boolean isSyncFeatureActive();
 
     public @GoogleServiceAuthError.State int getAuthError();
@@ -97,26 +92,43 @@ public interface SyncService {
      *
      * @return true if the primary account is consented to Sync (the feature), false otherwise.
      */
+    // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
+    // codebase. See ConsentLevel::kSync documentation for details.
     public boolean hasSyncConsent();
 
     /**
      * Gets the set of data types that are currently syncing.
      *
-     * This is affected by whether sync is on.
+     * <p>This is affected by whether sync is on.
      *
-     * @return ModelType set of active data types.
+     * @return DataType set of active data types.
      */
     public Set<Integer> getActiveDataTypes();
 
     /**
      * Gets the set of types that the user has selected.
      *
-     * NOTE: This returns "all types" by default, even if the user has never
-     *       enabled Sync, or if only Sync-the-transport is running.
-     *
      * @return UserSelectableType set of selected types.
      */
     public Set<Integer> getSelectedTypes();
+
+    /**
+     * Returns the datatypes which have local changes that have not yet been synced with the server.
+     * Note: This includes deletions as well.
+     */
+    public void getTypesWithUnsyncedData(Callback<Set<Integer>> callback);
+
+    /**
+     * Queries the count and description/preview of existing local data for `types` data types. This
+     * is an asynchronous method which returns the result via the callback `callback` once the
+     * information for all the data types in `types` is available. Note: Only data types that are
+     * enabled and support this functionality are part of the response. Note: Only data types that
+     * are ready for migration are returned.
+     */
+    public void getLocalDataDescriptions(
+            Set<Integer> types, Callback<HashMap<Integer, LocalDataDescription>> callback);
+
+    public void triggerLocalDataMigration(Set<Integer> types);
 
     public boolean hasKeepEverythingSynced();
 
@@ -127,10 +139,9 @@ public interface SyncService {
     /**
      * Enables syncing for the passed types.
      *
-     * @param syncEverything Set to true if the user wants to sync all data types
-     *                       (including new data types we add in the future).
-     * @param enabledTypes   The set of types to enable. Ignored (can be null) if
-     *                       syncEverything is true.
+     * @param syncEverything Set to true if the user wants to sync all data types (including new
+     *     data types we add in the future).
+     * @param enabledTypes The set of types to enable.
      */
     public void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes);
 
@@ -174,19 +185,13 @@ public interface SyncService {
     public void removeSyncStateChangedListener(SyncStateChangedListener listener);
 
     /**
-     * Returns the actual passphrase type being used for encryption. The sync engine must be
-     * running (isEngineInitialized() returns true) before calling this function.
-     * <p/>
-     * This method should only be used if you want to know the raw value. For checking whether
-     * we should ask the user for a passphrase, use isPassphraseRequiredForPreferredDataTypes().
+     * Returns the actual passphrase type being used for encryption. The sync engine must be running
+     * (isEngineInitialized() returns true) before calling this function.
+     *
+     * <p>This method should only be used if you want to know the raw value. For checking whether we
+     * should ask the user for a passphrase, use isPassphraseRequiredForPreferredDataTypes().
      */
     public @PassphraseType int getPassphraseType();
-
-    /**
-     * Returns the time the current explicit passphrase was set (if any). Null if no explicit
-     * passphrase is in use, or no time is available.
-     */
-    public @Nullable Date getExplicitPassphraseTime();
 
     /**
      * Checks if sync is currently set to use a custom passphrase (or the similar -and legacy-
@@ -272,6 +277,10 @@ public interface SyncService {
 
     /** @return Whether sync is enabled to sync urls with a non custom passphrase. */
     public boolean isSyncingUnencryptedUrls();
+
+    /** @return Returns the pointer the corresponding native object. */
+    @CalledByNative
+    public long getNativeSyncServiceAndroidBridge();
 
     /**
      * Returns the time when the last sync cycle was completed.

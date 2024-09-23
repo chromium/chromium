@@ -31,7 +31,6 @@ class Label;
 namespace ash {
 
 enum class HelpBubbleId;
-enum class HelpBubbleStyle;
 
 namespace internal {
 
@@ -78,7 +77,6 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   gfx::Rect GetHitRect() const;
 
   HelpBubbleId id() const { return id_; }
-  HelpBubbleStyle style() const { return style_; }
 
  protected:
   // views::BubbleDialogDelegateView:
@@ -89,7 +87,8 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetBoundsChanged(views::Widget* widget, const gfx::Rect&) override;
   void OnThemeChanged() override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Rect GetAnchorRect() const override;
   void GetWidgetHitTestMask(SkPath* mask) const override;
   bool WidgetHasHitTestMask() const override;
@@ -109,7 +108,6 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   void UpdateRoundedCorners();
 
   const HelpBubbleId id_;
-  const HelpBubbleStyle style_;
 
   raw_ptr<views::ImageView> icon_view_ = nullptr;
   std::vector<raw_ptr<views::Label, VectorExperimental>> labels_;

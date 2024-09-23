@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/feed/web_feed_tab_helper.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,8 +21,6 @@
 #include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chrome {
-
 std::vector<TabAlertState> GetTabAlertStatesForContents(
     content::WebContents* contents) {
   std::vector<TabAlertState> states;
@@ -36,7 +33,7 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
   if (indicator.get()) {
     // Currently we only show the icon and tooltip of the highest-priority
     // alert on a tab.
-    // TODO(crbug.com/861961): To show the icon of the highest-priority alert
+    // TODO(crbug.com/40584226): To show the icon of the highest-priority alert
     // with tooltip that notes all the states in play.
     if (indicator->IsCapturingWindow(contents) ||
         indicator->IsCapturingDisplay(contents)) {
@@ -141,7 +138,7 @@ std::u16string GetTabAlertStateText(const TabAlertState alert_state) {
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -208,34 +205,6 @@ bool AreAllSitesMuted(const TabStripModel& tab_strip,
   }
   return true;
 }
-
-TabWebFeedFollowState GetSiteFollowState(const TabStripModel& tab_strip,
-                                         const int index) {
-  content::WebContents* web_contents = tab_strip.GetWebContentsAt(index);
-  DCHECK(web_contents);
-
-  return feed::WebFeedTabHelper::GetFollowState(web_contents);
-}
-
-TabWebFeedFollowState GetAggregatedFollowStateOfAllSites(
-    const TabStripModel& tab_strip,
-    const std::vector<int>& indices) {
-  bool all_followed = true;
-  for (int tab_index : indices) {
-    TabWebFeedFollowState state = GetSiteFollowState(tab_strip, tab_index);
-    if (state == TabWebFeedFollowState::kUnknown)
-      return TabWebFeedFollowState::kUnknown;
-    // Don't return kNotFollowed immediately since kUnknown should be returned
-    // when a later tab is found with kUnknown.
-    else if (state == TabWebFeedFollowState::kNotFollowed)
-      all_followed = false;
-  }
-
-  return all_followed ? TabWebFeedFollowState::kFollowed
-                      : TabWebFeedFollowState::kNotFollowed;
-}
-
-}  // namespace chrome
 
 LastMuteMetadata::LastMuteMetadata(content::WebContents* contents)
     : content::WebContentsUserData<LastMuteMetadata>(*contents) {}

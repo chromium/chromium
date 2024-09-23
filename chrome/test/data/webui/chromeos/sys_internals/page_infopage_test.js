@@ -4,6 +4,7 @@
 
 import {$} from 'chrome://resources/js/util.js';
 import {handleUpdateData, lineChart, updateInfoPage} from 'chrome://sys-internals/index.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {getTestData} from './test_util.js';
 

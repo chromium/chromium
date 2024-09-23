@@ -1,0 +1,16 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_video_context_input_params.proto";
+
+message LensOverlayVideoParams {
+  // Video context params from input.
+  LensOverlayVideoContextInputParams video_context_input_params = 1;
+}

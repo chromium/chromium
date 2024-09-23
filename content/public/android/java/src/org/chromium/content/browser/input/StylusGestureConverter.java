@@ -270,7 +270,8 @@ public class StylusGestureConverter {
      * string.
      */
     private static String16 toMojoString(String string) {
-        short[] data = new short[string.length()];
+        int len = string != null ? string.length() : 0;
+        short[] data = new short[len];
         for (int i = 0; i < data.length; i++) {
             data[i] = (short) string.charAt(i);
         }

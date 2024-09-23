@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_marginHorizontal="@dimen/facilitated_payments_horizontal_margin"
+    android:layout_marginVertical="@dimen/facilitated_payments_additional_info_margin_vertical"
+    android:orientation="vertical">
+
+    <!-- TODO(b/352590525): Add facilitated payments render test. -->
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+          android:id="@+id/description_line"
+          android:layout_height="wrap_content"
+          android:layout_width="match_parent"
+          android:textAlignment="center"
+          android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
+</LinearLayout>

@@ -13,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.StyleRes;
 
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -56,29 +58,85 @@ public final class DualControlLayout extends ViewGroup {
         int APART = 2;
     }
 
+    @IntDef({
+        ButtonType.PRIMARY_FILLED,
+        ButtonType.PRIMARY_TEXT,
+        ButtonType.SECONDARY_TEXT,
+        ButtonType.PRIMARY_OUTLINED,
+        ButtonType.SECONDARY_OUTLINED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ButtonType {
+        // Buttons will have the primary button ID with a filled container.
+        int PRIMARY_FILLED = 0;
+
+        //  Buttons will have the primary button ID without an outlined border or a filled container
+        int PRIMARY_TEXT = 1;
+
+        // Buttons will have the primary button ID with an outlined border but without a filled
+        // container.
+        int PRIMARY_OUTLINED = 2;
+
+        // Buttons will have the secondary button ID without an outlined border or a filled
+        // container (same style as PRIMARY_TEXT)
+        int SECONDARY_TEXT = 3;
+
+        // Buttons will have the secondary button ID with an outlined border but without a filled
+        // container (same style as PRIMARY_OUTLINED)
+        int SECONDARY_OUTLINED = 4;
+    }
+
     /**
      * Creates a standardized Button that can be used for DualControlLayouts showing buttons.
      *
-     * @param isPrimary Whether or not the button is meant to act as a "Confirm" button.
-     * @param text      Text to display on the button.
-     * @param listener  Listener to alert when the button has been clicked.
+     * @param buttonType Determines button's function and appearance.
+     * @param text Text to display on the button.
+     * @param listener Listener to alert when the button has been clicked.
      * @return Button that can be used in the view.
      */
     public static Button createButtonForLayout(
-            Context context, boolean isPrimary, String text, OnClickListener listener) {
-        if (isPrimary) {
-            ButtonCompat primaryButton =
-                    new ButtonCompat(context, R.style.FilledButtonThemeOverlay_Flat);
-            primaryButton.setId(R.id.button_primary);
-            primaryButton.setOnClickListener(listener);
-            primaryButton.setText(text);
-            return primaryButton;
-        } else {
-            Button secondaryButton = new ButtonCompat(context, R.style.TextButtonThemeOverlay);
-            secondaryButton.setId(R.id.button_secondary);
-            secondaryButton.setOnClickListener(listener);
-            secondaryButton.setText(text);
-            return secondaryButton;
+            Context context, @ButtonType int buttonType, String text, OnClickListener listener) {
+        ButtonCompat button = new ButtonCompat(context, getButtonTheme(buttonType));
+        button.setId(getButtonId(buttonType));
+        button.setOnClickListener(listener);
+        button.setText(text);
+
+        if (buttonType == ButtonType.PRIMARY_OUTLINED
+                || buttonType == ButtonType.SECONDARY_OUTLINED) {
+            // TODO(crbug.com/346931122) By default R.style.OutlinedButton capitalizes the text
+            // labels.
+            button.setAllCaps(false);
+        }
+
+        return button;
+    }
+
+    private static @StyleRes int getButtonTheme(@ButtonType int buttonType) {
+        switch (buttonType) {
+            case ButtonType.PRIMARY_FILLED:
+                return R.style.FilledButtonThemeOverlay;
+            case ButtonType.PRIMARY_TEXT:
+            case ButtonType.SECONDARY_TEXT:
+                return R.style.TextButtonThemeOverlay;
+            case ButtonType.PRIMARY_OUTLINED:
+            case ButtonType.SECONDARY_OUTLINED:
+                return R.style.OutlinedButton;
+            default:
+                throw new IllegalArgumentException("Unknown button type");
+        }
+    }
+
+    private static @IdRes int getButtonId(@ButtonType int buttonType) {
+        switch (buttonType) {
+            case ButtonType.PRIMARY_FILLED:
+            case ButtonType.PRIMARY_TEXT:
+            case ButtonType.PRIMARY_OUTLINED:
+                return R.id.button_primary;
+            case ButtonType.SECONDARY_TEXT:
+            case ButtonType.SECONDARY_OUTLINED:
+                return R.id.button_secondary;
+            default:
+                throw new IllegalArgumentException("Unknown button type");
         }
     }
 
@@ -146,6 +204,13 @@ public final class DualControlLayout extends ViewGroup {
         } else {
             throw new IllegalStateException("Too many children added to DualControlLayout");
         }
+    }
+
+    @Override
+    public void removeAllViews() {
+        mPrimaryView = null;
+        mSecondaryView = null;
+        super.removeAllViews();
     }
 
     @Override
@@ -287,7 +352,9 @@ public final class DualControlLayout extends ViewGroup {
             primaryButtonText = a.getString(R.styleable.DualControlLayout_primaryButtonText);
         }
         if (!TextUtils.isEmpty(primaryButtonText)) {
-            addView(createButtonForLayout(getContext(), true, primaryButtonText, null));
+            addView(
+                    createButtonForLayout(
+                            getContext(), ButtonType.PRIMARY_FILLED, primaryButtonText, null));
         }
 
         // Build the secondary button, but only if there's a primary button set.
@@ -296,7 +363,9 @@ public final class DualControlLayout extends ViewGroup {
             secondaryButtonText = a.getString(R.styleable.DualControlLayout_secondaryButtonText);
         }
         if (!TextUtils.isEmpty(primaryButtonText) && !TextUtils.isEmpty(secondaryButtonText)) {
-            addView(createButtonForLayout(getContext(), false, secondaryButtonText, null));
+            addView(
+                    createButtonForLayout(
+                            getContext(), ButtonType.SECONDARY_TEXT, secondaryButtonText, null));
         }
 
         // Set the alignment.

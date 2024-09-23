@@ -77,6 +77,13 @@ public class CronetManifestTest {
                                             mCronetTestFramework.getContext(), source))
                             .isFalse();
                     break;
+                case CRONET_SOURCE_FAKE:
+                    assertWithMessage("Check failed for " + source)
+                            .that(
+                                    CronetManifest.isAppOptedInForTelemetry(
+                                            mCronetTestFramework.getContext(), source))
+                            .isFalse();
+                    break;
                 case CRONET_SOURCE_UNSPECIFIED:
                     // This shouldn't happen, but for safety check that it will be disabled.
                     assertWithMessage("Check failed for " + source)
@@ -124,7 +131,7 @@ public class CronetManifestTest {
     @Test
     @SmallTest
     public void testShouldReadHttpFlags_whenNoMetadata() throws Exception {
-        assertThat(CronetManifest.shouldReadHttpFlags(mCronetTestFramework.getContext())).isFalse();
+        assertThat(CronetManifest.shouldReadHttpFlags(mCronetTestFramework.getContext())).isTrue();
     }
 
     @Test

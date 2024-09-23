@@ -36,6 +36,9 @@ class COMPOSITOR_EXPORT TransformAnimationCurveAdapter
   base::TimeDelta Duration() const override;
   std::unique_ptr<gfx::AnimationCurve> Clone() const override;
   gfx::TransformOperations GetValue(base::TimeDelta t) const override;
+  gfx::TransformOperations GetTransformedValue(
+      base::TimeDelta t,
+      gfx::TimingFunction::LimitDirection) const override;
   bool PreservesAxisAlignment() const override;
   bool MaximumScale(float* max_scale) const override;
 

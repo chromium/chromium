@@ -11,12 +11,14 @@ TestPushNotificationClient::TestPushNotificationClient(size_t client_id)
 }
 TestPushNotificationClient::~TestPushNotificationClient() = default;
 
-void TestPushNotificationClient::HandleNotificationInteraction(
+bool TestPushNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* notification) {
   has_notification_received_interaction_ = true;
+  return false;
 }
 
-UIBackgroundFetchResult TestPushNotificationClient::HandleNotificationReception(
+std::optional<UIBackgroundFetchResult>
+TestPushNotificationClient::HandleNotificationReception(
     NSDictionary<NSString*, id>* notification) {
   return fetch_result_;
 }
@@ -32,7 +34,7 @@ bool TestPushNotificationClient::HasNotificationReceivedInteraction() {
 }
 
 void TestPushNotificationClient::SetBackgroundFetchResult(
-    UIBackgroundFetchResult result) {
+    std::optional<UIBackgroundFetchResult> result) {
   fetch_result_ = result;
 }
 

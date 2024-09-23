@@ -34,7 +34,7 @@ void StubAuthenticator::CompleteLogin(
     bool ephemeral,
     std::unique_ptr<UserContext> user_context) {
   if (expected_user_context_ != *user_context)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   OnAuthSuccess();
 }
 
@@ -138,20 +138,6 @@ void StubAuthenticator::LoginAsKioskAccount(
   consumer_->OnAuthSuccess(user_context);
 }
 
-void StubAuthenticator::LoginAsArcKioskAccount(
-    const AccountId& /* app_account_id */,
-    bool /* ephemeral */) {
-  UserContext user_context(user_manager::UserType::kArcKioskApp,
-                           expected_user_context_.GetAccountId());
-  user_context.SetIsUsingOAuth(false);
-  user_context.SetMountState(UserContext::MountState::kExistingPersistent);
-  user_context.SetUserIDHash(
-      expected_user_context_.GetAccountId().GetUserEmail() + kUserIdHashSuffix);
-  user_context.GetKey()->Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
-                                   "some-salt");
-  consumer_->OnAuthSuccess(user_context);
-}
-
 void StubAuthenticator::LoginAsWebKioskAccount(
     const AccountId& /* app_account_id */,
     bool /* ephemeral */) {
@@ -176,27 +162,6 @@ void StubAuthenticator::OnAuthSuccess() {
 
 void StubAuthenticator::OnAuthFailure(const AuthFailure& failure) {
   consumer_->OnAuthFailure(failure);
-}
-
-void StubAuthenticator::RecoverEncryptedData(
-    std::unique_ptr<UserContext> user_context,
-    const std::string& old_password) {
-  if (old_password_ != old_password) {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&StubAuthenticator::OnPasswordChangeDetected, this));
-    return;
-  }
-
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&StubAuthenticator::OnAuthSuccess, this));
-}
-
-void StubAuthenticator::ResyncEncryptedData(
-    bool ephemeral,
-    std::unique_ptr<UserContext> user_context) {
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&StubAuthenticator::OnAuthSuccess, this));
 }
 
 void StubAuthenticator::LoginAuthenticated(

@@ -47,11 +47,12 @@ struct Credential {
 };
 
 // Contains all information whis is required for filling the password form.
-// TODO(crbug.com/1075444): Remove form name and field identifiers once
+// TODO(crbug.com/40128249): Remove form name and field identifiers once
 // unique IDs are used in filling.
 struct FillData {
   FillData();
   ~FillData();
+  FillData(const FillData& other);
 
   GURL origin;
   autofill::FormRendererId form_id;
@@ -79,7 +80,7 @@ class AccountSelectFillData {
   // overrides known credentials with credentials from |form_data|. So only the
   // credentials from the latest |form_data| will be shown to the user.
   void Add(const autofill::PasswordFormFillData& form_data,
-           bool is_cross_origin_iframe);
+           bool always_populate_realm);
   void Reset();
   bool Empty() const;
 

@@ -7,13 +7,13 @@
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
+#import "ios/chrome/browser/autofill/ui_bundled/cells/autofill_credit_card_edit_item.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_view_controller_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -130,10 +130,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super loadModel];
 
   TableViewModel* model = self.tableViewModel;
-  AutofillEditItem* cardHolderNameItem = [self cardHolderNameItem];
-  AutofillEditItem* cardNumberItem = [self cardNumberItem];
-  AutofillEditItem* expirationMonthItem = [self expirationMonthItem];
-  AutofillEditItem* expirationYearItem = [self expirationYearItem];
+  AutofillCreditCardEditItem* cardHolderNameItem = [self cardHolderNameItem];
+  AutofillCreditCardEditItem* cardNumberItem = [self cardNumberItem];
+  AutofillCreditCardEditItem* expirationMonthItem = [self expirationMonthItem];
+  AutofillCreditCardEditItem* expirationYearItem = [self expirationYearItem];
 
   [model addSectionWithIdentifier:SectionIdentifierCreditCardDetails];
   [model addItem:cardNumberItem
@@ -244,7 +244,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeCardNickname:
       return YES;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return NO;
 }
 
@@ -291,8 +291,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSIndexPath* path =
       [self.tableViewModel indexPathForItemType:itemType
                               sectionIdentifier:sectionIdentifier];
-  AutofillEditItem* item = base::apple::ObjCCastStrict<AutofillEditItem>(
-      [self.tableViewModel itemAtIndexPath:path]);
+  AutofillCreditCardEditItem* item =
+      base::apple::ObjCCastStrict<AutofillCreditCardEditItem>(
+          [self.tableViewModel itemAtIndexPath:path]);
   NSString* text = item.textFieldValue;
   return text;
 }
@@ -305,8 +306,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSIndexPath* path =
       [self.tableViewModel indexPathForItemType:itemType
                               sectionIdentifier:sectionIdentifier];
-  AutofillEditItem* item = base::apple::ObjCCastStrict<AutofillEditItem>(
-      [self.tableViewModel itemAtIndexPath:path]);
+  AutofillCreditCardEditItem* item =
+      base::apple::ObjCCastStrict<AutofillCreditCardEditItem>(
+          [self.tableViewModel itemAtIndexPath:path]);
   item.textFieldValue = text;
   [self reconfigureCellsForItems:@[ item ]];
 }
@@ -317,14 +319,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 // Returns initialized tableViewItem with passed arguments.
-- (AutofillEditItem*)createTableViewItemWithType:(NSInteger)itemType
-                              fieldNameLabelText:(NSString*)fieldNameLabelText
-                                  textFieldValue:(NSString*)textFieldValue
-                            textFieldPlaceholder:(NSString*)textFieldPlaceholder
-                                    keyboardType:(UIKeyboardType)keyboardType
-                                  autofillUIType:
-                                      (AutofillUIType)autofillUIType {
-  AutofillEditItem* item = [[AutofillEditItem alloc] initWithType:itemType];
+- (AutofillCreditCardEditItem*)
+    createTableViewItemWithType:(NSInteger)itemType
+             fieldNameLabelText:(NSString*)fieldNameLabelText
+                 textFieldValue:(NSString*)textFieldValue
+           textFieldPlaceholder:(NSString*)textFieldPlaceholder
+                   keyboardType:(UIKeyboardType)keyboardType
+       autofillCreditCardUIType:
+           (AutofillCreditCardUIType)autofillCreditCardUIType {
+  AutofillCreditCardEditItem* item =
+      [[AutofillCreditCardEditItem alloc] initWithType:itemType];
   item.delegate = self;
   item.fieldNameLabelText = fieldNameLabelText;
   item.textFieldValue = textFieldValue;
@@ -332,12 +336,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.keyboardType = keyboardType;
   item.hideIcon = NO;
   item.textFieldEnabled = YES;
-  item.autofillUIType = autofillUIType;
+  item.autofillCreditCardUIType = autofillCreditCardUIType;
   return item;
 }
 
-- (AutofillEditItem*)expirationYearItem {
-  AutofillEditItem* expirationYearItem =
+- (AutofillCreditCardEditItem*)expirationYearItem {
+  AutofillCreditCardEditItem* expirationYearItem =
       [self createTableViewItemWithType:ItemTypeExpirationYear
                      fieldNameLabelText:l10n_util::GetNSString(
                                             IDS_IOS_AUTOFILL_EXP_YEAR)
@@ -346,12 +350,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRATION_YEAR)
                            keyboardType:UIKeyboardTypeNumberPad
-                         autofillUIType:AutofillUITypeCreditCardExpYear];
+               autofillCreditCardUIType:AutofillCreditCardUIType::kExpYear];
   return expirationYearItem;
 }
 
-- (AutofillEditItem*)expirationMonthItem {
-  AutofillEditItem* expirationMonthItem =
+- (AutofillCreditCardEditItem*)expirationMonthItem {
+  AutofillCreditCardEditItem* expirationMonthItem =
       [self createTableViewItemWithType:ItemTypeExpirationMonth
                      fieldNameLabelText:l10n_util::GetNSString(
                                             IDS_IOS_AUTOFILL_EXP_MONTH)
@@ -360,12 +364,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_MONTH)
                            keyboardType:UIKeyboardTypeNumberPad
-                         autofillUIType:AutofillUITypeCreditCardExpMonth];
+               autofillCreditCardUIType:AutofillCreditCardUIType::kExpMonth];
   return expirationMonthItem;
 }
 
-- (AutofillEditItem*)cardNumberItem {
-  AutofillEditItem* cardNumberItem =
+- (AutofillCreditCardEditItem*)cardNumberItem {
+  AutofillCreditCardEditItem* cardNumberItem =
       [self createTableViewItemWithType:ItemTypeCardNumber
                      fieldNameLabelText:l10n_util::GetNSString(
                                             IDS_IOS_AUTOFILL_CARD_NUMBER)
@@ -374,12 +378,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_NUMBER)
                            keyboardType:UIKeyboardTypeNumberPad
-                         autofillUIType:AutofillUITypeCreditCardNumber];
+               autofillCreditCardUIType:AutofillCreditCardUIType::kNumber];
   return cardNumberItem;
 }
 
-- (AutofillEditItem*)cardHolderNameItem {
-  AutofillEditItem* cardHolderNameItem =
+- (AutofillCreditCardEditItem*)cardHolderNameItem {
+  AutofillCreditCardEditItem* cardHolderNameItem =
       [self createTableViewItemWithType:ItemTypeName
                      fieldNameLabelText:l10n_util::GetNSString(
                                             IDS_IOS_AUTOFILL_CARDHOLDER)
@@ -388,12 +392,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_HOLDER_NAME)
                            keyboardType:UIKeyboardTypeDefault
-                         autofillUIType:AutofillUITypeCreditCardHolderFullName];
+               autofillCreditCardUIType:AutofillCreditCardUIType::kFullName];
   return cardHolderNameItem;
 }
 
-- (AutofillEditItem*)cardNicknameItem {
-  AutofillEditItem* cardNicknameItem =
+- (AutofillCreditCardEditItem*)cardNicknameItem {
+  AutofillCreditCardEditItem* cardNicknameItem =
       [self createTableViewItemWithType:ItemTypeCardNickname
                      fieldNameLabelText:l10n_util::GetNSString(
                                             IDS_IOS_AUTOFILL_NICKNAME)
@@ -402,7 +406,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_NICKNAME)
                            keyboardType:UIKeyboardTypeDefault
-                         autofillUIType:AutofillUITypeUnknown];
+               autofillCreditCardUIType:AutofillCreditCardUIType::kUnknown];
   return cardNicknameItem;
 }
 

@@ -64,10 +64,6 @@ BASE_FEATURE(kCaptivePortalInterstitial,
              "CaptivePortalInterstitial",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCaptivePortalCertificateList,
-             "CaptivePortalCertificateList",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 BASE_FEATURE(kSSLCommonNameMismatchHandling,
@@ -423,7 +419,7 @@ void SSLErrorHandlerDelegateImpl::CheckForCaptivePortal() {
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   captive_portal_service_->DetectCaptivePortal();
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 
@@ -716,14 +712,6 @@ void SSLErrorHandler::StartHandlingError() {
   if (only_error_is_name_mismatch) {
     delegate_->ReportNetworkConnectivity(
         g_config.Pointer()->report_network_connectivity_callback());
-
-    if (base::FeatureList::IsEnabled(kCaptivePortalCertificateList) &&
-        g_config.Pointer()->IsKnownCaptivePortalCertificate(ssl_info_) &&
-        !is_captive_portal_login_tab) {
-      RecordUMA(CAPTIVE_PORTAL_CERT_FOUND);
-      ShowCaptivePortalInterstitial(GURL());
-      return;
-    }
   }
 
   // The MITM software interstitial is displayed if and only if:
@@ -848,7 +836,7 @@ void SSLErrorHandler::ShowDynamicInterstitial(
     const DynamicInterstitialInfo dynamic_interstitial) {
   switch (dynamic_interstitial.interstitial_type) {
     case chrome_browser_ssl::DynamicInterstitial::INTERSTITIAL_PAGE_NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case chrome_browser_ssl::DynamicInterstitial::INTERSTITIAL_PAGE_SSL:
       delegate_->ShowSSLInterstitial(dynamic_interstitial.support_url);
@@ -900,7 +888,7 @@ void SSLErrorHandler::Observe(
   else
     ShowSSLInterstitial();
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 

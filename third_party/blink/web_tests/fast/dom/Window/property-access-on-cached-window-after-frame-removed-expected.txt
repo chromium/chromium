@@ -130,6 +130,7 @@ PASS childWindow.onoverscroll is null
 PASS childWindow.onpagehide is null
 PASS childWindow.onpagereveal is null
 PASS childWindow.onpageshow is null
+PASS childWindow.onpageswap is null
 PASS childWindow.onpause is null
 PASS childWindow.onplay is null
 PASS childWindow.onplaying is null
@@ -150,6 +151,8 @@ PASS childWindow.onreset is null
 PASS childWindow.onresize is null
 PASS childWindow.onscroll is null
 PASS childWindow.onscrollend is null
+PASS childWindow.onscrollsnapchange is null
+PASS childWindow.onscrollsnapchanging is null
 PASS childWindow.onsearch is null
 PASS childWindow.onsecuritypolicyviolation is null
 PASS childWindow.onseeked is null
@@ -158,8 +161,6 @@ PASS childWindow.onselect is null
 PASS childWindow.onselectionchange is null
 PASS childWindow.onselectstart is null
 PASS childWindow.onslotchange is null
-PASS childWindow.onsnapchanged is null
-PASS childWindow.onsnapchanging is null
 PASS childWindow.onstalled is null
 PASS childWindow.onstorage is null
 PASS childWindow.onsubmit is null
@@ -218,15 +219,16 @@ PASS childWindow.styleMedia.type is ''
 PASS childWindow.toolbar.visible is false
 PASS childWindow.trustedTypes.defaultPolicy is null
 PASS childWindow.trustedTypes.onbeforecreatepolicy is null
+PASS childWindow.viewport.segments is null
 PASS childWindow.visualViewport.height is 0
 PASS childWindow.visualViewport.offsetLeft is 0
 PASS childWindow.visualViewport.offsetTop is 0
 PASS childWindow.visualViewport.onresize is null
 PASS childWindow.visualViewport.onscroll is null
+PASS childWindow.visualViewport.onscrollend is null
 PASS childWindow.visualViewport.pageLeft is 0
 PASS childWindow.visualViewport.pageTop is 0
 PASS childWindow.visualViewport.scale is 0
-PASS childWindow.visualViewport.segments is null
 PASS childWindow.visualViewport.width is 0
 PASS successfullyParsed is true
 

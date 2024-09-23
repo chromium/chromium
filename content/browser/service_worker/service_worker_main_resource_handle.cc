@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "content/browser/renderer_host/policy_container_host.h"
-#include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -19,57 +18,33 @@ namespace content {
 
 ServiceWorkerMainResourceHandle::ServiceWorkerMainResourceHandle(
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
-    ServiceWorkerAccessedCallback on_service_worker_accessed)
-    : service_worker_accessed_callback_(std::move(on_service_worker_accessed)),
+    ServiceWorkerAccessedCallback on_service_worker_accessed,
+    base::WeakPtr<ServiceWorkerClient> parent_service_worker_client)
+    : parent_service_worker_client_(std::move(parent_service_worker_client)),
+      service_worker_accessed_callback_(std::move(on_service_worker_accessed)),
       context_wrapper_(std::move(context_wrapper)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
 ServiceWorkerMainResourceHandle::~ServiceWorkerMainResourceHandle() = default;
 
-void ServiceWorkerMainResourceHandle::OnCreatedContainerHost(
-    blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info) {
+void ServiceWorkerMainResourceHandle::set_service_worker_client(
+    ScopedServiceWorkerClient scoped_service_worker_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(container_info->host_remote.is_valid() &&
-         container_info->client_receiver.is_valid());
+  CHECK(!scoped_service_worker_client_);
 
-  container_info_ = std::move(container_info);
+  scoped_service_worker_client_ = std::make_unique<ScopedServiceWorkerClient>(
+      std::move(scoped_service_worker_client));
+
+  CHECK(service_worker_client());
 }
 
-void ServiceWorkerMainResourceHandle::OnBeginNavigationCommit(
-    const GlobalRenderFrameHostId& rfh_id,
-    const PolicyContainerPolicies& policy_container_policies,
-    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        coep_reporter,
-    blink::mojom::ServiceWorkerContainerInfoForClientPtr* out_container_info,
-    ukm::SourceId document_ukm_source_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // We may have failed to pre-create the container host.
-  if (!container_info_)
-    return;
-  *out_container_info = std::move(container_info_);
-
-  if (container_host_) {
-    container_host_->OnBeginNavigationCommit(rfh_id, policy_container_policies,
-                                             std::move(coep_reporter),
-                                             document_ukm_source_id);
+base::WeakPtr<ServiceWorkerClient>
+ServiceWorkerMainResourceHandle::service_worker_client() {
+  if (!scoped_service_worker_client_) {
+    return nullptr;
   }
-}
-
-void ServiceWorkerMainResourceHandle::OnEndNavigationCommit() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (container_host_)
-    container_host_->OnEndNavigationCommit();
-}
-
-void ServiceWorkerMainResourceHandle::OnBeginWorkerCommit(
-    const PolicyContainerPolicies& policy_container_policies,
-    ukm::SourceId worker_ukm_source_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (container_host_) {
-    container_host_->CompleteWebWorkerPreparation(policy_container_policies,
-                                                  worker_ukm_source_id);
-  }
+  return scoped_service_worker_client_->AsWeakPtr();
 }
 
 }  // namespace content

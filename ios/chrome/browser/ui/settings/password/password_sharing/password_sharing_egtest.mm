@@ -3,18 +3,19 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
-#import "components/password_manager/core/browser/features/password_features.h"
-#import "components/password_manager/core/common/password_manager_features.h"
+#import "build/branding_buildflags.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -27,21 +28,22 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#import "components/password_manager/core/browser/password_manager_switches.h"
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 namespace {
 
 using base::test::ios::kWaitForActionTimeout;
+using chrome_test_util::NavigationBarCancelButton;
+using password_manager_test_utils::EditDoneButton;
 using password_manager_test_utils::kScrollAmount;
+using password_manager_test_utils::NavigationBarEditButton;
 using password_manager_test_utils::OpenPasswordManager;
 using password_manager_test_utils::PasswordDetailsShareButtonMatcher;
 using password_manager_test_utils::PasswordDetailsTableViewMatcher;
+using password_manager_test_utils::SaveExamplePasskeyToStore;
 using password_manager_test_utils::SavePasswordFormToProfileStore;
-
-constexpr char kGoogleHelpCenterURL[] = "support.google.com";
-
-void SignInAndEnableSync() {
-  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fake_identity enableSync:YES];
-}
 
 // Matcher for Password Sharing First Run.
 id<GREYMatcher> PasswordSharingFirstRunMatcher() {
@@ -59,6 +61,25 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   return grey_accessibilityID(kPasswordPickerViewID);
 }
 
+GREYElementInteraction* TapCredentialEntryWithDomain(NSString* domain) {
+  return [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(domain),
+                                          grey_accessibilityTrait(
+                                              UIAccessibilityTraitButton),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
+                                                  kScrollAmount)
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
+      performAction:grey_tap()];
+}
+
+// TODO(crbug.com/348484044): Re-enable the test suite on ipad on iOS 17.
+#define DISABLE_ON_IPAD_WITH_IOS_17                            \
+  if (@available(iOS 17.0, *)) {                               \
+    if ([ChromeEarlGrey isIPadIdiom]) {                        \
+      EARL_GREY_TEST_DISABLED(@"Disabled for iPad on iOS 17"); \
+    }                                                          \
+  }
 }  // namespace
 
 // Test case for the Password Sharing flow.
@@ -67,6 +88,10 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 - (GREYElementInteraction*)saveExamplePasswordToProfileStoreAndOpenDetails;
 
 - (GREYElementInteraction*)saveExamplePasswordsToProfileStoreAndOpenDetails;
+
+- (GREYElementInteraction*)saveExamplePasskeyToStoreAndOpenDetails;
+
+- (GREYElementInteraction*)saveExamplePasskeyAndPasswordToStoreAndOpenDetails;
 
 @end
 
@@ -80,16 +105,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 
   SavePasswordFormToProfileStore();
   OpenPasswordManager();
-
-  return [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"example.com"),
-                                          grey_accessibilityTrait(
-                                              UIAccessibilityTraitButton),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
-                                                  kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
-      performAction:grey_tap()];
+  return TapCredentialEntryWithDomain(@"example.com");
 }
 
 - (GREYElementInteraction*)saveExamplePasswordsToProfileStoreAndOpenDetails {
@@ -103,17 +119,30 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SavePasswordFormToProfileStore(/*password=*/@"password2",
                                  /*username=*/@"username2");
   OpenPasswordManager();
+  return TapCredentialEntryWithDomain(@"example.com, 2 accounts");
+}
 
-  return [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              @"example.com, 2 accounts"),
-                                          grey_accessibilityTrait(
-                                              UIAccessibilityTraitButton),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
-                                                  kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
-      performAction:grey_tap()];
+- (GREYElementInteraction*)saveExamplePasskeyToStoreAndOpenDetails {
+  // Mock successful reauth for opening the Password Manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  SaveExamplePasskeyToStore();
+  OpenPasswordManager();
+  return TapCredentialEntryWithDomain(@"example.com");
+}
+
+- (GREYElementInteraction*)saveExamplePasskeyAndPasswordToStoreAndOpenDetails {
+  // Mock successful reauth for opening the Password Manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  SaveExamplePasskeyToStore();
+  SavePasswordFormToProfileStore();
+  OpenPasswordManager();
+  return TapCredentialEntryWithDomain(@"example.com, 2 accounts");
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -123,26 +152,16 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   // by default. Individual tests can override it.
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kFamilyStatus + "=1");
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Make tests run on unbranded builds.
+  config.additional_args.push_back(
+      std::string("-") + password_manager::kEnableShareButtonUnbranded);
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  if ([self isRunningTest:@selector
-            (testShareButtonVisibilityWithSharingDisabled)]) {
-    config.features_disabled.push_back(
-        password_manager::features::kSendPasswords);
-  } else {
-    config.features_enabled.push_back(
-        password_manager::features::kSendPasswords);
-    config.features_enabled.push_back(
-        password_manager::features::kPasswordManagerEnableSenderService);
-  }
-
-  if ([self isRunningTest:@selector
-            (testFirstRunExperienceViewDismissedForAuthentication)] ||
+  if ([self isRunningTest:@selector(testShareButtonDisabledWithJustPasskeys)] ||
       [self isRunningTest:@selector
-            (testPasswordPickerViewDismissedForAuthentication)] ||
-      [self isRunningTest:@selector
-            (testFamilyPickerViewDismissedForAuthentication)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kIOSPasswordAuthOnEntryV2);
+            (testShareButtonEnabledWithMixOfPasswordsAndPasskeys)]) {
+    config.features_enabled.push_back(syncer::kSyncWebauthnCredentials);
   }
 
   return config;
@@ -176,16 +195,9 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   [super tearDown];
 }
 
-- (void)testShareButtonVisibilityWithSharingDisabled {
-  SignInAndEnableSync();
-  [self saveExamplePasswordToProfileStoreAndOpenDetails];
-
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
-}
-
-- (void)testShareButtonVisibilityWithSharingEnabled {
-  SignInAndEnableSync();
+- (void)testShareButtonVisibility {
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -193,6 +205,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testShareButtonVisibilityForSignedOutUser {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -200,8 +213,9 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testShareButtonVisibilityForUserOptedInToAccountStorage {
+  DISABLE_ON_IPAD_WITH_IOS_17
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fake_identity enableSync:NO];
+  [SigninEarlGrey signinWithFakeIdentity:fake_identity];
 
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
@@ -210,11 +224,12 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testShareButtonVisibilityWithSharingPolicyDisabled {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [ChromeEarlGrey
       setBoolValue:NO
        forUserPref:password_manager::prefs::kPasswordSharingEnabled];
 
-  SignInAndEnableSync();
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   // Share button should be visible and display the policy info popup upon tap.
@@ -228,8 +243,58 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+- (void)testShareButtonVisibilityDuringPasswordEditing {
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Share button should not be visible during password details editing.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+
+  // Share button should be visible again after editing is confirmed.
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // The same behaviour should be observed if editing is cancelled.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)testShareButtonDisabledWithJustPasskeys {
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self saveExamplePasskeyToStoreAndOpenDetails];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      assertWithMatcher:grey_not(grey_enabled())];
+}
+
+- (void)testShareButtonEnabledWithMixOfPasswordsAndPasskeys {
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [self saveExamplePasskeyAndPasswordToStoreAndOpenDetails];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      assertWithMatcher:grey_enabled()];
+}
+
 - (void)testFamilyPickerCancelFlow {
-  SignInAndEnableSync();
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -248,7 +313,8 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testPasswordPickerCancelFlow {
-  SignInAndEnableSync();
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -266,7 +332,8 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testFamilyPickerSwipeToDismissFlow {
-  SignInAndEnableSync();
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -282,6 +349,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testFamilyPromoSwipeToDismissFlow {
+  DISABLE_ON_IPAD_WITH_IOS_17
   // Override family status with `FetchFamilyMembersRequestStatus::kNoFamily`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(std::string("-") +
@@ -290,7 +358,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
-  SignInAndEnableSync();
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -305,7 +373,8 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testPasswordPickerSwipeToDismissFlow {
-  SignInAndEnableSync();
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -320,7 +389,8 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testSharingStatusSwipeToDismissFlow {
-  SignInAndEnableSync();
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -343,6 +413,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testFetchingRecipientsNoFamilyStatus {
+  DISABLE_ON_IPAD_WITH_IOS_17
   // Override family status with `FetchFamilyMembersRequestStatus::kNoFamily`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(std::string("-") +
@@ -351,7 +422,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
-  SignInAndEnableSync();
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -377,6 +448,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testTappingGotItInFamilyPromoInviteMembersView {
+  DISABLE_ON_IPAD_WITH_IOS_17
   // Override family status with
   // `FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
@@ -386,7 +458,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
-  SignInAndEnableSync();
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -414,6 +486,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testFetchingRecipientsError {
+  DISABLE_ON_IPAD_WITH_IOS_17
   // Override family status with `FetchFamilyMembersRequestStatus::kUnknown`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(std::string("-") +
@@ -422,7 +495,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
-  SignInAndEnableSync();
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -442,7 +515,8 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testPasswordSharingSuccess {
-  SignInAndEnableSync();
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -465,7 +539,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kFamilyPickerShareButtonID)]
       performAction:grey_tap()];
-  // TODO(crbug.com/1463882): Override animation time for tests.
+  // TODO(crbug.com/40275395): Override animation time for tests.
   GREYCondition* waitForAnimationEnding = [GREYCondition
       conditionWithName:@"Wait for sharing animation to end"
                   block:^{
@@ -494,7 +568,8 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testNavigationBetweenPasswordAndFamilyPicker {
-  SignInAndEnableSync();
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -526,8 +601,9 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-- (void)testTappingLearnMoreInFamilyPickerInfoPopup {
-  SignInAndEnableSync();
+- (void)testTappingFamilyPickerIneligibleRecipientInfoPopup {
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -538,6 +614,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   // Scroll down to the last recipient (the ineligible ones are on the bottom).
   [[EarlGrey selectElementWithMatcher:FamilyPickerTableViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
   // Tap on the info button next to the ineligible recipient row.
   [[EarlGrey
       selectElementWithMatcher:
@@ -547,21 +624,21 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
                      grey_kindOfClass([UIButton class]), nil)]
       performAction:grey_tap()];
 
-  // Tap the "Learn more" link in the popup.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Learn more")]
-      performAction:grey_tap()];
-
-  // Check that the help center article was opened.
-  GREYAssertEqual(std::string(kGoogleHelpCenterURL),
-                  [ChromeEarlGrey webStateVisibleURL].host(),
-                  @"Did not navigate to the help center article.");
+  // Check that the info popup about ineligibility is visible.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_text(ParseStringWithLinks(
+                        l10n_util::GetNSString(
+                            IDS_IOS_PASSWORD_SHARING_FAMILY_MEMBER_INELIGIBLE))
+                        .string)] assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 - (void)testTappingCancelInFirstRunExperienceView {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
-  SignInAndEnableSync();
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -586,10 +663,11 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testTappingShareInFirstRunExperienceView {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
-  SignInAndEnableSync();
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -618,38 +696,12 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       assertWithMatcher:grey_notNil()];
 }
 
-- (void)testTappingLearnMoreInFirstRunExperienceView {
-  // TODO(crbug.com/1488977): Test fails on iPad simulator.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Failing on iPad Simulator");
-  }
-
-  [ChromeEarlGrey setBoolValue:NO
-                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
-
-  SignInAndEnableSync();
-  [self saveExamplePasswordToProfileStoreAndOpenDetails];
-
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
-      performAction:grey_tap()];
-
-  // Tap the "Learn more" link in the popup.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Learn more")]
-      performAction:grey_tap()];
-
-  // Check that the help center article was opened.
-  GREYAssertEqual(std::string(kGoogleHelpCenterURL),
-                  [ChromeEarlGrey webStateVisibleURL].host(),
-                  @"Did not navigate to the help center article.");
-}
-
 - (void)testFirstRunExperienceViewDismissedForAuthentication {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
-  SignInAndEnableSync();
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -671,7 +723,8 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testFamilyPickerViewDismissedForAuthentication {
-  SignInAndEnableSync();
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -693,7 +746,8 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testPasswordPickerViewDismissedForAuthentication {
-  SignInAndEnableSync();
+  DISABLE_ON_IPAD_WITH_IOS_17
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]

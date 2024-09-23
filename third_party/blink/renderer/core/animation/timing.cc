@@ -33,7 +33,7 @@ String Timing::FillModeString(FillMode fill_mode) {
     case FillMode::AUTO:
       return "auto";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "none";
 }
 
@@ -61,7 +61,7 @@ String Timing::PlaybackDirectionString(PlaybackDirection playback_direction) {
     case PlaybackDirection::ALTERNATE_REVERSE:
       return "alternate-reverse";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "normal";
 }
 

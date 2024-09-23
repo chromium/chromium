@@ -13,13 +13,13 @@
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_utils.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/dependency_factory.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
+#include "components/enterprise/core/dependency_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -49,7 +49,7 @@ std::optional<std::string> TryGetEnrollmentDomain(
 
 BrowserSignalsDecorator::BrowserSignalsDecorator(
     policy::CloudPolicyManager* browser_cloud_policy_manager,
-    std::unique_ptr<DependencyFactory> dependency_factory,
+    std::unique_ptr<enterprise_core::DependencyFactory> dependency_factory,
     device_signals::SignalsAggregator* signals_aggregator)
     : browser_cloud_policy_manager_(browser_cloud_policy_manager),
       dependency_factory_(std::move(dependency_factory)),

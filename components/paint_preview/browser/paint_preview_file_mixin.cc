@@ -4,6 +4,7 @@
 
 #include "components/paint_preview/browser/paint_preview_file_mixin.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -53,7 +54,7 @@ GetProto(scoped_refptr<FileManager> file_manager,
       status = PaintPreviewFileMixin::ProtoReadStatus::kDeserializationError;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return std::make_pair(status, std::move(result.second));
 }
@@ -70,7 +71,7 @@ void OnReadProto(PaintPreviewFileMixin::OnReadProtoCallback callback,
 
 PaintPreviewFileMixin::PaintPreviewFileMixin(
     const base::FilePath& path,
-    base::StringPiece ascii_feature_name)
+    std::string_view ascii_feature_name)
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
@@ -93,7 +94,7 @@ void PaintPreviewFileMixin::GetCapturedPaintPreviewProto(
 void PaintPreviewFileMixin::WriteAXTreeUpdate(
     const DirectoryKey& key,
     base::OnceCallback<void(bool)> finished_callback,
-    const ui::AXTreeUpdate& ax_tree_update) {
+    ui::AXTreeUpdate& ax_tree_update) {
   std::vector<uint8_t> ax_data =
       ax::mojom::AXTreeUpdate::Serialize(&ax_tree_update);
   task_runner_->PostTaskAndReplyWithResult(

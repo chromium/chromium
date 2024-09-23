@@ -5,8 +5,8 @@
 #ifndef BASE_NUMERICS_SAFE_MATH_H_
 #define BASE_NUMERICS_SAFE_MATH_H_
 
-#include "base/numerics/checked_math.h"
-#include "base/numerics/clamped_math.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/numerics/checked_math.h"      // IWYU pragma: export
+#include "base/numerics/clamped_math.h"      // IWYU pragma: export
+#include "base/numerics/safe_conversions.h"  // IWYU pragma: export
 
 #endif  // BASE_NUMERICS_SAFE_MATH_H_

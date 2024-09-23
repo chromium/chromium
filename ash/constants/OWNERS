@@ -7,7 +7,6 @@ per-file url_constants.cc=*
 per-file url_constants.h=*
 per-file notifier_catalogs.h=set noparent
 per-file notifier_catalogs.h=file://ash/system/OWNERS
-per-file notifier_catalogs.h=kradtke@chromium.org
 per-file quick_settings_catalogs.h=set noparent
 per-file quick_settings_catalogs.h=file://ash/system/OWNERS
 per-file quick_settings_catalogs.h=jiamingc@chromium.org

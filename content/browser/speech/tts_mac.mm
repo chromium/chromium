@@ -185,7 +185,7 @@ void TtsPlatformImplMac::Speak(
     const content::VoiceData& voice,
     const content::UtteranceContinuousParameters& params,
     base::OnceCallback<void(bool)> on_speak_finished) {
-  // Parse SSML and process speech. TODO(https://crbug.com/1457381):
+  // Parse SSML and process speech. TODO(crbug.com/40273591):
   // AVSpeechUtterance has an initializer -initWithSSMLRepresentation:. Should
   // that be used instead?
   content::TtsController::GetInstance()->StripSSML(

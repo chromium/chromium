@@ -24,8 +24,8 @@ namespace perfetto {
 class EventContext;
 namespace protos {
 namespace pbzero {
-class BeginFrameObserverState;
-class BeginFrameSourceState;
+class BeginFrameObserverStateV2;
+class BeginFrameSourceStateV2;
 }  // namespace pbzero
 }  // namespace protos
 }  // namespace perfetto
@@ -117,7 +117,7 @@ class VIZ_COMMON_EXPORT BeginFrameObserverBase : public BeginFrameObserver {
 
   void AsProtozeroInto(
       perfetto::EventContext& ctx,
-      perfetto::protos::pbzero::BeginFrameObserverState* state) const;
+      perfetto::protos::pbzero::BeginFrameObserverStateV2* state) const;
 
   BeginFrameArgs last_begin_frame_args_;
   int64_t dropped_begin_frame_args_ = 0;
@@ -152,13 +152,6 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
                                           base::TimeTicks deadline,
                                           base::TimeDelta vsync_interval);
 
-    void set_dynamic_begin_frame_deadline_offset_source(
-        DynamicBeginFrameDeadlineOffsetSource*
-            dynamic_begin_frame_deadline_offset_source) {
-      dynamic_begin_frame_deadline_offset_source_ =
-          dynamic_begin_frame_deadline_offset_source;
-    }
-
    private:
     static uint64_t EstimateTickCountsBetween(
         base::TimeTicks frame_time,
@@ -175,9 +168,6 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
     // number assigned relative to this, based on how many intervals the frame
     // time is off.
     uint64_t next_sequence_number_ = BeginFrameArgs::kStartingFrameNumber;
-
-    raw_ptr<DynamicBeginFrameDeadlineOffsetSource, DanglingUntriaged>
-        dynamic_begin_frame_deadline_offset_source_ = nullptr;
   };
 
   // This restart_id should be used for BeginFrameSources that don't have to
@@ -220,11 +210,7 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
 
   virtual void AsProtozeroInto(
       perfetto::EventContext& ctx,
-      perfetto::protos::pbzero::BeginFrameSourceState* state) const;
-
-  virtual void SetDynamicBeginFrameDeadlineOffsetSource(
-      DynamicBeginFrameDeadlineOffsetSource*
-          dynamic_begin_frame_deadline_offset_source);
+      perfetto::protos::pbzero::BeginFrameSourceStateV2* state) const;
 
   // Update the display ID for the source. This can change, e.g, as a window
   // moves across displays.
@@ -297,6 +283,9 @@ class VIZ_COMMON_EXPORT SyntheticBeginFrameSource : public BeginFrameSource {
 
   virtual void OnUpdateVSyncParameters(base::TimeTicks timebase,
                                        base::TimeDelta interval) = 0;
+  // Sets the maximum interval allowable for use with VRR (variable refresh
+  // rates). When set, this value should correspond to the maximum vsync
+  // interval supported by the display. Absent when VRR is not enabled.
   virtual void SetMaxVrrInterval(
       const std::optional<base::TimeDelta>& max_vrr_interval) = 0;
 };
@@ -333,8 +322,9 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
 
  private:
   std::unique_ptr<DelayBasedTimeSource> time_source_;
-  base::flat_set<BeginFrameObserver*> observers_;
-  base::flat_set<BeginFrameObserver*> pending_begin_frame_observers_;
+  base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers_;
+  base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>>
+      pending_begin_frame_observers_;
   uint64_t next_sequence_number_;
   base::TimeDelta vsync_interval_ = BeginFrameArgs::DefaultInterval();
   std::optional<base::TimeDelta> max_vrr_interval_ = std::nullopt;
@@ -361,9 +351,6 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   void RemoveObserver(BeginFrameObserver* obs) override;
   void DidFinishFrame(BeginFrameObserver* obs) override {}
   void OnGpuNoLongerBusy() override;
-  void SetDynamicBeginFrameDeadlineOffsetSource(
-      DynamicBeginFrameDeadlineOffsetSource*
-          dynamic_begin_frame_deadline_offset_source) override;
 
   // SyntheticBeginFrameSource implementation.
   void OnUpdateVSyncParameters(base::TimeTicks timebase,
@@ -391,8 +378,9 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   void SetActive(bool active);
 
   std::unique_ptr<DelayBasedTimeSource> time_source_;
-  base::flat_set<BeginFrameObserver*> observers_;
+  base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers_;
   base::TimeTicks last_timebase_;
+  base::TimeDelta last_vsync_interval_;
   std::optional<base::TimeDelta> max_vrr_interval_ = std::nullopt;
   int vrr_tick_count_ = 0;
   BeginFrameArgs last_begin_frame_args_;
@@ -428,7 +416,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   void DidFinishFrame(BeginFrameObserver* obs) override {}
   void AsProtozeroInto(
       perfetto::EventContext& ctx,
-      perfetto::protos::pbzero::BeginFrameSourceState* state) const override;
+      perfetto::protos::pbzero::BeginFrameSourceStateV2* state) const override;
   void OnGpuNoLongerBusy() override;
 
   void OnSetBeginFrameSourcePaused(bool paused);
@@ -447,7 +435,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   // Returns the maximum supported refresh rate interval for a given BFS.
   virtual base::TimeDelta GetMaximumRefreshFrameInterval();
 
-  virtual std::vector<base::TimeDelta> GetSupportedFrameIntervals(
+  virtual base::flat_set<base::TimeDelta> GetSupportedFrameIntervals(
       base::TimeDelta interval);
 
  protected:
@@ -457,7 +445,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   virtual BeginFrameArgs GetMissedBeginFrameArgs(BeginFrameObserver* obs);
 
   BeginFrameArgs last_begin_frame_args_;
-  base::flat_set<BeginFrameObserver*> observers_;
+  base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers_;
   raw_ptr<ExternalBeginFrameSourceClient> client_;
   bool paused_ = false;
 

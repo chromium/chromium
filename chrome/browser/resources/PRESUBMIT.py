@@ -156,6 +156,7 @@ def CheckNoNewJs(input_api, output_api):
     'chrome/browser/resources/new_tab_page/untrusted/',
     'chrome/browser/resources/offline_pages/',
     'chrome/browser/resources/omnibox/',
+    'chrome/browser/resources/reading_mode_gdocs_helper/',
     'chrome/browser/resources/settings/',
     'chrome/browser/resources/tools/',
   ]

@@ -21,18 +21,19 @@ ArImageTransport::ArImageTransport(
 
 ArImageTransport::~ArImageTransport() = default;
 
-void ArImageTransport::DoRuntimeInitialization() {
+void ArImageTransport::DoRuntimeInitialization(int texture_taget) {
   renderer_ = std::make_unique<XrRenderer>();
-  glGenTextures(1, &camera_texture_id_arcore_);
+  glGenTextures(1, &camera_texture_arcore_.id);
+  camera_texture_arcore_.target = GL_TEXTURE_EXTERNAL_OES;
 
   glGenFramebuffersEXT(1, &camera_fbo_);
 }
 
 GLuint ArImageTransport::GetCameraTextureId() {
-  return camera_texture_id_arcore_;
+  return camera_texture_arcore_.id;
 }
 
-gpu::MailboxHolder ArImageTransport::TransferCameraImageFrame(
+WebXrSharedBuffer* ArImageTransport::TransferCameraImageFrame(
     WebXrPresentationState* webxr,
     const gfx::Size& frame_size,
     const gfx::Transform& uv_transform) {
@@ -70,8 +71,8 @@ gpu::MailboxHolder ArImageTransport::TransferCameraImageFrame(
   }
   glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, camera_image_fbo_);
   glFramebufferTexture2DEXT(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                            GL_TEXTURE_EXTERNAL_OES,
-                            camera_image_shared_buffer->local_texture, 0);
+                            camera_image_shared_buffer->local_texture.target,
+                            camera_image_shared_buffer->local_texture.id, 0);
 
   CopyCameraImageToFramebuffer(camera_image_fbo_, frame_size, uv_transform);
 
@@ -94,7 +95,8 @@ gpu::MailboxHolder ArImageTransport::TransferCameraImageFrame(
   mailbox_bridge_->GenSyncToken(&camera_image_shared_buffer->sync_token);
   DVLOG(3) << __func__ << ": camera_image_shared_buffer->sync_token="
            << camera_image_shared_buffer->sync_token.ToDebugString();
-  return camera_image_shared_buffer->mailbox_holder();
+
+  return camera_image_shared_buffer;
 }
 
 void ArImageTransport::CopyCameraImageToFramebuffer(
@@ -102,7 +104,7 @@ void ArImageTransport::CopyCameraImageToFramebuffer(
     const gfx::Size& frame_size,
     const gfx::Transform& uv_transform) {
   glDisable(GL_BLEND);
-  CopyTextureToFramebuffer(camera_texture_id_arcore_, framebuffer, frame_size,
+  CopyTextureToFramebuffer(camera_texture_arcore_, framebuffer, frame_size,
                            uv_transform);
 }
 
@@ -120,12 +122,12 @@ void ArImageTransport::CopyDrawnImageToFramebuffer(
   // additive AR headset that can't draw opaque black.)
   glEnable(GL_BLEND);
   glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  CopyTextureToFramebuffer(GetRenderingTextureId(webxr), framebuffer,
-                           frame_size, uv_transform);
+  auto texture = GetRenderingTexture(webxr);
+  CopyTextureToFramebuffer(texture, framebuffer, frame_size, uv_transform);
 }
 
 void ArImageTransport::CopyTextureToFramebuffer(
-    GLuint texture,
+    const LocalTexture& texture,
     GLuint framebuffer,
     const gfx::Size& frame_size,
     const gfx::Transform& uv_transform) {

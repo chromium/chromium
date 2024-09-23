@@ -7,11 +7,11 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -103,6 +103,9 @@ class CONTENT_EXPORT ContentClient {
   // Gives the embedder a chance to register its own plugins.
   virtual void AddPlugins(std::vector<content::ContentPluginInfo>* plugins) {}
 
+  // Returns a list of origins that are allowed to use PDF internal plugin.
+  virtual std::vector<url::Origin> GetPdfInternalPluginAllowedOrigins();
+
   // Gives the embedder a chance to register the Content Decryption Modules
   // (CDM) it supports, as well as the CDM host file paths to verify CDM host.
   // |cdms| or |cdm_host_file_paths| can be null which means that specific list
@@ -163,8 +166,9 @@ class CONTENT_EXPORT ContentClient {
   virtual std::u16string GetLocalizedString(int message_id,
                                             const std::u16string& replacement);
 
-  // Return the contents of a resource in a StringPiece given the resource id.
-  virtual base::StringPiece GetDataResource(
+  // Return the contents of a resource in a std::string_view given the resource
+  // id.
+  virtual std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor);
 

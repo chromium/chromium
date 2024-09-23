@@ -164,6 +164,32 @@ suite('AppearanceFontHandler', function() {
     assertFontFamily(mathFontPreview, 'math');
   });
 
+  test('font preview fixed Osaka', () => {
+    fontsPage.prefs = {
+      webkit: {
+        webprefs: {
+          fonts: {
+            fixed: {
+              Zyyy: {
+                value: 'Osaka',
+                type: chrome.settingsPrivate.PrefType.STRING,
+              },
+            },
+          },
+        },
+      },
+    };
+
+    const cssFamilyName = fontsPage.$.fixedFontPreview.computedStyleMap().get(
+                              'font-family') as CSSStyleValue;
+    // <if expr="is_macosx">
+    assertEquals(`Osaka-Mono`, cssFamilyName.toString());
+    // </if>
+    // <if expr="not is_macosx">
+    assertEquals(`Osaka`, cssFamilyName.toString());
+    // </if>
+  });
+
   test('math font preview', () => {
     const mathFontPreview =
         fontsPage.shadowRoot!.querySelector<HTMLElement>('#mathFontPreview');

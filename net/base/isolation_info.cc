@@ -36,7 +36,7 @@ bool ValidateSameSite(const url::Origin& origin,
   if (origin.opaque())
     return false;
 
-  // TODO(https://crbug.com/1060631): GetURL() is expensive. Maybe make a
+  // TODO(crbug.com/40122112): GetURL() is expensive. Maybe make a
   // version of IsFirstParty that works on origins?
   return site_for_cookies.IsFirstParty(origin.GetURL());
 }
@@ -68,11 +68,11 @@ bool IsConsistent(IsolationInfo::RequestType request_type,
   }
   switch (request_type) {
     case IsolationInfo::RequestType::kMainFrame:
-      // TODO(https://crbug.com/1056706): Check that |top_frame_origin| and
+      // TODO(crbug.com/40677006): Check that |top_frame_origin| and
       // |frame_origin| are the same, once the ViewSource code creates a
       // consistent IsolationInfo object.
       //
-      // TODO(https://crbug.com/1060631): Once CreatePartial() is removed,
+      // TODO(crbug.com/40122112): Once CreatePartial() is removed,
       // check if SiteForCookies is non-null if the scheme is HTTP or HTTPS.
       break;
     case IsolationInfo::RequestType::kSubFrame:
@@ -114,6 +114,13 @@ IsolationInfo IsolationInfo::CreateTransient() {
   url::Origin opaque_origin;
   return IsolationInfo(RequestType::kOther, opaque_origin, opaque_origin,
                        SiteForCookies(), /*nonce=*/std::nullopt);
+}
+
+IsolationInfo IsolationInfo::CreateTransientWithNonce(
+    const base::UnguessableToken& nonce) {
+  url::Origin opaque_origin;
+  return IsolationInfo(RequestType::kOther, opaque_origin, opaque_origin,
+                       SiteForCookies(), nonce);
 }
 
 std::optional<IsolationInfo> IsolationInfo::Deserialize(
@@ -174,7 +181,7 @@ IsolationInfo IsolationInfo::DoNotUseCreatePartialFromNak(
   auto isolation_info = IsolationInfo::Create(
       IsolationInfo::RequestType::kOther, top_frame_origin,
       frame_origin.value(), SiteForCookies(), nonce);
-  // TODO(crbug/1343856): DCHECK isolation info is fully populated.
+  // TODO(crbug.com/40852603): DCHECK isolation info is fully populated.
   return isolation_info;
 }
 
@@ -208,11 +215,6 @@ IsolationInfo IsolationInfo::CreateForRedirect(
 }
 
 const std::optional<url::Origin>& IsolationInfo::frame_origin() const {
-  return frame_origin_;
-}
-
-const std::optional<url::Origin>& IsolationInfo::frame_origin_for_testing()
-    const {
   return frame_origin_;
 }
 
@@ -293,21 +295,6 @@ std::string IsolationInfo::DebugString() const {
   return s;
 }
 
-NetworkAnonymizationKey
-IsolationInfo::CreateNetworkAnonymizationKeyForIsolationInfo(
-    const std::optional<url::Origin>& top_frame_origin,
-    const std::optional<url::Origin>& frame_origin,
-    const std::optional<base::UnguessableToken>& nonce) const {
-  if (!top_frame_origin) {
-    return NetworkAnonymizationKey();
-  }
-  SchemefulSite top_frame_site(*top_frame_origin);
-  SchemefulSite frame_site(*frame_origin);
-
-  return NetworkAnonymizationKey::CreateFromFrameSite(top_frame_site,
-                                                      frame_site, nonce);
-}
-
 IsolationInfo::IsolationInfo(RequestType request_type,
                              const std::optional<url::Origin>& top_frame_origin,
                              const std::optional<url::Origin>& frame_origin,
@@ -323,9 +310,11 @@ IsolationInfo::IsolationInfo(RequestType request_type,
                                     SchemefulSite(*frame_origin),
                                     nonce)),
       network_anonymization_key_(
-          CreateNetworkAnonymizationKeyForIsolationInfo(top_frame_origin,
-                                                        frame_origin,
-                                                        nonce)),
+          !top_frame_origin ? NetworkAnonymizationKey()
+                            : NetworkAnonymizationKey::CreateFromFrameSite(
+                                  SchemefulSite(*top_frame_origin),
+                                  SchemefulSite(*frame_origin),
+                                  nonce)),
       site_for_cookies_(site_for_cookies),
       nonce_(nonce) {
   DCHECK(IsConsistent(request_type_, top_frame_origin_, frame_origin_,

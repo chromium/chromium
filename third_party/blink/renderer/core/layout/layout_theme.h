@@ -40,10 +40,8 @@ namespace blink {
 
 class ComputedStyle;
 class ComputedStyleBuilder;
-class Document;
 class Element;
 class File;
-class FontDescription;
 class LocalFrame;
 class Node;
 class ThemePainter;
@@ -121,11 +119,15 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // Highlight and text colors for TextMatches.
   Color PlatformTextSearchHighlightColor(
       bool active_match,
+      bool in_forced_colors,
       mojom::blink::ColorScheme color_scheme,
-      const ui::ColorProvider* color_provider) const;
+      const ui::ColorProvider* color_provider,
+      bool is_in_web_app_scope) const;
   Color PlatformTextSearchColor(bool active_match,
+                                bool in_forced_colors,
                                 mojom::blink::ColorScheme color_scheme,
-                                const ui::ColorProvider* color_provider) const;
+                                const ui::ColorProvider* color_provider,
+                                bool is_in_web_app_scope) const;
 
   virtual Color FocusRingColor(mojom::blink::ColorScheme color_scheme) const;
   virtual Color PlatformFocusRingColor() const { return Color(0, 0, 0); }
@@ -145,11 +147,11 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   void SetCaretBlinkInterval(base::TimeDelta);
   virtual base::TimeDelta CaretBlinkInterval() const;
 
-  // System fonts and colors for CSS.
-  void SystemFont(CSSValueID system_font_id, FontDescription&, const Document*);
+  // System colors for CSS.
   virtual Color SystemColor(CSSValueID,
                             mojom::blink::ColorScheme color_scheme,
-                            const ui::ColorProvider* color_provider) const;
+                            const ui::ColorProvider* color_provider,
+                            bool is_in_web_app_scope) const;
 
   virtual void AdjustSliderThumbSize(ComputedStyleBuilder&) const;
 
@@ -195,13 +197,18 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
       mojom::blink::ColorScheme color_scheme) const;
 
   // GetAccentColorOrDefault will return GetAccentColor if there is a value from
-  // the OS, otherwise it will return the default accent color.
-  Color GetAccentColorOrDefault(mojom::blink::ColorScheme color_scheme) const;
+  // the OS and if it is within an installed WebApp scope, otherwise it will
+  // return the default accent color.
+  Color GetAccentColorOrDefault(mojom::blink::ColorScheme color_scheme,
+                                bool is_in_web_app_scope) const;
   // GetAccentColorText returns black or white depending on which can be
   // rendered with enough contrast on the result of GetAccentColorOrDefault.
-  Color GetAccentColorText(mojom::blink::ColorScheme color_scheme) const;
+  Color GetAccentColorText(mojom::blink::ColorScheme color_scheme,
+                           bool is_in_web_app_scope) const;
 
-  bool InForcedColorsMode() const { return in_forced_colors_mode_; }
+  virtual Color SystemHighlightFromColorProvider(
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider) const;
 
  protected:
   // The platform selection color.
@@ -241,10 +248,13 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   Color GetCustomFocusRingColor() const;
 
   Color DefaultSystemColor(CSSValueID,
-                           mojom::blink::ColorScheme color_scheme) const;
-  Color SystemColorFromNativeTheme(
-      CSSValueID,
-      mojom::blink::ColorScheme color_scheme) const;
+                           mojom::blink::ColorScheme color_scheme,
+                           const ui::ColorProvider* color_provider,
+                           bool is_in_web_app_scope) const;
+  Color SystemColorFromColorProvider(CSSValueID,
+                                     mojom::blink::ColorScheme color_scheme,
+                                     const ui::ColorProvider* color_provider,
+                                     bool is_in_web_app_scope) const;
 
  private:
   // This function is to be implemented in your platform-specific theme
@@ -265,7 +275,6 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   base::TimeDelta caret_blink_interval_ = base::Milliseconds(500);
 
   bool delegates_menu_list_rendering_ = false;
-  bool in_forced_colors_mode_ = false;
 
   // This color is expected to be drawn on a semi-transparent overlay,
   // making it more transparent than its alpha value indicates.

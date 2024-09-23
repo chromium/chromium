@@ -17,7 +17,7 @@
     (function collectProfiles() {
       console.profile();
       console.profile('titled');
-      console.profileEnd();
+      console.profileEnd('titled');
       console.profileEnd();
     })();
   `);

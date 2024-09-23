@@ -12,9 +12,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "media/audio/audio_manager_base.h"
-#include "media/base/android/media_jni_headers/AudioTrackOutputStream_jni.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "media/base/android/media_jni_headers/AudioTrackOutputStream_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;
@@ -74,7 +76,7 @@ bool AudioTrackOutputStream::Open() {
       case AudioParameters::AUDIO_FAKE:
       case AudioParameters::AUDIO_PCM_LINEAR:
       case AudioParameters::AUDIO_PCM_LOW_LATENCY:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/omnibox_metrics_provider.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -20,12 +21,18 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 
 using metrics::OmniboxEventProto;
 
 namespace {
+
+using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+using OmniboxScoringSignals = ::metrics::OmniboxScoringSignals;
 
 // Keep up to date with ClientSummarizedResultType in
 // //tools/metrics/histograms/enums.xml.
@@ -114,12 +121,137 @@ ClientSummarizedResultType GetClientSummarizedResultType(
            ClientSummarizedResultType::kUrl},
           {OmniboxEventProto::Suggestion::PEDAL,
            ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS,
+           ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::FEATURED_ENTERPRISE_SEARCH,
+           ClientSummarizedResultType::kSearch},
       });
 
   const auto it = kResultTypesToClientSummarizedResultTypes->find(type);
   return it == kResultTypesToClientSummarizedResultTypes->cend()
              ? ClientSummarizedResultType::kUnknown
              : it->second;
+}
+
+// Extracts the subset of signals which must be logged by the client in order to
+// train the Omnibox ML Scoring model using server-side training logic.
+void GetScoringSignalsForLogging(const OmniboxScoringSignals& scoring_signals,
+                                 ScoringSignals& scoring_signals_for_logging) {
+  // Keep consistent:
+  // - omnibox_event.proto `ScoringSignals`
+  // - omnibox_scoring_signals.proto `OmniboxScoringSignals`
+  // - autocomplete_scoring_model_handler.cc
+  //   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
+  // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
+  // - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
+  // - omnibox_metrics_provider.cc `GetScoringSignalsForLogging()`
+  // - omnibox.mojom `struct Signals`
+  // - omnibox_page_handler.cc
+  //   `TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr>`
+  // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
+  //   AutocompleteMatch::ScoringSignals>`
+  // - omnibox_util.ts `signalNames`
+  // - omnibox/histograms.xml
+  //   `Omnibox.URLScoringModelExecuted.ScoringSignalCoverage`
+
+  if (scoring_signals.has_typed_count()) {
+    scoring_signals_for_logging.set_typed_count(scoring_signals.typed_count());
+  }
+  if (scoring_signals.has_visit_count()) {
+    scoring_signals_for_logging.set_visit_count(scoring_signals.visit_count());
+  }
+  if (scoring_signals.has_elapsed_time_last_visit_secs()) {
+    scoring_signals_for_logging.set_elapsed_time_last_visit_secs(
+        scoring_signals.elapsed_time_last_visit_secs());
+  }
+  if (scoring_signals.has_shortcut_visit_count()) {
+    scoring_signals_for_logging.set_shortcut_visit_count(
+        scoring_signals.shortcut_visit_count());
+  }
+  if (scoring_signals.has_shortest_shortcut_len()) {
+    scoring_signals_for_logging.set_shortest_shortcut_len(
+        scoring_signals.shortest_shortcut_len());
+  }
+  if (scoring_signals.has_elapsed_time_last_shortcut_visit_sec()) {
+    scoring_signals_for_logging.set_elapsed_time_last_shortcut_visit_sec(
+        scoring_signals.elapsed_time_last_shortcut_visit_sec());
+  }
+  if (scoring_signals.has_is_host_only()) {
+    scoring_signals_for_logging.set_is_host_only(
+        scoring_signals.is_host_only());
+  }
+  if (scoring_signals.has_num_bookmarks_of_url()) {
+    scoring_signals_for_logging.set_num_bookmarks_of_url(
+        scoring_signals.num_bookmarks_of_url());
+  }
+  if (scoring_signals.has_first_bookmark_title_match_position()) {
+    scoring_signals_for_logging.set_first_bookmark_title_match_position(
+        scoring_signals.first_bookmark_title_match_position());
+  }
+  if (scoring_signals.has_total_bookmark_title_match_length()) {
+    scoring_signals_for_logging.set_total_bookmark_title_match_length(
+        scoring_signals.total_bookmark_title_match_length());
+  }
+  if (scoring_signals.has_num_input_terms_matched_by_bookmark_title()) {
+    scoring_signals_for_logging.set_num_input_terms_matched_by_bookmark_title(
+        scoring_signals.num_input_terms_matched_by_bookmark_title());
+  }
+  if (scoring_signals.has_first_url_match_position()) {
+    scoring_signals_for_logging.set_first_url_match_position(
+        scoring_signals.first_url_match_position());
+  }
+  if (scoring_signals.has_total_url_match_length()) {
+    scoring_signals_for_logging.set_total_url_match_length(
+        scoring_signals.total_url_match_length());
+  }
+  if (scoring_signals.has_host_match_at_word_boundary()) {
+    scoring_signals_for_logging.set_host_match_at_word_boundary(
+        scoring_signals.host_match_at_word_boundary());
+  }
+  if (scoring_signals.has_total_host_match_length()) {
+    scoring_signals_for_logging.set_total_host_match_length(
+        scoring_signals.total_host_match_length());
+  }
+  if (scoring_signals.has_total_path_match_length()) {
+    scoring_signals_for_logging.set_total_path_match_length(
+        scoring_signals.total_path_match_length());
+  }
+  if (scoring_signals.has_total_query_or_ref_match_length()) {
+    scoring_signals_for_logging.set_total_query_or_ref_match_length(
+        scoring_signals.total_query_or_ref_match_length());
+  }
+  if (scoring_signals.has_total_title_match_length()) {
+    scoring_signals_for_logging.set_total_title_match_length(
+        scoring_signals.total_title_match_length());
+  }
+  if (scoring_signals.has_has_non_scheme_www_match()) {
+    scoring_signals_for_logging.set_has_non_scheme_www_match(
+        scoring_signals.has_non_scheme_www_match());
+  }
+  if (scoring_signals.has_num_input_terms_matched_by_title()) {
+    scoring_signals_for_logging.set_num_input_terms_matched_by_title(
+        scoring_signals.num_input_terms_matched_by_title());
+  }
+  if (scoring_signals.has_num_input_terms_matched_by_url()) {
+    scoring_signals_for_logging.set_num_input_terms_matched_by_url(
+        scoring_signals.num_input_terms_matched_by_url());
+  }
+  if (scoring_signals.has_length_of_url()) {
+    scoring_signals_for_logging.set_length_of_url(
+        scoring_signals.length_of_url());
+  }
+  if (scoring_signals.has_site_engagement()) {
+    scoring_signals_for_logging.set_site_engagement(
+        scoring_signals.site_engagement());
+  }
+  if (scoring_signals.has_allowed_to_be_default_match()) {
+    scoring_signals_for_logging.set_allowed_to_be_default_match(
+        scoring_signals.allowed_to_be_default_match());
+  }
+  if (scoring_signals.has_search_suggest_relevance()) {
+    scoring_signals_for_logging.set_search_suggest_relevance(
+        scoring_signals.search_suggest_relevance());
+  }
 }
 
 }  // namespace
@@ -150,7 +282,7 @@ void OmniboxMetricsProvider::OnURLOpenedFromOmnibox(OmniboxLog* log) {
 }
 
 void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
-  std::vector<base::StringPiece16> terms =
+  std::vector<std::u16string_view> terms =
       base::SplitStringPiece(log.text, base::kWhitespaceUTF16,
                              base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
@@ -210,7 +342,7 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
       suggestion->set_typed_count(match.typed_count);
     }
 
-    // TODO(https://crbug.com/1103056): send the entire set of subtypes.
+    // TODO(crbug.com/40139076): send the entire set of subtypes.
     if (!match.subtypes.empty()) {
       suggestion->set_result_subtype_identifier(*match.subtypes.begin());
     }
@@ -218,12 +350,17 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
     suggestion->set_has_tab_match(match.has_tab_match.value_or(false));
     suggestion->set_is_keyword_suggestion(match.from_keyword);
 
-    // Scoring signals are not logged for search suggestions or in incognito
-    // mode.
+    // Scoring signals are not logged when the client is in incognito mode or
+    // when the particular suggestion type is considered ineligible for signal
+    // logging.
     if (OmniboxFieldTrial::IsReportingUrlScoringSignalsEnabled() &&
-        !AutocompleteMatch::IsSearchType(match.type) && !log.is_incognito &&
+        !log.is_incognito && match.IsMlSignalLoggingEligible() &&
         match.scoring_signals) {
-      suggestion->mutable_scoring_signals()->CopyFrom(*match.scoring_signals);
+      ScoringSignals scoring_signals_for_logging;
+      GetScoringSignalsForLogging(*match.scoring_signals,
+                                  scoring_signals_for_logging);
+      suggestion->mutable_scoring_signals()->CopyFrom(
+          scoring_signals_for_logging);
     }
   }
   for (const auto& info : log.providers_info) {
@@ -254,7 +391,14 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURLClientSummarizedResultType(
       log.selection.IsAction() ? log.selection.action_index : -1);
   auto client_summarized_result_type =
       GetClientSummarizedResultType(omnibox_event_result_type);
+  // Log UMA histogram.
   base::UmaHistogramEnumeration(
       "Omnibox.SuggestionUsed.ClientSummarizedResultType",
       client_summarized_result_type);
+  // Log UKM event.
+  if (log.ukm_source_id != ukm::kInvalidSourceId) {
+    ukm::builders::Omnibox_SuggestionUsed(log.ukm_source_id)
+        .SetResultType(static_cast<int64_t>(client_summarized_result_type))
+        .Record(ukm::UkmRecorder::Get());
+  }
 }

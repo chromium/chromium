@@ -132,7 +132,7 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
               .ClipHeightTo(0, provider->GetDistanceMetric(
                                    DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT))
               .SetContents(std::move(message_contents)),
-          // TODO(crbug.com/1218186): Remove this, this is in place temporarily
+          // TODO(crbug.com/40185544): Remove this, this is in place temporarily
           // to be able to submit accessibility checks, but this focusable View
           // needs to add a name so that the screen reader knows what to
           // announce.
@@ -143,7 +143,7 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
               .SetAccessibleName(message)
               .SetVisible(false)
               .CustomConfigure(base::BindOnce([](Textfield* prompt_field) {
-                prompt_field->GetViewAccessibility().OverrideIsIgnored(true);
+                prompt_field->GetViewAccessibility().SetIsIgnored(true);
               })),
           Builder<Checkbox>()
               .CopyAddressTo(&checkbox_)
@@ -237,16 +237,22 @@ void MessageBoxView::SetPromptField(const std::u16string& default_prompt) {
     return;
   prompt_field_->SetText(default_prompt);
   prompt_field_->SetVisible(true);
-  prompt_field_->GetViewAccessibility().OverrideIsIgnored(false);
+  prompt_field_->GetViewAccessibility().SetIsIgnored(false);
   // The same text visible in the message box is used as an accessible name for
   // the prompt. To prevent it from being announced twice, we hide the message
   // to ATs.
-  scroll_view_->GetViewAccessibility().OverrideIsLeaf(true);
+  scroll_view_->GetViewAccessibility().SetIsLeaf(true);
   ResetLayoutManager();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // MessageBoxView, View overrides:
+
+gfx::Size MessageBoxView::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
+  return BoxLayoutView::CalculatePreferredSize(
+      SizeBounds(message_width_, available_size.height()));
+}
 
 void MessageBoxView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
@@ -284,7 +290,6 @@ bool MessageBoxView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 void MessageBoxView::ResetLayoutManager() {
   SetBetweenChildSpacing(inter_row_vertical_spacing_);
   SetMinimumCrossAxisSize(message_width_);
-  scroll_view_->SetPreferredSize(gfx::Size(message_width_, 0));
 
   views::DialogContentType trailing_content_type =
       views::DialogContentType::kText;
@@ -297,8 +302,8 @@ void MessageBoxView::ResetLayoutManager() {
 
   // Ignored views are not in the accessibility tree, but their children
   // still can be exposed. Leaf views have no accessible children.
-  checkbox_->GetViewAccessibility().OverrideIsIgnored(!checkbox_is_visible);
-  checkbox_->GetViewAccessibility().OverrideIsLeaf(!checkbox_is_visible);
+  checkbox_->GetViewAccessibility().SetIsIgnored(!checkbox_is_visible);
+  checkbox_->GetViewAccessibility().SetIsLeaf(!checkbox_is_visible);
 
   if (link_->GetVisible())
     trailing_content_type = views::DialogContentType::kText;

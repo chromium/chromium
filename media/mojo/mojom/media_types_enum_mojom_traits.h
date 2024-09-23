@@ -7,6 +7,7 @@
 
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "media/base/cdm_factory.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_transformation.h"
@@ -34,7 +35,7 @@ struct EnumTraits<media::mojom::CdmEvent, ::media::CdmEvent> {
         return media::mojom::CdmEvent::kHardwareContextReset;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -56,7 +57,7 @@ struct EnumTraits<media::mojom::CdmEvent, ::media::CdmEvent> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 #endif  // BUILDFLAG(IS_WIN)
@@ -79,7 +80,7 @@ struct EnumTraits<media::mojom::CdmSessionClosedReason,
         return media::mojom::CdmSessionClosedReason::kResourceEvicted;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -104,7 +105,7 @@ struct EnumTraits<media::mojom::CdmSessionClosedReason,
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -122,7 +123,7 @@ struct EnumTraits<media::mojom::EncryptionType, ::media::EncryptionType> {
         return media::mojom::EncryptionType::kEncryptedWithClearLead;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -144,7 +145,7 @@ struct EnumTraits<media::mojom::EncryptionType, ::media::EncryptionType> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -211,7 +212,7 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
       case media::SVCScalabilityMode::kL3T1h:
       case media::SVCScalabilityMode::kL3T2h:
       case media::SVCScalabilityMode::kL3T3h:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -219,7 +220,7 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
                         media::SVCScalabilityMode* output) {
     switch (input) {
       case media::mojom::SVCScalabilityMode::kUnsupportedMode:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case media::mojom::SVCScalabilityMode::kL1T1:
         *output = media::SVCScalabilityMode::kL1T1;
         return true;
@@ -285,7 +286,7 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -302,7 +303,7 @@ struct EnumTraits<media::mojom::SVCInterLayerPredMode,
       case media::SVCInterLayerPredMode::kOnKeyPic:
         return media::mojom::SVCInterLayerPredMode::kOnKeyPic;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   static bool FromMojom(media::mojom::SVCInterLayerPredMode input,
@@ -318,7 +319,7 @@ struct EnumTraits<media::mojom::SVCInterLayerPredMode,
         *output = media::SVCInterLayerPredMode::kOnKeyPic;
         return true;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -336,7 +337,7 @@ struct EnumTraits<media::mojom::VideoRotation, ::media::VideoRotation> {
         return media::mojom::VideoRotation::kVideoRotation270;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -358,7 +359,7 @@ struct EnumTraits<media::mojom::VideoRotation, ::media::VideoRotation> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -390,7 +391,7 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
         return media::mojom::RendererType::kTest;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -433,7 +434,132 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
+  }
+};
+
+template <>
+struct EnumTraits<media::mojom::CreateCdmStatus, media::CreateCdmStatus> {
+  static media::mojom::CreateCdmStatus ToMojom(media::CreateCdmStatus input) {
+    switch (input) {
+      case media::CreateCdmStatus::kSuccess:
+        return media::mojom::CreateCdmStatus::kSuccess;
+      case media::CreateCdmStatus::kUnknownError:
+        return media::mojom::CreateCdmStatus::kUnknownError;
+      case media::CreateCdmStatus::kCdmCreationAborted:
+        return media::mojom::CreateCdmStatus::kCdmCreationAborted;
+      case media::CreateCdmStatus::kLoadCdmFailed:
+        return media::mojom::CreateCdmStatus::kLoadCdmFailed;
+      case media::CreateCdmStatus::kCreateCdmFuncNotAvailable:
+        return media::mojom::CreateCdmStatus::kCreateCdmFuncNotAvailable;
+      case media::CreateCdmStatus::kCdmHelperCreationFailed:
+        return media::mojom::CreateCdmStatus::kCdmHelperCreationFailed;
+      case media::CreateCdmStatus::kGetCdmPrefDataFailed:
+        return media::mojom::CreateCdmStatus::kGetCdmPrefDataFailed;
+      case media::CreateCdmStatus::kGetCdmOriginIdFailed:
+        return media::mojom::CreateCdmStatus::kGetCdmOriginIdFailed;
+      case media::CreateCdmStatus::kInitCdmFailed:
+        return media::mojom::CreateCdmStatus::kInitCdmFailed;
+      case media::CreateCdmStatus::kCdmFactoryCreationFailed:
+        return media::mojom::CreateCdmStatus::kCdmFactoryCreationFailed;
+      case media::CreateCdmStatus::kCdmNotSupported:
+        return media::mojom::CreateCdmStatus::kCdmNotSupported;
+      case media::CreateCdmStatus::kInvalidCdmConfig:
+        return media::mojom::CreateCdmStatus::kInvalidCdmConfig;
+      case media::CreateCdmStatus::kUnsupportedKeySystem:
+        return media::mojom::CreateCdmStatus::kUnsupportedKeySystem;
+      case media::CreateCdmStatus::kDisconnectionError:
+        return media::mojom::CreateCdmStatus::kDisconnectionError;
+      case media::CreateCdmStatus::kNotAllowedOnUniqueOrigin:
+        return media::mojom::CreateCdmStatus::kNotAllowedOnUniqueOrigin;
+      case media::CreateCdmStatus::kMediaDrmBridgeCreationFailed:
+        return media::mojom::CreateCdmStatus::kMediaDrmBridgeCreationFailed;
+      case media::CreateCdmStatus::kMediaCryptoNotAvailable:
+        return media::mojom::CreateCdmStatus::kMediaCryptoNotAvailable;
+      case media::CreateCdmStatus::kNoMoreInstances:
+        return media::mojom::CreateCdmStatus::kNoMoreInstances;
+      case media::CreateCdmStatus::kInsufficientGpuResources:
+        return media::mojom::CreateCdmStatus::kInsufficientGpuResources;
+      case media::CreateCdmStatus::kCrOsVerifiedAccessDisabled:
+        return media::mojom::CreateCdmStatus::kCrOsVerifiedAccessDisabled;
+      case media::CreateCdmStatus::kCrOsRemoteFactoryCreationFailed:
+        return media::mojom::CreateCdmStatus::kCrOsRemoteFactoryCreationFailed;
+    }
+
+    NOTREACHED();
+  }
+
+  // Returning false results in deserialization failure and causes the
+  // message pipe receiving it to be disconnected.
+  static bool FromMojom(media::mojom::CreateCdmStatus input,
+                        media::CreateCdmStatus* output) {
+    switch (input) {
+      case media::mojom::CreateCdmStatus::kSuccess:
+        *output = media::CreateCdmStatus::kSuccess;
+        return true;
+      case media::mojom::CreateCdmStatus::kUnknownError:
+        *output = media::CreateCdmStatus::kUnknownError;
+        return true;
+      case media::mojom::CreateCdmStatus::kCdmCreationAborted:
+        *output = media::CreateCdmStatus::kCdmCreationAborted;
+        return true;
+      case media::mojom::CreateCdmStatus::kLoadCdmFailed:
+        *output = media::CreateCdmStatus::kLoadCdmFailed;
+        return true;
+      case media::mojom::CreateCdmStatus::kCreateCdmFuncNotAvailable:
+        *output = media::CreateCdmStatus::kCreateCdmFuncNotAvailable;
+        return true;
+      case media::mojom::CreateCdmStatus::kCdmHelperCreationFailed:
+        *output = media::CreateCdmStatus::kCdmHelperCreationFailed;
+        return true;
+      case media::mojom::CreateCdmStatus::kGetCdmPrefDataFailed:
+        *output = media::CreateCdmStatus::kGetCdmPrefDataFailed;
+        return true;
+      case media::mojom::CreateCdmStatus::kGetCdmOriginIdFailed:
+        *output = media::CreateCdmStatus::kGetCdmOriginIdFailed;
+        return true;
+      case media::mojom::CreateCdmStatus::kInitCdmFailed:
+        *output = media::CreateCdmStatus::kInitCdmFailed;
+        return true;
+      case media::mojom::CreateCdmStatus::kCdmFactoryCreationFailed:
+        *output = media::CreateCdmStatus::kCdmFactoryCreationFailed;
+        return true;
+      case media::mojom::CreateCdmStatus::kCdmNotSupported:
+        *output = media::CreateCdmStatus::kCdmNotSupported;
+        return true;
+      case media::mojom::CreateCdmStatus::kInvalidCdmConfig:
+        *output = media::CreateCdmStatus::kInvalidCdmConfig;
+        return true;
+      case media::mojom::CreateCdmStatus::kUnsupportedKeySystem:
+        *output = media::CreateCdmStatus::kUnsupportedKeySystem;
+        return true;
+      case media::mojom::CreateCdmStatus::kDisconnectionError:
+        *output = media::CreateCdmStatus::kDisconnectionError;
+        return true;
+      case media::mojom::CreateCdmStatus::kNotAllowedOnUniqueOrigin:
+        *output = media::CreateCdmStatus::kNotAllowedOnUniqueOrigin;
+        return true;
+      case media::mojom::CreateCdmStatus::kMediaDrmBridgeCreationFailed:
+        *output = media::CreateCdmStatus::kMediaDrmBridgeCreationFailed;
+        return true;
+      case media::mojom::CreateCdmStatus::kMediaCryptoNotAvailable:
+        *output = media::CreateCdmStatus::kMediaCryptoNotAvailable;
+        return true;
+      case media::mojom::CreateCdmStatus::kNoMoreInstances:
+        *output = media::CreateCdmStatus::kNoMoreInstances;
+        return true;
+      case media::mojom::CreateCdmStatus::kInsufficientGpuResources:
+        *output = media::CreateCdmStatus::kInsufficientGpuResources;
+        return true;
+      case media::mojom::CreateCdmStatus::kCrOsVerifiedAccessDisabled:
+        *output = media::CreateCdmStatus::kCrOsVerifiedAccessDisabled;
+        return true;
+      case media::mojom::CreateCdmStatus::kCrOsRemoteFactoryCreationFailed:
+        *output = media::CreateCdmStatus::kCrOsRemoteFactoryCreationFailed;
+        return true;
+    }
+
+    NOTREACHED();
   }
 };
 

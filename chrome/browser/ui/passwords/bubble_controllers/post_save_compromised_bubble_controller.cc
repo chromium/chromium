@@ -26,7 +26,7 @@ PostSaveCompromisedBubbleController::PostSaveCompromisedBubbleController(
       type_ = BubbleType::kPasswordUpdatedWithMoreToFix;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   base::UmaHistogramEnumeration("PasswordBubble.CompromisedBubble.Type", type_);
 }
@@ -83,31 +83,29 @@ int PostSaveCompromisedBubbleController::GetImageID(bool dark) const {
 
 void PostSaveCompromisedBubbleController::OnAccepted() {
   using password_manager::PasswordCheckReferrer;
-  checked_clicked_ = true;
   PasswordCheckReferrer referrer;
   switch (type_) {
     case BubbleType::kPasswordUpdatedSafeState:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case BubbleType::kPasswordUpdatedWithMoreToFix:
       referrer = PasswordCheckReferrer::kMoreToFixBubble;
       break;
   }
-  if (delegate_)
+  if (delegate_) {
     delegate_->NavigateToPasswordCheckup(referrer);
+  }
 }
 
 void PostSaveCompromisedBubbleController::OnSettingsClicked() {
-  if (delegate_)
+  if (delegate_) {
     delegate_->NavigateToPasswordManagerSettingsPage(
         password_manager::ManagePasswordsReferrer::kSafeStateBubble);
+  }
 }
 
 std::u16string PostSaveCompromisedBubbleController::GetTitle() const {
   return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UPDATED_BUBBLE_TITLE);
 }
 
-void PostSaveCompromisedBubbleController::ReportInteractions() {
-  base::UmaHistogramBoolean("PasswordBubble.CompromisedBubble.CheckClicked",
-                            checked_clicked_);
-}
+void PostSaveCompromisedBubbleController::ReportInteractions() {}

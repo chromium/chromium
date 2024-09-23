@@ -5,6 +5,7 @@
 #include "ash/system/camera/camera_app_prefs.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

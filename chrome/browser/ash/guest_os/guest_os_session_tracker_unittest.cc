@@ -40,12 +40,6 @@ class GuestOsSessionTrackerTest : public testing::Test,
     container_shutdown_signal_.set_container_name("penguin");
     container_shutdown_signal_.set_vm_name("vm_name");
     container_shutdown_signal_.set_owner_id(OwnerId());
-
-    container_stopping_signal_.set_vm_name("vm_name");
-    container_stopping_signal_.set_container_name("penguin");
-    container_stopping_signal_.set_owner_id(OwnerId());
-    container_stopping_signal_.set_status(
-        vm_tools::cicerone::LxdContainerStoppingSignal::STOPPED);
   }
 
   std::string OwnerId() {
@@ -79,7 +73,6 @@ class GuestOsSessionTrackerTest : public testing::Test,
   vm_tools::concierge::VmStoppedSignal vm_shutdown_signal_;
   vm_tools::cicerone::ContainerStartedSignal container_started_signal_;
   vm_tools::cicerone::ContainerShutdownSignal container_shutdown_signal_;
-  vm_tools::cicerone::LxdContainerStoppingSignal container_stopping_signal_;
 };
 
 TEST_F(GuestOsSessionTrackerTest, ContainerAddedOnStartup) {
@@ -118,36 +111,6 @@ TEST_F(GuestOsSessionTrackerTest, ContainerRemovedOnContainerShutdown) {
 
   FakeCiceroneClient()->NotifyContainerShutdownSignal(
       container_shutdown_signal_);
-  CheckContainerNotExists();
-}
-
-TEST_F(GuestOsSessionTrackerTest, ContainerRemovedOnContainerStoppedSignal) {
-  FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
-  FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
-  CheckContainerExists();
-
-  FakeCiceroneClient()->NotifyLxdContainerStopping(container_stopping_signal_);
-  CheckContainerNotExists();
-}
-
-TEST_F(GuestOsSessionTrackerTest,
-       ContainerNotRemovedOnContainerStoppingSignal) {
-  // Set the signal to something that isn't STOPPED.
-  container_stopping_signal_.set_status(
-      vm_tools::cicerone::LxdContainerStoppingSignal::STOPPING);
-
-  FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
-  FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
-  CheckContainerExists();
-
-  FakeCiceroneClient()->NotifyLxdContainerStopping(container_stopping_signal_);
-  CheckContainerExists();
-}
-
-TEST_F(GuestOsSessionTrackerTest, ContainerHandleShutdownNonexistentNoop) {
-  CheckContainerNotExists();
-
-  FakeCiceroneClient()->NotifyLxdContainerStopping(container_stopping_signal_);
   CheckContainerNotExists();
 }
 
@@ -265,21 +228,6 @@ TEST_F(GuestOsSessionTrackerTest, RunOnContainerShutdown) {
       guest_id_, base::BindLambdaForTesting([&called]() { called = true; }));
   FakeCiceroneClient()->NotifyContainerShutdownSignal(
       container_shutdown_signal_);
-  EXPECT_TRUE(called);
-}
-
-TEST_F(GuestOsSessionTrackerTest, RunOnLxdStopping) {
-  FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
-  FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
-  bool called = false;
-  auto _ = tracker_.RunOnShutdown(
-      guest_id_, base::BindLambdaForTesting([&called]() { called = true; }));
-  vm_tools::cicerone::LxdContainerStoppingSignal signal;
-  signal.set_vm_name(guest_id_.vm_name);
-  signal.set_container_name(guest_id_.container_name);
-  signal.set_owner_id(OwnerId());
-  signal.set_status(vm_tools::cicerone::LxdContainerStoppingSignal::STOPPED);
-  FakeCiceroneClient()->NotifyLxdContainerStopping(signal);
   EXPECT_TRUE(called);
 }
 

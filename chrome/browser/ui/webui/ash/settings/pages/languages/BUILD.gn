@@ -1,0 +1,39 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("languages") {
+  sources = [
+    "languages_section.cc",
+    "languages_section.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/webui/ash/settings/pages/device",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/keyboard",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/common",
+    "//chromeos/components/quick_answers/public/cpp",
+    "//chromeos/constants",
+    "//components/prefs",
+    "//content/public/browser",
+    "//net",
+    "//ui/base",
+    "//url",
+  ]
+}

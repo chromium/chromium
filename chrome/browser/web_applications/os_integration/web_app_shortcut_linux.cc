@@ -4,10 +4,12 @@
 
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_linux.h"
 
-#include <algorithm>
-#include <utility>
-
 #include <fcntl.h>
+
+#include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/base_paths.h"
 #include "base/check_is_test.h"
@@ -63,23 +65,11 @@ LaunchXdgUtilityForTesting& GetInstalledLaunchXdgUtilityForTesting() {
 
 base::FilePath GetDesktopPath() {
   base::FilePath desktop_path;
-  scoped_refptr<OsIntegrationTestOverride> os_override =
-      OsIntegrationTestOverride::Get();
-  if (os_override) {
-    CHECK_IS_TEST();
-    return os_override->desktop();
-  }
   base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path);
   return desktop_path;
 }
 
 base::FilePath GetAutostartPath(base::Environment* env) {
-  scoped_refptr<OsIntegrationTestOverride> os_override =
-      OsIntegrationTestOverride::Get();
-  if (os_override) {
-    CHECK_IS_TEST();
-    return os_override->startup();
-  }
   return AutoStart::GetAutostartDirectory(env);
 }
 
@@ -167,6 +157,13 @@ std::string CreateShortcutIcon(const gfx::ImageFamily& icon_images,
     if (!base::WriteFile(temp_file_path, *png_data)) {
       RecordCreateIcon(CreateShortcutIconResult::kImageCorrupted);
       return std::string();
+    }
+    // TODO(https://crbug.com/332935566): Have the os integration override save
+    // these calls instead of exiting early here.
+    if (OsIntegrationTestOverride::Get() &&
+        !GetInstalledLaunchXdgUtilityForTesting()) {
+      CHECK_IS_TEST();
+      continue;
     }
 
     std::vector<std::string> argv;
@@ -270,7 +267,12 @@ bool CreateShortcutInApplicationsMenu(base::Environment* env,
                                       const std::string& contents,
                                       const base::FilePath& directory_filename,
                                       const std::string& directory_contents) {
-  DCHECK(!OsIntegrationTestOverride::Get());
+  // Application menu shortcuts are not yet supported by
+  // OsIntegrationTestOverride, so this function should only be called if it
+  // isn't populated OR if the test has overridden
+  // `GetInstalledLaunchXdgUtilityForTesting()`.
+  DCHECK(!OsIntegrationTestOverride::Get() ||
+         GetInstalledLaunchXdgUtilityForTesting());  // IN-TEST
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {
     RecordCreateShortcut(CreateShortcutResult::kFailToCreateTempDir);
@@ -320,8 +322,8 @@ bool CreateShortcutInApplicationsMenu(base::Environment* env,
   // manually run update-desktop-database on the user applications folder.
   // See this bug on xdg desktop-file-utils
   // https://gitlab.freedesktop.org/xdg/desktop-file-utils/issues/54
-  base::FilePath user_applications_dir =
-      base::nix::GetXDGDataWriteLocation(env).Append("applications");
+  base::FilePath user_dir = base::nix::GetXDGDataWriteLocation(env);
+  base::FilePath user_applications_dir = user_dir.Append("applications");
   argv.clear();
   argv.push_back("update-desktop-database");
   argv.push_back(user_applications_dir.value());
@@ -367,10 +369,8 @@ void SetLaunchXdgUtilityForTesting(
       std::move(launchXdgUtilityForTesting);
 }
 
-base::FilePath GetAppShortcutFilename(const base::FilePath& profile_path,
-                                      const std::string& app_id) {
-  DCHECK(!app_id.empty());
-
+std::string GetShortcutFileName(const base::FilePath& profile_path,
+                                const std::string& app_id) {
   // Use a prefix, because xdg-desktop-menu requires it.
   std::string filename(chrome::kBrowserProcessExecutableName);
   filename.append("-").append(app_id).append("-").append(
@@ -379,7 +379,21 @@ base::FilePath GetAppShortcutFilename(const base::FilePath& profile_path,
   // Spaces in filenames break xdg-desktop-menu
   // (see https://bugs.freedesktop.org/show_bug.cgi?id=66605).
   base::ReplaceChars(filename, " ", "_", &filename);
-  return base::FilePath(filename.append(".desktop"));
+  return filename;
+}
+
+base::FilePath GetAppDesktopShortcutFilename(const base::FilePath& profile_path,
+                                             const std::string& app_id) {
+  CHECK(!app_id.empty());
+  std::string shortcut_filename = GetShortcutFileName(profile_path, app_id);
+  return base::FilePath(shortcut_filename.append(".desktop"));
+}
+
+base::FilePath GetAppIconShortcutFilename(const base::FilePath& profile_path,
+                                          const std::string& app_id) {
+  CHECK(!app_id.empty());
+  std::string shortcut_filename = GetShortcutFileName(profile_path, app_id);
+  return base::FilePath(shortcut_filename.append(".png"));
 }
 
 bool DeleteShortcutOnDesktop(const base::FilePath& shortcut_filename) {
@@ -400,8 +414,9 @@ bool DeleteShortcutInAutoStart(base::Environment* env,
 bool DeleteShortcutInApplicationsMenu(
     const base::FilePath& shortcut_filename,
     const base::FilePath& directory_filename) {
-  // TODO(crbug.com/1276141): Support shortcut testing in Applications Menu.
-  DCHECK(!OsIntegrationTestOverride::Get());
+  // TODO(crbug.com/40808705): Support shortcut testing in Applications Menu.
+  DCHECK(!OsIntegrationTestOverride::Get() ||
+         GetInstalledLaunchXdgUtilityForTesting());  // IN-TEST
   std::vector<std::string> argv;
   argv.push_back("xdg-desktop-menu");
   argv.push_back("uninstall");
@@ -422,6 +437,29 @@ bool DeleteShortcutInApplicationsMenu(
   return LaunchXdgUtility(argv, &exit_code);
 }
 
+// Removes temporary shortcut icons left over in `./local/share/icons/hicolor`
+// post shortcut deletion.
+bool DeleteShortcutIcons(const base::FilePath& shortcut_icon_filename) {
+  CHECK(!shortcut_icon_filename.empty());
+  bool result = true;
+  for (const auto& size : web_app::GetDesiredIconSizesForShortcut()) {
+    std::vector<std::string> argv;
+    argv.push_back("xdg-icon-resource");
+    argv.push_back("uninstall");
+
+    // Uninstall in user mode, to match the install.
+    argv.push_back("--mode");
+    argv.push_back("user");
+    argv.push_back("--size");
+    argv.push_back(base::ToString(size));
+
+    argv.push_back(shortcut_icon_filename.value());
+    int exit_code;
+    result = result && LaunchXdgUtility(argv, &exit_code);
+  }
+  return result;
+}
+
 bool CreateDesktopShortcut(base::Environment* env,
                            const ShortcutInfo& shortcut_info,
                            const ShortcutLocations& creation_locations) {
@@ -432,6 +470,11 @@ bool CreateDesktopShortcut(base::Environment* env,
   scoped_refptr<OsIntegrationTestOverride> test_override =
       OsIntegrationTestOverride::Get();
 
+  if (test_override) {
+    CHECK_IS_TEST();
+    env = test_override->environment();
+  }
+
   bool create_shortcut_in_startup = creation_locations.in_startup;
 
   ApplicationsMenuLocation applications_menu_location =
@@ -439,14 +482,15 @@ bool CreateDesktopShortcut(base::Environment* env,
   // Do not create the shortcuts in startup directory when testing because
   // xdg-utility (which creates this shortcut) doesn't work well with temp
   // directories.
-  if (test_override) {
+  if (test_override && !GetInstalledLaunchXdgUtilityForTesting()) {
+    CHECK_IS_TEST();
     applications_menu_location = APP_MENU_LOCATION_NONE;
   }
 
   base::FilePath shortcut_filename;
   if (!shortcut_info.app_id.empty()) {
-    shortcut_filename = GetAppShortcutFilename(shortcut_info.profile_path,
-                                               shortcut_info.app_id);
+    shortcut_filename = GetAppDesktopShortcutFilename(
+        shortcut_info.profile_path, shortcut_info.app_id);
     // For extensions we do not want duplicate shortcuts. So, delete any that
     // already exist and replace them.
     if (creation_locations.on_desktop) {
@@ -460,9 +504,16 @@ bool CreateDesktopShortcut(base::Environment* env,
     if (applications_menu_location != APP_MENU_LOCATION_NONE) {
       DeleteShortcutInApplicationsMenu(shortcut_filename, base::FilePath());
     }
-  } else {
-    shortcut_filename =
-        shell_integration_linux::GetWebShortcutFilename(shortcut_info.url);
+    if (!test_override && !GetInstalledLaunchXdgUtilityForTesting()) {
+      base::FilePath icon_filename = GetAppIconShortcutFilename(
+          shortcut_info.profile_path, shortcut_info.app_id);
+      DeleteShortcutIcons(icon_filename);
+    }
+  } else if (std::optional<base::SafeBaseName> opt_shortcut_filename =
+                 shell_integration_linux::GetUniqueWebShortcutFilename(
+                     shortcut_info.url.spec());
+             opt_shortcut_filename.has_value()) {
+    shortcut_filename = opt_shortcut_filename->path();
   }
   if (shortcut_filename.empty()) {
     RecordCreateShortcut(CreateShortcutResult::kFailToGetShortcutFilename);
@@ -480,7 +531,7 @@ bool CreateDesktopShortcut(base::Environment* env,
       shell_integration_linux::internal::GetChromeExePath();
   if (chrome_exe_path.empty()) {
     RecordCreateShortcut(CreateShortcutResult::kFailToGetChromeExePath);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -526,7 +577,7 @@ bool CreateDesktopShortcut(base::Environment* env,
           shell_integration::GetAppShortcutsSubdirName(), "");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -565,8 +616,15 @@ ShortcutLocations GetExistingShortcutLocations(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
+  scoped_refptr<OsIntegrationTestOverride> test_override =
+      OsIntegrationTestOverride::Get();
+  if (test_override) {
+    CHECK_IS_TEST();
+    env = test_override->environment();
+  }
+
   base::FilePath shortcut_filename =
-      GetAppShortcutFilename(profile_path, extension_id);
+      GetAppDesktopShortcutFilename(profile_path, extension_id);
   DCHECK(!shortcut_filename.empty());
   ShortcutLocations locations;
 
@@ -610,9 +668,13 @@ bool DeleteDesktopShortcuts(base::Environment* env,
   // destroyed while we use it.
   scoped_refptr<OsIntegrationTestOverride> test_override =
       OsIntegrationTestOverride::Get();
+  if (test_override) {
+    CHECK_IS_TEST();
+    env = test_override->environment();
+  }
 
   base::FilePath shortcut_filename =
-      GetAppShortcutFilename(profile_path, extension_id);
+      GetAppDesktopShortcutFilename(profile_path, extension_id);
   DCHECK(!shortcut_filename.empty());
 
   bool deleted_from_desktop = DeleteShortcutOnDesktop(shortcut_filename);
@@ -621,8 +683,11 @@ bool DeleteDesktopShortcuts(base::Environment* env,
   // directory. It doesn't matter: this will still delete the shortcut even if
   // it isn't in the directory.
 
+  // Autostart items aren't fully supported with test_override, so don't fail if
+  // it's populated.
+  // TODO(https://crbug.com/332935566): Support this by saving the xdg calls.
   bool deleted_from_autostart = true;
-  if (!test_override) {
+  if (!test_override || GetInstalledLaunchXdgUtilityForTesting()) {
     deleted_from_autostart = DeleteShortcutInAutoStart(env, shortcut_filename);
   }
 
@@ -632,13 +697,24 @@ bool DeleteDesktopShortcuts(base::Environment* env,
                                            std::vector<std::string>());
   }
 
+  // Shortcuts items aren't fully supported with test_override, so don't fail if
+  // it's populated.
+  // TODO(https://crbug.com/332935566): Support this by saving the xdg calls.
   bool deleted_from_application_menu = true;
-  if (!test_override) {
+  if (!test_override || GetInstalledLaunchXdgUtilityForTesting()) {
     deleted_from_application_menu = DeleteShortcutInApplicationsMenu(
         shortcut_filename, base::FilePath(kDirectoryFilename));
   }
+
+  bool deleted_from_icon_storage = true;
+  if (!test_override && !GetInstalledLaunchXdgUtilityForTesting()) {
+    base::FilePath icon_filename =
+        GetAppIconShortcutFilename(profile_path, extension_id);
+    deleted_from_icon_storage = DeleteShortcutIcons(icon_filename);
+  }
+
   return (deleted_from_desktop && deleted_from_autostart &&
-          deleted_from_application_menu);
+          deleted_from_application_menu && deleted_from_icon_storage);
 }
 
 bool DeleteAllDesktopShortcuts(base::Environment* env,
@@ -649,10 +725,16 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
   // destroyed while we use it.
   scoped_refptr<OsIntegrationTestOverride> test_override =
       OsIntegrationTestOverride::Get();
+  if (test_override) {
+    CHECK_IS_TEST();
+    env = test_override->environment();
+  }
 
   bool result = true;
-  // Delete shortcuts from Desktop.
+  // Delete shortcuts from Desktop and collect all icon files that need to be
+  // removed from the staging directory `~/.local/share/icons/hicolor/`.
   base::FilePath desktop_path = GetDesktopPath();
+  std::vector<base::FilePath> icon_files_to_be_deleted;
   if (!desktop_path.empty()) {
     std::vector<base::FilePath> shortcut_filenames_desktop =
         shell_integration_linux::GetExistingProfileShortcutFilenames(
@@ -661,6 +743,8 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
       if (!DeleteShortcutOnDesktop(shortcut)) {
         result = false;
       }
+      icon_files_to_be_deleted.push_back(
+          shortcut.RemoveExtension().AddExtension("png"));
     }
   }
 
@@ -669,11 +753,11 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
       shell_integration_linux::GetExistingProfileShortcutFilenames(
           profile_path, autostart_path);
   for (const auto& shortcut : shortcut_filenames_autostart) {
-    if (test_override) {
-      continue;
-    }
-    if (!DeleteShortcutInAutoStart(env, shortcut)) {
-      result = false;
+    // Autostart items aren't fully supported with test_override, so don't fail
+    // if it's populated.
+    // TODO(https://crbug.com/332935566): Support this by saving the xdg calls.
+    if (!test_override || GetInstalledLaunchXdgUtilityForTesting()) {
+      result = result && DeleteShortcutInAutoStart(env, shortcut);
     }
   }
 
@@ -684,14 +768,19 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
       shell_integration_linux::GetExistingProfileShortcutFilenames(
           profile_path, applications_menu);
   for (const auto& menu : shortcut_filenames_app_menu) {
-    if (test_override) {
-      continue;
-    }
-    if (!DeleteShortcutInApplicationsMenu(menu,
-                                          base::FilePath(kDirectoryFilename))) {
-      result = false;
+    // Shortcut items aren't fully supported with test_override, so don't fail
+    // if it's populated.
+    // TODO(https://crbug.com/332935566): Support this by saving the xdg calls.
+    if (!test_override || GetInstalledLaunchXdgUtilityForTesting()) {
+      result = result && DeleteShortcutInApplicationsMenu(
+                             menu, base::FilePath(kDirectoryFilename));
     }
   }
+  // Delete the shortcut icons from the staging area.
+  for (const auto& icon_files : icon_files_to_be_deleted) {
+    result = result && DeleteShortcutIcons(icon_files);
+  }
+
   return result;
 }
 
@@ -701,6 +790,13 @@ bool UpdateDesktopShortcuts(
     std::optional<ShortcutLocations> user_specified_locations) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
+
+  scoped_refptr<OsIntegrationTestOverride> test_override =
+      OsIntegrationTestOverride::Get();
+  if (test_override) {
+    CHECK_IS_TEST();
+    env = test_override->environment();
+  }
 
   // Find out whether shortcuts are already installed.
   ShortcutLocations existing_locations = GetExistingShortcutLocations(
@@ -736,10 +832,14 @@ std::vector<base::FilePath> GetShortcutLocations(
   // destroyed while we use it.
   scoped_refptr<OsIntegrationTestOverride> test_override =
       OsIntegrationTestOverride::Get();
+  if (test_override) {
+    CHECK_IS_TEST();
+    env = test_override->environment();
+  }
 
   std::vector<base::FilePath> shortcut_locations;
   base::FilePath shortcut_filename =
-      GetAppShortcutFilename(profile_path, app_id);
+      GetAppDesktopShortcutFilename(profile_path, app_id);
   DCHECK(!shortcut_filename.empty());
 
   if (locations.on_desktop) {
@@ -771,14 +871,16 @@ std::vector<base::FilePath> GetShortcutLocations(
 
 namespace internals {
 
-bool CreatePlatformShortcuts(const base::FilePath& /*web_app_path*/,
+void CreatePlatformShortcuts(const base::FilePath& /*web_app_path*/,
                              const ShortcutLocations& creation_locations,
                              ShortcutCreationReason /*creation_reason*/,
-                             const ShortcutInfo& shortcut_info) {
+                             const ShortcutInfo& shortcut_info,
+                             CreateShortcutsCallback callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  return CreateDesktopShortcut(env.get(), shortcut_info, creation_locations);
+  std::move(callback).Run(
+      CreateDesktopShortcut(env.get(), shortcut_info, creation_locations));
 }
 
 ShortcutLocations GetAppExistingShortCutLocationImpl(
@@ -800,16 +902,18 @@ void DeletePlatformShortcuts(const base::FilePath& web_app_path,
                                     shortcut_info.app_id)));
 }
 
-Result UpdatePlatformShortcuts(
+void UpdatePlatformShortcuts(
     const base::FilePath& /*web_app_path*/,
     const std::u16string& /*old_app_title*/,
     std::optional<ShortcutLocations> user_specified_locations,
+    ResultCallback callback,
     const ShortcutInfo& shortcut_info) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  return (
-      UpdateDesktopShortcuts(env.get(), shortcut_info, user_specified_locations)
-          ? Result::kOk
-          : Result::kError);
+  Result result = (UpdateDesktopShortcuts(env.get(), shortcut_info,
+                                          user_specified_locations)
+                       ? Result::kOk
+                       : Result::kError);
+  std::move(callback).Run(result);
 }
 
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {

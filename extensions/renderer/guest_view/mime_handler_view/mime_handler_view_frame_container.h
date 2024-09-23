@@ -82,8 +82,7 @@ class MimeHandlerViewFrameContainer : public PostMessageSupport::Delegate {
   bool AreFramesValid();
 
   // Controls the lifetime of |this| (always alive).
-  const raw_ptr<MimeHandlerViewContainerManager, ExperimentalRenderer>
-      container_manager_;
+  const raw_ptr<MimeHandlerViewContainerManager> container_manager_;
   blink::WebElement plugin_element_;
   const GURL resource_url_;
   const std::string mime_type_;

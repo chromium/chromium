@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_data_encryptor.h"
@@ -19,10 +20,12 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -261,7 +264,7 @@ TEST_F(FastPairHandshakeImplNewTest, ParseResponseWrongType) {
   histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 0);
   fake_fast_pair_gatt_service_client()->RunOnGattClientInitializedCallback();
   data_encryptor()->response(std::make_optional(DecryptedResponse(
-      FastPairMessageType::kProvidersPasskey,
+      FastPairMessageType::kKeyBasedPairingExtendedResponse,
       std::array<uint8_t, kDecryptedResponseAddressByteSize>(),
       std::array<uint8_t, kDecryptedResponseSaltByteSize>())));
   fake_fast_pair_gatt_service_client()->RunWriteResponseCallback(
@@ -283,6 +286,31 @@ TEST_F(FastPairHandshakeImplNewTest, Success) {
   fake_fast_pair_gatt_service_client()->RunOnGattClientInitializedCallback();
   data_encryptor()->response(std::make_optional(DecryptedResponse(
       FastPairMessageType::kKeyBasedPairingResponse,
+      std::array<uint8_t, kDecryptedResponseAddressByteSize>(),
+      std::array<uint8_t, kDecryptedResponseSaltByteSize>())));
+  fake_fast_pair_gatt_service_client()->RunWriteResponseCallback(
+      std::vector<uint8_t>());
+  EXPECT_FALSE(failure_.has_value());
+  EXPECT_TRUE(handshake_->completed_successfully());
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptTime, 1);
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 1);
+  histogram_tester().ExpectTotalCount(kHandshakeResult, 1);
+  histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 0);
+}
+
+TEST_F(FastPairHandshakeImplNewTest, SuccessWithExtendedResponse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kFastPairKeyboards,
+                            floss::features::kFlossEnabled},
+      /*disabled_features=*/{});
+  histogram_tester().ExpectTotalCount(kHandshakeResult, 0);
+  histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 0);
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 0);
+  fake_fast_pair_gatt_service_client()->RunOnGattClientInitializedCallback();
+  data_encryptor()->response(std::make_optional(DecryptedResponse(
+      FastPairMessageType::kKeyBasedPairingExtendedResponse,
       std::array<uint8_t, kDecryptedResponseAddressByteSize>(),
       std::array<uint8_t, kDecryptedResponseSaltByteSize>())));
   fake_fast_pair_gatt_service_client()->RunWriteResponseCallback(

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 
 #include <atomic>
 #include <memory>
@@ -26,9 +25,11 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace reporting {
 
@@ -105,12 +106,11 @@ void FatalCrashEventsObserver::UploadedCrashInfoManager::ResumeLoadingSaveFile(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(save_file_loaded_callback_);
 
-  base::ScopedClosureRunner run_callback_on_return(base::BindOnce(
-      [](bool* save_file_loaded, SaveFileLoadedCallback callback) {
-        *save_file_loaded = true;
-        std::move(callback).Run();
-      },
-      &save_file_loaded_, std::move(save_file_loaded_callback_)));
+  absl::Cleanup run_callback_on_return = [this] {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    save_file_loaded_ = true;
+    std::move(save_file_loaded_callback_).Run();
+  };
 
   if (!content.has_value()) {
     // Error already logged immediately after reading file fails.

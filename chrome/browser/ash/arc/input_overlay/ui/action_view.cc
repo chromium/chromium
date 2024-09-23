@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
-#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
@@ -91,7 +91,7 @@ void ActionView::SetPositionFromCenterPosition(
   SetPosition(gfx::Point(left, top));
 }
 
-void ActionView::ShowErrorMsg(const base::StringPiece& message,
+void ActionView::ShowErrorMsg(std::string_view message,
                               ActionLabel* editing_label,
                               bool ax_annouce) {
   display_overlay_controller_->AddEditMessage(message, MessageType::kError);
@@ -99,20 +99,20 @@ void ActionView::ShowErrorMsg(const base::StringPiece& message,
   if (ax_annouce) {
     GetViewAccessibility().AnnounceText(base::UTF8ToUTF16(message));
   } else {
-    editing_label->SetAccessibleDescription(base::UTF8ToUTF16(message));
+    editing_label->GetViewAccessibility().SetDescription(
+        base::UTF8ToUTF16(message));
   }
 }
 
-void ActionView::ShowInfoMsg(const base::StringPiece& message,
+void ActionView::ShowInfoMsg(std::string_view message,
                              ActionLabel* editing_label) {
   display_overlay_controller_->AddEditMessage(message, MessageType::kInfo);
 }
 
-void ActionView::ShowFocusInfoMsg(const base::StringPiece& message,
-                                  views::View* view) {
+void ActionView::ShowFocusInfoMsg(std::string_view message, views::View* view) {
   display_overlay_controller_->AddEditMessage(message,
                                               MessageType::kInfoLabelFocus);
-  view->SetAccessibleDescription(base::UTF8ToUTF16(message));
+  view->GetViewAccessibility().SetDescription(base::UTF8ToUTF16(message));
 }
 
 void ActionView::RemoveMessage() {

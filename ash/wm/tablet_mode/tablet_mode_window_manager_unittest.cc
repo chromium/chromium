@@ -49,6 +49,7 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
@@ -85,7 +86,7 @@ class TabletModeWindowManagerTest : public AshTestBase {
   // set, |max_size| is the upper limiting size for the window,
   // whereas an empty size means that there is no limit.
   struct InitParams {
-    InitParams(aura::client::WindowType t) : type(t) {}
+    explicit InitParams(aura::client::WindowType t) : type(t) {}
 
     aura::client::WindowType type = aura::client::WINDOW_TYPE_NORMAL;
     gfx::Rect bounds;
@@ -530,8 +531,9 @@ TEST_F(TabletModeWindowManagerTest, CreateNonMaximizableButResizableWindows) {
 
 // Create a string which consists of the bounds and the state for comparison.
 std::string GetPlacementString(const gfx::Rect& bounds,
-                               ui::WindowShowState state) {
-  return bounds.ToString() + ' ' + base::NumberToString(state);
+                               ui::mojom::WindowShowState state) {
+  return bounds.ToString() + ' ' +
+         base::NumberToString(static_cast<int>(state));
 }
 
 // Retrieves the window's restore state override - if any - and returns it as a
@@ -562,14 +564,14 @@ TEST_F(TabletModeWindowManagerTest, TestRestoreIntegrety) {
 
   // With the maximization the override states should be returned in its
   // pre-maximized state.
-  EXPECT_EQ(GetPlacementString(bounds, ui::SHOW_STATE_DEFAULT),
+  EXPECT_EQ(GetPlacementString(bounds, ui::mojom::WindowShowState::kDefault),
             GetPlacementOverride(normal_window.get()));
-  EXPECT_EQ(GetPlacementString(bounds, ui::SHOW_STATE_MAXIMIZED),
+  EXPECT_EQ(GetPlacementString(bounds, ui::mojom::WindowShowState::kMaximized),
             GetPlacementOverride(maximized_window.get()));
 
   // Changing a window's state now does not change the returned result.
   WindowState::Get(maximized_window.get())->Minimize();
-  EXPECT_EQ(GetPlacementString(bounds, ui::SHOW_STATE_MAXIMIZED),
+  EXPECT_EQ(GetPlacementString(bounds, ui::mojom::WindowShowState::kMaximized),
             GetPlacementOverride(maximized_window.get()));
 
   // Destroy the manager again and check that the overrides get reset.
@@ -899,17 +901,17 @@ TEST_F(TabletModeWindowManagerTest, PersistPreMinimizedShowState) {
   WindowState* window_state = WindowState::Get(window.get());
   window_state->Maximize();
   window_state->Minimize();
-  EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED,
+  EXPECT_EQ(ui::mojom::WindowShowState::kMaximized,
             window->GetProperty(aura::client::kRestoreShowStateKey));
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   window_state->Unminimize();
   // Check that pre-minimized window show state is not cleared due to
   // unminimizing in tablet mode.
-  EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED,
+  EXPECT_EQ(ui::mojom::WindowShowState::kMaximized,
             window->GetProperty(aura::client::kRestoreShowStateKey));
   window_state->Minimize();
-  EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED,
+  EXPECT_EQ(ui::mojom::WindowShowState::kMaximized,
             window->GetProperty(aura::client::kRestoreShowStateKey));
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
@@ -1652,6 +1654,7 @@ TEST_F(TabletModeWindowManagerTest, AllowNormalWindowBoundsChangeByVK) {
 }
 
 // Test clamshell mode <-> tablet mode transition.
+// TODO(b/327269057): Refactor this to `SplitViewController|SnapGroup`.
 TEST_F(TabletModeWindowManagerTest, ClamshellTabletTransitionTest) {
   gfx::Rect rect(10, 10, 200, 50);
   std::unique_ptr<aura::Window> window(
@@ -1827,7 +1830,7 @@ TEST_F(TabletModeWindowManagerTest, PartialClamshellTabletTransitionTest) {
                              ->GetDividerBoundsInScreen(
                                  /*is_dragging=*/false)
                              .x();
-  const int divider_delta = kSplitviewDividerShortSideLength / 2;
+  int divider_delta = kSplitviewDividerShortSideLength / 2;
   EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio),
             window1->bounds().width() + divider_delta);
   EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio),
@@ -1867,10 +1870,19 @@ TEST_F(TabletModeWindowManagerTest, PartialClamshellTabletTransitionTest) {
   // Exit tablet mode and verify the windows are still at 2/3, with allowance
   // for the divider width since it is only there in tablet mode.
   DestroyTabletModeWindowManager();
-  EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio),
-            window1->bounds().width());
-  EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kOneThirdSnapRatio),
-            window2->bounds().width());
+  if (IsSnapGroupEnabledInClamshellMode()) {
+    // TODO(b/5626469): Revisit the snapped bounds.
+    EXPECT_NEAR(
+        std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio),
+        window1->bounds().width(), divider_delta);
+    EXPECT_NEAR(
+        std::round(work_area_bounds.width() * chromeos::kOneThirdSnapRatio),
+        window2->bounds().width(), divider_delta);
+  } else {
+    EXPECT_EQ(
+        std::round(work_area_bounds.width() * chromeos::kOneThirdSnapRatio),
+        window2->bounds().width() + divider_delta);
+  }
 }
 
 // Test that when switching from clamshell mode to tablet mode, if overview mode
@@ -1907,7 +1919,7 @@ TEST_F(TabletModeWindowManagerTest, HomeLauncherVisibilityTest) {
       OverviewAnimationState::kExitAnimationComplete);
   tester.ExpectBucketCount(
       kHotseatGestureHistogramName,
-      InAppShelfGestures::kHotseatHiddenDueToInteractionOutsideOfShelf, 1);
+      InAppShelfGestures::kHotseatHiddenDueToInteractionOutsideOfShelf, 0);
 
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_TRUE(home_screen_window->TargetVisibility());

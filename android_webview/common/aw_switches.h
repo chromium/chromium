@@ -12,6 +12,7 @@ extern const char kWebViewSandboxedRenderer[];
 extern const char kWebViewDisableSafebrowsingSupport[];
 extern const char kWebViewSafebrowsingBlockAllResources[];
 extern const char kHighlightAllWebViews[];
+extern const char kNetLog[];
 extern const char kWebViewVerboseLogging[];
 extern const char kFinchSeedExpirationAge[];
 extern const char kFinchSeedIgnorePendingDownload[];
@@ -21,11 +22,15 @@ extern const char kFinchSeedMinUpdatePeriod[];
 extern const char kWebViewEnableModernCookieSameSite[];
 extern const char kWebViewSelectiveImageInversionDarkening[];
 extern const char kWebViewFencedFrames[];
-extern const char kWebViewDisableAppRecovery[];
-extern const char kWebViewEnableAppRecovery[];
 extern const char kWebViewEnableTrustTokensComponent[];
 extern const char kWebViewTpcdMetadaComponent[];
 extern const char kWebViewFpsComponent[];
+extern const char kWebViewForceDisable3pcs[];
+extern const char kWebViewForceCrashJava[];
+extern const char kWebViewForceCrashNative[];
+extern const char kWebViewUseSeparateResourceContext[];
+extern const char kDebugBsa[];
+extern const char kWebViewInterceptedCookieHeader[];
 
 }  // namespace switches
 

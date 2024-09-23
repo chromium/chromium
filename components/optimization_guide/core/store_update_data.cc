@@ -18,18 +18,18 @@ namespace optimization_guide {
 std::unique_ptr<StoreUpdateData>
 StoreUpdateData::CreateComponentStoreUpdateData(
     const base::Version& component_version) {
-  return base::WrapUnique<StoreUpdateData>(new StoreUpdateData(
-      std::optional<base::Version>(component_version),
-      std::optional<base::Time>(), std::optional<base::Time>()));
+  return base::WrapUnique<StoreUpdateData>(
+      new StoreUpdateData(std::optional<base::Version>(component_version),
+                          /*fetch_update_time=*/std::nullopt,
+                          /*expiry_time=*/std::nullopt));
 }
 
 // static
 std::unique_ptr<StoreUpdateData> StoreUpdateData::CreateFetchedStoreUpdateData(
     base::Time fetch_update_time) {
-  return base::WrapUnique<StoreUpdateData>(
-      new StoreUpdateData(std::optional<base::Version>(),
-                          std::optional<base::Time>(fetch_update_time),
-                          std::optional<base::Time>()));
+  return base::WrapUnique<StoreUpdateData>(new StoreUpdateData(
+      /*component_version=*/std::nullopt, fetch_update_time,
+      /*expiry_time=*/std::nullopt));
 }
 
 StoreUpdateData::StoreUpdateData(std::optional<base::Version> component_version,
@@ -67,7 +67,7 @@ StoreUpdateData::StoreUpdateData(std::optional<base::Version> component_version,
             OptimizationGuideStore::MetadataType::kFetched),
         std::move(metadata_fetched_entry));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   // |this| may be modified on another thread after construction but all
   // future modifications, from that call forward, must be made on the same

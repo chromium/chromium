@@ -5,7 +5,6 @@
 #include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu_debug_capture.h"
 
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "build/build_config.h"
@@ -24,6 +23,8 @@
 #include "components/viz/service/display_embedder/skia_render_copy_results.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -45,7 +46,7 @@ struct DebuggerCaptureBufferSharedImageInfo {
   gfx::ColorSpace color_space;
   GrSurfaceOrigin surface_origin;
   SkAlphaType alpha_type;
-  uint32_t usage;
+  gpu::SharedImageUsageSet usage;
   gpu::Mailbox mailbox;
 };
 

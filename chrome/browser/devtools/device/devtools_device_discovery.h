@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -145,7 +146,7 @@ class DevToolsDeviceDiscovery {
   void RequestDeviceList();
   void ReceivedDeviceList(const CompleteDevices& complete_devices);
 
-  AndroidDeviceManager* device_manager_;
+  raw_ptr<AndroidDeviceManager, DanglingUntriaged> device_manager_;
   const DeviceListCallback callback_;
   base::RepeatingCallback<void(base::OnceClosure)> task_scheduler_;
   base::WeakPtrFactory<DevToolsDeviceDiscovery> weak_factory_{this};

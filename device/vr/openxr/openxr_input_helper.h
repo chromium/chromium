@@ -38,6 +38,8 @@ class OpenXRInputHelper {
 
   ~OpenXRInputHelper();
 
+  bool IsHandTrackingEnabled() const;
+
   std::vector<mojom::XRInputSourceStatePtr> GetInputState(
       XrTime predicted_display_time);
 

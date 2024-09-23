@@ -5,10 +5,11 @@
 #ifndef CC_PAINT_PAINT_OP_BUFFER_SERIALIZER_H_
 #define CC_PAINT_PAINT_OP_BUFFER_SERIALIZER_H_
 
+#include <concepts>
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -18,6 +19,8 @@
 namespace cc {
 
 class CC_PAINT_EXPORT PaintOpBufferSerializer {
+  STACK_ALLOCATED();
+
  public:
   // As this code is performance sensitive, a raw function pointer is used.
   using SerializeCallback = size_t (*)(void*,
@@ -77,22 +80,34 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
   bool valid() const { return valid_; }
 
  private:
+  PlaybackParams MakeParams(const SkCanvas* canvas) const;
   void SerializePreamble(SkCanvas* canvas,
                          const Preamble& preamble,
                          const PlaybackParams& params);
+  // Serialize `buffer`, using the current transform as `original_ctm`.
   void SerializeBuffer(SkCanvas* canvas,
                        const PaintOpBuffer& buffer,
                        const std::vector<size_t>* offsets);
+  // Serialize `buffer` using the provided `params`.
+  void SerializeBufferWithParams(SkCanvas* canvas,
+                                 const PlaybackParams& params,
+                                 const PaintOpBuffer& buffer,
+                                 const std::vector<size_t>* offsets);
   // Returns whether serialization of |op| succeeded and we need to serialize
   // the next PaintOp in the PaintOpBuffer.
+  template<typename F>
+  requires std::same_as<F, float>
   bool WillSerializeNextOp(const PaintOp& op,
                            SkCanvas* canvas,
                            const PlaybackParams& params,
-                           float alpha);
+                           F alpha);
+  template<typename F>
+  requires std::same_as<F, float>
   bool SerializeOpWithFlags(SkCanvas* canvas,
                             const PaintOpWithFlags& flags_op,
                             const PlaybackParams& params,
-                            float alpha);
+                            F alpha);
+
   ALWAYS_INLINE bool SerializeOp(SkCanvas* canvas,
                                  const PaintOp& op,
                                  const PaintFlags* flags_to_serialize,
@@ -110,7 +125,7 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
                                 const PlaybackParams& params);
 
   SerializeCallback serialize_cb_;
-  raw_ptr<void> callback_data_;
+  void* callback_data_;
   PaintOp::SerializeOptions options_;
 
   size_t serialized_op_count_ = 0;
@@ -145,7 +160,7 @@ class CC_PAINT_EXPORT SimpleBufferSerializer : public PaintOpBufferSerializer {
                                 original_ctm);
   }
 
-  raw_ptr<void> memory_;
+  void* memory_;
   const size_t total_;
   size_t written_ = 0u;
 };

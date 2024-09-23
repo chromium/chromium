@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -64,19 +65,18 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.net.URL;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -204,6 +204,7 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
+    @DisabledTest(message = "https://crbug.com/346968609")
     public void testOpenAndNavigate() throws Exception {
         final String url = mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
         navigateAndObserve(url);
@@ -225,6 +226,7 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/339299609
     public void testOpenLink() throws Exception {
         String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
         String url2 = mTestServer.getURL("/chrome/test/data/android/about.html");
@@ -248,7 +250,7 @@ public class NavigateTest {
     @MediumTest
     @Feature({"Navigation"})
     @CommandLineFlags.Add({"enable-features=UserAgentClientHint"})
-    // TODO(https://crbug.com/928669) Remove switch when UA-CH-* launched.
+    // TODO(crbug.com/40612550) Remove switch when UA-CH-* launched.
     public void testRequestDesktopSiteClientHints() throws Exception {
         String url1 =
                 mTestServer.getURL(
@@ -256,20 +258,16 @@ public class NavigateTest {
         String url2 =
                 mTestServer.getURL(
                         "/echoheader?sec-ch-ua-arch&sec-ch-ua-mobile&sec-ch-ua-model&sec-ch-ua-platform");
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
         navigateAndObserve(url1);
-
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        TabUtils.switchUserAgent(
-                                tab,
-                                /* switchToDesktop= */ true,
-                                /* forcedByUser= */ true,
-                                UseDesktopUserAgentCaller.OTHER));
         ChromeTabUtils.waitForTabPageLoaded(tab, url1);
 
         navigateAndObserve(url2);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        TabUtils.switchUserAgent(
+                                tab, /* switchToDesktop= */ true, UseDesktopUserAgentCaller.OTHER));
         ChromeTabUtils.waitForTabPageLoaded(tab, url2);
         String content =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
@@ -286,21 +284,18 @@ public class NavigateTest {
     @MediumTest
     @Feature({"Navigation"})
     @CommandLineFlags.Add({"enable-features=UserAgentClientHint, CriticalClientHint"})
-    // TODO(https://crbug.com/928669) Remove switch when UA-CH-* launched.
+    // TODO(crbug.com/40612550) Remove switch when UA-CH-* launched.
     public void testRequestDesktopSiteCriticalClientHints() throws Exception {
-        // TODO(https://crbug.com/1138913): Move EchoCriticalHeader request handler here when
+        // TODO(crbug.com/40153192): Move EchoCriticalHeader request handler here when
         // implemented
         String url = mTestServer.getURL("/echocriticalheader");
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
+        navigateAndObserve(url);
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         TabUtils.switchUserAgent(
-                                tab,
-                                /* switchToDesktop= */ true,
-                                /* forcedByUser= */ true,
-                                UseDesktopUserAgentCaller.OTHER));
+                                tab, /* switchToDesktop= */ true, UseDesktopUserAgentCaller.OTHER));
 
-        navigateAndObserve(url);
         ChromeTabUtils.waitForTabPageLoaded(tab, url);
         String content =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
@@ -315,6 +310,7 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/339299609
     public void testTabObserverOnPageLoadStarted() throws Exception {
         final String url1 = mTestServer.getURL("/chrome/test/data/android/google.html");
         final String url2 = mTestServer.getURL("/chrome/test/data/android/about.html");
@@ -332,7 +328,7 @@ public class NavigateTest {
                     }
                 };
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(onPageLoadStartedObserver));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(onPageLoadStartedObserver));
         DOMUtils.clickNode(tab.getWebContents(), "aboutLink");
         ChromeTabUtils.waitForTabPageLoaded(tab, url2);
         Assert.assertEquals(
@@ -467,7 +463,7 @@ public class NavigateTest {
                     toolbarManager.getHandleBackPressChangedSupplier().get());
             Assert.assertTrue(
                     "Tab has been navigated back",
-                    TestThreadUtils.runOnUiThreadBlocking(toolbarManager::back));
+                    ThreadUtils.runOnUiThreadBlocking(toolbarManager::back));
             UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         }
         Assert.assertEquals(
@@ -604,7 +600,7 @@ public class NavigateTest {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabUiTestHelper.enterTabSwitcher(cta);
         Assert.assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
                 });
@@ -634,7 +630,7 @@ public class NavigateTest {
     @DisabledTest(message = "https://crbug.com/1410635")
     public void testNavigateBackWithTabSwitcher_BackPressRefactor() throws Exception {
         // Disable iph
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BackPressManager backPressManager =
                             mActivityTestRule.getActivity().getBackPressManagerForTesting();
@@ -785,19 +781,14 @@ public class NavigateTest {
                     }
                 };
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(onPageLoadStartedObserver));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(onPageLoadStartedObserver));
         DOMUtils.clickNode(tab.getWebContents(), "rendererInitiated");
         ChromeTabUtils.waitForTabPageLoaded(tab, finalUrl);
     }
 
     private String getTabUrlOnUIThread(final Tab tab) {
-        try {
-            return TestThreadUtils.runOnUiThreadBlocking(
-                    () -> ChromeTabUtils.getUrlStringOnUiThread(tab));
-        } catch (ExecutionException ex) {
-            assert false : "Unexpected ExecutionException";
-        }
-        return null;
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> ChromeTabUtils.getUrlStringOnUiThread(tab));
     }
 
     private String getTabBodyText(Tab tab) {

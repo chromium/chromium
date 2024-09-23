@@ -92,7 +92,7 @@ class OneTimeMessageHandlerTest : public NativeExtensionBindingsSystemUnittest {
   const Extension* extension() { return extension_.get(); }
 
  private:
-  raw_ptr<ScriptContext, ExperimentalRenderer> script_context_ = nullptr;
+  raw_ptr<ScriptContext> script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };
 

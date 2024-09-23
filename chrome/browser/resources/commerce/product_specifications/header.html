@@ -1,0 +1,95 @@
+<style include="cr-shared-style">
+  :host {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  cr-input {
+    --cr-input-background-color: transparent;
+    --cr-input-error-display: none;
+    margin: 12px 20px;
+  }
+
+  cr-input.stroked:hover {
+    --cr-input-hover-background-color: transparent;
+  }
+
+  :host([showing-menu_]) #menuButton {
+    background-color: var(--cr-hover-background-color);
+  }
+
+  #logo {
+    margin-inline-end: 4px;
+  }
+
+  .title-text {
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  #input {
+    --cr-input-font-size: 24px;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .spacer {
+    flex: 1;
+  }
+
+  #title {
+    color: var(--color-product-specifications-primary-title);
+  }
+
+  #divider {
+    background: var(--color-product-specifications-divider);
+    display: inline;
+    height: 2em;
+    margin: 4px 2px;
+    width: 2px;
+  }
+
+  #subtitle {
+    color: var(--color-product-specifications-secondary-title);
+    flex: 1;
+  }
+
+  #subtitle:hover {
+    border-bottom: 1px solid var(--color-product-specifications-divider);
+    margin-bottom: -1px; /* Don't move on hover */
+  }
+
+  #menuButton {
+    --cr-icon-button-size: 30px;
+  }
+</style>
+<img id="logo" srcset="chrome://theme/current-channel-logo@4x 4x"
+    role="presentation">
+<div class="title-text" id="title">$i18n{pageTitle}</div>
+<div id="divider" hidden="[[!subtitle]]"></div>
+<template is="dom-if" if="[[showingInput_]]">
+  <cr-input id="input" class="stroked" value="[[subtitle]]"
+    on-keydown="onInputKeyDown_"
+    on-blur="onInputBlur_"
+    maxlength="{{maxNameLength_}}"
+    aria-label="$i18n{tableNameInputA11yLabel}">
+  </cr-input>
+  <div class="spacer"></div>
+</template>
+<template is="dom-if" if="[[!showingInput_]]">
+  <div class="title-text" id="subtitle" hidden="[[!subtitle]]"
+      on-click="onRenaming_" on-keydown="onSubtitleKeyDown_" role="textbox"
+      tabindex="0">
+    [[subtitle]]
+  </div>
+</template>
+<cr-icon-button id="menuButton" class="icon-more-vert" on-click="showMenu_"
+    disabled="[[menuButtonDisabled]]"
+    hidden="[[!subtitle]]"
+    aria-label="$i18n{tableMenuA11yLabel}">
+</cr-icon-button>
+
+<header-menu id="menu" on-close="onCloseMenu_" on-rename-click="onRenaming_">
+</header-menu>

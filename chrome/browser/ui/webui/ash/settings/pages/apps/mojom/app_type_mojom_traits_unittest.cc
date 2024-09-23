@@ -19,7 +19,8 @@ TEST(AppTypeMojomTraitsTest, RoundTripReadiness) {
       apps::Readiness::kTerminated,
       apps::Readiness::kUninstalledByUser,
       apps::Readiness::kRemoved,
-      apps::Readiness::kUninstalledByNonUser};
+      apps::Readiness::kUninstalledByNonUser,
+      apps::Readiness::kDisabledByLocalSettings};
 
   for (auto readiness_in : kTestReadiness) {
     apps::Readiness readiness_out;

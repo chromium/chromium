@@ -4,14 +4,14 @@
 
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 
-#include "content/public/common/input/native_web_keyboard_event.h"
+#include "components/input/native_web_keyboard_event.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
 namespace views {
 
 // static
 bool UnhandledKeyboardEventHandler::HandleNativeKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event,
+    const input::NativeWebKeyboardEvent& event,
     FocusManager* focus_manager) {
   if (event.skip_if_unhandled) {
     return false;

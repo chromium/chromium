@@ -95,7 +95,7 @@ export class EsimInstallErrorDialogElement extends
         this.$.installErrorDialog.close();
         return;
       }
-      // TODO(crbug.com/1093185) Only display confirmation code entry if the
+      // TODO(crbug.com/40134918) Only display confirmation code entry if the
       // error was an invalid confirmation code, else display generic error.
       this.isConfirmationCodeInvalid_ = true;
     });

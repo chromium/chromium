@@ -1,24 +1,10 @@
 Tests compositor animated image handling.
-Expired count: 1, elaspedTime: 500
-Expired count: 2, elaspedTime: 1000
-Expired count: 3, elaspedTime: 1500
-Expired count: 4, elaspedTime: 2000
-Expired count: 5, elaspedTime: 2500
-Expired count: 6, elaspedTime: 3000
-Expired count: 7, elaspedTime: 3500
-Expired count: 8, elaspedTime: 4000
+Current time: 3500
+Screenshot size: 800 x 600
 Screenshot rgba: 0,0,255,255
-Expired count: 9, elaspedTime: 4500
-Expired count: 10, elaspedTime: 5000
-Expired count: 11, elaspedTime: 5500
-Expired count: 12, elaspedTime: 6000
-Expired count: 13, elaspedTime: 6500
+Current time: 5500
+Screenshot size: 800 x 600
 Screenshot rgba: 255,255,0,255
-Expired count: 14, elaspedTime: 7000
-Expired count: 15, elaspedTime: 7500
-Expired count: 16, elaspedTime: 8000
-Expired count: 17, elaspedTime: 8500
-Expired count: 18, elaspedTime: 9000
-Expired count: 19, elaspedTime: 9500
+Current time: 8500
+Screenshot size: 800 x 600
 Screenshot rgba: 255,255,0,255
-Expired count: 20, elaspedTime: 10000

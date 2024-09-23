@@ -137,11 +137,13 @@ message GetHintsResponse {
   repeated MatchedHintInfo hints_to_remove = 3;
 }
 
-// Must sync with enum OptimizationType in enums.xml and
-// optimization/histograms.xml for metric recording.
+// These values must reflect the values defined in the server-side
+// OptimizationType enum at http://shortn/_t8G1sv8yAS (Google-internal link).
+// Additionally, these values must be synchronized with the OptimizationType
+// enum in enums.xml and optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29;
+  reserved 11, 12, 16, 29, 32, 66, 72;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -216,8 +218,6 @@ enum OptimizationType {
   PRICE_INSIGHTS = 30;
   // Information about which JavaScript functions should be eager compiled.
   V8_COMPILE_HINTS = 31;
-  // Provides Page Insights features for a URL.
-  PAGE_INSIGHTS = 32;
   // This optimization provides information about shoppinge page types of this
   // page.
   SHOPPING_PAGE_TYPES = 33;
@@ -227,7 +227,8 @@ enum OptimizationType {
   // compose.
   COMPOSE = 35;
   // This optimization provides information about whether a merchant can be
-  // triggered with PIX bottom sheet.
+  // triggered with PIX bottom sheet. This allowlist uses page pattern matching
+  // to perform regex match against entire URLs.
   PIX_PAYMENT_MERCHANT_ALLOWLIST = 36;
   // The below optimizations provide information for merchant URLs that are
   // eligible for credit card category benefits. These URLs are shared and apply
@@ -248,6 +249,51 @@ enum OptimizationType {
   // American Express supports for credit card category benefits.
   AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS = 47;
   AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS = 48;
+  // This optimization provides information about URLs that should be blocked
+  // from displaying Capital One credit card benefits.
+  CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED = 55;
+  // This optimization provides information about whether a merchant is
+  // opted-out of Discover virtual cards for a URL.
+  VCN_MERCHANT_OPT_OUT_DISCOVER = 56;
+  // This optimization provides information about whether a merchant is
+  // opted-out of Mastercard virtual cards for a URL.
+  VCN_MERCHANT_OPT_OUT_MASTERCARD = 57;
+  // This optimization provides information about merchants origins for which
+  // PIX payments should be triggered. This allowlist contains a list of origins
+  // and uses a bloom filter for matching.
+  PIX_MERCHANT_ORIGINS_ALLOWLIST = 58;
+  // This optimization provides information for whether a page is eligible for
+  // history embeddings.
+  HISTORY_EMBEDDINGS = 59;
+  // The following optimizations provide information about sites on which
+  // an autofill ablation is supposed to be applied.
+  AUTOFILL_ABLATION_SITES_LIST1 = 60;
+  AUTOFILL_ABLATION_SITES_LIST2 = 61;
+  AUTOFILL_ABLATION_SITES_LIST3 = 62;
+  AUTOFILL_ABLATION_SITES_LIST4 = 63;
+  AUTOFILL_ABLATION_SITES_LIST5 = 64;
+  AUTOFILL_ABLATION_SITES_LIST6 = 65;
+  // This optimization helps determine if this merchant page is a good candidate
+  // for enabling price/amount extraction.
+  AMOUNT_EXTRACTION_ALLOWLIST = 67;
+  // This optimization provides information about sites for which pages Autofill
+  // prediction improvements should be triggered on.
+  AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST = 68;
+  // This optimization helps determine if this merchant page is a good candidate
+  // for enabling buy now pay later flow with Affirm.
+  BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM = 69;
+  // This optimization helps determine if this merchant page is a good candidate
+  // for enabling buy now pay later flow with Zip.
+  BUY_NOW_PAY_LATER_ALLOWLIST_ZIP = 70;
+  // Provides information about whether a URL can be synced across devices for
+  // saved tab groups feature.
+  SAVED_TAB_GROUP = 71;
+  // This optimization provides information about whether a URL is eligible for
+  // generating user annotations derived from forms.
+  FORMS_ANNOTATIONS = 73;
+  // This optimization provides information about whether a page is eligible for
+  // text classifier entity detection. This feature is iOS only.
+  TEXT_CLASSIFIER_ENTITY_DETECTION = 74;
 }
 
 // Presents semantics for how page load URLs should be matched.

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/pickle.h"
 
 #include <limits.h>
@@ -10,8 +15,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,11 +97,11 @@ void VerifyResult(const Pickle& pickle) {
   EXPECT_TRUE(iter.ReadString16(&outstring16));
   EXPECT_EQ(teststring16, outstring16);
 
-  StringPiece outstringpiece;
+  std::string_view outstringpiece;
   EXPECT_TRUE(iter.ReadStringPiece(&outstringpiece));
   EXPECT_EQ(testrawstring, outstringpiece);
 
-  StringPiece16 outstringpiece16;
+  std::u16string_view outstringpiece16;
   EXPECT_TRUE(iter.ReadStringPiece16(&outstringpiece16));
   EXPECT_EQ(testrawstring16, outstringpiece16);
 
@@ -108,6 +116,16 @@ void VerifyResult(const Pickle& pickle) {
 }
 
 }  // namespace
+
+TEST(PickleTest, UnownedVsOwned) {
+  const uint8_t buffer[1] = {0x00};
+
+  Pickle unowned_pickle = Pickle::WithUnownedBuffer(buffer);
+  EXPECT_EQ(unowned_pickle.GetTotalAllocatedSize(), 0u);
+
+  Pickle owned_pickle = Pickle::WithData(buffer);
+  EXPECT_GE(unowned_pickle.GetTotalAllocatedSize(), 0u);
+}
 
 TEST(PickleTest, EncodeDecode) {
   Pickle pickle;
@@ -162,10 +180,10 @@ TEST(PickleTest, LongFrom64Bit) {
 
 // Tests that we can handle really small buffers.
 TEST(PickleTest, SmallBuffer) {
-  std::unique_ptr<char[]> buffer(new char[1]);
+  const uint8_t buffer[] = {0x00};
 
   // We should not touch the buffer.
-  Pickle pickle(buffer.get(), 1);
+  Pickle pickle = Pickle::WithUnownedBuffer(buffer);
 
   PickleIterator iter(pickle);
   int data;
@@ -174,9 +192,9 @@ TEST(PickleTest, SmallBuffer) {
 
 // Tests that we can handle improper headers.
 TEST(PickleTest, BigSize) {
-  int buffer[] = { 0x56035200, 25, 40, 50 };
+  const int buffer[4] = {0x56035200, 25, 40, 50};
 
-  Pickle pickle(reinterpret_cast<char*>(buffer), sizeof(buffer));
+  Pickle pickle = Pickle::WithUnownedBuffer(as_byte_span(buffer));
   EXPECT_EQ(0U, pickle.size());
 
   PickleIterator iter(pickle);
@@ -191,8 +209,7 @@ TEST(PickleTest, CopyWithInvalidHeader) {
   // buffer size. Which results in Pickle's internal |header_| = null.
   {
     Pickle::Header header = {.payload_size = 100};
-    const char* data = reinterpret_cast<char*>(&header);
-    const Pickle pickle(data, sizeof(header));
+    const Pickle pickle = Pickle::WithUnownedBuffer(byte_span_from_ref(header));
 
     EXPECT_EQ(0U, pickle.size());
     EXPECT_FALSE(pickle.data());
@@ -208,8 +225,8 @@ TEST(PickleTest, CopyWithInvalidHeader) {
   // 2. Input buffer's size < sizeof(Pickle::Header). Which must also result in
   // Pickle's internal |header_| = null.
   {
-    const char data[2] = {0x00, 0x00};
-    const Pickle pickle(data, sizeof(data));
+    const uint8_t data[] = {0x00, 0x00};
+    const Pickle pickle = Pickle::WithUnownedBuffer(data);
     static_assert(sizeof(Pickle::Header) > sizeof(data));
 
     EXPECT_EQ(0U, pickle.size());
@@ -228,7 +245,7 @@ TEST(PickleTest, CopyWithInvalidHeader) {
 TEST(PickleTest, UnalignedSize) {
   int buffer[] = { 10, 25, 40, 50 };
 
-  Pickle pickle(reinterpret_cast<char*>(buffer), sizeof(buffer));
+  Pickle pickle = Pickle::WithUnownedBuffer(as_byte_span(buffer));
 
   PickleIterator iter(pickle);
   int data;
@@ -370,10 +387,10 @@ TEST(PickleTest, FindNext) {
 
 TEST(PickleTest, FindNextWithIncompleteHeader) {
   size_t header_size = sizeof(Pickle::Header);
-  std::unique_ptr<char[]> buffer(new char[header_size - 1]);
-  memset(buffer.get(), 0x1, header_size - 1);
+  auto buffer = base::HeapArray<char>::Uninit(header_size - 1);
+  memset(buffer.data(), 0x1, header_size - 1);
 
-  const char* start = buffer.get();
+  const char* start = buffer.data();
   const char* end = start + header_size - 1;
 
   EXPECT_EQ(nullptr, Pickle::FindNext(header_size, start, end));
@@ -387,9 +404,9 @@ TEST(PickleTest, FindNextOverflow) {
   size_t header_size = sizeof(Pickle::Header);
   size_t header_size2 = 2 * header_size;
   size_t payload_received = 100;
-  std::unique_ptr<char[]> buffer(new char[header_size2 + payload_received]);
-  const char* start = buffer.get();
-  Pickle::Header* header = reinterpret_cast<Pickle::Header*>(buffer.get());
+  auto buffer = base::HeapArray<char>::Uninit(header_size2 + payload_received);
+  const char* start = buffer.data();
+  Pickle::Header* header = reinterpret_cast<Pickle::Header*>(buffer.data());
   const char* end = start + header_size2 + payload_received;
   // It is impossible to construct an overflow test otherwise.
   if (sizeof(size_t) > sizeof(header->payload_size) ||
@@ -431,8 +448,8 @@ TEST(PickleTest, GetReadPointerAndAdvance) {
 
 TEST(PickleTest, Resize) {
   size_t unit = Pickle::kPayloadUnit;
-  std::unique_ptr<char[]> data(new char[unit]);
-  char* data_ptr = data.get();
+  auto data = base::HeapArray<char>::Uninit(unit);
+  char* data_ptr = data.data();
   for (size_t i = 0; i < unit; i++)
     data_ptr[i] = 'G';
 
@@ -489,7 +506,7 @@ TEST(PickleTest, EqualsOperator) {
   Pickle source;
   source.WriteInt(1);
 
-  Pickle copy_refs_source_buffer(source.data_as_char(), source.size());
+  Pickle copy_refs_source_buffer = Pickle::WithUnownedBuffer(source);
   Pickle copy;
   copy = copy_refs_source_buffer;
   ASSERT_EQ(source.size(), copy.size());
@@ -506,7 +523,7 @@ TEST(PickleTest, EvilLengths) {
   EXPECT_FALSE(iter.ReadString16(&str16));
 
   // And check we didn't break ReadString16.
-  str16 = (wchar_t) 'A';
+  str16 = u"A";
   Pickle str16_pickle;
   str16_pickle.WriteString16(str16);
   iter = PickleIterator(str16_pickle);

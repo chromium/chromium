@@ -14,10 +14,10 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -55,7 +55,7 @@ void FinalizeNewProfileSetup(Profile* profile,
   if (signin_util::IsForceSigninEnabled() &&
       base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
     // Managed accounts do not need to have Sync consent set.
-    // TODO(https://crbug.com/1478102): Align Managed and Consumer accounts.
+    // TODO(crbug.com/40280466): Align Managed and Consumer accounts.
     if (!entry->CanBeManaged()) {
       signin::IdentityManager* identity_manager =
           IdentityManagerFactory::GetForProfile(profile);
@@ -70,7 +70,7 @@ void FinalizeNewProfileSetup(Profile* profile,
     // The profile has already been created outside of the classic "profile
     // creation" flow and did not start as omitted. The rest of the finalization
     // is not necessary.
-    // TODO(crbug.com/1432944): Improve the API to clarify this inconsistency.
+    // TODO(crbug.com/40264199): Improve the API to clarify this inconsistency.
     return;
   }
 
@@ -81,12 +81,6 @@ void FinalizeNewProfileSetup(Profile* profile,
     // startup. Profiles should never be made non-ephemeral if ephemeral mode
     // is forced by policy.
     entry->SetIsEphemeral(false);
-  }
-
-  if (!base::FeatureList::IsEnabled(kForYouFre)) {
-    // Skip the welcome page for this profile as we already showed a profile
-    // setup experience.
-    profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
   }
 }
 

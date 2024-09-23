@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/highlight_pseudo_marker.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
 #include "third_party/blink/renderer/core/layout/selection_state.h"
 #include "third_party/blink/renderer/core/paint/highlight_overlay.h"
@@ -29,7 +30,6 @@ namespace blink {
 class ComputedStyle;
 class FragmentItem;
 class FrameSelection;
-class InlineCursor;
 class LayoutObject;
 class Node;
 class TextDecorationPainter;
@@ -38,6 +38,9 @@ struct LayoutSelectionStatus;
 struct PaintInfo;
 struct PhysicalOffset;
 struct TextFragmentPaintInfo;
+
+using HighlightLayer = HighlightOverlay::HighlightLayer;
+using HighlightPart = HighlightOverlay::HighlightPart;
 
 // Highlight overlay painter for LayoutNG. Operates on a FragmentItem that
 // IsText(). Delegates to TextPainter to paint the text itself.
@@ -63,7 +66,7 @@ class CORE_EXPORT HighlightPainter {
 
     const LayoutSelectionStatus& Status() const { return selection_status_; }
 
-    const TextPaintStyle& GetSelectionStyle() const { return selection_style_; }
+    const TextPaintStyle& GetSelectionStyle() const { return selection_style_.style; }
 
     SelectionState State() const { return state_; }
 
@@ -122,7 +125,7 @@ class CORE_EXPORT HighlightPainter {
     const PhysicalOffset& box_offset_;
     const std::optional<AffineTransform> writing_mode_rotation_;
     std::optional<SelectionRect> selection_rect_;
-    TextPaintStyle selection_style_;
+    HighlightStyleUtils::HighlightTextPaintStyle selection_style_;
     bool paint_selected_text_only_;
   };
 
@@ -132,18 +135,17 @@ class CORE_EXPORT HighlightPainter {
                    const PaintInfo& paint_info,
                    const InlineCursor& cursor,
                    const FragmentItem& fragment_item,
-                   const std::optional<AffineTransform> writing_mode_rotation,
                    const PhysicalOffset& box_origin,
                    const ComputedStyle& style,
                    const TextPaintStyle& text_style,
-                   SelectionPaintState*,
-                   bool is_printing);
+                   SelectionPaintState*);
 
   enum Phase { kBackground, kForeground };
 
   // Paints backgrounds or foregrounds for markers that are not exposed as CSS
-  // highlight pseudos.
-  void Paint(Phase phase);
+  // highlight pseudos. Note that when text is painted here, that text will be
+  // painted two or more times, which will create antialiasing errors.
+  void PaintNonCssMarkers(Phase phase);
 
   // Indicates the way this painter should be used by the caller, aside from
   // the Paint method, which should always be used.
@@ -188,7 +190,7 @@ class CORE_EXPORT HighlightPainter {
   void FastPaintSpellingGrammarDecorations();
 
   // PaintCase() == kOverlay only
-  void PaintOriginatingText(const TextPaintStyle&, DOMNodeId);
+  void PaintOriginatingShadow(const TextPaintStyle&, DOMNodeId);
   void PaintHighlightOverlays(const TextPaintStyle&,
                               DOMNodeId,
                               bool paint_marker_backgrounds,
@@ -208,32 +210,10 @@ class CORE_EXPORT HighlightPainter {
 
   SelectionPaintState* Selection() { return selection_; }
 
-  struct LayerPaintState {
-    DISALLOW_NEW();
-
-   public:
-    LayerPaintState(HighlightOverlay::HighlightLayer id,
-                    const ComputedStyle* style,
-                    TextPaintStyle text_style);
-
-    void Trace(Visitor* visitor) const { visitor->Trace(style); }
-
-    // Equality on HighlightLayer id only, for Vector::Find.
-    bool operator==(const LayerPaintState&) const = delete;
-    bool operator!=(const LayerPaintState&) const = delete;
-    bool operator==(const HighlightOverlay::HighlightLayer&) const;
-    bool operator!=(const HighlightOverlay::HighlightLayer&) const;
-
-    const HighlightOverlay::HighlightLayer id;
-    const Member<const ComputedStyle> style;
-    const TextPaintStyle text_style;
-    const TextDecorationLine decorations_in_effect;
-  };
-
  private:
   struct HighlightEdgeInfo {
     unsigned offset;
-    LayoutUnit x;
+    float x;
   };
 
   Case ComputePaintCase() const;
@@ -241,7 +221,9 @@ class CORE_EXPORT HighlightPainter {
   const PhysicalRect ComputeBackgroundRect(StringView text,
                                            unsigned start_offset,
                                            unsigned end_offset);
-  Vector<LayoutSelectionStatus> GetHighlights(const LayerPaintState& layer);
+  const PhysicalRect ComputeBackgroundRectForSelection(unsigned start_offset,
+                                                       unsigned end_offset);
+  Vector<LayoutSelectionStatus> GetHighlights(const HighlightLayer& layer);
   void FastPaintSpellingGrammarDecorations(const Text& text_node,
                                            const StringView& text,
                                            const DocumentMarkerVector& markers);
@@ -261,23 +243,21 @@ class CORE_EXPORT HighlightPainter {
       const HighlightOverlay::HighlightRange&);
   LineRelativeRect LocalRectInWritingModeSpace(unsigned from,
                                                unsigned to) const;
-  void ClipToPartDecorations(const LineRelativeRect& part_rect);
-  void PaintDecorationsExceptLineThrough(
-      const HighlightOverlay::HighlightPart&);
+  void ClipToPartRect(const LineRelativeRect& part_rect);
   void PaintDecorationsExceptLineThrough(const HighlightOverlay::HighlightPart&,
+                                         const LineRelativeRect&);
+  void PaintDecorationsExceptLineThrough(const HighlightOverlay::HighlightPart&,
+                                         const LineRelativeRect&,
                                          TextDecorationLine lines_to_paint);
-  void PaintDecorationsOnlyLineThrough(const HighlightOverlay::HighlightPart&);
-  void PaintSpellingGrammarDecorations(const HighlightOverlay::HighlightPart&);
+  void PaintDecorationsOnlyLineThrough(const HighlightOverlay::HighlightPart&,
+                                       const LineRelativeRect&);
 
-  // Paints text with a highlight color. For composition markers, omit the last
-  // two arguments. For PseudoHighlightMarkers, include both the PseudoId and
-  // PseudoArgument.
-  void PaintDecoratedText(const StringView& text,
-                          const Color& text_color,
-                          unsigned paint_start_offset,
-                          unsigned paint_end_offset,
-                          const PseudoId pseudo = PseudoId::kPseudoIdNone,
-                          const AtomicString& pseudo_argument = g_empty_atom);
+  // Paints originating text and decorations (again) with the given color.
+  // Used for composition markers only.
+  void PaintTextForCompositionMarker(const StringView& text,
+                                     const Color& text_color,
+                                     unsigned paint_start_offset,
+                                     unsigned paint_end_offset);
 
   const TextFragmentPaintInfo& fragment_paint_info_;
 
@@ -291,6 +271,7 @@ class CORE_EXPORT HighlightPainter {
   TextDecorationPainter& decoration_painter_;
   const PaintInfo& paint_info_;
   const InlineCursor& cursor_;
+  InlineCursor root_inline_cursor_;
   const FragmentItem& fragment_item_;
   const PhysicalOffset& box_origin_;
   const ComputedStyle& originating_style_;
@@ -301,20 +282,17 @@ class CORE_EXPORT HighlightPainter {
   const AutoDarkMode foreground_auto_dark_mode_;
   const AutoDarkMode background_auto_dark_mode_;
   DocumentMarkerVector markers_;
+  DocumentMarkerVector search_;
   DocumentMarkerVector target_;
   DocumentMarkerVector spelling_;
   DocumentMarkerVector grammar_;
   DocumentMarkerVector custom_;
-  HeapVector<LayerPaintState> layers_;
-  Vector<HighlightOverlay::HighlightPart> parts_;
+  HeapVector<HighlightLayer> layers_;
+  HeapVector<HighlightPart> parts_;
   Vector<HighlightEdgeInfo> edges_info_;
-  const bool skip_backgrounds_;
   Case paint_case_;
 };
 
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::HighlightPainter::LayerPaintState)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIGHLIGHT_PAINTER_H_

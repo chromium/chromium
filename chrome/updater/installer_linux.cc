@@ -15,7 +15,7 @@
 
 namespace updater {
 
-AppInstallerResult RunApplicationInstaller(
+InstallerResult RunApplicationInstaller(
     const AppInfo& app_info,
     const base::FilePath& installer_path,
     const std::string& arguments,
@@ -44,18 +44,19 @@ AppInstallerResult RunApplicationInstaller(
   }
 
   int exit_code = 0;
-  if (!base::LaunchProcess(command, options)
-           .WaitForExitWithTimeout(timeout, &exit_code)) {
+  const base::Process process = base::LaunchProcess(command, options);
+  if (!process.IsValid() ||
+      !process.WaitForExitWithTimeout(timeout, &exit_code)) {
     LOG(ERROR) << "Could not launch application installer.";
-    return AppInstallerResult(kErrorApplicationInstallerFailed,
-                              kErrorProcessLaunchFailed);
+    return InstallerResult(kErrorApplicationInstallerFailed,
+                           kErrorProcessLaunchFailed);
   }
   if (exit_code != 0) {
     LOG(ERROR) << "Installer returned error code " << exit_code;
-    return AppInstallerResult(kErrorApplicationInstallerFailed, exit_code);
+    return InstallerResult(kErrorApplicationInstallerFailed, exit_code);
   }
 
-  return AppInstallerResult();
+  return InstallerResult();
 }
 
 std::string LookupString(const base::FilePath& path,

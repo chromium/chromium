@@ -132,8 +132,8 @@ TEST_F(AnimationThroughputReporterTest, AbortedAnimation) {
   // Wait a bit to ensure that report does not happen.
   Advance(base::Milliseconds(100));
 
-  // TODO(crbug.com/1158510): Test the scenario where the report exists when the
-  // layer is removed.
+  // TODO(crbug.com/40161328): Test the scenario where the report exists when
+  // the layer is removed.
 }
 
 // Tests no report and no leak when underlying layer is gone before reporter.
@@ -269,6 +269,32 @@ TEST_F(AnimationThroughputReporterTest, NoLeakWithNoAnimationStart) {
 
   // Wait a bit to ensure to let the existing animation finish.
   // There should be no report and no leak.
+  Advance(base::Milliseconds(100));
+}
+
+// Tests smoothness is not reported if the animation will not run.
+TEST_F(AnimationThroughputReporterTest, NoReportForNoRunAnimations) {
+  Layer layer;
+  root_layer()->Add(&layer);
+
+  ThroughputReportChecker checker(this, /*fail_if_reported=*/true);
+  {
+    LayerAnimator* animator = layer.GetAnimator();
+    AnimationThroughputReporter reporter(animator,
+                                         checker.repeating_callback());
+
+    // Simulate views::AnimationBuilder to create an animation that will not
+    // run.
+    ScopedLayerAnimationSettings settings(animator);
+    settings.SetPreemptionStrategy(
+        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+    std::vector<ui::LayerAnimationSequence*> sequences;
+    sequences.push_back(new LayerAnimationSequence(
+        LayerAnimationElement::CreateOpacityElement(1.0f, base::TimeDelta())));
+    animator->StartTogether(std::move(sequences));
+  }
+
+  // Wait a bit to ensure that report does not happen.
   Advance(base::Milliseconds(100));
 }
 

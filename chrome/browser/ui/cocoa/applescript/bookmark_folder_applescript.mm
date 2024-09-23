@@ -156,7 +156,7 @@ using bookmarks::BookmarkNode;
   }
 
   model->Remove(self.bookmarkNode->children()[position].get(),
-                bookmarks::metrics::BookmarkEditSource::kUser);
+                bookmarks::metrics::BookmarkEditSource::kUser, FROM_HERE);
 }
 
 - (void)insertInBookmarkItems:(BookmarkItemAppleScript*)bookmarkItem {
@@ -206,7 +206,7 @@ using bookmarks::BookmarkNode;
   }
 
   model->Remove(self.bookmarkNode->children()[position].get(),
-                bookmarks::metrics::BookmarkEditSource::kUser);
+                bookmarks::metrics::BookmarkEditSource::kUser, FROM_HERE);
 }
 
 - (size_t)bookmarkManagerPositionOfFolderAt:(size_t)index {

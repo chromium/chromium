@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.anything;
@@ -18,13 +19,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.url.GURL;
@@ -44,7 +45,7 @@ public class TargetSelectorCoordinatorTest extends BlankUiTestActivityTestCase {
     public void setUp() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAppModalPresenter = new AppModalPresenter(getActivity());
                     mModalDialogManager =
@@ -76,7 +77,7 @@ public class TargetSelectorCoordinatorTest extends BlankUiTestActivityTestCase {
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
         Callback<InstanceInfo> moveCallback = (item) -> itemClickCallbackHelper.notifyCalled();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TargetSelectorCoordinator.showDialog(
                             getActivity(),
@@ -87,7 +88,7 @@ public class TargetSelectorCoordinatorTest extends BlankUiTestActivityTestCase {
                 });
 
         // Choose a target window.
-        onData(anything()).atPosition(1).perform(click());
+        onData(anything()).inRoot(isDialog()).atPosition(1).perform(click());
 
         // Click 'move tab'.
         String moveTab = getActivity().getResources().getString(R.string.target_selector_move);

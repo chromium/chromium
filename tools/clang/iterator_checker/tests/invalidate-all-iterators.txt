@@ -1,0 +1,10 @@
+invalidate-all-iterators.cpp:20:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it1 = 1;
+   ^
+invalidate-all-iterators.cpp:21:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it2 = 2;
+   ^
+invalidate-all-iterators.cpp:22:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it3 = 3;
+   ^
+3 errors generated.

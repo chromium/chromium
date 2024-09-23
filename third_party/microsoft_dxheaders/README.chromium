@@ -1,0 +1,20 @@
+Name: Headers for DirectX APIs.
+Short Name: DirectX-Headers
+URL: https://github.com/microsoft/directx-headers
+Version: v1.613.1
+Revision: aafb798404373bec7875e6a36a8d9635642587c1
+License: MIT
+License File: LICENSE
+Security Critical: Yes
+Shipped: Yes
+
+Description:
+DirectX-Headers hosts the official Direct3D 12 and DirectML headers. These
+headers are made available under the MIT license rather than the traditional
+Windows SDK license.
+
+Chromium code uses these header files to use DirectX features that ship before
+official Windows releases. Testing is performed with either the Direct3D
+Agility SDK or the version of DirectML available through the NuGet package.
+
+Local Modifications: None

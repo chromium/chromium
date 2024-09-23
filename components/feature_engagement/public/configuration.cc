@@ -4,7 +4,6 @@
 
 #include "components/feature_engagement/public/configuration.h"
 
-#include <optional>
 #include <string>
 
 #include "base/notreached.h"
@@ -21,7 +20,7 @@ std::ostream& operator<<(std::ostream& os, const SessionRateImpact::Type type) {
       return os << "EXPLICIT";
     default:
       // All cases should be covered.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return os;
   }
 }
@@ -36,7 +35,7 @@ std::ostream& operator<<(std::ostream& os, BlockedBy::Type type) {
       return os << "EXPLICIT";
     default:
       // All cases should be covered.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return os;
   }
 }
@@ -49,7 +48,7 @@ std::ostream& operator<<(std::ostream& os, Blocking::Type type) {
       return os << "NONE";
     default:
       // All cases should be covered.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return os;
   }
 }
@@ -81,7 +80,7 @@ bool Comparator::MeetsCriteria(uint32_t v) const {
       return v != value;
     default:
       // All cases should be covered.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -104,7 +103,7 @@ std::ostream& operator<<(std::ostream& os, const Comparator& comparator) {
       return os << "!=" << comparator.value;
     default:
       // All cases should be covered.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return os;
   }
 }

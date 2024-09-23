@@ -6,11 +6,13 @@
 #define CHROME_SERVICES_SHARING_NEARBY_NEARBY_SHARED_REMOTES_H_
 
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/mdns.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence_credential_storage.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/webrtc.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
+#include "chromeos/ash/services/wifi_direct/public/mojom/wifi_direct_manager.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -31,18 +33,24 @@ struct NearbySharedRemotes {
 
   mojo::SharedRemote<bluetooth::mojom::Adapter> bluetooth_adapter;
   mojo::SharedRemote<network::mojom::P2PSocketManager> socket_manager;
-  mojo::SharedRemote<sharing::mojom::MdnsResponderFactory>
+  mojo::SharedRemote<::sharing::mojom::MdnsResponderFactory>
       mdns_responder_factory;
-  mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>
+  mojo::SharedRemote<::sharing::mojom::WebRtcSignalingMessenger>
       webrtc_signaling_messenger;
-  mojo::SharedRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher;
+  mojo::SharedRemote<::sharing::mojom::IceConfigFetcher> ice_config_fetcher;
   mojo::SharedRemote<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config;
-  mojo::SharedRemote<sharing::mojom::FirewallHoleFactory> firewall_hole_factory;
-  mojo::SharedRemote<sharing::mojom::TcpSocketFactory> tcp_socket_factory;
+  mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>
+      firewall_hole_factory;
+  mojo::SharedRemote<::sharing::mojom::TcpSocketFactory> tcp_socket_factory;
+  mojo::SharedRemote<::sharing::mojom::MdnsManager> mdns_manager;
   mojo::SharedRemote<
       ash::nearby::presence::mojom::NearbyPresenceCredentialStorage>
       nearby_presence_credential_storage;
+  mojo::SharedRemote<ash::wifi_direct::mojom::WifiDirectManager>
+      wifi_direct_manager;
+  mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>
+      wifi_direct_firewall_hole_factory;
 };
 
 }  // namespace nearby

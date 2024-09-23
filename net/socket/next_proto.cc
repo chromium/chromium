@@ -4,9 +4,11 @@
 
 #include "net/socket/next_proto.h"
 
+#include <string_view>
+
 namespace net {
 
-NextProto NextProtoFromString(base::StringPiece proto_string) {
+NextProto NextProtoFromString(std::string_view proto_string) {
   if (proto_string == "http/1.1") {
     return kProtoHTTP11;
   }

@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -723,6 +724,8 @@ void CrdAdminSessionController::RegisterLocalStatePrefs(
   registry->RegisterBooleanPref(prefs::kRemoteAdminWasPresent, false);
   registry->RegisterBooleanPref(
       prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections, true);
+  registry->RegisterBooleanPref(
+      prefs::kDeviceAllowEnterpriseRemoteAccessConnections, true);
 }
 
 }  // namespace policy

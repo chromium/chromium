@@ -1,0 +1,94 @@
+<style include="cr-shared-style shared-style">
+  .cr-row {
+    padding: 0;
+  }
+
+  .header-button,
+  .extension-buttons {
+    margin-inline-start: auto;
+  }
+
+  /* Reformat panel when the panel is the width of one extension card */
+  /* clean-css ignore:start */
+  @container (max-width:450px) {
+    /* Set a max width for the extension info so extension buttons can fit on
+       the same row */
+    .panel-extension-info {
+      max-width: 116px;
+    }
+  }
+  /* clean-css ignore:end */
+</style>
+
+<h2 class="panel-title" hidden$="[[!showTitle]]">
+  $i18n{mv2DeprecationPanelTitle}
+</h2>
+
+<div class="panel-background" id="panelContainer">
+  <div class="panel-header">
+    <cr-icon aria-hidden="true" icon="extensions-icons:my_extensions"
+        class="panel-header-icon">
+    </cr-icon>
+    <div class="panel-header-text">
+      <h3 id="headingText">[[headerString_]]</h3>
+      <div class="cr-secondary-text"
+          inner-h-t-m-l="[[getSubtitleString_(subtitleString_)]]">
+      </div>
+    </div>
+    <cr-button class="header-button" on-click="onDismissButtonClick_">
+      $i18n{mv2DeprecationPanelDismissButton}
+    </cr-button>
+  </div>
+
+  <div class="panel-extensions">
+    <template is="dom-repeat" items="[[extensions]]">
+      <div class="panel-extension-row cr-row">
+        <img class="panel-extension-icon" src="[[item.iconUrl]]"
+            role="presentation">
+        <div class="panel-extension-info text-elide">[[item.name]]</div>
+        <div class="extension-buttons">
+          <cr-button class="find-alternative-button"
+              on-click="onFindAlternativeButtonClick_"
+              hidden$="[[!showExtensionFindAlternativeButton_(item)]]"
+              aria-label="[[getFindAlternativeButtonLabelFor_(item.name)]]">
+            $i18n{mv2DeprecationPanelFindAlternativeButton}
+            <cr-icon icon="cr:open-in-new" slot="suffix-icon"></cr-icon>
+          </cr-button>
+          <cr-icon-button id="removeButton"
+              class="icon-delete-gray"
+              on-click="onRemoveButtonClick_"
+              title="$i18n{remove}"
+              aria-label$="[[getRemoveButtonLabelFor_(item.name)]]"
+              hidden$="[[!showExtensionRemoveButton_(item,
+                  mv2ExperimentStage)]]">
+          </cr-icon-button>
+          <cr-icon-button id="actionMenuButton"
+              class="icon-more-vert header-aligned-button"
+              on-click="onExtensionActionMenuClick_"
+              title="$i18n{moreOptions}"
+              aria-label="[[getActionMenuButtonLabelFor_(item.name)]]">
+          </cr-icon-button>
+        </div>
+      </div>
+    </template>
+
+    <cr-action-menu id="actionMenu">
+      <button class="dropdown-item" id="findAlternativeAction"
+          on-click="onFindAlternativeExtensionActionClick_"
+          hidden$="[[!showExtensionFindAlternativeAction_(
+              extensionWithActionMenuOpened_, mv2ExperimentStage)]]">
+        Find alternatives
+      </button>
+      <button class="dropdown-item" id="keepAction"
+          on-click="onKeepExtensionActionClick_">
+        $i18n{mv2DeprecationPanelKeepForNowButton}
+      </button>
+      <button class="dropdown-item" id="removeAction"
+          on-click="onRemoveExtensionActionClicked_"
+          hidden$="[[!showExtensionRemoveAction_(
+              extensionWithActionMenuOpened_, mv2ExperimentStage)]]">
+        $i18n{mv2DeprecationPanelRemoveExtensionButton}
+      </button>
+    </cr-action-menu>
+  </div>
+</div>

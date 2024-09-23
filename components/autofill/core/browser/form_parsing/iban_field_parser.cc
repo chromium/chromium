@@ -16,16 +16,11 @@ std::unique_ptr<FormFieldParser> IbanFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
   raw_ptr<AutofillField> field;
-  base::span<const MatchPatternRef> iban_patterns = GetMatchPatterns(
-      IBAN_VALUE, context.page_language, context.pattern_source);
-
-  if (ParseFieldSpecifics(context, scanner, kIbanRe,
-                          kDefaultMatchParamsWith<FormControlType::kInputNumber,
-                                                  FormControlType::kTextArea>,
-                          iban_patterns, &field, "kIbanRe")) {
+  base::span<const MatchPatternRef> iban_patterns =
+      GetMatchPatterns(IBAN_VALUE, context.page_language, context.pattern_file);
+  if (ParseField(context, scanner, iban_patterns, &field, "IBAN_VALUE")) {
     return std::make_unique<IbanFieldParser>(field);
   }
-
   return nullptr;
 }
 

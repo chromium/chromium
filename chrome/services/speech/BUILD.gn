@@ -12,6 +12,8 @@ source_set("lib") {
     "audio_source_consumer.h",
     "audio_source_fetcher_impl.cc",
     "audio_source_fetcher_impl.h",
+    "soda_speech_recognizer_impl.cc",
+    "soda_speech_recognizer_impl.h",
     "speech_recognition_recognizer_impl.cc",
     "speech_recognition_recognizer_impl.h",
     "speech_recognition_service_impl.cc",
@@ -47,30 +49,35 @@ source_set("lib") {
       "cros_speech_recognition_recognizer_impl.h",
     ]
     deps += [
-        "//chromeos/services/machine_learning/public/mojom",
+      "//chromeos/services/machine_learning/public/mojom",
+      "//components/soda:soda",
     ]
-
   }
 }
 
-if (is_chromeos_ash) {
-  source_set("unit_tests") {
-    testonly = true
+source_set("unit_tests") {
+  testonly = true
 
-    sources = [
+  sources = [ "soda_speech_recognizer_impl_unittest.cc" ]
+  deps = [
+    ":lib",
+    "//base",
+    "//base/test:test_support",
+    "//media/mojo/common",
+    "//media/mojo/mojom:web_speech_recognition",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos_ash) {
+    sources += [
       "audio_source_fetcher_unittest.cc",
       "cros_speech_recognition_recognizer_impl_test.cc",
     ]
 
-    deps = [
-      ":lib",
-      "//base",
-      "//base/test:test_support",
+    deps += [
       "//chromeos/services/machine_learning/public/mojom",
-      "//media/mojo/common",
-      "//mojo/public/cpp/bindings",
       "//services/audio/public/cpp:test_support",
-      "//testing/gtest",
     ]
   }
 }

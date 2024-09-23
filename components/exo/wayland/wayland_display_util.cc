@@ -23,7 +23,7 @@ wl_output_transform OutputTransform(display::Display::Rotation rotation) {
     case display::Display::ROTATE_270:
       return WL_OUTPUT_TRANSFORM_90;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WL_OUTPUT_TRANSFORM_NORMAL;
 }
 

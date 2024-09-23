@@ -6,12 +6,14 @@
 
 #include <cmath>
 
+#include "base/feature_list.h"
 #include "base/task/bind_post_task.h"
 #include "content/browser/media/captured_surface_control_permission_manager.h"
 #include "content/browser/media/media_stream_web_contents_observer.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -45,7 +47,7 @@ void OnZoomLevelChangeOnUI(
   }
 
   int zoom_level =
-      std::round(100 * blink::PageZoomLevelToZoomFactor(
+      std::round(100 * blink::ZoomLevelToZoomFactor(
                            HostZoomMap::GetZoomLevel(captured_wc.get())));
   on_zoom_level_change_callback.Run(zoom_level);
 }
@@ -74,7 +76,7 @@ std::optional<CapturedSurfaceInfo> ResolveCapturedSurfaceOnUI(
   }
 
   int initial_zoom_level = std::round(
-      100 * blink::PageZoomLevelToZoomFactor(HostZoomMap::GetZoomLevel(wc)));
+      100 * blink::ZoomLevelToZoomFactor(HostZoomMap::GetZoomLevel(wc)));
 
   std::unique_ptr<base::CallbackListSubscription,
                   BrowserThread::DeleteOnUIThread>
@@ -88,15 +90,6 @@ std::optional<CapturedSurfaceInfo> ResolveCapturedSurfaceOnUI(
                              subscription_version, initial_zoom_level);
 }
 
-// Checks whether the app is focused.
-// Note that this is different from requiring that the capturer RFH is focused.
-// The check here starts at the primary main frame, and then cascades through
-// the tree - which is the desired behavior.
-bool IsFocused(WebContentsImpl& web_contents) {
-  RenderFrameHostImpl* const rfhi = web_contents.GetPrimaryMainFrame();
-  return rfhi && rfhi->IsFocused();
-}
-
 // Deliver a synthetic MouseWheel action on `captured_wc` with the parameters
 // described by the values in `action`.
 //
@@ -108,9 +101,10 @@ CapturedSurfaceControlResult DoSendWheel(
     blink::mojom::CapturedWheelActionPtr action) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebContentsImpl* const capturer_wc = WebContentsImpl::FromRenderFrameHostImpl(
-      RenderFrameHostImpl::FromID(capturer_rfh_id));
-  if (!capturer_wc) {
+  WebContentsImpl* const capturer_wci =
+      WebContentsImpl::FromRenderFrameHostImpl(
+          RenderFrameHostImpl::FromID(capturer_rfh_id));
+  if (!capturer_wci) {
     // The capturing frame or tab appears to have closed asynchronously.
     return CapturedSurfaceControlResult::kCapturerNotFoundError;
   }
@@ -129,17 +123,13 @@ CapturedSurfaceControlResult DoSendWheel(
     return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
   }
 
-  if (capturer_wc == captured_wc.get()) {
+  if (capturer_wci == captured_wc.get()) {
     return CapturedSurfaceControlResult::kDisallowedForSelfCaptureError;
-  }
-
-  if (!IsFocused(*capturer_wc)) {
-    return CapturedSurfaceControlResult::kCapturerNotFocusedError;
   }
 
   // Scale (x, y).
   const gfx::Size captured_viewport_size =
-      captured_rwhi->GetRootWidgetViewportSize();
+      captured_rwhi->GetRenderInputRouter()->GetRootWidgetViewportSize();
   if (captured_viewport_size.width() < 1 ||
       captured_viewport_size.height() < 1) {
     return CapturedSurfaceControlResult::kUnknownError;
@@ -184,6 +174,8 @@ CapturedSurfaceControlResult DoSendWheel(
     captured_rwhi->ForwardWheelEvent(event);
   }
 
+  capturer_wci->DidCapturedSurfaceControl();
+
   return CapturedSurfaceControlResult::kSuccess;
 }
 
@@ -197,9 +189,10 @@ CapturedSurfaceControlResult DoSetZoomLevel(
     int zoom_level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebContentsImpl* const capturer_wc = WebContentsImpl::FromRenderFrameHostImpl(
-      RenderFrameHostImpl::FromID(capturer_rfh_id));
-  if (!capturer_wc) {
+  WebContentsImpl* const capturer_wci =
+      WebContentsImpl::FromRenderFrameHostImpl(
+          RenderFrameHostImpl::FromID(capturer_rfh_id));
+  if (!capturer_wci) {
     // The capturing frame or tab appears to have closed asynchronously.
     return CapturedSurfaceControlResult::kCapturerNotFoundError;
   }
@@ -208,17 +201,67 @@ CapturedSurfaceControlResult DoSetZoomLevel(
     return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
   }
 
-  if (capturer_wc == captured_wc.get()) {
+  if (capturer_wci == captured_wc.get()) {
     return CapturedSurfaceControlResult::kDisallowedForSelfCaptureError;
   }
 
-  if (!IsFocused(*capturer_wc)) {
-    return CapturedSurfaceControlResult::kCapturerNotFocusedError;
+  // TODO(crbug.com/328589994): Hard-code kCapturedSurfaceControlTemporaryZoom.
+  if (!base::FeatureList::IsEnabled(
+          features::kCapturedSurfaceControlTemporaryZoom)) {
+    HostZoomMap::SetZoomLevel(
+        captured_wc.get(),
+        blink::ZoomFactorToZoomLevel(static_cast<double>(zoom_level) / 100));
+    return CapturedSurfaceControlResult::kSuccess;
   }
 
-  HostZoomMap::SetZoomLevel(
-      captured_wc.get(),
-      blink::PageZoomFactorToZoomLevel(static_cast<double>(zoom_level) / 100));
+  HostZoomMap* const zoom_map =
+      HostZoomMap::GetForWebContents(captured_wc.get());
+  if (!zoom_map) {
+    return CapturedSurfaceControlResult::kUnknownError;
+  }
+
+  zoom_map->SetTemporaryZoomLevel(
+      captured_wc->GetPrimaryMainFrame()->GetGlobalId(),
+      blink::ZoomFactorToZoomLevel(static_cast<double>(zoom_level) / 100));
+
+  capturer_wci->DidCapturedSurfaceControl();
+
+  return CapturedSurfaceControlResult::kSuccess;
+}
+
+// Return success if all conditions for CSC apply, otherwise fail with the
+// appropriate error code.
+CapturedSurfaceControlResult FinalizeRequestPermission(
+    GlobalRenderFrameHostId capturer_rfh_id,
+    base::WeakPtr<WebContents> captured_wc) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  WebContentsImpl* const capturer_wci =
+      WebContentsImpl::FromRenderFrameHostImpl(
+          RenderFrameHostImpl::FromID(capturer_rfh_id));
+  if (!capturer_wci) {
+    // The capturing frame or tab appears to have closed asynchronously.
+    return CapturedSurfaceControlResult::kCapturerNotFoundError;
+  }
+
+  RenderFrameHost* const captured_rfh =
+      captured_wc ? captured_wc->GetPrimaryMainFrame() : nullptr;
+  if (!captured_rfh) {
+    return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
+  }
+
+  RenderFrameHostImpl* const captured_rfhi =
+      RenderFrameHostImpl::FromID(captured_rfh->GetGlobalId());
+  RenderWidgetHostImpl* const captured_rwhi =
+      captured_rfhi ? captured_rfhi->GetRenderWidgetHost() : nullptr;
+  if (!captured_rwhi) {
+    return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
+  }
+
+  if (capturer_wci == captured_wc.get()) {
+    return CapturedSurfaceControlResult::kDisallowedForSelfCaptureError;
+  }
+
   return CapturedSurfaceControlResult::kSuccess;
 }
 
@@ -371,6 +414,24 @@ void CapturedSurfaceController::SetZoomLevel(
       base::BindOnce(&DoSetZoomLevel, capturer_rfh_id_, captured_wc_.value(),
                      zoom_level);
 
+  permission_manager_->CheckPermission(
+      ComposeCallbacks(std::move(action_callback), std::move(reply_callback)));
+}
+
+void CapturedSurfaceController::RequestPermission(
+    base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!captured_wc_.has_value()) {
+    std::move(reply_callback)
+        .Run(CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
+    return;
+  }
+
+  // If the permission check is successful, just return success.
+  base::OnceCallback<CapturedSurfaceControlResult(void)> action_callback =
+      base::BindOnce(&FinalizeRequestPermission, capturer_rfh_id_,
+                     captured_wc_.value());
   permission_manager_->CheckPermission(
       ComposeCallbacks(std::move(action_callback), std::move(reply_callback)));
 }

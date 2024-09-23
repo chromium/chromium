@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
 import * as Console from 'devtools/panels/console/console.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
@@ -62,7 +63,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
    */
   function addConsoleAPIMessage(text,  url) {
     var message = new SDK.ConsoleModel.ConsoleMessage(
-        null, SDK.ConsoleModel.FrontendMessageSource.ConsoleAPI,
+        null, Common.Console.FrontendMessageSource.ConsoleAPI,
         Protocol.Log.LogEntryLevel.Info, text,
         {type: Protocol.Runtime.ConsoleAPICalledEventType.Log, url});
     const consoleModel = SDK.TargetManager.TargetManager.instance().primaryPageTarget().model(SDK.ConsoleModel.ConsoleModel);

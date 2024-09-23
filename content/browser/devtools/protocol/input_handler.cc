@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/devtools/protocol/input_handler.h"
 
 #include <stddef.h>
 
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -15,19 +21,20 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/protocol/native_input_event_builder.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "content/browser/renderer_host/data_transfer_util.h"
-#include "content/browser/renderer_host/input/touch_emulator.h"
+#include "content/browser/renderer_host/input/touch_emulator_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/input/synthetic_pinch_gesture.h"
@@ -130,19 +137,22 @@ base::TimeTicks GetEventTimeTicks(const Maybe<double>& timestamp) {
 }
 
 bool SetKeyboardEventText(
-    char16_t (&to)[blink::WebKeyboardEvent::kTextLengthCap],
+    base::span<char16_t, blink::WebKeyboardEvent::kTextLengthCap> to,
     Maybe<std::string> from) {
   if (!from.has_value()) {
     return true;
   }
 
   std::u16string text16 = base::UTF8ToUTF16(from.value());
-  if (text16.size() >= blink::WebKeyboardEvent::kTextLengthCap)
+  if (text16.size() >= to.size()) {
     return false;
+  }
 
-  for (size_t i = 0; i < text16.size(); ++i)
-    to[i] = text16[i];
-  to[text16.size()] = 0;
+  base::span<char16_t> to_text;
+  base::span<char16_t> to_nul;
+  std::tie(to_text, to_nul) = to.split_at(text16.size());
+  to_text.copy_from(text16);
+  to_nul.front() = 0;
   return true;
 }
 
@@ -691,7 +701,7 @@ class InputHandler::InputInjector
     }
   }
 
-  void InjectKeyboardEvent(const NativeWebKeyboardEvent& keyboard_event,
+  void InjectKeyboardEvent(const input::NativeWebKeyboardEvent& keyboard_event,
                            Maybe<Array<std::string>> commands,
                            std::unique_ptr<DispatchKeyEventCallback> callback) {
     if (!widget_host_) {
@@ -731,15 +741,16 @@ class InputHandler::InputInjector
     }
 
     widget_host_->Focus();
-    widget_host_->GetTouchEmulator()->Enable(
-        TouchEmulator::Mode::kInjectingTouchEvents,
-        ui::GestureProviderConfigType::CURRENT_PLATFORM);
+    widget_host_->GetTouchEmulator(/*create_if_necessary=*/true)
+        ->Enable(input::TouchEmulator::Mode::kInjectingTouchEvents,
+                 ui::GestureProviderConfigType::CURRENT_PLATFORM);
     base::OnceClosure closure = base::BindOnce(
         &DispatchTouchEventCallback::sendSuccess, std::move(callback));
     for (size_t i = 0; i < events.size(); i++) {
-      widget_host_->GetTouchEmulator()->InjectTouchEvent(
-          events[i], widget_host_->GetView(),
-          i == events.size() - 1 ? std::move(closure) : base::OnceClosure());
+      widget_host_->GetTouchEmulator(/*create_if_necessary=*/true)
+          ->InjectTouchEvent(events[i], widget_host_->GetView(),
+                             i == events.size() - 1 ? std::move(closure)
+                                                    : base::OnceClosure());
     }
     MaybeSelfDestruct();
   }
@@ -793,7 +804,7 @@ class InputHandler::InputInjector
     owner_->injectors_.erase(this);
   }
 
-  InputHandler* const owner_;
+  const raw_ptr<InputHandler> owner_;
   base::WeakPtr<RenderWidgetHostImpl> widget_host_;
   // Callbacks for calls to Input.dispatchKey/MouseEvent that have been sent to
   // the renderer, but that we haven't yet received an ack for.
@@ -934,7 +945,7 @@ void InputHandler::DragController::StartDragging(
 
 void InputHandler::DragController::CancelDragging(base::OnceClosure callback) {
   if (!drag_state_ || !drag_state_->host) {
-    if (auto* view = handler_.GetRootView()) {
+    if (auto* view = handler_->GetRootView()) {
       view->GetRenderWidgetHost()->DragSourceSystemDragEnded();
     }
     std::move(callback).Run();
@@ -972,7 +983,7 @@ void InputHandler::DragController::DragUpdated(
   if (!drag_state_) {
     // Dragging ended, perhaps due to a previous mouse up or a drag
     // cancellation.
-    handler_.HandleMouseEvent(std::move(event), callback->release());
+    handler_->HandleMouseEvent(std::move(event), callback->release());
     return;
   }
   drag_state_->data.operation = operation;
@@ -1014,13 +1025,11 @@ void InputHandler::DragController::EndDragging(
         drag_state_->pos);
     return;
   }
-  handler_.web_contents_->GetInputEventRouter()
-      ->GetRenderWidgetHostAtPointAsynchronously(
-          handler_.GetRootView(), drag_state_->pos,
-          base::BindOnce(&InputHandler::DragController::
-                             EndDraggingWithRenderWidgetHostAtPoint,
-                         weak_factory_.GetWeakPtr(), std::move(event),
-                         std::move(callback)));
+  handler_->web_contents_->GetRenderWidgetHostAtPointAsynchronously(
+      handler_->GetRootView(), drag_state_->pos,
+      base::BindOnce(
+          &InputHandler::DragController::EndDraggingWithRenderWidgetHostAtPoint,
+          weak_factory_.GetWeakPtr(), std::move(event), std::move(callback)));
 }
 
 void InputHandler::DragController::EndDraggingWithRenderWidgetHostAtPoint(
@@ -1037,8 +1046,8 @@ void InputHandler::DragController::EndDraggingWithRenderWidgetHostAtPoint(
   if (!drag_state_) {
     // Dragging ended, perhaps due to a previous mouse up or a drag
     // cancellation.
-    handler_.OnWidgetForDispatchMouseEvent(callback->release(),
-                                           std::move(event), view, maybe_point);
+    handler_->OnWidgetForDispatchMouseEvent(
+        callback->release(), std::move(event), view, maybe_point);
     return;
   }
   auto* host = RenderWidgetHostImpl::From(view->GetRenderWidgetHost());
@@ -1079,7 +1088,8 @@ void InputHandler::SetRenderer(int process_host_id,
 
   if (ignore_input_events_ && old_web_contents != web_contents_) {
     if (web_contents_) {
-      scoped_ignore_input_events_ = web_contents_->IgnoreInputEvents();
+      scoped_ignore_input_events_ =
+          web_contents_->IgnoreInputEvents(std::nullopt);
     } else {
       scoped_ignore_input_events_.reset();
     }
@@ -1133,7 +1143,7 @@ void InputHandler::DispatchKeyEvent(
     return;
   }
 
-  NativeWebKeyboardEvent event(
+  input::NativeWebKeyboardEvent event(
       web_event_type,
       GetEventModifiers(modifiers.value_or(blink::WebInputEvent::kNoModifiers),
                         auto_repeat.value_or(false), is_keypad.value_or(false),
@@ -1235,13 +1245,7 @@ void InputHandler::ImeSetComposition(
   // Currently no DevTools target for Prerender.
   if (host_->GetLifecycleState() ==
       RenderFrameHost::LifecycleState::kPrerendering) {
-    NOTREACHED();
-  }
-  // Portal cannot be focused.
-  if (web_contents_->IsPortal()) {
-    callback->sendFailure(
-        Response::InvalidRequest("A Portal cannot be focused."));
-    return;
+    NOTREACHED_IN_MIGRATION();
   }
 
   // |RenderFrameHostImpl::GetRenderWidgetHost| returns the RWHImpl of the
@@ -1338,7 +1342,6 @@ void InputHandler::HandleMouseEvent(
           return;
         gfx::PointF position = event->PositionInWidget();
         widget_host->delegate()
-            ->GetInputEventRouter()
             ->GetRenderWidgetHostAtPointAsynchronously(
                 widget_host->GetView(), position,
                 base::BindOnce(&InputHandler::OnWidgetForDispatchMouseEvent,
@@ -1379,7 +1382,6 @@ void InputHandler::DispatchDragEvent(
   }
 
   widget_host->delegate()
-      ->GetInputEventRouter()
       ->GetRenderWidgetHostAtPointAsynchronously(
           widget_host->GetView(), CssPixelsToPointF(x, y, ScaleFactor()),
           base::BindOnce(&InputHandler::OnWidgetForDispatchDragEvent,
@@ -1476,9 +1478,21 @@ void InputHandler::OnWidgetForDispatchDragEvent(
 
 float InputHandler::ScaleFactor() {
   DCHECK(web_contents_);
-  return blink::PageZoomLevelToZoomFactor(
-             web_contents_->GetPendingPageZoomLevel()) *
-         web_contents_->GetPrimaryPage().GetPageScaleFactor();
+  // Browser zoom
+  float scale_factor =
+      blink::ZoomLevelToZoomFactor(web_contents_->GetPendingPageZoomLevel());
+  // CSS zoom applied to embedding element (e.g. <iframe>), if applicable.
+  if (host_) {
+    if (RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost()) {
+      if (auto* view = widget_host->GetView()) {
+        scale_factor *= view->GetCSSZoomFactor();
+      }
+    }
+  }
+  // Pinch zoom
+  scale_factor *= web_contents_->GetPrimaryPage().GetPageScaleFactor();
+
+  return scale_factor;
 }
 
 void InputHandler::StartDragging(const content::DropData& drop_data,
@@ -1629,7 +1643,6 @@ void InputHandler::DispatchWebTouchEvent(
         }
         gfx::PointF point(events[0].touches[0].PositionInWidget());
         widget_host->delegate()
-            ->GetInputEventRouter()
             ->GetRenderWidgetHostAtPointAsynchronously(
                 widget_host->GetView(), point,
                 base::BindOnce(&InputHandler::OnWidgetForDispatchWebTouchEvent,
@@ -1857,7 +1870,7 @@ SyntheticPointerActionParams InputHandler::PrepareSyntheticPointerActionParams(
     case SyntheticPointerActionParams::PointerActionType::LEAVE:
     case SyntheticPointerActionParams::PointerActionType::IDLE:
     case SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return action_params;
@@ -1977,7 +1990,8 @@ Response InputHandler::SetIgnoreInputEvents(bool ignore) {
   if (!ignore) {
     scoped_ignore_input_events_.reset();
   } else if (web_contents_) {
-    scoped_ignore_input_events_ = web_contents_->IgnoreInputEvents();
+    scoped_ignore_input_events_ =
+        web_contents_->IgnoreInputEvents(std::nullopt);
   }
   return Response::Success();
 }

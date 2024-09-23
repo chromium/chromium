@@ -10,9 +10,9 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
@@ -70,7 +70,6 @@ DisallowedFeatures AdjustDisallowedFeatures(
 ContextGroup::ContextGroup(
     const GpuPreferences& gpu_preferences,
     bool supports_passthrough_command_decoders,
-    MailboxManager* mailbox_manager,
     std::unique_ptr<MemoryTracker> memory_tracker,
     ShaderTranslatorCache* shader_translator_cache,
     FramebufferCompletenessCache* framebuffer_completeness_cache,
@@ -82,7 +81,6 @@ ContextGroup::ContextGroup(
     PassthroughDiscardableManager* passthrough_discardable_manager,
     SharedImageManager* shared_image_manager)
     : gpu_preferences_(gpu_preferences),
-      mailbox_manager_(mailbox_manager),
       memory_tracker_(std::move(memory_tracker)),
       shader_translator_cache_(shader_translator_cache),
 #if BUILDFLAG(IS_MAC)
@@ -130,7 +128,6 @@ ContextGroup::ContextGroup(
       shared_image_manager_(shared_image_manager) {
   DCHECK(discardable_manager);
   DCHECK(feature_info_);
-  DCHECK(mailbox_manager_);
   use_passthrough_cmd_decoder_ = supports_passthrough_command_decoders &&
                                  gpu_preferences_.use_passthrough_cmd_decoder;
 }
@@ -229,7 +226,7 @@ gpu::ContextResult ContextGroup::Initialize(
     DCHECK(max_dual_source_draw_buffers_ >= 1);
   }
 
-  if (feature_info_->gl_version_info().is_es3_capable) {
+  if (feature_info_->gl_version_info().IsAtLeastGLES(3, 0)) {
     const GLint kMinTransformFeedbackSeparateAttribs = 4;
     if (!QueryGLFeatureU(GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS,
                          kMinTransformFeedbackSeparateAttribs,
@@ -335,7 +332,7 @@ gpu::ContextResult ContextGroup::Initialize(
     return was_lost ? gpu::ContextResult::kTransientFailure
                     : gpu::ContextResult::kFatalFailure;
   }
-  if (feature_info_->gl_version_info().is_es3_capable &&
+  if (feature_info_->gl_version_info().IsAtLeastGLES(3, 0) &&
       !QueryGLFeature(GL_MAX_3D_TEXTURE_SIZE, kMin3DTextureSize,
                       &max_3d_texture_size)) {
     bool was_lost = decoder->CheckResetStatus();
@@ -347,7 +344,7 @@ gpu::ContextResult ContextGroup::Initialize(
     return was_lost ? gpu::ContextResult::kTransientFailure
                     : gpu::ContextResult::kFatalFailure;
   }
-  if (feature_info_->gl_version_info().is_es3_capable &&
+  if (feature_info_->gl_version_info().IsAtLeastGLES(3, 0) &&
       !QueryGLFeature(GL_MAX_ARRAY_TEXTURE_LAYERS, kMinArrayTextureLayers,
                       &max_array_texture_layers)) {
     bool was_lost = decoder->CheckResetStatus();
@@ -430,20 +427,9 @@ gpu::ContextResult ContextGroup::Initialize(
                     : gpu::ContextResult::kFatalFailure;
   }
 
-  if (feature_info_->gl_version_info().BehavesLikeGLES()) {
-    GetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS,
-        &max_fragment_uniform_vectors_);
-    GetIntegerv(GL_MAX_VARYING_VECTORS, &max_varying_vectors_);
-    GetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &max_vertex_uniform_vectors_);
-  } else {
-    GetIntegerv(
-        GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, &max_fragment_uniform_vectors_);
-    max_fragment_uniform_vectors_ /= 4;
-    GetIntegerv(GL_MAX_VARYING_FLOATS, &max_varying_vectors_);
-    max_varying_vectors_ /= 4;
-    GetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS, &max_vertex_uniform_vectors_);
-    max_vertex_uniform_vectors_ /= 4;
-  }
+  GetIntegerv(GL_MAX_FRAGMENT_UNIFORM_VECTORS, &max_fragment_uniform_vectors_);
+  GetIntegerv(GL_MAX_VARYING_VECTORS, &max_varying_vectors_);
+  GetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &max_vertex_uniform_vectors_);
 
   const GLint kMinFragmentUniformVectors = 16;
   const GLint kMinVaryingVectors = 8;
@@ -569,7 +555,7 @@ class WeakPtrEquals {
 }  // namespace anonymous
 
 bool ContextGroup::HaveContexts() {
-  base::EraseIf(decoders_, IsNull);
+  std::erase_if(decoders_, IsNull);
   return !decoders_.empty();
 }
 
@@ -579,7 +565,7 @@ void ContextGroup::ReportProgress() {
 }
 
 void ContextGroup::Destroy(DecoderContext* decoder, bool have_context) {
-  base::EraseIf(decoders_, WeakPtrEquals<DecoderContext>(decoder));
+  std::erase_if(decoders_, WeakPtrEquals<DecoderContext>(decoder));
 
   // If we still have contexts do nothing.
   if (HaveContexts()) {

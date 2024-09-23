@@ -108,7 +108,6 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
 
   bool ShouldUseGpuMemoryBuffersForVideoFrames(
       bool for_media_stream) const override;
-  unsigned ImageTextureTarget(gfx::BufferFormat format) override;
   OutputFormat VideoFrameOutputFormat(
       media::VideoPixelFormat pixel_format) override;
 
@@ -200,8 +199,7 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
 
   gfx::ColorSpace rendering_color_space_;
 
-  const raw_ptr<gpu::GpuMemoryBufferManager, ExperimentalRenderer>
-      gpu_memory_buffer_manager_;
+  const raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
 };
 
 }  // namespace content

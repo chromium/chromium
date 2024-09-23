@@ -43,12 +43,14 @@ class SideSearchSideContentsHelper
     // Passthrough for the side content's WebContentsDelegate.
     virtual bool HandleKeyboardEvent(
         content::WebContents* source,
-        const content::NativeWebKeyboardEvent& event);
+        const input::NativeWebKeyboardEvent& event);
 
     // Passthrough for the side content's WebContentsDelegate.
     virtual content::WebContents* OpenURLFromTab(
         content::WebContents* source,
-        const content::OpenURLParams& params);
+        const content::OpenURLParams& params,
+        base::OnceCallback<void(content::NavigationHandle&)>
+            navigation_handle_callback);
 
     // Get the WebContents of the associated tab.
     virtual content::WebContents* GetTabWebContents() = 0;
@@ -84,12 +86,13 @@ class SideSearchSideContentsHelper
   bool CanDragEnter(content::WebContents* source,
                     const content::DropData& data,
                     blink::DragOperationsMask operations_allowed) override;
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
-      const content::OpenURLParams& params) override;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
 
   // Navigates the associated tab contents to `url`.
   void NavigateInTabContents(const content::OpenURLParams& params);

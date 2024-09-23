@@ -16,8 +16,9 @@ HelpBubbleWebUI::HelpBubbleWebUI(HelpBubbleHandlerBase* handler,
     : handler_(handler), anchor_id_(anchor_id) {
   CHECK(handler_);
 }
+
 HelpBubbleWebUI::~HelpBubbleWebUI() {
-  Close();
+  Close(HelpBubble::CloseReason::kBubbleDestroyed);
 }
 
 content::WebContents* HelpBubbleWebUI::GetWebContents() {

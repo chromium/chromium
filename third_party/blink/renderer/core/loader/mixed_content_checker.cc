@@ -32,7 +32,6 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/features.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -167,7 +166,7 @@ const char* RequestContextName(mojom::blink::RequestContextType context) {
     case mojom::blink::RequestContextType::XSLT:
       return "XSLT";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "resource";
 }
 
@@ -229,8 +228,7 @@ bool IsUrlPotentiallyTrustworthy(const KURL& url) {
   // This saves a copy of the url, which can be expensive for large data URLs.
   // TODO(crbug.com/1322100): Remove this logic once
   // network::IsUrlPotentiallyTrustworthy() doesn't copy the URL.
-  if (base::FeatureList::IsEnabled(base::features::kOptimizeDataUrls) &&
-      url.ProtocolIsData()) {
+  if (url.ProtocolIsData()) {
     DCHECK(network::IsUrlPotentiallyTrustworthy(GURL(url)));
     return true;
   }
@@ -398,7 +396,7 @@ void MixedContentChecker::Count(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   UseCounter::Count(source->GetDocument(), feature);
@@ -536,7 +534,7 @@ bool MixedContentChecker::ShouldBlockFetch(
         local_frame_host.DidDisplayInsecureContent();
       break;
     case mojom::blink::MixedContentContextType::kNotMixedContent:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   };
 
@@ -549,9 +547,16 @@ bool MixedContentChecker::ShouldBlockFetch(
           network::features::kPrivateNetworkAccessPermissionPrompt) &&
       RuntimeEnabledFeatures::PrivateNetworkAccessPermissionPromptEnabled(
           frame->DomWindow())) {
-    if (target_address_space ==
-            network::mojom::blink::IPAddressSpace::kPrivate ||
-        target_address_space == network::mojom::blink::IPAddressSpace::kLocal) {
+    // TODO(crbug.com/323583084): Re-enable PNA permission prompt for documents
+    // fetched via service worker.
+    if (!frame->Loader()
+             .GetDocumentLoader()
+             ->GetResponse()
+             .WasFetchedViaServiceWorker() &&
+        (target_address_space ==
+             network::mojom::blink::IPAddressSpace::kPrivate ||
+         target_address_space ==
+             network::mojom::blink::IPAddressSpace::kLocal)) {
       UseCounter::Count(frame->GetDocument(),
                         WebFeature::kPrivateNetworkAccessPermissionPrompt);
       allowed = true;
@@ -1029,7 +1034,7 @@ void MixedContentChecker::UpgradeInsecureRequest(
                 WebFeature::kUpgradeInsecureRequestsUpgradedRequestBlockable);
             break;
           case mojom::blink::MixedContentContextType::kNotMixedContent:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
         }
       }
     }

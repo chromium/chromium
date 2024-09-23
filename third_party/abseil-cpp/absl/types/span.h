@@ -43,7 +43,7 @@
 //    * A read-only `absl::Span<const T>` can be implicitly constructed from an
 //      initializer list.
 //    * `absl::Span` has no `bytes()`, `size_bytes()`, `as_bytes()`, or
-//      `as_mutable_bytes()` methods
+//      `as_writable_bytes()` methods
 //    * `absl::Span` has no static extent template parameter, nor constructors
 //      which exist only because of the static extent parameter.
 //    * `absl::Span` has an explicit mutable-reference constructor
@@ -151,7 +151,7 @@ ABSL_NAMESPACE_BEGIN
 //   int* my_array = new int[10];
 //   MyRoutine(absl::Span<const int>(my_array, 10));
 template <typename T>
-class Span {
+class ABSL_ATTRIBUTE_VIEW Span {
  private:
   // Used to determine whether a Span can be constructed from a container of
   // type C.
@@ -185,6 +185,7 @@ class Span {
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
   using size_type = size_t;
   using difference_type = ptrdiff_t;
+  using absl_internal_is_view = std::true_type;
 
   static const size_type npos = ~(size_type(0));
 

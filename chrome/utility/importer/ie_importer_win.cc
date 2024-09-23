@@ -5,8 +5,10 @@
 #include "chrome/utility/importer/ie_importer_win.h"
 
 #include <objbase.h>
+
 #include <ole2.h>
-#include <intshcut.h>  // Needs to come after ole2.h
+
+#include <intshcut.h>
 #include <shlobj.h>
 #include <stddef.h>
 #include <urlhist.h>

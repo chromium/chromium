@@ -8,7 +8,6 @@
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/javascript_dialogs/android/jni_headers/JavascriptAppModalDialog_jni.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
@@ -17,6 +16,9 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/javascript_dialog_type.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/javascript_dialogs/android/jni_headers/JavascriptAppModalDialog_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
@@ -31,7 +33,7 @@ AppModalDialogViewAndroid::AppModalDialogViewAndroid(
     AppModalDialogController* controller,
     gfx::NativeWindow parent)
     : controller_(controller),
-      parent_jobject_weak_ref_(env, parent->GetJavaObject().obj()) {
+      parent_jobject_weak_ref_(env, parent->GetJavaObject()) {
   controller->web_contents()->GetDelegate()->ActivateContents(
       controller->web_contents());
 }
@@ -78,7 +80,7 @@ void AppModalDialogViewAndroid::ShowAppModalDialog() {
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // Keep a ref to the java side object until we get a confirm or cancel.
@@ -93,7 +95,7 @@ void AppModalDialogViewAndroid::ActivateAppModalDialog() {
   // that does not host the currently active app modal dialog, as a way to
   // redirect activation to the app modal dialog host. It's not relevant on
   // Android.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AppModalDialogViewAndroid::CloseAppModalDialog() {

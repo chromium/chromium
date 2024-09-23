@@ -10,7 +10,7 @@
 #include "ash/webui/grit/ash_diagnostics_app_resources.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
-#include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
+#include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -20,14 +20,14 @@
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForDiagnosticsSystemWebApp() {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUIDiagnosticsAppUrl);
+  GURL start_url = GURL(ash::kChromeUIDiagnosticsAppUrl);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeUIDiagnosticsAppUrl);
 
   info->title = l10n_util::GetStringUTF16(IDS_DIAGNOSTICS_TITLE);
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {{"app_icon_192.png", 192, IDR_ASH_DIAGNOSTICS_APP_APP_ICON_192_PNG}},
       *info);
   info->theme_color =

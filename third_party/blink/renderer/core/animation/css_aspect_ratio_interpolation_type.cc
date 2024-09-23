@@ -115,7 +115,8 @@ InterpolationValue CSSAspectRatioInterpolationType::MaybeConvertInherit(
 
   StyleAspectRatio inherited_aspect_ratio = state.ParentStyle()->AspectRatio();
   conversion_checkers.push_back(
-      std::make_unique<InheritedAspectRatioChecker>(inherited_aspect_ratio));
+      MakeGarbageCollected<InheritedAspectRatioChecker>(
+          inherited_aspect_ratio));
   if (inherited_aspect_ratio.IsAuto())
     return nullptr;
 

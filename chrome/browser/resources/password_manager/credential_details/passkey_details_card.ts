@@ -13,9 +13,11 @@ import '../dialogs/delete_passkey_dialog.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
+import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import type {CredentialFieldElement} from './credential_field.js';
 import {getTemplate} from './passkey_details_card.html.js';
@@ -28,10 +30,11 @@ export interface PasskeyDetailsCardElement {
     showMore: HTMLAnchorElement,
     usernameValue: CredentialFieldElement,
     displayNameValue: CredentialFieldElement,
+    infoLabel: HTMLElement,
   };
 }
 
-const PasskeyDetailsCardElementBase = I18nMixin(PolymerElement);
+const PasskeyDetailsCardElementBase = UserUtilMixin(I18nMixin(PolymerElement));
 
 export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
   static get is() {
@@ -51,12 +54,20 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
       },
       showEditPasskeyDialog_: Boolean,
       showDeletePasskeyDialog_: Boolean,
+      infoLabelText_: String,
     };
+  }
+
+  static get observers() {
+    return [
+      'updatePasskeyManagementInfoLabel_(isSyncingPasswords)',
+    ];
   }
 
   passkey: chrome.passwordsPrivate.PasswordUiEntry;
   private showEditPasskeyDialog_: boolean;
   private showDeletePasskeyDialog_: boolean;
+  private infoLabelText_: string;
 
   private getUsernameValue_(): string {
     return !this.passkey.username || this.passkey.username === '' ?
@@ -112,6 +123,17 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
         this.i18n('passkeyDetailsCardDeleteButtonNoUsernameAriaLabel') :
         this.i18n(
             'passkeyDetailsCardDeleteButtonAriaLabel', this.passkey.username);
+  }
+
+  private updatePasskeyManagementInfoLabel_() {
+    // Google Password Manager passkeys always have their creation time
+    // available.
+    assert(this.passkey.creationTime !== undefined);
+
+    const date = new Date(this.passkey.creationTime);
+    this.infoLabelText_ = this.i18n(
+        'passkeyManagementInfoLabel',
+        date.toLocaleDateString(/*locales=*/ undefined, {dateStyle: 'short'}));
   }
 }
 

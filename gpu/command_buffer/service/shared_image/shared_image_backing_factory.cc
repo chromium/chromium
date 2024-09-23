@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
+
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 
 namespace gpu {
 
-SharedImageBackingFactory::SharedImageBackingFactory(uint32_t valid_usages)
-    : invalid_usages_(~valid_usages) {}
+SharedImageBackingFactory::SharedImageBackingFactory(
+    SharedImageUsageSet valid_usages)
+    : valid_usages_(valid_usages) {}
 
 SharedImageBackingFactory::~SharedImageBackingFactory() = default;
 
@@ -25,23 +28,22 @@ SharedImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
                                              const gfx::ColorSpace& color_space,
                                              GrSurfaceOrigin surface_origin,
                                              SkAlphaType alpha_type,
-                                             uint32_t usage,
+                                             SharedImageUsageSet usage,
                                              std::string debug_label,
                                              bool is_thread_safe,
                                              gfx::BufferUsage buffer_usage) {
   NOTREACHED();
-  return nullptr;
 }
 
 bool SharedImageBackingFactory::CanCreateSharedImage(
-    uint32_t usage,
+    SharedImageUsageSet usage,
     viz::SharedImageFormat format,
     const gfx::Size& size,
     bool thread_safe,
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
-  if (invalid_usages_ & usage) {
+  if (!valid_usages_.HasAll(usage)) {
     // This factory doesn't support all the usages.
     return false;
   }

@@ -10,6 +10,7 @@
 #include <array>
 #include <optional>
 #include <tuple>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"

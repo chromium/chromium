@@ -29,7 +29,7 @@ const char* GetSyncErrorTypeString(SyncProtocolErrorType type) {
     ENUM_CASE(CONFLICT);
     ENUM_CASE(INVALID_MESSAGE);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const char* GetClientActionString(ClientAction action) {
@@ -40,7 +40,7 @@ const char* GetClientActionString(ClientAction action) {
     ENUM_CASE(RESET_LOCAL_SYNC_DATA);
     ENUM_CASE(UNKNOWN_ACTION);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

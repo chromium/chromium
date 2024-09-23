@@ -32,20 +32,28 @@
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2244252133441425811">Slå på velger for videobilder per sekund</translation>
 <translation id="2271433936731426666">Slå på full størrelse for øyeblikksbilder fra videoer</translation>
+<translation id="2281736597583450397">Få skarpere detaljer med forbedret zoom</translation>
 <translation id="2320741269052147773">Panorer til venstre</translation>
+<translation id="2360840973209616515">Kamera-appen administreres av administratoren din.
+        Kontakt administratoren for å få mer informasjon.</translation>
+<translation id="2442754296994859145">Kopier for å bekrefte innholdet, eller utvid for å stoppe skanningen.</translation>
+<translation id="2486151619109781620">Skjul dialogboksen og start skanningen</translation>
 <translation id="2501278716633472235">Gå tilbake</translation>
 <translation id="2501853267655415902">Opptaket er stoppet</translation>
 <translation id="2517472476991765520">Skann</translation>
 <translation id="2549985041256363841">Start opptak</translation>
 <translation id="2577915835281444458">Opptaket stopper snart. Gå til enhetslagringen for å frigjøre plass.</translation>
 <translation id="2599796128805996109">Bakre kamera</translation>
+<translation id="2654491636277477479">Kopier gjenkjent tekst</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Skannetype</translation>
 <translation id="28682968802727151">Forhåndsvisning av speiling</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> er koblet til.</translation>
 <translation id="3067436040345934772">Panorer til høyre</translation>
 <translation id="3081586908890909590">Bytt til video</translation>
+<translation id="3091480460059548935">Tekstgjenkjenning i forhåndsvisningen</translation>
 <translation id="313467653172006084">30 bilder per sekund</translation>
+<translation id="3157038259444425153">Nå kan du kopiere tekst direkte i bilder</translation>
 <translation id="3158534262962737808">Koble til «<ph name="WIFINAME" />»</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Linken er kopiert</translation>
@@ -65,9 +73,7 @@
 <translation id="4118525110028899586">Sett opptaket på pause</translation>
 <translation id="4121305183798804752">Et dokument er oppdaget</translation>
 <translation id="414641094616694804">Dette kameraet kan ikke endre oppløsning</translation>
-<translation id="4176463684765177261">Deaktivert</translation>
 <translation id="428234092390943511">Miniatyrbilde av siden</translation>
-<translation id="4349714250734879769">Skaler rammer etter Chrome</translation>
 <translation id="4383571725254449280">Logger over utskriftsytelse</translation>
 <translation id="4445542136948522167">Slutt å ta bilde</translation>
 <translation id="4570032796877367747">Fremre kamera</translation>
@@ -80,7 +86,6 @@
 <translation id="4864143361253542638">Skannet sideliste</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">Kopiér linkadressen <ph name="URL" /></translation>
-<translation id="491895758387112773">Videoopptak med flere strømmer</translation>
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Høyde/bredde-forhold for bildet</translation>
@@ -93,6 +98,7 @@
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5320594929574852403">Beveger seg mot venstre</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5634947914995388399">Vis dialogboksen og stopp skanningen</translation>
 <translation id="5662366948659129155">Skanner side <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="574392208103952083">Medium</translation>
@@ -106,6 +112,7 @@
 <translation id="5975083100439434680">Zoom ut</translation>
 <translation id="5976160379964388480">Andre</translation>
 <translation id="6073451960410192870">Stopp opptaket</translation>
+<translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6197807149213783179">Lagre metadata</translation>
 <translation id="6233780560267770709">3 ganger 3</translation>
 <translation id="6243827288366940320">Det gylne snitt</translation>
@@ -115,11 +122,14 @@
 Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge ved et eksempelbilde eller en eksempelvideo og forklare hva som er galt. (Eksempel: Bildet er for mørkt, eller motivet er ute av fokus.)</translation>
 <translation id="6519884562954018934">Koble til <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Del</translation>
+<translation id="6586509689874700895">Trykk først på <ph name="BUTTON_NAME" /> for å zoome inn. Når du deretter tar bilder, blir detaljene skarpere.</translation>
+<translation id="659539649712855529"><ph name="CONTENT" /> er kopiert</translation>
 <translation id="6617916774429601017">Vis alle oppløsninger</translation>
 <translation id="6631515515009660915">Speiling av</translation>
 <translation id="6652737148136672975">Flytt hjørneposisjonen med piltastene</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681668084120808868">Ta et bilde</translation>
+<translation id="6692092766759105707">Kopier for å bekrefte innholdet.</translation>
 <translation id="6778482348691154169">Kan ikke ta bilde</translation>
 <translation id="6888362557094394345">Beveger seg nedover</translation>
 <translation id="695140971690006676">Tilbakestill alle</translation>
@@ -132,8 +142,8 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="7337660886763914220">Filsystemfeil.</translation>
 <translation id="7450541714075000668">Teksten er kopiert</translation>
 <translation id="7488619942230388918">Ta opp GIF-video</translation>
+<translation id="7527714402753141485">Viser tekst og knapp for kopiering</translation>
 <translation id="7557677699350329807">Bytt til neste kamera</translation>
-<translation id="7562584071994185503">Kopiér teksten <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Satt på pause</translation>
 <translation id="7608223098072244877">4 ganger 4</translation>
 <translation id="761421184377987513">Beveger seg nedover mot venstre</translation>
@@ -153,12 +163,12 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="8145038249676204903">Bytt til foto</translation>
 <translation id="8167081290930651932">Lagre som bilde</translation>
 <translation id="8239780215768881278">Ta øyeblikksbilde av videoen</translation>
-<translation id="8346544573713510785">Skaler rammer etter kamera-HAL</translation>
 <translation id="8425673304802773841">Vipp ned</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8609951387004618906">Åpne <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Slå av/på mikrofonlyden. Lyden er kuttet</translation>
+<translation id="8712637175834984815">Skjønner</translation>
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8732462232047530626">Forhåndsvis metadata</translation>
 <translation id="874854738381978209">Fant et wifi-nettverk.</translation>

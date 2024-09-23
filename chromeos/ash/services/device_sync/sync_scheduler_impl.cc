@@ -107,7 +107,7 @@ void SyncSchedulerImpl::OnTimerFired() {
     PA_LOG(VERBOSE) << "Timer fired for aggressive recovery, making request...";
     sync_state_ = SyncState::SYNC_IN_PROGRESS;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

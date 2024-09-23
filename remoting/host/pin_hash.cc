@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/logging.h"
+#include "base/strings/string_split.h"
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
 
@@ -14,16 +15,16 @@ namespace remoting {
 bool ParsePinHashFromConfig(const std::string& value,
                             const std::string& host_id,
                             std::string* pin_hash_out) {
-  size_t separator = value.find(':');
-  if (separator == std::string::npos) {
+  auto parts = base::SplitStringOnce(value, ':');
+  if (!parts) {
+    return false;
+  }
+  auto [function_name, encoded_pin_hash] = *parts;
+
+  if (!base::Base64Decode(encoded_pin_hash, pin_hash_out)) {
     return false;
   }
 
-  if (!base::Base64Decode(value.substr(separator + 1), pin_hash_out)) {
-    return false;
-  }
-
-  std::string function_name = value.substr(0, separator);
   if (function_name == "plain") {
     *pin_hash_out = protocol::GetSharedSecretHash(host_id, *pin_hash_out);
     return true;

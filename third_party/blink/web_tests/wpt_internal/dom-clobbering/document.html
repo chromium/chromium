@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script type="module">
+import {WebFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js';
+
+// This test suite verifies that the following use counters work correctly:
+// - kDOMClobberedShadowedDocumentPropertyAccessed
+// - kDOMClobberedNotShadowedDocumentPropertyAccessed
+
+test(() => {
+    internals.clearUseCounter(document, WebFeature.kDOMClobberedShadowedDocumentPropertyAccessed);
+    internals.clearUseCounter(document, WebFeature.kDOMClobberedNotShadowedDocumentPropertyAccessed);
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedShadowedDocumentPropertyAccessed));
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedNotShadowedDocumentPropertyAccessed));
+
+    // Check elements clobberable via name
+    const img = document.createElement("img");
+    img.name = "test1234";
+    document.body.append(img);
+
+    // Check if the property is actually clobbered, and this should also
+    // trigger the use counter.
+    assert_equals(document.test1234, img);
+
+    assert_true(internals.isUseCounted(document,WebFeature.kDOMClobberedNotShadowedDocumentPropertyAccessed));
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedShadowedDocumentPropertyAccessed));
+
+
+}, 'Non-shadowed clobbered property in document should be use-counted');
+
+test(() => {
+    internals.clearUseCounter(document, WebFeature.kDOMClobberedShadowedDocumentPropertyAccessed);
+    internals.clearUseCounter(document, WebFeature.kDOMClobberedNotShadowedDocumentPropertyAccessed);
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedShadowedDocumentPropertyAccessed));
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedNotShadowedDocumentPropertyAccessed));
+
+    const img = document.createElement("img");
+    img.name = "getElementById";
+    document.body.append(img);
+
+    // Check if the property is actually clobbered, and this should also
+    // trigger the use counter.
+    assert_equals(document.getElementById, img);
+
+    assert_false(internals.isUseCounted(document,WebFeature.kDOMClobberedNotShadowedDocumentPropertyAccessed));
+    assert_true(internals.isUseCounted(document, WebFeature.kDOMClobberedShadowedDocumentPropertyAccessed));
+}, 'Shadowed clobbered property in document should be use-counted');
+
+test(() => {
+    internals.clearUseCounter(document, WebFeature.kDOMClobberedShadowedDocumentPropertyAccessed);
+    internals.clearUseCounter(document, WebFeature.kDOMClobberedNotShadowedDocumentPropertyAccessed);
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedShadowedDocumentPropertyAccessed));
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedNotShadowedDocumentPropertyAccessed));
+
+
+    assert_equals(document.someRandomProperty, undefined);
+
+    assert_false(internals.isUseCounted(document,WebFeature.kDOMClobberedNotShadowedDocumentPropertyAccessed));
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedShadowedDocumentPropertyAccessed));
+}, 'Non-existing property in document should not be use-counted');
+
+
+</script>

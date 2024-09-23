@@ -4,6 +4,8 @@
 
 #include "ui/base/ime/text_input_client.h"
 
+#include <string_view>
+
 namespace ui {
 
 TextInputClient::~TextInputClient() {
@@ -17,7 +19,7 @@ bool TextInputClient::CanInsertImage() {
 void TextInputClient::ExtendSelectionAndReplace(
     size_t length_before_selection,
     size_t length_after_selection,
-    const base::StringPiece16 replacement_string) {
+    const std::u16string_view replacement_string) {
   ExtendSelectionAndDelete(length_before_selection, length_after_selection);
   InsertText(std::u16string(replacement_string),
              InsertTextCursorBehavior::kMoveCursorAfterText);

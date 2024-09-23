@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] speechSynthesis.pause() and resume() state and events
-  assert_unreached: error event Reached unreachable code
-Harness: the test ran to completion.

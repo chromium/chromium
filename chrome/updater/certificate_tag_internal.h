@@ -16,6 +16,7 @@
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_span.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
 
@@ -49,10 +50,10 @@ class PEBinary : public BinaryInterface {
   bool ParseTag();
 
   // binary_ contains the whole input binary.
-  base::span<const uint8_t> binary_;
+  base::raw_span<const uint8_t> binary_;
 
   // content_info_ contains the `WIN_CERTIFICATE` structure.
-  base::span<const uint8_t> content_info_;
+  base::raw_span<const uint8_t> content_info_;
 
   // tag_ contains the embedded tag, or `nullopt` if there isn't one.
   std::optional<std::vector<uint8_t>> tag_;

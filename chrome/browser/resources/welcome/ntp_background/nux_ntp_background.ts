@@ -3,28 +3,29 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/js/cr.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../shared/animations.css.js';
-import '../shared/chooser_shared.css.js';
 import '../shared/step_indicator.js';
 import '../strings.m.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isRTL} from 'chrome://resources/js/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {navigateToNextStep, NavigationMixin} from '../navigation_mixin.js';
+import {NavigationMixin} from '../navigation_mixin.js';
+import {navigateToNextStep} from '../router.js';
 import {ModuleMetricsManager} from '../shared/module_metrics_proxy.js';
 import type {StepIndicatorModel} from '../shared/nux_types.js';
 
 import {NtpBackgroundMetricsProxyImpl} from './ntp_background_metrics_proxy.js';
 import type {NtpBackgroundData, NtpBackgroundProxy} from './ntp_background_proxy.js';
 import {NtpBackgroundProxyImpl} from './ntp_background_proxy.js';
-import {getTemplate} from './nux_ntp_background.html.js';
+import {getCss} from './nux_ntp_background.css.js';
+import {getHtml} from './nux_ntp_background.html.js';
 
 const KEYBOARD_FOCUSED_CLASS = 'keyboard-focused';
 
@@ -35,48 +36,56 @@ export interface NuxNtpBackgroundElement {
   };
 }
 
-const NuxNtpBackgroundElementBase = I18nMixin(NavigationMixin(PolymerElement));
+const NuxNtpBackgroundElementBase = I18nMixinLit(NavigationMixin(CrLitElement));
 
-/** @polymer */
 export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
   static get is() {
     return 'nux-ntp-background';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      indicatorModel: Object,
-
-      selectedBackground_: {
-        observer: 'onSelectedBackgroundChange_',
-        type: Object,
-      },
-
-      subtitle: {
-        type: String,
-        value: loadTimeData.getString('ntpBackgroundDescription'),
-      },
+      backgrounds_: {type: Array},
+      selectedBackground_: {type: Object},
+      indicatorModel: {type: Object},
     };
   }
 
-  private backgrounds_: NtpBackgroundData[]|null = null;
+  protected backgrounds_: NtpBackgroundData[] = [];
+  private selectedBackground_?: NtpBackgroundData;
+  indicatorModel?: StepIndicatorModel;
+
   private finalized_: boolean = false;
   private imageIsLoading_: boolean = false;
+
   private metricsManager_: ModuleMetricsManager;
   private ntpBackgroundProxy_: NtpBackgroundProxy;
-  private selectedBackground_: NtpBackgroundData|undefined;
-  indicatorModel?: StepIndicatorModel;
 
   constructor() {
     super();
 
+    this.subtitle = loadTimeData.getString('ntpBackgroundDescription');
     this.ntpBackgroundProxy_ = NtpBackgroundProxyImpl.getInstance();
     this.metricsManager_ =
         new ModuleMetricsManager(NtpBackgroundMetricsProxyImpl.getInstance());
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('selectedBackground_')) {
+      this.onSelectedBackgroundChange_();
+    }
   }
 
   override onRouteEnter() {
@@ -90,7 +99,7 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
     if (!this.selectedBackground_) {
       this.selectedBackground_ = defaultBackground;
     }
-    if (!this.backgrounds_) {
+    if (this.backgrounds_.length === 0) {
       this.ntpBackgroundProxy_.getBackgrounds().then((backgrounds) => {
         this.backgrounds_ = [
           defaultBackground,
@@ -127,7 +136,7 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
     return this.selectedBackground_!.id > -1;
   }
 
-  private isSelectedBackground_(background: NtpBackgroundData) {
+  protected isSelectedBackground_(background: NtpBackgroundData) {
     return background === this.selectedBackground_;
   }
 
@@ -153,7 +162,7 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
     }
   }
 
-  private onBackgroundPreviewTransitionEnd_() {
+  protected onBackgroundPreviewTransitionEnd_() {
     // Whenever the #backgroundPreview transitions to a non-active, hidden
     // state, remove the background image. This way, when the element
     // transitions back to active, the previous background is not displayed.
@@ -163,18 +172,18 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
   }
 
   private announceA11y_(text: string) {
-    this.dispatchEvent(new CustomEvent(
-        'iron-announce', {bubbles: true, composed: true, detail: {text}}));
+    getAnnouncerInstance().announce(text);
   }
 
-  private onBackgroundClick_(e: {model: {item: NtpBackgroundData}}) {
-    this.selectedBackground_ = e.model.item;
+  protected onBackgroundClick_(e: Event) {
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    this.selectedBackground_ = this.backgrounds_[index]!;
     this.metricsManager_.recordClickedOption();
     this.announceA11y_(this.i18n(
         'ntpBackgroundPreviewUpdated', this.selectedBackground_.title));
   }
 
-  private onBackgroundKeyUp_(e: KeyboardEvent) {
+  protected onBackgroundKeyUp_(e: KeyboardEvent) {
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
       this.changeFocus_(e.currentTarget!, 1);
     } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
@@ -210,11 +219,11 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
     }
   }
 
-  private onBackgroundPointerDown_(e: Event) {
+  protected onBackgroundPointerDown_(e: Event) {
     (e.currentTarget as HTMLElement).classList.remove(KEYBOARD_FOCUSED_CLASS);
   }
 
-  private onNextClicked_() {
+  protected onNextClicked_() {
     this.finalized_ = true;
 
     if (this.selectedBackground_ && this.selectedBackground_.id > -1) {
@@ -226,7 +235,7 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
     navigateToNextStep();
   }
 
-  private onSkipClicked_() {
+  protected onSkipClicked_() {
     this.finalized_ = true;
     this.metricsManager_.recordNoThanks();
     navigateToNextStep();

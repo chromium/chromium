@@ -86,6 +86,10 @@ class LocationIconView : public IconLabelBubbleView {
   void AddedToWidget() override;
   void OnThemeChanged() override;
 
+  // Returns true if the icon's security state has changed since the last call
+  // to Update().
+  bool HasSecurityStateChanged() const;
+
   // Returns what the minimum width for the label text.
   int GetMinimumLabelTextWidth() const;
 
@@ -119,6 +123,8 @@ class LocationIconView : public IconLabelBubbleView {
   void UpdateBorder() override;
 
  private:
+  friend class ToolbarViewTest;
+
   // Returns what the minimum size would be if the preferred size were |size|.
   gfx::Size GetMinimumSizeForPreferredSize(gfx::Size size) const;
 
@@ -142,10 +148,19 @@ class LocationIconView : public IconLabelBubbleView {
   // Handles the arrival of an asynchronously fetched icon.
   void OnIconFetched(const gfx::Image& image);
 
+  // Returns the current security level from the LocationBarModel.
+  security_state::SecurityLevel GetSecurityLevel() const;
+
+  // Sets the security level to use for testing.
+  void SetSecurityLevelForTesting(security_state::SecurityLevel security_level);
+
   // The security level when the location icon was last updated. Used to decide
   // whether to animate security level transitions.
   security_state::SecurityLevel last_update_security_level_ =
       security_state::NONE;
+
+  // The security level to use during testing (if set).
+  std::optional<security_state::SecurityLevel> security_level_for_testing_;
 
   // Whether the delegate's editing or empty flag was set the last time the
   // location icon was updated.

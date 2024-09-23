@@ -14,7 +14,8 @@ export const AVATAR_PLACEHOLDER_URL: string =
  * Returns the avatar url. If necessary, prefixes the url with the sanitizing
  * string.
  */
-export function getAvatarUrl(url: string): string {
+export function getAvatarUrl(
+    url: string, staticEncode: boolean = false): string {
   if (!url) {
     return '';
   }
@@ -22,5 +23,8 @@ export function getAvatarUrl(url: string): string {
       url === AVATAR_PLACEHOLDER_URL) {
     return url;
   }
-  return `chrome://image/?${url}`;
+  if (!staticEncode) {
+    return `chrome://image/?${url}`;
+  }
+  return `chrome://image/?url=${encodeURIComponent(url)}&staticEncode=true`;
 }

@@ -9,15 +9,14 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
 #endif
 
 using StartupMetricsTest = PlatformBrowserTest;
@@ -52,8 +51,10 @@ void AddProcessCreateMetrics(std::vector<const char*>& v) {
 }  // namespace
 
 // Verify that startup histograms are logged on browser startup.
-// TODO(crbug.com/1459364): Re-enable this test
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)
+// TODO(crbug.com/40919406): Re-enable this test
+// TODO(b/321634178): Disable the test on Lacros due to flakiness.
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ReportsValues DISABLED_ReportsValues
 #else
 #define MAYBE_ReportsValues ReportsValues

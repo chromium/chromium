@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/events/mobile_scroller.h"
 
 #include <cmath>
@@ -406,8 +411,9 @@ bool MobileScroller::ComputeScrollOffsetInternal(base::TimeTicks time) {
   const float u = time_passed.InSecondsF() * duration_seconds_reciprocal_;
   switch (mode_) {
     case UNDEFINED:
-      NOTREACHED() << "|StartScroll()| or |Fling()| must be called prior to "
-                      "scroll offset computation.";
+      NOTREACHED_IN_MIGRATION()
+          << "|StartScroll()| or |Fling()| must be called prior to "
+             "scroll offset computation.";
       return false;
 
     case SCROLL_MODE: {

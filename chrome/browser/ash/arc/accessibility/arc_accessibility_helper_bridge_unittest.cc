@@ -11,7 +11,6 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
@@ -145,7 +144,7 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
 
    private:
     std::map<std::string, ArcNotificationSurface*> surfaces_;
-    base::ObserverList<Observer>::Unchecked observers_;
+    base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_;
   };
 
   ArcAccessibilityHelperBridgeTest() = default;
@@ -308,10 +307,12 @@ TEST_F(ArcAccessibilityHelperBridgeTest, NotificationEventArriveFirst) {
   event1->notification_key = std::make_optional<std::string>(kNotificationKey);
   event1->node_data.push_back(
       ax::android::mojom::AccessibilityNodeInfoData::New());
+  event1->node_data[0]->id = 1;
   event1->window_data =
       std::vector<ax::android::mojom::AccessibilityWindowInfoDataPtr>();
   event1->window_data->push_back(
       ax::android::mojom::AccessibilityWindowInfoData::New());
+  event1->window_data->at(0)->window_id = 2;
   helper_bridge->OnAccessibilityEvent(event1.Clone());
 
   EXPECT_EQ(1U, key_to_tree_.size());
@@ -346,10 +347,12 @@ TEST_F(ArcAccessibilityHelperBridgeTest, NotificationEventArriveFirst) {
   event3->notification_key = std::make_optional<std::string>(kNotificationKey);
   event3->node_data.push_back(
       ax::android::mojom::AccessibilityNodeInfoData::New());
+  event3->node_data[0]->id = 3;
   event3->window_data =
       std::vector<ax::android::mojom::AccessibilityWindowInfoDataPtr>();
   event3->window_data->push_back(
       ax::android::mojom::AccessibilityWindowInfoData::New());
+  event3->window_data->at(0)->window_id = 4;
   helper_bridge->OnAccessibilityEvent(event3.Clone());
 
   EXPECT_EQ(1U, key_to_tree_.size());
@@ -415,10 +418,12 @@ TEST_F(ArcAccessibilityHelperBridgeTest, NotificationSurfaceArriveFirst) {
   event1->notification_key = std::make_optional<std::string>(kNotificationKey);
   event1->node_data.push_back(
       ax::android::mojom::AccessibilityNodeInfoData::New());
+  event1->node_data[0]->id = 1;
   event1->window_data =
       std::vector<ax::android::mojom::AccessibilityWindowInfoDataPtr>();
   event1->window_data->push_back(
       ax::android::mojom::AccessibilityWindowInfoData::New());
+  event1->window_data->at(0)->window_id = 2;
   helper_bridge->OnAccessibilityEvent(event1.Clone());
 
   EXPECT_EQ(1U, key_to_tree_.size());
@@ -447,7 +452,8 @@ TEST_F(ArcAccessibilityHelperBridgeTest,
       CreateArcNotificationView(item.get(), *notification.get());
 
   // Prepare widget to hold it.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->widget_delegate()->SetCanActivate(false);
   widget->Deactivate();
   widget->SetContentsView(std::move(notification_view));
@@ -468,10 +474,13 @@ TEST_F(ArcAccessibilityHelperBridgeTest,
   event->notification_key = std::make_optional<std::string>(kNotificationKey);
   event->node_data.push_back(
       ax::android::mojom::AccessibilityNodeInfoData::New());
+  event->node_data[0]->id = 1;
   event->window_data =
       std::vector<ax::android::mojom::AccessibilityWindowInfoDataPtr>();
   event->window_data->push_back(
       ax::android::mojom::AccessibilityWindowInfoData::New());
+  event->window_data->at(0)->window_id = 2;
+  event->source_id = 1;
   accessibility_helper_bridge()->OnAccessibilityEvent(event.Clone());
 
   // Widget is activated.
@@ -508,7 +517,8 @@ TEST_F(ArcAccessibilityHelperBridgeTest, TextSelectionChangedFocusContentView) {
       std::make_unique<views::View>();
 
   // Prepare a widget to hold them.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   ArcNotificationView* notification_view =
       widget->GetRootView()->AddChildView(std::move(owning_notification_view));
   views::View* focus_stealer =
@@ -534,10 +544,13 @@ TEST_F(ArcAccessibilityHelperBridgeTest, TextSelectionChangedFocusContentView) {
   event->notification_key = std::make_optional<std::string>(kNotificationKey);
   event->node_data.push_back(
       ax::android::mojom::AccessibilityNodeInfoData::New());
+  event->node_data[0]->id = 1;
   event->window_data =
       std::vector<ax::android::mojom::AccessibilityWindowInfoDataPtr>();
   event->window_data->push_back(
       ax::android::mojom::AccessibilityWindowInfoData::New());
+  event->window_data->at(0)->window_id = 2;
+  event->source_id = 1;
   accessibility_helper_bridge()->OnAccessibilityEvent(event.Clone());
 
   // Focus moves to contents view with text selection change.

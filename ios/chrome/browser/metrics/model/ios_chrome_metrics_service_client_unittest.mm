@@ -19,10 +19,10 @@
 #import "components/metrics/unsent_log_store.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/ukm/ukm_service.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
+#import "components/variations/synthetic_trial_registry.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -33,13 +33,8 @@ class UkmService;
 class IOSChromeMetricsServiceClientTest : public PlatformTest {
  public:
   IOSChromeMetricsServiceClientTest()
-      : scoped_browser_state_manager_(
-            std::make_unique<TestChromeBrowserStateManager>(
-                TestChromeBrowserState::Builder().Build())),
-        enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {
-    browser_state_ = GetApplicationContext()
-                         ->GetChromeBrowserStateManager()
-                         ->GetLastUsedBrowserState();
+      : enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {
+    profile_manager_.AddProfileWithBuilder(TestChromeBrowserState::Builder());
   }
 
   IOSChromeMetricsServiceClientTest(const IOSChromeMetricsServiceClientTest&) =
@@ -53,15 +48,18 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         &prefs_, &enabled_state_provider_, std::wstring(), base::FilePath());
     metrics_state_manager_->InstantiateFieldTrialList();
+    synthetic_trial_registry_ =
+        std::make_unique<variations::SyntheticTrialRegistry>();
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
   metrics::TestEnabledStateProvider enabled_state_provider_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
 };
 
 namespace {
@@ -96,7 +94,8 @@ TEST_F(IOSChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   expected_providers += 21;
 
   std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
-      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get());
+      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
+                                            synthetic_trial_registry_.get());
   EXPECT_EQ(expected_providers,
             chrome_metrics_service_client->GetMetricsService()
                 ->delegating_provider_.GetProviders()
@@ -109,7 +108,8 @@ TEST_F(IOSChromeMetricsServiceClientTest,
   local_feature.InitAndEnableFeature(ukm::kUkmFeature);
 
   std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
-      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get());
+      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
+                                            synthetic_trial_registry_.get());
 
   ukm::UkmService* ukmService =
       chrome_metrics_service_client->GetUkmService();
@@ -136,7 +136,8 @@ TEST_F(IOSChromeMetricsServiceClientTest,
   metrics::ForceEnableMetricsReportingForTesting();
 
   std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
-      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get());
+      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
+                                            synthetic_trial_registry_.get());
   // Verify that the UKM service is instantiated when enabled.
   EXPECT_TRUE(chrome_metrics_service_client->GetUkmService());
 }
@@ -147,14 +148,16 @@ TEST_F(IOSChromeMetricsServiceClientTest, TestUkmProvidersWhenDisabled) {
   local_feature.InitAndDisableFeature(ukm::kUkmFeature);
 
   std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
-      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get());
+      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
+                                            synthetic_trial_registry_.get());
   // Verify that the UKM service is not instantiated when disabled.
   EXPECT_FALSE(chrome_metrics_service_client->GetUkmService());
 }
 
 TEST_F(IOSChromeMetricsServiceClientTest, GetUploadSigningKey_NotEmpty) {
   std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
-      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get());
+      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
+                                            synthetic_trial_registry_.get());
   [[maybe_unused]] const std::string signing_key =
       chrome_metrics_service_client->GetUploadSigningKey();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -169,7 +172,8 @@ TEST_F(IOSChromeMetricsServiceClientTest, GetUploadSigningKey_NotEmpty) {
 
 TEST_F(IOSChromeMetricsServiceClientTest, GetUploadSigningKey_CanSignLogs) {
   std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
-      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get());
+      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
+                                            synthetic_trial_registry_.get());
   const std::string signing_key =
       chrome_metrics_service_client->GetUploadSigningKey();
 

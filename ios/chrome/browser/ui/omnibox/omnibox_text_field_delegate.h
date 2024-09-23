@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class OmniboxTextFieldIOS;
+
 @protocol OmniboxTextFieldDelegate<UITextFieldDelegate>
 
 @optional
@@ -25,6 +27,14 @@
 
 // Called when the UIPasteControl in the omnibox's keyboard accessory is tapped.
 - (void)pasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders;
+
+/// Called when the user accepts autocomplete text in `textField`.
+- (void)textFieldDidAcceptAutocomplete:(OmniboxTextFieldIOS*)textField;
+
+/// Called when the additional text has been removed due to a user action in
+/// `textField`.
+- (void)textFieldDidRemoveAdditionalText:(OmniboxTextFieldIOS*)textField;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_TEXT_FIELD_DELEGATE_H_

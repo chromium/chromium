@@ -1,15 +1,26 @@
 <style include="cr-shared-style os-settings-icons settings-shared iron-flex">
   #networkListDiv {
-    min-height: var(--cr-section-min-height);
+    min-height: var(--cr-section-two-line-min-height);
   }
 
-  :host(:not([is-showing-vpn_])) #networkListDiv {
+  :host(:not([is-showing-vpn_], [is-showing-tether_])) #networkListDiv {
     margin-top: var(--cr-section-vertical-margin);
   }
 
   #cellularNetworkList {
     /* No extra margin-top when displaying the cellular network list. */
     margin-top: calc(-1*var(--cr-section-vertical-margin));
+  }
+
+  #instant-tether-notifications-toggle {
+    border-bottom: var(--cr-separator-line);
+    min-height: var(--cr-section-min-height);
+  }
+
+  #your-device-hotspots-header {
+    color: var(--cros-text-color-primary);
+    font: var(--cros-button-1-font);
+    margin-bottom: 5px;
   }
 
   /* Set padding on children instead of the container itself to ensure that
@@ -25,14 +36,6 @@
     margin-inline-end: 20px;
   }
 
-  #onOff {
-    font-weight: 500;
-  }
-
-  #onOff[on] {
-    color: var(--cros-text-color-prominent);
-  }
-
   .vpn-header {
     margin-bottom: 8px;
     margin-inline-end: 12px;
@@ -41,7 +44,7 @@
   }
 
   .no-networks {
-    margin: 4px;
+    min-height: var(--cr-section-two-line-min-height);
   }
 
   network-list {
@@ -78,9 +81,18 @@
     padding-inline-start: 0;
   }
 </style>
+
+<template is="dom-if" if="[[shouldShowBluetoothDisabledTetherErrorMessage_(deviceState)]]">
+  <div id="networkListDiv" class="layout horizontal center">
+    <localized-link
+      localized-string="[[getBluetoothDisabledErrorMessageForTether_()]]">
+    </localized-link>
+  </div>
+</template>
+
 <template is="dom-if" if="[[enableToggleIsVisible_(deviceState)]]">
   <div class="settings-box first">
-    <div id="onOff" class="start" on$="[[deviceIsEnabled_(deviceState)]]"
+    <div class="primary-toggle start" on$="[[deviceIsEnabled_(deviceState)]]"
         aria-hidden="true">
       [[getOffOnString_(deviceState,
         '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]
@@ -114,18 +126,29 @@
   </cr-link-row>
 </template>
 
+
+<template is="dom-if" if="[[shouldShowTetherNotificationControl_(deviceState)]]">
+  <settings-toggle-button
+     id="instant-tether-notifications-toggle"
+     label="$i18n{internetTetherNotificationControlTitle}"
+     sub-label="$i18n{internetTetherNotificationControlDescription}"
+     pref="{{prefs.tether.notifications_enabled}}">
+  </settings-toggle-button>
+</template>
+
 <template is="dom-if" if="[[deviceIsEnabled_(deviceState)]]">
   <div id="networkListDiv" class="layout vertical flex">
     <!-- VPN only header for built-in VPNs. -->
     <template is="dom-if" if="[[isShowingVpn_]]">
       <div class="vpn-header layout horizontal center">
         <div class="flex settings-box-text">$i18n{networkVpnBuiltin}</div>
-        <template is="dom-if" if="[[!vpnIsEnabled_]]">
+        <template is="dom-if" if="[[isBuiltInVpnManagementBlocked]]">
           <cr-policy-indicator indicator-type="devicePolicy">
           </cr-policy-indicator>
         </template>
         <cr-icon-button class="icon-add-circle"
-            disabled="[[!vpnIsEnabled_]]"
+            id="addBuiltInVpnButton"
+            disabled="[[isBuiltInVpnManagementBlocked]]"
             aria-label="$i18n{internetAddVPN}"
             on-click="onAddVpnButtonClick_"
             tabindex$="[[tabindex]]">
@@ -136,7 +159,12 @@
     <!-- List of networks (empty if no networks exist). -->
     <template is="dom-if"
         if="[[shouldShowNetworkList_(networkStateList_, deviceState)]]">
+      <template is="dom-if" if="[[shouldShowTetherDeviceListHeader_(deviceState)]]">
+          <div id="your-device-hotspots-title">$i18n{internetYourDeviceHotspots}</div>
+      </template>
       <network-list id="networkList" show-buttons
+          class="layout horizontal center"
+          is-built-in-vpn-management-blocked="[[isBuiltInVpnManagementBlocked]]"
           show-technology-badge="[[showTechnologyBadge_]]"
           networks="[[networkStateList_]]"
           global-policy="[[globalPolicy]]"
@@ -184,12 +212,13 @@
     </template>
 
     <!-- Text shown if no networks exist. -->
-    <localized-link
-        class="no-networks"
-        hidden="[[hideNoNetworksMessage_(networkStateList_, deviceState)]]"
-        localized-string=
-            "[[getNoNetworksInnerHtml_(deviceState, tetherDeviceState)]]">
-    </localized-link>
+    <template is="dom-if" if="[[!hideNoNetworksMessage_(networkStateList_, deviceState)]]">
+      <div class="layout horizontal center no-networks">
+        <localized-link
+          localized-string="[[getNoNetworksInnerHtml_(deviceState, tetherDeviceState)]]">
+        </localized-link>
+      </div>
+    </template>
 
     <template is="dom-if" if="[[isShowingVpn_]]">
       <!-- Third party VPNs. -->
@@ -198,7 +227,7 @@
         <div id="[[item.providerName]]"
             class="vpn-header layout horizontal center">
           <div class="flex settings-box-text">[[item.providerName]]</div>
-          <cr-icon-button class="icon-add-circle"
+          <cr-icon-button class="icon-external"
               aria-label$="[[getAddThirdPartyVpnA11yString_(item)]]"
               on-click="onAddThirdPartyVpnClick_" tabindex$="[[tabindex]]">
           </cr-icon-button>
@@ -208,10 +237,6 @@
             networks="[[getThirdPartyVpnNetworks_(thirdPartyVpns_, item)]]"
             on-selected="onNetworkSelected_">
         </network-list>
-        <div hidden$="[[haveThirdPartyVpnNetwork_(thirdPartyVpns_, item)]]"
-            class="no-networks settings-box-text">
-          $i18n{internetNoNetworks}
-        </div>
       </template>
     </template>
   </div>
@@ -231,4 +256,3 @@
     </div>
   </template>
 </template>
-

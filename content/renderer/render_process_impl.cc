@@ -8,6 +8,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include <mlang.h>
 #include <objidl.h>
 #endif
@@ -21,7 +22,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -44,16 +44,8 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "v8/include/v8-initialization.h"
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
-    (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
-#define ENABLE_WEB_ASSEMBLY_TRAP_HANDLER_LINUX
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
-#endif
-#ifdef ENABLE_WEB_ASSEMBLY_TRAP_HANDLER_LINUX
-#include "v8/include/v8-wasm-trap-handler-posix.h"
 #endif
 
 namespace {
@@ -105,10 +97,11 @@ GetThreadPoolInitParams() {
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 void V8DcheckCallbackHandler(const char* file, int line, const char* message) {
-  // TODO(siggi): Set a crash key or a breadcrumb so the fact that we hit a
-  //     V8 DCHECK gets out in the crash report.
-  ::logging::LogMessage(file, line, logging::LOGGING_DCHECK).stream()
-      << message;
+  // Only file/line are used from base::Location::Current() inside DCHECKs right
+  // now so this should correctly pretend to be the original v8 point of
+  // failure.
+  ::logging::CheckError::DCheck(message,
+                                base::Location::Current("", file, line));
 }
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
@@ -158,10 +151,6 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfFeature(features::kJavaScriptExperimentalSharedMemory,
                      "--shared-string-table --harmony-struct");
 
-  SetV8FlagIfOverridden(features::kJavaScriptArrayGrouping,
-                        "--harmony-array-grouping",
-                        "--no-harmony-array-grouping");
-
   SetV8FlagIfOverridden(features::kV8VmFuture, "--future", "--no-future");
 
   SetV8FlagIfOverridden(features::kWebAssemblyBaseline, "--liftoff",
@@ -177,15 +166,19 @@ RenderProcessImpl::RenderProcessImpl()
                         "--wasm-lazy-compilation",
                         "--no-wasm-lazy-compilation");
 
+  SetV8FlagIfOverridden(features::kWebAssemblyMemory64,
+                        "--experimental-wasm-memory64",
+                        "--no-experimental-wasm-memory64");
+
   SetV8FlagIfOverridden(features::kWebAssemblyTiering, "--wasm-tier-up",
                         "--no-wasm-tier-up");
 
   SetV8FlagIfOverridden(features::kWebAssemblyDynamicTiering,
                         "--wasm-dynamic-tiering", "--no-wasm-dynamic-tiering");
 
-  constexpr char kImportAssertionsFlag[] = "--harmony-import-assertions";
-  v8::V8::SetFlagsFromString(kImportAssertionsFlag,
-                             sizeof(kImportAssertionsFlag));
+  SetV8FlagIfOverridden(blink::features::kWebAssemblyJSStringBuiltins,
+                        "--experimental-wasm-imported-strings",
+                        "--no-experimental-wasm-imported-strings");
 
   bool enable_shared_array_buffer_unconditionally =
       base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
@@ -216,29 +209,9 @@ RenderProcessImpl::RenderProcessImpl()
     v8::V8::SetFlagsFromString(kSABPerContextFlag, sizeof(kSABPerContextFlag));
   }
 
-#ifdef ENABLE_WEB_ASSEMBLY_TRAP_HANDLER_LINUX
   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
-    // The trap handler is set as the first chance handler for Crashpad's signal
-    // handler.
-    v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/false);
+    content::GetContentClient()->renderer()->SetUpWebAssemblyTrapHandler();
   }
-#endif
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)
-  if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
-    // On Windows we use the default trap handler provided by V8.
-    bool use_v8_trap_handler = true;
-    v8::V8::EnableWebAssemblyTrapHandler(use_v8_trap_handler);
-  }
-#endif
-#if BUILDFLAG(IS_MAC) && (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
-  if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
-    // On macOS, Crashpad uses exception ports to handle signals in a different
-    // process. As we cannot just pass a callback to this other process, we ask
-    // V8 to install its own signal handler to deal with WebAssembly traps.
-    bool use_v8_signal_handler = true;
-    v8::V8::EnableWebAssemblyTrapHandler(use_v8_signal_handler);
-  }
-#endif  // BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
 }
 
 RenderProcessImpl::~RenderProcessImpl() {
@@ -256,11 +229,11 @@ std::unique_ptr<RenderProcess> RenderProcessImpl::Create() {
 }
 
 void RenderProcessImpl::AddRefProcess() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RenderProcessImpl::ReleaseProcess() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace content

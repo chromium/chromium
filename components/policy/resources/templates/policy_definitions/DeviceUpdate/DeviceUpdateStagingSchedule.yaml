@@ -32,3 +32,4 @@ supported_on:
 tags:
 - system-security
 type: dict
+generate_device_proto: False

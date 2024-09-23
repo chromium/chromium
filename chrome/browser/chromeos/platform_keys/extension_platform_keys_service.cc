@@ -134,7 +134,7 @@ KeystoreSigningScheme GetKeystoreSigningScheme(
       }
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return KeystoreSigningScheme::kUnknown;
 }
 
@@ -535,7 +535,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   // Starts the actual signing operation and afterwards passes the signature (or
   // error) to |callback_|.
   void Sign() {
-    // TODO(crbug.com/657632): This can be simplified when mojo supports
+    // TODO(crbug.com/40489779): This can be simplified when mojo supports
     // optional enums.
     bool is_keystore_provided = false;
     KeystoreType keystore = KeystoreType::kUser;
@@ -910,7 +910,7 @@ void ExtensionPlatformKeysService::GenerateRSAKey(
     GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (UNLIKELY(!keystore_service_)) {
+  if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*public_key_spki_der=*/std::vector<uint8_t>(),
                             crosapi::mojom::KeystoreError::kMojoUnavailable);
     return;
@@ -920,7 +920,7 @@ void ExtensionPlatformKeysService::GenerateRSAKey(
   if (sw_backed) {
     // Software-backed RSA keys are only supported starting with KeyStore
     // interface version 16.
-    // TODO(https://crbug.com/1252410): Remove this code with M-100.
+    // TODO(crbug.com/40793151): Remove this code with M-100.
     const int kSoftwareBackedRsaMinVersion = 16;
     if (!chromeos::LacrosService::Get() ||
         (chromeos::LacrosService::Get()
@@ -946,7 +946,7 @@ void ExtensionPlatformKeysService::GenerateECKey(
     GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (UNLIKELY(!keystore_service_)) {
+  if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*public_key_spki_der=*/std::vector<uint8_t>(),
                             crosapi::mojom::KeystoreError::kMojoUnavailable);
     return;
@@ -958,7 +958,7 @@ void ExtensionPlatformKeysService::GenerateECKey(
 }
 
 bool ExtensionPlatformKeysService::IsUsingSigninProfile() {
-// TODO(crbug.com/1146430) Revisit this place when Lacros-Chrome starts being
+// TODO(crbug.com/40156265) Revisit this place when Lacros-Chrome starts being
 // used on the login screen.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::ProfileHelper::IsSigninProfile(
@@ -978,7 +978,7 @@ void ExtensionPlatformKeysService::SignDigest(
     SignCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (UNLIKELY(!keystore_service_)) {
+  if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*signature=*/std::vector<uint8_t>(),
                             crosapi::mojom::KeystoreError::kMojoUnavailable);
     return;
@@ -997,7 +997,7 @@ void ExtensionPlatformKeysService::SignRSAPKCS1Raw(
     SignCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (UNLIKELY(!keystore_service_)) {
+  if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*signature=*/std::vector<uint8_t>(),
                             crosapi::mojom::KeystoreError::kMojoUnavailable);
     return;
@@ -1019,7 +1019,7 @@ void ExtensionPlatformKeysService::SelectClientCertificates(
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (UNLIKELY(!keystore_service_)) {
+  if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*matches=*/nullptr,
                             crosapi::mojom::KeystoreError::kMojoUnavailable);
     return;

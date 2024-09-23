@@ -31,8 +31,8 @@
 #include "components/cross_device/logging/logging.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/prefs/pref_service.h"
-#include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "third_party/nearby/sharing/proto/certificate_rpc.pb.h"
 #include "third_party/nearby/sharing/proto/encrypted_metadata.pb.h"
@@ -80,11 +80,7 @@ size_t NumPrivateCertificates() {
 }
 
 size_t NumExpectedPrivateCertificates() {
-  if (features::IsSelfShareEnabled()) {
-    return kVisibilities.size() * NumPrivateCertificates();
-  }
-
-  return (kVisibilities.size() - 1) * NumPrivateCertificates();
+  return kVisibilities.size() * NumPrivateCertificates();
 }
 
 std::optional<std::string> GetBluetoothMacAddress(
@@ -150,6 +146,9 @@ std::optional<nearby::sharing::proto::EncryptedMetadata> BuildMetadata(
       "BluetoothMacAddressPresentForPrivateCertificateCreation",
       bluetooth_mac_address.has_value());
   if (!bluetooth_mac_address) {
+    CD_LOG(WARNING, Feature::NS)
+        << __func__ << ": Failed to create private certificate metadata; "
+        << "missing adapter address.";
     return std::nullopt;
   }
 
@@ -230,6 +229,23 @@ void TryDecryptPublicCertificates(
   std::move(callback).Run(std::nullopt);
 }
 
+// See documentation in declaration of `AttemptPrivateCertificateRefresh()`. The
+// `bluetooth_adapter` is considered ready if it can provide its address. On
+// BlueZ, it's when the `bluetooth_adapter` is non-null. On Floss, it's when
+// the `bluetooth_adapter` is non-null and powered on.
+bool IsAdapterReadyToRefreshPrivateCertificates(
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+  if (!bluetooth_adapter) {
+    return false;
+  }
+
+  if (floss::features::IsFlossEnabled()) {
+    return bluetooth_adapter->IsPowered();
+  }
+
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -300,8 +316,9 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
                   kNearbySharingSchedulerPrivateCertificateExpirationPrefName,
               pref_service_,
               base::BindRepeating(&NearbyShareCertificateManagerImpl::
-                                      OnPrivateCertificateExpiration,
+                                      AttemptPrivateCertificateRefresh,
                                   base::Unretained(this)),
+              Feature::NS,
               clock_)),
       public_certificate_expiration_scheduler_(
           ash::nearby::NearbySchedulerFactory::CreateExpirationScheduler(
@@ -315,6 +332,7 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
               base::BindRepeating(&NearbyShareCertificateManagerImpl::
                                       OnPublicCertificateExpiration,
                                   base::Unretained(this)),
+              Feature::NS,
               clock_)),
       upload_local_device_certificates_scheduler_(
           ash::nearby::NearbySchedulerFactory::CreateOnDemandScheduler(
@@ -326,6 +344,7 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
               base::BindRepeating(&NearbyShareCertificateManagerImpl::
                                       OnLocalDeviceCertificateUploadRequest,
                                   base::Unretained(this)),
+              Feature::NS,
               clock_)),
       download_public_certificates_scheduler_(
           ash::nearby::NearbySchedulerFactory::CreatePeriodicScheduler(
@@ -340,9 +359,14 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
                                   /*page_token=*/std::nullopt,
                                   /*page_number=*/1,
                                   /*certificate_count=*/0),
+              Feature::NS,
               clock_)) {
   local_device_data_manager_->AddObserver(this);
   contact_manager_->AddObserver(this);
+
+  device::BluetoothAdapterFactory::Get()->GetAdapter(
+      base::BindOnce(&NearbyShareCertificateManagerImpl::OnGetAdapter,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 NearbyShareCertificateManagerImpl::~NearbyShareCertificateManagerImpl() {
@@ -444,6 +468,50 @@ void NearbyShareCertificateManagerImpl::OnLocalDeviceDataChanged(
   private_certificate_expiration_scheduler_->MakeImmediateRequest();
 }
 
+void NearbyShareCertificateManagerImpl::AdapterPoweredChanged(
+    device::BluetoothAdapter* adapter,
+    bool powered) {
+  // `NearbyShareCertificateManagerImpl` should only be added as an observer
+  // of `AdapterPoweredChanged()` if Floss is enabled.
+  CHECK(floss::features::IsFlossEnabled());
+
+  if (!powered) {
+    return;
+  }
+
+  if (is_pending_call_to_refresh_private_certificates_) {
+    CD_LOG(VERBOSE, Feature::NS) << __func__
+                                 << ": Attempting to execute pending call to "
+                                    "refresh private certificates";
+    AttemptPrivateCertificateRefresh();
+  }
+}
+
+void NearbyShareCertificateManagerImpl::OnGetAdapter(
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+  CHECK(bluetooth_adapter);
+  adapter_ = bluetooth_adapter;
+
+  // Private certificate refresh depends on the `BluetoothAdapter`'s address,
+  // and on Floss, the address is unavailable if the `adapter_` is powered off.
+  // When on Floss, add observer for `AdapterPoweredChanged()` events, for
+  // when a refresh of private certificates is requested, and the `adapter_`
+  // is powered off. `NearbyShareCertificateManagerImpl` will cache the
+  // pending refresh request, and wait for the `adapter_` to be powered on again
+  // to execute the pending request. See documentation in declaration of
+  // `AttemptPrivateCertificateRefresh()`.
+  if (floss::features::IsFlossEnabled()) {
+    adapter_observation_.Observe(adapter_.get());
+  }
+
+  if (is_pending_call_to_refresh_private_certificates_) {
+    CD_LOG(VERBOSE, Feature::NS) << __func__
+                                 << ": Attempting to execute pending call to "
+                                    "refresh private certificates";
+    AttemptPrivateCertificateRefresh();
+  }
+}
+
 std::optional<base::Time>
 NearbyShareCertificateManagerImpl::NextPrivateCertificateExpirationTime() {
   // We enforce that a fixed number--kNearbyShareNumPrivateCertificates for each
@@ -464,18 +532,30 @@ NearbyShareCertificateManagerImpl::NextPrivateCertificateExpirationTime() {
   return *expiration_time;
 }
 
-void NearbyShareCertificateManagerImpl::OnPrivateCertificateExpiration() {
+void NearbyShareCertificateManagerImpl::AttemptPrivateCertificateRefresh() {
+  // The `adapter_` will not be ready to refresh the private certificates if
+  // it cannot provide its address. This can happen in the following scenarios:
+  //   - [BlueZ]: The `adapter_` has not been retrieved yet in the asynchronous
+  //     call to `OnGetAdapter()`. In this case, wait until the `adapter_`
+  //     is retrieved to refresh the private certificates.
+  //   - [Floss]: The `adapter_` has either not been retrieved yet (like
+  //     the scenario above on BlueZ), or is not powered on. On Floss, the
+  //     `adapter_` needs to be powered on to provide its address. In this case,
+  //     wait until the `adapter_` is retrieved and/or powered on to refresh
+  //     the private certificates.
+  if (!IsAdapterReadyToRefreshPrivateCertificates(adapter_)) {
+    CD_LOG(VERBOSE, Feature::NS)
+        << __func__
+        << ": Adapter is not ready to generate private certificates, storing "
+           "pending call to refresh certificates until Adapter is ready";
+    is_pending_call_to_refresh_private_certificates_ = true;
+    return;
+  }
+
   CD_LOG(VERBOSE, Feature::NS)
       << __func__
       << ": Private certificate expiration detected; refreshing certificates.";
-
-  device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
-      &NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh,
-      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
-    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+  is_pending_call_to_refresh_private_certificates_ = false;
   base::Time now = clock_->Now();
   certificate_storage_->RemoveExpiredPrivateCertificates(now);
 
@@ -507,7 +587,7 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
                     local_device_data_manager_->GetFullName(),
                     local_device_data_manager_->GetIconUrl(),
                     profile_info_provider_->GetProfileUserName(),
-                    bluetooth_adapter.get());
+                    adapter_.get());
   if (!metadata) {
     CD_LOG(WARNING, Feature::NS)
         << __func__
@@ -520,36 +600,19 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
   // kNearbyShareNumPrivateCertificates (unless overridden by a command-line
   // switch).
   size_t num_certificates = NumPrivateCertificates();
-  if (features::IsSelfShareEnabled()) {
-    CD_LOG(INFO, Feature::NS)
-        << __func__ << ": Creating "
-        << num_certificates -
-               num_valid_certs[nearby_share::mojom::Visibility::kAllContacts]
-        << " all-contacts visibility, "
-        << num_certificates -
-               num_valid_certs
-                   [nearby_share::mojom::Visibility::kSelectedContacts]
-        << " selected-contacts visibility, and "
-        << num_certificates -
-               num_valid_certs[nearby_share::mojom::Visibility::kYourDevices]
-        << " your-devices private certificates.";
-  } else {
-    CD_LOG(INFO, Feature::NS)
-        << __func__ << ": Creating "
-        << num_certificates -
-               num_valid_certs[nearby_share::mojom::Visibility::kAllContacts]
-        << " all-contacts visibility and "
-        << num_certificates -
-               num_valid_certs
-                   [nearby_share::mojom::Visibility::kSelectedContacts]
-        << " selected-contacts visibility private certificates.";
-  }
+  CD_LOG(INFO, Feature::NS)
+      << __func__ << ": Creating "
+      << num_certificates -
+             num_valid_certs[nearby_share::mojom::Visibility::kAllContacts]
+      << " all-contacts visibility, "
+      << num_certificates -
+             num_valid_certs[nearby_share::mojom::Visibility::kSelectedContacts]
+      << " selected-contacts visibility, and "
+      << num_certificates -
+             num_valid_certs[nearby_share::mojom::Visibility::kYourDevices]
+      << " your-devices private certificates.";
 
   for (nearby_share::mojom::Visibility visibility : kVisibilities) {
-    if (visibility == nearby_share::mojom::Visibility::kYourDevices &&
-        !features::IsSelfShareEnabled()) {
-      continue;
-    }
     while (num_valid_certs[visibility] < num_certificates) {
       certs.emplace_back(visibility,
                          /*not_before=*/latest_not_after[visibility],

@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/discardable_shared_memory.h"
+
 #include <fcntl.h>
 #include <stdint.h>
 
+#include <algorithm>
+
 #include "base/files/scoped_file.h"
-#include "base/memory/discardable_shared_memory.h"
 #include "base/memory/page_size.h"
 #include "base/memory/shared_memory_tracker.h"
 #include "base/tracing_buildflags.h"
@@ -434,7 +437,7 @@ TEST(DiscardableSharedMemoryTest, ZeroFilledPagesAfterPurge) {
   ASSERT_TRUE(rv);
 
   // Initialize all memory to '0xaa'.
-  memset(memory2.memory(), 0xaa, kDataSize);
+  std::ranges::fill(memory2.memory(), 0xaa);
 
   // Unlock memory.
   memory2.SetNow(Time::FromSecondsSinceUnixEpoch(1));
@@ -450,7 +453,7 @@ TEST(DiscardableSharedMemoryTest, ZeroFilledPagesAfterPurge) {
   // Check that reading memory after it has been purged is returning
   // zero-filled pages.
   uint8_t expected_data[kDataSize] = {};
-  EXPECT_EQ(memcmp(memory2.memory(), expected_data, kDataSize), 0);
+  EXPECT_EQ(base::span(expected_data), memory2.memory());
 }
 #endif
 

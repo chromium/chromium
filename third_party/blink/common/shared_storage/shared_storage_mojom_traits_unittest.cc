@@ -11,10 +11,13 @@
 namespace blink {
 namespace {
 
+// Divide the byte limit by two to get the character limit for a key or value.
+constexpr int kMaxChar16StringLength = 5242880 / 2;
+
 TEST(SharedStorageMojomTraitsTest, SerializeAndDeserializeKeyArgument) {
-  std::u16string success_originals[] = {std::u16string(u"c"),
-                                        std::u16string(u"hello world"),
-                                        std::u16string(1024, 'c')};
+  std::u16string success_originals[] = {
+      std::u16string(u"c"), std::u16string(u"hello world"),
+      std::u16string(kMaxChar16StringLength, 'c')};
   for (auto& original : success_originals) {
     std::u16string copied;
     EXPECT_TRUE(
@@ -23,8 +26,8 @@ TEST(SharedStorageMojomTraitsTest, SerializeAndDeserializeKeyArgument) {
     EXPECT_EQ(original, copied);
   }
 
-  std::u16string failure_originals[] = {std::u16string(),
-                                        std::u16string(1025, 'c')};
+  std::u16string failure_originals[] = {
+      std::u16string(), std::u16string(kMaxChar16StringLength + 1, 'c')};
   for (auto& original : failure_originals) {
     std::u16string copied;
     EXPECT_FALSE(
@@ -34,9 +37,9 @@ TEST(SharedStorageMojomTraitsTest, SerializeAndDeserializeKeyArgument) {
 }
 
 TEST(SharedStorageMojomTraitsTest, SerializeAndDeserializeValueArgument) {
-  std::u16string success_originals[] = {std::u16string(), std::u16string(u"c"),
-                                        std::u16string(u"hello world"),
-                                        std::u16string(1024, 'c')};
+  std::u16string success_originals[] = {
+      std::u16string(), std::u16string(u"c"), std::u16string(u"hello world"),
+      std::u16string(kMaxChar16StringLength, 'c')};
   for (auto& original : success_originals) {
     std::u16string copied;
     EXPECT_TRUE(
@@ -45,7 +48,8 @@ TEST(SharedStorageMojomTraitsTest, SerializeAndDeserializeValueArgument) {
     EXPECT_EQ(original, copied);
   }
 
-  std::u16string failure_originals[] = {std::u16string(1025, 'c')};
+  std::u16string failure_originals[] = {
+      std::u16string(kMaxChar16StringLength + 1, 'c')};
   for (auto& original : failure_originals) {
     std::u16string copied;
     EXPECT_FALSE(

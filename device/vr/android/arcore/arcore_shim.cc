@@ -177,7 +177,7 @@ bool LoadArCoreSdk(const std::string& libraryPath) {
     VLOG(2) << "Opened shim shared library.";
   }
 
-  // TODO(https://crbug.com/914999): check SDK version.
+  // TODO(crbug.com/41431724): check SDK version.
   auto* arcore_api = new ArCoreApi();
   LoadArCoreApi(sdk_handle, arcore_api);
 

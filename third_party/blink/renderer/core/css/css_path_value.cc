@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/style/style_path.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -22,7 +23,7 @@ CSSPathValue::CSSPathValue(scoped_refptr<StylePath> style_path,
   DCHECK(style_path_);
 }
 
-CSSPathValue::CSSPathValue(std::unique_ptr<SVGPathByteStream> path_byte_stream,
+CSSPathValue::CSSPathValue(SVGPathByteStream path_byte_stream,
                            WindRule wind_rule,
                            PathSerializationFormat serialization_format)
     : CSSPathValue(StylePath::Create(std::move(path_byte_stream), wind_rule),
@@ -31,12 +32,7 @@ CSSPathValue::CSSPathValue(std::unique_ptr<SVGPathByteStream> path_byte_stream,
 namespace {
 
 CSSPathValue* CreatePathValue() {
-  std::unique_ptr<SVGPathByteStream> path_byte_stream =
-      std::make_unique<SVGPathByteStream>();
-  // Need to be registered as LSan ignored, as it will be reachable and
-  // separately referred to by emptyPathValue() callers.
-  LEAK_SANITIZER_IGNORE_OBJECT(path_byte_stream.get());
-  return MakeGarbageCollected<CSSPathValue>(std::move(path_byte_stream));
+  return MakeGarbageCollected<CSSPathValue>(SVGPathByteStream());
 }
 
 }  // namespace

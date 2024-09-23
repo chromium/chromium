@@ -95,4 +95,4 @@ bool HasNonEmptyStringProperty(InfoDataType* node, PropType prop) {
 
 }  // namespace ax::android
 
-#endif
+#endif  // SERVICES_ACCESSIBILITY_ANDROID_ANDROID_ACCESSIBILITY_UTIL_H_

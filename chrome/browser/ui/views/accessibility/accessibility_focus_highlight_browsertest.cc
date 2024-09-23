@@ -24,9 +24,9 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/focus_changed_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot.h"
@@ -57,8 +57,6 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
   // InProcessBrowserTest overrides:
   void SetUp() override {
     EnablePixelOutput();
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAccessibilityFocusHighlight);
     InProcessBrowserTest::SetUp();
   }
 
@@ -94,7 +92,7 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
     // Keep trying until we get a successful capture.
     while (true) {
       base::test::TestFuture<gfx::Image> future;
-      ui::GrabViewSnapshotAsync(native_view, bounds, future.GetCallback());
+      ui::GrabViewSnapshot(native_view, bounds, future.GetCallback());
       gfx::Image result_image = future.Take();
 
       if (result_image.Size().IsEmpty()) {
@@ -124,15 +122,12 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
       return result_image;
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Smoke test that ensures that when a node gets focus, the layer with the
 // focus highlight actually gets drawn.
 //
-// Flaky on all platforms. TODO(https://crbug.com/1083806): Enable this test.
+// Flaky on all platforms. TODO(crbug.com/40692704): Enable this test.
 IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
                        DISABLED_DrawsHighlight) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -232,8 +227,8 @@ class ReadbackHolder : public base::RefCountedThreadSafe<ReadbackHolder> {
 
 const cc::ExactPixelComparator pixel_comparator;
 
-// TODO(crbug/1289366): Fix flaky test on Lacros.
-// TODO(crbug/1467250): Fix flaky test on Mac.
+// TODO(crbug.com/40817482): Fix flaky test on Lacros.
+// TODO(crbug.com/40924319): Fix flaky test on Mac.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 #define MAYBE_FocusAppearance DISABLED_FocusAppearance
 #else

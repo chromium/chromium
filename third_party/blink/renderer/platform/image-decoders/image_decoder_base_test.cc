@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_base_test.h"
 
 #include <stddef.h>
@@ -50,19 +55,24 @@ void ReadFileToVector(const base::FilePath& path, Vector<char>* contents) {
   memcpy(&contents->front(), raw_image_data.data(), raw_image_data.size());
 }
 
-#if defined(CALCULATE_MD5_SUMS)
-void SaveMD5Sum(const base::FilePath& path, blink::ImageFrame* frame_buffer) {
-  SkBitmap bitmap = frame_buffer->Bitmap();
-
-  // Calculate MD5 sum.
+base::MD5Digest ComputeMD5Sum(const blink::ImageFrame& frame_buffer) {
+  SkBitmap bitmap = frame_buffer.Bitmap();
   base::MD5Digest digest;
-  base::MD5Sum(bitmap.getPixels(),
-               bitmap.width() * bitmap.height() * sizeof(uint32_t), &digest);
+  base::MD5Sum(base::make_span(static_cast<const uint8_t*>(bitmap.getPixels()),
+                               bitmap.computeByteSize()),
+               &digest);
+  return digest;
+}
+
+#if defined(CALCULATE_MD5_SUMS)
+void SaveMD5Sum(const base::FilePath& path,
+                const blink::ImageFrame* frame_buffer) {
+  // Calculate MD5 sum.
+  ASSERT_TRUE(frame_buffer);
+  base::MD5Digest digest = ComputeMD5Sum(*frame_buffer);
 
   // Write sum to disk.
-  ASSERT_TRUE(base::WriteFile(
-      path,
-      base::as_bytes(base::make_span(&digest, 1)));
+  ASSERT_TRUE(base::WriteFile(path, base::byte_span_from_ref(digest)));
 }
 #endif
 
@@ -77,16 +87,12 @@ void VerifyImage(blink::ImageDecoder& decoder,
   EXPECT_GE(decoder.FrameCount(), frame_index);
   blink::ImageFrame* const frame_buffer =
       decoder.DecodeFrameBufferAtIndex(frame_index);
-  EXPECT_TRUE(frame_buffer);
+  ASSERT_TRUE(frame_buffer);
   EXPECT_EQ(blink::ImageFrame::kFrameComplete, frame_buffer->GetStatus());
   EXPECT_FALSE(decoder.Failed());
 
   // Calculate MD5 sum.
-  base::MD5Digest actual_digest;
-  SkBitmap bitmap = frame_buffer->Bitmap();
-  auto bytes = base::make_span(static_cast<const uint8_t*>(bitmap.getPixels()),
-                               bitmap.computeByteSize());
-  base::MD5Sum(bytes, &actual_digest);
+  base::MD5Digest actual_digest = ComputeMD5Sum(*frame_buffer);
 
   // Read the MD5 sum off disk.
   std::string file_bytes;
@@ -174,8 +180,9 @@ void ImageDecoderBaseTest::TestImageDecoder(const base::FilePath& image_path,
   }
 #endif
 
-  CHECK(base::PathExists(image_path));
-  CHECK(base::PathExists(md5_sum_path));
+  CHECK(base::PathExists(image_path)) << image_path;
+  CHECK(ShouldImageFail(image_path) || base::PathExists(md5_sum_path))
+      << md5_sum_path;
   Vector<char> image_contents;
   ReadFileToVector(image_path, &image_contents);
   EXPECT_TRUE(image_contents.size());

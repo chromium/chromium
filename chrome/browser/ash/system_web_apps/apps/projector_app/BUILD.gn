@@ -1,0 +1,56 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("projector_app") {
+  sources = [
+    "untrusted_projector_ui_config.cc",
+    "untrusted_projector_ui_config.h",
+  ]
+
+  public_deps = [
+    "//ash/webui/projector_app",
+    "//chrome/browser:browser_public_dependencies",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/webui/projector_app/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/projector",
+    "//chrome/common",
+    "//chrome/common:channel_info",
+    "//components/version_info:channel",
+    "//third_party/blink/public/common:headers",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "projector_app_integration_browsertest.cc" ]
+
+  deps = [
+    "//ash",
+    "//ash/webui/annotator",
+    "//ash/webui/annotator/public/cpp",
+    "//ash/webui/media_app_ui:browser_test_support",
+    "//ash/webui/media_app_ui:buildflags",
+    "//ash/webui/projector_app:buildflags",
+    "//ash/webui/projector_app/public/cpp",
+    "//base",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//content/test:test_support",
+  ]
+}

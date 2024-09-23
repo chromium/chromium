@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -116,7 +115,7 @@ media::OutputDeviceInfo AudioRendererSinkCache::GetSinkInfo(
                      device_id);
   {
     base::AutoLock auto_lock(cache_lock_);
-    auto* cache_iter = FindCacheEntry_Locked(source_frame_token, device_id);
+    auto cache_iter = FindCacheEntry_Locked(source_frame_token, device_id);
     if (cache_iter != cache_.end()) {
       // A matching cached sink is found.
       TRACE_EVENT_END1("audio", "AudioRendererSinkCache::GetSinkInfo", "result",
@@ -160,7 +159,7 @@ void AudioRendererSinkCache::DeleteSink(
     base::AutoLock auto_lock(cache_lock_);
 
     // Looking up the sink by its pointer.
-    auto* cache_iter = base::ranges::find(
+    auto cache_iter = base::ranges::find(
         cache_, sink_ptr, [](const CacheEntry& val) { return val.sink.get(); });
 
     if (cache_iter == cache_.end())

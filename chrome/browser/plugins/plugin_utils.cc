@@ -7,6 +7,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/public/common/webplugininfo.h"
@@ -49,7 +50,7 @@ void PluginUtils::GetPluginContentSetting(
   if (is_default)
     *is_default = uses_default_content_setting;
   if (is_managed)
-    *is_managed = info.source == content_settings::SETTING_SOURCE_POLICY;
+    *is_managed = info.source == content_settings::SettingSource::kPolicy;
 }
 
 // static

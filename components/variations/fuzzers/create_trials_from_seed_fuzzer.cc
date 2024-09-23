@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/variations/variations_seed_processor.h"
-
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -11,6 +9,8 @@
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/study.pb.h"
+#include "components/variations/variations_layers.h"
+#include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_test_utils.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
@@ -73,17 +73,14 @@ void CreateTrialsFromStudyFuzzer(const VariationsSeed& seed) {
   // provider arguments.
   auto client_state = MockChromeClientFilterableState();
 
-  // Using an empty string as the limited entropy randomization source means any
-  // layers with LIMITED entropy mode will be dropped.
-  // TODO(crbug.com/1518402): Add support for fuzzing seeds that contains a
-  // layer with LIMITED entropy mode after the limited entropy randomization
-  // logic lands.
   EntropyProviders entropy_providers(
       "client_id", {7999, 8000},
-      /*limited_entropy_randomization_source=*/std::string_view());
+      // The following is a test value for limited entropy randomization source
+      "00000000000000000000000000000001");
+  VariationsLayers layers(seed, entropy_providers);
   VariationsSeedProcessor().CreateTrialsFromSeed(
       seed, *client_state, override_callback.callback(), entropy_providers,
-      &feature_list);
+      layers, &feature_list);
 }
 
 DEFINE_PROTO_FUZZER(const VariationsSeed& seed) {

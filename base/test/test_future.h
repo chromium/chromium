@@ -6,6 +6,7 @@
 #define BASE_TEST_TEST_FUTURE_H_
 
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/auto_reset.h"
@@ -22,7 +23,6 @@
 #include "base/test/test_future_internal.h"
 #include "base/thread_annotations.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::test {
 
@@ -222,9 +222,8 @@ class TestFuture {
   //   int first = future.Get<0>();
   //   std::string second = future.Get<1>();
   //
-  template <std::size_t I,
-            typename T = TupleType,
-            internal::EnableIfOneOrMoreValues<T> = true>
+  template <std::size_t I, typename T = TupleType>
+    requires(internal::IsNonEmptyTuple<T>)
   const auto& Get() {
     return std::get<I>(GetTuple());
   }
@@ -421,7 +420,8 @@ class TestFuture {
   // Waits for the value to arrive, and returns a reference to it.
   //
   // Will CHECK if a timeout happens.
-  template <typename T = TupleType, internal::EnableIfSingleValue<T> = true>
+  template <typename T = TupleType>
+    requires(internal::IsSingleValuedTuple<T>)
   [[nodiscard]] const auto& Get() {
     return std::get<0>(GetTuple());
   }
@@ -429,7 +429,8 @@ class TestFuture {
   // Waits for the value to arrive, and returns it.
   //
   // Will CHECK if a timeout happens.
-  template <typename T = TupleType, internal::EnableIfSingleValue<T> = true>
+  template <typename T = TupleType>
+    requires(internal::IsSingleValuedTuple<T>)
   [[nodiscard]] auto Take() {
     return std::get<0>(TakeTuple());
   }
@@ -441,7 +442,8 @@ class TestFuture {
   // Waits for the values to arrive, and returns a tuple with the values.
   //
   // Will CHECK if a timeout happens.
-  template <typename T = TupleType, internal::EnableIfMultiValue<T> = true>
+  template <typename T = TupleType>
+    requires(internal::IsMultiValuedTuple<T>)
   [[nodiscard]] const TupleType& Get() {
     return GetTuple();
   }
@@ -449,7 +451,8 @@ class TestFuture {
   // Waits for the values to arrive, and moves a tuple with the values out.
   //
   // Will CHECK if a timeout happens.
-  template <typename T = TupleType, internal::EnableIfMultiValue<T> = true>
+  template <typename T = TupleType>
+    requires(internal::IsMultiValuedTuple<T>)
   [[nodiscard]] TupleType Take() {
     return TakeTuple();
   }
@@ -475,7 +478,7 @@ class TestFuture {
   base::RepeatingClosure ready_signal_ GUARDED_BY_CONTEXT(sequence_checker_) =
       base::DoNothing();
 
-  absl::optional<TupleType> values_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::optional<TupleType> values_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   WeakPtrFactory<TestFuture<Types...>> weak_ptr_factory_{this};
 };
@@ -543,6 +546,77 @@ class TestFuture<void> {
  private:
   TestFuture<bool> implementation_;
 };
+
+// A gmock action that when invoked will store the argument values and
+// unblock any waiters. The action must be invoked on the sequence the
+// TestFuture was created on.
+//
+// Usually the action will be used with `WillOnce()` and only invoked once,
+// but if you consume the value with `Take()` or `Clear()` it is safe to
+// invoke it again.
+//
+// Example usage:
+//   TestFuture<int> future;
+//
+//   EXPECT_CALL(delegate, OnReadComplete)
+//     .WillOnce(InvokeFuture(future));
+//
+//   object_under_test.Read(buffer, 16);
+//
+//   EXPECT_EQ(future.Take(), 16);
+//
+//
+//
+// Implementation note: this is not implemented using the MATCHER_P macro as the
+// C++03-compatible way it implements varargs would make this too verbose.
+// Instead, it takes advantage of the ability to pass a functor to .WillOnce()
+// and .WillRepeatedly().
+template <typename... Types>
+class InvokeFuture {
+ public:
+  // The TestFuture must be an lvalue. Passing an rvalue would make no sense as
+  // you wouldn't be able to call Take() on it afterwards.
+  explicit InvokeFuture(TestFuture<Types...>& future)
+      : callback_(future.GetRepeatingCallback()) {}
+
+  // GMock actions must be copyable.
+  InvokeFuture(const InvokeFuture&) = default;
+  InvokeFuture& operator=(const InvokeFuture&) = default;
+
+  // WillOnce() can take advantage of move constructors.
+  InvokeFuture(InvokeFuture&&) = default;
+  InvokeFuture& operator=(InvokeFuture&&) = default;
+
+  void operator()(Types... values) {
+    callback_.Run(std::forward<Types>(values)...);
+  }
+
+ private:
+  RepeatingCallback<void(Types...)> callback_;
+};
+
+// Specialization for TestFuture<void>.
+template <>
+class InvokeFuture<void> {
+ public:
+  explicit InvokeFuture(TestFuture<void>& future)
+      : closure_(future.GetRepeatingCallback()) {}
+
+  InvokeFuture(const InvokeFuture&) = default;
+  InvokeFuture& operator=(const InvokeFuture&) = default;
+  InvokeFuture(InvokeFuture&&) = default;
+  InvokeFuture& operator=(InvokeFuture&&) = default;
+
+  void operator()() { closure_.Run(); }
+
+ private:
+  RepeatingClosure closure_;
+};
+
+// Deduction guide so the compiler can choose the correct specialisation of
+// InvokeFuture.
+template <typename... Types>
+InvokeFuture(TestFuture<Types...>&) -> InvokeFuture<Types...>;
 
 }  // namespace base::test
 

@@ -130,8 +130,9 @@ bool HasAnySpecifiedSourcesAndNoOtherSources(
     WebAppManagementTypes sources,
     WebAppManagementTypes specified_sources);
 
-// Check if all types of |sources| are uninstallable by the user.
-bool CanUserUninstallWebApp(WebAppManagementTypes sources);
+// Check if all types of |sources| for |app_id| are uninstallable by the user.
+bool CanUserUninstallWebApp(const webapps::AppId& app_id,
+                            WebAppManagementTypes sources);
 
 // Extracts app_id from chrome://app-settings/<app-id> URL path.
 webapps::AppId GetAppIdFromAppSettingsUrl(const GURL& url);
@@ -155,7 +156,7 @@ void SetSkipMainProfileCheckForTesting(bool skip_check);
 bool IsMainProfileCheckSkippedForTesting();
 
 // The storage partitions' domain name for the experimental web app isolation.
-// TODO(crbug.com/1425284): use a better domain name, or maybe use a unique
+// TODO(crbug.com/40260833): use a better domain name, or maybe use a unique
 // domain for each app.
 constexpr char kExperimentalWebAppStorageParitionDomain[] = "goldfish";
 #endif
@@ -166,13 +167,15 @@ constexpr char kAppSettingsPageEntryPointsHistogramName[] =
 // These are used in histograms, do not remove/renumber entries. If you're
 // adding to this enum with the intention that it will be logged, update the
 // AppSettingsPageEntryPoint enum listing in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/webapps/enums.xml.
 enum class AppSettingsPageEntryPoint {
   kPageInfoView = 0,
   kChromeAppsPage = 1,
   kBrowserCommand = 2,
   kSubAppsInstallPrompt = 3,
-  kMaxValue = kSubAppsInstallPrompt,
+  kNotificationSettingsButton = 4,
+  kSiteDataDialog = 5,
+  kMaxValue = kSiteDataDialog,
 };
 
 // When user_display_mode indicates a user preference for opening in
@@ -184,18 +187,11 @@ enum class AppSettingsPageEntryPoint {
 //
 // |is_isolated| overrides browser display mode for Isolated Web Apps because
 // they can't be open as a tab.
-//
-// `is_shortcut_app` overrides the user display mode if `kCrosShortstand`
-// is enabled and `ignore_shortstand` is false.
-// TODO(b/319753599): Migrate chrome os shortcut out of web app system. Should
-// be able to remove all the shortcut related code after migration completion.
 DisplayMode ResolveEffectiveDisplayMode(
     DisplayMode app_display_mode,
     const std::vector<DisplayMode>& app_display_mode_overrides,
     mojom::UserDisplayMode user_display_mode,
-    bool is_isolated,
-    bool is_shortcut_app,
-    bool ignore_shortstand);
+    bool is_isolated);
 
 apps::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
     DisplayMode display_mode);
@@ -214,6 +210,11 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
     std::u16string supplementary_icon);
 
 bool IsValidScopeForLinkCapturing(const GURL& scope);
+
+// TODO(http://b/331208955): Remove after migration.
+// Returns whether |app_id| will soon refer to a system web app given |sources|.
+bool WillBeSystemWebApp(const webapps::AppId& app_id,
+                        WebAppManagementTypes sources);
 
 }  // namespace web_app
 

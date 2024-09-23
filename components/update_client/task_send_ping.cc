@@ -16,17 +16,11 @@ namespace update_client {
 
 TaskSendPing::TaskSendPing(scoped_refptr<UpdateEngine> update_engine,
                            const CrxComponent& crx_component,
-                           int event_type,
-                           int result,
-                           int error_code,
-                           int extra_code1,
+                           UpdateClient::PingParams ping_params,
                            Callback callback)
     : update_engine_(update_engine),
       crx_component_(crx_component),
-      event_type_(event_type),
-      result_(result),
-      error_code_(error_code),
-      extra_code1_(extra_code1),
+      ping_params_(ping_params),
       callback_(std::move(callback)) {}
 
 TaskSendPing::~TaskSendPing() = default;
@@ -39,8 +33,7 @@ void TaskSendPing::Run() {
     return;
   }
 
-  update_engine_->SendPing(crx_component_, event_type_, result_, error_code_,
-                           extra_code1_,
+  update_engine_->SendPing(crx_component_, ping_params_,
                            base::BindOnce(&TaskSendPing::TaskComplete, this));
 }
 

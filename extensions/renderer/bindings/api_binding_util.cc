@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/renderer/bindings/get_per_context_data.h"
@@ -125,7 +126,7 @@ void InvalidateContext(v8::Local<v8::Context> context) {
 }
 
 std::string GetPlatformString() {
-// TODO(https://crbug.com/1052397): For readability, this should become
+// TODO(crbug.com/40118868): For readability, this should become
 // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_LACROS). The second
 // conditional should be BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH).
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -140,8 +141,10 @@ std::string GetPlatformString() {
   return "win";
 #elif BUILDFLAG(IS_FUCHSIA)
   return "fuchsia";
+#elif BUILDFLAG(IS_DESKTOP_ANDROID)
+  return "desktop_android";
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 #endif
 }

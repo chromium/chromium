@@ -1,9 +1,0 @@
-block_elements: "script"
-block_elements: "span"
-drop_elements: "iframe"
-drop_attributes {
-  key: "onclick"
-  value {
-    element: "*"
-  }
-}

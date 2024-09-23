@@ -55,7 +55,7 @@ void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainDouble* d) {
       builder.AddToken(d->GetAsDouble());
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainLong* l) {
@@ -70,7 +70,7 @@ void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainLong* l) {
       builder.AddToken(l->GetAsLong());
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Visit(IdentifiableTokenBuilder& builder,
@@ -89,7 +89,7 @@ void Visit(IdentifiableTokenBuilder& builder,
       }
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainDOMString* s) {
@@ -114,7 +114,7 @@ void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainDOMString* s) {
       }
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainBoolean* b) {
@@ -136,7 +136,7 @@ void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainBoolean* b) {
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Visit(IdentifiableTokenBuilder& builder,
@@ -155,7 +155,7 @@ void Visit(IdentifiableTokenBuilder& builder,
       builder.AddToken(x->GetAsDouble());
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Visit(IdentifiableTokenBuilder& builder,
@@ -190,7 +190,7 @@ void Visit(IdentifiableTokenBuilder& builder, const V8ConstrainPoint2D* p) {
     case V8ConstrainPoint2D::ContentType::kPoint2DSequence:
       return Visit(builder, p->GetAsPoint2DSequence());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Visit(IdentifiableTokenBuilder& builder,
@@ -226,6 +226,7 @@ void Visit(IdentifiableTokenBuilder& builder,
   Visit(builder, set.getZoomOr(nullptr));
   Visit(builder, set.getTorchOr(nullptr));
   Visit(builder, set.getBackgroundBlurOr(nullptr));
+  Visit(builder, set.getBackgroundSegmentationMaskOr(nullptr));
   Visit(builder, set.getEyeGazeCorrectionOr(nullptr));
   Visit(builder, set.getFaceFramingOr(nullptr));
 }
@@ -255,7 +256,7 @@ void Visit(IdentifiableTokenBuilder& builder,
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace

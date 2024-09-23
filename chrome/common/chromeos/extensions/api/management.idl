@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Use the <code>chrome.os.management</code> API to manage ChromeOS settings.
-[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/management/management_api.h", modernised_enums]
+[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/management/management_api.h"]
 namespace os.management {
 // Note: Please update documentation as well when this interface is changed.
 // The documentation lives here: //docs/telemetry_extension/api_overview.md.
@@ -30,11 +30,11 @@ namespace os.management {
   interface Functions {
       // Sets the specified input audio device's gain to value. Returns false if
       // |args.nodeId| is invalid.
-      [supportsPromises] static void setAudioGain(
+      static void setAudioGain(
           SetAudioGainArguments args, OperationCallback callback);
       // Sets the specified output audio device's volume and mute state to the
       // given value. Returns false if |args.nodeId| is invalid.
-      [supportsPromises] static void setAudioVolume(
+      static void setAudioVolume(
           SetAudioVolumeArguments args, OperationCallback callback);
   };
 

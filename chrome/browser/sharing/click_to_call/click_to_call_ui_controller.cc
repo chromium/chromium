@@ -11,13 +11,12 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
-#include "chrome/browser/sharing/sharing_constants.h"
-#include "chrome/browser/sharing/sharing_dialog.h"
-#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/grit/branded_strings.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/sharing_message/sharing_constants.h"
+#include "components/sharing_message/sharing_dialog.h"
+#include "components/sharing_message/sharing_target_device_info.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
@@ -25,7 +24,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 
-using SharingMessage = chrome_browser_sharing::SharingMessage;
+using SharingMessage = components_sharing_message::SharingMessage;
 
 // static
 ClickToCallUiController* ClickToCallUiController::GetOrCreateFromWebContents(
@@ -176,9 +175,7 @@ std::u16string ClickToCallUiController::GetContentType() const {
 }
 
 const gfx::VectorIcon& ClickToCallUiController::GetVectorIcon() const {
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? vector_icons::kCallRefreshIcon
-             : vector_icons::kCallIcon;
+  return vector_icons::kCallRefreshIcon;
 }
 
 std::u16string ClickToCallUiController::GetTextForTooltipAndAccessibleName()

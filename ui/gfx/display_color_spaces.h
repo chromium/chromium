@@ -96,7 +96,7 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
     return hdr_max_luminance_relative_;
   }
 
-  // TODO(https://crbug.com/1116870): These helper functions exist temporarily
+  // TODO(crbug.com/40144904): These helper functions exist temporarily
   // to handle the transition of display::ScreenInfo off of ColorSpace. All
   // calls to these functions are to be eliminated.
   ColorSpace GetScreenInfoColorSpace() const;
@@ -131,9 +131,9 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   bool operator!=(const DisplayColorSpaces& other) const;
 
   // Return true if the two parameters are equal except for their
-  // `hdr_max_luminance_relative_` and `sdr_max_luminance_nits_` members.
-  static bool EqualExceptForHdrParameters(const DisplayColorSpaces& a,
-                                          const DisplayColorSpaces& b);
+  // `hdr_max_luminance_relative_` member.
+  static bool EqualExceptForHdrHeadroom(const DisplayColorSpaces& a,
+                                        const DisplayColorSpaces& b);
 
  private:
   // Serialization of DisplayColorSpaces directly accesses members.

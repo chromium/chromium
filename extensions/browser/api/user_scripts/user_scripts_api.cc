@@ -8,20 +8,23 @@
 #include <string>
 #include <vector>
 
+#include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
-#include "extensions/browser/api/scripting/scripting_constants.h"
-#include "extensions/browser/api/scripting/scripting_utils.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_user_script_loader.h"
-#include "extensions/browser/extension_util.h"
+#include "extensions/browser/scripting_constants.h"
+#include "extensions/browser/scripting_utils.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/browser/user_script_world_configuration_manager.h"
 #include "extensions/common/api/extension_types.h"
 #include "extensions/common/api/scripts_internal/script_serialization.h"
 #include "extensions/common/api/user_scripts.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/execution_world.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -37,6 +40,35 @@ constexpr char kInvalidSourceError[] =
     "js source.";
 constexpr char kMatchesMissingError[] =
     "User script with ID '*' must specify 'matches'.";
+
+// Returns true if the given `world_id` is valid from the API perspective.
+// If invalid, populates `error_out`.
+bool IsValidWorldId(const std::optional<std::string>& world_id,
+                    std::string* error_out) {
+  if (!world_id) {
+    // Omitting world ID is valid.
+    return true;
+  }
+
+  if (world_id->empty()) {
+    *error_out = "If specified, `worldId` must be non-empty.";
+    return false;
+  }
+
+  if (world_id->at(0) == '_') {
+    *error_out = "World IDs beginning with '_' are reserved.";
+    return false;
+  }
+
+  static constexpr size_t kMaxWorldIdLength = 256;
+  if (world_id->length() > kMaxWorldIdLength) {
+    *error_out = "World IDs must be at most 256 characters.";
+    return false;
+  }
+
+  // Valid world ID!
+  return true;
+}
 
 api::scripts_internal::SerializedUserScript
 ConvertRegisteredUserScriptToSerializedUserScript(
@@ -80,6 +112,11 @@ ConvertRegisteredUserScriptToSerializedUserScript(
   serialized_script.run_at = std::move(user_script.run_at);
   serialized_script.world = convert_execution_world(user_script.world);
 
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kApiUserScriptsMultipleWorlds)) {
+    serialized_script.world_id = std::move(user_script.world_id);
+  }
+
   return serialized_script;
 }
 
@@ -112,6 +149,12 @@ std::unique_ptr<UserScript> ParseUserScript(
           UserScript::TrimPrefixFromScriptID(user_script.id));
       return nullptr;
     }
+  }
+
+  std::string utf8_error;
+  if (!IsValidWorldId(user_script.world_id, &utf8_error)) {
+    *error = base::UTF8ToUTF16(utf8_error);
+    return nullptr;
   }
 
   // After this, we can just convert to our internal type and rely on our
@@ -152,11 +195,10 @@ api::user_scripts::RegisteredUserScript CreateRegisteredUserScriptInfo(
       [](api::extension_types::ExecutionWorld world) {
         switch (world) {
           case api::extension_types::ExecutionWorld::kNone:
-            NOTREACHED_NORETURN()
+            NOTREACHED()
                 << "Execution world should always be present in serialization.";
           case api::extension_types::ExecutionWorld::kIsolated:
-            NOTREACHED_NORETURN()
-                << "ISOLATED worlds are not supported in this API.";
+            NOTREACHED() << "ISOLATED worlds are not supported in this API.";
           case api::extension_types::ExecutionWorld::kUserScript:
             return api::user_scripts::ExecutionWorld::kUserScript;
           case api::extension_types::ExecutionWorld::kMain:
@@ -177,6 +219,7 @@ api::user_scripts::RegisteredUserScript CreateRegisteredUserScriptInfo(
   result.matches = std::move(serialized_script.matches);
   result.run_at = serialized_script.run_at;
   result.world = convert_execution_world(serialized_script.world);
+  result.world_id = std::move(serialized_script.world_id);
 
   return result;
 }
@@ -461,6 +504,10 @@ std::unique_ptr<UserScript> UserScriptsUpdateFunction::ApplyUpdate(
     original_script.world = new_script.world;
   }
 
+  if (new_script.world_id) {
+    original_script.world_id = std::move(new_script.world_id);
+  }
+
   // Note: for the update application, we disregard allowed_in_incognito.
   // We'll set it on the resulting scripts.
   constexpr bool kAllowedInIncognito = false;
@@ -538,11 +585,77 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension());
 
-  std::optional<std::string> csp = params->properties.csp;
+  std::optional<std::string> csp = std::move(params->properties.csp);
   bool enable_messaging = params->properties.messaging.value_or(false);
 
-  util::SetUserScriptWorldInfo(*extension(), browser_context(), csp,
-                               enable_messaging);
+  std::optional<std::string> world_id;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kApiUserScriptsMultipleWorlds)) {
+    world_id = std::move(params->properties.world_id);
+  }
+
+  std::string error;
+  if (!IsValidWorldId(world_id, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  UserScriptWorldConfigurationManager* config_manager =
+      UserScriptWorldConfigurationManager::Get(browser_context());
+  static constexpr size_t kMaxNumberOfRegisteredWorlds = 100;
+  if (config_manager->GetAllUserScriptWorlds(extension()->id()).size() >=
+      kMaxNumberOfRegisteredWorlds) {
+    return RespondNow(
+        Error(base::StringPrintf("You may only configure up to %" PRIuS
+                                 " individual user script worlds.",
+                                 kMaxNumberOfRegisteredWorlds)));
+  }
+
+  config_manager->SetUserScriptWorldInfo(*extension(), world_id, csp,
+                                         enable_messaging);
+
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+UserScriptsGetWorldConfigurationsFunction::Run() {
+  EXTENSION_FUNCTION_VALIDATE(extension());
+
+  std::vector<mojom::UserScriptWorldInfoPtr> world_configurations =
+      UserScriptWorldConfigurationManager::Get(browser_context())
+          ->GetAllUserScriptWorlds(extension()->id());
+
+  std::vector<api::user_scripts::WorldProperties> result;
+  result.reserve(world_configurations.size());
+  for (const auto& world : world_configurations) {
+    api::user_scripts::WorldProperties converted;
+    converted.messaging = world->enable_messaging;
+    converted.csp = world->csp;
+    converted.world_id = world->world_id;
+    result.push_back(std::move(converted));
+  }
+
+  return RespondNow(ArgumentList(
+      api::user_scripts::GetWorldConfigurations::Results::Create(result)));
+}
+
+ExtensionFunction::ResponseAction
+UserScriptsResetWorldConfigurationFunction::Run() {
+  std::optional<api::user_scripts::ResetWorldConfiguration::Params> params(
+      api::user_scripts::ResetWorldConfiguration::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  EXTENSION_FUNCTION_VALIDATE(extension());
+
+  // In theory, it'd be safe to just pass in `world_id` without validating it
+  // because we should never have an invalid world ID in the preferences. But
+  // that's a fragile guarantee and may change if e.g. we start using reserved
+  // world IDs. Validate to be on the safe side.
+  std::string error;
+  if (!IsValidWorldId(params->world_id, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  UserScriptWorldConfigurationManager::Get(browser_context())
+      ->ClearUserScriptWorldInfo(*extension(), params->world_id);
 
   return RespondNow(NoArguments());
 }

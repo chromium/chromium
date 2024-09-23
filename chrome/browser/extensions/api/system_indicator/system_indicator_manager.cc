@@ -21,7 +21,7 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_icon_image.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_icon_set.h"
+#include "extensions/common/icons/extension_icon_set.h"
 
 namespace extensions {
 

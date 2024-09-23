@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/policy/core/common/schema_registry.h"
 
 #include "base/check_op.h"
@@ -163,7 +168,7 @@ void CombinedSchemaRegistry::UnregisterComponent(const PolicyNamespace& ns) {
     own_schema_map_ = new SchemaMap(std::move(map));
     Combine(false);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -181,7 +186,7 @@ void CombinedSchemaRegistry::OnSchemaRegistryShuttingDown(
     if (registry->schema_map()->HasComponents())
       Combine(false);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

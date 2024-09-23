@@ -1,3 +1,7 @@
+include_rules = [
+  "+components/peripherals/logging",
+]
+
 specific_include_rules = {
   "input_device_settings_controller_unittest\.cc": [
     "+device/udev_linux/fake_udev_loader.h",

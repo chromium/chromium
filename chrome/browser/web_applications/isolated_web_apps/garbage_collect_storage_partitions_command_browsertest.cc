@@ -6,13 +6,13 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
@@ -36,9 +37,9 @@
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
-constexpr base::StringPiece kIwa1UrlString(
+constexpr std::string_view kIwa1UrlString(
     "isolated-app://wiabxazz27gf4rgupuiogazvf3u4pszqgzp2tlocmvnhpkyzsvnaaaac/");
-constexpr base::StringPiece kIwa2UrlString(
+constexpr std::string_view kIwa2UrlString(
     "isolated-app://lcqmu3b7fzkmcev36j2slaxolx6edzzinw7n4xhppqsk4wo3hkfaaaac/");
 
 const base::FilePath::CharType kStoragePartitionDirname[] =
@@ -108,7 +109,8 @@ class GarbageCollectStoragePartitionsCommandBrowserTest
     CHECK(url_info.has_value());
 
     WebAppProvider::GetForWebApps(profile())->scheduler().InstallIsolatedWebApp(
-        url_info.value(), DevModeProxy{.proxy_url = proxy_origin},
+        url_info.value(),
+        IsolatedWebAppInstallSource::FromDevUi(IwaSourceProxy(proxy_origin)),
         /*expected_version=*/std::nullopt,
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
@@ -179,11 +181,11 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
 
   // Uninstall one of the IWAs.
   base::test::TestFuture<webapps::UninstallResultCode> future;
-  provider().scheduler().UninstallWebApp(
+  provider().scheduler().RemoveUserUninstallableManagements(
       url_info_2.app_id(), webapps::WebappUninstallSource::kAppsPage,
       future.GetCallback());
   auto code = future.Get();
-  ASSERT_TRUE(code == webapps::UninstallResultCode::kSuccess);
+  ASSERT_TRUE(code == webapps::UninstallResultCode::kAppRemoved);
 
   // Pref value is set.
   ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(

@@ -7,11 +7,24 @@
 
 #include <memory>
 
+#include "chrome/common/webui_url_constants.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom-forward.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class BrowsingTopicsInternalsPageHandler;
+class BrowsingTopicsInternalsUI;
+
+// WebUIConfig for chrome://browsing-topics-internals
+class BrowsingTopicsInternalsUIConfig
+    : public content::DefaultWebUIConfig<BrowsingTopicsInternalsUI> {
+ public:
+  BrowsingTopicsInternalsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIBrowsingTopicsInternalsHost) {}
+};
 
 // WebUI which handles serving the chrome://topics-internals page.
 class BrowsingTopicsInternalsUI : public ui::MojoWebUIController {
@@ -26,6 +39,10 @@ class BrowsingTopicsInternalsUI : public ui::MojoWebUIController {
   // passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<browsing_topics::mojom::PageHandler> receiver);
+
+  BrowsingTopicsInternalsPageHandler* page_handler() {
+    return page_handler_.get();
+  }
 
  private:
   std::unique_ptr<BrowsingTopicsInternalsPageHandler> page_handler_;

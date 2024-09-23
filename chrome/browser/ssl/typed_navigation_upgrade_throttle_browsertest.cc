@@ -813,7 +813,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
   // Try again. This time the omnibox will find a history match for the http
   // URL and navigate directly to it. Histograms shouldn't change.
-  // TODO(crbug.com/1169564): We should try the https URL after a certain
+  // TODO(crbug.com/40165447): We should try the https URL after a certain
   // time has passed.
   TypeUrlAndExpectNoUpgrade(http_url.host(), false);
 
@@ -847,7 +847,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Try again. This time the omnibox will find a history match for the http
   // URL and navigate directly to it. Histograms shouldn't change.
-  // TODO(crbug.com/1169564): We should try the https URL after a certain
+  // TODO(crbug.com/40165447): We should try the https URL after a certain
   // time has passed.
   TypeUrlAndExpectNoUpgrade(http_url.host(), false);
 
@@ -877,7 +877,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
   // Try again. This time the omnibox will find a history match for the http
   // URL and navigate directly to it. Histograms shouldn't change.
-  // TODO(crbug.com/1169564): We should try the https URL after a certain
+  // TODO(crbug.com/40165447): We should try the https URL after a certain
   // time has passed.
   TypeUrlAndExpectNoUpgrade(kSiteWithNetError, false);
 
@@ -933,7 +933,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleFastTimeoutBrowserTest,
 // the https EmbeddedTestServer runs on port 8765. Then, AutocompleteInput will
 // see example.com:5678 and upgrade it to https://example.com:8765.
 //
-// TODO(crbug.com/1168371): Fold into TypedNavigationUpgradeThrottleBrowserTest
+// TODO(crbug.com/40743298): Fold into TypedNavigationUpgradeThrottleBrowserTest
 // when URLLoaderInterceptor supports redirects.
 class TypedNavigationUpgradeThrottleRedirectBrowserTest
     : public TypedNavigationUpgradeThrottleBrowserTest {
@@ -1276,7 +1276,7 @@ IN_PROC_BROWSER_TEST_P(
                                error_page::NETWORK_ERROR_PAGE_SHOWN, 2);
 }
 
-// TODO(crbug.com/1141691): Test the following cases:
+// TODO(crbug.com/40154361): Test the following cases:
 // - Various types of omnibox entries (URLs typed with a port, URLs in history,
 // non-unique URLs such as machine.local, IP addresses etc.
 // - Redirects (either in the upgraded HTTPS navigation or in the fallback)

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromeos/components/cdm_factory_daemon/content_decryption_module_adapter.h"
 
 #include <algorithm>
@@ -115,9 +120,9 @@ cdm::mojom::CdmPromiseResultPtr CreatePromise(bool success) {
 }
 
 scoped_refptr<media::DecoderBuffer> CreateDecoderBuffer(
-    const std::vector<uint8_t> data) {
+    base::span<const uint8_t> data) {
   scoped_refptr<media::DecoderBuffer> buffer =
-      media::DecoderBuffer::CopyFrom(data.data(), data.size());
+      media::DecoderBuffer::CopyFrom(data);
   buffer->set_timestamp(base::Seconds(kFakeTimestampSec));
   buffer->set_duration(base::Seconds(kFakeDurationSec));
   return buffer;

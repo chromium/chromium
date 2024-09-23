@@ -94,7 +94,7 @@ public class AwComponentUpdateService extends JobService {
         ComponentUpdaterSafeModeUtils.executeSafeModeIfEnabled(
                 new File(ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath()));
 
-        // TODO(https://crbug.com/1221092): Stop native updates when onStopJob, onDestroy are
+        // TODO(crbug.com/40773291): Stop native updates when onStopJob, onDestroy are
         // called.
 
         setUnexpectedExit(false);
@@ -157,7 +157,7 @@ public class AwComponentUpdateService extends JobService {
             setUnexpectedExit(true);
             mIsUpdating = true;
             final long startTime = SystemClock.uptimeMillis();
-            // TODO(crbug.com/1171817) Once we can log UMA from native, remove the count parameter.
+            // TODO(crbug.com/40745317) Once we can log UMA from native, remove the count parameter.
             AwComponentUpdateServiceJni.get()
                     .startComponentUpdateService(
                             (count) -> {

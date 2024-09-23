@@ -14,11 +14,13 @@ import android.system.OsConstants;
 import android.system.StructPollfd;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
-import org.chromium.base.task.SingleThreadTaskRunner;
+import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
 
 import java.io.Closeable;
@@ -48,7 +50,7 @@ class USBHandler implements Closeable {
 
     private final UsbAccessory mAccessory;
     private final Context mContext;
-    private final SingleThreadTaskRunner mTaskRunner;
+    private final TaskRunner mTaskRunner;
     private final UsbManager mUsbManager;
     private final StructPollfd[] mPollFds;
 
@@ -64,7 +66,7 @@ class USBHandler implements Closeable {
     private int mBufferUsed;
     private int mBufferOffset;
 
-    USBHandler(Context context, SingleThreadTaskRunner taskRunner, UsbAccessory accessory) {
+    USBHandler(Context context, TaskRunner taskRunner, UsbAccessory accessory) {
         mAccessory = accessory;
         mContext = context;
         mTaskRunner = taskRunner;
@@ -75,14 +77,14 @@ class USBHandler implements Closeable {
 
     @CalledByNative
     public void startReading() {
-        assert mTaskRunner.belongsToCurrentThread();
+        ThreadUtils.assertOnUiThread();
         openAccessory(mAccessory);
     }
 
     @Override
     @CalledByNative
     public void close() {
-        assert mTaskRunner.belongsToCurrentThread();
+        ThreadUtils.assertOnUiThread();
 
         setStopped();
 
@@ -99,8 +101,8 @@ class USBHandler implements Closeable {
      * getAssertion request).
      */
     @CalledByNative
-    public void write(byte[] message) {
-        assert mTaskRunner.belongsToCurrentThread();
+    public void write(@JniType("std::vector<uint8_t>") byte[] message) {
+        ThreadUtils.assertOnUiThread();
         assert mOutput != null;
 
         doWrite(message);
@@ -115,7 +117,7 @@ class USBHandler implements Closeable {
     }
 
     private void openAccessory(UsbAccessory accessory) {
-        assert mTaskRunner.belongsToCurrentThread();
+        ThreadUtils.assertOnUiThread();
 
         if (haveStopped()) {
             return;
@@ -306,7 +308,7 @@ class USBHandler implements Closeable {
                 if (!readAll(message)) {
                     return;
                 }
-                mTaskRunner.postTask(() -> this.didRead(message));
+                mTaskRunner.execute(() -> this.didRead(message));
             }
         }
     }
@@ -318,12 +320,12 @@ class USBHandler implements Closeable {
     private void readLoop() {
         readLoopInner();
         Log.i(TAG, "Read loop has exited.");
-        mTaskRunner.postTask(() -> this.didRead(null));
+        mTaskRunner.execute(() -> this.didRead(null));
     }
 
     /** Called with each message read from USB, or null on transport error. */
     private void didRead(byte[] buffer) {
-        assert mTaskRunner.belongsToCurrentThread();
+        ThreadUtils.assertOnUiThread();
 
         if (haveStopped()) {
             return;

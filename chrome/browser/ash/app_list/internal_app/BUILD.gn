@@ -1,0 +1,35 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("internal_app") {
+  sources = [
+    "internal_app_metadata.cc",
+    "internal_app_metadata.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//ash/public/cpp/resources:ash_public_unscaled_resources",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:chrome_unscaled_resources",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/release_notes",
+    "//chrome/browser/profiles:profile",
+    "//components/crx_file",
+    "//components/sessions",
+    "//extensions/browser",
+    "//extensions/common",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+}

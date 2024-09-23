@@ -2,16 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/dns/dns_query.h"
 
 #include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_names_util.h"
@@ -72,8 +79,7 @@ TEST(DnsQueryTest, Constructor) {
   EXPECT_THAT(AsTuple(q1.io_buffer()), ElementsAreArray(query_data));
   EXPECT_THAT(q1.qname(), ElementsAreArray(kQName));
 
-  base::StringPiece question(reinterpret_cast<const char*>(query_data) + 12,
-                             21);
+  std::string_view question(reinterpret_cast<const char*>(query_data) + 12, 21);
   EXPECT_EQ(question, q1.question());
 }
 
@@ -83,8 +89,8 @@ TEST(DnsQueryTest, CopiesAreIndependent) {
   DnsQuery q2(q1);
 
   EXPECT_EQ(q1.id(), q2.id());
-  EXPECT_EQ(base::StringPiece(q1.io_buffer()->data(), q1.io_buffer()->size()),
-            base::StringPiece(q2.io_buffer()->data(), q2.io_buffer()->size()));
+  EXPECT_EQ(std::string_view(q1.io_buffer()->data(), q1.io_buffer()->size()),
+            std::string_view(q2.io_buffer()->data(), q2.io_buffer()->size()));
   EXPECT_NE(q1.io_buffer(), q2.io_buffer());
 }
 
@@ -131,8 +137,7 @@ TEST(DnsQueryTest, EDNS0) {
 
   EXPECT_THAT(AsTuple(q1.io_buffer()), ElementsAreArray(query_data));
 
-  base::StringPiece question(reinterpret_cast<const char*>(query_data) + 12,
-                             21);
+  std::string_view question(reinterpret_cast<const char*>(query_data) + 12, 21);
   EXPECT_EQ(question, q1.question());
 }
 
@@ -277,7 +282,7 @@ const uint8_t kQueryInvalidDNSDomainName2[] = {
 
 TEST(DnsQueryParseTest, FailsInvalidQueries) {
   const struct TestCase {
-    const uint8_t* data;
+    raw_ptr<const uint8_t> data;
     size_t size;
   } testcases[] = {
       {kQueryTruncatedQuestion, std::size(kQueryTruncatedQuestion)},

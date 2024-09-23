@@ -40,10 +40,10 @@ namespace loginState {
 
   interface Functions {
     // Gets the type of the profile the extension is in.
-    [supportsPromises] static void getProfileType(ProfileTypeCallback callback);
+    static void getProfileType(ProfileTypeCallback callback);
 
     // Gets the current session state.
-    [supportsPromises] static void getSessionState(
+    static void getSessionState(
         SessionStateCallback callback);
   };
 

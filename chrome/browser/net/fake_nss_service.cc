@@ -57,7 +57,10 @@ FakeNssService::FakeNssService(content::BrowserContext* context,
   nss_cert_database_ = std::move(cert_db);
 }
 
-FakeNssService::~FakeNssService() = default;
+FakeNssService::~FakeNssService() {
+  content::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                                 std::move(nss_cert_database_));
+}
 
 NssCertDatabaseGetter FakeNssService::CreateNSSCertDatabaseGetterForIOThread() {
   return base::BindOnce(&NssGetterForIOThread, nss_cert_database_.get());

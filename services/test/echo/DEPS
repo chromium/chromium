@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/os_crypt/async/common",
+  "+components/os_crypt/sync",
+]

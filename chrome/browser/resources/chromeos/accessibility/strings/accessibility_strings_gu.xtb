@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">ગુલાબી કથ્થઈ</translation>
 <translation id="249330843868392562">ટેક્સ્ટ-ટૂ-સ્પીચ સેટિંગ ખોલો</translation>
 <translation id="2497706219848005458">લીલો પીળો</translation>
+<translation id="2512979179176933762">વિન્ડો બતાવો</translation>
 <translation id="2523609930580546572">ChromeVox ટયૂટૉરિઅલ</translation>
 <translation id="2525706221823668172">Chromebook કીબોર્ડ શૉર્ટકટ્સ</translation>
 <translation id="2553108862507765288">વ્યાકરણની ભૂલ</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">પાછળની આઇટમ પર જવા માટે, તમે એક આંગળીથી ડાબેથી જમણે સ્વાઇપ પણ કરી શકો છો. હમણાં જ અજમાવી જુઓ.</translation>
 <translation id="280499067616661124">ChromeVox પેજમાં શોધો</translation>
-<translation id="2811019999044652585">ટુલબાર અથવા સિસ્ટમ ટ્રે જેવા સ્ક્રીનના બીજા ભાગ પર જવા માટે, Control+ફોરવર્ડ દબાવો. Chromebook પર, ફોરવર્ડ કી એ નંબર 2 કીની એકદમ ઉપરની કી છે.</translation>
 <translation id="2811204574343810641">પંક્તિ</translation>
 <translation id="2816868829355607410">અભ્યાસ ક્ષેત્ર: જમ્પ આદેશો</translation>
 <translation id="2841013758207633010">સમય</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">રાખોડી ભૂરો</translation>
 <translation id="4253168017788158739">નોંધ</translation>
 <translation id="4254798249533888099">ટ્રી</translation>
+<translation id="4259220820964911921">ચહેરાથી નિયંત્રિત કરવાની સુવિધા ચાલુ કરીએ?</translation>
 <translation id="4271220233568730077">આગલું ગણિત</translation>
 <translation id="4275397969489577657">ઇવેન્ટ સ્ટ્રીમ લૉગિંગ ચાલુ કરો</translation>
 <translation id="4278486392851938658">મુલાકાત લીધેલી કોઈ પાછલી લિંક નથી</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">ભારતીય લાલ</translation>
 <translation id="4432896207833262240">માર્ક કરેલું કન્ટેન્ટ</translation>
 <translation id="4437615272777527928">મેનૂ શોધવા માટે ટાઇપ કરો. પરિણામો જોવા માટે ઉપર અને નીચે ઍરોનો ઉપયોગ કરો. ટેક્સ્ટ કૅરેટની ગોઠવણી કરવા અને મેનૂ વચ્ચે આવ-જા કરવા માટે ડાબા અને જમણા ઍરોનો ઉપયોગ કરો.</translation>
+<translation id="4453530046591759283">ટૂલબાર કે સિસ્ટમ ટ્રે જેવા સ્ક્રીનના બીજા ભાગો પર જવા માટે, Control+F1 દબાવો. Escape કીની જમણી બાજુએ પ્રથમ કી F1 છે.</translation>
 <translation id="4457472090507035117">વર્તમાન વૉઇસ પસંદ કરો:</translation>
 <translation id="4476183483923481720">નવી લાઇન</translation>
 <translation id="4479068155583208887">આગમાંની ઈંટ જેવો</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">જોડાણ</translation>
 <translation id="5761219715606611783">વાહ! તમે ChromeVox ટચની મૂળભૂત બાબતો શીખી લીધી છે. તમે ફરીથી ટ્યૂટૉરિઅલ જોઈ શકો છો અથવા નીચેના બટનનો ઉપયોગ કરીને આ ટ્યૂટૉરિઅલમાંથી બહાર નીકળી શકો છો.</translation>
 <translation id="5776001898637896684">Google Enhanced Network ટેક્સ્ટ ટૂ સ્પીચ એક્સ્ટેન્શન</translation>
+<translation id="5783252477644995371">ચહેરાથી નિયંત્રિત કરવાની સુવિધા તમને ચહેરા વડે પૉઇન્ટ કરવાની અને ક્રિયાઓ કરવાની ક્ષમતા દ્વારા કર્સરનું નિયંત્રણ કરવા દે છે, જેમ કે સ્મિત જેવા ચહેરાના હાવભાવ વડે લેફ્ટ ક્લિક કરવું</translation>
 <translation id="5805940204952508776">બે આંગળી વડે ટૅપ કરો</translation>
 <translation id="5819072574982403430">ટ્રી આઇટમ</translation>
 <translation id="5822819874379903994">ઘેરો પીરોજી</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">નાવાહો સફેદ</translation>
 <translation id="7095834689119144465">ફક્ત આંકડાકીય ટેક્સ્ટમાંજ ફેરફાર કરો</translation>
 <translation id="7096001299300236431">પાછલું મીડિયા</translation>
+<translation id="7096668131290451939">શીખવાના મોડમાંથી બહાર નીકળવા માટે ફરીથી Escape કી દબાવો</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">શબ્દ પડઘો</translation>
 <translation id="7137397390322864165">સૅમન</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">કોઈ આગલું ચેકબૉક્સ નથી</translation>
 <translation id="8473540203671727883">માઉસ હેઠળ આવતી ટેક્સ્ટ બોલો</translation>
 <translation id="8476408756881832830">ChromeVox બોલી રહ્યું હોય ત્યારે પ્લેબેક થોભાવો</translation>
-<translation id="8476508772960940536">વિંડોનું વિહંગાવલોકન</translation>
 <translation id="8480873377842220259">હવે તમે થોડું મૂળભૂત નૅવિગેશન શીખશો. સ્ક્રીન પર કોઈપણ જગ્યાએ જવા માટે, તમે Search કી દબાવી રાખીને ઍરો કી દબાવી શકો છો. આગળ વધવા માટે, Search + જમણો ઍરો દબાવો.</translation>
 <translation id="8503360654911991865">નૅવિગેશન ગ્રેન્યુલારિટી ઘટાડો</translation>
 <translation id="8520472399088452386">સ્પિન બટન</translation>

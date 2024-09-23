@@ -108,30 +108,9 @@ class PasswordStoreAndroidBackendDispatcherBridge {
 
   // Factory function for creating the bridge. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.
-  // Ensure `CanCreateBackend` returns true before calling this method.
+  // Ensure `password_manager_android_util::IsUpmBackendForAccountAvailable`
+  // returns true before calling this method.
   static std::unique_ptr<PasswordStoreAndroidBackendDispatcherBridge> Create();
-
-  // Method that checks whether a backend can be created or whether `Create`
-  // would fail. It returns true iff all nontransient prerequisistes are
-  // fulfilled. E.g. if the backend requires a minimum GMS version this method
-  // would return false.
-  static bool CanCreateBackend();
-
-  // Returns true if GMS Core supports new GetAffiliatedPasswords API.
-  // TODO(crbug.com/1507820): Remove from the bridge as this method doesn't call
-  // java.
-  static bool CanUseGetAffiliatedPasswordsAPI();
-
-  // Returns true if GMS Core supports new GetAllLoginsWithBrandingInfo API.
-  // TODO(crbug.com/1507820): Remove from the bridge as this method doesn't call
-  // java.
-  static bool CanUseGetAllLoginsWithBrandingInfoAPI();
-
-  // Returns true if user shouldn't be evicted from the experiment due to
-  // GMSCore errors.
-  // TODO(crbug.com/1507820): Remove from the bridge as this method doesn't call
-  // java.
-  static bool CanRemoveUnenrollment();
 };
 
 }  // namespace password_manager

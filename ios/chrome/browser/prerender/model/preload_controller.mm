@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <UIKit/UIKit.h>
-
 #import "ios/chrome/browser/prerender/model/preload_controller.h"
+
+#import <UIKit/UIKit.h>
 
 #import "base/check_op.h"
 #import "base/ios/device_util.h"
@@ -15,8 +15,6 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
-#import "components/supervised_user/core/browser/supervised_user_preferences.h"
-#import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/download/model/mime_type_util.h"
@@ -24,9 +22,10 @@
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/model/prerender_pref.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -88,7 +87,7 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
 // URL filtering control has been enabled.
 bool IsSubjectToParentalControls(ChromeBrowserState* browserState) {
   return browserState &&
-         supervised_user:: IsUrlFilteringEnabled(*browserState->GetPrefs());
+         supervised_user::IsSubjectToParentalControls(browserState);
 }
 
 // Returns whether `url` can be prerendered.
@@ -417,7 +416,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
           transition:(ui::PageTransition)transition
      currentWebState:(web::WebState*)currentWebState
          immediately:(BOOL)immediately {
-  // TODO(crbug.com/754050): If CanPrerenderURL() returns false, should we
+  // TODO(crbug.com/40534385): If CanPrerenderURL() returns false, should we
   // cancel any scheduled prerender requests?
   if (!self.enabled || !CanPrerenderURL(url)) {
     return;
@@ -500,7 +499,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   _policyDeciderBridge.reset();
 
   if (AccountConsistencyService* accountConsistencyService =
-          ios::AccountConsistencyServiceFactory::GetForBrowserState(
+          ios::AccountConsistencyServiceFactory::GetForProfile(
               self.browserState)) {
     accountConsistencyService->RemoveWebStateHandler(webState.get());
   }
@@ -636,9 +635,9 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 #pragma mark - PreloadCancelling
 
 - (void)schedulePrerenderCancel {
-  // TODO(crbug.com/228550): Instead of cancelling the prerender, should we mark
-  // it as failed instead?  That way, subsequent prerender requests for the same
-  // URL will not kick off new prerenders.
+  // TODO(crbug.com/41005198): Instead of cancelling the prerender, should we
+  // mark it as failed instead?  That way, subsequent prerender requests for the
+  // same URL will not kick off new prerenders.
   [self removeScheduledPrerenderRequests];
   [self performSelector:@selector(cancelPrerender) withObject:nil afterDelay:0];
 }
@@ -671,7 +670,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   web::WebState* webStateToReplace = _webStateToReplace.get();
   _webStateToReplace.reset();
 
-  // TODO(crbug.com/1140583): The correct way is to always get the
+  // TODO(crbug.com/40726702): The correct way is to always get the
   // webStateToReplace from the delegate. however this is not possible because
   // there is only one delegate per browser state.
   if (!webStateToReplace) {
@@ -693,7 +692,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   // execute thier side effects (eg. AppLauncherTabHelper launching app).
   _policyDeciderBridge =
       std::make_unique<web::WebStatePolicyDeciderBridge>(_webState.get(), self);
-  AttachTabHelpers(_webState.get(), /*for_prerender=*/true);
+  AttachTabHelpers(_webState.get(), TabHelperFilter::kPrerender);
 
   _webState->SetDelegate(_webStateDelegate.get());
   _webState->AddObserver(_webStateObserver.get());
@@ -701,7 +700,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   _webState->SetWebUsageEnabled(true);
 
   if (AccountConsistencyService* accountConsistencyService =
-          ios::AccountConsistencyServiceFactory::GetForBrowserState(
+          ios::AccountConsistencyServiceFactory::GetForProfile(
               self.browserState)) {
     accountConsistencyService->SetWebStateHandler(
         _webState.get(), _manageAccountsDelegate.get());
@@ -717,7 +716,7 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
   _webState->GetNavigationManager()->LoadURLWithParams(loadParams);
 
   // LoadIfNecessary is needed because the view is not created (but needed) when
-  // loading the page. TODO(crbug.com/705819): Remove this call.
+  // loading the page. TODO(crbug.com/41309809): Remove this call.
   _webState->GetNavigationManager()->LoadIfNecessary();
 
   self.startTime = base::TimeTicks::Now();

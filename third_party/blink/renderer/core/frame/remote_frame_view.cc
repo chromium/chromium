@@ -9,6 +9,7 @@
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -98,7 +99,7 @@ void RemoteFrameView::DetachFromLayout() {
 
 bool RemoteFrameView::UpdateViewportIntersectionsForSubtree(
     unsigned parent_flags,
-    std::optional<base::TimeTicks>&) {
+    ComputeIntersectionsContext&) {
   UpdateViewportIntersection(parent_flags, needs_occlusion_tracking_);
   return needs_occlusion_tracking_;
 }
@@ -120,8 +121,10 @@ void RemoteFrameView::SetNeedsOcclusionTracking(bool needs_tracking) {
     return;
   needs_occlusion_tracking_ = needs_tracking;
   if (needs_tracking) {
-    if (LocalFrameView* parent_view = ParentLocalRootFrameView())
+    if (LocalFrameView* parent_view = ParentLocalRootFrameView()) {
+      parent_view->SetIntersectionObservationState(LocalFrameView::kRequired);
       parent_view->ScheduleAnimation();
+    }
   }
 }
 
@@ -263,7 +266,6 @@ void RemoteFrameView::Dispose() {
   // RemoteFrameView is disconnected before detachment.
   if (owner_element && owner_element->OwnedEmbeddedContentView() == this)
     owner_element->SetEmbeddedContentView(nullptr);
-  SetNeedsOcclusionTracking(false);
 }
 
 void RemoteFrameView::SetFrameRect(const gfx::Rect& rect) {
@@ -287,6 +289,10 @@ void RemoteFrameView::UpdateFrozenSize() {
                                       frozen_phys_size->height.Ceil());
   frozen_size_ = rounded_frozen_size;
   needs_frame_rect_propagation_ = true;
+}
+
+void RemoteFrameView::ZoomFactorChanged(float zoom_factor) {
+  remote_frame_->ZoomFactorChanged(zoom_factor);
 }
 
 void RemoteFrameView::PropagateFrameRects() {

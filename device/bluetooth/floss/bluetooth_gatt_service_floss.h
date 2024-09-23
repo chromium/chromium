@@ -11,6 +11,14 @@
 
 namespace floss {
 
+const base::TimeDelta kResponseTimeout = base::Seconds(1);
+
+struct GattRequest {
+  std::string address;
+  int32_t request_id;
+  int32_t offset;
+};
+
 class BluetoothAdapterFloss;
 
 // Subclass of |BluetoothGattService| for platforms that use Floss.
@@ -29,6 +37,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattServiceFloss
   // Processes a |GattStatus| into a service error code.
   static device::BluetoothGattService::GattErrorCode GattStatusToServiceError(
       const GattStatus status);
+
+  // Processes a |GattErrorCode| into a status code.
+  static GattStatus GattServiceErrorToStatus(
+      device::BluetoothGattService::GattErrorCode error_code);
 
   // Adds an observer for a specific handle. This observer will only get
   // callbacks invoked for that specific handle.
@@ -87,6 +99,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattServiceFloss
                                         bool needs_response,
                                         int32_t handle,
                                         std::vector<uint8_t> value) override;
+  void GattServerExecuteWrite(std::string address,
+                              int32_t request_id,
+                              bool execute_write) override;
 
  protected:
   explicit BluetoothGattServiceFloss(BluetoothAdapterFloss* adapter);

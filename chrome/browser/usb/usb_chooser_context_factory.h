@@ -27,9 +27,8 @@ class UsbChooserContextFactory : public ProfileKeyedServiceFactory {
   ~UsbChooserContextFactory() override;
 
   // BrowserContextKeyedServiceFactory methods:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
-  void BrowserContextShutdown(content::BrowserContext* context) override;
 };
 
 #endif  // CHROME_BROWSER_USB_USB_CHOOSER_CONTEXT_FACTORY_H_

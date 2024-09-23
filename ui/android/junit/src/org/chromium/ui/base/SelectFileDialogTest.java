@@ -43,13 +43,14 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowMimeTypeMap;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.FileUtils;
 import org.chromium.base.FileUtilsJni;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.ui.permissions.PermissionCallback;
 
@@ -59,13 +60,15 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /** Tests logic in the SelectFileDialog class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures({
+    UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION,
+    UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT
+})
 @LooperMode(LooperMode.Mode.PAUSED)
 public class SelectFileDialogTest {
     // A callback that fires when the file selection pipeline shuts down as a result of an action.
@@ -80,10 +83,6 @@ public class SelectFileDialogTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         PostTask.setPrenativeThreadPoolExecutorForTesting(mExecutor);
-
-        Map<String, Boolean> featureMap = new HashMap<>();
-        featureMap.put(UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION, false);
-        FeatureList.setTestFeatures(featureMap);
     }
 
     private void runAllAsyncTasks() {
@@ -153,8 +152,7 @@ public class SelectFileDialogTest {
         }
     }
 
-    @Test
-    public void testMimeTypesWithExternalPicker() throws Exception {
+    public void testMimeTypesWithExternalPicker(String intentAction) throws Exception {
         TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
 
@@ -162,6 +160,7 @@ public class SelectFileDialogTest {
         // simulate the pipeline aborting because showIntent fails.
         int callCount = mOnActionCallback.getCallCount();
         selectFileDialog.selectFile(
+                intentAction,
                 new String[] {"application/pdf"},
                 /* capture= */ false,
                 /* multiple= */ false,
@@ -202,6 +201,7 @@ public class SelectFileDialogTest {
         // remain open.
         callCount = mOnActionCallback.getCallCount();
         selectFileDialog.selectFile(
+                intentAction,
                 new String[] {"application/pdf"},
                 /* capture= */ false,
                 /* multiple= */ false,
@@ -242,9 +242,63 @@ public class SelectFileDialogTest {
         // Add a media file to the mix and allow multiple files.
         callCount = mOnActionCallback.getCallCount();
         selectFileDialog.selectFile(
+                intentAction,
                 new String[] {"application/pdf", "image/gif"},
                 /* capture= */ false,
                 /* multiple= */ true,
+                windowAndroid);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(0, selectFileDialog.mFileSelectionAborted);
+        selectFileDialog.resetFileSelectionAttempts();
+    }
+
+    @Test
+    public void testMimeTypesWithExternalPicker() throws Exception {
+        testMimeTypesWithExternalPicker(Intent.ACTION_GET_CONTENT);
+    }
+
+    @Test
+    public void testExternalPickerWithFileExtensions() throws Exception {
+        verifyExternalPickerWithFileExtensions(Intent.ACTION_GET_CONTENT);
+    }
+
+    @Test
+    @EnableFeatures({UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT})
+    public void testMimeTypesWithExternalPickerOpenDocument() throws Exception {
+        testMimeTypesWithExternalPicker(Intent.ACTION_OPEN_DOCUMENT);
+    }
+
+    @Test
+    @EnableFeatures({UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT})
+    public void testMimeTypesWithExternalPickerOpenDocumentTree() throws Exception {
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+        WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+
+        // Setup WindowAndroid#showIntent to succeed (and validate the call).
+        IntentArgumentMatcher chooserIntentArgumentMatcher =
+                new IntentArgumentMatcher(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE));
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            // Validate open-dir intent has no extra choosers, mimes, etc.
+                            Intent intent = (Intent) invocation.getArguments()[0];
+                            assertEquals(null, intent.getExtra(Intent.EXTRA_INTENT));
+                            assertEquals(null, intent.getType());
+                            assertEquals(null, intent.getExtra(Intent.EXTRA_MIME_TYPES));
+                            assertFalse(intent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            return true;
+                        })
+                .when(windowAndroid)
+                .showIntent(
+                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
+
+        // Simulate showing the dialog, allowing a directory to be selected.
+        selectFileDialog.selectFile(
+                Intent.ACTION_OPEN_DOCUMENT_TREE,
+                /* fileTypes= */ new String[] {},
+                /* capture= */ false,
+                /* multiple= */ false,
                 windowAndroid);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
@@ -283,7 +337,154 @@ public class SelectFileDialogTest {
 
         // Select an empty MIME type.
         selectFileDialog.selectFile(
-                new String[] {}, /* capture= */ false, /* multiple= */ false, windowAndroid);
+                Intent.ACTION_GET_CONTENT,
+                new String[] {},
+                /* capture= */ false,
+                /* multiple= */ false,
+                windowAndroid);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(0, selectFileDialog.mFileSelectionAborted);
+        selectFileDialog.resetFileSelectionAttempts();
+    }
+
+    public void verifyExternalPickerWithFileExtensions(String intentAction) throws Exception {
+        ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("jpg", "image/jpeg");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("gif", "image/gif");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("pdf", "application/pdf");
+
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+        WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+
+        // Select simple file extensions without setting up successful intent handling, to
+        // simulate the pipeline aborting because showIntent fails.
+        int callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.selectFile(
+                intentAction,
+                new String[] {".pdf", ".jpg"},
+                /* capture= */ false,
+                /* multiple= */ false,
+                windowAndroid);
+        mOnActionCallback.waitForCallback(callCount, 1);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(1, selectFileDialog.mFileSelectionAborted);
+        selectFileDialog.resetFileSelectionAttempts();
+
+        // Now setup WindowAndroid#showIntent to succeed for our next run.
+        IntentArgumentMatcher chooserIntentArgumentMatcher =
+                new IntentArgumentMatcher(new Intent(Intent.ACTION_CHOOSER));
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            // When showIntent is called, we use the opportunity to check on the
+                            // values we expect to see within the Intent data.
+                            Intent chooserIntent = (Intent) invocation.getArguments()[0];
+                            Intent getContentIntent =
+                                    (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
+                            assertEquals(
+                                    null, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
+                            assertEquals("*/*", getContentIntent.getType());
+                            String[] mimeTypes =
+                                    (String[]) getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES);
+                            assertArrayEquals(
+                                    new String[] {
+                                        "application/pdf",
+                                        "image/jpeg",
+                                        "image/gif",
+                                        "type/nonexistent"
+                                    },
+                                    mimeTypes);
+                            assertEquals(
+                                    null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
+                            assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            return true;
+                        })
+                .when(windowAndroid)
+                .showIntent(
+                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
+
+        // Simulate showing the dialog, allowing a PDF and some images to be uploaded and watch the
+        // pipeline remain open.
+        callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.selectFile(
+                intentAction,
+                new String[] {".pdf", ".jpg", "image/gif"},
+                /* capture= */ false,
+                /* multiple= */ false,
+                windowAndroid);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(0, selectFileDialog.mFileSelectionAborted);
+        selectFileDialog.resetFileSelectionAttempts();
+
+        // Setup showIntent to check for invalid file extensions.
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            Intent chooserIntent = (Intent) invocation.getArguments()[0];
+                            Intent getContentIntent =
+                                    (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
+                            assertEquals(
+                                    true, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
+                            assertEquals("*/*", getContentIntent.getType());
+                            String[] mimeTypes =
+                                    (String[]) getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES);
+                            assertArrayEquals(new String[] {"type/nonexistent"}, mimeTypes);
+                            assertEquals(
+                                    null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
+                            assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            return true;
+                        })
+                .when(windowAndroid)
+                .showIntent(
+                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
+
+        // Add a media file to the mix and allow multiple files.
+        callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.selectFile(
+                intentAction,
+                new String[] {".xyz", "image/gif"},
+                /* capture= */ false,
+                /* multiple= */ true,
+                windowAndroid);
+        assertEquals(0, selectFileDialog.mFileSelectionSuccess);
+        assertEquals(0, selectFileDialog.mFileSelectionAborted);
+        selectFileDialog.resetFileSelectionAttempts();
+
+        // Setup showIntent to check for an empty file extensions, which will be
+        // ignored.
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            Intent chooserIntent = (Intent) invocation.getArguments()[0];
+                            Intent getContentIntent =
+                                    (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
+                            assertEquals(
+                                    true, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
+                            assertEquals("*/*", getContentIntent.getType());
+                            String[] mimeTypes =
+                                    (String[]) getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES);
+                            assertArrayEquals(
+                                    new String[] {"image/gif", "type/nonexistent"}, mimeTypes);
+                            assertEquals(
+                                    null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
+                            assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            return true;
+                        })
+                .when(windowAndroid)
+                .showIntent(
+                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
+
+        // Empty file extension is ignored.
+        callCount = mOnActionCallback.getCallCount();
+        selectFileDialog.selectFile(
+                intentAction,
+                new String[] {".", "image/gif"},
+                /* capture= */ false,
+                /* multiple= */ true,
+                windowAndroid);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
         selectFileDialog.resetFileSelectionAttempts();
@@ -300,6 +501,7 @@ public class SelectFileDialogTest {
         // is denied).
         int callCount = mOnActionCallback.getCallCount();
         selectFileDialog.selectFile(
+                Intent.ACTION_GET_CONTENT,
                 new String[] {"image/jpeg"},
                 /* capture= */ true,
                 /* multiple= */ false,
@@ -458,6 +660,7 @@ public class SelectFileDialogTest {
         // Ensure permission request in selectFile can handle interrupted permission flow.
         int callCount = mOnActionCallback.getCallCount();
         selectFileDialog.selectFile(
+                Intent.ACTION_GET_CONTENT,
                 new String[] {"image/jpeg"},
                 /* capture= */ true,
                 /* multiple= */ false,
@@ -561,10 +764,10 @@ public class SelectFileDialogTest {
     @Test
     public void testPhotoPickerLaunchAndMimeTypes() {
         ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
-        shadowMimeTypeMap.addExtensionMimeTypMapping("jpg", "image/jpeg");
-        shadowMimeTypeMap.addExtensionMimeTypMapping("gif", "image/gif");
-        shadowMimeTypeMap.addExtensionMimeTypMapping("txt", "text/plain");
-        shadowMimeTypeMap.addExtensionMimeTypMapping("mpg", "video/mpeg");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("jpg", "image/jpeg");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("gif", "image/gif");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("txt", "text/plain");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("mpg", "video/mpeg");
 
         assertEquals("", SelectFileDialog.ensureMimeType(""));
         assertEquals("image/jpeg", SelectFileDialog.ensureMimeType(".jpg"));
@@ -572,42 +775,35 @@ public class SelectFileDialogTest {
         // Unknown extension, expect default response:
         assertEquals("application/octet-stream", SelectFileDialog.ensureMimeType(".flv"));
 
-        assertEquals(null, SelectFileDialog.convertToSupportedPhotoPickerTypes(new ArrayList<>()));
-        assertEquals(null, SelectFileDialog.convertToSupportedPhotoPickerTypes(Arrays.asList("")));
-        assertEquals(
-                null,
-                SelectFileDialog.convertToSupportedPhotoPickerTypes(Arrays.asList("foo/bar")));
-        assertEquals(
-                Arrays.asList("image/jpeg"),
-                SelectFileDialog.convertToSupportedPhotoPickerTypes(Arrays.asList(".jpg")));
-        assertEquals(
-                Arrays.asList("image/jpeg"),
-                SelectFileDialog.convertToSupportedPhotoPickerTypes(Arrays.asList("image/jpeg")));
-        assertEquals(
-                Arrays.asList("image/jpeg"),
-                SelectFileDialog.convertToSupportedPhotoPickerTypes(
-                        Arrays.asList(".jpg", "image/jpeg")));
-        assertEquals(
-                Arrays.asList("image/gif", "image/jpeg"),
-                SelectFileDialog.convertToSupportedPhotoPickerTypes(
-                        Arrays.asList(".gif", "image/jpeg")));
+        assertFalse(SelectFileDialog.isSupportedPhotoPickerTypes(new ArrayList<>()));
+        assertFalse(SelectFileDialog.isSupportedPhotoPickerTypes(Arrays.asList("")));
+        assertFalse(SelectFileDialog.isSupportedPhotoPickerTypes(Arrays.asList("foo/bar")));
+        // ".jpg" is not a valid MIME type.
+        assertFalse(SelectFileDialog.isSupportedPhotoPickerTypes(Arrays.asList(".jpg")));
+        assertTrue(SelectFileDialog.isSupportedPhotoPickerTypes(Arrays.asList("image/jpeg")));
+        // If one of the file type is not a valid MIME type, the method should return false.
+        assertFalse(
+                SelectFileDialog.isSupportedPhotoPickerTypes(Arrays.asList(".jpg", "image/jpeg")));
+        assertFalse(
+                SelectFileDialog.isSupportedPhotoPickerTypes(Arrays.asList(".gif", "image/jpeg")));
+        assertTrue(
+                SelectFileDialog.isSupportedPhotoPickerTypes(
+                        Arrays.asList("image/gif", "image/jpeg")));
 
         // Video and mixed video/images support. This feature is supported, but off by default, so
         // expect failure until it is turned on by default.
-        assertEquals(
-                null, SelectFileDialog.convertToSupportedPhotoPickerTypes(Arrays.asList(".mpg")));
-        assertEquals(
-                null,
-                SelectFileDialog.convertToSupportedPhotoPickerTypes(Arrays.asList("video/mpeg")));
-        assertEquals(
-                null,
-                SelectFileDialog.convertToSupportedPhotoPickerTypes(
+        assertFalse(SelectFileDialog.isSupportedPhotoPickerTypes(Arrays.asList(".mpg")));
+        assertFalse(SelectFileDialog.isSupportedPhotoPickerTypes(Arrays.asList("video/mpeg")));
+        assertFalse(
+                SelectFileDialog.isSupportedPhotoPickerTypes(
+                        Arrays.asList("image/jpeg", "video/mpeg")));
+        assertFalse(
+                SelectFileDialog.isSupportedPhotoPickerTypes(
                         Arrays.asList(".jpg", "image/jpeg", ".mpg")));
 
         // Returns null because generic picker is required (due to addition of .txt file).
-        assertEquals(
-                null,
-                SelectFileDialog.convertToSupportedPhotoPickerTypes(
+        assertFalse(
+                SelectFileDialog.isSupportedPhotoPickerTypes(
                         Arrays.asList(".txt", ".jpg", "image/jpeg")));
     }
 
@@ -701,6 +897,11 @@ public class SelectFileDialogTest {
 
     @Test
     public void testShowTypes() {
+        ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("jpg", "image/jpeg");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("gif", "image/gif");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("pdf", "application/pdf");
+
         SelectFileDialog selectFileDialog = new SelectFileDialog(0);
 
         selectFileDialog.setFileTypesForTests(Arrays.asList("image/jpeg"));
@@ -772,23 +973,83 @@ public class SelectFileDialogTest {
         assertTrue(selectFileDialog.shouldShowVideoTypes());
         assertTrue(selectFileDialog.shouldShowAudioTypes());
 
+        // Only the first one is considered valid MIME type.
         selectFileDialog.setFileTypesForTests(Arrays.asList("image//png", "image/", "image"));
-        assertFalse(selectFileDialog.acceptsSingleType());
+        assertTrue(selectFileDialog.acceptsSingleType());
         assertTrue(selectFileDialog.shouldShowImageTypes());
         assertFalse(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());
 
+        // Both are invalid MIME types
         selectFileDialog.setFileTypesForTests(Arrays.asList("/image", "/"));
+        assertFalse(selectFileDialog.acceptsSingleType());
+        assertTrue(selectFileDialog.shouldShowImageTypes());
+        assertTrue(selectFileDialog.shouldShowVideoTypes());
+        assertTrue(selectFileDialog.shouldShowAudioTypes());
+
+        // Same, both are invalid MIME types
+        selectFileDialog.setFileTypesForTests(Arrays.asList("/", ""));
+        assertFalse(selectFileDialog.acceptsSingleType());
+        assertTrue(selectFileDialog.shouldShowImageTypes());
+        assertTrue(selectFileDialog.shouldShowVideoTypes());
+        assertTrue(selectFileDialog.shouldShowAudioTypes());
+
+        // Invalid extension
+        selectFileDialog.setFileTypesForTests(Arrays.asList(".xyz"));
+        assertTrue(selectFileDialog.acceptsSingleType());
+        assertFalse(selectFileDialog.shouldShowImageTypes());
+        assertFalse(selectFileDialog.shouldShowVideoTypes());
+        assertFalse(selectFileDialog.shouldShowAudioTypes());
+
+        // Both are converted to the same MIME type
+        selectFileDialog.setFileTypesForTests(Arrays.asList("application/octet-stream", ".xyz"));
+        assertTrue(selectFileDialog.acceptsSingleType());
+        assertFalse(selectFileDialog.shouldShowImageTypes());
+        assertFalse(selectFileDialog.shouldShowVideoTypes());
+        assertFalse(selectFileDialog.shouldShowAudioTypes());
+
+        selectFileDialog.setFileTypesForTests(Arrays.asList(".pdf", ".xyz"));
         assertFalse(selectFileDialog.acceptsSingleType());
         assertFalse(selectFileDialog.shouldShowImageTypes());
         assertFalse(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());
 
-        selectFileDialog.setFileTypesForTests(Arrays.asList("/", ""));
-        assertFalse(selectFileDialog.acceptsSingleType());
-        assertFalse(selectFileDialog.shouldShowImageTypes());
+        selectFileDialog.setFileTypesForTests(Arrays.asList(".gif", "image/gif"));
+        assertTrue(selectFileDialog.acceptsSingleType());
+        assertTrue(selectFileDialog.shouldShowImageTypes());
         assertFalse(selectFileDialog.shouldShowVideoTypes());
         assertFalse(selectFileDialog.shouldShowAudioTypes());
+
+        selectFileDialog.setFileTypesForTests(Arrays.asList(".gif", ".jpg"));
+        assertFalse(selectFileDialog.acceptsSingleType());
+        assertTrue(selectFileDialog.shouldShowImageTypes());
+        assertFalse(selectFileDialog.shouldShowVideoTypes());
+        assertFalse(selectFileDialog.shouldShowAudioTypes());
+    }
+
+    @Test
+    public void testConvertToSupportedMimeTypes() {
+        ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("jpg", "image/jpeg");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("gif", "image/gif");
+        shadowMimeTypeMap.addExtensionMimeTypeMapping("pdf", "application/pdf");
+
+        assertEquals(
+                SelectFileDialog.convertToSupportedMimeTypes(Arrays.asList("image/jpeg", ".jpg")),
+                Arrays.asList("image/jpeg"));
+
+        assertEquals(
+                SelectFileDialog.convertToSupportedMimeTypes(Arrays.asList("image/gif", "jpg")),
+                Arrays.asList("image/gif"));
+
+        assertEquals(
+                SelectFileDialog.convertToSupportedMimeTypes(Arrays.asList("image/gif", ".xyz")),
+                Arrays.asList("image/gif", "application/octet-stream"));
+
+        // Empty extensions are omitted.
+        assertEquals(
+                SelectFileDialog.convertToSupportedMimeTypes(Arrays.asList("image/gif", ".", "")),
+                Arrays.asList("image/gif"));
     }
 
     ContentResolver getMockContentResolver(String mimeType) {

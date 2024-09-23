@@ -4,7 +4,7 @@ rootWebArea
 ++++staticText editable linked richlyEditable name='link'
 ++++staticText editable richlyEditable name=' and an '
 ++++staticText editable richlyEditable name=' and a '
-++++button editable name='Button'
+++++button editable name='Button' nameFrom=value
 ++++++staticText name='Button'
 ++++staticText editable richlyEditable name='.'
 ++++staticText editable richlyEditable name='Always expose editable tables as tables.'

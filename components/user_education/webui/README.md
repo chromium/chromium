@@ -3,7 +3,7 @@
 
 [Frontend documentation can be found here.](/ui/webui/resources/cr_components/help_bubble/README.md)
 
-Allows a WebUI page to support Polymer-based, blue material design ("Navi")
+Allows a WebUI page to support Polymer/Lit-based, blue material design ("Navi")
 [HelpBubble](../common/help_bubble.h)s that can be shown in the course of a
 [Feature Promo](../common/feature_promo_controller.h) or
 [Tutorial](../common/tutorial.h).

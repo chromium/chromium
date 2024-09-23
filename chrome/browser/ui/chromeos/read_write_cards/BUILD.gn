@@ -1,0 +1,50 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("read_write_cards") {
+  sources = [
+    "read_write_card_controller.h",
+    "read_write_cards_ui_controller.cc",
+    "read_write_cards_ui_controller.h",
+    "read_write_cards_view.cc",
+    "read_write_cards_view.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui/views/editor_menu:utils",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/wm",
+  ]
+}
+
+source_set("read_write_cards_manager") {
+  sources = [
+    "read_write_cards_manager.cc",
+    "read_write_cards_manager.h",
+    "read_write_cards_manager_impl.cc",
+    "read_write_cards_manager_impl.h",
+  ]
+  deps = [
+    ":read_write_cards",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ui/chromeos/magic_boost",
+    "//chrome/browser/ui/quick_answers:quick_answers",
+    "//chrome/browser/ui/views/editor_menu",
+    "//chrome/browser/ui/views/editor_menu:utils",
+    "//chrome/browser/ui/views/mahi",
+    "//chromeos/components/magic_boost/public/cpp:cpp",
+    "//chromeos/components/quick_answers",
+    "//chromeos/components/quick_answers/public/cpp:cpp",
+    "//chromeos/components/quick_answers/public/cpp:prefs",
+    "//chromeos/constants:constants",
+    "//chromeos/crosapi/mojom",
+    "//content/public/browser",
+  ]
+}

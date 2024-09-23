@@ -8,7 +8,7 @@
 #include <ostream>
 #include <string_view>
 
-#include "components/user_manager/user_manager_export.h"
+#include "base/component_export.h"
 
 namespace user_manager {
 
@@ -42,8 +42,7 @@ enum class UserType {
   // Ephemeral for demo mode only.
   // Kiosk type for Chrome apps.
   kKioskApp = 5,
-  // Kiosk type for Android apps.
-  kArcKioskApp = 7,
+  // kArcKioskApp = 7, deprecated
   // Kiosk type for Web apps (aka PWA - Progressive Web Apps).
   kWebKioskApp = 9,
 
@@ -58,7 +57,8 @@ enum class UserType {
 // Stringifies UserType. Returns a C-style (i.e. \0-terminated) string literal.
 // The returned value is for logging or also to be used for crash key in
 // UserManager.
-USER_MANAGER_EXPORT const char* UserTypeToString(UserType user_type);
+COMPONENT_EXPORT(USER_MANAGER_COMMON)
+const char* UserTypeToString(UserType user_type);
 
 // Operator overloading for logging.
 inline std::ostream& operator<<(std::ostream& os, UserType user_type) {

@@ -15,7 +15,7 @@
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/background_service/test/mock_client.h"
 #include "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -102,7 +102,7 @@ class BackgroundDownloadServiceTest
         base::BindRepeating(
             &BackgroundDownloadServiceTest::MakeBackgroundDowloadService,
             base::Unretained(this)));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     // Create a random file in root dir and an unknown file in downoad dir.
     ASSERT_TRUE(base::CreateTemporaryFileInDir(browser_state_->GetStatePath(),

@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Credential interface: operation isConditionalMediationAvailable()
   assert_own_property: interface object missing static operation expected property "isConditionalMediationAvailable" missing
+[FAIL] Credential interface: operation willRequestConditionalCreation()
+  assert_own_property: interface object missing static operation expected property "willRequestConditionalCreation" missing
 Harness: the test ran to completion.
 

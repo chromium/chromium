@@ -19,11 +19,22 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.app.Activity;
+import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,33 +45,44 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CommandLineFlags.Add;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.SyncConsentFirstRunFragment;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
+import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -69,15 +91,19 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManagerJni;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SyncButtonClicked;
+import org.chromium.components.signin.metrics.SyncButtonsType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -88,12 +114,12 @@ import java.util.Set;
 /** Render tests for sync consent fragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures(ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)
+@DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
 public class SyncConsentFragmentTest {
-    private static final int RENDER_REVISION = 2;
+    private static final int RENDER_REVISION = 3;
     private static final String RENDER_DESCRIPTION = "Change button style";
     private static final String NEW_ACCOUNT_NAME = "new.account@gmail.com";
-    // TODO(https://crbug.com/1414078): Use ALL_SELECTABLE_TYPES defined in {@link SyncServiceImpl}
-    // here.
     private static final Set<Integer> ALL_CLANK_SYNCABLE_DATA_TYPES =
             Set.of(
                     UserSelectableType.AUTOFILL,
@@ -126,8 +152,6 @@ public class SyncConsentFragmentTest {
         }
     }
 
-    @Rule public final TestRule mCommandLindFlagRule = CommandLineFlags.getTestRule();
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
@@ -151,9 +175,16 @@ public class SyncConsentFragmentTest {
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SIGN_IN)
                     .build();
 
+    @Rule public final JniMocker mocker = new JniMocker();
+
+    @Mock private IdentityManager.Natives mIdentityManagerNativeMock;
+
     @Mock private FirstRunPageDelegate mFirstRunPageDelegateMock;
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
+
+    // Needed so proguard doesn't mess up mocking.
+    @Mock private SigninManagerImpl mUnused;
 
     private SyncConsentActivity mSyncConsentActivity;
 
@@ -162,7 +193,7 @@ public class SyncConsentFragmentTest {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
 
         OneshotSupplier<ProfileProvider> profileProviderSupplier =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             OneshotSupplierImpl<ProfileProvider> supplierImpl =
                                     new OneshotSupplierImpl<>();
@@ -171,7 +202,7 @@ public class SyncConsentFragmentTest {
                                         @NonNull
                                         @Override
                                         public Profile getOriginalProfile() {
-                                            return Profile.getLastUsedRegularProfile();
+                                            return ProfileManager.getLastUsedRegularProfile();
                                         }
 
                                         @Nullable
@@ -208,8 +239,7 @@ public class SyncConsentFragmentTest {
     @Feature("RenderTest")
     public void testSyncConsentFragmentDefaultAccount() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         mSyncConsentActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
@@ -219,11 +249,34 @@ public class SyncConsentFragmentTest {
                                     .launchActivityForPromoDefaultFlow(
                                             mChromeActivityTestRule.getActivity(),
                                             SigninAccessPoint.BOOKMARK_MANAGER,
-                                            accountInfo.getEmail());
+                                            AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail());
                         });
+
         mRenderTestRule.render(
                 mSyncConsentActivity.findViewById(R.id.fragment_container),
                 "sync_consent_fragment_default_account");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testSyncConsentFragmentMinorAwareDefaultAccount() throws IOException {
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mSyncConsentActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SyncConsentActivity.class,
+                        () -> {
+                            SyncConsentActivityLauncherImpl.get()
+                                    .launchActivityForPromoDefaultFlow(
+                                            mChromeActivityTestRule.getActivity(),
+                                            SigninAccessPoint.BOOKMARK_MANAGER,
+                                            AccountManagerTestRule.AADC_MINOR_ACCOUNT.getEmail());
+                        });
+        mRenderTestRule.render(
+                mSyncConsentActivity.findViewById(R.id.fragment_container),
+                "sync_consent_fragment_minor_aware_default_account");
     }
 
     @Test
@@ -252,9 +305,17 @@ public class SyncConsentFragmentTest {
     @Feature("RenderTest")
     public void testSyncConsentFragmentNotDefaultAccountWithPrimaryAccount() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        mSigninTestRule.addAccount("test.second.account@gmail.com");
+
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
+
+        // Resolve minor mode of TEST_ACCOUNT_1 before taking screenshot.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSigninTestRule.resolveMinorModeToUnrestricted(
+                            AccountManagerTestRule.TEST_ACCOUNT_1.getId());
+                });
+
         mSyncConsentActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
@@ -264,7 +325,7 @@ public class SyncConsentFragmentTest {
                                     .launchActivityForPromoChooseAccountFlow(
                                             mChromeActivityTestRule.getActivity(),
                                             SigninAccessPoint.BOOKMARK_MANAGER,
-                                            accountInfo.getEmail());
+                                            AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail());
                         });
         mRenderTestRule.render(
                 mSyncConsentActivity.findViewById(R.id.fragment_container),
@@ -300,13 +361,8 @@ public class SyncConsentFragmentTest {
     public void testSyncConsentFragmentWithChildAccountWithNonDisplayableAccountEmail()
             throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccount(
-                        SigninTestRule.generateChildEmail(
-                                AccountManagerTestRule.TEST_ACCOUNT_EMAIL),
-                        SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
-        mSigninTestRule.waitForSeeding();
-        mSigninTestRule.waitForSignin(accountInfo);
+        AccountInfo accountInfo = AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
+        mSigninTestRule.addAccount(accountInfo);
         mSyncConsentActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
@@ -327,16 +383,10 @@ public class SyncConsentFragmentTest {
             testSyncConsentFragmentWithChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName()
                     throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
-        CoreAccountInfo accountInfo =
-                mSigninTestRule.addAccount(
-                        SigninTestRule.generateChildEmail(
-                                AccountManagerTestRule.TEST_ACCOUNT_EMAIL),
-                        "",
-                        "",
-                        null,
-                        SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
-        mSigninTestRule.waitForSeeding();
-        mSigninTestRule.waitForSignin(accountInfo);
+        AccountInfo accountInfo =
+                AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME;
+        mSigninTestRule.addAccountThenSignin(accountInfo);
+
         mSyncConsentActivity =
                 ActivityTestUtils.waitForActivity(
                         InstrumentationRegistry.getInstrumentation(),
@@ -355,6 +405,9 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    @DisableIf.Build(
+            sdk_is_less_than = VERSION_CODES.P,
+            message = "Flaky on Oreo. See crbug.com/41493567")
     public void testFRESyncConsentFragmentWithNoAccountsOnDevice() throws IOException {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         var startPageHistogram =
@@ -395,6 +448,12 @@ public class SyncConsentFragmentTest {
                 "fre_sync_consent_fragment_with_adult_account");
     }
 
+    /**
+     * This test is using default account turned into child account.
+     *
+     * <p>Default accounts do not specify minor-mode restrictions and as a consequence, wait for
+     * them to be resolved to either minor-restricted or -unrestricted mode.
+     */
     @Test
     @LargeTest
     @Feature("RenderTest")
@@ -403,7 +462,7 @@ public class SyncConsentFragmentTest {
         var startPageHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
         bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, true);
@@ -412,7 +471,16 @@ public class SyncConsentFragmentTest {
 
         launchActivityWithFragment(fragment);
         startPageHistogram.assertExpected();
-        // TODO(https://crbug.com/1291903): Rewrite this test when RenderTestRule is integrated with
+
+        // Resolves minor-mode to unrestricted; so the user will experience weighted buttons.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSigninTestRule.resolveMinorModeToUnrestricted(
+                            AccountManagerTestRule.TEST_ACCOUNT_1.getId());
+                });
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+
+        // TODO(crbug.com/40212926): Rewrite this test when RenderTestRule is integrated with
         // Espresso.
         // We check the button is enabled rather than visible, as it may be off-screen on small
         // devices.
@@ -420,6 +488,34 @@ public class SyncConsentFragmentTest {
         mRenderTestRule.render(
                 mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "fre_sync_consent_fragment_with_regular_child_allow_sync_off");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testFRESyncConsentFragmentWithChildAccountWithMinorModeRestrictionsEnabled()
+            throws IOException {
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        var startPageHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, true);
+        when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
+        fragment.setPageDelegate(mFirstRunPageDelegateMock);
+
+        launchActivityWithFragment(fragment);
+        startPageHistogram.assertExpected();
+        // TODO(crbug.com/40212926): Rewrite this test when RenderTestRule is integrated with
+        // Espresso.
+        // We check the button is enabled rather than visible, as it may be off-screen on small
+        // devices.
+        onView(withId(R.id.button_primary)).check(matches(isEnabled()));
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "fre_sync_consent_fragment_with_regular_child_allow_sync_off_with_minor_mode_restrictions_enabled");
     }
 
     @Test
@@ -457,7 +553,7 @@ public class SyncConsentFragmentTest {
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
         launchActivityWithFragment(fragment);
 
-        mSigninTestRule.removeAccountAndWaitForSeeding(primaryAccount.getEmail());
+        mSigninTestRule.removeAccount(primaryAccount.getId());
 
         CriteriaHelper.pollUiThread(() -> fragment.mIsUpdateAccountCalled);
         verify(mFirstRunPageDelegateMock).abortFirstRunExperience();
@@ -513,11 +609,11 @@ public class SyncConsentFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
                     assertTrue(syncService.hasSyncConsent());
@@ -539,7 +635,7 @@ public class SyncConsentFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return !IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
@@ -560,11 +656,11 @@ public class SyncConsentFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
                     assertTrue(syncService.hasSyncConsent());
@@ -577,7 +673,7 @@ public class SyncConsentFragmentTest {
                 () -> {
                     IdentityManager identityManager =
                             IdentityServicesProvider.get()
-                                    .getSigninManager(Profile.getLastUsedRegularProfile())
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                                     .getIdentityManager();
                     return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
                             && !identityManager.hasPrimaryAccount(ConsentLevel.SYNC);
@@ -623,7 +719,7 @@ public class SyncConsentFragmentTest {
         settingsHistogram.assertExpected();
         // As there is no account on the device, the set of selected types will be empty. Sync Setup
         // UI in this case does not link to the types list.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
                     assertEquals(Set.of(), syncService.getSelectedTypes());
@@ -662,6 +758,62 @@ public class SyncConsentFragmentTest {
         onView(withText(defaultAccountInfo.getEmail())).check(doesNotExist());
         onView(withText(nonDefaultAccountName)).check(matches(isDisplayed()));
         bookmarkHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testSelectNonDefaultAccountInAccountPickerDialogOpposingCapability() {
+        mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+
+        when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
+                        anyLong(), eq(AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail())))
+                .thenReturn(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
+                        anyLong(), eq(AccountManagerTestRule.AADC_MINOR_ACCOUNT.getEmail())))
+                .thenReturn(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+
+        mSyncConsentActivity =
+                waitForSyncConsentActivity(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+
+        // Default account has the capability MINOR_MODE_NOT_REQUIRED thus buttons will be unequally
+        // weighted
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
+                    Button secondaryButton =
+                            mSyncConsentActivity.findViewById(R.id.button_secondary);
+                    Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
+                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
+                    Assert.assertNotEquals(
+                            primaryButton.getTextColors().getDefaultColor(),
+                            secondaryButton.getTextColors().getDefaultColor());
+                });
+
+        onView(withText(AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+        onView(withText(AccountManagerTestRule.AADC_MINOR_ACCOUNT.getEmail()))
+                .inRoot(isDialog())
+                .perform(click());
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+
+        // Sync consent activity now has the non-default account which has the capability
+        // MINOR_MODE_REQUIRED thus buttons will be equally weighted
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
+                    Button secondaryButton =
+                            mSyncConsentActivity.findViewById(R.id.button_secondary);
+                    Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
+                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
+                    Assert.assertEquals(
+                            primaryButton.getTextColors().getDefaultColor(),
+                            secondaryButton.getTextColors().getDefaultColor());
+                });
     }
 
     @Test
@@ -803,11 +955,15 @@ public class SyncConsentFragmentTest {
         if (mSyncConsentActivity.findViewById(R.id.more_button).isShown()) {
             onView(withId(R.id.more_button)).perform(click());
         }
-        onView(withText(R.string.signin_accept_button)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_accept_button)).perform(click());
+
+        // Minor-mode safety needs time to show buttons and is not revealing them immediately.
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+        onView(withText(R.string.signin_accept_button))
+                .check(matches(isDisplayed()))
+                .perform(click());
 
         // Accepting the sync on an automotive device should take the user to the device lock page.
-        onView(withId(R.id.device_lock_title)).check(matches(isDisplayed()));
+        ViewUtils.waitForVisibleView(withId(R.id.device_lock_title));
         onView(withText(R.string.signin_accept_button)).check(doesNotExist());
 
         simulateDeviceLockReadyOnAutomotive();
@@ -816,8 +972,7 @@ public class SyncConsentFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     return IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
-                            .getIdentityManager()
+                            .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
         onView(withId(R.id.device_lock_title)).check(doesNotExist());
@@ -826,7 +981,11 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
-    public void testAutomotiveDevice_deviceLockRefused_syncRefused() throws IOException {
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    @DisabledTest(message = "https://crbug.com/333735758")
+    public void
+            testAutomotiveDevice_deviceLockCreated_syncAcceptedSuccessfully_withMinorModeRestrictionsEnabled()
+                    throws IOException {
         mAutoTestRule.setIsAutomotive(true);
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
@@ -847,25 +1006,122 @@ public class SyncConsentFragmentTest {
         if (mSyncConsentActivity.findViewById(R.id.more_button).isShown()) {
             onView(withId(R.id.more_button)).perform(click());
         }
-        onView(withText(R.string.signin_accept_button)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_accept_button)).perform(click());
+
+        // The account is created without a capability that determines its minor mode, wait until
+        // all buttons are created in minor safe mode.
+        ViewUtils.onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
 
         // Accepting the sync on an automotive device should take the user to the device lock page.
-        onView(withId(R.id.device_lock_title)).check(matches(isDisplayed()));
+        ViewUtils.waitForVisibleView(withId(R.id.device_lock_title));
+        onView(withText(R.string.signin_accept_button)).check(doesNotExist());
+
+        simulateDeviceLockReadyOnAutomotive();
+
+        // Wait for the sync consent to be set and the activity has finished.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return IdentityServicesProvider.get()
+                            .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
+                            .hasPrimaryAccount(ConsentLevel.SYNC);
+                });
+        onView(withId(R.id.device_lock_title)).check(doesNotExist());
+        ApplicationTestUtils.waitForActivityState(mSyncConsentActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @LargeTest
+    public void testAutomotiveDevice_deviceLockRefused_syncRefused() throws Exception {
+        mAutoTestRule.setIsAutomotive(true);
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SyncConsentActivity.class,
+                        () -> {
+                            SyncConsentActivityLauncherImpl.get()
+                                    .launchActivityForPromoDefaultFlow(
+                                            mChromeActivityTestRule.getActivity(),
+                                            SigninAccessPoint.BOOKMARK_MANAGER,
+                                            accountInfo.getEmail());
+                        });
+
+        // Should display the sync page, clicking the 'more' button to scroll down if needed.
+        if (mSyncConsentActivity.findViewById(R.id.more_button).isShown()) {
+            onView(withId(R.id.more_button)).perform(click());
+        }
+
+        // Minor-mode safety needs time to show buttons and is not revealing them immediately.
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+        onView(withText(R.string.signin_accept_button))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Accepting the sync on an automotive device should take the user to the device lock page.
+        ViewUtils.waitForVisibleView(withId(R.id.device_lock_title));
         onView(withText(R.string.signin_accept_button)).check(doesNotExist());
 
         simulateDeviceLockRefused();
 
         // Check that the user is not consented to sync and the activity has finished.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return !IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
-                            .getIdentityManager()
-                            .hasPrimaryAccount(ConsentLevel.SYNC);
-                });
         onView(withId(R.id.device_lock_title)).check(doesNotExist());
         ApplicationTestUtils.waitForActivityState(mSyncConsentActivity, Stage.DESTROYED);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(
+                            IdentityServicesProvider.get()
+                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
+                                    .hasPrimaryAccount(ConsentLevel.SYNC));
+                });
+    }
+
+    @Test
+    @LargeTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    @DisabledTest(message = "https://crbug.com/333735758")
+    public void
+            testAutomotiveDevice_deviceLockRefused_syncRefused_withMinorModeRestrictionsEnabled()
+                    throws Exception {
+        mAutoTestRule.setIsAutomotive(true);
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SyncConsentActivity.class,
+                        () -> {
+                            SyncConsentActivityLauncherImpl.get()
+                                    .launchActivityForPromoDefaultFlow(
+                                            mChromeActivityTestRule.getActivity(),
+                                            SigninAccessPoint.BOOKMARK_MANAGER,
+                                            accountInfo.getEmail());
+                        });
+
+        // Should display the sync page, clicking the 'more' button to scroll down if needed.
+        if (mSyncConsentActivity.findViewById(R.id.more_button).isShown()) {
+            onView(withId(R.id.more_button)).perform(click());
+        }
+
+        ViewUtils.onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
+
+        // Accepting the sync on an automotive device should take the user to the device lock page.
+        ViewUtils.waitForVisibleView(withId(R.id.device_lock_title));
+        onView(withText(R.string.signin_accept_button)).check(doesNotExist());
+
+        simulateDeviceLockRefused();
+
+        // Check that the user is not consented to sync and the activity has finished.
+        onView(withId(R.id.device_lock_title)).check(doesNotExist());
+        ApplicationTestUtils.waitForActivityState(mSyncConsentActivity, Stage.DESTROYED);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(
+                            IdentityServicesProvider.get()
+                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
+                                    .hasPrimaryAccount(ConsentLevel.SYNC));
+                });
     }
 
     @Test
@@ -894,19 +1150,23 @@ public class SyncConsentFragmentTest {
         if (mSyncConsentActivity.findViewById(R.id.more_button).isShown()) {
             onView(withId(R.id.more_button)).perform(click());
         }
-        onView(withId(R.id.signin_details_description)).perform(ViewUtils.clickOnClickableSpan(0));
 
+        // The account is created without a capability that determines its minor mode, wait until
+        // all buttons are created in minor safe mode.
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+
+        onView(withId(R.id.signin_details_description)).perform(ViewUtils.clickOnClickableSpan(0));
         simulateDeviceLockReadyOnAutomotive();
 
         // Wait for sync opt-in process to finish.
         CriteriaHelper.pollUiThread(
                 () -> {
                     return IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
                     assertTrue(
@@ -954,20 +1214,475 @@ public class SyncConsentFragmentTest {
         if (mSyncConsentActivity.findViewById(R.id.more_button).isShown()) {
             onView(withId(R.id.more_button)).perform(click());
         }
+        // The account is created without a capability that determines its minor mode, wait until
+        // all buttons are created in minor safe mode.
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
         onView(withId(R.id.signin_details_description)).perform(ViewUtils.clickOnClickableSpan(0));
-
         simulateDeviceLockRefused();
 
         // Check that the user is not consented to sync and the activity has finished.
         CriteriaHelper.pollUiThread(
                 () -> {
                     return !IdentityServicesProvider.get()
-                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SYNC);
                 });
         onView(withId(R.id.device_lock_title)).check(doesNotExist());
         ApplicationTestUtils.waitForActivityState(mSyncConsentActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @LargeTest
+    public void testSignedInWithMinorModeRequiredRecordsCancelButtonClicked() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
+                        .build();
+
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        SigninTestUtil.signin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mSyncConsentActivity =
+                waitForSyncConsentActivity(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        onViewWaiting(withText(R.string.signin_sync_decline_button)).perform(click());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    public void testSignedInWithMinorModeNotRequiredRecordsCancelButtonClicked()
+            throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown", SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
+                        .build();
+
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        SigninTestUtil.signin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSyncConsentActivity =
+                waitForSyncConsentActivity(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        onViewWaiting(withText(R.string.signin_sync_decline_button)).perform(click());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    public void testSignedInWithMinorModeRequiredRecordsAcceptButtonClicked() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
+                        .build();
+
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        SigninTestUtil.signin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mSyncConsentActivity =
+                waitForSyncConsentActivity(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    public void testSignedInWithMinorModeNotRequiredRecordsAcceptButtonClicked()
+            throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown", SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
+                        .build();
+
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        SigninTestUtil.signin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSyncConsentActivity =
+                waitForSyncConsentActivity(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testSignedInWithMinorModeRequiredHasEqualButtons() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
+                        .build();
+
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+
+        SigninTestUtil.signin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+
+        mSyncConsentActivity =
+                waitForSyncConsentActivity(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mRenderTestRule.render(
+                mSyncConsentActivity.findViewById(R.id.fragment_container),
+                "signed_in_with_minor_mode_required_has_equal_buttons");
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testSignedInWithMinorModeNotRequiredHasWeightedButtons() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown", SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
+                        .build();
+
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+
+        SigninTestUtil.signin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+
+        mSyncConsentActivity =
+                waitForSyncConsentActivity(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mRenderTestRule.render(
+                mSyncConsentActivity.findViewById(R.id.fragment_container),
+                "signed_in_with_minor_mode_not_required_has_weighted_buttons");
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    public void testSignedInWithMinorModeUnknownHasEqualButtonsOnDeadline() throws Exception {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_DEADLINE)
+                        .build();
+
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        // Account Capabilities are intentionally empty.
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+
+        SigninTestUtil.signin(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+
+        mSyncConsentActivity =
+                waitForSyncConsentActivity(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+
+        // Account with no capabilities must wait to be deadlined to show buttons.
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+
+        checkButtonsAreEquallyWeightedandVisible();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    public void testSignedInWithMinorModeUnknownHasNoButtonsBeforeDeadline() {
+        // Disable timeouting mechanism that ultimately shows some buttons
+        MinorModeHelper.disableTimeoutForTesting();
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+
+        // Account Capabilities are intentionally empty - this account is waiting for capabilities
+        // to be fetched to determine buttons, but in this test they will never arrive.
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+
+        SigninTestUtil.signin(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+        mSyncConsentActivity =
+                waitForSyncConsentActivity(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+
+        // Since the capabilities never arrived, buttons should be still invisible
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
+                    Button secondaryButton =
+                            mSyncConsentActivity.findViewById(R.id.button_secondary);
+                    Assert.assertEquals(View.GONE, primaryButton.getVisibility());
+                    Assert.assertEquals(View.GONE, secondaryButton.getVisibility());
+                });
+    }
+
+    @Test
+    @LargeTest
+    public void testSignedInWithMinorModeUnknownHasEqualButtonsBeforeDeadline()
+            throws InterruptedException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
+                        .build();
+        MinorModeHelper.disableTimeoutForTesting();
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        // Account Capabilities are intentionally empty.
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+
+        SigninTestUtil.signin(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+        mSyncConsentActivity =
+                waitForSyncConsentActivity(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+
+        // Capability is received as MINOR_MODE_REQUIRED after an arbitrary amount of time that is
+        // less than the deadline {@link
+        // org.chromium.chrome.browser.ui.signin.MinorModeHelper.CAPABILITY_TIMEOUT_MS}. Buttons
+        // will be equally weighted.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSigninTestRule.resolveMinorModeToRestricted(
+                            AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT.getId());
+                });
+
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
+                    Button secondaryButton =
+                            mSyncConsentActivity.findViewById(R.id.button_secondary);
+                    Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
+                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
+                    Assert.assertEquals(
+                            primaryButton.getTextColors().getDefaultColor(),
+                            secondaryButton.getTextColors().getDefaultColor());
+                });
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    public void testSignedInWithMinorModeUnknownHasUnequalButtonsBeforeDeadline()
+            throws InterruptedException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown", SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
+                        .build();
+
+        MinorModeHelper.disableTimeoutForTesting();
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        // Account Capabilities are intentionally empty.
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+        SigninTestUtil.signin(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+
+        mSyncConsentActivity =
+                waitForSyncConsentActivity(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+
+        // Capability is received as MINOR_MODE_NOT_REQUIRED after an arbitrary amount of time that
+        // is less than the deadline {@link
+        // org.chromium.chrome.browser.ui.signin.MinorModeHelper.CAPABILITY_TIMEOUT_MS}. Buttons
+        // will be unequally weighted.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSigninTestRule.resolveMinorModeToUnrestricted(
+                            AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT.getId());
+                });
+
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
+                    Button secondaryButton =
+                            mSyncConsentActivity.findViewById(R.id.button_secondary);
+                    Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
+                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
+                    Assert.assertNotEquals(
+                            primaryButton.getTextColors().getDefaultColor(),
+                            secondaryButton.getTextColors().getDefaultColor());
+                });
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testSignedOutWithMinorModeRequiredHasEqualButtons() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
+                        .build();
+
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mSyncConsentActivity =
+                waitForSyncConsentActivity(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+        mRenderTestRule.render(
+                mSyncConsentActivity.findViewById(R.id.fragment_container),
+                "signed_out_with_minor_mode_required_has_equal_buttons");
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testSignedOutWithMinorModeNotRequiredHasWeightedButtons() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown", SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED)
+                        .build();
+
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mSyncConsentActivity =
+                waitForSyncConsentActivity(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+        mRenderTestRule.render(
+                mSyncConsentActivity.findViewById(R.id.fragment_container),
+                "signed_out_with_minor_mode_not_required_has_weighted_buttons");
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    public void testSignedOutWithMinorModeUnknownHasEqualButtonsOnDeadline() throws Exception {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Shown",
+                                SyncButtonsType.SYNC_EQUAL_WEIGHTED_FROM_DEADLINE)
+                        .build();
+
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+        mSyncConsentActivity =
+                waitForSyncConsentActivity(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+
+        // Signed out account with no capabilities must wait to be deadlined to show buttons.
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+
+        checkButtonsAreEquallyWeightedandVisible();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testSyncConsentFragmentNoAccount() throws IOException {
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        mSyncConsentActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SyncConsentActivity.class,
+                        () -> {
+                            SyncConsentActivityLauncherImpl.get()
+                                    .launchActivityForPromoAddAccountFlow(
+                                            mChromeActivityTestRule.getActivity(),
+                                            SigninAccessPoint.START_PAGE);
+                        });
+        mRenderTestRule.render(
+                mSyncConsentActivity.findViewById(R.id.fragment_container),
+                "sync_consent_fragment_with_no_accounts");
+    }
+
+    @Test
+    @LargeTest
+    @DisabledTest(message = "Broken and/or flake on different bots, see b/40944120.")
+    public void testManagedAccount_confirmed() throws Exception {
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        CoreAccountInfo accountInfo = mSigninTestRule.addAccount(NEW_ACCOUNT_NAME);
+
+        SigninManager signinManager =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return IdentityServicesProvider.get()
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile());
+                        });
+        IdentityServicesProvider spyProvider = Mockito.spy(IdentityServicesProvider.get());
+        SigninManager spySigninManager = Mockito.spy(signinManager);
+        IdentityServicesProvider.setInstanceForTests(spyProvider);
+
+        doReturn(spySigninManager).when(spyProvider).getSigninManager(any());
+        doAnswer(
+                        invocation -> {
+                            ((Callback<Boolean>) invocation.getArgument(1)).onResult(true);
+                            return null;
+                        })
+                .when(spySigninManager)
+                .isAccountManaged(eq(accountInfo), any());
+
+        mSyncConsentActivity = waitForSyncConsentActivity(accountInfo);
+        View moreButton = mSyncConsentActivity.findViewById(R.id.more_button);
+        if (moreButton != null && moreButton.isShown()) {
+            onView(withId(R.id.more_button)).perform(click());
+        }
+        onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
+        onViewWaiting(withId(R.id.positive_button)).perform(click());
+        // Wait for the sync consent to be set.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return IdentityServicesProvider.get()
+                            .getSigninManager(ProfileManager.getLastUsedRegularProfile())
+                            .getIdentityManager()
+                            .hasPrimaryAccount(ConsentLevel.SYNC);
+                });
+        assertTrue(
+                ThreadUtils.runOnUiThreadBlocking(signinManager::getUserAcceptedAccountManagement));
+    }
+
+    @Test
+    @LargeTest
+    @DisabledTest(message = "Broken and/or flake on different bots, see b/40944120.")
+    public void testManagedAccount_failedSignin() throws Exception {
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        CoreAccountInfo accountInfo = mSigninTestRule.addAccount(NEW_ACCOUNT_NAME);
+
+        SigninManager signinManager =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return IdentityServicesProvider.get()
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile());
+                        });
+        IdentityServicesProvider spyProvider = Mockito.spy(IdentityServicesProvider.get());
+        SigninManager spySigninManager = Mockito.spy(signinManager);
+        IdentityServicesProvider.setInstanceForTests(spyProvider);
+
+        doReturn(spySigninManager).when(spyProvider).getSigninManager(any());
+        doAnswer(
+                        invocation -> {
+                            ((Callback<Boolean>) invocation.getArgument(1)).onResult(true);
+                            return null;
+                        })
+                .when(spySigninManager)
+                .isAccountManaged(eq(accountInfo), any());
+        doAnswer(
+                        invocation -> {
+                            ((SigninManager.SignInCallback) invocation.getArgument(2))
+                                    .onSignInAborted();
+                            return null;
+                        })
+                .when(spySigninManager)
+                .signinAndEnableSync(eq(accountInfo), anyInt(), any());
+
+        mSyncConsentActivity = waitForSyncConsentActivity(accountInfo);
+        View moreButton = mSyncConsentActivity.findViewById(R.id.more_button);
+        if (moreButton != null && moreButton.isShown()) {
+            onView(withId(R.id.more_button)).perform(click());
+        }
+        onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
+        onViewWaiting(withId(R.id.positive_button)).perform(click());
+        assertFalse(
+                ThreadUtils.runOnUiThreadBlocking(signinManager::getUserAcceptedAccountManagement));
     }
 
     private void simulateDeviceLockReadyOnAutomotive() {
@@ -981,7 +1696,7 @@ public class SyncConsentFragmentTest {
         assertNotNull(
                 "The SyncConsentActivity should contain the SyncConsentFragment!",
                 syncConsentFragment);
-        TestThreadUtils.runOnUiThreadBlocking(syncConsentFragment::onDeviceLockReady);
+        ThreadUtils.runOnUiThreadBlocking(syncConsentFragment::onDeviceLockReady);
     }
 
     private void simulateDeviceLockRefused() {
@@ -993,7 +1708,7 @@ public class SyncConsentFragmentTest {
         assertNotNull(
                 "The SyncConsentActivity should contain the SyncConsentFragment!",
                 syncConsentFragment);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     syncConsentFragment.onDeviceLockRefused();
                     assertFalse(syncConsentFragment.getDeviceLockReadyForTesting());
@@ -1002,7 +1717,7 @@ public class SyncConsentFragmentTest {
 
     private void launchActivityWithFragment(Fragment fragment) {
         mActivityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()
@@ -1012,5 +1727,32 @@ public class SyncConsentFragmentTest {
                             .commit();
                 });
         ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
+    }
+
+    private SyncConsentActivity waitForSyncConsentActivity(CoreAccountInfo accountInfo) {
+        return ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(),
+                SyncConsentActivity.class,
+                () -> {
+                    SyncConsentActivityLauncherImpl.get()
+                            .launchActivityForPromoDefaultFlow(
+                                    mChromeActivityTestRule.getActivity(),
+                                    SigninAccessPoint.START_PAGE,
+                                    accountInfo.getEmail());
+                });
+    }
+
+    void checkButtonsAreEquallyWeightedandVisible() {
+        onView(withId(R.id.button_primary)).check(matches(isDisplayed()));
+        onView(withId(R.id.button_secondary)).check(matches(isDisplayed()));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
+                    Button secondaryButton =
+                            mSyncConsentActivity.findViewById(R.id.button_secondary);
+                    Assert.assertEquals(
+                            primaryButton.getTextColors().getDefaultColor(),
+                            secondaryButton.getTextColors().getDefaultColor());
+                });
     }
 }

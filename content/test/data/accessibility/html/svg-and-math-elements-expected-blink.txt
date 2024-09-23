@@ -1,6 +1,6 @@
 rootWebArea htmlTag='#document'
-++genericContainer ignored htmlTag='html'
-++++genericContainer ignored htmlTag='body'
+++genericContainer ignored
+++++genericContainer ignored
 ++++++genericContainer className='svg-container' htmlTag='div'
 ++++++++image htmlTag='svg' name='original'
 ++++++++genericContainer className='html-namespace' htmlTag='svg' name='created'

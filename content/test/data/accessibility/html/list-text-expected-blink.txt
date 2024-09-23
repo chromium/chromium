@@ -4,19 +4,19 @@ rootWebArea
 ++++++list
 ++++++++listItem
 ++++++++++listMarker name='1. '
-++++++++++++staticText ignored name='1. '
+++++++++++++staticText ignored
 ++++++++++staticText name='tic'
 ++++++++++++inlineTextBox name='tic'
 ++++++++staticText name='^'
 ++++++++++inlineTextBox name='^'
 ++++++++listItem
 ++++++++++listMarker name='2. '
-++++++++++++staticText ignored name='2. '
+++++++++++++staticText ignored
 ++++++++++staticText name='tac'
 ++++++++++++inlineTextBox name='tac'
 ++++++++listItem
 ++++++++++listMarker name='3. '
-++++++++++++staticText ignored name='3. '
+++++++++++++staticText ignored
 ++++++++++staticText name='toe'
 ++++++++++++inlineTextBox name='toe'
 ++++++++staticText name='|'

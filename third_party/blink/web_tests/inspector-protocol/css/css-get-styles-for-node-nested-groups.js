@@ -17,9 +17,16 @@
       }
     }
   }
+
+  #commented-out-property {
+    @supports (display: flex) {
+      /* color: red; */
+    }
+  }
   </style>
   <div id='no-properties'></div>
-  <div id='with-properties'></div>`,
+  <div id='with-properties'></div>
+  <div id='commented-out-property'></div>`,
 'The test verifies functionality of protocol method CSS.getMatchedStylesForNode for nested groups.');
 
   await dp.DOM.enable();
@@ -36,6 +43,9 @@
 
   testRunner.log("\nThere should be a rule for implicit nested group.");
   await cssHelper.loadAndDumpInlineAndMatchingRules(documentNodeId, '#with-properties');
+
+  testRunner.log("\nThere should not be a rule for #commented-out-property.");
+  await cssHelper.loadAndDumpInlineAndMatchingRules(documentNodeId, '#commented-out-property');
 
   testRunner.completeTest();
 });

@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] treat-as-public-address to local: failed preflight.
+  assert_equals: expected "timeout" but got "success"
+[FAIL] treat-as-public-address to local: missing CORS headers.
+  assert_equals: expected "timeout" but got "success"
+[FAIL] treat-as-public-address to local: missing PNA header.
+  assert_equals: expected "timeout" but got "success"
+[FAIL] treat-as-public-address to private: failed preflight.
+  assert_equals: expected "timeout" but got "success"
+[FAIL] treat-as-public-address to private: missing CORS headers.
+  assert_equals: expected "timeout" but got "success"
+[FAIL] treat-as-public-address to private: missing PNA header.
+  assert_equals: expected "timeout" but got "success"
+Harness: the test ran to completion.
+

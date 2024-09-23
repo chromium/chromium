@@ -1,0 +1,729 @@
+{
+  "description": "Order of various limits checked for source registrations",
+  "api_config": {
+    "max_event_level_channel_capacity_navigation": "12",
+    "max_event_level_channel_capacity_event": "4",
+    "max_event_level_channel_capacity_scopes_navigation": "12",
+    "max_sources_per_origin": "3",
+    "max_destinations_per_source_site_reporting_site": "3",
+    "rate_limit_max_reporting_origins_per_source_reporting_site": "1",
+    "max_destinations_per_rate_limit_window_reporting_site": "3",
+    "max_destinations_per_rate_limit_window": "3",
+    "rate_limit_max_source_registration_reporting_origins": "1",
+    "needs_attribution_scopes": true
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter1.test",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination1.test",
+                "source_event_id": "111",
+                "expiry": "86400",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "86390000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter1.test",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination2.test",
+                "source_event_id": "222",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "86391000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter2.test",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination3.test",
+                "source_event_id": "333",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // This source would hit channel capacity limit, max event states limit,
+      // scopes channel capacity limit, storage limit, unexpired destination
+      // limit, reporting origin per site limit, time-based destination per site
+      // limit, time-based destination limit, reporting origin limit. Should be
+      // reported as `source-channel-capacity-limit`.
+      {
+        "timestamp": "86392000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "event-source"
+        },
+        "responses": [
+          {
+            "url": "https://sub.reporter1.test",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "max_event_level_reports": 5,
+                "destination": [
+                  "https://destination3.test",
+                  "https://destination4.test",
+                  "https://destination5.test"
+                ],
+                "attribution_scopes": {
+                  "limit": 10000,
+                  "max_event_states": 3,
+                  "values": [
+                    "1"
+                  ]
+                },
+                "source_event_id": "334",
+                "debug_reporting": true,
+                "destination_limit_priority": "-1"
+              }
+            }
+          }
+        ]
+      },
+      // This source would hit max event states limit, scopes channel capacity
+      // limit, storage limit, unexpired destination limit, reporting origin
+      // per site limit, time-based destination per site limit, time-based
+      // destination limit, reporting origin limit. Should be reported as
+      // `source-max-event-states-limit`.
+      {
+        "timestamp": "86392001",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "event-source"
+        },
+        "responses": [
+          {
+            "url": "https://sub.reporter1.test",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "max_event_level_reports": 3,
+                "destination": [
+                  "https://destination3.test",
+                  "https://destination4.test",
+                  "https://destination5.test"
+                ],
+                "attribution_scopes": {
+                  "limit": 1000,
+                  "max_event_states": 3,
+                  "values": [
+                    "1"
+                  ]
+                },
+                "source_event_id": "335",
+                "debug_reporting": true,
+                "destination_limit_priority": "-1"
+              }
+            }
+          }
+        ]
+      },
+      // This source would hit scopes channel capacity limit, storage limit,
+      // unexpired destination limit, reporting origin per site limit, time-
+      // based destination per site limit, time-based destination limit,
+      // reporting origin limit. Should be reported as
+      // `source-scopes-channel-capacity-limit`.
+      {
+        "timestamp": "86392002",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://sub.reporter1.test",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "max_event_level_reports": 3,
+                "destination": [
+                  "https://destination3.test",
+                  "https://destination4.test",
+                  "https://destination5.test"
+                ],
+                "attribution_scopes": {
+                  "limit": 1000,
+                  "max_event_states": 1000,
+                  "values": [
+                    "1"
+                  ]
+                },
+                "source_event_id": "336",
+                "debug_reporting": true,
+                "destination_limit_priority": "-1"
+              }
+            }
+          }
+        ]
+      },
+      // This source would hit storage limit, unexpired destination limit,
+      // reporting origin per site limit, time-based destination per site limit,
+      // time-based destination limit, reporting origin limit. Should be
+      // reported as `source-storage-limit`.
+      {
+        "timestamp": "86393000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://sub.reporter1.test",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": [
+                  "https://destination3.test",
+                  "https://destination4.test",
+                  "https://destination5.test"
+                ],
+                "source_event_id": "444",
+                "debug_reporting": true,
+                "destination_limit_priority": "-1"
+              }
+            }
+          }
+        ]
+      },
+      // The first source has expired, therefore this source doesn't hit the
+      // storage limit. Should be reported as `source-reporting-origin-per-site-limit`.
+      {
+        "timestamp": "86401000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://sub.reporter1.test",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": [
+                  "https://destination3.test",
+                  "https://destination4.test",
+                  "https://destination5.test"
+                ],
+                "source_event_id": "555",
+                "debug_reporting": true,
+                "destination_limit_priority": "-1"
+              }
+            }
+          }
+        ]
+      },
+      // Changes the reporting origin, therefore this source doesn't hit the
+      // reporting origin per site limit. Should be reported as
+      // `source-destination-rate-limit`.
+      {
+        "timestamp": "86402000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter1.test",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": [
+                  "https://destination3.test",
+                  "https://destination4.test",
+                  "https://destination5.test"
+                ],
+                "source_event_id": "666",
+                "debug_reporting": true,
+                "destination_limit_priority": "-1"
+              }
+            }
+          }
+        ]
+      },
+      // The second source falls outside destination rate-limit window,
+      // therefore this source doesn't hit the destination per site rate limit.
+      // Should be reported as `source-destination-limit`.
+      {
+        "timestamp": "86450001",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter1.test",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": [
+                  "https://destination3.test",
+                  "https://destination4.test",
+                  "https://destination5.test"
+                ],
+                "source_event_id": "777",
+                "debug_reporting": true,
+                "destination_limit_priority": "-1"
+              }
+            }
+          }
+        ]
+      },
+      // Changes to a new reporting origin, therefore this source doesn't hit
+      // the destination limit. Should be reported as `source-success`
+      // (time-based destination limit).
+      {
+        "timestamp": "86450002",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter3.test",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": [
+                  "https://destination4.test",
+                  "https://destination5.test",
+                  "https://destination6.test"
+                ],
+                "source_event_id": "888",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Verifies that there is no matching source as the previous source is
+      // not registered.
+      {
+        "timestamp": "86450003",
+        "registration_request": {
+          "context_origin": "https://destination4.test",
+          "Attribution-Reporting-Eligible": "trigger"
+        },
+        "responses": [
+          {
+            "url": "https://reporter3.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "0"
+                  }
+                ],
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Randomized response provided, therefore should be reported as
+      // `source-noised` (time-based destination limit).
+      {
+        "timestamp": "86450004",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter3.test",
+            "debug_permission": true,
+            "randomized_response": [],
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": [
+                  "https://destination4.test",
+                  "https://destination5.test",
+                  "https://destination6.test"
+                ],
+                "source_event_id": "876",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Verifies that there is no matching source as the previous source is
+      // not registered.
+      {
+        "timestamp": "86450005",
+        "registration_request": {
+          "context_origin": "https://destination4.test",
+          "Attribution-Reporting-Eligible": "trigger"
+        },
+        "responses": [
+          {
+            "url": "https://reporter3.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "0"
+                  }
+                ],
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Reduces the number of destinations, therefore this source doesn't hit
+      // the time-based destination limit. Should be reported as
+      // `source-success` (reporting origin limit).
+      {
+        "timestamp": "86450006",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter3.test",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": [
+                  "https://destination3.test"
+                ],
+                "source_event_id": "999",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Verifies that there is no matching source as the previous source is
+      // not registered.
+      {
+        "timestamp": "86450007",
+        "registration_request": {
+          "context_origin": "https://destination3.test",
+          "Attribution-Reporting-Eligible": "trigger"
+        },
+        "responses": [
+          {
+            "url": "https://reporter3.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1"
+                  }
+                ],
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Randomized response provided, therefore should be reported as
+      // `source-noised` (reporting origin limit).
+      {
+        "timestamp": "86450008",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter3.test",
+            "debug_permission": true,
+            "randomized_response": [],
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": [
+                  "https://destination3.test"
+                ],
+                "source_event_id": "967",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Verifies that there is no matching source as the previous source is
+      // not registered.
+      {
+        "timestamp": "86450009",
+        "registration_request": {
+          "context_origin": "https://destination3.test",
+          "Attribution-Reporting-Eligible": "trigger"
+        },
+        "responses": [
+          {
+            "url": "https://reporter3.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1"
+                  }
+                ],
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination1.test",
+              "source_event_id": "111",
+              "source_site": "https://source.test"
+           },
+           "type": "source-success"
+        } ],
+        "report_time": "0",
+        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination2.test",
+              "source_event_id": "222",
+              "source_site": "https://source.test"
+           },
+           "type": "source-success"
+        } ],
+        "report_time": "86390000",
+        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination3.test",
+              "source_event_id": "333",
+              "source_site": "https://source.test"
+           },
+           "type": "source-success"
+        } ],
+        "report_time": "86391000",
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": [ "https://destination3.test", "https://destination4.test", "https://destination5.test" ],
+              "limit": 4.0,
+              "source_event_id": "334",
+              "source_site": "https://source.test"
+           },
+           "type": "source-channel-capacity-limit"
+        } ],
+        "report_time": "86392000",
+        "report_url": "https://sub.reporter1.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": [ "https://destination3.test", "https://destination4.test", "https://destination5.test" ],
+              "limit": "3",
+              "source_event_id": "335",
+              "source_site": "https://source.test"
+           },
+           "type": "source-max-event-states-limit"
+        } ],
+        "report_time": "86392001",
+        "report_url": "https://sub.reporter1.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": [ "https://destination3.test", "https://destination4.test", "https://destination5.test" ],
+              "limit": 12.0,
+              "source_event_id": "336",
+              "source_site": "https://source.test"
+           },
+           "type": "source-scopes-channel-capacity-limit"
+        } ],
+        "report_time": "86392002",
+        "report_url": "https://sub.reporter1.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": [ "https://destination3.test", "https://destination4.test", "https://destination5.test" ],
+              "limit": "3",
+              "source_event_id": "444",
+              "source_site": "https://source.test"
+           },
+           "type": "source-storage-limit"
+        } ],
+        "report_time": "86393000",
+        "report_url": "https://sub.reporter1.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": [ "https://destination3.test", "https://destination4.test", "https://destination5.test" ],
+              "limit": "1",
+              "source_event_id": "555",
+              "source_site": "https://source.test"
+           },
+           "type": "source-reporting-origin-per-site-limit"
+        } ],
+        "report_time": "86401000",
+        "report_url": "https://sub.reporter1.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": [ "https://destination3.test", "https://destination4.test", "https://destination5.test" ],
+              "limit": "3",
+              "source_event_id": "666",
+              "source_site": "https://source.test"
+           },
+           "type": "source-destination-rate-limit"
+        } ],
+        "report_time": "86402000",
+        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": [ "https://destination3.test", "https://destination4.test", "https://destination5.test" ],
+              "limit": "3",
+              "source_event_id": "777",
+              "source_site": "https://source.test"
+           },
+           "type": "source-destination-limit"
+        } ],
+        "report_time": "86450001",
+        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": [ "https://destination4.test", "https://destination5.test", "https://destination6.test" ],
+              "source_event_id": "888",
+              "source_site": "https://source.test"
+           },
+           "type": "source-success"
+        } ],
+        "report_time": "86450002",
+        "report_url": "https://reporter3.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination4.test"
+           },
+           "type": "trigger-no-matching-source"
+        } ],
+        "report_time": "86450003",
+        "report_url": "https://reporter3.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": [ "https://destination4.test", "https://destination5.test", "https://destination6.test" ],
+              "source_event_id": "876",
+              "source_site": "https://source.test"
+           },
+           "type": "source-noised"
+        } ],
+        "report_time": "86450004",
+        "report_url": "https://reporter3.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination4.test"
+           },
+           "type": "trigger-no-matching-source"
+        } ],
+        "report_time": "86450005",
+        "report_url": "https://reporter3.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination3.test",
+              "source_event_id": "999",
+              "source_site": "https://source.test"
+           },
+           "type": "source-success"
+        } ],
+        "report_time": "86450006",
+        "report_url": "https://reporter3.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination3.test"
+           },
+           "type": "trigger-no-matching-source"
+        } ],
+        "report_time": "86450007",
+        "report_url": "https://reporter3.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination3.test",
+              "source_event_id": "967",
+              "source_site": "https://source.test"
+           },
+           "type": "source-noised"
+        } ],
+        "report_time": "86450008",
+        "report_url": "https://reporter3.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
+              "attribution_destination": "https://destination3.test"
+           },
+           "type": "trigger-no-matching-source"
+        } ],
+        "report_time": "86450009",
+        "report_url": "https://reporter3.test/.well-known/attribution-reporting/debug/verbose"
+      }
+    ]
+  }
+}

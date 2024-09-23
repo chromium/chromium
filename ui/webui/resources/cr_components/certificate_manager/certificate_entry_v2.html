@@ -1,0 +1,36 @@
+<style include="cr-shared-style cr-icons">
+  .cert-row {
+    display: flex;
+    border-top: none;
+    overflow-wrap: anywhere;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .cert-hash {
+    --cr-input-error-display: none;
+    margin-left: auto;
+    min-width: 20em;
+    max-width: 20em;
+  }
+</style>
+
+<div class="cr-row cert-row">
+  [[displayName]]
+  <cr-input id="certhash" class="input-field cert-hash"
+      value="[[sha256hashHex]]" readonly>
+    <cr-icon-button id="copy" class="icon-copy-content"
+        slot="inline-suffix"
+        aria-label="[[i18n('certificateManagerV2CertHashCopyAriaLabel', displayName)]]"
+        on-click="onCopyHash_">
+    </cr-icon-button>
+  </cr-input>
+  <cr-icon-button id="delete" class="icon-picture-delete" hidden$="[[!isDeletable]]"
+      aria-label="[[i18n('certificateManagerV2CertEntryDeleteAriaLabel', displayName)]]"
+      on-click="onDeleteCertificate_">
+  </cr-icon-button>
+  <cr-icon-button id="view" class="icon-visibility"
+      aria-label="[[i18n('certificateManagerV2CertEntryViewAriaLabel', displayName)]]"
+      on-click="onViewCertificate_">
+  </cr-icon-button>
+</div>

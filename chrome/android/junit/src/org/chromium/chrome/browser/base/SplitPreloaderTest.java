@@ -16,6 +16,7 @@ import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +26,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.build.BuildConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,6 +119,15 @@ public class SplitPreloaderTest {
 
     @Before
     public void setUp() {
+        BuildConfig.IS_BUNDLE = true;
+        mContext = new MainContext(ContextUtils.getApplicationContext());
+        ContextUtils.initApplicationContextForTests(mContext);
+        mPreloader = new SplitPreloader(mContext);
+    }
+
+    @After
+    public void tearDown() {
+        BuildConfig.IS_BUNDLE = false;
         mContext = new MainContext(ContextUtils.getApplicationContext());
         ContextUtils.initApplicationContextForTests(mContext);
         mPreloader = new SplitPreloader(mContext);
@@ -219,7 +230,7 @@ public class SplitPreloaderTest {
                         uiContextHolder[0] = context;
                     }
                 });
-        helper.waitForFirst();
+        helper.waitForOnly();
         assertEquals(backgroundContextHolder[0], mContext);
 
         mPreloader.wait(SPLIT_A);

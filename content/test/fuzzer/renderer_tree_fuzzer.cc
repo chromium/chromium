@@ -369,7 +369,7 @@ std::unique_ptr<Node> Node::CreateRandom(Random* rnd) {
     case 1:
       return Text::CreateRandom(rnd);
     default:
-      NOTREACHED_NORETURN() << "SHOULD NOT HAPPEN";
+      NOTREACHED() << "SHOULD NOT HAPPEN";
   }
 }
 

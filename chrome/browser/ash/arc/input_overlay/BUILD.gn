@@ -1,0 +1,106 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("input_overlay") {
+  sources = [
+    "arc_input_overlay_manager.cc",
+    "arc_input_overlay_manager.h",
+    "arc_input_overlay_metrics.cc",
+    "arc_input_overlay_metrics.h",
+    "constants.h",
+    "display_overlay_controller.cc",
+    "display_overlay_controller.h",
+    "input_overlay_resources_util.cc",
+    "input_overlay_resources_util.h",
+    "key_event_source_rewriter.cc",
+    "key_event_source_rewriter.h",
+    "touch_id_manager.cc",
+    "touch_id_manager.h",
+    "touch_injector.cc",
+    "touch_injector.h",
+    "touch_injector_observer.cc",
+    "touch_injector_observer.h",
+    "util.cc",
+    "util.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/app_list",
+    "//ash/components/arc",
+    "//ash/components/arc/input_overlay/resources",
+    "//ash/components/arc/mojom",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc/input_overlay/actions",
+    "//chrome/browser/ash/arc/input_overlay/db",
+    "//chrome/browser/ash/arc/input_overlay/db/proto",
+    "//chrome/browser/ash/arc/input_overlay/ui",
+    "//chromeos/strings:strings_grit",
+    "//components/app_restore",
+    "//components/exo",
+    "//components/keyed_service/core",
+    "//components/ukm",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/display",
+    "//ui/display/manager",
+    "//ui/events",
+    "//ui/views",
+    "//ui/wm",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/arc/input_overlay/actions",
+    "//chrome/browser/ash/arc/input_overlay/ui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_input_overlay_manager_unittest.cc",
+    "display_overlay_controller_alpha_unittest.cc",
+    "display_overlay_controller_unittest.cc",
+    "touch_id_manager_unittest.cc",
+    "touch_injector_unittest.cc",
+  ]
+
+  deps = [
+    ":input_overlay",
+    "//ash",
+    "//ash:test_support",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc/input_overlay/resources",
+    "//ash/public/cpp",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/arc/input_overlay/actions",
+    "//chrome/browser/ash/arc/input_overlay/test:test_support",
+    "//chrome/browser/ash/arc/input_overlay/ui",
+    "//chrome/test:test_support",
+    "//chromeos/strings",
+    "//components/exo:test_support",
+    "//components/ukm:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/aura:test_support",
+    "//ui/base",
+    "//ui/events:test_support",
+    "//ui/gfx",
+    "//ui/views",
+
+    # Gather unit tests from subdirectories.
+    "//chrome/browser/ash/arc/input_overlay/actions:unit_tests",
+    "//chrome/browser/ash/arc/input_overlay/ui:unit_tests",
+  ]
+}

@@ -24,9 +24,10 @@ enum class PasswordSharingInteraction {
   kSharingConfirmationLearnMoreClicked = 11,
   kSharingConfirmationChangePasswordClicked = 12,
   kSharingConfirmationDoneClicked = 13,
-  kMaxValue = kSharingConfirmationDoneClicked,
+  kFamilyPickerOpened = 14,
+  kMaxValue = kFamilyPickerOpened,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml)
 
 // Logs the user interaction with the password sharing flow.
 void LogPasswordSharingInteraction(PasswordSharingInteraction action);

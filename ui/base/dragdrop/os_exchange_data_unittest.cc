@@ -19,10 +19,6 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 namespace ui {
 
 class OSExchangeDataTest : public PlatformTest {
@@ -45,17 +41,13 @@ TEST_F(OSExchangeDataTest, StringDataGetAndSet) {
     return data.provider().Clone();
   }());
 
-  std::u16string output;
   EXPECT_TRUE(copy.HasString());
-  EXPECT_TRUE(copy.GetString(&output));
-  EXPECT_EQ(u"I can has cheezburger?", output);
-  std::string url_spec = "https://www.example.com/";
-  GURL url(url_spec);
-  std::u16string title;
-  EXPECT_FALSE(copy.GetURLAndTitle(
-      FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url, &title));
-  // No URLs in |data|, so url should be untouched.
-  EXPECT_EQ(url_spec, url.spec());
+  std::optional<std::u16string> string = copy.GetString();
+  EXPECT_EQ(u"I can has cheezburger?", string);
+  std::optional<OSExchangeData::UrlInfo> url_info =
+      copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  // No URLs in `data` so no URLs should be read out.
+  EXPECT_FALSE(url_info.has_value());
 }
 
 TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
@@ -68,18 +60,17 @@ TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
   }());
 
   // URL spec and title should match
-  GURL output_url;
-  std::u16string output_title;
   EXPECT_TRUE(copy.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
-  EXPECT_TRUE(copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
-                                  &output_url, &output_title));
-  EXPECT_EQ("https://www.google.com/", output_url.spec());
-  EXPECT_EQ(u"www.google.com", output_title);
+  std::optional<OSExchangeData::UrlInfo> url_info =
+      copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  EXPECT_TRUE(url_info.has_value());
+  EXPECT_EQ("https://www.google.com/", url_info->url.spec());
+  EXPECT_EQ(u"www.google.com", url_info->title);
 
-  // URL should be the raw text response
-  std::u16string output_string;
-  EXPECT_TRUE(copy.GetString(&output_string));
-  EXPECT_EQ("https://www.google.com/", base::UTF16ToUTF8(output_string));
+  // URL should be the raw text response, even though no text was explicitly
+  // set.
+  std::optional<std::u16string> string = copy.GetString();
+  EXPECT_EQ(u"https://www.google.com/", string);
 }
 
 // Test that setting the URL does not overwrite a previously set custom string
@@ -92,30 +83,26 @@ TEST_F(OSExchangeDataTest, URLStringFileContents) {
     return data.provider().Clone();
   }());
 
-  std::u16string output_string;
-  EXPECT_TRUE(copy.GetString(&output_string));
-  EXPECT_EQ(u"I can has cheezburger?", output_string);
+  std::optional<std::u16string> string = copy.GetString();
+  EXPECT_EQ(u"I can has cheezburger?", string);
 
-  GURL output_url;
-  std::u16string output_title;
-  EXPECT_TRUE(copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
-                                  &output_url, &output_title));
-  EXPECT_EQ("https://www.google.com/", output_url.spec());
-  EXPECT_EQ(u"www.google.com", output_title);
+  std::optional<OSExchangeData::UrlInfo> url_info =
+      copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  EXPECT_TRUE(url_info.has_value());
+  EXPECT_EQ("https://www.google.com/", url_info->url.spec());
+  EXPECT_EQ(u"www.google.com", url_info->title);
 
   // HasFileContents() should be false, and GetFileContents() should be empty
   // (https://crbug.com/1274395).
   EXPECT_FALSE(copy.HasFileContents());
-  base::FilePath filename;
-  std::string contents;
-  EXPECT_FALSE(copy.GetFileContents(&filename, &contents));
-  EXPECT_TRUE(filename.empty());
-  EXPECT_TRUE(contents.empty());
+  std::optional<OSExchangeData::FileContentsInfo> file_contents =
+      copy.GetFileContents();
+  EXPECT_FALSE(file_contents.has_value());
 }
 
 TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
-  base::FilePath current_directory;
-  ASSERT_TRUE(base::GetCurrentDirectory(&current_directory));
+  base::FilePath file_path;
+  ASSERT_TRUE(base::CreateTemporaryFile(&file_path));
 
   const OSExchangeData copy([&] {
     OSExchangeData data;
@@ -123,39 +110,31 @@ TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
     EXPECT_FALSE(data.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
     EXPECT_FALSE(data.HasFile());
 
-    data.SetFilename(current_directory);
+    data.SetFilename(file_path);
 
     return data.provider().Clone();
   }());
 
   {
     EXPECT_FALSE(copy.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
-    GURL actual_url;
-    std::u16string actual_title;
-    EXPECT_FALSE(
-        copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
-                            &actual_url, &actual_title));
-    EXPECT_EQ(GURL(), actual_url);
-    EXPECT_EQ(std::u16string(), actual_title);
+    std::optional<OSExchangeData::UrlInfo> no_converted_filenames_url_info =
+        copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+    EXPECT_FALSE(no_converted_filenames_url_info.has_value());
   }
 
   {
     EXPECT_TRUE(copy.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
-    GURL actual_url;
-    std::u16string actual_title;
-    EXPECT_TRUE(copy.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES,
-                                    &actual_url, &actual_title));
-    // Some Mac OS versions return the URL in file://localhost form instead
-    // of file:///, so we compare the url's path not its absolute string.
-    EXPECT_EQ(net::FilePathToFileURL(current_directory).path(),
-              actual_url.path());
-    EXPECT_EQ(std::u16string(), actual_title);
+    std::optional<OSExchangeData::UrlInfo> converted_url_info =
+        copy.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES);
+    ASSERT_TRUE(converted_url_info.has_value());
+    EXPECT_EQ(net::FilePathToFileURL(file_path), converted_url_info->url);
+    EXPECT_EQ(std::u16string(), converted_url_info->title);
   }
   EXPECT_TRUE(copy.HasFile());
-  std::vector<FileInfo> actual_files;
-  EXPECT_TRUE(copy.GetFilenames(&actual_files));
-  EXPECT_EQ(1u, actual_files.size());
-  EXPECT_EQ(current_directory, actual_files[0].path);
+  std::optional<std::vector<FileInfo>> actual_files = copy.GetFilenames();
+  ASSERT_TRUE(actual_files.has_value());
+  EXPECT_EQ(1u, actual_files.value().size());
+  EXPECT_EQ(file_path, actual_files.value()[0].path);
 }
 
 TEST_F(OSExchangeDataTest, TestPickledData) {
@@ -173,9 +152,10 @@ TEST_F(OSExchangeDataTest, TestPickledData) {
 
   EXPECT_TRUE(copy.HasCustomFormat(kTestFormat));
 
-  base::Pickle restored_pickle;
-  EXPECT_TRUE(copy.GetPickledData(kTestFormat, &restored_pickle));
-  base::PickleIterator iterator(restored_pickle);
+  std::optional<base::Pickle> restored_pickle =
+      copy.GetPickledData(kTestFormat);
+  ASSERT_TRUE(restored_pickle.has_value());
+  base::PickleIterator iterator(restored_pickle.value());
   int value;
   EXPECT_TRUE(iterator.ReadInt(&value));
   EXPECT_EQ(1, value);
@@ -204,13 +184,13 @@ TEST_F(OSExchangeDataTest, TestFilenames) {
     return data.provider().Clone();
   }());
 
-  std::vector<FileInfo> dropped_filenames;
-  EXPECT_TRUE(copy.GetFilenames(&dropped_filenames));
+  std::optional<std::vector<FileInfo>> dropped_filenames = copy.GetFilenames();
+  ASSERT_TRUE(dropped_filenames.has_value());
   // Only check the paths, not the display names, as those might be synthesized
   // during the clone while reading from the clipboard.
-  ASSERT_EQ(kTestFilenames.size(), dropped_filenames.size());
+  ASSERT_EQ(kTestFilenames.size(), dropped_filenames.value().size());
   for (size_t i = 0; i < kTestFilenames.size(); ++i) {
-    EXPECT_EQ(kTestFilenames[i].path, dropped_filenames[i].path);
+    EXPECT_EQ(kTestFilenames[i].path, dropped_filenames.value()[i].path);
   }
 }
 
@@ -228,12 +208,11 @@ TEST_F(OSExchangeDataTest, TestHTML) {
     return data.provider().Clone();
   }());
 
-  std::u16string read_html;
-  GURL read_url;
   EXPECT_TRUE(copy.HasHtml());
-  EXPECT_TRUE(copy.GetHtml(&read_html, &read_url));
-  EXPECT_EQ(html, read_html);
-  EXPECT_EQ(url, read_url);
+  std::optional<ui::OSExchangeData::HtmlInfo> html_content = copy.GetHtml();
+  ASSERT_TRUE(html_content.has_value());
+  EXPECT_EQ(html, html_content->html);
+  EXPECT_EQ(url, html_content->base_url);
 }
 #endif
 

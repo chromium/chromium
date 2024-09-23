@@ -21,7 +21,9 @@ VideoCaptureDeviceChromeOSHalv3::VideoCaptureDeviceChromeOSHalv3(
 }
 
 VideoCaptureDeviceChromeOSHalv3::~VideoCaptureDeviceChromeOSHalv3() {
-  vcd_delegate_->Shutdown();
+  // TODO(b/335574894) : Self deleting object is kind of a dangerous pattern.
+  // Refine the pattern when refactoring.
+  vcd_delegate_.ExtractAsDangling()->Shutdown();
 }
 
 // VideoCaptureDevice implementation.

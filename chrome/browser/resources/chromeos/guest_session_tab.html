@@ -11,7 +11,9 @@
 <div id="enterprise-info" visible="$i18n{enterpriseInfoVisible}">
   <img src="../../../../ui/webui/resources/images/business.svg">
   <span id="enterprise-info-message">$i18n{enterpriseInfoMessage}</span>
-  <a id="enterprise-info-hint-link" href="$i18nRaw{enterpriseInfoHintLink}">
+  <a id="enterprise-info-hint-link"
+      href="$i18nRaw{enterpriseInfoHintLink}"
+      aria-label="$i18nRaw{enterpriseLearnMoreA11yLabel}">
     $i18n{enterpriseLearnMore}
   </a>
 </div>
@@ -19,7 +21,10 @@
   <h1>$i18n{guestTabHeading}</h1>
   <p>
     <span>$i18n{guestTabDescription}</span>
-    <a href="$i18nRaw{learnMoreLink}">$i18n{learnMore}</a>
+    <a aria-label="$i18nRaw{learnMoreA11yLabel}"
+        href="$i18nRaw{learnMoreLink}">
+      $i18n{learnMore}
+    </a>
   </p>
 </div>
 </body>

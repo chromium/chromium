@@ -4,15 +4,18 @@
 
 #include "chrome/browser/ui/webui/app_management/web_app_settings_page_handler.h"
 
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
+#include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "components/url_formatter/elide_url.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -20,6 +23,11 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/default_apps_util.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #endif
 
 namespace {
@@ -75,6 +83,24 @@ std::vector<std::string> GetScopeExtensions(const webapps::AppId& app_id,
   return scope_extensions_vector;
 }
 
+web_app::RunOnOsLoginMode ConvertOsLoginModeToWebAppConstants(
+    apps::RunOnOsLoginMode login_mode) {
+  web_app::RunOnOsLoginMode web_app_constant_login_mode =
+      web_app::RunOnOsLoginMode::kMinValue;
+  switch (login_mode) {
+    case apps::RunOnOsLoginMode::kWindowed:
+      web_app_constant_login_mode = web_app::RunOnOsLoginMode::kWindowed;
+      break;
+    case apps::RunOnOsLoginMode::kNotRun:
+      web_app_constant_login_mode = web_app::RunOnOsLoginMode::kNotRun;
+      break;
+    case apps::RunOnOsLoginMode::kUnknown:
+      web_app_constant_login_mode = web_app::RunOnOsLoginMode::kNotRun;
+      break;
+  }
+  return web_app_constant_login_mode;
+}
+
 }  // namespace
 
 WebAppSettingsPageHandler::WebAppSettingsPageHandler(
@@ -84,17 +110,50 @@ WebAppSettingsPageHandler::WebAppSettingsPageHandler(
     AppManagementPageHandlerBase::Delegate& delegate)
     : AppManagementPageHandlerBase(std::move(receiver),
                                    std::move(page),
-                                   profile,
-                                   delegate) {
+                                   profile),
+      delegate_(delegate) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   registrar_observation_.Observe(&provider->registrar_unsafe());
+#if BUILDFLAG(IS_MAC)
+  app_shim_observation_ = AppShimRegistry::Get()->RegisterAppChangedCallback(
+      base::BindRepeating(&WebAppSettingsPageHandler::NotifyAppChanged,
+                          base::Unretained(this)));
+#endif
 }
 
 WebAppSettingsPageHandler::~WebAppSettingsPageHandler() = default;
 
+void WebAppSettingsPageHandler::GetSubAppToParentMap(
+    GetSubAppToParentMapCallback callback) {
+  NOTIMPLEMENTED();
+}
+
+void WebAppSettingsPageHandler::GetExtensionAppPermissionMessages(
+    const std::string& app_id,
+    GetExtensionAppPermissionMessagesCallback callback) {
+  NOTIMPLEMENTED();
+}
+
+void WebAppSettingsPageHandler::SetPinned(const std::string& app_id,
+                                          bool pinned) {
+  NOTIMPLEMENTED();
+}
+
 void WebAppSettingsPageHandler::SetResizeLocked(const std::string& app_id,
                                                 bool locked) {
   NOTIMPLEMENTED();
+}
+
+void WebAppSettingsPageHandler::Uninstall(const std::string& app_id) {
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile());
+
+  if (!provider->registrar_unsafe().CanUserUninstallWebApp(app_id)) {
+    return;
+  }
+
+  provider->ui_manager().PresentUserUninstallDialog(
+      app_id, webapps::WebappUninstallSource::kAppManagement,
+      delegate_->GetUninstallAnchorWindow(), base::DoNothing());
 }
 
 void WebAppSettingsPageHandler::SetPreferredApp(const std::string& app_id,
@@ -124,6 +183,10 @@ void WebAppSettingsPageHandler::GetOverlappingPreferredApps(
       std::move(callback), /*arg_for_shutdown=*/std::vector<std::string>());
 }
 
+void WebAppSettingsPageHandler::UpdateAppSize(const std::string& app_id) {
+  NOTIMPLEMENTED();
+}
+
 void WebAppSettingsPageHandler::SetWindowMode(const std::string& app_id,
                                               apps::WindowMode window_mode) {
   auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile());
@@ -140,8 +203,11 @@ void WebAppSettingsPageHandler::SetWindowMode(const std::string& app_id,
 void WebAppSettingsPageHandler::SetRunOnOsLoginMode(
     const std::string& app_id,
     apps::RunOnOsLoginMode run_on_os_login_mode) {
-  apps::AppServiceProxyFactory::GetForProfile(profile())->SetRunOnOsLoginMode(
-      app_id, run_on_os_login_mode);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile());
+  provider->scheduler().SetRunOnOsLoginMode(
+      app_id, ConvertOsLoginModeToWebAppConstants(run_on_os_login_mode),
+      base::DoNothing());
 }
 
 void WebAppSettingsPageHandler::ShowDefaultAppAssociationsUi() {
@@ -160,6 +226,15 @@ void WebAppSettingsPageHandler::SetAppLocale(const std::string& app_id,
                                              const std::string& locale_tag) {
   NOTIMPLEMENTED();
 }
+
+#if BUILDFLAG(IS_MAC)
+void WebAppSettingsPageHandler::OpenSystemNotificationSettings(
+    const std::string& app_id) {
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kNotifications,
+      web_app::GetBundleIdentifierForShim(app_id));
+}
+#endif
 
 void WebAppSettingsPageHandler::OnAppRegistrarDestroyed() {
   registrar_observation_.Reset();
@@ -204,6 +279,19 @@ app_management::mojom::AppPtr WebAppSettingsPageHandler::CreateApp(
   }
 
   app->hide_window_mode = provider->registrar_unsafe().IsIsolated(app->id);
+
+  app->show_system_notifications_settings_link = false;
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution)) {
+    auto system_permission_status =
+        AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(app->id);
+    app->show_system_notifications_settings_link =
+        system_permission_status !=
+            mac_notifications::mojom::PermissionStatus::kGranted &&
+        system_permission_status !=
+            mac_notifications::mojom::PermissionStatus::kNotDetermined;
+  }
+#endif
 
   return app;
 }

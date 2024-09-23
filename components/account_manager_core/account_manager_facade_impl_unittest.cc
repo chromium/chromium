@@ -425,7 +425,7 @@ TEST_F(AccountManagerFacadeImplTest, GetAccountsHangsWhenRemoteIsNull) {
   base::OnceCallback<void(const std::vector<Account>&)> dropped_callback =
       base::BindLambdaForTesting(
           [scoped_closure = std::move(scoped_closure)](
-              const std::vector<Account>&) { NOTREACHED(); });
+              const std::vector<Account>&) { NOTREACHED_IN_MIGRATION(); });
   EXPECT_FALSE(callback_was_dropped);
   account_manager_facade->GetAccounts(std::move(dropped_callback));
   // `dropped_callback` was destroyed without being run.

@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -28,6 +29,10 @@
 using content::RenderFrameHost;
 using content::WebContents;
 using content::WebUIMessageHandler;
+
+ConstrainedWebDialogUIConfig::ConstrainedWebDialogUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIConstrainedHTMLTestURL) {}
 
 namespace {
 
@@ -97,7 +102,7 @@ void ConstrainedWebDialogUI::OnDialogCloseMessage(
     if (args[0].is_string()) {
       json_retval = args[0].GetString();
     } else {
-      NOTREACHED() << "Could not read JSON argument";
+      NOTREACHED_IN_MIGRATION() << "Could not read JSON argument";
     }
   }
 

@@ -181,4 +181,9 @@ void MojoEcho::EchoStringAsOptionalNestedUnion(
       mojom::TestUnion::NewStringValue(value)));
 }
 
+void MojoEcho::EchoBoolArray(const std::vector<bool>& values,
+                             EchoBoolArrayCallback callback) {
+  std::move(callback).Run(values);
+}
+
 }  // namespace content

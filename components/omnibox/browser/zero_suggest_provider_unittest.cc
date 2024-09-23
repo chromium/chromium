@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/top_sites.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -28,6 +29,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/entropy_provider.h"
@@ -50,14 +52,12 @@ constexpr int kCacheSize = 10;
 
 class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
-  FakeAutocompleteProviderClient()
-      : template_url_service_(std::make_unique<TemplateURLService>(
-            /*prefs=*/nullptr,
-            /*search_engine_choice_service=*/nullptr)),
-        pref_service_(new TestingPrefServiceSimple()) {
-    ZeroSuggestProvider::RegisterProfilePrefs(pref_service_->registry());
+  FakeAutocompleteProviderClient() {
+    ZeroSuggestProvider::RegisterProfilePrefs(
+        search_engines_test_environment_.pref_service().registry());
     zero_suggest_cache_service_ = std::make_unique<ZeroSuggestCacheService>(
-        pref_service_.get(), kCacheSize);
+        std::make_unique<TestSchemeClassifier>(),
+        &search_engines_test_environment_.pref_service(), kCacheSize);
   }
   FakeAutocompleteProviderClient(const FakeAutocompleteProviderClient&) =
       delete;
@@ -67,14 +67,16 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   bool SearchSuggestEnabled() const override { return true; }
 
   TemplateURLService* GetTemplateURLService() override {
-    return template_url_service_.get();
+    return search_engines_test_environment_.template_url_service();
   }
 
-  TemplateURLService* GetTemplateURLService() const override {
-    return template_url_service_.get();
+  const TemplateURLService* GetTemplateURLService() const override {
+    return search_engines_test_environment_.template_url_service();
   }
 
-  PrefService* GetPrefs() const override { return pref_service_.get(); }
+  PrefService* GetPrefs() const override {
+    return &search_engines_test_environment_.pref_service();
+  }
 
   ZeroSuggestCacheService* GetZeroSuggestCacheService() override {
     return zero_suggest_cache_service_.get();
@@ -111,9 +113,8 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   }
 
  private:
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   bool is_personalized_url_data_collection_active_;
-  std::unique_ptr<TemplateURLService> template_url_service_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<ZeroSuggestCacheService> zero_suggest_cache_service_;
   TestSchemeClassifier scheme_classifier_;
 };
@@ -267,6 +268,16 @@ class ZeroSuggestProviderTest : public testing::Test,
     return input;
   }
 
+  AutocompleteInput OnFocusInputForLens(
+      const std::string& input_url = "https://example.com/") {
+    AutocompleteInput input(
+        u"", metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX,
+        TestSchemeClassifier());
+    input.set_current_url(GURL(input_url));
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+    return input;
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -317,19 +328,13 @@ void ZeroSuggestProviderTest::OnProviderUpdate(
   provider_did_notify_ = true;
 }
 
-// Tests whether zero-suggest is allowed on NTP when the external request
-// conditions are met.
+// Tests whether zero-suggest is allowed on NTP.
 TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsNTP) {
   AutocompleteInput zero_prefix_ntp_input = OnFocusInputForNTP();
   AutocompleteInput prefix_ntp_input = PrefixInputForNTP();
 
-  EXPECT_CALL(*client_, IsAuthenticated())
-      .WillRepeatedly(testing::Return(false));
-
-  // Enable on-focus zero-suggest for signed-out users.
+  // zero-suggest suggestions are allowed on NTP.
   {
-    base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(omnibox::kZeroSuggestOnNTPForSignedOutUsers);
 
     EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
               ZeroSuggestProvider::ResultTypeToRun(zero_prefix_ntp_input));
@@ -340,16 +345,6 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsNTP) {
               ZeroSuggestProvider::ResultTypeToRun(prefix_ntp_input));
     EXPECT_FALSE(
         provider_->AllowZeroPrefixSuggestions(client_.get(), prefix_ntp_input));
-  }
-  // Disable on-focus zero-suggest for signed-out users.
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(omnibox::kZeroSuggestOnNTPForSignedOutUsers);
-
-    EXPECT_FALSE(provider_->AllowZeroPrefixSuggestions(client_.get(),
-                                                       zero_prefix_ntp_input));
-    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
-              ZeroSuggestProvider::ResultTypeToRun(zero_prefix_ntp_input));
   }
 }
 
@@ -382,6 +377,7 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
   AutocompleteInput on_focus_srp_input = OnFocusInputForSRP();
   AutocompleteInput on_clobber_web_input = OnClobberInputForWeb();
   AutocompleteInput on_clobber_srp_input = OnClobberInputForSRP();
+  AutocompleteInput on_focus_lens_input = OnFocusInputForLens();
 
   // Disable on-clobber for OTHER and SRP.
   {
@@ -434,6 +430,11 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
               ZeroSuggestProvider::ResultTypeToRun(on_clobber_srp_input));
     EXPECT_FALSE(provider_->AllowZeroPrefixSuggestions(client_.get(),
                                                        on_clobber_srp_input));
+
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_lens_input));
+    EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                      on_focus_lens_input));
   }
   // Disable on-clobber for OTHER.
   {
@@ -486,6 +487,11 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
               ZeroSuggestProvider::ResultTypeToRun(on_clobber_srp_input));
     EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
                                                       on_clobber_srp_input));
+
+    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
+              ZeroSuggestProvider::ResultTypeToRun(on_focus_lens_input));
+    EXPECT_TRUE(provider_->AllowZeroPrefixSuggestions(client_.get(),
+                                                      on_focus_lens_input));
   }
 }
 
@@ -494,9 +500,6 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
 TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
   // Enable on-focus for OTHER and SRP.
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kZeroSuggestOnNTPForSignedOutUsers},
-      /*disabled_features=*/{});
 
   // Keep a reference to the Google default search provider.
   TemplateURLService* template_url_service = client_->GetTemplateURLService();
@@ -914,6 +917,81 @@ TEST_F(ZeroSuggestProviderRequestTest, RequestAndRemoteSendURLDisallowed) {
   // Make sure the default provider's suggest endpoint was not queried.
   EXPECT_TRUE(provider_->done());
   EXPECT_EQ(0, test_loader_factory()->NumPending());
+}
+
+TEST_F(ZeroSuggestProviderRequestTest,
+       SendRequestWithoutLensInteractionResponse) {
+  // Set up a Google default search provider.
+  TemplateURLData google_template_url_data;
+  google_template_url_data.SetShortName(u"t");
+  google_template_url_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  google_template_url_data.suggestions_url =
+      "https://www.google.com/suggest?q={searchTerms}&{google:currentPageUrl}";
+
+  TemplateURLService* turl_service = client_->GetTemplateURLService();
+  TemplateURL* template_url = turl_service->Add(
+      std::make_unique<TemplateURL>(google_template_url_data));
+  turl_service->SetUserSelectedDefaultSearchProvider(template_url);
+  ASSERT_NE(0, template_url->id());
+
+  EXPECT_CALL(*provider_, AllowZeroPrefixSuggestions(_, _))
+      .WillRepeatedly(testing::Return(true));
+
+  // Start a query for the ResultType::kRemoteNoURL variant.
+  AutocompleteInput input = OnFocusInputForLens();
+  provider_->Start(input, false);
+
+  // Make sure the default provider's suggest endpoint was queried with the
+  // expected client and without Lens Suggest signals.
+  EXPECT_FALSE(provider_->done());
+  EXPECT_TRUE(test_loader_factory()->IsPending(
+      "https://www.google.com/suggest?q=&client=chrome-multimodal"));
+
+  test_loader_factory()->AddResponse(
+      test_loader_factory()->GetPendingRequest(0)->request.url.spec(),
+      R"(["",[],[],[],{}])");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(provider_->done());
+}
+
+TEST_F(ZeroSuggestProviderRequestTest, SendRequestWithLensInteractionResponse) {
+  // Set up a Google default search provider.
+  TemplateURLData google_template_url_data;
+  google_template_url_data.SetShortName(u"t");
+  google_template_url_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  google_template_url_data.suggestions_url =
+      "https://www.google.com/suggest?q={searchTerms}&{google:currentPageUrl}";
+
+  TemplateURLService* turl_service = client_->GetTemplateURLService();
+  TemplateURL* template_url = turl_service->Add(
+      std::make_unique<TemplateURL>(google_template_url_data));
+  turl_service->SetUserSelectedDefaultSearchProvider(template_url);
+  ASSERT_NE(0, template_url->id());
+
+  EXPECT_CALL(*provider_, AllowZeroPrefixSuggestions(_, _))
+      .WillRepeatedly(testing::Return(true));
+
+  // Start a query for the ResultType::kRemoteNoURL variant.
+  AutocompleteInput input = OnFocusInputForLens();
+  lens::proto::LensOverlayInteractionResponse lens_overlay_interaction_response;
+  lens_overlay_interaction_response.set_suggest_signals("xyz");
+  input.set_lens_overlay_interaction_response(
+      lens_overlay_interaction_response);
+  provider_->Start(input, false);
+
+  // Make sure the default provider's suggest endpoint was queried with the
+  // expected client and Lens Suggest signals.
+  EXPECT_FALSE(provider_->done());
+  EXPECT_TRUE(test_loader_factory()->IsPending(
+      "https://www.google.com/suggest?q=&client=chrome-multimodal&iil=xyz"));
+
+  test_loader_factory()->AddResponse(
+      test_loader_factory()->GetPendingRequest(0)->request.url.spec(),
+      R"(["",[],[],[],{}])");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(provider_->done());
 }
 
 // -----------------------------------------------------------------------------

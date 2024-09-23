@@ -25,13 +25,12 @@ class CAPTURE_EXPORT JpegAcceleratorProviderImpl final
     : public cros::mojom::JpegAcceleratorProvider,
       public chromeos::mojo_service_manager::mojom::ServiceProvider {
  public:
-  JpegAcceleratorProviderImpl();
+  JpegAcceleratorProviderImpl(MojoMjpegDecodeAcceleratorFactoryCB jda_factory,
+                              MojoJpegEncodeAcceleratorFactoryCB jea_factory);
   ~JpegAcceleratorProviderImpl() override;
   JpegAcceleratorProviderImpl(const JpegAcceleratorProviderImpl&) = delete;
   JpegAcceleratorProviderImpl& operator=(const JpegAcceleratorProviderImpl&) =
       delete;
-
-  static JpegAcceleratorProviderImpl* GetInstance();
 
   void GetJpegEncodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
@@ -39,9 +38,6 @@ class CAPTURE_EXPORT JpegAcceleratorProviderImpl final
   void GetMjpegDecodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
           jda_receiver) override;
-
-  void Start(MojoMjpegDecodeAcceleratorFactoryCB jda_factory,
-             MojoJpegEncodeAcceleratorFactoryCB jea_factory);
 
  private:
   void AddReceiver(mojo::ScopedMessagePipeHandle message_pipe);

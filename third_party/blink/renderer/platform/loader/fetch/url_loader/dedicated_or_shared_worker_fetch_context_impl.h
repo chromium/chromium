@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_DEDICATED_OR_SHARED_WORKER_FETCH_CONTEXT_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -116,7 +115,8 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
   std::unique_ptr<URLLoaderFactory> WrapURLLoaderFactory(
       CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
           url_loader_factory) override;
-  void WillSendRequest(WebURLRequest&) override;
+  std::optional<WebURL> WillSendRequest(const WebURL& url) override;
+  void FinalizeRequest(WebURLRequest&) override;
   WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       const network::ResourceRequest& request) override;
   mojom::ControllerServiceWorkerMode GetControllerServiceWorkerMode()
@@ -277,8 +277,7 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
       child_preference_watchers_;
 
   // This is owned by ThreadedMessagingProxyBase on the main thread.
-  raw_ptr<base::WaitableEvent, ExperimentalRenderer>
-      terminate_sync_load_event_ = nullptr;
+  raw_ptr<base::WaitableEvent> terminate_sync_load_event_ = nullptr;
 
   // The URLLoaderFactory which was created and passed to
   // Blink by GetURLLoaderFactory().
@@ -302,8 +301,7 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
   std::unique_ptr<WeakWrapperResourceLoadInfoNotifier>
       weak_wrapper_resource_load_info_notifier_;
 
-  raw_ptr<AcceptLanguagesWatcher, ExperimentalRenderer>
-      accept_languages_watcher_ = nullptr;
+  raw_ptr<AcceptLanguagesWatcher> accept_languages_watcher_ = nullptr;
 };
 
 template <>

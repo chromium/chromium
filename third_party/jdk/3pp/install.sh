@@ -18,4 +18,4 @@ exec "$0.chromium" -XX:+PerfDisableSharedMem "$@"
 ' > current/bin/java
 chmod a+x current/bin/java
 
-mv current "$PREFIX"
+mv current/* "$PREFIX"

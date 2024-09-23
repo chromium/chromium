@@ -22,6 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Discover.Overall.AppLaunched" enum="LaunchSource"
+    expires_after="2025-02-16">
+  <owner>callistus@google.com</owner>
+  <owner>showoff-eng@google.com</owner>
+  <summary>
+    Records where the Help app was launched from. This is similar to the
+    &quot;Apps.DefaultAppLaunch{DefaultAppLaunchSource}&quot; histogram, however
+    it is specific to the Help app and the tokens are enums instead.
+  </summary>
+</histogram>
+
 <histogram name="Discover.SearchConcept.ReadStatus"
     enum="HelpAppSearchConceptReadStatus" expires_after="2025-03-24">
   <owner>chenjih@google.com</owner>
@@ -50,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Discover.SearchHandler.SearchAvailableTime" units="ms"
-    expires_after="2024-07-28">
+    expires_after="2025-03-09">
   <owner>chenjih@google.com</owner>
   <owner>tby@chromium.org</owner>
   <owner>showoff-eng@google.com</owner>

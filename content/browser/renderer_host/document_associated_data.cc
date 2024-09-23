@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/document_associated_data.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/containers/map_util.h"
 #include "base/no_destructor.h"
@@ -48,21 +50,30 @@ DocumentAssociatedData::DocumentAssociatedData(
   }
 }
 
-void DocumentAssociatedData::RemoveAllServices() {
-  while (!services_.empty()) {
-    // DocumentServiceBase unregisters itself at destruction time.
-    services_.back()->WillBeDestroyed(
-        DocumentServiceDestructionReason::kEndOfDocumentLifetime);
-    services_.back()->ResetAndDeleteThis();
-  }
-}
-
 DocumentAssociatedData::~DocumentAssociatedData() {
-  RemoveAllServices();
+  TRACE_EVENT0("navigation", "DocumentAssociatedData::~DocumentAssociatedData");
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.DocumentAssociatedDataDestructor");
+  decltype(services_) services;
+  std::swap(services_, services);
+  for (auto& service : services) {
+    service->WillBeDestroyed(
+        DocumentServiceDestructionReason::kEndOfDocumentLifetime);
+    service->ResetAndDeleteThisInternal({});
+  }
 
   // Explicitly clear all user data here, so that the other fields of
   // DocumentAssociatedData are still valid while user data is being destroyed.
   ClearAllUserData();
+
+  // Explicitly clear all PageUserData here before destruction of |owned_page_|
+  // (A std::unique_ptr's stored pointer value is (intentionally) undefined
+  // during destruction (e.g. it could be nullptr)), so that |owned_page_| and
+  // the other fields of DocumentAssociatedData are still valid and accessible
+  // from RenderFrameHost interface while its page user data is being destroyed.
+  if (owned_page_) {
+    owned_page_->ClearAllUserData();
+  }
 
   // Last in case any DocumentService / DocumentUserData service destructors try
   // to look up RenderFrameHosts by DocumentToken.
@@ -72,6 +83,18 @@ DocumentAssociatedData::~DocumentAssociatedData() {
 void DocumentAssociatedData::set_navigation_or_document_handle(
     scoped_refptr<NavigationOrDocumentHandle> handle) {
   navigation_or_document_handle_ = std::move(handle);
+}
+
+void DocumentAssociatedData::AddService(
+    internal::DocumentServiceBase* service,
+    base::PassKey<internal::DocumentServiceBase>) {
+  services_.push_back(service);
+}
+
+void DocumentAssociatedData::RemoveService(
+    internal::DocumentServiceBase* service,
+    base::PassKey<internal::DocumentServiceBase>) {
+  std::erase(services_, service);
 }
 
 }  // namespace content

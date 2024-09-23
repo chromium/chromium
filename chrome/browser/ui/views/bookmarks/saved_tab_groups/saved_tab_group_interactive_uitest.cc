@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
@@ -31,7 +32,9 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
@@ -47,21 +50,35 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget_utils.h"
 #include "url/url_constants.h"
 
-class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
+namespace tab_groups {
+
+class SavedTabGroupInteractiveTest
+    : public InteractiveBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   SavedTabGroupInteractiveTest() = default;
   ~SavedTabGroupInteractiveTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kTabGroupsSave}, {});
+    if (IsV2UIEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          {tab_groups::kTabGroupsSaveUIUpdate}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {tab_groups::kTabGroupsSaveUIUpdate});
+    }
     InteractiveBrowserTest::SetUp();
   }
+
+  bool IsV2UIEnabled() const { return GetParam(); }
 
   MultiStep ShowBookmarksBar() {
     return Steps(PressButton(kToolbarAppMenuButtonElementId),
@@ -119,11 +136,11 @@ class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
     return Steps(SaveGroupLeaveEditorBubbleOpen(group_id),
                  // Close the editor bubble view. Must flush events first to
                  // avoid closing a view while it's in the stack frame above us.
-                 FlushEvents(), HoverTabGroupHeader(group_id), ClickMouse());
+                 HoverTabGroupHeader(group_id), ClickMouse());
   }
 
   StepBuilder CheckIfSavedGroupIsOpen(const base::Uuid* const saved_guid) {
-    return Do([=]() {
+    return Do([=, this]() {
       const SavedTabGroupKeyedService* const service =
           SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
 
@@ -136,7 +153,7 @@ class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
   }
 
   StepBuilder CheckIfSavedGroupIsClosed(const base::Uuid* const saved_guid) {
-    return Do([=]() {
+    return Do([=, this]() {
       const SavedTabGroupKeyedService* const service =
           SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
 
@@ -148,24 +165,39 @@ class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
     });
   }
 
-  StepBuilder SaveGroupViaModel(const tab_groups::TabGroupId local_group) {
-    return Do([=]() {
-      SavedTabGroupKeyedService* const service =
+  StepBuilder CheckIfSavedGroupIsPinned(tab_groups::TabGroupId group_id,
+                                        bool is_pinned) {
+    return Do([=, this]() {
+      const SavedTabGroupKeyedService* const service =
           SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
 
-      service->SaveGroup(local_group);
-      ASSERT_NE(nullptr, service->model()->Get(local_group));
+      EXPECT_EQ(is_pinned, service->model()->Get(group_id)->is_pinned());
+    });
+  }
+
+  StepBuilder SaveGroupViaModel(const tab_groups::TabGroupId local_group) {
+    return Do([=, this]() {
+      TabGroupSyncService* service =
+          SavedTabGroupUtils::GetServiceForProfile(browser()->profile());
+      service->AddGroup(
+          SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(local_group));
+      ASSERT_TRUE(service->GetGroup(local_group).has_value());
     });
   }
 
   StepBuilder UnsaveGroupViaModel(const tab_groups::TabGroupId local_group) {
-    return Do([=]() {
-      SavedTabGroupKeyedService* const service =
-          SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
-
-      service->model()->Remove(local_group);
-      ASSERT_EQ(nullptr, service->model()->Get(local_group));
+    return Do([=, this]() {
+      TabGroupSyncService* service =
+          SavedTabGroupUtils::GetServiceForProfile(browser()->profile());
+      service->RemoveGroup(local_group);
+      ASSERT_FALSE(service->GetGroup(local_group).has_value());
     });
+  }
+
+  auto CheckEverythingButtonVisibility(bool is_v2_enabled) {
+    return is_v2_enabled
+               ? EnsurePresent(kSavedTabGroupOverflowButtonElementId)
+               : EnsureNotPresent(kSavedTabGroupOverflowButtonElementId);
   }
 
   std::unique_ptr<content::WebContents> CreateWebContents() {
@@ -177,7 +209,7 @@ class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest, CreateGroupAndSave) {
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest, CreateGroupAndSave) {
   const tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0});
 
@@ -192,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest, CreateGroupAndSave) {
       WaitForShow(kSavedTabGroupButtonElementId, true));
 }
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        UnsaveGroupFromTabGroupHeader) {
   const tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0});
@@ -210,11 +242,10 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       WaitForHide(kSavedTabGroupButtonElementId),
       // Click the first tab to close the context menu. Mac builders fail if the
       // context menu stays open.
-      FlushEvents(), HoverTabGroupHeader(group_id),
-      ClickMouse(ui_controls::LEFT));
+      HoverTabGroupHeader(group_id), ClickMouse(ui_controls::LEFT));
 }
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        UnsaveGroupFromButtonMenu) {
   // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
   // open the browser and the added one).
@@ -233,26 +264,355 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       SaveGroupLeaveEditorBubbleOpen(group_id),
       WaitForShow(kSavedTabGroupButtonElementId, true),
       // Click the tab group header to close the menu.
-      FlushEvents(), HoverTabGroupHeader(group_id),
-      ClickMouse(ui_controls::LEFT), FinishTabstripAnimations(),
+      HoverTabGroupHeader(group_id), ClickMouse(ui_controls::LEFT),
+      FinishTabstripAnimations(),
       // Press the enter/return key on the button to open the context menu.
       WithElement(kSavedTabGroupButtonElementId,
                   [](ui::TrackedElement* el) {
                     const ui::KeyEvent event(
-                        ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_RETURN,
-                        ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
-                        base::TimeTicks(), /*is_char=*/false);
+                        ui::EventType::kKeyPressed,
+                        ui::KeyboardCode::VKEY_RETURN, ui::DomCode::ENTER,
+                        ui::EF_NONE, ui::DomKey::ENTER, base::TimeTicks(),
+                        /*is_char=*/false);
 
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
       // Flush events and select the delete group menu item.
-      EnsurePresent(SavedTabGroupButton::kDeleteGroupMenuItem), FlushEvents(),
-      SelectMenuItem(SavedTabGroupButton::kDeleteGroupMenuItem),
+      EnsurePresent(SavedTabGroupUtils::kDeleteGroupMenuItem),
+      SelectMenuItem(SavedTabGroupUtils::kDeleteGroupMenuItem),
       // Ensure the button is no longer present.
       FinishTabstripAnimations(), WaitForHide(kSavedTabGroupButtonElementId));
 }
 
-// TODO(crbug.com/1487362): Deflake this test before enabling
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest, UnpinGroupFromButtonMenu) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
+  // open the browser and the added one).
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      // Show the bookmarks bar where the buttons will be displayed.
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      // Ensure no tab groups save buttons in the bookmarks bar are present.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+      SaveGroupLeaveEditorBubbleOpen(group_id),
+      WaitForShow(kSavedTabGroupButtonElementId, true),
+      // Ensure the tab group is pinned.
+      CheckIfSavedGroupIsPinned(group_id, /*is_pinned=*/true),
+      // Click the tab group header to close the menu.
+      HoverTabGroupHeader(group_id), ClickMouse(ui_controls::LEFT),
+      FinishTabstripAnimations(),
+      // Press the enter/return key on the button to open the context menu.
+      WithElement(kSavedTabGroupButtonElementId,
+                  [](ui::TrackedElement* el) {
+                    const ui::KeyEvent event(
+                        ui::EventType::kKeyPressed,
+                        ui::KeyboardCode::VKEY_RETURN, ui::DomCode::ENTER,
+                        ui::EF_NONE, ui::DomKey::ENTER, base::TimeTicks(),
+                        /*is_char=*/false);
+
+                    AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
+                  }),
+      // Flush events and select the unpin group menu item.
+      EnsurePresent(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
+
+      SelectMenuItem(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
+      FinishTabstripAnimations(), WaitForHide(kSavedTabGroupButtonElementId),
+      // Ensure the tab group is unpinned.
+      CheckIfSavedGroupIsPinned(group_id, /*is_pinned=*/false));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       ContextMenuShowForEverythingMenuTabGroupItem) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId local_group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      SaveGroupAndCloseEditorBubble(local_group_id),
+      WaitForHide(kTabGroupEditorBubbleId),
+      PressButton(kSavedTabGroupOverflowButtonElementId),
+      WaitForShow(STGEverythingMenu::kTabGroup),
+      WithElement(
+          STGEverythingMenu::kTabGroup,
+          [](ui::TrackedElement* el) {
+            ui::test::EventGenerator event_generator(
+                views::GetRootWindow(AsView<views::View>(el)->GetWidget()));
+            event_generator.MoveMouseTo(
+                AsView<views::View>(el)->GetBoundsInScreen().CenterPoint());
+            event_generator.ClickRightButton();
+          }),
+      WaitForShow(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
+      WaitForShow(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
+      WaitForShow(SavedTabGroupUtils::kDeleteGroupMenuItem),
+      WaitForShow(SavedTabGroupUtils::kTabsTitleItem));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       SubmenuShowForAppMenuTabGroups) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId local_group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      SaveGroupAndCloseEditorBubble(local_group_id),
+      WaitForHide(kTabGroupEditorBubbleId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+      WaitForShow(STGEverythingMenu::kTabGroup),
+      SelectMenuItem(STGEverythingMenu::kTabGroup),
+      WaitForShow(STGEverythingMenu::kOpenGroup),
+      WaitForShow(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
+      WaitForShow(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
+      WaitForShow(SavedTabGroupUtils::kDeleteGroupMenuItem),
+      WaitForShow(SavedTabGroupUtils::kTabsTitleItem),
+      WaitForShow(SavedTabGroupUtils::kTab));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       OpenGroupFromAppMenuTabGroupSubmenu) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Add 2 tabs to the group.
+  const tab_groups::TabGroupId local_group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+  const SavedTabGroupKeyedService* const service =
+      SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
+
+  base::Uuid saved_guid;
+
+  RunTestSequence(
+      // Show the bookmarks bar where the buttons will be displayed.
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      // Ensure no saved group buttons in the bookmarks bar are present.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+      // Save the group and ensure it is linked in the model.
+      SaveGroupLeaveEditorBubbleOpen(local_group_id),
+      WaitForShow(kSavedTabGroupButtonElementId, true),
+      // The group we just saved should be the only group in the model.
+      CheckResult([&]() { return service->model()->Count(); }, 1),
+      // Find the saved guid that is linked to the group we just saved.
+      Do([&]() {
+        const SavedTabGroup& saved_group =
+            service->model()->saved_tab_groups()[0];
+        ASSERT_TRUE(saved_group.local_group_id().has_value());
+        saved_guid = saved_group.saved_guid();
+      }),
+      // Make sure the editor bubble is still open and flush events before we
+      // close it.
+      EnsurePresent(kTabGroupEditorBubbleId),
+      // Close the tab group and expect the saved group is no longer linked.
+      PressButton(kTabGroupEditorBubbleCloseGroupButtonId),
+      FinishTabstripAnimations(), CheckIfSavedGroupIsClosed(&saved_guid),
+      // Reopen the tab group from the app menu tab group's submenu.
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+      WaitForShow(STGEverythingMenu::kTabGroup),
+      SelectMenuItem(STGEverythingMenu::kTabGroup),
+      WaitForShow(STGEverythingMenu::kOpenGroup),
+      SelectMenuItem(STGEverythingMenu::kOpenGroup), FinishTabstripAnimations(),
+      WaitForShow(kTabGroupHeaderElementId));
+}
+
+// TODO(crbug.com/40934084): Deflake this test before enabling
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MoveGroupToNewWindowFromAppMenuTabGroupSubmenu \
+  DISABLED_MoveGroupToNewWindowFromAppMenuTabGroupSubmenu
+#else
+#define MAYBE_MoveGroupToNewWindowFromAppMenuTabGroupSubmenu \
+  MoveGroupToNewWindowFromAppMenuTabGroupSubmenu
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       MAYBE_MoveGroupToNewWindowFromAppMenuTabGroupSubmenu) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
+  // open the browser and the added one).
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      SaveGroupAndCloseEditorBubble(group_id),
+      WaitForHide(kTabGroupEditorBubbleId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+      WaitForShow(STGEverythingMenu::kTabGroup),
+      SelectMenuItem(STGEverythingMenu::kTabGroup),
+      WaitForShow(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
+      SelectMenuItem(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
+      FinishTabstripAnimations(),
+      // Expect the original browser has 1 less tab.
+      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 1),
+      // Expect the browser with the tab group is not the original browser.
+      CheckResult(
+          [&]() {
+            return browser() ==
+                   SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
+          },
+          false));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       UnpinGroupFromAppMenuTabGroupSubmenu) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      // Ensure no tab groups save buttons in the bookmarks bar are present.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+      SaveGroupLeaveEditorBubbleOpen(group_id),
+      WaitForShow(kSavedTabGroupButtonElementId, true),
+      // Ensure the tab group is pinned.
+      CheckIfSavedGroupIsPinned(group_id, /*is_pinned=*/true),
+      // Click the tab group header to close the menu.
+      HoverTabGroupHeader(group_id), ClickMouse(ui_controls::LEFT),
+      FinishTabstripAnimations(), PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+      WaitForShow(STGEverythingMenu::kTabGroup),
+      SelectMenuItem(STGEverythingMenu::kTabGroup),
+      WaitForShow(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
+      SelectMenuItem(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
+      WaitForHide(kSavedTabGroupButtonElementId),
+      CheckIfSavedGroupIsPinned(group_id, /*is_pinned=*/false));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       DeleteGroupFromAppMenuTabGroupSubmenu) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
+  // open the browser and the added one).
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      SaveGroupLeaveEditorBubbleOpen(group_id),
+      WaitForShow(kSavedTabGroupButtonElementId, true),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+      WaitForShow(STGEverythingMenu::kTabGroup),
+      SelectMenuItem(STGEverythingMenu::kTabGroup),
+      WaitForShow(SavedTabGroupUtils::kDeleteGroupMenuItem),
+      SelectMenuItem(SavedTabGroupUtils::kDeleteGroupMenuItem),
+      FinishTabstripAnimations(),
+      // Expect the saved tab group button disappears.
+      WaitForHide(kSavedTabGroupButtonElementId),
+      // Expect the original browser has 1 less tab.
+      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 1),
+      // Expect the browser has no such a tab group.
+      CheckResult(
+          [&]() {
+            return nullptr ==
+                   SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
+          },
+          true));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       OpenTabFromAppMenuTabGroupSubmenu) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
+  // open the browser and the added one).
+  GURL test_url(chrome::kChromeUINewTabURL);
+  ASSERT_TRUE(AddTabAtIndex(0, test_url, ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      SaveGroupAndCloseEditorBubble(group_id),
+      WaitForHide(kTabGroupEditorBubbleId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+      WaitForShow(STGEverythingMenu::kTabGroup),
+      SelectMenuItem(STGEverythingMenu::kTabGroup),
+      WaitForShow(SavedTabGroupUtils::kTab),
+      SelectMenuItem(SavedTabGroupUtils::kTab),
+      WaitForHide(AppMenuModel::kTabGroupsMenuItem), FinishTabstripAnimations(),
+
+      // Expect the original browser has 1 more tab.
+      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 3),
+      // Expect the active tab is the one opened from submenu.
+      CheckResult(
+          [&]() {
+            return browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetURL();
+          },
+          test_url),
+      // Expect the active tab is at the end of tab strip.
+      CheckResult(
+          [&]() { return browser()->tab_strip_model()->active_index(); }, 2));
+}
+
+// TODO(crbug.com/40934084): Deflake this test before enabling
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_MoveGroupToNewWindowFromButtonMenu \
   DISABLED_MoveGroupToNewWindowFromButtonMenu
@@ -260,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
 #define MAYBE_MoveGroupToNewWindowFromButtonMenu \
   MoveGroupToNewWindowFromButtonMenu
 #endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        MAYBE_MoveGroupToNewWindowFromButtonMenu) {
   // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
   // open the browser and the added one).
@@ -279,22 +639,23 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       SaveGroupLeaveEditorBubbleOpen(group_id),
       WaitForShow(kSavedTabGroupButtonElementId, true),
       // Click the tab group header to close the menu.
-      FlushEvents(), HoverTabGroupHeader(group_id),
-      ClickMouse(ui_controls::LEFT), FinishTabstripAnimations(),
+      HoverTabGroupHeader(group_id), ClickMouse(ui_controls::LEFT),
+      FinishTabstripAnimations(),
       // Press the enter/return key on the button to open the context menu.
       WithElement(kSavedTabGroupButtonElementId,
                   [](ui::TrackedElement* el) {
                     const ui::KeyEvent event(
-                        ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_RETURN,
-                        ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
-                        base::TimeTicks(), /*is_char=*/false);
+                        ui::EventType::kKeyPressed,
+                        ui::KeyboardCode::VKEY_RETURN, ui::DomCode::ENTER,
+                        ui::EF_NONE, ui::DomKey::ENTER, base::TimeTicks(),
+                        /*is_char=*/false);
 
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
       // Flush events and select the move group to new window menu item.
-      EnsurePresent(SavedTabGroupButton::kMoveGroupToNewWindowMenuItem),
-      FlushEvents(),
-      SelectMenuItem(SavedTabGroupButton::kMoveGroupToNewWindowMenuItem),
+      EnsurePresent(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
+
+      SelectMenuItem(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
       // Ensure the button is no longer present.
       FinishTabstripAnimations(),
       // Expect the original browser has 1 less tab.
@@ -308,7 +669,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
           false));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SavedTabGroupInteractiveTest,
     MoveGroupToNewWindowFromButtonMenuDoesNothingIfOnlyGroupInWindow) {
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
@@ -324,22 +685,23 @@ IN_PROC_BROWSER_TEST_F(
       SaveGroupLeaveEditorBubbleOpen(group_id),
       WaitForShow(kSavedTabGroupButtonElementId, true),
       // Click the tab group header to close the menu.
-      FlushEvents(), HoverTabGroupHeader(group_id),
-      ClickMouse(ui_controls::LEFT), FinishTabstripAnimations(),
+      HoverTabGroupHeader(group_id), ClickMouse(ui_controls::LEFT),
+      FinishTabstripAnimations(),
       // Press the enter/return key on the button to open the context menu.
       WithElement(kSavedTabGroupButtonElementId,
                   [](ui::TrackedElement* el) {
                     const ui::KeyEvent event(
-                        ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_RETURN,
-                        ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
-                        base::TimeTicks(), /*is_char=*/false);
+                        ui::EventType::kKeyPressed,
+                        ui::KeyboardCode::VKEY_RETURN, ui::DomCode::ENTER,
+                        ui::EF_NONE, ui::DomKey::ENTER, base::TimeTicks(),
+                        /*is_char=*/false);
 
                     AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
                   }),
       // Flush events and select the move group to new window menu item.
-      EnsurePresent(SavedTabGroupButton::kMoveGroupToNewWindowMenuItem),
-      FlushEvents(),
-      SelectMenuItem(SavedTabGroupButton::kMoveGroupToNewWindowMenuItem),
+      EnsurePresent(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
+
+      SelectMenuItem(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
       // Ensure the button is no longer present.
       FinishTabstripAnimations(),
       // Expect the original browser has 1 less tab.
@@ -353,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(
           true));
 }
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        FirstTabIsFocusedInReopenedSavedGroup) {
   ASSERT_TRUE(
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
@@ -388,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       }),
       // Make sure the editor bubble is still open and flush events before we
       // close it.
-      EnsurePresent(kTabGroupEditorBubbleId), FlushEvents(),
+      EnsurePresent(kTabGroupEditorBubbleId),
       // Close the tab group and expect the saved group is no longer linked.
       PressButton(kTabGroupEditorBubbleCloseGroupButtonId),
       FinishTabstripAnimations(), CheckIfSavedGroupIsClosed(&saved_guid),
@@ -400,7 +762,38 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
           [&]() { return browser()->tab_strip_model()->active_index(); }, 1));
 }
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       MoveTabInsideAndOutsideGroup) {
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Add 2 tabs to the group.
+  const tab_groups::TabGroupId local_group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+
+  RunTestSequence(
+      // Show the bookmarks bar where the buttons will be displayed.
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      SaveGroupAndCloseEditorBubble(local_group_id), Do([&]() {
+        browser()->tab_strip_model()->MoveWebContentsAt(1, 2, false);
+      }),
+      CheckResult(
+          [&]() { return browser()->tab_strip_model()->GetTabGroupForTab(2); },
+          std::nullopt),
+      Do([&]() {
+        std::vector<int> indices = {2};
+        browser()->tab_strip_model()->AddToExistingGroup(indices,
+                                                         local_group_id);
+      }),
+      CheckResult(
+          [&]() { return browser()->tab_strip_model()->GetTabGroupForTab(1); },
+          local_group_id));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        UpdateButtonWhenTabGroupVisualDataChanges) {
   // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
   // open the browser and the added one).
@@ -444,12 +837,164 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       CheckViewProperty(kSavedTabGroupButtonElementId,
                         &SavedTabGroupButton::tab_group_color_id, new_color),
       // Click the tab group header to close the menu.
-      FlushEvents(), HoverTabGroupHeader(group_id),
-      ClickMouse(ui_controls::LEFT), FinishTabstripAnimations());
+      HoverTabGroupHeader(group_id), ClickMouse(ui_controls::LEFT),
+      FinishTabstripAnimations());
 }
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       CreateNewTabGroupFromEverythingMenu) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+  const bool is_v2_ui_enabled = IsV2UIEnabled();
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      CheckEverythingButtonVisibility(is_v2_ui_enabled),
+      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 1),
+      EnsureNotPresent(kTabGroupEditorBubbleId),
+      PressButton(kSavedTabGroupOverflowButtonElementId),
+      EnsurePresent(STGEverythingMenu::kCreateNewTabGroup),
+      SelectMenuItem(STGEverythingMenu::kCreateNewTabGroup),
+      FinishTabstripAnimations(), WaitForShow(kTabGroupEditorBubbleId),
+      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 2),
+      // This menu item opens a new tab and the editor bubble.
+      CheckResult(
+          [&]() { return browser()->tab_strip_model()->active_index(); }, 1),
+      CheckResult(
+          [&]() {
+            return browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL()
+                .host_piece();
+          },
+          chrome::kChromeUINewTabHost));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       OpenSavedGroupFromEverythingMenu) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+  // Add 2 tabs to the group.
+  const tab_groups::TabGroupId local_group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+  const SavedTabGroupKeyedService* const service =
+      SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
+
+  base::Uuid saved_guid;
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      // Save the group and ensure it is linked in the model.
+      SaveGroupLeaveEditorBubbleOpen(local_group_id),
+      // The group we just saved should be the only group in the model.
+      CheckResult([&]() { return service->model()->Count(); }, 1),
+      // Find the saved guid that is linked to the group we just saved.
+      Do([&]() {
+        const SavedTabGroup& saved_group =
+            service->model()->saved_tab_groups()[0];
+        ASSERT_TRUE(saved_group.local_group_id().has_value());
+        saved_guid = saved_group.saved_guid();
+      }),
+      // Make sure the editor bubble is still open and flush events before we
+      // close it.
+      EnsurePresent(kTabGroupEditorBubbleId),
+      // Close the tab group and expect the saved group is no longer linked.
+      PressButton(kTabGroupEditorBubbleCloseGroupButtonId),
+      FinishTabstripAnimations(), CheckIfSavedGroupIsClosed(&saved_guid),
+      // Open the saved tab group from the Everything menu item.
+      PressButton(kSavedTabGroupOverflowButtonElementId),
+      WaitForHide(kTabGroupEditorBubbleId),
+      WaitForShow(STGEverythingMenu::kTabGroup),
+      SelectMenuItem(STGEverythingMenu::kTabGroup), FinishTabstripAnimations(),
+      WaitForShow(kTabGroupHeaderElementId));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       CreateNewTabGroupFromAppMenuSubmenu) {
+  if (!IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V1";
+  }
+  const bool is_v2_ui_enabled = IsV2UIEnabled();
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      CheckEverythingButtonVisibility(is_v2_ui_enabled),
+      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 1),
+      EnsureNotPresent(kTabGroupEditorBubbleId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+      WaitForShow(STGEverythingMenu::kCreateNewTabGroup),
+      SelectMenuItem(STGEverythingMenu::kCreateNewTabGroup),
+      FinishTabstripAnimations(), WaitForShow(kTabGroupEditorBubbleId),
+      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 2),
+      // This menu item opens a new tab and the editor bubble.
+      CheckResult(
+          [&]() { return browser()->tab_strip_model()->active_index(); }, 1),
+      CheckResult(
+          [&]() {
+            return browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL()
+                .host_piece();
+          },
+          chrome::kChromeUINewTabHost));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       EverythingButtonAlwaysShowsForV2) {
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+  const bool is_v2_ui_enabled = IsV2UIEnabled();
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      CheckEverythingButtonVisibility(is_v2_ui_enabled),
+
+      // Ensure no tab groups save buttons in the bookmarks bar are present.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+      SaveGroupLeaveEditorBubbleOpen(group_id),
+      WaitForShow(kSavedTabGroupButtonElementId, true),
+      // Click the tab group header to close the menu.
+      HoverTabGroupHeader(group_id), ClickMouse(ui_controls::LEFT),
+      FinishTabstripAnimations(),
+      CheckEverythingButtonVisibility(is_v2_ui_enabled),
+
+      // Press the enter/return key on the button to open the context menu.
+      WithElement(kSavedTabGroupButtonElementId,
+                  [](ui::TrackedElement* el) {
+                    const ui::KeyEvent event(
+                        ui::EventType::kKeyPressed,
+                        ui::KeyboardCode::VKEY_RETURN, ui::DomCode::ENTER,
+                        ui::EF_NONE, ui::DomKey::ENTER, base::TimeTicks(),
+                        /*is_char=*/false);
+
+                    AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
+                  }),
+      // Flush events and select the delete group menu item.
+      EnsurePresent(SavedTabGroupUtils::kDeleteGroupMenuItem),
+      SelectMenuItem(SavedTabGroupUtils::kDeleteGroupMenuItem),
+      // Ensure the button is no longer present.
+      FinishTabstripAnimations(), WaitForHide(kSavedTabGroupButtonElementId),
+      CheckEverythingButtonVisibility(is_v2_ui_enabled));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        FiveSavedGroupsShowsOverflowMenuButton) {
+  if (IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V2";
+  }
   // Add 4 additional tabs to the browser.
   ASSERT_TRUE(
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
@@ -486,7 +1031,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       SaveGroupAndCloseEditorBubble(group_4), FinishTabstripAnimations(),
       EnsureNotPresent(kSavedTabGroupOverflowButtonElementId),
       SaveGroupAndCloseEditorBubble(group_5), FinishTabstripAnimations(),
-      WaitForShow(kSavedTabGroupOverflowButtonElementId), FlushEvents(),
+      WaitForShow(kSavedTabGroupOverflowButtonElementId),
 
       // Verify there is only 1 button in the overflow menu
       PressButton(kSavedTabGroupOverflowButtonElementId),
@@ -494,17 +1039,17 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       CheckView(kSavedTabGroupOverflowMenuId,
                 [](views::View* el) { return el->children().size() == 1u; }),
       // Hide the overflow menu.
-      FlushEvents(),
+
       SendAccelerator(
           kSavedTabGroupOverflowMenuId,
           ui::Accelerator(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE)),
       WaitForHide(kSavedTabGroupOverflowMenuId));
 }
 
-// TODO(crbug.com/1432770): Re-enable this test once it doesn't get stuck in
+// TODO(crbug.com/40264110): Re-enable this test once it doesn't get stuck in
 // drag and drop. Maybe related issue - the relative positioning seems to be
 // interpreted as an absolute position.
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        DISABLED_DragGroupWithinBar) {
   // Create two tab groups with one tab each.
   const tab_groups::TabGroupId group_id_1 =
@@ -546,110 +1091,12 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
   EXPECT_EQ(1, model->GetIndexOf(group_id_1).value());
 }
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
-                       OverflowMenuUpdatesWhileOpen) {
-#if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521486): Test fails on MacOS when ChromeRefresh2023 flags are
-  //                       enabled.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
-  // Add 5 additional tabs to the browser.
-  ASSERT_TRUE(
-      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-  ASSERT_TRUE(
-      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-  ASSERT_TRUE(
-      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-  ASSERT_TRUE(
-      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-  ASSERT_TRUE(
-      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-  ASSERT_EQ(6, browser()->tab_strip_model()->count());
-
-  // Add each tab to a separate group.
-  const tab_groups::TabGroupId group_1 =
-      browser()->tab_strip_model()->AddToNewGroup({0});
-  const tab_groups::TabGroupId group_2 =
-      browser()->tab_strip_model()->AddToNewGroup({1});
-  const tab_groups::TabGroupId group_3 =
-      browser()->tab_strip_model()->AddToNewGroup({2});
-  const tab_groups::TabGroupId group_4 =
-      browser()->tab_strip_model()->AddToNewGroup({3});
-  const tab_groups::TabGroupId group_5 =
-      browser()->tab_strip_model()->AddToNewGroup({4});
-  const tab_groups::TabGroupId group_6 =
-      browser()->tab_strip_model()->AddToNewGroup({5});
-
-  int menu_widget_height;
-
-  RunTestSequence(
-      // Show the bookmarks bar where the buttons will be displayed.
-      FinishTabstripAnimations(), ShowBookmarksBar(),
-      // Ensure no saved group buttons in the bookmarks bar are present.
-      EnsureNotPresent(kSavedTabGroupButtonElementId),
-
-      // Add views until we get an overflow button.
-      SaveGroupAndCloseEditorBubble(group_1), FinishTabstripAnimations(),
-      SaveGroupAndCloseEditorBubble(group_2), FinishTabstripAnimations(),
-      SaveGroupAndCloseEditorBubble(group_3), FinishTabstripAnimations(),
-      SaveGroupAndCloseEditorBubble(group_4), FinishTabstripAnimations(),
-      SaveGroupAndCloseEditorBubble(group_5), FinishTabstripAnimations(),
-      WaitForShow(kSavedTabGroupOverflowButtonElementId), FlushEvents(),
-
-      // Show the overflow menu.
-      PressButton(kSavedTabGroupOverflowButtonElementId),
-      WaitForShow(kSavedTabGroupOverflowMenuId, true), Do([=]() {
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->GetWidget()
-            ->LayoutRootViewIfNecessary();
-      }),
-      FlushEvents(),
-      CheckView(kSavedTabGroupOverflowMenuId,
-                [&menu_widget_height](views::View* el) {
-                  menu_widget_height = el->GetWidget()->GetSize().height();
-                  return true;
-                }),
-
-      // Verify the overflow menu expands if another group is added.
-      SaveGroupViaModel(group_6), Do([=]() {
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->GetWidget()
-            ->LayoutRootViewIfNecessary();
-      }),
-      FlushEvents(),
-      CheckView(kSavedTabGroupOverflowMenuId,
-                [&menu_widget_height](views::View* el) {
-                  const int old_height = menu_widget_height;
-                  menu_widget_height = el->GetWidget()->GetSize().height();
-                  return menu_widget_height > old_height;
-                }),
-
-      // Verify the overflow menu shrinks if a group is removed.
-      UnsaveGroupViaModel(group_6), Do([=]() {
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->GetWidget()
-            ->LayoutRootViewIfNecessary();
-      }),
-      FlushEvents(),
-      CheckView(kSavedTabGroupOverflowMenuId,
-                [&menu_widget_height](views::View* el) {
-                  const int old_height = menu_widget_height;
-                  menu_widget_height = el->GetWidget()->GetSize().height();
-                  return menu_widget_height < old_height;
-                }),
-
-      // Hide the overflow menu.
-      FlushEvents(),
-      SendAccelerator(
-          kSavedTabGroupOverflowMenuId,
-          ui::Accelerator(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE)),
-      WaitForHide(kSavedTabGroupOverflowMenuId));
-}
-
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        OverflowMenuClosesWhenNoMoreButtons) {
+  if (IsV2UIEnabled()) {
+    GTEST_SKIP() << "N/A for V2";
+  }
+
   // Add 5 additional tabs to the browser.
   ASSERT_TRUE(
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
@@ -685,26 +1132,30 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       SaveGroupAndCloseEditorBubble(group_3), FinishTabstripAnimations(),
       SaveGroupAndCloseEditorBubble(group_4), FinishTabstripAnimations(),
       SaveGroupAndCloseEditorBubble(group_5), FinishTabstripAnimations(),
-      WaitForShow(kSavedTabGroupOverflowButtonElementId), FlushEvents(),
+      WaitForShow(kSavedTabGroupOverflowButtonElementId),
 
       // Show the overflow menu.
       PressButton(kSavedTabGroupOverflowButtonElementId),
-      WaitForShow(kSavedTabGroupOverflowMenuId, true), Do([=]() {
+      WaitForShow(kSavedTabGroupOverflowMenuId, true), Do([=, this]() {
         BrowserView::GetBrowserViewForBrowser(browser())
             ->GetWidget()
             ->LayoutRootViewIfNecessary();
       }),
-      FlushEvents(),
 
       // Verify the overflow menu expands if another group is added.
-      UnsaveGroupViaModel(group_5), Do([=]() {
+      UnsaveGroupViaModel(group_5), Do([=, this]() {
         BrowserView::GetBrowserViewForBrowser(browser())
             ->GetWidget()
             ->LayoutRootViewIfNecessary();
       }),
-      FlushEvents(),
 
       // Ensure the menu is no longer visible / present.
       WaitForHide(kSavedTabGroupOverflowMenuId),
       EnsureNotPresent(kSavedTabGroupOverflowMenuId));
 }
+
+INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,
+                         SavedTabGroupInteractiveTest,
+                         testing::Bool());
+
+}  // namespace tab_groups

@@ -38,7 +38,7 @@ TEST_F(WelcomeTourDialogPixelTest, Appearance) {
   // Take a screenshot of the Welcome Tour dialog.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "welcome_tour_dialog",
-      /*revision_number=*/2, WelcomeTourDialog::Get()));
+      /*revision_number=*/3, WelcomeTourDialog::Get()));
 }
 
 }  // namespace ash

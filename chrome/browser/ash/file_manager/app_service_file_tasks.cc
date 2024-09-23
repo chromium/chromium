@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
+#include "chrome/browser/apps/app_service/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
@@ -35,10 +36,13 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/virtual_file_tasks.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -114,20 +118,6 @@ const char kImportCrostiniImageHandlerId[] =
     "chrome://file-manager/?import-crostini-image";
 const char kInstallLinuxPackageHandlerId[] =
     "chrome://file-manager/?install-linux-package";
-
-bool MatchPolicyIdAgainstLegacyArcAppFormat(const TaskDescriptor& td,
-                                            base::StringPiece policy_id) {
-  DCHECK_EQ(td.task_type, TASK_TYPE_ARC_APP);
-  // Sometimes task descriptors for Android apps are stored in a
-  // legacy format (app id: "<package>/<activity>", action id: "view").
-  std::vector<std::string> app_id_info = base::SplitString(
-      td.app_id, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (app_id_info.size() != 2) {
-    return false;
-  }
-  const auto& package_name = app_id_info[0];
-  return package_name == policy_id;
-}
 
 }  // namespace
 
@@ -214,7 +204,7 @@ bool IsFilesAppUrlOpener(const std::string& app_id,
          action_id == ToSwaActionId(kActionIdWebDriveOfficePowerPoint);
 }
 
-bool IsSystemAppIdWithFileHandlers(base::StringPiece id) {
+bool IsSystemAppIdWithFileHandlers(std::string_view id) {
   return id == web_app::kMediaAppId;
 }
 
@@ -261,6 +251,7 @@ void FindAppServiceTasks(Profile* profile,
       proxy->GetAppsForFiles(std::move(intent_files));
 
   std::vector<apps::AppType> supported_app_types = {
+      apps::AppType::kArc,
       apps::AppType::kWeb,
       apps::AppType::kSystemWeb,
       apps::AppType::kChromeApp,
@@ -271,9 +262,6 @@ void FindAppServiceTasks(Profile* profile,
       apps::AppType::kCrostini,
       apps::AppType::kPluginVm,
   };
-  if (ash::features::ShouldArcFileTasksUseAppService()) {
-    supported_app_types.push_back(apps::AppType::kArc);
-  }
   for (auto& launch_entry : intent_launch_info) {
     auto app_type = proxy->AppRegistryCache().GetAppType(launch_entry.app_id);
     if (!base::Contains(supported_app_types, app_type)) {
@@ -387,13 +375,22 @@ void ExecuteAppServiceTask(
          task.task_type == TASK_TYPE_BRUSCHETTA_APP ||
          task.task_type == TASK_TYPE_CROSTINI_APP ||
          task.task_type == TASK_TYPE_PLUGIN_VM_APP ||
-         (ash::features::ShouldArcFileTasksUseAppService() &&
-          task.task_type == TASK_TYPE_ARC_APP));
+         task.task_type == TASK_TYPE_ARC_APP);
 
   apps::IntentPtr intent = std::make_unique<apps::Intent>(
       apps_util::kIntentActionView, std::move(intent_files));
   intent->activity_name = task.action_id;
 
+  if (base::FeatureList::IsEnabled(::features::kHappinessTrackingOffice) &&
+      task.app_id == extension_misc::kQuickOfficeComponentExtensionId &&
+      task.action_id == kActionIdQuickOffice) {
+    auto survey_launching_app =
+        chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)
+            ? ash::cloud_upload::HatsOfficeLaunchingApp::kQuickOffice
+            : ash::cloud_upload::HatsOfficeLaunchingApp::kQuickOfficeClippyOff;
+    ash::cloud_upload::HatsOfficeTrigger::Get().ShowSurveyAfterDelay(
+        survey_launching_app);
+  }
   // `window_info` as nullptr sets `display_id` to `display::kInvalidDisplayId`
   // later, which is the default value. `display::kDefaultDisplayId` is not. The
   // default value allows a window on any display to be reused, i.e. a wildcard.
@@ -444,7 +441,7 @@ bool ChooseAndSetDefaultTaskFromPolicyPrefs(
 
   std::vector<FullTaskDescriptor*> filtered_tasks;
   // `app_id` matching is not necessary if the policy points to a virtual task.
-  if (std::optional<base::StringPiece> virtual_task_id =
+  if (std::optional<std::string_view> virtual_task_id =
           apps_util::GetVirtualTaskIdFromPolicyId(policy_id)) {
     std::string full_virtual_task_id = ToSwaActionId(*virtual_task_id);
     for (auto& task : resulting_tasks->tasks) {
@@ -458,10 +455,7 @@ bool ChooseAndSetDefaultTaskFromPolicyPrefs(
         apps_util::GetAppIdsFromPolicyId(profile, policy_id);
     for (auto& task : resulting_tasks->tasks) {
       const auto& td = task.task_descriptor;
-      if (base::Contains(app_ids, td.app_id) ||
-          (td.task_type == TASK_TYPE_ARC_APP &&
-           !ash::features::ShouldArcFileTasksUseAppService() &&
-           MatchPolicyIdAgainstLegacyArcAppFormat(td, policy_id))) {
+      if (base::Contains(app_ids, td.app_id)) {
         filtered_tasks.push_back(&task);
       }
     }

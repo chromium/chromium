@@ -37,7 +37,7 @@
 //   is_debug= false
 //   symbol_level= 0
 //   target_os= "chromeos"
-//   use_goma=true
+//   use_remoteexec=true
 //   '''
 // 2 Build chromeos_integration_tests target
 //   Example commandline:
@@ -112,7 +112,8 @@ class DemoIntegrationTest : public MixinBasedInProcessBrowserTest {
   ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
 };
 
-IN_PROC_BROWSER_TEST_F(DemoIntegrationTest, NewTab) {
+// TODO(crbug.com/342512743): Re-enable this test
+IN_PROC_BROWSER_TEST_F(DemoIntegrationTest, DISABLED_NewTab) {
   chrome_test_base_chromeos_crosier::TestInfo info;
   info.set_description(R"(
 This test verifies Chrome can launch and open version page.

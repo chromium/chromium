@@ -34,7 +34,7 @@ class CONTROLLER_EXPORT CrashMemoryMetricsReporterImpl
 
   // This method tracks when an allocation failure occurs. It should be hooked
   // into all platform allocation failure handlers in a process such as
-  // base::TerminateBecauseOutOfMemory() and OOM_CRASH() in Partition Alloc.
+  // base::TerminateBecauseOutOfMemory() and OOM_CRASH() in PartitionAlloc.
   // TODO(yuzus): Now only called from OOM_CRASH(). Call this from malloc/new
   // failures and base::TerminateBecauseOutOfMemory(), too.
   static void OnOOMCallback();

@@ -19,6 +19,9 @@
 // Note that rewrites in *explicit* template specializations are still
 // desirable.  For example, see the |T2* t2_ptr_field| in |MyTemplate<int, T2>|
 // partial template specialization.
+#include <optional>
+
+#include "base/containers/span.h"
 
 class SomeClass;
 class SomeClass2;
@@ -33,6 +36,16 @@ class MyTemplate {
 
   // No rewrite expected.
   int int_field;
+
+  // Expected rewrite: base::raw_span<T> span_field1;
+  base::span<T> span_field1;
+  // Expected rewrite: base::raw_span<SomeClass> span_field2;
+  base::span<SomeClass> span_field2;
+  // Expected rewrite: std::optional<base::raw_span<T>> optional_span_field1;
+  std::optional<base::span<T>> optional_span_field1;
+  // Expected rewrite: std::optional<base::raw_span<SomeClass>>
+  // optional_span_field2;
+  std::optional<base::span<SomeClass>> optional_span_field2;
 };
 
 // Partial *explicit* specialization.
@@ -49,6 +62,15 @@ class MyTemplate<int, T2> {
 
   // No rewrite expected.
   int int_field;
+
+  // Expected rewrite: base::raw_span<T2> span_field1;
+  base::span<T2> span_field1;
+  // Expected rewrite: base::raw_span<SomeClass> span_field2;
+  base::span<SomeClass> span_field2;
+  // Expected rewrite: std::optional<base::raw_span<int>> optional_span_field1;
+  std::optional<base::span<int>> optional_span_field1;
+  // Expected rewrite: std::optional<base::raw_span<T2>> optional_span_field2;
+  std::optional<base::span<T2>> optional_span_field2;
 };
 
 // Full *explicit* specialization.
@@ -62,6 +84,15 @@ class MyTemplate<int, SomeClass2> {
 
   // No rewrite expected.
   int int_field;
+
+  // Expected rewrite: base::raw_span<T2> span_field1;
+  base::span<int> span_field1;
+  // Expected rewrite: base::raw_span<SomeClass> span_field2;
+  base::span<SomeClass2> span_field2;
+  // Expected rewrite: std::optional<base::raw_span<int>> optional_span_field1;
+  std::optional<base::span<int>> optional_span_field1;
+  // Expected rewrite: std::optional<base::raw_span<T2>> optional_span_field2;
+  std::optional<base::span<SomeClass2>> optional_span_field2;
 };
 
 // The class definitions below trigger an implicit template specialization of
@@ -101,6 +132,17 @@ class TemplateSelfPointerTest {
   //
   // Expected rewrite: raw_ptr<TemplateSelfPointerTest<T>>
   TemplateSelfPointerTest<T>* ptr_field2_;
+
+  // Expected rewrite: base::raw_span<TemplateSelfPointerTest> span_field1;
+  base::span<TemplateSelfPointerTest> span_field1;
+  // Expected rewrite: base::raw_span<TemplateSelfPointerTest<T>> span_field2;
+  base::span<TemplateSelfPointerTest<T>> span_field2;
+  // Expected rewrite: std::optional<base::raw_span<TemplateSelfPointerTest>>
+  // optional_span_field1;
+  std::optional<base::span<TemplateSelfPointerTest>> optional_span_field1;
+  // Expected rewrite: std::optional<base::raw_span<TemplateSelfPointerTest<T>>>
+  // optional_span_field2;
+  std::optional<base::span<TemplateSelfPointerTest<T>>> optional_span_field2;
 };
 
 void foo() {
@@ -140,6 +182,9 @@ class StringSplitter {
     //
     // Expected rewrite: raw_ptr<const StringSplitter<T>> splitter_
     const StringSplitter* splitter_;
+
+    // Expected rewrite: base::raw_span<const StringSplitter> span_field
+    base::span<const StringSplitter> span_field;
   };
 
   Iterator begin() const { return Iterator(*this); }
@@ -165,6 +210,9 @@ void foo(T* arg) {
 
     // Expected rewrite: raw_ptr<MyTemplate<T, T>> ptr_field2;
     MyTemplate<T, T>* ptr_field2;
+
+    // Expected rewrite: base::raw_span<T> span_field;
+    base::span<T> span_field;
   } var;
 
   var.ptr_field = nullptr;

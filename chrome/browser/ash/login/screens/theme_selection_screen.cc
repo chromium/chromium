@@ -78,12 +78,14 @@ void ReportScreenCompletedToChoobe(ChoobeFlowController* controller) {
 
 // static
 std::string ThemeSelectionScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kProceed:
       return "Proceed";
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 ThemeSelectionScreen::ThemeSelectionScreen(

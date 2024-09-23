@@ -348,8 +348,8 @@ TEST_F(FetchDataLoaderBlobTest, LoadAsBlobNoClientCallbacksAfterCancel) {
 TEST_F(FetchDataLoaderBlobTest,
        LoadAsBlobViaDrainAsBlobDataHandleWithSameContentType) {
   auto blob_data = std::make_unique<BlobData>();
-  blob_data->AppendBytes(kQuickBrownFox,
-                         kQuickBrownFoxLengthWithTerminatingNull);
+  blob_data->AppendBytes(
+      base::as_bytes(base::span_with_nul_from_cstring(kQuickBrownFox)));
   blob_data->SetContentType("text/test");
   scoped_refptr<BlobDataHandle> input_blob_data_handle = BlobDataHandle::Create(
       std::move(blob_data), kQuickBrownFoxLengthWithTerminatingNull);
@@ -390,8 +390,8 @@ TEST_F(FetchDataLoaderBlobTest,
 TEST_F(FetchDataLoaderBlobTest,
        LoadAsBlobViaDrainAsBlobDataHandleWithDifferentContentType) {
   auto blob_data = std::make_unique<BlobData>();
-  blob_data->AppendBytes(kQuickBrownFox,
-                         kQuickBrownFoxLengthWithTerminatingNull);
+  blob_data->AppendBytes(
+      base::as_bytes(base::span_with_nul_from_cstring(kQuickBrownFox)));
   blob_data->SetContentType("text/different");
   scoped_refptr<BlobDataHandle> input_blob_data_handle = BlobDataHandle::Create(
       std::move(blob_data), kQuickBrownFoxLengthWithTerminatingNull);

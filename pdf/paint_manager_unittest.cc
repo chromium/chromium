@@ -4,11 +4,11 @@
 
 #include "pdf/paint_manager.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/paint_ready_rect.h"
@@ -33,7 +33,7 @@ namespace {
 using ::testing::_;
 using ::testing::NiceMock;
 
-base::FilePath GetTestDataFilePath(base::StringPiece filename) {
+base::FilePath GetTestDataFilePath(std::string_view filename) {
   return base::FilePath(FILE_PATH_LITERAL("paint_manager"))
       .AppendASCII(filename);
 }
@@ -130,7 +130,7 @@ class PaintManagerTest : public testing::Test {
 
   void TestScroll(const gfx::Vector2d& scroll_amount,
                   const gfx::Rect& expected_paint_rect,
-                  base::StringPiece expected_png) {
+                  std::string_view expected_png) {
     // Paint non-uniform initial image.
     gfx::Size plugin_size = paint_manager_.GetEffectiveSize();
     ASSERT_GE(plugin_size.width(), 4);

@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -71,7 +70,7 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   // is a friend of GridLayoutAlgorithm but the individual tests are not.
   wtf_size_t GridItemCount() { return cached_grid_items_.Size(); }
 
-  Vector<GridArea> GridItemGridAreas(const GridLayoutAlgorithm& algorithm) {
+  Vector<GridArea> GridItemGridAreas() {
     Vector<GridArea> results;
     for (const auto& grid_item : cached_grid_items_)
       results.push_back(grid_item.resolved_position);
@@ -79,7 +78,6 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   }
 
   Vector<wtf_size_t> GridItemsWithColumnSpanProperty(
-      const GridLayoutAlgorithm& algorithm,
       TrackSpanProperties::PropertyId property) {
     Vector<wtf_size_t> results;
     for (wtf_size_t i = 0; i < GridItemCount(); ++i) {
@@ -90,7 +88,6 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   }
 
   Vector<wtf_size_t> GridItemsWithRowSpanProperty(
-      const GridLayoutAlgorithm& algorithm,
       TrackSpanProperties::PropertyId property) {
     Vector<wtf_size_t> results;
     for (wtf_size_t i = 0; i < GridItemCount(); ++i) {
@@ -100,8 +97,7 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     return results;
   }
 
-  Vector<LayoutUnit> BaseSizes(GridLayoutAlgorithm& algorithm,
-                               GridTrackSizingDirection track_direction) {
+  Vector<LayoutUnit> BaseSizes(GridTrackSizingDirection track_direction) {
     const auto& collection = TrackCollection(track_direction);
 
     Vector<LayoutUnit> base_sizes;
@@ -112,8 +108,7 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     return base_sizes;
   }
 
-  Vector<LayoutUnit> GrowthLimits(GridLayoutAlgorithm& algorithm,
-                                  GridTrackSizingDirection track_direction) {
+  Vector<LayoutUnit> GrowthLimits(GridTrackSizingDirection track_direction) {
     const auto& collection = TrackCollection(track_direction);
 
     Vector<LayoutUnit> growth_limits;
@@ -580,7 +575,7 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmAutoGridPositions) {
   BuildGridItemsAndTrackCollections(algorithm);
   EXPECT_EQ(GridItemCount(), 4U);
 
-  Vector<GridArea> grid_positions = GridItemGridAreas(algorithm);
+  Vector<GridArea> grid_positions = GridItemGridAreas();
   ASSERT_EQ(grid_positions.size(), 4U);
 
   EXPECT_GRID_AREA(grid_positions[0], 1U, 2U, 1U, 2U);
@@ -706,7 +701,7 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmAutoDense) {
   BuildGridItemsAndTrackCollections(algorithm);
   EXPECT_EQ(GridItemCount(), 16U);
 
-  Vector<GridArea> grid_positions = GridItemGridAreas(algorithm);
+  Vector<GridArea> grid_positions = GridItemGridAreas();
   ASSERT_EQ(grid_positions.size(), 16U);
 
   // Expected placements:
@@ -833,12 +828,12 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmResolveFixedTrackSizes) {
   Vector<LayoutUnit> expected_column_growth_limits = {
       LayoutUnit(25), LayoutUnit(60), LayoutUnit(15)};
 
-  Vector<LayoutUnit> base_sizes = BaseSizes(algorithm, kForColumns);
+  Vector<LayoutUnit> base_sizes = BaseSizes(kForColumns);
   EXPECT_EQ(expected_column_base_sizes.size(), base_sizes.size());
   for (wtf_size_t i = 0; i < base_sizes.size(); ++i)
     EXPECT_EQ(expected_column_base_sizes[i], base_sizes[i]);
 
-  Vector<LayoutUnit> growth_limits = GrowthLimits(algorithm, kForColumns);
+  Vector<LayoutUnit> growth_limits = GrowthLimits(kForColumns);
   EXPECT_EQ(expected_column_growth_limits.size(), growth_limits.size());
   for (wtf_size_t i = 0; i < growth_limits.size(); ++i)
     EXPECT_EQ(expected_column_growth_limits[i], growth_limits[i]);
@@ -848,12 +843,12 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmResolveFixedTrackSizes) {
   Vector<LayoutUnit> expected_row_growth_limits = {
       LayoutUnit(100), LayoutUnit(50), LayoutUnit(70)};
 
-  base_sizes = BaseSizes(algorithm, kForRows);
+  base_sizes = BaseSizes(kForRows);
   EXPECT_EQ(expected_row_base_sizes.size(), base_sizes.size());
   for (wtf_size_t i = 0; i < base_sizes.size(); ++i)
     EXPECT_EQ(expected_row_base_sizes[i], base_sizes[i]);
 
-  growth_limits = GrowthLimits(algorithm, kForRows);
+  growth_limits = GrowthLimits(kForRows);
   EXPECT_EQ(expected_row_growth_limits.size(), growth_limits.size());
   for (wtf_size_t i = 0; i < growth_limits.size(); ++i)
     EXPECT_EQ(expected_row_growth_limits[i], growth_limits[i]);
@@ -909,15 +904,15 @@ TEST_F(GridLayoutAlgorithmTest,
   Vector<wtf_size_t> expected_grid_items_spanning_intrinsic_track = {0, 1, 3};
   Vector<wtf_size_t> expected_grid_items_spanning_flex_track = {1};
 
-  Vector<wtf_size_t> actual_items = GridItemsWithColumnSpanProperty(
-      algorithm, TrackSpanProperties::kHasIntrinsicTrack);
+  Vector<wtf_size_t> actual_items =
+      GridItemsWithColumnSpanProperty(TrackSpanProperties::kHasIntrinsicTrack);
   EXPECT_EQ(expected_grid_items_spanning_intrinsic_track.size(),
             actual_items.size());
   for (wtf_size_t i = 0; i < actual_items.size(); ++i)
     EXPECT_EQ(expected_grid_items_spanning_intrinsic_track[i], actual_items[i]);
 
-  actual_items = GridItemsWithColumnSpanProperty(
-      algorithm, TrackSpanProperties::kHasFlexibleTrack);
+  actual_items =
+      GridItemsWithColumnSpanProperty(TrackSpanProperties::kHasFlexibleTrack);
   EXPECT_EQ(expected_grid_items_spanning_flex_track.size(),
             actual_items.size());
   for (wtf_size_t i = 0; i < actual_items.size(); ++i)
@@ -927,15 +922,15 @@ TEST_F(GridLayoutAlgorithmTest,
   expected_grid_items_spanning_intrinsic_track = {1, 2, 3};
   expected_grid_items_spanning_flex_track = {2};
 
-  actual_items = GridItemsWithRowSpanProperty(
-      algorithm, TrackSpanProperties::kHasIntrinsicTrack);
+  actual_items =
+      GridItemsWithRowSpanProperty(TrackSpanProperties::kHasIntrinsicTrack);
   EXPECT_EQ(expected_grid_items_spanning_intrinsic_track.size(),
             actual_items.size());
   for (wtf_size_t i = 0; i < actual_items.size(); ++i)
     EXPECT_EQ(expected_grid_items_spanning_intrinsic_track[i], actual_items[i]);
 
-  actual_items = GridItemsWithRowSpanProperty(
-      algorithm, TrackSpanProperties::kHasFlexibleTrack);
+  actual_items =
+      GridItemsWithRowSpanProperty(TrackSpanProperties::kHasFlexibleTrack);
   EXPECT_EQ(expected_grid_items_spanning_flex_track.size(),
             actual_items.size());
   for (wtf_size_t i = 0; i < actual_items.size(); ++i)

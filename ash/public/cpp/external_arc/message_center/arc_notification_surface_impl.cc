@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_impl.h"
 
+#include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "components/exo/notification_surface.h"
@@ -153,6 +154,11 @@ void ArcNotificationSurfaceImpl::FocusSurfaceWindow() {
 
 void ArcNotificationSurfaceImpl::SetAXTreeId(ui::AXTreeID ax_tree_id) {
   ax_tree_id_ = ax_tree_id;
+
+  auto* surface_manager = ash::ArcNotificationSurfaceManager::Get();
+  if (surface_manager) {
+    surface_manager->OnNotificationSurfaceAXTreeIdChanged(this);
+  }
 }
 
 ui::AXTreeID ArcNotificationSurfaceImpl::GetAXTreeId() const {

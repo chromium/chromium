@@ -26,6 +26,7 @@ constexpr char kSameOriginAllowPopups[] = "same-origin-allow-popups";
 constexpr char kRestrictProperties[] = "restrict-properties";
 constexpr char kUnsafeNone[] = "unsafe-none";
 constexpr char kReportTo[] = "report-to";
+constexpr char kNoopenerAllowPopups[] = "noopener-allow-popups";
 
 // Fills |value|, |endpoint| and an optional |soap_by_default_value| with
 // parsed values from |header|.
@@ -75,6 +76,14 @@ void ParseHeader(std::string_view header_value,
       if (soap_by_default_value) {
         *soap_by_default_value =
             mojom::CrossOriginOpenerPolicyValue::kUnsafeNone;
+      }
+    }
+    if ((policy_item == kNoopenerAllowPopups) &&
+        base::FeatureList::IsEnabled(features::kCoopNoopenerAllowPopups)) {
+      *value = mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups;
+      if (soap_by_default_value) {
+        *soap_by_default_value =
+            mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups;
       }
     }
     auto it = base::ranges::find(item->params, kReportTo,

@@ -7,10 +7,10 @@
 #include <initializer_list>
 #include <limits>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "media/formats/hls/media_playlist_test_builder.h"
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/parse_status.h"
@@ -25,7 +25,7 @@ namespace media::hls {
 namespace {
 
 scoped_refptr<MultivariantPlaylist> CreateMultivariantPlaylist(
-    std::initializer_list<base::StringPiece> lines,
+    std::initializer_list<std::string_view> lines,
     GURL uri = GURL("http://localhost/multi_playlist.m3u8"),
     types::DecimalInteger version = Playlist::kDefaultVersion) {
   std::string source;
@@ -332,7 +332,7 @@ TEST(HlsMediaPlaylistTest, XBitrateTag) {
 
   // The EXT-X-BITRATE tag must be a valid DecimalInteger
   {
-    for (base::StringPiece x : {"", ":", ": 1", ":1 ", ":-1", ":{$bitrate}"}) {
+    for (std::string_view x : {"", ":", ": 1", ":1 ", ":-1", ":{$bitrate}"}) {
       auto fork = builder;
       fork.AppendLine("#EXT-X-BITRATE", x);
       fork.ExpectError(ParseStatusCode::kMalformedTag);
@@ -436,7 +436,7 @@ TEST(HlsMediaPlaylistTest, XByteRangeTag) {
 
   // EXT-X-BYTERANGE content must be a valid ByteRange
   {
-    for (base::StringPiece x :
+    for (std::string_view x :
          {"", ":", ": 12@34", ":12@34 ", ":12@", ":12@{$offset}"}) {
       auto fork = builder;
       fork.AppendLine("#EXT-X-BYTERANGE", x);
@@ -446,7 +446,7 @@ TEST(HlsMediaPlaylistTest, XByteRangeTag) {
     }
   }
   // EXT-X-BYTERANGE may not appear twice per-segment.
-  // TODO(https://crbug.com/1328528): Some players support this, using only the
+  // TODO(crbug.com/40226468): Some players support this, using only the
   // final occurrence.
   {
     auto fork = builder;
@@ -457,7 +457,7 @@ TEST(HlsMediaPlaylistTest, XByteRangeTag) {
     fork.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
   }
   // Offset is required if this is the first media segment.
-  // TODO(https://crbug.com/1328528): Some players support this, default offset
+  // TODO(crbug.com/40226468): Some players support this, default offset
   // to 0.
   {
     auto fork = builder;
@@ -500,7 +500,7 @@ TEST(HlsMediaPlaylistTest, XByteRangeTag) {
   }
   // Offset is required if the previous media segment is a byterange of a
   // different resource.
-  // TODO(https://crbug.com/1328528): Some players support this.
+  // TODO(crbug.com/40226468): Some players support this.
   {
     auto fork = builder;
     fork.AppendLine("#EXT-X-BYTERANGE:12@34");
@@ -678,7 +678,7 @@ TEST(HlsMediaPlaylistTest, XDiscontinuitySequenceTag) {
 
   // The EXT-X-DISCONTINUITY-SEQUENCE tag must be a valid DecimalInteger
   {
-    for (const base::StringPiece x : {"", ":-1", ":{$foo}", ":1.5", ":one"}) {
+    for (const std::string_view x : {"", ":-1", ":{$foo}", ":1.5", ":one"}) {
       auto fork = builder;
       fork.AppendLine("#EXT-X-DISCONTINUITY-SEQUENCE", x);
       fork.ExpectError(ParseStatusCode::kMalformedTag);
@@ -810,7 +810,7 @@ TEST(HlsMediaPlaylistTest, XEndListTag) {
   // Without the 'EXT-X-ENDLIST' tag, the default value is false, regardless of
   // the playlist type.
   {
-    for (const base::StringPiece type : {"", "EVENT", "VOD"}) {
+    for (const std::string_view type : {"", "EVENT", "VOD"}) {
       auto fork = builder;
       if (!type.empty()) {
         fork.AppendLine("#EXT-X-PLAYLIST-TYPE:", type);
@@ -822,7 +822,7 @@ TEST(HlsMediaPlaylistTest, XEndListTag) {
 
   // The 'EXT-X-ENDLIST' tag may not have any content
   {
-    for (const base::StringPiece x : {"", "FOO=BAR", "1"}) {
+    for (const std::string_view x : {"", "FOO=BAR", "1"}) {
       auto fork = builder;
       fork.AppendLine("#EXT-X-ENDLIST:", x);
       fork.ExpectError(ParseStatusCode::kMalformedTag);
@@ -900,7 +900,7 @@ TEST(HlsMediaPlaylistTest, XIFramesOnlyTag) {
 
   // The 'EXT-X-I-FRAMES-ONLY' tag may not have any content
   {
-    for (const base::StringPiece x : {"", "FOO=BAR", "1"}) {
+    for (const std::string_view x : {"", "FOO=BAR", "1"}) {
       auto fork = builder;
       fork.AppendLine("#EXT-X-I-FRAMES-ONLY:", x);
       fork.ExpectError(ParseStatusCode::kMalformedTag);
@@ -935,7 +935,7 @@ TEST(HlsMediaPlaylistTest, XMapTag) {
   builder.AppendLine("#EXT-X-TARGETDURATION:10");
 
   // The EXT-X-MAP tag must be valid
-  for (base::StringPiece x : {"", "BYTERANGE=\"10\"", "URI=foo.ts"}) {
+  for (std::string_view x : {"", "BYTERANGE=\"10\"", "URI=foo.ts"}) {
     auto fork = builder;
     fork.AppendLine("#EXT-X-MAP:", x);
     fork.ExpectError(ParseStatusCode::kMalformedTag);
@@ -1002,7 +1002,7 @@ TEST(HlsMediaPlaylistTest, XMediaSequenceTag) {
 
   // The EXT-X-MEDIA-SEQUENCE tag's content must be a valid DecimalInteger
   {
-    for (const base::StringPiece x : {"", ":-1", ":{$foo}", ":1.5", ":one"}) {
+    for (const std::string_view x : {"", ":-1", ":{$foo}", ":1.5", ":one"}) {
       auto fork = builder;
       fork.AppendLine("#EXT-X-MEDIA-SEQUENCE", x);
       fork.ExpectError(ParseStatusCode::kMalformedTag);
@@ -1080,7 +1080,7 @@ TEST(HlsMediaPlaylistTest, XPartInfTag) {
   builder.AppendLine("#EXT-X-SERVER-CONTROL:PART-HOLD-BACK=500");
 
   // EXT-X-PART-INF tag must be well-formed
-  for (base::StringPiece x : {"", ":", ":TARGET=1", ":PART-TARGET=two"}) {
+  for (std::string_view x : {"", ":", ":TARGET=1", ":PART-TARGET=two"}) {
     auto fork = builder;
     fork.AppendLine("#EXT-X-PART-INF", x);
     fork.ExpectError(ParseStatusCode::kMalformedTag);
@@ -1371,7 +1371,7 @@ TEST(HlsMediaPlaylistTest, XTargetDurationTag) {
   }
 
   // The XTargetDurationTag must be a valid DecimalInteger (unsigned)
-  for (base::StringPiece x : {"-1", "0.5", "-1.5", "999999999999999999999"}) {
+  for (std::string_view x : {"-1", "0.5", "-1.5", "999999999999999999999"}) {
     MediaPlaylistTestBuilder builder2;
     builder2.AppendLine("#EXTM3U");
     builder2.AppendLine("#EXT-X-TARGETDURATION:", x);
@@ -1395,6 +1395,109 @@ TEST(HlsMediaPlaylistTest, XTargetDurationTag) {
       "#EXT-X-TARGETDURATION:",
       base::NumberToString(MediaPlaylist::kMaxTargetDuration.InSeconds() + 1));
   builder.ExpectError(ParseStatusCode::kTargetDurationExceedsMax);
+}
+
+TEST(HlsMediaPlaylistTest, XKeyTagAppliesToSegments) {
+  MediaPlaylistTestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+
+  // The XTargetDurationTag tag is required
+  builder.ExpectError(ParseStatusCode::kMediaPlaylistMissingTargetDuration);
+
+  // The XTargetDurationTag must appear exactly once
+  builder.AppendLine("#EXT-X-TARGETDURATION:2");
+  builder.ExpectPlaylist(HasTargetDuration, base::Seconds(2));
+  builder.ExpectOk();
+
+  builder.AppendLine("#EXT-X-MEDIA-SEQUENCE:0");
+  builder.ExpectOk();
+
+  builder.AppendLine("#EXT-X-PLAYLIST-TYPE:VOD");
+  builder.ExpectOk();
+
+  builder.AppendLine("#EXTINF:1.600000,");
+  builder.AppendLine("data00.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasUri, GURL("http://localhost/data00.ts"));
+  builder.ExpectSegment(HasMediaSequenceNumber, 0);
+  builder.ExpectSegment(HasEncryptionData, std::nullopt);
+  builder.ExpectOk();
+
+  builder.AppendLine(
+      "#EXT-X-KEY:METHOD=AES-128,URI=\"enc.key\",IV="
+      "0x00000000000000000000000000000042");
+  builder.AppendLine("#EXTINF:1.60000,");
+  builder.AppendLine("data01.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasUri, GURL("http://localhost/data01.ts"));
+  builder.ExpectSegment(HasMediaSequenceNumber, 1);
+  builder.ExpectSegment(
+      HasEncryptionData,
+      std::make_tuple(GURL("http://localhost/enc.key"), XKeyTagMethod::kAES128,
+                      XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 0x42)));
+  builder.ExpectOk();
+
+  builder.AppendLine("#EXT-X-KEY:METHOD=NONE");
+  builder.AppendLine("#EXTINF:1.60000,");
+  builder.AppendLine("data02.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasUri, GURL("http://localhost/data02.ts"));
+  builder.ExpectSegment(HasMediaSequenceNumber, 2);
+  builder.ExpectSegment(HasEncryptionData, std::nullopt);
+  builder.ExpectOk();
+
+  builder.AppendLine(
+      "#EXT-X-KEY:METHOD=AES-128,URI=\"enc.key\",KEYFORMAT=\"identity\"");
+  builder.AppendLine("#EXTINF:1.60000,");
+  builder.AppendLine("data03.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasUri, GURL("http://localhost/data03.ts"));
+  builder.ExpectSegment(HasMediaSequenceNumber, 3);
+  builder.ExpectSegment(
+      HasEncryptionData,
+      std::make_tuple(GURL("http://localhost/enc.key"), XKeyTagMethod::kAES128,
+                      XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 3)));
+  builder.ExpectOk();
+
+  builder.AppendLine("#EXTINF:1.600000,");
+  builder.AppendLine("data04.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasUri, GURL("http://localhost/data04.ts"));
+  builder.ExpectSegment(HasMediaSequenceNumber, 4);
+  builder.ExpectSegment(
+      HasEncryptionData,
+      std::make_tuple(GURL("http://localhost/enc.key"), XKeyTagMethod::kAES128,
+                      XKeyTagKeyFormat::kIdentity, std::make_tuple(0, 4)));
+  builder.ExpectOk();
+
+  builder.AppendLine(
+      "#EXT-X-KEY:METHOD=SAMPLE-AES,URI=\"enc.key\",KEYFORMAT=\"identity\"");
+  builder.AppendLine("#EXTINF:1.60000,");
+  builder.AppendLine("data05.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasUri, GURL("http://localhost/data05.ts"));
+  builder.ExpectSegment(HasMediaSequenceNumber, 5);
+  builder.ExpectSegment(
+      HasEncryptionData,
+      std::make_tuple(GURL("http://localhost/enc.key"),
+                      XKeyTagMethod::kSampleAES, XKeyTagKeyFormat::kIdentity,
+                      std::make_tuple(0, 5)));
+  builder.ExpectOk();
+
+  builder.AppendLine(
+      "#EXT-X-KEY:METHOD=SAMPLE-AES-CTR,URI=\"enc.key\",KEYFORMAT="
+      "\"identity\"");
+  builder.AppendLine("#EXTINF:1.60000,");
+  builder.AppendLine("data06.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasUri, GURL("http://localhost/data06.ts"));
+  builder.ExpectSegment(HasMediaSequenceNumber, 6);
+  builder.ExpectSegment(
+      HasEncryptionData,
+      std::make_tuple(GURL("http://localhost/enc.key"),
+                      XKeyTagMethod::kSampleAESCTR, XKeyTagKeyFormat::kIdentity,
+                      std::make_tuple(0, 6)));
+  builder.ExpectOk();
 }
 
 }  // namespace media::hls

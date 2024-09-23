@@ -22,7 +22,7 @@ void PassthroughSysmemBufferStream::Initialize(Sink* sink,
   DCHECK(sink);
   sink_ = sink;
 
-  fuchsia::sysmem::BufferCollectionConstraints buffer_constraints =
+  fuchsia::sysmem2::BufferCollectionConstraints buffer_constraints =
       VmoBuffer::GetRecommendedConstraints(min_buffer_count, min_buffer_size,
                                            /*writable=*/true);
 
@@ -49,7 +49,7 @@ void PassthroughSysmemBufferStream::Reset() {
 
 void PassthroughSysmemBufferStream::OnBuffersAcquired(
     std::vector<VmoBuffer> buffers,
-    const fuchsia::sysmem::SingleBufferSettings& buffer_settings) {
+    const fuchsia::sysmem2::SingleBufferSettings& buffer_settings) {
   queue_.Start(
       std::move(buffers),
       base::BindRepeating(&PassthroughSysmemBufferStream::ProcessOutputPacket,

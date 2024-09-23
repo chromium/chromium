@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_switches.h"
@@ -24,6 +25,11 @@
 #include "ui/native_theme/native_theme_utils.h"
 
 namespace ui {
+
+namespace {
+static constexpr base::TimeDelta kDefaultCaretBlinkInterval =
+    base::Milliseconds(500);
+}
 
 NativeTheme::MenuListExtraParams::MenuListExtraParams() = default;
 NativeTheme::TextFieldExtraParams::TextFieldExtraParams() = default;
@@ -81,7 +87,7 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
                            : ColorProviderKey::ColorMode::kLight;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   key.contrast_mode = UserHasContrastPreference()
                           ? ColorProviderKey::ContrastMode::kHigh
@@ -178,22 +184,27 @@ float NativeTheme::AdjustBorderRadiusByZoom(Part part,
   return border_radius;
 }
 
+base::TimeDelta NativeTheme::GetCaretBlinkInterval() const {
+  if (caret_blink_interval_.has_value()) {
+    return caret_blink_interval_.value();
+  }
+  std::optional<base::TimeDelta> platform_interval =
+      GetPlatformCaretBlinkInterval();
+  if (platform_interval.has_value()) {
+    return platform_interval.value();
+  }
+  return kDefaultCaretBlinkInterval;
+}
+
 NativeTheme::NativeTheme(bool should_use_dark_colors,
-                         ui::SystemTheme system_theme,
-                         NativeTheme* theme_to_update)
-    : color_scheme_observer_(theme_to_update),
-      should_use_dark_colors_(should_use_dark_colors || IsForcedDarkMode()),
+                         ui::SystemTheme system_theme)
+    : should_use_dark_colors_(should_use_dark_colors || IsForcedDarkMode()),
       system_theme_(system_theme),
       forced_colors_(IsForcedHighContrast()),
       prefers_reduced_transparency_(false),
       inverted_colors_(false),
       preferred_color_scheme_(CalculatePreferredColorScheme()),
-      preferred_contrast_(CalculatePreferredContrast()) {
-  if (theme_to_update && !IsForcedDarkMode() && !IsForcedHighContrast() &&
-      base::SequencedTaskRunner::HasCurrentDefault()) {
-    theme_observation_.Observe(this);
-  }
-}
+      preferred_contrast_(CalculatePreferredContrast()) {}
 
 NativeTheme::~NativeTheme() = default;
 
@@ -227,6 +238,11 @@ NativeTheme::PreferredColorScheme NativeTheme::CalculatePreferredColorScheme()
     const {
   return ShouldUseDarkColors() ? NativeTheme::PreferredColorScheme::kDark
                                : NativeTheme::PreferredColorScheme::kLight;
+}
+
+std::optional<base::TimeDelta> NativeTheme::GetPlatformCaretBlinkInterval()
+    const {
+  return std::nullopt;
 }
 
 NativeTheme::PreferredColorScheme NativeTheme::GetPreferredColorScheme() const {
@@ -300,28 +316,6 @@ void NativeTheme::set_system_colors(
   system_colors_ = colors;
 }
 
-bool NativeTheme::UpdateSystemColorInfo(
-    bool is_dark_mode,
-    bool forced_colors,
-    const base::flat_map<SystemThemeColor, uint32_t>& colors) {
-  bool did_system_color_info_change = false;
-  if (is_dark_mode != ShouldUseDarkColors()) {
-    did_system_color_info_change = true;
-    set_use_dark_colors(is_dark_mode);
-  }
-  if (forced_colors != InForcedColorsMode()) {
-    did_system_color_info_change = true;
-    set_forced_colors(forced_colors);
-  }
-  for (const auto& color : colors) {
-    if (color.second != GetSystemThemeColor(color.first)) {
-      did_system_color_info_change = true;
-      system_colors_[color.first] = color.second;
-    }
-  }
-  return did_system_color_info_change;
-}
-
 NativeTheme::ColorSchemeNativeThemeObserver::ColorSchemeNativeThemeObserver(
     NativeTheme* theme_to_update)
     : theme_to_update_(theme_to_update) {}
@@ -332,15 +326,52 @@ NativeTheme::ColorSchemeNativeThemeObserver::~ColorSchemeNativeThemeObserver() =
 void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
     ui::NativeTheme* observed_theme) {
   bool should_use_dark_colors = observed_theme->ShouldUseDarkColors();
-  bool forced_colors = observed_theme->InForcedColorsMode();
-  PageColors page_colors = observed_theme->GetPageColors();
-  bool prefers_reduced_transparency =
-      observed_theme->GetPrefersReducedTransparency();
   PreferredColorScheme preferred_color_scheme =
       observed_theme->GetPreferredColorScheme();
-  PreferredContrast preferred_contrast = observed_theme->GetPreferredContrast();
   bool inverted_colors = observed_theme->GetInvertedColors();
+  base::TimeDelta caret_blink_interval =
+      observed_theme->GetCaretBlinkInterval();
   bool notify_observers = false;
+
+  if (theme_to_update_->ShouldUseDarkColors() != should_use_dark_colors) {
+    theme_to_update_->set_use_dark_colors(should_use_dark_colors);
+    notify_observers = true;
+  }
+  if (theme_to_update_->GetPreferredColorScheme() != preferred_color_scheme) {
+    theme_to_update_->set_preferred_color_scheme(preferred_color_scheme);
+    notify_observers = true;
+  }
+  if (theme_to_update_->GetInvertedColors() != inverted_colors) {
+    theme_to_update_->set_inverted_colors(inverted_colors);
+    notify_observers = true;
+  }
+  if (theme_to_update_->GetCaretBlinkInterval() != caret_blink_interval) {
+    theme_to_update_->set_caret_blink_interval(caret_blink_interval);
+    notify_observers = true;
+  }
+
+  notify_observers |=
+      theme_to_update_->UpdateContrastRelatedStates(*observed_theme);
+
+  if (notify_observers) {
+    DCHECK(theme_to_update_->UserHasContrastPreference() ||
+           !theme_to_update_->InForcedColorsMode());
+    theme_to_update_->NotifyOnNativeThemeUpdated();
+  }
+}
+
+NativeTheme::ColorScheme NativeTheme::GetDefaultSystemColorScheme() const {
+  return ShouldUseDarkColors() ? ColorScheme::kDark : ColorScheme::kLight;
+}
+
+bool NativeTheme::UpdateContrastRelatedStates(
+    const NativeTheme& observed_theme) {
+  bool forced_colors = observed_theme.InForcedColorsMode();
+  PageColors page_colors = observed_theme.GetPageColors();
+  bool prefers_reduced_transparency =
+      observed_theme.GetPrefersReducedTransparency();
+  PreferredContrast preferred_contrast = observed_theme.GetPreferredContrast();
+  bool states_updated = false;
 
   const auto default_page_colors =
       forced_colors ? PageColors::kHighContrast : PageColors::kOff;
@@ -355,70 +386,56 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
       // only available in forced colors mode.
       CHECK_GE(page_colors, ui::NativeTheme::PageColors::kDusk);
       CHECK_LE(page_colors, ui::NativeTheme::PageColors::kWhite);
+      forced_colors = true;
+      preferred_contrast = PreferredContrast::kMore;
+    }
+  }
+
+  if (InForcedColorsMode() != forced_colors) {
+    set_forced_colors(forced_colors);
+    states_updated = true;
+  }
+  if (GetPageColors() != page_colors) {
+    set_page_colors(page_colors);
+    // Only update the color scheme if page colors is a selected theme.
+    if (page_colors != PageColors::kOff &&
+        page_colors != PageColors::kHighContrast) {
       bool is_dark_color =
           page_colors == PageColors::kBlack || page_colors == PageColors::kDusk;
       PreferredColorScheme page_colors_theme_scheme =
           is_dark_color ? PreferredColorScheme::kDark
                         : PreferredColorScheme::kLight;
-
-      forced_colors = true;
-      should_use_dark_colors = is_dark_color;
-      preferred_color_scheme = page_colors_theme_scheme;
-      preferred_contrast = PreferredContrast::kMore;
+      set_use_dark_colors(is_dark_color);
+      set_preferred_color_scheme(page_colors_theme_scheme);
     }
+    states_updated = true;
+  }
+  if (GetPreferredContrast() != preferred_contrast) {
+    SetPreferredContrast(preferred_contrast);
+    states_updated = true;
+  }
+  if (GetPrefersReducedTransparency() != prefers_reduced_transparency) {
+    set_prefers_reduced_transparency(prefers_reduced_transparency);
+    states_updated = true;
   }
 
-  if (theme_to_update_->ShouldUseDarkColors() != should_use_dark_colors) {
-    theme_to_update_->set_use_dark_colors(should_use_dark_colors);
-    notify_observers = true;
-  }
-  if (theme_to_update_->InForcedColorsMode() != forced_colors) {
-    theme_to_update_->set_forced_colors(forced_colors);
-    notify_observers = true;
-  }
-  if (theme_to_update_->GetPageColors() != page_colors) {
-    theme_to_update_->set_page_colors(page_colors);
-    notify_observers = true;
-  }
-  if (theme_to_update_->GetPreferredColorScheme() != preferred_color_scheme) {
-    theme_to_update_->set_preferred_color_scheme(preferred_color_scheme);
-    notify_observers = true;
-  }
-  if (theme_to_update_->GetPreferredContrast() != preferred_contrast) {
-    theme_to_update_->SetPreferredContrast(preferred_contrast);
-    notify_observers = true;
-  }
-  if (theme_to_update_->GetPrefersReducedTransparency() !=
-      prefers_reduced_transparency) {
-    theme_to_update_->set_prefers_reduced_transparency(
-        prefers_reduced_transparency);
-    notify_observers = true;
-  }
-  if (theme_to_update_->GetInvertedColors() != inverted_colors) {
-    theme_to_update_->set_inverted_colors(inverted_colors);
-    notify_observers = true;
-  }
-
-  // TODO(samomekarajr): Take this out when fully migrated to the color
-  // pipeline.
-  const auto& system_colors = observed_theme->GetSystemColors();
-  if (theme_to_update_->HasDifferentSystemColors(system_colors)) {
-    theme_to_update_->set_system_colors(system_colors);
-    notify_observers = true;
-  }
-
-  if (notify_observers) {
-    DCHECK(theme_to_update_->UserHasContrastPreference() ||
-           !theme_to_update_->InForcedColorsMode());
-    theme_to_update_->NotifyOnNativeThemeUpdated();
-  }
-}
-
-NativeTheme::ColorScheme NativeTheme::GetDefaultSystemColorScheme() const {
-  return ShouldUseDarkColors() ? ColorScheme::kDark : ColorScheme::kLight;
+  return states_updated;
 }
 
 int NativeTheme::GetPaintedScrollbarTrackInset() const {
   return 0;
 }
+
+gfx::Insets NativeTheme::GetScrollbarSolidColorThumbInsets(Part part) const {
+  return gfx::Insets();
+}
+
+SkColor4f NativeTheme::GetScrollbarThumbColor(
+    const ui::ColorProvider& color_provider,
+    State state,
+    const ScrollbarThumbExtraParams& extra_params) const {
+  // A native theme using solid color scrollbar thumb must override this method.
+  NOTREACHED();
+}
+
 }  // namespace ui

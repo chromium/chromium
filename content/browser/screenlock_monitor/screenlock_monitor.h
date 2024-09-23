@@ -20,7 +20,7 @@ class ScreenlockMonitorSource;
 // A class used to monitor the screenlock state change and notify the observers
 // about the change event.
 // Currently available on Win/MacOSX/ChromOS only.
-// TODO(crbug.com/887585): Keep studying for a solid way to do this on Linux.
+// TODO(crbug.com/40594737): Keep studying for a solid way to do this on Linux.
 class CONTENT_EXPORT ScreenlockMonitor {
  public:
   ScreenlockMonitor(std::unique_ptr<ScreenlockMonitorSource> source);

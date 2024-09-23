@@ -100,7 +100,7 @@ class NetInfoNetworkQualityEstimatorHoldbackBrowserTest
       g_browser_process->network_quality_tracker()
           ->ReportRTTsAndThroughputForTesting(base::Milliseconds(3600), 40);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

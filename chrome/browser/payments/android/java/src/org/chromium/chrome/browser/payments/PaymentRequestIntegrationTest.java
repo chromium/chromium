@@ -21,9 +21,13 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.payments.test_support.MockPaymentUiServiceBuilder;
 import org.chromium.chrome.browser.payments.test_support.PaymentRequestParamsBuilder;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.components.payments.AndroidPaymentApp;
 import org.chromium.components.payments.ErrorMessageUtil;
 import org.chromium.components.payments.ErrorMessageUtilJni;
@@ -76,7 +80,10 @@ public class PaymentRequestIntegrationTest {
     @Mock private ErrorMessageUtil.Natives mErrorMessageUtilMock;
     @Mock private NavigationController mNavigationController;
     @Mock private WebContentsImpl.Natives mWebContentsJniMock;
+    @Mock private Profile.Natives mProfileJniMock;
     @Mock private PaymentRequestWebContentsData.Natives mWebContentsDataJniMock;
+
+    @Mock private PersonalDataManager mPersonalDataManager;
 
     private PaymentRequestClient mClient;
     private PaymentAppFactoryInterface mFactory;
@@ -94,6 +101,11 @@ public class PaymentRequestIntegrationTest {
         // We don't mock the WebContentsObserverProxy, so mock the observer behaviour.
         Mockito.doNothing().when(webContentsImpl).addObserver(Mockito.any());
         webContentsImpl.initializeForTesting();
+
+        mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
+
+        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
+
         mPaymentRequestWebContentsData = new PaymentRequestWebContentsData(webContentsImpl);
         PaymentRequestWebContentsData.setInstanceForTesting(mPaymentRequestWebContentsData);
 

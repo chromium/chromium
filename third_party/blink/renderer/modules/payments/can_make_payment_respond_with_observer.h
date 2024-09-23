@@ -36,7 +36,9 @@ class MODULES_EXPORT CanMakePaymentRespondWithObserver final
 
   // Observes the given promise and calls OnResponseRejected() or
   // OnResponseFulfilled().
-  void ObservePromiseResponse(ScriptState*, ScriptPromise, ExceptionState&);
+  void ObservePromiseResponse(ScriptState*,
+                              ScriptPromiseUntyped,
+                              ExceptionState&);
 
  private:
   void Respond(

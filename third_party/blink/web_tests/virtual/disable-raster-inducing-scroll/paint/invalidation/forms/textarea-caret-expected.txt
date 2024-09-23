@@ -1,0 +1,51 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [7, 7, 183, 40]
+      ]
+    },
+    {
+      "name": "Caret",
+      "position": [482, 3],
+      "bounds": [1, 16],
+      "contentsOpaque": true,
+      "transform": 2
+    },
+    {
+      "name": "LayoutTextControlMultiLine (inline) TEXTAREA id='editor'",
+      "position": [-1, -1],
+      "bounds": [183, 40],
+      "invalidations": [
+        [0, 0, 183, 40]
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [-303, 0, 0, 1]
+      ]
+    }
+  ]
+}
+

@@ -5,7 +5,7 @@ implemented matches the intended behavior of the Attribution Reporting API.
 
 See https://wicg.github.io/attribution-reporting-api/ for the draft specification.
 
-See //content/browser/attribution_reporting/attribution_interop_unittest.cc
+See //content/browser/attribution_reporting/interop/interop_unittest.cc
 for the tests.
 
 These tests are purposefully not implemented as web platform tests, so that
@@ -46,21 +46,21 @@ and triggers.
         "timestamp": "123",
 
         "registration_request": {
-          // Required URL specified in the attributionsrc registration.
-          "attribution_src_url": "https://reporting.example",
-
           // Required origin on which to register.
           "context_origin": "https://context.example",
 
-          // Either "navigation" or "event",
-          // corresponding to whether the source is registered on click or
-          // view, respectively. Must be present for source registrations and
-          // omitted for trigger registrations.
-          "source_type": "navigation"
+          // A structured dictionary indicating which registrations the
+          // responses are eligible for.
+          // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#registration-requests
+          "Attribution-Reporting-Eligible": "navigation-source",
+
+          // Whether the request originated from a fenced frame.
+          // Defaults to false.
+          // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#verbose-debugging-reports
+          "fenced": false
         },
 
-        // List of URLs and the corresponding responses. Currently only allows
-        // one.
+        // List of URLs and the corresponding responses.
         "responses": [
           {
             // Required URL from which the response was sent.
@@ -70,13 +70,40 @@ and triggers.
             // enabled. Defaults to false.
             "debug_permission": true,
 
-            // Exactly one of the below fields must be present. See
+            // Optional for the first response in the list, but required for all
+            // subsequent ones. If absent, defaults to the registration's
+            // timestamp.
+            "timestamp": "456",
+
+            // If present and non-null, the source's randomized response,
+            // consisting of zero of more fake reports. Defaults to null. Length
+            // must be <= the source's max_event_level_reports. Ignored for
+            // triggers.
+            "randomized_response": [
+              {
+                // The fake report's trigger data. Must be a uint32 exactly
+                // matching a value in the source's trigger specs.
+                "trigger_data": 1,
+
+                // The fake report's report window index. Must be a non-negative
+                // integer less than the source's number of report windows.
+                "report_window_index": 0
+              }
+            ],
+
+            // If present and non-null, the lookback days that would create null
+            // aggregatable reports. Defaults to null. Ignored for sources.
+            "null_aggregatable_reports_days": [1, 5]
+
+            // Exactly one of the registration fields must be present. See
             // https://github.com/WICG/attribution-reporting-api for the
             // complete schema.
             "response": {
               "Attribution-Reporting-Register-Source": { ... },
 
-              "Attribution-Reporting-Register-Trigger": { ... }
+              "Attribution-Reporting-Register-Trigger": { ... },
+
+              "Attribution-Reporting-Info": "..."
             }
           }
         ]
@@ -96,15 +123,6 @@ and triggers.
         "report_time": "123",
 
         "payload": ...
-      }
-    ],
-
-    "unparsable_registrations": [
-      {
-        // Time of the input that failed to register.
-        "time": "123",
-
-        "type": "source" // or "trigger"
       }
     ]
   }

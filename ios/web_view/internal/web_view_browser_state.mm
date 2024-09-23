@@ -11,12 +11,7 @@
 #import "base/memory/ptr_util.h"
 #import "base/path_service.h"
 #import "base/threading/thread_restrictions.h"
-#import "components/autofill/core/common/autofill_prefs.h"
-#import "components/history/core/common/pref_names.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/language/core/browser/language_prefs.h"
-#import "components/metrics/demographics/user_demographics.h"
-#import "components/password_manager/core/browser/password_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/in_memory_pref_store.h"
 #import "components/prefs/json_pref_store.h"
@@ -28,38 +23,19 @@
 #import "components/sync/service/glue/sync_transport_data_prefs.h"
 #import "components/sync/service/sync_prefs.h"
 #import "components/sync_device_info/device_info_prefs.h"
-#import "components/translate/core/browser/translate_pref_names.h"
-#import "components/translate/core/browser/translate_prefs.h"
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web_view/internal/app/application_context.h"
-#import "ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h"
-#import "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
-#import "ios/web_view/internal/language/web_view_accept_languages_service_factory.h"
-#import "ios/web_view/internal/language/web_view_language_model_manager_factory.h"
-#import "ios/web_view/internal/language/web_view_url_language_histogram_factory.h"
-#import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
-#import "ios/web_view/internal/passwords/web_view_bulk_leak_check_service_factory.h"
-#import "ios/web_view/internal/passwords/web_view_password_manager_log_router_factory.h"
-#import "ios/web_view/internal/passwords/web_view_password_requirements_service_factory.h"
-#import "ios/web_view/internal/passwords/web_view_profile_password_store_factory.h"
-#import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
-#import "ios/web_view/internal/signin/web_view_signin_client_factory.h"
-#import "ios/web_view/internal/sync/web_view_gcm_profile_service_factory.h"
-#import "ios/web_view/internal/sync/web_view_model_type_store_service_factory.h"
-#import "ios/web_view/internal/sync/web_view_profile_invalidation_provider_factory.h"
-#import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
-#import "ios/web_view/internal/translate/web_view_translate_ranker_factory.h"
+#import "ios/web_view/internal/browser_state_prefs.h"
 #import "ios/web_view/internal/web_view_download_manager.h"
 #import "ios/web_view/internal/web_view_url_request_context_getter.h"
-#import "ios/web_view/internal/webdata_services/web_view_web_data_service_wrapper_factory.h"
-#import "ios/web_view/internal/webui/web_view_web_ui_ios_controller_factory.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+
 const char kPreferencesFilename[] =
     FILE_PATH_LITERAL("ChromeWebViewPreferences");
 }
@@ -80,6 +56,8 @@ WebViewBrowserState::WebViewBrowserState(
           !recording_browser_state->IsOffTheRecord()));
   recording_browser_state_ = recording_browser_state;
 
+  BrowserStateDependencyManager::GetInstance()->MarkBrowserStateLive(this);
+
   profile_metrics::SetBrowserProfileType(
       this, off_the_record ? profile_metrics::BrowserProfileType::kIncognito
                            : profile_metrics::BrowserProfileType::kRegular);
@@ -99,7 +77,7 @@ WebViewBrowserState::WebViewBrowserState(
     // Initialize prefs.
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry =
         new user_prefs::PrefRegistrySyncable;
-    RegisterPrefs(pref_registry.get());
+    RegisterBrowserStatePrefs(pref_registry.get());
 
     scoped_refptr<PersistentPrefStore> user_pref_store;
     if (off_the_record) {
@@ -162,48 +140,6 @@ base::FilePath WebViewBrowserState::GetStatePath() const {
 
 net::URLRequestContextGetter* WebViewBrowserState::GetRequestContext() {
   return request_context_getter_.get();
-}
-
-void WebViewBrowserState::RegisterPrefs(
-    user_prefs::PrefRegistrySyncable* pref_registry) {
-  pref_registry->RegisterBooleanPref(translate::prefs::kOfferTranslateEnabled,
-                                     true);
-  pref_registry->RegisterBooleanPref(prefs::kSavingBrowserHistoryDisabled,
-                                     true);
-  language::LanguagePrefs::RegisterProfilePrefs(pref_registry);
-  metrics::RegisterDemographicsProfilePrefs(pref_registry);
-  translate::TranslatePrefs::RegisterProfilePrefs(pref_registry);
-  autofill::prefs::RegisterProfilePrefs(pref_registry);
-  password_manager::PasswordManager::RegisterProfilePrefs(pref_registry);
-  syncer::SyncPrefs::RegisterProfilePrefs(pref_registry);
-  syncer::SyncTransportDataPrefs::RegisterProfilePrefs(pref_registry);
-  syncer::DeviceInfoPrefs::RegisterProfilePrefs(pref_registry);
-  safe_browsing::RegisterProfilePrefs(pref_registry);
-  unified_consent::UnifiedConsentService::RegisterPrefs(pref_registry);
-
-  // Instantiate all factories to setup dependency graph for pref registration.
-  WebViewLanguageModelManagerFactory::GetInstance();
-  WebViewTranslateRankerFactory::GetInstance();
-  WebViewUrlLanguageHistogramFactory::GetInstance();
-  WebViewAcceptLanguagesServiceFactory::GetInstance();
-  WebViewWebUIIOSControllerFactory::GetInstance();
-  autofill::WebViewAutofillLogRouterFactory::GetInstance();
-  WebViewPersonalDataManagerFactory::GetInstance();
-  WebViewWebDataServiceWrapperFactory::GetInstance();
-  WebViewPasswordManagerLogRouterFactory::GetInstance();
-  WebViewAccountPasswordStoreFactory::GetInstance();
-  WebViewProfilePasswordStoreFactory::GetInstance();
-  WebViewPasswordRequirementsServiceFactory::GetInstance();
-  WebViewSigninClientFactory::GetInstance();
-  WebViewIdentityManagerFactory::GetInstance();
-  WebViewGCMProfileServiceFactory::GetInstance();
-  WebViewProfileInvalidationProviderFactory::GetInstance();
-  WebViewSyncServiceFactory::GetInstance();
-  WebViewModelTypeStoreServiceFactory::GetInstance();
-  WebViewBulkLeakCheckServiceFactory::GetInstance();
-
-  BrowserStateDependencyManager::GetInstance()
-      ->RegisterBrowserStatePrefsForServices(pref_registry);
 }
 
 }  // namespace ios_web_view

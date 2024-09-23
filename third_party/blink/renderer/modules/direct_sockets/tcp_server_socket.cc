@@ -67,7 +67,10 @@ mojom::blink::DirectTCPServerSocketOptionsPtr CreateTCPServerSocketOptions(
 }  // namespace
 
 TCPServerSocket::TCPServerSocket(ScriptState* script_state)
-    : Socket(script_state) {}
+    : Socket(script_state),
+      opened_(MakeGarbageCollected<
+              ScriptPromiseProperty<TCPServerSocketOpenInfo, DOMException>>(
+          GetExecutionContext())) {}
 
 TCPServerSocket::~TCPServerSocket() = default;
 
@@ -87,12 +90,18 @@ TCPServerSocket* TCPServerSocket::Create(ScriptState* script_state,
   return socket;
 }
 
-ScriptPromise TCPServerSocket::close(ScriptState* script_state,
-                                     ExceptionState& exception_state) {
+ScriptPromise<TCPServerSocketOpenInfo> TCPServerSocket::opened(
+    ScriptState* script_state) const {
+  return opened_->Promise(script_state->World());
+}
+
+ScriptPromise<IDLUndefined> TCPServerSocket::close(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (GetState() == State::kOpening) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Socket is not properly initialized.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   if (GetState() != State::kOpen) {
@@ -102,7 +111,7 @@ ScriptPromise TCPServerSocket::close(ScriptState* script_state,
   if (readable_stream_wrapper_->Locked()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Close called on locked streams.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   auto* reason = MakeGarbageCollected<DOMException>(
@@ -156,7 +165,7 @@ void TCPServerSocket::OnTCPServerSocketOpened(
     open_info->setLocalAddress(String{local_addr->ToStringWithoutPort()});
     open_info->setLocalPort(local_addr->port());
 
-    GetOpenedPromiseResolver()->Resolve(open_info);
+    opened_->Resolve(open_info);
 
     SetState(State::kOpen);
   } else {
@@ -164,9 +173,11 @@ void TCPServerSocket::OnTCPServerSocketOpened(
     base::UmaHistogramSparse("DirectSockets.TCPServerNetworkFailures", -result);
     ReleaseResources();
 
+    ScriptState::Scope scope(GetScriptState());
     auto* exception = CreateDOMExceptionFromNetErrorCode(result);
-    GetOpenedPromiseResolver()->Reject(exception);
-    GetClosedPromiseResolver()->Reject(exception);
+    opened_->Reject(exception);
+    GetClosedProperty().Reject(ScriptValue(GetScriptState()->GetIsolate(),
+                                           exception->ToV8(GetScriptState())));
 
     SetState(State::kAborted);
   }
@@ -175,6 +186,7 @@ void TCPServerSocket::OnTCPServerSocketOpened(
 }
 
 void TCPServerSocket::Trace(Visitor* visitor) const {
+  visitor->Trace(opened_);
   visitor->Trace(readable_stream_wrapper_);
 
   ScriptWrappable::Trace(visitor);
@@ -195,10 +207,10 @@ void TCPServerSocket::OnReadableStreamClosed(ScriptValue exception) {
   DCHECK_EQ(GetState(), State::kOpen);
 
   if (!exception.IsEmpty()) {
-    GetClosedPromiseResolver()->Reject(exception);
+    GetClosedProperty().Reject(exception);
     SetState(State::kAborted);
   } else {
-    GetClosedPromiseResolver()->Resolve();
+    GetClosedProperty().ResolveWithUndefined();
     SetState(State::kClosed);
   }
   ReleaseResources();

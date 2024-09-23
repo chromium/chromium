@@ -20,6 +20,8 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -41,11 +43,13 @@ namespace autofill {
 SaveCardBubbleViews::SaveCardBubbleViews(views::View* anchor_view,
                                          content::WebContents* web_contents,
                                          SaveCardBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
   DCHECK(controller);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller->GetAcceptButtonText());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller->GetDeclineButtonText());
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 controller->GetAcceptButtonText());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                 controller->GetDeclineButtonText());
   SetAcceptCallback(base::BindOnce(&SaveCardBubbleViews::OnDialogAccepted,
                                    base::Unretained(this)));
 
@@ -254,15 +258,18 @@ void SaveCardBubbleViews::AssignIdsToDialogButtons() {
 }
 
 void SaveCardBubbleViews::Init() {
+  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
+
   // For server cards, there is an explanation between the title and the
   // controls; use DialogContentType::kText. For local cards, since there is no
   // explanation, use DialogContentType::kControl instead.
   // There are legal messages before the buttons for server cards, so use
   // DialogContentType::kText. For local card, since there is no legal message,
   // use DialogContentType::kControl instead.
-  set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
+  set_margins(provider->GetDialogInsetsForContentType(
       controller_->GetExplanatoryMessage().empty()
           ? views::DialogContentType::kControl
           : views::DialogContentType::kText,
@@ -271,5 +278,8 @@ void SaveCardBubbleViews::Init() {
           : views::DialogContentType::kControl));
   AddChildView(CreateMainContentView());
 }
+
+BEGIN_METADATA(SaveCardBubbleViews)
+END_METADATA
 
 }  // namespace autofill

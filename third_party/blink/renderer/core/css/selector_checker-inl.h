@@ -162,7 +162,7 @@ bool EasySelectorChecker::MatchOne(const CSSSelector* selector,
       return AttributeMatches(*element, selector->Attribute(),
                               selector->Value());
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }

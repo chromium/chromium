@@ -81,8 +81,8 @@ class CustomLinksManagerImpl : public CustomLinksManager,
   // history::HistoryServiceObserver implementation.
   // Deletes any Most Visited links whose URL is in |deletion_info|. Clears
   // |previous_links_|. Does not delete entries expired by HistoryService.
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
   void HistoryServiceBeingDeleted(
       history::HistoryService* history_service) override;
 

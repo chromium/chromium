@@ -226,7 +226,7 @@ void ARQuickLookTabHelper::OnDownloadUpdated(web::DownloadTask* download_task) {
       DidFinishDownload();
       break;
     case web::DownloadTask::State::kNotStarted:
-      NOTREACHED() << "Invalid state.";
+      NOTREACHED_IN_MIGRATION() << "Invalid state.";
   }
 }
 

@@ -10,13 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.history.HistoryContentManager;
 import org.chromium.chrome.browser.history.HistoryItem;
 import org.chromium.chrome.browser.history.HistoryProvider;
+import org.chromium.chrome.browser.history.HistoryUmaRecorder;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
@@ -93,11 +93,14 @@ public class PageInfoHistoryController
                         /* shouldShowClearDataIfAvailable= */ false,
                         mHost,
                         /* selectionDelegate= */ null,
+                        /* bottomSheetController= */ null,
                         mTabSupplier,
-                        new ObservableSupplierImpl<>(),
-                        vg -> null,
+                        /* hideSoftKeyboard= */ null,
+                        /* umaRecorder= */ new HistoryUmaRecorder(),
                         new BrowsingHistoryBridge(profile),
-                        null);
+                        null,
+                        /* launchedForApp= */ false,
+                        /* showAppFilter= */ false);
         mContentManager.startLoadingItems();
         return mContentManager.getRecyclerView();
     }
@@ -170,7 +173,7 @@ public class PageInfoHistoryController
 
     @Override
     public void clearData() {
-        // TODO(crbug.com/1173154): Add functionality for clear history for this site.
+        // TODO(crbug.com/40746014): Add functionality for clear history for this site.
         return;
     }
 
@@ -209,10 +212,14 @@ public class PageInfoHistoryController
     // HistoryContentManager.Observer
     @Override
     public void onClearBrowsingDataClicked() {
-        // TODO(crbug.com/1173154): Add functionality for "clear history" button click and
+        // TODO(crbug.com/40746014): Add functionality for "clear history" button click and
         // change the name of the current clear browsing data button.
         return;
     }
+
+    // HistoryContentManager.Observer
+    @Override
+    public void onOpenFullChromeHistoryClicked() {}
 
     // HistoryContentManager.Observer
     @Override

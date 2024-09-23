@@ -18,6 +18,12 @@ namespace net {
 
 class HttpResponseHeaders;
 
+// This command line switch provides a means to disable data URL whitespace
+// kKeepWhitespaceForDataUrls feature flag. This is set part of an enterprise
+// policy and is intended as a kill switch.
+inline constexpr std::string_view kRemoveWhitespaceForDataURLs =
+    "remove-keep-whitespace-for-data-urls";
+
 // See RFC 2397 for a complete description of the 'data' URL scheme.
 //
 // Briefly, a 'data' URL has the form:

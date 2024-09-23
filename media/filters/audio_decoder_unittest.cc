@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -15,7 +16,6 @@
 #include "base/hash/md5.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -30,10 +30,12 @@
 #include "media/base/test_helpers.h"
 #include "media/base/timestamp_constants.h"
 #include "media/ffmpeg/ffmpeg_common.h"
+#include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/audio_file_reader.h"
 #include "media/filters/ffmpeg_audio_decoder.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/services/gpu_mojo_media_client_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -47,6 +49,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/scoped_com_initializer.h"
 #include "media/filters/win/media_foundation_audio_decoder.h"
 #endif
 
@@ -115,8 +118,7 @@ void SetDiscardPadding(AVPacket* packet,
   if (skip_samples_size < 4)
     return;
   buffer->set_discard_padding(
-      std::make_pair(base::Seconds(base::ByteSwapToLE32(*skip_samples_ptr) /
-                                   samples_per_second),
+      std::make_pair(base::Seconds(*skip_samples_ptr / samples_per_second),
                      base::TimeDelta()));
 }
 
@@ -131,6 +133,7 @@ class AudioDecoderTest
         pending_decode_(false),
         pending_reset_(false),
         last_decode_status_(DecoderStatus::Codes::kFailed) {
+    AddSupplementalCodecsForTesting();
     switch (decoder_type_) {
       case AudioDecoderType::kFFmpeg:
         decoder_ = std::make_unique<FFmpegAudioDecoder>(
@@ -204,17 +207,17 @@ class AudioDecoderTest
   void Initialize() {
     // Load the test data file.
     data_ = ReadTestDataFile(params_.filename);
-    protocol_ = std::make_unique<InMemoryUrlProtocol>(
-        data_->data(), data_->data_size(), false);
+    protocol_ = std::make_unique<InMemoryUrlProtocol>(data_->data(),
+                                                      data_->size(), false);
     reader_ = std::make_unique<AudioFileReader>(protocol_.get());
     ASSERT_TRUE(reader_->OpenDemuxerForTesting());
 
     // Load the first packet and check its timestamp.
-    AVPacket packet;
-    ASSERT_TRUE(reader_->ReadPacketForTesting(&packet));
-    EXPECT_EQ(params_.first_packet_pts, packet.pts);
+    auto packet = ScopedAVPacket::Allocate();
+    ASSERT_TRUE(reader_->ReadPacketForTesting(packet.get()));
+    EXPECT_EQ(params_.first_packet_pts, packet->pts);
     start_timestamp_ = ConvertFromTimeBase(
-        reader_->GetAVStreamForTesting()->time_base, packet.pts);
+        reader_->GetAVStreamForTesting()->time_base, packet->pts);
 
     // Seek back to the beginning.
     ASSERT_TRUE(reader_->SeekForTesting(start_timestamp_));
@@ -226,26 +229,27 @@ class AudioDecoderTest
 
 #if (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)) && \
     BUILDFLAG(USE_PROPRIETARY_CODECS)
-    // MediaCodec type requires config->extra_data() for AAC codec. For ADTS
+    // MediaCodec type requires config->aac_extra_data() for AAC codec. For ADTS
     // streams we need to extract it with a separate procedure.
     if ((decoder_type_ == AudioDecoderType::kMediaCodec ||
          decoder_type_ == AudioDecoderType::kMediaFoundation) &&
-        params_.codec == AudioCodec::kAAC && config.extra_data().empty()) {
+        params_.codec == AudioCodec::kAAC && config.aac_extra_data().empty()) {
       int sample_rate;
       ChannelLayout channel_layout;
       std::vector<uint8_t> extra_data;
       ASSERT_GT(ADTSStreamParser().ParseFrameHeader(
-                    packet.data, packet.size, nullptr, &sample_rate,
+                    packet->data, packet->size, nullptr, &sample_rate,
                     &channel_layout, nullptr, nullptr, &extra_data),
                 0);
       config.Initialize(AudioCodec::kAAC, kSampleFormatS16, channel_layout,
                         sample_rate, extra_data, EncryptionScheme::kUnencrypted,
                         base::TimeDelta(), 0);
+      config.set_aac_extra_data(extra_data);
       ASSERT_FALSE(config.extra_data().empty());
     }
 #endif
 
-    av_packet_unref(&packet);
+    av_packet_unref(packet.get());
 
     EXPECT_EQ(params_.codec, config.codec());
     EXPECT_EQ(params_.samples_per_second, config.samples_per_second());
@@ -273,27 +277,27 @@ class AudioDecoderTest
   }
 
   void Decode() {
-    AVPacket packet;
-    ASSERT_TRUE(reader_->ReadPacketForTesting(&packet));
+    auto packet = ScopedAVPacket::Allocate();
+    ASSERT_TRUE(reader_->ReadPacketForTesting(packet.get()));
 
     scoped_refptr<DecoderBuffer> buffer =
-        DecoderBuffer::CopyFrom(packet.data, packet.size);
+        DecoderBuffer::CopyFrom(AVPacketData(*packet));
     buffer->set_timestamp(ConvertFromTimeBase(
-        reader_->GetAVStreamForTesting()->time_base, packet.pts));
+        reader_->GetAVStreamForTesting()->time_base, packet->pts));
     buffer->set_duration(ConvertFromTimeBase(
-        reader_->GetAVStreamForTesting()->time_base, packet.duration));
-    if (packet.flags & AV_PKT_FLAG_KEY)
+        reader_->GetAVStreamForTesting()->time_base, packet->duration));
+    if (packet->flags & AV_PKT_FLAG_KEY)
       buffer->set_is_key_frame(true);
 
     // Don't set discard padding for Opus, it already has discard behavior set
     // based on the codec delay in the AudioDecoderConfig.
     if (decoder_type_ == AudioDecoderType::kFFmpeg &&
         params_.codec != AudioCodec::kOpus) {
-      SetDiscardPadding(&packet, buffer.get(), params_.samples_per_second);
+      SetDiscardPadding(packet.get(), buffer.get(), params_.samples_per_second);
     }
 
     // DecodeBuffer() shouldn't need the original packet since it uses the copy.
-    av_packet_unref(&packet);
+    av_packet_unref(packet.get());
     DecodeBuffer(std::move(buffer));
   }
 
@@ -346,8 +350,8 @@ class AudioDecoderTest
     for (int ch = 0; ch < output->channels(); ++ch) {
       base::MD5Update(
           &context,
-          base::StringPiece(reinterpret_cast<char*>(output->channel(ch)),
-                            output->frames() * sizeof(*output->channel(ch))));
+          std::string_view(reinterpret_cast<char*>(output->channel(ch)),
+                           output->frames() * sizeof(*output->channel(ch))));
     }
     base::MD5Digest digest;
     base::MD5Final(&digest, &context);
@@ -401,6 +405,11 @@ class AudioDecoderTest
   TestParams params_;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
+
+#if BUILDFLAG(IS_WIN)
+  // MediaFoundationAudioDecoder calls CoInitialize() when creating the decoder.
+  base::win::ScopedCOMInitializer com_initializer_;
+#endif  // BUILDFLAG(IS_WIN)
 
   NullMediaLog media_log_;
   scoped_refptr<DecoderBuffer> data_;
@@ -484,7 +493,7 @@ constexpr TestParams kXheAacTestParams[] = {
      }},
      0,
      29400,
-     CHANNEL_LAYOUT_MONO,
+     CHANNEL_LAYOUT_UNSUPPORTED,
      AudioCodecProfile::kXHE_AAC},
 #endif
     {AudioCodec::kAAC,

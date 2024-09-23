@@ -7,11 +7,16 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/extend.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/not_fatal_until.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/serial/serial_api.h"
@@ -101,8 +106,9 @@ class FakeSerialPort : public device::mojom::SerialPort {
  private:
   // device::mojom::SerialPort methods:
   void StartWriting(mojo::ScopedDataPipeConsumerHandle consumer) override {
-    if (in_stream_)
+    if (in_stream_) {
       return;
+    }
 
     in_stream_ = std::move(consumer);
     in_stream_watcher_.Watch(
@@ -114,8 +120,9 @@ class FakeSerialPort : public device::mojom::SerialPort {
   }
 
   void StartReading(mojo::ScopedDataPipeProducerHandle producer) override {
-    if (out_stream_)
+    if (out_stream_) {
       return;
+    }
 
     out_stream_ = std::move(producer);
     out_stream_watcher_.Watch(
@@ -133,10 +140,10 @@ class FakeSerialPort : public device::mojom::SerialPort {
       return;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
-  void Drain(DrainCallback callback) override { NOTREACHED(); }
+  void Drain(DrainCallback callback) override { NOTREACHED_IN_MIGRATION(); }
 
   void GetControlSignals(GetControlSignalsCallback callback) override {
     auto signals = device::mojom::SerialPortControlSignals::New();
@@ -176,23 +183,19 @@ class FakeSerialPort : public device::mojom::SerialPort {
   }
 
   void DoWrite(MojoResult result, const mojo::HandleSignalsState& state) {
-    const void* data;
-    uint32_t num_bytes;
-
+    base::span<const uint8_t> data;
     if (result == MOJO_RESULT_OK) {
-      result = in_stream_->BeginReadData(&data, &num_bytes,
-                                         MOJO_READ_DATA_FLAG_NONE);
+      result = in_stream_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, data);
     }
     if (result == MOJO_RESULT_OK) {
       // Control the bytes read from in_stream_ to trigger a variaty of
       // transfer cases between SerialConnection::send_pipe_.
       write_step_++;
-      if ((write_step_ % 4) < 2 && num_bytes > 1) {
-        num_bytes = 1;
+      if ((write_step_ % 4) < 2 && data.size() > 1) {
+        data = data.first(1u);
       }
-      const uint8_t* uint8_data = reinterpret_cast<const uint8_t*>(data);
-      buffer_.insert(buffer_.end(), uint8_data, uint8_data + num_bytes);
-      in_stream_->EndReadData(num_bytes);
+      base::Extend(buffer_, data);
+      in_stream_->EndReadData(data.size());
       in_stream_watcher_.ArmOrNotify();
 
       // Enable the notification to write this data to the out stream.
@@ -211,7 +214,7 @@ class FakeSerialPort : public device::mojom::SerialPort {
       return;
     }
     // The code should not reach other cases.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void DoRead(MojoResult result, const mojo::HandleSignalsState& state) {
@@ -241,11 +244,15 @@ class FakeSerialPort : public device::mojom::SerialPort {
     out_stream_watcher_.ArmOrNotify();
   }
 
-  void WriteOutReadData(uint32_t num_bytes) {
-    MojoResult result = out_stream_->WriteData(buffer_.data(), &num_bytes,
-                                               MOJO_WRITE_DATA_FLAG_NONE);
+  void WriteOutReadData(size_t num_bytes) {
+    base::span<const uint8_t> bytes = buffer_;
+    bytes = bytes.first(num_bytes);
+
+    size_t actually_written_bytes = 0;
+    MojoResult result = out_stream_->WriteData(bytes, MOJO_WRITE_DATA_FLAG_NONE,
+                                               actually_written_bytes);
     if (result == MOJO_RESULT_OK) {
-      buffer_.erase(buffer_.begin(), buffer_.begin() + num_bytes);
+      buffer_.erase(buffer_.begin(), buffer_.begin() + actually_written_bytes);
     }
   }
 
@@ -323,7 +330,7 @@ class FakeSerialPortManager : public device::mojom::SerialPortManager {
       OpenPortCallback callback) override {
     DCHECK(!watcher);
     auto it = ports_.find(token);
-    DCHECK(it != ports_.end());
+    CHECK(it != ports_.end(), base::NotFatalUntil::M130);
     std::move(callback).Run(
         it->second->Open(std::move(options), std::move(client)));
   }

@@ -437,7 +437,7 @@ TEST_F(InputEventPredictionTest, TouchPointStates) {
 
   for (size_t state =
            static_cast<size_t>(blink::WebTouchPoint::State::kStateUndefined);
-       state <= static_cast<size_t>(blink::WebTouchPoint::State::kStateMax);
+       state <= static_cast<size_t>(blink::WebTouchPoint::State::kMaxValue);
        state++) {
     touch_event.touches[0].state =
         static_cast<blink::WebTouchPoint::State>(state);

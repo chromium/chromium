@@ -23,6 +23,11 @@
  * DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/webaudio/wave_shaper_dsp_kernel.h"
 
 #include <algorithm>
@@ -82,7 +87,7 @@ void WaveShaperDSPKernel::Process(const float* source,
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -379,7 +384,7 @@ double WaveShaperDSPKernel::LatencyTime() const {
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return static_cast<double>(latency_frames) / SampleRate();

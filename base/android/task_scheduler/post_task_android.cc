@@ -4,7 +4,8 @@
 
 #include "base/android/task_scheduler/post_task_android.h"
 
-#include "base/base_jni/PostTask_jni.h"
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/tasks_jni/PostTask_jni.h"
 
 namespace base {
 

@@ -46,12 +46,7 @@ TargetAutoAttacher::HandleNavigation(NavigationRequest* navigation_request,
   scoped_refptr<RenderFrameDevToolsAgentHost> agent_host =
       RenderFrameDevToolsAgentHost::FindForDangling(frame_tree_node);
 
-  bool is_portal_main_frame =
-      frame_tree_node->IsMainFrame() &&
-      static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(new_host))
-          ->IsPortal();
-  bool needs_host_attached =
-      new_host->is_local_root_subframe() || is_portal_main_frame;
+  bool needs_host_attached = new_host->is_local_root_subframe();
 
   if (needs_host_attached) {
     if (!agent_host) {

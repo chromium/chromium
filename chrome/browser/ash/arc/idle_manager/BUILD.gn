@@ -1,0 +1,83 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("idle_manager") {
+  sources = [
+    "arc_background_service_observer.cc",
+    "arc_background_service_observer.h",
+    "arc_cpu_throttle_observer.cc",
+    "arc_cpu_throttle_observer.h",
+    "arc_display_power_observer.cc",
+    "arc_display_power_observer.h",
+    "arc_idle_manager.cc",
+    "arc_idle_manager.h",
+    "arc_on_battery_observer.cc",
+    "arc_on_battery_observer.h",
+    "arc_window_observer.cc",
+    "arc_window_observer.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//base",
+    "//chrome/browser/ash/arc/vmm",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/patchpanel",
+    "//chromeos/ash/components/throttle",
+    "//chromeos/dbus/power",
+    "//ui/display/manager",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/arc/vmm" ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "arc_throttle_test_observer.cc",
+    "arc_throttle_test_observer.h",
+  ]
+
+  deps = [ "//chromeos/ash/components/throttle" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_cpu_throttle_observer_unittest.cc",
+    "arc_display_power_observer_unittest.cc",
+    "arc_idle_manager_unittest.cc",
+    "arc_on_battery_observer_unittest.cc",
+    "arc_window_observer_unittest.cc",
+  ]
+
+  deps = [
+    ":idle_manager",
+    ":test_support",
+    "//ash",
+    "//ash:test_support",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/arc/instance_throttle",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/ash/arc/util",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/concierge",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/display",
+    "//ui/display:test_support",
+  ]
+}

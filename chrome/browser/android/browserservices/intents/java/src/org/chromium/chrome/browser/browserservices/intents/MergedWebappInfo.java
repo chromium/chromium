@@ -44,6 +44,7 @@ public class MergedWebappInfo extends WebappInfo {
             @NonNull BrowserServicesIntentDataProvider provider) {
         super(provider);
         mOldWebappInfo = oldWebappInfo;
+        setUseOldName(oldWebappInfo.getWebApkExtras().hasCustomName);
     }
 
     /** Sets whether to use the override values when webapp name/shortName are requested. */

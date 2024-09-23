@@ -5,6 +5,7 @@
 
 #include "third_party/liburlpattern/parse.h"
 
+#include <string_view>
 #include <unordered_set>
 
 #include "third_party/abseil-cpp/absl/base/macros.h"
@@ -92,7 +93,7 @@ class State {
   // Append the given Token value to the pending fixed value.  This will
   // be converted to a kFixed Part when we reach the end of a run of
   // kChar and kEscapedChar tokens.
-  void AppendToPendingFixedValue(absl::string_view token_value) {
+  void AppendToPendingFixedValue(std::string_view token_value) {
     pending_fixed_value_.append(token_value.data(), token_value.size());
   }
 
@@ -274,7 +275,7 @@ class State {
 
 }  // namespace
 
-absl::StatusOr<Pattern> Parse(absl::string_view pattern,
+absl::StatusOr<Pattern> Parse(std::string_view pattern,
                               EncodeCallback encode_callback,
                               const Options& options) {
   auto result = Tokenize(pattern);
@@ -313,13 +314,13 @@ absl::StatusOr<Pattern> Parse(absl::string_view pattern,
       // Determine if the char token is a valid prefix.  Only characters in the
       // configured prefix_list are automatically treated as prefixes.  A
       // kEscapedChar Token is never treated as a prefix.
-      absl::string_view prefix = char_token ? char_token->value : "";
+      std::string_view prefix = char_token ? char_token->value : "";
       if (options.prefix_list.find(prefix.data(), /*pos=*/0, prefix.size()) ==
           std::string::npos) {
         // This is not a prefix character.  Add it to the buffered characters
         // to be added as a kFixed Part later.
         state.AppendToPendingFixedValue(prefix);
-        prefix = absl::string_view();
+        prefix = std::string_view();
       }
 
       // If we have any buffered characters in a pending fixed value, then

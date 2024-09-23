@@ -1,0 +1,23 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "android",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_automatic_fullscreen_allowed_for_urls",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "isolated-app://*",
+          "[*.]google.com"
+        ]
+      ]
+    }
+  }
+]

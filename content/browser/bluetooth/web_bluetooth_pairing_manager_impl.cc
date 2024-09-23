@@ -102,10 +102,10 @@ void OnPairCharacteristicStartNotifications(
 
 constexpr int WebBluetoothPairingManagerImpl::kMaxPairAttempts;
 
-// TODO(960258): Ensure this delegate outlives any in-progress pairing operation
-// for which it is used. Additionally review use of WebBluetoothDeviceId vs.
-// BluetoothDevice as well as how to deal with simultaneous pairing requests
-// for the same device.
+// TODO(crbug.com/40626253): Ensure this delegate outlives any in-progress
+// pairing operation for which it is used. Additionally review use of
+// WebBluetoothDeviceId vs. BluetoothDevice as well as how to deal with
+// simultaneous pairing requests for the same device.
 WebBluetoothPairingManagerImpl::WebBluetoothPairingManagerImpl(
     WebBluetoothPairingManagerDelegate* pairing_manager_delegate)
     : pairing_manager_delegate_(pairing_manager_delegate) {

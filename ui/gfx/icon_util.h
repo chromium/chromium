@@ -6,8 +6,10 @@
 #define UI_GFX_ICON_UTIL_H_
 
 #include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 #include <vector>
 

@@ -1,0 +1,222 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_hidden_style_lit.css.js
+ * #import=../cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-slider-active-color: var(--google-blue-600);
+  --cr-slider-container-color: rgba(var(--google-blue-600-rgb), .24);
+  --cr-slider-container-disabled-color:
+      rgba(var(--google-grey-600-rgb), .24);
+  --cr-slider-disabled-color: var(--google-grey-600);
+  --cr-slider-knob-color-rgb: var(--google-blue-600-rgb);
+  --cr-slider-knob-disabled-color: white;
+  --cr-slider-marker-active-color: rgba(255, 255, 255, .54);
+  --cr-slider-marker-color: rgba(26, 115, 232, .54);
+  --cr-slider-marker-disabled-color: rgba(128, 134, 139, .54);
+  --cr-slider-position-transition: 80ms ease;
+  --cr-slider-ripple-color: rgba(var(--cr-slider-knob-color-rgb), .25);
+
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  cursor: default;
+  height: 32px;
+  isolation: isolate;
+  outline: none;
+  padding: 0 16px;
+  user-select: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --cr-slider-active-color: var(--google-blue-300);
+    --cr-slider-container-color:
+        rgba(var(--google-blue-500-rgb), .48);
+    --cr-slider-container-disabled-color:
+        rgba(var(--google-grey-600-rgb), .48);
+    /* --cr-slider-disabled-color is the same in dark mode (GG600). */
+    --cr-slider-knob-color-rgb: var(--google-blue-300-rgb);
+    --cr-slider-knob-disabled-color:
+        var(--google-grey-900-white-4-percent);
+    --cr-slider-marker-active-color: var(--google-blue-300);
+    --cr-slider-marker-color: var(--google-blue-300);
+    --cr-slider-marker-disabled-color: rgba(255, 255, 255, .54);
+    --cr-slider-ripple-color: rgba(var(--cr-slider-knob-color-rgb), .4);
+  }
+}
+
+/* Disable browser touch actions so that dragging via touch works
+   correctly. */
+/* TODO(crbug.com/40125694): For reasons I don't understand we need to set
+   touch-action: none on the container for sliders inside dialogs and on
+   the host for sliders not in dialogs. If we don't, then you can't drag
+   the slider via touch (mouse works fine).*/
+:host,
+:host > #container {
+  touch-action: none;
+}
+
+#container,
+#bar {
+  /* Using border instead of background-color to address pixel rounding
+     at low zoom levels (e.g. 33%). The browser will round border widths
+     to a minimum of 1px.*/
+  border-top-style: solid;
+  border-top-width: 2px;
+}
+
+#container {
+  border-top-color: var(--cr-slider-container-color);
+  position: relative;
+  top: 16px;
+}
+
+#container > div {
+  position: absolute;
+}
+
+#markers,
+#bar {
+  top: -2px;
+}
+
+#markers {
+  display: flex;
+  flex-direction: row;
+  left: 0;
+  pointer-events: none;
+  right: 0;
+}
+
+.active-marker,
+.inactive-marker {
+  flex: 1;
+}
+
+#markers::before,
+#markers::after,
+.active-marker::after,
+.inactive-marker::after {
+  border-radius: 50%;
+  content: '';
+  display: block;
+  height: 2px;
+  margin-inline-start: -1px;
+  width: 2px;
+}
+
+#markers::before,
+.active-marker::after {
+  background-color: var(--cr-slider-marker-active-color);
+}
+
+#markers::after,
+.inactive-marker::after {
+  background-color: var(--cr-slider-marker-color);
+}
+
+#bar {
+  border-top-color: var(--cr-slider-active-color);
+}
+
+:host([transiting_]) #bar {
+  transition: width var(--cr-slider-position-transition);
+}
+
+#knobAndLabel {
+  top: -1px;
+}
+
+:host([transiting_]) #knobAndLabel {
+  transition: margin-inline-start var(--cr-slider-position-transition);
+}
+
+#knob {
+  background-color: rgb(var(--cr-slider-knob-color-rgb));
+  border-radius: 50%;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .4);
+  height: 10px;
+  outline: none;
+  position: relative;
+  transform: translate(-50%, -50%);
+  width: 10px;
+}
+
+:host-context([dir=rtl]) #knob {
+  transform: translate(50%, -50%);
+}
+
+#label {
+  background: rgb(var(--cr-slider-knob-color-rgb));
+  border-radius: .75em;
+  bottom: 22px;
+  color: white;  /* Same for dark and light mode. */
+  font-size: 12px;
+  line-height: 1.5em;
+  opacity: 0;
+  /* TODO(crbug.com/40634687): Remove workaround after rendering bug is
+   * fixed. */
+  outline: 1px transparent solid;
+  padding: 0 .67em;
+  position: absolute;
+  transform: translateX(-50%);
+  transition: opacity 80ms ease-in-out;
+  white-space: nowrap;
+}
+
+:host-context([dir=rtl]) #label {
+  transform: translateX(50%);
+}
+
+:host(:hover) #label,
+:host([show-label_]) #label {
+  opacity: 1;
+}
+
+#ink {
+  --paper-ripple-opacity: var(--cr-slider-ripple-opacity, 1);
+  color: var(--cr-slider-ripple-color);
+  height: var(--cr-slider-ripple-size, 32px);
+  pointer-events: none;
+  transition: color linear 80ms;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  width: var(--cr-slider-ripple-size, 32px);
+  z-index: var(--cr-slider-ripple-z-index, auto);
+}
+
+:host-context([dir=rtl]) #ink {
+  left: auto;
+  right: 50%;
+  transform: translate(50%, -50%);
+}
+
+:host([disabled_]) {
+  pointer-events: none;
+}
+
+:host([disabled_]) #container {
+  border-top-color: var(--cr-slider-container-disabled-color);
+}
+
+:host([disabled_]) #bar {
+  border-top-color: var(--cr-slider-disabled-color);
+}
+
+:host([disabled_]) .inactive-marker::after,
+:host([disabled_]) #markers::after {
+  background-color: var(--cr-slider-marker-disabled-color);
+}
+
+:host([disabled_]) #knob {
+  background-color: var(--cr-slider-disabled-color);
+  border: 2px solid var(--cr-slider-knob-disabled-color);
+  box-shadow: unset;
+}

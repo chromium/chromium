@@ -59,17 +59,41 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
   builder->AddF("consolidatedConsentRecoveryOptIn",
                 IDS_CONSOLIDATED_CONSENT_RECOVERY_OPT_IN,
                 ui::GetChromeOSDeviceTypeResourceId());
-  builder->Add("consolidatedConsentLocationOptInTitle",
-               IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_TITLE);
-  builder->Add("consolidatedConsentLocationOptIn",
-               IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN);
-  builder->Add("consolidatedConsentLocationOptInChild",
-               IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_CHILD);
-  builder->Add("consolidatedConsenttLocationOptInLearnMoreLink",
-               IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_LEARN_MORE_LINK);
-  builder->Add("consolidatedConsentFooter", IDS_CONSOLIDATED_CONSENT_FOOTER);
-  builder->Add("consolidatedConsentFooterChild",
-               IDS_CONSOLIDATED_CONSENT_FOOTER_CHILD);
+  if (features::IsCrosPrivacyHubLocationEnabled()) {
+    builder->Add("consolidatedConsentLocationOptInTitle",
+                 IDS_CONSOLIDATED_CONSENT_CROS_LOCATION_OPT_IN_TITLE);
+    builder->Add("consolidatedConsentLocationOptIn",
+                 IDS_CONSOLIDATED_CONSENT_CROS_LOCATION_OPT_IN);
+    builder->Add("consolidatedConsentLocationOptInChild",
+                 IDS_CONSOLIDATED_CONSENT_CROS_LOCATION_OPT_IN_CHILD);
+    builder->Add("consolidatedConsenttLocationOptInLearnMoreLink",
+                 IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_LEARN_MORE_LINK);
+    builder->Add("consolidatedConsentFooter", IDS_CONSOLIDATED_CONSENT_FOOTER);
+    builder->Add("consolidatedConsentFooterChild",
+                 IDS_CONSOLIDATED_CONSENT_FOOTER_CHILD);
+    builder->Add("consolidatedConsentLocationOptInLearnMore",
+                 IDS_CONSOLIDATED_CONSENT_CROS_LOCATION_OPT_IN_LEARN_MORE);
+    builder->Add(
+        "consolidatedConsentLocationOptInLearnMoreChild",
+        IDS_CONSOLIDATED_CONSENT_CROS_LOCATION_OPT_IN_LEARN_MORE_CHILD);
+
+  } else {
+    builder->Add("consolidatedConsentLocationOptInTitle",
+                 IDS_CONSOLIDATED_CONSENT_ARC_LOCATION_OPT_IN_TITLE);
+    builder->Add("consolidatedConsentLocationOptIn",
+                 IDS_CONSOLIDATED_CONSENT_ARC_LOCATION_OPT_IN);
+    builder->Add("consolidatedConsentLocationOptInChild",
+                 IDS_CONSOLIDATED_CONSENT_ARC_LOCATION_OPT_IN_CHILD);
+    builder->Add("consolidatedConsenttLocationOptInLearnMoreLink",
+                 IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_LEARN_MORE_LINK);
+    builder->Add("consolidatedConsentFooter", IDS_CONSOLIDATED_CONSENT_FOOTER);
+    builder->Add("consolidatedConsentFooterChild",
+                 IDS_CONSOLIDATED_CONSENT_FOOTER_CHILD);
+    builder->Add("consolidatedConsentLocationOptInLearnMore",
+                 IDS_CONSOLIDATED_CONSENT_ARC_LOCATION_OPT_IN_LEARN_MORE);
+    builder->Add("consolidatedConsentLocationOptInLearnMoreChild",
+                 IDS_CONSOLIDATED_CONSENT_ARC_LOCATION_OPT_IN_LEARN_MORE_CHILD);
+  }
   if (crosapi::browser_util::IsLacrosEnabled() &&
       features::IsOsSyncConsentRevampEnabled()) {
     builder->Add("consolidatedConsentUsageOptInLearnMore",
@@ -101,10 +125,6 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
                IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_LEARN_MORE);
   builder->Add("consolidatedConsentBackupOptInLearnMoreChild",
                IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_LEARN_MORE_CHILD);
-  builder->Add("consolidatedConsentLocationOptInLearnMore",
-               IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_LEARN_MORE);
-  builder->Add("consolidatedConsentLocationOptInLearnMoreChild",
-               IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_LEARN_MORE_CHILD);
   builder->Add("consolidatedConsentFooterLearnMore",
                IDS_CONSOLIDATED_CONSENT_FOOTER_LEARN_MORE);
   builder->Add("consolidatedConsentLearnMore",
@@ -156,4 +176,10 @@ void ConsolidatedConsentScreenHandler::SetLocationMode(bool enabled,
 void ConsolidatedConsentScreenHandler::SetUsageOptinHidden(bool hidden) {
   CallExternalAPI("setUsageOptinHidden", hidden);
 }
+
+base::WeakPtr<ConsolidatedConsentScreenView>
+ConsolidatedConsentScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

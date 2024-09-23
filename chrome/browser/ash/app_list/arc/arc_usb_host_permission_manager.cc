@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager.h"
 
 #include <utility>
+#include <vector>
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/usb/usb_host_bridge.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_dialog.h"
@@ -217,10 +217,6 @@ void ArcUsbHostPermissionManager::RestorePermissionFromChromePrefs() {
 void ArcUsbHostPermissionManager::RequestUsbScanDeviceListPermission(
     const std::string& package_name,
     ArcUsbHostUiDelegate::RequestPermissionCallback callback) {
-  // Grants Arc USB permission for |package_name| in Arc kiosk mode.
-  if (IsArcKioskMode())
-    UpdateArcUsbScanDeviceListPermission(package_name, true /*allowed*/);
-
   if (HasUsbScanDeviceListPermission(package_name)) {
     std::move(callback).Run(true);
     return;
@@ -251,12 +247,6 @@ void ArcUsbHostPermissionManager::RequestUsbAccessPermission(
           vendor_id, product_id, manufacturer_string, product_string,
           serial_number, true /*always_include_manufacturer*/),
       serial_number, vendor_id, product_id);
-
-  // Grants Arc USB permission for |package_name| in Arc kiosk mode.
-  if (IsArcKioskMode()) {
-    UpdateArcUsbAccessPermission(package_name, usb_device_entry,
-                                 true /*allowed*/);
-  }
 
   if (HasUsbAccessPermission(package_name, usb_device_entry)) {
     std::move(callback).Run(true);
@@ -317,7 +307,7 @@ ArcUsbHostPermissionManager::GetEventPackageList(
 
 void ArcUsbHostPermissionManager::DeviceRemoved(const std::string& guid) {
   // Remove pending requests.
-  base::EraseIf(pending_requests_,
+  std::erase_if(pending_requests_,
                 [guid](const UsbPermissionRequest& usb_permission_request) {
                   return !usb_permission_request.is_scan_request() &&
                          usb_permission_request.usb_device_entry()->guid ==
@@ -340,7 +330,7 @@ void ArcUsbHostPermissionManager::OnPackageRemoved(
     const std::string& package_name,
     bool uninstalled) {
   // Remove pending requests.
-  base::EraseIf(
+  std::erase_if(
       pending_requests_,
       [package_name](const UsbPermissionRequest& usb_permission_request) {
         return usb_permission_request.package_name() == package_name;

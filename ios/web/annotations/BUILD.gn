@@ -34,7 +34,10 @@ compile_ts("compile_annotations_ts") {
 }
 
 optimize_ts("annotations_ts") {
-  visibility = [ ":annotations" ]
+  visibility = [
+    ":annotations",
+    ":inttests",
+  ]
 
   sources = [ "resources/annotations.ts" ]
 
@@ -114,7 +117,6 @@ optimize_ts("text_tests_ts") {
     ":compile_text_tests_ts",
     ":compile_text_ts",
     "//ios/web/public/js_messaging:gcrweb",
-    "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
@@ -123,6 +125,7 @@ source_set("inttests") {
   deps = [
     ":annotations",
     ":annotations_test_ts",
+    ":annotations_ts",
     ":text_tests_ts",
     "//base",
     "//base/test:test_support",

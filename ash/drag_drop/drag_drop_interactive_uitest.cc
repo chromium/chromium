@@ -65,8 +65,9 @@ views::Widget* CreateWidget(std::unique_ptr<views::View> contents_view,
                             const gfx::Rect& bounds,
                             aura::Window* context) {
   views::Widget* widget = new views::Widget;
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.accept_events = true;
   params.bounds = bounds;
   params.context = context;
@@ -106,7 +107,7 @@ using DragDropTest = AshInteractiveUITestBase;
 
 // Test if the mouse gets moved properly to another display
 // during drag & drop operation.
-// TODO(https://crbug.com/1491759): Consistently failing on Chrome OS builds.
+// TODO(crbug.com/40935905): Consistently failing on Chrome OS builds.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DragDropAcrossMultiDisplay DISABLED_DragDropAcrossMultiDisplay
 #else

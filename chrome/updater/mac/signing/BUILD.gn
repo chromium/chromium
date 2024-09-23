@@ -42,6 +42,8 @@ process_version_rc_template("sign_config") {
     "-e",
     "MAC_TEAM_ID=\"" + mac_team_identifier + "\"",
     "-e",
+    "COMPANY_NAME=\"" + updater_company_short_name + "\"",
+    "-e",
     "$extra_args_is_chrome_branded",
   ]
 }

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.segmentation_platform;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -46,6 +47,6 @@ public final class SegmentationPlatformServiceFactory {
 
     @NativeMethods
     interface Natives {
-        SegmentationPlatformService getForProfile(Profile profile);
+        SegmentationPlatformService getForProfile(@JniType("Profile*") Profile profile);
     }
 }

@@ -30,7 +30,7 @@ class VirtualPlatformSensor : public PlatformSensor {
  public:
   VirtualPlatformSensor(mojom::SensorType type,
                         SensorReadingSharedBuffer* reading_buffer,
-                        PlatformSensorProvider* provider,
+                        base::WeakPtr<PlatformSensorProvider> provider,
                         std::optional<SensorReading> pending_reading,
                         const mojom::VirtualSensorMetadata& metadata);
 

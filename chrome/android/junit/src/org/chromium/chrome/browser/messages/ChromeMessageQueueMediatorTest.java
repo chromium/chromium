@@ -16,9 +16,7 @@ import android.os.Handler;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -33,7 +31,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -62,8 +59,6 @@ import java.util.concurrent.TimeoutException;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class ChromeMessageQueueMediatorTest {
     private static final int EXPECTED_TOKEN = 42;
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock private BrowserControlsManager mBrowserControlsManager;
 
@@ -261,7 +256,7 @@ public class ChromeMessageQueueMediatorTest {
         Assert.assertFalse(mediator.isReadyForShowing());
         CallbackHelper callbackHelper = new CallbackHelper();
         mediator.onRequestShowing(callbackHelper::notifyCalled);
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
         ChromeMessageQueueMediator.BrowserControlsObserver observer =
                 observerArgumentCaptor.getValue();
         Assert.assertFalse(observer.isRequesting());

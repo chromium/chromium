@@ -9,14 +9,13 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
-#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 
 namespace device {
 
 using ::testing::Return;
 using ::testing::ReturnPointee;
 
-MockBluetoothDevice::MockBluetoothDevice(MockBluetoothAdapter* adapter,
+MockBluetoothDevice::MockBluetoothDevice(BluetoothAdapter* adapter,
                                          uint32_t bluetooth_class,
                                          const char* name,
                                          const std::string& address,

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.touch_to_fill;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.SHARED_PASSWORD_NOTIFICATION_UI;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
@@ -39,7 +38,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
@@ -90,16 +88,13 @@ class TouchToFillMediator {
     private List<Credential> mCredentials;
     private boolean mManagePasskeysHidesPasswords;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
-    private final ImageFetcher mImageFetcher;
-
-    public TouchToFillMediator(ImageFetcher imageFetcher) {
-        mImageFetcher = imageFetcher;
-    }
+    private ImageFetcher mImageFetcher;
 
     void initialize(
             Context context,
             TouchToFillComponent.Delegate delegate,
             PropertyModel model,
+            ImageFetcher imageFetcher,
             LargeIconBridge largeIconBridge,
             @Px int desiredIconSize,
             BottomSheetFocusHelper bottomSheetFocusHelper) {
@@ -107,6 +102,7 @@ class TouchToFillMediator {
         mContext = context;
         mDelegate = delegate;
         mModel = model;
+        mImageFetcher = imageFetcher;
         mLargeIconBridge = largeIconBridge;
         mDesiredIconSize = desiredIconSize;
         mBottomSheetFocusHelper = bottomSheetFocusHelper;
@@ -134,7 +130,7 @@ class TouchToFillMediator {
                         .with(
                                 SUBTITLE,
                                 getSubtitle(url, isOriginSecure, triggerSubmission, credentials))
-                        // TODO(crbug.com/1471888): Use the TTF resource provider instead
+                        // TODO(crbug.com/40278443): Use the TTF resource provider instead
                         // and use a 32dp icon.
                         .with(
                                 IMAGE_DRAWABLE_ID,
@@ -351,7 +347,7 @@ class TouchToFillMediator {
 
     private String getIconOrigin(String credentialOrigin, GURL siteUrl) {
         final Origin o = Origin.create(credentialOrigin);
-        // TODO(crbug.com/1030230): assert o != null as soon as credential Origin must be valid.
+        // TODO(crbug.com/40661767): assert o != null as soon as credential Origin must be valid.
         return o != null && !o.uri().isOpaque() ? credentialOrigin : siteUrl.getSpec();
     }
 
@@ -381,7 +377,7 @@ class TouchToFillMediator {
 
     private void onSelectedMorePasskeys() {
         mModel.set(VISIBLE, false);
-        // TODO(crbug/1474805): add metrics
+        // TODO(crbug.com/40070194): add metrics
         mDelegate.onShowMorePasskeysSelected();
     }
 
@@ -449,9 +445,7 @@ class TouchToFillMediator {
         // after the UI is complete.
         List<Credential> sharedCredentials = new ArrayList<Credential>();
         for (Credential credential : credentials) {
-            if (credential.isShared()
-                    && !credential.isSharingNotificationDisplayed()
-                    && ChromeFeatureList.isEnabled(SHARED_PASSWORD_NOTIFICATION_UI)) {
+            if (credential.isShared() && !credential.isSharingNotificationDisplayed()) {
                 sharedCredentials.add(credential);
             }
         }

@@ -13,11 +13,11 @@ namespace blink {
 
 TEST(PagePopupClientTest, AddJavaScriptString) {
   test::TaskEnvironment task_environment;
-  scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create();
+  SegmentedBuffer buffer;
   PagePopupClient::AddJavaScriptString(
       String::FromUTF8("abc\r\n'\"</script>\t\f\v\xE2\x80\xA8\xE2\x80\xA9"),
-      buffer.get());
-  const Vector<char> contiguous = buffer->CopyAs<Vector<char>>();
+      buffer);
+  const Vector<char> contiguous = std::move(buffer).CopyAs<Vector<char>>();
   EXPECT_EQ(
       "\"abc\\r\\n'\\\"\\x3C/script>\\u0009\\u000C\\u000B\\u2028\\u2029\"",
       std::string(contiguous.data(), contiguous.size()));

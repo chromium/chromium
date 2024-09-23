@@ -85,7 +85,7 @@ class TestEventHandler : public ui::EventHandler {
     if (target->GetName() != kWallpaperView)
       return;
 
-    if (event->type() == ui::ET_SCROLL) {
+    if (event->type() == ui::EventType::kScroll) {
       scroll_x_offset_ = event->x_offset();
       scroll_y_offset_ = event->y_offset();
       scroll_x_offset_ordinal_ = event->x_offset_ordinal();
@@ -202,8 +202,10 @@ TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
   EXPECT_EQ(gfx::Rect(200, 0, 150, 200),
             display_manager_test.GetSecondaryDisplay().bounds());
   generator1.MoveMouseToInHost(39, 120);
+  // The EventHandler truncates floating-point locations to integer locations,
+  // while Magnifier will round them up.
   EXPECT_EQ(gfx::Point(110, 70), event_handler.GetLocationAndReset());
-  EXPECT_EQ(gfx::Point(110, 70),
+  EXPECT_EQ(gfx::Point(110, 71),
             aura::Env::GetInstance()->last_mouse_location());
   EXPECT_EQ(display::Display::ROTATE_90,
             GetActiveDisplayRotation(display1.id()));
@@ -365,7 +367,7 @@ TEST_F(RootWindowTransformersTest, ConvertHostToRootCoords) {
   generator.MoveMouseToInHost(200, 300);
   EXPECT_EQ(gfx::Point(155, 218), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(100, 400);
-  EXPECT_EQ(gfx::Point(204, 249), event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(205, 249), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(0, 0);
   EXPECT_EQ(gfx::Point(125, 298), event_handler.GetLocationAndReset());
 

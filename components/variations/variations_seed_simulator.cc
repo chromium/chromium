@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/types/optional_ref.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/processed_study.h"
 #include "components/variations/proto/study.pb.h"
@@ -108,12 +109,9 @@ ChangeType PermanentStudyGroupChanged(
     const ProcessedStudy& processed_study,
     const std::string& selected_group,
     const VariationsLayers& layers,
-    const EntropyProviders& entropy_providers) {
+    const base::FieldTrial::EntropyProvider& entropy_provider) {
   const Study& study = *processed_study.study();
   DCHECK_EQ(Study_Consistency_PERMANENT, study.consistency());
-
-  const auto& entropy_provider =
-      processed_study.SelectEntropyProviderForStudy(entropy_providers, layers);
 
   const std::string simulated_group =
       SimulateGroupAssignment(entropy_provider, processed_study);
@@ -186,14 +184,22 @@ SeedSimulationResult ComputeDifferences(
     if (it == current_state.end())
       continue;
 
+    base::optional_ref<const base::FieldTrial::EntropyProvider>
+        entropy_provider = layers.SelectEntropyProviderForStudy(
+            processed_study, entropy_providers);
+    if (!entropy_provider.has_value()) {
+      // Skip if there is no suitable entropy provider to randomize this study.
+      continue;
+    }
+
     // Study exists in the current state, check whether its group will change.
     // Note: The logic below does the right thing if study consistency changes,
     // as it doesn't rely on the previous study consistency.
     const std::string& selected_group = it->second;
     ChangeType change_type = NO_CHANGE;
     if (study.consistency() == Study_Consistency_PERMANENT) {
-      change_type = PermanentStudyGroupChanged(processed_study, selected_group,
-                                               layers, entropy_providers);
+      change_type = PermanentStudyGroupChanged(
+          processed_study, selected_group, layers, entropy_provider.value());
     } else if (study.consistency() == Study_Consistency_SESSION) {
       change_type = SessionStudyGroupChanged(processed_study, selected_group);
     }

@@ -34,7 +34,7 @@ class CommerceWebExtractor
       mojo::PendingReceiver<commerce_web_extractor::mojom::CommerceWebExtractor>
           receiver);
 
-  raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_;
+  raw_ptr<content::RenderFrame> render_frame_;
   mojo::Receiver<commerce_web_extractor::mojom::CommerceWebExtractor> receiver_{
       this};
 };

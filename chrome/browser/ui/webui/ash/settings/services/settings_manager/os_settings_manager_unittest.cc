@@ -33,6 +33,8 @@
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "chromeos/ash/components/local_search_service/search_metrics_reporter.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -86,6 +88,7 @@ class OsSettingsManagerTest : public testing::Test {
         ->SetLocalState(&pref_service_);
     input_method::MockInputMethodManager::Initialize(
         new input_method::MockInputMethodManager);
+    statistics_provider_.SetMachineStatistic(ash::system::kRegionKey, "us");
 
     UserDataAuthClient::InitializeFake();
 
@@ -113,6 +116,7 @@ class OsSettingsManagerTest : public testing::Test {
               /*for_testing=*/true);
   std::unique_ptr<OsSettingsManager> manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  ash::system::ScopedFakeStatisticsProvider statistics_provider_;
 };
 
 TEST_F(OsSettingsManagerTest, Initialization) {

@@ -97,7 +97,9 @@ class ToastManagerImplTest : public AshTestBase,
   ~ToastManagerImplTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(features::kSideAlignedToasts,
+    // Side-aligned toasts project is launching with Notifier Collision, so we
+    // use the flag `kNotifierCollision` here.
+    scoped_feature_list_.InitWithFeatureState(features::kNotifierCollision,
                                               AreSideAlignedToastsEnabled());
 
     AshTestBase::SetUp();
@@ -109,6 +111,7 @@ class ToastManagerImplTest : public AshTestBase,
 
     // Start in the ACTIVE (logged-in) state.
     ChangeLockState(false);
+    SetShouldLockScreenAutomatically(false);
   }
 
   bool AreSideAlignedToastsEnabled() const { return GetParam(); }
@@ -209,11 +212,18 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool() /* AreSideAlignedToastsEnabled() */);
 
 TEST_P(ToastManagerImplTest, ShowAndCloseAutomatically) {
-  ShowToast("DUMMY", base::Milliseconds(10));
+  // A toast with custom duration closes after its duration plus one second.
+  base::TimeDelta custom_duration = base::Milliseconds(10);
+  ShowToast("id", custom_duration);
+  EXPECT_TRUE(GetCurrentOverlay());
+  task_environment()->FastForwardBy(custom_duration + base::Seconds(1));
+  EXPECT_FALSE(GetCurrentOverlay());
 
-  EXPECT_EQ(1, GetToastSerial());
-
-  task_environment()->FastForwardBy(base::Milliseconds(1000));
+  // A toast with "infinite" duration closes after its duration plus one second.
+  ShowToast("id", ToastData::kInfiniteDuration);
+  EXPECT_TRUE(GetCurrentOverlay());
+  task_environment()->FastForwardBy(ToastData::kInfiniteDuration +
+                                    base::Seconds(1));
   EXPECT_FALSE(GetCurrentOverlay());
 }
 
@@ -780,22 +790,18 @@ TEST_P(ToastManagerImplTest,
   EXPECT_EQ(3, GetToastSerial());
 }
 
-TEST_P(ToastManagerImplTest, ToastSupportedOnLockScreen) {
+TEST_P(ToastManagerImplTest, ToastDismissedOnSessionStateChanges) {
   // Show a toast supported on the lock screen in the unlocked screen.
   std::string id1 = ShowToast("TEXT1", ToastData::kInfiniteDuration,
                               /*visible_on_lock_screen=*/true);
   EXPECT_TRUE(GetCurrentOverlay());
 
-  // Simulate device lock, overlay should be visible.
+  // Simulate device lock, toast should be dismissed.
   ChangeLockState(true);
-  EXPECT_TRUE(GetCurrentOverlay());
+  EXPECT_FALSE(GetCurrentOverlay());
 
-  // Simulate device unlock, overlay should still be visible.
+  // Simulate device unlock, overlay should not be visible.
   ChangeLockState(false);
-  EXPECT_TRUE(GetCurrentOverlay());
-
-  // Cancel toast.
-  CancelToast(id1);
   EXPECT_FALSE(GetCurrentOverlay());
 
   // Try to show a new toast from within the lock screen, toast should be
@@ -805,9 +811,9 @@ TEST_P(ToastManagerImplTest, ToastSupportedOnLockScreen) {
                               /*visible_on_lock_screen=*/true);
   EXPECT_TRUE(GetCurrentOverlay());
 
-  // Unlock, overlay should still be visible.
-  ChangeLockState(true);
-  EXPECT_TRUE(GetCurrentOverlay());
+  // Unlock, toast should be dismissed.
+  ChangeLockState(false);
+  EXPECT_FALSE(GetCurrentOverlay());
 }
 
 TEST_P(ToastManagerImplTest, ToastNotSupportedOnLockScreen) {
@@ -816,28 +822,20 @@ TEST_P(ToastManagerImplTest, ToastNotSupportedOnLockScreen) {
                               /*visible_on_lock_screen=*/false);
   EXPECT_TRUE(GetCurrentOverlay());
 
-  // Simulate device lock, overlay should be hidden.
+  // Simulate device lock, overlay should be dismissed.
   ChangeLockState(true);
   EXPECT_FALSE(GetCurrentOverlay());
 
-  // Simulate device unlock, overlay should be shown again.
-  ChangeLockState(false);
-  EXPECT_TRUE(GetCurrentOverlay());
-
-  // Cancel toast.
-  CancelToast(id1);
-  EXPECT_FALSE(GetCurrentOverlay());
-
-  // Try to show a new toast from within the lock screen, toast should be hidden
-  // but queued.
+  // Try to show a new toast from within the lock screen, toast request will be
+  // ignored.
   ChangeLockState(true);
   std::string id2 = ShowToast("TEXT1", ToastData::kInfiniteDuration,
                               /*visible_on_lock_screen=*/false);
   EXPECT_FALSE(GetCurrentOverlay());
 
-  // Unlock, overlay should now be visible.
+  // Unlock, overlay should not be visible.
   ChangeLockState(false);
-  EXPECT_TRUE(GetCurrentOverlay());
+  EXPECT_FALSE(GetCurrentOverlay());
 }
 
 TEST_P(ToastManagerImplTest, ShownCountMetric) {

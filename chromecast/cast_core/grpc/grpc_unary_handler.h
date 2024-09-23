@@ -77,14 +77,17 @@ class GrpcUnaryHandler final : public GrpcHandler {
       }
     }
 
-    void OnResponseDone(const grpc::Status& /*status*/) override {
-      LOG(FATAL)
-          << "Unary handler writes must finish the reactor at the same time";
+    void OnResponseDone(const grpc::Status& status) override {
+      // This method may be called from the cancelled_reactor as a generic way
+      // to signal reactor is done via OnResponseDone API. For unary reactor it
+      // is a no-op.
+      CHECK(status.error_code() == grpc::StatusCode::ABORTED)
+          << "Unexpected status: " << GrpcStatusToString(status);
     }
 
     void OnRequestDone(GrpcStatusOr<TRequest> request) override {
       if (!request.ok()) {
-        Finish(request.status());
+        FinishWriting(nullptr, request.status());
         return;
       }
       on_request_callback_.Run(std::move(request).value(), this);

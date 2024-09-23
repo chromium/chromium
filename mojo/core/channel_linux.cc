@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "mojo/core/channel_linux.h"
 
 #include <fcntl.h>
@@ -38,7 +43,7 @@
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "mojo/core/core.h"
+#include "mojo/buildflags.h"
 #include "mojo/core/embedder/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -62,10 +67,6 @@ void KernelVersionNumbers(int32_t* major_version,
   struct utsname info;
   if (uname(&info) < 0) {
     NOTREACHED();
-    *major_version = 0;
-    *minor_version = 0;
-    *bugfix_version = 0;
-    return;
   }
   int num_read = sscanf(info.release, "%d.%d.%d", major_version, minor_version,
                         bugfix_version);

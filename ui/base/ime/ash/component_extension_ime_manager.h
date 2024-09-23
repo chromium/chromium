@@ -39,8 +39,8 @@ struct COMPONENT_EXPORT(UI_BASE_IME_ASH) ComponentExtensionIME {
   ComponentExtensionIME();
   ComponentExtensionIME(const ComponentExtensionIME& other);
   ~ComponentExtensionIME();
-  std::string id;  // extension id.
-  std::string manifest;  // the contents of manifest.json
+  std::string id;           // extension id.
+  std::string manifest;     // the contents of manifest.json
   std::string description;  // description of extension.
   GURL options_page_url;
   base::FilePath path;

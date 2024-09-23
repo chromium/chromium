@@ -69,6 +69,14 @@ if (crashpad_use_libfuzzer) {
   _default_configs += [ "//build/config:crashpad_fuzzer_flags" ]
 }
 
+if (current_os == "fuchsia") {
+  _default_configs += [
+    "//third_party/fuchsia-gn-sdk/src/config:compiler",
+    "//third_party/fuchsia-gn-sdk/src/config:runtime_library",
+  ]
+  import("//third_party/fuchsia-gn-sdk/src/gn_configs.gni")
+}
+
 _default_executable_configs = _default_configs + [
                                 "$_mini_chromium_dir/build/config:executable",
                                 "$_mini_chromium_dir/build/config:win_console",

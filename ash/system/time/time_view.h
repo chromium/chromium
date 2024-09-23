@@ -40,9 +40,6 @@ class VerticalDateView : public views::View {
   VerticalDateView& operator=(const VerticalDateView& other) = delete;
   ~VerticalDateView() override;
 
-  // views::View:
-  void OnThemeChanged() override;
-
   // Updates the date label text.
   void UpdateText();
 
@@ -95,19 +92,36 @@ class ASH_EXPORT TimeView : public views::View, public ClockObserver {
   // For Jelly: updates `vertical_date_view_` color id if exists.
   void SetDateViewColorId(ui::ColorId color_id);
 
+  // Controls whether the horizontal time view shows "AM/PM" text.
+  // This setting does not affect the vertical time view.
+  void SetAmPmClockType(base::AmPmClockType am_pm_clock_type);
+
   // ClockObserver:
   void OnDateFormatChanged() override;
   void OnSystemClockTimeUpdated() override;
   void OnSystemClockCanSetTimeChanged(bool can_set_time) override;
   void Refresh() override;
 
+  base::AmPmClockType GetAmPmClockTypeForTesting() const {
+    return am_pm_clock_type_;
+  }
+
   base::HourClockType GetHourTypeForTesting() const;
 
-  views::Label* horizontal_time_label_for_test() {
+  views::Label* GetHorizontalTimeLabelForTesting() {
     return horizontal_time_label_;
   }
-  views::Label* horizontal_date_label_for_test() {
+
+  views::Label* GetHorizontalDateLabelForTesting() {
     return horizontal_date_label_;
+  }
+
+  views::Label* GetVerticalMinutesLabelForTesting() {
+    return vertical_label_minutes_;
+  }
+
+  views::Label* GetVerticalHoursLabelForTesting() {
+    return vertical_label_hours_;
   }
 
  private:
@@ -115,7 +129,6 @@ class ASH_EXPORT TimeView : public views::View, public ClockObserver {
   friend class TimeTrayItemViewTest;
 
   // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -135,6 +148,9 @@ class ASH_EXPORT TimeView : public views::View, public ClockObserver {
 
   // Starts |timer_| to schedule the next update.
   void SetTimer(const base::Time& now);
+
+  // Indicates if the horizontal view should show "AM/PM" text next to the time.
+  base::AmPmClockType am_pm_clock_type_ = base::kDropAmPm;
 
   // The `TimeView` of `Type::kTime` shows a single label in horizontal shelf,
   // or two stacked labels in vertical shelf. The container views own the

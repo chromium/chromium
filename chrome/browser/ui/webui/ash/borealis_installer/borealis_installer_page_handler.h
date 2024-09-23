@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_types.mojom-forward.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/borealis/borealis_installer_error_dialog.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -53,7 +52,6 @@ class BorealisInstallerPageHandler
   mojo::Receiver<ash::borealis_installer::mojom::PageHandler> receiver_;
   mojo::Remote<ash::borealis_installer::mojom::Page> page_;
   base::OnceClosure on_page_closed_;
-  gfx::NativeWindow native_window_;
   raw_ptr<Profile> profile_;
   base::Time install_start_time_;
   base::ScopedObservation<borealis::BorealisInstaller,

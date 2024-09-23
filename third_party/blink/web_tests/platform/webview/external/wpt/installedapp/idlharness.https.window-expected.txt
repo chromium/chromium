@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Navigator interface: operation getInstalledRelatedApps()
+  assert_own_property: interface prototype object missing non-static operation expected property "getInstalledRelatedApps" missing
+[FAIL] Navigator interface: navigator must inherit property "getInstalledRelatedApps()" with the proper type
+  assert_inherits: property "getInstalledRelatedApps" not found in prototype chain
+Harness: the test ran to completion.

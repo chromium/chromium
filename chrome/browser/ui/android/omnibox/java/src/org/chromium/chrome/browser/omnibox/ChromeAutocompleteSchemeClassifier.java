@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.LifetimeAssert;
@@ -33,7 +34,7 @@ public class ChromeAutocompleteSchemeClassifier extends AutocompleteSchemeClassi
 
     @NativeMethods
     public interface Natives {
-        long createAutocompleteClassifier(Profile profile);
+        long createAutocompleteClassifier(@JniType("Profile*") Profile profile);
 
         void deleteAutocompleteClassifier(long chromeAutocompleteSchemeClassifier);
     }

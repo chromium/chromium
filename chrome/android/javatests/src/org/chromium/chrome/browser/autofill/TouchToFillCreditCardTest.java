@@ -4,16 +4,16 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.Criteria.checkThat;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.base.test.util.Matchers.containsString;
 import static org.chromium.base.test.util.Matchers.is;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
-import static org.chromium.chrome.test.R.id.card_name;
-import static org.chromium.chrome.test.R.id.card_number;
-import static org.chromium.chrome.test.R.id.description_line_2;
+import static org.chromium.chrome.test.R.id.first_line_label;
+import static org.chromium.chrome.test.R.id.main_text;
+import static org.chromium.chrome.test.R.id.minor_text;
 import static org.chromium.chrome.test.R.id.sheet_item_list;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.view.View;
 import android.widget.TextView;
@@ -26,13 +26,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestUtilsBridge;
@@ -61,8 +59,6 @@ import java.util.concurrent.TimeoutException;
 public class TouchToFillCreditCardTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
@@ -141,12 +137,12 @@ public class TouchToFillCreditCardTest {
         // Click on it to simulate user selection.
         runOnUiThreadBlocking(
                 () -> {
-                    View creditCardItemLayout = getItemsList().getChildAt(1);
-                    verifyCardIsCorrectlyDisplayed(creditCardItemLayout);
+                    View creditCardSuggestionItemLayout = getItemsList().getChildAt(1);
+                    verifyCardSuggestionIsCorrectlyDisplayed(creditCardSuggestionItemLayout);
                     // Check that continue button is present
                     Assert.assertTrue(getItemsList().getChildAt(2) instanceof ButtonCompat);
 
-                    creditCardItemLayout.performClick();
+                    creditCardSuggestionItemLayout.performClick();
                 });
         // Wait until the bottom sheet is closed
         BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
@@ -167,15 +163,15 @@ public class TouchToFillCreditCardTest {
         return mActivityTestRule.getActivity().findViewById(sheet_item_list);
     }
 
-    private void verifyCardIsCorrectlyDisplayed(View cardItemLayout) {
-        TextView cardNameLayout = (TextView) cardItemLayout.findViewById(card_name);
-        TextView cardNumberLayout = (TextView) cardItemLayout.findViewById(card_number);
-        TextView cardDescLayout = (TextView) cardItemLayout.findViewById(description_line_2);
-        // Check that the card name is displayed
-        checkThat(cardNameLayout.getText().toString(), is(CARD_NAME));
-        // Check that the last four digits of the card are displayed
+    private void verifyCardSuggestionIsCorrectlyDisplayed(View cardSuggestionItemLayout) {
+        TextView mainTextLayout = cardSuggestionItemLayout.findViewById(main_text);
+        TextView minorTextLayout = cardSuggestionItemLayout.findViewById(minor_text);
+        TextView cardDescLayout = cardSuggestionItemLayout.findViewById(first_line_label);
+        // Check that suggestion main text with the card name is displayed
+        checkThat(mainTextLayout.getText().toString(), is(CARD_NAME));
+        // Check that suggestion minor text with the last four digits of the card are displayed
         checkThat(
-                cardNumberLayout.getText().toString(),
+                minorTextLayout.getText().toString(),
                 containsString(CARD_NUMBER.substring(CARD_NUMBER.length() - 4)));
         // Check that the expiration month and year are present in the card description
         checkThat(cardDescLayout.getText().toString(), containsString(CARD_EXP_MONTH));

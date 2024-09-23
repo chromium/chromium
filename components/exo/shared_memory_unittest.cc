@@ -41,7 +41,7 @@ TEST_F(SharedMemoryTest, CreateBuffer) {
   const gfx::Size top_left_buffer_size(128, 128);
   std::unique_ptr<Buffer> top_left_buffer = shared_memory->CreateBuffer(
       top_left_buffer_size, format, 0,
-      gfx::RowSizeForBufferFormat(buffer_size.width(), format, 0));
+      gfx::RowSizeForBufferFormat(top_left_buffer_size.width(), format, 0));
   EXPECT_TRUE(top_left_buffer);
 
   // Creating a buffer for the bottom-right rectangle should succeed.
@@ -51,7 +51,7 @@ TEST_F(SharedMemoryTest, CreateBuffer) {
       (buffer_size.height() - bottom_right_buffer_size.height()) *
               gfx::RowSizeForBufferFormat(buffer_size.width(), format, 0) +
           (buffer_size.width() - bottom_right_buffer_size.width()) * 4,
-      gfx::RowSizeForBufferFormat(buffer_size.width(), format, 0));
+      gfx::RowSizeForBufferFormat(bottom_right_buffer_size.width(), format, 0));
   EXPECT_TRUE(bottom_right_buffer);
 }
 

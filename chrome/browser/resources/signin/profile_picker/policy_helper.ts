@@ -6,10 +6,6 @@ import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-export function isGuestModeEnabled(): boolean {
-  return loadTimeData.getBoolean('isGuestModeEnabled');
-}
-
 export function isProfileCreationAllowed(): boolean {
   return loadTimeData.getBoolean('isProfileCreationAllowed');
 }

@@ -24,6 +24,9 @@
     <message name="IDS_AR_INFOBAR_TEXT" desc="Text requesting permission for a site to use AR">
       <ph name="URL">$1<ex>google.com</ex></ph> wants to create a 3D map of your surroundings and track camera position
     </message>
+    <message name="IDS_HAND_TRACKING_INFOBAR_TEXT" desc="Text requesting permission for a site to use Hand tracking">
+      <ph name="URL">$1<ex>google.com</ex></ph> wants to track your hands
+    </message>
     <message name="IDS_IDLE_DETECTION_INFOBAR_TEXT" desc="Text requesting permission for a site to know when the user is idle.">
       <ph name="URL">$1<ex>google.com</ex></ph> wants to know when you're actively using this device
     </message>
@@ -35,6 +38,12 @@
     </message>
     <message name="IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_PREDICTION_SERVICE_MESSAGE" desc="Text used as notification message when requesting permission for Web Notifications via a notification. Used when the prediction service has decided that the user will be very unlikely to grant this permission.">
       Notifications were automatically blocked because you usually don't allow them
+    </message>
+    <message name="IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI" desc="Text used as notification message when requesting Gelocation permission. Used when quiet UI is enabled in settings.">
+      Location requests are automatically blocked for all sites except ones you allow
+    </message>
+    <message name="IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI_PREDICTION_SERVICE" desc="Text used as notification message when requesting permission for Geolocation. Used when the prediction service has decided that the user will be very unlikely to grant this permission.">
+      This site was blocked from knowing your precise location because you usually don't allow this
     </message>
     <message name="IDS_MEDIA_CAPTURE_AUDIO_ONLY_INFOBAR_TEXT" desc="Text requesting permission for a site to access the computer's microphone.">
       <ph name="HOST">$1<ex>html5rocks.com</ex></ph> wants to use your microphone
@@ -64,6 +73,12 @@
     <message name="IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android camera permission when a website has requested access to camera, but Chrome is missing the Android camera permission.">
       Allow camera?
     </message>
+    <message name="IDS_MESSAGE_MISSING_XR_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android scene understanding and hand tracking permission when a website has requested access to scene understanding and hand tracking, but Chrome is missing the Android scene understanding and hand tracking permission.">
+      Allow an immersive experience?
+    </message>
+    <message name="IDS_MESSAGE_MISSING_HAND_TRACKING_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android hand tracking permission when a website has requested access to scene understanding and hand tracking, but Chrome is missing the Android scene understanding and hand tracking permission.">
+      Allow hand tracking?
+    </message>
     <message name="IDS_MESSAGE_MISSING_STORAGE_ACCESS_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android storage access permission when a website has requested access to storage access, but Chrome is missing the Android storage access permission.">
       Allow storage access?
     </message>
@@ -75,6 +90,9 @@
     </message>
     <message name="IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android microphone and camera permission when a website has requested access to microphone and camera, but Chrome is missing the Android microphone and camera permission.">
       Allow 2 permissions?
+    </message>
+    <message name="IDS_IDENTITY_PROVIDER_INFOBAR_TEXT" desc="Text requesting permission for a site to register itself as an Federated Identity Provider." translateable="false">
+      Would you like to use your <ph name="URL">$1<ex>google.com</ex></ph> accounts to login to websites?
     </message>
 </if>
   <if expr="is_android or is_chromeos or is_win">
@@ -97,11 +115,20 @@
   <message name="IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's microphone.">
     Use your microphones
   </message>
+  <message name="IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's microphone, in addition to the number of real mics.">
+    Use available microphones (<ph name="MICS_COUNT">$1<ex>1</ex></ph>)
+  </message>
   <message name="IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's camera.">
     Use your cameras
   </message>
+  <message name="IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's camera, in addition to the number of real cameras.">
+    Use available cameras (<ph name="CAMERAS_COUNT">$1<ex>1</ex></ph>)
+  </message>
   <message name="IDS_MEDIA_CAPTURE_CAMERA_PAN_TILT_ZOOM_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions prompt when a web page requests access to the computer's camera, including zoom and move.">
     Use &amp; move your camera
+  </message>
+  <message name="IDS_MEDIA_CAPTURE_CAMERA_PAN_TILT_ZOOM_PERMISSION_FRAGMENT_WITH_COUNT" desc="Permission fragment shown in the permissions prompt when a web page requests access to the computer's camera, including zoom and move, in addition to the number of real cameras.">
+    Use &amp; move available cameras (<ph name="CAMERAS_COUNT">$1<ex>1</ex></ph>)
   </message>
   <message name="IDS_ACCESSIBILITY_EVENTS_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to respond to accessibility events, for example if the user is using a screen reader and the site has custom accessibility features. Follows a prompt: 'This site would like to:'">
     Respond to Accessibility Events
@@ -114,6 +141,15 @@
   </message>
   <message name="IDS_AR_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to use AR. Follows a prompt: 'This site would like to:">
     Create a 3D map of your surroundings and track camera position
+  </message>
+  <message name="IDS_HAND_TRACKING_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to use Hand tracking. Follows a prompt: 'This site would like to:">
+    Track your hands
+  </message>
+  <message name="IDS_KEYBOARD_LOCK_PERMISSIONS_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to lock the user's keyboard. When the keyboard is locked, any keyboard input usually handled by the browser or the OS is handled by the website instead. Follows a prompt: 'This site would like to:">
+    Lock and use your keyboard
+  </message>
+  <message name="IDS_POINTER_LOCK_PERMISSIONS_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to lock the user's mouse. When the mouse is locked, the cursor is hidden and its motions are handled by the website. Follows a prompt: 'This site would like to:">
+    Lock and use your mouse
   </message>
   <message name="IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_PROMPT_TITLE" desc="The title of a dialog box that prompts the user to provide permission. In the description below, “www.myfavoritesite.com” and “Google Docs” are just used as examples. 1) “wants to” means “is asking permission to”2) “use info” means retrieve existing info and save additional info. 3) “they've saved about you”: Google Docs can only prompt the user for permission on www.myfavoritesite.com if the user has previously used Google Docs.A user might visit a site called www.myfavoritesite.com. That site might embed content and services from other sites. Embedded content can include things like text, images, audio, and services (for example, Google Docs). In this example, the dialog box is shown by Google Docs. The permission is to enable a connection between www.myfavoritesite.com and Google Docs and to allow Google Docs to access information that services has previously saved about the user. For example, Google Docs would need this permission to verify the user's identity and display the user's documents as they browse www.myfavoritesite.com.">
     <ph name="EMBEDDED_URL">$1<ex>google.com</ex></ph> wants to use info they've saved about you
@@ -141,11 +177,17 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_IDLE_DETECTION_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to monitor when the user is interacting with their device. Follows a prompt: 'This site would like to:'">
     Know when you're actively using this device
   </message>
+  <message name="IDS_IDENTITY_PROVIDER_PERMISSION_FRAGMENT" desc="Permission request shown when the user wants to register a website as a Federated Identity Provider'" translateable="false">
+      Use your accounts to login to websites
+  </message>
   <message name="IDS_MULTI_DOWNLOAD_PERMISSION_FRAGMENT" desc="Permission request shown if multiple downloads are attempted without user interaction and there are multiple permissions requested. Follows a prompt: 'This site would like to:'">
     Download multiple files
   </message>
   <message name="IDS_CAPTURED_SURFACE_CONTROL_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests to scroll and zoom a captured tab.">
     Scroll and zoom the contents of your shared tab
+  </message>
+  <message name="IDS_WEB_APP_INSTALLATION_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests to install a web app.">
+    Be able to install web apps
   </message>
   <message name="IDS_PERMISSION_ALLOW" desc="Label on button to allow a permissions request.">
     Allow
@@ -158,6 +200,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   </message>
   <message name="IDS_PERMISSION_ALLOW_EVERY_VISIT" desc="Label on button to permanent grant in a one-time granting use case">
     Allow on every visit
+  </message>
+  <message name="IDS_PERMISSION_ALLOW_WHILE_VISITING" desc="Label on button to grant a permission to a site to do X permanently, that is, on the user's current visit and subsequent visits. This contrasts with the temporary grant through a button labeled [Allow this time], which only allows the site to do X on the current visit. The context for this choice is a prompt that says [The site wants to do X]. Therefore, for some languages it might be possible to drop the _the site_ suffix if it is evident from this context and its absensce does not feel dangling in the language.">
+    Allow while visiting the site
   </message>
   <message name="IDS_PERMISSION_DONT_ALLOW" desc="Label on button to permanent deny in a one-time granting use case">
     Don't allow
@@ -181,6 +226,15 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     </message>
     <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING_LABEL_TOOLTIP" desc="Tooltip for the label that shows while scanning for Bluetooth devices.">
       Scanning for Bluetooth devices...
+    </message>
+    <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_ADAPTER_OFF" desc="Text of a link the user can click to get help information when Bluetooth adapter is turned off.">
+      <ph name="TURN_ON_BLUETOOTH_LINK">$1<ex>Turn on Bluetooth</ex></ph> to allow pairing
+    </message>
+    <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ON_BLUETOOTH_LINK_TEXT" desc="Text of the link for turning on Bluetooth when Bluetooth adapter is turned off.">
+      Turn on Bluetooth
+    </message>
+    <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK_TEXT" desc="Text of the link for opening system settings when browser does not have Bluetooth permission.">
+      System Settings
     </message>
   </if>
   <message name="IDS_DEVICE_CHOOSER_DEVICE_NAME_WITH_ID" desc="To distinguish devices with the same name, the device chooser shows the device name with id.">
@@ -266,12 +320,50 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     <message name="IDS_IDLE_DETECTION_PERMISSION_CHIP" desc="Button text representing a request for using using idle detection from a website. When clicked, shows a permission prompt bubble with more information.">
       Know your device use?
     </message>
+    <message name="IDS_KEYBOARD_LOCK_PERMISSION_CHIP" desc="Chip UI text representing a request from a website to lock and use keyboard input.">
+      Lock your keyboard?
+    </message>
+    <message name="IDS_POINTER_LOCK_PERMISSION_CHIP" desc="Chip UI text representing a request from a website to lock and use mouse input.">
+      Lock your mouse?
+    </message>
+    <message name="IDS_WEB_APP_INSTALLATION_PERMISSION_CHIP" desc="Chip UI text representing a request from a website to install web apps.">
+      Install web apps?
+    </message>
+
+    <message name="IDS_HAND_TRACKING_PERMISSION_CHIP" desc="Button text representing a request for using hand tracking from a website. When clicked, shows a permission prompt bubble with more information.">
+      Allow hand tracking?
+    </message>
+    <message name="IDS_HAND_TRACKING_PERMISSION_BLOCKED_CHIP" desc="Button text representing a blocked or expired request for using hand tracking from a website. When clicked, shows a permission prompt bubble with more information.">
+      Hand tracking blocked
+    </message>
+    <message name="IDS_PERMISSIONS_HAND_TRACKING_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a hand tracking permission requested has been granted..">
+      Hand tracking allowed
+    </message>
+    <message name="IDS_PERMISSIONS_HAND_TRACKING_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a hand tracking permission requested has been granted once.">
+      Hand tracking allowed this time
+    </message>
+    <message name="IDS_PERMISSIONS_HAND_TRACKING_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a hand tracking permission requested has been denied.">
+      Hand tracking not allowed
+    </message>
 
     <message name="IDS_GEOLOCATION_PERMISSION_BLOCKED_CHIP" desc="Button text representing a blocked or expired request for the user's physical location from a website. When clicked, shows a permission prompt bubble with more information.">
       Location blocked
     </message>
     <message name="IDS_NOTIFICATION_PERMISSIONS_BLOCKED_CHIP" desc="Button text representing a blocked or expired request for showing notifications from a website. When clicked, shows a permission prompt bubble with more information.">
       Notifications blocked
+    </message>
+
+    <message name="IDS_CAPTURED_SURFACE_CONTROL_PERMISSION_CHIP" desc="Button text representing a request for permission to scroll and zoom captured tabs by a capturing website. When clicked, shows a permission prompt bubble with more information.">
+      Scroll and zoom your shared tab?
+    </message>
+    <message name="IDS_CAPTURED_SURFACE_CONTROL_PERMISSION_BLOCKED_CHIP" desc="Button text representing a blocked or expired request for scrolling and zooming shared tabs from a website. When clicked, shows a permission prompt bubble with more information.">
+      Scroll &amp; zoom blocked
+    </message>
+    <message name="IDS_PERMISSIONS_CAPTURED_SURFACE_CONTROL_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a scroll and zoom permission requested has been granted.">
+      Scroll &amp; zoom allowed
+    </message>
+    <message name="IDS_PERMISSIONS_CAPTURED_SURFACE_CONTROL_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a scroll and zoom permission requested has been denied.">
+      Scroll &amp; zoom not allowed
     </message>
 
     <message name="IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION" desc="Text displayed next to a permission icon confirming that a permission has been granted.">
@@ -331,6 +423,24 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     <message name="IDS_PERMISSIONS_SAA_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that the Storage Access API permission requested has been denied.">
         Embedded content not allowed
     </message>
+    <message name="IDS_PERMISSIONS_KEYBOARD_LOCK_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a keyboard lock permission requested has been granted.">
+      Keyboard lock allowed
+    </message>
+    <message name="IDS_PERMISSIONS_KEYBOARD_LOCK_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a keyboard lock permission requested has been denied.">
+      Keyboard lock not allowed
+    </message>
+    <message name="IDS_PERMISSIONS_POINTER_LOCK_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a mouse lock permission requested has been granted.">
+      Mouse lock allowed
+    </message>
+    <message name="IDS_PERMISSIONS_POINTER_LOCK_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a mouse lock permission requested has been denied.">
+      Mouse lock not allowed
+    </message>
+    <message name="IDS_PERMISSIONS_WEB_INSTALL_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a web app installation permission requested has been granted.">
+      Install web apps allowed
+    </message>
+    <message name="IDS_PERMISSIONS_WEB_INSTALL_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a web app installation permission requested has been denied.">
+      Install web apps not allowed
+    </message>
   </if>
   <if expr="is_chromeos">
     <message name="IDS_SMART_CARD_PERMISSION_PROMPT" desc="Text on dialog that asks the user for permission to access a smart card reader device and the card inserted in it (or presented to it, if contactless).">
@@ -369,22 +479,22 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 
   <!-- Embedded permission prompts: text -->
   <message name="IDS_EMBEDDED_PROMPT_ADMIN_BLOCKED" desc="Text informing the user that their administrator has blocked a permission for a site">
-    Your administrator has blocked <ph name="permission">$1<ex>camera</ex></ph> on <ph name="Origin">$2<ex>www.google.com</ex></ph>
+    Your administrator blocked your <ph name="permission">$1<ex>camera</ex></ph> for this site
   </message>
   <message name="IDS_EMBEDDED_PROMPT_ADMIN_ALLOWED" desc="Text informing the user that their administrator has allowed a permission for a site">
-    Your administrator has allowed <ph name="permission">$1<ex>camera</ex></ph> on <ph name="Origin">$2<ex>www.google.com</ex></ph>
+    <ph name="permission">$1<ex>Camera</ex></ph> allowed
   </message>
   <message name="IDS_EMBEDDED_PROMPT_PREVIOUSLY_ALLOWED" desc="Text informing the user that they already granted permission to the site">
     You have allowed <ph name="permission">$1<ex>camera</ex></ph> on <ph name="Origin">$2<ex>www.google.com</ex></ph>
   </message>
     <message name="IDS_EMBEDDED_PROMPT_PREVIOUSLY_NOT_ALLOWED" desc="Text informing the user that they previously denied permission to the site">
-    You previously didn't allow <ph name="permission">$1<ex>camera</ex></ph> on <ph name="Origin">$2<ex>www.google.com</ex></ph>
+    You previously chose don’t allow for this site
   </message>
   <message name ="IDS_PERMISSION_OFF_FOR_CHROME" desc="Text informing the user that they have turned the permission off for chrome">
-    You've turned <ph name="permission">$1<ex>camera</ex></ph> off for Chrome.
+    To use your <ph name="permission">$1<ex>camera</ex></ph> on this site, give Chrome access
   </message>
   <message name ="IDS_PERMISSION_CHROME_NEEDS_PERMISSION" desc="Text informing the user in the background that Chrome needs a permission in order to use it on the site the user is visiting">
-      To use your <ph name="permission">$1<ex>camera</ex></ph> on this site, you need to give Chrome access
+      Chrome needs access to your device's <ph name="permission">$1<ex>camera</ex></ph>
   </message>
     <message name="IDS_GEOLOCATION_NAME_FRAGMENT" desc="Text fragment identifying the geolocation permission">
     location
@@ -398,8 +508,20 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_CAMERA_AND_MICROPHONE_PERMISSION_NAME_FRAGMENT" desc="Text fragment identifying the camera and microphone permissions">
     camera and microphone
   </message>
+    <message name="IDS_CAMERA_PERMISSION_NAME_FRAGMENT_CAPITALIZED" desc="Text fragment identifying the camera permission">
+    Camera
+  </message>
+  <message name="IDS_MICROPHONE_PERMISSION_NAME_FRAGMENT_CAPITALIZED" desc="Text fragment identifying the microphone permission">
+    Microphone
+  </message>
+  <message name="IDS_CAMERA_AND_MICROPHONE_PERMISSION_NAME_FRAGMENT_CAPITALIZED" desc="Text fragment identifying the camera and microphone permissions">
+    Camera and microphone
+  </message>
   <message name="IDS_MACOS_NAME_FRAGMENT" desc="Text fragment identifying the macOS">
     macOS
+  </message>
+  <message name="IDS_WINDOWS_NAME_FRAGMENT" desc="Text fragment identifying the Windows">
+    Windows
   </message>
   <!--Embedded permission prompts: button labels-->
   <message name="IDS_EMBEDDED_PROMPT_OK_LABEL" desc="Label used on a button that allows the user to acknowledge and close an informational dialog">

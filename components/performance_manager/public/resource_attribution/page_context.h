@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
 
 namespace content {
 class WebContents;
@@ -79,7 +78,7 @@ class PageContext {
 
  private:
   PageContext(base::UnguessableToken token,
-              performance_manager::WebContentsProxy web_contents_proxy,
+              base::WeakPtr<content::WebContents> weak_web_contents,
               base::WeakPtr<performance_manager::PageNode> weak_node);
 
   // A unique identifier for the PageNode. A PageNodeImpl::PageToken will be
@@ -88,9 +87,8 @@ class PageContext {
   // that PageContexts for the same PageNode compare equal.
   base::UnguessableToken token_;
 
-  // A PerformanceManager proxy object that resolves to the WebContents on the
-  // UI thread.
-  performance_manager::WebContentsProxy web_contents_proxy_;
+  // A pointer to the WebContents that must be dereferenced on the UI thread.
+  base::WeakPtr<content::WebContents> weak_web_contents_;
 
   // A pointer to the PageNode that must be dereferenced on the PM sequence.
   base::WeakPtr<performance_manager::PageNode> weak_node_;

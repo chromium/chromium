@@ -13,11 +13,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using base::UTF8ToUTF16;
-
 namespace autofill {
-
 namespace {
+
+using base::UTF8ToUTF16;
 
 const char kTestString[] = "Message";  // Corresponds to STRING_MESSAGE.
 
@@ -36,8 +35,6 @@ class TestLogger : public SavePasswordProgressLogger {
 
   std::string accumulated_log_;
 };
-
-}  // namespace
 
 TEST(SavePasswordProgressLoggerTest, LogHTMLForm) {
   TestLogger logger;
@@ -120,4 +117,5 @@ TEST(SavePasswordProgressLoggerTest, NoFullStops) {
   }
 }
 
+}  // namespace
 }  // namespace autofill

@@ -21,12 +21,14 @@
  * will fill a supplied 16-byte array with the digest.
  */
 
+#include "base/hash/md5.h"
+
 #include <stddef.h>
+#include <string.h>
 
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "base/hash/md5.h"
 #include "base/strings/string_number_conversions.h"
 
 namespace {
@@ -173,8 +175,12 @@ void MD5Init(MD5Context* context) {
  * of bytes.
  */
 void MD5Update(MD5Context* context, std::string_view data) {
+  MD5Update(context, base::as_byte_span(data));
+}
+
+void MD5Update(MD5Context* context, base::span<const uint8_t> data) {
   struct Context* ctx = reinterpret_cast<struct Context*>(context);
-  const uint8_t* buf = reinterpret_cast<const uint8_t*>(data.data());
+  const uint8_t* buf = data.data();
   size_t len = data.size();
 
   /* Update bitcount */
@@ -261,8 +267,8 @@ void MD5Final(MD5Digest* digest, MD5Context* context) {
 
   MD5Transform(ctx->buf, reinterpret_cast<uint32_t*>(ctx->in));
   byteReverse(reinterpret_cast<uint8_t*>(ctx->buf), 4);
-  memcpy(digest->a, ctx->buf, 16);
-  memset(ctx, 0, sizeof(*ctx)); /* In case it's sensitive */
+  span(digest->a).copy_from(as_byte_span(ctx->buf));
+  std::ranges::fill(byte_span_from_ref(*ctx), 0u); /* In case it's sensitive */
 }
 
 std::string MD5DigestToBase16(const MD5Digest& digest) {
@@ -277,8 +283,7 @@ std::string MD5DigestToBase16(const MD5Digest& digest) {
 void MD5Sum(span<const uint8_t> data, MD5Digest* digest) {
   MD5Context ctx;
   MD5Init(&ctx);
-  span<const char> chars = as_chars(data);
-  MD5Update(&ctx, std::string_view(chars.data(), chars.size()));
+  MD5Update(&ctx, data);
   MD5Final(digest, &ctx);
 }
 

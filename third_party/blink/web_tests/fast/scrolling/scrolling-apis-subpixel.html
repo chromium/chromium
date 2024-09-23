@@ -55,11 +55,6 @@ test( () => {
   const setOffset = 4.2;
   let expectedOffset = 4;
 
-  // When fractional offsets are enabled, we should allow setting a fractional
-  // scroll offset.
-  if (internals.runtimeFlags.fractionalScrollOffsetsEnabled)
-    expectedOffset = 4.2;
-
   testScroll(setOffset, expectedOffset);
 }, "Set fractional scroll offset without zoom");
 
@@ -79,11 +74,6 @@ test( () => {
   // Zooming provides additional granularity but we try to set a value beyond the 0.5 increment.
   const setOffset = 4.6;
   let expectedOffset = 4.5;
-
-  // When fractional offsets are enabled, we should allow setting a fractional
-  // scroll offset.
-  if (internals.runtimeFlags.fractionalScrollOffsetsEnabled)
-    expectedOffset = 4.6;
 
   testScroll(setOffset, expectedOffset);
 }, "Set fractional scroll offset to higher granularity when zoomed.");

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/simple_sources.h"
 
 #include <stddef.h>
@@ -10,6 +15,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/time/time.h"
 #include "media/audio/audio_io.h"
@@ -118,7 +124,7 @@ TEST(SimpleSources, FileSourceTestDataWithoutLooping) {
   ASSERT_TRUE(base::CreateTemporaryFile(&temp_path));
   base::File temp(temp_path,
                   base::File::FLAG_WRITE | base::File::FLAG_OPEN_ALWAYS);
-  temp.WriteAtCurrentPos(kTestAudioData, kTestAudioDataSize);
+  temp.WriteAtCurrentPos(base::byte_span_from_cstring(kTestAudioData));
   ASSERT_EQ(kTestAudioDataSize, static_cast<size_t>(temp.GetLength()));
   temp.Close();
 
@@ -156,7 +162,7 @@ TEST(SimpleSources, FileSourceTestDataWithLooping) {
   ASSERT_TRUE(base::CreateTemporaryFile(&temp_path));
   base::File temp(temp_path,
                   base::File::FLAG_WRITE | base::File::FLAG_OPEN_ALWAYS);
-  temp.WriteAtCurrentPos(kTestAudioData, kTestAudioDataSize);
+  temp.WriteAtCurrentPos(base::byte_span_from_cstring(kTestAudioData));
   ASSERT_EQ(kTestAudioDataSize, static_cast<size_t>(temp.GetLength()));
   temp.Close();
 
@@ -211,7 +217,7 @@ TEST(SimpleSources, FileSourceCorruptTestDataFails) {
   ASSERT_TRUE(base::CreateTemporaryFile(&temp_path));
   base::File temp(temp_path,
                   base::File::FLAG_WRITE | base::File::FLAG_OPEN_ALWAYS);
-  temp.WriteAtCurrentPos(kTestAudioData, kTestAudioDataSize);
+  temp.WriteAtCurrentPos(base::byte_span_from_cstring(kTestAudioData));
 
   // Corrupt the header.
   temp.Write(3, "0x00", 1);

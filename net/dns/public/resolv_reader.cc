@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/dns/public/resolv_reader.h"
 
 #include <netinet/in.h>
@@ -9,11 +14,11 @@
 #include <sys/types.h>
 
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"

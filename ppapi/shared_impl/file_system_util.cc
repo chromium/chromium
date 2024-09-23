@@ -29,7 +29,6 @@ std::string IsolatedFileSystemTypeToRootName(
       return "crxfs";
     default:
       NOTREACHED() << type;
-      return std::string();
   }
 }
 

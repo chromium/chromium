@@ -4,8 +4,10 @@
 
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 
+#include <string_view>
+
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -14,8 +16,8 @@
 #include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -45,6 +47,7 @@ constexpr char16_t kWeakPassword216[] =
 constexpr int kDelay = 2;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+using affiliations::FacetURI;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
@@ -59,10 +62,10 @@ using StrictMockInsecureCredentialsManagerObserver =
     ::testing::StrictMock<MockInsecureCredentialsManagerObserver>;
 
 PasswordForm MakeSavedPassword(
-    base::StringPiece signon_realm,
-    base::StringPiece16 username,
-    base::StringPiece16 password,
-    base::StringPiece16 username_element = u"",
+    std::string_view signon_realm,
+    std::u16string_view username,
+    std::u16string_view password,
+    std::u16string_view username_element = u"",
     PasswordForm::Store store = PasswordForm::Store::kProfileStore) {
   PasswordForm form;
   form.signon_realm = std::string(signon_realm);
@@ -74,8 +77,8 @@ PasswordForm MakeSavedPassword(
   return form;
 }
 
-LeakCheckCredential MakeLeakCredential(base::StringPiece16 username,
-                                       base::StringPiece16 password) {
+LeakCheckCredential MakeLeakCredential(std::u16string_view username,
+                                       std::u16string_view password) {
   return LeakCheckCredential(std::u16string(username),
                              std::u16string(password));
 }
@@ -129,11 +132,10 @@ class InsecureCredentialsManagerTest : public testing::TestWithParam<bool> {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
-  FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr};
-  InsecureCredentialsManager provider_{&presenter_, store_,
-                                       /*account_store=*/nullptr};
+  InsecureCredentialsManager provider_{&presenter_};
 };
 
 }  // namespace
@@ -198,7 +200,7 @@ TEST_F(InsecureCredentialsManagerTest,
 
   // Removing a saved password should notify observers.
   EXPECT_CALL(observer, OnInsecureCredentialsChanged);
-  store().RemoveLogin(saved_password);
+  store().RemoveLogin(FROM_HERE, saved_password);
   RunUntilIdle();
 
   // After an observer is removed it should no longer receive notifications.
@@ -273,12 +275,12 @@ TEST_F(InsecureCredentialsManagerTest, ReactToChangesInBothTables) {
               testing::UnorderedElementsAre(CredentialUIEntry(password1),
                                             CredentialUIEntry(password2)));
 
-  store().RemoveLogin(password1);
+  store().RemoveLogin(FROM_HERE, password1);
   RunUntilIdle();
   EXPECT_THAT(provider().GetInsecureCredentialEntries(),
               ElementsAre(CredentialUIEntry(password2)));
 
-  store().RemoveLogin(password2);
+  store().RemoveLogin(FROM_HERE, password2);
   RunUntilIdle();
   EXPECT_THAT(provider().GetInsecureCredentialEntries(), IsEmpty());
 }
@@ -1255,10 +1257,10 @@ TEST_F(InsecureCredentialsManagerTest, ReuseCheckUsesAffiliationInfo) {
   if (!IsGroupingEnabled()) {
     return;
   }
-  MockAffiliationService mock_affiliation_service;
+  affiliations::MockAffiliationService mock_affiliation_service;
   SavedPasswordsPresenter presenter{&mock_affiliation_service, &store(),
                                     nullptr};
-  InsecureCredentialsManager provider{&presenter, &store(), nullptr};
+  InsecureCredentialsManager provider{&presenter};
   presenter.Init();
   RunUntilIdle();
 
@@ -1268,8 +1270,9 @@ TEST_F(InsecureCredentialsManagerTest, ReuseCheckUsesAffiliationInfo) {
   PasswordForm form2 = MakeSavedPassword(kExampleOrg, kUsername2, kPassword1);
 
   // Setup affiliated groups.
-  std::vector<password_manager::GroupedFacets> grouped_facets(1);
-  Facet facet(FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm));
+  std::vector<affiliations::GroupedFacets> grouped_facets(1);
+  affiliations::Facet facet(
+      FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm));
   grouped_facets[0].facets.push_back(facet);
   facet.uri = FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm);
   grouped_facets[0].facets.push_back(facet);
@@ -1359,11 +1362,10 @@ class InsecureCredentialsManagerWithTwoStoresTest : public ::testing::Test {
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   scoped_refptr<TestPasswordStore> account_store_ =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
-  FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, profile_store_,
                                      account_store_};
-  InsecureCredentialsManager provider_{&presenter_, profile_store_,
-                                       account_store_};
+  InsecureCredentialsManager provider_{&presenter_};
 };
 }  // namespace
 

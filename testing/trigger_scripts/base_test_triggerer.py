@@ -36,7 +36,7 @@ SWARMING_GO = os.path.join(SRC_DIR, 'tools', 'luci-go',
 _A_WEEK_IN_SECONDS = 60 * 60 * 24 * 7
 
 
-def _convert_to_go_swarming_args(args):
+def convert_to_go_swarming_args(args):
     go_args = []
     i = 0
     while i < len(args):
@@ -66,7 +66,8 @@ def strip_unicode(obj):
     return obj
 
 
-class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
+class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
+
     def __init__(self):
         self._bot_configs = None
         self._bot_statuses = []
@@ -135,10 +136,10 @@ class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
         try:
             self._bot_configs = strip_unicode(
                 json.loads(args.multiple_trigger_configs))
-        except Exception as e:
-            six.raise_from(ValueError(
+        except json.JSONDecodeError as e:
+            raise ValueError(
                 'Error while parsing JSON from bot config string %s: %s' %
-                (args.multiple_trigger_configs, str(e))), e)
+                (args.multiple_trigger_configs, str(e))) from e
         # Validate the input.
         if not isinstance(self._bot_configs, list):
             raise ValueError('Bot configurations must be a list, were: %s' %
@@ -149,9 +150,7 @@ class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
         if not all(isinstance(entry, dict) for entry in self._bot_configs):
             raise ValueError('Bot configurations must all be dictionaries')
 
-    def list_bots(self,
-                  dimensions,
-                  server='chromium-swarm.appspot.com'):
+    def list_bots(self, dimensions, server='chromium-swarm.appspot.com'):
         """List bots having specified bot dimensions.
 
         Type of returned value is list of
@@ -172,8 +171,7 @@ class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
             with open(result_json.name) as f:
                 return json.load(f)
 
-    def list_tasks(self, tags, limit=None,
-                   server='chromium-swarm.appspot.com'):
+    def list_tasks(self, tags, limit=None, server='chromium-swarm.appspot.com'):
         """List bots having specified task tags.
 
         Type of returned value is list of
@@ -203,8 +201,8 @@ class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
                 return json.load(f)
 
     def remove_swarming_dimension(self, args, dimension):
-        for i in range(len(args)):
-            if args[i] == '--dimension' and args[i + 1] == dimension:
+        for i, argument in enumerate(args):
+            if argument == '--dimension' and args[i + 1] == dimension:
                 return args[:i] + args[i + 3:]
         return args
 
@@ -244,8 +242,7 @@ class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
         if 'tasks' not in merged_json:
             merged_json['tasks'] = {}
 
-        ret = subprocess.call([SWARMING_GO] +
-                              _convert_to_go_swarming_args(args))
+        ret = subprocess.call([SWARMING_GO] + convert_to_go_swarming_args(args))
         result_json = self.read_json_from_temp_file(json_path)
 
         tasks = {}
@@ -285,7 +282,7 @@ class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
 
     def generate_shard_map(self, args, buildername, selected_config):
         """Returns shard map generated on runtime if needed."""
-        pass # pylint: disable=unnecessary-pass
+        pass  # pylint: disable=unnecessary-pass
 
     def trigger_tasks(self, args, remaining):
         """Triggers tasks for each bot.
@@ -347,11 +344,9 @@ class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
                                                 args.shards, json_temp,
                                                 shard_map)
                 # crbug/1140389: debug print outs
-                logging.info('DEBUG: Before calling swarming: %s',
-                             args_to_pass)
-                ret = self.run_swarming_go(args_to_pass, json_temp,
-                                           shard_index, args.shards,
-                                           merged_json)
+                logging.info('DEBUG: Before calling swarming: %s', args_to_pass)
+                ret = self.run_swarming_go(args_to_pass, json_temp, shard_index,
+                                           args.shards, merged_json)
                 if ret:
                     sys.stderr.write('Failed to trigger a task, aborting\n')
                     return ret
@@ -367,6 +362,7 @@ class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
             if (args[i] == '--tag' and i < args_length - 1
                     and args[i + 1].startswith('buildername:')):
                 return args[i + 1].split(':', 1)[1]
+
     # pylint: enable=inconsistent-return-statements
 
     @staticmethod

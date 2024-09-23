@@ -25,7 +25,7 @@ namespace gpu {
 
 namespace {
 
-// TODO(crbug.com/984971): for WebPs we may need to compute the coded size
+// TODO(crbug.com/41471307): for WebPs we may need to compute the coded size
 // instead and check that against the supported dimensions.
 bool IsSupportedImageSize(
     const cc::ImageHeaderMetadata* image_data,
@@ -152,7 +152,7 @@ bool ImageDecodeAcceleratorProxy::IsImageSupported(
       return image_metadata->webp_is_non_extended_lossy.value();
     case ImageDecodeAcceleratorType::kUnknown:
       // Should not reach due to a check above.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return false;

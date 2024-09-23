@@ -17,7 +17,6 @@
 #include "ui/gfx/geometry/rect.h"
 
 class ManualFillingController;
-class PasswordGenerationDialogViewInterface;
 class TouchToFillPasswordGenerationController;
 struct PasswordGenerationElementData;
 
@@ -37,8 +36,6 @@ class PasswordGenerationControllerImpl
       public content::WebContentsObserver,
       public content::WebContentsUserData<PasswordGenerationControllerImpl> {
  public:
-  using CreateDialogFactory = base::RepeatingCallback<std::unique_ptr<
-      PasswordGenerationDialogViewInterface>(PasswordGenerationController*)>;
   using CreateTouchToFillGenerationControllerFactory = base::RepeatingCallback<
       std::unique_ptr<TouchToFillPasswordGenerationController>()>;
 
@@ -94,7 +91,6 @@ class PasswordGenerationControllerImpl
       content::WebContents* web_contents,
       password_manager::PasswordManagerClient* client,
       base::WeakPtr<ManualFillingController> manual_filling_controller,
-      CreateDialogFactory create_dialog_callback,
       CreateTouchToFillGenerationControllerFactory
           create_touch_to_fill_generation_controller);
 
@@ -116,7 +112,6 @@ class PasswordGenerationControllerImpl
       content::WebContents* web_contents,
       password_manager::PasswordManagerClient* client,
       base::WeakPtr<ManualFillingController> manual_filling_controller,
-      CreateDialogFactory create_dialog_callback,
       CreateTouchToFillGenerationControllerFactory
           create_touch_to_fill_generation_controller);
 
@@ -175,12 +170,6 @@ class PasswordGenerationControllerImpl
 
   std::unique_ptr<TouchToFillPasswordGenerationController>
       touch_to_fill_generation_controller_;
-
-  // Modal dialog view meant to display the generated password.
-  std::unique_ptr<PasswordGenerationDialogViewInterface> dialog_view_;
-
-  // Creation callback for the modal dialog view meant to facilitate testing.
-  CreateDialogFactory create_dialog_factory_;
 
   // Creation callback for the password generation bottom sheet controller to
   // facilitate testing.

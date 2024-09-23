@@ -36,7 +36,7 @@ TEST(EventLevelEpsilonTest, Parse) {
           .desc = "wrong_type",
           .json = R"json({"event_level_epsilon": "1"})json",
           .matches =
-              ErrorIs(SourceRegistrationError::kEventLevelEpsilonWrongType),
+              ErrorIs(SourceRegistrationError::kEventLevelEpsilonValueInvalid),
       },
       {
           .desc = "negative",

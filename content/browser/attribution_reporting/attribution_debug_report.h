@@ -5,20 +5,28 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DEBUG_REPORT_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DEBUG_REPORT_H_
 
+#include <stddef.h>
+
 #include <optional>
 
-#include "base/time/time.h"
+#include "base/functional/function_ref.h"
 #include "base/values.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/common/content_export.h"
 
 class GURL;
 
+namespace attribution_reporting {
+struct RegistrationHeaderError;
+}  // namespace attribution_reporting
+
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
-class AttributionTrigger;
 class CreateReportResult;
-class StorableSource;
 class StoreSourceResult;
 
 struct OsRegistration;
@@ -28,16 +36,27 @@ struct OsRegistration;
 class CONTENT_EXPORT AttributionDebugReport {
  public:
   static std::optional<AttributionDebugReport> Create(
-      const StorableSource& source,
-      bool is_debug_cookie_set,
+      base::FunctionRef<bool()> is_operation_allowed,
       const StoreSourceResult& result);
 
   static std::optional<AttributionDebugReport> Create(
-      const AttributionTrigger& trigger,
+      base::FunctionRef<bool()> is_operation_allowed,
       bool is_debug_cookie_set,
       const CreateReportResult& result);
 
-  static std::optional<AttributionDebugReport> Create(const OsRegistration&);
+  static std::optional<AttributionDebugReport> Create(
+      const OsRegistration&,
+      size_t item_index,
+      base::FunctionRef<bool(const url::Origin& registration_origin)>
+          is_operation_allowed);
+
+  static std::optional<AttributionDebugReport> Create(
+      attribution_reporting::SuitableOrigin reporting_origin,
+      const attribution_reporting::RegistrationHeaderError&,
+      const attribution_reporting::SuitableOrigin& context_origin,
+      bool is_within_fenced_frame,
+      base::FunctionRef<bool(const url::Origin& reporting_origin)>
+          is_operation_allowed);
 
   ~AttributionDebugReport();
 
@@ -55,23 +74,13 @@ class CONTENT_EXPORT AttributionDebugReport {
 
   GURL ReportUrl() const;
 
-  // TODO(apaseltiner): This is a workaround to allow the simulator to adjust
-  // times while accounting for sub-second precision. Investigate removing it.
-  base::Time GetOriginalReportTimeForTesting() const {
-    return original_report_time_;
-  }
-
  private:
-  AttributionDebugReport(base::Value::List report_body,
-                         attribution_reporting::SuitableOrigin reporting_origin,
-                         base::Time original_report_time);
+  AttributionDebugReport(
+      base::Value::List report_body,
+      attribution_reporting::SuitableOrigin reporting_origin);
 
   base::Value::List report_body_;
   attribution_reporting::SuitableOrigin reporting_origin_;
-
-  // Only set for report bodies that would include an event-level
-  // scheduled_report_time field.
-  base::Time original_report_time_;
 };
 
 }  // namespace content

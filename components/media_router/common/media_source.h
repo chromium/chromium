@@ -144,8 +144,8 @@ class MediaSource {
   bool IsDesktopSourceWithAudio() const;
 
   // Returns true this source outputs its content via DIAL.
-  // TODO(crbug.com/804419): Move this to in-browser DIAL/Cast MRP when we have
-  // one.
+  // TODO(crbug.com/41366226): Move this to in-browser DIAL/Cast MRP when we
+  // have one.
   bool IsDialSource() const;
 
   // Returns empty string if this source is not DIAL media source, or is not a

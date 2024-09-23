@@ -2,8 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capture/video/win/filter_base_win.h"
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 
 #pragma comment(lib, "strmiids.lib")
@@ -14,6 +21,8 @@ namespace media {
 class PinEnumerator final : public IEnumPins,
                             public base::RefCounted<PinEnumerator> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   explicit PinEnumerator(FilterBase* filter) : filter_(filter), index_(0) {}
 
   // IUnknown implementation.
@@ -66,16 +75,16 @@ class PinEnumerator final : public IEnumPins,
   }
 
   IFACEMETHODIMP Clone(IEnumPins** clone) override {
-    PinEnumerator* pin_enum = new PinEnumerator(filter_.get());
+    auto pin_enum = base::MakeRefCounted<PinEnumerator>(filter_.get());
     pin_enum->AddRef();
     pin_enum->index_ = index_;
-    *clone = pin_enum;
+    *clone = pin_enum.get();
     return S_OK;
   }
 
  private:
   friend class base::RefCounted<PinEnumerator>;
-  ~PinEnumerator() {}
+  ~PinEnumerator() = default;
 
   scoped_refptr<FilterBase> filter_;
   size_t index_;
@@ -85,8 +94,9 @@ FilterBase::FilterBase() : state_(State_Stopped) {
 }
 
 HRESULT FilterBase::EnumPins(IEnumPins** enum_pins) {
-  *enum_pins = new PinEnumerator(this);
-  (*enum_pins)->AddRef();
+  auto pin_enum = base::MakeRefCounted<PinEnumerator>(this);
+  pin_enum->AddRef();
+  *enum_pins = pin_enum.get();
   return S_OK;
 }
 
@@ -142,7 +152,7 @@ HRESULT FilterBase::GetSyncSource(IReferenceClock** clock) {
 
 // Implement from IPersistent.
 HRESULT FilterBase::GetClassID(CLSID* class_id) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Implement IUnknown.

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/metrics_ash.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -34,7 +35,7 @@ void MetricsAsh::GetFullHardwareClass(GetFullHardwareClassCallback callback) {
 }
 
 void MetricsAsh::OnMachineStatisticsLoaded() {
-  const std::optional<base::StringPiece> full_hardware_class =
+  const std::optional<std::string_view> full_hardware_class =
       ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           "hardware_class");
   if (full_hardware_class) {

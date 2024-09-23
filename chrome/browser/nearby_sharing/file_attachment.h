@@ -16,7 +16,7 @@
 // either a file or text.
 class FileAttachment : public Attachment {
  public:
-  using Type = sharing::mojom::FileMetadata::Type;
+  using Type = ::sharing::mojom::FileMetadata::Type;
 
   explicit FileAttachment(const base::FilePath& file_path);
   // Create a FileAttachment for |file_path|, with a separate human-readable

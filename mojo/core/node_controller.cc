@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "mojo/core/node_controller.h"
 
 #include <limits>
@@ -32,26 +37,15 @@
 #include <windows.h>
 #endif
 
-#if !BUILDFLAG(IS_NACL)
-#include "crypto/random.h"
-#endif
-
 namespace mojo {
 namespace core {
 
 namespace {
 
-#if BUILDFLAG(IS_NACL)
 template <typename T>
 void GenerateRandomName(T* out) {
-  base::RandBytes(out, sizeof(T));
+  base::RandBytes(base::byte_span_from_ref(*out));
 }
-#else
-template <typename T>
-void GenerateRandomName(T* out) {
-  crypto::RandBytes(out, sizeof(T));
-}
-#endif
 
 ports::NodeName GetRandomNodeName() {
   ports::NodeName name;
@@ -1176,7 +1170,7 @@ void NodeController::OnRequestPortMerge(
   {
     base::AutoLock lock(reserved_ports_lock_);
     auto it = reserved_ports_.find(from_node);
-    // TODO(https://crbug.com/822034): We should send a notification back to the
+    // TODO(crbug.com/40567118): We should send a notification back to the
     // requestor so they can clean up their dangling port in this failure case.
     // This requires changes to the internal protocol, which can't be made yet.
     // Until this is done, pipes from |MojoExtractMessagePipeFromInvitation()|

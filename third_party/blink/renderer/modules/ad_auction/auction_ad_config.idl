@@ -30,6 +30,10 @@ dictionary AuctionReportBuyerDebugModeConfig {
   bigint? debugKey;
 };
 
+dictionary AuctionRealTimeReportingConfig {
+  required DOMString type;
+};
+
 dictionary AuctionAdConfig {
   required USVString seller;
 
@@ -45,6 +49,8 @@ dictionary AuctionAdConfig {
   [ImplementedAs=trustedScoringSignalsUrlDeprecated]
   USVString trustedScoringSignalsUrl;
   long maxTrustedScoringSignalsURLLength;
+  [RuntimeEnabled=FledgeTrustedSignalsKVv2Support]
+  USVString trustedScoringSignalsCoordinator;
   sequence<USVString> interestGroupBuyers;
   Promise<any> auctionSignals;
   Promise<any> sellerSignals;
@@ -53,6 +59,9 @@ dictionary AuctionAdConfig {
   [RuntimeEnabled=FledgeDirectFromSellerSignalsHeaderAdSlot]
   Promise<DOMString> directFromSellerSignalsHeaderAdSlot;
 
+  [RuntimeEnabled=FledgeDeprecatedRenderURLReplacements]
+  Promise<record<USVString, USVString>> deprecatedRenderURLReplacements;
+
   unsigned long long sellerTimeout;
   unsigned short sellerExperimentGroupId;
 
@@ -60,12 +69,18 @@ dictionary AuctionAdConfig {
   Promise<record<USVString, unsigned long long>> perBuyerTimeouts;
   Promise<record<USVString, unsigned long long>> perBuyerCumulativeTimeouts;
 
+  [RuntimeEnabled=FledgeReportingTimeout]
+  unsigned long long reportingTimeout;
+
   USVString sellerCurrency;
   Promise<record<USVString, USVString>> perBuyerCurrencies;
 
   record<USVString, unsigned short> perBuyerGroupLimits;
   record<USVString, unsigned short> perBuyerExperimentGroupIds;
   record<USVString, record<USVString, double>> perBuyerPrioritySignals;
+
+  [RuntimeEnabled=FledgeMultiBid]
+  record<USVString, unsigned short> perBuyerMultiBidLimits;
 
   // `auctionReportBuyerKeys`, `auctionReportBuyers`, and
   // `requiredSellerCapabilities` are described in:
@@ -77,16 +92,18 @@ dictionary AuctionAdConfig {
   sequence<DOMString> requiredSellerCapabilities;
 
   AuctionAdInterestGroupSize requestedSize;
-  [RuntimeEnabled=FledgeTrustedBiddingSignalsSlotSize]
   sequence<AuctionAdInterestGroupSize> allSlotsRequestedSizes;
 
-  [RuntimeEnabled=FledgeNegativeTargeting]
   Promise<undefined> additionalBids;
 
-  [RuntimeEnabled=FledgeNegativeTargeting]
   DOMString auctionNonce;
 
   ProtectedAudiencePrivateAggregationConfig privateAggregationConfig;
+
+  [RuntimeEnabled=FledgeRealTimeReporting]
+  AuctionRealTimeReportingConfig sellerRealTimeReportingConfig;
+  [RuntimeEnabled=FledgeRealTimeReporting]
+  record<USVString, AuctionRealTimeReportingConfig> perBuyerRealTimeReportingConfig;
 
   sequence<AuctionAdConfig> componentAuctions;
   AbortSignal? signal;

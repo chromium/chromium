@@ -78,7 +78,7 @@ void CreateTestApp(const base::FilePath& test_dir) {
 
   ASSERT_TRUE([launchd_plist
       writeToURL:base::apple::FilePathToNSURL(test_app_info_plist_path)
-      atomically:YES]);
+           error:nil]);
 }
 
 void CreateTestSuiteTestDir(const base::FilePath& test_dir) {

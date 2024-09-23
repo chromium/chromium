@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -27,11 +26,12 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/update_client/activity_data_service.h"
 #include "components/update_client/persisted_data.h"
+#include "components/update_client/update_client_errors.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
-#include "base/strings/sys_string_conversions.h"
+#include "base/win/registry.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #endif
@@ -50,6 +50,7 @@ constexpr char kAPKey[] = "ap_key";
 
 constexpr char kHadApps[] = "had_apps";
 constexpr char kUsageStatsEnabledKey[] = "usage_stats_enabled";
+constexpr char kEulaRequired[] = "eula_required";
 
 constexpr char kLastChecked[] = "last_checked";
 constexpr char kLastStarted[] = "last_started";
@@ -92,8 +93,8 @@ void PersistedData::SetProductVersion(const std::string& id,
   // creating the ClientState key, which is read to sense for application
   // uninstallation.
   SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
-                 GetAppClientStateKey(base::SysUTF8ToWide(id)), L"pv",
-                 base::SysUTF8ToWide(pv.GetString()));
+                 GetAppClientStateKey(base::UTF8ToWide(id)), kRegValuePV,
+                 base::UTF8ToWide(pv.GetString()));
 #endif
 }
 
@@ -157,14 +158,59 @@ void PersistedData::SetExistenceCheckerPath(const std::string& id,
   SetString(id, kECP, ecp.AsUTF8Unsafe());
 }
 
-std::string PersistedData::GetBrandCode(const std::string& id) const {
+std::string PersistedData::GetBrandCode(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetString(id, kBC);
+
+  const std::string bc = GetString(id, kBC);
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, if there is a brand code in the registry
+  // ClientState, that brand code is considered authoritative, and overrides any
+  // brand code that is already in `prefs`.
+  std::wstring registry_bc;
+  if (base::win::RegKey(UpdaterScopeToHKeyRoot(scope_),
+                        GetAppClientStateKey(base::UTF8ToWide(id)).c_str(),
+                        Wow6432(KEY_QUERY_VALUE))
+          .ReadValue(kRegValueBrandCode, &registry_bc) == ERROR_SUCCESS) {
+    const std::string registry_brand_code = base::WideToUTF8(registry_bc);
+    if (!registry_brand_code.empty() && registry_brand_code != bc) {
+      SetString(id, kBC, registry_brand_code);
+      return registry_brand_code;
+    }
+  }
+#endif
+
+  if (bc.empty()) {
+    return {};
+  }
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, record the brand code in ClientState, since
+  // some applications read it from there.
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
+                 GetAppClientStateKey(base::UTF8ToWide(id)), kRegValueBrandCode,
+                 base::UTF8ToWide(bc));
+#endif
+  return bc;
 }
 
 void PersistedData::SetBrandCode(const std::string& id, const std::string& bc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If there is already an existing brand code, do not overwrite it.
+  if (!GetBrandCode(id).empty()) {
+    return;
+  }
+
   SetString(id, kBC, bc);
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, record the brand code in ClientState, since
+  // some applications read it from there.
+  SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
+                 GetAppClientStateKey(base::UTF8ToWide(id)), kRegValueBrandCode,
+                 base::UTF8ToWide(bc));
+#endif
 }
 
 base::FilePath PersistedData::GetBrandPath(const std::string& id) const {
@@ -209,8 +255,8 @@ void PersistedData::SetAP(const std::string& id, const std::string& ap) {
   // registry is correct. Clients should transition to requesting the
   // registration info for their application via RPC.
   SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
-                 GetAppClientStateKey(base::SysUTF8ToWide(id)), L"ap",
-                 base::SysUTF8ToWide(ap));
+                 GetAppClientStateKey(base::UTF8ToWide(id)), kRegValueAP,
+                 base::UTF8ToWide(ap));
 #endif
 }
 
@@ -279,8 +325,8 @@ void PersistedData::SetCohort(const std::string& id,
   // For backwards compatibility, we record the Cohort in ClientState as well.
   // (Some applications read it from there.)
   SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
-                 GetAppCohortKey(base::SysUTF8ToWide(id)), L"",
-                 base::SysUTF8ToWide(cohort));
+                 GetAppCohortKey(base::UTF8ToWide(id)), L"",
+                 base::UTF8ToWide(cohort));
 #endif
 }
 
@@ -298,8 +344,8 @@ void PersistedData::SetCohortName(const std::string& id,
   // For backwards compatibility, we record the Cohort in ClientState as well.
   // (Some applications read it from there.)
   SetRegistryKey(UpdaterScopeToHKeyRoot(scope_),
-                 GetAppCohortKey(base::SysUTF8ToWide(id)), kRegValueCohortName,
-                 base::SysUTF8ToWide(cohort_name));
+                 GetAppCohortKey(base::UTF8ToWide(id)), kRegValueCohortName,
+                 base::UTF8ToWide(cohort_name));
 #endif
 }
 
@@ -331,6 +377,11 @@ int PersistedData::GetInstallDate(const std::string& id) const {
   return delegate_->GetInstallDate(id);
 }
 
+void PersistedData::SetInstallDate(const std::string& id, int install_date) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->SetInstallDate(id, install_date);
+}
+
 void PersistedData::GetActiveBits(
     const std::vector<std::string>& ids,
     base::OnceCallback<void(const std::set<std::string>&)> callback) const {
@@ -343,15 +394,21 @@ base::Time PersistedData::GetThrottleUpdatesUntil() const {
   return delegate_->GetThrottleUpdatesUntil();
 }
 
+void PersistedData::SetLastUpdateCheckError(
+    const update_client::CategorizedError& error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_->SetLastUpdateCheckError(error);
+}
+
 void PersistedData::SetThrottleUpdatesUntil(const base::Time& time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_->SetThrottleUpdatesUntil(time);
 }
 
 void PersistedData::RegisterApp(const RegistrationRequest& rq) {
-  VLOG(2) << __func__ << ": Registering " << rq.app_id << " at version "
-          << rq.version;
+  VLOG(2) << __func__ << ": Registering " << rq.app_id;
   if (rq.version.IsValid()) {
+    VLOG(2) << __func__ << ": app version " << rq.version;
     SetProductVersion(rq.app_id, rq.version);
   }
   if (!rq.version_path.empty()) {
@@ -388,6 +445,9 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   } else if (GetDateLastRollCall(rq.app_id) == update_client::kDateUnknown) {
     SetDateLastRollCall(rq.app_id, update_client::kDateFirstTime);
   }
+  if (rq.install_date) {
+    SetInstallDate(rq.app_id, *rq.install_date);
+  }
   if (!rq.cohort.empty()) {
     SetCohort(rq.app_id, rq.cohort);
   }
@@ -409,7 +469,7 @@ bool PersistedData::RemoveApp(const std::string& id) {
                               update_client::kPersistedDataPreference);
   base::Value::Dict* apps = update->FindDict("apps");
 
-  return apps ? apps->Remove(id) : false;
+  return apps ? apps->Remove(base::ToLowerASCII(id)) : false;
 }
 
 std::vector<std::string> PersistedData::GetAppIds() const {
@@ -538,6 +598,23 @@ void PersistedData::SetUsageStatsEnabled(bool usage_stats_enabled) {
   }
 }
 
+bool PersistedData::GetEulaRequired() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_ && pref_service_->GetBoolean(kEulaRequired);
+}
+
+void PersistedData::SetEulaRequired(bool eula_required) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pref_service_) {
+    pref_service_->SetBoolean(kEulaRequired, eula_required);
+  }
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, `eulaaccepted` is recorded in the registry,
+  // since some applications read it from there.
+  SetEulaAccepted(scope_, !eula_required);
+#endif
+}
+
 base::Time PersistedData::GetLastChecked() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pref_service_->GetTime(kLastChecked);
@@ -610,6 +687,7 @@ void PersistedData::SetLastOSVersion() {
 void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry) {
   registry->RegisterBooleanPref(kHadApps, false);
   registry->RegisterBooleanPref(kUsageStatsEnabledKey, false);
+  registry->RegisterBooleanPref(kEulaRequired, false);
   registry->RegisterTimePref(kLastChecked, {});
   registry->RegisterTimePref(kLastStarted, {});
   registry->RegisterStringPref(kLastOSVersion, {});

@@ -28,7 +28,7 @@ class SingleThreadTaskRunner;
 namespace internal {
 
 class DelayedTaskManager;
-class WorkerThreadWaitableEvent;
+class WorkerThread;
 class TaskTracker;
 
 namespace {
@@ -117,16 +117,15 @@ class BASE_EXPORT PooledSingleThreadTaskRunnerManager final {
       SingleThreadTaskRunnerThreadMode thread_mode);
 
   template <typename DelegateType>
-  WorkerThreadWaitableEvent* CreateAndRegisterWorkerThread(
+  WorkerThread* CreateAndRegisterWorkerThread(
       const std::string& name,
       SingleThreadTaskRunnerThreadMode thread_mode,
       ThreadType thread_type_hint) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   template <typename DelegateType>
-  WorkerThreadWaitableEvent*& GetSharedWorkerThreadForTraits(
-      const TaskTraits& traits);
+  WorkerThread*& GetSharedWorkerThreadForTraits(const TaskTraits& traits);
 
-  void UnregisterWorkerThread(WorkerThreadWaitableEvent* worker);
+  void UnregisterWorkerThread(WorkerThread* worker);
 
   void ReleaseSharedWorkerThreads();
 
@@ -140,8 +139,7 @@ class BASE_EXPORT PooledSingleThreadTaskRunnerManager final {
   raw_ptr<WorkerThreadObserver> worker_thread_observer_ = nullptr;
 
   CheckedLock lock_;
-  std::vector<scoped_refptr<WorkerThreadWaitableEvent>> workers_
-      GUARDED_BY(lock_);
+  std::vector<scoped_refptr<WorkerThread>> workers_ GUARDED_BY(lock_);
   int next_worker_id_ GUARDED_BY(lock_) = 0;
 
   // Workers for SingleThreadTaskRunnerThreadMode::SHARED tasks. It is
@@ -149,11 +147,11 @@ class BASE_EXPORT PooledSingleThreadTaskRunnerManager final {
   // CONTINUE_ON_SHUTDOWN to avoid being in a situation where a
   // CONTINUE_ON_SHUTDOWN task effectively blocks shutdown by preventing a
   // BLOCK_SHUTDOWN task to be scheduled. https://crbug.com/829786
-  WorkerThreadWaitableEvent*
-      shared_worker_threads_[ENVIRONMENT_COUNT]
-                            [CONTINUE_ON_SHUTDOWN_COUNT] GUARDED_BY(lock_) = {};
+  WorkerThread* shared_worker_threads_[ENVIRONMENT_COUNT]
+                                      [CONTINUE_ON_SHUTDOWN_COUNT] GUARDED_BY(
+                                          lock_) = {};
 #if BUILDFLAG(IS_WIN)
-  WorkerThreadWaitableEvent* shared_com_worker_threads_
+  WorkerThread* shared_com_worker_threads_
       [ENVIRONMENT_COUNT][CONTINUE_ON_SHUTDOWN_COUNT] GUARDED_BY(lock_) = {};
 #endif  // BUILDFLAG(IS_WIN)
 

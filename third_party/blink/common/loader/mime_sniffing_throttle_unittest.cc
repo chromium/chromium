@@ -5,7 +5,9 @@
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
 
 #include <memory>
+#include <string_view>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -41,9 +43,11 @@ class MojoDataPipeSender {
   }
 
   void OnWritable(MojoResult) {
-    uint32_t sending_bytes = data_.size() - sent_bytes_;
-    MojoResult result = handle_->WriteData(
-        data_.c_str() + sent_bytes_, &sending_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+    base::span<const uint8_t> bytes = base::as_byte_span(data_);
+    bytes = bytes.subspan(sent_bytes_);
+    size_t actually_written_bytes = 0;
+    MojoResult result = handle_->WriteData(bytes, MOJO_WRITE_DATA_FLAG_NONE,
+                                           actually_written_bytes);
     switch (result) {
       case MOJO_RESULT_OK:
         break;
@@ -55,10 +59,10 @@ class MojoDataPipeSender {
         // Just wait until OnWritable() is called by the watcher.
         return;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return;
     }
-    sent_bytes_ += sending_bytes;
+    sent_bytes_ += actually_written_bytes;
     if (data_.size() == sent_bytes_)
       std::move(done_callback_).Run();
   }
@@ -74,14 +78,14 @@ class MojoDataPipeSender {
   mojo::SimpleWatcher watcher_;
   base::OnceClosure done_callback_;
   std::string data_;
-  uint32_t sent_bytes_ = 0;
+  size_t sent_bytes_ = 0;
 };
 
 class MockDelegate : public blink::URLLoaderThrottle::Delegate {
  public:
   // Implements blink::URLLoaderThrottle::Delegate.
   void CancelWithError(int error_code,
-                       base::StringPiece custom_reason) override {
+                       std::string_view custom_reason) override {
     NOTIMPLEMENTED();
   }
   void Resume() override {
@@ -97,8 +101,6 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
     updated_response_head_ = std::move(new_response_head);
     body_ = std::move(body);
   }
-  void PauseReadingBodyFromNet() override { NOTIMPLEMENTED(); }
-  void ResumeReadingBodyFromNet() override { NOTIMPLEMENTED(); }
   void InterceptResponse(
       mojo::PendingRemote<network::mojom::URLLoader> new_loader,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>
@@ -145,10 +147,10 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
     source_body_handle_.reset();
   }
 
-  uint32_t ReadResponseBody(uint32_t size) {
+  uint32_t ReadResponseBody(size_t size) {
     std::vector<uint8_t> buffer(size);
     MojoResult result = destination_loader_client_.response_body().ReadData(
-        buffer.data(), &size, MOJO_READ_DATA_FLAG_NONE);
+        MOJO_READ_DATA_FLAG_NONE, buffer, size);
     switch (result) {
       case MOJO_RESULT_OK:
         return size;
@@ -157,7 +159,7 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
       case MOJO_RESULT_SHOULD_WAIT:
         return 0;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     return 0;
   }

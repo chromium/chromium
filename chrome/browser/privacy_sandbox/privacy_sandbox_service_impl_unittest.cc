@@ -4,7 +4,9 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_impl.h"
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -12,7 +14,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/to_vector.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -23,6 +24,8 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -32,12 +35,14 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/privacy_sandbox/mock_privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
@@ -73,6 +78,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/login/login_state/scoped_test_public_session_login_state.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -84,12 +90,19 @@
 #endif
 
 namespace {
-using browsing_topics::Topic;
-using privacy_sandbox::CanonicalTopic;
-using testing::ElementsAre;
-using PromptAction = PrivacySandboxService::PromptAction;
-using PromptSuppressedReason = PrivacySandboxService::PromptSuppressedReason;
-using PromptType = PrivacySandboxService::PromptType;
+using ::browsing_topics::Topic;
+using ::privacy_sandbox::CanonicalTopic;
+using ::testing::ElementsAre;
+using PromptAction = ::PrivacySandboxService::PromptAction;
+using PromptSuppressedReason = ::PrivacySandboxService::PromptSuppressedReason;
+using PromptType = ::PrivacySandboxService::PromptType;
+using SurfaceType = ::PrivacySandboxService::SurfaceType;
+
+#if BUILDFLAG(IS_ANDROID)
+using ActivityType = PrivacySandboxService::PrivacySandboxStorageActivityType;
+using UserSegment =
+    PrivacySandboxService::PrivacySandboxStorageUserSegmentByRecentActivity;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using enum privacy_sandbox_test_util::StateKey;
 using enum privacy_sandbox_test_util::InputKey;
@@ -144,11 +157,13 @@ class TestPrivacySandboxService
   void ForceChromeBuildForTests(bool force_chrome_build) const override {
     service_->ForceChromeBuildForTests(force_chrome_build);
   }
-  int GetRequiredPromptType() const override {
-    return static_cast<int>(service_->GetRequiredPromptType());
+  int GetRequiredPromptType(int surface_type) const override {
+    return static_cast<int>(service_->GetRequiredPromptType(
+        static_cast<SurfaceType>(surface_type)));
   }
-  void PromptActionOccurred(int action) const override {
-    service_->PromptActionOccurred(static_cast<PromptAction>(action));
+  void PromptActionOccurred(int action, int surface_type) const override {
+    service_->PromptActionOccurred(static_cast<PromptAction>(action),
+                                   static_cast<SurfaceType>(surface_type));
   }
 
  private:
@@ -165,7 +180,7 @@ class TestInterestGroupManager : public content::InterestGroupManager {
   // content::InterestGroupManager:
   void GetAllInterestGroupJoiningOrigins(
       base::OnceCallback<void(std::vector<url::Origin>)> callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void GetAllInterestGroupDataKeys(
       base::OnceCallback<void(std::vector<InterestGroupDataKey>)> callback)
@@ -174,7 +189,7 @@ class TestInterestGroupManager : public content::InterestGroupManager {
   }
   void RemoveInterestGroupsByDataKey(InterestGroupDataKey data_key,
                                      base::OnceClosure callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:
@@ -277,7 +292,7 @@ std::vector<int> GetTopicsSettingsStringIdentifiers(bool did_consent,
             IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
   }
 
-  NOTREACHED() << "Invalid topics settings consent state";
+  NOTREACHED_IN_MIGRATION() << "Invalid topics settings consent state";
   return {};
 }
 
@@ -294,6 +309,16 @@ std::vector<int> GetTopicsConfirmationStringIdentifiers() {
           IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_LINK};
 }
 
+struct NoticeTestingParameters {
+  // Inputs
+  SurfaceType surface_type;
+  base::test::FeatureRefAndParams feature_flag;
+  PromptAction shown_type;
+  PromptAction prompt_action;
+  // Expected Output
+  // Represents the correct notice preference name that should be logged
+  std::string_view notice_name;
+};
 }  // namespace
 
 class PrivacySandboxServiceTest : public testing::Test {
@@ -302,7 +327,10 @@ class PrivacySandboxServiceTest : public testing::Test {
       : browser_task_environment_(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         scoped_attestations_(
-            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {}
+            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {
+    notice_storage_ =
+        std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>();
+  }
 
   void SetUp() override {
     InitializeFeaturesBeforeStart();
@@ -341,9 +369,9 @@ class PrivacySandboxServiceTest : public testing::Test {
             profile());
 #endif
     privacy_sandbox_service_ = std::make_unique<PrivacySandboxServiceImpl>(
-        privacy_sandbox_settings(), cookie_settings(), profile()->GetPrefs(),
-        test_interest_group_manager(), GetProfileType(),
-        browsing_data_remover(), host_content_settings_map(),
+        privacy_sandbox_settings(), tracking_protection_settings(),
+        cookie_settings(), profile()->GetPrefs(), test_interest_group_manager(),
+        GetProfileType(), browsing_data_remover(), host_content_settings_map(),
 #if !BUILDFLAG(IS_ANDROID)
         mock_sentiment_service(),
 #endif
@@ -363,10 +391,10 @@ class PrivacySandboxServiceTest : public testing::Test {
     auto* managed_provider_raw = managed_provider.get();
     content_settings::TestUtils::OverrideProvider(
         host_content_settings_map(), std::move(user_provider),
-        HostContentSettingsMap::PREF_PROVIDER);
+        content_settings::ProviderType::kPrefProvider);
     content_settings::TestUtils::OverrideProvider(
         host_content_settings_map(), std::move(managed_provider),
-        HostContentSettingsMap::POLICY_PROVIDER);
+        content_settings::ProviderType::kPolicyProvider);
     auto service_wrapper = TestPrivacySandboxService(privacy_sandbox_service());
 
     privacy_sandbox_test_util::RunTestCase(
@@ -425,6 +453,10 @@ class PrivacySandboxServiceTest : public testing::Test {
     return mock_sentiment_service_.get();
   }
 #endif
+
+ protected:
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<privacy_sandbox::PrivacySandboxNoticeStorage> notice_storage_;
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
@@ -502,7 +534,7 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
   for (const auto& [origins, expected] : test_cases) {
     base::HistogramTester histogram_tester;
     test_interest_group_manager()->SetInterestGroupDataKeys(
-        base::test::ToVector(origins, [](const auto& origin) {
+        base::ToVector(origins, [](const auto& origin) {
           return content::InterestGroupManager::InterestGroupDataKey{
               url::Origin::Create(GURL("https://embedded.com")), origin};
         }));
@@ -558,7 +590,7 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeBlockedEtldPlusOne) {
   // Sites should be returned in lexographical order.
   auto returned_sites =
       privacy_sandbox_service()->GetBlockedFledgeJoiningTopFramesForDisplay();
-  ASSERT_EQ(3u, returned_sites.size());
+  ASSERT_EQ(returned_sites.size(), 3u);
   EXPECT_EQ(returned_sites[0], sites[1]);
   EXPECT_EQ(returned_sites[1], sites[0]);
   EXPECT_EQ(returned_sites[2], sites[2]);
@@ -568,9 +600,19 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeBlockedEtldPlusOne) {
   privacy_sandbox_settings()->SetFledgeJoiningAllowed("google.com", true);
   returned_sites =
       privacy_sandbox_service()->GetBlockedFledgeJoiningTopFramesForDisplay();
-  ASSERT_EQ(2u, returned_sites.size());
+  ASSERT_EQ(returned_sites.size(), 2u);
   EXPECT_EQ(returned_sites[0], sites[1]);
   EXPECT_EQ(returned_sites[1], sites[2]);
+}
+
+TEST_F(PrivacySandboxServiceTest, HistogramsAreEmptyOnStartup) {
+  const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
+  for (const auto& notice_name : privacy_sandbox::kPrivacySandboxNoticeNames) {
+    EXPECT_THAT(
+        histograms,
+        testing::Not(testing::AnyOf(base::StrCat(
+            {"PrivacySandbox.Notice.NoticeStartupState.", notice_name}))));
+  }
 }
 
 TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
@@ -578,136 +620,168 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
 
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings4, {{"notice-required", "true"}});
-  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kNoticeShown);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Notice.Shown"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeOpenSettings);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Notice.OpenedSettings"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeAcknowledge);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Notice.Acknowledged"));
-
-  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kNoticeDismiss);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Notice.Dismissed"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeClosedNoInteraction);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Notice.ClosedNoInteraction"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeLearnMore);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Notice.LearnMore"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeMoreInfoOpened);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Notice.LearnMoreExpanded"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeMoreInfoClosed);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Notice.LearnMoreClosed"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentMoreButtonClicked);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Consent.MoreButtonClicked"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kNoticeMoreButtonClicked);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Notice.MoreButtonClicked"));
-
-  feature_list()->Reset();
-  feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{"consent-required", "true"}});
-
-  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Consent.Shown"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentAccepted);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Consent.Accepted"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentDeclined);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Consent.Declined"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentMoreInfoOpened);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Consent.LearnMoreExpanded"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentMoreInfoClosed);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Consent.LearnMoreClosed"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kConsentClosedNoDecision);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.Consent.ClosedNoInteraction"));
-
-  feature_list()->Reset();
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings4,
-      {{"consent-required", "true"}, {"restricted-notice", "true"}});
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kRestrictedNoticeOpenSettings);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.RestrictedNotice.OpenedSettings"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kRestrictedNoticeAcknowledge);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.RestrictedNotice.Acknowledged"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kRestrictedNoticeShown);
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Settings.PrivacySandbox.RestrictedNotice.Shown"));
-
-  privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kRestrictedNoticeClosedNoInteraction);
+      {{privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"}});
+  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kNoticeShown,
+                                                  SurfaceType::kDesktop);
   EXPECT_EQ(
-      1, user_action_tester.GetActionCount(
-             "Settings.PrivacySandbox.RestrictedNotice.ClosedNoInteraction"));
+      user_action_tester.GetActionCount("Settings.PrivacySandbox.Notice.Shown"),
+      1);
 
   privacy_sandbox_service()->PromptActionOccurred(
-      PromptAction::kRestrictedNoticeMoreButtonClicked);
-  EXPECT_EQ(1,
-            user_action_tester.GetActionCount(
-                "Settings.PrivacySandbox.RestrictedNotice.MoreButtonClicked"));
+      PromptAction::kNoticeOpenSettings, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Notice.OpenedSettings"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kNoticeAcknowledge, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Notice.Acknowledged"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kNoticeDismiss,
+                                                  SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Notice.Dismissed"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kNoticeClosedNoInteraction, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Notice.ClosedNoInteraction"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kNoticeLearnMore, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Notice.LearnMore"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kNoticeMoreInfoOpened, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Notice.LearnMoreExpanded"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kNoticeMoreInfoClosed, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Notice.LearnMoreClosed"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kConsentMoreButtonClicked, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Consent.MoreButtonClicked"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kNoticeMoreButtonClicked, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Notice.MoreButtonClicked"),
+            1);
+
+  feature_list()->Reset();
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"}});
+
+  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown,
+                                                  SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Consent.Shown"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kConsentAccepted, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Consent.Accepted"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kConsentDeclined, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Consent.Declined"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kConsentMoreInfoOpened, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Consent.LearnMoreExpanded"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kPrivacyPolicyLinkClicked, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Consent.PrivacyPolicyLinkClicked"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kConsentMoreInfoClosed, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Consent.LearnMoreClosed"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kConsentClosedNoDecision, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.Consent.ClosedNoInteraction"),
+            1);
+
+  feature_list()->Reset();
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"},
+       {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+        "true"}});
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kRestrictedNoticeOpenSettings, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.RestrictedNotice.OpenedSettings"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kRestrictedNoticeAcknowledge, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.RestrictedNotice.Acknowledged"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kRestrictedNoticeShown, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.RestrictedNotice.Shown"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kRestrictedNoticeClosedNoInteraction,
+      SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.RestrictedNotice.ClosedNoInteraction"),
+            1);
+
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kRestrictedNoticeMoreButtonClicked, SurfaceType::kDesktop);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Settings.PrivacySandbox.RestrictedNotice.MoreButtonClicked"),
+            1);
 }
 
 TEST_F(PrivacySandboxServiceTest, FledgeBlockDeletesData) {
   // Allowing FLEDGE joining should not start a removal task.
   privacy_sandbox_service()->SetFledgeJoiningAllowed("example.com", true);
-  EXPECT_EQ(0xffffffffffffffffull,  // -1, indicates no last removal task.
-            browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
+            0xffffffffffffffffull);  // -1, indicates no last removal task.
 
   // When FLEDGE joining is blocked, a removal task should be started.
   privacy_sandbox_service()->SetFledgeJoiningAllowed("example.com", false);
-  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS,
-            browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
-  EXPECT_EQ(base::Time::Min(),
-            browsing_data_remover()->GetLastUsedBeginTimeForTesting());
-  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-            browsing_data_remover()->GetLastUsedOriginTypeMaskForTesting());
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
+            content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS);
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedBeginTimeForTesting(),
+            base::Time::Min());
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedOriginTypeMaskForTesting(),
+            content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
 }
 
 TEST_F(PrivacySandboxServiceTest, DisablingTopicsPrefClearsData) {
@@ -717,14 +791,14 @@ TEST_F(PrivacySandboxServiceTest, DisablingTopicsPrefClearsData) {
   // Enabling should not delete data.
   prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
   constexpr uint64_t kNoRemovalTask = -1ull;
-  EXPECT_EQ(kNoRemovalTask,
-            browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
+            kNoRemovalTask);
 
   // Disabling should start delete topics data.
   EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(1);
   prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
-  EXPECT_EQ(kNoRemovalTask,
-            browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
+            kNoRemovalTask);
 }
 
 TEST_F(PrivacySandboxServiceTest, DisablingFledgePrefClearsData) {
@@ -734,20 +808,20 @@ TEST_F(PrivacySandboxServiceTest, DisablingFledgePrefClearsData) {
   // Enabling should not cause a removal task.
   prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
   constexpr uint64_t kNoRemovalTask = -1ull;
-  EXPECT_EQ(kNoRemovalTask,
-            browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
+            kNoRemovalTask);
 
   // Disabling should start a task clearing all related information.
   prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, false);
   EXPECT_EQ(
+      browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
       content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS |
           content::BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE |
-          content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS_INTERNAL,
-      browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
-  EXPECT_EQ(base::Time::Min(),
-            browsing_data_remover()->GetLastUsedBeginTimeForTesting());
-  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-            browsing_data_remover()->GetLastUsedOriginTypeMaskForTesting());
+          content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS_INTERNAL);
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedBeginTimeForTesting(),
+            base::Time::Min());
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedOriginTypeMaskForTesting(),
+            content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
 }
 
 TEST_F(PrivacySandboxServiceTest, DisablingAdMeasurementePrefClearsData) {
@@ -757,20 +831,20 @@ TEST_F(PrivacySandboxServiceTest, DisablingAdMeasurementePrefClearsData) {
   // Enabling should not cause a removal task.
   prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
   constexpr uint64_t kNoRemovalTask = -1ull;
-  EXPECT_EQ(kNoRemovalTask,
-            browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
+            kNoRemovalTask);
 
   // Disabling should start a task clearing all related information.
   prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, false);
   EXPECT_EQ(
+      browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
       content::BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING |
           content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE |
-          content::BrowsingDataRemover::DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL,
-      browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
-  EXPECT_EQ(base::Time::Min(),
-            browsing_data_remover()->GetLastUsedBeginTimeForTesting());
-  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-            browsing_data_remover()->GetLastUsedOriginTypeMaskForTesting());
+          content::BrowsingDataRemover::DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL);
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedBeginTimeForTesting(),
+            base::Time::Min());
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedOriginTypeMaskForTesting(),
+            content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
 }
 
 TEST_F(PrivacySandboxServiceTest, GetTopTopics) {
@@ -792,9 +866,9 @@ TEST_F(PrivacySandboxServiceTest, GetTopTopics) {
 
   auto topics = privacy_sandbox_service()->GetCurrentTopTopics();
 
-  ASSERT_EQ(2u, topics.size());
-  EXPECT_EQ(kFirstTopic, topics[0]);
-  EXPECT_EQ(kSecondTopic, topics[1]);
+  ASSERT_EQ(topics.size(), 2u);
+  EXPECT_EQ(topics[0], kFirstTopic);
+  EXPECT_EQ(topics[1], kSecondTopic);
 }
 
 TEST_F(PrivacySandboxServiceTest, GetBlockedTopics) {
@@ -816,9 +890,9 @@ TEST_F(PrivacySandboxServiceTest, GetBlockedTopics) {
 
   auto blocked_topics = privacy_sandbox_service()->GetBlockedTopics();
 
-  ASSERT_EQ(2u, blocked_topics.size());
-  EXPECT_EQ(kFirstTopic, blocked_topics[0]);
-  EXPECT_EQ(kSecondTopic, blocked_topics[1]);
+  ASSERT_EQ(blocked_topics.size(), 2u);
+  EXPECT_EQ(blocked_topics[0], kFirstTopic);
+  EXPECT_EQ(blocked_topics[1], kSecondTopic);
 }
 
 TEST_F(PrivacySandboxServiceTest, GetFirstLevelTopics) {
@@ -836,9 +910,9 @@ TEST_F(PrivacySandboxServiceTest, GetFirstLevelTopics) {
 
   auto first_level_topics = privacy_sandbox_service()->GetFirstLevelTopics();
 
-  ASSERT_EQ(22u, first_level_topics.size());
-  EXPECT_EQ(kFirstTopic, first_level_topics[0]);
-  EXPECT_EQ(kLastTopic, first_level_topics[21]);
+  ASSERT_EQ(first_level_topics.size(), 22u);
+  EXPECT_EQ(first_level_topics[0], kFirstTopic);
+  EXPECT_EQ(first_level_topics[21], kLastTopic);
 }
 
 TEST_F(PrivacySandboxServiceTest, GetChildTopicsCurrentlyAssigned) {
@@ -872,9 +946,9 @@ TEST_F(PrivacySandboxServiceTest, GetChildTopicsCurrentlyAssigned) {
   // Both direct and indirect child should be returned.
   currently_assigned_child_topics =
       privacy_sandbox_service()->GetChildTopicsCurrentlyAssigned(kParentTopic);
-  ASSERT_EQ(2u, currently_assigned_child_topics.size());
-  EXPECT_EQ(kIndirectChildTopic, currently_assigned_child_topics[0]);
-  EXPECT_EQ(kDirectChildTopic, currently_assigned_child_topics[1]);
+  ASSERT_EQ(currently_assigned_child_topics.size(), 2u);
+  EXPECT_EQ(currently_assigned_child_topics[0], kIndirectChildTopic);
+  EXPECT_EQ(currently_assigned_child_topics[1], kDirectChildTopic);
 }
 
 TEST_F(PrivacySandboxServiceTest, SetTopicAllowed) {
@@ -960,6 +1034,24 @@ TEST_F(PrivacySandboxServiceTest, TestFakeTopics) {
     EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic3, topic4));
   }
 }
+using PrivacySandboxServiceDeathTest = PrivacySandboxServiceTest;
+
+TEST_F(PrivacySandboxServiceDeathTest, TPSettingsNullExpectDeath) {
+  ASSERT_DEATH(
+      {
+        PrivacySandboxServiceImpl(
+            privacy_sandbox_settings(),
+            /*tracking_protection_settings=*/nullptr, cookie_settings(),
+            profile()->GetPrefs(), test_interest_group_manager(),
+            GetProfileType(), browsing_data_remover(),
+            host_content_settings_map(),
+#if !BUILDFLAG(IS_ANDROID)
+            mock_sentiment_service(),
+#endif
+            mock_browsing_topics_service(), first_party_sets_policy_service());
+      },
+      "");
+}
 
 TEST_F(PrivacySandboxServiceTest,
        FirstPartySetsNotRelevantMetricAllowedCookies) {
@@ -1035,18 +1127,18 @@ TEST_F(PrivacySandboxServiceTest, SampleFpsData) {
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
-  EXPECT_EQ(u"google.com",
-            privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
-                GURL("https://mail.google.com.au")));
-  EXPECT_EQ(u"google.com",
-            privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
-                GURL("https://youtube.com")));
-  EXPECT_EQ(u"münchen.de",
-            privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
-                GURL("https://muenchen.de")));
-  EXPECT_EQ(std::nullopt,
-            privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
-                GURL("https://example.com")));
+  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+                GURL("https://mail.google.com.au")),
+            u"google.com");
+  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+                GURL("https://youtube.com")),
+            u"google.com");
+  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+                GURL("https://muenchen.de")),
+            u"münchen.de");
+  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+                GURL("https://example.com")),
+            std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
@@ -1060,9 +1152,14 @@ TEST_F(PrivacySandboxServiceTest,
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
       kFirstPartySetsVersion,
-      {{associate1_site,
-        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                 0)}}},
+      {
+          {primary_site,
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
+                                    std::nullopt)}},
+          {associate1_site,
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                    0)}},
+      },
       {});
 
   // Simulate 3PC are allowed while:
@@ -1097,9 +1194,14 @@ TEST_F(PrivacySandboxServiceTest,
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
       kFirstPartySetsVersion,
-      {{associate1_site,
-        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                 0)}}},
+      {
+          {primary_site,
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
+                                    std::nullopt)}},
+          {associate1_site,
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                    0)}},
+      },
       {});
 
   // Simulate all cookies are blocked while:
@@ -1136,9 +1238,14 @@ TEST_F(PrivacySandboxServiceTest,
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
       kFirstPartySetsVersion,
-      {{associate1_site,
-        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                 0)}}},
+      {
+          {primary_site,
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
+                                    std::nullopt)}},
+          {associate1_site,
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                    0)}},
+      },
       {});
 
   // Simulate FPS UI feature disabled while:
@@ -1175,9 +1282,14 @@ TEST_F(PrivacySandboxServiceTest,
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
       kFirstPartySetsVersion,
-      {{associate1_site,
-        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                 0)}}},
+      {
+          {primary_site,
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
+                                    std::nullopt)}},
+          {associate1_site,
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                    0)}},
+      },
       {});
 
   // Simulate FPS pref disabled while:
@@ -1260,11 +1372,17 @@ TEST_F(PrivacySandboxServiceTest,
   // associatedSites: ["https://associate1.test", "https://associate2.test"] }
   mock_first_party_sets_handler().SetGlobalSets(net::GlobalFirstPartySets(
       kFirstPartySetsVersion,
-      {{associate1_site,
-        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated, 0)}},
-       {associate2_site,
-        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                 1)}}},
+      {
+          {primary_site,
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
+                                    std::nullopt)}},
+          {associate1_site,
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                    0)}},
+          {associate2_site,
+           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                    1)}},
+      },
       {}));
 
   // Simulate that associate2 is removed from the Global First-Party Sets for
@@ -1384,9 +1502,14 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
 
   mock_first_party_sets_handler().SetGlobalSets(net::GlobalFirstPartySets(
       kFirstPartySetsVersion,
-      {{youtube_site,
-        {net::FirstPartySetEntry(youtube_primary_site,
-                                 net::SiteType::kAssociated, 0)}}},
+      {
+          {youtube_primary_site,
+           {net::FirstPartySetEntry(youtube_primary_site,
+                                    net::SiteType::kPrimary, std::nullopt)}},
+          {youtube_site,
+           {net::FirstPartySetEntry(youtube_primary_site,
+                                    net::SiteType::kAssociated, 0)}},
+      },
       {}));
 
   // Simulate that https://google.de is moved into a new First-Party Set for
@@ -1812,13 +1935,356 @@ TEST_F(PrivacySandboxServiceTest, RecordPrivacySandbox4StartupMetrics_APIs) {
   }
 }
 
+class PrivacySandboxNoticeActionToStorageTests
+    : public PrivacySandboxServiceTest,
+      public testing::WithParamInterface<NoticeTestingParameters> {};
+
+using TopicsConsentTest = PrivacySandboxNoticeActionToStorageTests;
+using NoticeAckTest = PrivacySandboxNoticeActionToStorageTests;
+using NoticeShownTest = PrivacySandboxNoticeActionToStorageTests;
+using NoticeSettingsTest = PrivacySandboxNoticeActionToStorageTests;
+
+TEST_P(TopicsConsentTest, DidConsentOptInUpdateNoticeStorage) {
+  feature_list()->Reset();
+  feature_list()->InitWithFeaturesAndParameters(
+      /*enabled_features=*/{GetParam().feature_flag,
+                            {privacy_sandbox::kPsDualWritePrefsToNoticeStorage,
+                             {}}},
+      /*disabled_features=*/{});
+
+  // Show then OptIn
+  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown,
+                                                  GetParam().surface_type);
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kConsentAccepted, GetParam().surface_type);
+
+  // Pref
+  auto actual =
+      notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
+  EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kOptIn,
+            actual->notice_action_taken);
+
+  // Histogram
+  CreateService();
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.",
+                    GetParam().notice_name}),
+      privacy_sandbox::NoticeStartupState::kFlowCompletedWithOptIn, 1);
+}
+
+TEST_P(TopicsConsentTest, DidConsentOptOutUpdateNoticeStorage) {
+  feature_list()->Reset();
+  feature_list()->InitWithFeaturesAndParameters(
+      /*enabled_features=*/{GetParam().feature_flag,
+                            {privacy_sandbox::kPsDualWritePrefsToNoticeStorage,
+                             {}}},
+      /*disabled_features=*/{});
+
+  // Show then OptOut
+  privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown,
+                                                  GetParam().surface_type);
+  privacy_sandbox_service()->PromptActionOccurred(
+      PromptAction::kConsentDeclined, GetParam().surface_type);
+
+  // Pref
+  auto actual =
+      notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
+  EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kOptOut,
+            actual->notice_action_taken);
+
+  // Histogram
+  CreateService();
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.",
+                    GetParam().notice_name}),
+      privacy_sandbox::NoticeStartupState::kFlowCompletedWithOptOut, 1);
+}
+
+TEST_P(NoticeShownTest, NoticeShownUpdateNoticeStorage) {
+  feature_list()->Reset();
+  feature_list()->InitWithFeaturesAndParameters(
+      /*enabled_features=*/{GetParam().feature_flag,
+                            {privacy_sandbox::kPsDualWritePrefsToNoticeStorage,
+                             {}}},
+      /*disabled_features=*/{});
+
+  privacy_sandbox_service()->PromptActionOccurred(GetParam().shown_type,
+                                                  GetParam().surface_type);
+
+  auto actual =
+      notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
+  EXPECT_TRUE(actual.has_value());
+}
+
+TEST_P(NoticeAckTest, DidNoticeAckUpdateNoticeStorage) {
+  feature_list()->Reset();
+  feature_list()->InitWithFeaturesAndParameters(
+      /*enabled_features=*/{GetParam().feature_flag,
+                            {privacy_sandbox::kPsDualWritePrefsToNoticeStorage,
+                             {}}},
+      /*disabled_features=*/{});
+
+  // Show then ack
+  privacy_sandbox_service()->PromptActionOccurred(GetParam().shown_type,
+                                                  GetParam().surface_type);
+  privacy_sandbox_service()->PromptActionOccurred(GetParam().prompt_action,
+                                                  GetParam().surface_type);
+
+  // Pref
+  auto actual =
+      notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
+  EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kAck,
+            actual->notice_action_taken);
+
+  // Histogram
+  CreateService();
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.",
+                    GetParam().notice_name}),
+      privacy_sandbox::NoticeStartupState::kFlowCompleted, 1);
+}
+
+TEST_P(NoticeSettingsTest, DidNoticeSettingsUpdateNoticeStorage) {
+  feature_list()->Reset();
+  feature_list()->InitWithFeaturesAndParameters(
+      /*enabled_features=*/{GetParam().feature_flag,
+                            {privacy_sandbox::kPsDualWritePrefsToNoticeStorage,
+                             {}}},
+      /*disabled_features=*/{});
+
+  // Show then open settings
+  privacy_sandbox_service()->PromptActionOccurred(GetParam().shown_type,
+                                                  GetParam().surface_type);
+  privacy_sandbox_service()->PromptActionOccurred(GetParam().prompt_action,
+                                                  GetParam().surface_type);
+
+  // Pref
+  auto actual =
+      notice_storage_->ReadNoticeData(prefs(), GetParam().notice_name);
+  EXPECT_EQ(privacy_sandbox::NoticeActionTaken::kSettings,
+            actual->notice_action_taken);
+
+  // Histogram
+  CreateService();
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.",
+                    GetParam().notice_name}),
+      privacy_sandbox::NoticeStartupState::kFlowCompleted, 1);
+}
+
+base::test::FeatureRefAndParams ConsentFeature() {
+  return {
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"}}};
+}
+
+base::test::FeatureRefAndParams NoticeFeature() {
+  return {
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"}}};
+}
+
+base::test::FeatureRefAndParams RestrictedNoticeFeature() {
+  return {privacy_sandbox::kPrivacySandboxSettings4,
+          {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+            "true"}}};
+}
+
+// The following tests test variations of all 4 notice storage prefs across 3
+// surface types. For each promptAction that can be taken on the notices, we
+// ensure the pref service and histograms were updated correctly.
+INSTANTIATE_TEST_SUITE_P(
+    NoticeShownTestSuite,
+    NoticeShownTest,
+    testing::ValuesIn<NoticeTestingParameters>(
+        // Topics Consent Shown
+        {{.surface_type = SurfaceType::kDesktop,
+          .feature_flag = ConsentFeature(),
+          .shown_type = PromptAction::kConsentShown,
+          .notice_name = privacy_sandbox::kTopicsConsentModal},
+         {.surface_type = SurfaceType::kBrApp,
+          .feature_flag = ConsentFeature(),
+          .shown_type = PromptAction::kConsentShown,
+          .notice_name = privacy_sandbox::kTopicsConsentModalClankBrApp},
+         {.surface_type = SurfaceType::kAGACCT,
+          .feature_flag = ConsentFeature(),
+          .shown_type = PromptAction::kConsentShown,
+          .notice_name = privacy_sandbox::kTopicsConsentModalClankCCT},
+         // EEA regional API notice Shown
+         {.surface_type = SurfaceType::kDesktop,
+          .feature_flag = ConsentFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .notice_name =
+              privacy_sandbox::kProtectedAudienceMeasurementNoticeModal},
+         {.surface_type = SurfaceType::kBrApp,
+          .feature_flag = ConsentFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .notice_name = privacy_sandbox::
+              kProtectedAudienceMeasurementNoticeModalClankBrApp},
+         {.surface_type = SurfaceType::kAGACCT,
+          .feature_flag = ConsentFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .notice_name = privacy_sandbox::
+              kProtectedAudienceMeasurementNoticeModalClankCCT},
+         // ROW regional API notice Shown
+         {.surface_type = SurfaceType::kDesktop,
+          .feature_flag = NoticeFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModal},
+         {.surface_type = SurfaceType::kBrApp,
+          .feature_flag = NoticeFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModalClankBrApp},
+         {.surface_type = SurfaceType::kAGACCT,
+          .feature_flag = NoticeFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModalClankCCT},
+         // Restricted API notice Shown
+         {.surface_type = SurfaceType::kDesktop,
+          .feature_flag = RestrictedNoticeFeature(),
+          .shown_type = PromptAction::kRestrictedNoticeShown,
+          .notice_name = privacy_sandbox::kMeasurementNoticeModal},
+         {.surface_type = SurfaceType::kBrApp,
+          .feature_flag = RestrictedNoticeFeature(),
+          .shown_type = PromptAction::kRestrictedNoticeShown,
+          .notice_name = privacy_sandbox::kMeasurementNoticeModalClankBrApp},
+         {.surface_type = SurfaceType::kAGACCT,
+          .feature_flag = RestrictedNoticeFeature(),
+          .shown_type = PromptAction::kRestrictedNoticeShown,
+          .notice_name = privacy_sandbox::kMeasurementNoticeModalClankCCT}}));
+
+INSTANTIATE_TEST_SUITE_P(
+    TopicsConsentTestSuite,
+    TopicsConsentTest,
+    testing::ValuesIn<NoticeTestingParameters>(
+        // Actions on consent (OptIn/OptOut)
+        {{.surface_type = SurfaceType::kDesktop,
+          .feature_flag = ConsentFeature(),
+          .notice_name = privacy_sandbox::kTopicsConsentModal},
+         {.surface_type = SurfaceType::kBrApp,
+          .feature_flag = ConsentFeature(),
+          .notice_name = privacy_sandbox::kTopicsConsentModalClankBrApp},
+         {.surface_type = SurfaceType::kAGACCT,
+          .feature_flag = ConsentFeature(),
+          .notice_name = privacy_sandbox::kTopicsConsentModalClankCCT}}));
+
+INSTANTIATE_TEST_SUITE_P(
+    NoticeTestSuite,
+    NoticeAckTest,
+    // Ack on ROW, EEA, Restricted Notices
+    testing::ValuesIn<NoticeTestingParameters>(
+        {{.surface_type = SurfaceType::kDesktop,
+          .feature_flag = ConsentFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .prompt_action = PromptAction::kNoticeAcknowledge,
+          .notice_name =
+              privacy_sandbox::kProtectedAudienceMeasurementNoticeModal},
+         {.surface_type = SurfaceType::kBrApp,
+          .feature_flag = ConsentFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .prompt_action = PromptAction::kNoticeAcknowledge,
+          .notice_name = privacy_sandbox::
+              kProtectedAudienceMeasurementNoticeModalClankBrApp},
+         {.surface_type = SurfaceType::kAGACCT,
+          .feature_flag = ConsentFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .prompt_action = PromptAction::kNoticeAcknowledge,
+          .notice_name = privacy_sandbox::
+              kProtectedAudienceMeasurementNoticeModalClankCCT},
+         {.surface_type = SurfaceType::kDesktop,
+          .feature_flag = NoticeFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .prompt_action = PromptAction::kNoticeAcknowledge,
+          .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModal},
+         {.surface_type = SurfaceType::kBrApp,
+          .feature_flag = NoticeFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .prompt_action = PromptAction::kNoticeAcknowledge,
+          .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModalClankBrApp},
+         {.surface_type = SurfaceType::kAGACCT,
+          .feature_flag = NoticeFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .prompt_action = PromptAction::kNoticeAcknowledge,
+          .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModalClankCCT},
+         {.surface_type = SurfaceType::kDesktop,
+          .feature_flag = RestrictedNoticeFeature(),
+          .shown_type = PromptAction::kRestrictedNoticeShown,
+          .prompt_action = PromptAction::kRestrictedNoticeAcknowledge,
+          .notice_name = privacy_sandbox::kMeasurementNoticeModal},
+         {.surface_type = SurfaceType::kBrApp,
+          .feature_flag = RestrictedNoticeFeature(),
+          .shown_type = PromptAction::kRestrictedNoticeShown,
+          .prompt_action = PromptAction::kRestrictedNoticeAcknowledge,
+          .notice_name = privacy_sandbox::kMeasurementNoticeModalClankBrApp},
+         {.surface_type = SurfaceType::kAGACCT,
+          .feature_flag = RestrictedNoticeFeature(),
+          .shown_type = PromptAction::kRestrictedNoticeShown,
+          .prompt_action = PromptAction::kRestrictedNoticeAcknowledge,
+          .notice_name = privacy_sandbox::kMeasurementNoticeModalClankCCT}}));
+
+INSTANTIATE_TEST_SUITE_P(
+    NoticeTestSuite,
+    NoticeSettingsTest,
+    testing::ValuesIn<NoticeTestingParameters>(
+        // Settings click on ROW, EEA, Restricted Notices
+        {{.surface_type = SurfaceType::kDesktop,
+          .feature_flag = ConsentFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .prompt_action = PromptAction::kNoticeOpenSettings,
+          .notice_name =
+              privacy_sandbox::kProtectedAudienceMeasurementNoticeModal},
+         {.surface_type = SurfaceType::kBrApp,
+          .feature_flag = ConsentFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .prompt_action = PromptAction::kNoticeOpenSettings,
+          .notice_name = privacy_sandbox::
+              kProtectedAudienceMeasurementNoticeModalClankBrApp},
+         {.surface_type = SurfaceType::kAGACCT,
+          .feature_flag = ConsentFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .prompt_action = PromptAction::kNoticeOpenSettings,
+          .notice_name = privacy_sandbox::
+              kProtectedAudienceMeasurementNoticeModalClankCCT},
+         {.surface_type = SurfaceType::kDesktop,
+          .feature_flag = NoticeFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .prompt_action = PromptAction::kNoticeOpenSettings,
+          .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModal},
+         {.surface_type = SurfaceType::kBrApp,
+          .feature_flag = NoticeFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .prompt_action = PromptAction::kNoticeOpenSettings,
+          .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModalClankBrApp},
+         {.surface_type = SurfaceType::kAGACCT,
+          .feature_flag = NoticeFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .prompt_action = PromptAction::kNoticeOpenSettings,
+          .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModalClankCCT},
+         {.surface_type = SurfaceType::kDesktop,
+          .feature_flag = RestrictedNoticeFeature(),
+          .shown_type = PromptAction::kRestrictedNoticeShown,
+          .prompt_action = PromptAction::kRestrictedNoticeOpenSettings,
+          .notice_name = privacy_sandbox::kMeasurementNoticeModal},
+         {.surface_type = SurfaceType::kBrApp,
+          .feature_flag = RestrictedNoticeFeature(),
+          .shown_type = PromptAction::kRestrictedNoticeShown,
+          .prompt_action = PromptAction::kRestrictedNoticeOpenSettings,
+          .notice_name = privacy_sandbox::kMeasurementNoticeModalClankBrApp},
+         {.surface_type = SurfaceType::kAGACCT,
+          .feature_flag = RestrictedNoticeFeature(),
+          .shown_type = PromptAction::kRestrictedNoticeShown,
+          .prompt_action = PromptAction::kRestrictedNoticeOpenSettings,
+          .notice_name = privacy_sandbox::kMeasurementNoticeModalClankCCT}}));
+
 class PrivacySandboxServiceM1RestrictedNoticeTest
     : public PrivacySandboxServiceTest {
  public:
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"notice-required", "true"}, {"restricted-notice", "true"}});
+        {{privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+          "true"}});
   }
 };
 
@@ -1872,45 +2338,47 @@ TEST_F(PrivacySandboxServiceM1DelayCreation,
   EXPECT_TRUE(
       prefs()->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxTopicsConsentGiven));
-  EXPECT_EQ(
-      base::Time::Now(),
-      prefs()->GetTime(prefs::kPrivacySandboxTopicsConsentLastUpdateTime));
-  EXPECT_EQ(privacy_sandbox::TopicsConsentUpdateSource::kConfirmation,
-            static_cast<privacy_sandbox::TopicsConsentUpdateSource>(
+  EXPECT_EQ(prefs()->GetTime(prefs::kPrivacySandboxTopicsConsentLastUpdateTime),
+            base::Time::Now());
+  EXPECT_EQ(static_cast<privacy_sandbox::TopicsConsentUpdateSource>(
                 prefs()->GetInteger(
-                    prefs::kPrivacySandboxTopicsConsentLastUpdateReason)));
-  EXPECT_EQ("foo", prefs()->GetString(
-                       prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate));
+                    prefs::kPrivacySandboxTopicsConsentLastUpdateReason)),
+            privacy_sandbox::TopicsConsentUpdateSource::kConfirmation);
+  EXPECT_EQ(
+      prefs()->GetString(prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate),
+      "foo");
 }
 
 TEST_F(PrivacySandboxServiceM1DelayCreation,
        PromptSuppressReasonClearedWhenRestrictedNoticeEnabled) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{"restricted-notice", "true"}});
+      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+        "true"}});
 
   prefs()->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
                       static_cast<int>(PromptSuppressedReason::kRestricted));
 
   CreateService();
 
-  EXPECT_EQ(static_cast<int>(PromptSuppressedReason::kNone),
-            prefs()->GetValue(prefs::kPrivacySandboxM1PromptSuppressed));
+  EXPECT_EQ(prefs()->GetValue(prefs::kPrivacySandboxM1PromptSuppressed),
+            static_cast<int>(PromptSuppressedReason::kNone));
 }
 
 TEST_F(PrivacySandboxServiceM1DelayCreation,
        PromptSuppressReasonNotClearedWhenRestrictedNoticeDisabled) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{"restricted-notice", "false"}});
+      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+        "false"}});
 
   prefs()->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
                       static_cast<int>(PromptSuppressedReason::kRestricted));
 
   CreateService();
 
-  EXPECT_EQ(static_cast<int>(PromptSuppressedReason::kRestricted),
-            prefs()->GetValue(prefs::kPrivacySandboxM1PromptSuppressed));
+  EXPECT_EQ(prefs()->GetValue(prefs::kPrivacySandboxM1PromptSuppressed),
+            static_cast<int>(PromptSuppressedReason::kRestricted));
 }
 
 class PrivacySandboxServiceM1DelayCreationRestricted
@@ -1948,22 +2416,23 @@ TEST_F(PrivacySandboxServiceM1DelayCreationRestricted,
   EXPECT_FALSE(
       prefs()->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled));
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxTopicsConsentGiven));
-  EXPECT_EQ(
-      base::Time(),
-      prefs()->GetTime(prefs::kPrivacySandboxTopicsConsentLastUpdateTime));
-  EXPECT_EQ(privacy_sandbox::TopicsConsentUpdateSource::kDefaultValue,
-            static_cast<privacy_sandbox::TopicsConsentUpdateSource>(
+  EXPECT_EQ(prefs()->GetTime(prefs::kPrivacySandboxTopicsConsentLastUpdateTime),
+            base::Time());
+  EXPECT_EQ(static_cast<privacy_sandbox::TopicsConsentUpdateSource>(
                 prefs()->GetInteger(
-                    prefs::kPrivacySandboxTopicsConsentLastUpdateReason)));
-  EXPECT_EQ("", prefs()->GetString(
-                    prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate));
+                    prefs::kPrivacySandboxTopicsConsentLastUpdateReason)),
+            privacy_sandbox::TopicsConsentUpdateSource::kDefaultValue);
+  EXPECT_EQ(
+      prefs()->GetString(prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate),
+      "");
 }
 
 TEST_F(PrivacySandboxServiceM1DelayCreationRestricted,
        RestrictedEnabledDoesntClearAdMeasurementPref) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{"restricted-notice", "true"}});
+      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+        "true"}});
 
   prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
   prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
@@ -1982,7 +2451,9 @@ class PrivacySandboxServiceM1PromptTest : public PrivacySandboxServiceTest {
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"consent-required", "true"}, {"notice-required", "false"}});
+        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName,
+          "false"}});
   }
 };
 
@@ -2003,8 +2474,11 @@ TEST_F(PrivacySandboxServiceM1PromptTest, DeviceLocalAccountUser) {
   init_params->session_type = crosapi::mojom::SessionType::kPublicSession;
   chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 #endif
-  EXPECT_EQ(PromptType::kNone,
-            privacy_sandbox_service()->GetRequiredPromptType());
+  // TODO(crbug.com/361794340): Ensure the promptType is correct across
+  // different surfaceTypes.
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop),
+      PromptType::kNone);
 
   // A prompt should be shown for a regular user.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2016,13 +2490,15 @@ TEST_F(PrivacySandboxServiceM1PromptTest, DeviceLocalAccountUser) {
   init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
   chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 #endif
-  EXPECT_EQ(PromptType::kM1Consent,
-            privacy_sandbox_service()->GetRequiredPromptType());
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop),
+      PromptType::kM1Consent);
 
   // No prompt should be shown for a web kiosk account.
   chromeos::SetUpFakeKioskSession();
-  EXPECT_EQ(PromptType::kNone,
-            privacy_sandbox_service()->GetRequiredPromptType());
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetRequiredPromptType(SurfaceType::kDesktop),
+      PromptType::kNone);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -2038,14 +2514,30 @@ TEST_F(PrivacySandboxServiceM1PromptTest, NonChromeBuildPrompt) {
 }
 #endif
 
-TEST_F(PrivacySandboxServiceM1PromptTest, ThirdPartyCookiesBlocked) {
+TEST_F(PrivacySandboxServiceM1PromptTest, ThirdPartyCookiesBlockedPostTP3PC) {
+  // If third party cookies are blocked, set the suppressed reason as
+  // kThirdPartyCookiesBlocked and return kNone.
+  RunTestCase(
+      TestState{{kM1PromptPreviouslySuppressedReason,
+                 static_cast<int>(PromptSuppressedReason::kNone)},
+                {kBlockAll3pcToggleEnabledUserPrefValue, true},
+                {kTrackingProtection3pcdEnabledUserPrefValue, true}},
+      TestInput{{kForceChromeBuild, true}},
+      TestOutput{{kPromptType, static_cast<int>(PromptType::kNone)},
+                 {kM1PromptSuppressedReason,
+                  static_cast<int>(
+                      PromptSuppressedReason::kThirdPartyCookiesBlocked)}});
+}
+
+TEST_F(PrivacySandboxServiceM1PromptTest, ThirdPartyCookiesBlockedPreTP3PC) {
   // If third party cookies are blocked, set the suppressed reason as
   // kThirdPartyCookiesBlocked and return kNone.
   RunTestCase(
       TestState{{kM1PromptPreviouslySuppressedReason,
                  static_cast<int>(PromptSuppressedReason::kNone)},
                 {kCookieControlsModeUserPrefValue,
-                 content_settings::CookieControlsMode::kBlockThirdParty}},
+                 content_settings::CookieControlsMode::kBlockThirdParty},
+                {kTrackingProtection3pcdEnabledUserPrefValue, false}},
       TestInput{{kForceChromeBuild, true}},
       TestOutput{{kPromptType, static_cast<int>(PromptType::kNone)},
                  {kM1PromptSuppressedReason,
@@ -2087,9 +2579,10 @@ TEST_F(PrivacySandboxServiceM1PromptTest, PromptActionsSentimentService) {
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{"consent-required", "true"},
-       {"notice-required", "true"},
-       {"restricted-notice", "true"}});
+      {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"},
+       {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
+       {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+        "true"}});
 
   std::map<PromptAction, TrustSafetySentimentService::FeatureArea>
       expected_feature_areas;
@@ -2118,7 +2611,8 @@ TEST_F(PrivacySandboxServiceM1PromptTest, PromptActionsSentimentService) {
                   InteractedWithPrivacySandbox4(testing::_))
           .Times(0);
     }
-    privacy_sandbox_service()->PromptActionOccurred(prompt_action);
+    privacy_sandbox_service()->PromptActionOccurred(prompt_action,
+                                                    SurfaceType::kDesktop);
     testing::Mock::VerifyAndClearExpectations(mock_sentiment_service());
   }
 }
@@ -2305,7 +2799,10 @@ class PrivacySandboxServiceM1NoticePromptTest
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"consent-required", "false"}, {"notice-required", "true"}});
+        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+          "false"},
+         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName,
+          "true"}});
   }
 };
 
@@ -2476,7 +2973,7 @@ TEST_F(PrivacySandboxServiceTest, DisablePrivacySandboxAdMeasurementPolicy) {
                          {kIsAttributionReportingAllowed, false}});
 }
 
-// TODO(crbug.com/1428506): consider parameterizing other tests for the various
+// TODO(crbug.com/40262246): consider parameterizing other tests for the various
 // feature flags, particularly `kPrivacySandboxSettings4RestrictedNotice`.
 class PrivacySandboxServiceM1RestrictedNoticePromptTest
     : public PrivacySandboxServiceM1PromptTest {
@@ -2492,9 +2989,10 @@ class PrivacySandboxServiceM1RestrictedNoticePromptTest
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"consent-required", "false"},
-         {"notice-required", "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+          "false"},
+         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
           "true"}});
   }
 };
@@ -2640,9 +3138,10 @@ class PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyUnrestricted
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"consent-required", "false"},
-         {"notice-required", "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+          "false"},
+         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
           "true"}});
   }
 };
@@ -2733,9 +3232,10 @@ class PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyRestricted
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"consent-required", "false"},
-         {"notice-required", "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+          "false"},
+         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
           "true"}});
   }
 };
@@ -2811,9 +3311,10 @@ class PrivacySandboxServiceM1RestrictedNoticeShownToGuardianTest
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"consent-required", "false"},
-         {"notice-required", "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+          "false"},
+         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
           "true"}});
   }
 };
@@ -2868,9 +3369,10 @@ class PrivacySandboxServiceM1RestrictedNoticeEnabledNoRestrictionsTest
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"consent-required", "false"},
-         {"notice-required", "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+          "false"},
+         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
           "true"}});
   }
 };
@@ -2889,3 +3391,604 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticeEnabledNoRestrictionsTest,
                  {kM1PromptSuppressedReason,
                   static_cast<int>(PromptSuppressedReason::kNone)}});
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class PrivacySandboxActivityTypeStorageTests
+    : public PrivacySandboxServiceTest {
+ public:
+  PrivacySandboxActivityTypeStorageTests()
+      : local_state_(std::make_unique<ScopedTestingLocalState>(
+            TestingBrowserProcess::GetGlobal())) {}
+
+  void InitializeFeaturesBeforeStart() override {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        privacy_sandbox::kPrivacySandboxActivityTypeStorage,
+        {{"last-n-launches", "5"},
+         {"within-x-days", "2"},
+         {"skip-pre-first-tab", "false"}});
+  }
+
+ protected:
+  base::HistogramTester histogram_tester;
+  ScopedTestingLocalState* local_state() { return local_state_.get(); }
+
+ private:
+  std::unique_ptr<ScopedTestingLocalState> local_state_;
+};
+
+TEST_F(PrivacySandboxActivityTypeStorageTests, VerifyListOverflow) {
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
+            1u);
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kNonAGSACustomTab);
+  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
+            2u);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
+            3u);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
+  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
+            4u);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
+  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
+            5u);
+  //   Since we are already at a size of 5, and last-n-launches is set to 5, the
+  //   next call of another launch will remove the first element in the list
+  //   before adding the newly created one. The size should still be 5.
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kTrustedWebActivity);
+  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
+            5u);
+}
+
+// This test is ensuring that the start of the list is represented as the newest
+// records and the end is the oldest records.
+TEST_F(PrivacySandboxActivityTypeStorageTests, VerifyListOrder) {
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  EXPECT_EQ(*prefs()
+                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[0]
+                 .GetDict()
+                 .Find("activity_type"),
+            static_cast<int>(ActivityType::kAGSACustomTab));
+
+  browser_task_environment()->FastForwardBy(base::Minutes(5));
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kNonAGSACustomTab);
+  EXPECT_EQ(*prefs()
+                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[0]
+                 .GetDict()
+                 .Find("activity_type"),
+            static_cast<int>(ActivityType::kNonAGSACustomTab));
+
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kTrustedWebActivity);
+  EXPECT_EQ(*prefs()
+                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[0]
+                 .GetDict()
+                 .Find("activity_type"),
+            static_cast<int>(ActivityType::kTrustedWebActivity));
+
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
+  EXPECT_EQ(*prefs()
+                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[0]
+                 .GetDict()
+                 .Find("activity_type"),
+            static_cast<int>(ActivityType::kWebapp));
+
+  browser_task_environment()->FastForwardBy(base::Minutes(5));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  EXPECT_EQ(*prefs()
+                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[0]
+                 .GetDict()
+                 .Find("activity_type"),
+            static_cast<int>(ActivityType::kAGSACustomTab));
+  EXPECT_EQ(*prefs()
+                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[1]
+                 .GetDict()
+                 .Find("activity_type"),
+            static_cast<int>(ActivityType::kWebApk));
+  EXPECT_EQ(*prefs()
+                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[2]
+                 .GetDict()
+                 .Find("activity_type"),
+            static_cast<int>(ActivityType::kWebapp));
+  EXPECT_EQ(*prefs()
+                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[3]
+                 .GetDict()
+                 .Find("activity_type"),
+            static_cast<int>(ActivityType::kTabbed));
+  EXPECT_EQ(*prefs()
+                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[4]
+                 .GetDict()
+                 .Find("activity_type"),
+            static_cast<int>(ActivityType::kTrustedWebActivity));
+}
+
+TEST_F(PrivacySandboxActivityTypeStorageTests, VerifyListExpiration) {
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kOther);
+  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
+            1u);
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kNonAGSACustomTab);
+  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
+            2u);
+  // Even though within-x-days is set to 2 days, we still include records that
+  // are inclusive of the time boundary. When we fast forward by 2 days and add
+  // a third record, all three entries are still in the record list.
+  browser_task_environment()->FastForwardBy(base::Days(2));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kPreFirstTab);
+  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
+            3u);
+  // Now by fast forwarding by 1 more day, we have exceeded the within-x-days of
+  // 2 days, so the first two entries should be removed and the size should
+  // be 2.
+  browser_task_environment()->FastForwardBy(base::Days(1));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
+  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
+            2u);
+}
+
+TEST_F(PrivacySandboxActivityTypeStorageTests, VerifyTimeBackwards) {
+  // Initializing the activity type record list with entries that have
+  // timestamps set for future dates (e.g., 5 and 7 days from now).
+  base::Value::List old_records;
+  base::Value::Dict first_record;
+  base::Value::Dict second_record;
+
+  first_record.Set("timestamp",
+                   base::TimeToValue(base::Time::Now() + base::Days(5)));
+  first_record.Set("activity_type",
+                   static_cast<int>(ActivityType::kAGSACustomTab));
+
+  second_record.Set("timestamp",
+                    base::TimeToValue(base::Time::Now() + base::Days(7)));
+  second_record.Set("activity_type", static_cast<int>(ActivityType::kTabbed));
+
+  old_records.Append(std::move(first_record));
+  old_records.Append(std::move(second_record));
+
+  prefs()->SetList(prefs::kPrivacySandboxActivityTypeRecord2,
+                   std::move(old_records));
+
+  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
+            2u);
+
+  // After recording a new activity, any previous records with timestamps in the
+  // future (greater than the current timestamp) are not added to the updated
+  // list.
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kTrustedWebActivity);
+  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
+            1u);
+  EXPECT_EQ(*prefs()
+                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[0]
+                 .GetDict()
+                 .Find("activity_type"),
+            static_cast<int>(ActivityType::kTrustedWebActivity));
+}
+
+class PrivacySandboxActivityTypeStorageMetricsTests
+    : public PrivacySandboxServiceTest {
+ public:
+  PrivacySandboxActivityTypeStorageMetricsTests()
+      : local_state_(std::make_unique<ScopedTestingLocalState>(
+            TestingBrowserProcess::GetGlobal())) {}
+
+  void InitializeFeaturesBeforeStart() override {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        privacy_sandbox::kPrivacySandboxActivityTypeStorage,
+        {{"last-n-launches", "100"},
+         {"within-x-days", "60"},
+         {"skip-pre-first-tab", "false"}});
+  }
+
+  struct PercentageMetricValues {
+    int AGSACCTPercent = 0;
+    int AGSACCTBucketCount = 1;
+    int BrAppPercent = 0;
+    int BrAppBucketCount = 1;
+    int NonAGSACCTPercent = 0;
+    int NonAGSACCTBucketCount = 1;
+    int TWAPercent = 0;
+    int TWABucketCount = 1;
+    int WebappPercent = 0;
+    int WebappBucketCount = 1;
+    int WebAPKPercent = 0;
+    int WebAPKBucketCount = 1;
+    int OtherPercent = 0;
+    int OtherBucketCount = 1;
+    int PreFirstTabPercent = 0;
+    int PreFirstTabCount = 1;
+  };
+
+  void TestMetricValues(PercentageMetricValues values) {
+    histogram_tester.ExpectBucketCount(
+        "PrivacySandbox.ActivityTypeStorage.Percentage.AGSACCT2",
+        values.AGSACCTPercent, values.AGSACCTBucketCount);
+    histogram_tester.ExpectBucketCount(
+        "PrivacySandbox.ActivityTypeStorage.Percentage.BrApp2",
+        values.BrAppPercent, values.BrAppBucketCount);
+    histogram_tester.ExpectBucketCount(
+        "PrivacySandbox.ActivityTypeStorage.Percentage.NonAGSACCT2",
+        values.NonAGSACCTPercent, values.NonAGSACCTBucketCount);
+    histogram_tester.ExpectBucketCount(
+        "PrivacySandbox.ActivityTypeStorage.Percentage.TWA2", values.TWAPercent,
+        values.TWABucketCount);
+    histogram_tester.ExpectBucketCount(
+        "PrivacySandbox.ActivityTypeStorage.Percentage.WebApp2",
+        values.WebappPercent, values.WebappBucketCount);
+    histogram_tester.ExpectBucketCount(
+        "PrivacySandbox.ActivityTypeStorage.Percentage.WebApk2",
+        values.WebAPKPercent, values.WebAPKBucketCount);
+    histogram_tester.ExpectBucketCount(
+        "PrivacySandbox.ActivityTypeStorage.Percentage.Other2",
+        values.OtherPercent, values.OtherBucketCount);
+    histogram_tester.ExpectBucketCount(
+        "PrivacySandbox.ActivityTypeStorage.Percentage.PreFirstTab2",
+        values.PreFirstTabPercent, values.PreFirstTabCount);
+  }
+
+ protected:
+  base::HistogramTester histogram_tester;
+  ScopedTestingLocalState* local_state() { return local_state_.get(); }
+
+ private:
+  std::unique_ptr<ScopedTestingLocalState> local_state_;
+};
+
+TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
+       VerifyMetricsRecordsLength) {
+  local_state()->Get()->SetInt64(
+      metrics::prefs::kMetricsReportingEnabledTimestamp,
+      (base::Time::Now() - base::Days(10)).ToTimeT());
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 1, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 2, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 3, 1);
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kTrustedWebActivity);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 4, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 5, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kOther);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 6, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kPreFirstTab);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 7, 1);
+}
+
+TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
+       VerifyMetricsPercentages) {
+  local_state()->Get()->SetInt64(
+      metrics::prefs::kMetricsReportingEnabledTimestamp,
+      (base::Time::Now() - base::Days(10)).ToTimeT());
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  TestMetricValues({.AGSACCTPercent = 100});
+
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kNonAGSACustomTab);
+  TestMetricValues({.AGSACCTPercent = 50,
+                    .BrAppBucketCount = 2,
+                    .NonAGSACCTPercent = 50,
+                    .TWABucketCount = 2,
+                    .WebappBucketCount = 2,
+                    .WebAPKBucketCount = 2,
+                    .OtherBucketCount = 2,
+                    .PreFirstTabCount = 2});
+
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kTrustedWebActivity);
+  TestMetricValues({.AGSACCTPercent = 33,
+                    .BrAppBucketCount = 3,
+                    .NonAGSACCTPercent = 33,
+                    .TWAPercent = 33,
+                    .WebappBucketCount = 3,
+                    .WebAPKBucketCount = 3,
+                    .OtherBucketCount = 3,
+                    .PreFirstTabCount = 3});
+
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  TestMetricValues({.AGSACCTPercent = 50,
+                    .AGSACCTBucketCount = 2,
+                    .BrAppBucketCount = 4,
+                    .NonAGSACCTPercent = 25,
+                    .TWAPercent = 25,
+                    .WebappBucketCount = 4,
+                    .WebAPKBucketCount = 4,
+                    .OtherBucketCount = 4,
+                    .PreFirstTabCount = 4});
+
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
+  TestMetricValues({.AGSACCTPercent = 40,
+                    .BrAppBucketCount = 5,
+                    .NonAGSACCTPercent = 20,
+                    .TWAPercent = 20,
+                    .WebappBucketCount = 5,
+                    .WebAPKPercent = 20,
+                    .OtherBucketCount = 5,
+                    .PreFirstTabCount = 5});
+
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kTrustedWebActivity);
+  TestMetricValues({.AGSACCTPercent = 33,
+                    .AGSACCTBucketCount = 2,
+                    .BrAppBucketCount = 6,
+                    .NonAGSACCTPercent = 17,
+                    .TWAPercent = 33,
+                    .TWABucketCount = 2,
+                    .WebappBucketCount = 6,
+                    .WebAPKPercent = 17,
+                    .OtherBucketCount = 6,
+                    .PreFirstTabCount = 6});
+
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
+  TestMetricValues({.AGSACCTPercent = 29,
+                    .BrAppBucketCount = 7,
+                    .NonAGSACCTPercent = 14,
+                    .TWAPercent = 29,
+                    .WebappPercent = 14,
+                    .WebAPKPercent = 14,
+                    .OtherBucketCount = 7,
+                    .PreFirstTabCount = 7});
+
+  browser_task_environment()->FastForwardBy(base::Days(61));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  // Since 61 days have passed, the activity log gets cleared because it is
+  // passed our within-x-days feature param.
+  TestMetricValues({.BrAppPercent = 100,
+                    .NonAGSACCTBucketCount = 2,
+                    .TWABucketCount = 3,
+                    .WebappBucketCount = 7,
+                    .WebAPKBucketCount = 5,
+                    .OtherBucketCount = 8,
+                    .PreFirstTabCount = 8});
+}
+
+TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
+       VerifyUserSegmentMetrics) {
+  local_state()->Get()->SetInt64(
+      metrics::prefs::kMetricsReportingEnabledTimestamp,
+      (base::Time::Now() - base::Days(10)).ToTimeT());
+  for (int i = 0; i < 10; ++i) {
+    privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
+  }
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2", 1);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
+      UserSegment::kHasWebapp, 1);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2", 0);
+
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kTrustedWebActivity);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
+      UserSegment::kHasTWA, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
+      UserSegment::kHasTWA, 2);
+
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
+      UserSegment::kHasPWA, 1);
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kTrustedWebActivity);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
+      UserSegment::kHasPWA, 2);
+
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kNonAGSACustomTab);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
+      UserSegment::kHasNonAGSACCT, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
+      UserSegment::kHasNonAGSACCT, 2);
+
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
+      UserSegment::kHasAGSACCT, 1);
+  privacy_sandbox_service()->RecordActivityType(
+      ActivityType::kNonAGSACustomTab);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
+      UserSegment::kHasAGSACCT, 2);
+
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
+      UserSegment::kHasBrowserApp, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
+      UserSegment::kHasBrowserApp, 2);
+
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2", 1);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2",
+      UserSegment::kHasBrowserApp, 1);
+
+  for (int i = 0; i < 9; ++i) {
+    privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
+  }
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
+      UserSegment::kHasBrowserApp, 10);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
+      UserSegment::kHasAGSACCT, 3);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2",
+      UserSegment::kHasBrowserApp, 10);
+
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
+      UserSegment::kHasOther, 0);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2",
+      UserSegment::kHasOther, 0);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
+      UserSegment::kHasPreFirstTab, 0);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2",
+      UserSegment::kHasPreFirstTab, 0);
+}
+
+TEST_F(PrivacySandboxActivityTypeStorageMetricsTests, VerifyNoMetrics) {
+  // Set the kMetricsReportingEnabledTimestamp of UMA opt in to 10 days in the
+  // future and we should receive no metrics on any of the data in the Activity
+  // Type storage list. The list should still be populated to a size of 10
+  // records.
+  local_state()->Get()->SetInt64(
+      metrics::prefs::kMetricsReportingEnabledTimestamp,
+      (base::Time::Now() + base::Days(10)).ToTimeT());
+  for (int i = 0; i < 10; ++i) {
+    privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  }
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.AGSACCT2", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.BrApp2", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.NonAGSACCT2", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.TWA2", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.WebApp2", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.Other2", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.PreFirstTab2", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.ActivityTypeStorage.RecordsLength2", 0);
+  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
+            10u);
+}
+
+TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
+       VerifyDurationSinceOldestRecordMetrics) {
+  local_state()->Get()->SetInt64(
+      metrics::prefs::kMetricsReportingEnabledTimestamp,
+      (base::Time::Now() - base::Days(10)).ToTimeT());
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 0, 1);
+  browser_task_environment()->FastForwardBy(base::Days(5));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 5, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 5, 2);
+  browser_task_environment()->FastForwardBy(base::Days(10));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 15, 1);
+  browser_task_environment()->FastForwardBy(base::Days(10));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 25, 1);
+  browser_task_environment()->FastForwardBy(base::Days(10));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 35, 1);
+  browser_task_environment()->FastForwardBy(base::Days(10));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 45, 1);
+  browser_task_environment()->FastForwardBy(base::Days(10));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 55, 1);
+  browser_task_environment()->FastForwardBy(base::Days(10));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 60, 1);
+  browser_task_environment()->FastForwardBy(base::Days(10));
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 60, 2);
+}
+
+class PrivacySandboxActivityTypeStorageMetricsTypeReceivedTests
+    : public PrivacySandboxActivityTypeStorageMetricsTests,
+      public testing::WithParamInterface<int> {};
+
+TEST_P(PrivacySandboxActivityTypeStorageMetricsTypeReceivedTests,
+       VerifyTypeReceivedMetric) {
+  privacy_sandbox_service()->RecordActivityType(
+      static_cast<ActivityType>(GetParam()));
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.TypeReceived",
+      static_cast<ActivityType>(GetParam()), 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PrivacySandboxActivityTypeStorageMetricsTypeReceivedTests,
+    testing::Range(static_cast<int>(ActivityType::kOther),
+                   static_cast<int>(ActivityType::kMaxValue) + 1));
+
+class PrivacySandboxActivityTypeStorageSkipPreFirstTabTests
+    : public PrivacySandboxActivityTypeStorageTests {
+  void InitializeFeaturesBeforeStart() override {
+    feature_list()->InitAndEnableFeatureWithParameters(
+        privacy_sandbox::kPrivacySandboxActivityTypeStorage,
+        {{"last-n-launches", "100"},
+         {"within-x-days", "60"},
+         {"skip-pre-first-tab", "true"}});
+  }
+};
+
+TEST_F(PrivacySandboxActivityTypeStorageSkipPreFirstTabTests,
+       RecordsOnlyTabbedActivity) {
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
+  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
+            1u);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.TypeReceived", ActivityType::kTabbed,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.BrApp2", 100, 1);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.PreFirstTab2", 0, 1);
+  privacy_sandbox_service()->RecordActivityType(ActivityType::kPreFirstTab);
+  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
+            1u);
+  EXPECT_EQ(*prefs()
+                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[0]
+                 .GetDict()
+                 .Find("activity_type"),
+            static_cast<int>(ActivityType::kTabbed));
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.TypeReceived",
+      ActivityType::kPreFirstTab, 1);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.BrApp2", 100, 1);
+  histogram_tester.ExpectBucketCount(
+      "PrivacySandbox.ActivityTypeStorage.Percentage.PreFirstTab2", 0, 1);
+}
+#endif  // BUILDFLAG(IS_ANDROID)

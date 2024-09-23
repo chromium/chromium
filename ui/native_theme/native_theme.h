@@ -12,13 +12,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
-#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/menu_separator_types.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
@@ -33,6 +33,7 @@ class PaintCanvas;
 }
 
 namespace gfx {
+class Insets;
 class Rect;
 class Size;
 }
@@ -61,7 +62,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // The part to be painted / sized.
   enum Part {
     kCheckbox,
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     kFrameTopArea,
@@ -219,6 +220,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   struct MenuSeparatorExtraParams {
     raw_ptr<const gfx::Rect> paint_rect = nullptr;
+    ui::ColorId color_id = ui::kColorMenuSeparator;
     MenuSeparatorType type = MenuSeparatorType::NORMAL_SEPARATOR;
   };
 
@@ -288,20 +290,13 @@ class NATIVE_THEME_EXPORT NativeTheme {
     std::optional<SkColor> track_color;
   };
 
-  enum class ScrollbarOverlayColorTheme {
-    kDefault = 0,
-    kLight = 1,
-    kDark = 2,
-  };
-
   struct ScrollbarThumbExtraParams {
     bool is_hovering = false;
-    ScrollbarOverlayColorTheme scrollbar_theme =
-        ScrollbarOverlayColorTheme::kDefault;
     // This allows clients to directly override the color values to support
     // element-specific web platform CSS.
     std::optional<SkColor> thumb_color;
     bool is_thumb_minimal_mode = false;
+    bool is_web_test = false;
   };
 
 #if BUILDFLAG(IS_APPLE)
@@ -318,8 +313,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
   struct ScrollbarExtraParams {
     bool is_hovering = false;
     bool is_overlay = false;
-    ScrollbarOverlayColorTheme scrollbar_theme =
-        ScrollbarOverlayColorTheme::kDefault;
     ScrollbarOrientation orientation =
         ScrollbarOrientation::kVerticalOnRight;  // Used on Mac for drawing
                                                  // gradients.
@@ -392,6 +385,14 @@ class NATIVE_THEME_EXPORT NativeTheme {
                                 const ExtraParams& extra) const = 0;
   virtual int GetPaintedScrollbarTrackInset() const;
 
+  virtual gfx::Insets GetScrollbarSolidColorThumbInsets(Part part) const;
+
+  // Called if the theme uses solid color for scrollbar thumb.
+  virtual SkColor4f GetScrollbarThumbColor(
+      const ui::ColorProvider& color_provider,
+      State state,
+      const ScrollbarThumbExtraParams& extra_params) const;
+
   virtual float GetBorderRadiusForPart(Part part,
                                        float width,
                                        float height) const;
@@ -405,6 +406,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
       const gfx::Rect& rect,
       const ExtraParams& extra,
       ColorScheme color_scheme = ColorScheme::kDefault,
+      bool in_forced_colors = false,
       const std::optional<SkColor>& accent_color = std::nullopt) const = 0;
 
   // Returns whether the theme uses a nine-patch resource for the given part.
@@ -519,6 +521,12 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   virtual ColorScheme GetDefaultSystemColorScheme() const;
 
+  // Updates contrast-related theme states such as `forced_colors_`,
+  // `page_colors_`, `preferred_contrast_` and `prefers_reduced_transparency_`
+  // based on the `observed_theme`. Returns true if there's an update to any of
+  // these states.
+  bool UpdateContrastRelatedStates(const NativeTheme& observed_theme);
+
   virtual const std::map<SystemThemeColor, SkColor>& GetSystemColors() const;
 
   std::optional<SkColor> GetSystemThemeColor(
@@ -566,14 +574,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
     return should_use_system_accent_color_;
   }
 
-  // Updates the state of dark mode, forced colors mode, and the map of system
-  // colors. Returns true if NativeTheme was updated as a result, or false if
-  // the state of NativeTheme was untouched.
-  bool UpdateSystemColorInfo(
-      bool is_dark_mode,
-      bool forced_colors,
-      const base::flat_map<SystemThemeColor, uint32_t>& colors);
-
   // On certain platforms, currently only Mac, there is a unique visual for
   // pressed states.
   virtual SkColor GetSystemButtonPressedColor(SkColor base_color) const;
@@ -587,6 +587,17 @@ class NATIVE_THEME_EXPORT NativeTheme {
                                  float border_width,
                                  float zoom_level) const;
 
+  // Returns the rate at which the text caret should blink. If 0, the caret
+  // will not blink.
+  base::TimeDelta GetCaretBlinkInterval() const;
+
+  // Sets the rate at which the text caret should blink. Overrides any
+  // platform values.
+  void set_caret_blink_interval(
+      std::optional<base::TimeDelta> caret_blink_interval) {
+    caret_blink_interval_ = std::move(caret_blink_interval);
+  }
+
   // Whether high contrast is forced via command-line flag.
   static bool IsForcedHighContrast();
 
@@ -594,13 +605,21 @@ class NATIVE_THEME_EXPORT NativeTheme {
   static bool IsForcedDarkMode();
 
  protected:
-  explicit NativeTheme(bool should_only_use_dark_colors,
-                       ui::SystemTheme system_theme,
-                       NativeTheme* theme_to_update);
+  explicit NativeTheme(
+      bool should_only_use_dark_colors,
+      ui::SystemTheme system_theme = ui::SystemTheme::kDefault);
   virtual ~NativeTheme();
 
   // Calculates and returns the current user preferred contrast.
   virtual PreferredContrast CalculatePreferredContrast() const;
+
+  // A function to be called by native theme instances that need to set state
+  // or listeners with the webinstance in order to provide correct native
+  // platform behaviors.
+  virtual void ConfigureWebInstance() {}
+
+  // Gets the platform caret blink interval if it exists.
+  virtual std::optional<base::TimeDelta> GetPlatformCaretBlinkInterval() const;
 
   // Allows one native theme to observe changes in another. For example, the
   // web native theme for Windows observes the corresponding ui native theme in
@@ -630,7 +649,8 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
  private:
   // Observers to notify when the native theme changes.
-  base::ObserverList<NativeThemeObserver>::Unchecked native_theme_observers_;
+  base::ObserverList<NativeThemeObserver>::UncheckedAndDanglingUntriaged
+      native_theme_observers_;
 
   // User's primary color. Included in the `ColorProvider::Key` as the basis of
   // all generated colors.
@@ -639,13 +659,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // System color scheme variant. Used in `ColorProvider::Key` to specify the
   // transforms of `user_color_` which generate colors.
   std::optional<ui::ColorProviderKey::SchemeVariant> scheme_variant_;
-
-  // Used to notify the web native theme of changes to dark mode, high
-  // contrast, preferred color scheme, and preferred contrast.
-  NativeTheme::ColorSchemeNativeThemeObserver color_scheme_observer_;
-
-  base::ScopedObservation<NativeTheme, ColorSchemeNativeThemeObserver>
-      theme_observation_{&color_scheme_observer_};
 
   // Determines whether generated colors should express the system's accent
   // color if present.
@@ -659,6 +672,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   bool inverted_colors_ = false;
   PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
+  std::optional<base::TimeDelta> caret_blink_interval_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -39,7 +39,26 @@
           ]
         },
         "prefs": {
-          "profile.web_app.policy_settings": {}
+          "profile.web_app.policy_settings": {
+            "value": [
+              {
+                "manifest_id": "https://foo.example/index.html",
+                "run_on_os_login": "allowed"
+              },
+              {
+                "manifest_id": "https://bar.example/index.html",
+                "run_on_os_login": "blocked"
+              },
+              {
+                "manifest_id": "https://foobar.example/index.html",
+                "run_on_os_login": "run_windowed"
+              },
+              {
+                "manifest_id": "*",
+                "run_on_os_login": "blocked"
+              }
+            ]
+          }
         }
       }
     ]

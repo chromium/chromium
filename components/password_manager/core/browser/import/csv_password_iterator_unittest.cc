@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/import/csv_password_iterator.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
@@ -27,7 +28,7 @@ TEST(CSVPasswordIteratorTest, Operations) {
       {1, Label::kUsername},
       {2, Label::kPassword},
   };
-  constexpr base::StringPiece kCSV = "http://example.com,user,password";
+  constexpr std::string_view kCSV = "http://example.com,user,password";
   CSVPasswordIterator iter(kColMap, kCSV);
   // Because kCSV is just one row, it can be used to create a CSVPassword
   // directly.
@@ -62,7 +63,7 @@ TEST(CSVPasswordIteratorTest, MostRowsAreValid) {
       {1, Label::kUsername},
       {2, Label::kPassword},
   };
-  constexpr base::StringPiece kCSVBlob =
+  constexpr std::string_view kCSVBlob =
       "\r\n"
       "\t\t\t\n"
       "http://no-failure.example.com,user_1,pwd]\n"
@@ -91,7 +92,7 @@ TEST(CSVPasswordIteratorTest, LastRowNonEmpty) {
       {1, Label::kUsername},
       {2, Label::kPassword},
   };
-  constexpr base::StringPiece kCSVBlob =
+  constexpr std::string_view kCSVBlob =
       "        \n"
       " \n"
       "\n"
@@ -114,14 +115,14 @@ TEST(CSVPasswordIteratorTest, AllRowsAreEmpty) {
       {1, Label::kUsername},
       {2, Label::kPassword},
   };
-  constexpr base::StringPiece kCSVBlob =
+  constexpr std::string_view kCSVBlob =
       "     \t   \r\n"
       " \n"
       "\n"
       "         ";
 
   CSVPasswordIterator iter(kColMap, kCSVBlob);
-  CSVPasswordIterator end(kColMap, base::StringPiece());
+  CSVPasswordIterator end(kColMap, std::string_view());
   EXPECT_EQ(0, std::distance(iter, end));
   EXPECT_EQ(iter, end);
 }

@@ -20,14 +20,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.android.util.concurrent.PausedExecutorService;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
@@ -35,11 +32,13 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridgeJni;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -55,9 +54,11 @@ import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataJni;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelJniBridge;
@@ -74,18 +75,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Tests for TabPersistentStore reacting to events from TabModel and Tab. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(Mode.PAUSED)
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_TAB_DECLUTTER,
+    ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH
+})
 public class TabPersistentStoreIntegrationTest {
-    /** Shadow for {@link HomepageManager}. */
-    @Implements(HomepageManager.class)
-    static class ShadowHomepageManager {
-        @Implementation
-        public static boolean shouldCloseAppWithZeroTabs() {
-            return false;
-        }
-    }
-
     @Rule public JniMocker jniMocker = new JniMocker();
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final int TAB_ID = 42;
     private static final WebContentsState WEB_CONTENTS_STATE =
@@ -107,6 +102,7 @@ public class TabPersistentStoreIntegrationTest {
     @Mock private RecentlyClosedBridge.Natives mRecentlyClosedBridgeJni;
     @Mock private Resources mResources;
     @Mock private PersistedTabData.Natives mPersistedTabDataJni;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private PausedExecutorService mExecutor = new PausedExecutorService();
 
@@ -127,9 +123,14 @@ public class TabPersistentStoreIntegrationTest {
         OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
         profileProviderSupplier.set(mProfileProvider);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
-        mOrchestrator = new TabbedModeTabModelOrchestrator(/* tabMergingEnabled= */ true);
+        mOrchestrator =
+                new TabbedModeTabModelOrchestrator(
+                        /* tabMergingEnabled= */ true,
+                        mActivityLifecycleDispatcher,
+                        new CipherFactory());
         mOrchestrator.createTabModels(
                 mChromeActivity,
                 profileProviderSupplier,
@@ -184,7 +185,7 @@ public class TabPersistentStoreIntegrationTest {
         assertTrue(tabStateFile.exists());
 
         // Close the tab
-        tabModel.closeTab(tab, false, false, true);
+        tabModel.closeTabs(TabClosureParams.closeTab(tab).build());
         runAllAsyncTasks();
 
         // Step to test: Commit tab closure
@@ -210,7 +211,7 @@ public class TabPersistentStoreIntegrationTest {
         TabModel tabModel = mTabModelSelector.getModel(false);
         Tab tab = MockTab.createAndInitialize(TAB_ID, mProfile, TabLaunchType.FROM_CHROME_UI);
         tabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        tabModel.closeTab(tab, false, false, true);
+        tabModel.closeTabs(TabClosureParams.closeTab(tab).build());
         runAllAsyncTasks();
         int timesMetadataSavedBefore = timesMetadataSaved.intValue();
 
@@ -236,7 +237,7 @@ public class TabPersistentStoreIntegrationTest {
 
         int timesMetadataSavedBefore = timesMetadataSaved.intValue();
         // Step to test: Close tab.
-        tabModel.closeTab(tab, false, false, true);
+        tabModel.closeTabs(TabClosureParams.closeTab(tab).build());
         runAllAsyncTasks();
 
         // Step to test: Commit tab closure.
@@ -250,10 +251,11 @@ public class TabPersistentStoreIntegrationTest {
     @Test
     @SmallTest
     @Feature({"TabPersistentStore"})
-    @Config(
-            manifest = Config.NONE,
-            shadows = {ShadowHomepageManager.class})
     public void testCloseAllTabsPersistsState() {
+        HomepageManager homepageManager = Mockito.mock(HomepageManager.class);
+        when(homepageManager.shouldCloseAppWithZeroTabs()).thenReturn(false);
+        HomepageManager.setInstanceForTesting(homepageManager);
+
         AtomicInteger timesMetadataSaved = new AtomicInteger();
         observeOnMetadataSavedAsynchronously(timesMetadataSaved);
 
@@ -268,7 +270,7 @@ public class TabPersistentStoreIntegrationTest {
 
         int timesMetadataSavedBefore = timesMetadataSaved.intValue();
         // Step to test: Close all tabs.
-        tabModel.closeAllTabs(false);
+        tabModel.closeTabs(TabClosureParams.closeAllTabs().build());
         runAllAsyncTasks();
 
         // Step to test: Commit tabs closure.

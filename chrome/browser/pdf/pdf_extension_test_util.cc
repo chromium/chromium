@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -15,7 +16,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/pdf_util.h"
+#include "components/pdf/common/pdf_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -43,12 +44,15 @@ bool IsPluginFrame(content::RenderFrameHost& frame) {
 }  // namespace
 
 content::RenderFrameHost* GetPdfExtensionHostFromEmbedder(
-    content::RenderFrameHost* embedder_host) {
-  // PDF embedder hosts should have one child, which is the extension host.
-  if (content::ChildFrameAt(embedder_host, 1)) {
+    content::RenderFrameHost* embedder_host,
+    bool allow_multiple_frames) {
+  // Return nullptr if multiple frames aren't allowed and there's more than one
+  // child.
+  if (!allow_multiple_frames && content::ChildFrameAt(embedder_host, 1)) {
     return nullptr;
   }
 
+  // The extension host be the first child of the embedder host.
   content::RenderFrameHost* child_host =
       content::ChildFrameAt(embedder_host, 0);
   return child_host &&
@@ -94,7 +98,7 @@ std::vector<content::RenderFrameHost*> GetPdfPluginFrames(
   return plugin_frames;
 }
 
-size_t CountPdfPluginProcesses(Browser* browser) {
+size_t CountPdfPluginProcesses(const Browser* browser) {
   base::flat_set<content::RenderProcessHost*> pdf_processes;
 
   const TabStripModel* tab_strip = browser->tab_strip_model();
@@ -109,9 +113,13 @@ size_t CountPdfPluginProcesses(Browser* browser) {
 }
 
 testing::AssertionResult EnsurePDFHasLoaded(
+    const content::ToRenderFrameHost& frame) {
+  return EnsurePDFHasLoadedWithOptions(frame, EnsurePDFHasLoadedOptions());
+}
+
+testing::AssertionResult EnsurePDFHasLoadedWithOptions(
     const content::ToRenderFrameHost& frame,
-    bool wait_for_hit_test_data,
-    const std::string& pdf_element) {
+    const EnsurePDFHasLoadedOptions& options) {
   // OOPIF PDF intentionally doesn't support postMessage() API for embedders.
   // postMessage() can still be used if the script is injected into the
   // extension frame.
@@ -144,7 +152,9 @@ testing::AssertionResult EnsurePDFHasLoaded(
   // Otherwise, it should be whatever frame was given.
   content::RenderFrameHost* frame_rfh = frame.render_frame_host();
   content::RenderFrameHost* target_frame =
-      use_oopif ? GetPdfExtensionHostFromEmbedder(frame_rfh) : frame_rfh;
+      use_oopif ? GetPdfExtensionHostFromEmbedder(frame_rfh,
+                                                  options.allow_multiple_frames)
+                : frame_rfh;
 
   if (use_oopif && !target_frame) {
     return testing::AssertionFailure() << "Failed to get PDF extension frame.";
@@ -152,22 +162,26 @@ testing::AssertionResult EnsurePDFHasLoaded(
 
   const std::string post_message_target =
       use_oopif ? kOopifPostMessageTarget
-                : content::JsReplace(kGuestViewPostMessageTarget, pdf_element);
+                : content::JsReplace(kGuestViewPostMessageTarget,
+                                     options.pdf_element);
   bool load_success =
       content::EvalJs(target_frame,
                       base::StringPrintf(kEnsurePdfHasLoadedScript,
                                          post_message_target.c_str()))
           .ExtractBool();
 
-  if (wait_for_hit_test_data) {
+  if (!load_success) {
+    return testing::AssertionFailure() << "Load failed.";
+  }
+
+  if (options.wait_for_hit_test_data) {
     frame.render_frame_host()->ForEachRenderFrameHost(
         [](content::RenderFrameHost* render_frame_host) {
           return content::WaitForHitTestData(render_frame_host);
         });
   }
 
-  return load_success ? testing::AssertionSuccess()
-                      : (testing::AssertionFailure() << "Load failed.");
+  return testing::AssertionSuccess();
 }
 
 gfx::Point ConvertPageCoordToScreenCoord(
@@ -177,29 +191,24 @@ gfx::Point ConvertPageCoordToScreenCoord(
     ADD_FAILURE() << "The guest main frame needs to be non-null";
     return point;
   }
-  if (!content::ExecJs(
-          guest_main_frame,
-          "var visiblePage = viewer.viewport.getMostVisiblePage();"
-          "var visiblePageDimensions ="
-          "    viewer.viewport.getPageScreenRect(visiblePage);"
-          "var viewportPosition = viewer.viewport.position;"
-          "var offsetParent = viewer.shadowRoot.querySelector('#container');"
-          "var scrollParent = viewer.shadowRoot.querySelector('#main');"
-          "var screenOffsetX = visiblePageDimensions.x - viewportPosition.x +"
-          "    scrollParent.offsetLeft + offsetParent.offsetLeft;"
-          "var screenOffsetY = visiblePageDimensions.y - viewportPosition.y +"
-          "    scrollParent.offsetTop + offsetParent.offsetTop;"
-          "var linkScreenPositionX ="
-          "    Math.floor(" +
-              base::NumberToString(point.x()) +
-              " * viewer.viewport.internalZoom_" +
-              " + screenOffsetX);"
-              "var linkScreenPositionY ="
-              "    Math.floor(" +
-              base::NumberToString(point.y()) +
-              " * viewer.viewport.internalZoom_" +
-              " +"
-              "    screenOffsetY);")) {
+
+  static constexpr char kScript[] = R"(
+    var visiblePage = viewer.viewport.getMostVisiblePage();
+    var visiblePageDimensions = viewer.viewport.getPageScreenRect(visiblePage);
+    var viewportPosition = viewer.viewport.position;
+    var offsetParent = viewer.shadowRoot.querySelector('#container');
+    var scrollParent = viewer.shadowRoot.querySelector('#main');
+    var screenOffsetX = visiblePageDimensions.x - viewportPosition.x +
+        scrollParent.offsetLeft + offsetParent.offsetLeft;
+    var screenOffsetY = visiblePageDimensions.y - viewportPosition.y +
+        scrollParent.offsetTop + offsetParent.offsetTop;
+    var linkScreenPositionX = Math.floor(%d * viewer.viewport.internalZoom_ +
+        screenOffsetX);
+    var linkScreenPositionY = Math.floor(%d * viewer.viewport.internalZoom_ +
+        screenOffsetY);
+  )";
+  if (!content::ExecJs(guest_main_frame,
+                       base::StringPrintf(kScript, point.x(), point.y()))) {
     ADD_FAILURE() << "Error executing script";
     return point;
   }

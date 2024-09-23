@@ -41,7 +41,7 @@ class FakeTextCheckingCompletion : public blink::WebTextCheckingCompletion {
       const blink::WebVector<blink::WebTextCheckingResult>& results) override;
   void DidCancelCheckingText() override;
 
-  raw_ptr<FakeTextCheckingResult, ExperimentalRenderer> result_;
+  raw_ptr<FakeTextCheckingResult> result_;
 };
 
 // A fake SpellCheck object which can fake the number of (enabled) spell check

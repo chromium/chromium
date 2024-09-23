@@ -14,6 +14,8 @@
 #include <zircon/status.h>
 #include <zircon/syscalls.h>
 
+#include <string_view>
+
 #include "base/base_paths.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -22,7 +24,6 @@
 #include "base/path_service.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -59,7 +60,7 @@ NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
 
   // Use fdio_open_fd (a Fuchsia-specific API) here so we can pass the
   // appropriate FS rights flags to request executability.
-  // TODO(crbug.com/1018538): Teach base::File about FLAG_WIN_EXECUTE on
+  // TODO(crbug.com/40655456): Teach base::File about FLAG_WIN_EXECUTE on
   // Fuchsia, and then use it here instead of using fdio_open_fd() directly.
   base::ScopedFD fd;
   zx_status_t status = fdio_open_fd(
@@ -98,11 +99,11 @@ void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
   return dlsym(library, name);
 }
 
-std::string GetNativeLibraryName(StringPiece name) {
+std::string GetNativeLibraryName(std::string_view name) {
   return StrCat({"lib", name, ".so"});
 }
 
-std::string GetLoadableModuleName(StringPiece name) {
+std::string GetLoadableModuleName(std::string_view name) {
   return GetNativeLibraryName(name);
 }
 

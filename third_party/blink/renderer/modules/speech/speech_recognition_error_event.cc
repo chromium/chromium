@@ -25,42 +25,43 @@
 
 #include "third_party/blink/renderer/modules/speech/speech_recognition_error_event.h"
 
-#include "third_party/blink/public/mojom/speech/speech_recognition_error_code.mojom-blink.h"
+#include "media/mojo/mojom/speech_recognition_error_code.mojom-blink.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 
 namespace blink {
 
-static String ErrorCodeToString(mojom::blink::SpeechRecognitionErrorCode code) {
+static String ErrorCodeToString(
+    media::mojom::blink::SpeechRecognitionErrorCode code) {
   switch (code) {
-    case mojom::blink::SpeechRecognitionErrorCode::kNone:
+    case media::mojom::blink::SpeechRecognitionErrorCode::kNone:
       return "other";
-    case mojom::blink::SpeechRecognitionErrorCode::kNoSpeech:
+    case media::mojom::blink::SpeechRecognitionErrorCode::kNoSpeech:
       return "no-speech";
-    case mojom::blink::SpeechRecognitionErrorCode::kAborted:
+    case media::mojom::blink::SpeechRecognitionErrorCode::kAborted:
       return "aborted";
-    case mojom::blink::SpeechRecognitionErrorCode::kAudioCapture:
+    case media::mojom::blink::SpeechRecognitionErrorCode::kAudioCapture:
       return "audio-capture";
-    case mojom::blink::SpeechRecognitionErrorCode::kNetwork:
+    case media::mojom::blink::SpeechRecognitionErrorCode::kNetwork:
       return "network";
-    case mojom::blink::SpeechRecognitionErrorCode::kNotAllowed:
+    case media::mojom::blink::SpeechRecognitionErrorCode::kNotAllowed:
       return "not-allowed";
-    case mojom::blink::SpeechRecognitionErrorCode::kServiceNotAllowed:
+    case media::mojom::blink::SpeechRecognitionErrorCode::kServiceNotAllowed:
       return "service-not-allowed";
-    case mojom::blink::SpeechRecognitionErrorCode::kBadGrammar:
+    case media::mojom::blink::SpeechRecognitionErrorCode::kBadGrammar:
       return "bad-grammar";
-    case mojom::blink::SpeechRecognitionErrorCode::kLanguageNotSupported:
+    case media::mojom::blink::SpeechRecognitionErrorCode::kLanguageNotSupported:
       return "language-not-supported";
-    case mojom::blink::SpeechRecognitionErrorCode::kNoMatch:
-      NOTREACHED();
+    case media::mojom::blink::SpeechRecognitionErrorCode::kNoMatch:
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
 SpeechRecognitionErrorEvent* SpeechRecognitionErrorEvent::Create(
-    mojom::blink::SpeechRecognitionErrorCode code,
+    media::mojom::blink::SpeechRecognitionErrorCode code,
     const String& message) {
   return MakeGarbageCollected<SpeechRecognitionErrorEvent>(
       ErrorCodeToString(code), message);

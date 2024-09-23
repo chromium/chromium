@@ -62,6 +62,7 @@ OnDeviceTailTokenizer::~OnDeviceTailTokenizer() = default;
 
 bool OnDeviceTailTokenizer::Init(const base::FilePath& vocabulary_filepath) {
   std::string vocabulary_content;
+  Reset();
   if (!base::ReadFileToStringWithMaxSize(
           vocabulary_filepath, &vocabulary_content, kVocabFileSizeLimit)) {
     DVLOG(1) << "Failed to read the vocabulary file "

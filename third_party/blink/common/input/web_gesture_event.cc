@@ -37,8 +37,9 @@ gfx::Transform GetTransformForEvent(const WebGestureEvent& gesture_event) {
     gesture_transform.Translate(gesture_event.PositionInWidget().x(),
                                 gesture_event.PositionInWidget().y());
   } else {
-    NOTREACHED() << "Invalid event type for transform retrieval: "
-                 << WebInputEvent::GetName(gesture_event.GetType());
+    NOTREACHED_IN_MIGRATION()
+        << "Invalid event type for transform retrieval: "
+        << WebInputEvent::GetName(gesture_event.GetType());
   }
   return gesture_transform;
 }
@@ -122,7 +123,7 @@ ui::ScrollInputType WebGestureEvent::GetScrollInputType() const {
     case WebGestureDevice::kUninitialized:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::ScrollInputType::kTouchscreen;
 }
 
@@ -177,20 +178,6 @@ bool WebGestureEvent::Synthetic() const {
     return data.scroll_begin.synthetic;
   DCHECK_EQ(type_, WebInputEvent::Type::kGestureScrollEnd);
   return data.scroll_end.synthetic;
-}
-
-float WebGestureEvent::VelocityX() const {
-  if (type_ == WebInputEvent::Type::kGestureScrollUpdate)
-    return data.scroll_update.velocity_x;
-  DCHECK_EQ(type_, WebInputEvent::Type::kGestureFlingStart);
-  return data.fling_start.velocity_x;
-}
-
-float WebGestureEvent::VelocityY() const {
-  if (type_ == WebInputEvent::Type::kGestureScrollUpdate)
-    return data.scroll_update.velocity_y;
-  DCHECK_EQ(type_, WebInputEvent::Type::kGestureFlingStart);
-  return data.fling_start.velocity_y;
 }
 
 gfx::SizeF WebGestureEvent::TapAreaInRootFrame() const {

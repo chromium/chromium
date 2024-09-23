@@ -211,7 +211,7 @@ class StubDeviceSyncImplFactory : public DeviceSyncImpl::Factory {
   // device_sync::DeviceSyncImpl::Factory:
   std::unique_ptr<DeviceSyncBase> CreateInstance(
       signin::IdentityManager* identity_manager,
-      gcm::GCMDriver* gcm_driver,
+      instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* profile_prefs,
       const GcmDeviceInfoProvider* gcm_device_info_provider,
       ClientAppMetadataProvider* client_app_metadata_provider,

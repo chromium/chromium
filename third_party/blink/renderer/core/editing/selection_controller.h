@@ -125,8 +125,8 @@ class CORE_EXPORT SelectionController final
   FrameSelection& Selection() const;
 
   // Implements |ExecutionContextLifecycleObserver|.
-  // TODO(yosin): We should relocate |original_base_in_flat_tree_| when DOM tree
-  // changed.
+  // TODO(yosin): We should relocate |original_anchor_in_flat_tree_| when DOM
+  // tree changed.
   void ContextDestroyed() final;
 
   bool HandleSingleClick(const MouseEventWithHitTestResults&);
@@ -139,8 +139,8 @@ class CORE_EXPORT SelectionController final
                                 const SelectionInFlatTree&);
 
   Member<LocalFrame> const frame_;
-  // Used to store base before the adjustment at bidi boundary
-  PositionInFlatTreeWithAffinity original_base_in_flat_tree_;
+  // Used to store anchor before the adjustment at bidi boundary
+  PositionInFlatTreeWithAffinity original_anchor_in_flat_tree_;
   bool mouse_down_may_start_select_;
   bool mouse_down_was_single_click_on_caret_ = false;
   bool mouse_down_was_single_click_in_selection_;

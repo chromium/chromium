@@ -11,7 +11,9 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
+#include "components/metrics/demographics/user_demographics.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/in_memory_pref_store.h"
 #include "components/prefs/overlay_user_pref_store.h"
@@ -19,6 +21,7 @@
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_value_store.h"
 #include "components/sync/base/features.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync_preferences/dual_layer_user_pref_store.h"
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
@@ -29,6 +32,42 @@
 #endif
 
 namespace sync_preferences {
+
+class PrefServiceSyncable::DemographicsPrefsClearer
+    : public syncer::SyncServiceObserver {
+ public:
+  DemographicsPrefsClearer(PrefService* pref_service,
+                           syncer::SyncService* sync_service)
+      : pref_service_(pref_service) {
+    if (sync_service) {
+      sync_observation_.Observe(sync_service);
+    }
+  }
+
+  void OnStateChanged(syncer::SyncService* sync) override {
+    switch (sync->GetTransportState()) {
+      case syncer::SyncService::TransportState::DISABLED:
+        metrics::ClearDemographicsPrefs(pref_service_);
+        break;
+      case syncer::SyncService::TransportState::PAUSED:
+      case syncer::SyncService::TransportState::START_DEFERRED:
+      case syncer::SyncService::TransportState::INITIALIZING:
+      case syncer::SyncService::TransportState::PENDING_DESIRED_CONFIGURATION:
+      case syncer::SyncService::TransportState::CONFIGURING:
+      case syncer::SyncService::TransportState::ACTIVE:
+        break;
+    }
+  }
+
+  void OnSyncShutdown(syncer::SyncService* sync) override {
+    sync_observation_.Reset();
+  }
+
+ private:
+  const raw_ptr<PrefService> pref_service_;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_observation_{this};
+};
 
 PrefServiceSyncable::PrefServiceSyncable(
     std::unique_ptr<PrefNotifierImpl> pref_notifier,
@@ -194,7 +233,7 @@ void PrefServiceSyncable::RemoveObserver(
 }
 
 syncer::SyncableService* PrefServiceSyncable::GetSyncableService(
-    const syncer::ModelType& type) {
+    const syncer::DataType& type) {
   switch (type) {
     case syncer::PREFERENCES:
       return &pref_sync_associator_;
@@ -207,7 +246,7 @@ syncer::SyncableService* PrefServiceSyncable::GetSyncableService(
       return &os_priority_pref_sync_associator_;
 #endif
     default:
-      NOTREACHED() << "invalid model type: " << type;
+      NOTREACHED_IN_MIGRATION() << "invalid data type: " << type;
       return nullptr;
   }
 }
@@ -241,9 +280,8 @@ void PrefServiceSyncable::RemoveSyncedPrefObserver(
 #endif
 }
 
-void PrefServiceSyncable::AddRegisteredSyncablePreference(
-    const std::string& path,
-    uint32_t flags) {
+void PrefServiceSyncable::AddRegisteredSyncablePreference(std::string_view path,
+                                                          uint32_t flags) {
   DCHECK(FindPreference(path));
   if (flags & user_prefs::PrefRegistrySyncable::SYNCABLE_PREF) {
     pref_sync_associator_.RegisterPref(path);
@@ -266,7 +304,7 @@ void PrefServiceSyncable::AddRegisteredSyncablePreference(
 }
 
 base::Value::Type PrefServiceSyncable::GetRegisteredPrefType(
-    const std::string& pref_name) const {
+    std::string_view pref_name) const {
   const Preference* pref = FindPreference(pref_name);
   DCHECK(pref);
   return pref->GetType();
@@ -278,8 +316,7 @@ void PrefServiceSyncable::OnIsSyncingChanged() {
   }
 }
 
-uint32_t PrefServiceSyncable::GetWriteFlags(
-    const std::string& pref_name) const {
+uint32_t PrefServiceSyncable::GetWriteFlags(std::string_view pref_name) const {
   const Preference* pref = FindPreference(pref_name);
   return PrefService::GetWriteFlags(pref);
 }
@@ -289,6 +326,8 @@ void PrefServiceSyncable::OnSyncServiceInitialized(
   if (dual_layer_user_prefs_) {
     dual_layer_user_prefs_->OnSyncServiceInitialized(sync_service);
   }
+  demographics_prefs_clearer_ =
+      std::make_unique<DemographicsPrefsClearer>(this, sync_service);
 }
 
 }  // namespace sync_preferences

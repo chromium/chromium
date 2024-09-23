@@ -4,145 +4,88 @@
 
 package org.chromium.chrome.browser.device_reauth;
 
-import static android.hardware.biometrics.BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE;
-import static android.hardware.biometrics.BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED;
-import static android.hardware.biometrics.BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
-import static android.hardware.biometrics.BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED;
-import static android.hardware.biometrics.BiometricManager.BIOMETRIC_SUCCESS;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 
-import android.app.KeyguardManager;
-import android.content.Context;
-import android.hardware.biometrics.BiometricManager;
-import android.hardware.biometrics.BiometricPrompt;
-import android.os.Build;
-import android.os.CancellationSignal;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.base.WindowAndroid;
 
-import java.util.concurrent.Executor;
-
-class DeviceAuthenticatorBridge {
-    private CancellationSignal mCancellationSignal;
-    private final Context mContext;
+class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegate {
     private long mNativeDeviceAuthenticator;
-    private BiometricPrompt mBiometricPrompt;
+    private DeviceAuthenticatorController mController;
 
-    private DeviceAuthenticatorBridge(long nativeDeviceAuthenticator) {
+    private DeviceAuthenticatorBridge(
+            long nativeDeviceAuthenticator, @Nullable FragmentActivity activity) {
         mNativeDeviceAuthenticator = nativeDeviceAuthenticator;
-        mContext = ContextUtils.getApplicationContext();
-        mNativeDeviceAuthenticator = nativeDeviceAuthenticator;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            BiometricPrompt.Builder promptBuilder =
-                    new BiometricPrompt.Builder(mContext)
-                            .setTitle(
-                                    mContext.getResources()
-                                            .getString(
-                                                    R.string.password_filling_reauth_prompt_title));
-            promptBuilder.setDeviceCredentialAllowed(true);
-            promptBuilder.setConfirmationRequired(false);
-            mBiometricPrompt = promptBuilder.build();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.BIOMETRIC_AUTH_IDENTITY_CHECK)
+                && VERSION.SDK_INT >= VERSION_CODES.VANILLA_ICE_CREAM) {
+            mController =
+                    new MandatoryAuthenticatorControllerImpl(
+                            ContextUtils.getApplicationContext(), this);
+        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEVICE_AUTHENTICATOR_ANDROIDX)) {
+            if (activity == null) return;
+            mController = new AndroidxDeviceAuthenticatorControllerImpl(activity, this);
+        } else {
+            mController =
+                    new DeviceAuthenticatorControllerImpl(
+                            ContextUtils.getApplicationContext(), this);
         }
     }
 
     @CalledByNative
-    private static DeviceAuthenticatorBridge create(long nativeDeviceAuthenticator) {
-        return new DeviceAuthenticatorBridge(nativeDeviceAuthenticator);
+    private static DeviceAuthenticatorBridge createForWindow(
+            long nativeDeviceAuthenticator, @Nullable WindowAndroid window) {
+        FragmentActivity activity =
+                (window == null || window.getActivity().get() == null)
+                        ? null
+                        : (FragmentActivity) window.getActivity().get();
+        return new DeviceAuthenticatorBridge(nativeDeviceAuthenticator, activity);
+    }
+
+    @CalledByNative
+    private static DeviceAuthenticatorBridge createForActivity(
+            long nativeDeviceAuthenticator, FragmentActivity activity) {
+        return new DeviceAuthenticatorBridge(nativeDeviceAuthenticator, activity);
     }
 
     @CalledByNative
     @BiometricsAvailability
     int canAuthenticateWithBiometric() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return BiometricsAvailability.ANDROID_VERSION_NOT_SUPPORTED;
-        }
-        BiometricManager biometricManager = mContext.getSystemService(BiometricManager.class);
-        switch (biometricManager.canAuthenticate()) {
-            case BIOMETRIC_SUCCESS:
-                return hasScreenLockSetUp()
-                        ? BiometricsAvailability.AVAILABLE
-                        : BiometricsAvailability.AVAILABLE_NO_FALLBACK;
-            case BIOMETRIC_ERROR_NONE_ENROLLED:
-                return BiometricsAvailability.NOT_ENROLLED;
-            case BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED:
-                return BiometricsAvailability.SECURITY_UPDATE_REQUIRED;
-            case BIOMETRIC_ERROR_NO_HARDWARE:
-                return BiometricsAvailability.NO_HARDWARE;
-            case BIOMETRIC_ERROR_HW_UNAVAILABLE:
-                return BiometricsAvailability.HW_UNAVAILABLE;
-            default:
-                return BiometricsAvailability.OTHER_ERROR;
-        }
+        if (mController == null) return BiometricsAvailability.OTHER_ERROR;
+
+        return mController.canAuthenticateWithBiometric();
     }
 
     /**
      * A general method to check whether we can authenticate either via biometrics or screen lock.
      *
-     * True, if either biometrics are enrolled or screen lock is setup, false otherwise.
+     * <p>True, if either biometrics are enrolled or screen lock is setup, false otherwise.
      */
     @CalledByNative
     boolean canAuthenticateWithBiometricOrScreenLock() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return false;
-        }
+        if (mController == null) return false;
 
-        @BiometricsAvailability int availability = canAuthenticateWithBiometric();
-        return (availability == BiometricsAvailability.AVAILABLE) || hasScreenLockSetUp();
+        return mController.canAuthenticateWithBiometricOrScreenLock();
     }
 
     @CalledByNative
-    @RequiresApi(Build.VERSION_CODES.P)
     void authenticate() {
-        if (mBiometricPrompt == null) {
-            return;
-        }
-        mCancellationSignal = new CancellationSignal();
-        Executor callbackExecutor = (r) -> PostTask.postTask(TaskTraits.UI_DEFAULT, r);
+        assert mController != null
+                : "The authentication controller must not be null, call"
+                        + " canAuthenticateWithBiometric before this.";
 
-        mBiometricPrompt.authenticate(
-                mCancellationSignal,
-                callbackExecutor,
-                new BiometricPrompt.AuthenticationCallback() {
-                    @Override
-                    public void onAuthenticationError(
-                            int errorCode, @NonNull CharSequence errString) {
-                        super.onAuthenticationError(errorCode, errString);
-                        if (errorCode == BiometricPrompt.BIOMETRIC_ERROR_USER_CANCELED) {
-                            onAuthenticationCompleted(DeviceAuthUIResult.CANCELED_BY_USER);
-                            return;
-                        }
-                        onAuthenticationCompleted(DeviceAuthUIResult.FAILED);
-                    }
-
-                    @Override
-                    public void onAuthenticationSucceeded(
-                            @NonNull BiometricPrompt.AuthenticationResult result) {
-                        super.onAuthenticationSucceeded(result);
-                        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.R) {
-                            onAuthenticationCompleted(
-                                    DeviceAuthUIResult.SUCCESS_WITH_UNKNOWN_METHOD);
-                            return;
-                        }
-
-                        if (result.getAuthenticationType()
-                                == BiometricPrompt.AUTHENTICATION_RESULT_TYPE_BIOMETRIC) {
-                            onAuthenticationCompleted(DeviceAuthUIResult.SUCCESS_WITH_BIOMETRICS);
-                            return;
-                        }
-                        onAuthenticationCompleted(DeviceAuthUIResult.SUCCESS_WITH_DEVICE_LOCK);
-                    }
-                });
+        mController.authenticate();
     }
 
-    void onAuthenticationCompleted(@DeviceAuthUIResult int result) {
-        mCancellationSignal = null;
+    @Override
+    public void onAuthenticationCompleted(@DeviceAuthUIResult int result) {
         if (mNativeDeviceAuthenticator != 0) {
             DeviceAuthenticatorBridgeJni.get()
                     .onAuthenticationCompleted(mNativeDeviceAuthenticator, result);
@@ -157,14 +100,7 @@ class DeviceAuthenticatorBridge {
 
     @CalledByNative
     void cancel() {
-        if (mCancellationSignal != null) {
-            mCancellationSignal.cancel();
-        }
-    }
-
-    private boolean hasScreenLockSetUp() {
-        return ((KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE))
-                .isKeyguardSecure();
+        mController.cancel();
     }
 
     @NativeMethods

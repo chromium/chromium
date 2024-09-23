@@ -77,10 +77,12 @@ class TestBackForwardMenuDelegate : public ui::MenuModelDelegate {
 class BackFwdMenuModelTest : public ChromeRenderViewHostTestHarness {
  public:
   TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {{HistoryServiceFactory::GetInstance(),
-             HistoryServiceFactory::GetDefaultFactory()},
-            {FaviconServiceFactory::GetInstance(),
-             FaviconServiceFactory::GetDefaultFactory()}};
+    return {TestingProfile::TestingFactory{
+                HistoryServiceFactory::GetInstance(),
+                HistoryServiceFactory::GetDefaultFactory()},
+            TestingProfile::TestingFactory{
+                FaviconServiceFactory::GetInstance(),
+                FaviconServiceFactory::GetDefaultFactory()}};
   }
 
   void ValidateModel(BackForwardMenuModel* model,
@@ -480,7 +482,7 @@ TEST_F(BackFwdMenuModelTest, ChapterStops) {
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     // The case below currently fails on the linux-bfcache-rel bot with
     // back/forward cache enabled, so return early.
-    // TODO(https://crbug.com/1232883): re-enable this test.
+    // TODO(crbug.com/40780539): re-enable this test.
     return;
   }
 

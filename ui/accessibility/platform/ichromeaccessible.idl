@@ -38,7 +38,7 @@ interface IChromeAccessibleDelegate : IUnknown
 [object, uuid(6175bd95-3b2e-4ebc-bc51-9cab782bec92), pointer_default(unique)]
 interface IChromeAccessible : IUnknown
 {
-  // TODO(crbug.com/1083834): Fully document this interface.
+  // TODO(crbug.com/40692720): Fully document this interface.
   // Fetch multiple accessibility properties of one or more accessibility
   // nodes as JSON. This method is asynchronous; the result is returned
   // by calling put_bulkFetchResult on |delegate|. The client can pass any

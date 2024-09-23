@@ -11,14 +11,19 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
 #include "base/android_runtime_jni_headers/Throwable_jni.h"
-#include "base/base_jni/JniAndroid_jni.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/robolectric_buildflags.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
-#include "third_party/jni_zero/core.h"
+#include "third_party/jni_zero/jni_zero.h"
+
+#if BUILDFLAG(IS_ROBOLECTRIC)
+#include "base/base_robolectric_jni/JniAndroid_jni.h"  // nogncheck
+#else
+#include "base/base_jni/JniAndroid_jni.h"
+#endif
 
 namespace base {
 namespace android {
@@ -28,7 +33,7 @@ namespace {
 // uncaught Java exception (historical behavior). If enabled, we give the Java
 // uncaught exception handler a chance to handle the exception first, so that
 // the crash is (hopefully) seen as a Java crash, not a native crash.
-// TODO(https://crbug.com/1426888): remove this switch once we are confident the
+// TODO(crbug.com/40261529): remove this switch once we are confident the
 // new behavior is fine.
 BASE_FEATURE(kHandleExceptionsInJava,
              "HandleJniExceptionsInJava",
@@ -45,9 +50,11 @@ jmethodID g_class_loader_load_class_method_id = nullptr;
 jclass GetClassFromSplit(JNIEnv* env,
                          const char* class_name,
                          const char* split_name) {
+  DCHECK(IsStringASCII(class_name));
+  ScopedJavaLocalRef<jstring> j_class_name(env, env->NewStringUTF(class_name));
   return static_cast<jclass>(env->CallObjectMethod(
       GetSplitClassLoader(env, split_name), g_class_loader_load_class_method_id,
-      ConvertUTF8ToJavaString(env, class_name).obj()));
+      j_class_name.obj()));
 }
 
 // Must be called before using GetClassFromSplit - we need to set the global,

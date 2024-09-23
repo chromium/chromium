@@ -4,27 +4,27 @@
 
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_client_factory.h"
 
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 class SafeBrowsingClientFactoryTest : public PlatformTest {
  protected:
   SafeBrowsingClientFactoryTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()) {}
+      : profile_(TestProfileIOS::Builder().Build()) {}
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
 };
 
 // Checks that different instances are returned for recording and off the record
-// browser states.
+// profiles.
 TEST_F(SafeBrowsingClientFactoryTest, DifferentClientInstances) {
   SafeBrowsingClient* recording_client =
-      SafeBrowsingClientFactory::GetForBrowserState(browser_state_.get());
+      SafeBrowsingClientFactory::GetForProfile(profile_.get());
   SafeBrowsingClient* off_the_record_client =
-      SafeBrowsingClientFactory::GetForBrowserState(
-          browser_state_->GetOffTheRecordChromeBrowserState());
+      SafeBrowsingClientFactory::GetForProfile(
+          profile_->GetOffTheRecordProfile());
   EXPECT_TRUE(recording_client);
   EXPECT_TRUE(off_the_record_client);
   EXPECT_NE(recording_client, off_the_record_client);

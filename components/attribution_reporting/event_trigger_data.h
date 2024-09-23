@@ -17,6 +17,34 @@
 
 namespace attribution_reporting {
 
+class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventTriggerValue {
+ public:
+  static base::expected<EventTriggerValue, mojom::TriggerRegistrationError>
+  Parse(const base::Value::Dict&);
+
+  EventTriggerValue() = default;
+
+  // `CHECK()`s that the given value is non-zero.
+  explicit EventTriggerValue(uint32_t);
+
+  EventTriggerValue(const EventTriggerValue&) = default;
+  EventTriggerValue& operator=(const EventTriggerValue&) = default;
+
+  EventTriggerValue(EventTriggerValue&&) = default;
+  EventTriggerValue& operator=(EventTriggerValue&&) = default;
+
+  // This implicit conversion is allowed to ease drop-in use of
+  // this type in places currently requiring `uint32_t` with prior validation.
+  operator uint32_t() const {  // NOLINT
+    return value_;
+  }
+
+  void Serialize(base::Value::Dict&) const;
+
+ private:
+  uint32_t value_ = 1;
+};
+
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventTriggerData {
   static base::expected<EventTriggerData, mojom::TriggerRegistrationError>
   FromJSON(base::Value& value);
@@ -39,6 +67,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventTriggerData {
   // The filters used to determine whether this `EventTriggerData'`s fields
   // are used.
   FilterPair filters;
+
+  // TODO(crbug.com/40287976): Add an `EventTriggerValue` field called `value`.
 
   EventTriggerData();
 

@@ -18,9 +18,11 @@ BoundSessionRequestThrottledHandlerBrowserImpl::
 
 void BoundSessionRequestThrottledHandlerBrowserImpl::
     HandleRequestBlockedOnCookie(
+        const GURL& untrusted_request_url,
         ResumeOrCancelThrottledRequestCallback callback) {
   if (cookie_refresh_service_) {
     cookie_refresh_service_->HandleRequestBlockedOnCookie(
+        untrusted_request_url,
         base::BindOnce(std::move(callback), UnblockAction::kResume));
   } else {
     // The service has been shutdown.

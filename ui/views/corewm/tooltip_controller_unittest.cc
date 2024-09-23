@@ -62,7 +62,6 @@ class TestTooltipLacros : public Tooltip {
   TestTooltipLacros& operator=(const TestTooltipLacros&) = delete;
 
   ~TestTooltipLacros() override {
-    tooltip_parent_ = nullptr;
     state_manager_ = nullptr;
   }
 
@@ -90,6 +89,7 @@ class TestTooltipLacros : public Tooltip {
   }
   void Hide() override {
     is_visible_ = false;
+    tooltip_parent_ = nullptr;
     DCHECK(state_manager_);
     state_manager_->OnTooltipHiddenOnServer();
   }
@@ -112,12 +112,11 @@ class TestTooltipLacros : public Tooltip {
 };
 #endif
 
-views::Widget* CreateWidget(aura::Window* root) {
-  views::Widget* widget = new views::Widget;
-  views::Widget::InitParams params;
+std::unique_ptr<views::Widget> CreateWidget(aura::Window* root) {
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET);
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.accept_events = true;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
 #if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
   params.parent = root;
 #endif
@@ -156,7 +155,7 @@ class TooltipControllerTest : public ViewsTestBase {
       SetTooltipClient(root_window, controller_.get());
     }
 #endif
-    widget_.reset(CreateWidget(root_window));
+    widget_ = CreateWidget(root_window);
     widget_->SetContentsView(std::make_unique<View>());
     view_ = new TooltipTestView;
     widget_->GetContentsView()->AddChildView(view_.get());
@@ -185,18 +184,26 @@ class TooltipControllerTest : public ViewsTestBase {
   }
 
   void TearDown() override {
+    // Reset the tooltip in case tests end with a visible tooltip.
+    helper_->state_manager()->HideAndReset();
+
 #if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
     aura::Window* root_window = GetContext();
     if (root_window) {
       root_window->RemovePreTargetHandler(controller_.get());
       wm::SetTooltipClient(root_window, nullptr);
+      tooltip_ = nullptr;
+      helper_->set_controller(nullptr);
       controller_.reset();
     }
 #endif
     generator_.reset();
     helper_.reset();
     view_ = nullptr;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    widget_->CloseNow();
+#endif
     widget_.reset();
     ViewsTestBase::TearDown();
   }
@@ -236,7 +243,7 @@ class TooltipControllerTest : public ViewsTestBase {
 
  protected:
 #if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
-  raw_ptr<TooltipAura, DanglingUntriaged> tooltip_;  // not owned.
+  raw_ptr<TooltipAura> tooltip_;  // not owned.
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   raw_ptr<TestTooltipLacros> tooltip_;  // not owned.
 #endif
@@ -863,7 +870,7 @@ TEST_F(TooltipControllerTest, MAYBE_Capture) {
   widget_->SetBounds(gfx::Rect(0, 0, 200, 200));
   view_->set_tooltip_text(tooltip_text);
 
-  std::unique_ptr<views::Widget> widget2(CreateWidget(GetContext()));
+  std::unique_ptr<views::Widget> widget2 = CreateWidget(GetContext());
   widget2->SetContentsView(std::make_unique<View>());
   TooltipTestView* view2 = new TooltipTestView;
   widget2->GetContentsView()->AddChildView(view2);
@@ -901,7 +908,7 @@ TEST_F(TooltipControllerTest, MAYBE_Capture) {
   // refer to its parent property. In this scenario, `widget_child`'s parent is
   // `widget2` and it has the same kGroupingPropertyKey as `widget_`'s key, so
   // `widget_child` should show tooltip when `widget_` has a capture.
-  std::unique_ptr<views::Widget> widget_child(CreateWidget(GetContext()));
+  std::unique_ptr<views::Widget> widget_child = CreateWidget(GetContext());
   widget_child->SetContentsView(std::make_unique<View>());
   TooltipTestView* view_child = new TooltipTestView;
   widget_child->GetContentsView()->AddChildView(view_child);
@@ -1120,6 +1127,9 @@ class TooltipControllerTest2 : public aura::test::AuraTestBase {
   }
 
   void TearDown() override {
+    // Reset the tooltip in case tests end with a visible tooltip.
+    helper_->state_manager()->HideAndReset();
+
     root_window()->RemovePreTargetHandler(controller_.get());
     wm::SetTooltipClient(root_window(), nullptr);
     controller_.reset();
@@ -1193,7 +1203,7 @@ class TooltipControllerTest3 : public ViewsTestBase {
 
     ViewsTestBase::SetUp();
 
-    widget_.reset(CreateWidget(GetContext()));
+    widget_ = CreateWidget(GetContext());
     widget_->SetContentsView(std::make_unique<View>());
     view_ = new TooltipTestView;
     widget_->GetContentsView()->AddChildView(view_.get());

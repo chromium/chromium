@@ -60,7 +60,7 @@ void FakeClientConnectionParameters::PerformSetConnectionSucceeded(
 
 void FakeClientConnectionParameters::UpdateBleDiscoveryState(
     mojom::DiscoveryResult discovery_result,
-    absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+    std::optional<mojom::DiscoveryErrorCode> potential_error_code) {
   ble_discovery_result_ = discovery_result;
   potential_ble_discovery_error_code_ = potential_error_code;
 }

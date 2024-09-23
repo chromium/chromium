@@ -56,7 +56,7 @@ bool PDFiumTestBase::UsingTestFonts() {
 }
 
 void PDFiumTestBase::SetUp() {
-  InitializePDFium();
+  InitializePDFiumSDK();
 }
 
 void PDFiumTestBase::TearDown() {
@@ -104,7 +104,7 @@ PDFiumTestBase::InitializeEngineWithoutLoading(
   return result;
 }
 
-void PDFiumTestBase::InitializePDFium() {
+void PDFiumTestBase::InitializePDFiumSDK() {
   font_paths_.clear();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   test_fonts_path_ = GetTestFontsDir();

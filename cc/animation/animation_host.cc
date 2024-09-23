@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -129,6 +130,17 @@ void AnimationHost::RemoveAnimationTimeline(
   EraseTimeline(timeline);
   id_to_timeline_map_.Write(*this).erase(timeline->id());
   SetNeedsPushProperties();
+}
+
+void AnimationHost::DetachAnimationTimeline(
+    scoped_refptr<AnimationTimeline> timeline) {
+  if (InProtectedSequence()) {
+    // Defer cleanup until post-commit.
+    detached_timeline_map_.Write(*this).insert(
+        std::make_pair(timeline->id(), timeline));
+  } else {
+    RemoveAnimationTimeline(timeline);
+  }
 }
 
 void AnimationHost::SetHasCanvasInvalidation(bool has_canvas_invalidation) {
@@ -330,8 +342,8 @@ void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
                                      const PropertyTrees& property_trees) {
   auto* host_impl = static_cast<AnimationHost*>(mutator_host_impl);
 
-  base::AutoReset<const PropertyTrees*> properties(&property_trees_,
-                                                   &property_trees);
+  base::AutoReset<raw_ptr<const PropertyTrees>> properties(&property_trees_,
+                                                           &property_trees);
 
   // Update animation counts and whether raf was requested. These explicitly
   // do not request push properties and are pushed as part of the next commit
@@ -354,6 +366,18 @@ void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
     // This is redundant but used in tests.
     host_impl->needs_push_properties_.Write(*host_impl) = false;
   }
+}
+
+void AnimationHost::RemoveStaleTimelines() {
+  DCHECK(!InProtectedSequence());
+  if (detached_timeline_map_.Read(*this).empty()) {
+    return;
+  }
+
+  for (auto& kv : detached_timeline_map_.Read(*this)) {
+    RemoveAnimationTimeline(kv.second);
+  }
+  detached_timeline_map_.Write(*this).clear();
 }
 
 void AnimationHost::PushTimelinesToImplThread(AnimationHost* host_impl) const {
@@ -387,8 +411,8 @@ void AnimationHost::RemoveTimelinesFromImplThread(
 }
 
 void AnimationHost::PushPropertiesToImplThread(AnimationHost* host_impl) {
-  base::AutoReset<const PropertyTrees*> properties(&host_impl->property_trees_,
-                                                   property_trees_);
+  base::AutoReset<raw_ptr<const PropertyTrees>> properties(
+      &host_impl->property_trees_, property_trees_);
 
   // Sync all animations with impl thread to create ElementAnimations. This
   // needs to happen before the element animations are synced below.

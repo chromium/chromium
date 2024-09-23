@@ -5,6 +5,7 @@
 #ifndef UI_WEBUI_EXAMPLES_BROWSER_DEVTOOLS_DEVTOOLS_FRONTEND_H_
 #define UI_WEBUI_EXAMPLES_BROWSER_DEVTOOLS_DEVTOOLS_FRONTEND_H_
 
+#include "base/memory/raw_ptr.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -32,8 +33,8 @@ class DevToolsFrontend {
   DevToolsFrontend(content::WebContents* inspected_contents);
 
   const GURL frontend_url_;
-  content::WebContents* inspected_contents_;
-  content::WebContents* devtools_contents_;
+  raw_ptr<content::WebContents> inspected_contents_;
+  raw_ptr<content::WebContents> devtools_contents_;
   std::unique_ptr<AgentHostClient> agent_host_client_;
 };
 

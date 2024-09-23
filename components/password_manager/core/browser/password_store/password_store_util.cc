@@ -12,12 +12,14 @@ PasswordChanges JoinPasswordStoreChanges(
     const std::vector<PasswordChangesOrError>& changes_to_join) {
   PasswordStoreChangeList joined_changes;
   for (const auto& changes_or_error : changes_to_join) {
-    if (absl::holds_alternative<PasswordStoreBackendError>(changes_or_error))
+    if (absl::holds_alternative<PasswordStoreBackendError>(changes_or_error)) {
       return std::nullopt;
+    }
     const PasswordChanges& changes =
         absl::get<PasswordChanges>(changes_or_error);
-    if (!changes.has_value())
+    if (!changes.has_value()) {
       return std::nullopt;
+    }
     base::ranges::copy(*changes, std::back_inserter(joined_changes));
   }
   return joined_changes;

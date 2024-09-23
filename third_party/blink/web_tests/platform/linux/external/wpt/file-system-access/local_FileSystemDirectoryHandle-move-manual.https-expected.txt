@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+[FAIL] move(name) to rename an empty directory
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'move' on 'FileSystemHandle': The user aborted a request."
+[FAIL] move("") to rename an empty directory fails
+  promise_rejects_js: function "function() { throw e }" threw object "AbortError: Failed to execute 'move' on 'FileSystemHandle': The user aborted a request." ("AbortError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] move(name) to rename a non-empty directory
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'move' on 'FileSystemHandle': The user aborted a request."
+[FAIL] move(dir, name) to rename an empty directory
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'move' on 'FileSystemHandle': The user aborted a request."
+[FAIL] move(dir, name) to rename a non-empty directory
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'move' on 'FileSystemHandle': The user aborted a request."
+[FAIL] move(dir) to move an empty directory to a new directory
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'move' on 'FileSystemHandle': The user aborted a request."
+[FAIL] move(dir, name) to move an empty directory to a new directory
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'move' on 'FileSystemHandle': The user aborted a request."
+[FAIL] move(dir) to move a non-empty directory to a new directory
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'move' on 'FileSystemHandle': The user aborted a request."
+[FAIL] move(dir, name) to move a non-empty directory to a new directory
+  promise_test: Unhandled rejection with value: object "AbortError: Failed to execute 'move' on 'FileSystemHandle': The user aborted a request."
+[FAIL] move(dir, name) with a name with invalid characters should fail
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'move' on 'FileSystemFileHandle'"
+[FAIL] move(dir, name) to move a directory within itself fails
+  promise_rejects_dom: function "function() { throw e }" threw object "AbortError: Failed to execute 'move' on 'FileSystemHandle': The user aborted a request." that is not a DOMException InvalidModificationError: property "code" is equal to 20, expected 13
+[FAIL] move(dir, name) to move a directory within itself and rename fails
+  promise_rejects_dom: function "function() { throw e }" threw object "AbortError: Failed to execute 'move' on 'FileSystemHandle': The user aborted a request." that is not a DOMException InvalidModificationError: property "code" is equal to 20, expected 13
+[FAIL] move(dir) to move a directory within a descendent fails
+  promise_rejects_dom: function "function() { throw e }" threw object "AbortError: Failed to execute 'move' on 'FileSystemHandle': The user aborted a request." that is not a DOMException InvalidModificationError: property "code" is equal to 20, expected 13
+[FAIL] move(dir, name) to move a directory within a descendent fails
+  promise_rejects_dom: function "function() { throw e }" threw object "AbortError: Failed to execute 'move' on 'FileSystemHandle': The user aborted a request." that is not a DOMException InvalidModificationError: property "code" is equal to 20, expected 13
+Harness: the test ran to completion.
+

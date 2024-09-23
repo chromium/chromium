@@ -15,7 +15,7 @@ namespace autofill {
 
 class FormFieldDataAndroid;
 
-struct FormData;
+class FormData;
 
 // Interface for the C++ <-> Android bridge between `FormDataAndroid` and Java
 // `FormData`.

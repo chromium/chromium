@@ -1,0 +1,3 @@
+android.webkit.WebView focusable focused
+++android.view.View role_description='menu pop up button' clickable collapsed focusable name='Onscreen 1'
+++android.view.View role_description='menu pop up button' clickable collapsed focusable name='Offscreen 1'

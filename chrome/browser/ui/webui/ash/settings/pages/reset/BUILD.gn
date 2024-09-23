@@ -1,0 +1,30 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("reset") {
+  sources = [
+    "reset_section.cc",
+    "reset_section.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/app/resources:locale_settings",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] > .foo in .nest,@scope created by string valid
+  assert_equals: expected 1 but got 0
+[FAIL] > .foo in .nest,@scope created by insertRule valid
+  Failed to execute 'insertRule' on 'CSSStyleRule': Only conditional nested group rules, style rules, and nested declaration rules may be nested.
+[FAIL] > .foo in .nest,@scope,@media screen created by insertRule valid
+  Failed to execute 'insertRule' on 'CSSStyleRule': Only conditional nested group rules, style rules, and nested declaration rules may be nested.
+Harness: the test ran to completion.
+

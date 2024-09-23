@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -13,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
@@ -36,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/html/html_embed_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
@@ -111,7 +114,7 @@ class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
     host_context_menu_location_ = host_context_menu_location;
   }
 
-  WebMediaPlayer* CreateMediaPlayer(
+  std::unique_ptr<WebMediaPlayer> CreateMediaPlayer(
       const WebMediaPlayerSource&,
       WebMediaPlayerClient*,
       blink::MediaInspectorContext*,
@@ -120,7 +123,7 @@ class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
       const WebString& sink_id,
       const cc::LayerTreeSettings* settings,
       scoped_refptr<base::TaskRunner> compositor_worker_task_runner) override {
-    return new MockWebMediaPlayerForContextMenu();
+    return std::make_unique<MockWebMediaPlayerForContextMenu>();
   }
 
   const ContextMenuData& GetContextMenuData() const {
@@ -1971,6 +1974,8 @@ TEST_F(ContextMenuControllerTest, AttributionSrc) {
       anchor->setAttribute(html_names::kAttributionsrcAttr,
                            AtomicString(test_case.attributionsrc));
     }
+
+    GetPage()->SetAttributionSupport(network::mojom::AttributionSupport::kWeb);
 
     GetDocument()->body()->AppendChild(anchor);
     ASSERT_TRUE(ShowContextMenuForElement(anchor, kMenuSourceMouse));

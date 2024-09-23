@@ -115,6 +115,15 @@ public class Snackbar {
     public static final int UMA_QUICK_DELETE = 60;
     public static final int UMA_AUTO_TRANSLATE = 61;
     public static final int UMA_BOOKMARK_MOVED = 62;
+    public static final int UMA_CLEAR_BROWSING_DATA = 63;
+    public static final int UMA_SIGN_OUT = 64;
+    public static final int UMA_TAB_GROUP_DELETE_UNDO = 65;
+    public static final int UMA_SINGLE_TAB_GROUP_DELETE_UNDO = 66;
+    public static final int UMA_SAFETY_HUB_REGRANT_SINGLE_PERMISSION = 67;
+    public static final int UMA_SAFETY_HUB_REGRANT_MULTIPLE_PERMISSIONS = 68;
+    public static final int UMA_SAFETY_HUB_SINGLE_SITE_NOTIFICATIONS = 69;
+    public static final int UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS = 70;
+    public static final int UMA_SETTINGS_BATCH_UPLOAD = 71;
 
     private @Nullable SnackbarController mController;
     private CharSequence mText;

@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_UTIL_H_
 
 #import <optional>
-#import <vector>
+#import <set>
 
 #import "base/unguessable_token.h"
 #import "base/values.h"
@@ -20,9 +20,8 @@ class WebState;
 
 namespace autofill {
 
-class FieldRendererId;
-struct FormData;
-struct FormFieldData;
+class FormData;
+class FormFieldData;
 class FieldDataManager;
 struct FrameTokenWithPredecessor;
 
@@ -51,6 +50,7 @@ bool ExtractFormsData(NSString* form_json,
                       const GURL& main_frame_url,
                       const GURL& frame_origin,
                       const FieldDataManager& field_data_manager,
+                      const std::string& frame_id,
                       std::vector<FormData>* forms_data);
 
 // Converts |form| into |form_data|.
@@ -64,6 +64,7 @@ bool ExtractFormData(const base::Value::Dict& form,
                      const GURL& main_frame_url,
                      const GURL& form_frame_origin,
                      const FieldDataManager& field_data_manager,
+                     const std::string& frame_id,
                      FormData* form_data);
 
 // Extracts a single form field from the JSON dictionary into a FormFieldData
@@ -99,8 +100,32 @@ void ExecuteJavaScriptFunction(const std::string& name,
                                web::WebFrame* frame,
                                JavaScriptResultCallback callback);
 
-// Extracts a vector of numeric renderer IDs from the JS returned json string.
-bool ExtractIDs(NSString* json_string, std::vector<FieldRendererId>* ids);
+// Extracts a vector of 32 bits numeric renderer IDs from the JS returned json
+// string.
+// - IDType: Identifier type must be constructable from uint32_t.
+template <typename IDType>
+std::optional<std::set<IDType>> ExtractIDs(NSString* json_string) {
+  std::unique_ptr<base::Value> ids_value = ParseJson(json_string);
+
+  if (!ids_value || !ids_value->is_list()) {
+    return std::nullopt;
+  }
+
+  std::set<IDType> ids;
+
+  for (const auto& unique_id : ids_value->GetList()) {
+    if (!unique_id.is_string()) {
+      return std::nullopt;
+    }
+    uint32_t id_num = 0;
+    if (!base::StringToUint(unique_id.GetString(), &id_num)) {
+      return std::nullopt;
+    }
+    ids.insert(IDType(id_num));
+  }
+
+  return ids;
+}
 
 // Extracts a map of filled renderer IDs and values from the JS returned json
 // string.

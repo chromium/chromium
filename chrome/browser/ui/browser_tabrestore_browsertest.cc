@@ -12,8 +12,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
+#include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/toolbar/recent_tabs_sub_menu_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -73,6 +73,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
   EXPECT_EQ(2u, active_browser_list->size());
 
   // Close the first browser.
+  const int active_tab_index = browser()->tab_strip_model()->active_index();
   CloseBrowserSynchronously(browser());
   EXPECT_EQ(1u, active_browser_list->size());
 
@@ -108,8 +109,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
     }
   }
 
-  // The middle tab only should have visible disposition.
-  CheckVisbility(restored_browser->tab_strip_model(), 1);
+  // Previously active tab should have visible disposition.
+  CheckVisbility(restored_browser->tab_strip_model(), active_tab_index);
 }
 
 // Expect a selected restored tab to start loading synchronously.
@@ -130,11 +131,13 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest,
       browser(), navigations, /* tab_index=*/1, /* selected_navigation=*/0,
       /* extension_app_id=*/std::string(), /* group=*/std::nullopt,
       /* select=*/true, /* pin=*/false,
-      /* last_active_time=*/base::TimeTicks::Now(),
+      /* last_active_time_ticks=*/base::TimeTicks::Now(),
+      /* last_active_time=*/base::Time::Now(),
       /* storage_namespace=*/nullptr,
       /* user_agent_override=*/sessions::SerializedUserAgentOverride(),
       /* extra_data*/ std::map<std::string, std::string>(),
-      /* from_session_restore=*/true);
+      /* from_session_restore=*/true,
+      /* is_active_browser=*/true);
 
   EXPECT_TRUE(web_contents->GetController().GetPendingEntry());
 }
@@ -153,11 +156,13 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest,
       browser(), navigations, /* tab_index=*/1, /* selected_navigation=*/0,
       /* extension_app_id=*/std::string(), /* group=*/std::nullopt,
       /* select=*/false, /* pin=*/false,
-      /* last_active_time=*/base::TimeTicks::Now(),
+      /* last_active_time_ticks=*/base::TimeTicks::Now(),
+      /* last_active_time=*/base::Time::Now(),
       /* storage_namespace=*/nullptr,
       /* user_agent_override=*/sessions::SerializedUserAgentOverride(),
       /* extra_data*/ std::map<std::string, std::string>(),
-      /* from_session_restore=*/true);
+      /* from_session_restore=*/true,
+      /* is_active_browser=*/true);
 
   EXPECT_FALSE(web_contents->GetController().GetPendingEntry());
 }
@@ -175,6 +180,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, DelegateRestoreTabDisposition) {
   EXPECT_EQ(2u, active_browser_list->size());
 
   // Close the first browser.
+  const int active_tab_index = browser()->tab_strip_model()->active_index();
   CloseBrowserSynchronously(browser());
   EXPECT_EQ(1u, active_browser_list->size());
 
@@ -212,6 +218,6 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, DelegateRestoreTabDisposition) {
     }
   }
 
-  // The middle tab only should have visible disposition.
-  CheckVisbility(browser->tab_strip_model(), 1);
+  // Previously active tab should have visible disposition.
+  CheckVisbility(browser->tab_strip_model(), active_tab_index);
 }

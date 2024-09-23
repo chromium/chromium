@@ -149,6 +149,9 @@ static const char kAllTracingCategories[] = "*";
   [_headerContentView addSubview:_menuButton];
   [_headerContentView addSubview:_field];
 
+  self.view.accessibilityElements = @[ _headerBackgroundView, _contentView ];
+  self.view.isAccessibilityElement = NO;
+
   _headerBackgroundView.backgroundColor =
       [ContentShellWindowDelegate backgroundColorDefault];
 
@@ -298,10 +301,17 @@ static const char kAllTracingCategories[] = "*";
 
   UIView* web_contents_view = _shell->web_contents()->GetNativeView().Get();
   [_contentView addSubview:web_contents_view];
+
+  if (@available(ios 17.0, *)) {
+    NSArray<UITrait>* traits = @[ UITraitUserInterfaceStyle.self ];
+    [self registerForTraitChanges:traits
+                       withTarget:self
+                           action:@selector(darkModeDidChange)];
+  }
+  [self darkModeDidChange];
 }
 
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
+- (void)darkModeDidChange {
   BOOL darkModeEnabled =
       (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
   _field.backgroundColor =
@@ -624,7 +634,7 @@ void ShellPlatformDelegate::EnableUIControl(Shell* shell,
       break;
     }
     default:
-      NOTREACHED() << "Unknown UI control";
+      NOTREACHED_IN_MIGRATION() << "Unknown UI control";
       return;
   }
   [button setEnabled:is_enabled];

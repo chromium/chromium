@@ -4,10 +4,12 @@ include_rules = [
   "+components/system_cpu",
   "+components/variations",
   "+device",
+  "+net/base",
   "+services/device/usb/jni_headers",
   "+services/network/public/cpp",
   "+services/network/test",
   "+testing/gmock/include/gmock/gmock.h",
+  "+third_party/ocmock",
   "+ui/gfx/native_widget_types.h",
 ]
 

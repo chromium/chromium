@@ -11,6 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
@@ -101,7 +103,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void Close() override;
   void CloseNow() override;
   aura::WindowTreeHost* AsWindowTreeHost() override;
-  void Show(ui::WindowShowState show_state,
+  void Show(ui::mojom::WindowShowState show_state,
             const gfx::Rect& restore_bounds) override;
   bool IsVisible() const override;
   void SetSize(const gfx::Size& size) override;
@@ -109,8 +111,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void StackAtTop() override;
   bool IsStackedAbove(aura::Window* window) override;
   void CenterWindow(const gfx::Size& size) override;
-  void GetWindowPlacement(gfx::Rect* bounds,
-                          ui::WindowShowState* show_state) const override;
+  void GetWindowPlacement(
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const override;
   gfx::Rect GetWindowBoundsInScreen() const override;
   gfx::Rect GetClientAreaBoundsInScreen() const override;
   gfx::Rect GetRestoredBounds() const override;
@@ -151,7 +154,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
                       const gfx::Size& excluded_margin) override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
-  void InitModalType(ui::ModalType modal_type) override;
+  void InitModalType(ui::mojom::ModalType modal_type) override;
   void FlashFrame(bool flash_frame) override;
   bool IsAnimatingClosed() const override;
   void SizeConstraintsChanged() override;
@@ -160,6 +163,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   bool ShouldCreateVisibilityController() const override;
   DesktopNativeCursorManager* GetSingletonDesktopNativeCursorManager() override;
   void SetBoundsInDIP(const gfx::Rect& bounds) override;
+  void SetAllowScreenshots(bool allow) override;
+  bool AreScreenshotsAllowed() override;
 
   // Overridden from aura::WindowTreeHost:
   ui::EventSource* GetEventSource() override;
@@ -227,7 +232,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void HandleCreate() override;
   void HandleDestroying() override;
   void HandleDestroyed() override;
-  bool HandleInitialFocus(ui::WindowShowState show_state) override;
+  bool HandleInitialFocus(ui::mojom::WindowShowState show_state) override;
   void HandleDisplayChange() override;
   void HandleBeginWMSizeMove() override;
   void HandleEndWMSizeMove() override;
@@ -276,8 +281,14 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // has changed, and, if so, inform the aura::WindowTreeHost.
   void CheckForMonitorChange();
 
+  // Returns `bounds`, clamped to the minimum/maximum widget size constraints.
+  gfx::Rect AdjustedContentBounds(const gfx::Rect& bounds);
+
   // Accessor for DesktopNativeWidgetAura::content_window().
   aura::Window* content_window();
+
+  // Call Windows API to update the window display affinity.
+  void UpdateAllowScreenshots();
 
   HMONITOR last_monitor_from_window_ = nullptr;
 
@@ -308,7 +319,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // the property is set on the contained window which has a shorter lifetime.
   bool should_animate_window_close_;
 
-  // When Close()d and animations are being applied to this window, the close
+  // When closed and animations are being applied to this window, the close
   // of the window needs to be deferred to when the close animation is
   // completed. This variable indicates that a Close was converted to a Hide,
   // so that when the Hide is completed the host window should be closed.
@@ -321,6 +332,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   // True if the window should have the frame removed.
   bool remove_standard_frame_;
+
+  // True if the window is allow to take screenshots, by default is true.
+  bool allow_screenshots_ = true;
 
   // Visibility of the cursor. On Windows we can have multiple root windows and
   // the implementation of ::ShowCursor() is based on a counter, so making this

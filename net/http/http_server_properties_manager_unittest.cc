@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
+#include "net/base/privacy_mode.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
@@ -60,17 +61,17 @@ std::unique_ptr<base::test::ScopedFeatureList> SetNetworkAnonymizationKeyMode(
   switch (mode) {
     case NetworkAnonymizationKeyMode::kDisabled:
       feature_list->InitAndDisableFeature(
-          features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+          features::kPartitionConnectionsByNetworkIsolationKey);
       break;
     case NetworkAnonymizationKeyMode::kEnabled:
       feature_list->InitAndEnableFeature(
-          features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+          features::kPartitionConnectionsByNetworkIsolationKey);
       break;
   }
   return feature_list;
 }
 
-class MockPrefDelegate : public net::HttpServerProperties::PrefDelegate {
+class MockPrefDelegate : public HttpServerProperties::PrefDelegate {
  public:
   MockPrefDelegate() = default;
 
@@ -932,15 +933,18 @@ TEST_F(HttpServerPropertiesManagerTest, ServerNetworkStats) {
 TEST_F(HttpServerPropertiesManagerTest, QuicServerInfo) {
   InitializePrefs();
 
-  quic::QuicServerId mail_quic_server_id("mail.google.com", 80, false);
+  quic::QuicServerId mail_quic_server_id("mail.google.com", 80);
   EXPECT_EQ(nullptr, http_server_props_->GetQuicServerInfo(
-                         mail_quic_server_id, NetworkAnonymizationKey()));
+                         mail_quic_server_id, PRIVACY_MODE_DISABLED,
+                         NetworkAnonymizationKey()));
   std::string quic_server_info1("quic_server_info1");
   http_server_props_->SetQuicServerInfo(
-      mail_quic_server_id, NetworkAnonymizationKey(), quic_server_info1);
+      mail_quic_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      quic_server_info1);
   // Another task should not be scheduled.
   http_server_props_->SetQuicServerInfo(
-      mail_quic_server_id, NetworkAnonymizationKey(), quic_server_info1);
+      mail_quic_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      quic_server_info1);
 
   // Run the task.
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
@@ -948,13 +952,14 @@ TEST_F(HttpServerPropertiesManagerTest, QuicServerInfo) {
   FastForwardUntilNoTasksRemain();
   EXPECT_EQ(1, pref_delegate_->GetAndClearNumPrefUpdates());
 
-  EXPECT_EQ(quic_server_info1,
-            *http_server_props_->GetQuicServerInfo(mail_quic_server_id,
-                                                   NetworkAnonymizationKey()));
+  EXPECT_EQ(quic_server_info1, *http_server_props_->GetQuicServerInfo(
+                                   mail_quic_server_id, PRIVACY_MODE_DISABLED,
+                                   NetworkAnonymizationKey()));
 
   // Another task should not be scheduled.
   http_server_props_->SetQuicServerInfo(
-      mail_quic_server_id, NetworkAnonymizationKey(), quic_server_info1);
+      mail_quic_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      quic_server_info1);
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
   EXPECT_EQ(0u, GetPendingMainThreadTaskCount());
 }
@@ -964,7 +969,7 @@ TEST_F(HttpServerPropertiesManagerTest, Clear) {
 
   const url::SchemeHostPort spdy_server("https", "mail.google.com", 443);
   const IPAddress actual_address(127, 0, 0, 1);
-  const quic::QuicServerId mail_quic_server_id("mail.google.com", 80, false);
+  const quic::QuicServerId mail_quic_server_id("mail.google.com", 80);
   const std::string quic_server_info1("quic_server_info1");
   const AlternativeService alternative_service(kProtoHTTP2, "mail.google.com",
                                                1234);
@@ -992,7 +997,8 @@ TEST_F(HttpServerPropertiesManagerTest, Clear) {
                                             NetworkAnonymizationKey(), stats);
 
   http_server_props_->SetQuicServerInfo(
-      mail_quic_server_id, NetworkAnonymizationKey(), quic_server_info1);
+      mail_quic_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      quic_server_info1);
 
   // Advance time by just enough so that the prefs update task is executed but
   // not the task to expire the brokenness of |broken_alternative_service|.
@@ -1010,9 +1016,9 @@ TEST_F(HttpServerPropertiesManagerTest, Clear) {
   const ServerNetworkStats* stats1 = http_server_props_->GetServerNetworkStats(
       spdy_server, NetworkAnonymizationKey());
   EXPECT_EQ(10, stats1->srtt.ToInternalValue());
-  EXPECT_EQ(quic_server_info1,
-            *http_server_props_->GetQuicServerInfo(mail_quic_server_id,
-                                                   NetworkAnonymizationKey()));
+  EXPECT_EQ(quic_server_info1, *http_server_props_->GetQuicServerInfo(
+                                   mail_quic_server_id, PRIVACY_MODE_DISABLED,
+                                   NetworkAnonymizationKey()));
 
   // Clear http server data, which should instantly update prefs.
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
@@ -1038,7 +1044,8 @@ TEST_F(HttpServerPropertiesManagerTest, Clear) {
       spdy_server, NetworkAnonymizationKey());
   EXPECT_EQ(nullptr, stats2);
   EXPECT_EQ(nullptr, http_server_props_->GetQuicServerInfo(
-                         mail_quic_server_id, NetworkAnonymizationKey()));
+                         mail_quic_server_id, PRIVACY_MODE_DISABLED,
+                         NetworkAnonymizationKey()));
 }
 
 // https://crbug.com/444956: Add 200 alternative_service servers followed by
@@ -1151,10 +1158,11 @@ TEST_F(HttpServerPropertiesManagerTest, UpdatePrefsWithCache) {
                                             NetworkAnonymizationKey(), stats);
 
   // #5: Set quic_server_info string.
-  quic::QuicServerId mail_quic_server_id("mail.google.com", 80, false);
+  quic::QuicServerId mail_quic_server_id("mail.google.com", 80);
   std::string quic_server_info1("quic_server_info1");
   http_server_props_->SetQuicServerInfo(
-      mail_quic_server_id, NetworkAnonymizationKey(), quic_server_info1);
+      mail_quic_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      quic_server_info1);
 
   // #6: Set SupportsQuic.
   IPAddress actual_address(127, 0, 0, 1);
@@ -1500,10 +1508,11 @@ TEST_F(HttpServerPropertiesManagerTest, PersistAdvertisedVersionsToPref) {
                                             NetworkAnonymizationKey(), stats);
 
   // #4: Set quic_server_info string.
-  quic::QuicServerId mail_quic_server_id("mail.google.com", 80, false);
+  quic::QuicServerId mail_quic_server_id("mail.google.com", 80);
   std::string quic_server_info1("quic_server_info1");
   http_server_props_->SetQuicServerInfo(
-      mail_quic_server_id, NetworkAnonymizationKey(), quic_server_info1);
+      mail_quic_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      quic_server_info1);
 
   // #5: Set SupportsQuic.
   IPAddress actual_address(127, 0, 0, 1);
@@ -1591,9 +1600,8 @@ TEST_F(HttpServerPropertiesManagerTest, ReadAdvertisedVersionsFromPref) {
   // Verify advertised versions.
   const quic::ParsedQuicVersionVector loaded_advertised_versions =
       alternative_service_info_vector[1].advertised_versions();
-  ASSERT_EQ(2u, loaded_advertised_versions.size());
+  ASSERT_EQ(1u, loaded_advertised_versions.size());
   EXPECT_EQ(quic::ParsedQuicVersion::Q046(), loaded_advertised_versions[0]);
-  EXPECT_EQ(quic::ParsedQuicVersion::Q050(), loaded_advertised_versions[1]);
 
   // No other fields should have been populated.
   server_info.alternative_services.reset();
@@ -1619,10 +1627,11 @@ TEST_F(HttpServerPropertiesManagerTest,
       server_www, NetworkAnonymizationKey(), alternative_service_info_vector);
 
   // Set quic_server_info string.
-  quic::QuicServerId mail_quic_server_id("mail.google.com", 80, false);
+  quic::QuicServerId mail_quic_server_id("mail.google.com", 80);
   std::string quic_server_info1("quic_server_info1");
   http_server_props_->SetQuicServerInfo(
-      mail_quic_server_id, NetworkAnonymizationKey(), quic_server_info1);
+      mail_quic_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
+      quic_server_info1);
 
   // Set SupportsQuic.
   IPAddress actual_address(127, 0, 0, 1);
@@ -1662,7 +1671,7 @@ TEST_F(HttpServerPropertiesManagerTest,
   AlternativeServiceInfoVector alternative_service_info_vector_2;
   // Quic alternative service set with two advertised QUIC versions.
   quic::ParsedQuicVersionVector advertised_versions = {
-      quic::ParsedQuicVersion::Q046(), quic::ParsedQuicVersion::Q050()};
+      quic::ParsedQuicVersion::Q046(), quic::ParsedQuicVersion::Draft29()};
   alternative_service_info_vector_2.push_back(
       AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
           quic_alternative_service1, expiration1, advertised_versions));
@@ -1683,7 +1692,7 @@ TEST_F(HttpServerPropertiesManagerTest,
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
       "{\"alternative_service\":"
-      "[{\"advertised_alpns\":[\"h3-Q046\",\"h3-Q050\"],"
+      "[{\"advertised_alpns\":[\"h3-Q046\",\"h3-29\"],"
       "\"expiration\":\"13756212000000000\",\"port\":443,"
       "\"protocol_str\":\"quic\"}],"
       "\"anonymization\":[],"
@@ -1698,7 +1707,7 @@ TEST_F(HttpServerPropertiesManagerTest,
   AlternativeServiceInfoVector alternative_service_info_vector_3;
   // A same set of QUIC versions but listed in a different order.
   quic::ParsedQuicVersionVector advertised_versions_2 = {
-      quic::ParsedQuicVersion::Q050(), quic::ParsedQuicVersion::Q046()};
+      quic::ParsedQuicVersion::Draft29(), quic::ParsedQuicVersion::Q046()};
   alternative_service_info_vector_3.push_back(
       AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
           quic_alternative_service1, expiration1, advertised_versions_2));
@@ -1719,7 +1728,7 @@ TEST_F(HttpServerPropertiesManagerTest,
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
       "{\"alternative_service\":"
-      "[{\"advertised_alpns\":[\"h3-Q050\",\"h3-Q046\"],"
+      "[{\"advertised_alpns\":[\"h3-29\",\"h3-Q046\"],"
       "\"expiration\":\"13756212000000000\",\"port\":443,"
       "\"protocol_str\":\"quic\"}],"
       "\"anonymization\":[],"
@@ -1986,7 +1995,7 @@ TEST_F(HttpServerPropertiesManagerTest, UpdateCacheWithPrefs) {
   // Verify QUIC server info.
   //
   const std::string* quic_server_info = http_server_props_->GetQuicServerInfo(
-      quic::QuicServerId("mail.google.com", 80, false),
+      quic::QuicServerId("mail.google.com", 80), PRIVACY_MODE_DISABLED,
       NetworkAnonymizationKey());
   EXPECT_EQ("quic_server_info1", *quic_server_info);
 
@@ -2110,8 +2119,7 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkAnonymizationKeyServerInfo) {
       std::unique_ptr<base::test::ScopedFeatureList> feature_list =
           SetNetworkAnonymizationKeyMode(save_network_anonymization_key_mode);
 
-      // This parameter is normally calculated by HttpServerProperties based on
-      // the kPartitionHttpServerPropertiesByNetworkIsolationKey feature, but
+      // This parameter is normally calculated by HttpServerProperties, but
       // this test doesn't use that class.
       bool use_network_anonymization_key =
           save_network_anonymization_key_mode !=
@@ -2204,7 +2212,7 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkAnonymizationKeyIntegration) {
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Create and initialize an HttpServerProperties with no state.
   std::unique_ptr<MockPrefDelegate> pref_delegate =
@@ -2282,7 +2290,7 @@ TEST_F(HttpServerPropertiesManagerTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Create three alt service vectors of different lengths.
   base::Time expiration = base::Time::Now() + base::Days(1);
@@ -2646,7 +2654,7 @@ TEST_F(HttpServerPropertiesManagerTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Create and initialize an HttpServerProperties, must be done after
   // setting the feature.
@@ -2690,10 +2698,8 @@ TEST_F(HttpServerPropertiesManagerTest,
   const auto kNetworkAnonymizationKey2 =
       NetworkAnonymizationKey::CreateSameSite(kSite2);
 
-  const quic::QuicServerId kServer1("foo", 443,
-                                    false /* privacy_mode_enabled */);
-  const quic::QuicServerId kServer2("foo", 443,
-                                    true /* privacy_mode_enabled */);
+  const quic::QuicServerId kServer1("foo", 443);
+  const quic::QuicServerId kServer2("foo", 443);
 
   const char kQuicServerInfo1[] = "info1";
   const char kQuicServerInfo2[] = "info2";
@@ -2725,34 +2731,45 @@ TEST_F(HttpServerPropertiesManagerTest,
       // kNetworkAnonymizationKey1, Set kServer2 to kQuicServerInfo2 in the
       // context of kNetworkAnonymizationKey2, and kServer1 to kQuicServerInfo3
       // in the context of NetworkAnonymizationKey().
-      properties->SetQuicServerInfo(kServer1, kNetworkAnonymizationKey1,
+      properties->SetQuicServerInfo(kServer1, PRIVACY_MODE_DISABLED,
+                                    kNetworkAnonymizationKey1,
                                     kQuicServerInfo1);
-      properties->SetQuicServerInfo(kServer2, kNetworkAnonymizationKey2,
+      properties->SetQuicServerInfo(kServer2, PRIVACY_MODE_ENABLED,
+                                    kNetworkAnonymizationKey2,
                                     kQuicServerInfo2);
-      properties->SetQuicServerInfo(kServer1, NetworkAnonymizationKey(),
+      properties->SetQuicServerInfo(kServer1, PRIVACY_MODE_DISABLED,
+                                    NetworkAnonymizationKey(),
                                     kQuicServerInfo3);
 
       // Verify values were set.
       if (save_network_anonymization_key_mode !=
           NetworkAnonymizationKeyMode::kDisabled) {
         EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
-                                        kServer1, kNetworkAnonymizationKey1));
-        EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer1, kNetworkAnonymizationKey2));
+                                        kServer1, PRIVACY_MODE_DISABLED,
+                                        kNetworkAnonymizationKey1));
+        EXPECT_EQ(nullptr,
+                  properties->GetQuicServerInfo(kServer1, PRIVACY_MODE_DISABLED,
+                                                kNetworkAnonymizationKey2));
         EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                        kServer1, NetworkAnonymizationKey()));
+                                        kServer1, PRIVACY_MODE_DISABLED,
+                                        NetworkAnonymizationKey()));
 
-        EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer2, kNetworkAnonymizationKey1));
-        EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
-                                        kServer2, kNetworkAnonymizationKey2));
-        EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer2, NetworkAnonymizationKey()));
+        EXPECT_EQ(nullptr,
+                  properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_ENABLED,
+                                                kNetworkAnonymizationKey1));
+        EXPECT_EQ(kQuicServerInfo2,
+                  *properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_ENABLED,
+                                                 kNetworkAnonymizationKey2));
+        EXPECT_EQ(nullptr,
+                  properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_ENABLED,
+                                                NetworkAnonymizationKey()));
       } else {
         EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                        kServer1, NetworkAnonymizationKey()));
-        EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
-                                        kServer2, NetworkAnonymizationKey()));
+                                        kServer1, PRIVACY_MODE_DISABLED,
+                                        NetworkAnonymizationKey()));
+        EXPECT_EQ(kQuicServerInfo2,
+                  *properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_ENABLED,
+                                                 NetworkAnonymizationKey()));
       }
 
       // Wait until the data's been written to prefs, and then create a copy of
@@ -2786,59 +2803,77 @@ TEST_F(HttpServerPropertiesManagerTest,
         // loaded successfully. This is needed to continue to support consumers
         // that don't use NetworkAnonymizationKeys.
         EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                        kServer1, NetworkAnonymizationKey()));
-        EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
-                                        kServer2, NetworkAnonymizationKey()));
+                                        kServer1, PRIVACY_MODE_DISABLED,
+                                        NetworkAnonymizationKey()));
+        EXPECT_EQ(kQuicServerInfo2,
+                  *properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_ENABLED,
+                                                 NetworkAnonymizationKey()));
         if (load_network_anonymization_key_mode !=
             NetworkAnonymizationKeyMode::kDisabled) {
           EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                                 kServer1, kNetworkAnonymizationKey1));
+                                 kServer1, PRIVACY_MODE_DISABLED,
+                                 kNetworkAnonymizationKey1));
           EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                                 kServer1, kNetworkAnonymizationKey2));
+                                 kServer1, PRIVACY_MODE_DISABLED,
+                                 kNetworkAnonymizationKey2));
 
           EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                                 kServer2, kNetworkAnonymizationKey1));
+                                 kServer2, PRIVACY_MODE_ENABLED,
+                                 kNetworkAnonymizationKey1));
           EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                                 kServer2, kNetworkAnonymizationKey2));
+                                 kServer2, PRIVACY_MODE_ENABLED,
+                                 kNetworkAnonymizationKey2));
         }
       } else if (save_network_anonymization_key_mode ==
                  load_network_anonymization_key_mode) {
         // If the save and load modes are the same, the load should succeed, and
         // the network anonymization keys should match.
         EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
-                                        kServer1, kNetworkAnonymizationKey1));
-        EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer1, kNetworkAnonymizationKey2));
+                                        kServer1, PRIVACY_MODE_DISABLED,
+                                        kNetworkAnonymizationKey1));
+        EXPECT_EQ(nullptr,
+                  properties->GetQuicServerInfo(kServer1, PRIVACY_MODE_DISABLED,
+                                                kNetworkAnonymizationKey2));
         EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                        kServer1, NetworkAnonymizationKey()));
+                                        kServer1, PRIVACY_MODE_DISABLED,
+                                        NetworkAnonymizationKey()));
 
-        EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer2, kNetworkAnonymizationKey1));
-        EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
-                                        kServer2, kNetworkAnonymizationKey2));
-        EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer2, NetworkAnonymizationKey()));
+        EXPECT_EQ(nullptr,
+                  properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_ENABLED,
+                                                kNetworkAnonymizationKey1));
+        EXPECT_EQ(kQuicServerInfo2,
+                  *properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_ENABLED,
+                                                 kNetworkAnonymizationKey2));
+        EXPECT_EQ(nullptr,
+                  properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_ENABLED,
+                                                NetworkAnonymizationKey()));
       } else {
         // Otherwise, only the value set with an empty NetworkAnonymizationKey
         // should have been loaded successfully.
         EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                        kServer1, NetworkAnonymizationKey()));
+                                        kServer1, PRIVACY_MODE_DISABLED,
+                                        NetworkAnonymizationKey()));
 
-        EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer2, kNetworkAnonymizationKey1));
-        EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer2, kNetworkAnonymizationKey2));
-        EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer2, NetworkAnonymizationKey()));
+        EXPECT_EQ(nullptr,
+                  properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_ENABLED,
+                                                kNetworkAnonymizationKey1));
+        EXPECT_EQ(nullptr,
+                  properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_ENABLED,
+                                                kNetworkAnonymizationKey2));
+        EXPECT_EQ(nullptr,
+                  properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_ENABLED,
+                                                NetworkAnonymizationKey()));
 
         // There should be no cross-contamination of NetworkAnonymizationKeys,
         // if NetworkAnonymizationKeys are enabled.
         if (load_network_anonymization_key_mode !=
             NetworkAnonymizationKeyMode::kDisabled) {
           EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                                 kServer1, kNetworkAnonymizationKey1));
+                                 kServer1, PRIVACY_MODE_DISABLED,
+                                 kNetworkAnonymizationKey1));
           EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                                 kServer1, kNetworkAnonymizationKey2));
+                                 kServer1, PRIVACY_MODE_DISABLED,
+                                 kNetworkAnonymizationKey2));
         }
       }
     }
@@ -2858,12 +2893,9 @@ TEST_F(HttpServerPropertiesManagerTest,
       NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   // Three servers with the same canonical suffix (".c.youtube.com").
-  const quic::QuicServerId kServer1("foo.c.youtube.com", 443,
-                                    false /* privacy_mode_enabled */);
-  const quic::QuicServerId kServer2("bar.c.youtube.com", 443,
-                                    false /* privacy_mode_enabled */);
-  const quic::QuicServerId kServer3("baz.c.youtube.com", 443,
-                                    false /* privacy_mode_enabled */);
+  const quic::QuicServerId kServer1("foo.c.youtube.com", 443);
+  const quic::QuicServerId kServer2("bar.c.youtube.com", 443);
+  const quic::QuicServerId kServer3("baz.c.youtube.com", 443);
 
   const char kQuicServerInfo1[] = "info1";
   const char kQuicServerInfo2[] = "info2";
@@ -2871,7 +2903,7 @@ TEST_F(HttpServerPropertiesManagerTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Create and initialize an HttpServerProperties with no state.
   std::unique_ptr<MockPrefDelegate> pref_delegate =
@@ -2886,47 +2918,59 @@ TEST_F(HttpServerPropertiesManagerTest,
   // Set kQuicServerInfo1 for kServer1 using kNetworkAnonymizationKey1. That
   // information should be retrieved when fetching information for any server
   // with the same canonical suffix, when using kNetworkAnonymizationKey1.
-  properties->SetQuicServerInfo(kServer1, kNetworkAnonymizationKey1,
-                                kQuicServerInfo1);
-  EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
-                                  kServer1, kNetworkAnonymizationKey1));
-  EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
-                                  kServer2, kNetworkAnonymizationKey1));
-  EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
-                                  kServer3, kNetworkAnonymizationKey1));
-  EXPECT_FALSE(
-      properties->GetQuicServerInfo(kServer1, kNetworkAnonymizationKey2));
+  properties->SetQuicServerInfo(kServer1, PRIVACY_MODE_DISABLED,
+                                kNetworkAnonymizationKey1, kQuicServerInfo1);
+  EXPECT_EQ(kQuicServerInfo1,
+            *properties->GetQuicServerInfo(kServer1, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo1,
+            *properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo1,
+            *properties->GetQuicServerInfo(kServer3, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey1));
+  EXPECT_FALSE(properties->GetQuicServerInfo(kServer1, PRIVACY_MODE_DISABLED,
+                                             kNetworkAnonymizationKey2));
 
   // Set kQuicServerInfo2 for kServer2 using kNetworkAnonymizationKey1. It
   // should not affect information retrieved for kServer1, but should for
   // kServer2 and kServer3.
-  properties->SetQuicServerInfo(kServer2, kNetworkAnonymizationKey1,
-                                kQuicServerInfo2);
-  EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
-                                  kServer1, kNetworkAnonymizationKey1));
-  EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
-                                  kServer2, kNetworkAnonymizationKey1));
-  EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
-                                  kServer3, kNetworkAnonymizationKey1));
-  EXPECT_FALSE(
-      properties->GetQuicServerInfo(kServer1, kNetworkAnonymizationKey2));
+  properties->SetQuicServerInfo(kServer2, PRIVACY_MODE_DISABLED,
+                                kNetworkAnonymizationKey1, kQuicServerInfo2);
+  EXPECT_EQ(kQuicServerInfo1,
+            *properties->GetQuicServerInfo(kServer1, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo2,
+            *properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo2,
+            *properties->GetQuicServerInfo(kServer3, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey1));
+  EXPECT_FALSE(properties->GetQuicServerInfo(kServer1, PRIVACY_MODE_DISABLED,
+                                             kNetworkAnonymizationKey2));
 
   // Set kQuicServerInfo3 for kServer1 using kNetworkAnonymizationKey2. It
   // should not affect information stored for kNetworkAnonymizationKey1.
-  properties->SetQuicServerInfo(kServer1, kNetworkAnonymizationKey2,
-                                kQuicServerInfo3);
-  EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
-                                  kServer1, kNetworkAnonymizationKey1));
-  EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
-                                  kServer2, kNetworkAnonymizationKey1));
-  EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
-                                  kServer3, kNetworkAnonymizationKey1));
-  EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                  kServer1, kNetworkAnonymizationKey2));
-  EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                  kServer2, kNetworkAnonymizationKey2));
-  EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                  kServer3, kNetworkAnonymizationKey2));
+  properties->SetQuicServerInfo(kServer1, PRIVACY_MODE_DISABLED,
+                                kNetworkAnonymizationKey2, kQuicServerInfo3);
+  EXPECT_EQ(kQuicServerInfo1,
+            *properties->GetQuicServerInfo(kServer1, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo2,
+            *properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo2,
+            *properties->GetQuicServerInfo(kServer3, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo3,
+            *properties->GetQuicServerInfo(kServer1, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey2));
+  EXPECT_EQ(kQuicServerInfo3,
+            *properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey2));
+  EXPECT_EQ(kQuicServerInfo3,
+            *properties->GetQuicServerInfo(kServer3, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey2));
 
   // Wait until the data's been written to prefs, and then tear down the
   // HttpServerProperties.
@@ -2948,18 +2992,24 @@ TEST_F(HttpServerPropertiesManagerTest,
   // TODO(mmenke): The rest of this test corresponds exactly to behavior in
   // CanonicalSuffixRoundTripWithNetworkAnonymizationKey. It seems like these
   // lines should correspond as well.
-  EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
-                                  kServer1, kNetworkAnonymizationKey1));
-  EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
-                                  kServer2, kNetworkAnonymizationKey1));
-  EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
-                                  kServer3, kNetworkAnonymizationKey1));
-  EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                  kServer1, kNetworkAnonymizationKey2));
-  EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                  kServer2, kNetworkAnonymizationKey2));
-  EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                  kServer3, kNetworkAnonymizationKey2));
+  EXPECT_EQ(kQuicServerInfo1,
+            *properties->GetQuicServerInfo(kServer1, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo2,
+            *properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo2,
+            *properties->GetQuicServerInfo(kServer3, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo3,
+            *properties->GetQuicServerInfo(kServer1, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey2));
+  EXPECT_EQ(kQuicServerInfo3,
+            *properties->GetQuicServerInfo(kServer2, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey2));
+  EXPECT_EQ(kQuicServerInfo3,
+            *properties->GetQuicServerInfo(kServer3, PRIVACY_MODE_DISABLED,
+                                           kNetworkAnonymizationKey2));
 }
 
 // Make sure QuicServerInfo associated with NetworkAnonymizationKeys with opaque
@@ -2969,12 +3019,11 @@ TEST_F(HttpServerPropertiesManagerTest,
   const SchemefulSite kOpaqueSite(GURL("data:text/plain,Hello World"));
   const auto kNetworkAnonymizationKey =
       NetworkAnonymizationKey::CreateSameSite(kOpaqueSite);
-  const quic::QuicServerId kServer("foo", 443,
-                                   false /* privacy_mode_enabled */);
+  const quic::QuicServerId kServer("foo", 443);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Create and initialize an HttpServerProperties, must be done after
   // setting the feature.
@@ -2987,9 +3036,10 @@ TEST_F(HttpServerPropertiesManagerTest,
                                              GetMockTickClock());
   unowned_pref_delegate->InitializePrefs(base::Value::Dict());
 
-  properties->SetQuicServerInfo(kServer, kNetworkAnonymizationKey,
-                                "QuicServerInfo");
-  EXPECT_TRUE(properties->GetQuicServerInfo(kServer, kNetworkAnonymizationKey));
+  properties->SetQuicServerInfo(kServer, PRIVACY_MODE_DISABLED,
+                                kNetworkAnonymizationKey, "QuicServerInfo");
+  EXPECT_TRUE(properties->GetQuicServerInfo(kServer, PRIVACY_MODE_DISABLED,
+                                            kNetworkAnonymizationKey));
 
   // Wait until the data's been written to prefs, and then create a copy of
   // the prefs data.
@@ -3074,7 +3124,7 @@ TEST_F(HttpServerPropertiesManagerTest, SameOrderAfterReload) {
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Create and initialize an HttpServerProperties with no state.
   std::unique_ptr<MockPrefDelegate> pref_delegate =
@@ -3109,15 +3159,15 @@ TEST_F(HttpServerPropertiesManagerTest, SameOrderAfterReload) {
                                      {alt_service3});
 
   // Set quic_server_info.
-  quic::QuicServerId quic_server_id1("quic1.example", 80, false);
-  quic::QuicServerId quic_server_id2("quic2.example", 80, false);
-  quic::QuicServerId quic_server_id3("quic3.example", 80, false);
-  properties->SetQuicServerInfo(quic_server_id1, kNetworkAnonymizationKey1,
-                                "quic_server_info1");
-  properties->SetQuicServerInfo(quic_server_id2, kNetworkAnonymizationKey1,
-                                "quic_server_info2");
-  properties->SetQuicServerInfo(quic_server_id3, kNetworkAnonymizationKey2,
-                                "quic_server_info3");
+  quic::QuicServerId quic_server_id1("quic1.example", 80);
+  quic::QuicServerId quic_server_id2("quic2.example", 80);
+  quic::QuicServerId quic_server_id3("quic3.example", 80);
+  properties->SetQuicServerInfo(quic_server_id1, PRIVACY_MODE_DISABLED,
+                                kNetworkAnonymizationKey1, "quic_server_info1");
+  properties->SetQuicServerInfo(quic_server_id2, PRIVACY_MODE_DISABLED,
+                                kNetworkAnonymizationKey1, "quic_server_info2");
+  properties->SetQuicServerInfo(quic_server_id3, PRIVACY_MODE_DISABLED,
+                                kNetworkAnonymizationKey2, "quic_server_info3");
 
   // Set broken_alternative_service info.
   AlternativeService broken_service1(kProtoQUIC, "broken1.example", 443);
@@ -3212,6 +3262,68 @@ TEST_F(HttpServerPropertiesManagerTest, SameOrderAfterReload) {
                 .broken_alternative_service_list()
                 .begin()
                 ->first.alternative_service.host);
+}
+
+// Test that different privacy modes have different QUIC server info.
+TEST_F(HttpServerPropertiesManagerTest, PrivacyMode) {
+  const quic::QuicServerId kQuicServerId("quic.example", 443);
+  constexpr char kQuicServerInfo[] = "info";
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
+
+  // Create and initialize an HttpServerProperties with no state.
+  std::unique_ptr<MockPrefDelegate> pref_delegate =
+      std::make_unique<MockPrefDelegate>();
+  MockPrefDelegate* unowned_pref_delegate = pref_delegate.get();
+  std::unique_ptr<HttpServerProperties> properties =
+      std::make_unique<HttpServerProperties>(std::move(pref_delegate),
+                                             /*net_log=*/nullptr,
+                                             GetMockTickClock());
+  unowned_pref_delegate->InitializePrefs(base::Value::Dict());
+
+  properties->SetQuicServerInfo(kQuicServerId, PRIVACY_MODE_DISABLED,
+                                NetworkAnonymizationKey(), kQuicServerInfo);
+  properties->SetQuicServerInfo(kQuicServerId, PRIVACY_MODE_ENABLED,
+                                NetworkAnonymizationKey(), kQuicServerInfo);
+  properties->SetQuicServerInfo(kQuicServerId,
+                                PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS,
+                                NetworkAnonymizationKey(), kQuicServerInfo);
+  properties->SetQuicServerInfo(kQuicServerId,
+                                PRIVACY_MODE_ENABLED_PARTITIONED_STATE_ALLOWED,
+                                NetworkAnonymizationKey(), kQuicServerInfo);
+  EXPECT_EQ(4u, properties->quic_server_info_map_for_testing().size());
+
+  // Wait until the data's been written to prefs, and then tear down the
+  // HttpServerProperties.
+  FastForwardBy(HttpServerProperties::GetUpdatePrefsDelayForTesting());
+  base::Value::Dict saved_value =
+      unowned_pref_delegate->GetServerProperties().Clone();
+  properties.reset();
+
+  // Create a new HttpServerProperties using the value saved to prefs above.
+  pref_delegate = std::make_unique<MockPrefDelegate>();
+  unowned_pref_delegate = pref_delegate.get();
+  properties = std::make_unique<HttpServerProperties>(
+      std::move(pref_delegate), /*net_log=*/nullptr, GetMockTickClock());
+  unowned_pref_delegate->InitializePrefs(std::move(saved_value));
+
+  // All values should have been saved and be retrievable.
+  EXPECT_EQ(kQuicServerInfo,
+            *properties->GetQuicServerInfo(kQuicServerId, PRIVACY_MODE_DISABLED,
+                                           NetworkAnonymizationKey()));
+  EXPECT_EQ(kQuicServerInfo,
+            *properties->GetQuicServerInfo(kQuicServerId, PRIVACY_MODE_ENABLED,
+                                           NetworkAnonymizationKey()));
+  EXPECT_EQ(kQuicServerInfo,
+            *properties->GetQuicServerInfo(
+                kQuicServerId, PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS,
+                NetworkAnonymizationKey()));
+  EXPECT_EQ(kQuicServerInfo,
+            *properties->GetQuicServerInfo(
+                kQuicServerId, PRIVACY_MODE_ENABLED_PARTITIONED_STATE_ALLOWED,
+                NetworkAnonymizationKey()));
 }
 
 }  // namespace net

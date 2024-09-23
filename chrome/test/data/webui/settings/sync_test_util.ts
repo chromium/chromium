@@ -5,8 +5,7 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsRoutes, StoredAccount, SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
-import {Route, Router} from 'chrome://settings/settings.js';
+import type {StoredAccount, SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
 // clang-format on
 
 /**
@@ -23,6 +22,9 @@ export function getSyncAllPrefs(): SyncPrefs {
     bookmarksManaged: false,
     bookmarksRegistered: true,
     bookmarksSynced: true,
+    cookiesManaged: false,
+    cookiesRegistered: true,
+    cookiesSynced: true,
     encryptAllData: false,
     customPassphraseAllowed: true,
     extensionsManaged: false,
@@ -38,6 +40,9 @@ export function getSyncAllPrefs(): SyncPrefs {
     preferencesManaged: false,
     preferencesRegistered: true,
     preferencesSynced: true,
+    productComparisonManaged: false,
+    productComparisonRegistered: true,
+    productComparisonSynced: true,
     readingListManaged: false,
     readingListRegistered: true,
     readingListSynced: true,
@@ -70,6 +75,8 @@ export function getSyncAllPrefsManaged(): SyncPrefs {
     autofillSynced: false,
     bookmarksManaged: true,
     bookmarksSynced: false,
+    cookiesManaged: true,
+    cookiesSynced: false,
     extensionsManaged: true,
     extensionsSynced: false,
     passwordsManaged: true,
@@ -78,6 +85,8 @@ export function getSyncAllPrefsManaged(): SyncPrefs {
     paymentsSynced: false,
     preferencesManaged: true,
     preferencesSynced: false,
+    productComparisonManaged: true,
+    productComparisonSynced: false,
     readingListManaged: true,
     readingListSynced: false,
     savedTabGroupsManaged: true,
@@ -91,39 +100,6 @@ export function getSyncAllPrefsManaged(): SyncPrefs {
     wifiConfigurationsManaged: true,
     wifiConfigurationsSynced: false,
   });
-}
-
-export interface SyncRoutes {
-  BASIC: Route;
-  PEOPLE: Route;
-  SYNC: Route;
-  SYNC_ADVANCED: Route;
-  SIGN_OUT: Route;
-  ADVANCED: Route;
-  ABOUT: Route;
-}
-
-export function setupRouterWithSyncRoutes() {
-  const BASIC = new Route('/');
-  const PEOPLE = BASIC.createSection('/people', 'people');
-  const SYNC = PEOPLE.createChild('/syncSetup');
-  const SYNC_ADVANCED = SYNC.createChild('/syncSetup/advanced');
-
-  const SIGN_OUT = BASIC.createChild('/signOut');
-  SIGN_OUT.isNavigableDialog = true;
-
-  const routes: SyncRoutes = {
-    BASIC,
-    PEOPLE,
-    SYNC,
-    SYNC_ADVANCED,
-    SIGN_OUT,
-    ADVANCED: new Route('/advanced'),
-    ABOUT: new Route('/help'),
-  };
-
-  Router.resetInstanceForTesting(
-      new Router(routes as unknown as SettingsRoutes));
 }
 
 export function simulateSyncStatus(status: SyncStatus|undefined) {

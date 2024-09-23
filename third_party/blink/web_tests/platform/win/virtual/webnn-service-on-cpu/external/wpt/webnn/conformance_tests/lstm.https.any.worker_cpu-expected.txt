@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] lstm float32 tensors steps=2 with all options
+  assert_true: assert_array_approx_equals_ulp: test lstm float32 actual 1 should be close enough to expected 10.469000816345215 by the acceptable 1 ULP distance, but they have 27754759 ULP distance expected true got false
+Harness: the test ran to completion.
+

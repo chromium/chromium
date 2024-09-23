@@ -7,14 +7,13 @@ import 'chrome://profile-picker/profile_picker.js';
 import type {ProfileCardElement, ProfilePickerMainViewElement, ProfileState} from 'chrome://profile-picker/profile_picker.js';
 import {loadTimeData, ManageProfilesBrowserProxyImpl, NavigationMixin, Routes} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
-class NavigationElement extends NavigationMixin
-(PolymerElement) {
+class NavigationElement extends NavigationMixin(CrLitElement) {
   static get is() {
     return 'navigation-element';
   }
@@ -22,8 +21,7 @@ class NavigationElement extends NavigationMixin
   changeCalled: boolean = false;
   route: string = '';
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.reset();
   }
 
@@ -46,6 +44,28 @@ declare global {
 
 customElements.define(NavigationElement.is, NavigationElement);
 
+/**
+ * @param n Indicates the desired number of profiles.
+ */
+function generateProfilesList(n: number): ProfileState[] {
+  return Array(n)
+      .fill(0)
+      .map((_x, i) => i % 2 === 0)
+      .map((sync, i) => ({
+             profilePath: `profilePath${i}`,
+             localProfileName: `profile${i}`,
+             isSyncing: sync,
+             needsSignin: false,
+             gaiaName: sync ? `User${i}` : '',
+             userName: sync ? `User${i}@gmail.com` : '',
+             avatarIcon: `AvatarUrl-${i}`,
+             avatarBadge: i % 4 === 0 ? `cr:domain` : ``,
+             // <if expr="chromeos_lacros">
+             isPrimaryLacrosProfile: false,
+             // </if>
+           }));
+}
+
 suite('ProfilePickerMainViewTest', function() {
   let mainViewElement: ProfilePickerMainViewElement;
   let browserProxy: TestManageProfilesBrowserProxy;
@@ -57,7 +77,6 @@ suite('ProfilePickerMainViewTest', function() {
     document.body.appendChild(navigationElement);
     mainViewElement = document.createElement('profile-picker-main-view');
     document.body.appendChild(mainViewElement);
-    return waitBeforeNextRender(mainViewElement);
   }
 
   function resetPolicies() {
@@ -75,43 +94,21 @@ suite('ProfilePickerMainViewTest', function() {
     browserProxy = new TestManageProfilesBrowserProxy();
     ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
     resetPolicies();
-    return resetTest();
+    resetTest();
   });
-
-  /**
-   * @param n Indicates the desired number of profiles.
-   */
-  function generateProfilesList(n: number): ProfileState[] {
-    return Array(n)
-        .fill(0)
-        .map((_x, i) => i % 2 === 0)
-        .map((sync, i) => ({
-               profilePath: `profilePath${i}`,
-               localProfileName: `profile${i}`,
-               isSyncing: sync,
-               needsSignin: false,
-               gaiaName: sync ? `User${i}` : '',
-               userName: sync ? `User${i}@gmail.com` : '',
-               isManaged: i % 4 === 0,
-               avatarIcon: `AvatarUrl-${i}`,
-               // <if expr="chromeos_lacros">
-               isPrimaryLacrosProfile: false,
-               // </if>
-             }));
-  }
 
   async function simulateProfilesListChanged(profiles: ProfileState[]) {
     webUIListenerCallback('profiles-list-changed', [...profiles]);
 
     // Await for the profiles to be rendered before proceeding.
-    await waitAfterNextRender(mainViewElement.$.profiles);
+    await microtasksFinished();
   }
 
   async function simulateProfileRemoved(profilePath: string) {
     webUIListenerCallback('profile-removed', profilePath);
 
     // Await for the profiles to be rendered before proceeding.
-    await waitAfterNextRender(mainViewElement.$.profiles);
+    await microtasksFinished();
   }
 
   async function verifyProfileCard(
@@ -137,7 +134,7 @@ suite('ProfilePickerMainViewTest', function() {
       assertEquals(
           profile.shadowRoot!.querySelector<HTMLElement>(
                                  '#iconContainer')!.hidden,
-          !expectedProfile.isManaged);
+          !expectedProfile.avatarBadge);
       assertEquals(
           (profile.shadowRoot!
                .querySelector<HTMLImageElement>('.profile-avatar')!.src)
@@ -202,6 +199,7 @@ suite('ProfilePickerMainViewTest', function() {
 
     // Set to invalid profile name
     localProfileName.value = '';
+    await localProfileName.updateComplete;
     assertTrue(localProfileName.invalid);
   });
 
@@ -229,7 +227,7 @@ suite('ProfilePickerMainViewTest', function() {
     navigationElement.reset();
     assertEquals(addProfile.style.display, 'none');
     addProfile.click();
-    flushTasks();
+    await microtasksFinished();
     assertTrue(!navigationElement.changeCalled);
   });
 
@@ -264,7 +262,6 @@ suite('ProfilePickerMainViewTest', function() {
     assertTrue(mainViewElement.$.askOnStartup.hidden);
     const profiles = generateProfilesList(2);
     await simulateProfilesListChanged(profiles);
-    flushTasks();
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
     assertTrue(!mainViewElement.$.askOnStartup.hidden);
@@ -305,6 +302,40 @@ suite('ProfilePickerMainViewTest', function() {
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
   });
+});
+
+suite('ProfilePickerProfilesReorderingTest', function() {
+  let mainViewElement: ProfilePickerMainViewElement;
+  let browserProxy: TestManageProfilesBrowserProxy;
+
+  setup(function() {
+    browserProxy = new TestManageProfilesBrowserProxy();
+    ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
+    loadTimeData.overrideValues({
+      profilesReorderingEnabled: true,
+    });
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    mainViewElement = document.createElement('profile-picker-main-view');
+    document.body.appendChild(mainViewElement);
+  });
+
+  // Sets up the profile picker with the reorder functionality and creates
+  // profiles.
+  async function setupProfileReorderingTest(numberOfProfiles: number) {
+    // Activates the profile reordering feature.
+    loadTimeData.overrideValues({profilesReorderingEnabled: true});
+
+    // Remove transition duration to avoid waiting during tests.
+    mainViewElement.setDraggingTransitionDurationForTesting(0);
+
+    // Create the profiles and push them to the main profile picker view.
+    const profiles = generateProfilesList(numberOfProfiles);
+    webUIListenerCallback('profiles-list-changed', [...profiles]);
+
+    // Await for the profiles to be rendered before proceeding.
+    await microtasksFinished();
+  }
 
   // This function makes sure that the test data is valid and consistent.
   function checkTestData(
@@ -388,19 +419,6 @@ suite('ProfilePickerMainViewTest', function() {
           return profile.localProfileName;
         }),
         profileNames, errorMessage);
-  }
-
-  // Sets up the profile picker with the reorder functionality and creates
-  // profiles.
-  async function setupProfileReorderingTest(numberOfProfiles: number) {
-    // Activates the profile reordering feature.
-    loadTimeData.overrideValues({profilesReorderingEnabled: true});
-
-    // Remove transition duration to avoid waiting during tests.
-    mainViewElement.setDraggingTransitionDurationForTesting(0);
-
-    // Create the profiles and push them to the main profile picker view.
-    await simulateProfilesListChanged(generateProfilesList(numberOfProfiles));
   }
 
   // This test function simulates drag event cycles.

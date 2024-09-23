@@ -14,7 +14,9 @@
       img.onload = t.step_func_done(_ => {
         assert_equals(img.naturalWidth, 76, "Image loaded correctly.");
         assert_equals(img.src, "http://127.0.0.1:8000/security/resources/abe.png");
-        assert_equals(base.href, 'data:/,This is a data URL.');
+        // Fails unless kStandardCompliantNonSpecialSchemeURLParsing is enabled.
+        // See https://crbug.com/40063064.
+        assert_equals(base.href, 'data:/,This%20is%20a%20data%20URL.');
       });
       img.onerror = t.unreached_func("Image should have loaded.");
 

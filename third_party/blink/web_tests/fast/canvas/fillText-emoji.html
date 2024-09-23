@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<title>crbug.com/340641253 Emoji sequences should show correct glyphs</title>
+<meta charset="utf-8">
+<canvas width="400" height="300"></canvas>
+<script>
+const ctx = document.querySelector('canvas').getContext('2d');
+ctx.font = "400 40px 'Arial'";
+ctx.fillText("Man shrug: 🤷‍♂️", 0, 50);
+ctx.fillText("Woman shrug: 🤷‍♀️", 0, 100);
+</script>

@@ -4,6 +4,12 @@
 
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 
+#include <hb.h>
+#include <unicode/locid.h>
+#include <unicode/ulocdata.h>
+
+#include <array>
+
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -16,10 +22,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
-#include <hb.h>
-#include <unicode/locid.h>
-#include <unicode/ulocdata.h>
-
 namespace blink {
 
 namespace {
@@ -29,10 +31,9 @@ struct PerThreadData {
           scoped_refptr<LayoutLocale>,
           CaseFoldingHashTraits<AtomicString>>
       locale_map;
-  raw_ptr<const LayoutLocale, ExperimentalRenderer> default_locale = nullptr;
-  raw_ptr<const LayoutLocale, ExperimentalRenderer> system_locale = nullptr;
-  raw_ptr<const LayoutLocale, ExperimentalRenderer> default_locale_for_han =
-      nullptr;
+  raw_ptr<const LayoutLocale> default_locale = nullptr;
+  raw_ptr<const LayoutLocale> system_locale = nullptr;
+  raw_ptr<const LayoutLocale> default_locale_for_han = nullptr;
   bool default_locale_for_han_computed = false;
   String current_accept_languages;
 };
@@ -44,7 +45,7 @@ PerThreadData& GetPerThreadData() {
 
 struct DelimiterConfig {
   ULocaleDataDelimiterType type;
-  raw_ptr<UChar, ExperimentalRenderer> result;
+  raw_ptr<UChar> result;
 };
 // Use  ICU ulocdata to find quote delimiters for an ICU locale
 // https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/ulocdata_8h.html#a0bf1fdd1a86918871ae2c84b5ce8421f
@@ -58,15 +59,14 @@ scoped_refptr<QuotesData> GetQuotesDataForLanguage(const char* locale) {
     ulocdata_close(uld);
     return nullptr;
   }
-  UChar open1[ucharDelimMaxLength], close1[ucharDelimMaxLength],
-      open2[ucharDelimMaxLength], close2[ucharDelimMaxLength];
+  std::array<UChar, ucharDelimMaxLength> open1, close1, open2, close2;
 
   int32_t delimResultLength;
   struct DelimiterConfig delimiters[] = {
-      {ULOCDATA_QUOTATION_START, open1},
-      {ULOCDATA_QUOTATION_END, close1},
-      {ULOCDATA_ALT_QUOTATION_START, open2},
-      {ULOCDATA_ALT_QUOTATION_END, close2},
+      {ULOCDATA_QUOTATION_START, open1.data()},
+      {ULOCDATA_QUOTATION_END, close1.data()},
+      {ULOCDATA_ALT_QUOTATION_START, open2.data()},
+      {ULOCDATA_ALT_QUOTATION_END, close2.data()},
   };
   for (DelimiterConfig delim : delimiters) {
     delimResultLength = ulocdata_getDelimiter(uld, delim.type, delim.result,
@@ -94,7 +94,7 @@ inline const char* LbValueFromStrictness(LineBreakStrictness strictness) {
     case LineBreakStrictness::kLoose:
       return "loose";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -178,7 +178,7 @@ const LayoutLocale* LayoutLocale::LocaleForHan(
     return content_locale;
 
   PerThreadData& data = GetPerThreadData();
-  if (UNLIKELY(!data.default_locale_for_han_computed)) {
+  if (!data.default_locale_for_han_computed) [[unlikely]] {
     // Use the first acceptLanguages that can disambiguate.
     Vector<String> languages;
     data.current_accept_languages.Split(',', languages);
@@ -241,7 +241,7 @@ const LayoutLocale* LayoutLocale::Get(const AtomicString& locale) {
 // static
 const LayoutLocale& LayoutLocale::GetDefault() {
   PerThreadData& data = GetPerThreadData();
-  if (UNLIKELY(!data.default_locale)) {
+  if (!data.default_locale) [[unlikely]] {
     AtomicString language = DefaultLanguage();
     data.default_locale =
         LayoutLocale::Get(!language.empty() ? language : AtomicString("en"));
@@ -252,7 +252,7 @@ const LayoutLocale& LayoutLocale::GetDefault() {
 // static
 const LayoutLocale& LayoutLocale::GetSystem() {
   PerThreadData& data = GetPerThreadData();
-  if (UNLIKELY(!data.system_locale)) {
+  if (!data.system_locale) [[unlikely]] {
     // Platforms such as Windows can give more information than the default
     // locale, such as "en-JP" for English speakers in Japan.
     String name = icu::Locale::getDefault().getName();
@@ -401,7 +401,7 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
       (!use_phrase || builder.SetKeywordValue("lw", "phrase"))) {
     return builder.ToAtomicString();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return string_;
 }
 

@@ -2,14 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 
+#include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -56,7 +62,7 @@ bool operator==(const HeapVector<OffsetMappingUnit>& units1,
                 const HeapVector<OffsetMappingUnit>& units2) {
   if (units1.size() != units2.size())
     return false;
-  auto* it2 = units2.begin();
+  auto it2 = units2.begin();
   for (const auto& unit1 : units1) {
     if (unit1 != *it2)
       return false;
@@ -828,7 +834,7 @@ TEST_F(OffsetMappingTest, FirstLetter) {
   SetupHtml("t",
             "<style>div:first-letter{color:red}</style>"
             "<div id=t>foo</div>");
-  Element* div = GetDocument().getElementById(AtomicString("t"));
+  Element* div = GetElementById("t");
   const Node* foo_node = div->firstChild();
   const OffsetMapping& result = GetOffsetMapping();
 
@@ -858,7 +864,7 @@ TEST_F(OffsetMappingTest, FirstLetterWithLeadingSpace) {
   SetupHtml("t",
             "<style>div:first-letter{color:red}</style>"
             "<div id=t>  foo</div>");
-  Element* div = GetDocument().getElementById(AtomicString("t"));
+  Element* div = GetElementById("t");
   const Node* foo_node = div->firstChild();
   const OffsetMapping& result = GetOffsetMapping();
 
@@ -894,7 +900,7 @@ TEST_F(OffsetMappingTest, FirstLetterWithoutRemainingText) {
   SetupHtml("t",
             "<style>div:first-letter{color:red}</style>"
             "<div id=t>  f</div>");
-  Element* div = GetDocument().getElementById(AtomicString("t"));
+  Element* div = GetElementById("t");
   const Node* text_node = div->firstChild();
   const OffsetMapping& result = GetOffsetMapping();
 
@@ -924,7 +930,7 @@ TEST_F(OffsetMappingTest, FirstLetterWithoutRemainingText) {
 TEST_F(OffsetMappingTest, FirstLetterInDifferentBlock) {
   SetupHtml("t",
             "<style>:first-letter{float:right}</style><div id=t>foo</div>");
-  Element* div = GetDocument().getElementById(AtomicString("t"));
+  Element* div = GetElementById("t");
   const Node* text_node = div->firstChild();
 
   auto* mapping0 = OffsetMapping::GetFor(Position(text_node, 0));
@@ -987,7 +993,7 @@ TEST_F(OffsetMappingTest, FirstLetterInDifferentBlock) {
 
 TEST_F(OffsetMappingTest, WhiteSpaceTextNodeWithoutLayoutText) {
   SetupHtml("t", "<div id=t> <span>foo</span></div>");
-  Element* div = GetDocument().getElementById(AtomicString("t"));
+  Element* div = GetElementById("t");
   const Node* text_node = div->firstChild();
 
   EXPECT_TRUE(EndOfLastNonCollapsedContent(Position(text_node, 1u)).IsNull());
@@ -1178,19 +1184,19 @@ TEST_F(OffsetMappingTest, BiDiAroundForcedBreakInPreLine) {
   const Node* text = GetElementById("bdo")->firstChild();
   const OffsetMapping& mapping = GetOffsetMapping();
 
-  EXPECT_EQ(String(u"\u202Efoo\u202C"
+  EXPECT_EQ(String(u"\u2068\u202Efoo\u202C\u2069"
                    u"\n"
-                   u"\u202Ebar\u202C"),
+                   u"\u2068\u202Ebar\u202C\u2069"),
             mapping.GetText());
 
   // Offset mapping should skip generated BiDi control characters.
   ASSERT_EQ(3u, mapping.GetUnits().size());
   TEST_UNIT(mapping.GetUnits()[0], OffsetMappingUnitType::kIdentity, text, 0u,
-            3u, 1u, 4u);  // "foo"
+            3u, 2u, 5u);  // "foo"
   TEST_UNIT(mapping.GetUnits()[1], OffsetMappingUnitType::kIdentity, text, 3u,
-            4u, 5u, 6u);  // "\n"
+            4u, 7u, 8u);  // "\n"
   TEST_UNIT(mapping.GetUnits()[2], OffsetMappingUnitType::kIdentity, text, 4u,
-            7u, 7u, 10u);  // "bar"
+            7u, 10u, 13u);  // "bar"
   TEST_RANGE(mapping.GetRanges(), text, 0u, 3u);
 }
 
@@ -1202,19 +1208,19 @@ TEST_F(OffsetMappingTest, BiDiAroundForcedBreakInPreWrap) {
   const Node* text = GetElementById("bdo")->firstChild();
   const OffsetMapping& mapping = GetOffsetMapping();
 
-  EXPECT_EQ(String(u"\u202Efoo\u202C"
+  EXPECT_EQ(String(u"\u2068\u202Efoo\u202C\u2069"
                    u"\n"
-                   u"\u202Ebar\u202C"),
+                   u"\u2068\u202Ebar\u202C\u2069"),
             mapping.GetText());
 
   // Offset mapping should skip generated BiDi control characters.
   ASSERT_EQ(3u, mapping.GetUnits().size());
   TEST_UNIT(mapping.GetUnits()[0], OffsetMappingUnitType::kIdentity, text, 0u,
-            3u, 1u, 4u);  // "foo"
+            3u, 2u, 5u);  // "foo"
   TEST_UNIT(mapping.GetUnits()[1], OffsetMappingUnitType::kIdentity, text, 3u,
-            4u, 5u, 6u);  // "\n"
+            4u, 7u, 8u);  // "\n"
   TEST_UNIT(mapping.GetUnits()[2], OffsetMappingUnitType::kIdentity, text, 4u,
-            7u, 7u, 10u);  // "bar"
+            7u, 10u, 13u);  // "bar"
   TEST_RANGE(mapping.GetRanges(), text, 0u, 3u);
 }
 
@@ -1226,19 +1232,19 @@ TEST_F(OffsetMappingTest, BiDiAroundForcedBreakInPre) {
   const Node* text = GetElementById("bdo")->firstChild();
   const OffsetMapping& mapping = GetOffsetMapping();
 
-  EXPECT_EQ(String(u"\u202Efoo\u202C"
+  EXPECT_EQ(String(u"\u2068\u202Efoo\u202C\u2069"
                    u"\n"
-                   u"\u202Ebar\u202C"),
+                   u"\u2068\u202Ebar\u202C\u2069"),
             mapping.GetText());
 
   // Offset mapping should skip generated BiDi control characters.
   ASSERT_EQ(3u, mapping.GetUnits().size());
   TEST_UNIT(mapping.GetUnits()[0], OffsetMappingUnitType::kIdentity, text, 0u,
-            3u, 1u, 4u);  // "foo"
+            3u, 2u, 5u);  // "foo"
   TEST_UNIT(mapping.GetUnits()[1], OffsetMappingUnitType::kIdentity, text, 3u,
-            4u, 5u, 6u);  // "\n"
+            4u, 7u, 8u);  // "\n"
   TEST_UNIT(mapping.GetUnits()[2], OffsetMappingUnitType::kIdentity, text, 4u,
-            7u, 7u, 10u);  // "bar"
+            7u, 10u, 13u);  // "bar"
   TEST_RANGE(mapping.GetRanges(), text, 0u, 3u);
 }
 
@@ -1262,7 +1268,7 @@ TEST_F(OffsetMappingTest, SoftHyphen) {
 TEST_F(OffsetMappingTest, PreWrapAndReusing) {
   // Note: "white-space: break-space" yields same result.
   SetupHtml("t", "<p id='t' style='white-space: pre-wrap'>abc</p>");
-  Element& target = *GetDocument().getElementById(AtomicString("t"));
+  Element& target = *GetElementById("t");
 
   // Change to <p id=t>abc xyz</p>
   Text& text = *Text::Create(GetDocument(), " xyz");
@@ -1531,6 +1537,37 @@ TEST_F(OffsetMappingGetterTest, Get) {
 
   const String& text_content = mapping->GetText();
   EXPECT_EQ(text_content, "Whitespaces in this text should be collapsed.");
+}
+
+TEST_F(OffsetMappingTest, LayoutObjectConverter) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=container>
+      <span id="s1">0123456</span>
+      <span id="s2">7890</span>
+    </div>
+  )HTML");
+  auto* layout_block_flow =
+      To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
+  const OffsetMapping* mapping =
+      InlineNode::GetOffsetMapping(layout_block_flow);
+  EXPECT_TRUE(mapping);
+
+  const auto* s1 = GetLayoutObjectByElementId("s1");
+  ASSERT_TRUE(s1);
+  OffsetMapping::LayoutObjectConverter converter1{mapping,
+                                                  *s1->SlowFirstChild()};
+  EXPECT_EQ(converter1.TextContentOffset(0), 0u);
+  EXPECT_EQ(converter1.TextContentOffset(3), 3u);
+  EXPECT_EQ(converter1.TextContentOffset(6), 6u);
+  EXPECT_DEATH_IF_SUPPORTED(converter1.TextContentOffset(7), "");
+
+  const auto* s2 = GetLayoutObjectByElementId("s2");
+  ASSERT_TRUE(s2);
+  OffsetMapping::LayoutObjectConverter converter2{mapping,
+                                                  *s2->SlowFirstChild()};
+  EXPECT_EQ(converter2.TextContentOffset(0), 8u);
+  EXPECT_EQ(converter2.TextContentOffset(3), 11u);
+  EXPECT_DEATH_IF_SUPPORTED(converter2.TextContentOffset(4), "");
 }
 
 }  // namespace blink

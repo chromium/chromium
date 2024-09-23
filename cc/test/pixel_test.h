@@ -38,7 +38,6 @@ class CopyOutputResult;
 class DirectRenderer;
 class DisplayResourceProvider;
 class GpuServiceImpl;
-class TestSharedBitmapManager;
 }
 
 namespace cc {
@@ -71,12 +70,17 @@ class PixelTest : public testing::Test {
                     std::vector<SkColor>* ref_pixels,
                     const PixelComparator& comparator);
 
-  bool RunPixelTestWithReadbackTarget(viz::AggregatedRenderPassList* pass_list,
-                                      viz::AggregatedRenderPass* target,
-                                      const base::FilePath& ref_file,
-                                      const PixelComparator& comparator);
+  bool RunPixelTest(viz::AggregatedRenderPassList* pass_list,
+                    SkBitmap ref_bitmap,
+                    const PixelComparator& comparator);
 
-  bool RunPixelTestWithReadbackTargetAndArea(
+  bool RunPixelTestWithCopyOutputRequest(
+      viz::AggregatedRenderPassList* pass_list,
+      viz::AggregatedRenderPass* target,
+      const base::FilePath& ref_file,
+      const PixelComparator& comparator);
+
+  bool RunPixelTestWithCopyOutputRequestAndArea(
       viz::AggregatedRenderPassList* pass_list,
       viz::AggregatedRenderPass* target,
       const base::FilePath& ref_file,
@@ -91,16 +95,20 @@ class PixelTest : public testing::Test {
     return gpu_service_holder_->task_executor();
   }
 
-  // Allocates a SharedMemory bitmap and registers it with the display
-  // compositor's SharedBitmapManager.
-  base::WritableSharedMemoryMapping AllocateSharedBitmapMemory(
-      const viz::SharedBitmapId& id,
-      const gfx::Size& size);
+  // Allocates a SharedMemory bitmap.
+  void AllocateSharedBitmapMemory(
+      scoped_refptr<viz::RasterContextProvider> context_provider,
+      const gfx::Size& size,
+      scoped_refptr<gpu::ClientSharedImage>& shared_image,
+      base::WritableSharedMemoryMapping& mapping,
+      gpu::SyncToken& sync_token);
   // Uses AllocateSharedBitmapMemory() then registers a ResourceId with the
   // |child_resource_provider_|, and copies the contents of |source| into the
   // software resource backing.
-  viz::ResourceId AllocateAndFillSoftwareResource(const gfx::Size& size,
-                                                  const SkBitmap& source);
+  viz::ResourceId AllocateAndFillSoftwareResource(
+      scoped_refptr<viz::RasterContextProvider> context_provider,
+      const gfx::Size& size,
+      const SkBitmap& source);
 
   // |scoped_feature_list_| must be the first member to ensure that it is
   // destroyed after any member that might be using it.
@@ -115,14 +123,10 @@ class PixelTest : public testing::Test {
   gfx::Size device_viewport_size_;
   gfx::DisplayColorSpaces display_color_spaces_;
   viz::SurfaceDamageRectList surface_damage_rect_list_;
-  bool disable_picture_quad_image_filtering_;
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
       display_controller_;
   std::unique_ptr<FakeOutputSurfaceClient> output_surface_client_;
   std::unique_ptr<viz::OutputSurface> output_surface_;
-  std::unique_ptr<viz::TestSharedBitmapManager> shared_bitmap_manager_;
-  std::unique_ptr<gpu::SharedImageManager> shared_image_manager_;
-  std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
   std::unique_ptr<viz::DisplayResourceProvider> resource_provider_;
   scoped_refptr<viz::RasterContextProvider> child_context_provider_;
   std::unique_ptr<viz::ClientResourceProvider> child_resource_provider_;
@@ -141,6 +145,8 @@ class PixelTest : public testing::Test {
   }
 
  private:
+  void FinishSetup();
+
   // Render |pass_list| and readback the |copy_rect| portion of |target| to
   // |result_bitmap_|.
   void RenderReadbackTargetAndAreaToResultBitmap(

@@ -65,7 +65,7 @@ crosapi::mojom::Stage ToMojo(image_writer_api::Stage stage) {
 bool IsRemoteClientToken(const ExtensionId& id) {
   // CrosapiManager is not initialized for unit test cases, since we have
   // not enabled unit tests for Lacros.
-  // TODO(crbug.com/1222153): Always expect CrosapiManager::IsInitialized()
+  // TODO(crbug.com/40773848): Always expect CrosapiManager::IsInitialized()
   // once we enable unit test with Lacros integration.
   if (!crosapi::CrosapiManager::IsInitialized())
     return false;
@@ -82,7 +82,7 @@ void DispatchOnWriteProgressToRemoteClient(
     int progress) {
   // CrosapiManager is not initialized for unit test cases, since we have
   // not enabled unit tests for Lacros.
-  // TODO(crbug.com/1222153): Always expect CrosapiManager::IsInitialized()
+  // TODO(crbug.com/40773848): Always expect CrosapiManager::IsInitialized()
   // once we enable unit test with Lacros integration.
   if (crosapi::CrosapiManager::IsInitialized()) {
     crosapi::CrosapiManager::Get()

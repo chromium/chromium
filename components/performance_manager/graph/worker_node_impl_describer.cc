@@ -52,6 +52,7 @@ base::Value::Dict WorkerNodeImplDescriber::DescribeWorkerNodeData(
   ret.Set("worker_token", impl->GetWorkerToken().ToString());
   ret.Set("resource_context", impl->GetResourceContext().ToString());
   ret.Set("url", impl->GetURL().spec());
+  ret.Set("origin", impl->GetOrigin().GetDebugString());
   ret.Set("priority", PriorityAndReasonToValue(impl->GetPriorityAndReason()));
 
   base::Value::Dict metrics;

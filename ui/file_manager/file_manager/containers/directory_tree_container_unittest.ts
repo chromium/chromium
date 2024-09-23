@@ -7,15 +7,16 @@ import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome:/
 
 import {MockVolumeManager} from '../background/js/mock_volume_manager.js';
 import {installMockChrome} from '../common/js/mock_chrome.js';
-import {MockFileSystem} from '../common/js/mock_entry.js';
+import type {MockFileSystem} from '../common/js/mock_entry.js';
 import {waitUntil} from '../common/js/test_error_reporting.js';
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
 import {VolumeType} from '../common/js/volume_manager_types.js';
 import {addAndroidApps} from '../state/ducks/android_apps.js';
+import {updateMaterializedViews} from '../state/ducks/materialized_views.js';
 import {addVolume, removeVolume} from '../state/ducks/volumes.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore} from '../state/for_tests.js';
 import {getStore} from '../state/store.js';
-import {XfTree} from '../widgets/xf_tree.js';
+import type {XfTree} from '../widgets/xf_tree.js';
 
 import {DirectoryTreeContainer} from './directory_tree_container.js';
 
@@ -41,11 +42,11 @@ export function setUp() {
   };
   installMockChrome(mockChrome);
   // Initialize directory tree container.
-  const {directoryModel, volumeManager} = window.fileManager;
+  const {directoryModel} = window.fileManager;
   window.store = null;
   setupStore();
   directoryTreeContainer =
-      new DirectoryTreeContainer(document.body, directoryModel, volumeManager);
+      new DirectoryTreeContainer(document.body, directoryModel);
 }
 
 export function tearDown() {
@@ -77,18 +78,14 @@ async function addMyFilesAndDriveVolumes():
   // Prepare data for MyFiles.
   const downloadsVolumeInfo =
       volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
-  store.dispatch(addVolume({
-    volumeInfo: downloadsVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(downloadsVolumeInfo),
-  }));
+  store.dispatch(addVolume(
+      downloadsVolumeInfo, createFakeVolumeMetadata(downloadsVolumeInfo)));
   // Prepare data for Drive.
   const driveVolumeInfo =
       volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE)!;
   await driveVolumeInfo.resolveDisplayRoot();
-  store.dispatch(addVolume({
-    volumeInfo: driveVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(driveVolumeInfo),
-  }));
+  store.dispatch(
+      addVolume(driveVolumeInfo, createFakeVolumeMetadata(driveVolumeInfo)));
 
   return {
     myFilesFs: downloadsVolumeInfo.fileSystem as MockFileSystem,
@@ -450,10 +447,8 @@ export async function testDirectoryTreeUpdateWithVolumeChanges() {
   const removableVolumeInfo = MockVolumeManager.createMockVolumeInfo(
       VolumeType.REMOVABLE, 'removable', 'Removable 1');
   volumeManager.volumeInfoList.add(removableVolumeInfo);
-  store.dispatch(addVolume({
-    volumeInfo: removableVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(removableVolumeInfo),
-  }));
+  store.dispatch(addVolume(
+      removableVolumeInfo, createFakeVolumeMetadata(removableVolumeInfo)));
 
   // Asserts that a removable directory is added after the update.
   await waitUntil(() => directoryTree.items.length === 3);
@@ -469,10 +464,8 @@ export async function testDirectoryTreeUpdateWithVolumeChanges() {
   const archiveVolumeInfo = MockVolumeManager.createMockVolumeInfo(
       VolumeType.ARCHIVE, 'archive', 'Archive 1');
   volumeManager.volumeInfoList.add(archiveVolumeInfo);
-  store.dispatch(addVolume({
-    volumeInfo: archiveVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(archiveVolumeInfo),
-  }));
+  store.dispatch(addVolume(
+      archiveVolumeInfo, createFakeVolumeMetadata(archiveVolumeInfo)));
 
   // Asserts that an archive directory is added before the removable
   await waitUntil(() => directoryTree.items.length === 4);
@@ -486,7 +479,7 @@ export async function testDirectoryTreeUpdateWithVolumeChanges() {
       getDirectoryTreeItemLabels(directoryTree));
 
   // Deletes an archive directory.
-  store.dispatch(removeVolume({volumeId: archiveVolumeInfo.volumeId}));
+  store.dispatch(removeVolume(archiveVolumeInfo.volumeId));
 
   // Asserts that an archive directory is deleted.
   await waitUntil(() => directoryTree.items.length === 3);
@@ -523,10 +516,8 @@ export async function testDirectoryTreeWithAndroidDisabled() {
   volumeManager.isDisabled = (volumeType) => {
     return volumeType === VolumeType.ANDROID_FILES;
   };
-  store.dispatch(addVolume({
-    volumeInfo: androidVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(androidVolumeInfo),
-  }));
+  store.dispatch(addVolume(
+      androidVolumeInfo, createFakeVolumeMetadata(androidVolumeInfo)));
 
   // Asserts that MyFiles should have 1 child: Android files.
   const myFilesItem = directoryTree.items[0]!;
@@ -573,10 +564,8 @@ export async function testDirectoryTreeWithRemovableDisabled() {
   volumeManager.isDisabled = (volumeType) => {
     return volumeType === VolumeType.REMOVABLE;
   };
-  store.dispatch(addVolume({
-    volumeInfo: removableVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(removableVolumeInfo),
-  }));
+  store.dispatch(addVolume(
+      removableVolumeInfo, createFakeVolumeMetadata(removableVolumeInfo)));
 
   // Asserts that a removable directory is added after the update.
   await waitUntil(() => directoryTree.items.length === 3);
@@ -599,7 +588,7 @@ export async function testDirectoryTreeWithRemovableDisabled() {
   assertFalse(removableItem.expanded);
 
   // Unmount the removable and assert that it's removed from the directory.
-  store.dispatch(removeVolume({volumeId: removableVolumeInfo.volumeId}));
+  store.dispatch(removeVolume(removableVolumeInfo.volumeId));
   await waitUntil(() => directoryTree.items.length === 2);
 }
 
@@ -827,17 +816,16 @@ export async function testAddProviderAndSMB() {
 
   const volumeManager = window.fileManager.volumeManager as MockVolumeManager;
   // Add a volume representing a non-Smb provider to the mock filesystem.
-  const nonSmbProviderVolumeInfo = volumeManager.createVolumeInfo(
-      VolumeType.PROVIDED, 'not_smb', 'NOT_SMB_LABEL');
+  const nonSmbProviderVolumeInfo =
+      volumeManager.createVolumeInfo(VolumeType.PROVIDED, 'fsp', 'FSP_LABEL');
   volumeManager.volumeInfoList.add(nonSmbProviderVolumeInfo);
   // Add a sub directory to the non-Smb provider.
   const providerFs =
       assert(volumeManager.volumeInfoList.item(2).fileSystem) as MockFileSystem;
-  providerFs.populate(['/non_smb_child/']);
-  store.dispatch(addVolume({
-    volumeInfo: nonSmbProviderVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(nonSmbProviderVolumeInfo),
-  }));
+  providerFs.populate(['/fsp_child/']);
+  store.dispatch(addVolume(
+      nonSmbProviderVolumeInfo,
+      createFakeVolumeMetadata(nonSmbProviderVolumeInfo)));
 
   // Add a volume representing an smbfs share to the mock filesystem.
   const smbShareVolumeInfo =
@@ -847,10 +835,8 @@ export async function testAddProviderAndSMB() {
   const smbFs =
       assert(volumeManager.volumeInfoList.item(3).fileSystem) as MockFileSystem;
   smbFs.populate(['/smbfs_child/']);
-  store.dispatch(addVolume({
-    volumeInfo: smbShareVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(smbShareVolumeInfo),
-  }));
+  store.dispatch(addVolume(
+      smbShareVolumeInfo, createFakeVolumeMetadata(smbShareVolumeInfo)));
 
   // At top level, MyFiles and Drive, 2 volumes should be listed.
   await waitUntil(() => directoryTree.items.length === 4);
@@ -858,9 +844,16 @@ export async function testAddProviderAndSMB() {
   assertEquals('Downloads', directoryTree.items[0]!.label);
   assertEquals('Google Drive', directoryTree.items[1]!.label);
   assertEquals('SMBFS_LABEL', directoryTree.items[2]!.label);
-  assertEquals('NOT_SMB_LABEL', directoryTree.items[3]!.label);
+  assertEquals('FSP_LABEL', directoryTree.items[3]!.label);
 
   const smbFsItem = directoryTree.items[2]!;
+  const smbFsKey = smbFsItem.dataset['navigationKey']!;
+  // At first rendering, SMB is marked as mayHaveChildren without any scanning.
+  // So it shouldn't have any children in the store.
+  assertTrue(smbFsItem.mayHaveChildren);
+  assertEquals(0, smbFsItem.items.length);
+  assertEquals(0, store.getState().allEntries[smbFsKey]!.children.length);
+
   const providerItem = directoryTree.items[3]!;
   // Expand it before checking children items.
   providerItem.expanded = true;
@@ -868,61 +861,28 @@ export async function testAddProviderAndSMB() {
     // Under providerItem there should be 1 entry, 'non_smb_child'.
     return providerItem.items.length === 1;
   });
-  assertEquals('non_smb_child', providerItem.items[0]!.label);
+  assertEquals('fsp_child', providerItem.items[0]!.label);
   // Ensure there are no entries under smbItem.
   assertEquals(0, smbFsItem.items.length);
-}
 
-/**
- * Test sub directories are not fetched for SMB, until the directory is
- * clicked.
- */
-export async function testSmbNotFetchedUntilClick() {
-  const store = getStore();
-  const directoryTree = directoryTreeContainer.tree;
-
-  // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveVolumes();
-
-  const volumeManager = window.fileManager.volumeManager as MockVolumeManager;
-  // Add a volume representing a smb provider to the mock filesystem.
-  const smbProviderVolumeInfo = volumeManager.createVolumeInfo(
-      VolumeType.PROVIDED, 'smb', 'SMB_LABEL', '@smb');
-  volumeManager.volumeInfoList.add(smbProviderVolumeInfo);
-  // Add a sub directory to the smb provider.
-  const smbProviderFs =
-      assert(volumeManager.volumeInfoList.item(2).fileSystem) as MockFileSystem;
-  smbProviderFs.populate(['/smb_child/']);
-  store.dispatch(addVolume({
-    volumeInfo: smbProviderVolumeInfo,
-    volumeMetadata: createFakeVolumeMetadata(smbProviderVolumeInfo),
-  }));
-
-  // At top level, MyFiles and Drive, smb provider volume should be listed.
-  await waitUntil(() => directoryTree.items.length === 3);
-  assertEquals('Downloads', directoryTree.items[0]!.label);
-  assertEquals('Google Drive', directoryTree.items[1]!.label);
-  assertEquals('SMB_LABEL', directoryTree.items[2]!.label);
-
-  // Expect the SMB share has no children.
-  const smbItem = directoryTree.items[2]!;
-  assertEquals(0, smbItem.items.length);
-
-  // Click on the SMB volume.
-  smbItem.click();
+  // After clicking on the SMB, we still don't scan for children, because it
+  // already has the canExpand=true.
+  smbFsItem.click();
   await waitUntil(() => {
-    // Wait until the SMB share item has expand icon shown
-    return smbItem.mayHaveChildren;
+    return smbFsItem.selected &&
+        store.getState().allEntries[smbFsKey]!.children.length === 0;
   });
 
   // Expand SMB volume.
-  smbItem.expanded = true;
+  smbFsItem.expanded = true;
   await waitUntil(() => {
     // Wait until the SMB share item has been updated with its sub
     // directories.
-    return smbItem.items.length === 1;
+    return smbFsItem.items.length === 1 &&
+        // Wait until the SMB file data has children.
+        store.getState().allEntries[smbFsKey]!.children.length > 0;
   });
-  assertEquals('smb_child', smbItem.items[0]!.label);
+  assertEquals('smbfs_child', smbFsItem.items[0]!.label);
 }
 
 /** Test aria-expanded attribute for directory tree item. */
@@ -993,4 +953,38 @@ export async function testAriaDescription() {
   // Now the aria-description on Drive should have value.
   assertEquals(ariaDescription, driveItem.getAttribute('aria-description'));
   assertFalse(myFilesItem.hasAttribute('aria-description'));
+}
+
+/**
+ * Test adding a materialized view causes it to display in the tree.
+ */
+export async function testAddMaterializedView() {
+  const directoryTree = directoryTreeContainer.tree;
+  const store = getStore();
+
+  // Add MyFiles and Drive to the store.
+  await addMyFilesAndDriveVolumes();
+
+  // At top level, MyFiles and Drive should be listed.
+  await waitUntil(() => directoryTree.items.length === 2);
+  assertEquals(directoryTree.items[0]!.label, 'Downloads');
+  assertEquals(directoryTree.items[1]!.label, 'Google Drive');
+
+  // Add a view.
+  store.dispatch(updateMaterializedViews(
+      {materializedViews: [{viewId: 1, name: 'test view'}]}));
+
+  // The container should refresh the navigation roots and display the new
+  // materialized view.
+  await waitUntil(() => directoryTree.items.length === 3);
+
+  assertEquals(directoryTree.items[0]!.label, 'test view');
+  assertEquals(directoryTree.items[1]!.label, 'Downloads');
+  assertEquals(directoryTree.items[2]!.label, 'Google Drive');
+
+  // Remove view should remove from the tree.
+  store.dispatch(updateMaterializedViews({materializedViews: []}));
+  await waitUntil(() => directoryTree.items.length === 2);
+  assertEquals(directoryTree.items[0]!.label, 'Downloads');
+  assertEquals(directoryTree.items[1]!.label, 'Google Drive');
 }

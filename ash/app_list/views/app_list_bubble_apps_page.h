@@ -35,7 +35,6 @@ class Separator;
 
 namespace ash {
 
-class ApplicationDragAndDropHost;
 class AppListA11yAnnouncer;
 class AppListConfig;
 class AppListFolderController;
@@ -65,7 +64,6 @@ class ASH_EXPORT AppListBubbleAppsPage
 
  public:
   AppListBubbleAppsPage(AppListViewDelegate* view_delegate,
-                        ApplicationDragAndDropHost* drag_and_drop_host,
                         AppListConfig* app_list_config,
                         AppListA11yAnnouncer* a11y_announcer,
                         AppListFolderController* folder_controller,
@@ -136,6 +134,11 @@ class ASH_EXPORT AppListBubbleAppsPage
 
   // Updates the visibility of the continue section based on user preference.
   void UpdateContinueSectionVisibility();
+
+  // Invoked when the `scroll_view_` received an scrolling event.
+  void OnPageScrolled();
+
+  void RecordAboveTheFoldMetrics();
 
   views::ScrollView* scroll_view() { return scroll_view_; }
   IconButton* toggle_continue_section_button() {
@@ -250,6 +253,9 @@ class ASH_EXPORT AppListBubbleAppsPage
 
   // A closure that runs at the end of the reorder animation.
   base::OnceClosure reorder_animation_done_closure_;
+
+  // Subscription to notify of scrolling events.
+  base::CallbackListSubscription on_contents_scrolled_subscription_;
 
   base::WeakPtrFactory<AppListBubbleAppsPage> weak_factory_{this};
 };

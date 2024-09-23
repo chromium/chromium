@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_TEST_UTILS_H_
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_TEST_UTILS_H_
 
+#include <stddef.h>
+
 #include <optional>
 #include <set>
 #include <string>
@@ -15,6 +17,7 @@
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 #include "content/public/browser/storage_partition.h"
@@ -22,7 +25,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-forward.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
 
 namespace url {
@@ -42,6 +45,7 @@ class MockPrivateAggregationBudgeter : public PrivateAggregationBudgeter {
               ConsumeBudget,
               (int,
                const PrivateAggregationBudgetKey&,
+               int,
                base::OnceCallback<void(RequestResult)>),
               (override));
 
@@ -77,10 +81,11 @@ class MockPrivateAggregationHost : public PrivateAggregationHost {
               BindNewReceiver,
               (url::Origin,
                url::Origin,
-               PrivateAggregationBudgetKey::Api,
+               PrivateAggregationCallerApi,
                std::optional<std::string>,
                std::optional<base::TimeDelta>,
                std::optional<url::Origin>,
+               size_t,
                mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 
@@ -105,10 +110,11 @@ class MockPrivateAggregationManagerImpl : public PrivateAggregationManagerImpl {
               BindNewReceiver,
               (url::Origin,
                url::Origin,
-               PrivateAggregationBudgetKey::Api,
+               PrivateAggregationCallerApi,
                std::optional<std::string>,
                std::optional<base::TimeDelta>,
                std::optional<url::Origin>,
+               size_t,
                mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 
@@ -129,7 +135,8 @@ class MockPrivateAggregationContentBrowserClientBase : public SuperClass {
               IsPrivateAggregationAllowed,
               (content::BrowserContext * browser_context,
                const url::Origin& top_frame_origin,
-               const url::Origin& reporting_origin),
+               const url::Origin& reporting_origin,
+               bool* out_block_is_site_setting_specific),
               (override));
   MOCK_METHOD(bool,
               IsPrivateAggregationDebugModeAllowed,
@@ -147,7 +154,8 @@ class MockPrivateAggregationContentBrowserClientBase : public SuperClass {
                content::RenderFrameHost* rfh,
                const url::Origin& top_frame_origin,
                const url::Origin& accessing_origin,
-               std::string* out_debug_message),
+               std::string* out_debug_message,
+               bool* out_block_is_site_setting_specific),
               (override));
   MOCK_METHOD(bool,
               IsPrivacySandboxReportingDestinationAttested,

@@ -12,19 +12,19 @@ namespace {
 
 size_t LargeSparseEnum() {
   enum class TestEnumSparse {
-    TEST_1 = 1,
-    TEST_MIN = 1,
-    TEST_50 = 50,
-    TEST_100 = 100,
-    TEST_MAX = TEST_100,
+    kTest1 = 1,
+    kTestMin = 1,
+    kTest50 = 50,
+    kTest100 = 100,
+    kTestMax = kTest100,
   };
-  using TestEnumSparseSet = EnumSet<TestEnumSparse, TestEnumSparse::TEST_MIN,
-                                    TestEnumSparse::TEST_MAX>;
+  using TestEnumSparseSet = EnumSet<TestEnumSparse, TestEnumSparse::kTestMin,
+                                    TestEnumSparse::kTestMax>;
 
   // TestEnumSparseSet::All() does not compile as constexpr because there are
   // more than 64 possible values.
   constexpr auto set = TestEnumSparseSet::All();  // expected-error {{constexpr variable 'set' must be initialized by a constant expression}}
-  return set.Size();
+  return set.size();
 }
 
 }  // namespace

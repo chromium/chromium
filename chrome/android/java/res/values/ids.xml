@@ -44,7 +44,6 @@ found in the LICENSE file.
     <!-- Custom Tab Group -->
     <item type="id" name="contextmenu_open_in_new_chrome_tab" />
     <item type="id" name="contextmenu_open_in_chrome_incognito_tab" />
-    <item type="id" name="contextmenu_open_in_browser_id" />
 
     <!-- Link Group -->
     <item type="id" name="contextmenu_open_in_new_tab" />
@@ -53,8 +52,6 @@ found in the LICENSE file.
     <item type="id" name="contextmenu_open_in_other_window" />
     <item type="id" name="contextmenu_open_in_new_window" />
     <item type="id" name="contextmenu_open_in_ephemeral_tab" />
-    <item type="id" name="contextmenu_copy_link_address" />
-    <item type="id" name="contextmenu_copy_link_text" />
     <item type="id" name="contextmenu_save_link_as" />
     <item type="id" name="contextmenu_share_link" />
     <item type="id" name="contextmenu_direct_share_link" />

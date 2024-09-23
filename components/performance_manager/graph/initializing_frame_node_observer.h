@@ -8,6 +8,7 @@
 #include "base/observer_list.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -29,11 +30,15 @@ class InitializingFrameNodeObserver {
 
   // Same interface as FrameNodeObserver. Look up frame_node.h for their
   // descriptions.
-  virtual void OnIsCurrentChanged(const FrameNode* frame_node) {}
+  virtual void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
+                                     const FrameNode* current_frame_node) {}
   virtual void OnNetworkAlmostIdleChanged(const FrameNode* frame_node) {}
   virtual void OnFrameLifecycleStateChanged(const FrameNode* frame_node) {}
   virtual void OnURLChanged(const FrameNode* frame_node,
                             const GURL& previous_value) {}
+  virtual void OnOriginChanged(
+      const FrameNode* frame_node,
+      const std::optional<url::Origin>& previous_value) {}
   virtual void OnIsAdFrameChanged(const FrameNode* frame_node) {}
   virtual void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) {}
   virtual void OnFrameIsHoldingIndexedDBLockChanged(
@@ -41,11 +46,14 @@ class InitializingFrameNodeObserver {
   virtual void OnPriorityAndReasonChanged(
       const FrameNode* frame_node,
       const PriorityAndReason& previous_value) {}
+  virtual void OnHadUserActivationChanged(const FrameNode* frame_node) {}
   virtual void OnHadFormInteractionChanged(const FrameNode* frame_node) {}
   virtual void OnHadUserEditsChanged(const FrameNode* frame_node) {}
+  virtual void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) {}
   virtual void OnIsAudibleChanged(const FrameNode* frame_node) {}
   virtual void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) {}
-  virtual void OnIntersectsViewportChanged(const FrameNode* frame_node) {}
+  virtual void OnViewportIntersectionStateChanged(const FrameNode* frame_node) {
+  }
   virtual void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                         FrameNode::Visibility previous_value) {}
   virtual void OnNonPersistentNotificationCreated(const FrameNode* frame_node) {
@@ -75,11 +83,15 @@ class InitializingFrameNodeObserverManager final : public FrameNodeObserver {
   // FrameNodeObserver:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
-  void OnIsCurrentChanged(const FrameNode* frame_node) override;
+  void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
+                             const FrameNode* current_frame_node) override;
   void OnNetworkAlmostIdleChanged(const FrameNode* frame_node) override;
   void OnFrameLifecycleStateChanged(const FrameNode* frame_node) override;
   void OnURLChanged(const FrameNode* frame_node,
                     const GURL& previous_value) override;
+  void OnOriginChanged(
+      const FrameNode* frame_node,
+      const std::optional<url::Origin>& previous_value) override;
   void OnIsAdFrameChanged(const FrameNode* frame_node) override;
   void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) override;
   void OnFrameIsHoldingIndexedDBLockChanged(
@@ -87,11 +99,13 @@ class InitializingFrameNodeObserverManager final : public FrameNodeObserver {
   void OnPriorityAndReasonChanged(
       const FrameNode* frame_node,
       const PriorityAndReason& previous_value) override;
+  void OnHadUserActivationChanged(const FrameNode* frame_node) override;
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override;
   void OnHadUserEditsChanged(const FrameNode* frame_node) override;
+  void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) override;
   void OnIsAudibleChanged(const FrameNode* frame_node) override;
   void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) override;
-  void OnIntersectsViewportChanged(const FrameNode* frame_node) override;
+  void OnViewportIntersectionStateChanged(const FrameNode* frame_node) override;
   void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                 FrameNode::Visibility previous_value) override;
   void OnNonPersistentNotificationCreated(const FrameNode* frame_node) override;

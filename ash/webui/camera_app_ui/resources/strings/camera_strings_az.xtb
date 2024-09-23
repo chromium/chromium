@@ -32,20 +32,28 @@
 <translation id="2175927920773552910">QR Kod</translation>
 <translation id="2244252133441425811">Video FPS seçicisini aktiv edin</translation>
 <translation id="2271433936731426666">Tam ölçülü video snepşotunu aktivləşdirin</translation>
+<translation id="2281736597583450397">Təkmil zum ilə daha kəskin detallar əldə edin</translation>
 <translation id="2320741269052147773">Solu görüntüləyin</translation>
+<translation id="2360840973209616515">Kamera tətbiqini administratorunuz idarə edir.
+        Ətraflı məlumat üçün administratorla əlaqə saxlayın.</translation>
+<translation id="2442754296994859145">Kontenti doğrulamaq üçün kopyalayın və ya skanı dayandırmaq üçün genişləndirin.</translation>
+<translation id="2486151619109781620">Dialoqu yığcamlaşdırın və skanlamağa başlayın</translation>
 <translation id="2501278716633472235">Geri qayıdın</translation>
 <translation id="2501853267655415902">Çəkim dayandırılıb</translation>
 <translation id="2517472476991765520">Skan edin</translation>
 <translation id="2549985041256363841">Çəkməyə başlayın</translation>
 <translation id="2577915835281444458">Qeydə alma tezliklə dayandırılacaq. Yer boşaltmaq üçün cihaz yaddaşına keçin.</translation>
 <translation id="2599796128805996109">Arxa kamera</translation>
+<translation id="2654491636277477479">Aşkarlanmış mətni kopyalayın</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> san</translation>
 <translation id="2761536921376153655">Skan növü</translation>
 <translation id="28682968802727151">Önizləməni əks etdirin</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> kabeli birləşdirilib.</translation>
 <translation id="3067436040345934772">Sağı görüntüləyin</translation>
 <translation id="3081586908890909590">"Video çəkin" rejiminə keçin</translation>
+<translation id="3091480460059548935">Önizləmədə mətn aşkarlanması</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3157038259444425153">İndi fotodakı mətni birbaşa kopyalaya bilərsiniz</translation>
 <translation id="3158534262962737808">Qoşulun: "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Link kopyalandı</translation>
@@ -65,9 +73,7 @@
 <translation id="4118525110028899586">Səsi yazmağa fasilə verin</translation>
 <translation id="4121305183798804752">Sənəd aşkar edilib</translation>
 <translation id="414641094616694804">Bu kamera ayırdetmə dəqiqliyini dəyişə bilmir</translation>
-<translation id="4176463684765177261">Deaktiv edildi</translation>
 <translation id="428234092390943511">Səhifə miniatürü</translation>
-<translation id="4349714250734879769">Chrome tərəfindən çərçivə miqyaslama</translation>
 <translation id="4383571725254449280">Performans jurnallarını çap edin</translation>
 <translation id="4445542136948522167">Foto çəkməyi dayandırın</translation>
 <translation id="4570032796877367747">Ön kamera</translation>
@@ -80,7 +86,6 @@
 <translation id="4864143361253542638">Skan edilmiş səhifə siyahısı</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">Keçid ünvanını kopyalayın: <ph name="URL" /></translation>
-<translation id="491895758387112773">Çox-yayımlı video çəkilişi</translation>
 <translation id="495170559598752135">Fəaliyyətlər</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Fotonun tərəflər nisbəti</translation>
@@ -93,6 +98,7 @@
 <translation id="5317780077021120954">Yadda saxlayın</translation>
 <translation id="5320594929574852403">Sol tərəfə daşınır</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5634947914995388399">Dialoqu genişləndirin və skanı dayandırın</translation>
 <translation id="5662366948659129155">Səhifə <ph name="COUNT" /> skanlanır</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="574392208103952083">Orta</translation>
@@ -106,6 +112,7 @@
 <translation id="5975083100439434680">Kiçildin</translation>
 <translation id="5976160379964388480">Digərləri</translation>
 <translation id="6073451960410192870">Çəkməyi dayandırın</translation>
+<translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6197807149213783179">Metadatanı yadda saxlayın</translation>
 <translation id="6233780560267770709">3x3</translation>
 <translation id="6243827288366940320">Qızıl bölgü</translation>
@@ -115,11 +122,14 @@
 Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və ya video əlavə edərək problemi təsvir edin. (Məsələn, foto çox qaranlıqdır və ya subyekt fokusda deyil.)</translation>
 <translation id="6519884562954018934">Qoşulun: <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Paylaşın</translation>
+<translation id="6586509689874700895">Əvvəlcə böyütmək üçün <ph name="BUTTON_NAME" /> üzərinə basın. Foto çəkdikdən sonra təkmil detalları görəcəksiniz.</translation>
+<translation id="659539649712855529"><ph name="CONTENT" /> kopyalandı</translation>
 <translation id="6617916774429601017">Bütün ayırdetmə dəqiqliklərini göstərin</translation>
 <translation id="6631515515009660915">Əksetmə deaktivdir</translation>
 <translation id="6652737148136672975">Ox düymələri ilə küncləri hərəkət etdirin</translation>
 <translation id="667999046851023355">Sənəd</translation>
 <translation id="6681668084120808868">Fotoşəkil çəkin</translation>
+<translation id="6692092766759105707">Kontenti doğrulamaq üçün kopyalayın.</translation>
 <translation id="6778482348691154169">Foto çəkmək mümkün deyil</translation>
 <translation id="6888362557094394345">Aşağı tərəfə daşınır</translation>
 <translation id="695140971690006676">Hamısını sıfırlayın</translation>
@@ -132,8 +142,8 @@ Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və 
 <translation id="7337660886763914220">Fayl sistemi xətaları.</translation>
 <translation id="7450541714075000668">Mətn kopyalandı</translation>
 <translation id="7488619942230388918">GIF video çəkin</translation>
+<translation id="7527714402753141485">Kopyalamaq üçün mətn və düyməni göstərir</translation>
 <translation id="7557677699350329807">Növbəti kameraya keçin</translation>
-<translation id="7562584071994185503">Mətni kopyalayın: <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Durduruldu</translation>
 <translation id="7608223098072244877">4x4</translation>
 <translation id="761421184377987513">Aşağı sol tərəfə daşınır</translation>
@@ -153,12 +163,12 @@ Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və 
 <translation id="8145038249676204903">"Foto çəkin" rejiminə keçin</translation>
 <translation id="8167081290930651932">Foto olaraq yadda saxlayın</translation>
 <translation id="8239780215768881278">Video snepşotu çəkin</translation>
-<translation id="8346544573713510785">Kamera HAL tərəfindən çərçivə miqyaslama</translation>
 <translation id="8425673304802773841">Aşağı əyin</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8609951387004618906">Açın: <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Mikrofonu səssisə keçirin. Susdurma düyməsi aktivdir</translation>
+<translation id="8712637175834984815">Anladım</translation>
 <translation id="8730621377337864115">Tamamdır</translation>
 <translation id="8732462232047530626">Metadatanı önizləyin</translation>
 <translation id="874854738381978209">Wi-Fi şəbəkəsi aşkarlandı.</translation>

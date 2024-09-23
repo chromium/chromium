@@ -38,7 +38,7 @@ void MenuClosureAnimationMac::Start() {
     step_ = AnimationStep::kFading;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&MenuClosureAnimationMac::AdvanceAnimation,
-                                  AsWeakPtr()));
+                                  weak_ptr_factory_.GetWeakPtr()));
     return;
   }
   AdvanceAnimation();
@@ -105,7 +105,7 @@ void MenuClosureAnimationMac::AnimationEnded(const gfx::Animation* animation) {
 
 void MenuClosureAnimationMac::AnimationCanceled(
     const gfx::Animation* animation) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace views

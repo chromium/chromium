@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("webrtc_desktop_capture_private") {
+  sources = [
+    "webrtc_desktop_capture_private_api.cc",
+    "webrtc_desktop_capture_private_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/browser/extensions/api/desktop_capture",
+    "//chrome/common:non_code_constants",
+    "//content/public/browser",
+    "//net",
+    "//services/network/public/cpp",
+    "//skia",
+  ]
+}

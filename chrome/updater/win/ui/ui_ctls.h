@@ -9,7 +9,7 @@
 
 namespace updater::ui {
 
-const ProgressWnd::ControlState ProgressWnd::ctls_[] = {
+inline constexpr ProgressWnd::ControlState ProgressWnd::ctls_[] = {
     // The struct values are:
     // is_ignore_entry, is_visible, is_enabled, is_button, is_default
     {

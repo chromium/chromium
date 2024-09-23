@@ -58,11 +58,13 @@ class FloatingMenuButton : public views::ImageButton {
 
   // views::ImageButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
   void UpdateImage();
+  void UpdateAccessibleProperties();
 
   raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
   // True if the button is currently toggled.

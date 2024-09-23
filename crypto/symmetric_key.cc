@@ -32,7 +32,6 @@ bool CheckDerivationParameters(SymmetricKey::Algorithm algorithm,
   }
 
   NOTREACHED();
-  return false;
 }
 
 }  // namespace

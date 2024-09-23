@@ -121,7 +121,8 @@ std::u16string GetLocalizedTitle(const std::u16string& title,
     case content::PROCESS_TYPE_MAX:
       break;
     case content::PROCESS_TYPE_UNKNOWN:
-      NOTREACHED() << "Need localized name for child process type.";
+      NOTREACHED_IN_MIGRATION()
+          << "Need localized name for child process type.";
   }
 
   return result_title;

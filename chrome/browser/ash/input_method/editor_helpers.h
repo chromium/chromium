@@ -6,11 +6,14 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_HELPERS_H_
 
 #include <string>
+
 #include "ui/gfx/range/range.h"
+
 namespace ash::input_method {
 
-size_t NonWhitespaceAndSymbolsLength(const std::u16string& text,
-                                     gfx::Range selection_range);
+std::string GetSystemLocale();
+
+bool ShouldUseL10nStrings();
 
 }  // namespace ash::input_method
 

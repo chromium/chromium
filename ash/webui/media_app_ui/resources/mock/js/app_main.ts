@@ -180,6 +180,9 @@ class BacklightApp extends HTMLElement implements ClientApi {
 
     this.replaceChild(child, this.currentMedia);
     this.currentMedia = child;
+    if (mimeType === 'application/pdf') {
+      this.delegate!.notifyFileOpened(file.name, mimeType);
+    }
     this.delegate!.notifyCurrentFile(file.name, mimeType);
     this.appBar.setFilename(file.name);
   }
@@ -215,7 +218,36 @@ class BacklightApp extends HTMLElement implements ClientApi {
     this.updateHandler();
   }
 
-  async setViewport(_viewport: Rect) {}
+  async requestBitmap(_requestedPageId: string) {
+    return {
+      'page': {
+        'imageInfo': {
+          'alphaType': 1,
+          'width': 1,
+          'height': 1,
+          'colorTransferFunction': null,
+          'colorToXyzMatrix': null,
+        },
+        'pixelData': {
+          'bytes': [],
+          'sharedMemory': undefined,
+          'invalidBuffer': undefined,
+        },
+      },
+    };
+  }
+
+  async setViewport(_viewport: RectF) {}
+
+  async setPdfOcrEnabled(_enabled: boolean) {}
+
+  async getPdfContent(_limit: number) {
+    return {
+      'content': 'test content',
+    };
+  }
+
+  async hidePdfContextMenu() {}
 
   setDelegate(delegate: ClientApiDelegate|null) {
     this.delegate = delegate;

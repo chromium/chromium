@@ -22,7 +22,7 @@ TEST(RenderSurfaceLayerImplTest, Occlusion) {
 
   LayerTreeImplTestBase impl;
 
-  LayerImpl* owning_layer_impl = impl.AddLayer<LayerImpl>();
+  LayerImpl* owning_layer_impl = impl.AddLayerInActiveTree<LayerImpl>();
   owning_layer_impl->SetBounds(layer_size);
   owning_layer_impl->SetDrawsContent(true);
   CopyProperties(impl.root_layer(), owning_layer_impl);
@@ -75,10 +75,10 @@ static std::unique_ptr<viz::CompositorRenderPass> DoAppendQuadsWithScaledMask(
   scoped_refptr<FakeRasterSource> raster_source =
       FakeRasterSource::CreateFilledSolidColor(layer_size);
 
-  LayerTreeImplTestBase impl;
+  LayerTreeImplTestBase impl(CommitToActiveTreeLayerListSettings());
   auto* root = impl.root_layer();
 
-  auto* surface = impl.AddLayer<LayerImpl>();
+  auto* surface = impl.AddLayerInActiveTree<LayerImpl>();
   surface->SetBounds(layer_size);
   gfx::Transform scale;
   scale.Scale(scale_factor, scale_factor);
@@ -86,12 +86,13 @@ static std::unique_ptr<viz::CompositorRenderPass> DoAppendQuadsWithScaledMask(
   CreateTransformNode(surface).local = scale;
   CreateEffectNode(surface).render_surface_reason = RenderSurfaceReason::kTest;
 
-  auto* mask_layer = impl.AddLayer<FakeMaskLayerImpl>(raster_source);
+  auto* mask_layer =
+      impl.AddLayerInActiveTree<FakeMaskLayerImpl>(raster_source);
   mask_layer->set_resource_size(
       gfx::ScaleToCeiledSize(layer_size, scale_factor));
   SetupMaskProperties(surface, mask_layer);
 
-  auto* child = impl.AddLayer<LayerImpl>();
+  auto* child = impl.AddLayerInActiveTree<LayerImpl>();
   child->SetDrawsContent(true);
   child->SetBounds(layer_size);
   CopyProperties(surface, child);

@@ -154,7 +154,7 @@ class MEDIA_EXPORT AlsaPcmOutputStream : public AudioOutputStream {
   //
   // TODO(ajwong): This is necessary because the ownership semantics for the
   // |source_callback_| object are incorrect in AudioRenderHost. The callback
-  // is passed into the output stream, but ownership is not transfered which
+  // is passed into the output stream, but ownership is not transferred which
   // requires a synchronization on access of the |source_callback_| to avoid
   // using a deleted callback.
   int RunDataCallback(base::TimeDelta delay,

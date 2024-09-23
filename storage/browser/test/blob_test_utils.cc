@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "storage/browser/test/blob_test_utils.h"
+
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
@@ -17,8 +19,8 @@ class DataPipeDrainerClient : public mojo::DataPipeDrainer::Client {
   explicit DataPipeDrainerClient(std::string* output) : output_(output) {}
   void Run() { run_loop_.Run(); }
 
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
-    output_->append(reinterpret_cast<const char*>(data), num_bytes);
+  void OnDataAvailable(base::span<const uint8_t> data) override {
+    output_->append(base::as_string_view(data));
   }
   void OnDataComplete() override { run_loop_.Quit(); }
 

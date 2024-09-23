@@ -254,6 +254,10 @@ void UnifiedConsentService::OnStateChanged(syncer::SyncService* sync) {
   // |IsInitialSyncFeatureSetupComplete()|), because on Android
   // |SetInitialSyncFeatureSetupComplete()| is called automatically during the
   // first setup, i.e. the value could change in the meantime.
+  // TODO(crbug.com/40067025): Simplify (remove the following block) once
+  // kReplaceSyncPromosWithSigninPromos is rolled out on all platforms, and thus
+  // IsSetupInProgress() always returns false. See ConsentLevel::kSync
+  // documentation for details.
   if (sync->IsSetupInProgress() && !pref_service_->IsSyncing()) {
     StartObservingServicePrefChanges();
   } else {
@@ -265,6 +269,9 @@ void UnifiedConsentService::OnStateChanged(syncer::SyncService* sync) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/40066949): Simplify (remove the following block) after
+  // Sync-the-feature users are migrated to ConsentLevel::kSignin (and thus
+  // CanSyncFeatureStart() always returns false).
   if (!sync_service_->CanSyncFeatureStart() ||
       !sync_service_->IsEngineInitialized()) {
     return;
@@ -329,6 +336,9 @@ void UnifiedConsentService::SetMigrationState(MigrationState migration_state) {
 void UnifiedConsentService::MigrateProfileToUnifiedConsent() {
   DCHECK_EQ(GetMigrationState(), MigrationState::kNotInitialized);
 
+  // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     SetMigrationState(MigrationState::kCompleted);
     return;
@@ -345,6 +355,10 @@ void UnifiedConsentService::UpdateSettingsForMigration() {
 
   // Set URL-keyed anonymized metrics to the state it had before unified
   // consent.
+  // TODO(crbug.com/40066949): Simplify (remove the following block) after
+  // Sync-the-feature users are migrated to ConsentLevel::kSignin, and thus
+  // IsSyncFeatureEnabled() always returns false. (The UKM state for kSignin
+  // users is set in OnStateChanged(), so no need for the logic here.)
   bool url_keyed_metrics_enabled =
       sync_service_->IsSyncFeatureEnabled() &&
       sync_service_->GetUserSettings()->GetSelectedTypes().Has(

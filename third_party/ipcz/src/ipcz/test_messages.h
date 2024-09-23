@@ -21,6 +21,14 @@ namespace ipcz::test::msg {
 #include "ipcz/test_messages_generator.h"
 #include "ipcz/message_macros/undef_message_macros.h"
 
+#include "ipcz/message_macros/message_versions_declaration_macros.h"
+#include "ipcz/test_messages_generator.h"
+#include "ipcz/message_macros/undef_message_macros.h"
+
+#include "ipcz/message_macros/message_base_declaration_macros.h"
+#include "ipcz/test_messages_generator.h"
+#include "ipcz/message_macros/undef_message_macros.h"
+
 #include "ipcz/message_macros/message_declaration_macros.h"
 #include "ipcz/test_messages_generator.h"
 #include "ipcz/message_macros/undef_message_macros.h"

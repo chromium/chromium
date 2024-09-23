@@ -15,7 +15,7 @@ class WebState;
 
 // Test observer to check that the WebStateObserver methods are called as
 // expected. Can only observe a single WebState.
-// TODO(crbug.com/775684): fix this to allow observing multiple WebStates.
+// TODO(crbug.com/41350286): fix this to allow observing multiple WebStates.
 class FakeWebStateObserver : public WebStateObserver {
  public:
   FakeWebStateObserver(WebState* web_state);
@@ -55,6 +55,11 @@ class FakeWebStateObserver : public WebStateObserver {
   update_favicon_url_candidates_info() {
     return update_favicon_url_candidates_info_.get();
   }
+  // Arguments passed to `UnderPageBackgroundColorChanged`.
+  web::TestUnderPageBackgroundColorChangedInfo*
+  under_page_background_color_changed_info() {
+    return under_page_background_color_changed_info_.get();
+  }
   // Arguments passed to `RenderProcessGone`.
   web::TestRenderProcessGoneInfo* render_process_gone_info() {
     return render_process_gone_info_.get();
@@ -87,6 +92,7 @@ class FakeWebStateObserver : public WebStateObserver {
   void DidChangeVisibleSecurityState(WebState* web_state) override;
   void FaviconUrlUpdated(WebState* web_state,
                          const std::vector<FaviconURL>& candidates) override;
+  void UnderPageBackgroundColorChanged(WebState* web_state) override;
   void RenderProcessGone(WebState* web_state) override;
   void WebStateDestroyed(WebState* web_state) override;
   void DidStartLoading(WebState* web_state) override;
@@ -108,6 +114,8 @@ class FakeWebStateObserver : public WebStateObserver {
       did_change_visible_security_state_info_;
   std::unique_ptr<web::TestUpdateFaviconUrlCandidatesInfo>
       update_favicon_url_candidates_info_;
+  std::unique_ptr<web::TestUnderPageBackgroundColorChangedInfo>
+      under_page_background_color_changed_info_;
   std::unique_ptr<web::TestRenderProcessGoneInfo> render_process_gone_info_;
   std::unique_ptr<web::TestWebStateDestroyedInfo> web_state_destroyed_info_;
   std::unique_ptr<web::TestStartLoadingInfo> start_loading_info_;

@@ -4,17 +4,19 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
 
+#include <string_view>
+
 namespace web_app {
 namespace {
 const char kUmaSuccessSuffix[] = "Success";
 const char kUmaErrorSuffix[] = "Error";
 }  // namespace
 
-std::string ToSuccessHistogramName(base::StringPiece base_name) {
+std::string ToSuccessHistogramName(std::string_view base_name) {
   return base::StrCat({base_name, kUmaSuccessSuffix});
 }
 
-std::string ToErrorHistogramName(base::StringPiece base_name) {
+std::string ToErrorHistogramName(std::string_view base_name) {
   return base::StrCat({base_name, kUmaErrorSuffix});
 }
 }  // namespace web_app

@@ -42,9 +42,12 @@ class COMPONENT_EXPORT(COLOR) ColorProviderSource {
   // Gets the ColorMode currently associated with this source.
   ColorProviderKey::ColorMode GetColorMode() const;
 
+  // Gets the ForcedColors state currently associated with this source.
+  ColorProviderKey::ForcedColors GetForcedColors() const;
+
   // Gets the RendererColorMap corresponding to the ColorProvider for the
   // `color_mode` and `forced_colors`.
-  virtual const RendererColorMap GetRendererColorMap(
+  virtual RendererColorMap GetRendererColorMap(
       ColorProviderKey::ColorMode color_mode,
       ColorProviderKey::ForcedColors forced_colors) const = 0;
 

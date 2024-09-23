@@ -84,6 +84,11 @@ class DownloadItemModel : public DownloadUIModel,
   download::DownloadItem::InsecureDownloadStatus GetInsecureDownloadStatus()
       const override;
   void OpenUsingPlatformHandler() override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::optional<DownloadCommands::Command> MaybeGetMediaAppAction()
+      const override;
+  void OpenUsingMediaApp() override;
+#endif
   bool IsBeingRevived() const override;
   void SetIsBeingRevived(bool is_being_revived) override;
   const download::DownloadItem* GetDownloadItem() const override;
@@ -122,6 +127,7 @@ class DownloadItemModel : public DownloadUIModel,
   void ExecuteCommand(DownloadCommands* download_commands,
                       DownloadCommands::Command command) override;
   TailoredWarningType GetTailoredWarningType() const override;
+  DangerUiPattern GetDangerUiPattern() const override;
   bool ShouldShowInBubble() const override;
   bool IsEphemeralWarning() const override;
 #endif
@@ -135,7 +141,7 @@ class DownloadItemModel : public DownloadUIModel,
   void DetermineAndSetShouldPreferOpeningInBrowser(
       const base::FilePath& target_path,
       bool is_filetype_handled_safely) override;
-  bool IsEncryptedArchive() const override;
+  bool IsTopLevelEncryptedArchive() const override;
   bool IsExtensionDownload() const override;
 
   // download::DownloadItem::Observer implementation.

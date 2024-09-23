@@ -13,7 +13,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_browsertest_base.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -23,6 +22,7 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
@@ -111,9 +111,6 @@ std::string ExpectedOsPlatform() {
 #endif
 #elif BUILDFLAG(IS_LINUX)
   return "Linux";
-#endif
-#if BUILDFLAG(IS_FUCHSIA)
-  return "Fuchsia";
 #endif
 }
 
@@ -313,7 +310,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      ManagementStatus::UNMANAGED)));
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
-  SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
+  SetPrefs(kOnSecurityEventPref, kOnSecurityEventScopePref,
            kNormalReportingSettingsPref);
 
   auto settings =
@@ -512,11 +509,11 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        DeviceReporting) {
-  SetPrefs(ConnectorPref(FILE_ATTACHED), ConnectorScopePref(FILE_ATTACHED),
-           settings_value(), /*profile_scope*/ false);
-  SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
-           ConnectorScopePref(ReportingConnector::SECURITY_EVENT),
-           settings_value(), /*profile_scope*/ false);
+  SetPrefs(AnalysisConnectorPref(FILE_ATTACHED),
+           AnalysisConnectorScopePref(FILE_ATTACHED), settings_value(),
+           /*profile_scope*/ false);
+  SetPrefs(kOnSecurityEventPref, kOnSecurityEventScopePref, settings_value(),
+           /*profile_scope*/ false);
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), FILE_ATTACHED);
@@ -560,10 +557,9 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        ProfileReporting) {
-  SetPrefs(ConnectorPref(FILE_DOWNLOADED), ConnectorScopePref(FILE_DOWNLOADED),
-           settings_value());
-  SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
-           ConnectorScopePref(ReportingConnector::SECURITY_EVENT),
+  SetPrefs(AnalysisConnectorPref(FILE_DOWNLOADED),
+           AnalysisConnectorScopePref(FILE_DOWNLOADED), settings_value());
+  SetPrefs(kOnSecurityEventPref, kOnSecurityEventScopePref,
            kNormalReportingSettingsPref);
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
@@ -656,7 +652,8 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        NoReporting) {
-  SetPrefs(ConnectorPref(PRINT), ConnectorScopePref(PRINT), settings_value());
+  SetPrefs(AnalysisConnectorPref(PRINT), AnalysisConnectorScopePref(PRINT),
+           settings_value());
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), PRINT);
@@ -679,9 +676,8 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
               settings.value().cloud_or_local_settings.dm_token());
     if (enterprise_connectors_enabled_on_mgs()) {
       ASSERT_FALSE(ContainsClientId(settings.value()));
-    } else {
-      ASSERT_FALSE(settings.value().client_metadata);
     }
+    ASSERT_TRUE(settings.value().client_metadata);
     ASSERT_FALSE(settings.value().per_profile);
   }
 #else
@@ -704,9 +700,8 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                   settings.value().cloud_or_local_settings.dm_token());
         if (enterprise_connectors_enabled_on_mgs()) {
           ASSERT_FALSE(ContainsClientId(settings.value()));
-        } else {
-          ASSERT_FALSE(settings.value().client_metadata);
         }
+        ASSERT_TRUE(settings.value().client_metadata);
         ASSERT_EQ(management_domain, kDomain1);
       }
       break;
@@ -717,9 +712,12 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                   settings.value().cloud_or_local_settings.dm_token());
         if (enterprise_connectors_enabled_on_mgs()) {
           ASSERT_FALSE(ContainsClientId(settings.value()));
-        } else {
-          ASSERT_FALSE(settings.value().client_metadata);
         }
+        ASSERT_TRUE(settings.value().client_metadata);
+        ASSERT_FALSE(
+            settings.value().client_metadata->profile().dm_token().empty());
+        ASSERT_FALSE(
+            settings.value().client_metadata->device().dm_token().empty());
       } else {
         ASSERT_EQ("path_user",
                   settings.value().cloud_or_local_settings.local_path());
@@ -736,9 +734,13 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                   settings.value().cloud_or_local_settings.dm_token());
         if (enterprise_connectors_enabled_on_mgs()) {
           ASSERT_FALSE(ContainsClientId(settings.value()));
-        } else {
-          ASSERT_FALSE(settings.value().client_metadata);
         }
+        ASSERT_TRUE(settings.value().client_metadata);
+        ASSERT_FALSE(
+            settings.value().client_metadata->profile().dm_token().empty());
+        ASSERT_TRUE(
+            settings.value().client_metadata->device().dm_token().empty());
+
       } else {
         ASSERT_EQ("path_user",
                   settings.value().cloud_or_local_settings.local_path());
@@ -756,8 +758,8 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 // is cleaned up.
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        Affiliation) {
-  SetPrefs(ConnectorPref(BULK_DATA_ENTRY), ConnectorScopePref(BULK_DATA_ENTRY),
-           settings_value());
+  SetPrefs(AnalysisConnectorPref(BULK_DATA_ENTRY),
+           AnalysisConnectorScopePref(BULK_DATA_ENTRY), settings_value());
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), BULK_DATA_ENTRY);
@@ -799,9 +801,8 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                   settings.value().cloud_or_local_settings.dm_token());
         if (enterprise_connectors_enabled_on_mgs()) {
           ASSERT_FALSE(ContainsClientId(settings.value()));
-        } else {
-          ASSERT_FALSE(settings.value().client_metadata);
         }
+        ASSERT_TRUE(settings.value().client_metadata);
         ASSERT_TRUE(settings.value().per_profile);
         break;
       case ManagementStatus::UNMANAGED:
@@ -810,9 +811,8 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                   settings.value().cloud_or_local_settings.dm_token());
         if (enterprise_connectors_enabled_on_mgs()) {
           ASSERT_FALSE(ContainsClientId(settings.value()));
-        } else {
-          ASSERT_FALSE(settings.value().client_metadata);
         }
+        ASSERT_TRUE(settings.value().client_metadata);
         ASSERT_TRUE(settings.value().per_profile);
         break;
     }
@@ -836,24 +836,23 @@ INSTANTIATE_TEST_SUITE_P(,
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
                        Test) {
-  SetPrefs(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-           prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope, 1);
+  SetPrefs(kEnterpriseRealTimeUrlCheckMode, kEnterpriseRealTimeUrlCheckScope,
+           1);
   auto maybe_dm_token =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetDMTokenForRealTimeUrlCheck();
-  safe_browsing::EnterpriseRealTimeUrlCheckMode url_check_pref =
+  EnterpriseRealTimeUrlCheckMode url_check_pref =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAppliedRealTimeUrlCheck();
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(maybe_dm_token.has_value());
-    ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);
+    ASSERT_EQ(REAL_TIME_CHECK_DISABLED, url_check_pref);
   } else {
     ASSERT_TRUE(maybe_dm_token.has_value());
     ASSERT_EQ(kFakeBrowserDMToken, maybe_dm_token.value());
-    ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
-              url_check_pref);
+    ASSERT_EQ(REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED, url_check_pref);
   }
 #else
   std::string management_domain =
@@ -862,8 +861,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
   // expected state is the same regardless of management_status() value.
   ASSERT_TRUE(maybe_dm_token.has_value());
   ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
-  ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
-            url_check_pref);
+  ASSERT_EQ(REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED, url_check_pref);
   ASSERT_EQ(kDomain1, management_domain);
 #endif
 }

@@ -9,6 +9,7 @@
 #include <map>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/identity/extension_token_key.h"
 
 namespace extensions {
@@ -56,7 +57,8 @@ class IdentityMintRequestQueue {
              const ExtensionTokenKey& key);
 
  private:
-  typedef std::list<IdentityMintRequestQueue::Request*> RequestQueue;
+  typedef std::list<raw_ptr<IdentityMintRequestQueue::Request, CtnExperimental>>
+      RequestQueue;
   typedef std::map<const ExtensionTokenKey, RequestQueue> RequestQueueMap;
 
   RequestQueueMap& GetRequestQueueMap(IdentityMintRequestQueue::MintType type);

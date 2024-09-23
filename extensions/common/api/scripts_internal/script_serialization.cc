@@ -5,6 +5,7 @@
 #include "extensions/common/api/scripts_internal/script_serialization.h"
 
 #include <optional>
+
 #include "base/types/optional_util.h"
 #include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/user_script.h"
@@ -37,7 +38,7 @@ api::scripts_internal::SerializedUserScript SerializeUserScript(
     serialized_script.css.emplace();
     serialized_script.css->reserve(user_script.css_scripts().size());
     for (const auto& css_script : user_script.css_scripts()) {
-      // TODO(https://crbug.com/1385165): Handle `code`.
+      // TODO(crbug.com/40061759): Handle `code`.
       api::scripts_internal::ScriptSource source;
       source.file = css_script->relative_path().AsUTF8Unsafe();
       serialized_script.css->push_back(std::move(source));
@@ -123,7 +124,7 @@ api::scripts_internal::SerializedUserScript SerializeUserScript(
       case UserScript::Source::kStaticContentScript:
       case UserScript::Source::kWebUIScript:
         // We shouldn't be serialized these script types, ever.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   };
   serialized_script.source =
@@ -132,6 +133,9 @@ api::scripts_internal::SerializedUserScript SerializeUserScript(
   // `world`.
   serialized_script.world =
       ConvertExecutionWorldForAPI(user_script.execution_world());
+
+  // `worldId`.
+  serialized_script.world_id = user_script.world_id();
 
   return serialized_script;
 }
@@ -158,7 +162,8 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
           serialized_script.id, UserScript::kManifestContentScriptPrefix);
       break;
     case api::scripts_internal::Source::kNone:
-      NOTREACHED();  // This should have been caught by our parsing.
+      NOTREACHED_IN_MIGRATION();  // This should have been caught by our
+                                  // parsing.
   }
 
   if (!source_matches_id) {
@@ -219,6 +224,9 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
   // `world`.
   user_script->set_execution_world(
       ConvertExecutionWorld(serialized_script.world));
+
+  // `worldId`.
+  user_script->set_world_id(serialized_script.world_id);
 
   // Post-parse validation (these rely on multiple fields).
   if (!script_parsing::ValidateMatchOriginAsFallback(

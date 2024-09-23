@@ -19,8 +19,9 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/engine/model_type_processor_metrics.h"
+#include "components/sync/engine/data_type_processor_metrics.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
@@ -107,7 +108,7 @@ syncer::UniquePosition ComputeUniquePositionForTrackedBookmarkNode(
   const SyncedBookmarkTrackerEntity* child_entity =
       bookmark_tracker->GetEntityForBookmarkNode(bookmark_node);
   DCHECK(child_entity);
-  // TODO(crbug.com/1113139): precompute UniquePosition to prevent its
+  // TODO(crbug.com/40710102): precompute UniquePosition to prevent its
   // calculation on each remote update.
   return syncer::UniquePosition::FromProto(
       child_entity->metadata().unique_position());
@@ -304,7 +305,7 @@ void BookmarkRemoteUpdatesHandler::Process(
     }
 
     // Record freshness of the update to UMA. To mimic the behavior in
-    // ClientTagBasedModelTypeProcessor, one scenario is special-cased: an
+    // ClientTagBasedDataTypeProcessor, one scenario is special-cased: an
     // incoming tombstone for an entity that is not tracked.
     if (tracked_entity || !update_entity.is_deleted()) {
       syncer::LogNonReflectionUpdateFreshnessToUma(
@@ -355,11 +356,11 @@ void BookmarkRemoteUpdatesHandler::Process(
 
     // If the received entity has out of date encryption, we schedule another
     // commit to fix it.
-    if (bookmark_tracker_->model_type_state().encryption_key_name() !=
+    if (bookmark_tracker_->data_type_state().encryption_key_name() !=
         update->encryption_key_name) {
       DVLOG(2) << "Bookmarks: Requesting re-encrypt commit "
                << update->encryption_key_name << " -> "
-               << bookmark_tracker_->model_type_state().encryption_key_name();
+               << bookmark_tracker_->data_type_state().encryption_key_name();
       bookmark_tracker_->IncrementSequenceNumber(tracked_entity);
     }
 
@@ -431,7 +432,7 @@ BookmarkRemoteUpdatesHandler::ReorderValidUpdates(
   // Normally there shouldn't be multiple updates for the same UUID, but let's
   // avoiding dedupping here just in case (e.g. the could in theory be a
   // combination of client-tagged and non-client-tagged updated that
-  // ModelTypeWorker failed to deduplicate.
+  // DataTypeWorker failed to deduplicate.
   std::unordered_multimap<base::Uuid, const syncer::UpdateResponseData*,
                           base::UuidHash>
       uuid_to_updates;
@@ -669,13 +670,13 @@ void BookmarkRemoteUpdatesHandler::ProcessDelete(
   // Remove the entities of |node| and its children.
   RemoveEntityAndChildrenFromTracker(node);
   // Remove the node and its children from the model.
-  bookmark_model_->Remove(node);
+  bookmark_model_->Remove(node, FROM_HERE);
 }
 
 // This method doesn't explicitly handle conflicts as a result of re-encryption:
 // remote update wins even if there wasn't a real change in specifics. However,
 // this scenario is very unlikely and hence the implementation is less
-// sophisticated than in ClientTagBasedModelTypeProcessor (it would require
+// sophisticated than in ClientTagBasedDataTypeProcessor (it would require
 // introducing base hash specifics to track remote changes).
 const SyncedBookmarkTrackerEntity*
 BookmarkRemoteUpdatesHandler::ProcessConflict(
@@ -694,7 +695,8 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
   if (tracked_entity->metadata().is_deleted() && update_entity.is_deleted()) {
     // Both have been deleted, delete the corresponding entity from the tracker.
     bookmark_tracker_->Remove(tracked_entity);
-    DLOG(WARNING) << "Conflict: CHANGES_MATCH";
+    syncer::RecordDataTypeEntityConflictResolution(
+        syncer::BOOKMARKS, syncer::ConflictResolution::kChangesMatch);
     return nullptr;
   }
 
@@ -703,7 +705,8 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
     // update from the server but leave the pending commit intact.
     bookmark_tracker_->UpdateServerVersion(tracked_entity,
                                            update.response_version);
-    DLOG(WARNING) << "Conflict: USE_LOCAL";
+    syncer::RecordDataTypeEntityConflictResolution(
+        syncer::BOOKMARKS, syncer::ConflictResolution::kUseLocal);
     return tracked_entity;
   }
 
@@ -713,7 +716,8 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
     // Only local node has been deleted. It should be restored from the server
     // data as a remote creation.
     bookmark_tracker_->Remove(tracked_entity);
-    DLOG(WARNING) << "Conflict: USE_REMOTE";
+    syncer::RecordDataTypeEntityConflictResolution(
+        syncer::BOOKMARKS, syncer::ConflictResolution::kUseRemote);
     return ProcessCreate(update);
   }
 
@@ -734,6 +738,8 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
   if (!new_parent_entity) {
     LogProblematicBookmark(
         RemoteBookmarkUpdateError::kMissingParentEntityInConflict);
+    syncer::RecordDataTypeEntityConflictResolution(
+        syncer::BOOKMARKS, syncer::ConflictResolution::kUseLocal);
     return tracked_entity;
   }
   const bookmarks::BookmarkNode* new_parent =
@@ -745,6 +751,8 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
   if (!new_parent) {
     LogProblematicBookmark(
         RemoteBookmarkUpdateError::kMissingParentNodeInConflict);
+    syncer::RecordDataTypeEntityConflictResolution(
+        syncer::BOOKMARKS, syncer::ConflictResolution::kUseLocal);
     return tracked_entity;
   }
   // Either local and remote data match or server wins, and in both cases we
@@ -761,11 +769,13 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
                               update_entity.specifics);
 
     // The changes are identical so there isn't a real conflict.
-    DLOG(WARNING) << "Conflict: CHANGES_MATCH";
+    syncer::RecordDataTypeEntityConflictResolution(
+        syncer::BOOKMARKS, syncer::ConflictResolution::kChangesMatch);
   } else {
     // Conflict where data don't match and no remote deletion, and hence server
     // wins. Update the model from server data.
-    DLOG(WARNING) << "Conflict: USE_REMOTE";
+    syncer::RecordDataTypeEntityConflictResolution(
+        syncer::BOOKMARKS, syncer::ConflictResolution::kUseRemote);
     ApplyRemoteUpdate(update, tracked_entity, new_parent_entity,
                       bookmark_model_, bookmark_tracker_, favicon_service_);
   }

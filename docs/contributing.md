@@ -86,8 +86,7 @@ contribution can be accepted:
 
 ## Initial git setup
 
-1. Visit <https://chromium.googlesource.com/new-password> and follow the
-   on-screen instructions to get credentials for uploading changes.
+1. Set up [Gerrit access](https://www.chromium.org/developers/gerrit-guide/).
 2. Tell git about your name, email and some other settings.
    ```
    git config --global user.name "My Name"
@@ -133,8 +132,10 @@ Chromium workflow is not the same as the GitHub pull request workflow.
 
 ## Uploading a change for review
 
-Note: go through the [commit checklist][commit-checklist] for Chromium before
-uploading a change for review.
+Note: If your change is to a dependent project, see the documentation on
+[changing dependencies](dependencies.md#changing-dependencies). Otherwise, go
+through the [commit checklist][commit-checklist] for Chromium before uploading a
+change for review.
 
 Chromium uses a Gerrit instance hosted at
 <https://chromium-review.googlesource.com> for code reviews. In order to upload
@@ -235,7 +236,7 @@ policies][code-reviews] page.
 
 Please note here that a "reviewer" in this context is someone that not
 only provides comment on the CL but also someone who can approve the
-submission by providing a CR+1.
+submission by providing a "Code-Review +1".
 
 Reviewers must be [committers](https://www.chromium.org/getting-involved/become-a-committer/).
 Ideally they should be committers who are familiar with the area of code
@@ -263,9 +264,9 @@ uses multiple systems and a perspective from each is valuable. In this case,
 please make it explicit that you would like both reviewers to review.
 
 Submissions to the chromium/src repository by a change contributor who is
-not a Chromium committer will require two committers to Code-Review+1 the
+not a Chromium committer will require two committers to "Code-Review +1" the
 submissions. If the owner of the CL is already a committer, then only one
-other committer is needed to Code-Review+1.
+other committer is needed to "Code-Review +1".
 
 ### Requesting review
 
@@ -305,6 +306,13 @@ When the reviewer is happy with the change, they will set the "Code-Review +1"
 label. Owners of all affected files must approve before a change can be
 committed. See: [code review policies: owners][code-reviews-owners].
 
+All code review comments must be marked resolved before a CL can be committed.
+In some cases a reviewer may give "Code-Review +1" with some additional
+comments. These should be addressed and responded to, or at least acknowledged
+with the ACK button to resolve them. If you cannot resolve all comments an
+override is provided through an "Unresolved-Comment-Reason:" stanza in your
+commit message.
+
 ## Running automated tests
 
 Before being submitted, a change must pass the commit queue (CQ). The commit
@@ -338,7 +346,7 @@ colors to indicate its status:
 
 ## Committing
 
-Changes should generally be committed via the [commit queue][commit-queue].
+Changes are committed via the [commit queue][commit-queue].
 This is done by clicking **Submit to CQ** in the upper right corner, or setting
 the "Commit-Queue +2" label on the change. The commit queue will then
 send the patch to the try bots. If all try bots return green, the change will
@@ -347,9 +355,8 @@ automatically be committed. Yay!
 Sometimes a test might be flaky. If you have an isolated failure that appears
 unrelated to your change, try sending the change to the commit queue again.
 
-Alternatively, a developer with commit access can [directly
-commit][direct-commit] a change, bypassing the commit queue. This should only
-be used in emergencies because it will bypass all the safety nets.
+In emergencies, a developer with commit access can [directly
+commit][direct-commit] a change, bypassing the commit queue and all safety nets.
 
 ## Relanding a change
 
@@ -573,7 +580,7 @@ formats.
 [life-of-a-chromium-developer]: https://docs.google.com/presentation/d/1abnqM9j6zFodPHA38JG1061rG2iGj_GABxEDgZsdbJg/edit
 [noms-tutorial]: https://meowni.ca/posts/chromium-101
 [review-lag]: https://dev.chromium.org/developers/contributing-code/minimizing-review-lag-across-time-zones
-[skia-dev-guide]: https://skia.org/dev/contrib
+[skia-dev-guide]: https://skia.org/docs/dev/contrib/
 [try-job-access]: https://www.chromium.org/getting-involved/become-a-committer#TOC-Try-job-access
 [v8-dev-guide]: https://v8.dev/docs
 [watchlist-doc]: infra/watchlists.md

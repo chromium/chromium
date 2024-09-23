@@ -13,6 +13,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
@@ -108,7 +109,7 @@ bool WidgetDelegate::CanActivate() const {
   return can_activate_;
 }
 
-ui::ModalType WidgetDelegate::GetModalType() const {
+ui::mojom::ModalType WidgetDelegate::GetModalType() const {
   return params_.modal_type;
 }
 
@@ -223,8 +224,9 @@ std::string WidgetDelegate::GetWindowName() const {
   return std::string();
 }
 
-void WidgetDelegate::SaveWindowPlacement(const gfx::Rect& bounds,
-                                         ui::WindowShowState show_state) {
+void WidgetDelegate::SaveWindowPlacement(
+    const gfx::Rect& bounds,
+    ui::mojom::WindowShowState show_state) {
   std::string window_name = GetWindowName();
   if (!window_name.empty()) {
     ViewsDelegate::GetInstance()->SaveWindowPlacement(GetWidget(), window_name,
@@ -239,7 +241,7 @@ bool WidgetDelegate::ShouldSaveWindowPlacement() const {
 bool WidgetDelegate::GetSavedWindowPlacement(
     const Widget* widget,
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   std::string window_name = GetWindowName();
   if (window_name.empty() ||
       !ViewsDelegate::GetInstance()->GetSavedWindowPlacement(
@@ -251,10 +253,14 @@ bool WidgetDelegate::GetSavedWindowPlacement(
   return display.bounds().Intersects(*bounds);
 }
 
-void WidgetDelegate::WidgetInitializing(Widget* widget) {
+base::WeakPtr<WidgetDelegate> WidgetDelegate::AttachWidgetAndGetHandle(
+    Widget* widget) {
   can_delete_this_ = false;
 
   widget_ = widget;
+  // This weak ptr is valid until `DeleteDelegate` is called. This
+  // will be called otherwise the dtor will CHECK on `can_delete_this_`.
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void WidgetDelegate::WidgetInitialized() {
@@ -288,9 +294,15 @@ void WidgetDelegate::DeleteDelegate() {
   ClosureVector delete_callbacks;
   delete_callbacks.swap(delete_delegate_callbacks_);
 
-  base::WeakPtr<WidgetDelegate> weak_this = AsWeakPtr();
-  for (auto&& callback : delete_callbacks)
+  const auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  for (auto&& callback : delete_callbacks) {
     std::move(callback).Run();
+  }
+
+  if (weak_this && !owned_by_widget && widget_ &&
+      widget_->ownership() == Widget::InitParams::CLIENT_OWNS_WIDGET) {
+    WidgetIsZombie(widget_.get());
+  }
 
   // TODO(kylixrd): Eventually the widget will never own the delegate, so much
   // of this code will need to be reworked.
@@ -303,6 +315,9 @@ void WidgetDelegate::DeleteDelegate() {
     // TODO(kylxird): Rework this once the Widget stops being able to "own" the
     // delegate.
     delete this;
+  } else if (weak_this) {
+    widget_ = nullptr;
+    weak_ptr_factory_.InvalidateWeakPtrs();
   }
 }
 
@@ -425,7 +440,7 @@ void WidgetDelegate::SetInitiallyFocusedView(View* initially_focused_view) {
   params_.initially_focused_view = initially_focused_view;
 }
 
-void WidgetDelegate::SetModalType(ui::ModalType modal_type) {
+void WidgetDelegate::SetModalType(ui::mojom::ModalType modal_type) {
   DCHECK(!GetWidget());
   params_.modal_type = modal_type;
 }
@@ -506,14 +521,30 @@ void WidgetDelegate::SetContentsViewImpl(std::unique_ptr<View> contents) {
   unowned_contents_view_ = owned_contents_view_.get();
 }
 
+gfx::Rect WidgetDelegate::GetDesiredWidgetBounds() {
+  DCHECK(GetWidget());
+
+  if (has_desired_bounds_delegate()) {
+    const gfx::Rect desired_bounds = params_.desired_bounds_delegate.Run();
+    // This can for instance be empty during browser shutdown where the delegate
+    // fails to find the appropriate Widget native view to generate bounds. See
+    // GetModalDialogBounds in constrained_window which as of this commit return
+    // empty bounds if it can't find the the host widget. Ideally this Widget
+    // would go away or at least be "in shutdown" and probably avoid this code
+    // path before the underlying host Widget or native view goes away.
+    if (!desired_bounds.IsEmpty()) {
+      return desired_bounds;
+    }
+  }
+
+  return gfx::Rect(GetWidget()->GetWindowBoundsInScreen().origin(),
+                   GetWidget()->GetContentsView()->GetPreferredSize({}));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // WidgetDelegateView:
 
-WidgetDelegateView::WidgetDelegateView() {
-  // TODO (kylixrd): Remove once the Widget ceases to "own" the WidgetDelegate.
-  // A WidgetDelegate should be deleted on DeleteDelegate.
-  SetOwnedByWidget(true);
-}
+WidgetDelegateView::WidgetDelegateView() = default;
 
 WidgetDelegateView::~WidgetDelegateView() = default;
 

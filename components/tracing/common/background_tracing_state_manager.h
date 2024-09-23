@@ -5,13 +5,16 @@
 #ifndef COMPONENTS_TRACING_COMMON_BACKGROUND_TRACING_STATE_MANAGER_H_
 #define COMPONENTS_TRACING_COMMON_BACKGROUND_TRACING_STATE_MANAGER_H_
 
-#include "base/component_export.h"
+#include <cstdint>
+
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
+#include "components/tracing/tracing_export.h"
 
 namespace tracing {
 
@@ -30,18 +33,12 @@ enum class BackgroundTracingState : int {
 // Manages local state prefs for background tracing, and tracks state from
 // previous background tracing session(s). All the calls are expected to run on
 // UI thread.
-class COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BackgroundTracingStateManager {
+class TRACING_EXPORT BackgroundTracingStateManager {
  public:
+  static std::unique_ptr<BackgroundTracingStateManager> CreateInstance(
+      PrefService* local_state);
   static BackgroundTracingStateManager& GetInstance();
-
-  // Initializes state from previous session and writes current state to
-  // prefs, when called the first time. NOOP on any calls after that. It also
-  // deletes any expired entries from prefs.
-  void Initialize(PrefService* local_state);
-
-  // Used in tests when other methods of this class need to be called before
-  // Initialize().
-  void SetPrefServiceForTesting(PrefService* local_state);
+  ~BackgroundTracingStateManager();
 
   // True if last session potentially crashed and it is unsafe to turn on
   // background tracing in current session.
@@ -52,22 +49,27 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BackgroundTracingStateManager {
   // sequence to update the state once more to denote no crashes after a
   // reasonable time (see DidLastSessionEndUnexpectedly()).
   void OnTracingStarted();
-
   void OnTracingStopped();
 
-  // Saves the given state to prefs, public for testing.
-  void SaveState(BackgroundTracingState state);
+  // Saves user-controlled prefs related to tracing.
+  // `enabled_scenario_hashes` is a list of hashes uniquely identifying scenario
+  // configs.
+  void UpdateEnabledScenarios(std::vector<std::string> enabled_scenario_hashes);
+  void UpdatePrivacyFilter(bool enabled);
+
+  const std::vector<std::string>& enabled_scenarios() const {
+    return enabled_scenarios_;
+  }
+  bool privacy_filter_enabled() const { return privacy_filter_enabled_; }
 
   // Used in tests to reset the state since a singleton instance is never
   // destroyed.
   void ResetForTesting();
 
  private:
-  friend base::NoDestructor<BackgroundTracingStateManager>;
+  explicit BackgroundTracingStateManager(PrefService* local_state);
 
-  BackgroundTracingStateManager();
-  ~BackgroundTracingStateManager();
-
+  void Initialize();
   void SaveState();
 
   // Updates the current tracing state and saves it to prefs.
@@ -75,13 +77,14 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BackgroundTracingStateManager {
 
   BackgroundTracingState state_ = BackgroundTracingState::NOT_ACTIVATED;
 
-  bool initialized_ = false;
-
   raw_ptr<PrefService> local_state_ = nullptr;
+  std::vector<std::string> enabled_scenarios_;
+  bool privacy_filter_enabled_ = true;
 
-  // Following are valid only when |initialized_| = true.
   BackgroundTracingState last_session_end_state_ =
       BackgroundTracingState::NOT_ACTIVATED;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace tracing

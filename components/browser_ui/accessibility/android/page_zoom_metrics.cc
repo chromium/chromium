@@ -5,11 +5,13 @@
 #include "components/browser_ui/accessibility/android/page_zoom_metrics.h"
 
 #include "base/android/scoped_java_ref.h"
-#include "components/browser_ui/accessibility/android/accessibility_jni_headers/PageZoomMetrics_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/browser_ui/accessibility/android/accessibility_jni_headers/PageZoomMetrics_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

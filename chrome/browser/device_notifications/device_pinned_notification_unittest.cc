@@ -15,6 +15,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -69,8 +73,15 @@ void DevicePinnedNotificationTestBase::CheckIcon(
     EXPECT_EQ(maybe_notification->message(), GetExpectedMessage(origin_items));
     EXPECT_EQ(maybe_notification->priority(), message_center::LOW_PRIORITY);
     ASSERT_EQ(maybe_notification->rich_notification_data().buttons.size(), 1u);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (!ash::features::AreOngoingProcessesEnabled()) {
+      EXPECT_EQ(maybe_notification->rich_notification_data().buttons[0].title,
+                device_content_settings_label_);
+    }
+#else
     EXPECT_EQ(maybe_notification->rich_notification_data().buttons[0].title,
               device_content_settings_label_);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     EXPECT_TRUE(maybe_notification->delegate());
 
     EXPECT_CALL(*GetMockDeviceConnectionTracker(connection_tracker),

@@ -35,11 +35,13 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -51,6 +53,9 @@ public final class FeedActionDelegateImplTest {
     @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
     @Mock private SyncConsentActivityLauncher mMockSyncConsentActivityLauncher;
+    @Mock private SigninAndHistorySyncActivityLauncher mMockSigninLauncher;
+
+    @Mock private SigninAndHistorySyncActivityLauncher mMockSigninAndHistorySyncActivityLauncher;
 
     @Mock private SnackbarManager mMockSnackbarManager;
 
@@ -75,13 +80,14 @@ public final class FeedActionDelegateImplTest {
         MockitoAnnotations.initMocks(this);
 
         SyncConsentActivityLauncherImpl.setLauncherForTest(mMockSyncConsentActivityLauncher);
+        SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(
+                mMockSigninAndHistorySyncActivityLauncher);
         mFeedActionDelegateImpl =
                 new FeedActionDelegateImpl(
                         mActivity,
                         mMockSnackbarManager,
                         mMockNavigationDelegate,
                         mMockBookmarkModel,
-                        BrowserUiUtils.HostSurface.NOT_SET,
                         mTabModelSelector,
                         mProfile,
                         mBottomSheetController);
@@ -94,18 +100,73 @@ public final class FeedActionDelegateImplTest {
     public void testShowSyncConsentActivity_shownWhenFlagEnabled() {
         FeatureList.setTestFeatures(
                 ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, true));
-        mFeedActionDelegateImpl.showSyncConsentActivity(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS);
+        mFeedActionDelegateImpl.showSyncConsentActivity(SigninAccessPoint.NTP_FEED_TOP_PROMO);
         verify(mMockSyncConsentActivityLauncher)
-                .launchActivityIfAllowed(any(), eq(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                .launchActivityIfAllowed(any(), eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
     }
 
     @Test
     public void testShowSyncConsentActivity_dontShowWhenFlagDisabled() {
         FeatureList.setTestFeatures(
                 ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, false));
-        mFeedActionDelegateImpl.showSyncConsentActivity(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS);
+        mFeedActionDelegateImpl.showSyncConsentActivity(SigninAccessPoint.NTP_FEED_TOP_PROMO);
         verify(mMockSyncConsentActivityLauncher, never())
-                .launchActivityIfAllowed(any(), eq(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+                .launchActivityIfAllowed(any(), eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
+    }
+
+    @Test
+    public void testStartSigninFlow_shownWhenFlagEnabled() {
+        FeatureList.setTestFeatures(
+                ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, true));
+        mFeedActionDelegateImpl.startSigninFlow(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+        verify(mMockSigninAndHistorySyncActivityLauncher)
+                .launchActivityIfAllowed(
+                        any(),
+                        any(),
+                        any(),
+                        eq(SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET),
+                        eq(
+                                SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET),
+                        eq(SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
+                        eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
+    }
+
+    @Test
+    public void testStartSigninFlow_dontShowWhenFlagDisabled() {
+        FeatureList.setTestFeatures(
+                ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, false));
+        mFeedActionDelegateImpl.startSigninFlow(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+        verify(mMockSigninAndHistorySyncActivityLauncher, never())
+                .launchActivityIfAllowed(
+                        any(),
+                        any(),
+                        any(),
+                        eq(SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET),
+                        eq(
+                                SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET),
+                        eq(SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
+                        eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
+    }
+
+    @Test
+    public void testShowSigninInterstitial_replaceSyncPromosWithSignInPromosEnabled() {
+        FeatureList.setTestFeatures(
+                ImmutableMap.of(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS, true));
+        mFeedActionDelegateImpl.showSignInInterstitial(
+                SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, null, null);
+        verify(mMockSigninAndHistorySyncActivityLauncher)
+                .launchActivityIfAllowed(
+                        any(),
+                        any(),
+                        any(),
+                        eq(SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET),
+                        eq(
+                                SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET),
+                        eq(SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
+                        eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO));
     }
 
     @Test

@@ -70,6 +70,20 @@ component("linux_ui_factory") {
   }
 }
 
+source_set("display_server_utils") {
+  sources = [
+    "display_server_utils.cc",
+    "display_server_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/angle:angle_gpu_info_util",
+    "//ui/base:features",
+    "//ui/base:ozone_buildflags",
+    "//ui/ozone",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
 

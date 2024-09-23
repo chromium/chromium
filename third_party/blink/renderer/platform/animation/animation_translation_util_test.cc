@@ -26,7 +26,6 @@
 
 #include <memory>
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/scale_transform_operation.h"
@@ -41,11 +40,11 @@ TEST(AnimationTranslationUtilTest, transformsWork) {
   TransformOperations ops;
   gfx::TransformOperations out_ops;
 
-  ops.Operations().push_back(TranslateTransformOperation::Create(
+  ops.Operations().push_back(MakeGarbageCollected<TranslateTransformOperation>(
       Length::Fixed(2), Length::Fixed(0), TransformOperation::kTranslateX));
-  ops.Operations().push_back(RotateTransformOperation::Create(
+  ops.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
       0.1, 0.2, 0.3, 200000.4, TransformOperation::kRotate3D));
-  ops.Operations().push_back(ScaleTransformOperation::Create(
+  ops.Operations().push_back(MakeGarbageCollected<ScaleTransformOperation>(
       50.2, 100, -4, TransformOperation::kScale3D));
   ToGfxTransformOperations(ops, &out_ops, gfx::SizeF());
 
@@ -74,7 +73,7 @@ TEST(AnimationTranslationUtilTest, transformsWork) {
 
 TEST(AnimationTranslationUtilTest, RelativeTranslate) {
   TransformOperations ops;
-  ops.Operations().push_back(TranslateTransformOperation::Create(
+  ops.Operations().push_back(MakeGarbageCollected<TranslateTransformOperation>(
       Length::Percent(50), Length::Percent(50),
       TransformOperation::kTranslate));
 
@@ -91,10 +90,12 @@ TEST(AnimationTranslationUtilTest, RelativeTranslate) {
 
 TEST(AnimationTranslationUtilTest, RelativeInterpolated) {
   TransformOperations ops_a, ops_b;
-  ops_a.Operations().push_back(TranslateTransformOperation::Create(
-      Length::Percent(50), Length::Fixed(0), TransformOperation::kTranslate));
-  ops_b.Operations().push_back(
-      RotateTransformOperation::Create(3600, TransformOperation::kRotate));
+  ops_a.Operations().push_back(
+      MakeGarbageCollected<TranslateTransformOperation>(
+          Length::Percent(50), Length::Fixed(0),
+          TransformOperation::kTranslate));
+  ops_b.Operations().push_back(MakeGarbageCollected<RotateTransformOperation>(
+      3600, TransformOperation::kRotate));
 
   TransformOperations ops_c = ops_b.Blend(ops_a, 0.5);
 

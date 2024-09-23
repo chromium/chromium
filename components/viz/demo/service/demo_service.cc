@@ -13,7 +13,6 @@
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/demo/common/switches.h"
 #include "components/viz/service/main/viz_compositor_thread_runner_impl.h"
-#include "gpu/ipc/host/gpu_memory_buffer_support.h"
 #include "gpu/ipc/service/gpu_init.h"
 #include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
 #include "ui/gl/gl_utils.h"
@@ -25,7 +24,7 @@ namespace {
 
 std::unique_ptr<base::Thread> CreateAndStartIOThread() {
   base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
-  thread_options.thread_type = base::ThreadType::kCompositing;
+  thread_options.thread_type = base::ThreadType::kDisplayCritical;
   auto io_thread = std::make_unique<base::Thread>("VizDemoGpuIOThread");
   CHECK(io_thread->StartWithOptions(std::move(thread_options)));
   return io_thread;
@@ -50,17 +49,18 @@ DemoService::DemoService(
 
     io_thread_ = CreateAndStartIOThread();
 
-    auto pref = gpu_init_->gpu_preferences();
-    pref.texture_target_exception_list =
-        gpu::CreateBufferUsageAndFormatExceptionList();
+    viz::GpuServiceImpl::InitParams init_params;
+    init_params.watchdog_thread = gpu_init_->TakeWatchdogThread();
+    init_params.io_runner = io_thread_->task_runner();
+    init_params.vulkan_implementation = gpu_init_->vulkan_implementation();
+    init_params.exit_callback =
+        base::BindOnce(&DemoService::ExitProcess, base::Unretained(this));
 
     gpu_service_ = std::make_unique<viz::GpuServiceImpl>(
-        gpu_init_->gpu_info(), gpu_init_->TakeWatchdogThread(),
-        io_thread_->task_runner(), gpu_init_->gpu_feature_info(), pref,
-        gpu_init_->gpu_info_for_hardware_gpu(),
+        gpu_init_->gpu_preferences(), gpu_init_->gpu_info(),
+        gpu_init_->gpu_feature_info(), gpu_init_->gpu_info_for_hardware_gpu(),
         gpu_init_->gpu_feature_info_for_hardware_gpu(),
-        gpu_init_->gpu_extra_info(), gpu_init_->vulkan_implementation(),
-        base::BindOnce(&DemoService::ExitProcess, base::Unretained(this)));
+        gpu_init_->gpu_extra_info(), std::move(init_params));
 
     mojo::PendingRemote<viz::mojom::GpuHost> gpu_host_proxy;
     std::ignore = gpu_host_proxy.InitWithNewPipeAndPassReceiver();

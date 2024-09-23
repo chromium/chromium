@@ -74,8 +74,8 @@ void WaitForHttpAuthDialog() {
 - (void)testSuccessfullBasicAuth {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // EG does not allow interactions with HTTP Dialog when loading spinner is
-    // animated. TODO(crbug.com/680290): Enable this test on iPad when EarlGrey
-    // allows tapping dialog buttons with active page load spinner.
+    // animated. TODO(crbug.com/41294580): Enable this test on iPad when
+    // EarlGrey allows tapping dialog buttons with active page load spinner.
     EARL_GREY_TEST_DISABLED(@"Tab Title not displayed on handset.");
   }
 
@@ -113,8 +113,8 @@ void WaitForHttpAuthDialog() {
 - (void)testUnsuccessfullBasicAuth {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // EG does not allow interactions with HTTP Dialog when loading spinner is
-    // animated. TODO(crbug.com/680290): Enable this test on iPad when EarlGrey
-    // allows tapping dialog buttons with active page load spinner.
+    // animated. TODO(crbug.com/41294580): Enable this test on iPad when
+    // EarlGrey allows tapping dialog buttons with active page load spinner.
     EARL_GREY_TEST_DISABLED(@"Tab Title not displayed on handset.");
   }
 
@@ -153,8 +153,8 @@ void WaitForHttpAuthDialog() {
 - (void)testCancellingBasicAuth {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // EG does not allow interactions with HTTP Dialog when loading spinner is
-    // animated. TODO(crbug.com/680290): Enable this test on iPad when EarlGrey
-    // allows tapping dialog buttons with active page load spinner.
+    // animated. TODO(crbug.com/41294580): Enable this test on iPad when
+    // EarlGrey allows tapping dialog buttons with active page load spinner.
     EARL_GREY_TEST_DISABLED(@"Tab Title not displayed on handset.");
   }
 
@@ -169,7 +169,14 @@ void WaitForHttpAuthDialog() {
     [ChromeEarlGrey loadURL:URL waitForCompletion:NO];
     WaitForHttpAuthDialog();
 
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+    id<GREYMatcher> cancelButtonMatcher = grey_allOf(
+        chrome_test_util::CancelButton(),
+        grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
+    // Wait for element to become enabled because auth dialog buttons are
+    // initially disabled. See crbug.com/341353783
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cancelButtonMatcher];
+
+    [[EarlGrey selectElementWithMatcher:cancelButtonMatcher]
         performAction:grey_tap()];
 
   }  // EG synchronization disabled block.

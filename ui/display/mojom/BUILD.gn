@@ -102,6 +102,11 @@ mojom("mojom") {
           mojom = "display.mojom.VariableRefreshRateState"
           cpp = "::display::VariableRefreshRateState"
         },
+        {
+          mojom = "display.mojom.ModesetFlags"
+          cpp = "::display::ModesetFlags"
+          copyable_pass_by_value = true
+        },
       ]
       traits_sources = [ "display_constants_mojom_traits.cc" ]
       traits_headers = [ "display_constants_mojom_traits.h" ]
@@ -137,6 +142,7 @@ mojom("mojom") {
           mojom = "display.mojom.DisplayMode"
           cpp = "::std::unique_ptr<::display::DisplayMode>"
           move_only = true
+          nullable_is_same_type = true
         },
       ]
       traits_sources = [ "display_mode_mojom_traits.cc" ]

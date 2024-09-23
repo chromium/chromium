@@ -83,6 +83,7 @@ class ViewEventTestBase : public ChromeViewsTestBase {
   void SetUp() override;
   void TearDown() override;
   views::Widget::InitParams CreateParams(
+      views::Widget::InitParams::Ownership ownership,
       views::Widget::InitParams::Type type) override;
 
   // Returns the view that is added to the window.

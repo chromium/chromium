@@ -5,9 +5,11 @@
 #include "chrome/browser/android/customtabs/chrome_origin_verifier.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/browser/android/browserservices/verification/jni_headers/ChromeOriginVerifier_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "components/content_relationship_verification/origin_verifier.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/android/browserservices/verification/jni_headers/ChromeOriginVerifier_jni.h"
 
 namespace customtabs {
 

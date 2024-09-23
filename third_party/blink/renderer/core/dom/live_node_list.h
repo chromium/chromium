@@ -40,16 +40,7 @@ class CORE_EXPORT LiveNodeList : public NodeList, public LiveNodeListBase {
   LiveNodeList(ContainerNode& owner_node,
                CollectionType collection_type,
                NodeListInvalidationType invalidation_type,
-               NodeListSearchRoot search_root = NodeListSearchRoot::kOwnerNode)
-      : LiveNodeListBase(owner_node,
-                         search_root,
-                         invalidation_type,
-                         collection_type) {
-    // Keep this in the child class because |registerNodeList| requires wrapper
-    // tracing and potentially calls virtual methods which is not allowed in a
-    // base class constructor.
-    GetDocument().RegisterNodeList(this);
-  }
+               NodeListSearchRoot search_root = NodeListSearchRoot::kOwnerNode);
 
   unsigned length() const final;
   Element* item(unsigned offset) const final;
@@ -59,15 +50,15 @@ class CORE_EXPORT LiveNodeList : public NodeList, public LiveNodeListBase {
   void InvalidateCacheForAttribute(const QualifiedName*) const;
 
   // Collection IndexCache API.
-  bool CanTraverseBackward() const { return true; }
-  Element* TraverseToFirst() const;
-  Element* TraverseToLast() const;
-  Element* TraverseForwardToOffset(unsigned offset,
-                                   Element& current_node,
-                                   unsigned& current_offset) const;
-  Element* TraverseBackwardToOffset(unsigned offset,
-                                    Element& current_node,
-                                    unsigned& current_offset) const;
+  virtual bool CanTraverseBackward() const { return true; }
+  virtual Element* TraverseToFirst() const;
+  virtual Element* TraverseToLast() const;
+  virtual Element* TraverseForwardToOffset(unsigned offset,
+                                           Element& current_node,
+                                           unsigned& current_offset) const;
+  virtual Element* TraverseBackwardToOffset(unsigned offset,
+                                            Element& current_node,
+                                            unsigned& current_offset) const;
 
   void Trace(Visitor*) const override;
 

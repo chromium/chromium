@@ -25,9 +25,12 @@ bool NormalizeAndValidatePath(std::string* path);
 bool NormalizeAndValidatePath(const std::string& path,
                               std::string* normalized_path);
 
+// Returns an optional size as an `int` from a valid input string.
+std::optional<int> LoadValidSizeFromString(const std::string& string_size);
+
 // Loads icon paths defined in dictionary |icons_value| into ExtensionIconSet
-// |icons|. |icons_value| is a dictionary value {icon size -> icon path}.
-// Returns success. If load fails, |error| will be set.
+// `icons`. `icons_value` is a dictionary value {icon size -> icon path}.
+// Returns success. If load fails, `error` will be set.
 bool LoadIconsFromDictionary(const base::Value::Dict& icons_value,
                              ExtensionIconSet* icons,
                              std::u16string* error);

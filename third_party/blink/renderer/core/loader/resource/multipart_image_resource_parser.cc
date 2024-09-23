@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/resource/multipart_image_resource_parser.h"
 
+#include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -78,7 +79,8 @@ void MultipartImageResourceParser::AppendData(const char* bytes,
       }
     }
     if (data_size) {
-      client_->MultipartDataReceived(data_.data(), data_size);
+      client_->MultipartDataReceived(
+          base::as_byte_span(data_).first(data_size));
       if (IsCancelled())
         return;
     }
@@ -107,9 +109,10 @@ void MultipartImageResourceParser::AppendData(const char* bytes,
   // buffered to handle a boundary that may have been truncated. "+2" for CRLF,
   // as we may ignore the last CRLF.
   if (!is_parsing_headers_ && data_.size() > boundary_.size() + 2) {
-    wtf_size_t send_length = data_.size() - boundary_.size() - 2;
-    client_->MultipartDataReceived(data_.data(), send_length);
-    data_.EraseAt(0, send_length);
+    auto send_data =
+        base::as_byte_span(data_).first(data_.size() - boundary_.size() - 2);
+    client_->MultipartDataReceived(send_data);
+    data_.EraseAt(0, send_data.size());
   }
 }
 
@@ -119,8 +122,9 @@ void MultipartImageResourceParser::Finish() {
     return;
   // If we have any pending data and we're not in a header, go ahead and send
   // it to the client.
-  if (!is_parsing_headers_ && !data_.empty())
-    client_->MultipartDataReceived(data_.data(), data_.size());
+  if (!is_parsing_headers_ && !data_.empty()) {
+    client_->MultipartDataReceived(base::as_byte_span(data_));
+  }
   data_.clear();
   saw_last_boundary_ = true;
 }
@@ -150,9 +154,10 @@ bool MultipartImageResourceParser::ParseHeaders() {
     response.AddHttpHeaderField(header.key, header.value);
 
   wtf_size_t end = 0;
-  if (!ParseMultipartHeadersFromBody(data_.data() + pos, data_.size() - pos,
-                                     &response, &end))
+  if (!ParseMultipartHeadersFromBody(base::as_byte_span(data_).subspan(pos),
+                                     &response, &end)) {
     return false;
+  }
   data_.EraseAt(0, end + pos);
   // Send the response!
   client_->OnePartInMultipartReceived(response);
@@ -163,11 +168,11 @@ bool MultipartImageResourceParser::ParseHeaders() {
 // doesn't require the dashes to exist.  See nsMultiMixedConv::FindToken.
 wtf_size_t MultipartImageResourceParser::FindBoundary(const Vector<char>& data,
                                                       Vector<char>* boundary) {
-  auto* it = base::ranges::search(data, *boundary);
+  auto it = base::ranges::search(data, *boundary);
   if (it == data.end())
     return kNotFound;
 
-  wtf_size_t boundary_position = static_cast<wtf_size_t>(it - data.data());
+  wtf_size_t boundary_position = static_cast<wtf_size_t>(it - data.begin());
   // Back up over -- for backwards compat
   // TODO(tc): Don't we only want to do this once?  Gecko code doesn't seem to
   // care.

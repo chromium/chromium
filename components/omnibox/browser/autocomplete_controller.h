@@ -42,6 +42,7 @@
 
 class ClipboardProvider;
 class DocumentProvider;
+class FeaturedSearchProvider;
 class HistoryFuzzyProvider;
 class HistoryQuickProvider;
 class HistoryURLProvider;
@@ -52,6 +53,11 @@ class SearchProvider;
 class TemplateURLService;
 class VoiceSuggestProvider;
 class ZeroSuggestProvider;
+
+// The header used to report whether a navigation to google.com is coming from
+// omnibox. Only set when the navigation is initiated from the Gemini
+// built-in keyword.
+inline constexpr char kOmniboxGeminiHeader[] = "X-Omnibox-Gemini";
 
 // The AutocompleteController is the center of the autocomplete system.  A
 // class creates an instance of the controller, which in turn creates a set of
@@ -142,6 +148,13 @@ class AutocompleteController : public AutocompleteProviderListener,
       const AutocompleteMatch& match,
       base::flat_set<omnibox::SuggestSubtype>* subtypes);
 
+  // Given an `ml_score` in the range [0, 1], computes the corresponding
+  // relevance score using the piecewise function described by the given
+  // `break_points`.
+  static int ApplyPiecewiseScoringTransform(
+      double ml_score,
+      std::vector<std::pair<double, int>> break_points);
+
   // `provider_types` is a bitmap containing AutocompleteProvider::Type values
   // that will (potentially, depending on platform, flags, etc.) be
   // instantiated. `provider_client` is passed to all those providers, and
@@ -228,6 +241,10 @@ class AutocompleteController : public AutocompleteProviderListener,
       base::TimeDelta query_formulation_time,
       AutocompleteMatch* match) const;
 
+  void UpdateSearchTermsArgsWithAdditionalSearchboxStats(
+      base::TimeDelta query_formulation_time,
+      TemplateURLRef::SearchTermsArgs& search_terms_args) const;
+
   // Constructs and sets the final destination URL on the given match.
   void SetMatchDestinationURL(AutocompleteMatch* match) const;
 
@@ -257,6 +274,12 @@ class AutocompleteController : public AutocompleteProviderListener,
   UpdateType last_update_type() const { return last_update_type_; }
   const Providers& providers() const { return providers_; }
 
+  // Returns whether the given provider should be ran based on whether we're in
+  // keyword mode and which keyword we're searching. Currently runs all enabled
+  // providers unless in a Starter Pack scope, except for OpenTabProvider which
+  // only runs on Lacros and the @tabs scope.
+  bool ShouldRunProvider(AutocompleteProvider* provider) const;
+
   const base::TimeTicks& last_time_default_match_changed() const {
     return last_time_default_match_changed_;
   }
@@ -285,6 +308,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   friend class ZeroSuggestPrefetchTabHelperBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
                            FilterMatchesForInstantKeywordWithBareAt);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
+                           NoPedalsAttachedToLensSearchboxMatches);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest,
                            RedundantKeywordsIgnoredInResult);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest, UpdateSearchboxStats);
@@ -324,6 +349,12 @@ class AutocompleteController : public AutocompleteProviderListener,
                            EmitSelectedChildrenChangedAccessibilityEvent);
   FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
                            OpenActionSelectionLogsOmniboxEvent);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
+                           OpenThumbsDownSelectionShowsFeedback);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
+                           AccessibleActivedescendantId);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
+                           AccessibleSelectionOnResultSelection);
 
   // A minimal representation of the previous `AutocompleteResult`. Used by
   // `UpdateResult()`'s helper methods.
@@ -416,30 +447,23 @@ class AutocompleteController : public AutocompleteProviderListener,
       const base::trace_event::MemoryDumpArgs& args,
       base::trace_event::ProcessMemoryDump* process_memory_dump) override;
 
-  // Returns whether the given provider should be ran based on whether we're in
-  // keyword mode and which keyword we're searching. Currently runs all enabled
-  // providers unless in a Starter Pack scope, except for OpenTabProvider which
-  // only runs on Lacros and the @tabs scope.
-  bool ShouldRunProvider(AutocompleteProvider* provider) const;
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Runs the batch scoring for all the eligible matches in `results_.matches_`.
-  // `*WithStableSearches` avoids swapping the default suggestion from a search
-  // to a URL or vice versa. See `stable_search_blending`'s comment for details.
   void RunBatchUrlScoringModel(OldResult& old_result);
-  void RunBatchUrlScoringModelWithStableSearches(OldResult& old_result);
   void RunBatchUrlScoringModelMappedSearchBlending(OldResult& old_result);
+  void RunBatchUrlScoringModelPiecewiseMappedSearchBlending(
+      OldResult& old_result);
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   // Constructs a destination URL from supplied search terms args.
-  // TODO(1418077): look for a way to dissolve this function into direct
-  // application where it's needed.
+  // TODO(crbug.com/40257536): look for a way to dissolve this function into
+  // direct application where it's needed.
   GURL ComputeURLFromSearchTermsArgs(
-      TemplateURL* template_url,
+      const TemplateURL* template_url,
       const TemplateURLRef::SearchTermsArgs& args) const;
 
-  // May remove company entity images if omnibox::kCompanyEntityIconAdjustment
-  // feature is enabled.
+  // Ablates company entity image when the first suggestion is a historical URL
+  // and its domain is equal to an entity suggestion's domain.
   void MaybeRemoveCompanyEntityImages(AutocompleteResult* result);
 
   // May remove actions from default suggestion to avoid interference with
@@ -483,6 +507,10 @@ class AutocompleteController : public AutocompleteProviderListener,
   raw_ptr<HistoryFuzzyProvider> history_fuzzy_provider_;
 
   raw_ptr<OpenTabProvider> open_tab_provider_;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  raw_ptr<FeaturedSearchProvider> featured_search_provider_;
+#endif
 
   // A vector of scoring signals annotators for URL suggestions.
   // Unlike the other existing annotators (e.g., pedals and keywords), these

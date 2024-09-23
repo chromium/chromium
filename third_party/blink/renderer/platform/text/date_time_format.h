@@ -28,7 +28,11 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+class StringBuilder;
+}  // namespace WTF
 
 namespace blink {
 
@@ -114,12 +118,12 @@ class PLATFORM_EXPORT DateTimeFormat {
     TokenHandler& operator=(const TokenHandler&) = delete;
     virtual ~TokenHandler() = default;
     virtual void VisitField(FieldType, int number_of_pattern_characters) = 0;
-    virtual void VisitLiteral(const String&) = 0;
+    virtual void VisitLiteral(const WTF::String&) = 0;
   };
 
   // Returns true if succeeded, false if failed.
-  static bool Parse(const String&, TokenHandler&);
-  static void QuoteAndappend(const String&, StringBuilder&);
+  static bool Parse(const WTF::String&, TokenHandler&);
+  static void QuoteAndappend(const WTF::String&, WTF::StringBuilder&);
 };
 
 }  // namespace blink

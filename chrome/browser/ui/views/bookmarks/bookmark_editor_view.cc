@@ -34,7 +34,10 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
@@ -74,12 +77,13 @@ BookmarkEditorView::BookmarkEditorView(
   DCHECK(expanded_state_tracker_);
   DCHECK(!bb_model_->client()->IsNodeManaged(parent));
   SetCanResize(true);
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   SetShowCloseButton(false);
   SetAcceptCallback(base::BindOnce(&BookmarkEditorView::ApplyEdits,
                                    base::Unretained(this), nullptr));
   SetTitle(details_.GetWindowTitleId());
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_SAVE));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 l10n_util::GetStringUTF16(IDS_SAVE));
   if (show_tree_) {
     new_folder_button_ = SetExtraView(std::make_unique<views::MdTextButton>(
         base::BindRepeating(&BookmarkEditorView::NewFolderButtonPressed,
@@ -90,6 +94,14 @@ BookmarkEditorView::BookmarkEditorView(
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
   Init();
+
+  // TODO(crbug.com/40863584):  We need this View to have a role before setting
+  // its name, but if we set it to dialog, we'll wind up with a dialog (this
+  // view) inside of a dialog (RootView). Note that both views also share the
+  // same accessible name. In the meantime, give it a generic role.
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPane);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF8(IDS_BOOKMARK_EDITOR_TITLE));
 }
 
 BookmarkEditorView::~BookmarkEditorView() {
@@ -100,8 +112,9 @@ BookmarkEditorView::~BookmarkEditorView() {
   bb_model_->RemoveObserver(this);
 }
 
-bool BookmarkEditorView::IsDialogButtonEnabled(ui::DialogButton button) const {
-  if (button == ui::DIALOG_BUTTON_OK) {
+bool BookmarkEditorView::IsDialogButtonEnabled(
+    ui::mojom::DialogButton button) const {
+  if (button == ui::mojom::DialogButton::kOk) {
     if (!bb_model_->loaded())
       return false;
 
@@ -111,9 +124,10 @@ bool BookmarkEditorView::IsDialogButtonEnabled(ui::DialogButton button) const {
   return true;
 }
 
-gfx::Size BookmarkEditorView::CalculatePreferredSize() const {
+gfx::Size BookmarkEditorView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (!show_tree_)
-    return views::View::CalculatePreferredSize();
+    return views::View::CalculatePreferredSize(available_size);
 
   return gfx::Size(views::Widget::GetLocalizedContentsSize(
       IDS_EDITBOOKMARK_DIALOG_WIDTH_CHARS,
@@ -141,20 +155,6 @@ bool BookmarkEditorView::HandleKeyEvent(views::Textfield* sender,
     return false;
 }
 
-void BookmarkEditorView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::DialogDelegateView::GetAccessibleNodeData(node_data);
-
-  // TODO(crbug.com/1361263): Currently DialogDelegateView does not override
-  // GetAccessibleNodeData, thus the call above accomplishes nothing. We need
-  // this View to have a role before setting its name, but if we set it to
-  // dialog, we'll wind up with a dialog (this view) inside of a dialog
-  // (RootView). Note that both views also share the same accessible name.
-  // In the meantime, give it a generic role.
-  node_data->role = ax::mojom::Role::kPane;
-  node_data->SetNameChecked(
-      l10n_util::GetStringUTF8(IDS_BOOKMARK_EDITOR_TITLE));
-}
-
 bool BookmarkEditorView::IsCommandIdChecked(int command_id) const {
   return false;
 }
@@ -167,7 +167,7 @@ bool BookmarkEditorView::IsCommandIdEnabled(int command_id) const {
     case kContextMenuItemNewFolder:
       return true;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -223,27 +223,24 @@ void BookmarkEditorView::ShowContextMenuForViewImpl(
                                   source_type);
 }
 
-void BookmarkEditorView::BookmarkNodeMoved(BookmarkModel* model,
-                                           const BookmarkNode* old_parent,
+void BookmarkEditorView::BookmarkNodeMoved(const BookmarkNode* old_parent,
                                            size_t old_index,
                                            const BookmarkNode* new_parent,
                                            size_t new_index) {
   Reset();
 }
 
-void BookmarkEditorView::BookmarkNodeAdded(BookmarkModel* model,
-                                           const BookmarkNode* parent,
+void BookmarkEditorView::BookmarkNodeAdded(const BookmarkNode* parent,
                                            size_t index,
                                            bool added_by_user) {
   Reset();
 }
 
-void BookmarkEditorView::BookmarkNodeRemoved(
-    BookmarkModel* model,
-    const BookmarkNode* parent,
-    size_t index,
-    const BookmarkNode* node,
-    const std::set<GURL>& removed_urls) {
+void BookmarkEditorView::BookmarkNodeRemoved(const BookmarkNode* parent,
+                                             size_t index,
+                                             const BookmarkNode* node,
+                                             const std::set<GURL>& removed_urls,
+                                             const base::Location& location) {
   if ((details_.type == EditDetails::EXISTING_NODE &&
        details_.existing_node->HasAncestor(node)) ||
       (parent_ && parent_->HasAncestor(node))) {
@@ -255,13 +252,12 @@ void BookmarkEditorView::BookmarkNodeRemoved(
 }
 
 void BookmarkEditorView::BookmarkAllUserNodesRemoved(
-    BookmarkModel* model,
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   Reset();
 }
 
 void BookmarkEditorView::BookmarkNodeChildrenReordered(
-    BookmarkModel* model,
     const BookmarkNode* node) {
   Reset();
 }
@@ -306,7 +302,7 @@ void BookmarkEditorView::Init() {
   labels->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NAME_LABEL)));
   title_tf_ = labels->AddChildView(std::make_unique<views::Textfield>());
-  title_tf_->SetAccessibleName(
+  title_tf_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_BOOKMARK_AX_EDITOR_NAME_LABEL));
   title_tf_->SetText(title);
   title_tf_->set_controller(this);
@@ -323,7 +319,7 @@ void BookmarkEditorView::Init() {
     url_tf_ = labels->AddChildView(std::make_unique<views::Textfield>());
     url_tf_->SetText(chrome::FormatBookmarkURLForDisplay(url));
     url_tf_->set_controller(this);
-    url_tf_->SetAccessibleName(
+    url_tf_->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_BOOKMARK_AX_EDITOR_URL_LABEL));
     url_tf_->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_URL);
   }
@@ -505,7 +501,7 @@ void BookmarkEditorView::ApplyEdits(EditorNode* parent) {
 
     // Remove the folders that were removed. This has to be done after all the
     // other changes have been committed.
-    bookmarks::DeleteBookmarkFolders(bb_model_, deletes_);
+    bookmarks::DeleteBookmarkFolders(bb_model_, deletes_, FROM_HERE);
   }
 
   // Once all required bookmarks updates have been called, call the configured

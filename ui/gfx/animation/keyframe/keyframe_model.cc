@@ -12,14 +12,10 @@ namespace gfx {
 namespace {
 
 // This should match the RunState enum.
-static const char* const s_runStateNames[] = {"WAITING_FOR_TARGET_AVAILABILITY",
-                                              "WAITING_FOR_DELETION",
-                                              "STARTING",
-                                              "RUNNING",
-                                              "PAUSED",
-                                              "FINISHED",
-                                              "ABORTED",
-                                              "ABORTED_BUT_NEEDS_COMPLETION"};
+static constexpr auto s_runStateNames = std::to_array<const char*>(
+    {"WAITING_FOR_TARGET_AVAILABILITY", "WAITING_FOR_DELETION", "STARTING",
+     "RUNNING", "PAUSED", "FINISHED", "ABORTED",
+     "ABORTED_BUT_NEEDS_COMPLETION"});
 
 static_assert(static_cast<int>(KeyframeModel::LAST_RUN_STATE) + 1 ==
                   std::size(s_runStateNames),
@@ -73,7 +69,7 @@ void KeyframeModel::SetRunState(RunState run_state,
 
 void KeyframeModel::Pause(base::TimeDelta pause_offset) {
   // Convert pause offset which is in local time to monotonic time.
-  // TODO(crbug.com/912407): This should be scaled by playbackrate.
+  // TODO(crbug.com/41430321): This should be scaled by playbackrate.
   base::TimeTicks monotonic_time = pause_offset +
                                    start_time_.value_or(base::TimeTicks()) +
                                    total_paused_duration_;
@@ -96,7 +92,7 @@ KeyframeModel::Phase KeyframeModel::CalculatePhase(
       (local_time == before_active_boundary_time && playback_rate_ < 0)) {
     return KeyframeModel::Phase::BEFORE;
   }
-  // TODO(crbug.com/909794): By spec end time = max(start delay + duration +
+  // TODO(crbug.com/41428771): By spec end time = max(start delay + duration +
   // end delay, 0). The logic should be updated once "end delay" is supported.
   base::TimeDelta active_after_boundary_time = base::TimeDelta::Max();
   if (std::isfinite(iterations_)) {
@@ -123,6 +119,12 @@ std::optional<base::TimeDelta> KeyframeModel::CalculateActiveTime(
     base::TimeTicks monotonic_time) const {
   base::TimeDelta local_time = ConvertMonotonicTimeToLocalTime(monotonic_time);
   KeyframeModel::Phase phase = CalculatePhase(local_time);
+  return CalculateActiveTime(local_time, phase);
+}
+
+std::optional<base::TimeDelta> KeyframeModel::CalculateActiveTime(
+    base::TimeDelta local_time,
+    KeyframeModel::Phase phase) const {
   DCHECK(playback_rate_);
   switch (phase) {
     case KeyframeModel::Phase::BEFORE:
@@ -141,7 +143,7 @@ std::optional<base::TimeDelta> KeyframeModel::CalculateActiveTime(
       }
       return std::nullopt;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }
@@ -170,24 +172,37 @@ bool KeyframeModel::StartShouldBeDeferred() const {
 }
 
 base::TimeDelta KeyframeModel::TrimTimeToCurrentIteration(
-    base::TimeTicks monotonic_time) const {
+    base::TimeTicks monotonic_time,
+    TimingFunction::LimitDirection* limit_direction) const {
   DCHECK(playback_rate_);
   DCHECK_GE(iteration_start_, 0);
 
   DCHECK(HasActiveTime(monotonic_time));
-  base::TimeDelta active_time = CalculateActiveTime(monotonic_time).value();
+
+  base::TimeDelta local_time = ConvertMonotonicTimeToLocalTime(monotonic_time);
+  KeyframeModel::Phase phase = CalculatePhase(local_time);
+  base::TimeDelta active_time = CalculateActiveTime(local_time, phase).value();
   base::TimeDelta start_offset = curve_->Duration() * iteration_start_;
 
-  // Return start offset if we are before the start of the keyframe model
-  if (active_time.is_negative())
-    return start_offset;
+  if (limit_direction) {
+    if (phase == KeyframeModel::Phase::BEFORE) {
+      *limit_direction = TimingFunction::LimitDirection::LEFT;
+    } else {
+      *limit_direction = TimingFunction::LimitDirection::RIGHT;
+    }
+  }
+
+  DCHECK(!active_time.is_negative());
+
   // Always return zero if we have no iterations.
-  if (!iterations_)
+  if (!iterations_) {
     return base::TimeDelta();
+  }
 
   // Don't attempt to trim if we have no duration.
-  if (curve_->Duration() <= base::TimeDelta())
+  if (curve_->Duration() <= base::TimeDelta()) {
     return base::TimeDelta();
+  }
 
   base::TimeDelta repeated_duration = std::isfinite(iterations_)
                                           ? (curve_->Duration() * iterations_)
@@ -241,7 +256,8 @@ base::TimeDelta KeyframeModel::TrimTimeToCurrentIteration(
   return iteration_time;
 }
 
-// TODO(crbug.com/912407): Local time should be scaled by playback rate by spec.
+// TODO(crbug.com/41430321): Local time should be scaled by playback rate by
+// spec.
 base::TimeDelta KeyframeModel::ConvertMonotonicTimeToLocalTime(
     base::TimeTicks monotonic_time) const {
   // When waiting on receiving a start time, then our global clock is 'stuck' at

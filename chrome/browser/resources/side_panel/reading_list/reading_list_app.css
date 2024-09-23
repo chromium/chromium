@@ -1,0 +1,35 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://read-later.top-chrome/shared/sp_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/mwb_element_shared_style_lit.css.js
+ * #scheme=relative
+ * #include=mwb-element-shared-style-lit cr-hidden-style-lit sp-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+#content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Transition required to ensure focus highlight after button press.
+ * See crbug/1358900.
+ */
+reading-list-item:first-of-type:last-of-type {
+  transition: background 100ms;
+}
+
+#readingListList {
+  max-height: none;
+  overflow: auto;
+  padding-block-start: var(--sp-body-padding);
+}
+
+sp-heading {
+  margin: 8px 16px;
+}

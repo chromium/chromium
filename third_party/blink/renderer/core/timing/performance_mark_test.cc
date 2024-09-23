@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
@@ -94,11 +95,12 @@ TEST_F(PerformanceMarkTest, BuildJSONValue) {
   const double expected_start_time = 0;
   const double expected_duration = 0;
   const AtomicString expected_entry_type("mark");
-  PerformanceMark pm(expected_name, expected_start_time, base::TimeTicks(),
-                     SerializedScriptValue::NullValue(), exception_state,
-                     LocalDOMWindow::From(script_state));
+  PerformanceMark* pm = MakeGarbageCollected<PerformanceMark>(
+      expected_name, expected_start_time, base::TimeTicks(),
+      SerializedScriptValue::NullValue(), exception_state,
+      LocalDOMWindow::From(script_state));
 
-  ScriptValue json_object = pm.toJSONForBinding(script_state);
+  ScriptValue json_object = pm->toJSONForBinding(script_state);
   EXPECT_TRUE(json_object.IsObject());
 
   String json_string = ToBlinkString<String>(

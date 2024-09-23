@@ -89,7 +89,8 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
             "parent": "asd",
             "position": "00000000000000000000",
             "status": "completed",
-            "updated": "2023-01-30T22:19:22.812Z"
+            "updated": "2023-01-30T22:19:22.812Z",
+            "webViewLink": "https://tasks.google.com/task/id123"
           },
           {
             "id": "asd",
@@ -98,7 +99,8 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
             "status": "needsAction",
             "due": "2023-04-19T00:00:00.000Z",
             "notes": "Lorem ipsum dolor sit amet",
-            "updated": "2022-12-21T23:38:22.590Z"
+            "updated": "2022-12-21T23:38:22.590Z",
+            "webViewLink": "invalid_url"
           }
         ]
       })");
@@ -118,6 +120,9 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
   EXPECT_TRUE(tasks->items()[0]->notes().empty());
   EXPECT_EQ(util::FormatTimeAsString(tasks->items()[0]->updated()),
             "2023-01-30T22:19:22.812Z");
+  EXPECT_EQ(tasks->items()[0]->web_view_link(),
+            "https://tasks.google.com/task/id123");
+  EXPECT_FALSE(tasks->items()[0]->assignment_info());
 
   EXPECT_EQ(tasks->items()[1]->id(), "asd");
   EXPECT_EQ(tasks->items()[1]->title(), "Parent task");
@@ -129,6 +134,8 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
   EXPECT_EQ(tasks->items()[1]->notes(), "Lorem ipsum dolor sit amet");
   EXPECT_EQ(util::FormatTimeAsString(tasks->items()[1]->updated()),
             "2022-12-21T23:38:22.590Z");
+  EXPECT_FALSE(tasks->items()[1]->web_view_link().is_valid());
+  EXPECT_FALSE(tasks->items()[1]->assignment_info());
 }
 
 TEST(TasksApiResponseTypesTest, CreatesTasksWithNextPageTokenFromResponse) {
@@ -171,6 +178,53 @@ TEST(TasksApiResponseTypesTest, ConvertsTaskLinks) {
   ASSERT_EQ(links.size(), 2u);
   EXPECT_EQ(links.at(0)->type(), TaskLink::Type::kEmail);
   EXPECT_EQ(links.at(1)->type(), TaskLink::Type::kUnknown);
+}
+
+TEST(TasksApiResponseTypesTest, ConvertsTaskAssignmentInfo) {
+  const auto raw_tasks = JSONReader::Read(R"(
+      {
+        "kind": "tasks#tasks",
+        "items": [
+          {
+            "id": "doc",
+            "assignmentInfo": {
+              "surfaceType": "DOCUMENT"
+            }
+          },
+          {
+            "id": "space",
+            "assignmentInfo": {
+              "surfaceType": "SPACE"
+            }
+          },
+          {
+            "id": "unknown",
+            "assignmentInfo": {
+              "surfaceType": "UNKNOWN"
+            }
+          }
+        ]
+      })");
+  ASSERT_TRUE(raw_tasks);
+
+  const auto tasks = Tasks::CreateFrom(*raw_tasks);
+  ASSERT_TRUE(tasks);
+  ASSERT_EQ(tasks->items().size(), 3u);
+
+  EXPECT_EQ(tasks->items()[0]->id(), "doc");
+  ASSERT_TRUE(tasks->items()[0]->assignment_info());
+  EXPECT_EQ(tasks->items()[0]->assignment_info()->surface_type(),
+            TaskAssignmentInfo::SurfaceType::kDocument);
+
+  EXPECT_EQ(tasks->items()[1]->id(), "space");
+  ASSERT_TRUE(tasks->items()[1]->assignment_info());
+  EXPECT_EQ(tasks->items()[1]->assignment_info()->surface_type(),
+            TaskAssignmentInfo::SurfaceType::kSpace);
+
+  EXPECT_EQ(tasks->items()[2]->id(), "unknown");
+  ASSERT_TRUE(tasks->items()[2]->assignment_info());
+  EXPECT_EQ(tasks->items()[2]->assignment_info()->surface_type(),
+            TaskAssignmentInfo::SurfaceType::kUnknown);
 }
 
 TEST(TasksApiResponseTypesTest, FailsToCreateTasksFromInvalidResponse) {

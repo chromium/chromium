@@ -52,7 +52,7 @@ class WebState;
 // Processes and provides password suggestions for form fields across frames
 // within a specific web state. Also a hub for password filling signals (e.g.
 // track focus on field).
-// TODO(crbug.com/1097353): Consider folding this class into
+// TODO(crbug.com/40701292): Consider folding this class into
 // SharedPasswordController.
 @interface PasswordSuggestionHelper : NSObject
 
@@ -65,12 +65,9 @@ class WebState;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Retrieves suggestions for a field within a form with `formIdentifier`.
-- (NSArray<FormSuggestion*>*)
-    retrieveSuggestionsWithFormID:(autofill::FormRendererId)formIdentifier
-                  fieldIdentifier:(autofill::FieldRendererId)fieldIdentifier
-                       forFrameId:(const std::string&)frameId
-                        fieldType:(NSString*)fieldType;
+// Retrieves suggestions for a field within a form from `formQuery`.
+- (NSArray<FormSuggestion*>*)retrieveSuggestionsWithForm:
+    (FormSuggestionProviderQuery*)formQuery;
 
 // Checks if suggestions are available for the field within a form targeted by
 // the provided |formQuery|. Calls |completion| on completion with a boolean

@@ -4,6 +4,7 @@
 
 #include "remoting/test/fake_ice_connection.h"
 
+#include "remoting/base/errors.h"
 #include "remoting/base/logging.h"
 #include "remoting/protocol/client_control_dispatcher.h"
 #include "remoting/protocol/host_control_dispatcher.h"
@@ -41,7 +42,7 @@ void FakeIceConnection::OnIceTransportRouteChange(
 }
 
 void FakeIceConnection::OnIceTransportError(protocol::ErrorCode error) {
-  LOG(ERROR) << "ICE transport error: " << error;
+  LOG(ERROR) << "ICE transport error: " << ErrorCodeToString(error);
   std::move(on_closed_).Run();
 }
 

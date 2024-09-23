@@ -7,10 +7,12 @@
 
 #include <memory>
 
+#include "base/containers/lru_cache.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/id_type.h"
 #include "media/base/frame_buffer_pool.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
@@ -86,6 +88,20 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
 
   // FFmpeg structures owned by this object.
   std::unique_ptr<AVCodecContext, ScopedPtrAVFreeContext> codec_context_;
+
+  // The gist here is that timestamps need to be 64 bits to store microsecond
+  // precision. A 32 bit integer would overflow at ~35 minutes at this level of
+  // precision. We can't cast the timestamp to the void ptr object used by the
+  // opaque field in ffmpeg then, because it would lose data on a 32 bit build.
+  // However, we don't actually have 2^31 timestamped frames in a single
+  // playback, so it's fine to use the 32 bit value as a key in a map which
+  // contains the actual timestamps. Additionally, we've in the past set 128
+  // outstanding frames for re-ordering as a limit for cross-thread decoding
+  // tasks, so we'll do that here too with the LRU cache.
+  using TimestampId = base::IdType<int64_t, size_t, 0>;
+
+  TimestampId::Generator timestamp_id_generator_;
+  base::LRUCache<TimestampId, int64_t> timestamp_map_;
 
   VideoDecoderConfig config_;
 

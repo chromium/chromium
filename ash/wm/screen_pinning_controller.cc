@@ -166,11 +166,11 @@ ScreenPinningController::ScreenPinningController()
           std::make_unique<SystemModalContainerWindowObserver>(this)),
       system_modal_container_child_window_observer_(
           std::make_unique<SystemModalContainerChildWindowObserver>(this)) {
-  Shell::Get()->window_tree_host_manager()->AddObserver(this);
+  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
 }
 
 ScreenPinningController::~ScreenPinningController() {
-  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
+  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
   if (pinned_window_)
     pinned_window_->RemoveObserver(this);
   pinned_window_ = nullptr;
@@ -303,7 +303,7 @@ void ScreenPinningController::ResetWindowPinningState() {
   pinned_window_ = nullptr;
 }
 
-void ScreenPinningController::OnDisplayConfigurationChanged() {
+void ScreenPinningController::OnDidApplyDisplayChanges() {
   // Note: this is called on display attached or detached.
   if (!IsPinned())
     return;
@@ -356,10 +356,13 @@ void ScreenPinningController::OnWindowDestroying(aura::Window* window) {
 }
 
 void ScreenPinningController::KeepPinnedWindowOnTop() {
-  if (in_restacking_)
+  if (in_restacking_ || allow_window_stacking_with_pinned_window_) {
     return;
+  }
 
   base::AutoReset<bool> auto_reset(&in_restacking_, true);
+  base::AutoReset<bool> auto_reset_pinned_window_stacking(
+      &allow_window_stacking_with_pinned_window_, false);
   aura::Window* container = pinned_window_->parent();
   container->StackChildAtTop(pinned_window_);
   WindowDimmer* pinned_window_dimmer = window_dimmers_->Get(container);

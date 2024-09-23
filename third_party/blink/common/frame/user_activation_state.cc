@@ -47,6 +47,10 @@ void UserActivationState::Activate(
     transient_state_expiry_time_for_interaction_ = transient_state_expiry_time_;
 }
 
+void UserActivationState::SetHasBeenActive() {
+  has_been_active_ = true;
+}
+
 void UserActivationState::Clear() {
   has_been_active_ = false;
   last_activation_was_restricted_ = false;

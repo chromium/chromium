@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/synchronization/waitable_event.h"
 
 #include <windows.h>
@@ -9,6 +14,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -20,7 +26,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -49,8 +54,6 @@ WaitableEvent::WaitableEvent(win::ScopedHandle handle)
   CHECK(handle_.is_valid()) << "Tried to create WaitableEvent from NULL handle";
 }
 
-WaitableEvent::~WaitableEvent() = default;
-
 void WaitableEvent::Reset() {
   ResetEvent(handle_.get());
 }
@@ -59,7 +62,7 @@ void WaitableEvent::SignalImpl() {
   SetEvent(handle_.get());
 }
 
-bool WaitableEvent::IsSignaled() {
+bool WaitableEvent::IsSignaled() const {
   DWORD result = WaitForSingleObject(handle_.get(), 0);
   if (result != WAIT_OBJECT_0 && result != WAIT_TIMEOUT) {
     ReportInvalidWaitableEventResult(result);
@@ -113,11 +116,7 @@ bool WaitableEvent::TimedWaitImpl(TimeDelta wait_delta) {
 }
 
 // static
-size_t WaitableEvent::WaitMany(WaitableEvent** events, size_t count) {
-  DCHECK(count) << "Cannot wait on no events";
-  internal::ScopedBlockingCallWithBaseSyncPrimitives scoped_blocking_call(
-      FROM_HERE, BlockingType::MAY_BLOCK);
-
+size_t WaitableEvent::WaitManyImpl(WaitableEvent** events, size_t count) {
   HANDLE handles[MAXIMUM_WAIT_OBJECTS];
   CHECK_LE(count, static_cast<size_t>(MAXIMUM_WAIT_OBJECTS))
       << "Can only wait on " << MAXIMUM_WAIT_OBJECTS << " with WaitMany";

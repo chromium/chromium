@@ -8,8 +8,8 @@ import android.view.View;
 
 import org.junit.Assert;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Utility methods and classes for testing modal dialogs. */
 public class ChromeModalDialogTestUtils {
@@ -21,13 +21,13 @@ public class ChromeModalDialogTestUtils {
      */
     public static void checkBrowserControls(ChromeActivity activity, boolean restricted) {
         boolean isViewObscuringTabContent =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> activity.getTabObscuringHandler().isTabContentObscured());
         boolean isViewObscuringToolbar =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> activity.getTabObscuringHandler().isToolbarObscured());
         boolean isMenuEnabled =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             View menu = activity.getToolbarManager().getMenuButtonView();
                             Assert.assertNotNull("Toolbar menu is incorrectly null.", menu);

@@ -38,13 +38,14 @@ OsUrlHandlerSystemWebAppDelegate::~OsUrlHandlerSystemWebAppDelegate() = default;
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 OsUrlHandlerSystemWebAppDelegate::GetWebAppInfo() const {
-  auto info = std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(chrome::kChromeUIOsUrlAppURL);
+  GURL start_url(chrome::kChromeUIOsUrlAppURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(chrome::kChromeUIOsUrlAppURL);
   info->title = l10n_util::GetStringUTF16(IDS_OS_URL_HANDLER_APP_NAME);
 
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {
           {"os_url_handler_app_icon_48.png", 48,
            IDR_OS_URL_HANDLER_APP_ICONS_48_PNG},

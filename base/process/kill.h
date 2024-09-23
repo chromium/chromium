@@ -50,6 +50,8 @@ const DWORD kProcessKilledExitCode = 1;
 //
 // Used for metrics. Keep in sync with the "TerminationStatus" histogram enum.
 // Do not repurpose previously used indexes.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base
+// GENERATED_JAVA_PREFIX_TO_STRIP: TERMINATION_STATUS_
 enum TerminationStatus {
   // Zero exit status.
   TERMINATION_STATUS_NORMAL_TERMINATION = 0,
@@ -132,13 +134,13 @@ BASE_EXPORT void EnsureProcessGetsReaped(Process process);
 // terminated if necessary, and reaped on exit. The caller should have signalled
 // |process| to exit before calling this API. The API will allow a couple of
 // seconds grace period before forcibly terminating |process|.
-// TODO(https://crbug.com/806451): The Mac implementation currently blocks the
+// TODO(crbug.com/41367359): The Mac implementation currently blocks the
 // calling thread for up to two seconds.
 BASE_EXPORT void EnsureProcessTerminated(Process process);
 
-// These are only sparingly used, and not needed on Fuchsia. They could be
-// implemented if necessary.
-#if !BUILDFLAG(IS_FUCHSIA)
+// These are only sparingly used, and not needed on Fuchsia or iOS. They could
+// be implemented if necessary.
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
 // Wait for all the processes based on the named executable to exit.  If filter
 // is non-null, then only processes selected by the filter are waited on.
 // Returns after all processes have exited or wait_milliseconds have expired.
@@ -158,7 +160,13 @@ BASE_EXPORT bool CleanupProcesses(const FilePath::StringType& executable_name,
                                   base::TimeDelta wait,
                                   int exit_code,
                                   const ProcessFilter* filter);
-#endif  // !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && TARGET_OS_SIMULATOR)
+// This is common code used by kill_ios.cc when building with iOS simulator it
+// does not need to be exported.
+void WaitForChildToDie(pid_t child, int timeout_seconds);
+#endif  // BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && TARGET_OS_SIMULATOR)
 
 }  // namespace base
 

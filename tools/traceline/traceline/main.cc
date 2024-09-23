@@ -20,10 +20,9 @@
 #include "assembler.h"
 #include "logging.h"
 #include "rdtsc.h"
+#include "sidestep/mini_disassembler.h"
 #include "sym_resolver.h"
 #include "syscall_map.h"
-
-#include "sidestep/mini_disassembler.h"
 
 namespace {
 

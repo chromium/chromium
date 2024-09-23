@@ -68,8 +68,8 @@ class StyleSheetCSSRuleList final : public CSSRuleList {
 
  private:
   unsigned length() const override { return style_sheet_->length(); }
-  CSSRule* item(unsigned index) const override {
-    return style_sheet_->item(index);
+  CSSRule* Item(unsigned index, bool trigger_use_counters) const override {
+    return style_sheet_->item(index, trigger_use_counters);
   }
 
   CSSStyleSheet* GetStyleSheet() const override { return style_sheet_.Get(); }
@@ -168,7 +168,6 @@ CSSStyleSheet::CSSStyleSheet(StyleSheetContents* contents,
   // Following steps at spec draft
   // https://wicg.github.io/construct-stylesheets/#dom-cssstylesheet-cssstylesheet
   SetConstructorDocument(document);
-  SetTitle(options->title());
   ClearOwnerNode();
   ClearOwnerRule();
   Contents()->RegisterClient(this);
@@ -250,7 +249,7 @@ void CSSStyleSheet::DidMutate(Mutation mutation) {
         ownerNode()->GetTreeScope());
     invalidate_matched_properties_cache = true;
   } else if (!adopted_tree_scopes_.empty()) {
-    for (auto tree_scope : adopted_tree_scopes_) {
+    for (auto tree_scope : adopted_tree_scopes_.Keys()) {
       // It is currently required that adopted sheets can not be moved between
       // documents.
       DCHECK(tree_scope->GetDocument() == document);
@@ -314,11 +313,20 @@ bool CSSStyleSheet::MatchesMediaQueries(const MediaQueryEvaluator& evaluator) {
 }
 
 void CSSStyleSheet::AddedAdoptedToTreeScope(TreeScope& tree_scope) {
-  adopted_tree_scopes_.insert(&tree_scope);
+  auto add_result = adopted_tree_scopes_.insert(&tree_scope, 1u);
+  if (!add_result.is_new_entry) {
+    add_result.stored_value->value++;
+  }
 }
 
 void CSSStyleSheet::RemovedAdoptedFromTreeScope(TreeScope& tree_scope) {
-  adopted_tree_scopes_.erase(&tree_scope);
+  auto it = adopted_tree_scopes_.find(&tree_scope);
+  if (it != adopted_tree_scopes_.end()) {
+    CHECK_GT(it->value, 0u);
+    if (--it->value == 0) {
+      adopted_tree_scopes_.erase(&tree_scope);
+    }
+  }
 }
 
 bool CSSStyleSheet::IsAdoptedByTreeScope(TreeScope& tree_scope) {
@@ -338,7 +346,7 @@ unsigned CSSStyleSheet::length() const {
   return contents_->RuleCount();
 }
 
-CSSRule* CSSStyleSheet::item(unsigned index) {
+CSSRule* CSSStyleSheet::item(unsigned index, bool trigger_use_counters) {
   unsigned rule_count = length();
   if (index >= rule_count) {
     return nullptr;
@@ -351,7 +359,8 @@ CSSRule* CSSStyleSheet::item(unsigned index) {
 
   Member<CSSRule>& css_rule = child_rule_cssom_wrappers_[index];
   if (!css_rule) {
-    css_rule = contents_->RuleAt(index)->CreateCSSOMWrapper(index, this);
+    css_rule = contents_->RuleAt(index)->CreateCSSOMWrapper(
+        index, this, trigger_use_counters);
   }
   return css_rule.Get();
 }
@@ -498,22 +507,22 @@ int CSSStyleSheet::addRule(const String& selector,
   return addRule(selector, style, length(), exception_state);
 }
 
-ScriptPromise CSSStyleSheet::replace(ScriptState* script_state,
-                                     const String& text,
-                                     ExceptionState& exception_state) {
+ScriptPromise<CSSStyleSheet> CSSStyleSheet::replace(
+    ScriptState* script_state,
+    const String& text,
+    ExceptionState& exception_state) {
   if (!IsConstructed()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Can't call replace on non-constructed CSSStyleSheets.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
   SetText(text, CSSImportRules::kIgnoreWithWarning);
   probe::DidReplaceStyleSheetText(OwnerDocument(), this, text);
   // We currently parse synchronously, and since @import support was removed,
   // nothing else happens asynchronously. This API is left as-is, so that future
   // async parsing can still be supported here.
-  return ScriptPromise::Cast(
-      script_state, ToV8Traits<CSSStyleSheet>::ToV8(script_state, this));
+  return ToResolvedPromise<CSSStyleSheet>(script_state, this);
 }
 
 void CSSStyleSheet::replaceSync(const String& text,

@@ -50,13 +50,17 @@ const gfx::VectorIcon* GetToastIconForOrder(AppListSortOrder order) {
     case AppListSortOrder::kCustom:
     case AppListSortOrder::kAlphabeticalEphemeralAppFirst:
       NOTREACHED();
-      return nullptr;
   }
 }
 
 constexpr auto kReorderUndoInteriorMargin = gfx::Insets::TLBR(8, 16, 8, 8);
 
 }  // namespace
+
+AppsGridContextMenu::GridType
+AppListToastContainerView::Delegate::GetGridTypeForContextMenu() {
+  return AppsGridContextMenu::GridType::kAppsGrid;
+}
 
 AppListToastContainerView::AppListToastContainerView(
     AppListNudgeController* nudge_controller,
@@ -73,7 +77,6 @@ AppListToastContainerView::AppListToastContainerView(
       keyboard_controller_(keyboard_controller),
       current_toast_(AppListToastType::kNone) {
   DCHECK(a11y_announcer_);
-  DCHECK(keyboard_controller_);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
@@ -86,7 +89,8 @@ AppListToastContainerView::AppListToastContainerView(
   if (!tablet_mode_) {
     // `context_menu_` is only set in clamshell mode. The sort options in tablet
     // mode are handled in RootWindowController with ShelfContextMenuModel.
-    context_menu_ = std::make_unique<AppsGridContextMenu>();
+    context_menu_ = std::make_unique<AppsGridContextMenu>(
+        delegate->GetGridTypeForContextMenu());
     set_context_menu_controller(context_menu_.get());
   }
 }
@@ -97,8 +101,9 @@ AppListToastContainerView::~AppListToastContainerView() {
 }
 
 bool AppListToastContainerView::OnKeyPressed(const ui::KeyEvent& event) {
-  if (!delegate_)
+  if (!delegate_ || !keyboard_controller_) {
     return false;
+  }
 
   if (event.key_code() == ui::VKEY_UP)
     return keyboard_controller_->MoveFocusUpFromToast(focused_app_column_);
@@ -191,6 +196,36 @@ void AppListToastContainerView::CreateReorderNudgeView() {
   current_toast_ = AppListToastType::kReorderNudge;
 }
 
+void AppListToastContainerView::CreateTutorialNudgeView() {
+  if (toast_view_) {
+    return;
+  }
+
+  AppListToastView::Builder toast_view_builder(
+      l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_TITLE));
+
+  toast_view_builder
+      .SetButton(
+          l10n_util::GetStringUTF16(
+              IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_DISMISS_BUTTON),
+          base::BindRepeating(&AppListToastContainerView::FadeOutToastView,
+                              base::Unretained(this)))
+      .SetStyleForTabletMode(tablet_mode_)
+      .SetSubtitle(l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_SUBTITLE))
+      .SetIconBackground(true);
+
+  toast_view_ = AddChildView(toast_view_builder.Build());
+  toast_view_->GetViewAccessibility().SetRole(ax::mojom::Role::kRegion);
+  toast_view_->toast_button()->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_DISMISS_BUTTON_SPOKEN_TEXT));
+  if (available_width_) {
+    toast_view_->SetAvailableWidth(*available_width_);
+  }
+  current_toast_ = AppListToastType::kTutorialViewNudge;
+}
+
 void AppListToastContainerView::RemoveReorderNudgeView() {
   // If the nudge is requested to be removed, it is likely that it won't be
   // shown to the user again. Therefore, the nudge child view is directly
@@ -213,8 +248,8 @@ void AppListToastContainerView::UpdateVisibilityState(VisibilityState state) {
   // Return early if the reorder nudge is not showing when the app list is
   // hiding.
   if (nudge_controller_->is_visible() &&
-      nudge_controller_->current_nudge() !=
-          AppListNudgeController::NudgeType::kReorderNudge) {
+      (nudge_controller_->current_nudge() !=
+       AppListNudgeController::NudgeType::kReorderNudge)) {
     return;
   }
 
@@ -225,9 +260,14 @@ void AppListToastContainerView::UpdateVisibilityState(VisibilityState state) {
   }
 
   AppListNudgeController::NudgeType new_nudge =
-      nudge_controller_->ShouldShowReorderNudge()
-          ? AppListNudgeController::NudgeType::kReorderNudge
-          : AppListNudgeController::NudgeType::kNone;
+      AppListNudgeController::NudgeType::kNone;
+
+  if (nudge_controller_->current_nudge() ==
+      AppListNudgeController::NudgeType::kTutorialNudge) {
+    new_nudge = AppListNudgeController::NudgeType::kTutorialNudge;
+  } else if (nudge_controller_->ShouldShowReorderNudge()) {
+    new_nudge = AppListNudgeController::NudgeType::kReorderNudge;
+  }
 
   // Update the visible and active state in `nudge_controller_`.
   switch (state) {
@@ -267,10 +307,7 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
   const gfx::VectorIcon* toast_icon = GetToastIconForOrder(*new_order);
   const std::u16string a11y_text_on_undo_button =
       GetA11yTextOnUndoButtonFromOrder(*new_order);
-  const ui::ColorId toast_icon_color_id =
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-          : kColorAshIconColorPrimary;
+  const ui::ColorId toast_icon_color_id = cros_tokens::kCrosSysOnSurface;
 
   if (toast_view_) {
     // If the reorder undo toast is showing, updates the title and icon of the
@@ -278,8 +315,8 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
     toast_view_->SetTitle(toast_text);
     toast_view_->SetIcon(
         ui::ImageModel::FromVectorIcon(*toast_icon, toast_icon_color_id));
-    toast_view_->toast_button()->GetViewAccessibility().OverrideName(
-        a11y_text_on_undo_button);
+    toast_view_->toast_button()->GetViewAccessibility().SetName(
+        a11y_text_on_undo_button, ax::mojom::NameFrom::kAttribute);
     return;
   }
 
@@ -300,8 +337,8 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
                          base::Unretained(this)))
           .SetViewDelegate(view_delegate_)
           .Build());
-  toast_view_->toast_button()->GetViewAccessibility().OverrideName(
-      a11y_text_on_undo_button);
+  toast_view_->toast_button()->GetViewAccessibility().SetName(
+      a11y_text_on_undo_button, ax::mojom::NameFrom::kAttribute);
 
   toast_view_->UpdateInteriorMargins(kReorderUndoInteriorMargin);
   if (available_width_) {
@@ -416,7 +453,6 @@ std::u16string AppListToastContainerView::CalculateToastTextFromOrder(
     case AppListSortOrder::kCustom:
     case AppListSortOrder::kAlphabeticalEphemeralAppFirst:
       NOTREACHED();
-      return u"";
   }
 }
 
@@ -433,7 +469,6 @@ std::u16string AppListToastContainerView::GetA11yTextOnUndoButtonFromOrder(
     case AppListSortOrder::kCustom:
     case AppListSortOrder::kAlphabeticalEphemeralAppFirst:
       NOTREACHED();
-      return u"";
   }
 }
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/device/usb/usb_service_impl.h"
 
 #include <stdint.h>
@@ -433,7 +438,7 @@ int LIBUSB_CALL UsbServiceImpl::HotplugCallback(libusb_context* context,
                                     self->weak_self_, std::move(device)));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return 0;

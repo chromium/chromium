@@ -7,16 +7,16 @@
 #include <array>
 #include <cstdint>
 #include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
-
-#include <jni.h>
 
 namespace segmentation_platform {
 
@@ -67,25 +67,22 @@ TEST_F(InputContextAndroidTest, FromJavaParams) {
   base::android::ScopedJavaLocalRef<jobjectArray> java_bool_keys =
       base::android::ToJavaArrayOfStrings(jni_env, bool_keys);
   base::android::ScopedJavaLocalRef<jbooleanArray> java_bool_values =
-      base::android::ToJavaBooleanArray(jni_env, bool_values,
-                                        std::size(bool_values));
+      base::android::ToJavaBooleanArray(jni_env, bool_values);
 
   base::android::ScopedJavaLocalRef<jobjectArray> java_int_keys =
       base::android::ToJavaArrayOfStrings(jni_env, int_keys);
   base::android::ScopedJavaLocalRef<jintArray> java_int_values =
-      base::android::ToJavaIntArray(jni_env, int_values, std::size(int_values));
+      base::android::ToJavaIntArray(jni_env, int_values);
 
   base::android::ScopedJavaLocalRef<jobjectArray> java_float_keys =
       base::android::ToJavaArrayOfStrings(jni_env, float_keys);
   base::android::ScopedJavaLocalRef<jfloatArray> java_float_values =
-      base::android::ToJavaFloatArray(jni_env, float_values,
-                                      std::size(float_values));
+      base::android::ToJavaFloatArray(jni_env, float_values);
 
   base::android::ScopedJavaLocalRef<jobjectArray> java_double_keys =
       base::android::ToJavaArrayOfStrings(jni_env, double_keys);
   base::android::ScopedJavaLocalRef<jdoubleArray> java_double_values =
-      base::android::ToJavaDoubleArray(jni_env, double_values,
-                                       std::size(double_values));
+      base::android::ToJavaDoubleArray(jni_env, double_values);
 
   base::android::ScopedJavaLocalRef<jobjectArray> java_string_keys =
       base::android::ToJavaArrayOfStrings(jni_env, string_keys);
@@ -96,19 +93,17 @@ TEST_F(InputContextAndroidTest, FromJavaParams) {
   base::android::ScopedJavaLocalRef<jobjectArray> java_time_keys =
       base::android::ToJavaArrayOfStrings(jni_env, time_keys);
   base::android::ScopedJavaLocalRef<jlongArray> java_time_values =
-      base::android::ToJavaLongArray(jni_env, time_values,
-                                     std::size(time_values));
+      base::android::ToJavaLongArray(jni_env, time_values);
 
   base::android::ScopedJavaLocalRef<jobjectArray> java_int64_keys =
       base::android::ToJavaArrayOfStrings(jni_env, int64_keys);
   base::android::ScopedJavaLocalRef<jlongArray> java_int64_values =
-      base::android::ToJavaLongArray(jni_env, int64_values,
-                                     std::size(int64_values));
+      base::android::ToJavaLongArray(jni_env, int64_values);
 
   base::android::ScopedJavaLocalRef<jobjectArray> java_url_keys =
       base::android::ToJavaArrayOfStrings(jni_env, url_keys);
   base::android::ScopedJavaLocalRef<jobjectArray> java_url_values =
-      url::GURLAndroid::ToJavaArrayOfGURLs(jni_env, url_values);
+      jni_zero::ToJniArray(jni_env, url_values, jni_zero::g_object_class);
 
   segmentation_platform::InputContextAndroid::FromJavaParams(
       jni_env, reinterpret_cast<intptr_t>(native_input_context.get()),

@@ -73,15 +73,25 @@ inline WritingMode ToLineWritingMode(WritingMode writing_mode) {
 }
 
 // Block progression increases in the opposite direction to normal; modes
-// vertical-rl.
+// vertical-rl and sideways-rl.
 inline bool IsFlippedBlocksWritingMode(WritingMode writing_mode) {
-  return writing_mode == WritingMode::kVerticalRl;
+  return writing_mode == WritingMode::kVerticalRl ||
+         writing_mode == WritingMode::kSidewaysRl;
 }
 
 // Whether the child and the containing block are parallel to each other.
 // Example: vertical-rl and vertical-lr
 inline bool IsParallelWritingMode(WritingMode a, WritingMode b) {
   return (a == WritingMode::kHorizontalTb) == (b == WritingMode::kHorizontalTb);
+}
+
+// Returns true if the specified writing-mode is a horizontal typographic
+// mode; modes horizontal-tb, sideways-lr, and sideways-rl.
+// https://drafts.csswg.org/css-writing-modes/#horizontal-typographic-mode
+inline bool IsHorizontalTypographicMode(WritingMode writing_mode) {
+  return writing_mode == WritingMode::kHorizontalTb ||
+         writing_mode == WritingMode::kSidewaysLr ||
+         writing_mode == WritingMode::kSidewaysRl;
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, WritingMode);

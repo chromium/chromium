@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/nullable_value_types_enums.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "mojo/public/interfaces/bindings/tests/nullable_value_types.mojom-shared.h"
 #include "mojo/public/interfaces/bindings/tests/nullable_value_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -431,6 +432,35 @@ class InterfaceV2Impl : public mojom::InterfaceV2 {
         false, uint8_t{128}, uint16_t{64}, uint32_t{32}, uint64_t{16},
         int8_t{-8}, int16_t{-4}, int32_t{-2}, int64_t{-1}, -0.5f, 0.25,
         mojom::RegularEnum::kThatValue, TypemappedEnum::kValueOne));
+  }
+
+  void MethodWithContainers(
+      const std::vector<std::optional<bool>>& bool_values,
+      const std::vector<std::optional<uint8_t>>& u8_values,
+      const std::vector<std::optional<uint16_t>>& u16_values,
+      const std::vector<std::optional<uint32_t>>& u32_values,
+      const std::vector<std::optional<uint64_t>>& u64_values,
+      const std::vector<std::optional<int8_t>>& i8_values,
+      const std::vector<std::optional<int16_t>>& i16_values,
+      const std::vector<std::optional<int32_t>>& i32_values,
+      const std::vector<std::optional<int64_t>>& i64_values,
+      const std::vector<std::optional<float>>& float_values,
+      const std::vector<std::optional<double>>& double_values,
+      const std::vector<std::optional<mojom::RegularEnum>>& enum_values,
+      const std::vector<std::optional<mojom::ExtensibleEnum>>&
+          extensible_enum_values,
+      const base::flat_map<int32_t, std::optional<bool>>& bool_map,
+      const base::flat_map<int32_t, std::optional<int32_t>>& int_map,
+      MethodWithContainersCallback reply) override {
+    std::move(reply).Run(bool_values, u8_values, u16_values, u32_values,
+                         u64_values, i8_values, i16_values, i32_values,
+                         i64_values, float_values, double_values, enum_values,
+                         extensible_enum_values, bool_map, int_map);
+  }
+
+  void MethodToSendUnknownEnum(MethodToSendUnknownEnumCallback reply) override {
+    std::move(reply).Run(
+        {static_cast<mojom::ExtensibleEnum>(555), std::nullopt});
   }
 
   const Receiver<mojom::InterfaceV2> receiver_;

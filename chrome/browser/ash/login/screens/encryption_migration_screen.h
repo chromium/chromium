@@ -14,7 +14,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
+#include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -31,9 +33,14 @@ namespace ash {
 class LoginFeedback;
 class UserContext;
 
-class EncryptionMigrationScreen : public BaseScreen,
-                                  public chromeos::PowerManagerClient::Observer,
-                                  public UserDataAuthClient::Observer {
+class EncryptionMigrationScreen
+    : public BaseScreen,
+      public chromeos::PowerManagerClient::Observer,
+      public UserDataAuthClient::Observer,
+      public screens_login::mojom::EncryptionMigrationPageHandler,
+      public OobeMojoBinder<
+          screens_login::mojom::EncryptionMigrationPageHandler,
+          screens_login::mojom::EncryptionMigrationPage> {
  public:
   using TView = EncryptionMigrationScreenView;
 
@@ -82,7 +89,6 @@ class EncryptionMigrationScreen : public BaseScreen,
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
 
   // PowerManagerClient::Observer implementation:
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
@@ -90,15 +96,16 @@ class EncryptionMigrationScreen : public BaseScreen,
   // UserDataAuthClient::Observer implementation:
   void DircryptoMigrationProgress(
       const ::user_data_auth::DircryptoMigrationProgress& progress) override;
-  // Handlers for user actions.
-  void HandleStartMigration();
-  void HandleSkipMigration();
-  void HandleRequestRestartOnLowStorage();
-  void HandleRequestRestartOnFailure();
-  void HandleOpenFeedbackDialog();
+  // screens_login::mojom::EncryptionMigrationPageHandler
+  void OnStartMigration() override;
+  void OnSkipMigration() override;
+  void OnRequestRestartOnLowStorage() override;
+  void OnRequestRestartOnFailure() override;
+  void OnOpenFeedbackDialog() override;
 
   // Updates UI state.
-  void UpdateUIState(EncryptionMigrationScreenView::UIState state);
+  void UpdateUIState(
+      screens_login::mojom::EncryptionMigrationPage::UIState state);
 
   void CheckAvailableStorage();
   void OnGetAvailableStorage(int64_t size);
@@ -106,12 +113,6 @@ class EncryptionMigrationScreen : public BaseScreen,
   void StartMigration();
   // Removes cryptohome and shows the error screen after the removal finishes.
   void RemoveCryptohome();
-
-  // Creates authorization request for MountEx method using |user_context_|.
-  cryptohome::AuthorizationRequest CreateAuthorizationRequest();
-
-  // True if the session is in ARC kiosk mode.
-  bool IsArcKiosk() const;
 
   // Handlers for cryptohome API callbacks.
   void OnMigrationRequested(std::unique_ptr<UserContext> context,
@@ -123,7 +124,7 @@ class EncryptionMigrationScreen : public BaseScreen,
 
   // Records UMA about visible screen after delay.
   void OnDelayedRecordVisibleScreen(
-      EncryptionMigrationScreenView::UIState state);
+      screens_login::mojom::EncryptionMigrationPage::UIState state);
 
   // True if |mode_| suggests that we are resuming an incomplete migration.
   bool IsResumingIncompleteMigration() const;
@@ -137,8 +138,8 @@ class EncryptionMigrationScreen : public BaseScreen,
   base::WeakPtr<EncryptionMigrationScreenView> view_;
 
   // The current UI state which should be refrected in the web UI.
-  EncryptionMigrationScreenView::UIState current_ui_state_ =
-      EncryptionMigrationScreenView::INITIAL;
+  screens_login::mojom::EncryptionMigrationPage::UIState current_ui_state_ =
+      screens_login::mojom::EncryptionMigrationPage::UIState::kInitial;
 
   // The current user's UserContext, which is used to request the migration to
   // cryptohome.

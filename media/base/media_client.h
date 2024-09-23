@@ -11,6 +11,7 @@
 
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/key_system_info.h"
 #include "media/base/media_export.h"
 #include "media/base/media_types.h"
@@ -33,15 +34,19 @@ MEDIA_EXPORT void SetMediaClient(MediaClient* media_client);
 MEDIA_EXPORT MediaClient* GetMediaClient();
 #endif
 
+class MEDIA_EXPORT ExternalMemoryAllocator {
+ public:
+  virtual ~ExternalMemoryAllocator() = default;
+  virtual std::unique_ptr<DecoderBuffer::ExternalMemory> CopyFrom(
+      base::span<const uint8_t> span) = 0;
+};
+
 // A client interface for embedders (e.g. content/renderer) to provide
 // customized key systems and decoders.
 class MEDIA_EXPORT MediaClient {
  public:
   MediaClient();
   virtual ~MediaClient();
-
-  // Adds properties for supported key systems.
-  virtual void GetSupportedKeySystems(GetSupportedKeySystemsCB cb) = 0;
 
   // Returns true if the given audio config is supported.
   virtual bool IsSupportedAudioType(const AudioType& type) = 0;
@@ -56,6 +61,12 @@ class MEDIA_EXPORT MediaClient {
   // Optionally returns audio renderer algorithm parameters.
   virtual std::optional<::media::AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(AudioParameters audio_parameters) = 0;
+
+  // Returns custom allocator if embedder has provided one, else nullptr.
+  // When an allocator is provided, the MSE pipeline will use the provided
+  // allocator during StreamParserBuffer creation. The SRC playback pipeline
+  // does not currently use the allocator, but could be updated to do so.
+  virtual ExternalMemoryAllocator* GetMediaAllocator() = 0;
 };
 
 }  // namespace media

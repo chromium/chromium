@@ -17,8 +17,8 @@ class CONTENT_EXPORT RenderProcessHostInternalObserver
     : public base::CheckedObserver {
  public:
   // This method is invoked when the observed RenderProcessHost's value of
-  // |IsProcessBackgrounded()| changes.
-  virtual void RenderProcessBackgroundedChanged(RenderProcessHostImpl* host) {}
+  // |GetPriority()| changes.
+  virtual void RenderProcessPriorityChanged(RenderProcessHostImpl* host) {}
 
  protected:
   ~RenderProcessHostInternalObserver() override;

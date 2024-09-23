@@ -41,14 +41,69 @@
 #include "base/test/test_future.h"
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
+#include "components/history/core/browser/history_client.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/visit_delegate.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "components/history/core/test/test_history_database.h"
+#include "components/visitedlink/core/visited_link.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history {
+
+class TestVisitDelegate : public VisitDelegate {
+ public:
+  TestVisitDelegate() = default;
+  ~TestVisitDelegate() override = default;
+
+  // Implementation of VisitDelegate.
+  bool Init(HistoryService* history_service) override { return true; }
+  void AddURL(const GURL& url) override {}
+  void AddURLs(const std::vector<GURL>& urls) override {}
+  void DeleteURLs(const std::vector<GURL>& urls) override {}
+  void DeleteAllURLs() override {}
+  void AddVisitedLink(const VisitedLink& link) override;
+  void DeleteVisitedLinks(const std::vector<VisitedLink>& links) override {}
+  void DeleteAllVisitedLinks() override {}
+  std::optional<uint64_t> GetOrAddOriginSalt(
+      const url::Origin& origin) override {
+    return std::nullopt;
+  }
+
+  bool visit_delegate_was_called() { return visit_delegate_was_called_; }
+
+  base::WeakPtr<TestVisitDelegate> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+  std::vector<VisitedLink> get_added_links() { return links_; }
+
+  void set_add_complete_task(base::OnceClosure task) {
+    DCHECK(add_complete_task_.is_null());
+    add_complete_task_ = std::move(task);
+  }
+
+ private:
+  // Set to true once `AddVisitedLink` is called.
+  bool visit_delegate_was_called_ = false;
+  // A mock of our partitioned hashtable.
+  std::vector<VisitedLink> links_;
+  // Task to be called once `AddVisitedLink` is called.
+  base::OnceClosure add_complete_task_;
+  base::WeakPtrFactory<TestVisitDelegate> weak_factory_{this};
+};
+
+void TestVisitDelegate::AddVisitedLink(const VisitedLink& link) {
+  visit_delegate_was_called_ = true;
+  links_.push_back(link);
+  // Notify the unit test that the AddVisitedLink task has completed.
+  if (!add_complete_task_.is_null()) {
+    std::move(add_complete_task_).Run();
+  }
+}
 
 class HistoryServiceTest : public testing::Test {
  public:
@@ -469,8 +524,8 @@ TEST_F(HistoryServiceTest, SetTitle) {
 
   // Add a URL.
   const GURL existing_url("http://www.google.com/");
-  history_service_->AddPage(
-      existing_url, base::Time::Now(), history::SOURCE_BROWSED);
+  history_service_->AddPage(existing_url, base::Time::Now(),
+                            history::SOURCE_BROWSED);
 
   // Set some title.
   const std::u16string existing_title = u"Google";
@@ -900,7 +955,6 @@ TEST_F(HistoryServiceTest, CountMonthlyVisitedHosts) {
 
   AddPageInThePast(history, "https://www.yahoo.com/foo", 29);
   EXPECT_EQ(3, GetMonthlyHostCountHelper(history, &tracker_));
-
 }
 
 TEST_F(HistoryServiceTest, GetDomainDiversityShortBasetimeRange) {
@@ -1217,23 +1271,15 @@ TEST_F(HistoryServiceTest, GetDomainDiversityLocalVsSynced) {
   query_time =
       std::max(query_time.LocalMidnight() + base::Minutes(10), query_time);
 
-  // Add a regular local visit.
+  // Add a local visit.
   history->AddPage(GURL("https://www.local.com/"),
                    GetTimeInThePast(query_time, /*days_back=*/1,
                                     /*hours_since_midnight=*/12),
                    0, 0, GURL(), history::RedirectList(),
                    ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED, false);
 
-  // Add a legacy-style synced visit, as it would be created by TYPED_URLS sync.
-  // This has SOURCE_SYNCED but otherwise looks mostly like a local visit.
-  history->AddPage(GURL("https://www.synced-legacy.com/"),
-                   GetTimeInThePast(query_time, /*days_back=*/1,
-                                    /*hours_since_midnight=*/13),
-                   0, 0, GURL(), history::RedirectList(),
-                   ui::PAGE_TRANSITION_LINK, history::SOURCE_SYNCED, false);
-
-  // Add a new-style synced visit, as it would be created by HISTORY sync. The
-  // API to do this isn't exposed in HistoryService (only HistoryBackend).
+  // Add a synced visit, as it would be created by HISTORY sync. The API to do
+  // this isn't exposed in HistoryService (only HistoryBackend).
   {
     VisitRow visit;
     visit.visit_time = GetTimeInThePast(query_time, /*days_back=*/1,
@@ -1262,8 +1308,133 @@ TEST_F(HistoryServiceTest, GetDomainDiversityLocalVsSynced) {
 
   // The "local" result should only count the local visit.
   TestDomainMetricSet(local_res[0], 1, -1, -1);
-  // The "all" result should also include synced visits.
-  TestDomainMetricSet(all_res[0], 3, -1, -1);
+  // The "all" result should also include the synced visit.
+  TestDomainMetricSet(all_res[0], 2, -1, -1);
+}
+
+TEST_F(HistoryServiceTest, GetMostRecentVisitsForGurl) {
+  HistoryService* history = history_service_.get();
+  ASSERT_TRUE(history);
+
+  // Should not return older visits.
+  AddPageInThePast(history, "http://www.google.com/", 6);
+  // Should not return visits to a different URL.
+  AddPageInThePast(history, "http://www.not-google.com/", 1);
+  AddPageInThePast(history, "http://www.google.com/", 1);
+  // Should return visits in order of visit time.
+  AddPageInThePast(history, "http://www.google.com/", 3);
+  AddPageInThePast(history, "http://www.google.com/", 2);
+  // Should not return older visits.
+  AddPageInThePast(history, "http://www.google.com/", 6);
+
+  base::test::TestFuture<QueryURLResult> future;
+  history->GetMostRecentVisitsForGurl(GURL("http://www.google.com/"), 3,
+                                      future.GetCallback(), &tracker_);
+  const auto result = future.Take();
+  EXPECT_EQ(result.row.id(), 1);
+  EXPECT_THAT(result.visits,
+              testing::ElementsAre(
+                  testing::AllOf(testing::Field(&VisitRow::url_id, 1),
+                                 testing::Field(&VisitRow::visit_id, 3)),
+                  testing::AllOf(testing::Field(&VisitRow::url_id, 1),
+                                 testing::Field(&VisitRow::visit_id, 5)),
+                  testing::AllOf(testing::Field(&VisitRow::url_id, 1),
+                                 testing::Field(&VisitRow::visit_id, 4))));
+}
+
+// This class mocks the VisitDelegate in HistoryService to ensure that
+// partitioned visited links are not added immediately, but rather are posted to
+// the HistoryBackend before notifying the VisitDelegate.
+class OrderingHistoryServiceTest : public HistoryServiceTest {
+ public:
+  OrderingHistoryServiceTest() = default;
+  ~OrderingHistoryServiceTest() override = default;
+
+ protected:
+  friend class BackendDelegate;
+
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    history_dir_ = temp_dir_.GetPath().AppendASCII("HistoryServiceTest");
+    ASSERT_TRUE(base::CreateDirectory(history_dir_));
+
+    // Override the VisitDelegate with our mock instance.
+    std::unique_ptr<TestVisitDelegate> visit_delegate =
+        std::make_unique<TestVisitDelegate>();
+    // Wait for the AddVisitedLink task to post to the DB thread and contact the
+    // TestVisitDelegate on the main thread. The task will terminate
+    // the message loop when the build is done.
+    visit_delegate->set_add_complete_task(run_loop_.QuitClosure());
+    // Store a weak instance of the VisitDelegate so we can query it in tests.
+    weak_visit_delegate_ = visit_delegate->GetWeakPtr();
+
+    // Set up the HistoryService.
+    history_service_ = std::make_unique<history::HistoryService>(
+        nullptr, std::move(visit_delegate));
+    if (!history_service_->Init(
+            TestHistoryDatabaseParamsForPath(history_dir_))) {
+      history_service_.reset();
+      ADD_FAILURE();
+    }
+  }
+
+  base::RunLoop run_loop_;
+  base::WeakPtr<TestVisitDelegate> weak_visit_delegate_;
+};
+
+TEST_F(OrderingHistoryServiceTest, EnsureCorrectOrder) {
+  // Create the components required for our visited link.
+  const GURL frame_url("https://local1.url");
+  const GURL top_level_url("https://local2.url");
+  const GURL server_redirect_url("http://ads.google.com");
+  const GURL client_redirect_url("http://google.com");
+  base::Time visit_time = base::Time::Now() - base::Days(1);
+  const ContextID context_id1 = 1;
+
+  // Create a VisitedLinkRow containing the top-level site and frame origin.
+  VisitedLinkRow deleted_visited_link_row;
+  deleted_visited_link_row.top_level_url = top_level_url;
+  deleted_visited_link_row.frame_url = frame_url;
+
+  // Create a VisitedLink deletion notification for that same VisitedLink.
+  DeletedVisitedLink deleted_visited_link;
+  deleted_visited_link.link_url = client_redirect_url;
+  deleted_visited_link.visited_link_row = deleted_visited_link_row;
+
+  // Create a Visit deletion notification for that same VisitedLink and a mock
+  // corresponding Visit.
+  VisitRow deleted_visit_row = VisitRow();
+  deleted_visit_row.visit_time = visit_time;
+  DeletedVisit deleted_visit(deleted_visit_row, deleted_visited_link);
+  std::vector<DeletedVisit> deleted_visits = {deleted_visit};
+
+  // Prepare a mock `AddPage` request for the VisitedLink.
+  HistoryAddPageArgs request(
+      client_redirect_url, base::Time::Now() - base::Seconds(1), context_id1, 0,
+      std::nullopt, frame_url,
+      /*redirects=*/{}, ui::PAGE_TRANSITION_LINK, false, SOURCE_BROWSED, false,
+      true, std::nullopt, top_level_url);
+
+  // Simulate a user clicking on our VistedLink.
+  history_service_->AddPage(request);
+
+  // Check that the visit delegate is not called immediately.
+  ASSERT_TRUE(weak_visit_delegate_);
+  EXPECT_FALSE(weak_visit_delegate_->visit_delegate_was_called());
+
+  // Wait for the visit delegate to resolve.
+  run_loop_.Run();
+
+  // Determine what VisitedLink should be in our mock hashtable.
+  VisitedLink expected_link = {client_redirect_url,
+                               net::SchemefulSite(top_level_url),
+                               url::Origin::Create(frame_url)};
+  std::vector<VisitedLink> expected_links = {expected_link};
+
+  // Ensure that we have notified out visit delegate of the added link.
+  ASSERT_TRUE(weak_visit_delegate_);
+  EXPECT_TRUE(weak_visit_delegate_->visit_delegate_was_called());
+  EXPECT_EQ(weak_visit_delegate_->get_added_links(), expected_links);
 }
 
 }  // namespace history

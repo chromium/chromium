@@ -5,12 +5,11 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_REGISTER_AD_BEACON_BINDINGS_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_REGISTER_AD_BEACON_BINDINGS_H_
 
-#include <optional>
-
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/context_recycler.h"
 #include "url/gurl.h"
 #include "v8/include/v8-forward.h"
@@ -24,7 +23,8 @@ namespace auction_worklet {
 // throws on invalid URLs or non-HTTPS URLs in the map.
 class RegisterAdBeaconBindings : public Bindings {
  public:
-  explicit RegisterAdBeaconBindings(AuctionV8Helper* v8_helper);
+  RegisterAdBeaconBindings(AuctionV8Helper* v8_helper,
+                           AuctionV8Logger* v8_logger);
   RegisterAdBeaconBindings(const RegisterAdBeaconBindings&) = delete;
   RegisterAdBeaconBindings& operator=(const RegisterAdBeaconBindings&) = delete;
   ~RegisterAdBeaconBindings() override;
@@ -42,6 +42,7 @@ class RegisterAdBeaconBindings : public Bindings {
   static void RegisterAdBeacon(const v8::FunctionCallbackInfo<v8::Value>& args);
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
+  const raw_ptr<AuctionV8Logger> v8_logger_;
 
   // This is a map from the event type to the reporting url.
   base::flat_map<std::string, GURL> ad_beacon_map_;

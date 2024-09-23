@@ -71,7 +71,7 @@ void AppServiceAppWindowShelfItemController::ItemSelected(
   }
 
   if (session_ids_.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   std::move(callback).Run(ash::SHELF_ACTION_NONE, {});

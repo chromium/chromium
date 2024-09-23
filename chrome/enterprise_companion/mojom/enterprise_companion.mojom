@@ -1,0 +1,31 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module enterprise_companion.mojom;
+
+[Stable] struct Status {
+    // The numeric identifier of the status space corresponding to the variant
+    // indices defined in enterprise_companion_status.h. Zero corresponds to
+    // the monostate OK space.
+    int32 space@0;
+
+    // The numeric status code which paired with `space` uniquely identifies an
+    // error.
+    int32 code@1;
+
+    // A human-readable description of the status.
+    string description@2;
+};
+
+// The core of the enterprise companion.
+[Stable] interface EnterpriseCompanion {
+    // Instruct the application to exit. The callback will be returned before
+    // the app shuts down.
+    Shutdown@0() => (Status result);
+
+    // Instruct the app to perform a policy fetch, registering the device if
+    // needed. Fetched policies are persisted to the on-disk cached which may be
+    // read from by dependent applications.
+    FetchPolicies@1() => (Status result);
+};

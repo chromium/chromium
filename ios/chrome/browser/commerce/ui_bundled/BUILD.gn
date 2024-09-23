@@ -1,0 +1,27 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("price_card") {
+  sources = [
+    "price_card/price_card_constants.h",
+    "price_card/price_card_constants.mm",
+    "price_card/price_card_data_source.h",
+    "price_card/price_card_item.h",
+    "price_card/price_card_item.mm",
+    "price_card/price_card_mediator.h",
+    "price_card/price_card_mediator.mm",
+    "price_card/price_card_view.h",
+    "price_card/price_card_view.mm",
+  ]
+  deps = [
+    "price_card/resources:colors",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/commerce/model:model",
+    "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
+    "//ios/chrome/browser/ui/tab_switcher:utils",
+    "//ios/chrome/common/ui/colors",
+    "//ios/web/public",
+    "//ui/base:base",
+  ]
+}

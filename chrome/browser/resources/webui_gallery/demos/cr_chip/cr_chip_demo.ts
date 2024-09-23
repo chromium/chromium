@@ -3,21 +3,26 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_chip/cr_chip.js';
-import '//resources/cr_elements/icons.html.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../demo.css.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/icons_lit.html.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_chip_demo.html.js';
+import {getCss} from '../demo.css.js';
 
-class CrChipDemoElement extends PolymerElement {
+import {getHtml} from './cr_chip_demo.html.js';
+
+export class CrChipDemoElement extends CrLitElement {
   static get is() {
     return 'cr-chip-demo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 }
 

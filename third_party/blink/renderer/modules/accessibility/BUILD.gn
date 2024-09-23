@@ -14,30 +14,18 @@ blink_modules_sources("accessibility") {
     "ax_image_map_link.h",
     "ax_inline_text_box.cc",
     "ax_inline_text_box.h",
-    "ax_layout_object.cc",
-    "ax_layout_object.h",
-    "ax_list_box.cc",
-    "ax_list_box.h",
-    "ax_list_box_option.cc",
-    "ax_list_box_option.h",
     "ax_media_control.cc",
     "ax_media_control.h",
     "ax_media_element.cc",
     "ax_media_element.h",
-    "ax_menu_list.cc",
-    "ax_menu_list.h",
-    "ax_menu_list_option.cc",
-    "ax_menu_list_option.h",
-    "ax_menu_list_popup.cc",
-    "ax_menu_list_popup.h",
-    "ax_mock_object.cc",
-    "ax_mock_object.h",
     "ax_node_object.cc",
     "ax_node_object.h",
     "ax_object.cc",
     "ax_object.h",
     "ax_object_cache_impl.cc",
     "ax_object_cache_impl.h",
+    "ax_object_cache_lifecycle.cc",
+    "ax_object_cache_lifecycle.h",
     "ax_position.cc",
     "ax_position.h",
     "ax_progress_indicator.cc",
@@ -86,6 +74,6 @@ blink_modules_sources("accessibility") {
   }
 
   if (is_android) {
-    defines = [ " REDUCE_AX_INLINE_TEXTBOXES " ]
+    defines = [ "REDUCE_AX_INLINE_TEXTBOXES" ]
   }
 }

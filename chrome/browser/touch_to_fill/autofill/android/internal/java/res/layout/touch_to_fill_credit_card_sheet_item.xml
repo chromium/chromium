@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:descendantFocusability="blocksDescendants"
     android:layout_width="match_parent"
@@ -14,7 +14,6 @@ found in the LICENSE file.
     android:layout_marginHorizontal="8dp"
     android:background="@drawable/touch_to_fill_credential_background_modern_rounded_all"
     android:gravity="center_vertical"
-    android:orientation="horizontal"
     android:padding="16dp">
 
     <ImageView
@@ -23,30 +22,60 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:importantForAccessibility="no"
-        android:layout_gravity="center"/>
-    <LinearLayout
-        android:layout_width="0dp"
+        android:layout_centerVertical="true"/>
+
+    <TextView
+        android:id="@+id/main_text"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
-        <include
-            layout="@layout/autofill_card_name_and_number" />
-        <!-- This line will appear when it's necessary to display a card linked offer -->
-        <TextView
-            android:id="@+id/description_line_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-            android:visibility="gone" />
-        <!-- This line will hold either the information that the card is virtual or the expiration date -->
-        <TextView
-            android:id="@+id/description_line_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
-    </LinearLayout>
-</LinearLayout>
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_toEndOf="@id/favicon"
+        android:layout_alignParentTop="true"/>
+
+    <TextView
+        android:id="@+id/minor_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:maxLines="1"
+        android:layout_toEndOf="@id/main_text"
+        android:layout_alignParentTop="true" />
+
+    <!-- This line will appear when it's necessary to display a card linked offer -->
+    <TextView
+        android:id="@+id/description_line_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:visibility="gone"
+        android:layout_below="@id/main_text"
+        android:layout_alignStart="@id/main_text" />
+
+    <!-- This line will display card benefits when available. Otherwise, it will show either
+         the virtual card status or the expiration date. -->
+    <TextView
+        android:id="@+id/first_line_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:layout_below="@id/description_line_1"
+        android:layout_alignStart="@id/main_text" />
+
+    <!-- If card benefits are displayed on the first line, this line will show either the
+         virtual card status or the expiration date. -->
+    <TextView
+        android:id="@+id/second_line_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:visibility="gone"
+        android:layout_below="@id/first_line_label"
+        android:layout_alignStart="@id/main_text" />
+</RelativeLayout>

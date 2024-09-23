@@ -1,0 +1,195 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package device.enclave;
+
+import "digest.proto";
+import "tcb_version.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// Represents a verification result. Can be extended to return certain
+// measurements and other detail to the client for further processing.
+// Nomenclature follows RFC 9334.
+message AttestationResults {
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+    STATUS_SUCCESS = 1;
+    STATUS_GENERIC_FAILURE = 2;
+  }
+
+  // Indicates whether the verification passed and perhaps more.
+  Status status = 1;
+
+  // Provides the reason why verification did not pass, on non-success status.
+  string reason = 2;
+
+  // Contains the verified public key for encryption whenever the status
+  // indicates success. The key is serialized as an X25519 octet string.
+  //
+  // Deprecated: will be replaced by the
+  // `extracted_evidence.encryption_public_key` field. For now both are
+  // populated.
+  bytes encryption_public_key = 3 [deprecated = true];
+
+  // Contains the verified public key for signing whenever the status
+  // indicates success. The key is serialized using the SEC 1
+  // Elliptic-Curve-Point-to-Octet-String conversion.
+  //
+  // Deprecated: will be replaced by the `extracted_evidence.signing_public_key`
+  // field. For now both are populated.
+  bytes signing_public_key = 4 [deprecated = true];
+
+  // Contains the evidence values whenever the status indicates success.
+  ExtractedEvidence extracted_evidence = 5;
+}
+
+// Evidence values extracted from attestation evidence during verification.
+message ExtractedEvidence {
+  oneof evidence_values {
+    OakRestrictedKernelData oak_restricted_kernel = 1;
+    OakContainersData oak_containers = 2;
+  }
+
+  // Contains the public key for encryption. The key is serialized as an X25519
+  // octet string.
+  bytes encryption_public_key = 4;
+
+  // Contains the public key for signing. The key is serialized using the SEC 1
+  // Elliptic-Curve-Point-to-Octet-String conversion.
+  bytes signing_public_key = 5;
+}
+
+// Values extracted from the root layer evidence.
+message RootLayerData {
+  oneof report {
+    // Values extracted from an AMD SEV-SNP attestation report.
+    AmdAttestationReport sev_snp = 1;
+    // Values extracted from an Intel TDX attestation report.
+    IntelTdxAttestationReport tdx = 2;
+    // Values extracted from a fake report when not running in a TEE.
+    FakeAttestationReport fake = 3;
+  }
+}
+
+// Values extracted from an AMD SEV-SNP attestation report.
+message AmdAttestationReport {
+  // The custom bytes that were passed to the report when it was requested.
+  bytes report_data = 1;
+
+  // This represents the actual, up-to-date TCB version of the currently running
+  // SEV-SNP firmware. It reflects the latest security patches and updates
+  // applied to the firmware.
+  TcbVersion current_tcb = 2;
+
+  // This is the TCB version reported in attestation reports. It can be set
+  // independently from the current_tcb by the hypervisor. This allows for a
+  // smoother transition when updating firmware, giving guest owners time to
+  // retrieve new VCEK certificates before switching to a new VCEK derived from
+  // the updated TCB.
+  // See Section 3.4 of the AMD SEV-SNP specification:
+  // https://www.amd.com/content/dam/amd/en/documents/epyc-technical-docs/specifications/56860.pdf
+  TcbVersion reported_tcb = 7;
+
+  // Whether the VM was booted in debug mode.
+  bool debug = 3;
+
+  // The measurement of the initial memory and CPU state of the VM before
+  // startup. This implicitly includes the measurement of the Stage 0 firmware
+  // binary.
+  bytes initial_measurement = 4;
+
+  // The hardware ID of the AMD SEV-SNP platform that generated the attestation
+  // report.
+  bytes hardware_id = 5;
+
+  // The VM Protection Level (VMPL) that was active when the attestation report
+  // was generated.
+  uint32 vmpl = 6;
+}
+
+// Values extracted from an Intel TDX attestation report.
+message IntelTdxAttestationReport {
+  // The custom bytes that were passed to the report when it was requested.
+  bytes report_data = 1;
+}
+
+// Values extracted from a fake attestation report when not running in a TEE.
+message FakeAttestationReport {
+  // The custom bytes that were passed to the report when it was requested.
+  bytes report_data = 1;
+}
+
+// Values extracted from the the kernel layer evidence, as measured by stage0.
+message KernelLayerData {
+  // Measured digests of the image part of the kernel.
+  RawDigest kernel_image = 1;
+
+  // Measured digests of the setup data part of the kernel.
+  RawDigest kernel_setup_data = 3;
+
+  // Measured digests of the command-line that was passed to the kernel
+  // during startup.
+  RawDigest kernel_cmd_line = 2 [deprecated = true];
+
+  // Command-line that was passed to the kernel during startup. If absent,
+  // verification will only succeed with the corresponding reference value set
+  // to skip (for compatibility with the legacy version of the evidence
+  // producing code). Empty value corresponds to the kernel being run with an
+  // empty command line.
+  optional string kernel_raw_cmd_line = 7;
+
+  // Measured digests of the initial RAM disk.
+  RawDigest init_ram_fs = 4;
+
+  // Measured digests of the physical memory map.
+  RawDigest memory_map = 5;
+
+  // Measured digests of the commands for building the ACPI tables.
+  RawDigest acpi = 6;
+}
+
+// Values extracted from the evidence that represents an application running
+// under the Oak Restricted Kernel.
+message ApplicationLayerData {
+  // Measurement RawDigest of the application binary.
+  RawDigest binary = 1;
+
+  // Measurement RawDigest of the application configuration.
+  RawDigest config = 2;
+}
+
+// Values extracted from the evidence that represents the Oak Containers system
+// image.
+message SystemLayerData {
+  // Measurement RawDigest of the system image.
+  RawDigest system_image = 1;
+}
+
+// Values extracted from the evidence that represents the Container Runtime
+// Bundle used in Oak Containers.
+message ContainerLayerData {
+  // Measurement RawDigest of the container bundle.
+  RawDigest bundle = 1;
+
+  // Measurement RawDigest of the configuration used by the container.
+  RawDigest config = 2;
+}
+
+// Values extracted from the evidence for a restricted kernel application.
+message OakRestrictedKernelData {
+  RootLayerData root_layer = 1;
+  KernelLayerData kernel_layer = 2;
+  ApplicationLayerData application_layer = 3;
+}
+
+// Values extracted from the evidence for an Oak Containers instance.
+message OakContainersData {
+  RootLayerData root_layer = 1;
+  KernelLayerData kernel_layer = 2;
+  SystemLayerData system_layer = 3;
+  ContainerLayerData container_layer = 4;
+}

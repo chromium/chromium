@@ -25,7 +25,6 @@ import androidx.fragment.app.FragmentManager;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -34,9 +33,10 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningSheetStateAtClosing;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningUserActions;
@@ -100,8 +100,6 @@ public class PasswordMigrationWarningMediatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
-
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     private PasswordMigrationWarningMediator mMediator;
@@ -116,11 +114,13 @@ public class PasswordMigrationWarningMediatorTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private SyncService mSyncService;
     @Mock private SigninManager mSigninManager;
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
+        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
         mMediator =
                 new PasswordMigrationWarningMediator(
@@ -140,6 +140,15 @@ public class PasswordMigrationWarningMediatorTest {
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         mMediator.showWarning(ScreenType.INTRO_SCREEN);
         assertTrue(mModel.get(VISIBLE));
+    }
+
+    @Test
+    public void testShowWarningShouldOfferSyncToFalse() {
+        when(mIdentityServicesProvider.getSigninManager(mProfile)).thenReturn(mSigninManager);
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        mModel.set(VISIBLE, false);
+        mMediator.showWarning(ScreenType.OPTIONS_SCREEN);
+        assertFalse(mModel.get(SHOULD_OFFER_SYNC));
     }
 
     @Test

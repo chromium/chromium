@@ -45,10 +45,11 @@
 #define TRACELINE_ASSEMBLER_H_
 
 #include <windows.h>
-#include <stdio.h>
-#include <string>
 
 #include <stddef.h>
+#include <stdio.h>
+
+#include <string>
 
 #include "logging.h"
 

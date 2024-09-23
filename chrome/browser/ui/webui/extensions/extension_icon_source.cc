@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -46,7 +47,7 @@ namespace {
 
 scoped_refptr<base::RefCountedMemory> BitmapToMemory(const SkBitmap* image) {
   auto image_bytes = base::MakeRefCounted<base::RefCountedBytes>();
-  gfx::PNGCodec::EncodeBGRASkBitmap(*image, false, &image_bytes->data());
+  gfx::PNGCodec::EncodeBGRASkBitmap(*image, false, &image_bytes->as_vector());
   return image_bytes;
 }
 
@@ -72,13 +73,13 @@ struct ExtensionIconSource::ExtensionIconRequest {
   scoped_refptr<const Extension> extension;
   bool grayscale;
   int size;
-  ExtensionIconSet::MatchType match;
+  ExtensionIconSet::Match match;
 };
 
 // static
 GURL ExtensionIconSource::GetIconURL(const Extension* extension,
                                      int icon_size,
-                                     ExtensionIconSet::MatchType match,
+                                     ExtensionIconSet::Match match,
                                      bool grayscale) {
   return GetIconURL(extension->id(), icon_size, match, grayscale);
 }
@@ -86,18 +87,18 @@ GURL ExtensionIconSource::GetIconURL(const Extension* extension,
 // static
 GURL ExtensionIconSource::GetIconURL(const std::string& extension_id,
                                      int icon_size,
-                                     ExtensionIconSet::MatchType match,
+                                     ExtensionIconSet::Match match,
                                      bool grayscale) {
   GURL icon_url(base::StringPrintf(
       "%s%s/%d/%d%s", chrome::kChromeUIExtensionIconURL, extension_id.c_str(),
-      icon_size, match, grayscale ? "?grayscale=true" : ""));
+      icon_size, static_cast<int>(match), grayscale ? "?grayscale=true" : ""));
   CHECK(icon_url.is_valid());
   return icon_url;
 }
 
 // static
 SkBitmap* ExtensionIconSource::LoadImageByResourceId(int resource_id) {
-  base::StringPiece contents =
+  std::string_view contents =
       ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
           resource_id, ui::k100Percent);
 
@@ -251,8 +252,9 @@ void ExtensionIconSource::OnFaviconDataAvailable(
     std::move(request->callback).Run(bitmap_result.bitmap_data.get());
     ClearData(request_id);
   } else {
-    FinalizeImage(ToBitmap(bitmap_result.bitmap_data->front(),
-                           bitmap_result.bitmap_data->size()), request_id);
+    FinalizeImage(ToBitmap(bitmap_result.bitmap_data->data(),
+                           bitmap_result.bitmap_data->size()),
+                  request_id);
   }
 }
 
@@ -296,15 +298,16 @@ bool ExtensionIconSource::ParseData(
   if (size <= 0 || size > extension_misc::EXTENSION_ICON_GIGANTOR)
     return false;
 
-  ExtensionIconSet::MatchType match_type;
+  ExtensionIconSet::Match match_type;
   int match_num;
   if (!base::StringToInt(match_param, &match_num))
     return false;
-  match_type = static_cast<ExtensionIconSet::MatchType>(match_num);
-  if (!(match_type == ExtensionIconSet::MATCH_EXACTLY ||
-        match_type == ExtensionIconSet::MATCH_SMALLER ||
-        match_type == ExtensionIconSet::MATCH_BIGGER))
-    match_type = ExtensionIconSet::MATCH_EXACTLY;
+  match_type = static_cast<ExtensionIconSet::Match>(match_num);
+  if (!(match_type == ExtensionIconSet::Match::kExactly ||
+        match_type == ExtensionIconSet::Match::kSmaller ||
+        match_type == ExtensionIconSet::Match::kBigger)) {
+    match_type = ExtensionIconSet::Match::kExactly;
+  }
 
   std::string extension_id = path_parts.at(0);
   const Extension* extension =
@@ -326,7 +329,7 @@ void ExtensionIconSource::SetData(
     const Extension* extension,
     bool grayscale,
     int size,
-    ExtensionIconSet::MatchType match) {
+    ExtensionIconSet::Match match) {
   std::unique_ptr<ExtensionIconRequest> request =
       std::make_unique<ExtensionIconRequest>();
   request->callback = std::move(callback);

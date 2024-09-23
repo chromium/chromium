@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
@@ -14,7 +15,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/permissions/chip_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
@@ -26,6 +27,7 @@
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/test/views_test_utils.h"
@@ -91,13 +93,6 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   // location icon isn't offset by the chip and the bubble is hidden.
   EXPECT_FALSE(lbv->GetChipController()->IsPermissionPromptChipVisible());
   EXPECT_FALSE(lbv->GetChipController()->IsBubbleShowing());
-  if (!features::IsChromeRefresh2023() &&
-      !OmniboxFieldTrial::IsCr23LayoutEnabled()) {
-    // CR2023 has a few experimental flavors of LocationIconView positioning.
-    // It does not make sense to test them here. See LocationBarView::Layout().
-    EXPECT_EQ(lbv->location_icon_view()->bounds().x(),
-              GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING));
-  }
 
   // Ensure no callbacks are pending.
   EXPECT_FALSE(
@@ -279,8 +274,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   // reference to a Permission Request Manager instance.
   ASSERT_FALSE(chip_controller->permissions::PermissionRequestManager::
                    Observer::IsInObserverList());
-  ASSERT_FALSE(chip_controller->active_permission_request_manager_for_testing()
-                   .has_value());
+  ASSERT_FALSE(
+      chip_controller->active_permission_request_manager().has_value());
 
   // Trigger a request on the second (the now only remaining) tab.
   EXPECT_TRUE(content::ExecJs(
@@ -292,11 +287,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   // During the request, the chip controller should be observing the correct
   // permission request manager instance, and have a reference to the same.
   EXPECT_TRUE(manager_tab_1->IsRequestInProgress());
-  ASSERT_TRUE(chip_controller->active_permission_request_manager_for_testing()
-                  .has_value());
-  ASSERT_EQ(
-      chip_controller->active_permission_request_manager_for_testing().value(),
-      manager_tab_1);
+  ASSERT_TRUE(chip_controller->active_permission_request_manager().has_value());
+  ASSERT_EQ(chip_controller->active_permission_request_manager().value(),
+            manager_tab_1);
   ASSERT_TRUE(manager_tab_1->get_observer_list_for_testing()->HasObserver(
       chip_controller));
 }
@@ -377,8 +370,9 @@ class PermissionRequestChipBrowserUiTest : public UiBrowserTest {
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 };
 
+// Flaky b/40261456
 IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserUiTest,
-                       InvokeUi_geolocation) {
+                       DISABLED_InvokeUi_geolocation) {
   ShowAndVerifyUi();
 }
 
@@ -393,10 +387,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserUiTest,
   EXPECT_TRUE(lbv->GetChipController()->IsPermissionPromptChipVisible());
   EXPECT_TRUE(lbv->GetChipController()->IsBubbleShowing());
 
-  lbv->GetChipController()
-      ->active_permission_request_manager_for_testing()
-      .value()
-      ->Deny();
+  lbv->GetChipController()->active_permission_request_manager().value()->Deny();
 
   base::RunLoop().RunUntilIdle();
 

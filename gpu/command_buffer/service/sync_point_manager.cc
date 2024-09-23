@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/service/sync_point_manager.h"
 
 #include <limits.h>
@@ -14,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "gpu/config/gpu_finch_features.h"
 
 namespace gpu {
 
@@ -119,21 +125,25 @@ void SyncPointOrderData::FinishProcessingOrderNumber(uint32_t order_num) {
     DCHECK_EQ(order_num, unprocessed_order_nums_.front());
     unprocessed_order_nums_.pop();
 
-    uint32_t next_order_num = 0;
-    if (!unprocessed_order_nums_.empty())
-      next_order_num = unprocessed_order_nums_.front();
-
-    while (!order_fence_queue_.empty()) {
-      const OrderFence& order_fence = order_fence_queue_.top();
-      // It's possible for the fence's order number to equal next order number.
-      // This happens when the wait was enqueued with an order number greater
-      // than the last unprocessed order number. So don't release the fence yet.
-      if (!next_order_num || order_fence.order_num < next_order_num) {
-        ensure_releases.push_back(order_fence);
-        order_fence_queue_.pop();
-        continue;
+    if (!sync_point_manager_->graph_validation_enabled()) {
+      uint32_t next_order_num = 0;
+      if (!unprocessed_order_nums_.empty()) {
+        next_order_num = unprocessed_order_nums_.front();
       }
-      break;
+
+      while (!order_fence_queue_.empty()) {
+        const OrderFence& order_fence = order_fence_queue_.top();
+        // It's possible for the fence's order number to equal next order
+        // number. This happens when the wait was enqueued with an order number
+        // greater than the last unprocessed order number. So don't release the
+        // fence yet.
+        if (!next_order_num || order_fence.order_num < next_order_num) {
+          ensure_releases.push_back(order_fence);
+          order_fence_queue_.pop();
+          continue;
+        }
+        break;
+      }
     }
   }
 
@@ -153,16 +163,22 @@ uint64_t SyncPointOrderData::ValidateReleaseOrderNumber(
   if (destroyed_)
     return 0;
 
+  if (sync_point_manager_->graph_validation_enabled()) {
+    return ++current_callback_id_;
+  }
+
   // We should have unprocessed order numbers which could potentially release
   // this fence.
-  if (unprocessed_order_nums_.empty())
+  if (unprocessed_order_nums_.empty()) {
     return 0;
+  }
 
   // We should have an unprocessed order number lower than the wait order
   // number for the wait to be valid. It's not possible for wait order number to
   // equal next unprocessed order number, but we handle that defensively.
-  if (wait_order_num <= unprocessed_order_nums_.front())
+  if (wait_order_num <= unprocessed_order_nums_.front()) {
     return 0;
+  }
 
   // So far it could be valid, but add an order fence guard to be sure it
   // gets released eventually.
@@ -208,8 +224,8 @@ void SyncPointClientState::Destroy() {
 std::vector<base::OnceClosure>
 SyncPointClientState::DestroyAndReturnCallbacks() {
   base::AutoLock lock(fence_sync_lock_);
-  DCHECK(sync_point_manager_);  // not destroyed
-  sync_point_manager_ = nullptr;
+  DCHECK(!destroyed_.IsSet());
+  destroyed_.Set();
   std::vector<base::OnceClosure> callbacks;
   callbacks.reserve(release_callback_queue_.size());
   while (!release_callback_queue_.empty()) {
@@ -224,7 +240,7 @@ SyncPointClientState::DestroyAndReturnCallbacks() {
 
 bool SyncPointClientState::Wait(const SyncToken& sync_token,
                                 base::OnceClosure callback) {
-  DCHECK(sync_point_manager_);  // not destroyed
+  DCHECK(!destroyed_.IsSet());
   // Validate that this Wait call is between BeginProcessingOrderNumber() and
   // FinishProcessingOrderNumber(), or else we may deadlock.
   DCHECK(order_data_->IsProcessingOrderNumber());
@@ -265,7 +281,8 @@ bool SyncPointClientState::WaitForRelease(uint64_t release,
     return true;
   }
 
-  DLOG(ERROR) << "Client waiting on non-existent sync token";
+  DLOG(ERROR)
+      << "Client waiting on non-existent sync token or sequence destroyed";
   return false;
 }
 
@@ -273,19 +290,50 @@ void SyncPointClientState::ReleaseFenceSync(uint64_t release) {
   // Validate that this Release call is between BeginProcessingOrderNumber() and
   // FinishProcessingOrderNumber(), or else we may deadlock.
   DCHECK(order_data_->IsProcessingOrderNumber());
-  DCHECK(sync_point_manager_)
+  DCHECK(!destroyed_.IsSet())
       << "Attempting to release fence on destroyed client state.";
-  ReleaseFenceSyncHelper(release);
+
+  EnsureFenceSyncReleased(release, ReleaseCause::kExplicitClientRelease);
 }
 
-void SyncPointClientState::ReleaseFenceSyncHelper(uint64_t release) {
+void SyncPointClientState::EnsureFenceSyncReleased(uint64_t release,
+                                                   ReleaseCause cause) {
   // Call callbacks without the lock to avoid possible deadlocks.
   std::vector<base::OnceClosure> callback_list;
   {
     base::AutoLock auto_lock(fence_sync_lock_);
 
+    // Check that in the ReleaseCause::kExplicitClientRelease case, the
+    // release count must be larger than previously-seen release count from the
+    // client.
+    //
+    // For the ReleaseCause::kTaskCompletionRelease case, we relax the check a
+    // little bit to allow the release count to be "no less than"
+    // previously-seen release count from the client. That is because currently
+    // for some clients consecutive tasks may specify the same task release
+    // number, if no new fence sync is inserted.
+    //
+    // Please also note that if forceful release has happened to resolve invalid
+    // waits, the current `fence_sync_release_` may be larger than `release`.
+    if ((cause == ReleaseCause::kExplicitClientRelease &&
+         release <= client_fence_sync_release_) ||
+        (cause == ReleaseCause::kTaskCompletionRelease &&
+         release < client_fence_sync_release_)) {
+      static constexpr char error_message[] =
+          "Client attempted to release a fence sync that has been released.";
+      if (!sync_point_manager_->suppress_fatal_log_for_testing()) {
+        LOG(DFATAL) << error_message;
+      } else {
+        LOG(ERROR) << error_message;
+      }
+    }
+
+    if (cause == ReleaseCause::kExplicitClientRelease ||
+        cause == ReleaseCause::kTaskCompletionRelease) {
+      client_fence_sync_release_ = release;
+    }
+
     if (release <= fence_sync_release_) {
-      DLOG(ERROR) << "Client submitted fence releases out of order.";
       DCHECK(release_callback_queue_.empty() ||
              release_callback_queue_.top().release_count > release);
       return;
@@ -307,6 +355,9 @@ void SyncPointClientState::ReleaseFenceSyncHelper(uint64_t release) {
 
 void SyncPointClientState::EnsureWaitReleased(uint64_t release,
                                               uint64_t callback_id) {
+  // This method should not be called if graph-based validation is enabled.
+  DCHECK(!sync_point_manager_->graph_validation_enabled());
+
   // Call callbacks without the lock to avoid possible deadlocks.
   base::OnceClosure callback;
 
@@ -346,7 +397,8 @@ void SyncPointClientState::EnsureWaitReleased(uint64_t release,
   }
 }
 
-SyncPointManager::SyncPointManager() {
+SyncPointManager::SyncPointManager()
+    : graph_validation_enabled_(features::IsSyncPointGraphValidationEnabled()) {
   // Order number 0 is treated as invalid, so increment the generator and return
   // positive order numbers in GenerateOrderNumber() from now on.
   order_num_generator_.GetNext();
@@ -416,10 +468,24 @@ void SyncPointManager::DestroySyncPointClientState(
   }
   // At this point, if SyncPointClientState::Wait is called, it will (correctly)
   // return false because client_state is removed from our map. It is safe to
-  // call the callbacks (assuming they don't reference any of the other
-  // SyncPointClientState methods that DCHECK(sync_point_manager_)).
+  // call the callbacks.
   for (auto& closure : callbacks) {
     std::move(closure).Run();
+  }
+}
+
+void SyncPointManager::EnsureFenceSyncReleased(const SyncToken& release,
+                                               ReleaseCause cause) {
+  scoped_refptr<SyncPointClientState> client_state;
+  {
+    base::AutoLock lock(lock_);
+    client_state = GetSyncPointClientState(release.namespace_id(),
+                                           release.command_buffer_id());
+  }
+  if (client_state) {
+    // This must be called without holding `lock_`, because it may call release
+    // callbacks which are not supposed to be called under `lock_`.
+    client_state->EnsureFenceSyncReleased(release.release_count(), cause);
   }
 }
 
@@ -497,16 +563,6 @@ bool SyncPointManager::WaitNonThreadSafe(
     base::OnceClosure callback) {
   return Wait(sync_token, sequence_id, wait_order_num,
               base::BindOnce(&RunOnThread, task_runner, std::move(callback)));
-}
-
-bool SyncPointManager::WaitOutOfOrder(const SyncToken& trusted_sync_token,
-                                      base::OnceClosure callback) {
-  // No order number associated with the current execution context, using
-  // UINT32_MAX will just assume the release is in the SyncPointClientState's
-  // order numbers to be executed. Null sequence id will be ignored for the
-  // deadlock early out check.
-  return Wait(trusted_sync_token, SequenceId(), UINT32_MAX,
-              std::move(callback));
 }
 
 uint32_t SyncPointManager::GenerateOrderNumber() {

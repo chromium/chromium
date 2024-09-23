@@ -12,10 +12,6 @@
 #include "components/metrics/metrics_service_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/metrics/debug/structured/structured_metrics_debug_provider.h"
-#endif
-
 // UI Handler for chrome://metrics-internals.
 class MetricsInternalsHandler : public content::WebUIMessageHandler {
  public:
@@ -47,10 +43,6 @@ class MetricsInternalsHandler : public content::WebUIMessageHandler {
   void HandleFetchUmaSummary(const base::Value::List& args);
   void HandleFetchUmaLogsData(const base::Value::List& args);
   void HandleIsUsingMetricsServiceObserver(const base::Value::List& args);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void HandleFetchStructuredMetricsEvents(const base::Value::List& args);
-  void HandleFetchStructuredMetricsSummary(const base::Value::List& args);
-#endif
 
   void OnUmaLogCreatedOrEvent();
 
@@ -58,11 +50,6 @@ class MetricsInternalsHandler : public content::WebUIMessageHandler {
   // if the UMA metrics service has its own observer that has observed all
   // events since browser startup.
   std::unique_ptr<metrics::MetricsServiceObserver> uma_log_observer_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<metrics::structured::StructuredMetricsDebugProvider>
-      structured_metrics_debug_provider_;
-#endif
 
   // The callback subscription to |uma_log_observer_| that notifies the WebUI
   // of changes. When this subscription is destroyed, it is automatically

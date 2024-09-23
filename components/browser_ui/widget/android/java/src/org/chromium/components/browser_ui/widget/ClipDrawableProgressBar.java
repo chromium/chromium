@@ -111,7 +111,15 @@ public class ClipDrawableProgressBar extends ImageView {
     }
 
     /**
+     * @return Background color of the progress bar.
+     */
+    public int getBackgroundColor() {
+        return mBackgroundColor;
+    }
+
+    /**
      * Get progress bar drawing information.
+     *
      * @param drawingInfoOut An instance that the result will be written.
      */
     public void getDrawingInfo(DrawingInfo drawingInfoOut) {

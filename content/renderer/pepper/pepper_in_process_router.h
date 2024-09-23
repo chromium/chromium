@@ -83,7 +83,7 @@ class PepperInProcessRouter {
   void DispatchPluginMsg(IPC::Message* msg);
   bool SendToBrowser(IPC::Message* msg);
 
-  raw_ptr<RendererPpapiHostImpl, ExperimentalRenderer> host_impl_;
+  raw_ptr<RendererPpapiHostImpl> host_impl_;
 
   class Channel;
   std::unique_ptr<Channel> browser_channel_;

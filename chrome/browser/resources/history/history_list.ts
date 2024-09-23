@@ -105,6 +105,18 @@ export class HistoryListElement extends HistoryListElementBase {
       queryState: Object,
 
       actionMenuModel_: Object,
+
+      scrollTarget: {
+        type: Object,
+        observer: 'onScrollTargetChanged_',
+      },
+      scrollOffset: Number,
+
+      isEmpty: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: 'computeIsEmpty_(historyData_.length)',
+      },
     };
   }
 
@@ -113,23 +125,18 @@ export class HistoryListElement extends HistoryListElementBase {
       loadTimeData.getBoolean('allowDeletingHistory');
   private actionMenuModel_: ActionMenuModel|null = null;
   private resultLoadingDisabled_: boolean = false;
+  isEmpty: boolean;
   searchedTerm: string = '';
   selectedItems: Set<number> = new Set();
   pendingDelete: boolean = false;
   lastSelectedIndex: number;
   queryState: QueryState;
+  scrollTarget: HTMLElement = document.documentElement;
+  scrollOffset: number = 0;
 
   override connectedCallback() {
     super.connectedCallback();
-
-    // It is possible (eg, when middle clicking the reload button) for all other
-    // resize events to fire before the list is attached and can be measured.
-    // Adding another resize here ensures it will get sized correctly.
-    this.$['infinite-list'].notifyResize();
-    this.$['infinite-list'].scrollTarget = this;
-    this.$['scroll-threshold'].scrollTarget = this;
     this.setAttribute('aria-roledescription', this.i18n('ariaRoleDescription'));
-
     this.addWebUiListener('history-deleted', () => this.onHistoryDeleted_());
   }
 
@@ -272,6 +279,11 @@ export class HistoryListElement extends HistoryListElementBase {
         this.shadowRoot!.querySelector<HTMLElement>('.action-button');
     assert(button);
     button.focus();
+  }
+
+  // Notifies the iron-list of this element being potentially resized.
+  notifyResize() {
+    this.$['infinite-list'].notifyResize();
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -605,6 +617,26 @@ export class HistoryListElement extends HistoryListElementBase {
    */
   private onHistoryDataChanged_() {
     this.$['infinite-list'].fire('iron-resize');
+  }
+
+  private getHistoryEmbeddingsMatches_(): HistoryEntry[] {
+    return this.historyData_.slice(0, 3);
+  }
+
+  private showHistoryEmbeddings_(): boolean {
+    return loadTimeData.getBoolean('enableHistoryEmbeddings') &&
+        !!this.searchedTerm && this.historyData_?.length > 0;
+  }
+
+  private onScrollTargetChanged_() {
+    // It is possible (eg, when middle clicking the reload button) for all other
+    // resize events to fire before the list is attached and can be measured.
+    // Adding another resize here ensures it will get sized correctly.
+    this.$['infinite-list'].notifyResize();
+  }
+
+  private computeIsEmpty_() {
+    return this.historyData_.length === 0;
   }
 }
 

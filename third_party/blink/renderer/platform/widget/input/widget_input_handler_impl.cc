@@ -17,7 +17,6 @@
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/widget/input/frame_widget_input_handler_impl.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
@@ -166,13 +165,15 @@ void WidgetInputHandlerImpl::RequestCompositionUpdates(bool immediate_request,
 void WidgetInputHandlerImpl::DispatchEvent(
     std::unique_ptr<WebCoalescedInputEvent> event,
     DispatchEventCallback callback) {
-  TRACE_EVENT0("input", "WidgetInputHandlerImpl::DispatchEvent");
+  TRACE_EVENT0("input,input.scrolling",
+               "WidgetInputHandlerImpl::DispatchEvent");
   input_handler_manager_->DispatchEvent(std::move(event), std::move(callback));
 }
 
 void WidgetInputHandlerImpl::DispatchNonBlockingEvent(
     std::unique_ptr<WebCoalescedInputEvent> event) {
-  TRACE_EVENT0("input", "WidgetInputHandlerImpl::DispatchNonBlockingEvent");
+  TRACE_EVENT0("input,input.scrolling",
+               "WidgetInputHandlerImpl::DispatchNonBlockingEvent");
   input_handler_manager_->DispatchEvent(std::move(event),
                                         DispatchEventCallback());
 }
@@ -221,9 +222,10 @@ void WidgetInputHandlerImpl::GetFrameWidgetInputHandler(
 void WidgetInputHandlerImpl::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
-    bool animate) {
+    bool animate,
+    const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info) {
   input_handler_manager_->UpdateBrowserControlsState(constraints, current,
-                                                     animate);
+                                                     animate, offset_tags_info);
 }
 
 void WidgetInputHandlerImpl::RunOnMainThread(base::OnceClosure closure) {

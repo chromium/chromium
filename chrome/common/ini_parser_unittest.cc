@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/common/ini_parser.h"
+
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/values.h"
-#include "chrome/common/ini_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -41,9 +43,9 @@ class TestINIParser : public INIParser {
   }
 
  private:
-  void HandleTriplet(base::StringPiece section,
-                     base::StringPiece key,
-                     base::StringPiece value) override {
+  void HandleTriplet(std::string_view section,
+                     std::string_view key,
+                     std::string_view value) override {
     EXPECT_EQ(expected_triplets_[pair_i_].section, section);
     EXPECT_EQ(expected_triplets_[pair_i_].key, key);
     EXPECT_EQ(expected_triplets_[pair_i_].value, value);

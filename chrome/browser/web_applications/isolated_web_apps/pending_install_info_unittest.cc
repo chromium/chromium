@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -84,39 +84,37 @@ TEST_F(PendingInstallInfoTest, DifferentInstancesForDifferentWebContents) {
 TEST_F(PendingInstallInfoTest, CanSetAndGetIsolatedWebAppLocation) {
   auto& install_info =
       IsolatedWebAppPendingInstallInfo::FromWebContents(web_contents());
-  install_info.set_isolated_web_app_location(DevModeProxy{
-      .proxy_url = url::Origin::Create(GURL("https://example.com"))});
+  install_info.set_source(
+      IwaSourceProxy{url::Origin::Create(GURL("https://example.com"))});
 
-  EXPECT_THAT(
-      install_info.location(),
-      Optional(Eq(IsolatedWebAppLocation(DevModeProxy{
-          .proxy_url = url::Origin::Create(GURL("https://example.com"))}))));
+  EXPECT_THAT(install_info.source(),
+              Optional(Eq(IwaSourceProxy{
+                  url::Origin::Create(GURL("https://example.com"))})));
 }
 
 TEST_F(PendingInstallInfoTest, CanSetAndGetAnotherIsolatedWebAppLocation) {
   auto& install_info =
       IsolatedWebAppPendingInstallInfo::FromWebContents(web_contents());
-  install_info.set_isolated_web_app_location(DevModeBundle{
-      .path = base::FilePath{FILE_PATH_LITERAL("some testing bundle path")}});
+  install_info.set_source(IwaSourceBundleProdMode{
+      base::FilePath{FILE_PATH_LITERAL("some testing bundle path")}});
 
-  EXPECT_THAT(install_info.location(),
-              Optional(Eq(IsolatedWebAppLocation(
-                  DevModeBundle{.path = base::FilePath{FILE_PATH_LITERAL(
-                                    "some testing bundle path")}}))));
+  EXPECT_THAT(install_info.source(),
+              Optional(Eq(IwaSourceBundleProdMode{base::FilePath{
+                  FILE_PATH_LITERAL("some testing bundle path")}})));
 }
 
 TEST_F(PendingInstallInfoTest, IsolatedWebAppLocationIsEmptyAfterReset) {
   auto& install_info =
       IsolatedWebAppPendingInstallInfo::FromWebContents(web_contents());
 
-  EXPECT_THAT(install_info.location().has_value(), IsFalse());
+  EXPECT_THAT(install_info.source().has_value(), IsFalse());
 
-  install_info.set_isolated_web_app_location(DevModeBundle{
-      .path = base::FilePath{FILE_PATH_LITERAL("some testing bundle path")}});
+  install_info.set_source(IwaSourceBundleProdMode{
+      base::FilePath{FILE_PATH_LITERAL("some testing bundle path")}});
 
-  install_info.ResetIsolatedWebAppLocation();
+  install_info.ResetSource();
 
-  EXPECT_THAT(install_info.location().has_value(), IsFalse());
+  EXPECT_THAT(install_info.source().has_value(), IsFalse());
 }
 
 }  // namespace

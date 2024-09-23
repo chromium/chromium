@@ -29,17 +29,13 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
-#include "third_party/blink/renderer/platform/wtf/bit_field.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-class ComputedStyle;
 enum class DynamicRestyleFlags;
 enum class ElementFlags;
-class ElementRareData;
 class FlatTreeNodeData;
-class LayoutObject;
 class MutationObserverRegistration;
 class NodeListsNodeData;
 class NodeRareData;
@@ -75,97 +71,17 @@ class NodeMutationObserverData final
   HeapHashSet<Member<MutationObserverRegistration>> transient_registry_;
 };
 
-class NodeData : public GarbageCollected<NodeData> {
+class NodeRareData : public GarbageCollected<NodeRareData> {
  public:
   enum {
     kConnectedFrameCountBits = 10,  // Must fit Page::maxNumberOfFrames.
     kNumberOfElementFlags = 8,
-    kNumberOfDynamicRestyleFlags = 15
+    kNumberOfDynamicRestyleFlags = 14
+    // 0 bits remaining.
   };
 
-  // NOTE: This can only distinguish between NodeRareData and ElementRareData,
-  // not a regular NodeData (because we never need to do that).
-  enum class ClassType : uint8_t {
-    kNodeRareData,
-    kElementRareData,
-    kLastType = kElementRareData,
-  };
-
-  virtual ~NodeData();
-  virtual void Trace(Visitor*) const;
-
-  CORE_EXPORT NodeData(LayoutObject*, const ComputedStyle* computed_style);
-  NodeData(const NodeData&) = delete;
-  NodeData(NodeData&&);
-
-  LayoutObject* GetLayoutObject() const { return layout_object_.Get(); }
-  void SetLayoutObject(LayoutObject* layout_object) {
-    DCHECK_NE(&SharedEmptyData(), this);
-    layout_object_ = layout_object;
-  }
-
-  const ComputedStyle* GetComputedStyle() const {
-    return computed_style_.Get();
-  }
-  void SetComputedStyle(const ComputedStyle* computed_style);
-
-  void SetIsPseudoElement(bool value) { is_pseudo_element_ = value; }
-  bool IsPseudoElement() const { return is_pseudo_element_; }
-
-  static NodeData& SharedEmptyData();
-  bool IsSharedEmptyData() { return this == &SharedEmptyData(); }
-
- protected:
-  using BitField = WTF::ConcurrentlyReadBitField<uint16_t>;
-  using RestyleFlags =
-      BitField::DefineFirstValue<uint16_t, kNumberOfDynamicRestyleFlags>;
-  static constexpr size_t kClassTypeBits = 1;
-  static_assert(static_cast<size_t>(ClassType::kLastType) <
-                    ((size_t{1} << kClassTypeBits)),
-                "Too many subtypes to fit into bitfield.");
-  using ClassTypeData =
-      RestyleFlags::DefineNextValue<uint8_t,
-                                    kClassTypeBits,
-                                    WTF::BitFieldValueConstness::kConst>;
-
-  ClassType GetClassType() const {
-    return static_cast<ClassType>(bit_field_.get_concurrently<ClassTypeData>());
-  }
-
- protected:
-  subtle::UncompressedMember<const ComputedStyle> computed_style_;
-  Member<LayoutObject> layout_object_;
-  BitField bit_field_;
-  bool is_pseudo_element_ = false;
-  // 8 free bits here (or 16, if moving is_pseudo_element_ into bit_field_).
-
-  friend struct DowncastTraits<NodeRareData>;
-  friend struct DowncastTraits<ElementRareData>;
-};
-
-template <>
-struct DowncastTraits<NodeRareData> {
-  static bool AllowFrom(const NodeData& node_data) {
-    return node_data.GetClassType() == NodeData::ClassType::kNodeRareData;
-  }
-};
-
-template <>
-struct DowncastTraits<ElementRareData> {
-  static bool AllowFrom(const NodeData& node_data) {
-    return node_data.GetClassType() == NodeData::ClassType::kElementRareData;
-  }
-};
-
-class NodeRareData : public NodeData {
- public:
-  explicit NodeRareData(NodeData&& node_layout_data)
-      : NodeData(std::move(node_layout_data)),
-        connected_frame_count_(0),
-        element_flags_(0) {
-    bit_field_.set<ClassTypeData>(
-        ClassTypeData::encode(static_cast<uint8_t>(ClassType::kNodeRareData)));
-  }
+  NodeRareData() = default;
+  virtual ~NodeRareData() = default;
   NodeRareData(const NodeRareData&) = delete;
   NodeRareData& operator=(const NodeRareData&) = delete;
 
@@ -216,15 +132,13 @@ class NodeRareData : public NodeData {
   }
 
   bool HasRestyleFlag(DynamicRestyleFlags mask) const {
-    return bit_field_.get<RestyleFlags>() & static_cast<uint16_t>(mask);
+    return restyle_flags_ & static_cast<uint16_t>(mask);
   }
   void SetRestyleFlag(DynamicRestyleFlags mask) {
-    bit_field_.set<RestyleFlags>(bit_field_.get<RestyleFlags>() |
-                                 static_cast<uint16_t>(mask));
-    CHECK(bit_field_.get<RestyleFlags>());
+    restyle_flags_ |= static_cast<uint16_t>(mask);
   }
-  bool HasRestyleFlags() const { return bit_field_.get<RestyleFlags>(); }
-  void ClearRestyleFlags() { bit_field_.set<RestyleFlags>(0); }
+  bool HasRestyleFlags() const { return restyle_flags_; }
+  void ClearRestyleFlags() { restyle_flags_ = 0u; }
 
   void RegisterScrollTimeline(ScrollTimeline*);
   void UnregisterScrollTimeline(ScrollTimeline*);
@@ -232,21 +146,14 @@ class NodeRareData : public NodeData {
 
   void AddDOMPart(Part& part);
   void RemoveDOMPart(Part& part);
-  PartsList* GetDOMParts() const { return dom_parts_.Get(); }
+  PartsList* GetDOMParts() const;
 
-  void Trace(blink::Visitor*) const override;
+  virtual void Trace(Visitor*) const;
 
  protected:
-  NodeRareData(ClassType class_type, NodeData&& node_layout_data)
-      : NodeData(std::move(node_layout_data)),
-        connected_frame_count_(0),
-        element_flags_(0) {
-    bit_field_.set<ClassTypeData>(
-        ClassTypeData::encode(static_cast<uint16_t>(class_type)));
-  }
-
-  uint16_t connected_frame_count_ : kConnectedFrameCountBits;
-  uint16_t element_flags_ : kNumberOfElementFlags;
+  uint32_t restyle_flags_ : kNumberOfDynamicRestyleFlags = 0u;
+  uint32_t connected_frame_count_ : kConnectedFrameCountBits = 0u;
+  uint32_t element_flags_ : kNumberOfElementFlags = 0u;
 
  private:
   NodeListsNodeData& CreateNodeLists();

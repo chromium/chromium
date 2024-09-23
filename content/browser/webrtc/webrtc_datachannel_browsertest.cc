@@ -28,8 +28,8 @@ class WebRtcDataChannelTest : public WebRtcContentBrowserTestBase {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebRtcContentBrowserTestBase::SetUpCommandLine(command_line);
     AppendUseFakeUIForMediaStreamFlag();
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        blink::switches::kJavaScriptFlags, kJavaScriptFeaturesNeeded);
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    kJavaScriptFeaturesNeeded);
   }
 };
 

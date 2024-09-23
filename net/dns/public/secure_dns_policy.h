@@ -18,6 +18,8 @@ enum class SecureDnsPolicy {
   kBootstrap,
 };
 
+const char* SecureDnsPolicyToDebugString(SecureDnsPolicy secure_dns_policy);
+
 }  // namespace net
 
 #endif  // NET_DNS_PUBLIC_SECURE_DNS_POLICY_H_

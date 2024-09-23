@@ -4,13 +4,15 @@
 
 #include "components/viz/host/host_frame_sink_manager.h"
 
+#include <cstddef>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -19,6 +21,8 @@
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/renderer_settings_creation.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_manager_test_api.mojom-forward.h"
+#include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom.h"
 #include "services/viz/privileged/mojom/compositing/renderer_settings.mojom.h"
 
 namespace viz {
@@ -38,9 +42,10 @@ void HostFrameSinkManager::BindAndSetManager(
     mojo::PendingReceiver<mojom::FrameSinkManagerClient> receiver,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojo::PendingRemote<mojom::FrameSinkManager> remote) {
-  DCHECK(!receiver_.is_bound());
+  DCHECK(!frame_sink_manager_client_receiver_.is_bound());
 
-  receiver_.Bind(std::move(receiver), std::move(task_runner));
+  frame_sink_manager_client_receiver_.Bind(std::move(receiver),
+                                           std::move(task_runner));
   frame_sink_manager_remote_.Bind(std::move(remote));
   frame_sink_manager_ = frame_sink_manager_remote_.get();
 
@@ -167,15 +172,18 @@ void HostFrameSinkManager::CreateRootCompositorFrameSink(
       maybe_wait_on_destruction && params->gpu_compositing;
 
   frame_sink_manager_->CreateRootCompositorFrameSink(std::move(params));
-  display_hit_test_query_[frame_sink_id] = std::make_unique<HitTestQuery>();
+  display_hit_test_query_[frame_sink_id] =
+      std::make_unique<HitTestQuery>(std::nullopt);
 }
 
 void HostFrameSinkManager::CreateCompositorFrameSink(
     const FrameSinkId& frame_sink_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
-    mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
+    mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
+    input::mojom::RenderInputRouterConfigPtr render_input_router_config) {
   CreateFrameSink(frame_sink_id, /*bundle_id=*/std::nullopt,
-                  std::move(receiver), std::move(client));
+                  std::move(receiver), std::move(client),
+                  std::move(render_input_router_config));
 }
 
 void HostFrameSinkManager::CreateFrameSinkBundle(
@@ -192,14 +200,15 @@ void HostFrameSinkManager::CreateBundledCompositorFrameSink(
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
     mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
   CreateFrameSink(frame_sink_id, bundle_id, std::move(receiver),
-                  std::move(client));
+                  std::move(client), /* render_input_router_config= */ nullptr);
 }
 
 void HostFrameSinkManager::CreateFrameSink(
     const FrameSinkId& frame_sink_id,
     std::optional<FrameSinkBundleId> bundle_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
-    mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) {
+    mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
+    input::mojom::RenderInputRouterConfigPtr render_input_router_config) {
   FrameSinkData& data = frame_sink_data_map_[frame_sink_id];
   DCHECK(data.IsFrameSinkRegistered());
 
@@ -212,9 +221,9 @@ void HostFrameSinkManager::CreateFrameSink(
 
   data.is_root = false;
   data.has_created_compositor_frame_sink = true;
-
   frame_sink_manager_->CreateCompositorFrameSink(
-      frame_sink_id, bundle_id, std::move(receiver), std::move(client));
+      frame_sink_id, bundle_id, std::move(receiver), std::move(client),
+      std::move(render_input_router_config));
 }
 
 void HostFrameSinkManager::OnFrameTokenChanged(
@@ -257,7 +266,7 @@ void HostFrameSinkManager::UnregisterFrameSinkHierarchy(
     const FrameSinkId& child_frame_sink_id) {
   // Unregister and clear the stored parent.
   FrameSinkData& parent_data = frame_sink_data_map_[parent_frame_sink_id];
-  size_t num_erased = base::Erase(parent_data.children, child_frame_sink_id);
+  size_t num_erased = std::erase(parent_data.children, child_frame_sink_id);
   CHECK_EQ(num_erased, 1u);
 
   if (parent_data.IsEmpty())
@@ -300,6 +309,24 @@ void HostFrameSinkManager::RequestCopyOfOutput(
                                            capture_exact_surface_id);
 }
 
+void HostFrameSinkManager::SetOnCopyOutputReadyCallback(
+    const blink::SameDocNavigationScreenshotDestinationToken& destination_token,
+    ScreenshotDestinationReadyCallback callback) {
+  CHECK(screenshot_destinations_.find(destination_token) ==
+        screenshot_destinations_.end());
+  screenshot_destinations_[destination_token] = std::move(callback);
+}
+
+void HostFrameSinkManager::InvalidateCopyOutputReadyCallback(
+    const blink::SameDocNavigationScreenshotDestinationToken&
+        destination_token) {
+  auto it = screenshot_destinations_.find(destination_token);
+  if (it == screenshot_destinations_.end()) {
+    return;
+  }
+  screenshot_destinations_.erase(it);
+}
+
 void HostFrameSinkManager::Throttle(const std::vector<FrameSinkId>& ids,
                                     base::TimeDelta interval) {
   frame_sink_manager_->Throttle(ids, interval);
@@ -324,19 +351,29 @@ void HostFrameSinkManager::RemoveHitTestRegionObserver(
   observers_.RemoveObserver(observer);
 }
 
+const DisplayHitTestQueryMap& HostFrameSinkManager::GetDisplayHitTestQuery()
+    const {
+  return display_hit_test_query_;
+}
+
 void HostFrameSinkManager::OnConnectionLost() {
   connection_was_lost_ = true;
 
-  receiver_.reset();
-  // frame_sink_manager_ points to |frame_sink_manager_remote_| if using mojo.
-  // Set frame_sink_manager_ to nullptr before
+  frame_sink_manager_client_receiver_.reset();
+
+  // `frame_sink_manager_` points to `frame_sink_manager_remote_` if using mojo.
+  // Set `frame_sink_manager_` to nullptr before
   // frame_sink_manager_remote_.reset() to avoid dangling ptr.
   frame_sink_manager_ = nullptr;
   frame_sink_manager_remote_.reset();
 
+  metrics_recorder_remote_.reset();
+
+#if BUILDFLAG(IS_ANDROID)
   // Any cached back buffers are invalid once the connection to the
   // FrameSinkManager is lost.
   min_valid_cache_back_buffer_id_ = next_cache_back_buffer_id_;
+#endif
 
   // CompositorFrameSinks are lost along with the connection to
   // mojom::FrameSinkManager.
@@ -417,10 +454,24 @@ void HostFrameSinkManager::VerifyThreadIdsDoNotBelongToHost(
 }
 #endif
 
+void HostFrameSinkManager::OnScreenshotCaptured(
+    const blink::SameDocNavigationScreenshotDestinationToken& destination_token,
+    std::unique_ptr<CopyOutputResult> copy_output_result) {
+  auto it = screenshot_destinations_.find(destination_token);
+  if (it == screenshot_destinations_.end()) {
+    return;
+  }
+  auto callback = std::move(it->second);
+  screenshot_destinations_.erase(it);
+  std::move(callback).Run(
+      copy_output_result->ScopedAccessSkBitmap().GetOutScopedBitmap());
+}
+
+#if BUILDFLAG(IS_ANDROID)
 uint32_t HostFrameSinkManager::CacheBackBufferForRootSink(
     const FrameSinkId& root_sink_id) {
   auto it = frame_sink_data_map_.find(root_sink_id);
-  DCHECK(it != frame_sink_data_map_.end());
+  CHECK(it != frame_sink_data_map_.end(), base::NotFatalUntil::M130);
   DCHECK(it->second.is_root);
   DCHECK(it->second.IsFrameSinkRegistered());
   DCHECK(frame_sink_manager_remote_);
@@ -442,10 +493,12 @@ void HostFrameSinkManager::EvictCachedBackBuffer(uint32_t cache_id) {
   mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync_call;
   frame_sink_manager_remote_->EvictBackBuffer(cache_id);
 }
+#endif
 
 void HostFrameSinkManager::CreateHitTestQueryForSynchronousCompositor(
     const FrameSinkId& frame_sink_id) {
-  display_hit_test_query_[frame_sink_id] = std::make_unique<HitTestQuery>();
+  display_hit_test_query_[frame_sink_id] =
+      std::make_unique<HitTestQuery>(std::nullopt);
 }
 void HostFrameSinkManager::EraseHitTestQueryForSynchronousCompositor(
     const FrameSinkId& frame_sink_id) {
@@ -458,17 +511,39 @@ void HostFrameSinkManager::UpdateDebugRendererSettings(
   frame_sink_manager_->UpdateDebugRendererSettings(debug_settings);
 }
 
-void HostFrameSinkManager::StartFrameCountingForTest(
-    base::TimeTicks start_time,
-    base::TimeDelta bucket_size) {
-  frame_sink_manager_->StartFrameCountingForTest(start_time,  // IN-TEST
-                                                 bucket_size);
+mojom::FrameSinksMetricsRecorder&
+HostFrameSinkManager::GetFrameSinksMetricsRecorderForTest() {
+  if (metrics_recorder_remote_) {
+    return *metrics_recorder_remote_.get();
+  }
+
+  CHECK(frame_sink_manager_);
+  mojo::PendingRemote<mojom::FrameSinksMetricsRecorder> metric_recorder;
+  frame_sink_manager_->CreateMetricsRecorderForTest(  // IN-TEST
+      metric_recorder.InitWithNewPipeAndPassReceiver());
+  metrics_recorder_remote_.Bind(std::move(metric_recorder));
+
+  return *metrics_recorder_remote_.get();
 }
 
-void HostFrameSinkManager::StopFrameCountingForTest(
-    mojom::FrameSinkManager::StopFrameCountingForTestCallback callback) {
-  frame_sink_manager_->StopFrameCountingForTest(  // IN-TEST
-      std::move(callback));
+mojom::FrameSinkManagerTestApi&
+HostFrameSinkManager::GetFrameSinkManagerTestApi() {
+  if (test_api_remote_) {
+    return *test_api_remote_.get();
+  }
+
+  CHECK(frame_sink_manager_);
+  mojo::PendingRemote<mojom::FrameSinkManagerTestApi> test_api_recorder;
+  frame_sink_manager_->EnableFrameSinkManagerTestApi(  // IN-TEST
+      test_api_recorder.InitWithNewPipeAndPassReceiver());
+  test_api_remote_.Bind(std::move(test_api_recorder));
+
+  return *test_api_remote_.get();
+}
+
+void HostFrameSinkManager::ClearUnclaimedViewTransitionResources(
+    const blink::ViewTransitionToken& transition_token) {
+  frame_sink_manager_->ClearUnclaimedViewTransitionResources(transition_token);
 }
 
 HostFrameSinkManager::FrameSinkData::FrameSinkData() = default;

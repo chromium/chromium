@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -12,17 +13,16 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
-#include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
+#include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -30,6 +30,7 @@
 #include "components/performance_manager/public/user_tuning/tab_revisit_tracker.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
 
 using performance_manager::mechanism::PageDiscarder;
@@ -43,15 +44,11 @@ namespace {
 // TODO(sebmarchand): The only reason for a discard attempt to fail is if we try
 // to discard a prerenderer, remove this once we can detect if a PageNode is a
 // prerenderer in CanDiscard().
-class DiscardAttemptMarker : public NodeAttachedDataImpl<DiscardAttemptMarker> {
+class DiscardAttemptMarker
+    : public ExternalNodeAttachedDataImpl<DiscardAttemptMarker> {
  public:
-  struct Traits : public NodeAttachedDataInMap<PageNodeImpl> {};
-  ~DiscardAttemptMarker() override = default;
-
- private:
-  friend class ::performance_manager::NodeAttachedDataImpl<
-      DiscardAttemptMarker>;
   explicit DiscardAttemptMarker(const PageNodeImpl* page_node) {}
+  ~DiscardAttemptMarker() override = default;
 };
 
 const char kDescriberName[] = "PageDiscardingHelper";
@@ -69,7 +66,7 @@ NodeRssMap GetPageNodeRssEstimateKb(
   }
   NodeRssMap result(std::move(result_container));
 
-  // TODO(crbug/1240994): Use visitor to accumulate the result to avoid
+  // TODO(crbug.com/40194476): Use visitor to accumulate the result to avoid
   // allocating extra lists of frame nodes behind the scenes.
 
   // List all the processes associated with these page nodes.
@@ -83,7 +80,7 @@ NodeRssMap GetPageNodeRssEstimateKb(
   // Compute the resident set of each page by simply summing up the estimated
   // resident set of all its frames.
   for (const ProcessNode* process_node : process_nodes) {
-    base::flat_set<const FrameNode*> process_frames =
+    ProcessNode::NodeSetView<const FrameNode*> process_frames =
         process_node->GetFrameNodes();
     if (!process_frames.size()) {
       continue;
@@ -105,6 +102,18 @@ NodeRssMap GetPageNodeRssEstimateKb(
   return result;
 }
 
+void RecordDiscardedTabMetrics(const PageNodeSortProxy& candidate) {
+  // Logs a histogram entry to track the proportion of discarded tabs that
+  // were protected at the time of discard.
+  UMA_HISTOGRAM_BOOLEAN("Discarding.DiscardingProtectedTab",
+                        candidate.is_protected());
+
+  // Logs a histogram entry to track the proportion of discarded tabs that
+  // were focused at the time of discard.
+  UMA_HISTOGRAM_BOOLEAN("Discarding.DiscardingFocusedTab",
+                        candidate.is_focused());
+}
+
 }  // namespace
 
 PageDiscardingHelper::PageDiscardingHelper()
@@ -112,7 +121,7 @@ PageDiscardingHelper::PageDiscardingHelper()
 PageDiscardingHelper::~PageDiscardingHelper() = default;
 
 void PageDiscardingHelper::DiscardAPage(
-    base::OnceCallback<void(bool)> post_discard_cb,
+    DiscardCallback post_discard_cb,
     DiscardReason discard_reason,
     base::TimeDelta minimum_time_in_background) {
   DiscardMultiplePages(std::nullopt, false, std::move(post_discard_cb),
@@ -122,7 +131,7 @@ void PageDiscardingHelper::DiscardAPage(
 void PageDiscardingHelper::DiscardMultiplePages(
     std::optional<memory_pressure::ReclaimTarget> reclaim_target,
     bool discard_protected_tabs,
-    base::OnceCallback<void(bool)> post_discard_cb,
+    DiscardCallback post_discard_cb,
     DiscardReason discard_reason,
     base::TimeDelta minimum_time_in_background) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -135,14 +144,12 @@ void PageDiscardingHelper::DiscardMultiplePages(
   }
 
   // Ensures running post_discard_cb on early return.
-  auto split_callback = base::SplitOnceCallback(std::move(post_discard_cb));
-  base::ScopedClosureRunner run_post_discard_cb_on_return(
-      base::BindOnce(std::move(split_callback.first), false));
-
-  std::vector<const PageNode*> page_nodes = graph_->GetAllPageNodes();
+  absl::Cleanup run_post_discard_cb_on_return = [&post_discard_cb] {
+    std::move(post_discard_cb).Run(std::nullopt);
+  };
 
   std::vector<PageNodeSortProxy> candidates;
-  for (const auto* page_node : page_nodes) {
+  for (const PageNode* page_node : GetOwningGraph()->GetAllPageNodes()) {
     CanDiscardResult can_discard_result =
         CanDiscard(page_node, discard_reason, minimum_time_in_background);
     if (can_discard_result == CanDiscardResult::kMarked) {
@@ -156,6 +163,7 @@ void PageDiscardingHelper::DiscardMultiplePages(
                             is_protected, page_node->IsFocused(),
                             page_node->GetTimeSinceLastVisibilityChange());
   }
+
   // Sorts with ascending importance.
   std::sort(candidates.begin(), candidates.end());
 
@@ -172,6 +180,9 @@ void PageDiscardingHelper::DiscardMultiplePages(
   if (!reclaim_target) {
     const PageNode* oldest = candidates[0].page_node();
     discard_attempts.emplace_back(oldest);
+
+    // Record metrics about the tab that is about to be discarded.
+    RecordDiscardedTabMetrics(candidates[0]);
   } else {
     const uint64_t reclaim_target_kb_value = reclaim_target->target_kb;
     uint64_t total_reclaim_kb = 0;
@@ -182,6 +193,10 @@ void PageDiscardingHelper::DiscardMultiplePages(
       }
       const PageNode* node = candidate.page_node();
       discard_attempts.emplace_back(node);
+
+      // Record metrics about the tab that is about to be discarded.
+      RecordDiscardedTabMetrics(candidate);
+
       // The node RSS value is updated by ProcessMetricsDecorator periodically.
       // The RSS value is 0 for nodes that have never been updated, estimate the
       // RSS value to 80 MiB for these nodes. 80 MiB is the average
@@ -212,34 +227,45 @@ void PageDiscardingHelper::DiscardMultiplePages(
   }
 
   // Got to the end successfully, don't call the early return callback.
-  run_post_discard_cb_on_return.ReplaceClosure(base::DoNothing());
+  std::move(run_post_discard_cb_on_return).Cancel();
 
   page_discarder_->DiscardPageNodes(
       discard_attempts, discard_reason,
       base::BindOnce(&PageDiscardingHelper::PostDiscardAttemptCallback,
                      weak_factory_.GetWeakPtr(), reclaim_target,
-                     discard_protected_tabs, std::move(split_callback.second),
+                     discard_protected_tabs, std::move(post_discard_cb),
                      discard_reason, minimum_time_in_background));
 }
 
-void PageDiscardingHelper::ImmediatelyDiscardSpecificPage(
-    const PageNode* page_node,
+void PageDiscardingHelper::ImmediatelyDiscardMultiplePages(
+    const std::vector<const PageNode*>& page_nodes,
     DiscardReason discard_reason,
-    base::OnceCallback<void(bool)> post_discard_cb) {
-  // Pass 0 TimeDelta to bypass the minimum time in background check.
-  if (CanDiscard(page_node, discard_reason,
-                 /*minimum_time_in_background=*/base::TimeDelta()) ==
-      CanDiscardResult::kEligible) {
+    DiscardCallback post_discard_cb) {
+  std::vector<const PageNode*> eligible_nodes;
+  for (const PageNode* node : page_nodes) {
+    // Pass 0 TimeDelta to bypass the minimum time in background check.
+    if (CanDiscard(node, discard_reason,
+                   /*minimum_time_in_background=*/base::TimeDelta()) ==
+        CanDiscardResult::kEligible) {
+      eligible_nodes.emplace_back(node);
+    }
+  }
+
+  if (eligible_nodes.empty()) {
+    std::move(post_discard_cb).Run(std::nullopt);
+  } else {
     page_discarder_->DiscardPageNodes(
-        {page_node}, discard_reason,
+        std::move(eligible_nodes), discard_reason,
         base::BindOnce(
-            [](base::OnceCallback<void(bool)> callback,
+            [](DiscardCallback callback,
                const std::vector<PageDiscarder::DiscardEvent>& discard_events) {
-              std::move(callback).Run(discard_events.size() > 0);
+              std::optional<base::TimeTicks> first_discarded_at = std::nullopt;
+              if (discard_events.size() > 0) {
+                first_discarded_at = discard_events[0].discard_time;
+              }
+              std::move(callback).Run(first_discarded_at);
             },
             std::move(post_discard_cb)));
-  } else {
-    std::move(post_discard_cb).Run(false);
   }
 }
 
@@ -276,8 +302,6 @@ void PageDiscardingHelper::RemovesDiscardAttemptMarkerForTesting(
 
 void PageDiscardingHelper::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  graph_ = graph;
-  graph->RegisterObject(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            kDescriberName);
 }
@@ -285,8 +309,6 @@ void PageDiscardingHelper::OnPassedToGraph(Graph* graph) {
 void PageDiscardingHelper::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
-  graph->UnregisterObject(this);
-  graph_ = nullptr;
 }
 
 const PageLiveStateDecorator::Data*
@@ -303,16 +325,19 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
     return CanDiscardResult::kMarked;
   }
 
-  bool is_proactive;
+  bool is_proactive_or_suggested;
   switch (discard_reason) {
     case DiscardReason::EXTERNAL:
       // Always allow discards from external sources like extensions.
       return CanDiscardResult::kEligible;
     case DiscardReason::URGENT:
-      is_proactive = false;
+      is_proactive_or_suggested = false;
       break;
     case DiscardReason::PROACTIVE:
-      is_proactive = true;
+      is_proactive_or_suggested = true;
+      break;
+    case DiscardReason::SUGGESTED:
+      is_proactive_or_suggested = true;
       break;
   }
 
@@ -345,7 +370,7 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
   }
 
   // Don't discard tabs that don't have a main frame yet.
-  // TODO(crbug.com/1441986): Due to a state tracking bug, sometimes there are
+  // TODO(crbug.com/40910297): Due to a state tracking bug, sometimes there are
   // two frames marked "current". In that case GetMainFrameNode() returns an
   // arbitrary one, which may not have the url set correctly. As a workaround
   // ignore the returned frame and use GetMainFrameUrl() for the url.
@@ -356,9 +381,11 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
   // Only discard http(s) pages and internal pages to make sure that we don't
   // discard extensions or other PageNode that don't correspond to a tab.
   const GURL& main_frame_url = page_node->GetMainFrameUrl();
-  bool is_web_page_or_internal_page =
-      main_frame_url.SchemeIsHTTPOrHTTPS() || main_frame_url.SchemeIs("chrome");
-  if (!is_web_page_or_internal_page) {
+  bool is_web_page_or_internal_or_data_page =
+      main_frame_url.SchemeIsHTTPOrHTTPS() ||
+      main_frame_url.SchemeIs("chrome") ||
+      main_frame_url.SchemeIs(url::kDataScheme);
+  if (!is_web_page_or_internal_or_data_page) {
     return CanDiscardResult::kProtected;
   }
 
@@ -370,6 +397,12 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
   // proactive and urgent discards.
   if (IsPageOptedOutOfDiscarding(page_node->GetBrowserContextID(),
                                  main_frame_url)) {
+    return CanDiscardResult::kProtected;
+  }
+
+  if (is_proactive_or_suggested &&
+      page_node->GetNotificationPermissionStatus() ==
+          blink::mojom::PermissionStatus::GRANTED) {
     return CanDiscardResult::kProtected;
   }
 
@@ -419,14 +452,9 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
     if (live_state_data->IsDevToolsOpen()) {
       return CanDiscardResult::kProtected;
     }
-    if (is_proactive) {
-      if (live_state_data->IsContentSettingTypeAllowed(
-              ContentSettingsType::NOTIFICATIONS)) {
-        return CanDiscardResult::kProtected;
-      }
-      if (live_state_data->UpdatedTitleOrFaviconInBackground()) {
-        return CanDiscardResult::kProtected;
-      }
+    if (is_proactive_or_suggested &&
+        live_state_data->UpdatedTitleOrFaviconInBackground()) {
+      return CanDiscardResult::kProtected;
     }
 #if !BUILDFLAG(IS_CHROMEOS)
     // TODO(sebmarchand): Skip this check if the Entreprise memory limit is set.
@@ -454,10 +482,12 @@ bool PageDiscardingHelper::IsPageOptedOutOfDiscarding(
     const std::string& browser_context_id,
     const GURL& url) const {
   auto it = profiles_no_discard_patterns_.find(browser_context_id);
-  // TODO(crbug.com/1308741): Change the CHECK to a DCHECK in Sept 2022, after
-  // verifying that there are no crash reports.
-  CHECK(it != profiles_no_discard_patterns_.end());
-
+  if (it == profiles_no_discard_patterns_.end()) {
+    // There's can be narrow window between profile creation and when prefs are
+    // read, which is when `profiles_no_discard_patterns_` is populated. During
+    // that time assume that a page might be opted out of discarding.
+    return true;
+  }
   return !it->second->MatchURL(url).empty();
 }
 
@@ -486,7 +516,7 @@ base::Value::Dict PageDiscardingHelper::DescribePageNodeData(
       TabPageDecorator::FromPageNode(node);
   if (tab_handle) {
     TabRevisitTracker* revisit_tracker =
-        graph_->GetRegisteredObjectAs<TabRevisitTracker>();
+        GetOwningGraph()->GetRegisteredObjectAs<TabRevisitTracker>();
     CHECK(revisit_tracker);
     TabRevisitTracker::StateBundle state =
         revisit_tracker->GetStateForTabHandle(tab_handle);
@@ -499,7 +529,7 @@ base::Value::Dict PageDiscardingHelper::DescribePageNodeData(
 void PageDiscardingHelper::PostDiscardAttemptCallback(
     std::optional<memory_pressure::ReclaimTarget> reclaim_target,
     bool discard_protected_tabs,
-    base::OnceCallback<void(bool)> post_discard_cb,
+    DiscardCallback post_discard_cb,
     DiscardReason discard_reason,
     base::TimeDelta minimum_time_in_background,
     const std::vector<PageDiscarder::DiscardEvent>& discard_events) {
@@ -513,6 +543,9 @@ void PageDiscardingHelper::PostDiscardAttemptCallback(
     return;
   }
 
+  std::optional<base::TimeTicks> first_discarded_at =
+      discard_events[0].discard_time;
+
   for (const auto& discard_event : discard_events) {
     unnecessary_discard_monitor_.OnDiscard(
         discard_event.estimated_memory_freed_kb, discard_event.discard_time);
@@ -520,7 +553,7 @@ void PageDiscardingHelper::PostDiscardAttemptCallback(
 
   unnecessary_discard_monitor_.OnReclaimTargetEnd();
 
-  std::move(post_discard_cb).Run(true);
+  std::move(post_discard_cb).Run(first_discarded_at);
 }
 
 }  // namespace policies

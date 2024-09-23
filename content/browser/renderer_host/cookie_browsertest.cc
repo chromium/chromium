@@ -9,8 +9,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -37,6 +38,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/alternative_service.h"
+#include "net/storage_access_api/status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-test-utils.h"
@@ -67,9 +69,8 @@ void SetCookieDirect(WebContentsImpl* tab,
   options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
-  auto cookie_obj = net::CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), std::nullopt /* server_time */,
-      std::nullopt /* cookie_partition_key */);
+  auto cookie_obj = net::CanonicalCookie::CreateForTesting(url, cookie_line,
+                                                           base::Time::Now());
 
   base::RunLoop run_loop;
   tab->GetBrowserContext()
@@ -158,7 +159,12 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
   } else {
     EXPECT_EQ("http://a.test/",
               web_contents_http->GetSiteInstance()->GetSiteURL().spec());
-    EXPECT_EQ("https://a.test/",
+    // Create expected site url, including port if origin isolation is enabled.
+    std::string expected_site_url =
+        SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()
+            ? url::Origin::Create(https_url).GetURL().spec()
+            : std::string("https://a.test/");
+    EXPECT_EQ(expected_site_url,
               web_contents_https->GetSiteInstance()->GetSiteURL().spec());
   }
 
@@ -281,37 +287,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, SameSiteCookies) {
   EXPECT_EQ("none=1", GetCookieFromJS(b_iframe));
 }
 
-class TruncatedCookieBrowserTestP : public CookieBrowserTest,
-                                    public testing::WithParamInterface<bool> {
- public:
-  TruncatedCookieBrowserTestP() {
-    truncated_cookies_blocked_ = GetParam();
-
-    if (TruncatedCookiesBlocked()) {
-      feature_list_.InitAndEnableFeature(net::features::kBlockTruncatedCookies);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          net::features::kBlockTruncatedCookies);
-    }
-  }
-
-  bool TruncatedCookiesBlocked() { return truncated_cookies_blocked_; }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  bool truncated_cookies_blocked_;
-};
-
-INSTANTIATE_TEST_SUITE_P(TruncatedCookieBrowserTests,
-                         TruncatedCookieBrowserTestP,
-                         testing::Values(true, false));
-
-IN_PROC_BROWSER_TEST_P(TruncatedCookieBrowserTestP,
-                       CookieTruncatingCharFromJavascript) {
-  using std::string_literals::operator""s;
-
-  base::HistogramTester histogram;
-
+IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromJavascript) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ASSERT_TRUE(
@@ -329,51 +305,25 @@ IN_PROC_BROWSER_TEST_P(TruncatedCookieBrowserTestP,
     // Note that when truncation of this cookie string occurs, no histogram
     // entries get recorded because the code bails out early on the resulting
     // empty cookie string.
-    std::string cookie_string = ctl_string + "foo1=bar"s;
+    std::string cookie_string = base::StrCat({ctl_string, "foo1=bar"});
     SetCookieFromJS(frame, cookie_string);
 
     // Control char in the middle of the string.
-    cookie_string = "foo2=bar;"s + ctl_string + "httponly"s;
+    cookie_string = base::StrCat({"foo2=bar;", ctl_string, "httponly"});
     SetCookieFromJS(frame, cookie_string);
 
-    cookie_string = "foo3=ba"s + ctl_string + "r; httponly"s;
+    cookie_string = base::StrCat({"foo3=ba", ctl_string, "r; httponly"});
     SetCookieFromJS(frame, cookie_string);
 
     // Control char at the end of the string.
-    cookie_string = "foo4=bar;" + ctl_string;
+    cookie_string = base::StrCat({"foo4=bar;", ctl_string});
     SetCookieFromJS(frame, cookie_string);
   }
 
-  int expected_histogram_hit_count;
-  if (TruncatedCookiesBlocked()) {
-    EXPECT_EQ("", GetCookieFromJS(frame));
-    expected_histogram_hit_count = 0;
-  } else {
-    // Note: the last three test cases above are detectable as truncations
-    // (since the first case results in a failure that occurs before the
-    // histogram is recorded), so check for that below.
-    EXPECT_EQ("foo2=bar; foo3=ba; foo4=bar", GetCookieFromJS(frame));
-    expected_histogram_hit_count = 3;
-  }
-
-  FetchHistogramsFromChildProcesses();
-  histogram.ExpectBucketCount(
-      "Cookie.TruncatingCharacterInCookieString",
-      net::TruncatingCharacterInCookieStringType::kTruncatingCharNull,
-      expected_histogram_hit_count);
-  histogram.ExpectBucketCount(
-      "Cookie.TruncatingCharacterInCookieString",
-      net::TruncatingCharacterInCookieStringType::kTruncatingCharNewline,
-      expected_histogram_hit_count);
-  histogram.ExpectBucketCount(
-      "Cookie.TruncatingCharacterInCookieString",
-      net::TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed,
-      expected_histogram_hit_count);
+  EXPECT_EQ("", GetCookieFromJS(frame));
 }
 
 IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromHeaders) {
-  using std::string_literals::operator""s;
-
   std::string cookie_string;
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
@@ -386,7 +336,6 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromHeaders) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL http_url = embedded_test_server()->GetURL("/");
-  base::HistogramTester histogram;
 
   // Test scenarios where a control char may appear at start, middle and end of
   // a cookie line. Control char array with NULL (\x0), CR (\xD), and LF (xA)
@@ -396,34 +345,23 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromHeaders) {
     std::string ctl_string(1, test);
 
     // ctrl char at start of string
-    cookie_string = ctl_string + "foo=bar"s;
+    cookie_string = base::StrCat({ctl_string, "foo=bar"});
     EXPECT_TRUE(NavigateToURL(shell(), http_url));
 
     // ctrl char at middle of string
-    cookie_string = "foo=bar;"s + ctl_string + "httponly"s;
+    cookie_string = base::StrCat({"foo=bar;", ctl_string, "httponly"});
     EXPECT_TRUE(NavigateToURL(shell(), http_url));
 
-    cookie_string = "foo=ba"s + ctl_string + "r; httponly"s;
+    cookie_string = base::StrCat({"foo=ba", ctl_string, "r; httponly"});
     EXPECT_TRUE(NavigateToURL(shell(), http_url));
 
     // ctrl char at end of string
-    cookie_string = "foo=bar;"s + "httponly;"s + ctl_string;
+    cookie_string = base::StrCat({"foo=bar;", "httponly;", ctl_string});
     EXPECT_TRUE(NavigateToURL(shell(), http_url));
   }
   // Test if there are multiple control characters that terminate.
-  cookie_string = "foo=bar;\xA\xDhttponly"s;
+  cookie_string = "foo=bar;\xA\xDhttponly";
   EXPECT_TRUE(NavigateToURL(shell(), http_url));
-
-  FetchHistogramsFromChildProcesses();
-  histogram.ExpectBucketCount(
-      "Cookie.TruncatingCharacterInCookieString",
-      net::TruncatingCharacterInCookieStringType::kTruncatingCharNull, 0);
-  histogram.ExpectBucketCount(
-      "Cookie.TruncatingCharacterInCookieString",
-      net::TruncatingCharacterInCookieStringType::kTruncatingCharNewline, 0);
-  histogram.ExpectBucketCount(
-      "Cookie.TruncatingCharacterInCookieString",
-      net::TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed, 0);
 }
 
 class RestrictedCookieManagerInterceptor
@@ -438,27 +376,30 @@ class RestrictedCookieManagerInterceptor
     override_url_ = std::move(maybe_url);
   }
 
-  void SetCookieFromString(const GURL& url,
-                           const net::SiteForCookies& site_for_cookies,
-                           const url::Origin& top_frame_origin,
-                           bool has_storage_access,
-                           const std::string& cookie,
-                           SetCookieFromStringCallback callback) override {
+  void SetCookieFromString(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_frame_origin,
+      net::StorageAccessApiStatus storage_access_api_status,
+      const std::string& cookie,
+      SetCookieFromStringCallback callback) override {
     GetForwardingInterface()->SetCookieFromString(
-        URLToUse(url), site_for_cookies, top_frame_origin, has_storage_access,
-        std::move(cookie), std::move(callback));
+        URLToUse(url), site_for_cookies, top_frame_origin,
+        storage_access_api_status, std::move(cookie), std::move(callback));
   }
 
   void GetCookiesString(const GURL& url,
                         const net::SiteForCookies& site_for_cookies,
                         const url::Origin& top_frame_origin,
-                        bool has_storage_access,
+                        net::StorageAccessApiStatus storage_access_api_status,
                         bool get_version_shared_memory,
                         bool is_ad_tagged,
+                        bool force_disable_third_party_cookies,
                         GetCookiesStringCallback callback) override {
     GetForwardingInterface()->GetCookiesString(
-        URLToUse(url), site_for_cookies, top_frame_origin, has_storage_access,
-        get_version_shared_memory, is_ad_tagged, std::move(callback));
+        URLToUse(url), site_for_cookies, top_frame_origin,
+        storage_access_api_status, get_version_shared_memory, is_ad_tagged,
+        force_disable_third_party_cookies, std::move(callback));
   }
 
  private:
@@ -517,7 +458,7 @@ class CookieStoreContentBrowserClient
 
 // Cookie access in loader is locked to a particular origin, so messages
 // for wrong URLs are rejected.
-// TODO(https://crbug.com/954603): This should actually result in renderer
+// TODO(crbug.com/41453892): This should actually result in renderer
 // kills.
 IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
   // The code under test is only active under site isolation.

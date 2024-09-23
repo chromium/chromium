@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 
+#import "base/location.h"
 #import "base/memory/singleton.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -87,7 +88,7 @@ class ConnectionTypeOverrider {
     return error;
   }
   for (const GURL& url : model->GetKeys()) {
-    model->RemoveEntryByURL(url);
+    model->RemoveEntryByURL(url, FROM_HERE);
   }
   return nil;
 }

@@ -10,26 +10,23 @@ import unittest.mock as mock
 
 import serve_repo
 
-from common import REPO_ALIAS
+from common import REPO_ALIAS, register_device_args
 
 _REPO_DIR = 'test_repo_dir'
 _REPO_NAME = 'test_repo_name'
 _TARGET = 'test_target'
 
 
+# Tests private functions.
+# pylint: disable=protected-access
 class ServeRepoTest(unittest.TestCase):
     """Unittests for serve_repo.py."""
 
-    def setUp(self) -> None:
-        self._namespace = argparse.Namespace(repo=_REPO_DIR,
-                                             repo_name=_REPO_NAME,
-                                             target_id=_TARGET)
-
     @mock.patch('serve_repo.run_ffx_command')
-    def test_run_serve_cmd_start(self, mock_ffx) -> None:
-        """Test |run_serve_cmd| function for start."""
+    def test_start_server(self, mock_ffx) -> None:
+        """Test |_start_serving| function for start."""
 
-        serve_repo.run_serve_cmd('start', self._namespace)
+        serve_repo._start_serving(_REPO_DIR, _REPO_NAME, _TARGET)
         self.assertEqual(mock_ffx.call_count, 4)
         second_call = mock_ffx.call_args_list[1]
         self.assertEqual(mock.call(cmd=['repository', 'server', 'start']),
@@ -48,10 +45,10 @@ class ServeRepoTest(unittest.TestCase):
                       target_id=_TARGET), fourth_call)
 
     @mock.patch('serve_repo.run_ffx_command')
-    def test_run_serve_cmd_stop(self, mock_ffx) -> None:
-        """Test |run_serve_cmd| function for stop."""
+    def test_stop_server(self, mock_ffx) -> None:
+        """Test |_stop_serving| function for stop."""
 
-        serve_repo.run_serve_cmd('stop', self._namespace)
+        serve_repo._stop_serving(_REPO_NAME, _TARGET)
         self.assertEqual(mock_ffx.call_count, 3)
         first_call = mock_ffx.call_args_list[0]
         self.assertEqual(
@@ -68,47 +65,21 @@ class ServeRepoTest(unittest.TestCase):
             mock.call(cmd=['repository', 'server', 'stop'], check=False),
             third_call)
 
-    @mock.patch('serve_repo.serve_repository')
-    def test_run_serve_cmd_run(self, mock_serve) -> None:
-        """Test |run_serve_cmd| function for run."""
-
-        with mock.patch('common.time.sleep', side_effect=KeyboardInterrupt):
-            serve_repo.run_serve_cmd('run', self._namespace)
-        self.assertEqual(mock_serve.call_count, 1)
-
-    @mock.patch('serve_repo.run_serve_cmd')
-    def test_serve_repository(self, mock_serve) -> None:
+    @mock.patch('serve_repo._start_serving')
+    @mock.patch('serve_repo._stop_serving')
+    def test_serve_repository(self, mock_stop, mock_start) -> None:
         """Tests |serve_repository| context manager."""
 
-        with serve_repo.serve_repository(self._namespace):
-            self.assertEqual(mock_serve.call_count, 1)
-        self.assertEqual(mock_serve.call_count, 2)
-
-    def test_main_start_no_serve_repo_flag(self) -> None:
-        """Tests not specifying directory for start raises a ValueError."""
-
-        with mock.patch('sys.argv', ['serve_repo.py', 'start']):
-            with self.assertRaises(ValueError):
-                serve_repo.main()
-
-    @mock.patch('serve_repo.run_serve_cmd')
-    def test_main_stop(self, mock_serve) -> None:
-        """Tests |main| function."""
-
-        with mock.patch('sys.argv', ['serve_repo.py', 'stop']):
-            serve_repo.main()
-            self.assertEqual(mock_serve.call_count, 1)
-
-    @mock.patch('serve_repo.run_serve_cmd')
-    def test_main_run(self, mock_serve) -> None:
-        """Tests |main| function."""
-
-        with mock.patch('sys.argv', [
-                'serve_repo.py', 'run', '--serve-repo', _REPO_NAME
-              ]), \
-             mock.patch('common.time.sleep', side_effect=KeyboardInterrupt):
-            serve_repo.main()
-            self.assertEqual(mock_serve.call_count, 1)
+        parser = argparse.ArgumentParser()
+        serve_repo.register_serve_args(parser)
+        register_device_args(parser)
+        with serve_repo.serve_repository(
+                parser.parse_args([
+                    '--repo', _REPO_DIR, '--repo-name', _REPO_NAME,
+                    '--target-id', _TARGET
+                ])):
+            self.assertEqual(mock_start.call_count, 1)
+        self.assertEqual(mock_stop.call_count, 1)
 
 
 if __name__ == '__main__':

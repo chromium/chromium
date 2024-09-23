@@ -67,7 +67,8 @@ void WindowMirrorView::OnWindowDestroying(aura::Window* window) {
   }
 }
 
-gfx::Size WindowMirrorView::CalculatePreferredSize() const {
+gfx::Size WindowMirrorView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return show_non_client_view_ ? source_->bounds().size()
                                : GetClientAreaBounds().size();
 }
@@ -150,7 +151,7 @@ void WindowMirrorView::InitLayerOwner() {
     // If the window is already visible, don't set its raster scale. This means
     // that, for example, alt-tab window cycling won't update the raster scale
     // of visible windows.
-    // TODO(crbug.com/1473882): Consider using compositor occlusion information
+    // TODO(crbug.com/40279149): Consider using compositor occlusion information
     // to determine if raster scale can be set lower, e.g. on alt-tab.
     raster_scale_observer_lock_.emplace(
         (new RasterScaleLayerObserver(target_, mirror_layer, source_))->Lock());

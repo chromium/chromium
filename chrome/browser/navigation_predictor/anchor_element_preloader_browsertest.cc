@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchorInaccurate) {
                                                          expected_entry);
 }
 
-// TODO(crbug.com/1413564): Flaky on Win10
+// TODO(crbug.com/40255727): Flaky on Win10
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_Duplicates DISABLED_Duplicates
 #else
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, InvalidHref) {
   EXPECT_EQ(ukm_entries.size(), 0u);
 }
 
-// TODO(crbug.com/1318937): Re-enable this test
+// TODO(crbug.com/40835708): Re-enable this test
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, DISABLED_IframeTest) {
   const GURL& url = GetTestURL("/iframe_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -441,7 +441,7 @@ class AnchorElementPreloaderLimitedBrowserTest
   }
 };
 
-// TODO(crbug.com/1383953): Re-enable this test
+// TODO(crbug.com/40878140): Re-enable this test
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderLimitedBrowserTest,
                        DISABLED_LimitExceeded) {
   const GURL& url = GetTestURL("/many_anchors.html");

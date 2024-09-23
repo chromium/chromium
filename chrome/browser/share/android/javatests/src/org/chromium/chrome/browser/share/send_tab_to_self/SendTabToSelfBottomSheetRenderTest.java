@@ -25,12 +25,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
@@ -38,7 +39,6 @@ import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync_device_info.FormFactor;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.url.JUnitTestGURLs;
@@ -81,7 +81,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
                                 FormFactor.DESKTOP,
                                 todayTimestamp - TimeUnit.DAYS.toMillis(1)));
         View view =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             DevicePickerBottomSheetContent sheetContent =
                                     new DevicePickerBottomSheetContent(
@@ -100,8 +100,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     @Test
     @MediumTest
     public void testDevicePickerBottomSheetWithNonDisplayableAccountEmail() throws Throwable {
-        AccountInfo account =
-                createFakeAccount(SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+        AccountInfo account = AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
         setUpAccountData(account);
         long todayTimestamp = Calendar.getInstance().getTimeInMillis();
         List<TargetDeviceInfo> devices =
@@ -112,7 +111,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
                                 "guid2",
                                 FormFactor.DESKTOP,
                                 todayTimestamp - TimeUnit.DAYS.toMillis(1)));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DevicePickerBottomSheetContent sheetContent =
                             new DevicePickerBottomSheetContent(
@@ -133,10 +132,10 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     public void testNoTargetDeviceBottomSheet() throws Throwable {
         setUpAccountData(createFakeAccount());
         View view =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             NoTargetDeviceBottomSheetContent sheetContent =
-                                    new NoTargetDeviceBottomSheetContent(getActivity());
+                                    new NoTargetDeviceBottomSheetContent(getActivity(), mProfile);
                             getActivity().setContentView(sheetContent.getContentView());
                             return sheetContent.getContentView();
                         });
@@ -146,13 +145,12 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     @Test
     @MediumTest
     public void testNoTargetDeviceBottomSheetWithNonDisplayableAccountEmail() throws Throwable {
-        AccountInfo account =
-                createFakeAccount(SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+        AccountInfo account = AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL;
         setUpAccountData(account);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     NoTargetDeviceBottomSheetContent sheetContent =
-                            new NoTargetDeviceBottomSheetContent(getActivity());
+                            new NoTargetDeviceBottomSheetContent(getActivity(), mProfile);
                     getActivity().setContentView(sheetContent.getContentView());
                 });
         onView(withText(account.getEmail())).check(doesNotExist());
@@ -192,6 +190,5 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
                 .thenReturn(account);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        Profile.setLastUsedProfileForTesting(mProfile);
     }
 }

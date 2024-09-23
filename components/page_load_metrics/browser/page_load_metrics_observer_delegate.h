@@ -45,7 +45,7 @@ enum class PageVisibility {
 // be transmitted to kActivatedNoActivationStart, and kActivated.
 // Otherwise, it sticks on kNoPrerendering.
 //
-// TODO(crbug.com/1348097): Remove kActivatedNoActivationStart if possible.
+// TODO(crbug.com/40233224): Remove kActivatedNoActivationStart if possible.
 enum class PrerenderingState {
   // Not prerenedered
   kNoPrerendering,

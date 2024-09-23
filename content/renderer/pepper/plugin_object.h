@@ -82,10 +82,10 @@ class PluginObject : public gin::Wrappable<PluginObject>,
   v8::Local<v8::FunctionTemplate> GetFunctionTemplate(v8::Isolate* isolate,
                                                       const std::string& name);
 
-  raw_ptr<PepperPluginInstanceImpl, ExperimentalRenderer> instance_;
+  raw_ptr<PepperPluginInstanceImpl> instance_;
 
-  raw_ptr<const PPP_Class_Deprecated, ExperimentalRenderer> ppp_class_;
-  raw_ptr<void, ExperimentalRenderer> ppp_class_data_;
+  raw_ptr<const PPP_Class_Deprecated> ppp_class_;
+  raw_ptr<void, DanglingUntriaged> ppp_class_data_;
 
   v8::StdGlobalValueMap<std::string, v8::FunctionTemplate> template_cache_;
 

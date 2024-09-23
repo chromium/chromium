@@ -12,7 +12,7 @@ namespace {
 // Crops `image` to half of its width taking the center part of it.
 UIImage* CropToMiddle(UIImage* image) {
   // Skip cropping if image is already portrait oriented.
-  // TODO(crbug.com/1463882): Consider adding a CHECK or different handling of
+  // TODO(crbug.com/40275395): Consider adding a CHECK or different handling of
   // this case.
   if (image.size.width < image.size.height) {
     return image;
@@ -72,7 +72,7 @@ UIImage* CreateMultiAvatarImage(NSArray<UIImage*>* images, CGFloat size) {
         }
 
         // Create the right side of the image.
-        // TODO(crbug.com/1463882): Handle the case of more than 4 images.
+        // TODO(crbug.com/40275395): Handle the case of more than 4 images.
         if (images.count == 2) {
           [CropToMiddle(images[1]) drawInRect:rightRect];
         } else {

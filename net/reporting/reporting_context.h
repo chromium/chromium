@@ -38,7 +38,8 @@ class NET_EXPORT ReportingContext {
   static std::unique_ptr<ReportingContext> Create(
       const ReportingPolicy& policy,
       URLRequestContext* request_context,
-      ReportingCache::PersistentReportingStore* store);
+      ReportingCache::PersistentReportingStore* store,
+      const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints);
 
   ReportingContext(const ReportingContext&) = delete;
   ReportingContext& operator=(const ReportingContext&) = delete;
@@ -76,13 +77,15 @@ class NET_EXPORT ReportingContext {
   void OnShutdown();
 
  protected:
-  ReportingContext(const ReportingPolicy& policy,
-                   base::Clock* clock,
-                   const base::TickClock* tick_clock,
-                   const RandIntCallback& rand_callback,
-                   std::unique_ptr<ReportingUploader> uploader,
-                   std::unique_ptr<ReportingDelegate> delegate,
-                   ReportingCache::PersistentReportingStore* store);
+  ReportingContext(
+      const ReportingPolicy& policy,
+      base::Clock* clock,
+      const base::TickClock* tick_clock,
+      const RandIntCallback& rand_callback,
+      std::unique_ptr<ReportingUploader> uploader,
+      std::unique_ptr<ReportingDelegate> delegate,
+      ReportingCache::PersistentReportingStore* store,
+      const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints);
 
  private:
   ReportingPolicy policy_;
@@ -98,8 +101,7 @@ class NET_EXPORT ReportingContext {
 
   std::unique_ptr<ReportingCache> cache_;
 
-  const raw_ptr<ReportingCache::PersistentReportingStore, DanglingUntriaged>
-      store_;
+  const raw_ptr<ReportingCache::PersistentReportingStore> store_;
 
   // |delivery_agent_| must come after |tick_clock_|, |delegate_|, |uploader_|,
   // and |cache_|.

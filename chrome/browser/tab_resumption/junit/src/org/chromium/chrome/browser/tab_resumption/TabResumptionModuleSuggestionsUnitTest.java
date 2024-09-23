@@ -4,13 +4,20 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Size;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -20,11 +27,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.UrlImageProvider.UrlImageSource;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -56,13 +69,15 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
                 final LargeIconCallback callback) {
             // For simplicity, fake with a synchronous call.
             callback.onLargeIconAvailable(
-                    pageUrl.equals(mFakeCachedUrl) ? mFakeCachedBitmap : null,
+                    pageUrl.equals(mFakeCachedUrl) ? mFakeCachedBitmap : /* tab= */ null,
                     DEFAULT_FALLBACK_COLOR,
                     /*isFallbackColorDefault*/ true,
                     IconType.FAVICON);
             return true;
         }
     }
+
+    @Mock private Profile mProfile;
 
     // Various test value that satisfy FOO_LO < FOO_0 < FOO_HI.
     private static final String SOURCE_NAME_LO = "Desktop";
@@ -89,144 +104,138 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
     @After
     public void tearDown() {}
 
-    @Test
-    @SmallTest
-    public void testAssignSuggestions() {
-        SuggestionEntry entry0 =
-                new SuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0);
-        SuggestionEntry entryLo =
-                new SuggestionEntry(SOURCE_NAME_LO, URL_LO, TITLE_LO, TIMESTAMP_LO, ID_LO);
-        SuggestionBundle bundle = new SuggestionBundle(TIMESTAMP_HI);
-        Assert.assertEquals(TIMESTAMP_HI, bundle.referenceTimeMs);
-        bundle.entries.add(entry0);
-        bundle.entries.add(entryLo);
-        Assert.assertEquals(2, bundle.entries.size());
-
-        Resources res = ApplicationProvider.getApplicationContext().getResources();
-        Drawable drawable = new BitmapDrawable(res, makeBitmap(1, 1));
-
-        entry0.setUrlDrawable(drawable);
-        Assert.assertEquals(drawable, entry0.getUrlDrawable());
+    private static SuggestionEntry createSuggestionEntry(
+            String source, GURL url, String title, long time, int id) {
+        return new SuggestionEntry(
+                SuggestionEntryType.LOCAL_TAB,
+                source,
+                url,
+                title,
+                time,
+                id,
+                null,
+                null,
+                /* needMatchLocalTab= */ false);
     }
 
     @Test
     @SmallTest
     public void testCompareSuggestions() {
         SuggestionEntry entry0 =
-                new SuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0);
+                createSuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0);
         Assert.assertEquals(
                 0,
                 entry0.compareTo(
-                        new SuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0)));
+                        createSuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0)));
 
         // Timestamps dominate source name.
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_LO, ID_0))
                         < 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_LO, URL_0, TITLE_0, TIMESTAMP_LO, ID_0))
                         < 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_HI, URL_0, TITLE_0, TIMESTAMP_LO, ID_0))
                         < 0);
 
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_HI, ID_0))
                         > 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_LO, URL_0, TITLE_0, TIMESTAMP_HI, ID_0))
                         > 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_HI, URL_0, TITLE_0, TIMESTAMP_HI, ID_0))
                         > 0);
 
         // Source name dominates title.
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_LO, URL_0, TITLE_0, TIMESTAMP_0, ID_0))
                         > 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_LO, URL_0, TITLE_LO, TIMESTAMP_0, ID_0))
                         > 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_LO, URL_0, TITLE_HI, TIMESTAMP_0, ID_0))
                         > 0);
 
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_HI, URL_0, TITLE_0, TIMESTAMP_0, ID_0))
                         < 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_HI, URL_0, TITLE_LO, TIMESTAMP_0, ID_0))
                         < 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_HI, URL_0, TITLE_HI, TIMESTAMP_0, ID_0))
                         < 0);
 
         // Title dominates id.
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_LO, TIMESTAMP_0, ID_0))
                         > 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_LO, TIMESTAMP_0, ID_LO))
                         > 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_LO, TIMESTAMP_0, ID_HI))
                         > 0);
 
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_HI, TIMESTAMP_0, ID_0))
                         < 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_HI, TIMESTAMP_0, ID_LO))
                         < 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_HI, TIMESTAMP_0, ID_HI))
                         < 0);
 
         // Id as final tie-breaker.
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_LO))
                         > 0);
         Assert.assertTrue(
                 entry0.compareTo(
-                                new SuggestionEntry(
+                                createSuggestionEntry(
                                         SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_HI))
                         < 0);
 
@@ -234,11 +243,28 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
         Assert.assertEquals(
                 0,
                 entry0.compareTo(
-                        new SuggestionEntry(SOURCE_NAME_0, URL_LO, TITLE_0, TIMESTAMP_0, ID_0)));
+                        createSuggestionEntry(SOURCE_NAME_0, URL_LO, TITLE_0, TIMESTAMP_0, ID_0)));
         Assert.assertEquals(
                 0,
                 entry0.compareTo(
-                        new SuggestionEntry(SOURCE_NAME_0, URL_HI, TITLE_0, TIMESTAMP_0, ID_0)));
+                        createSuggestionEntry(SOURCE_NAME_0, URL_HI, TITLE_0, TIMESTAMP_0, ID_0)));
+    }
+
+    @Test
+    @SmallTest
+    public void testCompareSuggestionsWithTraingIds() {
+        SuggestionEntry entry =
+                createSuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0);
+        SuggestionEntry entryWithTrainingInfo =
+                createSuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0);
+        entryWithTrainingInfo.trainingInfo =
+                new TrainingInfo(
+                        /* nativeVisitedUrlRankingBackend= */ 0L,
+                        /* visitId= */ "www.google.com",
+                        /* requestId= */ 123L);
+
+        // The presence of `trainingInfo` does not affect comparison.
+        Assert.assertEquals(0, entry.compareTo(entryWithTrainingInfo));
     }
 
     @Test
@@ -247,17 +273,32 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
         GURL urlWithFavicon = URL_0;
         GURL urlWithoutFavicon = URL_LO;
         Bitmap expectedRealIcon = makeBitmap(64, 64);
+        Bitmap expectedThumbnail = makeBitmap(32, 32);
         Bitmap expectedFallbackIcon = makeBitmap(64, 64);
         LargeIconBridge largeIconBridge = new FakeLargeIconBridge(urlWithFavicon, expectedRealIcon);
+        ThumbnailProvider thumbnailProvider = Mockito.mock(ThumbnailProvider.class);
+        doAnswer(
+                        (InvocationOnMock invocation) -> {
+                            ((Callback<Drawable>) invocation.getArguments()[3])
+                                    .onResult(new BitmapDrawable(expectedThumbnail));
+                            return null;
+                        })
+                .when(thumbnailProvider)
+                .getTabThumbnailWithCallback(
+                        /* tabId= */ anyInt(),
+                        /* thumbnailSize= */ any(Size.class),
+                        /* isSelected= */ anyBoolean(),
+                        /* callback= */ any(Callback.class));
         RoundedIconGenerator roundedIconGenerator = Mockito.mock(RoundedIconGenerator.class);
         when(roundedIconGenerator.generateIconForUrl(urlWithoutFavicon))
                 .thenReturn(expectedFallbackIcon);
 
         UrlImageSource urlImageSource = Mockito.mock(UrlImageSource.class);
-        when(urlImageSource.createLargeIconBridge()).thenReturn(largeIconBridge);
+        when(urlImageSource.createThumbnailProvider()).thenReturn(thumbnailProvider);
         when(urlImageSource.createIconGenerator()).thenReturn(roundedIconGenerator);
         Context context = ApplicationProvider.getApplicationContext();
-        UrlImageProvider urlImageProvider = new UrlImageProvider(urlImageSource, context);
+        UrlImageProvider urlImageProvider =
+                new UrlImageProvider(context, urlImageSource, null, largeIconBridge);
 
         urlImageProvider.fetchImageForUrl(
                 urlWithFavicon,
@@ -266,6 +307,17 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
                     ++mCallbackCounter;
                 });
 
+        Assert.assertEquals(1, mCallbackCounter);
+
+        urlImageProvider.getTabThumbnail(
+                /* tabId= */ 0,
+                /* thumbnailSize= */ new Size(32, 32),
+                /* tabThumbnailCallback= */ (Drawable icon) -> {
+                    Assert.assertEquals(((BitmapDrawable) icon).getBitmap(), expectedThumbnail);
+                    ++mCallbackCounter;
+                });
+        Assert.assertEquals(2, mCallbackCounter);
+
         urlImageProvider.fetchImageForUrl(
                 urlWithoutFavicon,
                 (Bitmap icon) -> {
@@ -273,6 +325,53 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
                     ++mCallbackCounter;
                 });
 
-        Assert.assertEquals(2, mCallbackCounter);
+        Assert.assertEquals(3, mCallbackCounter);
+
+        urlImageProvider.destroy();
+        assertNull(urlImageProvider.getImageServiceBridgeForTesting());
+        assertNull(urlImageProvider.getLargeIconBridgeForTesting());
+        assertTrue(urlImageProvider.isDestroyed());
+    }
+
+    @Test
+    public void testIsLocalTab() {
+        SuggestionEntry entry =
+                new SuggestionEntry(
+                        SuggestionEntryType.LOCAL_TAB,
+                        SOURCE_NAME_0,
+                        URL_0,
+                        TITLE_0,
+                        TIMESTAMP_0,
+                        ID_0,
+                        null,
+                        null,
+                        /* needMatchLocalTab= */ false);
+        assertTrue(entry.isLocalTab());
+
+        entry =
+                new SuggestionEntry(
+                        SuggestionEntryType.HISTORY,
+                        SOURCE_NAME_0,
+                        URL_0,
+                        TITLE_0,
+                        TIMESTAMP_0,
+                        ID_0,
+                        null,
+                        null,
+                        /* needMatchLocalTab= */ false);
+        assertTrue(entry.isLocalTab());
+
+        SuggestionEntry invalidEntry =
+                new SuggestionEntry(
+                        SuggestionEntryType.LOCAL_TAB,
+                        SOURCE_NAME_0,
+                        URL_0,
+                        TITLE_0,
+                        TIMESTAMP_0,
+                        Tab.INVALID_TAB_ID,
+                        null,
+                        null,
+                        /* needMatchLocalTab= */ false);
+        assertFalse(invalidEntry.isLocalTab());
     }
 }

@@ -5,17 +5,16 @@
 #ifndef BASE_TRACE_EVENT_TRACED_VALUE_SUPPORT_H_
 #define BASE_TRACE_EVENT_TRACED_VALUE_SUPPORT_H_
 
+#include <optional>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
@@ -66,16 +65,16 @@ struct TraceFormatTraits<::base::WeakPtr<T>,
   }
 };
 
-// If T is serialisable into a trace, absl::optional<T> is serialisable as well.
-// Note that we need definitions for both absl::optional<T>& and
-// const absl::optional<T>& (unlike scoped_refptr and WeakPtr above), as
+// If T is serialisable into a trace, std::optional<T> is serialisable as well.
+// Note that we need definitions for both std::optional<T>& and
+// const std::optional<T>& (unlike scoped_refptr and WeakPtr above), as
 // dereferencing const scoped_refptr<T>& gives you T, while dereferencing const
-// absl::optional<T>& gives you const T&.
+// std::optional<T>& gives you const T&.
 template <class T>
-struct TraceFormatTraits<::absl::optional<T>,
+struct TraceFormatTraits<::std::optional<T>,
                          perfetto::check_traced_value_support_t<T>> {
   static void WriteIntoTrace(perfetto::TracedValue context,
-                             const ::absl::optional<T>& value) {
+                             const ::std::optional<T>& value) {
     if (!value) {
       std::move(context).WritePointer(nullptr);
       return;
@@ -84,7 +83,7 @@ struct TraceFormatTraits<::absl::optional<T>,
   }
 
   static void WriteIntoTrace(perfetto::TracedValue context,
-                             ::absl::optional<T>& value) {
+                             ::std::optional<T>& value) {
     if (!value) {
       std::move(context).WritePointer(nullptr);
       return;

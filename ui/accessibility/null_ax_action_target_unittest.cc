@@ -15,7 +15,7 @@ TEST(NullAXActionTargetTest, TestMethods) {
       std::make_unique<NullAXActionTarget>();
 
   EXPECT_EQ(AXActionTarget::Type::kNull, action_target->GetType());
-  ui::AXActionData action_data;
+  AXActionData action_data;
   action_data.action = ax::mojom::Action::kFocus;
   EXPECT_FALSE(action_target->PerformAction(action_data));
   EXPECT_EQ(gfx::Rect(), action_target->GetRelativeBounds());

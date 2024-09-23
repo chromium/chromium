@@ -4,6 +4,11 @@
 
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -58,10 +63,10 @@ std::unique_ptr<views::Widget>
 TestBrowserWindowViewsWithDesktopNativeWidgetAura::CreateDesktopWidget(
     bool popup) {
   auto widget = std::make_unique<views::Widget>();
-  views::Widget::InitParams params;
-  params.type = popup ? views::Widget::InitParams::TYPE_POPUP
-                      : views::Widget::InitParams::TYPE_WINDOW;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      popup ? views::Widget::InitParams::TYPE_POPUP
+            : views::Widget::InitParams::TYPE_WINDOW);
   params.native_widget = new views::DesktopNativeWidgetAura(widget.get());
   params.bounds = gfx::Rect(0, 0, 20, 20);
   widget->Init(std::move(params));
@@ -89,20 +94,22 @@ std::unique_ptr<Browser> ExistingWindowSubMenuModelTest::CreateTestBrowser(
     bool incognito,
     bool popup) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  TestBrowserWindow* window =
-      new TestBrowserWindowViewsWithDesktopNativeWidgetAura(popup);
+  auto window =
+      std::make_unique<TestBrowserWindowViewsWithDesktopNativeWidgetAura>(
+          popup);
 #else
-  TestBrowserWindow* window = new TestBrowserWindow;
+  auto window = std::make_unique<TestBrowserWindow>();
 #endif
-  new TestBrowserWindowOwner(window);
   Profile* profile = incognito ? browser()->profile()->GetPrimaryOTRProfile(
                                      /*create_if_needed=*/true)
                                : browser()->profile();
   Browser::Type type = popup ? Browser::TYPE_POPUP : Browser::TYPE_NORMAL;
 
   std::unique_ptr<Browser> browser =
-      CreateBrowser(profile, type, false, window);
+      CreateBrowser(profile, type, false, window.get());
   BrowserList::SetLastActive(browser.get());
+  // Self deleting.
+  new TestBrowserWindowOwner(std::move(window));
   return browser;
 }
 

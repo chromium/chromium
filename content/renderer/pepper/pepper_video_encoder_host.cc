@@ -103,7 +103,7 @@ PP_VideoProfile PP_FromMediaVideoProfile(media::VideoCodecProfile profile) {
     case media::VP9PROFILE_PROFILE0:
       return PP_VIDEOPROFILE_VP9_ANY;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return static_cast<PP_VideoProfile>(-1);
   }
 }
@@ -267,7 +267,10 @@ int32_t PepperVideoEncoderHost::OnHostMsgInitialize(
   initialize_reply_context_ = context->MakeReplyMessageContext();
   const media::VideoEncodeAccelerator::Config config(
       media_input_format_, input_size, media_profile,
-      media::Bitrate::ConstantBitrate(initial_bitrate));
+      media::Bitrate::ConstantBitrate(initial_bitrate),
+      media::VideoEncodeAccelerator::kDefaultFramerate,
+      media::VideoEncodeAccelerator::Config::StorageType::kShmem,
+      media::VideoEncodeAccelerator::Config::ContentType::kDisplay);
   if (encoder_->Initialize(config, this))
     return PP_OK_COMPLETIONPENDING;
 
@@ -451,7 +454,7 @@ void PepperVideoEncoderHost::AllocateVideoFrames() {
   // Frames have already been allocated.
   if (buffer_manager_.number_of_buffers() > 0) {
     SendGetFramesErrorReply(PP_ERROR_FAILED);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

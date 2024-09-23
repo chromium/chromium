@@ -37,7 +37,6 @@ bool PipeControlMessageHandler::Accept(Message* message) {
     return RunOrClosePipe(message);
 
   NOTREACHED();
-  return false;
 }
 
 bool PipeControlMessageHandler::Validate(Message* message) {

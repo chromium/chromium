@@ -12,11 +12,16 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
 namespace content {
 class WebUIDataSource;
 }  // namespace content
+
+namespace ui {
+class ColorChangeHandler;
+}  // namespace ui
 
 class PrefService;
 
@@ -48,6 +53,13 @@ class UntrustedProjectorUI
       mojo::PendingReceiver<
           projector::mojom::UntrustedProjectorPageHandlerFactory> factory);
 
+  // Binds a PageHandler to ProjectorUntrustedUI. This handler grabs a reference
+  // to the page and pushes a colorChangeEvent to the untrusted JS running there
+  // when the OS color scheme has changed.
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 
@@ -62,6 +74,8 @@ class UntrustedProjectorUI
       receiver_{this};
   std::unique_ptr<UntrustedProjectorPageHandlerImpl> page_handler_;
   const raw_ptr<PrefService> pref_service_;
+
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 };
 
 }  // namespace ash

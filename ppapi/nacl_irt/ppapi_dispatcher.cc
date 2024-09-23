@@ -212,7 +212,6 @@ void PpapiDispatcher::OnPluginDispatcherMessageReceived(
   uint32_t id = 0;
   if (!iter.ReadUInt32(&id)) {
     NOTREACHED();
-    return;
   }
   std::map<uint32_t, proxy::PluginDispatcher*>::iterator dispatcher =
       plugin_dispatchers_.find(id);

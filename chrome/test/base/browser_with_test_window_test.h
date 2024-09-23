@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -63,6 +64,17 @@ class CrosapiManager;
 
 class TestingProfileManager;
 
+// WARNING WARNING WARNING WARNING
+// Do not use this class. See docs/chrome_browser_design_principles.md for
+// details. Either write a browser test which provides both a "class Browser"
+// and a "class BrowserView" or a unit test which requires neither.
+// Historically, features were written that take a "class Browser" as an input
+// parameter. "class Browser" cannot be stubbed/faked/mocked, and this class was
+// written as a workaround to create a "class Browser" without a "class
+// BrowserView". This cannot happen in production code and thus results in test
+// logic leaking into production code. New features should not take "class
+// Browser" as input, and should instead perform dependency injection.
+//
 // Base class for browser based unit tests. BrowserWithTestWindowTest creates a
 // Browser with a TestingProfile and TestBrowserWindow. To add a tab use
 // AddTab. For example, the following adds a tab and navigates to two URLs:
@@ -80,7 +92,7 @@ class TestingProfileManager;
 //   // This is equivalent to the above, and lets you test pending navigations.
 //   browser()->OpenURL(OpenURLParams(
 //       GURL("http://foo/2"), GURL(), WindowOpenDisposition::CURRENT_TAB,
-//       ui::PAGE_TRANSITION_TYPED, false));
+//       ui::PAGE_TRANSITION_TYPED, false), /*navigation_handle_callback=*/{});
 //   CommitPendingLoad(&contents->GetController());
 //
 // Subclasses must invoke BrowserWithTestWindowTest::SetUp as it is responsible
@@ -124,6 +136,14 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
 
   void SetUp() override;
   void TearDown() override;
+
+  // Set up process for `profile_manager_`. If a `profile_manager` is supplied,
+  // it will be set as the underlying profile manager that `profile_manager_`
+  // uses, aka `profile_manager_->profile_manager()`. This can only be called
+  // before ::SetUp().
+  void SetUpProfileManager(
+      const base::FilePath& profiles_path = base::FilePath(),
+      std::unique_ptr<ProfileManager> profile_manager = nullptr);
 
  protected:
   BrowserWindow* window() const { return window_.get(); }
@@ -180,6 +200,10 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   void NavigateAndCommitActiveTabWithTitle(Browser* browser,
                                            const GURL& url,
                                            const std::u16string& title);
+
+  // Sets the focused frame to the main frame of the active WebContents, for
+  // tests that rely on the focused frame not being null.
+  void FocusMainFrameOfActiveWebContents();
 
   // Returns the profile name used for the profile created in SetUp() by
   // default.

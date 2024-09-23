@@ -5,6 +5,8 @@ This is a testharness.js-based test.
   assert_equals: blob URL iframe should intercept fetch expected "intercepted" but got "var hello = \\"world\\";\\n"
 [FAIL] Same-origin blob URL worker should inherit service worker controller.
   promise_test: Unhandled rejection with value: "Uncaught TypeError: Cannot read properties of undefined (reading 'controller')"
+[FAIL] Same-origin blob URL sharedworker should inherit service worker controller.
+  promise_test: Unhandled rejection with value: "Uncaught TypeError: Cannot read properties of undefined (reading 'controller')"
 [FAIL] Data URL worker should not inherit service worker controller.
   promise_test: Unhandled rejection with value: "Uncaught TypeError: Cannot read properties of undefined (reading 'controller')"
 [FAIL] Data URL worker should not intercept fetch().

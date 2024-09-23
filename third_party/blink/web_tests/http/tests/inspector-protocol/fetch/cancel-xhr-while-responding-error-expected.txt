@@ -1,0 +1,6 @@
+Tests to ensure error message on request cancelled while intercepting response.
+Request paused: resource.php?send=10000&nosniff=1
+Renderer received abort signal
+Continuing intercepted request
+Error message: Invalid InterceptionId.
+

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/profiler/stack_sampling_profiler.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -23,7 +25,6 @@
 #include "base/profiler/profiler_buildflags.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/profiler/stack_sampler.h"
-#include "base/profiler/stack_sampling_profiler.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/profiler/unwinder.h"
 #include "base/ranges/algorithm.h"
@@ -33,30 +34,31 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include <intrin.h>
 #include <malloc.h>
-#include <windows.h>
 #else
 #include <alloca.h>
 #endif
 
 // STACK_SAMPLING_PROFILER_SUPPORTED is used to conditionally enable the tests
-// below for supported platforms (currently Win x64, Mac x64, iOS 64, some
+// below for supported platforms (currently Win x64, Mac, iOS 64, some
 // Android, and ChromeOS x64).
 // ChromeOS: These don't run under MSan because parts of the stack aren't
 // initialized.
-#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)) ||            \
-    (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)) ||            \
-    (BUILDFLAG(IS_IOS) && defined(ARCH_CPU_64_BITS)) ||           \
-    (BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)) || \
-    (BUILDFLAG(IS_CHROMEOS) &&                                    \
-     (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)) &&     \
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)) || (BUILDFLAG(IS_MAC)) || \
+    (BUILDFLAG(IS_IOS) && defined(ARCH_CPU_64_BITS)) ||                       \
+    (BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)) ||             \
+    (BUILDFLAG(IS_CHROMEOS) &&                                                \
+     (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)) &&                 \
      !defined(MEMORY_SANITIZER))
 #define STACK_SAMPLING_PROFILER_SUPPORTED 1
 #endif
@@ -323,8 +325,9 @@ void TestLibraryUnload(bool wait_until_unloaded, ModuleCache* module_cache) {
 
   NativeLibrary other_library = LoadOtherLibrary();
 
-  UnwindScenario scenario(
-      BindRepeating(&CallThroughOtherLibrary, Unretained(other_library)));
+  // TODO(crbug.com/40061562): Remove `UnsafeDanglingUntriaged`
+  UnwindScenario scenario(BindRepeating(
+      &CallThroughOtherLibrary, UnsafeDanglingUntriaged(other_library)));
 
   UnwindScenario::SampleEvents events;
   TargetThread target_thread(
@@ -424,6 +427,8 @@ void TestLibraryUnload(bool wait_until_unloaded, ModuleCache* module_cache) {
 // usable in a later test.
 class StackSamplingProfilerTest : public testing::Test {
  public:
+  StackSamplingProfilerTest() = default;
+
   void SetUp() override {
     // The idle-shutdown time is too long for convenient (and accurate) testing.
     // That behavior is checked instead by artificially triggering it through
@@ -442,6 +447,7 @@ class StackSamplingProfilerTest : public testing::Test {
 
  private:
   ModuleCache module_cache_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 }  // namespace
@@ -450,7 +456,7 @@ class StackSamplingProfilerTest : public testing::Test {
 //
 // macOS ASAN is not yet supported - crbug.com/718628.
 //
-// TODO(https://crbug.com/1100175): Enable this test again for Android with
+// TODO(crbug.com/40702833): Enable this test again for Android with
 // ASAN. This is now disabled because the android-asan bot fails.
 //
 // If we're running the ChromeOS unit tests on Linux, this test will never pass
@@ -495,7 +501,8 @@ class TestAuxUnwinder : public Unwinder {
   }
   bool CanUnwindFrom(const Frame& current_frame) const override { return true; }
 
-  UnwindResult TryUnwind(RegisterContext* thread_context,
+  UnwindResult TryUnwind(UnwinderStateCapture* capture_state,
+                         RegisterContext* thread_context,
                          uintptr_t stack_top,
                          std::vector<Frame>* stack) override {
     stack->push_back(frame_to_report_);
@@ -538,7 +545,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_Alloca) {
 // iOS chrome doesn't support loading native libraries.
 // Android is not supported when EXCLUDE_UNWIND_TABLES |other_library| doesn't
 // have unwind tables.
-// TODO(https://crbug.com/1100175): Enable this test again for Android with
+// TODO(crbug.com/40702833): Enable this test again for Android with
 // ASAN. This is now disabled because the android-asan bot fails.
 // If we're running the ChromeOS unit tests on Linux, this test will never pass
 // because Ubuntu's libc isn't compiled with frame pointers. Skip if not a real
@@ -569,7 +576,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MAYBE_OtherLibrary) {
 // Unloading is synchronous on the Mac, so this test is inapplicable.
 // Android is not supported when EXCLUDE_UNWIND_TABLES |other_library| doesn't
 // have unwind tables.
-// TODO(https://crbug.com/1100175): Enable this test again for Android with
+// TODO(crbug.com/40702833): Enable this test again for Android with
 // ASAN. This is now disabled because the android-asan bot fails.
 // If we're running the ChromeOS unit tests on Linux, this test will never pass
 // because Ubuntu's libc isn't compiled with frame pointers. Skip if not a real
@@ -1086,7 +1093,8 @@ PROFILER_TEST_F(StackSamplingProfilerTest, IdleShutdownAbort) {
 PROFILER_TEST_F(StackSamplingProfilerTest, ConcurrentProfiling_InSync) {
   WithTargetThread(
       BindLambdaForTesting([](SamplingProfilerThreadToken target_thread_token) {
-        std::vector<ModuleCache> module_caches(2);
+        ModuleCache module_cache1;
+        ModuleCache module_cache2;
 
         // Providing an initial delay makes it more likely that both will be
         // scheduled before either starts to run. Once started, samples will
@@ -1100,13 +1108,13 @@ PROFILER_TEST_F(StackSamplingProfilerTest, ConcurrentProfiling_InSync) {
             SamplingParams{/*initial_delay=*/Milliseconds(10),
                            /*samples_per_profile=*/9,
                            /*sampling_interval=*/Milliseconds(1)},
-            &module_caches[0]));
+            &module_cache1));
         profiler_infos.push_back(std::make_unique<TestProfilerInfo>(
             target_thread_token,
             SamplingParams{/*initial_delay=*/Milliseconds(11),
                            /*samples_per_profile=*/8,
                            /*sampling_interval=*/Milliseconds(1)},
-            &module_caches[1]));
+            &module_cache2));
 
         profiler_infos[0]->profiler.Start();
         profiler_infos[1]->profiler.Start();
@@ -1126,43 +1134,47 @@ PROFILER_TEST_F(StackSamplingProfilerTest, ConcurrentProfiling_InSync) {
 
 // Checks that several mixed sampling requests execute in parallel.
 PROFILER_TEST_F(StackSamplingProfilerTest, ConcurrentProfiling_Mixed) {
-  WithTargetThread(BindLambdaForTesting([](SamplingProfilerThreadToken
-                                               target_thread_token) {
-    std::vector<ModuleCache> module_caches(3);
+  WithTargetThread(
+      BindLambdaForTesting([](SamplingProfilerThreadToken target_thread_token) {
+        std::vector<ModuleCache> module_caches(3);
 
-    std::vector<std::unique_ptr<TestProfilerInfo>> profiler_infos;
-    profiler_infos.push_back(std::make_unique<TestProfilerInfo>(
-        target_thread_token,
-        SamplingParams{/*initial_delay=*/Milliseconds(8),
-                       /*samples_per_profile=*/10,
-                       /*sampling_interval=*/Milliseconds(4)},
-        &module_caches[0]));
-    profiler_infos.push_back(std::make_unique<TestProfilerInfo>(
-        target_thread_token,
-        SamplingParams{/*initial_delay=*/Milliseconds(9),
-                       /*samples_per_profile=*/10,
-                       /*sampling_interval=*/Milliseconds(3)},
-        &module_caches[1]));
-    profiler_infos.push_back(std::make_unique<TestProfilerInfo>(
-        target_thread_token,
-        SamplingParams{/*initial_delay=*/Milliseconds(10),
-                       /*samples_per_profile=*/10,
-                       /*sampling_interval=*/Milliseconds(2)},
-        &module_caches[2]));
+        std::vector<std::unique_ptr<TestProfilerInfo>> profiler_infos;
+        profiler_infos.push_back(std::make_unique<TestProfilerInfo>(
+            target_thread_token,
+            SamplingParams{/*initial_delay=*/Milliseconds(8),
+                           /*samples_per_profile=*/10,
+                           /*sampling_interval=*/Milliseconds(4)},
+            &module_caches[0]));
+        profiler_infos.push_back(std::make_unique<TestProfilerInfo>(
+            target_thread_token,
+            SamplingParams{/*initial_delay=*/Milliseconds(9),
+                           /*samples_per_profile=*/10,
+                           /*sampling_interval=*/Milliseconds(3)},
+            &module_caches[1]));
+        profiler_infos.push_back(std::make_unique<TestProfilerInfo>(
+            target_thread_token,
+            SamplingParams{/*initial_delay=*/Milliseconds(10),
+                           /*samples_per_profile=*/10,
+                           /*sampling_interval=*/Milliseconds(2)},
+            &module_caches[2]));
 
-    for (auto& i : profiler_infos)
-      i->profiler.Start();
+        for (auto& i : profiler_infos) {
+          i->profiler.Start();
+        }
 
-    // Wait for one profiler to finish.
-    size_t completed_profiler = WaitForSamplingComplete(profiler_infos);
-    EXPECT_EQ(10u, profiler_infos[completed_profiler]->profile.samples.size());
-    // Stop and destroy all profilers, always in the same order. Don't
-    // crash.
-    for (auto& i : profiler_infos)
-      i->profiler.Stop();
-    for (auto& i : profiler_infos)
-      i.reset();
-  }));
+        // Wait for one profiler to finish.
+        size_t completed_profiler = WaitForSamplingComplete(profiler_infos);
+        EXPECT_EQ(10u,
+                  profiler_infos[completed_profiler]->profile.samples.size());
+        // Stop and destroy all profilers, always in the same order. Don't
+        // crash.
+        for (auto& i : profiler_infos) {
+          i->profiler.Stop();
+        }
+        for (auto& i : profiler_infos) {
+          i.reset();
+        }
+      }));
 }
 
 // Checks that different threads can be sampled in parallel.

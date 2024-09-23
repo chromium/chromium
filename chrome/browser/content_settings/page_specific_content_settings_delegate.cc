@@ -4,37 +4,44 @@
 
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 
-#include "build/build_config.h"
+#include "base/feature_list.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
-#include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
-#include "components/permissions/permission_recovery_success_rate_tracker.h"
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "components/guest_view/browser/guest_view_base.h"
-#endif
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ipc/ipc_channel_proxy.h"
+#include "pdf/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "components/guest_view/browser/guest_view_base.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 using content_settings::PageSpecificContentSettings;
-
-namespace chrome {
 
 PageSpecificContentSettingsDelegate::PageSpecificContentSettingsDelegate(
     content::WebContents* web_contents)
@@ -155,26 +162,11 @@ namespace {
 void GetGuestViewDefaultContentSettingRules(
     bool incognito,
     RendererContentSettingRules* rules) {
-  rules->image_rules.clear();
-  rules->image_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-      std::string(), incognito));
-  rules->auto_dark_content_rules.clear();
-  rules->auto_dark_content_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-      std::string(), incognito));
-  rules->script_rules.clear();
-  rules->script_rules.push_back(ContentSettingPatternSource(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-      std::string(), incognito));
   rules->mixed_content_rules.clear();
   rules->mixed_content_rules.push_back(ContentSettingPatternSource(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK),
-      std::string(), incognito));
+      content_settings::ProviderType::kNone, incognito));
 }
 #endif
 }  // namespace
@@ -182,32 +174,15 @@ void GetGuestViewDefaultContentSettingRules(
 void PageSpecificContentSettingsDelegate::SetDefaultRendererContentSettingRules(
     content::RenderFrameHost* rfh,
     RendererContentSettingRules* rules) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   bool is_off_the_record =
       web_contents()->GetBrowserContext()->IsOffTheRecord();
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (guest_view::GuestViewBase::IsGuest(rfh)) {
     GetGuestViewDefaultContentSettingRules(is_off_the_record, rules);
     return;
   }
 #endif
-  // Always allow scripting in PDF renderers to retain the functionality of
-  // the scripted messaging proxy in between the plugins in the PDF renderers
-  // and the PDF extension UI. Content settings for JavaScript embedded in
-  // PDFs are enforced by the PDF plugin.
-  if (rfh->GetProcess()->IsPdf()) {
-    rules->script_rules.clear();
-    rules->script_rules.emplace_back(
-        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-        std::string(), is_off_the_record);
-  }
-}
-
-browsing_data::CookieHelper::IsDeletionDisabledCallback
-PageSpecificContentSettingsDelegate::GetIsDeletionDisabledCallback() {
-  return CookiesTreeModel::GetCookieDeletionDisabledCallback(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
 }
 
 PageSpecificContentSettings::MicrophoneCameraState
@@ -279,9 +254,41 @@ void PageSpecificContentSettingsDelegate::OnContentBlocked(
   }
 }
 
+bool PageSpecificContentSettingsDelegate::IsBlockedOnSystemLevel(
+    ContentSettingsType type) {
+  DCHECK(type == ContentSettingsType::MEDIASTREAM_MIC ||
+         type == ContentSettingsType::MEDIASTREAM_CAMERA);
+
+  return system_permission_settings::IsDenied(type);
+}
+
+bool PageSpecificContentSettingsDelegate::IsFrameAllowlistedForJavaScript(
+    content::RenderFrameHost* render_frame_host) {
+#if BUILDFLAG(ENABLE_PDF)
+  // OOPIF PDF viewer only.
+  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
+    return false;
+  }
+
+  // There should be a `pdf::PdfViewerStreamManager` if `render_frame_host`'s
+  // `content::WebContents` has a PDF.
+  auto* pdf_viewer_stream_manager =
+      pdf::PdfViewerStreamManager::FromRenderFrameHost(render_frame_host);
+  if (!pdf_viewer_stream_manager) {
+    return false;
+  }
+
+  // Allow the PDF extension frame and PDF content frame to use JavaScript.
+  if (pdf_viewer_stream_manager->IsPdfExtensionHost(render_frame_host) ||
+      pdf_viewer_stream_manager->IsPdfContentHost(render_frame_host)) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+  return false;
+}
+
 void PageSpecificContentSettingsDelegate::PrimaryPageChanged(
     content::Page& page) {
   ClearPendingProtocolHandler();
 }
-
-}  // namespace chrome

@@ -9,9 +9,9 @@
 namespace webapps {
 
 bool IsSuccess(InstallResultCode code) {
-  // TODO(crbug.com/1296447): enumerate all the constants instead of the default
-  // clause to prevent accidentally implicitly returning false on any newly
-  // added value.
+  // TODO(crbug.com/40821686): enumerate all the constants instead of the
+  // default clause to prevent accidentally implicitly returning false on any
+  // newly added value.
   switch (code) {
     case InstallResultCode::kSuccessNewInstall:
     case InstallResultCode::kSuccessAlreadyInstalled:

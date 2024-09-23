@@ -91,6 +91,10 @@ interface DetailsProvider {
   // If the mode is enabled, this will disable it. Conversely, if it is disabled
   // this will enable it.
   ToggleBatterySaverMode();
+
+  // Refreshes the tab CPU measurements as if the CPU health tracker queries
+  // for tab CPU usage data naturally.
+  RefreshPerformanceTabCpuMeasurements();
 };
 
 // Represents the momentary state of a Page node. Sent from browser to the

@@ -9,6 +9,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -35,12 +36,13 @@ class OverviewDropTargetView : public views::View {
     SetUseDefaultFillLayout(true);
 
     background_view_ = AddChildView(std::make_unique<views::View>());
+
+    const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
     background_view_->SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorAshShieldAndBase20, kWindowMiniViewCornerRadius,
-        /*for_border_thickness=*/0));
+        kColorAshShieldAndBase20, corner_radius));
 
     SetBorder(views::CreateThemedRoundedRectBorder(
-        kDropTargetBorderThickness, kWindowMiniViewCornerRadius,
+        kDropTargetBorderThickness, corner_radius,
         cros_tokens::kCrosSysSystemBaseElevated));
   }
   OverviewDropTargetView(const OverviewDropTargetView&) = delete;
@@ -76,6 +78,20 @@ void OverviewDropTarget::UpdateBackgroundVisibility(
   drop_target_view->UpdateBackgroundVisibility(
       item_widget_->GetWindowBoundsInScreen().Contains(location_in_screen));
 }
+
+void OverviewDropTarget::SetOpacity(float opacity) {}
+
+aura::Window::Windows OverviewDropTarget::GetWindowsForHomeGesture() {
+  return {item_widget_->GetNativeWindow()};
+}
+
+void OverviewDropTarget::HideForSavedDeskLibrary(bool animate) {}
+
+void OverviewDropTarget::RevertHideForSavedDeskLibrary(bool animate) {}
+
+void OverviewDropTarget::UpdateMirrorsForDragging(bool is_touch_dragging) {}
+
+void OverviewDropTarget::DestroyMirrorsForDragging() {}
 
 aura::Window* OverviewDropTarget::GetWindow() {
   return nullptr;
@@ -132,8 +148,7 @@ void OverviewDropTarget::ScaleUpSelectedItem(
 
 void OverviewDropTarget::EnsureVisible() {}
 
-std::vector<OverviewFocusableView*> OverviewDropTarget::GetFocusableViews()
-    const {
+std::vector<views::Widget*> OverviewDropTarget::GetFocusableWidgets() {
   return {};
 }
 
@@ -141,9 +156,11 @@ views::View* OverviewDropTarget::GetBackDropView() const {
   return nullptr;
 }
 
-void OverviewDropTarget::UpdateRoundedCornersAndShadow() {}
+bool OverviewDropTarget::ShouldHaveShadow() const {
+  return false;
+}
 
-void OverviewDropTarget::SetOpacity(float opacity) {}
+void OverviewDropTarget::UpdateRoundedCornersAndShadow() {}
 
 float OverviewDropTarget::GetOpacity() const {
   return 1.f;
@@ -151,19 +168,15 @@ float OverviewDropTarget::GetOpacity() const {
 
 void OverviewDropTarget::PrepareForOverview() {}
 
+void OverviewDropTarget::SetShouldUseSpawnAnimation(bool value) {}
+
 void OverviewDropTarget::OnStartingAnimationComplete() {}
-
-void OverviewDropTarget::HideForSavedDeskLibrary(bool animate) {}
-
-void OverviewDropTarget::RevertHideForSavedDeskLibrary(bool animate) {}
-
-void OverviewDropTarget::CloseWindows() {}
 
 void OverviewDropTarget::Restack() {}
 
 void OverviewDropTarget::StartDrag() {}
 
-void OverviewDropTarget::OnOverviewItemDragStarted(OverviewItemBase* item) {}
+void OverviewDropTarget::OnOverviewItemDragStarted() {}
 
 void OverviewDropTarget::OnOverviewItemDragEnded(bool snap) {}
 
@@ -171,21 +184,11 @@ void OverviewDropTarget::OnOverviewItemContinuousScroll(
     const gfx::Transform& target_transform,
     float scroll_ratio) {}
 
-void OverviewDropTarget::SetVisibleDuringItemDragging(bool visible,
-                                                      bool animate) {
-  SetWindowsVisibleDuringItemDragging({item_widget_->GetNativeWindow()},
-                                      visible, animate);
-}
-
 void OverviewDropTarget::UpdateCannotSnapWarningVisibility(bool animate) {}
 
 void OverviewDropTarget::HideCannotSnapWarning(bool animate) {}
 
 void OverviewDropTarget::OnMovingItemToAnotherDesk() {}
-
-void OverviewDropTarget::UpdateMirrorsForDragging(bool is_touch_dragging) {}
-
-void OverviewDropTarget::DestroyMirrorsForDragging() {}
 
 void OverviewDropTarget::Shutdown() {}
 
@@ -193,15 +196,11 @@ void OverviewDropTarget::AnimateAndCloseItem(bool up) {}
 
 void OverviewDropTarget::StopWidgetAnimation() {}
 
-OverviewGridWindowFillMode OverviewDropTarget::GetWindowDimensionsType() const {
-  return OverviewGridWindowFillMode::kNormal;
+OverviewItemFillMode OverviewDropTarget::GetOverviewItemFillMode() const {
+  return OverviewItemFillMode::kNormal;
 }
 
-void OverviewDropTarget::UpdateWindowDimensionsType() {}
-
-gfx::Point OverviewDropTarget::GetMagnifierFocusPointInScreen() const {
-  return gfx::Point();
-}
+void OverviewDropTarget::UpdateOverviewItemFillMode() {}
 
 const gfx::RoundedCornersF OverviewDropTarget::GetRoundedCorners() const {
   return gfx::RoundedCornersF();

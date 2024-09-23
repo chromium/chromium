@@ -1,0 +1,33 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/test.gni")
+
+assert(is_chromeos_ash)
+
+component("ash") {
+  defines = [ "IS_COMPONENT_UPDATER_ASH_IMPL" ]
+
+  deps = [ "//base" ]
+
+  sources = [
+    "component_manager_ash.cc",
+    "component_manager_ash.h",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  deps = [
+    ":ash",
+    "//base",
+  ]
+
+  sources = [
+    "fake_component_manager_ash.cc",
+    "fake_component_manager_ash.h",
+  ]
+}

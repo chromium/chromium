@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/all_plus_addresses_bottom_sheet"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/sheet_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:layout_marginStart="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:layout_marginTop="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+    <TextView
+        android:id="@+id/sheet_warning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:layout_marginStart="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:layout_marginTop="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+    <SearchView
+        android:id="@+id/all_plus_addresses_search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:iconifiedByDefault="false"
+        android:layout_marginEnd="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:layout_marginBottom="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:layout_marginTop="@dimen/all_plus_addresses_bottom_sheet_padding" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/sheet_item_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginEnd="@dimen/all_plus_addresses_bottom_sheet_padding"
+        android:layout_marginStart="@dimen/all_plus_addresses_bottom_sheet_padding" />
+
+</LinearLayout>

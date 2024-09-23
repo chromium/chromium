@@ -15,25 +15,17 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 namespace {
 
 class IMEDetailedViewPixelTest : public AshTestBase {
  public:
-  IMEDetailedViewPixelTest() {
-    feature_list_.InitWithFeatures({chromeos::features::kJelly}, {});
-  }
-
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(IMEDetailedViewPixelTest, Basics) {

@@ -6,15 +6,12 @@
 #define COMPONENTS_METRICS_STRUCTURED_LIB_KEY_DATA_PROVIDER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/metrics/structured/lib/key_data.h"
-
-namespace base {
-class FilePath;
-}
 
 namespace metrics::structured {
 
@@ -46,9 +43,6 @@ class KeyDataProvider {
 
   // Returns true if the keys are ready to be used.
   virtual bool IsReady() = 0;
-
-  // Called whenever a profile is added.
-  virtual void OnProfileAdded(const base::FilePath& profile_path) = 0;
 
   // Retrieves the ID for given |project_name|.
   //
@@ -85,4 +79,4 @@ class KeyDataProvider {
 
 }  // namespace metrics::structured
 
-#endif  // COMPONENTS_METRICS_STRUCTURED_KEY_DATA_PROVIDER_H_
+#endif  // COMPONENTS_METRICS_STRUCTURED_LIB_KEY_DATA_PROVIDER_H_

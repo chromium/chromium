@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src='../../../../../resources/gesture-util.js'></script>
+<style>
+  html {
+    height: 2000px;
+    width: 2000px;
+  }
+</style>
+
+<script>
+const programmaticScrollY = 10;
+
+// Schedule programmatic scroll once the user scroll has started. 
+function instantScrollPromise() {
+  return new Promise((resolve, reject) => {
+    const scrollListener = () => {
+      if (document.scrollingElement.scrollTop > 0) {
+        document.scrollingElement.scrollBy({
+            top: programmaticScrollY, behavior: "instant"});
+        resolve();
+      } else {
+        reject('failed to scroll');
+      }
+    }
+    window.addEventListener('scroll', scrollListener, { once: true });
+  });
+}
+
+// Wait for 2 scrollend events to arrive. One from programmatic instant scroll,
+// and another one from the smooth user scroll. 
+function scrollendPromise() {
+  return new Promise((resolve, reject) => {
+    let scrollendCount = 0;
+    window.addEventListener('scrollend', () => {
+      scrollendCount++;
+      if (scrollendCount == 2) {
+        resolve();
+      }
+    })
+  });
+}
+
+promise_test(async () => {
+  await waitForCompositorCommit();
+  await waitForScrollReset(document.scrollingElement);
+  const pos = {x: 20, y: 20};
+  await Promise.all([
+    wheelTick(/*scroll_tick_x=*/0, /*scroll_tick_y=*/1, pos, SPEED_INSTANT),
+    instantScrollPromise(),
+    scrollendPromise(),
+  ]);
+  assert_equals(
+      document.scrollingElement.scrollTop,
+      pixelsPerTick() + programmaticScrollY);
+}, "This test ensures that smooth input driven user scrolls get adjusted " +
+   "by programmatic instant scrolls.");
+</script>

@@ -155,7 +155,7 @@ void SSLVersionToString(const char** name, int ssl_version) {
       *name = "QUIC";
       break;
     default:
-      NOTREACHED() << ssl_version;
+      NOTREACHED_IN_MIGRATION() << ssl_version;
       *name = "???";
       break;
   }

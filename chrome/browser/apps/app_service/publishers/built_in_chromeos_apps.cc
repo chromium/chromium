@@ -10,7 +10,6 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/app_menu_constants.h"
-#include "ash/public/cpp/keyboard_shortcut_viewer.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -84,16 +83,15 @@ void BuiltInChromeOsApps::Launch(const std::string& app_id,
                                  int32_t event_flags,
                                  LaunchSource launch_source,
                                  WindowInfoPtr window_info) {
-  if (app_id == ash::kInternalAppIdKeyboardShortcutViewer) {
-    ash::ToggleKeyboardShortcutViewer();
-  }
+  // TODO(longbowei): Remove BuiltInChromeOsApps code if no longer needed.
+  NOTIMPLEMENTED();
 }
 
 void BuiltInChromeOsApps::LaunchAppWithParams(AppLaunchParams&& params,
                                               LaunchCallback callback) {
   Launch(params.app_id, ui::EF_NONE, LaunchSource::kUnknown, nullptr);
 
-  // TODO(crbug.com/1244506): Add launch return value.
+  // TODO(crbug.com/40787924): Add launch return value.
   std::move(callback).Run(LaunchResult());
 }
 

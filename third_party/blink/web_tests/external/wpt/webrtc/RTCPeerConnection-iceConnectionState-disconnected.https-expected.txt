@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] ICE restart when ICE is disconnected results in checking, then connected
+  assert_equals: expected "checking" but got "connected"
+Harness: the test ran to completion.
+

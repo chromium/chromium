@@ -5,14 +5,14 @@
 import 'chrome://intro/dice_app.js';
 
 import {IntroBrowserProxyImpl} from 'chrome://intro/browser_proxy.js';
-import type {IntroAppElement} from 'chrome://intro/dice_app.js';
+import type {DiceAppElement} from 'chrome://intro/dice_app.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestIntroBrowserProxy} from './test_intro_browser_proxy.js';
 
 suite('DiceAppTest', function() {
-  let testElement: IntroAppElement;
+  let testElement: DiceAppElement;
   let testBrowserProxy: TestIntroBrowserProxy;
 
   setup(function() {

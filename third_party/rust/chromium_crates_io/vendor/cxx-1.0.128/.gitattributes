@@ -1,0 +1,3 @@
+MODULE.bazel.lock linguist-generated
+third-party/BUCK linguist-generated
+third-party/bazel/** linguist-generated

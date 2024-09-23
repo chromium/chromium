@@ -384,7 +384,7 @@ void BackendIO::ExecuteBackendOperation() {
       result_ = net::OK;
       break;
     default:
-      NOTREACHED() << "Invalid Operation";
+      NOTREACHED_IN_MIGRATION() << "Invalid Operation";
       result_ = net::ERR_UNEXPECTED;
   }
   DCHECK_NE(net::ERR_IO_PENDING, result_);
@@ -428,7 +428,7 @@ void BackendIO::ExecuteEntryOperation() {
           base::BindOnce(&BackendIO::OnIOComplete, this));
       break;
     default:
-      NOTREACHED() << "Invalid Operation";
+      NOTREACHED_IN_MIGRATION() << "Invalid Operation";
       result_ = net::ERR_UNEXPECTED;
   }
   buf_ = nullptr;

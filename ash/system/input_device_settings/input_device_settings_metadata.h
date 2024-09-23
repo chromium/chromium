@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_METADATA_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "base/containers/flat_map.h"
@@ -21,14 +22,44 @@ enum class DeviceType {
   kMouse = 3,
 };
 
+enum class MetadataTier {
+  kNoMetadata = 0,
+  kClassificationOnly = 1,
+  kHasButtonConfig = 2,
+  kMaxValue = kHasButtonConfig,
+};
+
+enum class DeviceImageDestination {
+  kNotification = 0,
+  kSettings = 1,
+};
+
 struct ASH_EXPORT MouseMetadata {
+  MouseMetadata();
+  MouseMetadata(mojom::CustomizationRestriction customization_restriction,
+                mojom::MouseButtonConfig config,
+                std::optional<std::string> name = std::nullopt);
+  ~MouseMetadata();
+  MouseMetadata(const MouseMetadata& other);
+
   mojom::CustomizationRestriction customization_restriction;
   mojom::MouseButtonConfig mouse_button_config;
+  std::optional<std::string> name = std::nullopt;
   bool operator==(const MouseMetadata& other) const;
 };
 
 struct ASH_EXPORT GraphicsTabletMetadata {
+  GraphicsTabletMetadata();
+  GraphicsTabletMetadata(
+      mojom::CustomizationRestriction customization_restriction,
+      mojom::GraphicsTabletButtonConfig config,
+      std::optional<std::string> name = std::nullopt);
+  ~GraphicsTabletMetadata();
+  GraphicsTabletMetadata(const GraphicsTabletMetadata& other);
+
   mojom::CustomizationRestriction customization_restriction;
+  mojom::GraphicsTabletButtonConfig graphics_tablet_button_config;
+  std::optional<std::string> name = std::nullopt;
   bool operator==(const GraphicsTabletMetadata& other) const;
 };
 
@@ -80,6 +111,18 @@ GetKeyboardMetadataList();
 // This function returns the button remapping list from the peripherals.
 ASH_EXPORT std::vector<mojom::ButtonRemappingPtr>
 GetButtonRemappingListForConfig(mojom::MouseButtonConfig mouse_button_config);
+
+// This function returns the button remapping list for pen buttons based on the
+// config.
+ASH_EXPORT std::vector<mojom::ButtonRemappingPtr>
+GetPenButtonRemappingListForConfig(
+    mojom::GraphicsTabletButtonConfig graphics_tablet_button_config);
+
+// This function returns the button remapping list for tablet buttons based on
+// the config.
+ASH_EXPORT std::vector<mojom::ButtonRemappingPtr>
+GetTabletButtonRemappingListForConfig(
+    mojom::GraphicsTabletButtonConfig graphics_tablet_button_config);
 
 // This function returns the vid pid alias list.
 ASH_EXPORT const base::flat_map<VendorProductId, VendorProductId>&

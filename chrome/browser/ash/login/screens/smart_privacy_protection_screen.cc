@@ -24,6 +24,7 @@ constexpr const char kUserActionShowLearnMore[] = "show-learn-more";
 
 // static
 std::string SmartPrivacyProtectionScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kProceedWithFeatureOn:
       return "ContinueWithFeatureOn";
@@ -32,6 +33,7 @@ std::string SmartPrivacyProtectionScreen::GetResultString(Result result) {
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 SmartPrivacyProtectionScreen::SmartPrivacyProtectionScreen(

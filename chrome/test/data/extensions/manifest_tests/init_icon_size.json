@@ -1,6 +1,6 @@
 {
   "name": "my extension",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "1.0.0.0",
   "icons": {
     "16": "16.png",

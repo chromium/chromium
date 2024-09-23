@@ -73,6 +73,9 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
   // Return true if any of the VMs is using the device. Note that if the camera
   // privacy switch is on, this always returns false for `kCamera`.
   bool IsDeviceActive(DeviceType device) const;
+  // Return true if the selected VM is using the device. Note that if the camera
+  // privacy switch is on, this always returns false for `kCamera`.
+  bool IsDeviceActive(VmType vm, DeviceType device) const;
   // Return true if any of the VMs is displaying the `notification`.
   bool IsNotificationActive(NotificationType notification) const;
 

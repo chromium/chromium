@@ -29,6 +29,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_filter.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "device/bluetooth/bluetooth_local_gatt_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
@@ -43,7 +44,6 @@ namespace device {
 class BluetoothAdvertisement;
 class BluetoothDiscoveryFilter;
 class BluetoothDiscoverySession;
-class BluetoothLocalGattService;
 #if BUILDFLAG(IS_CHROMEOS)
 class BluetoothLowEnergyScanFilter;
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -236,7 +236,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     //   GetCharacteristic(s)
     //   GetDescriptor(s)
     //
-    // TODO(710352): Remove Service, Characteristic, & Descriptor Added/Removed.
+    // TODO(crbug.com/41312390): Remove Service, Characteristic, & Descriptor
+    // Added/Removed.
 
     // See "Deprecated GATT Added/Removed Events NOTE" above.
     //
@@ -261,8 +262,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     virtual void GattServicesDiscovered(BluetoothAdapter* adapter,
                                         BluetoothDevice* device) {}
 
-    // TODO(782494): Deprecated & not functional on all platforms. Use
-    // GattServicesDiscovered.
+    // TODO(crbug.com/41354033): Deprecated & not functional on all platforms.
+    // Use GattServicesDiscovered.
     //
     // Called when all characteristic and descriptor discovery procedures are
     // known to be completed for the GATT service |service|. This method will be
@@ -372,6 +373,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     std::optional<bool> require_authentication;
   };
 
+  enum class DiscoveryState {
+    kStarting = 0,
+    kStopping,
+    kDiscovering,
+    kIdle,
+  };
+
+  enum class PermissionStatus { kUndetermined = 0, kDenied, kAllowed };
+
   // The ErrorCallback is used for methods that can fail in which case it is
   // called, in the success case the callback is simply not called.
   using ErrorCallback = base::OnceClosure;
@@ -401,15 +411,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   using DiscoverySessionResultCallback =
       base::OnceCallback<void(/*is_error*/ bool,
                               UMABluetoothDiscoverySessionOutcome)>;
-
-  enum class DiscoveryState {
-    kStarting = 0,
-    kStopping,
-    kDiscovering,
-    kIdle,
-  };
-
-  enum class PermissionStatus { kUndetermined = 0, kDenied, kAllowed };
+  using RequestSystemPermissionCallback =
+      base::OnceCallback<void(BluetoothAdapter::PermissionStatus)>;
 
   // Creates a new adapter. Initialize() must be called before the adapter can
   // be used.
@@ -448,7 +451,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
 
   // Set the human-readable name of the adapter to |name|. On success,
   // |callback| will be called. On failure, |error_callback| will be called.
-  // TODO(crbug.com/1117654): Implement a mechanism to request this resource
+  // TODO(crbug.com/40145221): Implement a mechanism to request this resource
   // before being able to use it.
   virtual void SetName(const std::string& name,
                        base::OnceClosure callback,
@@ -472,6 +475,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
 
   // Returns the status of the browser's Bluetooth permission status.
   virtual PermissionStatus GetOsPermissionStatus() const;
+
+  // Request Bluetooth system permission. For platforms that require Bluetooth
+  // system permission for accessing Bluetooth devices, it triggers system
+  // permission prompt. `callback` will be invoked when the system permission is
+  // determined or `this` is destructed.
+  virtual void RequestSystemPermission(
+      RequestSystemPermissionCallback callback);
 
   // Requests a change to the adapter radio power. Setting |powered| to true
   // will turn on the radio and false will turn it off. On success, |callback|
@@ -519,7 +529,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   // being connected by Chromium, into |devices_|. This method is useful since
   // a discovery session cannot find devices that are already connected to the
   // computer.
-  // TODO(crbug.com/653032): Needs to be implemented for Android and Windows.
+  // TODO(crbug.com/40487754): Needs to be implemented for Android and Windows.
   virtual std::unordered_map<BluetoothDevice*, BluetoothDevice::UUIDSet>
   RetrieveGattConnectedDevicesWithDiscoveryFilter(
       const BluetoothDiscoveryFilter& discovery_filter);
@@ -636,10 +646,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
       CreateAdvertisementCallback callback,
       AdvertisementErrorCallback error_callback) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Indicates whether LE extended advertising is supported.
-  virtual bool IsExtendedAdvertisementsAvailable() const = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  virtual bool IsExtendedAdvertisementsAvailable() const;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Sets the interval between two consecutive advertisements. Valid ranges
@@ -679,6 +687,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   // given identifier. Returns NULL if the service doesn't exist.
   virtual BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const = 0;
+
+  // Creates a GATT services associated with this adapter with the
+  // given identifier. Currently only derived and implemented on BlueZ and
+  // Floss. All other platforms use default behavior of returning nullptr.
+  virtual base::WeakPtr<BluetoothLocalGattService> CreateLocalGattService(
+      const BluetoothUUID& uuid,
+      bool is_primary,
+      BluetoothLocalGattService::Delegate* delegate);
 
   // The following methods are used to send various events to observers.
   void NotifyAdapterPresentChanged(bool present);
@@ -916,11 +932,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   // Number of DiscoverySessions with the status of SCANNING.
   int NumScanningDiscoverySessions() const;
 
+  // Clear `devices_` and send device removed event for each one of them.
+  void ClearAllDevices();
+
   // UI thread task runner.
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
   // Observers of BluetoothAdapter, notified from implementation subclasses.
-  base::ObserverList<device::BluetoothAdapter::Observer>::Unchecked observers_;
+  base::ObserverList<device::BluetoothAdapter::Observer>::
+      UncheckedAndDanglingUntriaged observers_;
 
   // Devices paired with, connected to, discovered by, or visible to the
   // adapter. The key is the Bluetooth address of the device and the value is

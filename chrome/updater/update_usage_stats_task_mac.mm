@@ -79,4 +79,10 @@ bool OtherAppUsageStatsAllowed(const std::vector<std::string>& app_ids,
   return false;
 }
 
+bool AreRawUsageStatsEnabled(
+    UpdaterScope scope,
+    const std::vector<std::string>& include_only_these_app_ids) {
+  return false;
+}
+
 }  // namespace updater

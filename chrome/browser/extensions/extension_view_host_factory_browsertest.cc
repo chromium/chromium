@@ -4,13 +4,11 @@
 
 #include "chrome/browser/extensions/extension_view_host_factory.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 
 namespace extensions {
@@ -36,20 +34,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest, CreateExtensionHosts) {
   EXPECT_EQ(mojom::ViewType::kExtensionPopup, host->extension_host_type());
 }
 
-class ExtensionSidePanelViewHostFactoryTest : public ExtensionBrowserTest {
- public:
-  ExtensionSidePanelViewHostFactoryTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionSidePanelIntegration);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests that side panel hosts are created with the correct profile and
 // browsers.
-IN_PROC_BROWSER_TEST_F(ExtensionSidePanelViewHostFactoryTest,
+IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest,
                        CreateExtensionSidePanelHost) {
   // Load a very simple extension with just a background page.
   scoped_refptr<const Extension> extension =

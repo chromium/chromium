@@ -1,0 +1,580 @@
+{
+  "description": "Limits for aggregatable debug reports",
+  "api_config": {
+    "needs_aggregatable_debug": true,
+    "max_aggregatable_debug_reports_per_source": "2",
+    "max_aggregatable_debug_budget_per_context_site": "65537"
+  },
+  "input": {
+    "registrations": [
+      // Creates an aggregatable debug report.
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "aggregation_keys": {
+                  "a": "0x1"
+                },
+                "aggregatable_debug_reporting": {
+                  "budget": 1000,
+                  "key_piece": "0x159",
+                  "debug_data": [
+                    {
+                      "types": ["unspecified"],
+                      "key_piece": "0x1000",
+                      "value": 990
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Attribution-success not supported, creates a null report.
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1",
+                    "deduplication_key": "1"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 123
+                },
+                "aggregatable_deduplication_keys": [
+                  {
+                    "deduplication_key": "1"
+                  }
+                ],
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x1",
+                  "debug_data": [
+                    {
+                      "types": ["unspecified"],
+                      "key_piece": "0x2",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Insufficient budget as the required budget is 11, creates a null report.
+      {
+        "timestamp": "2000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "deduplication_key": "1"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 456
+                },
+                "aggregatable_deduplication_keys": [
+                  {
+                    "deduplication_key": "1"
+                  }
+                ],
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x2",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-event-deduplicated"],
+                      "key_piece": "0xf",
+                      "value": 6
+                    },
+                    {
+                      "types": ["unspecified"],
+                      "key_piece": "0xff",
+                      "value": 5
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Creates an aggregatable debug report.
+      {
+        "timestamp": "3000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "deduplication_key": "1"
+                  }
+                ],
+                "aggregatable_values": {
+                  "a": 654
+                },
+                "aggregatable_deduplication_keys": [
+                  {
+                    "deduplication_key": "1"
+                  }
+                ],
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x1000",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-event-deduplicated"],
+                      "key_piece": "0x123",
+                      "value": 4
+                    },
+                    {
+                      "types": ["trigger-aggregate-deduplicated"],
+                      "key_piece": "0x321",
+                      "value": 5
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Hits max reports per source limit, creates a null report.
+      {
+        "timestamp": "4000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [{}],
+                "filters": {
+                  "source_type": ["event"]
+                },
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x3",
+                  "debug_data": [
+                    {
+                      "types": ["unspecified"],
+                      "key_piece": "0x456",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Hits both global and per reporting site rate-limits, creates a null report.
+      {
+        "timestamp": "5000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://a.reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [{}],
+                "filters": {
+                  "source_type": ["event"]
+                },
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x1",
+                  "debug_data": [
+                    {
+                      "types": ["unspecified"],
+                      "key_piece": "0x321",
+                      "value": 65529
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Hits per reporting site rate-limit, creates a null report.
+      {
+        "timestamp": "6000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://a.reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [{}],
+                "filters": {
+                  "source_type": ["event"]
+                },
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x4",
+                  "debug_data": [
+                    {
+                      "types": ["unspecified"],
+                      "key_piece": "0x3",
+                      "value": 65528
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Changes to a different reporting site but still hits global rate-limit,
+      // creates a null report.
+      {
+        "timestamp": "7000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter1.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [{}],
+                "filters": {
+                  "source_type": ["event"]
+                },
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x5",
+                  "debug_data": [
+                    {
+                      "types": ["unspecified"],
+                      "key_piece": "0x6",
+                      "value": 65529
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // A different context site, creates an aggregatable debug report.
+      {
+        "timestamp": "8000",
+        "registration_request": {
+          "context_origin": "https://destination1.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [{}],
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x12f",
+                  "debug_data": [
+                    {
+                      "types": ["unspecified"],
+                      "key_piece": "0x6",
+                      "value": 65536
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // The aggregatable debug report created at T=3000 falls outside the rate-limit window,
+      // creates an aggregatable debug report.
+      {
+        "timestamp": "86403000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://a.reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [{}],
+                "filters": {
+                  "source_type": ["event"]
+                },
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0xf23",
+                  "debug_data": [
+                    {
+                      "types": ["unspecified"],
+                      "key_piece": "0x8",
+                      "value": 65536
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x1159",
+            "value": 990
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "0",
+            "version": "1.0"
+          }
+        },
+        "report_time": "0",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "1",
+            "version": "1.0"
+          }
+        },
+        "report_time": "1000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "2",
+            "version": "1.0"
+          }
+        },
+        "report_time": "2000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x117b",
+            "value": 4
+          }, {
+            "id": "0",
+            "key": "0x1379",
+            "value": 5
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3",
+            "version": "1.0"
+          }
+        },
+        "report_time": "3000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "4",
+            "version": "1.0"
+          }
+        },
+        "report_time": "4000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://a.reporter.test",
+            "scheduled_report_time": "5",
+            "version": "1.0"
+          }
+        },
+        "report_time": "5000",
+        "report_url": "https://a.reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://a.reporter.test",
+            "scheduled_report_time": "6",
+            "version": "1.0"
+          }
+        },
+        "report_time": "6000",
+        "report_url": "https://a.reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter1.test",
+            "scheduled_report_time": "7",
+            "version": "1.0"
+          }
+        },
+        "report_time": "7000",
+        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x12f",
+            "value": 65536
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination1.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "8",
+            "version": "1.0"
+          }
+        },
+        "report_time": "8000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x1",
+            "value": 123
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3601",
+            "version": "1.0"
+          }
+        },
+        "report_time": "3601000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0xf2b",
+            "value": 65536
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://a.reporter.test",
+            "scheduled_report_time": "86403",
+            "version": "1.0"
+          }
+        },
+        "report_time": "86403000",
+        "report_url": "https://a.reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172800",
+          "source_event_id": "0",
+          "source_type": "navigation",
+          "trigger_data": "1"
+        },
+        "report_time": "172800000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
+      }
+    ]
+  }
+}

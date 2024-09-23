@@ -12,45 +12,84 @@
 #include "device/bluetooth/bluetooth_socket_mac.h"
 
 // A simple delegate class for an open L2CAP channel that forwards methods to
-// its wrapped |channel_|.
+// its wrapped `_channel`.
 @interface BluetoothL2capChannelDelegate
     : NSObject <IOBluetoothL2CAPChannelDelegate> {
  @private
   raw_ptr<device::BluetoothL2capChannelMac> _channel;  // weak
+  IOBluetoothL2CAPChannel* __strong _l2capChannel;
+
+  // While `_l2capChannel` is open, the delegate holds a strong reference to
+  // itself to ensure it is not destroyed before l2capChannelClosed is
+  // received. This is a workaround for a macOS bug, see Apple Feedback report
+  // FB13705522.
+  BluetoothL2capChannelDelegate* __strong _strongSelf;
 }
 
-- (instancetype)initWithChannel:(device::BluetoothL2capChannelMac*)channel;
+- (instancetype)initWithChannel:(device::BluetoothL2capChannelMac*)channel
+                   l2capChannel:(IOBluetoothL2CAPChannel*)l2capChannel;
 
 @end
 
 @implementation BluetoothL2capChannelDelegate
 
-- (instancetype)initWithChannel:(device::BluetoothL2capChannelMac*)channel {
-  if ((self = [super init]))
+- (instancetype)initWithChannel:(device::BluetoothL2capChannelMac*)channel
+                   l2capChannel:(IOBluetoothL2CAPChannel*)l2capChannel {
+  if ((self = [super init])) {
     _channel = channel;
+    _l2capChannel = l2capChannel;
+  }
 
   return self;
 }
 
 - (void)l2capChannelOpenComplete:(IOBluetoothL2CAPChannel*)l2capChannel
                           status:(IOReturn)error {
-  _channel->OnChannelOpenComplete(l2capChannel, error);
+  if (error == kIOReturnSuccess) {
+    // Keep the delegate alive until l2capChannelClosed.
+    _strongSelf = self;
+  }
+  if (_channel) {
+    _channel->OnChannelOpenComplete(l2capChannel, error);
+  }
 }
 
 - (void)l2capChannelWriteComplete:(IOBluetoothL2CAPChannel*)l2capChannel
                            refcon:(void*)refcon
                            status:(IOReturn)error {
-  _channel->OnChannelWriteComplete(l2capChannel, refcon, error);
+  if (_channel) {
+    _channel->OnChannelWriteComplete(l2capChannel, refcon, error);
+  }
 }
 
 - (void)l2capChannelData:(IOBluetoothL2CAPChannel*)l2capChannel
                     data:(void*)dataPointer
                   length:(size_t)dataLength {
-  _channel->OnChannelDataReceived(l2capChannel, dataPointer, dataLength);
+  if (_channel) {
+    _channel->OnChannelDataReceived(l2capChannel, dataPointer, dataLength);
+  }
 }
 
 - (void)l2capChannelClosed:(IOBluetoothL2CAPChannel*)l2capChannel {
-  _channel->OnChannelClosed(l2capChannel);
+  [_l2capChannel setDelegate:nil];
+
+  // If `_channel` still exists, notify it that the channel was closed so it
+  // can release its strong references to `l2capChannel` and the channel
+  // delegate (this object). In the typical case we expect `_channel` has
+  // already been destroyed.
+  if (_channel) {
+    _channel->OnChannelClosed(l2capChannel);
+  }
+
+  // Remove the last owning references to the channel and delegate. After
+  // releasing `_strongSelf` this object may be destroyed, so the only safe
+  // thing to do is return.
+  _l2capChannel = nil;
+  _strongSelf = nil;
+}
+
+- (void)resetOwner {
+  _channel = nullptr;
 }
 
 @end
@@ -66,7 +105,11 @@ BluetoothL2capChannelMac::BluetoothL2capChannelMac(
 }
 
 BluetoothL2capChannelMac::~BluetoothL2capChannelMac() {
-  [channel_ setDelegate:nil];
+  // If `channel_` is opened, `delegate_` and `channel_` are allowed to persist
+  // until the delegate is notified that the channel has been closed. Reset the
+  // delegate's reference to this object so the delegate will not notify us
+  // for events that occur after our destruction.
+  [delegate_ resetOwner];
   [channel_ closeChannel];
 }
 
@@ -101,7 +144,8 @@ void BluetoothL2capChannelMac::SetSocket(BluetoothSocketMac* socket) {
   // Now that the socket is set, it's safe to associate a delegate, which can
   // call back to the socket.
   DCHECK(!delegate_);
-  delegate_ = [[BluetoothL2capChannelDelegate alloc] initWithChannel:this];
+  delegate_ = [[BluetoothL2capChannelDelegate alloc] initWithChannel:this
+                                                        l2capChannel:channel_];
   [channel_ setDelegate:delegate_];
 }
 
@@ -138,6 +182,9 @@ void BluetoothL2capChannelMac::OnChannelOpenComplete(
 void BluetoothL2capChannelMac::OnChannelClosed(
     IOBluetoothL2CAPChannel* channel) {
   DCHECK_EQ(channel_, channel);
+  channel_ = nil;
+  [delegate_ resetOwner];
+  delegate_ = nil;
   socket()->OnChannelClosed();
 }
 

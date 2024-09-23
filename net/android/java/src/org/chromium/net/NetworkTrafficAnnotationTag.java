@@ -54,17 +54,17 @@ public class NetworkTrafficAnnotationTag {
         return new NetworkTrafficAnnotationTag(uniqueId);
     }
 
-    // TODO(crbug.com/1231780): Add Partial, Completing, Branched-Completing, and
+    // TODO(crbug.com/40190832): Add Partial, Completing, Branched-Completing, and
     // Mutable(?) factory methods.
 
     /**
      * At runtime, an annotation tag is just a hashCode. Most of the validation is done on CQ, so
      * there's no point keeping track of everything at runtime.
      *
-     * This field is referenced from C++, so don't change it without updating
+     * <p>This field is referenced from C++, so don't change it without updating
      * net/traffic_annotation/network_traffic_annotation.h.
      */
-    // TODO(crbug.com/1231780): Unlike the C++ version though, the string will still get compiled
+    // TODO(crbug.com/40190832): Unlike the C++ version though, the string will still get compiled
     // into the APK, and get loaded into memory when the constructor is called... Is there a way to
     // tell Java, "No, I don't actually need this string at runtime"? We should investigate.
     private final int mHashCode;

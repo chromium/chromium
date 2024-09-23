@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/rand_util.h"
 
 #include <errno.h>
@@ -26,13 +31,12 @@
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !BUILDFLAG(IS_NACL)
 #include "third_party/lss/linux_syscall_support.h"
 #elif BUILDFLAG(IS_MAC)
-// TODO(crbug.com/995996): Waiting for this header to appear in the iOS SDK.
+// TODO(crbug.com/40641285): Waiting for this header to appear in the iOS SDK.
 // (See below.)
 #include <sys/random.h>
 #endif
 
 #if !BUILDFLAG(IS_NACL)
-#include "third_party/boringssl/src/include/openssl/crypto.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 #endif
 
@@ -77,10 +81,6 @@ void KernelVersionNumbers(int32_t* major_version,
   struct utsname info;
   if (uname(&info) < 0) {
     NOTREACHED();
-    *major_version = 0;
-    *minor_version = 0;
-    *bugfix_version = 0;
-    return;
   }
   int num_read = sscanf(info.release, "%d.%d.%d", major_version, minor_version,
                         bugfix_version);
@@ -176,12 +176,10 @@ bool UseBoringSSLForRandBytes() {
 
 namespace {
 
-void RandBytes(span<uint8_t> output, bool avoid_allocation) {
+void RandBytesInternal(span<uint8_t> output, bool avoid_allocation) {
 #if !BUILDFLAG(IS_NACL)
   // The BoringSSL experiment takes priority over everything else.
   if (!avoid_allocation && internal::UseBoringSSLForRandBytes()) {
-    // Ensure BoringSSL is initialized so it can use things like RDRAND.
-    CRYPTO_library_init();
     // BoringSSL's RAND_bytes always returns 1. Any error aborts the program.
     (void)RAND_bytes(output.data(), output.size());
     return;
@@ -200,7 +198,7 @@ void RandBytes(span<uint8_t> output, bool avoid_allocation) {
     }
   }
 #elif BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/995996): Enable this on iOS too, when sys/random.h arrives
+  // TODO(crbug.com/40641285): Enable this on iOS too, when sys/random.h arrives
   // in its SDK.
   if (getentropy(output.data(), output.size()) == 0) {
     return;
@@ -210,7 +208,7 @@ void RandBytes(span<uint8_t> output, bool avoid_allocation) {
   // If the OS-specific mechanisms didn't work, fall through to reading from
   // urandom.
   //
-  // TODO(crbug.com/995996): When we no longer need to support old Linux
+  // TODO(crbug.com/40641285): When we no longer need to support old Linux
   // kernels, we can get rid of this /dev/urandom branch altogether.
   const int urandom_fd = GetUrandomFD();
   const bool success = ReadFromFD(urandom_fd, as_writable_chars(output));
@@ -223,8 +221,7 @@ namespace internal {
 
 double RandDoubleAvoidAllocation() {
   uint64_t number;
-  RandBytes(as_writable_bytes(make_span(&number, 1u)),
-            /*avoid_allocation=*/true);
+  RandBytesInternal(byte_span_from_ref(number), /*avoid_allocation=*/true);
   // This transformation is explained in rand_util.cc.
   return (number >> 11) * 0x1.0p-53;
 }
@@ -232,11 +229,7 @@ double RandDoubleAvoidAllocation() {
 }  // namespace internal
 
 void RandBytes(span<uint8_t> output) {
-  RandBytes(output, /*avoid_allocation=*/false);
-}
-
-void RandBytes(void* output, size_t output_length) {
-  RandBytes(make_span(static_cast<uint8_t*>(output), output_length));
+  RandBytesInternal(output, /*avoid_allocation=*/false);
 }
 
 int GetUrandomFD() {

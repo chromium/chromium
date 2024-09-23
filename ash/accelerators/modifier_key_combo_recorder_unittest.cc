@@ -58,7 +58,7 @@ TEST_F(ModifierKeyComboRecorderTest, ModifierLocation) {
   keyboard_capability->SetKeyboardInfoForTesting(keyboard,
                                                  std::move(keyboard_info));
 
-  ui::KeyEvent control_event(ui::ET_KEY_PRESSED, ui::VKEY_RCONTROL,
+  ui::KeyEvent control_event(ui::EventType::kKeyPressed, ui::VKEY_RCONTROL,
                              ui::DomCode::CONTROL_RIGHT, ui::EF_CONTROL_DOWN);
   control_event.set_source_device_id(keyboard.id);
   modifier_key_combo_recorder_->OnPrerewriteKeyInputEvent(control_event);
@@ -66,7 +66,8 @@ TEST_F(ModifierKeyComboRecorderTest, ModifierLocation) {
       "ChromeOS.Inputs.ModifierKeyCombo.Internal",
       static_cast<uint32_t>(AcceleratorKeyInputType::kControlRight), 1);
 
-  ui::KeyEvent alpha_event(ui::ET_KEY_PRESSED, ui::VKEY_Z, ui::EF_CONTROL_DOWN);
+  ui::KeyEvent alpha_event(ui::EventType::kKeyPressed, ui::VKEY_Z,
+                           ui::EF_CONTROL_DOWN);
   alpha_event.set_source_device_id(keyboard.id);
   modifier_key_combo_recorder_->OnPrerewriteKeyInputEvent(alpha_event);
 
@@ -92,7 +93,7 @@ TEST_F(ModifierKeyComboRecorderTest, AltGrModifier) {
   keyboard_capability->SetKeyboardInfoForTesting(keyboard,
                                                  std::move(keyboard_info));
 
-  ui::KeyEvent altgr_event(ui::ET_KEY_PRESSED, ui::VKEY_ALTGR,
+  ui::KeyEvent altgr_event(ui::EventType::kKeyPressed, ui::VKEY_ALTGR,
                            ui::DomCode::ALT_RIGHT, ui::EF_ALTGR_DOWN);
   altgr_event.set_source_device_id(keyboard.id);
   modifier_key_combo_recorder_->OnPrerewriteKeyInputEvent(altgr_event);
@@ -100,7 +101,8 @@ TEST_F(ModifierKeyComboRecorderTest, AltGrModifier) {
       "ChromeOS.Inputs.ModifierKeyCombo.Internal",
       static_cast<uint32_t>(AcceleratorKeyInputType::kAltGr), 1);
 
-  ui::KeyEvent alpha_event(ui::ET_KEY_PRESSED, ui::VKEY_Z, ui::EF_ALTGR_DOWN);
+  ui::KeyEvent alpha_event(ui::EventType::kKeyPressed, ui::VKEY_Z,
+                           ui::EF_ALTGR_DOWN);
   alpha_event.set_source_device_id(keyboard.id);
   modifier_key_combo_recorder_->OnPrerewriteKeyInputEvent(alpha_event);
 
@@ -126,14 +128,15 @@ TEST_F(ModifierKeyComboRecorderTest, AlphaOrDigitKeysWithShift) {
   keyboard_capability->SetKeyboardInfoForTesting(keyboard,
                                                  std::move(keyboard_info));
 
-  ui::KeyEvent shift_c_event(ui::ET_KEY_PRESSED, ui::VKEY_C, ui::EF_SHIFT_DOWN);
+  ui::KeyEvent shift_c_event(ui::EventType::kKeyPressed, ui::VKEY_C,
+                             ui::EF_SHIFT_DOWN);
   shift_c_event.set_source_device_id(keyboard.id);
   modifier_key_combo_recorder_->OnPrerewriteKeyInputEvent(shift_c_event);
   // No metric should be recorded if the input was an alpha key + shift.
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Inputs.ModifierKeyCombo.Internal", 0);
 
-  ui::KeyEvent shift_nine_event(ui::ET_KEY_PRESSED, ui::VKEY_9,
+  ui::KeyEvent shift_nine_event(ui::EventType::kKeyPressed, ui::VKEY_9,
                                 ui::EF_SHIFT_DOWN);
   shift_nine_event.set_source_device_id(keyboard.id);
   modifier_key_combo_recorder_->OnPrerewriteKeyInputEvent(shift_nine_event);
@@ -141,7 +144,7 @@ TEST_F(ModifierKeyComboRecorderTest, AlphaOrDigitKeysWithShift) {
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Inputs.ModifierKeyCombo.Internal", 0);
 
-  ui::KeyEvent ctrl_shift_c_event(ui::ET_KEY_PRESSED, ui::VKEY_C,
+  ui::KeyEvent ctrl_shift_c_event(ui::EventType::kKeyPressed, ui::VKEY_C,
                                   ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
   ctrl_shift_c_event.set_source_device_id(keyboard.id);
   modifier_key_combo_recorder_->OnPrerewriteKeyInputEvent(ctrl_shift_c_event);
@@ -167,28 +170,32 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ModifierKeyComboRecorderParameterizedTest,
     testing::ValuesIn(std::vector<std::tuple<ui::KeyEvent, uint32_t>>{
-        {ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_NUMPAD0, ui::EF_NONE),
+        {ui::KeyEvent(ui::EventType::kKeyPressed,
+                      ui::VKEY_NUMPAD0,
+                      ui::EF_NONE),
          static_cast<uint32_t>(AcceleratorKeyInputType::kNumberPad)},
-        {ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_HOME, ui::EF_NONE),
+        {ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_HOME, ui::EF_NONE),
          static_cast<uint32_t>(AcceleratorKeyInputType::kSixPack)},
-        {ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, ui::EF_NONE),
+        {ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE, ui::EF_NONE),
          static_cast<uint32_t>(AcceleratorKeyInputType::kEscape)},
-        {ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_BROWSER_BACK, ui::EF_NONE),
+        {ui::KeyEvent(ui::EventType::kKeyPressed,
+                      ui::VKEY_BROWSER_BACK,
+                      ui::EF_NONE),
          static_cast<uint32_t>(AcceleratorKeyInputType::kTopRow)},
-        {ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_BACK, ui::EF_NONE),
+        {ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_BACK, ui::EF_NONE),
          static_cast<uint32_t>(AcceleratorKeyInputType::kBackspace)},
-        {ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UP, ui::EF_NONE),
+        {ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_UP, ui::EF_NONE),
          static_cast<uint32_t>(AcceleratorKeyInputType::kUpArrow)},
-        {ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_TAB, ui::EF_NONE),
+        {ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_TAB, ui::EF_NONE),
          static_cast<uint32_t>(AcceleratorKeyInputType::kTab)},
-        {ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_ALTGR, ui::EF_NONE),
+        {ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_ALTGR, ui::EF_NONE),
          static_cast<uint32_t>(AcceleratorKeyInputType::kAltGr)},
-        {ui::KeyEvent(ui::ET_KEY_PRESSED,
+        {ui::KeyEvent(ui::EventType::kKeyPressed,
                       ui::VKEY_LWIN,
                       ui::DomCode::META_LEFT,
                       ui::EF_NONE),
          static_cast<uint32_t>(AcceleratorKeyInputType::kMetaLeft)},
-        {ui::KeyEvent(ui::ET_KEY_PRESSED,
+        {ui::KeyEvent(ui::EventType::kKeyPressed,
                       ui::VKEY_RWIN,
                       ui::DomCode::META_RIGHT,
                       ui::EF_NONE),

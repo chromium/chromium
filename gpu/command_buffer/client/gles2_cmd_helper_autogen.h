@@ -2890,29 +2890,6 @@ void VertexAttribDivisorANGLE(GLuint index, GLuint divisor) {
   }
 }
 
-void ProduceTextureDirectCHROMIUMImmediate(GLuint texture, GLbyte* mailbox) {
-  const uint32_t size =
-      gles2::cmds::ProduceTextureDirectCHROMIUMImmediate::ComputeSize();
-  gles2::cmds::ProduceTextureDirectCHROMIUMImmediate* c =
-      GetImmediateCmdSpaceTotalSize<
-          gles2::cmds::ProduceTextureDirectCHROMIUMImmediate>(size);
-  if (c) {
-    c->Init(texture, mailbox);
-  }
-}
-
-void CreateAndConsumeTextureINTERNALImmediate(GLuint texture,
-                                              const GLbyte* mailbox) {
-  const uint32_t size =
-      gles2::cmds::CreateAndConsumeTextureINTERNALImmediate::ComputeSize();
-  gles2::cmds::CreateAndConsumeTextureINTERNALImmediate* c =
-      GetImmediateCmdSpaceTotalSize<
-          gles2::cmds::CreateAndConsumeTextureINTERNALImmediate>(size);
-  if (c) {
-    c->Init(texture, mailbox);
-  }
-}
-
 void BindUniformLocationCHROMIUMBucket(GLuint program,
                                        GLint location,
                                        uint32_t name_bucket_id) {
@@ -2967,14 +2944,6 @@ void DrawBuffersEXTImmediate(GLsizei count, const GLenum* bufs) {
       GetImmediateCmdSpaceTotalSize<gles2::cmds::DrawBuffersEXTImmediate>(size);
   if (c) {
     c->Init(count, bufs);
-  }
-}
-
-void DiscardBackbufferCHROMIUM() {
-  gles2::cmds::DiscardBackbufferCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::DiscardBackbufferCHROMIUM>();
-  if (c) {
-    c->Init();
   }
 }
 
@@ -3161,65 +3130,6 @@ void EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
       GetCmdSpace<gles2::cmds::EndSharedImageAccessDirectCHROMIUM>();
   if (c) {
     c->Init(texture);
-  }
-}
-
-void ConvertRGBAToYUVAMailboxesINTERNALImmediate(GLenum planes_yuv_color_space,
-                                                 GLenum plane_config,
-                                                 GLenum subsampling,
-                                                 const GLbyte* mailboxes) {
-  const uint32_t size =
-      gles2::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate::ComputeSize();
-  gles2::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate* c =
-      GetImmediateCmdSpaceTotalSize<
-          gles2::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate>(size);
-  if (c) {
-    c->Init(planes_yuv_color_space, plane_config, subsampling, mailboxes);
-  }
-}
-
-void ConvertYUVAMailboxesToRGBINTERNALImmediate(GLint src_x,
-                                                GLint src_y,
-                                                GLsizei width,
-                                                GLsizei height,
-                                                GLenum planes_yuv_color_space,
-                                                GLenum plane_config,
-                                                GLenum subsampling,
-                                                const GLbyte* mailboxes) {
-  const uint32_t size =
-      gles2::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate::ComputeSize();
-  gles2::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate* c =
-      GetImmediateCmdSpaceTotalSize<
-          gles2::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate>(size);
-  if (c) {
-    c->Init(src_x, src_y, width, height, planes_yuv_color_space, plane_config,
-            subsampling, mailboxes);
-  }
-}
-
-void ConvertYUVAMailboxesToTextureINTERNALImmediate(
-    GLuint texture,
-    GLenum target,
-    GLuint internal_format,
-    GLenum type,
-    GLint src_x,
-    GLint src_y,
-    GLsizei width,
-    GLsizei height,
-    GLboolean flip_y,
-    GLenum planes_yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const GLbyte* mailboxes) {
-  const uint32_t size = gles2::cmds::
-      ConvertYUVAMailboxesToTextureINTERNALImmediate::ComputeSize();
-  gles2::cmds::ConvertYUVAMailboxesToTextureINTERNALImmediate* c =
-      GetImmediateCmdSpaceTotalSize<
-          gles2::cmds::ConvertYUVAMailboxesToTextureINTERNALImmediate>(size);
-  if (c) {
-    c->Init(texture, target, internal_format, type, src_x, src_y, width, height,
-            flip_y, planes_yuv_color_space, plane_config, subsampling,
-            mailboxes);
   }
 }
 

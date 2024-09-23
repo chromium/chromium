@@ -29,18 +29,14 @@ import '../common_styles/oobe_common_styles.css.js';
 import {CrDialogElement} from '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeFocusBehavior, OobeFocusBehaviorInterface} from '../behaviors/oobe_focus_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../behaviors/oobe_i18n_behavior.js';
+import {OobeFocusMixin} from '../mixins/oobe_focus_mixin.js';
+import {OobeI18nMixin} from '../mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './oobe_modal_dialog.html.js';
 
-const OobeModalDialogBase =
-    mixinBehaviors([OobeI18nBehavior, OobeFocusBehavior], PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          OobeFocusBehaviorInterface,
-    };
+const OobeModalDialogBase = OobeI18nMixin(OobeFocusMixin(PolymerElement));
 
 export class OobeModalDialog extends OobeModalDialogBase {
   static get is() {

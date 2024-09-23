@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -38,9 +37,7 @@ b AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 </button>)HTML");
   RunDocumentLifecycle();
 
-  GetDocument()
-      .getElementById(AtomicString("ruby1"))
-      ->appendChild(GetDocument().getElementById(AtomicString("rt1")));
+  GetElementById("ruby1")->appendChild(GetElementById("rt1"));
   RunDocumentLifecycle();
 
   EXPECT_TRUE(GetLayoutObjectByElementId("span1")->EverHadLayout());

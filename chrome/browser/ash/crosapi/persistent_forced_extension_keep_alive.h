@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSAPI_PERSISTENT_FORCED_EXTENSION_KEEP_ALIVE_H_
 
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_manager_scoped_keep_alive.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
@@ -38,7 +38,7 @@ class PersistentForcedExtensionKeepAlive final : public KeyedService {
   // keep_alive_. Called when the user prefs changed.
   void UpdateKeepAlive();
 
-  std::unique_ptr<BrowserManager::ScopedKeepAlive> keep_alive_;
+  std::unique_ptr<BrowserManagerScopedKeepAlive> keep_alive_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Must be the last member.

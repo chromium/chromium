@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -219,7 +219,7 @@ void CategorizedWorkerPoolImpl::Start(int max_concurrency_foreground) {
       std::end(kBackgroundThreadPriorityCategories)};
 
   base::SimpleThread::Options thread_options;
-// TODO(1326996): Figure out whether !IS_MAC can be lifted here.
+// TODO(crbug.com/40226019): Figure out whether !IS_MAC can be lifted here.
 #if !BUILDFLAG(IS_MAC)
   thread_options.thread_type = base::ThreadType::kBackground;
 #endif
@@ -277,7 +277,7 @@ bool CategorizedWorkerPoolImpl::PostDelayedTask(const base::Location& from_here,
   DCHECK(completed_tasks_.empty());
   CollectCompletedTasksWithLockAcquired(namespace_token_, &completed_tasks_);
 
-  base::EraseIf(tasks_, [this](const scoped_refptr<Task>& e)
+  std::erase_if(tasks_, [this](const scoped_refptr<Task>& e)
                             EXCLUSIVE_LOCKS_REQUIRED(lock_) {
                               return base::Contains(this->completed_tasks_, e);
                             });
@@ -307,11 +307,6 @@ void CategorizedWorkerPoolImpl::Run(
       // We are no longer running tasks, which may allow another category to
       // start running. Signal other worker threads.
       SignalHasReadyToRunTasksWithLockAcquired();
-
-      // Make sure the END of the last trace event emitted before going idle
-      // is flushed to perfetto.
-      // TODO(crbug.com/1021571): Remove this once fixed.
-      PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 
       // Exit when shutdown is set and no more tasks are pending.
       if (shutdown_) {
@@ -487,7 +482,7 @@ bool CategorizedWorkerPoolJob::PostDelayedTask(const base::Location& from_here,
     DCHECK(completed_tasks_.empty());
     CollectCompletedTasksWithLockAcquired(namespace_token_, &completed_tasks_);
 
-    base::EraseIf(tasks_,
+    std::erase_if(tasks_,
                   [this](const scoped_refptr<Task>& e)
                       EXCLUSIVE_LOCKS_REQUIRED(lock_) {
                         return base::Contains(this->completed_tasks_, e);

@@ -10,12 +10,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/version_info/channel.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/offscreen_document_host.h"
+#include "extensions/browser/script_executor.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,9 +29,10 @@ namespace {
 
 class ContentBrowserClientMock : public ChromeContentBrowserClient {
  public:
-  MOCK_METHOD(bool,
-              IsGetAllScreensMediaAllowed,
-              (content::BrowserContext * context, const url::Origin& origin),
+  MOCK_METHOD(void,
+              CheckGetAllScreensMediaAllowed,
+              (content::RenderFrameHost * render_frame_host,
+               base::OnceCallback<void(bool)> callback),
               (override));
 };
 
@@ -105,8 +109,11 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaOffscreenApiTest,
   base::AddTagToTestResult("feature_id",
                            "screenplay-f3601ae4-bff7-495a-a51f-3c0997a46445");
   EXPECT_CALL(content_browser_client(),
-              IsGetAllScreensMediaAllowed(testing::_, testing::_))
-      .WillOnce(testing::Return(true));
+              CheckGetAllScreensMediaAllowed(testing::_, testing::_))
+      .WillOnce(testing::Invoke([](content::RenderFrameHost* render_frame_host,
+                                   base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      }));
 
   static constexpr char kManifest[] =
       R"({
@@ -119,6 +126,8 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaOffscreenApiTest,
   // An offscreen document that knows how to capture all screens.
   static constexpr char kOffscreenJs[] =
       R"(
+        'use strict';
+
         let streams;
 
         async function captureAllScreens() {
@@ -165,12 +174,22 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaOffscreenApiTest,
           } else {
             console.error('Unexpected message: ' + msg);
           }
-        }))";
+        })
+        R)";
   TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "// Blank.");
   test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"),
-                     R"(<html><script src="offscreen.js"></script></html>)");
+                     R"(
+    <html>
+      <script src="offscreen.js"></script>
+      <meta http-equiv="Content-Security-Policy"
+        content="object-src 'none'; base-uri 'none';
+        script-src 'strict-dynamic'
+        'sha256-Y55VppSZfjQ4A035BPDo9OMXignyoxRXv+KKCZpnWiM=';
+        require-trusted-types-for 'script';trusted-types a;">
+    </html>
+    )");
   test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.js"), kOffscreenJs);
 
   scoped_refptr<const Extension> extension =
@@ -205,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(GetAllScreensMediaOffscreenApiTest,
         profile(), extension->id(), "chrome.runtime.sendMessage('stop');");
   }
 
-  // TODO(crbug.com/1443432): Add check if document gets shut down after the
+  // TODO(crbug.com/40267351): Add check if document gets shut down after the
   // screen capture with `getAllScreensMedia` is stopped.
 }
 

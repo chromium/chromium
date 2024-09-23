@@ -82,10 +82,10 @@ class WebKioskAppDataTest : public InProcessBrowserTest,
 
   void SetCached(bool installed, bool icon_valid = true) {
     const std::string app_key = std::string(kAppKey) + '.' + kAppId;
-    base::Value::Dict app_dict;
-
-    app_dict.SetByDottedPath(app_key + '.' + std::string(kTitleKey), kAppTitle);
-    app_dict.SetByDottedPath(app_key + '.' + std::string(kIconKey),
+    auto app_dict =
+        base::Value::Dict()
+            .SetByDottedPath(app_key + '.' + std::string(kTitleKey), kAppTitle)
+            .SetByDottedPath(app_key + '.' + std::string(kIconKey),
                              GetFullPathToImage(icon_valid).value());
     if (installed) {
       app_dict.SetByDottedPath(app_key + '.' + std::string(kLaunchUrlKey),
@@ -245,9 +245,9 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, LaunchableUrl) {
   EXPECT_EQ(app_data.GetLaunchableUrl(), GURL(kAppUrl));
 
   // `start_url` is treated as launchable URL if the app has been installed.
-  web_app::WebAppInstallInfo app_info;
-  app_info.start_url = GURL(kStartUrl);
-  app_data.UpdateFromWebAppInfo(app_info);
+  auto app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(kStartUrl));
+  app_data.UpdateFromWebAppInfo(*app_info);
   app_data.LoadFromCache();
   WaitForAppDataChange(1);
   EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kInstalled);
@@ -265,12 +265,12 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest,
   EXPECT_EQ(app_data.GetLaunchableUrl(), GURL(kAppUrl));
   EXPECT_TRUE(app_data.icon().isNull());
 
-  web_app::WebAppInstallInfo app_info;
-  app_info.start_url = GURL(kStartUrl);
-  app_info.title = kAppTitle16;
-  PopulateIcon(&app_info, kIconExampleUrl1);
+  auto app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(kStartUrl));
+  app_info->title = kAppTitle16;
+  PopulateIcon(app_info.get(), kIconExampleUrl1);
 
-  app_data.UpdateFromWebAppInfo(app_info);
+  app_data.UpdateFromWebAppInfo(*app_info);
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest,

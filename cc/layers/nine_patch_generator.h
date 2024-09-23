@@ -8,13 +8,14 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "cc/cc_export.h"
 #include "cc/resources/ui_resource_client.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace base {
 namespace trace_event {
@@ -35,13 +36,13 @@ class CC_EXPORT NinePatchGenerator {
  public:
   class Patch {
    public:
-    Patch(const gfx::RectF& image_rect,
+    Patch(const gfx::Rect& image_rect,
           const gfx::Size& total_image_bounds,
-          const gfx::RectF& output_rect);
+          const gfx::Rect& output_rect);
 
-    gfx::RectF image_rect;
+    gfx::Rect image_rect;
     gfx::RectF normalized_image_rect;
-    gfx::RectF output_rect;
+    gfx::Rect output_rect;
   };
 
   NinePatchGenerator();
@@ -106,16 +107,18 @@ class CC_EXPORT NinePatchGenerator {
                         UIResourceId ui_resource_id,
                         viz::CompositorRenderPass* render_pass,
                         viz::SharedQuadState* shared_quad_state,
-                        const std::vector<Patch>& patches);
+                        const std::vector<Patch>& patches,
+                        const gfx::Vector2d& offset = gfx::Vector2d());
 
   void AppendQuads(
       viz::ResourceId resource,
       bool opaque,
-      base::RepeatingCallback<gfx::Rect(const gfx::Rect&)> clip_visible_rect,
+      base::FunctionRef<gfx::Rect(const gfx::Rect&)> clip_visible_rect,
       viz::ClientResourceProvider* client_resource_provider,
       viz::CompositorRenderPass* render_pass,
       viz::SharedQuadState* shared_quad_state,
-      const std::vector<Patch>& patches);
+      const std::vector<Patch>& patches,
+      const gfx::Vector2d& offset = gfx::Vector2d());
 
   void AsValueInto(base::trace_event::TracedValue* state) const;
   void CheckGeometryLimitations();

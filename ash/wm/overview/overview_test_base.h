@@ -40,9 +40,9 @@ class OverviewTestBase : public AshTestBase {
   OverviewTestBase& operator=(const OverviewTestBase&) = delete;
   ~OverviewTestBase() override;
 
-  // Enters tablet mode. Needed by tests that test dragging and or splitview,
-  // which are tablet mode only.
+  // Enters/Leaves tablet mode.
   void EnterTabletMode();
+  void LeaveTabletMode();
 
   bool InOverviewSession() const;
 

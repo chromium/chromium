@@ -32,7 +32,7 @@ class ScopedA11yOverrideWindowSetter;
 // CaptureModeSessionFocusCycler handles the special focus transitions which
 // happen between the capture session UI items. These include the capture bar
 // buttons, the selection region UI and the capture button.
-// TODO(crbug.com/1182456): The selection region UI are drawn directly on a
+// TODO(crbug.com/40170806): The selection region UI are drawn directly on a
 // layer. We simulate focus by drawing focus rings on the same layer, but this
 // is not compatible with accessibility. Investigate using AxVirtualView or
 // making the dots actual Views.
@@ -40,8 +40,8 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
  public:
   // The different groups which can receive focus during a capture mode session.
   // A group may have multiple items which can receive focus.
-  // TODO(crbug.com/1182456): Investigate removing the groups concept and having
-  // one flat list.
+  // TODO(crbug.com/40170806): Investigate removing the groups concept and
+  // having one flat list.
   enum class FocusGroup {
     kNone = 0,
     // The buttons to select the capture type and source on the capture bar.
@@ -109,7 +109,7 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     HighlightableView();
     virtual ~HighlightableView();
 
-    // TODO(crbug.com/1182456): This can result in multiple of these objects
+    // TODO(crbug.com/40170806): This can result in multiple of these objects
     // thinking they have focus if CaptureModeSessionFocusCycler does not call
     // PseudoFocus or PseudoBlur properly. Investigate if there is a better
     // approach.

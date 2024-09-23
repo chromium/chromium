@@ -158,8 +158,8 @@ dictionary VideoDecoderConfig {
 
 dictionary AudioEncoderConfig {
   required DOMString codec;
-  [EnforceRange] unsigned long sampleRate;
-  [EnforceRange] unsigned long numberOfChannels;
+  [EnforceRange] required unsigned long sampleRate;
+  [EnforceRange] required unsigned long numberOfChannels;
   [EnforceRange] unsigned long long bitrate;
   BitrateMode bitrateMode = "variable";
 };
@@ -229,7 +229,7 @@ dictionary EncodedAudioChunkInit {
   required EncodedAudioChunkType type;
   [EnforceRange] required long long timestamp;    // microseconds
   [EnforceRange] unsigned long long duration;     // microseconds
-  required BufferSource data;
+  required AllowSharedBufferSource data;
   sequence<ArrayBuffer> transfer = [];
 };
 
@@ -371,6 +371,8 @@ dictionary VideoFrameBufferInit {
   VideoColorSpaceInit colorSpace;
 
   sequence<ArrayBuffer> transfer = [];
+
+  VideoFrameMetadata metadata;
 };
 
 dictionary VideoFrameMetadata {
@@ -380,6 +382,8 @@ dictionary VideoFrameMetadata {
 dictionary VideoFrameCopyToOptions {
   DOMRectInit rect;
   sequence<PlaneLayout> layout;
+  VideoPixelFormat format;
+  PredefinedColorSpace colorSpace;
 };
 
 dictionary PlaneLayout {
@@ -390,21 +394,37 @@ dictionary PlaneLayout {
 enum VideoPixelFormat {
   // 4:2:0 Y, U, V
   "I420",
+  "I420P10",
+  "I420P12",
   // 4:2:0 Y, U, V, A
   "I420A",
+  "I420AP10",
+  "I420AP12",
   // 4:2:2 Y, U, V
   "I422",
+  "I422P10",
+  "I422P12",
+  // 4:2:2 Y, U, V, A
+  "I422A",
+  "I422AP10",
+  "I422AP12",
   // 4:4:4 Y, U, V
   "I444",
+  "I444P10",
+  "I444P12",
+  // 4:4:4 Y, U, V, A
+  "I444A",
+  "I444AP10",
+  "I444AP12",
   // 4:2:0 Y, UV
   "NV12",
-  // 32bpp RGBA
+  // 4:4:4 RGBA
   "RGBA",
-  // 32bpp RGBX (opaque)
+  // 4:4:4 RGBX (opaque)
   "RGBX",
-  // 32bpp BGRA
+  // 4:4:4 BGRA
   "BGRA",
-  // 32bpp BGRX (opaque)
+  // 4:4:4 BGRX (opaque)
   "BGRX",
 };
 
@@ -468,7 +488,7 @@ interface ImageDecoder {
   static Promise<boolean> isTypeSupported(DOMString type);
 };
 
-typedef (BufferSource or ReadableStream) ImageBufferSource;
+typedef (AllowSharedBufferSource or ReadableStream) ImageBufferSource;
 dictionary ImageDecoderInit {
   required DOMString type;
   required ImageBufferSource data;

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/public/cpp/message_center/oobe_notification_constants.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/location.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -47,9 +48,8 @@ void GnubbyNotification::CreateNotification() {
       message_center::SystemNotificationWarningLevel::NORMAL;
 
   GnubbyNotification::notification_prompt_ = ash::CreateSystemNotificationPtr(
-      message_center::NOTIFICATION_TYPE_SIMPLE,
-      GnubbyNotification::kNotificationID, title, message, std::u16string(),
-      GURL(), message_center::NotifierId(),
+      message_center::NOTIFICATION_TYPE_SIMPLE, kOOBEGnubbyNotificationId,
+      title, message, std::u16string(), GURL(), message_center::NotifierId(),
       message_center::RichNotificationData(),
       new message_center::HandleNotificationClickDelegate(
           base::BindRepeating(&GnubbyNotification::DismissNotification,
@@ -75,8 +75,7 @@ void GnubbyNotification::ShowNotification() {
 
 void GnubbyNotification::DismissNotification() {
   GnubbyNotification::notificationActive = false;
-  SystemNotificationHelper::GetInstance()->Close(
-      GnubbyNotification::kNotificationID);
+  SystemNotificationHelper::GetInstance()->Close(kOOBEGnubbyNotificationId);
 }
 
 }  // namespace ash

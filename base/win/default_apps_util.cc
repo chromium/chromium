@@ -5,6 +5,7 @@
 #include "base/win/default_apps_util.h"
 
 #include <shobjidl.h>
+
 #include <wrl/client.h>
 
 #include <string_view>

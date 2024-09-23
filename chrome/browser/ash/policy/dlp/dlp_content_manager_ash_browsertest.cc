@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 
 #include <functional>
@@ -13,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -20,6 +19,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/mock_dlp_warn_notifier.h"
@@ -39,15 +39,16 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
-#include "chrome/browser/ui/ash/screenshot_area.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/enterprise/data_controls/dlp_histogram_helper.h"
-#include "components/enterprise/data_controls/dlp_policy_event.pb.h"
+#include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
+#include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
+#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/test/shell_surface_builder.h"
@@ -56,8 +57,10 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
@@ -123,7 +126,8 @@ content::MediaStreamRequest CreateMediaStreamRequest(
       /*requested_audio_device_id=*/{}, {requested_video_device_id},
       blink::mojom::MediaStreamType::NO_SERVICE, video_type,
       /*disable_local_echo=*/false,
-      /*request_pan_tilt_zoom_permission=*/false);
+      /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
 }
 
 }  // namespace
@@ -1334,7 +1338,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
           new_web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
           new_web_contents->GetPrimaryMainFrame()->GetRoutingID()));
   // Simulate changing the source to another tab.
-  manager->OnScreenShareSourceChanging(kLabel, media_id, new_media_id);
+  manager->OnScreenShareSourceChanging(
+      kLabel, media_id, new_media_id,
+      /*captured_surface_control_active=*/false);
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenShareResumedNotificationId));
   manager->OnScreenShareStopped(kLabel, media_id);
@@ -1823,10 +1829,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                                 /*source_callback=*/base::DoNothing());
 
   // Move restricted tab from second window to shared first window.
-  std::unique_ptr<content::WebContents> moved_web_contents =
-      browser2->tab_strip_model()->DetachWebContentsAtForInsertion(0);
-  browser1->tab_strip_model()->InsertWebContentsAt(
-      0, std::move(moved_web_contents), AddTabTypes::ADD_NONE);
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser2->tab_strip_model()->DetachTabAtForInsertion(0);
+  browser1->tab_strip_model()->InsertDetachedTabAt(0, std::move(detached_tab),
+                                                   AddTabTypes::ADD_NONE);
   browser1->tab_strip_model()->ActivateTabAt(0);
 
   // Cleanup and check reporting.

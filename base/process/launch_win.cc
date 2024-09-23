@@ -40,7 +40,7 @@ namespace base {
 
 namespace {
 
-bool GetAppOutputInternal(CommandLine::StringPieceType cl,
+bool GetAppOutputInternal(CommandLine::StringViewType cl,
                           bool include_stderr,
                           std::string* output,
                           int* exit_code) {
@@ -466,7 +466,7 @@ bool GetAppOutputWithExitCode(const CommandLine& cl,
       cl.GetCommandLineString(), false, output, exit_code);
 }
 
-bool GetAppOutput(CommandLine::StringPieceType cl, std::string* output) {
+bool GetAppOutput(CommandLine::StringViewType cl, std::string* output) {
   int exit_code;
   return GetAppOutputInternal(cl, false, output, &exit_code);
 }

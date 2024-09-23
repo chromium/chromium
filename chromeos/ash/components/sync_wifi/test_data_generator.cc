@@ -32,7 +32,7 @@ sync_pb::WifiConfigurationSpecifics GenerateTestWifiSpecifics(
     specifics.set_security_type(
         sync_pb::WifiConfigurationSpecifics::SECURITY_TYPE_WEP);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   specifics.set_passphrase(passphrase);
   specifics.set_last_connected_timestamp(timestamp);

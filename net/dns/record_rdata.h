@@ -11,11 +11,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/strings/string_piece.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
@@ -35,7 +35,7 @@ class NET_EXPORT RecordRdata {
   // Return true if `data` represents RDATA in the wire format with a valid size
   // for the give `type`. Always returns true for unrecognized `type`s as the
   // size is never known to be invalid.
-  static bool HasValidSize(base::StringPiece data, uint16_t type);
+  static bool HasValidSize(std::string_view data, uint16_t type);
 
   virtual bool IsEqual(const RecordRdata* other) const = 0;
   virtual uint16_t Type() const = 0;
@@ -54,7 +54,7 @@ class NET_EXPORT_PRIVATE SrvRecordRdata : public RecordRdata {
   SrvRecordRdata& operator=(const SrvRecordRdata&) = delete;
 
   ~SrvRecordRdata() override;
-  static std::unique_ptr<SrvRecordRdata> Create(base::StringPiece data,
+  static std::unique_ptr<SrvRecordRdata> Create(std::string_view data,
                                                 const DnsRecordParser& parser);
 
   bool IsEqual(const RecordRdata* other) const override;
@@ -86,7 +86,7 @@ class NET_EXPORT ARecordRdata : public RecordRdata {
   ARecordRdata& operator=(const ARecordRdata&) = delete;
 
   ~ARecordRdata() override;
-  static std::unique_ptr<ARecordRdata> Create(base::StringPiece data,
+  static std::unique_ptr<ARecordRdata> Create(std::string_view data,
                                               const DnsRecordParser& parser);
   bool IsEqual(const RecordRdata* other) const override;
   uint16_t Type() const override;
@@ -109,7 +109,7 @@ class NET_EXPORT AAAARecordRdata : public RecordRdata {
   AAAARecordRdata& operator=(const AAAARecordRdata&) = delete;
 
   ~AAAARecordRdata() override;
-  static std::unique_ptr<AAAARecordRdata> Create(base::StringPiece data,
+  static std::unique_ptr<AAAARecordRdata> Create(std::string_view data,
                                                  const DnsRecordParser& parser);
   bool IsEqual(const RecordRdata* other) const override;
   uint16_t Type() const override;
@@ -133,7 +133,7 @@ class NET_EXPORT_PRIVATE CnameRecordRdata : public RecordRdata {
 
   ~CnameRecordRdata() override;
   static std::unique_ptr<CnameRecordRdata> Create(
-      base::StringPiece data,
+      std::string_view data,
       const DnsRecordParser& parser);
   bool IsEqual(const RecordRdata* other) const override;
   uint16_t Type() const override;
@@ -156,7 +156,7 @@ class NET_EXPORT_PRIVATE PtrRecordRdata : public RecordRdata {
   PtrRecordRdata& operator=(const PtrRecordRdata&) = delete;
 
   ~PtrRecordRdata() override;
-  static std::unique_ptr<PtrRecordRdata> Create(base::StringPiece data,
+  static std::unique_ptr<PtrRecordRdata> Create(std::string_view data,
                                                 const DnsRecordParser& parser);
   bool IsEqual(const RecordRdata* other) const override;
   uint16_t Type() const override;
@@ -180,7 +180,7 @@ class NET_EXPORT_PRIVATE TxtRecordRdata : public RecordRdata {
   TxtRecordRdata& operator=(const TxtRecordRdata&) = delete;
 
   ~TxtRecordRdata() override;
-  static std::unique_ptr<TxtRecordRdata> Create(base::StringPiece data,
+  static std::unique_ptr<TxtRecordRdata> Create(std::string_view data,
                                                 const DnsRecordParser& parser);
   bool IsEqual(const RecordRdata* other) const override;
   uint16_t Type() const override;
@@ -205,7 +205,7 @@ class NET_EXPORT_PRIVATE NsecRecordRdata : public RecordRdata {
   NsecRecordRdata& operator=(const NsecRecordRdata&) = delete;
 
   ~NsecRecordRdata() override;
-  static std::unique_ptr<NsecRecordRdata> Create(base::StringPiece data,
+  static std::unique_ptr<NsecRecordRdata> Create(std::string_view data,
                                                  const DnsRecordParser& parser);
   bool IsEqual(const RecordRdata* other) const override;
   uint16_t Type() const override;

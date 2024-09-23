@@ -17,6 +17,7 @@ enum class ActionType;
 @class DestinationCustomizationModel;
 @class OverflowMenuAction;
 @class OverflowMenuActionGroup;
+@protocol OverflowMenuActionProvider;
 @class OverflowMenuDestination;
 @class OverflowMenuModel;
 class PrefService;
@@ -41,26 +42,6 @@ class PrefService;
 // Allows destination provider to fire any feature-specific logic for clearing
 // feature-driven badges.
 - (void)destinationCustomizationCompleted;
-
-@end
-
-@protocol OverflowMenuActionProvider <NSObject>
-
-// The default base ranking of page actions (those that act on the current page
-// state) currently supported.
-- (ActionRanking)basePageActions;
-
-// Returns the correct `OverflowMenuAction` for the corresponding
-// `overflow_menu::ActionType` on the current page. Returns nil if the current
-// page does not support the given `actionType`.
-- (OverflowMenuAction*)actionForActionType:
-    (overflow_menu::ActionType)actionType;
-
-// Returns a representative `OverflowMenuAction` for the corresponding
-// `overflow_menu::ActionType` to display to the user when customizing the order
-// and show/hide state of the actions.
-- (OverflowMenuAction*)customizationActionForActionType:
-    (overflow_menu::ActionType)actionType;
 
 @end
 

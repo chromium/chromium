@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "base/check.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
@@ -43,9 +44,18 @@ LayerAnimationSequence::~LayerAnimationSequence() {
 
 void LayerAnimationSequence::Start(LayerAnimationDelegate* delegate) {
   DCHECK(start_time_ != base::TimeTicks());
+
   last_progressed_fraction_ = 0.0;
   if (elements_.empty())
     return;
+
+  // TODO(b/352744702): Convert to CHECK after https://crrev.com/c/5713998
+  // has rolled out and any cases like this have been removed.
+  DUMP_WILL_BE_CHECK(
+      !(is_repeating_ && GetTotalDurationOfAllElements().is_zero()))
+      << "A repeating animation with zero duration is not a supported "
+         "combination. It unnecessarily consumes CPU resources for an "
+         "indefinite amount of time without any actual animated content";
 
   elements_[0]->set_requested_start_time(start_time_);
   elements_[0]->Start(delegate, animation_group_id_);
@@ -66,10 +76,19 @@ void LayerAnimationSequence::Progress(base::TimeTicks now,
   if (last_element_ == 0)
     last_start_ = start_time_;
 
+  const base::TimeDelta total_duration = GetTotalDurationOfAllElements();
+  const auto animation_should_progress = [this, total_duration]() {
+    // A repeating animation with zero total duration results in an infinite
+    // `while` loop below, so this corner case must be checked explicitly.
+    // In this case, the ui should immediately render the properties' target
+    // values.
+    return (is_repeating_ && !total_duration.is_zero()) ||
+           last_element_ < elements_.size();
+  };
   size_t current_index = last_element_ % elements_.size();
-  bool just_completed_sequence = false;
   base::TimeDelta element_duration;
-  while (is_repeating_ || last_element_ < elements_.size()) {
+  bool just_completed_sequence = total_duration.is_zero();
+  while (animation_should_progress()) {
     elements_[current_index]->set_requested_start_time(last_start_);
     if (!elements_[current_index]->IsFinished(now, &element_duration))
       break;
@@ -86,7 +105,7 @@ void LayerAnimationSequence::Progress(base::TimeTicks now,
     just_completed_sequence = current_index == 0;
   }
 
-  if (is_repeating_ || last_element_ < elements_.size()) {
+  if (animation_should_progress()) {
     if (!elements_[current_index]->Started()) {
       animation_group_id_ = cc::AnimationIdProvider::NextGroupId();
       elements_[current_index]->Start(delegate, animation_group_id_);
@@ -306,6 +325,14 @@ LayerAnimationElement* LayerAnimationSequence::CurrentElement() const {
 
   size_t current_index = last_element_ % elements_.size();
   return elements_[current_index].get();
+}
+
+base::TimeDelta LayerAnimationSequence::GetTotalDurationOfAllElements() const {
+  base::TimeDelta total_duration;
+  for (const std::unique_ptr<LayerAnimationElement>& element : elements_) {
+    total_duration += element->duration();
+  }
+  return total_duration;
 }
 
 std::string LayerAnimationSequence::ElementsToString() const {

@@ -11,6 +11,7 @@
 
 #include <cstring>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -120,7 +121,7 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
                     const gfx::Rect& cleared_rect) override;
   void BeginDecoding() override;
   void EndDecoding() override;
-  base::StringPiece GetLogPrefix() override;
+  std::string_view GetLogPrefix() override;
 
   void set_initialized() {
     initialized_ = true;

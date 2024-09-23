@@ -80,7 +80,7 @@ class AXWindowObjWrapper : public AXAuraObjWrapper,
 
   const bool is_root_window_;
 
-  const ui::AXUniqueId unique_id_;
+  const ui::AXUniqueId unique_id_{ui::AXUniqueId::Create()};
 
   // Whether OnWindowDestroying has happened for |window_|. Used to suppress
   // further events from |window| after OnWindowDestroying. Otherwise, dangling

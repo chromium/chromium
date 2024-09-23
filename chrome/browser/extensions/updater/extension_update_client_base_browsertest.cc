@@ -14,6 +14,7 @@
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/extensions/browsertest_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/update_client/net/url_loader_post_interceptor.h"
 #include "components/update_client/protocol_handler.h"
 #include "content/public/browser/browser_context.h"
@@ -48,6 +49,12 @@ class TestChromeUpdateClientConfig
   std::vector<GURL> PingUrl() const final { return ping_url_; }
 
   bool EnabledCupSigning() const final { return false; }
+
+  bool EnabledBackgroundDownloader() const final {
+    // Some tests rely on URLFetcher network interceptors, which won't intercept
+    // BITS requests.
+    return false;
+  }
 
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const final {
@@ -214,8 +221,9 @@ ExtensionUpdateClientBaseTest::WaitOnComponentUpdaterCompleteEvent(
 
 bool ExtensionUpdateClientBaseTest::OnRequest(
     content::URLLoaderInterceptor::RequestParams* params) {
-  if (params->url_request.url.host() != "localhost")
+  if (params->url_request.url.host() != "localhost") {
     return false;
+  }
 
   get_interceptor_count_++;
   return callback_ && callback_.Run(params);

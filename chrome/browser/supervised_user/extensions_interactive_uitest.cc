@@ -6,11 +6,11 @@
 #include <string_view>
 #include <tuple>
 
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/strong_alias.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_keybinding_registry.h"
+#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
@@ -20,8 +20,12 @@
 #include "chrome/test/supervised_user/family_live_test.h"
 #include "chrome/test/supervised_user/family_member.h"
 #include "components/prefs/pref_service.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/test_support/browser_state_management.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,19 +36,15 @@ namespace {
 
 static constexpr std::string_view kChromeManageExternsionsUrl =
     "chrome://extensions/";
+static constexpr std::string_view kExtensionSiteSettingsUrl =
+    "chrome://settings/content/siteDetails?site=chrome-extension://";
+static constexpr std::string_view kExtensionName = "An Extension";
 
-// State of a Family Link switch
-enum class FamilyLinkSwitchState : int {
-  kEnabled = 0,
-  kDisabled,
+// Family Link switch that governs the handling of extensions for SU.
+enum class ExtensionHandlingMode : int {
+  kExtensionsGovernedByPermissionsSwitch = 0,
+  kExtensionsGovernedByExtensionsSwitch = 1,
 };
-
-constexpr const char* kFamilyLinkSwitchStateToString[2] = {"true", "false"};
-
-using BoolPermissionsStateObserver = ui::test::PollingStateObserver<bool>;
-
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BoolPermissionsStateObserver,
-                                    kBoolPermissionsPreferenceObserver);
 
 // TODO(b/321242366): Consider moving to helper class.
 // Checks if a page title matches the given regexp in ecma script dialect.
@@ -68,36 +68,50 @@ InteractiveBrowserTestApi::StateChange PageWithMatchingTitle(
 // kEnableExtensionsPermissionsForSupervisedUsersOnDesktop feature on
 // Win/Mac/Linux).
 class SupervisedUserExtensionsParentalControlsUiTest
-    : public InteractiveBrowserTestT<FamilyLiveTest>,
-      public testing::WithParamInterface<
-          std::tuple<supervised_user::FamilyIdentifier,
-                     FamilyLinkSwitchState>> {
+    : public InteractiveFamilyLiveTest,
+      public testing::WithParamInterface<std::tuple<
+          FamilyLiveTest::RpcMode,
+          /*permissions_switch_state=*/FamilyLinkToggleState,
+          /*extensions_switch_state=*/FamilyLinkToggleState,
+          // Depending on the ExtensionHandlingMode only one switch
+          // should affect the behaviour of supervised user's extensions.
+          // Toggling the other switch should have no effect to the result.
+          /*extensions_handling_mode=*/ExtensionHandlingMode>> {
  public:
   SupervisedUserExtensionsParentalControlsUiTest()
-      : InteractiveBrowserTestT<FamilyLiveTest>(
-            /*family_identifier=*/std::get<0>(GetParam()),
-            /*extra_enabled_hosts=*/std::vector<std::string>()) {
+      : InteractiveFamilyLiveTest(GetRpcMode()) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (GetExtensionHandlingMode() ==
+        ExtensionHandlingMode::kExtensionsGovernedByExtensionsSwitch) {
+      enabled_features.push_back(
+              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+    } else {
+      disabled_features.push_back(
+              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+    }
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     // Enable extensions parental controls.
-    feature_list_.InitAndEnableFeature(
-        supervised_user::
+    enabled_features.push_back(
             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 #endif
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
  protected:
-  // Parenr navigates to FL control page and waits for it to load.
-  auto ParentOpensControlPage(ui::ElementIdentifier kParentTab,
-                              const GURL& gurl) {
-    return Steps(NavigateWebContents(kParentTab, gurl),
-                 WaitForWebContentsReady(kParentTab, gurl));
-  }
-
   // Child tries to enable a disabled extension (which is pending parent
   // approval) by clicking at the extension's toggle.
-  auto ChildClicksEnableExtension(ui::ElementIdentifier kChildTab) {
+  // When the Extensions toggle is ON and used to manage the extensions,
+  // the extension should be already enabled.
+  // In that case the method only verifies the enabled state.
+  auto ChildClicksEnableExtensionIfExtensionDisabled(
+      ui::ElementIdentifier kChildTab,
+      bool expected_extension_enabled) {
     return Steps(ExecuteJs(kChildTab,
-                           R"js(
+                           base::StringPrintf(
+                               R"js(
                 () => {
                   const view_manager =
                     document.querySelector("extensions-manager").shadowRoot
@@ -110,6 +124,10 @@ class SupervisedUserExtensionsParentalControlsUiTest
                   if (!container) {
                     throw Error("Path to container element is invalid.");
                   }
+                  const count = container.querySelectorAll("extensions-item").length;
+                  if (count !== 1) {
+                    throw Error("Encountered unexpected number of extensions: " + count);
+                  }
                   const extn = container.querySelectorAll("extensions-item")[0];
                   if (!extn) {
                     throw Error("Path to extension element is invalid.");
@@ -118,57 +136,155 @@ class SupervisedUserExtensionsParentalControlsUiTest
                   if (!toggle) {
                     throw Error("Path to extension toggle is invalid.");
                   }
-                  toggle.click();
+                  if (toggle.ariaPressed != "%s") {
+                    throw Error("Extension toggle in unexpected state: " + toggle.ariaPressed);
+                  }
+                  if (toggle.ariaPressed == "false") {
+                    toggle.click();
+                  }
                 }
-              )js"));
+              )js",
+                               expected_extension_enabled ? "true" : "false")),
+                 Log("Child inspected extension toggle."));
   }
 
   // Installs programmatically (not through the UI) an extension for the given
   // user.
-  void InstallExtension(const std::string_view& name, Profile* profile) {
-    extensions::TestExtensionDir extension_dir;
-    extension_dir.WriteManifest(base::StringPrintf(
+  void InstallExtension(Profile* profile) {
+    std::string extension_manifest = base::StringPrintf(
         R"({
             "name": "%s",
             "manifest_version": 3,
-            "version": "0.1"
+            "version": "0.1",
+            "host_permissions": ["<all_urls>"],
+            "permissions": [ "geolocation" ]
           })",
-        name.data()));
+        kExtensionName.data());
+    extensions::TestExtensionDir extension_dir;
+    extension_dir.WriteManifest(extension_manifest);
 
     extensions::ChromeTestExtensionLoader extension_loader(profile);
     extension_loader.set_ignore_manifest_warnings(true);
     extension_loader.LoadExtension(extension_dir.Pack());
   }
 
-  // Parent toggles the "Permissions" switch in FL, if it does not have
-  // the desired value.
-  auto ParentSetsPermissionsSwitch(ui::ElementIdentifier kParentTab,
-                                   FamilyLinkSwitchState target_state) {
-    return Steps(ExecuteJs(
-        kParentTab,
-        base::StringPrintf(
-            R"js(
-          () => {
-            const button = document.querySelector('[aria-label="Toggle permissions for sites, apps and extensions"]')
-            if (!button) {
-              throw Error("'Permissions' toggle not found.");
-            }
-            if (button.ariaChecked != "%s") {
-              button.click();
-            }
-          }
-        )js",
-            kFamilyLinkSwitchStateToString[static_cast<int>(target_state)])));
+  ui::ElementIdentifier GetTargetUIElement() {
+    if (GetExtensionHandlingMode() ==
+        ExtensionHandlingMode::kExtensionsGovernedByPermissionsSwitch) {
+      // Depending on the "Permissions" switch's value either the "Parent
+      // Approval Dialog" (switch ON) or the "Extensions Blocked by Parent"
+      // error message will appear at the end.
+      return GetPermissionsSwitchTargetState() ==
+                     FamilyLinkToggleState::kEnabled
+                 ? ParentPermissionDialog::kDialogViewIdForTesting
+                 : extensions::kParentBlockedDialogMessage;
+    }
+    // If governed by extensions:
+    CHECK(GetExtensionHandlingMode() ==
+          ExtensionHandlingMode::kExtensionsGovernedByExtensionsSwitch);
+    CHECK(GetExtensionsSwitchTargetState() == FamilyLinkToggleState::kDisabled);
+    // Parent approval dialog should appear.
+    return ParentPermissionDialog::kDialogViewIdForTesting;
   }
 
-  // Polls the Permissions preference value in Chrome.
-  auto PollPermissionsPreference(
-      ui::test::StateIdentifier<BoolPermissionsStateObserver>
-          permission_preference_observer) {
-    return Steps(PollState(permission_preference_observer, [this]() {
-      return child().browser()->profile()->GetPrefs()->GetBoolean(
-          prefs::kSupervisedUserExtensionsMayRequestPermissions);
-    }));
+  // Navigates to the `Settings` page for the installed extension under test
+  // and inspects the permissions granted to the `Location` setting.
+  // Checks if the `Locations` attribute is editable or not (html attribute
+  // should be disabled), respecting the configuration of the "Permissions"
+  // switch in Family Link.
+  auto CheckExtensionLocationPermissions(ui::ElementIdentifier kChildElementId,
+                                         Profile* profile) {
+    if (GetExtensionHandlingMode() ==
+            ExtensionHandlingMode::kExtensionsGovernedByPermissionsSwitch &&
+        GetPermissionsSwitchTargetState() == FamilyLinkToggleState::kDisabled) {
+      // No extension has been installed on this mode, there are no permissions
+      // to check.
+      return Steps();
+    }
+
+    extensions::ExtensionId installed_extension_id;
+    const auto& installed_extensions =
+        extensions::ExtensionRegistry::Get(profile)
+            ->GenerateInstalledExtensionsSet();
+    for (const auto& extension : installed_extensions) {
+      if (extension->name() == kExtensionName) {
+        installed_extension_id = extension->id();
+        break;
+      }
+    }
+    CHECK(installed_extension_id.size() > 0)
+        << "There must be an installed extension.";
+
+    // When the Permissions FL switch is Off, the Location permissions button
+    // should be disabled (unmodifiable).
+    bool permissions_button_greyed_out =
+        GetPermissionsSwitchTargetState() == FamilyLinkToggleState::kDisabled;
+    return Steps(
+        Log("With installed extension : " + installed_extension_id),
+        NavigateWebContents(kChildElementId,
+                            GURL(std::string(kExtensionSiteSettingsUrl) +
+                                 std::string(installed_extension_id))),
+        WaitForStateChange(kChildElementId, PageWithMatchingTitle("Settings")),
+        Log("With extension settings page open."),
+        // Detect the Location permission and check whether it's user
+        // modifiable.
+        ExecuteJs(kChildElementId,
+                  base::StringPrintf(
+                      R"js(
+          () => { const location_permission = document.querySelector("body > settings-ui")
+                .shadowRoot.querySelector("#main")
+                .shadowRoot.querySelector("settings-basic-page")
+                .shadowRoot.querySelector("#basicPage > settings-section.expanded > settings-privacy-page")
+                .shadowRoot.querySelector("#pages > settings-subpage > site-details")
+                .shadowRoot.querySelector('[label="Location"]')
+                .shadowRoot.querySelector("#permission");
+                if (!location_permission) {
+                  throw Error('No location permission menu was found.');
+                }
+                if (location_permission.disabled === "%s") {
+                  throw Error('Unexpected Location Permission state: ' + permission_drop.disabled);
+                }
+              }
+          )js",
+                      permissions_button_greyed_out ? "true" : "false")),
+        Log("Child inspected Location Permission button."));
+  }
+
+  auto CheckForParentDialogIfExtensionDisabled(
+      bool is_expected_extension_enabled) {
+    if (is_expected_extension_enabled) {
+      // No dialog appears in this case.
+      return Steps(Log("No dialog check is done, the extension is enabled."));
+    }
+    auto target_ui_element_id = GetTargetUIElement();
+    return Steps(
+        Log(base::StringPrintf("Waiting for the %s to appear.",
+                               (target_ui_element_id ==
+                                ParentPermissionDialog::kDialogViewIdForTesting)
+                                   ? "parent approval dialog"
+                                   : "blocked extension message")),
+        WaitForShow(target_ui_element_id),
+        Log(base::StringPrintf("The %s appears.",
+                               (target_ui_element_id ==
+                                ParentPermissionDialog::kDialogViewIdForTesting)
+                                   ? "parent approval dialog"
+                                   : "blocked extension message")));
+  }
+
+  static FamilyLiveTest::RpcMode GetRpcMode() {
+    return std::get<0>(GetParam());
+  }
+
+  static FamilyLinkToggleState GetPermissionsSwitchTargetState() {
+    return std::get<1>(GetParam());
+  }
+
+  static FamilyLinkToggleState GetExtensionsSwitchTargetState() {
+    return std::get<2>(GetParam());
+  }
+
+  static ExtensionHandlingMode GetExtensionHandlingMode() {
+    return std::get<3>(GetParam());
   }
 
  private:
@@ -177,71 +293,94 @@ class SupervisedUserExtensionsParentalControlsUiTest
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserExtensionsParentalControlsUiTest,
                        ChildTogglesExtensionMissingParentApproval) {
+  extensions::ScopedInstallVerifierBypassForTest install_verifier_bypass;
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentControlsTab);
-  int child_tab_index = 0;
-  int parent_tab_index = 0;
-  auto switch_target_state = std::get<1>(GetParam());
-  TurnOnSyncFor(head_of_household());
-  TurnOnSyncFor(child());
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
+                                      kDefineStateObserverId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
+                                      kResetStateObserverId);
+  const int child_tab_index = 0;
 
-  // Depending on the "Permissions" switch's value either the "Parent Approval
-  // Dialog" (switch ON) or the "Extensions Blocked by Parent" error message
-  // will appear at the end.
-  auto target_ui_element_id =
-      switch_target_state == FamilyLinkSwitchState::kEnabled
-          ? ParentPermissionDialog::kDialogViewIdForTesting
-          : extensions::kParentBlockedDialogMessage;
+  // The extensions should be disabled (pending parent approval) in all cases,
+  // expect when the new "Extensions" FL switch is enabled and is used
+  // in Chrome to manage extensions.
+  const bool should_be_enabled =
+      GetExtensionHandlingMode() ==
+          ExtensionHandlingMode::kExtensionsGovernedByExtensionsSwitch &&
+      GetExtensionsSwitchTargetState() == FamilyLinkToggleState::kEnabled;
 
-  RunTestSequence(Steps(
-      // Parent sets the FL switch "Permissions" to ON.
-      // TODO(b/303401498): Use chrome test state seeding rpc.
-      InstrumentTab(kParentControlsTab, parent_tab_index,
-                    head_of_household().browser()),
+  TurnOnSync();
 
-      ParentOpensControlPage(kParentControlsTab,
-                             head_of_household().GetPermissionsUrlFor(child())),
-      PollPermissionsPreference(kBoolPermissionsPreferenceObserver),
-      ParentSetsPermissionsSwitch(kParentControlsTab,
-                                  FamilyLinkSwitchState::kEnabled),
-      WaitForState(kBoolPermissionsPreferenceObserver, true)));
+  // Set the FL switch in the value that require parent approvals for
+  // extension installation.
+  RunTestSequence(
+      Log("Set config that requires parental approvals."),
+      WaitForStateSeeding(kResetStateObserverId, child(),
+                          BrowserState::SetAdvancedSettingsDefault()));
+
+  InstallExtension(&child().profile());
 
   RunTestSequence(InAnyContext(Steps(
-      // Install programmatically an extension. It is pending parent approval.
-      Do([this]() -> void {
-        InstallExtension("A Extension", child().browser()->profile());
-      }),
-      // Parent sets the FL Permissions switch.
-      ParentSetsPermissionsSwitch(kParentControlsTab, switch_target_state),
-      WaitForState(kBoolPermissionsPreferenceObserver,
-                   switch_target_state == FamilyLinkSwitchState::kEnabled
-                       ? true
-                       : false),
-
+      Log("Given an installed disabled extension."),
+      // Parent sets both the FL Permissions and Extensions switches.
+      // Only one of them impacts the handling of supervised user extensions.
+      WaitForStateSeeding(
+          kDefineStateObserverId, child(),
+          BrowserState::AdvancedSettingsToggles(
+              {FamilyLinkToggleConfiguration(
+                   {.type = FamilyLinkToggleType::kExtensionsToggle,
+                    .state = GetExtensionsSwitchTargetState()}),
+               FamilyLinkToggleConfiguration(
+                   {.type = FamilyLinkToggleType::kPermissionsToggle,
+                    .state = GetPermissionsSwitchTargetState()})})),
       // Child navigates to the extensions page and tries to enable the
-      // extension.
-      InstrumentTab(kChildElementId, child_tab_index, child().browser()),
+      // extension, if it is disabled.
+      Log("When child visits the extensions management page."),
+      InstrumentTab(kChildElementId, child_tab_index, &child().browser()),
       NavigateWebContents(kChildElementId, GURL(kChromeManageExternsionsUrl)),
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Extensions")),
-      ChildClicksEnableExtension(kChildElementId),
-      // The parent approval dialog or the Blocked extensions error message
-      // appears.
-      WaitForShow(target_ui_element_id))));
+      Log("When child tries to enable the extension."),
+      ChildClicksEnableExtensionIfExtensionDisabled(kChildElementId,
+                                                    should_be_enabled),
+      // If the extension is not already enabled, check that the expect UI
+      // dialog appears.
+      CheckForParentDialogIfExtensionDisabled(should_be_enabled),
+      CheckExtensionLocationPermissions(kChildElementId, &child().profile()))));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     SupervisedUserExtensionsParentalControlsUiTest,
     testing::Combine(
-        testing::Values(supervised_user::FamilyIdentifier("FAMILY_DMA_ALL")),
-        testing::Values(FamilyLinkSwitchState::kEnabled,
-                        FamilyLinkSwitchState::kDisabled)),
+        testing::Values(FamilyLiveTest::RpcMode::kProd,
+                        FamilyLiveTest::RpcMode::kTestImpersonation),
+        /*permissions_switch_target_value=*/
+        testing::Values(FamilyLinkToggleState::kEnabled,
+                        FamilyLinkToggleState::kDisabled),
+        /*extensions_switch_target_value==*/
+        testing::Values(FamilyLinkToggleState::kEnabled,
+                        FamilyLinkToggleState::kDisabled),
+        /*extensions_handling_mode=*/
+        testing::Values(
+            ExtensionHandlingMode::kExtensionsGovernedByPermissionsSwitch,
+            ExtensionHandlingMode::kExtensionsGovernedByExtensionsSwitch)),
     [](const auto& info) {
-      return std::string(std::get<0>(info.param)->data()) +
+      return ToString(std::get<0>(info.param)) +
              std::string(
-                 (std::get<1>(info.param) == FamilyLinkSwitchState::kEnabled
-                      ? "WithPermissionsSwitchOn"
-                      : "WithPermissionsSwitchOff"));
+                 (std::get<1>(info.param) == FamilyLinkToggleState::kEnabled
+                      ? "WithPermissionsOn"
+                      : "WithPermissionsOff")) +
+             std::string(
+                 (std::get<2>(info.param) == FamilyLinkToggleState::kEnabled
+                      ? "WithExtensionsOn"
+                      : "WithExtensionsOff")) +
+             std::string((std::get<3>(info.param) ==
+                                  ExtensionHandlingMode::
+                                      kExtensionsGovernedByPermissionsSwitch
+                              ? "ManagedByPermissionsSwitch"
+                              : "ManagedByExtensionsSwitch"));
     });
+
 }  // namespace
 }  // namespace supervised_user

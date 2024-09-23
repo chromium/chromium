@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos)
@@ -13,15 +14,28 @@ proto_library("proto") {
   link_deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
 }
 
-source_set("app_install_service") {
+source_set("app_install") {
   sources = [
-    "app_install_service.cc",
     "app_install_service.h",
     "app_install_types.cc",
     "app_install_types.h",
   ]
 
   deps = [
+    "//components/services/app_service",
+    "//services/network/public/cpp",
+    "//ui/gfx:native_widget_types",
+  ]
+}
+
+# This target is separated from the :app_install interface target to allow the
+# implementation to depend on //chrome/browser/apps/app_service without circular
+# deps.
+source_set("implementation") {
+  sources = [ "app_install_service.cc" ]
+
+  deps = [
+    ":app_install",
     "//base",
     "//chromeos/crosapi/mojom",
     "//components/services/app_service",
@@ -30,22 +44,34 @@ source_set("app_install_service") {
 
   if (is_chromeos_ash) {
     sources += [
-      "app_install_almanac_connector.cc",
-      "app_install_almanac_connector.h",
+      "app_install_almanac_endpoint.cc",
+      "app_install_almanac_endpoint.h",
+      "app_install_discovery_metrics.cc",
+      "app_install_discovery_metrics.h",
       "app_install_service_ash.cc",
       "app_install_service_ash.h",
+      "arc_app_installer.cc",
+      "arc_app_installer.h",
       "web_app_installer.cc",
       "web_app_installer.h",
     ]
 
     deps += [
       ":proto",
+      "//ash/components/arc/mojom",
+      "//ash/components/arc/session",
+      "//ash/components/arc/session:connection_holder",
+      "//ash/constants",
       "//chrome/browser/apps/almanac_api_client",
-      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/ash/borealis",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
       "//chrome/browser/web_applications",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/components/mgs",
       "//chromeos/constants:constants",
+      "//components/metrics/structured:structured_events",
       "//components/webapps/browser",
       "//components/webapps/common",
     ]
@@ -56,6 +82,22 @@ source_set("app_install_service") {
       "app_install_service_lacros.cc",
       "app_install_service_lacros.h",
     ]
+
+    deps += [ "//chromeos/lacros" ]
+  }
+
+  # Outside of //chrome/browser only tests should be depending on this target.
+  visibility = [
+    ":*",
+    "//chrome/browser",
+    "//chrome/browser/ash/system_web_apps/apps/help_app:browser_tests",
+  ]
+
+  if (is_chromeos_ash) {
+    # For transition period, let crosapi allow to depend on this for
+    # allow_circular_includes_from. Crosapi will be gone along with
+    # lacros removal.
+    visibility += [ "//chrome/browser/ash/crosapi" ]
   }
 }
 
@@ -66,9 +108,11 @@ source_set("navigation_throttle") {
   ]
 
   deps = [
-    ":app_install_service",
+    ":app_install",
     "//base",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/browser_instance",
+    "//chrome/browser/apps/link_capturing",
     "//chrome/browser/profiles:profile",
     "//chromeos/constants",
     "//components/services/app_service",
@@ -80,9 +124,14 @@ source_set("navigation_throttle") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "app_install_navigation_throttle_unittest.cc" ]
+  sources = [
+    "app_install_navigation_throttle_unittest.cc",
+    "app_install_types_unittest.cc",
+  ]
 
   deps = [
+    ":app_install",
+    ":implementation",
     ":navigation_throttle",
     "//base",
     "//chrome/browser/web_applications",
@@ -94,13 +143,24 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos_ash) {
-    sources += [ "app_install_almanac_connector_unittest.cc" ]
+    sources += [
+      "app_install_almanac_endpoint_unittest.cc",
+      "app_install_service_ash_unittest.cc",
+      "arc_app_installer_unittest.cc",
+    ]
 
     deps += [
-      ":app_install_service",
       ":proto",
+      ":test_support",
+      "//ash/components/arc:arc_test_support",
+      "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/almanac_api_client/proto",
       "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/ash/app_list/arc",
+      "//chrome/browser/ash/app_list/arc:test_support",
+      "//chromeos/ash/components/system",
+      "//components/arc:arc_test_support",
       "//services/network:test_support",
     ]
   }
@@ -110,21 +170,31 @@ source_set("browser_tests") {
   testonly = true
 
   sources = [ "app_install_navigation_throttle_browsertest.cc" ]
+
   if (is_chromeos_ash) {
     sources += [
+      "app_install_service_ash_browsertest.cc",
       "web_app_installer_browsertest.cc",
-      "web_app_installer_lacros_browsertest.cc",
     ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
-    ":app_install_service",
+    ":app_install",
+    ":implementation",
     ":navigation_throttle",
     ":proto",
+    ":test_support",
     "//base",
     "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/apps/browser_instance",
+    "//chrome/browser/apps/link_capturing:test_support",
+    "//chrome/browser/chromeos/crosapi:test_support",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
     "//components/webapps/common",
@@ -142,12 +212,45 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//chrome/browser/apps/app_service",
-      "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crosapi:test_support",
+      "//chrome/browser/ui/webui/ash/app_install:test_support",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
     ]
   }
+}
+
+test("app_install_fuzztests") {
+  sources = [ "app_install_navigation_throttle_fuzztests.cc" ]
+
+  fuzztests = [
+    "AppInstallNavigationThrottleFuzzTest.ExtractQueryParamsCanParseAnyString",
+  ]
+
+  deps = [
+    ":navigation_throttle",
+    "//chrome/test:test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_app_install_server.cc",
+    "test_app_install_server.h",
+  ]
+
+  deps = [
+    ":proto",
+    "//base",
+    "//chrome/browser/chromeos/crosapi:test_support",
+    "//chrome/browser/web_applications",
+    "//chromeos/crosapi/mojom",
+    "//components/services/app_service",
+    "//components/webapps/common",
+    "//net:test_support",
+  ]
 }

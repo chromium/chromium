@@ -4,9 +4,10 @@
 
 #include "components/signin/core/browser/consistency_cookie_manager.h"
 
+#include <vector>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -100,7 +101,7 @@ void ConsistencyCookieManager::RemoveExtraCookieManager(
     network::mojom::CookieManager* manager) {
   DCHECK(manager);
   DCHECK(base::Contains(extra_cookie_managers_, manager));
-  base::Erase(extra_cookie_managers_, manager);
+  std::erase(extra_cookie_managers_, manager);
 }
 
 // static
@@ -115,7 +116,7 @@ ConsistencyCookieManager::CreateConsistencyCookie(const std::string& value) {
       /*path=*/"/", /*creation=*/now, /*expiration=*/expiry,
       /*last_access=*/now, /*secure=*/true, /*httponly=*/false,
       net::CookieSameSite::STRICT_MODE, net::COOKIE_PRIORITY_DEFAULT,
-      /*partition_key=*/std::nullopt);
+      /*partition_key=*/std::nullopt, /*status=*/nullptr);
 }
 
 // static
@@ -155,7 +156,7 @@ void ConsistencyCookieManager::SetCookieValue(
       cookie_value_string = kCookieValueStringUpdating;
       break;
     case CookieValue::kInvalid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   DCHECK(!cookie_value_string.empty());
@@ -210,7 +211,7 @@ ConsistencyCookieManager::CalculateCookieValue() const {
       return CookieValue::kInconsistent;
     case signin_metrics::AccountReconcilorState::kInactive:
       // This case is already handled at the top of the function.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }

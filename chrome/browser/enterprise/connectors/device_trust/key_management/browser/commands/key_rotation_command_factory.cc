@@ -4,12 +4,17 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command_factory.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
+#include "components/enterprise/client_certificates/core/browser_cloud_management_delegate.h"
+#include "components/enterprise/client_certificates/core/dm_server_client.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -44,12 +49,20 @@ KeyRotationCommandFactory* KeyRotationCommandFactory::GetInstance() {
 }
 
 std::unique_ptr<KeyRotationCommand> KeyRotationCommandFactory::CreateCommand(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    policy::DeviceManagementService* device_management_service) {
 #if BUILDFLAG(IS_WIN)
   return std::make_unique<WinKeyRotationCommand>();
 #elif BUILDFLAG(IS_LINUX)
   return std::make_unique<LinuxKeyRotationCommand>(url_loader_factory);
 #elif BUILDFLAG(IS_MAC)
+  if (IsDTCKeyRotationUploadedBySharedAPI()) {
+    auto cloud_delegate = std::make_unique<
+        enterprise_attestation::BrowserCloudManagementDelegate>(
+        enterprise_attestation::DMServerClient::Create(
+            device_management_service, url_loader_factory));
+    return std::make_unique<MacKeyRotationCommand>(std::move(cloud_delegate));
+  }
   return std::make_unique<MacKeyRotationCommand>(url_loader_factory);
 #else
   return nullptr;

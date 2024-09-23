@@ -5,10 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_PASSWORD_MANAGER_LOG_ROUTER_FACTORY_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_PASSWORD_MANAGER_LOG_ROUTER_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace autofill {
 class LogRouter;
@@ -16,12 +15,13 @@ class LogRouter;
 
 namespace ios {
 // Singleton that owns all PasswordStores and associates them with
-// ChromeBrowserState.
+// profile.
 class PasswordManagerLogRouterFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static autofill::LogRouter* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static autofill::LogRouter* GetForBrowserState(ProfileIOS* profile);
 
+  static autofill::LogRouter* GetForProfile(ProfileIOS* profile);
   static PasswordManagerLogRouterFactory* GetInstance();
 
   PasswordManagerLogRouterFactory(const PasswordManagerLogRouterFactory&) =

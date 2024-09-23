@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/android/hats/survey_ui_delegate_android.h"
 
-#include "chrome/browser/ui/android/hats/internal/jni_headers/SurveyUiDelegateBridge_jni.h"
 #include "components/messages/android/message_wrapper.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/hats/internal/jni_headers/SurveyUiDelegateBridge_jni.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;

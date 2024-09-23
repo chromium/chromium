@@ -5,6 +5,7 @@
 #include "net/websockets/websocket_http2_handshake_stream.h"
 
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -25,7 +26,6 @@
 #include "net/spdy/spdy_http_utils.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_stream.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_basic_stream.h"
 #include "net/websockets/websocket_deflate_predictor_impl.h"
@@ -114,10 +114,8 @@ int WebSocketHttp2HandshakeStream::SendRequest(
       request_info_->url, base::Time::Now());
   request->headers = headers;
 
-  AddVectorHeaderIfNonEmpty(websockets::kSecWebSocketExtensions,
-                            requested_extensions_, &request->headers);
-  AddVectorHeaderIfNonEmpty(websockets::kSecWebSocketProtocol,
-                            requested_sub_protocols_, &request->headers);
+  AddVectorHeaders(requested_extensions_, requested_sub_protocols_,
+                   &request->headers);
 
   CreateSpdyHeadersFromHttpRequestForWebSocket(
       request_info_->url, request->headers, &http2_request_headers_);
@@ -159,7 +157,7 @@ int WebSocketHttp2HandshakeStream::ReadResponseBody(
     CompletionOnceCallback callback) {
   // Callers should instead call Upgrade() to get a WebSocketStream
   // and call ReadFrames() on that.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return OK;
 }
 
@@ -210,13 +208,6 @@ void WebSocketHttp2HandshakeStream::GetSSLInfo(SSLInfo* ssl_info) {
     stream_->GetSSLInfo(ssl_info);
 }
 
-void WebSocketHttp2HandshakeStream::GetSSLCertRequestInfo(
-    SSLCertRequestInfo* cert_request_info) {
-  // A multiplexed stream cannot request client certificates. Client
-  // authentication may only occur during the initial SSL handshake.
-  NOTREACHED();
-}
-
 int WebSocketHttp2HandshakeStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
   if (!session_)
     return ERR_SOCKET_NOT_CONNECTED;
@@ -250,7 +241,7 @@ const std::set<std::string>& WebSocketHttp2HandshakeStream::GetDnsAliases()
   return dns_aliases_;
 }
 
-base::StringPiece WebSocketHttp2HandshakeStream::GetAcceptChViaAlps() const {
+std::string_view WebSocketHttp2HandshakeStream::GetAcceptChViaAlps() const {
   return {};
 }
 
@@ -285,7 +276,7 @@ void WebSocketHttp2HandshakeStream::OnHeadersSent() {
 }
 
 void WebSocketHttp2HandshakeStream::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers) {
+    const quiche::HttpHeaderBlock& response_headers) {
   DCHECK(!response_headers_complete_);
   DCHECK(http_response_info_);
 

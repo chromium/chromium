@@ -9,16 +9,21 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+
+class Profile;
 
 namespace web_package {
 class SignedWebBundleId;
@@ -37,6 +42,7 @@ class IsolatedWebAppValidator;
 class IsolatedWebAppResponseReaderFactory {
  public:
   explicit IsolatedWebAppResponseReaderFactory(
+      Profile& profile,
       std::unique_ptr<IsolatedWebAppValidator> validator,
       base::RepeatingCallback<
           std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>()>
@@ -55,36 +61,42 @@ class IsolatedWebAppResponseReaderFactory {
       base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
                      UnusableSwbnFileError>)>;
 
+  enum class Flag {
+    kMinValue,
+    kDevModeBundle = kMinValue,
+    kSkipSignatureVerification,
+    kMaxValue = kSkipSignatureVerification
+  };
+  using Flags = base::EnumSet<Flag, Flag::kMinValue, Flag::kMaxValue>;
+
   virtual void CreateResponseReader(
       const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
-      bool skip_signature_verification,
+      Flags flags,
       Callback callback);
 
   static std::string ErrorToString(const UnusableSwbnFileError& error);
 
  private:
   void OnIntegrityBlockRead(
+      std::unique_ptr<SignedWebBundleReader> reader,
+      const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
-      bool skip_signature_verification,
-      const web_package::SignedWebBundleIntegrityBlock integrity_block,
-      base::OnceCallback<
-          void(SignedWebBundleReader::SignatureVerificationAction)> callback);
-
-  void OnIntegrityBlockValidated(
-      bool skip_signature_verification,
-      base::OnceCallback<
-          void(SignedWebBundleReader::SignatureVerificationAction)>
-          integrity_callback,
-      std::optional<std::string> integrity_block_error);
+      Flags flags,
+      Callback callback,
+      base::expected<web_package::SignedWebBundleIntegrityBlock,
+                     UnusableSwbnFileError> result);
 
   void OnIntegrityBlockAndMetadataRead(
       std::unique_ptr<SignedWebBundleReader> reader,
       const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
+      Flags flags,
       Callback callback,
       base::expected<void, UnusableSwbnFileError> status);
 
+  const raw_ref<Profile> profile_;
+  IsolatedWebAppTrustChecker trust_checker_;
   std::unique_ptr<IsolatedWebAppValidator> validator_;
   base::RepeatingCallback<
       std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>()>

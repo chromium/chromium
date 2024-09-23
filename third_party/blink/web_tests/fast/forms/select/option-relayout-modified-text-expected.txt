@@ -1,5 +1,6 @@
-Modifying text content of an
-changes the width of the .On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+Modifying text content of an option changes the width of the select.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 PASS refSelect.offsetWidth is > testSelect.offsetWidth
 PASS testSelect.offsetWidth is refSelect.offsetWidth

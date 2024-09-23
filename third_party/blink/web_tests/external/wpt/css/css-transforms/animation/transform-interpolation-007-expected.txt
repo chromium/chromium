@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] CSS Transitions: property <transform> from [matrix3d(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)] to [matrix(3, 0, 0, 3, 0, 0)] at (-0.3) should be [matrix(3, 0, 0, 3, 0, 0)]
+  assert_equals: expected "matrix ( 3 , 0 , 0 , 3 , 0 , 0 ) " but got "matrix3d ( 2 , 0 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 ) "
+[FAIL] CSS Transitions: property <transform> from [matrix3d(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)] to [matrix(3, 0, 0, 3, 0, 0)] at (0) should be [matrix(3, 0, 0, 3, 0, 0)]
+  assert_equals: expected "matrix ( 3 , 0 , 0 , 3 , 0 , 0 ) " but got "matrix3d ( 2 , 0 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 ) "
+[FAIL] CSS Transitions: property <transform> from [matrix3d(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)] to [matrix(3, 0, 0, 3, 0, 0)] at (0.3) should be [matrix(3, 0, 0, 3, 0, 0)]
+  assert_equals: expected "matrix ( 3 , 0 , 0 , 3 , 0 , 0 ) " but got "matrix3d ( 2 , 0 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 ) "
+[FAIL] CSS Transitions with transition: all: property <transform> from [matrix3d(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)] to [matrix(3, 0, 0, 3, 0, 0)] at (-0.3) should be [matrix(3, 0, 0, 3, 0, 0)]
+  assert_equals: expected "matrix ( 3 , 0 , 0 , 3 , 0 , 0 ) " but got "matrix3d ( 2 , 0 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 ) "
+[FAIL] CSS Transitions with transition: all: property <transform> from [matrix3d(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)] to [matrix(3, 0, 0, 3, 0, 0)] at (0) should be [matrix(3, 0, 0, 3, 0, 0)]
+  assert_equals: expected "matrix ( 3 , 0 , 0 , 3 , 0 , 0 ) " but got "matrix3d ( 2 , 0 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 ) "
+[FAIL] CSS Transitions with transition: all: property <transform> from [matrix3d(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)] to [matrix(3, 0, 0, 3, 0, 0)] at (0.3) should be [matrix(3, 0, 0, 3, 0, 0)]
+  assert_equals: expected "matrix ( 3 , 0 , 0 , 3 , 0 , 0 ) " but got "matrix3d ( 2 , 0 , 0 , 0 , 0 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 ) "
+Harness: the test ran to completion.
+

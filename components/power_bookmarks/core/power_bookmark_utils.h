@@ -62,15 +62,14 @@ void DeleteNodePowerBookmarkMeta(bookmarks::BookmarkModel* model,
 // counterpart in bookmark_utils, this method is capable of searching and
 // filtering on tags. A list of tags can be provided that will produce
 // bookmarks that at least have those tags. The bookmark's tags will also be
-// tested against the text search query. Output is put into \nodes\. Bookmarks
-// that are returned will match all of the other query fields that are set. For
-// example: if |folder| and |type| are set, all returned bookmarks will be a
-// descendant of |folder| and have a power bookmark type of |type|.
-void GetBookmarksMatchingProperties(
+// tested against the text search query. Bookmarks that are returned will match
+// all of the other query fields that are set. For example: if |folder| and
+// |type| are set, all returned bookmarks will be a descendant of |folder| and
+// have a power bookmark type of |type|.
+std::vector<const bookmarks::BookmarkNode*> GetBookmarksMatchingProperties(
     bookmarks::BookmarkModel* model,
     const PowerBookmarkQueryFields& query,
-    size_t max_count,
-    std::vector<const bookmarks::BookmarkNode*>* nodes);
+    size_t max_count);
 
 // Encode the provided metadata into |out| so it can be safely stored as JSON
 // in the persistence layer.

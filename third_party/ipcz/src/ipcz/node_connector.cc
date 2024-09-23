@@ -14,7 +14,6 @@
 #include "ipcz/link_type.h"
 #include "ipcz/node_link.h"
 #include "ipcz/node_link_memory.h"
-#include "ipcz/operation_context.h"
 #include "ipcz/remote_router_link.h"
 #include "ipcz/router.h"
 #include "ipcz/sublink_id.h"
@@ -54,14 +53,14 @@ class NodeConnectorForBrokerToNonBroker : public NodeConnector {
 
     ABSL_ASSERT(node_->type() == Node::Type::kBroker);
     msg::ConnectFromBrokerToNonBroker connect;
-    connect.params().broker_name = broker_name_;
-    connect.params().receiver_name = new_remote_node_name_;
-    connect.params().protocol_version = msg::kProtocolVersion;
-    connect.params().num_initial_portals =
-        checked_cast<uint32_t>(num_portals());
-    connect.params().buffer = connect.AppendDriverObject(
+    connect.v0()->broker_name = broker_name_;
+    connect.v0()->receiver_name = new_remote_node_name_;
+    connect.v0()->protocol_version = msg::kProtocolVersion;
+    connect.v0()->num_initial_portals = checked_cast<uint32_t>(num_portals());
+    connect.v0()->buffer = connect.AppendDriverObject(
         link_memory_allocation_.memory.TakeDriverObject());
-    connect.params().padding = 0;
+    connect.v0()->padding = 0;
+    connect.v1()->features = node_->features().Serialize(connect);
     return IPCZ_RESULT_OK == transport_->Transmit(connect);
   }
 
@@ -72,12 +71,17 @@ class NodeConnectorForBrokerToNonBroker : public NodeConnector {
              << broker_name_.ToString() << " from new node "
              << new_remote_node_name_.ToString();
 
+    Features remote_features = {};
+    if (auto* v1 = connect.v1()) {
+      remote_features = Features::Deserialize(connect, v1->features);
+    }
     Ref<NodeLink> link = NodeLink::CreateActive(
         node_, LinkSide::kA, broker_name_, new_remote_node_name_,
-        Node::Type::kNormal, connect.params().protocol_version, transport_,
-        NodeLinkMemory::Create(node_,
+        Node::Type::kNormal, connect.v0()->protocol_version, remote_features,
+        transport_,
+        NodeLinkMemory::Create(node_, LinkSide::kA, remote_features,
                                std::move(link_memory_allocation_.mapping)));
-    AcceptConnection({.link = link}, connect.params().num_initial_portals);
+    AcceptConnection({.link = link}, connect.v0()->num_initial_portals);
     return true;
   }
 
@@ -106,9 +110,9 @@ class NodeConnectorForNonBrokerToBroker : public NodeConnector {
   bool Connect() override {
     ABSL_ASSERT(node_->type() == Node::Type::kNormal);
     msg::ConnectFromNonBrokerToBroker connect;
-    connect.params().protocol_version = msg::kProtocolVersion;
-    connect.params().num_initial_portals =
-        checked_cast<uint32_t>(num_portals());
+    connect.v0()->protocol_version = msg::kProtocolVersion;
+    connect.v0()->num_initial_portals = checked_cast<uint32_t>(num_portals());
+    connect.v1()->features = node_->features().Serialize(connect);
     return IPCZ_RESULT_OK == transport_->Transmit(connect);
   }
 
@@ -116,26 +120,31 @@ class NodeConnectorForNonBrokerToBroker : public NodeConnector {
   bool OnConnectFromBrokerToNonBroker(
       msg::ConnectFromBrokerToNonBroker& connect) override {
     DVLOG(4) << "New node accepting ConnectFromBrokerToNonBroker with assigned "
-             << "name " << connect.params().receiver_name.ToString()
-             << " from broker " << connect.params().broker_name.ToString();
+             << "name " << connect.v0()->receiver_name.ToString()
+             << " from broker " << connect.v0()->broker_name.ToString();
 
     DriverMemoryMapping mapping =
-        DriverMemory(connect.TakeDriverObject(connect.params().buffer)).Map();
+        DriverMemory(connect.TakeDriverObject(connect.v0()->buffer)).Map();
     if (!mapping.is_valid()) {
       return false;
     }
 
+    Features remote_features = {};
+    if (auto* v1 = connect.v1()) {
+      remote_features = Features::Deserialize(connect, v1->features);
+    }
     auto new_link = NodeLink::CreateActive(
-        node_, LinkSide::kB, connect.params().receiver_name,
-        connect.params().broker_name, Node::Type::kBroker,
-        connect.params().protocol_version, transport_,
-        NodeLinkMemory::Create(node_, std::move(mapping)));
+        node_, LinkSide::kB, connect.v0()->receiver_name,
+        connect.v0()->broker_name, Node::Type::kBroker,
+        connect.v0()->protocol_version, remote_features, transport_,
+        NodeLinkMemory::Create(node_, LinkSide::kB, remote_features,
+                               std::move(mapping)));
     if ((flags_ & IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE) != 0) {
       node_->SetAllocationDelegate(new_link);
     }
 
     AcceptConnection({.link = new_link, .broker = new_link},
-                     connect.params().num_initial_portals);
+                     connect.v0()->num_initial_portals);
     return true;
   }
 };
@@ -216,9 +225,9 @@ class NodeConnectorForReferredNonBroker : public NodeConnector {
   bool Connect() override {
     ABSL_ASSERT(node_->type() == Node::Type::kNormal);
     msg::ConnectToReferredBroker connect;
-    connect.params().protocol_version = msg::kProtocolVersion;
-    connect.params().num_initial_portals =
-        checked_cast<uint32_t>(num_portals());
+    connect.v0()->protocol_version = msg::kProtocolVersion;
+    connect.v0()->num_initial_portals = checked_cast<uint32_t>(num_portals());
+    connect.v1()->features = node_->features().Serialize(connect);
     return IPCZ_RESULT_OK == transport_->Transmit(connect);
   }
 
@@ -226,55 +235,61 @@ class NodeConnectorForReferredNonBroker : public NodeConnector {
   bool OnConnectToReferredNonBroker(
       msg::ConnectToReferredNonBroker& connect) override {
     DVLOG(4) << "New node accepting ConnectToReferredNonBroker with assigned "
-             << "name " << connect.params().name.ToString() << " from broker "
-             << connect.params().broker_name.ToString() << " as referred by "
-             << connect.params().referrer_name.ToString();
+             << "name " << connect.v0()->name.ToString() << " from broker "
+             << connect.v0()->broker_name.ToString() << " as referred by "
+             << connect.v0()->referrer_name.ToString();
 
     DriverMemoryMapping broker_mapping =
-        DriverMemory(
-            connect.TakeDriverObject(connect.params().broker_link_buffer))
+        DriverMemory(connect.TakeDriverObject(connect.v0()->broker_link_buffer))
             .Map();
     DriverMemoryMapping referrer_mapping =
         DriverMemory(
-            connect.TakeDriverObject(connect.params().referrer_link_buffer))
+            connect.TakeDriverObject(connect.v0()->referrer_link_buffer))
             .Map();
     Ref<DriverTransport> referrer_transport = MakeRefCounted<DriverTransport>(
-        connect.TakeDriverObject(connect.params().referrer_link_transport));
+        connect.TakeDriverObject(connect.v0()->referrer_link_transport));
     if (!broker_mapping.is_valid() || !referrer_mapping.is_valid() ||
         !referrer_transport->driver_object().is_valid()) {
       return false;
+    }
+
+    Features broker_features = {}, referrer_features = {};
+    if (auto* v1 = connect.v1()) {
+      broker_features = Features::Deserialize(connect, v1->broker_features);
+      referrer_features = Features::Deserialize(connect, v1->referrer_features);
     }
 
     // Ensure this NodeConnector stays alive until this method returns.
     // Otherwise the last reference may be dropped when the new NodeLink takes
     // over listening on `transport_`.
     Ref<NodeConnector> self(this);
-    const uint32_t broker_protocol_version = std::min(
-        connect.params().broker_protocol_version, msg::kProtocolVersion);
+    const uint32_t broker_protocol_version =
+        std::min(connect.v0()->broker_protocol_version, msg::kProtocolVersion);
     auto broker_link = NodeLink::CreateActive(
-        node_, LinkSide::kB, connect.params().name,
-        connect.params().broker_name, Node::Type::kBroker,
-        broker_protocol_version, transport_,
-        NodeLinkMemory::Create(node_, std::move(broker_mapping)));
+        node_, LinkSide::kB, connect.v0()->name, connect.v0()->broker_name,
+        Node::Type::kBroker, broker_protocol_version, broker_features,
+        transport_,
+        NodeLinkMemory::Create(node_, LinkSide::kB, broker_features,
+                               std::move(broker_mapping)));
     if ((flags_ & IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE) != 0) {
       node_->SetAllocationDelegate(broker_link);
     }
-    node_->AddConnection(connect.params().broker_name,
-                         {
-                             .link = broker_link,
-                             .broker = broker_link,
-                         });
+    node_->AddConnection(connect.v0()->broker_name, {
+                                                        .link = broker_link,
+                                                        .broker = broker_link,
+                                                    });
 
     const uint32_t referrer_protocol_version = std::min(
-        connect.params().referrer_protocol_version, msg::kProtocolVersion);
+        connect.v0()->referrer_protocol_version, msg::kProtocolVersion);
     auto referrer_link = NodeLink::CreateInactive(
-        node_, LinkSide::kB, connect.params().name,
-        connect.params().referrer_name, Node::Type::kNormal,
-        referrer_protocol_version, std::move(referrer_transport),
-        NodeLinkMemory::Create(node_, std::move(referrer_mapping)));
+        node_, LinkSide::kB, connect.v0()->name, connect.v0()->referrer_name,
+        Node::Type::kNormal, referrer_protocol_version, referrer_features,
+        std::move(referrer_transport),
+        NodeLinkMemory::Create(node_, LinkSide::kB, referrer_features,
+                               std::move(referrer_mapping)));
 
     AcceptConnection({.link = referrer_link, .broker = broker_link},
-                     connect.params().num_initial_portals);
+                     connect.v0()->num_initial_portals);
     referrer_link->Activate();
     return true;
   }
@@ -326,12 +341,17 @@ class NodeConnectorForBrokerReferral : public NodeConnector {
     // no initial portals on this link, as this link was not established
     // directly by the application. Note that this takes over listsening on
     // `transport_`
+    Features remote_features = {};
+    if (auto* v1 = connect_to_broker.v1()) {
+      remote_features = Features::Deserialize(connect_to_broker, v1->features);
+    }
     const uint32_t protocol_version = std::min(
-        connect_to_broker.params().protocol_version, msg::kProtocolVersion);
+        connect_to_broker.v0()->protocol_version, msg::kProtocolVersion);
     Ref<NodeLink> link_to_referree = NodeLink::CreateActive(
         node_, LinkSide::kA, broker_name_, referred_node_name_,
-        Node::Type::kNormal, protocol_version, transport_,
-        NodeLinkMemory::Create(node_, std::move(link_memory_.mapping)));
+        Node::Type::kNormal, protocol_version, remote_features, transport_,
+        NodeLinkMemory::Create(node_, LinkSide::kA, remote_features,
+                               std::move(link_memory_.mapping)));
     AcceptConnection({.link = link_to_referree}, /*num_remote_portals=*/0);
 
     // Now we can create a new link to introduce both clients -- the referrer
@@ -347,41 +367,45 @@ class NodeConnectorForBrokerReferral : public NodeConnector {
     // through the broker to the referree before this handshake is sent to the
     // referree, which would be bad.
     msg::ConnectToReferredNonBroker connect;
-    connect.params().name = referred_node_name_;
-    connect.params().broker_name = broker_name_;
-    connect.params().referrer_name = referrer_->remote_node_name();
-    connect.params().broker_protocol_version = protocol_version;
-    connect.params().referrer_protocol_version =
+    connect.v0()->name = referred_node_name_;
+    connect.v0()->broker_name = broker_name_;
+    connect.v0()->referrer_name = referrer_->remote_node_name();
+    connect.v0()->broker_protocol_version = protocol_version;
+    connect.v0()->referrer_protocol_version =
         referrer_->remote_protocol_version();
-    connect.params().num_initial_portals = num_initial_portals_;
-    connect.params().broker_link_buffer =
+    connect.v0()->num_initial_portals = num_initial_portals_;
+    connect.v0()->broker_link_buffer =
         connect.AppendDriverObject(link_memory_.memory.TakeDriverObject());
-    connect.params().referrer_link_transport =
+    connect.v0()->referrer_link_transport =
         connect.AppendDriverObject(referree->TakeDriverObject());
-    connect.params().referrer_link_buffer = connect.AppendDriverObject(
+    connect.v0()->referrer_link_buffer = connect.AppendDriverObject(
         client_link_memory_.memory.Clone().TakeDriverObject());
+    connect.v1()->broker_features = node_->features().Serialize(connect);
+    connect.v1()->referrer_features =
+        referrer_->remote_features().Serialize(connect);
     link_to_referree->Transmit(connect);
 
     // Finally, give the referrer a repy which includes details of its new link
     // to the referred node.
     msg::NonBrokerReferralAccepted accepted;
-    accepted.params().referral_id = referral_id_;
-    accepted.params().protocol_version =
-        connect_to_broker.params().protocol_version;
-    accepted.params().num_initial_portals =
-        connect_to_broker.params().num_initial_portals;
-    accepted.params().name = referred_node_name_;
-    accepted.params().transport =
+    accepted.v0()->referral_id = referral_id_;
+    accepted.v0()->protocol_version = connect_to_broker.v0()->protocol_version;
+    accepted.v0()->num_initial_portals =
+        connect_to_broker.v0()->num_initial_portals;
+    accepted.v0()->name = referred_node_name_;
+    accepted.v0()->transport =
         accepted.AppendDriverObject(referrer->TakeDriverObject());
-    accepted.params().buffer = accepted.AppendDriverObject(
+    accepted.v0()->buffer = accepted.AppendDriverObject(
         client_link_memory_.memory.TakeDriverObject());
+    accepted.v1()->features =
+        link_to_referree->remote_features().Serialize(accepted);
     referrer_->Transmit(accepted);
     return true;
   }
 
   void OnTransportError() override {
     msg::NonBrokerReferralRejected rejected;
-    rejected.params().referral_id = referral_id_;
+    rejected.v0()->referral_id = referral_id_;
     referrer_->Transmit(rejected);
 
     NodeConnector::OnTransportError();
@@ -424,28 +448,27 @@ class NodeConnectorForBrokerToBroker : public NodeConnector {
 
     ABSL_ASSERT(node_->type() == Node::Type::kBroker);
     msg::ConnectFromBrokerToBroker connect;
-    connect.params().name = local_name_;
-    connect.params().protocol_version = msg::kProtocolVersion;
-    connect.params().num_initial_portals =
-        checked_cast<uint32_t>(num_portals());
-    connect.params().buffer = connect.AppendDriverObject(
+    connect.v0()->name = local_name_;
+    connect.v0()->protocol_version = msg::kProtocolVersion;
+    connect.v0()->num_initial_portals = checked_cast<uint32_t>(num_portals());
+    connect.v0()->buffer = connect.AppendDriverObject(
         link_memory_allocation_.memory.TakeDriverObject());
-    connect.params().padding = 0;
+    connect.v0()->padding = 0;
+    connect.v1()->features = node_->features().Serialize(connect);
     return IPCZ_RESULT_OK == transport_->Transmit(connect);
   }
 
   // NodeMessageListener overrides:
   bool OnConnectFromBrokerToBroker(
       msg::ConnectFromBrokerToBroker& connect) override {
-    const NodeName& remote_name = connect.params().name;
+    const NodeName& remote_name = connect.v0()->name;
     DVLOG(4) << "Accepting ConnectFromBrokerToBroker on broker "
              << local_name_.ToString() << " from other broker "
              << remote_name.ToString();
 
     const LinkSide this_side =
         remote_name < local_name_ ? LinkSide::kA : LinkSide::kB;
-    DriverMemory their_memory(
-        connect.TakeDriverObject(connect.params().buffer));
+    DriverMemory their_memory(connect.TakeDriverObject(connect.v0()->buffer));
     DriverMemoryMapping primary_buffer_mapping =
         this_side.is_side_a() ? std::move(link_memory_allocation_.mapping)
                               : their_memory.Map();
@@ -453,12 +476,17 @@ class NodeConnectorForBrokerToBroker : public NodeConnector {
       return false;
     }
 
+    Features remote_features = {};
+    if (auto* v1 = connect.v1()) {
+      remote_features = Features::Deserialize(connect, v1->features);
+    }
     Ref<NodeLink> link = NodeLink::CreateActive(
         node_, this_side, local_name_, remote_name, Node::Type::kBroker,
-        connect.params().protocol_version, transport_,
-        NodeLinkMemory::Create(node_, std::move(primary_buffer_mapping)));
+        connect.v0()->protocol_version, remote_features, transport_,
+        NodeLinkMemory::Create(node_, this_side, remote_features,
+                               std::move(primary_buffer_mapping)));
     AcceptConnection({.link = link, .broker = link},
-                     connect.params().num_initial_portals);
+                     connect.v0()->num_initial_portals);
     return true;
   }
 
@@ -627,28 +655,25 @@ bool NodeConnector::ActivateTransport() {
 
 void NodeConnector::EstablishWaitingRouters(Ref<NodeLink> to_link,
                                             size_t max_valid_portals) {
-  // All paths to this function come from a transport notification.
-  const OperationContext context{OperationContext::kTransportNotification};
-
   ABSL_ASSERT(to_link != nullptr || max_valid_portals == 0);
   const size_t num_valid_portals =
       std::min(max_valid_portals, waiting_routers_.size());
   for (size_t i = 0; i < num_valid_portals; ++i) {
     const Ref<Router>& router = waiting_routers_[i];
     Ref<RouterLink> link = to_link->AddRemoteRouterLink(
-        context, SublinkId(i), to_link->memory().GetInitialRouterLinkState(i),
+        SublinkId(i), to_link->memory().GetInitialRouterLinkState(i),
         LinkType::kCentral, to_link->link_side(), router);
     if (link) {
-      router->SetOutwardLink(context, std::move(link));
+      router->SetOutwardLink(std::move(link));
     } else {
-      router->AcceptRouteDisconnectedFrom(context, LinkType::kCentral);
+      router->AcceptRouteDisconnectedFrom(LinkType::kCentral);
     }
   }
 
   // Elicit immediate peer closure on any surplus portals that were established
   // on this side of the link.
   for (size_t i = num_valid_portals; i < waiting_routers_.size(); ++i) {
-    waiting_routers_[i]->AcceptRouteClosureFrom(context, LinkType::kCentral,
+    waiting_routers_[i]->AcceptRouteClosureFrom(LinkType::kCentral,
                                                 SequenceNumber(0));
   }
 }

@@ -49,8 +49,8 @@ class EventLogger {
 
   // Logs a message with formatting.
   // Can be called from any thread as long as the object is alive.
-  void Log(logging::LogSeverity severity, const char* format, ...)
-      PRINTF_FORMAT(3, 4);
+  PRINTF_FORMAT(3, 4)
+  void Log(logging::LogSeverity severity, const char* format, ...);
 
   // Sets the history size. The existing history is cleared.
   // Can be called from any thread as long as the object is alive.

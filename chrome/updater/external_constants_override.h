@@ -50,6 +50,7 @@ class ExternalConstantsOverrider : public ExternalConstants {
   std::vector<GURL> UpdateURL() const override;
   GURL CrashUploadURL() const override;
   GURL DeviceManagementURL() const override;
+  GURL AppLogoURL() const override;
   bool UseCUP() const override;
   base::TimeDelta InitialDelay() const override;
   base::TimeDelta ServerKeepAliveTime() const override;

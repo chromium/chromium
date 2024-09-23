@@ -17,7 +17,11 @@
           ]
         },
         "prefs": {
-          "profile.lookalike_domain_allowlist": {}
+          "profile.lookalike_domain_allowlist": {
+            "value": [
+              "example.com"
+            ]
+          }
         }
       }
     ]

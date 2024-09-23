@@ -3,49 +3,113 @@
     padding-inline-end: 0;
   }
 
-  .list-frame settings-toggle-button {
+  .list-frame settings-toggle-button,
+  .list-frame cr-link-row {
     padding-inline-start: 0;
   }
 </style>
 
-<settings-toggle-button
-    pref="{{prefs.optimization_guide.model_execution_main_toggle_setting_state}}"
-    numeric-unchecked-values="[[numericUncheckedValues_]]"
-    numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
-    label="$i18n{aiPageMainLabel}"
-    sub-label="$i18n{aiPageMainSublabel}">
-</settings-toggle-button>
+<template is="dom-if" if="[[!enableAiSettingsPageRefresh_]]" restamp>
+  <settings-toggle-button
+      pref="{{
+        prefs.optimization_guide.model_execution_main_toggle_setting_state}}"
+      hidden="[[!shouldShowMainToggle_(showComposeControl_,
+          showTabOrganizationControl_, showWallpaperSearchControl_)]]"
+      numeric-unchecked-values="[[numericUncheckedValues_]]"
+      numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
+      label="$i18n{aiPageMainLabel}"
+      sub-label="$i18n{aiPageMainSublabel}">
+  </settings-toggle-button>
 
-<iron-collapse opened="[[isExpanded_(
-    prefs.optimization_guide.model_execution_main_toggle_setting_state.value)]]">
-  <div class="list-frame">
-    <settings-toggle-button
-        hidden="[[!showComposeControl_]]"
-        pref="{{prefs.optimization_guide.compose_setting_state}}"
-        numeric-unchecked-values="[[numericUncheckedValues_]]"
-        numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
-        label="$i18n{aiComposeLabel}"
-        sub-label="$i18n{aiComposeSublabel}">
-    </settings-toggle-button>
-    <settings-toggle-button
-        class$="[[getTabOrganizationHrCssClass_(showComposeControl_)]]"
-        hidden="[[!showTabOrganizationControl_]]"
-        pref="{{prefs.optimization_guide.tab_organization_setting_state}}"
-        numeric-unchecked-values="[[numericUncheckedValues_]]"
-        numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
-        label="$i18n{experimentalAdvancedFeature2Label}"
-        sub-label="$i18n{experimentalAdvancedFeature2Sublabel}">
-    </settings-toggle-button>
-    <settings-toggle-button
-        class$="[[getWallpaperSearchHrCssClass_(
-            showComposeControl_, showTabOrganizationControl_)]]"
-        hidden="[[!showWallpaperSearchControl_]]"
-        pref="{{prefs.optimization_guide.wallpaper_search_setting_state}}"
-        numeric-unchecked-values="[[numericUncheckedValues_]]"
-        numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
-        label="$i18n{experimentalAdvancedFeature3Label}"
-        sub-label="$i18n{experimentalAdvancedFeature3Sublabel}">
-    </settings-toggle-button>
-  </div>
-</iron-collapse>
+  <cr-collapse opened="[[isExpanded_(
+      prefs.optimization_guide.model_execution_main_toggle_setting_state.value)]]">
+    <div class="list-frame">
+      <settings-toggle-button
+          hidden="[[!showComposeControl_]]"
+          pref="{{prefs.optimization_guide.compose_setting_state}}"
+          numeric-unchecked-values="[[numericUncheckedValues_]]"
+          numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
+          label="$i18n{aiComposeLabel}"
+          sub-label="$i18n{aiComposeSublabel}">
+      </settings-toggle-button>
+      <settings-toggle-button
+          class$="[[getTabOrganizationHrCssClass_(showComposeControl_)]]"
+          hidden="[[!showTabOrganizationControl_]]"
+          pref="{{prefs.optimization_guide.tab_organization_setting_state}}"
+          numeric-unchecked-values="[[numericUncheckedValues_]]"
+          numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
+          label="$i18n{experimentalAdvancedFeature2Label}"
+          sub-label="$i18n{experimentalAdvancedFeature2Sublabel}">
+      </settings-toggle-button>
+      <settings-toggle-button
+          class$="[[getWallpaperSearchHrCssClass_(
+              showComposeControl_, showTabOrganizationControl_)]]"
+          hidden="[[!showWallpaperSearchControl_]]"
+          pref="{{prefs.optimization_guide.wallpaper_search_setting_state}}"
+          numeric-unchecked-values="[[numericUncheckedValues_]]"
+          numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
+          label="$i18n{experimentalAdvancedFeature3Label}"
+          sub-label="$i18n{experimentalAdvancedFeature3Sublabel}">
+      </settings-toggle-button>
+    </div>
+  </cr-collapse>
+  <cr-link-row id="historySearchRow"
+      class="hr"
+      hidden="[[!showHistorySearchControl_]]"
+      label="$i18n{historySearchSettingLabel}"
+      sub-label="$i18n{historySearchSettingSublabel}"
+      role-description="$i18n{subpageArrowRoleDescription}"
+      on-click="onHistorySearchRowClick_">
+  </cr-link-row>
+</template>
 
+<!-- TODO(crbug.com/362225975): Update icons and strings. -->
+<template is="dom-if" if="[[enableAiSettingsPageRefresh_]]" restamp>
+  <settings-animated-pages id="pages" section="ai"
+      focus-config="[[focusConfig_]]">
+    <div route-path="default">
+      <cr-link-row id="historySearchRowV2"
+          class="hr"
+          hidden="[[!showHistorySearchControl_]]"
+          label="$i18n{historySearchSettingLabel}"
+          sub-label="$i18n{historySearchSettingSublabel}"
+          role-description="$i18n{subpageArrowRoleDescription}"
+          on-click="onHistorySearchRowClick_">
+      </cr-link-row>
+      <cr-link-row id="composeRowV2"
+          class="hr"
+          hidden="[[!showComposeControl_]]"
+          label="$i18n{aiComposeLabel}"
+          sub-label="$i18n{aiComposeSublabel}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <cr-link-row id="tabOrganizationRowV2"
+          class="hr"
+          hidden="[[!showTabOrganizationControl_]]"
+          label="$i18n{experimentalAdvancedFeature2Label}"
+          sub-label="$i18n{experimentalAdvancedFeature2Sublabel}"
+          role-description="$i18n{subpageArrowRoleDescription}"
+          on-click="onTabOrganizationRowClick_">
+      </cr-link-row>
+      <cr-link-row id="wallpaperSearchRowV2"
+          class="hr"
+          hidden="[[!showWallpaperSearchControl_]]"
+          label="$i18n{experimentalAdvancedFeature3Label}"
+          sub-label="$i18n{experimentalAdvancedFeature3Sublabel}"
+          role-description="$i18n{subpageArrowRoleDescription}"
+          external>
+      </cr-link-row>
+    </div>
+
+    <template is="dom-if" if="[[showTabOrganizationControl_]]">
+      <template is="dom-if" route-path="/ai/tabOrganizer">
+        <settings-subpage id="tabOrganization"
+            associated-control="[[$$('#tabOrganizationRowV2')]]"
+            page-title="$i18n{experimentalAdvancedFeature2Label}">
+          <settings-ai-tab-organization-subpage prefs="{{prefs}}">
+          </settings-ai-tab-organization-subpage>
+        </settings-subpage>
+      </template>
+    </template>
+  </settings-animated-pages>
+</template>

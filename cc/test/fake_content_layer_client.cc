@@ -64,6 +64,10 @@ FakeContentLayerClient::~FakeContentLayerClient() = default;
 
 scoped_refptr<DisplayItemList>
 FakeContentLayerClient::PaintContentsToDisplayList() {
+  if (display_list_) {
+    return display_list_;
+  }
+
   DCHECK(bounds_set_);
   gfx::Rect paint_bounds(bounds_);
   auto display_list = base::MakeRefCounted<DisplayItemList>();

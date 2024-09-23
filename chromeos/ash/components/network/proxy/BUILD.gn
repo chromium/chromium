@@ -16,6 +16,7 @@ source_set("proxy") {
     "//base",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network/onc",
+    "//chromeos/ash/components/network/portal_detector",
     "//chromeos/constants",
     "//components/onc",
     "//components/pref_registry",
@@ -24,6 +25,10 @@ source_set("proxy") {
     "//components/user_manager",
     "//dbus",
     "//net",
+
+    # TODO(b/354839582): Use targets having headers included from
+    # chromeos/ash/components/network/proxy/proxy_config_handler.cc.
+    "//chromeos/services/network_config/public/mojom",
   ]
   sources = [
     "proxy_config_handler.cc",

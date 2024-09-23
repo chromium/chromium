@@ -8,25 +8,38 @@
 #import <LocalAuthenticationEmbeddedUI/LocalAuthenticationEmbeddedUI.h>
 
 #include "base/logging.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/timer/timer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/scoped_lacontext.h"
+#include "device/fido/mac/util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/widget/widget.h"
 
-// kWidth is the width (and height, since it's square) of the NSView. This
-// particular width matches Safari, but isn't any of the predefined sizes.
-constexpr int kWidth = 40;
+// kWidth is the width (and height, since it's square) of the NSView.
+constexpr int kWidth = 64;
+
+// The seconds it takes for the Touch ID animation to finish when the challenge
+// fails.
+constexpr float kErrorAnimationLength = 1;
+
+// The seconds it takes for the Touch ID animation to finish when the challenge
+// succeeds. This is trimmed down so that we can overlap the enclave operation
+// with the animation.
+constexpr float kSuccessAnimationLength = 1.6;
 
 struct API_AVAILABLE(macos(12.0)) MacAuthenticationView::ObjCStorage {
   LAContext* __strong context;
   LAAuthenticationView* __strong auth_view;
 };
 
-MacAuthenticationView::MacAuthenticationView(
-    base::OnceCallback<void(bool)> callback)
+MacAuthenticationView::MacAuthenticationView(Callback callback,
+                                             std::u16string touch_id_reason)
     : callback_(std::move(callback)),
-      storage_(std::make_unique<ObjCStorage>()) {
+      storage_(std::make_unique<ObjCStorage>()),
+      touch_id_reason_(std::move(touch_id_reason)) {
   storage_->context = [[LAContext alloc] init];
   storage_->auth_view =
       [[LAAuthenticationView alloc] initWithContext:storage_->context];
@@ -44,7 +57,8 @@ MacAuthenticationView::MacAuthenticationView(
 
 MacAuthenticationView::~MacAuthenticationView() = default;
 
-gfx::Size MacAuthenticationView::CalculatePreferredSize() const {
+gfx::Size MacAuthenticationView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kWidth, kWidth);
 }
 
@@ -96,12 +110,18 @@ void MacAuthenticationView::Layout(PassKey) {
 void MacAuthenticationView::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaint(canvas);
   if (GetVisible() && !evaluation_requested_) {
+    InvalidateLayout();
+    storage_->auth_view.hidden = false;
+    evaluation_requested_ = true;
+    if (!device::fido::mac::DeviceHasBiometricsAvailable()) {
+      return;
+    }
     __block auto internal_callback =
         base::BindOnce(&MacAuthenticationView::OnAuthenticationComplete,
                        weak_factory_.GetWeakPtr());
     [storage_->context
          evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
-        localizedReason:@"NOT USED"
+        localizedReason:base::SysUTF16ToNSString(touch_id_reason_)
                   reply:^(BOOL success, NSError* error) {
                     if (error) {
                       FIDO_LOG(ERROR) << "Touch ID failed with error: "
@@ -113,7 +133,6 @@ void MacAuthenticationView::OnPaint(gfx::Canvas* canvas) {
                                    base::BindOnce(std::move(internal_callback),
                                                   success));
                   }];
-    evaluation_requested_ = true;
   }
 }
 
@@ -125,8 +144,23 @@ void MacAuthenticationView::VisibilityChanged(views::View* from,
 
 void MacAuthenticationView::OnAuthenticationComplete(bool success) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  // It takes a while for the Touch ID animation to finish after success is
+  // reported. Avoid jank by waiting for the animation to finish before
+  // notifying the client.
+  touch_id_animation_timer_.Start(
+      FROM_HERE,
+      base::Seconds(success ? kSuccessAnimationLength : kErrorAnimationLength),
+      base::BindOnce(&MacAuthenticationView::OnTouchIDAnimationComplete,
+                     base::Unretained(this), success));
+}
+
+void MacAuthenticationView::OnTouchIDAnimationComplete(bool success) {
+  std::optional<crypto::ScopedLAContext> lacontext;
+  if (success) {
+    lacontext.emplace(storage_->context);
+  }
   storage_->context = nil;
-  std::move(callback_).Run(success);
+  std::move(callback_).Run(std::move(lacontext));
 }
 
 BEGIN_METADATA(MacAuthenticationView)

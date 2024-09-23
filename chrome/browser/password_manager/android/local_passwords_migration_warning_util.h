@@ -32,6 +32,13 @@ void ShowWarningWithActivity(
 // the conditions.
 bool ShouldShowWarning(Profile* profile);
 
+// Tries to show the post passwords migration sheet.
+void MaybeShowPostMigrationSheet(const gfx::NativeWindow window,
+                                 Profile* profile);
+
+// Returns whether the post passwords migration sheet should be displayed.
+bool ShouldShowPostMigrationSheet(Profile* profile);
+
 }  // namespace local_password_migration
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_LOCAL_PASSWORDS_MIGRATION_WARNING_UTIL_H_

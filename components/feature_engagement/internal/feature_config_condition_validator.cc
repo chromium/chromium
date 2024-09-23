@@ -129,7 +129,7 @@ void FeatureConfigConditionValidator::NotifyIsShowing(
       break;
     default:
       // All cases should be covered.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -156,6 +156,10 @@ void FeatureConfigConditionValidator::SetPriorityNotification(
 std::optional<std::string>
 FeatureConfigConditionValidator::GetPendingPriorityNotification() {
   return pending_priority_notification_;
+}
+
+void FeatureConfigConditionValidator::ResetSession() {
+  times_shown_for_feature_.clear();
 }
 
 bool FeatureConfigConditionValidator::AvailabilityMeetsConditions(
@@ -219,7 +223,7 @@ bool FeatureConfigConditionValidator::IsBlocked(
       return false;
     default:
       // All cases should be covered.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

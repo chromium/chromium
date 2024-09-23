@@ -94,7 +94,7 @@ void LoggingNetworkChangeObserver::OnIPAddressChanged() {
 
 void LoggingNetworkChangeObserver::OnConnectionTypeChanged(
     NetworkChangeNotifier::ConnectionType type) {
-  std::string type_as_string =
+  std::string_view type_as_string =
       NetworkChangeNotifier::ConnectionTypeToString(type);
 
   VLOG(1) << "Observed a change to network connectivity state "
@@ -107,7 +107,7 @@ void LoggingNetworkChangeObserver::OnConnectionTypeChanged(
 
 void LoggingNetworkChangeObserver::OnNetworkChanged(
     NetworkChangeNotifier::ConnectionType type) {
-  std::string type_as_string =
+  std::string_view type_as_string =
       NetworkChangeNotifier::ConnectionTypeToString(type);
 
   VLOG(1) << "Observed a network change to state " << type_as_string;

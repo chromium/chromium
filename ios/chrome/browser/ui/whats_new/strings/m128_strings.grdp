@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+ <!-- Milestone specific strings -->
+<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_TITLE" desc="PackageTracking Title displayed in What's New. [iOS only]">
+        Package Tracking
+</message>
+<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SUBTITLE" desc="PackageTracking Subtitle displayed in What's New. [iOS only]">
+        Chrome can detect tracking numbers you enter on sites and show package updates on the New Tab Page.
+</message>
+<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of PackageTracking in What's New. [iOS only]">
+        Enter your tracking number on a postal or shopping website.
+</message>
+<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of PackageTracking in What's New. [iOS only]">
+        Allow Chrome to track your packages.
+</message>
+<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of PackageTracking in What's New. [iOS only]">
+        See package updates in the Cards on your New Tab Page.
+</message>
+<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_1" desc="Text in image displaying: Track this Package? for the feature: PackageTracking in What's New. [iOS only]">
+        Track this Package?
+</message>
+<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_2" desc="Text in image displaying: Track for the feature: PackageTracking in What's New. [iOS only]">
+        Track
+</message>
+<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_3" desc="Text in image displaying: Your shipment for the feature: PackageTracking in What's New. [iOS only]">
+        Your shipment
+</message>
+<message name="IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_4" desc="Text in image displaying: Estimated delivery for the feature: PackageTracking in What's New. [iOS only]">
+        Estimated delivery
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSWORDSHARING_TITLE" desc="PasswordSharing Title displayed in What's New. [iOS only]">
+        Share Passwords with your Family Group
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSWORDSHARING_SUBTITLE" desc="PasswordSharing Subtitle displayed in What's New. [iOS only]">
+        Easily and securely share a copy of a password with your family group in Google Password Manager.
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of PasswordSharing in What's New. [iOS only]">
+        Open Chrome
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of PasswordSharing in What's New. [iOS only]">
+        Tap the three-dot menu
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of PasswordSharing in What's New. [iOS only]">
+        Go to “Password Manager”
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_4" desc="Text of the row indicating step 4 of PasswordSharing in What's New. [iOS only]">
+        Select a password and tap the “share” icon
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSWORDSHARING_INSTRUCTIONS_STEP_5" desc="Text of the row indicating step 5 of PasswordSharing in What's New. [iOS only]">
+        Select family members to share with
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSWORDSHARING_SCREENSHOT_TEXT_1" desc="Text in image displaying: Share Your Passwords for the feature: PasswordSharing in What's New. [iOS only]">
+        Share Your Passwords
+</message>
+<message name="IDS_IOS_WHATS_NEW_PASSWORDSHARING_SCREENSHOT_TEXT_2" desc="Text in image displaying: Share for the feature: PasswordSharing in What's New. [iOS only]">
+        Share
+</message>
+<message name="IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_TITLE" desc="CustomizableOverflowMenu Title displayed in What's New. [iOS only]">
+        Customize Your Menu
+</message>
+<message name="IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SUBTITLE" desc="CustomizableOverflowMenu Subtitle displayed in What's New. [iOS only]">
+        Make Chrome fit the way you browse by customizing your Chrome menu.
+</message>
+<message name="IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of CustomizableOverflowMenu in What's New. [iOS only]">
+        Open your Chrome menu
+</message>
+<message name="IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of CustomizableOverflowMenu in What's New. [iOS only]">
+        Long press any menu item
+</message>
+<message name="IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of CustomizableOverflowMenu in What's New. [iOS only]">
+        Tap ‘Customize Menu’
+</message>
+<message name="IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_INSTRUCTIONS_STEP_4" desc="Text of the row indicating step 4 of CustomizableOverflowMenu in What's New. [iOS only]">
+        Hide any items you don’t want to see.
+</message>
+<message name="IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SCREENSHOT_TEXT_1" desc="Text in image displaying: Hide for the feature: CustomizableOverflowMenu in What's New. [iOS only]">
+        Hide
+</message>
+<message name="IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SCREENSHOT_TEXT_2" desc="Text in image displaying: Customize for the feature: CustomizableOverflowMenu in What's New. [iOS only]">
+        Customize
+</message>
+</grit-part>

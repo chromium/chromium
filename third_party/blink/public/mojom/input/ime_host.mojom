@@ -1,0 +1,56 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "skia/public/mojom/skcolor.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// This struct holds sizing information for the bounding rectangle of an
+// element.
+struct EditorBoundsInfo {
+  // The visible bounding rectangle of the element.
+  gfx.mojom.RectF editor_bounds;
+  // The area within which stylus scroll input events should initiate
+  // handwriting for the currently focused element.
+  gfx.mojom.RectF handwriting_bounds;
+};
+
+// This struct holds style information about the currently focused element. It
+// contains the data required by the browser to support the subset of
+// TextAppearanceInfo attributes Chromium supports. This is used by Android.
+// https://developer.android.com/reference/android/view/inputmethod/TextAppearanceInfo
+struct TextAppearanceInfo {
+  // The primary color of the text in the currently focused element.
+  skia.mojom.SkColor text_color;
+};
+
+// This struct holds information about the currently focused element which is
+// useful for IMEs. It is used by Android only and exists as the internal
+// Chromium representation of the Android CursorAnchorInfo object:
+// https://developer.android.com/reference/android/view/inputmethod/CursorAnchorInfo
+// They do not share a name to avoid confusion where Java code may need both.
+// For each optional field, a missing value means that an update is not
+// required for that attribute. An empty but present value (like an empty array)
+// implies that the attribute should be updated to the empty value.
+// This struct is designed to be extensible as Chromium supports more of
+// CursorAnchorInfo's APIs and so exists in its own file for clarity.
+struct InputCursorAnchorInfo {
+  // The bounding rectangles of each character in the currently focused element.
+  array<gfx.mojom.Rect> character_bounds;
+  // Positional information of the element.
+  EditorBoundsInfo editor_bounds_info;
+  // The style information for the currently focused element.
+  TextAppearanceInfo text_appearance_info;
+  // The bounding rectangles of each line in the currently focused element.
+  array<gfx.mojom.Rect> visible_line_bounds;
+};
+
+// An interface exposed by the browser to the renderer which lets the renderer
+// send positional/styling information about the currently focused editable
+// element. This data is used by the IME to enhance the user's experience.
+interface ImeRenderWidgetHost {
+  // Update the CursorAnchorInfo associated with the focused element.
+  UpdateCursorAnchorInfo(InputCursorAnchorInfo cursor_anchor_info);
+};

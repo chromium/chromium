@@ -1,0 +1,4 @@
+std_vector_pop_back.cpp:14:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it;  // Invalid, because `pop_back` invalidated every references.
+   ^
+1 error generated.

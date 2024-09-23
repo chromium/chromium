@@ -4,11 +4,15 @@
 
 #include "chrome/browser/android/tab_browser_controls_constraints_helper.h"
 
+#include "cc/input/android/offset_tag_android.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
-#include "chrome/android/chrome_jni_headers/TabBrowserControlsConstraintsHelper_jni.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/TabBrowserControlsConstraintsHelper_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -34,7 +38,8 @@ void TabBrowserControlsConstraintsHelper::UpdateState(
     const JavaParamRef<jobject>& jweb_contents,
     jint constraints,
     jint current,
-    jboolean animate) {
+    jboolean animate,
+    const JavaParamRef<jobject>& joffset_tags_info) {
   cc::BrowserControlsState constraints_state =
       static_cast<cc::BrowserControlsState>(constraints);
   cc::BrowserControlsState current_state =
@@ -45,8 +50,12 @@ void TabBrowserControlsConstraintsHelper::UpdateState(
     return;
   }
 
+  cc::BrowserControlsOffsetTagsInfo offset_tags_info =
+      cc::android::FromJavaBrowserControlsOffsetTagsInfo(env,
+                                                         joffset_tags_info);
+
   web_contents->UpdateBrowserControlsState(constraints_state, current_state,
-                                           animate);
+                                           animate, offset_tags_info);
 }
 
 static jlong JNI_TabBrowserControlsConstraintsHelper_Init(

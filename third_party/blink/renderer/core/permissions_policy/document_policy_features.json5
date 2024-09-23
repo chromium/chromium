@@ -57,20 +57,6 @@
       depends_on: []
     },
     {
-      name: "FontDisplay",
-      document_policy_name: "font-display-late-swap",
-      value_type: "Bool",
-      default_value: "true",
-      depends_on: ["ExperimentalPolicies"],
-    },
-    {
-      name: "LosslessImagesMaxBpp",
-      document_policy_name: "lossless-images-max-bpp",
-      value_type: "DecDouble",
-      default_value: "max",
-      depends_on: ["ExperimentalPolicies"],
-    },
-    {
       // The ForceLoadAtTop policy lets pages opt-out of scrolling that
       // automatically happens on page load. This includes fragment scrolls,
       // text fragment scrolls (i.e. this provides an opt-out for the Scroll To
@@ -79,55 +65,6 @@
       document_policy_name: "force-load-at-top",
       value_type: "Bool",
       default_value: "false",
-    },
-    {
-      name: "LosslessImagesStrictMaxBpp",
-      document_policy_name: "lossless-images-strict-max-bpp",
-      value_type: "DecDouble",
-      default_value: "max",
-      depends_on: ["ExperimentalPolicies"],
-    },
-    {
-      name: "LossyImagesMaxBpp",
-      document_policy_name: "lossy-images-max-bpp",
-      value_type: "DecDouble",
-      default_value: "max",
-      depends_on: ["ExperimentalPolicies"],
-    },
-    {
-      name: "OversizedImages",
-      document_policy_name: "oversized-images",
-      value_type: "DecDouble",
-      default_value: "max",
-      depends_on: ["ExperimentalPolicies"],
-    },
-    {
-      name: "UnsizedMedia",
-      document_policy_name: "unsized-media",
-      value_type: "Bool",
-      default_value: "true",
-      depends_on: ["ExperimentalPolicies"],
-    },
-    {
-      name: "LayoutAnimations",
-      document_policy_name: "layout-animations",
-      value_type: "Bool",
-      default_value: "true",
-      depends_on: ["ExperimentalPolicies"],
-    },
-    {
-      name: "DocumentWrite",
-      document_policy_name: "document-write",
-      value_type: "Bool",
-      default_value: "true",
-      depends_on: ["ExperimentalPolicies"],
-    },
-    {
-      name: "SyncScript",
-      document_policy_name: "sync-script",
-      value_type: "Bool",
-      default_value: "true",
-      depends_on: ["ExperimentalPolicies"],
     },
     {
       name: "JSProfiling",
@@ -141,6 +78,19 @@
       value_type: "Bool",
       default_value: "true",
       depends_on: ["DocumentPolicySyncXHR"],
+    },
+    {
+      name: "IncludeJSCallStacksInCrashReports",
+      document_policy_name: "include-js-call-stacks-in-crash-reports",
+      value_type: "Bool",
+      default_value: "false",
+    },
+    {
+      name: "ExpectNoLinkedResources",
+      document_policy_name: "expect-no-linked-resources",
+      value_type: "Bool",
+      default_value: "false",
+      depends_on: ["DocumentPolicyExpectNoLinkedResources"]
     }
   ],
 }

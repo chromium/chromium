@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_uia_win.h"
 
 #include <math.h>
 #include <oleacc.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <uiautomation.h>
 #include <wrl/client.h>
 
 #include <iostream>
@@ -19,7 +23,6 @@
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,6 +36,8 @@
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/gfx/win/hwnd_util.h"
+
+#include <uiautomation.h>
 
 namespace {
 
@@ -467,12 +472,12 @@ void AXTreeFormatterUia::AddDefaultFilters(
   AddPropertyFilter(
       property_filters,
       GetPropertyName(
-          ui::UiaRegistrarWin::GetInstance().GetVirtualContentPropertyId()) +
+          UiaRegistrarWin::GetInstance().GetVirtualContentPropertyId()) +
           "=*");
 }
 
 base::Value::Dict AXTreeFormatterUia::BuildTree(
-    ui::AXPlatformNodeDelegate* start) const {
+    AXPlatformNodeDelegate* start) const {
   Microsoft::WRL::ComPtr<IUIAutomationElement> start_element;
   GetUIAElementFromDelegate(start, uia_.Get(), &start_element);
 
@@ -532,7 +537,7 @@ base::Value::Dict AXTreeFormatterUia::BuildTreeForSelector(
 }
 
 base::Value::Dict AXTreeFormatterUia::BuildNode(
-    ui::AXPlatformNodeDelegate* node) const {
+    AXPlatformNodeDelegate* node) const {
   Microsoft::WRL::ComPtr<IUIAutomationElement> uia_element;
   GetUIAElementFromDelegate(node, uia_.Get(), &uia_element);
   // Note that we have to go through external UIA APIs to get a reference to
@@ -1169,7 +1174,7 @@ void AXTreeFormatterUia::BuildCacheRequests() {
 
 void AXTreeFormatterUia::BuildCustomPropertiesMap() {
   GetCustomPropertiesMap().insert(
-      {ui::UiaRegistrarWin::GetInstance().GetVirtualContentPropertyId(),
+      {UiaRegistrarWin::GetInstance().GetVirtualContentPropertyId(),
        "VirtualContent"});
 }
 
@@ -1283,7 +1288,7 @@ void AXTreeFormatterUia::ProcessValueForOutput(const std::string& name,
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

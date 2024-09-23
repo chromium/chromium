@@ -17,13 +17,10 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/MostVisitedSitesBridge_jni.h"
-#include "chrome/android/chrome_jni_headers/MostVisitedSites_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/ntp_tiles/metrics.h"
@@ -32,15 +29,15 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/android/gurl_android.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/MostVisitedSitesBridge_jni.h"
+#include "chrome/android/chrome_jni_headers/MostVisitedSites_jni.h"
+
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
-using base::android::ToJavaArrayOfStrings;
-using base::android::ToJavaIntArray;
-using base::android::ToJavaLongArray;
 using ntp_tiles::MostVisitedSites;
 using ntp_tiles::NTPTilesVector;
 using ntp_tiles::SectionType;
@@ -154,34 +151,23 @@ MostVisitedSitesBridge::JavaObserver::JavaObserver(
 void MostVisitedSitesBridge::JavaObserver::OnURLsAvailable(
     const std::map<SectionType, NTPTilesVector>& sections) {
   JNIEnv* env = AttachCurrentThread();
-  std::vector<std::u16string> titles;
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> urls;
-  std::vector<int> title_sources;
-  std::vector<int> sources;
-  std::vector<int> section_types;
+  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> suggestions;
   for (const auto& section : sections) {
+    int32_t section_type = static_cast<int32_t>(section.first);
     const NTPTilesVector& tiles = section.second;
-    section_types.resize(section_types.size() + tiles.size(),
-                         static_cast<int>(section.first));
     for (const auto& tile : tiles) {
-      titles.emplace_back(tile.title);
-      urls.emplace_back(url::GURLAndroid::FromNativeGURL(env, tile.url));
-      title_sources.emplace_back(static_cast<int>(tile.title_source));
-      sources.emplace_back(static_cast<int>(tile.source));
+      suggestions.push_back(Java_MostVisitedSitesBridge_makeSiteSuggestion(
+          env, tile.title, tile.url, static_cast<int32_t>(tile.title_source),
+          static_cast<int32_t>(tile.source), section_type));
     }
   }
-  Java_MostVisitedSitesBridge_onURLsAvailable(
-      env, observer_, ToJavaArrayOfStrings(env, titles),
-      url::GURLAndroid::ToJavaArrayOfGURLs(env, urls),
-      ToJavaIntArray(env, section_types),
-      ToJavaIntArray(env, title_sources), ToJavaIntArray(env, sources));
+  Java_MostVisitedSitesBridge_onURLsAvailable(env, observer_, suggestions);
 }
 
 void MostVisitedSitesBridge::JavaObserver::OnIconMadeAvailable(
     const GURL& site_url) {
   JNIEnv* env = AttachCurrentThread();
-  Java_MostVisitedSitesBridge_onIconMadeAvailable(
-      env, observer_, url::GURLAndroid::FromNativeGURL(env, site_url));
+  Java_MostVisitedSitesBridge_onIconMadeAvailable(env, observer_, site_url);
 }
 
 MostVisitedSitesBridge::MostVisitedSitesBridge(Profile* profile)
@@ -225,8 +211,8 @@ void MostVisitedSitesBridge::AddOrRemoveBlockedUrl(
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_url,
     jboolean add_url) {
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  most_visited_->AddOrRemoveBlockedUrl(*url, add_url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  most_visited_->AddOrRemoveBlockedUrl(url, add_url);
 }
 
 void MostVisitedSitesBridge::RecordPageImpression(
@@ -245,7 +231,7 @@ void MostVisitedSitesBridge::RecordTileImpression(
     jint jtitle_source,
     jint jsource,
     const JavaParamRef<jobject>& jurl) {
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, jurl);
   TileTitleSource title_source = static_cast<TileTitleSource>(jtitle_source);
   TileSource source = static_cast<TileSource>(jsource);
   TileVisualType visual_type = static_cast<TileVisualType>(jvisual_type);
@@ -253,7 +239,7 @@ void MostVisitedSitesBridge::RecordTileImpression(
       static_cast<favicon_base::IconType>(jicon_type);
 
   ntp_tiles::metrics::RecordTileImpression(ntp_tiles::NTPTileImpression(
-      jindex, source, title_source, visual_type, icon_type, *url));
+      jindex, source, title_source, visual_type, icon_type, url));
 }
 
 void MostVisitedSitesBridge::RecordOpenedMostVisitedItem(
@@ -270,11 +256,10 @@ void MostVisitedSitesBridge::RecordOpenedMostVisitedItem(
       /*url_for_rappor=*/GURL()));
 }
 
-static jlong JNI_MostVisitedSitesBridge_Init(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile) {
+static jlong JNI_MostVisitedSitesBridge_Init(JNIEnv* env,
+                                             const JavaParamRef<jobject>& obj,
+                                             Profile* profile) {
   MostVisitedSitesBridge* most_visited_sites =
-      new MostVisitedSitesBridge(ProfileAndroid::FromProfileAndroid(jprofile));
+      new MostVisitedSitesBridge(profile);
   return reinterpret_cast<intptr_t>(most_visited_sites);
 }

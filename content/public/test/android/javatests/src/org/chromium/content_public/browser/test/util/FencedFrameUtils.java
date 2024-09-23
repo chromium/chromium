@@ -8,6 +8,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 import org.junit.Assert;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -27,7 +28,7 @@ public class FencedFrameUtils {
     }
 
     private static int getCount(final RenderFrameHost frame) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return FencedFrameUtilsJni.get().getCount(frame);
                 });
@@ -35,7 +36,7 @@ public class FencedFrameUtils {
 
     public static RenderFrameHost getLastFencedFrame(
             final RenderFrameHost frame, final String url) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return FencedFrameUtilsJni.get().getLastFencedFrame(frame, url);
                 });
@@ -45,12 +46,11 @@ public class FencedFrameUtils {
             final WebContents webContents, final RenderFrameHost parentFrame, String url)
             throws TimeoutException {
         RenderFrameHostTestExt frameExt =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> new RenderFrameHostTestExt(parentFrame));
+                ThreadUtils.runOnUiThreadBlocking(() -> new RenderFrameHostTestExt(parentFrame));
 
         int previousFencedFrameCount = getCount(parentFrame);
         final CountDownLatch latch = new CountDownLatch(1);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new WebContentsObserver(webContents) {
                         @Override

@@ -12,12 +12,14 @@
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/search/scoring.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "url/gurl.h"
 
 namespace ui {
 class ImageModel;
@@ -96,6 +98,10 @@ class ChromeSearchResult {
     return metadata_->result_type;
   }
   MetricsType metrics_type() const { return metadata_->metrics_type; }
+  const std::optional<ash::ContinueFileSuggestionType>&
+  continue_file_suggestion_type() const {
+    return metadata_->continue_file_suggestion_type;
+  }
   const Actions& actions() const { return metadata_->actions; }
   double display_score() const { return metadata_->display_score; }
   bool is_recommendation() const { return metadata_->is_recommendation; }
@@ -111,6 +117,9 @@ class ChromeSearchResult {
   }
   // Only file results have set the filepath.
   const base::FilePath& filePath() const { return metadata_->file_path; }
+  const base::FilePath& displayable_file_path() const {
+    return metadata_->displayable_file_path;
+  }
   ash::FileMetadataLoader* file_metadata_loader() {
     return &metadata_->file_metadata_loader;
   }
@@ -138,6 +147,8 @@ class ChromeSearchResult {
   void SetDisplayType(DisplayType display_type);
   void SetResultType(ResultType result_type);
   void SetMetricsType(MetricsType metrics_type);
+  void SetContinueFileSuggestionType(
+      ash::ContinueFileSuggestionType continue_file_suggestion_type);
   void SetDisplayScore(double display_score);
   void SetActions(const Actions& actions);
   void SetIsRecommendation(bool is_recommendation);
@@ -150,6 +161,7 @@ class ChromeSearchResult {
   void SetSystemInfoAnswerCardData(
       ash::SystemInfoAnswerCardData answer_card_info);
   void SetFilePath(base::FilePath file_path);
+  void SetDisplayableFilePath(base::FilePath displayable_file_path);
   void SetMetadataLoaderCallback(MetadataLoaderCallback callback);
 
   void SetSearchResultMetadata();
@@ -194,6 +206,9 @@ class ChromeSearchResult {
 
   // Maybe returns a Drive file ID for this result, if applicable.
   virtual std::optional<std::string> DriveId() const;
+
+  // Maybe returns a url for this result, if applicable.
+  virtual std::optional<GURL> url() const;
 
   // Invokes a custom action on the result. It does nothing by default.
   virtual void InvokeAction(ash::SearchResultActionType action);

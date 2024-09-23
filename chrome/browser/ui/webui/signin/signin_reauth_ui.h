@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_REAUTH_UI_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "content/public/browser/web_ui_controller.h"
@@ -49,7 +50,7 @@ class SigninReauthUI : public content::WebUIController {
   // of the string to the |ids| in order to later pass it to
   // SigninReauthHandler.
   void AddStringResource(content::WebUIDataSource* source,
-                         base::StringPiece name,
+                         std::string_view name,
                          int ids);
 
   // For consent auditing.

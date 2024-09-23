@@ -21,11 +21,30 @@
 - (void)fromInputAccessoryViewDidTapOmniboxTypingShield:
     (FormInputAccessoryView*)sender;
 @optional
-// This method must be implemented only if the manual fill button is present,
-// which happens when using the setup function with the `manualFillSymbol`
-// argument below.
+// This method is called when the manual fill button is tapped.
+// Must be implemented when the view contains the button (i.e. setUp called with
+// non nil "manualFillSymbol").
 - (void)formInputAccessoryViewDidTapManualFillButton:
     (FormInputAccessoryView*)sender;
+
+// This method is called when the password manual fill button is tapped.
+// Must be implemented when the view contains the button (i.e. setUp called with
+// non nil "passwordManualFillSymbol").
+- (void)formInputAccessoryViewDidTapPasswordManualFillButton:
+    (FormInputAccessoryView*)sender;
+
+// This method is called when the credit card manual fill button is tapped.
+// Must be implemented when the view contains the button (i.e. setUp called with
+// non nil "creditCardManualFillButton").
+- (void)formInputAccessoryViewDidTapCreditCardManualFillButton:
+    (FormInputAccessoryView*)sender;
+
+// This method is called when the address manual fill button is tapped.
+// Must be implemented when the view contains the button (i.e. setUp called with
+// non nil "addressManualFillSymbol").
+- (void)formInputAccessoryViewDidTapAddressManualFillButton:
+    (FormInputAccessoryView*)sender;
+
 @end
 
 extern NSString* const kFormInputAccessoryViewAccessibilityID;
@@ -37,20 +56,35 @@ extern NSString* const
 // playInputClick method.
 @interface FormInputAccessoryView : UIView <UIInputViewAudioFeedback>
 
-// The previous button if the view was set up with a navigation delegate. Nil
-// otherwise.
+// The previous button if the view was set up with a navigation delegate and no
+// "manualFillSymbol". Nil otherwise.
 @property(nonatomic, readonly, weak) UIButton* previousButton;
 
-// The next button if the view was set up with a navigation delegate. Nil
-// otherwise.
+// The next button if the view was set up with a navigation delegate and no
+// "manualFillSymbol". Nil otherwise.
 @property(nonatomic, readonly, weak) UIButton* nextButton;
 
-// The expand button if the view was set up with a navigation delegate. Nil
-// otherwise.
+// The expand button if the view was set up with a navigation delegate and a
+// "manualFillSymbol". Nil otherwise.
 @property(nonatomic, readonly, weak) UIButton* manualFillButton;
+
+// The password button if the view was set up with a navigation delegate and a
+// "passwordManualFillSymbol". Nil otherwise.
+@property(nonatomic, readonly, weak) UIButton* passwordManualFillButton;
+
+// The credit card button if the view was set up with a navigation delegate and
+// a "creditCardManualFillSymbol". Nil otherwise.
+@property(nonatomic, readonly, weak) UIButton* creditCardManualFillButton;
+
+// The address button if the view was set up with a navigation delegate and a
+// "addressManualFillSymbol". Nil otherwise.
+@property(nonatomic, readonly, weak) UIButton* addressManualFillButton;
 
 // The leading view.
 @property(nonatomic, readonly, weak) UIView* leadingView;
+
+// The trailing view. Can be nil.
+@property(nonatomic, readonly, weak) UIView* trailingView;
 
 // Sets up the view with the given `leadingView`. Navigation controls are shown
 // on the trailing side and use `delegate` for actions.
@@ -60,16 +94,19 @@ extern NSString* const
 // Sets up the view with the given `leadingView`. Navigation controls are shown
 // on the trailing side and use `delegate` for actions.
 // This initializer modifies multiple UI elements:
-// - The manual fill button is added, using manualFillSymbol as its image.
+// - The manual fill buttons are added, using *manualFillSymbol as their images.
 // - The previous and next buttons are removed.
 // - The accessory height is increased.
 // - The background color is set to grey.
 // If `closeButtonSymbol` is nil, the close button will use the default text.
 // Otherwise, it will use closeButtonSymbol as the image instead.
 - (void)setUpWithLeadingView:(UIView*)leadingView
-          navigationDelegate:(id<FormInputAccessoryViewDelegate>)delegate
-            manualFillSymbol:(UIImage*)manualFillSymbol
-           closeButtonSymbol:(UIImage*)closeButtonSymbol;
+            navigationDelegate:(id<FormInputAccessoryViewDelegate>)delegate
+              manualFillSymbol:(UIImage*)manualFillSymbol
+      passwordManualFillSymbol:(UIImage*)passwordManualFillSymbol
+    creditCardManualFillSymbol:(UIImage*)creditCardManualFillSymbol
+       addressManualFillSymbol:(UIImage*)addressManualFillSymbol
+             closeButtonSymbol:(UIImage*)closeButtonSymbol;
 
 // Sets up the view with the given `leadingView`. Navigation controls are
 // replaced with `customTrailingView`.

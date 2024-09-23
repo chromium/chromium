@@ -7,13 +7,13 @@
 
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_for_testing.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/values.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "components/services/heap_profiling/public/mojom/heap_profiling_client.mojom.h"
+#include "partition_alloc/partition_alloc_for_testing.h"
 
 namespace heap_profiling {
 

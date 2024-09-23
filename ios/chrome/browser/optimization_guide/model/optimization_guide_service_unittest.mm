@@ -24,8 +24,8 @@
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_utils.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -68,6 +68,8 @@ class OptimizationGuideServiceTest : public PlatformTest {
   OptimizationGuideServiceTest() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         optimization_guide::switches::kPurgeHintsStore);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        optimization_guide::switches::kGoogleApiKeyConfigurationCheckOverride);
 
     // The tests are run in the same process and share the same
     // OptimizationHintsComponentUpdateListener due to the global object usage
@@ -104,23 +106,16 @@ class OptimizationGuideServiceTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.SetPrefService(std::move(testing_prefs));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForBrowserState(
-            browser_state_.get());
-    optimization_guide_service_->DoFinalInit(
-        BackgroundDownloadServiceFactory::GetForBrowserState(
-            browser_state_.get()));
+        OptimizationGuideServiceFactory::GetForProfile(browser_state_.get());
   }
 
   void CreateOTRBrowserState() {
-    ChromeBrowserState* otr_browser_state =
-        browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
-            {std::make_pair(
-                OptimizationGuideServiceFactory::GetInstance(),
-                OptimizationGuideServiceFactory::GetDefaultFactory())});
-    OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state)
-        ->DoFinalInit();
+    browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
+        {TestChromeBrowserState::TestingFactory{
+            OptimizationGuideServiceFactory::GetInstance(),
+            OptimizationGuideServiceFactory::GetDefaultFactory()}});
   }
 
   void PushHintsComponentAndWaitForCompletion() {
@@ -231,7 +226,7 @@ class OptimizationGuideServiceTest : public PlatformTest {
 TEST_F(OptimizationGuideServiceTest, RemoteFetchingDisabled) {
   histogram_tester()->ExpectUniqueSample(
       "OptimizationGuide.RemoteFetchingEnabled", false, 1);
-  // TODO(crbug.com/1240912): Verify the optimization guide fetching synthetic
+  // TODO(crbug.com/40194448): Verify the optimization guide fetching synthetic
   // field trial is recorded.
 }
 
@@ -444,7 +439,7 @@ TEST_F(OptimizationGuideServiceTest, CheckForBlocklistFilter) {
   PushHintsComponentAndWaitForCompletion();
 
   OptimizationGuideService* ogks =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state());
+      OptimizationGuideServiceFactory::GetForProfile(browser_state());
 
   {
     base::HistogramTester histogram_tester;
@@ -521,7 +516,7 @@ TEST_F(OptimizationGuideServiceTest, IncognitoCanStillReadFromComponentHints) {
 
   // Instantiate off the record Optimization Guide Service.
   OptimizationGuideService* otr_ogs =
-      OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(otr_browser_state);
   otr_ogs->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
   // Wait until initialization has stabilized.
   RunUntilIdle();
@@ -550,7 +545,7 @@ TEST_F(OptimizationGuideServiceTest, IncognitoStillProcessesBloomFilter) {
 
   // Instantiate off the record Optimization Guide Service.
   OptimizationGuideService* otr_ogs =
-      OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(otr_browser_state);
   base::HistogramTester histogram_tester;
 
   // Register an optimization type with an optimization filter.
@@ -585,6 +580,6 @@ class OptimizationGuideServiceMSBBUserTest
 TEST_F(OptimizationGuideServiceMSBBUserTest, RemoteFetchingEnabled) {
   histogram_tester()->ExpectUniqueSample(
       "OptimizationGuide.RemoteFetchingEnabled", true, 1);
-  // TODO(crbug.com/1240912): Verify the optimization guide fetching synthetic
+  // TODO(crbug.com/40194448): Verify the optimization guide fetching synthetic
   // field trial is recorded.
 }

@@ -101,8 +101,13 @@ bool ProtocolParserXML::ParseAction(IXMLDOMNode* node, Results* results) {
                         &results->list.back().manifest.arguments);
     return true;
   } else if (event == "postinstall") {
-    // TODO(crbug.com/1286574): Handle `postinstall` action when `Result` class
-    // implements it.
+    // The "postinstall" event is handled by `AppInstall`. The common
+    // `postinstall` scenario where the installer provides a launch command is
+    // handled by `AppInstall` by running the launch command and exiting in the
+    // interactive install case.
+    // Other `postinstall` actions such as "reboot", "restart browser", and
+    // "post install url" are obsolete, since no one currently uses these
+    // actions.
     return true;
   } else {
     ParseError("Unsupported `event` type in <action>: %s", event.c_str());
@@ -173,12 +178,10 @@ bool ProtocolParserXML::ParseData(IXMLDOMNode* node, Results* results) {
 
 bool ProtocolParserXML::ParseManifest(IXMLDOMNode* node, Results* results) {
   std::string version;
-  if (!ReadStringAttribute(node, L"version", &version) ||
-      !base::Version(version).IsValid()) {
-    ParseError("Bad `version` attribute in <manifest>: %s", version.c_str());
-    return false;
+  if (ReadStringAttribute(node, L"version", &version) &&
+      base::Version(version).IsValid()) {
+    results->list.back().manifest.version = version;
   }
-  results->list.back().manifest.version = version;
 
   return ParseChildren(
       {
@@ -306,9 +309,9 @@ bool ProtocolParserXML::ParseElement(const ElementHandlerMap& handler_map,
     return false;
   }
 
-  for (const auto& handler : handler_map) {
-    if (handler.first == basename.Get()) {
-      return (this->*handler.second)(node, results);
+  for (const auto& [name, handler] : handler_map) {
+    if (name == basename.Get()) {
+      return (this->*handler)(node, results);
     }
   }
 

@@ -11,8 +11,8 @@
 // other enum value and passed on to a function that takes an int or unsigned
 // int.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_FLAGS_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_FLAGS_H_
+#ifndef PARTITION_ALLOC_FLAGS_H_
+#define PARTITION_ALLOC_FLAGS_H_
 
 #include <type_traits>
 
@@ -44,12 +44,6 @@ template <typename EnumType>
 constexpr inline IfEnum<EnumType, bool> ContainsFlags(EnumType superset,
                                                       EnumType subset) {
   return (superset & subset) == subset;
-}
-
-// Removes flags `target` from `from`.
-template <typename EnumType>
-constexpr inline IfEnum<EnumType> RemoveFlags(EnumType from, EnumType target) {
-  return from & ~target;
 }
 
 // A macro to define binary arithmetic over `EnumType`.
@@ -98,4 +92,4 @@ constexpr inline IfEnum<EnumType> RemoveFlags(EnumType from, EnumType target) {
 
 }  // namespace partition_alloc::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_FLAGS_H_
+#endif  // PARTITION_ALLOC_FLAGS_H_

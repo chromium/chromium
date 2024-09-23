@@ -135,6 +135,46 @@ TEST(WritingModeUtilsTest, LogicalToPhysicalVrlRtl) {
   EXPECT_EQ(kInlineStart, converter.Bottom());
 }
 
+TEST(WritingModeUtilsTest, LogicalToPhysicalSlrLtr) {
+  LogicalToPhysical<int> converter(
+      {WritingMode::kSidewaysLr, TextDirection::kLtr}, kInlineStart, kInlineEnd,
+      kBlockStart, kBlockEnd);
+  EXPECT_EQ(kBlockStart, converter.Left());
+  EXPECT_EQ(kBlockEnd, converter.Right());
+  EXPECT_EQ(kInlineEnd, converter.Top());
+  EXPECT_EQ(kInlineStart, converter.Bottom());
+}
+
+TEST(WritingModeUtilsTest, LogicalToPhysicalSlrRtl) {
+  LogicalToPhysical<int> converter(
+      {WritingMode::kSidewaysLr, TextDirection::kRtl}, kInlineStart, kInlineEnd,
+      kBlockStart, kBlockEnd);
+  EXPECT_EQ(kBlockStart, converter.Left());
+  EXPECT_EQ(kBlockEnd, converter.Right());
+  EXPECT_EQ(kInlineStart, converter.Top());
+  EXPECT_EQ(kInlineEnd, converter.Bottom());
+}
+
+TEST(WritingModeUtilsTest, LogicalToPhysicalSrlLtr) {
+  LogicalToPhysical<int> converter(
+      {WritingMode::kSidewaysRl, TextDirection::kLtr}, kInlineStart, kInlineEnd,
+      kBlockStart, kBlockEnd);
+  EXPECT_EQ(kBlockEnd, converter.Left());
+  EXPECT_EQ(kBlockStart, converter.Right());
+  EXPECT_EQ(kInlineStart, converter.Top());
+  EXPECT_EQ(kInlineEnd, converter.Bottom());
+}
+
+TEST(WritingModeUtilsTest, LogicalToPhysicalSrlRtl) {
+  LogicalToPhysical<int> converter(
+      {WritingMode::kSidewaysRl, TextDirection::kRtl}, kInlineStart, kInlineEnd,
+      kBlockStart, kBlockEnd);
+  EXPECT_EQ(kBlockEnd, converter.Left());
+  EXPECT_EQ(kBlockStart, converter.Right());
+  EXPECT_EQ(kInlineEnd, converter.Top());
+  EXPECT_EQ(kInlineStart, converter.Bottom());
+}
+
 class PhysicalValues {
   STACK_ALLOCATED();
 
@@ -216,25 +256,6 @@ TEST(WritingModeUtilsTest, LogicalToPhysicalGetter) {
   EXPECT_EQ(kBlockStart, getter.Right());
   EXPECT_EQ(kInlineEnd, getter.Top());
   EXPECT_EQ(kInlineStart, getter.Bottom());
-}
-
-TEST(WritingModeUtilsTest, IsFlippedXY) {
-  struct TestData {
-    WritingDirectionMode writing_direction;
-    bool is_flipped_x;
-    bool is_flipped_y;
-  } test_data_list[] = {
-      {{WritingMode::kHorizontalTb, TextDirection::kLtr}, false, false},
-      {{WritingMode::kHorizontalTb, TextDirection::kRtl}, true, false},
-      {{WritingMode::kVerticalRl, TextDirection::kLtr}, true, false},
-      {{WritingMode::kVerticalRl, TextDirection::kRtl}, true, true},
-      {{WritingMode::kVerticalLr, TextDirection::kLtr}, false, false},
-      {{WritingMode::kVerticalLr, TextDirection::kRtl}, false, true},
-  };
-  for (const TestData& data : test_data_list) {
-    EXPECT_EQ(data.writing_direction.IsFlippedX(), data.is_flipped_x);
-    EXPECT_EQ(data.writing_direction.IsFlippedY(), data.is_flipped_y);
-  }
 }
 
 }  // namespace

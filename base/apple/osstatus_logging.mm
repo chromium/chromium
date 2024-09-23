@@ -9,6 +9,7 @@
 #include <iomanip>
 
 #include "base/immediate_crash.h"
+#include "base/scoped_clear_last_error.h"
 
 namespace logging {
 
@@ -30,6 +31,9 @@ OSStatusLogMessage::~OSStatusLogMessage() {
 }
 
 void OSStatusLogMessage::AppendError() {
+  // Don't let actions from this method affect the system error after returning.
+  base::ScopedClearLastError scoped_clear_last_error;
+
   stream() << ": " << DescriptionFromOSStatus(status_) << " (" << status_
            << ")";
 }

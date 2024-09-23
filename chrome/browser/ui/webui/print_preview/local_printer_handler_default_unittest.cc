@@ -6,12 +6,12 @@
 
 #include <functional>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/common/printing/printer_capabilities.h"
@@ -135,7 +135,7 @@ void RecordGetCapability(base::Value::Dict& capabilities_out,
 
 // Converts JSON string to `base::Value` object.
 // On failure, fills `error` string and the return value is not a list.
-base::Value GetJSONAsValue(const base::StringPiece& json, std::string& error) {
+base::Value GetJSONAsValue(std::string_view json, std::string& error) {
   return base::Value::FromUniquePtrValue(
       JSONStringValueDeserializer(json).Deserialize(nullptr, &error));
 }
@@ -263,7 +263,7 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
       service_manager_client_id_ =
           PrintBackendServiceManager::GetInstance().RegisterQueryClient();
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
     } else {
       // Use of task runners will call `PrintBackend::CreateInstance()`, which
@@ -328,7 +328,7 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
       sandboxed_print_backend()->AddAccessDeniedPrinter(id);
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif
     } else {
       default_print_backend()->AddValidPrinter(id, std::move(caps),
@@ -587,7 +587,7 @@ TEST_P(LocalPrinterHandlerDefaultTest, GetPrinters) {
   EXPECT_EQ(call_count, 1u);
   EXPECT_TRUE(is_done);
 
-  constexpr base::StringPiece expected_list = R"(
+  constexpr std::string_view expected_list = R"(
     [
       {
         "deviceName": "printer1",

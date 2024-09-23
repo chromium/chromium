@@ -13,32 +13,32 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
-#include "components/sync/base/model_type.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
+#include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/mock_commit_queue.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-
 namespace {
 
 using sync_pb::AutofillWalletCredentialSpecifics;
-using sync_pb::ModelTypeState;
+using sync_pb::DataTypeState;
 using syncer::EntityData;
-using syncer::MockModelTypeChangeProcessor;
+using syncer::MockDataTypeLocalChangeProcessor;
 using testing::NiceMock;
 using testing::Return;
 
@@ -54,15 +54,15 @@ std::vector<ServerCvc> ExtractServerCvcDataFromDataBatch(
   return server_cvc_data;
 }
 
-}  // namespace
-
 class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
  public:
+  AutofillWalletCredentialSyncBridgeTest()
+      : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {}
+
   void SetUp() override {
-    OSCryptMocker::SetUp();
     db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);
-    db_.Init(base::FilePath(WebDatabase::kInMemoryPath));
+    db_.Init(base::FilePath(WebDatabase::kInMemoryPath), &encryptor_);
     ON_CALL(backend_, GetDatabase()).WillByDefault(Return(&db_));
     ResetProcessor();
     bridge_ = std::make_unique<AutofillWalletCredentialSyncBridge>(
@@ -70,14 +70,11 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
   }
 
   void ResetProcessor() {
-    real_processor_ =
-        std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-            syncer::AUTOFILL_WALLET_CREDENTIAL,
-            /*dump_stack=*/base::DoNothing());
+    real_processor_ = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+        syncer::AUTOFILL_WALLET_CREDENTIAL,
+        /*dump_stack=*/base::DoNothing());
     mock_processor_.DelegateCallsByDefaultTo(real_processor_.get());
   }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
   std::vector<ServerCvc> GetAllServerCvcDataFromTable() {
     // In tests, it's more convenient to work without `std::unique_ptr`.
@@ -101,7 +98,7 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
 
   MockAutofillWebDataBackend& backend() { return backend_; }
 
-  syncer::MockModelTypeChangeProcessor& mock_processor() {
+  syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
   }
 
@@ -117,14 +114,14 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
               loop.Quit();
             }));
     loop.Run();
-    // ClientTagBasedModelTypeProcessor requires connecting before other
+    // ClientTagBasedDataTypeProcessor requires connecting before other
     // interactions with the worker happen.
     real_processor_->ConnectSync(
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
     // Initialize the processor with the initial sync already done.
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     syncer::UpdateResponseDataList initial_updates;
     for (const AutofillWalletCredentialSpecifics& specifics : remote_data) {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));
@@ -147,12 +144,13 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
   }
 
  private:
+  const os_crypt_async::Encryptor encryptor_;
   NiceMock<MockAutofillWebDataBackend> backend_;
   AutofillSyncMetadataTable sync_metadata_table_;
   PaymentsAutofillTable table_;
   WebDatabase db_;
-  NiceMock<MockModelTypeChangeProcessor> mock_processor_;
-  std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
+  NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
+  std::unique_ptr<syncer::ClientTagBasedDataTypeProcessor> real_processor_;
   std::unique_ptr<AutofillWalletCredentialSyncBridge> bridge_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
@@ -437,7 +435,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
 
 // Test to get all the server cvc data for a user which is filtered on the list
 // of `instrument_id` provided.
-TEST_F(AutofillWalletCredentialSyncBridgeTest, GetData) {
+TEST_F(AutofillWalletCredentialSyncBridgeTest, GetDataForCommit) {
   const ServerCvc server_cvc1 =
       ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
   const ServerCvc server_cvc2 =
@@ -446,16 +444,9 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, GetData) {
   table()->AddServerCvc(server_cvc2);
 
   // Synchronously get data of `server_cvc1`.
-  std::vector<ServerCvc> server_cvc_from_get_data;
-  base::RunLoop loop;
-  bridge()->GetData(
-      {base::NumberToString(server_cvc1.instrument_id)},
-      base::BindLambdaForTesting([&](std::unique_ptr<syncer::DataBatch> batch) {
-        server_cvc_from_get_data =
-            ExtractServerCvcDataFromDataBatch(std::move(batch));
-        loop.Quit();
-      }));
-  loop.Run();
+  std::vector<ServerCvc> server_cvc_from_get_data =
+      ExtractServerCvcDataFromDataBatch(bridge()->GetDataForCommit(
+          {base::NumberToString(server_cvc1.instrument_id)}));
 
   EXPECT_THAT(server_cvc_from_get_data, testing::ElementsAre(server_cvc1));
 }
@@ -469,47 +460,11 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, GetAllDataForDebugging) {
   table()->AddServerCvc(server_cvc1);
   table()->AddServerCvc(server_cvc2);
 
-  std::vector<ServerCvc> server_cvc_from_get_all;
-  base::RunLoop loop;
-  bridge()->GetAllDataForDebugging(
-      base::BindLambdaForTesting([&](std::unique_ptr<syncer::DataBatch> batch) {
-        server_cvc_from_get_all =
-            ExtractServerCvcDataFromDataBatch(std::move(batch));
-        loop.Quit();
-      }));
-  loop.Run();
+  std::vector<ServerCvc> server_cvc_from_get_all =
+      ExtractServerCvcDataFromDataBatch(bridge()->GetAllDataForDebugging());
 
   EXPECT_THAT(server_cvc_from_get_all,
               testing::UnorderedElementsAre(server_cvc1, server_cvc2));
-}
-
-// Test to verify the deletion of the server cvc for the card with the `REMOVE`
-// change tag.
-TEST_F(AutofillWalletCredentialSyncBridgeTest,
-       DeletesServerCvcWhenCardDeleted) {
-  const CreditCard card1 = test::GetMaskedServerCard();
-  const CreditCard card2 = test::GetMaskedServerCard2();
-  const ServerCvc server_cvc1 =
-      ServerCvc{card1.instrument_id(), u"123",
-                base::Time::UnixEpoch() + base::Milliseconds(25000)};
-  const ServerCvc server_cvc2 =
-      ServerCvc{card2.instrument_id(), u"890",
-                base::Time::UnixEpoch() + base::Milliseconds(50000)};
-  table()->AddServerCvc(server_cvc1);
-  table()->AddServerCvc(server_cvc2);
-
-  EXPECT_CALL(mock_processor(), Delete).Times(1);
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  EXPECT_CALL(backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(backend(),
-              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_CREDENTIAL))
-      .Times(0);
-
-  bridge()->CreditCardChanged(
-      CreditCardChange(CreditCardChange::REMOVE, card1.server_id(), card1));
-
-  EXPECT_THAT(GetAllServerCvcDataFromTable(),
-              testing::UnorderedElementsAre(server_cvc2));
 }
 
 // Test to verify the non deletion/updation of the server cvc for the card with
@@ -541,4 +496,5 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
               testing::UnorderedElementsAre(server_cvc1, server_cvc2));
 }
 
+}  // namespace
 }  // namespace autofill

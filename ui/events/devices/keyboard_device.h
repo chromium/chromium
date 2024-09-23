@@ -18,7 +18,8 @@ struct EVENTS_DEVICES_EXPORT KeyboardDevice : public InputDevice {
   KeyboardDevice(int id,
                  InputDeviceType type,
                  const std::string& name,
-                 bool has_assistant_key = false);
+                 bool has_assistant_key = false,
+                 bool has_function_key = false);
   KeyboardDevice(int id,
                  InputDeviceType type,
                  const std::string& name,
@@ -27,15 +28,20 @@ struct EVENTS_DEVICES_EXPORT KeyboardDevice : public InputDevice {
                  uint16_t vendor,
                  uint16_t product,
                  uint16_t version,
-                 bool has_assistant_key = false);
+                 bool has_assistant_key = false,
+                 bool has_function_key = false);
   explicit KeyboardDevice(InputDevice input_device,
-                          bool has_assistant_key = false);
+                          bool has_assistant_key = false,
+                          bool has_function_key = false);
 
   KeyboardDevice(const KeyboardDevice& other);
   ~KeyboardDevice() override;
 
   // Whether or not the keyboard claims to have the assistant key.
   bool has_assistant_key = false;
+
+  // Whether or not the keyboard claims to have the function key.
+  bool has_function_key = false;
 };
 
 }  // namespace ui

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "remoting/codec/audio_encoder_opus.h"
 
 #include <stddef.h>
@@ -9,10 +14,10 @@
 
 #include <cmath>
 #include <memory>
+#include <numbers>
 #include <utility>
 
 #include "base/logging.h"
-#include "base/numerics/math_constants.h"
 #include "remoting/codec/audio_decoder_opus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +31,7 @@ const int kMaxSampleValue = 32767;
 const int kChannels = 2;
 
 // Phase shift between left and right channels.
-const double kChannelPhaseShift = 2 * base::kPiDouble / 3;
+const double kChannelPhaseShift = 2 * std::numbers::pi / 3;
 
 // The sampling rate that OPUS uses internally and that we expect to get
 // from the decoder.
@@ -60,7 +65,7 @@ class OpusAudioEncoderTest : public testing::Test {
                                 double pos,
                                 int channel) {
     double angle =
-        pos * 2 * base::kPiDouble * frequency_hz / static_cast<double>(rate) +
+        pos * 2 * std::numbers::pi * frequency_hz / static_cast<double>(rate) +
         kChannelPhaseShift * channel;
     return static_cast<int>(std::sin(angle) * kMaxSampleValue + 0.5);
   }

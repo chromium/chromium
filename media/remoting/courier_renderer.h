@@ -26,8 +26,8 @@
 #include "media/remoting/metrics.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "third_party/openscreen/src/cast/streaming/public/rpc_messenger.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
-#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 #include "third_party/openscreen/src/util/weak_ptr.h"
 
 namespace media {

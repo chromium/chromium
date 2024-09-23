@@ -8,7 +8,8 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.webkit.URLUtil;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.base.CommandLine;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -56,10 +57,9 @@ public final class ContextMenuUtils {
      * @see DeviceFormFactor#isNonMultiDisplayContextOnTablet(Context).
      */
     public static boolean usePopupContextMenuForContext(Context context) {
-        if (context == null) return false;
+        if (context == null || !CommandLine.isInitialized()) return false;
 
-        return ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES)
-                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                || CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_CONTEXT_MENU_POPUP);
     }
 }

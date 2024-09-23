@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_COORDINATEE_H_
 #define IOS_CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_COORDINATEE_H_
 
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_controller_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
 
 @protocol PopupMenuUIUpdating;
 

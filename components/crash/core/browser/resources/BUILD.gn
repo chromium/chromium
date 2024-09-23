@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 
 preprocess_if_expr("preprocess") {
   in_folder = "."
@@ -11,7 +11,7 @@ preprocess_if_expr("preprocess") {
   in_files = [ "crashes.ts" ]
 }
 
-ts_library("build_ts") {
+webui_ts_library("build_ts") {
   root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
   in_files = [ "crashes.ts" ]

@@ -42,8 +42,8 @@ align-content: normal
 align-items: normal
 align-self: auto
 alignment-baseline: auto
-anchor-default: implicit
 anchor-name: none
+anchor-scope: none
 animation-composition: replace
 animation-delay: 0s
 animation-direction: normal
@@ -114,6 +114,7 @@ border-top-right-radius: 0px
 border-top-style: none
 border-top-width: 0px
 bottom: auto
+box-decoration-break: slice
 box-shadow: none
 box-sizing: content-box
 break-after: auto
@@ -181,6 +182,7 @@ font-variant: normal
 font-variant-alternates: normal
 font-variant-caps: normal
 font-variant-east-asian: normal
+font-variant-emoji: normal
 font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-position: normal
@@ -208,6 +210,7 @@ inset-block-end: auto
 inset-block-start: auto
 inset-inline-end: auto
 inset-inline-start: auto
+interpolate-size: numeric-only
 isolation: auto
 justify-content: normal
 justify-items: normal
@@ -216,6 +219,7 @@ left: auto
 letter-spacing: normal
 lighting-color: rgb(255, 255, 255)
 line-break: auto
+line-clamp: none
 line-height: normal
 list-style-image: none
 list-style-position: outside
@@ -240,6 +244,10 @@ mask-position: 0% 0%
 mask-repeat: repeat
 mask-size: auto
 mask-type: luminance
+masonry-slack: normal
+masonry-template-tracks: auto
+masonry-track-end: auto
+masonry-track-start: auto
 math-depth: 0
 math-shift: normal
 math-style: normal
@@ -293,15 +301,18 @@ pointer-events: auto
 popover-hide-delay: infinity * 1s
 popover-show-delay: 0.5s
 position: static
-position-fallback: none
-position-fallback-bounds: normal
-position-try-options: none
+position-anchor: auto
+position-area: none
+position-try-fallbacks: none
 position-try-order: normal
+position-visibility: always
 r: 0px
+reading-flow: normal
 resize: none
 right: auto
 rotate: none
 row-gap: normal
+ruby-align: space-around
 ruby-position: over
 rx: auto
 ry: auto
@@ -311,6 +322,7 @@ scroll-margin-block-end: 0px
 scroll-margin-block-start: 0px
 scroll-margin-inline-end: 0px
 scroll-margin-inline-start: 0px
+scroll-marker-group: none
 scroll-padding-block-end: auto
 scroll-padding-block-start: auto
 scroll-padding-inline-end: auto
@@ -349,6 +361,7 @@ text-align: start
 text-align-last: auto
 text-anchor: start
 text-autospace: normal
+text-box-edge: auto
 text-box-trim: none
 text-decoration: none solid rgb(0, 0, 0)
 text-decoration-color: rgb(0, 0, 0)
@@ -366,7 +379,8 @@ text-size-adjust: auto
 text-spacing-trim: normal
 text-transform: none
 text-underline-position: auto
-text-wrap: wrap
+text-wrap-mode: wrap
+text-wrap-style: auto
 timeline-scope: none
 top: auto
 touch-action: auto
@@ -387,6 +401,7 @@ view-timeline-axis: block
 view-timeline-inset: auto
 view-timeline-name: none
 view-transition-class: none
+view-transition-group: normal
 view-transition-name: none
 visibility: visible
 white-space-collapse: collapse

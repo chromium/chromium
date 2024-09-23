@@ -18,7 +18,10 @@ component("snapshot") {
   }
 
   if (is_mac) {
-    sources += [ "snapshot_mac.mm" ]
+    sources += [
+      "snapshot_mac.h",
+      "snapshot_mac.mm",
+    ]
   }
 
   if (is_win) {
@@ -73,6 +76,7 @@ component("snapshot") {
       "AppKit.framework",
       "CoreGraphics.framework",
     ]
+    weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 14.4
   }
 }
 
@@ -101,6 +105,7 @@ test("snapshot_unittests") {
     "//ui/base:test_support",
     "//ui/compositor:test_support",
     "//ui/gfx",
+    "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//ui/gl",
   ]
@@ -118,12 +123,12 @@ test("snapshot_unittests") {
   }
 
   if (is_fuchsia) {
-    # TODO(https://crbug.com/1022542): Some of these tests use SwiftShader,
+    # TODO(crbug.com/42050042): Some of these tests use SwiftShader,
     # which requires ambient VMEX.
     test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
 
     additional_manifest_fragments = [
-      # TODO(https://crbug.com/1185811): Investigate removing the requirement
+      # TODO(crbug.com/40055105): Investigate removing the requirement
       # for VmexResource.
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
       "//build/config/fuchsia/test/present_view.shard.test-cml",

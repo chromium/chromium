@@ -13,7 +13,10 @@
 #include "base/nix/mime_util_xdg.h"
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
+  // SAFETY: LibFuzzer provides a valid pointer/size pair.
+  auto data = UNSAFE_BUFFERS(base::span(data_ptr, size));
+
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {
     // Not a fuzzer error, so we return 0.
@@ -25,8 +28,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   setenv("XDG_DATA_DIRS", temp_dir.GetPath().value().c_str(), 1);
   base::FilePath mime_dir = temp_dir.GetPath().Append("mime");
   base::FilePath mime_cache = mime_dir.Append("mime.cache");
-  if (!base::CreateDirectory(mime_dir) ||
-      !base::WriteFile(mime_cache, base::make_span(data, size))) {
+  if (!base::CreateDirectory(mime_dir) || !base::WriteFile(mime_cache, data)) {
     LOG(ERROR) << "Failed to create " << mime_cache;
     // Not a fuzzer error, so we return 0.
     return 0;

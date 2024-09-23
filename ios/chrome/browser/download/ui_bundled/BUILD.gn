@@ -1,0 +1,187 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "ar_quick_look_coordinator.h",
+    "ar_quick_look_coordinator.mm",
+    "download_manager_consumer.h",
+    "download_manager_coordinator.h",
+    "download_manager_coordinator.mm",
+    "download_manager_mediator.h",
+    "download_manager_mediator.mm",
+    "download_manager_state.h",
+    "download_manager_state_view.h",
+    "download_manager_state_view.mm",
+    "download_manager_view_controller.h",
+    "download_manager_view_controller.mm",
+    "download_manager_view_controller_delegate.h",
+    "download_manager_view_controller_protocol.h",
+    "legacy_download_manager_view_controller.h",
+    "legacy_download_manager_view_controller.mm",
+    "pass_kit_coordinator.h",
+    "pass_kit_coordinator.mm",
+    "radial_progress_view.h",
+    "radial_progress_view.mm",
+    "safari_download_coordinator.h",
+    "safari_download_coordinator.mm",
+    "unopened_downloads_tracker.h",
+    "unopened_downloads_tracker.mm",
+    "vcard_coordinator.h",
+    "vcard_coordinator.mm",
+  ]
+  deps = [
+    ":constants",
+    ":features",
+    "//base",
+    "//components/infobars/core",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/download/model",
+    "//ios/chrome/browser/download/ui_bundled/activities",
+    "//ios/chrome/browser/download/ui_bundled/resources",
+    "//ios/chrome/browser/drive/model:drive_availability",
+    "//ios/chrome/browser/drive/model:drive_service_factory",
+    "//ios/chrome/browser/drive/model:drive_tab_helper",
+    "//ios/chrome/browser/drive/model:upload_task",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/common/confirmation",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/store_kit/model",
+    "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/browser/ui/fullscreen:ui",
+    "//ios/chrome/browser/ui/presenters",
+    "//ios/chrome/browser/web/model:web_internal",
+    "//ios/chrome/browser/web_state_list/model",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/components/webui:url_constants",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
+    "//ios/third_party/material_components_ios",
+    "//ios/web:core",
+    "//ios/web/common",
+    "//ios/web/public",
+    "//net",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+  public_deps = [ "//ios/web/public/download" ]
+  frameworks = [
+    "ContactsUI.framework",
+    "Contacts.framework",
+    "SafariServices.framework",
+    "ARKit.framework",
+    "StoreKit.framework",
+    "UIKit.framework",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "download_manager_constants.h",
+    "download_manager_constants.mm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "ar_quick_look_coordinator_unittest.mm",
+    "download_manager_coordinator_unittest.mm",
+    "download_manager_mediator_unittest.mm",
+    "legacy_download_manager_view_controller_unittest.mm",
+    "pass_kit_coordinator_unittest.mm",
+    "safari_download_coordinator_unittest.mm",
+    "vcard_coordinator_unittest.mm",
+  ]
+  deps = [
+    ":features",
+    ":ui_bundled",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/download/model",
+    "//ios/chrome/browser/download/model:test_support",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/web_content_area",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/fakes",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//net:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock:ocmock",
+    "//ui/base",
+  ]
+  frameworks = [
+    "MobileCoreServices.framework",
+    "PassKit.framework",
+    "StoreKit.framework",
+    "UIKit.framework",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [
+    "ar_quick_look_egtest.mm",
+    "download_manager_egtest.mm",
+    "pass_kit_egtest.mm",
+    "safari_download_egtest.mm",
+  ]
+
+  deps = [
+    ":constants",
+    ":features",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/download/model:mime_types",
+    "//ios/chrome/browser/download/model:test_support",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/infobars/banners:public",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing:embedded_test_server_support",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+    "//ios/web/common",
+    "//ios/web/public/test:element_selector",
+    "//net:test_support",
+    "//ui/base",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}

@@ -71,7 +71,7 @@ TEST_F(FeedApiTest,
 
 TEST_F(FeedApiTest, DoNotRefreshIfSnippetsByDseDisabled) {
   profile_prefs_.SetBoolean(prefs::kEnableSnippetsByDse, false);
-  CreateStream(/*wait_for_initialization=*/true, /*start_surface=*/false,
+  CreateStream(/*wait_for_initialization=*/true,
                /*is_new_tab_search_engine_url_android_enabled*/ true);
   stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
 #if BUILDFLAG(IS_ANDROID)
@@ -2614,7 +2614,7 @@ TEST_F(FeedApiTest, PersistentKeyValueStoreIsClearedOnClearAll) {
 }
 
 TEST_F(FeedApiTest, LoadMultipleStreams) {
-  // TODO(crbug.com/1369777) Add support for single web feed.
+  // TODO(crbug.com/40869325) Add support for single web feed.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   // WebFeed stream is only fetched when there's a subscription.
@@ -2657,8 +2657,8 @@ TEST_F(FeedApiTest, UnloadOnlyOneOfMultipleModels) {
 
 TEST_F(FeedApiTest, ExperimentsAreClearedOnClearAll) {
   Experiments e;
-  std::vector<std::string> group_list1{"Group1"};
-  std::vector<std::string> group_list2{"Group2"};
+  std::vector<ExperimentGroup> group_list1{{"Group1", 123}};
+  std::vector<ExperimentGroup> group_list2{{"Group2", 9999}};
   e["Trial1"] = group_list1;
   e["Trial2"] = group_list2;
   prefs::SetExperiments(e, profile_prefs_);
@@ -2918,14 +2918,14 @@ TEST_F(FeedApiTest, ClearAllOnStartupIfFeedIsDisabledByDse) {
 
   // Turn off the feed, and re-create FeedStream. It should perform a ClearAll.
   profile_prefs_.SetBoolean(feed::prefs::kEnableSnippetsByDse, false);
-  CreateStream(/*wait_for_initialization=*/true, /*start_surface=*/false,
+  CreateStream(/*wait_for_initialization=*/true,
                /*is_new_tab_search_engine_url_android_enabled*/ true);
   EXPECT_TRUE(on_clear_all.called());
 
   // Re-create the feed, and verify ClearAll isn't called again.
   on_clear_all.Clear();
   base::HistogramTester histograms;
-  CreateStream(/*wait_for_initialization=*/true, /*start_surface=*/false,
+  CreateStream(/*wait_for_initialization=*/true,
                /*is_new_tab_search_engine_url_android_enabled*/ true);
 
   EXPECT_FALSE(on_clear_all.called());
@@ -3290,38 +3290,6 @@ TEST_F(FeedApiTest, ManualRefresh_MetricsOnCardsViewedAfterRestart) {
       FROM_HERE);
 }
 
-TEST_F(FeedApiTest, StartSurface) {
-  CreateStream(/*wait_for_initialization=*/true, /*start_surface=*/true);
-  TestForYouSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
-  CallbackReceiver<bool> callback;
-  stream_->ManualRefresh(surface.GetSurfaceId(), callback.Bind());
-  WaitForIdleTaskQueue();
-
-  ASSERT_TRUE(network_.query_request_sent.has_value());
-  EXPECT_TRUE(network_.query_request_sent->feed_request()
-                  .client_info()
-                  .chrome_client_info()
-                  .start_surface());
-}
-
-TEST_F(FeedApiTest, NoStartSurface) {
-  CreateStream(/*wait_for_initialization=*/true, /*start_surface=*/false);
-  TestForYouSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
-  CallbackReceiver<bool> callback;
-  stream_->ManualRefresh(surface.GetSurfaceId(), callback.Bind());
-  WaitForIdleTaskQueue();
-
-  ASSERT_TRUE(network_.query_request_sent.has_value());
-  EXPECT_FALSE(network_.query_request_sent->feed_request()
-                   .client_info()
-                   .chrome_client_info()
-                   .start_surface());
-}
-
 TEST_F(FeedApiTest, ForYouContentOrderUnset) {
   stream_->SetChainedWebFeedRefreshEnabledForTesting(false);
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
@@ -3392,48 +3360,6 @@ TEST_F(FeedApiTest, SetContentOrderIsSavedeNotRefreshedIfUnchanged) {
   // "Raw prefs" order value should have been updated.
   EXPECT_EQ(ContentOrder::kGrouped,
             feed::prefs::GetWebFeedContentOrder(profile_prefs_));
-  EXPECT_EQ(ContentOrder::kGrouped,
-            stream_->GetContentOrder(StreamType(StreamKind::kFollowing)));
-}
-
-TEST_F(FeedApiTest, ContentOrderIsFinchControllable) {
-  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialParams params;
-  params["following_feed_content_order"] = "reverse_chron";
-  scoped_feature_list.InitAndEnableFeatureWithParameters(kWebFeed, params);
-  CreateStream();
-
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestWebFeedSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-
-  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
-  EXPECT_EQ(
-      feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_RECENT,
-      network_.query_request_sent->feed_request().feed_query().order_by());
-  EXPECT_EQ(ContentOrder::kReverseChron,
-            stream_->GetContentOrder(StreamType(StreamKind::kFollowing)));
-}
-
-TEST_F(FeedApiTest, ContentOrderPrefOverridesFinch) {
-  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
-  base::test::ScopedFeatureList scoped_feature_list;
-  // Sets the "raw prefs" order value
-  feed::prefs::SetWebFeedContentOrder(profile_prefs_, ContentOrder::kGrouped);
-  base::FieldTrialParams params;
-  params["following_feed_content_order"] = "reverse_chron";
-  scoped_feature_list.InitAndEnableFeatureWithParameters(kWebFeed, params);
-  CreateStream();
-
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestWebFeedSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-
-  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
-  EXPECT_EQ(
-      feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_GROUPED,
-      network_.query_request_sent->feed_request().feed_query().order_by());
   EXPECT_EQ(ContentOrder::kGrouped,
             stream_->GetContentOrder(StreamType(StreamKind::kFollowing)));
 }
@@ -3729,9 +3655,6 @@ class FeedCloseRefreshTest : public FeedApiTest {
     FeedApiTest::SetUp();
     // Sometimes the clock starts near zero; move it forward just in case.
     task_environment_.AdvanceClock(base::Minutes(10));
-
-    features_.InitAndEnableFeatureWithParameters(
-        kFeedCloseRefresh, {{"require_interaction", "true"}});
   }
 
  private:
@@ -3819,54 +3742,6 @@ TEST_F(FeedCloseRefreshTest, ManualRefreshResetsCoalesceTimestamp) {
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
 }
 
-TEST_F(FeedCloseRefreshTest, FeedViewed) {
-  // Disable the interaction requirement for refreshes.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kFeedCloseRefresh, {{"require_interaction", "false"}});
-  TestForYouSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-  stream_->ReportFeedViewed(surface.GetSurfaceId());
-  // The schedule should have been updated.
-  EXPECT_EQ(base::Minutes(30),
-            refresh_scheduler_
-                .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
-
-  // Only a surface's first view should cause the schedule to be set.
-  refresh_scheduler_.Clear();
-  stream_->ReportFeedViewed(surface.GetSurfaceId());
-  // Zero means the scheudle wasn't updated.
-  EXPECT_EQ(base::Seconds(0),
-            refresh_scheduler_
-                .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
-
-  task_environment_.AdvanceClock(base::Minutes(6));
-
-  // Opening another surface should cause a refresh to be scheduled.
-  refresh_scheduler_.Clear();
-  TestForYouSurface surface2(stream_.get());
-  WaitForIdleTaskQueue();
-  stream_->ReportFeedViewed(surface2.GetSurfaceId());
-  // The schedule should have been updated.
-  EXPECT_EQ(base::Minutes(30),
-            refresh_scheduler_
-                .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
-
-  task_environment_.AdvanceClock(base::Minutes(6));
-
-  // Leaving the surface and returning should schedule a refresh.
-  refresh_scheduler_.Clear();
-  surface.Detach();
-  WaitForIdleTaskQueue();
-  surface.Attach(stream_.get());
-  WaitForIdleTaskQueue();
-  stream_->ReportFeedViewed(surface.GetSurfaceId());
-  // The schedule should have been updated.
-  EXPECT_EQ(base::Minutes(30),
-            refresh_scheduler_
-                .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
-}
-
 TEST_F(FeedCloseRefreshTest, ExistingScheduleGetsReplaced) {
   // Inject a typical network response, with a server-defined request schedule.
   {
@@ -3897,14 +3772,11 @@ TEST_F(FeedCloseRefreshTest, ExistingScheduleGetsReplaced) {
 }
 
 TEST_F(FeedCloseRefreshTest, Retry) {
-  // Disable the interaction requirement for refreshes.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kFeedCloseRefresh, {{"require_interaction", "false"}});
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   // Update the schedule.
-  stream_->ReportFeedViewed(surface.GetSurfaceId());
+  stream_->ReportOpenAction(GURL("http://example.com"), surface.GetSurfaceId(),
+                            "", OpenActionType::kDefault);
   EXPECT_EQ(base::Minutes(30),
             refresh_scheduler_
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);

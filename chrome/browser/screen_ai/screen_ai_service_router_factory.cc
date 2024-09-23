@@ -28,9 +28,12 @@ ScreenAIServiceRouterFactory::ScreenAIServiceRouterFactory()
           "ScreenAIService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {}
 
 ScreenAIServiceRouterFactory::~ScreenAIServiceRouterFactory() = default;
@@ -38,7 +41,8 @@ ScreenAIServiceRouterFactory::~ScreenAIServiceRouterFactory() = default;
 std::unique_ptr<KeyedService>
 ScreenAIServiceRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* /*context*/) const {
-  return std::make_unique<screen_ai::ScreenAIServiceRouter>();
+  return base::WrapUnique<screen_ai::ScreenAIServiceRouter>(
+      new screen_ai::ScreenAIServiceRouter);
 }
 
 // static

@@ -10,6 +10,7 @@ option java_outer_classname = "ModelExecutionProto";
 package optimization_guide.proto;
 
 import "components/optimization_guide/proto/model_execution.proto";
+import "components/optimization_guide/proto/substitution.proto";
 
 message TextSafetyModelMetadata {
   // The number of categories the model is expected to output.
@@ -32,14 +33,42 @@ message SafetyCategoryThreshold {
   optional float threshold = 3;
 }
 
+message RequestSafetyCheck {
+  // How to generate input for the text safety check from the request message.
+  repeated SubstitutedString input_template = 1;
+
+  // The set of thresholds to apply per category, overriding those in the
+  // parent.
+  repeated SafetyCategoryThreshold safety_category_thresholds = 2;
+
+  // Whether to only perform the allowed language check.
+  optional bool check_language_only = 3;
+
+  // Whether to ignore the language result of the safety check.
+  optional bool ignore_language_result = 4;
+}
+
+message RawOutputCheck {
+  // How to generate input for the text safety check.
+  // Should be written against a google.protobuf.StringValue proto with the raw
+  // output.
+  repeated SubstitutedString input_template = 1;
+}
+
 message FeatureTextSafetyConfiguration {
   // The feature this configuration pertains to.
   optional ModelExecutionFeature feature = 1;
 
-  // The set of thresholds to apply per category.
+  // The default set of thresholds to apply per category.
   repeated SafetyCategoryThreshold safety_category_thresholds = 2;
 
   // The set of languages allowed for text safety evaluation. If empty, no
   // language constraints are enforced.
   repeated string allowed_languages = 3;
+
+  // Safety checks to run on the feature request message.
+  repeated RequestSafetyCheck request_check = 4;
+
+  // Configures the checks to run on raw model output.
+  optional RawOutputCheck raw_output_check = 5;
 }

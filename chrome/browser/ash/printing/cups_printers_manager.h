@@ -33,6 +33,7 @@ class PrefRegistrySyncable;
 
 namespace ash {
 
+class DlcserviceClient;
 class EnterprisePrintersProvider;
 class PrinterDetector;
 class PrinterEventTracker;
@@ -86,6 +87,7 @@ class CupsPrintersManager : public PrinterInstallationManager,
       std::unique_ptr<PrinterDetector> usb_printer_detector,
       std::unique_ptr<PrinterDetector> zeroconf_printer_detector,
       scoped_refptr<chromeos::PpdProvider> ppd_provider,
+      DlcserviceClient* dlc_service_client,
       std::unique_ptr<UsbPrinterNotificationController>
           usb_notification_controller,
       std::unique_ptr<PrintServersManager> print_servers_manager,

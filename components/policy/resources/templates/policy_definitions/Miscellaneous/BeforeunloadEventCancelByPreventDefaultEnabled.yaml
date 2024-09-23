@@ -23,7 +23,7 @@ items:
   value: null
 owners:
 - dizhangg@chromium.org
-- dom-dev@chromium.org
+- dom-dev@google.com
 schema:
   type: boolean
 supported_on:

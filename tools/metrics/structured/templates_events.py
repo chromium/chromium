@@ -41,6 +41,12 @@ namespace {project.namespace} {{
 
 """
 
+HEADER_ENUM_TEMPLATE = """
+enum class {enum.name} {{
+{variants}
+}};
+"""
+
 HEADER_EVENT_TEMPLATE = """\
 class {event.name} final : public ::metrics::structured::Event {{
  public:
@@ -109,4 +115,66 @@ IMPL_METRIC_TEMPLATE = """\
   return *this;
 }}
 
+"""
+
+# Typescript templates
+TS_FILE_TEMPLATE = """\
+// Generated from gen_events.py. DO NOT EDIT!
+// source: structured.xml
+import {{Event as StructuredMetricsEvent}} from './event.mojom-webui.js';
+
+{project_code}
+
+"""
+
+TS_PROJECT_TEMPLATE = """\
+// {project.name} Enums and Event Declarations
+{enum_code}
+
+{event_code}
+"""
+
+TS_ENUM_TEMPLATE = """
+export enum {project_info.name}_{enum.name} {{
+{variants}
+}};
+    """
+
+TS_EVENT_TEMPLATE = """\
+export class {event.project_name}_{event.name} {{
+private project_name: string = "{event.project_name}";
+private is_event_sequence: boolean = {event.is_event_sequence};
+private event_name: string = "{event.name}"
+{metric_fields}
+
+{metric_code}\
+
+build(): StructuredMetricsEvent {{
+  return {{
+    projectName: this.project_name,
+    eventName: this.event_name,
+    isEventSequence: this.is_event_sequence,
+    metrics: {{
+      {metric_build_code}
+    }},
+    systemUptime: {event.systemUptime},
+  }};
+}}
+}}
+"""
+
+TS_METRIC_FIELD_TEMPLATE = """\
+private {metric.name}?: {metric.ts_type};
+"""
+
+TS_METRIC_TEMPLATE = """\
+set{metric.name}(
+    metric_value: {metric.ts_type}): {metric.project_name}_{metric.event_name} {{
+  this.{metric.name} = metric_value;
+  return this;
+}}
+"""
+
+TS_METRIC_BUILD_TEMPLATE = """\
+  \"{metric.name}\": {{{metric.type_enum}: this.{metric.name}}},
 """

@@ -37,12 +37,12 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
   field_data.Set("fieldSignature",
                  base::NumberToString(field->GetFieldSignature().value()));
   field_data.Set("hostFormSignature",
-                 base::NumberToString(field->host_form_signature.value()));
-  field_data.Set("idAttribute", field->id_attribute);
-  field_data.Set("parseableNameAttribute", field->name_attribute);
-  field_data.Set("autocompleteAttribute", field->autocomplete_attribute);
-  field_data.Set("labelAttribute", field->label);
-  field_data.Set("placeholderAttribute", field->placeholder);
+                 base::NumberToString(field->host_form_signature().value()));
+  field_data.Set("idAttribute", field->id_attribute());
+  field_data.Set("parseableNameAttribute", field->name_attribute());
+  field_data.Set("autocompleteAttribute", field->autocomplete_attribute());
+  field_data.Set("labelAttribute", field->label());
+  field_data.Set("placeholderAttribute", field->placeholder());
   field_data.Set("fieldType", field->Type().ToStringView());
   field_data.Set("heuristicType",
                  FieldTypeToStringView(field->heuristic_type()));
@@ -50,7 +50,7 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
   field_data.Set("serverTypeIsOverride",
                  field->server_type_prediction_is_override());
   field_data.Set("htmlType", FieldTypeToStringView(field->html_type()));
-  field_data.Set("section", field->section.ToString());
+  field_data.Set("section", field->section().ToString());
   field_data.Set("rank", base::NumberToString(field->rank()));
   field_data.Set("rankInSignatureGroup",
                  base::NumberToString(field->rank_in_signature_group()));
@@ -60,9 +60,9 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
       "rankInHostFormSignatureGroup",
       base::NumberToString(field->rank_in_host_form_signature_group()));
 
-  field_data.Set("isEmpty", field->IsEmpty());
+  field_data.Set("isEmpty", field->value(ValueSemantics::kCurrent).empty());
   field_data.Set("isFocusable", field->IsFocusable());
-  field_data.Set("isVisible", field->is_visible);
+  field_data.Set("isVisible", field->is_visible());
   return field_data;
 }
 

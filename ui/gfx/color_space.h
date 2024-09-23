@@ -62,6 +62,8 @@ class ColorSpaceDataView;
 class COLOR_SPACE_EXPORT ColorSpace {
  public:
   enum class PrimaryID : uint8_t {
+    // Used as an enum for metrics. DO NOT reorder or delete values. Rather,
+    // add them at the end and increment kMaxValue.
     INVALID,
     // BT709 is also the primaries for SRGB.
     BT709,
@@ -83,10 +85,13 @@ class COLOR_SPACE_EXPORT ColorSpace {
     WIDE_GAMUT_COLOR_SPIN,
     // Primaries defined by the primary matrix |custom_primary_matrix_|.
     CUSTOM,
-    kMaxValue = CUSTOM,
+    EBU_3213_E,
+    kMaxValue = EBU_3213_E,
   };
 
   enum class TransferID : uint8_t {
+    // Used as an enum for metrics. DO NOT reorder or delete values. Rather,
+    // add them at the end and increment kMaxValue.
     INVALID,
     BT709,
     // On macOS, BT709 hardware decoded video frames, when displayed as
@@ -140,7 +145,6 @@ class COLOR_SPACE_EXPORT ColorSpace {
     SMPTE240M,
     YCOCG,
     BT2020_NCL,
-    BT2020_CL,
     YDZDX,
     GBR,
     kMaxValue = GBR,

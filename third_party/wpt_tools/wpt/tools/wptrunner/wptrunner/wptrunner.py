@@ -128,11 +128,15 @@ def get_loader(test_paths: wptcommandline.TestPaths,
 def list_test_groups(test_paths, product, **kwargs):
     env.do_delayed_imports(logger, test_paths)
 
-    _, test_loader = get_loader(test_paths,
-                                product,
-                                **kwargs)
+    test_queue_builder, test_loader = get_loader(test_paths,
+                                                 product,
+                                                 **kwargs)
 
-    for item in sorted(test_loader.groups(kwargs["test_types"])):
+    tests_by_type = {(subsuite_name, test_type): tests
+                     for subsuite_name, subsuite_tests in test_loader.tests.items()
+                     for test_type, tests in subsuite_tests.items()}
+
+    for item in sorted(test_queue_builder.tests_by_group(tests_by_type)):
         print(item)
 
 
@@ -396,11 +400,16 @@ def run_tests(config, product, test_paths, **kwargs):
 
         product.check_args(**kwargs)
 
+        kwargs["allow_list_paths"] = []
         if kwargs["install_fonts"]:
+            # Add test font to allow list for sandbox to ensure that the content
+            # processes will have read access.
+            ahem_path = os.path.join(test_paths["/"].tests_path, "fonts/Ahem.ttf")
+            kwargs["allow_list_paths"].append(ahem_path)
             env_extras.append(FontInstaller(
                 logger,
                 font_dir=kwargs["font_dir"],
-                ahem=os.path.join(test_paths["/"].tests_path, "fonts/Ahem.ttf")
+                ahem=ahem_path
             ))
 
         recording.set(["startup", "load_tests"])

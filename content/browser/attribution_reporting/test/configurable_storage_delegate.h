@@ -8,20 +8,26 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
+#include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
+
+namespace attribution_reporting {
+class AttributionScopesData;
+}
 
 namespace content {
 
-class ConfigurableStorageDelegate : public AttributionStorageDelegate {
+class ConfigurableStorageDelegate : public AttributionResolverDelegate {
  public:
   ConfigurableStorageDelegate();
   ~ConfigurableStorageDelegate() override;
 
-  // AttributionStorageDelegate:
+  // AttributionResolverDelegate:
   base::Time GetEventLevelReportTime(
       const attribution_reporting::EventReportWindows& event_report_windows,
       base::Time source_time,
@@ -33,22 +39,19 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   std::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>&) override;
-  void ShuffleTriggerVerifications(
-      std::vector<network::TriggerVerification>&) override;
-  double GetRandomizedResponseRate(
+  std::optional<double> GetRandomizedResponseRate(
       const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::MaxEventLevelReports,
       attribution_reporting::EventLevelEpsilon) const override;
   GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::MaxEventLevelReports,
       attribution_reporting::EventLevelEpsilon,
-      base::Time source_time) const override;
-  std::vector<NullAggregatableReport> GetNullAggregatableReports(
-      const AttributionTrigger&,
-      base::Time trigger_time,
-      std::optional<base::Time> attributed_source_time) const override;
+      const std::optional<attribution_reporting::AttributionScopesData>&)
+      override;
+  bool GenerateNullAggregatableReportForLookbackDay(
+      int lookback_day,
+      attribution_reporting::mojom::SourceRegistrationTimeConfig)
+      const override;
 
   void set_max_sources_per_origin(int max);
 
@@ -60,6 +63,9 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_destination_rate_limit(AttributionConfig::DestinationRateLimit);
 
+  void set_aggregatable_debug_rate_limit(
+      AttributionConfig::AggregatableDebugRateLimit);
+
   void set_delete_expired_sources_frequency(base::TimeDelta frequency);
 
   void set_delete_expired_rate_limits_frequency(base::TimeDelta frequency);
@@ -70,16 +76,15 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_reverse_reports_on_shuffle(bool reverse);
 
-  void set_reverse_verifications_on_shuffle(bool reverse);
-
   // Note that this is *not* used to produce a randomized response; that
   // is controlled deterministically by `set_randomized_response()`.
   void set_randomized_response_rate(double rate);
 
-  void set_randomized_response(RandomizedResponse);
+  void set_randomized_response(attribution_reporting::RandomizedResponse);
   void set_exceeds_channel_capacity_limit(bool);
 
-  void set_null_aggregatable_reports(std::vector<NullAggregatableReport>);
+  void set_null_aggregatable_reports_lookback_days(
+      base::flat_set<int> null_aggregatable_reports_lookback_days);
 
   void use_realistic_report_times();
 
@@ -106,18 +111,15 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   bool reverse_reports_on_shuffle_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
 
-  // If true, `ShuffleTriggerVerifications()` reverses the verifications.
-  bool reverse_verifications_on_shuffle_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      false;
-
   double randomized_response_rate_ GUARDED_BY_CONTEXT(sequence_checker_) = 0.0;
 
-  RandomizedResponse randomized_response_ GUARDED_BY_CONTEXT(sequence_checker_);
+  attribution_reporting::RandomizedResponse randomized_response_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   bool exceeds_channel_capacity_limit_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
 
-  std::vector<NullAggregatableReport> null_aggregatable_reports_
+  base::flat_set<int> null_aggregatable_reports_lookback_days_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

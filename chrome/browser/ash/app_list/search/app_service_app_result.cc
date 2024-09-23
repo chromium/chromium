@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -40,7 +41,7 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
         is_platform_app_ = update.IsPlatformApp().value_or(false);
         show_in_launcher_ = update.ShowInLauncher().value_or(false);
 
-        if (update.Readiness() == apps::Readiness::kDisabledByPolicy) {
+        if (apps_util::IsDisabled(update.Readiness())) {
           SetAccessibleName(l10n_util::GetStringFUTF16(
               IDS_APP_ACCESSIBILITY_BLOCKED_INSTALLED_APP_ANNOUNCEMENT,
               base::UTF8ToUTF16(update.Name())));
@@ -63,12 +64,12 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
   switch (app_type_) {
     case apps::AppType::kBuiltIn:
       set_id(app_id);
-      // TODO(crbug.com/826982): Is this SetResultType call necessary?? Does
+      // TODO(crbug.com/40569217): Is this SetResultType call necessary?? Does
       // anyone care about the kInternalApp vs kInstalledApp distinction?
       SetResultType(ResultType::kInternalApp);
       break;
     case apps::AppType::kChromeApp:
-      // TODO(crbug.com/826982): why do we pass the URL and not the app_id??
+      // TODO(crbug.com/40569217): why do we pass the URL and not the app_id??
       // Can we replace this by the simpler "set_id(app_id)", and therefore
       // pull that out of the switch?
       set_id(extensions::Extension::GetBaseURLFromExtensionId(app_id).spec());
@@ -113,7 +114,7 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserExtension:
     case apps::AppType::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ash::SEARCH_RESULT_TYPE_BOUNDARY;
   }
 }
@@ -133,7 +134,7 @@ void AppServiceAppResult::Launch(int event_flags,
   // apps, Crostini apps treat activations as a launch. The app can decide
   // whether to show a new window or focus an existing window as it sees fit.
   //
-  // TODO(crbug.com/1026730): Move this special case to ExtensionApps,
+  // TODO(crbug.com/40659878): Move this special case to ExtensionApps,
   // when AppService Instance feature is done.
   bool is_active_app = false;
   proxy->AppRegistryCache().ForOneApp(

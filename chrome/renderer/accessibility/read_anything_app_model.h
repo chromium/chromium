@@ -5,10 +5,16 @@
 #ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_
 
+#include <map>
+
 #include "base/containers/contains.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
+#include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
@@ -24,110 +30,133 @@ class AXNode;
 class AXSerializableTree;
 }  // namespace ui
 
-namespace ukm {
-class MojoUkmRecorder;
-}
-
 // A class that holds state for the ReadAnythingAppController for the Read
 // Anything WebUI app.
 class ReadAnythingAppModel {
  public:
+  // Allows one to observer changes in the model state.
+  class ModelObserver : public base::CheckedObserver {
+   public:
+    virtual void OnTreeAdded(ui::AXTree* tree) = 0;
+    virtual void OnTreeRemoved(ui::AXTree* tree) = 0;
+  };
+
   ReadAnythingAppModel();
   ~ReadAnythingAppModel();
   ReadAnythingAppModel(const ReadAnythingAppModel& other) = delete;
   ReadAnythingAppModel& operator=(const ReadAnythingAppModel&) = delete;
 
-  // A current segment of text that will be consumed by Read Aloud.
-  struct ReadAloudTextSegment {
-    // The AXNodeID associated with this particular text segment.
-    ui::AXNodeID id;
+  struct AXTreeInfo {
+    explicit AXTreeInfo(std::unique_ptr<ui::AXTreeManager> other);
+    ~AXTreeInfo();
+    AXTreeInfo(const AXTreeInfo& other) = delete;
+    AXTreeInfo& operator=(const AXTreeInfo&) = delete;
 
-    // The starting index for the text with the node of the given id.
-    int text_start;
+    // Store AXTrees of web contents in the browser's tab strip as
+    // AXTreeManagers.
+    std::unique_ptr<ui::AXTreeManager> manager;
 
-    // The ending index for the text with the node of the given id.
-    int text_end;
+    // The UKM source ID of the main frame that sources this AXTree. This is
+    // used for metrics collection. Only root AXTrees have this set.
+    ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
+
+    // Used to keep track of how many selections were made for the
+    // ukm_source_id. Only recorded during the select-to-distill flow (when the
+    // empty state page is shown).
+    int32_t num_selections = 0;
+
+    // Whether URL information, namely is_docs, has been set.
+    bool is_url_information_set = false;
+
+    // Google Docs are different from regular webpages. We want to distill
+    // content from the annotated canvas elements, not the main tree. Only root
+    // AXTrees have this set.
+    bool is_docs = false;
+
+    // TODO(41496290): Include any information that is associated with a
+    // particular AXTree, namely is_pdf. Right now, this is set every time the
+    // active ax tree id changes; instead, it should be set once when a new tree
+    // is added.
   };
 
-  // A representation of multiple ReadAloudTextSegments that are processed
-  // by Read Aloud at a single moment. For example, when using sentence
-  // granularity, the list of ReadAloudTextSegments in a
-  // ReadAloudCurrentGranularity will include all ReadAloudTextSegments
-  // necessary to represent a single sentence.
-  struct ReadAloudCurrentGranularity {
-    ReadAloudCurrentGranularity();
-    ReadAloudCurrentGranularity(const ReadAloudCurrentGranularity& other);
-    ~ReadAloudCurrentGranularity();
-
-    // Adds a segment to the current granularity.
-    void AddSegment(ReadAloudTextSegment segment) {
-      segments[segment.id] = segment;
-      node_ids.push_back(segment.id);
-    }
-
-    // All of the ReadAloudTextSegments in the current granularity.
-    std::map<ui::AXNodeID, ReadAloudTextSegment> segments;
-
-    // Because GetCurrentText returns a vector of node ids to be used by
-    // TypeScript also store the node ids as a vector for easier retrieval.
-    std::vector<ui::AXNodeID> node_ids;
-  };
-
-  bool requires_distillation() { return requires_distillation_; }
+  bool requires_distillation() const { return requires_distillation_; }
   void set_requires_distillation(bool value) { requires_distillation_ = value; }
-  bool requires_post_process_selection() {
+  bool requires_post_process_selection() const {
     return requires_post_process_selection_;
   }
   void set_requires_post_process_selection(bool value) {
     requires_post_process_selection_ = value;
   }
-  bool selection_from_action() { return selection_from_action_; }
+  bool reset_draw_timer() const { return reset_draw_timer_; }
+  void set_reset_draw_timer(bool value) { reset_draw_timer_ = value; }
+
+  const ui::AXNodeID& last_expanded_node_id() const {
+    return last_expanded_node_id_;
+  }
+
+  void set_last_expanded_node_id(const ui::AXNodeID& node_id) {
+    last_expanded_node_id_ = node_id;
+  }
+
+  void reset_last_expanded_node_id() {
+    set_last_expanded_node_id(ui::kInvalidAXNodeID);
+  }
+
+  bool redraw_required() const { return redraw_required_; }
+  void reset_redraw_required() { redraw_required_ = false; }
+  bool selection_from_action() const { return selection_from_action_; }
   void set_selection_from_action(bool value) { selection_from_action_ = value; }
 
-  const std::string& default_language_code() const {
-    return default_language_code_;
-  }
+  const std::string& base_language_code() const { return base_language_code_; }
 
-  void set_default_language_code(const std::string code) {
-    default_language_code_ = code;
-  }
+  void SetBaseLanguageCode(const std::string code);
 
-  std::vector<std::string> GetSupportedFonts() const;
+  std::vector<std::string> GetSupportedFonts();
 
-  // TODO(b/1266555): Ensure there is proper test coverage for all methods.
   // Theme
   const std::string& font_name() const { return font_name_; }
+  void set_font_name(const std::string& font) { font_name_ = font; }
   float font_size() const { return font_size_; }
+  void set_font_size(float font_size) { font_size_ = font_size; }
   bool links_enabled() const { return links_enabled_; }
-  float letter_spacing() const { return letter_spacing_; }
-  float line_spacing() const { return line_spacing_; }
+  bool images_enabled() const { return images_enabled_; }
+  int letter_spacing() const { return letter_spacing_; }
+  void set_letter_spacing(int letter_spacing) {
+    letter_spacing_ = letter_spacing;
+  }
+  int line_spacing() const { return line_spacing_; }
+  void set_line_spacing(int line_spacing) { line_spacing_ = line_spacing; }
   int color_theme() const { return color_theme_; }
-  int highlight_granularity() const { return highlight_granularity_; }
-  const SkColor& foreground_color() const { return foreground_color_; }
-  const SkColor& background_color() const { return background_color_; }
-  float speech_rate() const { return speech_rate_; }
-  const base::Value::Dict& voices() const { return voices_; }
+  void set_color_theme(int color_theme) { color_theme_ = color_theme; }
 
   // Selection.
   bool has_selection() const { return has_selection_; }
-  ui::AXNodeID start_node_id() const { return start_node_id_; }
-  ui::AXNodeID end_node_id() const { return end_node_id_; }
+  const ui::AXNodeID& start_node_id() const { return start_node_id_; }
+  const ui::AXNodeID& end_node_id() const { return end_node_id_; }
   int32_t start_offset() const { return start_offset_; }
   int32_t end_offset() const { return end_offset_; }
 
   bool distillation_in_progress() const { return distillation_in_progress_; }
-  bool active_tree_selectable() const { return active_tree_selectable_; }
   bool is_empty() const {
     return display_node_ids_.empty() && selection_node_ids_.empty();
   }
 
-  bool page_finished_loading_for_data_collection() const {
-    return page_finished_loading_for_data_collection_;
-  }
+  // The following methods are used for the screen2x data collection pipeline.
+  // They all have CHECKs to ensure that the DataCollectionModeForScreen2x
+  // feature flag is enabled.
+  bool ScreenAIServiceReadyForDataColletion() const;
+  void SetScreenAIServiceReadyForDataColletion(bool value);
+  bool PageFinishedLoadingForDataCollection() const;
+  void SetPageFinishedLoadingForDataCollection(bool value);
+  void SetDataCollectionForScreen2xCallback(
+      base::RepeatingCallback<void()> callback);
 
-  const ukm::SourceId& active_ukm_source_id() const {
-    return active_ukm_source_id_;
+  bool page_finished_loading() const { return page_finished_loading_; }
+  void set_page_finished_loading(bool value) {
+    page_finished_loading_ = value;
   }
+  bool requires_tree_lang() const { return requires_tree_lang_; }
+  void set_requires_tree_lang(bool value) { requires_tree_lang_ = value; }
 
   const std::vector<ui::AXNodeID>& content_node_ids() const {
     return content_node_ids_;
@@ -139,35 +168,31 @@ class ReadAnythingAppModel {
     return selection_node_ids_;
   }
 
-  // Returns the active tree id. For PDFs, this will return the tree id of the
-  // PDF iframe, since that is where the PDF contents are. If that tree id is
-  // not yet in the model, AXTreeIDUnknown will be returned.
-  ui::AXTreeID GetActiveTreeId() const;
+  const ui::AXTreeID& active_tree_id() const { return active_tree_id_; }
+  void SetActiveTreeId(const ui::AXTreeID& active_tree_id);
 
-  void SetDistillationInProgress(bool distillation) {
+  void set_distillation_in_progress(bool distillation) {
     distillation_in_progress_ = distillation;
   }
-  void SetActiveTreeSelectable(bool active_tree_selectable) {
-    active_tree_selectable_ = active_tree_selectable;
-  }
-  void SetActiveUkmSourceId(ukm::SourceId source_id);
 
-  void SetActiveTreeId(ui::AXTreeID tree_id) { active_tree_id_ = tree_id; }
+  const ukm::SourceId& UkmSourceId();
+  void SetUkmSourceId(const ukm::SourceId ukm_source_id);
+  int32_t NumSelections();
+  void SetNumSelections(const int32_t& num_selections);
 
-  ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id) const;
-  bool IsNodeIgnoredForReadAnything(ui::AXNodeID ax_node_id) const;
-  bool NodeIsContentNode(ui::AXNodeID ax_node_id) const;
-  void OnThemeChanged(read_anything::mojom::ReadAnythingThemePtr new_theme);
+  void AddUrlInformationForTreeId(const ui::AXTreeID& tree_id);
+  bool IsDocs() const;
+
+  ui::AXNode* GetAXNode(const ui::AXNodeID& ax_node_id) const;
+  bool NodeIsContentNode(const ui::AXNodeID& ax_node_id) const;
   void OnSettingsRestoredFromPrefs(
       read_anything::mojom::LineSpacing line_spacing,
       read_anything::mojom::LetterSpacing letter_spacing,
       const std::string& font,
       double font_size,
       bool links_enabled,
-      read_anything::mojom::Colors color,
-      double speech_rate,
-      base::Value::Dict* voices,
-      read_anything::mojom::HighlightGranularity granularity);
+      bool images_enabled,
+      read_anything::mojom::Colors color);
   void OnScroll(bool on_selection, bool from_reading_mode) const;
   void OnSelection(ax::mojom::EventFrom event_from);
 
@@ -187,29 +212,30 @@ class ReadAnythingAppModel {
   // clears their selection or selects content inside the distilled content.
   void ComputeDisplayNodeIdsForDistilledTree();
 
-  ui::AXSerializableTree* GetTreeFromId(ui::AXTreeID tree_id) const;
-  void AddTree(ui::AXTreeID tree_id,
+  ui::AXSerializableTree* GetTreeFromId(const ui::AXTreeID& tree_id) const;
+  void AddTree(const ui::AXTreeID& tree_id,
                std::unique_ptr<ui::AXSerializableTree> tree);
 
-  bool ContainsTree(ui::AXTreeID tree_id) const;
+  bool ContainsTree(const ui::AXTreeID& tree_id) const;
 
-  void UnserializePendingUpdates(ui::AXTreeID tree_id);
+  void UnserializePendingUpdates(const ui::AXTreeID& tree_id);
 
   void ClearPendingUpdates();
 
   void AccessibilityEventReceived(const ui::AXTreeID& tree_id,
-                                  const std::vector<ui::AXTreeUpdate>& updates,
-                                  const std::vector<ui::AXEvent>& events);
+                                  std::vector<ui::AXTreeUpdate>& updates,
+                                  std::vector<ui::AXEvent>& events,
+                                  const bool speech_playing);
 
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id);
 
   std::map<ui::AXTreeID, std::vector<ui::AXTreeUpdate>>&
   GetPendingUpdatesForTesting();
 
-  std::map<ui::AXTreeID, std::unique_ptr<ui::AXTreeManager>>*
+  std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>*
   GetTreesForTesting();
 
-  void EraseTreeForTesting(ui::AXTreeID tree_id);
+  void EraseTreeForTesting(const ui::AXTreeID& tree_id);
 
   double GetLineSpacingValue(
       read_anything::mojom::LineSpacing line_spacing) const;
@@ -220,95 +246,32 @@ class ReadAnythingAppModel {
   void DecreaseTextSize();
   void ResetTextSize();
   void ToggleLinksEnabled();
-
-  std::string GetHtmlTag(ui::AXNodeID ax_node_id) const;
-
-  // Returns the index of the next sentence of the given text, such that the
-  // next sentence is equivalent to text.substr(0, <returned_index>).
-  int GetNextSentence(const std::u16string& text);
+  void ToggleImagesEnabled();
 
   // PDF handling.
-  void SetIsPdf(const GURL& url);
+  void set_is_pdf(bool is_pdf) { is_pdf_ = is_pdf; }
   bool is_pdf() const { return is_pdf_; }
-  ui::AXTreeID GetPDFWebContents() const;
 
-  // Checks assumptions made about the PDF's structure, specifically that the
-  // main web contents AXTree has one child (the pdf web contents), and that
-  // the pdf web contents AXTree has one child (the pdf iframe). If there is
-  // not enough information to check a certain assumption, ie the model does
-  // not contain a certain tree, this function could still return true. When
-  // tree updates are received for the missing tree(s), this function should
-  // be ran again to check for the correct structure.
-  bool IsPDFFormatted() const;
-
-  // Google Docs need special handling.
-  void set_is_google_docs(bool is_google_docs) { is_docs_ = is_google_docs; }
-  bool is_docs() const { return is_docs_; }
-
-  // Returns the next valid AXNodePosition.
-  ui::AXNodePosition::AXPositionInstance
-  GetNextValidPositionFromCurrentPosition(
-      ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity);
-
-  // Inits the AXPosition with a starting node.
-  // TODO(crbug.com/1474951): We should be able to use AXPosition in a way
-  // where this isn't needed.
-  void InitAXPositionWithNode(const ui::AXNodeID starting_node_id);
-
-  // Returns a list of AXNodeIds representing the next nodes that should be
-  // spoken and highlighted with Read Aloud.
-  // This defaults to returning the first granularity until
-  // MovePositionTo<Next,Previous>Granularity() moves the position.
-  // If the the current processed_granularity_index_ has not been calculated
-  // yet, GetNextNodes() is called which updates the AXPosition.
-  // GetCurrentTextStartIndex and GetCurrentTextEndIndex called with an AXNodeID
-  // return by GetCurrentText will return the starting text and ending text
-  // indices for specific text that should be referenced within the node.
-  std::vector<ui::AXNodeID> GetCurrentText();
-
-  // Increments the processed_granularity_index_, updating ReadAloud's state of
-  // the current granularity to refer to the next granularity. The current
-  // behavior allows the client to increment past the end of the page's content.
-  void MovePositionToNextGranularity();
-
-  // Decrements the processed_granularity_index_,updating ReadAloud's state of
-  // the current granularity to refer to the previous granularity. Cannot be
-  // decremented less than 0.
-  void MovePositionToPreviousGranularity();
-
-  // Helper method for GetCurrentText.
-  ReadAloudCurrentGranularity GetNextNodes();
-
-  // Returns the Read Aloud starting text index for a node. For example,
-  // if the entire text of the node should be read by Read Aloud at a particular
-  // moment, this will return 0. Returns -1 if the node isn't in the current
-  // segment.
-  int GetCurrentTextStartIndex(ui::AXNodeID node_id);
-
-  // Returns the Read Aloud ending text index for a node. For example,
-  // if the entire text of the node should be read by Read Aloud at a particular
-  // moment, this will return the length of the node's text. Returns -1 if the
-  // node isn't in the current segment.
-  int GetCurrentTextEndIndex(ui::AXNodeID node_id);
+  void AddObserver(ModelObserver* observer);
+  void RemoveObserver(ModelObserver* observer);
 
  private:
-  void EraseTree(ui::AXTreeID tree_id);
+  void EraseTree(const ui::AXTreeID& tree_id);
 
-  void InsertDisplayNode(ui::AXNodeID node);
+  void InsertDisplayNode(const ui::AXNodeID& node);
   void ResetSelection();
-  void InsertSelectionNode(ui::AXNodeID node);
+  void InsertSelectionNode(const ui::AXNodeID& node);
   void UpdateSelection();
   void ComputeSelectionNodeIds();
+  bool IsCurrentSelectionEmpty();
   bool SelectionInsideDisplayNodes();
+  bool ContentNodesOnlyContainHeadings();
 
-  void AddPendingUpdates(const ui::AXTreeID tree_id,
-                         const std::vector<ui::AXTreeUpdate>& updates);
+  void AddPendingUpdates(const ui::AXTreeID& tree_id,
+                         std::vector<ui::AXTreeUpdate>& updates);
 
-  void UnserializeUpdates(const std::vector<ui::AXTreeUpdate>& updates,
+  void UnserializeUpdates(std::vector<ui::AXTreeUpdate>& updates,
                           const ui::AXTreeID& tree_id);
-
-  const std::vector<ui::AXTreeUpdate>& GetOrCreatePendingUpdateAt(
-      ui::AXTreeID tree_id);
 
   void ProcessNonGeneratedEvents(const std::vector<ui::AXEvent>& events);
 
@@ -318,66 +281,19 @@ class ReadAnythingAppModel {
                               size_t prev_tree_size,
                               size_t tree_size);
 
-  ui::AXNode* GetParentForSelection(ui::AXNode* node);
-  std::string GetHtmlTagForPDF(ui::AXNode* ax_node, std::string html_tag) const;
-  std::string GetHeadingHtmlTagForPDF(ui::AXNode* ax_node,
-                                      std::string html_tag) const;
-  std::string GetAriaLevel(ui::AXNode* ax_node) const;
-
-  // Uses the current AXNodePosition to return the next node that should be
-  // spoken by Read Aloud.
-  ui::AXNode* GetNodeFromCurrentPosition();
-
-  void ResetReadAloudState();
-
-  bool IsTextForReadAnything(ui::AXNodeID ax_node_id) const;
-
-  bool ShouldSplitAtParagraph(ui::AXNodePosition::AXPositionInstance& position,
-                              ReadAloudCurrentGranularity& current_granularity);
-
-  // Returns true if the node was previously spoken or we expect to speak it
-  // to be spoken once the current run of #GetCurrentText which called
-  // #NodeBeenOrWillBeSpoken finishes executing. Because AXPosition
-  // sometimes returns leaf nodes, we sometimes need to use the parent of a
-  // node returned by AXPosition instead of the node itself. Because of this,
-  // we need to double-check that the node has not been used or currently
-  // in use.
-  // Example:
-  // parent node: id=5
-  //    child node: id=6
-  //    child node: id =7
-  // node: id = 10
-  // Where AXPosition will return nodes in order of 6, 7, 10, but Reading Mode
-  // process them as 5, 10. Without checking for previously spoken nodes,
-  // id 5 will be spoken twice.
-  bool NodeBeenOrWillBeSpoken(
-      ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity,
-      ui::AXNodeID id);
-
-  // Helper method to get the correct anchor node from an AXPositionInstance
-  // that should be used by Read Aloud. AXPosition can sometimes return
-  // leaf nodes that don't actually correspond to the AXNodes we're using
-  // in Reading Mode, so we need to get a parent node from the AXPosition's
-  // returned anchor when this happens.
-  ui::AXNode* GetAnchorNode(ui::AXNodePosition::AXPositionInstance& position);
-
-  bool IsOpeningPunctuation(char c);
+  // Runs the data collection for screen2x pipeline, provided in the form of a
+  // callback from the ReadAnythingAppController. This should only be called
+  // when the DataCollectionModeForScreen2x feature is enabled.
+  void MaybeRunDataCollectionForScreen2xCallback();
 
   // State.
-  // Store AXTrees of web contents in the browser's tab strip as AXTreeManagers.
-  std::map<ui::AXTreeID, std::unique_ptr<ui::AXTreeManager>> tree_managers_;
+  std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>
+      tree_infos_;
 
   // The AXTreeID of the currently active web contents. For PDFs, this will
   // always be the AXTreeID of the main web contents (not the PDF iframe or its
   // child).
   ui::AXTreeID active_tree_id_ = ui::AXTreeIDUnknown();
-
-  // The UKM source ID of the main frame of the active web contents, whose
-  // AXTree has ID active_tree_id_. This is used for metrics collection.
-  ukm::SourceId active_ukm_source_id_ = ukm::kInvalidSourceId;
-
-  // Certain websites (e.g. Docs and PDFs) are not distillable with selection.
-  bool active_tree_selectable_ = true;
 
   // PDFs are handled differently than regular webpages. That is because they
   // are stored in a different web contents and the actual PDF text is inside an
@@ -415,22 +331,21 @@ class ReadAnythingAppModel {
   // contains all nodes between the start and end nodes of the selection.
   std::set<ui::AXNodeID> selection_node_ids_;
 
-  std::string default_language_code_ = "en-US";
+  // The current base language code used for fonts or reading aloud.
+  std::string base_language_code_ = "en";
+  std::map<ui::AXNodeID, std::string> aria_expanded_node_states_;
+
+  bool redraw_required_ = false;
+  ui::AXNodeID last_expanded_node_id_ = ui::kInvalidAXNodeID;
 
   // Theme information.
   std::string font_name_ = string_constants::kReadAnythingPlaceholderFontName;
   float font_size_ = kReadAnythingDefaultFontScale;
   bool links_enabled_ = kReadAnythingDefaultLinksEnabled;
-  float letter_spacing_ =
-      (int)read_anything::mojom::LetterSpacing::kDefaultValue;
-  float line_spacing_ = (int)read_anything::mojom::LineSpacing::kDefaultValue;
-  SkColor background_color_ = (int)read_anything::mojom::Colors::kDefaultValue;
-  SkColor foreground_color_ = (int)read_anything::mojom::Colors::kDefaultValue;
+  bool images_enabled_ = kReadAnythingDefaultImagesEnabled;
+  int letter_spacing_ = (int)read_anything::mojom::LetterSpacing::kDefaultValue;
+  int line_spacing_ = (int)read_anything::mojom::LineSpacing::kDefaultValue;
   int color_theme_ = (int)read_anything::mojom::Colors::kDefaultValue;
-  float speech_rate_ = kReadAnythingDefaultSpeechRate;
-  base::Value::Dict voices_ = base::Value::Dict();
-  int highlight_granularity_ =
-      (int)read_anything::mojom::HighlightGranularity::kDefaultValue;
 
   // Selection information.
   bool has_selection_ = false;
@@ -439,41 +354,35 @@ class ReadAnythingAppModel {
   int32_t start_offset_ = -1;
   int32_t end_offset_ = -1;
   bool requires_distillation_ = false;
+  bool reset_draw_timer_ = false;
   bool requires_post_process_selection_ = false;
   bool selection_from_action_ = false;
 
-  std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
-
-  // Used to keep track of how many selections were made for the
-  // active_ukm_source_id_. Only recorded during the select-to-distill flow
-  // (when the empty state page is shown).
-  int32_t num_selections_ = 0;
-
   // For screen2x data collection, Chrome is launched from the CLI to open one
   // webpage. We record the result of the distill() call for this entire
-  // webpage, so we only make the call once the webpage finished loading.
-  bool page_finished_loading_for_data_collection_ = false;
+  // webpage, so we only make the call once the webpage finished loading and
+  // screen ai has loaded.
+  bool ScreenAIServiceReadyForDataColletion_ = false;
+  bool PageFinishedLoadingForDataCollection_ = false;
+  base::OneShotTimer timer_since_page_load_for_data_collection_;
+  base::RetainingOneShotTimer timer_since_tree_changed_for_data_collection_;
+  base::RepeatingCallback<void()> data_collection_for_screen2x_callback_;
 
-  // Google Docs are different from regular webpages. We want to distill content
-  // from the annotated canvas elements, not the main tree.
-  bool is_docs_ = false;
+  // Whether the webpage has finished loading or not.
+  bool page_finished_loading_ = false;
 
-  // Read Aloud state
+  // Maps fonts to whether the current base_language_code_ supports that font.
+  std::map<std::string_view, bool> supported_fonts_;
+  // If the page language can't be determined by the model, we can check the
+  // AX tree to see if it has that information, but the ax tree is created
+  // asynchronously from the language determination so we need to keep track of
+  // that here.
+  bool requires_tree_lang_ = false;
 
-  ui::AXNodePosition::AXPositionInstance ax_position_;
+  // List of observers of model state changes.
+  base::ObserverList<ModelObserver, /*check_empty=*/true> observers_;
 
-  // Our current index within processed_granularities_on_current_page_.
-  size_t processed_granularity_index_ = 0;
-
-  // The current text index within the given node.
-  int current_text_index_ = 0;
-
-  // TODO(crbug.com/1474951): Clear this when granularity changes.
-  // TODO(crbug.com/1474951): Use this to assist in navigating forwards /
-  // backwards.
-  // Previously processed granularities on the current page.
-  std::vector<ReadAnythingAppModel::ReadAloudCurrentGranularity>
-      processed_granularities_on_current_page_;
+  base::WeakPtrFactory<ReadAnythingAppModel> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_

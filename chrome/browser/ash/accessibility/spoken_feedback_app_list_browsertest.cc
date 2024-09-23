@@ -138,9 +138,9 @@ class TestSearchProvider : public app_list::SearchProvider {
 // through `apps_provder_ptr` and `web_provider_ptr`.
 void InitializeTestSearchProviders(
     app_list::SearchController* search_controller,
-    TestSearchProvider** apps_provider_ptr,
-    TestSearchProvider** web_provider_ptr,
-    TestSearchProvider** image_provider_ptr) {
+    raw_ptr<TestSearchProvider>* apps_provider_ptr,
+    raw_ptr<TestSearchProvider>* web_provider_ptr,
+    raw_ptr<TestSearchProvider>* image_provider_ptr) {
   std::unique_ptr<TestSearchProvider> apps_provider =
       std::make_unique<TestSearchProvider>(
           "app", ChromeSearchResult::DisplayType::kList,
@@ -193,7 +193,8 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
 
     scoped_feature_list_.InitWithFeatures(
         {features::kProductivityLauncherImageSearch,
-         features::kLauncherSearchControl},
+         features::kLauncherSearchControl,
+         features::kFeatureManagementLocalImageSearch},
         {});
 
     LoggedInSpokenFeedbackTest::SetUp();
@@ -357,6 +358,9 @@ class SpokenFeedbackAppListSearchTest
   }
 
   void TearDownOnMainThread() override {
+    apps_provider_ = nullptr;
+    web_provider_ = nullptr;
+    image_provider_ = nullptr;
     AppListClientImpl::GetInstance()->SetSearchControllerForTest(nullptr);
     SpokenFeedbackAppListBaseTest::TearDownOnMainThread();
   }
@@ -383,15 +387,9 @@ class SpokenFeedbackAppListSearchTest
   // Whether the test runs in tablet mode.
   const bool tablet_mode_;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION TestSearchProvider* apps_provider_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION TestSearchProvider* web_provider_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION TestSearchProvider* image_provider_ = nullptr;
+  raw_ptr<TestSearchProvider> apps_provider_ = nullptr;
+  raw_ptr<TestSearchProvider> web_provider_ = nullptr;
+  raw_ptr<TestSearchProvider> image_provider_ = nullptr;
 };
 
 // Instantiate test by user variant and tablet mode state.
@@ -937,14 +935,14 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest,
 
     gfx::Point touch_point = target_view->GetBoundsInScreen().CenterPoint();
     ui::TouchEvent touch_press(
-        ui::ET_TOUCH_PRESSED, touch_point, base::TimeTicks::Now(),
+        ui::EventType::kTouchPressed, touch_point, base::TimeTicks::Now(),
         ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     generator_ptr->Dispatch(&touch_press);
 
     clock_ptr->Advance(base::Seconds(1));
 
     ui::TouchEvent touch_move(
-        ui::ET_TOUCH_MOVED, touch_point, base::TimeTicks::Now(),
+        ui::EventType::kTouchMoved, touch_point, base::TimeTicks::Now(),
         ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     generator_ptr->Dispatch(&touch_move);
   });
@@ -1025,7 +1023,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest, SearchCategoryFilter) {
   sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
   sm_.ExpectSpeech("Images");
   sm_.ExpectSpeech("Checked");
-  sm_.ExpectSpeech("Image search by content and image previews");
+  sm_.ExpectSpeech("Search for text within images and see image previews");
 
   sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
   sm_.ExpectSpeech("Websites");

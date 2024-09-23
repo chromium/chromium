@@ -29,7 +29,7 @@ class WebContents;
 // implement Http authentication. This class is responsible for coordinating the
 // browser side implementation fo content::LoginDelegate.
 //
-// TODO(https://crbug.com/1371177): Fix the flow to match below description.
+// TODO(crbug.com/40870289): Fix the flow to match below description.
 // The control flow is the following:
 //   (1) Extensions are given the opportunity to automatically fill in or
 //       cancel http auth. If this happens, skip the remaining steps.

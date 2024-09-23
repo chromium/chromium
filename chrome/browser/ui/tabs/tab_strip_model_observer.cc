@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
@@ -203,6 +202,12 @@ void TabStripModelObserver::OnTabWillBeRemoved(content::WebContents* contents,
 
 void TabStripModelObserver::OnTabGroupChanged(const TabGroupChange& change) {}
 
+void TabStripModelObserver::OnTabGroupAdded(
+    const tab_groups::TabGroupId& group_id) {}
+
+void TabStripModelObserver::OnTabGroupWillBeRemoved(
+    const tab_groups::TabGroupId& group_id) {}
+
 void TabStripModelObserver::TabChangedAt(WebContents* contents,
                                          int index,
                                          TabChangeType change_type) {
@@ -220,7 +225,7 @@ void TabStripModelObserver::TabBlockedStateChanged(WebContents* contents,
 
 void TabStripModelObserver::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> group,
-    content::WebContents* contents,
+    tabs::TabModel* tab,
     int index) {}
 
 void TabStripModelObserver::TabStripEmpty() {
@@ -257,7 +262,7 @@ int TabStripModelObserver::CountObservedModels(
 void TabStripModelObserver::StartedObserving(
     TabStripModelObserver::ModelPasskey,
     TabStripModel* model) {
-  // TODO(https://crbug.com/991308): Add this DCHECK here. This DCHECK enforces
+  // TODO(crbug.com/40639200): Add this DCHECK here. This DCHECK enforces
   // that a given TabStripModelObserver only observes a given TabStripModel
   // once.
   // DCHECK_EQ(observed_models_.count(model), 0U);
@@ -267,7 +272,7 @@ void TabStripModelObserver::StartedObserving(
 void TabStripModelObserver::StoppedObserving(
     TabStripModelObserver::ModelPasskey,
     TabStripModel* model) {
-  // TODO(https://crbug.com/991308): Add this DCHECK here. This DCHECK enforces
+  // TODO(crbug.com/40639200): Add this DCHECK here. This DCHECK enforces
   // that a given TabStripModelObserver is only removed from a given
   // TabStripModel once.
   // DCHECK_EQ(observed_models_.count(model), 1U);

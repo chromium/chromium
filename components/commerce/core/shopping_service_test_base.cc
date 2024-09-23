@@ -4,6 +4,8 @@
 
 #include "components/commerce/core/shopping_service_test_base.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -19,7 +21,9 @@
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/commerce/core/proto/price_insights.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
+#include "components/commerce/core/proto/product_category.pb.h"
 #include "components/commerce/core/proto/shopping_page_types.pb.h"
+#include "components/commerce/core/test_utils.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -45,11 +49,34 @@ namespace commerce {
 
 const uint64_t kInvalidDiscountId = 0;
 
-MockOptGuideDecider::MockOptGuideDecider() = default;
-MockOptGuideDecider::~MockOptGuideDecider() = default;
+MockOptGuideDecider::MockOptGuideDecider() {
+  ON_CALL(*this, CanApplyOptimizationOnDemand)
+      .WillByDefault(
+          [&](const std::vector<GURL>& urls,
+              const base::flat_set<OptimizationType>& optimization_types,
+              RequestContext request_context,
+              OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+              std::optional<RequestContextMetadata> request_context_metadata) {
+            if (optimization_types.contains(OptimizationType::PRICE_TRACKING)) {
+              for (const GURL& url : urls) {
+                if (on_demand_shopping_responses_.find(url.spec()) ==
+                    on_demand_shopping_responses_.end()) {
+                  continue;
+                }
 
-void MockOptGuideDecider::RegisterOptimizationTypes(
-    const std::vector<OptimizationType>& optimization_types) {}
+                base::flat_map<OptimizationType,
+                               OptimizationGuideDecisionWithMetadata>
+                    decision_map;
+                decision_map[OptimizationType::PRICE_TRACKING] =
+                    on_demand_shopping_responses_[url.spec()];
+                base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                    FROM_HERE,
+                    base::BindOnce(callback, url, std::move(decision_map)));
+              }
+            }
+          });
+}
+MockOptGuideDecider::~MockOptGuideDecider() = default;
 
 void MockOptGuideDecider::CanApplyOptimization(
     const GURL& url,
@@ -94,32 +121,9 @@ OptimizationGuideDecision MockOptGuideDecider::CanApplyOptimization(
     OptimizationType optimization_type,
     OptimizationMetadata* optimization_metadata) {
   // We don't use the synchronous API in the shopping service.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 
   return OptimizationGuideDecision::kUnknown;
-}
-
-void MockOptGuideDecider::CanApplyOptimizationOnDemand(
-    const std::vector<GURL>& urls,
-    const base::flat_set<OptimizationType>& optimization_types,
-    RequestContext request_context,
-    OnDemandOptimizationGuideDecisionRepeatingCallback callback,
-    RequestContextMetadata* request_context_metadata) {
-  if (optimization_types.contains(OptimizationType::PRICE_TRACKING)) {
-    for (const GURL& url : urls) {
-      if (on_demand_shopping_responses_.find(url.spec()) ==
-          on_demand_shopping_responses_.end()) {
-        continue;
-      }
-
-      base::flat_map<OptimizationType, OptimizationGuideDecisionWithMetadata>
-          decision_map;
-      decision_map[OptimizationType::PRICE_TRACKING] =
-          on_demand_shopping_responses_[url.spec()];
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(callback, url, std::move(decision_map)));
-    }
-  }
 }
 
 void MockOptGuideDecider::AddOnDemandShoppingResponse(
@@ -151,7 +155,8 @@ OptimizationMetadata MockOptGuideDecider::BuildPriceTrackingResponse(
     const std::string& country_code,
     const int64_t amount_micros,
     const std::string& currency_code,
-    const std::string& gpc_title) {
+    const std::string& gpc_title,
+    const std::vector<std::vector<std::string>>& product_categories) {
   OptimizationMetadata meta;
 
   PriceTrackingData price_tracking_data;
@@ -177,6 +182,18 @@ OptimizationMetadata MockOptGuideDecider::BuildPriceTrackingResponse(
   ProductPrice* price = buyable_product->mutable_current_price();
   price->set_currency_code(currency_code);
   price->set_amount_micros(amount_micros);
+
+  if (product_categories.size() > 0) {
+    CategoryData* category_data = buyable_product->mutable_category_data();
+    for (auto category : product_categories) {
+      ProductCategory* product_category =
+          category_data->add_product_categories();
+      for (auto label : category) {
+        CategoryLabel* category_label = product_category->add_category_labels();
+        category_label->set_category_default_label(label);
+      }
+    }
+  }
 
   Any any;
   any.set_type_url(price_tracking_data.GetTypeName());
@@ -353,90 +370,97 @@ void MockOptGuideDecider::SetDefaultShoppingPage(bool default_shopping_page) {
 }
 
 MockWebWrapper::MockWebWrapper(const GURL& last_committed_url,
-                               bool is_off_the_record)
-    : MockWebWrapper(last_committed_url, is_off_the_record, nullptr) {}
-
-MockWebWrapper::MockWebWrapper(const GURL& last_committed_url,
                                bool is_off_the_record,
-                               base::Value* result)
-    : last_committed_url_(last_committed_url),
-      is_off_the_record_(is_off_the_record),
-      mock_js_result_(result) {}
+                               base::Value* result,
+                               std::u16string title)
+    : mock_js_result_(result) {
+  ON_CALL(*this, GetLastCommittedURL)
+      .WillByDefault(testing::ReturnRefOfCopy(last_committed_url));
+  ON_CALL(*this, GetTitle).WillByDefault(testing::ReturnRefOfCopy(title));
+  ON_CALL(*this, IsFirstLoadForNavigationFinished)
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*this, IsOffTheRecord)
+      .WillByDefault(testing::Return(is_off_the_record));
+  ON_CALL(*this, GetPageUkmSourceId).WillByDefault(testing::Return(0x1234));
+
+  ON_CALL(*this, RunJavascript)
+      .WillByDefault([result = result](
+                         const std::u16string& script,
+                         base::OnceCallback<void(const base::Value)> callback) {
+        if (!result) {
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(callback), base::Value()));
+          return;
+        }
+
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), result->Clone()));
+      });
+}
 
 MockWebWrapper::~MockWebWrapper() = default;
 
-const GURL& MockWebWrapper::GetLastCommittedURL() {
-  return last_committed_url_;
-}
-
-bool MockWebWrapper::IsFirstLoadForNavigationFinished() {
-  return is_first_load_finished_;
-}
-
 void MockWebWrapper::SetIsFirstLoadForNavigationFinished(bool finished) {
-  is_first_load_finished_ = finished;
+  ON_CALL(*this, IsFirstLoadForNavigationFinished)
+      .WillByDefault(testing::Return(finished));
 }
 
-bool MockWebWrapper::IsOffTheRecord() {
-  return is_off_the_record_;
+MockWebExtractor::MockWebExtractor() {
+  ON_CALL(*this, ExtractMetaInfo)
+      .WillByDefault([](WebWrapper* web_wrapper,
+                        base::OnceCallback<void(const base::Value)> callback) {
+        MockWebWrapper* mock_web_wrapper =
+            static_cast<MockWebWrapper*>(web_wrapper);
+
+        if (!mock_web_wrapper) {
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(callback), base::Value()));
+          return;
+        }
+
+        mock_web_wrapper->RunJavascript(
+            u"", base::BindOnce(
+                     [](base::OnceCallback<void(const base::Value)> callback,
+                        const base::Value result) {
+                       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                           FROM_HERE,
+                           base::BindOnce(std::move(callback), result.Clone()));
+                     },
+                     std::move(callback)));
+      });
 }
 
-void MockWebWrapper::RunJavascript(
-    const std::u16string& script,
-    base::OnceCallback<void(const base::Value)> callback) {
-  if (!mock_js_result_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::Value()));
-    return;
-  }
+MockWebExtractor::~MockWebExtractor() = default;
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), mock_js_result_->Clone()));
-}
+MockProductSpecificationsServerProxy::MockProductSpecificationsServerProxy()
+    : ProductSpecificationsServerProxy(nullptr, nullptr, nullptr) {}
+MockProductSpecificationsServerProxy::~MockProductSpecificationsServerProxy() =
+    default;
 
-ukm::SourceId MockWebWrapper::GetPageUkmSourceId() {
-  // Return a UKM source ID that is valid.
-  return 0x1234;
-}
-
-base::Value* MockWebWrapper::GetMockExtractionResult() {
-  return mock_js_result_;
-}
-
-TestWebExtractor::TestWebExtractor() = default;
-
-TestWebExtractor::~TestWebExtractor() = default;
-
-void TestWebExtractor::ExtractMetaInfo(
-    WebWrapper* web_wrapper,
-    base::OnceCallback<void(const base::Value)> callback) {
-  MockWebWrapper* mock_web_wrapper = static_cast<MockWebWrapper*>(web_wrapper);
-
-  if (!mock_web_wrapper || !mock_web_wrapper->GetMockExtractionResult()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::Value()));
-    return;
-  }
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     mock_web_wrapper->GetMockExtractionResult()->Clone()));
+void MockProductSpecificationsServerProxy::
+    SetGetProductSpecificationsForClusterIdsResponse(
+        std::optional<ProductSpecifications> specs) {
+  ON_CALL(*this, GetProductSpecificationsForClusterIds)
+      .WillByDefault([specs](std::vector<uint64_t> cluster_ids,
+                             ProductSpecificationsCallback callback) {
+        std::move(callback).Run(std::move(cluster_ids), std::move(specs));
+      });
 }
 
 ShoppingServiceTestBase::ShoppingServiceTestBase()
-    : local_or_syncable_bookmark_model_(
-          bookmarks::TestBookmarkClient::CreateModel()),
-      account_bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()),
-      opt_guide_(std::make_unique<MockOptGuideDecider>()),
+    : bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()),
+      opt_guide_(std::make_unique<testing::NiceMock<MockOptGuideDecider>>()),
       pref_service_(std::make_unique<TestingPrefServiceSimple>()),
       identity_test_env_(std::make_unique<signin::IdentityTestEnvironment>()),
       sync_service_(std::make_unique<syncer::TestSyncService>()),
       test_url_loader_factory_(
-          std::make_unique<network::TestURLLoaderFactory>()) {
+          std::make_unique<network::TestURLLoaderFactory>()),
+      product_spec_service_(
+          std::make_unique<
+              testing::NiceMock<MockProductSpecificationsService>>()) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
-  RegisterPrefs(pref_service_->registry());
+  RegisterCommercePrefs(pref_service_->registry());
   pref_service_->registry()->RegisterBooleanPref(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
 }
@@ -445,13 +469,13 @@ ShoppingServiceTestBase::~ShoppingServiceTestBase() = default;
 
 void ShoppingServiceTestBase::SetUp() {
   shopping_service_ = std::make_unique<ShoppingService>(
-      "us", "en-us", local_or_syncable_bookmark_model_.get(),
-      account_bookmark_model_.get(), opt_guide_.get(), pref_service_.get(),
-      identity_test_env_->identity_manager(), sync_service_.get(),
+      "us", "en-us", bookmark_model_.get(), opt_guide_.get(),
+      pref_service_.get(), identity_test_env_->identity_manager(),
+      sync_service_.get(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           test_url_loader_factory_.get()),
-      nullptr, nullptr, nullptr, nullptr, nullptr,
-      std::make_unique<TestWebExtractor>());
+      nullptr, nullptr, product_spec_service_.get(), nullptr, nullptr, nullptr,
+      std::make_unique<testing::NiceMock<MockWebExtractor>>());
 }
 
 void ShoppingServiceTestBase::TestBody() {}
@@ -483,9 +507,18 @@ void ShoppingServiceTestBase::DidNavigateAway(WebWrapper* web,
   base::RunLoop().RunUntilIdle();
 }
 
+void ShoppingServiceTestBase::WebWrapperCreated(WebWrapper* web) {
+  shopping_service_->WebWrapperCreated(web);
+  base::RunLoop().RunUntilIdle();
+}
+
 void ShoppingServiceTestBase::WebWrapperDestroyed(WebWrapper* web) {
   shopping_service_->WebWrapperDestroyed(web);
   base::RunLoop().RunUntilIdle();
+}
+
+void ShoppingServiceTestBase::OnWebWrapperSwitched(WebWrapper* web) {
+  shopping_service_->OnWebWrapperSwitched(web);
 }
 
 void ShoppingServiceTestBase::MergeProductInfoData(
@@ -495,16 +528,30 @@ void ShoppingServiceTestBase::MergeProductInfoData(
 }
 
 int ShoppingServiceTestBase::GetProductInfoCacheOpenURLCount(const GURL& url) {
-  auto it = shopping_service_->product_info_cache_.find(url.spec());
-  if (it == shopping_service_->product_info_cache_.end())
-    return 0;
-
-  return it->second->pages_with_url_open;
+  return shopping_service_->commerce_info_cache_.GetUrlRefCount(url);
 }
 
 const ProductInfo* ShoppingServiceTestBase::GetFromProductInfoCache(
     const GURL& url) {
   return shopping_service_->GetFromProductInfoCache(url);
+}
+
+CommerceInfoCache& ShoppingServiceTestBase::GetCache() {
+  return shopping_service_->commerce_info_cache_;
+}
+
+MockOptGuideDecider* ShoppingServiceTestBase::GetMockOptGuideDecider() {
+  return opt_guide_.get();
+}
+
+ProductSpecificationsSet::Observer*
+ShoppingServiceTestBase::GetProductSpecServiceUrlRefObserver() {
+  return shopping_service_->prod_spec_url_ref_observer_.get();
+}
+
+void ShoppingServiceTestBase::SetProductSpecificationsServerProxy(
+    std::unique_ptr<ProductSpecificationsServerProxy> proxy_ptr) {
+  shopping_service_->product_specs_server_proxy_ = std::move(proxy_ptr);
 }
 
 }  // namespace commerce

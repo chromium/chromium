@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -39,6 +38,7 @@
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace chromeos {
 
@@ -87,7 +87,7 @@ PowerManagerClient::LidState GetLidStateFromProtoEnum(
     case power_manager::SwitchStates_LidState_NOT_PRESENT:
       return PowerManagerClient::LidState::NOT_PRESENT;
   }
-  NOTREACHED() << "Unhandled lid state " << state;
+  NOTREACHED_IN_MIGRATION() << "Unhandled lid state " << state;
   return PowerManagerClient::LidState::NOT_PRESENT;
 }
 
@@ -103,7 +103,7 @@ PowerManagerClient::TabletMode GetTabletModeFromProtoEnum(
     case power_manager::SwitchStates_TabletMode_UNSUPPORTED:
       return PowerManagerClient::TabletMode::UNSUPPORTED;
   }
-  NOTREACHED() << "Unhandled tablet mode " << mode;
+  NOTREACHED_IN_MIGRATION() << "Unhandled tablet mode " << mode;
   return PowerManagerClient::TabletMode::UNSUPPORTED;
 }
 
@@ -123,7 +123,7 @@ base::PowerThermalObserver::DeviceThermalState GetThermalStateFromProtoEnum(
     case power_manager::ThermalEvent_ThermalState_CRITICAL:
       return base::PowerThermalObserver::DeviceThermalState::kCritical;
   }
-  NOTREACHED() << "Unhandled thermal state " << state;
+  NOTREACHED_IN_MIGRATION() << "Unhandled thermal state " << state;
   return base::PowerThermalObserver::DeviceThermalState::kUnknown;
 }
 
@@ -201,6 +201,11 @@ class PowerManagerClientImpl : public PowerManagerClient {
     const std::pair<const char*, SignalMethod> kSignalMethods[] = {
         {power_manager::kScreenBrightnessChangedSignal,
          &PowerManagerClientImpl::ScreenBrightnessChangedReceived},
+        {power_manager::kAmbientLightSensorEnabledChangedSignal,
+         &PowerManagerClientImpl::AmbientLightSensorEnabledChangedReceived},
+        {power_manager::kKeyboardAmbientLightSensorEnabledChangedSignal,
+         &PowerManagerClientImpl::
+             KeyboardAmbientLightSensorEnabledChangedReceived},
         {power_manager::kAmbientColorTemperatureChangedSignal,
          &PowerManagerClientImpl::AmbientColorTemperatureChangedReceived},
         {power_manager::kKeyboardBrightnessChangedSignal,
@@ -286,6 +291,15 @@ class PowerManagerClientImpl : public PowerManagerClient {
         power_manager::kIncreaseScreenBrightnessMethod);
   }
 
+  void HasKeyboardBacklight(DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
+                                 power_manager::kHasKeyboardBacklightMethod);
+    power_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&PowerManagerClientImpl::OnGetHasKeyboardBacklight,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void DecreaseKeyboardBrightness() override {
     SimpleMethodCallToPowerManager(
         power_manager::kDecreaseKeyboardBrightnessMethod);
@@ -326,6 +340,43 @@ class PowerManagerClientImpl : public PowerManagerClient {
         base::BindOnce(
             &PowerManagerClientImpl::OnGetScreenOrKeyboardBrightnessPercent,
             weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void SetAmbientLightSensorEnabled(
+      const power_manager::SetAmbientLightSensorEnabledRequest& request)
+      override {
+    dbus::MethodCall method_call(
+        power_manager::kPowerManagerInterface,
+        power_manager::kSetAmbientLightSensorEnabledMethod);
+    if (!dbus::MessageWriter(&method_call).AppendProtoAsArrayOfBytes(request)) {
+      POWER_LOG(ERROR) << "Error serializing "
+                       << power_manager::kSetAmbientLightSensorEnabledMethod
+                       << " request";
+      return;
+    }
+    power_manager_proxy_->CallMethod(&method_call,
+                                     dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                     base::DoNothing());
+  }
+
+  void GetAmbientLightSensorEnabled(
+      DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(
+        power_manager::kPowerManagerInterface,
+        power_manager::kGetAmbientLightSensorEnabledMethod);
+    power_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&PowerManagerClientImpl::OnGetAmbientLightSensorEnabled,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void HasAmbientLightSensor(DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
+                                 power_manager::kHasAmbientLightSensorMethod);
+    power_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&PowerManagerClientImpl::OnGetHasAmbientLightSensor,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void GetKeyboardBrightnessPercent(
@@ -389,9 +440,22 @@ class PowerManagerClientImpl : public PowerManagerClient {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void RequestSuspend() override {
-    POWER_LOG(USER) << "RequestSuspend";
-    SimpleMethodCallToPowerManager(power_manager::kRequestSuspendMethod);
+  void RequestSuspend(std::optional<uint64_t> wakeup_count,
+                      int32_t duration_secs,
+                      power_manager::RequestSuspendFlavor flavor) override {
+    auto wakeup_count_value = wakeup_count.value_or(-1ULL);
+    POWER_LOG(USER) << "RequestSuspend: wakeup_count=" << wakeup_count_value
+                    << ", duration_secs=" << duration_secs
+                    << ", flavor=" << flavor;
+    dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
+                                 power_manager::kRequestSuspendMethod);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint64(wakeup_count_value);
+    writer.AppendInt32(duration_secs);
+    writer.AppendUint32(flavor);
+    power_manager_proxy_->CallMethod(&method_call,
+                                     dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                     base::DoNothing());
   }
 
   void RequestRestart(power_manager::RequestRestartReason reason,
@@ -514,6 +578,36 @@ class PowerManagerClientImpl : public PowerManagerClient {
     power_manager_proxy_->CallMethod(&method_call,
                                      dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                                      base::DoNothing());
+  }
+
+  void SetKeyboardAmbientLightSensorEnabled(
+      const power_manager::SetAmbientLightSensorEnabledRequest& request)
+      override {
+    dbus::MethodCall method_call(
+        power_manager::kPowerManagerInterface,
+        power_manager::kSetKeyboardAmbientLightSensorEnabledMethod);
+    if (!dbus::MessageWriter(&method_call).AppendProtoAsArrayOfBytes(request)) {
+      POWER_LOG(ERROR)
+          << "Error serializing "
+          << power_manager::kSetKeyboardAmbientLightSensorEnabledMethod
+          << " request";
+      return;
+    }
+    power_manager_proxy_->CallMethod(&method_call,
+                                     dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                     base::DoNothing());
+  }
+
+  void GetKeyboardAmbientLightSensorEnabled(
+      DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(
+        power_manager::kPowerManagerInterface,
+        power_manager::kGetKeyboardAmbientLightSensorEnabledMethod);
+    power_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(
+            &PowerManagerClientImpl::OnGetKeyboardAmbientLightSensorEnabled,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void GetBatterySaverModeState(
@@ -761,6 +855,39 @@ class PowerManagerClientImpl : public PowerManagerClient {
       observer.ScreenBrightnessChanged(proto);
   }
 
+  void AmbientLightSensorEnabledChangedReceived(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    power_manager::AmbientLightSensorChange proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      POWER_LOG(ERROR) << "Unable to decode protocol buffer from "
+                       << power_manager::kAmbientLightSensorEnabledChangedSignal
+                       << " signal";
+      return;
+    }
+    POWER_LOG(DEBUG) << "Ambient Light Sensor enabled changed to "
+                     << proto.sensor_enabled() << ": cause " << proto.cause();
+    for (auto& observer : observers_) {
+      observer.AmbientLightSensorEnabledChanged(proto);
+    }
+  }
+
+  void KeyboardAmbientLightSensorEnabledChangedReceived(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    power_manager::AmbientLightSensorChange proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      POWER_LOG(ERROR)
+          << "Unable to decode protocol buffer from "
+          << power_manager::kKeyboardAmbientLightSensorEnabledChangedSignal
+          << " signal";
+      return;
+    }
+    POWER_LOG(DEBUG) << "Keyboard ambient Light Sensor enabled changed to "
+                     << proto.sensor_enabled() << ": cause " << proto.cause();
+    for (auto& observer : observers_) {
+      observer.KeyboardAmbientLightSensorEnabledChanged(proto);
+    }
+  }
+
   void AmbientColorTemperatureChangedReceived(dbus::Signal* signal) {
     dbus::MessageReader reader(signal);
     int32_t color_temperature = 0;
@@ -898,8 +1025,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
   void OnGetPowerSupplyPropertiesMethod(dbus::Response* response) {
     // This is the last callback to run after all the initialization in |Init|.
     // Notify all observers that the initialization is complete.
-    base::ScopedClosureRunner notify_runner(base::BindOnce(
-        &PowerManagerClientImpl::NotifyInitialization, base::Unretained(this)));
+    absl::Cleanup notify_runner = [this] { NotifyInitialization(); };
 
     if (!response) {
       POWER_LOG(ERROR) << "Error calling "
@@ -926,6 +1052,40 @@ class PowerManagerClientImpl : public PowerManagerClient {
     }
   }
 
+  void OnGetHasAmbientLightSensor(DBusMethodCallback<bool> callback,
+                                  dbus::Response* response) {
+    if (!response) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    dbus::MessageReader reader(response);
+    bool has_ambient_light_sensor = false;
+    if (!reader.PopBool(&has_ambient_light_sensor)) {
+      POWER_LOG(ERROR) << "Error reading response from powerd: "
+                       << response->ToString();
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    std::move(callback).Run(has_ambient_light_sensor);
+  }
+
+  void OnGetAmbientLightSensorEnabled(DBusMethodCallback<bool> callback,
+                                      dbus::Response* response) {
+    if (!response) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    dbus::MessageReader reader(response);
+    bool is_ambient_light_sensor_enabled = false;
+    if (!reader.PopBool(&is_ambient_light_sensor_enabled)) {
+      POWER_LOG(ERROR) << "Error reading response from powerd: "
+                       << response->ToString();
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    std::move(callback).Run(is_ambient_light_sensor_enabled);
+  }
+
   void OnGetScreenOrKeyboardBrightnessPercent(
       DBusMethodCallback<double> callback,
       dbus::Response* response) {
@@ -942,6 +1102,45 @@ class PowerManagerClientImpl : public PowerManagerClient {
       return;
     }
     std::move(callback).Run(percent);
+  }
+
+  void OnGetHasKeyboardBacklight(DBusMethodCallback<bool> callback,
+                                 dbus::Response* response) {
+    if (!response) {
+      POWER_LOG(ERROR) << "Error calling "
+                       << power_manager::kHasKeyboardBacklightMethod;
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    dbus::MessageReader reader(response);
+    bool state = false;
+    if (!reader.PopBool(&state)) {
+      POWER_LOG(ERROR) << "Error reading response from powerd: "
+                       << response->ToString();
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    std::move(callback).Run(state);
+  }
+
+  void OnGetKeyboardAmbientLightSensorEnabled(DBusMethodCallback<bool> callback,
+                                              dbus::Response* response) {
+    if (!response) {
+      POWER_LOG(ERROR)
+          << "Error calling "
+          << power_manager::kGetKeyboardAmbientLightSensorEnabledMethod;
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    dbus::MessageReader reader(response);
+    bool state = false;
+    if (!reader.PopBool(&state)) {
+      POWER_LOG(ERROR) << "Error reading response from powerd: "
+                       << response->ToString();
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    std::move(callback).Run(state);
   }
 
   void OnGetBacklightsForcedOff(DBusMethodCallback<bool> callback,
@@ -1087,7 +1286,10 @@ class PowerManagerClientImpl : public PowerManagerClient {
     const bool on_battery =
         proto_->external_power() ==
         power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED;
-    base::PowerMonitorDeviceSource::SetPowerSource(on_battery);
+    base::PowerMonitorDeviceSource::SetPowerSource(
+        on_battery
+            ? base::PowerStateObserver::BatteryPowerStatus::kBatteryPower
+            : base::PowerStateObserver::BatteryPowerStatus::kExternalPower);
   }
 
   void HandleRegisterSuspendDelayReply(bool dark_suspend,
@@ -1426,7 +1628,8 @@ class PowerManagerClientImpl : public PowerManagerClient {
   // Origin thread (i.e. the UI thread in production).
   base::PlatformThreadId origin_thread_id_;
 
-  raw_ptr<dbus::ObjectProxy> power_manager_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, LeakedDanglingUntriaged> power_manager_proxy_ =
+      nullptr;
   base::ObserverList<Observer>::Unchecked observers_;
 
   std::optional<bool> service_available_;

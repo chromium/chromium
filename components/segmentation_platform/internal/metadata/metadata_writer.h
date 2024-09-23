@@ -10,7 +10,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -27,19 +27,18 @@ class MetadataWriter {
 
   // Defines a feature based on UMA metric.
   struct UMAFeature {
+    STACK_ALLOCATED();
+
+   public:
     const proto::SignalType signal_type{proto::SignalType::UNKNOWN_SIGNAL_TYPE};
     const char* name{nullptr};
     const uint64_t bucket_count{0};
     const uint64_t tensor_length{0};
     const proto::Aggregation aggregation{proto::Aggregation::UNKNOWN};
     const size_t enum_ids_size{0};
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #constexpr-var-initializer
-    RAW_PTR_EXCLUSION const int32_t* const accepted_enum_ids = nullptr;
+    const int32_t* const accepted_enum_ids = nullptr;
     const size_t default_values_size{0};
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #constexpr-var-initializer
-    RAW_PTR_EXCLUSION const float* const default_values = nullptr;
+    const float* const default_values = nullptr;
 
     static constexpr UMAFeature FromUserAction(const char* name,
                                                uint64_t bucket_count) {
@@ -86,23 +85,32 @@ class MetadataWriter {
 
   // Defines a feature based on a SQL query.
   struct SqlFeature {
+    STACK_ALLOCATED();
+
+   public:
     const char* const sql{nullptr};
     struct EventAndMetrics {
+      STACK_ALLOCATED();
+
+     public:
       const UkmEventHash event_hash;
-      const raw_ptr<const UkmMetricHash, AllowPtrArithmetic> metrics{nullptr};
+      const UkmMetricHash* const metrics = nullptr;
       const size_t metrics_size{0};
     };
-    const raw_ptr<const EventAndMetrics, AllowPtrArithmetic> events{nullptr};
+    const EventAndMetrics* const events = nullptr;
     const size_t events_size{0};
   };
 
   // Defines a feature based on a custom input.
   struct CustomInput {
+    STACK_ALLOCATED();
+
+   public:
     const uint64_t tensor_length{0};
     const proto::CustomInput::FillPolicy fill_policy{
         proto::CustomInput_FillPolicy_UNKNOWN_FILL_POLICY};
     const size_t default_values_size{0};
-    const raw_ptr<const float, AllowPtrArithmetic> default_values = nullptr;
+    const float* const default_values = nullptr;
     const char* name{nullptr};
 
     using Arg = std::pair<const char*, const char*>;
@@ -166,18 +174,20 @@ class MetadataWriter {
                                           const std::string& negative_label);
 
   // Adds a MultiClassClassifier.
-  void AddOutputConfigForMultiClassClassifier(const char* const* class_labels,
-                                              size_t class_labels_length,
-                                              int top_k_outputs,
-                                              std::optional<float> threshold);
+  void AddOutputConfigForMultiClassClassifier(
+      base::span<const char* const> class_labels,
+      int top_k_outputs,
+      std::optional<float> threshold);
+  void AddOutputConfigForMultiClassClassifier(
+      const std::vector<std::string>& class_labels,
+      int top_k_outputs,
+      std::optional<float> threshold);
 
   // Adds a MultiClassClassifier with one threshold per label.
   void AddOutputConfigForMultiClassClassifier(
-      const char* const* class_labels,
-      size_t class_labels_length,
+      base::span<const char* const> class_labels,
       int top_k_outputs,
-      const float* per_label_thresholds,
-      size_t per_label_thresholds_length);
+      const base::span<float> per_label_thresholds);
 
   // Adds a BinnedClassifier.
   void AddOutputConfigForBinnedClassifier(

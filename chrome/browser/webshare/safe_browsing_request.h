@@ -44,10 +44,7 @@ class SafeBrowsingRequest {
   // Posted by the |client_| from the IO thread when it gets a response.
   void OnResultReceived(bool is_url_safe);
 
-  // The client interfacing with Safe Browsing. Created on |this| thread, but
-  // used on the IO thread for the rest of its life and destroyed there. If
-  // kSafeBrowsingOnUIThread is enabled it's used and destroyed on the UI
-  // thread.
+  // The client interfacing with Safe Browsing.
   std::unique_ptr<SafeBrowsingClient> client_;
 
   base::OnceCallback<void(bool)> callback_;

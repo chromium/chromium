@@ -1324,6 +1324,7 @@ static const xmlCharEncodingHandler defaultHandlers[] = {
 static const xmlCharEncodingHandler *xmlUTF16LEHandler = &defaultHandlers[1];
 static const xmlCharEncodingHandler *xmlUTF16BEHandler = &defaultHandlers[2];
 static const xmlCharEncodingHandler *xmlLatin1Handler = &defaultHandlers[4];
+static const xmlCharEncodingHandler *xmlAsciiHandler = &defaultHandlers[5];
 
 /* the size should be growable, but it's not a big deal ... */
 #define MAX_ENCODING_HANDLERS 50
@@ -1658,6 +1659,7 @@ error:
 /**
  * xmlFindExtraHandler:
  * @name:  a string describing the char encoding.
+ * @output:  boolean, use handler for output
  * @out:  pointer to resulting handler
  *
  * Search the non-default handlers for an exact match.
@@ -1666,7 +1668,8 @@ error:
  * allocation failed.
  */
 static int
-xmlFindExtraHandler(const char *name, xmlCharEncodingHandler **out) {
+xmlFindExtraHandler(const char *name, int output,
+                    xmlCharEncodingHandler **out) {
     int ret;
     int i;
 
@@ -1674,10 +1677,21 @@ xmlFindExtraHandler(const char *name, xmlCharEncodingHandler **out) {
 
     if (handlers != NULL) {
         for (i = 0; i < nbCharEncodingHandler; i++) {
+            xmlCharEncodingHandler *handler = handlers[i];
+
             if (!xmlStrcasecmp((const xmlChar *) name,
-                               (const xmlChar *) handlers[i]->name)) {
-                *out = handlers[i];
-                return(0);
+                               (const xmlChar *) handler->name)) {
+                if (output) {
+                    if (handler->output != NULL) {
+                        *out = handler;
+                        return(0);
+                    }
+                } else {
+                    if (handler->input != NULL) {
+                        *out = handler;
+                        return(0);
+                    }
+                }
             }
         }
     }
@@ -1704,6 +1718,7 @@ xmlFindExtraHandler(const char *name, xmlCharEncodingHandler **out) {
 /**
  * xmlFindHandler:
  * @name:  a string describing the char encoding.
+ * @output:  boolean, use handler for output
  * @out:  pointer to resulting handler
  *
  * Search all handlers for an exact match.
@@ -1712,24 +1727,37 @@ xmlFindExtraHandler(const char *name, xmlCharEncodingHandler **out) {
  * allocation failed.
  */
 static int
-xmlFindHandler(const char *name, xmlCharEncodingHandler **out) {
+xmlFindHandler(const char *name, int output, xmlCharEncodingHandler **out) {
     int i;
 
     /*
      * Check for default handlers
      */
     for (i = 0; i < (int) NUM_DEFAULT_HANDLERS; i++) {
+        xmlCharEncodingHandler *handler;
+
+        handler = (xmlCharEncodingHandler *) &defaultHandlers[i];
+
         if (xmlStrcasecmp((const xmlChar *) name,
-                          (const xmlChar *) defaultHandlers[i].name) == 0) {
-            *out = (xmlCharEncodingHandler *) &defaultHandlers[i];
-            return(0);
+                          (const xmlChar *) handler->name) == 0) {
+            if (output) {
+                if (handler->output != NULL) {
+                    *out = handler;
+                    return(0);
+                }
+            } else {
+                if (handler->input != NULL) {
+                    *out = handler;
+                    return(0);
+                }
+            }
         }
     }
 
     /*
      * Check for other handlers
      */
-    return(xmlFindExtraHandler(name, out));
+    return(xmlFindExtraHandler(name, output, out));
 }
 
 /**
@@ -1803,6 +1831,9 @@ xmlLookupCharEncodingHandler(xmlCharEncoding enc,
             numNames = sizeof(ucs2Names) / sizeof(ucs2Names[0]);
 	    break;
 
+        case XML_CHAR_ENCODING_ASCII:
+	    *out = (xmlCharEncodingHandler *) xmlAsciiHandler;
+            return(0);
         case XML_CHAR_ENCODING_8859_1:
 	    *out = (xmlCharEncodingHandler *) xmlLatin1Handler;
             return(0);
@@ -1846,11 +1877,11 @@ xmlLookupCharEncodingHandler(xmlCharEncoding enc,
     }
 
     if (name != NULL)
-        return(xmlFindExtraHandler(name, out));
+        return(xmlFindExtraHandler(name, 0, out));
 
     if (names != NULL) {
         for (i = 0; i < numNames; i++) {
-            ret = xmlFindExtraHandler(names[i], out);
+            ret = xmlFindExtraHandler(names[i], 0, out);
             if (*out != NULL)
                 return(0);
             if (ret != XML_ERR_UNSUPPORTED_ENCODING)
@@ -1882,6 +1913,7 @@ xmlGetCharEncodingHandler(xmlCharEncoding enc) {
 /**
  * xmlOpenCharEncodingHandler:
  * @name:  a string describing the char encoding.
+ * @output:  boolean, use handler for output
  * @out:  pointer to result
  *
  * Find or create a handler matching the encoding. If no default or
@@ -1895,7 +1927,8 @@ xmlGetCharEncodingHandler(xmlCharEncoding enc) {
  * Returns an xmlParserErrors error code.
  */
 int
-xmlOpenCharEncodingHandler(const char *name, xmlCharEncodingHandler **out) {
+xmlOpenCharEncodingHandler(const char *name, int output,
+                           xmlCharEncodingHandler **out) {
     const char *nalias;
     const char *norig;
     xmlCharEncoding enc;
@@ -1916,7 +1949,7 @@ xmlOpenCharEncodingHandler(const char *name, xmlCharEncodingHandler **out) {
     if (nalias != NULL)
 	name = nalias;
 
-    ret = xmlFindHandler(name, out);
+    ret = xmlFindHandler(name, output, out);
     if (*out != NULL)
         return(0);
     if (ret != XML_ERR_UNSUPPORTED_ENCODING)
@@ -1943,7 +1976,7 @@ xmlCharEncodingHandlerPtr
 xmlFindCharEncodingHandler(const char *name) {
     xmlCharEncodingHandler *ret;
 
-    xmlOpenCharEncodingHandler(name, &ret);
+    xmlOpenCharEncodingHandler(name, 0, &ret);
     return(ret);
 }
 
@@ -2458,7 +2491,6 @@ retry:
          */
         charrefLen = snprintf((char *) &charref[0], sizeof(charref),
                          "&#%d;", cur);
-        xmlBufShrink(in, len);
         xmlBufGrow(out, charrefLen * 4);
         c_out = xmlBufAvail(out);
         c_in = charrefLen;
@@ -2469,6 +2501,7 @@ retry:
             goto error;
         }
 
+        xmlBufShrink(in, len);
         xmlBufAddLen(out, c_out);
         writtentot += c_out;
         goto retry;
@@ -2907,7 +2940,7 @@ ISO8859xToUTF8(unsigned char* out, int *outlen,
  * Lookup tables for ISO-8859-2..ISO-8859-16 transcoding                *
  ************************************************************************/
 
-static unsigned short const xmlunicodetable_ISO8859_2 [128] = {
+static const unsigned short xmlunicodetable_ISO8859_2 [128] = {
     0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087,
     0x0088, 0x0089, 0x008a, 0x008b, 0x008c, 0x008d, 0x008e, 0x008f,
     0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097,
@@ -2956,7 +2989,7 @@ static const unsigned char xmltranscodetable_ISO8859_2 [48 + 6 * 64] = {
     "\x00\x00\x00\xf3\xf4\x00\xf6\xf7\x00\x00\xfa\x00\xfc\xfd\x00\x00"
 };
 
-static unsigned short const xmlunicodetable_ISO8859_3 [128] = {
+static const unsigned short xmlunicodetable_ISO8859_3 [128] = {
     0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087,
     0x0088, 0x0089, 0x008a, 0x008b, 0x008c, 0x008d, 0x008e, 0x008f,
     0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097,
@@ -3009,7 +3042,7 @@ static const unsigned char xmltranscodetable_ISO8859_3 [48 + 7 * 64] = {
     "\x00\xf1\xf2\xf3\xf4\x00\xf6\xf7\x00\xf9\xfa\xfb\xfc\x00\x00\x00"
 };
 
-static unsigned short const xmlunicodetable_ISO8859_4 [128] = {
+static const unsigned short xmlunicodetable_ISO8859_4 [128] = {
     0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087,
     0x0088, 0x0089, 0x008a, 0x008b, 0x008c, 0x008d, 0x008e, 0x008f,
     0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097,
@@ -3058,7 +3091,7 @@ static const unsigned char xmltranscodetable_ISO8859_4 [48 + 6 * 64] = {
     "\x00\x00\x00\x00\xf4\xf5\xf6\xf7\xf8\x00\xfa\xfb\xfc\x00\x00\x00"
 };
 
-static unsigned short const xmlunicodetable_ISO8859_5 [128] = {
+static const unsigned short xmlunicodetable_ISO8859_5 [128] = {
     0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087,
     0x0088, 0x0089, 0x008a, 0x008b, 0x008c, 0x008d, 0x008e, 0x008f,
     0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097,
@@ -3107,7 +3140,7 @@ static const unsigned char xmltranscodetable_ISO8859_5 [48 + 6 * 64] = {
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 };
 
-static unsigned short const xmlunicodetable_ISO8859_6 [128] = {
+static const unsigned short xmlunicodetable_ISO8859_6 [128] = {
     0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087,
     0x0088, 0x0089, 0x008a, 0x008b, 0x008c, 0x008d, 0x008e, 0x008f,
     0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097,
@@ -3152,7 +3185,7 @@ static const unsigned char xmltranscodetable_ISO8859_6 [48 + 5 * 64] = {
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 };
 
-static unsigned short const xmlunicodetable_ISO8859_7 [128] = {
+static const unsigned short xmlunicodetable_ISO8859_7 [128] = {
     0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087,
     0x0088, 0x0089, 0x008a, 0x008b, 0x008c, 0x008d, 0x008e, 0x008f,
     0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097,
@@ -3205,7 +3238,7 @@ static const unsigned char xmltranscodetable_ISO8859_7 [48 + 7 * 64] = {
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 };
 
-static unsigned short const xmlunicodetable_ISO8859_8 [128] = {
+static const unsigned short xmlunicodetable_ISO8859_8 [128] = {
     0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087,
     0x0088, 0x0089, 0x008a, 0x008b, 0x008c, 0x008d, 0x008e, 0x008f,
     0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097,
@@ -3258,7 +3291,7 @@ static const unsigned char xmltranscodetable_ISO8859_8 [48 + 7 * 64] = {
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 };
 
-static unsigned short const xmlunicodetable_ISO8859_9 [128] = {
+static const unsigned short xmlunicodetable_ISO8859_9 [128] = {
     0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087,
     0x0088, 0x0089, 0x008a, 0x008b, 0x008c, 0x008d, 0x008e, 0x008f,
     0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097,
@@ -3303,7 +3336,7 @@ static const unsigned char xmltranscodetable_ISO8859_9 [48 + 5 * 64] = {
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 };
 
-static unsigned short const xmlunicodetable_ISO8859_10 [128] = {
+static const unsigned short xmlunicodetable_ISO8859_10 [128] = {
     0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087,
     0x0088, 0x0089, 0x008a, 0x008b, 0x008c, 0x008d, 0x008e, 0x008f,
     0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097,
@@ -3356,7 +3389,7 @@ static const unsigned char xmltranscodetable_ISO8859_10 [48 + 7 * 64] = {
     "\xf0\x00\x00\xf3\xf4\xf5\xf6\x00\xf8\x00\xfa\xfb\xfc\xfd\xfe\x00"
 };
 
-static unsigned short const xmlunicodetable_ISO8859_11 [128] = {
+static const unsigned short xmlunicodetable_ISO8859_11 [128] = {
     0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087,
     0x0088, 0x0089, 0x008a, 0x008b, 0x008c, 0x008d, 0x008e, 0x008f,
     0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097,
@@ -3405,7 +3438,7 @@ static const unsigned char xmltranscodetable_ISO8859_11 [48 + 6 * 64] = {
     "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 };
 
-static unsigned short const xmlunicodetable_ISO8859_13 [128] = {
+static const unsigned short xmlunicodetable_ISO8859_13 [128] = {
     0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087,
     0x0088, 0x0089, 0x008a, 0x008b, 0x008c, 0x008d, 0x008e, 0x008f,
     0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097,
@@ -3458,7 +3491,7 @@ static const unsigned char xmltranscodetable_ISO8859_13 [48 + 7 * 64] = {
     "\x00\x00\x00\x00\x00\x00\xcd\xed\x00\x00\x00\xcf\xef\x00\x00\x00"
 };
 
-static unsigned short const xmlunicodetable_ISO8859_14 [128] = {
+static const unsigned short xmlunicodetable_ISO8859_14 [128] = {
     0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087,
     0x0088, 0x0089, 0x008a, 0x008b, 0x008c, 0x008d, 0x008e, 0x008f,
     0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097,
@@ -3523,7 +3556,7 @@ static const unsigned char xmltranscodetable_ISO8859_14 [48 + 10 * 64] = {
     "\x00\xf1\xf2\xf3\xf4\xf5\xf6\x00\xf8\xf9\xfa\xfb\xfc\xfd\x00\xff"
 };
 
-static unsigned short const xmlunicodetable_ISO8859_15 [128] = {
+static const unsigned short xmlunicodetable_ISO8859_15 [128] = {
     0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087,
     0x0088, 0x0089, 0x008a, 0x008b, 0x008c, 0x008d, 0x008e, 0x008f,
     0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097,
@@ -3572,7 +3605,7 @@ static const unsigned char xmltranscodetable_ISO8859_15 [48 + 6 * 64] = {
     "\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff"
 };
 
-static unsigned short const xmlunicodetable_ISO8859_16 [128] = {
+static const unsigned short xmlunicodetable_ISO8859_16 [128] = {
     0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087,
     0x0088, 0x0089, 0x008a, 0x008b, 0x008c, 0x008d, 0x008e, 0x008f,
     0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097,

@@ -142,7 +142,7 @@ InsertIncrementalTextCommand::InsertIncrementalTextCommand(
 
 void InsertIncrementalTextCommand::DoApply(EditingState* editing_state) {
   DCHECK(!GetDocument().NeedsLayoutTreeUpdate());
-  const Element* element = RootEditableElementOf(EndingSelection().Base());
+  const Element* element = RootEditableElementOf(EndingSelection().Anchor());
   DCHECK(element);
 
   const VisibleSelection& visible_selection = EndingVisibleSelection();

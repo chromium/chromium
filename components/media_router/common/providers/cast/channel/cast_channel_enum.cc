@@ -23,7 +23,8 @@ std::string ReadyStateToString(ReadyState ready_state) {
     CAST_CHANNEL_TYPE_TO_STRING(ReadyState::CLOSING);
     CAST_CHANNEL_TYPE_TO_STRING(ReadyState::CLOSED);
   }
-  NOTREACHED() << "Unknown ready_state " << ReadyStateToString(ready_state);
+  NOTREACHED_IN_MIGRATION()
+      << "Unknown ready_state " << ReadyStateToString(ready_state);
   return "Unknown ready_state";
 }
 
@@ -42,8 +43,8 @@ std::string ChannelErrorToString(ChannelError channel_error) {
     CAST_CHANNEL_TYPE_TO_STRING(ChannelError::PING_TIMEOUT);
     CAST_CHANNEL_TYPE_TO_STRING(ChannelError::UNKNOWN);
   }
-  NOTREACHED() << "Unknown channel_error "
-               << ChannelErrorToString(channel_error);
+  NOTREACHED_IN_MIGRATION()
+      << "Unknown channel_error " << ChannelErrorToString(channel_error);
   return "Unknown channel_error";
 }
 

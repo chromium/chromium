@@ -72,4 +72,9 @@ bool TermsOfServiceScreenHandler::AreTermsLoaded() {
   return terms_loaded_;
 }
 
+base::WeakPtr<TermsOfServiceScreenView>
+TermsOfServiceScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

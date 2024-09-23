@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<style>
+deprecated-syntax-element, new-syntax-element {
+  color: blue;
+}
+deprecated-syntax-element:--foo {
+  color: red;
+}
+new-syntax-element:state(foo) {
+  color: red;
+}
+</style>
+
+<deprecated-syntax-element>
+  <div>hello world</div>
+</deprecated-syntax-element>
+<new-syntax-element>
+  <div>hello world</div>
+</new-syntax-element>
+
+<script>
+class DeprecatedSyntaxElement extends HTMLElement {
+  constructor() {
+    super();
+    this.internals = this.attachInternals();
+    this.internals.states.add('--foo');
+  }
+};
+customElements.define('deprecated-syntax-element', DeprecatedSyntaxElement);
+
+class NewSyntaxElement extends HTMLElement {
+  constructor() {
+    super();
+    this.internals = this.attachInternals();
+    this.internals.states.add('foo');
+  }
+};
+customElements.define('new-syntax-element', NewSyntaxElement);
+
+const deprecatedSyntaxElement = document.querySelector('deprecated-syntax-element');
+const newSyntaxElement = document.querySelector('new-syntax-element');
+window.deprecatedSyntaxColor = getComputedStyle(deprecatedSyntaxElement).color;
+window.newSyntaxColor = getComputedStyle(newSyntaxElement).color;
+</script>

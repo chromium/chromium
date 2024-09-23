@@ -44,12 +44,10 @@ import org.robolectric.shadows.ShadowPowerManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -188,8 +186,6 @@ public class IntentHandlerRobolectricTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
-
     @Captor ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
     private ShadowPowerManager mShadowPowerManager;
@@ -317,7 +313,6 @@ public class IntentHandlerRobolectricTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Feature({"Android-Appbase"})
     public void testUrlFromIntent_WebappUrl() {
         Intent webappLauncherActivityIntent =
@@ -345,7 +340,6 @@ public class IntentHandlerRobolectricTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Feature({"Android-AppBase"})
     public void testReferrerUrl_customTabIntentWithSession() {
         Context context = ApplicationProvider.getApplicationContext();
@@ -544,15 +538,11 @@ public class IntentHandlerRobolectricTest {
         Assert.assertNull(IntentHandler.getUrlFromShareIntent(intent));
         for (Object[] shareCase : SHARE_INTENT_CASES) {
             intent.putExtra(Intent.EXTRA_TEXT, (String) shareCase[0]);
-            int before =
-                    RecordHistogram.getHistogramValueCountForTesting(
+            var histogramWatcher =
+                    HistogramWatcher.newSingleRecordWatcher(
                             IntentHandler.SHARE_INTENT_HISTOGRAM, (int) shareCase[2]);
             Assert.assertEquals((String) shareCase[1], IntentHandler.getUrlFromShareIntent(intent));
-            Assert.assertEquals(
-                    "Test case: " + (String) shareCase[0],
-                    before + 1,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            IntentHandler.SHARE_INTENT_HISTOGRAM, (int) shareCase[2]));
+            histogramWatcher.assertExpected((String) shareCase[0]);
         }
     }
 

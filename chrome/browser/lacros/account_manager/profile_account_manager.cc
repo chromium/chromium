@@ -79,14 +79,14 @@ void ProfileAccountManager::GetPersistentErrorForAccount(
 }
 
 void ProfileAccountManager::ShowAddAccountDialog(AccountAdditionSource source) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProfileAccountManager::ShowAddAccountDialog(
     AccountAdditionSource source,
     base::OnceCallback<
         void(const account_manager::AccountUpsertionResult& result)> callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProfileAccountManager::ShowReauthAccountDialog(
@@ -94,11 +94,11 @@ void ProfileAccountManager::ShowReauthAccountDialog(
     const std::string& email,
     base::OnceCallback<
         void(const account_manager::AccountUpsertionResult& result)> callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProfileAccountManager::ShowManageAccountsSettings() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::unique_ptr<OAuth2AccessTokenFetcher>

@@ -39,25 +39,22 @@ BackForwardButton::BackForwardButton(Direction direction,
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
   if (direction == Direction::kBack) {
-    SetVectorIcons(features::IsChromeRefresh2023()
-                       ? vector_icons::kBackArrowChromeRefreshIcon
-                       : vector_icons::kBackArrowIcon,
+    SetVectorIcons(vector_icons::kBackArrowChromeRefreshIcon,
                    kBackArrowTouchIcon);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
-    SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
-    GetViewAccessibility().OverrideDescription(
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
+    GetViewAccessibility().SetDescription(
         l10n_util::GetStringUTF8(IDS_ACCDESCRIPTION_BACK));
     SetID(VIEW_ID_BACK_BUTTON);
     SetProperty(views::kElementIdentifierKey, kToolbarBackButtonElementId);
     set_menu_identifier(kToolbarBackButtonMenuElementId);
   } else {
-    SetVectorIcons(features::IsChromeRefresh2023()
-                       ? vector_icons::kForwardArrowChromeRefreshIcon
-                       : vector_icons::kForwardArrowIcon,
+    SetVectorIcons(vector_icons::kForwardArrowChromeRefreshIcon,
                    kForwardArrowTouchIcon);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FORWARD));
-    SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));
-    GetViewAccessibility().OverrideDescription(
+    GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));
+    GetViewAccessibility().SetDescription(
         l10n_util::GetStringUTF8(IDS_ACCDESCRIPTION_FORWARD));
     SetID(VIEW_ID_FORWARD_BUTTON);
     SetProperty(views::kElementIdentifierKey, kToolbarForwardButtonElementId);
@@ -91,8 +88,8 @@ void BackForwardButton::NotifyClick(const ui::Event& event) {
 
   content::WebContents* web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
-  chrome::ChainedBackNavigationTracker* tracker =
-      chrome::ChainedBackNavigationTracker::FromWebContents(web_contents);
+  ChainedBackNavigationTracker* tracker =
+      ChainedBackNavigationTracker::FromWebContents(web_contents);
   CHECK(tracker);
   tracker->RecordBackButtonClickForChainedBackNavigation();
 

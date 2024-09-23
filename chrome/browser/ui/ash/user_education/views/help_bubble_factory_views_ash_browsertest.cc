@@ -92,7 +92,8 @@ IN_PROC_BROWSER_TEST_P(HelpBubbleFactoryViewsAshBrowserTest, CreateBubble) {
 
   // Show the anchor `view` in a `widget`.
   views::UniqueWidgetPtr widget(std::make_unique<views::Widget>());
-  widget->Init(views::Widget::InitParams());
+  widget->Init(views::Widget::InitParams(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET));
   auto* view_ptr = widget->GetContentsView()->AddChildView(std::move(view));
   widget->ShowInactive();
 

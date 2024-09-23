@@ -9,6 +9,7 @@
 #include <lib/fidl/cpp/binding.h>
 
 #include <optional>
+
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/functional/callback.h"

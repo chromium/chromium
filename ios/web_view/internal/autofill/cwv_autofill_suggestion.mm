@@ -15,6 +15,7 @@
 @synthesize formName = _formName;
 @synthesize fieldIdentifier = _fieldIdentifier;
 @synthesize frameID = _frameID;
+@synthesize suggestionType = _suggestionType;
 
 - (instancetype)initWithFormSuggestion:(FormSuggestion*)formSuggestion
                               formName:(NSString*)formName
@@ -28,6 +29,7 @@
     _fieldIdentifier = [fieldIdentifier copy];
     _frameID = [frameID copy];
     _isPasswordSuggestion = isPasswordSuggestion;
+    _suggestionType = CWVSuggestionType(static_cast<long>(formSuggestion.type));
   }
   return self;
 }

@@ -105,7 +105,8 @@ mojom::blink::ServiceWorkerUpdateViaCache ParseUpdateViaCache(
 class GetRegistrationCallback : public WebServiceWorkerProvider::
                                     WebServiceWorkerGetRegistrationCallbacks {
  public:
-  explicit GetRegistrationCallback(ScriptPromiseResolver* resolver)
+  explicit GetRegistrationCallback(
+      ScriptPromiseResolver<ServiceWorkerRegistration>* resolver)
       : resolver_(resolver) {}
 
   GetRegistrationCallback(const GetRegistrationCallback&) = delete;
@@ -135,7 +136,7 @@ class GetRegistrationCallback : public WebServiceWorkerProvider::
   }
 
  private:
-  Persistent<ScriptPromiseResolver> resolver_;
+  Persistent<ScriptPromiseResolver<ServiceWorkerRegistration>> resolver_;
 };
 
 }  // namespace
@@ -215,13 +216,15 @@ void ServiceWorkerContainer::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-ScriptPromise ServiceWorkerContainer::registerServiceWorker(
+ScriptPromise<ServiceWorkerRegistration>
+ServiceWorkerContainer::registerServiceWorker(
     ScriptState* script_state,
     const String& url,
     const RegistrationOptions* options) {
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<ServiceWorkerRegistration>>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<ServiceWorkerRegistration>>(
+          script_state);
+  auto promise = resolver->Promise();
   auto callbacks = std::make_unique<CallbackPromiseAdapter<
       ServiceWorkerRegistration, ServiceWorkerErrorForUpdate>>(resolver);
 
@@ -379,11 +382,13 @@ void ServiceWorkerContainer::RegisterServiceWorkerInternal(
       std::move(fetch_client_settings_object), std::move(callbacks));
 }
 
-ScriptPromise ServiceWorkerContainer::getRegistration(
-    ScriptState* script_state,
-    const String& document_url) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromise<ServiceWorkerRegistration>
+ServiceWorkerContainer::getRegistration(ScriptState* script_state,
+                                        const String& document_url) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<ServiceWorkerRegistration>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
@@ -433,12 +438,12 @@ ScriptPromise ServiceWorkerContainer::getRegistration(
   return promise;
 }
 
-ScriptPromise ServiceWorkerContainer::getRegistrations(
-    ScriptState* script_state) {
+ScriptPromise<IDLSequence<ServiceWorkerRegistration>>
+ServiceWorkerContainer::getRegistrations(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<ServiceWorkerRegistration>>>(
+      ScriptPromiseResolver<IDLSequence<ServiceWorkerRegistration>>>(
       script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   if (!provider_) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -481,18 +486,18 @@ void ServiceWorkerContainer::startMessages() {
   EnableClientMessageQueue();
 }
 
-ScriptPromiseTyped<ServiceWorkerRegistration> ServiceWorkerContainer::ready(
+ScriptPromise<ServiceWorkerRegistration> ServiceWorkerContainer::ready(
     ScriptState* caller_state,
     ExceptionState& exception_state) {
   if (!GetExecutionContext())
-    return ScriptPromiseTyped<ServiceWorkerRegistration>();
+    return EmptyPromise();
 
   if (!caller_state->World().IsMainWorld()) {
     // FIXME: Support .ready from isolated worlds when
     // ScriptPromiseProperty can vend Promises in isolated worlds.
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "'ready' is only supported in pages.");
-    return ScriptPromiseTyped<ServiceWorkerRegistration>();
+    return EmptyPromise();
   }
 
   if (!ready_) {
@@ -698,13 +703,7 @@ void ServiceWorkerContainer::OnGetRegistrationForReady(
     WebServiceWorkerRegistrationObjectInfo info) {
   DCHECK_EQ(ready_->GetState(), ReadyProperty::kPending);
 
-  if (ready_->GetExecutionContext() &&
-      !ready_->GetExecutionContext()->IsContextDestroyed()) {
-    ready_->Resolve(
-        ServiceWorkerContainer::From(
-            *To<LocalDOMWindow>(ready_->GetExecutionContext()))
-            ->GetOrCreateServiceWorkerRegistration(std::move(info)));
-  }
+  ready_->Resolve(GetOrCreateServiceWorkerRegistration(std::move(info)));
 }
 
 }  // namespace blink

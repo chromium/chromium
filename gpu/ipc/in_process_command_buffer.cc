@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/ipc/in_process_command_buffer.h"
 
 #include <stddef.h>
@@ -40,7 +45,6 @@
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
-#include "gpu/command_buffer/service/mailbox_manager_factory.h"
 #include "gpu/command_buffer/service/memory_program_cache.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/query_manager.h"
@@ -245,8 +249,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       workarounds, task_executor_->gpu_feature_info());
   context_group_ = base::MakeRefCounted<gles2::ContextGroup>(
       task_executor_->gpu_preferences(),
-      gles2::PassthroughCommandDecoderSupported(),
-      task_executor_->mailbox_manager(), std::move(memory_tracker),
+      gles2::PassthroughCommandDecoderSupported(), std::move(memory_tracker),
       task_executor_->shader_translator_cache(),
       task_executor_->framebuffer_completeness_cache(), feature_info,
       params.attribs->bind_generates_resource, nullptr /* progress_reporter */,
@@ -281,7 +284,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
   if (context_state_) {
     surface = context_state_->surface();
   } else {
-    // TODO(crbug.com/1247756): Is creating an offscreen GL surface needed
+    // TODO(crbug.com/40196979): Is creating an offscreen GL surface needed
     // still?
     surface = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
                                                  gfx::Size());
@@ -833,15 +836,15 @@ void InProcessCommandBuffer::OnFenceSyncRelease(uint64_t release) {
 }
 
 void InProcessCommandBuffer::OnDescheduleUntilFinished() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void InProcessCommandBuffer::OnRescheduleAfterFinished() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void InProcessCommandBuffer::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void InProcessCommandBuffer::ScheduleGrContextCleanup() {
@@ -855,6 +858,10 @@ void InProcessCommandBuffer::HandleReturnData(base::span<const uint8_t> data) {
   PostOrRunClientCallback(
       base::BindOnce(&InProcessCommandBuffer::HandleReturnDataOnOriginThread,
                      client_thread_weak_ptr_, std::move(vec)));
+}
+
+bool InProcessCommandBuffer::ShouldYield() {
+  return task_sequence_->ShouldYield();
 }
 
 void InProcessCommandBuffer::PostOrRunClientCallback(
@@ -996,7 +1003,7 @@ void InProcessCommandBuffer::GetGpuFenceOnGpuThread(
 
 void InProcessCommandBuffer::SetLock(base::Lock*) {
   // No support for using on multiple threads.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void InProcessCommandBuffer::EnsureWorkVisible() {

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.dependency_injection;
 
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.APP_CONTEXT;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.LAST_USED_REGULAR_PROFILE;
 
 import android.content.Context;
 
@@ -24,7 +23,6 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 
@@ -37,12 +35,6 @@ public class ChromeAppModule {
     /** See {@link ModuleFactoryOverrides} */
     public interface Factory {
         ChromeAppModule create();
-    }
-
-    @Provides
-    @Named(LAST_USED_REGULAR_PROFILE)
-    public Profile provideLastUsedRegularProfile() {
-        return Profile.getLastUsedRegularProfile();
     }
 
     @Provides

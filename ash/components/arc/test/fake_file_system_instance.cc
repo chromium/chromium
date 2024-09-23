@@ -11,9 +11,9 @@
 #include <optional>
 #include <sstream>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -603,7 +603,7 @@ void FakeFileSystemInstance::DeleteDocument(const std::string& authority,
 
   // Remove this document from lists of children.
   for (auto& child_iter : child_documents_) {
-    base::Erase(child_iter.second, key);
+    std::erase(child_iter.second, key);
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

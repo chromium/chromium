@@ -22,6 +22,7 @@
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/typography.h"
@@ -63,6 +64,14 @@ WebAppOriginText::WebAppOriginText(Browser* browser) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(true);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kApplication);
+  UpdateAccessibleName();
+
+  // This owns label_ which owns the callback.
+  label_text_changed_callback_ =
+      label_->AddTextChangedCallback(base::BindRepeating(
+          &WebAppOriginText::UpdateAccessibleName, base::Unretained(this)));
 }
 
 WebAppOriginText::~WebAppOriginText() = default;
@@ -120,13 +129,6 @@ void WebAppOriginText::OnLayerAnimationEnded(
   SetVisible(false);
 }
 
-void WebAppOriginText::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kApplication;
-  if (!label_->GetText().empty()) {
-    node_data->SetNameChecked(label_->GetText());
-  }
-}
-
 const std::u16string& WebAppOriginText::GetLabelTextForTesting() {
   CHECK(label_ != nullptr);
   return label_->GetText();
@@ -165,7 +167,7 @@ void WebAppOriginText::DidFinishNavigation(content::NavigationHandle* handle) {
   label_->SetText(origin_text_);
   // CCT UI already displays origin information so there is no need to animate
   // origin text.
-  // TODO(crbug.com/1485373): Instead of DidFinishNavigation, we can use
+  // TODO(crbug.com/40282543): Instead of DidFinishNavigation, we can use
   // ReadyToCommitNavigation if this logic does not consider
   // ShouldShowCustomTabBar or if ShouldShowCustomTabBar can take pre-commit URL
   // as input. ShouldShowCustomTabBar is currently implemented to be used after
@@ -175,6 +177,14 @@ void WebAppOriginText::DidFinishNavigation(content::NavigationHandle* handle) {
     return;
   }
   StartFadeAnimation();
+}
+
+void WebAppOriginText::UpdateAccessibleName() {
+  if (!label_->GetText().empty()) {
+    GetViewAccessibility().SetName(label_->GetText());
+  } else {
+    GetViewAccessibility().RemoveName();
+  }
 }
 
 BEGIN_METADATA(WebAppOriginText)

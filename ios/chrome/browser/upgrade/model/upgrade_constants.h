@@ -7,6 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
+// Values of UMA IOS.UpgradeCenter.UpgradeFailed histograms. Entries should not
+// be renumbered and numeric values should never be reused.
+enum class UpgradeCenterFailureReason {
+  kInvalidURL = 0,
+  kInvalidVersion = 1,
+  kMaxValue = kInvalidVersion,
+};
+
 // The Pref key for the upgrade version.
 extern const char kIOSChromeNextVersionKey[];
 // The Pref key for the upgrade URL.

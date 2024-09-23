@@ -20,11 +20,13 @@ namespace {
 // a single chunk. Chosen somewhat arbitrarily otherwise.
 constexpr size_t kDefaultReadSize = 1024 * 16;
 
-void OnMultiBufferReadComplete(std::unique_ptr<HlsDataSourceStream> stream,
-                               HlsDataSourceProviderImpl::ReadCb callback,
-                               int requested_read_size,
-                               void* trace_key,
-                               int read_size) {
+void OnMultiBufferReadComplete(
+    std::unique_ptr<HlsDataSourceStream> stream,
+    HlsDataSourceProviderImpl::ReadCb callback,
+    base::OnceCallback<void(HlsDataSourceStream&)> update_metadata,
+    int requested_read_size,
+    uint64_t trace_key,
+    int read_size) {
   TRACE_EVENT_NESTABLE_ASYNC_END1("media", "HLS::ReadExistingStream", trace_key,
                                   "size", read_size);
   switch (read_size) {
@@ -41,6 +43,7 @@ void OnMultiBufferReadComplete(std::unique_ptr<HlsDataSourceStream> stream,
     default: {
       CHECK_GE(read_size, 0);
       stream->UnlockStreamPostWrite(read_size, 0 == read_size);
+      std::move(update_metadata).Run(*stream);
       std::move(callback).Run(std::move(stream));
     }
   }
@@ -79,6 +82,20 @@ void HlsDataSourceProviderImpl::ReadFromCombinedUrlQueue(SegmentQueue segments,
   ReadFromExistingStream(std::move(stream), std::move(callback));
 }
 
+void HlsDataSourceProviderImpl::UpdateStreamMetadata(
+    HlsDataSourceStream::StreamId stream_id,
+    HlsDataSourceStream& stream) {
+  uint64_t usage = 0;
+  for (const auto& it : data_source_map_) {
+    usage += it.second->GetMemoryUsage();
+    would_taint_origin_ |= it.second->WouldTaintOrigin();
+  }
+  stream.set_total_memory_usage(usage);
+  if (would_taint_origin_) {
+    stream.set_would_taint_origin();
+  }
+}
+
 void HlsDataSourceProviderImpl::ReadFromExistingStream(
     std::unique_ptr<HlsDataSourceStream> stream,
     ReadCb callback) {
@@ -88,11 +105,11 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
   // try to make one. Creating a new data source will re-enter this function to
   // complete `callback`.
   if (stream->RequiresNextDataSource()) {
-    auto new_uri = stream->GetNextSegmentURI();
+    auto [new_uri, bypass_cache] = stream->GetNextSegmentURIAndCacheStatus();
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "HLS::CreateDataSource", this,
                                       "uri", new_uri);
     data_source_factory_->CreateDataSource(
-        std::move(new_uri),
+        std::move(new_uri), bypass_cache,
         base::BindOnce(&HlsDataSourceProviderImpl::OnDataSourceCreated,
                        weak_factory_.GetWeakPtr(), std::move(stream),
                        std::move(callback)));
@@ -128,12 +145,16 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
 
   auto int_read_size = base::checked_cast<int>(read_size);
   auto* buffer_data = stream->LockStreamForWriting(int_read_size);
+  auto stream_id = stream->stream_id();
+  uint64_t async_event_key = reinterpret_cast<std::uintptr_t>(this);
 
-  // `this` used here is _only_ for use as a key in
-  // TRACE_EVENT_NESTABLE_ASYNC_END.
-  it->second->Read(base::checked_cast<int64_t>(pos), int_read_size, buffer_data,
-                   base::BindOnce(&OnMultiBufferReadComplete, std::move(stream),
-                                  std::move(callback), int_read_size, this));
+  it->second->Read(
+      base::checked_cast<int64_t>(pos), int_read_size, buffer_data,
+      base::BindOnce(
+          &OnMultiBufferReadComplete, std::move(stream), std::move(callback),
+          base::BindOnce(&HlsDataSourceProviderImpl::UpdateStreamMetadata,
+                         weak_factory_.GetWeakPtr(), stream_id),
+          int_read_size, async_event_key));
 }
 
 void HlsDataSourceProviderImpl::OnDataSourceCreated(
@@ -147,6 +168,7 @@ void HlsDataSourceProviderImpl::OnDataSourceCreated(
     old_data_source->second->Stop();
     data_source_map_.erase(old_data_source);
   }
+  would_taint_origin_ |= data_source->WouldTaintOrigin();
   auto pair = data_source_map_.try_emplace(stream_id, std::move(data_source));
   // Cross origin data sources have an asynchronous initialize method which
   // must be called after they're put into `data_source_map_`. Other types of

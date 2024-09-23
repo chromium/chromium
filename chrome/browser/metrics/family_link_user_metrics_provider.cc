@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -43,7 +44,8 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
         SupervisedUserServiceFactory::GetForProfile(profile);
 
     records.push_back(supervised_user::FamilyLinkUserLogRecord::Create(
-        IdentityManagerFactory::GetForProfile(profile),
+        IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
+        *HostContentSettingsMapFactory::GetForProfile(profile),
         service ? service->GetURLFilter() : nullptr));
   }
   return supervised_user::EmitLogRecordHistograms(records);

@@ -4,6 +4,13 @@
 
 #include "ash/picker/picker_insert_media_request.h"
 
+#include <optional>
+#include <utility>
+
+#include "ash/picker/picker_insert_media.h"
+#include "ash/picker/picker_rich_media.h"
+#include "ash/picker/picker_web_paste_target.h"
+#include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/ime/input_method.h"
@@ -12,62 +19,34 @@
 
 namespace ash {
 
-PickerInsertMediaRequest::MediaData PickerInsertMediaRequest::MediaData::Text(
-    std::u16string_view text) {
-  return MediaData(MediaData::Type::kText, std::u16string(text));
-}
+namespace {
 
-PickerInsertMediaRequest::MediaData PickerInsertMediaRequest::MediaData::Text(
-    std::string_view text) {
-  return MediaData(MediaData::Type::kText, base::UTF8ToUTF16(text));
-}
-
-PickerInsertMediaRequest::MediaData PickerInsertMediaRequest::MediaData::Image(
-    const GURL& url) {
-  return MediaData(MediaData::Type::kImage, url);
-}
-
-PickerInsertMediaRequest::MediaData PickerInsertMediaRequest::MediaData::Link(
-    const GURL& url) {
-  return MediaData(MediaData::Type::kLink, url);
-}
-
-PickerInsertMediaRequest::MediaData::MediaData(const MediaData&) = default;
-
-PickerInsertMediaRequest::MediaData&
-PickerInsertMediaRequest::MediaData::operator=(const MediaData&) = default;
-
-PickerInsertMediaRequest::MediaData::~MediaData() = default;
-
-void PickerInsertMediaRequest::MediaData::Insert(ui::TextInputClient* client) {
-  switch (type_) {
-    case MediaData::Type::kText:
-      client->InsertText(
-          std::get<std::u16string>(data_),
-          ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-      break;
-    case MediaData::Type::kImage:
-      // TODO(b/322729192): Implement fallback behavior when `client` doesn't
-      // support image insertion.
-      client->InsertImage(std::get<GURL>(data_));
-      break;
-    case MediaData::Type::kLink:
-      // TODO(b/322729192): Insert a real hyperlink.
-      client->InsertText(
-          base::UTF8ToUTF16(std::get<GURL>(data_).spec()),
-          ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-      break;
+PickerInsertMediaRequest::Result ConvertInsertMediaResult(
+    InsertMediaResult result) {
+  switch (result) {
+    case InsertMediaResult::kSuccess:
+      return PickerInsertMediaRequest::Result::kSuccess;
+    case InsertMediaResult::kUnsupported:
+      return PickerInsertMediaRequest::Result::kUnsupported;
+    case InsertMediaResult::kNotFound:
+      return PickerInsertMediaRequest::Result::kNotFound;
   }
 }
 
-PickerInsertMediaRequest::MediaData::MediaData(Type type, Data data)
-    : type_(type), data_(std::move(data)) {}
+}  // namespace
 
 PickerInsertMediaRequest::PickerInsertMediaRequest(
     ui::InputMethod* input_method,
-    const MediaData& data_to_insert,
-    const base::TimeDelta insert_timeout)
-    : data_to_insert(data_to_insert) {
+    const PickerRichMedia& media_to_insert,
+    const base::TimeDelta insert_timeout,
+    base::OnceCallback<std::optional<PickerWebPasteTarget>()>
+        get_web_paste_target,
+    OnCompleteCallback on_complete_callback)
+    : media_to_insert_(media_to_insert),
+      get_web_paste_target_(std::move(get_web_paste_target)),
+      on_complete_callback_(on_complete_callback.is_null()
+                                ? base::DoNothing()
+                                : std::move(on_complete_callback)) {
   observation_.Observe(input_method);
   insert_timeout_timer_.Start(FROM_HERE, insert_timeout, this,
                               &PickerInsertMediaRequest::CancelPendingInsert);
@@ -77,20 +56,31 @@ PickerInsertMediaRequest::~PickerInsertMediaRequest() = default;
 
 void PickerInsertMediaRequest::OnTextInputStateChanged(
     const ui::TextInputClient* client) {
+  // `OnTextInputStateChanged` can be called multiple times before the insert
+  // timeout. For each `client` change, attempt to insert the media. Only notify
+  // that the insert has failed when the insert has timed out.
   ui::TextInputClient* mutable_client =
       observation_.GetSource()->GetTextInputClient();
+
+  DCHECK_EQ(mutable_client, client);
   if (mutable_client == nullptr ||
       mutable_client->GetTextInputType() ==
           ui::TextInputType::TEXT_INPUT_TYPE_NONE ||
-      !data_to_insert.has_value()) {
+      !media_to_insert_.has_value()) {
     return;
   }
 
-  DCHECK_EQ(mutable_client, client);
-  data_to_insert->Insert(mutable_client);
+  if (!InputFieldSupportsInsertingMedia(*media_to_insert_, *mutable_client)) {
+    return;
+  }
 
-  data_to_insert = std::nullopt;
+  insert_timeout_timer_.Reset();
   observation_.Reset();
+
+  InsertMediaToInputField(*std::exchange(media_to_insert_, std::nullopt),
+                          *mutable_client, std::move(get_web_paste_target_),
+                          base::BindOnce(&ConvertInsertMediaResult)
+                              .Then(std::move(on_complete_callback_)));
 }
 
 void PickerInsertMediaRequest::OnInputMethodDestroyed(
@@ -101,8 +91,12 @@ void PickerInsertMediaRequest::OnInputMethodDestroyed(
 }
 
 void PickerInsertMediaRequest::CancelPendingInsert() {
-  data_to_insert = std::nullopt;
   observation_.Reset();
+
+  if (media_to_insert_.has_value()) {
+    media_to_insert_ = std::nullopt;
+    std::move(on_complete_callback_).Run(Result::kTimeout);
+  }
 }
 
 }  // namespace ash

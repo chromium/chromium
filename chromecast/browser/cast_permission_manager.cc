@@ -186,7 +186,8 @@ CastPermissionManager::GetPermissionResultForOriginWithoutContext(
 blink::mojom::PermissionStatus
 CastPermissionManager::GetPermissionStatusForCurrentDocument(
     blink::PermissionType permission,
-    content::RenderFrameHost* render_frame_host) {
+    content::RenderFrameHost* render_frame_host,
+    bool should_include_device_status) {
   return GetPermissionStatusInternal(
       permission, render_frame_host,
       render_frame_host->GetLastCommittedOrigin().GetURL());
@@ -208,19 +209,6 @@ CastPermissionManager::GetPermissionStatusForEmbeddedRequester(
   return GetPermissionStatusInternal(permission, render_frame_host,
                                      requesting_origin.GetURL());
 }
-
-CastPermissionManager::SubscriptionId
-CastPermissionManager::SubscribeToPermissionStatusChange(
-    blink::PermissionType permission,
-    content::RenderProcessHost* render_process_host,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {
-  return SubscriptionId();
-}
-
-void CastPermissionManager::UnsubscribeFromPermissionStatusChange(
-    SubscriptionId subscription_id) {}
 
 }  // namespace shell
 }  // namespace chromecast

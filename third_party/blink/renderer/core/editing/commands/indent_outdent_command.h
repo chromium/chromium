@@ -46,11 +46,16 @@ class CORE_EXPORT IndentOutdentCommand final : public ApplyBlockElementCommand {
                      const VisiblePosition&,
                      EditingState*);
   void OutdentParagraph(EditingState*);
-  bool TryIndentingAsListItem(const Position&, const Position&, EditingState*);
+  bool TryIndentingAsListItem(
+      const Position& start,
+      const Position& end,
+      VisiblePosition& out_end_of_next_of_paragraph_to_move,
+      EditingState*);
   void IndentIntoBlockquote(const Position&,
                             const Position&,
                             HTMLElement*&,
                             EditingState*);
+  void SetEndingSelectionToListChildIfListItem();
 
   void FormatSelection(const VisiblePosition& start_of_selection,
                        const VisiblePosition& end_of_selection,
@@ -59,6 +64,7 @@ class CORE_EXPORT IndentOutdentCommand final : public ApplyBlockElementCommand {
                    const Position& end,
                    const Position& end_of_selection,
                    HTMLElement*& blockquote_for_next_indent,
+                   VisiblePosition& out_end_of_next_of_paragraph_to_move,
                    EditingState*) override;
 
   IndentType type_of_action_;

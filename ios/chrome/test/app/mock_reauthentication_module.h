@@ -30,7 +30,7 @@
 // reauthentication request is made or wait for
 // `returnMockedReauthenticationResult` to be invoked. Defaults to YES. Use it
 // for testing some state while authentication is being requested.
-@property(nonatomic, assign) BOOL shouldReturnSynchronously;
+@property(nonatomic, assign) BOOL shouldSkipReAuth;
 
 // Invokes the last handler passed to attemptReauthWithLocalizedReason with
 // `expectedResult`.

@@ -16,7 +16,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/webdata/common/web_database_table.h"
 
 class WebDatabase;
@@ -27,14 +28,13 @@ class Time;
 
 namespace autofill {
 
-struct AutofillMetadata;
 class AutofillOfferData;
-class AutofillTableEncryptor;
 class BankAccount;
 class CreditCard;
 struct CreditCardCloudTokenData;
 class Iban;
 struct PaymentsCustomerData;
+struct PaymentsMetadata;
 class VirtualCardUsageData;
 // Helper struct to better group server cvc related variables for better
 // passing last_updated_timestamp, which is needed for sync bridge. Limited
@@ -42,11 +42,11 @@ class VirtualCardUsageData;
 struct ServerCvc {
   bool operator==(const ServerCvc&) const = default;
   // A server generated id to identify the corresponding credit card.
-  const int64_t instrument_id;
+  int64_t instrument_id;
   // CVC value of the card.
-  const std::u16string cvc;
+  std::u16string cvc;
   // The timestamp of the most recent update to the data entry.
-  const base::Time last_updated_timestamp;
+  base::Time last_updated_timestamp;
 };
 
 // This class manages the various payments Autofill tables within the SQLite
@@ -180,7 +180,6 @@ struct ServerCvc {
 //                      shown when in a masked format.
 //   suffix             Contains the suffix of the full IBAN value that is
 //                      shown when in a masked format.
-//   length             Length of the full IBAN value.
 //   nickname           A nickname for the IBAN, entered by the user.
 // -----------------------------------------------------------------------------
 // masked_ibans_metadata
@@ -335,6 +334,15 @@ struct ServerCvc {
 //   merchant_domain    Origin for merchant websites on which this benefit
 //                      would apply.
 // -----------------------------------------------------------------------------
+// generic_payment_instruments
+//                      Contains serialized versions of payment instruments such
+//                      as eWallets.
+//
+//   instrument_id      The server-generated ID for the payment instrument.
+//   serialized_value_encrypted
+//                      A byte-encoded representation of the payment
+//                      instrument's protobuf, encrypted.
+// -----------------------------------------------------------------------------
 class PaymentsAutofillTable : public WebDatabaseTable {
  public:
   PaymentsAutofillTable();
@@ -356,8 +364,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // successfully added to the database.
   bool SetMaskedBankAccounts(const std::vector<BankAccount>& bank_accounts);
   // Retrieve all bank accounts from the database.
-  bool GetMaskedBankAccounts(
-      std::vector<std::unique_ptr<BankAccount>>& bank_accounts);
+  bool GetMaskedBankAccounts(std::vector<BankAccount>& bank_accounts);
 
   // Records a single IBAN in the local_ibans table.
   bool AddLocalIban(const Iban& iban);
@@ -389,11 +396,9 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // credit card to remove.
   bool RemoveCreditCard(const std::string& guid);
 
-  // Adds to the masked_credit_cards table.
-  //
-  // TODO(crbug.com/1497734): Remove this method entirely; server cards should
-  // only be added via AddCreditCard.
-  bool AddFullServerCreditCard(const CreditCard& credit_card);
+  // Adds to the masked_credit_cards table. Only tests add cards this way - in
+  // production server cards are set directly via `SetServerCreditCards`.
+  bool AddServerCreditCardForTesting(const CreditCard& credit_card);
 
   // Retrieves a credit card with guid |guid|.
   std::unique_ptr<CreditCard> GetCreditCard(const std::string& guid);
@@ -406,15 +411,6 @@ class PaymentsAutofillTable : public WebDatabaseTable {
 
   // Replaces all server credit cards with the given vector.
   void SetServerCreditCards(const std::vector<CreditCard>& credit_cards);
-
-  // Cards synced from the server may be "masked" (only last 4 digits
-  // available) or "unmasked" (everything is available). These functions set
-  // that state.
-  //
-  // TODO(crbug.com/1497734): Remove these methods entirely.
-  bool UnmaskServerCreditCard(const CreditCard& masked,
-                              const std::u16string& full_number);
-  bool MaskServerCreditCard(const std::string& id);
 
   // Methods to add, update, remove, clear and get cvc in the
   // `server_stored_cvc` table. Return value indicates if the operation is
@@ -431,7 +427,9 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // Payment cannot delete the CVC from server side directly, and this has to be
   // done on the Chrome side. So this ReconcileServerCvc will be invoked when
   // card sync happens and will remove orphaned CVC from the current client.
-  bool ReconcileServerCvcs();
+  // The list of deleted CVCs will also be returned back to trigger the deletion
+  // flow for the sync server.
+  std::vector<std::unique_ptr<ServerCvc>> DeleteOrphanedServerCvcs();
   // Get all server cvcs from `server_stored_cvc` table.
   std::vector<std::unique_ptr<ServerCvc>> GetAllServerCvcs() const;
 
@@ -445,16 +443,16 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // occurred.
   // TODO (crbug.com/1504063): Merge Add/UpdateServerCardMetadata into a single
   // method AddOrUpdateServerCardMetadata.
-  bool AddServerCardMetadata(const AutofillMetadata& card_metadata);
+  bool AddServerCardMetadata(const PaymentsMetadata& card_metadata);
   bool UpdateServerCardMetadata(const CreditCard& credit_card);
-  bool UpdateServerCardMetadata(const AutofillMetadata& card_metadata);
+  bool UpdateServerCardMetadata(const PaymentsMetadata& card_metadata);
   bool RemoveServerCardMetadata(const std::string& id);
   bool GetServerCardsMetadata(
-      std::vector<AutofillMetadata>& cards_metadata) const;
-  bool AddOrUpdateServerIbanMetadata(const AutofillMetadata& iban_metadata);
+      std::vector<PaymentsMetadata>& cards_metadata) const;
+  bool AddOrUpdateServerIbanMetadata(const PaymentsMetadata& iban_metadata);
   bool RemoveServerIbanMetadata(const std::string& instrument_id);
   bool GetServerIbansMetadata(
-      std::vector<AutofillMetadata>& ibans_metadata) const;
+      std::vector<PaymentsMetadata>& ibans_metadata) const;
 
   // Method to add the server cards independently from the metadata.
   void SetServerCardsData(const std::vector<CreditCard>& credit_cards);
@@ -478,7 +476,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
 
   // Overwrite the server IBANs and server IBAN metadata with the given `ibans`.
   // This distinction is necessary compared with above method, because metadata
-  // and data are synced through separate model types in prod code, while this
+  // and data are synced through separate data types in prod code, while this
   // method is an easy way to set up during tests.
   void SetServerIbansForTesting(const std::vector<Iban>& ibans);
 
@@ -501,14 +499,13 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // table
   bool AddOrUpdateVirtualCardUsageData(
       const VirtualCardUsageData& virtual_card_usage_data);
-  std::unique_ptr<VirtualCardUsageData> GetVirtualCardUsageData(
+  std::optional<VirtualCardUsageData> GetVirtualCardUsageData(
       const std::string& usage_data_id);
   bool RemoveVirtualCardUsageData(const std::string& usage_data_id);
   void SetVirtualCardUsageData(
       const std::vector<VirtualCardUsageData>& virtual_card_usage_data);
   bool GetAllVirtualCardUsageData(
-      std::vector<std::unique_ptr<VirtualCardUsageData>>*
-          virtual_card_usage_data);
+      std::vector<VirtualCardUsageData>& virtual_card_usage_data);
   bool RemoveAllVirtualCardUsageData();
 
   // Deletes all data from the server card tables. Returns true if any data was
@@ -516,44 +513,30 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // "error").
   bool ClearAllServerData();
 
-  // Deletes all data from the local card table. Returns true if any data was
-  // deleted, false if not (so false means "commit not needed" rather than
-  // "error").
-  bool ClearAllLocalData();
-
-  // Removes rows from credit_cards if they were created on or after
-  // `delete_begin` and strictly before `delete_end`. Returns the list of
-  // deleted cards in `credit_cards`. Return value is true if all rows were
-  // successfully removed. Returns false on database error. In that case, the
-  // output vector state is undefined, and may be partially filled.
-  // TODO(crbug.com/1135188): This function is solely used to remove browsing
-  // data. Once explicit save dialogs are fully launched, it can be removed.
-  bool RemoveAutofillDataModifiedBetween(
-      const base::Time& delete_begin,
-      const base::Time& delete_end,
-      std::vector<std::unique_ptr<CreditCard>>* credit_cards);
-
-  // Removes origin URLs from the credit_cards tables if they were written on or
-  // after `delete_begin` and strictly before `delete_end`. Returns true if all
-  // rows were successfully updated and false on a database error.
-  bool RemoveOriginURLsModifiedBetween(const base::Time& delete_begin,
-                                       const base::Time& delete_end);
-
-  // Clear all local payment methods (credit cards and IBANs).
-  void ClearLocalPaymentMethodsData();
-
   // Set, get, and clear the `credit_card_benefits` table and the
-  // 'benefit_merchant_domains' table.
+  // 'benefit_merchant_domains' table. Return true if the operation
+  // succeeded.
   bool SetCreditCardBenefits(
-      const std::vector<std::unique_ptr<CreditCardBenefit>>&
-          credit_card_benefits);
+      const std::vector<CreditCardBenefit>& credit_card_benefits);
   bool GetAllCreditCardBenefits(
-      std::vector<std::unique_ptr<CreditCardBenefit>>* credit_card_benefits);
+      std::vector<CreditCardBenefit>& credit_card_benefits);
+  // Get all 'CreditCardBenefit` for the given `instrument_id`. If
+  // no `instrument_id` is provided, return all 'CreditCardBenefit`.
+  bool GetCreditCardBenefitsForInstrumentId(
+      std::optional<int64_t> instrument_id,
+      std::vector<CreditCardBenefit>& credit_card_benefits);
   bool ClearAllCreditCardBenefits();
+
+  // Sets and gets the `payment_instruments` table. Return true if the operation
+  // succeeded.
+  bool SetPaymentInstruments(
+      const std::vector<sync_pb::PaymentInstrument>& payment_instruments);
+  bool GetPaymentInstruments(
+      std::vector<sync_pb::PaymentInstrument>& payment_instruments);
 
   // Testing helper to access the database for checking the result of database
   // update.
-  raw_ptr<sql::Database> GetDbForTesting() const { return db_.get(); }
+  sql::Database* GetDbForTesting() const { return db(); }
 
   // Table migration functions. NB: These do not and should not rely on other
   // functions in this class. The implementation of a function such as
@@ -582,25 +565,21 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool
   MigrateToVersion124AndDeletePaymentInstrumentRelatedTablesAndAddMaskedBankAccountTable();
   bool MigrateToVersion125DeleteFullServerCardsTable();
+  bool MigrateToVersion129AddGenericPaymentInstrumentsTable();
+  bool MigrateToVersion131RemoveGenericPaymentInstrumentTypeColumn();
+  bool MigrateToVersion133RemoveLengthColumnFromMaskedIbansTable();
 
  private:
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.
   // Must already be in a transaction.
   void AddMaskedCreditCards(const std::vector<CreditCard>& credit_cards);
 
-  // Adds to |unmasked_credit_cards|.
-  //
-  // TODO(crbug.com/1497734): This method is now a no-op and should be removed.
-  void AddUnmaskedCreditCard(const std::string& id,
-                             const std::u16string& full_number);
-
   // Deletes server credit cards by |id|. Returns true if a row was deleted.
   bool DeleteFromMaskedCreditCards(const std::string& id);
-  bool DeleteFromUnmaskedCreditCards(const std::string& id);
 
   // Get the list of eligible merchant domains for the specific 'benefit_id`.
   base::flat_set<url::Origin> GetMerchantDomainsForBenefitId(
-      const CreditCardBenefit::BenefitId benefit_id);
+      const CreditCardBenefitBase::BenefitId& benefit_id);
 
   bool InitCreditCardsTable();
   bool InitLocalIbansTable();
@@ -620,8 +599,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool InitMaskedBankAccountsMetadataTable();
   bool InitMaskedCreditCardBenefitsTable();
   bool InitBenefitMerchantDomainsTable();
-
-  std::unique_ptr<AutofillTableEncryptor> autofill_table_encryptor_;
+  bool InitGenericPaymentInstrumentsTable();
 };
 
 }  // namespace autofill

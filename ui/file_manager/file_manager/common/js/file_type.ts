@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import type {FileData} from '../../state/state.js';
 
 import {getFileTypeForName, getFinalExtension} from './file_types_base.js';
 import {FileExtensionType, MIME_TO_TYPE} from './file_types_data.js';
-import {VolumeEntry} from './files_app_entry_types.js';
+import type {VolumeEntry} from './files_app_entry_types.js';
 import {RootType, VolumeType} from './volume_manager_types.js';
 
 export {FileExtensionType};

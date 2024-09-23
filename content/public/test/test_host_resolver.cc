@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/threading/thread.h"
-#include "content/browser/notification_service_impl.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/url_util.h"

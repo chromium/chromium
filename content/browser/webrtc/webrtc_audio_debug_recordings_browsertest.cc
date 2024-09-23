@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   // This fakes the behavior of another open tab with webrtc-internals, and
   // enabling audio debug recordings in that tab.
   WebRTCInternals::GetInstance()->FileSelected(
-      ui::SelectedFileInfo(base_file_path), -1, nullptr);
+      ui::SelectedFileInfo(base_file_path), -1);
 
   // Make a call.
   GURL url(embedded_test_server()->GetURL("/media/peerconnection-call.html"));
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   // This fakes the behavior of another open tab with webrtc-internals, and
   // enabling audio debug recordings in that tab, then disabling it.
   WebRTCInternals::GetInstance()->FileSelected(
-      ui::SelectedFileInfo(base_file_path), -1, nullptr);
+      ui::SelectedFileInfo(base_file_path), -1);
   WebRTCInternals::GetInstance()->DisableAudioDebugRecordings();
 
   // Make a call.
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
 }
 
 // Same test as CallWithAudioDebugRecordings, but does two parallel calls.
-// TODO(crbug.com/874378): Fix an re-enable test.
+// TODO(crbug.com/40589452): Fix an re-enable test.
 // List of issues filed before this test was disabled for all platforms:
 // Renderer crashes under Android ASAN: https://crbug.com/408496.
 // Renderer crashes under Android: https://crbug.com/820934.
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   // This fakes the behavior of another open tab with webrtc-internals, and
   // enabling audio debug recordings in that tab.
   WebRTCInternals::GetInstance()->FileSelected(
-      ui::SelectedFileInfo(base_file_path), -1, nullptr);
+      ui::SelectedFileInfo(base_file_path), -1);
 
   // Make the calls.
   GURL url(embedded_test_server()->GetURL("/media/peerconnection-call.html"));

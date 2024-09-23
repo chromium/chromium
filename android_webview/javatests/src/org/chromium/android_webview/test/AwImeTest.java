@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -38,7 +39,6 @@ import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests for IME (input method editor) on Android WebView. */
 @RunWith(Parameterized.class)
@@ -72,7 +72,7 @@ public class AwImeTest extends AwParameterizedTest {
     @Before
     public void setUp() {
         mContentsClient = new TestAwContentsClient();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Use detached container view to avoid focus request.
                     mTestContainerView =
@@ -142,7 +142,7 @@ public class AwImeTest extends AwParameterizedTest {
     }
 
     private void focusOnEditTextAndShowKeyboard() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mEditText.requestFocus();
                     InputMethodManager imm =
@@ -155,7 +155,7 @@ public class AwImeTest extends AwParameterizedTest {
     }
 
     private void focusOnWebViewAndEnableEditing() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking((Runnable) () -> mTestContainerView.requestFocus());
+        ThreadUtils.runOnUiThreadBlocking((Runnable) () -> mTestContainerView.requestFocus());
 
         // View focus may not have been propagated to the renderer process yet. If document is not
         // yet focused, and focusing on an element is an invalid operation. See crbug.com/622151
@@ -219,7 +219,7 @@ public class AwImeTest extends AwParameterizedTest {
                             is(mTestContainerView));
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 (Runnable)
                         () -> {
                             getInputConnection()
@@ -256,7 +256,7 @@ public class AwImeTest extends AwParameterizedTest {
                             is(mTestContainerView));
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTestContainerView.dispatchKeyEvent(
                             new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_UP));
@@ -294,7 +294,7 @@ public class AwImeTest extends AwParameterizedTest {
         loadBottomInputHtml();
         Rect currentRect = new Rect();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTestContainerView.getWindowVisibleDisplayFrame(currentRect);
                 });
@@ -319,7 +319,7 @@ public class AwImeTest extends AwParameterizedTest {
         CriteriaHelper.pollInstrumentationThread(
                 () -> "input_text".equals(DOMUtils.getFocusedNode(webContents)));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Expect that we may have a size change.
                     ImeAdapter imeAdapter =

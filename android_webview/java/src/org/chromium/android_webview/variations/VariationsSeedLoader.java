@@ -14,6 +14,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.os.SystemClock;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -31,6 +32,8 @@ import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.variations.LoadSeedResult;
 
 import java.io.File;
@@ -110,7 +113,7 @@ public class VariationsSeedLoader {
     private static long sCachedSeedFreshness;
     private static long sCachedAppSeedFreshness;
 
-    private SeedLoadAndUpdateRunnable mRunnable;
+    private FutureTask<SeedLoadResult> mLoadTask;
     private SeedServerCallback mSeedServerCallback = new SeedServerCallback();
 
     private static void recordLoadSeedResult(@LoadSeedResult int result) {
@@ -225,95 +228,110 @@ public class VariationsSeedLoader {
         }
     }
 
-    // Loads our local copy of the seed, if any, and then renames our local copy and/or requests a
-    // new seed, if necessary.
-    private class SeedLoadAndUpdateRunnable implements Runnable {
-        // mLoadTask will set these to indicate what additional work to do after mLoadTask finishes:
-        // - mFoundNewSeed: Is a "new" seed file present? (If so, it should be renamed to an "old"
-        //   seed, replacing any existing "old" seed.)
-        // - mNeedNewSeed: Should we request a new seed from the service?
-        // - mCurrentSeedDate: The "date" field of our local seed, converted to milliseconds since
-        //   epoch, or Long.MIN_VALUE if we have no seed. This value originates from the server.
-        // - mSeedFileTime: The time, in milliseconds since the UNIX epoch, our local copy of the
-        //   seed was last written to disk as measured by the device's clock.
-        private boolean mFoundNewSeed;
-        private boolean mNeedNewSeed;
-        private long mCurrentSeedDate = Long.MIN_VALUE;
-        private long mSeedFileTime;
+    /** Result of loading the local copy of the seed. */
+    private static class SeedLoadResult {
+        /** Whether the seed was loaded successfully. */
+        final boolean mLoadedSeed;
 
-        private FutureTask<Boolean> mLoadTask =
-                new FutureTask<>(
-                        () -> {
-                            File newSeedFile = VariationsUtils.getNewSeedFile();
-                            File oldSeedFile = VariationsUtils.getSeedFile();
+        /**
+         * The "date" field of our local seed, converted to milliseconds since epoch, or
+         * Long.MIN_VALUE if we have no seed. This value originates from the server.
+         */
+        final long mCurrentSeedDate;
 
-                            // First check for a new seed.
-                            boolean loadedSeed = false;
-                            if (parseAndSaveSeedFile(newSeedFile)) {
-                                loadedSeed = true;
-                                mSeedFileTime = newSeedFile.lastModified();
+        /**
+         * The time, in milliseconds since the UNIX epoch, our local copy of the seed was last
+         * written to disk as measured by the device's clock.
+         */
+        final long mSeedFileTime;
 
-                                // If a valid new seed was found, make a note to replace the old
-                                // seed with the new seed. (Don't do it now, to avoid delaying
-                                // FutureTask.get().)
-                                mFoundNewSeed = true;
-                            } else if (parseAndSaveSeedFile(
-                                    oldSeedFile)) { // If no new seed, check for an old one.
-                                loadedSeed = true;
-                                mSeedFileTime = oldSeedFile.lastModified();
-                            }
+        private SeedLoadResult(boolean loadedSeed, long mCurrentSeedDate, long seedFileTime) {
+            this.mLoadedSeed = loadedSeed;
+            this.mCurrentSeedDate = mCurrentSeedDate;
+            this.mSeedFileTime = seedFileTime;
+        }
+    }
 
-                            // Make a note to request a new seed if necessary. (Don't request it
-                            // now, to avoid delaying FutureTask.get().)
-                            if (!loadedSeed || isSeedExpired(mSeedFileTime)) {
-                                mNeedNewSeed = true;
+    /**
+     * Load the current variations seed file.
+     *
+     * <p>This method should be posted to a background thread to ensure that other initialization
+     * work can happen concurrently.
+     */
+    @NonNull
+    private SeedLoadResult loadSeedFile() {
+        File newSeedFile = VariationsUtils.getNewSeedFile();
+        File oldSeedFile = VariationsUtils.getSeedFile();
+        long currentSeedDate = Long.MIN_VALUE;
+        long seedFileTime = 0;
+        boolean loadedSeed = false;
+        boolean foundNewSeed = false;
+        // First check for a new seed.
+        if (parseAndSaveSeedFile(newSeedFile)) {
+            loadedSeed = true;
+            seedFileTime = newSeedFile.lastModified();
 
-                                // Rate-limit the requests.
-                                if (shouldThrottleRequests(getCurrentTimeMillis())) {
-                                    mNeedNewSeed = false;
-                                }
-                            }
-
-                            // Save the date field of whatever seed was loaded, if any.
-                            if (loadedSeed) {
-                                mCurrentSeedDate = VariationsSeedLoaderJni.get().getSavedSeedDate();
-                            }
-                            return loadedSeed;
-                        });
-
-        @Override
-        public void run() {
-            mLoadTask.run();
-            // The loaded seed is now available via get(). The following steps won't block startup.
-
-            if (mFoundNewSeed) {
-                // The move happens synchronously. It's not possible for the service to still be
-                // writing to this file when we move it, because mFoundNewSeed means we already read
-                // the seed and found it to be complete. Therefore the service must have already
-                // finished writing.
-                VariationsUtils.replaceOldWithNewSeed();
-            }
-
-            if (mNeedNewSeed) {
-                // The new seed will arrive asynchronously; the new seed file is written by the
-                // service, and may complete after this app process has died.
-                requestSeedFromService(mCurrentSeedDate);
-                VariationsUtils.updateStampTime();
-            }
-
-            onBackgroundWorkFinished();
+            // If a valid new seed was found, make a note to replace the old
+            // seed with the new seed. (Don't do it now, to avoid delaying
+            // FutureTask.get().)
+            foundNewSeed = true;
+        } else if (parseAndSaveSeedFile(oldSeedFile)) {
+            // If no new seed, check for an old one.
+            loadedSeed = true;
+            seedFileTime = oldSeedFile.lastModified();
         }
 
-        public boolean get(long timeout, TimeUnit unit)
-                throws InterruptedException, ExecutionException, TimeoutException {
-            boolean success = mLoadTask.get(timeout, unit);
-            maybeRecordSeedFileTime(mSeedFileTime);
-            return success;
+        // Make a note to request a new seed if necessary. (Don't request it
+        // now, to avoid delaying FutureTask.get().)
+        boolean needNewSeed = false;
+        if (!loadedSeed || isSeedExpired(seedFileTime)) {
+            // Rate-limit the requests.
+            needNewSeed = !shouldThrottleRequests(getCurrentTimeMillis());
         }
 
-        public long getLoadedSeedDate() {
-            return mCurrentSeedDate;
+        // Save the date field of whatever seed was loaded, if any.
+        if (loadedSeed) {
+            currentSeedDate = VariationsSeedLoaderJni.get().getSavedSeedDate();
         }
+
+        // Schedule a task to update the seed files from the service.
+        updateSeedFileAndRequestNewFromServiceOnBackgroundThread(
+                foundNewSeed, needNewSeed, currentSeedDate);
+
+        return new SeedLoadResult(loadedSeed, currentSeedDate, seedFileTime);
+    }
+
+    /**
+     * Post a task to replace the old seed with a new one and request an update.
+     *
+     * @param foundNewSeed Is a "new" seed file present? (If so, it should be renamed to an "old"
+     *     seed, replacing any existing "old" seed.)
+     * @param needNewSeed Should we request a new seed from the service?
+     * @param seedFileTime timestamp of the current seed file.
+     */
+    private void updateSeedFileAndRequestNewFromServiceOnBackgroundThread(
+            boolean foundNewSeed, boolean needNewSeed, long seedFileTime) {
+        // This work is not time critical.
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    if (foundNewSeed) {
+                        // The move happens synchronously. It's not possible for the service to
+                        // still be writing to this file when we move it, because foundNewSeed means
+                        // we already read the seed and found it to be complete. Therefore the
+                        // service must have already finished writing.
+                        VariationsUtils.replaceOldWithNewSeed();
+                    }
+
+                    if (needNewSeed) {
+                        // The new seed will arrive asynchronously; the new seed file is written by
+                        // the service, and may complete after this app process has died.
+                        requestSeedFromService(seedFileTime);
+                        VariationsUtils.updateStampTime();
+                    }
+
+                    onBackgroundWorkFinished();
+                });
     }
 
     // Connects to VariationsSeedServer service. Sends a file descriptor for our local copy of the
@@ -440,8 +458,10 @@ public class VariationsSeedLoader {
     // Begin asynchronously loading the variations seed. ContextUtils.getApplicationContext() and
     // AwBrowserProcess.getWebViewPackageName() must be ready to use before calling this.
     public void startVariationsInit() {
-        mRunnable = new SeedLoadAndUpdateRunnable();
-        (new Thread(mRunnable)).start();
+        mLoadTask = new FutureTask<>(this::loadSeedFile);
+        // The Runnable task must be scheduled with high priority to start the FutureTask as soon as
+        // possible since that task is blocking WebView startup.
+        PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, mLoadTask);
     }
 
     // Block on loading the seed with a timeout. Then if a seed was successfully loaded, initialize
@@ -450,9 +470,12 @@ public class VariationsSeedLoader {
         long start = SystemClock.elapsedRealtime();
         try {
             try {
-                boolean gotSeed = mRunnable.get(getSeedLoadTimeoutMillis(), TimeUnit.MILLISECONDS);
+                SeedLoadResult loadResult =
+                        mLoadTask.get(getSeedLoadTimeoutMillis(), TimeUnit.MILLISECONDS);
+                maybeRecordSeedFileTime(loadResult.mSeedFileTime);
+                boolean gotSeed = loadResult.mLoadedSeed;
                 // Log the seed age to help with debugging.
-                long seedDate = mRunnable.getLoadedSeedDate();
+                long seedDate = loadResult.mCurrentSeedDate;
                 if (gotSeed && seedDate > 0) {
                     long seedAge = TimeUnit.MILLISECONDS.toSeconds(new Date().getTime() - seedDate);
                     // Changes to the log message below must be accompanied with changes to WebView

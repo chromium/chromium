@@ -16,7 +16,7 @@ const char* NetLogEventTypeToString(NetLogEventType type) {
 #include "net/log/net_log_event_type_list.h"
 #undef EVENT_TYPE
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

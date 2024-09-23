@@ -33,7 +33,7 @@ export class InsightsCommentRow extends PolymerElement {
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   private showFeedback_() {
-    this.shoppingApi_.showFeedback();
+    this.shoppingApi_.showFeedbackForPriceInsights();
     chrome.metricsPrivate.recordUserAction(
         'Commerce.PriceInsights.InlineFeedbackLinkClicked');
   }

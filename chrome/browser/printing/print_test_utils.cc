@@ -16,8 +16,7 @@
 #include "printing/print_job_constants.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-#include "chrome/browser/printing/prefs_util.h"
-#include "printing/printing_features.h"
+#include "chrome/browser/printing/oop_features.h"
 #endif
 
 namespace printing::test {
@@ -113,10 +112,14 @@ std::unique_ptr<PrintSettings> MakeDefaultPrintSettings(
 }
 
 std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
-    const std::string& printer_name) {
+    const std::string& printer_name,
+    const PageRanges* page_ranges) {
   std::unique_ptr<PrintSettings> settings =
       MakeDefaultPrintSettings(printer_name);
   settings->set_copies(kPrintSettingsCopies + 1);
+  if (page_ranges) {
+    settings->set_ranges(*page_ranges);
+  }
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
   if (ShouldPrintJobOop()) {
     // Supply fake data to mimic what might be collected from the system print

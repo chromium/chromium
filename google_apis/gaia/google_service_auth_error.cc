@@ -29,7 +29,6 @@ const char* InvalidCredentialsReasonToString(
       return "credentials missing";
     case InvalidGaiaCredentialsReason::NUM_REASONS:
       NOTREACHED();
-      return "";
   }
 }
 }  // namespace
@@ -195,7 +194,6 @@ std::string GoogleServiceAuthError::ToString() const {
       return "Service responded with a token binding challenge.";
     case NUM_STATES:
       NOTREACHED();
-      return std::string();
   }
 }
 

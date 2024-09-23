@@ -22,6 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
@@ -34,6 +35,7 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -42,11 +44,9 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.components.infobars.InfoBar;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -101,7 +101,7 @@ public class InfoBarContainerTest {
         // Register for animation notifications
         InfoBarContainer container = sActivityTestRule.getInfoBarContainer();
         mListener = new InfoBarTestAnimationListener();
-        TestThreadUtils.runOnUiThreadBlocking(() -> container.addAnimationListener(mListener));
+        ThreadUtils.runOnUiThreadBlocking(() -> container.addAnimationListener(mListener));
     }
 
     @After
@@ -109,7 +109,7 @@ public class InfoBarContainerTest {
         // Unregister animation notifications
         InfoBarContainer container = sActivityTestRule.getInfoBarContainer();
         if (container != null) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         container.removeAnimationListener(mListener);
                         InfoBarContainer.removeInfoBarContainerForTesting(
@@ -204,14 +204,15 @@ public class InfoBarContainerTest {
 
     // Define function to pass parameter to Runnable to be used in testInfoBarExpirationNoPrerender.
     private Runnable setNetworkPredictionOptions(final boolean networkPredictionEnabled) {
-        return new Runnable() {
-            @Override
-            public void run() {
-                if (networkPredictionEnabled) {
-                    PreloadPagesSettingsBridge.setState(PreloadPagesState.STANDARD_PRELOADING);
-                } else {
-                    PreloadPagesSettingsBridge.setState(PreloadPagesState.NO_PRELOADING);
-                }
+        return () -> {
+            if (networkPredictionEnabled) {
+                PreloadPagesSettingsBridge.setState(
+                        ProfileManager.getLastUsedRegularProfile(),
+                        PreloadPagesState.STANDARD_PRELOADING);
+            } else {
+                PreloadPagesSettingsBridge.setState(
+                        ProfileManager.getLastUsedRegularProfile(),
+                        PreloadPagesState.NO_PRELOADING);
             }
         };
     }
@@ -226,20 +227,17 @@ public class InfoBarContainerTest {
     public void testInfoBarExpirationNoPrerender() throws Exception {
         // Save prediction preference.
         boolean networkPredictionEnabled =
-                TestThreadUtils.runOnUiThreadBlocking(
-                        new Callable<Boolean>() {
-                            @Override
-                            public Boolean call() {
-                                return PreloadPagesSettingsBridge.getState()
-                                        != PreloadPagesState.NO_PRELOADING;
-                            }
-                        });
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                PreloadPagesSettingsBridge.getState(
+                                                ProfileManager.getLastUsedRegularProfile())
+                                        != PreloadPagesState.NO_PRELOADING);
         try {
-            TestThreadUtils.runOnUiThreadBlocking(setNetworkPredictionOptions(false));
+            ThreadUtils.runOnUiThreadBlocking(setNetworkPredictionOptions(false));
             testInfoBarExpiration();
         } finally {
             // Make sure we restore prediction preference.
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     setNetworkPredictionOptions(networkPredictionEnabled));
         }
     }
@@ -273,7 +271,7 @@ public class InfoBarContainerTest {
         Assert.assertEquals(1, sActivityTestRule.getInfoBars().size());
         final InfoBar infoBar = sActivityTestRule.getInfoBars().get(0);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(0, infobarListener.dismissedCallback.getCallCount());
                     infoBar.onCloseButtonClicked();
@@ -440,11 +438,11 @@ public class InfoBarContainerTest {
         Assert.assertEquals(0, infoBar.getView().getTranslationY(), /* delta= */ 0.1);
 
         InfoBarContainer infoBarContainer = sActivityTestRule.getInfoBarContainer();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     infoBarContainer
                             .getContainerViewForTesting()
-                            .onControlsOffsetChanged(-100, 100, 0, 0, false);
+                            .onControlsOffsetChanged(-100, 100, 0, 0, false, false);
                 });
         Assert.assertNotEquals(
                 0,

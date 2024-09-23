@@ -1,0 +1,3 @@
+android.webkit.WebView focusable focused
+++android.widget.TextView name='The quick brown fox jumped over dog'
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='Normal bold italic underline line-through subscript superscript' text_change_added_count=63

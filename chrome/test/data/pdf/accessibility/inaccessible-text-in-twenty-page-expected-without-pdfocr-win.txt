@@ -1,0 +1,64 @@
+pdfRoot 'PDF document containing 20 pages'
+  banner
+    status 'This PDF is inaccessible. Couldn't download text extraction files. Please try again later.'
+      staticText 'This PDF is inaccessible. Couldn't download text extraction files. Please try again later.'
+  region 'Page 1'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 2'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 3'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 4'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 5'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 6'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 7'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 8'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 9'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 10'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 11'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 12'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 13'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 14'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 15'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 16'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 17'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 18'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 19'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 20'
+    paragraph
+      image 'Unlabeled graphic'

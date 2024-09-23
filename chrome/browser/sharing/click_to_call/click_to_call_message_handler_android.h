@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SHARING_CLICK_TO_CALL_CLICK_TO_CALL_MESSAGE_HANDLER_ANDROID_H_
 #define CHROME_BROWSER_SHARING_CLICK_TO_CALL_CLICK_TO_CALL_MESSAGE_HANDLER_ANDROID_H_
 
-#include "chrome/browser/sharing/sharing_message_handler.h"
+#include "components/sharing_message/sharing_message_handler.h"
 
 // Handles incoming messages for the click to call feature.
 class ClickToCallMessageHandler : public SharingMessageHandler {
@@ -19,7 +19,7 @@ class ClickToCallMessageHandler : public SharingMessageHandler {
   ~ClickToCallMessageHandler() override;
 
   // SharingMessageHandler implementation:
-  void OnMessage(chrome_browser_sharing::SharingMessage message,
+  void OnMessage(components_sharing_message::SharingMessage message,
                  SharingMessageHandler::DoneCallback done_callback) override;
 
  protected:

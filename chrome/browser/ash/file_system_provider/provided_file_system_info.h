@@ -107,6 +107,8 @@ class ProvidedFileSystemInfo {
   const IconSet& icon_set() const { return icon_set_; }
   CacheType cache_type() const { return cache_type_; }
 
+  bool operator==(const ProvidedFileSystemInfo& other) const;
+
  private:
   // ID of the provider supplying this file system.
   ProviderId provider_id_;

@@ -33,7 +33,7 @@ FlatlandSysmemBufferManager::~FlatlandSysmemBufferManager() {
 }
 
 void FlatlandSysmemBufferManager::Initialize(
-    fuchsia::sysmem::AllocatorHandle sysmem_allocator,
+    fuchsia::sysmem2::AllocatorHandle sysmem_allocator,
     fuchsia::ui::composition::AllocatorHandle flatland_allocator) {
   base::AutoLock auto_lock(collections_lock_);
   DCHECK(collections_.empty());
@@ -41,8 +41,9 @@ void FlatlandSysmemBufferManager::Initialize(
   DCHECK(!sysmem_allocator_);
   sysmem_allocator_.Bind(std::move(sysmem_allocator));
   sysmem_allocator_->SetDebugClientInfo(
-      GetProcessName() + "-FlatlandSysmemBufferManager",
-      base::GetCurrentProcId());
+      std::move(fuchsia::sysmem2::AllocatorSetDebugClientInfoRequest{}
+                    .set_name(GetProcessName() + "-FlatlandSysmemBufferManager")
+                    .set_id(base::GetCurrentProcId())));
 
   DCHECK(!flatland_allocator_);
   flatland_allocator_.Bind(std::move(flatland_allocator));

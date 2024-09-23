@@ -1,0 +1,109 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of others histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Mac.AppClonefileError" enum="MacErrno"
+    expires_after="2025-06-03">
+  <owner>bur@google.com</owner>
+  <owner>src/ui/base/cocoa/OWNERS</owner>
+  <summary>
+    The `errno` from the `clonefile` syscall. This histogram is emitted once at
+    browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Mac.AppCodeSignCloneCount" units="count"
+    expires_after="2025-06-03">
+  <owner>bur@google.com</owner>
+  <owner>src/ui/base/cocoa/OWNERS</owner>
+  <summary>
+    The current count of app clones in the code sign clone temp dir. This
+    histogram is emitted once at browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Mac.AppCodeSignCloneCreationTime" units="ms"
+    expires_after="2025-03-06">
+  <owner>bur@google.com</owner>
+  <owner>src/ui/base/cocoa/OWNERS</owner>
+  <summary>
+    The time it took in milliseconds to create the browser app code sign clone.
+    Logged once at browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Mac.AppCodeSignCloneExists" enum="MacCloneExists"
+    expires_after="2025-06-03">
+  <owner>bur@google.com</owner>
+  <owner>src/ui/base/cocoa/OWNERS</owner>
+  <summary>
+    The existence of the clone on disk. This histogram is emitted up to two
+    times. Once, immediately after successful clone creation. Then again, if the
+    clone is prematurely removed.
+  </summary>
+</histogram>
+
+<histogram name="Mac.AppFileSystemType" enum="MacFileSystemType"
+    expires_after="2025-03-06">
+  <owner>bur@google.com</owner>
+  <owner>src/ui/base/cocoa/OWNERS</owner>
+  <summary>
+    The file system type where the running instance of Chrome is installed. This
+    histogram is emitted once at browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Mac.AppHardLinkError" enum="MacErrno"
+    expires_after="2025-06-03">
+  <owner>bur@google.com</owner>
+  <owner>src/ui/base/cocoa/OWNERS</owner>
+  <summary>
+    The `errno` from the `link` syscall. This histogram is emitted once at
+    browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Mac.AppUpgradeCodeSignatureValidationStatus"
+    enum="CodeSigningOSStatus" expires_after="2025-03-06">
+  <owner>bur@google.com</owner>
+  <owner>src/ui/base/cocoa/OWNERS</owner>
+  <summary>
+    The dynamic code signature validation status of Chrome with a pending Chrome
+    update on disk. A single metric is emitted about an hour after an update to
+    the running instance of Chrome has been staged on disk.
+  </summary>
+</histogram>
+
+<histogram name="Mac.LaunchApplicationResult" enum="MacLaunchApplicationResult"
+    expires_after="2025-01-26">
+  <owner>mek@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    The result of calls to base::mac::LaunchApplication, logged once for every
+    invocation of that method.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

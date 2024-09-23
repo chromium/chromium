@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace cc {
 
@@ -51,7 +51,7 @@ class TransferCacheTestHelper : public TransferCacheDeserializeHelper,
   // Serialization helpers.
   bool LockEntryInternal(const EntryKey& key) override;
   uint32_t CreateEntryInternal(const ClientTransferCacheEntry& entry,
-                               char* memory) override;
+                               uint8_t* memory) override;
   void FlushEntriesInternal(std::set<EntryKey> keys) override;
 
  private:

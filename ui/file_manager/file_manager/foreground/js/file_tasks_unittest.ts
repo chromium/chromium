@@ -16,19 +16,21 @@ import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {descriptorEqual} from '../../common/js/util.js';
 import {RootType, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
-import {USER_CANCELLED, XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
+import type {XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
+import {USER_CANCELLED} from '../../widgets/xf_password_dialog.js';
 
-import {type DirectoryChangeTracker, DirectoryModel} from './directory_model.js';
-import {FileManager} from './file_manager.js';
+import type {DirectoryModel} from './directory_model.js';
+import {type DirectoryChangeTracker} from './directory_model.js';
+import type {FileManager} from './file_manager.js';
 import {FileTasks} from './file_tasks.js';
-import {FileTransferController} from './file_transfer_controller.js';
+import type {FileTransferController} from './file_transfer_controller.js';
 import {MetadataItem} from './metadata/metadata_item.js';
-import {MetadataModel} from './metadata/metadata_model.js';
-import {TaskController} from './task_controller.js';
-import {TaskHistory} from './task_history.js';
-import {DefaultTaskDialog} from './ui/default_task_dialog.js';
-import {ImportCrostiniImageDialog} from './ui/import_crostini_image_dialog.js';
-import {InstallLinuxPackageDialog} from './ui/install_linux_package_dialog.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
+import type {TaskController} from './task_controller.js';
+import type {TaskHistory} from './task_history.js';
+import type {DefaultTaskDialog} from './ui/default_task_dialog.js';
+import type {ImportCrostiniImageDialog} from './ui/import_crostini_image_dialog.js';
+import type {InstallLinuxPackageDialog} from './ui/install_linux_package_dialog.js';
 
 let passwordDialog: XfPasswordDialog;
 
@@ -130,7 +132,7 @@ function getMockFileManager(): FileManager {
 
   passwordDialog = {} as unknown as XfPasswordDialog;
   const fileManager = {
-    volumeManager: /** @type {!VolumeManager} */ ({
+    volumeManager: {
       getLocationInfo: function(_entry: Entry) {
         return {
           rootType: RootType.DRIVE,
@@ -144,8 +146,8 @@ function getMockFileManager(): FileManager {
           volumeType: VolumeType.DRIVE,
         };
       },
-    }),
-    ui: /** @type {!FileManagerUI} */ ({
+    },
+    ui: {
       alertDialog: {
         showHtml: function(
             _title: string, _text: string, _onOk: () => void,
@@ -153,7 +155,7 @@ function getMockFileManager(): FileManager {
       },
       passwordDialog,
       speakA11yMessage: (_text: string) => {},
-    }),
+    },
     metadataModel: {
       getCache: function(_entries: Entry[], _names: string[]) {
         return _entries.map(_ => new MetadataItem());
@@ -396,7 +398,7 @@ export async function testOpenWithMostRecentlyExecuted(done: () => void) {
             0);
       };
 
-  const taskHistory = /** @type {!TaskHistory} */ ({
+  const taskHistory = {
     getLastExecutedTime: function(
         descriptor: chrome.fileManagerPrivate.FileTaskDescriptor) {
       if (descriptorEqual(descriptor, oldTaskDescriptor)) {
@@ -409,7 +411,7 @@ export async function testOpenWithMostRecentlyExecuted(done: () => void) {
     },
     recordTaskExecuted: function(
         _descriptor: chrome.fileManagerPrivate.FileTaskDescriptor) {},
-  });
+  };
 
   type FileTaskDescriptor = chrome.fileManagerPrivate.FileTaskDescriptor;
   let executedTask: FileTaskDescriptor|null = null;

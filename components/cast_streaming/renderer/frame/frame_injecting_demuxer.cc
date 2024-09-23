@@ -59,7 +59,7 @@ class StreamTimestampOffsetTracker
 
   base::TimeDelta audio_position_ = {};
   base::TimeDelta offset_ = {};
-  raw_ptr<media::DemuxerHost, ExperimentalRenderer> demuxer_host_ = nullptr;
+  raw_ptr<media::DemuxerHost> demuxer_host_ = nullptr;
 };
 
 namespace {
@@ -294,7 +294,7 @@ class FrameInjectingAudioDemuxerStream final
   // DemuxerStream remainder of implementation.
   media::AudioDecoderConfig audio_decoder_config() final { return config(); }
   media::VideoDecoderConfig video_decoder_config() final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return media::VideoDecoderConfig();
   }
   Type type() const final { return Type::AUDIO; }
@@ -311,7 +311,7 @@ class FrameInjectingVideoDemuxerStream final
  private:
   // DemuxerStream remainder of implementation.
   media::AudioDecoderConfig audio_decoder_config() final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return media::AudioDecoderConfig();
   }
   media::VideoDecoderConfig video_decoder_config() final { return config(); }
@@ -400,12 +400,11 @@ void FrameInjectingDemuxer::OnStreamInitializationComplete() {
   std::move(initialized_cb_).Run(media::PIPELINE_OK);
 }
 
-std::vector<raw_ptr<media::DemuxerStream, VectorExperimental>>
-FrameInjectingDemuxer::GetAllStreams() {
+std::vector<media::DemuxerStream*> FrameInjectingDemuxer::GetAllStreams() {
   DVLOG(1) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
-  std::vector<raw_ptr<media::DemuxerStream, VectorExperimental>> streams;
+  std::vector<media::DemuxerStream*> streams;
   if (video_stream_) {
     streams.push_back(video_stream_.get());
   }
@@ -510,7 +509,7 @@ void FrameInjectingDemuxer::OnEnabledAudioTracksChanged(
     TrackChangeCB change_completed_cb) {
   DLOG(WARNING) << "Track changes are not supported.";
   std::vector<media::DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(media::DemuxerStream::AUDIO, streams);
+  std::move(change_completed_cb).Run(streams);
 }
 
 // Not supported.
@@ -520,7 +519,7 @@ void FrameInjectingDemuxer::OnSelectedVideoTrackChanged(
     TrackChangeCB change_completed_cb) {
   DLOG(WARNING) << "Track changes are not supported.";
   std::vector<media::DemuxerStream*> streams;
-  std::move(change_completed_cb).Run(media::DemuxerStream::VIDEO, streams);
+  std::move(change_completed_cb).Run(streams);
 }
 
 }  // namespace cast_streaming

@@ -16,7 +16,7 @@
 
 namespace credential_provider {
 
-// TODO(crbug.com/1111561): Change it back to emdedded/reauth/windows
+// TODO(crbug.com/40142636): Change it back to emdedded/reauth/windows
 // once reauth flow latency issue is resolved.
 constexpr char kGaiaReauthPath[] = "embedded/setup/windows";
 

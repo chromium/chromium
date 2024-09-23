@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
+#include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_mojo_media_stream_dispatcher_host.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_video_capturer_source.h"
@@ -42,6 +44,10 @@ namespace blink {
 using mojom::blink::MediaStreamRequestResult;
 
 namespace {
+
+MATCHER_P2(IsExpectedDOMException, name, message, "") {
+  return arg->name() == name && arg->message() == message;
+}
 
 class FakeMediaStreamVideoSink : public MediaStreamVideoSink {
  public:
@@ -72,8 +78,8 @@ class FakeMediaStreamVideoSink : public MediaStreamVideoSink {
   }
 
  private:
-  const raw_ptr<base::TimeTicks, ExperimentalRenderer> capture_time_;
-  const raw_ptr<media::VideoFrameMetadata, ExperimentalRenderer> metadata_;
+  const raw_ptr<base::TimeTicks> capture_time_;
+  const raw_ptr<media::VideoFrameMetadata> metadata_;
   base::OnceClosure got_frame_cb_;
 };
 

@@ -9,7 +9,7 @@
 
 #include "ash/app_list/app_list_util.h"
 #include "ash/style/style_util.h"
-#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
@@ -25,6 +25,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -153,7 +154,7 @@ void MenuEntryView::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void MenuEntryView::Init() {
-  SetAccessibleName(
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA));
   SetBackground(views::CreateRoundedRectBackground(kDefaultColor,
                                                    kMenuEntryCornerRadius));

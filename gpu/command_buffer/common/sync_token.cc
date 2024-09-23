@@ -10,6 +10,10 @@
 
 namespace gpu {
 
+SyncPointClientId::SyncPointClientId(CommandBufferNamespace in_namespace_id,
+                                     CommandBufferId in_command_buffer_id)
+    : namespace_id(in_namespace_id), command_buffer_id(in_command_buffer_id) {}
+
 SyncToken::SyncToken()
     : verified_flush_(false),
       namespace_id_(CommandBufferNamespace::INVALID),

@@ -9,6 +9,7 @@
 #include <lib/sys/cpp/outgoing_directory.h>
 
 #include <optional>
+
 #include "base/fuchsia/scoped_service_publisher.h"
 
 // Runs an isolated archivist-for-embedding, publishing its

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include <memory>
 #include <utility>
@@ -58,11 +63,8 @@ ScopedClipboardWriter::~ScopedClipboardWriter() {
   if (!objects_.empty() || !platform_representations_.empty()) {
     Clipboard::GetForCurrentThread()->WritePortableAndPlatformRepresentations(
         buffer_, objects_, std::move(platform_representations_),
-        std::move(data_src_));
+        std::move(data_src_), privacy_types_);
   }
-
-  if (confidential_)
-    Clipboard::GetForCurrentThread()->MarkAsConfidential();
 }
 
 void ScopedClipboardWriter::SetDataSource(
@@ -172,7 +174,12 @@ void ScopedClipboardWriter::WriteImage(const SkBitmap& bitmap) {
 }
 
 void ScopedClipboardWriter::MarkAsConfidential() {
-  confidential_ = true;
+  privacy_types_ |= Clipboard::PrivacyTypes::kNoDisplay;
+}
+
+void ScopedClipboardWriter::MarkAsOffTheRecord() {
+  privacy_types_ |= Clipboard::PrivacyTypes::kNoLocalClipboardHistory;
+  privacy_types_ |= Clipboard::PrivacyTypes::kNoCloudClipboard;
 }
 
 void ScopedClipboardWriter::WritePickledData(
@@ -231,7 +238,7 @@ void ScopedClipboardWriter::Reset() {
   objects_.clear();
   platform_representations_.clear();
   registered_formats_.clear();
-  confidential_ = false;
+  privacy_types_ = 0;
   counter_ = 0;
 }
 

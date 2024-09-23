@@ -49,7 +49,7 @@ size_t NumBytesForSymmetricKeyType(cryptauthv2::KeyType key_type) {
     case cryptauthv2::KeyType::RAW256:
       return 32u;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0u;
   }
 }

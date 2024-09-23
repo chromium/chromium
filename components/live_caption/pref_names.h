@@ -8,6 +8,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/soda/constants.h"
@@ -45,6 +46,24 @@ inline constexpr char kLiveCaptionMaskOffensiveWords[] =
 inline constexpr char kLiveCaptionMediaFoundationRendererErrorSilenced[] =
     "accessibility.captions.live_caption_media_foundation_renderer_error_"
     "silenced";
+
+// This may be removed in the future but for now these preferences are ash only.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Enables Captioning from microphone input.
+inline constexpr char kLiveCaptionUserMicrophoneEnabled[] =
+    "accessibility.captions.user_microphone_captioning_enabled";
+
+// Describes the language code of the current locale for microphone input
+// live captions.
+inline constexpr char kUserMicrophoneCaptionLanguageCode[] =
+    "accessibility.captions.user_microphone_language_code";
+
+const std::string GetUserMicrophoneCaptionLanguage(PrefService* profile_prefs);
+bool IsLanguageCodeForMicrophoneCaption(speech::LanguageCode language_code,
+                                        PrefService* profile_prefs);
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const std::string GetLiveCaptionLanguageCode(PrefService* profile_prefs);
 bool IsLanguageCodeForLiveCaption(speech::LanguageCode language_code,

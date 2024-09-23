@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_views_util.h"
 
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/payments/core/features.h"
 #include "components/payments/core/sizes.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -20,13 +22,16 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/progress_bar.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace payments {
+
+using features::SecurePaymentConfirmationNetworkAndIssuerIconsTreatment;
+
 namespace {
 
 const gfx::VectorIcon& GetPlatformVectorIcon(bool dark_mode) {
@@ -49,20 +54,20 @@ ui::ImageModel GetHeaderImageSkia(bool dark_mode) {
                                                   : IDR_SAVE_CARD);
 }
 
-class SecurePaymentConfirmationIconView : public NonAccessibleImageView {
-  METADATA_HEADER(SecurePaymentConfirmationIconView, NonAccessibleImageView)
+class SecurePaymentConfirmationHeaderIconView : public NonAccessibleImageView {
+  METADATA_HEADER(SecurePaymentConfirmationHeaderIconView,
+                  NonAccessibleImageView)
 
  public:
-  explicit SecurePaymentConfirmationIconView(bool use_cart_image = false)
+  explicit SecurePaymentConfirmationHeaderIconView(bool use_cart_image = false)
       : use_cart_image_{use_cart_image} {
     const gfx::Size header_size(
         GetSecurePaymentConfirmationHeaderWidth(),
         use_cart_image_ ? kShoppingCartHeaderIconHeight : kHeaderIconHeight);
-    SetSize(header_size);
     SetPreferredSize(header_size);
     SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   }
-  ~SecurePaymentConfirmationIconView() override = default;
+  ~SecurePaymentConfirmationHeaderIconView() override = default;
 
   // NonAccessibleImageView:
   void OnThemeChanged() override {
@@ -79,48 +84,87 @@ class SecurePaymentConfirmationIconView : public NonAccessibleImageView {
   bool use_cart_image_;
 };
 
-BEGIN_METADATA(SecurePaymentConfirmationIconView)
+BEGIN_METADATA(SecurePaymentConfirmationHeaderIconView)
 END_METADATA
+
+std::unique_ptr<views::View> CreateInlineHeaderIconView(
+    const SkBitmap& icon_bitmap,
+    int view_id) {
+  CHECK(!icon_bitmap.drawsNothing());
+
+  auto icon_view = std::make_unique<views::ImageView>();
+  gfx::ImageSkia icon =
+      gfx::ImageSkia::CreateFrom1xBitmap(icon_bitmap).DeepCopy();
+  icon_view->SetImage(ui::ImageModel::FromImageSkia(icon));
+
+  // Resize to a constant height, with a variable width in the acceptable range
+  // based on the aspect ratio.
+  gfx::Size icon_size = icon.size();
+  // The CHECK on drawsNothing() above ensures that the height and width are
+  // non-zero, so this divide should be safe.
+  float aspect_ratio =
+      static_cast<float>(icon_size.width()) / icon_size.height();
+  int preferred_width = static_cast<int>(kInlineTitleIconHeight * aspect_ratio);
+  int icon_width = std::min(preferred_width, kInlineTitleMaxIconWidth);
+  icon_view->SetImageSize(gfx::Size(icon_width, kInlineTitleIconHeight));
+
+  icon_view->SetPaintToLayer();
+  icon_view->layer()->SetFillsBoundsOpaquely(false);
+  icon_view->SetID(view_id);
+
+  return icon_view;
+}
 
 }  // namespace
 
-std::unique_ptr<views::ProgressBar>
-CreateSecurePaymentConfirmationProgressBarView() {
-  auto progress_bar = std::make_unique<views::ProgressBar>();
-  progress_bar->SetPreferredHeight(kProgressBarHeight);
-  progress_bar->SetPreferredCornerRadii(std::nullopt);
-  progress_bar->SetValue(-1);  // infinite animation.
-  progress_bar->SetBackgroundColor(SK_ColorTRANSPARENT);
-  progress_bar->SetPreferredSize(
-      gfx::Size(GetSecurePaymentConfirmationHeaderWidth(), kProgressBarHeight));
-  progress_bar->SizeToPreferredSize();
-
-  return progress_bar;
-}
-
-std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
-    int progress_bar_id,
+std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderIcon(
     int header_icon_id,
     bool use_cart_image) {
-  auto header = std::make_unique<views::BoxLayoutView>();
-  header->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  header->SetBetweenChildSpacing(kHeaderIconTopPadding);
-
-  // Progress bar
-  auto progress_bar = CreateSecurePaymentConfirmationProgressBarView();
-  progress_bar->SetID(progress_bar_id);
-  progress_bar->SetVisible(false);
-  auto* container = header->AddChildView(std::make_unique<views::View>());
-  container->SetPreferredSize(progress_bar->GetPreferredSize());
-  container->AddChildView(std::move(progress_bar));
-
-  // Header icon
   auto image_view =
-      std::make_unique<SecurePaymentConfirmationIconView>(use_cart_image);
+      std::make_unique<SecurePaymentConfirmationHeaderIconView>(use_cart_image);
   image_view->SetID(header_icon_id);
-  header->AddChildView(std::move(image_view));
+  image_view->SetProperty(views::kMarginsKey,
+                          gfx::Insets().set_top(kHeaderIconTopPadding));
+  return image_view;
+}
 
-  return header;
+std::unique_ptr<views::View>
+CreateSecurePaymentConfirmationInlineImageTitleView(
+    std::unique_ptr<views::Label> title_text,
+    const SkBitmap& network_icon,
+    int network_icon_id,
+    const SkBitmap& issuer_icon,
+    int issuer_icon_id) {
+  auto title_view = std::make_unique<views::BoxLayoutView>();
+  title_view->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  title_view->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  title_view->SetBetweenChildSpacing(kInlineTitleRowHorizontalSpacing);
+
+  // Add the title text, weighted to take up as much space in the row as
+  // possible (and thus pushing the icons to the end of the row).
+  title_text->SetMultiLine(true);
+  auto* title_text_ptr = title_view->AddChildView(std::move(title_text));
+  title_view->SetFlexForView(title_text_ptr, 1);
+
+  // Add the icons, if present. A separator is also added if both icons are
+  // present.
+  if (!network_icon.drawsNothing()) {
+    title_view->AddChildView(
+        CreateInlineHeaderIconView(network_icon, network_icon_id));
+  }
+  if (!network_icon.drawsNothing() && !issuer_icon.drawsNothing()) {
+    title_view->AddChildView(
+        views::Builder<views::Separator>()
+            .SetPreferredLength(kInlineTitleIconSeparatorHeight)
+            .Build());
+  }
+  if (!issuer_icon.drawsNothing()) {
+    title_view->AddChildView(
+        CreateInlineHeaderIconView(issuer_icon, issuer_icon_id));
+  }
+
+  return title_view;
 }
 
 std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
@@ -129,14 +173,12 @@ std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
       title, views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY);
   title_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   title_label->SetLineHeight(kTitleLineHeight);
-  title_label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kBodyInsets, 0)));
 
   return title_label;
 }
 
-std::unique_ptr<views::ImageView>
-CreateSecurePaymentConfirmationInstrumentIconView(const gfx::ImageSkia& image) {
+std::unique_ptr<views::ImageView> CreateSecurePaymentConfirmationIconView(
+    const gfx::ImageSkia& image) {
   std::unique_ptr<views::ImageView> icon_view =
       std::make_unique<views::ImageView>();
   icon_view->SetImage(ui::ImageModel::FromImageSkia(image));
@@ -146,14 +188,13 @@ CreateSecurePaymentConfirmationInstrumentIconView(const gfx::ImageSkia& image) {
   // based on the aspect ratio.
   float aspect_ratio =
       static_cast<float>(image_size.width()) / image_size.height();
-  int preferred_width = static_cast<int>(
-      kSecurePaymentConfirmationInstrumentIconHeightPx * aspect_ratio);
-  int icon_width =
-      std::max(std::min(preferred_width,
-                        kSecurePaymentConfirmationInstrumentIconMaximumWidthPx),
-               kSecurePaymentConfirmationInstrumentIconDefaultWidthPx);
+  int preferred_width =
+      static_cast<int>(kSecurePaymentConfirmationIconHeightPx * aspect_ratio);
+  int icon_width = std::max(
+      std::min(preferred_width, kSecurePaymentConfirmationIconMaximumWidthPx),
+      kSecurePaymentConfirmationIconDefaultWidthPx);
   icon_view->SetImageSize(
-      gfx::Size(icon_width, kSecurePaymentConfirmationInstrumentIconHeightPx));
+      gfx::Size(icon_width, kSecurePaymentConfirmationIconHeightPx));
   icon_view->SetPaintToLayer();
   icon_view->layer()->SetFillsBoundsOpaquely(false);
 

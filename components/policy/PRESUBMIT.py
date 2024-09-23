@@ -42,7 +42,7 @@ _ENUMS_PATH = os.path.join(
 _DEVICE_POLICY_PROTO_PATH = os.path.join(
       _COMPONENTS_POLICY_PATH, 'proto', 'chrome_device_policy.proto')
 _DEVICE_POLICY_PROTO_MAP_PATH = os.path.join(
-      _TEMPLATES_PATH, 'device_policy_proto_map.yaml')
+      _TEMPLATES_PATH, 'manual_device_policy_proto_map.yaml')
 _LEGACY_DEVICE_POLICY_PROTO_MAP_PATH = os.path.join(
       _TEMPLATES_PATH, 'legacy_device_policy_proto_map.yaml')
 
@@ -203,6 +203,11 @@ def _GetPolicyChangeList(input_api):
         filename == 'OWNERS' or
         filename == 'DIR_METADATA'):
       continue
+
+    if policy_name not in policy_name_to_id and affected_file.Action() != 'D':
+      raise Exception("Policy not listed in %s: '%s'" % (
+          _POLICIES_YAML_PATH, policy_name))
+
     old_policy = None
     new_policy = None
     if affected_file.Action() == 'M':
@@ -592,16 +597,18 @@ def CheckPolicyChangeVersionPlatformCompatibility(input_api, output_api):
       # disable them in these cases to reduce the noise.
       if input_api.no_diffs:
         continue
-      # Support for policies can only be removed for past version until we have
-      # a better reminder process to cleanup the code related to deprecated
-      # policies.
-      if new_policy_platforms[platform]['to'] > current_version:
-        previous_version = int(current_version) - 1
+      # An end-milestone for policies can only be added for versions that have
+      # already branched, until we have a better reminder process to cleanup
+      # the code related to deprecated policies.
+      end_version = new_policy_platforms[platform]['to']
+      if end_version >= current_version:
         results.append(output_api.PresubmitPromptWarning(
-          f"In policy {policy_name}: Support on platform {platform} can only "
-          f"be removed for version {previous_version}. Please remove all "
-          "references in the code to that policy since it will not be "
-          f"supported in the current version {current_version}."))
+          f"In policy {policy_name} for platform {platform}: An end-milestone "
+          f"of {end_version} was used. But policies are only allowed to be end-"
+          f"dated at versions that have already branched, currently "
+          f"M{current_version - 1} or before. Please remove all references in "
+          f"the code to {end_version}, and instead file a bug with a reminder "
+          f"to add the end milestone after M{end_version - 1} branches."))
   return results
 
 
@@ -794,12 +801,19 @@ def CheckDevicePolicies(input_api, output_api):
   for policy in policy_definitions:
     if not policy.get('device_only', False):
       continue
+
     policy_name = policy['name']
-    if (policy_name not in proto_map and
-        policy_name not in legacy_proto_map):
-      results.append(output_api.PresubmitError(
-          f"Please add '{policy_name}' to device_policy_proto_map.yaml and map "
-          "it to the corresponding field in chrome_device_policy.proto."))
+    if policy.get('generate_device_proto', True):
+      if policy_name in proto_map or policy_name in legacy_proto_map:
+        results.append(output_api.PresubmitError(
+          f"'{policy_name}' generates the path to the proto. "
+          "Please remove it from *_device_policy_proto_map.yaml"))
+    else:
+      if (policy_name not in proto_map and
+          policy_name not in legacy_proto_map):
+        results.append(output_api.PresubmitError(
+            f"Please set generate_device_proto to true in '{policy_name}.yaml "
+            "or add a mapping in manual_device_policy_proto_map.yaml '"))
 
   # Check that the proto field is equal to the policy name for new policies
   for policy_change in policy_changelist:
@@ -808,6 +822,9 @@ def CheckDevicePolicies(input_api, output_api):
     if ('old_policy' in policy_change and
         policy_change['old_policy'] is not None):
       # Ignore existing policies
+      continue
+    if policy.get('generate_device_proto', True):
+      # Ignore policies which will be generated automatically
       continue
     policy_name = policy_change['policy']
 

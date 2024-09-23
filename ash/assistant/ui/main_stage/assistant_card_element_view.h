@@ -11,6 +11,7 @@
 #include "ash/public/cpp/ash_web_view.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -22,6 +23,8 @@ class AssistantViewDelegate;
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantCardElementView
     : public AssistantUiElementView,
       public AshWebView::Observer {
+  METADATA_HEADER(AssistantCardElementView, AssistantUiElementView)
+
  public:
   AssistantCardElementView(AssistantViewDelegate* delegate,
                            const AssistantCardElement* card_element);
@@ -32,7 +35,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantCardElementView
   ~AssistantCardElementView() override;
 
   // AssistantUiElementView:
-  const char* GetClassName() const override;
   ui::Layer* GetLayerForAnimating() override;
   std::string ToStringForTesting() const override;
   void AddedToWidget() override;

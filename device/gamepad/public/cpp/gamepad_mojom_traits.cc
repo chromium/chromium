@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/gamepad/public/cpp/gamepad_mojom_traits.h"
 
 #include "base/containers/span.h"
@@ -75,7 +80,7 @@ EnumTraits<device::mojom::GamepadHapticActuatorType,
           GamepadHapticActuatorTypeTriggerRumble;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return device::mojom::GamepadHapticActuatorType::
       GamepadHapticActuatorTypeVibration;
 }
@@ -100,7 +105,7 @@ bool EnumTraits<device::mojom::GamepadHapticActuatorType,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -186,7 +191,7 @@ EnumTraits<device::mojom::GamepadMapping, device::GamepadMapping>::ToMojom(
       return device::mojom::GamepadMapping::GamepadMappingXRStandard;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return device::mojom::GamepadMapping::GamepadMappingNone;
 }
 
@@ -206,7 +211,7 @@ bool EnumTraits<device::mojom::GamepadMapping, device::GamepadMapping>::
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -223,7 +228,7 @@ EnumTraits<device::mojom::GamepadHand, device::GamepadHand>::ToMojom(
       return device::mojom::GamepadHand::GamepadHandRight;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return device::mojom::GamepadHand::GamepadHandNone;
 }
 
@@ -243,7 +248,7 @@ bool EnumTraits<device::mojom::GamepadHand, device::GamepadHand>::FromMojom(
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

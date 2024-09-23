@@ -56,13 +56,17 @@ class EditLabels : public views::View {
 
   void SetNameTagState(bool is_error, const std::u16string& error_tooltip);
   void RemoveNewState();
-  // Called when this view is clicked upon.
+
+  // Focuses on the first edit label if no child is focused. Otherwise focus on
+  // the next edit label.
   void FocusLabel();
 
   // Returns Action name, such as "Joystick wasd".
   std::u16string CalculateActionName();
   // Returns key list, such as "w, a, s, d" or "w".
   std::u16string CalculateKeyListForA11yLabel() const;
+
+  bool IsFirstLabelUnassigned() const;
 
   void PerformPulseAnimationOnFirstLabel();
 

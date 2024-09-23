@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event';
+import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
 
-// TODO(crbug.com/1203307): Auto-generate this file.
+// TODO(crbug.com/40179454): Auto-generate this file.
 
 declare global {
   namespace chrome {
@@ -67,6 +67,8 @@ declare global {
       export function getVoices(callback?: (param: TtsVoice[]) => void): void;
 
       export const onEvent: ChromeEvent<(event: TtsEvent) => void>;
+
+      export const onVoicesChanged: ChromeEvent<() => void>;
     }
   }
 }

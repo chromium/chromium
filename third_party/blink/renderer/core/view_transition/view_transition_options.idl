@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 dictionary ViewTransitionOptions {
   ViewTransitionCallback? update = null;
-  sequence<DOMString>? type = null;
+  sequence<DOMString>? types = null;
 };

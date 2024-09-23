@@ -4,7 +4,9 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {ProfileState} from './manage_profiles_browser_proxy.js';
 
 function isIndexInBetweenStartEnd(
     index: number, start: number, end: number): boolean {
@@ -45,7 +47,7 @@ export interface DraggableTileListInterface {
   onDragEnd(initialIndex: number, finalIndex: number): void;
 }
 
-// This delegate class allows any Polymer list container of tiles to add the
+// This delegate class allows any Lit list container of tiles to add the
 // drag and drop with reordering functionality.
 //
 // The events that will be redirected to this delegate are:
@@ -63,10 +65,9 @@ export interface DraggableTileListInterface {
 // constructed once the HTML tiles, that are intended to be drag and dropped,
 // are properly rendered.
 export class DragDropReorderTileListDelegate {
-  private polymerElement_: PolymerElement;
+  private element: CrLitElement;
+  private tileList_: ProfileState[];
   private tileListInterface_: DraggableTileListInterface;
-  private tileListName_: string;
-  private tileCount_: number;
   private transitionDuration_: number;  // Unit: ms.
 
   private isDragEnabled_ = true;
@@ -82,13 +83,12 @@ export class DragDropReorderTileListDelegate {
   // public section:
 
   constructor(
-      polymer: PolymerElement, tileListInterface: DraggableTileListInterface,
-      tileListName: string, tileCount: number,
+      element: CrLitElement, tileList: ProfileState[],
+      tileListInterface: DraggableTileListInterface,
       transitionDuration: number = 300) {
-    this.polymerElement_ = polymer;
+    this.element = element;
+    this.tileList_ = tileList;
     this.tileListInterface_ = tileListInterface;
-    this.tileListName_ = tileListName;
-    this.tileCount_ = tileCount;
     this.transitionDuration_ = transitionDuration;
 
     this.eventTracker_ = new EventTracker();
@@ -98,7 +98,7 @@ export class DragDropReorderTileListDelegate {
 
   // Clear all drag events listeners and reset tiles drag state.
   clearListeners() {
-    for (let i = 0; i < this.tileCount_; ++i) {
+    for (let i = 0; i < this.tileList_.length; ++i) {
       const tile = this.getDraggableTile_(i);
       tile.draggable = false;
     }
@@ -122,7 +122,7 @@ export class DragDropReorderTileListDelegate {
   // Expected to be called once so that a single event of each type is added to
   // the tiles.
   private initializeListeners_() {
-    for (let i = 0; i < this.tileCount_; ++i) {
+    for (let i = 0; i < this.tileList_.length; ++i) {
       const tile = this.getDraggableTile_(i);
       tile.draggable = true;
 
@@ -143,7 +143,7 @@ export class DragDropReorderTileListDelegate {
       });
     }
 
-    // React to all elements being dragged over. We need this global polymer
+    // React to all elements being dragged over. We need this global Lit
     // element listener in order to allow dropping an element on top of another
     // one. For that, we need a call to `preventDefault()` with the proper
     // event/element (it could be any sub-element, potentially not the tile
@@ -151,17 +151,16 @@ export class DragDropReorderTileListDelegate {
     // triggering any more drag over events that will be associated with the
     // dragend of our drag event cycle of interest).
     // Therefore, we only use this listener to allow properly dropping the tile.
-    this.eventTracker_.add(
-        this.polymerElement_, 'dragover', (event: DragEvent) => {
-          // Only react if we are part of our drag event cycle. This event will
-          // trigger for any element being dragged over within the polymer
-          // element.
-          if (!this.isDragging_) {
-            return;
-          }
+    this.eventTracker_.add(this.element, 'dragover', (event: DragEvent) => {
+      // Only react if we are part of our drag event cycle. This event will
+      // trigger for any element being dragged over within the Lit
+      // element.
+      if (!this.isDragging_) {
+        return;
+      }
 
-          event.preventDefault();
-        });
+      event.preventDefault();
+    });
   }
 
   // Event 'dragstart' is applied on the tile that will be dragged. We store the
@@ -294,7 +293,7 @@ export class DragDropReorderTileListDelegate {
     if (this.dropTargetIndex_ !== -1) {
       // In case a reorder should happen:
       // - Apply the changes on the original list.
-      // - The changes will cause a re-rendering of the polymer element which
+      // - The changes will cause a re-rendering of the Lit element which
       // will take into account the changes and have all the tiles at their
       // right place.
       this.applyChanges_();
@@ -410,16 +409,17 @@ export class DragDropReorderTileListDelegate {
     }
   }
 
-  // Apply changes on the underlying tile list through the polymer element by
+  // Apply changes on the underlying tile list through the Lit element by
   // performing two splices, the changes applied will cause a re-rendering of
-  // the polymer element.
+  // the Lit element.
   private applyChanges_() {
     // Remove the dragging tile from its original index.
-    const [draggingTile] = this.polymerElement_.splice(
-        this.tileListName_, this.dragStartIndex_, 1);
+    const [draggingTile] = this.tileList_.splice(this.dragStartIndex_, 1);
+    assert(draggingTile);
     // Place it on the target index.
-    this.polymerElement_.splice(
-        this.tileListName_, this.dropTargetIndex_, 0, draggingTile);
+    this.tileList_.splice(this.dropTargetIndex_, 0, draggingTile);
+
+    this.element.requestUpdate();
   }
 
   // Compute the new drag target index based on the tile that is being hovered
@@ -444,6 +444,8 @@ export class DragDropReorderTileListDelegate {
   // Prepare 'this.draggingTile_' member variable as the dragging tile.
   // It will used throughout each drag event cycle and reset in the
   // `resetDraggingTile_()` method which restore the tile to it's initial state.
+  // Notifies the tile that the drag event started to allow for UI
+  // modifications.
   private markDraggingTile_(element: HTMLElement) {
     this.draggingTile_ = element;
     this.draggingTile_.classList.add(DRAGGING_TAG);
@@ -455,6 +457,8 @@ export class DragDropReorderTileListDelegate {
     // element would be considered invisible and would not react to drag events
     // anymore. A value of '0.001' is enough to simulate the 'invisible' effect.
     this.draggingTile_.style.opacity = '0.001';
+
+    this.draggingTile_.dispatchEvent(new Event('drag-tile-start'));
   }
 
   // Restores `this.draggingTile_` to it's initial state.
@@ -472,7 +476,7 @@ export class DragDropReorderTileListDelegate {
     // Reset all tiles potential transform values or shited/shifting values.
     // Also clear all tiles transition effects so that the repositioning doesn't
     // animate.
-    for (let i = 0; i < this.tileCount_; ++i) {
+    for (let i = 0; i < this.tileList_.length; ++i) {
       const tile = this.getDraggableTile_(i);
       tile.classList.remove(SHIFTED_TAG);
       tile.classList.remove(SHIFTING_TAG);
@@ -486,7 +490,7 @@ export class DragDropReorderTileListDelegate {
   // transform property is changed using the `this.transitionDuration_` value
   // set at construction.
   private setAllTilesTransitions_() {
-    for (let i = 0; i < this.tileCount_; ++i) {
+    for (let i = 0; i < this.tileList_.length; ++i) {
       const tile = this.getDraggableTile_(i);
       tile.style.transition =
           `transform ease-in-out ${this.transitionDuration_}ms`;

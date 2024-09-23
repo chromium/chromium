@@ -1,0 +1,623 @@
+{
+  "description": "Aggregatable debug reports creation",
+  "api_config": {
+    "needs_aggregatable_debug": true,
+    "aggregation_coordinator_origins": [
+      "https://c1.test",
+      "https://c2.test"
+    ]
+  },
+  "input": {
+    "registrations": [
+      // Source not dropped for invalid `aggregatable_debug_reporting`.
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "1",
+                "aggregatable_debug_reporting": {
+                  "budget": "1024"
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Verifies that the previous source was registered, creates an
+      // event-level report.
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "7"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      // No debug data registered, no report was created.
+      {
+        "timestamp": "2000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "aggregation_keys": {
+                  "a": "0x5"
+                },
+                "aggregatable_debug_reporting": {
+                  "budget": 1024.0, // ensure validity of trailing zero
+                  "key_piece": "0x1"
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Verifies that the previous source was registered, and the budget and
+      // key piece was stored. The remaining aggregatable attribution budget is
+      // 65536 - 1024 = 64512. Creates an aggregatable debug report.
+      {
+        "timestamp": "3000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "a": 64513
+                },
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x4",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-aggregate-insufficient-budget"],
+                      "key_piece": "0x8",
+                      "value": 123.0 // ensure validity of trailing zero
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Not opted-in to `source-success`, creates a null report.
+      {
+        "timestamp": "4000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter1.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "aggregation_keys": {
+                  "a": "0x3"
+                },
+                "aggregatable_debug_reporting": {
+                  "budget": 65536,
+                  "key_piece": "0x15",
+                  "debug_data": [
+                    {
+                      "types": ["source-destination-limit"],
+                      "key_piece": "0x2",
+                      "value": 456
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Verifies that the previous source was registered, and the budget and
+      // key piece was stored. The remaining aggregatable attribution budget is
+      // 65536 - 65536 = 0. Creates an aggregatable debug report.
+      {
+        "timestamp": "5000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter1.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "a": 1
+                },
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x2",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-aggregate-insufficient-budget"],
+                      "key_piece": "0x8",
+                      "value": 65536
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Explicitly opts-in to `source-success`, creates an aggregatable debug
+      // report. The unknown type was ignored.
+      {
+        "timestamp": "6000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "aggregatable_debug_reporting": {
+                  "budget": 1000,
+                  "key_piece": "0x3",
+                  "debug_data": [
+                    {
+                      "types": ["source-success", "unknown"],
+                      "key_piece": "0x5",
+                      "value": 666
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Opts-in to `source-success` by `unspecified`, creates an aggregatable
+      // debug report. The first destination lexicographically was used.
+      {
+        "timestamp": "7000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": [
+                  "https://destination0.test",
+                  "https://destination.test"
+                ],
+                "aggregatable_debug_reporting": {
+                  "budget": 1000,
+                  "key_piece": "0x123",
+                  "debug_data": [
+                    {
+                      "types": ["unspecified"],
+                      "key_piece": "0x11",
+                      "value": 678
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Rate-limits apply to `trigger-no-matching-source`, creates a null
+      // report.
+      {
+        "timestamp": "8000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://a.reporter1.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [{}],
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x2f",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-no-matching-source"],
+                      "key_piece": "0x321",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Changes to a different reporting site. `trigger-no-matching-source` can
+      // consume up to a budget of 65536. However, no aggregatable debug report
+      // was created due to no attribution data.
+      {
+        "timestamp": "8500",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter2.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x1f",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-no-matching-source"],
+                      "key_piece": "0x321",
+                      "value": 65536
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Changes to a different reporting site. `trigger-no-matching-source` can
+      // consume up to a budget of 65536. Creates an aggregatable debug report.
+      {
+        "timestamp": "9000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter2.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [{}],
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x1f",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-no-matching-source"],
+                      "key_piece": "0x321",
+                      "value": 65536
+                    }
+                  ],
+                  "aggregation_coordinator_origin": "https://c2.test"
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Invalid `aggregatable_debug_reporting` due to duplicate types within a
+      // list.
+      {
+        "timestamp": "10000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "aggregation_keys": {
+                  "abc": "0x9"
+                },
+                "aggregatable_debug_reporting": {
+                  "budget": 1024,
+                  "key_piece": "0x789",
+                  "debug_data": [
+                    {
+                      "types": ["source-success", "source-success"],
+                      "key_piece": "0x2",
+                      "value": 666
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Verifies that the previous source was registered, and the budget and
+      // key piece was not applied. Creates an aggregatable attribution report.
+      {
+        "timestamp": "11000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "abc": 65536
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Invalid `aggregatable_debug_reporting` due to duplicate types across
+      // lists.
+      {
+        "timestamp": "12000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "aggregation_keys": {
+                  "b": "0x36"
+                },
+                "aggregatable_debug_reporting": {
+                  "budget": 1024,
+                  "key_piece": "0x789",
+                  "debug_data": [
+                    {
+                      "types": ["source-success"],
+                      "key_piece": "0x2",
+                      "value": 666
+                    },
+                    {
+                      "types": ["source-success"],
+                      "key_piece": "0x3",
+                      "value": 777
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Verifies that the previous source was registered, and the budget and
+      // key piece was not applied. Creates an aggregatable attribution report.
+      {
+        "timestamp": "13000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "b": 65536
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://c1.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0xd",
+            "value": 123
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3",
+            "version": "1.0"
+          }
+        },
+        "report_time": "3000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://c1.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter1.test",
+            "scheduled_report_time": "4",
+            "version": "1.0"
+          }
+        },
+        "report_time": "4000",
+        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://c1.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x1f",
+            "value": 65536
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter1.test",
+            "scheduled_report_time": "5",
+            "version": "1.0"
+          }
+        },
+        "report_time": "5000",
+        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://c1.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x7",
+            "value": 666
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "6",
+            "version": "1.0"
+          }
+        },
+        "report_time": "6000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://c1.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x133",
+            "value": 678
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "7",
+            "version": "1.0"
+          }
+        },
+        "report_time": "7000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://c1.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://a.reporter1.test",
+            "scheduled_report_time": "8",
+            "version": "1.0"
+          }
+        },
+        "report_time": "8000",
+        "report_url": "https://a.reporter1.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://c2.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x33f",
+            "value": 65536
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter2.test",
+            "scheduled_report_time": "9",
+            "version": "1.0"
+          }
+        },
+        "report_time": "9000",
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://c1.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x9",
+            "value": 65536
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3611",
+            "version": "1.0"
+          }
+        },
+        "report_time": "3611000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://c1.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x36",
+            "value": 65536
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3613",
+            "version": "1.0"
+          }
+        },
+        "report_time": "3613000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024263,
+          "scheduled_report_time": "172800",
+          "source_event_id": "1",
+          "source_type": "navigation",
+          "trigger_data": "7"
+        },
+        "report_time": "172800000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
+      }
+    ]
+  }
+}

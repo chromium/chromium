@@ -43,7 +43,7 @@ class QuickOpen
     uint64 RawDataPos;   // Current read position in QO data.
     size_t ReadBufSize;  // Size of Buf data currently read from QO.
     size_t ReadBufPos;   // Current read position in Buf data.
-    Array<byte> LastReadHeader;
+    std::vector<byte> LastReadHeader;
     uint64 LastReadHeaderPos;
     uint64 SeekPos;
     bool UnsyncSeekPos;  // QOpen SeekPos does not match an actual file pointer.

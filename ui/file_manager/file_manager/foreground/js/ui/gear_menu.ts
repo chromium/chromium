@@ -8,7 +8,7 @@ import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {bytesToString, str, strf} from '../../../common/js/translations.js';
 
-import {MenuItem} from './menu_item.js';
+import type {MenuItem} from './menu_item.js';
 
 /**
  * Selector used by tast tests to identify when the storage meter is empty.
@@ -24,7 +24,6 @@ export interface SpaceInfo {
 export class GearMenu {
   readonly syncButton: MenuItem;
   readonly volumeSpaceInfo: HTMLElement;
-  private readonly volumeSpaceInfoSeparator_: HTMLElement;
   private readonly volumeSpaceInfoLabel_: HTMLElement;
   private readonly volumeSpaceInnerBar_: HTMLElement;
   private readonly volumeSpaceOuterBar_: HTMLElement;
@@ -40,8 +39,6 @@ export class GearMenu {
         queryRequiredElement('#gear-menu-drive-sync-settings', element) as
         MenuItem;
     this.volumeSpaceInfo = queryRequiredElement('#volume-space-info', element);
-    this.volumeSpaceInfoSeparator_ =
-        queryRequiredElement('#volume-space-info-separator', element);
     this.volumeSpaceInfoLabel_ =
         queryRequiredElement('#volume-space-info-label', element);
     this.volumeSpaceInnerBar_ =
@@ -139,11 +136,9 @@ export class GearMenu {
 
   private hideVolumeSpaceInfo() {
     this.volumeSpaceInfo.hidden = true;
-    this.volumeSpaceInfoSeparator_.hidden = true;
   }
 
   private showVolumeSpaceInfo() {
     this.volumeSpaceInfo.hidden = false;
-    this.volumeSpaceInfoSeparator_.hidden = false;
   }
 }

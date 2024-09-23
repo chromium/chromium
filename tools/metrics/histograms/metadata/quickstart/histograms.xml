@@ -24,7 +24,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="QuickStart.AttestationCertificate.FailureReason"
     enum="QuickStartAttestationCertificateFetchFailureReason"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>sinhak@chromium.org</owner>
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.AttestationCertificate.FetchDuration" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>sinhak@chromium.org</owner>
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.AttestationCertificate.FetchResult"
-    enum="BooleanSuccess" expires_after="2024-12-01">
+    enum="BooleanSuccess" expires_after="2025-02-02">
   <owner>sinhak@chromium.org</owner>
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -60,8 +60,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.AuthenticationMethod"
+    enum="QuickStartAuthenticationMethod" expires_after="2025-02-02">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The method used to authenticate connection with source device. Recorded when
+    the connection is marked authenticated.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.ChallengeBytes.FailureReason"
-    enum="GoogleServiceAuthError" expires_after="2024-12-01">
+    enum="GoogleServiceAuthError" expires_after="2025-02-02">
   <owner>sinhak@chromium.org</owner>
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -74,7 +85,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.ChallengeBytes.FetchDuration" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>sinhak@chromium.org</owner>
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -86,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.ChallengeBytes.FetchResult" enum="BooleanSuccess"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>sinhak@chromium.org</owner>
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -98,33 +109,89 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="QuickStart.FastPairAdvertisementEnded.AdvertisingMethod"
-    enum="QuickStartAdvertisingMethod" expires_after="2024-12-01">
+<histogram name="QuickStart.ConsumerUpdateCancelled" enum="BooleanOccurred"
+    expires_after="2025-04-18">
   <owner>bhartmire@google.com</owner>
-  <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    The authentication method used for the Quick Start flow. Recorded when
-    unregistering the advertisement or when there's an error attempting to
-    register the advertisement.
+    Records the total number of cancelled Consumer Updates during an ongoing
+    Quick Start session. Recorded when a user cancels after an update starts
+    downloading.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.ConsumerUpdateStarted" enum="BooleanOccurred"
+    expires_after="2025-04-18">
+  <owner>bhartmire@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total number of Consumer Updates during an ongoing Quick Start
+    session. Recorded when the update starts downloading.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.EntryPoint" enum="QuickStartEntryPoint"
+    expires_after="2025-04-17">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The entry point from which the Quick Start flow is initiated. Recorded when
+    transitioning to the Quick Start screen at the beginning of a session.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.EntryPointVisible" enum="QuickStartEntryPoint"
+    expires_after="2025-09-16">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Counts number of times a Quick Start entry point button is visible. Emitted
+    when the button visibility is determined.
   </summary>
 </histogram>
 
 <histogram name="QuickStart.FastPairAdvertisementEnded.Duration" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Time elapsed from attempting to start Fast Pair Advertising to it ending or
-    an error occurring. Recorded when unregistering the advertisement or when
-    there's an error attempting to register the advertisement.
+    Time elapsed from attempting to start Fast Pair Advertising to it ending.
+    Recorded after unregistering the advertisement. It is not recorded when an
+    error occurs attempting to register/unregister the advertisement.
+
+    Note: buckets were resized during m126 to increase max duration.
   </summary>
 </histogram>
 
 <histogram name="QuickStart.FastPairAdvertisementEnded.ErrorCode"
-    enum="QuickStartFastPairAdvertisingEndedErrorCode"
-    expires_after="2024-12-01">
+    enum="QuickStartFastPairAdvertisingErrorCode" expires_after="2025-02-02">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Reason a Fast Pair BLE advertisment failed to unregister. Recorded whenever
+    a Bluetooth Advertisement error occurs after attempting to unregister the
+    advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.FastPairAdvertisementEnded.Succeeded"
+    enum="BooleanSuccess" expires_after="2025-02-02">
+  <owner>bhartmire@google.com</owner>
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether unregistering the Fast Pair advertisement was successful. Recorded
+    after unregistering the advertisement or when there's an error attempting to
+    unregister the advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.FastPairAdvertisementStarted.ErrorCode"
+    enum="QuickStartFastPairAdvertisingErrorCode" expires_after="2025-03-09">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -135,26 +202,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="QuickStart.FastPairAdvertisementEnded.Succeeded"
-    enum="BooleanSuccess" expires_after="2024-12-01">
+<histogram name="QuickStart.FastPairAdvertisementStarted.Succeeded"
+    enum="BooleanSuccess" expires_after="2025-02-02">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Whether Fast Pair advertising was successful. Recorded when unregistering
-    the advertisement or when there's an error attempting to register the
-    advertisement.
+    Whether Fast Pair advertising is started successfully. Recorded after the
+    advertisement is succesfully registered or when there's an error attempting
+    to register the advertisement.
   </summary>
 </histogram>
 
-<histogram name="QuickStart.FastPairAdvertisementStarted.AdvertisingMethod"
-    enum="QuickStartAdvertisingMethod" expires_after="2024-12-01">
+<histogram name="QuickStart.FlowAborted.Reason"
+    enum="QuickStartAbortFlowReason" expires_after="2025-04-17">
   <owner>bhartmire@google.com</owner>
-  <owner>joeantonetti@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    The authentication method used for the Quick Start flow. Recorded before
-    attempting to register advertisement.
+    The reason why the Quick Start flow is aborted. Recorded when flow aborts.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.ForcedUpdateStarted" enum="BooleanOccurred"
+    expires_after="2025-04-18">
+  <owner>bhartmire@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total number of Forced Updates during an ongoing Quick Start
+    session. Recorded when the update starts downloading.
   </summary>
 </histogram>
 
@@ -170,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.GaiaAuthentication.Result"
-    enum="QuickStartGaiaAuthenticationResult" expires_after="2024-12-01">
+    enum="QuickStartGaiaAuthenticationResult" expires_after="2025-02-02">
   <owner>sinhak@chromium.org</owner>
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -181,26 +257,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="QuickStart.GaiaTransferAttempted" enum="BooleanAttempted"
-    expires_after="2024-12-01">
-  <owner>bhartmire@google.com</owner>
-  <owner>joeantonetti@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Whether account transfer is being attempted. Recorded when there is an error
-    with the challenge bytes received or before requesting assertion.
-  </summary>
-</histogram>
-
 <histogram name="QuickStart.GaiaTransferResult" enum="BooleanSuccess"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
-    Whether Gaia transfer was successful. Recorded after succesfully generating
-    FIDO assertion information or when an error occurs when receiving an
-    assertion response.
+    Whether Gaia transfer was successful. Recorded after succesfully completing
+    account creation or when an error occurs during account transfer process.
   </summary>
 </histogram>
 
@@ -216,7 +280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.HandshakeResult.Duration" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -238,7 +302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.HandshakeResult.Succeeded" enum="BooleanSuccess"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -249,7 +313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.HandshakeStarted" enum="BooleanAttempted"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -315,7 +379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.MessageReceived.{MessageType}.Succeeded"
-    enum="BooleanSuccess" expires_after="2024-12-01">
+    enum="BooleanSuccess" expires_after="2025-02-02">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -346,6 +410,140 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.NearbyConnectionsAdvertisementEnded.Duration"
+    units="ms" expires_after="2025-04-16">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Time elapsed during Nearby Connections advertisement. Recorded after
+    successfully stopping the advertisement. It is not recorded when an error
+    occurs attempting to start/stop the advertisement.
+
+    Note: buckets were resized during m126 to increase max duration.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.NearbyConnectionsAdvertisementEnded.ErrorCode"
+    enum="QuickStartNearbyConnectionsAdvertisingErrorCode"
+    expires_after="2025-04-16">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Reason a Nearby Connections advertisement failed to stop. Recorded whenever
+    a Nearby Connections error occurs after attempting to stop the
+    advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.NearbyConnectionsAdvertisementEnded.Succeeded"
+    enum="BooleanSuccess" expires_after="2025-04-16">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether the Nearby Connections advertisement was successfully stopped.
+    Recorded after the advertisement succesfully stops or an error occurs after
+    attempting to stop the advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.NearbyConnectionsAdvertisementStarted.ErrorCode"
+    enum="QuickStartNearbyConnectionsAdvertisingErrorCode"
+    expires_after="2025-04-16">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Reason a Nearby Connections advertisement failed to start. Recorded whenever
+    a Nearby Connections error occurs after attempting to start the
+    advertisement.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.NearbyConnectionsAdvertisementStarted.Succeeded"
+    enum="BooleanSuccess" expires_after="2025-04-16">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether Nearby Connections advertising is started successfully. Recorded
+    when advertising successfully starts or when an error occurs after
+    attempting to start.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.ScreenClosed.{ScreenName}.Reason"
+    enum="ScreenClosedReason" expires_after="2025-04-09">
+  <owner>bhartmire@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The reason a screen is closed. This includes all major Quick Start screens
+    as well as all other OOBE screens that occur in the middle of the Quick
+    Start flow. Recorded when a screen is closed.
+  </summary>
+  <token key="ScreenName">
+    <variant name="AddChild"/>
+    <variant name="CheckingForUpdateAndDeterminingDeviceConfiguration"/>
+    <variant name="ChooseChromebookSetup"/>
+    <variant name="ConsumerUpdate"/>
+    <variant name="GaiaInfoScreen"/>
+    <variant name="GaiaScreen"/>
+    <variant name="NetworkScreen"/>
+    <variant name="None"/>
+    <variant name="Other"/>
+    <variant name="QSComplete"/>
+    <variant name="QSConnectingToWifi"/>
+    <variant name="QSCreatingAccount"/>
+    <variant name="QSFallbackURL"/>
+    <variant name="QSGettingGoogleAccountInfo"/>
+    <variant name="QSResumingConnectionAfterUpdate"/>
+    <variant name="QSSelectGoogleAccount"/>
+    <variant name="QSSetUpWithAndroidPhone"/>
+    <variant name="QSWifiCredentialsReceived"/>
+    <variant name="ReviewPrivacyAndTerms"/>
+    <variant name="SetupDevicePIN"/>
+    <variant name="UnifiedSetup"/>
+    <variant name="WelcomeScreen"/>
+  </token>
+</histogram>
+
+<histogram name="QuickStart.ScreenClosed.{ScreenName}.ViewDuration" units="ms"
+    expires_after="2025-04-09">
+  <owner>bhartmire@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    How long a user viewed a screen. This includes all major Quick Start screens
+    as well as all other OOBE screens that occur in the middle of the Quick
+    Start flow. Recorded when a screen is closed.
+  </summary>
+  <token key="ScreenName">
+    <variant name="AddChild"/>
+    <variant name="CheckingForUpdateAndDeterminingDeviceConfiguration"/>
+    <variant name="ChooseChromebookSetup"/>
+    <variant name="ConsumerUpdate"/>
+    <variant name="GaiaInfoScreen"/>
+    <variant name="GaiaScreen"/>
+    <variant name="NetworkScreen"/>
+    <variant name="None"/>
+    <variant name="Other"/>
+    <variant name="QSComplete"/>
+    <variant name="QSConnectingToWifi"/>
+    <variant name="QSCreatingAccount"/>
+    <variant name="QSFallbackURL"/>
+    <variant name="QSGettingGoogleAccountInfo"/>
+    <variant name="QSResumingConnectionAfterUpdate"/>
+    <variant name="QSSelectGoogleAccount"/>
+    <variant name="QSSetUpWithAndroidPhone"/>
+    <variant name="QSWifiCredentialsReceived"/>
+    <variant name="ReviewPrivacyAndTerms"/>
+    <variant name="SetupDevicePIN"/>
+    <variant name="UnifiedSetup"/>
+    <variant name="WelcomeScreen"/>
+  </token>
+</histogram>
+
 <histogram name="QuickStart.ScreenOpened" enum="QuickStartScreenName"
     expires_after="2024-12-01">
   <owner>bhartmire@google.com</owner>
@@ -358,8 +556,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.WelcomeScreen.QuickStartButtonVisible"
+    enum="Boolean" expires_after="2025-02-10">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Whether the Quick Start entry point button is visible on the Welcome Screen.
+    Emitted when the button visibility is determined. This metric is used for
+    understanding which users had Quick Start already enabled before an update
+    during finch experiment analysis.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.WifiTransferResult" enum="BooleanSuccess"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -370,7 +581,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.WifiTransferResult.FailureReason"
-    enum="QuickStartWifiTransferResultFailureReason" expires_after="2024-12-01">
+    enum="QuickStartWifiTransferResultFailureReason" expires_after="2025-02-02">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>

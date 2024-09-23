@@ -33,7 +33,8 @@ class OneClickSigninDialogViewTest : public ChromeViewsTestBase,
     SetConstrainedWindowViewsClient(CreateChromeConstrainedWindowViewsClient());
 
     // Create a widget to host the anchor view.
-    anchor_widget_ = CreateTestWidget();
+    anchor_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     anchor_widget_->Show();
   }
 
@@ -111,7 +112,7 @@ TEST_F(OneClickSigninDialogViewTest, OkButton) {
   view->ResetViewShownTimeStampForTesting();
 
   gfx::Point center(10, 10);
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, center, center,
+  const ui::MouseEvent event(ui::EventType::kMousePressed, center, center,
                              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
   view->GetOkButton()->OnMousePressed(event);
@@ -128,7 +129,7 @@ TEST_F(OneClickSigninDialogViewTest, UndoButton) {
   view->ResetViewShownTimeStampForTesting();
 
   gfx::Point center(10, 10);
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, center, center,
+  const ui::MouseEvent event(ui::EventType::kMousePressed, center, center,
                              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
   view->GetCancelButton()->OnMousePressed(event);
@@ -142,7 +143,7 @@ TEST_F(OneClickSigninDialogViewTest, UndoButton) {
 
 TEST_F(OneClickSigninDialogViewTest, PressEnterKey) {
   OneClickSigninDialogView* one_click_view = ShowOneClickSigninDialog();
-  ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, 0);
+  ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_RETURN, 0);
   one_click_view->GetWidget()->OnKeyEvent(&event);
 
   WaitForClose();
@@ -153,7 +154,7 @@ TEST_F(OneClickSigninDialogViewTest, PressEnterKey) {
 
 TEST_F(OneClickSigninDialogViewTest, PressEscapeKey) {
   OneClickSigninDialogView* one_click_view = ShowOneClickSigninDialog();
-  ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, 0);
+  ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE, 0);
   one_click_view->GetWidget()->OnKeyEvent(&event);
 
   WaitForClose();

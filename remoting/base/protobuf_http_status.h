@@ -37,6 +37,7 @@ class ProtobufHttpStatus {
     INTERNAL = 13,
     UNAVAILABLE = 14,
     DATA_LOSS = 15,
+    NETWORK_ERROR = 16,
   };
 
   // An OK pre-defined instance.

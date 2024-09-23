@@ -14,7 +14,7 @@ namespace blink {
 class LayoutBoxModelObject;
 class LayoutObject;
 
-// RubyContainer is a common part of LayoutRubyAsInline and LayoutRubyAsBlock.
+// RubyContainer is a helper for LayoutRuby.
 class RubyContainer : public GarbageCollected<RubyContainer> {
  public:
   explicit RubyContainer(LayoutBoxModelObject& ruby);

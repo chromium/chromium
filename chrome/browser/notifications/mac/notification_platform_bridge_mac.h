@@ -51,6 +51,11 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   void SetReadyCallback(NotificationBridgeReadyCallback callback) override;
   void DisplayServiceShutDown(Profile* profile) override;
 
+  // Called when an app shim for `web_app_id` is terminating gracefully. This
+  // is used by NotificationDispatcherMac to correctly distinguish graceful from
+  // ungraceful shutdowns in metrics.
+  void AppShimWillTerminate(const webapps::AppId& web_app_id);
+
  private:
   // Closes the notification with the given `notification_id` and `profile` in
   // every dispatcher except `excluded_dispatcher`. Pass nullptr to
@@ -72,7 +77,7 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   std::unique_ptr<NotificationDispatcherMac> alert_dispatcher_;
 
   // The objects in charge of dispatching per-app notifications.
-  // TODO(https://crbug.com/938661): Implement some logic for cleaning up no
+  // TODO(crbug.com/40616749): Implement some logic for cleaning up no
   // longer needed dispatchers.
   mutable std::map<webapps::AppId, std::unique_ptr<NotificationDispatcherMac>>
       app_specific_dispatchers_;

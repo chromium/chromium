@@ -111,6 +111,14 @@ class PerfBenchmark(benchmark.Benchmark):
     browser_options.AppendExtraBrowserArgs(
         '--disable-gpu-process-for-dx12-info-collection')
 
+    # In-Product Help (IPH) is a constantly-updating collection of prompts
+    # designed to help users understand the browser better. Because different
+    # experiences are rolled out all the time and some can happen at or near
+    # startup, disable IPH to prevent any interference with test results.
+    # (Note that this argument takes a list of IPH that will be allowed;
+    # specifying none disables all IPH.)
+    browser_options.AppendExtraBrowserArgs('--propagate-iph-for-testing')
+
     self.SetExtraBrowserOptions(browser_options)
 
   def GetExtraOutDirectories(self):

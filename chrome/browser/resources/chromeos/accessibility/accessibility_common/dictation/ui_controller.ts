@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {LocaleInfo} from './locale_info.js';
 
 import HintType = chrome.accessibilityPrivate.DictationBubbleHintType;
@@ -143,3 +145,5 @@ export namespace UIController {
         [HintType.TRY_SAYING, HintType.UNDO, HintType.HELP],
   };
 }
+
+TestImportManager.exportForTesting(UIController);

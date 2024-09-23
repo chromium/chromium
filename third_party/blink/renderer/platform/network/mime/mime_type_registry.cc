@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 
 #include "base/files/file_path.h"
@@ -81,7 +86,7 @@ String MIMETypeRegistry::GetWellKnownMIMETypeForExtension(const String& ext) {
   std::string mime_type;
   net::GetWellKnownMimeTypeFromExtension(WebStringToFilePath(ext).value(),
                                          &mime_type);
-  return String::FromUTF8(mime_type.data(), mime_type.length());
+  return String::FromUTF8(mime_type);
 }
 
 bool MIMETypeRegistry::IsSupportedMIMEType(const String& mime_type) {
@@ -235,6 +240,12 @@ bool MIMETypeRegistry::IsXMLMIMEType(const String& mime_type) {
   }
 
   return true;
+}
+
+bool MIMETypeRegistry::IsXMLExternalEntityMIMEType(const String& mime_type) {
+  return EqualIgnoringASCIICase(mime_type,
+                                "application/xml-external-parsed-entity") ||
+         EqualIgnoringASCIICase(mime_type, "text/xml-external-parsed-entity");
 }
 
 bool MIMETypeRegistry::IsPlainTextMIMEType(const String& mime_type) {

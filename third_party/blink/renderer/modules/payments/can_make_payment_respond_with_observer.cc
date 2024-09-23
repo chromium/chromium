@@ -72,7 +72,7 @@ void CanMakePaymentRespondWithObserver::Trace(Visitor* visitor) const {
 
 void CanMakePaymentRespondWithObserver::ObservePromiseResponse(
     ScriptState* script_state,
-    ScriptPromise promise,
+    ScriptPromiseUntyped promise,
     ExceptionState& exception_state) {
   RespondWith(script_state, promise, exception_state);
 }

@@ -307,6 +307,11 @@ std::u16string BluetoothChooserContext::GetObjectDisplayName(
   return base::UTF8ToUTF16(*object.FindString(kDeviceNameKey));
 }
 
+void BluetoothChooserContext::Shutdown() {
+  FlushScheduledSaveSettingsCalls();
+  ObjectPermissionContextBase::Shutdown();
+}
+
 bool BluetoothChooserContext::IsValidDict(const base::Value::Dict& dict) {
   return dict.FindString(kDeviceAddressKey) &&
          dict.FindString(kDeviceNameKey) &&

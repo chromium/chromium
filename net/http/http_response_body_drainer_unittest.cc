@@ -8,6 +8,7 @@
 
 #include <cstring>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -17,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
@@ -33,6 +33,7 @@
 #include "net/socket/socket_test_util.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/url_request/static_http_user_agent_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -113,7 +114,6 @@ class MockHttpStream : public HttpStream {
     return false;
   }
   void GetSSLInfo(SSLInfo* ssl_info) override {}
-  void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) override {}
   int GetRemoteEndpoint(IPEndPoint* endpoint) override {
     return ERR_UNEXPECTED;
   }
@@ -147,7 +147,7 @@ class MockHttpStream : public HttpStream {
     return *nullset_result;
   }
 
-  base::StringPiece GetAcceptChViaAlps() const override { return {}; }
+  std::string_view GetAcceptChViaAlps() const override { return {}; }
 
   // Methods to tweak/observer mock behavior:
   void set_stall_reads_forever() { stall_reads_forever_ = true; }
@@ -252,6 +252,7 @@ class HttpResponseBodyDrainerTest : public TestWithTaskEnvironment {
     context.client_socket_factory = &socket_factory_;
     context.proxy_resolution_service = proxy_resolution_service_.get();
     context.ssl_config_service = ssl_config_service_.get();
+    context.http_user_agent_settings = &http_user_agent_settings_;
     context.http_server_properties = http_server_properties_.get();
     context.cert_verifier = &cert_verifier_;
     context.transport_security_state = &transport_security_state_;
@@ -262,6 +263,7 @@ class HttpResponseBodyDrainerTest : public TestWithTaskEnvironment {
 
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   std::unique_ptr<SSLConfigService> ssl_config_service_;
+  StaticHttpUserAgentSettings http_user_agent_settings_ = {"*", "test-ua"};
   std::unique_ptr<HttpServerProperties> http_server_properties_;
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;

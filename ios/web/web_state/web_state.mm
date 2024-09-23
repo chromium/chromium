@@ -4,6 +4,8 @@
 
 #import "ios/web/public/web_state.h"
 
+#import <string_view>
+
 #import "ios/web/public/web_client.h"
 
 namespace web {
@@ -55,13 +57,13 @@ WebState::InterfaceBinder::InterfaceBinder(WebState* web_state)
 
 WebState::InterfaceBinder::~InterfaceBinder() = default;
 
-void WebState::InterfaceBinder::AddInterface(base::StringPiece interface_name,
+void WebState::InterfaceBinder::AddInterface(std::string_view interface_name,
                                              Callback callback) {
   callbacks_.emplace(std::string(interface_name), std::move(callback));
 }
 
 void WebState::InterfaceBinder::RemoveInterface(
-    base::StringPiece interface_name) {
+    std::string_view interface_name) {
   callbacks_.erase(std::string(interface_name));
 }
 

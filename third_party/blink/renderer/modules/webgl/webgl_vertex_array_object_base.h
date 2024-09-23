@@ -40,6 +40,9 @@ class WebGLVertexArrayObjectBase : public WebGLContextObject {
   bool IsAllEnabledAttribBufferBound() const {
     return is_all_enabled_attrib_buffer_bound_;
   }
+  bool HasArrayBuffer(const WebGLBuffer* buffer) {
+    return array_buffer_list_.Contains(buffer);
+  }
   void UnbindBuffer(WebGLBuffer*);
 
   void Trace(Visitor*) const override;

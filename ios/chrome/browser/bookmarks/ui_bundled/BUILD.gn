@@ -1,0 +1,222 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("core") {
+  sources = [
+    "bookmark_mediator.h",
+    "bookmark_mediator.mm",
+    "bookmark_navigation_controller.h",
+    "bookmark_navigation_controller.mm",
+    "bookmark_path_cache.h",
+    "bookmark_path_cache.mm",
+  ]
+  deps = [
+    ":constants",
+    ":utils",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/sync/service",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
+    "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
+    "//ios/chrome/browser/shared/ui/util:url_with_title",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/common/ui/colors",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("utils") {
+  sources = [
+    "bookmark_utils_ios.h",
+    "bookmark_utils_ios.mm",
+    "undo_manager_bridge_observer.h",
+    "undo_manager_bridge_observer.mm",
+    "undo_manager_wrapper.h",
+    "undo_manager_wrapper.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base:i18n",
+    "//components/bookmarks/browser",
+    "//components/query_parser",
+    "//components/signin/public/identity_manager",
+    "//components/strings",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//components/undo",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/common/ui/colors",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "bookmark_ui_constants.h",
+    "bookmark_ui_constants.mm",
+  ]
+  deps = []
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "bookmark_mediator_unittest.mm",
+    "bookmark_path_cache_unittest.mm",
+    "bookmark_utils_ios_unittest.mm",
+  ]
+  deps = [
+    ":core",
+    ":utils",
+    "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/sync:test_support",
+    "//components/sync/service",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
+    "//ios/chrome/browser/bookmarks/model:test_support",
+    "//ios/chrome/browser/bookmarks/ui_bundled/home",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "bookmarks_accessibility_egtest.mm",
+    "bookmarks_egtest.mm",
+    "bookmarks_entries_egtest.mm",
+    "bookmarks_search_egtest.mm",
+    "managed_bookmarks_egtest.mm",
+  ]
+  deps = [
+    ":constants",
+    ":eg_test_support+eg2",
+    "//base/test:test_support",
+    "//components/policy:generated",
+    "//components/signin/public/base",
+    "//components/strings",
+    "//components/sync/base:features",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
+    "//ios/chrome/browser/policy/model:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/authentication/cells:constants",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+    "//ios/web/public/test/http_server",
+    "//net",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "bookmark_earl_grey_app_interface.h",
+    "bookmark_earl_grey_app_interface.mm",
+  ]
+  deps = [
+    ":constants",
+    ":core",
+    ":utils",
+    "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/prefs",
+    "//components/query_parser",
+    "//components/strings",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/ui_bundled/home",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing:nserror_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/third_party/earl_grey2:app_framework+link",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "bookmark_earl_grey.h",
+    "bookmark_earl_grey.mm",
+    "bookmark_earl_grey_app_interface.h",
+    "bookmark_earl_grey_app_interface_stub.mm",
+    "bookmark_earl_grey_ui.h",
+    "bookmark_earl_grey_ui.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base/test:test_support",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/table_view:constants",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test/http_server",
+    "//ui/base",
+    "//url",
+  ]
+}

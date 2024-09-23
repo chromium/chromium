@@ -55,7 +55,8 @@ class NET_EXPORT_PRIVATE ObservationBuffer {
 
   // Adds |observation| to the buffer. The oldest observation in the buffer
   // will be evicted to make room if the buffer is already full.
-  void AddObservation(const Observation& observation);
+  // In that case, an evicted observation will be returned.
+  std::optional<Observation> AddObservation(const Observation& observation);
 
   // Returns the number of observations in this buffer.
   size_t Size() const { return static_cast<size_t>(observations_.size()); }

@@ -172,14 +172,13 @@ KeyframeEffect* KeyframeEffect::Create(
     if (element) {
       element->GetDocument().UpdateStyleAndLayoutTreeForElement(
           element, DocumentUpdateReason::kWebAnimation);
-      PseudoId pseudo_id =
-          CSSSelectorParser::ParsePseudoElement(pseudo, element);
-      AtomicString pseudo_argument =
-          PseudoElementHasArguments(pseudo_id)
-              ? CSSSelectorParser::ParsePseudoElementArgument(pseudo)
-              : WTF::g_null_atom;
+
+      AtomicString pseudo_argument = WTF::g_null_atom;
+
+      PseudoId pseudo_id = CSSSelectorParser::ParsePseudoElement(
+          pseudo, element, pseudo_argument);
       effect->effect_target_ =
-          element->GetNestedPseudoElement(pseudo_id, pseudo_argument);
+          element->GetStyledPseudoElement(pseudo_id, pseudo_argument);
     }
   }
   return effect;
@@ -255,6 +254,7 @@ void KeyframeEffect::setPseudoElement(String pseudo,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "A valid pseudo-selector must be null or start with ::.");
+    return;
   }
 
   RefreshTarget();
@@ -269,9 +269,10 @@ void KeyframeEffect::RefreshTarget() {
   } else {
     target_element_->GetDocument().UpdateStyleAndLayoutTreeForElement(
         target_element_, DocumentUpdateReason::kWebAnimation);
-    PseudoId pseudoId =
-        CSSSelectorParser::ParsePseudoElement(target_pseudo_, target_element_);
-    new_target = target_element_->GetPseudoElement(pseudoId);
+    AtomicString argument;
+    PseudoId pseudoId = CSSSelectorParser::ParsePseudoElement(
+        target_pseudo_, target_element_, argument);
+    new_target = target_element_->GetPseudoElement(pseudoId, argument);
   }
 
   if (new_target != effect_target_) {
@@ -524,10 +525,10 @@ void KeyframeEffect::Trace(Visitor* visitor) const {
 
 namespace {
 
-static const size_t num_transform_properties = 4;
+using TransformPropertiesArray = std::array<const CSSProperty*, 4>;
 
-const CSSProperty** TransformProperties() {
-  static const CSSProperty* kTransformProperties[num_transform_properties] = {
+const TransformPropertiesArray& TransformProperties() {
+  static const TransformPropertiesArray kTransformProperties{
       &GetCSSPropertyTransform(), &GetCSSPropertyScale(),
       &GetCSSPropertyRotate(), &GetCSSPropertyTranslate()};
   return kTransformProperties;
@@ -537,14 +538,13 @@ const CSSProperty** TransformProperties() {
 
 bool KeyframeEffect::UpdateBoxSizeAndCheckTransformAxisAlignment(
     const gfx::SizeF& box_size) {
-  static const auto** properties = TransformProperties();
   bool preserves_axis_alignment = true;
   bool has_transform = false;
   TransformOperation::BoxSizeDependency size_dependencies =
       TransformOperation::kDependsNone;
-  for (size_t i = 0; i < num_transform_properties; i++) {
+  for (const auto* property : TransformProperties()) {
     const auto* keyframes =
-        Model()->GetPropertySpecificKeyframes(PropertyHandle(*properties[i]));
+        Model()->GetPropertySpecificKeyframes(PropertyHandle(*property));
     if (!keyframes)
       continue;
 
@@ -595,10 +595,9 @@ void KeyframeEffect::RestartRunningAnimationOnCompositor() {
 }
 
 bool KeyframeEffect::IsIdentityOrTranslation() const {
-  static const auto** properties = TransformProperties();
-  for (size_t i = 0; i < num_transform_properties; i++) {
+  for (const auto* property : TransformProperties()) {
     const auto* keyframes =
-        Model()->GetPropertySpecificKeyframes(PropertyHandle(*properties[i]));
+        Model()->GetPropertySpecificKeyframes(PropertyHandle(*property));
     if (!keyframes)
       continue;
 
@@ -632,15 +631,34 @@ void KeyframeEffect::ApplyEffects() {
   DCHECK(iteration);
   DCHECK_GE(iteration.value(), 0);
   bool changed = false;
+
+  // Determine if the left or right limit is used when at a discontinuity in
+  // timing function.  The css-easing spec calls for using a "before flag", and
+  // instructions for setting the flag are in the web-animations-1 spec.
+  // The term "before" is somehwat convoluted since the before flag is to be set
+  // to true of in the before phase of the animation and playing forward, or in
+  // the after phase of the animation and playing backwards. Using limit
+  // direction in place of a "before" flag since the ultimate goal is to
+  // determine the one-sided limit to use.
+  // See https://drafts.csswg.org/css-easing/#step-easing-algo
+  // See
+  // https://www.w3.org/TR/web-animations-1/#calculating-the-transformed-progress
+  // TODO(crbug.com/347967022): Fix reversed animation in the after phase.
+  TimingFunction::LimitDirection limit_direction =
+      (GetPhase() == Timing::kPhaseBefore)
+          ? TimingFunction::LimitDirection::LEFT
+          : TimingFunction::LimitDirection::RIGHT;
+
   if (sampled_effect_) {
     changed =
         model_->Sample(ClampTo<int>(iteration.value(), 0), Progress().value(),
-                       NormalizedTiming().iteration_duration,
+                       limit_direction, NormalizedTiming().iteration_duration,
                        sampled_effect_->MutableInterpolations());
   } else {
     HeapVector<Member<Interpolation>> interpolations;
     model_->Sample(ClampTo<int>(iteration.value(), 0), Progress().value(),
-                   NormalizedTiming().iteration_duration, interpolations);
+                   limit_direction, NormalizedTiming().iteration_duration,
+                   interpolations);
     if (!interpolations.empty()) {
       auto* sampled_effect =
           MakeGarbageCollected<SampledEffect>(this, owner_->SequenceNumber());
@@ -769,7 +787,7 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
       }
       return local_time.value() - after_time;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return AnimationTimeDelta::Max();
   }
 }
@@ -790,10 +808,10 @@ bool KeyframeEffect::HasIncompatibleStyle() const {
 
   if (HasActiveAnimationsOnCompositor()) {
     if (effect_target_->GetComputedStyle()->HasOffset()) {
-      static const auto** properties = TransformProperties();
-      for (size_t i = 0; i < num_transform_properties; i++) {
-        if (Affects(PropertyHandle(*properties[i])))
+      for (const auto* property : TransformProperties()) {
+        if (Affects(PropertyHandle(*property))) {
           return true;
+        }
       }
     }
   }
@@ -845,11 +863,9 @@ ActiveInterpolationsMap KeyframeEffect::InterpolationsForCommitStyles() {
 }
 
 void KeyframeEffect::SetLogicalPropertyResolutionContext(
-    TextDirection text_direction,
-    WritingMode writing_mode) {
+    WritingDirectionMode writing_direction) {
   if (auto* model = DynamicTo<StringKeyframeEffectModel>(Model())) {
-    if (model->SetLogicalPropertyResolutionContext(text_direction,
-                                                   writing_mode)) {
+    if (model->SetLogicalPropertyResolutionContext(writing_direction)) {
       ClearEffects();
       InvalidateAndNotifyOwner();
     }

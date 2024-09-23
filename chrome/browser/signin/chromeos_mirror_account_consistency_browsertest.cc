@@ -21,7 +21,7 @@
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
@@ -31,11 +31,6 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#include "components/supervised_user/core/common/supervised_user_constants.h"
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace {
 
@@ -114,7 +109,6 @@ class ChromeOsMirrorAccountConsistencyTest : public ash::LoginManagerTest {
   std::unique_ptr<net::EmbeddedTestServer> test_server_;
 };
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 // Mirror is enabled for child accounts.
 IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
                        TestMirrorRequestChromeOsChildAccount) {
@@ -154,7 +148,6 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
       "source=Chrome,mode=1,enable_account_consistency=true,supervised=false,"
       "consistency_enabled_by_default=false");
 }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 // Mirror is enabled for non-child accounts.
 IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,

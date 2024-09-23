@@ -68,8 +68,11 @@ class DataDecoder {
       ResultCallback<net::structured_headers::ParameterizedItem>;
   using StructuredHeaderParseListCallback =
       ResultCallback<net::structured_headers::List>;
+  using StructuredHeaderParseDictionaryCallback =
+      ResultCallback<net::structured_headers::Dictionary>;
   using ValueParseCallback = ResultCallback<base::Value>;
   using GzipperCallback = ResultCallback<mojo_base::BigBuffer>;
+  using ValidationCallback = ResultCallback<bool>;
   using CancellationFlag = base::RefCountedData<bool>;
 
   // Returns a raw interface to the service instance. This launches an instance
@@ -123,6 +126,23 @@ class DataDecoder {
   static void ParseStructuredHeaderListIsolated(
       const std::string& header,
       StructuredHeaderParseListCallback callback);
+
+  // Parses the potentially unsafe string in `header` as a structured header
+  // dictionary using this DataDecoder's service instance or some other
+  // platform-specific decoding facility.
+  //
+  // Note that `callback` will only be called if the parsing operation succeeds
+  // or fails before this DataDecoder is destroyed.
+  void ParseStructuredHeaderDictionary(
+      const std::string& header,
+      StructuredHeaderParseDictionaryCallback callback);
+
+  // Parses the potentially unsafe string in `header` as a structured header
+  // dictionary. This static helper uses a dedicated instance of the Data
+  // Decoder service on applicable platforms.
+  static void ParseStructuredHeaderDictionaryIsolated(
+      const std::string& header,
+      StructuredHeaderParseDictionaryCallback callback);
 
   // Parses the potentially unsafe XML string in |xml| using this
   // DataDecoder's service instance. The Value provided to the callback
@@ -192,6 +212,10 @@ class DataDecoder {
   // platforms.
   static void ParseCborIsolated(base::span<const uint8_t> cbor,
                                 ValueParseCallback callback);
+
+  // Validates the format of the potentially unsafe `pix_code`.
+  void ValidatePixCode(const std::string& pix_code,
+                       ValidationCallback callback);
 
  private:
   // The amount of idle time to tolerate on a DataDecoder instance. If the

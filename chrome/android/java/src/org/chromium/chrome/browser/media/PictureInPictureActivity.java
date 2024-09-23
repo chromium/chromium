@@ -527,7 +527,6 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                 public Bundle build(final Context activityContext, final Rect bounds) {
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return null;
 
-                    Bundle optionsBundle = null;
                     final Rational aspectRatio = new Rational(bounds.width(), bounds.height());
                     final PictureInPictureParams params =
                             new PictureInPictureParams.Builder()
@@ -720,6 +719,12 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             mInitiatorTab = null;
         }
         mTabObserver = null;
+
+        // If called by `closeByNative`, it means that the native side will be freed at some point
+        // after this returns.  If `!closeByNative`, then we called destroyed on our native side (if
+        // we have one).  Either way, we shouldn't refer to the native side after this.
+        // See b/40063137 for details.
+        mNativeOverlayWindowAndroid = 0;
 
         this.finish();
     }

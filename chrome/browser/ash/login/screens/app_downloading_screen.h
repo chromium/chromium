@@ -8,6 +8,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
 
 namespace ash {
 
@@ -15,7 +17,10 @@ class AppDownloadingScreenView;
 
 // This is App Downloading screen that tells the user the selected Android apps
 // are being downloaded.
-class AppDownloadingScreen : public BaseScreen {
+class AppDownloadingScreen
+    : public BaseScreen,
+      public screens_common::mojom::AppDownloadingPageHandler,
+      public OobeMojoBinder<screens_common::mojom::AppDownloadingPageHandler> {
  public:
   using TView = AppDownloadingScreenView;
 
@@ -35,7 +40,9 @@ class AppDownloadingScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+
+  // screens_common::mojom::AppDownloadingPageHandler
+  void OnContinueClicked() override;
 
  private:
   base::WeakPtr<TView> view_;

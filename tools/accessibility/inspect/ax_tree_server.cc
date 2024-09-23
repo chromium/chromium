@@ -30,7 +30,8 @@ namespace content {
 
 AXTreeServer::AXTreeServer(const AXTreeSelector& selector,
                            const ui::AXInspectScenario& scenario,
-                           ui::AXApiType::Type api) {
+                           ui::AXApiType::Type api)
+    : error(false) {
   // If an API is not supplied, use the default API for this platform.
   std::unique_ptr<AXTreeFormatter> formatter =
       api != ui::AXApiType::kNone ? AXInspectFactory::CreateFormatter(api)

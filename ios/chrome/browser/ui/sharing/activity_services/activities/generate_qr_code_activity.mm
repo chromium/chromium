@@ -29,7 +29,7 @@ NSString* const kGenerateQrCodeActivityType =
 - (instancetype)initWithURL:(const GURL&)activityURL
                       title:(NSString*)title
                     handler:(id<QRGenerationCommands>)handler {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _activityURL = activityURL;
     _title = title;
     _handler = handler;

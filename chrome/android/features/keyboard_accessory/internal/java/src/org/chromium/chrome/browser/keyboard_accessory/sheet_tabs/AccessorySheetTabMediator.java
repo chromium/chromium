@@ -17,8 +17,10 @@ import org.chromium.chrome.browser.keyboard_accessory.AccessoryToggleType;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.IbanInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PromoCodeInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
@@ -46,7 +48,7 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
     /**
      * Can be used to handle changes coming from the {@link OptionToggle}.
      *
-     * TODO(crbug.com/1099301): Remove the interface and the delegate field from this class and
+     * <p>TODO(crbug.com/40702406): Remove the interface and the delegate field from this class and
      * handle the toggle changes via the PasswordAccessorySheetMediator.
      */
     public interface ToggleChangeDelegate {
@@ -111,11 +113,16 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         for (PromoCodeInfo promoCodeInfo : accessorySheetData.getPromoCodeInfoList()) {
             items.add(new AccessorySheetDataPiece(promoCodeInfo, Type.PROMO_CODE_INFO));
         }
-        if (shouldShowTitle(accessorySheetData.getUserInfoList())) {
-            items.add(new AccessorySheetDataPiece(accessorySheetData.getTitle(), Type.TITLE));
+        if (!accessorySheetData.getUserInfoTitle().isEmpty()) {
+            items.add(
+                    new AccessorySheetDataPiece(accessorySheetData.getUserInfoTitle(), Type.TITLE));
         }
         if (!accessorySheetData.getWarning().isEmpty()) {
             items.add(new AccessorySheetDataPiece(accessorySheetData.getWarning(), Type.WARNING));
+        }
+        if (accessorySheetData.getSheetType() == AccessoryTabType.ADDRESSES) {
+            // Plus address section is displayed at the top for addresses tab.
+            addPlusAddressSection(accessorySheetData, items);
         }
         for (PasskeySection passkey : accessorySheetData.getPasskeySectionList()) {
             items.add(new AccessorySheetDataPiece(passkey, Type.PASSKEY_SECTION));
@@ -123,11 +130,28 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         for (UserInfo userInfo : accessorySheetData.getUserInfoList()) {
             items.add(new AccessorySheetDataPiece(userInfo, mUserInfoType));
         }
+        if (accessorySheetData.getSheetType() == AccessoryTabType.PASSWORDS) {
+            // Plus address section is displayed at the bottom for passwords tab.
+            addPlusAddressSection(accessorySheetData, items);
+        }
+        for (IbanInfo ibanInfo : accessorySheetData.getIbanInfoList()) {
+            items.add(new AccessorySheetDataPiece(ibanInfo, Type.IBAN_INFO));
+        }
         for (FooterCommand command : accessorySheetData.getFooterCommands()) {
             items.add(new AccessorySheetDataPiece(command, Type.FOOTER_COMMAND));
         }
 
         return items.toArray(new AccessorySheetDataPiece[0]);
+    }
+
+    private void addPlusAddressSection(
+            AccessorySheetData data, List<AccessorySheetDataPiece> items) {
+        if (!data.getPlusAddressSectionTitle().isEmpty()) {
+            items.add(new AccessorySheetDataPiece(data.getPlusAddressSectionTitle(), Type.TITLE));
+        }
+        for (PlusAddressInfo plusAddress : data.getPlusAddressInfoList()) {
+            items.add(new AccessorySheetDataPiece(plusAddress, Type.PLUS_ADDRESS_SECTION));
+        }
     }
 
     private AccessorySheetDataPiece createDataPieceForToggle(OptionToggle toggle) {
@@ -188,9 +212,5 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         assert false
                 : "Recording type for toggle of type " + toggle.getActionType() + "is not known.";
         return AccessoryToggleType.COUNT;
-    }
-
-    private boolean shouldShowTitle(List<UserInfo> userInfoList) {
-        return userInfoList.isEmpty();
     }
 }

@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("metrics") {
+  sources = [
+    "facilitated_payments_metrics.cc",
+    "facilitated_payments_metrics.h",
+  ]
+  deps = [
+    "//base",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "facilitated_payments_metrics_unittest.cc" ]
+  deps = [
+    ":metrics",
+    "//base",
+    "//base/test:test_support",
+    "//components/ukm:test_support",
+    "//testing/gtest",
+  ]
+}

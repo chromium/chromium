@@ -327,7 +327,7 @@ typedef NSMutableArray<ListItem*> SectionItems;
       return [NSIndexPath indexPathForItem:itemIndex inSection:section];
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nil;
 }
 
@@ -349,7 +349,7 @@ typedef NSMutableArray<ListItem*> SectionItems;
         DCHECK_LT(0ul, items.count);
         return 1;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return items.count;
 }
@@ -440,7 +440,7 @@ typedef NSMutableArray<ListItem*> SectionItems;
 
 @end
 
-// TODO(crbug.com/419346): Store in the browser state preference or in
+// TODO(crbug.com/41134911): Store in the browser state preference or in
 // UISceneSession.unserInfo instead of NSUserDefaults.
 @implementation ListModelCollapsedMediator
 

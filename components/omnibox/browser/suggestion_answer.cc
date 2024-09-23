@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "build/build_config.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -41,6 +42,9 @@ static constexpr char kAnswerJsonNumLines[] = "ln";
 static constexpr char kAnswerJsonImage[] = "i";
 static constexpr char kAnswerJsonImageData[] = "d";
 
+constexpr char kAnswerUsedUmaHistogramName[] =
+    "Omnibox.SuggestionUsed.AnswerInSuggest";
+
 void AppendWithSpace(const SuggestionAnswer::TextField* text,
                      std::u16string* output) {
   if (!text) {
@@ -53,6 +57,162 @@ void AppendWithSpace(const SuggestionAnswer::TextField* text,
 }
 
 }  // namespace
+
+namespace omnibox::answer_data_parser {
+
+// If necessary, concatenate scheme and host/path using only ':' as
+// separator. This is due to the results delivering strings of the form
+// "//host/path", which is web-speak for "use the enclosing page's scheme",
+// but not a valid path of a URL. The GWS frontend commonly (always?)
+// redirects to HTTPS, so we just default to that here.
+GURL GetFormattedURL(const std::string* url_string) {
+  return GURL(base::StartsWith(*url_string, "//", base::CompareCase::SENSITIVE)
+                  ? (std::string(url::kHttpsScheme) + ":" + *url_string)
+                  : *url_string);
+}
+
+void SetColorType(int text_type,
+                  omnibox::FormattedString::FormattedStringFragment* fragment) {
+  switch (text_type) {
+    case DESCRIPTION_NEGATIVE: {
+      fragment->set_color(omnibox::FormattedString::COLOR_ON_SURFACE_NEGATIVE);
+      break;
+    }
+    case DESCRIPTION_POSITIVE: {
+      fragment->set_color(omnibox::FormattedString::COLOR_ON_SURFACE_POSITIVE);
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+bool ParseJsonToFormattedStringFragment(
+    const base::Value::Dict& field_json,
+    omnibox::FormattedString* formatted_string) {
+  const std::string* text = field_json.FindString(kAnswerJsonText);
+  std::optional<int> type = field_json.FindInt(kAnswerJsonTextType);
+  const bool parsed = text && !text->empty() && type;
+  if (!parsed) {
+    return false;
+  }
+  omnibox::FormattedString::FormattedStringFragment* fragment =
+      formatted_string->add_fragments();
+  std::string unescaped_text =
+      base::UTF16ToUTF8(base::UnescapeForHTML(base::UTF8ToUTF16(*text)));
+  if (formatted_string->has_text()) {
+    // Append fragment text to FormattedString text.
+    fragment->set_start_index(formatted_string->text().size() + 1);
+    std::string full_text = formatted_string->text() + " " + unescaped_text;
+    formatted_string->set_text(full_text);
+  } else {
+    fragment->set_start_index(0);
+    formatted_string->set_text(unescaped_text);
+  }
+  fragment->set_text(unescaped_text);
+  SetColorType(type.value(), fragment);
+  return true;
+}
+
+bool ParseJsonToFormattedString(const base::Value::Dict& line_json,
+                                omnibox::FormattedString* formatted_string,
+                                omnibox::Image* image) {
+  const base::Value::Dict* inner_json =
+      line_json.FindDict(kAnswerJsonImageLine);
+  if (!inner_json) {
+    return false;
+  }
+
+  const base::Value::List* fields_json = inner_json->FindList(kAnswerJsonText);
+  if (!fields_json || fields_json->empty()) {
+    return false;
+  }
+
+  for (const base::Value& field_json : *fields_json) {
+    if (!field_json.is_dict() || !ParseJsonToFormattedStringFragment(
+                                     field_json.GetDict(), formatted_string)) {
+      return false;
+    }
+  }
+
+  const base::Value::Dict* additional_text_json =
+      inner_json->FindDict(kAnswerJsonAdditionalText);
+  if (additional_text_json && !ParseJsonToFormattedStringFragment(
+                                  *additional_text_json, formatted_string)) {
+    return false;
+  }
+
+  const std::string* accessibility_label =
+      inner_json->FindString(kAnswerJsonAccessibilityLabel);
+  if (accessibility_label) {
+    formatted_string->set_a11y_text(*accessibility_label);
+  }
+
+  const base::Value::Dict* status_text_json =
+      inner_json->FindDict(kAnswerJsonStatusText);
+  if (status_text_json && !ParseJsonToFormattedStringFragment(
+                              *status_text_json, formatted_string)) {
+    return false;
+  }
+
+  const base::Value::Dict* image_json = inner_json->FindDict(kAnswerJsonImage);
+  if (image_json) {
+    const std::string* url_string =
+        image_json->FindString(kAnswerJsonImageData);
+    if (!url_string || url_string->empty()) {
+      return false;
+    }
+
+    GURL image_url = GetFormattedURL(url_string);
+    if (!image_url.is_valid()) {
+      return false;
+    }
+    image->set_url(image_url.spec());
+  }
+  return true;
+}
+
+bool ParseJsonToAnswerData(const base::Value::Dict& answer_json,
+                           omnibox::RichAnswerTemplate* answer_template) {
+  // Ensure there are exactly two lines in the response.
+  const base::Value::List* lines_json = answer_json.FindList(kAnswerJsonLines);
+  if (!lines_json || lines_json->size() != 2) {
+    return false;
+  }
+
+  const base::Value::Dict* first_line_dict = (*lines_json)[0].GetIfDict();
+  omnibox::AnswerData* answer_data = answer_template->add_answers();
+  if (!first_line_dict || !ParseJsonToFormattedString(
+                              *first_line_dict, answer_data->mutable_headline(),
+                              answer_data->mutable_image())) {
+    return false;
+  }
+
+  const base::Value::Dict* second_line_dict = (*lines_json)[1].GetIfDict();
+  if (!second_line_dict ||
+      !ParseJsonToFormattedString(*second_line_dict,
+                                  answer_data->mutable_subhead(),
+                                  answer_data->mutable_image())) {
+    return false;
+  }
+
+  const std::string* image_url;
+  const base::Value::Dict* optional_image =
+      answer_json.FindDict(kAnswerJsonImage);
+  if (optional_image &&
+      (image_url = optional_image->FindString(kAnswerJsonImageData)) &&
+      !answer_data->image().has_url()) {
+    answer_data->mutable_image()->set_url(*image_url);
+  }
+  return true;
+}
+
+void LogAnswerUsed(omnibox::AnswerType answer_type) {
+  UMA_HISTOGRAM_ENUMERATION(kAnswerUsedUmaHistogramName, answer_type,
+                            omnibox::AnswerType_MAX);
+}
+
+}  // namespace omnibox::answer_data_parser
 
 // SuggestionAnswer::TextField -------------------------------------------------
 
@@ -174,15 +334,8 @@ bool SuggestionAnswer::ImageLine::ParseImageLine(
     if (!url_string || url_string->empty()) {
       return false;
     }
-    // If necessary, concatenate scheme and host/path using only ':' as
-    // separator. This is due to the results delivering strings of the form
-    // "//host/path", which is web-speak for "use the enclosing page's scheme",
-    // but not a valid path of a URL. The GWS frontend commonly (always?)
-    // redirects to HTTPS, so we just default to that here.
     image_line->image_url_ =
-        GURL(base::StartsWith(*url_string, "//", base::CompareCase::SENSITIVE)
-                 ? (std::string(url::kHttpsScheme) + ":" + *url_string)
-                 : *url_string);
+        omnibox::answer_data_parser::GetFormattedURL(url_string);
 
     if (!image_line->image_url_.is_valid()) {
       return false;
@@ -307,15 +460,8 @@ SuggestionAnswer::~SuggestionAnswer() = default;
 
 // static
 bool SuggestionAnswer::ParseAnswer(const base::Value::Dict& answer_json,
-                                   const std::u16string& answer_type_str,
+                                   omnibox::AnswerType answer_type,
                                    SuggestionAnswer* result) {
-  int answer_type = 0;
-  if (!base::StringToInt(answer_type_str, &answer_type)) {
-    return false;
-  }
-
-  result->set_type(answer_type);
-
   const base::Value::List* lines_json = answer_json.FindList(kAnswerJsonLines);
   if (!lines_json || lines_json->size() != 2) {
     return false;
@@ -340,23 +486,14 @@ bool SuggestionAnswer::ParseAnswer(const base::Value::Dict& answer_json,
   } else {
     result->image_url_ = result->second_line_.image_url();
   }
-  result->InterpretTextTypes();
+  result->InterpretTextTypes(answer_type);
   return true;
 }
 
 bool SuggestionAnswer::Equals(const SuggestionAnswer& answer) const {
-  return type_ == answer.type_ && image_url_ == answer.image_url_ &&
+  return image_url_ == answer.image_url_ &&
          first_line_.Equals(answer.first_line_) &&
          second_line_.Equals(answer.second_line_);
-}
-
-void SuggestionAnswer::AddImageURLsTo(URLs* urls) const {
-  // Note: first_line_.image_url() is not used in practice (so it's ignored).
-  if (image_url_.is_valid()) {
-    urls->push_back(image_url_);
-  } else if (second_line_.image_url().is_valid()) {
-    urls->push_back(second_line_.image_url());
-  }
 }
 
 size_t SuggestionAnswer::EstimateMemoryUsage() const {
@@ -369,21 +506,23 @@ size_t SuggestionAnswer::EstimateMemoryUsage() const {
   return res;
 }
 
-void SuggestionAnswer::InterpretTextTypes() {
-  switch (type()) {
-    case SuggestionAnswer::ANSWER_TYPE_WEATHER: {
-      second_line_.SetTextStyles(SuggestionAnswer::TOP_ALIGNED,
+void SuggestionAnswer::InterpretTextTypes(omnibox::AnswerType answer_type) {
+  switch (answer_type) {
+    case omnibox::ANSWER_TYPE_WEATHER: {
+      second_line_.SetTextStyles(omnibox::answer_data_parser::TOP_ALIGNED,
                                  TextStyle::SUPERIOR);
       break;
     }
-    case SuggestionAnswer::ANSWER_TYPE_FINANCE: {
+    case omnibox::ANSWER_TYPE_FINANCE: {
       first_line_.SetTextStyles(
-          SuggestionAnswer::SUGGESTION_SECONDARY_TEXT_SMALL,
+          omnibox::answer_data_parser::SUGGESTION_SECONDARY_TEXT_SMALL,
           TextStyle::SECONDARY);
-      second_line_.SetTextStyles(SuggestionAnswer::DESCRIPTION_POSITIVE,
-                                 TextStyle::POSITIVE);
-      second_line_.SetTextStyles(SuggestionAnswer::DESCRIPTION_NEGATIVE,
-                                 TextStyle::NEGATIVE);
+      second_line_.SetTextStyles(
+          omnibox::answer_data_parser::DESCRIPTION_POSITIVE,
+          TextStyle::POSITIVE);
+      second_line_.SetTextStyles(
+          omnibox::answer_data_parser::DESCRIPTION_NEGATIVE,
+          TextStyle::NEGATIVE);
       break;
     }
     default:
@@ -392,7 +531,7 @@ void SuggestionAnswer::InterpretTextTypes() {
 
   // Most answers uniformly apply different styling for each answer line.
   // Any old styles not replaced above will get these by default.
-  if (IsExceptedFromLineReversal()) {
+  if (IsExceptedFromLineReversal(answer_type)) {
     first_line_.SetTextStyles(0, TextStyle::NORMAL);
     second_line_.SetTextStyles(0, TextStyle::NORMAL_DIM);
   } else {
@@ -401,25 +540,10 @@ void SuggestionAnswer::InterpretTextTypes() {
   }
 }
 
-bool SuggestionAnswer::IsExceptedFromLineReversal() const {
-  return type() == SuggestionAnswer::ANSWER_TYPE_DICTIONARY;
+bool SuggestionAnswer::IsExceptedFromLineReversal(
+    omnibox::AnswerType answer_type) const {
+  return answer_type == omnibox::ANSWER_TYPE_DICTIONARY;
 }
-
-// static
-void SuggestionAnswer::LogAnswerUsed(
-    const std::optional<SuggestionAnswer>& answer) {
-  auto answer_type = SuggestionAnswer::ANSWER_TYPE_INVALID;
-  if (answer) {
-    answer_type = static_cast<SuggestionAnswer::AnswerType>(answer->type());
-  }
-  DCHECK_NE(-1, answer_type);  // just in case; |type_| is init'd to -1
-  UMA_HISTOGRAM_ENUMERATION(kAnswerUsedUmaHistogramName, answer_type,
-                            SuggestionAnswer::ANSWER_TYPE_TOTAL_COUNT);
-}
-
-// static
-const char SuggestionAnswer::kAnswerUsedUmaHistogramName[] =
-    "Omnibox.SuggestionUsed.AnswerInSuggest";
 
 #if BUILDFLAG(IS_ANDROID)
 namespace {
@@ -466,10 +590,11 @@ ScopedJavaLocalRef<jobject> CreateJavaImageLine(
 
 }  // namespace
 
-ScopedJavaLocalRef<jobject> SuggestionAnswer::CreateJavaObject() const {
+ScopedJavaLocalRef<jobject> SuggestionAnswer::CreateJavaObject(
+    omnibox::AnswerType answer_type) const {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_SuggestionAnswer_createSuggestionAnswer(
-      env, static_cast<int>(type_), CreateJavaImageLine(env, &first_line_),
+      env, answer_type, CreateJavaImageLine(env, &first_line_),
       CreateJavaImageLine(env, &second_line_));
 }
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DEDICATED_OR_SHARED_WORKER_FETCH_CONTEXT_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -99,7 +100,7 @@ class BLINK_PLATFORM_EXPORT WebDedicatedOrSharedWorkerFetchContext
   virtual void set_top_frame_origin(
       const blink::WebSecurityOrigin& top_frame_origin) = 0;
 
-  using RewriteURLFunction = WebURL (*)(base::StringPiece, bool);
+  using RewriteURLFunction = WebURL (*)(std::string_view, bool);
   static void InstallRewriteURLFunction(RewriteURLFunction rewrite_url);
 };
 

@@ -1,0 +1,16 @@
+<style include="healthd-internals-shared">
+  .line-chart-header {
+    height: 25px;
+  }
+
+  #lineChart {
+    display: flex;
+    height: calc(100% - 25px);
+    width: 100%;
+  }
+</style>
+<div class="full-page">
+  <h1 class="line-chart-header">[[chartHeader]]</h1>
+  <healthd-internals-line-chart id="lineChart">
+  </healthd-internals-line-chart>
+</div>

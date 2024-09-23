@@ -32,7 +32,7 @@ struct Environment {
   }
 
   base::SingleThreadTaskExecutor task_executor;
-  mojo::Remote<sharing::mojom::NearbySharingDecoder> remote;
+  mojo::Remote<::sharing::mojom::NearbySharingDecoder> remote;
   std::unique_ptr<sharing::NearbySharingDecoder> decoder;
 };
 
@@ -44,7 +44,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   environment->decoder->DecodeAdvertisement(
       buffer, base::BindOnce(
                   [](base::RunLoop* run_loop,
-                     sharing::mojom::AdvertisementPtr advertisement) {
+                     ::sharing::mojom::AdvertisementPtr advertisement) {
                     run_loop->Quit();
                   },
                   &run_loop));

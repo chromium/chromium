@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/user_manager/user_manager.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/common/extension.h"
@@ -102,15 +103,10 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
 
 bool ChromeProcessManagerDelegate::DeferCreatingStartupBackgroundHosts(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-
   // The profile may not be valid yet if it is still being initialized.
   // In that case, defer loading, since it depends on an initialized profile.
   // Background hosts will be loaded later via OnProfileAdded.
-  // http://crbug.com/222473
-  // Unit tests may not have a profile manager.
-  return (g_browser_process->profile_manager() &&
-          !g_browser_process->profile_manager()->IsValidProfile(profile));
+  return !ExtensionsBrowserClient::Get()->IsValidContext(context);
 }
 
 void ChromeProcessManagerDelegate::OnBrowserAdded(Browser* browser) {
@@ -165,8 +161,9 @@ void ChromeProcessManagerDelegate::OnProfileWillBeDestroyed(Profile* profile) {
   auto close_background_hosts = [](Profile* profile) {
     ProcessManager* manager =
         ProcessManagerFactory::GetForBrowserContextIfExists(profile);
-    if (manager)
+    if (manager) {
       manager->CloseBackgroundHosts();
+    }
   };
 
   close_background_hosts(profile);
@@ -177,8 +174,9 @@ void ChromeProcessManagerDelegate::OnProfileWillBeDestroyed(Profile* profile) {
   if (!profile->IsOffTheRecord() && profile->HasPrimaryOTRProfile()) {
     Profile* otr = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     close_background_hosts(otr);
-    if (observed_profiles_.IsObservingSource(otr))
+    if (observed_profiles_.IsObservingSource(otr)) {
       observed_profiles_.RemoveObservation(otr);
+    }
   }
 }
 

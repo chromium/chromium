@@ -16,6 +16,7 @@ bool Traits::Read(viz::mojom::FrameTimingDetailsDataView data,
                   viz::FrameTimingDetails* out) {
   return data.ReadReceivedCompositorFrameTimestamp(
              &out->received_compositor_frame_timestamp) &&
+         data.ReadEmbeddedFrameTimestamp(&out->embedded_frame_timestamp) &&
          data.ReadDrawStartTimestamp(&out->draw_start_timestamp) &&
          data.ReadSwapTimings(&out->swap_timings) &&
          data.ReadPresentationFeedback(&out->presentation_feedback);

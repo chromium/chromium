@@ -5,7 +5,7 @@
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitUntil} from '../common/js/test_error_reporting.js';
-import {XfNudge} from '../widgets/xf_nudge.js';
+import type {XfNudge} from '../widgets/xf_nudge.js';
 
 import {NudgeContainer, nudgeInfo, NudgeType} from './nudge_container.js';
 

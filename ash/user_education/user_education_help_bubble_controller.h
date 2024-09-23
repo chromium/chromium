@@ -23,7 +23,6 @@ class ElementIdentifier;
 
 namespace user_education {
 class HelpBubble;
-struct HelpBubbleParams;
 }  // namespace user_education
 
 namespace ash {
@@ -46,34 +45,6 @@ class ASH_EXPORT UserEducationHelpBubbleController {
   // Returns the singleton instance owned by the `UserEducationController`.
   // NOTE: Exists if and only if user education features are enabled.
   static UserEducationHelpBubbleController* Get();
-
-  // Attempts to create a help bubble, identified by `help_bubble_id`, with the
-  // specified `help_bubble_params` for the tracked element associated with the
-  // specified `element_id` in the specified `element_context`. A help bubble
-  // may not be created under certain circumstances, e.g. if there is already a
-  // help bubble showing or if there is an ongoing tutorial running. Iff a help
-  // bubble was created, `close_callback` is run when the help bubble is closed.
-  // NOTE: Currently only the primary user profile is supported.
-  // TODO(https://b/303280629): Lock this API down with
-  // `UserEducationPrivateApiKey`.
-  bool CreateHelpBubble(HelpBubbleId help_bubble_id,
-                        user_education::HelpBubbleParams help_bubble_params,
-                        ui::ElementIdentifier element_id,
-                        ui::ElementContext element_context,
-                        base::OnceClosure close_callback = base::DoNothing());
-
-  // Creates a help bubble just like `CreateHelpBubble()`, but also returns a
-  // `base::ScopedClosureRunner` that will close the help bubble when it is
-  // destroyed, if the help bubble is still open.
-  // NOTE: Currently only the primary user profile is supported.
-  // TODO(https://b/303280629): Lock this API down with
-  // `UserEducationPrivateApiKey`.
-  [[nodiscard]] base::ScopedClosureRunner CreateScopedHelpBubble(
-      HelpBubbleId help_bubble_id,
-      user_education::HelpBubbleParams help_bubble_params,
-      ui::ElementIdentifier element_id,
-      ui::ElementContext element_context,
-      base::OnceClosure close_callback = base::DoNothing());
 
   // Returns the unique identifier for the help bubble currently being shown for
   // the tracked element associated with the specified `element_id` in the

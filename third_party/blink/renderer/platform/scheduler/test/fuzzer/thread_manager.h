@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -77,7 +78,7 @@ class PLATFORM_EXPORT ThreadManager {
     bool is_running_;
 
     // Should outlive |this|.
-    ThreadManager* thread_manager_;
+    raw_ptr<ThreadManager> thread_manager_;
     base::WeakPtrFactory<Task> weak_ptr_factory_{this};
   };
 
@@ -161,7 +162,7 @@ class PLATFORM_EXPORT ThreadManager {
 
   // Outlives this class. |processor_| owns a thread pool manager that creates
   // threads.
-  SequenceManagerFuzzerProcessor* const processor_;
+  const raw_ptr<SequenceManagerFuzzerProcessor> processor_;
 
   THREAD_CHECKER(thread_checker_);
 };

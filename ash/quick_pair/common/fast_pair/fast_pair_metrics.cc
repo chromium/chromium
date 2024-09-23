@@ -13,7 +13,6 @@
 #include "components/cross_device/logging/logging.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
-#include "components/metrics/structured/structured_metrics_features.h"
 
 namespace {
 
@@ -21,7 +20,7 @@ const char kDeviceTypeHeadphones[] = "HeadphonesDeviceType";
 const char kDeviceTypeSpeaker[] = "SpeakerDeviceType";
 const char kDeviceTypeTrueWirelessHeadphones[] =
     "TrueWirelessHeadphonesDeviceType";
-const char kDeviceTypeInputDevice[] = "InputDeviceDeviceType";
+const char kDeviceTypeMouse[] = "MouseDeviceType";
 const char kDeviceTypeUnspecified[] = "UnspecifiedDeviceType";
 
 const char kNotificationTypeFastPair[] = "FastPairNotificationType";
@@ -598,8 +597,8 @@ std::optional<std::string> GetFastPairDeviceType(
              nearby::fastpair::DeviceType::TRUE_WIRELESS_HEADPHONES) {
     return kDeviceTypeTrueWirelessHeadphones;
   } else if (device_metadata.device_type() ==
-             nearby::fastpair::DeviceType::INPUT_DEVICE) {
-    return kDeviceTypeInputDevice;
+             nearby::fastpair::DeviceType::MOUSE) {
+    return kDeviceTypeMouse;
   } else if (device_metadata.device_type() ==
              nearby::fastpair::DeviceType::DEVICE_TYPE_UNSPECIFIED) {
     return kDeviceTypeUnspecified;
@@ -1588,10 +1587,6 @@ int GetTxPower(const device::BluetoothDevice* bt_device) {
 void RecordStructuredDiscoveryNotificationShown(
     const Device& device,
     const device::BluetoothDevice* bt_device) {
-  if (!base::FeatureList::IsEnabled(metrics::structured::kFastPairMetrics)) {
-    return;
-  }
-
   CD_LOG(INFO, Feature::FP) << __func__;
   int model_id;
   if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
@@ -1613,10 +1608,6 @@ void RecordStructuredDiscoveryNotificationShown(
 
 void RecordStructuredPairingStarted(const Device& device,
                                     const device::BluetoothDevice* bt_device) {
-  if (!base::FeatureList::IsEnabled(metrics::structured::kFastPairMetrics)) {
-    return;
-  }
-
   CD_LOG(INFO, Feature::FP) << __func__;
   int model_id;
   if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
@@ -1638,10 +1629,6 @@ void RecordStructuredPairingStarted(const Device& device,
 
 void RecordStructuredPairingComplete(const Device& device,
                                      const device::BluetoothDevice* bt_device) {
-  if (!base::FeatureList::IsEnabled(metrics::structured::kFastPairMetrics)) {
-    return;
-  }
-
   CD_LOG(INFO, Feature::FP) << __func__;
   int model_id;
   if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
@@ -1662,10 +1649,6 @@ void RecordStructuredPairingComplete(const Device& device,
 }
 
 void RecordStructuredPairFailure(const Device& device, PairFailure failure) {
-  if (!base::FeatureList::IsEnabled(metrics::structured::kFastPairMetrics)) {
-    return;
-  }
-
   CD_LOG(INFO, Feature::FP) << __func__;
   int model_id;
   if (!base::HexStringToInt(device.metadata_id(), &model_id)) {

@@ -22,6 +22,10 @@ namespace ios {
 class AccountCapabilitiesFetcherIOS;
 }  // namespace ios
 
+namespace supervised_user {
+class SupervisedUserCapabilitiesObserver;
+}  // namespace supervised_user
+
 // Stores the information about account capabilities. Capabilities provide
 // information about state and features of Gaia accounts.
 class AccountCapabilities {
@@ -48,6 +52,10 @@ class AccountCapabilities {
 #endif
   // Keep sorted alphabetically.
 
+  // Chrome can fetch information related to the family group for accounts
+  // with this capability.
+  signin::Tribool can_fetch_family_member_info() const;
+
   // Chrome can display the email address for accounts with this capability.
   signin::Tribool can_have_email_address_displayed() const;
 
@@ -68,6 +76,15 @@ class AccountCapabilities {
 
   // The user account is able to use IP Protection.
   signin::Tribool can_use_chrome_ip_protection() const;
+
+  // The user account is able to use DevTools AI features.
+  signin::Tribool can_use_devtools_generative_ai_features() const;
+
+  // The user account is able to use edu features.
+  signin::Tribool can_use_edu_features() const;
+
+  // The user account is able to use manta service.
+  signin::Tribool can_use_manta_service() const;
 
   // The user account is able to use model execution features.
   signin::Tribool can_use_model_execution_features() const;
@@ -100,17 +117,18 @@ class AccountCapabilities {
   bool UpdateWith(const AccountCapabilities& other);
 
   bool operator==(const AccountCapabilities& other) const;
-  bool operator!=(const AccountCapabilities& other) const;
 
  private:
   friend std::optional<AccountCapabilities> AccountCapabilitiesFromValue(
       const base::Value::Dict& account_capabilities);
   friend class AccountCapabilitiesFetcherGaia;
 #if BUILDFLAG(IS_IOS)
+  friend const std::vector<std::string>& GetAccountCapabilityNamesForPrefetch();
   friend class ios::AccountCapabilitiesFetcherIOS;
 #endif
   friend class AccountCapabilitiesTestMutator;
   friend class AccountTrackerService;
+  friend class supervised_user::SupervisedUserCapabilitiesObserver;
 
   // Returns the capability state using the service name.
   signin::Tribool GetCapabilityByName(const std::string& name) const;

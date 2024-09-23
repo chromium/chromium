@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/blink/renderer/modules/modules.gni")
+import("//ui/gl/features.gni")
 
 blink_modules_sources("webgpu") {
   sources = [
@@ -108,8 +109,15 @@ blink_modules_sources("webgpu") {
     "//skia",
     "//skia:skcms",
     "//third_party/blink/renderer/modules/webcodecs:webcodecs",
-    "//third_party/dawn/include/dawn:headers",
   ]
+
+  if (use_dawn) {
+    deps += [ "//third_party/dawn/src/dawn/wire" ]
+  } else {
+    # If Dawn is not used, use the proc table. This gives the WebGPU implementation
+    # something to link to, though WebGPU won't be supported.
+    deps += [ "//third_party/dawn/src/dawn:proc" ]
+  }
 }
 
 source_set("unit_tests") {

@@ -44,7 +44,11 @@ void HandleAppExitingForPlatform() {
   // This clears existing notifications from the message center and their
   // associated ScopedKeepAlives. Chrome OS doesn't use ScopedKeepAlives for
   // notifications.
-  g_browser_process->notification_ui_manager()->StartShutdown();
+  if (auto* notification_ui_manager =
+          g_browser_process->notification_ui_manager();
+      notification_ui_manager) {
+    notification_ui_manager->StartShutdown();
+  }
 #endif
 
   views::Widget::CloseAllSecondaryWidgets();

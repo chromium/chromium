@@ -41,6 +41,7 @@ class FakeLayerTreeHostImpl : public LayerTreeHostImpl {
   }
 
   void CreatePendingTree() override;
+  void EnsureSyncTree();
 
   void NotifyTileStateChanged(const Tile* tile) override;
   const viz::BeginFrameArgs& CurrentBeginFrameArgs() const override;

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/api/reading_list.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "content/public/test/browser_test.h"
@@ -19,7 +21,7 @@ IN_PROC_BROWSER_TEST_F(ReadingListApiTest, TestReadingListWorks) {
   ASSERT_TRUE(RunExtensionTest("reading_list")) << message_;
 }
 
-// TODO(crbug.com/1482646): Re-enable this test
+// TODO(crbug.com/40931607): Re-enable this test
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TestReadingListEventsAcrossProfiles \
   DISABLED_TestReadingListEventsAcrossProfiles

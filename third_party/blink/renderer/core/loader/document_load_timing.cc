@@ -186,6 +186,14 @@ void DocumentLoadTiming::SetUserTimingMarkInteractive(
   NotifyDocumentTimingChanged();
 }
 
+void DocumentLoadTiming::NotifyCustomUserTimingMarkAdded(
+    const AtomicString& mark_name,
+    const base::TimeDelta& start_time) {
+  custom_user_timing_mark_.emplace(std::make_tuple(mark_name, start_time));
+  NotifyDocumentTimingChanged();
+  custom_user_timing_mark_.reset();
+}
+
 void DocumentLoadTiming::AddRedirect(const KURL& redirecting_url,
                                      const KURL& redirected_url) {
   redirect_count_++;
@@ -287,8 +295,8 @@ void DocumentLoadTiming::MarkCommitNavigationEnd() {
 
 void DocumentLoadTiming::SetActivationStart(base::TimeTicks activation_start) {
   activation_start_ = activation_start;
-  TRACE_EVENT_MARK_WITH_TIMESTAMP1("blink.user_timing", "activationtart",
-                                   activation_start, "frame",
+  TRACE_EVENT_MARK_WITH_TIMESTAMP1("blink.user_timing", "activationStart",
+                                   activation_start_, "frame",
                                    GetFrameIdForTracing(GetFrame()));
   NotifyDocumentTimingChanged();
 }

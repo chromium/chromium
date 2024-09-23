@@ -264,7 +264,7 @@ state” of the pipeline.
 
 ## Web Codecs Receiver
 
-TODO(crbug.com/1208196): Add these details
+TODO(crbug.com/40765922): Add these details
 
 # Appendix
 

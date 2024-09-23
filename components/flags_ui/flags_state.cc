@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/flags_ui/flags_state.h"
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -16,9 +22,9 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/not_fatal_until.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -92,7 +98,7 @@ bool IsDefaultValue(const FeatureEntry& entry,
       }
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
@@ -174,7 +180,7 @@ std::vector<std::string> TokenizeOriginList(const std::string& value) {
   base::StringTokenizer tokenizer(input, delimiters);
   std::vector<std::string> origin_strings;
   while (tokenizer.GetNext()) {
-    base::StringPiece token = tokenizer.token_piece();
+    std::string_view token = tokenizer.token_piece();
     DCHECK(!token.empty());
     const GURL url(token);
     if (!url.is_valid() ||
@@ -359,7 +365,7 @@ void FlagsState::GetSwitchesAndFeaturesFromFlags(
 
   for (const std::string& entry_name : enabled_entries) {
     const auto& entry_it = name_to_switch_map.find(entry_name);
-    DCHECK(entry_it != name_to_switch_map.end());
+    CHECK(entry_it != name_to_switch_map.end(), base::NotFatalUntil::M130);
 
     const SwitchEntry& entry = entry_it->second;
     if (!entry.switch_name.empty())
@@ -511,9 +517,9 @@ void FlagsState::RemoveFlagsSwitches(
     const std::string& existing_value_utf8 = existing_value;
 #endif
 
-    std::vector<base::StringPiece> features =
+    std::vector<std::string_view> features =
         base::FeatureList::SplitFeatureListString(existing_value_utf8);
-    std::vector<base::StringPiece> remaining_features;
+    std::vector<std::string_view> remaining_features;
     // For any featrue name in |features| that is not in |switch_added_values| -
     // i.e. it wasn't added by about_flags code, add it to |remaining_features|.
     for (const auto& feature : features) {
@@ -668,6 +674,14 @@ void FlagsState::GetFlagFeatureEntries(
     bool is_default_value = IsDefaultValue(entry, enabled_entries);
     data.Set("is_default", is_default_value);
 
+    if (!entry.links.empty()) {
+      base::Value::List links;
+      for (auto* link : entry.links) {
+        links.Append(link);
+      }
+      data.Set("links", std::move(links));
+    }
+
     switch (entry.type) {
       case FeatureEntry::SINGLE_VALUE:
       case FeatureEntry::SINGLE_DISABLE_VALUE:
@@ -796,7 +810,7 @@ void FlagsState::AddSwitchesToCommandLine(
   for (const std::string& entry_name : enabled_entries) {
     const auto& entry_it = name_to_switch_map.find(entry_name);
     if (entry_it == name_to_switch_map.end()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
 
@@ -837,7 +851,7 @@ void FlagsState::MergeFeatureCommandLineSwitch(
     base::CommandLine* command_line) {
   std::string original_switch_value =
       command_line->GetSwitchValueASCII(switch_name);
-  std::vector<base::StringPiece> features =
+  std::vector<std::string_view> features =
       base::FeatureList::SplitFeatureListString(original_switch_value);
   // Only add features that don't already exist in the lists.
   // Note: The base::Contains() call results in O(n^2) performance, but in

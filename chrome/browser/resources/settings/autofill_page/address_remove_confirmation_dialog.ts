@@ -70,8 +70,8 @@ export class SettingsAddressRemoveConfirmationDialogElement extends
   private computeIsAccountAddress_(
       address: chrome.autofillPrivate.AddressEntry): boolean {
     return address.metadata !== undefined &&
-        address.metadata.source ===
-        chrome.autofillPrivate.AddressSource.ACCOUNT;
+        address.metadata.recordType ===
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT;
   }
 
   private computeIsProfileSyncEnabled_(

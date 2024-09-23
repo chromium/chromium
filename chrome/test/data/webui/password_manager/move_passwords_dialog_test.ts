@@ -115,7 +115,7 @@ suite('AddPasswordDialogTest', function() {
     passwords.forEach(
         item => item.affiliatedDomains = [createAffiliatedDomain('test.com')]);
     passwordManager.setRequestCredentialsDetailsResponse(passwords);
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
 
     syncProxy.accountInfo = {
       email: 'test@gmail.com',
@@ -146,7 +146,7 @@ suite('AddPasswordDialogTest', function() {
     });
 
     passwordManager.setRequestCredentialsDetailsResponse([password]);
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
 
     syncProxy.accountInfo = {
       email: 'test@gmail.com',
@@ -177,7 +177,7 @@ suite('AddPasswordDialogTest', function() {
     passwords.forEach(
         item => item.affiliatedDomains = [createAffiliatedDomain('test.com')]);
     passwordManager.setRequestCredentialsDetailsResponse(passwords);
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
 
     syncProxy.accountInfo = {
       email: 'test@gmail.com',
@@ -199,6 +199,7 @@ suite('AddPasswordDialogTest', function() {
 
     // Deselect 2nd item.
     passwordItems[1]!.$.checkbox.click();
+    await passwordItems[1]!.$.checkbox.updateComplete;
 
     dialog.$.move.click();
 
@@ -227,7 +228,7 @@ suite('AddPasswordDialogTest', function() {
     passwords.forEach(
         item => item.affiliatedDomains = [createAffiliatedDomain('test.com')]);
     passwordManager.setRequestCredentialsDetailsResponse(passwords);
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
 
     syncProxy.accountInfo = {
       email: 'test@gmail.com',
@@ -246,7 +247,11 @@ suite('AddPasswordDialogTest', function() {
     const passwordItems =
         dialog.shadowRoot!.querySelectorAll('password-preview-item');
     assertEquals(3, passwordItems.length);
-    passwordItems.forEach(item => item.$.checkbox.click());
+
+    for (const item of passwordItems) {
+      item.$.checkbox.click();
+      await item.$.checkbox.updateComplete;
+    }
 
     assertTrue(dialog.$.move.disabled);
   });

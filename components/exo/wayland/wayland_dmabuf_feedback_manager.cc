@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/exo/wayland/wayland_dmabuf_feedback_manager.h"
 
 #include <bits/types.h>
@@ -297,7 +302,8 @@ class WaylandDmabufSurfaceFeedbackResourceWrapper {
   void SetInert() { surface_feedback_ = nullptr; }
 
  private:
-  raw_ptr<WaylandDmabufSurfaceFeedback> surface_feedback_;
+  // Dangling when starting Borealis and Steam starts updating.
+  raw_ptr<WaylandDmabufSurfaceFeedback, DanglingUntriaged> surface_feedback_;
   raw_ptr<wl_resource> resource_;
 };
 

@@ -19,6 +19,7 @@
 #include "RecordInfo.h"
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Sema/Sema.h"
+#include "llvm/Support/TimeProfiler.h"
 
 using namespace clang;
 
@@ -102,6 +103,8 @@ BlinkGCPluginConsumer::BlinkGCPluginConsumer(
 }
 
 void BlinkGCPluginConsumer::HandleTranslationUnit(ASTContext& context) {
+  llvm::TimeTraceScope TimeScope(
+      "BlinkGCPluginConsumer::HandleTranslationUnit");
   // Don't run the plugin if the compilation unit is already invalid.
   if (reporter_.hasErrorOccurred())
     return;

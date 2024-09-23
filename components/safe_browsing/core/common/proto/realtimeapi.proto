@@ -11,6 +11,7 @@ option optimize_for = LITE_RUNTIME;
 
 package safe_browsing;
 
+import "components/enterprise/common/proto/connectors.proto";
 import "components/safe_browsing/core/common/proto/csd.proto";
 
 message RTLookupRequest {
@@ -33,10 +34,29 @@ message RTLookupRequest {
   // Deprecated
   optional string DEPRECATED_scoped_oauth_token = 4 [deprecated = true];
 
-  // The DM Token for Enterprise-enrolled devices (go/uss-dmtoken).
+  // The DM Token for Enterprise-enrolled devices (go/cbe-dmtoken). May contain
+  // either a device or a profile DM token. The device DM token takes precedence
+  // when both are present.
   optional string dm_token = 5;
 
-  // |version| helps the Safe Browsing server understand what verison of the
+  // DM token for managed profile.
+  // For more information on DM tokens, see go/cbe-dmtoken
+  optional string profile_dm_token = 11;
+
+  // DM token for managed device.
+  // For more information on DM tokens, see go/cbe-dmtoken
+  optional string browser_dm_token = 12;
+
+  // This field contains additional information about the browser and device or
+  // profile, this information is used for security event reporting.
+  // Only populated for Enterprise Protego requests.
+  optional enterprise_connectors.ClientMetadata client_reporting_metadata = 14;
+
+  // Email of the signed-in user that triggered the request, if available.
+  // Only populated for enterprise requests.
+  optional string email = 13;
+
+  // |version| helps the Safe Browsing server understand what version of the
   // proto Chrome understands, and also what kinds of behaviours it supports.
   // It should be incremented when adding new fields and/or when making changes
   // to how existing fields may be interpreted.
@@ -56,7 +76,7 @@ message RTLookupRequest {
     OS_TYPE_UNSPECIFIED = 0;
     OS_TYPE_ANDROID = 1;
     OS_TYPE_CHROME_OS = 2;
-    OS_TYPE_FUCHSIA = 3;
+    // Deprecated: OS_TYPE_FUCHSIA = 3;
     OS_TYPE_IOS = 4;
     OS_TYPE_LINUX = 5;
     OS_TYPE_MAC = 6;
@@ -119,7 +139,6 @@ message RTLookupResponse {
     // This field is only used by previous versions of Chrome(M81 Canary and
     // Dev) that only support "COVERING_MATCH". This field is deprecated in
     // favor of "cache_expression_using_match_type" below.
-    // Deprecated in M93.
     optional string cache_expression = 3 [deprecated = true];
 
     // Type of verdicts issued by the server. Different levels of verdicts from
@@ -258,4 +277,9 @@ message MatchedUrlNavigationRule {
   // Also includes information about the user for whom the rule was triggered,
   // and the timestamp of the triggered rule event.
   optional WatermarkMessage watermark_message = 6;
+
+  reserved 7;
+
+  // Whether the matched rule need to block screenshots.
+  optional bool block_screenshot = 8;
 }

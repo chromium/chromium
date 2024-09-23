@@ -253,8 +253,13 @@ class BottomSheetSwipeDetector extends GestureDetector.SimpleOnGestureListener {
         return mIsScrolling;
     }
 
+    void setShouldLongPressMoveSheet(boolean shouldMoveSheet) {
+        mGestureDetector.setIsLongpressEnabled(!shouldMoveSheet);
+    }
+
     /**
      * Creates an unadjusted version of a MotionEvent.
+     *
      * @param e The original event.
      * @return The unadjusted version of the event.
      */

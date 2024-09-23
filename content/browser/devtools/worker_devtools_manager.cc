@@ -24,7 +24,7 @@ WorkerDevToolsManager::WorkerDevToolsManager() = default;
 WorkerDevToolsManager::~WorkerDevToolsManager() = default;
 
 DedicatedWorkerDevToolsAgentHost* WorkerDevToolsManager::GetDevToolsHost(
-    DedicatedWorkerHost* host) {
+    const DedicatedWorkerHost* host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto it = hosts_.find(host);
@@ -37,14 +37,16 @@ WorkerDevToolsManager::GetDevToolsHostFromToken(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (const auto& it : hosts_) {
-    if (it.second->devtools_worker_token() == token)
+    if (it.second->devtools_worker_token() == token) {
       return it.second.get();
+    }
   }
+
   return nullptr;
 }
 
 void WorkerDevToolsManager::WorkerCreated(
-    DedicatedWorkerHost* host,
+    const DedicatedWorkerHost* host,
     int process_id,
     const GlobalRenderFrameHostId& ancestor_render_frame_host_id,
     scoped_refptr<DevToolsThrottleHandle> throttle_handle) {
@@ -61,7 +63,7 @@ void WorkerDevToolsManager::WorkerCreated(
       std::move(throttle_handle));
 }
 
-void WorkerDevToolsManager::WorkerDestroyed(DedicatedWorkerHost* host) {
+void WorkerDevToolsManager::WorkerDestroyed(const DedicatedWorkerHost* host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   hosts_.erase(host);
 }

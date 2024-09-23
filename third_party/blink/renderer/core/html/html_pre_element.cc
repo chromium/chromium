@@ -47,7 +47,7 @@ void HTMLPreElement::CollectStyleForPresentationAttribute(
     // Longhands of `white-space: pre-wrap`.
     style->SetLonghandProperty(CSSPropertyID::kWhiteSpaceCollapse,
                                CSSValueID::kPreserve);
-    style->SetLonghandProperty(CSSPropertyID::kTextWrap, CSSValueID::kWrap);
+    style->SetLonghandProperty(CSSPropertyID::kTextWrapMode, CSSValueID::kWrap);
   } else {
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);
   }

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -181,11 +182,28 @@ const cryptohome::AuthFactor* SessionAuthFactors::FindRecoveryFactor() const {
   return FindFactorByType(cryptohome::AuthFactorType::kRecovery);
 }
 
+const cryptohome::AuthFactor* SessionAuthFactors::FindSmartCardFactor() const {
+  DCHECK(keys_.empty());
+  return FindFactorByType(cryptohome::AuthFactorType::kSmartCard);
+}
+
 const std::vector<cryptohome::AuthFactorType>
 SessionAuthFactors::GetSessionFactors() const {
   std::vector<cryptohome::AuthFactorType> result;
   for (auto factor : session_factors_) {
     result.push_back(factor.ref().type());
+  }
+  return result;
+}
+
+const std::vector<cryptohome::KeyLabel>
+SessionAuthFactors::GetFactorLabelsByType(
+    cryptohome::AuthFactorType type) const {
+  std::vector<cryptohome::KeyLabel> result;
+  for (auto factor : session_factors_) {
+    if (factor.ref().type() == type) {
+      result.push_back(factor.ref().label());
+    }
   }
   return result;
 }

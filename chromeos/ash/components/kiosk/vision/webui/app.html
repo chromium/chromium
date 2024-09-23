@@ -1,0 +1,92 @@
+<!-- Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. -->
+
+<style>
+  #featureRunningText,
+  #featureDisabledText,
+  #featureEnabledText {
+    font-weight: bold;
+  }
+
+  #rootContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    /* Viewport width minus padding. */
+    width: calc(100vw - 20px);
+    /* Viewport height minus padding. */
+    height: calc(100vh - 20px);
+    background: #3f3f46;
+  }
+
+  #cameraFeedContainer {
+    position: relative;
+  }
+
+  #cameraFeed {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow:
+      0 0 #0000,
+      0 0 #0000,
+      0 10px 15px -3px rgb(0 0 0 / 0.4),
+      0 4px 6px -4px rgb(0 0 0 / 0.4);
+  }
+
+  @media(max-aspect-ratio: 4/3) {
+
+    #cameraFeedContainer,
+    #cameraFeed {
+      width: 100%;
+    }
+  }
+
+  @media(min-aspect-ratio: 4/3) {
+
+    #cameraFeedContainer,
+    #cameraFeed {
+      height: 100%;
+    }
+  }
+
+  #overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+</style>
+
+<div hidden$="[[!statusIs_(state_, 'kRunning')]]">
+  <div id="rootContainer">
+    <div id="cameraFeedContainer">
+      <video id="cameraFeed" autoplay="true"></video>
+      <canvas id="overlay"></canvas>
+    </div>
+  </div>
+</div>
+
+<h1 hidden$="[[statusIs_(state_, 'kRunning')]]">Kiosk Vision Internals</h1>
+
+<div hidden$="[[!statusIs_(state_, 'kUnknown')]]">
+  <p>Unknown status. Possibly still loading...</p>
+</div>
+
+<div hidden$="[[!statusIs_(state_, 'kFeatureDisabled')]]">
+  <p>
+    The Kiosk Vision feature <span id="featureDisabledText">is disabled</span>.
+  </p>
+</div>
+
+<div hidden$="[[!statusIs_(state_, 'kFeatureNotInitialized')]]">
+  <p>
+    The Kiosk Vision feature <span id="featureEnabledText">is enabled</span>
+    but not yet initialized.
+  </p>
+  <p>Possibly still loading...</p>
+</div>
+
+<div hidden$="[[!statusIs_(state_, 'kError')]]">
+  <p>There has been an error.</p>
+</div>

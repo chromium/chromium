@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -15,25 +15,21 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
+import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable.TabSwitcherDrawableLocation;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.widget.Toast;
 
 /**
  * A button displaying the number of open tabs. Clicking the button toggles the tab switcher view.
  * TODO(twellington): Replace with TabSwitcherButtonCoordinator so code can be shared with bottom
  * toolbar.
  */
-public class ToggleTabStackButton extends ListMenuButton
-        implements View.OnClickListener, View.OnLongClickListener {
+public class ToggleTabStackButton extends ListMenuButton {
     private final Callback<Integer> mTabCountSupplierObserver;
     private TabSwitcherDrawable mTabSwitcherButtonDrawable;
     private ObservableSupplier<Integer> mTabCountSupplier;
     private Supplier<Boolean> mIsIncognitoSupplier;
-    private OnClickListener mTabSwitcherListener;
-    private OnLongClickListener mTabSwitcherLongClickListener;
 
     public ToggleTabStackButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -51,10 +47,10 @@ public class ToggleTabStackButton extends ListMenuButton
 
         mTabSwitcherButtonDrawable =
                 TabSwitcherDrawable.createTabSwitcherDrawable(
-                        getContext(), BrandedColorScheme.APP_DEFAULT);
+                        getContext(),
+                        BrandedColorScheme.APP_DEFAULT,
+                        TabSwitcherDrawableLocation.TAB_TOOLBAR);
         setImageDrawable(mTabSwitcherButtonDrawable);
-        setOnClickListener(this);
-        setOnLongClickListener(this);
     }
 
     /** Called to destroy the tab stack button. */
@@ -64,27 +60,13 @@ public class ToggleTabStackButton extends ListMenuButton
         }
     }
 
-    /**
-     * Sets the OnClickListener that will be notified when the TabSwitcher button is pressed.
-     * @param listener The callback that will be notified when the TabSwitcher button is pressed.
-     */
-    void setOnTabSwitcherClickHandler(OnClickListener listener) {
-        mTabSwitcherListener = listener;
-    }
-
-    /**
-     * Sets the OnLongClickListern that will be notified when the TabSwitcher button is long
-     *         pressed.
-     * @param listener The callback that will be notified when the TabSwitcher button is long
-     *         pressed.
-     */
-    void setOnTabSwitcherLongClickHandler(OnLongClickListener listener) {
-        mTabSwitcherLongClickListener = listener;
-    }
-
     void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
         mTabSwitcherButtonDrawable.setTint(
                 ThemeUtils.getThemedToolbarIconTint(getContext(), brandedColorScheme));
+        mTabSwitcherButtonDrawable.setNotificationBackground(brandedColorScheme);
+        if (mIsIncognitoSupplier != null) {
+            mTabSwitcherButtonDrawable.setIncognitoStatus(mIsIncognitoSupplier.get());
+        }
     }
 
     /**
@@ -99,23 +81,6 @@ public class ToggleTabStackButton extends ListMenuButton
     }
 
     @Override
-    public void onClick(View v) {
-        if (mTabSwitcherListener != null && isClickable()) {
-            mTabSwitcherListener.onClick(this);
-        }
-    }
-
-    @Override
-    public boolean onLongClick(View v) {
-        if (mTabSwitcherLongClickListener != null && isLongClickable()) {
-            return mTabSwitcherLongClickListener.onLongClick(v);
-        } else {
-            CharSequence description = getResources().getString(R.string.open_tabs);
-            return Toast.showAnchoredToast(getContext(), v, description);
-        }
-    }
-
-    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         try (TraceEvent e = TraceEvent.scoped("ToggleTabStackButton.onMeasure")) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -127,5 +92,34 @@ public class ToggleTabStackButton extends ListMenuButton
         try (TraceEvent e = TraceEvent.scoped("ToggleTabStackButton.onLayout")) {
             super.onLayout(changed, left, top, right, bottom);
         }
+    }
+
+    /**
+     * Draws the current visual state of this component for the purposes of rendering the tab
+     * switcher animation, setting the alpha to fade the view by the appropriate amount.
+     *
+     * @param canvas Canvas to draw to.
+     * @param alpha Integer (0-255) alpha level to draw at.
+     */
+    public void drawTabSwitcherAnimationOverlay(Canvas canvas, int alpha) {
+        int backgroundWidth = mTabSwitcherButtonDrawable.getIntrinsicWidth();
+        int backgroundHeight = mTabSwitcherButtonDrawable.getIntrinsicHeight();
+        int backgroundLeft =
+                (getWidth() - getPaddingLeft() - getPaddingRight() - backgroundWidth) / 2;
+        backgroundLeft += getPaddingLeft();
+        int backgroundTop =
+                (getHeight() - getPaddingTop() - getPaddingBottom() - backgroundHeight) / 2;
+        backgroundTop += getPaddingTop();
+        canvas.translate(backgroundLeft, backgroundTop);
+
+        int previousAlpha = mTabSwitcherButtonDrawable.getAlpha();
+        mTabSwitcherButtonDrawable.setAlpha(255);
+        mTabSwitcherButtonDrawable.draw(canvas);
+        // restore alpha.
+        getDrawable().setAlpha(previousAlpha);
+    }
+
+    public TabSwitcherDrawable getTabSwitcherDrawableForTesting() {
+        return mTabSwitcherButtonDrawable;
     }
 }

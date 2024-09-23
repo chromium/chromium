@@ -15,12 +15,14 @@
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/address_profile_save_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -46,9 +48,13 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
+#include "components/autofill/core/browser/payments/iban_save_manager.h"
+#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/profile_requirement_utils.h"
 #include "components/autofill/core/browser/validation.h"
@@ -79,7 +85,7 @@ bool IsValidFieldTypeAndValue(
   // field;
   // - phone number components because a form might request several phone
   // numbers.
-  // TODO(crbug.com/1156315) Clean up when launched.
+  // TODO(crbug.com/40735892) Clean up when launched.
   FieldTypeGroup field_type_group = GroupTypeOfFieldType(field_type);
   if (observed_types.contains(field_type) && field_type != EMAIL_ADDRESS &&
       (!base::FeatureList::IsEnabled(
@@ -116,11 +122,6 @@ bool ShouldOfferVirtualCardEnrollment(
   if (!base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCards)) {
     return false;
   }
-#else
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableUpdateVirtualCardEnrollment)) {
-    return false;
-  }
 #endif
 
   if (!extracted_credit_card) {
@@ -144,8 +145,8 @@ bool ShouldOfferVirtualCardEnrollment(
 bool HasSynthesizedTypes(
     const base::flat_map<FieldType, std::u16string>& observed_field_values,
     AddressCountryCode country_code) {
-  return base::ranges::any_of(observed_field_values, [country_code](
-                                                         const auto& entry) {
+  return std::ranges::any_of(observed_field_values, [country_code](
+                                                        const auto& entry) {
     return i18n_model_definition::IsSynthesizedType(entry.first, country_code);
   });
 }
@@ -164,46 +165,30 @@ FormDataImporter::ExtractedFormData::operator=(
 FormDataImporter::ExtractedFormData::~ExtractedFormData() = default;
 
 FormDataImporter::FormDataImporter(AutofillClient* client,
-                                   PersonalDataManager* personal_data_manager,
                                    history::HistoryService* history_service,
                                    const std::string& app_locale)
-    : client_(client),
+    : client_(CHECK_DEREF(client)),
       credit_card_save_manager_(
-          std::make_unique<CreditCardSaveManager>(client,
-                                                  app_locale,
-                                                  personal_data_manager)),
+          std::make_unique<CreditCardSaveManager>(client, app_locale)),
       address_profile_save_manager_(
-          std::make_unique<AddressProfileSaveManager>(client,
-                                                      personal_data_manager)),
+          std::make_unique<AddressProfileSaveManager>(client)),
+#if !BUILDFLAG(IS_IOS)
+      iban_save_manager_(std::make_unique<IbanSaveManager>(client)),
+#endif  // !BUILDFLAG(IS_IOS)
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      iban_save_manager_(
-          std::make_unique<IbanSaveManager>(personal_data_manager, client)),
       local_card_migration_manager_(
-          std::make_unique<LocalCardMigrationManager>(client,
-                                                      app_locale,
-                                                      personal_data_manager)),
+          std::make_unique<LocalCardMigrationManager>(client, app_locale)),
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      personal_data_manager_(personal_data_manager),
       app_locale_(app_locale),
-      virtual_card_enrollment_manager_(
-          std::make_unique<VirtualCardEnrollmentManager>(
-              personal_data_manager,
-              client->GetPaymentsNetworkInterface(),
-              client)),
       multistep_importer_(app_locale,
                           client_->GetVariationConfigCountryCode()) {
-  if (personal_data_manager_) {
-    personal_data_manager_->AddObserver(this);
-  }
+  address_data_manager_observation_.Observe(&address_data_manager());
   if (history_service) {
     history_service_observation_.Observe(history_service);
   }
 }
 
-FormDataImporter::~FormDataImporter() {
-  if (personal_data_manager_)
-    personal_data_manager_->RemoveObserver(this);
-}
+FormDataImporter::~FormDataImporter() = default;
 
 FormDataImporter::AddressProfileImportCandidate::
     AddressProfileImportCandidate() = default;
@@ -234,7 +219,6 @@ void FormDataImporter::ImportAndProcessFormData(
 
   bool cc_prompt_potentially_shown = ProcessExtractedCreditCard(
       submitted_form, extracted_data.extracted_credit_card,
-      payment_methods_autofill_enabled,
       credit_card_save_manager_->IsCreditCardUploadEnabled());
   fetched_card_instrument_id_.reset();
 
@@ -252,15 +236,21 @@ void FormDataImporter::ImportAndProcessFormData(
       !cc_prompt_potentially_shown && !iban_prompt_potentially_shown);
 }
 
-bool FormDataImporter::ComplementCountry(
-    AutofillProfile& profile,
-    const std::string& predicted_country_code) {
-  bool should_complement_country = !profile.HasRawInfo(ADDRESS_HOME_COUNTRY);
-  return should_complement_country &&
-         profile.SetInfoWithVerificationStatus(
-             AutofillType(ADDRESS_HOME_COUNTRY),
-             base::ASCIIToUTF16(predicted_country_code), app_locale_,
-             VerificationStatus::kObserved);
+bool FormDataImporter::ComplementCountry(AutofillProfile& profile,
+                                         LogBuffer* import_log_buffer) {
+  if (profile.HasRawInfo(ADDRESS_HOME_COUNTRY)) {
+    return false;
+  }
+  const std::string fallback =
+      address_data_manager().GetDefaultCountryCodeForNewAddress().value();
+  if (import_log_buffer) {
+    *import_log_buffer
+        << LogMessage::kImportAddressProfileComplementedCountryCode << fallback
+        << CTag{};
+  }
+  return profile.SetInfoWithVerificationStatus(
+      ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16(fallback), app_locale_,
+      VerificationStatus::kObserved);
 }
 
 bool FormDataImporter::SetPhoneNumber(
@@ -268,15 +258,9 @@ bool FormDataImporter::SetPhoneNumber(
     const PhoneNumber::PhoneCombineHelper& combined_phone) {
   if (combined_phone.IsEmpty())
     return true;
-  std::u16string constructed_number;
-  // If the phone number only consists of a single component, the
-  // `PhoneCombineHelper` won't try to parse it. This happens during `SetInfo()`
-  // in this case.
-  bool parsed_successfully =
-      combined_phone.ParseNumber(profile, app_locale_, &constructed_number) &&
-      profile.SetInfoWithVerificationStatus(PHONE_HOME_WHOLE_NUMBER,
-                                            constructed_number, app_locale_,
-                                            VerificationStatus::kObserved);
+
+  bool parsed_successfully = PhoneNumber::ImportPhoneNumberToProfile(
+      combined_phone, app_locale_, profile);
   autofill_metrics::LogPhoneNumberImportParsingResult(parsed_successfully);
   return parsed_successfully;
 }
@@ -323,11 +307,11 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
         ExtractCreditCard(submitted_form);
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
   if (payment_methods_autofill_enabled) {
     extracted_form_data.extracted_iban = ExtractIban(submitted_form);
   }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   size_t num_complete_address_profiles = 0;
   if (profile_autofill_enabled &&
@@ -336,8 +320,7 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
         submitted_form, &extracted_form_data.address_profile_import_candidates);
   }
 
-  if (profile_autofill_enabled && payment_methods_autofill_enabled &&
-      base::FeatureList::IsEnabled(features::kAutofillAssociateForms)) {
+  if (profile_autofill_enabled && payment_methods_autofill_enabled) {
     auto origin = url::Origin::Create(submitted_form.source_url());
     FormSignature form_signature = submitted_form.form_signature();
     // If multiple complete address profiles were extracted, this most likely
@@ -380,7 +363,7 @@ size_t FormDataImporter::ExtractAddressProfiles(
     std::map<Section, std::vector<const AutofillField*>> section_fields;
     for (const auto& field : form) {
       if (IsAddressType(field->Type().GetStorableType())) {
-        section_fields[field->section].push_back(field.get());
+        section_fields[field->section()].push_back(field.get());
       }
     }
 
@@ -443,11 +426,8 @@ AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
   // country or the app locale. For the variation country code to take
   // precedence over the app locale, country code complemention needs to happen
   // before `SetPhoneNumber()`.
-  const std::string predicted_country_code = GetPredictedCountryCode(
-      candidate_profile, client_->GetVariationConfigCountryCode(), app_locale_,
-      import_log_buffer);
   import_metadata.did_complement_country =
-      ComplementCountry(candidate_profile, predicted_country_code);
+      ComplementCountry(candidate_profile, import_log_buffer);
 
   // We only set complete phone, so aggregate phone parts in these vars and set
   // complete at the end.
@@ -463,10 +443,11 @@ AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
     if (type == ADDRESS_HOME_COUNTRY) {
       continue;
     }
-    // We need to store phone data in the variables, before building the whole
-    // number at the end. If |value| is not from a phone field, phone.SetInfo()
-    // returns false and data is stored directly in `candidate_profile`.
-    if (!combined_phone.SetInfo(AutofillType(type), value)) {
+    if (GroupTypeOfFieldType(type) == FieldTypeGroup::kPhone) {
+      // We need to store phone data in the variables, before building the whole
+      // number at the end.
+      combined_phone.SetInfo(type, value);
+    } else {
       candidate_profile.SetInfoWithVerificationStatus(
           type, value, app_locale_, VerificationStatus::kObserved);
     }
@@ -502,45 +483,44 @@ FormDataImporter::GetAddressObservedFieldValues(
 
   // Go through each |form| field and attempt to constitute a valid profile.
   for (const AutofillField* const field : section_fields) {
-    std::u16string value;
-    base::TrimWhitespace(field->value, base::TRIM_ALL, &value);
+    std::u16string value = field->value_for_import();
+    base::TrimWhitespace(value, base::TRIM_ALL, &value);
 
     // If we don't know the type of the field, or the user hasn't entered any
     // information into the field, then skip it.
     if (!field->IsFieldFillable() || value.empty()) {
       continue;
     }
-
     // If the field was filled with a fallback type, skip it in order to not
     // introduce noise to the map's data, as this would add an entry for
     // field type X with a value retrieved from another field type Y.
     if (field->WasAutofilledWithFallback()) {
       continue;
     }
-
     // When the experimental plus addresses feature is enabled, and the value is
     // a plus address, exclude it from the resulting address profile.
     if (plus_address_delegate &&
         plus_address_delegate->IsPlusAddress(base::UTF16ToUTF8(value))) {
       continue;
     }
-
     // Don't import from ac=unrecognized fields.
-    if (field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+    if (field->ShouldSuppressSuggestionsAndFillingByDefault() &&
+        !base::FeatureList::IsEnabled(
+            features::kAutofillImportFromAutocompleteUnrecognized)) {
       continue;
     }
 
-    AutofillType autofill_type = field->Type();
-
-    // Credit card fields are handled by ExtractCreditCard().
-    if (autofill_type.group() == FieldTypeGroup::kCreditCard) {
+    FieldType field_type = field->Type().GetStorableType();
+    // Only address types are relevant in this function, other types are treated
+    // in different flows.
+    if (!IsAddressType(field_type)) {
       continue;
     }
+    has_address_related_fields = true;
 
     // There can be multiple email fields (e.g. in the case of 'confirm email'
     // fields) but they must all contain the same value, else the profile is
     // invalid.
-    FieldType field_type = autofill_type.GetStorableType();
     if (field_type == EMAIL_ADDRESS) {
       auto email_it = observed_field_values.find(EMAIL_ADDRESS);
       if (email_it != observed_field_values.end() &&
@@ -551,17 +531,15 @@ FormDataImporter::GetAddressObservedFieldValues(
         has_multiple_distinct_email_addresses = true;
       }
     }
-
     // If the field type and |value| don't pass basic validity checks then
     // abandon the import.
     if (!IsValidFieldTypeAndValue(observed_field_values, field_type, value,
                                   import_log_buffer)) {
       has_invalid_field_types = true;
     }
-
     // Found phone number component field.
-    // TODO(crbug.com/1156315) Remove feature check when launched.
-    if (autofill_type.group() == FieldTypeGroup::kPhone &&
+    // TODO(crbug.com/40735892) Remove feature check when launched.
+    if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kPhone &&
         base::FeatureList::IsEnabled(
             features::kAutofillEnableImportWhenMultiplePhoneNumbers)) {
       if (ignore_phone_number_fields) {
@@ -576,18 +554,19 @@ FormDataImporter::GetAddressObservedFieldValues(
         continue;
       }
     }
+    observed_field_values.insert_or_assign(field_type, value);
+    // The `autofill_source_profile_guid()` is not reset when a field is
+    // manually edited or filled with non-address information later.
+    import_metadata.filled_types_to_autofill_guid.insert_or_assign(
+        field_type, field->is_autofilled() &&
+                            field->filling_product() == FillingProduct::kAddress
+                        ? field->autofill_source_profile_guid()
+                        : std::nullopt);
 
-    observed_field_values.insert_or_assign(autofill_type.GetStorableType(),
-                                           value);
-
-    if (FieldTypeGroupToFormType(autofill_type.group()) ==
-        FormType::kAddressForm) {
-      has_address_related_fields = true;
-      if (field->parsed_autocomplete) {
-        import_metadata.did_import_from_unrecognized_autocomplete_field |=
-            field->parsed_autocomplete->field_type ==
-            HtmlFieldType::kUnrecognized;
-      }
+    if (field->parsed_autocomplete()) {
+      import_metadata.did_import_from_unrecognized_autocomplete_field |=
+          field->parsed_autocomplete()->field_type ==
+          HtmlFieldType::kUnrecognized;
     }
   }
   return observed_field_values;
@@ -606,8 +585,8 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   bool has_invalid_field_types = false;
 
   // Metadata about the way we construct candidate_profile.
-  ProfileImportMetadata import_metadata{.origin =
-                                            url::Origin::Create(source_url)};
+  ProfileImportMetadata import_metadata;
+  import_metadata.origin = url::Origin::Create(source_url);
 
   // Tracks if any of the fields belongs to FormType::kAddressForm.
   bool has_address_related_fields = false;
@@ -749,17 +728,19 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
 bool FormDataImporter::ProcessExtractedCreditCard(
     const FormStructure& submitted_form,
     const std::optional<CreditCard>& extracted_credit_card,
-    bool payment_methods_autofill_enabled,
     bool is_credit_card_upstream_enabled) {
   // If no card was successfully extracted from the form, return.
   if (credit_card_import_type_ == CreditCardImportType::kNoCard) {
     return false;
   }
 
-  // If a flow where there was no interactive authentication was completed,
-  // re-auth opt-in flow might be offered.
+  // If a flow without interactive authentication was completed and the user
+  // didn't update the result that was filled into the form, re-auth opt-in flow
+  // might be offered.
   if (auto* mandatory_reauth_manager =
-          client_->GetOrCreatePaymentsMandatoryReauthManager();
+          client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager();
+      credit_card_import_type_ != CreditCardImportType::kNewCard &&
       mandatory_reauth_manager &&
       mandatory_reauth_manager->ShouldOfferOptin(
           payment_method_type_if_non_interactive_authentication_flow_completed_)) {
@@ -783,8 +764,10 @@ bool FormDataImporter::ProcessExtractedCreditCard(
 
   if (ShouldOfferVirtualCardEnrollment(extracted_credit_card,
                                        fetched_card_instrument_id_)) {
-    virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-        *extracted_credit_card, VirtualCardEnrollmentSource::kDownstream);
+    client_->GetPaymentsAutofillClient()
+        ->GetVirtualCardEnrollmentManager()
+        ->InitVirtualCardEnroll(*extracted_credit_card,
+                                VirtualCardEnrollmentSource::kDownstream);
     return true;
   }
 
@@ -812,7 +795,8 @@ bool FormDataImporter::ProcessIbanImportCandidate(Iban& extracted_iban) {
   // If a flow where there was no interactive authentication was completed,
   // re-auth opt-in flow might be offered.
   if (auto* mandatory_reauth_manager =
-          client_->GetOrCreatePaymentsMandatoryReauthManager();
+          client_->GetPaymentsAutofillClient()
+              ->GetOrCreatePaymentsMandatoryReauthManager();
       mandatory_reauth_manager &&
       mandatory_reauth_manager->ShouldOfferOptin(
           payment_method_type_if_non_interactive_authentication_flow_completed_)) {
@@ -867,12 +851,12 @@ std::optional<CreditCard> FormDataImporter::ExtractCreditCard(
   // Attempt to merge with an existing local credit card without presenting a
   // prompt.
   for (const CreditCard* local_card :
-       personal_data_manager_->GetLocalCreditCards()) {
+       payments_data_manager().GetLocalCreditCards()) {
     // Make a local copy so that the data in `local_credit_cards_` isn't
     // modified directly by the UpdateFromImportedCard() call.
     CreditCard maybe_updated_card = *local_card;
     if (maybe_updated_card.UpdateFromImportedCard(candidate, app_locale_)) {
-      personal_data_manager_->UpdateCreditCard(maybe_updated_card);
+      payments_data_manager().UpdateCreditCard(maybe_updated_card);
       credit_card_import_type_ = CreditCardImportType::kLocalCard;
       // Update `candidate` to reflect all the details of the updated card.
       // `UpdateFromImportedCard` has updated all values except for the
@@ -896,7 +880,7 @@ std::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
   // `candidate`, and we treat it as a new card.
   bool same_last_four_but_different_expiration_date = false;
 
-  for (auto* server_card : personal_data_manager_->GetServerCreditCards()) {
+  for (auto* server_card : payments_data_manager().GetServerCreditCards()) {
     if (!server_card->HasSameNumberAs(candidate)) {
       continue;
     }
@@ -907,18 +891,6 @@ std::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
     // importing.
     if (!candidate.HasValidExpirationDate()) {
       return std::nullopt;
-    }
-
-    if (server_card->record_type() == CreditCard::RecordType::kFullServerCard) {
-      AutofillMetrics::LogSubmittedServerCardExpirationStatusMetric(
-          server_card->HasSameExpirationDateAs(candidate)
-              ? AutofillMetrics::FULL_SERVER_CARD_EXPIRATION_DATE_MATCHED
-              : AutofillMetrics::
-                    FULL_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH);
-      // Return that we found a full server card with a matching card number
-      // to `candidate`.
-      credit_card_import_type_ = CreditCardImportType::kServerCard;
-      return *server_card;
     }
 
     // Only return the masked server card if both the last four digits and
@@ -939,19 +911,9 @@ std::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
       if (credit_card_import_type_ == CreditCardImportType::kLocalCard) {
         credit_card_import_type_ =
             CreditCardImportType::kDuplicateLocalServerCard;
-
-        // Return server card if flag is on since suggestion only shows server
-        // cards if flag is on. Return local card if flag is off since
-        // suggestion only shows local cards if flag is off.
-        if (base::FeatureList::IsEnabled(
-                features::kAutofillSuggestServerCardInsteadOfLocalCard)) {
-          return server_card_with_cvc;
-        } else {
-          return candidate;
-        }
+      } else {
+        credit_card_import_type_ = CreditCardImportType::kServerCard;
       }
-
-      credit_card_import_type_ = CreditCardImportType::kServerCard;
       return server_card_with_cvc;
     } else {
       // Keep track of the fact that we found a server card with matching
@@ -986,84 +948,13 @@ std::optional<Iban> FormDataImporter::ExtractIban(const FormStructure& form) {
   // with IBANs as a concept. We set the pref so that even if the user travels
   // to a country where IBAN functionality is not typically used, they will
   // still be able to save new IBANs from the settings page using this pref.
-  personal_data_manager_->SetAutofillHasSeenIban();
+  payments_data_manager().SetAutofillHasSeenIban();
 
   return candidate_iban;
 }
 
 FormDataImporter::ExtractCreditCardFromFormResult
 FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
-  if (base::FeatureList::IsEnabled(features::kAutofillRelaxCreditCardImport)) {
-    return ExtractCreditCardFromFormRelaxed(form);
-  }
-
-  ExtractCreditCardFromFormResult result;
-
-  FieldTypeSet types_seen;
-  for (const auto& field : form) {
-    // If we don't know the type of the field, then skip it.
-    if (!field->IsFieldFillable()) {
-      continue;
-    }
-
-    AutofillType autofill_type = field->Type();
-    // Field was not identified as a credit card field.
-    if (autofill_type.group() != FieldTypeGroup::kCreditCard) {
-      continue;
-    }
-
-    FieldType field_type = autofill_type.GetStorableType();
-
-    std::u16string value_view = field->value;
-    std::u16string_view user_input_view =
-        base::TrimWhitespace(field->user_input, base::TRIM_ALL);
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillUseTypedCreditCardNumber) &&
-        field_type == FieldType::CREDIT_CARD_NUMBER &&
-        !user_input_view.empty()) {
-      value_view = user_input_view;
-    }
-    value_view = base::TrimWhitespace(value_view, base::TRIM_ALL);
-
-    // If the user hasn't entered any information into the field, then skip it.
-    if (value_view.empty()) {
-      continue;
-    }
-
-    std::u16string value = value_view;
-
-    result.has_duplicate_credit_card_field_type |=
-        types_seen.contains(field_type);
-    types_seen.insert(field_type);
-
-    // If |field| is an HTML5 month input, handle it as a special case.
-    if (field->form_control_type == FormControlType::kInputMonth) {
-      DCHECK_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, field_type);
-      result.card.SetInfoForMonthInputType(value);
-      continue;
-    }
-
-    // CreditCard handles storing the |value| according to |autofill_type|.
-    bool saved = result.card.SetInfo(autofill_type, value, app_locale_);
-
-    // Saving with the option text (here |value|) may fail for the expiration
-    // month. Attempt to save with the option value. First find the index of the
-    // option text in the select options and try the corresponding value.
-    if (!saved && field_type == CREDIT_CARD_EXP_MONTH) {
-      for (const SelectOption& option : field->options) {
-        if (value == option.content) {
-          result.card.SetInfo(autofill_type, option.value, app_locale_);
-          break;
-        }
-      }
-    }
-  }
-
-  return result;
-}
-
-FormDataImporter::ExtractCreditCardFromFormResult
-FormDataImporter::ExtractCreditCardFromFormRelaxed(const FormStructure& form) {
   // Populated by the lambdas below.
   ExtractCreditCardFromFormResult result;
 
@@ -1072,18 +963,19 @@ FormDataImporter::ExtractCreditCardFromFormRelaxed(const FormStructure& form) {
   // of `result.card` to the `field`'s value.
   auto extract_if_credit_card_field = [&result, &app_locale = app_locale_](
                                           const AutofillField& field) {
-    // The value of interest is `field->value` or `field->user_input`.
-    std::u16string_view value_view =
-        base::TrimWhitespace(field.value, base::TRIM_ALL);
-    std::u16string_view user_input_view =
-        base::TrimWhitespace(field.user_input, base::TRIM_ALL);
-    if (!user_input_view.empty() &&
-        field.Type().GetStorableType() == FieldType::CREDIT_CARD_NUMBER &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillUseTypedCreditCardNumber)) {
-      value_view = user_input_view;
-    }
-    std::u16string value(value_view);
+    std::u16string value = [&field] {
+      if (field.Type().GetStorableType() == FieldType::CREDIT_CARD_NUMBER) {
+        // Credit card numbers are sometimes obfuscated on form submission.
+        // Therefore, we give preference to the user input over the field value.
+        std::u16string user_input = field.user_input();
+        base::TrimWhitespace(user_input, base::TRIM_ALL);
+        if (!user_input.empty()) {
+          return user_input;
+        }
+      }
+      return field.value_for_import();
+    }();
+    base::TrimWhitespace(value, base::TRIM_ALL);
 
     // If we don't know the type of the field, or the user hasn't entered any
     // information into the field, then skip it.
@@ -1092,7 +984,7 @@ FormDataImporter::ExtractCreditCardFromFormRelaxed(const FormStructure& form) {
       return;
     }
     std::u16string old_value = result.card.GetInfo(field.Type(), app_locale);
-    if (field.form_control_type == FormControlType::kInputMonth) {
+    if (field.form_control_type() == FormControlType::kInputMonth) {
       // If |field| is an HTML5 month input, handle it as a special case.
       DCHECK_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
                 field.Type().GetStorableType());
@@ -1104,9 +996,9 @@ FormDataImporter::ExtractCreditCardFromFormRelaxed(const FormStructure& form) {
         // expiration month. Attempt to save with the option value. First find
         // the index of the option text in the select options and try the
         // corresponding value.
-        if (auto it = base::ranges::find(field.options, value,
-                                         &SelectOption::content);
-            it != field.options.end()) {
+        if (auto it =
+                base::ranges::find(field.options(), value, &SelectOption::text);
+            it != field.options().end()) {
           result.card.SetInfo(field.Type(), it->value, app_locale);
         }
       }
@@ -1158,24 +1050,21 @@ Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
   // Creates an IBAN candidate with `kUnknown` record type as it is currently
   // unknown if this IBAN already exists locally or on the server.
   Iban candidate_iban;
-
   for (const auto& field : form) {
-    if (!field->IsFieldFillable() || field->value.empty()) {
+    const std::u16string& value = field->value_for_import();
+    if (!field->IsFieldFillable() || value.empty()) {
       continue;
     }
-
-    AutofillType autofill_type = field->Type();
-    if (autofill_type.GetStorableType() == IBAN_VALUE &&
-        Iban::IsValid(field->value)) {
-      candidate_iban.SetInfo(autofill_type, field->value, app_locale_);
+    FieldType field_type = field->Type().GetStorableType();
+    if (field_type == IBAN_VALUE && Iban::IsValid(value)) {
+      candidate_iban.SetInfo(IBAN_VALUE, value, app_locale_);
       break;
     }
   }
-
   return candidate_iban;
 }
 
-// TODO(crbug.com/1450749): Move ShouldOfferCreditCardSave to
+// TODO(crbug.com/40270301): Move ShouldOfferCreditCardSave to
 // credit_card_save_manger and combine all card and CVC save logic to
 // ProceedWithSavingIfApplicable function.
 bool FormDataImporter::ShouldOfferCreditCardSave(
@@ -1213,14 +1102,11 @@ bool FormDataImporter::ShouldOfferCreditCardSave(
   return true;
 }
 
-void FormDataImporter::OnPersonalDataChanged() {
-  // `personal_data_manager_` cannot be null, because the callback cannot be
-  // registered otherwise.
-  DCHECK(personal_data_manager_);
-  multistep_importer_.OnPersonalDataChanged(*personal_data_manager_);
+void FormDataImporter::OnAddressDataChanged() {
+  multistep_importer_.OnAddressDataChanged(address_data_manager());
 }
 
-void FormDataImporter::OnURLsDeleted(
+void FormDataImporter::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   multistep_importer_.OnBrowsingHistoryCleared(deletion_info);
@@ -1235,9 +1121,12 @@ void FormDataImporter::
       payment_method_type_if_non_interactive_authentication_flow_completed;
 }
 
-std::optional<NonInteractivePaymentMethodType> FormDataImporter::
-    GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted() const {
-  return payment_method_type_if_non_interactive_authentication_flow_completed_;
+AddressDataManager& FormDataImporter::address_data_manager() {
+  return client_->GetPersonalDataManager()->address_data_manager();
+}
+
+PaymentsDataManager& FormDataImporter::payments_data_manager() {
+  return client_->GetPersonalDataManager()->payments_data_manager();
 }
 
 }  // namespace autofill

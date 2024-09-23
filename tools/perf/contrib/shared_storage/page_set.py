@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from collections import Counter
 import json
 import logging
 import os
@@ -15,6 +16,8 @@ from telemetry.internal.backends.chrome_inspector import websocket
 from telemetry.page import page as page_module
 
 from contrib.shared_storage import shared_storage_shared_page_state as state
+from contrib.shared_storage import utils
+
 
 # Timeouts in seconds.
 _ACTION_TIMEOUT = 2
@@ -94,7 +97,8 @@ class SharedStorageStory(
   NAME = NotImplemented
   ABSTRACT_STORY = True
   # The setup script is run once per story, before the first iteration of the
-  # action script.
+  # action script. Note that this should be an empty string when
+  # `RENAVIGATE_AFTER_ACTION` is True.
   SETUP_SCRIPT = ""
   # The shared storage events that should happen in the setup, as a list of
   # dictionaries.
@@ -112,12 +116,19 @@ class SharedStorageStory(
   # /inspector_backend.py for more information.
   EXPECTED_ACTION_EVENTS_TEMPLATE = NotImplemented
   # Whether the page should be reloaded after each action iteration in order to
-  # refresh the database.
+  # refresh the database. Note that this should not be set to True when using an
+  # nonempty `SETUP_SCRIPT`.
   RENAVIGATE_AFTER_ACTION = False
+  # The number of "Storage.SharedStorage.Worklet.Timing.<METHOD>.Next"
+  # histograms expected to be recorded for the iterator <METHOD> being tested
+  # by this story, written as a string literal to be evaluated by `eval()`, so
+  # so that the value can depend on `self.SIZE`.
+  EXPECTED_ITERATOR_HISTOGRAM_COUNT = "0"
 
   def __init__(self,
                story_set,
                url,
+               size,
                shared_page_state_class,
                enable_memory_metric,
                iterations=_PLACEHOLDER_ITERATIONS,
@@ -127,11 +138,29 @@ class SharedStorageStory(
                          page_set=story_set,
                          name=self.NAME,
                          url=url)
+    self._size = size
     self._enable_memory_metric = enable_memory_metric
     self._iterations = iterations
     self._verbosity = verbosity
 
-  # TODO(crbug.com/1516507): Wait for relevant Shared Storage timing histograms
+    if len(self.SETUP_SCRIPT) > 0 and self.RENAVIGATE_AFTER_ACTION:
+      # The expected histogram count would have been incorrect because it
+      # assumes this condition won't happen.
+      msg_list = [
+          '`RENAVIGATE_AFTER_ACTION` is True with nonempty',
+          ' `SETUP_SCRIPT`: %s' % self.SETUP_SCRIPT,
+          '\n`SETUP_SCRIPT` will only be run during the initial ',
+          'navigation.\n It will not run during subsequent ',
+          're-navigations.\nConsider incorporting content of ',
+          '`SETUP_SCRIPT` into `ACTION_SCRIPT_TEMPLATE`.'
+      ]
+      raise RuntimeError(''.join(msg_list))
+
+  @property
+  def SIZE(self):
+    return self._size
+
+  # TODO(crbug.com/41489492): Wait for relevant Shared Storage timing histograms
   # to be recorded in each step, rather than simply the event notifications.
   #
   # Note that this will require retrieving histograms from renderer processes;
@@ -142,12 +171,13 @@ class SharedStorageStory(
   # total counts should be at the end of the test run.
   def RunPageInteractions(self, action_runner):
     action_runner.tab.WaitForDocumentReadyStateToBeComplete(_NAVIGATION_TIMEOUT)
-    self.LogMetadataIfVerbose(action_runner, False)
+    self._LogMetadataIfVerbose(action_runner, False)
 
     action_runner.tab.EnableSharedStorageNotifications()
     self._RunSharedStorageSetUp(action_runner)
 
     for index in range(self._iterations):
+      self._PrintProgressBarIfNonVerbose(index)
       try:
         self._RunSharedStorageAction(action_runner, index)
       except timeout as t:
@@ -173,7 +203,8 @@ class SharedStorageStory(
     if self._enable_memory_metric:
       action_runner.MeasureMemory(deterministic_mode=True)
 
-    self.LogMetadataIfVerbose(action_runner, True)
+    self._LogMetadataIfVerbose(action_runner, True)
+    self._WriteExpectedHistogramCountsIfNeeded()
 
     # Navigate away to an untracked page to trigger recording of metrics
     # requiring document destruction.
@@ -211,7 +242,7 @@ class SharedStorageStory(
                                                  timeout=_ACTION_TIMEOUT)
     action_runner.tab.ClearSharedStorageNotifications()
 
-  def LogMetadataIfVerbose(self, action_runner, is_post):
+  def _LogMetadataIfVerbose(self, action_runner, is_post):
     if self._verbosity < 1:
       return
     prefix = 'Post' if is_post else 'Pre'
@@ -229,8 +260,73 @@ class SharedStorageStory(
       logging.warning("%s timed out getting %s-test metadata: %s" %
                       (self.NAME, prefix, repr(w)))
 
+  def _PrintProgressBarIfNonVerbose(self, index):
+    if self._verbosity >= 1:
+      # We don't need a progress bar because we are already logging information
+      # to track each action iteration.
+      return
 
-def IterAllSharedStorageStoryClasses():
+    progress = ''.join(
+        ['[', '#' * (index + 1), ' ' * (self._iterations - 1 - index), '] '])
+    fraction = ''.join([str(index + 1), ' / ', str(self._iterations)])
+
+    # We use `print()` instead of logging so that the progress bar will print
+    # with no prefix and in spite of having `self._verbosity < 1`.
+    print(f'{progress}{fraction} iterations', end='\r')
+    if index == self._iterations - 1:
+      print()
+
+  def _WriteExpectedHistogramCountsIfNeeded(self):
+    story_counts_so_far = utils.GetExpectedHistogramsDictionary()
+    if self.NAME in story_counts_so_far:
+      return
+    current_counts = self._CalculateExpectedHistogramCountsPerRepeat()
+    story_counts_so_far[self.NAME] = current_counts
+    logging.info("Story '%s' expected histogram counts: %s" %
+                 (self.NAME, utils.JsonDump(current_counts)))
+    with open(utils.GetExpectedHistogramsFile(), 'w') as f:
+      f.write(utils.JsonDump(story_counts_so_far))
+    logging.info('Wrote expected histograms for "%s" to file://%s.' %
+                 (self.NAME, utils.GetExpectedHistogramsFile()))
+
+  def _GetHistogramCountsFromEvents(self, events):
+    event_counts = Counter(event['type'] for event in events)
+    histogram_counts = Counter()
+    for event_type, count in event_counts.items():
+      for name in utils.GetHistogramsFromEventType(event_type):
+        if name in utils.GetSharedStorageIteratorHistograms():
+          histogram_counts[name] = eval(self.EXPECTED_ITERATOR_HISTOGRAM_COUNT)
+        else:
+          histogram_counts[name] = count
+    return histogram_counts
+
+  def _MultiplyCounterValuesByIterations(self, counts):
+    return Counter(
+        dict(map(lambda h: (h[0], h[1] * self._iterations), counts.items())))
+
+  def _CalculateExpectedHistogramCountsPerRepeat(self):
+    # The number of histograms we expect to be recorded based on navigation to
+    # self.URL.
+    counts = Counter({
+        "Storage.SharedStorage.Document.Timing.AddModule": 1,
+        "Storage.SharedStorage.Document.Timing.Clear": 1,
+        "Storage.SharedStorage.Document.Timing.Set": self._size,
+    })
+
+    if self.RENAVIGATE_AFTER_ACTION:
+      counts = self._MultiplyCounterValuesByIterations(counts)
+    elif (len(self.SETUP_SCRIPT) > 0 and len(self.EXPECTED_SETUP_EVENTS) > 0):
+      setup_counts = self._GetHistogramCountsFromEvents(
+          self.EXPECTED_SETUP_EVENTS)
+      counts += Counter(setup_counts)
+    if len(self.EXPECTED_ACTION_EVENTS_TEMPLATE) > 0:
+      action_counts = self._GetHistogramCountsFromEvents(
+          self.EXPECTED_ACTION_EVENTS_TEMPLATE)
+      counts += self._MultiplyCounterValuesByIterations(action_counts)
+    return counts
+
+
+def _IterAllSharedStorageStoryClasses():
   """Generator for SharedStorage stories.
 
   Yields:
@@ -251,11 +347,14 @@ class SharedStorageStorySet(story.StorySet):
 
   def __init__(self,
                url,
+               size,
                enable_memory_metric,
                user_agent='desktop',
                iterations=_PLACEHOLDER_ITERATIONS,
-               verbosity=0):
+               verbosity=0,
+               xvfb_process=None):
     super(SharedStorageStorySet, self).__init__()
+    self.xvfb_process = xvfb_process
     if user_agent == 'mobile':
       shared_page_state_class = state.SharedStorageSharedMobilePageState
     elif user_agent == 'desktop':
@@ -266,7 +365,7 @@ class SharedStorageStorySet(story.StorySet):
     def IncludeStory(story_class):
       return not story_class.ABSTRACT_STORY
 
-    for story_class in IterAllSharedStorageStoryClasses():
+    for story_class in _IterAllSharedStorageStoryClasses():
       if IncludeStory(story_class):
         if user_agent == 'mobile':
           # Extra browser args are disabled in the mobile user agent
@@ -279,6 +378,7 @@ class SharedStorageStorySet(story.StorySet):
         self.AddStory(
             story_class(self,
                         url=url,
+                        size=size,
                         shared_page_state_class=shared_page_state_class,
                         enable_memory_metric=enable_memory_metric,
                         iterations=iterations,

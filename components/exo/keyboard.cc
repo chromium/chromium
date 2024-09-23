@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/exo/keyboard.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/accelerator_table.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
@@ -15,11 +19,16 @@
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/keyboard_delegate.h"
 #include "components/exo/keyboard_device_configuration_delegate.h"
@@ -37,6 +46,9 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -99,12 +111,11 @@ bool ProcessAcceleratorIfReserved(Surface* surface, ui::KeyEvent* event) {
 bool IsImeSupportedSurface(Surface* surface) {
   aura::Window* window = surface->window();
   while (window) {
-    const auto app_type =
-        static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
+    const auto app_type = window->GetProperty(chromeos::kAppTypeKey);
     switch (app_type) {
-      case ash::AppType::ARC_APP:
-      case ash::AppType::CROSTINI_APP:
-      case ash::AppType::LACROS:
+      case chromeos::AppType::ARC_APP:
+      case chromeos::AppType::CROSTINI_APP:
+      case chromeos::AppType::LACROS:
         return true;
       default:
         // Do nothing.
@@ -130,12 +141,12 @@ bool IsImeSupportedSurface(Surface* surface) {
 bool CanConsumeAshAccelerators(Surface* surface) {
   aura::Window* window = surface->window();
   for (; window; window = window->parent()) {
-    const auto app_type =
-        static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
+    const auto app_type = window->GetProperty(chromeos::kAppTypeKey);
     // TOOD(hidehiko): get rid of this if check, after introducing capability,
     // followed by ARC/Crostini migration.
-    if (app_type == ash::AppType::LACROS)
+    if (app_type == chromeos::AppType::LACROS) {
       return surface->is_keyboard_shortcuts_inhibited();
+    }
   }
   return true;
 }
@@ -322,9 +333,11 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
   // TODO(yhanada): This is a quick fix for https://crbug.com/859071. Remove
   // ARC-/Lacros-specific code path once we can find a way to manage
   // press/release events pair for synthetic events.
-  ui::DomCode physical_code =
+  PhysicalCode physical_code =
       seat_->physical_code_for_currently_processing_event();
-  if (physical_code == ui::DomCode::NONE && focused_on_ime_supported_surface_) {
+  const auto* physical_dom_code = std::get_if<ui::DomCode>(&physical_code);
+  if (physical_dom_code && *physical_dom_code == ui::DomCode::NONE &&
+      focused_on_ime_supported_surface_) {
     // This key event is a synthetic event.
     // Consider DomCode field of the event as a physical code
     // for synthetic events when focus surface belongs to an ARC application.
@@ -332,10 +345,14 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
   }
 
   switch (event->type()) {
-    case ui::ET_KEY_PRESSED: {
+    case ui::EventType::kKeyPressed: {
       auto it = pressed_keys_.find(physical_code);
-      if (it == pressed_keys_.end() && !event->handled() &&
-          physical_code != ui::DomCode::NONE) {
+      const bool should_handle =
+          (it == pressed_keys_.end()) ||
+          (event->flags() & ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+      const bool is_physical_code_none =
+          physical_dom_code && *physical_dom_code == ui::DomCode::NONE;
+      if (should_handle && !event->handled() && !is_physical_code_none) {
         if (bool auto_repeat_enabled = IsAutoRepeatEnabled(*event);
             auto_repeat_enabled != auto_repeat_enabled_) {
           auto_repeat_enabled_ = auto_repeat_enabled;
@@ -365,9 +382,8 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
         }
         // Keep track of both the physical code and potentially re-written
         // code that this event generated.
-        pressed_keys_.emplace(physical_code,
-                              KeyState{event->code(), consumed_by_ime});
-      } else if (it != pressed_keys_.end() && !event->handled()) {
+        pressed_keys_[physical_code].emplace(event->code(), consumed_by_ime);
+      } else if (!should_handle && !event->handled()) {
         // Non-repeate key events for already pressed key can be sent in some
         // cases (e.g. Holding 'A' key then holding 'B' key then releasing 'A'
         // key sends a non-repeat 'B' key press event).
@@ -377,20 +393,36 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
           event->SetHandled();
       }
     } break;
-    case ui::ET_KEY_RELEASED: {
+    case ui::EventType::kKeyReleased: {
       // Process key release event if currently pressed.
-      auto it = pressed_keys_.find(physical_code);
-      if (it != pressed_keys_.end()) {
-        for (auto& observer : observer_list_)
-          observer.OnKeyboardKey(event->time_stamp(), it->second.code, false);
+      auto key_state_set_iter = pressed_keys_.find(physical_code);
+      if (key_state_set_iter == pressed_keys_.end()) {
+        break;
+      }
 
-        if (!it->second.consumed_by_ime) {
+      auto& key_state_set = key_state_set_iter->second;
+      auto key_state_iter = base::ranges::find(
+          key_state_set, event->code(),
+          [](const KeyState& key_state) { return key_state.code; });
+
+      // If we can't find the specific key event to release, all previously
+      // pressed events tied to this physical key should be released.
+      auto [begin, end] =
+          key_state_iter == key_state_set.end()
+              ? std::pair(key_state_set.begin(), key_state_set.end())
+              : std::pair(key_state_iter, key_state_iter + 1);
+      for (auto iter = begin; iter != end; ++iter) {
+        for (auto& observer : observer_list_) {
+          observer.OnKeyboardKey(event->time_stamp(), iter->code, false);
+        }
+
+        if (!iter->consumed_by_ime) {
           // We use the code that was generated when the physical key was
           // pressed rather than the current event code. This allows events
           // to be re-written before dispatch, while still allowing the
           // client to track the state of the physical keyboard.
-          uint32_t serial = delegate_->OnKeyboardKey(event->time_stamp(),
-                                                     it->second.code, false);
+          uint32_t serial =
+              delegate_->OnKeyboardKey(event->time_stamp(), iter->code, false);
           if (AreKeyboardKeyAcksNeeded()) {
             auto ack_it =
                 pending_key_acks_
@@ -401,16 +433,20 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
                     .first;
             // Handled is not copied with Event's copy ctor, so explicitly copy
             // here.
-            if (event->handled())
+            if (event->handled()) {
               ack_it->second.first.SetHandled();
+            }
             event->SetHandled();
           }
         }
-        pressed_keys_.erase(it);
+      }
+      key_state_set.erase(begin, end);
+      if (key_state_set.empty()) {
+        pressed_keys_.erase(key_state_set_iter);
       }
     } break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -466,7 +502,7 @@ void Keyboard::OnKeyRepeatSettingsChanged(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ash::ImeControllerImpl::Observer overrides:
+// ash::ImeController::Observer overrides:
 
 void Keyboard::OnCapsLockChanged(bool enabled) {}
 
@@ -479,15 +515,19 @@ void Keyboard::OnKeyboardLayoutNameChanged(const std::string& layout_name) {
 ////////////////////////////////////////////////////////////////////////////////
 // Keyboard, private:
 
-base::flat_map<ui::DomCode, KeyState> Keyboard::GetPressedKeysForSurface(
-    Surface* surface) {
+base::flat_map<PhysicalCode, base::flat_set<KeyState>>
+Keyboard::GetPressedKeysForSurface(Surface* surface) {
   // Remove system keys from being sent as pressed keys unless the window
   // can consume them.
-  base::flat_map<ui::DomCode, KeyState> filtered_keys = pressed_keys_;
+  base::flat_map<PhysicalCode, base::flat_set<KeyState>> filtered_keys =
+      pressed_keys_;
   aura::Window* top_level = surface->window()->GetToplevelWindow();
   if (top_level && !ash::WindowState::Get(top_level)->CanConsumeSystemKeys()) {
-    base::EraseIf(filtered_keys, [](const auto& p) {
-      return ash::AcceleratorController::IsSystemKey(p.second.key_code);
+    base::EraseIf(filtered_keys, [](auto& key_state_set_pair) {
+      base::EraseIf(key_state_set_pair.second, [](auto& key_state) {
+        return ash::AcceleratorController::IsSystemKey(key_state.key_code);
+      });
+      return key_state_set_pair.second.empty();
     });
   }
   return filtered_keys;

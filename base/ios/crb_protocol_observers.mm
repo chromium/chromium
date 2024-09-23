@@ -86,7 +86,6 @@ id Iterator::GetNext() {
 
 - (id)init {
   NOTREACHED();
-  return nil;
 }
 
 - (id)initWithProtocol:(Protocol*)protocol {

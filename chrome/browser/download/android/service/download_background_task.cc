@@ -4,7 +4,6 @@
 
 #include "base/android/callback_android.h"
 #include "base/functional/bind.h"
-#include "chrome/android/chrome_jni_headers/DownloadBackgroundTask_jni.h"
 #include "chrome/browser/download/android/download_manager_service.h"
 #include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -12,6 +11,9 @@
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/common/android/auto_resumption_handler.h"
 #include "content/public/browser/browser_context.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/DownloadBackgroundTask_jni.h"
 
 using base::android::JavaParamRef;
 

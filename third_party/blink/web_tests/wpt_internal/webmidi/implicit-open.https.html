@@ -48,8 +48,7 @@ async function checkAccess(access) {
 }
 
 promise_test(async _ => {
-  // Set default permission behavior that grants non-sysex requests.
-  await test_driver.set_permission({name: 'midi'}, 'granted');
+  await test_driver.set_permission({name: 'midi', sysex: true}, 'granted');
   const access = await navigator.requestMIDIAccess();
   await checkAccess(access);
 }, 'MIDIPort implicit open');

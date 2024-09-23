@@ -5,8 +5,10 @@
     "is_component_build": false,
     "is_debug": false,
     "proprietary_codecs": true,
+    "target_cpu": "x64",
     "target_os": "chromeos",
     "use_cups": true,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

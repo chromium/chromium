@@ -9,6 +9,6 @@ found in the LICENSE file.
 	android:shape="rectangle">
     <size android:height="248dp" android:width="248dp" />
     <solid android:color="@color/modern_white" />
-    <stroke android:width="@dimen/chip_border_width" android:color="@color/modern_grey_200" />
+    <stroke android:width="@dimen/chip_border_width" android:color="@color/baseline_neutral_80" />
     <corners android:radius="@dimen/chip_corner_radius" />
 </shape>

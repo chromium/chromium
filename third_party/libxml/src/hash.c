@@ -608,6 +608,8 @@ xmlHashDefaultDeallocator(void *entry, const xmlChar *key ATTRIBUTE_UNUSED) {
  * can't be distinguished from out-of-memory errors, so this function
  * should be used with care.
  *
+ * Available since 2.13.0.
+ *
  * Returns 1 on success, 0 if an entry exists and -1 in case of error.
  */
 int
@@ -625,6 +627,10 @@ xmlHashAdd(xmlHashTablePtr hash, const xmlChar *key, void *payload) {
  * Add a hash table entry with two strings as key.
  *
  * See xmlHashAdd.
+ *
+ * Available since 2.13.0.
+ *
+ * Returns 1 on success, 0 if an entry exists and -1 in case of error.
  */
 int
 xmlHashAdd2(xmlHashTablePtr hash, const xmlChar *key,
@@ -643,6 +649,10 @@ xmlHashAdd2(xmlHashTablePtr hash, const xmlChar *key,
  * Add a hash table entry with three strings as key.
  *
  * See xmlHashAdd.
+ *
+ * Available since 2.13.0.
+ *
+ * Returns 1 on success, 0 if an entry exists and -1 in case of error.
  */
 int
 xmlHashAdd3(xmlHashTablePtr hash, const xmlChar *key,
@@ -1130,6 +1140,8 @@ xmlHashScanFull3(xmlHashTablePtr hash, const xmlChar *key,
  * @deallocFunc: deallocation function in case of errors
  *
  * Copy the hash table using @copyFunc to copy payloads.
+ *
+ * Available since 2.13.0.
  *
  * Returns the new table or NULL if a memory allocation failed.
  */

@@ -7,8 +7,8 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/enterprise/data_controls/features.h"
-#include "components/enterprise/data_controls/prefs.h"
+#include "components/enterprise/data_controls/core/browser/features.h"
+#include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "url/origin.h"
 
@@ -27,14 +27,6 @@ constexpr char kWildCardMatching[] = "*";
 ChromeDlpRulesManager::ChromeDlpRulesManager(Profile* profile)
     : profile_(profile) {
   DCHECK(profile_);
-  if (base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
-    data_controls_rules_registrar_.Init(profile_->GetPrefs());
-    data_controls_rules_registrar_.Add(
-        kDataControlsRulesPref,
-        base::BindRepeating(&ChromeDlpRulesManager::OnDataControlsRulesUpdate,
-                            base::Unretained(this)));
-    OnDataControlsRulesUpdate();
-  }
 }
 
 ChromeDlpRulesManager::~ChromeDlpRulesManager() = default;
@@ -128,8 +120,7 @@ Level ChromeDlpRulesManager::IsRestrictedDestination(
 
   const MatchedRuleInfo rule_info = GetMaxJoinRestrictionLevelAndRuleId(
       restriction, intersection_rules, restrictions_map_);
-  if (rule_info.url_condition.has_value() && out_source_pattern &&
-      out_destination_pattern) {
+  if (rule_info.url_condition.has_value() && out_source_pattern) {
     UrlConditionId src_condition_id = rule_info.url_condition.value().first;
     UrlConditionId dst_condition_id = rule_info.url_condition.value().second;
     if (out_source_pattern) {
@@ -250,40 +241,6 @@ std::string ChromeDlpRulesManager::GetSourceUrlPattern(
   return std::string();
 }
 
-Verdict ChromeDlpRulesManager::GetVerdict(Restriction restriction,
-                                          const ActionContext& context) const {
-  if (!base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
-    return Verdict::NotSet();
-  }
-
-  Level max_level = Level::kNotSet;
-  std::set<size_t> triggered_rules;
-  for (size_t i = 0; i < rules_.size(); ++i) {
-    Level level = rules_[i].GetLevel(restriction, context);
-    if (level > max_level) {
-      max_level = level;
-    }
-    if (level != Level::kNotSet) {
-      triggered_rules.insert(i);
-    }
-  }
-
-  // TODO(b/303640183): Access `rules_` using the indexes in `triggered_rules`
-  // to populate the reporting callback(s) appropriately.
-  switch (max_level) {
-    case Rule::Level::kNotSet:
-      return Verdict::NotSet();
-    case Rule::Level::kReport:
-      return Verdict::Report(base::DoNothing());
-    case Rule::Level::kWarn:
-      return Verdict::Warn(base::DoNothing(), base::DoNothing());
-    case Rule::Level::kBlock:
-      return Verdict::Block(base::DoNothing());
-    case Rule::Level::kAllow:
-      return Verdict::Allow();
-  }
-}
-
 // static
 RulesConditionsMap ChromeDlpRulesManager::MatchUrlAndGetRulesMapping(
     const GURL& url,
@@ -340,33 +297,11 @@ ChromeDlpRulesManager::GetMaxJoinRestrictionLevelAndRuleId(
   return MatchedRuleInfo(max_level, matched_rule_id, url_condition);
 }
 
-void ChromeDlpRulesManager::OnDataControlsRulesUpdate() {
-  DCHECK(profile_);
-  if (!base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
-    return;
-  }
-
-  rules_.clear();
-
-  const base::Value::List& rules_list =
-      profile_->GetPrefs()->GetList(kDataControlsRulesPref);
-
-  for (const base::Value& rule_value : rules_list) {
-    auto rule = Rule::Create(rule_value);
-
-    if (!rule) {
-      continue;
-    }
-
-    rules_.push_back(std::move(*rule));
-  }
-}
-
 void ChromeDlpRulesManager::OnDataLeakPreventionRulesUpdate() {
   // Not supported on non-CrOS platforms, see
   // `DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate()` for the CrOS
   // implementation.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace data_controls

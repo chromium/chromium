@@ -1,0 +1,4 @@
+InheritParentConfig: true
+Checks:
+- misc-include-cleaner
+- misc-unused-using-decls

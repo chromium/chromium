@@ -1,0 +1,82 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/password_manager/android:password_manager_resource_provider_java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//ui/android:ui_java",
+  ]
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/bottom_sheet/SimpleNoticeSheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/bottom_sheet/SimpleNoticeSheetProperties.java",
+    "java/src/org/chromium/chrome/browser/bottom_sheet/SimpleNoticeSheetView.java",
+    "java/src/org/chromium/chrome/browser/bottom_sheet/SimpleNoticeSheetViewBinder.java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.bottom_sheet"
+}
+
+robolectric_library("junit") {
+  testonly = true
+
+  sources = [ "java/src/org/chromium/chrome/browser/bottom_sheet/SimpleNoticeSheetCoordinatorRobolectricTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base:callback_java",
+    "//chrome/browser/flags:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.bottom_sheet"
+
+  sources = [ "java/src/org/chromium/chrome/browser/bottom_sheet/SimpleNoticeSheetRenderTest.java" ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/bottomsheet/android/test:java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_resources("java_resources") {
+  deps = [ "//ui/android:ui_java_resources" ]
+  sources = [ "java/res/layout/simple_notice_sheet.xml" ]
+}

@@ -15,12 +15,12 @@ import androidx.annotation.NonNull;
 import org.chromium.build.annotations.UsedByReflection;
 
 /** Animator for scaling a {@link ShrinkExpandImageView} from one rect to another. */
-// TODO(crbug/1495731): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
+// TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
 public class ShrinkExpandAnimator {
     /**
-     * Tag for the {@link ObjectAnimator#ofObject()} {@code propertyName} param. Using this
-     * triggers invocation of {@link #setRect(Rect)} during animation steps. An
-     * {@link RectEvaluator} is used to interpolate between {@link Rect}s based on animation steps.
+     * Tag for the {@link ObjectAnimator#ofObject()} {@code propertyName} param. Using this triggers
+     * invocation of {@link #setRect(Rect)} during animation steps. An {@link RectEvaluator} is used
+     * to interpolate between {@link Rect}s based on animation steps.
      */
     public static final String RECT = "rect";
 
@@ -92,7 +92,7 @@ public class ShrinkExpandAnimator {
         if (bitmap == null) return;
 
         // Scale image to fill the width of the screen. Normalize the scale against the scaling of
-        // the view to ensure the image appears as if it is sacaling with the view. Scaling the
+        // the view to ensure the image appears as if it is scaling with the view. Scaling the
         // view by itself will not change the image size which would lead to the wrong appearance.
         final float scale = (float) rect.width() / bitmap.getWidth();
         final float xFactor = scale / scaleX;

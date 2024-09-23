@@ -18,23 +18,21 @@ extern const base::FeatureParam<bool> kPrivilegeRepeatableQueries;
 extern const base::FeatureParam<bool> kRepeatableQueriesIgnoreDuplicateVisits;
 extern const base::FeatureParam<int> kRepeatableQueriesMaxAgeDays;
 extern const base::FeatureParam<int> kRepeatableQueriesMinVisitCount;
-extern const base::FeatureParam<int> kMaxNumNewTabPageDisplays;
 
 // When enabled, this feature flag begins populating the VisitedLinkDatabase
 // with data.
 BASE_DECLARE_FEATURE(kPopulateVisitedLinkDatabase);
 
-// Synced Segments Data
-// NOTE: Use `IsSyncSegmentsDataEnabled()` below to check if `kSyncSegmentsData`
-// is enabled; do not check `kSyncSegmentsData` directly.
-BASE_DECLARE_FEATURE(kSyncSegmentsData);
+// If enabled, change the scoring function for most visited tiles.
+BASE_DECLARE_FEATURE(kMostVisitedTilesNewScoring);
 
-// Kill switch for use of the new SQL recovery module in `TopSitesDatabase`.
-BASE_DECLARE_FEATURE(kTopSitesDatabaseUseBuiltInRecoveryIfSupported);
+// |kMostVisitedTilesNewScoring|: Feature param names.
+extern const char kMvtScoringParamRecencyFactor[];
+extern const char kMvtScoringParamDailyVisitCountCap[];
 
-// Returns true when both full history sync and synced segments data are
-// enabled.
-bool IsSyncSegmentsDataEnabled();
+// |kMvtScoringParamRecencyFactor|: Feature param values.
+extern const char kMvtScoringParamRecencyFactor_Default[];
+extern const char kMvtScoringParamRecencyFactor_DecayStaircase[];
 
 }  // namespace history
 

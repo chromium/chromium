@@ -183,7 +183,7 @@ void SVGLengthTearOff::setValue(float value, ExceptionState& exception_state) {
     Target()->SetValueInSpecifiedUnits(length_context.ConvertValueFromUserUnits(
         value, Target()->UnitMode(), Target()->NumericLiteralType()));
   }
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 float SVGLengthTearOff::valueInSpecifiedUnits() {
@@ -203,7 +203,7 @@ void SVGLengthTearOff::setValueInSpecifiedUnits(
     Target()->SetValueAsNumber(value);
   else
     Target()->SetValueInSpecifiedUnits(value);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 String SVGLengthTearOff::valueAsString() {
@@ -223,7 +223,7 @@ void SVGLengthTearOff::setValueAsString(const String& str,
         "The value provided ('" + str + "') is invalid.");
     return;
   }
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGLengthTearOff::newValueSpecifiedUnits(uint16_t unit_type,
@@ -242,7 +242,7 @@ void SVGLengthTearOff::newValueSpecifiedUnits(uint16_t unit_type,
   }
   Target()->NewValueSpecifiedUnits(ToCSSUnitType(unit_type),
                                    value_in_specified_units);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGLengthTearOff::convertToSpecifiedUnits(
@@ -266,7 +266,7 @@ void SVGLengthTearOff::convertToSpecifiedUnits(
   }
   SVGLengthContext length_context(context_element);
   Target()->ConvertToSpecifiedUnits(ToCSSUnitType(unit_type), length_context);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 SVGLengthTearOff::SVGLengthTearOff(SVGLength* target,

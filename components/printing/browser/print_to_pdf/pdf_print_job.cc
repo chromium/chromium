@@ -85,7 +85,7 @@ void PdfPrintJob::OnDidPrintWithParams(
   }
 
   // If the printed data already looks like a PDF, report it now.
-  if (printing::LooksLikePdf(region.Map().GetMemoryAsSpan<char>())) {
+  if (printing::LooksLikePdf(region.Map().GetMemoryAsSpan<const uint8_t>())) {
     ReportMemoryRegion(region);
     return;
   }
@@ -95,6 +95,7 @@ void PdfPrintJob::OnDidPrintWithParams(
       ->CompositeDocument(
           params->document_cookie, printing_rfh_, content,
           result->get_data()->accessibility_tree,
+          result->get_data()->generate_document_outline,
           printing::mojom::PrintCompositor::DocumentType::kPDF,
           base::BindOnce(&PdfPrintJob::OnCompositeDocumentToPdfDone,
                          weak_ptr_factory_.GetWeakPtr()));
@@ -120,7 +121,7 @@ void PdfPrintJob::OnCompositeDocumentToPdfDone(
 void PdfPrintJob::ReportMemoryRegion(
     const base::ReadOnlySharedMemoryRegion& region) {
   DCHECK(region.IsValid());
-  DCHECK(printing::LooksLikePdf(region.Map().GetMemoryAsSpan<char>()));
+  DCHECK(printing::LooksLikePdf(region.Map().GetMemoryAsSpan<const uint8_t>()));
 
   base::ReadOnlySharedMemoryMapping mapping = region.Map();
   if (!mapping.IsValid()) {

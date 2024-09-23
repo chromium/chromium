@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FEEDBACK_REDACTION_TOOL_INPROCESS_METRICS_TESTER_H_
 #define COMPONENTS_FEEDBACK_REDACTION_TOOL_INPROCESS_METRICS_TESTER_H_
 
+#include <string_view>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "components/feedback/redaction_tool/metrics_tester.h"
 
@@ -20,9 +22,9 @@ class InprocessMetricsTester : public MetricsTester {
   ~InprocessMetricsTester() override = default;
 
   // redaction::MetricsTester:
-  size_t GetBucketCount(base::StringPiece histogram_name,
+  size_t GetBucketCount(std::string_view histogram_name,
                         int histogram_value) override;
-  size_t GetNumBucketEntries(base::StringPiece histogram_name) override;
+  size_t GetNumBucketEntries(std::string_view histogram_name) override;
   std::unique_ptr<RedactionToolMetricsRecorder> SetupRecorder() override;
 
  private:

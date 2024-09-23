@@ -9,23 +9,12 @@ namespace display {
 DisplayConfigurationParams::DisplayConfigurationParams() = default;
 DisplayConfigurationParams::DisplayConfigurationParams(
     const DisplayConfigurationParams& other)
-    : id(other.id), origin(other.origin), enable_vrr(other.enable_vrr) {
-  if (other.mode)
-    mode = other.mode->get()->Clone();
-}
-
+    : DisplayConfigurationParams(other.id,
+                                 other.origin,
+                                 other.mode.get(),
+                                 other.enable_vrr) {}
 DisplayConfigurationParams::DisplayConfigurationParams(
-    DisplayConfigurationParams&& other)
-    : id(std::move(other.id)),
-      origin(std::move(other.origin)),
-      mode(std::move(other.mode)),
-      enable_vrr(other.enable_vrr) {}
-
-DisplayConfigurationParams::DisplayConfigurationParams(
-    int64_t id,
-    const gfx::Point& origin,
-    const display::DisplayMode* pmode)
-    : DisplayConfigurationParams(id, origin, pmode, /*enable_vrr=*/false) {}
+    DisplayConfigurationParams&& other) = default;
 
 DisplayConfigurationParams::DisplayConfigurationParams(
     int64_t id,
@@ -37,6 +26,22 @@ DisplayConfigurationParams::DisplayConfigurationParams(
     mode = pmode->Clone();
 }
 
+DisplayConfigurationParams& DisplayConfigurationParams::operator=(
+    const DisplayConfigurationParams& other) {
+  id = other.id;
+  origin = other.origin;
+  mode = other.mode ? other.mode->Clone() : nullptr;
+  enable_vrr = other.enable_vrr;
+  return *this;
+}
+
 DisplayConfigurationParams::~DisplayConfigurationParams() = default;
+
+bool DisplayConfigurationParams::operator==(
+    const DisplayConfigurationParams& other) const {
+  return id == other.id && origin == other.origin &&
+         (mode == other.mode || (mode && other.mode && *mode == *other.mode)) &&
+         enable_vrr == other.enable_vrr;
+}
 
 }  // namespace display

@@ -86,6 +86,11 @@ class CrDummyPropertiesWithNotifyElement extends CrLitElement {
         type: Boolean,
         notify: true,
       },
+
+      prop5: {
+        type: Boolean,
+        notify: true,
+      },
     };
   }
 
@@ -93,6 +98,7 @@ class CrDummyPropertiesWithNotifyElement extends CrLitElement {
   prop2: boolean = false;
   prop3: boolean = false;
   propFour: boolean = false;
+  prop5: boolean|undefined = false;
 }
 
 customElements.define(
@@ -125,13 +131,19 @@ suite('CrLitElement', function() {
     assertNotEquals(null, element.shadowRoot);
   });
 
-  // Test an odd case where a CrLitElement is connected to the DOM but its
-  // connectedCallback() method has not fired yet, which happens when the
-  // following pattern is encountered:
-  // dom-if > parent PolymerElement -> child CrLitElement
-  // See CrLitElement definition for more details. Ensure that `shadowRoot` is
-  // force-rendered as part of accessing the $ dictionary.
-  test('ForcedRendering_BeforeConnectedCallback', function(done) {
+  // Called by cr-polymer-wrapper's connectedCallback() below. Exposed as a hook
+  // to allow testing different cases.
+  let polymerWrapperCallback: (e: CrDummyLitElement) => void = (_e) => {};
+
+  // Defines two elements, cr-dom-if-polymer and cr-polymer-wrapper which are
+  // used in a couple test cases.
+  function defineForcedRenderingTestElements() {
+    if (customElements.get('cr-polymer-wrapper')) {
+      // Don't re-register the same elements, since this would lead to a runtime
+      // error.
+      return;
+    }
+
     class CrPolymerWrapperElement extends PolymerElement {
       static get is() {
         return 'cr-polymer-wrapper';
@@ -151,9 +163,10 @@ suite('CrLitElement', function() {
         assertNull(litChild.shadowRoot);
         assertDeepEquals([], litChild.lifecycleCallbacks);
 
-        // Try to access the $ dictionary, and ensure that it causes the
-        // `shadowRoot` to be force-rendered.
-        assertTrue(!!litChild.$.foo);
+        // Trigger the callback that is supposed to cause a forced-rendering.
+        polymerWrapperCallback(litChild);
+
+        // Check that the forced-rendering indeed happened.
         assertTrue(!!litChild.shadowRoot);
 
         // Check that 'performUpdate' was called, even though
@@ -166,7 +179,8 @@ suite('CrLitElement', function() {
           assertDeepEquals(
               ['performUpdate', 'connectedCallback', 'performUpdate'],
               litChild.lifecycleCallbacks);
-          done();
+          this.dispatchEvent(new CustomEvent(
+              'test-finished', {bubbles: true, composed: true}));
         });
       }
     }
@@ -201,10 +215,48 @@ suite('CrLitElement', function() {
     }
 
     customElements.define(CrDomIfPolymerElement.is, CrDomIfPolymerElement);
+  }
 
+  // Test an odd case where a CrLitElement is connected to the DOM but its
+  // connectedCallback() method has not fired yet, which happens when the
+  // following pattern is encountered:
+  // dom-if > parent PolymerElement -> child CrLitElement
+  // See CrLitElement definition for more details. Ensure that `shadowRoot` is
+  // force-rendered as part of accessing the $ dictionary.
+  test('ForcedRendering_BeforeConnectedCallback_DollarSign', function() {
+    defineForcedRenderingTestElements();
+    polymerWrapperCallback = (litChild: CrDummyLitElement) => {
+      // Access the $ dictionary, to test that it causes the
+      // `shadowRoot` to be force-rendered.
+      assertTrue(!!litChild.$.foo);
+    };
+
+    const whenDone = eventToPromise('test-finished', document.body);
     document.body.innerHTML = getTrustedHTML`
       <cr-dom-if-polymer></cr-dom-if-polymer>
     `;
+    return whenDone;
+  });
+
+  // Test an odd case where a CrLitElement is connected to the DOM but its
+  // connectedCallback() method has not fired yet, which happens when the
+  // following pattern is encountered:
+  // dom-if > parent PolymerElement -> child CrLitElement
+  // See CrLitElement definition for more details. Ensure that `shadowRoot` is
+  // force-rendered as part of calling focus().
+  test('ForcedRendering_BeforeConnectedCallback_Focus', function() {
+    defineForcedRenderingTestElements();
+    polymerWrapperCallback = (litChild: CrDummyLitElement) => {
+      // Call focus() to test that whether causes the `shadowRoot` to be
+      // force-rendered.
+      litChild.focus();
+    };
+
+    const whenDone = eventToPromise('test-finished', document.body);
+    document.body.innerHTML = getTrustedHTML`
+      <cr-dom-if-polymer></cr-dom-if-polymer>
+    `;
+    return whenDone;
   });
 
   test('DollarSign_ErrorWhenNotConnectedOnce', function() {
@@ -300,12 +352,20 @@ suite('CrLitElement', function() {
   test('PropertiesWithNotify', async function() {
     const element = document.createElement('cr-dummy-properties-with-notify');
 
-    // Ensure that properties without 'notify: true' don't trigger events.
     function unexpectedEventListener(e: Event) {
       assertNotReached(`Unexpected event caught: ${e.type}`);
     }
+
+    // Ensure that properties without 'notify: true' don't trigger events.
     element.addEventListener('prop2-changed', unexpectedEventListener);
     element.addEventListener('prop3-changed', unexpectedEventListener);
+
+    // Ensure that properties with 'notify: true' that
+    //   1) have a non-undefined initial value AND
+    //   2) are changed back to undefined before the element is connected
+    // also don't trigger updates.
+    element.addEventListener('prop5-changed', unexpectedEventListener);
+    element.prop5 = undefined;
 
     // Ensure that properties with 'notify: true' trigger events.
 

@@ -5,14 +5,21 @@
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/ui/push_notification/metrics.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_consumer.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_item_identifier.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_presenter.h"
@@ -27,7 +34,7 @@
 
 - (instancetype)initWithAuthenticationService:
     (AuthenticationService*)authenticationService {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _authenticationService = authenticationService;
     _selected = {{NotificationsOptInItemIdentifier::kContent, NO},
                  {NotificationsOptInItemIdentifier::kTips, NO},
@@ -40,8 +47,8 @@
   std::string gaiaID = base::SysNSStringToUTF8([self primaryIdentity].gaiaID);
   for (auto [item, selection] : _selected) {
     selection = push_notification_settings::
-        GetMobileNotificationPermissionStatusForClient(
-            [self clientIDForItem:item], gaiaID);
+        GetMobileNotificationPermissionStatusForMultipleClients(
+            [self clientIDsForItem:item], gaiaID);
     [self.consumer setOptInItem:item enabled:selection];
   }
 }
@@ -55,22 +62,41 @@
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  // TODO(crbug.com/41492138): record metrics.
   std::vector<PushNotificationClientId> selectedClientIds;
   std::vector<PushNotificationClientId> deselectedClientIds;
+  std::string gaiaID = base::SysNSStringToUTF8([self primaryIdentity].gaiaID);
+
   for (auto [item, selection] : _selected) {
-    if (selection) {
-      selectedClientIds.push_back([self clientIDForItem:item]);
-    } else {
-      deselectedClientIds.push_back([self clientIDForItem:item]);
+    std::vector<PushNotificationClientId> clientIDs =
+        [self clientIDsForItem:item];
+    BOOL enabled = push_notification_settings::
+        GetMobileNotificationPermissionStatusForMultipleClients(clientIDs,
+                                                                gaiaID);
+    // Only add the clientId if there has been a change from the original opt-in
+    // status.
+    if (selection && !enabled) {
+      selectedClientIds.insert(selectedClientIds.end(), clientIDs.begin(),
+                               clientIDs.end());
+    } else if (!selection && enabled) {
+      deselectedClientIds.insert(deselectedClientIds.end(), clientIDs.begin(),
+                                 clientIDs.end());
     }
   }
+
   [self disableNotifications:deselectedClientIds];
   [self.presenter presentNotificationsAlertForClientIds:selectedClientIds];
+  base::UmaHistogramEnumeration(
+      kNotificationsOptInPromptActionHistogram,
+      NotificationsOptInPromptActionType::kEnableNotificationsTapped);
 }
 
 - (void)didTapSecondaryActionButton {
-  // TODO(crbug.com/41492138): record metrics.
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  set_up_list_prefs::MarkItemComplete(localState,
+                                      SetUpListItemType::kNotifications);
+  base::UmaHistogramEnumeration(
+      kNotificationsOptInPromptActionHistogram,
+      NotificationsOptInPromptActionType::kNoThanksTapped);
   [self.presenter dismiss];
 }
 
@@ -94,15 +120,16 @@
       signin::ConsentLevel::kSignin);
 }
 
-- (PushNotificationClientId)clientIDForItem:
+- (std::vector<PushNotificationClientId>)clientIDsForItem:
     (NotificationsOptInItemIdentifier)item {
   switch (item) {
     case kContent:
-      return PushNotificationClientId::kContent;
+      return {PushNotificationClientId::kContent,
+              PushNotificationClientId::kSports};
     case kTips:
-      return PushNotificationClientId::kTips;
+      return {PushNotificationClientId::kTips};
     case kPriceTracking:
-      return PushNotificationClientId::kCommerce;
+      return {PushNotificationClientId::kCommerce};
   }
 }
 

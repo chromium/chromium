@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_member.h"
 #include "components/printing/browser/print_manager.h"
 #include "components/printing/browser/print_to_pdf/pdf_print_job.h"
@@ -29,12 +30,14 @@
 #include "ui/accessibility/ax_tree_update_forward.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include <optional>
+
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 namespace base {
 class RefCountedMemory;
@@ -45,7 +48,7 @@ namespace printing {
 class PrintQueriesQueue;
 class PrinterQuery;
 
-// TODO(crbug.com/1514866): Remove this emergency off switch after a safe
+// TODO(crbug.com/41487419): Remove this emergency off switch after a safe
 // rollout.
 BASE_DECLARE_FEATURE(kCheckPrintRfhIsActive);
 
@@ -67,6 +70,8 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
     virtual void OnRegisterSystemPrintClient(bool succeeded) {}
 
     virtual void OnDidPrintDocument() {}
+
+    virtual void OnRenderFrameDeleted() {}
   };
 
   PrintViewManagerBase(const PrintViewManagerBase&) = delete;
@@ -146,6 +151,14 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   void RemoveTestObserver(TestObserver& observer);
 
  protected:
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  using PrintDocumentCallback =
+      base::OnceCallback<void(scoped_refptr<base::RefCountedMemory> print_data,
+                              const gfx::Size& page_size,
+                              const gfx::Rect& content_area,
+                              const gfx::Point& offsets)>;
+#endif
+
   explicit PrintViewManagerBase(content::WebContents* web_contents);
 
   // Helper method for checking whether the WebContents is crashed.
@@ -169,7 +182,12 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // which require a UI.  This function can be called even if there is no
   // current registration.
   void UnregisterSystemPrintClient();
-#endif
+
+  const std::optional<PrintBackendServiceManager::ClientId>&
+  query_with_ui_client_id() const {
+    return query_with_ui_client_id_;
+  }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
   // content::WebContentsObserver implementation.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
@@ -190,6 +208,10 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // returns.
   void DisconnectFromCurrentPrintJob();
 
+  bool GetPrintingEnabledBooleanPref() const;
+
+  PrintQueriesQueue* queue() { return queue_.get(); }
+
   // PrintJob::Observer overrides:
   void OnDocDone(int job_id, PrintedDocument* document) override;
   void OnJobDone() override;
@@ -207,7 +229,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
                                      mojom::ScriptedPrintParamsPtr params,
                                      ScriptedPrintCallback callback);
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   // Helper method bound to `content_analysis_before_printing_document_` when
   // content analysis should happen right before the document is to be printed.
   // This method is virtual for testing purposes.
@@ -220,7 +242,10 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 
   // Helper method to set `analyzing_content_` in child classes.
   void set_analyzing_content(bool analyzing);
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+
+  void set_content_analysis_before_printing_document(
+      PrintDocumentCallback callback);
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
   // Manages the low-level talk to the printer.
   scoped_refptr<PrintJob> print_job_;
@@ -275,7 +300,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // Helpers for PrintForPrintPreview();
   void OnPrintSettingsDone(scoped_refptr<base::RefCountedMemory> print_data,
                            uint32_t page_count,
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
                            bool show_system_dialog,
 #endif
                            PrinterHandler::PrintCallback callback,
@@ -283,7 +308,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 
   void StartLocalPrintJob(scoped_refptr<base::RefCountedMemory> print_data,
                           uint32_t page_count,
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
                           bool show_system_dialog,
 #endif
                           int cookie,
@@ -346,7 +371,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // Release the PrinterQuery associated with our `cookie_`.
   void ReleasePrinterQuery();
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   // Helper method called after a verdict has been obtained from scanning
   // to-be-printed content, right before the actual `print_job_` starts.
   // Printing will proceed only if `allowed` is set to true, otherwise the print
@@ -357,7 +382,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
       const gfx::Rect& content_area,
       const gfx::Point& offsets,
       bool allowed);
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
   // The current RFH that is printing with a system printing dialog.
   raw_ptr<content::RenderFrameHost> printing_rfh_ = nullptr;
@@ -381,19 +406,14 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   std::optional<PrintBackendServiceManager::ClientId> query_with_ui_client_id_;
 #endif
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   // Indicates that the page/document is currently undergoing content analysis.
   bool analyzing_content_ = false;
 
   // Called by `PrintDocument` to insert content analysis logic before key
   // printing steps like `PrintJob::StartPrinting`.
-  using PrintDocumentCallback =
-      base::OnceCallback<void(scoped_refptr<base::RefCountedMemory> print_data,
-                              const gfx::Size& page_size,
-                              const gfx::Rect& content_area,
-                              const gfx::Point& offsets)>;
   PrintDocumentCallback content_analysis_before_printing_document_;
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
   const scoped_refptr<PrintQueriesQueue> queue_;
 

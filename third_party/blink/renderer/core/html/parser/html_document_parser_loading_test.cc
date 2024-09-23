@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/metrics/histogram_tester.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -410,25 +413,6 @@ TEST_P(HTMLDocumentParserLoadingTest,
 
   css_async_resource.Complete("");
   platform_->RunUntilIdle();
-}
-
-TEST_P(HTMLDocumentParserLoadingTest, TestWithWebUIUrl) {
-  const char* histogram_name = "Blink.NotifyScriptLoaded.TabSearch";
-  base::HistogramTester histogram_tester;
-  SimRequest main_resource("chrome://tab-search.top-chrome/", "text/html");
-  SimRequest::Params params;
-  params.response_http_status = 200;
-  SimSubresourceRequest js("chrome://tab-search.top-chrome/non-existent.js",
-                           "application/javascript", params);
-  LoadURL("chrome://tab-search.top-chrome/");
-  main_resource.Complete(R"HTML(
-    <script src="non-existent.js"></script>
-  )HTML");
-  platform_->RunUntilIdle();
-  js.Complete("");
-  platform_->RunUntilIdle();
-
-  histogram_tester.ExpectTotalCount(histogram_name, 1);
 }
 
 }  // namespace blink

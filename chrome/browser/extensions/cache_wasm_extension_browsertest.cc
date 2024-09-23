@@ -2,19 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
+#include <string_view>
+
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/switches.h"
-
-namespace chrome {
 
 class WasmExtensionCachingBrowserTest
     : public extensions::ExtensionBrowserTest {
@@ -22,7 +29,7 @@ class WasmExtensionCachingBrowserTest
   WasmExtensionCachingBrowserTest() = default;
   ~WasmExtensionCachingBrowserTest() override = default;
 
-  static constexpr base::StringPiece kHistogram = "V8.WasmCodeCaching";
+  static constexpr std::string_view kHistogram = "V8.WasmCodeCaching";
 
   // The enum values need to match "WasmCodeCaching" in
   // tools/metrics/histograms/metadata/v8/enums.xml.
@@ -68,7 +75,7 @@ class WasmExtensionCachingBrowserTest
 
   // Fetch the `bucket` from the `histogram` in every renderer process until
   // reaching, but not exceeding, `expected_samples`.
-  void WaitForHistogramSamples(base::StringPiece histogram,
+  void WaitForHistogramSamples(std::string_view histogram,
                                int expected_samples) {
     // We sleep for an increasing amount of time for the background task to
     // finish.
@@ -91,16 +98,19 @@ class WasmExtensionCachingBrowserTest
 
  private:
   // JS flags:
-  // --allow-natives-syntax:     Enables the use of (internal) runtime functions
-  //                             like %IsLiftoffFunction`,
-  // --wasm-caching-threshold=1: Trigger caching as soon as any TurboFan code is
-  //                             available.
-  // --wasm-tiering-budget=10:   Trigger tier-up earlier.
+  // --allow-natives-syntax:          Enables the use of (internal) runtime
+  //                                  functions like `%IsLiftoffFunction`.
+  // --wasm-caching-threshold=1:      Trigger caching as soon as any TurboFan
+  //                                  code is available.
+  // --wasm-caching-hard-threshold=1: Trigger caching immediately, not after a
+  //                                  delay.
+  // --wasm-tiering-budget=1:         Trigger tier-up earlier.
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(
-        blink::switches::kJavaScriptFlags,
-        "--allow-natives-syntax --wasm-caching-threshold=1 "
-        "--wasm-tiering-budget=10");
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--allow-natives-syntax"
+                                    " --wasm-caching-threshold=1"
+                                    " --wasm-caching-hard-threshold=1"
+                                    " --wasm-tiering-budget=1");
     ExtensionBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -171,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(WasmExtensionCachingBrowserTest, CacheWasmExtensions) {
   // few more loads.
   for (int num_tabs = 1; num_tabs <= 10; ++num_tabs) {
     LOG(INFO) << "Opening new tab #" << num_tabs;
-    NewTab(browser());
+    chrome::NewTab(browser());
     // Wait until we got a total of `num_tabs` many samples.
     WaitForHistogramSamples(kHistogram, num_tabs);
     // If there was a hit, we are happy (and done).
@@ -187,5 +197,3 @@ IN_PROC_BROWSER_TEST_F(WasmExtensionCachingBrowserTest, CacheWasmExtensions) {
 
   FAIL() << "Failure: No cache hits";
 }
-
-}  // namespace chrome

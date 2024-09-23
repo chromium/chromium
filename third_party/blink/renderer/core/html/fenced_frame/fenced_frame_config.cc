@@ -15,18 +15,15 @@ FencedFrameConfig* FencedFrameConfig::Create(const String& url) {
 // static
 FencedFrameConfig* FencedFrameConfig::Create(
     const KURL url,
-    uint32_t width,
-    uint32_t height,
     const String& shared_storage_context,
     std::optional<KURL> urn_uuid,
     std::optional<gfx::Size> container_size,
     std::optional<gfx::Size> content_size,
     AttributeVisibility url_visibility,
-    AttributeVisibility size_visibility,
     bool freeze_initial_size) {
   return MakeGarbageCollected<FencedFrameConfig>(
-      url, width, height, shared_storage_context, urn_uuid, container_size,
-      content_size, url_visibility, size_visibility, freeze_initial_size);
+      url, shared_storage_context, urn_uuid, container_size, content_size,
+      url_visibility, freeze_initial_size);
 }
 
 // static
@@ -39,21 +36,15 @@ FencedFrameConfig::FencedFrameConfig(const String& url)
     : url_(url), url_attribute_visibility_(AttributeVisibility::kTransparent) {}
 
 FencedFrameConfig::FencedFrameConfig(const KURL url,
-                                     uint32_t width,
-                                     uint32_t height,
                                      const String& shared_storage_context,
                                      std::optional<KURL> urn_uuid,
                                      std::optional<gfx::Size> container_size,
                                      std::optional<gfx::Size> content_size,
                                      AttributeVisibility url_visibility,
-                                     AttributeVisibility size_visibility,
                                      bool freeze_initial_size)
     : url_(url),
-      width_(width),
-      height_(height),
       shared_storage_context_(shared_storage_context),
       url_attribute_visibility_(url_visibility),
-      size_attribute_visibility_(size_visibility),
       urn_uuid_(urn_uuid),
       container_size_(container_size),
       content_size_(content_size),
@@ -108,14 +99,6 @@ FencedFrameConfig::FencedFrameConfig(
 
 V8UnionOpaquePropertyOrUSVString* FencedFrameConfig::url() const {
   return Get<Attribute::kURL>();
-}
-
-V8UnionOpaquePropertyOrUnsignedLong* FencedFrameConfig::width() const {
-  return Get<Attribute::kWidth>();
-}
-
-V8UnionOpaquePropertyOrUnsignedLong* FencedFrameConfig::height() const {
-  return Get<Attribute::kHeight>();
 }
 
 void FencedFrameConfig::setSharedStorageContext(const String& context) {

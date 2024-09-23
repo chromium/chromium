@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PREVIEW_CANCEL_REASON_H_
 #define CONTENT_PUBLIC_BROWSER_PREVIEW_CANCEL_REASON_H_
 
+#include <string>
+
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 

@@ -65,8 +65,9 @@ class MockCompletionPrintCompositorImpl : public PrintCompositorImpl {
       mojom::PrintCompositor::DocumentType document_type) override {
     const auto* data =
         reinterpret_cast<const TestRequestData*>(serialized_content.data());
-    if (docinfo_)
-      docinfo_->pages_written++;
+    if (doc_info_) {
+      doc_info_->pages_written++;
+    }
     OnCompositePage(data->frame_guid, data->page_num);
     return mojom::PrintCompositor::Status::kSuccess;
   }
@@ -369,7 +370,7 @@ TEST_F(PrintCompositorImplTest, NotifyUnavailableSubframe) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1186718): Enable this test once CrashKeys are supported.
+// TODO(crbug.com/40172607): Enable this test once CrashKeys are supported.
 #define MAYBE_SetCrashKey DISABLED_SetCrashKey
 #else
 #define MAYBE_SetCrashKey SetCrashKey

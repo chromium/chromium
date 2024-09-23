@@ -9,8 +9,10 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <type_traits>
+#include <variant>
 
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
@@ -19,13 +21,12 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/rectify_callback.h"
 #include "base/types/is_instantiation.h"
+#include "base/types/pass_key.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -33,6 +34,9 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/state_observer.h"
+
+class ChromeOSTestLauncherDelegate;
+class InteractiveUITestSuite;
 
 namespace ui::test {
 
@@ -144,10 +148,15 @@ class InteractiveTestPrivate {
     aborted_callback_for_testing_ = std::move(aborted_callback_for_testing);
   }
 
-  // Places a callback in the message queue to bounce an event off of the pivot
-  // element, then responds by executing `task`.
+  // The following are the classes allowed to set the "allow interactive test
+  // verbs" flag.
   template <typename T>
-  static MultiStep PostTask(const base::StringPiece& description, T&& task);
+    requires std::same_as<T, ui::test::InteractiveTestTest> ||
+             std::same_as<T, ChromeOSTestLauncherDelegate> ||
+             std::same_as<T, InteractiveUITestSuite>
+  static void set_interactive_test_verbs_allowed(base::PassKey<T>) {
+    allow_interactive_test_verbs_ = true;
+  }
 
  private:
   friend class ui::test::InteractiveTestTest;
@@ -191,10 +200,14 @@ class InteractiveTestPrivate {
 
   // Overrides the default test failure behavior to test the API itself.
   InteractionSequence::AbortedCallback aborted_callback_for_testing_;
+
+  // Whether interactive test verbs are allowed. See
+  // `InteractiveTestApi::RequireInteractiveTest()` for more info.
+  static bool allow_interactive_test_verbs_;
 };
 
 // Specifies an element either by ID or by name.
-using ElementSpecifier = absl::variant<ElementIdentifier, base::StringPiece>;
+using ElementSpecifier = std::variant<ElementIdentifier, std::string_view>;
 
 class StateObserverElement : public TestElementBase {
  public:
@@ -298,15 +311,20 @@ class StateObserverElementT : public StateObserverElement {
 // Steps which use this method will fail if it returns false, printing out the
 // details of the step in the usual way.
 template <typename T, typename V = std::decay_t<T>>
-bool MatchAndExplain(const base::StringPiece& test_name,
+bool MatchAndExplain(std::string_view test_name,
                      const testing::Matcher<V>& matcher,
                      const T& value) {
-  if (matcher.Matches(value))
+  testing::StringMatchResultListener listener;
+  if (matcher.MatchAndExplain(value, &listener)) {
     return true;
+  }
   std::ostringstream oss;
   oss << test_name << " failed.\nExpected: ";
   matcher.DescribeTo(&oss);
   oss << "\nActual: " << testing::PrintToString(value);
+  if (!listener.str().empty()) {
+    oss << "\n" << listener.str();
+  }
   LOG(ERROR) << oss.str();
   return false;
 }
@@ -328,48 +346,6 @@ bool InteractiveTestPrivate::AddStateObserver(
       std::make_unique<StateObserverElementT<V>>(id, context,
                                                  std::move(state_observer)));
   return true;
-}
-
-// static
-template <typename T>
-InteractiveTestPrivate::MultiStep InteractiveTestPrivate::PostTask(
-    const base::StringPiece& description,
-    T&& task) {
-  MultiStep result;
-  result.emplace_back(std::move(
-      InteractionSequence::StepBuilder()
-          .SetDescription(base::StrCat({description, ": PostTask()"}))
-          .SetElementID(kInteractiveTestPivotElementId)
-          .SetStartCallback(base::BindOnce([](ui::TrackedElement* el) {
-            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(
-                    [](ElementIdentifier id, ElementContext context) {
-                      auto* const el =
-                          ui::ElementTracker::GetElementTracker()
-                              ->GetFirstMatchingElement(id, context);
-                      if (el) {
-                        ui::ElementTracker::GetFrameworkDelegate()
-                            ->NotifyCustomEvent(el,
-                                                kInteractiveTestPivotEventType);
-                      }
-                      // If there is no pivot element, the test sequence has
-                      // been aborted and there's no need to send an additional
-                      // error.
-                    },
-                    el->identifier(), el->context()));
-          }))));
-  result.emplace_back(std::move(
-      InteractionSequence::StepBuilder()
-          .SetDescription(base::StrCat({description, ": WaitForComplete()"}))
-          .SetElementID(kInteractiveTestPivotElementId)
-          .SetContext(InteractionSequence::ContextMode::kFromPreviousStep)
-          .SetType(InteractionSequence::StepType::kCustomEvent,
-                   kInteractiveTestPivotEventType)
-          .SetStartCallback(
-              base::RectifyCallback<InteractionSequence::StepStartCallback>(
-                  std::move(task)))));
-  return result;
 }
 
 // Similar to `std::invocable<T, Args...>`, but does not put constraints on the

@@ -1,0 +1,77 @@
+syntax = "proto2";
+
+package mojolpmgenerator.{{basename}};
+
+{% for import in imports %}
+import "{{import}}";
+{% endfor %}
+
+message RunThreadAction {
+  required uint32 id = 1;
+}
+
+{% for new_message in new_messages %}
+message {{new_message}}NewAction {
+    required uint32 id = 1;
+}
+{% endfor %}
+
+{% for actions in actions_list %}
+{%- set root_action = actions|selectattr("is_new_action")|first %}
+message RemoteAction{{root_action['proto_type']}} {
+{% if ensure_remote %}
+{% set oneof_actions = actions|rejectattr("is_new_action")|list -%}
+{% else %}
+{% set oneof_actions = actions -%}
+{% endif %}
+{% if oneof_actions|length > 0 %}
+  oneof action {
+{%    for action in oneof_actions %}
+{%-     if action['is_new_action'] %}
+    {{action['proto_type']}}NewAction {{action['proto_identifier']}} = {{proto_id(action['proto_identifier'])}};
+{%      else %}
+    {{action['proto_type']}} {{action['proto_identifier']}} = {{proto_id(action['proto_identifier'])}};
+{%      endif -%}
+{%    endfor %}
+  }
+{% endif %}
+}
+{% endfor %}
+
+{% for actions in actions_list %}
+{%- set root_action = actions|selectattr("is_new_action")|first %}
+message Remote{{root_action['proto_type']}} {
+  repeated RemoteAction{{root_action['proto_type']}} action_{{root_action['proto_identifier']}} = 1;
+  repeated Sequence sequences = 2;
+  repeated uint32 sequence_indexes = 3 [packed = true];
+{% if ensure_remote %}
+{% for action in actions|selectattr("is_new_action") %}
+  required {{action['proto_type']}}NewAction {{action['proto_identifier']}} = {{proto_id(action['proto_identifier'])}};
+{% endfor %}
+{% endif %}
+}
+{% endfor %}
+
+
+message Action {
+    oneof action {
+        RunThreadAction run_thread_action = 1;
+{% for action_set in actions_list %}
+{%- set root_action = action_set|selectattr("is_new_action")|first %}
+        Remote{{root_action['proto_type']}} {{root_action['proto_identifier']}} = {{proto_id(root_action['proto_type'])}};
+{% endfor %}
+    }
+}
+
+// Sequence provides a level of indirection which allows Testcase to compactly
+// express repeated sequences of actions.
+message Sequence {
+  repeated uint32 action_indexes = 1 [packed = true];
+}
+
+// Testcase is the top-level message type interpreted by the fuzzer.
+message Testcase {
+  repeated Action actions = 1;
+  repeated Sequence sequences = 2;
+  repeated uint32 sequence_indexes = 3 [packed = true];
+}

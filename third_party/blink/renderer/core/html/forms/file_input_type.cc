@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/keywords.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -229,7 +229,7 @@ void FileInputType::AdjustStyle(ComputedStyleBuilder& builder) {
 }
 
 LayoutObject* FileInputType::CreateLayoutObject(const ComputedStyle&) const {
-  return MakeGarbageCollected<LayoutNGBlockFlow>(&GetElement());
+  return MakeGarbageCollected<LayoutBlockFlow>(&GetElement());
 }
 
 InputType::ValueMode FileInputType::GetValueMode() const {
@@ -380,7 +380,8 @@ Node* FileInputType::FileStatusElement() const {
 }
 
 void FileInputType::DisabledAttributeChanged() {
-  DCHECK(IsShadowHost(GetElement()));
+  DCHECK(RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() ||
+         IsShadowHost(GetElement()));
   if (Element* button = UploadButton()) {
     button->SetBooleanAttribute(html_names::kDisabledAttr,
                                 GetElement().IsDisabledFormControl());
@@ -388,7 +389,8 @@ void FileInputType::DisabledAttributeChanged() {
 }
 
 void FileInputType::MultipleAttributeChanged() {
-  DCHECK(IsShadowHost(GetElement()));
+  DCHECK(RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() ||
+         IsShadowHost(GetElement()));
   if (Element* button = UploadButton()) {
     button->setAttribute(
         html_names::kValueAttr,
@@ -539,7 +541,7 @@ void FileInputType::HandleKeypressEvent(KeyboardEvent& event) {
   if (GetElement().FastHasAttribute(html_names::kWebkitdirectoryAttr)) {
     // Override to invoke the action on Enter key up (not press) to avoid
     // repeats committing the file chooser.
-    if (event.key() == "Enter") {
+    if (event.key() == keywords::kCapitalEnter) {
       event.SetDefaultHandled();
       return;
     }
@@ -551,7 +553,7 @@ void FileInputType::HandleKeyupEvent(KeyboardEvent& event) {
   if (GetElement().FastHasAttribute(html_names::kWebkitdirectoryAttr)) {
     // Override to invoke the action on Enter key up (not press) to avoid
     // repeats committing the file chooser.
-    if (event.key() == "Enter") {
+    if (event.key() == keywords::kCapitalEnter) {
       GetElement().DispatchSimulatedClick(&event);
       event.SetDefaultHandled();
       return;

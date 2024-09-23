@@ -12,7 +12,7 @@
 
 namespace audio {
 
-// TODO(https://crbug.com/836226) remove inheritance after switching to audio
+// TODO(crbug.com/40573245) remove inheritance after switching to audio
 // service input streams.
 class UserInputMonitor : public media::UserInputMonitor {
  public:

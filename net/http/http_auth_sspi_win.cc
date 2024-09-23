@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // See "SSPI Sample Application" at
 // http://msdn.microsoft.com/en-us/library/aa918273.aspx
 
@@ -10,7 +15,6 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -212,10 +216,10 @@ Error MapInitializeSecurityContextStatusToError(SECURITY_STATUS status) {
     case SEC_E_INSUFFICIENT_MEMORY:
       return ERR_OUT_OF_MEMORY;
     case SEC_E_UNSUPPORTED_FUNCTION:
-      DUMP_WILL_BE_NOTREACHED_NORETURN();
+      DUMP_WILL_BE_NOTREACHED();
       return ERR_UNEXPECTED;
     case SEC_E_INVALID_HANDLE:
-      DUMP_WILL_BE_NOTREACHED_NORETURN();
+      DUMP_WILL_BE_NOTREACHED();
       return ERR_INVALID_HANDLE;
     case SEC_E_INVALID_TOKEN:
       return ERR_INVALID_RESPONSE;
@@ -327,7 +331,7 @@ SECURITY_STATUS SSPILibraryDefault::QueryContextAttributesEx(
     ULONG ulAttribute,
     PVOID pBuffer,
     ULONG cbBuffer) {
-  // TODO(https://crbug.com/992779): QueryContextAttributesExW is not included
+  // TODO(crbug.com/41475489): QueryContextAttributesExW is not included
   // in Secur32.Lib in 10.0.18362.0 SDK. This symbol requires switching to using
   // Windows SDK API sets in mincore.lib or OneCore.Lib. Switch to using
   // QueryContextAttributesEx when the switch is made.
@@ -399,11 +403,11 @@ void HttpAuthSSPI::ResetSecurityContext() {
 HttpAuth::AuthorizationResult HttpAuthSSPI::ParseChallenge(
     HttpAuthChallengeTokenizer* tok) {
   if (!SecIsValidHandle(&ctxt_)) {
-    return net::ParseFirstRoundChallenge(scheme_, tok);
+    return ParseFirstRoundChallenge(scheme_, tok);
   }
   std::string encoded_auth_token;
-  return net::ParseLaterRoundChallenge(scheme_, tok, &encoded_auth_token,
-                                       &decoded_server_auth_token_);
+  return ParseLaterRoundChallenge(scheme_, tok, &encoded_auth_token,
+                                  &decoded_server_auth_token_);
 }
 
 int HttpAuthSSPI::GenerateAuthToken(const AuthCredentials* credentials,

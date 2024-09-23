@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
@@ -39,7 +40,7 @@ OptimizationGuideLogger::LogMessageBuilder::~LogMessageBuilder() {
   std::string message = base::StrCat(messages_);
   optimization_guide_logger_->OnLogMessageAdded(
       base::Time::Now(), log_source_, source_file_, source_line_, message);
-  DVLOG(0) << source_file_ << "(" << source_line_ << ") " << message;
+  DVLOG(1) << source_file_ << "(" << source_line_ << ") " << message;
 }
 
 OptimizationGuideLogger::LogMessageBuilder&
@@ -112,6 +113,12 @@ OptimizationGuideLogger::LogMessage::LogMessage(
       source_file(source_file),
       source_line(source_line),
       message(message) {}
+
+// static
+OptimizationGuideLogger* OptimizationGuideLogger::GetInstance() {
+  static base::NoDestructor<OptimizationGuideLogger> instance;
+  return instance.get();
+}
 
 OptimizationGuideLogger::OptimizationGuideLogger()
     : command_line_flag_enabled_(

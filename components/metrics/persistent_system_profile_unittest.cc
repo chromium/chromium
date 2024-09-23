@@ -40,7 +40,7 @@ class PersistentSystemProfileTest : public testing::Test {
     memory_allocator_.reset();
   }
 
-  void WriteRecord(uint8_t type, const std::string& record) {
+  void WriteRecord(uint8_t type, std::string_view record) {
     persistent_profile_.allocators_[0].Write(
         static_cast<PersistentSystemProfile::RecordType>(type), record);
   }
@@ -75,19 +75,16 @@ TEST_F(PersistentSystemProfileTest, Create) {
 
 TEST_F(PersistentSystemProfileTest, RecordSplitting) {
   const size_t kRecordSize = 100 << 10;  // 100 KiB
-  std::vector<char> buffer;
-  buffer.resize(kRecordSize);
-  base::RandBytes(&buffer[0], kRecordSize);
+  std::string buffer(kRecordSize, '\0');
+  base::RandBytes(base::as_writable_byte_span(buffer));
 
-  WriteRecord(42, std::string(&buffer[0], kRecordSize));
+  WriteRecord(42, buffer);
 
   uint8_t type;
   std::string record;
   ASSERT_TRUE(ReadRecord(&type, &record));
   EXPECT_EQ(42U, type);
-  ASSERT_EQ(kRecordSize, record.size());
-  for (size_t i = 0; i < kRecordSize; ++i)
-    EXPECT_EQ(buffer[i], record[i]);
+  EXPECT_EQ(buffer, record);
 }
 
 TEST_F(PersistentSystemProfileTest, ProfileStorage) {

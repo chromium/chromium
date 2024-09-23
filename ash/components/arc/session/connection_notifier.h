@@ -35,7 +35,8 @@ class ConnectionNotifier {
 
  private:
   THREAD_CHECKER(thread_checker_);
-  base::ObserverList<ConnectionObserverBase>::Unchecked observer_list_;
+  base::ObserverList<ConnectionObserverBase>::UncheckedAndDanglingUntriaged
+      observer_list_;
 };
 
 }  // namespace internal

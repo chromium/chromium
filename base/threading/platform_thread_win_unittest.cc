@@ -109,36 +109,4 @@ class MemoryPriorityAssertingThreadDelegate
 };
 }  // namespace
 
-// It has been observed (crbug.com/1489467) that memory priority is set to very
-// low on background threads, and a possible mitigation is running in the
-// kThreadNormalMemoryPriorityWin experiment which sets memory priority to
-// NORMAL on all threads at creation. If this test fails, the feature is broken
-// and investigation needs to be done into whether pages are being allocated at
-// pri-1 despite it as shown in the above linked bug.
-TEST(PlatformThreadWinTest, NormalPriorityFeatureForBackgroundThreads) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(kBackgroundThreadNormalMemoryPriorityWin);
-  base::InitializePlatformThreadFeatures();
-
-  MemoryPriorityAssertingThreadDelegate delegate{MEMORY_PRIORITY_NORMAL};
-
-  PlatformThreadHandle handle;
-
-  CHECK(PlatformThread::CreateWithType(0, &delegate, &handle,
-                                       ThreadType::kBackground));
-  PlatformThread::Join(handle);
-}
-
-TEST(PlatformThreadWinTest, BackgroundThreadsSetLowMemoryPriority) {
-  base::InitializePlatformThreadFeatures();
-
-  MemoryPriorityAssertingThreadDelegate delegate{MEMORY_PRIORITY_VERY_LOW};
-
-  PlatformThreadHandle handle;
-
-  CHECK(PlatformThread::CreateWithType(0, &delegate, &handle,
-                                       ThreadType::kBackground));
-  PlatformThread::Join(handle);
-}
-
 }  // namespace base

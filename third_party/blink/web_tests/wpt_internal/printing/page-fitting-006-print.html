@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<link rel="match" href="page-fitting-006-print-ref.html">
+<meta name="assert" content="When the page size is smaller than the sheet, it's centered on paper, but the unused space shouldn't be available to margin boxes.">
+<script>
+  if (window.testRunner) {
+    testRunner.setPrintingSize(800, 600);
+    testRunner.setShouldCenterAndShrinkToFitPaper(true);
+  }
+</script>
+<style>
+  @page {
+    size: 400px 300px;
+    margin: 100px;
+    border: 10px solid;
+
+    @top-left-corner {
+      box-sizing: border-box;
+      border: 5px solid lime;
+      width: 100px;
+      height: 100%;
+      content: "";
+      background: green;
+    }
+    @top-right-corner {
+      box-sizing: border-box;
+      border: 5px solid lime;
+      width: 100%;
+      height: 100px;
+      content: "";
+      background: green;
+    }
+    @bottom-right-corner {
+      box-sizing: border-box;
+      border: 5px solid lime;
+      width: 100px;
+      height: 100%;
+      content: "";
+      background: green;
+    }
+    @bottom-left-corner {
+      box-sizing: border-box;
+      border: 5px solid lime;
+      width: 100%;
+      height: 100px;
+      content: "";
+      background: green;
+    }
+  }
+</style>

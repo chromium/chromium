@@ -8,55 +8,114 @@ config("jni_include_dir") {
   include_dirs = [ jni_headers_dir ]
 }
 
-config("toolchain_define") {
+config("jni_zero_defines") {
+  defines = []
   if (is_robolectric) {
-    defines = [ "JNI_ZERO_IS_ROBOLECTRIC" ]
+    defines += [ "JNI_ZERO_IS_ROBOLECTRIC" ]
+  }
+  if (enable_jni_multiplexing) {
+    defines += [ "JNI_ZERO_MULTIPLEXING_ENABLED" ]
   }
 }
 
-source_set("jni_export") {
-  sources = [ "jni_export.h" ]
+generate_jni("generate_jni") {
+  sources = [
+    "java/src/org/jni_zero/JniInit.java",
+    "java/src/org/jni_zero/JniUtil.java",
+  ]
+  visibility = [
+    ":*",
+    "//components/cronet/android/*",
+  ]
 }
 
+generate_jar_jni("system_jni") {
+  classes = [
+    "java/util/Arrays.class",
+    "java/util/Collection.class",
+    "java/util/List.class",
+    "java/util/Map.class",
+  ]
+  visibility = [ ":*" ]
+}
+
+# This is the public target that we intend others to use.
 component("jni_zero") {
+  public = [
+    "default_conversions.h",
+    "jni_zero.h",
+
+    # TODO(bugs.webrtc.org/42225138): Move back to sources as
+    # soon as WebRTC removes the jni_generator_helper.h which at
+    # the moment needs to read jni_zero::internal::kJniStackMarkerValue.
+    "jni_zero_internal.h",
+  ]
+
   sources = [
-    "core.cc",
-    "core.h",
-    "jni_int_wrapper.h",
-    "jni_zero_helper.h",
+    "common_apis.cc",
+    "common_apis.h",
+    "default_conversions.cc",
+    "java_refs.cc",
+    "java_refs.h",
+    "jni_export.h",
+    "jni_methods.h",
+    "jni_wrappers.h",
+    "jni_zero.cc",
     "logging.cc",
     "logging.h",
-    "scoped_java_ref.cc",
-    "scoped_java_ref.h",
+    "type_conversions.h",
   ]
-  public_deps = [ ":jni_export" ]
+  configs += [ ":jni_include_dir" ]
+  public_configs = [ ":jni_zero_defines" ]
+
   if (is_android) {
     libs = [ "log" ]
+  } else if (is_robolectric) {
+    public_configs += [ "//third_party/jdk:jdk" ]
   }
-  if (is_robolectric) {
-    public_configs = [ "//third_party/jdk:jdk" ]
-  }
-  configs += [ ":toolchain_define" ]
+
+  deps = [
+    ":generate_jni($default_toolchain)",
+    ":system_jni($default_toolchain)",
+  ]
 }
 
 if (enable_java_templates && is_android) {
   import("//build/config/android/rules.gni")
 
-  java_library("jni_zero_java") {
-    supports_android = true
-    deps = [ "//build/android:build_java" ]
+  android_library("jni_zero_java") {
+    deps = [ ":generate_jni_java" ]
+    public_deps = [ ":gendeps_java" ]
+    preferred_dep = true
     sources = [
       "java/src/org/jni_zero/AccessedByNative.java",
       "java/src/org/jni_zero/CalledByNative.java",
       "java/src/org/jni_zero/CalledByNativeForTesting.java",
       "java/src/org/jni_zero/CalledByNativeUnchecked.java",
-      "java/src/org/jni_zero/CheckDiscard.java",
       "java/src/org/jni_zero/JNINamespace.java",
-      "java/src/org/jni_zero/JniStaticTestMocker.java",
+      "java/src/org/jni_zero/JniInit.java",
+      "java/src/org/jni_zero/JniType.java",
+      "java/src/org/jni_zero/JniUtil.java",
       "java/src/org/jni_zero/NativeClassQualifiedName.java",
-      "java/src/org/jni_zero/NativeLibraryLoadedStatus.java",
       "java/src/org/jni_zero/NativeMethods.java",
     ]
     proguard_configs = [ "proguard.flags" ]
+  }
+
+  # Classes referenced by generated code.
+  android_library("gendeps_java") {
+    sources = [
+      "java/src/org/jni_zero/CheckDiscard.java",
+      "java/src/org/jni_zero/JniStaticTestMocker.java",
+      "java/src/org/jni_zero/NativeLibraryLoadedStatus.java",
+    ]
+  }
+
+  group("jni_zero_tests") {
+    testonly = true
+    deps = [
+      "//third_party/jni_zero/sample:jni_zero_sample_apk_test",
+      "//third_party/jni_zero/test:jni_zero_compile_check_apk",
+    ]
   }
 }

@@ -4,7 +4,11 @@
 
 #include <windows.h>
 
+#include <delayimp.h>
+#include <roerrorapi.h>
+
 #include "base/run_loop.h"
+#include "chrome/common/win/delay_load_notify_hook.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/child_process_data.h"
@@ -14,10 +18,31 @@
 #include "content/public/test/browser_test.h"
 #include "services/test/echo/public/mojom/echo.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace chrome {
 
 using ChromeDelayLoadHookTest = InProcessBrowserTest;
+
+namespace {
+
+bool g_callback_ran = false;
+void WINAPI RoFailFastWithErrorContextPatch(HRESULT error) {
+  g_callback_ran = true;
+}
+
+FARPROC TestDelayLoadCallbackFunction(unsigned delay_load_event,
+                                      DelayLoadInfo* delay_load_info) {
+  if (delay_load_event == dliNotePreGetProcAddress &&
+      base::EqualsCaseInsensitiveASCII(
+          delay_load_info->szDll, "api-ms-win-core-winrt-error-l1-1-0.dll") &&
+      strcmp(delay_load_info->dlp.szProcName, "RoFailFastWithErrorContext") ==
+          0) {
+    return reinterpret_cast<FARPROC>(RoFailFastWithErrorContextPatch);
+  }
+
+  return nullptr;
+}
 
 class EchoServiceProcessObserver : public content::ServiceProcessHost::Observer,
                                    public content::BrowserChildProcessObserver {
@@ -66,6 +91,8 @@ class EchoServiceProcessObserver : public content::ServiceProcessHost::Observer,
   base::RunLoop crash_loop_;
 };
 
+}  // namespace
+
 IN_PROC_BROWSER_TEST_F(ChromeDelayLoadHookTest, ObserveDelayLoadFailure) {
   EchoServiceProcessObserver observer;
   auto echo_service =
@@ -74,6 +101,20 @@ IN_PROC_BROWSER_TEST_F(ChromeDelayLoadHookTest, ObserveDelayLoadFailure) {
   echo_service->DelayLoad();
   int exit_code = observer.WaitForCrash();
   EXPECT_EQ(EXCEPTION_BREAKPOINT, static_cast<DWORD>(exit_code));
+}
+
+// Override delayload behavior to redirect a Windows API call to our own
+// implementation. Note we can only override functions that haven't been
+// called or statically resolved before this point.
+IN_PROC_BROWSER_TEST_F(ChromeDelayLoadHookTest, OverrideDelayloadBehavior) {
+  absl::Cleanup reset_callback = [] { SetDelayLoadHookCallback(nullptr); };
+
+  SetDelayLoadHookCallback(TestDelayLoadCallbackFunction);
+  g_callback_ran = false;
+  // Normally this API will crash the process. Since we've patched it, we
+  // won't see a crash.
+  ::RoFailFastWithErrorContext(E_FAIL);
+  EXPECT_EQ(g_callback_ran, true);
 }
 
 }  // namespace chrome

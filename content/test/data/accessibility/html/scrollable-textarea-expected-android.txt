@@ -1,0 +1,4 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='little' text_change_added_count=6
+++++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text+ lots+of+text' text_change_added_count=166

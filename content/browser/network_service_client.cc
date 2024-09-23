@@ -286,7 +286,7 @@ void NetworkServiceClient::OnCertificateRequested(
 
 void NetworkServiceClient::OnAuthRequired(
     const std::optional<base::UnguessableToken>& window_id,
-    uint32_t request_id,
+    int32_t request_id,
     const GURL& url,
     bool first_auth_attempt,
     const net::AuthChallengeInfo& auth_info,
@@ -344,5 +344,8 @@ void NetworkServiceClient::Clone(
         observer) {
   url_loader_network_service_observers_.Add(this, std::move(observer));
 }
+
+void NetworkServiceClient::OnWebSocketConnectedToPrivateNetwork(
+    network::mojom::IPAddressSpace ip_address_space) {}
 
 }  // namespace content

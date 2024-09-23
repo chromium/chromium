@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 
 namespace ash {
 
@@ -62,6 +63,11 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       const vm_tools::concierge::ImportDiskImageRequest& request,
       chromeos::DBusMethodCallback<vm_tools::concierge::ImportDiskImageResponse>
           callback) override;
+  void ExportDiskImage(
+      std::vector<base::ScopedFD> fds,
+      const vm_tools::concierge::ExportDiskImageRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::ExportDiskImageResponse>
+          callback) override;
   void CancelDiskImageOperation(
       const vm_tools::concierge::CancelDiskImageRequest& request,
       chromeos::DBusMethodCallback<vm_tools::concierge::CancelDiskImageResponse>
@@ -80,11 +86,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
           callback) override;
   void StartVmWithFd(
       base::ScopedFD fd,
-      const vm_tools::concierge::StartVmRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
-          callback) override;
-  void StartVmWithFds(
-      std::vector<base::ScopedFD> fd,
       const vm_tools::concierge::StartVmRequest& request,
       chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
           callback) override;
@@ -169,10 +170,11 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   const base::ObserverList<Observer>& observer_list() const {
     return observer_list_;
   }
-  const base::ObserverList<VmObserver>::Unchecked& vm_observer_list() const {
+  const base::ObserverList<VmObserver>::UncheckedAndDanglingUntriaged&
+  vm_observer_list() const {
     return vm_observer_list_;
   }
-  const base::ObserverList<DiskImageObserver>::Unchecked&
+  const base::ObserverList<DiskImageObserver>::UncheckedAndDanglingUntriaged&
   disk_image_observer_list() const {
     return disk_image_observer_list_;
   }
@@ -188,6 +190,9 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   }
   int import_disk_image_call_count() const {
     return import_disk_image_call_count_;
+  }
+  int export_disk_image_call_count() const {
+    return export_disk_image_call_count_;
   }
   int list_vm_disks_call_count() const { return list_vm_disks_call_count_; }
   int start_vm_call_count() const { return start_vm_call_count_; }
@@ -248,6 +253,11 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       std::optional<vm_tools::concierge::ImportDiskImageResponse>
           import_disk_image_response) {
     import_disk_image_response_ = import_disk_image_response;
+  }
+  void set_export_disk_image_response(
+      std::optional<vm_tools::concierge::ExportDiskImageResponse>
+          export_disk_image_response) {
+    export_disk_image_response_ = export_disk_image_response;
   }
   void set_cancel_disk_image_response(
       std::optional<vm_tools::concierge::CancelDiskImageResponse>
@@ -353,6 +363,9 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   }
   void reset_get_vm_info_call_count() { get_vm_info_call_count_ = 0; }
 
+  void NotifyDiskImageProgress(
+      vm_tools::concierge::DiskImageStatusResponse signal);
+
   void NotifyVmStarted(const vm_tools::concierge::VmStartedSignal& signal);
   void NotifyVmStopped(const vm_tools::concierge::VmStoppedSignal& signal);
   void NotifyVmStopping(const vm_tools::concierge::VmStoppingSignal& signal);
@@ -376,7 +389,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       const vm_tools::cicerone::TremplinStartedSignal& signal);
 
   // Notifies observers with a sequence of DiskImageStatus signals.
-  void NotifyDiskImageProgress();
+  void NotifyAllDiskImageProgress();
   // Notifies observers with a DiskImageStatus signal.
   void OnDiskImageProgress(
       const vm_tools::concierge::DiskImageStatusResponse& signal);
@@ -387,6 +400,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   int create_disk_image_call_count_ = 0;
   int destroy_disk_image_call_count_ = 0;
   int import_disk_image_call_count_ = 0;
+  int export_disk_image_call_count_ = 0;
   int disk_image_status_call_count_ = 0;
   int list_vm_disks_call_count_ = 0;
   int start_vm_call_count_ = 0;
@@ -416,6 +430,8 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       destroy_disk_image_response_;
   std::optional<vm_tools::concierge::ImportDiskImageResponse>
       import_disk_image_response_;
+  std::optional<vm_tools::concierge::ExportDiskImageResponse>
+      export_disk_image_response_;
   std::optional<vm_tools::concierge::CancelDiskImageResponse>
       cancel_disk_image_response_;
   std::optional<vm_tools::concierge::DiskImageStatusResponse>
@@ -461,11 +477,11 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   base::ObserverList<Observer> observer_list_{
       ConciergeClient::kObserverListPolicy};
 
-  base::ObserverList<VmObserver>::Unchecked vm_observer_list_{
-      ConciergeClient::kObserverListPolicy};
+  base::ObserverList<VmObserver>::UncheckedAndDanglingUntriaged
+      vm_observer_list_{ConciergeClient::kObserverListPolicy};
 
-  base::ObserverList<DiskImageObserver>::Unchecked disk_image_observer_list_{
-      ConciergeClient::kObserverListPolicy};
+  base::ObserverList<DiskImageObserver>::UncheckedAndDanglingUntriaged
+      disk_image_observer_list_{ConciergeClient::kObserverListPolicy};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

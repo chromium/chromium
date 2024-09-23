@@ -144,7 +144,7 @@ TEST_F(EventEmitterUnittest, ListenersDestroyingContext) {
   v8::Local<v8::Context> context = MainContext();
 
   struct ListenerClosureData {
-    const raw_ref<EventEmitterUnittest, ExperimentalRenderer> test;
+    const raw_ref<EventEmitterUnittest> test;
     bool did_invalidate_context;
   } closure_data = {raw_ref(*this), false};
 

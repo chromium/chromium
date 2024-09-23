@@ -12,10 +12,12 @@
 
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/sync/base/features.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/test_bookmark_model_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -156,18 +158,36 @@ class FolderBuilder {
   std::optional<base::Uuid> uuid_;
 };
 
-std::unique_ptr<TestBookmarkModelView> BuildModel(
+std::unique_ptr<TestBookmarkModelView> BuildLocalModel(
     const std::vector<FolderBuilder::FolderOrUrl>& children_of_bookmark_bar) {
-  auto model = std::make_unique<TestBookmarkModelView>();
+  auto model = std::make_unique<TestBookmarkModelView>(
+      TestBookmarkModelView::ViewType::kLocalOrSyncableNodes);
   FolderBuilder::AddChildrenTo(model.get(), model->bookmark_bar_node(),
                                children_of_bookmark_bar);
   return model;
 }
 
-}  // namespace
+std::unique_ptr<TestBookmarkModelView> BuildAccountModel(
+    const std::vector<FolderBuilder::FolderOrUrl>& children_of_bookmark_bar) {
+  auto model = std::make_unique<TestBookmarkModelView>(
+      TestBookmarkModelView::ViewType::kAccountNodes);
+  model->EnsurePermanentNodesExist();
+  FolderBuilder::AddChildrenTo(model.get(), model->bookmark_bar_node(),
+                               children_of_bookmark_bar);
+  return model;
+}
 
-TEST(LocalBookmarkModelMergerTest,
-     ShouldUploadEntireLocalModelIfAccountModelEmpty) {
+class LocalBookmarkModelMergerTest : public testing::Test {
+ protected:
+  LocalBookmarkModelMergerTest() = default;
+  ~LocalBookmarkModelMergerTest() override = default;
+
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kSyncEnableBookmarksInTransportMode};
+};
+
+TEST_F(LocalBookmarkModelMergerTest,
+       ShouldUploadEntireLocalModelIfAccountModelEmpty) {
   const std::string kFolder1Title = "folder1";
   const std::string kFolder2Title = "folder2";
 
@@ -190,16 +210,16 @@ TEST(LocalBookmarkModelMergerTest,
   //    |- url3(http://www.url3.com)
   //    |- url4(http://www.url4.com)
   std::unique_ptr<BookmarkModelView> local_model =
-      BuildModel({FolderBuilder(kFolder1Title)
-                      .SetChildren({UrlBuilder(kUrl1Title, kUrl1),
-                                    UrlBuilder(kUrl2Title, kUrl2)}),
-                  FolderBuilder(kFolder2Title)
-                      .SetChildren({UrlBuilder(kUrl3Title, kUrl3),
-                                    UrlBuilder(kUrl4Title, kUrl4)})});
+      BuildLocalModel({FolderBuilder(kFolder1Title)
+                           .SetChildren({UrlBuilder(kUrl1Title, kUrl1),
+                                         UrlBuilder(kUrl2Title, kUrl2)}),
+                       FolderBuilder(kFolder2Title)
+                           .SetChildren({UrlBuilder(kUrl3Title, kUrl3),
+                                         UrlBuilder(kUrl4Title, kUrl4)})});
 
   // -------- The account model --------
   // bookmark_bar
-  std::unique_ptr<BookmarkModelView> account_model = BuildModel({});
+  std::unique_ptr<BookmarkModelView> account_model = BuildAccountModel({});
 
   // -------- Exercise the merge logic --------
   LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
@@ -216,7 +236,7 @@ TEST(LocalBookmarkModelMergerTest,
                                             MatchesUrl(kUrl4Title, kUrl4)))));
 }
 
-TEST(LocalBookmarkModelMergerTest, ShouldIgnoreManagedNodes) {
+TEST_F(LocalBookmarkModelMergerTest, ShouldIgnoreManagedNodes) {
   const std::string kUrl1Title = "url1";
   const std::string kUrl2Title = "url2";
 
@@ -232,7 +252,9 @@ TEST(LocalBookmarkModelMergerTest, ShouldIgnoreManagedNodes) {
   //  |- url1(http://www.url1.com)
   // managed_bookmarks
   //  |- url2(http://www.url2.com)
-  TestBookmarkModelView local_model(std::move(local_client));
+  TestBookmarkModelView local_model(
+      TestBookmarkModelView::ViewType::kLocalOrSyncableNodes,
+      std::move(local_client));
 
   FolderBuilder::AddChildrenTo(&local_model, local_model.bookmark_bar_node(),
                                {UrlBuilder(kUrl1Title, kUrl1)});
@@ -241,7 +263,7 @@ TEST(LocalBookmarkModelMergerTest, ShouldIgnoreManagedNodes) {
 
   // -------- The account model --------
   // bookmark_bar
-  std::unique_ptr<TestBookmarkModelView> account_model = BuildModel({});
+  std::unique_ptr<TestBookmarkModelView> account_model = BuildAccountModel({});
 
   // -------- Exercise the merge logic --------
   LocalBookmarkModelMerger(&local_model, account_model.get()).Merge();
@@ -258,7 +280,7 @@ TEST(LocalBookmarkModelMergerTest, ShouldIgnoreManagedNodes) {
               IsEmpty());
 }
 
-TEST(LocalBookmarkModelMergerTest, ShouldUploadLocalUuid) {
+TEST_F(LocalBookmarkModelMergerTest, ShouldUploadLocalUuid) {
   const std::string kUrl1Title = "url1";
   const GURL kUrl1("http://www.url1.com/");
   const base::Uuid kUrl1Uuid = base::Uuid::GenerateRandomV4();
@@ -267,11 +289,11 @@ TEST(LocalBookmarkModelMergerTest, ShouldUploadLocalUuid) {
   // bookmark_bar
   //  | - bookmark(kUuid/kLocalTitle)
   std::unique_ptr<BookmarkModelView> local_model =
-      BuildModel({UrlBuilder(kUrl1Title, kUrl1).SetUuid(kUrl1Uuid)});
+      BuildLocalModel({UrlBuilder(kUrl1Title, kUrl1).SetUuid(kUrl1Uuid)});
 
   // -------- The account model --------
   // bookmark_bar
-  std::unique_ptr<BookmarkModelView> account_model = BuildModel({});
+  std::unique_ptr<BookmarkModelView> account_model = BuildAccountModel({});
 
   // -------- Exercise the merge logic --------
   LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
@@ -282,7 +304,7 @@ TEST(LocalBookmarkModelMergerTest, ShouldUploadLocalUuid) {
               ElementsAre(MatchesUrlWithUuid(kUrl1Title, kUrl1, kUrl1Uuid)));
 }
 
-TEST(LocalBookmarkModelMergerTest, ShouldNotUploadDuplicateBySemantics) {
+TEST_F(LocalBookmarkModelMergerTest, ShouldNotUploadDuplicateBySemantics) {
   const std::string kFolder1Title = "folder1";
 
   const std::string kUrl1Title = "url1";
@@ -299,9 +321,9 @@ TEST(LocalBookmarkModelMergerTest, ShouldNotUploadDuplicateBySemantics) {
   //    |- url1(http://www.url1.com)
   //    |- url2(http://www.url2.com)
   std::unique_ptr<BookmarkModelView> local_model =
-      BuildModel({FolderBuilder(kFolder1Title)
-                      .SetChildren({UrlBuilder(kUrl1Title, kUrl1),
-                                    UrlBuilder(kUrl2Title, kUrl2)})});
+      BuildLocalModel({FolderBuilder(kFolder1Title)
+                           .SetChildren({UrlBuilder(kUrl1Title, kUrl1),
+                                         UrlBuilder(kUrl2Title, kUrl2)})});
 
   // -------- The account model --------
   // bookmark_bar
@@ -309,9 +331,9 @@ TEST(LocalBookmarkModelMergerTest, ShouldNotUploadDuplicateBySemantics) {
   //    |- url2(http://www.url2.com)
   //    |- url3(http://www.url3.com)
   std::unique_ptr<BookmarkModelView> account_model =
-      BuildModel({FolderBuilder(kFolder1Title)
-                      .SetChildren({UrlBuilder(kUrl2Title, kUrl2),
-                                    UrlBuilder(kUrl3Title, kUrl3)})});
+      BuildAccountModel({FolderBuilder(kFolder1Title)
+                             .SetChildren({UrlBuilder(kUrl2Title, kUrl2),
+                                           UrlBuilder(kUrl3Title, kUrl3)})});
 
   // -------- Exercise the merge logic --------
   LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
@@ -329,7 +351,7 @@ TEST(LocalBookmarkModelMergerTest, ShouldNotUploadDuplicateBySemantics) {
                                              MatchesUrl(kUrl1Title, kUrl1)))));
 }
 
-TEST(LocalBookmarkModelMergerTest, ShouldMergeLocalAndAccountModels) {
+TEST_F(LocalBookmarkModelMergerTest, ShouldMergeLocalAndAccountModels) {
   const std::string kFolder1Title = "folder1";
   const std::string kFolder2Title = "folder2";
   const std::string kFolder3Title = "folder3";
@@ -354,12 +376,12 @@ TEST(LocalBookmarkModelMergerTest, ShouldMergeLocalAndAccountModels) {
   //    |- url3(http://www.url3.com)
   //    |- url4(http://www.url4.com)
   std::unique_ptr<BookmarkModelView> local_model =
-      BuildModel({FolderBuilder(kFolder1Title)
-                      .SetChildren({UrlBuilder(kUrl1Title, kUrl1),
-                                    UrlBuilder(kUrl2Title, kUrl2)}),
-                  FolderBuilder(kFolder2Title)
-                      .SetChildren({UrlBuilder(kUrl3Title, kUrl3),
-                                    UrlBuilder(kUrl4Title, kUrl4)})});
+      BuildLocalModel({FolderBuilder(kFolder1Title)
+                           .SetChildren({UrlBuilder(kUrl1Title, kUrl1),
+                                         UrlBuilder(kUrl2Title, kUrl2)}),
+                       FolderBuilder(kFolder2Title)
+                           .SetChildren({UrlBuilder(kUrl3Title, kUrl3),
+                                         UrlBuilder(kUrl4Title, kUrl4)})});
 
   // -------- The account model --------
   // bookmark_bar
@@ -369,13 +391,13 @@ TEST(LocalBookmarkModelMergerTest, ShouldMergeLocalAndAccountModels) {
   //  |- folder 3
   //    |- url3(http://www.url3.com)
   //    |- url4(http://www.url4.com)
-  std::unique_ptr<BookmarkModelView> account_model =
-      BuildModel({FolderBuilder(kFolder1Title)
-                      .SetChildren({UrlBuilder(kUrl1Title, kUrl1),
-                                    UrlBuilder(kUrl2Title, kAnotherUrl2)}),
-                  FolderBuilder(kFolder3Title)
-                      .SetChildren({UrlBuilder(kUrl3Title, kUrl3),
-                                    UrlBuilder(kUrl4Title, kUrl4)})});
+  std::unique_ptr<BookmarkModelView> account_model = BuildAccountModel(
+      {FolderBuilder(kFolder1Title)
+           .SetChildren({UrlBuilder(kUrl1Title, kUrl1),
+                         UrlBuilder(kUrl2Title, kAnotherUrl2)}),
+       FolderBuilder(kFolder3Title)
+           .SetChildren({UrlBuilder(kUrl3Title, kUrl3),
+                         UrlBuilder(kUrl4Title, kUrl4)})});
 
   // -------- Exercise the merge logic --------
   LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
@@ -409,18 +431,18 @@ TEST(LocalBookmarkModelMergerTest, ShouldMergeLocalAndAccountModels) {
 
 // This tests that truncated titles produced by legacy clients are properly
 // matched.
-TEST(LocalBookmarkModelMergerTest,
-     ShouldMergeLocalAndAccountNodesWhenAccountHasLegacyTruncatedTitle) {
+TEST_F(LocalBookmarkModelMergerTest,
+       ShouldMergeLocalAndAccountNodesWhenAccountHasLegacyTruncatedTitle) {
   const std::string kLocalLongTitle(300, 'A');
   const std::string kAccountTruncatedTitle(255, 'A');
 
   // -------- The local model --------
   std::unique_ptr<BookmarkModelView> local_model =
-      BuildModel({FolderBuilder(kLocalLongTitle)});
+      BuildLocalModel({FolderBuilder(kLocalLongTitle)});
 
   // -------- The account model --------
   std::unique_ptr<BookmarkModelView> account_model =
-      BuildModel({FolderBuilder(kAccountTruncatedTitle)});
+      BuildAccountModel({FolderBuilder(kAccountTruncatedTitle)});
 
   // -------- Exercise the merge logic --------
   LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
@@ -432,18 +454,18 @@ TEST(LocalBookmarkModelMergerTest,
 
 // This test checks that local node with truncated title will merge with account
 // node which has full title.
-TEST(LocalBookmarkModelMergerTest,
-     ShouldMergeLocalAndAccountNodesWhenLocalHasLegacyTruncatedTitle) {
+TEST_F(LocalBookmarkModelMergerTest,
+       ShouldMergeLocalAndAccountNodesWhenLocalHasLegacyTruncatedTitle) {
   const std::string kAccountFullTitle(300, 'A');
   const std::string kLocalTruncatedTitle(255, 'A');
 
   // -------- The local model --------
   std::unique_ptr<BookmarkModelView> local_model =
-      BuildModel({FolderBuilder(kLocalTruncatedTitle)});
+      BuildLocalModel({FolderBuilder(kLocalTruncatedTitle)});
 
   // -------- The account model --------
   std::unique_ptr<BookmarkModelView> account_model =
-      BuildModel({FolderBuilder(kAccountFullTitle)});
+      BuildAccountModel({FolderBuilder(kAccountFullTitle)});
 
   // -------- Exercise the merge logic --------
   LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
@@ -455,7 +477,7 @@ TEST(LocalBookmarkModelMergerTest,
               ElementsAre(MatchesFolder(kLocalTruncatedTitle, IsEmpty())));
 }
 
-TEST(LocalBookmarkModelMergerTest, ShouldMergeBookmarkByUuid) {
+TEST_F(LocalBookmarkModelMergerTest, ShouldMergeBookmarkByUuid) {
   const std::string kLocalTitle = "Title 1";
   const std::string kAccountTitle = "Title 2";
   const GURL kUrl("http://www.foo.com/");
@@ -465,13 +487,13 @@ TEST(LocalBookmarkModelMergerTest, ShouldMergeBookmarkByUuid) {
   // bookmark_bar
   //  | - bookmark(kUuid/kLocalTitle)
   std::unique_ptr<BookmarkModelView> local_model =
-      BuildModel({UrlBuilder(kLocalTitle, kUrl).SetUuid(kUuid)});
+      BuildLocalModel({UrlBuilder(kLocalTitle, kUrl).SetUuid(kUuid)});
 
   // -------- The account model --------
   // bookmark_bar
   //  | - bookmark(kUuid/kAccountTitle)
   std::unique_ptr<BookmarkModelView> account_model =
-      BuildModel({UrlBuilder(kAccountTitle, kUrl).SetUuid(kUuid)});
+      BuildAccountModel({UrlBuilder(kAccountTitle, kUrl).SetUuid(kUuid)});
 
   // -------- Exercise the merge logic --------
   LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
@@ -483,8 +505,8 @@ TEST(LocalBookmarkModelMergerTest, ShouldMergeBookmarkByUuid) {
               ElementsAre(MatchesUrlWithUuid(kLocalTitle, kUrl, kUuid)));
 }
 
-TEST(LocalBookmarkModelMergerTest,
-     ShouldMergeBookmarkByUuidDespiteDifferentParent) {
+TEST_F(LocalBookmarkModelMergerTest,
+       ShouldMergeBookmarkByUuidDespiteDifferentParent) {
   const std::string kFolderTitle = "Folder Title";
   const std::string kLocalTitle = "Title 1";
   const std::string kAccountTitle = "Title 2";
@@ -495,13 +517,13 @@ TEST(LocalBookmarkModelMergerTest,
   // bookmark_bar
   //  |- bookmark(kUuid/kLocalTitle)
   std::unique_ptr<BookmarkModelView> local_model =
-      BuildModel({UrlBuilder(kLocalTitle, kUrl).SetUuid(kUuid)});
+      BuildLocalModel({UrlBuilder(kLocalTitle, kUrl).SetUuid(kUuid)});
 
   // -------- The account model --------
   // bookmark_bar
   //  | - folder
   //    | - bookmark(kUuid/kAccountTitle)
-  std::unique_ptr<BookmarkModelView> account_model = BuildModel(
+  std::unique_ptr<BookmarkModelView> account_model = BuildAccountModel(
       {FolderBuilder(kFolderTitle)
            .SetChildren({UrlBuilder(kAccountTitle, kUrl).SetUuid(kUuid)})});
 
@@ -518,7 +540,8 @@ TEST(LocalBookmarkModelMergerTest,
                                                   kLocalTitle, kUrl, kUuid)))));
 }
 
-TEST(LocalBookmarkModelMergerTest, ShouldNotMergeBySemanticsIfDifferentParent) {
+TEST_F(LocalBookmarkModelMergerTest,
+       ShouldNotMergeBySemanticsIfDifferentParent) {
   const std::string kFolder1Title = "folder1";
   const std::string kFolder2Title = "folder2";
 
@@ -533,7 +556,7 @@ TEST(LocalBookmarkModelMergerTest, ShouldNotMergeBySemanticsIfDifferentParent) {
   //  |- folder 1
   //    |- folder 2
   //      |- url1(http://www.url1.com)
-  std::unique_ptr<BookmarkModelView> local_model = BuildModel(
+  std::unique_ptr<BookmarkModelView> local_model = BuildLocalModel(
       {FolderBuilder(kFolder1Title)
            .SetChildren({FolderBuilder(kFolder2Title)
                              .SetChildren({UrlBuilder(kUrl1Title, kUrl1)})})});
@@ -543,8 +566,8 @@ TEST(LocalBookmarkModelMergerTest, ShouldNotMergeBySemanticsIfDifferentParent) {
   //  |- folder 2
   //    |- url2(http://www.url2.com)
   std::unique_ptr<BookmarkModelView> account_model =
-      BuildModel({FolderBuilder(kFolder2Title)
-                      .SetChildren({UrlBuilder(kUrl2Title, kUrl2)})});
+      BuildAccountModel({FolderBuilder(kFolder2Title)
+                             .SetChildren({UrlBuilder(kUrl2Title, kUrl2)})});
 
   // -------- Exercise the merge logic --------
   LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
@@ -566,7 +589,7 @@ TEST(LocalBookmarkModelMergerTest, ShouldNotMergeBySemanticsIfDifferentParent) {
                                                        kUrl1Title, kUrl1)))))));
 }
 
-TEST(LocalBookmarkModelMergerTest, ShouldMergeFolderByUuidAndNotSemantics) {
+TEST_F(LocalBookmarkModelMergerTest, ShouldMergeFolderByUuidAndNotSemantics) {
   const std::string kTitle1 = "Title 1";
   const std::string kTitle2 = "Title 2";
   const GURL kUrl("http://www.foo.com/");
@@ -578,14 +601,14 @@ TEST(LocalBookmarkModelMergerTest, ShouldMergeFolderByUuidAndNotSemantics) {
   //  | - folder 1 (kUuid1/kTitle1)
   //    | - folder 2 (kUuid2/kTitle2)
   std::unique_ptr<BookmarkModelView> local_model =
-      BuildModel({FolderBuilder(kTitle1).SetUuid(kUuid1).SetChildren(
+      BuildLocalModel({FolderBuilder(kTitle1).SetUuid(kUuid1).SetChildren(
           {FolderBuilder(kTitle2).SetUuid(kUuid2)})});
 
   // -------- The account model --------
   // bookmark_bar
   //  | - folder (kUuid2/kTitle1)
   std::unique_ptr<BookmarkModelView> account_model =
-      BuildModel({FolderBuilder(kTitle1).SetUuid(kUuid2)});
+      BuildAccountModel({FolderBuilder(kTitle1).SetUuid(kUuid2)});
 
   // -------- Exercise the merge logic --------
   LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
@@ -602,7 +625,7 @@ TEST(LocalBookmarkModelMergerTest, ShouldMergeFolderByUuidAndNotSemantics) {
                           MatchesFolderWithUuid(kTitle1, kUuid1, IsEmpty())));
 }
 
-TEST(
+TEST_F(
     LocalBookmarkModelMergerTest,
     ShouldIgnoreFolderSemanticsMatchAndLaterMatchByUuidWithSemanticsNodeFirst) {
   const std::string kLocalOnlyTitle = "LocalOnlyTitle";
@@ -618,16 +641,16 @@ TEST(
   //  | - folder (kUuid2/kLocalOnlyTitle)
   //    | - bookmark
   std::unique_ptr<BookmarkModelView> local_model =
-      BuildModel({FolderBuilder(kMatchingTitle).SetUuid(kUuid1),
-                  FolderBuilder(kLocalOnlyTitle)
-                      .SetUuid(kUuid2)
-                      .SetChildren({UrlBuilder(kUrlTitle, kUrl)})});
+      BuildLocalModel({FolderBuilder(kMatchingTitle).SetUuid(kUuid1),
+                       FolderBuilder(kLocalOnlyTitle)
+                           .SetUuid(kUuid2)
+                           .SetChildren({UrlBuilder(kUrlTitle, kUrl)})});
 
   // -------- The account model --------
   // bookmark_bar
   //  | - folder (kUuid2/kMatchingTitle)
   std::unique_ptr<BookmarkModelView> account_model =
-      BuildModel({FolderBuilder(kMatchingTitle).SetUuid(kUuid2)});
+      BuildAccountModel({FolderBuilder(kMatchingTitle).SetUuid(kUuid2)});
 
   // -------- Exercise the merge logic --------
   LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
@@ -648,8 +671,8 @@ TEST(
           MatchesFolderWithUuid(kMatchingTitle, kUuid1, IsEmpty())));
 }
 
-TEST(LocalBookmarkModelMergerTest,
-     ShouldIgnoreFolderSemanticsMatchAndLaterMatchByUuidWithUuidNodeFirst) {
+TEST_F(LocalBookmarkModelMergerTest,
+       ShouldIgnoreFolderSemanticsMatchAndLaterMatchByUuidWithUuidNodeFirst) {
   const std::string kLocalOnlyTitle = "LocalOnlyTitle";
   const std::string kMatchingTitle = "MatchingTitle";
   const base::Uuid kUuid1 = base::Uuid::GenerateRandomV4();
@@ -663,16 +686,16 @@ TEST(LocalBookmarkModelMergerTest,
   //    | - bookmark
   //  | - folder (kUuid1/kMatchingTitle)
   std::unique_ptr<BookmarkModelView> local_model =
-      BuildModel({FolderBuilder(kLocalOnlyTitle)
-                      .SetUuid(kUuid2)
-                      .SetChildren({UrlBuilder(kUrlTitle, kUrl)}),
-                  FolderBuilder(kMatchingTitle).SetUuid(kUuid1)});
+      BuildLocalModel({FolderBuilder(kLocalOnlyTitle)
+                           .SetUuid(kUuid2)
+                           .SetChildren({UrlBuilder(kUrlTitle, kUrl)}),
+                       FolderBuilder(kMatchingTitle).SetUuid(kUuid1)});
 
   // -------- The account model --------
   // bookmark_bar
   //  | - folder (kUuid2/kMatchingTitle)
   std::unique_ptr<BookmarkModelView> account_model =
-      BuildModel({FolderBuilder(kMatchingTitle).SetUuid(kUuid2)});
+      BuildAccountModel({FolderBuilder(kMatchingTitle).SetUuid(kUuid2)});
 
   // -------- Exercise the merge logic --------
   LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
@@ -693,8 +716,8 @@ TEST(LocalBookmarkModelMergerTest,
           MatchesFolderWithUuid(kMatchingTitle, kUuid1, IsEmpty())));
 }
 
-TEST(LocalBookmarkModelMergerTest,
-     ShouldReplaceBookmarkUuidWithConflictingURLs) {
+TEST_F(LocalBookmarkModelMergerTest,
+       ShouldReplaceBookmarkUuidWithConflictingURLs) {
   const std::string kTitle = "Title";
   const GURL kUrl1("http://www.foo.com/");
   const GURL kUrl2("http://www.bar.com/");
@@ -704,13 +727,13 @@ TEST(LocalBookmarkModelMergerTest,
   // bookmark_bar
   //  | - bookmark (kUuid/kUrl1)
   std::unique_ptr<BookmarkModelView> local_model =
-      BuildModel({UrlBuilder(kTitle, kUrl1).SetUuid(kUuid)});
+      BuildLocalModel({UrlBuilder(kTitle, kUrl1).SetUuid(kUuid)});
 
   // -------- The account model --------
   // bookmark_bar
   //  | - bookmark (kUuid/kUrl2)
   std::unique_ptr<BookmarkModelView> account_model =
-      BuildModel({UrlBuilder(kTitle, kUrl2).SetUuid(kUuid)});
+      BuildAccountModel({UrlBuilder(kTitle, kUrl2).SetUuid(kUuid)});
 
   // -------- Exercise the merge logic --------
   LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
@@ -726,8 +749,8 @@ TEST(LocalBookmarkModelMergerTest,
                           MatchesUrlWithUuid(kTitle, kUrl1, Ne(kUuid))));
 }
 
-TEST(LocalBookmarkModelMergerTest,
-     ShouldReplaceBookmarkUuidWithConflictingTypes) {
+TEST_F(LocalBookmarkModelMergerTest,
+       ShouldReplaceBookmarkUuidWithConflictingTypes) {
   const GURL kUrl1("http://www.foo.com/");
   const std::string kTitle = "Title";
   const base::Uuid kUuid = base::Uuid::GenerateRandomV4();
@@ -736,13 +759,13 @@ TEST(LocalBookmarkModelMergerTest,
   // bookmark_bar
   //  | - bookmark (kUuid/kUrl1)
   std::unique_ptr<BookmarkModelView> local_model =
-      BuildModel({UrlBuilder(kTitle, kUrl1).SetUuid(kUuid)});
+      BuildLocalModel({UrlBuilder(kTitle, kUrl1).SetUuid(kUuid)});
 
   // -------- The account model --------
   // bookmark_bar
   //  | - folder(kUuid)
   std::unique_ptr<BookmarkModelView> account_model =
-      BuildModel({FolderBuilder(kTitle).SetUuid(kUuid)});
+      BuildAccountModel({FolderBuilder(kTitle).SetUuid(kUuid)});
 
   // -------- Exercise the merge logic --------
   LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
@@ -758,8 +781,8 @@ TEST(LocalBookmarkModelMergerTest,
                           MatchesUrlWithUuid(kTitle, kUrl1, Ne(kUuid))));
 }
 
-TEST(LocalBookmarkModelMergerTest,
-     ShouldReplaceBookmarkUuidWithConflictingTypesAndLocalChildren) {
+TEST_F(LocalBookmarkModelMergerTest,
+       ShouldReplaceBookmarkUuidWithConflictingTypesAndLocalChildren) {
   const std::string kFolderTitle = "Folder Title";
   const std::string kUrl1Title = "url1";
   const std::string kUrl2Title = "url2";
@@ -772,15 +795,15 @@ TEST(LocalBookmarkModelMergerTest,
   //  | - folder (kUuid)
   //    | - bookmark (kUrl1)
   std::unique_ptr<BookmarkModelView> local_model =
-      BuildModel({FolderBuilder(kFolderTitle)
-                      .SetUuid(kUuid)
-                      .SetChildren({UrlBuilder(kUrl1Title, kUrl1)})});
+      BuildLocalModel({FolderBuilder(kFolderTitle)
+                           .SetUuid(kUuid)
+                           .SetChildren({UrlBuilder(kUrl1Title, kUrl1)})});
 
   // -------- The account model --------
   // bookmark_bar
   //  | - bookmark (kUuid/kUrl2)
   std::unique_ptr<BookmarkModelView> account_model =
-      BuildModel({UrlBuilder(kUrl2Title, kUrl2).SetUuid(kUuid)});
+      BuildAccountModel({UrlBuilder(kUrl2Title, kUrl2).SetUuid(kUuid)});
 
   // -------- Exercise the merge logic --------
   LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
@@ -798,5 +821,7 @@ TEST(LocalBookmarkModelMergerTest,
                               kFolderTitle, Ne(kUuid),
                               ElementsAre(MatchesUrl(kUrl1Title, kUrl1)))));
 }
+
+}  // namespace
 
 }  // namespace sync_bookmarks

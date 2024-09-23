@@ -58,7 +58,7 @@ std::optional<int> ContentMainDelegate::PreBrowserMain() {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       sandbox::policy::switches::kGpuSandboxFailuresFatal, "yes");
 
-  // TODO(crbug.com/1351777): remove this workaround once SwANGLE can work with
+  // TODO(crbug.com/40857355): remove this workaround once SwANGLE can work with
   // the GPU process sandbox.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kOverrideUseSoftwareGLForTests)) {
@@ -80,6 +80,10 @@ bool ContentMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
 variations::VariationsIdsProvider*
 ContentMainDelegate::CreateVariationsIdsProvider() {
   return nullptr;
+}
+
+void ContentMainDelegate::CreateThreadPool(std::string_view name) {
+  base::ThreadPoolInstance::Create(name);
 }
 
 std::optional<int> ContentMainDelegate::PostEarlyInitialization(

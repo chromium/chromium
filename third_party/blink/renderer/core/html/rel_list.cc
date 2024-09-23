@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/core/html/rel_list.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/resource/link_dictionary_resource.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -65,7 +65,7 @@ bool RelList::ValidateTokenValue(const AtomicString& token_value,
     if (SupportedTokensLink().Contains(token_value)) {
       return true;
     } else if (CompressionDictionaryTransportFullyEnabled(execution_context) &&
-               token_value == "dictionary") {
+               token_value == "compression-dictionary") {
       return true;
     }
   } else if ((GetElement().HasTagName(html_names::kATag) ||

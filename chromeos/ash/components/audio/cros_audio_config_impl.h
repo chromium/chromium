@@ -54,6 +54,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
   void SetNoiseCancellationEnabled(bool enabled) override;
   void SetForceRespectUiGainsEnabled(bool enabled) override;
   void SetHfpMicSrEnabled(bool enabled) override;
+  void SetStyleTransferEnabled(bool enabled) override;
 
   // Records the output volume percentage set by the user to metrics.
   void RecordOutputVolume();
@@ -72,6 +73,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
       CrasAudioHandler::InputMuteChangeMethod method) override;
   void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) override;
   void OnNoiseCancellationStateChanged() override;
+  void OnStyleTransferStateChanged() override;
   void OnForceRespectUiGainsStateChanged() override;
   void OnHfpMicSrStateChanged() override;
 

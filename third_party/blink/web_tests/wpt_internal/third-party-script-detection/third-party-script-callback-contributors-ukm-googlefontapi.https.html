@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src=resources/third-party-script-test-utils.js></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script>
+  third_party_script_test(
+    'script-callback',
+    'https://www.googleapis.com/example/webfont', 1 << 2 /*Technology::kGoogleFontApi*/);
+</script>

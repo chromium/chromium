@@ -10,54 +10,39 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/types/expected.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
-#include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_source.h"
-#include "extensions/common/install_warning.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace extensions {
 class Extension;
+struct RulesetParseResult;
 namespace declarative_net_request {
 
 // A class to help in indexing multiple rulesets at install time.
 class InstallIndexHelper
     : public base::RefCountedThreadSafe<InstallIndexHelper> {
  public:
-  struct Result {
-    Result();
-    ~Result();
-    Result(Result&&);
-    Result& operator=(Result&&);
-
-    // Non-empty on failure.
-    std::optional<std::string> error;
-
-    // Valid if |error| is std::nullopt. Clients should not use these fields in
-    // case of a failure since these may be partially populated.
-    std::vector<InstallWarning> warnings;
-    std::vector<RulesetInstallPref> ruleset_install_prefs;
-  };
-
   // Starts indexing rulesets. Must be called on a sequence which supports file
   // IO. The |callback| will be dispatched to the same sequence on which
   // IndexStaticRulesets() is called.
-  using IndexCallback = base::OnceCallback<void(Result result)>;
+  using IndexCallback = base::OnceCallback<void(RulesetParseResult result)>;
   static void IndexStaticRulesets(
       const Extension& extension,
       FileBackedRulesetSource::RulesetFilter ruleset_filter,
       uint8_t parse_flags,
       IndexCallback callback);
 
-  // Synchronously indexes the static rulesets for an extension. Must be called
-  // on a sequence which supports file IO. This is potentially unsafe since this
-  // parses JSON in-process.
-  static Result IndexStaticRulesetsUnsafe(
-      const Extension& extension,
-      FileBackedRulesetSource::RulesetFilter ruleset_filter,
-      uint8_t parse_flags);
+  // Reads the Declarative Net Request JSON rulesets for the extension, if it
+  // provided any, and persists the indexed rulesets. Returns the ruleset
+  // install prefs on success and an error on failure.
+  // Must be called on a sequence where file IO is allowed.
+  static base::expected<base::Value::Dict, std::string>
+  IndexAndPersistRulesOnInstall(Extension& extension);
 
  private:
   friend class base::RefCountedThreadSafe<InstallIndexHelper>;
@@ -67,6 +52,14 @@ class InstallIndexHelper
   InstallIndexHelper(std::vector<FileBackedRulesetSource> sources,
                      IndexCallback callback);
   ~InstallIndexHelper();
+
+  // Synchronously indexes the static rulesets for an extension. Must be called
+  // on a sequence which supports file IO. This is potentially unsafe since this
+  // parses JSON in-process.
+  static RulesetParseResult IndexStaticRulesetsUnsafe(
+      const Extension& extension,
+      FileBackedRulesetSource::RulesetFilter ruleset_filter,
+      uint8_t parse_flags);
 
   // Starts indexing the rulesets.
   void Start(uint8_t parse_flags);

@@ -15,7 +15,9 @@ import type {RecentDestination} from 'chrome://print/print_preview.js';
 // <if expr="is_chromeos">
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 // </if>
+// <if expr="not is_chromeos">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+// </if>
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -463,7 +465,6 @@ suite('DestinationStoreTest', function() {
     };
     nativeLayerCros.setLocalPrinters([printer1, printer2]);
 
-    loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
     return setInitialSettings(/*expectPrinterFailure=*/ false).then(() => {
       assertEquals(1, nativeLayerCros.getCallCount('observeLocalPrinters'));
       assertTrue(!!destinationStore.destinations().find(
@@ -486,7 +487,6 @@ suite('DestinationStoreTest', function() {
     };
     nativeLayerCros.setLocalPrinters([printer1, printer2]);
 
-    loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
     // Set to empty string so `systemDefaultDestinationId` destination store
     // param is empty which triggers no destination search.
     initialSettings.printerName = '';
@@ -511,7 +511,6 @@ suite('DestinationStoreTest', function() {
       deviceName: 'localPrinter2',
     };
 
-    loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
     return setInitialSettings(/*expectPrinterFailure=*/ false).then(() => {
       // Confirm the printers are not in the destination store before the event
       // fires.
@@ -546,7 +545,6 @@ suite('DestinationStoreTest', function() {
       }],
     };
 
-    loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
     return setInitialSettings(/*expectPrinterFailure=*/ false)
         .then(() => {
           // Fire the event and expect the destination to not have a printer
@@ -585,7 +583,6 @@ suite('DestinationStoreTest', function() {
       printerStatus: {},
     };
 
-    loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
     return setInitialSettings(/*expectPrinterFailure=*/ false)
         .then(() => {
           // Add an unreachable status then trigger the event to set the

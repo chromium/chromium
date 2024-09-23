@@ -7,17 +7,24 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/task/task_runner.h"
 #include "net/base/address_list.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
 #include "net/dns/host_resolver_proc.h"
+#include "net/dns/public/dns_query_type.h"
 #include "net/log/net_log_with_source.h"
 
 namespace net {
+
+class HostResolverCache;
 
 using SystemDnsResultsCallback = base::OnceCallback<
     void(const AddressList& addr_list, int os_error, int net_error)>;
@@ -88,13 +95,27 @@ class NET_EXPORT HostResolverSystemTask {
     uint32_t retry_factor = 2;
   };
 
+  struct CacheParams {
+    CacheParams(HostResolverCache& cache,
+                NetworkAnonymizationKey network_anonymization_key);
+    CacheParams(const CacheParams&);
+    CacheParams& operator=(const CacheParams&) = default;
+    CacheParams(CacheParams&&);
+    CacheParams& operator=(CacheParams&&) = default;
+    ~CacheParams();
+
+    base::raw_ref<HostResolverCache> cache;
+    NetworkAnonymizationKey network_anonymization_key;
+  };
+
   static std::unique_ptr<HostResolverSystemTask> Create(
       std::string hostname,
       AddressFamily address_family,
       HostResolverFlags flags,
       const Params& params = Params(nullptr, 0),
       const NetLogWithSource& job_net_log = NetLogWithSource(),
-      handles::NetworkHandle network = handles::kInvalidNetworkHandle);
+      handles::NetworkHandle network = handles::kInvalidNetworkHandle,
+      std::optional<CacheParams> cache_params = std::nullopt);
 
   // Same as above but resolves the result of GetHostName() (the machine's own
   // hostname).
@@ -114,7 +135,8 @@ class NET_EXPORT HostResolverSystemTask {
       HostResolverFlags flags,
       const Params& params = Params(nullptr, 0),
       const NetLogWithSource& job_net_log = NetLogWithSource(),
-      handles::NetworkHandle network = handles::kInvalidNetworkHandle);
+      handles::NetworkHandle network = handles::kInvalidNetworkHandle,
+      std::optional<CacheParams> cache_params = std::nullopt);
 
   HostResolverSystemTask(const HostResolverSystemTask&) = delete;
   HostResolverSystemTask& operator=(const HostResolverSystemTask&) = delete;
@@ -143,6 +165,14 @@ class NET_EXPORT HostResolverSystemTask {
                         const int os_error,
                         int error);
 
+  void MaybeCacheResults(const AddressList& address_list);
+  void CacheEndpoints(std::string domain_name,
+                      std::vector<IPEndPoint> endpoints,
+                      DnsQueryType query_type);
+  void CacheAlias(std::string domain_name,
+                  DnsQueryType query_type,
+                  std::string target_name);
+
   // If `hostname_` is std::nullopt, this class should resolve the result of
   // net::GetHostName() (the machine's own hostname).
   const std::optional<std::string> hostname_;
@@ -167,6 +197,8 @@ class NET_EXPORT HostResolverSystemTask {
 
   // Network to perform DNS lookups for.
   const handles::NetworkHandle network_;
+
+  std::optional<CacheParams> cache_params_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

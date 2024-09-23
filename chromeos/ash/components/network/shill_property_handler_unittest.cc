@@ -136,7 +136,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
       case ManagedState::MANAGED_TYPE_DEVICE:
         return shill::kDevicesProperty;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::string();
   }
 

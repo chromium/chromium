@@ -10,12 +10,11 @@ if (is_android) {
 
 source_set("identity_manager") {
   sources = [
-    "access_token_constants.cc",
-    "access_token_constants.h",
     "access_token_fetcher.cc",
     "access_token_fetcher.h",
-    "access_token_info.cc",
     "access_token_info.h",
+    "access_token_restriction.cc",
+    "access_token_restriction.h",
     "account_capabilities.cc",
     "account_capabilities.h",
     "account_info.cc",
@@ -44,13 +43,12 @@ source_set("identity_manager") {
     "primary_account_mutator.h",
     "scope_set.h",
     "set_accounts_in_cookie_result.h",
-    "tribool.cc",
-    "tribool.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    ":tribool",
     "//base",
     "//components/keyed_service/core",
     "//components/signin/public/base",
@@ -94,11 +92,21 @@ if (is_android) {
   }
 }
 
+source_set("tribool") {
+  sources = [
+    "tribool.cc",
+    "tribool.h",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
   sources = [
     "access_token_fetcher_unittest.cc",
+    "access_token_restriction_unittest.cc",
     "account_capabilities_unittest.cc",
     "account_info_unittest.cc",
     "account_managed_status_finder_unittest.cc",

@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../build_webui_tests.gni")
+
+assert(is_chromeos_ash)
+
+build_webui_tests("build") {
+  files = [
+    "extended_updates_app_test.ts",
+    "test_extended_updates_browser_proxy.ts",
+  ]
+
+  ts_path_mappings =
+      [ "chrome://extended-updates-dialog/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/ash/extended_updates/tsc/*",
+            target_gen_dir) ]
+
+  ts_deps = [
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//chrome/browser/resources/ash/extended_updates:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+  ]
+}

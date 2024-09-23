@@ -4,10 +4,9 @@
 
 #include "printing/client_info_helpers.h"
 
+#include <optional>
 #include <string>
 
-#include <optional>
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"

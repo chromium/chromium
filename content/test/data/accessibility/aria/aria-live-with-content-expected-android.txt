@@ -1,0 +1,4 @@
+android.webkit.WebView focusable focused
+++android.view.View role_description='marquee' name='Off'
+++android.view.View role_description='marquee' name='Polite' live_region_type=1
+++android.view.View role_description='marquee' name='Assertive' live_region_type=2

@@ -11,6 +11,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "third_party/skia/include/core/SkImage.h"
 
@@ -19,18 +20,18 @@ namespace viz {
 DisplayResourceProviderSoftware::DisplayResourceProviderSoftware(
     SharedBitmapManager* shared_bitmap_manager,
     gpu::SharedImageManager* shared_image_manager,
-    gpu::SyncPointManager* sync_point_manager)
+    gpu::SyncPointManager* sync_point_manager,
+    gpu::Scheduler* scheduler)
     : DisplayResourceProvider(DisplayResourceProvider::kSoftware),
       shared_bitmap_manager_(shared_bitmap_manager),
       shared_image_manager_(shared_image_manager),
       sync_point_manager_(sync_point_manager),
+      gpu_scheduler_(scheduler),
       sync_point_order_data_(
           (sync_point_manager_ &&
            base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage))
               ? sync_point_manager_->CreateSyncPointOrderData()
               : nullptr) {
-  DCHECK(shared_bitmap_manager);
-
   memory_tracker_ = std::make_unique<gpu::MemoryTypeTracker>(nullptr);
 }
 
@@ -41,21 +42,29 @@ DisplayResourceProviderSoftware::~DisplayResourceProviderSoftware() {
   }
 }
 
+std::unique_ptr<gpu::MemoryImageRepresentation>
+DisplayResourceProviderSoftware::GetSharedImageRepresentation(
+    const gpu::Mailbox& mailbox,
+    const gpu::SyncToken& sync_token) {
+  WaitSyncToken(sync_token);
+  return shared_image_manager_->ProduceMemory(mailbox, memory_tracker_.get());
+}
+
 const DisplayResourceProvider::ChildResource*
 DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
   ChildResource* resource = GetResource(id);
   DCHECK(!resource->is_gpu_resource_type());
 
-  if (resource->transferable.mailbox_holder.mailbox.IsSharedImage()) {
+  // Determine whether this resource is using a software SharedImage or a legacy
+  // shared bitmap.
+  if (resource->transferable.IsSoftwareSharedImage()) {
     DCHECK(shared_image_manager_ && sync_point_manager_);
     auto it = resource_shared_images_.find(id);
     if (it == resource_shared_images_.end()) {
-      const gpu::Mailbox& mailbox =
-          resource->transferable.mailbox_holder.mailbox;
+      const gpu::Mailbox& mailbox = resource->transferable.mailbox();
       auto access = std::make_unique<SharedImageAccess>();
-      WaitSyncToken(resource->transferable.mailbox_holder.sync_token);
-      access->representation =
-          shared_image_manager_->ProduceMemory(mailbox, memory_tracker_.get());
+      access->representation = GetSharedImageRepresentation(
+          mailbox, resource->transferable.sync_token());
       if (!access->representation) {
         return nullptr;
       }
@@ -66,7 +75,7 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
   } else {
     if (!resource->shared_bitmap) {
       const SharedBitmapId& shared_bitmap_id =
-          resource->transferable.mailbox_holder.mailbox;
+          resource->transferable.shared_bitmap_id();
       std::unique_ptr<SharedBitmap> bitmap =
           shared_bitmap_manager_->GetSharedBitmapFromId(
               resource->transferable.size, resource->transferable.format,
@@ -86,7 +95,7 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
 
 void DisplayResourceProviderSoftware::UnlockForRead(ResourceId id,
                                                     const SkImage* sk_image) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ChildResource* resource = GetResource(id);
   DCHECK(!resource->is_gpu_resource_type());
   if (sk_image) {
@@ -211,8 +220,18 @@ void DisplayResourceProviderSoftware::WaitSyncToken(gpu::SyncToken sync_token) {
           sync_token, sync_point_order_data_->sequence_id(), order_num,
           base::BindOnce(&base::WaitableEvent::Signal,
                          base::Unretained(&completion)))) {
+    gpu::SequenceId release_sequence_id =
+        sync_point_manager_->GetSyncTokenReleaseSequenceId(sync_token);
+    gpu::Scheduler::ScopedSetSequencePriority waiting(
+        gpu_scheduler_, release_sequence_id, gpu::SchedulingPriority::kHigh);
+
     completion.Wait();
   }
+
+  // We don't have any tasks to run here, but we need to mark order number as
+  // complete.
+  sync_point_order_data_->BeginProcessingOrderNumber(order_num);
+  sync_point_order_data_->FinishProcessingOrderNumber(order_num);
 }
 
 DisplayResourceProviderSoftware::ScopedReadLockSkImage::

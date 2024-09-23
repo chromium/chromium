@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_array_equals: lengths differ, expected array [object "[object EventTarget]"] length 1, got [] length 0
+[FAIL] A constructed EventTarget implements dispatch correctly
+  assert_equals: expected null but got object "[object EventTarget]"
+Harness: the test ran to completion.
+

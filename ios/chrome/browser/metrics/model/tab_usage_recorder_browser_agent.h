@@ -14,7 +14,7 @@
 #import "base/scoped_observation.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_metrics.h"
-#import "ios/chrome/browser/sessions/session_restoration_observer.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
@@ -96,7 +96,7 @@ class TabUsageRecorderBrowserAgent
   void ResetAll();
 
  private:
-  // TODO(crbug.com/731724): remove this once the code has been refactored not
+  // TODO(crbug.com/41324440): remove this once the code has been refactored not
   // to depends on injecting values in `termination_timestamps_`.
   friend class TabUsageRecorderBrowserAgentTest;
 

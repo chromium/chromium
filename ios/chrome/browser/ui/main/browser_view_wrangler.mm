@@ -10,30 +10,30 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_browser_agent.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_service.h"
-#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
-#import "ios/chrome/browser/sessions/session_util.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
+#import "ios/chrome/browser/sessions/model/session_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/utils.h"
-#import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/wrangled_browser.h"
 
 @implementation BrowserViewWrangler {
@@ -42,7 +42,6 @@
   __weak SceneState* _sceneState;
   __weak id<ApplicationCommands> _applicationEndpoint;
   __weak id<SettingsCommands> _settingsEndpoint;
-  __weak id<BrowsingDataCommands> _browsingDataEndpoint;
 
   std::unique_ptr<Browser> _mainBrowser;
   std::unique_ptr<Browser> _otrBrowser;
@@ -53,18 +52,16 @@
   BOOL _isShutdown;
 }
 
-- (instancetype)
-    initWithBrowserState:(ChromeBrowserState*)browserState
-              sceneState:(SceneState*)sceneState
-     applicationEndpoint:(id<ApplicationCommands>)applicationEndpoint
-        settingsEndpoint:(id<SettingsCommands>)settingsEndpoint
-    browsingDataEndpoint:(id<BrowsingDataCommands>)browsingDataEndpoint {
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
+                          sceneState:(SceneState*)sceneState
+                 applicationEndpoint:
+                     (id<ApplicationCommands>)applicationEndpoint
+                    settingsEndpoint:(id<SettingsCommands>)settingsEndpoint {
   if ((self = [super init])) {
     _browserState = browserState;
     _sceneState = sceneState;
     _applicationEndpoint = applicationEndpoint;
     _settingsEndpoint = settingsEndpoint;
-    _browsingDataEndpoint = browsingDataEndpoint;
 
     // Create all browsers.
     _mainBrowser = Browser::Create(_browserState, _sceneState);
@@ -116,7 +113,7 @@
   if (IsInactiveTabsEnabled()) {
     // Ensure there is no active element in the restored inactive browser. It
     // can be caused by a flag change, for example.
-    // TODO(crbug.com/1412108): Remove the following line as soon as inactive
+    // TODO(crbug.com/40890696): Remove the following line as soon as inactive
     // tabs is fully launched. After fully launched the only place where tabs
     // can move from inactive to active is after a settings change, this line
     // will be called at this specific moment.
@@ -168,8 +165,12 @@
   }
 
   if (_currentInterface) {
-    // Tell the current BVC it moved to the background.
-    [_currentInterface setPrimary:NO];
+    // Record that the primary browser was changed.
+    TabUsageRecorderBrowserAgent* tabUsageRecorder =
+        TabUsageRecorderBrowserAgent::FromBrowser(_currentInterface.browser);
+    if (tabUsageRecorder) {
+      tabUsageRecorder->RecordPrimaryBrowserChange(true);
+    }
   }
 
   _currentInterface = interface;
@@ -280,8 +281,6 @@
                            forProtocol:@protocol(ApplicationCommands)];
   [dispatcher startDispatchingToTarget:_settingsEndpoint
                            forProtocol:@protocol(SettingsCommands)];
-  [dispatcher startDispatchingToTarget:_browsingDataEndpoint
-                           forProtocol:@protocol(BrowsingDataCommands)];
 }
 
 // Sets up an existing browser.
@@ -289,11 +288,7 @@
   ChromeBrowserState* browserState = browser->GetBrowserState();
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(browserState);
-  if (browserState->IsOffTheRecord()) {
-    browserList->AddIncognitoBrowser(browser);
-  } else {
-    browserList->AddBrowser(browser);
-  }
+  browserList->AddBrowser(browser);
 
   [self dispatchToEndpointsForBrowser:browser];
 
@@ -334,11 +329,7 @@
   ChromeBrowserState* browserState = browser->GetBrowserState();
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(browserState);
-  if (browserState->IsOffTheRecord()) {
-    browserList->RemoveIncognitoBrowser(browser);
-  } else {
-    browserList->RemoveBrowser(browser);
-  }
+  browserList->RemoveBrowser(browser);
 
   // Stop serializing the state of `browser`.
   SessionRestorationServiceFactory::GetForBrowserState(browserState)
@@ -356,7 +347,7 @@
   // in their -dealloc method, ensure the -autorelease introduced by ARC are
   // processed before the WebStateList destructor is called.
   @autoreleasepool {
-    webStateList->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+    CloseAllWebStates(*webStateList, WebStateList::CLOSE_NO_FLAGS);
   }
 }
 

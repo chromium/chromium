@@ -31,6 +31,7 @@ public final class AndroidXProcessGlobalConfig {
     private String mDataDirectorySuffix;
     private String mDataDirectoryBasePath;
     private String mCacheDirectoryBasePath;
+    private boolean mPartitionedCookiesEnabled;
     private static AndroidXProcessGlobalConfig sGlobalConfig;
 
     private AndroidXProcessGlobalConfig(@NonNull Map<String, Object> configMap) {
@@ -71,6 +72,15 @@ public final class AndroidXProcessGlobalConfig {
                                         + entry.getKey());
                     }
                     mCacheDirectoryBasePath = (String) configValue;
+                    break;
+                case ProcessGlobalConfigConstants.CONFIGURE_PARTITIONED_COOKIES:
+                    if (!(configValue instanceof Boolean)) {
+                        throw new RuntimeException(
+                                "AndroidXProcessGlobalConfig map does not have "
+                                        + "right type of value for key: "
+                                        + entry.getKey());
+                    }
+                    mPartitionedCookiesEnabled = (Boolean) configValue;
                     break;
                 default:
                     throw new RuntimeException(
@@ -128,5 +138,9 @@ public final class AndroidXProcessGlobalConfig {
 
     public @Nullable String getCacheDirectoryBasePathOrNull() {
         return mCacheDirectoryBasePath;
+    }
+
+    public boolean getPartitionedCookiesEnabled() {
+        return mPartitionedCookiesEnabled;
     }
 }

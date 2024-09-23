@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "tools/android/forwarder2/command.h"
 #include "tools/android/forwarder2/device_listener.h"
 #include "tools/android/forwarder2/socket.h"
@@ -67,8 +67,7 @@ void DeviceController::AcceptHostCommandInternal() {
       LOG(INFO) << "Received exit notification";
     return;
   }
-  base::ScopedClosureRunner accept_next_client(base::BindOnce(
-      &DeviceController::AcceptHostCommandSoon, base::Unretained(this)));
+  absl::Cleanup accept_next_client = [this] { AcceptHostCommandSoon(); };
   // So that |socket| doesn't block on read if it has notifications.
   socket->AddEventFd(exit_notifier_fd_);
   int port;

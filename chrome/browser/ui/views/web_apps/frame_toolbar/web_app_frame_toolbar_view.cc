@@ -195,7 +195,12 @@ gfx::Size WebAppFrameToolbarView::GetToolbarButtonSize() const {
 }
 
 views::View* WebAppFrameToolbarView::GetDefaultExtensionDialogAnchorView() {
-  return right_container_->extensions_container()->GetExtensionsButton();
+  ExtensionsToolbarContainer* extensions_container =
+      GetExtensionsToolbarContainer();
+  if (extensions_container && extensions_container->GetVisible()) {
+    return extensions_container->GetExtensionsButton();
+  }
+  return GetAppMenuButton();
 }
 
 PageActionIconView* WebAppFrameToolbarView::GetPageActionIconView(
@@ -236,7 +241,8 @@ views::AccessiblePaneView* WebAppFrameToolbarView::GetAsAccessiblePaneView() {
   return this;
 }
 
-views::View* WebAppFrameToolbarView::GetAnchorView(PageActionIconType type) {
+views::View* WebAppFrameToolbarView::GetAnchorView(
+    std::optional<PageActionIconType> type) {
   views::View* anchor = GetAppMenuButton();
   return anchor ? anchor : this;
 }
@@ -246,12 +252,12 @@ void WebAppFrameToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
       can_show_bubble);
 }
 
-SidePanelToolbarButton* WebAppFrameToolbarView::GetSidePanelButton() {
-  return nullptr;
-}
-
 AvatarToolbarButton* WebAppFrameToolbarView::GetAvatarToolbarButton() {
   return right_container_ ? right_container_->avatar_button() : nullptr;
+}
+
+ManagementToolbarButton* WebAppFrameToolbarView::GetManagementToolbarButton() {
+  return nullptr;
 }
 
 ToolbarButton* WebAppFrameToolbarView::GetBackButton() {

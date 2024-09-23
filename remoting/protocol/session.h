@@ -14,6 +14,7 @@
 
 namespace remoting::protocol {
 
+class Authenticator;
 class SessionPlugin;
 class Transport;
 
@@ -71,7 +72,7 @@ class Session {
   virtual void SetEventHandler(EventHandler* event_handler) = 0;
 
   // Returns error code for a failed session.
-  virtual ErrorCode error() = 0;
+  virtual ErrorCode error() const = 0;
 
   // JID of the other side.
   virtual const std::string& jid() = 0;
@@ -79,6 +80,8 @@ class Session {
   // Protocol configuration. Can be called only after session has been accepted.
   // Returned pointer is valid until connection is closed.
   virtual const SessionConfig& config() = 0;
+
+  virtual const Authenticator& authenticator() const = 0;
 
   // Sets Transport to be used by the session. Must be called before the
   // session becomes AUTHENTICATED. The transport must outlive the session.

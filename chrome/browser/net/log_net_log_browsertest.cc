@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -115,7 +116,7 @@ class LogNetLogExplicitFileTest
     // was omitted, and not stripped when it was given a value of
     // IncludeSensitive
     bool include_cookies =
-        GetParam() && base::StringPiece(GetParam()) == "IncludeSensitive";
+        GetParam() && std::string_view(GetParam()) == "IncludeSensitive";
 
     if (include_cookies) {
       EXPECT_TRUE(file_contents.find("Set-Cookie: name=Good;Max-Age=3600") !=

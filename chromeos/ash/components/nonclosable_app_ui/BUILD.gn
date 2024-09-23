@@ -1,0 +1,25 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Non-Chrome-OS builds must not depend on //chromeos/ash")
+
+component("nonclosable_app_ui") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_NONCLOSABLE_APP_UI_IMPL" ]
+
+  sources = [
+    "nonclosable_app_ui_utils.cc",
+    "nonclosable_app_ui_utils.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/strings",
+    "//ui/base",
+  ]
+}

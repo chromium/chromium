@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MIXED_CONTENT_CHECKER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MIXED_CONTENT_CHECKER_H_
 
-#include <optional>
 #include <set>
 
 #include "base/gtest_prod_util.h"

@@ -1,0 +1,75 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("camera_mic") {
+  sources = [
+    "vm_camera_mic_manager.cc",
+    "vm_camera_mic_manager.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos/ash/components/audio",
+    "//components/keyed_service/core",
+    "//media/capture:capture_lib",
+    "//ui/message_center/public/cpp",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ash/borealis",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ui/webui/ash/settings/app_management",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//media/capture/video/chromeos/mojom:cros_camera_shared",
+    "//media/capture/video/chromeos/mojom:cros_camera_shared_cpp_sources",
+    "//media/capture/video/chromeos/public",
+    "//ui/base",
+  ]
+
+  allow_circular_includes_from = [
+    # TODO: Currently UserSessionInitializer notifies VmCameraMicManager,
+    # so initroducing an Observer should resolve the dependency on
+    # c/b/ash/login/session.
+    "//chrome/browser/ash/login/session",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "vm_camera_mic_manager_unittest.cc" ]
+
+  deps = [
+    ":camera_mic",
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/test:test_support",
+    "//components/account_id",
+    "//components/prefs:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/display:display_manager_test_api",
+    "//ui/message_center",
+  ]
+}

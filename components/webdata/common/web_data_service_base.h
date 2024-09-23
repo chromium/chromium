@@ -58,15 +58,16 @@ class WEBDATA_EXPORT WebDataServiceBase
   // call.
   virtual void ShutdownOnUISequence();
 
-  // Initializes the web data service.
-  virtual void Init(ProfileErrorCallback callback);
+  // Initializes the web data service, invoking `callback` if there are any
+  // errors.
+  void Init(ProfileErrorCallback callback);
 
   // Unloads the database and shuts down service.
   void ShutdownDatabase();
 
   // Returns a pointer to the DB (used by SyncableServices). May return NULL if
   // the database is unavailable. Must be called on DB sequence.
-  virtual WebDatabase* GetDatabase();
+  WebDatabase* GetDatabase();
 
  protected:
   friend class base::RefCountedDeleteOnSequence<WebDataServiceBase>;

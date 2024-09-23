@@ -83,23 +83,9 @@ static_library("browser") {
       "translate_infobar_delegate.cc",
       "translate_infobar_delegate.h",
     ]
+
     public_deps += [ "//components/infobars/core" ]
   }
-}
-
-static_library("translate_model_service") {
-  sources = [
-    "translate_model_service.cc",
-    "translate_model_service.h",
-  ]
-  deps = [
-    ":browser",
-    "//base",
-    "//components/keyed_service/core",
-    "//components/optimization_guide/core",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//mojo/public/cpp/bindings",
-  ]
 }
 
 source_set("translate_pref_names") {

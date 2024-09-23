@@ -1,0 +1,115 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("account_manager") {
+  sources = [
+    "account_apps_availability.cc",
+    "account_apps_availability.h",
+    "account_apps_availability_factory.cc",
+    "account_apps_availability_factory.h",
+    "account_manager_edu_coexistence_controller.cc",
+    "account_manager_edu_coexistence_controller.h",
+    "account_manager_facade_factory_ash.cc",
+    "account_manager_policy_controller.cc",
+    "account_manager_policy_controller.h",
+    "account_manager_policy_controller_factory.cc",
+    "account_manager_policy_controller_factory.h",
+    "account_manager_ui_impl.cc",
+    "account_manager_ui_impl.h",
+    "account_manager_util.cc",
+    "account_manager_util.h",
+    "child_account_type_changed_user_data.cc",
+    "child_account_type_changed_user_data.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/account_manager",
+    "//components/account_manager_core",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//skia",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/webui/settings/public/constants",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/arc/auth",
+    "//chrome/browser/ash/child_accounts",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/net",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/components/mgs",
+    "//components/user_manager",
+    "//content/public/browser",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/arc/auth",
+    "//chrome/browser/ash/login/session",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "account_apps_availability_unittest.cc",
+    "account_manager_edu_coexistence_controller_unittest.cc",
+  ]
+
+  deps = [
+    ":account_manager",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/child_accounts",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/edu_coexistence",
+    "//chrome/test:test_support",
+    "//components/account_manager_core:test_support",
+    "//components/policy/proto",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "account_manager_policy_controller_browsertest.cc" ]
+
+  deps = [
+    ":account_manager",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/account_manager",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/account_id",
+    "//components/account_manager_core",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

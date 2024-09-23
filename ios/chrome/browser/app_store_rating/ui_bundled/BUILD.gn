@@ -1,0 +1,77 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "app_store_rating_display_handler.h",
+    "app_store_rating_display_handler.mm",
+    "app_store_rating_scene_agent.h",
+    "app_store_rating_scene_agent.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    ":features",
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/password_manager/core/browser",
+    "//components/prefs",
+    "//components/variations/service:service",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/ui/promos_manager:promos",
+    "//ios/chrome/common",
+  ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/promos_manager/model:features",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "app_store_rating_scene_agent_unittest.mm" ]
+  deps = [
+    ":features",
+    ":ui_bundled",
+    "//base",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/variations",
+    "//components/variations/service:service",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/default_browser/model:test_support",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//services/network:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

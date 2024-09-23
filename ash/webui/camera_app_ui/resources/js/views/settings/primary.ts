@@ -14,6 +14,7 @@ import {I18nString} from '../../i18n_string.js';
 import * as loadTimeData from '../../models/load_time_data.js';
 import {ChromeHelper} from '../../mojo/chrome_helper.js';
 import * as nav from '../../nav.js';
+import * as scannerChip from '../../scanner_chip.js';
 import * as state from '../../state.js';
 import {Mode, ViewName} from '../../type.js';
 import * as util from '../../util.js';
@@ -148,6 +149,12 @@ export class PrimarySettings extends BaseSettings {
       const span =
           dom.getFrom(this.videoResolutionSettings, 'span', HTMLSpanElement);
       span.textContent = toVideoResolutionOptionLabel(option.resolutionLevel);
+    });
+
+    state.addObserver(state.State.ENABLE_PREVIEW_OCR, (enabled) => {
+      if (!enabled) {
+        scannerChip.dismiss();
+      }
     });
   }
 

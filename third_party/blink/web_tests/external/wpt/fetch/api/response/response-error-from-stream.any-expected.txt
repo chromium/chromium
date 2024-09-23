@@ -3,6 +3,8 @@ This is a testharness.js-based test.
   promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Start error"
 [FAIL] ReadableStream start() Error propagates to Response.blob() Promise
   promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Start error"
+[FAIL] ReadableStream start() Error propagates to Response.bytes() Promise
+  (intermediate value)[responseReaderMethod] is not a function
 [FAIL] ReadableStream start() Error propagates to Response.formData() Promise
   promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Start error"
 [FAIL] ReadableStream start() Error propagates to Response.json() Promise
@@ -13,6 +15,8 @@ This is a testharness.js-based test.
   promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Pull error"
 [FAIL] ReadableStream pull() Error propagates to Response.blob() Promise
   promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Pull error"
+[FAIL] ReadableStream pull() Error propagates to Response.bytes() Promise
+  (intermediate value)[responseReaderMethod] is not a function
 [FAIL] ReadableStream pull() Error propagates to Response.formData() Promise
   promise_rejects_exactly: CustomTestError should propagate function "function() { throw e }" threw object "TypeError: Failed to fetch" but we expected it to throw object "Error: Pull error"
 [FAIL] ReadableStream pull() Error propagates to Response.json() Promise

@@ -186,6 +186,7 @@ TEST_F(CrxDownloaderTest, NoUrl) {
   EXPECT_EQ(1, num_download_complete_calls_);
   EXPECT_EQ(static_cast<int>(CrxDownloaderError::NO_URL),
             download_complete_result_.error);
+  EXPECT_EQ(download_complete_result_.extra_code1, 0);
   EXPECT_TRUE(download_complete_result_.response.empty());
   EXPECT_EQ(0, num_progress_calls_);
 }
@@ -200,6 +201,7 @@ TEST_F(CrxDownloaderTest, NoHash) {
   EXPECT_EQ(1, num_download_complete_calls_);
   EXPECT_EQ(static_cast<int>(CrxDownloaderError::NO_HASH),
             download_complete_result_.error);
+  EXPECT_EQ(download_complete_result_.extra_code1, 0);
   EXPECT_TRUE(download_complete_result_.response.empty());
   EXPECT_EQ(0, num_progress_calls_);
 }
@@ -220,6 +222,7 @@ TEST_F(CrxDownloaderTest, OneUrl) {
 
   EXPECT_EQ(1, num_download_complete_calls_);
   EXPECT_EQ(0, download_complete_result_.error);
+  EXPECT_EQ(0, download_complete_result_.extra_code1);
   EXPECT_TRUE(ContentsEqual(download_complete_result_.response, test_file));
 
   EXPECT_TRUE(
@@ -250,6 +253,7 @@ TEST_F(CrxDownloaderTest, OneUrlBadHash) {
   EXPECT_EQ(1, num_download_complete_calls_);
   EXPECT_EQ(static_cast<int>(CrxDownloaderError::BAD_HASH),
             download_complete_result_.error);
+  EXPECT_EQ(download_complete_result_.extra_code1, 0);
   EXPECT_TRUE(download_complete_result_.response.empty());
 
   EXPECT_LE(1, num_progress_calls_);
@@ -276,6 +280,7 @@ TEST_F(CrxDownloaderTest, TwoUrls) {
 
   EXPECT_EQ(1, num_download_complete_calls_);
   EXPECT_EQ(0, download_complete_result_.error);
+  EXPECT_EQ(0, download_complete_result_.extra_code1);
   EXPECT_TRUE(ContentsEqual(download_complete_result_.response, test_file));
 
   EXPECT_TRUE(
@@ -307,6 +312,7 @@ TEST_F(CrxDownloaderTest, TwoUrls_FirstInvalid) {
 
   EXPECT_EQ(1, num_download_complete_calls_);
   EXPECT_EQ(0, download_complete_result_.error);
+  EXPECT_EQ(0, download_complete_result_.extra_code1);
   EXPECT_TRUE(ContentsEqual(download_complete_result_.response, test_file));
 
   EXPECT_TRUE(
@@ -351,6 +357,7 @@ TEST_F(CrxDownloaderTest, TwoUrls_SecondInvalid) {
 
   EXPECT_EQ(1, num_download_complete_calls_);
   EXPECT_EQ(0, download_complete_result_.error);
+  EXPECT_EQ(0, download_complete_result_.extra_code1);
   EXPECT_TRUE(ContentsEqual(download_complete_result_.response, test_file));
 
   EXPECT_TRUE(
@@ -380,6 +387,7 @@ TEST_F(CrxDownloaderTest, TwoUrls_BothInvalid) {
 
   EXPECT_EQ(1, num_download_complete_calls_);
   EXPECT_NE(0, download_complete_result_.error);
+  EXPECT_EQ(0, download_complete_result_.extra_code1);
   EXPECT_TRUE(download_complete_result_.response.empty());
 
   const auto download_metrics = crx_downloader_->download_metrics();

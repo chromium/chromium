@@ -20,9 +20,24 @@ namespace safe_browsing {
 // the caller.
 class SafeBrowsingLookupMechanism {
  public:
+  // Represents what triggers a real-time mechanism falling back to the hash
+  // database mechanism. These values are persisted to logs. Entries should not
+  // be renumbered and numeric values should never be reused.
+  enum class HashDatabaseFallbackTrigger {
+    kAllowlistMatch = 0,
+    kCacheMatch = 1,
+    kOriginalCheckFailed = 2,
+    kMaxValue = kOriginalCheckFailed,
+  };
+
   struct StartCheckResult {
-    explicit StartCheckResult(bool is_safe_synchronously);
+    explicit StartCheckResult(bool is_safe_synchronously,
+                              std::optional<ThreatSource> threat_source);
     bool is_safe_synchronously;
+    // Indicates the kind of check that confirmed this is safe. Not
+    // guaranteed to be populated even if `is_safe_synchronously` is
+    // true (e.g. no checks could be applied).
+    std::optional<ThreatSource> threat_source;
   };
 
   // This is used by individual lookup mechanisms as the input for the
@@ -42,9 +57,7 @@ class SafeBrowsingLookupMechanism {
     // Specifies the threat source associated with the mechanism that provided
     // the threat type. In cases where a real-time mechanism falls back to the
     // hash database mechanism, the threat source will correspond to the hash
-    // database mechanism. This value only guaranteed to be non-null in cases
-    // where the threat type is not SB_THREAT_TYPE_SAFE; in cases where the hash
-    // database mechanism fallback completes synchronously, this is unset.
+    // database mechanism.
     std::optional<ThreatSource> threat_source;
     std::unique_ptr<RTLookupResponse> url_real_time_lookup_response;
   };
@@ -71,6 +84,13 @@ class SafeBrowsingLookupMechanism {
   // synchronously). This should only be called once, since it calls std::move
   // on |complete_check_callback_|.
   void CompleteCheck(std::unique_ptr<CompleteCheckResult> result);
+
+  // Logs the |threat_type| triggered by falling back to
+  // hash database mechanism. |metric_variation| should be either "HPRT" or
+  // "RT".
+  void LogHashDatabaseFallbackResult(const std::string& metric_variation,
+                                     HashDatabaseFallbackTrigger trigger,
+                                     SBThreatType threat_type);
 
   // The URL to run the lookup for.
   GURL url_;

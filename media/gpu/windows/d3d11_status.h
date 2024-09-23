@@ -66,6 +66,9 @@ enum class D3D11StatusCode : StatusCodeType {
   kGetCommandBufferHelperFailed = 48,
   kDecoderGetCreationParametersFailed = 49,
   kGetDeviceFailed = 50,
+  kCreateFenceFailed = 51,
+  kFenceSignalFailed = 52,
+  kWaitForFenceFailed = 53,
 };
 
 struct D3D11StatusTraits {

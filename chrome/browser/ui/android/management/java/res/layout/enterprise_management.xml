@@ -37,7 +37,6 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/cm_description_margin_top"
-            android:text="@string/management_browser_notice"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
         <TextView
@@ -81,6 +80,20 @@ found in the LICENSE file.
             android:text="@string/management_extension_report_version"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
             app:drawableLeftCompat="@drawable/enterprise_phone" />
+
+        <TextView
+            android:id="@+id/profile_reporting_explanation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/management_profile_reporting_explanation"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+        <TextView
+            android:id="@+id/profile_report_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/cm_browser_item_margin_top"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
          <TextView
             android:id="@+id/report_legacy_tech"

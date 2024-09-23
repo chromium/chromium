@@ -1,0 +1,146 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+body.showing-blocked-site-message {
+  --header-color: var(--google-gray-900);
+  --paragraph-color: var(--google-gray-700);
+  --callout-text-color: var(--google-gray-900);
+  --callout-bg-color: var(--google-gray-100);
+}
+
+.supervised-user-verify  {
+  #main-content a {
+    color: var(--google-blue-700);
+    text-decoration: none;
+  }
+
+  .icon {
+    background-image: url(images/error_page_illustration_light_theme.svg);
+    width: 120px;
+    height: 120px;
+  }
+}
+
+.showing-blocked-site-message {
+  #blocked-site-message {
+    align-items: center;
+    background-color: var(--callout-bg-color);
+    border-radius: 8px;
+    color: var(--header-color);
+    justify-content: flex-start;
+    padding: 16px;
+    width: max-content;
+  }
+
+  #blocked-site-message-header,
+  #blocked-site-message-reason {
+    background-color: var(--callout-bg-color);
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  #blocked-site-message-reason {
+    font-size: 0.8em;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .supervised-user-verify .icon {
+    background-image: url(images/error_page_illustration_dark_theme.svg);
+  }
+
+  body.showing-blocked-site-message {
+    --callout-bg-color: var(--google-gray-800);
+    --callout-text-color: var(--google-gray-200);
+    --header-color: var(#e9eaed);
+    --paragraph-color: var(--google-gray-500);
+  }
+}
+
+body.supervised-user-verify-subframe {
+  --border-color: var(--google-gray-300);
+  --background-color: #f8fafd;
+  margin: 0;
+  overflow: auto;
+  box-shadow: 0 0 1px 1px var(--border-color) inset;
+  background-color: var(--background-color);
+
+  @media (prefers-color-scheme: dark) {
+    --border-color: var(--google-gray-700);
+    --background-color: var(--google-gray-900);
+  }
+}
+
+.supervised-user-verify-subframe {
+  .interstitial-wrapper {
+    max-width: unset;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0px;
+    padding: 0px;
+    height: 100vh;
+  }
+
+  .icon {
+    background-image: url(images/error_page_illustration_light_theme.svg);
+    width: 64px;
+    height: 64px;
+    margin-bottom: 14px;
+  }
+
+  #main-content {
+    all: unset;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #main-message {
+    text-align: center;
+    max-width: 225px;
+
+    p, #debugging {
+      display: none;
+    }
+
+    h1 {
+      font-size: 14px;
+      margin: 0;
+    }
+  }
+
+  #blocked-site-message {
+    display: none;
+  }
+
+  .nav-wrapper {
+    all: unset;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  .nav-wrapper button {
+    margin: 0;
+    padding: 8px 16px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .icon {
+      background-image: url(images/error_page_illustration_dark_theme.svg);
+    }
+  }
+
+  @media (max-height: 200px) {
+    .icon {
+        display: none;
+      }
+  }
+}

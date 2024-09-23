@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_SYSTEM_WEB_APP_INSTALL_UTILS_H_
 
 #include <initializer_list>
+#include <memory>
 #include <string>
 
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -39,6 +40,13 @@ void CreateShortcutsMenuItemForSystemWebApp(
 // Get correct ChromeOS background color based on if dark mode is requested and
 // if kSemanticColorsDebugOverride is enabled.
 SkColor GetDefaultBackgroundColor(const bool use_dark_mode);
+
+// Creates a `WebAppInstallInfo` for a System Web App where the `manifest_id` is
+// derived from the `start_url`. Changing the `start_url` will cause the
+// resulting SWA's identity to change, so if a change is neededthe regular
+// `WebAppInstallInfo` constructor must be used with the original `manifest_id`.
+std::unique_ptr<WebAppInstallInfo>
+CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(const GURL& start_url);
 
 }  // namespace web_app
 

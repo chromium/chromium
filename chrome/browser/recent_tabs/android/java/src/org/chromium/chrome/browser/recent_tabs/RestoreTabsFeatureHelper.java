@@ -68,7 +68,19 @@ public class RestoreTabsFeatureHelper {
         }
 
         mForeignSessionHelper = new ForeignSessionHelper(profile);
-        List<ForeignSession> sessions = mForeignSessionHelper.getMobileAndTabletForeignSessions();
+        if (!mForeignSessionHelper.isTabSyncEnabled()) {
+            destroy();
+
+            RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
+                    RestoreTabsOnFREPromoShowResult.TAB_SYNC_DISABLED);
+            return;
+        }
+        // Trigger a session sync in the event one has not occurred. This is asynchronous so it may
+        // not finish by the time we attempt to show. However, we need to show immediately to avoid
+        // showing up after the GTS is already visible to avoid potential misclicks. Triggering
+        // this does mean next time the GTS becomes visible we are more likely to have tabs
+        // available.
+        mForeignSessionHelper.triggerSessionSync();
 
         // Determines whether the promo is to be shown for the first or second time.
         // To determine if it is the first time that the promo is being triggered, the logic checks
@@ -89,9 +101,10 @@ public class RestoreTabsFeatureHelper {
         // successfully, IPH must show. Alternatively, the former lets the logic know if the promo
         // is expected to show, which can help determine if it is being shown for the first or
         // second time.
+        List<ForeignSession> sessions = mForeignSessionHelper.getMobileAndTabletForeignSessions();
         if (hasValidSyncedDevices(sessions)
-                && (tracker.shouldTriggerHelpUI(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE))) {
-            setDelegate(
+                && tracker.shouldTriggerHelpUI(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE)) {
+            createDelegate(
                     activity,
                     profile,
                     tabCreatorManager,
@@ -106,7 +119,6 @@ public class RestoreTabsFeatureHelper {
             destroy();
 
             // This metric covers the situations where:
-            // * sync is not enabled.
             // * no tabs are synced.
             // * synced tabs haven't finished syncing.
             RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
@@ -114,7 +126,7 @@ public class RestoreTabsFeatureHelper {
         }
     }
 
-    private void setDelegate(
+    private void createDelegate(
             Activity activity,
             Profile profile,
             TabCreatorManager tabCreatorManager,

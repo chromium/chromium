@@ -9,7 +9,7 @@
 
 #include "base/types/expected.h"
 #include "base/version.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 
@@ -27,20 +27,19 @@ class SignedWebBundleMetadata {
   using SignedWebBundleMetadataCallback = base::OnceCallback<void(
       base::expected<SignedWebBundleMetadata, std::string>)>;
 
-  // Performs installation checks for the bundle specified by |location|.
-  // If bundle passes the checks, runs |callback| with the expected
+  // Performs installation checks for the bundle specified by |source|. If
+  // bundle passes the checks, runs |callback| with the expected
   // SignedWebBundleMetaData. If bundle fails the checks, runs |callback| with
-  // the unexpected error. Only works for DevModeBundle or InstalledBundle, as
-  // DevModeProxy does not have a bundle file associated.
+  // the unexpected error.
   static void Create(Profile* profile,
                      WebAppProvider* provider,
                      const IsolatedWebAppUrlInfo& url_info,
-                     const IsolatedWebAppLocation& location,
+                     const IwaSourceBundleWithMode& source,
                      SignedWebBundleMetadataCallback callback);
 
   static SignedWebBundleMetadata CreateForTesting(
       const IsolatedWebAppUrlInfo& url_info,
-      const IsolatedWebAppLocation& location,
+      const IwaSourceBundleWithMode& source,
       const std::u16string& app_name,
       const base::Version& version,
       const IconBitmaps& icons);
@@ -50,8 +49,6 @@ class SignedWebBundleMetadata {
   SignedWebBundleMetadata& operator=(const SignedWebBundleMetadata&);
 
   const IsolatedWebAppUrlInfo& url_info() const { return url_info_; }
-
-  const IsolatedWebAppLocation& location() const { return location_; }
 
   const webapps::AppId& app_id() const { return url_info_.app_id(); }
 
@@ -65,13 +62,12 @@ class SignedWebBundleMetadata {
 
  private:
   SignedWebBundleMetadata(const IsolatedWebAppUrlInfo& url_info,
-                          const IsolatedWebAppLocation& location,
+                          const IwaSourceBundleWithMode& source,
                           const std::u16string& app_name,
                           const base::Version& version,
                           const IconBitmaps& icons);
 
   IsolatedWebAppUrlInfo url_info_;
-  IsolatedWebAppLocation location_;
   std::u16string app_name_;
   base::Version version_;
   IconBitmaps icons_;

@@ -14,7 +14,11 @@
           ]
         },
         "prefs": {
-          "native_messaging.allowlist": {}
+          "native_messaging.allowlist": {
+            "value": [
+              "native.messaging.host.name"
+            ]
+          }
         }
       }
     ]

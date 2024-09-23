@@ -338,6 +338,32 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphCannotBeBeforePosition) {
   EXPECT_EQ(p2, end2.DeepEquivalent());
 }
 
+TEST_F(VisibleUnitsParagraphTest, endOfParagraphCannotCrossEditingRoot) {
+  SetBodyContent(
+      "<div><span contenteditable id=span>this </span>"
+      "<a contenteditable=false>link</a>"
+      "<span contenteditable> after</span></div>");
+
+  Element* span = GetElementById("span");
+  const Position& p1 = Position(span->firstChild(), 2);
+  const Position& p2 = Position(span->firstChild(), 5);
+  const VisiblePosition& vp1 = CreateVisiblePosition(p1);
+  const VisiblePosition& vp2 = CreateVisiblePosition(p2);
+
+  EXPECT_EQ(p1, vp1.DeepEquivalent());
+  EXPECT_EQ(p2, vp2.DeepEquivalent());
+
+  const VisiblePosition& end1 = EndOfParagraph(vp1);
+  const VisiblePosition& end2 = EndOfParagraph(
+      vp1, EditingBoundaryCrossingRule::kCanSkipOverEditingBoundary);
+
+  EXPECT_LE(vp1.DeepEquivalent(), end1.DeepEquivalent());
+  EXPECT_LE(vp1.DeepEquivalent(), end2.DeepEquivalent());
+
+  EXPECT_EQ(p2, end1.DeepEquivalent());
+  EXPECT_EQ(p2, end2.DeepEquivalent());
+}
+
 TEST_F(VisibleUnitsParagraphTest, startOfParagraphCannotBeAfterPosition) {
   SetBodyContent(
       "<span contenteditable><br contenteditable=false>"

@@ -1,0 +1,49 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("ai") {
+  sources = [
+    "ai.cc",
+    "ai.h",
+    "ai_assistant.cc",
+    "ai_assistant.h",
+    "ai_assistant_capabilities.cc",
+    "ai_assistant_capabilities.h",
+    "ai_assistant_factory.cc",
+    "ai_assistant_factory.h",
+    "ai_capability_availability.cc",
+    "ai_capability_availability.h",
+    "ai_metrics.cc",
+    "ai_metrics.h",
+    "ai_mojo_session_create_client.h",
+    "ai_rewriter.cc",
+    "ai_rewriter.h",
+    "ai_rewriter_factory.cc",
+    "ai_rewriter_factory.h",
+    "ai_summarizer.cc",
+    "ai_summarizer.h",
+    "ai_summarizer_capabilities.cc",
+    "ai_summarizer_capabilities.h",
+    "ai_summarizer_factory.cc",
+    "ai_summarizer_factory.h",
+    "ai_text_session.cc",
+    "ai_text_session.h",
+    "ai_text_session_factory.cc",
+    "ai_text_session_factory.h",
+    "ai_writer.cc",
+    "ai_writer.h",
+    "ai_writer_factory.cc",
+    "ai_writer_factory.h",
+    "dom_ai.cc",
+    "dom_ai.h",
+    "exception_helpers.cc",
+    "exception_helpers.h",
+    "model_execution_responder.cc",
+    "model_execution_responder.h",
+  ]
+
+  public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]
+}

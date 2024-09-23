@@ -64,14 +64,14 @@ std::optional<ViewID> GetViewID(
     case ImageType::FRAMEBUST:
     case ImageType::CLIPBOARD_READ_WRITE:
     case ImageType::SENSORS:
-    case ImageType::NOTIFICATIONS_QUIET_PROMPT:
+    case ImageType::NOTIFICATIONS:
     case ImageType::STORAGE_ACCESS:
       return std::nullopt;
 
     case ImageType::NUM_IMAGE_TYPES:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -101,7 +101,7 @@ ContentSettingImageView::ContentSettingImageView(
 
   // Because this view is focusable, it should always have an accessible name,
   // even if an announcement is not to be made.
-  // TODO(crbug.com/1411342): `IconLabelBubbleView::GetAccessibleNodeData`
+  // TODO(crbug.com/40890218): `IconLabelBubbleView::GetAccessibleNodeData`
   // would set the name to explicitly empty when the name was missing.
   // That function no longer exists. As a result we need to handle that here.
   // There appear to be cases in which `Update` is never called and we lack
@@ -115,12 +115,10 @@ ContentSettingImageView::ContentSettingImageView(
                                           ->AccessibilityAnnouncementStringId())
           : std::u16string();
 
-  SetAccessibilityProperties(
-      /*role*/ std::nullopt, accessible_name,
-      /*description=*/std::nullopt,
-      /*role_description*/ std::nullopt,
-      accessible_name.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
-                              : ax::mojom::NameFrom::kAttribute);
+  GetViewAccessibility().SetName(
+      accessible_name, accessible_name.empty()
+                           ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
+                           : ax::mojom::NameFrom::kAttribute);
 
   // The chrome refresh version of this view has a ripple effect which is
   // configured by the background.
@@ -139,25 +137,25 @@ void ContentSettingImageView::Update() {
 
   if (!content_setting_image_model_->is_visible()) {
     SetVisible(false);
-    GetViewAccessibility().OverrideIsIgnored(true);
+    GetViewAccessibility().SetIsIgnored(true);
     critical_promo_bubble_.reset();
     return;
   }
   DCHECK(web_contents);
   UpdateImage();
   SetVisible(true);
-  GetViewAccessibility().OverrideIsIgnored(false);
-  // An alert role is required in order to fire the alert event.
-  SetAccessibleRole(ax::mojom::Role::kAlert);
+  GetViewAccessibility().SetIsIgnored(false);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
   if (content_setting_image_model_->ShouldNotifyAccessibility(web_contents)) {
     auto name = l10n_util::GetStringUTF16(
         content_setting_image_model_->AccessibilityAnnouncementStringId());
-    SetAccessibleName(name);
-    const std::u16string& accessible_description =
-        l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT);
-    SetAccessibleDescription(accessible_description);
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    GetViewAccessibility().SetName(name);
+
+    GetViewAccessibility().AnnounceAlert(l10n_util::GetStringFUTF16(
+        IDS_A11Y_INDICATORS_ANNOUNCEMENT, name,
+        l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT)));
+
     content_setting_image_model_->AccessibilityWasNotified(web_contents);
   }
 
@@ -178,19 +176,9 @@ void ContentSettingImageView::Update() {
   // mechanism to show one after the other, but it doesn't seem important now.
   int string_id = content_setting_image_model_->explanatory_string_id();
   if (string_id) {
-    // If this is part of the mac location permissions experiment, show a
-    // persistent label.
-    if (content_setting_image_model_
-            ->IsMacRestoreLocationPermissionExperimentActive()) {
-      SetLabel(l10n_util::GetStringUTF16(string_id));
-      // Reset the slide animation so that the label is persistent and won't
-      // animate out.
-      ResetSlideAnimation(true);
-    } else {
-      // Reset the slide animation so that the label's show/hide animation runs.
-      ResetSlideAnimation(false);
-      AnimateIn(string_id);
-    }
+    // Reset the slide animation so that the label's show/hide animation runs.
+    ResetSlideAnimation(false);
+    AnimateIn(string_id);
   }
 
   content_setting_image_model_->SetAnimationHasRun(web_contents);

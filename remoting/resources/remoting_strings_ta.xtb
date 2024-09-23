@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">கிளையண்ட் சாதனத்தில் <ph name="URL" /> தளத்தைத் திறக்க முடியவில்லை.</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2366718077645204424">ஹோஸ்ட்டை அடைய முடியவில்லை. இததற்கு நீங்கள் பயன்படுத்தும் நெட்வொர்க்கின் உள்ளமைவு காரணமாக இருக்கலாம்.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> கடைசியாக ஆன்லைனில் இருந்தது <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> தயாரிப்பிற்கு 'அணுகல்தன்மை' அனுமதியை வழங்கவும்</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> உடன் இணைக்கப்பட்டது</translation>
 <translation id="2540992418118313681">பிறர் இந்தக் கம்ப்யூட்டரைப் பார்க்கவும் கட்டுப்படுத்தவும், அதைப் பகிர்ந்து கொள்ள விரும்புகிறீர்களா?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">பாதுகாப்பு விசையின் தொலைநிலை செயல்முறை</translation>
 <translation id="3581045510967524389">நெட்வொர்க்குடன் இணைக்க முடியவில்லை. உங்கள் சாதனம் ஆன்லைனில் இருப்பதைச் சரிபார்க்கவும்.</translation>
 <translation id="3596628256176442606">இந்தச் சேவை குரோமோட்டிங் க்ளையன்ட்களிடமிருந்து வரும் இணைப்புகளை இயக்குகிறது.</translation>
-<translation id="369442766917958684">ஆஃப்லைன்.</translation>
 <translation id="3695446226812920698">எப்படி என அறிக</translation>
 <translation id="3776024066357219166">உங்கள் Chrome தொலைநிலை டெஸ்க்டாப் அமர்வு முடிந்தது.</translation>
 <translation id="3858860766373142691">பெயர்</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">தற்போது உங்கள் டெஸ்க்டாப் <ph name="USER" /> உடன் பகிரப்படுகிறது.</translation>
-<translation id="5750083143895808682">உள்நுழைந்துள்ள முகவரி: <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">மீண்டும் இணை</translation>
 <translation id="5810269635982033450">டிராக்பேட் போல திரை செயல்படும்</translation>
 <translation id="5823554426827907568">உங்கள் ஸ்கிரீனைப் பார்ப்பதற்கும் உங்கள் கீபோர்டு, மவுஸ் ஆகியவற்றைக் கட்டுப்படுத்துவதற்கும் <ph name="CLIENT_USERNAME" /> அனுமதி கேட்டுள்ளார். இந்தக் கோரிக்கையை நீங்கள் எதிர்பார்க்கவில்லை எனில் ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' பட்டனை அழுத்தவும். இல்லையெனில் இணைப்பு தயாரானதும் அனுமதி வழங்க ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' பட்டனைத் தேர்ந்தெடுக்கவும்.</translation>

@@ -1,0 +1,25 @@
+{
+    "archive_datas": [
+        {
+            "files": [
+                "apks/ContentShell.apk",
+                "apks/ChromePublic.apk",
+                "apks/SystemWebView.apk",
+                "apks/SystemWebViewShell.apk"
+            ],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chrome-android-desktop"}
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "AndroidDesktop_x64/{%position%}/chrome-android-desktop.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP",
+            "latest_upload": {
+                "gcs_path": "AndroidDesktop_x64/LAST_CHANGE",
+                "gcs_file_content": "{%position%}"
+            },
+            "revisions_file": {
+                "gcs_path": "AndroidDesktop_x64/{%position%}/REVISIONS"
+            }
+        }
+    ]
+}

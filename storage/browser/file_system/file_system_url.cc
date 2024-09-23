@@ -22,7 +22,7 @@ namespace storage {
 namespace {
 
 bool AreSameStorageKey(const FileSystemURL& a, const FileSystemURL& b) {
-  // TODO(https://crbug.com/1396116): Make the `storage_key_` member optional.
+  // TODO(crbug.com/40249324): Make the `storage_key_` member optional.
   // This class improperly uses a StorageKey with an opaque origin to indicate a
   // lack of origin for FileSystemURLs corresponding to non-sandboxed file
   // systems. This leads to unexpected behavior when comparing two non-sandboxed
@@ -58,7 +58,13 @@ FileSystemURL::~FileSystemURL() = default;
 FileSystemURL FileSystemURL::CreateSibling(
     const base::SafeBaseName& sibling_name) const {
   const base::FilePath& new_base_name = sibling_name.path();
-  if (!is_valid_ || new_base_name.empty()) {
+  if (!is_valid_ ||
+      new_base_name.empty()
+#if BUILDFLAG(IS_ANDROID)
+      // Android content-URIs do not support siblings.
+      || path().IsContentUri()
+#endif
+  ) {
     return FileSystemURL();
   }
 
@@ -119,7 +125,6 @@ bool FileSystemURL::TypeImpliesPathIsReal(FileSystemType type) {
     case kFileSystemInternalTypeEnumStart:
     case kFileSystemInternalTypeEnumEnd:
       NOTREACHED();
-      break;
 
     case kFileSystemTypeLocal:
     case kFileSystemTypeLocalMedia:
@@ -277,7 +282,12 @@ bool FileSystemURL::IsInSameFileSystem(const FileSystemURL& other) const {
   // Invalid FileSystemURLs should never be considered of the same file system.
   return AreSameStorageKey(*this, other) && is_valid() && other.is_valid() &&
          type() == other.type() && filesystem_id() == other.filesystem_id() &&
-         bucket() == other.bucket();
+         bucket() == other.bucket()
+#if BUILDFLAG(IS_ANDROID)
+         // Android content-URIs do not support same-FS ops such as rename().
+         && !path().IsContentUri() && !other.path().IsContentUri()
+#endif
+      ;
 }
 
 bool FileSystemURL::operator==(const FileSystemURL& that) const {

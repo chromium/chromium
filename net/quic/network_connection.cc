@@ -27,7 +27,10 @@ void NetworkConnection::OnIPAddressChanged() {
 void NetworkConnection::OnConnectionTypeChanged(
     NetworkChangeNotifier::ConnectionType type) {
   DVLOG(1) << "Updating NetworkConnection's Cached Data";
+
   connection_type_ = type;
+  connection_description_ =
+      NetworkChangeNotifier::ConnectionTypeToString(type).c_str();
 }
 
 }  // namespace net

@@ -32,11 +32,11 @@ bool OptionalBooleanToBool(OptionalBoolean value) {
     case OptionalBoolean::kTrue:
       return true;
     case OptionalBoolean::kUndefined:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -77,8 +77,9 @@ bool AreCollapsible(const TypingFieldLogEvent& event1,
 bool AreCollapsible(const HeuristicPredictionFieldLogEvent& event1,
                     const HeuristicPredictionFieldLogEvent& event2) {
   return event1.field_type == event2.field_type &&
-         event1.pattern_source == event2.pattern_source &&
-         event1.is_active_pattern_source == event2.is_active_pattern_source &&
+         event1.heuristic_source == event2.heuristic_source &&
+         event1.is_active_heuristic_source ==
+             event2.is_active_heuristic_source &&
          event1.rank_in_field_signature_group ==
              event2.rank_in_field_signature_group;
 }
@@ -108,6 +109,14 @@ bool AreCollapsible(const RationalizationFieldLogEvent& event1,
   return event1.field_type == event2.field_type &&
          event1.section_id == event2.section_id &&
          event1.type_changed == event2.type_changed;
+}
+
+bool AreCollapsible(const AblationFieldLogEvent& event1,
+                    const AblationFieldLogEvent& event2) {
+  return event1.ablation_group == event2.ablation_group &&
+         event1.conditional_ablation_group ==
+             event2.conditional_ablation_group &&
+         event1.day_in_ablation_window == event2.day_in_ablation_window;
 }
 
 }  // namespace autofill

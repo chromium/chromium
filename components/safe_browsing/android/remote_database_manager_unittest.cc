@@ -22,7 +22,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,31 +36,15 @@ class TestUrlCheckInterceptor : public safe_browsing::UrlCheckInterceptor {
   ~TestUrlCheckInterceptor() override = default;
 
   // Checks the threat type of |url| previously set by
-  // |SetSafetyNetThreatTypeForUrl|. It crashes if the threat type of |url| is
-  // not set in advance.
-  void CheckBySafetyNet(
-      std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback> callback,
-      const GURL& gurl) override {
-    std::string url = gurl.spec();
-    DCHECK(base::Contains(urls_safetynet_threat_type_, url));
-    std::move(*callback).Run(urls_safetynet_threat_type_[url],
-                             ThreatMetadata());
-  }
-
-  // Checks the threat type of |url| previously set by
   // |SetSafeBrowsingThreatTypeForUrl|. It crashes if the threat type of |url|
   // is not set in advance.
   void CheckBySafeBrowsing(
-      std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback> callback,
+      SafeBrowsingApiHandlerBridge::ResponseCallback callback,
       const GURL& gurl) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_safebrowsing_threat_type_, url));
-    std::move(*callback).Run(urls_safebrowsing_threat_type_[url],
-                             ThreatMetadata());
-  }
-
-  void SetSafetyNetThreatTypeForUrl(const GURL& url, SBThreatType threat_type) {
-    urls_safetynet_threat_type_[url.spec()] = threat_type;
+    std::move(callback).Run(urls_safebrowsing_threat_type_[url],
+                            ThreatMetadata());
   }
 
   void SetSafeBrowsingThreatTypeForUrl(const GURL& url,
@@ -70,7 +53,6 @@ class TestUrlCheckInterceptor : public safe_browsing::UrlCheckInterceptor {
   }
 
  private:
-  base::flat_map<std::string, SBThreatType> urls_safetynet_threat_type_;
   base::flat_map<std::string, SBThreatType> urls_safebrowsing_threat_type_;
 };
 
@@ -94,6 +76,12 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
     is_callback_called_ = true;
   }
 
+  void OnCheckDownloadUrlResult(const std::vector<GURL>& url_chain,
+                                SBThreatType threat_type) override {
+    EXPECT_EQ(expected_threat_type_, threat_type);
+    is_callback_called_ = true;
+  }
+
   bool IsCallbackCalled() { return is_callback_called_; }
 
  private:
@@ -107,6 +95,8 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
 
 class RemoteDatabaseManagerTest : public testing::Test {
  protected:
+  using enum SBThreatType;
+
   RemoteDatabaseManagerTest() {}
 
   void SetUp() override {
@@ -114,7 +104,7 @@ class RemoteDatabaseManagerTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     db_ = new RemoteSafeBrowsingDatabaseManager();
-    db_->StartOnSBThread(test_shared_loader_factory_,
+    db_->StartOnUIThread(test_shared_loader_factory_,
                          GetTestV4ProtocolConfig());
 
     url_interceptor_ = std::make_unique<TestUrlCheckInterceptor>();
@@ -123,26 +113,8 @@ class RemoteDatabaseManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-    db_->StopOnSBThread(/*shutdown=*/false);
+    db_->StopOnUIThread(/*shutdown=*/false);
     db_ = nullptr;
-  }
-
-  // Setup the two field trial params.  These are read in db_'s ctor.
-  void SetFieldTrialParams(const std::string types_to_check_val) {
-    variations::testing::ClearAllVariationIDs();
-    variations::testing::ClearAllVariationParams();
-
-    const std::string group_name = "GroupFoo";  // Value not used
-    const std::string experiment_name = "SafeBrowsingAndroid";
-    ASSERT_TRUE(
-        base::FieldTrialList::CreateFieldTrial(experiment_name, group_name));
-
-    std::map<std::string, std::string> params;
-    if (!types_to_check_val.empty())
-      params["types_to_check"] = types_to_check_val;
-
-    ASSERT_TRUE(
-        base::AssociateFieldTrialParams(experiment_name, group_name, params));
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -155,8 +127,8 @@ class RemoteDatabaseManagerTest : public testing::Test {
 
 TEST_F(RemoteDatabaseManagerTest, CheckBrowseUrl_HashDatabase) {
   GURL url("https://example.com");
-  url_interceptor_->SetSafetyNetThreatTypeForUrl(url,
-                                                 SB_THREAT_TYPE_URL_PHISHING);
+  url_interceptor_->SetSafeBrowsingThreatTypeForUrl(
+      url, SB_THREAT_TYPE_URL_PHISHING);
   TestClient client(db_, /*expected_url=*/url,
                     /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING);
 
@@ -199,71 +171,28 @@ TEST_F(RemoteDatabaseManagerTest, CheckBrowseUrl_HashRealtime) {
                                      /*expected_count=*/0);
 }
 
-TEST_F(RemoteDatabaseManagerTest, DestinationsToCheckDefault) {
-  // Most are true, a few are false.
-  for (int t_int = 0;
-       t_int <= static_cast<int>(network::mojom::RequestDestination::kMaxValue);
-       t_int++) {
-    network::mojom::RequestDestination t =
-        static_cast<network::mojom::RequestDestination>(t_int);
-    switch (t) {
-      case network::mojom::RequestDestination::kStyle:
-      case network::mojom::RequestDestination::kImage:
-      case network::mojom::RequestDestination::kFont:
-        EXPECT_FALSE(db_->CanCheckRequestDestination(t));
-        break;
-      default:
-        EXPECT_TRUE(db_->CanCheckRequestDestination(t));
-        break;
-    }
-  }
-}
-
-TEST_F(RemoteDatabaseManagerTest, DestinationsToCheckFromTrial) {
-  SetFieldTrialParams("7,16,blah, 20");
-  // Stop the current DB and start a new one to consume the new field trial
-  // params.
-  db_->StopOnSBThread(/*shutdown=*/false);
-  db_ = new RemoteSafeBrowsingDatabaseManager();
-  db_->StartOnSBThread(test_shared_loader_factory_, GetTestV4ProtocolConfig());
-  EXPECT_TRUE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kDocument));  // defaulted
-  EXPECT_TRUE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kIframe));
-  EXPECT_TRUE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kFrame));
-  EXPECT_TRUE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kFencedframe));
-  EXPECT_TRUE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kStyle));
-  EXPECT_FALSE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kScript));
-  EXPECT_FALSE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kImage));
-  // ...
-  EXPECT_FALSE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kVideo));
-  EXPECT_TRUE(db_->CanCheckRequestDestination(
-      network::mojom::RequestDestination::kWorker));
-}
-
 TEST_F(RemoteDatabaseManagerTest, ThreatSource) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
   EXPECT_EQ(ThreatSource::ANDROID_SAFEBROWSING,
             db_->GetBrowseUrlThreatSource(CheckBrowseUrlType::kHashDatabase));
   EXPECT_EQ(ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME,
             db_->GetBrowseUrlThreatSource(CheckBrowseUrlType::kHashRealTime));
-  EXPECT_EQ(ThreatSource::REMOTE, db_->GetNonBrowseUrlThreatSource());
 }
 
-TEST_F(RemoteDatabaseManagerTest, ThreatSource_SafeBrowsingNewGmsApiDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
-  EXPECT_EQ(ThreatSource::REMOTE,
-            db_->GetBrowseUrlThreatSource(CheckBrowseUrlType::kHashDatabase));
+TEST_F(RemoteDatabaseManagerTest, CheckDownloadUrl) {
+  GURL url("https://example.com");
+  GURL referrer_url("https://unrelated.com");
+  url_interceptor_->SetSafeBrowsingThreatTypeForUrl(url,
+                                                    SB_THREAT_TYPE_URL_MALWARE);
+  url_interceptor_->SetSafeBrowsingThreatTypeForUrl(referrer_url,
+                                                    SB_THREAT_TYPE_SAFE);
+
+  TestClient client(db_, /*expected_url=*/url,
+                    /*expected_threat_type=*/SB_THREAT_TYPE_URL_MALWARE);
+
+  db_->CheckDownloadUrl({GURL("https://unrelated.com/"), url}, &client);
+
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(client.IsCallbackCalled());
 }
 
 }  // namespace safe_browsing

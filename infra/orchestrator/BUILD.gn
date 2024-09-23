@@ -44,12 +44,15 @@ group("orchestrator_all") {
   }
 
   if (use_jacoco_coverage) {
-    data += [ "//third_party/jacoco/lib/jacococli.jar" ]
+    data += [ "//third_party/jacoco/cipd/lib/jacococli.jar" ]
     data_deps += [ "//third_party/jdk:java_data" ]
   }
 
   if (is_skylab) {
-    data += [ "//third_party/chromite/" ]
+    data += [
+      "//third_party/chromite/",
+      "//chromeos/CHROMEOS_LKGM",
+    ]
   }
 
   write_runtime_deps = "$root_out_dir/orchestrator_all.runtime_deps"

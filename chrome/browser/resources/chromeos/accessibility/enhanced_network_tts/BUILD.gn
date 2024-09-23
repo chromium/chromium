@@ -56,7 +56,8 @@ ts_library("ts_build") {
     "../definitions/tabs.d.ts",
     "../definitions/tts.d.ts",
     "../definitions/tts_engine.d.ts",
-    "//tools/typescript/definitions/windows.d.ts",
+    "../definitions/windows.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
   ]
 
   in_files = ts_modules + js_deps
@@ -124,8 +125,9 @@ js2gtest("enhanced_network_tts_extjs_tests") {
   deps = [
     "//ash",
     "//base",
-    "//chrome/browser/ash",
+    "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/system_web_apps",
     "//chrome/common",
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

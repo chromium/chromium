@@ -16,7 +16,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/threading/thread_checker.h"
-#include "base/timer/timer.h"
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
@@ -40,34 +39,6 @@ class SocketTag;
 
 class NET_EXPORT UDPSocketPosix {
  public:
-  // Performance helper for net::activity_monitor, it batches
-  // throughput samples, subject to a byte limit threshold (64 KB) or
-  // timer (100 ms), whichever comes first.  The batching is subject
-  // to a minimum number of samples (2) required by NQE to update its
-  // throughput estimate.
-  class ReceivedActivityMonitor {
-   public:
-    ReceivedActivityMonitor() = default;
-
-    ReceivedActivityMonitor(const ReceivedActivityMonitor&) = delete;
-    ReceivedActivityMonitor& operator=(const ReceivedActivityMonitor&) = delete;
-
-    ~ReceivedActivityMonitor() = default;
-    // Provided by sent/received subclass.
-    // Update throughput, but batch to limit overhead of net::activity_monitor.
-    void Increment(uint32_t bytes);
-    // For flushing cached values.
-    void OnClose();
-
-   private:
-    void Update();
-    void OnTimerFired();
-
-    uint32_t bytes_ = 0;
-    uint32_t increments_ = 0;
-    base::RepeatingTimer timer_;
-  };
-
   UDPSocketPosix(DatagramSocket::BindType bind_type,
                  net::NetLog* net_log,
                  const net::NetLogSource& source);
@@ -405,7 +376,7 @@ class NET_EXPORT UDPSocketPosix {
 
   // Hash of |socket_| to verify that it is not corrupted when calling close().
   // Used to debug https://crbug.com/906005.
-  // TODO(crbug.com/906005): Remove this once the bug is fixed.
+  // TODO(crbug.com/41426706): Remove this once the bug is fixed.
   int socket_hash_ = 0;
 
   int addr_family_ = 0;
@@ -462,16 +433,6 @@ class NET_EXPORT UDPSocketPosix {
 
   // Network that this socket is bound to via BindToNetwork().
   handles::NetworkHandle bound_network_;
-
-  // Whether net::activity_monitor should be updated every time bytes are
-  // received, without batching through |received_activity_monitor_|. This is
-  // initialized with the state of the "UdpSocketPosixAlwaysUpdateBytesReceived"
-  // feature. It is cached to avoid accessing the FeatureList every time bytes
-  // are received.
-  const bool always_update_bytes_received_;
-
-  // Used to lower the overhead updating activity monitor.
-  ReceivedActivityMonitor received_activity_monitor_;
 
   // Current socket tag if |socket_| is valid, otherwise the tag to apply when
   // |socket_| is opened.

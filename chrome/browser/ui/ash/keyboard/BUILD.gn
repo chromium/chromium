@@ -1,0 +1,96 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("keyboard") {
+  sources = [
+    "chrome_keyboard_bounds_observer.cc",
+    "chrome_keyboard_bounds_observer.h",
+    "chrome_keyboard_controller_client.cc",
+    "chrome_keyboard_controller_client.h",
+    "chrome_keyboard_ui.cc",
+    "chrome_keyboard_ui.h",
+    "chrome_keyboard_ui_factory.cc",
+    "chrome_keyboard_ui_factory.h",
+    "chrome_keyboard_web_contents.cc",
+    "chrome_keyboard_web_contents.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/keyboard/ui",
+    "//ash/public/cpp",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//ui/compositor_extra",
+    "//url",
+  ]
+}
+
+source_set("ash_test_support") {
+  sources = [
+    "chrome_keyboard_controller_client_test_helper.cc",
+    "chrome_keyboard_controller_client_test_helper.h",
+  ]
+
+  deps = [
+    ":keyboard",
+    "//ash",
+    "//chrome/browser/profiles:profile",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "chrome_keyboard_ui_unittest.cc",
+    "chrome_keyboard_web_contents_unittest.cc",
+  ]
+
+  deps = [
+    ":keyboard",
+    "//base",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "keyboard_controller_browsertest.cc",
+    "keyboard_end_to_end_browsertest.cc",
+  ]
+
+  deps = [
+    ":keyboard",
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/apps/platform_apps",
+    "//chrome/browser/ash/input_method:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//extensions/browser",
+    "//extensions/common",
+    "//ui/events:test_support",
+  ]
+}

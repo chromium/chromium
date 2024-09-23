@@ -17,6 +17,7 @@
 
 #include "base/base_paths.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/heap_array.h"
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -35,14 +36,7 @@ namespace crypto {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
-// Fake certificate authority database used for testing.
-static const base::FilePath::CharType kReadOnlyCertDB[] =
-    FILE_PATH_LITERAL("/etc/fake_root_ca/nssdb");
-
-#else
-
+#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
 base::FilePath GetDefaultConfigDirectory() {
   base::FilePath dir;
   base::PathService::Get(base::DIR_HOME, &dir);
@@ -58,20 +52,14 @@ base::FilePath GetDefaultConfigDirectory() {
   DVLOG(2) << "DefaultConfigDirectory: " << dir.value();
   return dir;
 }
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-// On non-Chrome OS platforms, return the default config directory. On Chrome OS
-// test images, return a read-only directory with fake root CA certs (which are
-// used by the local Google Accounts server mock we use when testing our login
-// code). On Chrome OS non-test images (where the read-only directory doesn't
-// exist), return an empty path.
+// On non-Chrome OS platforms, return the default config directory. On Chrome
+// OS return a empty path which will result in NSS being initialized without a
+// persistent database.
 base::FilePath GetInitialConfigDirectory() {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::FilePath database_dir = base::FilePath(kReadOnlyCertDB);
-  if (!base::PathExists(database_dir))
-    database_dir.clear();
-  return database_dir;
+  return base::FilePath();
 #else
   return GetDefaultConfigDirectory();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -365,9 +353,10 @@ SECMODModule* LoadNSSModule(const char* name,
 std::string GetNSSErrorMessage() {
   std::string result;
   if (PR_GetErrorTextLength()) {
-    std::unique_ptr<char[]> error_text(new char[PR_GetErrorTextLength() + 1]);
-    PRInt32 copied = PR_GetErrorText(error_text.get());
-    result = std::string(error_text.get(), copied);
+    auto error_text =
+        base::HeapArray<char>::Uninit(PR_GetErrorTextLength() + 1);
+    PRInt32 copied = PR_GetErrorText(error_text.data());
+    result = std::string(error_text.data(), copied);
   } else {
     result = base::StringPrintf("NSS error code: %d", PR_GetError());
   }

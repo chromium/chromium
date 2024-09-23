@@ -1,0 +1,73 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("audio") {
+  sources = [
+    "audio_survey_handler.cc",
+    "audio_survey_handler.h",
+    "cras_audio_handler_delegate_impl.cc",
+    "cras_audio_handler_delegate_impl.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos/ash/components/audio",
+  ]
+
+  deps = [
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/browser/ash/hats",
+
+    # Due to a cycle, we can't depend on //chrome/browser. Explicitly list one
+    # of its dependencies that transitively depends on generated mojo headers,
+    # in order to avoid non-deterministic builds.
+    "//chrome/browser/profiles:profile",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "volume_controller_browsertest.cc" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/audio/public/cpp/sounds",
+    "//content/test:test_support",
+    "//ui/base",
+    "//ui/events:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "audio_survey_handler_unittest.cc",
+    "cras_audio_handler_delegate_impl_unittest.cc",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//chrome/browser/ash/audio",
+    "//chrome/browser/ash/hats",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

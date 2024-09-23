@@ -40,7 +40,7 @@ class ExtensionsManager {
 
   // Returns ExtensionsPref::kStorageGarbageCollect which indicates possibly
   // deleted Storage Partitions on disk requiring garbage collection.
-  // TODO(crbug.com/1463825): Delete ExtensionsPref::kStorageGarbageCollect.
+  // TODO(crbug.com/40922689): Delete ExtensionsPref::kStorageGarbageCollect.
   virtual bool ShouldGarbageCollectStoragePartitions();
 
   // Sets ExtensionsPref::kStorageGarbageCollect to false.

@@ -52,6 +52,12 @@
       border-radius: var(--element-border-radius) 0 0 0;
     }
 
+<if expr="is_android or is_ios">
+    #namespace-header {
+     display: none;
+   }
+</if>
+
     #header-remove-btn-cell {
       border-radius: 0 var(--element-border-radius) 0 0;
       border-right: none;

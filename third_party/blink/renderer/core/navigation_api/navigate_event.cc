@@ -205,6 +205,7 @@ void NavigateEvent::commit(ExceptionState& exception_state) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "commit() may only be used if { commit: "
                                       "'after-transition' } was specified.");
+    return;
   }
   if (IsBeingDispatched()) {
     exception_state.ThrowDOMException(
@@ -266,29 +267,33 @@ void NavigateEvent::CommitNow() {
       dispatch_params_->url, dispatch_params_->destination_item,
       mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept,
       state_object, dispatch_params_->frame_load_type,
+      dispatch_params_->event_type == NavigateEventType::kHistoryApi
+          ? FirePopstate::kNo
+          : FirePopstate::kYes,
       dispatch_params_->is_browser_initiated,
-      dispatch_params_->is_synchronously_committed_same_document);
+      dispatch_params_->is_synchronously_committed_same_document,
+      dispatch_params_->soft_navigation_heuristics_task_id);
 }
 
 void NavigateEvent::React(ScriptState* script_state) {
   CHECK(navigation_action_handlers_list_.empty());
 
-  ScriptPromise promise;
+  ScriptPromiseUntyped promise;
   if (!navigation_action_promises_list_.empty()) {
-    promise =
-        ScriptPromise::All(script_state, navigation_action_promises_list_);
+    promise = ScriptPromiseUntyped::All(script_state,
+                                        navigation_action_promises_list_);
   } else {
     // There is a subtle timing difference between the fast-path for zero
     // promises and the path for 1+ promises, in both spec and implementation.
-    // In most uses of ScriptPromise::All / the Web IDL spec's "wait for all",
-    // this does not matter. However for us there are so many events and promise
-    // handlers firing around the same time (navigatesuccess, committed promise,
-    // finished promise, ...) that the difference is pretty easily observable by
-    // web developers and web platform tests. So, let's make sure we always go
-    // down the 1+ promises path.
-    promise = ScriptPromise::All(
-        script_state, HeapVector<ScriptPromise>(
-                          {ScriptPromise::CastUndefined(script_state)}));
+    // In most uses of ScriptPromiseUntyped::All / the Web IDL spec's "wait for
+    // all", this does not matter. However for us there are so many events and
+    // promise handlers firing around the same time (navigatesuccess, committed
+    // promise, finished promise, ...) that the difference is pretty easily
+    // observable by web developers and web platform tests. So, let's make sure
+    // we always go down the 1+ promises path.
+    promise = ScriptPromiseUntyped::All(
+        script_state, HeapVector<ScriptPromiseUntyped>(
+                          {ToResolvedUndefinedPromise(script_state)}));
   }
 
   promise.Then(MakeGarbageCollected<ScriptFunction>(
@@ -376,7 +381,7 @@ void NavigateEvent::FinalizeNavigationActionPromisesList() {
   handlers_list.swap(navigation_action_handlers_list_);
 
   for (auto& function : handlers_list) {
-    ScriptPromise result;
+    ScriptPromiseUntyped result;
     if (function->Invoke(this).To(&result))
       navigation_action_promises_list_.push_back(result);
   }
@@ -469,7 +474,7 @@ WebFrameLoadType LoadTypeFromNavigation(const String& navigation_type) {
     return WebFrameLoadType::kBackForward;
   if (navigation_type == "reload")
     return WebFrameLoadType::kReload;
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void NavigateEvent::ProcessScrollBehavior() {
@@ -480,13 +485,16 @@ void NavigateEvent::ProcessScrollBehavior() {
       dispatch_params_->destination_item
           ? dispatch_params_->destination_item->GetViewState()
           : std::nullopt;
+  auto scroll_behavior = has_ua_visual_transition_
+                             ? mojom::blink::ScrollBehavior::kInstant
+                             : mojom::blink::ScrollBehavior::kAuto;
   // Use mojom::blink::ScrollRestorationType::kAuto unconditionally here
   // because we are certain that we want to actually scroll if we reach this
   // point. Using mojom::blink::ScrollRestorationType::kManual would block the
   // scroll.
   DomWindow()->GetFrame()->Loader().ProcessScrollForSameDocumentNavigation(
       dispatch_params_->url, LoadTypeFromNavigation(navigation_type_),
-      view_state, mojom::blink::ScrollRestorationType::kAuto);
+      view_state, mojom::blink::ScrollRestorationType::kAuto, scroll_behavior);
 }
 
 const AtomicString& NavigateEvent::InterfaceName() const {

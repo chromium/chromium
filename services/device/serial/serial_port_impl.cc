@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "services/device/serial/serial_io_handler.h"
 
 namespace device {
@@ -211,19 +212,16 @@ void SerialPortImpl::Close(bool flush, CloseCallback callback) {
 
 void SerialPortImpl::WriteToPort(MojoResult result,
                                  const mojo::HandleSignalsState& state) {
-  const void* buffer;
-  uint32_t num_bytes;
+  base::span<const uint8_t> buffer;
 
   if (result == MOJO_RESULT_OK) {
     DCHECK(in_stream_);
-    result = in_stream_->BeginReadData(&buffer, &num_bytes,
-                                       MOJO_WRITE_DATA_FLAG_NONE);
+    result = in_stream_->BeginReadData(MOJO_WRITE_DATA_FLAG_NONE, buffer);
   }
   if (result == MOJO_RESULT_OK) {
-    io_handler_->Write(
-        base::make_span(static_cast<const uint8_t*>(buffer), num_bytes),
-        base::BindOnce(&SerialPortImpl::OnWriteToPortCompleted,
-                       weak_factory_.GetWeakPtr(), num_bytes));
+    io_handler_->Write(buffer,
+                       base::BindOnce(&SerialPortImpl::OnWriteToPortCompleted,
+                                      weak_factory_.GetWeakPtr()));
     return;
   }
   if (result == MOJO_RESULT_SHOULD_WAIT) {
@@ -244,11 +242,10 @@ void SerialPortImpl::WriteToPort(MojoResult result,
     return;
   }
   // The code should not reach other cases.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
-void SerialPortImpl::OnWriteToPortCompleted(uint32_t bytes_expected,
-                                            uint32_t bytes_sent,
+void SerialPortImpl::OnWriteToPortCompleted(uint32_t bytes_sent,
                                             mojom::SerialSendError error) {
   DCHECK(in_stream_);
   in_stream_->EndReadData(bytes_sent);
@@ -268,17 +265,16 @@ void SerialPortImpl::OnWriteToPortCompleted(uint32_t bytes_expected,
 void SerialPortImpl::ReadFromPortAndWriteOut(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
-  void* buffer;
-  uint32_t num_bytes;
+  base::span<uint8_t> buffer;
   if (result == MOJO_RESULT_OK) {
     DCHECK(out_stream_);
-    result = out_stream_->BeginWriteData(&buffer, &num_bytes,
-                                         MOJO_WRITE_DATA_FLAG_NONE);
+    result =
+        out_stream_->BeginWriteData(mojo::DataPipeProducerHandle::kNoSizeHint,
+                                    MOJO_WRITE_DATA_FLAG_NONE, buffer);
   }
   if (result == MOJO_RESULT_OK) {
-    io_handler_->Read(base::make_span(static_cast<uint8_t*>(buffer), num_bytes),
-                      base::BindOnce(&SerialPortImpl::WriteToOutStream,
-                                     weak_factory_.GetWeakPtr()));
+    io_handler_->Read(buffer, base::BindOnce(&SerialPortImpl::WriteToOutStream,
+                                             weak_factory_.GetWeakPtr()));
     return;
   }
   if (result == MOJO_RESULT_SHOULD_WAIT) {
@@ -294,7 +290,7 @@ void SerialPortImpl::ReadFromPortAndWriteOut(
     return;
   }
   // The code should not reach other cases.
-  NOTREACHED() << "Unexpected Mojo result: " << result;
+  NOTREACHED_IN_MIGRATION() << "Unexpected Mojo result: " << result;
 }
 
 void SerialPortImpl::WriteToOutStream(uint32_t bytes_read,

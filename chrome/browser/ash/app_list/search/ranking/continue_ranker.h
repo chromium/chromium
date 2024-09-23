@@ -21,6 +21,9 @@ class ContinueRanker : public Ranker {
 
   // Ranker:
   void UpdateResultRanks(ResultsMap& results, ProviderType provider) override;
+
+ private:
+  const bool mix_local_and_drive_files_;
 };
 
 }  // namespace app_list

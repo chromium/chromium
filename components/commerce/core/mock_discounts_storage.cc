@@ -9,10 +9,10 @@ namespace commerce {
 MockDiscountsStorage::MockDiscountsStorage()
     : DiscountsStorage(nullptr, nullptr) {
   ON_CALL(*this, HandleServerDiscounts)
-      .WillByDefault([](const std::vector<std::string>& urls_to_check,
-                        DiscountsMap server_results,
+      .WillByDefault([](const GURL& url,
+                        std::vector<DiscountInfo> server_results,
                         DiscountInfoCallback callback) {
-        std::move(callback).Run(std::move(server_results));
+        std::move(callback).Run(url, std::move(server_results));
       });
 }
 MockDiscountsStorage::~MockDiscountsStorage() = default;

@@ -24,11 +24,8 @@ static_library("webui") {
   ]
 }
 
-static_library("constants") {
-  sources = [
-    "url_constants.cc",
-    "url_constants.h",
-  ]
+source_set("constants") {
+  sources = [ "url_constants.h" ]
 }
 
 mojom("mojo_bindings") {

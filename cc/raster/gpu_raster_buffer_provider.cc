@@ -149,7 +149,6 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
       worker_context_provider_(worker_context_provider),
       tile_format_(raster_caps.tile_format),
       tile_overlay_candidate_(raster_caps.tile_overlay_candidate),
-      tile_texture_target_(raster_caps.tile_texture_target),
       max_tile_size_(max_tile_size),
       pending_raster_queries_(pending_raster_queries),
       raster_metric_probability_(raster_metric_probability),
@@ -192,7 +191,6 @@ std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
     auto backing = std::make_unique<GpuRasterBacking>();
     backing->worker_context_provider = worker_context_provider_;
     backing->overlay_candidate = tile_overlay_candidate_;
-    backing->texture_target = tile_texture_target_;
     backing->is_using_raw_draw =
         !backing->overlay_candidate && is_using_raw_draw_;
     resource.set_gpu_backing(std::move(backing));
@@ -376,9 +374,9 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
 
     // This SharedImage will serve as the destination of the raster defined by
     // `raster_source` before being sent off to the display compositor.
-    uint32_t flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+    gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     if (backing_->overlay_candidate) {
       flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       if (features::IsDelegatedCompositingEnabled())
@@ -386,10 +384,10 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
     } else if (client_->is_using_raw_draw_) {
       flags |= gpu::SHARED_IMAGE_USAGE_RAW_DRAW;
     }
-    backing_->shared_image = sii->CreateSharedImage(
-        shared_image_format_, resource_size_, color_space_,
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags, "GpuRasterTile",
-        gpu::kNullSurfaceHandle);
+    backing_->shared_image =
+        sii->CreateSharedImage({shared_image_format_, resource_size_,
+                                color_space_, flags, "GpuRasterTile"},
+                               gpu::kNullSurfaceHandle);
     CHECK(backing_->shared_image);
     mailbox_needs_clear = true;
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
@@ -436,6 +434,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
       playback_settings.image_provider, content_size, raster_full_rect,
       playback_rect, transform.translation(), recording_to_raster_scale,
       raster_source->requires_clear(),
+      playback_settings.raster_inducing_scroll_offsets,
       const_cast<RasterSource*>(raster_source)->max_op_size_hint());
   ri->EndRasterCHROMIUM();
 
@@ -445,7 +444,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
 
 bool GpuRasterBufferProvider::ShouldUnpremultiplyAndDitherResource(
     viz::SharedImageFormat format) const {
-  // TODO(crbug.com/1151490): Re-enable for OOPR.
+  // TODO(crbug.com/40042400): Re-enable for OOPR.
   return false;
 }
 

@@ -8,7 +8,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/media_session/public/mojom/media_session.mojom";
 
-// Next MinVersion: 7
+// Next MinVersion: 8
 
 // Next Method ID: 3
 [Stable, Uuid="1ed3225e-33c8-487b-b79f-4c3ec13ad623"]
@@ -159,11 +159,16 @@ interface MediaControllerObserver {
 // The observer for observing when images associated with a media controller
 // change. This is a separate observer because not all clients need to handle
 // images.
-// Next Method ID: 1
+// Next Method ID: 2
 [Stable]
 interface MediaControllerImageObserver {
   // Called when the observed media controller has a new image of |type|.
   // It may be null if there is no image.
   MediaControllerImageChanged@0(
       MediaSessionImageType type, MediaImageBitmap? bitmap);
+
+  // Called when the observed media controller has a new image of the chapter
+  // at the `index` in the chapter list.
+  [MinVersion=7] MediaControllerChapterImageChanged@1(
+      int32 index, MediaImageBitmap? bitmap);
 };

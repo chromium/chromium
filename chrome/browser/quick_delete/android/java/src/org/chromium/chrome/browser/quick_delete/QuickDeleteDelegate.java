@@ -11,9 +11,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 
 import java.util.List;
@@ -54,32 +53,24 @@ abstract class QuickDeleteDelegate {
 
     /**
      * @param {@link Profile} from which to query the syncing history status.
-     *
      * @return A boolean indicating whether the user is syncing history and history deletions are
-     *         propagated.
+     *     propagated.
      */
     static boolean isSyncingHistory(@NonNull Profile profile) {
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         return syncService != null
-                && syncService.isSyncFeatureEnabled()
-                && syncService.getActiveDataTypes().contains(ModelType.HISTORY_DELETE_DIRECTIVES);
+                && syncService.getActiveDataTypes().contains(DataType.HISTORY_DELETE_DIRECTIVES);
     }
 
     /**
      * Performs the data deletion for the quick delete feature.
      *
      * @param onDeleteFinished A {@link Runnable} to be called once the browsing data has been
-     *                         cleared.
+     *     cleared.
      * @param timePeriod The {@link TimePeriod} of the browsing data to delete.
      */
-    void performQuickDelete(@NonNull Runnable onDeleteFinished, @TimePeriod int timePeriod) {}
-
-    /**
-     * @return {@link SettingsLauncher} used to launch the Clear browsing data settings fragment.
-     */
-    SettingsLauncher getSettingsLauncher() {
-        return null;
-    }
+    abstract void performQuickDelete(
+            @NonNull Runnable onDeleteFinished, @TimePeriod int timePeriod);
 
     /**
      * Show the Quick Delete animation on the tab list.
@@ -88,5 +79,11 @@ abstract class QuickDeleteDelegate {
      * @param tabs The tabs to fade with the animation. These tabs will get closed after the
      *     animation is complete.
      */
-    void showQuickDeleteAnimation(@NonNull Runnable onAnimationEnd, @NonNull List<Tab> tabs) {}
+    abstract void showQuickDeleteAnimation(
+            @NonNull Runnable onAnimationEnd, @NonNull List<Tab> tabs);
+
+    /**
+     * @return True if the user has more than one restorable window.
+     */
+    abstract boolean isInMultiWindowMode();
 }

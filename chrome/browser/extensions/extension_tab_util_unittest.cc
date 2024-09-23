@@ -21,7 +21,7 @@ namespace extensions {
 
 TEST(ExtensionTabUtilTest, ScrubTabBehaviorForTabsPermission) {
   auto extension = ExtensionBuilder("Extension with tabs permission")
-                       .AddPermission("tabs")
+                       .AddAPIPermission("tabs")
                        .Build();
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(extension.get(),
@@ -44,7 +44,7 @@ TEST(ExtensionTabUtilTest, ScrubTabBehaviorForNoPermission) {
 
 TEST(ExtensionTabUtilTest, ScrubTabBehaviorForHostPermission) {
   auto extension = ExtensionBuilder("Extension with host permission")
-                       .AddPermission("*://www.google.com/*")
+                       .AddHostPermission("*://www.google.com/*")
                        .Build();
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(
@@ -249,7 +249,7 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigationOnDevtools) {
   // Having the debugger permissions should also allow access.
   {
     auto debugger_extension =
-        ExtensionBuilder("debugger").AddPermission("debugger").Build();
+        ExtensionBuilder("debugger").AddAPIPermission("debugger").Build();
     auto url = ExtensionTabUtil::PrepareURLForNavigation(
         kDevtoolsURL, debugger_extension.get(), browser_context());
     EXPECT_THAT(url, base::test::ValueIs(kDevtoolsURL));

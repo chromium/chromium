@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // This small program is used to measure the performance of the various
 // resize algorithms offered by the ImageOperations::Resize function.
 // It will generate an empty source bitmap, and rescale it to specified
@@ -17,6 +22,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/format_macros.h"
@@ -120,7 +127,7 @@ class Dimensions {
   // On failure, will set its state in such a way that IsValid will return
   // false.
   void FromString(const std::string& arg) {
-    std::vector<base::StringPiece> strings = base::SplitStringPiece(
+    std::vector<std::string_view> strings = base::SplitStringPiece(
         arg, "x", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (strings.size() != 2 ||
         base::StringToInt(strings[0], &width_) == false ||

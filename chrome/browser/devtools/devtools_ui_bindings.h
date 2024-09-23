@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/aida_client.h"
@@ -60,6 +61,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
     virtual void InspectElementCompleted() = 0;
     virtual void SetIsDocked(bool is_docked) = 0;
     virtual void OpenInNewTab(const std::string& url) = 0;
+    virtual void OpenSearchResultsInNewTab(const std::string& query) = 0;
     virtual void SetWhitelistedShortcuts(const std::string& message) = 0;
     virtual void SetEyeDropperActive(bool active) = 0;
     virtual void OpenNodeFrontend() = 0;
@@ -142,10 +144,12 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                            int stream_id) override;
   void SetIsDocked(DispatchCallback callback, bool is_docked) override;
   void OpenInNewTab(const std::string& url) override;
+  void OpenSearchResultsInNewTab(const std::string& query) override;
   void ShowItemInFolder(const std::string& file_system_path) override;
   void SaveToFile(const std::string& url,
                   const std::string& content,
-                  bool save_as) override;
+                  bool save_as,
+                  bool is_base64) override;
   void AppendToFile(const std::string& url,
                     const std::string& content) override;
   void RequestFileSystems() override;
@@ -209,6 +213,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void RemovePreference(const std::string& name) override;
   void ClearPreferences() override;
   void GetSyncInformation(DispatchCallback callback) override;
+  void GetHostConfig(DispatchCallback callback) override;
   void Reattach(DispatchCallback callback) override;
   void ReadyForTest() override;
   void ConnectionReady() override;
@@ -220,7 +225,10 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void CanShowSurvey(DispatchCallback callback,
                      const std::string& trigger) override;
   void DoAidaConversation(DispatchCallback callback,
-                          const std::string& request) override;
+                          const std::string& request,
+                          int stream_id) override;
+  void RegisterAidaClientEvent(DispatchCallback callback,
+                               const std::string& request) override;
 
   void EnableRemoteDeviceCounter(bool enable);
 
@@ -273,20 +281,43 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                            DevToolsInfoBarDelegate::Callback callback);
   bool MaybeStartLogging();
   base::TimeDelta GetTimeSinceSessionStart();
+  void OnAidaConversationRequest(
+      DispatchCallback callback,
+      int stream_id,
+      const std::string& request,
+      base::TimeDelta delay,
+      absl::variant<network::ResourceRequest, std::string>
+          resource_request_or_error);
+  void OnAidaConversationResponse(
+      DispatchCallback callback,
+      int stream_id,
+      const std::string& request,
+      base::TimeDelta delay,
+      absl::variant<network::ResourceRequest, std::string>
+          resource_request_or_error,
+      base::TimeTicks start_time,
+      const base::Value* response);
+  void OnRegisterAidaClientEventRequest(
+      DispatchCallback callback,
+      const std::string& request,
+      absl::variant<network::ResourceRequest, std::string>
+          resource_request_or_error);
+  void OnAidaClientResponse(
+      DispatchCallback callback,
+      std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
+      std::optional<std::string> response_body);
 
   // Extensions support.
   void AddDevToolsExtensionsToClient();
 
   static DevToolsUIBindingsList& GetDevToolsUIBindings();
 
-  void OnAidaConversationResponse(DispatchCallback callback,
-                                  const std::string& response);
   class FrontendWebContentsObserver;
   std::unique_ptr<FrontendWebContentsObserver> frontend_contents_observer_;
 
-  Profile* profile_;
-  DevToolsAndroidBridge* android_bridge_;
-  content::WebContents* web_contents_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<DevToolsAndroidBridge> android_bridge_;
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<Delegate> delegate_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::unique_ptr<content::DevToolsFrontendHost> frontend_host_;

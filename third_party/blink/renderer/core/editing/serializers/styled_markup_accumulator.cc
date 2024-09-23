@@ -227,8 +227,13 @@ String StyledMarkupAccumulator::RenderedText(Text& text_node) {
     start_offset = start_.Offset();
   if (end_.GetText() == text_node)
     end_offset = end_.Offset();
+
   return PlainText(EphemeralRange(Position(&text_node, start_offset),
-                                  Position(&text_node, end_offset)));
+                                  Position(&text_node, end_offset)),
+                   TextIteratorBehavior::Builder()
+                       .SetIgnoresCSSTextTransforms(
+                           options_.IgnoresCSSTextTransformsForRenderedText())
+                       .Build());
 }
 
 String StyledMarkupAccumulator::StringValueForRange(const Text& node) {

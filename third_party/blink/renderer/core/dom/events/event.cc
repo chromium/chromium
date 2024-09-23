@@ -289,6 +289,17 @@ void Event::InitEventPath(Node& node) {
   }
 }
 
+bool Event::IsFullyTrusted() const {
+  const Event* event = this;
+  while (event) {
+    if (!event->isTrusted()) {
+      return false;
+    }
+    event = event->UnderlyingEvent();
+  }
+  return true;
+}
+
 void Event::SetHandlingPassive(PassiveMode mode) {
   handling_passive_ = mode;
 }
@@ -312,7 +323,7 @@ HeapVector<Member<EventTarget>> Event::composedPath(
       if (node == context.GetNode())
         return context.GetTreeScopeEventContext().EnsureEventPath(*event_path_);
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (LocalDOMWindow* window = current_target_->ToLocalDOMWindow()) {

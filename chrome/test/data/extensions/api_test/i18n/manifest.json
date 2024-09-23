@@ -7,7 +7,7 @@
     "scripts": ["test.js"],
     "persistent": true
   },
-  "permissions": ["http://*/*", "tabs"],
+  "permissions": ["tabs"],
   "default_locale": "en_US",
   "content_scripts": [
     {

@@ -11,7 +11,7 @@
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
@@ -42,13 +42,12 @@ OptimizationGuideInternalsUI::OptimizationGuideInternalsUI(
     web::WebUIIOS* web_ui,
     const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
-  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
-  auto* service =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
+  auto* service = OptimizationGuideServiceFactory::GetForProfile(profile);
   if (!service)
     return;
   optimization_guide_logger_ = service->GetOptimizationGuideLogger();
-  web::WebUIIOSDataSource::Add(browser_state,
+  web::WebUIIOSDataSource::Add(profile,
                                CreateOptimizationGuideInternalsHTMLSource());
   web_ui->GetWebState()->GetInterfaceBinderForMainFrame()->AddInterface(
       base::BindRepeating(&OptimizationGuideInternalsUI::BindInterface,
@@ -63,7 +62,7 @@ OptimizationGuideInternalsUI::~OptimizationGuideInternalsUI() {
 void OptimizationGuideInternalsUI::BindInterface(
     mojo::PendingReceiver<
         optimization_guide_internals::mojom::PageHandlerFactory> receiver) {
-  // TODO(crbug.com/1297362): Remove the reset which is needed now since `this`
+  // TODO(crbug.com/40215132): Remove the reset which is needed now since `this`
   // is reused on internals page reloads.
   optimization_guide_internals_page_factory_receiver_.reset();
   optimization_guide_internals_page_factory_receiver_.Bind(std::move(receiver));
@@ -78,10 +77,8 @@ void OptimizationGuideInternalsUI::CreatePageHandler(
 
 void OptimizationGuideInternalsUI::RequestDownloadedModelsInfo(
     RequestDownloadedModelsInfoCallback callback) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromWebUIIOS(web_ui());
-  auto* service =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
+  auto* service = OptimizationGuideServiceFactory::GetForProfile(profile);
   if (!service) {
     std::move(callback).Run({});
     return;

@@ -57,7 +57,23 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                const std::string&,
                const std::string&),
               (override));
+  MOCK_METHOD(void,
+              RegisterWithOidcResponse,
+              (const RegistrationParameters&,
+               const std::string&,
+               const std::string&,
+               const std::string&,
+               const base::TimeDelta&),
+              (override));
   MOCK_METHOD(void, FetchPolicy, (PolicyFetchReason), (override));
+  MOCK_METHOD(void,
+              FetchRemoteCommands,
+              (std::unique_ptr<RemoteCommandJob::UniqueIDType>,
+               const std::vector<enterprise_management::RemoteCommandResult>&,
+               enterprise_management::PolicyFetchRequest::SignatureType,
+               const std::string&,
+               RemoteCommandCallback),
+              (override));
   MOCK_METHOD(void,
               UploadEnterpriseMachineCertificate,
               (const std::string&, ResultCallback),
@@ -86,6 +102,7 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               UploadPolicyValidationReport,
               (CloudPolicyValidatorBase::Status,
                const std::vector<ValueValidationIssue>&,
+               const ValidationAction,
                const std::string&,
                const std::string&),
               (override));
@@ -112,11 +129,10 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               (std::unique_ptr<enterprise_management::UploadEuiccInfoRequest>,
                StatusCallback),
               (override));
-  MOCK_METHOD(
-      void,
-      UploadSecurityEventReport,
-      (content::BrowserContext*, bool, base::Value::Dict, ResultCallback),
-      (override));
+  MOCK_METHOD(void,
+              UploadSecurityEventReport,
+              (bool, base::Value::Dict, ResultCallback),
+              (override));
   MOCK_METHOD(void,
               UploadAppInstallReport,
               (base::Value::Dict value, ResultCallback callback),
@@ -125,6 +141,11 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               ClientCertProvisioningRequest,
               (enterprise_management::ClientCertificateProvisioningRequest,
                ClientCertProvisioningRequestCallback),
+              (override));
+  MOCK_METHOD(void,
+              UploadFmRegistrationToken,
+              (enterprise_management::FmRegistrationTokenUploadRequest request,
+               ResultCallback callback),
               (override));
 
   // Sets the DMToken.
@@ -152,8 +173,11 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   using CloudPolicyClient::invalidation_payload_;
   using CloudPolicyClient::invalidation_version_;
   using CloudPolicyClient::last_policy_timestamp_;
+  using CloudPolicyClient::oidc_user_display_name_;
+  using CloudPolicyClient::oidc_user_email_;
   using CloudPolicyClient::public_key_version_;
   using CloudPolicyClient::public_key_version_valid_;
+  using CloudPolicyClient::third_party_identity_type_;
   using CloudPolicyClient::types_to_fetch_;
 };
 

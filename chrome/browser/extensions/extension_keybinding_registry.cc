@@ -9,8 +9,8 @@
 
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
@@ -24,7 +24,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/ash/media_client_impl.h"
+#include "chrome/browser/ui/ash/media_client/media_client_impl.h"
 #endif
 
 namespace {
@@ -165,8 +165,8 @@ void ExtensionKeybindingRegistry::CommandExecuted(
 
     if (web_contents) {
       // The action APIs (browserAction, pageAction, action) are only available
-      // to blessed extension contexts. As such, we deterministically know that
-      // the right context type here is blessed.
+      // to privileged extension contexts. As such, we deterministically know
+      // that the right context type here is privileged.
       constexpr mojom::ContextType context_type =
           mojom::ContextType::kPrivilegedExtension;
       ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
@@ -312,7 +312,7 @@ bool ExtensionKeybindingRegistry::ExtensionMatchesFilter(
     case PLATFORM_APPS_ONLY:
       return extension->is_platform_app();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }

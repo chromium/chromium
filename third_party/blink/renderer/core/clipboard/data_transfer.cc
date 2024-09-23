@@ -110,15 +110,6 @@ class DraggedNodeImageBuilder {
 
     gfx::Rect absolute_bounding_box =
         dragged_layout_object->AbsoluteBoundingBoxRectIncludingDescendants();
-    // TODO(chrishtr): consider using the root frame's visible rect instead
-    // of the local frame, to avoid over-clipping.
-    gfx::Rect visible_rect(gfx::Point(),
-                           layer->GetLayoutObject().GetFrameView()->Size());
-    // If the absolute bounding box is large enough to be possibly a memory
-    // or IPC payload issue, clip it to the visible content rect.
-    if (absolute_bounding_box.size().Area64() > visible_rect.size().Area64()) {
-      absolute_bounding_box.Intersect(visible_rect);
-    }
 
     gfx::RectF bounding_box =
         layer->GetLayoutObject()
@@ -130,11 +121,11 @@ class DraggedNodeImageBuilder {
     OverriddenCullRectScope cull_rect_scope(
         *layer, CullRect(gfx::ToEnclosingRect(cull_rect)),
         /*disable_expansion*/ true);
-    auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+    PaintRecordBuilder builder;
 
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
         DocumentLifecycle::kInPaint);
-    PaintLayerPainter(*layer).Paint(builder->Context(),
+    PaintLayerPainter(*layer).Paint(builder.Context(),
                                     PaintFlag::kOmitCompositingInfo);
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
         DocumentLifecycle::kPaintClean);
@@ -150,7 +141,7 @@ class DraggedNodeImageBuilder {
         gfx::Vector2dF(layer->GetLayoutObject().FirstFragment().PaintOffset());
 
     return DataTransfer::CreateDragImageForFrame(
-        *local_frame_, 1.0f, bounding_box.size(), paint_offset, *builder,
+        *local_frame_, 1.0f, bounding_box.size(), paint_offset, builder,
         border_box_properties);
   }
 
@@ -288,14 +279,10 @@ void DataTransfer::clearData(const String& type) {
     return;
   }
   if (type.IsNull()) {
-    if (RuntimeEnabledFeatures::DataTransferClearStringItemsEnabled()) {
-      // As per spec
-      // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-cleardata,
-      // `clearData()` doesn't remove `kFileKind` objects from `item_list_`.
-      data_object_->ClearStringItems();
-    } else {
-      data_object_->ClearAll();
-    }
+    // As per spec
+    // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-cleardata,
+    // `clearData()` doesn't remove `kFileKind` objects from `item_list_`.
+    data_object_->ClearStringItems();
   } else {
     data_object_->ClearData(NormalizeType(type));
   }
@@ -363,11 +350,11 @@ void DataTransfer::setDragImage(Element* image, int x, int y) {
     return;
 
   // Convert `drag_loc_` from CSS px to physical pixels.
-  // `LocalFrame::PageZoomFactor` converts from CSS px to physical px by taking
-  // into account both device scale factor and page zoom.
+  // `LocalFrame::LayoutZoomFactor` converts from CSS px to physical px by
+  // taking into account both device scale factor and page zoom.
   LocalFrame* frame = image->GetDocument().GetFrame();
   gfx::Point location =
-      gfx::ScaleToRoundedPoint(gfx::Point(x, y), frame->PageZoomFactor());
+      gfx::ScaleToRoundedPoint(gfx::Point(x, y), frame->LayoutZoomFactor());
 
   auto* html_image_element = DynamicTo<HTMLImageElement>(image);
   if (html_image_element && !image->isConnected())
@@ -534,7 +521,7 @@ void DataTransfer::WriteSelection(const FrameSelection& selection) {
     return;
 
   if (!EnclosingTextControl(
-          selection.ComputeVisibleSelectionInDOMTreeDeprecated().Start())) {
+          selection.ComputeVisibleSelectionInDOMTree().Start())) {
     data_object_->SetHTMLAndBaseURL(selection.SelectedHTMLForClipboard(),
                                     selection.GetFrame()->GetDocument()->Url());
   }
@@ -570,8 +557,7 @@ bool DataTransfer::CanWriteData() const {
 }
 
 bool DataTransfer::CanSetDragImage() const {
-  return policy_ == DataTransferAccessPolicy::kImageWritable ||
-         policy_ == DataTransferAccessPolicy::kWritable;
+  return policy_ == DataTransferAccessPolicy::kWritable;
 }
 
 DragOperationsMask DataTransfer::SourceOperation() const {
@@ -598,10 +584,10 @@ void DataTransfer::SetDestinationOperation(ui::mojom::blink::DragOperation op) {
 }
 
 DataTransferItemList* DataTransfer::items() {
-  // TODO: According to the spec, we are supposed to return the same collection
-  // of items each time. We now return a wrapper that always wraps the *same*
-  // set of items, so JS shouldn't be able to tell, but we probably still want
-  // to fix this.
+  // TODO(crbug.com/331320416): According to the spec, we are supposed to
+  // return the same collection of items each time. We now return a wrapper
+  // that always wraps the *same* set of items, so JS shouldn't be able to
+  // tell, but we probably still want to fix this.
   return MakeGarbageCollected<DataTransferItemList>(this, data_object_);
 }
 

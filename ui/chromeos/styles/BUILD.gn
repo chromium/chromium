@@ -11,11 +11,16 @@ style_variable_generator("cros_styles") {
   # If you change the sources, also change the paths in presubmit_support.py
   sources = [
     "cros_colors.json5",
+    "cros_gm3_shadows.json5",
     "cros_palette.json5",
     "cros_shadows.json5",
     "cros_typography.json5",
   ]
 
+  gen_css = true
+
+  # TODO(b/252365403): Delete this when the old usages are removed.
+  gen_views = true
   cpp_namespace = "cros_styles"
 }
 

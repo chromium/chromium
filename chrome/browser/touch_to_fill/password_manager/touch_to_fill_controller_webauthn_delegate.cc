@@ -76,6 +76,10 @@ GURL TouchToFillControllerWebAuthnDelegate::GetFrameUrl() {
   return request_delegate_->web_contents()->GetLastCommittedURL();
 }
 
+bool TouchToFillControllerWebAuthnDelegate::ShouldShowTouchToFill() {
+  return true;
+}
+
 bool TouchToFillControllerWebAuthnDelegate::ShouldTriggerSubmission() {
   return false;
 }

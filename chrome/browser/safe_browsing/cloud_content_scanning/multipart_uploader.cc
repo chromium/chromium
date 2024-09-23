@@ -73,16 +73,15 @@ MultipartUploadRequest::MultipartUploadRequest(
     const std::string& data,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
-    : base_url_(base_url),
-      metadata_(metadata),
-      data_source_(STRING),
-      data_(data),
+    : ConnectorUploadRequest(std::move(url_loader_factory),
+                             base_url,
+                             metadata,
+                             data,
+                             traffic_annotation,
+                             std::move(callback)),
       boundary_(net::GenerateMimeMultipartBoundary()),
-      callback_(std::move(callback)),
       current_backoff_(base::Seconds(kInitialBackoffSeconds)),
-      retry_count_(0),
-      url_loader_factory_(url_loader_factory),
-      traffic_annotation_(traffic_annotation) {
+      retry_count_(0) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -94,17 +93,16 @@ MultipartUploadRequest::MultipartUploadRequest(
     uint64_t file_size,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
-    : base_url_(base_url),
-      metadata_(metadata),
-      data_source_(FILE),
-      path_(path),
-      data_size_(file_size),
+    : ConnectorUploadRequest(std::move(url_loader_factory),
+                             base_url,
+                             metadata,
+                             path,
+                             file_size,
+                             traffic_annotation,
+                             std::move(callback)),
       boundary_(net::GenerateMimeMultipartBoundary()),
-      callback_(std::move(callback)),
       current_backoff_(base::Seconds(kInitialBackoffSeconds)),
-      retry_count_(0),
-      url_loader_factory_(url_loader_factory),
-      traffic_annotation_(traffic_annotation) {
+      retry_count_(0) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -115,42 +113,29 @@ MultipartUploadRequest::MultipartUploadRequest(
     base::ReadOnlySharedMemoryRegion page_region,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
-    : base_url_(base_url),
-      metadata_(metadata),
-      data_source_(PAGE),
-      page_region_(std::move(page_region)),
-      data_size_(page_region_.GetSize()),
+    : ConnectorUploadRequest(std::move(url_loader_factory),
+                             base_url,
+                             metadata,
+                             std::move(page_region),
+                             traffic_annotation,
+                             std::move(callback)),
       boundary_(net::GenerateMimeMultipartBoundary()),
-      callback_(std::move(callback)),
       current_backoff_(base::Seconds(kInitialBackoffSeconds)),
-      retry_count_(0),
-      url_loader_factory_(url_loader_factory),
-      traffic_annotation_(traffic_annotation) {
+      retry_count_(0) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-MultipartUploadRequest::~MultipartUploadRequest() {
-  // Take ownership of the file in `data_pipe_getter_` if there is one to close
-  // it on another thread since it makes blocking calls.
-  if (!data_pipe_getter_)
-    return;
-
-  auto file = data_pipe_getter_->ReleaseFile();
-  if (file) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(
-            [](std::unique_ptr<
-                ConnectorDataPipeGetter::InternalMemoryMappedFile> file) {},
-            std::move(file)));
-  }
-}
+MultipartUploadRequest::~MultipartUploadRequest() = default;
 
 void MultipartUploadRequest::Start() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   start_time_ = base::Time::Now();
   SendRequest();
+}
+
+std::string MultipartUploadRequest::GetUploadInfo() {
+  return scan_complete_ ? "Multipart - Complete" : "Multipart - Pending";
 }
 
 std::string MultipartUploadRequest::GenerateRequestBody(
@@ -174,16 +159,21 @@ void MultipartUploadRequest::SetRequestHeaders(
       data_size = data_size_;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   request->headers.SetHeader("X-Goog-Upload-Header-Content-Length",
                              base::NumberToString(data_size));
 
-  if (access_token_.empty()) {
-    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  } else {
+  if (!access_token_.empty()) {
+    LogAuthenticatedCookieResets(
+        *request, SafeBrowsingAuthenticatedEndpoint::kDeepScanning);
     SetAccessTokenAndClearCookieInResourceRequest(request, access_token_);
   }
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+}
+
+void MultipartUploadRequest::MarkScanAsCompleteForTesting() {
+  scan_complete_ = true;
 }
 
 void MultipartUploadRequest::SendRequest() {
@@ -203,7 +193,7 @@ void MultipartUploadRequest::SendRequest() {
       SendPageRequest(std::move(resource_request));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -305,6 +295,8 @@ void MultipartUploadRequest::CreateDatapipe(
 void MultipartUploadRequest::OnURLLoaderComplete(
     std::optional<std::string> response_body) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  scan_complete_ = true;
+
   int response_code = 0;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
     response_code = url_loader_->ResponseInfo()->headers->response_code();
@@ -338,10 +330,7 @@ void MultipartUploadRequest::RetryOrFinish(
 }
 
 // static
-MultipartUploadRequestFactory* MultipartUploadRequest::factory_ = nullptr;
-
-// static
-std::unique_ptr<MultipartUploadRequest>
+std::unique_ptr<ConnectorUploadRequest>
 MultipartUploadRequest::CreateStringRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
@@ -361,7 +350,7 @@ MultipartUploadRequest::CreateStringRequest(
 }
 
 // static
-std::unique_ptr<MultipartUploadRequest>
+std::unique_ptr<ConnectorUploadRequest>
 MultipartUploadRequest::CreateFileRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
@@ -376,13 +365,17 @@ MultipartUploadRequest::CreateFileRequest(
         traffic_annotation, std::move(callback));
   }
 
+  // Note that multipart uploads only handle data that is less than
+  // `kMaxUploadSizeBytes` and not encrypted.  Therefore `Result::SUCCESS` is
+  // passed as the `get_data_result` argument.
   return factory_->CreateFileRequest(url_loader_factory, base_url, metadata,
-                                     path, file_size, traffic_annotation,
+                                     BinaryUploadService::Result::SUCCESS, path,
+                                     file_size, traffic_annotation,
                                      std::move(callback));
 }
 
 // static
-std::unique_ptr<MultipartUploadRequest>
+std::unique_ptr<ConnectorUploadRequest>
 MultipartUploadRequest::CreatePageRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
@@ -397,12 +390,8 @@ MultipartUploadRequest::CreatePageRequest(
   }
 
   return factory_->CreatePageRequest(url_loader_factory, base_url, metadata,
+                                     BinaryUploadService::Result::SUCCESS,
                                      std::move(page_region), traffic_annotation,
                                      std::move(callback));
 }
-
-void MultipartUploadRequest::set_access_token(const std::string& access_token) {
-  access_token_ = access_token;
-}
-
 }  // namespace safe_browsing

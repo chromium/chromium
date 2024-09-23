@@ -141,11 +141,13 @@ keyDown('\t'); // -> 09/05/2012 12:[00] AM
 keyDown('\t'); // -> 09/05/2012 12:00 [AM]
 keyDown('P'); // -> 09/05/2012 12:00 [PM]
 shouldBeEqualToString('input.value', '2012-09-05T12:00');
+keyDown('\t'); // -> Focus drop down button.
 keyDown('\t'); // -> Focus out.
 shouldBeEqualToString('document.activeElement.id', 'after');
 
 beginTest('Shfit+Tab key', '2012-09-30T01:00');
 after.focus();
+keyDown('\t', ['shiftKey']); // -> 09/30/2012 01:00 AM [drop-down-button]
 keyDown('\t', ['shiftKey']); // -> 09/30/2012 01:00 [AM]
 keyDown('P'); // -> 09/30/2012 01:00 [PM]
 keyDown('\t', ['shiftKey']); // -> 09/30/2012 01:[00] PM

@@ -6,8 +6,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/command_line.h"
+#import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
@@ -21,12 +23,14 @@
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/credential_provider_extension/account_verification_provider.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
-#import "ios/chrome/credential_provider_extension/password_util.h"
+#import "ios/chrome/credential_provider_extension/passkey_keychain_util.h"
+#import "ios/chrome/credential_provider_extension/passkey_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
+#import "ios/chrome/credential_provider_extension/ui/saving_enterprise_disabled_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
 
 namespace {
@@ -72,7 +76,11 @@ UIColor* BackgroundColor() {
 
 @end
 
-@implementation CredentialProviderViewController
+@implementation CredentialProviderViewController {
+  // Information about a passkey credential request.
+  ASPasskeyCredentialRequestParameters* _requestParameters
+      API_AVAILABLE(ios(17.0));
+}
 
 + (void)initialize {
   if (self == [CredentialProviderViewController self]) {
@@ -122,40 +130,56 @@ UIColor* BackgroundColor() {
   self.serviceIdentifiers = serviceIdentifiers;
 }
 
-- (void)provideCredentialWithoutUserInteractionForIdentity:
-    (ASPasswordCredentialIdentity*)credentialIdentity {
-  __weak __typeof__(self) weakSelf = self;
-  [self validateUserWithCompletion:^(BOOL userIsValid) {
-    // reauthenticationModule can't attempt reauth when no password is set. This
-    // means a password shouldn't be retrieved.
-    if (!weakSelf.reauthenticationModule.canAttemptReauth || !userIsValid) {
-      [weakSelf exitWithErrorCode:ASExtensionErrorCodeUserInteractionRequired];
-      return;
-    }
-    // iOS already gates the password with device auth for
-    // -provideCredentialWithoutUserInteractionForIdentity:. Not using
-    // reauthenticationModule here to avoid a double authentication request.
-    [weakSelf provideCredentialForIdentity:credentialIdentity];
-  }];
+// Only available in iOS 17.0+.
+// The system calls this method when there’s an active passkey request in the
+// app or website.
+- (void)prepareCredentialListForServiceIdentifiers:
+            (NSArray<ASCredentialServiceIdentifier*>*)serviceIdentifiers
+                                 requestParameters:
+                                     (ASPasskeyCredentialRequestParameters*)
+                                         requestParameters
+    API_AVAILABLE(ios(17.0)) {
+  self.serviceIdentifiers = serviceIdentifiers;
+  _requestParameters = requestParameters;
 }
 
+// Deprecated in iOS 17.0+.
+// Replaced with provideCredentialWithoutUserInteractionForRequest.
+- (void)provideCredentialWithoutUserInteractionForIdentity:
+    (ASPasswordCredentialIdentity*)credentialIdentity {
+  if (@available(iOS 17.0, *)) {
+    return;
+  }
+
+  [self provideCredentialWithoutUserInteractionForIdentifier:
+            credentialIdentity.recordIdentifier];
+}
+
+// Only available in iOS 17.0+.
+- (void)provideCredentialWithoutUserInteractionForRequest:
+    (id<ASCredentialRequest>)credentialRequest API_AVAILABLE(ios(17.0)) {
+  [self provideCredentialWithoutUserInteractionForIdentifier:
+            credentialRequest.credentialIdentity.recordIdentifier];
+}
+
+// Deprecated in iOS 17.0+.
+// Replaced with prepareInterfaceToProvideCredentialForRequest.
 - (void)prepareInterfaceToProvideCredentialForIdentity:
     (ASPasswordCredentialIdentity*)credentialIdentity {
-  __weak __typeof__(self) weakSelf = self;
-  [self validateUserWithCompletion:^(BOOL userIsValid) {
-    if (!userIsValid) {
-      [weakSelf showStaleCredentials];
-      return;
-    }
-    [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
-                  ReauthenticationResult result) {
-      if (result != ReauthenticationResult::kFailure) {
-        [weakSelf provideCredentialForIdentity:credentialIdentity];
-      } else {
-        [weakSelf exitWithErrorCode:ASExtensionErrorCodeUserCanceled];
-      }
-    }];
-  }];
+  if (@available(iOS 17.0, *)) {
+    return;
+  }
+
+  [self prepareInterfaceToProvideCredentialForIdentifier:credentialIdentity
+                                                             .recordIdentifier];
+}
+
+// Only available in iOS 17.0+.
+- (void)prepareInterfaceToProvideCredentialForRequest:
+    (id<ASCredentialRequest>)credentialRequest API_AVAILABLE(ios(17.0)) {
+  [self prepareInterfaceToProvideCredentialForIdentifier:credentialRequest
+                                                             .credentialIdentity
+                                                             .recordIdentifier];
 }
 
 - (void)prepareInterfaceForExtensionConfiguration {
@@ -163,6 +187,56 @@ UIColor* BackgroundColor() {
       [[ConsentCoordinator alloc] initWithBaseViewController:self
                                    credentialResponseHandler:self];
   [self.consentCoordinator start];
+}
+
+// Only available in iOS 18.0+.
+- (void)performPasskeyRegistrationWithoutUserInteractionIfPossible:
+    (ASPasskeyCredentialRequest*)registrationRequest API_AVAILABLE(ios(18.0)) {
+  // This function is called to silently create passkeys.
+  // We're always allowed to return an error until we support this flow.
+  [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+}
+
+- (void)prepareInterfaceForPasskeyRegistration:
+    (id<ASCredentialRequest>)registrationRequest {
+  if (![registrationRequest isKindOfClass:[ASPasskeyCredentialRequest class]]) {
+    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+    return;
+  }
+
+  if (!IsPasswordCreationUserEnabled()) {
+    [self showSavingDisabledByEnterpriseAlert];
+    return;
+  }
+
+  ASPasskeyCredentialRequest* passkeyCredentialRequest =
+      base::apple::ObjCCastStrict<ASPasskeyCredentialRequest>(
+          registrationRequest);
+
+  NSArray<NSNumber*>* supportedAlgorithms =
+      [passkeyCredentialRequest.supportedAlgorithms
+          filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
+                                                       NSNumber* algorithm,
+                                                       NSDictionary* bindings) {
+            return webauthn::passkey_model_utils::IsSupportedAlgorithm(
+                algorithm.intValue);
+          }]];
+
+  if (supportedAlgorithms.count == 0) {
+    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+    return;
+  }
+
+  // TODO(crbug.com/330355124): Handle
+  // passkeyCredentialRequest.userVerificationPreference.
+  ASPasskeyCredentialIdentity* identity =
+      base::apple::ObjCCastStrict<ASPasskeyCredentialIdentity>(
+          passkeyCredentialRequest.credentialIdentity);
+
+  [self createPasskeyForClient:passkeyCredentialRequest.clientDataHash
+        relyingPartyIdentifier:identity.relyingPartyIdentifier
+                      username:identity.userName
+                    userHandle:identity.userHandle];
 }
 
 #pragma mark - Properties
@@ -216,20 +290,82 @@ UIColor* BackgroundColor() {
       presentReminderOnViewController:self];
 }
 
+- (void)provideCredentialWithoutUserInteractionForIdentifier:
+    (NSString*)identifier {
+  __weak __typeof__(self) weakSelf = self;
+  [self validateUserWithCompletion:^(BOOL userIsValid) {
+    // reauthenticationModule can't attempt reauth when no password is set. This
+    // means a password shouldn't be retrieved.
+    if (!weakSelf.reauthenticationModule.canAttemptReauth || !userIsValid) {
+      [weakSelf exitWithErrorCode:ASExtensionErrorCodeUserInteractionRequired];
+      return;
+    }
+    // iOS already gates the password with device auth for
+    // -provideCredentialWithoutUserInteractionForRequest:. Not using
+    // reauthenticationModule here to avoid a double authentication request.
+    [weakSelf provideCredentialForIdentifier:identifier];
+  }];
+}
+
+- (void)prepareInterfaceToProvideCredentialForIdentifier:(NSString*)identifier {
+  __weak __typeof__(self) weakSelf = self;
+  [self validateUserWithCompletion:^(BOOL userIsValid) {
+    if (!userIsValid) {
+      [weakSelf showStaleCredentials];
+      return;
+    }
+    [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
+                  ReauthenticationResult result) {
+      if (result != ReauthenticationResult::kFailure) {
+        [weakSelf provideCredentialForIdentifier:identifier];
+      } else {
+        [weakSelf exitWithErrorCode:ASExtensionErrorCodeUserCanceled];
+      }
+    }];
+  }];
+}
+
 // Completes the extension request providing `ASPasswordCredential` that matches
-// the `credentialIdentity` or an error if not found.
-- (void)provideCredentialForIdentity:
-    (ASPasswordCredentialIdentity*)credentialIdentity {
-  NSString* identifier = credentialIdentity.recordIdentifier;
+// the `identifier` or an error if not found.
+- (void)provideCredentialForIdentifier:(NSString*)identifier {
   id<Credential> credential =
       [self.credentialStore credentialWithRecordIdentifier:identifier];
   if (credential) {
     UpdateUMACountForKey(app_group::kCredentialExtensionQuickPasswordUseCount);
-    ASPasswordCredential* ASCredential =
-        [ASPasswordCredential credentialWithUser:credential.user
+    ASPasswordCredential* passwordCredential =
+        [ASPasswordCredential credentialWithUser:credential.username
                                         password:credential.password];
-    [self completeRequestWithSelectedCredential:ASCredential];
+    [self completeRequestWithSelectedCredential:passwordCredential];
     return;
+  }
+  [self exitWithErrorCode:ASExtensionErrorCodeCredentialIdentityNotFound];
+}
+
+- (void)provideCredentialForRequest:(id<ASCredentialRequest>)credentialRequest
+    API_AVAILABLE(ios(17.0)) {
+  NSString* identifier = credentialRequest.credentialIdentity.recordIdentifier;
+  if (credentialRequest.type == ASCredentialRequestTypePassword) {
+    [self provideCredentialForIdentifier:identifier];
+    return;
+  }
+
+  if (credentialRequest.type == ASCredentialRequestTypePasskeyAssertion) {
+    id<Credential> credential =
+        [self.credentialStore credentialWithRecordIdentifier:identifier];
+    if (credential) {
+      UpdateUMACountForKey(app_group::kCredentialExtensionQuickPasskeyUseCount);
+      ASPasskeyCredentialRequest* passkeyCredentialRequest =
+          base::apple::ObjCCastStrict<ASPasskeyCredentialRequest>(
+              credentialRequest);
+      // TODO(crbug.com/355047459): Handle
+      // passkeyCredentialRequest.userVerificationPreference.
+
+      [self userSelectedPasskey:credential
+                 clientDataHash:passkeyCredentialRequest.clientDataHash
+             allowedCredentials:nil
+                     allowRetry:YES];
+      return;
+    }
   }
   [self exitWithErrorCode:ASExtensionErrorCodeCredentialIdentityNotFound];
 }
@@ -311,6 +447,9 @@ UIColor* BackgroundColor() {
               serviceIdentifiers:serviceIdentifiers
          reauthenticationHandler:self.reauthenticationHandler
        credentialResponseHandler:self];
+  if (@available(iOS 17.0, *)) {
+    self.listCoordinator.requestParameters = _requestParameters;
+  }
   [self.listCoordinator start];
   UpdateUMACountForKey(app_group::kCredentialExtensionDisplayCount);
 }
@@ -325,6 +464,28 @@ UIColor* BackgroundColor() {
                                              completionHandler:nil];
 }
 
+// Convenience wrapper for
+// -completeAssertionRequestWithSelectedPasskeyCredential:completionHandler:.
+- (void)completeAssertionRequestWithSelectedPasskeyCredential:
+    (ASPasskeyAssertionCredential*)credential API_AVAILABLE(ios(17.0)) {
+  [self.listCoordinator stop];
+  self.listCoordinator = nil;
+  [self.extensionContext
+      completeAssertionRequestWithSelectedPasskeyCredential:credential
+                                          completionHandler:nil];
+}
+
+// Convenience wrapper for
+// -completeRegistrationRequestWithSelectedPasskeyCredential:completionHandler:.
+- (void)completeRegistrationRequestWithSelectedPasskeyCredential:
+    (ASPasskeyRegistrationCredential*)credential API_AVAILABLE(ios(17.0)) {
+  [self.listCoordinator stop];
+  self.listCoordinator = nil;
+  [self.extensionContext
+      completeRegistrationRequestWithSelectedPasskeyCredential:credential
+                                             completionHandler:nil];
+}
+
 // Convenience wrapper for -cancelRequestWithError.
 - (void)exitWithErrorCode:(ASExtensionErrorCode)errorCode {
   [self.listCoordinator stop];
@@ -333,6 +494,109 @@ UIColor* BackgroundColor() {
                                               code:errorCode
                                           userInfo:nil];
   [self.extensionContext cancelRequestWithError:error];
+}
+
+// Displays sheet with information that credential saving is disabled by the
+// enterprise policy.
+- (void)showSavingDisabledByEnterpriseAlert {
+  // TODO(crbug.com/362719658): Check whether it's possible to make the whole
+  // VC a half sheet.
+  SavingEnterpriseDisabledViewController*
+      savingEnterpriseDisabledViewController =
+          [[SavingEnterpriseDisabledViewController alloc] init];
+  savingEnterpriseDisabledViewController.actionHandler = self;
+  [self presentViewController:savingEnterpriseDisabledViewController
+                     animated:YES
+                   completion:nil];
+}
+
+// Attempts to create a passkey.
+- (void)createPasskeyForClient:(NSData*)clientDataHash
+        relyingPartyIdentifier:(NSString*)relyingPartyIdentifier
+                      username:(NSString*)username
+                    userHandle:(NSData*)userHandle
+          securityDomainSecret:(NSData*)securityDomainSecret
+    API_AVAILABLE(ios(17.0)) {
+  ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
+      PerformPasskeyCreation(clientDataHash, relyingPartyIdentifier, username,
+                             userHandle, securityDomainSecret);
+  if (passkeyRegistrationCredential) {
+    [self completeRegistrationRequestWithSelectedPasskeyCredential:
+              passkeyRegistrationCredential];
+  } else {
+    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+  }
+}
+
+// Fetches the security domain secret in order to use it in the passkey creation
+// process.
+- (void)createPasskeyForClient:(NSData*)clientDataHash
+        relyingPartyIdentifier:(NSString*)relyingPartyIdentifier
+                      username:(NSString*)username
+                    userHandle:(NSData*)userHandle API_AVAILABLE(ios(17.0)) {
+  __weak __typeof(self) weakSelf = self;
+  auto completion = ^(NSData* securityDomainSecret) {
+    [weakSelf createPasskeyForClient:clientDataHash
+              relyingPartyIdentifier:relyingPartyIdentifier
+                            username:username
+                          userHandle:userHandle
+                securityDomainSecret:securityDomainSecret];
+  };
+
+  [self fetchSecurityDomainSecretForGaia:[self gaia]
+                                 purpose:PasskeyKeychainProvider::
+                                             ReauthenticatePurpose::kEncrypt
+                              completion:completion];
+}
+
+// Attempts to perform passkey assertion and retry on failure if allowed.
+- (void)passkeyAssertionWithCredential:(id<Credential>)credential
+                        clientDataHash:(NSData*)clientDataHash
+                    allowedCredentials:(NSArray<NSData*>*)allowedCredentials
+                  securityDomainSecret:(NSData*)securityDomainSecret
+                            allowRetry:(BOOL)allowRetry
+    API_AVAILABLE(ios(17.0)) {
+  ASPasskeyAssertionCredential* passkeyCredential = PerformPasskeyAssertion(
+      credential, clientDataHash, allowedCredentials, securityDomainSecret);
+  if (passkeyCredential || !allowRetry) {
+    [self userSelectedPasskey:passkeyCredential];
+  } else {
+    // If we failed to perform the passkey assertion on the first attempt, try
+    // to mark the security domain secret vault keys as stale and retry.
+    __weak __typeof(self) weakSelf = self;
+    MarkKeysAsStale(credential.gaia, ^() {
+      [weakSelf userSelectedPasskey:credential
+                     clientDataHash:clientDataHash
+                 allowedCredentials:allowedCredentials
+                         allowRetry:NO];
+    });
+  }
+}
+
+// Returns the gaia for the account used for passkey creation.
+- (NSString*)gaia {
+  // TODO(crbug.com/355041765): Get gaia from ios keychain instead of the
+  // credential store, since that would fail if there are no synced credentials
+  // in the store.
+  NSArray<id<Credential>>* credentials = self.credentialStore.credentials;
+  NSUInteger credentialIndex =
+      [credentials indexOfObjectPassingTest:^BOOL(id<Credential> credential,
+                                                  NSUInteger idx, BOOL* stop) {
+        return credential.gaia.length > 0;
+      }];
+  return credentialIndex != NSNotFound ? credentials[credentialIndex].gaia
+                                       : nil;
+}
+
+// Fetches the security domain secret and calls the completion block with the
+// security domain secret as input.
+- (void)fetchSecurityDomainSecretForGaia:(NSString*)gaia
+                                 purpose:(PasskeyKeychainProvider::
+                                              ReauthenticatePurpose)purpose
+                              completion:(FetchKeyCompletionBlock)completion {
+  // TODO(crbug.com/355047459): Add navigation controller.
+  FetchSecurityDomainSecret(gaia, /*navigation_controller =*/nil, purpose,
+                            completion);
 }
 
 #pragma mark - SuccessfulReauthTimeAccessor
@@ -356,8 +620,36 @@ UIColor* BackgroundColor() {
 
 #pragma mark - CredentialResponseHandler
 
-- (void)userSelectedCredential:(ASPasswordCredential*)credential {
+- (void)userSelectedPassword:(ASPasswordCredential*)credential {
   [self completeRequestWithSelectedCredential:credential];
+}
+
+- (void)userSelectedPasskey:(ASPasskeyAssertionCredential*)credential
+    API_AVAILABLE(ios(17.0)) {
+  if (credential) {
+    [self completeAssertionRequestWithSelectedPasskeyCredential:credential];
+  } else {
+    [self exitWithErrorCode:ASExtensionErrorCodeCredentialIdentityNotFound];
+  }
+}
+
+- (void)userSelectedPasskey:(id<Credential>)credential
+             clientDataHash:(NSData*)clientDataHash
+         allowedCredentials:(NSArray<NSData*>*)allowedCredentials
+                 allowRetry:(BOOL)allowRetry API_AVAILABLE(ios(17.0)) {
+  __weak __typeof(self) weakSelf = self;
+  auto completion = ^(NSData* securityDomainSecret) {
+    [weakSelf passkeyAssertionWithCredential:credential
+                              clientDataHash:clientDataHash
+                          allowedCredentials:allowedCredentials
+                        securityDomainSecret:securityDomainSecret
+                                  allowRetry:allowRetry];
+  };
+
+  [self fetchSecurityDomainSecretForGaia:credential.gaia
+                                 purpose:PasskeyKeychainProvider::
+                                             ReauthenticatePurpose::kDecrypt
+                              completion:completion];
 }
 
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode {

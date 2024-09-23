@@ -10,6 +10,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_proto_loader.h"
+#include "base/trace_event/named_trigger.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -222,8 +223,11 @@ class TracingScenarioForTesting : public TracingScenario {
  public:
   TracingScenarioForTesting(const perfetto::protos::gen::ScenarioConfig& config,
                             TestTracingScenarioDelegate* delegate)
-      : TracingScenario(config, delegate) {
-    EXPECT_TRUE(Initialize(config, false, false));
+      : TracingScenario(config,
+                        delegate,
+                        /*enable_privacy_filter=*/false,
+                        /*request_startup_tracing=*/true) {
+    EXPECT_TRUE(Initialize(config, false));
   }
 
  protected:
@@ -321,15 +325,9 @@ TEST_F(TracingScenarioTest, Disabled) {
 
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario)).Times(0);
 
-  EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-          "setup_trigger"));
-  EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-          "start_trigger"));
-  EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-          "nested_start_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("setup_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("start_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
 
   tracing_scenario.Enable();
   EXPECT_EQ(TracingScenario::State::kEnabled, tracing_scenario.current_state());
@@ -337,15 +335,9 @@ TEST_F(TracingScenarioTest, Disabled) {
   EXPECT_EQ(TracingScenario::State::kDisabled,
             tracing_scenario.current_state());
 
-  EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-          "setup_trigger"));
-  EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-          "start_trigger"));
-  EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-          "nested_start_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("setup_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("start_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
 }
 
 TEST_F(TracingScenarioTest, StartStop) {
@@ -356,8 +348,7 @@ TEST_F(TracingScenarioTest, StartStop) {
   EXPECT_EQ(TracingScenario::State::kEnabled, tracing_scenario.current_state());
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
 
   base::RunLoop run_loop;
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
@@ -366,8 +357,7 @@ TEST_F(TracingScenarioTest, StartStop) {
         return true;
       });
 
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "stop_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("stop_trigger"));
   run_loop.Run();
   EXPECT_EQ(TracingScenario::State::kDisabled,
             tracing_scenario.current_state());
@@ -381,16 +371,11 @@ TEST_F(TracingScenarioTest, NestedStartStop) {
   EXPECT_EQ(TracingScenario::State::kEnabled, tracing_scenario.current_state());
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "start_trigger"));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "nested_start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
 
-  EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-          "stop_trigger"));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "nested_stop_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("stop_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_stop_trigger"));
 
   base::RunLoop run_loop;
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
@@ -399,8 +384,7 @@ TEST_F(TracingScenarioTest, NestedStartStop) {
         return true;
       });
 
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "stop_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("stop_trigger"));
   run_loop.Run();
   EXPECT_EQ(TracingScenario::State::kDisabled,
             tracing_scenario.current_state());
@@ -423,8 +407,7 @@ TEST_F(TracingScenarioTest, StartFail) {
   EXPECT_EQ(TracingScenario::State::kEnabled, tracing_scenario.current_state());
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
 
   base::RunLoop run_loop;
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
@@ -436,9 +419,7 @@ TEST_F(TracingScenarioTest, StartFail) {
   run_loop.Run();
   EXPECT_EQ(TracingScenario::State::kDisabled,
             tracing_scenario.current_state());
-  EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-          "stop_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("stop_trigger"));
 }
 
 TEST_F(TracingScenarioTest, SpuriousStop) {
@@ -458,8 +439,7 @@ TEST_F(TracingScenarioTest, SpuriousStop) {
   EXPECT_EQ(TracingScenario::State::kEnabled, tracing_scenario.current_state());
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
 
   base::RunLoop run_loop;
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
@@ -471,9 +451,7 @@ TEST_F(TracingScenarioTest, SpuriousStop) {
   run_loop.Run();
   EXPECT_EQ(TracingScenario::State::kDisabled,
             tracing_scenario.current_state());
-  EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-          "stop_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("stop_trigger"));
 }
 
 TEST_F(TracingScenarioTest, SetupStop) {
@@ -483,8 +461,7 @@ TEST_F(TracingScenarioTest, SetupStop) {
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "setup_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("setup_trigger"));
   EXPECT_EQ(TracingScenario::State::kSetup, tracing_scenario.current_state());
 
   base::RunLoop run_loop;
@@ -494,8 +471,7 @@ TEST_F(TracingScenarioTest, SetupStop) {
         return true;
       });
 
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "stop_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("stop_trigger"));
   run_loop.Run();
   EXPECT_EQ(TracingScenario::State::kDisabled,
             tracing_scenario.current_state());
@@ -508,8 +484,7 @@ TEST_F(TracingScenarioTest, SetupUpload) {
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "setup_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("setup_trigger"));
   EXPECT_EQ(TracingScenario::State::kSetup, tracing_scenario.current_state());
 
   base::Token trace_uuid = tracing_scenario.GetSessionID();
@@ -521,8 +496,7 @@ TEST_F(TracingScenarioTest, SetupUpload) {
         return true;
       });
 
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "upload_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("upload_trigger"));
   run_loop.Run();
   EXPECT_EQ(TracingScenario::State::kDisabled,
             tracing_scenario.current_state());
@@ -535,13 +509,11 @@ TEST_F(TracingScenarioTest, SetupStartStop) {
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "setup_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("setup_trigger"));
   EXPECT_EQ(TracingScenario::State::kSetup, tracing_scenario.current_state());
 
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario)).Times(0);
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
   EXPECT_EQ(TracingScenario::State::kRecording,
             tracing_scenario.current_state());
 
@@ -552,8 +524,7 @@ TEST_F(TracingScenarioTest, SetupStartStop) {
         return true;
       });
 
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "stop_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("stop_trigger"));
   run_loop.Run();
   EXPECT_EQ(TracingScenario::State::kDisabled,
             tracing_scenario.current_state());
@@ -566,24 +537,18 @@ TEST_F(TracingScenarioTest, SetupNestedStartStop) {
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "setup_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("setup_trigger"));
   EXPECT_EQ(TracingScenario::State::kSetup, tracing_scenario.current_state());
 
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario)).Times(0);
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "nested_start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
   EXPECT_EQ(TracingScenario::State::kRecording,
             tracing_scenario.current_state());
   EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-          "other_nested_start_trigger"));
-  EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-          "stop_trigger"));
+      base::trace_event::EmitNamedTrigger("other_nested_start_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("stop_trigger"));
 
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "nested_stop_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_stop_trigger"));
 
   base::RunLoop run_loop;
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
@@ -591,8 +556,7 @@ TEST_F(TracingScenarioTest, SetupNestedStartStop) {
         run_loop.Quit();
         return true;
       });
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "stop_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("stop_trigger"));
   run_loop.Run();
   EXPECT_EQ(TracingScenario::State::kDisabled,
             tracing_scenario.current_state());
@@ -605,8 +569,7 @@ TEST_F(TracingScenarioTest, Abort) {
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
   EXPECT_EQ(TracingScenario::State::kRecording,
             tracing_scenario.current_state());
 
@@ -621,9 +584,7 @@ TEST_F(TracingScenarioTest, Abort) {
   run_loop.Run();
   EXPECT_EQ(TracingScenario::State::kDisabled,
             tracing_scenario.current_state());
-  EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-          "stop_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("stop_trigger"));
 }
 
 TEST_F(TracingScenarioTest, Upload) {
@@ -633,8 +594,7 @@ TEST_F(TracingScenarioTest, Upload) {
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
 
   base::Token trace_uuid = tracing_scenario.GetSessionID();
   base::RunLoop run_loop;
@@ -644,8 +604,7 @@ TEST_F(TracingScenarioTest, Upload) {
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
       .WillOnce(testing::Return(true));
 
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "upload_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("upload_trigger"));
 
   run_loop.Run();
   EXPECT_EQ(TracingScenario::State::kDisabled,
@@ -659,8 +618,7 @@ TEST_F(TracingScenarioTest, StopUpload) {
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
 
   base::Token trace_uuid = tracing_scenario.GetSessionID();
   base::RunLoop run_loop;
@@ -670,10 +628,8 @@ TEST_F(TracingScenarioTest, StopUpload) {
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
       .WillOnce(testing::Return(true));
 
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "stop_trigger"));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "upload_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("stop_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("upload_trigger"));
 
   run_loop.Run();
   EXPECT_EQ(TracingScenario::State::kDisabled,
@@ -687,10 +643,8 @@ TEST_F(TracingScenarioTest, NestedUpload) {
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "start_trigger"));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "nested_start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
 
   base::Token trace_uuid = tracing_scenario.GetSessionID();
   base::RunLoop run_loop;
@@ -700,8 +654,7 @@ TEST_F(TracingScenarioTest, NestedUpload) {
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
       .WillOnce(testing::Return(true));
 
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "nested_upload_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_upload_trigger"));
 
   run_loop.Run();
   EXPECT_EQ(TracingScenario::State::kDisabled,
@@ -714,9 +667,7 @@ TEST_F(NestedTracingScenarioTest, Disabled) {
 
   EXPECT_CALL(delegate, OnNestedScenarioStart(&tracing_scenario)).Times(0);
 
-  EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-          "start_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("start_trigger"));
 
   tracing_scenario.Enable();
   EXPECT_EQ(NestedTracingScenario::State::kEnabled,
@@ -725,9 +676,7 @@ TEST_F(NestedTracingScenarioTest, Disabled) {
   EXPECT_EQ(NestedTracingScenario::State::kDisabled,
             tracing_scenario.current_state());
 
-  EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-          "start_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("start_trigger"));
 }
 
 TEST_F(NestedTracingScenarioTest, StartStop) {
@@ -738,12 +687,10 @@ TEST_F(NestedTracingScenarioTest, StartStop) {
   EXPECT_EQ(NestedTracingScenario::State::kEnabled,
             tracing_scenario.current_state());
   EXPECT_CALL(delegate, OnNestedScenarioStart(&tracing_scenario)).Times(1);
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
 
   EXPECT_CALL(delegate, OnNestedScenarioStop(&tracing_scenario)).Times(1);
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "stop_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("stop_trigger"));
   EXPECT_EQ(NestedTracingScenario::State::kStopping,
             tracing_scenario.current_state());
   tracing_scenario.Disable();
@@ -757,12 +704,10 @@ TEST_F(NestedTracingScenarioTest, Upload) {
 
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnNestedScenarioStart(&tracing_scenario)).Times(1);
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
 
   EXPECT_CALL(delegate, OnNestedScenarioUpload(&tracing_scenario, _)).Times(1);
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "upload_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("upload_trigger"));
 
   EXPECT_EQ(NestedTracingScenario::State::kDisabled,
             tracing_scenario.current_state());
@@ -774,18 +719,15 @@ TEST_F(NestedTracingScenarioTest, StopUpload) {
 
   tracing_scenario.Enable();
   EXPECT_CALL(delegate, OnNestedScenarioStart(&tracing_scenario)).Times(1);
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "start_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("start_trigger"));
 
   base::RunLoop run_loop;
   EXPECT_CALL(delegate, OnNestedScenarioUpload(&tracing_scenario, _))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   EXPECT_CALL(delegate, OnNestedScenarioStop(&tracing_scenario)).Times(1);
 
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "stop_trigger"));
-  EXPECT_TRUE(content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
-      "upload_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("stop_trigger"));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("upload_trigger"));
 
   run_loop.Run();
   EXPECT_EQ(NestedTracingScenario::State::kDisabled,

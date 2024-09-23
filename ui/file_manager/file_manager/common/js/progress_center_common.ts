@@ -202,6 +202,6 @@ export class ProgressCenterItem {
   /** Clones the item. */
   clone(): ProgressCenterItem {
     const clonedItem = Object.assign(new ProgressCenterItem(), this);
-    return /** @type {!ProgressCenterItem} */ (clonedItem);
+    return clonedItem;
   }
 }

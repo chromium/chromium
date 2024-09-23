@@ -74,7 +74,7 @@ class SQLitePersistentStoreBackendBase
   // will be opened with exclusive flag.
   SQLitePersistentStoreBackendBase(
       const base::FilePath& path,
-      std::string histogram_tag,
+      const std::string& histogram_tag,
       const int current_version_number,
       const int compatible_version_number,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,

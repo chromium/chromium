@@ -15,4 +15,15 @@ WebAppInstallParams::~WebAppInstallParams() = default;
 
 WebAppInstallParams::WebAppInstallParams(const WebAppInstallParams&) = default;
 
+std::ostream& operator<<(std::ostream& os, FallbackBehavior state) {
+  switch (state) {
+    case FallbackBehavior::kCraftedManifestOnly:
+      return os << "kCraftedManifestOnly";
+    case FallbackBehavior::kUseFallbackInfoWhenNotInstallable:
+      return os << "kUseFallbackInfoWhenNotInstallable";
+    case FallbackBehavior::kAllowFallbackDataAlways:
+      return os << "kAllowFallbackDataAlways";
+  }
+}
+
 }  // namespace web_app

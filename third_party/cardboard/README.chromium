@@ -1,7 +1,8 @@
 Name: Cardboard SDK
 Short Name: cardboard
 URL: https://github.com/googlevr/cardboard
-Version: 1.23.0
+Version: 1.25.0
+Revision: 596352df971aacede278a50f55ff1fecc4e81afc
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
@@ -16,3 +17,6 @@ Local Modifications:
 * Created local proguard-rules.pro to create more scoped proto-specific rules
 * Created local override for LoadJClass in jni_utils to leaverage //base JNI loading due to splits.
 * Created local configuration header file with the OpenGL ES 2.0 binding customization required by setting the CARDBOARD_USE_CUSTOM_GL_BINDINGS buildflag.
+* Created local override in sdk/sensors/android gyroscope and accelerometer classes, to use
+  ALooper_pollOnce instead of ALooper_pollAll. This should be removed once the Cardboard SDK is
+  upgraded to version v1.26.0 (b/354725659).

@@ -1,0 +1,33 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='start'
+++IA2_ROLE_SECTION auto-generated:true auto-generated:true
+++++ROLE_SYSTEM_STATICTEXT name='text with '
+++++IA2_ROLE_TEXT_FRAME auto-generated:true auto-generated:true
+++++++ROLE_SYSTEM_STATICTEXT name='[' auto-generated:true
+++++++ROLE_SYSTEM_STATICTEXT name=':before'
+++++++ROLE_SYSTEM_STATICTEXT name=']' auto-generated:true
+++++ROLE_SYSTEM_STATICTEXT name=' and '
+++++IA2_ROLE_TEXT_FRAME auto-generated:true auto-generated:true
+++++++ROLE_SYSTEM_STATICTEXT name='[' auto-generated:true
+++++++ROLE_SYSTEM_STATICTEXT name=':after'
+++++++ROLE_SYSTEM_STATICTEXT name=']' auto-generated:true
+++++ROLE_SYSTEM_STATICTEXT name=' content, then a'
+++++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='bold'
+++++ROLE_SYSTEM_STATICTEXT name=' element with a '
+++++IA2_ROLE_TEXT_FRAME auto-generated:true auto-generated:true
+++++++ROLE_SYSTEM_STATICTEXT name='[' auto-generated:true
+++++++ROLE_SYSTEM_STATICTEXT name='block'
+++++++ROLE_SYSTEM_STATICTEXT name=']' auto-generated:true
+++++ROLE_SYSTEM_STATICTEXT name=' before content then a '
+++++ROLE_SYSTEM_STATICTEXT name='italic'
+++++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='element with a '
+++++IA2_ROLE_TEXT_FRAME auto-generated:true auto-generated:true
+++++++ROLE_SYSTEM_STATICTEXT name='[' auto-generated:true
+++++++ROLE_SYSTEM_STATICTEXT name='block'
+++++++ROLE_SYSTEM_STATICTEXT name=']' auto-generated:true
+++++ROLE_SYSTEM_STATICTEXT name=' after content'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='end'

@@ -9,7 +9,7 @@
 
 #include "content/public/browser/browser_context.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace ash {
 
@@ -25,7 +25,7 @@ class AXMediaApp {
   virtual void AccessibilityEnabledChanged(bool enabled) = 0;
   virtual content::BrowserContext* GetBrowserContext() const = 0;
   virtual SkBitmap RequestBitmap(const std::string& page_id) = 0;
-  virtual void SetViewport(const gfx::Insets& viewport_box) = 0;
+  virtual void SetViewport(const gfx::RectF& viewport_box) = 0;
 
  protected:
   AXMediaApp() = default;

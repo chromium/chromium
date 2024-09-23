@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -42,7 +42,7 @@ class TestDocumentLoader : public DocumentLoader {
 
  private:
   const raw_ptr<Client> client_;
-  std::string pdf_data_;
+  const std::vector<uint8_t> pdf_data_;
 
   // Not using ChunkStream, for more fine-grained control over request size.
   uint32_t received_bytes_ = 0;

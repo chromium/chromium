@@ -1,0 +1,46 @@
+# proto-file: //chrome/browser/extensions/cws_item_service.proto"
+# proto-message: extensions.FetchItemSnippetResponse
+
+item_id: "app_with_bad_required_platform_version"
+
+manifest:
+  '{'
+  '  "name": "__MSG_appName__",'
+  '  "version": "1",'
+  '  "manifest_version": 2,'
+  '  "description": "__MSG_appDesc__",'
+  '  "default_locale": "en",'
+  '  "app": {'
+  '    "background": {'
+  '      "scripts": ['
+  '        "background.js"'
+  '      ]'
+  '    },'
+  '    "launch": {'
+  '      "local_path": "index.html"'
+  '    }'
+  '  },'
+  '  "icons": {'
+  '    "16": "favicon.png",'
+  '    "128": "128.png"'
+  '  },'
+  '  "kiosk_enabled": true,'
+  '  "kiosk": {'
+  '    "required_platform_version": "bad"'
+  '  },'
+  '  "permissions": []'
+  '}'
+
+title: "App with bad required platform version"
+
+summary: "Description of app with bad required_platform_version"
+
+logo_uri: "webstore/itemsnippet/icons/app_1_green16x16.png"
+
+user_count_string: "1234"
+
+rating_count: 999
+
+average_rating: 1
+
+rating_count_string: "999"

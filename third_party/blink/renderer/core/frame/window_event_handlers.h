@@ -51,7 +51,6 @@ class WindowEventHandlers {
   DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(pagehide, kPagehide)
   DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(pageshow, kPageshow)
   DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(popstate, kPopstate)
-  DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(portalactivate, kPortalactivate)
   DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(rejectionhandled, kRejectionhandled)
   DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(storage, kStorage)
   DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(timezonechange, kTimezonechange)

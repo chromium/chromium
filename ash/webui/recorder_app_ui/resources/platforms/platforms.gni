@@ -1,0 +1,21 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO(pihsun): This currently contains dev files to the release build since
+# build_webui don't expose the toggle to have dev files compiled but not
+# include in the bundle. Reconsider this when we eventually have an "expert
+# mode" to toggle different platform implementation on DUT.
+platform_files = [
+  "dev/error-view.ts",
+  "dev/handler.ts",
+  "dev/metrics.ts",
+  "dev/settings.ts",
+  "dev/strings.ts",
+  "index.ts",
+  "swa/handler.ts",
+  "swa/metrics.ts",
+  "swa/on_device_model.ts",
+  "swa/soda_session.ts",
+  "swa/types.ts",
+]

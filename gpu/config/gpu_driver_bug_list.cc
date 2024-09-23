@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/config/gpu_driver_bug_list.h"
 
 #include "base/check_op.h"
@@ -34,8 +39,7 @@ GpuDriverBugList::~GpuDriverBugList() = default;
 
 // static
 std::unique_ptr<GpuDriverBugList> GpuDriverBugList::Create() {
-  return Create(
-      base::make_span(kGpuDriverBugListEntries, kGpuDriverBugListEntryCount));
+  return Create(kGpuDriverBugListEntries);
 }
 
 // static
@@ -109,7 +113,7 @@ void GpuDriverBugList::AppendAllWorkarounds(
 bool GpuDriverBugList::AreEntryIndicesValid(
     const std::vector<uint32_t>& entry_indices) {
   return GpuControlList::AreEntryIndicesValid(entry_indices,
-                                              kGpuDriverBugListEntryCount);
+                                              kGpuDriverBugListEntries.size());
 }
 
 }  // namespace gpu

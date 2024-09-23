@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
@@ -19,8 +18,7 @@ namespace ash {
 
 // Tracks the state associated with a single attempt to log in to chromium OS.
 // Enforces that methods are only called on the UI thread.
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthAttemptState
-    : public base::SupportsWeakPtr<AuthAttemptState> {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthAttemptState {
  public:
   // Used to initialize for a login attempt.
   explicit AuthAttemptState(std::unique_ptr<UserContext> user_context);

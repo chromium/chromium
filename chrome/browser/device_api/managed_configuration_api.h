@@ -33,7 +33,7 @@ class ManagedConfigurationAPI : public KeyedService {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnManagedConfigurationChanged() = 0;
-    virtual const url::Origin& GetOrigin() = 0;
+    virtual const url::Origin& GetOrigin() const = 0;
   };
 
   static const char kOriginKey[];

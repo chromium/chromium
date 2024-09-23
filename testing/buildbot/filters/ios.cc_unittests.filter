@@ -1,7 +1,7 @@
-# TODO(crbug.com/1507079): Delete lines from this file as these test failures
+# TODO(crbug.com/40947766): Delete lines from this file as these test failures
 # are addressed.
 
-# TODO(crbug.com/1506550): The expected results appear quite clipped.
+# TODO(crbug.com/40947216): The expected results appear quite clipped.
 -All/LayerTreeHostMaskAsBlendingPixelTest.RotatedClippedCircle/SkiaGL_ZeroCopy_0
 -All/LayerTreeHostMaskAsBlendingPixelTest.RotatedClippedCircle/SkiaGL_ZeroCopy_1
 -All/LayerTreeHostMaskAsBlendingPixelTest.RotatedClippedCircle/SkiaGL_ZeroCopy_2

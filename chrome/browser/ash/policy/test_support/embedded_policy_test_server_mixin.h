@@ -5,18 +5,22 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_TEST_SUPPORT_EMBEDDED_POLICY_TEST_SERVER_MIXIN_H_
 #define CHROME_BROWSER_ASH_POLICY_TEST_SUPPORT_EMBEDDED_POLICY_TEST_SERVER_MIXIN_H_
 
+#include <cstdint>
 #include <initializer_list>
 #include <memory>
 #include <string>
 
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+
+class AccountId;
 
 namespace policy {
 class EmbeddedPolicyTestServer;
@@ -37,7 +41,12 @@ class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
     ENABLE_CANNED_SIGNING_KEYS,
     // Enables the automatic rotation of the policy signing keys with each
     // policy fetch request.
-    ENABLE_AUTOMATIC_ROTATION_OF_SIGNINGKEYS
+    ENABLE_AUTOMATIC_ROTATION_OF_SIGNINGKEYS,
+    // By default all users are considered managed by the server. If tests need
+    // to handle both managed and unmanaged users, this capability would prevent
+    // marking all users as managed, tests would need to indicate management
+    // status separately.
+    PER_USER_MANAGEMENT_STATUS
   };
 
   explicit EmbeddedPolicyTestServerMixin(
@@ -111,6 +120,15 @@ class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
   // Sets which types of licenses are possible to use for enrollment.
   void SetAvailableLicenses(bool has_enterpise_license, bool has_kiosk_license);
 
+  // Sets market segment for the device, this information is provided via policy
+  // metadata.
+  void SetMarketSegment(
+      enterprise_management::PolicyData::MarketSegment segment);
+  // Sets metric segment for the user, this information is provided via policy
+  // metadata.
+  void SetMetricsLogSegment(
+      enterprise_management::PolicyData::MetricsLogSegment segment);
+
   // Configures server to expect these PSM (private set membership) execution
   // values (i.e. `psm_execution_result` and `psm_determination_timestamp`) as
   // part of DeviceRegisterRequest. Note: `device_brand_code` and
@@ -150,6 +168,11 @@ class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
   // zero-touch enrollment.
   void ConfigureFakeStatisticsForZeroTouch(
       system::ScopedFakeStatisticsProvider* provider);
+
+  // Methods used in conjunction with PER_USER_MANAGEMENT_STATUS capability.
+  // Allow to mark individual/all users as managed.
+  void MarkUserAsManaged(const AccountId& account_id);
+  void MarkAllUsersAsManaged();
 
  private:
   std::unique_ptr<policy::EmbeddedPolicyTestServer> policy_test_server_;

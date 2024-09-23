@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/android/build_info.h"
-#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/viz/common/features.h"
@@ -182,15 +181,6 @@ ScopedAppGLStateRestoreImpl::ScopedAppGLStateRestoreImpl(
 }
 
 void ScopedAppGLStateRestoreImpl::SaveHWUIState(bool save_restore) {
-  base::ScopedClosureRunner uma_runner(base::BindOnce(
-      [](base::TimeTicks start_time) {
-        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-            "Android.WebView.Gfx.SaveHWUIStateNonANGLEMicroseconds",
-            base::TimeTicks::Now() - start_time, base::Microseconds(1),
-            base::Seconds(1), 100);
-      },
-      base::TimeTicks::Now()));
-
   if (g_supports_arm_shader_framebuffer_fetch)
     glGetBooleanv(GL_FETCH_PER_SAMPLE_ARM, &fetch_per_sample_arm_enabled_);
 

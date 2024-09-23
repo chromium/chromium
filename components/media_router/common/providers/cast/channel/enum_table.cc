@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
 
 #include <cstdlib>
+#include <string_view>
 
 namespace cast_util {
 
@@ -20,7 +26,7 @@ static_assert(sizeof(GenericEnumTableEntry) == 16,
 const GenericEnumTableEntry* GenericEnumTableEntry::FindByString(
     const GenericEnumTableEntry data[],
     std::size_t size,
-    base::StringPiece str) {
+    std::string_view str) {
   for (std::size_t i = 0; i < size; i++) {
     if (data[i].length == str.length() &&
         std::memcmp(data[i].chars, str.data(), str.length()) == 0)
@@ -30,7 +36,7 @@ const GenericEnumTableEntry* GenericEnumTableEntry::FindByString(
 }
 
 // static
-std::optional<base::StringPiece> GenericEnumTableEntry::FindByValue(
+std::optional<std::string_view> GenericEnumTableEntry::FindByValue(
     const GenericEnumTableEntry data[],
     std::size_t size,
     int value) {

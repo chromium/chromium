@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/night_light/night_light_metrics_recorder.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "ash/system/time/time_of_day.h"
 #include "base/containers/flat_map.h"
@@ -20,6 +20,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/aura/env_observer.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -44,7 +45,7 @@ class ColorTemperatureAnimation;
 // display).
 class ASH_EXPORT NightLightControllerImpl
     : public NightLightController,
-      public WindowTreeHostManager::Observer,
+      public display::DisplayManagerObserver,
       public aura::EnvObserver,
       public message_center::NotificationObserver,
       public ScheduledFeature {
@@ -113,8 +114,8 @@ class ASH_EXPORT NightLightControllerImpl
   // AnimationDurationType::kShort.
   void Toggle();
 
-  // ash::WindowTreeHostManager::Observer:
-  void OnDisplayConfigurationChanged() override;
+  // ui::display::DisplayManagerObserver:
+  void OnDidApplyDisplayChanges() override;
 
   // aura::EnvObserver:
   void OnHostInitialized(aura::WindowTreeHost* host) override;
@@ -188,6 +189,8 @@ class ASH_EXPORT NightLightControllerImpl
 
   std::unique_ptr<ColorTemperatureAnimation> temperature_animation_;
 
+  std::unique_ptr<NightLightMetricsRecorder> night_light_metrics_recorder_;
+
   // True only until Night Light is initialized from the very first user
   // session. After that, it is set to false.
   bool is_first_user_init_ = true;
@@ -203,7 +206,7 @@ class ASH_EXPORT NightLightControllerImpl
 
   // Night light state in the last call to `RefreshFeatureState()`. `nullopt`
   // if no call has been made yet.
-  absl::optional<bool> last_observed_enabled_state_;
+  std::optional<bool> last_observed_enabled_state_;
 
   base::WeakPtrFactory<NightLightControllerImpl> weak_ptr_factory_;
 };

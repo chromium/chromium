@@ -7,11 +7,12 @@
 #include <lib/async/default.h>
 #include <lib/vfs/cpp/pseudo_dir.h>
 #include <lib/vfs/cpp/service.h>
+
+#include <string_view>
 #include <utility>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -21,7 +22,8 @@ FilteredServiceDirectory::FilteredServiceDirectory(
 
 FilteredServiceDirectory::~FilteredServiceDirectory() = default;
 
-zx_status_t FilteredServiceDirectory::AddService(StringPiece service_name) {
+zx_status_t FilteredServiceDirectory::AddService(
+    std::string_view service_name) {
   return outgoing_directory_.AddPublicService(
       std::make_unique<vfs::Service>(
           [this, service_name = std::string(service_name)](

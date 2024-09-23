@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capture/video/apple/video_capture_device_factory_apple.h"
 
 #include <stddef.h>
@@ -25,6 +30,7 @@
 #import <IOKit/audio/IOAudioTypes.h>
 
 #import "media/capture/video/mac/video_capture_device_decklink_mac.h"
+#import "media/capture/video/mac/video_capture_metrics_mac.h"
 #endif
 
 namespace {
@@ -121,6 +127,9 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryApple::CreateDevice(
 
   if (capture_device) {
     LogCaptureDeviceHashedModelId(descriptor);
+#if BUILDFLAG(IS_MAC)
+    LogReactionEffectsGesturesState();
+#endif
   }
 
   return capture_device ? VideoCaptureErrorOrDevice(std::move(capture_device))

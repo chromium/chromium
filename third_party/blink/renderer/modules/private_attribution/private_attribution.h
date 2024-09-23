@@ -5,13 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PRIVATE_ATTRIBUTION_PRIVATE_ATTRIBUTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PRIVATE_ATTRIBUTION_PRIVATE_ATTRIBUTION_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
 class ExceptionState;
+class PrivateAttributionEncryptedMatchKey;
+class PrivateAttributionNetwork;
 class PrivateAttributionOptions;
-class ScriptPromise;
 class ScriptState;
 
 // Interoperable Private Attribution (IPA) is a new web platform API for
@@ -35,13 +41,14 @@ class PrivateAttribution final : public ScriptWrappable {
   explicit PrivateAttribution();
   ~PrivateAttribution() final = default;
 
-  static ScriptPromise getEncryptedMatchKey(ScriptState*,
-                                            String report_collector,
-                                            PrivateAttributionOptions* options,
-                                            ExceptionState& exception_state);
+  static ScriptPromise<PrivateAttributionEncryptedMatchKey>
+  getEncryptedMatchKey(ScriptState*,
+                       WTF::String report_collector,
+                       PrivateAttributionOptions* options,
+                       ExceptionState& exception_state);
 
-  static ScriptPromise getHelperNetworks(ScriptState*,
-                                         ExceptionState& exception_state);
+  static ScriptPromise<IDLSequence<PrivateAttributionNetwork>>
+  getHelperNetworks(ScriptState*, ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
 };

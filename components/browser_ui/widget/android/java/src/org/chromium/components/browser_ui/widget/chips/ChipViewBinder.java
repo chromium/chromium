@@ -42,12 +42,13 @@ public class ChipViewBinder {
         } else if (ChipProperties.ID == key) {
             // Intentional noop.
 
+        } else if (ChipProperties.PRIMARY_TEXT_APPEARANCE == key) {
+            chip.getPrimaryTextView()
+                    .setTextAppearance(model.get(ChipProperties.PRIMARY_TEXT_APPEARANCE));
         } else if (ChipProperties.SELECTED == key) {
             chip.setSelected(model.get(ChipProperties.SELECTED));
-
         } else if (ChipProperties.TEXT == key) {
             chip.getPrimaryTextView().setText(model.get(ChipProperties.TEXT));
-
         } else if (ChipProperties.TEXT_MAX_WIDTH_PX == key) {
             int widthPx = model.get(ChipProperties.TEXT_MAX_WIDTH_PX);
             if (widthPx == ChipProperties.SHOW_WHOLE_TEXT) {

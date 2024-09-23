@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/views/buildflags.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/views_delegate.h"
@@ -68,9 +69,8 @@ TEST_F(BubbleDialogDelegateViewInteractiveTest,
   View* anchor_view = anchor_widget->GetContentsView();
   anchor_widget->LayoutRootViewIfNecessary();
 
-  test::WidgetActivationWaiter waiter(anchor_widget.get(), true);
   anchor_widget->Show();
-  waiter.Wait();
+  test::WaitForWidgetActive(anchor_widget.get(), true);
   EXPECT_TRUE(anchor_widget->IsActive());
   EXPECT_TRUE(anchor_widget->GetNativeWindow()->HasFocus());
 
@@ -84,7 +84,7 @@ TEST_F(BubbleDialogDelegateViewInteractiveTest,
   EXPECT_FALSE(anchor_widget->IsActive());
   EXPECT_TRUE(bubble_widget->IsActive());
 
-  // TODO(crbug.com/1213139): We are not checking anchor_widget's
+  // TODO(crbug.com/40183517): We are not checking anchor_widget's
   // aura::Window because it might not get focus. This happens in test
   // suites that don't use FocusController on NativeWidgetAura.
 

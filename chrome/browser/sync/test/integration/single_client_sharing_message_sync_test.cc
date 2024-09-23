@@ -9,12 +9,12 @@
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/sharing/features.h"
-#include "chrome/browser/sharing/sharing_message_bridge.h"
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/sharing_message/features.h"
+#include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sync/service/sync_token_status.h"
 #include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
@@ -102,7 +102,7 @@ class SharingMessageEqualityChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting server side SHARING_MESSAGE to match expected.";
     std::vector<sync_pb::SyncEntity> entities =
-        fake_server_->GetSyncEntitiesByModelType(syncer::SHARING_MESSAGE);
+        fake_server_->GetSyncEntitiesByDataType(syncer::SHARING_MESSAGE);
 
     // |entities.size()| is only going to grow, if |entities.size()| ever
     // becomes bigger then all hope is lost of passing, stop now.
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest, ShouldSubmit) {
       GetSyncService(0), sync_pb::SharingMessageCommitError::NONE);
 
   ASSERT_EQ(0u, GetFakeServer()
-                    ->GetSyncEntitiesByModelType(syncer::SHARING_MESSAGE)
+                    ->GetSyncEntitiesByDataType(syncer::SHARING_MESSAGE)
                     .size());
 
   SharingMessageBridge* sharing_message_bridge =
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
 
   EXPECT_TRUE(callback_checker.Wait());
   EXPECT_TRUE(GetFakeServer()
-                  ->GetSyncEntitiesByModelType(syncer::SHARING_MESSAGE)
+                  ->GetSyncEntitiesByDataType(syncer::SHARING_MESSAGE)
                   .empty());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

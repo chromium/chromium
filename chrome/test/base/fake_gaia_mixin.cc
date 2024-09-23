@@ -6,15 +6,11 @@
 
 #include "base/command_line.h"
 #include "build/chromeos_buildflags.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "chrome/test/supervised_user/child_account_test_utils.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/test/embedded_test_server/http_response.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/test/supervised_user/child_account_test_utils.h"
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace {
 
@@ -35,8 +31,10 @@ const int FakeGaiaMixin::kFakeAccessTokenExpiration = 3600;
 const char FakeGaiaMixin::kFakeSIDCookie[] = "fake-SID-cookie";
 const char FakeGaiaMixin::kFakeLSIDCookie[] = "fake-LSID-cookie";
 
-const char FakeGaiaMixin::kEnterpriseUser1[] = "user-1@example.com";
+// LINT.IfChange
+const char FakeGaiaMixin::kEnterpriseUser1[] = "username@example.com";
 const char FakeGaiaMixin::kEnterpriseUser1GaiaId[] = "0000111111";
+// LINT.ThenChange(/components/policy/core/common/cloud/test/policy_builder.cc)
 const char FakeGaiaMixin::kEnterpriseUser2[] = "user-2@example.com";
 const char FakeGaiaMixin::kEnterpriseUser2GaiaId[] = "0000222222";
 
@@ -70,7 +68,11 @@ void FakeGaiaMixin::SetupFakeGaiaForLogin(const std::string& user_email,
   fake_gaia_->IssueOAuthToken(refresh_token, token_info);
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+void FakeGaiaMixin::SetupFakeGaiaForLoginWithDefaults() {
+  SetupFakeGaiaForLogin(FakeGaiaMixin::kFakeUserEmail,
+                        FakeGaiaMixin::kFakeUserGaiaId,
+                        FakeGaiaMixin::kFakeRefreshToken);
+}
 
 void FakeGaiaMixin::SetupFakeGaiaForChildUser(const std::string& user_email,
                                               const std::string& gaia_id,
@@ -114,8 +116,6 @@ void FakeGaiaMixin::SetupFakeGaiaForChildUser(const std::string& user_email,
     fake_gaia_->UpdateConfiguration(configuration_update);
   }
 }
-
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 

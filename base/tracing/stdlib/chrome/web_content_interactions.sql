@@ -2,7 +2,7 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
-INCLUDE PERFETTO MODULE common.slices;
+INCLUDE PERFETTO MODULE slices.with_context;
 
 -- Chrome web content interactions (InteractionToFirstPaint), including
 -- associated high-level metrics and properties.

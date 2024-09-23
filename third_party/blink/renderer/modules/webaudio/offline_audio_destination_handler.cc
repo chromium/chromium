@@ -2,17 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_destination_handler.h"
 
 #include <algorithm>
 
 #include "base/trace_event/typed_macros.h"
+#include "media/base/audio_glitch_info.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_messaging_proxy.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
+#include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
@@ -121,15 +128,15 @@ void OfflineAudioDestinationHandler::StartRendering() {
 
 void OfflineAudioDestinationHandler::StopRendering() {
   // offline audio rendering CANNOT BE stopped by JavaScript.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void OfflineAudioDestinationHandler::Pause() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void OfflineAudioDestinationHandler::Resume() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void OfflineAudioDestinationHandler::InitializeOfflineRenderThread(
@@ -285,7 +292,9 @@ bool OfflineAudioDestinationHandler::RenderIfNotSuspended(
   // Take care pre-render tasks at the beginning of each render quantum. Then
   // it will stop the rendering loop if the context needs to be suspended
   // at the beginning of the next render quantum.
-  if (Context()->HandlePreRenderTasks(nullptr, nullptr)) {
+  if (Context()->HandlePreRenderTasks(number_of_frames, nullptr, nullptr,
+                                      base::TimeDelta(),
+                                      media::AudioGlitchInfo())) {
     SuspendOfflineRendering();
     return true;
   }

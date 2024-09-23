@@ -51,4 +51,15 @@ suite('cr-toolbar', function() {
     assertEquals('product-logo', newLogo.assignedSlot!.name);
     assertEquals('New logo', newLogo.textContent!.trim());
   });
+
+  test('Sends input aria-description', () => {
+    document.body.innerHTML = getTrustedHtml(`
+      <cr-toolbar id="toolbar" search-input-aria-description="my description">
+      </cr-toolbar>
+    `);
+
+    const toolbar = document.body.querySelector('cr-toolbar');
+    assertTrue(!!toolbar);
+    assertEquals('my description', toolbar.getSearchField().inputAriaDescription);
+  });
 });

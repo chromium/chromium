@@ -14,18 +14,18 @@ namespace gfx {
 
 // Return the parameterized function in |fn|, evaluated at |x|. This will not
 // clamp output values.
-// TODO(crbug.com/1504131): Replace this function with
+// TODO(crbug.com/40944641): Replace this function with
 // skcms_TransferFunction_eval.
 float COLOR_SPACE_EXPORT
 SkTransferFnEvalUnclamped(const skcms_TransferFunction& fn, float x);
 
-// TODO(crbug.com/1504131): Replace this function with
+// TODO(crbug.com/40944641): Replace this function with
 // skcms_TransferFunction_invert.
 skcms_TransferFunction COLOR_SPACE_EXPORT
 SkTransferFnInverse(const skcms_TransferFunction& fn);
 
 // Return true if `a` and `b` approximately cancel out.
-// TODO(crbug.com/1504131): This function determines the result by testing `b`
+// TODO(crbug.com/40944641): This function determines the result by testing `b`
 // after `a` on several points on the unit interval, which is not efficient or
 // accurate.
 bool COLOR_SPACE_EXPORT
@@ -33,7 +33,7 @@ SkTransferFnsApproximatelyCancel(const skcms_TransferFunction& a,
                                  const skcms_TransferFunction& b);
 
 // Returns true if `fn` is approximately the identity.
-// TODO(crbug.com/1504131): This function determines the result by testing `fn`
+// TODO(crbug.com/40944641): This function determines the result by testing `fn`
 // on several points in the unit interval, which is not efficient or accurate.
 bool COLOR_SPACE_EXPORT
 SkTransferFnIsApproximatelyIdentity(const skcms_TransferFunction& fn);

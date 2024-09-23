@@ -8,8 +8,10 @@ cases = [
   ["addr1 \t ", "addr1"],
   ["addr1?to=jon", "addr1?to=jon"],
   ["addr1,addr2", "addr1,addr2"],
-  ["addr1, addr2", "addr1,%20addr2"],
-  ['addr1,"addr2"', "addr1,%22addr2%22"],
+  // Fails unless kStandardCompliantNonSpecialSchemeURLParsing is enabled.
+  // See crbug.com/40063064.
+  ["addr1, addr2", "addr1, addr2"],
+  ['addr1,"addr2"', "addr1,\"addr2\""],
   ["addr1%2caddr2", "addr1%2caddr2"],
 
   // U+10300 input as UTF-16 surrogate pair, expected as escaped UTF-8

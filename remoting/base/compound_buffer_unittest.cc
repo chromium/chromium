@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "remoting/base/compound_buffer.h"
 
 #include <stddef.h>
@@ -10,6 +15,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "net/base/io_buffer.h"
@@ -144,10 +150,10 @@ class CompoundBufferTest : public testing::Test {
   static void ReadString(CompoundBufferInputStream* input,
                          const std::string& str) {
     SCOPED_TRACE(str);
-    std::unique_ptr<char[]> buffer(new char[str.size() + 1]);
+    auto buffer = base::HeapArray<char>::Uninit(str.size() + 1);
     buffer[str.size()] = '\0';
-    EXPECT_EQ(ReadFromInput(input, buffer.get(), str.size()), str.size());
-    EXPECT_STREQ(str.data(), buffer.get());
+    EXPECT_EQ(ReadFromInput(input, buffer.data(), str.size()), str.size());
+    EXPECT_STREQ(str.data(), buffer.data());
   }
 
   // Construct and prepare data in the |buffer|.

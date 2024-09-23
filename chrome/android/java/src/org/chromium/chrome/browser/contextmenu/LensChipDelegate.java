@@ -11,6 +11,10 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensQueryParams;
+import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
+import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuImageFormat;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.content_public.browser.WebContents;
 
 /** The class to handle Lens chip data and actions. */

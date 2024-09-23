@@ -12,9 +12,11 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "chrome/android/chrome_jni_headers/LensDebugBridge_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_ui.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/LensDebugBridge_jni.h"
 
 LensInternalsUIMessageHandler::LensInternalsUIMessageHandler(Profile* profile) {
 }

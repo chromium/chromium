@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.3.0-alpha12" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha12">
+<issues format="6" by="lint 8.7.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.7.0-alpha03">
+
+    <issue
+        id="PictureInPictureIssue"
+        message="An activity in this app supports picture-in-picture and the targetSdkVersion is 31 or above; it is therefore strongly recommended to call both `setAutoEnterEnabled(true)` and `setSourceRectHint(...)`"
+        errorLine1="  &lt;application android:name=&quot;org.chromium.chromecast.shell.CastApplication&quot; android:icon=&quot;@drawable/ic_settings_cast&quot;>"
+        errorLine2="   ~~~~~~~~~~~">
+        <location
+            file="gen/chromecast/cast_shell_apk__lint/AndroidManifest.xml"
+            line="37"
+            column="4"/>
+    </issue>
 
     <issue
         id="UnspecifiedRegisterReceiverFlag"
-        message="`mReceiver` \&#xA;is missing `RECEIVER_EXPORTED` or `RECEIVER_NOT_EXPORTED` flag for unprotected \&#xA;broadcasts registered for an IntentFilter that cannot be inspected by lint"
+        message="`mReceiver` is missing `RECEIVER_EXPORTED` or `RECEIVER_NOT_EXPORTED` flag for unprotected broadcasts registered for an IntentFilter that cannot be inspected by lint"
         errorLine1="        mContext.registerReceiver(mReceiver, filter);"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -21,28 +32,6 @@
             file="gen/chromecast/cast_shell_apk__lint/AndroidManifest.xml"
             line="71"
             column="217"/>
-    </issue>
-
-    <issue
-        id="MissingVersion"
-        message="Should set `android:versionCode` to specify the application version"
-        errorLine1="&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; xmlns:tools=&quot;http://schemas.android.com/tools&quot; package=&quot;org.chromium.chromecast.shell&quot;>"
-        errorLine2=" ~~~~~~~~">
-        <location
-            file="gen/chromecast/cast_shell_apk__lint/AndroidManifest.xml"
-            line="2"
-            column="2"/>
-    </issue>
-
-    <issue
-        id="MissingVersion"
-        message="Should set `android:versionName` to specify the application version"
-        errorLine1="&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; xmlns:tools=&quot;http://schemas.android.com/tools&quot; package=&quot;org.chromium.chromecast.shell&quot;>"
-        errorLine2=" ~~~~~~~~">
-        <location
-            file="gen/chromecast/cast_shell_apk__lint/AndroidManifest.xml"
-            line="2"
-            column="2"/>
     </issue>
 
     <issue

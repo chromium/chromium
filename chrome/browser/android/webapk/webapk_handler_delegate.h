@@ -29,16 +29,16 @@ class WebApkHandlerDelegate {
   // Called once for each installed WebAPK when RetrieveWebApks() is called.
   void OnWebApkInfoRetrieved(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jname,
-      const base::android::JavaParamRef<jstring>& jshort_name,
-      const base::android::JavaParamRef<jstring>& jpackage_name,
-      const base::android::JavaParamRef<jstring>& jid,
+      const std::string& jname,
+      const std::string& jshort_name,
+      const std::string& jpackage_name,
+      const std::string& jid,
       const jint jshell_apk_version,
       const jint jversion_code,
-      const base::android::JavaParamRef<jstring>& juri,
-      const base::android::JavaParamRef<jstring>& jscope,
-      const base::android::JavaParamRef<jstring>& jmanifest_url,
-      const base::android::JavaParamRef<jstring>& jmanifest_start_url,
+      const std::string& juri,
+      const std::string& jscope,
+      const std::string& jmanifest_url,
+      const std::string& jmanifest_start_url,
       const base::android::JavaParamRef<jstring>& jmanifest_id,
       const jint jdisplay_mode,
       const jint jorientation,
@@ -51,7 +51,7 @@ class WebApkHandlerDelegate {
       const jboolean jrelax_updates,
       const base::android::JavaParamRef<jstring>& jbacking_browser_package_name,
       const jboolean jis_backing_browser,
-      const base::android::JavaParamRef<jstring>& jupdate_status);
+      const std::string& jupdate_status);
 
  private:
   WebApkInfoCallback callback_;

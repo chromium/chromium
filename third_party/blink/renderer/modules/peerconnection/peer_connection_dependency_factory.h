@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transport.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_video_perf_reporter.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
@@ -36,7 +37,6 @@ class PortAllocator;
 }
 
 namespace media {
-class DecoderFactory;
 class GpuVideoAcceleratorFactories;
 class MojoVideoEncoderMetricsProviderFactory;
 }
@@ -111,7 +111,8 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
       const webrtc::PeerConnectionInterface::RTCConfiguration& config,
       blink::WebLocalFrame* web_frame,
       webrtc::PeerConnectionObserver* observer,
-      ExceptionState& exception_state);
+      ExceptionState& exception_state,
+      RTCRtpTransport* rtp_transport);
 
   // Creates a PortAllocator that uses Chrome IPC sockets and enforces privacy
   // controls according to the permissions granted on the page.
@@ -183,9 +184,7 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
 
   void InitializeSignalingThread(
       const gfx::ColorSpace& render_color_space,
-      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       media::GpuVideoAcceleratorFactories* gpu_factories,
-      base::WeakPtr<media::DecoderFactory> media_decoder_factory,
       scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
           video_encoder_metrics_provider_factory,
       base::WaitableEvent* event);
@@ -217,8 +216,7 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
 
   scoped_refptr<blink::WebRtcAudioDeviceImpl> audio_device_;
 
-  raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_;
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
   THREAD_CHECKER(thread_checker_);
 };

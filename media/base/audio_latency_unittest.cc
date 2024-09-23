@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/limits.h"
+#include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -126,11 +127,11 @@ TEST(AudioLatency, HighLatencyBufferSizes) {
 #if BUILDFLAG(IS_WIN)
     EXPECT_EQ(2 * (i / 100),
               AudioLatency::GetHighLatencyBufferSize(i, i / 100));
-#elif defined(USE_CRAS) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(USE_CRAS) || BUILDFLAG(IS_FUCHSIA)
     EXPECT_EQ(8 * (i / 100), AudioLatency::GetHighLatencyBufferSize(i, 32));
 #else
     EXPECT_EQ(2 * (i / 100), AudioLatency::GetHighLatencyBufferSize(i, 32));
-#endif  // defined(USE_CRAS)
+#endif  // BUILDFLAG(USE_CRAS)
 }
 
 TEST(AudioLatency, InteractiveBufferSizes) {
@@ -195,7 +196,7 @@ INSTANTIATE_TEST_SUITE_P(
                     std::make_tuple(44100, 440, 0, 0),
                     std::make_tuple(44100, 256, 128, 512),
                     std::make_tuple(44100, 256, 0, 0))
-#elif BUILDFLAG(IS_MAC) || defined(USE_CRAS)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(USE_CRAS)
     // These values are constant on Mac and ChromeOS, regardless of device.
     testing::Values(std::make_tuple(44100,
                                     256,

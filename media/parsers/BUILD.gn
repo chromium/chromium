@@ -3,43 +3,157 @@
 # found in the LICENSE file.
 
 import("//media/media_options.gni")
+import("//third_party/libgav1/options.gni")
 
-component("parsers") {
+source_set("parsers") {
   sources = [
+    "bit_reader_macros.h",
+    "h264_bit_reader.cc",
+    "h264_bit_reader.h",
+    "h264_level_limits.cc",
+    "h264_level_limits.h",
+    "h264_parser.cc",
+    "h264_parser.h",
+    "h264_poc.cc",
+    "h264_poc.h",
     "jpeg_parser.cc",
     "jpeg_parser.h",
-    "media_parsers_export.h",
+    "temporal_scalability_id_extractor.cc",
+    "temporal_scalability_id_extractor.h",
     "vp8_bool_decoder.cc",
     "vp8_bool_decoder.h",
     "vp8_parser.cc",
     "vp8_parser.h",
+    "vp9_bool_decoder.cc",
+    "vp9_bool_decoder.h",
+    "vp9_compressed_header_parser.cc",
+    "vp9_compressed_header_parser.h",
+    "vp9_parser.cc",
+    "vp9_parser.h",
+    "vp9_raw_bits_reader.cc",
+    "vp9_raw_bits_reader.h",
+    "vp9_uncompressed_header_parser.cc",
+    "vp9_uncompressed_header_parser.h",
     "webp_parser.cc",
     "webp_parser.h",
   ]
-  defines = [ "IS_MEDIA_PARSER_IMPL" ]
-  deps = [ "//base" ]
+  if (enable_platform_hevc) {
+    sources += [
+      "h265_nalu_parser.cc",
+      "h265_nalu_parser.h",
+    ]
+    if (enable_hevc_parser_and_hw_decoder) {
+      sources += [
+        "h265_parser.cc",
+        "h265_parser.h",
+        "h265_poc.cc",
+        "h265_poc.h",
+      ]
+    }
+  }
 
-  # This target is used in GPU IPC code and cannot depend on any //media code.
-  assert_no_deps = [
-    "//media",
-    "//media:shared_memory_support",
+  if (enable_platform_vvc) {
+    sources += [
+      "h266_nalu_parser.cc",
+      "h266_nalu_parser.h",
+      "h266_parser.cc",
+      "h266_parser.h",
+      "h266_poc.cc",
+      "h266_poc.h",
+    ]
+  }
+
+  configs += [ "//media:subcomponent_config" ]
+
+  deps = [
+    "//base",
+    "//media/base",
+    "//third_party/libgav1:libgav1_parser",
   ]
+}
+
+static_library("test_support") {
+  testonly = true
+  visibility = [ "//media:test_support" ]
+
+  sources = [
+    "ivf_parser.cc",
+    "ivf_parser.h",
+  ]
+
+  deps = [ "//base/test:test_support" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "h264_bit_reader_unittest.cc",
+    "h264_parser_unittest.cc",
+    "h264_poc_unittest.cc",
+    "ivf_parser_unittest.cc",
     "jpeg_parser_unittest.cc",
+    "temporal_scalability_id_extractor_unittest.cc",
     "vp8_bool_decoder_unittest.cc",
     "vp8_parser_unittest.cc",
+    "vp9_parser_unittest.cc",
+    "vp9_raw_bits_reader_unittest.cc",
+    "vp9_uncompressed_header_parser_unittest.cc",
     "webp_parser_unittest.cc",
   ]
+  if (enable_platform_hevc) {
+    sources += [ "h265_nalu_parser_unittest.cc" ]
+    if (enable_hevc_parser_and_hw_decoder) {
+      sources += [
+        "h265_parser_unittest.cc",
+        "h265_poc_unittest.cc",
+      ]
+    }
+  }
+  if (enable_platform_vvc) {
+    sources += [
+      "h266_nalu_parser_unittest.cc",
+      "h266_parser_unittest.cc",
+      "h266_poc_unittest.cc",
+    ]
+  }
+
   deps = [
-    ":parsers",
-    "//base",
+    "//base/test:test_support",
     "//media:test_support",
     "//testing/gtest",
+    "//third_party/libgav1:libgav1_parser",
   ]
+
+  data = [ "//media/test/data/" ]
+}
+
+fuzzer_test("media_h264_parser_fuzzer") {
+  sources = [ "h264_parser_fuzzertest.cc" ]
+  deps = [
+    "//base",
+    "//media",
+    "//ui/gfx/geometry",
+  ]
+}
+
+if (enable_hevc_parser_and_hw_decoder) {
+  fuzzer_test("media_h265_parser_fuzzer") {
+    sources = [ "h265_parser_fuzzertest.cc" ]
+    deps = [
+      "//base",
+      "//media",
+    ]
+  }
+}
+
+if (enable_platform_vvc) {
+  fuzzer_test("media_h266_parser_fuzzer") {
+    sources = [ "h266_parser_fuzzertest.cc" ]
+    deps = [
+      "//base",
+      "//media",
+    ]
+  }
 }
 
 fuzzer_test("media_jpeg_parser_picture_fuzzer") {
@@ -61,6 +175,25 @@ fuzzer_test("media_vp8_parser_fuzzer") {
   ]
   libfuzzer_options = [ "max_len = 400000" ]
   dict = "//media/test/vp8.dict"
+}
+
+fuzzer_test("media_vp9_parser_fuzzer") {
+  sources = [ "vp9_parser_fuzzertest.cc" ]
+  deps = [
+    "//base",
+    "//media:test_support",
+  ]
+  libfuzzer_options = [ "max_len = 400000" ]
+}
+
+fuzzer_test("media_vp9_parser_encrypted_fuzzer") {
+  sources = [ "vp9_parser_encrypted_fuzzertest.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//media:test_support",
+  ]
+  seed_corpus = "//media/test/data"
 }
 
 fuzzer_test("media_webp_parser_fuzzer") {

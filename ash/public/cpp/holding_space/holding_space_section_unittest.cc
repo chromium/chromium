@@ -33,11 +33,6 @@ void ExpectSection(const HoldingSpaceSection* section,
       EXPECT_THAT(section->supported_types,
                   testing::UnorderedElementsAre(
                       HoldingSpaceItem::Type::kArcDownload,
-                      HoldingSpaceItem::Type::kCameraAppPhoto,
-                      HoldingSpaceItem::Type::kCameraAppScanJpg,
-                      HoldingSpaceItem::Type::kCameraAppScanPdf,
-                      HoldingSpaceItem::Type::kCameraAppVideoGif,
-                      HoldingSpaceItem::Type::kCameraAppVideoMp4,
                       HoldingSpaceItem::Type::kDiagnosticsLog,
                       HoldingSpaceItem::Type::kDownload,
                       HoldingSpaceItem::Type::kLacrosDownload,
@@ -46,7 +41,6 @@ void ExpectSection(const HoldingSpaceSection* section,
                       HoldingSpaceItem::Type::kPhotoshopWeb,
                       HoldingSpaceItem::Type::kPrintedPdf,
                       HoldingSpaceItem::Type::kScan));
-      EXPECT_EQ(section->max_item_count, 50u);
       EXPECT_EQ(section->max_visible_item_count, 4u);
       break;
     case HoldingSpaceSectionId::kPinnedFiles:
@@ -54,7 +48,6 @@ void ExpectSection(const HoldingSpaceSection* section,
       EXPECT_THAT(
           section->supported_types,
           testing::UnorderedElementsAre(HoldingSpaceItem::Type::kPinnedFile));
-      EXPECT_EQ(section->max_item_count, std::nullopt);
       EXPECT_EQ(section->max_visible_item_count, std::nullopt);
       break;
     case HoldingSpaceSectionId::kScreenCaptures:
@@ -64,7 +57,6 @@ void ExpectSection(const HoldingSpaceSection* section,
                       HoldingSpaceItem::Type::kScreenRecording,
                       HoldingSpaceItem::Type::kScreenRecordingGif,
                       HoldingSpaceItem::Type::kScreenshot));
-      EXPECT_EQ(section->max_item_count, 50u);
       EXPECT_EQ(section->max_visible_item_count, 3u);
       break;
     case HoldingSpaceSectionId::kSuggestions:
@@ -73,7 +65,6 @@ void ExpectSection(const HoldingSpaceSection* section,
                   testing::UnorderedElementsAre(
                       HoldingSpaceItem::Type::kLocalSuggestion,
                       HoldingSpaceItem::Type::kDriveSuggestion));
-      EXPECT_EQ(section->max_item_count, std::nullopt);
       EXPECT_EQ(section->max_visible_item_count, 4u);
       break;
   }
@@ -100,11 +91,6 @@ TEST_F(HoldingSpaceSectionTest, GetHoldingSpaceSectionByType) {
     std::optional<HoldingSpaceSectionId> id;
     switch (type) {
       case HoldingSpaceItem::Type::kArcDownload:
-      case HoldingSpaceItem::Type::kCameraAppPhoto:
-      case HoldingSpaceItem::Type::kCameraAppScanJpg:
-      case HoldingSpaceItem::Type::kCameraAppScanPdf:
-      case HoldingSpaceItem::Type::kCameraAppVideoGif:
-      case HoldingSpaceItem::Type::kCameraAppVideoMp4:
       case HoldingSpaceItem::Type::kDiagnosticsLog:
       case HoldingSpaceItem::Type::kDownload:
       case HoldingSpaceItem::Type::kLacrosDownload:

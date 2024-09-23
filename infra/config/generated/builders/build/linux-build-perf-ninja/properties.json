@@ -1,0 +1,63 @@
+{
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/build/linux-build-perf-ninja/gn-args.json"
+      ],
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "build",
+              "builder": "linux-build-perf-ninja",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.build",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "config": "chromium",
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android",
+                  "ninja_staging"
+                ],
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "build",
+          "builder": "linux-build-perf-ninja",
+          "project": "chromium"
+        }
+      ]
+    }
+  },
+  "$build/code_coverage": {
+    "use_clang_coverage": true
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 500,
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium.build",
+  "recipe": "chrome_build/build_perf"
+}

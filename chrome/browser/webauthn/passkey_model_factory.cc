@@ -4,17 +4,20 @@
 
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/password_manager/affiliations_prefetcher_factory.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/model_type_store_service_factory.h"
-#include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/password_manager/core/browser/affiliation/passkey_affiliation_source_adapter.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/sync/base/features.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_store_service.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "components/webauthn/core/browser/passkey_sync_bridge.h"
 
 PasskeyModelFactory* PasskeyModelFactory::GetInstance() {
@@ -36,12 +39,12 @@ PasskeyModelFactory::PasskeyModelFactory()
               // never signed in so they don't have have access to GPM passkeys,
               // but this simplifies handling by clients.
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasskeysPrefetchAffiliations)) {
-    DependsOn(AffiliationsPrefetcherFactory::GetInstance());
-  }
+  DependsOn(AffiliationServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 PasskeyModelFactory::~PasskeyModelFactory() = default;
@@ -52,14 +55,15 @@ PasskeyModelFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   DCHECK(base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials));
   auto sync_bridge = std::make_unique<webauthn::PasskeySyncBridge>(
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
   // Do not instantiate the affiliation service for guest profiles, since the
   // password manager does not run for them.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasskeysPrefetchAffiliations) &&
-      !profile->IsGuestSession()) {
-    AffiliationsPrefetcherFactory::GetForProfile(profile)->RegisterPasskeyModel(
-        sync_bridge.get());
+  if (!profile->IsGuestSession()) {
+    std::unique_ptr<password_manager::PasskeyAffiliationSourceAdapter> adapter =
+        std::make_unique<password_manager::PasskeyAffiliationSourceAdapter>(
+            sync_bridge.get());
+    AffiliationServiceFactory::GetForProfile(profile)->RegisterSource(
+        std::move(adapter));
   }
   return sync_bridge;
 }

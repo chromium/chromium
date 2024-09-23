@@ -1,0 +1,8 @@
+{
+  "name": "MV3 extension with service worker",
+  "version": "1",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  }
+}

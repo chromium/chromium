@@ -48,7 +48,7 @@ class SaveUpdateAddressProfilePromptController {
   void DisplayPrompt();
 
   std::u16string GetTitle();
-  std::u16string GetSourceNotice(signin::IdentityManager* profile);
+  std::u16string GetRecordTypeNotice(signin::IdentityManager* profile);
   std::u16string GetPositiveButtonText();
   std::u16string GetNegativeButtonText();
   // For save prompt:
@@ -79,7 +79,7 @@ class SaveUpdateAddressProfilePromptController {
 
  private:
   void RunSaveAddressProfileCallback(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision);
+      AutofillClient::AddressPromptUserDecision decision);
 
   // If the user explicitly accepted/dismissed/edited the profile.
   bool had_user_interaction_ = false;

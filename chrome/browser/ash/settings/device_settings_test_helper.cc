@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
@@ -41,8 +42,9 @@ ScopedDeviceSettingsTestHelper::~ScopedDeviceSettingsTestHelper() {
   DeviceSettingsService::Shutdown();
 }
 
-DeviceSettingsTestBase::DeviceSettingsTestBase()
-    : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+DeviceSettingsTestBase::DeviceSettingsTestBase(bool profile_creation_enabled)
+    : profile_creation_enabled_(profile_creation_enabled),
+      task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
 DeviceSettingsTestBase::DeviceSettingsTestBase(
     base::test::TaskEnvironment::TimeSource time)
@@ -53,10 +55,10 @@ DeviceSettingsTestBase::~DeviceSettingsTestBase() {
 }
 
 void DeviceSettingsTestBase::SetUp() {
+  // Initialize ProfileHelper including BrowserContextHelper.
+  ProfileHelper::Get();
+
   device_policy_ = std::make_unique<policy::DevicePolicyBuilder>();
-  user_manager_ = new FakeChromeUserManager();
-  user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-      base::WrapUnique(user_manager_.get()));
   owner_key_util_ = new ownership::MockOwnerKeyUtil();
   device_settings_service_ = std::make_unique<DeviceSettingsService>();
   ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
@@ -77,10 +79,11 @@ void DeviceSettingsTestBase::SetUp() {
   device_settings_service_->SetSessionManager(&session_manager_client_,
                                               owner_key_util_);
 
-  profile_ = std::make_unique<TestingProfile>();
-
-  FakeNssService::InitializeForBrowserContext(profile_.get(),
-                                              /*enable_system_slot=*/false);
+  if (profile_creation_enabled_) {
+    profile_ = std::make_unique<TestingProfile>();
+    FakeNssService::InitializeForBrowserContext(profile_.get(),
+                                                /*enable_system_slot=*/false);
+  }
 }
 
 void DeviceSettingsTestBase::TearDown() {
@@ -115,13 +118,7 @@ void DeviceSettingsTestBase::ReloadDeviceSettings() {
 
 void DeviceSettingsTestBase::InitOwner(const AccountId& account_id,
                                        bool tpm_is_ready) {
-  const user_manager::User* user = user_manager_->FindUser(account_id);
-  if (!user) {
-    user = user_manager_->AddUser(account_id);
-    profile_->set_profile_name(account_id.GetUserEmail());
-    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                            profile_.get());
-  }
+  ash::AnnotatedAccountId::Set(profile_.get(), account_id);
   OwnerSettingsServiceAsh* service =
       OwnerSettingsServiceAshFactory::GetForBrowserContext(profile_.get());
   CHECK(service);

@@ -61,8 +61,7 @@ class URL_MATCHER_EXPORT URLMatcherCondition {
   ~URLMatcherCondition();
   URLMatcherCondition(Criterion criterion,
                       const base::MatcherStringPattern* substring_pattern);
-  URLMatcherCondition(const URLMatcherCondition& rhs);
-  URLMatcherCondition& operator=(const URLMatcherCondition& rhs);
+
   bool operator<(const URLMatcherCondition& rhs) const;
 
   Criterion criterion() const { return criterion_; }

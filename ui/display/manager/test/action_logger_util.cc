@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/display/manager/test/action_logger_util.h"
 
 #include <stddef.h>
@@ -23,8 +28,8 @@ std::string GetCrtcAction(
       "crtc(display_id=[%" PRId64 "],x=%d,y=%d,mode=[%s],enable_vrr=%d)",
       display_config_params.id, display_config_params.origin.x(),
       display_config_params.origin.y(),
-      display_config_params.mode.has_value()
-          ? display_config_params.mode.value()->ToString().c_str()
+      display_config_params.mode
+          ? display_config_params.mode->ToStringForTest().c_str()
           : "NULL",
       display_config_params.enable_vrr);
 }
@@ -62,25 +67,6 @@ std::string SetGammaAdjustmentAction(int64_t display_id,
   return base::StringPrintf("set_gamma_adjustment(id=%" PRId64 "%s)",
                             display_id,
                             gamma.curve.ToActionString("gamma").c_str());
-}
-
-std::string SetColorMatrixAction(int64_t display_id,
-                                 const std::vector<float>& color_matrix) {
-  std::string ctm;
-  for (size_t i = 0; i < color_matrix.size(); ++i)
-    ctm += base::StringPrintf(",ctm[%" PRIuS "]=%f", i, color_matrix[i]);
-
-  return base::StringPrintf("set_color_matrix(id=%" PRId64 "%s)", display_id,
-                            ctm.c_str());
-}
-
-std::string SetGammaCorrectionAction(int64_t display_id,
-                                     const display::GammaCurve& degamma,
-                                     const display::GammaCurve& gamma) {
-  return base::StringPrintf("set_gamma_correction(id=%" PRId64 "%s%s)",
-                            display_id,
-                            degamma.ToActionString("degamma").c_str(),
-                            gamma.ToActionString("gamma").c_str());
 }
 
 std::string SetPrivacyScreenAction(int64_t display_id, bool enabled) {

@@ -21,9 +21,116 @@
 
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 
+#include <cmath>
+
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/graphics/path.h"
 
 namespace blink {
+
+namespace {
+
+bool PointInRectangleStroke(const gfx::PointF& point,
+                            const gfx::RectF& rect,
+                            float stroke_width) {
+  const float half_stroke_width = stroke_width / 2;
+  const float half_width = rect.width() / 2;
+  const float half_height = rect.height() / 2;
+
+  const gfx::PointF rect_center(rect.x() + half_width, rect.y() + half_height);
+  const float abs_delta_x = std::abs(point.x() - rect_center.x());
+  const float abs_delta_y = std::abs(point.y() - rect_center.y());
+
+  if (!(abs_delta_x <= half_width + half_stroke_width &&
+        abs_delta_y <= half_height + half_stroke_width)) {
+    return false;
+  }
+
+  return (half_width - half_stroke_width <= abs_delta_x) ||
+         (half_height - half_stroke_width <= abs_delta_y);
+}
+
+bool QuadIntersectsRectangleStroke(const gfx::QuadF& quad,
+                                   const gfx::RectF& rect,
+                                   float stroke_width) {
+  const float half_stroke_width = stroke_width / 2;
+  gfx::RectF outer_edge(rect);
+  outer_edge.Outset(half_stroke_width);
+  // If the outer edge does not intersect the quad, then neither will the inner.
+  if (!quad.IntersectsRect(outer_edge)) {
+    return false;
+  }
+  gfx::RectF inner_edge(rect);
+  inner_edge.Inset(half_stroke_width);
+  // If all the points of the quad is contained within the inner edge,
+  // then the quad does not intersect.
+  if (inner_edge.InclusiveContains(quad.p1()) &&
+      inner_edge.InclusiveContains(quad.p2()) &&
+      inner_edge.InclusiveContains(quad.p3()) &&
+      inner_edge.InclusiveContains(quad.p4())) {
+    return false;
+  }
+  return true;
+}
+
+bool PointInEllipse(const gfx::PointF& point,
+                    const gfx::PointF& center,
+                    const gfx::SizeF& radii) {
+  const gfx::PointF point_to_center =
+      gfx::PointF(center.x() - point.x(), center.y() - point.y());
+
+  // This works by checking if the point satisfies the ellipse equation.
+  // (x/rX)^2 + (y/rY)^2 <= 1
+  const float xr_x = point_to_center.x() / radii.width();
+  const float yr_y = point_to_center.y() / radii.height();
+  return xr_x * xr_x + yr_y * yr_y <= 1.0;
+}
+
+float DistanceBetween(const gfx::PointF& from, const gfx::PointF& to) {
+  return (to - from).Length();
+}
+
+bool PointInCircleStroke(const gfx::PointF& point,
+                         const gfx::PointF& center,
+                         float radius,
+                         float stroke_width) {
+  const float half_stroke_width = stroke_width / 2;
+  return std::abs(DistanceBetween(point, center) - radius) <= half_stroke_width;
+}
+
+bool QuadIntersectsCircleStroke(const gfx::QuadF& quad,
+                                const gfx::PointF& center,
+                                float radius,
+                                float stroke_width) {
+  const float half_stroke_width = stroke_width / 2;
+  // If the outer edge does not intersect the quad, then neither will the inner.
+  if (!quad.IntersectsCircle(center, radius + half_stroke_width)) {
+    return false;
+  }
+  // If all the points of the quad is contained within the inner edge,
+  // then the quad does not intersect.
+  const float inner_edge_radius = radius - half_stroke_width;
+  if (DistanceBetween(quad.p1(), center) < inner_edge_radius &&
+      DistanceBetween(quad.p2(), center) < inner_edge_radius &&
+      DistanceBetween(quad.p3(), center) < inner_edge_radius &&
+      DistanceBetween(quad.p4(), center) < inner_edge_radius) {
+    return false;
+  }
+  return true;
+}
+
+constexpr int kMaxRectHitTestVerbs = 500;
+
+// The Path::Intersects(const gfx::QuadF&, ...) functions have O(N^2) behavior,
+// so to avoid performance issues we only call these functions for "shorter"
+// Paths and fallback to using the single-point (approximately the centroid of
+// the quad/rect) code-path - this matches behavior prior to
+// crrev.com/c/5307520. See crbug.com/337338049 and crbug.com/341136034.
+bool CanUseRectHitTestForPath(const Path& path) {
+  return path.GetSkPath().countVerbs() <= kMaxRectHitTestVerbs;
+}
+
+}  // namespace
 
 HitTestLocation::HitTestLocation()
     : is_rect_based_(false), is_rectilinear_(true) {}
@@ -126,7 +233,7 @@ bool HitTestLocation::Intersects(const PhysicalRect& rect) const {
     return true;
 
   // Otherwise we need to do a slower quad based intersection test.
-  return transformed_rect_.IntersectsRect(gfx::RectF(rect));
+  return transformed_rect_.IntersectsRectPartial(gfx::RectF(rect));
 }
 
 bool HitTestLocation::Intersects(const gfx::RectF& rect) const {
@@ -140,15 +247,61 @@ bool HitTestLocation::Intersects(const FloatRoundedRect& rect) const {
 }
 
 bool HitTestLocation::Intersects(const gfx::QuadF& quad) const {
-  // TODO(chrishtr): if the quads are not rectilinear, calling Intersects
-  // has false positives.
-  if (is_rect_based_)
-    return Intersects(quad.BoundingBox());
-  return quad.Contains(gfx::PointF(point_));
+  if (is_rect_based_) {
+    if (!Intersects(quad.BoundingBox())) {
+      return false;
+    }
+    if (quad.IsRectilinear()) {
+      return true;
+    }
+    return quad.IntersectsQuad(transformed_rect_);
+  }
+  return quad.Contains(transformed_point_);
 }
 
 bool HitTestLocation::ContainsPoint(const gfx::PointF& point) const {
   return transformed_rect_.Contains(point);
+}
+
+bool HitTestLocation::Intersects(const Path& path) const {
+  if (is_rect_based_ && CanUseRectHitTestForPath(path)) {
+    return path.Intersects(transformed_rect_);
+  }
+  return path.Contains(transformed_point_);
+}
+
+bool HitTestLocation::Intersects(const Path& path,
+                                 WindRule winding_rule) const {
+  if (is_rect_based_ && CanUseRectHitTestForPath(path)) {
+    return path.Intersects(transformed_rect_, winding_rule);
+  }
+  return path.Contains(transformed_point_, winding_rule);
+}
+
+bool HitTestLocation::IntersectsStroke(const gfx::RectF& rect,
+                                       float stroke_width) const {
+  if (is_rect_based_) {
+    return QuadIntersectsRectangleStroke(transformed_rect_, rect, stroke_width);
+  }
+  return PointInRectangleStroke(transformed_point_, rect, stroke_width);
+}
+
+bool HitTestLocation::IntersectsEllipse(const gfx::PointF& center,
+                                        const gfx::SizeF& radii) const {
+  if (is_rect_based_) {
+    return transformed_rect_.IntersectsEllipse(center, radii);
+  }
+  return PointInEllipse(transformed_point_, center, radii);
+}
+
+bool HitTestLocation::IntersectsCircleStroke(const gfx::PointF& center,
+                                             float radius,
+                                             float stroke_width) const {
+  if (is_rect_based_) {
+    return QuadIntersectsCircleStroke(transformed_rect_, center, radius,
+                                      stroke_width);
+  }
+  return PointInCircleStroke(transformed_point_, center, radius, stroke_width);
 }
 
 }  // namespace blink

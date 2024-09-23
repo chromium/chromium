@@ -56,8 +56,14 @@ testText("<div><span>abc </span><span style='white-space:pre'></span> def", "abc
 testText("<div>abc <input> def", "abc  def", "Whitespace around <input> should not be collapsed");
 testText("<div>abc <span style='display:inline-block'></span> def", "abc  def", "Whitespace around inline-block should not be collapsed");
 testText("<div>abc <span style='display:inline-block'> def </span> ghi", "abc def ghi", "Trailing space at end of inline-block should be collapsed");
+testText("<div>abc <span style='display:inline-flex'></span> def", "abc  def", "Whitespace around inline-flex should not be collapsed");
+testText("<div>abc <span style='display:inline-flex'> def </span> ghi", "abc def ghi", "Trailing space at end of inline-flex should be collapsed");
+testText("<div>abc <span style='display:inline-grid'></span> def", "abc  def", "Whitespace around inline-grid should not be collapsed");
+testText("<div>abc <span style='display:inline-grid'> def </span> ghi", "abc def ghi", "Trailing space at end of grid-flex should be collapsed");
 testText("<div><input> <div>abc</div>", "abc", "Whitespace between <input> and block should be collapsed");
 testText("<div><span style='inline-block'></span> <div>abc</div>", "abc", "Whitespace between inline-block and block should be collapsed");
+testText("<div><span style='inline-flex'></span> <div>abc</div>", "abc", "Whitespace between inline-flex and block should be collapsed");
+testText("<div><span style='inline-grid'></span> <div>abc</div>", "abc", "Whitespace between inline-grid and block should be collapsed");
 testText("<div>abc <img> def", "abc  def", "Whitespace around <img> should not be collapsed");
 testText("<div>abc <img width=1 height=1> def", "abc  def", "Whitespace around <img> should not be collapsed");
 testText("<div><img> abc", " abc", "Leading whitesapce should not be collapsed");
@@ -212,6 +218,7 @@ testText("<div><iframe src='data:text/html,abc'>", ""," <iframe> subdocument ign
 testText("<div><audio>abc", "", "<audio> contents ignored");
 testText("<div><video>abc", "", "<video> contents ignored");
 testText("<div><canvas>abc", "", "<canvas> contents ignored");
+testText("<div><object>abc", "", "<object> contents ignored");
 testText("<div><img alt='abc'>", "", "<img> alt text ignored");
 
 /**** Lines around blocks ****/
@@ -236,6 +243,8 @@ testText("<div style='visibility:hidden'><p><span style='visibility:visible'>abc
 testText("<div>abc<div style='margin:2em'>def", "abc\ndef", "No blank lines around <div> with margin");
 testText("<div>123<span style='display:inline-block'>abc</span>def", "123abcdef", "No newlines at display:inline-block boundary");
 testText("<div>123<span style='display:inline-block'> abc </span>def", "123abcdef", "Leading/trailing space removal at display:inline-block boundary");
+testText("<div>123<span style='display:inline-flex'> abc </span>def", "123abcdef", "Leading/trailing space removal at display:inline-flex boundary");
+testText("<div>123<span style='display:inline-grid'> abc </span>def", "123abcdef", "Leading/trailing space removal at display:inline-grid boundary");
 testText("<div>123<p style='margin:0px'>abc</p>def", "123\n\nabc\n\ndef", "Blank lines around <p> even without margin");
 testText("<div>123<h1>abc</h1>def", "123\nabc\ndef", "No blank lines around <h1>");
 testText("<div>123<h2>abc</h2>def", "123\nabc\ndef", "No blank lines around <h2>");
@@ -243,6 +252,8 @@ testText("<div>123<h3>abc</h3>def", "123\nabc\ndef", "No blank lines around <h3>
 testText("<div>123<h4>abc</h4>def", "123\nabc\ndef", "No blank lines around <h4>");
 testText("<div>123<h5>abc</h5>def", "123\nabc\ndef", "No blank lines around <h5>");
 testText("<div>123<h6>abc</h6>def", "123\nabc\ndef", "No blank lines around <h6>");
+testText("<div>123<p style='display:block'>abc", "123\n\nabc", "2 blank lines around <p> even when display:block");
+testText("<div>123<p style='display:inline-block'>abc", "123\n\nabc", "2 blank lines around <p> even when display:inline-block");
 
 /**** Spans ****/
 
@@ -326,6 +337,8 @@ testText("<div>abc<!--comment-->def", "abcdef", "comment ignored");
 testText("<br>", "", "<br>");
 testText("<p>", "", "empty <p>");
 testText("<div>", "", "empty <div>");
+testText("<div><details><summary>abc</summary>123", "abc", "unopened <details> ignored");
+testText("<div><details open><summary>abc</summary>123", "abc\n123", "opened <details> content shown");
 
 /**** text-transform ****/
 

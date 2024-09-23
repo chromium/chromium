@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -21,6 +23,7 @@
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -71,7 +74,7 @@ void MoveString(ParkableStringImpl* string,
                 ParkableStringManager::StringMap* from,
                 ParkableStringManager::StringMap* to) {
   auto it = from->find(string->digest());
-  DCHECK(it != from->end());
+  CHECK(it != from->end(), base::NotFatalUntil::M130);
   DCHECK_EQ(it->value, string);
   from->erase(it);
   auto insert_result = to->insert(string->digest(), string);
@@ -108,6 +111,26 @@ ParkableStringManager& ParkableStringManager::Instance() {
 
 ParkableStringManager::~ParkableStringManager() = default;
 
+void ParkableStringManager::SetRendererBackgrounded(bool backgrounded) {
+  DCHECK(IsMainThread());
+  bool was_paused = IsPaused();
+  backgrounded_ = backgrounded;
+
+  if (was_paused && !IsPaused() && HasPendingWork()) {
+    ScheduleAgingTaskIfNeeded();
+  }
+}
+
+void ParkableStringManager::OnRAILModeChanged(RAILMode rail_mode) {
+  DCHECK(IsMainThread());
+  bool was_paused = IsPaused();
+  rail_mode_ = rail_mode;
+
+  if (was_paused && !IsPaused() && HasPendingWork()) {
+    ScheduleAgingTaskIfNeeded();
+  }
+}
+
 bool ParkableStringManager::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   DCHECK(IsMainThread());
@@ -143,6 +166,13 @@ bool ParkableStringManager::ShouldPark(const StringImpl& string) {
   // TODO(lizeb): Consider parking non-main thread strings.
   return string.length() > kSizeThreshold && IsMainThread() &&
          CompressionEnabled();
+}
+
+// static
+base::TimeDelta ParkableStringManager::AgingInterval() {
+  return base::FeatureList::IsEnabled(features::kLessAggressiveParkableString)
+             ? kLessAggressiveAgingInterval
+             : kAgingInterval;
 }
 
 scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
@@ -223,7 +253,7 @@ void ParkableStringManager::RemoveOnMainThread(ParkableStringImpl* string) {
     }
 
     auto it = map->find(string->digest());
-    DCHECK(it != map->end());
+    CHECK(it != map->end(), base::NotFatalUntil::M130);
     map->erase(it);
   }
 
@@ -326,6 +356,15 @@ size_t ParkableStringManager::Size() const {
 }
 
 void ParkableStringManager::RecordStatisticsAfter5Minutes() const {
+  if (!CompressionEnabled()) {
+    return;
+  }
+
+  base::UmaHistogramTimes("Memory.ParkableString.TotalParkingThreadTime.5min",
+                          total_parking_thread_time_);
+  base::UmaHistogramTimes("Memory.ParkableString.TotalUnparkingTime.5min",
+                          total_unparking_time_);
+
   // These metrics only make sense if the disk allocator is used.
   if (data_allocator().may_write()) {
     Statistics stats = ComputeStatistics();
@@ -340,10 +379,13 @@ void ParkableStringManager::RecordStatisticsAfter5Minutes() const {
 
 void ParkableStringManager::AgeStringsAndPark() {
   DCHECK(CompressionEnabled());
-
-  TRACE_EVENT0("blink", "ParkableStringManager::AgeStringsAndPark");
   has_pending_aging_task_ = false;
 
+  if (IsPaused()) {
+    return;
+  }
+
+  TRACE_EVENT0("blink", "ParkableStringManager::AgeStringsAndPark");
   auto unparked = EnumerateStrings(unparked_strings_);
   auto parked = EnumerateStrings(parked_strings_);
 
@@ -371,20 +413,20 @@ void ParkableStringManager::AgeStringsAndPark() {
   // we need to age and park strings after the renderer becomes idle, meaning
   // that this has to run when the idle tasks are not. As a consequence, it
   // is important to make sure that this will not reschedule tasks forever.
-  bool reschedule = (!unparked_strings_.empty() || !parked_strings_.empty()) &&
-                    can_make_progress;
+  bool reschedule = HasPendingWork() && can_make_progress;
   if (reschedule)
     ScheduleAgingTaskIfNeeded();
 }
 
 void ParkableStringManager::ScheduleAgingTaskIfNeeded() {
-  if (!CompressionEnabled())
+  if (IsPaused()) {
     return;
+  }
 
   if (has_pending_aging_task_)
     return;
 
-  base::TimeDelta delay = kAgingInterval;
+  base::TimeDelta delay = AgingInterval();
   // Delay the first aging tick, since this renderer may be short-lived, we do
   // not want to waste CPU time compressing memory that is going away soon.
   if (!first_string_aging_was_delayed_) {
@@ -501,6 +543,23 @@ void ParkableStringManager::ResetForTesting() {
   first_string_aging_was_delayed_ = false;
 }
 
+bool ParkableStringManager::IsPaused() const {
+  DCHECK(IsMainThread());
+  if (!CompressionEnabled()) {
+    return true;
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kLessAggressiveParkableString)) {
+    return false;
+  }
+
+  return !(backgrounded_ && (rail_mode_ != RAILMode::kLoad));
+}
+
+bool ParkableStringManager::HasPendingWork() const {
+  return !unparked_strings_.empty() || !parked_strings_.empty();
+}
+
 bool ParkableStringManager::IsOnParkedMapForTesting(
     ParkableStringImpl* string) {
   auto it = parked_strings_.find(string->digest());
@@ -514,6 +573,11 @@ bool ParkableStringManager::IsOnDiskMapForTesting(ParkableStringImpl* string) {
 
 ParkableStringManager::ParkableStringManager()
     : task_runner_(Thread::MainThread()->GetTaskRunner(
-          MainThreadTaskRunnerRestricted())) {}
+          MainThreadTaskRunnerRestricted())) {
+  // Should unregister in the destructor, but `this` is a NoDestructor static
+  // local.
+  ThreadScheduler::Current()->ToMainThreadScheduler()->AddRAILModeObserver(
+      this);
+}
 
 }  // namespace blink

@@ -10,6 +10,7 @@
 #include <sys/vfs.h>
 
 #include <cstring>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/files/file_util.h"
@@ -33,6 +34,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/process/process_handle.h"
+#include "base/process/process_priority_delegate.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
@@ -56,6 +58,8 @@ namespace {
 const int kForegroundPriority = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
+ProcessPriorityDelegate* g_process_priority_delegate = nullptr;
+
 // We are more aggressive in our lowering of background process priority
 // for chromeos as we have much more control over other processes running
 // on the machine.
@@ -185,6 +189,10 @@ Time Process::CreationTime() const {
 // static
 bool Process::CanSetPriority() {
 #if BUILDFLAG(IS_CHROMEOS)
+  if (g_process_priority_delegate) {
+    return g_process_priority_delegate->CanSetProcessPriority();
+  }
+
   if (CGroups::Get().enabled)
     return true;
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -198,6 +206,10 @@ Process::Priority Process::GetPriority() const {
   DCHECK(IsValid());
 
 #if BUILDFLAG(IS_CHROMEOS)
+  if (g_process_priority_delegate) {
+    return g_process_priority_delegate->GetProcessPriority(process_);
+  }
+
   if (CGroups::Get().enabled) {
     // Used to allow reading the process priority from proc on thread launch.
     ScopedAllowBlocking scoped_allow_blocking;
@@ -217,6 +229,10 @@ bool Process::SetPriority(Priority priority) {
   DCHECK(IsValid());
 
 #if BUILDFLAG(IS_CHROMEOS)
+  if (g_process_priority_delegate) {
+    return g_process_priority_delegate->SetProcessPriority(process_, priority);
+  }
+
   // Go through all the threads for a process and set it as [un]backgrounded.
   // Threads that are created after this call will also be [un]backgrounded by
   // detecting that the main thread of the process has been [un]backgrounded.
@@ -260,19 +276,18 @@ bool Process::SetPriority(Priority priority) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-Process::Priority GetProcessPriorityCGroup(const StringPiece& cgroup_contents) {
+Process::Priority GetProcessPriorityCGroup(std::string_view cgroup_contents) {
   // The process can be part of multiple control groups, and for each cgroup
   // hierarchy there's an entry in the file. We look for a control group
   // named "/chrome_renderers/background" to determine if the process is
   // backgrounded. crbug.com/548818.
-  std::vector<StringPiece> lines = SplitStringPiece(
+  std::vector<std::string_view> lines = SplitStringPiece(
       cgroup_contents, "\n", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
   for (const auto& line : lines) {
-    std::vector<StringPiece> fields =
+    std::vector<std::string_view> fields =
         SplitStringPiece(line, ":", TRIM_WHITESPACE, SPLIT_WANT_ALL);
     if (fields.size() != 3U) {
       NOTREACHED();
-      continue;
     }
     if (fields[2] == kBackground)
       return Process::Priority::kBestEffort;
@@ -295,7 +310,7 @@ ProcessId Process::GetPidInNamespace() const {
     const std::string& key = pair.first;
     const std::string& value_str = pair.second;
     if (key == "NSpid") {
-      std::vector<StringPiece> split_value_str = SplitStringPiece(
+      std::vector<std::string_view> split_value_str = SplitStringPiece(
           value_str, "\t", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
       if (split_value_str.size() <= 1) {
         return kNullProcessId;
@@ -304,7 +319,6 @@ ProcessId Process::GetPidInNamespace() const {
       // The last value in the list is the PID in the namespace.
       if (!StringToInt(split_value_str.back(), &value)) {
         NOTREACHED();
-        return kNullProcessId;
       }
       return value;
     }
@@ -326,17 +340,31 @@ bool Process::IsSeccompSandboxed() {
 
 #if BUILDFLAG(IS_CHROMEOS)
 // static
+void Process::SetProcessPriorityDelegate(ProcessPriorityDelegate* delegate) {
+  // A component cannot override a delegate set by another component, thus
+  // disallow setting a delegate when one already exists.
+  DCHECK_NE(!!g_process_priority_delegate, !!delegate);
+
+  g_process_priority_delegate = delegate;
+}
+
+// static
 bool Process::OneGroupPerRendererEnabledForTesting() {
   return OneGroupPerRendererEnabled();
 }
 
-// On Chrome OS, each renderer runs in its own cgroup when running in the
-// foreground. After process creation the cgroup is created using a
-// unique token.
 void Process::InitializePriority() {
+  if (g_process_priority_delegate) {
+    g_process_priority_delegate->InitializeProcessPriority(process_);
+    return;
+  }
+
   if (!OneGroupPerRendererEnabled() || !IsValid() || !unique_token_.empty()) {
     return;
   }
+  // On Chrome OS, each renderer runs in its own cgroup when running in the
+  // foreground. After process creation the cgroup is created using a
+  // unique token.
 
   // The token has the following format:
   //   {cgroup_prefix}{UnguessableToken}
@@ -373,6 +401,13 @@ void Process::InitializePriority() {
   }
 }
 
+void Process::ForgetPriority() {
+  if (g_process_priority_delegate) {
+    g_process_priority_delegate->ForgetProcessPriority(process_);
+    return;
+  }
+}
+
 // static
 void Process::CleanUpProcessScheduled(Process process, int remaining_retries) {
   process.CleanUpProcess(remaining_retries);
@@ -394,8 +429,8 @@ void Process::CleanUpProcess(int remaining_retries) const {
   }
 
   // Try to delete the cgroup
-  // TODO(1322562): We can use notify_on_release to automoatically delete the
-  // cgroup when the process has left the cgroup.
+  // TODO(crbug.com/40224348): We can use notify_on_release to automoatically
+  // delete the cgroup when the process has left the cgroup.
   FilePath cgroup = CGroups::Get().GetForegroundCgroupDir(unique_token_);
   if (!DeleteFile(cgroup)) {
     auto saved_errno = errno;

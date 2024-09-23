@@ -13,7 +13,7 @@ class Transform;
 
 namespace ash {
 
-// TODO(crbug.com/756161): This method will need to be moved to
+// TODO(crbug.com/40535513): This method will need to be moved to
 // gfx/geometry/dip_utils.h for M62 and later. This method computes the scale
 // required to convert DIP coordinates to the coordinate space of the
 // |transform|. It deduces the scale from the transform by applying it to a pair

@@ -6,9 +6,11 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "services/device/usb/jni_headers/ChromeUsbConnection_jni.h"
 #include "services/device/usb/usb_device.h"
 #include "services/device/usb/usb_service.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "services/device/usb/jni_headers/ChromeUsbConnection_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

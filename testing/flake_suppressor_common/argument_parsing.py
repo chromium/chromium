@@ -103,9 +103,9 @@ def ParseArgs():
                             'when all other build-fail* thresholds meet.'))
   parser.add_argument('--builder-name',
                       default=[],
-                      action="append",
-                      dest="builder_names",
-                      help="CI builder list to suppress tests.")
+                      action='append',
+                      dest='builder_names',
+                      help='CI builder list to suppress tests.')
   args = parser.parse_args()
 
   if not args.prompt_for_user_input:

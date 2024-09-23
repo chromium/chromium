@@ -3,5 +3,8 @@ dcastagna@chromium.org
 dnicoara@chromium.org
 oshima@chromium.org
 
+# For CADisplayLink or CVDisplaylink on Mac
+per-file *display_link*=magchen@chromium.org
+
 # Legacy OWNER(s)
 marcheu@chromium.org

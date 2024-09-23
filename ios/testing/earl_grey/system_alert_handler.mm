@@ -30,7 +30,7 @@
       // EG2 framework.
       // If it does throw, handle the system alert in @catch.
       // If it doesn’t throw, accept it here.
-      // TODO(crbug.com/1073542): Style guide does not allow throwing
+      // TODO(crbug.com/40127610): Style guide does not allow throwing
       // exceptions.
       [EarlGrey SystemAlertType];
 

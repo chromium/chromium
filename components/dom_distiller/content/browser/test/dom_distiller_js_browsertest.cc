@@ -20,6 +20,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
@@ -52,9 +53,9 @@ namespace dom_distiller {
 
 const char* kExternalTestResourcesPath =
     "third_party/dom_distiller_js/dist/test/data";
-// TODO(877461): Remove filter once image construction happens synchronously and
-// asserts do not flake anymore when exposed to different garbage collection
-// heuristics.
+// TODO(crbug.com/40590818): Remove filter once image construction happens
+// synchronously and asserts do not flake anymore when exposed to different
+// garbage collection heuristics.
 const char* kTestFilePath =
     "/war/test.html?console_log=0&filter="
     "-*.testImageExtractorWithAttributesCSSHeightCM"
@@ -153,7 +154,8 @@ IN_PROC_BROWSER_TEST_F(DomDistillerJsTest, MAYBE_RunJsTests) {
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       base::UTF8ToUTF16(kRunJsTestsJs),
       base::BindOnce(&DomDistillerJsTest::OnJsTestExecutionDone,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      content::ISOLATED_WORLD_ID_GLOBAL);
   run_loop.Run();
 
   // Convert to dictionary and parse the results.

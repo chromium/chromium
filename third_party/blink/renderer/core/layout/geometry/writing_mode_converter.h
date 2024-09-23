@@ -71,6 +71,11 @@ class CORE_EXPORT WritingModeConverter {
   LogicalRect ToLogical(const PhysicalRect& rect) const;
   PhysicalRect ToPhysical(const LogicalRect& rect) const;
 
+  // gfx variants
+  gfx::PointF ToLogical(const gfx::PointF& offset) const;
+  gfx::SizeF ToLogical(const gfx::SizeF& size) const;
+  gfx::RectF ToLogical(const gfx::RectF& rect) const;
+
  private:
   LogicalOffset SlowToLogical(const PhysicalOffset& offset,
                               const PhysicalSize& inner_size) const;
@@ -79,6 +84,10 @@ class CORE_EXPORT WritingModeConverter {
 
   LogicalRect SlowToLogical(const PhysicalRect& rect) const;
   PhysicalRect SlowToPhysical(const LogicalRect& rect) const;
+
+  gfx::PointF SlowToLogical(const gfx::PointF& offset,
+                            const gfx::SizeF& inner_size) const;
+  gfx::RectF SlowToLogical(const gfx::RectF& rect) const;
 
   WritingDirectionMode writing_direction_;
   PhysicalSize outer_size_;
@@ -124,6 +133,27 @@ inline PhysicalRect WritingModeConverter::ToPhysical(
                         rect.size.inline_size, rect.size.block_size);
   }
   return SlowToPhysical(rect);
+}
+
+inline gfx::PointF WritingModeConverter::ToLogical(
+    const gfx::PointF& offset) const {
+  if (writing_direction_.IsHorizontalLtr()) {
+    return offset;
+  }
+  return SlowToLogical(offset, {});
+}
+
+inline gfx::SizeF WritingModeConverter::ToLogical(
+    const gfx::SizeF& size) const {
+  return writing_direction_.IsHorizontal() ? size : gfx::TransposeSize(size);
+}
+
+inline gfx::RectF WritingModeConverter::ToLogical(
+    const gfx::RectF& rect) const {
+  if (writing_direction_.IsHorizontalLtr()) {
+    return rect;
+  }
+  return SlowToLogical(rect);
 }
 
 }  // namespace blink

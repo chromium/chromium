@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "remoting/protocol/ice_config.h"
-#include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport.h"
 
 namespace network {
@@ -44,7 +43,6 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
       rtc::SocketFactory* socket_factory,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       OAuthTokenGetter* oauth_token_getter,
-      const NetworkSettings& network_settings,
       TransportRole role);
 
   TransportContext(const TransportContext&) = delete;
@@ -61,11 +59,6 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
     ice_config_ = ice_config;
   }
 
-  // Prepares fresh ICE configs. It may be called while connection is being
-  // negotiated to minimize the chance that the following GetIceConfig() will
-  // be blocking.
-  void Prepare();
-
   // Requests fresh STUN and TURN information.
   void GetIceConfig(GetIceConfigCallback callback);
 
@@ -73,7 +66,6 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
     return port_allocator_factory_.get();
   }
   rtc::SocketFactory* socket_factory() const { return socket_factory_; }
-  const NetworkSettings& network_settings() const { return network_settings_; }
   TransportRole role() const { return role_; }
 
   // Returns the suggested bandwidth cap for TURN relay connections, or 0 if
@@ -92,7 +84,6 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
   raw_ptr<rtc::SocketFactory> socket_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   raw_ptr<OAuthTokenGetter> oauth_token_getter_ = nullptr;
-  NetworkSettings network_settings_;
   TransportRole role_;
 
   IceConfig ice_config_;

@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TEST_LIFECYCLE_UNIT_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TEST_LIFECYCLE_UNIT_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_base.h"
 
@@ -29,13 +30,13 @@ class TestLifecycleUnit : public LifecycleUnitBase {
 
   ~TestLifecycleUnit() override;
 
-  void SetLastFocusedTime(base::TimeTicks last_focused_time) {
-    last_focused_time_ = last_focused_time;
+  void SetLastFocusedTimeTicks(base::TimeTicks last_focused_time) {
+    last_focused_time_ticks_ = last_focused_time;
   }
 
   void SetSortKey(LifecycleUnit::SortKey sort_key) { sort_key_ = sort_key; }
 
-  void SetTitle(base::StringPiece16 title) { title_ = std::u16string(title); }
+  void SetTitle(std::u16string_view title) { title_ = std::u16string(title); }
 
   void SetDiscardFailureReason(DecisionFailureReason failure_reason) {
     failure_reason_ = failure_reason;
@@ -45,10 +46,13 @@ class TestLifecycleUnit : public LifecycleUnitBase {
     estimated_memory_freed_kb_ = estimated_memory_freed_kb;
   }
 
+  void SetCanDiscard(bool can_discard) { can_discard_ = can_discard; }
+
   // LifecycleUnit:
   TabLifecycleUnitExternal* AsTabLifecycleUnitExternal() override;
   std::u16string GetTitle() const override;
-  base::TimeTicks GetLastFocusedTime() const override;
+  base::TimeTicks GetLastFocusedTimeTicks() const override;
+  base::Time GetLastFocusedTime() const override;
   base::ProcessHandle GetProcessHandle() const override;
   SortKey GetSortKey() const override;
   content::Visibility GetVisibility() const override;
@@ -63,7 +67,8 @@ class TestLifecycleUnit : public LifecycleUnitBase {
 
  private:
   std::u16string title_;
-  base::TimeTicks last_focused_time_;
+  base::TimeTicks last_focused_time_ticks_;
+  base::Time last_focused_time_;
   base::ProcessHandle process_handle_;
   LifecycleUnit::SortKey sort_key_;
   bool can_discard_ = true;

@@ -81,12 +81,17 @@ a[href]:focus {
   outline-color: var(--cros-sys-focus_ring);
 }
 
-settings-toggle-button.primary-toggle {
+/**
+ * primary-toggle is a row containing a toggle that represents some setting's
+ * on/off state. Examples: bluetooth primary toggle, wifi primary toggle, etc.
+ */
+.primary-toggle {
   color: var(--cros-sys-on_surface_variant);
   font: var(--cros-button-2-font);
 }
 
-settings-toggle-button.primary-toggle[checked] {
+.primary-toggle[on],
+.primary-toggle[checked] {
   color: var(--cros-sys-primary);
 }
 
@@ -290,6 +295,29 @@ h2.first {
   flex: auto;
 }
 
+/* A settings-box with the actionable-row attribute can be interacted with on
+ * click. Do not use this attribute for settings that are not interactable by
+ * clicking on the row. */
+.settings-box[actionable-row] {
+  cursor: pointer;
+}
+
+.settings-box[actionable-row]:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+.settings-box[actionable-row]:active {
+  background-color: var(--cr-active-background-color);
+}
+
+/* Do not show hover or active states for cr-icon-buttons that are
+ * embedded within the row to avoid showing multiple layers of
+ * backgrounds. */
+.settings-box[actionable-row] cr-icon-button {
+  --cr-icon-button-hover-background-color: transparent;
+  --cr-icon-button-active-background-color: transparent;
+}
+
 /* For grouping elements with common flex options. */
 .settings-row {
   align-items: center;
@@ -334,9 +362,7 @@ iron-list,
 
 /* Error message that appears in a toast to indicate the success or
  * failure of an operation. An example is when adding a printer. */
-.error-message {
-  color: white;
-  font: 13px;
+cr-toast .error-message {
   padding-bottom: 15px;
   padding-top: 15px;
   text-align: center;

@@ -6,7 +6,6 @@
 
 import argparse
 import atexit
-import distutils.spawn
 import logging
 import pathlib
 import platform

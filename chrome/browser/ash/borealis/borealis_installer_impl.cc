@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <sstream>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_types.mojom.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/infra/transition.h"
@@ -70,7 +72,7 @@ class BorealisInstallerImpl::Installation
       override {
     install_info_ = std::move(start_instance);
     SetState(InstallingState::kCheckingIfAllowed);
-    BorealisService::GetForProfile(profile_)->Features().IsAllowed(
+    BorealisServiceFactory::GetForProfile(profile_)->Features().IsAllowed(
         base::BindOnce(&Installation::OnAllowedCheckCompleted,
                        weak_factory_.GetWeakPtr()));
   }
@@ -158,7 +160,7 @@ class BorealisInstallerImpl::Installation
                 "Unexpected DLC failure, please file feedback."};
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // As part of its installation we perform a dry run of borealis. This ensures
@@ -166,9 +168,10 @@ class BorealisInstallerImpl::Installation
   // Chrome. See go/borealis-mid-launch for details.
   void StartupBorealis() {
     SetState(InstallingState::kStartingUp);
-    BorealisService::GetForProfile(profile_)->ContextManager().StartBorealis(
-        base::BindOnce(&Installation::OnBorealisStarted,
-                       weak_factory_.GetWeakPtr()));
+    BorealisServiceFactory::GetForProfile(profile_)
+        ->ContextManager()
+        .StartBorealis(base::BindOnce(&Installation::OnBorealisStarted,
+                                      weak_factory_.GetWeakPtr()));
   }
 
   void OnBorealisStarted(BorealisContextManager::ContextOrFailure result) {
@@ -260,9 +263,10 @@ class BorealisInstallerImpl::Uninstallation
   void Start(std::unique_ptr<BorealisInstallerImpl::InstallInfo> start_instance)
       override {
     uninstall_info_ = std::move(start_instance);
-    BorealisService::GetForProfile(profile_)->ContextManager().ShutDownBorealis(
-        base::BindOnce(&Uninstallation::OnShutdownCompleted,
-                       weak_factory_.GetWeakPtr()));
+    BorealisServiceFactory::GetForProfile(profile_)
+        ->ContextManager()
+        .ShutDownBorealis(base::BindOnce(&Uninstallation::OnShutdownCompleted,
+                                         weak_factory_.GetWeakPtr()));
   }
 
  private:
@@ -308,7 +312,7 @@ class BorealisInstallerImpl::Uninstallation
                                          weak_factory_.GetWeakPtr()));
   }
 
-  void OnDlcUninstalled(const std::string& dlc_err) {
+  void OnDlcUninstalled(std::string_view dlc_err) {
     if (dlc_err.empty()) {
       LOG(ERROR) << "Failed to remove DLC: no response.";
       Fail(BorealisUninstallResult::kRemoveDlcFailed);
@@ -340,7 +344,7 @@ BorealisInstallerImpl::BorealisInstallerImpl(Profile* profile)
 BorealisInstallerImpl::~BorealisInstallerImpl() = default;
 
 bool BorealisInstallerImpl::IsProcessing() {
-  return in_progress_installation_ ? true : false;
+  return !!in_progress_installation_;
 }
 
 void BorealisInstallerImpl::Start() {
@@ -448,7 +452,7 @@ void BorealisInstallerImpl::UpdateProgress(double state_progress) {
       end_range = 1.0;
       break;
     case InstallingState::kInactive:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   double new_progress =

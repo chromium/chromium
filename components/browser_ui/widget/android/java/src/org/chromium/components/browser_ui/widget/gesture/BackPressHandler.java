@@ -41,11 +41,10 @@ public interface BackPressHandler {
         Type.LOCATION_BAR,
         Type.BOTTOM_CONTROLS,
         Type.TAB_HISTORY,
-        Type.TAB_RETURN_TO_CHROME_START_SURFACE,
         Type.BOTTOM_SHEET,
-        Type.PAGE_INSIGHTS_BOTTOM_SHEET,
         Type.SHOW_READING_LIST,
-        Type.MINIMIZE_APP_AND_CLOSE_TAB
+        Type.MINIMIZE_APP_AND_CLOSE_TAB,
+        Type.ARCHIVED_TABS_DIALOG
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface Type {
@@ -53,23 +52,21 @@ public interface BackPressHandler {
         int XR_DELEGATE = 1;
         int SCENE_OVERLAY = 2;
         int BOTTOM_SHEET = 3;
-        // TODO(b/307046796): Remove this once we have found better way to integrate with back
-        // handling logic.
-        int PAGE_INSIGHTS_BOTTOM_SHEET = 4;
         int START_SURFACE = 5;
-        int HUB = 6;
-        int TAB_SWITCHER = 7;
+        // The archived tabs dialog is shown on top of the hub, so it must take priority.
+        int ARCHIVED_TABS_DIALOG = 6;
+        int HUB = 7;
+        int TAB_SWITCHER = 8;
         // Fullscreen must be before selection popup. crbug.com/1454817.
-        int FULLSCREEN = 8;
-        int SELECTION_POPUP = 9;
-        int MANUAL_FILLING = 10;
-        int LOCATION_BAR = 11;
-        int TAB_MODAL_HANDLER = 12;
-        int CLOSE_WATCHER = 13;
-        int FIND_TOOLBAR = 14;
-        int BOTTOM_CONTROLS = 15;
-        int TAB_HISTORY = 16;
-        int TAB_RETURN_TO_CHROME_START_SURFACE = 17;
+        int FULLSCREEN = 9;
+        int SELECTION_POPUP = 10;
+        int MANUAL_FILLING = 11;
+        int LOCATION_BAR = 12;
+        int TAB_MODAL_HANDLER = 13;
+        int CLOSE_WATCHER = 14;
+        int FIND_TOOLBAR = 15;
+        int BOTTOM_CONTROLS = 16;
+        int TAB_HISTORY = 17;
         int SHOW_READING_LIST = 18;
         int MINIMIZE_APP_AND_CLOSE_TAB = 19;
         int NUM_TYPES = MINIMIZE_APP_AND_CLOSE_TAB + 1;

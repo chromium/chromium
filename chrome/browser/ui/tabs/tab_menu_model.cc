@@ -10,6 +10,7 @@
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/commerce/browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
@@ -21,11 +22,13 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_notes/user_notes_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/commerce/core/commerce_constants.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -154,8 +157,17 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
     if (tab_organization_service) {
       AddItemWithStringId(TabStripModel::CommandOrganizeTabs,
                           IDS_TAB_CXMENU_ORGANIZE_TABS);
-      SetIsNewFeatureAt(GetItemCount() - 1, true);
+      SetIsNewFeatureAt(GetItemCount() - 1,
+                        UserEducationService::MaybeShowNewBadge(
+                            tab_strip->profile(), features::kTabOrganization));
     }
+  }
+
+  if (commerce::IsProductSpecsMultiSelectMenuEnabled(
+          tab_strip->profile(), tab_strip->GetWebContentsAt(index)) &&
+      num_tabs >= commerce::kProductSpecificationsMinTabsCount) {
+    AddItemWithStringId(TabStripModel::CommandCommerceProductSpecifications,
+                        IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC);
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
@@ -169,28 +181,12 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
       TabStripModel::CommandTogglePinned,
       will_pin ? IDS_TAB_CXMENU_PIN_TAB : IDS_TAB_CXMENU_UNPIN_TAB);
 
-  const bool will_mute = !chrome::AreAllSitesMuted(*tab_strip, indices);
+  const bool will_mute = !AreAllSitesMuted(*tab_strip, indices);
   AddItem(TabStripModel::CommandToggleSiteMuted,
           will_mute ? l10n_util::GetPluralStringFUTF16(
                           IDS_TAB_CXMENU_SOUND_MUTE_SITE, num_tabs)
                     : l10n_util::GetPluralStringFUTF16(
                           IDS_TAB_CXMENU_SOUND_UNMUTE_SITE, num_tabs));
-  if (base::FeatureList::IsEnabled(feed::kWebUiFeed)) {
-    const TabWebFeedFollowState follow_state =
-        chrome::GetAggregatedFollowStateOfAllSites(*tab_strip, indices);
-    if (follow_state == TabWebFeedFollowState::kNotFollowed) {
-      AddItemWithStringId(TabStripModel::CommandFollowSite,
-                          IDS_TAB_CXMENU_FOLLOW_SITE);
-    } else if (follow_state == TabWebFeedFollowState::kFollowed) {
-      AddItemWithStringId(TabStripModel::CommandUnfollowSite,
-                          IDS_TAB_CXMENU_UNFOLLOW_SITE);
-    }
-  }
-  if (UserNotesController::IsUserNotesSupported(tab_strip->profile())) {
-    AddItemWithStringId(TabStripModel::CommandAddNote,
-                        IDS_CONTENT_CONTEXT_ADD_A_NOTE);
-    SetElementIdentifierAt(GetItemCount() - 1, kAddANoteTabMenuItem);
-  }
   if (send_tab_to_self::ShouldDisplayEntryPoint(
           tab_strip->GetWebContentsAt(index))) {
     AddSeparator(ui::NORMAL_SEPARATOR);

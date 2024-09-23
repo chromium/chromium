@@ -4,26 +4,36 @@
 
 #include "base/metrics/field_trial_params.h"
 
+#include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/features.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time_delta_from_string.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
+
+namespace internal {
+
+bool IsFeatureParamWithCacheEnabled() {
+  return FeatureList::IsEnabled(features::kFeatureParamWithCache);
+}
+
+}  // namespace internal
 
 void LogInvalidValue(const Feature& feature,
                      const char* type,
@@ -68,9 +78,9 @@ bool AssociateFieldTrialParamsFromString(
     FieldTrialParamsDecodeStringFunc decode_data_func) {
   // Format: Trial1.Group1:k1/v1/k2/v2,Trial2.Group2:k1/v1/k2/v2
   std::set<std::pair<std::string, std::string>> trial_groups;
-  for (StringPiece experiment_group :
+  for (std::string_view experiment_group :
        SplitStringPiece(params_string, ",", TRIM_WHITESPACE, SPLIT_WANT_ALL)) {
-    std::vector<StringPiece> experiment = SplitStringPiece(
+    std::vector<std::string_view> experiment = SplitStringPiece(
         experiment_group, ":", TRIM_WHITESPACE, SPLIT_WANT_ALL);
     if (experiment.size() != 2) {
       DLOG(ERROR) << "Experiment and params should be separated by ':'";
@@ -125,8 +135,9 @@ bool GetFieldTrialParams(const std::string& trial_name,
 
 bool GetFieldTrialParamsByFeature(const Feature& feature,
                                   FieldTrialParams* params) {
-  if (!FeatureList::IsEnabled(feature))
+  if (!FeatureList::IsEnabled(feature)) {
     return false;
+  }
 
   FieldTrial* trial = FeatureList::GetFieldTrial(feature);
   return FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(trial,
@@ -138,8 +149,9 @@ std::string GetFieldTrialParamValue(const std::string& trial_name,
   FieldTrialParams params;
   if (GetFieldTrialParams(trial_name, &params)) {
     auto it = params.find(param_name);
-    if (it != params.end())
+    if (it != params.end()) {
       return it->second;
+    }
   }
   return std::string();
 }
@@ -149,10 +161,26 @@ std::string GetFieldTrialParamValueByFeature(const Feature& feature,
   FieldTrialParams params;
   if (GetFieldTrialParamsByFeature(feature, &params)) {
     auto it = params.find(param_name);
-    if (it != params.end())
+    if (it != params.end()) {
       return it->second;
+    }
   }
   return std::string();
+}
+
+std::string GetFieldTrialParamByFeatureAsString(
+    const Feature& feature,
+    const std::string& param_name,
+    const std::string& default_value) {
+  FieldTrialParams params;
+  if (!GetFieldTrialParamsByFeature(feature, &params)) {
+    return default_value;
+  }
+  auto it = params.find(param_name);
+  if (it == params.end()) {
+    return default_value;
+  }
+  return it->second;
 }
 
 int GetFieldTrialParamByFeatureAsInt(const Feature& feature,
@@ -192,10 +220,12 @@ bool GetFieldTrialParamByFeatureAsBool(const Feature& feature,
                                        bool default_value) {
   std::string value_as_string =
       GetFieldTrialParamValueByFeature(feature, param_name);
-  if (value_as_string == "true")
+  if (value_as_string == "true") {
     return true;
-  if (value_as_string == "false")
+  }
+  if (value_as_string == "false") {
     return false;
+  }
 
   if (!value_as_string.empty()) {
     LogInvalidValue(feature, "a bool", param_name, value_as_string,
@@ -211,10 +241,11 @@ base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
   std::string value_as_string =
       GetFieldTrialParamValueByFeature(feature, param_name);
 
-  if (value_as_string.empty())
+  if (value_as_string.empty()) {
     return default_value;
+  }
 
-  absl::optional<base::TimeDelta> ret = TimeDeltaFromString(value_as_string);
+  std::optional<base::TimeDelta> ret = TimeDeltaFromString(value_as_string);
   if (!ret.has_value()) {
     LogInvalidValue(feature, "a base::TimeDelta", param_name, value_as_string,
                     base::NumberToString(default_value.InSecondsF()) + " s");
@@ -224,32 +255,34 @@ base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
   return ret.value();
 }
 
-std::string FeatureParam<std::string>::Get() const {
-  // We don't use `GetFieldTrialParamValueByFeature()` to handle empty values in
-  // the map.
-  FieldTrialParams params;
-  if (GetFieldTrialParamsByFeature(*feature, &params)) {
-    auto it = params.find(name);
-    if (it != params.end()) {
-      return it->second;
-    }
-  }
-  return default_value;
-}
-
-double FeatureParam<double>::Get() const {
-  return GetFieldTrialParamByFeatureAsDouble(*feature, name, default_value);
-}
-
-int FeatureParam<int>::Get() const {
-  return GetFieldTrialParamByFeatureAsInt(*feature, name, default_value);
-}
-
-bool FeatureParam<bool>::Get() const {
+template <>
+bool FeatureParam<bool>::GetWithoutCache() const {
   return GetFieldTrialParamByFeatureAsBool(*feature, name, default_value);
 }
 
-base::TimeDelta FeatureParam<base::TimeDelta>::Get() const {
+template <>
+int FeatureParam<int>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsInt(*feature, name, default_value);
+}
+
+template <>
+size_t FeatureParam<size_t>::GetWithoutCache() const {
+  return checked_cast<size_t>(GetFieldTrialParamByFeatureAsInt(
+      *feature, name, checked_cast<int>(default_value)));
+}
+
+template <>
+double FeatureParam<double>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsDouble(*feature, name, default_value);
+}
+
+template <>
+std::string FeatureParam<std::string>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsString(*feature, name, default_value);
+}
+
+template <>
+base::TimeDelta FeatureParam<base::TimeDelta>::GetWithoutCache() const {
   return GetFieldTrialParamByFeatureAsTimeDelta(*feature, name, default_value);
 }
 

@@ -1,0 +1,12 @@
+{
+  "name": "Request permissions from extension popup",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Requests optional permissions from an extension action popup.",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "optional_host_permissions": [
+      "https://www.google.com/"
+  ]
+}

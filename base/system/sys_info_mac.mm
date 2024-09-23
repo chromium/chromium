@@ -12,6 +12,7 @@
 #include <sys/sysctl.h>
 #include <sys/types.h>
 
+#include <optional>
 #include <string_view>
 
 #include "base/apple/scoped_mach_port.h"
@@ -29,7 +30,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/system/sys_info_internal.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -46,16 +46,16 @@ bool g_is_cpu_security_mitigation_enabled_read = false;
 
 namespace internal {
 
-absl::optional<int> NumberOfPhysicalProcessors() {
+std::optional<int> NumberOfPhysicalProcessors() {
   return GetSysctlIntValue("hw.physicalcpu_max");
 }
 
-absl::optional<int> NumberOfProcessorsWhenCpuSecurityMitigationEnabled() {
+std::optional<int> NumberOfProcessorsWhenCpuSecurityMitigationEnabled() {
   g_is_cpu_security_mitigation_enabled_read = true;
 
   if (!g_is_cpu_security_mitigation_enabled ||
       !FeatureList::IsEnabled(kNumberOfCoresWithCpuSecurityMitigation)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return NumberOfPhysicalProcessors();
 }
@@ -109,7 +109,6 @@ uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
                          reinterpret_cast<host_info_t>(&hostinfo), &count);
   if (result != KERN_SUCCESS) {
     NOTREACHED();
-    return 0;
   }
   DCHECK_EQ(HOST_BASIC_INFO_COUNT, count);
   return hostinfo.max_mem;
@@ -132,39 +131,31 @@ std::string SysInfo::CPUModelName() {
 
 // static
 std::string SysInfo::HardwareModelName() {
-  // The old "hw.machine" and "hw.model" sysctls are discouraged in favor of the
-  // new "hw.product" and "hw.target". See
-  // https://github.com/apple-oss-distributions/xnu/blob/aca3beaa3dfbd42498b42c5e5ce20a938e6554e5/bsd/sys/sysctl.h#L1168-L1169
-  // and
-  // https://github.com/apple-oss-distributions/xnu/blob/aca3beaa3dfbd42498b42c5e5ce20a938e6554e5/bsd/kern/kern_mib.c#L534-L536
-  if (base::mac::MacOSMajorVersion() < 11) {
-    return StringSysctl({CTL_HW, HW_MODEL}).value_or(std::string{});
-  } else {
-    return StringSysctl({CTL_HW, HW_PRODUCT}).value_or(std::string{});
-  }
+  // Note that there is lots of code out there that uses "hw.model", but that is
+  // deprecated in favor of "hw.product" as used here. See the sysctl.h file for
+  // more info.
+  return StringSysctl({CTL_HW, HW_PRODUCT}).value_or(std::string{});
 }
 
 // static
-absl::optional<SysInfo::HardwareModelNameSplit>
+std::optional<SysInfo::HardwareModelNameSplit>
 SysInfo::SplitHardwareModelNameDoNotUse(std::string_view name) {
   size_t number_loc = name.find_first_of("0123456789");
   if (number_loc == std::string::npos) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   size_t comma_loc = name.find(',', number_loc);
   if (comma_loc == std::string::npos) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   HardwareModelNameSplit split;
-  const auto* begin = name.begin();
-  if (!StringToInt(std::string_view(begin + number_loc, begin + comma_loc),
+  if (!StringToInt(name.substr(0u, comma_loc).substr(number_loc),
                    &split.model) ||
-      !StringToInt(std::string_view(begin + comma_loc + 1, name.end()),
-                   &split.variant)) {
-    return absl::nullopt;
+      !StringToInt(name.substr(comma_loc + 1), &split.variant)) {
+    return std::nullopt;
   }
-  split.category = name.substr(0, number_loc);
+  split.category = name.substr(0u, number_loc);
   return split;
 }
 

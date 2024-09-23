@@ -23,17 +23,19 @@ String CandidateComponentToString(int component) {
   return String();
 }
 
-// Maps |type| to constants defined in
-// https://w3c.github.io/webrtc-pc/#rtcicecandidatetype-enum
-String CandidateTypeToString(const std::string& type) {
-  if (type == cricket::LOCAL_PORT_TYPE)
-    return String("host");
-  if (type == cricket::STUN_PORT_TYPE)
-    return String("srflx");
-  if (type == cricket::PRFLX_PORT_TYPE)
-    return String("prflx");
-  if (type == cricket::RELAY_PORT_TYPE)
-    return String("relay");
+// Determine the relay protocol from local type preference which is the
+// lower 8 bits of the priority. The mapping to relay protocol is defined
+// in webrtc/p2p/base/port.h and only valid for relay candidates.
+String PriorityToRelayProtocol(uint32_t priority) {
+  uint8_t local_type_preference = priority >> 24;
+  switch (local_type_preference) {
+    case 0:
+      return String("tls");
+    case 1:
+      return String("tcp");
+    case 2:
+      return String("udp");
+  }
   return String();
 }
 
@@ -43,11 +45,13 @@ RTCIceCandidatePlatform::RTCIceCandidatePlatform(
     String candidate,
     String sdp_mid,
     std::optional<uint16_t> sdp_m_line_index,
-    String username_fragment)
+    String username_fragment,
+    std::optional<String> url)
     : candidate_(std::move(candidate)),
       sdp_mid_(std::move(sdp_mid)),
       sdp_m_line_index_(std::move(sdp_m_line_index)),
-      username_fragment_(std::move(username_fragment)) {
+      username_fragment_(std::move(username_fragment)),
+      url_(std::move(url)) {
   PopulateFields(false);
 }
 
@@ -66,26 +70,36 @@ void RTCIceCandidatePlatform::PopulateFields(bool use_username_from_candidate) {
   if (!webrtc::ParseCandidate(candidate_.Utf8(), &c, nullptr, true))
     return;
 
-  foundation_ = String::FromUTF8(c.foundation().data());
+  foundation_ = String::FromUTF8(c.foundation());
   component_ = CandidateComponentToString(c.component());
   priority_ = c.priority();
-  protocol_ = String::FromUTF8(c.protocol().data());
+  protocol_ = String::FromUTF8(c.protocol());
   if (!c.address().IsNil()) {
-    address_ = String::FromUTF8(c.address().HostAsURIString().data());
+    address_ = String::FromUTF8(c.address().HostAsURIString());
     port_ = c.address().port();
   }
-  type_ = CandidateTypeToString(c.type());
+  // The `type_name()` property returns a name as specified in:
+  // https://datatracker.ietf.org/doc/html/rfc5245#section-15.1
+  // which is identical to:
+  // https://w3c.github.io/webrtc-pc/#rtcicecandidatetype-enum
+  auto type = c.type_name();
+  DCHECK(type == "host" || type == "srflx" || type == "prflx" ||
+         type == "relay");
+  type_ = String(type.data(), type.size());
   if (!c.tcptype().empty()) {
-    tcp_type_ = String::FromUTF8(c.tcptype().data());
+    tcp_type_ = String::FromUTF8(c.tcptype());
   }
   if (!c.related_address().IsNil()) {
-    related_address_ =
-        String::FromUTF8(c.related_address().HostAsURIString().data());
+    related_address_ = String::FromUTF8(c.related_address().HostAsURIString());
     related_port_ = c.related_address().port();
+  }
+  // url_ is set only when the candidate was gathered locally.
+  if (type_ == "relay" && priority_ && url_) {
+    relay_protocol_ = PriorityToRelayProtocol(*priority_);
   }
 
   if (use_username_from_candidate)
-    username_fragment_ = String::FromUTF8(c.username().data());
+    username_fragment_ = String::FromUTF8(c.username());
 }
 
 }  // namespace blink

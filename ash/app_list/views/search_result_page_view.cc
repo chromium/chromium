@@ -12,7 +12,6 @@
 #include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/app_list/views/search_notifier_controller.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/style/ash_color_id.h"
@@ -121,23 +120,8 @@ void SearchResultPageView::InitializeContainers(
   AddChildView(std::make_unique<SearchCardView>(std::move(search_view_ptr)));
 }
 
-const char* SearchResultPageView::GetClassName() const {
-  return "SearchResultPageView";
-}
-
-void SearchResultPageView::VisibilityChanged(View* starting_from,
-                                             bool is_visible) {
-  auto* notifier_controller = search_view_->search_notifier_controller();
-  if (starting_from == this && notifier_controller) {
-    notifier_controller->UpdateNotifierVisibility(is_visible);
-    if (search_view_->search_notifier_view() &&
-        !notifier_controller->ShouldShowPrivacyNotice()) {
-      search_view_->RemoveSearchNotifierView();
-    }
-  }
-}
-
-gfx::Size SearchResultPageView::CalculatePreferredSize() const {
+gfx::Size SearchResultPageView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   int adjusted_height =
       std::min(std::max(kMinHeight, search_view_->TabletModePreferredHeight() +
                                         kActiveSearchBoxHeight +
@@ -403,9 +387,10 @@ gfx::Rect SearchResultPageView::GetPageBoundsForState(
   bounding_rect.Inset(
       gfx::Insets::TLBR(0, 0, kSearchResultPageMinimumBottomMargin, 0));
 
-  gfx::Rect preferred_bounds = gfx::Rect(
-      search_box_bounds.origin(),
-      gfx::Size(search_box_bounds.width(), CalculatePreferredSize().height()));
+  gfx::Rect preferred_bounds =
+      gfx::Rect(search_box_bounds.origin(),
+                gfx::Size(search_box_bounds.width(),
+                          CalculatePreferredSize({}).height()));
   preferred_bounds.Intersect(bounding_rect);
 
   return preferred_bounds;
@@ -436,5 +421,8 @@ gfx::Size SearchResultPageView::GetPreferredSearchBoxSize() const {
 
   return gfx::Size(kWidth, kActiveSearchBoxHeight + iph_height);
 }
+
+BEGIN_METADATA(SearchResultPageView)
+END_METADATA
 
 }  // namespace ash

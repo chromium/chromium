@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // Implementation of helper functions for the Chrome Extensions Proxy Settings
 // API.
 //
@@ -392,7 +397,7 @@ std::optional<base::Value::Dict> CreateProxyConfigDict(
     case ProxyPrefs::MODE_SYSTEM:
       return ProxyConfigDictionary::CreateSystem();
     case ProxyPrefs::kModeCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return std::nullopt;
 }
@@ -470,7 +475,7 @@ base::Value::Dict CreateProxyServerDict(const net::ProxyChain& proxy_chain) {
   base::Value::Dict out;
   const char* scheme = nullptr;
   CHECK(proxy_chain.is_single_proxy());
-  const net::ProxyServer& proxy = proxy_chain.GetProxyServer(/*chain_index=*/0);
+  const net::ProxyServer& proxy = proxy_chain.First();
   switch (proxy.scheme()) {
     case net::ProxyServer::SCHEME_HTTP:
       scheme = "http";
@@ -488,7 +493,7 @@ base::Value::Dict CreateProxyServerDict(const net::ProxyChain& proxy_chain) {
       scheme = "socks5";
       break;
     case net::ProxyServer::SCHEME_INVALID:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return out;
   }
   out.Set(proxy_api_constants::kProxyConfigRuleScheme, scheme);

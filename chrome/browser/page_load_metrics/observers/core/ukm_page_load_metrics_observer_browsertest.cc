@@ -12,8 +12,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -72,15 +74,7 @@ class UkmPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
   std::vector<int64_t> GetUkmMetricEntryValues(
       const std::string& entry_name,
       const std::string& metric_name) const {
-    const auto metric_entries =
-        ukm_recorder_->GetMetrics(entry_name, {metric_name});
-    std::vector<int64_t> metrics;
-    for (const auto& entry : metric_entries) {
-      auto it = entry.find(metric_name);
-      if (it != entry.end())
-        metrics.push_back(it->second);
-    }
-    return metrics;
+    return ukm_recorder_->GetMetricsEntryValues(entry_name, metric_name);
   }
 
   GURL GetOriginURL(const std::string& path) {
@@ -177,6 +171,72 @@ IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
                   PageLoad::kEntryName,
                   PageLoad::kMainFrameResource_RequestHadCookiesName)
                   .empty());
+}
+
+void AttachBookmarkBarNavigationHandleUserData(
+    content::NavigationHandle& navigation_handle) {
+  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
+      navigation_handle, page_load_metrics::NavigationHandleUserData::
+                             InitiatorLocation::kBookmarkBar);
+}
+
+void AttachNewTabPageNavigationHandleUserData(
+    content::NavigationHandle& navigation_handle) {
+  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
+      navigation_handle, page_load_metrics::NavigationHandleUserData::
+                             InitiatorLocation::kNewTabPage);
+}
+
+IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
+                       NavigationHandleUserDataTypeMetrics_BookmarkBar) {
+  base::RepeatingCallback<void(content::NavigationHandle&)>
+      prerender_navigation_handle_callback =
+          base::BindRepeating(&AttachBookmarkBarNavigationHandleUserData);
+
+  browser()->tab_strip_model()->GetActiveWebContents()->OpenURL(
+      content::OpenURLParams(
+          embedded_test_server()->GetURL("origin.com",
+                                         "/subresource_loading/index.html"),
+          content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/std::move(
+          prerender_navigation_handle_callback));
+  NavigateAway();
+
+  ASSERT_THAT(
+      GetUkmMetricEntryValues(PageLoad::kEntryName,
+                              PageLoad::kNavigation_InitiatorLocationName),
+      testing::ElementsAre(
+          static_cast<int>(page_load_metrics::NavigationHandleUserData::
+                               InitiatorLocation::kBookmarkBar)));
+}
+
+IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
+                       NavigationHandleUserDataTypeMetrics_NewTabPage) {
+  base::RepeatingCallback<void(content::NavigationHandle&)>
+      prerender_navigation_handle_callback =
+          base::BindRepeating(&AttachNewTabPageNavigationHandleUserData);
+
+  browser()->tab_strip_model()->GetActiveWebContents()->OpenURL(
+      content::OpenURLParams(
+          embedded_test_server()->GetURL("origin.com",
+                                         "/subresource_loading/index.html"),
+          content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/std::move(
+          prerender_navigation_handle_callback));
+  NavigateAway();
+
+  ASSERT_THAT(
+      GetUkmMetricEntryValues(PageLoad::kEntryName,
+                              PageLoad::kNavigation_InitiatorLocationName),
+      testing::ElementsAre(
+          static_cast<int>(page_load_metrics::NavigationHandleUserData::
+                               InitiatorLocation::kNewTabPage)));
 }
 
 }  // namespace

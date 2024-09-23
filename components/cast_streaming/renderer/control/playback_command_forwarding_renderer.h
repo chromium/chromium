@@ -136,7 +136,7 @@ class PlaybackCommandForwardingRenderer : public media::Renderer,
   // MojoRendererInitialize().
   mojo::AssociatedRemote<media::mojom::RendererClient> remote_renderer_client_;
 
-  raw_ptr<RendererClient, ExperimentalRenderer> upstream_renderer_client_;
+  raw_ptr<RendererClient> upstream_renderer_client_;
 
   base::RepeatingTimer send_timestamp_update_caller_;
 

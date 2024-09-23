@@ -53,12 +53,12 @@ namespace memory_instrumentation {
 
 namespace {
 
-const char kMDPName[] = "TestDumpProvider";
-const char* kWhitelistedMDPName = "WhitelistedTestDumpProvider";
-const char* kBackgroundButNotSummaryWhitelistedMDPName =
+constexpr char kMDPName[] = "TestDumpProvider";
+constexpr char kWhitelistedMDPName[] = "WhitelistedTestDumpProvider";
+constexpr char kBackgroundButNotSummaryWhitelistedMDPName[] =
     "BackgroundButNotSummaryWhitelistedTestDumpProvider";
-const char* const kTestMDPWhitelist[] = {
-    kWhitelistedMDPName, kBackgroundButNotSummaryWhitelistedMDPName, nullptr};
+constexpr auto kTestMDPWhitelist = std::to_array<std::string_view>(
+    {kWhitelistedMDPName, kBackgroundButNotSummaryWhitelistedMDPName});
 
 // GTest matchers for MemoryDumpRequestArgs arguments.
 MATCHER(IsDetailedDump, "") {
@@ -144,11 +144,9 @@ class MemoryTracingIntegrationTest : public testing::Test {
         std::make_unique<base::test::SingleThreadTaskEnvironment>();
     coordinator_ = std::make_unique<MockCoordinator>(this);
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     TraceLog::GetInstance()->InitializePerfettoIfNeeded();
     tracing::PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
         base::SingleThreadTaskRunner::GetCurrentDefault());
-#endif
 
     TracingObserverProto::GetInstance()->ResetForTesting();
   }

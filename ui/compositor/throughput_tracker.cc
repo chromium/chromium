@@ -24,47 +24,63 @@ ThroughputTracker::ThroughputTracker(ThroughputTracker&& other) {
 ThroughputTracker& ThroughputTracker::operator=(ThroughputTracker&& other) {
   id_ = other.id_;
   host_ = std::move(other.host_);
-  started_ = other.started_;
+  state_ = other.state_;
 
   other.id_ = kInvalidId;
   other.host_.reset();
-  other.started_ = false;
+  other.state_ = State::kNotStarted;
   return *this;
 }
 
 ThroughputTracker::~ThroughputTracker() {
-  if (started_)
+  // Auto cancel if `Stop` is not called.
+  if (state_ == State::kStarted) {
     Cancel();
+  }
 }
 
 void ThroughputTracker::Start(ThroughputTrackerHost::ReportCallback callback) {
   // Start after |host_| destruction is likely an error.
   DCHECK(host_);
-  DCHECK(!started_);
+  DCHECK_EQ(state_, State::kNotStarted);
 
-  started_ = true;
+  state_ = State::kStarted;
   host_->StartThroughputTracker(id_, std::move(callback));
 }
 
 bool ThroughputTracker::Stop() {
-  DCHECK(started_);
+  DCHECK_EQ(state_, State::kStarted);
 
-  started_ = false;
-  if (host_)
-    return host_->StopThroughtputTracker(id_);
+  if (host_ && host_->StopThroughputTracker(id_)) {
+    state_ = State::kWaitForReport;
+    return true;
+  }
 
+  // No data will be reported. This could happen when gpu process crashed.
+  // Treat the case as `kCanceled`.
+  state_ = State::kCanceled;
   return false;
 }
 
 void ThroughputTracker::Cancel() {
   // Some code calls Cancel() indirectly after receiving report. Allow this to
   // happen and make it a no-op. See https://crbug.com/1193382.
-  if (!started_)
+  if (state_ != State::kStarted) {
     return;
+  }
 
-  started_ = false;
+  CancelReport();
+}
+
+void ThroughputTracker::CancelReport() {
+  // Report is only possible in `kStarted` and `kWaitForReport` state.
+  if (state_ != State::kStarted && state_ != State::kWaitForReport) {
+    return;
+  }
+
+  state_ = State::kCanceled;
   if (host_)
-    host_->CancelThroughtputTracker(id_);
+    host_->CancelThroughputTracker(id_);
 }
 
 }  // namespace ui

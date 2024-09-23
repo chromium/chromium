@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/domain_reliability/scheduler.h"
+#include "net/base/isolation_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace domain_reliability {
@@ -91,14 +92,13 @@ MockUploader::~MockUploader() = default;
 
 bool MockUploader::discard_uploads() const { return discard_uploads_; }
 
-void MockUploader::UploadReport(
-    const std::string& report_json,
-    int max_upload_depth,
-    const GURL& upload_url,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
-    UploadCallback callback) {
-  callback_.Run(report_json, max_upload_depth, upload_url,
-                network_anonymization_key, std::move(callback));
+void MockUploader::UploadReport(const std::string& report_json,
+                                int max_upload_depth,
+                                const GURL& upload_url,
+                                const net::IsolationInfo& isolation_info,
+                                UploadCallback callback) {
+  callback_.Run(report_json, max_upload_depth, upload_url, isolation_info,
+                std::move(callback));
 }
 
 void MockUploader::Shutdown() {}

@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -84,17 +85,17 @@ void AXInlineTextBox::GetRelativeBounds(AXObject** out_container,
   out_bounds_in_container.Offset(-parent_bounding_box.OffsetFromOrigin());
 }
 
-bool AXInlineTextBox::ComputeAccessibilityIsIgnored(
+bool AXInlineTextBox::ComputeIsIgnored(
     IgnoredReasons* ignored_reasons) const {
   AXObject* parent = ParentObject();
   if (!parent)
     return false;
 
-  if (!parent->AccessibilityIsIgnored())
+  if (!parent->IsIgnored())
     return false;
 
   if (ignored_reasons)
-    parent->ComputeAccessibilityIsIgnored(ignored_reasons);
+    parent->ComputeIsIgnored(ignored_reasons);
 
   return true;
 }
@@ -155,7 +156,7 @@ int AXInlineTextBox::TextOffsetInContainer(int offset) const {
 
   // If the parent object in the accessibility tree exists, then it is either
   // a static text object or a line break. In the static text case, it is an
-  // AXLayoutObject associated with an inline text object. Hence the container
+  // AXNodeObject associated with an inline text object. Hence the container
   // is another inline object, not a layout block flow. We need to subtract the
   // text start offset of the static text parent from the text start offset of
   // this inline text box.
@@ -185,28 +186,21 @@ ax::mojom::blink::WritingDirection AXInlineTextBox::GetTextDirection() const {
     return AXObject::GetTextDirection();
 
   switch (inline_text_box_->GetDirection()) {
-    case AbstractInlineTextBox::kLeftToRight:
+    case PhysicalDirection::kRight:
       return ax::mojom::blink::WritingDirection::kLtr;
-    case AbstractInlineTextBox::kRightToLeft:
+    case PhysicalDirection::kLeft:
       return ax::mojom::blink::WritingDirection::kRtl;
-    case AbstractInlineTextBox::kTopToBottom:
+    case PhysicalDirection::kDown:
       return ax::mojom::blink::WritingDirection::kTtb;
-    case AbstractInlineTextBox::kBottomToTop:
+    case PhysicalDirection::kUp:
       return ax::mojom::blink::WritingDirection::kBtt;
   }
 
   return AXObject::GetTextDirection();
 }
 
-Node* AXInlineTextBox::GetNode() const {
-  if (IsDetached())
-    return nullptr;
-
-  return inline_text_box_->GetNode();
-}
-
 Document* AXInlineTextBox::GetDocument() const {
-  return CachedParentObject() ? CachedParentObject()->GetDocument() : nullptr;
+  return ParentObject() ? ParentObject()->GetDocument() : nullptr;
 }
 
 AbstractInlineTextBox* AXInlineTextBox::GetInlineTextBox() const {
@@ -217,8 +211,12 @@ AXObject* AXInlineTextBox::NextOnLine() const {
   if (IsDetached())
     return nullptr;
 
-  if (inline_text_box_->IsLast())
-    return ParentObject()->NextOnLine();
+  if (inline_text_box_->IsLast()) {
+    // Do not serialize nextOnlineID if it can be inferred from the parent.
+    return features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()
+               ? nullptr
+               : ParentObject()->NextOnLine();
+  }
 
   if (AbstractInlineTextBox* next_on_line = inline_text_box_->NextOnLine()) {
     return AXObjectCache().Get(next_on_line);
@@ -230,8 +228,12 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
   if (IsDetached())
     return nullptr;
 
-  if (inline_text_box_->IsFirst())
-    return ParentObject()->PreviousOnLine();
+  if (inline_text_box_->IsFirst()) {
+    // Do not serialize previousOnlineID if it can be inferred from the parent.
+    return features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()
+               ? nullptr
+               : ParentObject()->PreviousOnLine();
+  }
 
   AbstractInlineTextBox* previous_on_line = inline_text_box_->PreviousOnLine();
   if (previous_on_line)
@@ -319,7 +321,7 @@ void AXInlineTextBox::SerializeMarkerAttributes(
                                                  markers_used_by_accessibility);
   const int start_text_offset_in_parent = TextOffsetInContainer(0);
   for (const auto& node_marker_pair : node_marker_pairs) {
-    DCHECK_EQ(GetNode(), node_marker_pair.first);
+    DCHECK_EQ(inline_text_box_->GetNode(), node_marker_pair.first);
     const DocumentMarker* marker = node_marker_pair.second;
 
     if (aria_marker_type == marker->GetType())
@@ -330,11 +332,11 @@ void AXInlineTextBox::SerializeMarkerAttributes(
     // accessibility tree, first in this object's parent and then to local text
     // offsets.
     const auto start_position = AXPosition::FromPosition(
-        Position(*GetNode(), marker->StartOffset()), TextAffinity::kDownstream,
-        AXPositionAdjustmentBehavior::kMoveLeft);
+        Position(*inline_text_box_->GetNode(), marker->StartOffset()),
+        TextAffinity::kDownstream, AXPositionAdjustmentBehavior::kMoveLeft);
     const auto end_position = AXPosition::FromPosition(
-        Position(*GetNode(), marker->EndOffset()), TextAffinity::kDownstream,
-        AXPositionAdjustmentBehavior::kMoveRight);
+        Position(*inline_text_box_->GetNode(), marker->EndOffset()),
+        TextAffinity::kDownstream, AXPositionAdjustmentBehavior::kMoveRight);
     if (!start_position.IsValid() || !end_position.IsValid())
       continue;
 
@@ -382,7 +384,7 @@ void AXInlineTextBox::Init(AXObject* parent) {
   DCHECK(ui::CanHaveInlineTextBoxChildren(parent->RoleValue()))
       << "Unexpected parent of inline text box: " << parent->RoleValue();
   DCHECK(parent->CanHaveChildren())
-      << "Parent cannot have children: " << parent->ToString(true, true);
+      << "Parent cannot have children: " << parent;
   // Don't call SetParent(), which calls SetAncestorsHaveDirtyDescendants(),
   // because once inline textboxes are loaded for the parent text, it's never
   // necessary to again recompute this part of the tree.
@@ -416,7 +418,7 @@ int AXInlineTextBox::TextLength() const {
   return static_cast<int>(inline_text_box_->Len());
 }
 
-void AXInlineTextBox::ClearChildren() const {
+void AXInlineTextBox::ClearChildren() {
   // An AXInlineTextBox has no children to clear.
 }
 

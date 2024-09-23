@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_multiple_headers
+  AssertionError: assert 'value2' in 'value1'
+[FAIL] test_override_cookies
+  AssertionError: assert 1 == 0
+Harness: the test ran to completion.

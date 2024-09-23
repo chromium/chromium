@@ -64,12 +64,12 @@ void FileManagerPrivateInternalGetContentMimeTypeFunction::ReadBlobBytes(
 
 void FileManagerPrivateInternalGetContentMimeTypeFunction::SniffMimeType(
     const std::string& blob_uuid,
-    std::unique_ptr<std::string> sniff_bytes,
-    int64_t length) {
+    std::string sniff_bytes,
+    int64_t /*length*/) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::string mime_type;
-  if (!net::SniffMimeTypeFromLocalData(*sniff_bytes, &mime_type)) {
+  if (!net::SniffMimeTypeFromLocalData(sniff_bytes, &mime_type)) {
     Respond(Error("Could not deduce the content mime type."));
     return;
   }
@@ -120,7 +120,7 @@ void FileManagerPrivateInternalGetContentMetadataFunction::CanParseBlob(
     const std::string& blob_uuid,
     const std::string& mime_type,
     bool include_images,
-    std::unique_ptr<std::string> sniff_bytes,
+    std::string /*sniff_bytes*/,
     int64_t length) {  // The length of the original input blob.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

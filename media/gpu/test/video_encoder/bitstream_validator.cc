@@ -46,7 +46,6 @@ std::unique_ptr<VideoDecoder> CreateDecoder(
 
   if (codec == VideoCodec::kVP8 || codec == VideoCodec::kVP9) {
 #if BUILDFLAG(ENABLE_LIBVPX)
-    LOG_ASSERT(!base::FeatureList::IsEnabled(kFFmpegDecodeOpaqueVP8));
     decoder = std::make_unique<VpxVideoDecoder>();
 #endif
   }

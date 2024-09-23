@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/ffmpeg_audio_decoder.h"
 
 #include <stdint.h>
@@ -179,12 +184,12 @@ void FFmpegAudioDecoder::DecodeBuffer(const DecoderBuffer& buffer,
 
 bool FFmpegAudioDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
   AVPacket* packet = av_packet_alloc();
-  if (buffer.end_of_stream()) {
-    packet->data = NULL;
+  if (buffer.end_of_stream() || buffer.size() == 0) {
+    packet->data = nullptr;
     packet->size = 0;
   } else {
     packet->data = const_cast<uint8_t*>(buffer.data());
-    packet->size = buffer.data_size();
+    packet->size = buffer.size();
     packet->pts =
         ConvertToTimeBase(codec_context_->time_base, buffer.timestamp());
 
@@ -324,7 +329,7 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
   ReleaseFFmpegResources();
 
   // Initialize AVCodecContext structure.
-  codec_context_.reset(avcodec_alloc_context3(NULL));
+  codec_context_.reset(avcodec_alloc_context3(nullptr));
   AudioDecoderConfigToAVCodecContext(config, codec_context_.get());
 
   codec_context_->opaque = this;
@@ -339,7 +344,7 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
   if (!config.should_discard_decoder_delay())
     codec_context_->flags2 |= AV_CODEC_FLAG2_SKIP_MANUAL;
 
-  AVDictionary* codec_options = NULL;
+  AVDictionary* codec_options = nullptr;
   if (config.codec() == AudioCodec::kOpus) {
     codec_context_->request_sample_fmt = AV_SAMPLE_FMT_FLT;
 
@@ -400,8 +405,7 @@ int FFmpegAudioDecoder::GetAudioBuffer(struct AVCodecContext* s,
 
   // Since this routine is called by FFmpeg when a buffer is required for
   // audio data, use the values supplied by FFmpeg (ignoring the current
-  // settings). FFmpegDecode() gets to determine if the buffer is useable or
-  // not.
+  // settings). FFmpegDecode() gets to determine if the buffer is usable or not.
   AVSampleFormat format = static_cast<AVSampleFormat>(frame->format);
   SampleFormat sample_format =
       AVSampleFormatToSampleFormat(format, s->codec_id);

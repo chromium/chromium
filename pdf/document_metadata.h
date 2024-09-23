@@ -43,8 +43,8 @@ enum class FormType {
 // 32000-1:2008 spec).
 struct DocumentMetadata {
   DocumentMetadata();
-  DocumentMetadata(const DocumentMetadata&) = delete;
-  DocumentMetadata& operator=(const DocumentMetadata&) = delete;
+  DocumentMetadata(DocumentMetadata&&) noexcept;
+  DocumentMetadata& operator=(DocumentMetadata&& other) noexcept;
   ~DocumentMetadata();
 
   // Version of the document.

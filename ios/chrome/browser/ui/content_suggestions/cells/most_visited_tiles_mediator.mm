@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/metrics.h"
@@ -16,28 +17,30 @@
 #import "components/ntp_tiles/ntp_tile.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_provider.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp_tiles/model/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_saver.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_config.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_stack_view_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_stack_view_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
-#import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
-#import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -49,15 +52,13 @@ namespace {
 // Maximum number of most visited tiles fetched.
 const NSInteger kMaxNumMostVisitedTiles = 4;
 
-// Size of the favicon returned by the provider for the most visited items.
-const CGFloat kMostVisitedFaviconSize = 48;
 // Size below which the provider returns a colored tile instead of an image.
-const CGFloat kMostVisitedFaviconMinimalSize = 32;
 const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 
 }  // namespace
 
 @interface MostVisitedTilesMediator () <MostVisitedSitesObserving,
+                                        MostVisitedTilesStackViewConsumerSource,
                                         ContentSuggestionsMenuProvider>
 @end
 
@@ -74,6 +75,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   BOOL _recordedPageImpression;
   PrefService* _prefService;
   UrlLoadingBrowserAgent* _URLLoadingBrowserAgent;
+  // Consumer of model updates when MVTs are in the Magic Stack.
+  id<MostVisitedTilesStackViewConsumer> _stackViewConsumer;
 }
 
 - (instancetype)
@@ -89,11 +92,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
     _incognitoAvailable = !IsIncognitoModeDisabled(prefService);
     _mostVisitedAttributesProvider = [[FaviconAttributesProvider alloc]
-        initWithFaviconSize:IsMagicStackEnabled() ? kMagicStackFaviconWidth
-                                                  : kMostVisitedFaviconSize
-             minFaviconSize:IsMagicStackEnabled()
-                                ? kMagicStackMostVisitedFaviconMinimalSize
-                                : kMostVisitedFaviconMinimalSize
+        initWithFaviconSize:kMagicStackFaviconWidth
+             minFaviconSize:kMagicStackMostVisitedFaviconMinimalSize
            largeIconService:largeIconService];
     // Set a cache only for the Most Visited provider, as the cache is
     // overwritten for every new results and the size of the favicon fetched for
@@ -140,7 +140,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   _freshMostVisitedItems = [NSMutableArray array];
   int index = 0;
   for (const ntp_tiles::NTPTile& tile : mostVisited) {
-    ContentSuggestionsMostVisitedItem* item = ConvertNTPTile(tile);
+    ContentSuggestionsMostVisitedItem* item = [self convertNTPTile:tile];
     item.commandHandler = self;
     item.incognitoAvailable = _incognitoAvailable;
     item.index = index;
@@ -265,6 +265,15 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
                                                actionProvider:actionProvider];
 }
 
+#pragma mark - MostVisitedTilesStackViewConsumerSource
+
+- (void)addConsumer:(id<MostVisitedTilesStackViewConsumer>)consumer {
+  if (_stackViewConsumer == consumer) {
+    return;
+  }
+  _stackViewConsumer = consumer;
+}
+
 #pragma mark - Private
 
 - (UIMenu*)contextMenuActionProviderForItem:
@@ -326,10 +335,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
-  if (IsMagicStackEnabled()) {
     const base::Value::List& oldMostVisitedSites =
-        GetApplicationContext()->GetLocalState()->GetList(
-            prefs::kIosLatestMostVisitedSites);
+        _prefService->GetList(prefs::kIosLatestMostVisitedSites);
     base::Value::List freshMostVisitedSites;
     for (ContentSuggestionsMostVisitedItem* item in _freshMostVisitedItems) {
       freshMostVisitedSites.Append(item.URL.spec());
@@ -342,22 +349,32 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
       [self lookForNewMostVisitedSite:freshMostVisitedSites
                   oldMostVisitedSites:oldMostVisitedSites];
     }
-    GetApplicationContext()->GetLocalState()->SetList(
-        prefs::kIosLatestMostVisitedSites, std::move(freshMostVisitedSites));
-  }
+    _prefService->SetList(prefs::kIosLatestMostVisitedSites,
+                          std::move(freshMostVisitedSites));
 
-  _mostVisitedConfig = [[MostVisitedTilesConfig alloc] init];
-  _mostVisitedConfig.imageDataSource = self;
-  _mostVisitedConfig.commandHandler = self;
-  _mostVisitedConfig.mostVisitedItems = _freshMostVisitedItems;
-  [self.consumer setMostVisitedTilesConfig:_mostVisitedConfig];
-  [self.contentSuggestionsDelegate contentSuggestionsWasUpdated];
+    _mostVisitedConfig = [[MostVisitedTilesConfig alloc] init];
+    _mostVisitedConfig.imageDataSource = self;
+    _mostVisitedConfig.commandHandler = self;
+    _mostVisitedConfig.mostVisitedItems = _freshMostVisitedItems;
+    _mostVisitedConfig.consumerSource = self;
+    if (ShouldPutMostVisitedSitesInMagicStack()) {
+      if ([_freshMostVisitedItems count] == 0) {
+        [self.delegate removeMostVisitedTilesModule];
+      } else if (!oldMostVisitedSites.empty()) {
+        [_stackViewConsumer updateWithConfig:_mostVisitedConfig];
+      } else {
+        [self.delegate didReceiveInitialMostVistedTiles];
+      }
+    } else {
+      [self.consumer setMostVisitedTilesConfig:_mostVisitedConfig];
+      [self.contentSuggestionsDelegate contentSuggestionsWasUpdated];
+    }
 }
 
 // Logs a histogram due to a Most Visited item being opened.
 - (void)logMostVisitedOpening:(ContentSuggestionsMostVisitedItem*)item
                       atIndex:(NSInteger)mostVisitedIndex {
-  [self.NTPMetricsDelegate mostVisitedTileOpened];
+  [self.NTPActionsDelegate mostVisitedTileOpened];
   if (ShouldPutMostVisitedSitesInMagicStack()) {
     [self.delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
                                                       kMostVisited];
@@ -399,9 +416,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   action.accessibilityIdentifier = @"Undo";
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = [MDCSnackbarMessage
-      messageWithText:l10n_util::GetNSString(
-                          IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED)];
+  MDCSnackbarMessage* message = CreateSnackbarMessage(
+      l10n_util::GetNSString(IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED));
   message.action = action;
   message.category = @"MostVisitedUndo";
   [self.snackbarHandler showSnackbarMessage:message];
@@ -416,12 +432,12 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 // remaining New Tab Page displays that include synced history in the Most
 // Visited Tiles.
 - (void)recordMostVisitedTilesDisplayed {
-  const int displayCount = GetApplicationContext()->GetLocalState()->GetInteger(
-                               prefs::kIosSyncSegmentsNewTabPageDisplayCount) +
-                           1;
+  const int displayCount =
+      _prefService->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount) +
+      1;
 
-  GetApplicationContext()->GetLocalState()->SetInteger(
-      prefs::kIosSyncSegmentsNewTabPageDisplayCount, displayCount);
+  _prefService->SetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
+                           displayCount);
 }
 
 // Logs a User Action if `freshMostVisitedSites` has at least one site that
@@ -446,6 +462,21 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
       return;
     }
   }
+}
+
+// Converts a ntp_tiles::NTPTile `tile` to a ContentSuggestionsMostVisitedItem
+// with a `sectionInfo`.
+- (ContentSuggestionsMostVisitedItem*)convertNTPTile:
+    (const ntp_tiles::NTPTile&)tile {
+  ContentSuggestionsMostVisitedItem* suggestion =
+      [[ContentSuggestionsMostVisitedItem alloc] init];
+
+  suggestion.title = base::SysUTF16ToNSString(tile.title);
+  suggestion.URL = tile.url;
+  suggestion.source = tile.source;
+  suggestion.titleSource = tile.title_source;
+
+  return suggestion;
 }
 
 @end

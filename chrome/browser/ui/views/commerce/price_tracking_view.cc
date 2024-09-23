@@ -9,7 +9,6 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -19,10 +18,10 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -34,19 +33,15 @@
 #include "ui/views/layout/layout_provider.h"
 
 namespace {
-constexpr int kIconSize = 16;
-constexpr int kIconMargin = 14;
-constexpr int kIconSizeRefresh = 20;
-constexpr int kIconMarginRefresh = 8;
+constexpr int kIconSize = 20;
+constexpr int kIconMargin = 8;
 
 int GetIconMargin() {
-  return features::IsChromeRefresh2023() ? kIconMarginRefresh : kIconMargin;
+  return kIconMargin;
 }
 
 gfx::Size GetIconSize() {
-  return features::IsChromeRefresh2023()
-             ? gfx::Size(kIconSizeRefresh, kIconSizeRefresh)
-             : gfx::Size(kIconSize, kIconSize);
+  return gfx::Size(kIconSize, kIconSize);
 }
 
 }  // namespace
@@ -65,9 +60,8 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
       views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
   const gfx::Insets dialog_insets =
       layout_provider->GetInsetsMetric(views::INSETS_DIALOG);
-  if (features::IsChromeRefresh2023()) {
-    SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  }
+  SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+
   // Icon column
   auto* icon = AddChildView(std::make_unique<views::ImageView>());
   icon->SetImage(ui::ImageModel::FromVectorIcon(
@@ -83,9 +77,7 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
   auto* title_label =
       text_container->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE_DIALOG_TITLE),
-          label_context,
-          features::IsChromeRefresh2023() ? views::style::STYLE_EMPHASIZED
-                                          : views::style::STYLE_PRIMARY));
+          label_context, views::style::STYLE_EMPHASIZED));
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
 
@@ -129,7 +121,7 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
   scoped_observation_.Observe(
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile_));
 
-  toggle_button_->SetAccessibleName(GetToggleAccessibleName());
+  toggle_button_->GetViewAccessibility().SetName(GetToggleAccessibleName());
   toggle_button_->SetProperty(views::kMarginsKey,
                               gfx::Insets::TLBR(0, horizontal_spacing, 0, 0));
 
@@ -139,13 +131,12 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
   toggle_button_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                               features::IsChromeRefresh2023()
-                                   ? views::MaximumFlexSizeRule::kPreferred
-                                   : views::MaximumFlexSizeRule::kUnbounded)
+                               views::MaximumFlexSizeRule::kPreferred)
           .WithAlignment(views::LayoutAlignment::kEnd));
 
-  label_width = bubble_width - horizontal_spacing * 2 - dialog_insets.right() -
-                GetIconMargin() - GetIconSize().width() -
+  label_width = bubble_width - horizontal_spacing - dialog_insets.left() -
+                dialog_insets.right() - GetIconMargin() -
+                GetIconSize().width() -
                 toggle_button_->GetPreferredSize().width();
   body_label_->SizeToFit(label_width);
   base::RecordAction(base::UserMetricsAction(
@@ -180,7 +171,7 @@ void PriceTrackingView::HandleSubscriptionUpdate(
           commerce::kInvalidSubscriptionId)) == sub.id) {
     is_price_track_enabled_ = is_tracking;
     toggle_button_->SetIsOn(is_tracking);
-    toggle_button_->SetAccessibleName(GetToggleAccessibleName());
+    toggle_button_->GetViewAccessibility().SetName(GetToggleAccessibleName());
   }
 }
 
@@ -199,7 +190,7 @@ void PriceTrackingView::OnToggleButtonPressed(const GURL& url) {
         "Commerce.PriceTracking.BookmarkDialogPriceTrackViewUntrackedPrice"));
   }
 
-  toggle_button_->SetAccessibleName(GetToggleAccessibleName());
+  toggle_button_->GetViewAccessibility().SetName(GetToggleAccessibleName());
   UpdatePriceTrackingState(url);
 }
 
@@ -235,11 +226,11 @@ void PriceTrackingView::UpdatePriceTrackingState(const GURL& url) {
 }
 
 void PriceTrackingView::OnPriceTrackingStateUpdated(bool success) {
-  // TODO(crbug.com/1346612): Record latency for the update status.
+  // TODO(crbug.com/40232577): Record latency for the update status.
   if (!success) {
     is_price_track_enabled_ = !is_price_track_enabled_;
     toggle_button_->SetIsOn(is_price_track_enabled_);
-    toggle_button_->SetAccessibleName(GetToggleAccessibleName());
+    toggle_button_->GetViewAccessibility().SetName(GetToggleAccessibleName());
     body_label_->SetText(l10n_util::GetStringUTF16(
         IDS_OMNIBOX_TRACK_PRICE_DIALOG_ERROR_DESCRIPTION));
   }

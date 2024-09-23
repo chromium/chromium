@@ -35,6 +35,7 @@
 // them, and monitoring their changes can be instructive.
 
 #include <atlbase.h>
+
 #include <dia2.h>
 #include <stdio.h>
 #include <wrl/client.h>

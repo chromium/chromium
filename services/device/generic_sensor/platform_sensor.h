@@ -27,7 +27,9 @@ namespace device {
 
 class PlatformSensorProvider;
 class PlatformSensorConfiguration;
-struct SensorReadingSharedBuffer;
+template <class T>
+struct SensorReadingSharedBufferImpl;
+using SensorReadingSharedBuffer = SensorReadingSharedBufferImpl<void>;
 
 // Base class for the sensors provided by the platform. Concrete instances of
 // this class are created by platform specific PlatformSensorProvider.
@@ -105,7 +107,7 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   virtual ~PlatformSensor();
   PlatformSensor(mojom::SensorType type,
                  SensorReadingSharedBuffer* reading_buffer,
-                 PlatformSensorProvider* provider);
+                 base::WeakPtr<PlatformSensorProvider> provider);
 
   using ReadingBuffer = SensorReadingSharedBuffer;
 
@@ -158,11 +160,13 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
-  raw_ptr<SensorReadingSharedBuffer>
-      reading_buffer_;  // NOTE: Owned by |provider_|.
+  // Pointer to the buffer where sensor readings will be written. The buffer is
+  // owned by `provider_` and must not be accessed if `provider_` is null.
+  raw_ptr<SensorReadingSharedBuffer> reading_buffer_;
+
   mojom::SensorType type_;
   ConfigMap config_map_;
-  raw_ptr<PlatformSensorProvider> provider_;
+  base::WeakPtr<PlatformSensorProvider> provider_;
   bool is_active_ GUARDED_BY(lock_);
   std::optional<SensorReading> last_raw_reading_ GUARDED_BY(lock_);
   std::optional<SensorReading> last_rounded_reading_ GUARDED_BY(lock_);

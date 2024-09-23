@@ -42,10 +42,6 @@ class WebSocketHandshakeThrottleProviderImpl final
   WebSocketHandshakeThrottleProviderImpl(
       const WebSocketHandshakeThrottleProviderImpl& other);
 
-  mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing>
-      pending_safe_browsing_;
-  mojo::Remote<safe_browsing::mojom::SafeBrowsing> safe_browsing_;
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   mojo::PendingRemote<safe_browsing::mojom::ExtensionWebRequestReporter>
       pending_extension_web_request_reporter_;

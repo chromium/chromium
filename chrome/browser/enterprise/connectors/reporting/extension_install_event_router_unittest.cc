@@ -7,16 +7,17 @@
 #include <set>
 #include <string>
 #include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -42,7 +43,7 @@ constexpr char kFakeInstallAction[] = "INSTALL";
 constexpr char kFakeUpdateAction[] = "UPDATE";
 constexpr char kFakeUninstallAction[] = "UNINSTALL";
 constexpr char kFakeExtensionVersion[] = "1";
-constexpr bool kFakeFromWebstore = false;
+constexpr char kFakeExtensionSource[] = "EXTERNAL";
 
 }  // namespace
 
@@ -98,8 +99,7 @@ class ExtensionInstallEventRouterTest : public testing::Test {
     mockRealtimeReportingClient_->SetBrowserCloudPolicyClientForTesting(
         client_.get());
 
-    settings.enabled_event_names.insert(
-        ReportingServiceSettings::kExtensionInstallEvent);
+    settings.enabled_event_names.insert(kExtensionInstallEvent);
 
     base::Value::Dict manifest;
     manifest.Set(extensions::manifest_keys::kName, kFakeExtensionName);
@@ -140,12 +140,11 @@ TEST_F(ExtensionInstallEventRouterTest, CheckInstallEventReported) {
   expectedEvent.Set("description", kFakeExtensionDescription);
   expectedEvent.Set("extension_action_type", kFakeInstallAction);
   expectedEvent.Set("extension_version", kFakeExtensionVersion);
-  expectedEvent.Set("from_webstore", kFakeFromWebstore);
+  expectedEvent.Set("extension_source", kFakeExtensionSource);
 
   EXPECT_CALL(
       *mockRealtimeReportingClient_,
-      ReportRealtimeEvent(ReportingServiceSettings::kExtensionInstallEvent, _,
-                          Eq(ByRef(expectedEvent))))
+      ReportRealtimeEvent(kExtensionInstallEvent, _, Eq(ByRef(expectedEvent))))
       .Times(1);
   extensionInstallEventRouter_->OnExtensionInstalled(
       nullptr, extension_chrome_.get(), false);
@@ -159,12 +158,11 @@ TEST_F(ExtensionInstallEventRouterTest, CheckUpdateEventReported) {
   expectedEvent.Set("description", kFakeExtensionDescription);
   expectedEvent.Set("extension_action_type", kFakeUpdateAction);
   expectedEvent.Set("extension_version", kFakeExtensionVersion);
-  expectedEvent.Set("from_webstore", kFakeFromWebstore);
+  expectedEvent.Set("extension_source", kFakeExtensionSource);
 
   EXPECT_CALL(
       *mockRealtimeReportingClient_,
-      ReportRealtimeEvent(ReportingServiceSettings::kExtensionInstallEvent, _,
-                          Eq(ByRef(expectedEvent))))
+      ReportRealtimeEvent(kExtensionInstallEvent, _, Eq(ByRef(expectedEvent))))
       .Times(1);
   extensionInstallEventRouter_->OnExtensionInstalled(
       nullptr, extension_chrome_.get(), true);
@@ -178,12 +176,11 @@ TEST_F(ExtensionInstallEventRouterTest, CheckUninstallEventReported) {
   expectedEvent.Set("description", kFakeExtensionDescription);
   expectedEvent.Set("extension_action_type", kFakeUninstallAction);
   expectedEvent.Set("extension_version", kFakeExtensionVersion);
-  expectedEvent.Set("from_webstore", kFakeFromWebstore);
+  expectedEvent.Set("extension_source", kFakeExtensionSource);
 
   EXPECT_CALL(
       *mockRealtimeReportingClient_,
-      ReportRealtimeEvent(ReportingServiceSettings::kExtensionInstallEvent, _,
-                          Eq(ByRef(expectedEvent))))
+      ReportRealtimeEvent(kExtensionInstallEvent, _, Eq(ByRef(expectedEvent))))
       .Times(1);
   extensionInstallEventRouter_->OnExtensionUninstalled(
       nullptr, extension_chrome_.get(),

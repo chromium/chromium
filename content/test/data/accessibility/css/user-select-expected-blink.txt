@@ -15,8 +15,8 @@ rootWebArea
 ++++++++++inlineTextBox name='4. Selectable'
 ++++++list
 ++++++++listItem
-++++++++++listMarker name='%E2%80%A2 '
-++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++listMarker name='%E2%80%A2 ' notUserSelectableStyle=true
+++++++++++++staticText ignored
 ++++++++++staticText name='One'
 ++++++++++++inlineTextBox name='One'
 ++++++genericContainer ignored

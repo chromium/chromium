@@ -80,6 +80,12 @@ class ExtensionActionAPI : public BrowserContextKeyedAPI {
                                       content::WebContents* web_contents,
                                       const Extension* extension);
 
+  // Called when the action for the given extension is pinned or unpinned from
+  // the toolbar. Dispatches the onUserSettingsChanged event for extension that
+  // owns the given action.
+  void OnActionPinnedStateChanged(const ExtensionId& extension_id,
+                                  bool is_pinned);
+
   // Clears the values for all ExtensionActions for the tab associated with the
   // given |web_contents| (and signals that page actions changed).
   void ClearAllValuesForTab(content::WebContents* web_contents);

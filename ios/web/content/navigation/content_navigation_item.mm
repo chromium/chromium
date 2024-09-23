@@ -40,7 +40,7 @@ class NavigationItemHolder : public base::SupportsUserData::Data {
   std::unique_ptr<NavigationItem> navigation_item_;
 };
 
-// TODO(crbug.com/1419001): rather than converting here, we could instead use
+// TODO(crbug.com/40257932): rather than converting here, we could instead use
 // network::mojom::ReferrerPolicy directly and remove web::ReferrerPolicy.
 ReferrerPolicy FromContentReferrerPolicy(
     network::mojom::ReferrerPolicy policy) {
@@ -64,7 +64,7 @@ ReferrerPolicy FromContentReferrerPolicy(
     case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
       return ReferrerPolicyStrictOriginWhenCrossOrigin;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return ReferrerPolicyDefault;
 }
@@ -84,7 +84,7 @@ int ContentNavigationItem::GetUniqueID() const {
 }
 
 void ContentNavigationItem::SetOriginalRequestURL(const GURL& url) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const GURL& ContentNavigationItem::GetOriginalRequestURL() const {
@@ -92,7 +92,7 @@ const GURL& ContentNavigationItem::GetOriginalRequestURL() const {
 }
 
 void ContentNavigationItem::SetURL(const GURL& url) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const GURL& ContentNavigationItem::GetURL() const {
@@ -100,7 +100,7 @@ const GURL& ContentNavigationItem::GetURL() const {
 }
 
 void ContentNavigationItem::SetReferrer(const Referrer& referrer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const Referrer& ContentNavigationItem::GetReferrer() const {
@@ -111,7 +111,7 @@ const Referrer& ContentNavigationItem::GetReferrer() const {
 }
 
 void ContentNavigationItem::SetVirtualURL(const GURL& url) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const GURL& ContentNavigationItem::GetVirtualURL() const {
@@ -119,7 +119,7 @@ const GURL& ContentNavigationItem::GetVirtualURL() const {
 }
 
 void ContentNavigationItem::SetTitle(const std::u16string& title) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const std::u16string& ContentNavigationItem::GetTitle() const {
@@ -132,7 +132,7 @@ const std::u16string& ContentNavigationItem::GetTitleForDisplay() const {
 
 void ContentNavigationItem::SetTransitionType(
     ui::PageTransition transition_type) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 ui::PageTransition ContentNavigationItem::GetTransitionType() const {
@@ -141,7 +141,7 @@ ui::PageTransition ContentNavigationItem::GetTransitionType() const {
 
 void ContentNavigationItem::SetFaviconStatus(
     const FaviconStatus& favicon_status) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const FaviconStatus& ContentNavigationItem::GetFaviconStatus() const {
@@ -155,8 +155,8 @@ const SSLStatus& ContentNavigationItem::GetSSL() const {
 }
 
 SSLStatus& ContentNavigationItem::GetSSL() {
-  // TODO(crbug.com/1419001): update web::SSLStatus to include some of the newer
-  // fields/values that are included in content::SSLStatus.
+  // TODO(crbug.com/40257932): update web::SSLStatus to include some of the
+  // newer fields/values that are included in content::SSLStatus.
   const auto& content_ssl_status = entry_->GetSSL();
   constexpr int WEB_SUPPORTED_STATUS_MASK =
       content::SSLStatus::DISPLAYED_INSECURE_CONTENT;
@@ -173,7 +173,7 @@ SSLStatus& ContentNavigationItem::GetSSL() {
 }
 
 void ContentNavigationItem::SetTimestamp(base::Time timestamp) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 base::Time ContentNavigationItem::GetTimestamp() const {
@@ -194,7 +194,7 @@ bool ContentNavigationItem::HasPostData() const {
 
 void ContentNavigationItem::AddHttpRequestHeaders(
     HttpRequestHeaders* additional_headers) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 NavigationItem::HttpRequestHeaders*
@@ -216,11 +216,11 @@ ContentNavigationItem::GetHttpRequestHeaders() const {
 
 void ContentNavigationItem::SetHttpsUpgradeType(
     HttpsUpgradeType https_upgrade_type) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 HttpsUpgradeType ContentNavigationItem::GetHttpsUpgradeType() const {
-  // TODO(crbug.com/1419001): Determine an analog.
+  // TODO(crbug.com/40257932): Determine an analog.
   return HttpsUpgradeType::kNone;
 }
 

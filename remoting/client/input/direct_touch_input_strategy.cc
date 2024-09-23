@@ -79,7 +79,6 @@ float DirectTouchInputStrategy::GetFeedbackRadius(
       return kDragFeedbackRadius;
   }
   NOTREACHED();
-  return 0.f;
 }
 
 bool DirectTouchInputStrategy::IsCursorVisible() const {

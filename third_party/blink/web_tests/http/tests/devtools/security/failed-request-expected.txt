@@ -2,7 +2,7 @@ Tests that origins with failed requests are shown correctly in the security pane
 
 Group: Main origin
 Group: Secure origins
-<SPAN >
+<SPAN class=highlighted-url >
     <SPAN class=url-scheme-secure >
 https
     </SPAN>
@@ -23,7 +23,7 @@ https
 foo.test
 </SPAN>
 Group: Unknown / canceled
-<SPAN >
+<SPAN class=highlighted-url >
     <SPAN class=url-scheme-unknown >
 https
     </SPAN>

@@ -67,23 +67,21 @@ class COMPONENT_EXPORT(UI_BASE) TableModel {
 
 // TableColumn specifies the title, alignment and size of a particular column.
 struct COMPONENT_EXPORT(UI_BASE) TableColumn {
-  enum Alignment {
-    LEFT, RIGHT, CENTER
-  };
+  enum Alignment : uint8_t { LEFT, RIGHT, CENTER };
 
   TableColumn();
   TableColumn(int id, Alignment alignment, int width, float percent);
   TableColumn(const TableColumn& other);
   TableColumn& operator=(const TableColumn& other);
 
-  // A unique identifier for the column.
-  int id;
+  // Note: Please be mindful of ordering when adding, modifying, or removing
+  //       fields. The struct should be as tightly packed together as possible.
 
   // The title for the column.
   std::u16string title;
 
-  // Alignment for the content.
-  Alignment alignment;
+  // A unique identifier for the column.
+  int id;
 
   // The size of a column may be specified in two ways:
   // 1. A fixed width. Set the width field to a positive number and the
@@ -104,6 +102,9 @@ struct COMPONENT_EXPORT(UI_BASE) TableColumn {
   // The minimum width required for all items in this column
   // (including the header) to be visible.
   int min_visible_width;
+
+  // Alignment for the content.
+  Alignment alignment;
 
   // Is this column sortable? Default is false.
   bool sortable;

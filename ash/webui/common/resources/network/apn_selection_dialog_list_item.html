@@ -1,0 +1,60 @@
+<style include="iron-flex iron-positioning">
+  #container {
+    border: var(--cr-separator-height) solid;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    padding-inline-end: 16px;
+    padding-inline-start: 16px;
+  }
+
+  :host(:not([selected])) #container {
+    background-color: transparent;
+    border-color: var(--cros-sys-separator);
+  }
+
+  :host([selected]) #container {
+    background-color: var(--cros-sys-primary_container);
+    border-color: var(--cros-sys-primary_container);
+  }
+
+  #details {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    flex: auto;
+    min-height: var(--cr-section-min-height);
+  }
+
+  #friendlyApnName {
+    color: var(--cros-sys-on_primary_container);
+  }
+
+  #secondaryApnName {
+    color: var(--cros-text-color-secondary);
+    margin-inline-start: 12px;
+  }
+
+  #checkmark {
+    --iron-icon-fill-color: var(--cros-sys-on_primary_container);
+  }
+</style>
+<div id="container">
+  <div class="flex layout horizontal center link-wrapper">
+    <div id="details">
+      <div class="flex settings-box-text">
+        <span id="friendlyApnName">[[getApnDisplayName_(apn)]]</span>
+        <span id="secondaryApnName"
+            hidden="[[shouldHideSecondaryApnName_(apn)]]">
+          [[apn.accessPointName]]
+        </span>
+      </div>
+    </div>
+    <template is="dom-if" if="[[selected]]" restamp>
+      <iron-icon id="checkmark"
+          icon="cellular-setup:checked"
+          tabindex="-1"
+          aria-label="[[i18n('apnSelectionDialogListItemSelected')]]">
+      </iron-icon>
+    </template>
+  </div>
+</div>

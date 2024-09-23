@@ -50,7 +50,7 @@ class _DictionaryMember(object):
 
     # Map from Blink member type to presence expression.
     _MEMBER_TYPE_TO_PRESENCE_EXPR = {
-        "ScriptPromise": "!{}.IsEmpty()",
+        "ScriptPromiseUntyped": "!{}.IsEmpty()",
         "ScriptValue": "!{}.IsEmpty()",
     }
 
@@ -220,6 +220,9 @@ def bind_local_vars(code_node, cg_context):
           ("const bool ${is_cross_origin_isolated} = "
            "${execution_context}"
            "->CrossOriginIsolatedCapabilityOrDisabledWebSecurity();")),
+        S("is_in_injection_mitigated_context",
+          ("const bool ${is_in_injection_mitigated_context} = "
+           "${execution_context}->IsInjectionMitigatedContext();")),
         S("is_in_isolated_context",
           ("const bool ${is_in_isolated_context} = "
            "${execution_context}->IsIsolatedContext();")),
@@ -308,11 +311,13 @@ def make_factory_methods(cg_context):
     if not dictionary.has_required_member:
         body.append(
             CxxLikelyIfNode(cond="${v8_value}->IsNullOrUndefined()",
+                            attribute=None,
                             body=T("return dictionary;")))
     # [PermissiveDictionaryConversion]
     if "PermissiveDictionaryConversion" in dictionary.extended_attributes:
         body.append(
             CxxUnlikelyIfNode(cond="!${v8_value}->IsObject()",
+                              attribute=None,
                               body=[
                                   T("// [PermissiveDictionaryConversion]"),
                                   T("return dictionary;"),
@@ -320,6 +325,7 @@ def make_factory_methods(cg_context):
     else:
         body.append(
             CxxUnlikelyIfNode(cond="!${v8_value}->IsObject()",
+                              attribute=None,
                               body=[
                                   T("${exception_state}.ThrowTypeError("
                                     "ExceptionMessages::ValueNotOfType("
@@ -329,7 +335,8 @@ def make_factory_methods(cg_context):
     body.extend([
         T("dictionary->FillMembersFromV8Object("
           "${isolate}, ${v8_value}.As<v8::Object>(), ${exception_state});"),
-        CxxUnlikelyIfNode(cond="UNLIKELY(${exception_state}.HadException())",
+        CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                          attribute="[[unlikely]]",
                           body=T("return nullptr;")),
         T("return dictionary;"),
     ])
@@ -424,6 +431,7 @@ def make_accessor_functions(cg_context):
         func_def.set_base_template_vars(cg_context.template_bindings())
         func_def.body.extend([
             CxxUnlikelyIfNode(cond="!{}()".format(member.api_has),
+                              attribute=None,
                               body=T("return fallback_value;")),
             F("return {};",
               member.type_info.member_var_to_ref_expr(member.value_var)),
@@ -442,6 +450,7 @@ def make_accessor_functions(cg_context):
         copy_func_def.set_base_template_vars(cg_context.template_bindings())
         copy_func_def.body.extend([
             CxxUnlikelyIfNode(cond="!{}()".format(member.api_has),
+                              attribute=None,
                               body=T("return fallback_value;")),
             F("return {};",
               member.type_info.member_var_to_ref_expr(member.value_var)),
@@ -456,6 +465,7 @@ def make_accessor_functions(cg_context):
         move_func_def.set_base_template_vars(cg_context.template_bindings())
         move_func_def.body.extend([
             CxxUnlikelyIfNode(cond="!{}()".format(member.api_has),
+                              attribute=None,
                               body=T("return std::move(fallback_value);")),
             F("return {};",
               member.type_info.member_var_to_ref_expr(member.value_var)),
@@ -480,6 +490,7 @@ def make_accessor_functions(cg_context):
         func_def.set_base_template_vars(cg_context.template_bindings())
         func_def.body.extend([
             CxxUnlikelyIfNode(cond="!{}()".format(member.api_has),
+                              attribute=None,
                               body=T("return fallback_value;")),
             F("return {};",
               member.type_info.member_var_to_ref_expr(member.value_var)),
@@ -710,6 +721,9 @@ def make_properties_array(cg_context):
 
     T = TextNode
 
+    if not cg_context.dictionary.own_members:
+        return ListNode({})
+
     properties = ListNode([
         T("\"{}\",".format(member.identifier))
         for member in cg_context.dictionary.own_members
@@ -837,6 +851,7 @@ def make_fill_values_impl_function(cg_context):
             index=index)
 
         node = CxxLikelyIfNode(cond="{}()".format(member.api_has),
+                               attribute=None,
                                body=[
                                    convert_property,
                                    F("DCHECK(!values[{index}].IsEmpty());",
@@ -845,7 +860,13 @@ def make_fill_values_impl_function(cg_context):
 
         exposure_conditional = expr_from_exposure(member.exposure)
         if not exposure_conditional.is_always_true:
-            node = CxxLikelyIfNode(cond=exposure_conditional, body=node)
+            node = CxxLikelyIfNode(cond=exposure_conditional,
+                                   attribute=None,
+                                   body=node)
+            node.accumulate(
+                CodeGenAccumulator.require_include_headers([
+                    "third_party/blink/renderer/platform/runtime_enabled_features.h"
+                ]))
 
         body.append(node)
 
@@ -863,8 +884,9 @@ def make_template_key_function(cg_context):
                               class_name=cg_context.class_name,
                               const=True)
 
-    func_def.body.append(
-        T("return static_cast<const void*>(kOwnPropertyNames);"))
+    func_def.body.extend(
+        [T("static const void *s_key = &s_key;"),
+         T("return s_key;")])
 
     return func_def.make_decl(override=True), func_def
 
@@ -895,24 +917,25 @@ def make_v8_to_blink_function(cg_context):
         S("exception_context_scope",
           ("ExceptionState::ContextScope ${exception_context_scope}("
            "ExceptionContext("
-           "ExceptionContextType::kDictionaryMemberGet, "
+           "v8::ExceptionContext::kAttributeGet, "
            "${class_like_name}, \"\"), "
            "${exception_state});")),
         S("fallback_presence_var", "bool ${fallback_presence_var};"),
         S("has_deprecated", "bool ${has_deprecated};"),
         S("is_optional", "constexpr bool ${is_optional} = false;"),
         S("is_required", "constexpr bool ${is_required} = true;"),
-        S("try_block", "v8::TryCatch ${try_block}(${isolate});"),
     ])
     bind_local_vars(body, cg_context)
 
+    body.append(
+        T("TryRethrowScope rethrow_scope(${isolate}, ${exception_state});"))
     if cg_context.dictionary.inherited:
         body.extend([
             T("${base_class_name}::FillMembersFromV8Object"
               "(${isolate}, ${v8_dictionary}, ${exception_state});"),
-            CxxUnlikelyIfNode(
-                cond="UNLIKELY(${exception_state}.HadException())",
-                body=T("return;")),
+            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                              attribute="[[unlikely]]",
+                              body=T("return;")),
             EmptyNode(),
         ])
 
@@ -924,7 +947,7 @@ def make_v8_to_blink_function(cg_context):
             "${v8_dictionary}, "
             "${v8_own_member_names}[{index}].Get(${isolate}), "
             "{presence_var}, {value_var}, "
-            "${try_block}, ${exception_state})",
+            "${exception_state})",
             native_value_tag=native_value_tag(member.idl_type),
             is_required=("${is_required}"
                          if member.is_required else "${is_optional}"),
@@ -936,7 +959,7 @@ def make_v8_to_blink_function(cg_context):
             F(("${exception_context_scope}"
                ".ChangePropertyNameAsOptimizationHack(\"{member_name}\");"),
               member_name=member.identifier),
-            CxxUnlikelyIfNode(cond=cond, body=T("return;")),
+            CxxUnlikelyIfNode(cond=cond, attribute=None, body=T("return;")),
         ])
 
         # [DeprecateAs]
@@ -950,8 +973,10 @@ def make_v8_to_blink_function(cg_context):
                     "${v8_own_member_names}[{index}].Get(${isolate}))"
                     ".To(&${has_deprecated})",
                     index=index),
+                                  attribute=None,
                                   body=T("return;")),
                 CxxUnlikelyIfNode(cond="${has_deprecated}",
+                                  attribute=None,
                                   body=F(("Deprecation::CountDeprecation("
                                           "${execution_context}, "
                                           "WebFeature::k{deprecate_as});"),
@@ -964,7 +989,11 @@ def make_v8_to_blink_function(cg_context):
 
         conditional = expr_from_exposure(member.exposure)
         if not conditional.is_always_true:
-            node = CxxLikelyIfNode(cond=conditional, body=node)
+            node = CxxLikelyIfNode(cond=conditional, attribute=None, body=node)
+            node.accumulate(
+                CodeGenAccumulator.require_include_headers([
+                    "third_party/blink/renderer/platform/runtime_enabled_features.h"
+                ]))
 
         body.append(node)
 
@@ -1034,10 +1063,13 @@ def generate_dictionary(dictionary_identifier):
     api_component = path_manager.api_component
     for_testing = dictionary.code_generator_info.for_testing
 
+    input_only = not (dictionary.usage & web_idl.Dictionary.Usage.OUTPUT)
     # Class names
     class_name = blink_class_name(dictionary)
     if dictionary.inherited:
         base_class_name = blink_class_name(dictionary.inherited)
+    elif input_only:
+        base_class_name = "bindings::InputDictionaryBase"
     else:
         base_class_name = "bindings::DictionaryBase"
 
@@ -1081,14 +1113,6 @@ def generate_dictionary(dictionary_identifier):
     trace_func_decls, trace_func_defs = make_trace_function(cg_context)
 
     # blink_to_v8_decls, blink_to_v8_defs = make_blink_to_v8_function(cg_context)
-
-    template_key_decl, template_key_def = make_template_key_function(
-        cg_context)
-    fill_template_properties_decl, fill_template_properties_def = (
-        make_fill_template_properties_function(cg_context))
-    fill_values_decl, fill_values_def = make_fill_values_function(cg_context)
-    fill_values_impl_decl, fill_values_impl_def = (
-        make_fill_values_impl_function(cg_context))
 
     v8_to_blink_decls, v8_to_blink_defs = make_v8_to_blink_function(cg_context)
     v8_names_decls, v8_names_defs = make_v8_own_member_names_function(
@@ -1190,20 +1214,30 @@ def generate_dictionary(dictionary_identifier):
 
     source_anon_ns.body.append(make_properties_array(cg_context))
 
-    class_def.protected_section.append(fill_template_properties_decl)
-    class_def.protected_section.append(fill_values_impl_decl)
-    class_def.protected_section.append(EmptyNode())
-    class_def.private_section.append(template_key_decl)
-    class_def.private_section.append(fill_values_decl)
-    class_def.protected_section.append(EmptyNode())
-    source_blink_ns.body.append(fill_template_properties_def)
-    source_blink_ns.body.append(EmptyNode())
-    source_blink_ns.body.append(fill_values_impl_def)
-    source_blink_ns.body.append(EmptyNode())
-    source_blink_ns.body.append(template_key_def)
-    source_blink_ns.body.append(EmptyNode())
-    source_blink_ns.body.append(fill_values_def)
-    source_blink_ns.body.append(EmptyNode())
+    if not input_only:
+        template_key_decl, template_key_def = make_template_key_function(
+            cg_context)
+        fill_template_properties_decl, fill_template_properties_def = (
+            make_fill_template_properties_function(cg_context))
+        fill_values_decl, fill_values_def = make_fill_values_function(
+            cg_context)
+        fill_values_impl_decl, fill_values_impl_def = (
+            make_fill_values_impl_function(cg_context))
+
+        class_def.protected_section.append(fill_template_properties_decl)
+        class_def.protected_section.append(fill_values_impl_decl)
+        class_def.protected_section.append(EmptyNode())
+        class_def.private_section.append(template_key_decl)
+        class_def.private_section.append(fill_values_decl)
+        class_def.protected_section.append(EmptyNode())
+        source_blink_ns.body.append(fill_template_properties_def)
+        source_blink_ns.body.append(EmptyNode())
+        source_blink_ns.body.append(fill_values_impl_def)
+        source_blink_ns.body.append(EmptyNode())
+        source_blink_ns.body.append(template_key_def)
+        source_blink_ns.body.append(EmptyNode())
+        source_blink_ns.body.append(fill_values_def)
+        source_blink_ns.body.append(EmptyNode())
 
     class_def.protected_section.append(v8_to_blink_decls)
     class_def.protected_section.append(EmptyNode())

@@ -4,13 +4,11 @@
 
 #include "components/android_autofill/browser/form_data_android.h"
 
-#include <functional>
 #include <memory>
 #include <string_view>
 #include <tuple>
 
 #include "base/containers/flat_map.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/form_data_android_bridge.h"
 #include "components/android_autofill/browser/form_field_data_android.h"
@@ -27,8 +25,8 @@ FormDataAndroid::FormDataAndroid(const FormData& form, SessionId session_id)
       form_(form),
       bridge_(AndroidAutofillBridgeFactory::GetInstance()
                   .CreateFormDataAndroidBridge()) {
-  fields_.reserve(form_.fields.size());
-  for (FormFieldData& field : form_.fields) {
+  fields_.reserve(form_.fields().size());
+  for (FormFieldData& field : form_.mutable_fields(/*pass_key=*/{})) {
     fields_.push_back(std::make_unique<FormFieldDataAndroid>(&field));
   }
 }
@@ -50,8 +48,8 @@ void FormDataAndroid::OnFormFieldDidChange(size_t index,
 }
 
 bool FormDataAndroid::GetFieldIndex(const FormFieldData& field, size_t* index) {
-  for (size_t i = 0; i < form_.fields.size(); ++i) {
-    if (form_.fields[i].SameFieldAs(field)) {
+  for (size_t i = 0; i < form_.fields().size(); ++i) {
+    if (form_.fields()[i].SameFieldAs(field)) {
       *index = i;
       return true;
     }
@@ -61,7 +59,7 @@ bool FormDataAndroid::GetFieldIndex(const FormFieldData& field, size_t* index) {
 
 bool FormDataAndroid::GetSimilarFieldIndex(const FormFieldData& field,
                                            size_t* index) {
-  for (size_t i = 0; i < form_.fields.size(); ++i) {
+  for (size_t i = 0; i < form_.fields().size(); ++i) {
     if (fields_[i]->SimilarFieldAs(field)) {
       *index = i;
       return true;
@@ -71,11 +69,11 @@ bool FormDataAndroid::GetSimilarFieldIndex(const FormFieldData& field,
 }
 
 bool FormDataAndroid::SimilarFieldsAs(const FormData& form) const {
-  if (fields_.size() != form.fields.size()) {
+  if (fields_.size() != form.fields().size()) {
     return false;
   }
   for (size_t i = 0; i < fields_.size(); ++i) {
-    if (!fields_[i]->SimilarFieldAs(form.fields[i])) {
+    if (!fields_[i]->SimilarFieldAs(form.fields()[i])) {
       return false;
     }
   }
@@ -87,38 +85,11 @@ bool FormDataAndroid::SimilarFormAs(const FormData& form) const {
   // since these remain constant even if the page has dynamically modified its
   // fields to have different labels, form control types, etc.
   auto SimilarityTuple = [](const FormData& f) {
-    return std::tie(f.host_frame, f.renderer_id, f.name, f.id_attribute,
-                    f.name_attribute, f.url, f.action);
+    return std::tie(f.host_frame(), f.renderer_id(), f.name(), f.id_attribute(),
+                    f.name_attribute(), f.url(), f.action());
   };
   return SimilarityTuple(form_) == SimilarityTuple(form) &&
          SimilarFieldsAs(form);
-}
-
-FormDataAndroid::SimilarityCheckResult
-FormDataAndroid::SimilarFormAsWithDiagnosis(const FormData& form) const {
-  SimilarityCheckResult result = kFormsAreSimilar;
-
-  // Helper function that sets the `component` bit in `result` if the
-  // `projection` of `form_` and `form` differs.
-  auto check_component = [&](auto projection,
-                             SimilarityCheckComponent component) {
-    if (std::invoke(projection, form_) != std::invoke(projection, form)) {
-      result.value() |= base::to_underlying(component);
-    }
-  };
-  check_component(&FormData::global_id, SimilarityCheckComponent::kGlobalId);
-  check_component(&FormData::name, SimilarityCheckComponent::kName);
-  check_component(&FormData::id_attribute,
-                  SimilarityCheckComponent::kIdAttribute);
-  check_component(&FormData::name_attribute,
-                  SimilarityCheckComponent::kNameAttribute);
-  check_component(&FormData::url, SimilarityCheckComponent::kUrl);
-  check_component(&FormData::action, SimilarityCheckComponent::kAction);
-
-  if (!SimilarFieldsAs(form)) {
-    result.value() |= base::to_underlying(SimilarityCheckComponent::kFields);
-  }
-  return result;
 }
 
 void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
@@ -163,15 +134,15 @@ void FormDataAndroid::UpdateFieldTypes(
 
 std::vector<int> FormDataAndroid::UpdateFieldVisibilities(
     const FormData& form) {
-  CHECK_EQ(form_.fields.size(), form.fields.size());
-  CHECK_EQ(form_.fields.size(), fields_.size());
+  CHECK_EQ(form_.fields().size(), form.fields().size());
+  CHECK_EQ(form_.fields().size(), fields_.size());
 
   // We rarely expect to find any difference in visibility - therefore do not
   // reserve space in the vector.
   std::vector<int> indices;
-  for (size_t i = 0; i < form_.fields.size(); ++i) {
-    if (form_.fields[i].IsFocusable() != form.fields[i].IsFocusable()) {
-      fields_[i]->OnFormFieldVisibilityDidChange(form.fields[i]);
+  for (size_t i = 0; i < form_.fields().size(); ++i) {
+    if (form_.fields()[i].IsFocusable() != form.fields()[i].IsFocusable()) {
+      fields_[i]->OnFormFieldVisibilityDidChange(form.fields()[i]);
       indices.push_back(i);
     }
   }

@@ -162,6 +162,16 @@ class ExtensionFrameHelper
   // Schedule a callback, to be run at the next RunScriptsAtDocumentIdle call.
   void ScheduleAtDocumentIdle(base::OnceClosure callback);
 
+  // Returns the set of active user script worlds for the given `extension_id`
+  // on the current document.
+  const std::set<std::optional<std::string>>* GetActiveUserScriptWorlds(
+      const ExtensionId& extension_id);
+
+  // Adds `world_id` to the set of active user script worlds for the given
+  // `extension_id`.
+  void AddActiveUserScriptWorld(const ExtensionId& extension_id,
+                                const std::optional<std::string>& world_id);
+
   mojom::LocalFrameHost* GetLocalFrameHost();
   mojom::RendererHost* GetRendererHost();
   mojom::EventRouter* GetEventRouter();
@@ -182,7 +192,6 @@ class ExtensionFrameHelper
   void WillReleaseScriptContext(v8::Local<v8::Context>,
                                 int32_t world_id) override;
   void OnDestruct() override;
-  void DraggableRegionsChanged() override;
   void DidClearWindowObject() override;
 
   // Type of view associated with the RenderFrame.
@@ -194,7 +203,7 @@ class ExtensionFrameHelper
   // The id of the browser window the render frame is attached to.
   int browser_window_id_ = -1;
 
-  raw_ptr<Dispatcher, ExperimentalRenderer> extension_dispatcher_;
+  raw_ptr<Dispatcher> extension_dispatcher_;
 
   // Whether or not the current document element has been created. This starts
   // true as the initial empty document is already created when this class is
@@ -211,6 +220,12 @@ class ExtensionFrameHelper
 
   // Callbacks to be run at the next RunScriptsAtDocumentIdle notification.
   std::vector<base::OnceClosure> document_idle_callbacks_;
+
+  // The map of user script world IDs that are active on the current document,
+  // keyed by extension ID.
+  // Cleared when a new document is created.
+  using UserScriptWorldIdSet = std::set<std::optional<std::string>>;
+  std::map<ExtensionId, UserScriptWorldIdSet> active_user_script_worlds_;
 
   bool delayed_main_world_script_initialization_ = false;
 

@@ -11,49 +11,52 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
-
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
-import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Batch(Batch.UNIT_TESTS)
 public class PlusAddressCreationViewBridgeTest {
     private static final long NATIVE_PLUS_ADDRESS_CREATION_VIEW = 100L;
-    private static final String MODAL_TITLE = "lorem ipsum title";
-    private static final String MODAL_PLUS_ADDRESS_DESCRIPTION =
-            "lorem ipsum description <link>test link</link> <b>test bold</b>";
-    private static final String MODAL_FORMATTED_PLUS_ADDRESS_DESCRIPTION =
-            "lorem ipsum description test link test bold";
-    private static final String MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER = "placeholder";
-    private static final String MODAL_OK = "ok";
-    private static final String MODAL_CANCEL = "cancel";
+    private static final PlusAddressCreationNormalStateInfo FIRST_TIME_USAGE_INFO =
+            new PlusAddressCreationNormalStateInfo(
+                    /* title= */ "lorem ipsum title",
+                    /* description= */ "lorem ipsum description",
+                    /* notice= */ "lorem ipsum description <link>test link</link>",
+                    /* proposedPlusAddressPlaceholder= */ "placeholder",
+                    /* confirmText= */ "ok",
+                    /* cancelText= */ "cancel",
+                    /* errorReportInstruction= */ "error! <link>test link</link>",
+                    /* learnMoreUrl= */ new GURL("learn.more.com"),
+                    /* errorReportUrl= */ new GURL("bug.com"));
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
-    private static final String MODAL_ERROR_MESSAGE = "error! <link>test link</link>";
-    private static final String MANAGE_URL = "manage.com";
-    private static final String ERROR_URL = "bug.com";
+    private static final boolean REFRESH_SUPPORTED = true;
+    private static final PlusAddressCreationErrorStateInfo ERROR_STATE =
+            new PlusAddressCreationErrorStateInfo(
+                    PlusAddressCreationBottomSheetErrorType.RESERVE_TIMEOUT,
+                    "Title",
+                    "Description",
+                    "Ok",
+                    "Cancel");
 
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private Profile mProfile;
@@ -64,73 +67,43 @@ public class PlusAddressCreationViewBridgeTest {
     @Mock private PlusAddressCreationCoordinator mCoordinator;
     @Mock private PlusAddressCreationViewBridge.CoordinatorFactory mCoordinatorFactory;
 
-    private Activity mActivity;
     private MockTabModel mTabModel;
-    private WindowAndroid mWindow;
     private PlusAddressCreationViewBridge mPlusAddressCreationViewBridge;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mActivity = Robolectric.setupActivity(TestActivity.class);
-        mWindow = new WindowAndroid(mActivity);
         mTabModel = new MockTabModel(mProfile, null);
-        BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
-        LayoutManagerAppUtils.attach(mWindow, mLayoutManager);
         mPlusAddressCreationViewBridge =
                 new PlusAddressCreationViewBridge(
                         NATIVE_PLUS_ADDRESS_CREATION_VIEW,
-                        mWindow,
+                        RuntimeEnvironment.application,
+                        mBottomSheetController,
+                        mLayoutManager,
                         mTabModel,
                         mTabModelSelector,
                         mCoordinatorFactory);
-        mPlusAddressCreationViewBridge.setActivityForTesting(mActivity);
         mJniMocker.mock(PlusAddressCreationViewBridgeJni.TEST_HOOKS, mBridgeNatives);
-    }
-
-    @After
-    public void tearDown() {
-        BottomSheetControllerFactory.detach(mBottomSheetController);
-        LayoutManagerAppUtils.detach(mLayoutManager);
-        mWindow.destroy();
     }
 
     private void setupCoordinatorFactory() {
         when(mCoordinatorFactory.create(
-                        mActivity,
+                        RuntimeEnvironment.application,
                         mBottomSheetController,
                         mLayoutManager,
                         mTabModel,
                         mTabModelSelector,
                         mPlusAddressCreationViewBridge,
-                        MODAL_TITLE,
-                        MODAL_PLUS_ADDRESS_DESCRIPTION,
-                        MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
-                        MODAL_OK,
-                        MODAL_CANCEL,
-                        MODAL_ERROR_MESSAGE,
-                        new GURL(MANAGE_URL),
-                        new GURL(ERROR_URL)))
+                        FIRST_TIME_USAGE_INFO,
+                        REFRESH_SUPPORTED))
                 .thenReturn(mCoordinator);
-    }
-
-    private void showBottomSheet() {
-        mPlusAddressCreationViewBridge.show(
-                MODAL_TITLE,
-                MODAL_PLUS_ADDRESS_DESCRIPTION,
-                MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
-                MODAL_OK,
-                MODAL_CANCEL,
-                MODAL_ERROR_MESSAGE,
-                MANAGE_URL,
-                ERROR_URL);
     }
 
     @Test
     @SmallTest
     public void testRequestShowContent_requestsShowOnCoordinator() {
         setupCoordinatorFactory();
-        showBottomSheet();
+        mPlusAddressCreationViewBridge.show(FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
         verify(mCoordinator, times(1)).requestShowContent();
     }
 
@@ -138,7 +111,7 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testDestroy_callsCoordinatorDestroy() {
         setupCoordinatorFactory();
-        showBottomSheet();
+        mPlusAddressCreationViewBridge.show(FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
         mPlusAddressCreationViewBridge.destroy();
         verify(mCoordinator, times(1)).destroy();
     }
@@ -147,12 +120,27 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testDestroyTwice_destroysCoordinatorOnce() {
         setupCoordinatorFactory();
-        showBottomSheet();
+        mPlusAddressCreationViewBridge.show(FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
 
         mPlusAddressCreationViewBridge.destroy();
         mPlusAddressCreationViewBridge.destroy();
 
         verify(mCoordinator, times(1)).destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testOnRefreshClicked_callsNativeOnRefreshClicked() {
+        mPlusAddressCreationViewBridge.onRefreshClicked();
+        verify(mBridgeNatives).onRefreshClicked(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testRefreshClicked_doesNotCallNative_afterDestroy() {
+        mPlusAddressCreationViewBridge.destroy();
+        mPlusAddressCreationViewBridge.onRefreshClicked();
+        verifyNoInteractions(mBridgeNatives);
     }
 
     @Test
@@ -206,7 +194,7 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testUpdateProposedPlusAddress_withPlusAddress_callsCoordinator() {
         setupCoordinatorFactory();
-        showBottomSheet();
+        mPlusAddressCreationViewBridge.show(FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
         mPlusAddressCreationViewBridge.updateProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
         verify(mCoordinator, times(1)).updateProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
     }
@@ -215,16 +203,25 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testShowError_callsCoordinator() {
         setupCoordinatorFactory();
-        showBottomSheet();
-        mPlusAddressCreationViewBridge.showError();
-        verify(mCoordinator, times(1)).showError();
+        mPlusAddressCreationViewBridge.show(FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
+        mPlusAddressCreationViewBridge.showError(ERROR_STATE);
+        verify(mCoordinator, times(1)).showError(eq(ERROR_STATE));
+    }
+
+    @Test
+    @SmallTest
+    public void testHideRefreshButton_callsCoordinator() {
+        setupCoordinatorFactory();
+        mPlusAddressCreationViewBridge.show(FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
+        mPlusAddressCreationViewBridge.hideRefreshButton();
+        verify(mCoordinator).hideRefreshButton();
     }
 
     @Test
     @SmallTest
     public void testFinishConfirm_callsCoordinator() {
         setupCoordinatorFactory();
-        showBottomSheet();
+        mPlusAddressCreationViewBridge.show(FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
         mPlusAddressCreationViewBridge.finishConfirm();
         verify(mCoordinator, times(1)).finishConfirm();
     }
@@ -233,7 +230,7 @@ public class PlusAddressCreationViewBridgeTest {
     @SmallTest
     public void testwhenCoordinatorHasNotBeenCreated() {
         mPlusAddressCreationViewBridge.updateProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
-        mPlusAddressCreationViewBridge.showError();
+        mPlusAddressCreationViewBridge.showError(ERROR_STATE);
         mPlusAddressCreationViewBridge.finishConfirm();
         mPlusAddressCreationViewBridge.destroy();
         verifyNoInteractions(mCoordinator);

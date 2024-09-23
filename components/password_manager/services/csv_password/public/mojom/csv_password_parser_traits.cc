@@ -21,7 +21,7 @@ EnumTraits<password_manager::mojom::CSVPassword_Status,
     case password_manager::CSVPassword::Status::kSemanticError:
       return password_manager::mojom::CSVPassword_Status::kSemanticError;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return password_manager::mojom::CSVPassword_Status::kSyntaxError;
 }
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/reporting/storage/storage.h"
 
 #include <atomic>
@@ -1086,7 +1091,7 @@ class StorageTest
 constexpr std::array<const char*, 3> kData = {"Rec1111", "Rec222", "Rec33"};
 constexpr std::array<const char*, 3> kMoreData = {"More1111", "More222",
                                                   "More33"};
-constexpr std::array<char, (1024 * 1024 / 3)* 2> kBigData = {'A'};
+constexpr std::array<char, (1024 * 1024 / 3) * 2> kBigData = {'A'};
 constexpr std::string_view xBigData(&kBigData.front(), kBigData.size());
 
 TEST_P(StorageTest, WriteIntoNewStorageAndReopen) {

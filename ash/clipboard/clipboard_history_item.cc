@@ -12,6 +12,7 @@
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
@@ -61,15 +62,14 @@ std::optional<ui::ImageModel> DetermineDisplayImage(
   std::optional<ui::ImageModel> maybe_image;
   switch (item.display_format()) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       break;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng: {
       gfx::Image image;
       if (const auto& maybe_png = item.data().maybe_png()) {
-        image = gfx::Image::CreateFrom1xPNGBytes(maybe_png.value().data(),
-                                                 maybe_png.value().size());
+        image = gfx::Image::CreateFrom1xPNGBytes(maybe_png.value());
       } else {
         // If we have not yet encoded the bitmap to a PNG, just create the
         // image using the available bitmap. No information is lost here.
@@ -96,10 +96,7 @@ std::u16string DetermineDisplayTextForFileSystemData(
   std::u16string sources;
   std::vector<std::u16string_view> source_list;
   clipboard_history_util::GetSplitFileSystemData(data, &source_list, &sources);
-  if (sources.empty()) {
-    NOTREACHED();
-    return std::u16string();
-  }
+  CHECK(!sources.empty());
 
   size_t file_count = source_list.size();
   if (chromeos::features::IsClipboardHistoryRefreshEnabled() &&

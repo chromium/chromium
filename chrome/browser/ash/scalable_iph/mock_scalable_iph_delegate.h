@@ -20,13 +20,13 @@ class MockScalableIphDelegate : public scalable_iph::ScalableIphDelegate {
   MockScalableIphDelegate();
   ~MockScalableIphDelegate() override;
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               ShowBubble,
               (const scalable_iph::ScalableIphDelegate::BubbleParams& params,
                std::unique_ptr<scalable_iph::IphSession> iph_session),
               (override));
   MOCK_METHOD(
-      void,
+      bool,
       ShowNotification,
       (const scalable_iph::ScalableIphDelegate::NotificationParams& params,
        std::unique_ptr<scalable_iph::IphSession> iph_session),
@@ -51,6 +51,7 @@ class MockScalableIphDelegate : public scalable_iph::ScalableIphDelegate {
   void FakeClientAgeInDays();
   void FakeShowBubble();
   void FakeShowNotification();
+  void FakePerformActionForScalableIph();
 
  private:
   std::unique_ptr<scalable_iph::ScalableIphDelegate> delegate_;
@@ -58,6 +59,7 @@ class MockScalableIphDelegate : public scalable_iph::ScalableIphDelegate {
   bool client_age_fake_enabled_ = false;
   bool show_bubble_fake_enabled_ = false;
   bool show_notification_fake_enabled_ = false;
+  bool perform_action_for_scalable_iph_enabled_ = false;
 };
 
 }  // namespace test

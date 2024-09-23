@@ -20,9 +20,7 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
@@ -31,7 +29,6 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeRobolectricTestRunner;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -70,7 +67,6 @@ import java.util.NoSuchElementException;
     "force-fieldtrial-params=FakeStudyName.Enabled:min_version_adaptive/0"
 })
 public class OptionalNewTabButtonControllerActivityTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     /**
      * Shadow of {@link OptionalNewTabButtonController.Delegate}. Injects testing values into every
@@ -105,6 +101,7 @@ public class OptionalNewTabButtonControllerActivityTest {
     public void setUp() {
         Profile originalProfile = Mockito.mock(Profile.class);
         Profile incognitoProfile = Mockito.mock(Profile.class);
+        when(originalProfile.getOriginalProfile()).thenReturn(originalProfile);
         when(incognitoProfile.isOffTheRecord()).thenReturn(true);
 
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
@@ -115,7 +112,7 @@ public class OptionalNewTabButtonControllerActivityTest {
         // To bypass a direct call to AdaptiveToolbarStatePredictor#readFromSegmentationPlatform for
         // UMA.
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
-                new Pair<>(true, AdaptiveToolbarButtonVariant.NEW_TAB));
+                new Pair<>(true, List.of(AdaptiveToolbarButtonVariant.NEW_TAB)));
         MockTabModelSelector tabModelSelector =
                 new MockTabModelSelector(
                         originalProfile,
@@ -140,7 +137,7 @@ public class OptionalNewTabButtonControllerActivityTest {
                 activity -> {
                     mAdaptiveButtonController =
                             getAdaptiveButton(getOptionalButtonController(activity));
-                    mAdaptiveButtonController.onFinishNativeInitialization();
+                    mAdaptiveButtonController.setProfile(originalProfile);
                 });
     }
 

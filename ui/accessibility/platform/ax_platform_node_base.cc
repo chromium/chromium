@@ -460,7 +460,7 @@ gfx::NativeViewAccessible AXPlatformNodeBase::GetNativeViewAccessible() {
 
 void AXPlatformNodeBase::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   if (event_type == ax::mojom::Event::kAlert) {
-    CHECK(ui::IsAlert(GetRole()))
+    CHECK(IsAlert(GetRole()))
         << "On some platforms, the alert event does not work correctly unless "
            "it is fired on an object with an alert role. Role was "
         << GetRole();
@@ -905,56 +905,6 @@ bool AXPlatformNodeBase::IsStructuredAnnotation() const {
   return !reverse_relations.empty();
 }
 
-// TODO(accessibility): This is only used in AXPlatformNodeWin and therefore
-// should be moved there.
-bool AXPlatformNodeBase::IsSelectionItemSupported() const {
-  switch (GetRole()) {
-    // An ARIA 1.1+ role of "cell", or a role of "row" inside
-    // an ARIA 1.1 role of "table", should not be selectable.
-    // ARIA "table" is not interactable, ARIA "grid" is.
-    case ax::mojom::Role::kCell:
-    case ax::mojom::Role::kColumnHeader:
-    case ax::mojom::Role::kRow:
-    case ax::mojom::Role::kRowHeader: {
-      // An ARIA grid subwidget is only selectable if explicitly marked as
-      // selected (or not) with the aria-selected property.
-      if (!HasBoolAttribute(ax::mojom::BoolAttribute::kSelected))
-        return false;
-
-      AXPlatformNodeBase* table = GetTable();
-      if (!table)
-        return false;
-
-      return table->GetRole() == ax::mojom::Role::kGrid ||
-             table->GetRole() == ax::mojom::Role::kTreeGrid;
-    }
-    // https://www.w3.org/TR/core-aam-1.1/#mapping_state-property_table
-    // SelectionItem.IsSelected is exposed when aria-checked is True or False,
-    // for 'radio' and 'menuitemradio' roles.
-    case ax::mojom::Role::kRadioButton:
-    case ax::mojom::Role::kMenuItemRadio: {
-      if (GetData().GetCheckedState() == ax::mojom::CheckedState::kTrue ||
-          GetData().GetCheckedState() == ax::mojom::CheckedState::kFalse)
-        return true;
-      return false;
-    }
-    // https://www.w3.org/TR/wai-aria-1.1/#aria-selected
-    // SelectionItem.IsSelected is exposed when aria-select is True or False.
-    case ax::mojom::Role::kListBoxOption:
-    case ax::mojom::Role::kListItem:
-    case ax::mojom::Role::kMenuListOption:
-    case ax::mojom::Role::kTreeItem:
-      return HasBoolAttribute(ax::mojom::BoolAttribute::kSelected);
-    case ax::mojom::Role::kTab:
-      // According to the UIA documentation, this role should always support the
-      // SelectionItem control pattern:
-      // https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-supporttabitemcontroltype#required-control-patterns.
-      return true;
-    default:
-      return false;
-  }
-}
-
 bool AXPlatformNodeBase::IsTextField() const {
   return GetData().IsTextField();
 }
@@ -1038,55 +988,45 @@ AXPlatformNodeBase* AXPlatformNodeBase::GetTable() const {
 AXPlatformNodeBase* AXPlatformNodeBase::GetTableCaption() const {
   if (!delegate_)
     return nullptr;
-
-  AXPlatformNodeBase* table = GetTable();
-  if (!table)
-    return nullptr;
-
-  DCHECK(table->delegate_);
-  return static_cast<AXPlatformNodeBase*>(table->delegate_->GetTableCaption());
+  return static_cast<AXPlatformNodeBase*>(delegate_->GetTableCaption());
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetTableCell(int index) const {
   if (!delegate_)
     return nullptr;
-  if (!IsTableLike(GetRole()) && !IsCellOrTableHeader(GetRole()))
-    return nullptr;
 
-  AXPlatformNodeBase* table = GetTable();
-  if (!table)
-    return nullptr;
-
-  DCHECK(table->delegate_);
-  std::optional<int32_t> cell_id = table->delegate_->CellIndexToId(index);
+  std::optional<int32_t> cell_id = delegate_->CellIndexToId(index);
   if (!cell_id)
     return nullptr;
 
-  return static_cast<AXPlatformNodeBase*>(
-      table->delegate_->GetFromNodeID(*cell_id));
+  return static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(*cell_id));
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetTableCell(int row,
                                                      int column) const {
-  if (!IsTableLike(GetRole()) && !IsCellOrTableHeader(GetRole()))
-    return nullptr;
-
-  AXPlatformNodeBase* table = GetTable();
-  if (!table || !GetTableRowCount() || !GetTableColumnCount())
-    return nullptr;
-
-  if (row < 0 || row >= *GetTableRowCount() || column < 0 ||
-      column >= *GetTableColumnCount()) {
+  if (!delegate_) {
     return nullptr;
   }
 
-  DCHECK(table->delegate_);
-  std::optional<int32_t> cell_id = table->delegate_->GetCellId(row, column);
+  std::optional<int32_t> cell_id = delegate_->GetCellId(row, column);
   if (!cell_id)
     return nullptr;
 
-  return static_cast<AXPlatformNodeBase*>(
-      table->delegate_->GetFromNodeID(*cell_id));
+  return static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(*cell_id));
+}
+
+AXPlatformNodeBase* AXPlatformNodeBase::GetAriaTableCell(int aria_row,
+                                                         int aria_column) const {
+  if (!delegate_) {
+    return nullptr;
+  }
+
+  std::optional<int32_t> cell_id =
+      delegate_->GetCellIdAriaCoords(aria_row, aria_column);
+  if (!cell_id) {
+    return nullptr;
+  }
+  return static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(*cell_id));
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableCellIndex() const {
@@ -1104,25 +1044,13 @@ std::optional<int> AXPlatformNodeBase::GetTableColumn() const {
 std::optional<int> AXPlatformNodeBase::GetTableColumnCount() const {
   if (!delegate_)
     return std::nullopt;
-
-  AXPlatformNodeBase* table = GetTable();
-  if (!table)
-    return std::nullopt;
-
-  DCHECK(table->delegate_);
-  return table->delegate_->GetTableColCount();
+  return delegate_->GetTableColCount();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableAriaColumnCount() const {
   if (!delegate_)
     return std::nullopt;
-
-  AXPlatformNodeBase* table = GetTable();
-  if (!table)
-    return std::nullopt;
-
-  DCHECK(table->delegate_);
-  return table->delegate_->GetTableAriaColCount();
+  return delegate_->GetTableAriaColCount();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableColumnSpan() const {
@@ -1144,25 +1072,13 @@ std::optional<int> AXPlatformNodeBase::GetTableRow() const {
 std::optional<int> AXPlatformNodeBase::GetTableRowCount() const {
   if (!delegate_)
     return std::nullopt;
-
-  AXPlatformNodeBase* table = GetTable();
-  if (!table)
-    return std::nullopt;
-
-  DCHECK(table->delegate_);
-  return table->delegate_->GetTableRowCount();
+  return delegate_->GetTableRowCount();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableAriaRowCount() const {
   if (!delegate_)
     return std::nullopt;
-
-  AXPlatformNodeBase* table = GetTable();
-  if (!table)
-    return std::nullopt;
-
-  DCHECK(table->delegate_);
-  return table->delegate_->GetTableAriaRowCount();
+  return delegate_->GetTableAriaRowCount();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableRowSpan() const {
@@ -1302,6 +1218,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       case ax::mojom::DescriptionFrom::kButtonLabel:
         from = "button-label";
         break;
+      case ax::mojom::DescriptionFrom::kProhibitedNameRepair:
+        from = "prohibited-name-repair";
+        break;
       case ax::mojom::DescriptionFrom::kRelatedElement:
         // aria-describedby=tooltip is mapped to "tooltip".
         from = IsDescribedByTooltip() ? "tooltip" : "aria-describedby";
@@ -1374,10 +1293,62 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   AddAttributeToList(ax::mojom::BoolAttribute::kContainerLiveBusy,
                      "container-busy", attributes);
 
+  // Expose name-from.
+  ax::mojom::NameFrom name_from = GetNameFrom();
+  std::string from;
+  bool is_explicit_name = true;
+  switch (static_cast<ax::mojom::NameFrom>(name_from)) {
+    case ax::mojom::NameFrom::kAttribute:
+      from = "attribute";
+      DCHECK(!GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kCaption:
+      from = "caption";
+      DCHECK(!GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kContents:
+      is_explicit_name = false;
+      from = "contents";
+      DCHECK(!GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kCssAltText:
+      from = "CSS alt text";
+      DCHECK(!GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kPlaceholder:
+      from = "placeholder";
+      DCHECK(!GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kProhibited:
+    case ax::mojom::NameFrom::kProhibitedAndRedundant:
+      is_explicit_name = false;
+      from = "prohibited";
+      DCHECK(GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kRelatedElement:
+      from = "related-element";
+      DCHECK(!GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kPopoverAttribute:
+    case ax::mojom::NameFrom::kTitle:
+      from = "tooltip";
+      DCHECK(!GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kValue:
+      from = "value";
+      DCHECK(!GetName().empty());
+      break;
+    case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
+      break;
+    case ax::mojom::NameFrom::kNone:
+      is_explicit_name = false;
+      break;  // Not exposed.
+  }
+  if (!from.empty()) {
+    AddAttributeToList("name-from", from, attributes);
+  }
   // Expose the non-standard explicit-name IA2 attribute.
-  int name_from;
-  if (GetIntAttribute(ax::mojom::IntAttribute::kNameFrom, &name_from) &&
-      name_from != static_cast<int32_t>(ax::mojom::NameFrom::kContents)) {
+  if (is_explicit_name) {
     AddAttributeToList("explicit-name", "true", attributes);
   }
 
@@ -1503,20 +1474,6 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       AddAttributeToList(ax::mojom::IntAttribute::kAriaCellColumnIndex,
                          "colindex", attributes);
     }
-
-    // Experimental: expose aria-rowtext / aria-coltext. Not standardized
-    // yet, but obscure enough that it's safe to expose.
-    // http://crbug.com/791634
-    for (const auto& attribute_value : GetHtmlAttributes()) {
-      const std::string& attr = attribute_value.first;
-      const std::string& value = attribute_value.second;
-      if (attr == "aria-coltext") {
-        AddAttributeToList("coltext", value, attributes);
-      }
-      if (attr == "aria-rowtext") {
-        AddAttributeToList("rowtext", value, attributes);
-      }
-    }
   }
 
   // Expose row or column header sort direction.
@@ -1543,16 +1500,21 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   }
 
   if (IsCellOrTableHeader(GetRole())) {
-    // Expose colspan attribute.
-    std::string colspan;
-    if (GetHtmlAttribute("aria-colspan", &colspan)) {
-      AddAttributeToList("colspan", colspan, attributes);
-    }
-    // Expose rowspan attribute.
-    std::string rowspan;
-    if (GetHtmlAttribute("aria-rowspan", &rowspan)) {
-      AddAttributeToList("rowspan", rowspan, attributes);
-    }
+    // These are the older, backwards compatible names that work with JAWS/NVDA:
+    AddAttributeToList(ax::mojom::StringAttribute::kAriaCellColumnIndexText,
+                       "coltext", attributes);
+    AddAttributeToList(ax::mojom::StringAttribute::kAriaCellRowIndexText,
+                       "rowtext", attributes);
+    // These newer names are consistent with the ARIA attribute names:
+    AddAttributeToList(ax::mojom::StringAttribute::kAriaCellColumnIndexText,
+                       "colindextext", attributes);
+    AddAttributeToList(ax::mojom::StringAttribute::kAriaCellRowIndexText,
+                       "rowindextext", attributes);
+
+    AddAttributeToList(ax::mojom::IntAttribute::kAriaCellColumnSpan, "colspan",
+                       attributes);
+    AddAttributeToList(ax::mojom::IntAttribute::kAriaCellRowSpan, "rowspan",
+                       attributes);
   }
 
   // Expose the value of a progress bar, slider, scroll bar or <select> element.
@@ -1567,7 +1529,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   // aria-dropeffect is deprecated in WAI-ARIA 1.1.
   if (delegate_->HasIntAttribute(
           ax::mojom::IntAttribute::kDropeffectDeprecated)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // Expose class attribute.
@@ -1584,9 +1546,8 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("datetime", datetime, attributes);
   }
 
-  // Expose id attribute.
   std::string id;
-  if (GetHtmlAttribute("id", &id)) {
+  if (delegate_->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId, &id)) {
     AddAttributeToList("id", id, attributes);
   }
 
@@ -1635,7 +1596,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("text-model", "a1", attributes);
 
   // Expose input-text type attribute.
-  if (IsAtomicTextField() || ui::IsDateOrTimeInput(GetRole())) {
+  if (IsAtomicTextField() || IsDateOrTimeInput(GetRole())) {
     AddAttributeToList(ax::mojom::StringAttribute::kInputType,
                        "text-input-type", attributes);
   }
@@ -1644,7 +1605,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   if (!details_roles.empty())
     AddAttributeToList("details-roles", details_roles, attributes);
 
-  if (ui::IsLink(GetRole())) {
+  if (IsLink(GetRole())) {
     AddAttributeToList(ax::mojom::StringAttribute::kLinkTarget, "link-target",
                        attributes);
   }
@@ -1792,7 +1753,7 @@ bool AXPlatformNodeBase::ScrollToNode(ScrollType scroll_type) {
       break;
   }
 
-  ui::AXActionData action_data;
+  AXActionData action_data;
   action_data.target_node_id = GetData().id;
   action_data.action = ax::mojom::Action::kScrollToMakeVisible;
   action_data.horizontal_scroll_alignment =
@@ -2000,9 +1961,9 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
     return hypertext_offset;
   }
 
-  // Case 3. Is the selection endpoint in a completely different part of the
-  // tree?
-  //
+  // Case 3. Selection endpoint is in a completely different part of the tree:
+  // - Return 0 if it's in an earlier part of the tree.
+  // - Return GetHypertext.size() if it's in a later part of the tree.
   // We can safely assume that the endpoint is in another part of the tree or
   // at common parent, and that this object is a descendant of common parent.
   std::optional<size_t> endpoint_index_in_common_parent;
@@ -2014,15 +1975,27 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
     }
   }
 
-  if (endpoint_index_in_common_parent < index_in_common_parent)
+  if (endpoint_index_in_common_parent < index_in_common_parent) {
+    // In earlier point in tree than endpoint_object.
     return 0;
-  if (endpoint_index_in_common_parent > index_in_common_parent)
+  }
+  if (endpoint_index_in_common_parent > index_in_common_parent) {
+    // In later point in the tree than endpoint_object.
     return static_cast<int>(GetHypertext().size());
+  }
 
-  // TODO(crbug.com/1423589): Make sure this doesn't fire then turn the last
+  // TODO(crbug.com/40897578): Make sure this doesn't fire then turn the last
   // conditional into a CHECK_GT(endpoint_index_in_common_parent,
   // index_in_common_parent); and remove this code path.
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
+  DUMP_WILL_BE_NOTREACHED()
+      << "Was not in descendant, so the endpoint_index_in_common_parent should "
+         "be < or > than the index_in_common_parent:\n"
+      << "\n* This: " << this << "\n* Endpoint object: " << endpoint_object
+      << "\n* Endpoint offset: " << endpoint_offset
+      << "\n* Common parent: " << common_parent
+      << "\n* Index in common parent: " << index_in_common_parent.value_or(-99)
+      << "\n* Endpoint in common parent: "
+      << endpoint_index_in_common_parent.value_or(-99);
   return -1;
 }
 
@@ -2400,17 +2373,18 @@ int AXPlatformNodeBase::NearestTextIndexToPoint(gfx::Point point) {
   return nearest_index;
 }
 
-ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
-  ui::TextAttributeList attributes;
+TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
+  TextAttributeList attributes;
 
   // From the IA2 Spec:
-  //
   // Occasionally, word processors will automatically generate characters which
   // appear on a line along with editable text. The characters are not
   // themselves editable, but are part of the document. The most common examples
   // of automatically inserted characters are in bulleted and numbered lists.
-  if (IsTextField() &&
-      HasBoolAttribute(ax::mojom::BoolAttribute::kNotUserSelectableStyle)) {
+  if (HasBoolAttribute(ax::mojom::BoolAttribute::kNotUserSelectableStyle)) {
+    // From IA2 text attribute guide:
+    // this attribute's value is “true” for list bullet/numbering prefix text or
+    // layout-inserted text such as via the CSS pseudo styles :before or :after.
     attributes.emplace_back("auto-generated", "true");
   }
 

@@ -5,21 +5,24 @@
 #ifndef SERVICES_WEBNN_DML_COMMAND_RECORDER_H_
 #define SERVICES_WEBNN_DML_COMMAND_RECORDER_H_
 
-#include <DirectML.h>
-#include <wrl.h>
-
+#include <map>
 #include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
+#include "third_party/microsoft_dxheaders/include/directml.h"
+
+// Windows SDK headers should be included after DirectX headers.
+#include <wrl.h>
 
 namespace webnn::dml {
 
-using Microsoft::WRL::ComPtr;
-
 class CommandQueue;
+class TensorImplDml;
 
 // CommandRecorder is mainly responsible for the initialization and execution of
 // a DirectML graph. It wraps a DirectML command recorder, and manages the
@@ -27,22 +30,16 @@ class CommandQueue;
 // submission.
 class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
  public:
-  static std::unique_ptr<CommandRecorder> Create(
+  static base::expected<std::unique_ptr<CommandRecorder>, HRESULT> Create(
       scoped_refptr<CommandQueue> queue,
-      ComPtr<IDMLDevice> dml_device);
+      Microsoft::WRL::ComPtr<IDMLDevice1> dml_device);
 
   ~CommandRecorder();
   CommandRecorder(const CommandRecorder&) = delete;
   CommandRecorder& operator=(const CommandRecorder&) = delete;
 
-  // Indicates whether the underlying D3D12 device supports UMA (Unified Memory
-  // Architecture).
-  bool IsUMA() const;
-
-  IDMLDevice* GetDMLDevice() const;
-
-  // Get the command queue that this command recorder submits command list to.
-  CommandQueue* GetCommandQueue() const;
+  // Indicates whether this recorder is ready to record new commands.
+  bool IsOpen() const { return is_open_; }
 
   // Call the `Open()` method before recording any new commands. The `Open()`
   // method would prepare the underlying command list and command allocator.
@@ -73,11 +70,23 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
 
   // Record the buffer copy command. The destination and source buffers will be
   // referenced until the GPU work has completed.
-  void CopyBufferRegion(ComPtr<ID3D12Resource> dst_buffer,
+  void CopyBufferRegion(Microsoft::WRL::ComPtr<ID3D12Resource> dst_buffer,
                         uint64_t dst_offset,
-                        ComPtr<ID3D12Resource> src_buffer,
+                        Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
                         uint64_t src_offset,
                         uint64_t byte_length);
+
+  // Helper function to upload tensor data from GPU to CPU.
+  void UploadTensorWithBarrier(
+      TensorImplDml* dst_tensor,
+      Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
+      size_t buffer_size);
+
+  // Helper function to readback tensor data from GPU to CPU.
+  void ReadbackTensorWithBarrier(
+      Microsoft::WRL::ComPtr<ID3D12Resource> dst_buffer,
+      TensorImplDml* src_tensor,
+      size_t buffer_size);
 
   // Initialize a compiled DirectML operator, which may also represent a
   // DirectML graph, on the GPU, before it can be executed. For a compiled
@@ -130,84 +139,57 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   // This method ensures that all the required GPU resources will be kept alive
   // until the operator execution has completed on the GPU.
   HRESULT ExecuteOperator(
-      ComPtr<IDMLCompiledOperator> compiled_operator,
-      ComPtr<ID3D12DescriptorHeap> descriptor_heap,
+      Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
+      Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptor_heap,
       base::span<const DML_BINDING_DESC> input_bindings,
       base::span<const DML_BINDING_DESC> output_bindings,
       const std::optional<DML_BINDING_DESC>& persistent_resource_binding,
       const std::optional<DML_BINDING_DESC>& temporary_resource_binding);
 
-  // Create a resource with `size` bytes in
-  // D3D12_RESOURCE_STATE_UNORDERED_ACCESS state from the default heap of the
-  // owned D3D12 device. For this method and the other two, if there are no
-  // errors, S_OK is returned and the created resource is returned via
-  // `resource`. Otherwise, the corresponding HRESULT error code is returned.
-  HRESULT CreateDefaultBuffer(uint64_t size,
-                              const wchar_t* name_for_debugging,
-                              ComPtr<ID3D12Resource>& resource);
+  CommandQueue* command_queue() const { return command_queue_.get(); }
 
-  // Create a resource with `size` bytes in D3D12_RESOURCE_STATE_GENERIC_READ
-  // state from the uploading heap of the owned D3D12 device.
-  HRESULT CreateUploadBuffer(uint64_t size,
-                             const wchar_t* name_for_debugging,
-                             ComPtr<ID3D12Resource>& resource);
+  // Called when a WebNNTensor requires tracking of GPU progress
+  // because a recorded command will modify the data which could be accessed
+  // by the CPU. The last submission fence will be updated during
+  // recording to ensure the CPU can safely use the buffer.
+  void OnTensorAccessed(TensorImplDml* tensor);
 
-  // Create a resource with `size` bytes in D3D12_RESOURCE_STATE_COPY_DEST state
-  // from the reading-back heap of the owned D3D12 device.
-  HRESULT CreateReadbackBuffer(uint64_t size,
-                               const wchar_t* name_for_debugging,
-                               ComPtr<ID3D12Resource>& resource);
-
-  // Create a resource with `size` bytes in
-  // D3D12_RESOURCE_STATE_UNORDERED_ACCESS state and from a custom heap with CPU
-  // memory pool (D3D12_MEMORY_POOL_L0) optimized for CPU uploading data to GPU.
-  // This type of buffer should only be created for GPU with UMA (Unified Memory
-  // Architecture).
-  HRESULT CreateCustomUploadBuffer(uint64_t size,
-                                   const wchar_t* name_for_debugging,
-                                   ComPtr<ID3D12Resource>& resource);
-
-  // Create a resource with `size` bytes in
-  // D3D12_RESOURCE_STATE_UNORDERED_ACCESS state and from a custom heap with CPU
-  // memory pool (D3D12_MEMORY_POOL_L0) optimized for CPU reading data back from
-  // GPU. This type of buffer should only be created for GPU with UMA (Unified
-  // Memory Architecture).
-  HRESULT CreateCustomReadbackBuffer(uint64_t size,
-                                     const wchar_t* name_for_debugging,
-                                     ComPtr<ID3D12Resource>& resource);
-
-  // Create a descriptor heap with D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV type,
-  // D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE flag and large enough for the
-  // number of descriptors.
-  HRESULT CreateDescriptorHeap(uint32_t num_descriptors,
-                               const wchar_t* name_for_debugging,
-                               ComPtr<ID3D12DescriptorHeap>& descriptor_heap);
+  void ReferenceCommandResources(Microsoft::WRL::ComPtr<IUnknown> object);
 
  private:
-  CommandRecorder(bool is_uma,
-                  scoped_refptr<CommandQueue> command_queue,
-                  ComPtr<IDMLDevice> dml_device,
-                  ComPtr<ID3D12CommandAllocator> command_allocator,
-                  ComPtr<IDMLCommandRecorder> command_recorder);
+  CommandRecorder(
+      scoped_refptr<CommandQueue> command_queue,
+      Microsoft::WRL::ComPtr<IDMLDevice1> dml_device,
+      Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator,
+      Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder);
 
-  // Store the info of D3D12_FEATURE_DATA_ARCHITECTURE.
-  const bool is_uma_ = false;
+  // Records execution of a dispatchable object (an operator initializer, or a
+  // compiled operator) onto a command list.
+  void RecordDispatch(IDMLDispatchable* dispatchable,
+                      IDMLBindingTable* binding_table);
 
   bool is_open_ = false;
   // The first call to `CloseAndExecute()` sets the first submitted fence value.
   uint64_t last_submitted_fence_value_ = UINT64_MAX;
 
   scoped_refptr<CommandQueue> command_queue_;
-  ComPtr<IDMLDevice> dml_device_;
-  ComPtr<ID3D12Device> d3d12_device_;
-  ComPtr<ID3D12CommandAllocator> command_allocator_;
-  ComPtr<ID3D12GraphicsCommandList> command_list_;
-  ComPtr<IDMLCommandRecorder> command_recorder_;
+  Microsoft::WRL::ComPtr<IDMLDevice1> dml_device_;
+  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device_;
+  Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator_;
+  Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> command_list_;
+  Microsoft::WRL::ComPtr<IDMLCommandRecorder> command_recorder_;
 
   // Keep the resources used by recorded commands. After commands submission,
   // these resources would be kept alive until the command queue has completed
   // the execution of these commands on GPU.
-  std::vector<ComPtr<IUnknown>> command_resources_;
+  std::vector<Microsoft::WRL::ComPtr<IUnknown>> command_resources_;
+
+  // Keep WebNNTensors used in recorded commands pending execution. The key is
+  // a strong pointer to the underlying ID3D12Resource to ensure the recorded
+  // buffer entry will always remain valid until Open() is called again to reset
+  // it.
+  std::map<Microsoft::WRL::ComPtr<ID3D12Resource>, base::WeakPtr<TensorImplDml>>
+      command_tensor_impls_;
 };
 
 }  // namespace webnn::dml

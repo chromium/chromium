@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <tuple>
 
+#include "base/not_fatal_until.h"
+
 namespace performance_manager {
 namespace execution_context_priority {
 
@@ -108,7 +110,7 @@ MaxVoteAggregator::StampedVote::~StampedVote() = default;
 MaxVoteAggregator::VoteDataMap::iterator MaxVoteAggregator::GetVoteData(
     const ExecutionContext* execution_context) {
   auto it = vote_data_map_.find(execution_context);
-  DCHECK(it != vote_data_map_.end());
+  CHECK(it != vote_data_map_.end(), base::NotFatalUntil::M130);
   return it;
 }
 
@@ -133,7 +135,7 @@ void MaxVoteAggregator::VoteData::AddVote(VoterId voter_id,
 void MaxVoteAggregator::VoteData::UpdateVote(VoterId voter_id,
                                              const Vote& new_vote) {
   auto it = heap_handles_.find(voter_id);
-  DCHECK(it != heap_handles_.end());
+  CHECK(it != heap_handles_.end(), base::NotFatalUntil::M130);
   base::HeapHandle* heap_handle = it->second;
 
   votes_.Modify(*heap_handle, [&new_vote](StampedVote& element) {
@@ -143,7 +145,7 @@ void MaxVoteAggregator::VoteData::UpdateVote(VoterId voter_id,
 
 void MaxVoteAggregator::VoteData::RemoveVote(VoterId voter_id) {
   auto it = heap_handles_.find(voter_id);
-  DCHECK(it != heap_handles_.end());
+  CHECK(it != heap_handles_.end(), base::NotFatalUntil::M130);
   base::HeapHandle* heap_handle = it->second;
   heap_handles_.erase(it);
 

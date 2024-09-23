@@ -7,9 +7,10 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#import "base/memory/raw_ptr.h"
+#include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 
 @class CRWWebUISchemeHandler;
@@ -19,17 +20,15 @@ namespace web {
 
 class BrowserState;
 class WKContentRuleListProvider;
-class WKWebViewConfigurationProviderObserver;
 
 // A provider class associated with a single web::BrowserState object. Manages
 // the lifetime and performs setup of WKWebViewConfiguration and instances. Not
 // threadsafe. Must be used only on the main thread.
 class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
  public:
-  WKWebViewConfigurationProvider(const WKWebViewConfigurationProvider&) =
-      delete;
-  WKWebViewConfigurationProvider& operator=(
-      const WKWebViewConfigurationProvider&) = delete;
+  // Callbacks invoked when a new WKWebViewConfiguration is created.
+  using ConfigurationCreatedCallbackList =
+      base::RepeatingCallbackList<void(WKWebViewConfiguration*)>;
 
   ~WKWebViewConfigurationProvider() override;
 
@@ -68,10 +67,6 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   // Callers must not retain the returned object.
   WKWebViewConfiguration* GetWebViewConfiguration();
 
-  // Returns WKContentRuleListProvider associated with WKWebViewConfiguration.
-  // Callers must not retain the returned object.
-  WKContentRuleListProvider* GetContentRuleListProvider();
-
   // Recreates and re-adds all injected Javascript into the current
   // configuration. This will only affect WebStates that are loaded after a call
   // to this function. All current WebStates will keep their existing Javascript
@@ -83,26 +78,24 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   // in debug builds).
   void Purge();
 
-  // Adds `observer` to monitor changes to the ConfigurationProvider.
-  void AddObserver(WKWebViewConfigurationProviderObserver* observer);
-
-  // Stop `observer` from monitoring changes to the ConfigurationProvider.
-  void RemoveObserver(WKWebViewConfigurationProviderObserver* observer);
+  // Registers callback to be invoked when a new WKWebViewConfiguration is
+  // created for this provider.
+  base::CallbackListSubscription RegisterConfigurationCreatedCallback(
+      ConfigurationCreatedCallbackList::CallbackType callback);
 
  private:
   explicit WKWebViewConfigurationProvider(BrowserState* browser_state);
   WKWebViewConfigurationProvider() = delete;
+
+  SEQUENCE_CHECKER(_sequence_checker_);
+
   CRWWebUISchemeHandler* scheme_handler_ = nil;
   WKWebViewConfiguration* configuration_ = nil;
   raw_ptr<BrowserState> browser_state_;
   std::unique_ptr<WKContentRuleListProvider> content_rule_list_provider_;
 
-  // A list of observers notified when WKWebViewConfiguration changes.
-  // This observer list has its' check_empty flag set to false, because
-  // observers need to remove them selves from the list in the UI Thread which
-  // will add more complixity if they are destructed on the IO thread.
-  base::ObserverList<WKWebViewConfigurationProviderObserver, false>::Unchecked
-      observers_;
+  // List of callbacks notified when a new WKWebViewConfiguration is created.
+  ConfigurationCreatedCallbackList configuration_created_callbacks_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<WKWebViewConfigurationProvider> weak_ptr_factory_{this};

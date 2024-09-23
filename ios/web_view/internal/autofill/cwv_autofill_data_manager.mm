@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/autofill/cwv_autofill_data_manager_internal.h"
-
 #include <memory>
 
 #include "base/functional/bind.h"
+#import "base/location.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/address_data_manager.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -17,6 +18,7 @@
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_data_manager_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
@@ -130,7 +132,7 @@ class WebViewPasswordStoreObserver
           [removed addObject:password];
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }
@@ -227,7 +229,8 @@ class WebViewPasswordStoreObserver
 }
 
 - (void)updateProfile:(CWVAutofillProfile*)profile {
-  _personalDataManager->UpdateProfile(*profile.internalProfile);
+  _personalDataManager->address_data_manager().UpdateProfile(
+      *profile.internalProfile);
 }
 
 - (void)deleteProfile:(CWVAutofillProfile*)profile {
@@ -290,7 +293,7 @@ class WebViewPasswordStoreObserver
 }
 
 - (void)deletePassword:(CWVPassword*)password {
-  _passwordStore->RemoveLogin(*[password internalPasswordForm]);
+  _passwordStore->RemoveLogin(FROM_HERE, *[password internalPasswordForm]);
 }
 
 - (void)addNewPasswordForUsername:(NSString*)username
@@ -376,8 +379,8 @@ class WebViewPasswordStoreObserver
 
 - (NSArray<CWVAutofillProfile*>*)profiles {
   NSMutableArray* profiles = [NSMutableArray array];
-  for (autofill::AutofillProfile* internalProfile :
-       _personalDataManager->GetProfiles()) {
+  for (const autofill::AutofillProfile* internalProfile :
+       _personalDataManager->address_data_manager().GetProfiles()) {
     CWVAutofillProfile* profile =
         [[CWVAutofillProfile alloc] initWithProfile:*internalProfile];
     [profiles addObject:profile];
@@ -388,7 +391,7 @@ class WebViewPasswordStoreObserver
 - (NSArray<CWVCreditCard*>*)creditCards {
   NSMutableArray* creditCards = [NSMutableArray array];
   for (autofill::CreditCard* internalCard :
-       _personalDataManager->GetCreditCards()) {
+       _personalDataManager->payments_data_manager().GetCreditCards()) {
     CWVCreditCard* creditCard =
         [[CWVCreditCard alloc] initWithCreditCard:*internalCard];
     [creditCards addObject:creditCard];

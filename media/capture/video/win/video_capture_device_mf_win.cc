@@ -15,10 +15,12 @@
 
 #include <d3d11.h>
 #include <memory>
+#include <optional>
 #include <thread>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -50,6 +52,10 @@ using Microsoft::WRL::ComPtr;
 
 namespace media {
 
+BASE_FEATURE(kMediaFoundationVideoCaptureForwardSampleTimestamps,
+             "MediaFoundationVideoCaptureForwardSampleTimestamps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ULONGLONG CaptureModeToExtendedPlatformFlags(
     mojom::EyeGazeCorrectionMode mode) {
   switch (mode) {
@@ -61,7 +67,7 @@ ULONGLONG CaptureModeToExtendedPlatformFlags(
       return KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_ON |
              KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_STARE;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 mojom::EyeGazeCorrectionMode ExtendedPlatformFlagsToCaptureMode(
@@ -107,6 +113,23 @@ std::vector<mojom::EyeGazeCorrectionMode> ExtendedPlatformFlagsToCaptureModes(
 #endif
 
 namespace {
+
+std::optional<base::TimeTicks> MaybeForwardCaptureBeginTime(
+    const base::TimeTicks capture_begin_time) {
+  if (!base::FeatureList::IsEnabled(
+          kMediaFoundationVideoCaptureForwardSampleTimestamps)) {
+    return std::nullopt;
+  }
+  return capture_begin_time;
+}
+
+// How long premapped frames will be premapped after corresponding feedback
+// message is received. Too high value would cause unnecessary premapped frames
+// when a VideoTrack is disconnected from the source requiring premapped frames.
+// If he value is less than the frame duration, the feedback might be ignored
+// completely and a costly mapping will be happening instead of the premapping.
+constexpr base::TimeDelta kMaxFeedbackPremappingEffectDuration =
+    base::Milliseconds(500);
 
 // Provide an unique GUID for reusing |handle| and |token| by
 // SetPrivateDataInterface/GetPrivateData.
@@ -688,7 +711,14 @@ HRESULT CopyTextureToGpuMemoryBuffer(ID3D11Texture2D* texture,
   hr = target_texture.As(&keyed_mutex);
   CHECK(SUCCEEDED(hr));
 
-  keyed_mutex->AcquireSync(0, INFINITE);
+  hr = keyed_mutex->AcquireSync(0, INFINITE);
+  // Can't check for FAILED(hr) because AcquireSync may return e.g.
+  // WAIT_ABANDONED.
+  if (hr != S_OK) {
+    DLOG(ERROR) << "Failed to acquire the mutex:"
+                << logging::SystemErrorCodeToString(hr);
+    return E_FAIL;
+  }
   device_context->CopySubresourceRegion(target_texture.Get(), 0, 0, 0, 0,
                                         texture, 0, nullptr);
   keyed_mutex->ReleaseSync(0);
@@ -806,9 +836,45 @@ class VideoCaptureDeviceMFWin::MFVideoCallback final
     }
 
     base::TimeTicks reference_time(base::TimeTicks::Now());
+    base::TimeTicks mf_time_now =
+        base::TimeTicks() + base::Microseconds(MFGetSystemTime() / 10);
+
     LONGLONG raw_time_stamp = 0;
     sample->GetSampleTime(&raw_time_stamp);
     base::TimeDelta timestamp = base::Microseconds(raw_time_stamp / 10);
+
+    uint64_t raw_capture_begin_time = 0;
+    HRESULT hr = sample->GetUINT64(MFSampleExtension_DeviceReferenceSystemTime,
+                                   &raw_capture_begin_time);
+    if (FAILED(hr)) {
+      hr = sample->GetUINT64(MFSampleExtension_DeviceReferenceSystemTime,
+                             &raw_capture_begin_time);
+    }
+    if (FAILED(hr)) {
+      raw_capture_begin_time = MFGetSystemTime();
+    }
+
+    base::TimeDelta mf_time_offset = reference_time - mf_time_now;
+    base::TimeTicks capture_begin_time =
+        base::TimeTicks() + base::Microseconds(raw_capture_begin_time / 10) +
+        mf_time_offset;
+
+    base::UmaHistogramCustomTimes(
+        "Media.VideoCapture.Win.Device.CaptureBeginTime.MFTimeOffset",
+        mf_time_offset + base::Milliseconds(150), base::Milliseconds(0),
+        base::Milliseconds(299), 50);
+    if (last_capture_begin_time_ > base::TimeTicks()) {
+      base::UmaHistogramCustomTimes(
+          "Media.VideoCapture.Win.Device.CaptureBeginTime.Interval",
+          capture_begin_time - last_capture_begin_time_ +
+              base::Milliseconds(150),
+          base::Milliseconds(0), base::Milliseconds(299), 50);
+    }
+
+    if (capture_begin_time <= last_capture_begin_time_) {
+      capture_begin_time = last_capture_begin_time_ + base::Microseconds(1);
+    }
+    last_capture_begin_time_ = capture_begin_time;
 
     DWORD count = 0;
     sample->GetBufferCount(&count);
@@ -817,7 +883,8 @@ class VideoCaptureDeviceMFWin::MFVideoCallback final
       ComPtr<IMFMediaBuffer> buffer;
       sample->GetBufferByIndex(i, &buffer);
       if (buffer) {
-        observer_->OnIncomingCapturedData(buffer, reference_time, timestamp);
+        observer_->OnIncomingCapturedData(buffer, reference_time, timestamp,
+                                          capture_begin_time);
       } else {
         observer_->OnFrameDropped(
             VideoCaptureFrameDropReason::
@@ -835,6 +902,8 @@ class VideoCaptureDeviceMFWin::MFVideoCallback final
  private:
   friend class base::RefCountedThreadSafe<MFVideoCallback>;
   ~MFVideoCallback() {}
+
+  base::TimeTicks last_capture_begin_time_ = base::TimeTicks();
 
   // Protects access to |observer_|.
   base::Lock lock_;
@@ -2046,7 +2115,9 @@ void VideoCaptureDeviceMFWin::SetPhotoOptions(
 void VideoCaptureDeviceMFWin::OnUtilizationReport(
     media::VideoCaptureFeedback feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  last_feedback_ = feedback;
+  if (feedback.require_mapped_frame) {
+    last_premapped_request_ = base::TimeTicks::Now();
+  }
 }
 
 void VideoCaptureDeviceMFWin::OnCameraControlChange(REFGUID control_set,
@@ -2133,7 +2204,8 @@ void VideoCaptureDeviceMFWin::OnCameraControlError(HRESULT status) const {
 void VideoCaptureDeviceMFWin::OnIncomingCapturedData(
     Microsoft::WRL::ComPtr<IMFMediaBuffer> buffer,
     base::TimeTicks reference_time,
-    base::TimeDelta timestamp) {
+    base::TimeDelta timestamp,
+    base::TimeTicks capture_begin_time) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceMFWin::OnIncomingCapturedData");
   // This is called on IMFCaptureEngine thread.
@@ -2148,6 +2220,7 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedData(
     input_buffer_ = std::move(buffer);
     input_reference_time_ = reference_time;
     input_timestamp_ = timestamp;
+    input_capture_begin_time_ = capture_begin_time;
   }
 
   if (need_to_post) {
@@ -2162,7 +2235,8 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
     Microsoft::WRL::ComPtr<IMFMediaBuffer> imf_buffer,
     ID3D11Texture2D* texture,
     base::TimeTicks reference_time,
-    base::TimeDelta timestamp) {
+    base::TimeDelta timestamp,
+    base::TimeTicks capture_begin_time) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceMFWin::DeliverTextureToClient");
   // Check for device loss
@@ -2202,15 +2276,16 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
 
   if (base::FeatureList::IsEnabled(kMediaFoundationD3D11VideoCaptureZeroCopy) &&
       is_cross_process_shared_texture) {
-    return DeliverExternalBufferToClient(std::move(imf_buffer), texture,
-                                         texture_size, pixel_format,
-                                         reference_time, timestamp);
+    return DeliverExternalBufferToClient(
+        std::move(imf_buffer), texture, texture_size, pixel_format,
+        reference_time, timestamp, capture_begin_time);
   }
 
   VideoCaptureDevice::Client::Buffer capture_buffer;
   constexpr int kDummyFrameFeedbackId = 0;
   auto result = client_->ReserveOutputBuffer(
-      texture_size, pixel_format, kDummyFrameFeedbackId, &capture_buffer);
+      texture_size, pixel_format, kDummyFrameFeedbackId, &capture_buffer,
+      /*require_new_buffer_id=*/nullptr, /*retire_old_buffer_id=*/nullptr);
   if (result != VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
     LOG(ERROR) << "Failed to reserve output capture buffer: " << (int)result;
     return MF_E_UNEXPECTED;
@@ -2231,7 +2306,8 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
   }
 
   capture_buffer.is_premapped = false;
-  if (last_feedback_.require_mapped_frame) {
+  if (last_premapped_request_ >
+      base::TimeTicks::Now() - kMaxFeedbackPremappingEffectDuration) {
     // Only a flag on the Buffer is set here; the region itself isn't passed
     // anywhere because it was passed when the buffer was created.
     // Now the flag would tell the consumer that the region contains actual
@@ -2268,7 +2344,8 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
       VideoCaptureFormat(
           texture_size, selected_video_capability_->supported_format.frame_rate,
           pixel_format),
-      color_space_, reference_time, timestamp, gfx::Rect(texture_size),
+      color_space_, reference_time, timestamp,
+      MaybeForwardCaptureBeginTime(capture_begin_time), gfx::Rect(texture_size),
       frame_metadata);
 
   return hr;
@@ -2280,7 +2357,8 @@ HRESULT VideoCaptureDeviceMFWin::DeliverExternalBufferToClient(
     const gfx::Size& texture_size,
     const VideoPixelFormat& pixel_format,
     base::TimeTicks reference_time,
-    base::TimeDelta timestamp) {
+    base::TimeDelta timestamp,
+    base::TimeTicks capture_begin_time) {
   UINT private_data_size;
   Microsoft::WRL::ComPtr<DXGIHandlePrivateData> private_data;
   HRESULT hr =
@@ -2337,9 +2415,10 @@ HRESULT VideoCaptureDeviceMFWin::DeliverExternalBufferToClient(
               selected_video_capability_->supported_format.frame_rate,
               pixel_format),
           gfx::ColorSpace());
-  client_->OnIncomingCapturedExternalBuffer(std::move(external_buffer),
-                                            reference_time, timestamp,
-                                            gfx::Rect(texture_size));
+  client_->OnIncomingCapturedExternalBuffer(
+      std::move(external_buffer), reference_time, timestamp,
+      MaybeForwardCaptureBeginTime(capture_begin_time),
+      gfx::Rect(texture_size));
   return hr;
 }
 
@@ -2349,13 +2428,14 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   Microsoft::WRL::ComPtr<IMFMediaBuffer> buffer;
-  base::TimeTicks reference_time;
+  base::TimeTicks reference_time, capture_begin_time;
   base::TimeDelta timestamp;
   {
     base::AutoLock lock(queueing_lock_);
     buffer = std::move(input_buffer_);
     reference_time = input_reference_time_;
     timestamp = input_timestamp_;
+    capture_begin_time = input_capture_begin_time_;
   }
 
   SendOnStartedIfNotYetSent();
@@ -2378,7 +2458,7 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal() {
         params_.requested_format.pixel_format == PIXEL_FORMAT_NV12 &&
         SUCCEEDED(GetTextureFromMFBuffer(buffer.Get(), &texture))) {
       HRESULT hr = DeliverTextureToClient(buffer, texture.Get(), reference_time,
-                                          timestamp);
+                                          timestamp, capture_begin_time);
       DLOG_IF_FAILED_WITH_HRESULT("Failed to deliver D3D11 texture to client.",
                                   hr);
       delivered_texture = SUCCEEDED(hr);
@@ -2402,8 +2482,8 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal() {
     client_->OnIncomingCapturedData(
         locked_buffer.data(), locked_buffer.length(),
         selected_video_capability_->supported_format, color_space_,
-        camera_rotation_.value(), false /* flip_y */, reference_time,
-        timestamp);
+        camera_rotation_.value(), false /* flip_y */, reference_time, timestamp,
+        MaybeForwardCaptureBeginTime(capture_begin_time));
   }
 
   while (!video_stream_take_photo_callbacks_.empty()) {
@@ -2687,9 +2767,6 @@ void VideoCaptureDeviceMFWin::OnCameraInUseReport(bool in_use,
 
   // Default action for no reports received can be only "camera not in use".
   DCHECK(!in_use || !is_default_action);
-
-  base::UmaHistogramBoolean("Media.VideoCapture.Win.ActivityReportProcessed",
-                            is_default_action);
 
   if (in_use) {
     OnError(VideoCaptureError::kWinMediaFoundationCameraBusy, FROM_HERE,

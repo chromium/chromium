@@ -1,0 +1,70 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("user_policy_util") {
+  sources = [
+    "user_policy_util.h",
+    "user_policy_util.mm",
+  ]
+  deps = [
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy/model:constants",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/signin/model",
+  ]
+}
+
+source_set("user_policy_scene_agent") {
+  sources = [
+    "signin_policy_scene_agent.h",
+    "signin_policy_scene_agent.mm",
+    "user_policy_scene_agent.h",
+    "user_policy_scene_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy/model:constants",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/policy/ui_bundled/user_policy",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/authentication/signin",
+    "//ios/chrome/browser/ui/scoped_ui_blocker",
+    "//ui/base",
+  ]
+  public_deps = [ ":user_policy_util" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("management_util") {
+  sources = [
+    "management_util.h",
+    "management_util.mm",
+  ]
+  deps = [
+    ":user_policy_util",
+    "//components/account_id",
+    "//components/policy/core/common",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/authentication/signin",
+  ]
+}

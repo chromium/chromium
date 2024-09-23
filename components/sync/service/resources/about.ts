@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import type {WebUiListener} from 'chrome://resources/js/cr.js';
 import {addWebUiListener, removeWebUiListener} from 'chrome://resources/js/cr.js';
 
-import {requestDataAndRegisterForUpdates, requestStart, requestStopClearData, setIncludeSpecifics, triggerRefresh} from './chrome_sync.js';
+import {requestDataAndRegisterForUpdates, requestStart, setIncludeSpecifics, triggerRefresh} from './chrome_sync.js';
 import type {ProtocolEvent} from './traffic_log.js';
 
 // Contains the latest snapshot of sync about info.
@@ -58,7 +58,7 @@ function highlightIfChanged(node: HTMLElement, oldVal: number, newVal: number) {
   }
 }
 
-function refreshAboutInfo(newAboutInfo: object) {
+function refreshAboutInfo(newAboutInfo: AboutInfo) {
   aboutInfo = newAboutInfo;
   const aboutInfoDiv = document.querySelector<HTMLElement>('#about-info');
   assert(aboutInfoDiv);
@@ -66,26 +66,40 @@ function refreshAboutInfo(newAboutInfo: object) {
 }
 
 interface EntityCount {
-  modelType: string;
+  dataType: string;
   entities: number;
   nonTombstoneEntities: number;
 }
 
-function onEntityCountsUpdatedEvent(response: {entityCounts: EntityCount[]}) {
-  if (!aboutInfo.type_status) {
-    return;
-  }
-  for (const count of response.entityCounts) {
-    const typeStatusRow =
-        aboutInfo.type_status.find(row => row.name === count.modelType);
-    if (typeStatusRow) {
-      typeStatusRow.num_entries = count.entities;
-      typeStatusRow.num_live = count.nonTombstoneEntities;
-    }
-  }
+let updateEntityCountsTimeoutID = -1;
+
+function updateEntityCounts() {
+  updateEntityCountsTimeoutID = -1;
+
   const typeInfo = document.querySelector<HTMLElement>('#typeInfo');
   assert(typeInfo);
   jstProcess(new JsEvalContext({type_status: aboutInfo.type_status}), typeInfo);
+}
+
+function onEntityCountsUpdatedEvent(response: {entityCounts: EntityCount}) {
+  if (!aboutInfo.type_status) {
+    return;
+  }
+
+  const typeStatusRow = aboutInfo.type_status.find(
+      row => row.name === response.entityCounts.dataType);
+  if (typeStatusRow) {
+    typeStatusRow.num_entries = response.entityCounts.entities;
+    typeStatusRow.num_live = response.entityCounts.nonTombstoneEntities;
+  }
+
+  // onEntityCountsUpdatedEvent() typically gets called multiple times in quick
+  // succession (once for each data type). To avoid lots of almost-simultaneous
+  // updates to the HTML table (which would result in UI jank), delay updating
+  // just a bit.
+  if (updateEntityCountsTimeoutID === -1) {
+    updateEntityCountsTimeoutID = setTimeout(updateEntityCounts, 10);
+  }
 }
 
 /**
@@ -192,6 +206,11 @@ function initStatusDumpButton() {
     data += 'Status\n';
     data += '======\n';
     data += JSON.stringify(aboutInfoCopy, null, 2) + '\n';
+    data += '\n';
+    data += '===\n';
+    data += 'Log\n';
+    data += '===\n';
+    data += JSON.stringify(protocolEvents, null, 2);
 
     const statusText =
         document.querySelector<HTMLTextAreaElement>('#status-text');
@@ -279,10 +298,6 @@ function onLoad() {
   const requestStartEl = document.querySelector<HTMLElement>('#request-start');
   assert(requestStartEl);
   requestStartEl.addEventListener('click', requestStart);
-  const requestStopClearDataEl =
-      document.querySelector<HTMLElement>('#request-stop-clear-data');
-  assert(requestStopClearDataEl);
-  requestStopClearDataEl.addEventListener('click', requestStopClearData);
 
   // Request initial data for the page and listen to updates.
   requestDataAndRegisterForUpdates();

@@ -11,18 +11,10 @@
 
 #include <string>
 
-#include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
 namespace content {
-
-// The name of the directory under BrowserContext::GetPath where the AppCache is
-// put.
-CONTENT_EXPORT extern const base::FilePath::CharType kAppCacheDirname[];
-// The name of the directory under BrowserContext::GetPath where Pepper plugin
-// data is put.
-CONTENT_EXPORT extern const base::FilePath::CharType kPepperDataDirname[];
 
 // The MIME type used for the browser plugin.
 CONTENT_EXPORT extern const char kBrowserPluginMimeType[];

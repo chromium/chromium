@@ -8,9 +8,7 @@
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../../components/oobe_cr_lottie.js';
-import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
@@ -20,13 +18,14 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/oobe_carousel.js';
 import '../../components/oobe_slide.js';
 
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
+import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 
 import {getTemplate} from './update.html.js';
 
@@ -72,13 +71,8 @@ enum UpdateUiState {
   OPT_OUT_INFO = 'opt-out-info',
 }
 
-const UpdateBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-        PolymerElement) as { new (): PolymerElement
-      & OobeI18nBehaviorInterface
-      & LoginScreenBehaviorInterface
-      & MultiStepBehaviorInterface,
-    };
+const UpdateBase =
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 interface UpdateScreenData {
   isOptOutEnabled: boolean;
@@ -237,7 +231,8 @@ export class Update extends UpdateBase {
    * Event handler that is invoked just before the screen is shown.
    * @param data Screen init payload.
    */
-  onBeforeShow(data: UpdateScreenData): void {
+  override onBeforeShow(data: UpdateScreenData): void {
+    super.onBeforeShow(data);
     if (data && 'isOptOutEnabled' in data) {
       this.isOptOutEnabled = data['isOptOutEnabled'];
     }
@@ -336,7 +331,7 @@ export class Update extends UpdateBase {
    */
   private getAutoTransition(step: UpdateUiState,
       autoTransition: boolean): boolean {
-    return step == UpdateUiState.UPDATE && autoTransition;
+    return step === UpdateUiState.UPDATE && autoTransition;
   }
 
   /**

@@ -5,12 +5,18 @@
 #ifndef ASH_IN_SESSION_AUTH_AUTH_DIALOG_CONTENTS_VIEW_H_
 #define ASH_IN_SESSION_AUTH_AUTH_DIALOG_CONTENTS_VIEW_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/session/user_info.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/events/event.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -65,6 +71,8 @@ class AuthDialogContentsView : public views::View {
 
     raw_ptr<LoginPasswordView> GetPinTextInputView() const;
 
+    views::Label* GetDialogFingerprintLabel() const;
+
    private:
     const raw_ptr<AuthDialogContentsView> view_;
   };
@@ -78,7 +86,6 @@ class AuthDialogContentsView : public views::View {
   ~AuthDialogContentsView() override;
 
   // views::Views:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void RequestFocus() override;
 
   uint32_t auth_methods() const { return auth_methods_; }
@@ -153,6 +160,8 @@ class AuthDialogContentsView : public views::View {
 
   // Called when the "Need help?" button is pressed.
   void OnNeedHelpButtonPressed(const ui::Event& event);
+
+  views::Label* GetFingerprintLabel() const;
 
   // Debug container which holds the entire debug UI.
   raw_ptr<views::View> container_ = nullptr;

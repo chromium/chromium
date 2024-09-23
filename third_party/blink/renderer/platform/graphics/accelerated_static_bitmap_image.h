@@ -9,11 +9,16 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/resources/release_callback.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/renderer/platform/graphics/mailbox_ref.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
 struct SkImageInfo;
+
+namespace gpu {
+class ClientSharedImage;
+}  // namespace gpu
 
 namespace blink {
 class MailboxTextureBacking;
@@ -68,13 +73,30 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       bool supports_display_compositing,
       bool is_overlay_candidate);
 
+  // Same as CreateFromCanvasMailbox() except that this function accepts
+  // a ClientSharedImage instead of a mailbox.
+  static scoped_refptr<AcceleratedStaticBitmapImage>
+  CreateFromCanvasSharedImage(
+      scoped_refptr<gpu::ClientSharedImage>,
+      const gpu::SyncToken&,
+      GLuint shared_image_texture_id,
+      const SkImageInfo& sk_image_info,
+      GLenum texture_target,
+      bool is_origin_top_left,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      base::PlatformThreadRef context_thread_ref,
+      scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
+      viz::ReleaseCallback release_callback,
+      bool supports_display_compositing,
+      bool is_overlay_candidate);
+
   // Creates an image wrapping an external mailbox.
   // The mailbox may come from a different context,
   // potentially from a different process.
   // This takes ownership of the mailbox.
   static scoped_refptr<AcceleratedStaticBitmapImage> CreateFromExternalMailbox(
       const gpu::MailboxHolder& mailbox_holder,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       const SkImageInfo& sk_image_info,
       bool is_origin_top_left,
       bool supports_display_compositing,
@@ -130,6 +152,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   // Provides the mailbox backing for this image. The caller must wait on the
   // sync token before accessing this mailbox.
   gpu::MailboxHolder GetMailboxHolder() const final;
+  scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const final;
   bool IsOriginTopLeft() const final { return is_origin_top_left_; }
   bool SupportsDisplayCompositing() const final {
     return supports_display_compositing_;
@@ -140,7 +163,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   SkImageInfo GetSkImageInfo() const override;
 
-  uint32_t GetUsage() const override;
+  gpu::SharedImageUsageSet GetUsage() const override;
 
  private:
   struct ReleaseContext {
@@ -166,9 +189,25 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
       viz::ReleaseCallback release_callback);
 
+  AcceleratedStaticBitmapImage(
+      scoped_refptr<gpu::ClientSharedImage>,
+      const gpu::SyncToken&,
+      GLuint shared_image_texture_id,
+      const SkImageInfo& sk_image_info,
+      GLenum texture_target,
+      bool is_origin_top_left,
+      bool supports_display_compositing,
+      bool is_overlay_candidate,
+      const ImageOrientation& orientation,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      base::PlatformThreadRef context_thread_ref,
+      scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
+      viz::ReleaseCallback release_callback);
+
   void CreateImageFromMailboxIfNeeded();
   void InitializeTextureBacking(GLuint shared_image_texture_id);
 
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
   const gpu::Mailbox mailbox_;
   const SkImageInfo sk_image_info_;
   const GLenum texture_target_;

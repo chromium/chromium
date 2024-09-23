@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
+
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/layout/flex_layout_view.h"
 
@@ -56,12 +58,11 @@ AutoPipSettingView::AutoPipSettingView(
     ResultCb result_cb,
     HideViewCb hide_view_cb,
     const GURL& origin,
-    const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow)
     : views::BubbleDialogDelegate(anchor_view, arrow),
       result_cb_(std::move(result_cb)) {
-  DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+  DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   CHECK(result_cb_);
   SetAnchorView(anchor_view);
   set_fixed_width(kBubbleFixedWidth);

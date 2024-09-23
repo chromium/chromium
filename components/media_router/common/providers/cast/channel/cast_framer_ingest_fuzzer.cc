@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -25,7 +30,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   scoped_refptr<net::GrowableIOBuffer> buffer =
       base::MakeRefCounted<net::GrowableIOBuffer>();
   buffer->SetCapacity(MessageFramer::MessageHeader::max_message_size());
-  memcpy(buffer->StartOfBuffer(), data, size);
+  buffer->everything().copy_prefix_from(base::span(data, size));
 
   std::unique_ptr<MessageFramer> framer =
       std::make_unique<MessageFramer>(buffer.get());

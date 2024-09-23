@@ -17,7 +17,7 @@ import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {StatusAction, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SignedInState, StatusAction, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from '/shared/settings/people_page/sync_browser_proxy.js';
 // <if expr="chromeos_lacros">
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 
@@ -37,9 +37,6 @@ enum RadioButtonNames {
   SYNC_EVERYTHING = 'sync-everything',
   CUSTOMIZE_SYNC = 'customize-sync',
 }
-
-const SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS_FEATURE: string =
-    'syncDecoupleAddressPaymentSettings';
 
 /**
  * @fileoverview
@@ -137,15 +134,6 @@ export class SettingsSyncControlsElement extends
    */
   private handleSyncPrefsChanged_(syncPrefs: SyncPrefs) {
     this.syncPrefs = syncPrefs;
-
-    // If autofill is not registered or synced, force Payments integration off.
-    // TODO(crbug.com/1435431): Remove this coupling.
-    if (!loadTimeData.getBoolean(
-            SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS_FEATURE) &&
-        (!this.syncPrefs.autofillRegistered ||
-         !this.syncPrefs.autofillSynced)) {
-      this.set('syncPrefs.paymentsSynced', false);
-    }
   }
 
   /**
@@ -163,8 +151,11 @@ export class SettingsSyncControlsElement extends
                                                CustomEvent<{value: string}>) {
     const syncAllDataTypes =
         event.detail.value === RadioButtonNames.SYNC_EVERYTHING;
-    this.set('syncPrefs.syncAllDataTypes', syncAllDataTypes);
-    this.handleSyncAllDataTypesChanged_(syncAllDataTypes);
+    const previous = this.syncPrefs!.syncAllDataTypes;
+    if (previous !== syncAllDataTypes) {
+      this.set('syncPrefs.syncAllDataTypes', syncAllDataTypes);
+      this.handleSyncAllDataTypesChanged_(syncAllDataTypes);
+    }
   }
 
   // <if expr="chromeos_lacros">
@@ -212,47 +203,17 @@ export class SettingsSyncControlsElement extends
     this.browserProxy_.setSyncDatatypes(this.syncPrefs!);
   }
 
-  /**
-   * Handler for when the autofill data type checkbox is changed.
-   */
-  private onAutofillDataTypeChanged_() {
-    if (!loadTimeData.getBoolean(
-            SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS_FEATURE)) {
-      // TODO(crbug.com/1435431): Remove this coupling.
-      this.set('syncPrefs.paymentsSynced', this.syncPrefs!.autofillSynced);
-    }
-
-    this.onSingleSyncDataTypeChanged_();
-  }
-
-  // TODO(crbug.com/1435431): Remove this coupling.
-  private shouldPaymentsCheckboxBeHidden_(
-      paymentsRegistered: boolean, autofillRegistered: boolean): boolean {
-    if (loadTimeData.getBoolean(
-            SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS_FEATURE)) {
-      return !paymentsRegistered;
-    } else {
-      return !paymentsRegistered || !autofillRegistered;
-    }
-  }
-
-  // TODO(crbug.com/1435431): Remove this coupling.
-  private disablePaymentsCheckbox_(
-      syncAllDataTypes: boolean, autofillSynced: boolean,
-      autofillManaged: boolean, paymentsManaged: boolean): boolean {
-    if (loadTimeData.getBoolean(
-            SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS_FEATURE)) {
-      return this.disableTypeCheckBox_(syncAllDataTypes, paymentsManaged);
-    } else {
-      return this.disableTypeCheckBox_(syncAllDataTypes, paymentsManaged) ||
-          !autofillSynced || autofillManaged;
-    }
-  }
-
   private disableTypeCheckBox_(
       syncAllDataTypes: boolean, dataTypeManaged: boolean): boolean {
     return syncAllDataTypes || dataTypeManaged;
   }
+
+  // <if expr="chromeos_ash">
+  private hideCookieItem_(
+      syncCookiesSupported: boolean, cookiesRegistered: boolean): boolean {
+    return !syncCookiesSupported || !cookiesRegistered;
+  }
+  // </if>
 
   private syncStatusChanged_() {
     const router = Router.getInstance();
@@ -272,7 +233,8 @@ export class SettingsSyncControlsElement extends
       return false;
     }
 
-    if (!this.syncStatus.signedIn || this.syncStatus.disabled) {
+    if (this.syncStatus.signedInState !== SignedInState.SYNCING ||
+        this.syncStatus.disabled) {
       return true;
     }
 

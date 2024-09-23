@@ -13,12 +13,12 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_enable_flow.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_util.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
 #include "chrome/browser/chromeos/extensions/web_file_handlers/intent_util.h"
 #include "chrome/browser/extensions/api/file_browser_handler/file_browser_handler_flow_lacros.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -135,7 +135,7 @@ void LacrosExtensionAppsController::PauseApp(const std::string& app_id) {
   // enforcement for child accounts. There's currently no mechanism to pause a
   // single app or website. There only exists a mechanism to pause the entire
   // browser. And even that mechanism has an ash-only implementation.
-  // TODO(https://crbug.com/1080693): Implement child account support for
+  // TODO(crbug.com/40690944): Implement child account support for
   // Lacros.
   NOTIMPLEMENTED();
 }
@@ -145,7 +145,7 @@ void LacrosExtensionAppsController::UnpauseApp(const std::string& app_id) {
   // enforcement for child accounts. There's currently no mechanism to pause a
   // single app or website. There only exists a mechanism to pause the entire
   // browser. And even that mechanism has an ash-only implementation.
-  // TODO(https://crbug.com/1080693): Implement child account support for
+  // TODO(crbug.com/40690944): Implement child account support for
   // Lacros.
   NOTIMPLEMENTED();
 }
@@ -155,7 +155,7 @@ void LacrosExtensionAppsController::GetMenuModel(
     GetMenuModelCallback callback) {
   // The current implementation of chrome apps menu models never uses the
   // AppService GetMenuModel method.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LacrosExtensionAppsController::DEPRECATED_LoadIcon(
@@ -164,7 +164,7 @@ void LacrosExtensionAppsController::DEPRECATED_LoadIcon(
     apps::IconType icon_type,
     int32_t size_hint_in_dip,
     apps::LoadIconCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LacrosExtensionAppsController::GetCompressedIcon(
@@ -280,7 +280,7 @@ void LacrosExtensionAppsController::StopApp(const std::string& app_id) {
         ->BrowserAppInstanceTracker()
         ->StopInstancesOfApp(app_id);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -332,7 +332,7 @@ void LacrosExtensionAppsController::FinallyLaunch(
       extensions::IsLegacyQuickOfficeExtension(*extension)) {
     OpenApplication(profile, std::move(params));
 
-    // TODO(https://crbug.com/1225848): Store the resulting instance token,
+    // TODO(crbug.com/40188614): Store the resulting instance token,
     // which will be used to close the instance at a later point in time.
     result->state = crosapi::mojom::LaunchResultState::kSuccess;
     std::move(callback).Run(std::move(result));
@@ -398,7 +398,7 @@ void LacrosExtensionAppsController::FinallyLaunch(
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   std::move(callback).Run(std::move(result));
 }
 
@@ -431,7 +431,7 @@ void LacrosExtensionAppsController::OnExecuteFileBrowserHandlerComplete(
     crosapi::mojom::LaunchResultPtr result,
     LaunchCallback callback,
     bool success) {
-  // TODO(https://crbug.com/1225848): Store the resulting instance token,
+  // TODO(crbug.com/40188614): Store the resulting instance token,
   // which will be used to close the instance at a later point in time.
   result->instance_id = base::UnguessableToken::Create();
   result->state = success ? crosapi::mojom::LaunchResultState::kSuccess

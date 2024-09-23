@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h"
 
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -14,9 +14,9 @@ class VoiceSearchNavigationsTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
 
     VoiceSearchNavigationTabHelper::CreateForWebState(web_state());
@@ -30,7 +30,7 @@ class VoiceSearchNavigationsTest : public PlatformTest {
   web::WebState* web_state() { return web_state_.get(); }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
 };
 

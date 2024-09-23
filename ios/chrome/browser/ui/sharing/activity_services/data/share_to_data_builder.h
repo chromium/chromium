@@ -25,17 +25,17 @@ namespace activity_services {
 ShareToData* ShareToDataForWebState(web::WebState* web_state,
                                     const GURL& share_url);
 
-// Returns a ShareToData object for a single `URL`, and its page's `title`,
-// which is not associated to a WebState. Will also add `additionalText`, if
+// Returns a ShareToData object for a single `url`, and its page's `title`,
+// which is not associated to a WebState. Will also add `additional_text`, if
 // present.
-ShareToData* ShareToDataForURL(const GURL& URL,
+ShareToData* ShareToDataForURL(const GURL& url,
                                NSString* title,
-                               NSString* additionalText,
-                               LPLinkMetadata* linkMetadata);
+                               NSString* additional_text,
+                               LPLinkMetadata* link_metadata);
 
-// Returns a ShareToData object for a single `URLWithTitle`, which is not
-// associated to a WebState. Will also add `additionalText`, if present.
-ShareToData* ShareToDataForURLWithTitle(URLWithTitle* URLWithTitle);
+// Returns a ShareToData object for a single `url_with_title`, which is not
+// associated to a WebState.
+ShareToData* ShareToDataForURLWithTitle(URLWithTitle* url_with_title);
 
 }  // namespace activity_services
 

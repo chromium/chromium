@@ -92,8 +92,8 @@ public interface BrowserStartupController {
 
     /**
      * @return Whether native is loaded successfully and running in any mode. See {@link
-     *         #isRunningInMinimalBrowserMode} and {@link #isFullBrowserStarted} for more
-     * information about the two modes.
+     *     #isRunningInMinimalBrowserMode} and {@link #isFullBrowserStarted} for more information
+     *     about the two modes.
      */
     boolean isNativeStarted();
 

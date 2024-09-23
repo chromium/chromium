@@ -307,7 +307,7 @@ class DisplayPrefsTest : public AshTestBase {
   DisplayPrefs* display_prefs() { return Shell::Get()->display_prefs(); }
 
  private:
-  std::unique_ptr<WindowTreeHostManager::Observer> observer_;
+  std::unique_ptr<display::DisplayManagerObserver> observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -443,12 +443,15 @@ TEST_F(DisplayPrefsTest, BasicStores) {
                                       gfx::Size(231, 416), 1);
   touchdevice_3.phys = "1357";
 
-  display_manager()->SetTouchCalibrationData(id2, point_pair_quad_1,
-                                             touch_size_1, touchdevice);
-  display_manager()->SetTouchCalibrationData(id2, point_pair_quad_2,
-                                             touch_size_2, touchdevice_2);
-  display_manager()->SetTouchCalibrationData(id2, point_pair_quad_2,
-                                             touch_size_1, touchdevice_3);
+  display_manager()->SetTouchCalibrationData(
+      id2, point_pair_quad_1, touch_size_1, touchdevice,
+      /*apply_spatial_calibration=*/true);
+  display_manager()->SetTouchCalibrationData(
+      id2, point_pair_quad_2, touch_size_2, touchdevice_2,
+      /*apply_spatial_calibration=*/true);
+  display_manager()->SetTouchCalibrationData(
+      id2, point_pair_quad_2, touch_size_1, touchdevice_3,
+      /*apply_spatial_calibration=*/true);
 
   const base::Value::Dict& displays =
       local_state()->GetDict(prefs::kSecondaryDisplays);
@@ -633,7 +636,8 @@ TEST_F(DisplayPrefsTest, BasicStores) {
       /*device_scale_factor=*/1.0f, /*display_zoom_factor=*/1.0f,
       /*display_zoom_factor_map=*/{}, /*refresh_rate=*/60.f,
       /*is_interlaced=*/false,
-      /*variable_refresh_rate_state=*/display::kVrrNotCapable,
+      /*variable_refresh_rate_state=*/
+      display::VariableRefreshRateState::kVrrNotCapable,
       /*vsync_rate_min=*/std::nullopt);
 
   UpdateDisplay("300x200*2, 600x500#600x500|500x400");
@@ -667,7 +671,8 @@ TEST_F(DisplayPrefsTest, BasicStores) {
       /*device_scale_factor=*/1.0f, /*display_zoom_factor=*/1.0f,
       /*display_zoom_factor_map=*/{}, /*refresh_rate=*/60.f,
       /*is_interlaced=*/false,
-      /*variable_refresh_rate_state=*/display::kVrrNotCapable,
+      /*variable_refresh_rate_state=*/
+      display::VariableRefreshRateState::kVrrNotCapable,
       /*vsync_rate_min=*/std::nullopt);
   // Disconnect 2nd display first to generate new id for external display.
   UpdateDisplay("300x200*2");
@@ -1388,8 +1393,9 @@ TEST_F(DisplayPrefsTest, LegacyTouchCalibrationDataSupport) {
       std::string("test touch device 4"), gfx::Size(231, 416), 1);
   display::TouchDeviceIdentifier identifier =
       display::TouchDeviceIdentifier::FromDevice(touchdevice_4);
-  display_manager()->SetTouchCalibrationData(id_2, point_pair_quad,
-                                             touch_size_2, touchdevice_4);
+  display_manager()->SetTouchCalibrationData(
+      id_2, point_pair_quad, touch_size_2, touchdevice_4,
+      /*apply_spatial_calibration=*/true);
 
   EXPECT_TRUE(tdm->touch_associations().count(identifier));
   EXPECT_TRUE(tdm->touch_associations().at(identifier).count(id_2));

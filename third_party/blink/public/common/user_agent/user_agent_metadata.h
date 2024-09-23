@@ -13,8 +13,8 @@
 
 namespace blink {
 
-// Values for the Sec-CH-UA-Form-Factor header.
-// https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factor
+// Values for the Sec-CH-UA-Form-Factors header.
+// https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors
 // LINT.IfChange
 inline constexpr char kDesktopFormFactor[] = "Desktop";
 inline constexpr char kAutomotiveFormFactor[] = "Automotive";
@@ -56,7 +56,7 @@ struct BLINK_COMMON_EXPORT UserAgentMetadata {
   // version.
   const std::string SerializeBrandFullVersionList();
   const std::string SerializeBrandMajorVersionList();
-  const std::string SerializeFormFactor();
+  const std::string SerializeFormFactors();
 
   static std::optional<UserAgentMetadata> Demarshal(
       const std::optional<std::string>& encoded);
@@ -74,10 +74,10 @@ struct BLINK_COMMON_EXPORT UserAgentMetadata {
   std::string bitness;
   bool wow64 = false;
 
-  // The form-factor list. It is up to the embedder to ensure that this is
+  // The form-factors list. It is up to the embedder to ensure that this is
   // compliant with the w3c draft spec:
-  // https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factor.
-  std::vector<std::string> form_factor;
+  // https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors.
+  std::vector<std::string> form_factors;
 };
 
 // Used when customizing the sent User-Agent and Sec-CH-UA-* for

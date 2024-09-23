@@ -14,6 +14,8 @@
 //
 // - void SetUpCommandLine(base::CommandLine* command_line), e.g. to add
 //   command-line flags to enable / configure the feature being tested.
+//   NOTE: There is no need to call ContentBrowserTest::SetUpCommandLine() from
+//   the override method, as ContentBrowserTest::SetUpCommandLine() is empty.
 //
 // - void SetUpOnMainThread(), to run test set-up steps on the browser main
 //   thread, e.g. installing hooks in the browser process for testing. Note that
@@ -43,6 +45,7 @@
 
 namespace content {
 class Shell;
+class TestBrowserContext;
 
 // Base class for browser tests which use content_shell.
 class ContentBrowserTest : public BrowserTestBase {
@@ -67,6 +70,10 @@ class ContentBrowserTest : public BrowserTestBase {
 
   // Returns the window for the test.
   Shell* shell() const { return shell_; }
+
+  // Creates a test browser context with a file path that's appropriate for
+  // browser tests.
+  std::unique_ptr<TestBrowserContext> CreateTestBrowserContext();
 
   // File path to test data, relative to DIR_SRC_TEST_DATA_ROOT.
   base::FilePath GetTestDataFilePath();

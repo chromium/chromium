@@ -349,6 +349,10 @@
           "group": "tryserver.chromium.android"
         },
         {
+          "builder": "android-cronet-x86-dbg-lollipop-fyi-tests",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "android-cronet-x86-dbg-lollipop-tests",
           "group": "tryserver.chromium.android"
         },
@@ -368,14 +372,24 @@
           "builder": "android-cronet-x86-dbg-pie-tests",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-x86-dbg/targets"
     }
   },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
-    "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-trusted",
+    "remote_jobs": 500
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

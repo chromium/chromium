@@ -6,8 +6,8 @@
 #define MEDIA_GPU_MAC_VIDEO_TOOLBOX_H265_ACCELERATOR_H_
 
 #include <CoreMedia/CoreMedia.h>
-
 #include <stdint.h>
+
 #include <memory>
 #include <vector>
 
@@ -17,6 +17,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
+#include "media/base/video_types.h"
 #include "media/gpu/h265_decoder.h"
 #include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "media/gpu/media_gpu_export.h"
@@ -119,8 +120,9 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
   base::flat_set<int> frame_sps_ids_;
   base::flat_set<int> frame_pps_ids_;
   std::vector<base::span<const uint8_t>> frame_slice_data_;
+  uint8_t frame_bit_depth_ = 8;
+  VideoChromaSampling frame_chroma_sampling_ = VideoChromaSampling::k420;
   bool frame_is_keyframe_ = false;
-  bool frame_is_hbd_ = false;
   bool frame_has_alpha_ = false;
   bool drop_frame_ = false;
 

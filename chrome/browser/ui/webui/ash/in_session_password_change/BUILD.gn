@@ -1,0 +1,58 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("in_session_password_change") {
+  sources = [
+    "confirm_password_change_handler.cc",
+    "confirm_password_change_handler.h",
+    "password_change_dialogs.cc",
+    "password_change_dialogs.h",
+    "password_change_handler.cc",
+    "password_change_handler.h",
+    "password_change_ui.cc",
+    "password_change_ui.h",
+    "urgent_password_expiry_notification_handler.cc",
+    "urgent_password_expiry_notification_handler.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ash/login/saml",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/web_dialogs",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/webui/common:trusted_types_util",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:resources",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/password_change:resources",
+    "//chrome/browser/resources/gaia_auth_host:resources",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/strings",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//components/user_manager",
+    "//net",
+    "//ui/base",
+    "//ui/display",
+    "//ui/strings:ui_strings",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/saml" ]
+}

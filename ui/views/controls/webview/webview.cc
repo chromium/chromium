@@ -71,6 +71,12 @@ WebView::WebView(content::BrowserContext* browser_context) {
   set_suppress_default_focus_handling();
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
   SetBrowserContext(browser_context);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kWebView);
+  // A webview does not need an accessible name as the document title is
+  // provided via other means. Providing it here would be redundant.
+  // Mark the name as explicitly empty so that accessibility_checks pass.
+  GetViewAccessibility().SetName(
+      std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
 
 WebView::~WebView() {
@@ -136,12 +142,17 @@ void WebView::SetBrowserContext(content::BrowserContext* browser_context) {
   browser_context_ = browser_context;
 }
 
-void WebView::LoadInitialURL(const GURL& url) {
-  // Loading requires a valid WebContents.
-  DCHECK(GetWebContents());
-  GetWebContents()->GetController().LoadURL(url, content::Referrer(),
-                                            ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                            std::string());
+void WebView::LoadInitialURL(const GURL& url,
+                             HttpsUpgradePolicy https_upgrade_policy,
+                             base::Location invoke_location) {
+  content::NavigationController::LoadURLParams params(url);
+  params.referrer = content::Referrer();
+  params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+  params.force_no_https_upgrade =
+      https_upgrade_policy == HttpsUpgradePolicy::kNoUpgrade;
+  content::WebContents* web_contents = GetWebContents(invoke_location);
+  DCHECK(web_contents);
+  web_contents->GetController().LoadURLWithParams(params);
 }
 
 void WebView::SetFastResize(bool fast_resize) {
@@ -414,14 +425,6 @@ void WebView::ResizeDueToAutoResize(content::WebContents* source,
   SetPreferredSize(new_size);
 }
 
-void WebView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kWebView;
-  // A webview does not need an accessible name as the document title is
-  // provided via other means. Providing it here would be redundant.
-  // Mark the name as explicitly empty so that accessibility_checks pass.
-  node_data->SetNameExplicitlyEmpty();
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // WebView, private:
 
@@ -488,7 +491,7 @@ void WebView::NotifyAccessibilityWebContentsChanged() {
   if (!lock_child_ax_tree_id_override_) {
     content::RenderFrameHost* rfh =
         web_contents() ? web_contents()->GetPrimaryMainFrame() : nullptr;
-    GetViewAccessibility().OverrideChildTreeID(rfh ? rfh->GetAXTreeID()
+    GetViewAccessibility().SetChildTreeID(rfh ? rfh->GetAXTreeID()
                                                    : ui::AXTreeIDUnknown());
   }
   NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);

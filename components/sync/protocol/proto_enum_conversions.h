@@ -9,17 +9,19 @@
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
+#include "components/sync/protocol/cookie_specifics.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/gaia_password_reuse.pb.h"
 #include "components/sync/protocol/get_updates_caller_info.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/note_entity.pb.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
+#include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/reading_list_specifics.pb.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
-#include "components/sync/protocol/segmentation_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
+#include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
@@ -56,10 +58,13 @@ const char* ProtoEnumToString(
     sync_pb::CommitResponse::ResponseType response_type);
 
 const char* ProtoEnumToString(
+    sync_pb::ContactInfoSpecifics::AddressType address_type);
+
+const char* ProtoEnumToString(
     sync_pb::ContactInfoSpecifics::VerificationStatus verification_status);
 
 const char* ProtoEnumToString(
-    sync_pb::GetUpdatesCallerInfo::GetUpdatesSource updates_source);
+    sync_pb::TrustedVaultAutoUpgradeExperimentGroup::Type type);
 
 const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type);
 
@@ -104,6 +109,9 @@ const char* ProtoEnumToString(
 const char* ProtoEnumToString(
     sync_pb::SyncEnums::PageTransitionRedirectType redirect_type);
 
+const char* ProtoEnumToString(
+    sync_pb::SyncEnums::SendTabReceivingType send_tab_receiving_type);
+
 const char* ProtoEnumToString(sync_pb::SyncEnums::SingletonDebugEventType type);
 
 const char* ProtoEnumToString(sync_pb::TabNavigation::BlockedState state);
@@ -126,9 +134,6 @@ const char* ProtoEnumToString(
 
 const char* ProtoEnumToString(
     sync_pb::GaiaPasswordReuse::PasswordReuseLookup::ReputationVerdict verdict);
-
-const char* ProtoEnumToString(
-    sync_pb::SegmentationSpecifics::DeviceMetadata::PlatformType platform_type);
 
 const char* ProtoEnumToString(
     sync_pb::UserEventSpecifics::GaiaPasswordCaptured::EventTrigger trigger);
@@ -203,7 +208,30 @@ const char* ProtoEnumToString(sync_pb::WorkspaceDeskSpecifics::DeskType type);
 const char* ProtoEnumToString(
     sync_pb::WorkspaceDeskSpecifics::TabGroupColor color);
 
-const char* ProtoEnumToString(sync_pb::ModelTypeState::InitialSyncState state);
+const char* ProtoEnumToString(sync_pb::DataTypeState::InitialSyncState state);
+
+const char* ProtoEnumToString(
+    sync_pb::CookieSpecifics::CookieSameSite site_restrictions);
+
+const char* ProtoEnumToString(
+    sync_pb::CookieSpecifics::CookiePriority priority);
+
+const char* ProtoEnumToString(
+    sync_pb::CookieSpecifics::CookieSourceScheme source_scheme);
+
+const char* ProtoEnumToString(
+    sync_pb::CookieSpecifics::CookieSourceType source_type);
+
+const char* ProtoEnumToString(
+    sync_pb::SharingMessageSpecifics::ChannelConfiguration::
+        ChimeChannelConfiguration::ChimeChannelType channel_type);
+
+const char* ProtoEnumToString(
+    sync_pb::ThemeSpecifics::UserColorTheme::BrowserColorVariant
+        browser_color_variant);
+
+const char* ProtoEnumToString(
+    sync_pb::ThemeSpecifics::BrowserColorScheme browser_color_scheme);
 
 }  // namespace syncer
 

@@ -68,13 +68,18 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 #pragma mark - PrivacySafeBrowsingConsumer
 
-- (void)reloadCellsForItems {
+- (void)reconfigureCellsForItems {
   if (!self.tableViewModel) {
     // No need to reconfigure since the model has not been loaded yet.
     return;
   }
-  [self reloadCellsForItems:self.safeBrowsingItems
-           withRowAnimation:UITableViewRowAnimationNone];
+
+  NSMutableArray<NSIndexPath*>* indexPaths = [[NSMutableArray alloc] init];
+  for (TableViewItem* item in self.safeBrowsingItems) {
+    [indexPaths addObject:[self.tableViewModel indexPathForItem:item]];
+  }
+
+  [self.tableView reconfigureRowsAtIndexPaths:indexPaths];
 }
 
 - (void)setSafeBrowsingItems:(ItemArray)safeBrowsingItems {

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace gfx {
 class Rect;
@@ -27,7 +28,7 @@ class Layer;
 namespace ash {
 
 class CaptureModeSession;
-class SystemToastStyle;
+class SystemToastView;
 
 // Defines the capture toast type that Capture Mode is currently using.
 enum class CaptureToastType {
@@ -36,13 +37,13 @@ enum class CaptureToastType {
 };
 
 // Controls the capture mode toast shown conditionally in the capture session.
-class ASH_EXPORT CaptureModeToastController {
+class ASH_EXPORT CaptureModeToastController : public views::WidgetObserver {
  public:
   explicit CaptureModeToastController(CaptureModeSession* session);
   CaptureModeToastController(const CaptureModeToastController&) = delete;
   CaptureModeToastController& operator=(const CaptureModeToastController&) =
       delete;
-  ~CaptureModeToastController();
+  ~CaptureModeToastController() override;
 
   const CaptureToastType* current_toast_type() const {
     return current_toast_type_ ? &(*current_toast_type_) : nullptr;
@@ -69,13 +70,16 @@ class ASH_EXPORT CaptureModeToastController {
   // Return the layer of `capture_toast_widget_` if it exists.
   ui::Layer* MaybeGetToastLayer();
 
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
+
   base::OneShotTimer* capture_toast_dismiss_timer_for_test() {
     return &capture_toast_dismiss_timer_;
   }
 
  private:
   // Initializes the toast widget and its contents.
-  void BuildCaptureToastWidget(const std::u16string& label);
+  void BuildCaptureToastWidget(const std::u16string& text);
 
   gfx::Rect CalculateToastWidgetBoundsInScreen() const;
 
@@ -85,7 +89,7 @@ class ASH_EXPORT CaptureModeToastController {
 
   // The capture toast widget and its contents view.
   views::UniqueWidgetPtr capture_toast_widget_;
-  raw_ptr<SystemToastStyle, DanglingUntriaged> toast_contents_view_ = nullptr;
+  raw_ptr<SystemToastView> toast_contents_view_ = nullptr;
 
   // Stores the toast type of the `capture_toast_widget_` after it's created.
   std::optional<CaptureToastType> current_toast_type_;

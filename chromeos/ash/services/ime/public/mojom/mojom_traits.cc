@@ -150,12 +150,15 @@ bool EnumTraits<SuggestionType, AssistiveSuggestionType>::FromMojom(
 bool StructTraits<SuggestionCandidateDataView, AssistiveSuggestion>::Read(
     SuggestionCandidateDataView input,
     AssistiveSuggestion* output) {
-  if (!input.ReadMode(&output->mode))
+  if (!input.ReadMode(&output->mode)) {
     return false;
-  if (!input.ReadType(&output->type))
+  }
+  if (!input.ReadType(&output->type)) {
     return false;
-  if (!input.ReadText(&output->text))
+  }
+  if (!input.ReadText(&output->text)) {
     return false;
+  }
   output->confirmed_length = input.confirmed_length();
   return true;
 }
@@ -173,8 +176,9 @@ bool StructTraits<SuggestionsTextContextDataView, SuggestionsTextContext>::Read(
 bool StructTraits<CompletionCandidateDataView, DecoderCompletionCandidate>::
     Read(CompletionCandidateDataView input,
          DecoderCompletionCandidate* output) {
-  if (!input.ReadText(&output->text))
+  if (!input.ReadText(&output->text)) {
     return false;
+  }
   output->score = input.normalized_score();
   return true;
 }
@@ -232,10 +236,12 @@ bool EnumTraits<AssistiveWindowTypeMojo, AssistiveWindowType>::FromMojom(
 bool StructTraits<AssistiveWindowDataView, AssistiveWindow>::Read(
     AssistiveWindowDataView input,
     AssistiveWindow* output) {
-  if (!input.ReadType(&output->type))
+  if (!input.ReadType(&output->type)) {
     return false;
-  if (!input.ReadCandidates(&output->candidates))
+  }
+  if (!input.ReadCandidates(&output->candidates)) {
     return false;
+  }
   return true;
 }
 

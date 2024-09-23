@@ -157,6 +157,7 @@ class COMPONENT_EXPORT(ASH_DBUS_ATTESTATION) FakeAttestationClient
   std::string GetFakePcaCertRequest() const override;
   std::string GetFakePcaCertResponse() const override;
   std::string GetFakeCertificate() const override;
+  void set_delete_keys_status(::attestation::AttestationStatus status) override;
 
   AttestationClient::TestInterface* GetTestInterface() override;
 
@@ -262,6 +263,9 @@ class COMPONENT_EXPORT(ASH_DBUS_ATTESTATION) FakeAttestationClient
       ::attestation::STATUS_SUCCESS;
   // The status returned by `CreateCertificateRequest()`.
   ::attestation::AttestationStatus cert_request_status_ =
+      ::attestation::STATUS_SUCCESS;
+  // The status returned by `DeleteKeys()`.
+  ::attestation::AttestationStatus delete_keys_status_ =
       ::attestation::STATUS_SUCCESS;
 };
 

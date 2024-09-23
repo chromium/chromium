@@ -31,17 +31,12 @@ extern const char kFetchSupportPacketFailureHistogramName[];
 // SupportPacketDetails will contain the details of the data collection that's
 // requested by the remote command's payload. Command payload contains the
 // JSON-encoded version of SupportPacketDetails proto message in
-// chrome/browser/support_tool/data_collection_module.proto and this struct is
-// based on the contents of the proto.
-// TODO(iremuguz): We may remove SupportPacketDetails proto message altogether
-// and reference to the proto in server-side here since we're not using it
-// anymore.
+// http://google3/chrome/cros/dpanel/data/devices/proto/requests.proto.
 struct SupportPacketDetails {
   std::string issue_case_id;
   std::string issue_description;
   std::set<support_tool::DataCollectorType> requested_data_collectors;
   std::set<redaction::PIIType> requested_pii_types;
-  std::string requester_metadata;
 
   SupportPacketDetails();
   ~SupportPacketDetails();

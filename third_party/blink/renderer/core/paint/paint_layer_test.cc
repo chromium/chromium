@@ -6,7 +6,9 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
@@ -274,12 +276,18 @@ class ReorderOverlayOverflowControlsTest
   OverlayType GetOverlayType() const { return GetParam(); }
 
   void InitOverflowStyle(const char* id) {
-    GetElementById(id)->setAttribute(
-        html_names::kStyleAttr,
-        AtomicString(GetOverlayType() == kOverlayScrollbars
-                         ? "overflow: auto"
-                         : "overflow: hidden; resize: both"));
+    auto* element = GetElementById(id);
+    element->setAttribute(html_names::kStyleAttr,
+                          AtomicString(GetOverlayType() == kOverlayScrollbars
+                                           ? "overflow: auto"
+                                           : "overflow: hidden; resize: both"));
     UpdateAllLifecyclePhasesForTest();
+    if (GetOverlayType() == kOverlayScrollbars) {
+      element->GetLayoutBox()
+          ->GetScrollableArea()
+          ->SetScrollbarsHiddenIfOverlay(false);
+      UpdateAllLifecyclePhasesForTest();
+    }
   }
 
   void RemoveOverflowStyle(const char* id) {
@@ -1684,7 +1692,7 @@ TEST_P(PaintLayerTest, ReferenceClipPathWithPageZoom) {
   EXPECT_EQ(body, GetDocument().ElementFromPoint(60, 151));
 
   // Zoom the page by 2x,
-  GetDocument().GetFrame()->SetPageZoomFactor(2);
+  GetDocument().GetFrame()->SetLayoutZoomFactor(2);
 
   // A hit test on the content div within the clip should hit it.
   EXPECT_EQ(content, GetDocument().ElementFromPoint(125, 75));
@@ -2122,8 +2130,10 @@ TEST_P(PaintLayerTest, HitTestObscuredOverlayScrollbar) {
                            width: 200px; height: 200px"></div>
   )HTML");
 
-  EXPECT_EQ(GetDocument().getElementById(AtomicString("scroll")),
-            HitTest(199, 1));
+  auto* scroller = GetDocument().getElementById(AtomicString("scroll"));
+  scroller->GetLayoutBox()->GetScrollableArea()->SetScrollbarsHiddenForTesting(
+      false);
+  EXPECT_EQ(scroller, HitTest(199, 1));
   EXPECT_EQ(GetDocument().getElementById(AtomicString("above")),
             HitTest(199, 101));
 }
@@ -2503,6 +2513,42 @@ TEST_P(PaintLayerTest, ScrollContainerLayerTransformScroller) {
   TEST_SCROLL_CONTAINER("absolute", scroller, false);
   TEST_SCROLL_CONTAINER("fixed", scroller, false);
   TEST_SCROLL_CONTAINER("transform", scroller, false);
+}
+
+TEST_P(PaintLayerTest, HitTestScrollMarkerPseudoElement) {
+  GetDocument().body()->setInnerHTML(
+      "<style>"
+      "#scroller { overflow: scroll; scroll-marker-group: before; width: "
+      "100px; height: 100px; }"
+      "#scroller::scroll-marker-group { border: 3px solid black; display: "
+      "flex; width: 100px; height: 20px; }"
+      "#scroller div { width: 100px; height: 100px; background: green; }"
+      "#scroller div::scroll-marker { content: ''; display: inline-flex; "
+      "width: 10px; height: 10px; background: green; border-radius: 50%; }"
+      "</style>"
+      "<div id='scroller'>"
+      "  <div></div>"
+      "  <div id='second_div'></div>"
+      "</div>");
+  UpdateAllLifecyclePhasesForTest();
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  EXPECT_EQ(scroller->scrollTop(), 0);
+  Element* second_div =
+      GetDocument().getElementById(AtomicString("second_div"));
+  PseudoElement* second_scroll_marker =
+      second_div->GetPseudoElement(kPseudoIdScrollMarker);
+
+  HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
+  HitTestLocation location(PhysicalOffset(25, 20));
+  HitTestResult result(request, location);
+  GetDocument().GetLayoutView()->HitTest(location, result);
+  EXPECT_EQ(second_scroll_marker, result.InnerNode());
+
+  MouseEvent& event = *MouseEvent::Create();
+  event.SetType(event_type_names::kClick);
+  event.SetTarget(second_scroll_marker);
+  second_scroll_marker->DefaultEventHandler(event);
+  EXPECT_EQ(scroller->scrollTop(), 100);
 }
 
 }  // namespace blink

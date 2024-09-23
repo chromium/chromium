@@ -17,12 +17,14 @@ FileSystemAccessDataTransferTokenImpl::FileSystemAccessDataTransferTokenImpl(
     FileSystemAccessManagerImpl* manager,
     FileSystemAccessManagerImpl::PathType path_type,
     const base::FilePath& file_path,
+    const base::FilePath& display_name,
     int renderer_process_id,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessDataTransferToken>
         receiver)
     : manager_(manager),
       path_type_(path_type),
       file_path_(file_path),
+      display_name_(display_name),
       renderer_process_id_(renderer_process_id),
       token_(base::UnguessableToken::Create()) {
   DCHECK(manager_);

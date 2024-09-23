@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gtk/wayland/gtk_ui_platform_wayland.h"
 
 #include "base/command_line.h"
@@ -118,7 +123,7 @@ void GtkUiPlatformWayland::ClearTransientFor(gfx::AcceleratedWidget parent) {
 }
 
 void GtkUiPlatformWayland::ShowGtkWindow(GtkWindow* window) {
-  // TODO(crbug.com/1008755): Check if gtk_window_present_with_time is needed
+  // TODO(crbug.com/40650162): Check if gtk_window_present_with_time is needed
   // here as well, similarly to what is done in X11 impl.
   gtk_window_present(window);
 }

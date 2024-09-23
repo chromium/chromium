@@ -18,21 +18,19 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
+import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.components.sync.SyncFirstSetupCompleteSource;
 import org.chromium.components.sync.SyncService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.components.sync.UserSelectableType;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /** Utility class for test signin functionality. */
@@ -41,10 +39,10 @@ public final class SigninTestUtil {
      * @return The primary account of the requested {@link ConsentLevel}.
      */
     static CoreAccountInfo getPrimaryAccount(@ConsentLevel int consentLevel) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return IdentityServicesProvider.get()
-                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
                             .getPrimaryAccountInfo(consentLevel);
                 });
     }
@@ -62,11 +60,11 @@ public final class SigninTestUtil {
     private static void signin(CoreAccountInfo coreAccountInfo, boolean waitForPrefsCommit) {
         CallbackHelper completionCallbackHelper = new CallbackHelper();
         CallbackHelper prefsCommitCallbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninManager signinManager =
                             IdentityServicesProvider.get()
-                                    .getSigninManager(Profile.getLastUsedRegularProfile());
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile());
                     signinManager.signin(
                             coreAccountInfo,
                             SigninAccessPoint.UNKNOWN,
@@ -88,14 +86,14 @@ public final class SigninTestUtil {
                             });
                 });
         try {
-            completionCallbackHelper.waitForFirst();
+            completionCallbackHelper.waitForOnly();
             if (waitForPrefsCommit) {
-                prefsCommitCallbackHelper.waitForFirst();
+                prefsCommitCallbackHelper.waitForOnly();
             }
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SIGNIN));
                 });
@@ -110,11 +108,11 @@ public final class SigninTestUtil {
     public static void signinAndEnableSync(
             CoreAccountInfo coreAccountInfo, @Nullable SyncService syncService) {
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninManager signinManager =
                             IdentityServicesProvider.get()
-                                    .getSigninManager(Profile.getLastUsedRegularProfile());
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile());
                     signinManager.signinAndEnableSync(
                             coreAccountInfo,
                             SigninAccessPoint.UNKNOWN,
@@ -135,36 +133,60 @@ public final class SigninTestUtil {
                             });
                 });
         try {
-            callbackHelper.waitForFirst();
+            callbackHelper.waitForOnly();
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SYNC));
                 });
     }
 
-    /** Waits for the AccountTrackerService to seed system accounts. */
-    static void seedAccounts() {
-        ThreadUtils.assertOnBackgroundThread();
-        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
-            throw new IllegalStateException(
-                    "This method should never be called when SeedAccountsRevamp is enabled");
-        }
-        CallbackHelper ch = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+    /**
+     * Signs into an account and enables history sync given a {@link SyncService} object.
+     *
+     * @param syncService Enable history sync with it.
+     */
+    @WorkerThread
+    public static void signinAndEnableHistorySync(CoreAccountInfo coreAccountInfo) {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    IdentityServicesProvider.get()
-                            .getAccountTrackerService(Profile.getLastUsedRegularProfile())
-                            .legacySeedAccountsIfNeeded(ch::notifyCalled);
+                    SigninManager signinManager =
+                            IdentityServicesProvider.get()
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile());
+                    signinManager.signin(
+                            coreAccountInfo,
+                            SigninAccessPoint.UNKNOWN,
+                            new SigninManager.SignInCallback() {
+                                @Override
+                                public void onSignInComplete() {
+                                    SyncService syncService =
+                                            SyncTestUtil.getSyncServiceForLastUsedProfile();
+                                    syncService.setSelectedType(
+                                            UserSelectableType.HISTORY, /* isTypeOn= */ true);
+                                    syncService.setSelectedType(
+                                            UserSelectableType.TABS, /* isTypeOn= */ true);
+                                    callbackHelper.notifyCalled();
+                                }
+
+                                @Override
+                                public void onSignInAborted() {
+                                    Assert.fail("Sign-in was aborted");
+                                }
+                            });
                 });
         try {
-            ch.waitForFirst(
-                    "Timed out while waiting for system accounts to seed.", 20, TimeUnit.SECONDS);
-        } catch (TimeoutException ex) {
-            throw new RuntimeException("Timed out while waiting for system accounts to seed.");
+            callbackHelper.waitForOnly();
+        } catch (TimeoutException e) {
+            throw new RuntimeException("Timed out waiting for callback", e);
         }
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SIGNIN));
+                });
+        SyncTestUtil.waitForHistorySyncEnabled();
     }
 
     static void signOut() {
@@ -178,18 +200,18 @@ public final class SigninTestUtil {
     private static void signOut(@SignoutReason int signoutReason) {
         ThreadUtils.assertOnBackgroundThread();
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final SigninManager signinManager =
                             IdentityServicesProvider.get()
-                                    .getSigninManager(Profile.getLastUsedRegularProfile());
+                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile());
                     signinManager.runAfterOperationInProgress(
                             () ->
                                     signinManager.signOut(
                                             signoutReason, callbackHelper::notifyCalled, false));
                 });
         try {
-            callbackHelper.waitForFirst();
+            callbackHelper.waitForOnly();
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
         }
@@ -197,17 +219,17 @@ public final class SigninTestUtil {
 
     /**
      * Simulates completing the device lock challenge for SigninFirstRunFragment.
+     *
      * @param fragment The fragment under test.
      */
     public static void completeAutoDeviceLockIfNeeded(SigninFirstRunFragment fragment) {
-        if (!ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> BuildInfo.getInstance().isAutomotive)) {
+        if (!ThreadUtils.runOnUiThreadBlocking(() -> BuildInfo.getInstance().isAutomotive)) {
             return;
         }
 
         onView(withId(R.id.device_lock_view)).check(matches(isDisplayed()));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> fragment.onDeviceLockReady());
+        ThreadUtils.runOnUiThreadBlocking(() -> fragment.onDeviceLockReady());
     }
 
     private SigninTestUtil() {}

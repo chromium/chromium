@@ -6,9 +6,12 @@
 
 #include <optional>
 
+#include "base/time/time.h"
+#include "chromeos/crosapi/mojom/native_theme.mojom-forward.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_key.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_aura.h"
 
 namespace chromeos {
@@ -49,6 +52,17 @@ void SetVariantOnTheme(ui::NativeTheme* theme,
   theme->set_scheme_variant(ConvertSchemeVariant(*info->scheme_variant));
 }
 
+void SetCaretBlinkIntervalOnTheme(
+    ui::NativeTheme* theme,
+    const crosapi::mojom::NativeThemeInfoPtr& info) {
+  if (!info->caret_blink_interval.has_value()) {
+    // A missing value indicates we should use the existing default within
+    // NativeTheme, so no further work is required.
+    return;
+  }
+  theme->set_caret_blink_interval(info->caret_blink_interval.value());
+}
+
 }  // namespace
 
 NativeThemeCache::NativeThemeCache(const crosapi::mojom::NativeThemeInfo& info)
@@ -79,6 +93,7 @@ void NativeThemeCache::SetNativeThemeInfo() {
   native_theme->set_use_dark_colors(dark_mode);
   SetSeedOnTheme(native_theme, info_);
   SetVariantOnTheme(native_theme, info_);
+  SetCaretBlinkIntervalOnTheme(native_theme, info_);
   native_theme->NotifyOnNativeThemeUpdated();
 
   auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
@@ -88,6 +103,7 @@ void NativeThemeCache::SetNativeThemeInfo() {
                 : ui::NativeTheme::PreferredColorScheme::kLight);
   SetSeedOnTheme(native_theme_web, info_);
   SetVariantOnTheme(native_theme_web, info_);
+  SetCaretBlinkIntervalOnTheme(native_theme_web, info_);
   native_theme_web->NotifyOnNativeThemeUpdated();
 }
 

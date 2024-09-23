@@ -156,9 +156,7 @@ TEST(MediaSourceTest, ForUnchosenDesktop) {
   base::test::ScopedFeatureList scoped_features;
   auto enabled_features = std::vector<base::test::FeatureRef>(
       {media::kCastLoopbackAudioToAudioReceivers});
-#if BUILDFLAG(IS_MAC)
-  enabled_features.push_back(media::kMacLoopbackAudioForCast);
-#elif BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   enabled_features.push_back(media::kPulseaudioLoopbackForCast);
 #endif
   scoped_features.InitWithFeatures(enabled_features, {});

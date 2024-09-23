@@ -1,0 +1,55 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("product_specifications") {
+  sources = [
+    "product_specifications_cache.cc",
+    "product_specifications_cache.h",
+    "product_specifications_service.cc",
+    "product_specifications_service.h",
+    "product_specifications_set.cc",
+    "product_specifications_set.h",
+    "product_specifications_sync_bridge.cc",
+    "product_specifications_sync_bridge.h",
+  ]
+  deps = [
+    "//base",
+    "//components/commerce/core:commerce_types",
+    "//components/commerce/core:feature_list",
+    "//components/keyed_service/core",
+    "//components/sync",
+    "//components/sync/model",
+  ]
+  public_deps = []
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "product_specifications_cache_unittest.cc",
+    "product_specifications_service_unittest.cc",
+    "product_specifications_sync_bridge_unittest.cc",
+  ]
+  deps = [
+    ":product_specifications",
+    "//base/test:test_support",
+    "//components/commerce/core:commerce_types",
+    "//components/commerce/core:feature_list",
+    "//components/sync:test_support",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_product_specifications_service.cc",
+    "mock_product_specifications_service.h",
+  ]
+  deps = [
+    ":product_specifications",
+    "//base/test:test_support",
+    "//components/sync:test_support",
+    "//testing/gtest",
+  ]
+}

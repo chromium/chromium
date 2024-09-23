@@ -11,12 +11,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
 /** Integration tests for JavaScript execution. */
@@ -49,7 +49,7 @@ public class TestsJavaScriptEvalTest {
         for (int i = 0; i < 30; ++i) {
             for (int j = 0; j < 10; ++j) {
                 // Start evaluation of a JavaScript script -- we don't need a result.
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> webContents.evaluateJavaScriptForTests("foobar();", null));
             }
             // DOMUtils does need to evaluate a JavaScript and get its result to get DOM bounds.

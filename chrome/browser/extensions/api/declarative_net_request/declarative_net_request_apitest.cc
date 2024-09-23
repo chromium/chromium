@@ -32,7 +32,7 @@ class DeclarativeNetRequestApiTest : public extensions::ExtensionApiTest {
   DeclarativeNetRequestApiTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+        // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
         // disable this feature.
         /*disabled_features=*/{features::kHttpsUpgrades});
   }
@@ -40,7 +40,7 @@ class DeclarativeNetRequestApiTest : public extensions::ExtensionApiTest {
       : ExtensionApiTest(context_type) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+        // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
         // disable this feature.
         /*disabled_features=*/{features::kHttpsUpgrades});
   }
@@ -86,9 +86,6 @@ class DeclarativeNetRequestLazyApiTest
       : DeclarativeNetRequestApiTest(GetParam()) {}
 };
 
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         DeclarativeNetRequestLazyApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          DeclarativeNetRequestLazyApiTest,
                          ::testing::Values(ContextType::kEventPage));
@@ -200,7 +197,7 @@ class DeclarativeNetRequestApiFencedFrameTest
     feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kFencedFrames, {{}}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
-        // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+        // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
         // disable this feature.
         /*disabled_features=*/{features::kHttpsUpgrades});
     // Fenced frames are only allowed in secure contexts.
@@ -213,7 +210,7 @@ class DeclarativeNetRequestApiFencedFrameTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1383550): Re-enable this test
+// TODO(crbug.com/40877906): Re-enable this test
 IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiFencedFrameTest, DISABLED_Load) {
   ASSERT_TRUE(RunExtensionTest("fenced_frames")) << message_;
 }
@@ -241,6 +238,38 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestApiPrerenderingTest,
                        PrerenderedPageInterception) {
   ASSERT_TRUE(RunExtensionTest("prerendering")) << message_;
+}
+
+class DeclarativeNetRequestLazyApiResponseHeadersTest
+    : public DeclarativeNetRequestLazyApiTest {
+ public:
+  DeclarativeNetRequestLazyApiResponseHeadersTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kDeclarativeNetRequestResponseHeaderMatching);
+  }
+
+ private:
+  // TODO(crbug.com/40727004): Once feature is launched to stable and feature
+  // flag can be removed, replace usages of this test class with just
+  // DeclarativeNetRequestLazyApiTest.
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedCurrentChannel current_channel_override_{version_info::Channel::DEV};
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         DeclarativeNetRequestLazyApiResponseHeadersTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(EventPage,
+                         DeclarativeNetRequestLazyApiResponseHeadersTest,
+                         ::testing::Values(ContextType::kEventPage));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         DeclarativeNetRequestLazyApiResponseHeadersTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiResponseHeadersTest,
+                       TestMatchOutcomeWithResponseHeaders) {
+  ASSERT_TRUE(RunExtensionTest("test_match_outcome_response_headers"))
+      << message_;
 }
 
 }  // namespace

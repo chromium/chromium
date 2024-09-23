@@ -12,7 +12,7 @@
 
 namespace blink {
 
-class ScriptPromiseResolver;
+class ScriptPromiseResolverBase;
 class SmartCardErrorOptions;
 
 // https://w3c.github.io/webtransport/#web-transport-error-interface
@@ -28,7 +28,7 @@ class MODULES_EXPORT SmartCardError : public DOMException {
   //
   // Will only reject if `resolver` is associated with valid execution and v8
   // contexts.
-  static void MaybeReject(ScriptPromiseResolver* resolver,
+  static void MaybeReject(ScriptPromiseResolverBase* resolver,
                           device::mojom::blink::SmartCardError mojom_error);
 
   SmartCardError(String message, V8SmartCardResponseCode::Enum);

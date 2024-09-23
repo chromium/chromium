@@ -49,11 +49,25 @@ class CORE_EXPORT CSSColorMixValue : public CSSValue {
   Color::HueInterpolationMethod HueInterpolationMethod() const {
     return hue_interpolation_method_;
   }
+
+  // Mix `color1` with `color2` using the parameters defined by the color-mix()
+  // function defined by this CSS value.
+  Color Mix(const Color& color1,
+            const Color& color2,
+            const CSSLengthResolver& length_resolver) const;
+
   // https://www.w3.org/TR/css-color-5/#color-mix-percent-norm
   static bool NormalizePercentages(const CSSPrimitiveValue* percentage1,
                                    const CSSPrimitiveValue* percentage2,
                                    double& mix_amount,
-                                   double& alpha_multiplier);
+                                   double& alpha_multiplier,
+                                   const CSSLengthResolver& length_resolver);
+  bool NormalizePercentages(double& mix_amount,
+                            double& alpha_multiplier,
+                            const CSSLengthResolver& length_resolver) const {
+    return NormalizePercentages(Percentage1(), Percentage2(), mix_amount,
+                                alpha_multiplier, length_resolver);
+  }
 
  private:
   Member<const CSSValue> color1_;

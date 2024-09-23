@@ -83,11 +83,8 @@ class PromosManager : public KeyedService {
   // later reference.
   virtual void InitializePromoConfigs(PromoConfigsSet promo_configs) = 0;
 
-  // Records the impression of `promo` in the impression history.
-  //
-  // NOTE: If `promo` is a single-display promo, it will be automatically
-  // deregistered.
-  virtual void RecordImpression(promos_manager::Promo promo) = 0;
+  // Deregisters the given `promo` if it is a single-display promo.
+  virtual void DeregisterAfterDisplay(promos_manager::Promo promo) = 0;
 
   // Returns the next promo for display, if any.
   virtual std::optional<promos_manager::Promo> NextPromoForDisplay() = 0;

@@ -259,7 +259,7 @@ GLTextureImageBacking::GLTextureImageBacking(const Mailbox& mailbox,
                                              const gfx::ColorSpace& color_space,
                                              GrSurfaceOrigin surface_origin,
                                              SkAlphaType alpha_type,
-                                             uint32_t usage,
+                                             SharedImageUsageSet usage,
                                              std::string debug_label,
                                              bool is_passthrough)
     : ClearTrackingSharedImageBacking(mailbox,
@@ -403,7 +403,7 @@ std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
   // Otherwise optimize this path with a GPU copy.
   SCOPED_CRASH_KEY_STRING256("", "GLSharedImage_DebugLabel", debug_label());
   SCOPED_CRASH_KEY_STRING32("", "GLSharedImage_Usage",
-                            base::NumberToString(usage()));
+                            base::NumberToString(uint32_t(usage())));
   base::debug::DumpWithoutCrashing();
 
 #if BUILDFLAG(USE_DAWN)

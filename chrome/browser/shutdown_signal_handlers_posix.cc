@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/shutdown_signal_handlers_posix.h"
 
 #include <limits.h>
@@ -136,11 +141,11 @@ void ShutdownDetector::ThreadMain() {
                             reinterpret_cast<char*>(&signal) + bytes_read,
                             sizeof(signal) - bytes_read));
     if (ret < 0) {
-      NOTREACHED() << "Unexpected error: " << strerror(errno);
+      NOTREACHED_IN_MIGRATION() << "Unexpected error: " << strerror(errno);
       ShutdownFDReadError();
       break;
     } else if (ret == 0) {
-      NOTREACHED() << "Unexpected closure of shutdown pipe.";
+      NOTREACHED_IN_MIGRATION() << "Unexpected closure of shutdown pipe.";
       ShutdownFDClosedError();
       break;
     }

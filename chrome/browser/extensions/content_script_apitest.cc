@@ -19,6 +19,7 @@
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
@@ -60,10 +61,16 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "pdf/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
 
@@ -149,7 +156,7 @@ class ContentScriptApiTest : public ExtensionApiTest {
 
     // Test extensions use these hostnames. Allow them to be loaded over
     // HTTP so that HTTPS-Upgrades feature doesn't upgrade their URLs.
-    // TODO(crbug.com/1394910): Use https in these tests and remove these
+    // TODO(crbug.com/40248833): Use https in these tests and remove these
     // allowlist entries.
     AllowHttpForHostnamesForTesting(
         {"a.com", "b.com", "default.test", "bar.com", "path-test.example",
@@ -196,9 +203,11 @@ class ContentScriptApiTestWithContextType
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ContentScriptApiTestWithContextType,
                          ::testing::Values(ContextType::kPersistentBackground));
+// These tests use chrome.tabs.executeScript, which is not available in MV3 and
+// above.
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ContentScriptApiTestWithContextType,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, AllFrames) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -231,7 +240,7 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, ExtensionIframe) {
   ASSERT_TRUE(RunExtensionTest("content_scripts/extension_iframe")) << message_;
 }
 
-// TODO(crbug.com/1488987): Very flaky on multiple platforms.
+// TODO(crbug.com/40934824): Very flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
                        DISABLED_ContentScriptExtensionProcess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -272,7 +281,7 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, ViewSource) {
 
 // crbug.com/126257 -- content scripts should not get injected into other
 // extensions.
-// TODO(crbug.com/1196340): Fix flakiness.
+// TODO(crbug.com/40759559): Fix flakiness.
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
                        DISABLED_OtherExtensions) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -286,7 +295,7 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
 
 // https://crbug.com/825111 -- content scripts may fetch() a blob URL from their
 // chrome-extension:// origin.
-// TODO(crbug.com/1381188): This test can't run using a service worker-based
+// TODO(crbug.com/40876652): This test can't run using a service worker-based
 // extension.
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, BlobFetch) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -672,7 +681,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptPermissionsApi) {
   ASSERT_TRUE(RunExtensionTest("content_scripts/permissions")) << message_;
 }
 
-// TODO(crbug.com/1093066): Maybe push the ContextType into
+// TODO(crbug.com/40698663): Maybe push the ContextType into
 // ExtensionApiTestWithManagementPolicy depending on how the conversions
 // with other derived classes go. Currently, web_request_apitest.cc has a
 // similar class.
@@ -692,9 +701,11 @@ class ContentScriptApiManagementPolicyTestWithContextType
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ContentScriptApiManagementPolicyTestWithContextType,
                          ::testing::Values(ContextType::kPersistentBackground));
+// These tests use chrome.tabs.executeScript, which is not available in MV3 and
+// above.
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ContentScriptApiManagementPolicyTestWithContextType,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 IN_PROC_BROWSER_TEST_P(ContentScriptApiManagementPolicyTestWithContextType,
                        Policy) {
@@ -769,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithManagementPolicy,
   EXPECT_FALSE(crx_path.empty());
 
   // Load first time to get extension id.
-  // TODO(crbug.com/1093066): This test should be run using a service worker-
+  // TODO(crbug.com/40698663): This test should be run using a service worker-
   // based extension, but we have no mechanism for doing that with a packed
   // extension.
   const Extension* extension = LoadExtension(crx_path);
@@ -1907,6 +1918,47 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 // reasons), but is close enough to a content script test to re-use the same
 // suite.
 
+#if BUILDFLAG(ENABLE_PDF)
+// A test suite for exercising the behavior of content script injection into
+// PDF-related frames.
+class ContentScriptRelatedPdfFrameTest : public ContentScriptRelatedFrameTest {
+ public:
+  ContentScriptRelatedPdfFrameTest() {
+    feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that content scripts can execute in the PDF embedder frame, but not in
+// the PDF extension frame nor PDF content frame.
+IN_PROC_BROWSER_TEST_F(ContentScriptRelatedPdfFrameTest, PdfFrames) {
+  // Navigate to a full-page PDF.
+  content::WebContents* tab = NavigateTab(
+      embedded_test_server()->GetURL("example.com", "/pdf/test.pdf"));
+  content::RenderFrameHost* primary_main_frame = tab->GetPrimaryMainFrame();
+
+  // Wait until the PDF finishes loading.
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(primary_main_frame));
+
+  // The content script should run in the PDF embedder frame.
+  EXPECT_TRUE(DidScriptRunInFrame(primary_main_frame));
+
+  // The content script shouldn't run in the PDF extension frame.
+  content::RenderFrameHost* extension_host =
+      pdf_extension_test_util::GetOnlyPdfExtensionHost(tab);
+  ASSERT_TRUE(extension_host);
+  EXPECT_FALSE(DidScriptRunInFrame(extension_host));
+
+  // The content script shouldn't run in the PDF content frame.
+  content::RenderFrameHost* content_host =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(tab);
+  ASSERT_TRUE(content_host);
+  EXPECT_FALSE(DidScriptRunInFrame(content_host));
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 class ContentScriptMatchOriginAsFallbackTest
     : public ContentScriptRelatedFrameTest {
  public:
@@ -2191,9 +2243,11 @@ class ContentScriptApiPrerenderingTest
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ContentScriptApiPrerenderingTest,
                          ::testing::Values(ContextType::kPersistentBackground));
+// These tests use chrome.tabs.executeScript, which is not available in MV3 and
+// above. See crbug.com/332328868.
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ContentScriptApiPrerenderingTest,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 IN_PROC_BROWSER_TEST_P(ContentScriptApiPrerenderingTest, Prerendering) {
   ASSERT_TRUE(StartEmbeddedTestServer());

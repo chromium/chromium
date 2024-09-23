@@ -13,8 +13,7 @@ namespace ash {
 
 // Interface for dependency injection between FingerprintSetupScreen and its
 // WebUI representation.
-class FingerprintSetupScreenView
-    : public base::SupportsWeakPtr<FingerprintSetupScreenView> {
+class FingerprintSetupScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "fingerprint-setup", "FingerprintSetupScreen"};
@@ -31,11 +30,14 @@ class FingerprintSetupScreenView
   virtual void OnEnrollScanDone(device::mojom::ScanResult scan_result,
                                 bool enroll_session_complete,
                                 int percent_complete) = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<FingerprintSetupScreenView> AsWeakPtr() = 0;
 };
 
 // The sole implementation of the FingerprintSetupScreenView, using WebUI.
-class FingerprintSetupScreenHandler : public BaseScreenHandler,
-                                      public FingerprintSetupScreenView {
+class FingerprintSetupScreenHandler final : public BaseScreenHandler,
+                                            public FingerprintSetupScreenView {
  public:
   using TView = FingerprintSetupScreenView;
 
@@ -57,6 +59,10 @@ class FingerprintSetupScreenHandler : public BaseScreenHandler,
   void OnEnrollScanDone(device::mojom::ScanResult scan_result,
                         bool enroll_session_complete,
                         int percent_complete) override;
+  base::WeakPtr<FingerprintSetupScreenView> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<FingerprintSetupScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

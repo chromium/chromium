@@ -48,11 +48,7 @@ bool WebSocketAdapter::Write(base::span<const uint8_t> data) {
   }
   socket_remote_->SendMessage(network::mojom::WebSocketMessageType::BINARY,
                               data.size());
-  uint32_t num_bytes = static_cast<uint32_t>(data.size());
-  MojoResult result = write_pipe_->WriteData(data.data(), &num_bytes,
-                                             MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
-  DCHECK(result != MOJO_RESULT_OK ||
-         data.size() == static_cast<size_t>(num_bytes));
+  MojoResult result = write_pipe_->WriteAllData(data);
   return result == MOJO_RESULT_OK;
 }
 
@@ -198,24 +194,19 @@ void WebSocketAdapter::OnClosingHandshake() {
 
 void WebSocketAdapter::OnDataPipeReady(MojoResult,
                                        const mojo::HandleSignalsState&) {
-  const size_t todo = pending_message_.size() - pending_message_i_;
-  DCHECK_GT(todo, 0u);
+  DCHECK_LT(pending_message_i_, pending_message_.size());
 
-  // Truncation to 32-bits cannot overflow because |pending_message_.size()| is
-  // bound by |kMaxIncomingMessageSize| when it is resized in |OnDataFrame|.
-  uint32_t todo_32 = static_cast<uint32_t>(todo);
-  static_assert(
-      kMaxIncomingMessageSize <= std::numeric_limits<decltype(todo_32)>::max(),
-      "");
-  const MojoResult result =
-      read_pipe_->ReadData(&pending_message_.data()[pending_message_i_],
-                           &todo_32, MOJO_READ_DATA_FLAG_NONE);
+  size_t actually_read_bytes = 0;
+  const MojoResult result = read_pipe_->ReadData(
+      MOJO_READ_DATA_FLAG_NONE,
+      base::span(pending_message_).subspan(pending_message_i_),
+      actually_read_bytes);
   if (result == MOJO_RESULT_OK) {
-    pending_message_i_ += todo_32;
+    pending_message_i_ += actually_read_bytes;
     DCHECK_LE(pending_message_i_, pending_message_.size());
 
     if (pending_message_i_ < pending_message_.size()) {
-      read_pipe_watcher_.Arm();
+      read_pipe_watcher_.ArmOrNotify();
     } else {
       client_receiver_.Resume();
       if (pending_message_finished_) {
@@ -223,7 +214,7 @@ void WebSocketAdapter::OnDataPipeReady(MojoResult,
       }
     }
   } else if (result == MOJO_RESULT_SHOULD_WAIT) {
-    read_pipe_watcher_.Arm();
+    read_pipe_watcher_.ArmOrNotify();
   } else {
     FIDO_LOG(ERROR) << "reading WebSocket frame failed: "
                     << static_cast<int>(result);

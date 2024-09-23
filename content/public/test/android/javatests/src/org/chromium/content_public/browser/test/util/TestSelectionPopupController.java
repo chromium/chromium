@@ -20,8 +20,8 @@ import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 
 /**
- * A dummy {@link SelectionPopupController} implementation that can be overriden by tests
- * to customize behavior.
+ * An empty {@link SelectionPopupController} implementation that can be overridden by tests to
+ * customize behavior.
  */
 public class TestSelectionPopupController implements SelectionPopupController {
     public TestSelectionPopupController() {}
@@ -75,6 +75,11 @@ public class TestSelectionPopupController implements SelectionPopupController {
 
     @Override
     public void setSelectionClient(SelectionClient selectionClient) {}
+
+    @Override
+    public SelectionClient getSelectionClient() {
+        return null;
+    }
 
     @Override
     public void setTextClassifier(TextClassifier textClassifier) {}

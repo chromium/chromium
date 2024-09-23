@@ -33,6 +33,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/lock.h"
 #include "cc/paint/paint_image_generator.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
@@ -41,7 +42,6 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/doubly_linked_list.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkTypes.h"
@@ -53,7 +53,7 @@ namespace blink {
 // 2. Size of the image.
 // 3. ImageDecoder::AlphaOption
 struct DecoderCacheKey {
-  raw_ptr<const blink::ImageFrameGenerator, ExperimentalRenderer> gen_;
+  raw_ptr<const blink::ImageFrameGenerator> gen_;
   SkISize size_;
   blink::ImageDecoder::AlphaOption alpha_option_;
   cc::PaintImage::GeneratorClientId client_id_;
@@ -110,12 +110,15 @@ class CacheEntry : public DoublyLinkedListNode<CacheEntry> {
   virtual CacheType GetType() const = 0;
 
  protected:
-  raw_ptr<const ImageFrameGenerator, ExperimentalRenderer> generator_;
+  raw_ptr<const ImageFrameGenerator> generator_;
   int use_count_;
 
  private:
-  CacheEntry* prev_;
-  CacheEntry* next_;
+  // RAW_PTR_EXCLUSION: Rewriting causes a crash, because a base class ctor
+  // accesses child class ptr fields before they're initialized (see
+  // crbug.com/349213429).
+  RAW_PTR_EXCLUSION CacheEntry* prev_;
+  RAW_PTR_EXCLUSION CacheEntry* next_;
 };
 
 class DecoderCacheEntry final : public CacheEntry {

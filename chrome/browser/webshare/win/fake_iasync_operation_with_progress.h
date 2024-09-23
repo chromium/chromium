@@ -56,14 +56,14 @@ class FakeIAsyncOperationWithProgress final
       ABI::Windows::Foundation::IAsyncOperationProgressHandler<TResult,
                                                                TProgress>*
           handler) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_Progress(
       ABI::Windows::Foundation::IAsyncOperationProgressHandler<TResult,
                                                                TProgress>**
           handler) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP put_Completed(
@@ -80,7 +80,7 @@ class FakeIAsyncOperationWithProgress final
       ABI::Windows::Foundation::IAsyncOperationWithProgressCompletedHandler<
           TResult,
           TProgress>** handler) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP GetResults(
@@ -98,7 +98,7 @@ class FakeIAsyncOperationWithProgress final
 
   // ABI::Windows::Foundation::IAsyncInfo:
   IFACEMETHODIMP get_Id(uint32_t* id) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_Status(AsyncStatus* status) final {
@@ -110,11 +110,11 @@ class FakeIAsyncOperationWithProgress final
     return S_OK;
   }
   IFACEMETHODIMP Cancel() final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP Close() final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
 

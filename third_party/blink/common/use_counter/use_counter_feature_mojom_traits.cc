@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-shared.h"
 
 namespace mojo {
 namespace {
@@ -18,6 +19,10 @@ bool IsReservedFeature(const blink::UseCounterFeature& feature) {
       return feature.value() ==
              static_cast<blink::UseCounterFeature::EnumValue>(
                  blink::mojom::WebFeature::kPageVisits);
+    case blink::mojom::UseCounterFeatureType::kWebDXFeature:
+      return feature.value() ==
+             static_cast<blink::UseCounterFeature::EnumValue>(
+                 blink::mojom::WebDXFeature::kPageVisits);
     case blink::mojom::UseCounterFeatureType::kCssProperty:
     case blink::mojom::UseCounterFeatureType::kAnimatedCssProperty:
       return feature.value() ==

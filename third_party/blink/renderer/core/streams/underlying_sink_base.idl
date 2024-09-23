@@ -10,10 +10,10 @@
     LegacyNoInterfaceObject
 ]
 interface UnderlyingSinkBase {
-    [CallWith=ScriptState, RaisesException] Promise<void> start(any controller);
-    [CallWith=ScriptState, RaisesException] Promise<void> write(any chunk, any controller);
-    [CallWith=ScriptState, RaisesException] Promise<void> close();
-    [CallWith=ScriptState, RaisesException] Promise<void> abort(any reason);
+    [CallWith=ScriptState, RaisesException] Promise<undefined> start(any controller);
+    [CallWith=ScriptState, RaisesException] Promise<undefined> write(any chunk, any controller);
+    [CallWith=ScriptState, RaisesException] Promise<undefined> close();
+    [CallWith=ScriptState, RaisesException] Promise<undefined> abort(any reason);
 
     // This only exists to prevent Object.prototype.type being accessed.
     [CallWith=ScriptState] readonly attribute any type;

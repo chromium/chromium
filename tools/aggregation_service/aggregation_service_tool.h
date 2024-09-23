@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/strings/string_split.h"
@@ -76,8 +77,7 @@ class AggregationServiceTool {
                          const base::FilePath& filename);
 
  private:
-  bool SetPublicKeysFromFile(const GURL& url,
-                             const std::string& json_file_path);
+  bool SetPublicKeysFromFile(const GURL& url, std::string_view json_file_path);
 
   ToolNetworkInitializer network_initializer_;
   std::unique_ptr<content::TestAggregationService> agg_service_;

@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_UTILS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_UTILS_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
@@ -39,7 +39,6 @@ enum class WebappUninstallSource;
 namespace web_app {
 
 class WebApp;
-class WebAppRegistrar;
 struct WebAppInstallParams;
 
 enum class ForInstallableSite {
@@ -69,13 +68,11 @@ void PopulateFileHandlerInfoFromManifest(
 // Will sanitise the manifest fields to be suitable for installation to prevent
 // sites from using arbitrarily large amounts of disk space.
 void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
-                                  const GURL& manifest_url,
                                   WebAppInstallInfo* web_app_info);
 
 // Same as above, but returns a fresh WebAppInstallInfo.
 WebAppInstallInfo CreateWebAppInfoFromManifest(
-    const blink::mojom::Manifest& manifest,
-    const GURL& manifest_url);
+    const blink::mojom::Manifest& manifest);
 
 // Populate non-product icons in WebAppInstallInfo using the IconsMap. This
 // currently covers shortcut item icons and file handler icons. It ignores
@@ -100,13 +97,13 @@ void RecordDownloadedIconsResultAndHttpStatusCodes(
 // Records the class of http status code (2XX, 3XX, 4XX, 5XX) for each processed
 // icon url.
 void RecordDownloadedIconsHttpResultsCodeClass(
-    base::StringPiece histogram_name,
+    std::string_view histogram_name,
     IconsDownloadedResult result,
     const DownloadedIconsHttpResults& icons_http_results);
 
 // Records http status code for each processed icon url.
 void RecordDownloadedIconHttpStatusCodes(
-    base::StringPiece histogram_name,
+    std::string_view histogram_name,
     const DownloadedIconsHttpResults& icons_http_results);
 
 WebAppManagement::Type ConvertExternalInstallSourceToSource(
@@ -124,17 +121,6 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
 
 void CreateWebAppInstallTabHelpers(content::WebContents* web_contents);
 
-// The function should be called before removing a source from the WebApp.
-void MaybeRegisterOsUninstall(const WebApp* web_app,
-                              WebAppManagement::Type source_uninstalling,
-                              OsIntegrationManager& os_integration_manager,
-                              InstallOsHooksCallback callback);
-
-// The function should be called before adding source to the WebApp.
-void MaybeUnregisterOsUninstall(const WebApp* web_app,
-                                WebAppManagement::Type source_installing,
-                                OsIntegrationManager& os_integration_manager);
-
 // Updates |web_app| using |web_app_info|
 void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
                              WebApp& web_app,
@@ -144,13 +130,10 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
 void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,
                                 WebApp& web_app);
 
-// Possibly updates |options| to disable OS-integrations based on the
-// configuration of the given app.
-void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,
-                               const webapps::AppId& app_id,
-                               InstallOsHooksOptions* options);
-
 // Update |web_app_info| using |install_params|.
+// TODO(crbug.com/354981650): Remove this method after moving fields that modify
+// the web app definition from WebAppInstallParams, and remove install-config
+// information from WebAppInstallInfo.
 void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,
                                     WebAppInstallInfo& web_app_info);
 

@@ -44,6 +44,8 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
+namespace cc {
+
 namespace {
 
 template <typename T>
@@ -51,9 +53,47 @@ std::unique_ptr<T> ClonePtr(const std::unique_ptr<T>& value) {
   return value ? std::make_unique<T>(*value) : nullptr;
 }
 
+const char* LayerTypeAsString(mojom::LayerType type) {
+  switch (type) {
+    case mojom::LayerType::kLayer:
+      return "cc::LayerImpl";
+    case mojom::LayerType::kSolidColor:
+      return "cc::SolidColorLayerImpl";
+    case mojom::LayerType::kTexture:
+      return "cc::TextureLayerImpl";
+    case mojom::LayerType::kSurface:
+      return "cc::SurfaceLayerImpl";
+    case mojom::LayerType::kPicture:
+      return "cc::PictureLayerImpl";
+    case mojom::LayerType::kTileDisplay:
+      return "cc::TileDisplayLayerImpl";
+    case mojom::LayerType::kMirror:
+      return "cc::MirrorLayerImpl";
+    case mojom::LayerType::kHeadsUpDisplay:
+      return "cc::HeadsUpDisplayLayerImpl";
+    case mojom::LayerType::kUIResource:
+      return "cc::UIResourceLayerImpl";
+    case mojom::LayerType::kNinePatch:
+      return "cc::NinePatchLayerImpl";
+    case mojom::LayerType::kSolidColorScrollbar:
+      return "cc::SolidColorScrollbarLayerImpl";
+    case mojom::LayerType::kPaintedScrollbar:
+      return "cc::PaintedScrollbarLayerImpl";
+    case mojom::LayerType::kNinePatchThumbScrollbar:
+      return "cc::NinePatchThumbScrollbarLayerImpl";
+    case mojom::LayerType::kVideo:
+      return "cc::VideoLayerImpl";
+    case mojom::LayerType::kViewTransitionContent:
+      return "cc::ViewTransitionContentLayerImpl";
+  }
+}
+
 }  // namespace
 
-namespace cc {
+LayerImpl::RareProperties::RareProperties() = default;
+LayerImpl::RareProperties::RareProperties(const RareProperties&) = default;
+LayerImpl::RareProperties::~RareProperties() = default;
+
 LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
                      int id,
                      bool will_always_push_properties)
@@ -77,6 +117,10 @@ LayerImpl::~LayerImpl() {
   layer_tree_impl_->UnregisterLayer(this);
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("cc.debug"), "cc::LayerImpl", this);
+}
+
+mojom::LayerType LayerImpl::GetLayerType() const {
+  return mojom::LayerType::kLayer;
 }
 
 ElementListType LayerImpl::GetElementTypeForAnimation() const {
@@ -281,7 +325,7 @@ void LayerImpl::AppendDebugBorderQuad(
 void LayerImpl::GetContentsResourceId(viz::ResourceId* resource_id,
                                       gfx::Size* resource_size,
                                       gfx::SizeF* resource_uv_size) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   *resource_id = viz::kInvalidResourceId;
 }
 
@@ -290,46 +334,6 @@ gfx::Vector2dF LayerImpl::ScrollBy(const gfx::Vector2dF& scroll) {
   ScrollNode* scroll_node = scroll_tree.Node(scroll_tree_index());
   DCHECK(scroll_node);
   return scroll_tree.ScrollBy(*scroll_node, scroll, layer_tree_impl());
-}
-
-void LayerImpl::UpdateScrollable() {
-  if (!element_id()) {
-    scrollable_ = false;
-    return;
-  }
-
-  const auto* scroll_node = GetScrollTree().FindNodeFromElementId(element_id());
-  bool was_scrollable = scrollable_;
-  scrollable_ = scroll_node && scroll_node->scrollable;
-  if (was_scrollable == scrollable_) {
-    if (!scrollable_)
-      return;
-    if (scroll_container_bounds_ == scroll_node->container_bounds &&
-        scroll_contents_bounds_ == scroll_node->bounds)
-      return;
-  }
-
-  const bool container_bounds_changed =
-      scrollable_ && scroll_node->container_bounds != scroll_container_bounds_;
-  scroll_container_bounds_ =
-      scrollable_ ? scroll_node->container_bounds : gfx::Size();
-  scroll_contents_bounds_ = scrollable_ ? scroll_node->bounds : gfx::Size();
-
-  // Scrollbar positions depend on the bounds.
-  layer_tree_impl()->SetScrollbarGeometriesNeedUpdate();
-
-  if (layer_tree_impl()->settings().scrollbar_animator ==
-      LayerTreeSettings::AURA_OVERLAY) {
-    if (layer_tree_impl()->settings().enable_fluent_overlay_scrollbar) {
-      // Show scrollbars when resizing scrollable areas and
-      // not when the inside content gets expanded.
-      set_needs_show_scrollbars(scrollable_ && container_bounds_changed);
-    } else {
-      set_needs_show_scrollbars(scrollable_);
-    }
-  }
-
-  NoteLayerPropertyChanged();
 }
 
 void LayerImpl::SetTouchActionRegion(TouchActionRegion region) {
@@ -389,8 +393,6 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer->effect_tree_index_ = effect_tree_index_;
   layer->clip_tree_index_ = clip_tree_index_;
   layer->scroll_tree_index_ = scroll_tree_index_;
-  if (needs_show_scrollbars_)
-    layer->needs_show_scrollbars_ = needs_show_scrollbars_;
 
   if (layer_property_changed_not_from_property_trees_ ||
       layer_property_changed_from_property_trees_)
@@ -401,7 +403,6 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
     layer->layer_property_changed_from_property_trees_ = true;
 
   layer->SetBounds(bounds_);
-  layer->UpdateScrollable();
 
   layer->UnionUpdateRect(update_rect_);
 
@@ -415,8 +416,12 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
   }
 
   // Reset any state that should be cleared for the next update.
-  needs_show_scrollbars_ = false;
   ResetChangeTracking();
+
+  if (layer_tree_impl()->settings().UseLayerContextForDisplay()) {
+    // Ensure updates also propagate to the display tree on its next update.
+    layer->SetNeedsPushProperties();
+  }
 }
 
 bool LayerImpl::IsAffectedByPageScale() const {
@@ -480,10 +485,6 @@ gfx::Transform LayerImpl::GetScaledDrawTransform(
   return scaled_draw_transform;
 }
 
-const char* LayerImpl::LayerTypeAsString() const {
-  return "cc::LayerImpl";
-}
-
 void LayerImpl::ResetChangeTracking() {
   layer_property_changed_not_from_property_trees_ = false;
   layer_property_changed_from_property_trees_ = false;
@@ -513,11 +514,6 @@ void LayerImpl::SetBounds(const gfx::Size& bounds) {
     return;
 
   bounds_ = bounds;
-
-  // Scrollbar positions depend on the scrolling layer bounds.
-  if (scrollable_)
-    layer_tree_impl()->SetScrollbarGeometriesNeedUpdate();
-
   NoteLayerPropertyChanged();
 }
 
@@ -526,6 +522,7 @@ bool LayerImpl::IsScrollbarLayer() const {
 }
 
 bool LayerImpl::IsScrollerOrScrollbar() const {
+  DCHECK(!layer_tree_impl()->settings().enable_hit_test_opaqueness);
   return IsScrollbarLayer() ||
          GetScrollTree().FindNodeFromElementId(element_id());
 }
@@ -563,7 +560,10 @@ bool LayerImpl::HitTestable() const {
 }
 
 bool LayerImpl::OpaqueToHitTest() const {
-  return HitTestable() && hit_test_opaqueness_ == HitTestOpaqueness::kOpaque;
+  return HitTestable() && hit_test_opaqueness_ == HitTestOpaqueness::kOpaque &&
+         !GetEffectTree()
+              .Node(effect_tree_index())
+              ->node_or_ancestor_has_fast_rounded_corner;
 }
 
 void LayerImpl::SetBackgroundColor(SkColor4f background_color) {
@@ -612,10 +612,21 @@ gfx::Rect LayerImpl::GetDamageRect() const {
   return gfx::Rect();
 }
 
+DamageReasonSet LayerImpl::GetDamageReasons() const {
+  DamageReasonSet reasons;
+  if (LayerPropertyChanged() || !update_rect_.IsEmpty() ||
+      !GetDamageRect().IsEmpty()) {
+    reasons.Put(DamageReason::kUntracked);
+  }
+  return reasons;
+}
+
 void LayerImpl::SetCurrentScrollOffset(const gfx::PointF& scroll_offset) {
   DCHECK(IsActive());
-  if (GetScrollTree().SetScrollOffset(element_id(), scroll_offset))
-    layer_tree_impl()->DidUpdateScrollOffset(element_id());
+  if (GetScrollTree().SetScrollOffset(element_id(), scroll_offset)) {
+    layer_tree_impl()->DidUpdateScrollOffset(
+        element_id(), /*pushed_from_main_or_pending_tree=*/false);
+  }
 }
 
 SimpleEnclosedRegion LayerImpl::VisibleOpaqueRegion() const {
@@ -637,10 +648,18 @@ void LayerImpl::ReleaseTileResources() {}
 void LayerImpl::RecreateTileResources() {}
 
 void LayerImpl::SetNeedsPushProperties() {
-  // There's no need to push layer properties on the active tree, or when
-  // |will_always_push_properties_| is true.
-  if (will_always_push_properties_ || layer_tree_impl()->IsActiveTree())
+  // For the pending tree, there's no need to mark this layer to push properties
+  // when |will_always_push_properties_| is true.
+  if (will_always_push_properties_ && layer_tree_impl()->IsPendingTree()) {
     return;
+  }
+
+  // We never push properties from the active tree unless using a LayerContext.
+  if (layer_tree_impl()->IsActiveTree() &&
+      !layer_tree_impl()->settings().UseLayerContextForDisplay()) {
+    return;
+  }
+
   if (!needs_push_properties_) {
     needs_push_properties_ = true;
     layer_tree_impl()->AddLayerShouldPushProperties(this);
@@ -666,7 +685,7 @@ void LayerImpl::AsValueInto(base::trace_event::TracedValue* state) const {
   // consumers.
   viz::TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
       TRACE_DISABLED_BY_DEFAULT("cc.debug"), state, "cc::LayerImpl",
-      LayerTypeAsString(), this);
+      LayerTypeAsString(GetLayerType()), this);
   state->SetInteger("layer_id", id());
   MathUtil::AddToTracedValue("bounds", bounds_, state);
 
@@ -708,8 +727,10 @@ void LayerImpl::AsValueInto(base::trace_event::TracedValue* state) const {
   wheel_event_handler_region().AsValueInto(state);
   state->EndArray();
 
+  // TODO(crbug.com/358408565): At least DevTools reads from trace using this
+  // name.
   state->BeginArray("non_fast_scrollable_region");
-  non_fast_scrollable_region().AsValueInto(state);
+  main_thread_scroll_hit_test_region().AsValueInto(state);
   state->EndArray();
 
   state->SetBoolean("hit_testable", HitTestable());
@@ -827,7 +848,7 @@ gfx::Vector2dF LayerImpl::GetIdealContentsScale() const {
   std::optional<gfx::Vector2dF> transform_scales =
       gfx::TryComputeTransform2dScaleComponents(transform);
   if (transform_scales) {
-    // TODO(crbug.com/1196414): Remove this scale cap.
+    // TODO(crbug.com/40176440): Remove this scale cap.
     float scale_cap = GetPreferredRasterScale(*transform_scales);
     transform_scales->SetToMin(gfx::Vector2dF(scale_cap, scale_cap));
     return *transform_scales;
@@ -843,7 +864,7 @@ gfx::Vector2dF LayerImpl::GetIdealContentsScale() const {
 
   float default_scale = page_scale * device_scale;
 
-  // TODO(crbug.com/1196414): This function should return a 2D scale.
+  // TODO(crbug.com/40176440): This function should return a 2D scale.
   float scale = gfx::ComputeApproximateMaxScale(transform);
 
   const int kMaxTilesToCoverLayerDimension = 5;

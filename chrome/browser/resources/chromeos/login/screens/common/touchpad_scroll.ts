@@ -17,22 +17,17 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './touchpad_scroll.html.js';
 
 const TouchpadScrollScreenElementBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 /**
  * Data that is passed to the screen during onBeforeShow.
@@ -126,7 +121,8 @@ export class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
     scrollArea.scrollTop = scrollArea.scrollHeight / 2 - 150;
   }
 
-  onBeforeShow(data: TouchpadScrollScreenData): void {
+  override onBeforeShow(data: TouchpadScrollScreenData): void {
+    super.onBeforeShow(data);
     this.shouldShowReturn = data['shouldShowReturn'];
   }
 
@@ -139,8 +135,8 @@ export class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): OOBE_UI_STATE {
-    return OOBE_UI_STATE.CHOOBE;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.CHOOBE;
   }
 
   private onCheckChanged(newValue: boolean, oldValue: boolean): void {

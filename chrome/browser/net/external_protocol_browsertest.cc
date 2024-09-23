@@ -82,7 +82,7 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
     return ExternalProtocolHandler::BlockState::DONT_BLOCK;
   }
 
-  void BlockRequest() override { NOTREACHED(); }
+  void BlockRequest() override { NOTREACHED_IN_MIGRATION(); }
 
   void RunExternalProtocolDialog(
       const GURL& url,
@@ -91,7 +91,7 @@ class FakeProtocolHandlerDelegate : public ExternalProtocolHandler::Delegate {
       bool has_user_gesture,
       const std::optional<url::Origin>& initiating_origin,
       const std::u16string& program_name) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void LaunchUrlWithoutSecurityCheck(

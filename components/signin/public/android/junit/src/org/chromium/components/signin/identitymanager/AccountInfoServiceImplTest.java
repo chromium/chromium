@@ -37,8 +37,6 @@ public class AccountInfoServiceImplTest {
 
     @Mock private IdentityManager mIdentityManagerMock;
 
-    @Mock private AccountTrackerService mAccountTrackerServiceMock;
-
     @Mock private AccountInfoService.Observer mObserverMock;
 
     private final AccountInfo mAccountInfoWithAvatar =
@@ -55,7 +53,7 @@ public class AccountInfoServiceImplTest {
 
     @Before
     public void setUp() {
-        AccountInfoServiceProvider.init(mIdentityManagerMock, mAccountTrackerServiceMock);
+        AccountInfoServiceProvider.init(mIdentityManagerMock);
         mService = (AccountInfoServiceImpl) AccountInfoServiceProvider.get();
     }
 
@@ -102,14 +100,14 @@ public class AccountInfoServiceImplTest {
         final Promise<AccountInfoService> promise = AccountInfoServiceProvider.getPromise();
 
         Assert.assertFalse(promise.isFulfilled());
-        AccountInfoServiceProvider.init(mIdentityManagerMock, mAccountTrackerServiceMock);
+        AccountInfoServiceProvider.init(mIdentityManagerMock);
         Assert.assertTrue(promise.isFulfilled());
     }
 
     @Test
     public void testGetPromiseInvokedAfterInitialization() {
         AccountInfoServiceProvider.resetForTests();
-        AccountInfoServiceProvider.init(mIdentityManagerMock, mAccountTrackerServiceMock);
+        AccountInfoServiceProvider.init(mIdentityManagerMock);
 
         final Promise<AccountInfoService> promise = AccountInfoServiceProvider.getPromise();
 

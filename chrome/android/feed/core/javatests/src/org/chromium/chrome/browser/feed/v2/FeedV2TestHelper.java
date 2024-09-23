@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.hamcrest.Matchers;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +23,7 @@ public class FeedV2TestHelper {
     private static Map<String, Integer> getEnumHistogramValues(
             String histogramName, Map<String, Integer> enumNames) {
         HashMap<String, Integer> counts = new HashMap<>();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (Map.Entry<String, Integer> entry : enumNames.entrySet()) {
                         int count =

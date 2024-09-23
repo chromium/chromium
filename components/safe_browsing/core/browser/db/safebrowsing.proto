@@ -358,6 +358,9 @@ message ChromeClientInfo {
 
     // Scout reporting population.
     SCOUT = 3;
+
+    // Enhanced safe browsing population.
+    ENHANCED_PROTECTION = 4;
   }
 
   // The reporting population of the user.

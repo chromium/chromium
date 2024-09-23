@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -29,6 +30,7 @@
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
+#include "content/browser/renderer_host/render_widget_host_factory.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame_messages.mojom.h"
@@ -142,10 +144,23 @@ bool NavigateToURLInSameBrowsingInstance(Shell* window, const GURL& url) {
 bool IsExpectedSubframeErrorTransition(SiteInstance* start_site_instance,
                                        SiteInstance* end_site_instance) {
   bool site_instances_are_equal = (start_site_instance == end_site_instance);
+
+  // AgentClusterKey mismatch will trigger a SiteInstance switch.
+  if (static_cast<SiteInstanceImpl*>(start_site_instance)
+              ->GetSiteInfo()
+              .agent_cluster_key() !=
+          static_cast<SiteInstanceImpl*>(end_site_instance)
+              ->GetSiteInfo()
+              .agent_cluster_key() &&
+      !site_instances_are_equal) {
+    return true;
+  }
+
   bool is_error_page_site_instance =
       (static_cast<SiteInstanceImpl*>(end_site_instance)
            ->GetSiteInfo()
            .is_error_page());
+
   if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(
           /*in_main_frame=*/false)) {
     return site_instances_are_equal && !is_error_page_site_instance;
@@ -158,28 +173,46 @@ RenderFrameHost* CreateSubframe(WebContentsImpl* web_contents,
                                 std::string frame_id,
                                 const GURL& url,
                                 bool wait_for_navigation) {
+  return CreateSubframe(
+      web_contents->GetPrimaryFrameTree().root()->current_frame_host(),
+      frame_id, url, wait_for_navigation, {});
+}
+
+RenderFrameHost* CreateSubframe(RenderFrameHost* parent,
+                                std::string frame_id,
+                                const GURL& url,
+                                bool wait_for_navigation) {
+  return CreateSubframe(parent, frame_id, url, wait_for_navigation, {});
+}
+
+RenderFrameHost* CreateSubframe(RenderFrameHost* parent,
+                                std::string frame_id,
+                                const GURL& url,
+                                bool wait_for_navigation,
+                                ExtraParams extra_params) {
+  WebContents* web_contents = WebContents::FromRenderFrameHost(parent);
   RenderFrameHostCreatedObserver subframe_created_observer(web_contents);
   TestNavigationObserver subframe_nav_observer(web_contents);
-  if (url.is_empty()) {
-    EXPECT_TRUE(ExecJs(web_contents, JsReplace(R"(
-          var iframe = document.createElement('iframe');
-          iframe.id = $1;
-          document.body.appendChild(iframe);
-      )",
-                                               frame_id)));
-  } else {
-    EXPECT_TRUE(ExecJs(web_contents, JsReplace(R"(
-          var iframe = document.createElement('iframe');
-          iframe.id = $1;
-          iframe.src = $2;
-          document.body.appendChild(iframe);
-      )",
-                                               frame_id, url)));
-  }
+
+  EXPECT_TRUE(
+      ExecJs(parent, JsReplace(R"(
+    var iframe = document.createElement('iframe');
+    iframe.id = $1; //frame_id
+    if ($2) {
+      iframe.src = $2; // url
+    }
+    if ($3) {
+      iframe.sandbox = $3; // extra_params.sandbox_flags
+    }
+    document.body.appendChild(iframe);
+  )",
+                               frame_id, url, extra_params.sandbox_flags)));
+
   subframe_created_observer.Wait();
   if (wait_for_navigation)
     subframe_nav_observer.Wait();
-  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+  FrameTreeNode* root =
+      static_cast<RenderFrameHostImpl*>(parent)->frame_tree_node();
   return root->child_at(root->child_count() - 1)->current_frame_host();
 }
 
@@ -289,16 +322,11 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
       to_explore.push(node->child_at(i));
     }
 
-    // Sort the proxies by SiteInstance ID to avoid unordered_map ordering.
+    // Sort the proxies by SiteInstanceGroup ID to avoid unordered_map ordering.
     std::vector<SiteInstance*> site_instances;
     for (const auto& proxy_pair :
          node->render_manager()->GetAllProxyHostsForTesting()) {
       SiteInstanceGroup* group = proxy_pair.second->site_instance_group();
-
-      // Currently, each SiteInstanceGroup only has one SiteInstance in it.
-      // TODO(crbug.com/1195535, yangsharon): Remove when multiple SiteInstances
-      // per group is supported.
-      CHECK_EQ(group->site_instances_for_testing().size(), 1u);
       for (raw_ptr<SiteInstanceImpl> instance :
            group->site_instances_for_testing()) {
         site_instances.push_back(instance);
@@ -393,16 +421,8 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
       // Sort these alphabetically, to avoid hash_map ordering dependency.
       std::vector<std::string> sorted_proxy_hosts;
       for (const auto& proxy_pair : proxy_host_map) {
-        // Get the first SiteInstance from each group, since there's only one
-        // SiteInstance per group.
-        // TODO(crbug.com/1447896, yangsharon): Add support for multiple
-        // SiteInstances per group.
-        auto site_instances_for_testing =
-            proxy_pair.second->site_instance_group()
-                ->site_instances_for_testing();
-        CHECK_EQ(site_instances_for_testing.size(), 1u);
-        SiteInstance* site_instance = *(site_instances_for_testing.begin());
-        sorted_proxy_hosts.push_back(GetName(site_instance));
+        sorted_proxy_hosts.push_back(
+            GetGroupName(proxy_pair.second->site_instance_group()));
       }
       std::sort(sorted_proxy_hosts.begin(), sorted_proxy_hosts.end());
       for (std::string& proxy_name : sorted_proxy_hosts) {
@@ -421,6 +441,16 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
         static_cast<SiteInstanceImpl*>(legend_entry.second);
     std::string description =
         GetUrlWithoutPort(site_instance->GetSiteURL()).spec();
+
+    // data: URLs have site URLs of the form data:nonce, where the nonce is an
+    // UnguessableToken. Make these deterministic for testing by using the
+    // abbreviated letter for the site in the nonce. For example,
+    // "data:nonce_A".
+    if (site_instance->GetSiteURL().SchemeIs(url::kDataScheme)) {
+      description =
+          base::StringPrintf("data:nonce_%s", legend_entry.first.c_str());
+    }
+
     base::StringAppendF(&result, "\n%s%s = %s", prefix,
                         legend_entry.first.c_str(), description.c_str());
     // Highlight some exceptionable conditions.
@@ -449,6 +479,33 @@ std::string FrameTreeVisualizer::GetName(SiteInstance* site_instance) {
     return base::StringPrintf("%c", 'A' + static_cast<char>(index));
   else
     return base::StringPrintf("Z%d", static_cast<int>(index - 25));
+}
+
+std::string FrameTreeVisualizer::GetGroupName(SiteInstanceGroup* group) {
+  // If there's only one SiteInstance in `group`, get the name of the
+  // SiteInstance directly. This preserves test expectations for DepictFrameTree
+  // uses that predate SiteInstanceGroup.
+  if (group->site_instances_for_testing().size() == 1) {
+    return GetName(*group->site_instances_for_testing().begin());
+  }
+
+  // Alphabetically sort the SiteInstances within the group.
+  std::vector<std::string> sorted_instance_names;
+  for (auto& site_instance : group->site_instances_for_testing()) {
+    sorted_instance_names.push_back(GetName(site_instance));
+  }
+  std::sort(sorted_instance_names.begin(), sorted_instance_names.end());
+
+  // Name the group using set notation.
+  CHECK(sorted_instance_names.size() >= 1u);
+  std::string result = "{";
+  for (auto& site_instance_name : sorted_instance_names) {
+    base::StringAppendF(&result, "%s,", site_instance_name.c_str());
+  }
+  result.resize(result.length() - 1);
+  result.append("}");
+
+  return result;
 }
 
 GURL FrameTreeVisualizer::GetUrlWithoutPort(const GURL& url) {
@@ -530,7 +587,7 @@ void FileChooserDelegate::RunFileChooser(
 }
 
 FrameTestNavigationManager::FrameTestNavigationManager(
-    int filtering_frame_tree_node_id,
+    FrameTreeNodeId filtering_frame_tree_node_id,
     WebContents* web_contents,
     const GURL& url)
     : TestNavigationManager(web_contents, url),
@@ -578,16 +635,119 @@ RenderProcessHostBadIpcMessageWaiter::Wait() {
   return static_cast<bad_message::BadMessageReason>(internal_result.value());
 }
 
+CreateNewPopupWidgetInterceptor::CreateNewPopupWidgetInterceptor(
+    RenderFrameHostImpl* rfh,
+    base::OnceCallback<void(RenderWidgetHostImpl*)> did_create_callback)
+    : swapped_impl_(rfh->local_frame_host_receiver_for_testing(), this),
+      did_create_callback_(std::move(did_create_callback)) {}
+
+CreateNewPopupWidgetInterceptor::~CreateNewPopupWidgetInterceptor() = default;
+
+void CreateNewPopupWidgetInterceptor::CreateNewPopupWidget(
+    mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
+        blink_popup_widget_host,
+    mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
+    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
+  class PopupWidgetCreationObserver : public RenderWidgetHostFactory {
+   public:
+    PopupWidgetCreationObserver() { RegisterFactory(this); }
+
+    ~PopupWidgetCreationObserver() override { UnregisterFactory(); }
+
+    // RenderWidgetHostFactory overrides:
+    RenderWidgetHostImpl* CreateSelfOwnedRenderWidgetHost(
+        FrameTree* frame_tree,
+        RenderWidgetHostDelegate* delegate,
+        base::SafeRef<SiteInstanceGroup> site_instance_group,
+        int32_t routing_id,
+        bool hidden) override {
+      CHECK(!last_created_widget_);
+      last_created_widget_ =
+          RenderWidgetHostFactory::CreateSelfOwnedRenderWidgetHost(
+              frame_tree, delegate, std::move(site_instance_group), routing_id,
+              hidden);
+      return last_created_widget_;
+    }
+
+    RenderWidgetHostImpl* TakeLastCreatedWidget() {
+      return std::exchange(last_created_widget_, nullptr);
+    }
+
+   private:
+    raw_ptr<RenderWidgetHostImpl> last_created_widget_;
+  };
+
+  PopupWidgetCreationObserver creation_observer;
+
+  GetForwardingInterface()->CreateNewPopupWidget(
+      std::move(blink_popup_widget_host), std::move(blink_widget_host),
+      std::move(blink_widget));
+
+  if (!did_create_callback_) {
+    return;
+  }
+
+  if (auto* widget = creation_observer.TakeLastCreatedWidget(); widget) {
+    std::move(did_create_callback_).Run(widget);
+  }
+}
+
+blink::mojom::LocalFrameHost*
+CreateNewPopupWidgetInterceptor::GetForwardingInterface() {
+  return swapped_impl_.old_impl();
+}
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::ShowPopupMenuInterceptor(
+    RenderFrameHostImpl* rfh,
+    base::OnceCallback<void(const gfx::Rect&)> did_show_popup_menu_callback)
+    : swapped_impl_(rfh->local_frame_host_receiver_for_testing(), this),
+      did_show_popup_menu_callback_(std::move(did_show_popup_menu_callback)) {}
+
+ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::~ShowPopupMenuInterceptor() =
+    default;
+
+void ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::ShowPopupMenu(
+    mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
+    const gfx::Rect& bounds,
+    int32_t item_height,
+    double font_size,
+    int32_t selected_item,
+    std::vector<blink::mojom::MenuItemPtr> menu_items,
+    bool right_aligned,
+    bool allow_multiple_selection) {
+  if (did_show_popup_menu_callback_) {
+    std::move(did_show_popup_menu_callback_).Run(bounds);
+    mojo::Remote<blink::mojom::PopupMenuClient>(std::move(popup_client))
+        ->DidCancel();
+    return;
+  }
+
+  GetForwardingInterface()->ShowPopupMenu(
+      std::move(popup_client), bounds, item_height, font_size, selected_item,
+      std::move(menu_items), right_aligned, allow_multiple_selection);
+}
+
+blink::mojom::LocalFrameHost*
+ShowPopupWidgetWaiter::ShowPopupMenuInterceptor::GetForwardingInterface() {
+  return swapped_impl_.old_impl();
+}
+#endif
+
 ShowPopupWidgetWaiter::ShowPopupWidgetWaiter(WebContentsImpl* web_contents,
                                              RenderFrameHostImpl* frame_host)
-    : frame_host_(frame_host) {
+    : create_new_popup_widget_interceptor_(
+          frame_host,
+          base::BindOnce(&ShowPopupWidgetWaiter::DidCreatePopupWidget,
+                         base::Unretained(this))),
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-  web_contents_ = web_contents;
-  web_contents_->set_show_popup_menu_callback_for_testing(base::BindOnce(
-      &ShowPopupWidgetWaiter::ShowPopupMenu, base::Unretained(this)));
+      show_popup_menu_interceptor_(
+          frame_host,
+          base::BindOnce(&ShowPopupWidgetWaiter::DidShowPopupMenu,
+                         base::Unretained(this))),
 #endif
-  frame_host_->SetCreateNewPopupCallbackForTesting(base::BindRepeating(
-      &ShowPopupWidgetWaiter::DidCreatePopupWidget, base::Unretained(this)));
+
+      frame_host_(frame_host) {
 }
 
 ShowPopupWidgetWaiter::~ShowPopupWidgetWaiter() {
@@ -595,20 +755,10 @@ ShowPopupWidgetWaiter::~ShowPopupWidgetWaiter() {
     std::ignore =
         rwhi->popup_widget_host_receiver_for_testing().SwapImplForTesting(rwhi);
   }
-  if (frame_host_)
-    frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
 }
 
 void ShowPopupWidgetWaiter::Wait() {
   run_loop_.Run();
-}
-
-void ShowPopupWidgetWaiter::Stop() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-  web_contents_->set_show_popup_menu_callback_for_testing(base::NullCallback());
-#endif
-  frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
-  frame_host_ = nullptr;
 }
 
 blink::mojom::PopupWidgetHost* ShowPopupWidgetWaiter::GetForwardingInterface() {
@@ -635,7 +785,7 @@ void ShowPopupWidgetWaiter::DidCreatePopupWidget(
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-void ShowPopupWidgetWaiter::ShowPopupMenu(const gfx::Rect& bounds) {
+void ShowPopupWidgetWaiter::DidShowPopupMenu(const gfx::Rect& bounds) {
   initial_rect_ = bounds;
   run_loop_.Quit();
 }
@@ -687,7 +837,8 @@ BeforeUnloadBlockingDelegate::GetJavaScriptDialogManager(WebContents* source) {
   return this;
 }
 
-bool BeforeUnloadBlockingDelegate::IsBackForwardCacheSupported() {
+bool BeforeUnloadBlockingDelegate::IsBackForwardCacheSupported(
+    WebContents& web_contents) {
   return true;
 }
 
@@ -699,7 +850,7 @@ void BeforeUnloadBlockingDelegate::RunJavaScriptDialog(
     const std::u16string& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BeforeUnloadBlockingDelegate::RunBeforeUnloadDialog(
@@ -715,7 +866,7 @@ bool BeforeUnloadBlockingDelegate::HandleJavaScriptDialog(
     WebContents* web_contents,
     bool accept,
     const std::u16string* prompt_override) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
@@ -1007,38 +1158,23 @@ bool CommitNavigationPauser::WillProcessDidCommitNavigation(
   return false;
 }
 
-// TODO(https://crbug.com/1473319): Use
+// TODO(crbug.com/40278950): Use
 // `WebFrameWidgetImpl::NotifySwapAndPresentationTime` instead.
 void WaitForCopyableViewInWebContents(WebContents* web_contents) {
-  {
-    MainThreadFrameObserver obs(
-        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
-    obs.Wait();
-  }
-  // The above `Wait()` blocks until a `CompositorFrame` is submitted from the
-  // renderer to the GPU. However, we want to wait until the Viz process has
-  // received the new `CompositorFrame` so that the previously submitted frame
-  // is available for copy. Waiting for a second frame to be submitted
-  // guarantees this, since the second frame cannot be sent until the first
-  // frame was ACKed by Viz.
-  {
-    MainThreadFrameObserver obs(
-        web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
-    obs.Wait();
-  }
+  WaitForCopyableViewInFrame(web_contents->GetPrimaryMainFrame());
+}
 
-  // `IsSurfaceAvailableForCopy` actually only checks if the browser currently
-  // embeds a surface or not (as opposed to sending a IPC to the GPU). However
-  // if the browser does not embed any surface, we won't be able to issue any
-  // copy requests.
-  ASSERT_TRUE(
-      web_contents->GetRenderWidgetHostView()->IsSurfaceAvailableForCopy());
+void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host) {
+  base::test::TestFuture<void> future;
+  NotifyCopyableViewInFrame(render_frame_host, future.GetCallback());
+  CHECK(future.Wait());
 }
 
 void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {
   base::RunLoop run_loop;
   auto callback = base::BindOnce(
-      [](base::RepeatingClosure cb, base::TimeTicks presentation_time) {
+      [](base::RepeatingClosure cb,
+         const viz::FrameTimingDetails& frame_timing_details) {
         std::move(cb).Run();
       },
       run_loop.QuitClosure());
@@ -1064,7 +1200,7 @@ void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {
   compositor->RequestSuccessfulPresentationTimeForNextFrame(
       std::move(callback));
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
   run_loop.Run();
 }

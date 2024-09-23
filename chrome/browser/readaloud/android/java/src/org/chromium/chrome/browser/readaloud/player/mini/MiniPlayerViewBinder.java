@@ -72,6 +72,9 @@ public class MiniPlayerViewBinder {
 
         } else if (key == Properties.HEIGHT) {
             viewHolder.sceneLayer.setSize(0, model.get(Properties.HEIGHT));
+        } else if (key == Properties.Y_OFFSET) {
+            int yOffset = model.get(Properties.Y_OFFSET);
+            viewHolder.view.setYOffset(yOffset);
         }
     }
 }

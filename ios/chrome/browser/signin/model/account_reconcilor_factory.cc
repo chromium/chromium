@@ -7,22 +7,16 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "build/build_config.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #include "ios/chrome/browser/signin/model/signin_client_factory.h"
-#include "ios/web/common/features.h"
 
 namespace ios {
 
 AccountReconcilorFactory::AccountReconcilorFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AccountReconcilor",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("AccountReconcilor") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SigninClientFactory::GetInstance());
 }
@@ -30,10 +24,10 @@ AccountReconcilorFactory::AccountReconcilorFactory()
 AccountReconcilorFactory::~AccountReconcilorFactory() {}
 
 // static
-AccountReconcilor* AccountReconcilorFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<AccountReconcilor*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+AccountReconcilor* AccountReconcilorFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<AccountReconcilor>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -44,15 +38,12 @@ AccountReconcilorFactory* AccountReconcilorFactory::GetInstance() {
 
 std::unique_ptr<KeyedService> AccountReconcilorFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  auto* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state);
-  std::unique_ptr<AccountReconcilor> reconcilor(new AccountReconcilor(
-      identity_manager,
-      SigninClientFactory::GetForBrowserState(chrome_browser_state),
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  auto reconcilor = std::make_unique<AccountReconcilor>(
+      identity_manager, SigninClientFactory::GetForBrowserState(profile),
       std::make_unique<signin::MirrorAccountReconcilorDelegate>(
-          identity_manager)));
+          identity_manager));
   reconcilor->Initialize(true /* start_reconcile_if_tokens_available */);
   return reconcilor;
 }

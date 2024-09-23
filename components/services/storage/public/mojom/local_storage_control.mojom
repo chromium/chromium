@@ -33,7 +33,11 @@ interface LocalStorageControl {
   CleanUpStorage() => ();
 
   // Tells the service to immediately commit any pending operations to disk.
-  Flush() => ();
+  Flush();
+
+  // Returns true if there is any storage area that has pending, un-committed
+  // writes.
+  NeedsFlushForTesting() => (bool commits_pending);
 
   // Purges any in-memory caches to free up as much memory as possible. The
   // next access to the StorageArea will reload data from the backing database.

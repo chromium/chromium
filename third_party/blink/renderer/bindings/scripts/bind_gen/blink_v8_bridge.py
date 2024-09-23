@@ -217,23 +217,13 @@ def blink_type_info(idl_type):
 
     real_type = idl_type.unwrap(typedef=True)
 
-    if real_type.is_boolean or real_type.is_numeric:
-        cxx_type = {
-            "boolean": "bool",
-            "byte": "int8_t",
-            "octet": "uint8_t",
-            "short": "int16_t",
-            "unsigned short": "uint16_t",
-            "long": "int32_t",
-            "unsigned long": "uint32_t",
-            "long long": "int64_t",
-            "unsigned long long": "uint64_t",
-            "float": "float",
-            "unrestricted float": "float",
-            "double": "double",
-            "unrestricted double": "double",
-        }
-        return TypeInfo(cxx_type[real_type.keyword_typename],
+    if real_type.is_boolean:
+        return TypeInfo("bool",
+                        const_ref_fmt="{}",
+                        clear_member_var_fmt="{} = false")
+
+    if real_type.is_numeric:
+        return TypeInfo(numeric_type(real_type.keyword_typename),
                         const_ref_fmt="{}",
                         clear_member_var_fmt="{} = 0")
 
@@ -267,16 +257,7 @@ def blink_type_info(idl_type):
                         is_gc_type=True)
 
     if real_type.is_buffer_source_type:
-        if "FlexibleArrayBufferView" in idl_type.effective_annotations:
-            assert "AllowShared" in idl_type.effective_annotations
-            return TypeInfo("Flexible{}".format(real_type.keyword_typename),
-                            member_fmt="void",
-                            ref_fmt="{}",
-                            const_ref_fmt="const {}",
-                            value_fmt="{}",
-                            has_null_value=True,
-                            is_gc_type=True)
-        elif "AllowShared" in idl_type.effective_annotations:
+        if "AllowShared" in idl_type.effective_annotations:
             return TypeInfo("MaybeShared<DOM{}>".format(
                 real_type.keyword_typename),
                             has_null_value=True,
@@ -379,12 +360,23 @@ def blink_type_info(idl_type):
                             clear_member_var_fmt="{}.clear()")
 
     if real_type.is_promise:
-        return TypeInfo("ScriptPromise",
+        if "IDLTypeImplementedAsV8Promise" in real_type.extended_attributes:
+            type_name = "v8::Local<v8::Promise>"
+        else:
+            type_name = "ScriptPromiseUntyped"
+        return TypeInfo(type_name,
                         ref_fmt="{}&",
                         const_ref_fmt="const {}&",
                         is_traceable=True)
 
     if real_type.is_union:
+        if real_type.is_phantom:
+            return TypeInfo("v8::Local<v8::Value>",
+                            ref_fmt="{}*",
+                            value_fmt="{}",
+                            has_null_value=True,
+                            is_gc_type=True)
+
         typename = blink_class_name(real_type.union_definition_object)
         return TypeInfo(typename,
                         member_fmt="Member<{}>",
@@ -432,6 +424,50 @@ def native_value_tag(idl_type, argument=None, apply_optional_to_last_arg=True):
     return _native_value_tag_impl(idl_type)
 
 
+def _pass_as_span_conversion_arguments(idl_type):
+    real_type = idl_type.unwrap(typedef=True)
+    types = real_type.flattened_member_types if real_type.is_union else [
+        real_type
+    ]
+    sequence_types = set(
+        map(lambda t: t.element_type.unwrap(typedef=True),
+            filter(lambda t: t.is_sequence, types)))
+    assert len(
+        sequence_types
+    ) < 2, "Unions of sequence types of different types are not supported with [PassAsSpan]"
+    typed_arrays = set(filter(lambda t: t.is_typed_array_type, types))
+    assert len(
+        typed_arrays
+    ) < 2, "Unions of typed arrays of different types are not supported with [PassAsSpan]"
+    native_type = None
+    if typed_arrays:
+        typed_array_type = typed_array_element_type(list(typed_arrays)[0])
+        native_type = numeric_type(typed_array_type)
+        if sequence_types:
+            seq_element_type = list(sequence_types)[0].keyword_typename
+            types_are_compatible = seq_element_type == typed_array_type
+            assert types_are_compatible, "Sequence and typed array types are incompatible (%s vs %s)" % (
+                seq_element_type, typed_array_type)
+    else:
+        assert (not sequence_types
+                ), "Plain sequence<> types are not supported with [PassAsSpan]"
+        native_type = "void"
+        is_buffer_source_type = all(t.is_buffer_source_type for t in types)
+        assert is_buffer_source_type, "All types must be buffer"
+
+    flags = []
+    if sequence_types:
+        flags.append("PassAsSpanMarkerBase::Flags::kAllowSequence")
+    allow_shared = "AllowShared" in idl_type.effective_annotations or any(
+        "AllowShared" in t.effective_annotations for t in types)
+    if allow_shared:
+        flags.append("PassAsSpanMarkerBase::Flags::kAllowShared")
+
+    return [
+        " | ".join(flags) or "PassAsSpanMarkerBase::Flags::kNone", native_type
+    ]
+
+
 def _native_value_tag_impl(idl_type):
     """Returns the tag type of NativeValueTraits."""
     assert isinstance(idl_type, web_idl.IdlType)
@@ -441,8 +477,13 @@ def _native_value_tag_impl(idl_type):
 
     real_type = idl_type.unwrap(typedef=True)
 
+    if "PassAsSpan" in idl_type.effective_annotations:
+        conversion_arguments = _pass_as_span_conversion_arguments(idl_type)
+        return "PassAsSpan<{}>".format(", ".join(conversion_arguments))
+
     if (real_type.is_boolean or real_type.is_numeric or real_type.is_string
-            or real_type.is_any or real_type.is_object or real_type.is_bigint):
+            or real_type.is_any or real_type.is_object or real_type.is_bigint
+            or real_type.is_undefined):
         return "IDL{}".format(
             idl_type.type_name_with_extended_attribute_key_values)
 
@@ -460,9 +501,6 @@ def _native_value_tag_impl(idl_type):
 
     if real_type.is_symbol:
         assert False, "Blink does not support/accept IDL symbol type."
-
-    if real_type.is_undefined:
-        assert False, "Blink does not support/accept IDL undefined type."
 
     if real_type.type_definition_object:
         return blink_class_name(real_type.type_definition_object)
@@ -515,6 +553,15 @@ def make_blink_to_v8_value(
 
     T = TextNode
     F = FormatNode
+
+    if "NodeWrapInOwnContext" in idl_type.effective_annotations:
+        assert native_value_tag(idl_type, argument=argument) == "Node"
+        execution_context = blink_value_expr + "->GetExecutionContext()"
+        creation_context_script_state = _format(
+            "{_1} && {_1} != ToExecutionContext({_2}) ? "
+            "ToScriptState({_1}, {_2}->World()) : {_2}",
+            _1=execution_context,
+            _2=creation_context_script_state)
 
     def create_definition(symbol_node):
         binds = {
@@ -729,7 +776,7 @@ def make_v8_to_blink_value(blink_var_name,
                            v8_value_expr,
                            idl_type,
                            argument=None,
-                           error_exit_return_statement="return;",
+                           error_exit_return_statement=None,
                            cg_context=None):
     """
     Returns a SymbolNode whose definition converts a v8::Value to a Blink value.
@@ -759,14 +806,14 @@ def make_v8_to_blink_value(blink_var_name,
     elif idl_type.type_name == "String":
         # A key point of this fast path is that it doesn't require an
         # ExceptionState.
-        fast_path_cond = "LIKELY({}->IsString())".format(v8_value_expr)
+        fast_path_cond = "{}->IsString()".format(v8_value_expr)
         fast_path_body_text = _format(
             "{}.Init(${isolate}, {}.As<v8::String>());", blink_var_name,
             v8_value_expr)
     elif idl_type.unwrap(typedef=True).is_callback_function:
         # A key point of this fast path is that it doesn't require an
         # ExceptionState.
-        fast_path_cond = "LIKELY({}->IsFunction())".format(v8_value_expr)
+        fast_path_cond = "{}->IsFunction()".format(v8_value_expr)
         fast_path_body_text = "{} = {}::Create({}.As<v8::Function>());".format(
             blink_var_name,
             blink_class_name(idl_type.unwrap().type_definition_object),
@@ -785,6 +832,8 @@ def make_v8_to_blink_value(blink_var_name,
                 "${exception_state}",
             ]
         if "StringContext" in idl_type.effective_annotations:
+            arguments.append("${class_like_name}")
+            arguments.append("${property_name}")
             arguments.append("${execution_context_of_document_tree}")
         blink_value_expr = _format("NativeValueTraits<{_1}>::{_2}({_3})",
                                    _1=native_value_tag(
@@ -799,7 +848,8 @@ def make_v8_to_blink_value(blink_var_name,
         else:
             default_expr = None
         exception_exit_node = CxxUnlikelyIfNode(
-            cond="UNLIKELY(${exception_state}.HadException())",
+            cond="${exception_state}.HadException()",
+            attribute="[[unlikely]]",
             body=T(error_exit_return_statement))
 
         if not (default_expr or fast_path_cond):
@@ -835,10 +885,12 @@ def make_v8_to_blink_value(blink_var_name,
               or default_expr.is_initialization_lightweight):
             assignment = CxxLikelyIfNode(
                 cond="!{}->IsUndefined()".format(v8_value_expr),
+                attribute=None,
                 body=assignment)
         else:
             assignment = CxxIfElseNode(
                 cond="{}->IsUndefined()".format(v8_value_expr),
+                attribute=None,
                 then=F("${{{}}} = {};", blink_var_name,
                        default_expr.assignment_value),
                 then_likeliness=Likeliness.LIKELY,
@@ -846,6 +898,7 @@ def make_v8_to_blink_value(blink_var_name,
                 else_likeliness=Likeliness.LIKELY)
         if fast_path_cond:
             assignment = CxxIfElseNode(cond=fast_path_cond,
+                                       attribute="[[likely]]",
                                        then=T(fast_path_body_text),
                                        then_likeliness=Likeliness.LIKELY,
                                        else_=assignment,
@@ -876,6 +929,8 @@ def make_v8_to_blink_value_variadic(blink_var_name, v8_array,
         str(v8_array_start_index), "${exception_state}"
     ]
     if "StringContext" in idl_type.element_type.effective_annotations:
+        arguments.append("${class_like_name}")
+        arguments.append("${property_name}")
         arguments.append("${execution_context_of_document_tree}")
     text = _format(
         pattern,
@@ -886,9 +941,47 @@ def make_v8_to_blink_value_variadic(blink_var_name, v8_array,
     def create_definition(symbol_node):
         return SymbolDefinitionNode(symbol_node, [
             TextNode(text),
-            CxxUnlikelyIfNode(
-                cond="UNLIKELY(${exception_state}.HadException())",
-                body=TextNode("return;")),
+            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                              attribute="[[unlikely]]",
+                              body=TextNode("return;")),
         ])
 
     return SymbolNode(blink_var_name, definition_constructor=create_definition)
+
+
+def typed_array_element_type(idl_type):
+    assert isinstance(idl_type, web_idl.IdlType), type(idl_type)
+    assert idl_type.is_typed_array_type
+    element_type_map = {
+        'Int8Array': 'byte',
+        'Int16Array': 'short',
+        'Int32Array': 'long',
+        'BigInt64Array': 'long long',
+        'Uint8Array': 'octet',
+        'Uint16Array': 'unsigned short',
+        'Uint32Array': 'unsigned long',
+        'BigUint64Array': 'unsigned long long',
+        'Uint8ClampedArray': 'octet',
+        'Float32Array': 'unrestricted float',
+        'Float64Array': 'unrestricted double',
+    }
+    return element_type_map.get(idl_type.keyword_typename)
+
+
+def numeric_type(type_keyword):
+    assert isinstance(type_keyword, str)
+    type_map = {
+        "byte": "int8_t",
+        "octet": "uint8_t",
+        "short": "int16_t",
+        "unsigned short": "uint16_t",
+        "long": "int32_t",
+        "unsigned long": "uint32_t",
+        "long long": "int64_t",
+        "unsigned long long": "uint64_t",
+        "float": "float",
+        "unrestricted float": "float",
+        "double": "double",
+        "unrestricted double": "double",
+    }
+    return type_map[type_keyword]

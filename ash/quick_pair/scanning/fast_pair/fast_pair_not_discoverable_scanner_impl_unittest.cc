@@ -189,7 +189,7 @@ class FastPairNotDiscoverableScannerImplTest : public testing::Test {
   base::MockCallback<DeviceCallback> lost_device_callback_;
 };
 
-// TODO(crbug.com/1298377) flaky on ASan + LSan bots
+// TODO(crbug.com/40822900) flaky on ASan + LSan bots
 #if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
 #define MAYBE_UtilityProcessStopped_FailedAllRetryAttempts \
   DISABLED_UtilityProcessStopped_FailedAllRetryAttempts
@@ -224,7 +224,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest,
   scanner_->NotifyDeviceFound(device);
 }
 
-// TODO(crbug.com/1298377) flaky on ASan + LSan bots
+// TODO(crbug.com/40822900) flaky on ASan + LSan bots
 #if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
 #define MAYBE_UtilityProcessStopped_DeviceLost \
   DISABLED_UtilityProcessStopped_DeviceLost
@@ -269,7 +269,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest,
   scanner_->NotifyDeviceFound(device_ptr);
 }
 
-// TODO(crbug.com/1298377) flaky on ASan + LSan bots
+// TODO(crbug.com/40822900) flaky on ASan + LSan bots
 #if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
 #define MAYBE_UtilityProcessStopped_FastPairServiceDataLost \
   DISABLED_UtilityProcessStopped_FastPairServiceDataLost

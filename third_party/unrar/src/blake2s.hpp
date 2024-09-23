@@ -17,9 +17,14 @@ constexpr size_t BLAKE2S_OUTBYTES = 32;
 // 'new' operator.
 struct blake2s_state
 {
+  // Use constexpr instead of enums, because otherwise clang -std=c++20
+  // issues a warning about "arithmetic between different enumeration types"
+  // in ubuf[BLAKE_DATA_SIZE + BLAKE_ALIGNMENT] declaration.
   static constexpr size_t BLAKE_ALIGNMENT = 64;
 
   // buffer and uint32 h[8], t[2], f[2];
+  // 2 * BLAKE2S_BLOCKBYTES is the buf size in blake2_code_20140114.zip.
+  // It might differ in later versions.
   static constexpr size_t BLAKE_DATA_SIZE = 48 + 2 * BLAKE2S_BLOCKBYTES;
 
   byte ubuf[BLAKE_DATA_SIZE + BLAKE_ALIGNMENT];

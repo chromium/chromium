@@ -36,7 +36,8 @@ TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
   if (!PlatformStyle::kInactiveWidgetControlsAppearDisabled)
     GTEST_SKIP() << "Button colors do not change with widget activation here.";
 
-  std::unique_ptr<Widget> widget = CreateTestWidget();
+  std::unique_ptr<Widget> widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* button = widget->SetContentsView(
       std::make_unique<MdTextButton>(Button::PressedCallback(), u" "));
   button->SetStyle(ui::ButtonStyle::kProminent);
@@ -63,7 +64,8 @@ TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
   // kColorButtonForegroundProminent. Bummer.
 
   // Activate another widget to cause the original widget to deactivate.
-  std::unique_ptr<Widget> other_widget = CreateTestWidget();
+  std::unique_ptr<Widget> other_widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   test::WidgetTest::SimulateNativeActivate(other_widget.get());
   EXPECT_FALSE(widget->IsActive());
   SkBitmap inactive_bitmap = views::test::PaintViewToBitmap(button);
@@ -92,4 +94,49 @@ TEST_F(MdTextButtonActionViewInterfaceTest, TestActionChanged) {
   EXPECT_EQ(test_string, md_text_button->GetText());
   EXPECT_FALSE(md_text_button->GetEnabled());
 }
+
+TEST_F(MdTextButtonActionViewInterfaceTest,
+       DefaultCornerRadiusDependsOnButtonSize) {
+  auto md_text_button = std::make_unique<MdTextButton>();
+  constexpr gfx::Size kSize1(100, 100);
+  constexpr gfx::Size kSize2(50, 50);
+
+  const int corner_radius_1 = LayoutProvider::Get()->GetCornerRadiusMetric(
+      ShapeContextTokens::kButtonRadius, kSize1);
+  const int corner_radius_2 = LayoutProvider::Get()->GetCornerRadiusMetric(
+      ShapeContextTokens::kButtonRadius, kSize2);
+  ASSERT_NE(corner_radius_1, corner_radius_2);
+
+  md_text_button->SetBoundsRect(gfx::Rect(kSize1));
+  EXPECT_EQ(md_text_button->GetCornerRadiusValue(), corner_radius_1);
+  EXPECT_EQ(md_text_button->GetFocusRingCornerRadius(), corner_radius_1);
+
+  md_text_button->SetBoundsRect(gfx::Rect(kSize2));
+  EXPECT_EQ(md_text_button->GetCornerRadiusValue(), corner_radius_2);
+  EXPECT_EQ(md_text_button->GetFocusRingCornerRadius(), corner_radius_2);
+}
+
+TEST_F(MdTextButtonActionViewInterfaceTest,
+       CustomCornerRadiusIsNotOverriddenOnButtonSizeChange) {
+  auto md_text_button = std::make_unique<MdTextButton>();
+  md_text_button->SetBoundsRect(gfx::Rect(100, 100));
+
+  constexpr int kCustomCornerRadius = 1234;
+  md_text_button->SetCornerRadius(kCustomCornerRadius);
+  ASSERT_EQ(md_text_button->GetCornerRadiusValue(), kCustomCornerRadius);
+
+  md_text_button->SetBoundsRect(gfx::Rect(50, 50));
+  EXPECT_EQ(md_text_button->GetCornerRadiusValue(), kCustomCornerRadius);
+  EXPECT_EQ(md_text_button->GetFocusRingCornerRadius(), kCustomCornerRadius);
+}
+
+TEST_F(MdTextButtonTest, StrokeColorIdOverride) {
+  auto button = std::make_unique<MdTextButton>();
+
+  ASSERT_FALSE(button->GetStrokeColorIdOverride().has_value());
+
+  button->SetStrokeColorIdOverride(ui::kColorButtonBorder);
+  EXPECT_EQ(ui::kColorButtonBorder, button->GetStrokeColorIdOverride().value());
+}
+
 }  // namespace views

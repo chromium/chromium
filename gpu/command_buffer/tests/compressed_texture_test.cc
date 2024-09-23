@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
@@ -45,7 +50,7 @@ static const char* extension(GLenum format) {
     case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
       return "GL_ANGLE_texture_compression_dxt5";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return nullptr;
 }
@@ -182,7 +187,8 @@ class CompressedTextureTest : public ::testing::TestWithParam<GLenum> {
       case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT: return LoadTextureDXT1(true);
       case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT: return LoadTextureDXT3();
       case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: return LoadTextureDXT5();
-      default: NOTREACHED();
+      default:
+        NOTREACHED_IN_MIGRATION();
     }
     return 0;
   }

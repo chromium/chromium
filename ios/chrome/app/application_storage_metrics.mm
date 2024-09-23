@@ -19,11 +19,6 @@
 #import "components/optimization_guide/core/optimization_guide_constants.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 
-// Key for last stored time that size metrics of the documents directory were
-// logged.
-NSString* const kLastApplicationStorageMetricsLogTime =
-    @"LastApplicationStorageMetricsLogTime";
-
 // The etension used for all snapshot images.
 constexpr std::string_view kSnapshotImageExtension = ".jpg";
 // The label appended to the snapshot filename for grey snapshot images.
@@ -296,14 +291,6 @@ void LogWebsiteLocalDataSize(base::FilePath profile_path,
                                  total_size_bytes / 1024 / 1024);
 }
 
-// Updates the last metric logged time. Accepts a task runner as a parameter in
-// order to keep it in scope throughout the execution.
-void UpdateLastLoggedTime(scoped_refptr<base::SequencedTaskRunner>) {
-  [[NSUserDefaults standardUserDefaults]
-      setObject:[NSDate date]
-         forKey:kLastApplicationStorageMetricsLogTime];
-}
-
 void LogApplicationStorageMetrics(base::FilePath profile_path,
                                   base::FilePath off_the_record_state_path) {
   scoped_refptr<base::SequencedTaskRunner> task_runner =
@@ -332,7 +319,4 @@ void LogApplicationStorageMetrics(base::FilePath profile_path,
                                                   profile_path, task_runner));
   task_runner->PostTask(FROM_HERE, base::BindOnce(&LogWebsiteLocalDataSize,
                                                   profile_path, task_runner));
-
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(&UpdateLastLoggedTime, task_runner));
 }

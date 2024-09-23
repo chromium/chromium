@@ -38,7 +38,7 @@ class TitleWithIconAndSeparatorView : public views::TableLayoutView {
   METADATA_HEADER(TitleWithIconAndSeparatorView, views::TableLayoutView)
 
  public:
-  // TODO(crbug.com/1433075): This enum is also used by
+  // TODO(crbug.com/40264259): This enum is also used by
   // TitleWithIconAfterLabelView, and should be refactored to be outside of
   // TitleWithIconAndSeparatorView.
   enum class Icon {
@@ -79,7 +79,7 @@ class TitleWithIconAfterLabelView : public views::BoxLayoutView {
 // An intermediary method to switch between TitleWithIconAndSeparatorView and
 // TitleWithIconAfterLabelView protected by
 // kAutofillEnableMovingGPayLogoToTheRightOnDesktop.
-// TODO(crbug.com/1459361): Remove this method once
+// TODO(crbug.com/40274277): Remove this method once
 // kAutofillEnableMovingGPayLogoToTheRightOnDesktop is fully launched.
 std::unique_ptr<views::View> CreateTitleView(
     const std::u16string& window_title,
@@ -106,8 +106,8 @@ class LegalMessageView : public views::BoxLayoutView {
 PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidget(
     const views::Widget* widget);
 
-// TODO(crbug.com/1249665): Replace all payments' progress bar usages with this.
-// Creates a progress bar with an explanatory text below.
+// TODO(crbug.com/40197696): Replace all payments' progress bar usages with
+// this. Creates a progress bar with an explanatory text below.
 class ProgressBarWithTextView : public views::BoxLayoutView {
   METADATA_HEADER(ProgressBarWithTextView, views::BoxLayoutView)
 

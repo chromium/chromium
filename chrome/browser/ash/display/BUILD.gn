@@ -1,0 +1,51 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("display") {
+  sources = [
+    "quirks_manager_delegate_impl.cc",
+    "quirks_manager_delegate_impl.h",
+  ]
+
+  public_deps = [ "//components/quirks" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/settings",
+    "//google_apis",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "display_prefs_browsertest.cc",
+    "quirks_browsertest.cc",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/test:test_support_ui",
+    "//components/prefs",
+    "//components/quirks",
+    "//content/test:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//ui/display",
+    "//ui/display/manager",
+  ]
+}

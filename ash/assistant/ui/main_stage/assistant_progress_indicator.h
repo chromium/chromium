@@ -25,9 +25,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantProgressIndicator
   ~AssistantProgressIndicator() override;
 
   // views::View:
-  const char* GetClassName() const override;
-  gfx::Size CalculatePreferredSize() const override;
-  int GetHeightForWidth(int width) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void OnLayerOpacityChanged(ui::PropertyChangeReason reason) override;

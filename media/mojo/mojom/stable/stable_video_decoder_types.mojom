@@ -293,6 +293,7 @@ enum ColorSpacePrimaryID {
   kAppleGenericRGB,
   kWideGamutColorSpin,
   kCustom,
+  [MinVersion=1] kEBU_3213_E,
 };
 
 // Maps to |gfx.mojom.ColorSpaceTransferID|.
@@ -337,6 +338,7 @@ enum ColorSpaceMatrixID {
   kSMPTE170M,
   kSMPTE240M,
   kYCOCG,
+  // DO NOT USE: Deprecated since BT2020_CL not used anymore (b/333906350).
   kBT2020_NCL,
   kBT2020_CL,
   kYDZDX,
@@ -412,7 +414,9 @@ enum VideoPixelFormat {
   kPixelFormatABGR = 27,  // 32bpp RGBA (byte-order), 1 plane.
   kPixelFormatXBGR = 28,  // 24bpp RGBX (byte-order), 1 plane.
 
-  kPixelFormatP016LE = 29,  // 24bpp NV12, 16 bits per channel
+  // 15bpp YUV planar 1x1 Y, 2x2 interleaved UV, 10 bits per channel.
+  // data in the high bits, zeros in the low bits, little-endian.
+  kPixelFormatP010LE = 29,
 
   kPixelFormatXR30 =
       30,  // 32bpp BGRX, 10 bits per channel, 2 bits ignored, 1 plane
@@ -436,6 +440,20 @@ enum VideoPixelFormat {
 
   // 20bpp YUVA planar 1x1 Y, 2x2 interleaved UV, 1x1 A samples.
   [MinVersion=2] kPixelFormatNV12A = 39,
+
+  // 16bpp YUV planar 1x1 Y, 2x1 interleaved UV, 8 bits per channel.
+  [MinVersion=3] kPixelFormatNV16 = 40,
+
+  // 24bpp YUV planar 1x1 Y, 1x1 interleaved UV, 8 bits per channel.
+  [MinVersion=3] kPixelFormatNV24 = 41,
+
+  // 20bpp YUV planar 1x1 Y, 2x1 interleaved UV, 16 bits per channel.
+  // data in the high bits, zeros in the low bits, little-endian.
+  [MinVersion=3] kPixelFormatP210LE = 42,
+
+  // 30bpp YUV planar 1x1 Y, 1x1 interleaved UV, 16 bits per channel.
+  // data in the high bits, zeros in the low bits, little-endian.
+  [MinVersion=3] kPixelFormatP410LE = 43,
 };
 
 // Based on |gfx.mojom.GpuMemoryBufferHandle| but does not depend on

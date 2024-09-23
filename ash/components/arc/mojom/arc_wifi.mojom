@@ -1,0 +1,92 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This number is frozen to 1 during the migration and that we don't need to
+// continuously update it while moving APIs from net.mojom.
+// Next MinVersion: 1
+
+// (Fields to be added while migration)
+// This file defines the mojo interface between the ARC WiFi stack and
+// Chrome OS. There are several different groups of interactions:
+//  - WiFi RPCs to get/set WiFi enabled state and gets notified when WiFi
+//    enabled state changes.
+//  - WiFi RPCs to start scan, notify completion of scan and get scan
+//    results from host.
+
+// Note: The reason for using int for uint fields such as port is: Mojo uint
+// values are byte cast when deserialized in Java, the practical and safe
+// solution is to pick the next signed type that includes the whole unsigned
+// range of possible values. Otherwise it forces writing error-prone conversion
+// code at the entry or exit of mojo data.
+
+module arc.mojom;
+
+import "ash/components/arc/mojom/net_shared.mojom";
+
+struct WifiScanResult {
+  // The network SSID encoded as an hexadecimal string.
+  // The host always uses hex byte string representation which directly comes
+  // from the driver/chip, so no extra validation needed. Encoding is
+  // contextual and not specified by the WiFi layer.
+  string hex_ssid@0;
+
+  // The network BSSID in the format of an Ethernet MAC address. ARC is
+  // responsibility for validating this field and error handling.
+  string bssid@1;
+
+  // The frequency of this network, in MHz.
+  int32 frequency@2;
+
+  // The type of wireless security protocol used by this network.
+  SecurityType security@3;
+
+  // The current RSSI (Received Signal Strength Indicator) in dBm of this
+  // network. This is typically between -90 and -20 dBm. Unknown value
+  // is represented as -32768 dBm (int16 min value). Note that updates for this
+  // value are not sent to ARC for connected WiFi networks and should be
+  // considered precise only for scanning results.
+  int32 rssi@4;
+};
+
+// Next Method ID: 5
+// Mojo interface exposed by the Chrome browser process for WiFi, ARC is the
+// client.
+interface ArcWifiHost {
+  // Sends a request to get enabled / disabled status of WiFi.
+  GetWifiEnabledState@1() => (bool enabled);
+
+  // Sends a request to enable or disable WiFi. The `enabled_state` is true
+  // when the state has been successfully set or WiFi is already in the desired
+  // state. Otherwise, it is false if the state was not set.
+  SetWifiEnabledState@2(bool enabled) => (bool enabled_state);
+
+  // Sends a request to start scan of WiFi APs asynchronously. The request may
+  // be ignored or coalesced into a prior request if a scanning operation is
+  // already on-going.
+  // Note that the client is not aware of the completion of this scan and
+  // GetScanResults() may retrieve the previous result even after this call.
+  StartScan@3();
+
+  // Sends a request to get currently available scan results for WiFi networks.
+  // The host periodically refreshes the scan results, and this method allows a
+  // client to obtain the cached last results. In practice scan results will
+  // always be available by the time that ARC has started.
+  GetScanResults@4() => (array<WifiScanResult> response);
+};
+
+// Next Method ID: 4
+// Mojo interface exposed by ARC for WiFi, the Chrome browser process is the
+// client.
+interface ArcWifiInstance {
+  // Establishes full-duplex communication with the host.
+  Init@1(pending_remote<ArcWifiHost> host_remote) => ();
+
+  // Notifies ARC of a change in the state of WiFi on the host.
+  WifiEnabledStateChanged@2(bool enabled);
+
+  // Notifies ARC of a WiFi AP scan being completed. This call is not
+  // necessarily called every time `StartScan()` is called, since `StartScan()`
+  // might be ignore or coalesced into a prior request.
+  ScanCompleted@3();
+};

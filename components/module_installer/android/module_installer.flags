@@ -1,0 +1,12 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# -identifiernamestring doesn't keep the module impl around, we have to
+# explicitly keep it.
+-if @org.chromium.components.module_installer.builder.ModuleInterface interface *
+-keep,allowobfuscation,allowaccessmodification class !cr_allowunused,** extends <1> {
+  <init>();
+}
+# This is necessary to work around a bug: crbug.com/337905171.
+-keep,allowobfuscation,allowshrinking @org.chromium.components.module_installer.builder.ModuleInterface interface !cr_allowunused,*

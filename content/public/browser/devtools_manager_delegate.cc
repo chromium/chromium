@@ -11,6 +11,8 @@ namespace content {
 void DevToolsManagerDelegate::Inspect(DevToolsAgentHost* agent_host) {
 }
 
+void DevToolsManagerDelegate::Activate(DevToolsAgentHost* agent_host) {}
+
 std::string DevToolsManagerDelegate::GetTargetType(WebContents* wc) {
   return std::string();
 }

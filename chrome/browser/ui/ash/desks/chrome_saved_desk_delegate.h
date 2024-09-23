@@ -47,6 +47,7 @@ class ChromeSavedDeskDelegate : public ash::SavedDeskDelegate {
       const ui::ColorProvider* color_provider) const override;
   void GetFaviconForUrl(
       const std::string& page_url,
+      uint64_t lacros_profile_id,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback,
       base::CancelableTaskTracker* tracker) const override;
   void GetIconForAppId(
@@ -72,9 +73,9 @@ class ChromeSavedDeskDelegate : public ash::SavedDeskDelegate {
   void GetLacrosChromeInfo(
       GetAppLaunchDataCallback callback,
       const std::string& window_unique_id,
-      std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info);
+      std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) const;
 
-  base::WeakPtrFactory<ChromeSavedDeskDelegate> weak_factory_{this};
+  mutable base::WeakPtrFactory<ChromeSavedDeskDelegate> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_DESKS_CHROME_SAVED_DESK_DELEGATE_H_

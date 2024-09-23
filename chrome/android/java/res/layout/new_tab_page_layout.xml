@@ -11,6 +11,7 @@ found in the LICENSE file.
     android:id="@+id/ntp_content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/home_surface_background"
     android:layout_gravity="center_horizontal"
     android:orientation="vertical"
     android:gravity="center"
@@ -76,15 +77,6 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/search_resumption_module_margin_top"
         android:layout="@layout/search_resumption_module_layout" />
-
-    <ViewStub
-        android:id="@+id/tab_resumption_module_container_stub"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/mvt_container_top_margin_polish"
-        android:layout_marginLeft="@dimen/mvt_container_lateral_margin_polish"
-        android:layout_marginRight="@dimen/mvt_container_lateral_margin_polish"
-        android:layout="@layout/tab_resumption_module_layout" />
 
     <!-- Spacer for when there is no search provider logo. -->
     <View

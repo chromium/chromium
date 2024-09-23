@@ -162,4 +162,19 @@ TEST_F(HTMLLinkElementTest, TermsOfServiceCounter) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLinkRelTermsOfService));
 }
 
+// This tests whether `rel=payment` is properly counted.
+TEST_F(HTMLLinkElementTest, PaymentCounter) {
+  // <link rel="payment"> is not counted when absent.
+  GetDocument().head()->setInnerHTML(R"HTML(
+    <link rel="not-payment" href="/">
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLinkRelPayment));
+
+  // <link rel="payment"> is counted when present.
+  GetDocument().head()->setInnerHTML(R"HTML(
+    <link rel="payment" href="/">
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLinkRelPayment));
+}
+
 }  // namespace blink

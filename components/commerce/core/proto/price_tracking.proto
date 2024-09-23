@@ -10,6 +10,8 @@ option java_package = "org.chromium.components.commerce";
 
 option optimize_for = LITE_RUNTIME;
 
+import "components/commerce/core/proto/product_category.proto";
+
 // These messages are primarily used for over-the-wire communications. If this
 // information needs to be stored locally, consider building a separate proto.
 message PriceTrackingData {
@@ -52,6 +54,9 @@ message BuyableProduct {
   // that it would exclude attributes (size, color, etc.) and instead describes
   // a broader range of the same product.
   optional string gpc_title = 8;
+
+  // Category data of this product.
+  optional CategoryData category_data = 9;
 }
 
 message ProductPriceUpdate {
@@ -73,7 +78,7 @@ message ProductPrice {
   optional int64 amount_micros = 2;
 }
 
-// TODO(crbug.com/1403169) Remove PriceDropNotificationPayload
+// TODO(crbug.com/40251440) Remove PriceDropNotificationPayload
 // from chrome/browser/commerce/price_tracking/proto/notifications.proto
 // and migrate usages of PriceDropNotificationPayload from chrome/browser
 // to here in components.

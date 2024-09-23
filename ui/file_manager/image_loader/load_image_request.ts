@@ -10,7 +10,7 @@ export interface CacheValue {
   timestamp: number|null;
   width: number;
   height: number;
-  ifd: string|null;
+  ifd?: string;
   data: string;
 }
 
@@ -31,15 +31,17 @@ export class LoadImageResponse {
   taskId: number|null;
   width?: number;
   height?: number;
-  ifd: string|null = null;
+  ifd?: string;
   /** The (compressed) image data as a data URL.  */
   data?: string;
 
   /** @param taskId or null if fulfilled by the client-side cache.  */
-  constructor(
-      status: LoadImageResponseStatus, taskId: number|null,
-      result?:
-          {width: number, height: number, ifd: string|null, data: string}) {
+  constructor(status: LoadImageResponseStatus, taskId: number|null, result?: {
+    width: number,
+    height: number,
+    ifd?: string,
+    data: string,
+  }) {
     this.status = status;
     this.taskId = taskId;
 

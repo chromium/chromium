@@ -4,13 +4,17 @@
 
 #include "chrome/browser/ui/quick_answers/quick_answers_browsertest_base.h"
 
+#include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/context_menu_interceptor.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 
 namespace quick_answers {
@@ -22,11 +26,26 @@ constexpr char kDataUrlTemplate[] =
 
 }  // namespace
 
-QuickAnswersBrowserTestBase::QuickAnswersBrowserTestBase() = default;
+QuickAnswersBrowserTestBase::QuickAnswersBrowserTestBase() {
+  // Note that `kMahi` is associated with the Magic Boost feature.
+  scoped_feature_list_.InitWithFeatureStates(
+      {{chromeos::features::kMahi, IsMagicBoostEnabled()},
+       {chromeos::features::kFeatureManagementMahi, IsMagicBoostEnabled()}});
+
+  if (IsMagicBoostEnabled()) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        chromeos::switches::kMahiRestrictionsOverride);
+  }
+}
+
 QuickAnswersBrowserTestBase::~QuickAnswersBrowserTestBase() = default;
 
 void QuickAnswersBrowserTestBase::SetUpOnMainThread() {
-  QuickAnswersState::Get()->set_eligibility_for_testing(true);
+  QuickAnswersState::Get()->SetEligibilityForTesting(true);
+}
+
+bool QuickAnswersBrowserTestBase::IsMagicBoostEnabled() const {
+  return GetParam();
 }
 
 // `ShowMenu` generates a web page with `params.selected_text` at a position of

@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Sondaj</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">Se verifică conexiunea la internet</translation>
+<translation id="2359808026110333948">Continuă</translation>
 <translation id="2388990488038464401">Apelezi acest număr de pe telefonul tău?</translation>
 <translation id="2435457462613246316">Afișați parola</translation>
 <translation id="24452542372838207">Extinde notificarea</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">NOU</translation>
 <translation id="2666092431469916601">Sus</translation>
 <translation id="2701330563083355633">Trimis de <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Nou</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Acum 1 an}few{Acum # ani}other{Acum # de ani}}</translation>
 <translation id="2878511608894704031">Șterge tot</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{în o zi}few{în # zile}other{în # zile}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Săgeată stânga</translation>
+<translation id="5633029987065897167">Gol</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{Un min.}few{# min.}other{# min.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Activ astăzi}=1{Activ acum o zi}few{Activ acum # zile}other{Activ acum # de zile}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{O zi și  }few{# zile și  }other{# de zile și  }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">Conținut RTF</translation>
 <translation id="6539092367496845964">A apărut o eroare. Încearcă din nou mai târziu.</translation>
 <translation id="654149438358937226">Blochează toate notificările</translation>
-<translation id="6612467943526193239">Pentru a ieși din calibrare, apasă pe Esc.</translation>
 <translation id="6620110761915583480">Salvează fișierul</translation>
 <translation id="6699343763173986273">Melodia următoare din conținutul media</translation>
 <translation id="6808150112686056157">Opriți conținutul media</translation>

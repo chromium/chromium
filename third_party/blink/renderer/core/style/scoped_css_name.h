@@ -65,7 +65,6 @@ class CORE_EXPORT ScopedCSSNameList
  public:
   explicit ScopedCSSNameList(HeapVector<Member<const ScopedCSSName>> names)
       : names_(std::move(names)) {
-    DCHECK(!names_.empty());
   }
 
   const HeapVector<Member<const ScopedCSSName>>& GetNames() const {

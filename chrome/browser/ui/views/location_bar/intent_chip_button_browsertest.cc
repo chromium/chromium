@@ -114,7 +114,7 @@ class IntentChipButtonBrowserTest : public web_app::WebAppNavigationBrowserTest,
         nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
 
     views::test::ButtonTestApi test_api(GetIntentChip());
-    ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+    ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                      ui::EventTimeForNow(), 0, 0);
     test_api.NotifyClick(e);
 
@@ -134,9 +134,10 @@ class IntentChipButtonBrowserTest : public web_app::WebAppNavigationBrowserTest,
   // Installs a web app on the same host as InstallTestWebApp(), but with "/" as
   // a scope, so it overlaps with all URLs in the test app scope.
   void InstallOverlappingApp() {
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     const char* app_host = GetAppUrlHost();
-    web_app_info->start_url = https_server().GetURL(app_host, "/");
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            https_server().GetURL(app_host, "/"));
     web_app_info->scope = https_server().GetURL(app_host, "/");
     web_app_info->title = base::UTF8ToUTF16(GetAppName());
     web_app_info->description = u"Test description";
@@ -194,7 +195,7 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
   EXPECT_FALSE(GetIntentChip()->GetVisible());
 }
 
-// TODO(crbug.com/1515480): This test is flaky on Mac.
+// TODO(crbug.com/41488032): This test is flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_IconVisibilityAfterTabSwitching \
   DISABLED_IconVisibilityAfterTabSwitching
@@ -273,51 +274,6 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest, OpensAppForPreferredApp) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest, ShowsAppIconInChip) {
-  // With ChromeRefresh2023, the same icon is always shown in the chip and this
-  // test is no longer meaningful.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP() << "With ChromeRefresh2023, the same icon is always shown in "
-                    "the chip and this test is no longer meaningful.";
-  }
-
-  InstallOverlappingApp();
-
-  const GURL root_url = https_server().GetURL(GetAppUrlHost(), "/");
-  const GURL overlapped_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  const GURL non_overlapped_url =
-      https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  NavigateAndWaitForIconUpdate(root_url);
-
-  auto icon1 =
-      GetIntentChip()->GetImage(views::Button::ButtonState::STATE_NORMAL);
-  ASSERT_FALSE(IntentPickerTabHelper::FromWebContents(web_contents)
-                   ->app_icon()
-                   .IsEmpty());
-
-  NavigateAndWaitForIconUpdate(non_overlapped_url);
-
-  // The chip should still be showing the same app icon.
-  auto icon2 =
-      GetIntentChip()->GetImage(views::Button::ButtonState::STATE_NORMAL);
-  ASSERT_TRUE(icon1.BackedBySameObjectAs(icon2));
-
-  NavigateAndWaitForIconUpdate(overlapped_url);
-
-  // Loading a URL with multiple apps available should switch to a generic icon.
-  auto icon3 =
-      GetIntentChip()->GetImage(views::Button::ButtonState::STATE_NORMAL);
-  ASSERT_FALSE(icon1.BackedBySameObjectAs(icon3));
-  ASSERT_TRUE(IntentPickerTabHelper::FromWebContents(web_contents)
-                  ->app_icon()
-                  .IsEmpty());
-}
-
 INSTANTIATE_TEST_SUITE_P(,
                          IntentChipButtonBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
@@ -374,6 +330,12 @@ class IntentChipButtonBrowserUiTest : public UiBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserUiTest, InvokeUi_default) {
+// TODO(crbug.com/340814277): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
+#else
+#define MAYBE_InvokeUi_default InvokeUi_default
+#endif
+IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserUiTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }

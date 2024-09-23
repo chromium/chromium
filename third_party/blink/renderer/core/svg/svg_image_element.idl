@@ -38,7 +38,7 @@
     [CEReactions, Reflect, ReflectOnly=("anonymous","use-credentials"), ReflectEmpty="anonymous", ReflectInvalid="anonymous", RuntimeEnabled=SvgCrossOriginAttribute] attribute DOMString? crossOrigin;
 
     // Follow HTMLImageElement's spec
-    [CallWith=ScriptState, RaisesException] Promise<void> decode();
+    [CallWith=ScriptState, RaisesException] Promise<undefined> decode();
 };
 
 SVGImageElement includes SVGURIReference;

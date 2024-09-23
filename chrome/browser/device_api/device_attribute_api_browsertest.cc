@@ -5,6 +5,7 @@
 #include "chrome/browser/device_api/device_attribute_api.h"
 
 #include "base/test/gtest_tags.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "content/public/test/browser_test.h"
@@ -27,41 +28,34 @@ class DeviceAttributeAPIUnsetTest : public policy::DevicePolicyCrosBrowserTest {
     DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
 
     // Init machine statistic.
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, std::string());
+    fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                  std::string());
   }
+
+  DeviceAttributeApi& device_attributes_api() { return device_attributes_api_; }
 
  private:
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  DeviceAttributeApiImpl device_attributes_api_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceAttributeAPIUnsetTest, AllAttributes) {
-  device_attribute_api::GetDirectoryId(
-      base::BindOnce([](blink::mojom::DeviceAttributeResultPtr result) {
-        EXPECT_FALSE(result->get_attribute().has_value());
-      }));
+  base::test::TestFuture<blink::mojom::DeviceAttributeResultPtr> future;
 
-  device_attribute_api::GetAnnotatedAssetId(
-      base::BindOnce([](blink::mojom::DeviceAttributeResultPtr result) {
-        EXPECT_FALSE(result->get_attribute().has_value());
-      }));
+  device_attributes_api().GetDirectoryId(future.GetCallback());
+  EXPECT_FALSE(future.Take()->get_attribute().has_value());
 
-  device_attribute_api::GetAnnotatedLocation(
-      base::BindOnce([](blink::mojom::DeviceAttributeResultPtr result) {
-        EXPECT_FALSE(result->get_attribute().has_value());
-      }));
+  device_attributes_api().GetAnnotatedAssetId(future.GetCallback());
+  EXPECT_FALSE(future.Take()->get_attribute().has_value());
 
-  device_attribute_api::GetSerialNumber(
-      base::BindOnce([](blink::mojom::DeviceAttributeResultPtr result) {
-        EXPECT_FALSE(result->get_attribute().has_value());
-      }));
+  device_attributes_api().GetAnnotatedLocation(future.GetCallback());
+  EXPECT_FALSE(future.Take()->get_attribute().has_value());
 
-  device_attribute_api::GetHostname(
-      base::BindOnce([](blink::mojom::DeviceAttributeResultPtr result) {
-        EXPECT_FALSE(result->get_attribute().has_value());
-      }));
+  device_attributes_api().GetSerialNumber(future.GetCallback());
+  EXPECT_FALSE(future.Take()->get_attribute().has_value());
 
-  base::RunLoop().RunUntilIdle();
+  device_attributes_api().GetHostname(future.GetCallback());
+  EXPECT_FALSE(future.Take()->get_attribute().has_value());
 }
 
 // This test class provides regular device policy values and statistic data used
@@ -83,42 +77,35 @@ class DeviceAttributeAPITest : public policy::DevicePolicyCrosBrowserTest {
     RefreshDevicePolicy();
 
     // Init machine statistic.
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, kSerialNumber);
+    fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                  kSerialNumber);
   }
+
+  DeviceAttributeApi& device_attributes_api() { return device_attributes_api_; }
 
  private:
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  DeviceAttributeApiImpl device_attributes_api_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceAttributeAPITest, AllAttributes) {
   base::AddFeatureIdTagToTestResult(
       "screenplay-163d36ff-e640-48e1-a451-03e14c9e8874");
 
-  device_attribute_api::GetDirectoryId(
-      base::BindOnce([](blink::mojom::DeviceAttributeResultPtr result) {
-        EXPECT_EQ(result->get_attribute(), kDirectoryApiId);
-      }));
+  base::test::TestFuture<blink::mojom::DeviceAttributeResultPtr> future;
 
-  device_attribute_api::GetAnnotatedAssetId(
-      base::BindOnce([](blink::mojom::DeviceAttributeResultPtr result) {
-        EXPECT_EQ(result->get_attribute(), kAnnotatedAssetId);
-      }));
+  device_attributes_api().GetDirectoryId(future.GetCallback());
+  EXPECT_EQ(future.Take()->get_attribute(), kDirectoryApiId);
 
-  device_attribute_api::GetAnnotatedLocation(
-      base::BindOnce([](blink::mojom::DeviceAttributeResultPtr result) {
-        EXPECT_EQ(result->get_attribute(), kAnnotatedLocation);
-      }));
+  device_attributes_api().GetAnnotatedAssetId(future.GetCallback());
+  EXPECT_EQ(future.Take()->get_attribute(), kAnnotatedAssetId);
 
-  device_attribute_api::GetHostname(
-      base::BindOnce([](blink::mojom::DeviceAttributeResultPtr result) {
-        EXPECT_EQ(result->get_attribute(), kHostname);
-      }));
+  device_attributes_api().GetAnnotatedLocation(future.GetCallback());
+  EXPECT_EQ(future.Take()->get_attribute(), kAnnotatedLocation);
 
-  device_attribute_api::GetSerialNumber(
-      base::BindOnce([](blink::mojom::DeviceAttributeResultPtr result) {
-        EXPECT_EQ(result->get_attribute(), kSerialNumber);
-      }));
+  device_attributes_api().GetHostname(future.GetCallback());
+  EXPECT_EQ(future.Take()->get_attribute(), kHostname);
 
-  base::RunLoop().RunUntilIdle();
+  device_attributes_api().GetSerialNumber(future.GetCallback());
+  EXPECT_EQ(future.Take()->get_attribute(), kSerialNumber);
 }

@@ -61,7 +61,7 @@ SideSearchPageLoadMetricsObserver::OnPrerenderStart(
   // the WebContents of the side panel. Especially, the navigation is not
   // prerendering. See
   // chrome/browser/page_load_metrics/page_load_metrics_initialize.cc
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return STOP_OBSERVING;
 }
 

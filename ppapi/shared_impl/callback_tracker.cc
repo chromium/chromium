@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "ppapi/c/pp_completion_callback.h"
 #include "ppapi/shared_impl/proxy_lock.h"
 #include "ppapi/shared_impl/tracked_callback.h"
@@ -81,9 +82,9 @@ void CallbackTracker::Remove(
   base::AutoLock acquire(lock_);
   CallbackSetMap::iterator map_it =
       pending_callbacks_.find(tracked_callback->resource_id());
-  DCHECK(map_it != pending_callbacks_.end());
+  CHECK(map_it != pending_callbacks_.end(), base::NotFatalUntil::M130);
   CallbackSet::iterator it = map_it->second.find(tracked_callback);
-  DCHECK(it != map_it->second.end());
+  CHECK(it != map_it->second.end(), base::NotFatalUntil::M130);
   map_it->second.erase(it);
 
   // If there are no pending callbacks left for this ID, get rid of the entry.

@@ -21,6 +21,7 @@ import '../controls/settings_idle_load.js';
 import '../on_startup_page/on_startup_page.js';
 import '../people_page/people_page.js';
 import '../performance_page/battery_page.js';
+import '../performance_page/memory_page.js';
 import '../performance_page/performance_page.js';
 import '../performance_page/speed_page.js';
 import '../reset_page/reset_profile_banner.js';
@@ -35,7 +36,7 @@ import '../languages_page/languages.js';
 
 // </if>
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -55,7 +56,7 @@ import type {LanguageHelper, LanguagesModel} from '../languages_page/languages_t
 // </if>
 import type {PageVisibility} from '../page_visibility.js';
 import type {PerformanceBrowserProxy} from '../performance_page/performance_browser_proxy.js';
-import {PerformanceBrowserProxyImpl} from '../performance_page/performance_browser_proxy.js';
+import {PerformanceBrowserProxyImpl, PerformanceFeedbackCategory} from '../performance_page/performance_browser_proxy.js';
 import {PrivacyGuideAvailabilityMixin} from '../privacy_page/privacy_guide/privacy_guide_availability_mixin.js';
 import type {PrivacyGuideBrowserProxy} from '../privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
 import {MAX_PRIVACY_GUIDE_PROMO_IMPRESSION, PrivacyGuideBrowserProxyImpl} from '../privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
@@ -347,30 +348,39 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         this.showPage_(visibility);
   }
 
+  private showAiInfoCard_(visibility?: boolean): boolean {
+    return loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
+        this.showExperimentalAdvancedPage_(visibility);
+  }
+
   private showExperimentalAdvancedPage_(visibility?: boolean): boolean {
     return loadTimeData.getBoolean('showAdvancedFeaturesMainControl') &&
         this.showPage_(visibility);
   }
 
   // <if expr="_google_chrome">
-  private showGetMostChrome_(visibility?: boolean): boolean {
-    return loadTimeData.getBoolean('showGetTheMostOutOfChromeSection') &&
-        this.showPage_(visibility);
+  private onSendPerformanceFeedbackClick_(e: Event) {
+    e.stopPropagation();
+    this.performanceBrowserProxy_.openFeedbackDialog(
+        PerformanceFeedbackCategory.NOTIFICATIONS);
   }
 
   private onSendMemorySaverFeedbackClick_(e: Event) {
     e.stopPropagation();
-    this.performanceBrowserProxy_.openMemorySaverFeedbackDialog();
+    this.performanceBrowserProxy_.openFeedbackDialog(
+        PerformanceFeedbackCategory.TABS);
   }
 
   private onSendBatterySaverFeedbackClick_(e: Event) {
     e.stopPropagation();
-    this.performanceBrowserProxy_.openBatterySaverFeedbackDialog();
+    this.performanceBrowserProxy_.openFeedbackDialog(
+        PerformanceFeedbackCategory.BATTERY);
   }
 
   private onSendSpeedFeedbackClick_(e: Event) {
     e.stopPropagation();
-    this.performanceBrowserProxy_.openSpeedFeedbackDialog();
+    this.performanceBrowserProxy_.openFeedbackDialog(
+        PerformanceFeedbackCategory.SPEED);
   }
   // </if>
 }

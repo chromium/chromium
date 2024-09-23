@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
@@ -29,7 +29,7 @@ class TestBrowserSwitcherPrefs : public BrowserSwitcherPrefs {
       : BrowserSwitcherPrefs(prefs, nullptr) {}
 };
 
-StringType UTF8ToNative(base::StringPiece src) {
+StringType UTF8ToNative(std::string_view src) {
 #if BUILDFLAG(IS_WIN)
   return base::UTF8ToWide(src);
 #elif BUILDFLAG(IS_POSIX)
@@ -40,10 +40,11 @@ StringType UTF8ToNative(base::StringPiece src) {
 }
 
 base::Value::List UTF8VectorToValueList(
-    const std::vector<base::StringPiece>& src) {
+    const std::vector<std::string_view>& src) {
   base::Value::List out;
-  for (base::StringPiece str : src)
+  for (std::string_view str : src) {
     out.Append(str);
+  }
   return out;
 }
 

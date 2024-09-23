@@ -19,6 +19,7 @@
 namespace dbus {
 class Bus;
 class ErrorResponse;
+class MessageReader;
 class ObjectProxy;
 class Response;
 class Signal;
@@ -52,6 +53,7 @@ class DarkModeManagerLinux : public NativeThemeObserver {
   friend class DarkModeManagerLinuxTest;
   FRIEND_TEST_ALL_PREFIXES(DarkModeManagerLinuxTest, UseNativeThemeSetting);
   FRIEND_TEST_ALL_PREFIXES(DarkModeManagerLinuxTest, UsePortalSetting);
+  FRIEND_TEST_ALL_PREFIXES(DarkModeManagerLinuxTest, UsePortalAccentColor);
 
   constexpr static char kFreedesktopSettingsService[] =
       "org.freedesktop.portal.Desktop";
@@ -63,6 +65,7 @@ class DarkModeManagerLinux : public NativeThemeObserver {
   constexpr static char kReadMethod[] = "Read";
   constexpr static char kSettingsNamespace[] = "org.freedesktop.appearance";
   constexpr static char kColorSchemeKey[] = "color-scheme";
+  constexpr static char kAccentColorKey[] = "accent-color";
   constexpr static int kFreedesktopColorSchemeDark = 1;
 
   // ui::NativeThemeObserver:
@@ -74,10 +77,13 @@ class DarkModeManagerLinux : public NativeThemeObserver {
                          bool connected);
   void OnPortalSettingChanged(dbus::Signal* signal);
   void OnReadColorSchemeResponse(dbus::Response* response);
-  void OnReadColorSchemeError(dbus::ErrorResponse* error);
+  void OnReadAccentColorResponse(dbus::Response* response);
+  void OnReadError(dbus::ErrorResponse* error);
 
   // Sets `prefer_dark_theme_` and propagates to the web theme.
   void SetColorScheme(bool prefer_dark_theme, bool from_toolkit_theme);
+
+  void SetAccentColor(dbus::MessageReader* reader);
 
   raw_ptr<const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>>
       linux_ui_themes_;

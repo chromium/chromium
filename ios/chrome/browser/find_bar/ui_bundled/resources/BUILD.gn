@@ -1,0 +1,20 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/find_next.imageset/Contents.json",
+    "Assets.xcassets/find_next.imageset/find_next.png",
+    "Assets.xcassets/find_next.imageset/find_next@2x.png",
+    "Assets.xcassets/find_next.imageset/find_next@3x.png",
+    "Assets.xcassets/find_prev.imageset/Contents.json",
+    "Assets.xcassets/find_prev.imageset/find_prev.png",
+    "Assets.xcassets/find_prev.imageset/find_prev@2x.png",
+    "Assets.xcassets/find_prev.imageset/find_prev@3x.png",
+  ]
+}

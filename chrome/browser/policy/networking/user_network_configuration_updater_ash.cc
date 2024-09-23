@@ -120,7 +120,7 @@ UserNetworkConfigurationUpdaterAsh::UserNetworkConfigurationUpdaterAsh(
   // call, which is not safe before the profile initialization is finalized.
   // Thus, listen for OnProfileInitializationComplete notification, on which
   // |cert_importer_| creation should start. https://crbug.com/171406
-  // TODO(crbug.com/1038437): Investigate if this is still required.
+  // TODO(crbug.com/40113187): Investigate if this is still required.
   profile_observation_.Observe(profile);
 
   // Make sure that the |NetworkCertLoader| which makes certificates available
@@ -175,7 +175,7 @@ void UserNetworkConfigurationUpdaterAsh::OnProfileInitializationComplete(
   profile_observation_.Reset();
   // Note: This unsafely grabs a persistent reference to the `NssService`'s
   // `NSSCertDatabase`, which may be invalidated once `profile` is shut down.
-  // TODO(https://crbug.com/1186373): Provide better lifetime guarantees and
+  // TODO(crbug.com/40753707): Provide better lifetime guarantees and
   // pass the `NssCertDatabaseGetter` to the `CertificateImporterImpl`.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,

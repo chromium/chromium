@@ -49,3 +49,4 @@ owners:
 - zauri@google.com
 - chromeos-privacyhub@google.com
 tags: []
+generate_device_proto: False

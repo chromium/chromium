@@ -38,6 +38,8 @@ constexpr uint32_t kDefaultInactiveSelectionFgColor = 0xFF323232;
 struct BLINK_COMMON_EXPORT RendererPreferences {
   bool can_accept_load_drops{true};
   bool should_antialias_text{true};
+  float text_contrast = SK_GAMMA_CONTRAST;
+  float text_gamma = SK_GAMMA_EXPONENT;
   gfx::FontRenderParams::Hinting hinting{gfx::FontRenderParams::HINTING_MEDIUM};
   bool use_autohinter{false};
   bool use_bitmaps{false};
@@ -88,6 +90,7 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   bool plugin_fullscreen_allowed{true};
   bool caret_browsing_enabled{false};
   std::vector<uint16_t> explicitly_allowed_network_ports;
+  std::optional<bool> prefixed_fullscreen_video_api_availability;
 
   RendererPreferences();
   RendererPreferences(const RendererPreferences& other);

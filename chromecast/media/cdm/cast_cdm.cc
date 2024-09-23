@@ -89,7 +89,6 @@ int HdcpVersionX10(::media::HdcpVersion hdcp_version) {
 
     default:
       NOTREACHED();
-      return 0;
   }
 }
 

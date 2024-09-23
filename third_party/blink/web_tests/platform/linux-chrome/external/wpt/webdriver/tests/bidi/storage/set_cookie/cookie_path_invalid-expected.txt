@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_path_invalid_values[no_leading_forward_slash]
-  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'storage.setCookie'.)
-Harness: the test ran to completion.

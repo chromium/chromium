@@ -7,14 +7,7 @@
 {% block application_label %}Content Shell Test{% endblock %}
 
 {% block extra_uses_permissions %}
-    <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-{% endblock %}
-
-{% block extra_application_definitions_for_test %}
-        <uses-library android:name="android.test.runner" />
-        <activity android:name="org.chromium.test.broker.OnDeviceInstrumentationBroker"
-            android:exported="true"/>
 {% endblock %}
 
 {% block extra_root_definitions %}

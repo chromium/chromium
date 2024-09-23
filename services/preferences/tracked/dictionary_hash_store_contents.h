@@ -11,10 +11,6 @@
 #include "base/values.h"
 #include "services/preferences/tracked/hash_store_contents.h"
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
-
 // Implements HashStoreContents by storing MACs in a DictionaryValue. The
 // DictionaryValue is presumed to be the contents of a PrefStore.
 // RegisterProfilePrefs() may be used to register all of the preferences used by
@@ -28,9 +24,6 @@ class DictionaryHashStoreContents : public HashStoreContents {
   DictionaryHashStoreContents(const DictionaryHashStoreContents&) = delete;
   DictionaryHashStoreContents& operator=(const DictionaryHashStoreContents&) =
       delete;
-
-  // Registers required preferences.
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // HashStoreContents implementation
   bool IsCopyable() const override;

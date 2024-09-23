@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/popup/custom_cursor_suppressor.h"
 
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -13,6 +14,8 @@
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
 
 class CustomCursorSuppressorBrowsertest
     : public extensions::ExtensionBrowserTest {
@@ -34,11 +37,14 @@ class CustomCursorSuppressorBrowsertest
   }
 
   SidePanelRegistry* global_registry() {
-    return SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
+    return browser()
+        ->browser_window_features()
+        ->side_panel_coordinator()
+        ->GetWindowRegistry();
   }
 
   SidePanelCoordinator* side_panel_coordinator() {
-    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    return browser()->GetFeatures().side_panel_coordinator();
   }
 };
 
@@ -50,7 +56,9 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowsertest,
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionInSidePanel();
   auto* extension_coordinator =
-      extensions::ExtensionSidePanelManager::GetOrCreateForBrowser(browser())
+      browser()
+          ->GetFeatures()
+          .extension_side_panel_manager()
           ->GetExtensionCoordinatorForTesting(extension->id());
   content::WebContents* host_contents =
       extension_coordinator->GetHostWebContentsForTesting();
@@ -73,9 +81,13 @@ IN_PROC_BROWSER_TEST_F(
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionInSidePanel();
   auto* extension_coordinator =
-      extensions::ExtensionSidePanelManager::GetOrCreateForBrowser(browser())
+      browser()
+          ->GetFeatures()
+          .extension_side_panel_manager()
           ->GetExtensionCoordinatorForTesting(extension->id());
   content::WebContents* host_contents =
       extension_coordinator->GetHostWebContentsForTesting();
   EXPECT_TRUE(suppressor.IsSuppressing(*host_contents));
 }
+
+}  // namespace

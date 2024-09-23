@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(https://crbug.com/1090941) automate packing procedure
+// TODO(crbug.com/40697472) automate packing procedure
 // Must be packed to ../enterprise_networking_attributes.crx using the private
 // key ../enterprise_networking_attributes.pem .
 

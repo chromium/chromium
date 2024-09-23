@@ -56,6 +56,8 @@ source_set("dns") {
     "dns_server_iterator.h",
     "dns_session.cc",
     "dns_session.h",
+    "dns_task_results_manager.cc",
+    "dns_task_results_manager.h",
     "dns_transaction.cc",
     "dns_udp_tracker.cc",
     "dns_udp_tracker.h",
@@ -74,6 +76,8 @@ source_set("dns") {
     "host_resolver_manager_job.h",
     "host_resolver_manager_request_impl.cc",
     "host_resolver_manager_request_impl.h",
+    "host_resolver_manager_service_endpoint_request_impl.cc",
+    "host_resolver_manager_service_endpoint_request_impl.h",
     "host_resolver_mdns_listener_impl.cc",
     "host_resolver_mdns_listener_impl.h",
     "host_resolver_mdns_task.cc",
@@ -310,13 +314,13 @@ source_set("dns_client") {
   friend = [
     # chrome/browser/local_discovery/service_discovery_client_impl.cc
     # Result parsing utilities for parsing results read through MdnsClient.
-    # TODO(crbug.com/874662): Remove once migrated to network service.
+    # TODO(crbug.com/41408297): Remove once migrated to network service.
     "//chrome/browser",
 
     # chrome/browser/ash/smb_client/discovery/mdns_host_locator.cc
     # Result parsing for results read through MdnsClient.
-    # TODO(crbug.com/902531): Remove once migrated to network service.
-    "//chrome/browser/ash",
+    # TODO(crbug.com/41424787): Remove once migrated to network service.
+    "//chrome/browser/ash/smb_client/discovery",
 
     # Tests and test support
     "//chrome/browser:test_support",
@@ -365,19 +369,19 @@ source_set("mdns_client") {
     # chrome/browser/local_discovery/service_discovery_client_mdns.h
     # chrome/browser/local_discovery/service_discovery_client_impl.h
     # Makes MDNS queries using MDnsClient.
-    # TODO(crbug.com/874662): Remove once migrated to network service.
+    # TODO(crbug.com/41408297): Remove once migrated to network service.
     "//chrome/browser",
 
     # chrome/tools/service_discovery_sniffer/service_discovery_sniffer.cc
     # Creates MDnsClient instance and passes to ServiceDiscoveryClientImpl.
-    # TODO(crbug.com/874662): Remove once discovery client migrated.
+    # TODO(crbug.com/41408297): Remove once discovery client migrated.
     "//chrome/tools/service_discovery_sniffer",
 
     # chrome/browser/ash/smb_client/discovery/mdns_host_locator.h
     # chrome/browser/ash/smb_client/discovery/mdns_host_locator.cc
     # Makes MDNS queries using MDnsClient.
-    # TODO(crbug.com/902531): Remove once migrated to network service.
-    "//chrome/browser/ash",
+    # TODO(crbug.com/41424787): Remove once migrated to network service.
+    "//chrome/browser/ash/smb_client/discovery",
 
     # Tests and test support
     "//chrome/browser:test_support",
@@ -414,13 +418,16 @@ source_set("tests") {
     "dns_query_unittest.cc",
     "dns_response_result_extractor_unittest.cc",
     "dns_response_unittest.cc",
+    "dns_task_results_manager_unittest.cc",
     "dns_transaction_unittest.cc",
     "dns_udp_tracker_unittest.cc",
     "dns_util_unittest.cc",
     "host_cache_unittest.cc",
     "host_resolver_cache_unittest.cc",
     "host_resolver_internal_result_unittest.cc",
+    "host_resolver_manager_ipv6_reachability_override_unittest.cc",
     "host_resolver_manager_unittest.cc",
+    "host_resolver_service_endpoint_request_unittest.cc",
     "https_record_rdata_unittest.cc",
     "httpssvc_metrics_unittest.cc",
     "loopback_only_unittest.cc",
@@ -484,6 +491,7 @@ source_set("test_support") {
   public = [
     "dns_test_util.h",
     "host_resolver_internal_result_test_util.h",
+    "host_resolver_manager_unittest.h",
     "host_resolver_results_test_util.h",
     "mock_host_resolver.h",
   ]
@@ -501,6 +509,7 @@ source_set("test_support") {
 
   deps = [
     "//base",
+    "//base/test:test_support",
     "//net",
     "//testing/gmock",
     "//testing/gtest",

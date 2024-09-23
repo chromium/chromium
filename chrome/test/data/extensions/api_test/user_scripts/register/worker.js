@@ -223,6 +223,22 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function registeringScriptWithInvalidWorldIdThrowsAnError() {
+    await chrome.userScripts.unregister();
+
+    const scripts = [{
+      id: 'invalidMatchPattern',
+      matches: ['http://example.com/*'],
+      js: [{file: 'script.js'}],
+      worldId: '_'
+    }];
+
+    await chrome.test.assertPromiseRejects(
+        chrome.userScripts.register(scripts),
+        `Error: World IDs beginning with '_' are reserved.`);
+    chrome.test.succeed();
+  },
+
   // Tests that a registered user script with files is injected into a frame
   // where the extension has host permissions for and matches the script match
   // patterns.

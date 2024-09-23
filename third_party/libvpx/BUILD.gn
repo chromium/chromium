@@ -5,9 +5,9 @@
 import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/test.gni")
 import("//third_party/libvpx/libvpx_srcs.gni")
+import("//third_party/libvpx/libvpx_test_srcs.gni")
 import("//third_party/nasm/nasm_assemble.gni")
 
 # Sets the architecture name for building libvpx.
@@ -67,12 +67,20 @@ if (is_nacl) {
 
 libvpx_include_dirs = [
   "source/config",
-  platform_include_dir,
   "source/libvpx",
+  platform_include_dir,
 ]
 
+# Private configuration used in building libvpx.
 config("libvpx_config") {
   include_dirs = libvpx_include_dirs
+  defines = [
+    "CHROMIUM",
+
+    # Maximum allowed for a direct mapping,
+    # see partition_alloc::internal::MaxDirectMapped()
+    "VPX_MAX_ALLOCABLE_MEMORY=((1ULL << 31) - (1 << 21))",
+  ]
 
   # gn orders flags on a target before flags from configs. The default config
   # adds -Wall, and these flags have to be after -Wall -- so they need to come
@@ -97,10 +105,46 @@ config("libvpx_config") {
 }
 
 # This config is applied to targets that depend on libvpx.
-config("libvpx_external_config") {
+config("libvpx_public_config") {
   include_dirs = [
+    # libvpx_public_config does not have "source/config" (which gives access to
+    # the private header vpx_version.h) because code outside the libvpx library
+    # should use the vpx_codec_version*() functions and macros declared in the
+    # public header vpx_codec.h.
     "source/libvpx",
     platform_include_dir,
+  ]
+}
+
+source_set("libvpx_test_generic_headers") {
+  deps = [ ":libvpx" ]
+  sources = libvpx_test_srcs_generic_headers
+}
+
+executable("decode_encode_profile_test") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  include_dirs = [ "source/libvpx/third_party/libwebm/" ]
+
+  testonly = true
+  sources = [
+    "source/libvpx/test/decode_test_driver.cc",
+    "source/libvpx/test/encode_test_driver.cc",
+    "source/libvpx/test/init_vpx_test.cc",
+    "source/libvpx/test/test_libvpx.cc",
+    "source/libvpx/test/test_vectors.cc",
+    "source/libvpx/test/test_vectors.h",
+    "source/libvpx/third_party/libwebm/mkvparser/mkvparser.cc",
+    "source/libvpx/third_party/libwebm/mkvparser/mkvreader.cc",
+    "source/libvpx/tools_common.h",
+    "source/libvpx/webmdec.cc",
+    "source/libvpx/y4minput.c",
+    "tests/pgo/decode_encode_profile_test.cc",
+  ]
+  deps = [
+    ":libvpx",
+    ":libvpx_test_generic_headers",
+    "//testing/gtest",
   ]
 }
 
@@ -111,7 +155,12 @@ if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
     } else if (current_cpu == "x64") {
       sources = libvpx_srcs_x86_64_assembly
     }
-
+    inputs = [
+      "$platform_include_dir/vpx_config.asm",
+      "source/libvpx/third_party/x86inc/x86inc.asm",
+      "source/libvpx/vpx_dsp/x86/bitdepth_conversion_sse2.asm",
+      "source/libvpx/vpx_ports/x86_abi_support.asm",
+    ]
     defines = [ "CHROMIUM" ]
     if (is_android) {
       # On Android, define __ANDROID__ to use alternative standard library
@@ -348,6 +397,21 @@ if (current_cpu == "arm64") {
         deps = [ ":libvpx_arm64_highbd_headers" ]
       }
     }
+
+    source_set("libvpx_intrinsics_sve2") {
+      check_includes = false
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ ":libvpx_config" ]
+      cflags = [ "-march=armv9-a+sve2" ]
+      if (cpu_arch_full == "arm64") {
+        sources = libvpx_srcs_arm64_sve2
+        deps = [ ":libvpx_arm64_headers" ]
+      } else if (cpu_arch_full == "arm64-highbd") {
+        sources = libvpx_srcs_arm64_highbd_sve2
+        deps = [ ":libvpx_arm64_highbd_headers" ]
+      }
+    }
   }
 }
 
@@ -414,10 +478,6 @@ source_set("libvpx_x86_64_headers") {
   sources = libvpx_srcs_x86_64_headers
 }
 
-source_set("libvpx_loongarch_headers") {
-  sources = libvpx_srcs_loongarch_headers
-}
-
 source_set("libvpx_arm_headers") {
   sources = libvpx_srcs_arm_headers
 }
@@ -444,6 +504,14 @@ source_set("libvpx_arm64_highbd_headers") {
 
 source_set("libvpx_mips_headers") {
   sources = libvpx_srcs_mips_headers
+}
+
+source_set("libvpx_loongarch_headers") {
+  sources = libvpx_srcs_loongarch_headers
+}
+
+source_set("libvpx_ppc64_headers") {
+  sources = libvpx_srcs_ppc64_headers
 }
 
 source_set("libvpx_nacl_headers") {
@@ -501,6 +569,7 @@ static_library("libvpx") {
     }
   } else if (current_cpu == "ppc64") {
     sources = libvpx_srcs_ppc64
+    public_deps = [ ":libvpx_ppc64_headers" ]
   } else if (current_cpu == "riscv64") {
     sources = libvpx_srcs_generic
     public_deps = [ ":libvpx_generic_headers" ]
@@ -533,7 +602,10 @@ static_library("libvpx") {
     deps += [ ":libvpx_intrinsics_neon_dotprod" ]
     deps += [ ":libvpx_intrinsics_neon_i8mm" ]
     if (!is_win) {
-      deps += [ ":libvpx_intrinsics_sve" ]
+      deps += [
+        ":libvpx_intrinsics_sve",
+        ":libvpx_intrinsics_sve2",
+      ]
     }
   }
   if (is_android) {
@@ -546,7 +618,7 @@ static_library("libvpx") {
     deps += [ ":libvpx_loongarch_lsx" ]
   }
 
-  public_configs = [ ":libvpx_external_config" ]
+  public_configs = [ ":libvpx_public_config" ]
 }
 
 static_library("libvpxrc") {
@@ -568,35 +640,61 @@ static_library("libvpxrc") {
   configs += [ ":libvpx_config" ]
   public_deps = [ ":libvpx" ]
 
-  public_configs = [ ":libvpx_external_config" ]
+  public_configs = [ ":libvpx_public_config" ]
 }
 
-if (fuzztest_supported) {
-  test("vp8_encoder_fuzz_test") {
-    sources = [ "tests/fuzzer/vp8_encoder_fuzz_test.cc" ]
+test("vp8_encoder_fuzz_test") {
+  sources = [ "tests/fuzzer/vp8_encoder_fuzz_test.cc" ]
 
-    fuzztests = [
-      "VP8EncodeFuzzTest.VP8EncodeArbitraryCallSequenceSucceeds",
-      "VP8EncodeFuzzTest.VP8EncodeSucceeds",
-    ]
+  fuzztests = [
+    "VP8EncodeFuzzTest.VP8EncodeArbitraryCallSequenceSucceeds",
+    "VP8EncodeFuzzTest.VP8EncodeSucceeds",
+  ]
 
-    deps = [
-      ":libvpx",
-      "//third_party/fuzztest:fuzztest_gtest_main",
-    ]
+  deps = [
+    ":libvpx",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+}
+
+test("vp9_encoder_fuzz_test") {
+  sources = [ "tests/fuzzer/vp9_encoder_fuzz_test.cc" ]
+
+  fuzztests = [
+    "VP9EncodeFuzzTest.VP9EncodeArbitraryCallSequenceSucceeds",
+    "VP9EncodeFuzzTest.VP9EncodeSucceeds",
+  ]
+
+  deps = [
+    ":libvpx",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+}
+
+test("test_libvpx") {
+  sources = libvpx_test_srcs_generic
+  sources += libvpx_test_srcs_generic_cc
+
+  include_dirs = [ "source/libvpx/third_party/libwebm/" ]
+
+  deps = [
+    ":libvpx",
+    ":libvpx_test_generic_headers",
+    "//testing/gtest",
+  ]
+
+  if (is_android) {
+    use_raw_android_executable = true
+    defines = [ "LIBVPX_TEST_DATA_PATH=/data/local/tmp/chromium_tests_root/third_party/libvpx/testdata" ]
+    data = [ "testdata/" ]
+  } else {
+    defines = [ string_join("",
+                            [
+                              "LIBVPX_TEST_DATA_PATH=",
+                              rebase_path("testdata", root_build_dir),
+                            ]) ]
   }
 
-  test("vp9_encoder_fuzz_test") {
-    sources = [ "tests/fuzzer/vp9_encoder_fuzz_test.cc" ]
-
-    fuzztests = [
-      "VP9EncodeFuzzTest.VP9EncodeArbitraryCallSequenceSucceeds",
-      "VP9EncodeFuzzTest.VP9EncodeSucceeds",
-    ]
-
-    deps = [
-      ":libvpx",
-      "//third_party/fuzztest:fuzztest_gtest_main",
-    ]
-  }
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
 }

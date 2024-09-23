@@ -23,10 +23,9 @@
 }
 @media screen and (min-height:1040px),
         screen and (min-width:1040px) {
-  :root.jelly-modal-enabled:not([tablet=true]),
-  :root.boot-animation-enabled:not([tablet=true]) {
-    /* TODO(b/268463435) Migrate to cros.sys.app-elevation3 when available */
-    --oobe-container-elevation: 0 12px 12px 0 var(--cros-shadow-color-key);
+  :root.jelly-modal-enabled:not([tablet]),
+  :root.boot-animation-enabled:not([tablet]) {
+    --oobe-container-elevation: var(--cros-sys-app-elevation-3-shadow);
   }
 }
 
@@ -38,10 +37,10 @@ body {
 }
 @media screen and (min-height:1040px),
         screen and (min-width:1040px) {
-  html.jelly-modal-enabled:not([tablet=true]),
-  html.boot-animation-enabled:not([tablet=true]),
-  :root.jelly-modal-enabled:not([tablet=true]) body,
-  :root.boot-animation-enabled:not([tablet=true]) body {
+  html.jelly-modal-enabled:not([tablet]),
+  html.boot-animation-enabled:not([tablet]),
+  :root.jelly-modal-enabled:not([tablet]) body,
+  :root.boot-animation-enabled:not([tablet]) body {
     background-color: transparent;
   }
 }
@@ -50,7 +49,7 @@ html {
   --shelf-area-height: var(--shelf-area-height-base);
 }
 
-html[virtual-keyboard=true],
+html[virtual-keyboard],
 html[screen=gaia-signin] {
   /* has to be with px suffix to be used in calc */
   --shelf-area-height: 0px;
@@ -288,10 +287,13 @@ Styles related to the `md-screen-container`
   min-width: 100vw;
   transform: translateY(0) rotateX(0);
 }
-:root.boot-animation-enabled [orientation=vertical] #oobe.connect
-#inner-container.down {
-  min-height: 100vw;
-  min-width: 100vh;
+
+@media (orientation: portrait) {
+  :root.boot-animation-enabled #oobe.connect
+  #inner-container.down {
+    min-height: 100vw;
+    min-width: 100vh;
+  }
 }
 :root.boot-animation-enabled #oobe.connect #inner-container.down #connect {
   opacity: 0;

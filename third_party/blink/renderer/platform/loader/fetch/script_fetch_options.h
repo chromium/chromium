@@ -57,8 +57,14 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
   const IntegrityMetadataSet& GetIntegrityMetadata() const {
     return integrity_metadata_;
   }
+  void SetIntegrityMetadata(IntegrityMetadataSet metadata) {
+    integrity_metadata_ = metadata;
+  }
   const String& GetIntegrityAttributeValue() const {
     return integrity_attribute_;
+  }
+  void SetIntegrityAttributeValue(const String& value) {
+    integrity_attribute_ = value;
   }
   const ParserDisposition& ParserState() const { return parser_state_; }
   network::mojom::CredentialsMode CredentialsMode() const {
@@ -90,21 +96,20 @@ class PLATFORM_EXPORT ScriptFetchOptions final {
 
   // https://html.spec.whatwg.org/C/#fetch-a-classic-script
   // Steps 1 and 3.
-  FetchParameters CreateFetchParameters(
-      const KURL&,
-      const SecurityOrigin*,
-      scoped_refptr<const DOMWrapperWorld> world,
-      CrossOriginAttributeValue,
-      const WTF::TextEncoding&,
-      FetchParameters::DeferOption) const;
+  FetchParameters CreateFetchParameters(const KURL&,
+                                        const SecurityOrigin*,
+                                        const DOMWrapperWorld* world,
+                                        CrossOriginAttributeValue,
+                                        const WTF::TextEncoding&,
+                                        FetchParameters::DeferOption) const;
 
  private:
   // https://html.spec.whatwg.org/C/#concept-script-fetch-options-nonce
   const String nonce_;
 
   // https://html.spec.whatwg.org/C/#concept-script-fetch-options-integrity
-  const IntegrityMetadataSet integrity_metadata_;
-  const String integrity_attribute_;
+  IntegrityMetadataSet integrity_metadata_;
+  String integrity_attribute_;
 
   // https://html.spec.whatwg.org/C/#concept-script-fetch-options-parser
   const ParserDisposition parser_state_;

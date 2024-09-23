@@ -21,6 +21,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_cycle/window_cycle_event_filter.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_util.h"
@@ -192,7 +193,6 @@ void WindowCycleController::HandleKeyboardNavigation(
     case KeyboardNavDirection::kInvalid:
     default:
       NOTREACHED();
-      break;
   }
 }
 
@@ -413,8 +413,7 @@ WindowCycleController::BuildWindowListForWindowCycling(
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleWithPipList(
           desks_mru_type);
 
-  SnapGroupController* snap_group_controller =
-      Shell::Get()->snap_group_controller();
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
   if (!snap_group_controller) {
     return window_list;
   }
@@ -432,8 +431,10 @@ WindowCycleController::BuildWindowListForWindowCycling(
       // Insert the windows if they belong to a group following the order of the
       // actual window layout, i.e. primary snapped window comes first followed
       // by the secondary snapped window.
-      adjusted_window_list.push_back(snap_group->window1());
-      adjusted_window_list.push_back(snap_group->window2());
+      adjusted_window_list.push_back(
+          snap_group->GetPhysicallyLeftOrTopWindow());
+      adjusted_window_list.push_back(
+          snap_group->GetPhysicallyRightOrBottomWindow());
     } else {
       adjusted_window_list.push_back(window);
     }

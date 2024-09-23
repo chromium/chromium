@@ -97,14 +97,14 @@ class PasswordStoreSync {
  public:
   class MetadataStore : public syncer::SyncMetadataStore {
    public:
-    // Reads and returns all the stored sync metadata for |model_type|. This is
+    // Reads and returns all the stored sync metadata for |data_type|. This is
     // currently used only for passwords.
     virtual std::unique_ptr<syncer::MetadataBatch> GetAllSyncMetadata(
-        syncer::ModelType model_type) = 0;
+        syncer::DataType data_type) = 0;
 
-    // Deletes all the stored sync metadata for |model_type|. This is currently
+    // Deletes all the stored sync metadata for |data_type|. This is currently
     // used only for passwords.
-    virtual void DeleteAllSyncMetadata(syncer::ModelType model_type) = 0;
+    virtual void DeleteAllSyncMetadata(syncer::DataType data_type) = 0;
 
     // Registers a callback that will be invoked whenever all pending (unsynced)
     // deletions are gone. If they were committed to the server (or, rarely, the
@@ -166,7 +166,7 @@ class PasswordStoreSync {
 
   // The methods below adds transaction support to the password store that's
   // required by sync to guarantee atomic writes of data and sync metadata.
-  // TODO(crbug.com/902349): The introduction of the three functions below
+  // TODO(crbug.com/40601175): The introduction of the three functions below
   // question the existence of NotifyCredentialsChanged() above and all the
   // round trips with PasswordStoreChangeList in the earlier functions. Instead,
   // observers could be notified inside CommitTransaction().
@@ -186,6 +186,12 @@ class PasswordStoreSync {
   virtual bool IsAccountStore() const = 0;
 
   virtual bool DeleteAndRecreateDatabaseFile() = 0;
+
+  virtual std::optional<bool> WereUndecryptableLoginsDeleted() const = 0;
+  // Called after all sync metadata was deleted as a result of deleting
+  // undecryptable passwords. Used to avoid unnecessary sync by clearing
+  // LoginDatabase member responsible for triggering them.
+  virtual void ClearWereUndecryptableLoginsDeleted() = 0;
 
  protected:
   virtual ~PasswordStoreSync();

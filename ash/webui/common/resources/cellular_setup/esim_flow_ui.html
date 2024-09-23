@@ -7,53 +7,31 @@
   }
 </style>
 <iron-pages attr-for-selected="id" selected="[[selectedEsimPageName_]]">
-  <setup-loading-page id="profileLoadingPage" loading-message="[[getLoadingMessage_(hasHadActiveCellularNetwork_)]]">
+  <setup-loading-page id="profileLoadingPage"
+      loading-message="[[i18n('profileLoadingPageMessage')]]">
   </setup-loading-page>
-  <template is="dom-if" if="[[smdsSupportEnabled_]]" restamp>
-    <profile-discovery-consent-page id="profileDiscoveryConsentPage" should-skip-discovery="{{shouldSkipDiscovery_}}">
-    </profile-discovery-consent-page>
-  </template>
-  <template is="dom-if"
-      if="[[smdsSupportEnabled_]]" restamp>
-      <profile-discovery-list-page id="profileDiscoveryPage"
-          pending-profile-properties="[[pendingProfileProperties_]]"
-          selected-profile-properties="{{selectedProfileProperties_}}">
-      </profile-discovery-list-page>
-  </template>
-  <template is="dom-if"
-      if="[[!smdsSupportEnabled_]]" restamp>
-      <profile-discovery-list-page-legacy id="profileDiscoveryPageLegacy"
-          pending-profiles="[[pendingProfiles_]]"
-          selected-profile="{{selectedProfile_}}"
-          show-busy="[[shouldShowSubpageBusy_(state_)]]">
-      </profile-discovery-list-page-legacy>
-  </template>
+  <profile-discovery-consent-page id="profileDiscoveryConsentPage"
+      should-skip-discovery="{{shouldSkipDiscovery_}}">
+  </profile-discovery-consent-page>
+  <profile-discovery-list-page id="profileDiscoveryPage"
+      pending-profile-properties="[[pendingProfileProperties_]]"
+      selected-profile-properties="{{selectedProfileProperties_}}">
+  </profile-discovery-list-page>
   <activation-code-page id="activationCodePage" is-from-qr-code="{{isActivationCodeFromQrCode_}}"
       activation-code="{{activationCode_}}"
       show-no-profiles-found="[[noProfilesFound_(pendingProfiles_, pendingProfileProperties_)]]"
-      show-error="{{showError_}}"
-      show-busy="[[shouldShowSubpageBusy_(state_)]]">
+      show-error="{{showError_}}">
   </activation-code-page>
-  <setup-loading-page id="profileInstallingPage" loading-message="[[i18n('profileInstallingMessage')]]">
+  <setup-loading-page id="profileInstallingPage"
+      loading-message="[[i18n('profileInstallingMessage')]]">
   </setup-loading-page>
-  <template is="dom-if"
-      if="[[smdsSupportEnabled_]]" restamp>
-      <confirmation-code-page id="confirmationCodePage"
-          confirmation-code="{{confirmationCode_}}"
-          profile-properties="[[selectedProfileProperties_]]"
-          show-error="{{showError_}}">
-      </confirmation-code-page>
-  </template>
-  <template is="dom-if"
-      if="[[!smdsSupportEnabled_]]" restamp>
-      <confirmation-code-page-legacy id="confirmationCodePageLegacy"
-          confirmation-code="{{confirmationCode_}}"
-          profile="[[selectedProfile_]]"
-          show-error="{{showError_}}"
-          show-busy="[[shouldShowSubpageBusy_(state_)]]">
-      </confirmation-code-page-legacy>
-  </template>
+  <confirmation-code-page id="confirmationCodePage"
+      confirmation-code="{{confirmationCode_}}"
+      profile-properties="[[selectedProfileProperties_]]"
+      show-error="{{showError_}}">
+  </confirmation-code-page>
   <final-page id="finalPage" delegate="[[delegate]]" show-error="[[showError_]]"
-      message="[[i18n('eSimFinalPageMessage')]]" error-message="[[i18n('eSimFinalPageErrorMessage')]]">
+      message="[[i18n('eSimFinalPageMessage')]]"
+      error-message="[[i18n('eSimFinalPageErrorMessage')]]">
   </final-page>
 </iron-pages>

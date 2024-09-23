@@ -26,7 +26,7 @@ class DecryptContext {
   // |opaque_handle| is a handle to the secure memory, which is only accessible
   // by TEE.
   //
-  // The decrypted data will be of size |buffer.data_size()| and there must be
+  // The decrypted data will be of size |buffer.size()| and there must be
   // enough space in |opaque_handle| to store that data.
   //
   // If non-zero, |data_offset| specifies an offset to be applied to

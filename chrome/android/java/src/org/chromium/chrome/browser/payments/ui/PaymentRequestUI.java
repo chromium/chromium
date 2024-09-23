@@ -31,15 +31,13 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.payments.ShippingStrings;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.LineItemBreakdownSection;
@@ -426,8 +424,7 @@ public class PaymentRequestUI
                 (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.payment_request, null);
         prepareRequestView(mContext, title, origin, securityLevel, profile);
 
-        mEditorDialog =
-                new EditorDialogView(activity, HelpAndFeedbackLauncherImpl.getForProfile(profile));
+        mEditorDialog = new EditorDialogView(activity, profile);
         DimmingDialog.setVisibleStatusBarIconColor(mEditorDialog.getWindow());
 
         mDialog = new DimmingDialog(activity, this);
@@ -506,7 +503,7 @@ public class PaymentRequestUI
         mIsShowingSpinner = true;
 
         // Indicate that we're preparing the dialog for display.
-        TextView messageView = (TextView) mRequestView.findViewById(R.id.message);
+        TextView messageView = mRequestView.findViewById(R.id.message);
         messageView.setText(R.string.payments_loading_message);
 
         ((PaymentRequestHeader) mRequestView.findViewById(R.id.header))
@@ -515,18 +512,17 @@ public class PaymentRequestUI
         // Set up the buttons.
         mCloseButton = mRequestView.findViewById(R.id.close_button);
         mCloseButton.setOnClickListener(this);
-        mBottomBar = (ViewGroup) mRequestView.findViewById(R.id.bottom_bar);
-        mPayButton = (Button) mBottomBar.findViewById(R.id.button_primary);
+        mBottomBar = mRequestView.findViewById(R.id.bottom_bar);
+        mPayButton = mBottomBar.findViewById(R.id.button_primary);
         mPayButton.setOnClickListener(this);
         mPayButton.setText(R.string.payments_continue_button);
-        mEditButton = (Button) mBottomBar.findViewById(R.id.button_secondary);
+        mEditButton = mBottomBar.findViewById(R.id.button_secondary);
         mEditButton.setOnClickListener(this);
 
         // Create all the possible sections.
         mSectionSeparators = new ArrayList<>();
-        mPaymentContainer = (FadingEdgeScrollView) mRequestView.findViewById(R.id.option_container);
-        mPaymentContainerLayout =
-                (LinearLayout) mRequestView.findViewById(R.id.payment_container_layout);
+        mPaymentContainer = mRequestView.findViewById(R.id.option_container);
+        mPaymentContainerLayout = mRequestView.findViewById(R.id.payment_container_layout);
         mRetryErrorView = mRequestView.findViewById(R.id.retry_error);
         mOrderSummarySection =
                 new LineItemBreakdownSection(
@@ -659,9 +655,9 @@ public class PaymentRequestUI
                 int paddingSize =
                         mContext.getResources()
                                 .getDimensionPixelSize(R.dimen.editor_dialog_section_large_spacing);
-                ViewCompat.setPaddingRelative(mRetryErrorView, 0, paddingSize, 0, paddingSize);
+                mRetryErrorView.setPaddingRelative(0, paddingSize, 0, paddingSize);
             } else {
-                ViewCompat.setPaddingRelative(mRetryErrorView, 0, 0, 0, 0);
+                mRetryErrorView.setPaddingRelative(0, 0, 0, 0);
             }
             mRetryErrorView.setVisibility(View.VISIBLE);
         }
@@ -1173,14 +1169,14 @@ public class PaymentRequestUI
         TextView view = new TextViewWithClickableSpans(mContext);
         view.setText(spannableMessage);
         view.setMovementMethod(LinkMovementMethod.getInstance());
-        ApiCompatibilityUtils.setTextAppearance(view, R.style.TextAppearance_TextMedium_Secondary);
+        view.setTextAppearance(R.style.TextAppearance_TextMedium_Secondary);
 
         // Add padding instead of margin to let getMeasuredHeight return correct value for section
         // resize animation.
         int paddingSize =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.editor_dialog_section_large_spacing);
-        ViewCompat.setPaddingRelative(view, paddingSize, paddingSize, paddingSize, paddingSize);
+        view.setPaddingRelative(paddingSize, paddingSize, paddingSize, paddingSize);
         parent.addView(view);
     }
 
@@ -1199,9 +1195,14 @@ public class PaymentRequestUI
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         if (identityManager == null) return null;
-        CoreAccountInfo info = identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
-        if (info == null) return null;
-        return info.getEmail();
+        @ConsentLevel
+        int consentLevel =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        ? ConsentLevel.SIGNIN
+                        : ConsentLevel.SYNC;
+        CoreAccountInfo info = identityManager.getPrimaryAccountInfo(consentLevel);
+        return CoreAccountInfo.getEmailFrom(info);
     }
 
     private Callback<SectionInformation> createUpdateSectionCallback(@DataType final int type) {

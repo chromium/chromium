@@ -13,8 +13,8 @@ import androidx.annotation.Nullable;
 
 import org.junit.Assert;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.components.browser_ui.modaldialog.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -89,8 +89,8 @@ public class ModalDialogTestUtils {
     }
 
     /**
-     * @return A {@link PropertyModel} of a modal dialog that is used for testing with
-     *         primary or negative button filled and dialog style.
+     * @return A {@link PropertyModel} of a modal dialog that is used for testing with primary or
+     *     negative button filled and dialog style.
      */
     public static PropertyModel createDialog(
             Activity activity,
@@ -99,7 +99,7 @@ public class ModalDialogTestUtils {
             @Nullable TestDialogDismissedObserver observer,
             @ModalDialogProperties.ButtonStyles int buttonStyles,
             @ModalDialogProperties.DialogStyles int dialogStyles) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ModalDialogProperties.Controller controller =
                             new ModalDialogProperties.Controller() {
@@ -157,27 +157,43 @@ public class ModalDialogTestUtils {
 
     /**
      * Shows a dialog on the specified {@link ModalDialogManager} on the UI thread.
+     *
      * @param manager The {@link ModalDialogManager} used to show the dialog.
      * @param model The {@link PropertyModel} for the dialog to show.
      * @param dialogType The {@link ModalDialogType} of the dialog to show.
      * @param waitForShow Whether to wait for the dialog to be shown. Use false if the enqueued
-     *                    dialog is not expected to show immediately.
+     *     dialog is not expected to show immediately.
      */
     public static void showDialog(
             ModalDialogManager manager,
             PropertyModel model,
             @ModalDialogType int dialogType,
             boolean waitForShow) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> manager.showDialog(model, dialogType));
+        ThreadUtils.runOnUiThreadBlocking(() -> manager.showDialog(model, dialogType));
         if (waitForShow) {
             ViewUtils.waitForVisibleView(withId(R.id.modal_dialog_view));
         }
     }
 
+    /**
+     * Shows a dialog that's in the root view in the specified {@link ModalDialogManager} on the UI
+     * thread.
+     *
+     * @param manager The {@link ModalDialogManager} used to show the dialog.
+     * @param model The {@link PropertyModel} for the dialog to show.
+     * @param dialogType The {@link ModalDialogType} of the dialog to show.
+     */
+    public static void showDialogInRoot(
+            ModalDialogManager manager, PropertyModel model, @ModalDialogType int dialogType) {
+        ThreadUtils.runOnUiThreadBlocking(() -> manager.showDialog(model, dialogType));
+        ViewUtils.waitForDialogViewCheckingState(
+                withId(R.id.modal_dialog_view), ViewUtils.VIEW_VISIBLE);
+    }
+
     /** Checks whether the number of pending dialogs of a specified type is as expected. */
     public static void checkPendingSize(
             ModalDialogManager manager, @ModalDialogType int dialogType, int expected) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     List list = manager.getPendingDialogsForTest(dialogType);
                     Assert.assertEquals(expected, list != null ? list.size() : 0);
@@ -190,7 +206,7 @@ public class ModalDialogTestUtils {
      */
     public static void checkCurrentPresenter(
             ModalDialogManager manager, @Nullable Integer dialogType) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (dialogType == null) {
                         Assert.assertFalse(manager.isShowing());
@@ -221,19 +237,11 @@ public class ModalDialogTestUtils {
      */
     public static PropertyModel createModel(
             PropertyModel.Builder modelBuilder, ModalDialogView view) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel model = modelBuilder.build();
                     PropertyModelChangeProcessor.create(model, view, new ModalDialogViewBinder());
                     return model;
                 });
-    }
-
-    /**
-     * Enable/Disable the {@link ModalDialogProperties#BUTTON_TAP_PROTECTION_PERIOD_MS} feature.
-     * Defaults to true.
-     */
-    public static void overrideEnableButtonTapProtection(boolean enable) {
-        ModalDialogView.overrideEnableButtonTapProtectionForTesting(enable);
     }
 }

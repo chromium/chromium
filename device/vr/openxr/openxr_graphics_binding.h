@@ -10,9 +10,13 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -22,7 +26,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
+#include "device/vr/android/local_texture.h"
 #include "ui/gl/scoped_egl_image.h"
 #endif
 
@@ -41,7 +45,7 @@ class ContextProvider;
 namespace device {
 class OpenXrViewConfiguration;
 
-// TODO(https://crbug.com/1441072): Refactor this class.
+// TODO(crbug.com/40909689): Refactor this class.
 struct SwapChainInfo {
  public:
 #if BUILDFLAG(IS_WIN)
@@ -70,7 +74,7 @@ struct SwapChainInfo {
   // depending on *how* you want to use it; so we can't use it at the moment.
   uint32_t openxr_texture;
 
-  uint32_t shared_buffer_texture;
+  LocalTexture shared_buffer_texture;
 
   // The size of the texture used for the shared buffer; which may be different
   // than the size of the actual swapchain image, as this size is influenced by
@@ -116,7 +120,7 @@ class OpenXrGraphicsBinding {
 
   // Returns a list of mutable SwapChainInfo objects. While the items themselves
   // are mutable, the list is not.
-  // TODO(https://crbug.com/1441072): Make SwapChainInfo internal to the child
+  // TODO(crbug.com/40909689): Make SwapChainInfo internal to the child
   // classes.
   virtual base::span<SwapChainInfo> GetSwapChainImages() = 0;
 
@@ -131,7 +135,7 @@ class OpenXrGraphicsBinding {
   // Returns the currently active swapchain image. This is only valid between
   // calls to ActivateSwapchainImage and ReleaseSwapchainImage, which happens
   // after BeginFrame and before EndFrame.
-  // TODO(https://crbug.com/1441072): Make SwapChainInfo internal to the child
+  // TODO(crbug.com/40909689): Make SwapChainInfo internal to the child
   // classes.
   virtual const SwapChainInfo& GetActiveSwapchainImage() = 0;
 
@@ -140,8 +144,13 @@ class OpenXrGraphicsBinding {
   virtual bool WaitOnFence(gfx::GpuFence& gpu_fence) = 0;
 
   // Causes the GraphicsBinding to render the currently active swapchain image.
-  // TODO(https://crbug.com/1454943): Make pure virtual
-  virtual bool Render();
+  virtual bool Render(
+      const scoped_refptr<viz::ContextProvider>& context_provider) = 0;
+
+  // Called when a frame is going to end without any attempt at rendering, in
+  // case there is any early cleanup to do that would otherwise occur during
+  // `Render`.
+  virtual void CleanupWithoutSubmit() = 0;
 
   // Sets the layers for each view in the view configuration, which are
   // submitted back to OpenXR on xrEndFrame. This is where we specify where in
@@ -188,6 +197,39 @@ class OpenXrGraphicsBinding {
   // up those SharedImages.
   void DestroySwapchainImages(viz::ContextProvider* context_provider);
 
+  // Called to indicate which of Overlay and WebXR content is expected to be
+  // composited during calls to `Render`.
+  virtual void SetOverlayAndWebXrVisibility(bool overlay_visible,
+                                            bool webxr_visible) = 0;
+
+// There are three different paths that submitting an image can take. In two of
+// them, we provide the surface/image for the page to draw into. The third is
+// only supported on Windows or via the overlay code and requires submitting
+// a texture handle to us, which we don't own. The first two rendering methods
+// will have their data tied to the active swapchain image, but for the third
+// method, we don't have to do any lifecycle management and will just hold a
+// reference to the latest submitted texture. It will be valid until we end the
+// frame, but can then be overwritten independently during the cycle. Since this
+// third code-path only exists on Windows we restrict this method to that
+// platform.
+#if BUILDFLAG(IS_WIN)
+  virtual void SetWebXrTexture(mojo::PlatformHandle texture_handle,
+                               const gpu::SyncToken& sync_token,
+                               const gfx::RectF& left,
+                               const gfx::RectF& right) = 0;
+#endif
+
+  // Much like the `SetWebXrTexture` path above, the texture submitted here is
+  // owned by the browser process with corresponding lifetime management
+  // and synchronization happening there. It's valid until we tell it we're done
+  // with the texture, but it's not tied to a swapchain info the same way that
+  // the page's textures are, so we provide this additional method and simply
+  // overwrite the overlay whenever we receive it.
+  virtual bool SetOverlayTexture(gfx::GpuMemoryBufferHandle texture,
+                                 const gpu::SyncToken& sync_token,
+                                 const gfx::RectF& left,
+                                 const gfx::RectF& right) = 0;
+
  protected:
   // Internal helper to clear the list of images allocated during
   // `EnumerateSwapchainImages`, since the child classes own the actual list.
@@ -208,11 +250,7 @@ class OpenXrGraphicsBinding {
   // Called at the end of ActivateSwapchainImage. Allows Children to setup the
   // appropriate image to be rendered to by, e.g. Render calls, if that needs
   // to happen ahead of time.
-  // TODO(https://crbug.com/1454938): Currently only used on Windows. Is it
-  // actually needed prior to the draw calls happening? Could the logic be
-  // condensed into Render along with the other calls needed to render to the
-  // texture?
-  virtual void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) {}
+  virtual void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) = 0;
 
   // Used to access the active swapchain index as returned by the system. This
   // class does not attempt to use the index in conjunction with

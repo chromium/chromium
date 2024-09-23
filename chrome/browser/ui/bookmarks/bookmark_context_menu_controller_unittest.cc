@@ -19,12 +19,14 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/bookmarks/test_bookmark_navigation_wrapper.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +42,9 @@ using content::WebContents;
 
 class BookmarkContextMenuControllerTest : public testing::Test {
  public:
-  BookmarkContextMenuControllerTest() : model_(nullptr) {}
+  BookmarkContextMenuControllerTest() : model_(nullptr) {
+    feature_list_.InitWithFeatures({tab_groups::kTabGroupsSaveUIUpdate}, {});
+  }
 
   void SetUp() override {
     TestingProfile::Builder profile_builder;
@@ -91,6 +95,7 @@ class BookmarkContextMenuControllerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<BookmarkModel> model_;
   TestingBookmarkNavigationWrapper wrapper_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests Deleting from the menu.
@@ -367,4 +372,33 @@ TEST_F(BookmarkContextMenuControllerTest,
                         std::make_unique<base::Value>(true));
   EXPECT_FALSE(
       controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT));
+}
+
+TEST_F(BookmarkContextMenuControllerTest, ShowTabGroupsPref) {
+  BookmarkContextMenuController controller(
+      nullptr, nullptr, nullptr, profile_.get(), BookmarkLaunchLocation::kNone,
+      model_->bookmark_bar_node(),
+      std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>());
+  EXPECT_TRUE(
+      controller.IsCommandIdEnabled(IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS));
+
+  // The pref is to show by default.
+  EXPECT_TRUE(
+      controller.IsCommandIdChecked(IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS));
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
+      bookmarks::prefs::kShowTabGroupsInBookmarkBar));
+
+  // Toggle to not show.
+  controller.ExecuteCommand(IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS, 0);
+  EXPECT_FALSE(
+      controller.IsCommandIdChecked(IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS));
+  EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
+      bookmarks::prefs::kShowTabGroupsInBookmarkBar));
+
+  // Toggle to show.
+  controller.ExecuteCommand(IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS, 0);
+  EXPECT_TRUE(
+      controller.IsCommandIdChecked(IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS));
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
+      bookmarks::prefs::kShowTabGroupsInBookmarkBar));
 }

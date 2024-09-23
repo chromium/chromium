@@ -4,17 +4,23 @@
 
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
 
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/loader/resource/mock_font_resource_client.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/background_code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
@@ -22,6 +28,11 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_status.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_url_loader.h"
+#include "third_party/blink/renderer/platform/loader/testing/fake_background_resource_fetch_assets.h"
+#include "third_party/blink/renderer/platform/loader/testing/fake_resource_load_info_notifier.h"
+#include "third_party/blink/renderer/platform/loader/testing/fake_url_loader_factory_for_background_thread.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource_client.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
@@ -29,6 +40,7 @@
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -364,6 +376,241 @@ TEST_F(FontResourceStrongReferenceTest, FollowCacheControl) {
 
   auto strong_referenced_resources = fetcher->MoveResourceStrongReferences();
   ASSERT_EQ(strong_referenced_resources.size(), 0u);
+}
+
+namespace {
+
+using LoadStartCallback = base::OnceCallback<void(
+    mojo::PendingReceiver<network::mojom::URLLoader>,
+    mojo::PendingRemote<network::mojom::URLLoaderClient>)>;
+
+class FakeLoaderFactory final : public ResourceFetcher::LoaderFactory {
+ public:
+  FakeLoaderFactory(
+      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      LoadStartCallback load_start_callback)
+      : unfreezable_task_runner_(std::move(unfreezable_task_runner)),
+        background_resource_fetch_assets_(
+            base::MakeRefCounted<FakeBackgroundResourceFetchAssets>(
+                background_task_runner,
+                std::move(load_start_callback))) {}
+  ~FakeLoaderFactory() override = default;
+
+  // ResourceFetcher::LoaderFactory implementation:
+  std::unique_ptr<URLLoader> CreateURLLoader(
+      const network::ResourceRequest& request,
+      const ResourceLoaderOptions& options,
+      scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
+      BackForwardCacheLoaderHelper*,
+      const std::optional<base::UnguessableToken>&
+          service_worker_race_network_request_token,
+      bool is_from_origin_dirty_style_sheet) override {
+    return std::make_unique<BackgroundURLLoader>(
+        background_resource_fetch_assets_,
+        /*cors_exempt_header_list=*/Vector<String>(), unfreezable_task_runner_,
+        /*back_forward_cache_loader_helper=*/nullptr,
+        /*background_code_cache_host=*/nullptr);
+  }
+  CodeCacheHost* GetCodeCacheHost() override { return nullptr; }
+
+ private:
+  scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner_;
+  scoped_refptr<WebBackgroundResourceFetchAssets>
+      background_resource_fetch_assets_;
+};
+
+class TestFontResourceClient final
+    : public GarbageCollected<TestFontResourceClient>,
+      public FontResourceClient {
+ public:
+  explicit TestFontResourceClient(base::OnceClosure finish_closure)
+      : finish_closure_(std::move(finish_closure)) {}
+
+  void NotifyFinished(Resource* resource) override {
+    std::move(finish_closure_).Run();
+  }
+
+  // Name for debugging, e.g. shown in memory-infra.
+  String DebugName() const override { return "TestFontResourceClient"; }
+
+ private:
+  bool error_occurred_ = false;
+  base::OnceClosure finish_closure_;
+};
+
+network::mojom::URLResponseHeadPtr CreateTestResponse() {
+  auto response = network::mojom::URLResponseHead::New();
+  response->headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  response->mime_type = "font/woff2";
+  return response;
+}
+
+mojo::ScopedDataPipeConsumerHandle CreateDataPipeConsumerHandleFilledWithString(
+    const std::string& string) {
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  CHECK_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
+           MOJO_RESULT_OK);
+  CHECK(mojo::BlockingCopyFromString(string, producer_handle));
+  return consumer_handle;
+}
+
+mojo::ScopedDataPipeConsumerHandle CreateTestFontDataPipe() {
+  std::optional<Vector<char>> font_data =
+      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"));
+  std::string font_data_string(base::as_string_view(*font_data));
+  return CreateDataPipeConsumerHandleFilledWithString(font_data_string);
+}
+
+mojo::ScopedDataPipeConsumerHandle CreateTestTooSmallFontDataPipe() {
+  // Use a test data smaller than 4 bytes to force the "file less than 4 bytes"
+  // error.
+  return CreateDataPipeConsumerHandleFilledWithString("Foo");
+}
+
+}  // namespace
+class FontResourceBackgroundProcessorTest : public testing::Test {
+ public:
+  FontResourceBackgroundProcessorTest()
+      : url_(String("http://font-test.example.com/foo" +
+                    base::NumberToString(url_counter_++))) {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackgroundResourceFetch,
+          {{"background-font-response-processor", "true"}}}},
+        {});
+  }
+  ~FontResourceBackgroundProcessorTest() override = default;
+
+ protected:
+  KURL url_;
+  FakeResourceLoadInfoNotifier fake_resource_load_info_notifier_;
+
+ private:
+  static int url_counter_;
+  test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+};
+int FontResourceBackgroundProcessorTest::url_counter_ = 0;
+
+TEST_F(FontResourceBackgroundProcessorTest, Basic) {
+  auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
+  MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
+  context->SetResourceLoadInfoNotifier(&fake_resource_load_info_notifier_);
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      scheduler::GetSingleThreadTaskRunnerForTesting();
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_BLOCKING});
+
+  mojo::PendingReceiver<network::mojom::URLLoader> loader_pending_receiver;
+  mojo::PendingRemote<network::mojom::URLLoaderClient>
+      loader_client_pending_remote;
+
+  base::RunLoop run_loop_for_request;
+  FakeLoaderFactory* fake_loader_factory =
+      MakeGarbageCollected<FakeLoaderFactory>(
+          task_runner, background_task_runner,
+          base::BindLambdaForTesting(
+              [&](mojo::PendingReceiver<network::mojom::URLLoader> loader,
+                  mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+                loader_pending_receiver = std::move(loader);
+                loader_client_pending_remote = std::move(client);
+                run_loop_for_request.Quit();
+              }));
+  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+      properties->MakeDetachable(), context, task_runner, task_runner,
+      fake_loader_factory, MakeGarbageCollected<MockContextLifecycleNotifier>(),
+      /*back_forward_cache_loader_helper=*/nullptr));
+
+  base::RunLoop run_loop;
+  TestFontResourceClient* resource_client =
+      MakeGarbageCollected<TestFontResourceClient>(run_loop.QuitClosure());
+
+  ResourceRequest request(url_);
+  FetchParameters fetch_params =
+      FetchParameters::CreateForTest(std::move(request));
+  FontResource* resource =
+      FontResource::Fetch(fetch_params, fetcher, resource_client);
+  EXPECT_TRUE(resource);
+  fetcher->StartLoad(resource);
+
+  run_loop_for_request.Run();
+  ASSERT_TRUE(loader_pending_receiver);
+  ASSERT_TRUE(loader_client_pending_remote);
+  mojo::Remote<network::mojom::URLLoaderClient> loader_client_remote(
+      std::move(loader_client_pending_remote));
+  loader_client_remote->OnReceiveResponse(CreateTestResponse(),
+                                          CreateTestFontDataPipe(),
+                                          /*cached_metadata=*/std::nullopt);
+  loader_client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
+
+  run_loop.Run();
+  const FontCustomPlatformData* font_data = resource->GetCustomFontData();
+  EXPECT_TRUE(font_data);
+  EXPECT_TRUE(resource->OtsParsingMessage().empty());
+  EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
+}
+
+TEST_F(FontResourceBackgroundProcessorTest, InvalidFontData) {
+  auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
+  MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
+  context->SetResourceLoadInfoNotifier(&fake_resource_load_info_notifier_);
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      scheduler::GetSingleThreadTaskRunnerForTesting();
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_BLOCKING});
+
+  mojo::PendingReceiver<network::mojom::URLLoader> loader_pending_receiver;
+  mojo::PendingRemote<network::mojom::URLLoaderClient>
+      loader_client_pending_remote;
+
+  base::RunLoop run_loop_for_request;
+  FakeLoaderFactory* fake_loader_factory =
+      MakeGarbageCollected<FakeLoaderFactory>(
+          task_runner, background_task_runner,
+          base::BindLambdaForTesting(
+              [&](mojo::PendingReceiver<network::mojom::URLLoader> loader,
+                  mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+                loader_pending_receiver = std::move(loader);
+                loader_client_pending_remote = std::move(client);
+                run_loop_for_request.Quit();
+              }));
+  auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
+      properties->MakeDetachable(), context, task_runner, task_runner,
+      fake_loader_factory, MakeGarbageCollected<MockContextLifecycleNotifier>(),
+      /*back_forward_cache_loader_helper=*/nullptr));
+
+  base::RunLoop run_loop;
+  TestFontResourceClient* resource_client =
+      MakeGarbageCollected<TestFontResourceClient>(run_loop.QuitClosure());
+
+  ResourceRequest request(url_);
+  FetchParameters fetch_params =
+      FetchParameters::CreateForTest(std::move(request));
+  FontResource* resource =
+      FontResource::Fetch(fetch_params, fetcher, resource_client);
+  EXPECT_TRUE(resource);
+  fetcher->StartLoad(resource);
+
+  run_loop_for_request.Run();
+  ASSERT_TRUE(loader_pending_receiver);
+  ASSERT_TRUE(loader_client_pending_remote);
+  mojo::Remote<network::mojom::URLLoaderClient> loader_client_remote(
+      std::move(loader_client_pending_remote));
+  loader_client_remote->OnReceiveResponse(CreateTestResponse(),
+                                          CreateTestTooSmallFontDataPipe(),
+                                          /*cached_metadata=*/std::nullopt);
+  loader_client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
+
+  run_loop.Run();
+  const FontCustomPlatformData* font_data = resource->GetCustomFontData();
+  EXPECT_FALSE(font_data);
+  EXPECT_EQ(resource->OtsParsingMessage(), "file less than 4 bytes");
+  EXPECT_EQ(resource->GetStatus(), ResourceStatus::kDecodeError);
 }
 
 }  // namespace blink

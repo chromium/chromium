@@ -10,8 +10,8 @@ import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from './test_support.js';
 
@@ -49,11 +49,12 @@ suite('LensUploadDialogTest', () => {
 
     uploadDialog = document.createElement('ntp-lens-upload-dialog');
     wrapperElement.appendChild(uploadDialog);
-    await waitAfterNextRender(uploadDialog);
+    await microtasksFinished();
 
     uploadDialog.$.lensForm.submitUrl = (url: string) => {
       submitUrlCalled = true;
       submittedUrl = url;
+      return Promise.resolve();
     };
   });
 
@@ -78,6 +79,7 @@ suite('LensUploadDialogTest', () => {
         uploadDialog.shadowRoot!.querySelector<HTMLElement>('#closeButton');
     assertTrue(!!closeButton);
     closeButton.click();
+    await microtasksFinished();
 
     // Assert.
     assertTrue(uploadDialog.$.dialog.hidden);
@@ -95,6 +97,7 @@ suite('LensUploadDialogTest', () => {
 
     // Act.
     uploadDialog.$.dialog.dispatchEvent(event);
+    await microtasksFinished();
 
     // Assert.
     assertTrue(uploadDialog.$.dialog.hidden);
@@ -114,6 +117,7 @@ suite('LensUploadDialogTest', () => {
 
         // Act.
         uploadDialog.$.dialog.dispatchEvent(event);
+        await microtasksFinished();
 
         // Assert.
         assertFalse(uploadDialog.$.dialog.hidden);
@@ -133,6 +137,7 @@ suite('LensUploadDialogTest', () => {
         // Act.
         (document.activeElement as HTMLElement).focus();
         uploadDialog.$.dialog.dispatchEvent(event);
+        await microtasksFinished();
 
         // Assert.
         assertTrue(uploadDialog.$.dialog.hidden);
@@ -155,6 +160,7 @@ suite('LensUploadDialogTest', () => {
           return false;
         };
         uploadDialog.$.dialog.dispatchEvent(event);
+        await microtasksFinished();
 
         // Assert.
         assertFalse(uploadDialog.$.dialog.hidden);
@@ -174,6 +180,7 @@ suite('LensUploadDialogTest', () => {
     // Act.
     uploadDialog.$.dragDropArea.dispatchEvent(dragEvent);
     uploadDialog.$.dialog.dispatchEvent(focusEvent);
+    await microtasksFinished();
 
     // Assert.
     assertFalse(uploadDialog.$.dialog.hidden);
@@ -187,6 +194,7 @@ suite('LensUploadDialogTest', () => {
   test('clicking esc key closes the dialog', async () => {
     // Act.
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+    await microtasksFinished();
 
     // Assert.
     assertTrue(uploadDialog.$.dialog.hidden);
@@ -205,10 +213,11 @@ suite('LensUploadDialogTest', () => {
     // Act.
     uploadDialog = document.createElement('ntp-lens-upload-dialog');
     wrapperElement.appendChild(uploadDialog);
-    await waitAfterNextRender(uploadDialog);
+    await microtasksFinished();
 
     // Assert.
-    assertTrue(uploadDialog.hasAttribute('is-offline_'));
+    assertTrue(
+        isVisible(uploadDialog.shadowRoot!.querySelector('#offlineContainer')));
 
     // Reset.
     windowProxy.setResultFor('onLine', true);
@@ -224,10 +233,11 @@ suite('LensUploadDialogTest', () => {
         // Act.
         uploadDialog = document.createElement('ntp-lens-upload-dialog');
         wrapperElement.appendChild(uploadDialog);
-        await waitAfterNextRender(uploadDialog);
+        await microtasksFinished();
 
         // Assert. (consistency check)
-        assertTrue(uploadDialog.hasAttribute('is-offline_'));
+        assertTrue(isVisible(
+            uploadDialog.shadowRoot!.querySelector('#offlineContainer')));
 
         // Arrange.
         windowProxy.setResultFor('onLine', true);
@@ -235,10 +245,11 @@ suite('LensUploadDialogTest', () => {
         // Act.
         uploadDialog.shadowRoot!
             .querySelector<HTMLElement>('#offlineRetryButton')!.click();
-        await waitAfterNextRender(uploadDialog);
+        await microtasksFinished();
 
         // Assert.
-        assertFalse(uploadDialog.hasAttribute('is-offline_'));
+        assertFalse(isVisible(
+            uploadDialog.shadowRoot!.querySelector('#offlineContainer')));
       });
 
   test('submit url does not submit with empty url', async () => {
@@ -307,10 +318,10 @@ suite('LensUploadDialogTest', () => {
   // test('dragenter event should transition to dragging state', async () => {
   //   // Arrange.
   //   uploadDialog.openDialog();
-  //   await waitAfterNextRender(uploadDialog);
+  //   await microtasksFinished();
   //   // Act.
   //   uploadDialog.$.dragDropArea.dispatchEvent(new DragEvent('dragenter'));
-  //   await waitAfterNextRender(uploadDialog);
+  //   await microtasksFinished();
   //   // Assert.
   //   assertTrue(uploadDialog.hasAttribute('is-dragging_'));
   // });
@@ -320,12 +331,13 @@ suite('LensUploadDialogTest', () => {
       async () => {
         // Arrange.
         uploadDialog.$.dragDropArea.dispatchEvent(new DragEvent('dragenter'));
-        await waitAfterNextRender(uploadDialog);
+        await microtasksFinished();
         // Act.
         uploadDialog.$.dragDropArea.dispatchEvent(new DragEvent('dragleave'));
-        await waitAfterNextRender(uploadDialog);
+        await microtasksFinished();
         // Assert.
-        assertTrue(uploadDialog.hasAttribute('is-normal-or-error_'));
+        assertTrue(isVisible(
+            uploadDialog.shadowRoot!.querySelector('#urlUploadContainer')));
       });
 
   test('drop event should submit files', async () => {
@@ -340,7 +352,7 @@ suite('LensUploadDialogTest', () => {
     dataTransfer.items.add(file);
     uploadDialog.$.dragDropArea.dispatchEvent(
         new DragEvent('drop', {dataTransfer}));
-    await waitAfterNextRender(uploadDialog);
+    await microtasksFinished();
     // Assert.
     assertTrue(submitFileListCalled);
   });
@@ -350,9 +362,11 @@ suite('LensUploadDialogTest', () => {
     uploadDialog.$.lensForm.dispatchEvent(new CustomEvent('error', {
       detail: LensErrorType.FILE_TYPE,
     }));
+    await microtasksFinished();
 
     // Assert.
-    assertTrue(uploadDialog.hasAttribute('is-error_'));
+    assertTrue(
+        isVisible(uploadDialog.shadowRoot!.querySelector('#dragDropError')));
     assertEquals(
         1,
         metrics.count(
@@ -373,9 +387,11 @@ suite('LensUploadDialogTest', () => {
     uploadDialog.$.lensForm.dispatchEvent(new CustomEvent('error', {
       detail: LensErrorType.NO_FILE,
     }));
+    await microtasksFinished();
 
     // Assert.
-    assertFalse(uploadDialog.hasAttribute('is-error_'));
+    assertFalse(
+        isVisible(uploadDialog.shadowRoot!.querySelector('#dragDropError')));
   });
 
   test('shows loading state when file is submitted', async () => {
@@ -383,9 +399,11 @@ suite('LensUploadDialogTest', () => {
     uploadDialog.$.lensForm.dispatchEvent(new CustomEvent('loading', {
       detail: LensSubmitType.FILE,
     }));
+    await microtasksFinished();
 
     // Assert.
-    assertTrue(uploadDialog.hasAttribute('is-loading_'));
+    assertTrue(
+        isVisible(uploadDialog.shadowRoot!.querySelector('#loadingContainer')));
     assertEquals(
         1,
         metrics.count(
@@ -398,9 +416,11 @@ suite('LensUploadDialogTest', () => {
     uploadDialog.$.lensForm.dispatchEvent(new CustomEvent('loading', {
       detail: LensSubmitType.URL,
     }));
+    await microtasksFinished();
 
     // Assert.
-    assertTrue(uploadDialog.hasAttribute('is-loading_'));
+    assertTrue(
+        isVisible(uploadDialog.shadowRoot!.querySelector('#loadingContainer')));
     assertEquals(
         1,
         metrics.count(

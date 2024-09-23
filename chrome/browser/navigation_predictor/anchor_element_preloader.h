@@ -16,18 +16,21 @@ extern const char kPreloadingAnchorElementPreloaderPreloadingTriggered[];
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 
-// If you change this, please follow the process in
-// go/preloading-dashboard-updates to update the mapping reflected in
-// dashboard, or if you are not a Googler, please file an FYI bug on
-// https://crbug.new with component Internals>Preload.
 enum class AnchorElementPreloaderType {
   kUnspecified = 0,
   kPreconnect = 1,
   kMaxValue = kPreconnect,
 };
 
+// If you change this, please follow the process in
+// go/preloading-dashboard-updates to update the mapping reflected in dashboard,
+// or if you are not a Googler, please file an FYI bug on https://crbug.new with
+// component Internals>Preload.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange
 enum class AnchorPreloadingFailureReason {
   // Numbering starts from `kPreloadingFailureReasonContentEnd` defined in
   // //content/public/preloading.h . Advance numbering by +1 when adding a new
@@ -37,6 +40,7 @@ enum class AnchorPreloadingFailureReason {
   kLimitExceeded = static_cast<int>(
       content::PreloadingFailureReason::kPreloadingFailureReasonContentEnd),
 };
+// LINT.ThenChange()
 
 // Helper function to convert AnchorPreloadingFailureReason to
 // content::PreloadingFailureReason without casting.

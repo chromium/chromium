@@ -20,7 +20,7 @@ UNSCHEDULED_v8.loading_mobile,"cbruni@chromium.org, leszeks@chromium.org",Blink>
 ad_frames.fencedframe,lbrady@google.com,Blink>FencedFrames,https://tinyurl.com/fenced-frame-benchmark,
 base_perftests,"skyostil@chromium.org, gab@chromium.org",Internals>SequenceManager,https://chromium.googlesource.com/chromium/src/+/HEAD/base/README.md#performance-testing,
 blink_perf.accessibility,aleventhal@chromium.org,Blink>Accessibility,https://bit.ly/blink-perf-benchmarks,all
-blink_perf.bindings,"jbroman@chromium.org, yukishiino@chromium.org, haraken@chromium.org",Blink>Bindings,https://bit.ly/blink-perf-benchmarks,all
+blink_perf.bindings,"jbroman@chromium.org, japhet@chromium.org, haraken@chromium.org",Blink>Bindings,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.css,"futhark@chromium.org, andruud@chromium.org",Blink>CSS,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.display_locking,"vmpstr@chromium.org, pdr@chromium.org",Blink>Paint,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.dom,masonf@chromium.org,Blink>DOM,https://bit.ly/blink-perf-benchmarks,all
@@ -30,7 +30,6 @@ blink_perf.layout,"ikilpatrick@chromium.org, kojii@chromium.org",Blink>Layout,ht
 blink_perf.owp_storage,ayui@chromium.org,Blink>Storage,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.paint,"pdr@chromium.org, wangxianzhu@chromium.org",Blink>Paint,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.parser,masonf@chromium.org,Blink>HTML>Parser,https://bit.ly/blink-perf-benchmarks,all
-blink_perf.sanitizer-api,lyf@chromium.org,Blink>Security>SanitizerAPI,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.shadow_dom,masonf@chromium.org,Blink>DOM>ShadowDOM,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.svg,"fs@opera.com, pdr@chromium.org",Blink>SVG,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.webaudio,"hongchan@chromium.org, mjwilson@chromium.org",Blink>WebAudio,https://bit.ly/blink-perf-benchmarks,all
@@ -41,27 +40,24 @@ blink_perf.webgpu,"enga@chromium.org, cwallez@chromium.org, webgpu-developers@go
 blink_perf.webgpu_fast_call,"enga@chromium.org, cwallez@chromium.org, junov@chromium.org, webgpu-developers@google.com",Blink>WebGPU,https://bit.ly/blink-perf-benchmarks,
 chrome_sizes,chonggu@chromium.org,Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 components_perftests,csharrison@chromium.org,,,
-dawn_perf_tests,enga@chromium.org,Internals>GPU>Dawn,https://dawn.googlesource.com/dawn/+/HEAD/src/tests/perf_tests/README.md,
+dawn_perf_tests,enga@chromium.org,Dawn,https://dawn.googlesource.com/dawn/+/HEAD/src/tests/perf_tests/README.md,
 desktop_ui,"yuhengh@chromium.org, tluk@chromium.org",UI>Browser,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/desktop_ui.md,smoke_test
 dummy_benchmark.noisy_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
 dummy_benchmark.stable_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
 jetstream2,"vahl@chromium.org, cbruni@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.0/in-depth.html,all
-jetstream2-nominorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://browserbench.org/JetStream2.0/in-depth.html,all
+jetstream2-minorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://browserbench.org/JetStream2.0/in-depth.html,all
 load_library_perf_tests,"xhwang@chromium.org, jrummell@chromium.org",Internals>Media>Encrypted,,
 media.desktop,dalecurtis@chromium.org,Internals>Media,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/media.md,"aac,audio_only,audio_video,av1,background,beginning_to_end,busyjs,cns,h264,is_2min,is_4k,is_50fps,mp3,mse,opus,seek,src,video_only,vorbis,vp8,vp9"
 media.mobile,dalecurtis@chromium.org,Internals>Media,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/media.md,"aac,audio_only,audio_video,background,beginning_to_end,busyjs,cns,h264,is_2min,mp3,mse,opus,seek,src,video_only,vorbis,vp9"
 memory.desktop,lizeb@chromium.org,,,
 octane,"vahl@chromium.org, mlippautz@chromium.org",Blink>JavaScript,,all
-octane-nominorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,,all
-performance_browser_tests,jophba@chromium.org,Internals>Media>ScreenCapture,,
+octane-minorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,,all
 power.desktop,brucedawson@chromium.org,,https://bit.ly/power-benchmarks,
 rasterize_and_record_micro.top_25,"pdr@chromium.org, wangxianzhu@chromium.org",Internals>Compositing>Rasterization,https://bit.ly/rasterize-and-record-benchmark,
 rendering.desktop,"jonross@chromium.org, chrome-gpu-metrics@google.com",Internals>GPU>Metrics,https://bit.ly/rendering-benchmarks,"backdrop_filter,gpu_rasterization,image_decoding,key_desktop_move,maps,motionmark,motionmark_fixed_2_seconds,motionmark_ramp,repaint_desktop,representative_mac_desktop,representative_mobile,representative_win_desktop,required_webgl,simple_canvas,throughput_test,top_real_world_desktop,tough_animation,tough_canvas,tough_compositor,tough_filters,tough_path_rendering,tough_pinch_zoom,tough_scheduling,tough_scrollbar_scrolling,tough_scrolling,tough_texture_upload,tough_webgl,use_fake_camera_device"
 rendering.desktop.notracing,"jonross@chromium.org, chrome-gpu-metrics@google.com",Internals>GPU>Metrics,https://bit.ly/rendering-benchmarks,"motionmark,motionmark_ramp"
 rendering.mobile,"jonross@chromium.org, chrome-gpu-metrics@google.com",Internals>GPU>Metrics,https://bit.ly/rendering-benchmarks,"backdrop_filter,fastpath,gpu_rasterization,image_decoding,key_idle_power,key_noop,key_silk,maps,motionmark,motionmark_fixed_2_seconds,motionmark_ramp,pathological_mobile_sites,representative_mac_desktop,representative_mobile,representative_win_desktop,required_webgl,simple_canvas,simple_mobile_sites,throughput_test,top_real_world_desktop,top_real_world_mobile,tough_animation,tough_canvas,tough_compositor,tough_filters,tough_path_rendering,tough_pinch_zoom_mobile,tough_scheduling,tough_scrollbar_scrolling,tough_scrolling,tough_texture_upload,tough_webgl,use_fake_camera_device"
 rendering.mobile.notracing,"jonross@chromium.org, chrome-gpu-metrics@google.com",Internals>GPU>Metrics,https://bit.ly/rendering-benchmarks,"motionmark,motionmark_ramp"
-resource_sizes_chromecast,vigeni@chromium.org,Chromecast,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
-resource_sizes_lacros_chrome,"skuhne@chromium.org, huangs@chromium.org",OS>LaCrOS,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 resource_sizes_monochrome_minimal_apks,agrieve@chromium.org,Build>Android,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 resource_sizes_system_webview_google_bundle,agrieve@chromium.org,Build>Android,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 resource_sizes_trichrome_google,agrieve@chromium.org,Build>Android,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
@@ -69,16 +65,19 @@ speedometer,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://br
 speedometer-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer,all
 speedometer2,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.1,all
 speedometer2-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.1,all
-speedometer2-nominorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://browserbench.org/Speedometer2.1,all
+speedometer2-minorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://browserbench.org/Speedometer2.1,all
+speedometer2-predictable,"agarwaltushar@google.com, wnwen@google.com",Blink>JavaScript,https://browserbench.org/Speedometer2.1,all
 speedometer3,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://github.com/WebKit/Speedometer,all
 speedometer3-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://github.com/WebKit/Speedometer,all
-speedometer3-nominorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://github.com/WebKit/Speedometer,all
+speedometer3-minorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://github.com/WebKit/Speedometer,all
+speedometer3-predictable,"agarwaltushar@google.com, wnwen@google.com",Blink>JavaScript,https://browserbench.org/Speedometer3.0,all
 startup.mobile,"pasko@chromium.org, lizeb@chromium.org",Speed>Metrics>SystemHealthRegressions,,
 system_health.common_desktop,kouhei@chromium.org,Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,wasm,webgl"
 system_health.common_mobile,kouhei@chromium.org,Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,2023,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 system_health.memory_desktop,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,wasm,webgl"
 system_health.memory_mobile,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,2023,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 system_health.webview_startup,"oksamyt@chromium.org, torne@chromium.org",Mobile>WebView>Perf,,2016
+tint_benchmark,"jrprice@google.com, dsinclair@chromium.org",Dawn>Tint,https://dawn.googlesource.com/dawn/+/HEAD/docs/tint/benchmark.md,
 tracing_perftests,"eseckler@chromium.org, khokhlov@chromium.org, kraskevich@chromium.org",Speed>Tracing,,
 v8.browsing_desktop,"cbruni@chromium.org, vahl@chromium.org, almuthanna@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,2021,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"
 v8.browsing_desktop-future,"cbruni@chromium.org, almuthanna@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,2021,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"

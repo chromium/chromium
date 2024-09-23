@@ -28,7 +28,8 @@ device::mojom::WakeLockType LevelToWakeLockType(api::power::Level level) {
     case api::power::Level::kNone:
       return device::mojom::WakeLockType::kPreventDisplaySleep;
   }
-  NOTREACHED() << "Unhandled power level: " << api::power::ToString(level);
+  NOTREACHED_IN_MIGRATION()
+      << "Unhandled power level: " << api::power::ToString(level);
   return device::mojom::WakeLockType::kPreventDisplaySleep;
 }
 
@@ -163,8 +164,9 @@ void PowerAPI::CancelWakeLock() {
 
 device::mojom::WakeLock* PowerAPI::GetWakeLock() {
   // Here is a lazy binding, and will not reconnect after connection error.
-  if (wake_lock_)
+  if (wake_lock_) {
     return wake_lock_.get();
+  }
 
   mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider;
   content::GetDeviceService().BindWakeLockProvider(

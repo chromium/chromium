@@ -79,7 +79,6 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
       const BucketLocator& bucket_locator,
       FileSystemType type) override {
     NOTREACHED();
-    return base::File::FILE_OK;
   }
 
   void PerformStorageCleanupOnFileTaskRunner(FileSystemContext* context,
@@ -90,20 +89,11 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
       const blink::StorageKey& storage_key,
       FileSystemType type) override {
     NOTREACHED();
-    return scoped_refptr<QuotaReservation>();
   }
 
   std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
       FileSystemType type) override {
     NOTREACHED();
-    return std::vector<blink::StorageKey>();
-  }
-
-  int64_t GetStorageKeyUsageOnFileTaskRunner(
-      FileSystemContext* context,
-      const blink::StorageKey& storage_key,
-      FileSystemType type) override {
-    return usage_;
   }
 
   int64_t GetBucketUsageOnFileTaskRunner(FileSystemContext* context,

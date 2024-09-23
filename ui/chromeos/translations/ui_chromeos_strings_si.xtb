@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS සංග්‍රාහක</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබගේ පරිපාලක විසින් අවහිර කර ඇත, විස්තර</translation>
-<translation id="3113153474486991170">මෙම ස්ථානයෙන් "<ph name="PATH" />" විවෘත කළ නොහැකි විය. කරුණාකර විවෘත කිරීමට "මගේ ගොනු" වෙත පිටපත් කරන්න.</translation>
 <translation id="3113592018909187986">ඔබට උත්සාහයන් 1ක් ඉතිරිව ඇත. ඔබ නව PIN එකක් පිහිටුවන තුරු ඔබට මෙම ජාලය භාවිත කිරීමට නොහැකි වනු ඇත.</translation>
 <translation id="3124404833828281817">දවල් සිහින දකින පුද්ගලයා</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> අවලංගු කරන්න.</translation>
 <translation id="3690128548376345212">ජාල <ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, සක්‍රිය නොකළ, <ph name="CONNECTION_STATUS" /> සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, විස්තර</translation>
 <translation id="3691184985318546178">සිංහල</translation>
+<translation id="3702842351052426940">ඔබේ SIM කාඩ්පත හෝ eSIM පැතිකඩ අක්‍රිය විය හැක. ඔබේ SIM කාඩ්පත ප්‍රතිස්ථාපනය කිරීමට හෝ eSIM පැතිකඩවල් මාරු කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="3722341589402358578">දෝෂයක් ඇති විය. සමහර අයිතම ප්‍රතිසාධනය කර නොතිබිය හැක.</translation>
 <translation id="3726463242007121105">ගොනුවේ ගොනුරටාව ආධාරක නොවන බැවින් උපාංගය විවෘත කළ නොහැක.</translation>
 <translation id="3727148787322499904">මෙම සැකසීම වෙනස් කිරීම සියලු බෙදා ගත් ජාලවලට බලපානු ඇත</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">මෙම ප්‍රොක්සිය ඔබේ පරිපාලක විසින් බලගන්වා ඇත</translation>
 <translation id="3830674330436234648">පසුධාවනය ලබා ගත නොහැකිය.</translation>
 <translation id="383652340667548381">සයිබීරියානු</translation>
+<translation id="3839045880592694915">ඔබේ මොඩමයට ඔබේ වාහකයා සම්බන්ධ වීමට ඉඩ නොදෙයි. වැඩි විස්තර සඳහා ඔබේ වාහකය සම්බන්ධ කර ගන්න.</translation>
 <translation id="385051799172605136">ආපසු</translation>
-<translation id="3851491607336266896">සම්බන්ධිතයි, සීමිත සම්බන්ධතාවය</translation>
 <translation id="3855472144336161447">ජර්මානු නියෝ 2</translation>
 <translation id="3858860766373142691">නම</translation>
 <translation id="3866249974567520381">විස්තරය</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">මෑතක දී විවෘත කරන ලද Microsoft ගොනු OneDrive වෙත ගෙන ගොස් ඇත</translation>
 <translation id="4002066346123236978">සිරස්තලය</translation>
 <translation id="4017788180641807848">Workman යතුරුපුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
-<translation id="4019998208269143058">ඉක්මන් ගොනු වෙත අමුණන්න</translation>
 <translation id="4040753847560036377">වැරදි PUK එකකි.</translation>
 <translation id="4057991113334098539">සක්‍රිය කරමින්...</translation>
 <translation id="4092890906744441904">අයිරිෂ්</translation>
+<translation id="4101601646343868113">ඔබේ ජංගම ජාලයට පුරනය වී ඔබේ ජංගම දත්ත සැලසුම සක්‍රිය බව තහවුරු කරන්න</translation>
 <translation id="4124731372776320263">Drive 1 ගොනුවක් සමමුහූර්ත කරමින්</translation>
 <translation id="4124935795427217608">කඟවේනා</translation>
 <translation id="4131235941541910880">ඔබට අවශ්‍ය නොවන අයිතම කුණු කූඩයට ගෙන යන්න</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Tamil99 යතුරුපුවරුව සමග දෙමළ</translation>
 <translation id="5633226425545095130">මෙම අයිතමය ගෙන යාම '<ph name="DESTINATION_NAME" />' බෙදා ගත් ෆෝල්ඩරය දැකිය හැකි සියලු දෙනා සමග එය බෙදා ගනු ඇත.</translation>
 <translation id="5649768706273821470">සවන් දෙන්න</translation>
+<translation id="5650895901941743674">ඔබේ APN වින්‍යාසය පරීක්ෂා කරන්න</translation>
 <translation id="5669691691057771421">නව PIN ඇතුළු කරන්න</translation>
 <translation id="5678784840044122290">Linux යෙදුම ඔබගේ පර්යන්තයෙහි ලබා ගත හැකි අතර, ඔබගේ දියත්කරණයේ ද නිරූපකයක් පෙන්වනු ඇත.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />සංරක්ෂිතයක් හෝ අතථ්‍ය තැටියක් වෙතින් විසන්ධි කළ නොහැකිය<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="PHONE_NAME" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, දුරකථන බැටරිය <ph name="BATTERY_STATUS" />%, සබඳින්න</translation>
 <translation id="6269630227984243955">මැලේ</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />" සතුව ප්‍රමාණවත් ආචයනය නොමැති නිසා ගොනු උඩුගත කළ නොහැක.</translation>
+<translation id="6279140785485544797">ඔබේ ජංගම දත්ත සැලසුම කල් ඉකුත් විය හැක. සහාය සඳහා ඔබේ වාහකය සම්බන්ධ කර ගන්න.</translation>
 <translation id="6287852322318138013">මෙම ගොනුව විවෘත කිරීමට යෙදුමක් තෝරන්න</translation>
 <translation id="6295542640242147836">SIM අගුළු දැමීම</translation>
 <translation id="6296410173147755564">වලංගු නොවන PUK</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> සංරක්ෂණය</translation>
 <translation id="6321303798550928047">අත වනමින්</translation>
 <translation id="6327785803543103246">වෙබ් ප්‍රොක්සි ස්වයං අනාවරණය</translation>
-<translation id="6337014272874260727">ඉක්මන් ගොනුවලින් ගලවන්න</translation>
 <translation id="6339145975392024142">එක්සත් ජනපද ජාත්‍යන්තර (PC)</translation>
 <translation id="6356685157277930264">ගොනු ප්‍රතිපෝෂණ කවුළුව</translation>
 <translation id="6358884629796491903">මකරා</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">වත්මන් නාමාවලිය</translation>
 <translation id="6751256176799620176">ෆෝල්ඩර 1ක් තෝරන ලදී</translation>
 <translation id="6755827872271341378">ChromeOS Flex උපාංගය</translation>
+<translation id="6777029074498310250">වැඩිදුර තොරතුරු සඳහා <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> වෙත පිවිසෙන්න</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="6794539005637808366">අයිතමය ප්‍රතිසාධනය කරන්න හෝ කුණු කූඩයෙන් පිටත නව ෆෝල්ඩරයකට ඇද දමන්න</translation>
 <translation id="6795884519221689054">පැන්ඩා</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">InScript යතුරුපුවරුව සමග දෙමළ</translation>
 <translation id="7088615885725309056">පැරණි</translation>
 <translation id="7103992300314999525">මැසිඩෝනියානු</translation>
+<translation id="7104338189998813914">ඔබේ OneDrive ගිණුමට ප්‍රවේශ වීමේ ගැටලුවක් ඇත</translation>
 <translation id="7106346894903675391">තවත් ගබඩා මිල දී ගන්න...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ධාවකයේ සොයන්න&lt;/em&gt;</translation>
 <translation id="7135561821015524160">කන්නඩ ශබ්දිම</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">මොහොතක් රැඳී සිටින්න</translation>
 <translation id="7600126690270271294">සර්බියානු</translation>
 <translation id="7603724359189955920">ජාලක</translation>
+<translation id="7624010287655004652">වෙනත් ජංගම සැපයුම්කරුවෙකු විසින් අගුළු දමා ඇත</translation>
 <translation id="7627790789328695202">ආහ්, <ph name="FILE_NAME" /> දැනටමත් තිබේ. එය නැවත නම් කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% සම්පූර්ණයි.</translation>
 <translation id="7649070708921625228">උදවු</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">ගොනු ලැයිස්තුව සිඟිති රූ දසුනට වෙනස් විය.</translation>
 <translation id="8601932370724196034">Crostini රූප ගොනුව</translation>
 <translation id="8609695766746872526">අයිස්ලන්ත</translation>
+<translation id="8630384863424041081">ඔබේ SIM කාඩ්පත් PIN හෝ ඔබේ වාහකයා විසින් සපයන ලද පෙරනිමි PIN අංකය ඇතුළු කරන්න. සහාය සඳහා ඔබේ වාහකය සම්බන්ධ කර ගන්න.</translation>
 <translation id="863903787380594467">වැරදි PIN එකකි. ඔබට උත්සාහයන් <ph name="RETRIES" />ක් ඉතිරිව ඇත.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - තොට</translation>
 <translation id="8656407365183407932">ඔබේ නොබැඳි ගොනු ඉවත් කිරීමට සිදු විය</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">මෙම ගොනුව රහස්‍ය වන අතර පරිපාලක ප්‍රතිපත්තිය මගින් සීමා කිරීම්වලට යටත් වේ.</translation>
 <translation id="8712637175834984815">එය ලැබුණා</translation>
 <translation id="8713112442029511308">මොල්ටීස්</translation>
-<translation id="8714138378966541668">සපයන්නා විසින් අගුළු දමා ඇත</translation>
 <translation id="8714406895390098252">බයිසිකල්</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> තෝරන ලදි.</translation>
 <translation id="872537912056138402">ක්‍රොඒෂියානු</translation>

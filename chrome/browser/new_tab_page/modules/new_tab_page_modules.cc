@@ -25,49 +25,28 @@
 namespace ntp {
 
 const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
-    bool drive_module_enabled) {
+    bool is_managed_profile,
+    Profile* profile) {
   std::vector<std::pair<const std::string, int>> details;
 
-  if (drive_module_enabled) {
+  if (IsGoogleCalendarModuleEnabled(is_managed_profile)) {
+    details.emplace_back("google_calendar",
+                         IDS_NTP_MODULES_GOOGLE_CALENDAR_TITLE);
+  }
+
+  if (IsOutlookCalendarModuleEnabled(is_managed_profile)) {
+    details.emplace_back("outlook_calendar",
+                         IDS_NTP_MODULES_OUTLOOK_CALENDAR_TITLE);
+  }
+
+  if (IsDriveModuleEnabledForProfile(is_managed_profile, profile)) {
     details.emplace_back("drive", IDS_NTP_MODULES_DRIVE_SENTENCE);
   }
 
-  if (IsHistoryClustersModuleEnabled() &&
-      base::FeatureList::IsEnabled(page_image_service::kImageService)) {
-    details.emplace_back("history_clusters",
-                         IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT);
-  }
-
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpTabResumptionModule)) {
-    details.emplace_back("tab_resumption", IDS_NTP_TAB_RESUMPTION_TITLE);
-  }
-
-  if (IsRecipeTasksModuleEnabled()) {
-    std::vector<std::string> splitExperimentGroup = base::SplitString(
-        base::GetFieldTrialParamValueByFeature(
-            ntp_features::kNtpRecipeTasksModule,
-            ntp_features::kNtpRecipeTasksModuleExperimentGroupParam),
-        "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-    bool recipes_historical_experiment_enabled =
-        !splitExperimentGroup.empty() &&
-        splitExperimentGroup[0] == "historical";
-
-    details.emplace_back("recipe_tasks",
-                         recipes_historical_experiment_enabled
-                             ? IDS_NTP_MODULES_RECIPE_VIEWED_TASKS_SENTENCE
-                             : IDS_NTP_MODULES_RECIPE_TASKS_SENTENCE);
-  }
-
-  if (IsCartModuleEnabled() &&
-      (!base::FeatureList::IsEnabled(
-           ntp_features::kNtpChromeCartInHistoryClusterModule) ||
-       base::FeatureList::IsEnabled(
-           ntp_features::kNtpChromeCartHistoryClusterCoexist))) {
-    details.emplace_back("chrome_cart", IDS_NTP_MODULES_CART_SENTENCE);
-  }
-
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpPhotosModule)) {
-    details.emplace_back("photos", IDS_NTP_MODULES_PHOTOS_MEMORIES_TITLE);
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpMostRelevantTabResumptionModule)) {
+    details.emplace_back("tab_resumption",
+                         IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_TITLE);
   }
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFeedModule)) {

@@ -122,7 +122,7 @@ class FetchDiscountWorker {
 
   std::string GetVariationsHeaders();
 
-  // TODO(crbug.com/1207197): Change these two static method to anonymous
+  // TODO(crbug.com/40181210): Change these two static method to anonymous
   // namespace in the cc file. This is run in a background thread, it fetches
   // for discounts for all active carts.
   static void FetchInBackground(

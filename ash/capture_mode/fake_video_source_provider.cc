@@ -112,7 +112,10 @@ void FakeVideoSourceProvider::GetSourceInfos(GetSourceInfosCallback callback) {
   // Simulate the asynchronously behavior of the actual VideoSourceProvider
   // which does a lot of asynchronous and mojo calls.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), devices));
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                video_capture::mojom::VideoSourceProvider::
+                                    GetSourceInfosResult::kSuccess,
+                                devices));
 
   if (on_replied_with_source_infos_)
     std::move(on_replied_with_source_infos_).Run();

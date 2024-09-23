@@ -6,25 +6,33 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_VIEW_H_
 
 #include <stddef.h>
+
 #include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/common/aliases.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
+#include "components/input/native_web_keyboard_event.h"
 
 namespace autofill {
 
-class AutofillPopupController;
+class AutofillSuggestionController;
 
 // The interface for creating and controlling a platform-dependent
 // AutofillPopupView.
 class AutofillPopupView {
  public:
-  // Factory function for creating the view.
+  struct SearchBarConfig {
+    std::u16string placeholder;
+    std::u16string no_results_message;
+  };
+
+  // Factory function for creating the view. Providing `std::nullopt` to
+  // the `search_bar_config` results in creating a popup without a search bar.
   static base::WeakPtr<AutofillPopupView> Create(
-      base::WeakPtr<AutofillPopupController> controller);
+      base::WeakPtr<AutofillSuggestionController> controller,
+      std::optional<const SearchBarConfig> search_bar_config = std::nullopt);
 
   // Attempts to display the Autofill popup and fills it with data from the
   // controller. Returns whether the popup was shown.
@@ -37,12 +45,14 @@ class AutofillPopupView {
   // swallowed. This allows views to handle events that depend on its internal
   // state, such as changing the selected Autofill cell.
   virtual bool HandleKeyPressEvent(
-      const content::NativeWebKeyboardEvent& event) = 0;
+      const input::NativeWebKeyboardEvent& event) = 0;
 
   // Refreshes the position and redraws popup when suggestions change. Returns
   // whether the resulting popup was shown (or had to hide, e.g. due to
-  // insufficient size).
-  virtual void OnSuggestionsChanged() = 0;
+  // insufficient size). If `prefer_prev_arrow_side` is `true`, the view takes
+  // prev arrow side as the first preferred when recalculating the popup
+  // position (potentially changed due to the change of the content).
+  virtual void OnSuggestionsChanged(bool prefer_prev_arrow_side) = 0;
 
   // Returns true if the autofill popup overlaps with the
   // picture-in-picture window.
@@ -58,10 +68,13 @@ class AutofillPopupView {
   // The child's lifetime depends on its parent, i.e. when the parent dies
   // the child dies also.
   virtual base::WeakPtr<AutofillPopupView> CreateSubPopupView(
-      base::WeakPtr<AutofillPopupController> sub_controller) = 0;
+      base::WeakPtr<AutofillSuggestionController> sub_controller) = 0;
 
   virtual std::optional<AutofillClient::PopupScreenLocation>
   GetPopupScreenLocation() const = 0;
+
+  // Indicates whether any of the view elements currently has focus.
+  virtual bool HasFocus() const = 0;
 
   // Returns a weak pointer to itself.
   virtual base::WeakPtr<AutofillPopupView> GetWeakPtr() = 0;

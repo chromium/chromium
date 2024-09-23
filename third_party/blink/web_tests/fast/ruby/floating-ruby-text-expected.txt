@@ -1,0 +1,1 @@
+CONSOLE MESSAGE: `float` property is not supported correctly inside an element with `display: ruby` or `display: ruby-text`.

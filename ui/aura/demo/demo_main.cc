@@ -191,7 +191,7 @@ int DemoMain() {
   auto context_factory = std::make_unique<ui::InProcessContextFactory>(
       &host_frame_sink_manager, &frame_sink_manager, /*output_to_window=*/true);
 
-  base::PowerMonitor::Initialize(
+  base::PowerMonitor::GetInstance()->Initialize(
       std::make_unique<base::PowerMonitorDeviceSource>());
 
   std::unique_ptr<aura::Env> env = aura::Env::CreateInstance();

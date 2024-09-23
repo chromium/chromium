@@ -1,0 +1,47 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(is_chromeos_ash)
+
+build_webui("build") {
+  grd_prefix = "ash_boca_ui"
+  static_files = [
+    "index.html",
+    "app_icon_120.png",
+  ]
+
+  # Files not holding a CustomElement element definition, or the CustomElement
+  # does not have a corresponding HTML template.
+  non_web_component_files = [
+    "app/client_delegate.ts",
+    "app/mojo_api_bootstrap.ts",
+    "app/receiver.ts",
+    "app/boca_app.ts",
+    "app/sandboxed_load_time_data.ts",
+  ]
+
+  ts_composite = true
+
+  mojo_files_deps = [ "//ash/webui/boca_ui/mojom:mojom_ts__generator" ]
+
+  mojo_base_path = "mojom"
+
+  mojo_files = [ "$root_gen_dir/ash/webui/boca_ui/mojom/boca.mojom-webui.ts" ]
+
+  ts_definitions = []
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  webui_context_type = "untrusted"
+  grit_output_dir = "$root_gen_dir/ash/webui"
+}

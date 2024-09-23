@@ -4,11 +4,14 @@
 
 #include "chrome/browser/serial/serial_chooser_context.h"
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -22,6 +25,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -39,7 +43,11 @@
 
 namespace {
 
+using ::base::test::InvokeFuture;
 using ::base::test::ParseJson;
+using ::base::test::TestFuture;
+using ::content_settings::SettingSource;
+using ::testing::_;
 using ::testing::NiceMock;
 
 constexpr char kTestUserEmail[] = "user@example.com";
@@ -53,6 +61,8 @@ class MockPortObserver : public SerialChooserContext::PortObserver {
 
   MOCK_METHOD1(OnPortAdded, void(const device::mojom::SerialPortInfo&));
   MOCK_METHOD1(OnPortRemoved, void(const device::mojom::SerialPortInfo&));
+  MOCK_METHOD1(OnPortConnectedStateChanged,
+               void(const device::mojom::SerialPortInfo&));
   MOCK_METHOD0(OnPortManagerConnectionError, void());
   MOCK_METHOD1(OnPermissionRevoked, void(const url::Origin&));
 };
@@ -141,7 +151,7 @@ class SerialChooserContextTestBase {
     SerialBlocklist::Get().ResetToDefaultValuesForTesting();
   }
 
-  void SetDynamicBlocklist(base::StringPiece value) {
+  void SetDynamicBlocklist(std::string_view value) {
     feature_list_.Reset();
 
     std::map<std::string, std::string> parameters;
@@ -244,8 +254,7 @@ TEST_F(SerialChooserContextTest, GrantAndRevokeEphemeralPermission) {
   ASSERT_EQ(1u, objects.size());
   EXPECT_EQ(origin.GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
-  EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
-            objects[0]->source);
+  EXPECT_EQ(SettingSource::kUser, objects[0]->source);
   EXPECT_FALSE(objects[0]->incognito);
 
   EXPECT_CALL(permission_observer(),
@@ -299,8 +308,7 @@ TEST_F(SerialChooserContextTest, RevokeEphemeralPermissionByWebsite) {
   ASSERT_EQ(1u, objects.size());
   EXPECT_EQ(origin.GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
-  EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
-            objects[0]->source);
+  EXPECT_EQ(SettingSource::kUser, objects[0]->source);
   EXPECT_FALSE(objects[0]->incognito);
 
   EXPECT_CALL(permission_observer(),
@@ -402,8 +410,7 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentUsbPermission) {
   ASSERT_EQ(1u, objects.size());
   EXPECT_EQ(origin.GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
-  EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
-            objects[0]->source);
+  EXPECT_EQ(SettingSource::kUser, objects[0]->source);
   EXPECT_FALSE(objects[0]->incognito);
 
   EXPECT_CALL(permission_observer(),
@@ -457,8 +464,7 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentBluetoothPermission) {
   ASSERT_EQ(1u, objects.size());
   EXPECT_EQ(origin.GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
-  EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
-            objects[0]->source);
+  EXPECT_EQ(SettingSource::kUser, objects[0]->source);
   EXPECT_FALSE(objects[0]->incognito);
 
   EXPECT_CALL(permission_observer(),
@@ -512,8 +518,7 @@ TEST_F(SerialChooserContextTest, RevokePersistentPermissionByWebsite) {
   ASSERT_EQ(1u, objects.size());
   EXPECT_EQ(origin.GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
-  EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
-            objects[0]->source);
+  EXPECT_EQ(SettingSource::kUser, objects[0]->source);
   EXPECT_FALSE(objects[0]->incognito);
 
   EXPECT_CALL(permission_observer(),
@@ -769,6 +774,25 @@ TEST_F(SerialChooserContextTest, PolicyBlockedForUrls) {
   EXPECT_EQ(1u, all_origin_objects.size());
 }
 
+TEST_F(SerialChooserContextTest, BluetoothPortConnectedState) {
+  const auto origin = url::Origin::Create(GURL("https://google.com"));
+
+  // Create a Bluetooth serial port.
+  auto port = CreatePersistentBluetoothPort("Persistent Bluetooth Port",
+                                            "aa:aa:aa:aa:aa:aa");
+
+  // Simulate disconnection of the Bluetooth device hosting `port`. The observer
+  // is notified that the port is now disconnected.
+  TestFuture<const device::mojom::SerialPortInfo&> port_future;
+  EXPECT_CALL(port_observer(), OnPortConnectedStateChanged)
+      .WillOnce(InvokeFuture(port_future));
+  auto disconnected_port = port.Clone();
+  disconnected_port->connected = false;
+  context()->OnPortConnectedStateChanged(std::move(disconnected_port));
+  EXPECT_EQ(port_future.Get().token, port->token);
+  EXPECT_FALSE(port_future.Get().connected);
+}
+
 TEST_P(SerialChooserContextAffiliatedTest, PolicyAllowForUrls) {
   const auto kFooOrigin = url::Origin::Create(GURL("https://foo.origin"));
   const auto kBarOrigin = url::Origin::Create(GURL("https://bar.origin"));
@@ -818,7 +842,7 @@ TEST_P(SerialChooserContextAffiliatedTest, PolicyAllowForUrls) {
     EXPECT_EQ(kFooOrigin.GetURL(), foo_object->origin);
     EXPECT_EQ(u"Any serial port",
               context()->GetObjectDisplayName(foo_object->value));
-    EXPECT_EQ(content_settings::SETTING_SOURCE_POLICY, foo_object->source);
+    EXPECT_EQ(SettingSource::kPolicy, foo_object->source);
     EXPECT_FALSE(foo_object->incognito);
 
     auto bar_objects = context()->GetGrantedObjects(kBarOrigin);
@@ -826,7 +850,7 @@ TEST_P(SerialChooserContextAffiliatedTest, PolicyAllowForUrls) {
     const auto& bar_object = bar_objects.front();
     EXPECT_EQ(kBarOrigin.GetURL(), bar_object->origin);
     EXPECT_EQ(u"Nexus One", context()->GetObjectDisplayName(bar_object->value));
-    EXPECT_EQ(content_settings::SETTING_SOURCE_POLICY, bar_object->source);
+    EXPECT_EQ(SettingSource::kPolicy, bar_object->source);
     EXPECT_FALSE(bar_object->incognito);
 
     auto all_objects = context()->GetAllGrantedObjects();
@@ -843,7 +867,7 @@ TEST_P(SerialChooserContextAffiliatedTest, PolicyAllowForUrls) {
         found_bar_object = true;
         EXPECT_EQ(u"Nexus One", context()->GetObjectDisplayName(object->value));
       }
-      EXPECT_EQ(content_settings::SETTING_SOURCE_POLICY, object->source);
+      EXPECT_EQ(SettingSource::kPolicy, object->source);
       EXPECT_FALSE(object->incognito);
     }
     EXPECT_TRUE(found_foo_object);

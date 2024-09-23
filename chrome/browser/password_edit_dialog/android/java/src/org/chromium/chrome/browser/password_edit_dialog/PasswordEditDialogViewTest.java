@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.password_edit_dialog;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.app.Activity;
 import android.view.View;
@@ -23,17 +23,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -51,8 +48,6 @@ public class PasswordEditDialogViewTest {
     private static final String CHANGED_PASSWORD = "passwordChanged";
     private static final String FOOTER = "Footer";
     private static final String PASSWORD_ERROR = "Enter password";
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
@@ -72,22 +67,18 @@ public class PasswordEditDialogViewTest {
     @BeforeClass
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
-        sActivity =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> sActivityTestRule.getActivity());
+        sActivity = ThreadUtils.runOnUiThreadBlocking(() -> sActivityTestRule.getActivity());
     }
 
     @Before
     public void setupTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDialogView =
                             (PasswordEditDialogView)
                                     sActivity
                                             .getLayoutInflater()
-                                            .inflate(
-                                                    R.layout.password_edit_dialog,
-                                                    null);
+                                            .inflate(R.layout.password_edit_dialog, null);
                     mUsernamesView = mDialogView.findViewById(R.id.username_view);
                     mUsernameInputLayout = mDialogView.findViewById(R.id.username_input_layout);
                     mFooterView = mDialogView.findViewById(R.id.footer);
@@ -123,7 +114,7 @@ public class PasswordEditDialogViewTest {
     @Test
     @MediumTest
     public void testProperties() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel model =
                             populateDialogPropertiesBuilder()
@@ -145,7 +136,7 @@ public class PasswordEditDialogViewTest {
     @Test
     @MediumTest
     public void testPasswordEditing() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel model = populateDialogPropertiesBuilder().build();
                     PropertyModelChangeProcessor.create(
@@ -153,7 +144,7 @@ public class PasswordEditDialogViewTest {
                     mPasswordView.setText(INITIAL_PASSWORD);
                 });
         CriteriaHelper.pollUiThread(() -> mCurrentPassword.equals(INITIAL_PASSWORD));
-        TestThreadUtils.runOnUiThreadBlocking(() -> mPasswordView.setText(CHANGED_PASSWORD));
+        ThreadUtils.runOnUiThreadBlocking(() -> mPasswordView.setText(CHANGED_PASSWORD));
         CriteriaHelper.pollUiThread(() -> mCurrentPassword.equals(CHANGED_PASSWORD));
     }
 
@@ -162,7 +153,7 @@ public class PasswordEditDialogViewTest {
     @MediumTest
     public void testEmptyFooter() {
         // Test with null footer property.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel nullModel = populateDialogPropertiesBuilder().build();
                     PropertyModelChangeProcessor.create(
@@ -171,7 +162,7 @@ public class PasswordEditDialogViewTest {
         Assert.assertEquals("Footer should not be visible", View.GONE, mFooterView.getVisibility());
 
         // Test with footer property containing empty string.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel emptyModel =
                             populateDialogPropertiesBuilder()
@@ -187,7 +178,7 @@ public class PasswordEditDialogViewTest {
     @Test
     @MediumTest
     public void testUsernameSelection() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel model = populateDialogPropertiesBuilder().build();
                     PropertyModelChangeProcessor.create(
@@ -195,7 +186,7 @@ public class PasswordEditDialogViewTest {
                     mUsernamesView.setText(CHANGED_USERNAME);
                 });
         CriteriaHelper.pollUiThread(() -> mUsername.equals(CHANGED_USERNAME));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUsernamesView.setText(INITIAL_USERNAME);
                 });
@@ -206,7 +197,7 @@ public class PasswordEditDialogViewTest {
     @Test
     @MediumTest
     public void testPasswordError() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel model =
                             populateDialogPropertiesBuilder()
@@ -222,7 +213,7 @@ public class PasswordEditDialogViewTest {
                 mPasswordInputLayout.getError().toString(),
                 PASSWORD_ERROR);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel model =
                             populateDialogPropertiesBuilder()

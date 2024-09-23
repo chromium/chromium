@@ -36,7 +36,7 @@ class ArCoreShimImpl implements ArCoreShim {
     public @ArCoreAvailability int checkAvailability(Context applicationContext) {
         // ARCore's checkAvailability reads shared preferences via ArCoreContentProvider, need to
         // turn off strict mode to allow that.
-        // TODO(https://crbug.com/1038757): Remove the disk write context when the disk write is
+        // TODO(crbug.com/40666477): Remove the disk write context when the disk write is
         // fixed on ArCore's end.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads();
                 StrictModeContext ignored2 = StrictModeContext.allowDiskWrites()) {

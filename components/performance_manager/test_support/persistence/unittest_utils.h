@@ -30,7 +30,10 @@ class MockSiteDataImplOnDestroyDelegate
 
   ~MockSiteDataImplOnDestroyDelegate();
 
-  MOCK_METHOD1(OnSiteDataImplDestroyed, void(internal::SiteDataImpl*));
+  MOCK_METHOD(void,
+              OnSiteDataImplDestroyed,
+              (internal::SiteDataImpl*),
+              (override));
 
   base::WeakPtr<MockSiteDataImplOnDestroyDelegate> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

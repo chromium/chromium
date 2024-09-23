@@ -1,0 +1,10 @@
+Verifies that we can intercept the network request for the script loaded when adding a module to an audio worklet.
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+Network.requestWillBeSent: http://127.0.0.1:8000/inspector-protocol/network/resources/audio-worklet-processor.js
+OK
+

@@ -1,0 +1,12 @@
+<div>
+  <template is="dom-if" if="[[!showDone]]">
+    <div>
+      <sanitize-initial></sanitize-initial>
+    </div>
+  </template>
+  <template is="dom-if" if="[[showDone]]">
+    <div>
+      <sanitize-done></sanitize-done>
+    </div>
+  </template>
+</div>

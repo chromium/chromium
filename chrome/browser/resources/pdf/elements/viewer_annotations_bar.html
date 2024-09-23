@@ -1,0 +1,115 @@
+<style>
+  :host {
+    align-items: center;
+    background-color: rgb(32, 33, 34);
+    color: var(--pdf-toolbar-text-color);
+    display: flex;
+    height: 48px;
+    justify-content: center;
+    padding: 0 16px;
+  }
+
+  /* Styles copied from pdf_shared.css since this element is using Polymer. */
+  cr-icon-button {
+    --cr-icon-button-fill-color: var(--pdf-toolbar-text-color);
+    --cr-icon-button-focus-outline-color: var(--google-grey-500);
+    margin: 0;
+  }
+
+  cr-icon-button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+  }
+
+  #pen,
+  #highlighter {
+    --dropdown-width: 346px;
+  }
+
+  #pen,
+  #highlighter {
+    --dropdown-open-background: var(--pdf-viewer-background-color);
+  }
+
+  #eraser {
+    opacity: 0.38;
+  }
+
+  #eraser[selected],
+  #eraser:focus,
+  #eraser:hover {
+    opacity: 1;
+  }
+
+  #annotation-separator {
+    background: white;
+    height: 30px;
+    margin-inline-end: 12px;
+    margin-inline-start: 12px;
+    opacity: 0.38;
+    width: 1px;
+  }
+
+  #pen {
+    margin-inline-end: 10px;
+  }
+
+  #highlighter {
+    margin-inline-end: 6px;
+  }
+</style>
+<viewer-toolbar-dropdown id="pen"
+    selected$="[[isAnnotationTool_('pen', annotationTool_.tool)]]"
+    open-after-select
+    on-click="annotationToolClicked_"
+    open-icon="pdf:marker"
+    closed-icon="pdf:marker"
+    dropdown-centered
+    hide-header
+    header="$i18n{annotationPen}"
+    style="--pen-tip-fill: #000000">
+  <viewer-pen-options
+    selected-color="#000000"
+    selected-size="0.1429"
+    strings="[[strings]]"
+    on-selected-size-changed="annotationToolOptionChanged_"
+    on-selected-color-changed="annotationToolOptionChanged_">
+  </viewer-pen-options>
+</viewer-toolbar-dropdown>
+
+<viewer-toolbar-dropdown id="highlighter"
+    selected$="[[isAnnotationTool_('highlighter', annotationTool_.tool)]]"
+    open-after-select
+    on-click="annotationToolClicked_"
+    open-icon="pdf:highlighter"
+    closed-icon="pdf:highlighter"
+    dropdown-centered
+    hide-header
+    header="$i18n{annotationHighlighter}"
+    style="--pen-tip-fill: #ffbc00">
+  <viewer-pen-options
+    selected-color="#ffbc00"
+    selected-size="0.7143"
+    strings="[[strings]]"
+    on-selected-size-changed="annotationToolOptionChanged_"
+    on-selected-color-changed="annotationToolOptionChanged_">
+  </viewer-pen-options>
+</viewer-toolbar-dropdown>
+
+<cr-icon-button id="eraser"
+    selected$="[[isAnnotationTool_('eraser', annotationTool_.tool)]]"
+    on-click="annotationToolClicked_" iron-icon="pdf:eraser"
+    aria-label="$i18n{annotationEraser}"
+    title="$i18n{annotationEraser}"></cr-icon-button>
+
+<div id="annotation-separator"></div>
+
+<cr-icon-button id="undo" disabled="[[!canUndoAnnotation_]]"
+    iron-icon="pdf:undo" on-click="onUndoClick_"
+    aria-label="$i18n{annotationUndo}"
+    title="$i18n{annotationUndo}"></cr-icon-button>
+
+<cr-icon-button id="redo" disabled="[[!canRedoAnnotation_]]"
+    iron-icon="pdf:redo" on-click="onRedoClick_"
+    aria-label="$i18n{annotationRedo}"
+    title="$i18n{annotationRedo}"></cr-icon-button>

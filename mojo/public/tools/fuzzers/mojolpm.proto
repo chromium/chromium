@@ -16,6 +16,10 @@ message CreateDataPipeOptions {
   required uint32 capacity_num_bytes = 4;
 }
 
+message CreateSharedBufferOptions {
+  required uint64 num_bytes = 2;
+}
+
 message DataPipeConsumerHandle {
   oneof instance {
     uint32 old = 1;
@@ -48,9 +52,23 @@ message DataPipeProducerClose {
   required uint32 id = 1;
 }
 
+message SharedBufferHandle {
+  oneof instance {
+    uint32 old = 1;
+    CreateSharedBufferOptions new = 2;
+  }
+}
+
+message SharedBufferWrite {
+  required SharedBufferHandle handle = 1;
+  required bytes data = 2;
+}
+
+message SharedBufferRelease {
+  required uint32 id = 1;
+}
+
 // TODO(markbrand): Implement these last two.
 message MessagePipeHandle {}
-
-message SharedBufferHandle {}
 
 message PlatformHandle {}

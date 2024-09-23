@@ -39,9 +39,8 @@ class SurfaceTextureGLOwnerTest : public testing::Test {
  protected:
   void SetUp() override {
     gl::init::InitializeStaticGLBindingsImplementation(
-        gl::GLImplementationParts(gl::kGLImplementationEGLGLES2), false);
+        gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
     display_ = gl::init::InitializeGLOneOffPlatformImplementation(
-        /*fallback_to_software_gl=*/false,
         /*disable_gl_drawing=*/false,
         /*init_extensions=*/true,
         /*gpu_preference=*/gl::GpuPreference::kDefault);

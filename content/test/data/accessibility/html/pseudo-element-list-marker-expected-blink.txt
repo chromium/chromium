@@ -1,0 +1,42 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='Group known as Mercury Seven:' nameFrom=contents
+++++++++++inlineTextBox name='Group known as Mercury Seven:' nameFrom=contents
+++++++list
+++++++++listItem
+++++++++++listMarker name='- ' nameFrom=contents
+++++++++++++staticText ignored
+++++++++++staticText name='Malcolm Scott Carpenter' nameFrom=contents
+++++++++++++inlineTextBox name='Malcolm Scott Carpenter' nameFrom=contents
+++++++++listItem
+++++++++++listMarker name='- ' nameFrom=contents
+++++++++++++staticText ignored
+++++++++++staticText name='Leroy Gordon (Gordo) Cooper Jr.' nameFrom=contents
+++++++++++++inlineTextBox name='Leroy Gordon (Gordo) Cooper Jr.' nameFrom=contents
+++++++++listItem
+++++++++++listMarker name='- ' nameFrom=contents
+++++++++++++staticText ignored
+++++++++++staticText name='John Herschel Glenn Jr.' nameFrom=contents
+++++++++++++inlineTextBox name='John Herschel Glenn Jr.' nameFrom=contents
+++++++++listItem
+++++++++++listMarker name='- ' nameFrom=contents
+++++++++++++staticText ignored
+++++++++++staticText name='Virgil Ivan (Gus) Grissom' nameFrom=contents
+++++++++++++inlineTextBox name='Virgil Ivan (Gus) Grissom' nameFrom=contents
+++++++++listItem
+++++++++++listMarker name='- ' nameFrom=contents
+++++++++++++staticText ignored
+++++++++++staticText name='Walter Marty (Wally) Schirra Jr.' nameFrom=contents
+++++++++++++inlineTextBox name='Walter Marty (Wally) Schirra Jr.' nameFrom=contents
+++++++++listItem
+++++++++++listMarker name='- ' nameFrom=contents
+++++++++++++staticText ignored
+++++++++++staticText name='Alan Bartlett Shepard Jr.' nameFrom=contents
+++++++++++++inlineTextBox name='Alan Bartlett Shepard Jr.' nameFrom=contents
+++++++++listItem
+++++++++++listMarker name='- ' nameFrom=contents
+++++++++++++staticText ignored
+++++++++++staticText name='Donald Kent (Deke) Slayton' nameFrom=contents
+++++++++++++inlineTextBox name='Donald Kent (Deke) Slayton' nameFrom=contents

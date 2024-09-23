@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/subresource_filter/tools/rule_parser/rule_parser.h"
 
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "components/subresource_filter/tools/rule_parser/rule.h"
 #include "components/subresource_filter/tools/rule_parser/rule_options.h"
 #include "components/url_pattern_index/proto/rules.pb.h"

@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/desks_storage/core/fake_desk_sync_bridge.h"
-#include "components/sync/test/fake_model_type_controller_delegate.h"
+#include "components/sync/test/fake_data_type_controller_delegate.h"
 
 namespace desks_storage {
 class FakeDeskSyncBridge;
@@ -25,12 +25,12 @@ class FakeDeskSyncService : public DeskSyncService {
   FakeDeskSyncBridge* GetDeskSyncBridge();
   void SetDeskSyncBridge(FakeDeskSyncBridge* fake_desk_sync_bridge);
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
  private:
   std::unique_ptr<FakeDeskSyncBridge> fake_bridge_;
-  syncer::FakeModelTypeControllerDelegate fake_model_type_controller_delegate_;
+  syncer::FakeDataTypeControllerDelegate fake_data_type_controller_delegate_;
 };
 
 }  // namespace desks_storage

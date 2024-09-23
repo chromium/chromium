@@ -155,7 +155,7 @@ public final class WebPaymentIntentHelperType {
             }
             // }}} total
 
-            // TODO(https://crbug.com/754779): The supportedMethods field was already changed from
+            // TODO(crbug.com/41338971): The supportedMethods field was already changed from
             // array to string but we should keep backward-compatibility for now. supportedMethods
             // {{{
             json.name("supportedMethods").beginArray();

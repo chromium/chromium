@@ -10,8 +10,11 @@
 // Commands related to suggesting strong passwords.
 @protocol PasswordSuggestionCommands
 
-// Shows the password suggestion view controller.
+// Shows the password suggestion view controller. The secondary action button
+// string is set depending on the value of proactive
 - (void)showPasswordSuggestion:(NSString*)passwordSuggestion
+                     proactive:(BOOL)proactive
+                      webState:(web::WebState*)webState
                decisionHandler:(void (^)(BOOL accept))decisionHandler;
 
 @end

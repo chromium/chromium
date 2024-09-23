@@ -76,8 +76,11 @@ const char* AutocompleteProvider::TypeToString(Type type) {
       return "Calculator";
     case TYPE_FEATURED_SEARCH:
       return "FeaturedSearch";
+    case TYPE_HISTORY_EMBEDDINGS:
+      return "HistoryEmbeddings";
     default:
-      NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type;
+      DUMP_WILL_BE_NOTREACHED()
+          << "Unhandled AutocompleteProvider::Type " << type;
       return "Unknown";
   }
 }
@@ -151,19 +154,18 @@ AutocompleteProvider::AsOmniboxEventProviderType() const {
     case TYPE_HISTORY_CLUSTER_PROVIDER:
       return metrics::OmniboxEventProto::HISTORY_CLUSTER;
     case TYPE_CALCULATOR:
-      // TODO(manukh): Since there's a high likelihood the calc provider won't
-      //   launch, log as search provider to avoid the adding then deprecating
-      //   the provider in the proto and histograms.
-      return metrics::OmniboxEventProto::SEARCH;
+      return metrics::OmniboxEventProto::CALCULATOR;
     case TYPE_FEATURED_SEARCH:
       return metrics::OmniboxEventProto::FEATURED_SEARCH;
+    case TYPE_HISTORY_EMBEDDINGS:
+      return metrics::OmniboxEventProto::HISTORY_EMBEDDINGS;
     default:
-      // TODO(crbug.com/1499235) This was a NOTREACHED that we converted to help
-      //   debug crbug.com/1499235 since NOTREACHED's don't log their message in
-      //   crash reports. Should be reverted back to a NOTREACHED or
-      //   NOTREACHED_NORETURN if their logs eventually begin being logged to
+      // TODO(crbug.com/40940012) This was a NOTREACHED that we converted to
+      //   help debug crbug.com/1499235 since NOTREACHED's don't log their
+      //   message in crash reports. Should be reverted back to a NOTREACHED or
+      //   NOTREACHED if their logs eventually begin being logged to
       //   crash reports.
-      DUMP_WILL_BE_NOTREACHED_NORETURN()
+      DUMP_WILL_BE_NOTREACHED()
           << "[NOTREACHED] Unhandled AutocompleteProvider::Type " << type_;
       return metrics::OmniboxEventProto::UNKNOWN_PROVIDER;
   }

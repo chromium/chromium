@@ -39,6 +39,15 @@ const int kBatchSize = 100;
                                         WebStateListObserving,
                                         CRWWebStateObserver>
 
+/// Tracks if a clear and reindex operation is pending e.g. while the app is
+/// backgrounded.
+@property(nonatomic, assign) BOOL needsClearAndReindex;
+/// Tracks if a clear and reindex operation is pending e.g. while the app is
+/// backgrounded.
+@property(nonatomic, assign) BOOL needsFullIndex;
+/// Prevents reentry into clearAndReindexIfNeeded method.
+@property(nonatomic, assign) BOOL deletionInProgress;
+
 @end
 
 /// @discussion Keeps a list of currently opened non-incognito tabs in the
@@ -128,16 +137,32 @@ const int kBatchSize = 100;
 
   [self stopObservingAllWebStates];
 
-  __weak OpenTabsSpotlightManager* weakSelf = self;
+  self.needsClearAndReindex = YES;
+  [self clearAndReindexIfNeeded];
+}
+- (void)clearAndReindexIfNeeded {
+  // If already waiting for Spotlight DB to clear all, don't do anything.
+  if (self.deletionInProgress) {
+    return;
+  }
 
+  if (!self.needsClearAndReindex || self.isAppInBackground) {
+    return;
+  }
+
+  self.needsFullIndex = NO;
+  self.deletionInProgress = YES;
+  __weak OpenTabsSpotlightManager* weakSelf = self;
   [self.spotlightInterface
       deleteSearchableItemsWithDomainIdentifiers:@[
         StringFromSpotlightDomain(spotlight::DOMAIN_OPEN_TABS)
       ]
                                completionHandler:^(NSError*) {
+                                 weakSelf.deletionInProgress = NO;
                                  if (weakSelf.isShuttingDown) {
                                    return;
                                  }
+                                 weakSelf.needsClearAndReindex = NO;
                                  [weakSelf indexAllOpenTabs];
                                }];
 }
@@ -147,10 +172,29 @@ const int kBatchSize = 100;
   [self shutdownAllObservation];
 }
 
+- (void)appWillEnterForeground {
+  [super appWillEnterForeground];
+
+  if (self.needsClearAndReindex || self.needsFullIndex) {
+    [self clearAndReindexOpenTabs];
+    return;
+  }
+
+  if (!_indexingQueue.empty()) {
+    __weak OpenTabsSpotlightManager* weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf indexNextBatchFromQueue];
+    });
+  }
+}
+
 #pragma mark - BrowserListObserver
 
 - (void)browserList:(const BrowserList*)browserList
        browserAdded:(Browser*)browser {
+  if (browser->type() == Browser::Type::kIncognito) {
+    return;
+  }
   // If the initial indexing is still in progress, cancel it and restart.
   if (!_indexingQueue.empty()) {
     [self logReindexInterruption];
@@ -159,18 +203,35 @@ const int kBatchSize = 100;
   }
 
   WebStateList* webStateList = browser->GetWebStateList();
+  webStateList->AddObserver(_webStateListObserverBridge.get());
+
+  if (self.isAppInBackground) {
+    // Normally, no model updates should happen in background.
+    // In case they do, process them on foreground.
+    self.needsClearAndReindex = YES;
+    return;
+  }
+
   [self addAllURLsFromWebStateList:webStateList];
 
-  webStateList->AddObserver(_webStateListObserverBridge.get());
 }
 
 - (void)browserList:(const BrowserList*)browserList
      browserRemoved:(Browser*)browser {
+  if (browser->type() == Browser::Type::kIncognito) {
+    return;
+  }
   WebStateList* webStateList = browser->GetWebStateList();
+  webStateList->RemoveObserver(_webStateListObserverBridge.get());
+
+  if (self.isAppInBackground) {
+    // Normally, no model updates should happen in background.
+    // In case they do, process them on foreground.
+    self.needsClearAndReindex = YES;
+    return;
+  }
 
   [self removeAllURLsFromWebStateList:webStateList];
-
-  webStateList->RemoveObserver(_webStateListObserverBridge.get());
 }
 
 - (void)browserListWillShutdown:(const BrowserList*)browserList {
@@ -183,7 +244,7 @@ const int kBatchSize = 100;
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
   // If the initial indexing is still in progress, cancel it and restart.
-  if (!_indexingQueue.empty()) {
+  if (!_indexingQueue.empty() && !self.isAppInBackground) {
     [self logReindexInterruption];
     [self clearAndReindexOpenTabs];
     return;
@@ -200,14 +261,28 @@ const int kBatchSize = 100;
     raw_ptr<web::WebState> webState = detachChange.detached_web_state();
     webState->RemoveObserver(_webStateObserverBridge.get());
 
+    if (self.isAppInBackground) {
+      // Normally, no model updates should happen in background.
+      // In case they do, process them on foreground.
+      self.needsClearAndReindex = YES;
+      return;
+    }
+
     [self removeLatestCommittedURLForWebState:webState];
   }
 }
 
 - (void)webStateListDestroyed:(WebStateList*)webStateList {
-  [self removeAllURLsFromWebStateList:webStateList];
-
   webStateList->RemoveObserver(_webStateListObserverBridge.get());
+
+  if (self.isAppInBackground) {
+    // Normally, no model updates should happen in background.
+    // In case they do, process them on foreground.
+    self.needsClearAndReindex = YES;
+    return;
+  }
+
+  [self removeAllURLsFromWebStateList:webStateList];
 }
 
 #pragma mark - CRWWebStateObserver
@@ -215,17 +290,38 @@ const int kBatchSize = 100;
 // Invoked by WebStateObserverBridge::DidStartNavigation.
 - (void)webState:(web::WebState*)webState
     didStartNavigation:(web::NavigationContext*)navigationContext {
+  if (self.isAppInBackground) {
+    // Normally, no model updates should happen in background.
+    // In case they do, process them on foreground.
+    self.needsClearAndReindex = YES;
+    return;
+  }
+
   [self removeLatestCommittedURLForWebState:webState];
 }
 
 // Invoked by WebStateObserverBridge::DidFinishNavigation.
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigationContext {
+  if (self.isAppInBackground) {
+    // Normally, no model updates should happen in background.
+    // In case they do, process them on foreground.
+    self.needsClearAndReindex = YES;
+    return;
+  }
+
   [self updateLatestCommittedURLForWebState:webState];
 }
 
 - (void)webState:(web::WebState*)webState
     didRedirectNavigation:(web::NavigationContext*)navigationContext {
+  if (self.isAppInBackground) {
+    // Normally, no model updates should happen in background.
+    // In case they do, process them on foreground.
+    self.needsClearAndReindex = YES;
+    return;
+  }
+
   [self updateLatestCommittedURLForWebState:webState];
 }
 
@@ -293,6 +389,10 @@ const int kBatchSize = 100;
     return;
   }
 
+  if (self.isAppInBackground) {
+    return;  // Indexing will resume on foreground.
+  }
+
   for (int i = 0; i < kBatchSize; i++) {
     if (_indexingQueue.empty()) {
       if (_initialIndexTimer) {
@@ -341,16 +441,28 @@ const int kBatchSize = 100;
     return;
   }
 
+  self.needsFullIndex = YES;
+  [self indexAllOpenTabsIfNeeded];
+}
+
+- (void)indexAllOpenTabsIfNeeded {
+  if (self.isAppInBackground || !self.needsFullIndex) {
+    return;
+  }
+
   _initialIndexTimer = std::make_unique<base::ElapsedTimer>();
 
   // Start observing only the web state lists. Individual webstates will be
   // observed as they are batch-indexed.
   [self startObservingAllWebStateLists];
 
-  for (Browser* browser : self.browserList->AllRegularBrowsers()) {
+  for (Browser* browser : self.browserList->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndInactive)) {
     WebStateList* webStateList = browser->GetWebStateList();
     [self addAllURLsFromWebStateList:webStateList];
   }
+
+  self.needsFullIndex = NO;
 
   UMA_HISTOGRAM_COUNTS_1000("IOS.Spotlight.OpenTabsInitialIndexSize",
                             _knownURLCounts.size());
@@ -377,7 +489,7 @@ const int kBatchSize = 100;
 - (void)indexURL:(GURL*)URL
             title:(NSString*)title
     forWebStateID:(web::WebStateID)webStateID {
-  if (self.isShuttingDown) {
+  if (self.isShuttingDown || self.isAppInBackground) {
     return;
   }
   if (_lastCommittedURLs.contains(webStateID)) {
@@ -399,12 +511,13 @@ const int kBatchSize = 100;
     _knownURLCounts[*URL]++;
     if (_knownURLCounts[*URL] == 1) {
       // The URL is newly added, update Spotlight index.
+      __weak OpenTabsSpotlightManager* weakSelf = self;
       [self.searchableItemFactory
           generateSearchableItem:*URL
                            title:title
               additionalKeywords:@[]
                completionHandler:^(CSSearchableItem* item) {
-                 [self.spotlightInterface indexSearchableItems:@[ item ]];
+                 [weakSelf.spotlightInterface indexSearchableItems:@[ item ]];
                }];
     }
   } else {
@@ -441,7 +554,8 @@ const int kBatchSize = 100;
     return;
   }
 
-  for (Browser* browser : _browserList->AllRegularBrowsers()) {
+  for (Browser* browser : _browserList->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndInactive)) {
     WebStateList* webStateList = browser->GetWebStateList();
     if (!webStateList) {
       continue;
@@ -463,7 +577,10 @@ const int kBatchSize = 100;
     return;
   }
 
-  for (Browser* browser : _browserList->AllRegularBrowsers()) {
+  [self stopObservingAllWebStates];
+
+  for (Browser* browser : _browserList->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndInactive)) {
     WebStateList* webStateList = browser->GetWebStateList();
     webStateList->AddObserver(_webStateListObserverBridge.get());
   }
@@ -476,7 +593,8 @@ const int kBatchSize = 100;
 
   [self startObservingAllWebStateLists];
 
-  for (Browser* browser : _browserList->AllRegularBrowsers()) {
+  for (Browser* browser : _browserList->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndInactive)) {
     WebStateList* webStateList = browser->GetWebStateList();
     for (int i = 0; i < webStateList->count(); i++) {
       web::WebState* webState = webStateList->GetWebStateAt(i);

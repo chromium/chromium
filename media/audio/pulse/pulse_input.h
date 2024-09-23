@@ -51,7 +51,7 @@ class PulseAudioInputStream : public AgcAudioStream<AudioInputStream> {
 
  private:
   // Helper method used for sending native logs to the registered client.
-  void SendLogMessage(const char* format, ...) PRINTF_FORMAT(2, 3);
+  PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
 
   // PulseAudio Callbacks.
   static void ReadCallback(pa_stream* handle, size_t length, void* user_data);

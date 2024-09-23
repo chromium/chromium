@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='resizable composited box'",
+      "name": "LayoutBlockFlow DIV class='resizable composited box'",
       "bounds": [100, 100],
       "transform": 1
     }

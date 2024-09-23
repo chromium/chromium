@@ -17,10 +17,6 @@ Tests Accessibility.getAXNodeAndAncestors
                 attribute : aria-label
                 type : attribute
             }
-            [2] : {
-                attribute : title
-                type : attribute
-            }
         ]
         type : computedString
         value : 
@@ -180,11 +176,6 @@ Tests Accessibility.getAXNodeAndAncestors
                 nativeSource : title
                 type : relatedElement
             }
-            [4] : {
-                attribute : title
-                superseded : true
-                type : attribute
-            }
         ]
         type : computedString
         value : 
@@ -196,6 +187,13 @@ Tests Accessibility.getAXNodeAndAncestors
             value : {
                 type : booleanOrUndefined
                 value : true
+            }
+        }
+        [1] : {
+            name : url
+            value : {
+                type : string
+                value : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
             }
         }
     ]

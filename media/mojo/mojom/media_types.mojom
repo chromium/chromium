@@ -4,10 +4,13 @@
 
 module media.mojom;
 
+import "gpu/ipc/common/exported_shared_image.mojom";
 import "gpu/ipc/common/mailbox_holder.mojom";
+import "gpu/ipc/common/sync_token.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
 import "media/mojo/mojom/audio_data.mojom";
 import "media/mojo/mojom/encryption_pattern.mojom";
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -153,6 +156,18 @@ enum SVCInterLayerPredMode {
   kOnKeyPic
 };
 
+// This defines a mojo transport format for media::VideoAspectRatio.
+// See media/base/video_aspect_ratio.h for description.
+struct VideoAspectRatio {
+  enum Type {
+    kDisplay,
+    kPixel,
+  };
+
+  Type type;
+  double value;
+};
+
 // This defines a mojo transport format for media::VideoColorSpace.
 // See media/base/video_color_space.h for description.
 struct VideoColorSpace {
@@ -176,7 +191,8 @@ struct VideoColorSpace {
 
 // This defines a mojo transport format for media::AudioDecoderConfig.
 // See media/base/audio_decoder_config.h for descriptions.
-// TODO(crbug.com/1232205): Support `channels_` set by SetChannelsForDiscrete().
+// TODO(crbug.com/40191032): Support `channels_` set by
+// SetChannelsForDiscrete().
 struct AudioDecoderConfig {
   AudioCodec codec;
   SampleFormat sample_format;
@@ -204,6 +220,7 @@ struct VideoDecoderConfig {
   gfx.mojom.Size coded_size;
   gfx.mojom.Rect visible_rect;
   gfx.mojom.Size natural_size;
+  VideoAspectRatio aspect_ratio;
   array<uint8> extra_data;
   EncryptionScheme encryption_scheme;
   VideoColorSpace color_space_info;
@@ -245,17 +262,39 @@ enum SharedImageFormatType {
 // See media/base/decrypt_config.h for descriptions.
 struct DecryptConfig {
   EncryptionScheme encryption_scheme;
-  string key_id;
-  string iv;
+  mojo_base.mojom.ByteString key_id;
+  mojo_base.mojom.ByteString iv;
   array<SubsampleEntry> subsamples;
   EncryptionPattern? encryption_pattern;
 };
 
+union DecoderBufferSideDataNextConfig {
+  AudioDecoderConfig next_audio_config;
+  VideoDecoderConfig next_video_config;
+};
+
 // This defines a mojo transport format for media::DecoderBufferSideData.
 struct DecoderBufferSideData {
+  // VP9 specific information.
   array<uint32> spatial_layers;
   array<uint8> alpha_data;
+
+  // Secure buffer handle corresponding to the decrypted contents of the
+  // associated DecoderBuffer. A non-zero value indicates this was set.
+  //
+  // Required by some hardware content protection mechanisms to ensure the
+  // decrypted buffer never leaves secure memory. When set, this DecoderBuffer
+  // generally carries the partially (headers in the clear) encrypted payload;
   uint64 secure_handle;
+
+  // These fields indicate the amount of data to discard after decoding.
+  mojo_base.mojom.TimeDelta front_discard;
+  mojo_base.mojom.TimeDelta back_discard;
+
+  // If the buffer is an end of stream buffer, presence of `next_config`
+  // indicates that the EOS is for a config change. Decoders may make more
+  // optimal flushing decisions using this information.
+  DecoderBufferSideDataNextConfig? next_config;
 };
 
 // This defines a mojo transport format for media::DecoderBuffer.
@@ -277,10 +316,6 @@ struct DecoderBuffer {
 
   // DecryptConfig for a encrypted buffer. NULL if the buffer is not encrypted.
   DecryptConfig? decrypt_config;
-
-  // These fields indicate the amount of data to discard after decoding.
-  mojo_base.mojom.TimeDelta front_discard;
-  mojo_base.mojom.TimeDelta back_discard;
 
   DecoderBufferSideData? side_data;
 };
@@ -313,7 +348,7 @@ struct AudioBuffer {
 };
 
 // See media/base/video_frame_metadata.h for a description of fields.
-// TODO(crbug.com/657632): Remove |has_*| values and use nullable types.
+// TODO(crbug.com/40489779): Remove |has_*| values and use nullable types.
 struct VideoFrameMetadata {
   bool allow_overlay;
 
@@ -428,8 +463,9 @@ struct VideoFrame {
 union VideoFrameData {
   EosVideoFrameData eos_data;
   SharedMemoryVideoFrameData shared_memory_data;
-  GpuMemoryBufferVideoFrameData gpu_memory_buffer_data;
+  GpuMemoryBufferSharedImageVideoFrameData gpu_memory_buffer_shared_image_data;
   MailboxVideoFrameData mailbox_data;
+  SharedImageVideoFrameData shared_image_data;
 };
 
 // A marker for EOS frames.
@@ -447,15 +483,26 @@ struct SharedMemoryVideoFrameData {
   array<uint32> offsets;
 };
 
-struct GpuMemoryBufferVideoFrameData {
+struct GpuMemoryBufferSharedImageVideoFrameData {
   gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;
-  array<gpu.mojom.MailboxHolder, 4> mailbox_holder;
+  gpu.mojom.ExportedSharedImage? shared_image;
+  gpu.mojom.SyncToken sync_token;
+  uint32 texture_target;
 };
 
-// This defines video frame data stored in texture mailboxes.
+// This defines video frame data stored in texture mailbox.
 struct MailboxVideoFrameData {
-  // Size must be kept in sync with media::VideoFrame::kMaxPlanes.
-  array<gpu.mojom.MailboxHolder, 4> mailbox_holder;
+  gpu.mojom.MailboxHolder mailbox_holder;
+  gpu.mojom.VulkanYCbCrInfo? ycbcr_data;
+};
+
+// This defines video frame data stored in texture shared images.
+struct SharedImageVideoFrameData {
+  gpu.mojom.ExportedSharedImage shared_image;
+  gpu.mojom.SyncToken sync_token;
+  uint32 texture_target;
+  // |ycbcr_data| is present on Android (and sometimes Fuchsia) when the
+  // video is hardware decoded and the display compositor uses Vulkan.
   gpu.mojom.VulkanYCbCrInfo? ycbcr_data;
 };
 
@@ -565,4 +612,29 @@ enum RendererType {
   kCastStreaming = 9,    // CastStreamingRendererFactory
   kContentEmbedderDefined = 10,  // Defined by the content embedder
   kTest= 11,             // Renderer implementations used in tests
+};
+
+// See media::CreateCdmStatus
+enum CreateCdmStatus {
+  kSuccess,
+  kUnknownError,
+  kCdmCreationAborted,
+  kLoadCdmFailed,
+  kCreateCdmFuncNotAvailable,
+  kCdmHelperCreationFailed,
+  kGetCdmPrefDataFailed,
+  kGetCdmOriginIdFailed,
+  kInitCdmFailed,
+  kCdmFactoryCreationFailed,
+  kCdmNotSupported,
+  kInvalidCdmConfig,
+  kUnsupportedKeySystem,
+  kDisconnectionError,
+  kNotAllowedOnUniqueOrigin,
+  kMediaDrmBridgeCreationFailed,
+  kMediaCryptoNotAvailable,
+  kNoMoreInstances,
+  kInsufficientGpuResources,
+  kCrOsVerifiedAccessDisabled,
+  kCrOsRemoteFactoryCreationFailed,
 };

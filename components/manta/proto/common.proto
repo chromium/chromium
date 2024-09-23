@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package manta.proto;
+
+// This should be google.protobuf.Any, but Chromium now cannot import well known
+// protos.
+message Proto3Any {
+  string type_url = 1;
+  bytes value = 2;
+}
+
+message Image {
+  optional bytes serialized_bytes = 1;
+}

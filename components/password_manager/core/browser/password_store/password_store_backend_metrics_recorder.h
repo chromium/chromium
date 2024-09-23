@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
@@ -101,6 +100,7 @@ class PasswordStoreBackendMetricsRecorder {
   // - "PasswordManager.PasswordStoreAndroidBackend.ErrorCode"
   // - "PasswordManager.PasswordStoreAndroidBackend.<method_name_>.ErrorCode"
   // Records additionally if the store infix is provided:
+  // - "PasswordManager.PasswordStoreAndroidBackend.<store infix>.ErrorCode"
   // -
   // "PasswordManager.PasswordStoreAndroidBackend.<store
   // infix>.<method_name_>.ErrorCode"
@@ -119,6 +119,7 @@ class PasswordStoreBackendMetricsRecorder {
   // - "PasswordManager.PasswordStoreAndroidBackend.APIError"
   // - "PasswordManager.PasswordStoreAndroidBackend.<method_name_>.APIError"
   // Records additionally if the store infix is provided:
+  // - "PasswordManager.PasswordStoreAndroidBackend.<store infix>.APIError"
   // -
   // "PasswordManager.PasswordStoreAndroidBackend.<store
   // infix>.<method_name_>.APIError"

@@ -2,16 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/http/http_auth_handler_digest.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -239,8 +244,8 @@ bool HttpAuthHandlerDigest::ParseChallenge(
   return true;
 }
 
-bool HttpAuthHandlerDigest::ParseChallengeProperty(base::StringPiece name,
-                                                   base::StringPiece value) {
+bool HttpAuthHandlerDigest::ParseChallengeProperty(std::string_view name,
+                                                   std::string_view value) {
   if (base::EqualsCaseInsensitiveASCII(name, "realm")) {
     std::string realm;
     if (!ConvertToUtf8AndNormalize(value, kCharsetLatin1, &realm)) {
@@ -277,8 +282,8 @@ bool HttpAuthHandlerDigest::ParseChallengeProperty(base::StringPiece name,
     // Parse the comma separated list of qops.
     // auth is the only supported qop, and all other values are ignored.
     //
-    // TODO(https://crbug.com/820198): Remove this copy when
-    // HttpUtil::ValuesIterator can take a StringPiece.
+    // TODO(crbug.com/41375521): Remove this copy when
+    // HttpUtil::ValuesIterator can take a std::string_view.
     std::string value_str(value);
     HttpUtil::ValuesIterator qop_values(value_str.begin(), value_str.end(),
                                         ',');
@@ -305,7 +310,7 @@ std::string HttpAuthHandlerDigest::QopToString(QualityOfProtection qop) {
     case QOP_AUTH:
       return "auth";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }
@@ -324,7 +329,7 @@ std::string HttpAuthHandlerDigest::AlgorithmToString(Algorithm algorithm) {
     case Algorithm::SHA256_SESS:
       return "SHA-256-sess";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }
@@ -364,10 +369,10 @@ class HttpAuthHandlerDigest::DigestContext {
         break;
     }
   }
-  void Update(base::StringPiece s) {
+  void Update(std::string_view s) {
     CHECK(EVP_DigestUpdate(md_ctx_.get(), s.data(), s.size()));
   }
-  void Update(std::initializer_list<base::StringPiece> sps) {
+  void Update(std::initializer_list<std::string_view> sps) {
     for (const auto sp : sps) {
       Update(sp);
     }

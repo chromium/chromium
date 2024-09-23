@@ -8,6 +8,16 @@
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 
+bool HasPlatformPolicies() {
+  return [[[NSUserDefaults standardUserDefaults]
+             dictionaryForKey:kPolicyLoaderIOSConfigurationKey] count] > 0;
+}
+
+bool IsApplicationManagedByMDM() {
+  return [[NSUserDefaults standardUserDefaults]
+             dictionaryForKey:kPolicyLoaderIOSConfigurationKey] != nil;
+}
+
 bool IsIncognitoPolicyApplied(PrefService* pref_service) {
   if (!pref_service)
     return NO;
@@ -29,11 +39,6 @@ bool IsIncognitoModeForced(PrefService* pref_service) {
          pref_service->GetInteger(
              policy::policy_prefs::kIncognitoModeAvailability) ==
              static_cast<int>(IncognitoModePrefs::kForced);
-}
-
-bool IsApplicationManagedByPlatform() {
-  return [[[NSUserDefaults standardUserDefaults]
-             dictionaryForKey:kPolicyLoaderIOSConfigurationKey] count] > 0;
 }
 
 bool IsAddNewTabAllowedByPolicy(PrefService* prefs, bool is_incognito) {

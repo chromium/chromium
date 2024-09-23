@@ -403,7 +403,7 @@ public class PlayerFrameBitmapState {
 
             if (mPendingBitmapRequests == null) return;
 
-            // TODO(crbug.com/1021590): Handle errors.
+            // TODO(crbug.com/40106234): Handle errors.
             assert mBitmapMatrix != null;
             assert mBitmapMatrix[mRequestRow][mRequestCol] == null;
             assert mPendingBitmapRequests[mRequestRow][mRequestCol] != null;

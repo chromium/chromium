@@ -49,7 +49,7 @@ class UrlLoaderNetworkServiceObserver
           cert_responder) override;
   void OnAuthRequired(
       const std::optional<base::UnguessableToken>& window_id,
-      uint32_t request_id,
+      int32_t request_id,
       const GURL& url,
       bool first_auth_attempt,
       const net::AuthChallengeInfo& auth_info,
@@ -81,6 +81,8 @@ class UrlLoaderNetworkServiceObserver
   void Clone(
       mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
           listener) override;
+  void OnWebSocketConnectedToPrivateNetwork(
+      network::mojom::IPAddressSpace ip_address_space) override;
 
   void OnCertificatesSelected(
       mojo::PendingRemote<network::mojom::ClientCertificateResponder>

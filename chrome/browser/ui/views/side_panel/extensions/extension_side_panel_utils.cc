@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -15,30 +17,20 @@
 namespace extensions::side_panel_util {
 
 // Defined in extension_side_panel_utils.h
-void CreateSidePanelManagerForWebContents(Profile* profile,
-                                          content::WebContents* web_contents) {
-  ExtensionSidePanelManager::GetOrCreateForWebContents(profile, web_contents);
-}
-
-// Defined in extension_side_panel_utils.h
 void ToggleExtensionSidePanel(Browser* browser,
                               const ExtensionId& extension_id) {
-  SidePanelUI* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser);
+  SidePanelUI* side_panel_ui = browser->GetFeatures().side_panel_ui();
 
   SidePanelEntry::Key extension_key =
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id);
-  if (side_panel_ui->IsSidePanelEntryShowing(extension_key)) {
-    side_panel_ui->Close();
-  } else {
-    side_panel_ui->Show(extension_key);
-  }
+  side_panel_ui->Toggle(extension_key, SidePanelOpenTrigger::kExtension);
 }
 
 // Declared in extension_side_panel_utils.h
 void OpenGlobalExtensionSidePanel(Browser& browser,
                                   content::WebContents* web_contents,
                                   const ExtensionId& extension_id) {
-  SidePanelUI* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(&browser);
+  SidePanelUI* side_panel_ui = browser.GetFeatures().side_panel_ui();
 
   SidePanelEntry::Key extension_key =
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id);
@@ -60,7 +52,7 @@ void OpenGlobalExtensionSidePanel(Browser& browser,
     // contextual panel in that tab. If there is one, we need to reset it so
     // that we can show the global entry instead.
     SidePanelRegistry* contextual_registry =
-        SidePanelRegistry::Get(web_contents);
+        SidePanelRegistry::GetDeprecated(web_contents);
     CHECK(contextual_registry);
     if (contextual_registry && contextual_registry->active_entry()) {
       contextual_registry->ResetActiveEntry();
@@ -80,7 +72,7 @@ void OpenGlobalExtensionSidePanel(Browser& browser,
   // In the case of a global side panel, we should override it. We don't want to
   // override a contextual side panel, though.
   SidePanelRegistry* active_tab_contextual_registry =
-      SidePanelRegistry::Get(active_web_contents);
+      SidePanelRegistry::GetDeprecated(active_web_contents);
   CHECK(active_tab_contextual_registry);
   bool has_active_contextual_entry =
       active_tab_contextual_registry->active_entry().has_value();
@@ -95,7 +87,7 @@ void OpenGlobalExtensionSidePanel(Browser& browser,
   // the active global entry in the global registry, which will take effect
   // when a different tab activates.
   SidePanelRegistry* global_registry =
-      SidePanelCoordinator::GetGlobalSidePanelRegistry(&browser);
+      browser.GetFeatures().side_panel_coordinator()->GetWindowRegistry();
   CHECK(global_registry);
   SidePanelEntry* entry = global_registry->GetEntryForKey(extension_key);
   CHECK(entry);
@@ -110,11 +102,11 @@ void OpenContextualExtensionSidePanel(Browser& browser,
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id);
 
   if (browser.tab_strip_model()->GetActiveWebContents() == &web_contents) {
-    SidePanelUI::GetSidePanelUIForBrowser(&browser)->Show(extension_key);
+    browser.GetFeatures().side_panel_ui()->Show(extension_key);
     return;
   }
 
-  SidePanelRegistry* registry = SidePanelRegistry::Get(&web_contents);
+  SidePanelRegistry* registry = SidePanelRegistry::GetDeprecated(&web_contents);
   CHECK(registry);
 
   SidePanelEntry* entry = registry->GetEntryForKey(extension_key);

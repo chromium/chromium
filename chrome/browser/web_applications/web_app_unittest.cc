@@ -6,7 +6,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -15,15 +17,23 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
+#include "components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
@@ -35,7 +45,7 @@ namespace web_app {
 
 namespace {
 
-constexpr base::StringPiece kGenerateExpectationsMessage = R"(
+constexpr std::string_view kGenerateExpectationsMessage = R"(
 In order to regenerate expectations run
 the following command:
   out/<dir>/unit_tests \
@@ -61,7 +71,7 @@ base::FilePath GetPathRelativeToTestDataDir(
   return relative_path;
 }
 
-base::FilePath GetPathToTestFile(base::StringPiece filename) {
+base::FilePath GetPathToTestFile(std::string_view filename) {
   return GetTestDataDir().AppendASCII("web_apps").AppendASCII(filename);
 }
 
@@ -72,7 +82,7 @@ std::string GetContentsOrDie(const base::FilePath& filepath) {
 }
 
 void SetContentsOrDie(const base::FilePath& filepath,
-                      base::StringPiece contents) {
+                      std::string_view contents) {
   CHECK(base::WriteFile(filepath, contents));
 }
 
@@ -83,7 +93,7 @@ std::string SerializeValueToJsonOrDie(const base::Value& value) {
   return contents;
 }
 
-base::Value DeserializeValueFromJsonOrDie(base::StringPiece json) {
+base::Value DeserializeValueFromJsonOrDie(std::string_view json) {
   std::optional<base::Value> value = base::JSONReader::Read(json);
   CHECK(value.has_value());
   return *std::move(value);
@@ -96,7 +106,7 @@ bool IsRebaseline() {
 }
 
 void SaveExpectationsContentsOrDie(const base::FilePath path,
-                                   base::StringPiece contents) {
+                                   std::string_view contents) {
   const std::string current_contents = GetContentsOrDie(path);
 
   const base::FilePath test_data_dir_relative_path =
@@ -110,6 +120,30 @@ void SaveExpectationsContentsOrDie(const base::FilePath path,
   }
 
   SetContentsOrDie(path, contents);
+}
+
+static constexpr char kEcdsaP256PublicKeyBase64[] =
+    "AxyCBzvQfu1yaF01392k1gu2qCtT1uA2+WfIEhlyJB5S";
+static constexpr char kEcdsaP256SHA256SignatureHex[] =
+    "3044022007381524F538B04F99CCC62703F06C87F66EF41BDA18A22D8E57952AA23E53A6"
+    "022063C7F81D3A44798CB95823FA38FC23B15E0483744657FF49E1E83AB8C06B63C2";
+
+IsolatedWebAppIntegrityBlockData CreateIntegrityBlockData() {
+  std::vector<web_package::SignedWebBundleSignatureInfo> signatures;
+
+  // EcdsaP256SHA256:
+  {
+    auto public_key = *web_package::EcdsaP256PublicKey::Create(
+        *base::Base64Decode(kEcdsaP256PublicKeyBase64));
+    std::vector<uint8_t> data;
+    CHECK(base::HexStringToBytes(kEcdsaP256SHA256SignatureHex, &data));
+    auto signature = *web_package::EcdsaP256SHA256Signature::Create(data);
+    signatures.push_back(
+        web_package::SignedWebBundleSignatureInfoEcdsaP256SHA256(
+            std::move(public_key), std::move(signature)));
+  }
+
+  return IsolatedWebAppIntegrityBlockData(std::move(signatures));
 }
 
 }  // namespace
@@ -337,21 +371,25 @@ TEST(WebAppTest, IsolationDataStartsEmpty) {
 TEST(WebAppTest, IsolationDataDebugValue) {
   WebApp app{GenerateAppId(/*manifest_id_path=*/std::nullopt,
                            GURL("https://example.com"))};
-  app.SetIsolationData(WebApp::IsolationData(
-      InstalledBundle{.path = base::FilePath(FILE_PATH_LITERAL("random_path"))},
-      base::Version("1.0.0")));
+  app.SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+          base::Version("1.0.0"))
+          .Build());
 
   EXPECT_TRUE(app.isolation_data().has_value());
 
   base::Value expected_isolation_data = base::JSONReader::Read(R"|({
         "isolated_web_app_location": {
-          "installed_bundle": {
-            "path": "random_path"
+          "owned_bundle": {
+            "dev_mode": false,
+            "dir_name_ascii": "random_name"
           }
         },
         "version": "1.0.0",
         "controlled_frame_partitions (on-disk)": [],
-        "pending_update_info": null
+        "pending_update_info": null,
+        "integrity_block_data": null
       })|")
                                             .value();
 
@@ -365,34 +403,54 @@ TEST(WebAppTest, IsolationDataDebugValue) {
 TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
   WebApp app{GenerateAppId(/*manifest_id_path=*/std::nullopt,
                            GURL("https://example.com"))};
-  app.SetIsolationData(WebApp::IsolationData(
-      InstalledBundle{.path = base::FilePath(FILE_PATH_LITERAL("random_path"))},
-      base::Version("1.0.0"), {},
-      WebApp::IsolationData::PendingUpdateInfo(
-          InstalledBundle{
-              .path = base::FilePath(FILE_PATH_LITERAL("another_path"))},
-          base::Version("2.0.0"))));
+
+  auto integrity_block_data = CreateIntegrityBlockData();
+  app.SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/true},
+          base::Version("1.0.0"))
+          .SetPendingUpdateInfo(IsolationData::PendingUpdateInfo(
+              IwaStorageUnownedBundle{
+                  base::FilePath(FILE_PATH_LITERAL("random_folder"))},
+              base::Version("2.0.0"), integrity_block_data))
+          .SetIntegrityBlockData(integrity_block_data)
+          .Build());
 
   EXPECT_TRUE(app.isolation_data().has_value());
 
-  base::Value expected_isolation_data = base::JSONReader::Read(R"|({
+  auto ib_data_serialized = *base::WriteJson(base::Value::Dict().Set(
+      "signatures", base::Value::List().Append(base::Value::Dict().Set(
+                        "ecdsa_p256_sha256",
+                        base::Value::Dict()
+                            .Set("public_key", kEcdsaP256PublicKeyBase64)
+                            .Set("signature", kEcdsaP256SHA256SignatureHex)))));
+
+  static constexpr std::string_view kExpectedIsolationDataFormat =
+      R"|({
         "isolated_web_app_location": {
-          "installed_bundle": {
-            "path": "random_path"
+          "owned_bundle": {
+            "dev_mode": true,
+            "dir_name_ascii": "random_name"
           }
         },
         "version": "1.0.0",
         "controlled_frame_partitions (on-disk)": [],
         "pending_update_info": {
           "isolated_web_app_location": {
-            "installed_bundle": {
-              "path": "another_path"
+            "unowned_bundle": {
+              "path": "random_folder"
             }
           },
-          "version": "2.0.0"
-        }
-      })|")
-                                            .value();
+          "version": "2.0.0",
+          "integrity_block_data": $1
+        },
+        "integrity_block_data": $2
+      })|";
+
+  base::Value expected_isolation_data = *base::JSONReader::Read(
+      base::ReplaceStringPlaceholders(kExpectedIsolationDataFormat,
+                                      {ib_data_serialized, ib_data_serialized},
+                                      /*offsets=*/nullptr));
 
   base::Value::Dict debug_app = app.AsDebugValue().GetDict().Clone();
   base::Value::Dict* debug_isolation_data =
@@ -457,4 +515,30 @@ TEST(WebAppTest, PermissionsPolicyDebugValue) {
   EXPECT_TRUE(debug_permissions_policy != nullptr);
   EXPECT_EQ(*debug_permissions_policy, expected_permissions_policy);
 }
+
+class WebAppScopeTest : public WebAppTest {
+ public:
+  void SetUp() override {
+    WebAppTest::SetUp();
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
+  }
+};
+
+TEST_F(WebAppScopeTest, TestScopeIgnored) {
+  const GURL kStartUrl("https://www.foo.com/bar/index.html");
+  const GURL kScopeWithQueryAndFragments =
+      GURL("https://www.foo.com/bar/?query=abc#fragment");
+
+  std::unique_ptr<WebAppInstallInfo> install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kStartUrl);
+  install_info->scope = kScopeWithQueryAndFragments;
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(install_info));
+
+  EXPECT_EQ(GURL("https://www.foo.com/bar/"),
+            fake_provider().registrar_unsafe().GetAppScope(app_id));
+  EXPECT_TRUE(fake_provider().registrar_unsafe().IsUrlInAppScope(
+      GURL("https://www.foo.com/bar/"), app_id));
+}
+
 }  // namespace web_app

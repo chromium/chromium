@@ -63,12 +63,13 @@ TabStatsTracker* g_tab_stats_tracker_instance = nullptr;
 
 void UmaHistogramCounts10000WithBatteryStateVariant(const char* histogram_name,
                                                     size_t value) {
-  DCHECK(base::PowerMonitor::IsInitialized());
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  DCHECK(power_monitor->IsInitialized());
 
   base::UmaHistogramCounts10000(histogram_name, value);
 
   const char* suffix =
-      base::PowerMonitor::IsOnBatteryPower() ? ".OnBattery" : ".PluggedIn";
+      power_monitor->IsOnBatteryPower() ? ".OnBattery" : ".PluggedIn";
 
   base::UmaHistogramCounts10000(base::StrCat({histogram_name, suffix}), value);
 }
@@ -104,11 +105,16 @@ const char TabStatsTracker::UmaStatsReportingDelegate::
     kDailyDiscardsProactiveHistogramName[] =
         "Discarding.DailyDiscards.Proactive";
 const char TabStatsTracker::UmaStatsReportingDelegate::
+    kDailyDiscardsSuggestedHistogramName[] =
+        "Discarding.DailyDiscards.Suggested";
+const char TabStatsTracker::UmaStatsReportingDelegate::
     kDailyReloadsExternalHistogramName[] = "Discarding.DailyReloads.External";
 const char TabStatsTracker::UmaStatsReportingDelegate::
     kDailyReloadsUrgentHistogramName[] = "Discarding.DailyReloads.Urgent";
 const char TabStatsTracker::UmaStatsReportingDelegate::
     kDailyReloadsProactiveHistogramName[] = "Discarding.DailyReloads.Proactive";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kDailyReloadsSuggestedHistogramName[] = "Discarding.DailyReloads.Suggested";
 
 const TabStatsDataStore::TabsStats& TabStatsTracker::tab_stats() const {
   return tab_stats_data_store_->tab_stats();
@@ -142,7 +148,7 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
   }
 
   browser_list->AddObserver(this);
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
 
   // Setup daily reporting of the stats aggregated in |tab_stats_data_store|.
   daily_event_->AddObserver(std::make_unique<TabStatsDailyObserver>(
@@ -164,7 +170,7 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
 TabStatsTracker::~TabStatsTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BrowserList::GetInstance()->RemoveObserver(this);
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
   g_browser_process->GetTabManager()->RemoveObserver(this);
 }
 
@@ -226,9 +232,11 @@ void TabStatsTracker::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(::prefs::kTabStatsDiscardsExternal, 0);
   registry->RegisterIntegerPref(::prefs::kTabStatsDiscardsUrgent, 0);
   registry->RegisterIntegerPref(::prefs::kTabStatsDiscardsProactive, 0);
+  registry->RegisterIntegerPref(::prefs::kTabStatsDiscardsSuggested, 0);
   registry->RegisterIntegerPref(::prefs::kTabStatsReloadsExternal, 0);
   registry->RegisterIntegerPref(::prefs::kTabStatsReloadsUrgent, 0);
   registry->RegisterIntegerPref(::prefs::kTabStatsReloadsProactive, 0);
+  registry->RegisterIntegerPref(::prefs::kTabStatsReloadsSuggested, 0);
 }
 
 void TabStatsTracker::TabStatsDailyObserver::OnDailyEvent(
@@ -349,6 +357,21 @@ class TabStatsTracker::WebContentsUsageObserver
   void MediaDestroyed(const content::MediaPlayerId& id) override {
     for (auto& tab_stats_observer : tab_stats_tracker_->tab_stats_observers_)
       tab_stats_observer.OnMediaDestroyed(web_contents());
+  }
+
+  void WasDiscarded() override {
+    if (ukm_source_id_) {
+      ukm::builders::TabManager_TabLifetime(ukm_source_id_)
+          .SetTimeSinceNavigation(
+              (base::TimeTicks::Now() - navigation_time_).InMilliseconds())
+          .Record(ukm::UkmRecorder::Get());
+      ukm_source_id_ = 0;
+    }
+
+    for (TabStatsObserver& tab_stats_observer :
+         tab_stats_tracker_->tab_stats_observers_) {
+      tab_stats_observer.OnTabDiscarded(web_contents());
+    }
   }
 
  private:
@@ -487,18 +510,24 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportDailyMetrics(
       static_cast<size_t>(LifecycleUnitDiscardReason::URGENT);
   const size_t proactive_index =
       static_cast<size_t>(LifecycleUnitDiscardReason::PROACTIVE);
+  const size_t suggested_index =
+      static_cast<size_t>(LifecycleUnitDiscardReason::SUGGESTED);
   base::UmaHistogramCounts10000(kDailyDiscardsExternalHistogramName,
                                 tab_stats.tab_discard_counts[external_index]);
   base::UmaHistogramCounts10000(kDailyDiscardsUrgentHistogramName,
                                 tab_stats.tab_discard_counts[urgent_index]);
   base::UmaHistogramCounts10000(kDailyDiscardsProactiveHistogramName,
                                 tab_stats.tab_discard_counts[proactive_index]);
+  base::UmaHistogramCounts10000(kDailyDiscardsSuggestedHistogramName,
+                                tab_stats.tab_discard_counts[suggested_index]);
   base::UmaHistogramCounts10000(kDailyReloadsExternalHistogramName,
                                 tab_stats.tab_reload_counts[external_index]);
   base::UmaHistogramCounts10000(kDailyReloadsUrgentHistogramName,
                                 tab_stats.tab_reload_counts[urgent_index]);
   base::UmaHistogramCounts10000(kDailyReloadsProactiveHistogramName,
                                 tab_stats.tab_reload_counts[proactive_index]);
+  base::UmaHistogramCounts10000(kDailyReloadsSuggestedHistogramName,
+                                tab_stats.tab_reload_counts[suggested_index]);
 }
 
 void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(

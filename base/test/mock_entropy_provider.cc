@@ -4,6 +4,8 @@
 
 #include "base/test/mock_entropy_provider.h"
 
+#include <string_view>
+
 namespace base {
 
 MockEntropyProvider::MockEntropyProvider() : entropy_value_(0.5) {}
@@ -12,7 +14,7 @@ MockEntropyProvider::MockEntropyProvider(double entropy_value)
 MockEntropyProvider::~MockEntropyProvider() = default;
 
 double MockEntropyProvider::GetEntropyForTrial(
-    StringPiece trial_name,
+    std::string_view trial_name,
     uint32_t randomization_seed) const {
   return entropy_value_;
 }

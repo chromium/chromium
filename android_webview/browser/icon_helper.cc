@@ -110,7 +110,6 @@ void IconHelper::DidUpdateFaviconURL(
         break;
       default:
         NOTREACHED();
-        break;
     }
   }
 }

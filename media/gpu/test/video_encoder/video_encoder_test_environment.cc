@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/test/video_encoder/video_encoder_test_environment.h"
 
 #include <iterator>
@@ -280,24 +285,14 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
       enabled_features);
   std::vector<base::test::FeatureRef> combined_disabled_features(
       disabled_features);
-  combined_disabled_features.push_back(media::kFFmpegDecodeOpaqueVP8);
 #if BUILDFLAG(USE_VAAPI)
-  // TODO(crbug.com/828482): remove once enabled by default.
+  // TODO(crbug.com/41380519): remove once enabled by default.
   combined_enabled_features.push_back(media::kVaapiLowPowerEncoderGen9x);
-  // TODO(crbug.com/811912): remove once enabled by default.
-  combined_enabled_features.push_back(media::kVaapiVP9Encoder);
 
   // Disable this feature so that the encoder test can test a resolution
   // which is denied for the sake of performance. See crbug.com/1008491.
   combined_disabled_features.push_back(
       media::kVaapiEnforceVideoMinMaxResolution);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_VAAPI)
-  // TODO(b/292462186): remove once enabled by default.
-  combined_enabled_features.push_back(media::kVaapiVp9SModeHWEncoding);
-  // TODO(b/202926617): remove once enabled by default.
-  combined_enabled_features.push_back(media::kVaapiVp8TemporalLayerHWEncoding);
 #endif
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_VAAPI)
@@ -415,10 +410,10 @@ base::FilePath VideoEncoderTestEnvironment::OutputFilePath(
           .Append(GetTestOutputFilePath())
           .Append(output_bitstream_file_base_name_.ReplaceExtension(extension));
   if (svc_enable) {
+    auto file_name_suffix =
+        base::StringPrintf(".SL%d.TL%d", spatial_idx, temporal_idx);
     output_bitstream_filepath =
-        output_bitstream_filepath.InsertBeforeExtensionASCII(
-            FILE_PATH_LITERAL(".SL") + base::NumberToString(spatial_idx) +
-            FILE_PATH_LITERAL(".TL") + base::NumberToString(temporal_idx));
+        output_bitstream_filepath.InsertBeforeExtensionASCII(file_name_suffix);
   }
 
   return output_bitstream_filepath;

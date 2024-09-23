@@ -36,18 +36,14 @@ class SelectFileDialogImpl : public SelectFileDialog {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& java_object);
 
-  void OnContactsSelected(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_object,
-      const base::android::JavaParamRef<jstring>& contacts);
-
   // From SelectFileDialog
   bool IsRunning(gfx::NativeWindow) const override;
   void ListenerDestroyed() override;
+  void SetAcceptTypes(std::vector<std::u16string> types) override;
+  void SetUseMediaCapture(bool use_media_capture) override;
+  void SetOpenWritable(bool open_writable) override;
 
   // Called when it is time to display the file picker.
-  // params is expected to be a vector<string16> with accept_types first and
-  // the capture value as the last element of the vector.
   void SelectFileImpl(SelectFileDialog::Type type,
                       const std::u16string& title,
                       const base::FilePath& default_path,
@@ -55,7 +51,6 @@ class SelectFileDialogImpl : public SelectFileDialog {
                       int file_type_index,
                       const std::string& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
                       const GURL* caller) override;
 
  protected:
@@ -66,6 +61,10 @@ class SelectFileDialogImpl : public SelectFileDialog {
                        std::unique_ptr<SelectFilePolicy> policy);
 
   bool HasMultipleFileTypeChoicesImpl() override;
+
+  std::vector<std::u16string> accept_types_;
+  bool use_media_capture_ = false;
+  bool open_writable_ = false;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };

@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Khảo sát</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/giây</translation>
 <translation id="2353636109065292463">Kiểm tra kết nối Internet</translation>
+<translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2388990488038464401">Gọi cho số này bằng điện thoại của bạn?</translation>
 <translation id="2435457462613246316">Hiện mật khẩu</translation>
 <translation id="24452542372838207">Mở rộng thông báo</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">MỚI</translation>
 <translation id="2666092431469916601">Hàng đầu</translation>
 <translation id="2701330563083355633">Chia sẻ từ <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Mới</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 năm trước}other{# năm trước}}</translation>
 <translation id="2878511608894704031">Xóa tất cả</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{trong 1 ngày}other{trong # ngày}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">Hệ thống <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Mũi tên trái</translation>
+<translation id="5633029987065897167">Trống</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 phút}other{# phút}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Hoạt động hôm nay}=1{Hoạt động 1 ngày trước}other{Hoạt động # ngày trước}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 ngày và }other{# ngày và }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">Nội dung ở định dạng văn bản giàu tính chất (RTF)</translation>
 <translation id="6539092367496845964">Đã xảy ra lỗi. Hãy thử lại sau.</translation>
 <translation id="654149438358937226">Chặn tất cả thông báo</translation>
-<translation id="6612467943526193239">Để thoát chế độ hiệu chỉnh, nhấn Esc.</translation>
 <translation id="6620110761915583480">Lưu Tệp</translation>
 <translation id="6699343763173986273">Bản nhạc tiếp theo của trình phát phương tiện</translation>
 <translation id="6808150112686056157">Dừng trình phát phương tiện</translation>

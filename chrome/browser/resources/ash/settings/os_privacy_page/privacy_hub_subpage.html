@@ -13,8 +13,23 @@
   }
 </style>
 
+<template is="dom-if" if="[[showPrivacyHubLocationControl_]]" restamp>
+  <cr-link-row
+      id="geolocationAreaLinkRow"
+      start-icon="app-management:location"
+      on-click="onGeolocationAreaClick_"
+      label="$i18n{geolocationAreaTitle}"
+      sub-label="[[locationSubLabel_]]"
+      role-description="$i18n{subpageArrowRoleDescription}"
+      deep-link-focus-id$="[[Setting.kGeolocationOnOff]]"
+      using-slotted-label>
+    </div>
+  </cr-link-row>
+</template>
+
 <div id="cameraSection">
   <template is="dom-if" if="[[!showAppPermissions_]]">
+    <div class="hr"></div>
     <settings-toggle-button
         id="cameraToggle"
         pref="{{prefs.ash.user.camera_allowed}}"
@@ -150,24 +165,6 @@
       deep-link-focus-id$="[[Setting.kSpeakOnMuteDetectionOnOff]]"
       learn-more-url="$i18n{speakOnMuteDetectionLearnMoreURL}">
   </settings-toggle-button>
-</template>
-
-<template is="dom-if" if="[[showPrivacyHubLocationControl_]]" restamp>
-  <div class="hr"></div>
-  <cr-link-row
-      id="geolocationAreaLinkRow"
-      start-icon="app-management:location"
-      on-click="onGeolocationAreaClick_"
-      deep-link-focus-id$="[[Setting.kGeolocationOnOff]]"
-      using-slotted-label>
-    <div slot="label">$i18n{geolocationAreaTitle}</div>
-    <div slot="sub-label">
-      <localized-link
-          localized-string="$i18n{geolocationAreaDescription}"
-          link-url="$i18n{geolocationAreaLearnMoreURL}">
-      </localized-link>
-    </div>
-  </cr-link-row>
 </template>
 
 <if expr="_google_chrome">

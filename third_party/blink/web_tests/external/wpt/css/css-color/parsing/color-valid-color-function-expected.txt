@@ -1,0 +1,94 @@
+This is a testharness.js-based test.
+Found 45 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] e.style['color'] = "color(srgb calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))" should set the property value
+  assert_equals: serialization should be canonical expected "color(srgb calc(1.5) calc(-0.5) calc(0.5) / calc(0.5))" but got "color(srgb 1.5 -0.5 0.5 / 0.5)"
+[FAIL] e.style['color'] = "color(srgb calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))" should set the property value
+  assert_equals: serialization should be canonical expected "color(srgb calc(150%) calc(-50%) calc(50%) / calc(-150%))" but got "color(srgb 1.5 -0.5 0.5 / 0)"
+[FAIL] e.style['color'] = "color(srgb calc(50%) 50% 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(srgb calc(50%) 0.5 0.5)" but got "color(srgb 0.5 0.5 0.5)"
+[FAIL] e.style['color'] = "color(srgb calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(srgb calc(50% + (10% * sign(1em - 10px))) 0 0 / 0.5)" but got "color(srgb 0.4 0 0 / 0.5)"
+[FAIL] e.style['color'] = "color(srgb 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "color(srgb 0.5 0 0 / calc(50% + (10% * sign(1em - 10px))))" but got "color(srgb 0.5 0 0 / 0.4)"
+[FAIL] e.style['color'] = "color(srgb-linear calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))" should set the property value
+  assert_equals: serialization should be canonical expected "color(srgb-linear calc(1.5) calc(-0.5) calc(0.5) / calc(0.5))" but got "color(srgb-linear 1.5 -0.5 0.5 / 0.5)"
+[FAIL] e.style['color'] = "color(srgb-linear calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))" should set the property value
+  assert_equals: serialization should be canonical expected "color(srgb-linear calc(150%) calc(-50%) calc(50%) / calc(-150%))" but got "color(srgb-linear 1.5 -0.5 0.5 / 0)"
+[FAIL] e.style['color'] = "color(srgb-linear calc(50%) 50% 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(srgb-linear calc(50%) 0.5 0.5)" but got "color(srgb-linear 0.5 0.5 0.5)"
+[FAIL] e.style['color'] = "color(srgb-linear calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(srgb-linear calc(50% + (10% * sign(1em - 10px))) 0 0 / 0.5)" but got "color(srgb-linear 0.4 0 0 / 0.5)"
+[FAIL] e.style['color'] = "color(srgb-linear 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "color(srgb-linear 0.5 0 0 / calc(50% + (10% * sign(1em - 10px))))" but got "color(srgb-linear 0.5 0 0 / 0.4)"
+[FAIL] e.style['color'] = "color(a98-rgb calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))" should set the property value
+  assert_equals: serialization should be canonical expected "color(a98-rgb calc(1.5) calc(-0.5) calc(0.5) / calc(0.5))" but got "color(a98-rgb 1.5 -0.5 0.5 / 0.5)"
+[FAIL] e.style['color'] = "color(a98-rgb calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))" should set the property value
+  assert_equals: serialization should be canonical expected "color(a98-rgb calc(150%) calc(-50%) calc(50%) / calc(-150%))" but got "color(a98-rgb 1.5 -0.5 0.5 / 0)"
+[FAIL] e.style['color'] = "color(a98-rgb calc(50%) 50% 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(a98-rgb calc(50%) 0.5 0.5)" but got "color(a98-rgb 0.5 0.5 0.5)"
+[FAIL] e.style['color'] = "color(a98-rgb calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(a98-rgb calc(50% + (10% * sign(1em - 10px))) 0 0 / 0.5)" but got "color(a98-rgb 0.4 0 0 / 0.5)"
+[FAIL] e.style['color'] = "color(a98-rgb 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "color(a98-rgb 0.5 0 0 / calc(50% + (10% * sign(1em - 10px))))" but got "color(a98-rgb 0.5 0 0 / 0.4)"
+[FAIL] e.style['color'] = "color(rec2020 calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))" should set the property value
+  assert_equals: serialization should be canonical expected "color(rec2020 calc(1.5) calc(-0.5) calc(0.5) / calc(0.5))" but got "color(rec2020 1.5 -0.5 0.5 / 0.5)"
+[FAIL] e.style['color'] = "color(rec2020 calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))" should set the property value
+  assert_equals: serialization should be canonical expected "color(rec2020 calc(150%) calc(-50%) calc(50%) / calc(-150%))" but got "color(rec2020 1.5 -0.5 0.5 / 0)"
+[FAIL] e.style['color'] = "color(rec2020 calc(50%) 50% 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(rec2020 calc(50%) 0.5 0.5)" but got "color(rec2020 0.5 0.5 0.5)"
+[FAIL] e.style['color'] = "color(rec2020 calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(rec2020 calc(50% + (10% * sign(1em - 10px))) 0 0 / 0.5)" but got "color(rec2020 0.4 0 0 / 0.5)"
+[FAIL] e.style['color'] = "color(rec2020 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "color(rec2020 0.5 0 0 / calc(50% + (10% * sign(1em - 10px))))" but got "color(rec2020 0.5 0 0 / 0.4)"
+[FAIL] e.style['color'] = "color(prophoto-rgb calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))" should set the property value
+  assert_equals: serialization should be canonical expected "color(prophoto-rgb calc(1.5) calc(-0.5) calc(0.5) / calc(0.5))" but got "color(prophoto-rgb 1.5 -0.5 0.5 / 0.5)"
+[FAIL] e.style['color'] = "color(prophoto-rgb calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))" should set the property value
+  assert_equals: serialization should be canonical expected "color(prophoto-rgb calc(150%) calc(-50%) calc(50%) / calc(-150%))" but got "color(prophoto-rgb 1.5 -0.5 0.5 / 0)"
+[FAIL] e.style['color'] = "color(prophoto-rgb calc(50%) 50% 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(prophoto-rgb calc(50%) 0.5 0.5)" but got "color(prophoto-rgb 0.5 0.5 0.5)"
+[FAIL] e.style['color'] = "color(prophoto-rgb calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(prophoto-rgb calc(50% + (10% * sign(1em - 10px))) 0 0 / 0.5)" but got "color(prophoto-rgb 0.4 0 0 / 0.5)"
+[FAIL] e.style['color'] = "color(prophoto-rgb 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "color(prophoto-rgb 0.5 0 0 / calc(50% + (10% * sign(1em - 10px))))" but got "color(prophoto-rgb 0.5 0 0 / 0.4)"
+[FAIL] e.style['color'] = "color(display-p3 calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))" should set the property value
+  assert_equals: serialization should be canonical expected "color(display-p3 calc(1.5) calc(-0.5) calc(0.5) / calc(0.5))" but got "color(display-p3 1.5 -0.5 0.5 / 0.5)"
+[FAIL] e.style['color'] = "color(display-p3 calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))" should set the property value
+  assert_equals: serialization should be canonical expected "color(display-p3 calc(150%) calc(-50%) calc(50%) / calc(-150%))" but got "color(display-p3 1.5 -0.5 0.5 / 0)"
+[FAIL] e.style['color'] = "color(display-p3 calc(50%) 50% 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(display-p3 calc(50%) 0.5 0.5)" but got "color(display-p3 0.5 0.5 0.5)"
+[FAIL] e.style['color'] = "color(display-p3 calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(display-p3 calc(50% + (10% * sign(1em - 10px))) 0 0 / 0.5)" but got "color(display-p3 0.4 0 0 / 0.5)"
+[FAIL] e.style['color'] = "color(display-p3 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "color(display-p3 0.5 0 0 / calc(50% + (10% * sign(1em - 10px))))" but got "color(display-p3 0.5 0 0 / 0.4)"
+[FAIL] e.style['color'] = "color(xyz calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))" should set the property value
+  assert_equals: serialization should be canonical expected "color(xyz-d65 calc(1.5) calc(-0.5) calc(0.5) / calc(0.5))" but got "color(xyz-d65 1.5 -0.5 0.5 / 0.5)"
+[FAIL] e.style['color'] = "color(xyz calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))" should set the property value
+  assert_equals: serialization should be canonical expected "color(xyz-d65 calc(150%) calc(-50%) calc(50%) / calc(-150%))" but got "color(xyz-d65 1.5 -0.5 0.5 / 0)"
+[FAIL] e.style['color'] = "color(xyz calc(50%) 50% 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(xyz-d65 calc(50%) 0.5 0.5)" but got "color(xyz-d65 0.5 0.5 0.5)"
+[FAIL] e.style['color'] = "color(xyz calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(xyz-d65 calc(50% + (10% * sign(1em - 10px))) 0 0 / 0.5)" but got "color(xyz-d65 0.4 0 0 / 0.5)"
+[FAIL] e.style['color'] = "color(xyz 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "color(xyz-d65 0.5 0 0 / calc(50% + (10% * sign(1em - 10px))))" but got "color(xyz-d65 0.5 0 0 / 0.4)"
+[FAIL] e.style['color'] = "color(xyz-d50 calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))" should set the property value
+  assert_equals: serialization should be canonical expected "color(xyz-d50 calc(1.5) calc(-0.5) calc(0.5) / calc(0.5))" but got "color(xyz-d50 1.5 -0.5 0.5 / 0.5)"
+[FAIL] e.style['color'] = "color(xyz-d50 calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))" should set the property value
+  assert_equals: serialization should be canonical expected "color(xyz-d50 calc(150%) calc(-50%) calc(50%) / calc(-150%))" but got "color(xyz-d50 1.5 -0.5 0.5 / 0)"
+[FAIL] e.style['color'] = "color(xyz-d50 calc(50%) 50% 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(xyz-d50 calc(50%) 0.5 0.5)" but got "color(xyz-d50 0.5 0.5 0.5)"
+[FAIL] e.style['color'] = "color(xyz-d50 calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(xyz-d50 calc(50% + (10% * sign(1em - 10px))) 0 0 / 0.5)" but got "color(xyz-d50 0.4 0 0 / 0.5)"
+[FAIL] e.style['color'] = "color(xyz-d50 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "color(xyz-d50 0.5 0 0 / calc(50% + (10% * sign(1em - 10px))))" but got "color(xyz-d50 0.5 0 0 / 0.4)"
+[FAIL] e.style['color'] = "color(xyz-d65 calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))" should set the property value
+  assert_equals: serialization should be canonical expected "color(xyz-d65 calc(1.5) calc(-0.5) calc(0.5) / calc(0.5))" but got "color(xyz-d65 1.5 -0.5 0.5 / 0.5)"
+[FAIL] e.style['color'] = "color(xyz-d65 calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))" should set the property value
+  assert_equals: serialization should be canonical expected "color(xyz-d65 calc(150%) calc(-50%) calc(50%) / calc(-150%))" but got "color(xyz-d65 1.5 -0.5 0.5 / 0)"
+[FAIL] e.style['color'] = "color(xyz-d65 calc(50%) 50% 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(xyz-d65 calc(50%) 0.5 0.5)" but got "color(xyz-d65 0.5 0.5 0.5)"
+[FAIL] e.style['color'] = "color(xyz-d65 calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(xyz-d65 calc(50% + (10% * sign(1em - 10px))) 0 0 / 0.5)" but got "color(xyz-d65 0.4 0 0 / 0.5)"
+[FAIL] e.style['color'] = "color(xyz-d65 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "color(xyz-d65 0.5 0 0 / calc(50% + (10% * sign(1em - 10px))))" but got "color(xyz-d65 0.5 0 0 / 0.4)"
+Harness: the test ran to completion.
+

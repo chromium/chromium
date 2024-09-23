@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
@@ -41,11 +42,13 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
         View rootView =
                 inflater.inflate(
                         R.layout.default_search_engine_first_run_fragment, container, false);
-        mEngineLayout =
-                (RadioButtonLayout)
-                        rootView.findViewById(R.id.default_search_engine_dialog_options);
-        mButton = (Button) rootView.findViewById(R.id.button_primary);
+        mEngineLayout = rootView.findViewById(R.id.default_search_engine_dialog_options);
+        mButton = rootView.findViewById(R.id.button_primary);
         mButton.setEnabled(false);
+
+        ((TextView) rootView.findViewById(R.id.footer))
+                .setText(R.string.search_engine_dialog_footer);
+        mButton.setText(R.string.search_engine_dialog_confirm_button_title);
 
         assert getPageDelegate().getProfileProviderSupplier().get() != null;
         Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();

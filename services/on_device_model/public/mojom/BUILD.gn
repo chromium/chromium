@@ -28,13 +28,26 @@ mojom("mojom") {
           cpp = "::on_device_model::AdaptationAssets"
           move_only = true
         },
+        {
+          mojom = "on_device_model.mojom.Token"
+          cpp = "::ml::Token"
+        },
+        {
+          mojom = "on_device_model.mojom.InputPiece"
+          cpp = "::ml::InputPiece"
+        },
       ]
       traits_headers = [
         "//services/on_device_model/public/cpp/adaptation_assets_mojom_traits.h",
         "//services/on_device_model/public/cpp/model_assets_mojom_traits.h",
+        "//services/on_device_model/ml/chrome_ml_types_traits.h",
       ]
-      traits_public_deps =
-          [ "//services/on_device_model/public/cpp:model_assets" ]
+      traits_sources =
+          [ "//services/on_device_model/ml/chrome_ml_types_traits.cc" ]
+      traits_public_deps = [
+        "//services/on_device_model/ml:api",
+        "//services/on_device_model/public/cpp:model_assets",
+      ]
     },
   ]
 }

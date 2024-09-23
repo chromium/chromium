@@ -1,3 +1,4 @@
+CONSOLE MESSAGE: A soft navigation has been detected: access-key.html#
 This test checks to see if accesskey attributes works on the specified elements.
 
 If this test passes you should see 1 - 9 and a, b and c clicked or focussed.

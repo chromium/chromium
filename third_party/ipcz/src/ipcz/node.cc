@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ipcz/driver_memory.h"
+#include "ipcz/features.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
 #include "ipcz/node_connector.h"
@@ -16,6 +17,7 @@
 #include "ipcz/node_link_memory.h"
 #include "ipcz/router.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
@@ -92,7 +94,10 @@ class Node::PendingIntroduction {
 Node::Node(Type type,
            const IpczDriver& driver,
            const IpczCreateNodeOptions* options)
-    : type_(type), driver_(driver), options_(CopyOrUseDefaultOptions(options)) {
+    : type_(type),
+      driver_(driver),
+      options_(CopyOrUseDefaultOptions(options)),
+      features_(Features::FromNodeOptions(options)) {
   if (type_ == Type::kBroker) {
     // Only brokers assign their own names.
     assigned_name_ = GenerateRandomName();
@@ -163,16 +168,9 @@ bool Node::AddConnection(const NodeName& remote_node_name,
       // it must be because the application has explicitly initiated a new
       // connection to the same node and it expects the previous connection to
       // be replaced.
-      //
-      // Note that DropConnection() may elicit trap notifications. Although we
-      // may be here *either* within a ConnectNode() API call *or* while
-      // handling an incoming NodeConnector message, we can err on the side of
-      // caution (i.e. less re-entrancy in event handlers) by treating every
-      // case like an API call.
       const Ref<NodeLink> link = it->second.link;
       mutex_.Unlock();
-      const OperationContext context{OperationContext::kAPICall};
-      DropConnection(context, *link);
+      DropConnection(*link);
       mutex_.Lock();
     }
 
@@ -353,8 +351,8 @@ void Node::HandleIntroductionRequest(NodeLink& from_node_link,
   // network's broker. This introduction is therefore the other broker's
   // responsibility.
   msg::RequestIndirectIntroduction request;
-  request.params().source_node = from_node_link.remote_node_name();
-  request.params().target_node = target_connection->link->remote_node_name();
+  request.v0()->source_node = from_node_link.remote_node_name();
+  request.v0()->target_node = target_connection->link->remote_node_name();
   target_connection->broker->Transmit(request);
 }
 
@@ -363,6 +361,7 @@ void Node::AcceptIntroduction(NodeLink& from_node_link,
                               LinkSide side,
                               Node::Type remote_node_type,
                               uint32_t remote_protocol_version,
+                              const Features& remote_features,
                               Ref<DriverTransport> transport,
                               Ref<NodeLinkMemory> memory) {
   // NodeLink should never dispatch this method to a node if the introduction
@@ -377,7 +376,7 @@ void Node::AcceptIntroduction(NodeLink& from_node_link,
 
   Ref<NodeLink> new_link = NodeLink::CreateInactive(
       WrapRefCounted(this), side, local_name, name, remote_node_type,
-      remote_protocol_version, transport, memory);
+      remote_protocol_version, remote_features, transport, memory);
   ABSL_ASSERT(new_link);
 
   std::unique_ptr<PendingIntroduction> pending_introduction;
@@ -446,32 +445,31 @@ void Node::NotifyIntroductionFailed(NodeLink& from_broker,
 
 bool Node::RelayMessage(const NodeName& from_node, msg::RelayMessage& relay) {
   ABSL_ASSERT(type_ == Type::kBroker);
-  auto link = GetLink(relay.params().destination);
+  auto link = GetLink(relay.v0()->destination);
   if (!link) {
     return true;
   }
 
-  absl::Span<uint8_t> data = relay.GetArrayView<uint8_t>(relay.params().data);
+  absl::Span<uint8_t> data = relay.GetArrayView<uint8_t>(relay.v0()->data);
   msg::AcceptRelayedMessage accept;
-  accept.params().source = from_node;
-  accept.params().data = accept.AllocateArray<uint8_t>(data.size());
-  accept.params().padding = 0;
-  memcpy(accept.GetArrayData(accept.params().data), data.data(), data.size());
-  accept.params().driver_objects =
+  accept.v0()->source = from_node;
+  accept.v0()->data = accept.AllocateArray<uint8_t>(data.size());
+  accept.v0()->padding = 0;
+  memcpy(accept.GetArrayData(accept.v0()->data), data.data(), data.size());
+  accept.v0()->driver_objects =
       accept.AppendDriverObjects(relay.driver_objects());
   link->Transmit(accept);
   return true;
 }
 
 bool Node::AcceptRelayedMessage(msg::AcceptRelayedMessage& accept) {
-  if (auto link = GetLink(accept.params().source)) {
+  if (auto link = GetLink(accept.v0()->source)) {
     link->DispatchRelayedMessage(accept);
   }
   return true;
 }
 
-void Node::DropConnection(const OperationContext& context,
-                          const NodeLink& connection_link) {
+void Node::DropConnection(const NodeLink& connection_link) {
   Ref<NodeLink> link;
   std::vector<NodeName> pending_introductions;
   bool lost_broker = false;
@@ -510,7 +508,7 @@ void Node::DropConnection(const OperationContext& context,
     }
   }
 
-  link->Deactivate(context);
+  link->Deactivate();
 
   if (lost_broker) {
     // Break all connections if the broker is lost. In practice we should only
@@ -599,9 +597,8 @@ void Node::ShutDown() {
     assigned_name_ = {};
   }
 
-  const OperationContext context{OperationContext::kAPICall};
   for (const auto& entry : connections) {
-    entry.second.link->Deactivate(context);
+    entry.second.link->Deactivate();
   }
 
   CancelAllIntroductions();
@@ -633,21 +630,32 @@ void Node::IntroduceRemoteNodes(NodeLink& first, NodeLink& second) {
     }
   }
 
+  const absl::Cleanup remove_intro_key = [this, &key] {
+    absl::MutexLock lock(&mutex_);
+    in_progress_introductions_.erase(key);
+  };
+
   DriverMemoryWithMapping buffer = NodeLinkMemory::AllocateMemory(driver_);
+  if (!buffer.memory.is_valid()) {
+    return;
+  }
+
+  DriverMemory cloned_buffer = buffer.memory.Clone();
+  if (!cloned_buffer.is_valid()) {
+    return;
+  }
+
   auto [transport_for_first_node, transport_for_second_node] =
       DriverTransport::CreatePair(driver_, first.transport().get(),
                                   second.transport().get());
-  first.AcceptIntroduction(second_name, LinkSide::kA, second.remote_node_type(),
-                           second.remote_protocol_version(),
-                           std::move(transport_for_first_node),
-                           buffer.memory.Clone());
-  second.AcceptIntroduction(first_name, LinkSide::kB, first.remote_node_type(),
-                            first.remote_protocol_version(),
-                            std::move(transport_for_second_node),
-                            std::move(buffer.memory));
-
-  absl::MutexLock lock(&mutex_);
-  in_progress_introductions_.erase(key);
+  first.AcceptIntroduction(
+      second_name, LinkSide::kA, second.remote_node_type(),
+      second.remote_protocol_version(), second.remote_features(),
+      std::move(transport_for_first_node), std::move(cloned_buffer));
+  second.AcceptIntroduction(
+      first_name, LinkSide::kB, first.remote_node_type(),
+      first.remote_protocol_version(), first.remote_features(),
+      std::move(transport_for_second_node), std::move(buffer.memory));
 }
 
 }  // namespace ipcz

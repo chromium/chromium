@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/http/http_content_disposition.h"
+
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -26,10 +32,10 @@ enum RFC2047EncodingType {
 
 // Decodes a "Q" encoded string as described in RFC 2047 section 4.2. Similar to
 // decoding a quoted-printable string.  Returns true if the input was valid.
-bool DecodeQEncoding(base::StringPiece input, std::string* output) {
+bool DecodeQEncoding(std::string_view input, std::string* output) {
   std::string temp;
   temp.reserve(input.size());
-  for (auto* it = input.begin(); it != input.end(); ++it) {
+  for (auto it = input.begin(); it != input.end(); ++it) {
     if (*it == '_') {
       temp.push_back(' ');
     } else if (*it == '=') {
@@ -60,7 +66,7 @@ bool DecodeQEncoding(base::StringPiece input, std::string* output) {
 
 // Decodes a "Q" or "B" encoded string as per RFC 2047 section 4. The encoding
 // type is specified in |enc_type|.
-bool DecodeBQEncoding(base::StringPiece part,
+bool DecodeBQEncoding(std::string_view part,
                       RFC2047EncodingType enc_type,
                       const std::string& charset,
                       std::string* output) {
@@ -78,7 +84,7 @@ bool DecodeBQEncoding(base::StringPiece part,
   return ConvertToUtf8(decoded, charset.c_str(), output);
 }
 
-bool DecodeWord(base::StringPiece encoded_word,
+bool DecodeWord(std::string_view encoded_word,
                 const std::string& referrer_charset,
                 bool* is_rfc2047,
                 std::string* output,
@@ -120,7 +126,7 @@ bool DecodeWord(base::StringPiece encoded_word,
                            encoded_word.data() + encoded_word.size(), "?");
   RFC2047EncodingType enc_type = Q_ENCODING;
   while (*is_rfc2047 && t.GetNext()) {
-    base::StringPiece part = t.token_piece();
+    std::string_view part = t.token_piece();
     switch (part_index) {
       case 0:
         if (part != "=") {
@@ -257,8 +263,8 @@ bool ParseExtValueComponents(const std::string& input,
                              std::string* value_chars) {
   base::StringTokenizer t(input, "'");
   t.set_options(base::StringTokenizer::RETURN_DELIMS);
-  base::StringPiece temp_charset;
-  base::StringPiece temp_value;
+  std::string_view temp_charset;
+  std::string_view temp_value;
   int num_delims_seen = 0;
   while (t.GetNext()) {
     if (t.token_is_delim()) {
@@ -346,7 +352,7 @@ std::string::const_iterator HttpContentDisposition::ConsumeDispositionType(
   DCHECK(type_ == INLINE);
   auto header = base::MakeStringPiece(begin, end);
   size_t delimiter = header.find(';');
-  base::StringPiece type = header.substr(0, delimiter);
+  std::string_view type = header.substr(0, delimiter);
   type = HttpUtil::TrimLWS(type);
 
   // If the disposition-type isn't a valid token the then the
@@ -357,7 +363,7 @@ std::string::const_iterator HttpContentDisposition::ConsumeDispositionType(
 
   parse_result_flags_ |= HAS_DISPOSITION_TYPE;
 
-  DCHECK(type.find('=') == base::StringPiece::npos);
+  DCHECK(type.find('=') == std::string_view::npos);
 
   if (base::EqualsCaseInsensitiveASCII(type, "inline")) {
     type_ = INLINE;

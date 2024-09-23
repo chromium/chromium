@@ -22,7 +22,7 @@ IOSChromeVariationsServiceClient::IOSChromeVariationsServiceClient() = default;
 IOSChromeVariationsServiceClient::~IOSChromeVariationsServiceClient() = default;
 
 base::Version IOSChromeVariationsServiceClient::GetVersionForSimulation() {
-  // TODO(crbug.com/1288101): Get the version that will be used on restart
+  // TODO(crbug.com/40816694): Get the version that will be used on restart
   // instead of the current version.
   return version_info::GetVersion();
 }
@@ -47,7 +47,7 @@ bool IOSChromeVariationsServiceClient::OverridesRestrictParameter(
 }
 
 bool IOSChromeVariationsServiceClient::IsEnterprise() {
-  // TODO(crbug.com/1003846): Implement enterprise check for iOS.
+  // TODO(crbug.com/40647432): Implement enterprise check for iOS.
   return false;
 }
 
@@ -58,11 +58,4 @@ void IOSChromeVariationsServiceClient::
 std::unique_ptr<variations::SeedResponse>
 IOSChromeVariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
   return [IOSChromeVariationsSeedStore popSeed];
-}
-
-void IOSChromeVariationsServiceClient::RegisterLimitedEntropySyntheticTrial(
-    std::string_view group_name) {
-  IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      variations::kLimitedEntropySyntheticTrialName, group_name,
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }

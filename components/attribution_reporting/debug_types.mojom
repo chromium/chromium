@@ -1,0 +1,53 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module attribution_reporting.mojom;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DebugDataType)
+enum DebugDataType {
+  kSourceDestinationLimit = 0,
+  kSourceNoised = 1,
+  kSourceStorageLimit = 2,
+  kSourceSuccess = 3,
+  kSourceUnknownError = 4,
+  kSourceDestinationRateLimit = 5,
+  kTriggerNoMatchingSource = 6,
+  // deprecated: 7
+  kTriggerNoMatchingFilterData = 8,
+  kTriggerReportingOriginLimit = 9,
+  kTriggerEventDeduplicated = 10,
+  kTriggerEventNoMatchingConfigurations = 11,
+  kTriggerEventNoise = 12,
+  kTriggerEventLowPriority = 13,
+  kTriggerEventExcessiveReports = 14,
+  kTriggerEventStorageLimit = 15,
+  kTriggerEventReportWindowPassed = 16,
+  kTriggerAggregateDeduplicated = 17,
+  kTriggerAggregateNoContributions = 18,
+  kTriggerAggregateInsufficientBudget = 19,
+  kTriggerAggregateStorageLimit = 20,
+  kTriggerAggregateReportWindowPassed = 21,
+  kTriggerAggregateExcessiveReports = 22,
+  kTriggerUnknownError = 23,
+  kOsSourceDelegated = 24,
+  kOsTriggerDelegated = 25,
+  kTriggerEventReportWindowNotStarted = 26,
+  kTriggerEventNoMatchingTriggerData = 27,
+  kHeaderParsingError = 28,
+  kSourceReportingOriginPerSiteLimit = 29,
+  kTriggerEventAttributionsPerSourceDestinationLimit = 30,
+  kTriggerAggregateAttributionsPerSourceDestinationLimit = 31,
+  kSourceChannelCapacityLimit = 32,
+  kSourceTriggerStateCardinalityLimit = 33,
+  kSourceDestinationGlobalRateLimit = 34,
+  kSourceReportingOriginLimit = 35,
+  kSourceDestinationPerDayRateLimit = 36,
+  kSourceDestinationLimitReplaced = 37,
+  kSourceScopesChannelCapacityLimit = 38,
+  kSourceMaxEventStatesLimit = 39,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionVerboseDebugReportType)

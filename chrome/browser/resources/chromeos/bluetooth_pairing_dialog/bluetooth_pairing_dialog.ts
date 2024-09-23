@@ -1,3 +1,7 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_ui.js';
 import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
@@ -6,7 +10,6 @@ import 'chrome://resources/ash/common/cr_elements/cr_page_host_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import './strings.m.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -59,19 +62,8 @@ class BluetoothPairingDialogElement extends PolymerElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    const isJellyEnabled = loadTimeData.valueExists('isJellyEnabled') &&
-        loadTimeData.getBoolean('isJellyEnabled');
 
-    if (isJellyEnabled) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'chrome://theme/colors.css?sets=legacy,sys';
-      document.head.appendChild(link);
-      document.body.classList.add('jelly-enabled');
-      (function() {
-        ColorChangeUpdater.forDocument().start();
-      })();
-    }
+    ColorChangeUpdater.forDocument().start();
 
     const dialogArgs = chrome.getVariableValue('dialogArguments');
     if (!dialogArgs) {

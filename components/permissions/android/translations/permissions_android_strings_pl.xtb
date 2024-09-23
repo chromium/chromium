@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Ta strona nie może prosić o Twoją zgodę</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Poproś o pomoc<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Włącz Bluetooth<ph name="END_LINK" />, by umożliwić parowanie</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> potrzebuje uprawnień do śledzenia rąk.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Pomoc<ph name="END_LINK" /> w trakcie wyszukiwania urządzeń…</translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> potrzebuje uprawnień dostępu do mikrofonu na tej stronie.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> chce wyszukać urządzenia Bluetooth w pobliżu. Znaleziono te urządzenia:</translation>

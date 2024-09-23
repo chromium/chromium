@@ -6,10 +6,7 @@
 
 namespace ui {
 
-TestNativeTheme::TestNativeTheme()
-    : NativeTheme(/*should_only_use_dark_colors=*/false,
-                  /*system_theme=*/ui::SystemTheme::kDefault,
-                  /*theme_to_update=*/nullptr) {}
+TestNativeTheme::TestNativeTheme() : NativeTheme(false) {}
 TestNativeTheme::~TestNativeTheme() = default;
 
 gfx::Size TestNativeTheme::GetPartSize(Part part,
@@ -25,6 +22,7 @@ void TestNativeTheme::Paint(cc::PaintCanvas* canvas,
                             const gfx::Rect& rect,
                             const ExtraParams& extra,
                             ColorScheme color_scheme,
+                            bool in_forced_colors,
                             const std::optional<SkColor>& accent_color) const {}
 
 bool TestNativeTheme::SupportsNinePatch(Part part) const {

@@ -224,7 +224,7 @@ interface ContentDecryptionModuleClient {
   // CDM may close a session at any point, such as in response to a
   // CloseSession() call, when the session is no longer needed, or when system
   // resources are lost.
-  // See http://w3c.github.io/encrypted-media/#session-close
+  // See http://w3c.github.io/encrypted-media/#session-closed
   OnSessionClosed@1(string session_id);
 
   // Called when there has been a change in the keys in the session or their

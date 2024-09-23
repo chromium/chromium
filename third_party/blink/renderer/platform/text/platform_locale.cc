@@ -28,6 +28,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 #include <memory>
@@ -553,19 +558,10 @@ String Locale::FormatDateTime(const DateComponents& date,
                         : DateTimeFormatWithSeconds());
       break;
     case DateComponents::kInvalid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
-
-  String date_time_string = builder.ToString();
-
-#if BUILDFLAG(IS_MAC)
-  // Revert ICU 72 change that introduced U+202F instead of U+0020
-  // to separate time from AM/PM. See https://crbug.com/1453047.
-  date_time_string.Replace(0x202f, 0x20);
-#endif
-
-  return date_time_string;
+  return builder.ToString();
 }
 
 }  // namespace blink

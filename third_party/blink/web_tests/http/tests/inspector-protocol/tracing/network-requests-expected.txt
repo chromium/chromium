@@ -1,6 +1,8 @@
 Tests the data of Network request lifecycle trace events
 Recording started
 Tracing complete
+
+Trace events for URL: http://127.0.0.1:8000/inspector-protocol/resources/basic.html:
 Object: {
 	args: {
 		data: {
@@ -18,6 +20,7 @@ Object: {
 Object: {
 	args: {
 		data: {
+			fetchPriorityHint: auto
 			frame: string
 			priority: string
 			requestId: string
@@ -37,49 +40,14 @@ Object: {
 Object: {
 	args: {
 		data: {
+			connectionId: number
+			connectionReused: boolean
 			encodedDataLength: number
 			frame: string
 			fromCache: boolean
 			fromServiceWorker: boolean
-			headers: [
-				{
-					name: Date
-					value: string
-				}
-				{
-					name: Last-Modified
-					value: string
-				}
-				{
-					name: Server
-					value: string
-				}
-				{
-					name: ETag
-					value: string
-				}
-				{
-					name: Content-Type
-					value: string
-				}
-				{
-					name: Connection
-					value: string
-				}
-				{
-					name: Accept-Ranges
-					value: string
-				}
-				{
-					name: Keep-Alive
-					value: string
-				}
-				{
-					name: Content-Length
-					value: string
-				}
-			]
 			mimeType: string
+			protocol: http/1.1
 			requestId: string
 			responseTime: number
 			statusCode: number
@@ -112,6 +80,8 @@ Object: {
 	tid: number
 	ts: number
 }
+ResourceReceiveResponse has headers: true
+
 Object: {
 	args: {
 		data: {
@@ -146,10 +116,21 @@ Object: {
 	tid: number
 	ts: number
 }
+
+Trace events for URL: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol/resources/empty.js:
 Object: {
 	args: {
 		data: {
+			fetchPriorityHint: auto
 			frame: string
+			initiator: {
+				columnNumber: number
+				fetchType: script
+				lineNumber: number
+				type: string
+				url: string
+			}
+			isLinkPreload: false
 			priority: string
 			renderBlocking: string
 			requestId: string
@@ -169,37 +150,14 @@ Object: {
 Object: {
 	args: {
 		data: {
+			connectionId: number
+			connectionReused: boolean
 			encodedDataLength: number
 			frame: string
 			fromCache: boolean
 			fromServiceWorker: boolean
-			headers: [
-				{
-					name: Date
-					value: string
-				}
-				{
-					name: Server
-					value: string
-				}
-				{
-					name: Connection
-					value: string
-				}
-				{
-					name: Keep-Alive
-					value: string
-				}
-				{
-					name: Content-Length
-					value: string
-				}
-				{
-					name: Content-Type
-					value: string
-				}
-			]
 			mimeType: string
+			protocol: http/1.1
 			requestId: string
 			responseTime: number
 			statusCode: number
@@ -232,6 +190,8 @@ Object: {
 	tid: number
 	ts: number
 }
+ResourceReceiveResponse has headers: true
+
 Object: {
 	args: {
 		data: {
@@ -249,10 +209,21 @@ Object: {
 	tid: number
 	ts: number
 }
+
+Trace events for URL: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol/resources/square.png:
 Object: {
 	args: {
 		data: {
+			fetchPriorityHint: high
 			frame: string
+			initiator: {
+				columnNumber: number
+				fetchType: img
+				lineNumber: number
+				type: string
+				url: string
+			}
+			isLinkPreload: false
 			priority: string
 			requestId: string
 			requestMethod: string
@@ -271,37 +242,14 @@ Object: {
 Object: {
 	args: {
 		data: {
+			connectionId: number
+			connectionReused: boolean
 			encodedDataLength: number
 			frame: string
 			fromCache: boolean
 			fromServiceWorker: boolean
-			headers: [
-				{
-					name: Date
-					value: string
-				}
-				{
-					name: Server
-					value: string
-				}
-				{
-					name: Connection
-					value: string
-				}
-				{
-					name: Keep-Alive
-					value: string
-				}
-				{
-					name: Content-Length
-					value: string
-				}
-				{
-					name: Content-Type
-					value: string
-				}
-			]
 			mimeType: string
+			protocol: http/1.1
 			requestId: string
 			responseTime: number
 			statusCode: number
@@ -334,6 +282,8 @@ Object: {
 	tid: number
 	ts: number
 }
+ResourceReceiveResponse has headers: true
+
 Object: {
 	args: {
 		data: {
@@ -368,10 +318,21 @@ Object: {
 	tid: number
 	ts: number
 }
+
+Trace events for URL: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol/resources/style.css:
 Object: {
 	args: {
 		data: {
+			fetchPriorityHint: auto
 			frame: string
+			initiator: {
+				columnNumber: number
+				fetchType: link
+				lineNumber: number
+				type: string
+				url: string
+			}
+			isLinkPreload: true
 			priority: string
 			renderBlocking: string
 			requestId: string
@@ -391,37 +352,14 @@ Object: {
 Object: {
 	args: {
 		data: {
+			connectionId: number
+			connectionReused: boolean
 			encodedDataLength: number
 			frame: string
 			fromCache: boolean
 			fromServiceWorker: boolean
-			headers: [
-				{
-					name: Date
-					value: string
-				}
-				{
-					name: Server
-					value: string
-				}
-				{
-					name: Connection
-					value: string
-				}
-				{
-					name: Keep-Alive
-					value: string
-				}
-				{
-					name: Content-Length
-					value: string
-				}
-				{
-					name: Content-Type
-					value: string
-				}
-			]
 			mimeType: string
+			protocol: http/1.1
 			requestId: string
 			responseTime: number
 			statusCode: number
@@ -454,6 +392,8 @@ Object: {
 	tid: number
 	ts: number
 }
+ResourceReceiveResponse has headers: true
+
 Object: {
 	args: {
 		data: {

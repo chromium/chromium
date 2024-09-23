@@ -6,6 +6,7 @@
 
 #include "base/environment.h"
 #include "base/notreached.h"
+#include "media/gpu/vaapi/test/fake_libva_driver/av1_decoder_delegate.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_buffer.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_config.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/no_op_context_delegate.h"
@@ -35,6 +36,9 @@ std::unique_ptr<media::internal::ContextDelegate> CreateDelegate(
     case VAProfileVP9Profile0:
       return std::make_unique<media::internal::VpxDecoderDelegate>(
           picture_width, picture_height, config.GetProfile());
+    case VAProfileAV1Profile0:
+      return std::make_unique<media::internal::Av1DecoderDelegate>(
+          config.GetProfile());
     default:
       break;
   }

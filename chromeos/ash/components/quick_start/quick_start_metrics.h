@@ -18,9 +18,11 @@ namespace ash::quick_start {
 class QuickStartMetrics {
  public:
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
-  // reflect it (do not change one without changing the other). Entries should
-  // be never modified or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml as well as a
+  // CrOSEvents enum defined in
+  // //components/metrics/structured/structured_events.h, and should always
+  // reflect them (do not change one without changing the others). Entries
+  // should never be modified or deleted. Only additions possible.
   enum class ScreenName {
     kOther = 0,  // We don't expect this value to ever be emitted.
     kNone = 1,  // There is no previous screen when automatically resuming after
@@ -28,21 +30,44 @@ class QuickStartMetrics {
     kWelcomeScreen = 2,  // Quick Start entry point 1.
     kNetworkScreen = 3,  // Quick Start entry point 2, or in the middle of Quick
                          // Start when the host device is not connected to wifi.
-    kGaiaScreen = 4,     // Quick Start entry point 3.
-    kSetUpAndroidPhone = 5,  // Beginning of Quick Start flow.
-    kConnectingToWifi = 6,   // Transferring wifi with Quick Start.
-    kCheckingForUpdateAndDeterminingDeviceConfiguration = 7,
+    kGaiaScreen = 4,     // Quick Start entry point 4 (See kGaiaInfoScreen for
+                         // entry point 3).
+    kQSSetUpWithAndroidPhone = 5,  // Beginning of Quick Start flow.
+    kQSConnectingToWifi = 6,       // Transferring wifi with Quick Start.
+    kCheckingForUpdateAndDeterminingDeviceConfiguration = 7,  // Critical Update
     kChooseChromebookSetup = 8,
-    kInstallingLatestUpdate = 9,
-    kResumingConnectionAfterUpdate = 10,
-    kGettingGoogleAccountInfo = 11,
-    kQuickStartComplete = 12,
-    kSetupDevicePIN = 13,          // After Quick Start flow is complete.
-    kAskForParentPermission = 14,  // Only for Unicorn accounts.
-    kReviewPrivacyAndTerms = 15,   // Only for Unicorn accounts.
-    kUnifiedSetup = 16,  // After Quick Start flow is complete, connect host
-                         // phone to account.
-    kMaxValue = kUnifiedSetup
+    kConsumerUpdate = 9,
+    kQSResumingConnectionAfterUpdate = 10,
+    kQSGettingGoogleAccountInfo = 11,
+    kQSComplete = 12,
+    kSetupDevicePIN = 13,         // After Quick Start flow is complete.
+    kAddChild = 14,               // Only for Unicorn accounts.
+    kReviewPrivacyAndTerms = 15,  // Only for Unicorn accounts.
+    kUnifiedSetup = 16,    // After Quick Start flow is complete, connect host
+                           // phone to account.
+    kGaiaInfoScreen = 17,  // Quick Start entry point 3
+    kQSWifiCredentialsReceived = 18,  // Quick Start UI when wifi credentials
+                                      // transfer succeeds.
+    kQSSelectGoogleAccount = 19,  // Quick Start UI informing user to confirm
+                                  // account on phone.
+    kQSCreatingAccount = 20,      // Quick Start UI attempting to login with
+                                  // transferred account details.
+    kQSFallbackURL = 21,  // Quick Start screen when when a signin challenge
+                          // must be completed on the target device.
+    kMaxValue = kQSFallbackURL
+  };
+
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
+  enum ScreenClosedReason {
+    kAdvancedInFlow,   // User moved to next screen as expected via flow.
+    kUserCancelled,    // User clicked cancel.
+    kUserClickedBack,  // User clicked back.
+    kSetupComplete,    // User finished Quick Start.
+    kError,            // An error occurred.
+    kMaxValue = kError
   };
 
   enum class ExitReason {
@@ -54,17 +79,19 @@ class QuickStartMetrics {
   // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
-  enum class AdvertisingMethod {
-    kQrCode = 0,
-    kPin = 1,
-    kMaxValue = kPin,
+  enum class AuthenticationMethod {
+    kPin = 0,
+    kQRCode = 1,
+    kResumeAfterUpdate = 2,
+    kMaxValue = kResumeAfterUpdate,
   };
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/metadata/quickstart/enums.xml and should always
-  // reflect it. The UMA enum cannot use
-  // |device::BluetoothAdvertisement::ErrorCode| directly, because it is missing
-  // the required |kMaxValue| field.
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible. The UMA enum cannot
+  // use |device::BluetoothAdvertisement::ErrorCode| directly, because it is
+  // missing the required |kMaxValue| field.
   enum class FastPairAdvertisingErrorCode {
     kUnsupportedPlatform = 0,
     kAdvertisementAlreadyExists = 1,
@@ -78,8 +105,21 @@ class QuickStartMetrics {
     kMaxValue = kInvalidAdvertisementErrorCode,
   };
 
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class NearbyConnectionsAdvertisingErrorCode {
-    kFailedToStart,
+    kError = 0,
+    kOutOfOrderApiCall = 1,
+    kAlreadyHaveActiveStrategy = 2,
+    kAlreadyAdvertising = 3,
+    kBluetoothError = 4,
+    kBleError = 5,
+    kUnknown = 6,
+    kTimeout = 7,
+    kOther = 8,
+    kMaxValue = kOther,
   };
 
   // This enum is tied directly to a UMA enum defined in
@@ -173,26 +213,47 @@ class QuickStartMetrics {
   // reflect it (do not change one without changing the other). Entries should
   // be never modified or deleted. Only additions possible.
   enum class GaiaTransferResultFailureReason {
-    kNoAccountsReceivedFromPhone = 0,
-    kIneligibleAccount = 1,
-    kFailedToSignIn = 2,
-    kEmptyResponseBytes = 3,
-    kUnableToReadAsJSON = 4,
-    kUnexpectedResponseSize = 5,
-    kUnsuccessfulCtapDeviceResponseStatus = 6,
-    kCborDecodingError = 7,
-    kInvalidCborDecodedValuesMap = 8,
-    kEmptyCredentialId = 9,
-    kEmptyAuthData = 10,
-    kEmptySignature = 11,
-    kEmptyEmail = 12,
-    kMaxValue = kEmptyEmail,
+    kNoAccountOnPhone = 0,
+    kFailedFetchingChallengeBytesFromGaia = 1,
+    kConnectionLost = 2,
+    kGaiaAssertionNotReceived = 3,
+    kFailedFetchingAttestationCertificate = 4,
+    kFailedFetchingRefreshToken = 5,
+    kFallbackURLRequired = 6,
+    kErrorReceivingFIDOAssertion = 7,
+    kObfuscatedGaiaIdMissing = 8,
+    kMaxValue = kObfuscatedGaiaIdMissing,
   };
 
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml as well as a
+  // CrOSEvents enum defined in
+  // //components/metrics/structured/structured_events.h, and should always
+  // reflect them (do not change one without changing the others). Entries
+  // should never be modified or deleted. Only additions possible.
+  enum class AbortFlowReason {
+    USER_CLICKED_BACK = 0,
+    USER_CLICKED_CANCEL = 1,
+    SIGNIN_SCHOOL = 2,
+    ENTERPRISE_ENROLLMENT = 3,
+    ERROR = 4,
+    // Child accounts are not yet supported.
+    ADD_CHILD = 5,
+    kMaxValue = ADD_CHILD,
+  };
+
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml as well as a
+  // CrOSEvents enum defined in
+  // //components/metrics/structured/structured_events.h, and should always
+  // reflect them (do not change one without changing the others). Entries
+  // should never be modified or deleted. Only additions possible.
   enum class EntryPoint {
-    kWelcome,
-    kWifi,
-    kGaia,
+    WELCOME_SCREEN = 0,
+    NETWORK_SCREEN = 1,
+    GAIA_INFO_SCREEN = 2,
+    GAIA_SCREEN = 3,
+    kMaxValue = GAIA_SCREEN,
   };
 
   // Helper function that returns the MessageType equivalent of
@@ -200,18 +261,14 @@ class QuickStartMetrics {
   static MessageType MapResponseToMessageType(
       QuickStartResponseType response_type);
 
-  static void RecordScreenOpened(ScreenName screen);
-
-  static void RecordScreenClosed(ScreenName screen,
-                                 int32_t session_id,
-                                 base::Time timestamp,
-                                 std::optional<ScreenName> previous_screen);
+  static ScreenClosedReason MapAbortFlowReasonToScreenClosedReason(
+      AbortFlowReason reason);
 
   static void RecordWifiTransferResult(
       bool succeeded,
       std::optional<WifiTransferResultFailureReason> failure_reason);
 
-  static void RecordGaiaTransferAttempted(bool attempted);
+  static void RecordGaiaTransferStarted();
 
   static void RecordCapturePortalEncountered(int32_t session_id);
 
@@ -225,10 +282,26 @@ class QuickStartMetrics {
 
   static void RecordEntryPoint(EntryPoint entry_point);
 
+  static void RecordEntryPointVisible(EntryPoint entry_point);
+
+  static void RecordAuthenticationMethod(AuthenticationMethod auth_method);
+
+  static void RecordAbortFlowReason(AbortFlowReason reason);
+
+  static void RecordUpdateStarted(bool is_forced);
+
+  static void RecordConsumerUpdateCancelled();
+
+  static void RecordEstablishConnection(bool success, bool is_automatic_resume);
+
   QuickStartMetrics();
   QuickStartMetrics(const QuickStartMetrics&) = delete;
   const QuickStartMetrics& operator=(const QuickStartMetrics&) = delete;
   virtual ~QuickStartMetrics();
+
+  void RecordScreenOpened(ScreenName screen);
+
+  void RecordScreenClosed(ScreenName screen, ScreenClosedReason reason);
 
   // Records the start of an attempt to fetch challenge bytes from Gaia.
   // Challenge bytes are later used to generate a Remote Attestation certificate
@@ -253,22 +326,23 @@ class QuickStartMetrics {
   void RecordGaiaAuthenticationRequestEnded(
       const GaiaAuthenticationResult& result);
 
-  void RecordFastPairAdvertisementStarted(AdvertisingMethod advertising_method);
+  void RecordFastPairAdvertisementStarted(
+      bool succeeded,
+      std::optional<FastPairAdvertisingErrorCode> error_code);
 
   void RecordFastPairAdvertisementEnded(
       bool succeeded,
       std::optional<FastPairAdvertisingErrorCode> error_code);
 
   void RecordNearbyConnectionsAdvertisementStarted(
-      int32_t session_id,
-      AdvertisingMethod advertising_method);
+      bool succeeded,
+      std::optional<NearbyConnectionsAdvertisingErrorCode> error_code);
 
   void RecordNearbyConnectionsAdvertisementEnded(
       bool succeeded,
       std::optional<NearbyConnectionsAdvertisingErrorCode> error_code);
 
-  // TODO(b/308200138): Change the wording here to make this less confusing.
-  void RecordHandshakeStarted(bool handshake_started);
+  void RecordHandshakeStarted();
 
   void RecordHandshakeResult(bool succeeded,
                              std::optional<HandshakeErrorCode> error_code);
@@ -281,11 +355,21 @@ class QuickStartMetrics {
       std::optional<MessageReceivedErrorCode> error_code);
 
  private:
+  ScreenName last_screen_opened_ = ScreenName::kNone;
   // Timer to keep track of Fast Pair advertising duration. Should be
   // constructed when advertising starts and destroyed when advertising
   // finishes.
   std::unique_ptr<base::ElapsedTimer> fast_pair_advertising_timer_;
-  std::optional<AdvertisingMethod> fast_pair_advertising_method_;
+
+  // Timer to keep track of Nearby Connections advertising duration. Should be
+  // constructed when advertising starts and destroyed when advertising
+  // finishes.
+  std::unique_ptr<base::ElapsedTimer> nearby_connections_advertising_timer_;
+
+  // Timer to keep track of duration spent viewing a screen. Should be
+  // constructed when a screen is opened and destroyed when that screen is
+  // closed.
+  std::unique_ptr<base::ElapsedTimer> screen_opened_view_duration_timer_;
 
   // Timer to keep track of handshake duration. Should be constructed when
   // the handshake starts and destroyed when the handshake finishes.
@@ -311,6 +395,10 @@ class QuickStartMetrics {
   // received.
   std::unique_ptr<base::ElapsedTimer> gaia_authentication_timer_;
 };
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const QuickStartMetrics::ScreenName& metrics_screen_name);
 
 }  // namespace ash::quick_start
 

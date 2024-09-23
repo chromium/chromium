@@ -1,0 +1,12 @@
+android.webkit.WebView focusable focused
+++android.widget.GridView role_description='table' collection row_count=3 column_count=3
+++++android.view.View name='Column 1 Column 2 Column 3'
+++++++android.view.View role_description='column header' collection_item table_header name='Column 1' row_span=1 column_span=1
+++++++android.view.View role_description='column header' collection_item table_header name='Column 2' row_span=1 column_index=1 column_span=1
+++++++android.view.View role_description='column header' collection_item table_header name='Column 3' row_span=1 column_index=2 column_span=1
+++++android.view.View name='Cell A2 Cell A3' row_index=1
+++++++android.view.View collection_item focusable name='Cell A2' row_index=1 row_span=1 column_span=1
+++++++android.view.View collection_item focusable name='Cell A3' row_index=1 row_span=1 column_index=1 column_span=1
+++++android.view.View name='Cell B1 Cell B2' row_index=2
+++++++android.view.View collection_item focusable name='Cell B1' row_index=2 row_span=1 column_span=1
+++++++android.view.View collection_item focusable name='Cell B2' row_index=2 row_span=1 column_index=1 column_span=1

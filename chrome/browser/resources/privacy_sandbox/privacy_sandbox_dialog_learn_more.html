@@ -2,6 +2,9 @@
 iron-collapse {
   --iron-collapse-transition-duration: 300ms;
 }
+.cr-secondary-text{
+  margin-left: 4px;
+}
 </style>
 
 <div>
@@ -10,7 +13,7 @@ iron-collapse {
       {{title}}
     </div>
   </cr-expand-button>
-  <iron-collapse id="collapse" opened="[[expanded]]">
+  <cr-collapse id="collapse" opened="[[expanded]]">
     <slot></slot>
-  </iron-collapse>
+  </cr-collapse>
 </div>

@@ -158,8 +158,8 @@ class UI_DEVTOOLS_EXPORT UIElement {
   const int node_id_;
   const UIElementType type_;
   UIElements children_;
-  UIElement* parent_;
-  UIElementDelegate* delegate_;
+  raw_ptr<UIElement, DanglingUntriaged> parent_;
+  raw_ptr<UIElementDelegate, DanglingUntriaged> delegate_;
   bool is_updating_ = false;
   int base_stylesheet_id_;
   bool header_sent_ = false;

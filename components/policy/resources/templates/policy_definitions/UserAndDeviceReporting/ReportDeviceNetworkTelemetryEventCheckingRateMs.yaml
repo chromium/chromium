@@ -13,7 +13,7 @@ features:
   unlisted: true
 owners:
 - anasr@google.com
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 schema:
   minimum: 60000
   type: integer
@@ -22,3 +22,4 @@ supported_on:
 tags:
 - admin-sharing
 type: int
+generate_device_proto: False

@@ -23,7 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
@@ -40,9 +40,9 @@ constexpr auto kColorSpace = gfx::ColorSpace::CreateSRGB();
 // is GL-Vulkan interop, so it's necessary to specify *some* GLES2 usage here
 // even though the tests don't actually use the GLES2 interface. The tests do
 // exercise Skia read and write accesses, so include RASTER_{READ, WRITE} usage.
-constexpr uint32_t kUsage = SHARED_IMAGE_USAGE_RASTER_READ |
-                            SHARED_IMAGE_USAGE_RASTER_WRITE |
-                            SHARED_IMAGE_USAGE_GLES2_READ;
+constexpr gpu::SharedImageUsageSet kUsage = SHARED_IMAGE_USAGE_RASTER_READ |
+                                            SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                            SHARED_IMAGE_USAGE_GLES2_READ;
 
 base::NoDestructor<base::test::ScopedFeatureList> g_scoped_feature_list;
 
@@ -89,7 +89,7 @@ class AngleVulkanImageBackingFactoryTest
 // Verify creation and Skia access works as expected.
 TEST_P(AngleVulkanImageBackingFactoryTest, Basic) {
   auto format = GetFormat();
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::Size size(100, 100);
 
   bool supported = backing_factory_->CanCreateSharedImage(
@@ -160,7 +160,7 @@ TEST_P(AngleVulkanImageBackingFactoryTest, Basic) {
 // Verify that pixel upload works as expected.
 TEST_P(AngleVulkanImageBackingFactoryTest, Upload) {
   auto format = GetFormat();
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::Size size(100, 100);
 
   auto backing = backing_factory_->CreateSharedImage(

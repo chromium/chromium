@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "chrome/browser/sharing/mock_sharing_message_handler.h"
-#include "chrome/browser/sharing/sharing_device_registration.h"
+#include "components/sharing_message/mock_sharing_message_handler.h"
+#include "components/sharing_message/sharing_device_registration.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,40 +54,42 @@ class SharingHandlerRegistryImplTest : public testing::Test {
 
 }  // namespace
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SharingHandlerRegistryImplTest, SharedClipboard_IsAdded) {
   sharing_device_registration_.SetIsSharedClipboardSupported(true);
   auto handler_registry = CreateHandlerRegistry();
   EXPECT_TRUE(handler_registry->GetSharingHandler(
-      chrome_browser_sharing::SharingMessage::kSharedClipboardMessage));
+      components_sharing_message::SharingMessage::kSharedClipboardMessage));
 
   // Default handlers cannot be removed.
   handler_registry->UnregisterSharingHandler(
-      chrome_browser_sharing::SharingMessage::kSharedClipboardMessage);
+      components_sharing_message::SharingMessage::kSharedClipboardMessage);
   EXPECT_TRUE(handler_registry->GetSharingHandler(
-      chrome_browser_sharing::SharingMessage::kSharedClipboardMessage));
+      components_sharing_message::SharingMessage::kSharedClipboardMessage));
 }
 
 TEST_F(SharingHandlerRegistryImplTest, SharedClipboard_NotAdded) {
   sharing_device_registration_.SetIsSharedClipboardSupported(false);
   auto handler_registry = CreateHandlerRegistry();
   EXPECT_FALSE(handler_registry->GetSharingHandler(
-      chrome_browser_sharing::SharingMessage::kSharedClipboardMessage));
+      components_sharing_message::SharingMessage::kSharedClipboardMessage));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(SharingHandlerRegistryImplTest, SharedClipboard_AddRemoveManually) {
   sharing_device_registration_.SetIsSharedClipboardSupported(false);
   auto handler_registry = CreateHandlerRegistry();
   EXPECT_FALSE(handler_registry->GetSharingHandler(
-      chrome_browser_sharing::SharingMessage::kSharedClipboardMessage));
+      components_sharing_message::SharingMessage::kSharedClipboardMessage));
 
   handler_registry->RegisterSharingHandler(
       std::make_unique<MockSharingMessageHandler>(),
-      chrome_browser_sharing::SharingMessage::kSharedClipboardMessage);
+      components_sharing_message::SharingMessage::kSharedClipboardMessage);
   EXPECT_TRUE(handler_registry->GetSharingHandler(
-      chrome_browser_sharing::SharingMessage::kSharedClipboardMessage));
+      components_sharing_message::SharingMessage::kSharedClipboardMessage));
 
   handler_registry->UnregisterSharingHandler(
-      chrome_browser_sharing::SharingMessage::kSharedClipboardMessage);
+      components_sharing_message::SharingMessage::kSharedClipboardMessage);
   EXPECT_FALSE(handler_registry->GetSharingHandler(
-      chrome_browser_sharing::SharingMessage::kSharedClipboardMessage));
+      components_sharing_message::SharingMessage::kSharedClipboardMessage));
 }

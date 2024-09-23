@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/fuchsia/video/fuchsia_video_decoder.h"
 
 #include <fuchsia/mediacodec/cpp/fidl.h>
-#include <fuchsia/sysmem/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 
 #include <memory>
@@ -26,6 +30,7 @@
 #include "components/viz/test/test_context_support.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "media/base/test_data_util.h"
@@ -44,306 +49,13 @@ namespace media {
 
 namespace {
 
-class TestBufferCollection {
- public:
-  TestBufferCollection(zx::eventpair handle, zx::channel collection_token)
-      : handle_(std::move(handle)) {
-    sysmem_allocator_ = base::ComponentContextForProcess()
-                            ->svc()
-                            ->Connect<fuchsia::sysmem::Allocator>();
-    sysmem_allocator_.set_error_handler([](zx_status_t status) {
-      ZX_LOG(FATAL, status)
-          << "The fuchsia.sysmem.Allocator channel was terminated.";
-    });
-    sysmem_allocator_->SetDebugClientInfo("CrTestBufferCollection",
-                                          base::GetCurrentProcId());
-
-    sysmem_allocator_->BindSharedCollection(
-        fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>(
-            std::move(collection_token)),
-        buffers_collection_.NewRequest());
-
-    fuchsia::sysmem::BufferCollectionConstraints buffer_constraints;
-    buffer_constraints.usage.cpu = fuchsia::sysmem::cpuUsageRead;
-    zx_status_t status = buffers_collection_->SetConstraints(
-        /*has_constraints=*/true, std::move(buffer_constraints));
-    ZX_CHECK(status == ZX_OK, status) << "BufferCollection::SetConstraints()";
-  }
-
-  TestBufferCollection(const TestBufferCollection&) = delete;
-  TestBufferCollection& operator=(const TestBufferCollection&) = delete;
-
-  ~TestBufferCollection() { buffers_collection_->Close(); }
-
-  size_t GetNumBuffers() {
-    if (!buffer_collection_info_) {
-      zx_status_t wait_status;
-      fuchsia::sysmem::BufferCollectionInfo_2 info;
-      zx_status_t status =
-          buffers_collection_->WaitForBuffersAllocated(&wait_status, &info);
-      ZX_CHECK(status == ZX_OK, status)
-          << "BufferCollection::WaitForBuffersAllocated()";
-      ZX_CHECK(wait_status == ZX_OK, wait_status)
-          << "BufferCollection::WaitForBuffersAllocated()";
-      buffer_collection_info_ = std::move(info);
-    }
-    return buffer_collection_info_->buffer_count;
-  }
-
- private:
-  zx::eventpair handle_;
-
-  fuchsia::sysmem::AllocatorPtr sysmem_allocator_;
-  fuchsia::sysmem::BufferCollectionSyncPtr buffers_collection_;
-
-  std::optional<fuchsia::sysmem::BufferCollectionInfo_2>
-      buffer_collection_info_;
-};
-
-class TestSharedImageInterface : public gpu::SharedImageInterface {
- public:
-  TestSharedImageInterface() = default;
-
-  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
-      gpu::SurfaceHandle surface_handle) override {
-    ADD_FAILURE();
-    return base::MakeRefCounted<gpu::ClientSharedImage>(
-        gpu::Mailbox(),
-        gpu::ClientSharedImage::Metadata(format, size, color_space,
-                                         surface_origin, alpha_type, usage),
-
-        holder_);
-  }
-
-  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
-      base::span<const uint8_t> pixel_data) override {
-    ADD_FAILURE();
-    return base::MakeRefCounted<gpu::ClientSharedImage>(
-        gpu::Mailbox(),
-        gpu::ClientSharedImage::Metadata(format, size, color_space,
-                                         surface_origin, alpha_type, usage),
-
-        holder_);
-  }
-
-  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
-      gpu::SurfaceHandle surface_handle,
-      gfx::BufferUsage buffer_usage,
-      gfx::GpuMemoryBufferHandle buffer_handle) override {
-    ADD_FAILURE();
-    return base::MakeRefCounted<gpu::ClientSharedImage>(
-        gpu::Mailbox(),
-        gpu::ClientSharedImage::Metadata(format, size, color_space,
-                                         surface_origin, alpha_type, usage),
-
-        holder_);
-  }
-
-  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
-      gfx::GpuMemoryBufferHandle buffer_handle) override {
-    auto result = GenerateMailboxForGMBHandle(std::move(buffer_handle));
-    mailboxes_.insert(result);
-    return base::MakeRefCounted<gpu::ClientSharedImage>(
-        result,
-        gpu::ClientSharedImage::Metadata(format, size, color_space,
-                                         surface_origin, alpha_type, usage),
-        holder_);
-  }
-
-  SharedImageInterface::SharedImageMapping CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label) override {
-    return {
-        base::MakeRefCounted<gpu::ClientSharedImage>(
-            gpu::Mailbox(),
-            gpu::ClientSharedImage::Metadata(format, size, color_space,
-                                             surface_origin, alpha_type, usage),
-            holder_),
-        base::WritableSharedMemoryMapping()};
-  }
-
-  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      gfx::BufferPlane plane,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label) override {
-    auto result = GenerateMailboxForGMBHandle(gpu_memory_buffer->CloneHandle());
-    mailboxes_.insert(result);
-    return base::MakeRefCounted<gpu::ClientSharedImage>(
-        result,
-        gpu::ClientSharedImage::Metadata(viz::GetSinglePlaneSharedImageFormat(
-                                             gpu_memory_buffer->GetFormat()),
-                                         gpu_memory_buffer->GetSize(),
-                                         color_space, surface_origin,
-                                         alpha_type, usage),
-
-        holder_);
-  }
-
-  void UpdateSharedImage(const gpu::SyncToken& sync_token,
-                         const gpu::Mailbox& mailbox) override {
-    ADD_FAILURE();
-  }
-  void UpdateSharedImage(const gpu::SyncToken& sync_token,
-                         std::unique_ptr<gfx::GpuFence> acquire_fence,
-                         const gpu::Mailbox& mailbox) override {
-    ADD_FAILURE();
-  }
-
-  scoped_refptr<gpu::ClientSharedImage> AddReferenceToSharedImage(
-      const gpu::SyncToken& sync_token,
-      const gpu::Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage) override {
-    ADD_FAILURE();
-    return nullptr;
-  }
-
-  void DestroySharedImage(const gpu::SyncToken& sync_token,
-                          const gpu::Mailbox& mailbox) override {
-    CHECK_EQ(mailboxes_.erase(mailbox), 1U);
-  }
-
-  void DestroySharedImage(
-      const gpu::SyncToken& sync_token,
-      scoped_refptr<gpu::ClientSharedImage> client_shared_image) override {
-    CHECK(client_shared_image->HasOneRef());
-    DestroySharedImage(sync_token, client_shared_image->mailbox());
-  }
-
-  gpu::SharedImageInterface::SwapChainSharedImages CreateSwapChain(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage) override {
-    ADD_FAILURE();
-    return gpu::SharedImageInterface::SwapChainSharedImages(nullptr, nullptr);
-  }
-  void PresentSwapChain(const gpu::SyncToken& sync_token,
-                        const gpu::Mailbox& mailbox) override {
-    ADD_FAILURE();
-  }
-
-  void RegisterSysmemBufferCollection(zx::eventpair handle,
-                                      zx::channel token,
-                                      gfx::BufferFormat format,
-                                      gfx::BufferUsage usage,
-                                      bool register_with_image_pipe) override {
-    EXPECT_EQ(format, gfx::BufferFormat::YUV_420_BIPLANAR);
-    EXPECT_EQ(usage, gfx::BufferUsage::GPU_READ);
-    zx_koid_t id = base::GetKoid(handle).value();
-    std::unique_ptr<TestBufferCollection>& collection =
-        sysmem_buffer_collections_[id];
-    EXPECT_FALSE(collection);
-    collection = std::make_unique<TestBufferCollection>(std::move(handle),
-                                                        std::move(token));
-  }
-
-  gpu::SyncToken GenVerifiedSyncToken() override {
-    gpu::SyncToken token(gpu::CommandBufferNamespace::GPU_IO,
-                         gpu::CommandBufferId(33), 1);
-    token.SetVerifyFlush();
-    return token;
-  }
-
-  gpu::SyncToken GenUnverifiedSyncToken() override {
-    ADD_FAILURE();
-    return gpu::SyncToken();
-  }
-
-  void WaitSyncToken(const gpu::SyncToken& sync_token) override {
-    ADD_FAILURE();
-  }
-
-  void Flush() override { ADD_FAILURE(); }
-
-  scoped_refptr<gfx::NativePixmap> GetNativePixmap(
-      const gpu::Mailbox& mailbox) override {
-    return nullptr;
-  }
-
-  const gpu::SharedImageCapabilities& GetCapabilities() override {
-    return shared_image_capabilities_;
-  }
-
- protected:
-  ~TestSharedImageInterface() override = default;
-
- private:
-  gpu::Mailbox GenerateMailboxForGMBHandle(
-      gfx::GpuMemoryBufferHandle buffer_handle) {
-    CHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::NATIVE_PIXMAP);
-
-    zx_koid_t id =
-        base::GetRelatedKoid(
-            buffer_handle.native_pixmap_handle.buffer_collection_handle)
-            .value();
-    auto collection_it = sysmem_buffer_collections_.find(id);
-    CHECK(collection_it != sysmem_buffer_collections_.end());
-    CHECK_LT(buffer_handle.native_pixmap_handle.buffer_index,
-             collection_it->second->GetNumBuffers());
-
-    return gpu::Mailbox::GenerateForSharedImage();
-  }
-
-  base::flat_map<zx_koid_t, std::unique_ptr<TestBufferCollection>>
-      sysmem_buffer_collections_;
-
-  base::flat_set<gpu::Mailbox> mailboxes_;
-
-  gpu::SharedImageCapabilities shared_image_capabilities_;
-};
-
 class TestRasterContextProvider
     : public base::RefCountedThreadSafe<TestRasterContextProvider>,
       public viz::RasterContextProvider {
  public:
   TestRasterContextProvider()
       : shared_image_interface_(
-            base::MakeRefCounted<TestSharedImageInterface>()) {}
+            base::MakeRefCounted<gpu::TestSharedImageInterface>()) {}
 
   TestRasterContextProvider(TestRasterContextProvider&) = delete;
   TestRasterContextProvider& operator=(TestRasterContextProvider&) = delete;
@@ -393,10 +105,6 @@ class TestRasterContextProvider
     static gpu::GpuFeatureInfo dummy_feature_info;
     return dummy_feature_info;
   }
-  gpu::gles2::GLES2Interface* ContextGL() override {
-    ADD_FAILURE();
-    return nullptr;
-  }
   gpu::raster::RasterInterface* RasterInterface() override {
     ADD_FAILURE();
     return nullptr;
@@ -415,7 +123,7 @@ class TestRasterContextProvider
       std::move(on_destroyed_).Run();
   }
 
-  scoped_refptr<TestSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::TestSharedImageInterface> shared_image_interface_;
   viz::TestContextSupport gpu_context_support_;
 
   base::OnceClosure on_destroyed_;
@@ -479,11 +187,11 @@ class FakeClientNativePixmap : public gfx::ClientNativePixmap {
   ~FakeClientNativePixmap() override = default;
 
   // gfx::ClientNativePixmap implementation.
-  bool Map() override { NOTREACHED_NORETURN(); }
-  void Unmap() override { NOTREACHED(); }
-  size_t GetNumberOfPlanes() const override { NOTREACHED_NORETURN(); }
-  void* GetMemoryAddress(size_t plane) const override { NOTREACHED_NORETURN(); }
-  int GetStride(size_t plane) const override { NOTREACHED_NORETURN(); }
+  bool Map() override { NOTREACHED(); }
+  void Unmap() override { NOTREACHED_IN_MIGRATION(); }
+  size_t GetNumberOfPlanes() const override { NOTREACHED(); }
+  void* GetMemoryAddress(size_t plane) const override { NOTREACHED(); }
+  int GetStride(size_t plane) const override { NOTREACHED(); }
   gfx::NativePixmapHandle CloneHandleForIPC() const override {
     return gfx::CloneHandleForIPC(handle_);
   }

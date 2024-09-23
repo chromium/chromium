@@ -8,6 +8,7 @@
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/screen_util.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf_focus_cycler.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -18,6 +19,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "base/i18n/rtl.h"
 #include "base/ranges/algorithm.h"
+#include "ui/aura/window_targeter.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -28,8 +30,57 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view.h"
+#include "ui/wm/core/coordinate_conversion.h"
+
+namespace {
+
+gfx::Point GetScreenLocationForEvent(aura::Window* root,
+                                     const ui::LocatedEvent& event) {
+  gfx::Point screen_location;
+  if (event.target()) {
+    screen_location = event.target()->GetScreenLocation(event);
+  } else {
+    screen_location = event.root_location();
+    wm::ConvertPointToScreen(root, &screen_location);
+  }
+  return screen_location;
+}
+
+}  // namespace
 
 namespace ash {
+
+// Customized window targeter that lets events fall through to the shelf if they
+// do not intersect with desk button UIs.
+class DeskButtonWindowTargeter : public aura::WindowTargeter {
+ public:
+  explicit DeskButtonWindowTargeter(DeskButtonWidget* desk_button_widget)
+      : desk_button_widget_(desk_button_widget) {}
+  DeskButtonWindowTargeter(const DeskButtonWindowTargeter&) = delete;
+  DeskButtonWindowTargeter& operator=(const DeskButtonWindowTargeter&) = delete;
+
+  // aura::WindowTargeter:
+  bool SubtreeShouldBeExploredForEvent(aura::Window* window,
+                                       const ui::LocatedEvent& event) override {
+    // Convert to screen coordinate. Do not process the event if it's not on the
+    // delegate view.
+    const gfx::Point screen_location =
+        GetScreenLocationForEvent(window->GetRootWindow(), event);
+    const gfx::Rect screen_bounds =
+        desk_button_widget_->delegate_view()->GetBoundsInScreen();
+    if (!screen_bounds.Contains(screen_location)) {
+      return false;
+    }
+
+    // Process the event if it intersects with desk button UI, otherwise let the
+    // event fall through to the shelf.
+    return desk_button_widget_->GetDeskButtonContainer()
+        ->IntersectsWithDeskButtonUi(screen_location);
+  }
+
+ private:
+  const raw_ptr<DeskButtonWidget> desk_button_widget_;
+};
 
 DeskButtonWidget::DelegateView::DelegateView() = default;
 DeskButtonWidget::DelegateView::~DelegateView() = default;
@@ -58,7 +109,8 @@ void DeskButtonWidget::DelegateView::Layout(PassKey) {
   }
 
   // Update the desk button container.
-  desk_button_container_->set_zero_state(desk_button_widget_->zero_state());
+  desk_button_container_->set_zero_state(
+      !desk_button_widget_->IsHorizontalShelf());
   desk_button_container_->UpdateUi(DesksController::Get()->active_desk());
 
   // Calculate bounds of the desk button container.
@@ -67,15 +119,10 @@ void DeskButtonWidget::DelegateView::Layout(PassKey) {
   const gfx::Size container_size = desk_button_container_->GetPreferredSize();
   gfx::Point container_origin;
   if (desk_button_widget_->IsHorizontalShelf()) {
-    if (base::i18n::IsRTL()) {
-      container_origin = gfx::Point(kDeskButtonWidgetInsetsHorizontal.right(),
-                                    kDeskButtonWidgetInsetsHorizontal.top());
-    } else {
-      container_origin = gfx::Point(
-          widget_size.width() - kDeskButtonWidgetInsetsHorizontal.right() -
-              container_size.width(),
-          kDeskButtonWidgetInsetsHorizontal.top());
-    }
+    container_origin = gfx::Point(
+        widget_size.width() - kDeskButtonWidgetInsetsHorizontal.right() -
+            container_size.width(),
+        kDeskButtonWidgetInsetsHorizontal.top());
   } else {
     container_origin = gfx::Point(kDeskButtonWidgetInsetsVertical.left(),
                                   widget_size.height() -
@@ -100,9 +147,9 @@ DeskButtonWidget::DeskButtonWidget(Shelf* shelf) : shelf_(shelf) {
 DeskButtonWidget::~DeskButtonWidget() = default;
 
 // static
-int DeskButtonWidget::GetMaxLength(bool horizontal_shelf, bool zero_state) {
+int DeskButtonWidget::GetMaxLength(bool horizontal_shelf) {
   const int container_len =
-      DeskButtonContainer::GetMaxLength(horizontal_shelf, zero_state);
+      DeskButtonContainer::GetMaxLength(!horizontal_shelf);
   return container_len + (horizontal_shelf
                               ? kDeskButtonWidgetInsetsHorizontal.width()
                               : kDeskButtonWidgetInsetsVertical.height());
@@ -136,26 +183,29 @@ void DeskButtonWidget::CalculateTargetBounds() {
 
   gfx::Point widget_origin;
   gfx::Size widget_size;
-  const gfx::Rect navigation_bounds =
-      shelf_->navigation_widget()->GetTargetBounds();
+
+  // The position of this widget is always dependant on the hotseat widget.
   const gfx::Rect hotseat_bounds = shelf_->hotseat_widget()->GetTargetBounds();
   const gfx::Insets shelf_padding =
       shelf_->hotseat_widget()
           ->scrollable_shelf_view()
           ->CalculateMirroredEdgePadding(/*use_target_bounds=*/true);
-  const int max_length = GetMaxLength(IsHorizontalShelf(), zero_state_);
+  const int app_icon_end_padding = ShelfConfig::Get()->GetAppIconEndPadding();
+  const int max_length = GetMaxLength(IsHorizontalShelf());
 
   if (IsHorizontalShelf()) {
-    widget_origin = gfx::Point(
-        base::i18n::IsRTL()
-            ? navigation_bounds.x() - max_length - shelf_padding.right()
-            : navigation_bounds.right() + shelf_padding.left(),
-        hotseat_bounds.y());
     widget_size = gfx::Size(max_length, hotseat_bounds.height());
-  } else {
     widget_origin = gfx::Point(
-        hotseat_bounds.x(), navigation_bounds.bottom() + shelf_padding.top());
+        base::i18n::IsRTL() ? hotseat_bounds.right() - shelf_padding.right() -
+                                  app_icon_end_padding
+                            : hotseat_bounds.x() + shelf_padding.left() +
+                                  app_icon_end_padding - widget_size.width(),
+        hotseat_bounds.y());
+  } else {
     widget_size = gfx::Size(hotseat_bounds.width(), max_length);
+    widget_origin = gfx::Point(hotseat_bounds.x(),
+                               hotseat_bounds.y() + shelf_padding.top() +
+                                   app_icon_end_padding - widget_size.height());
   }
 
   target_bounds_ = gfx::Rect(widget_origin, widget_size);
@@ -231,10 +281,10 @@ void DeskButtonWidget::Initialize(aura::Window* container) {
   CHECK(container);
   delegate_view_ = new DelegateView();
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "DeskButtonWidget";
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.delegate = delegate_view_;
   params.parent = container;
   params.layer_type = ui::LAYER_NOT_DRAWN;
@@ -246,6 +296,9 @@ void DeskButtonWidget::Initialize(aura::Window* container) {
 
   CalculateTargetBounds();
   UpdateLayout(/*animate=*/false);
+
+  GetNativeWindow()->SetEventTargeter(
+      std::make_unique<DeskButtonWindowTargeter>(/*desk_button_widget=*/this));
 }
 
 DeskButtonContainer* DeskButtonWidget::GetDeskButtonContainer() const {
@@ -254,10 +307,6 @@ DeskButtonContainer* DeskButtonWidget::GetDeskButtonContainer() const {
 
 bool DeskButtonWidget::IsHorizontalShelf() const {
   return shelf_->IsHorizontalAlignment();
-}
-
-bool DeskButtonWidget::IsForcedZeroState() const {
-  return delegate_view_->desk_button_container()->IsForcedZeroState();
 }
 
 void DeskButtonWidget::SetDefaultChildToFocus(

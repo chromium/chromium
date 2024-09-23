@@ -63,11 +63,14 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
@@ -256,12 +259,8 @@ class CertNetFetcherURLLoader::RequestCore
     DCHECK_EQ(job_, job);
     job_ = nullptr;
 
-    const uint8_t* string_data =
-        reinterpret_cast<const uint8_t*>(response_body->data());
-
     error_ = error;
-    bytes_ =
-        std::vector<uint8_t>(string_data, string_data + response_body->size());
+    bytes_ = base::ToVector(base::as_byte_span(*response_body));
     completion_event_.Signal();
   }
 
@@ -471,7 +470,7 @@ void Job::DetachRequest(CertNetFetcherURLLoader::RequestCore* request) {
   std::unique_ptr<Job> delete_this;
 
   auto it = base::ranges::find(requests_, request);
-  DCHECK(it != requests_.end());
+  CHECK(it != requests_.end(), base::NotFatalUntil::M130);
   requests_.erase(it);
 
   // If there are no longer any requests attached to the job then

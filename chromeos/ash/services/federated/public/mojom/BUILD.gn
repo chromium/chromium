@@ -11,6 +11,7 @@ mojom("mojom") {
   sources = [
     "example.mojom",
     "federated_service.mojom",
+    "tables.mojom",
   ]
 
   public_deps = [ "//mojo/public/mojom/base" ]

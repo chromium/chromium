@@ -1,0 +1,114 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("remote_apps") {
+  sources = [
+    "id_generator.cc",
+    "id_generator.h",
+    "remote_apps_impl.cc",
+    "remote_apps_impl.h",
+    "remote_apps_manager.cc",
+    "remote_apps_manager.h",
+    "remote_apps_manager_factory.cc",
+    "remote_apps_manager_factory.h",
+    "remote_apps_model.cc",
+    "remote_apps_model.h",
+    "remote_apps_types.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/app_list",
+    "//ash/public/cpp",
+    "//base",
+    "//base:i18n",
+    "//cc/paint",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common/apps/platform_apps/api",
+    "//chromeos/components/remote_apps/mojom",
+    "//components/account_id",
+    "//components/keyed_service/core",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+    "//net/traffic_annotation",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "remote_apps_manager_browsertest.cc" ]
+
+  deps = [
+    ":remote_apps",
+    "//ash",
+    "//ash:test_support",
+    "//ash/app_list",
+    "//ash/app_list/model:app_list_model",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/shelf",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/components/remote_apps/mojom",
+    "//components/account_id",
+    "//components/policy/proto",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/sync:test_support",
+    "//components/sync/protocol",
+    "//components/user_manager",
+    "//components/user_manager:common",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events:test_support",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "remote_apps_model_unittest.cc" ]
+
+  deps = [
+    ":remote_apps",
+    "//base",
+    "//testing/gtest",
+  ]
+}

@@ -274,7 +274,7 @@ class WebContentsNSViewHostStub
  public:
   WebContentsNSViewHostStub() = default;
 
-  void OnMouseEvent(bool motion, bool exited) override {}
+  void OnMouseEvent(std::unique_ptr<ui::Event> event) override {}
 
   void OnBecameFirstResponder(SelectionDirection direction) override {}
 
@@ -313,6 +313,7 @@ class WebContentsNSViewHostStub
   bool DragPromisedFileTo(const ::base::FilePath& file_path,
                           const ::content::DropData& drop_data,
                           const ::GURL& download_url,
+                          const ::url::Origin& source_origin,
                           ::base::FilePath* out_file_path) override {
     return false;
   }
@@ -320,6 +321,7 @@ class WebContentsNSViewHostStub
   void DragPromisedFileTo(const ::base::FilePath& file_path,
                           const ::content::DropData& drop_data,
                           const ::GURL& download_url,
+                          const ::url::Origin& source_origin,
                           DragPromisedFileToCallback callback) override {}
 
   void EndDrag(uint32_t drag_operation,

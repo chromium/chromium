@@ -36,6 +36,8 @@ class VideoDecoder {
     kEOStream,
   };
 
+  enum BitDepth { Depth8, Depth16 };
+
   VideoDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                gfx::Size display_resolution);
 
@@ -56,7 +58,8 @@ class VideoDecoder {
                                  std::vector<uint8_t>& y_plane,
                                  std::vector<uint8_t>& u_plane,
                                  std::vector<uint8_t>& v_plane,
-                                 gfx::Size& size) = 0;
+                                 gfx::Size& size,
+                                 BitDepth& bit_depth) = 0;
 
   // Handles dynamic resolution change with new resolution parsed from frame
   // header.
@@ -69,19 +72,21 @@ class VideoDecoder {
   static std::vector<uint8_t> ConvertYUVToPNG(uint8_t* y_plane,
                                               uint8_t* u_plane,
                                               uint8_t* v_plane,
-                                              const gfx::Size& size);
+                                              const gfx::Size& size,
+                                              BitDepth bit_depth);
 
  protected:
   void NegotiateCAPTUREFormat();
 
-  // Helper method for converting frames to YUV.
-  static void ConvertToYUV(std::vector<uint8_t>& dest_y,
-                           std::vector<uint8_t>& dest_u,
-                           std::vector<uint8_t>& dest_v,
-                           const gfx::Size& dest_size,
-                           const MmappedBuffer::MmappedPlanes& planes,
-                           const gfx::Size& src_size,
-                           uint32_t fourcc);
+  // Helper method for converting frames to YUV. Returns the bit depth of
+  // the converted frame.
+  static BitDepth ConvertToYUV(std::vector<uint8_t>& dest_y,
+                               std::vector<uint8_t>& dest_u,
+                               std::vector<uint8_t>& dest_v,
+                               const gfx::Size& dest_size,
+                               const MmappedBuffer::MmappedPlanes& planes,
+                               const gfx::Size& src_size,
+                               uint32_t fourcc);
 
   // Wrapper for V4L2 ioctl requests.
   const std::unique_ptr<V4L2IoctlShim> v4l2_ioctl_;

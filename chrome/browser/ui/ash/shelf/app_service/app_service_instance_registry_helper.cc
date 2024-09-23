@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/app_types.h"
 #include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
@@ -22,13 +21,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -227,8 +227,8 @@ void AppServiceInstanceRegistryHelper::OnSetShelfIDForBrowserWindowContents(
   const std::string top_app_id = GetAppId(window);
   if (!top_app_id.empty()) {
     app_id = top_app_id;
-  } else if (static_cast<ash::AppType>(window->GetProperty(
-                 aura::client::kAppType)) == ash::AppType::BROWSER) {
+  } else if (window->GetProperty(chromeos::kAppTypeKey) ==
+             chromeos::AppType::BROWSER) {
     // For a normal browser window, set the app id as the browser app id.
     app_id = app_constants::kChromeAppId;
   }
@@ -440,9 +440,9 @@ bool AppServiceInstanceRegistryHelper::IsOpenedInBrowser(
           browser_context = update.BrowserContext();
           found = true;
         });
-    if (!found)
-      continue;
-    return (browser_context) ? false : true;
+    if (found) {
+      return !browser_context;
+    }
   }
   return true;
 }

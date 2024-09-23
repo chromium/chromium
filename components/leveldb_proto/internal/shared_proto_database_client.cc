@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/leveldb_proto/internal/shared_proto_database_client.h"
 
 #include <memory>
@@ -194,7 +199,7 @@ SharedProtoDatabaseClient::~SharedProtoDatabaseClient() {
 void SharedProtoDatabaseClient::Init(const std::string& client_uma_name,
                                      Callbacks::InitStatusCallback callback) {
   // Should never be called from from the selector, and init is not necessary.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   GetSharedDatabaseInitStatusAsync(client_db_id(), parent_db_,
                                    std::move(callback));
 }
@@ -205,7 +210,7 @@ void SharedProtoDatabaseClient::InitWithDatabase(
     const leveldb_env::Options& options,
     bool destroy_on_corruption,
     Callbacks::InitStatusCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SharedProtoDatabaseClient::UpdateEntries(

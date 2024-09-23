@@ -11,7 +11,7 @@
 #include "base/numerics/safe_math.h"
 #include "pdf/accessibility_helper.h"
 #include "pdf/accessibility_structs.h"
-#include "pdf/pdf_engine.h"
+#include "pdf/pdfium/pdfium_engine.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace chrome_pdf {
@@ -19,7 +19,7 @@ namespace chrome_pdf {
 namespace {
 
 AccessibilityFormFieldInfo GetAccessibilityFormFieldInfo(
-    PDFEngine* engine,
+    PDFiumEngine* engine,
     int32_t page_index,
     uint32_t text_run_count) {
   AccessibilityFormFieldInfo form_field_info;
@@ -30,7 +30,7 @@ AccessibilityFormFieldInfo GetAccessibilityFormFieldInfo(
 
 }  // namespace
 
-bool GetAccessibilityInfo(PDFEngine* engine,
+bool GetAccessibilityInfo(PDFiumEngine* engine,
                           int32_t page_index,
                           AccessibilityPageInfo& page_info,
                           std::vector<AccessibilityTextRunInfo>& text_runs,

@@ -1,0 +1,38 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package device.enclave;
+
+option optimize_for = LITE_RUNTIME;
+
+// Contains various digest formats for the same underlying file. Mixing
+// digests from various files is "undefined behavior". There is no distinction
+// between empty and not set, it means the same.
+//
+// The wire numbers are the codec IDs in
+// https://github.com/multiformats/multicodec/blob/master/table.csv
+message RawDigest {
+  reserved 1 to 17;
+  bytes sha2_256 = 18;
+  bytes sha2_512 = 19;
+  reserved 20 to 31;
+  bytes sha2_384 = 32;
+}
+
+// Similar to RawDigest, but contains hex-encoded hashes for the sake of better
+// readability and copy-pastability. The set of all possible RawDigest and the
+// set of all possible HexDigests are in a bijective correspondence, by just
+// hex-encoding or hex-decoding each field separately.
+//
+// For example, the field sha2_256 could contain
+// "82aac1adbfe3ada1244c1f54b7c949519e1f048067d0c3b236b7ae048fc7e227".
+message HexDigest {
+  reserved 1 to 17;
+  string sha2_256 = 18;
+  string sha2_512 = 19;
+  reserved 20 to 31;
+  string sha2_384 = 32;
+}

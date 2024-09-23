@@ -227,7 +227,9 @@ class MetricReportingManagerLacrosTest
   MetricReportingManagerLacrosTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
+  // ::testing::TestWithParam:
   void SetUp() override {
+    TestWithParam::SetUp();
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(kUserId);
     delegate_ = std::make_unique<NiceMock<MockDelegate>>();
@@ -284,11 +286,21 @@ class MetricReportingManagerLacrosTest
             std::move(website_metrics_service));
   }
 
+  void ResetExpectationReferences() {
+    website_event_queue_ptr_ = nullptr;
+    telemetry_queue_ptr_ = nullptr;
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<MockDelegate> delegate_;
+
+  // These are necessary to set expectations in various test cases. The objects
+  // they point to are consumed when the expectation is triggered. Test cases
+  // must reset these pointers after setting expectations and before
+  // expectations are triggered to avoid dangling pointers.
   raw_ptr<test::FakeMetricReportQueue> telemetry_queue_ptr_;
   raw_ptr<test::FakeMetricReportQueue> website_event_queue_ptr_;
 };
@@ -314,6 +326,7 @@ TEST_F(MetricReportingManagerLacrosTest, InitiallyDeprovisioned) {
     return std::make_unique<FakeMetricEventObserverManager>(
         fake_reporting_settings.get(), &observer_manager_count);
   });
+  ResetExpectationReferences();
 
   auto* const delegate_ptr = delegate_.get();
   metrics::MetricReportingManagerLacros metric_reporting_manager(
@@ -342,6 +355,7 @@ TEST_P(MetricReportingManagerLacrosTelemetryTest, Default) {
       });
   ON_CALL(*delegate_, IsUserAffiliated(Address(profile_)))
       .WillByDefault(Return(test_case.is_affiliated));
+  ResetExpectationReferences();
 
   auto* const delegate_ptr = delegate_.get();
   metrics::MetricReportingManagerLacros metric_reporting_manager(
@@ -397,6 +411,7 @@ TEST_P(MetricReportingManagerLacrosEventTest, Default) {
         return std::make_unique<FakeMetricEventObserverManager>(
             fake_reporting_settings.get(), &observer_manager_count);
       });
+  ResetExpectationReferences();
 
   auto* const delegate_ptr = delegate_.get();
   metrics::MetricReportingManagerLacros metric_reporting_manager(

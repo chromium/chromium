@@ -4,11 +4,9 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_UIA_WIN_H_
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_UIA_WIN_H_
 
-#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
-
 #include <ole2.h>
+
 #include <stdint.h>
-#include <uiautomation.h>
 #include <wrl/client.h>
 
 #include <map>
@@ -17,20 +15,23 @@
 
 #include "base/component_export.h"
 #include "base/win/scoped_variant.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
+
+#include <uiautomation.h>
 
 namespace ui {
 
 class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterUia
-    : public ui::AXTreeFormatterBase {
+    : public AXTreeFormatterBase {
  public:
   AXTreeFormatterUia();
   ~AXTreeFormatterUia() override;
 
   // AccessibilityTreeFormatterBase:
-  base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* start) const override;
+  base::Value::Dict BuildTree(AXPlatformNodeDelegate* start) const override;
   base::Value::Dict BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
-  base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const override;
 
  protected:
   void AddDefaultFilters(

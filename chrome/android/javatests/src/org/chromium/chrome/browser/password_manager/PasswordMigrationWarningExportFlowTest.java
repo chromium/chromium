@@ -33,7 +33,6 @@ import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build.VERSION_CODES;
 import android.widget.Button;
 
 import androidx.test.espresso.intent.Intents;
@@ -48,30 +47,28 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FileUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.HistogramExportResult;
 import org.chromium.chrome.browser.password_manager.settings.ExportFlow;
-import org.chromium.chrome.browser.password_manager.settings.FakePasswordManagerHandler;
 import org.chromium.chrome.browser.password_manager.settings.ManualCallbackDelayer;
 import org.chromium.chrome.browser.password_manager.settings.PasswordListObserver;
 import org.chromium.chrome.browser.password_manager.settings.PasswordManagerHandlerProvider;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningCoordinator;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningTriggers;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -101,36 +98,39 @@ public class PasswordMigrationWarningExportFlowTest {
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getBottomSheetController();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mExportFlow = new ExportFlow();
                     mFakePasswordManagerHandler =
                             new FakePasswordManagerHandler(
-                                    PasswordManagerHandlerProvider.getInstance());
+                                    PasswordManagerHandlerProvider.getForProfile(
+                                            mChromeActivityRule.getProfile(false)));
                     // Create a password, otherwise the export will not be allowed when there are
                     // not passwords saved.
                     setPasswordSource("https://example.com", "test user", "password");
                     mCoordinator =
                             new PasswordMigrationWarningCoordinator(
                                     context,
-                                    Profile.getLastUsedRegularProfile(),
+                                    ProfileManager.getLastUsedRegularProfile(),
                                     bottomSheetController,
                                     SyncConsentActivityLauncherImpl.get(),
-                                    new SettingsLauncherImpl(),
                                     ManageSyncSettings.class,
                                     mExportFlow,
                                     (PasswordListObserver observer) ->
-                                            PasswordManagerHandlerProvider.getInstance()
+                                            PasswordManagerHandlerProvider.getForProfile(
+                                                            mChromeActivityRule.getProfile(false))
                                                     .addObserver(observer),
                                     mPasswordStoreBridge,
                                     PasswordMigrationWarningTriggers.CHROME_STARTUP,
                                     (Throwable exception) -> fail());
-                    PasswordManagerHandlerProvider.getInstance().passwordListAvailable(1);
+                    PasswordManagerHandlerProvider.getForProfile(
+                                    mChromeActivityRule.getProfile(false))
+                            .passwordListAvailable(1);
                     mCoordinator.showWarning();
                 });
         // Go to the "More options" screen.
         onViewWaiting(allOf(withId(password_migration_more_options_button), isDisplayed()));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Button button =
                             mChromeActivityRule
@@ -146,10 +146,7 @@ public class PasswordMigrationWarningExportFlowTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Build(
-            message = "https://crbug.com/1470333",
-            sdk_is_greater_than = VERSION_CODES.M,
-            sdk_is_less_than = VERSION_CODES.P)
+    @DisabledTest(message = "https://crbug.com/40925707")
     public void testExportIntent() throws Exception {
         ReauthenticationManager.setApiOverride(ReauthenticationManager.OverrideState.AVAILABLE);
         ReauthenticationManager.setScreenLockSetUpOverride(
@@ -188,7 +185,8 @@ public class PasswordMigrationWarningExportFlowTest {
             onViewWaiting(
                             allOf(
                                     withText(R.string.password_settings_export_action_title),
-                                    isCompletelyDisplayed()))
+                                    isCompletelyDisplayed()),
+                            /* checkRootDialog= */ true)
                     .perform(click());
 
             // Assert that the expected intent was detected.
@@ -224,7 +222,8 @@ public class PasswordMigrationWarningExportFlowTest {
         onViewWaiting(
                         allOf(
                                 withText(R.string.exported_passwords_delete_button),
-                                isCompletelyDisplayed()))
+                                isCompletelyDisplayed()),
+                        /* checkRootDialog= */ true)
                 .perform(click());
 
         verify(mPasswordStoreBridge).clearAllPasswords();
@@ -273,7 +272,7 @@ public class PasswordMigrationWarningExportFlowTest {
         ReauthenticationManager.recordLastReauth(
                 System.currentTimeMillis(), ReauthenticationManager.ReauthScope.BULK);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Disable the timer for progress bar.
                     mExportFlow
@@ -286,10 +285,12 @@ public class PasswordMigrationWarningExportFlowTest {
 
     private void setPasswordSource(String origin, String username, String password) {
         PasswordManagerHandlerProvider handlerProvider =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        PasswordManagerHandlerProvider::getInstance);
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                PasswordManagerHandlerProvider.getForProfile(
+                                        mChromeActivityRule.getProfile(false)));
         mFakePasswordManagerHandler.insertPasswordEntryForTesting(origin, username, password);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         handlerProvider.setPasswordManagerHandlerForTest(
                                 mFakePasswordManagerHandler));

@@ -4,12 +4,14 @@
 
 #include "components/permissions/android/permission_prompt/permission_dialog_delegate.h"
 
+#include <string_view>
+
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "components/permissions/android/jni_headers/PermissionDialogController_jni.h"
-#include "components/permissions/android/jni_headers/PermissionDialogDelegate_jni.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/android/permission_prompt/permission_prompt_android.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/strings/grit/components_strings.h"
@@ -18,6 +20,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/android/java_bitmap.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/permissions/android/jni_headers/PermissionDialogController_jni.h"
+#include "components/permissions/android/jni_headers/PermissionDialogDelegate_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 
@@ -35,16 +41,22 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
   // PermissionDialogDelegate.
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  bool isOneTime = PermissionUtil::CanPermissionBeAllowedOnce(
-      permission_prompt_->GetContentSettingType(0));
+  bool isOneTime =
+      base::FeatureList::IsEnabled(permissions::features::kOneTimePermission) &&
+      PermissionUtil::DoesSupportTemporaryGrants(
+          permission_prompt_->GetContentSettingType(0));
 
   base::android::ScopedJavaLocalRef<jstring> positiveButtonText;
   base::android::ScopedJavaLocalRef<jstring> negativeButtonText;
   base::android::ScopedJavaLocalRef<jstring> positiveEphemeralButtonText;
 
+  bool showPositiveNonEphemeralAsFirstButton = false;
   if (isOneTime) {
     positiveButtonText = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_EVERY_VISIT));
+        env, l10n_util::GetStringUTF16(
+                 permissions::feature_params::kUseWhileVisitingLanguage.Get()
+                     ? IDS_PERMISSION_ALLOW_WHILE_VISITING
+                     : IDS_PERMISSION_ALLOW_EVERY_VISIT));
     negativeButtonText = ConvertUTF16ToJavaString(
         env, l10n_util::GetStringUTF16(
                  permissions::feature_params::kUseStrongerPromptLanguage.Get()
@@ -52,13 +64,15 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
                      : IDS_PERMISSION_DONT_ALLOW));
     positiveEphemeralButtonText = ConvertUTF16ToJavaString(
         env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
+    showPositiveNonEphemeralAsFirstButton =
+        permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get();
   } else {
     positiveButtonText = ConvertUTF16ToJavaString(
         env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
     negativeButtonText = ConvertUTF16ToJavaString(
         env, l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
     positiveEphemeralButtonText =
-        ConvertUTF16ToJavaString(env, base::StringPiece16());
+        ConvertUTF16ToJavaString(env, std::u16string_view());
   }
 
   std::vector<int> content_settings_types;
@@ -70,9 +84,9 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
   PermissionRequest::AnnotatedMessageText annotatedMessageText =
       permission_prompt_->GetAnnotatedMessageText();
   std::vector<int> bolded_ranges;
-  for (auto [start, length] : annotatedMessageText.bolded_ranges) {
+  for (auto [start, end] : annotatedMessageText.bolded_ranges) {
     bolded_ranges.push_back(base::checked_cast<int>(start));
-    bolded_ranges.push_back(base::checked_cast<int>(length));
+    bolded_ranges.push_back(base::checked_cast<int>(end));
   }
 
   j_delegate_.Reset(Java_PermissionDialogDelegate_create(
@@ -83,7 +97,8 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
           permission_prompt_->GetIconId()),
       ConvertUTF16ToJavaString(env, annotatedMessageText.text),
       base::android::ToJavaIntArray(env, bolded_ranges), positiveButtonText,
-      negativeButtonText, positiveEphemeralButtonText));
+      negativeButtonText, positiveEphemeralButtonText,
+      showPositiveNonEphemeralAsFirstButton));
 }
 
 void PermissionDialogJavaDelegate::CreateDialog(
@@ -130,8 +145,7 @@ void PermissionDialogJavaDelegate::OnRequestingOriginFaviconLoaded(
     const favicon_base::FaviconRawBitmapResult& favicon_result) {
   if (favicon_result.is_valid()) {
     gfx::Image image =
-        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data->front(),
-                                         favicon_result.bitmap_data->size());
+        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data);
     const SkBitmap* bitmap = image.ToSkBitmap();
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_PermissionDialogDelegate_updateIcon(env, j_delegate_,
@@ -189,8 +203,25 @@ void PermissionDialogDelegate::Cancel(JNIEnv* env,
 }
 
 void PermissionDialogDelegate::Dismissed(JNIEnv* env,
-                                         const JavaParamRef<jobject>& obj) {
+                                         const JavaParamRef<jobject>& obj,
+                                         int dismissalType) {
   CHECK(permission_prompt_);
+  std::vector<ContentSettingsType> content_settings_types;
+  for (size_t i = 0; i < permission_prompt_->PermissionCount(); ++i) {
+    ContentSettingsType type = permission_prompt_->GetContentSettingType(i);
+    // Not all request types have an associated ContentSettingsType.
+    if (type == ContentSettingsType::DEFAULT) {
+      break;
+    }
+    content_settings_types.push_back(type);
+  }
+
+  if (content_settings_types.size() == permission_prompt_->PermissionCount()) {
+    PermissionUmaUtil::RecordDismissalType(
+        content_settings_types, permission_prompt_->GetPromptDisposition(),
+        static_cast<DismissalType>(dismissalType));
+  }
+
   permission_prompt_->Closing();
 }
 

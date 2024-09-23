@@ -18,7 +18,6 @@ import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -81,7 +80,9 @@ public class NotificationUmaTracker {
         SystemNotificationType.BLUETOOTH,
         SystemNotificationType.USB,
         SystemNotificationType.UPM_ERROR,
-        SystemNotificationType.WEBAPK_INSTALL_FAILED
+        SystemNotificationType.WEBAPK_INSTALL_FAILED,
+        SystemNotificationType.DATA_SHARING,
+        SystemNotificationType.UPM_ACCESS_LOSS_WARNING
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SystemNotificationType {
@@ -125,8 +126,10 @@ public class NotificationUmaTracker {
         int USB = 36;
         int UPM_ERROR = 37;
         int WEBAPK_INSTALL_FAILED = 38;
+        int DATA_SHARING = 39;
+        int UPM_ACCESS_LOSS_WARNING = 40;
 
-        int NUM_ENTRIES = 39;
+        int NUM_ENTRIES = 41;
     }
 
     /*
@@ -303,6 +306,37 @@ public class NotificationUmaTracker {
         int NUM_ENTRIES = 6;
     }
 
+    /** The stages of the job handling a notification intent. */
+    @IntDef({
+        IntentHandlerJobStage.SCHEDULE_JOB,
+        IntentHandlerJobStage.SCHEDULE_JOB_FAILED,
+        IntentHandlerJobStage.ON_START_JOB,
+        IntentHandlerJobStage.ON_STOP_JOB,
+        IntentHandlerJobStage.DISPATCH_EVENT,
+        IntentHandlerJobStage.NATIVE_STARTUP
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface IntentHandlerJobStage {
+        int SCHEDULE_JOB = 0;
+        int SCHEDULE_JOB_FAILED = 1;
+        int ON_START_JOB = 2;
+        int ON_STOP_JOB = 3;
+        int NATIVE_STARTUP = 4;
+        int DISPATCH_EVENT = 5;
+
+        int NUM_ENTRIES = 6;
+    }
+
+    /** The action during which the `WasGlobalStatePreserved` histogram is recorded. */
+    @IntDef({GlobalStatePreservedActionSuffix.UNDO, GlobalStatePreservedActionSuffix.COMMIT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface GlobalStatePreservedActionSuffix {
+        int UNDO = 0;
+        int COMMIT = 1;
+
+        int NUM_ENTRIES = 2;
+    }
+
     private static class LazyHolder {
         private static final NotificationUmaTracker INSTANCE = new NotificationUmaTracker();
     }
@@ -334,7 +368,7 @@ public class NotificationUmaTracker {
         if (type == SystemNotificationType.UNKNOWN || notification == null) return;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            logNotificationShown(type, ApiHelperForO.getNotificationChannelId(notification));
+            logNotificationShown(type, notification.getChannelId());
         } else {
             logNotificationShown(type, null);
         }
@@ -500,10 +534,15 @@ public class NotificationUmaTracker {
      * @param grantResults List of grant results.
      */
     public void onNotificationPermissionRequestResult(String[] permissions, int[] grantResults) {
-        if (permissions.length != 1
+        if (permissions == null
+                || permissions.length != 1
                 || grantResults.length != 1
                 || !permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS)) {
-            assert false;
+            assert permissions != null : "Parameter permissions should not be null";
+            assert permissions.length == 1 : "A single permission should have been requested";
+            assert grantResults.length == 1 : "A single result should have been returned";
+            assert permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS)
+                    : "The requested permission should be for notifications";
             return;
         }
 
@@ -540,6 +579,77 @@ public class NotificationUmaTracker {
                 "Mobile.SystemNotification.Permission.StartupState",
                 state,
                 NotificationPermissionState.NUM_ENTRIES);
+    }
+
+    /**
+     * Records whether the origin was already in the provisionally unsubscribed state when
+     * processing a tap on the `PRE_UNSUBSCRIBE` action button.
+     */
+    public void recordIsDuplicatePreUnsubscribe(boolean isDuplicate) {
+        RecordHistogram.recordBooleanHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe.IsDuplicatePreUnsubscribe",
+                isDuplicate);
+    }
+
+    /**
+     * Records how long the pre-native processing for the `PRE_UNSUBSCRIBE` action button took in
+     * real time, which includes time spent in power-saving modes and/or display being dark.
+     */
+    public void recordPreUnsubscribeRealDuration(long durationMillis) {
+        RecordHistogram.recordMediumTimesHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
+                        + "PreUnsubscribePreNativeRealDuration",
+                durationMillis);
+    }
+
+    /**
+     * Records how long the pre-native processing for the `PRE_UNSUBSCRIBE` action button took in
+     * `uptimeMillis`, which stops the clock when in power-saving modes and/or display being dark.
+     */
+    public void recordPreUnsubscribeDuration(long durationMillis) {
+        RecordHistogram.recordMediumTimesHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
+                        + "PreUnsubscribePreNativeDuration",
+                durationMillis);
+    }
+
+    /**
+     * Records the time, as perceived by the user, that has elapsed between the most recent
+     * non-duplicate `PRE_UNSUBSCRIBE` intent and the current, duplicate `PRE_UNSUBSCRIBE` intent,
+     * including time spent in power-saving modes and/or display being dark.
+     */
+    public void recordDuplicatePreUnsubscribeRealDelay(long delayMillis) {
+        RecordHistogram.recordMediumTimesHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
+                        + "DuplicatePreUnsubscribeRealDelay",
+                delayMillis);
+    }
+
+    /**
+     * Records whether the Java global state was preserved between `PRE_UNSUBSCRIBE` and the
+     * `UNDO_UNSUBSCRIBE`/`COMMIT_UNSUBSCRIBE_*` events.
+     */
+    public void recordWasGlobalStatePreserved(
+            @GlobalStatePreservedActionSuffix int action, boolean wasPreserved) {
+        RecordHistogram.recordBooleanHistogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe.WasGlobalStatePreserved."
+                        + (action == GlobalStatePreservedActionSuffix.UNDO ? "Undo" : "Commit"),
+                wasPreserved);
+    }
+
+    /**
+     * Records a sample to indicate that the job to handle a notification intent has reached a given
+     * stage.
+     *
+     * @param stage The stage reached.
+     * @param intentAction The action of the intent being processed.
+     */
+    public void recordIntentHandlerJobStage(@IntentHandlerJobStage int stage, String intentAction) {
+        RecordHistogram.recordSparseHistogram("Notifications.Android.JobStage", stage);
+        if (NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intentAction)) {
+            RecordHistogram.recordSparseHistogram(
+                    "Notifications.Android.JobStage.PreUnsubscribe", stage);
+        }
     }
 
     /**

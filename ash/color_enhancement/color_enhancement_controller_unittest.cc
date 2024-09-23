@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/color_enhancement/color_enhancement_controller.h"
+
+#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/flash_screen_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -13,14 +16,29 @@
 #include "components/prefs/pref_service.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/animation/animation_test_api.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
+
+namespace {
+const int kDelayToCheckStateChangeMs = 300;
+const int kBlueColor = 0x0000ff;
+
+// Indices in a FilterOperation::Matrix that map a channel to itself.
+const int kRedToRedIndex = 0;
+const int kGreenToGreenIndex = 6;
+const int kBlueToBlueIndex = 12;
+const int kAlphaToAlphaIndex = 18;
+}  // namespace
 
 // Tests that the color enhancement controller sets the appropriate values
 // on the root window layer and updates cursor compositing as needed.
 class ColorEnhancementControllerTest : public AshTestBase {
  public:
-  ColorEnhancementControllerTest() = default;
+  ColorEnhancementControllerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   ColorEnhancementControllerTest(const ColorEnhancementControllerTest&) =
       delete;
@@ -28,6 +46,12 @@ class ColorEnhancementControllerTest : public AshTestBase {
       const ColorEnhancementControllerTest&) = delete;
 
   ~ColorEnhancementControllerTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityFlashScreenFeature);
+    AshTestBase::SetUp();
+  }
 
   bool IsCursorCompositingEnabled() const {
     return Shell::Get()
@@ -38,6 +62,37 @@ class ColorEnhancementControllerTest : public AshTestBase {
 
   PrefService* GetPrefs() const {
     return Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  }
+
+  void FastForwardAnimationTo(int milliseconds) {
+    gfx::AnimationTestApi animation_api(
+        AccessibilityController::Get()
+            ->GetFlashScreenControllerForTesting()
+            ->GetAnimationForTesting());
+    base::TimeTicks now = base::TimeTicks::Now();
+    animation_api.SetStartTime(now);
+    animation_api.Step(now + base::Milliseconds(milliseconds));
+  }
+
+  void ShowNotification() {
+    const std::string notification_id("id");
+    const std::string notification_title("title");
+    message_center::MessageCenter::Get()->AddNotification(
+        std::make_unique<message_center::Notification>(
+            message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+            base::UTF8ToUTF16(notification_title), u"test message",
+            ui::ImageModel(), std::u16string() /* display_source */, GURL(),
+            message_center::NotifierId(),
+            message_center::RichNotificationData(),
+            new message_center::NotificationDelegate()));
+  }
+
+  void ExpectNoCustomColorMatrix() {
+    for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+      const cc::FilterOperation::Matrix* matrix =
+          root_window->layer()->GetLayerCustomColorMatrix();
+      EXPECT_FALSE(matrix);
+    }
   }
 
  private:
@@ -180,4 +235,110 @@ TEST_F(ColorEnhancementControllerTest, GrayscaleBehindColorCorrectionOption) {
     EXPECT_FALSE(root_window->layer()->LayerHasCustomColorMatrix());
   }
 }
+
+TEST_F(ColorEnhancementControllerTest, FlashNotifications) {
+  PrefService* prefs = GetPrefs();
+  prefs->SetBoolean(prefs::kAccessibilityFlashNotificationsEnabled, true);
+
+  // Show a normal notification. Flashing should occur.
+  ShowNotification();
+
+  // The color should be shown for kDelayToCheckStateChangeMs duration, then be
+  // off.
+  for (int i = 1; i < kDelayToCheckStateChangeMs; i++) {
+    FastForwardAnimationTo(i);
+    // A custom color matrix has been shown.
+    for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+      const cc::FilterOperation::Matrix* matrix =
+          root_window->layer()->GetLayerCustomColorMatrix();
+      ASSERT_TRUE(matrix);
+      // The default flash color is yellow, which has r == g == 1.0, b = 0.0,
+      // and alpha = 1.0. b however is not set to 0.0 since we use 30% of the
+      // original color.
+      EXPECT_EQ((*matrix)[kRedToRedIndex], 1.0f);
+      EXPECT_EQ((*matrix)[kGreenToGreenIndex], 1.0f);
+      EXPECT_NE((*matrix)[kBlueToBlueIndex], 1.0f);
+      EXPECT_NE((*matrix)[kBlueToBlueIndex], 0.0f);
+      EXPECT_EQ((*matrix)[kAlphaToAlphaIndex], 1.0f);
+    }
+  }
+  FastForwardAnimationTo(kDelayToCheckStateChangeMs);
+
+  // Off: Completed a throb animation.
+  ExpectNoCustomColorMatrix();
+
+  // Note: The throb animation does not play well with the AnimationTestAPI so
+  // we can only test the first throb cycle.
+}
+
+TEST_F(ColorEnhancementControllerTest, FlashNotificationsColorPref) {
+  PrefService* prefs = GetPrefs();
+  prefs->SetBoolean(prefs::kAccessibilityFlashNotificationsEnabled, true);
+
+  // Set the color to blue.
+  prefs->SetInteger(prefs::kAccessibilityFlashNotificationsColor, 0x0000ff);
+
+  // Show a normal notification. Flashing should occur.
+  ShowNotification();
+  FastForwardAnimationTo(1);
+
+  // A custom color matrix has been shown.
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+    const cc::FilterOperation::Matrix* matrix =
+        root_window->layer()->GetLayerCustomColorMatrix();
+    ASSERT_TRUE(matrix);
+    // Blue has r == g !== 1.0, b = 1.0, and alpha = 1.0.
+    EXPECT_NE((*matrix)[kRedToRedIndex], 1.0f);
+    EXPECT_NE((*matrix)[kGreenToGreenIndex], 1.0f);
+    EXPECT_EQ((*matrix)[kRedToRedIndex], (*matrix)[kGreenToGreenIndex]);
+    EXPECT_EQ((*matrix)[kBlueToBlueIndex], 1.0f);
+    EXPECT_EQ((*matrix)[kAlphaToAlphaIndex], 1.0f);
+  }
+
+  FastForwardAnimationTo(kDelayToCheckStateChangeMs);
+
+  // Should be off now.
+  ExpectNoCustomColorMatrix();
+}
+
+TEST_F(ColorEnhancementControllerTest,
+       FlashNotificationsResetsColorCorrectionOnComplete) {
+  PrefService* prefs = GetPrefs();
+  prefs->SetBoolean(prefs::kAccessibilityFlashNotificationsEnabled, true);
+  prefs->SetInteger(prefs::kAccessibilityFlashNotificationsColor, kBlueColor);
+
+  prefs->SetBoolean(prefs::kAccessibilityColorCorrectionEnabled, true);
+  prefs->SetInteger(prefs::kAccessibilityColorVisionCorrectionAmount, 50);
+  prefs->SetInteger(prefs::kAccessibilityColorVisionCorrectionType,
+                    ColorVisionCorrectionType::kDeuteranomaly);
+
+  // Color correction matrix is set.
+  aura::Window* root_window = Shell::GetPrimaryRootWindow();
+  const cc::FilterOperation::Matrix* color_correction_matrix =
+      root_window->layer()->GetLayerCustomColorMatrix();
+  ASSERT_TRUE(color_correction_matrix);
+  float r = (*color_correction_matrix)[kRedToRedIndex];
+  float g = (*color_correction_matrix)[kGreenToGreenIndex];
+  float b = (*color_correction_matrix)[kBlueToBlueIndex];
+
+  // Show a normal notification. Flashing should occur.
+  ShowNotification();
+  FastForwardAnimationTo(1);
+
+  // Overlay color matrix is shown instead.
+  const cc::FilterOperation::Matrix* matrix =
+      root_window->layer()->GetLayerCustomColorMatrix();
+  ASSERT_TRUE(matrix);
+  EXPECT_NE(r, (*matrix)[kRedToRedIndex]);
+  EXPECT_NE(g, (*matrix)[kGreenToGreenIndex]);
+  EXPECT_NE(b, (*matrix)[kBlueToBlueIndex]);
+
+  FastForwardAnimationTo(kDelayToCheckStateChangeMs);
+  // Flash is off, color correction matrix is shown again.
+  matrix = root_window->layer()->GetLayerCustomColorMatrix();
+  EXPECT_EQ(r, (*matrix)[kRedToRedIndex]);
+  EXPECT_EQ(g, (*matrix)[kGreenToGreenIndex]);
+  EXPECT_EQ(b, (*matrix)[kBlueToBlueIndex]);
+}
+
 }  // namespace ash

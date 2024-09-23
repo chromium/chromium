@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,7 +28,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -44,7 +42,6 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(shadows = {ShadowPostTask.class, ShadowCustomizationProviderDelegate.class})
 @EnableFeatures(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA)
 public class PartnerBrowserCustomizationsRoboUnitTest {
-    @Rule public Features.JUnitProcessor processor = new Features.JUnitProcessor();
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
 
     @Before
@@ -169,8 +166,6 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
         PartnerBrowserCustomizations.getInstance()
                 .onCreateInitialTab(
                         JUnitTestGURLs.NTP_NATIVE_URL.getSpec(),
-                        50,
-                        /* overviewOrStart= */ true,
                         mActivityLifecycleDispatcherMock,
                         HomepageCharacterizationHelperStub::ntpHelper);
 

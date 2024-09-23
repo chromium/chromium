@@ -7,7 +7,7 @@
       }
 
       #clearBrowsingDataDialog {
-        --border-top-color: var(--paper-grey-300);
+        --border-top-color: var(--google-grey-300);
         --cr-dialog-top-container-min-height: 42px;
         --cr-dialog-body-border-top: 1px solid var(--border-top-color);
       }
@@ -36,7 +36,7 @@
       }
 
       #clearBrowsingDataDialog [slot=footer] {
-        background: var(--paper-grey-50);
+        background: var(--google-grey-50);
         border-top: none;
         padding: 0;
       }
@@ -79,6 +79,15 @@
       .time-range-select {
         margin-inline-start: 12px;
       }
+
+      .dropdown-error::part(select) {
+        border-color: var(--settings-error-color);
+        color: var(--settings-error-color);
+      }
+
+      .dropdown-error::part(select):focus {
+        outline-color: var(--settings-error-color);
+    }
 
       [slot=title] .secondary {
         font-size: calc(13 / 15 * 100%);
@@ -145,13 +154,14 @@
         <div>$i18n{clearBrowsingData}</div>
       </div>
       <div slot="header">
-        <cr-tabs tab-names="[[tabsNames_]]" selected="{{selectedTabIndex_}}"
+        <cr-tabs id="tabs" tab-names="[[tabsNames_]]"
+            selected="{{selectedTabIndex_}}"
             on-selected-changed="recordTabChange_">
         </cr-tabs>
       </div>
       <div slot="body">
-        <iron-pages id="tabs" selected="[[selectedTabIndex_]]"
-            on-selected-item-changed="updateClearButtonState_">
+        <cr-page-selector id="pages" selected="[[selectedTabIndex_]]"
+            on-iron-select="updateClearButtonState_">
           <div id="basic-tab">
             <div class="row time-range-row">
               <span class="time-range-label" aria-hidden="true">
@@ -162,15 +172,17 @@
                     class="time-range-select"
                     label="$i18n{clearTimeRange}"
                     pref="{{prefs.browser.clear_data.time_period_basic}}"
-                    menu-options="[[clearFromOptions_]]">
+                    menu-options="[[clearFromOptions_]]"
+                    on-settings-control-change="onTimePeriodChanged_">
                 </settings-dropdown-menu>
               </template>
               <template is="dom-if" if="[[enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFromBasic" no-set-pref
+                <settings-dropdown-menu id="clearFromBasic" required no-set-pref
                     class="time-range-select"
                     label="$i18n{clearTimeRange}"
                     pref="{{prefs.browser.clear_data.time_period_v2_basic}}"
-                    menu-options="[[clearFromOptionsV2_]]">
+                    menu-options="[[clearFromOptionsV2_]]"
+                    on-settings-control-change="onTimePeriodChanged_">
                 </settings-dropdown-menu>
               </template>
             </div>
@@ -194,7 +206,7 @@
                 pref="{{prefs.browser.clear_data.cookies_basic}}"
                 label="$i18n{clearCookies}"
                 sub-label="[[cookiesCheckboxLabel_(
-                    isSignedIn_,
+                    syncStatus.signedInState,
                     shouldShowCookieException_,
                     '$i18nPolymer{clearCookiesSummary}',
                     '$i18nPolymer{clearCookiesSummarySignedIn}',
@@ -212,9 +224,9 @@
             </settings-checkbox>
             <div class="search-history-box"
                 hidden="[[!isSignedIn_]]">
-              <iron-icon class="search-history-box-icon" aria-hidden="true"
+              <cr-icon class="search-history-box-icon" aria-hidden="true"
                   icon="settings20:googleg">
-              </iron-icon>
+              </cr-icon>
               <div id="googleSearchHistoryLabel"
                   inner-h-t-m-l="[[googleSearchHistoryString_]]">
               </div>
@@ -222,9 +234,9 @@
             <div id="nonGoogleSearchHistoryBox"
                 class="search-history-box"
                 hidden="[[!isNonGoogleDse_]]">
-              <iron-icon class="search-history-box-icon" aria-hidden="true"
+              <cr-icon class="search-history-box-icon" aria-hidden="true"
                   icon="cr:search">
-              </iron-icon>
+              </cr-icon>
               <div id="nonGoogleSearchHistoryLabel"
                   inner-h-t-m-l="[[nonGoogleSearchHistoryString_]]">
               </div>
@@ -240,16 +252,17 @@
                     class="time-range-select"
                     label="$i18n{clearTimeRange}"
                     pref="{{prefs.browser.clear_data.time_period}}"
-                    menu-options="[[clearFromOptions_]]">
+                    menu-options="[[clearFromOptions_]]"
+                    on-settings-control-change="onTimePeriodChanged_">
                 </settings-dropdown-menu>
               </template>
               <template is="dom-if" if="[[enableCbdTimeframeRequired_]]">
-                <settings-dropdown-menu id="clearFrom" no-set-pref
+                <settings-dropdown-menu id="clearFrom" required no-set-pref
                     class="time-range-select"
                     label="$i18n{clearTimeRange}"
                     pref="{{prefs.browser.clear_data.time_period_v2}}"
-                    menu-options="[[clearFromOptionsV2_]]">
-                </settings-dropdown-menu>
+                    menu-options="[[clearFromOptionsV2_]]"
+                    on-settings-control-change="onTimePeriodChanged_">
               </template>
             </div>
             <settings-checkbox id="browsingCheckbox"
@@ -305,19 +318,21 @@
                 disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
           </div>
-        </iron-pages>
+        </cr-page-selector>
       </div>
       <div slot="button-container">
         <paper-spinner-lite active="[[clearingInProgress_]]">
         </paper-spinner-lite>
         <cr-button class="cancel-button" autofocus
             disabled="[[clearingInProgress_]]"
-            on-click="onCancelClick_">$i18n{cancel}</cr-button>
-        <cr-button id="clearBrowsingDataConfirm"
-            class="action-button" on-click="clearBrowsingData_"
+            on-click="onCancelClick_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button id="clearButton" class="action-button"
+            on-click="clearBrowsingData_"
             disabled="[[isClearButtonDisabled_(clearingInProgress_,
                                                clearButtonDisabled_)]]">
-            $i18n{clearData}
+          $i18n{clearData}
         </cr-button>
 
         <!-- The alert must be inside the dialog for it to be read while the
@@ -326,8 +341,10 @@
           [[clearingDataAlertString_]]
         </div>
       </div>
+<if expr="not is_chromeos">
       <template is="dom-if"
-          if="[[shouldShowFooter_(isSignedIn_, syncStatus.signedIn)]]"
+          if="[[shouldShowFooter_(isSignedIn_, syncStatus.signedInState,
+              isClearPrimaryAccountAllowed_)]]"
           restamp>
         <div slot="footer">
           <settings-sync-account-control sync-status="[[syncStatus]]"
@@ -336,11 +353,13 @@
           <div class="divider"></div>
           <div id="footer-description" on-click="onSyncDescriptionLinkClicked_">
             <span id="signin-info"
-                hidden="[[!showSigninInfo_(isSignedIn_, syncStatus.signedIn)]]">
+                hidden="[[!showSigninInfo_(isSignedIn_,
+                    syncStatus.signedInState, isClearPrimaryAccountAllowed_)]]">
               $i18nRaw{clearBrowsingDataSignedIn}
             </span>
             <span id="sync-info"
-                hidden="[[!showSyncInfo_(isSignedIn_, syncStatus.signedIn)]]">
+                hidden="[[!showSyncInfo_(isSignedIn_,
+                    syncStatus.signedInState)]]">
               $i18nRaw{clearBrowsingDataWithSync}
             </span>
             <span id="sync-paused-info" hidden="[[!isSyncPaused_]]">
@@ -356,6 +375,7 @@
           </div>
         </div>
       </template>
+</if>
     </cr-dialog>
 
     <template is="dom-if" if="[[showHistoryDeletionDialog_]]" restamp>

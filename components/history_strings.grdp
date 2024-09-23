@@ -54,13 +54,13 @@
     No search results found
   </message>
   <if expr="not use_titlecase">
-  <message name="IDS_HISTORY_OPEN_CLEAR_BROWSING_DATA_DIALOG" desc="Title of the button that will open the clear browsing data dialog [Length: 16em].">
-    Clear browsing data...
+  <message name="IDS_HISTORY_OPEN_CLEAR_BROWSING_DATA_DIALOG" desc="Title of the button that will open the delete browsing data dialog [Length: 16em].">
+    Delete browsing data...
   </message>
   </if>
   <if expr="use_titlecase">
-    <message name="IDS_HISTORY_OPEN_CLEAR_BROWSING_DATA_DIALOG" desc="In Title Case: Title of the button that will open the clear browsing data dialog [Length: 16em].">
-      Clear Browsing Data...
+    <message name="IDS_HISTORY_OPEN_CLEAR_BROWSING_DATA_DIALOG" desc="In Title Case: Title of the button that will open the delete browsing data dialog [Length: 16em].">
+      Delete Browsing Data...
     </message>
   </if>
   <if expr="not is_android">
@@ -121,4 +121,96 @@
     Unknown device
   </message>
 
+  <message name="IDS_HISTORY_EMBEDDINGS_DISCLAIMER" desc="On the history page, the persistent disclaimer text shown below the search box indicating what content is sent to Google for the history search feature.">
+    Your searches, best matches, and their page contents are sent to Google and may be seen by human reviewers to improve this feature.
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_LABEL" desc="On the history page, the accessiblility label for the promo for history search powered by AI." translateable="false">
+    Promo
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_CLOSE" desc="On the history page, the accessiblility label for the close button for the promo for history search powered by AI." translateable="false">
+    Close promo
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_HEADING" desc="On the history page, the heading of the promo for history search powered by AI.">
+    Search your history, powered by AI
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_BODY" desc="On the history page, the body text of the promo for history search powered by AI." translateable="false">
+    In a few words, describe what you’re looking for, like "comfortable walking shoes" or "vegetarian pasta recipes." As you visit more sites on this device, you’ll see more results powered by AI.
+  </message>
+  <message name="IDS_HISTORY_EMBEDDIGNS_PROMO_SETTINGS_LINK_TEXT" desc="On the history page, the text of the link to edit the user's history search setting." translateable="false">
+    Manage your history search setting
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SHOW_BY_ARIA_LABEL" desc="On the history page, the accessibility label on the menu to select whether to filter results grouped by date or by group." translateable="false">
+    Filter
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SHOW_BY_DATE" desc="On the history page, the label on the option to show history results grouped by date.">
+    Show by date
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SHOW_BY_GROUP" desc="On the history page, the label on the option to show history results grouped by history clusters.">
+    Show by group
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_1" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from yesterday">
+    Yesterday
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_2" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from last 7 days">
+    Last 7 days
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_3" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from last 30 days">
+    Last 30 days
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_1_ARIA_LABEL" desc="On the history page, the accessibility label for a suggestion chip that a user can click to update their search to show results from yesterday">
+    Show results from yesterday
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_2_ARIA_LABEL" desc="On the history page, the accessibility label for a suggestion chip that a user can click to update their search to show results from last 7 days">
+    Show results from last 7 days
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_3_ARIA_LABEL" desc="On the history page, the accessibility label for a suggestion chip that a user can click to update their search to show results from last 30 days">
+    Show results from last 30 days
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_HEADING" desc="Heading for history search results powered by AI showing the best matches for a search query.">
+    Best matches for "<ph name="SEARCH_QUERY"><ex>pizza</ex>$1</ph>"
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_HEADING_LOADING" desc="Heading for history search results powered by AI while loading.">
+    Searching for "<ph name="SEARCH_QUERY"><ex>pizza</ex>$1</ph>"
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_FOOTER" desc="Footer text for history search results powered by AI.">
+    This is an experimental feature and won’t always get it right.
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_FEEDBACK_PLACEHOLDER" desc="Placeholder text in feedback from for history search">
+    Send feedback for history search powered by AI
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_IPH_BODY" desc="Text for the IPH bubble for searching history using AI and everyday language." translateable="false">
+    For a more powerful way to search your browsing history, turn on History search, powered by AI
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_IPH_ACTION" desc="Text for the button in the IPH bubble for searching history using AI that takes user to Settings." translateable="false">
+    Turn on
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT" desc="Placeholder text/label for the search input field in the history page when history embeddings is enabled." translateable="false">
+    In a few words, describe what you're searching for
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING" desc="Heading for answer section in history search results." translateable="false">
+    Summary
+  </message>
+
+  <!-- For Compare -->
+  <message name="IDS_COMPARE_HISTORY_EMPTY" desc="Text shown for comparison tables tab when no sets are present.">
+    No comparison tables
+  </message>
+  <message name="IDS_COMPARE_HISTORY_HEADER" desc="Header text for comparison tables tab in history.">
+    Comparison tables
+  </message>
+  <message name="IDS_COMPARE_HISTORY_INFO" desc="Info disclaimer text for comparison tables tab in history.">
+    Tabs you delete from your Chrome history will still show up in your comparison tables
+  </message>
+  <message name="IDS_COMPARE_HISTORY_MENU_ARIA_LABEL" desc="Aria label for menu button for a row in tab compare history">
+    More actions for comparison table <ph name="COMPARE_SET_NAME"><ex>e-bikes</ex>$1</ph>
+  </message>
+  <message name="IDS_COMPARE_HISTORY_MENU_ITEM" desc="The title of the link in the history UI that navigates the user to a page showing the tables being maintained by the tab compare feature.">
+    Comparison tables
+  </message>
+  <message name="IDS_COMPARE_HISTORY_REMOVE" desc="Text for deleting a single row in tab compare history">
+    Remove from tables
+  </message>
+  <message name="IDS_COMPARE_HISTORY_ROW" desc="Text for a single row in tab compare history">
+    Compare <ph name="COMPARE_SET_NAME"><ex>e-bikes</ex>$1</ph> &#183; <ph name="ITEMS"><ex>3</ex>$2</ph> items
+  </message>
 </grit-part>

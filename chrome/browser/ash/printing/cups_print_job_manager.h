@@ -101,8 +101,8 @@ class CupsPrintJobManager : public KeyedService {
   friend class crosapi::TestControllerAsh;
   void RecordJobDuration(base::WeakPtr<CupsPrintJob> job);
 
-  std::unique_ptr<CupsPrintJobNotificationManager> notification_manager_;
   base::ObserverList<Observer> observers_;
+  std::unique_ptr<CupsPrintJobNotificationManager> notification_manager_;
 
   // Keyed by CupsPrintJob's unique ID
   std::map<std::string, base::TimeTicks> print_job_start_times_;

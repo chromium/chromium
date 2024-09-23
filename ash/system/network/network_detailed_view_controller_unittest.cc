@@ -325,8 +325,6 @@ TEST_F(NetworkDetailedViewControllerTest, CellularNetworkListItemSelected) {
 TEST_F(NetworkDetailedViewControllerTest,
        CarrierLockedNetworkListItemSelected) {
   base::UserActionTester user_action_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
 
   EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectionDetails));
   EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
@@ -344,30 +342,6 @@ TEST_F(NetworkDetailedViewControllerTest,
   cellular_network->type_state->get_cellular()->sim_lock_type = "network-pin";
   SelectNetworkListItem(cellular_network);
   EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
-}
-
-TEST_F(NetworkDetailedViewControllerTest,
-       CarrierLockedNetworkListItemSelectedFeatureDisabled) {
-  base::UserActionTester user_action_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kCellularCarrierLock);
-
-  EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectionDetails));
-  EXPECT_EQ(0, user_action_tester.GetActionCount(kNetworkConnectConfigured));
-  EXPECT_EQ(0, GetSystemTrayClient()->show_network_settings_count());
-  EXPECT_EQ(0, GetSystemTrayClient()->show_sim_unlock_settings_count());
-
-  NetworkStatePropertiesPtr cellular_network =
-      CreateStandaloneNetworkProperties(kCellular, NetworkType::kCellular,
-                                        ConnectionStateType::kConnected);
-
-  // With feature flag disabled verify that When cellular
-  // network is carrier locked SIM unlock
-  // settings page is displayed.
-  cellular_network->type_state->get_cellular()->sim_locked = true;
-  cellular_network->type_state->get_cellular()->sim_lock_type = "network-pin";
-  SelectNetworkListItem(cellular_network);
-  EXPECT_EQ(1, GetSystemTrayClient()->show_sim_unlock_settings_count());
 }
 
 TEST_F(NetworkDetailedViewControllerTest, WifiNetworkListItemSelected) {

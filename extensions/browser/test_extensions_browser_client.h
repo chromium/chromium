@@ -128,7 +128,8 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
       bool is_incognito,
       const Extension* extension,
       const ExtensionSet& extensions,
-      const ProcessMap& process_map) override;
+      const ProcessMap& process_map,
+      const GURL& upstream_url) override;
   PrefService* GetPrefServiceForContext(
       content::BrowserContext* context) override;
   void GetEarlyExtensionPrefsObservers(
@@ -137,7 +138,8 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
   ProcessManagerDelegate* GetProcessManagerDelegate() const override;
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
   GetControlledFrameEmbedderURLLoader(
-      int frame_tree_node_id,
+      const url::Origin& app_origin,
+      content::FrameTreeNodeId frame_tree_node_id,
       content::BrowserContext* browser_context) override;
   std::unique_ptr<ExtensionHostDelegate> CreateExtensionHostDelegate() override;
   bool DidVersionUpdate(content::BrowserContext* context) override;
@@ -164,6 +166,8 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
   ExtensionCache* GetExtensionCache() override;
   bool IsBackgroundUpdateAllowed() override;
   bool IsMinBrowserVersionSupported(const std::string& min_version) override;
+  void CreateExtensionWebContentsObserver(
+      content::WebContents* web_contents) override;
   ExtensionWebContentsObserver* GetExtensionWebContentsObserver(
       content::WebContents* web_contents) override;
   KioskDelegate* GetKioskDelegate() override;
@@ -174,6 +178,11 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
 
   ExtensionSystemProvider* extension_system_factory() {
     return extension_system_factory_;
+  }
+
+  void set_pref_service_for_context(content::BrowserContext* context,
+                                    PrefService* pref_service) {
+    set_pref_service_for_context_[context] = pref_service;
   }
 
  private:
@@ -192,6 +201,10 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
 
   // Not owned.
   raw_ptr<PrefService> pref_service_ = nullptr;
+
+  // Not owned.
+  std::map<content::BrowserContext*, raw_ptr<PrefService>>
+      set_pref_service_for_context_;
 
   std::unique_ptr<ExtensionCache> extension_cache_;
 

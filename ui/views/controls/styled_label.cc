@@ -24,6 +24,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/link_fragment.h"
@@ -83,9 +84,9 @@ struct StyledLabel::LayoutViews {
 };
 
 StyledLabel::StyledLabel() {
-  SetAccessibilityProperties(text_context_ == style::CONTEXT_DIALOG_TITLE
-                                 ? ax::mojom::Role::kTitleBar
-                                 : ax::mojom::Role::kStaticText);
+  GetViewAccessibility().SetRole(text_context_ == style::CONTEXT_DIALOG_TITLE
+                                     ? ax::mojom::Role::kTitleBar
+                                     : ax::mojom::Role::kStaticText);
 }
 
 StyledLabel::~StyledLabel() = default;
@@ -104,7 +105,7 @@ void StyledLabel::SetText(std::u16string text) {
   }
 
   text_ = text;
-  SetAccessibleName(text_);
+  GetViewAccessibility().SetName(text_);
   style_ranges_.clear();
   RemoveOrDeleteAllChildViews();
   OnPropertyChanged(&text_, kPropertyEffectsPreferredSizeChanged);
@@ -145,9 +146,9 @@ void StyledLabel::SetTextContext(int text_context) {
   }
 
   text_context_ = text_context;
-  SetAccessibleRole(text_context_ == style::CONTEXT_DIALOG_TITLE
-                        ? ax::mojom::Role::kTitleBar
-                        : ax::mojom::Role::kStaticText);
+  GetViewAccessibility().SetRole(text_context_ == style::CONTEXT_DIALOG_TITLE
+                                     ? ax::mojom::Role::kTitleBar
+                                     : ax::mojom::Role::kStaticText);
   OnPropertyChanged(&text_context_, kPropertyEffectsPreferredSizeChanged);
 }
 
@@ -238,7 +239,12 @@ void StyledLabel::SetSubpixelRenderingEnabled(bool subpixel_rendering_enabled) {
 
 const StyledLabel::LayoutSizeInfo& StyledLabel::GetLayoutSizeInfoForWidth(
     int w) const {
+  if (auto it = layout_size_info_cache_.Get(w);
+      it != layout_size_info_cache_.end()) {
+    return it->second;
+  }
   CalculateLayout(w);
+  layout_size_info_cache_.Put(w, layout_size_info_);
   return layout_size_info_;
 }
 
@@ -251,8 +257,14 @@ void StyledLabel::SizeToFit(int fixed_width) {
   SetSize(size);
 }
 
-gfx::Size StyledLabel::CalculatePreferredSize() const {
-  // Respect any existing size.  If there is none, default to a single line.
+base::CallbackListSubscription StyledLabel::AddTextChangedCallback(
+    views::PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&text_, std::move(callback));
+}
+
+gfx::Size StyledLabel::GetMinimumSize() const {
+  // Overload it otherwise BubbleDialogDelegateViewTest.StyledLabelTitle will
+  // fail.
   return CalculatePreferredSize(
       SizeBounds(width() == 0 ? SizeBound() : SizeBound(width()), {}));
 }
@@ -267,82 +279,31 @@ gfx::Size StyledLabel::CalculatePreferredSize(
   }
 
   // Respect any existing size.  If there is none, default to a single line.
-  CalculateLayout(width == 0 ? std::numeric_limits<int>::max() : width);
-  return layout_size_info_.total_size;
+  return GetLayoutSizeInfoForWidth(width == 0 ? std::numeric_limits<int>::max()
+                                              : width)
+      .total_size;
 }
 
-int StyledLabel::GetHeightForWidth(int w) const {
-  return GetLayoutSizeInfoForWidth(w).total_size.height();
+void StyledLabel::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  if (previous_bounds.width() == width()) {
+    return;
+  }
+
+  need_recreate_child_ = true;
 }
 
 void StyledLabel::Layout(PassKey) {
-  CalculateLayout(width());
-
-  // If the layout has been recalculated, add and position all views.
-  if (layout_views_) {
-    // Delete all non-custom views on removal; custom views are temporarily
-    // moved to |custom_views_|.
-    RemoveOrDeleteAllChildViews();
-
-    DCHECK_EQ(layout_size_info_.line_sizes.size(),
-              layout_views_->views_per_line.size());
-    int line_y = GetInsets().top();
-    auto next_owned_view = layout_views_->owned_views.begin();
-    for (size_t line = 0; line < layout_views_->views_per_line.size(); ++line) {
-      const auto& line_size = layout_size_info_.line_sizes[line];
-      int x = StartX(width() - line_size.width());
-      for (views::View* view : layout_views_->views_per_line[line]) {
-        gfx::Size size = view->GetPreferredSize();
-        size.set_width(std::min(size.width(), width() - x));
-        // Compute the view y such that the view center y and the line center y
-        // match.  Because of added rounding errors, this is not the same as
-        // doing (line_size.height() - size.height()) / 2.
-        const int y = line_size.height() / 2 - size.height() / 2;
-        view->SetBoundsRect({{x, line_y + y}, size});
-        x += size.width();
-
-        // Transfer ownership for any views in layout_views_->owned_views or
-        // custom_views_.  The actual pointer is the same in both arms below.
-        if (view->GetProperty(kStyledLabelCustomViewKey)) {
-          auto custom_view = base::ranges::find(custom_views_, view,
-                                                &std::unique_ptr<View>::get);
-          DCHECK(custom_view != custom_views_.end());
-          AddChildView(std::move(*custom_view));
-          custom_views_.erase(custom_view);
-        } else {
-          DCHECK(next_owned_view != layout_views_->owned_views.end());
-          DCHECK(view == next_owned_view->get());
-          AddChildView(std::move(*next_owned_view));
-          ++next_owned_view;
-        }
-      }
-      line_y += line_size.height();
-    }
-    DCHECK(next_owned_view == layout_views_->owned_views.end());
-
-    layout_views_.reset();
-  } else if (horizontal_alignment_ != gfx::ALIGN_LEFT) {
-    // Recompute all child X coordinates in case the width has shifted, which
-    // will move the children if the label is center/right-aligned.  If the
-    // width hasn't changed, all the SetX() calls below will no-op, so this
-    // won't have side effects.
-    int line_bottom = GetInsets().top();
-    auto i = children().begin();
-    for (const auto& line_size : layout_size_info_.line_sizes) {
-      DCHECK(i != children().end());  // Should not have an empty trailing line.
-      int x = StartX(width() - line_size.width());
-      line_bottom += line_size.height();
-      for (; (i != children().end()) && ((*i)->y() < line_bottom); ++i) {
-        (*i)->SetX(x);
-        x += (*i)->GetPreferredSize().width();
-      }
-    }
-    DCHECK(i == children().end());  // Should not be short any lines.
+  if (!need_recreate_child_) {
+    return;
   }
+
+  RecreateChildViews();
 }
 
 void StyledLabel::PreferredSizeChanged() {
+  need_recreate_child_ = true;
   layout_size_info_ = LayoutSizeInfo(0);
+  layout_size_info_cache_.Clear();
   layout_views_.reset();
   View::PreferredSizeChanged();
 }
@@ -366,7 +327,7 @@ void StyledLabel::ClearStyleRanges() {
 
 void StyledLabel::ClickFirstLinkForTesting() {
   GetFirstLinkForTesting()->OnKeyPressed(  // IN-TEST
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE));
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_SPACE, ui::EF_NONE));
 }
 
 views::Link* StyledLabel::GetFirstLinkForTesting() {
@@ -509,13 +470,16 @@ void StyledLabel::CalculateLayout(int width) const {
           chunk = substrings[0];
         }
 
-        if ((custom_view &&
-             line_size.width() + custom_view->GetPreferredSize().width() >
-                 content_width) &&
-            position == range.start() && line_size.width() != 0) {
-          // If the chunk should not be wrapped, try to fit it entirely on the
-          // next line.
-          break;
+        if (custom_view && position == range.start() &&
+            line_size.width() != 0) {
+          SizeBounds chunk_size(content_width - line_size.width(), {});
+          int custom_view_width =
+              custom_view->GetPreferredSize(chunk_size).width();
+          if (line_size.width() + custom_view_width > content_width) {
+            // If the chunk should not be wrapped, try to fit it entirely on the
+            // next line.
+            break;
+          }
         }
 
         if (chunk.size() > range.end() - position)
@@ -544,7 +508,8 @@ void StyledLabel::CalculateLayout(int width) const {
       }
 
       View* child_view = custom_view ? custom_view : label.get();
-      const gfx::Size child_size = child_view->GetPreferredSize();
+      const gfx::Size child_size = child_view->GetPreferredSize(
+          SizeBounds(content_width - line_size.width(), {}));
       // A custom view could be wider than the available width.
       line_size.SetSize(
           std::min(line_size.width() + child_size.width(), content_width),
@@ -591,17 +556,18 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
     const gfx::Range& range,
     LinkFragment** previous_link_fragment) const {
   std::unique_ptr<Label> result;
-  if (style_info.text_style == style::STYLE_LINK) {
+  if (style_info.text_style == style::STYLE_LINK ||
+      style_info.text_style == style::STYLE_LINK_5) {
     // Nothing should (and nothing does) use a custom font for links.
     DCHECK(!style_info.custom_font);
 
     // Note this ignores |default_text_style_|, in favor of `style::STYLE_LINK`.
     auto link = std::make_unique<LinkFragment>(
-        text, text_context_, style::STYLE_LINK, *previous_link_fragment);
+        text, text_context_, *style_info.text_style, *previous_link_fragment);
     *previous_link_fragment = link.get();
     link->SetCallback(style_info.callback);
     if (!style_info.accessible_name.empty())
-      link->SetAccessibleName(style_info.accessible_name);
+      link->GetViewAccessibility().SetName(style_info.accessible_name);
 
     result = std::move(link);
   } else if (style_info.custom_font) {
@@ -624,7 +590,7 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
     result->SetTooltipText(style_info.tooltip);
   }
   if (!style_info.accessible_name.empty())
-    result->SetAccessibleName(style_info.accessible_name);
+    result->GetViewAccessibility().SetName(style_info.accessible_name);
   if (absl::holds_alternative<SkColor>(displayed_on_background_color_)) {
     result->SetBackgroundColor(
         absl::get<SkColor>(displayed_on_background_color_));
@@ -658,10 +624,82 @@ void StyledLabel::UpdateLabelBackgroundColor() {
 }
 
 void StyledLabel::RemoveOrDeleteAllChildViews() {
+  pending_delete_views_.clear();
   while (children().size() > 0) {
     std::unique_ptr<View> view = RemoveChildViewT(children()[0]);
-    if (view->GetProperty(kStyledLabelCustomViewKey))
+    if (view->GetProperty(kStyledLabelCustomViewKey)) {
       custom_views_.push_back(std::move(view));
+    } else {
+      pending_delete_views_.push_back(std::move(view));
+    }
+  }
+}
+
+void StyledLabel::RecreateChildViews() {
+  need_recreate_child_ = false;
+
+  CalculateLayout(width());
+
+  // If the layout has been recalculated, add and position all views.
+  if (layout_views_) {
+    // Delete all non-custom views on removal; custom views are temporarily
+    // moved to |custom_views_|.
+    RemoveOrDeleteAllChildViews();
+
+    DCHECK_EQ(layout_size_info_.line_sizes.size(),
+              layout_views_->views_per_line.size());
+    int line_y = GetInsets().top();
+    auto next_owned_view = layout_views_->owned_views.begin();
+    for (size_t line = 0; line < layout_views_->views_per_line.size(); ++line) {
+      const auto& line_size = layout_size_info_.line_sizes[line];
+      int x = StartX(width() - line_size.width());
+      for (views::View* view : layout_views_->views_per_line[line]) {
+        gfx::Size size = view->GetPreferredSize(SizeBounds(line_size));
+        size.set_width(std::min(size.width(), width() - x));
+        // Compute the view y such that the view center y and the line center y
+        // match.  Because of added rounding errors, this is not the same as
+        // doing (line_size.height() - size.height()) / 2.
+        const int y = line_size.height() / 2 - size.height() / 2;
+        view->SetBoundsRect({{x, line_y + y}, size});
+        x += size.width();
+
+        // Transfer ownership for any views in layout_views_->owned_views or
+        // custom_views_.  The actual pointer is the same in both arms below.
+        if (view->GetProperty(kStyledLabelCustomViewKey)) {
+          auto custom_view = base::ranges::find(custom_views_, view,
+                                                &std::unique_ptr<View>::get);
+          DCHECK(custom_view != custom_views_.end());
+          AddChildView(std::move(*custom_view));
+          custom_views_.erase(custom_view);
+        } else {
+          DCHECK(next_owned_view != layout_views_->owned_views.end());
+          DCHECK(view == next_owned_view->get());
+          AddChildView(std::move(*next_owned_view));
+          ++next_owned_view;
+        }
+      }
+      line_y += line_size.height();
+    }
+    DCHECK(next_owned_view == layout_views_->owned_views.end());
+
+    layout_views_.reset();
+  } else if (horizontal_alignment_ != gfx::ALIGN_LEFT) {
+    // Recompute all child X coordinates in case the width has shifted, which
+    // will move the children if the label is center/right-aligned.  If the
+    // width hasn't changed, all the SetX() calls below will no-op, so this
+    // won't have side effects.
+    int line_bottom = GetInsets().top();
+    auto i = children().begin();
+    for (const auto& line_size : layout_size_info_.line_sizes) {
+      DCHECK(i != children().end());  // Should not have an empty trailing line.
+      int x = StartX(width() - line_size.width());
+      line_bottom += line_size.height();
+      for (; (i != children().end()) && ((*i)->y() < line_bottom); ++i) {
+        (*i)->SetX(x);
+        x += (*i)->GetPreferredSize(SizeBounds(line_size)).width();
+      }
+    }
+    DCHECK(i == children().end());  // Should not be short any lines.
   }
 }
 

@@ -94,10 +94,7 @@ class BASE_EXPORT MessagePump {
     virtual NextWorkInfo DoWork() = 0;
 
     // Called from within Run just before the message pump goes to sleep.
-    // Returns true to indicate that idle work was done; in which case Run()
-    // should resume with calling DoWork(). Returning false means the pump
-    // should now wait.
-    virtual bool DoIdleWork() = 0;
+    virtual void DoIdleWork() = 0;
 
     class ScopedDoWorkItem {
      public:
@@ -149,9 +146,9 @@ class BASE_EXPORT MessagePump {
     // Called before a unit of work is executed. This allows reports
     // about individual units of work to be produced. The unit of work ends when
     // the returned ScopedDoWorkItem goes out of scope.
-    // TODO(crbug.com/851163): Place calls for all platforms. Without this, some
-    // state like the top-level "ThreadController active" trace event will not
-    // be correct when work is performed.
+    // TODO(crbug.com/40580088): Place calls for all platforms. Without this,
+    // some state like the top-level "ThreadController active" trace event will
+    // not be correct when work is performed.
     [[nodiscard]] ScopedDoWorkItem BeginWorkItem() {
       return ScopedDoWorkItem(this);
     }
@@ -204,7 +201,7 @@ class BASE_EXPORT MessagePump {
   //     if (did_native_work || next_work_info.is_immediate())
   //       continue;
   //
-  //     bool did_idle_work = delegate_->DoIdleWork();
+  //     delegate_->DoIdleWork();
   //     if (should_quit_)
   //       break;
   //
@@ -266,7 +263,7 @@ class BASE_EXPORT MessagePump {
   //
   // It isn't necessary to call this during normal execution, as the pump wakes
   // up as requested by the return value of DoWork().
-  // TODO(crbug.com/885371): Determine if this must be called to ensure that
+  // TODO(crbug.com/40594269): Determine if this must be called to ensure that
   // delayed tasks run when a message pump outside the control of Run is
   // entered.
   virtual void ScheduleDelayedWork(
@@ -276,6 +273,14 @@ class BASE_EXPORT MessagePump {
   virtual TimeTicks AdjustDelayedRunTime(TimeTicks earliest_time,
                                          TimeTicks run_time,
                                          TimeTicks latest_time);
+
+  // Requests the pump to handle either the likely imminent creation (`true`) or
+  // destruction (`false`) of a native nested loop in which application tasks
+  // are desired to be run. The pump should override and return `true` if it
+  // supports this call and has scheduled work in response. The default
+  // implementation returns `false` and does nothing.
+  virtual bool HandleNestedNativeLoopWithApplicationTasks(
+      bool application_tasks_desired);
 };
 
 }  // namespace base

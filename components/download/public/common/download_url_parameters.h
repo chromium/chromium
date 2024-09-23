@@ -22,7 +22,6 @@
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "storage/browser/blob/blob_data_handle.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -61,8 +60,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   using RequestHeadersNameValuePair = std::pair<std::string, std::string>;
   using RequestHeadersType = std::vector<RequestHeadersNameValuePair>;
   using RangeRequestOffsets = std::pair<int64_t, int64_t>;
-  using BlobStorageContextGetter =
-      base::OnceCallback<storage::BlobStorageContext*()>;
   using UploadProgressCallback =
       base::RepeatingCallback<void(uint64_t bytes_uploaded)>;
 
@@ -141,11 +138,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   // Body of the HTTP POST request.
   void set_post_body(scoped_refptr<network::ResourceRequestBody> post_body) {
     post_body_ = post_body;
-  }
-
-  // The blob storage context to be used for uploading blobs, if any.
-  void set_blob_storage_context_getter(BlobStorageContextGetter blob_getter) {
-    blob_storage_context_getter_ = std::move(blob_getter);
   }
 
   // If |prefer_cache| is true and the response to |url| is in the HTTP cache,
@@ -301,9 +293,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   const std::string& referrer_encoding() const { return referrer_encoding_; }
   const std::optional<url::Origin>& initiator() const { return initiator_; }
   const std::string& request_origin() const { return request_origin_; }
-  BlobStorageContextGetter get_blob_storage_context_getter() {
-    return std::move(blob_storage_context_getter_);
-  }
 
   // These will be -1 if the request is not associated with a frame. See
   // the constructors for more.
@@ -368,7 +357,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   std::string method_;
   ::network::mojom::CredentialsMode credentials_mode_;
   scoped_refptr<network::ResourceRequestBody> post_body_;
-  BlobStorageContextGetter blob_storage_context_getter_;
   int64_t post_id_;
   bool prefer_cache_;
   GURL referrer_;

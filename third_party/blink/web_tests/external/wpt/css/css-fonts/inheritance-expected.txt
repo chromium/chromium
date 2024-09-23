@@ -5,9 +5,5 @@ This is a testharness.js-based test.
   assert_true: font-language-override doesn't seem to be supported in the computed style expected true got false
 [FAIL] Property font-synthesis has initial value weight style small-caps position
   assert_equals: expected "weight style small-caps position" but got "weight style small-caps"
-[FAIL] Property font-variant-emoji has initial value normal
-  assert_true: font-variant-emoji doesn't seem to be supported in the computed style expected true got false
-[FAIL] Property font-variant-emoji inherits
-  assert_true: font-variant-emoji doesn't seem to be supported in the computed style expected true got false
 Harness: the test ran to completion.
 

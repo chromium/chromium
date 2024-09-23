@@ -29,7 +29,13 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCache_NoMemoryLimit_Trial);
 
 namespace content {
 
+// Returns whether the BackForwardCache is enabled or not according to the
+// feature flags. Note that even if this returns true, the embedder might still
+// disable BackForwardCache by returning false in
+// `WebContentsDelegate::IsBackForwardCacheSupported()`, which this function
+// does not consider.
 CONTENT_EXPORT bool IsBackForwardCacheEnabled();
+
 CONTENT_EXPORT bool IsBackForwardCacheDisabledByCommandLine();
 CONTENT_EXPORT bool DeviceHasEnoughMemoryForBackForwardCache();
 
@@ -70,7 +76,7 @@ CONTENT_EXPORT extern const char kRenderDocumentLevelParameterName[];
 // If this is false we continue the old behaviour of doing an early call to
 // RenderFrameHostManager::CommitPending when we are replacing a crashed
 // frame.
-// TODO(https://crbug.com/1072817): Stop allowing this.
+// TODO(crbug.com/40052076): Stop allowing this.
 CONTENT_EXPORT bool ShouldSkipEarlyCommitPendingForCrashedFrame();
 
 // The levels for the kQueueNavigationsWhileWaitingForCommit feature.

@@ -10,12 +10,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 
-namespace content {
-struct PartitionedLockHolder;
-}
-
 namespace web_app {
 
+struct PartitionedLockHolder;
 class WebAppLockManager;
 
 // This lock essentially doesn't lock anything in the system. However, if a
@@ -46,7 +43,7 @@ class NoopLock : public Lock {
 
  private:
   friend WebAppLockManager;
-  NoopLock(std::unique_ptr<content::PartitionedLockHolder> holder,
+  NoopLock(std::unique_ptr<PartitionedLockHolder> holder,
            base::WeakPtr<WebAppLockManager> lock_manager);
 
   base::WeakPtrFactory<NoopLock> weak_factory_{this};

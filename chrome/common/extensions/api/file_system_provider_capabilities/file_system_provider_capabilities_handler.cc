@@ -96,7 +96,7 @@ bool FileSystemProviderCapabilitiesHandler::Parse(Extension* extension,
       source = SOURCE_NETWORK;
       break;
     case api::manifest_types::FileSystemProviderSource::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   std::unique_ptr<FileSystemProviderCapabilities> capabilities(

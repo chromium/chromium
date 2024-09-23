@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_EARLY_ZONE_REGISTRATION_CONSTANTS_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_EARLY_ZONE_REGISTRATION_CONSTANTS_H_
+#ifndef PARTITION_ALLOC_SHIM_EARLY_ZONE_REGISTRATION_CONSTANTS_H_
+#define PARTITION_ALLOC_SHIM_EARLY_ZONE_REGISTRATION_CONSTANTS_H_
 
 // This is an Apple-only file, used to register PartitionAlloc's zone *before*
 // the process becomes multi-threaded. These constants are shared between the
@@ -30,4 +30,4 @@ constexpr int kZoneVersion = 9;
 
 }  // namespace allocator_shim
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_EARLY_ZONE_REGISTRATION_CONSTANTS_H_
+#endif  // PARTITION_ALLOC_SHIM_EARLY_ZONE_REGISTRATION_CONSTANTS_H_

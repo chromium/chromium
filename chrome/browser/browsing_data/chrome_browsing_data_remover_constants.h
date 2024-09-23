@@ -43,6 +43,7 @@ constexpr DataType DATA_TYPE_LOCAL_CUSTOM_DICTIONARY = DATA_TYPE_EMBEDDER_BEGIN
 constexpr DataType DATA_TYPE_ISOLATED_WEB_APP_COOKIES = DATA_TYPE_EMBEDDER_BEGIN
                                                         << 13;
 constexpr DataType DATA_TYPE_READING_LIST = DATA_TYPE_EMBEDDER_BEGIN << 14;
+constexpr DataType DATA_TYPE_TABS = DATA_TYPE_EMBEDDER_BEGIN << 15;
 
 // Group datatypes.
 
@@ -68,7 +69,8 @@ constexpr DataType IMPORTANT_SITES_DATA_TYPES =
 // whichever makes sense.
 constexpr DataType FILTERABLE_DATA_TYPES =
     DATA_TYPE_SITE_DATA | content::BrowsingDataRemover::DATA_TYPE_CACHE |
-    content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS;
+    content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
+    content::BrowsingDataRemover::DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS;
 
 // Datatypes with account-scoped data that needs to be removed
 // before Google cookies are deleted.

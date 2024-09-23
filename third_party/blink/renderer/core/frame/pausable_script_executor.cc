@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/frame/pausable_script_executor.h"
 
 #include <memory>
@@ -119,11 +124,11 @@ PromiseAggregator::PromiseAggregator(ScriptState* script_state,
       continue;
 
     ++outstanding_;
-    // ScriptPromise::Cast() will turn any non-promise into a promise that
-    // resolves to the value. Calling ScriptPromise::Cast().Then() will either
+    // ToResolvedPromise<> will turn any non-promise into a promise that
+    // resolves to the value. Calling ToResolvedPromise<>.Then() will either
     // wait for the promise (or then-able) to settle, or will immediately finish
     // with the value. Thus, it's safe to just do this for every value.
-    ScriptPromise::Cast(script_state, values[i])
+    ToResolvedPromise<IDLAny>(script_state, values[i])
         .Then(OnSettled::New(script_state, this, i, /*was_fulfilled=*/true),
               OnSettled::New(script_state, this, i, /*was_fulfilled=*/false));
   }
@@ -238,7 +243,8 @@ void PausableScriptExecutor::CreateAndRun(
     v8::Local<v8::Value> argv[],
     mojom::blink::WantResultOption want_result_option,
     WebScriptExecutionCallback callback) {
-  ScriptState* script_state = ScriptState::From(context);
+  v8::Isolate* isolate = context->GetIsolate();
+  ScriptState* script_state = ScriptState::From(isolate, context);
   if (!script_state->ContextIsValid()) {
     if (callback)
       std::move(callback).Run({}, {});
@@ -432,7 +438,7 @@ void PausableScriptExecutor::HandleResults(
 void PausableScriptExecutor::Dispose() {
   // Remove object as a ExecutionContextLifecycleObserver.
   // TODO(keishi): Remove IsIteratingOverObservers() check when
-  // HeapObserverSet() supports removal while iterating.
+  // HeapObserverList() supports removal while iterating.
   if (!GetExecutionContext()
            ->ContextLifecycleObserverSet()
            .IsIteratingOverObservers()) {

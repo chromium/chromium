@@ -23,11 +23,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
 
 #include <memory>
 #include <utility>
 
+#include "base/not_fatal_until.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/image_decoder_wrapper.h"
@@ -80,9 +86,11 @@ static bool UpdateYUVAInfoSubsamplingAndWidthBytes(
 ImageFrameGenerator::ImageFrameGenerator(const SkISize& full_size,
                                          bool is_multi_frame,
                                          ColorBehavior color_behavior,
+                                         cc::AuxImage aux_image,
                                          Vector<SkISize> supported_sizes)
     : full_size_(full_size),
       decoder_color_behavior_(color_behavior),
+      aux_image_(aux_image),
       is_multi_frame_(is_multi_frame),
       supported_sizes_(std::move(supported_sizes)) {
 #if DCHECK_IS_ON()
@@ -135,8 +143,8 @@ bool ImageFrameGenerator::DecodeAndScale(
     // Lock the mutex, so only one thread can use the decoder at once.
     ClientAutoLock lock(this, client_id);
     ImageDecoderWrapper decoder_wrapper(this, data, pixmap,
-                                        decoder_color_behavior_, index,
-                                        all_data_received, client_id);
+                                        decoder_color_behavior_, aux_image_,
+                                        index, all_data_received, client_id);
     current_decode_succeeded = decoder_wrapper.Decode(
         image_decoder_factory_.get(), &frame_count, &has_alpha);
     decode_failed = decoder_wrapper.decode_failed();
@@ -185,7 +193,7 @@ bool ImageFrameGenerator::DecodeToYUV(
   const bool all_data_received = true;
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       data, all_data_received, ImageDecoder::kAlphaPremultiplied,
-      ImageDecoder::kDefaultBitDepth, decoder_color_behavior_,
+      ImageDecoder::kDefaultBitDepth, decoder_color_behavior_, aux_image_,
       Platform::GetMaxDecodedImageBytes());
   // getYUVComponentSizes was already called and was successful, so
   // ImageDecoder::create must succeed.
@@ -276,7 +284,7 @@ bool ImageFrameGenerator::GetYUVAInfo(
     return false;
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       data, /*data_complete=*/true, ImageDecoder::kAlphaPremultiplied,
-      ImageDecoder::kDefaultBitDepth, decoder_color_behavior_,
+      ImageDecoder::kDefaultBitDepth, decoder_color_behavior_, aux_image_,
       Platform::GetMaxDecodedImageBytes());
   DCHECK(decoder);
 
@@ -353,7 +361,7 @@ ImageFrameGenerator::ClientAutoLock::~ClientAutoLock() {
 
   base::AutoLock lock(generator_->generator_lock_);
   auto it = generator_->lock_map_.find(client_id_);
-  DCHECK(it != generator_->lock_map_.end());
+  CHECK(it != generator_->lock_map_.end(), base::NotFatalUntil::M130);
   it->value->ref_count--;
 
   if (it->value->ref_count == 0)

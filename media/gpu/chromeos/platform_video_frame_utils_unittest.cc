@@ -134,7 +134,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
                                                 kTimeStamp, kBufferUsage);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     };
 
@@ -151,10 +151,10 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
         EXPECT_FALSE(frame->NumDmabufFds() == 0);
         break;
       case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
-        EXPECT_TRUE(frame->GetGpuMemoryBuffer());
+        EXPECT_TRUE(frame->GetGpuMemoryBufferForTesting());
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     };
   }

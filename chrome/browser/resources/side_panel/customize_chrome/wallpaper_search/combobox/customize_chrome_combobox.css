@@ -1,0 +1,151 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/md_select_lit.css.js
+ * #scheme=relative
+ * #include=md-select-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  cursor: default;
+}
+
+.md-select {
+  text-align: start;
+  width: 100%;
+}
+
+.md-select div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#dropdownContainer {
+  display: none;
+  overflow: hidden;
+  position: absolute;
+  border-radius: 12px;
+  box-shadow: var(--cr-elevation-3);
+  z-index: 999;
+  background: var(--color-side-panel-card-background);
+  width: 220px;
+}
+
+@media (forced-colors: active) {
+  #dropdownContainer {
+    background: Field;
+    color: FieldText;
+    border: solid 1px Highlight;
+  }
+}
+
+:host([expanded_]) #dropdownContainer {
+  display: block;
+}
+
+:host([right-align-dropbox]) #dropdownContainer {
+  right: 0;
+}
+
+#dropdown {
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: visible;
+  padding: 12px 0;
+  max-height: 456px;
+  width: 100%;
+}
+
+#dropdown::-webkit-scrollbar {
+  background: transparent;
+  width: 3px;
+}
+
+#dropdown::-webkit-scrollbar-thumb {
+  background: var(--color-side-panel-scrollbar-thumb);
+}
+
+.group-item {
+  display: flex;
+  font-weight: 500;
+}
+
+.group-item cr-icon {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  margin-inline-start: auto;
+}
+
+.group-item,
+.item {
+  align-items: center;
+  box-sizing: border-box;
+  border: none;
+  display: flex;
+  max-height: 44px;
+  min-height: 28px;
+  padding: 6px 20px;
+}
+
+.group-item[highlighted],
+.item[highlighted] {
+  background: var(--cr-active-neutral-on-subtle-background-color);
+}
+
+@media (forced-colors: active) {
+  .group-item[highlighted],
+  .item[highlighted] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+
+.item cr-icon {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  flex-shrink: 0;
+  visibility: hidden;
+  margin-inline-end: 8px;
+}
+
+.item[selected] cr-icon {
+  visibility: visible;
+}
+
+.item:has(img) {
+  height: 48px;
+}
+
+.item customize-chrome-check-mark-wrapper {
+  --customize-chrome-check-mark-wrapper-end: -8px;
+  --customize-chrome-check-mark-wrapper-size: 16px;
+  --customize-chrome-check-mark-wrapper-top: -3px;
+}
+
+.item img {
+  border-radius: 8px;
+  height: 40px;
+  width: 40px;
+}
+
+.item span {
+  display: inline-block;
+  max-height: 32px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item:has(img) span {
+  padding-inline-start: 16px;
+}
+
+:host([indent-default-option_]) #defaultOption {
+  padding-inline-start: 44px;
+}

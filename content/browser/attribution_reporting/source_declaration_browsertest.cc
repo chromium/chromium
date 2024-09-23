@@ -16,11 +16,13 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/context_menu_interceptor.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
@@ -81,7 +83,8 @@ class AttributionSourceDisabledBrowserTest : public AttributionSourceBrowserTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {},
-        /*disabled_features=*/{features::kPrivacySandboxAdsAPIsM1Override});
+        /*disabled_features=*/{features::kPrivacySandboxAdsAPIsM1Override,
+                               features::kPrivacySandboxAdsAPIsOverride});
   }
 
  private:

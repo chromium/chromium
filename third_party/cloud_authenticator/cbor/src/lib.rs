@@ -47,8 +47,8 @@ use alloc::vec::Vec;
 use bytes::{Buf, Bytes};
 use core::borrow::Borrow;
 use core::cmp::Ordering;
+use core::fmt;
 use core::ops::Deref;
-use core::result::Result;
 
 // This code assumes that `usize` fits in a `u64` because it uses `as u64` in a
 // couple of places.
@@ -100,7 +100,7 @@ fn get(bytes: &mut Bytes, num_bytes: usize) -> Result<Bytes, Error> {
 /// Integers are mapped to `i64` despite CBOR having 65-bit integers. CBOR
 /// integers outside the range of an `i64` result in an error during parsing.
 /// Byte strings are returned as `Bytes`s in order to avoid copies.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(PartialEq, Clone)]
 pub enum Value {
     Int(i64),
     Bytestring(Bytes),
@@ -108,6 +108,75 @@ pub enum Value {
     Array(Vec<Value>),
     Map(BTreeMap<MapKey, Value>),
     Boolean(bool),
+}
+
+/// Implements pretty-printing of `Value`s and `MapKey`s to better support the
+/// `Debug` trait for those types.
+mod debug {
+    use super::{MapKey, Value};
+    use alloc::string::String;
+    use core::fmt;
+
+    const HEX_CHARS: [char; 16] =
+        ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
+
+    fn hex_encode(bytes: &[u8]) -> String {
+        let mut ret = String::with_capacity(bytes.len() * 2);
+        for &byte in bytes {
+            ret.push(HEX_CHARS[(byte >> 4) as usize]);
+            ret.push(HEX_CHARS[(byte & 15) as usize]);
+        }
+        ret
+    }
+
+    /// Write a debugging representation of `key` to `f`.
+    pub fn map_key(f: &mut fmt::Formatter, key: &MapKey) -> fmt::Result {
+        match key {
+            MapKey::Int(i) => write!(f, "{}", i),
+            MapKey::Bytestring(bytes) => {
+                f.write_str("h\"")?;
+                f.write_str(&hex_encode(bytes))?;
+                f.write_str("\"")
+            }
+            MapKey::String(s) => {
+                f.write_str("\"")?;
+                f.write_str(s)?;
+                f.write_str("\"")
+            }
+        }
+    }
+
+    /// Write a debugging representation of `value` to `f`.
+    pub fn value(f: &mut fmt::Formatter, value: &Value) -> fmt::Result {
+        match value {
+            Value::Int(i) => write!(f, "{}", i),
+            Value::Bytestring(bytes) => {
+                f.write_str("h\"")?;
+                f.write_str(&hex_encode(bytes))?;
+                f.write_str("\"")
+            }
+            Value::String(s) => {
+                f.write_str("\"")?;
+                f.write_str(s)?;
+                f.write_str("\"")
+            }
+            Value::Boolean(b) => f.write_str(if *b { "true" } else { "false" }),
+            Value::Array(array) => f.debug_list().entries(array.iter()).finish(),
+            Value::Map(map) => f.debug_map().entries(map.iter()).finish(),
+        }
+    }
+}
+
+impl fmt::Debug for MapKey {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        debug::map_key(f, self)
+    }
+}
+
+impl fmt::Debug for Value {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        debug::value(f, self)
+    }
 }
 
 // low_bits_and_length returns the bottom five bits of the initial byte of a
@@ -262,7 +331,7 @@ macro_rules! cbor {
 }
 
 /// A MapKey is the type of values that can key a CBOR map.
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(PartialEq, Eq, Clone)]
 pub enum MapKey {
     // A separate `MapKey` type is used because we want to exclude things like
     // maps keyed by arrays or other maps. Such structures never appear in
@@ -586,7 +655,7 @@ fn to_boolean(arg: u64) -> Result<Value, Error> {
 mod tests {
     extern crate hex;
     use super::*;
-    use alloc::vec;
+    use alloc::{format, vec};
     use proptest::prelude::*;
 
     #[test]
@@ -748,6 +817,26 @@ mod tests {
         assert_eq!(
             cbor!({b"0": 1}),
             Value::Map(BTreeMap::from([(MapKey::Bytestring(vec![0x30u8]), Value::Int(1)),]))
+        );
+    }
+
+    #[test]
+    fn test_debug() {
+        let value = cbor!({
+            1: 2,
+            "three": "four",
+            "five": [6, 7, "eight"],
+            "nine": {
+                "ten": [11],
+                "twelve": {
+                    b"13": 14,
+                },
+            },
+        });
+        let debug = format!("{:?}", value);
+        assert_eq!(
+            debug,
+            "{1: 2, \"five\": [6, 7, \"eight\"], \"nine\": {\"ten\": [11], \"twelve\": {h\"3133\": 14}}, \"three\": \"four\"}"
         );
     }
 

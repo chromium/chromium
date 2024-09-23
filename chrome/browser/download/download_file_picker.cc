@@ -46,7 +46,7 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
       (!web_contents || !web_contents->GetNativeView())) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&DownloadFilePicker::FileSelectionCanceled,
-                                  base::Unretained(this), nullptr));
+                                  base::Unretained(this)));
     return;
   }
 
@@ -57,7 +57,7 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
   if (!select_file_dialog_.get()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&DownloadFilePicker::FileSelectionCanceled,
-                                  base::Unretained(this), nullptr));
+                                  base::Unretained(this)));
     return;
   }
 
@@ -107,7 +107,7 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
       suggested_path_, &file_type_info, 0, base::FilePath::StringType(),
-      owning_window, /*params=*/nullptr, &caller);
+      owning_window, &caller);
 }
 
 DownloadFilePicker::~DownloadFilePicker() {
@@ -121,15 +121,14 @@ DownloadFilePicker::~DownloadFilePicker() {
 }
 
 void DownloadFilePicker::FileSelected(const ui::SelectedFileInfo& file,
-                                      int index,
-                                      void* params) {
+                                      int index) {
   std::move(file_selected_callback_)
       .Run(DownloadConfirmationResult::CONFIRMED, file);
 
   delete this;
 }
 
-void DownloadFilePicker::FileSelectionCanceled(void* params) {
+void DownloadFilePicker::FileSelectionCanceled() {
   std::move(file_selected_callback_)
       .Run(DownloadConfirmationResult::CANCELED, ui::SelectedFileInfo());
 

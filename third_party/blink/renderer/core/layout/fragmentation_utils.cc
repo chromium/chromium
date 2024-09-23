@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -36,7 +37,7 @@ inline int FragmentainerBreakPrecedence(EBreakBetween break_value) {
 
   switch (break_value) {
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case EBreakBetween::kAuto:
       return 0;
@@ -56,6 +57,25 @@ inline int FragmentainerBreakPrecedence(EBreakBetween break_value) {
     case EBreakBetween::kVerso:
       return 6;
   }
+}
+
+bool ShouldCloneBlockStartBorderPadding(const BoxFragmentBuilder& builder) {
+  if (builder.Node().Style().BoxDecorationBreak() !=
+      EBoxDecorationBreak::kClone) {
+    return false;
+  }
+  const BlockBreakToken* previous_break_token = builder.PreviousBreakToken();
+  if (!previous_break_token) {
+    return true;
+  }
+  if (previous_break_token->MonolithicOverflow()) {
+    LayoutUnit space_left =
+        FragmentainerSpaceLeft(builder, /*is_for_children=*/false);
+    if (space_left < builder.BorderScrollbarPadding().BlockSum()) {
+      return false;
+    }
+  }
+  return !previous_break_token->IsAtBlockEnd();
 }
 
 }  // anonymous namespace
@@ -296,10 +316,10 @@ LogicalOffset GetFragmentainerProgression(const BoxFragmentBuilder& builder,
 
 void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
                                        const LayoutInputNode& child,
-                                       LayoutUnit fragmentainer_offset_delta,
-                                       ConstraintSpaceBuilder* builder,
-                                       bool is_new_fc,
-                                       bool requires_content_before_breaking) {
+                                       LayoutUnit fragmentainer_offset,
+                                       LayoutUnit fragmentainer_block_size,
+                                       bool requires_content_before_breaking,
+                                       ConstraintSpaceBuilder* builder) {
   DCHECK(parent_space.HasBlockFragmentation());
 
   // If the child is truly unbreakable, it won't participate in block
@@ -314,9 +334,7 @@ void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
     return;
   }
 
-  builder->SetFragmentainerBlockSize(parent_space.FragmentainerBlockSize());
-  LayoutUnit fragmentainer_offset =
-      parent_space.FragmentainerOffset() + fragmentainer_offset_delta;
+  builder->SetFragmentainerBlockSize(fragmentainer_block_size);
   builder->SetFragmentainerOffset(fragmentainer_offset);
   if (fragmentainer_offset <= LayoutUnit())
     builder->SetIsAtFragmentainerStart();
@@ -343,8 +361,6 @@ void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
       parent_space.ShouldIgnoreForcedBreaks())
     builder->SetShouldIgnoreForcedBreaks();
 
-  if (parent_space.IsInColumnBfc() && !is_new_fc)
-    builder->SetIsInColumnBfc();
   builder->SetMinBreakAppeal(parent_space.MinBreakAppeal());
 
   if (parent_space.IsPaginated()) {
@@ -353,6 +369,22 @@ void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
     else
       builder->SetPageName(parent_space.PageName());
   }
+}
+
+void SetupSpaceBuilderForFragmentation(
+    const BoxFragmentBuilder& parent_fragment_builder,
+    const LayoutInputNode& child,
+    LayoutUnit fragmentainer_offset_delta,
+    ConstraintSpaceBuilder* builder) {
+  LayoutUnit fragmentainer_block_size =
+      FragmentainerCapacity(parent_fragment_builder, /*is_for_children=*/true);
+  LayoutUnit fragmentainer_block_offset =
+      FragmentainerOffset(parent_fragment_builder, /*is_for_children=*/true) +
+      fragmentainer_offset_delta;
+  return SetupSpaceBuilderForFragmentation(
+      parent_fragment_builder.GetConstraintSpace(), child,
+      fragmentainer_block_offset, fragmentainer_block_size,
+      parent_fragment_builder.RequiresContentBeforeBreaking(), builder);
 }
 
 void SetupFragmentBuilderForFragmentation(
@@ -385,7 +417,6 @@ void SetupFragmentBuilderForFragmentation(
 
   if (space.HasBlockFragmentation())
     builder->SetHasBlockFragmentation();
-  builder->SetPreviousBreakToken(previous_break_token);
 
   if (space.IsInitialColumnBalancingPass())
     builder->SetIsInitialColumnBalancingPass();
@@ -394,6 +425,25 @@ void SetupFragmentBuilderForFragmentation(
   if (previous_break_token && !previous_break_token->IsBreakBefore()) {
     sequence_number = previous_break_token->SequenceNumber() + 1;
     builder->SetIsFirstForNode(false);
+  }
+
+  LayoutUnit space_left =
+      FragmentainerSpaceLeft(*builder, /*is_for_children=*/false);
+
+  // If box decorations are to be cloned, both block-start and block-end should
+  // obviosuly be present in every fragment, but whether block-end decorations
+  // count as being cloned or not depends on whether the fragment currently
+  // being built is known to be the last fragment. If it is, block-end box
+  // decorations will behave as normally, so that child content may overflow it.
+  bool clone_box_start_decorations =
+      ShouldCloneBlockStartBorderPadding(*builder);
+  bool clone_box_end_decorations = clone_box_start_decorations;
+
+  if (clone_box_start_decorations) {
+    // Include border/padding from previous fragments. When resolving the
+    // block-size for this fragment, we need the total space used by
+    // decorations.
+    builder->UpdateBorderPaddingForClonedBoxDecorations();
   }
 
   if (space.HasBlockFragmentation() && !space.IsAnonymous() &&
@@ -412,8 +462,8 @@ void SetupFragmentBuilderForFragmentation(
       // constrained. If it doesn't affect the block size, it means that we can
       // tell before layout how much more space this node needs.
       LayoutUnit max_block_size = ComputeBlockSizeForFragment(
-          space, node.Style(), builder->BorderPadding(), LayoutUnit::Max(),
-          builder->InitialBorderBoxSize().inline_size);
+          space, To<BlockNode>(node), builder->BorderPadding(),
+          LayoutUnit::Max(), builder->InitialBorderBoxSize().inline_size);
       DCHECK(space.HasKnownFragmentainerBlockSize());
 
       // If max_block_size is "infinite", we can't tell for sure that it's going
@@ -422,7 +472,6 @@ void SetupFragmentBuilderForFragmentation(
       // incorrectly seems to be enough to contain the remaining fragment when
       // subtracting previously consumed block-size from its max size.
       if (max_block_size != LayoutUnit::Max()) {
-        LayoutUnit space_left = FragmentainerSpaceLeft(space);
         LayoutUnit previously_consumed_block_size;
         if (previous_break_token) {
           previously_consumed_block_size =
@@ -431,16 +480,35 @@ void SetupFragmentBuilderForFragmentation(
 
         if (max_block_size - previously_consumed_block_size <= space_left) {
           builder->SetIsKnownToFitInFragmentainer(true);
+          clone_box_end_decorations = false;
           if (builder->MustStayInCurrentFragmentainer())
             requires_content_before_breaking = true;
         }
       }
     }
+
+    if (clone_box_end_decorations) {
+      builder->SetShouldCloneBoxEndDecorations(true);
+
+      // If block-end border+padding is cloned, they should be repeated in every
+      // fragment, so breaking before them would be wrong and make no sense.
+      builder->SetShouldPreventBreakBeforeBlockEndDecorations(true);
+    }
+
     builder->SetRequiresContentBeforeBreaking(requires_content_before_breaking);
   }
   builder->SetSequenceNumber(sequence_number);
 
-  builder->AdjustBorderScrollbarPaddingForFragmentation(previous_break_token);
+  if (IsBreakInside(previous_break_token) && !clone_box_start_decorations) {
+    // When resuming after a fragmentation break in the slicing box decoration
+    // break model, block-start border and padding are omitted. Don't omit it
+    // here for tables, though. The table box (which contains the border) might
+    // not start in the first fragment, if there are preceding captions, so the
+    // table algorithm needs to handle this logic on its own.
+    if (!node.IsTable()) {
+      builder->ClearBorderScrollbarPaddingBlockStart();
+    }
+  }
 
   if (builder->IsInitialColumnBalancingPass()) {
     const BoxStrut& unbreakable = builder->BorderScrollbarPadding();
@@ -449,13 +517,19 @@ void SetupFragmentBuilderForFragmentation(
   }
 }
 
+bool ShouldIncludeBlockStartBorderPadding(const BoxFragmentBuilder& builder) {
+  return !IsBreakInside(builder.PreviousBreakToken()) ||
+         ShouldCloneBlockStartBorderPadding(builder);
+}
+
 bool ShouldIncludeBlockEndBorderPadding(const BoxFragmentBuilder& builder) {
   if (builder.PreviousBreakToken() &&
       builder.PreviousBreakToken()->IsAtBlockEnd()) {
     // Past the block-end, and therefore past block-end border+padding.
     return false;
   }
-  if (!builder.ShouldBreakInside() || builder.IsKnownToFitInFragmentainer()) {
+  if (!builder.ShouldBreakInside() || builder.IsKnownToFitInFragmentainer() ||
+      builder.ShouldCloneBoxEndDecorations()) {
     return true;
   }
 
@@ -468,11 +542,11 @@ bool ShouldIncludeBlockEndBorderPadding(const BoxFragmentBuilder& builder) {
   return !builder.HasInflowChildBreakInside();
 }
 
-BreakStatus FinishFragmentation(BlockNode node,
-                                const ConstraintSpace& space,
-                                LayoutUnit trailing_border_padding,
-                                LayoutUnit space_left,
-                                BoxFragmentBuilder* builder) {
+BreakStatus FinishFragmentation(BoxFragmentBuilder* builder) {
+  const BlockNode& node = builder->Node();
+  const ConstraintSpace& space = builder->GetConstraintSpace();
+  LayoutUnit space_left = FragmentainerSpaceLeft(*builder,
+                                                 /*is_for_children=*/false);
   const BlockBreakToken* previous_break_token = builder->PreviousBreakToken();
   LayoutUnit previously_consumed_block_size;
   if (previous_break_token && !previous_break_token->IsBreakBefore())
@@ -493,6 +567,34 @@ BreakStatus FinishFragmentation(BlockNode node,
   LayoutUnit desired_intrinsic_block_size = builder->IntrinsicBlockSize();
 
   LayoutUnit final_block_size = desired_block_size;
+
+  LayoutUnit trailing_border_padding =
+      builder->BorderScrollbarPadding().block_end;
+  LayoutUnit subtractable_border_padding;
+  if (!builder->ShouldPreventBreakBeforeBlockEndDecorations()) {
+    if (desired_block_size > trailing_border_padding ||
+        (previous_break_token && previous_break_token->MonolithicOverflow())) {
+      // There is a last-resort breakpoint before trailing border and padding,
+      // if progress can still be guaranteed.
+      //
+      // Note that we're always guaranteed progress if there's incoming
+      // monolithic overflow. We're going to move past monolithic overflow, and
+      // just add as many fragments we need in order to get past the overflow.
+      subtractable_border_padding = trailing_border_padding;
+    }
+  }
+
+  if (space_left != kIndefiniteSize) {
+    // If intrinsic block-size is larger than space left, it means that we have
+    // some tall unbreakable child content (otherwise it would already have
+    // broken to stay within the limits). In such cases, this fragment will be
+    // allowed to take up more space (within applicable constraints) in a
+    // similarly unbreakable manner, to encompass the unbreakable content. This
+    // effectively increases the fragmentainer space available, as far as this
+    // node is concerned.
+    space_left = std::max(
+        space_left, desired_intrinsic_block_size - subtractable_border_padding);
+  }
 
   if (space.IsPaginated()) {
     // Descendants take precedence, but if none of them propagated a page name,
@@ -548,24 +650,8 @@ BreakStatus FinishFragmentation(BlockNode node,
     // means that there's something unbreakable (monolithic) inside (or we'd
     // already have broken inside). We'll allow this to overflow the
     // fragmentainer.
-    //
-    // There is a last-resort breakpoint before trailing border and padding, so
-    // first check if we can break there and still make progress. Don't allow a
-    // break here for table cells, though, as that might disturb the row
-    // stretching machinery, causing an infinite loop. We'd add the stretch
-    // amount to the block-size to the content box of the table cell, even
-    // though we're past it. We're always guaranteed progress if there's
-    // incoming monolithic overflow, so in such cases we can always break before
-    // border / padding (and add as many fragments we need in order to get past
-    // the overflow).
     DCHECK_GE(desired_intrinsic_block_size, trailing_border_padding);
     DCHECK_GE(desired_block_size, trailing_border_padding);
-
-    LayoutUnit subtractable_border_padding;
-    if ((desired_block_size > trailing_border_padding && !node.IsTableCell()) ||
-        (previous_break_token && previous_break_token->MonolithicOverflow())) {
-      subtractable_border_padding = trailing_border_padding;
-    }
 
     LayoutUnit modified_intrinsic_block_size = std::max(
         space_left, desired_intrinsic_block_size - subtractable_border_padding);
@@ -581,15 +667,21 @@ BreakStatus FinishFragmentation(BlockNode node,
   }
 
   LogicalBoxSides sides;
-  // If this isn't the first fragment, omit the block-start border.
-  if (previously_consumed_block_size)
+  // If this isn't the first fragment, omit the block-start border, if in the
+  // slicing box decoration break model.
+  if (previously_consumed_block_size &&
+      (node.Style().BoxDecorationBreak() == EBoxDecorationBreak::kSlice ||
+       is_past_end)) {
     sides.block_start = false;
+  }
   // If this isn't the last fragment with same-flow content, omit the block-end
   // border. If something overflows the node, we'll keep on creating empty
   // fragments to contain the overflow (which establishes a parallel flow), but
   // those fragments should make no room (nor paint) block-end border/paddding.
-  if (builder->DidBreakSelf() || is_past_end)
+  if ((builder->DidBreakSelf() && !builder->ShouldCloneBoxEndDecorations()) ||
+      is_past_end) {
     sides.block_end = false;
+  }
   builder->SetSidesToInclude(sides);
 
   builder->SetConsumedBlockSize(previously_consumed_block_size +
@@ -617,8 +709,9 @@ BreakStatus FinishFragmentation(BlockNode node,
     // if we need to steer clear of at least some of it in the next
     // fragmentainer as well. This only happens when printing monolithic
     // content.
-    LayoutUnit remaining_overflow = previous_break_token->MonolithicOverflow() -
-                                    FragmentainerCapacity(space);
+    LayoutUnit remaining_overflow =
+        previous_break_token->MonolithicOverflow() -
+        FragmentainerCapacity(*builder, /*is_for_children=*/false);
     if (remaining_overflow > LayoutUnit()) {
       builder->ReserveSpaceForMonolithicOverflow(remaining_overflow);
     }
@@ -681,9 +774,11 @@ BreakStatus FinishFragmentation(BlockNode node,
                                     std::max(final_block_size, space_left));
     } else {
       // If we're not at the end, it means that block-end border and shadow
-      // should be omitted.
-      sides.block_end = false;
-      builder->SetSidesToInclude(sides);
+      // should be omitted, unless box decorations are to be cloned.
+      if (!builder->ShouldCloneBoxEndDecorations()) {
+        sides.block_end = false;
+        builder->SetSidesToInclude(sides);
+      }
     }
 
     return BreakStatus::kContinue;
@@ -727,8 +822,8 @@ BreakStatus FinishFragmentation(BlockNode node,
   return BreakStatus::kContinue;
 }
 
-BreakStatus FinishFragmentationForFragmentainer(const ConstraintSpace& space,
-                                                BoxFragmentBuilder* builder) {
+BreakStatus FinishFragmentationForFragmentainer(BoxFragmentBuilder* builder) {
+  const ConstraintSpace& space = builder->GetConstraintSpace();
   DCHECK(builder->IsFragmentainerBoxType());
   const BlockBreakToken* previous_break_token = builder->PreviousBreakToken();
   LayoutUnit consumed_block_size =
@@ -743,7 +838,8 @@ BreakStatus FinishFragmentationForFragmentainer(const ConstraintSpace& space,
     // token. The fragment block-size itself will be based directly on the
     // fragmentainer size from the constraint space, though.
     LayoutUnit block_size = space.FragmentainerBlockSize();
-    LayoutUnit fragmentainer_capacity = FragmentainerCapacity(space);
+    LayoutUnit fragmentainer_capacity =
+        FragmentainerCapacity(*builder, /*is_for_children=*/false);
     builder->SetFragmentBlockSize(block_size);
     consumed_block_size += fragmentainer_capacity;
     builder->SetConsumedBlockSize(consumed_block_size);
@@ -769,7 +865,7 @@ BreakStatus FinishFragmentationForFragmentainer(const ConstraintSpace& space,
       // Add pages as long as there's monolithic overflow that requires it.
       LayoutUnit remaining_overflow =
           previous_break_token->MonolithicOverflow() -
-          FragmentainerCapacity(space);
+          FragmentainerCapacity(*builder, /*is_for_children=*/false);
       if (remaining_overflow > LayoutUnit()) {
         builder->ReserveSpaceForMonolithicOverflow(remaining_overflow);
       }
@@ -820,6 +916,7 @@ BreakStatus BreakBeforeChildIfNeeded(
     LayoutInputNode child,
     const LayoutResult& layout_result,
     LayoutUnit fragmentainer_block_offset,
+    LayoutUnit fragmentainer_block_size,
     bool has_container_separation,
     BoxFragmentBuilder* builder,
     bool is_row_item,
@@ -832,8 +929,8 @@ BreakStatus BreakBeforeChildIfNeeded(
         CalculateBreakBetweenValue(child, layout_result, *builder);
     if (IsForcedBreakValue(space, break_between)) {
       BreakBeforeChild(space, child, &layout_result, fragmentainer_block_offset,
-                       kBreakAppealPerfect, /* is_forced_break */ true,
-                       builder);
+                       fragmentainer_block_size, kBreakAppealPerfect,
+                       /*is_forced_break=*/true, builder);
       return BreakStatus::kBrokeBefore;
     }
   }
@@ -844,17 +941,19 @@ BreakStatus BreakBeforeChildIfNeeded(
   // Attempt to move past the break point, and if we can do that, also assess
   // the appeal of breaking there, even if we didn't.
   if (MovePastBreakpoint(space, child, layout_result,
-                         fragmentainer_block_offset, appeal_before, builder,
-                         is_row_item, flex_column_break_info))
+                         fragmentainer_block_offset, fragmentainer_block_size,
+                         appeal_before, builder, is_row_item,
+                         flex_column_break_info)) {
     return BreakStatus::kContinue;
+  }
 
   // Breaking inside the child isn't appealing, and we're out of space. Figure
   // out where to insert a soft break. It will either be before this child, or
   // before an earlier sibling, if there's a more appealing breakpoint there.
-  if (!AttemptSoftBreak(space, child, &layout_result,
-                        fragmentainer_block_offset, appeal_before, builder,
-                        /* block_size_override */ std::nullopt,
-                        flex_column_break_info)) {
+  if (!AttemptSoftBreak(
+          space, child, &layout_result, fragmentainer_block_offset,
+          fragmentainer_block_size, appeal_before, builder,
+          /*block_size_override=*/std::nullopt, flex_column_break_info)) {
     return BreakStatus::kNeedsEarlierBreak;
   }
 
@@ -865,6 +964,7 @@ void BreakBeforeChild(const ConstraintSpace& space,
                       LayoutInputNode child,
                       const LayoutResult* layout_result,
                       LayoutUnit fragmentainer_block_offset,
+                      LayoutUnit fragmentainer_block_size,
                       std::optional<BreakAppeal> appeal,
                       bool is_forced_break,
                       BoxFragmentBuilder* builder,
@@ -882,7 +982,8 @@ void BreakBeforeChild(const ConstraintSpace& space,
 
   if (space.HasKnownFragmentainerBlockSize()) {
     PropagateSpaceShortage(space, layout_result, fragmentainer_block_offset,
-                           builder, block_size_override);
+                           fragmentainer_block_size, builder,
+                           block_size_override);
   }
 
   if (layout_result && space.ShouldPropagateChildBreakValues() &&
@@ -897,14 +998,16 @@ void BreakBeforeChild(const ConstraintSpace& space,
 void PropagateSpaceShortage(const ConstraintSpace& space,
                             const LayoutResult* layout_result,
                             LayoutUnit fragmentainer_block_offset,
+                            LayoutUnit fragmentainer_block_size,
                             FragmentBuilder* builder,
                             std::optional<LayoutUnit> block_size_override) {
   // Only multicol cares about space shortage.
   if (space.BlockFragmentationType() != kFragmentColumn)
     return;
 
-  LayoutUnit space_shortage = CalculateSpaceShortage(
-      space, layout_result, fragmentainer_block_offset, block_size_override);
+  LayoutUnit space_shortage =
+      CalculateSpaceShortage(space, layout_result, fragmentainer_block_offset,
+                             fragmentainer_block_size, block_size_override);
 
   // TODO(mstensho): Turn this into a DCHECK, when the engine is ready for
   // it. Space shortage should really be positive here, or we might ultimately
@@ -917,6 +1020,7 @@ LayoutUnit CalculateSpaceShortage(
     const ConstraintSpace& space,
     const LayoutResult* layout_result,
     LayoutUnit fragmentainer_block_offset,
+    LayoutUnit fragmentainer_block_size,
     std::optional<LayoutUnit> block_size_override) {
   // Space shortage is only reported for soft breaks, and they can only exist if
   // we know the fragmentainer block-size.
@@ -929,7 +1033,7 @@ LayoutUnit CalculateSpaceShortage(
   LayoutUnit space_shortage;
   if (block_size_override) {
     space_shortage = fragmentainer_block_offset + block_size_override.value() -
-                     space.FragmentainerBlockSize();
+                     fragmentainer_block_size;
   } else if (!layout_result->MinimalSpaceShortage()) {
     // Calculate space shortage: Figure out how much more space would have been
     // sufficient to make the child fragment fit right here in the current
@@ -940,7 +1044,7 @@ LayoutUnit CalculateSpaceShortage(
     LogicalFragment fragment(space.GetWritingDirection(),
                              layout_result->GetPhysicalFragment());
     space_shortage = fragmentainer_block_offset + fragment.BlockSize() -
-                     space.FragmentainerBlockSize();
+                     fragmentainer_block_size;
   } else {
     // However, if space shortage was reported inside the child, use that. If we
     // broke inside the child, we didn't complete layout, so calculating space
@@ -967,6 +1071,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
                         LayoutInputNode child,
                         const LayoutResult& layout_result,
                         LayoutUnit fragmentainer_block_offset,
+                        LayoutUnit fragmentainer_block_size,
                         BreakAppeal appeal_before,
                         BoxFragmentBuilder* builder,
                         bool is_row_item,
@@ -1019,9 +1124,10 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
     }
   }
 
-  bool move_past = MovePastBreakpoint(
-      space, layout_result, fragmentainer_block_offset, appeal_before, builder,
-      is_row_item, flex_column_break_info);
+  bool move_past =
+      MovePastBreakpoint(space, layout_result, fragmentainer_block_offset,
+                         fragmentainer_block_size, appeal_before, builder,
+                         is_row_item, flex_column_break_info);
 
   if (move_past && builder && child.IsBlock() && !is_row_item) {
     // We're tentatively not going to break before this child, but we'll check
@@ -1042,6 +1148,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
 bool MovePastBreakpoint(const ConstraintSpace& space,
                         const LayoutResult& layout_result,
                         LayoutUnit fragmentainer_block_offset,
+                        LayoutUnit fragmentainer_block_size,
                         BreakAppeal appeal_before,
                         BoxFragmentBuilder* builder,
                         bool is_row_item,
@@ -1059,15 +1166,14 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
   const auto* break_token =
       DynamicTo<BlockBreakToken>(physical_fragment.GetBreakToken());
 
-  LayoutUnit space_left =
-      FragmentainerCapacity(space) - fragmentainer_block_offset;
+  LayoutUnit space_left = fragmentainer_block_size - fragmentainer_block_offset;
 
   // If we haven't used any space at all in the fragmentainer yet, we cannot
   // break before this child, or there'd be no progress. We'd risk creating an
   // infinite number of fragmentainers without putting any content into them. If
   // we have set a minimum break appeal (better than kBreakAppealLastResort),
   // though, we might have to allow breaking here.
-  bool refuse_break_before = space_left >= FragmentainerCapacity(space) &&
+  bool refuse_break_before = space_left >= fragmentainer_block_size &&
                              (!builder || !IsBreakableAtStartOfResumedContainer(
                                               space, layout_result, *builder));
 
@@ -1098,32 +1204,36 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
   // If breaking before is impossible, we have to move past.
   bool move_past = refuse_break_before;
 
-  if (!move_past && block_size <= space_left) {
-    if (IsBreakInside(break_token) || appeal_inside < kBreakAppealPerfect) {
-      // The block child broke inside, either in this fragmentation context, or
-      // in an inner one. We now need to decide whether to keep that break, or
-      // if it would be better to break before it. Allow breaking inside if it
-      // has the same appeal or higher than breaking before or breaking earlier.
-      if (appeal_inside >= appeal_before) {
-        if (flex_column_break_info) {
-          if (!flex_column_break_info->early_break ||
-              appeal_inside >=
-                  flex_column_break_info->early_break->GetBreakAppeal()) {
+  if (!move_past) {
+    if (block_size <= space_left) {
+      if (IsBreakInside(break_token) || appeal_inside < kBreakAppealPerfect) {
+        // The block child broke inside, either in this fragmentation context,
+        // or in an inner one. We now need to decide whether to keep that break,
+        // or if it would be better to break before it. Allow breaking inside if
+        // it has the same appeal or higher than breaking before or breaking
+        // earlier.
+        if (appeal_inside >= appeal_before) {
+          if (flex_column_break_info) {
+            if (!flex_column_break_info->early_break ||
+                appeal_inside >=
+                    flex_column_break_info->early_break->GetBreakAppeal()) {
+              move_past = true;
+            }
+          } else if (!builder || !builder->HasEarlyBreak() ||
+                     appeal_inside >=
+                         builder->GetEarlyBreak().GetBreakAppeal()) {
             move_past = true;
           }
-        } else if (!builder || !builder->HasEarlyBreak() ||
-                   appeal_inside >= builder->GetEarlyBreak().GetBreakAppeal()) {
-          move_past = true;
         }
+      } else {
+        move_past = true;
       }
-    } else {
+    } else if (appeal_before == kBreakAppealLastResort && builder &&
+               builder->RequiresContentBeforeBreaking()) {
+      // The fragment doesn't fit, but we need to force it to stay here anyway.
+      builder->SetIsBlockSizeForFragmentationClamped();
       move_past = true;
     }
-  } else if (appeal_before == kBreakAppealLastResort && builder &&
-             builder->RequiresContentBeforeBreaking()) {
-    // The fragment doesn't fit, but we need to force it to stay here anyway.
-    builder->SetIsBlockSizeForFragmentationClamped();
-    move_past = true;
   }
 
   if (move_past) {
@@ -1133,7 +1243,8 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
         // may happen with monolithic content at the beginning of the
         // fragmentainer. Report space shortage.
         PropagateSpaceShortage(space, &layout_result,
-                               fragmentainer_block_offset, builder);
+                               fragmentainer_block_offset,
+                               fragmentainer_block_size, builder);
       }
     }
     return true;
@@ -1214,6 +1325,7 @@ bool AttemptSoftBreak(const ConstraintSpace& space,
                       LayoutInputNode child,
                       const LayoutResult* layout_result,
                       LayoutUnit fragmentainer_block_offset,
+                      LayoutUnit fragmentainer_block_size,
                       BreakAppeal appeal_before,
                       BoxFragmentBuilder* builder,
                       std::optional<LayoutUnit> block_size_override,
@@ -1235,7 +1347,8 @@ bool AttemptSoftBreak(const ConstraintSpace& space,
     // Found a better place to break. Before aborting, calculate and report
     // space shortage from where we'd actually break.
     PropagateSpaceShortage(space, layout_result, fragmentainer_block_offset,
-                           builder, block_size_override);
+                           fragmentainer_block_size, builder,
+                           block_size_override);
     return false;
   }
 
@@ -1243,7 +1356,7 @@ bool AttemptSoftBreak(const ConstraintSpace& space,
   // with higher appeal (but it's too early to tell), in which case this
   // breakpoint will be replaced.
   BreakBeforeChild(space, child, layout_result, fragmentainer_block_offset,
-                   appeal_before,
+                   fragmentainer_block_size, appeal_before,
                    /* is_forced_break */ false, builder, block_size_override);
   return true;
 }
@@ -1305,8 +1418,9 @@ BoxFragmentBuilder CreateContainerBuilderForMulticol(
     const ConstraintSpace& space,
     const FragmentGeometry& fragment_geometry) {
   const ComputedStyle* style = &multicol.Style();
-  BoxFragmentBuilder multicol_container_builder(multicol, style, space,
-                                                style->GetWritingDirection());
+  BoxFragmentBuilder multicol_container_builder(
+      multicol, style, space, style->GetWritingDirection(),
+      /*previous_break_token=*/nullptr);
   multicol_container_builder.SetIsNewFormattingContext(true);
   multicol_container_builder.SetInitialFragmentGeometry(fragment_geometry);
   multicol_container_builder.SetIsBlockFragmentationContextRoot();
@@ -1326,22 +1440,6 @@ ConstraintSpace CreateConstraintSpaceForMulticol(const BlockNode& multicol) {
   // at all.
   space_builder.SetAvailableSize(LogicalSize());
   return space_builder.ToConstraintSpace();
-}
-
-const BlockBreakToken* PreviousFragmentainerBreakToken(
-    const BoxFragmentBuilder& container_builder,
-    wtf_size_t index) {
-  const BlockBreakToken* previous_break_token = nullptr;
-  for (wtf_size_t i = index; i > 0; --i) {
-    auto* previous_fragment =
-        container_builder.Children()[i - 1].fragment.Get();
-    if (previous_fragment->IsFragmentainerBox()) {
-      previous_break_token = To<BlockBreakToken>(
-          To<PhysicalBoxFragment>(previous_fragment)->GetBreakToken());
-      break;
-    }
-  }
-  return previous_break_token;
 }
 
 const BlockBreakToken* FindPreviousBreakToken(
@@ -1412,7 +1510,7 @@ wtf_size_t PreviousInnerFragmentainerIndex(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return idx;
 }
 

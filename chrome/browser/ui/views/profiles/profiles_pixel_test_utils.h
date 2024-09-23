@@ -35,14 +35,20 @@ struct PixelTestParam {
   bool use_dark_theme = false;
   bool use_right_to_left_language = false;
   bool use_small_window = false;
-  bool use_fre_style = false;
-  bool use_chrome_refresh_2023_style = false;
 };
 
 enum class AccountManagementStatus {
   kManaged = 0,
   kNonManaged,
 };
+
+// Returns an AccountInfo with all fields filled in, such that
+// AccountInfo::IsValid() is true.
+AccountInfo FillAccountInfo(
+    const CoreAccountInfo& core_info,
+    AccountManagementStatus management_status,
+    signin::Tribool
+        can_show_history_sync_opt_ins_without_minor_mode_restrictions);
 
 // Used to create a dummy account and sign it in, by default as a primary
 // account.

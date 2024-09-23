@@ -144,8 +144,7 @@ class TabDragContext : public TabDragContextBase {
   // Used by TabDragController when the user stops dragging. |completed| is
   // true if the drag operation completed successfully, false if it was
   // reverted.
-  virtual void StoppedDragging(
-      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views) = 0;
+  virtual void StoppedDragging() = 0;
 
   // Invoked during drag to layout the views being dragged in |views| at
   // |location|. If |initial_drag| is true, this is the initial layout after the

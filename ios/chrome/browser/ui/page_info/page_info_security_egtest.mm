@@ -5,8 +5,11 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/page_info/core/page_info_action.h"
 #import "components/strings/grit/components_branded_strings.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -30,6 +33,19 @@
   config.relaunch_policy = NoForceRelaunchAndResetState;
   config.features_enabled.push_back(kRevampPageInfoIos);
   return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  [ChromeEarlGrey clearBrowsingHistory];
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+}
+
+- (void)tearDown {
+  [super tearDown];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
 }
 
 // Navigates to Page Info's Security Subpage.
@@ -78,6 +94,14 @@
   GREYAssertEqual(std::string("support.google.com"),
                   [ChromeEarlGrey webStateVisibleURL].host(),
                   @"Did not navigate to the help center article.");
+
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:page_info::PAGE_INFO_CONNECTION_HELP_OPENED
+          forHistogram:base::SysUTF8ToNSString(
+                           page_info::kWebsiteSettingsActionHistogram)],
+      @"WebsiteSettings.Action histogram not logged.");
 }
 
 // Tests that rotating the device will don't dismiss the security view and that
@@ -96,6 +120,19 @@
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      kPageInfoSecurityViewNavigationBarAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the navigation bar has both the security's page title and the
+  // page URL.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_PAGE_INFO_SECURITY))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text([NSString
+                     stringWithCString:[ChromeEarlGrey webStateVisibleURL]
+                                           .host()
+                                           .c_str()
+                              encoding:[NSString defaultCStringEncoding]])]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Rotate the device and check that the page info view is still presented

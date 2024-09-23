@@ -48,13 +48,12 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   virtual ~GpuDataManagerImplPrivate();
 
   void StartUmaTimer();
-  void BlocklistWebGLForTesting();
   gpu::GPUInfo GetGPUInfo() const;
   gpu::GPUInfo GetGPUInfoForHardwareGpu() const;
   std::vector<std::string> GetDawnInfoList() const;
   bool GpuAccessAllowed(std::string* reason) const;
   bool GpuAccessAllowedForHardwareGpu(std::string* reason) const;
-  void RequestDxdiagDx12VulkanVideoGpuInfoIfNeeded(
+  void RequestDx12VulkanVideoGpuInfoIfNeeded(
       GpuDataManagerImpl::GpuInfoRequest request,
       bool delayed);
   bool IsEssentialGpuInfoAvailable() const;
@@ -73,17 +72,16 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
       const gpu::GPUInfo& gpu_info,
       const std::optional<gpu::GPUInfo>& optional_gpu_info_for_hardware_gpu);
 #if BUILDFLAG(IS_WIN)
-  void UpdateDxDiagNode(const gpu::DxDiagNode& dx_diagnostics);
-  void UpdateDx12Info(uint32_t d3d12_feature_level);
+  void UpdateDirectXInfo(uint32_t d3d12_feature_level,
+                         uint32_t directml_feature_level);
   void UpdateVulkanInfo(uint32_t vulkan_version);
   void UpdateDevicePerfInfo(const gpu::DevicePerfInfo& device_perf_info);
 
   void UpdateOverlayInfo(const gpu::OverlayInfo& overlay_info);
   void UpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info);
-  void UpdateDxDiagNodeRequestStatus(bool request_continues);
-  void UpdateDx12RequestStatus(bool request_continues);
+  void UpdateDirectXRequestStatus(bool request_continues);
   void UpdateVulkanRequestStatus(bool request_continues);
-  bool Dx12Requested() const;
+  bool DirectXRequested() const;
   bool VulkanRequested() const;
   void TerminateInfoCollectionGpuProcess();
 #endif
@@ -130,8 +128,6 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   bool Are3DAPIsBlocked(const GURL& top_origin_url,
                         ThreeDAPIType requester);
 
-  void DisableDomainBlockingFor3DAPIsForTesting();
-
   void Notify3DAPIBlocked(const GURL& top_origin_url,
                           int render_process_id,
                           int render_frame_id,
@@ -147,7 +143,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   void SetApplicationVisible(bool is_visible);
 
   void OnDisplayAdded(const display::Display& new_display);
-  void OnDisplayRemoved(const display::Display& old_display);
+  void OnDisplaysRemoved(const display::Displays& removed_displays);
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics);
 
@@ -155,6 +151,10 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   bool IsGpuMemoryBufferNV12Supported();
   void SetGpuMemoryBufferNV12Supported(bool supported);
 #endif  // BUILDFLAG(IS_LINUX)
+
+  void DisableDomainBlockingFor3DAPIsForTesting();
+  void BlocklistWebGLForTesting();
+  void SetSkiaGraphiteEnabledForTesting(bool enabled);
 
  private:
   friend class GpuDataManagerImplPrivateTest;
@@ -231,8 +231,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   // Notify all observers whenever there is a GPU info update.
   void NotifyGpuInfoUpdate();
 
-  void RequestDxDiagNodeData(bool delayed);
-  void RequestGpuSupportedDx12Version(bool delayed);
+  void RequestGpuSupportedDirectXVersion(bool delayed);
   void RequestGpuSupportedVulkanVersion(bool delayed);
   void RequestDawnInfo(bool delayed, bool collect_metrics);
   void RequestMojoMediaVideoCapabilities();
@@ -245,11 +244,9 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   gpu::GPUInfo gpu_info_;
   gl::GpuPreference active_gpu_heuristic_ = gl::GpuPreference::kDefault;
 #if BUILDFLAG(IS_WIN)
-  bool gpu_info_dx_diag_requested_ = false;
-  bool gpu_info_dx_diag_request_failed_ = false;
-  bool gpu_info_dx12_valid_ = false;
-  bool gpu_info_dx12_requested_ = false;
-  bool gpu_info_dx12_request_failed_ = false;
+  bool gpu_info_dx_valid_ = false;
+  bool gpu_info_dx_requested_ = false;
+  bool gpu_info_dx_request_failed_ = false;
   bool gpu_info_vulkan_valid_ = false;
   bool gpu_info_vulkan_requested_ = false;
   bool gpu_info_vulkan_request_failed_ = false;

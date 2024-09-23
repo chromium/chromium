@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_processor.h"
 
 #include <stddef.h>
@@ -11,10 +16,13 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/aligned_memory.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
@@ -53,7 +61,7 @@ using MockProcessedCaptureCallback =
 // The number of packets used for testing.
 const int kNumberOfPacketsForTest = 100;
 
-void ReadDataFromSpeechFile(char* data, int length) {
+void ReadDataFromSpeechFile(base::HeapArray<int16_t>& data) {
   base::FilePath file;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file));
   file = file.Append(FILE_PATH_LITERAL("media"))
@@ -63,8 +71,10 @@ void ReadDataFromSpeechFile(char* data, int length) {
   DCHECK(base::PathExists(file));
   int64_t data_file_size64 = 0;
   DCHECK(base::GetFileSize(file, &data_file_size64));
-  EXPECT_EQ(length, base::ReadFile(file, data, length));
-  DCHECK(data_file_size64 > length);
+  auto bytes = base::as_writable_chars(data.as_span());
+  EXPECT_EQ(base::checked_cast<int>(bytes.size_bytes()),
+            base::ReadFile(file, bytes));
+  DCHECK(data_file_size64 > base::checked_cast<int64_t>(data.size()));
 }
 
 }  // namespace
@@ -88,12 +98,13 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     // Read the audio data from a file.
     const media::AudioParameters& params =
         audio_processor.GetInputFormatForTesting();
-    const int packet_size = params.frames_per_buffer() * 2 * params.channels();
-    const size_t length = packet_size * kNumberOfPacketsForTest;
-    std::unique_ptr<char[]> capture_data(new char[length]);
-    ReadDataFromSpeechFile(capture_data.get(), static_cast<int>(length));
+    const int frames_per_packet =
+        params.frames_per_buffer() * params.channels();
+    const size_t length = frames_per_packet * kNumberOfPacketsForTest;
+    auto capture_data = base::HeapArray<int16_t>::Uninit(length);
+    ReadDataFromSpeechFile(capture_data);
     const int16_t* data_ptr =
-        reinterpret_cast<const int16_t*>(capture_data.get());
+        reinterpret_cast<const int16_t*>(capture_data.data());
     std::unique_ptr<media::AudioBus> data_bus =
         media::AudioBus::Create(params.channels(), params.frames_per_buffer());
 
@@ -150,11 +161,11 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     EXPECT_TRUE(config.echo_canceller.enabled);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    EXPECT_TRUE(config.gain_controller1.enabled);
+    EXPECT_FALSE(config.gain_controller1.enabled);
     EXPECT_TRUE(config.gain_controller2.enabled);
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-    EXPECT_TRUE(config.gain_controller1.enabled);
-    EXPECT_FALSE(config.gain_controller2.enabled);
+    EXPECT_FALSE(config.gain_controller1.enabled);
+    EXPECT_TRUE(config.gain_controller2.enabled);
 #elif BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
     EXPECT_TRUE(config.gain_controller1.enabled);
     EXPECT_FALSE(config.gain_controller2.enabled);
@@ -168,15 +179,13 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     EXPECT_TRUE(config.noise_suppression.enabled);
     EXPECT_EQ(config.noise_suppression.level,
               webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
+    EXPECT_FALSE(config.transient_suppression.enabled);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    // Android uses echo cancellation optimized for mobiles, and does not
-    // support keytap suppression.
+    // Android uses echo cancellation optimized for mobiles.
     EXPECT_TRUE(config.echo_canceller.mobile_mode);
-    EXPECT_FALSE(config.transient_suppression.enabled);
 #else
     EXPECT_FALSE(config.echo_canceller.mobile_mode);
-    EXPECT_TRUE(config.transient_suppression.enabled);
 #endif
   }
 
@@ -211,9 +220,9 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, MAYBE_WithAudioProcessing) {
   const int expected_output_channels =
       use_multichannel_processing ? params_.channels() : 1;
   ProcessDataAndVerifyFormat(*audio_processor, mock_capture_callback_,
-                             media::kAudioProcessingSampleRateHz,
+                             media::WebRtcAudioProcessingSampleRateHz(),
                              expected_output_channels,
-                             media::kAudioProcessingSampleRateHz / 100);
+                             media::WebRtcAudioProcessingSampleRateHz() / 100);
 
   // Stop |audio_processor| so that it removes itself from
   // |webrtc_audio_device| and clears its pointer to it.
@@ -287,9 +296,9 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, MAYBE_TestAllSampleRates) {
     // logic here.
     int expected_sample_rate =
 #if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-        std::min(sample_rate, media::kAudioProcessingSampleRateHz);
+        std::min(sample_rate, media::WebRtcAudioProcessingSampleRateHz());
 #else
-        media::kAudioProcessingSampleRateHz;
+        media::WebRtcAudioProcessingSampleRateHz();
 #endif  // BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
     const int expected_output_channels =
         use_multichannel_processing ? params_.channels() : 1;

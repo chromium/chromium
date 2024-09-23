@@ -1,0 +1,26 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./shared_vars.css.js
+ * #import=//resources/cr_elements/cr_nav_menu_item_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #include=cr-shared-style-lit cr-hidden-style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --site-favicon-height: 16px;
+  --site-favicon-width: 16px;
+  overflow: hidden;
+}
+
+#favicon,
+#downloadedFavicon {
+  background-size: contain;
+  height: var(--site-favicon-height);
+  width: var(--site-favicon-width);
+}

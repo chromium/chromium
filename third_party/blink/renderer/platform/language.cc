@@ -72,9 +72,7 @@ void InitializePlatformLanguage() {
         if (!canonicalized.empty()) {
           StringImpl* impl = StringImpl::CreateStatic(
               reinterpret_cast<const char*>(canonicalized.Characters8()),
-              canonicalized.length(),
-              StringHasher::ComputeHashAndMaskTop8Bits(
-                  canonicalized.Characters8(), canonicalized.length()));
+              canonicalized.length());
 
           return AtomicString(impl);
         }

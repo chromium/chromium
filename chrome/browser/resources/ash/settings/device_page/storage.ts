@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
@@ -11,14 +11,15 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
 import './storage_external.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isCrostiniSupported, isExternalStorageEnabled} from '../common/load_time_booleans.js';
+import {isCrostiniSupported, isExternalStorageEnabled, isSkyVaultEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {PrefsState} from '../common/types.js';
 import {Route, Router, routes} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, StorageSpaceState} from './device_page_browser_proxy.js';
@@ -36,12 +37,11 @@ export interface SettingsStorageElement {
     availableLabelArea: HTMLElement,
     browsingDataSize: CrLinkRowElement,
     inUseLabelArea: HTMLElement,
-    myFilesSize: CrLinkRowElement,
   };
 }
 
 const SettingsStorageElementBase =
-    RouteOriginMixin(WebUiListenerMixin(PolymerElement));
+    I18nMixin(PrefsMixin(RouteOriginMixin(WebUiListenerMixin(PolymerElement))));
 
 export class SettingsStorageElement extends SettingsStorageElementBase {
   static get is() {
@@ -91,6 +91,34 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
         },
       },
 
+      isSkyVaultEnabled_: {
+        type: Boolean,
+        value() {
+          return isSkyVaultEnabled();
+        },
+      },
+
+      /**
+       * Sublabel for the MyFiles section, later it will be updated with the
+       * calculated size.
+       */
+      myFilesSizeSubLabel_: {
+        type: String,
+        value(this: SettingsStorageElement) {
+          return this.i18n('storageSizeComputing');
+        },
+      },
+
+      /**
+       * Sublabel for storage encryption label.
+       */
+      storageEncryptionSubLabel_: {
+        type: String,
+        value(this: SettingsStorageElement) {
+          return this.i18n('storageSizeComputing');
+        },
+      },
+
       sizeStat_: Object,
     };
   }
@@ -102,7 +130,6 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
     ];
   }
 
-  prefs: PrefsState;
   private browserProxy_: DevicePageBrowserProxy;
   private isEphemeralUser_: boolean;
   private showCrostiniStorage_: boolean;
@@ -111,6 +138,9 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
   private showOtherUsers_: boolean;
   private sizeStat_: StorageSizeStat;
   private updateTimerId_: number;
+  private myFilesSizeSubLabel_: string;
+  private storageEncryptionSubLabel_: string;
+  private readonly isSkyVaultEnabled_: boolean;
 
   constructor() {
     super();
@@ -156,6 +186,15 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
           'storage-system-size-changed',
           (size: string) => this.handleSystemSizeChanged_(size));
     }
+    if (!this.isEphemeralUser_) {
+      this.browserProxy_.getStorageEncryptionInfo().then(
+          encryptionInfo => {
+            this.storageEncryptionSubLabel_ = encryptionInfo;
+          },
+          reason => {
+            console.warn(`Unable to get info: ${reason}`);
+          });
+    }
   }
 
   override ready(): void {
@@ -187,10 +226,13 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
   }
 
   /**
-   * Handler for tapping the "My files" item.
+   * Handler for tapping the MyFiles item.
    */
   private onMyFilesClick_(): void {
-    this.browserProxy_.openMyFiles();
+    if (this.localUserFilesAllowed_(
+            this.getPref('filebrowser.local_user_files_allowed').value)) {
+      this.browserProxy_.openMyFiles();
+    }
   }
 
   /**
@@ -251,10 +293,10 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
   }
 
   /**
-   * @param size Formatted string representing the size of My files.
+   * @param size Formatted string representing the size of MyFiles.
    */
   private handleMyFilesSizeChanged_(size: string): void {
-    this.$.myFilesSize.subLabel = size;
+    this.myFilesSizeSubLabel_ = size;
   }
 
   /**
@@ -398,6 +440,18 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
 
   private roundTo2DecimalPoints_(n: number): string {
     return n.toFixed(2);
+  }
+
+  /**
+   * Checks feature flags and pref values to determine whether storing user
+   * files locally is allowed.
+   * @param prefValue The value of the local_user_files_allowed pref. Ignored if
+   *     feature flags are disabled.
+   * @returns Whether local user files are allowed.
+   */
+  private localUserFilesAllowed_(prefValue: boolean): boolean {
+    // If SkyVault is disabled, we don't care about the pref value.
+    return !this.isSkyVaultEnabled_ || prefValue;
   }
 }
 

@@ -1,0 +1,8 @@
+include_rules = [
+  "+chromecast/media",
+  "+google_apis",
+  "+media/base",
+  "+ui/base",
+  "+ui/events",
+  "+ui/platform_window",
+]

@@ -102,7 +102,7 @@ DisplayPortObserver::~DisplayPortObserver() {
   }
 }
 
-void DisplayPortObserver::OnDisplayModeChanged(
+void DisplayPortObserver::OnDisplayConfigurationChanged(
     const DisplayConfigurator::DisplayStateList& display_states) {
   // If no changes in base connector ids, then assume no changes on ports, so
   // return early to prevent overkill.
@@ -132,7 +132,7 @@ void DisplayPortObserver::OnDisplayModeChanged(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DisplayPortObserver::OnDisplayModeChangeFailed(
+void DisplayPortObserver::OnDisplayConfigurationChangeFailed(
     const DisplayConfigurator::DisplayStateList& displays,
     MultipleDisplayState failed_new_state) {}
 

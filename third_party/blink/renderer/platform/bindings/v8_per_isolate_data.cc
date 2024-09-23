@@ -23,38 +23,52 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 
 #include <memory>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "gin/public/v8_idle_task_runner.h"
+#include "partition_alloc/oom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_base.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/bindings/v8_histogram_accumulator.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/bindings/v8_value_cache.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 
 namespace blink {
 
+BASE_FEATURE(kTaskAttributionInfrastructureDisabledForTesting,
+             "TaskAttributionInfrastructureDisabledForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
+
 void AddCrashKey(v8::CrashKeyId id, const std::string& value) {
   using base::debug::AllocateCrashKeyString;
   using base::debug::CrashKeySize;
@@ -92,6 +106,10 @@ void AddCrashKey(v8::CrashKeyId id, const std::string& value) {
       break;
   }
 }
+
+V8PerIsolateData::TaskAttributionTrackerFactoryPtr
+    task_attribution_tracker_factory = nullptr;
+
 }  // namespace
 
 static void BeforeCallEnteredCallback(v8::Isolate* isolate) {
@@ -107,7 +125,8 @@ static bool AllowAtomicWaits(
 
 V8PerIsolateData::V8PerIsolateData(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> low_priority_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> user_visible_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> best_effort_task_runner,
     V8ContextSnapshotMode v8_context_snapshot_mode,
     v8::CreateHistogramCallback create_histogram_callback,
     v8::AddHistogramSampleCallback add_histogram_sample_callback)
@@ -126,7 +145,8 @@ V8PerIsolateData::V8PerIsolateData(
               : gin::IsolateHolder::IsolateCreationMode::kNormal,
           create_histogram_callback,
           add_histogram_sample_callback,
-          std::move(low_priority_task_runner)),
+          std::move(user_visible_task_runner),
+          std::move(best_effort_task_runner)),
       string_cache_(std::make_unique<StringCache>(GetIsolate())),
       private_property_(std::make_unique<V8PrivateProperty>()),
       constructor_mode_(ConstructorMode::kCreateNewObject),
@@ -145,6 +165,12 @@ V8PerIsolateData::V8PerIsolateData(
     main_world_ =
         DOMWrapperWorld::Create(GetIsolate(), DOMWrapperWorld::WorldType::kMain,
                                 /*is_default_world_of_isolate=*/true);
+    if (!base::FeatureList::IsEnabled(
+            kTaskAttributionInfrastructureDisabledForTesting)) {
+      CHECK(task_attribution_tracker_factory);
+      task_attribution_tracker_ =
+          task_attribution_tracker_factory(GetIsolate());
+    }
   }
 }
 
@@ -152,14 +178,16 @@ V8PerIsolateData::~V8PerIsolateData() = default;
 
 v8::Isolate* V8PerIsolateData::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> low_priority_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> user_visible_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> best_effort_task_runner,
     V8ContextSnapshotMode context_mode,
     v8::CreateHistogramCallback create_histogram_callback,
     v8::AddHistogramSampleCallback add_histogram_sample_callback) {
   TRACE_EVENT1("v8", "V8PerIsolateData::Initialize", "V8ContextSnapshotMode",
                context_mode);
   V8PerIsolateData* data = new V8PerIsolateData(
-      std::move(task_runner), std::move(low_priority_task_runner), context_mode,
+      std::move(task_runner), std::move(user_visible_task_runner),
+      std::move(best_effort_task_runner), context_mode,
       create_histogram_callback, add_histogram_sample_callback);
   DCHECK(data);
 
@@ -181,9 +209,10 @@ void V8PerIsolateData::WillBeDestroyed(v8::Isolate* isolate) {
 
   data->thread_debugger_.reset();
 
-  if (data->profiler_group_) {
-    data->profiler_group_->WillBeDestroyed();
-    data->profiler_group_ = nullptr;
+  for (auto& item : data->user_data_) {
+    if (item) {
+      item->WillBeDestroyed();
+    }
   }
 
   data->ClearScriptRegexpContext();
@@ -329,7 +358,7 @@ V8PerIsolateData::FindOrCreateEternalNameCache(
     base::span<const std::string_view> names) {
   auto it = eternal_name_cache_.find(lookup_key);
   const Vector<v8::Eternal<v8::Name>>* vector = nullptr;
-  if (UNLIKELY(it == eternal_name_cache_.end())) {
+  if (it == eternal_name_cache_.end()) [[unlikely]] {
     v8::Isolate* isolate = GetIsolate();
     Vector<v8::Eternal<v8::Name>> new_vector(
         base::checked_cast<wtf_size_t>(names.size()));
@@ -378,23 +407,19 @@ void V8PerIsolateData::SetThreadDebugger(
   thread_debugger_ = std::move(thread_debugger);
 }
 
-void V8PerIsolateData::SetProfilerGroup(
-    V8PerIsolateData::GarbageCollectedData* profiler_group) {
-  profiler_group_ = profiler_group;
+void V8PerIsolateData::SetPasswordRegexp(ScriptRegexp* password_regexp) {
+  password_regexp_ = password_regexp;
 }
 
-V8PerIsolateData::GarbageCollectedData* V8PerIsolateData::ProfilerGroup() {
-  return profiler_group_;
+ScriptRegexp* V8PerIsolateData::GetPasswordRegexp() {
+  return password_regexp_;
 }
 
-void V8PerIsolateData::SetCanvasResourceTracker(
-    V8PerIsolateData::GarbageCollectedData* canvas_resource_tracker) {
-  canvas_resource_tracker_ = canvas_resource_tracker;
-}
-
-V8PerIsolateData::GarbageCollectedData*
-V8PerIsolateData::CanvasResourceTracker() {
-  return canvas_resource_tracker_;
+void V8PerIsolateData::SetTaskAttributionTrackerFactory(
+    TaskAttributionTrackerFactoryPtr factory) {
+  CHECK(!task_attribution_tracker_factory);
+  CHECK(IsMainThread());
+  task_attribution_tracker_factory = factory;
 }
 
 void* CreateHistogram(const char* name, int min, int max, size_t buckets) {
@@ -411,14 +436,16 @@ void* CreateHistogram(const char* name, int min, int max, size_t buckets) {
 
   const std::string histogram_name =
       Platform::Current()->GetNameForHistogram(name);
-  return base::Histogram::FactoryGet(
+  base::HistogramBase* histogram = base::Histogram::FactoryGet(
       histogram_name, min, max, static_cast<uint32_t>(buckets),
       base::Histogram::kUmaTargetedHistogramFlag);
+
+  return V8HistogramAccumulator::GetInstance()->RegisterHistogram(
+      histogram, histogram_name);
 }
 
 void AddHistogramSample(void* hist, int sample) {
-  auto* histogram = static_cast<base::HistogramBase*>(hist);
-  histogram->Add(sample);
+  V8HistogramAccumulator::GetInstance()->AddSample(hist, sample);
 }
 
 }  // namespace blink

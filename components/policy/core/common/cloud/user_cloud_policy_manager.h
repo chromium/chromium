@@ -82,6 +82,8 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
   // ConfigurationPolicyProvider:
   bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
 
+  UserCloudPolicyStore* user_store() const { return user_store_; }
+
  private:
   // CloudPolicyManager:
   void GetChromePolicy(PolicyMap* policy_map) override;

@@ -1,0 +1,52 @@
+# Copyright 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+import("//chromecast/starboard/starboard.gni")
+
+config("public_config") {
+  include_dirs =
+      [ "//chromecast/starboard/chromecast/starboard_adapter/public" ]
+}
+
+source_set("starboard_adapter_public") {
+  sources = [ "public/cast_starboard_api_adapter.h" ]
+  public_configs = [ ":public_config" ]
+  public_deps = []
+  if (!remove_starboard_headers) {
+    public_deps += [ "//chromecast/starboard/third_party/starboard/public" ]
+  }
+  deps = [ "//chromecast/starboard:starboard_buildflags" ]
+}
+
+source_set("starboard_adapter_static") {
+  sources = []
+  public_deps = [ ":starboard_adapter_public" ]
+
+  if (remove_starboard_headers) {
+    sources += [ "src/cast_starboard_api_adapter_dummy.cc" ]
+  } else {
+    sources += [
+      "src/cast_starboard_api_adapter_impl.cc",
+      "src/cast_starboard_api_adapter_impl.h",
+    ]
+    public_deps += [
+      "//chromecast/starboard/chromecast/starboard_cast_api",
+      "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
+    ]
+  }
+
+  # TODO(riazantsevv@): To implement this in a better way.
+  defines = [ "SB_IS_EVERGREEN" ]
+}
+
+if (starboard_graphics_is_shared) {
+  shared_library("starboard_adapter") {
+    public_deps = [ ":starboard_adapter_static" ]
+  }
+} else {
+  source_set("starboard_adapter") {
+    public_deps = [ ":starboard_adapter_static" ]
+  }
+}

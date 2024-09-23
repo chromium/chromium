@@ -6,6 +6,7 @@
 #define SANDBOX_LINUX_SYSCALL_BROKER_BROKER_HOST_H_
 
 #include <optional>
+
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "sandbox/linux/syscall_broker/broker_channel.h"

@@ -82,6 +82,10 @@ bool SystemWebAppDelegate::ShouldHaveTabStrip() const {
   return false;
 }
 
+bool SystemWebAppDelegate::ShouldHideNewTabButton() const {
+  return false;
+}
+
 bool SystemWebAppDelegate::ShouldHaveReloadButtonInMinimalUi() const {
   return true;
 }
@@ -127,10 +131,6 @@ bool SystemWebAppDelegate::ShouldRestoreOverrideUrl() const {
 }
 
 bool SystemWebAppDelegate::IsUrlInSystemAppScope(const GURL& url) const {
-  return false;
-}
-
-bool SystemWebAppDelegate::PreferManifestBackgroundColor() const {
   return false;
 }
 

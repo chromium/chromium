@@ -53,10 +53,10 @@ std::u16string GetText(ResizeCompatMode mode) {
   switch (mode) {
     case ResizeCompatMode::kPhone:
       return l10n_util::GetStringUTF16(
-          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE);
+          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PORTRAIT);
     case ResizeCompatMode::kTablet:
       return l10n_util::GetStringUTF16(
-          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET);
+          IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_LANDSCAPE);
     case ResizeCompatMode::kResizable:
       return l10n_util::GetStringUTF16(
           IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE);

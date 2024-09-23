@@ -2,17 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 
+#include <stdint.h>
+
+#include <compare>
+#include <optional>
+#include <ostream>
+#include <string>
+#include <string_view>
+#include <utility>
+
+#include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/locks/with_app_resources.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "components/sync/base/time.h"
 
@@ -156,7 +166,7 @@ std::ostream& operator<<(std::ostream& out,
                          const GeneratedIconFixSource& source) {
   switch (source) {
     case GeneratedIconFixSource_UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return out << "Unknown";
     case GeneratedIconFixSource_SYNC_INSTALL:
       return out << "SyncInstall";

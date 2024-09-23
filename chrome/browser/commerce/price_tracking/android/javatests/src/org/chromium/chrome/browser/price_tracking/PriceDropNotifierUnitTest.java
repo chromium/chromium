@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotifier.ActionData;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotifier.NotificationData;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -68,10 +69,11 @@ public class PriceDropNotifierUnitTest {
 
         TestPriceDropNotifier(
                 Context context,
+                Profile profile,
                 ImageFetcher imageFetcher,
                 NotificationWrapperBuilder notificationBuilder,
                 NotificationManagerProxy notificationManager) {
-            super(context, notificationManager);
+            super(context, profile, notificationManager);
             mMockImageFetcher = imageFetcher;
             mMockNotificationBuilder = notificationBuilder;
         }
@@ -90,6 +92,7 @@ public class PriceDropNotifierUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private Profile mProfile;
     @Mock private ImageFetcher mImageFetcher;
     @Mock private NotificationWrapperBuilder mNotificationBuilder;
     @Mock private NotificationManagerProxy mNotificationManagerProxy;
@@ -108,6 +111,7 @@ public class PriceDropNotifierUnitTest {
         mPriceDropNotifier =
                 new TestPriceDropNotifier(
                         ContextUtils.getApplicationContext(),
+                        mProfile,
                         mImageFetcher,
                         mNotificationBuilder,
                         mNotificationManagerProxy);

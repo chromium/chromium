@@ -46,7 +46,7 @@ namespace webcamPrivate {
 
   interface Functions {
     // Open a serial port that controls a webcam.
-    [supportsPromises] static void openSerialWebcam(
+    static void openSerialWebcam(
         DOMString path,
         ProtocolConfiguration protocol,
         WebcamIdCallback callback);
@@ -57,41 +57,43 @@ namespace webcamPrivate {
     // Retrieve webcam parameters. Will respond with a config holding the
     // requested values that are available, or default values for those that
     // aren't. If none of the requests succeed, will respond with an error.
-    [supportsPromises] static void get(
+    static void get(
         DOMString webcamId,
         WebcamConfigurationCallback callback);
 
     // A callback is included here which is invoked when the function responds.
     // No configuration is returned through it.
-    [supportsPromises] static void set(DOMString webcamId,
-                                       WebcamConfiguration config,
-                                       WebcamConfigurationCallback callback);
+    static void set(
+        DOMString webcamId,
+        WebcamConfiguration config,
+        WebcamConfigurationCallback callback);
 
     // Reset a webcam. Note: the value of the parameter have no effect, it's the
     // presence of the parameter that matters. E.g.: reset(webcamId, {pan: 0,
     // tilt: 1}); will reset pan & tilt, but not zoom.
     // A callback is included here which is invoked when the function responds.
     // No configuration is returned through it.
-    [supportsPromises] static void reset(DOMString webcamId,
-                                         WebcamConfiguration config,
-                                         WebcamConfigurationCallback callback);
+    static void reset(
+        DOMString webcamId,
+        WebcamConfiguration config,
+        WebcamConfigurationCallback callback);
 
     // Set home preset for a webcam. A callback is included here which is
     // invoked when the function responds.
-    [supportsPromises] static void setHome(
+    static void setHome(
         DOMString webcamId,
         WebcamConfigurationCallback callback);
 
     // Restore the camera's position to that of the specified preset. A callback
     // is included here which is invoked when the function responds.
-    [supportsPromises] static void restoreCameraPreset(
+    static void restoreCameraPreset(
         DOMString webcamId,
         double presetNumber,
         WebcamConfigurationCallback callback);
 
     // Set the current camera's position to be stored for the specified preset.
     // A callback is included here which is invoked when the function responds.
-    [supportsPromises] static void setCameraPreset(
+    static void setCameraPreset(
         DOMString webcamId,
         double presetNumber,
         WebcamConfigurationCallback callback);

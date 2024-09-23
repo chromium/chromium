@@ -17,9 +17,15 @@ void LoginDataDispatcher::Observer::OnUserAvatarChanged(
     const AccountId& account_id,
     const UserAvatar& avatar) {}
 
+void LoginDataDispatcher::Observer::OnUserAuthFactorsChanged(
+    const AccountId& user,
+    cryptohome::AuthFactorsSet auth_factors,
+    cryptohome::PinLockAvailability pin_available_at) {}
+
 void LoginDataDispatcher::Observer::OnPinEnabledForUserChanged(
     const AccountId& user,
-    bool enabled) {}
+    bool enabled,
+    cryptohome::PinLockAvailability available_at) {}
 
 void LoginDataDispatcher::Observer::
     OnChallengeResponseAuthEnabledForUserChanged(const AccountId& user,
@@ -128,12 +134,23 @@ void LoginDataDispatcher::SetUserList(const std::vector<LoginUserInfo>& users) {
   }
 }
 
-void LoginDataDispatcher::SetPinEnabledForUser(const AccountId& user,
-                                               bool enabled) {
+void LoginDataDispatcher::SetAuthFactorsForUser(
+    const AccountId& user,
+    cryptohome::AuthFactorsSet auth_factors,
+    cryptohome::PinLockAvailability pin_available_at) {
+  for (auto& observer : observers_) {
+    observer.OnUserAuthFactorsChanged(user, auth_factors, pin_available_at);
+  }
+}
+
+void LoginDataDispatcher::SetPinEnabledForUser(
+    const AccountId& user,
+    bool enabled,
+    cryptohome::PinLockAvailability available_at) {
   // Chrome will update pin pod state every time user tries to authenticate.
   // LockScreen is destroyed in the case of authentication success.
   for (auto& observer : observers_) {
-    observer.OnPinEnabledForUserChanged(user, enabled);
+    observer.OnPinEnabledForUserChanged(user, enabled, available_at);
   }
 }
 

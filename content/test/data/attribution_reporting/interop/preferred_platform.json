@@ -1,0 +1,215 @@
+{
+  "description": "Preferred platform",
+  "api_config": {
+    "needs_cross_app_web": true
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "event-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter1.test/register-source",
+            "debug_permission": true,
+            "response": {
+              // No debug report is issued for invalid preferred-platform and
+              // no registration is processed
+              "Attribution-Reporting-Info": "report-header-errors, preferred-platform=xyz",
+              "Attribution-Reporting-Register-Source": {
+                "debug_reporting": true,
+                "destination": "https://destination.test"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter1.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              // This should match nothing since the source above should have been rejected.
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [{}]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "2",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "event-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter2.test/register-source",
+            "debug_permission": true,
+            "response": {
+              // Without a preferred platform, it is an error for both web and
+              // OS headers to be present on the same response, but no debug
+              // report is issued
+              "Attribution-Reporting-Register-OS-Source": "\"https://reporter2.test/x\";debug-reporting",
+              "Attribution-Reporting-Register-Source": {
+                "debug_reporting": true,
+                "destination": "https://destination.test"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "3",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter2.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              // This should match nothing since the source above should have been rejected.
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [{}]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "4",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "event-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter3.test/register-source",
+            "debug_permission": true,
+            "response": {
+              // With a preferred platform, only the relevant registration
+              // should be handled, and no debug report is issued for the other
+              "Attribution-Reporting-Info": "report-header-errors, preferred-platform=web",
+              "Attribution-Reporting-Register-OS-Source": "\"https://reporter3.test/x\";debug-reporting",
+              "Attribution-Reporting-Register-Source": {
+                "debug_reporting": true,
+                "destination": "https://destination.test"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "5",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "event-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter4.test/register-source",
+            "debug_permission": true,
+            "response": {
+              // With a preferred platform, only the relevant registration
+              // should be handled, and no debug report is issued for the other
+              "Attribution-Reporting-Info": "report-header-errors, preferred-platform=os",
+              "Attribution-Reporting-Register-OS-Source": "\"https://reporter4.test/x\";debug-reporting",
+              "Attribution-Reporting-Register-Source": {
+                "debug_reporting": true,
+                "destination": "https://destination.test"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "6",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter4.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              // This should match nothing since the source above should have been rejected.
+              "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
+                "event_trigger_data": [{}]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [{
+           "body": {
+              "attribution_destination": "https://destination.test"
+           },
+           "type": "trigger-no-matching-source"
+        }],
+        "report_time": "1",
+        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "attribution_destination": "https://destination.test"
+           },
+           "type": "trigger-no-matching-source"
+        }],
+        "report_time": "3",
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+          "body": {
+            "attribution_destination": "https://destination.test",
+            "source_event_id": "0",
+            "source_site": "https://source.test"
+          },
+          "type": "source-success"
+        }],
+        "report_time": "4",
+        "report_url": "https://reporter3.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "registration_url": "https://reporter4.test/x"
+           },
+           "type": "os-source-delegated"
+        }],
+        "report_time": "5",
+        "report_url": "https://reporter4.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "attribution_destination": "https://destination.test"
+           },
+           "type": "trigger-no-matching-source"
+        }],
+        "report_time": "6",
+        "report_url": "https://reporter4.test/.well-known/attribution-reporting/debug/verbose"
+      }
+    ]
+  }
+}

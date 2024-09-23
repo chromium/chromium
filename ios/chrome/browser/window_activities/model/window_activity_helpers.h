@@ -18,7 +18,7 @@ struct UrlLoadParams;
 // Window activity origins.  Please add new origins at the end, to keep
 // numeric values of existing origins, and update kMaxValue.
 // If new values are added, they must also be added to the WindowActivityOrigin
-// histogram definition in //tools/metrics/histograms/enums.xml
+// histogram definition in //tools/metrics/histograms/metadata/ios/enums.xml
 typedef NS_ENUM(NSInteger, WindowActivityOrigin) {
   WindowActivityUnknownOrigin = 0,
   // The command origin comes outside of chrome.

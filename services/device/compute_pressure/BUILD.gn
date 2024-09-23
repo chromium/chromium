@@ -12,6 +12,12 @@ source_set("compute_pressure") {
     "cpu_probe_manager.h",
     "pressure_manager_impl.cc",
     "pressure_manager_impl.h",
+    "probes_manager.cc",
+    "probes_manager.h",
+    "virtual_cpu_probe_manager.cc",
+    "virtual_cpu_probe_manager.h",
+    "virtual_probes_manager.cc",
+    "virtual_probes_manager.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

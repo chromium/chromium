@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_error_ui_default.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
@@ -90,6 +92,44 @@ TEST(ExtensionErrorUIDefaultTest, BubbleTitleAndMessageMentionsExtension) {
                       IDS_BLOCKLISTED_EXTENSIONS_ALERT_ITEM, u"Bar"),
                   l10n_util::GetStringFUTF16(
                       IDS_BLOCKLISTED_EXTENSIONS_ALERT_ITEM, u"Baz")));
+}
+
+// Test that unusually long extension names in the bubble message are truncated.
+TEST(ExtensionErrorUIDefaultTest, BubbleMessageWithLongNameExtension) {
+  std::string long_name_a(128, 'a');
+  std::string long_name_b(128, 'b');
+
+  TestErrorUIDelegate delegate;
+  delegate.InsertForbidden(extensions::ExtensionBuilder(long_name_a).Build());
+  delegate.InsertForbidden(extensions::ExtensionBuilder(long_name_b).Build());
+
+  extensions::ExtensionErrorUIDefault ui(&delegate);
+  GlobalErrorWithStandardBubble* bubble = ui.GetErrorForTesting();
+
+  std::u16string title = bubble->GetBubbleViewTitle();
+  EXPECT_THAT(title,
+              l10n_util::GetPluralStringFUTF16(IDS_EXTENSION_ALERT_TITLE, 2));
+
+  std::vector<std::u16string> messages = bubble->GetBubbleViewMessages();
+
+  // Expected values of extension names in the returned messages.
+  std::u16string truncated_name_a =
+      extensions::util::GetFixupExtensionNameForUIDisplay(long_name_a);
+  std::u16string truncated_name_b =
+      extensions::util::GetFixupExtensionNameForUIDisplay(long_name_b);
+
+  ASSERT_LT(truncated_name_a.size(), long_name_a.size());
+  ASSERT_LT(truncated_name_b.size(), long_name_b.size());
+
+  EXPECT_THAT(
+      messages,
+      testing::ElementsAre(
+          l10n_util::GetStringUTF16(
+              IDS_EXTENSIONS_ALERT_ITEM_BLOCKLISTED_MALWARE_TITLE),
+          l10n_util::GetStringFUTF16(IDS_BLOCKLISTED_EXTENSIONS_ALERT_ITEM,
+                                     truncated_name_a),
+          l10n_util::GetStringFUTF16(IDS_BLOCKLISTED_EXTENSIONS_ALERT_ITEM,
+                                     truncated_name_b)));
 }
 
 TEST(ExtensionErrorUIDefaultTest, BubbleTitleAndMessageMentionsApp) {

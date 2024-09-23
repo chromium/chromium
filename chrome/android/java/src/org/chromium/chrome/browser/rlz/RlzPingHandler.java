@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.rlz;
 import android.text.TextUtils;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.uid.SettingsSecureBasedIdentificationGenerator;
 
 import java.util.List;
@@ -39,7 +41,7 @@ public class RlzPingHandler {
 
         RlzPingHandlerJni.get()
                 .startPing(
-                        Profile.getLastUsedRegularProfile(),
+                        ProfileManager.getLastUsedRegularProfile(),
                         brand,
                         Locale.getDefault().getLanguage(),
                         TextUtils.join(",", events),
@@ -58,7 +60,7 @@ public class RlzPingHandler {
     @NativeMethods
     interface Natives {
         void startPing(
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 String brand,
                 String language,
                 String events,

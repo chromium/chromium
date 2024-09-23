@@ -45,7 +45,7 @@ TEST_F(FilteredServiceDirectoryTest, Connect) {
   ScopedServiceBinding<testfidl::TestInterface> publish_test_service(
       ComponentContextForProcess()->outgoing().get(), &test_service_);
 
-  EXPECT_EQ(
+  ASSERT_EQ(
       filtered_service_directory_.AddService(testfidl::TestInterface::Name_),
       ZX_OK);
 
@@ -58,7 +58,7 @@ TEST_F(FilteredServiceDirectoryTest, ConnectMultiple) {
   ScopedServiceBinding<testfidl::TestInterface> publish_test_service(
       ComponentContextForProcess()->outgoing().get(), &test_service_);
 
-  EXPECT_EQ(
+  ASSERT_EQ(
       filtered_service_directory_.AddService(testfidl::TestInterface::Name_),
       ZX_OK);
 
@@ -74,18 +74,18 @@ TEST_F(FilteredServiceDirectoryTest, ServiceBlocked) {
       ComponentContextForProcess()->outgoing().get(), &test_service_);
 
   auto stub = filtered_client_->Connect<testfidl::TestInterface>();
-  EXPECT_EQ(VerifyTestInterface(stub), ZX_ERR_PEER_CLOSED);
+  EXPECT_EQ(VerifyTestInterface(stub), ZX_ERR_NOT_FOUND);
 }
 
 // Verify that FilteredServiceDirectory handles the case when the target service
 // is not available in the underlying service directory.
 TEST_F(FilteredServiceDirectoryTest, NoService) {
-  EXPECT_EQ(
+  ASSERT_EQ(
       filtered_service_directory_.AddService(testfidl::TestInterface::Name_),
       ZX_OK);
 
   auto stub = filtered_client_->Connect<testfidl::TestInterface>();
-  EXPECT_EQ(VerifyTestInterface(stub), ZX_ERR_PEER_CLOSED);
+  EXPECT_EQ(VerifyTestInterface(stub), ZX_ERR_NOT_FOUND);
 }
 
 // Verify that FilteredServiceDirectory handles the case when the underlying
@@ -107,7 +107,7 @@ TEST_F(FilteredServiceDirectoryTest, NoServiceDir) {
   // handles requests, and verify that connection requests are dropped.
   directory_request = nullptr;
   auto stub = filtered_client_->Connect<testfidl::TestInterface>();
-  ASSERT_EQ(VerifyTestInterface(stub), ZX_ERR_PEER_CLOSED);
+  EXPECT_EQ(VerifyTestInterface(stub), ZX_ERR_NOT_FOUND);
 }
 
 // Verify that FilteredServiceDirectory allows extra services to be added.

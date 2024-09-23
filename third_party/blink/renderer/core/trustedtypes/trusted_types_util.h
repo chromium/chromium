@@ -33,14 +33,20 @@ enum class SpecificTrustedType {
 TrustedTypesCheckFor(SpecificTrustedType type,
                      const V8TrustedType* trusted,
                      const ExecutionContext* execution_context,
+                     const char* interface_name,
+                     const char* property_name,
                      ExceptionState& exception_state);
 [[nodiscard]] CORE_EXPORT String
 TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
                            const ExecutionContext* execution_context,
+                           const char* interface_name,
+                           const char* property_name,
                            ExceptionState& exception_state);
 [[nodiscard]] CORE_EXPORT String TrustedTypesCheckForScript(
     const V8UnionStringLegacyNullToEmptyStringOrTrustedScript* value,
     const ExecutionContext* execution_context,
+    const char* interface_name,
+    const char* property_name,
     ExceptionState& exception_state);
 
 // Perform Trusted Type checks, for a dynamically or statically determined
@@ -50,18 +56,26 @@ TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
 [[nodiscard]] String TrustedTypesCheckFor(SpecificTrustedType,
                                           String,
                                           const ExecutionContext*,
+                                          const char* interface_name,
+                                          const char* property_name,
                                           ExceptionState&);
 [[nodiscard]] CORE_EXPORT String
 TrustedTypesCheckForHTML(const String&,
                          const ExecutionContext*,
+                         const char* interface_name,
+                         const char* property_name,
                          ExceptionState&);
 [[nodiscard]] CORE_EXPORT String
 TrustedTypesCheckForScript(const String&,
                            const ExecutionContext*,
+                           const char* interface_name,
+                           const char* property_name,
                            ExceptionState&);
 [[nodiscard]] CORE_EXPORT String
 TrustedTypesCheckForScriptURL(const String&,
                               const ExecutionContext*,
+                              const char* interface_name,
+                              const char* property_name,
                               ExceptionState&);
 
 // Functionally equivalent to TrustedTypesCheckForScript(const String&, ...),

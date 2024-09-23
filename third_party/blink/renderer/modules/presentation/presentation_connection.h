@@ -31,7 +31,7 @@ enum class FileErrorCode;
 class PresentationController;
 class PresentationReceiver;
 class PresentationRequest;
-class ScriptPromiseResolver;
+class ScriptPromiseResolverBase;
 class WebString;
 
 class MODULES_EXPORT PresentationConnection
@@ -144,7 +144,7 @@ class MODULES_EXPORT PresentationConnection
   void SendMessageToTargetConnection(
       mojom::blink::PresentationConnectionMessagePtr);
   void DidReceiveTextMessage(const WebString&);
-  void DidReceiveBinaryMessage(const uint8_t*, uint32_t length);
+  void DidReceiveBinaryMessage(base::span<const uint8_t>);
 
   // Closes the PresentationConnection with the given reason and notifies the
   // target connection.
@@ -169,7 +169,7 @@ class MODULES_EXPORT ControllerPresentationConnection final
  public:
   // For CallbackPromiseAdapter.
   static ControllerPresentationConnection* Take(
-      ScriptPromiseResolver*,
+      ScriptPromiseResolverBase*,
       const mojom::blink::PresentationInfo&,
       PresentationRequest*);
   static ControllerPresentationConnection* Take(

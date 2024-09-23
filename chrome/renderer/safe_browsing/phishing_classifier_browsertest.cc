@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -59,7 +60,8 @@ class PhishingClassifierTest
         page_link_domain_phishing_(features::kPageLinkDomain +
                                    std::string("phishing.com")),
         page_term_login_(features::kPageTerm + std::string("login")),
-        page_text_(u"login") {}
+        page_text_(
+            base::MakeRefCounted<const base::RefCountedString16>(u"login")) {}
 
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
@@ -209,7 +211,8 @@ class PhishingClassifierTest
   }
 
   // Helper method to start phishing classification.
-  void RunPhishingClassifier(const std::u16string* page_text) {
+  void RunPhishingClassifier(
+      scoped_refptr<const base::RefCountedString16> page_text) {
     feature_map_.Clear();
 
     classifier_->BeginClassification(
@@ -250,7 +253,7 @@ class PhishingClassifierTest
   const std::string url_tld_token_net_;
   const std::string page_link_domain_phishing_;
   const std::string page_term_login_;
-  std::u16string page_text_;
+  scoped_refptr<const base::RefCountedString16> page_text_;
 
   // Outputs of phishing classifier.
   ClientPhishingRequest verdict_;
@@ -264,7 +267,7 @@ TEST_F(PhishingClassifierTest, TestClassificationOfPhishingDotComHttp) {
   LoadHtml(
       GURL("http://host.net"),
       "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
-  RunPhishingClassifier(&page_text_);
+  RunPhishingClassifier(page_text_);
 
   // Note: features.features() might contain other features that simply aren't
   // in the model.
@@ -281,7 +284,7 @@ TEST_F(PhishingClassifierTest, TestClassificationOfPhishingDotComHttps) {
   LoadHtml(
       GURL("https://host.net"),
       "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
-  RunPhishingClassifier(&page_text_);
+  RunPhishingClassifier(page_text_);
 
   // Note: features.features() might contain other features that simply aren't
   // in the model.
@@ -297,7 +300,7 @@ TEST_F(PhishingClassifierTest, TestClassificationOfSafeDotComHttp) {
   // Change the link domain to something non-phishy.
   LoadHtml(GURL("http://host.net"),
            "<html><body><a href=\"http://safe.com/\">login</a></body></html>");
-  RunPhishingClassifier(&page_text_);
+  RunPhishingClassifier(page_text_);
 
   EXPECT_THAT(feature_map_.features(),
               AllOf(Contains(Pair(url_tld_token_net_, 1.0)),
@@ -314,7 +317,7 @@ TEST_F(PhishingClassifierTest, TestClassificationOfSafeDotComHttps) {
   // non-phishy.
   LoadHtml(GURL("https://host.net"),
            "<html><body><a href=\"http://safe.com/\">login</a></body></html>");
-  RunPhishingClassifier(&page_text_);
+  RunPhishingClassifier(page_text_);
 
   EXPECT_THAT(feature_map_.features(),
               AllOf(Contains(Pair(url_tld_token_net_, 1.0)),
@@ -329,7 +332,7 @@ TEST_F(PhishingClassifierTest, TestClassificationOfSafeDotComHttps) {
 TEST_F(PhishingClassifierTest, TestClassificationWhenNoTld) {
   // Extraction should fail for this case since there is no TLD.
   LoadHtml(GURL("http://localhost"), "<html><body>content</body></html>");
-  RunPhishingClassifier(&page_text_);
+  RunPhishingClassifier(page_text_);
 
   EXPECT_EQ(0U, feature_map_.features().size());
   EXPECT_EQ(PhishingClassifier::kClassifierFailed,
@@ -341,7 +344,7 @@ TEST_F(PhishingClassifierTest, TestClassificationWhenSchemeNotSupported) {
   // Extraction should also fail for this case because the URL is not http or
   // https.
   LoadHtml(GURL("file://host.net"), "<html><body>content</body></html>");
-  RunPhishingClassifier(&page_text_);
+  RunPhishingClassifier(page_text_);
 
   EXPECT_EQ(0U, feature_map_.features().size());
   EXPECT_EQ(PhishingClassifier::kClassifierFailed,
@@ -360,7 +363,7 @@ TEST_F(PhishingClassifierTest, TestPhishingPagesAreDomMatches) {
   LoadHtml(
       GURL("http://host.net"),
       "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
-  RunPhishingClassifier(&page_text_);
+  RunPhishingClassifier(page_text_);
 
   EXPECT_NE(PhishingClassifier::kClassifierFailed, verdict_.client_score());
   EXPECT_TRUE(verdict_.is_phishing());
@@ -370,7 +373,7 @@ TEST_F(PhishingClassifierTest, TestPhishingPagesAreDomMatches) {
 TEST_F(PhishingClassifierTest, TestSafePagesAreNotDomMatches) {
   LoadHtml(GURL("http://host.net"),
            "<html><body><a href=\"http://safe.com/\">login</a></body></html>");
-  RunPhishingClassifier(&page_text_);
+  RunPhishingClassifier(page_text_);
 
   EXPECT_NE(PhishingClassifier::kClassifierFailed, verdict_.client_score());
   EXPECT_FALSE(verdict_.is_phishing());
@@ -381,7 +384,7 @@ TEST_F(PhishingClassifierTest, TestDomModelVersionPopulated) {
   LoadHtml(
       GURL("http://host.net"),
       "<html><body><a href=\"http://phishing.com/\">login</a></body></html>");
-  RunPhishingClassifier(&page_text_);
+  RunPhishingClassifier(page_text_);
 
   EXPECT_EQ(verdict_.dom_model_version(), 123);
 }

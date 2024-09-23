@@ -17,6 +17,8 @@ component("app_shim") {
 
   configs += [ ":app_shim_warnings" ]
   sources = [
+    "NSToolbar+Private.h",
+    "NSToolbar+Private.mm",
     "alert.h",
     "alert.mm",
     "application_bridge.h",
@@ -26,10 +28,6 @@ component("app_shim") {
     "bridged_content_view_touch_bar.mm",
     "browser_native_widget_window_mac.h",
     "browser_native_widget_window_mac.mm",
-    "certificate_viewer.h",
-    "certificate_viewer.mm",
-    "color_panel_bridge.h",
-    "color_panel_bridge.mm",
     "context_menu_runner.h",
     "context_menu_runner.mm",
     "drag_drop_client.h",
@@ -51,6 +49,8 @@ component("app_shim") {
     "native_widget_mac_frameless_nswindow.mm",
     "native_widget_mac_nswindow.h",
     "native_widget_mac_nswindow.mm",
+    "native_widget_mac_overlay_nswindow.h",
+    "native_widget_mac_overlay_nswindow.mm",
     "native_widget_ns_window_bridge.h",
     "native_widget_ns_window_bridge.mm",
     "native_widget_ns_window_fullscreen_controller.h",
@@ -75,6 +75,7 @@ component("app_shim") {
     "//base:i18n",
     "//components/crash/core/common",
     "//components/remote_cocoa/common:mojo",
+    "//components/system_media_controls",
     "//mojo/public/cpp/bindings",
     "//net",
     "//ui/accelerated_widget_mac",
@@ -91,8 +92,18 @@ component("app_shim") {
     "Cocoa.framework",
     "QuartzCore.framework",
     "SecurityInterface.framework",
+    "UniformTypeIdentifiers.framework",
   ]
-  weak_frameworks = [
-    "UniformTypeIdentifiers.framework",  # macOS 11
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "native_widget_mac_overlay_nswindow_unittests.mm" ]
+  deps = [
+    ":app_shim",
+    "//base",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+    "//ui/base",
   ]
 }

@@ -78,10 +78,6 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
       "appsToggleSharingEnabled",
       base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing) &&
           crosapi::browser_util::IsLacrosEnabled());
-
-  html_source->AddBoolean(
-      "osDeprecateSyncMetricsToggle",
-      ash::features::IsOsSettingsDeprecateSyncMetricsToggleEnabled());
 }
 
 const std::vector<SearchConcept>& GetCategorizedSyncSearchConcepts() {
@@ -190,7 +186,7 @@ void SyncSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   RegisterNestedSettingBulk(mojom::Subpage::kSyncSetup, kSyncSettings,
                             generator);
 
-  // TODO(crbug.com/1249845): Remove this.
+  // TODO(crbug.com/40197769): Remove this.
   generator->RegisterNestedSubpage(
       IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE,
       mojom::Subpage::kSyncDeprecatedAdvanced, mojom::Subpage::kSyncSetup,

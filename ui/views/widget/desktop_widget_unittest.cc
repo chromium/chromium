@@ -19,7 +19,7 @@ TEST_F(DesktopScreenPositionClientTest, PositionDialog) {
   Widget parent_widget;
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(10, 11, 200, 200);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.ownership = Widget::InitParams::CLIENT_OWNS_WIDGET;
   parent_widget.Init(std::move(params));
 
   // Owned by |dialog|.
@@ -55,13 +55,13 @@ TEST_F(DesktopScreenPositionClientTest, PositionControlWithNonRootParent) {
   params1.bounds = gfx::Rect(
       origin + work_area.OffsetFromOrigin(),
       gfx::Size(700, work_area.height() - origin.y() - work_area.y()));
-  params1.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params1.ownership = Widget::InitParams::CLIENT_OWNS_WIDGET;
   widget1.Init(std::move(params1));
 
   Widget::InitParams params2 = CreateParams(Widget::InitParams::TYPE_WINDOW);
   params2.bounds = gfx::Rect(origin, gfx::Size(600, work_area.height() - 100));
   params2.parent = widget1.GetNativeView();
-  params2.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params2.ownership = Widget::InitParams::CLIENT_OWNS_WIDGET;
   params2.child = true;
   params2.native_widget = test::CreatePlatformNativeWidgetImpl(
       &widget2, test::kStubCapture, nullptr);
@@ -69,7 +69,7 @@ TEST_F(DesktopScreenPositionClientTest, PositionControlWithNonRootParent) {
 
   Widget::InitParams params3 = CreateParams(Widget::InitParams::TYPE_CONTROL);
   params3.parent = widget2.GetNativeView();
-  params3.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params3.ownership = Widget::InitParams::CLIENT_OWNS_WIDGET;
   params3.child = true;
   params3.bounds = gfx::Rect(origin, gfx::Size(500, work_area.height() - 200));
   params3.native_widget = test::CreatePlatformNativeWidgetImpl(
@@ -102,7 +102,7 @@ TEST_F(DesktopScreenPositionClientTest, InitialBoundsConstrainedToDesktop) {
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(
       origin, gfx::Size(work_area.width() / 2, work_area.height() / 2));
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.ownership = Widget::InitParams::CLIENT_OWNS_WIDGET;
   widget.Init(std::move(params));
 
   // The bounds of the window should be fully on the primary display.
@@ -134,7 +134,7 @@ TEST_F(DesktopScreenPositionClientTest, InitialBoundsConstrainedToParent) {
   Widget::InitParams params1 = CreateParams(Widget::InitParams::TYPE_WINDOW);
   params1.bounds = gfx::Rect(
       origin, gfx::Size(work_area.width() / 2, work_area.height() / 2));
-  params1.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params1.ownership = Widget::InitParams::CLIENT_OWNS_WIDGET;
   widget1.Init(std::move(params1));
 
   gfx::Rect widget_bounds(widget1.GetWindowBoundsInScreen());
@@ -144,7 +144,7 @@ TEST_F(DesktopScreenPositionClientTest, InitialBoundsConstrainedToParent) {
       gfx::Rect(widget_bounds.width() * 3 / 4, widget_bounds.height() * 3 / 4,
                 widget_bounds.width() / 2, widget_bounds.height() / 2);
   params2.parent = widget1.GetNativeView();
-  params2.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params2.ownership = Widget::InitParams::CLIENT_OWNS_WIDGET;
   params2.child = true;
   params2.native_widget = test::CreatePlatformNativeWidgetImpl(
       &widget2, test::kStubCapture, nullptr);

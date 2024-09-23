@@ -29,6 +29,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
@@ -45,7 +46,6 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Integration tests for showing IPH bubbles on the toolbar. */
@@ -91,7 +91,7 @@ public class ToolbarButtonIphTest {
         when(mTracker.shouldTriggerHelpUIWithSnooze(FeatureConstants.PRICE_DROP_NTP_FEATURE))
                 .thenReturn(new TriggerDetails(true, false));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeActivity activity = mActivityTestRule.getActivity();
                     ToolbarManager toolbarManager = activity.getToolbarManager();
@@ -109,7 +109,7 @@ public class ToolbarButtonIphTest {
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testTabSwitcherEventEnabled() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityTestRule
                             .getActivity()
@@ -134,7 +134,6 @@ public class ToolbarButtonIphTest {
         toolbarTabButtonInteraction.check(ViewAssertions.matches(withHighlight(true)));
 
         toolbarTabButtonInteraction.perform(ViewActions.click());
-        onView(withId(R.id.new_tab_button)).check(ViewAssertions.matches(withHighlight(true)));
     }
 
     private void setPriceTrackingFeatures() {

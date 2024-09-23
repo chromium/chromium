@@ -9,11 +9,12 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/AutoFetchNotifier_jni.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/AutoFetchNotifier_jni.h"
 
 namespace offline_pages {
 
@@ -21,12 +22,9 @@ namespace offline_pages {
 // Java -> C++
 //
 
-void JNI_AutoFetchNotifier_CancelInProgress(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_profile) {
+void JNI_AutoFetchNotifier_CancelInProgress(JNIEnv* env, Profile* profile) {
   OfflinePageAutoFetcherService* service =
-      OfflinePageAutoFetcherServiceFactory::GetForBrowserContext(
-          ProfileAndroid::FromProfileAndroid(j_profile));
+      OfflinePageAutoFetcherServiceFactory::GetForBrowserContext(profile);
   DCHECK(service);
   service->CancelAll(base::BindOnce(&AutoFetchCancellationComplete));
 }
@@ -64,11 +62,7 @@ void ShowAutoFetchCompleteNotification(const std::u16string& pageTitle,
                                        int64_t offline_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_AutoFetchNotifier_showCompleteNotification(
-      env,
-      base::android::ConvertUTF8ToJavaString(env, base::UTF16ToUTF8(pageTitle)),
-      base::android::ConvertUTF8ToJavaString(env, original_url),
-      base::android::ConvertUTF8ToJavaString(env, final_url), android_tab_id,
-      offline_id);
+      env, pageTitle, original_url, final_url, android_tab_id, offline_id);
 }
 
 }  // namespace offline_pages

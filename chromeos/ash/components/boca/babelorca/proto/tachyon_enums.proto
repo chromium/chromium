@@ -1,0 +1,47 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Source: http://google3/media/webrtc/server/tachyon/proto/tachyon_enums.proto
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash.babelorca;
+
+message IdType {
+  enum Type {
+    UNSET = 0;
+    GROUP_ID = 2;
+    EMAIL = 16;
+  }
+}
+
+message DeviceIdType {
+  enum Type {
+    UNKNOWN = 0;
+    CLIENT_UUID = 7;
+  }
+}
+
+message ApiVersion {
+  enum Value {
+    UNKNOWN = 0;
+    V4 = 4;
+  }
+}
+
+message Platform {
+  enum Type {
+    UNKNOWN = 0;
+    DESKTOP = 6;
+  }
+}
+
+message MessageFanout {
+  enum SenderDevice {
+    DEFAULT_NO_SENDER_DEVICE = 0;
+    OTHER_SENDER_DEVICES = 1;
+  }
+}

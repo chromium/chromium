@@ -22,10 +22,20 @@
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 class Profile;
+
+namespace features {
+
+BASE_DECLARE_FEATURE(kSuppressesLoadingPredictorOnSlowNetwork);
+
+extern const base::FeatureParam<base::TimeDelta>
+    kSuppressesLoadingPredictorOnSlowNetworkThreshold;
+
+}  // namespace features
 
 namespace predictors {
 
@@ -61,6 +71,7 @@ class LoadingPredictor : public KeyedService,
   // preconnect. Returns true if no more preconnect actions should be taken by
   // the caller.
   bool PrepareForPageLoad(
+      const std::optional<url::Origin>& initiator_origin,
       const GURL& url,
       HintOrigin origin,
       bool preconnectable = false,
@@ -86,6 +97,7 @@ class LoadingPredictor : public KeyedService,
   // were taken, such as preconnecting to known resource hosts, at that time.
   bool OnNavigationStarted(NavigationId navigation_id,
                            ukm::SourceId ukm_source_id,
+                           const std::optional<url::Origin>& initiator_origin,
                            const GURL& main_frame_url,
                            base::TimeTicks creation_time);
   void OnNavigationFinished(NavigationId navigation_id,
@@ -123,7 +135,8 @@ class LoadingPredictor : public KeyedService,
       bool allow_credentials,
       const net::NetworkAnonymizationKey& network_anonymization_key);
 
-  void MaybePrewarmResources(const GURL& top_frame_main_resource_url);
+  void MaybePrewarmResources(const std::optional<url::Origin>& initiator_origin,
+                             const GURL& top_frame_main_resource_url);
 
  private:
   // Stores the information necessary to keep track of the active navigations.
@@ -156,7 +169,7 @@ class LoadingPredictor : public KeyedService,
 
   // May start a preconnect or a preresolve for `url`. `preconnectable`
   // indicates if preconnect is possible, or only preresolve will be performed.
-  void HandleHintByOrigin(const GURL& url,
+  bool HandleHintByOrigin(const GURL& url,
                           bool preconnectable,
                           bool only_allow_https,
                           PreconnectData& preconnect_data);
@@ -218,6 +231,12 @@ class LoadingPredictor : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(LoadingPredictorTest,
                            TestDontTrackNonPrefetchableUrls);
   FRIEND_TEST_ALL_PREFIXES(LoadingPredictorTest, TestDontPredictOmniboxHints);
+  FRIEND_TEST_ALL_PREFIXES(LoadingPredictorPreconnectTest,
+                           TestHandleHintWithOpaqueOrigins);
+  FRIEND_TEST_ALL_PREFIXES(LoadingPredictorPreconnectTest,
+                           TestHandleHintWhenOnlyHttpsAllowed);
+  FRIEND_TEST_ALL_PREFIXES(LoadingPredictorPreconnectTest,
+                           TestHandleHintPreresolveWhenOnlyHttpsAllowed);
 
   base::WeakPtrFactory<LoadingPredictor> weak_factory_{this};
 };

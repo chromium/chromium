@@ -9,6 +9,7 @@ import "media/mojo/mojom/audio_encoder.mojom";
 import "media/mojo/mojom/decryptor.mojom";
 import "media/mojo/mojom/content_decryption_module.mojom";
 import "media/mojo/mojom/media_log.mojom";
+import "media/mojo/mojom/media_types.mojom";
 import "media/mojo/mojom/renderer.mojom";
 import "media/mojo/mojom/renderer_extensions.mojom";
 import "media/mojo/mojom/stable/stable_video_decoder.mojom";
@@ -28,16 +29,31 @@ interface InterfaceFactory {
   // the GPU process acts a proxy between a renderer and a video decoder process
   // so that it can create a gpu::Mailbox for each decoded frame. As such, only
   // the GPU process should be provided with a valid |dst_video_decoder|.
+  //
+  // TODO(b/327268445): we can remove the `dst_video_decoder` parameter once
+  // GTFO OOP-VD is used instead of regular OOP-VD.
   CreateVideoDecoder(
       pending_receiver<VideoDecoder> video_decoder,
       pending_remote<media.stable.mojom.StableVideoDecoder>? dst_video_decoder);
+
+  // Creates a StableVideoDecoder (`video_decoder`). This method is intended to
+  // be used only for the "GTFO OOP-VD" mode, i.e., when the StableVideoDecoder
+  // client talks directly to the StableVideoDecoder service without using the
+  // GPU process as a proxy (in contrast to the "regular OOP-VD" mode).
+  //
+  // The StableVideoDecoder implementation lives in a utility process. Clients
+  // are expected to live in either the browser process (for supported profile
+  // querying) or the renderer process (to drive video decoding).
+  [EnableIf=allow_oop_video_decoder]
+  CreateStableVideoDecoder(
+      pending_receiver<media.stable.mojom.StableVideoDecoder> video_decoder);
 
   // Creates an AudioEncoder bound to a given receiver.
   CreateAudioEncoder(pending_receiver<AudioEncoder> audio_encoder);
 
   // Creates a regular media::Renderer (RendererImplFactory).
   // TODO(guohuideng): remove |audio_device_id|, it's not used.
-  // TODO(crbug.com/1374532): Rename this call.
+  // TODO(crbug.com/40242503): Rename this call.
   CreateDefaultRenderer(string audio_device_id,
                         pending_receiver<Renderer> renderer);
 
@@ -91,11 +107,11 @@ interface InterfaceFactory {
   // untrusted process (e.g. renderer), so the implementation must fully
   // validate `key_system` before creating the CDM. `cdm_config` specifies other
   // properties of the CDM which may influence creation. Upon failure, the
-  // returned `cdm` and `cdm_context` will be null, and `error_message` will
+  // returned `cdm` and `cdm_context` will be null, and `status` will
   // specify the error reason. Upon success, `cdm` and `cdm_context` will be
-  // valid, and `error_message` will be empty.
+  // valid, and `status` will be CreateCdmStatus::kSuccess.
   CreateCdm(CdmConfig cdm_config) =>
             (pending_remote<ContentDecryptionModule>? cdm,
              CdmContext? cdm_context,
-             string error_message);
+             CreateCdmStatus status);
 };

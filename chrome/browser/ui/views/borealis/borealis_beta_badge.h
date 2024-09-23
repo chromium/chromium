@@ -25,7 +25,8 @@ class BorealisBetaBadge : public views::View {
   std::u16string GetText() const;
 
   // View overrides.
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& /*available_size*/) const override;
   void OnPaint(gfx::Canvas* canvas) override;
 };
 

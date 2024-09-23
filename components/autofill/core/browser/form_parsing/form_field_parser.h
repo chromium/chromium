@@ -17,7 +17,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
@@ -33,11 +32,6 @@ class AutofillField;
 class AutofillRegexCache;
 class AutofillScanner;
 class LogManager;
-
-// When kNoLegacyPattern is passed to ParseField/ParseFieldSpecifics as the
-// pattern, the functions always default to the MatchPatternRefs, regardless
-// of the status of features::kAutofillParsingPatternProvider.
-inline constexpr std::u16string_view kNoLegacyPattern = u"no-legacy-pattern";
 
 // LRU cache to prevent the repetitive evaluation of identical regular
 // expressions (`pattern`) on identical `input` strings.
@@ -58,7 +52,7 @@ class RegexMatchesCache {
   // collision which we are accepting here to not store the inputs an patterns
   // which both may be large. Given that our heuristics are not 100% accurate
   // the small risk of a collision seems acceptable.
-  // TODO(crbug.com/1121990): Once we don't use autofill_regex_constants.h
+  // TODO(crbug.com/40146444): Once we don't use autofill_regex_constants.h
   // anymore, the second `std::size_t` should probably be a MatchPatternRef:
   // - more accurate (they uniquely identify the pattern across all pattern
   //   sources),
@@ -68,7 +62,7 @@ class RegexMatchesCache {
 
   // Creates a key for an `input` string and a `pattern` to be used in the LRU
   // cache.
-  static Key BuildKey(base::StringPiece16 input, base::StringPiece16 pattern);
+  static Key BuildKey(std::u16string_view input, std::u16string_view pattern);
 
   // Returns whether `pattern` in the key matched `input` if this information is
   // cached. std::nullopt if the information is not cached.
@@ -93,7 +87,8 @@ class RegexMatchesCache {
 struct ParsingContext {
   ParsingContext(GeoIpCountryCode client_country,
                  LanguageCode page_language,
-                 PatternSource pattern_source,
+                 PatternFile pattern_file,
+                 DenseSet<RegexFeature> active_features = {},
                  LogManager* log_manager = nullptr);
   ParsingContext(const ParsingContext&) = delete;
   ParsingContext& operator=(const ParsingContext&) = delete;
@@ -101,8 +96,10 @@ struct ParsingContext {
 
   const GeoIpCountryCode client_country;
   const LanguageCode page_language;
-  // Mutable so that the caches can be reused across different pattern sources.
-  PatternSource pattern_source;
+  // Mutable so that the caches can be reused across different pattern files
+  // and active features. Since the cache works at a regex level, this is safe.
+  PatternFile pattern_file;
+  DenseSet<RegexFeature> active_features;
 
   // Cache for autofill features that are tested on hot code paths. Testing
   // whether a feature is enabled is pretty expensive. Caching the status of two
@@ -147,7 +144,6 @@ class FormFieldParser {
   static void ParseSingleFieldForms(
       ParsingContext& context,
       const std::vector<std::unique_ptr<AutofillField>>& fields,
-      bool is_form_tag,
       FieldCandidatesMap& field_candidates);
 
   // Search for standalone CVC fields inside `fields`. Standalone CVC fields
@@ -176,12 +172,13 @@ class FormFieldParser {
       base::span<const MatchPatternRef> patterns,
       const AutofillField& field,
       const char* regex_name = "",
-      MatchParams (*projection)(const MatchParams&) = nullptr);
+      std::initializer_list<MatchParams (*)(const MatchParams&)> projections =
+          {});
 
 #if defined(UNIT_TEST)
   static bool MatchForTesting(ParsingContext& context,
                               const AutofillField* field,
-                              base::StringPiece16 pattern,
+                              std::u16string_view pattern,
                               DenseSet<MatchAttribute> match_attributes,
                               const char* regex_name = "") {
     return FormFieldParser::Match(context, field, pattern, match_attributes,
@@ -219,7 +216,7 @@ class FormFieldParser {
   static constexpr float kBaseMerchantPromoCodeParserScore = 0.85f;
   static constexpr float kBaseSearchParserScore = 0.8f;
   static constexpr float kBaseNumericQuantityParserScore = 0.75f;
-  static constexpr float kBaseAutocompleteParserScore = 0.05f;
+  static constexpr float kBaseImprovedPredictionsScore = 0.7f;
 
   // Only derived classes may instantiate.
   FormFieldParser() = default;
@@ -229,33 +226,17 @@ class FormFieldParser {
   // thread.
   static bool MatchesRegexWithCache(
       ParsingContext& context,
-      base::StringPiece16 input,
-      base::StringPiece16 pattern,
+      std::u16string_view input,
+      std::u16string_view pattern,
       std::vector<std::u16string>* groups = nullptr);
 
   // Attempts to parse a form field with the given pattern.  Returns true on
   // success and fills `match` with a pointer to the field.
-  // When `kNoLegacyPattern` is passed as the `pattern`, the functions always
-  // default to `patterns`, regardless of the status of
-  // `features::kAutofillParsingPatternProvider`.
-  static bool ParseField(ParsingContext& context,
-                         AutofillScanner* scanner,
-                         base::StringPiece16 pattern,
-                         base::span<const MatchPatternRef> patterns,
-                         raw_ptr<AutofillField>* match,
-                         const char* regex_name = "");
-
-  // When `kNoLegacyPattern` is passed as the `pattern`, the functions always
-  // default to `patterns`, regardless of the status of
-  // `features::kAutofillParsingPatternProvider`.
   // If a `match_pattern_projection` is defined, it is applied to the pattern's
-  // MatchParams after dereferencing the `MatchPatternRef`s. Note that this is
-  // only relevant with pattern provider.
-  static bool ParseFieldSpecifics(
+  // MatchParams after dereferencing the `MatchPatternRef`s.
+  static bool ParseField(
       ParsingContext& context,
       AutofillScanner* scanner,
-      base::StringPiece16 pattern,
-      const MatchParams& match_type,
       base::span<const MatchPatternRef> patterns,
       raw_ptr<AutofillField>* match,
       const char* regex_name = "",
@@ -321,27 +302,6 @@ class FormFieldParser {
       FieldCandidatesMap& field_candidates,
       bool is_form_tag);
 
-  static bool ParseFieldSpecificsWithNewPatterns(
-      ParsingContext& context,
-      AutofillScanner* scanner,
-      base::span<const MatchPatternRef> patterns,
-      raw_ptr<AutofillField>* match,
-      const char* regex_name,
-      MatchParams (*projection)(const MatchParams&));
-
-  // Parses the stream of fields in |scanner| with regular expression |pattern|
-  // as specified in |match_type|. If |match| is non-NULL and the pattern
-  // matches, |match| will be set to the matched field, and the scanner would
-  // advance by one step. A |true| result is returned in the case of a
-  // successful match, false otherwise.
-  static bool ParseFieldSpecificsWithLegacyPattern(
-      ParsingContext& context,
-      AutofillScanner* scanner,
-      base::StringPiece16 pattern,
-      MatchParams match_type,
-      raw_ptr<AutofillField>* match,
-      const char* regex_name = "");
-
   // Removes checkable fields and returns fields to be processed for field
   // detection.
   static std::vector<raw_ptr<AutofillField, VectorExperimental>>
@@ -352,7 +312,7 @@ class FormFieldParser {
   // |field| as specified in |match_type|.
   static bool Match(ParsingContext& context,
                     const AutofillField* field,
-                    base::StringPiece16 pattern,
+                    std::u16string_view pattern,
                     DenseSet<MatchAttribute> match_attributes,
                     const char* regex_name = "");
 

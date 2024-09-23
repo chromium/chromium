@@ -329,6 +329,19 @@ These browser's actions/shortcuts are specific to Chrome. They are different
 from the behavior specified by the web-platform, such as using executing
 `window.open()` or opening a link with the `target=_blank` attribute.
 
+<a name="TOC-What-is-the-threat-model-for-Chrome-for-Testing"</a>
+### What is the threat model for Chrome for Testing?
+
+[Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing) is a
+distribution of current and older versions of Chrome. It does not auto-update.
+Therefore, it may lack recent fixes for security bugs. Security bugs can more
+easily be exploited once their fixes are [published in the main Chromium source
+code repository](updates.md) and so it is unsafe to use Chrome for Testing to
+access any untrusted website.  You should use Chrome for Testing only for
+browser automation and testing purposes, consuming only trustworthy content.
+`chrome-headless-shell` also lacks auto-updates and so, for the same reason,
+should only be used to consume trusted content.
+
 ## Areas outside Chrome's Threat Model
 
 <a name="TOC-Are-privacy-issues-considered-security-bugs-"></a>
@@ -372,8 +385,8 @@ X-XSS-Protection header.
 No. Denial of Service (DoS) issues are treated as **abuse** or **stability**
 issues rather than security vulnerabilities.
 
-*    If you find a reproducible crash, we encourage you to [report
-     it](https://issues.chromium.org/new).
+*    If you find a reproducible crash (e.g. a way to hit a `CHECK`),
+     we encourage you to [report it](https://issues.chromium.org/new).
 *    If you find a site that is abusing the user experience (e.g. preventing you
      from leaving a site), we encourage you to [report
      it](https://issues.chromium.org/new).
@@ -555,6 +568,13 @@ the operating system and avoid accessing them, e.g.:
 *    C variable length array with an attacker-controlled size.
 *    A call to `alloca()` with an attacker-controlled size.
 
+<a name="TOC-Are-tint-ICE-considered-security-bugs-"></a>
+### Are tint shader compiler Internal Compiler Errors considered security bugs?
+
+No. When tint fails and throws an ICE (Internal Compiler Error), it will
+terminate the process in an intentional manner and produce no shader output.
+Thus there is not security bug that follows from it.
+
 <a name="TOC-Are-enterprise-admins-considered-privileged-"></a>
 ### Are enterprise admins considered privileged?
 
@@ -607,6 +627,29 @@ important security benefits are redundant with or superseded by built-in attack
 mitigations within the browser. For users, the very marginal security benefit is
 not usually a good trade-off for the compatibility issues and performance
 degradation the toolkit can cause.
+
+<a name="TOC-dangling-pointers"></a>
+### Dangling pointers
+
+Chromium can be instrumented to detect [dangling
+pointers](https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr.md):
+
+Notable build flags are:
+- `enable_dangling_raw_ptr_checks=true`
+- `use_raw_ptr_asan_unowned_impl=true`
+
+Notable runtime flags are:
+- `--enable-features=PartitionAllocDanglingPtr`
+
+It is important to note that detecting a dangling pointer alone does not
+necessarily indicate a security vulnerability. A dangling pointer becomes a
+security vulnerability only when it is dereferenced and used after it becomes
+dangling.
+
+In general, dangling pointer issues should be assigned to feature teams as
+ordinary bugs and be fixed by them. However, they can be considered only if
+there is a demonstrable way to show a memory corruption. e.g. with a POC causing
+crash with ASAN **without the flags above**.
 
 ## Certificates & Connection Indicators
 
@@ -799,14 +842,20 @@ for more details.
 ### What's the story with certificate revocation?
 
 Chrome's primary mechanism for checking certificate revocation status is
-[CRLsets](https://dev.chromium.org/Home/chromium-security/crlsets).
+[CRLSets](https://dev.chromium.org/Home/chromium-security/crlsets).
 Additionally, by default, [stapled Online Certificate Status Protocol (OCSP)
 responses](https://en.wikipedia.org/wiki/OCSP_stapling) are honored.
 
-"Online" certificate revocation status checks using Certificate Revocation
-List (CRL) or OCSP URLs included in certificates are disabled by default. This
-is because unless a client, like Chrome, refuses to connect to a website if it
-cannot get a valid response, online checks offer limited security value.
+As of 2024, Chrome enforces most security-relevant certificate revocations that
+are visible via Certificate Revocation Lists (CRLs) published to the
+[CCADB](https://www.ccadb.org/) via CRLSets. There is some inherent delay in
+getting revocation information to Chrome clients, but most revocations should
+reach most users within a few days of appearing on a CA's CRL.
+
+Chrome clients do not, by default, perform "online" certificate revocation
+status checks using CRLs directly or via OCSP URLs included in certificates.
+This is because online checks offer limited security value unless a client, like
+Chrome, refuses to connect to a website if it cannot get a valid response,
 
 Unfortunately, there are many widely-prevalent causes for why a client
 might be unable to get a valid certificate revocation status response to
@@ -823,10 +872,6 @@ OCSP responder (i.e., a third party). These details can be exposed accidentally
 (e.g., via data breach of logs) or intentionally (e.g., via subpoena). Chrome
 used to perform revocation checks for Extended Validation certificates, but that
 behavior was disabled in 2022 for [privacy reasons](https://groups.google.com/a/mozilla.org/g/dev-security-policy/c/S6A14e_X-T0/m/T4WxWgajAAAJ).
-
-For more discussion on challenges with certificate revocation status checking,
-explained by Adam Langley, see [https://www.imperialviolet.org/2014/04/29/revocationagain.html](https://www.imperialviolet.org/2014/04/29/revocationagain.html)
-and [https://www.imperialviolet.org/2014/04/19/revchecking.html](https://www.imperialviolet.org/2014/04/19/revchecking.html).
 
 The following enterprise policies can be used to change the default revocation
 checking behavior in Chrome, though these may be removed in the future:
@@ -929,22 +974,21 @@ specific:
      (DPAPI)](https://msdn.microsoft.com/en-us/library/ms995355.aspx) to bind
      your passwords to your user account and store them on disk encrypted with
      a key only accessible to processes running as the same logged on user.
-*    On macOS, Chrome previously stored credentials directly in the user's
+*    On macOS and iOS, Chrome previously stored credentials directly in the user's
      Keychain, but for technical reasons, it has switched to storing the
      credentials in "Login Data" in the Chrome users profile directory, but
      encrypted on disk with a key that is then stored in the user's Keychain.
-     See [Issue 466638](https://crbug.com/466638) for further explanation.
+     See [Issue 466638](https://crbug.com/466638) and [Issue 520437](https://crbug.com/520437) for further explanation.
 *    On Linux, Chrome previously stored credentials directly in the user's
      Gnome Secret Service or KWallet, but for technical reasons, it has switched to
      storing the credentials in "Login Data" in the Chrome user's profile directory,
      but encrypted on disk with a key that is then stored in the user's Gnome
      Secret Service or KWallet. If there is no available Secret Service or KWallet,
      the data is not encrypted when stored.
-*    On iOS, passwords are currently stored directly in the iOS Keychain and
-     referenced from the rest of the metadata stored in a separate DB. The plan
-     there is to just store them in plain text in the DB, because iOS gives
-     strong guarantees about only Chrome being able to access its storage. See
-     [Issue 520437](https://crbug.com/520437) to follow this migration.
+*    On Android, Chrome doesn't store in the profile anymore, instead it uses Google
+     Play Services to access passwords stored on a device.
+*    On ChromeOS passwords are only obfuscated since all profile data is encrypted
+     by the OS.
 
 <a name="TOC-If-theres-a-way-to-see-stored-passwords-without-entering-a-password--is-this-a-security-bug-"></a>
 ### If there's a way to see stored passwords without entering a password, is this a security bug?
@@ -959,6 +1003,21 @@ but this is not considered a robust defense. It’s historically to stop
 users inadvertently revealing their passwords on screen, for example if
 they’re screen sharing. We don’t do this on all platforms because we consider
 such risks greater on some than on others.
+
+
+<a name="TOC-On-some-websites-I-can-use-a-passkey-without-passing-a-lock-screen-or-biometric-challenge-is-this-a-security-bug"></a>
+### On some websites, I can use passkeys without passing a lock screen or biometric challenge. Is this a security bug?
+
+Probably not. When a website requests a passkeys signature, it can choose
+whether the authenticator should perform user verification (e.g. with a local
+user lock screen challenge). Unless the website sets user verification parameter
+in the request to 'required', the passkey authenticator can choose to skip the
+lock screen challenge. Authenticators commonly skip an optional challenge if
+biometrics are unavailable (e.g. on a laptop with a closed lid).
+
+If you can demonstrate bypassing the user verification challenge where the
+request user verification parameter is set to 'required', please
+[report it](https://issues.chromium.org/issues/new?noWizard=true&component=1363614&template=1922342).
 
 ## Other
 
@@ -977,6 +1036,53 @@ See our dedicated [Extensions Security FAQ](https://chromium.googlesource.com/ch
 ### What's the security model for Chrome Custom Tabs?
 
 See our [Chrome Custom Tabs security FAQ](custom-tabs-faq.md).
+
+<a name="TOC-How-is-security-different-in-Chrome-for-iOS--"></a>
+### How is security different in Chrome for iOS?
+
+Chrome for iOS does not use Chrome's standard rendering engine. Due to Apple's
+iOS platform restrictions, it instead uses Apple's WebKit engine and a more
+restricted process isolation model. This means its security properties are
+different from Chrome on all other platforms.
+
+The differences in security are far too extensive to list exhaustively, but some
+notable points are:
+
+* Chromium's [site
+  isolation](https://www.chromium.org/Home/chromium-security/site-isolation/)
+  isn't used; WebKit has its own alternative implementation with different costs
+  and benefits.
+* WebKit has [historically been slower at shipping security
+  fixes](https://googleprojectzero.blogspot.com/2022/02/a-walk-through-project-zero-metrics.html).
+* Chrome's network stack, [root
+  store](https://www.chromium.org/Home/chromium-security/root-ca-policy/) and
+  associated technology are not used, so
+  the platform will make different decisions about what web servers to trust.
+* Sandboxing APIs are not available for native code.
+
+Given that the fundamentals of the browser are so different, and given these
+limitations, Chrome for iOS has historically not consistently implemented some
+of Chrome's [standard security guidelines](rules.md). This includes the
+important [Rule of Two](rule-of-2.md). Future Chrome for iOS features should
+meet all guidelines except in cases where the lack of platform APIs make it
+unrealistic. (The use of WebAssembly-based sandboxing is currently considered
+unrealistic though this could change in future.)
+
+If the Rule of Two cannot be followed, features for Chrome for iOS should
+nevertheless follow it as closely as possible, and adopt additional mitigations
+where they cannot:
+
+* First consider adding a validation layer between unsafe code and web contents,
+  or adopting memory-safe parsers at the boundary between the renderer and the
+  browser process. Consider changing the design of the feature so the riskiest
+  parsing can happen in javascript injected in the renderer process.
+* Any unsafe unsandboxed code that is exposed to web contents or other
+  untrustworthy data sources must be extensively tested and fuzzed.
+
+The Chrome team is enthusiastic about the future possibility of making a version
+of Chrome for iOS that meets our usual security standards if richer platform
+facilities become widely available: this will require revisiting existing
+features to see if adjustment is required.
 
 <a name="TOC-Are-all-Chrome-updates-important--"></a>
 ### Are all Chrome updates important?

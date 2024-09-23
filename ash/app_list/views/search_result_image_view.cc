@@ -88,15 +88,12 @@ SearchResultImageView::SearchResultImageView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   result_image_ = AddChildView(std::make_unique<ImagePreviewView>());
   result_image_->SetCanProcessEventsWithinSubtree(false);
-  result_image_->GetViewAccessibility().OverrideIsIgnored(true);
+  result_image_->GetViewAccessibility().SetIsIgnored(true);
 
   views::FocusRing::Install(this);
   views::FocusRing* const focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
-  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
-  focus_ring->SetColorId(is_jelly_enabled ? static_cast<ui::ColorId>(
-                                                cros_tokens::kCrosSysFocusRing)
-                                          : ui::kColorAshFocusRing);
+  focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
   focus_ring->SetHasFocusPredicate(base::BindRepeating([](const View* view) {
     const auto* v = views::AsViewClass<SearchResultBaseView>(view);
     CHECK(v);
@@ -116,7 +113,8 @@ void SearchResultImageView::OnImageViewPressed(const ui::Event& event) {
                                     true /* by_button_press */);
 }
 
-gfx::Size SearchResultImageView::CalculatePreferredSize() const {
+gfx::Size SearchResultImageView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // Keep the ratio of the width and height be 3:2.
   return gfx::Size(preferred_width_, 2 * preferred_width_ / 3);
 }
@@ -138,7 +136,7 @@ void SearchResultImageView::CreatePulsingBlockView() {
   pulsing_block_view_ = AddChildView(std::make_unique<PulsingBlockView>(
       size(), base::Milliseconds(index_ * 200), kRoundedCornerRadius));
   pulsing_block_view_->SetCanProcessEventsWithinSubtree(false);
-  pulsing_block_view_->GetViewAccessibility().OverrideIsIgnored(true);
+  pulsing_block_view_->GetViewAccessibility().SetIsIgnored(true);
 }
 
 gfx::ImageSkia SearchResultImageView::CreateDragImage() {
@@ -169,32 +167,38 @@ void SearchResultImageView::OnMetadataChanged() {
   UpdateAccessibleName();
   // By default, the description will be set to the tooltip text, but the title
   // is already announced in the accessible name.
-  GetViewAccessibility().OverrideDescription(
+  GetViewAccessibility().SetDescription(
       u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
-  if (!result() || result()->icon().icon.IsEmpty()) {
+  if (!result()) {
     result_image_->SetVisible(false);
-    if (result() && !pulsing_block_view_) {
-      CreatePulsingBlockView();
-    }
-
     return;
   }
 
-  result_image_->SetVisible(true);
-  if (pulsing_block_view_) {
-    RemoveChildViewT(pulsing_block_view_.get());
-    pulsing_block_view_ = nullptr;
+  const bool has_icon = !result()->icon().icon.IsEmpty();
+  result_image_->SetVisible(has_icon);
+  if (!has_icon || result()->icon().is_placeholder) {
+    if (!pulsing_block_view_) {
+      CreatePulsingBlockView();
+    }
+  } else {
+    if (pulsing_block_view_) {
+      RemoveChildViewT(pulsing_block_view_.get());
+      pulsing_block_view_ = nullptr;
+    }
   }
 
-  gfx::ImageSkia image = result()->icon().icon.Rasterize(GetColorProvider());
-  if (!GetContentsBounds().IsEmpty()) {
-    image = gfx::ImageSkiaOperations::CreateResizedImage(
-        image, skia::ImageOperations::RESIZE_BEST, GetContentsBounds().size());
-  }
+  if (has_icon) {
+    gfx::ImageSkia image = result()->icon().icon.Rasterize(GetColorProvider());
+    if (!GetContentsBounds().IsEmpty()) {
+      image = gfx::ImageSkiaOperations::CreateResizedImage(
+          image, skia::ImageOperations::RESIZE_BEST,
+          GetContentsBounds().size());
+    }
 
-  result_image_->SetImageModel(views::Button::STATE_NORMAL,
-                               ui::ImageModel::FromImageSkia(image));
+    result_image_->SetImageModel(views::Button::STATE_NORMAL,
+                                 ui::ImageModel::FromImageSkia(image));
+  }
   SetTooltipText(result()->title());
 }
 

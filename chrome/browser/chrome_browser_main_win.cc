@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/chrome_browser_main_win.h"
 
 // windows.h must be included before shellapi.h
@@ -13,6 +18,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -39,7 +45,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/version.h"
 #include "base/win/pe_image.h"
-#include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "base/win/wrapped_window_proc.h"
 #include "build/branding_buildflags.h"
@@ -51,7 +56,6 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_policy_observer.h"
 #include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/os_crypt/app_bound_encryption_metrics_win.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/shell_integration_win.h"
@@ -71,6 +75,7 @@
 #include "chrome/browser/win/conflicts/enumerate_shell_extensions.h"
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/module_event_sink_impl.h"
+#include "chrome/browser/win/remove_app_compat_entries.h"
 #include "chrome/browser/win/util_win_service.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -104,6 +109,13 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
+#include "sandbox/policy/switches.h"
+#include "sandbox/win/src/sandbox.h"
+#include "sandbox/win/src/sandbox_factory.h"
+#include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
+#include "services/device/public/cpp/geolocation/system_geolocation_source_win.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/base/ui_base_switches.h"
@@ -379,6 +391,39 @@ void MigratePinnedTaskBarShortcutsIfNeeded() {
     }
   }
 }
+
+void MaybeBlockDynamicCodeForBrowserProcess() {
+  // This mitigation is not enabled if running in single-process mode or the GPU
+  // is in-process. It is also not enabled if the sandbox is disabled.
+  const char* const kUnsupportedSwitches[] = {
+      switches::kSingleProcess, switches::kInProcessGPU,
+      sandbox::policy::switches::kNoSandbox};
+
+  for (const auto* unsupported_switch : kUnsupportedSwitches) {
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(unsupported_switch)) {
+      return;
+    }
+  }
+
+  bool block_dynamic_code =
+      base::FeatureList::IsEnabled(features::kBrowserDynamicCodeDisabled);
+
+  PrefService* local_state = g_browser_process->local_state();
+  // Policy intentionally takes precedence over the feature.
+  if (local_state->IsManagedPreference(prefs::kDynamicCodeSettings) &&
+      local_state->GetInteger(prefs::kDynamicCodeSettings) ==
+          /*EnabledForBrowser=*/1) {
+    block_dynamic_code = true;
+  }
+
+  if (block_dynamic_code) {
+    // This must happen when Chrome is still in single-threaded mode, in
+    // particular, before the launcher thread has been created.
+    sandbox::SandboxFactory::GetBrokerServices()
+        ->RatchetDownSecurityMitigations(
+            sandbox::MITIGATION_DYNAMIC_CODE_DISABLE_WITH_OPT_OUT);
+  }
+}
 // This error message is not localized because we failed to load the
 // localization data files.
 const char kMissingLocaleDataTitle[] = "Missing File Error";
@@ -458,11 +503,10 @@ void ChromeBrowserMainPartsWin::PreCreateMainMessageLoop() {
 }
 
 int ChromeBrowserMainPartsWin::PreCreateThreads() {
-  // Record whether the machine is enterprise managed in a crash key. This will
-  // be used to better identify whether crashes are from enterprise users.
-  static crash_reporter::CrashKeyString<4> is_enterprise_managed(
-      "is-enterprise-managed");
-  is_enterprise_managed.Set(
+  static constexpr std::string_view kIsEnterpriseManaged =
+      "is-enterprise-managed";
+  crash_keys::AllocateCrashKeyInBrowserAndChildren(
+      kIsEnterpriseManaged,
       policy::ManagementServiceFactory::GetForPlatform()
                   ->GetManagementAuthorityTrustworthiness() >=
               policy::ManagementAuthorityTrustworthiness::TRUSTED
@@ -484,6 +528,19 @@ int ChromeBrowserMainPartsWin::PreCreateThreads() {
         &DumpHungRendererProcessImpl);
   }
 
+  // Pass the value of the UiAutomationProviderEnabled enterprise policy, if
+  // set, down to the accessibility platform after the platform is initialized
+  // in BrowserMainLoop::PostCreateMainMessageLoop() but before any UI is
+  // created.
+  if (auto* local_state = g_browser_process->local_state(); local_state) {
+    if (auto* pref =
+            local_state->FindPreference(prefs::kUiAutomationProviderEnabled);
+        pref && pref->IsManaged()) {
+      ui::AXPlatform::GetInstance().SetUiaProviderEnabled(
+          pref->GetValue()->GetBool());
+    }
+  }
+
   return ChromeBrowserMainParts::PreCreateThreads();
 }
 
@@ -495,6 +552,12 @@ void ChromeBrowserMainPartsWin::PostMainMessageLoopRun() {
   platform_auth_policy_observer_.reset();
 
   ChromeBrowserMainParts::PostMainMessageLoopRun();
+}
+
+void ChromeBrowserMainPartsWin::PostEarlyInitialization() {
+  MaybeBlockDynamicCodeForBrowserProcess();
+
+  ChromeBrowserMainParts::PostEarlyInitialization();
 }
 
 void ChromeBrowserMainPartsWin::ShowMissingLocaleMessageBox() {
@@ -516,6 +579,13 @@ void ChromeBrowserMainPartsWin::PreProfileInit() {
   if (local_state)
     platform_auth_policy_observer_ =
         std::make_unique<PlatformAuthPolicyObserver>(local_state);
+
+  if (base::FeatureList::IsEnabled(features::kWinSystemLocationPermission) &&
+      !device::GeolocationSystemPermissionManager::GetInstance()) {
+    device::GeolocationSystemPermissionManager::SetInstance(
+        device::SystemGeolocationSourceWin::
+            CreateGeolocationSystemPermissionManager());
+  }
 }
 
 void ChromeBrowserMainPartsWin::PostProfileInit(Profile* profile,
@@ -552,12 +622,6 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
   }
 #endif
 
-  // Query feature first, to include full population in field trial.
-  if (base::FeatureList::IsEnabled(features::kAppBoundEncryptionMetrics) &&
-      install_static::IsSystemInstall()) {
-    os_crypt::MeasureAppBoundEncryptionStatus(g_browser_process->local_state());
-  }
-
   // Record Processor Metrics. This is very low priority, hence posting as
   // BEST_EFFORT to start after Chrome startup has completed.
   scoped_refptr<base::SequencedTaskRunner> task_runner =
@@ -590,6 +654,25 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
           switches::kFromInstaller)) {
     AnnounceInActiveBrowser(l10n_util::GetStringUTF16(IDS_WELCOME_TO_CHROME));
   }
+
+  // Some users are getting stuck in compatibility mode. Try to help them
+  // escape; see http://crbug.com/581499.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce([]() {
+        base::FilePath current_exe;
+        if (base::PathService::Get(base::FILE_EXE, &current_exe)) {
+          RemoveAppCompatEntries(current_exe);
+        }
+      }));
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // os_update_handler is a separate process, so mirror the status of the
+  // feature to the local state on its behalf.
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kOsUpdateHandlerEnabled,
+      base::FeatureList::IsEnabled(features::kRegisterOsUpdateHandlerWin));
+#endif  // GOOGLE_CHROME_BRANDING
 
   base::ImportantFileWriterCleaner::GetInstance().Start();
 }
@@ -652,7 +735,7 @@ void ChromeBrowserMainPartsWin::RegisterApplicationRestart(
       LOG(WARNING) << "Command line too long for RegisterApplicationRestart: "
                    << command_line_string;
     } else {
-      NOTREACHED() << "RegisterApplicationRestart failed. hr: " << hr
+      LOG(WARNING) << "RegisterApplicationRestart failed. hr: " << hr
                    << ", command_line: " << command_line_string;
     }
   }
@@ -662,8 +745,8 @@ void ChromeBrowserMainPartsWin::RegisterApplicationRestart(
 int ChromeBrowserMainPartsWin::HandleIconsCommands(
     const base::CommandLine& parsed_command_line) {
   if (parsed_command_line.HasSwitch(switches::kHideIcons)) {
-    // TODO(740976): This is not up-to-date and not localized. Figure out if
-    // the --hide-icons and --show-icons switches are still used.
+    // TODO(crbug.com/41329700): This is not up-to-date and not localized.
+    // Figure out if the --hide-icons and --show-icons switches are still used.
     std::u16string cp_applet = u"Programs and Features";
     const std::u16string msg =
         l10n_util::GetStringFUTF16(IDS_HIDE_ICONS_NOT_SUPPORTED, cp_applet);
@@ -740,7 +823,7 @@ std::wstring TranslationDelegate::GetLocalizedString(int installer_string_id) {
     DO_STRING_MAPPING
 #undef HANDLE_STRING
   default:
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   if (resource_id)
     return base::UTF16ToWide(l10n_util::GetStringUTF16(resource_id));
@@ -776,7 +859,7 @@ base::CommandLine ChromeBrowserMainPartsWin::GetRestartCommandLine(
   if (!command_line.HasSwitch(switches::kRestart))
     restart_command.AppendSwitch(switches::kRestart);
 
-  // TODO(crbug.com/964541): Remove other unneeded switches, including
+  // TODO(crbug.com/41459588): Remove other unneeded switches, including
   // duplicates, perhaps harmonize with switches::RemoveSwitchesForAutostart.
   return restart_command;
 }
@@ -824,10 +907,6 @@ void ChromeBrowserMainPartsWin::OnModuleEvent(
       }
     }
   }
-  // Since OnModuleEvent can be invoked from any thread, the above trace event's
-  // END might be the last event on this thread, emit an empty event to force
-  // the END to be flushed. TODO(crbug.com/1021571): Remove this once fixed.
-  PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 }
 
 // Helper function for initializing the module database subsystem and populating

@@ -1,0 +1,70 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+testonly = true
+
+generate_jni("sample_header") {
+  sources = [ "java/src/org/jni_zero/sample/Sample.java" ]
+}
+
+android_library("sample_java") {
+  srcjar_deps = [ ":sample_header" ]
+  sources = [
+    "java/src/org/jni_zero/sample/Sample.java",
+    "java/src/org/jni_zero/sample/SampleActivity.java",
+  ]
+
+  deps = [ "//third_party/jni_zero:jni_zero_java" ]
+}
+
+source_set("sample_native_side") {
+  deps = [ ":sample_header" ]
+  sources = [ "sample.cc" ]
+}
+
+shared_library_with_jni("libjni_zero_sample") {
+  if (enable_jni_multiplexing) {
+    _linker_script = "sample_lib_multiplexing_version_script.txt"
+  } else {
+    _linker_script = "sample_lib_version_script.txt"
+  }
+  sources = [ "sample_entry_point.cc" ]
+
+  deps = [
+    ":sample_native_side",
+    "//third_party/jni_zero",
+  ]
+  inputs = [ _linker_script ]
+  ldflags =
+      [ "-Wl,--version-script=" + rebase_path(_linker_script, root_build_dir) ]
+  java_targets = [ ":jni_zero_sample_apk" ]
+  remove_uncalled_jni = true
+}
+
+android_apk("jni_zero_sample_apk") {
+  apk_name = "JniZeroSample"
+  android_manifest = "AndroidManifest.xml"
+  deps = [ ":sample_java" ]
+  shared_libraries = [ ":libjni_zero_sample" ]
+  srcjar_deps = [ ":libjni_zero_sample__jni_registration" ]
+}
+
+instrumentation_test_apk("jni_zero_sample_apk_test") {
+  apk_name = "JniZeroSampleTest"
+  apk_under_test = ":jni_zero_sample_apk"
+  android_manifest = "javatests/AndroidManifest.xml"
+  sources = [ "javatests/src/org/jni_zero/test_sample/JniZeroSampleTest.java" ]
+  deps = [
+    ":sample_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_rules_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/google-truth:google_truth_java",
+    "//third_party/junit",
+  ]
+}

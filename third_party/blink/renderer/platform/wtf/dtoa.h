@@ -26,10 +26,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace double_conversion {
-class StringToDoubleConverter;
-}  // namespace double_conversion
-
 namespace WTF {
 
 // Size = 80 for sizeof(DtoaBuffer) + some sign bits, decimal point, 'e',
@@ -54,24 +50,10 @@ WTF_EXPORT double ParseDouble(const UChar* string,
                               size_t& parsed_length);
 
 namespace internal {
-double ParseDoubleFromLongString(const UChar* string,
-                                 size_t length,
-                                 size_t& parsed_length);
-const double_conversion::StringToDoubleConverter& GetDoubleConverter();
-}  // namespace internal
 
-inline double ParseDouble(const UChar* string,
-                          size_t length,
-                          size_t& parsed_length) {
-  const size_t kConversionBufferSize = 64;
-  if (length > kConversionBufferSize)
-    return internal::ParseDoubleFromLongString(string, length, parsed_length);
-  LChar conversion_buffer[kConversionBufferSize];
-  for (size_t i = 0; i < length; ++i)
-    conversion_buffer[i] =
-        IsASCII(string[i]) ? static_cast<LChar>(string[i]) : 0;
-  return ParseDouble(conversion_buffer, length, parsed_length);
-}
+void InitializeDoubleConverter();
+
+}  // namespace internal
 
 }  // namespace WTF
 

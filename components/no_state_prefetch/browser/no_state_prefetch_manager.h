@@ -24,7 +24,7 @@
 #include "components/no_state_prefetch/browser/prerender_config.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
-#include "components/no_state_prefetch/common/prerender_origin.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
@@ -110,31 +110,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       const url::Origin& initiator_origin,
       const gfx::Size& size);
 
-  // Starts a prefetch for |url| if valid. As the prefetch request is coming
-  // from a source without a RenderFrameHost (i.e., the omnibox) we don't have a
-  // child or route id, or a referrer. This method uses sensible values for
-  // those. The |session_storage_namespace| matches the namespace of the active
-  // tab at the time the prefetch is started from the omnibox. Returns a
-  // NoStatePrefetchHandle or NULL. If the prefetch fails, the prefetch manager
-  // may fallback and initiate a preconnect to |url|. PreloadingAttempt
-  // represents the attempt corresponding to this prerender to log the necessary
-  // metrics.
-  std::unique_ptr<NoStatePrefetchHandle> StartPrefetchingFromOmnibox(
-      const GURL& url,
-      content::SessionStorageNamespace* session_storage_namespace,
-      const gfx::Size& size,
-      content::PreloadingAttempt* attempt);
-
-  // Adds a prerender for the prefetch url from IsolatedPrerender on
-  // page load, if NoStatePrefetch and prefetch_after_preconnect are true.
-  // Uses the NavigationPredictor's browser context and the default
-  // SessionStorageNamespace. Returns a NoStatePrefetchHandle or nullptr. Does
-  // not fallback to preconnecting if the prerender isn't triggered.
-  std::unique_ptr<NoStatePrefetchHandle> AddIsolatedPrerender(
-      const GURL& url,
-      content::SessionStorageNamespace* session_storage_namespace,
-      const gfx::Size& size);
-
   // Adds a NoStatePrefetch that only allows for same origin requests (i.e.,
   // requests that only redirect to the same origin).
   std::unique_ptr<NoStatePrefetchHandle> AddSameOriginSpeculation(
@@ -142,20 +117,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       content::SessionStorageNamespace* session_storage_namespace,
       const gfx::Size& size,
       const url::Origin& initiator_origin);
-
-  std::unique_ptr<NoStatePrefetchHandle> StartPrefetchingFromExternalRequest(
-      const GURL& url,
-      const content::Referrer& referrer,
-      content::SessionStorageNamespace* session_storage_namespace,
-      const gfx::Rect& bounds);
-
-  // Adds a prerender from an external request that will prerender even on
-  // cellular networks as long as the user setting for prerendering is ON.
-  std::unique_ptr<NoStatePrefetchHandle> AddForcedPrerenderFromExternalRequest(
-      const GURL& url,
-      const content::Referrer& referrer,
-      content::SessionStorageNamespace* session_storage_namespace,
-      const gfx::Rect& bounds);
 
   // Cancels all active prerenders.
   void CancelAllPrerenders();
@@ -229,10 +190,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
   void AddObserver(std::unique_ptr<NoStatePrefetchManagerObserver> observer);
 
-  // Notification that a prerender has completed and its bytes should be
-  // recorded.
-  void RecordNetworkBytesConsumed(Origin origin, int64_t prerender_bytes);
-
   // Registers a new ProcessHost performing a prerender. Called by
   // NoStatePrefetchContents.
   void AddPrerenderProcessHost(content::RenderProcessHost* process_host);
@@ -262,9 +219,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // Clears the list of recently prefetched URLs. Allows, for example, to reuse
   // the same URL in tests, without running into FINAL_STATUS_DUPLICATE.
   void ClearPrefetchInformationForTesting();
-
-  // Returns true iff the |url| is found in the list of recent prefetches.
-  bool HasRecentlyPrefetchedUrlForTesting(const GURL& url);
 
   // Starts a prefetch for |url| from |initiator_origin|. The |origin| specifies
   // how the prefetch was started. Returns a NoStatePrefetchHandle or nullptr.
@@ -310,8 +264,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
     int handle_count() const { return handle_count_; }
 
-    base::TimeTicks abandon_time() const { return abandon_time_; }
-
     base::TimeTicks expiry_time() const { return expiry_time_; }
     void set_expiry_time(base::TimeTicks expiry_time) {
       expiry_time_ = expiry_time;
@@ -332,9 +284,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
     // prefetches, this will always be 1, since the NoStatePrefetchManager only
     // merges handles of running prefetches.
     int handle_count_ = 0;
-
-    // The time when OnHandleNavigatedAway was called.
-    base::TimeTicks abandon_time_;
 
     // After this time, this prefetch is no longer fresh, and should be removed.
     base::TimeTicks expiry_time_;
@@ -378,7 +327,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // PrerenderConfig. Returns a NoStatePrefetchHandle or NULL.
   // PreloadingAttempt helps us to log various metrics associated with
   // particular NoStatePrefetch attempt.
-  // TODO(crbug.com/1363358): Remove nullptr as default parameter once NSP is
+  // TODO(crbug.com/40238653): Remove nullptr as default parameter once NSP is
   // integrated with all different predictors.
   std::unique_ptr<NoStatePrefetchHandle> StartPrefetchingWithPreconnectFallback(
       Origin origin,
@@ -517,13 +466,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   const std::unique_ptr<NoStatePrefetchHistory> prefetch_history_;
 
   const std::unique_ptr<PrerenderHistograms> histograms_;
-
-  // The number of bytes transferred over the network for the browser_context
-  // this NoStatePrefetchManager is attached to.
-  int64_t browser_context_network_bytes_ = 0;
-
-  // The value of browser_context_network_bytes_ that was last recorded.
-  int64_t last_recorded_browser_context_network_bytes_ = 0;
 
   // Set of process hosts being prerendered.
   using PrerenderProcessSet =

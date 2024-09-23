@@ -226,7 +226,7 @@ int ProxyResolvingClientSocket::DoLoop(int result) {
         rv = DoInitConnectionComplete(rv);
         break;
       default:
-        NOTREACHED() << "bad state";
+        NOTREACHED_IN_MIGRATION() << "bad state";
         rv = net::ERR_FAILED;
         break;
     }
@@ -239,7 +239,7 @@ int ProxyResolvingClientSocket::DoProxyResolve() {
   // base::Unretained(this) is safe because resolution request is canceled when
   // |proxy_resolve_request_| is destroyed.
   //
-  // TODO(https://crbug.com/1023439): Pass along a NetworkAnonymizationKey.
+  // TODO(crbug.com/40658165): Pass along a NetworkAnonymizationKey.
   return network_session_->proxy_resolution_service()->ResolveProxy(
       url_, net::HttpRequestHeaders::kPostMethod, network_anonymization_key_,
       &proxy_info_,
@@ -253,8 +253,9 @@ int ProxyResolvingClientSocket::DoProxyResolveComplete(int result) {
   if (result == net::OK) {
     // Removes unsupported proxies from the list. Currently, this removes
     // just the SCHEME_QUIC proxy.
-    // TODO(crbug.com/876885): Allow QUIC proxy once net::QuicProxyClientSocket
-    // supports ReadIfReady() and CancelReadIfReady().
+    // TODO(crbug.com/41409577): Allow QUIC proxy once
+    // net::QuicProxyClientSocket supports ReadIfReady() and
+    // CancelReadIfReady().
     proxy_info_.RemoveProxiesWithoutScheme(
         net::ProxyServer::SCHEME_HTTP | net::ProxyServer::SCHEME_HTTPS |
         net::ProxyServer::SCHEME_SOCKS4 | net::ProxyServer::SCHEME_SOCKS5);
@@ -273,7 +274,8 @@ int ProxyResolvingClientSocket::DoProxyResolveComplete(int result) {
 int ProxyResolvingClientSocket::DoInitConnection() {
   DCHECK(!socket_);
   // QUIC proxies are currently not supported.
-  DCHECK(!proxy_info_.is_quic());
+  DCHECK(proxy_info_.is_direct() ||
+         !proxy_info_.proxy_chain().Last().is_quic());
 
   next_state_ = STATE_INIT_CONNECTION_COMPLETE;
 

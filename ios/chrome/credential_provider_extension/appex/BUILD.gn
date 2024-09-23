@@ -13,13 +13,17 @@ assert(
     "ios_enable_credential_provider_extension must be true to depend on //ios/chrome/credential_provider_extension")
 
 tweak_info_plist("tweak_info_plist") {
-  info_plist = "Info.plist"
+  if (is_debug || ios_cpe_enable_passkey_capabilities) {
+    info_plist = "InfoWithPasskeySupport.plist"
+  } else {
+    info_plist = "Info.plist"
+  }
 }
 
 compile_entitlements("entitlements") {
   substitutions = [
     "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix",
-    "CHROMIUM_BUNDLE_ID=$chromium_bundle_id",
+    "CHROMIUM_BUNDLE_ID=$ios_chromium_bundle_id",
   ]
   output_name =
       "$target_gen_dir/credential_provider_extension.appex.entitlements"
@@ -37,6 +41,10 @@ ios_appex_bundle("appex") {
     "//ios/chrome/credential_provider_extension:credential_provider",
     "//ios/chrome/credential_provider_extension:system_strings",
   ]
+  if (ios_app_extension_privacy_manifest != "") {
+    deps += [ ":privacy_manifest" ]
+  }
+
   bundle_deps_filter = [ "//third_party/icu:icudata" ]
 
   assert_no_deps = ios_extension_assert_no_deps
@@ -44,10 +52,17 @@ ios_appex_bundle("appex") {
   extra_substitutions = [
     "CHROME_CHANNEL_SCHEME=$url_channel_scheme",
     "CHROMIUM_SHORT_NAME=$chromium_short_name",
-    "CHROMIUM_BUNDLE_ID=$chromium_bundle_id",
+    "CHROMIUM_BUNDLE_ID=$ios_chromium_bundle_id",
   ]
 
   entitlements_target = ":entitlements"
   info_plist_target = ":tweak_info_plist"
-  bundle_identifier = "$chromium_bundle_id.CredentialProviderExtension"
+  bundle_identifier = "$ios_chromium_bundle_id.CredentialProviderExtension"
+}
+
+if (ios_app_extension_privacy_manifest != "") {
+  bundle_data("privacy_manifest") {
+    sources = [ ios_app_extension_privacy_manifest ]
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+  }
 }

@@ -14,6 +14,7 @@
 #include "extensions/renderer/worker_thread_dispatcher.h"
 #include "extensions/renderer/worker_thread_util.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace extensions {
 
@@ -21,24 +22,20 @@ ServiceWorkerData::ServiceWorkerData(
     blink::WebServiceWorkerContextProxy* proxy,
     int64_t service_worker_version_id,
     const std::optional<base::UnguessableToken>& activation_sequence,
+    const blink::ServiceWorkerToken& service_worker_token,
     ScriptContext* context,
     std::unique_ptr<NativeExtensionBindingsSystem> bindings_system)
     : proxy_(proxy),
       service_worker_version_id_(service_worker_version_id),
       activation_sequence_(std::move(activation_sequence)),
+      service_worker_token_(service_worker_token),
       context_(context),
       v8_schema_registry_(new V8SchemaRegistry),
       bindings_system_(std::move(bindings_system)) {
-  // `bindings_system_` is null if `ExtensionAPIEnabledForServiceWorkerScript`
-  // returns false. That means we aren't exposing any bindings to the service
-  // worker, but we will have ServiceWorkerData for it so that the
-  // WakeEventPage and logging can communicate back to the browser via the
-  // `mojom::RendererHost`.
-  if (bindings_system_) {
-    proxy_->GetAssociatedInterfaceRegistry().AddInterface<mojom::ServiceWorker>(
-        base::BindRepeating(&ServiceWorkerData::OnServiceWorkerRequest,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
+  CHECK(bindings_system_);
+  proxy_->GetAssociatedInterfaceRegistry().AddInterface<mojom::ServiceWorker>(
+      base::BindRepeating(&ServiceWorkerData::OnServiceWorkerRequest,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 ServiceWorkerData::~ServiceWorkerData() = default;
@@ -113,6 +110,7 @@ void ServiceWorkerData::Init() {
   const int thread_id = content::WorkerThread::GetCurrentId();
   GetServiceWorkerHost()->DidInitializeServiceWorkerContext(
       context_->GetExtensionID(), service_worker_version_id_, thread_id,
+      service_worker_token_,
       event_dispatcher_receiver_.BindNewEndpointAndPassRemote());
 }
 

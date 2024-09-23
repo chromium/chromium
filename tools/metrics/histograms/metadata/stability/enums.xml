@@ -86,6 +86,8 @@ chromium-metrics-reviews@google.com.
              binding oom"/>
   <int value="24"
       label="Invisible renderer in foreground app with waived binding oom"/>
+  <int value="25"
+      label="Invisible renderer in foreground app with waived binding killed"/>
 </enum>
 
 <enum name="AndroidProcessedMinidumps">
@@ -109,13 +111,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="WasReceivedForUte">
     ApplicationWillTerminate notification was received for this UTE.
   </int>
-</enum>
-
-<enum name="BadMessageReasonAutofill">
-<!-- Generated from components/autofill/content/browser/bad_message.h.
-Called by update_bad_message_reasons.py.-->
-
-  <int value="1" label="Prerendering"/>
 </enum>
 
 <enum name="BadMessageReasonChrome">
@@ -375,7 +370,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="219" label="REGISTER_PROTOCOL_HANDLER_INVALID_URL"/>
   <int value="220" label="NC_SAME_DOCUMENT_POST_COMMIT_ERROR"/>
   <int value="221" label="RFH_INVALID_WEB_UI_CONTROLLER"/>
-  <int value="222" label="RFPH_ADVANCE_FOCUS_INTO_PORTAL"/>
+  <int value="222" label="OBSOLETE_RFPH_ADVANCE_FOCUS_INTO_PORTAL"/>
   <int value="223" label="RFH_UNEXPECTED_EMBEDDING_TOKEN"/>
   <int value="224" label="RFH_MISSING_EMBEDDING_TOKEN"/>
   <int value="225" label="RFH_BAD_DOCUMENT_POLICY_HEADER"/>
@@ -386,7 +381,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="230" label="RFH_SUBFRAME_CAPTURE_ON_MAIN_FRAME"/>
   <int value="231" label="RFH_CSP_ATTRIBUTE"/>
   <int value="232" label="RFH_RECEIVED_ASSOCIATED_MESSAGE_WHILE_BFCACHED"/>
-  <int value="233" label="RWH_CLOSE_PORTAL"/>
+  <int value="233" label="OBSOLETE_RWH_CLOSE_PORTAL"/>
   <int value="234" label="MSDH_INVALID_STREAM_TYPE"/>
   <int value="235" label="RFH_CREATE_CHILD_FRAME_TOKENS_NOT_FOUND"/>
   <int value="236" label="ASGH_ASSOCIATED_INTERFACE_REQUEST"/>
@@ -459,8 +454,10 @@ Called by update_bad_message_reasons.py.-->
       label="BIBI_BIND_PRESSURE_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY"/>
   <int value="298" label="RFSCI_BROWSER_VALIDATION_BAD_ORIGIN_TRIAL_TOKEN"/>
   <int value="299" label="RFH_RECEIVED_INVALID_BROWSING_TOPICS_ATTRIBUTE"/>
-  <int value="300" label="RFHI_FULLSCREEN_NAV_INVALID_INITIAL_DOCUMENT"/>
-  <int value="301" label="RFHI_FULLSCREEN_NAV_NOT_OUTERMOST_MAIN_FRAME"/>
+  <int value="300"
+      label="OBSOLETE_RFHI_FULLSCREEN_NAV_INVALID_INITIAL_DOCUMENT"/>
+  <int value="301"
+      label="OBSOLETE_RFHI_FULLSCREEN_NAV_NOT_OUTERMOST_MAIN_FRAME"/>
   <int value="302" label="MH_MIDI_PERMISSION"/>
   <int value="303" label="RFH_CAN_ACCESS_FILES_OF_PAGE_STATE_AT_COMMIT"/>
   <int value="304" label="PSI_REQUEST_EMBEDDED_PERMISSION_WITHOUT_FEATURE"/>
@@ -476,7 +473,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="311" label="MSDH_SEND_WHEEL_INVALID_ACTION"/>
   <int value="312"
       label="OBSOLETE_MSDH_GET_ZOOM_LEVEL_BUT_CSC_FEATURE_DISABLED"/>
-  <int value="313" label="RFH_FENCED_DOCUMENT_DATA_NOT_FOUND"/>
+  <int value="313" label="OBSOLETE_RFH_FENCED_DOCUMENT_DATA_NOT_FOUND"/>
   <int value="314"
       label="OBSOLETE_MSDH_SET_ZOOM_LEVEL_BUT_CSC_FEATURE_DISABLED"/>
   <int value="315" label="MSDH_SET_ZOOM_LEVEL_INVALID_LEVEL"/>
@@ -486,6 +483,10 @@ Called by update_bad_message_reasons.py.-->
       label="SSHO_RECEIVED_SHARED_STORAGE_WRITE_HEADER_FROM_OPAQUE_ORIGIN"/>
   <int value="318"
       label="SSHO_RECEIVED_SHARED_STORAGE_WRITE_HEADER_WITH_PERMISSION_DISABLED"/>
+  <int value="319" label="RFPH_POST_MESSAGE_PDF_CONTENT_FRAME"/>
+  <int value="320"
+      label="PSI_ADD_PAGE_EMBEDDED_PERMISSION_OBSERVER_WITHOUT_FEATURE"/>
+  <int value="321" label="RFH_INITIATOR_BASE_URL_IS_EMPTY"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
@@ -819,11 +820,215 @@ Called by update_debug_scenarios.py.-->
   <int value="9" label="Integrity failure (Win)"/>
 </enum>
 
+<enum name="UtilityProcessNameHash">
+  <summary>
+    The hash of a utility process name generated using `variations::HashName()`.
+    Update these using sheet available at http://bit.ly/2sKxPdR.
+  </summary>
+  <int value="-2128940758" label="sharing.mojom.Sharing"/>
+  <int value="-2115497279" label="network"/>
+  <int value="-2111358636" label="tracing.mojom.TracingService"/>
+  <int value="-2071993701" label="shape_detection"/>
+  <int value="-2061353184" label="content_gpu"/>
+  <int value="-2043041185" label="network.mojom.NetworkService"/>
+  <int value="-2021317198" label="chrome.mojom.RemovableStorageWriter"/>
+  <int value="-2006071118" label="tracing"/>
+  <int value="-1913809341" label="chrome_printing"/>
+  <int value="-1866379343" label="service_manager"/>
+  <int value="-1760356655" label="video_capture.mojom.VideoCaptureService"/>
+  <int value="-1706449158" label="unzip.mojom.Unzipper"/>
+  <int value="-1678455826" label="mirroring.mojom.MirroringService"/>
+  <int value="-1656677225" label="file"/>
+  <int value="-1632474908" label="viz"/>
+  <int value="-1615505903" label="media_gallery_util"/>
+  <int value="-1468742076" label="storage.mojom.StorageService"/>
+  <int value="-1450594275" label="identity"/>
+  <int value="-1436638555" label="auction_worklet.mojom.AuctionWorkletService"/>
+  <int value="-1307090589" label="ui"/>
+  <int value="-1289115149" label="device"/>
+  <int value="-1015990949" label="proxy_resolver"/>
+  <int value="-988537037" label="video_capture"/>
+  <int value="-859807435" label="device.mojom.XRDeviceService"/>
+  <int value="-848001757" label="chrome.mojom.DocumentAnalysisService"/>
+  <int value="-740182636" label="audio.mojom.AudioService"/>
+  <int value="-732644393" label="chrome.mojom.FileUtilService"/>
+  <int value="-725144915" label="local_state"/>
+  <int value="-678751616" label="media.mojom.SpeechRecognitionService"/>
+  <int value="-657784776" label="screen_ai.mojom.ScreenAIServiceFactory"/>
+  <int value="-657129659" label="printing.mojom.PrintCompositor"/>
+  <int value="-461949820" label="heap_profiling"/>
+  <int value="-407184831" label="catalog"/>
+  <int value="-400619253" label="mus_demo"/>
+  <int value="-367652865" label="quarantine.mojom.Quarantine"/>
+  <int value="-254080081" label="cdm"/>
+  <int value="-2816355" label="profile_import"/>
+  <int value="69152809" label="font_service"/>
+  <int value="239791233" label="media.mojom.CdmServiceBroker"/>
+  <int value="278046784" label="on_device_model.mojom.OnDeviceModelService"/>
+  <int value="281581793" label="printing.mojom.PrintingService"/>
+  <int value="331504207" label="data_decoder.mojom.DataDecoderService"/>
+  <int value="357224138" label="user_id"/>
+  <int value="369422744" label="media.mojom.MediaFoundationServiceBroker"/>
+  <int value="498331100" label="preferences"/>
+  <int value="573935755" label="removable_storage_writer"/>
+  <int value="622813541" label="chrome.mojom.ProfileImport"/>
+  <int value="685091421" label="unzip_service"/>
+  <int value="692677280" label="audio"/>
+  <int value="737685379" label="file_util"/>
+  <int value="862971321" label="data_decoder"/>
+  <int value="882338710" label="metrics"/>
+  <int value="1051118555" label="resource_coordinator"/>
+  <int value="1340314881" label="media.mojom.CdmService"/>
+  <int value="1395049324" label="patch_service"/>
+  <int value="1411170475" label="chrome.mojom.ProcessorMetrics"/>
+  <int value="1484328260" label="autoclick_app"/>
+  <int value="1624669190" label="chrome.mojom.UtilReadIcon"/>
+  <int value="1746181704" label="proxy_resolver.mojom.ProxyResolverFactory"/>
+  <int value="1803540096" label="tap_visualizer_app"/>
+  <int value="1882216268" label="patch.mojom.FilePatcher"/>
+  <int value="1893208764" label="chrome.mojom.UtilWin"/>
+  <int value="1937572987" label="shortcut_viewer_app"/>
+  <int value="1967189975" label="util_win"/>
+  <int value="1968783712" label="quick_launch_app"/>
+  <int value="1998508722" label="echo"/>
+  <int value="2077967579" label="pdf_compositor"/>
+</enum>
+
 <enum name="VersionComparison">
   <summary>The difference between two compared versions.</summary>
   <int value="0" label="Same">No version between versions.</int>
   <int value="1" label="Minor">A difference in minor versions.</int>
   <int value="2" label="Major">A difference in major versions.</int>
+</enum>
+
+<enum name="WindowsExitCode">
+<!-- These are raw exit codes returned from Windows APIs. See also the CrashExitCodes enum. -->
+
+  <int value="-2147483647" label="0x80000001 - EXCEPTION_GUARD_PAGE"/>
+  <int value="-2147483646"
+      label="0x80000002 - EXCEPTION_DATATYPE_MISALIGNMENT"/>
+  <int value="-2147483645" label="0x80000003 - STATUS_BREAKPOINT"/>
+  <int value="-2147483644" label="0x80000004 - EXCEPTION_SINGLE_STEP"/>
+  <int value="-1073741823" label="0xC0000001 - STATUS_UNSUCCESSFUL"/>
+  <int value="-1073741822" label="0xC0000002 - STATUS_NOT_IMPLEMENTED"/>
+  <int value="-1073741819" label="0xC0000005 - STATUS_ACCESS_VIOLATION"/>
+  <int value="-1073741818" label="0xC0000006 - EXCEPTION_IN_PAGE_ERROR"/>
+  <int value="-1073741816" label="0xC0000008 - EXCEPTION_INVALID_HANDLE"/>
+  <int value="-1073741811" label="0xC000000D - STATUS_INVALID_PARAMETER"/>
+  <int value="-1073741803" label="0xC0000015 - STATUS_NONEXISTENT_SECTOR"/>
+  <int value="-1073741801" label="0xC0000017 - STATUS_NO_MEMORY"/>
+  <int value="-1073741800" label="0xC0000018 - STATUS_CONFLICTING_ADDRESSES"/>
+  <int value="-1073741795" label="0xC000001D - EXCEPTION_ILLEGAL_INSTRUCTION"/>
+  <int value="-1073741794" label="0xC000001E - STATUS_INVALID_LOCK_SEQUENCE"/>
+  <int value="-1073741790" label="0xC0000022 - STATUS_ACCESS_DENIED"/>
+  <int value="-1073741788" label="0xC0000024 - STATUS_OBJECT_TYPE_MISMATCH"/>
+  <int value="-1073741739" label="0xC0000055 - STATUS_LOCK_NOT_GRANTED"/>
+  <int value="-1073741684"
+      label="0xC000008C - EXCEPTION_ARRAY_BOUNDS_EXCEEDED"/>
+  <int value="-1073741682" label="0xC000008E - EXCEPTION_FLT_DIVIDE_BY_ZERO"/>
+  <int value="-1073741681" label="0xC000008F - EXCEPTION_FLT_INEXACT_RESULT"/>
+  <int value="-1073741680"
+      label="0xC0000090 - EXCEPTION_FLT_INVALID_OPERATION"/>
+  <int value="-1073741679" label="0xC0000091 - EXCEPTION_FLT_OVERFLOW"/>
+  <int value="-1073741678" label="0xC0000092 - EXCEPTION_FLT_STACK_CHECK"/>
+  <int value="-1073741677" label="0xC0000093 - EXCEPTION_FLT_UNDERFLOW"/>
+  <int value="-1073741676" label="0xC0000094 - EXCEPTION_INT_DIVIDE_BY_ZERO"/>
+  <int value="-1073741675" label="0xC0000095 - EXCEPTION_INT_OVERFLOW"/>
+  <int value="-1073741571" label="0xC00000FD - EXCEPTION_STACK_OVERFLOW"/>
+  <int value="-1073741569" label="0xC00000FF - STATUS_BAD_FUNCTION_TABLE"/>
+  <int value="-1073741558" label="0xC000010A - STATUS_PROCESS_IS_TERMINATING"/>
+  <int value="-1073741523" label="0xC000012D - STATUS_COMMITMENT_LIMIT"/>
+  <int value="-1073741502" label="0xC0000142 - STATUS_DLL_INIT_FAILED"/>
+  <int value="-1073741420" label="0xC0000194 - EXCEPTION_POSSIBLE_DEADLOCK"/>
+  <int value="-1073741224" label="0xC0000258 - STATUS_NO_CALLBACK_ACTIVE"/>
+  <int value="-1073741212" label="0xC0000264 - STATUS_RESOURCE_NOT_OWNED"/>
+  <int value="-1073741205" label="0xC000026B - STATUS_DLL_INIT_FAILED_LOGOFF"/>
+  <int value="-1073741132" label="0xC00002B4 - STATUS_FLOAT_MULTIPLE_FAULTS"/>
+  <int value="-1073741131" label="0xC00002B5 - STATUS_FLOAT_MULTIPLE_TRAPS"/>
+  <int value="-1073740972" label="0xC0000354 - STATUS_DEBUGGER_INACTIVE"/>
+  <int value="-1073740940" label="0xC0000374 - STATUS_HEAP_CORRUPTION"/>
+  <int value="-1073740791" label="0xC0000409 - STATUS_STACK_BUFFER_OVERRUN"/>
+  <int value="-1073740777"
+      label="0xC0000417 - STATUS_INVALID_CRUNTIME_PARAMETER"/>
+  <int value="-1073740760" label="0xC0000428 - STATUS_INVALID_IMAGE_HASH"/>
+  <int value="-1073740022"
+      label="0xC000070A - STATUS_THREADPOOL_HANDLE_EXCEPTION"/>
+  <int value="-1073740021"
+      label="0xC000070B - STATUS_THREADPOOL_SET_EVENT_ON_COMPLETION_FAILED"/>
+  <int value="-1073740020"
+      label="0xC000070C -
+             STATUS_THREADPOOL_RELEASE_SEMAPHORE_ON_COMPLETION_FAILED"/>
+  <int value="-1073740018"
+      label="0xC000070E - STATUS_THREADPOOL_FREE_LIBRARY_ON_COMPLETION_FAILED"/>
+  <int value="-1073740016"
+      label="0xC0000710 - STATUS_CALLBACK_RETURNED_WHILE_IMPERSONATING"/>
+  <int value="-1073740004" label="0xC000071C - STATUS_INVALID_THREAD"/>
+  <int value="-1073740003"
+      label="0xC000071D - STATUS_CALLBACK_RETURNED_TRANSACTION"/>
+  <int value="-1073740002"
+      label="0xC000071E - STATUS_CALLBACK_RETURNED_LDR_LOCK"/>
+  <int value="-1073740001" label="0xC000071F - STATUS_CALLBACK_RETURNED_LANG"/>
+  <int value="-1073610685" label="0xC0020043 - RPC_NT_INTERNAL_ERROR"/>
+  <int value="-1072365553" label="0xC015000F - STATUS_SXS_EARLY_DEACTIVATION"/>
+  <int value="-1072365552"
+      label="0xC0150010 - STATUS_SXS_INVALID_DEACTIVATION"/>
+  <int value="-1072365551"
+      label="0xC0150011 - STATUS_SXS_MULTIPLE_DEACTIVATION"/>
+  <int value="-1072365548"
+      label="0xC0150014 - STATUS_SXS_CORRUPT_ACTIVATION_STACK"/>
+  <int value="-1066598274" label="FACILITY_VISUALCPP/ERROR_MOD_NOT_FOUND"/>
+  <int value="-1066598273" label="FACILITY_VISUALCPP/ERROR_PROC_NOT_FOUND"/>
+  <int value="-805306369" label="0xCFFFFFFF - Hung browser killed."/>
+  <int value="-536870904" label="base::win::kOomExceptionCode"/>
+  <int value="-529697949" label="EH_EXCEPTION_NUMBER"/>
+  <int value="-36863" label="0xFFFF7001 - Crashpad kCrashExitCodeNoDump."/>
+  <int value="-36862" label="0xFFFF7002 - Crashpad kFailedTerminationCode."/>
+  <int value="0" label="content::RESULT_CODE_NORMAL_EXIT"/>
+  <int value="1" label="content::RESULT_CODE_KILLED"/>
+  <int value="2" label="content::RESULT_CODE_HUNG"/>
+  <int value="3" label="content::RESULT_CODE_KILLED_BAD_MESSAGE"/>
+  <int value="4" label="content::RESULT_CODE_GPU_DEAD_ON_ARRIVAL"/>
+  <int value="5" label="chrome::RESULT_CODE_INVALID_CMDLINE_URL"/>
+  <int value="6" label="chrome::RESULT_CODE_BAD_PROCESS_TYPE"/>
+  <int value="7" label="chrome::RESULT_CODE_MISSING_DATA"/>
+  <int value="8" label="chrome::RESULT_CODE_SHELL_INTEGRATION_FAILED"/>
+  <int value="9" label="chrome::RESULT_CODE_MACHINE_LEVEL_INSTALL_EXISTS"/>
+  <int value="10" label="chrome::RESULT_CODE_UNINSTALL_CHROME_ALIVE"/>
+  <int value="11" label="chrome::RESULT_CODE_UNINSTALL_USER_CANCEL"/>
+  <int value="12" label="chrome::RESULT_CODE_UNINSTALL_DELETE_PROFILE"/>
+  <int value="13" label="chrome::RESULT_CODE_UNSUPPORTED_PARAM"/>
+  <int value="14" label="chrome::RESULT_CODE_IMPORTER_HUNG"/>
+  <int value="15" label="chrome::RESULT_CODE_RESPAWN_FAILED"/>
+  <int value="16" label="chrome::RESULT_CODE_NORMAL_EXIT_EXP1"/>
+  <int value="17" label="chrome::RESULT_CODE_NORMAL_EXIT_EXP2"/>
+  <int value="18" label="chrome::RESULT_CODE_NORMAL_EXIT_EXP3"/>
+  <int value="19" label="chrome::RESULT_CODE_NORMAL_EXIT_EXP4"/>
+  <int value="20" label="chrome::RESULT_CODE_NORMAL_EXIT_CANCEL"/>
+  <int value="21" label="chrome::RESULT_CODE_PROFILE_IN_USE"/>
+  <int value="22" label="chrome::RESULT_CODE_PACK_EXTENSION_ERROR"/>
+  <int value="23" label="chrome::RESULT_CODE_UNINSTALL_EXTENSION_ERROR"/>
+  <int value="24" label="chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED"/>
+  <int value="25" label="chrome::RESULT_CODE_NOTUSED_1"/>
+  <int value="26" label="chrome::RESULT_CODE_INSTALL_FROM_WEBSTORE_ERROR_2"/>
+  <int value="27" label="chrome::RESULT_CODE_NOTUSED_2"/>
+  <int value="28" label="chrome::RESULT_CODE_EULA_REFUSED"/>
+  <int value="29" label="chrome::RESULT_CODE_SXS_MIGRATION_FAILED"/>
+  <int value="30" label="chrome::RESULT_CODE_ACTION_DISALLOWED_BY_POLICY"/>
+  <int value="31" label="chrome::RESULT_CODE_INVALID_SANDBOX_STATE"/>
+  <int value="32" label="chrome::RESULT_CODE_CLOUD_POLICY_ENROLLMENT_FAILED"/>
+  <int value="33" label="chrome::RESULT_CODE_DOWNGRADE_AND_RELAUNCH"/>
+  <int value="34" label="chrome::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST"/>
+  <int value="35" label="chrome::RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED"/>
+  <int value="259" label="0x103 - STILL_ACTIVE."/>
+  <int value="1285" label="ERROR_DELAY_LOAD_FAILED"/>
+  <int value="1717" label="RPC_S_UNKNOWN_IF"/>
+  <int value="1722" label="RPC_S_SERVER_UNAVAILABLE"/>
+  <int value="1726" label="RPC_S_CALL_FAILED"/>
+  <int value="1766" label="RPC_S_INTERNAL_ERROR"/>
+  <int value="1783" label="RPC_X_BAD_STUB_DATA"/>
+  <int value="1818" label="RPC_S_CALL_CANCELLED"/>
+  <int value="85436397" label="0x517a7ed - Crashpad simulated exception"/>
+  <int value="1073807364" label="0x40010004 - DBG_TERMINATE_PROCESS"/>
 </enum>
 
 </enums>

@@ -11,12 +11,14 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_test_file_activity_observer.h"
 #include "chrome/browser/extensions/install_verifier.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_download_http_response.h"
 #include "content/public/test/test_file_error_injector.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
+#include "ui/base/window_open_disposition.h"
 
 class DownloadPrefs;
 
@@ -101,8 +103,8 @@ class DownloadTestBase : public InProcessBrowserTest {
 #if BUILDFLAG(IS_WIN)
   static constexpr char kDangerousMockFilePath[] =
       "/downloads/dangerous/dangerous.exe";
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/1264058): Find an actually "dangerous" extension for
+#elif BUILDFLAG(IS_POSIX)
+  // TODO(crbug.com/40800578): Find an actually "dangerous" extension for
   // Fuchsia.
   static constexpr char kDangerousMockFilePath[] =
       "/downloads/dangerous/dangerous.sh";
@@ -268,6 +270,8 @@ class DownloadTestBase : public InProcessBrowserTest {
   }
 
  private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
+
   // Location of the test data.
   base::FilePath test_dir_;
 

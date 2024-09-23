@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -73,14 +74,14 @@ bool IsValidTarget(aura::Window* event_target, aura::Window* target) {
 aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
                                gfx::Point* location) {
   switch (event.type()) {
-    case ui::ET_MOUSE_CAPTURE_CHANGED:
+    case ui::EventType::kMouseCaptureChanged:
       // On windows we can get a capture changed without an exit. We need to
       // reset state when this happens else the tooltip may incorrectly show.
       return nullptr;
-    case ui::ET_MOUSE_EXITED:
+    case ui::EventType::kMouseExited:
       return nullptr;
-    case ui::ET_MOUSE_MOVED:
-    case ui::ET_MOUSE_DRAGGED: {
+    case ui::EventType::kMouseMoved:
+    case ui::EventType::kMouseDragged: {
       aura::Window* event_target = static_cast<aura::Window*>(event.target());
       if (!event_target)
         return nullptr;
@@ -124,7 +125,7 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
       return screen_target;
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -215,8 +216,9 @@ void TooltipController::SetTooltipsEnabled(bool enable) {
 }
 
 void TooltipController::OnKeyEvent(ui::KeyEvent* event) {
-  if (event->type() != ui::ET_KEY_PRESSED)
+  if (event->type() != ui::EventType::kKeyPressed) {
     return;
+  }
   // Always hide a tooltip on a key press. Since this controller is a pre-target
   // handler (i.e. the events are received here before the target act on them),
   // hiding the tooltip will not cancel any action supposed to show it triggered
@@ -224,7 +226,7 @@ void TooltipController::OnKeyEvent(ui::KeyEvent* event) {
   HideAndReset();
 }
 
-// TODO(crbug.com/1492222): Figure out why we have code both here and
+// TODO(crbug.com/40285439): Figure out why we have code both here and
 // in DesktopNativeWidgetAura to handle mouse (and key?) events. Seems like we
 // should only need one set of them.
 void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
@@ -235,24 +237,24 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
     return;
   }
   switch (event->type()) {
-    case ui::ET_MOUSE_EXITED:
+    case ui::EventType::kMouseExited:
       // TODO(bebeaudr): Keyboard-triggered tooltips that show up right where
       // the cursor currently is are hidden as soon as they show up because of
       // this event. Handle this case differently to fix the issue.
       //
-      // Whenever a tooltip is closed, an ET_MOUSE_EXITED event is fired, even
-      // if the cursor is not in the tooltip's window. Make sure that these
-      // mouse exited events don't interfere with keyboard triggered tooltips by
-      // returning early.
+      // Whenever a tooltip is closed, an EventType::kMouseExited event is
+      // fired, even if the cursor is not in the tooltip's window. Make sure
+      // that these mouse exited events don't interfere with keyboard triggered
+      // tooltips by returning early.
       if (state_manager_->tooltip_parent_window() &&
           state_manager_->tooltip_trigger() == TooltipTrigger::kKeyboard) {
         return;
       }
       SetObservedWindow(nullptr);
       break;
-    case ui::ET_MOUSE_CAPTURE_CHANGED:
-    case ui::ET_MOUSE_MOVED:
-    case ui::ET_MOUSE_DRAGGED: {
+    case ui::EventType::kMouseCaptureChanged:
+    case ui::EventType::kMouseMoved:
+    case ui::EventType::kMouseDragged: {
       // Synthesized mouse moves shouldn't cause us to show a tooltip. See
       // https://crbug.com/1146981.
       if (event->IsSynthesized())
@@ -291,7 +293,7 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
       }
       break;
     }
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kMousePressed:
       if ((event->flags() & ui::EF_IS_NON_CLIENT) == 0) {
         aura::Window* target = static_cast<aura::Window*>(event->target());
         // We don't get a release for non-client areas.
@@ -303,7 +305,7 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
       }
       state_manager_->HideAndReset();
       break;
-    case ui::ET_MOUSEWHEEL:
+    case ui::EventType::kMousewheel:
       // Hide the tooltip for click, release, drag, wheel events.
       if (state_manager_->IsVisible())
         state_manager_->HideAndReset();
@@ -323,7 +325,7 @@ void TooltipController::OnCancelMode(ui::CancelModeEvent* event) {
   HideAndReset();
 }
 
-base::StringPiece TooltipController::GetLogContext() const {
+std::string_view TooltipController::GetLogContext() const {
   return "TooltipController";
 }
 
@@ -542,7 +544,7 @@ bool TooltipController::ShouldHideBecauseMouseWasOncePressed() {
   // This is required since client-side tooltip appears as empty text on server
   // side so that the tooltip is overridden by empty text regardless of the
   // actual text to show.
-  // TODO(crbug.com/1383844): Remove or update this special path when tooltip
+  // TODO(crbug.com/40246278): Remove or update this special path when tooltip
   // identifier is implemented.
   if (wm::GetTooltipText(observed_window_).empty())
     return false;

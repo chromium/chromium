@@ -6,13 +6,11 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/root_window_controller.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/apps/app_service/browser_app_instance.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/ash/shelf/browser_app_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -86,9 +84,6 @@ void BrowserAppShelfController::OnBrowserAppAdded(
     case apps::BrowserAppInstance::Type::kAppWindow: {
       shelf_spinner_controller_->CloseSpinner(instance.app_id);
       CreateOrUpdateShelfItem(id, ash::STATUS_RUNNING);
-      if (ash::features::IsStandaloneWindowMigrationUxEnabled()) {
-        MaybeShowStandaloneMigrationNudge(instance.app_id, profile_);
-      }
       break;
     }
     case apps::BrowserAppInstance::Type::kAppTab:

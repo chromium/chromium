@@ -26,6 +26,7 @@ mojom("mojom") {
     "mask_filter_info.mojom",
     "overlay_priority_hint.mojom",
     "overlay_transform.mojom",
+    "overlay_type.mojom",
     "presentation_feedback.mojom",
     "rrect_f.mojom",
     "selection_bound.mojom",
@@ -102,6 +103,10 @@ mojom("mojom") {
     },
     {
       types = [
+        {
+          mojom = "gfx.mojom.ContentColorUsage"
+          cpp = "::gfx::ContentColorUsage"
+        },
         {
           mojom = "gfx.mojom.DisplayColorSpaces"
           cpp = "::gfx::DisplayColorSpaces"
@@ -319,6 +324,16 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "frame_data_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gfx" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gfx.mojom.OverlayType"
+          cpp = "::gfx::OverlayType"
+        },
+      ]
+      traits_headers = [ "overlay_type_mojom_traits.h" ]
       traits_public_deps = [ "//ui/gfx" ]
     },
   ]

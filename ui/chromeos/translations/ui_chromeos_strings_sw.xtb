@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Seva Mbadala ya Seva Pangishi ya SOCKS</translation>
 <translation id="3104793765551262433">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Umezuiwa na Msimamizi wako, Maelezo</translation>
-<translation id="3113153474486991170">Imeshindwa kufungua "<ph name="PATH" />" kutoka hapa. Tafadhali inakili kwenye sehemu ya "Faili zangu" ili uifungue.</translation>
 <translation id="3113592018909187986">Umebakisha jaribio moja. Hutaweza kutumia mtandao huu hadi utakapoweka PIN mpya.</translation>
 <translation id="3124404833828281817">Mtu aliyezama kwenye mawazo</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Ghairi <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Haijawashwa, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao, asilimia <ph name="SIGNAL_STRENGTH" />, Maelezo</translation>
 <translation id="3691184985318546178">Kisinhala</translation>
+<translation id="3702842351052426940">Huenda SIM kadi au wasifu wa eSIM yako umezimwa. Jaribu kubadilisha SIM kadi au wasifu wa eSIM yako.</translation>
 <translation id="3722341589402358578">Hitilafu fulani imetokea. Huenda baadhi ya vipengee havijafutwa.</translation>
 <translation id="3726463242007121105">Kifaa hakiwezi kufunguliwa kwa sababu mfumo wake wa faili hauwezi kutumika.</translation>
 <translation id="3727148787322499904">Kubadilisha mipangilio hii kutaathiri mitandao yote inayoshirikiwa</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Seva hii mbadala inadhibitiwa na msimamizi wako</translation>
 <translation id="3830674330436234648">Kipengele cha kucheza hakipatikani.</translation>
 <translation id="383652340667548381">Kiserbia</translation>
+<translation id="3839045880592694915">Mtoa huduma wako haruhusu modemu yako kuunganishwa. Wasiliana na mtoa huduma wako ili upate maelezo zaidi.</translation>
 <translation id="385051799172605136">Rudi nyuma</translation>
-<translation id="3851491607336266896">Kimeunganishwa, muunganisho hafifu</translation>
 <translation id="3855472144336161447">Kijerumani Neo 2</translation>
 <translation id="3858860766373142691">Jina</translation>
 <translation id="3866249974567520381">Maelezo</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Faili za Microsoft zilizofunguliwa hivi karibuni zimehamishiwa kwenye OneDrive</translation>
 <translation id="4002066346123236978">Kichwa</translation>
 <translation id="4017788180641807848">Kiingereza (Marekani) kwenye kibodi ya Workman</translation>
-<translation id="4019998208269143058">Bandika kwenye faili zinazofikiwa kwa haraka</translation>
 <translation id="4040753847560036377">PUK si sahihi</translation>
 <translation id="4057991113334098539">Inawashwa...</translation>
 <translation id="4092890906744441904">Kiayalandi</translation>
+<translation id="4101601646343868113">Ingia katika mtandao wako wa simu kisha uthibitishe kuwa mpango wako wa data ya mtandao wa simu unatumika</translation>
 <translation id="4124731372776320263">Inasawazisha faili 1 ya Hifadhi</translation>
 <translation id="4124935795427217608">Farasi mwenye pembe</translation>
 <translation id="4131235941541910880">Hamishia kwenye tupio vipengee ambavyo huvihitaji</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Kitamili kwenye kibodi ya Tamil99</translation>
 <translation id="5633226425545095130">Hatua ya kuhamisha kipengee hiki itakishiriki na kila mtu anayeweza kuona folda ya pamoja iitwayo '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">Sikiliza</translation>
+<translation id="5650895901941743674">Angalia mipangilio ya APN yako</translation>
 <translation id="5669691691057771421">Weka PIN mpya</translation>
 <translation id="5678784840044122290">Programu ya Linux itapatikana kwenye Kituo chako na huenda pia ikaonyesha aikoni kwenye Kifungua programu chako.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Imeshindwa kutenganishwa kwenye kumbukumbu au diski pepe<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Betri ya Simu <ph name="BATTERY_STATUS" />%, Unganisha</translation>
 <translation id="6269630227984243955">Kimalei</translation>
 <translation id="6271903698064569429">Huwezi kupakia faili kwa sababu "<ph name="SHARED_DRIVE_NAME" />" haina nafasi ya hifadhi ya kutosha.</translation>
+<translation id="6279140785485544797">Huenda muda wa kutumia data yako ya mtandao wa simu umeisha. Wasiliana na mtoa huduma wako ili upate usaidizi.</translation>
 <translation id="6287852322318138013">Chagua programu ili ufungue faili hii</translation>
 <translation id="6295542640242147836">Kufunga SIM</translation>
 <translation id="6296410173147755564">PUK si sahihi</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423">Faili ya kumbukumbu ya <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Kupunga mkono</translation>
 <translation id="6327785803543103246">Ugunduzi wa seva mbadala za wavuti kiotomatiki</translation>
-<translation id="6337014272874260727">Bandua kutoka kwenye faili zinazofikiwa kwa haraka</translation>
 <translation id="6339145975392024142">Kibodi ya Kimataifa ya Marekani (PC)</translation>
 <translation id="6356685157277930264">Dirisha la maoni ya faili</translation>
 <translation id="6358884629796491903">Joka</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Saraka iliyochaguliwa sasa</translation>
 <translation id="6751256176799620176">Folda 1 imechaguliwa</translation>
 <translation id="6755827872271341378">Kifaa cha ChromeOS Flex</translation>
+<translation id="6777029074498310250">Tembelea <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> ili upate maelezo zaidi</translation>
 <translation id="6790428901817661496">Cheza</translation>
 <translation id="6794539005637808366">Rejesha kipengee au buruta ukipeleke kwenye folda mpya iliyo nje ya tupio</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Kitamili kwenye kibodi ya Hati za Kihindi</translation>
 <translation id="7088615885725309056">Za awali</translation>
 <translation id="7103992300314999525">Kimasedonia</translation>
+<translation id="7104338189998813914">Hitilafu imetokea wakati wa kufikia akaunti yako ya OneDrive</translation>
 <translation id="7106346894903675391">Nunua hifadhi zaidi...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;Hifadhi ya utafutaji&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Fonetiki ya Kikanada</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Subiri kidogo</translation>
 <translation id="7600126690270271294">Kiserbia</translation>
 <translation id="7603724359189955920">Gridi</translation>
+<translation id="7624010287655004652">Imefungwa na mtoa huduma mwingine wa vifaa vya mkononi</translation>
 <translation id="7627790789328695202">Lo, <ph name="FILE_NAME" /> tayari ipo. Ibadili jina na ujaribu tena.</translation>
 <translation id="7628656427739290098">Imekamilisha <ph name="PERCENT" />%.</translation>
 <translation id="7649070708921625228">Usaidizi</translation>
@@ -1009,16 +1013,16 @@
 <translation id="8600173386174225982">Orodha ya faili imebadilishwa kuwa mwonekano wa kijipicha.</translation>
 <translation id="8601932370724196034">Picha ya faili ya Crostini</translation>
 <translation id="8609695766746872526">Kiaislandi</translation>
+<translation id="8630384863424041081">Weka PIN ya SIM kadi yako au PIN chaguomsingi iliyotolewa na mtoa huduma wako. Wasiliana na mtoa huduma wako ili upate usaidizi.</translation>
 <translation id="863903787380594467">PIN si sahihi. Umebakisha majaribio <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Mlango</translation>
 <translation id="8656407365183407932">Faili zako zilizo nje ya mtandao zilipaswa kuondolewa</translation>
 <translation id="8656768832129462377">Usikague</translation>
 <translation id="8688591111840995413">Nenosiri lisilo sahihi</translation>
 <translation id="8698464937041809063">Mchoro wa Google</translation>
-<translation id="8698877009525468705">Faili hii ni ya siri na inazingatia vizuizi vya sera ya msimamizi.</translation>
+<translation id="8698877009525468705">Faili hii ni ya siri na inadhibitiwa na vizuizi vya sera ya msimamizi.</translation>
 <translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8713112442029511308">Kimalta</translation>
-<translation id="8714138378966541668">Umefungwa na mtoa huduma</translation>
 <translation id="8714406895390098252">Baiskeli</translation>
 <translation id="8719721339511222681">Umechagua <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Kikroeshia</translation>

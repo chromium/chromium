@@ -7,17 +7,22 @@
 
 #import <UIKit/UIKit.h>
 
+@class GridItemIdentifier;
+
 // Reflects user’s change in grid's model.
 @protocol GridViewControllerMutator <NSObject>
 
 // Notifies the model when the user tapped on a specific item id.
-- (void)userTappedOnItemID:(web::WebStateID)itemID;
+- (void)userTappedOnItemID:(GridItemIdentifier*)itemID;
 
 // Adds the given `itemID` to the selected item lists.
-- (void)addToSelectionItemID:(web::WebStateID)itemID;
+- (void)addToSelectionItemID:(GridItemIdentifier*)itemID;
 
 // Removes the given `itemID` to the selected item lists.
-- (void)removeFromSelectionItemID:(web::WebStateID)itemID;
+- (void)removeFromSelectionItemID:(GridItemIdentifier*)itemID;
+
+// Notifies the model to close a specific item identifier.
+- (void)closeItemWithIdentifier:(GridItemIdentifier*)identifier;
 
 @end
 

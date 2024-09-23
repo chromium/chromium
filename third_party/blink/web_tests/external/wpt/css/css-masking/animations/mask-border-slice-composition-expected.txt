@@ -1,0 +1,116 @@
+This is a testharness.js-based test.
+Found 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Compositing: property <mask-border-slice> underlying [1 2 3 4] from add [1 2 3 4] to add [101 102 103 104] at (-0.25) should be [0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [1 2 3 4] from add [1 2 3 4] to add [101 102 103 104] at (0) should be [2 4 6 8]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [1 2 3 4] from add [1 2 3 4] to add [101 102 103 104] at (0.25) should be [27 29 31 33]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [1 2 3 4] from add [1 2 3 4] to add [101 102 103 104] at (0.5) should be [52 54 56 58]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [1 2 3 4] from add [1 2 3 4] to add [101 102 103 104] at (0.75) should be [77 79 81 83]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [1 2 3 4] from add [1 2 3 4] to add [101 102 103 104] at (1) should be [102 104 106 108]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [1 2 3 4] from add [1 2 3 4] to add [101 102 103 104] at (1.25) should be [127 129 131 133]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [100 200 300 400 fill] from add [100 fill] to add [200 300 500 fill] at (-0.25) should be [175 250 300 450 fill]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [100 200 300 400 fill] from add [100 fill] to add [200 300 500 fill] at (0) should be [200 300 400 500 fill]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [100 200 300 400 fill] from add [100 fill] to add [200 300 500 fill] at (0.25) should be [225 350 500 550 fill]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [100 200 300 400 fill] from add [100 fill] to add [200 300 500 fill] at (0.5) should be [250 400 600 600 fill]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [100 200 300 400 fill] from add [100 fill] to add [200 300 500 fill] at (0.75) should be [275 450 700 650 fill]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [100 200 300 400 fill] from add [100 fill] to add [200 300 500 fill] at (1) should be [300 500 800 700 fill]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [100 200 300 400 fill] from add [100 fill] to add [200 300 500 fill] at (1.25) should be [325 550 900 750 fill]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [1 2 3% 4%] from add [1 2 3% 4%] to add [101 102 103% 104%] at (-0.25) should be [0 0 0% 0%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [1 2 3% 4%] from add [1 2 3% 4%] to add [101 102 103% 104%] at (0) should be [2 4 6% 8%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [1 2 3% 4%] from add [1 2 3% 4%] to add [101 102 103% 104%] at (0.25) should be [27 29 31% 33%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [1 2 3% 4%] from add [1 2 3% 4%] to add [101 102 103% 104%] at (0.5) should be [52 54 56% 58%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [1 2 3% 4%] from add [1 2 3% 4%] to add [101 102 103% 104%] at (0.75) should be [77 79 81% 83%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [1 2 3% 4%] from add [1 2 3% 4%] to add [101 102 103% 104%] at (1) should be [102 104 106% 108%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [1 2 3% 4%] from add [1 2 3% 4%] to add [101 102 103% 104%] at (1.25) should be [127 129 131% 133%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10% 20%] from add [190% 180% 290% 280%] to add [90% 80%] at (-0.25) should be [225% 225% 350% 350%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10% 20%] from add [190% 180% 290% 280%] to add [90% 80%] at (0) should be [200% 200% 300% 300%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10% 20%] from add [190% 180% 290% 280%] to add [90% 80%] at (0.25) should be [175% 175% 250% 250%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10% 20%] from add [190% 180% 290% 280%] to add [90% 80%] at (0.5) should be [150% 150% 200% 200%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10% 20%] from add [190% 180% 290% 280%] to add [90% 80%] at (0.75) should be [125% 125% 150% 150%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10% 20%] from add [190% 180% 290% 280%] to add [90% 80%] at (1) should be [100%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10% 20%] from add [190% 180% 290% 280%] to add [90% 80%] at (1.25) should be [75% 75% 50% 50%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20%] from replace [100 100%] to add [190 180%] at (-0.25) should be [75 75%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20%] from replace [100 100%] to add [190 180%] at (0) should be [100 100%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20%] from replace [100 100%] to add [190 180%] at (0.25) should be [125 125%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20%] from replace [100 100%] to add [190 180%] at (0.5) should be [150 150%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20%] from replace [100 100%] to add [190 180%] at (0.75) should be [175 175%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20%] from replace [100 100%] to add [190 180%] at (1) should be [200 200%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20%] from replace [100 100%] to add [190 180%] at (1.25) should be [225 225%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10% 20] from add [90% 80] to replace [0% 0 0% 0] at (-0.25) should be [125% 125]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10% 20] from add [90% 80] to replace [0% 0 0% 0] at (0) should be [100% 100]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10% 20] from add [90% 80] to replace [0% 0 0% 0] at (0.25) should be [75% 75]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10% 20] from add [90% 80] to replace [0% 0 0% 0] at (0.5) should be [50% 50]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10% 20] from add [90% 80] to replace [0% 0 0% 0] at (0.75) should be [25% 25]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10% 20] from add [90% 80] to replace [0% 0 0% 0] at (1) should be [0% 0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10% 20] from add [90% 80] to replace [0% 0 0% 0] at (1.25) should be [0% 0]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20] from add [100% 150%] to add [200% 250% fill] at (-0.25) should be [100% 150%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20] from add [100% 150%] to add [200% 250% fill] at (0) should be [100% 150%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20] from add [100% 150%] to add [200% 250% fill] at (0.25) should be [100% 150%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20] from add [100% 150%] to add [200% 250% fill] at (0.5) should be [200% 250% fill]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20] from add [100% 150%] to add [200% 250% fill] at (0.75) should be [200% 250% fill]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20] from add [100% 150%] to add [200% 250% fill] at (1) should be [200% 250% fill]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20] from add [100% 150%] to add [200% 250% fill] at (1.25) should be [200% 250% fill]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20] from add [100 150%] to add [200% 250] at (-0.25) should be [100 150%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20] from add [100 150%] to add [200% 250] at (0) should be [100 150%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20] from add [100 150%] to add [200% 250] at (0.25) should be [100 150%]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20] from add [100 150%] to add [200% 250] at (0.5) should be [200% 250]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20] from add [100 150%] to add [200% 250] at (0.75) should be [200% 250]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20] from add [100 150%] to add [200% 250] at (1) should be [200% 250]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Compositing: property <mask-border-slice> underlying [10 20] from add [100 150%] to add [200% 250] at (1.25) should be [200% 250]
+  assert_true: 'from' value should be supported expected true got false
+Harness: the test ran to completion.
+

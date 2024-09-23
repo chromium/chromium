@@ -25,7 +25,7 @@ using QueryScheduler = internal::QueryScheduler;
 // The minimum delay between QueryOnce() calls for kMemorySummary resources.
 // This can only be updated in unit tests so doesn't need to be thread-safe.
 // Copied from ProcessMetricsDecorator::kMinImmediateRefreshDelay.
-// TODO(crbug.com/1471683): Manage timing centrally in QueryScheduler.
+// TODO(crbug.com/40926264): Manage timing centrally in QueryScheduler.
 base::TimeDelta g_min_memory_query_delay = base::Seconds(2);
 
 void AddScopedQueryToScheduler(QueryParams* query_params,
@@ -36,6 +36,11 @@ void AddScopedQueryToScheduler(QueryParams* query_params,
 void RemoveScopedQueryFromScheduler(std::unique_ptr<QueryParams> query_params,
                                     QueryScheduler* scheduler) {
   scheduler->RemoveScopedQuery(std::move(query_params));
+}
+
+void StartRepeatingQueryInScheduler(QueryParams* query_params,
+                                    QueryScheduler* scheduler) {
+  scheduler->StartRepeatingQuery(query_params);
 }
 
 void RequestResultsFromScheduler(
@@ -192,6 +197,10 @@ void ScopedResourceUsageQuery::RemoveObserver(QueryResultObserver* observer) {
 
 void ScopedResourceUsageQuery::Start(base::TimeDelta delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Unretained is safe because the destructor passes `params_` to the scheduler
+  // sequence to delete.
+  QueryScheduler::CallWithScheduler(base::BindOnce(
+      &StartRepeatingQueryInScheduler, base::Unretained(params_.get())));
   throttled_timer_->StartTimer(delay, params_.get(), observer_list_);
 }
 
@@ -276,10 +285,7 @@ void QueryBuilder::QueryOnce(
 
 QueryBuilder QueryBuilder::Clone() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Clone the parameter contents to a newly-allocated QueryParams with the copy
-  // constructor.
-  auto cloned_params = std::make_unique<QueryParams>(*params_);
-  return QueryBuilder(std::move(cloned_params));
+  return QueryBuilder(params_->Clone());
 }
 
 QueryParams* QueryBuilder::GetParamsForTesting() const {
@@ -302,7 +308,7 @@ void QueryBuilder::ValidateQuery() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(params_);
   CHECK(!params_->contexts.IsEmpty());
-  CHECK(!params_->resource_types.Empty());
+  CHECK(!params_->resource_types.empty());
 }
 
 }  // namespace resource_attribution

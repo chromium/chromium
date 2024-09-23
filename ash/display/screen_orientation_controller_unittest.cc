@@ -9,7 +9,6 @@
 
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/accelerometer/accelerometer_types.h"
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
@@ -24,8 +23,11 @@
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/numerics/math_constants.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"
@@ -128,8 +130,7 @@ class ScreenOrientationControllerTest : public AshTestBase {
  protected:
   aura::Window* CreateAppWindowInShellWithId(int id) {
     aura::Window* window = CreateTestWindowInShellWithId(id);
-    window->SetProperty(aura::client::kAppType,
-                        static_cast<int>(AppType::CHROME_APP));
+    window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::CHROME_APP);
     return window;
   }
 
@@ -183,7 +184,7 @@ TEST_F(ScreenOrientationControllerTest, LockOrientation) {
   EXPECT_TRUE(RotationLocked());
 
   auto modal = CreateTestWindow(gfx::Rect(0, 0, 400, 400));
-  modal->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+  modal->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kSystem);
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
   EXPECT_TRUE(RotationLocked());
 }

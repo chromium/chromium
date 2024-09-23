@@ -5,6 +5,7 @@
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 
 #include "base/containers/contains.h"
+#include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -17,10 +18,15 @@ namespace global_media_controls {
 
 namespace {
 
-constexpr int kMediaListMaxHeight = 478;
+constexpr int kMediaListMaxHeight = 488;
 
 // Thickness of separator border.
 constexpr int kMediaListSeparatorThickness = 2;
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// Padding for the borders and separators for non-CrOS updated UI.
+constexpr int kMediaListUpdatedPadding = 8;
+#endif
 
 std::unique_ptr<views::Border> CreateMediaListSeparatorBorder(SkColor color,
                                                               int thickness) {
@@ -53,6 +59,16 @@ MediaItemUIListView::MediaItemUIListView(
       views::ScrollBar::Orientation::kVertical));
   SetHorizontalScrollBar(std::make_unique<views::OverlayScrollBar>(
       views::ScrollBar::Orientation::kHorizontal));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI)) {
+    auto* layout =
+        static_cast<views::BoxLayout*>(contents()->GetLayoutManager());
+    layout->set_inside_border_insets(
+        gfx::Insets::VH(kMediaListUpdatedPadding, kMediaListUpdatedPadding));
+    layout->set_between_child_spacing(kMediaListUpdatedPadding);
+  }
+#endif
 }
 
 MediaItemUIListView::~MediaItemUIListView() = default;
@@ -62,11 +78,9 @@ void MediaItemUIListView::ShowItem(const std::string& id,
   DCHECK(!base::Contains(items_, id));
   DCHECK_NE(nullptr, item.get());
 
-#if BUILDFLAG(IS_CHROMEOS)
-  bool use_updated_ui =
-      base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI);
-#else
-  bool use_updated_ui =
+  bool use_updated_ui = true;
+#if !BUILDFLAG(IS_CHROMEOS)
+  use_updated_ui =
       base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI);
 #endif
 
@@ -113,11 +127,40 @@ MediaItemUIView* MediaItemUIListView::GetItem(const std::string& id) {
   return items_[id];
 }
 
+void MediaItemUIListView::ShowUpdatedItem(
+    const std::string& id,
+    std::unique_ptr<MediaItemUIUpdatedView> item) {
+  CHECK(!base::Contains(updated_items_, id));
+  CHECK(item.get());
+
+  updated_items_[id] = contents()->AddChildView(std::move(item));
+
+  contents()->InvalidateLayout();
+  PreferredSizeChanged();
+}
+
+void MediaItemUIListView::HideUpdatedItem(const std::string& id) {
+  if (!base::Contains(updated_items_, id)) {
+    return;
+  }
+
+  contents()->RemoveChildViewT(updated_items_[id]);
+  updated_items_.erase(id);
+
+  contents()->InvalidateLayout();
+  PreferredSizeChanged();
+}
+
+MediaItemUIUpdatedView* MediaItemUIListView::GetUpdatedItem(
+    const std::string& id) {
+  return updated_items_[id];
+}
+
 base::WeakPtr<MediaItemUIListView> MediaItemUIListView::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-BEGIN_METADATA(MediaItemUIListView, views::ScrollView)
+BEGIN_METADATA(MediaItemUIListView)
 END_METADATA
 
 }  // namespace global_media_controls

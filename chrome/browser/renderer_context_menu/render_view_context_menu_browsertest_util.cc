@@ -85,13 +85,23 @@ const std::vector<int>& ContextMenuWaiter::GetCapturedCommandIds() const {
   return captured_command_ids_;
 }
 
+const std::vector<int>& ContextMenuWaiter::GetCapturedEnabledCommandIds()
+    const {
+  return captured_enabled_command_ids_;
+}
+
 void ContextMenuWaiter::Cancel(RenderViewContextMenu* context_menu) {
   params_ = context_menu->params();
 
   const ui::SimpleMenuModel& menu_model = context_menu->menu_model();
   captured_command_ids_.reserve(menu_model.GetItemCount());
-  for (size_t i = 0; i < menu_model.GetItemCount(); ++i)
+  captured_enabled_command_ids_.reserve(menu_model.GetItemCount());
+  for (size_t i = 0; i < menu_model.GetItemCount(); ++i) {
     captured_command_ids_.push_back(menu_model.GetCommandIdAt(i));
+    if (menu_model.IsEnabledAt(i)) {
+      captured_enabled_command_ids_.push_back(menu_model.GetCommandIdAt(i));
+    }
+  }
 
   if (maybe_command_to_execute_) {
     if (before_execute_) {

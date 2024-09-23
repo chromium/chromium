@@ -16,7 +16,12 @@
 - (void)dismissPopupMenuAnimated:(BOOL)animated;
 // Adjusts the popup's size when the containing view's size changes.
 - (void)adjustPopupSize;
-
+// Updates the blue dot state for tools menu button on toolbar.
+- (void)updateToolsMenuBlueDotVisibility;
+// Notifies that IPH bubble will be presenting on tools menu button.
+- (void)notifyIPHBubblePresenting;
+// Returns whether overflow menu button (e.g tools menu button) has blue dot.
+- (BOOL)hasBlueDotForOverflowMenu;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_POPUP_MENU_COMMANDS_H_

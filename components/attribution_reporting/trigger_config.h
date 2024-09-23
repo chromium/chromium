@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/event_report_windows.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
@@ -60,25 +61,33 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
   using TriggerDataIndices = base::flat_map<uint32_t, uint8_t>;
   using value_type = std::pair<uint32_t, const TriggerSpec&>;
 
-  static base::expected<TriggerSpecs, mojom::SourceRegistrationError> Parse(
-      const base::Value::Dict&,
-      mojom::SourceType,
-      base::TimeDelta expiry,
-      EventReportWindows default_report_windows,
-      mojom::TriggerDataMatching);
+  // TODO: Merge `ParseTopLevelTriggerData()` into this function and rename it
+  // to `Parse()`.
+  static base::expected<TriggerSpecs, mojom::SourceRegistrationError>
+  ParseFullFlexForTesting(const base::Value::Dict&,
+                          mojom::SourceType,
+                          base::TimeDelta expiry,
+                          EventReportWindows default_report_windows,
+                          mojom::TriggerDataMatching);
 
-  // Creates specs with the default trigger data cardinality for the given
-  // source type.
-  static TriggerSpecs Default(mojom::SourceType, EventReportWindows);
+  // Parses the top-level `trigger_data` field. The resulting value is either
+  // `empty()` or `SingleSharedSpec()`.
+  static base::expected<TriggerSpecs, mojom::SourceRegistrationError>
+  ParseTopLevelTriggerData(const base::Value::Dict&,
+                           mojom::SourceType,
+                           EventReportWindows default_report_windows,
+                           mojom::TriggerDataMatching);
 
   static std::optional<TriggerSpecs> Create(TriggerDataIndices,
-                                            std::vector<TriggerSpec>);
-
-  static TriggerSpecs CreateForTesting(TriggerDataIndices,
-                                       std::vector<TriggerSpec>);
+                                            std::vector<TriggerSpec>,
+                                            MaxEventLevelReports);
 
   // Creates specs matching no trigger data.
   TriggerSpecs();
+
+  // Creates specs with the default trigger data cardinality for the given
+  // source type.
+  TriggerSpecs(mojom::SourceType, EventReportWindows, MaxEventLevelReports);
 
   ~TriggerSpecs();
 
@@ -180,10 +189,21 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
 
   const std::vector<TriggerSpec>& specs() const { return specs_; }
 
+  MaxEventLevelReports max_event_level_reports() const {
+    return max_event_level_reports_;
+  }
+
+  void SetMaxEventLevelReportsForTesting(
+      MaxEventLevelReports max_event_level_reports) {
+    max_event_level_reports_ = max_event_level_reports;
+  }
+
   friend bool operator==(const TriggerSpecs&, const TriggerSpecs&) = default;
 
  private:
-  TriggerSpecs(TriggerDataIndices, std::vector<TriggerSpec>);
+  TriggerSpecs(TriggerDataIndices,
+               std::vector<TriggerSpec>,
+               MaxEventLevelReports);
 
   // These two fields effectively act as a compressed `base::flat_map<uint32_t,
   // scoped_refptr<TriggerSpec>>`, optimized for the fact that there are at most
@@ -196,6 +216,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
   // using `scoped_refptr` address.
   TriggerDataIndices trigger_data_indices_;
   std::vector<TriggerSpec> specs_;
+
+  MaxEventLevelReports max_event_level_reports_;
 };
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)

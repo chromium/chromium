@@ -85,7 +85,7 @@ class InputMethod {
   virtual bool IsInputLocaleCJK() const = 0;
 
   // Called when a frame with a committed Url has received focus.
-  virtual void OnUrlChanged() {}
+  virtual void OnUrlChanged() = 0;
 #endif
 
   // Sets the text input client which receives text input events such as
@@ -154,7 +154,7 @@ class InputMethod {
 
   // Sets a keyboard controller for testing.
   virtual void SetVirtualKeyboardControllerForTesting(
-      std::unique_ptr<VirtualKeyboardController> controller) {}
+      std::unique_ptr<VirtualKeyboardController> controller) = 0;
 };
 
 }  // namespace ui

@@ -79,19 +79,12 @@ struct SignalKeyInternal {
 // old keys will no longer be usable, and since this key is persisted to disk,
 // this is something that should be avoided.
 // See https://en.cppreference.com/w/cpp/named_req/StandardLayoutType
-static_assert(std::is_standard_layout<SignalKeyInternal>::value,
+static_assert(std::is_standard_layout_v<SignalKeyInternal>,
               "SignalKeyInternal must have a standard layout.");
 
 // Ensure there is no implicit padding.
-// TODO(C++17): Use std::has_unique_object_representations instead.
-static_assert(sizeof(SignalKeyInternal) == 32, "Size must be 32");
-static_assert(sizeof(SignalKeyInternal) ==
-                  sizeof(SignalKeyInternal::Prefix::kind) +
-                      sizeof(SignalKeyInternal::Prefix::padding) +
-                      sizeof(SignalKeyInternal::Prefix::name_hash) +
-                      sizeof(SignalKeyInternal::time_range_end_sec) +
-                      sizeof(SignalKeyInternal::time_range_start_sec),
-              "Sum of the size of all fields must be 32");
+static_assert(std::has_unique_object_representations_v<SignalKeyInternal>,
+              "SignalKeyInternal must have a unique object representation.");
 
 // A machine readable representation of the SignalKeyInternal.
 // See ToDebugString and operator<< implementation for a human readable

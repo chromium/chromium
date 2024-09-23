@@ -72,7 +72,7 @@ ui::Shadow::ElevationToColorsMap ShadowElevationToColorsMap(
         break;
 #endif
       default:
-        NOTREACHED() << "Invalid bubble border shadow type.";
+        NOTREACHED_IN_MIGRATION() << "Invalid bubble border shadow type.";
         break;
     }
   }
@@ -84,7 +84,7 @@ ui::Shadow::ElevationToColorsMap ShadowElevationToColorsMap(
   return colors_map;
 }
 
-enum BubbleArrowPart { kFill, kBorder };
+enum class BubbleArrowPart { kFill, kBorder };
 
 SkPath GetVisibleArrowPath(BubbleBorder::Arrow arrow,
                            const gfx::Rect& bounds,
@@ -180,7 +180,7 @@ const gfx::ShadowValues& GetShadowValues(
         break;
 #endif
       default:
-        NOTREACHED() << "Invalid bubble border shadow type";
+        NOTREACHED_IN_MIGRATION() << "Invalid bubble border shadow type";
         break;
     }
   } else {

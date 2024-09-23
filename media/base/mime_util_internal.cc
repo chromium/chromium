@@ -10,7 +10,6 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -229,7 +228,7 @@ VideoCodec MimeUtilToVideoCodec(MimeUtil::Codec codec) {
 
 SupportsType MimeUtil::AreSupportedCodecs(
     const std::vector<ParsedCodecResult>& parsed_codecs,
-    base::StringPiece mime_type_lower_case,
+    std::string_view mime_type_lower_case,
     bool is_encrypted) const {
   DCHECK(!parsed_codecs.empty());
   DCHECK_EQ(base::ToLowerASCII(mime_type_lower_case), mime_type_lower_case);
@@ -267,7 +266,7 @@ SupportsType MimeUtil::AreSupportedCodecs(
           // Nothing to do for AAC; no notion of profile / level to guess.
           break;
         default:
-          NOTREACHED()
+          NOTREACHED_IN_MIGRATION()
               << "Only VP9, H264, and AAC codec strings can be ambiguous.";
       }
     }
@@ -309,12 +308,6 @@ void MimeUtil::AddSupportedMediaFormats() {
   const CodecSet ogg_audio_codecs{FLAC, OPUS, VORBIS};
 
   CodecSet ogg_video_codecs{VP8};
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  if (base::FeatureList::IsEnabled(kTheoraVideoCodec)) {
-    ogg_video_codecs.emplace(THEORA);
-  }
-#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-
   CodecSet ogg_codecs(ogg_audio_codecs);
   ogg_codecs.insert(ogg_video_codecs.begin(), ogg_video_codecs.end());
 
@@ -414,8 +407,18 @@ void MimeUtil::AddSupportedMediaFormats() {
   video_3gpp_codecs.emplace(H264);
   AddContainerWithCodecs("video/3gpp", video_3gpp_codecs);
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_HLS_DEMUXER)
+  bool can_play_hls = false;
+#endif
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kCanPlayHls)) {
+  can_play_hls |= base::FeatureList::IsEnabled(kHlsPlayer);
+#endif
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+  can_play_hls |= base::FeatureList::IsEnabled(kBuiltInHlsPlayer);
+#endif
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_HLS_DEMUXER)
+  if (can_play_hls) {
     // HTTP Live Streaming (HLS).
     CodecSet hls_codecs{H264,
                         // TODO(ddorwin): Is any MP3 codec string variant
@@ -432,7 +435,7 @@ void MimeUtil::AddSupportedMediaFormats() {
     // https://crbug.com/675552 for details and examples.
     AddContainerWithCodecs("audio/x-mpegurl", hls_codecs);
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 }
 
@@ -440,11 +443,11 @@ void MimeUtil::AddContainerWithCodecs(std::string mime_type, CodecSet codecs) {
   media_format_map_.insert_or_assign(std::move(mime_type), std::move(codecs));
 }
 
-bool MimeUtil::IsSupportedMediaMimeType(base::StringPiece mime_type) const {
+bool MimeUtil::IsSupportedMediaMimeType(std::string_view mime_type) const {
   return media_format_map_.contains(base::ToLowerASCII(mime_type));
 }
 
-void MimeUtil::SplitCodecs(base::StringPiece codecs,
+void MimeUtil::SplitCodecs(std::string_view codecs,
                            std::vector<std::string>* codecs_out) const {
   *codecs_out =
       base::SplitString(base::TrimString(codecs, "\"", base::TRIM_ALL), ",",
@@ -498,8 +501,8 @@ std::optional<VideoType> MimeUtil::ParseVideoCodecString(
   return parsed_results[0].video;
 }
 
-bool MimeUtil::ParseAudioCodecString(base::StringPiece mime_type,
-                                     base::StringPiece codec_id,
+bool MimeUtil::ParseAudioCodecString(std::string_view mime_type,
+                                     std::string_view codec_id,
                                      bool* out_is_ambiguous,
                                      AudioCodec* out_codec) const {
   DCHECK(out_is_ambiguous);
@@ -533,7 +536,7 @@ bool MimeUtil::ParseAudioCodecString(base::StringPiece mime_type,
 }
 
 SupportsType MimeUtil::IsSupportedMediaFormat(
-    base::StringPiece mime_type,
+    std::string_view mime_type,
     const std::vector<std::string>& codecs,
     bool is_encrypted) const {
   const std::string mime_type_lower_case = base::ToLowerASCII(mime_type);
@@ -545,7 +548,8 @@ SupportsType MimeUtil::IsSupportedMediaFormat(
   }
 
   if (parsed_results.empty()) {
-    NOTREACHED() << __func__ << " Successful parsing should output results.";
+    NOTREACHED_IN_MIGRATION()
+        << __func__ << " Successful parsing should output results.";
     return SupportsType::kNotSupported;
   }
 
@@ -564,7 +568,7 @@ SupportsType MimeUtil::IsSupportedMediaFormat(
 
 // static
 bool MimeUtil::IsCodecSupportedOnAndroid(Codec codec,
-                                         base::StringPiece mime_type_lower_case,
+                                         std::string_view mime_type_lower_case,
                                          bool is_encrypted,
                                          VideoCodecProfile video_profile,
                                          const PlatformInfo& platform_info) {
@@ -692,7 +696,7 @@ bool MimeUtil::IsCodecSupportedOnAndroid(Codec codec,
 }
 
 bool MimeUtil::ParseCodecStrings(
-    base::StringPiece mime_type_lower_case,
+    std::string_view mime_type_lower_case,
     const std::vector<std::string>& codecs,
     std::vector<ParsedCodecResult>* out_results) const {
   DCHECK(out_results);
@@ -725,8 +729,9 @@ bool MimeUtil::ParseCodecStrings(
       // Determine implied codec for mime type.
       ParsedCodecResult implied_result = MakeDefaultParsedCodecResult();
       if (!GetDefaultCodec(mime_type_lower_case, &implied_result.codec)) {
-        NOTREACHED() << " Mime types must offer a default codec if no explicit "
-                        "codecs are expected";
+        NOTREACHED_IN_MIGRATION()
+            << " Mime types must offer a default codec if no explicit "
+               "codecs are expected";
         return false;
       }
       out_results->push_back(implied_result);
@@ -778,8 +783,8 @@ bool MimeUtil::ParseCodecStrings(
   return true;
 }
 
-bool MimeUtil::ParseCodecHelper(base::StringPiece mime_type_lower_case,
-                                base::StringPiece codec_id,
+bool MimeUtil::ParseCodecHelper(std::string_view mime_type_lower_case,
+                                std::string_view codec_id,
                                 ParsedCodecResult* out_result) const {
   DCHECK_EQ(base::ToLowerASCII(mime_type_lower_case), mime_type_lower_case);
   DCHECK(out_result);
@@ -892,7 +897,7 @@ bool MimeUtil::ParseCodecHelper(base::StringPiece mime_type_lower_case,
     return true;
   }
 
-// TODO(https://crbug.com/1117275): Remove buildflags for parsing functions; we
+// TODO(crbug.com/40145071): Remove buildflags for parsing functions; we
 // shouldn't be combining codec support and parsing support.
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
   if (base::StartsWith(codec_id, "mhm1.", base::CompareCase::SENSITIVE) ||
@@ -920,7 +925,7 @@ bool MimeUtil::ParseCodecHelper(base::StringPiece mime_type_lower_case,
   return false;
 }
 
-SupportsType MimeUtil::IsCodecSupported(base::StringPiece mime_type_lower_case,
+SupportsType MimeUtil::IsCodecSupported(std::string_view mime_type_lower_case,
                                         Codec codec,
                                         VideoCodecProfile video_profile,
                                         VideoCodecLevel video_level,
@@ -953,15 +958,15 @@ SupportsType MimeUtil::IsCodecSupported(base::StringPiece mime_type_lower_case,
       case H264PROFILE_MAIN:
       case H264PROFILE_HIGH:
         break;
-// HIGH10PROFILE is supported through fallback to the ffmpeg decoder
-// which is not available on Android, or if FFMPEG is not used.
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+      // Only supported on some hardware and via ffmpeg.
       case H264PROFILE_HIGH10PROFILE:
-        // FFmpeg is not generally used for encrypted videos, so we do not
-        // know whether 10-bit is supported.
-        ambiguous_platform_support = is_encrypted;
-        break;
-#endif
+        if (IsBuiltInVideoCodec(VideoCodec::kH264)) {
+          // FFmpeg is not generally used for encrypted videos, so we do not
+          // know whether 10-bit is supported.
+          ambiguous_platform_support = is_encrypted;
+          break;
+        }
+        [[fallthrough]];
       default:
         ambiguous_platform_support = true;
     }
@@ -997,7 +1002,7 @@ SupportsType MimeUtil::IsCodecSupported(base::StringPiece mime_type_lower_case,
                                     : SupportsType::kSupported;
 }
 
-bool MimeUtil::GetDefaultCodec(base::StringPiece mime_type,
+bool MimeUtil::GetDefaultCodec(std::string_view mime_type,
                                Codec* default_codec) const {
   // Codecs below are unambiguously implied by the mime type string. DO NOT add
   // default codecs for ambiguous mime types.

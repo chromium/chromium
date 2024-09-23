@@ -39,7 +39,7 @@ class FakeWebStateWithSnapshot : public web::FakeWebState {
 
 }  // namespace
 
-// TODO(crbug.com/1502841): Remove this test once the new implementation
+// TODO(crbug.com/40943236): Remove this test once the new implementation
 // written in Swift is used by default.
 class LegacySnapshotGeneratorTest : public PlatformTest {
  public:
@@ -164,7 +164,7 @@ TEST_F(SnapshotGeneratorTest, GenerateWebViewSnapshot) {
 
 @end
 
-// TODO(crbug.com/1502841): Remove this test once the new implementation
+// TODO(crbug.com/40943236): Remove this test once the new implementation
 // written in Swift is used by default.
 class LegacySnapshotGeneratorWithOverlaysTest : public PlatformTest {
  public:

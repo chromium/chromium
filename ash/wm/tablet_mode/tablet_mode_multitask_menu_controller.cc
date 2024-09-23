@@ -7,6 +7,7 @@
 #include "ash/accelerators/debug_commands.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
@@ -105,7 +106,16 @@ void TabletModeMultitaskMenuController::OnGestureEvent(
     ui::GestureEvent* event) {
   aura::Window* target = static_cast<aura::Window*>(event->target());
   aura::Window* window = GetTargetWindow(target);
-  if (!window) {
+  if (!window ||
+      !Shell::Get()->shell_delegate()->AllowDefaultTouchActions(window)) {
+    return;
+  }
+
+  const ui::GestureEventDetails details = event->details();
+  // Do not handle PEN and ERASER events. PEN events can come from stylus
+  // device.
+  if (details.primary_pointer_type() == ui::EventPointerType::kPen ||
+      details.primary_pointer_type() == ui::EventPointerType::kEraser) {
     return;
   }
 
@@ -115,10 +125,8 @@ void TabletModeMultitaskMenuController::OnGestureEvent(
   // Save the window coordinates to pass to the menu.
   gfx::PointF window_location = event->location_f();
   aura::Window::ConvertPointToTarget(target, window, &window_location);
-
-  const ui::GestureEventDetails details = event->details();
   switch (event->type()) {
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       if (std::fabs(details.scroll_y_hint()) <
           std::fabs(details.scroll_x_hint())) {
         return;
@@ -147,15 +155,15 @@ void TabletModeMultitaskMenuController::OnGestureEvent(
         is_drag_active_ = true;
       }
       break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       if (is_drag_active_ && multitask_menu_) {
         multitask_menu_->UpdateDrag(window_location.y(),
                                     /*down=*/details.scroll_y() > 0);
         event->SetHandled();
       }
       break;
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_GESTURE_END:
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kGestureEnd:
       // If an unsupported gesture is sent, make sure we reset `is_drag_active_`
       // to stop consuming events.
       if (is_drag_active_ && multitask_menu_) {
@@ -165,13 +173,13 @@ void TabletModeMultitaskMenuController::OnGestureEvent(
       is_drag_active_ = false;
       reserved_for_gesture_sent_ = false;
       break;
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kScrollFlingStart:
       if (!is_drag_active_) {
         return;
       }
-      // Normally ET_GESTURE_SCROLL_BEGIN will fire first and have already
-      // created the multitask menu, however occasionally ET_SCROLL_FLING_START
-      // may fire first (https://crbug.com/821237).
+      // Normally EventType::kGestureScrollBegin will fire first and have
+      // already created the multitask menu, however occasionally
+      // EventType::kScrollFlingStart may fire first (https://crbug.com/821237).
       target_window_for_test_ = window;
       MaybeCreateMultitaskMenu(window);
       if (multitask_menu_) {

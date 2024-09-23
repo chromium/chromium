@@ -24,15 +24,24 @@ class NotificationsSettingsObserverTest : public PlatformTest {
     PlatformTest::SetUp();
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kFeaturePushNotificationPermissions);
     pref_service_->registry()->RegisterBooleanPref(
         commerce::kPriceEmailNotificationsEnabled, false);
 
+    local_state_ = std::make_unique<TestingPrefServiceSimple>();
+    local_state_->registry()->RegisterDictionaryPref(
+        prefs::kAppLevelPushNotificationPermissions);
+
     observer_ = [[NotificationsSettingsObserver alloc]
-        initWithPrefService:pref_service_.get()];
+        initWithPrefService:pref_service_.get()
+                 localState:local_state_.get()];
     observer_.delegate = mock_delegate_;
+  }
+
+  void TearDown() override {
+    [observer_ disconnect];
+    PlatformTest::TearDown();
   }
 
   void TurnOnNotificationForKey(const std::string key) {
@@ -41,8 +50,15 @@ class NotificationsSettingsObserverTest : public PlatformTest {
     update->Set(key, true);
   }
 
+  void TurnOnAppLevelNotificationForKey(const std::string key) {
+    ScopedDictPrefUpdate update(local_state_.get(),
+                                prefs::kAppLevelPushNotificationPermissions);
+    update->Set(key, true);
+  }
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<TestingPrefServiceSimple> local_state_;
   NotificationsSettingsObserver* observer_;
   id<NotificationsSettingsObserverDelegate> mock_delegate_ =
       OCMProtocolMock(@protocol(NotificationsSettingsObserverDelegate));
@@ -70,5 +86,15 @@ TEST_F(NotificationsSettingsObserverTest,
   OCMExpect([mock_delegate_ notificationsSettingsDidChangeForClient:
                                 PushNotificationClientId::kContent]);
   TurnOnNotificationForKey(kContentNotificationKey);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+
+  OCMExpect([mock_delegate_ notificationsSettingsDidChangeForClient:
+                                PushNotificationClientId::kSports]);
+  TurnOnNotificationForKey(kSportsNotificationKey);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
+
+  OCMExpect([mock_delegate_
+      notificationsSettingsDidChangeForClient:PushNotificationClientId::kTips]);
+  TurnOnAppLevelNotificationForKey(kTipsNotificationKey);
   EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }

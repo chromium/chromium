@@ -20,33 +20,12 @@ mojom("mojom") {
     ]
   }
 
-  shared_cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "ui.mojom.WindowShowState"
-          cpp = "::ui::WindowShowState"
-        },
-      ]
-      traits_headers = [ "ui_base_types_mojom_traits.h" ]
-      traits_public_deps = [ "//ui/base" ]
-    },
-  ]
-
   cpp_typemaps = [
     {
       types = [
         {
-          mojom = "ui.mojom.DialogButton"
-          cpp = "::ui::DialogButton"
-        },
-        {
           mojom = "ui.mojom.MenuSourceType"
           cpp = "::ui::MenuSourceType"
-        },
-        {
-          mojom = "ui.mojom.ModalType"
-          cpp = "::ui::ModalType"
         },
       ]
       traits_headers = [ "ui_base_types_mojom_traits.h" ]
@@ -64,9 +43,6 @@ mojom("mojom") {
     },
   ]
 
-  cpp_typemaps += shared_cpp_typemaps
-  blink_cpp_typemaps = shared_cpp_typemaps
-
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/public/platform/web_common.h"
@@ -74,4 +50,14 @@ mojom("mojom") {
 
   # Generate legacy bindings for Blink.
   generate_legacy_js_bindings = true
+}
+
+# TODO(crbug.com/359910414): Move back DialogButton enum to ui_base_types.mojom.
+# TODO(crbug.com/361008605): Move back `WindowShowState` enum to ui_base_types.mojom.
+mojom("ui_base_types") {
+  generate_java = true
+  sources = [
+    "dialog_button.mojom",
+    "window_show_state.mojom",
+  ]
 }

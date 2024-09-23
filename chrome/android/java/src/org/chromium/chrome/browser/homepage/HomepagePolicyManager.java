@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar.PrefObserver;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.url.GURL;
@@ -221,7 +221,7 @@ public class HomepagePolicyManager implements PrefObserver {
 
     private PrefService getPrefService() {
         if (sPrefServiceForTesting != null) return sPrefServiceForTesting;
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
     }
 
     public static void setPrefServiceForTesting(PrefService prefService) {

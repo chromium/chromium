@@ -11,11 +11,14 @@
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_auth_page_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_base_test.h"
+#include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
@@ -64,9 +67,9 @@ class LoginUIShelfVisibilityTest : public MixinBasedInProcessBrowserTest {
         ->ShowSigninScreenForTest(kNewUserEmail, kNewUserGaiaId,
                                   FakeGaiaMixin::kEmptyUserServices);
 
-    // Consolidated consent is the first post-login screen shown when a new user
-    // signs in.
-    OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
+    // Wait for the exiting of the sign-in screen which will be followed
+    // by the showing of the first onboarding screen.
+    OobeScreenExitWaiter(OobeBaseTest::GetFirstSigninScreen()).Wait();
   }
 
  private:

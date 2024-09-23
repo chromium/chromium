@@ -1,0 +1,186 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
+
+option java_outer_classname = "OmniboxScoringSignalsProtos";
+
+package metrics;
+
+// Signals for machine learning scoring (used during ML inference).
+// See details: http://shortn/_B21YgmkLs9.
+//
+// Next tag: 32
+message OmniboxScoringSignals {
+  // Number of times the URL was navigated to using the Omnibox for this
+  // profile on this device, and all other devices syncing with this
+  // profile. Only include typed visits from the last 90 days. Discounted by
+  // a time-decaying factor with a 30-day half-life based on the last visit
+  // timestamp.
+  optional int32 typed_count = 1;
+  // Number of times the URL was visited in general for this profile on this
+  // device. Note that this will soon be across syncing devices with the
+  // rollout of full history sync in 2023. Only include visits from the last
+  // 90 days. Discounted by a time-decaying factor with a 30-day half-life
+  // based on the last visit timestamp.
+  optional int32 visit_count = 2;
+  // Elapsed time since last visit for this profile on this device. Uses the
+  // local client-side timestamps. Can be unreliable as local times can
+  // change in between different runs of Chrome.
+  optional int64 elapsed_time_last_visit_secs = 3;
+  // Number of times the suggestion was visited with the current input or
+  // prefix of it for this profile on this device.
+  // Discounted by a time-decaying factor with a 1-week half-life based on
+  // the last visit timestamp.
+  optional int32 shortcut_visit_count = 4;
+  // Length of the shortest shortcut text.
+  // Useful in comparison with |typed_length|.
+  optional int32 shortest_shortcut_len = 5;
+  // Elapsed time since last shortcut visit for this profile on this device.
+  // Uses the local client-side timestamps. Can be unreliable as local times
+  // can change in between different runs of Chrome.
+  optional int64 elapsed_time_last_shortcut_visit_sec = 6;
+  // URL points to the root page of a website, i.e., no query, path words,
+  // or references after "/".
+  optional bool is_host_only = 7;
+  // Number of bookmarks for this profile with this URL.
+  optional int32 num_bookmarks_of_url = 8;
+  // Position of the first matched bookmark title term.
+  // E.g. 4 for input 'x' and title "0123x56".
+  // Not set when there is no match in the bookmark title.
+  optional int32 first_bookmark_title_match_position = 9;
+  // Total length of matched strings in the bookmark title. Can be larger
+  // than the input text length. The input text is split by whitespaces, and
+  // each input word is matched against the title separately. Their matching
+  // lengths are summed. Similarly for other text matching signals below.
+  // E.g. 9 for input "[abc] ijk [xyz]" and title "[abc] def [xyz] - [xyz]".
+  // Set to 0 when there is no match in the title.
+  optional int32 total_bookmark_title_match_length = 10;
+  // Number of input terms matched by bookmark title. Take the maximum when
+  // there are multiple matching bookmarks of this URL.
+  // E.g., 1 for input "[a] b" and bookmark title "[a] book title".
+  // Not set when the user does not have this URL bookmarked.
+  optional int32 num_input_terms_matched_by_bookmark_title = 11;
+  // Position of the first matched URL substring.
+  // URL scheme or TLD matches are excluded, though those characters are
+  // counted when assessing match position. E.g., 11 for 't' in
+  // "https://hos[t].com" Not set when there is no URL match.
+  optional int32 first_url_match_position = 12;
+  // Total length of the matched URL strings. Can be longer than the input
+  // string. E.g., Given input "ab abc" and url "abc.com/ab", total is 7 (4
+  // for "ab" in "[ab]c.com/[ab]" and 3 for "abc" in
+  // "[abc].com"). Set to 0 when there is no URL string match.
+  optional int32 total_url_match_length = 13;
+  // One word matches host at a word boundary. E.g., true for input "[h] a"
+  // and "[h].com", Set to false when there are matches in the host but none
+  // at word boundaries. E.g., false for input "a" and "h[a].com". Not set
+  // when there is no host match.
+  optional bool host_match_at_word_boundary = 14;
+  // Total length of the matched host substrings.
+  // Can be larger than the input text.
+  // E.g., 3 for input "h a" and "[h]ost[aa].com".
+  // Set to 0 when there is no host match.
+  optional int32 total_host_match_length = 15;
+  // Total length of the matched substrings in the path at word boundaries.
+  // Can be larger than the input text. E.g. 3 for 'p' in
+  // 'a.com/[p]ath_[p]ath/[p]ath'. Set to 0 when there are no such matches.
+  optional int32 total_path_match_length = 16;
+  // Total length of the matched substrings in the query_or_ref at word
+  // boundaries. Can be larger than the input text.
+  // E.g., 3 for input '[qu] [a]' and 'a.com/a?[qu]ery_[a]'.
+  // Set to 0 when there are no such matches.
+  optional int32 total_query_or_ref_match_length = 17;
+  // Total length of the matched substrings in the page title at word
+  // boundaries. Can be larger than the input text.
+  // E.g., 2 for input "[a] [t] x" and page title "[a]bc [t]itle".
+  // Set to 0 when there is no title match.
+  optional int32 total_title_match_length = 18;
+  // Has matches that are not in schemes (e.g., "https") or "www".
+  optional bool has_non_scheme_www_match = 19;
+  // Number of input terms matched by title.
+  // E.g., 1 for input "[a] b" and title "[a] title [a]".
+  // Useful in comparison with |num_typed_terms|.
+  optional int32 num_input_terms_matched_by_title = 20;
+  // Number of input terms matched by url.
+  // Useful in comparison with |num_typed_terms|.
+  // E.g., 1 for input "[a] b" and url "[a].com".
+  optional int32 num_input_terms_matched_by_url = 21;
+  // Length of url. E.g., 22 for "https://www.host.com/p".
+  optional int32 length_of_url = 22;
+  // Site engagement score for the site the URL is on. See
+  // https://www.chromium.org/developers/design-documents/site-engagement/
+  optional float site_engagement = 23;
+  // True if url can be default match.
+  // Currently, this requires single-term input, and match needs to begin
+  // immediately after '', scheme, or 'http://www' in the URL, e.g., given
+  // input 'w', true for "https://www.[w]sj.com" or "[w]ww.a.com", false for
+  // "host[w].com". ref:
+  // https://source.chromium.org/chromium/chromium/src/+/main:components/omnibox/browser/scored_history_match.cc;l=187?q=inline%20autocomplete
+  optional bool allowed_to_be_default_match = 24;
+  // Server-generated relevance score provided by the remote Suggest service
+  // for this suggestion.
+  // This signal contains the raw score received from the Suggest service
+  // ("google:suggestrelevance") and does not reflect any client-side
+  // adjustments (unlike the value of the `relevance` field above).
+  // As such, this signal will take on the following values:
+  //   - Non-zero: Search suggestion with `relevance_from_server` set to `true`
+  //   - Zero:     Search suggestion with `relevance_from_server` set to `false`
+  //               OR non-Search suggestion (obtained from any source)
+  //   - Unset:    Otherwise (due to unexpected client-side behavior)
+  optional int32 search_suggest_relevance = 25;
+  // Whether this particular Search suggestion (or one of the duplicates deduped
+  // under it) refers to an entity.
+  // As such, this signal will take on the following values:
+  //   - True:  Search suggestion (or one of its duplicates) refers to an entity
+  //   - False: Neither this suggestion nor any of its duplicates refers to an
+  //            entity
+  //   - Unset: Otherwise (due to unexpected client-side behavior)
+  optional bool is_search_suggest_entity = 26;
+  // Whether this suggestion (or one of the duplicates deduped under it) is a
+  // verbatim match with respect to the user's input (e.g. URL_WHAT_YOU_TYPED).
+  // As such, this signal will take on the following values:
+  //   - True:  Suggestion (or one of its duplicates) is a verbatim match
+  //            (URL_WHAT_YOU_TYPED, SEARCH_WHAT_YOU_TYPED, etc.)
+  //   - False: Neither this suggestion nor any of its duplicates is a verbatim
+  //            match
+  //   - Unset: Otherwise (due to unexpected client-side behavior)
+  optional bool is_verbatim = 27;
+  // Whether this suggestion (or one of the duplicates deduped under it) is a
+  // NAVSUGGEST match.
+  // As such, this signal will take on the following values:
+  //   - True:  Suggestion (or one of its duplicates) is a NAVSUGGEST match
+  //   - False: Neither this suggestion nor any of its duplicates is a
+  //            NAVSUGGEST match
+  //   - Unset: Otherwise (due to unexpected client-side behavior)
+  optional bool is_navsuggest = 28;
+  // Whether this suggestion (or one of the duplicates deduped under it) is a
+  // SEARCH_SUGGEST_TAIL match.
+  // As such, this signal will take on the following values:
+  //   - True:  Suggestion (or one of its duplicates) is a SEARCH_SUGGEST_TAIL
+  //            match
+  //   - False: Neither this suggestion nor any of its duplicates is a
+  //            SEARCH_SUGGEST_TAIL match
+  //   - Unset: Otherwise (due to unexpected client-side behavior)
+  optional bool is_search_suggest_tail = 29;
+  // Whether this suggestion (or one of the duplicates deduped under it)
+  // contains an answer with respect to the user's input (i.e.
+  // `match.answer_type` != UNSPECIFIED in the client code).
+  // As such, this signal will take on the following values:
+  //   - True:  Suggestion (or one of its duplicates) contains an answer
+  //   - False: Neither this suggestion nor any of its duplicates contains an
+  //            answer
+  //   - Unset: Otherwise (due to unexpected client-side behavior)
+  optional bool is_answer_suggest = 30;
+  // Whether this suggestion (or one of the duplicates deduped under it) is a
+  // CALCULATOR match.
+  // As such, this signal will take on the following values:
+  //   - True:  Suggestion (or one of its duplicates) is a CALCULATOR match
+  //   - False: Neither this suggestion nor any of its duplicates is a
+  //            CALCULATOR match
+  //   - Unset: Otherwise (due to unexpected client-side behavior)
+  optional bool is_calculator_suggest = 31;
+}

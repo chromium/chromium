@@ -5,15 +5,15 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {ArrayDataModel} from '../../../common/js/array_data_model.js';
-import type {ChangeEvent, PermutationEvent} from '../../../common/js/array_data_model.js';
+import type {ArrayDataModel, ChangeEvent, PermutationEvent} from '../../../common/js/array_data_model.js';
 import {boolAttrSetter, crInjectTypeAndInit, type PropertyChangeEvent} from '../../../common/js/cr_ui.js';
 import {isNullOrUndefined} from '../../../common/js/util.js';
 
-import {createListItem, ListItem} from './list_item.js';
+import type {ListItem} from './list_item.js';
+import {createListItem} from './list_item.js';
 import {ListSelectionController} from './list_selection_controller.js';
 import {ListSelectionModel, type SelectionChangeEvent} from './list_selection_model.js';
-import {ListSingleSelectionModel} from './list_single_selection_model.js';
+import type {ListSingleSelectionModel} from './list_single_selection_model.js';
 
 /**
  * @fileoverview This implements a list control.
@@ -636,7 +636,6 @@ export abstract class List extends HTMLUListElement {
       const listItem = this.getListItemByIndex(change.index);
       if (listItem) {
         listItem.selected = change.selected;
-        listItem.setAttribute('aria-selected', String(listItem.selected));
         if (change.selected) {
           listItem.setAttribute('aria-posinset', String(change.index + 1));
           listItem.setAttribute('aria-setsize', String(this.dataModel!.length));

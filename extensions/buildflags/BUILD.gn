@@ -5,7 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//extensions/buildflags/buildflags.gni")
 
-# TODO(crbug.com/731689): Assert that extensions are enabled.
+# TODO(crbug.com/41324418): Assert that extensions are enabled.
 
 # This file is in a separate directory so all targets in the build can refer to
 # the buildflag header to get the necessary preprocessor defines without
@@ -14,5 +14,11 @@ import("//extensions/buildflags/buildflags.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_EXTENSIONS=$enable_extensions" ]
+  flags = [
+    "ENABLE_EXTENSIONS=$enable_extensions",
+    "ENABLE_DESKTOP_ANDROID_EXTENSIONS=$enable_desktop_android_extensions",
+    "ENABLE_EXTENSIONS_CORE=$enable_extensions_core",
+    "ENABLE_GUEST_VIEW=$enable_guest_view",
+    "ENABLE_PLATFORM_APPS=$enable_platform_apps",
+  ]
 }

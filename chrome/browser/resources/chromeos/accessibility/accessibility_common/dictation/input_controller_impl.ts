@@ -4,6 +4,7 @@
 
 import {EditableNodeData, InputController} from '/common/action_fulfillment/input_controller.js';
 import {EventHandler} from '/common/event_handler.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {EditingUtil} from './editing_util.js';
 import {FocusHandler} from './focus_handler.js';
@@ -532,3 +533,5 @@ export namespace InputControllerImpl {
 
   export const NO_ACTIVE_IME_CONTEXT_ID_ = -1;
 }
+
+TestImportManager.exportForTesting(InputControllerImpl);

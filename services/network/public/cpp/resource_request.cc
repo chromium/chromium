@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/resource_request.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
@@ -147,10 +148,13 @@ ResourceRequest::TrustedParams::TrustedParams(const TrustedParams& other) {
 
 ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
     const TrustedParams& other) {
+  TRACE_EVENT("loading", "ResourceRequest::TrustedParams.copy");
   isolation_info = other.isolation_info;
   disable_secure_dns = other.disable_secure_dns;
   has_user_activation = other.has_user_activation;
   allow_cookies_from_browser = other.allow_cookies_from_browser;
+  include_request_cookies_with_response =
+      other.include_request_cookies_with_response;
   cookie_observer =
       Clone(&const_cast<mojo::PendingRemote<mojom::CookieAccessObserver>&>(
           other.cookie_observer));
@@ -173,12 +177,18 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
   return *this;
 }
 
+ResourceRequest::TrustedParams::TrustedParams(TrustedParams&& other) = default;
+ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
+    TrustedParams&& other) = default;
+
 bool ResourceRequest::TrustedParams::EqualsForTesting(
     const TrustedParams& other) const {
   return isolation_info.IsEqualForTesting(other.isolation_info) &&
          disable_secure_dns == other.disable_secure_dns &&
          has_user_activation == other.has_user_activation &&
          allow_cookies_from_browser == other.allow_cookies_from_browser &&
+         include_request_cookies_with_response ==
+             other.include_request_cookies_with_response &&
          client_security_state == other.client_security_state;
 }
 
@@ -235,13 +245,15 @@ ResourceRequest::WebBundleTokenParams::CloneHandle() const {
   return new_remote;
 }
 
-#if BUILDFLAG(IS_ANDROID)
-ResourceRequest::ResourceRequest(const base::Location& location)
-    : created_location(location.ToString()) {}
-#else
 ResourceRequest::ResourceRequest() = default;
-#endif
-ResourceRequest::ResourceRequest(const ResourceRequest& request) = default;
+ResourceRequest::ResourceRequest(const ResourceRequest& request) {
+  TRACE_EVENT("loading", "ResourceRequest::ResourceRequest.copy_constructor");
+  *this = request;
+}
+ResourceRequest& ResourceRequest::operator=(const ResourceRequest& other) =
+    default;
+ResourceRequest::ResourceRequest(ResourceRequest&& other) = default;
+ResourceRequest& ResourceRequest::operator=(ResourceRequest&& other) = default;
 ResourceRequest::~ResourceRequest() = default;
 
 bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
@@ -265,7 +277,7 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          originated_from_service_worker ==
              request.originated_from_service_worker &&
          skip_service_worker == request.skip_service_worker &&
-         corb_detachable == request.corb_detachable && mode == request.mode &&
+         mode == request.mode &&
          required_ip_address_space == request.required_ip_address_space &&
          credentials_mode == request.credentials_mode &&
          redirect_mode == request.redirect_mode &&
@@ -344,7 +356,7 @@ net::ReferrerPolicy ReferrerPolicyForUrlRequest(
     case mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
       return net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
 }
 

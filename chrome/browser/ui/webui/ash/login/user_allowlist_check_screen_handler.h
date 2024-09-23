@@ -10,19 +10,22 @@
 
 namespace ash {
 
-class UserAllowlistCheckScreenView
-    : public base::SupportsWeakPtr<UserAllowlistCheckScreenView> {
+class UserAllowlistCheckScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "user-allowlist-check-screen", "UserAllowlistCheckScreen"};
 
   virtual void Show(bool enterprise_managed, bool family_link_allowed) = 0;
   virtual void Hide() = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<UserAllowlistCheckScreenView> AsWeakPtr() = 0;
 };
 
 // A class that handles WebUI hooks in Gaia screen.
-class UserAllowlistCheckScreenHandler : public UserAllowlistCheckScreenView,
-                                        public BaseScreenHandler {
+class UserAllowlistCheckScreenHandler final
+    : public UserAllowlistCheckScreenView,
+      public BaseScreenHandler {
  public:
   using TView = UserAllowlistCheckScreenView;
 
@@ -37,6 +40,7 @@ class UserAllowlistCheckScreenHandler : public UserAllowlistCheckScreenView,
 
   void Show(bool enterprise_managed, bool family_link_allowed) override;
   void Hide() override;
+  base::WeakPtr<UserAllowlistCheckScreenView> AsWeakPtr() override;
 
  private:
   // BaseScreenHandler implementation:

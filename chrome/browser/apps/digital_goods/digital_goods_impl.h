@@ -16,7 +16,7 @@
 
 namespace apps {
 
-// TODO(crbug.com/1203666): Remove when Lacros is permanently enabled.
+// TODO(crbug.com/40179639): Remove when Lacros is permanently enabled.
 class DigitalGoodsImpl : public content::DocumentUserData<DigitalGoodsImpl>,
                          public payments::mojom::DigitalGoods {
  public:

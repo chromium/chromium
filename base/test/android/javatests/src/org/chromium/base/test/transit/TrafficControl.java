@@ -4,27 +4,34 @@
 
 package org.chromium.base.test.transit;
 
+import android.util.Pair;
+
 import org.chromium.base.test.transit.ConditionalState.Phase;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Keeps track of all existing TransitStations and which one is active.
+ * Keeps track of all existing {@link Station}s and which one is active.
  *
  * <p>Also keeps track of which test is currently running for batched tests.
  */
 public class TrafficControl {
-    private static final List<TransitStation> sAllStations = new ArrayList<>();
+    private static final List<Pair<String, Station>> sAllStations = new ArrayList<>();
     private static String sCurrentTestCase;
 
-    private static TransitStation sActiveStation;
+    private static Station sActiveStation;
 
-    static void notifyCreatedStation(TransitStation station) {
-        sAllStations.add(station);
+    static void notifyCreatedStation(Station station) {
+        sAllStations.add(Pair.create(sCurrentTestCase, station));
     }
 
-    static void notifyActiveStationChanged(TransitStation newActiveStation) {
+    static void notifyEntryPointSentinelStationCreated(EntryPointSentinelStation sentinelStation) {
+        assert sActiveStation == null : "EntryPointSentinelStation was created twice";
+        sActiveStation = sentinelStation;
+    }
+
+    static void notifyActiveStationChanged(Station newActiveStation) {
         assert newActiveStation.getPhase() == Phase.ACTIVE : "New active Station must be ACTIVE";
         if (sActiveStation != null) {
             assert sActiveStation.getPhase() != Phase.ACTIVE
@@ -33,11 +40,11 @@ public class TrafficControl {
         sActiveStation = newActiveStation;
     }
 
-    public static List<TransitStation> getAllStations() {
+    public static List<Pair<String, Station>> getAllStations() {
         return sAllStations;
     }
 
-    public static TransitStation getActiveStation() {
+    public static Station getActiveStation() {
         return sActiveStation;
     }
 

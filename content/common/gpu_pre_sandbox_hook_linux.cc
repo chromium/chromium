@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/common/gpu_pre_sandbox_hook_linux.h"
 
 #include <dlfcn.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 
 #include <memory>
@@ -24,7 +30,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "content/common/set_process_title.h"
 #include "content/public/common/content_switches.h"
 #include "media/gpu/buildflags.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
@@ -84,6 +89,10 @@ inline bool UseV4L2Codec(
   return false;
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
+static const char kMaliConfPath[] = "/etc/mali_platform.conf";
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS) && defined(__aarch64__)
 static const char kLibGlesPath[] = "/usr/lib64/libGLESv2.so.2";
@@ -195,6 +204,15 @@ void AddArmMaliGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   static const char kMali0Path[] = "/dev/mali0";
 
   permissions->push_back(BrokerFilePermission::ReadWrite(kMali0Path));
+  // Need to be able to dlopen libmali.so from libEGL.so.
+  permissions->push_back(BrokerFilePermission::ReadOnly(kLibMaliPath));
+
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
+  // Files needed for protected DMA allocations.
+  static const char kDmaHeapPath[] = "/dev/dma_heap/restricted_mtk_cma";
+  permissions->push_back(BrokerFilePermission::ReadWrite(kDmaHeapPath));
+  permissions->push_back(BrokerFilePermission::ReadOnly(kMaliConfPath));
+#endif
 
   // Non-privileged render nodes for format enumeration.
   // https://dri.freedesktop.org/docs/drm/gpu/drm-uapi.html#render-nodes
@@ -248,6 +266,7 @@ void AddAmdGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
       "/usr/lib64/libEGL.so.1",
       "/usr/lib64/libGLESv2.so.2",
       "/usr/lib64/libglapi.so.0",
+      "/usr/lib64/libgallium_dri.so",
       "/usr/lib64/dri/r300_dri.so",
       "/usr/lib64/dri/r600_dri.so",
       "/usr/lib64/dri/radeonsi_dri.so",
@@ -286,6 +305,7 @@ void AddNvidiaGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
       // To support threads in mesa we use --gpu-sandbox-start-early and
       // that requires the following libs and files to be accessible.
       "/etc/ld.so.cache",
+      "/usr/lib64/libgallium_dri.so",
       "/usr/lib64/dri/nouveau_dri.so",
       "/usr/lib64/dri/radeonsi_dri.so",
       "/usr/lib64/dri/swrast_dri.so",
@@ -311,12 +331,13 @@ void AddIntelGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   static const char* const kReadOnlyList[] = {
       // To support threads in mesa we use --gpu-sandbox-start-early and
       // that requires the following libs and files to be accessible.
+      "/usr/lib64/libgallium_dri.so",
       "/usr/lib64/libEGL.so.1", "/usr/lib64/libGLESv2.so.2",
       "/usr/lib64/libelf.so.1", "/usr/lib64/libglapi.so.0",
       "/usr/lib64/libdrm_amdgpu.so.1", "/usr/lib64/libdrm_radeon.so.1",
       "/usr/lib64/libdrm_nouveau.so.2", "/usr/lib64/dri/crocus_dri.so",
       "/usr/lib64/dri/i965_dri.so", "/usr/lib64/dri/iris_dri.so",
-      "/usr/lib64/dri/swrast_dri.so",
+      "/usr/lib64/dri/swrast_dri.so", "/usr/lib64/libzstd.so.1",
       // Allow libglvnd files and libs.
       "/usr/share/glvnd/egl_vendor.d",
       "/usr/share/glvnd/egl_vendor.d/50_mesa.json",
@@ -349,6 +370,7 @@ void AddVirtIOGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
       "/usr/lib64/libGLdispatch.so.0",
       "/usr/lib64/libglapi.so.0",
       "/usr/lib64/libc++.so.1",
+      "/usr/lib64/libgallium_dri.so",
       // If kms_swrast_dri is not usable, swrast_dri is used instead.
       "/usr/lib64/dri/swrast_dri.so",
       "/usr/lib64/dri/kms_swrast_dri.so",
@@ -426,7 +448,7 @@ void AddVulkanICDPermissions(std::vector<BrokerFilePermission>* permissions) {
 
   static const char* const kReadOnlyICDList[] = {
       "intel_icd.x86_64.json", "nvidia_icd.json", "radeon_icd.x86_64.json",
-      "mali_icd.json"};
+      "mali_icd.json", "freedreno_icd.aarch64.json"};
 
   for (std::string prefix : kReadOnlyICDPrefixes) {
     permissions->push_back(BrokerFilePermission::ReadOnly(prefix));
@@ -527,6 +549,16 @@ std::vector<BrokerFilePermission> FilePermissionsForGpu(
 }
 
 void LoadArmGpuLibraries() {
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
+  // This environmental variable needs to be set before we load libMali if we
+  // want to instantiate protected Vulkan device queues.
+  static const char kMaliConfVar[] = "MALI_PLATFORM_CONFIG";
+  // Note this function will only fail if we run out of memory entirely, in
+  // which case we would have much bigger problems, so we don't bother to check
+  // the return value.
+  setenv(kMaliConfVar, kMaliConfPath, 1);
+#endif
+
   // Preload the Mali library.
   if (UseChromecastSandboxAllowlist()) {
     for (const char* path : kAllowedChromecastPaths) {
@@ -546,6 +578,7 @@ void LoadArmGpuLibraries() {
     if (!is_mali && !is_tegra &&
         (nullptr != dlopen("libglapi.so.0", dlopen_flag))) {
       const char* driver_paths[] = {
+        "/usr/lib64/libgallium_dri.so",
 #if defined(DRI_DRIVER_DIR)
         DRI_DRIVER_DIR "/msm_dri.so",
         DRI_DRIVER_DIR "/panfrost_dri.so",
@@ -615,6 +648,7 @@ void LoadVulkanLibraries() {
   dlopen("libvulkan_radeon.so", dlopen_flag);
   dlopen("libvulkan_intel.so", dlopen_flag);
   dlopen("libGLX_nvidia.so.0", dlopen_flag);
+  dlopen("libvulkan_freedreno.so", dlopen_flag);
 }
 
 void LoadChromecastV4L2Libraries() {
@@ -665,21 +699,11 @@ sandbox::syscall_broker::BrokerCommandSet CommandSetForGPU(
   return command_set;
 }
 
-bool BrokerProcessPreSandboxHook(
-    sandbox::policy::SandboxLinux::Options options) {
-  // Oddly enough, we call back into gpu to invoke this service manager
-  // method, since it is part of the embedder component, and the service
-  // mananger's sandbox component is a lower layer that can't depend on it.
-  SetProcessTitleFromCommandLine(nullptr);
-  return true;
-}
-
 }  // namespace
 
 bool GpuPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
   sandbox::policy::SandboxLinux::GetInstance()->StartBrokerProcess(
-      CommandSetForGPU(options), FilePermissionsForGpu(options),
-      base::BindOnce(BrokerProcessPreSandboxHook), options);
+      CommandSetForGPU(options), FilePermissionsForGpu(options), options);
 
   if (!LoadLibrariesForGpu(options))
     return false;

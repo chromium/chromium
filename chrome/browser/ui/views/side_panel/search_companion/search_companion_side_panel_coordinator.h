@@ -11,7 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_user_data.h"
-#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -42,8 +42,6 @@ class SearchCompanionSidePanelCoordinator
   void ShowLens(const content::OpenURLParams& url_params);
   BrowserView* GetBrowserView() const;
   std::u16string GetTooltipForToolbarButton() const;
-  static void SetAccessibleNameForToolbarButton(BrowserView* browser_view,
-                                                bool is_open);
 
   std::u16string accessible_name() const { return accessible_name_; }
   std::u16string name() const { return name_; }
@@ -79,13 +77,6 @@ class SearchCompanionSidePanelCoordinator
 
   // Update companion enabled state based on active tab's url.
   void MaybeUpdateCompanionEnabledState();
-
-  // Update whether the CSC pinned toolbar button is enabled if the button is
-  // pinned.
-  void MaybeUpdatePinnedButtonEnabledState(bool enabled);
-
-  // Update whether the CSC combobox entry is enabled if the entry exists.
-  void MaybeUpdateComboboxEntryEnabledState(bool enabled);
 
   // Called if there is a change in the state of policy pref.
   void OnPolicyPrefChanged();

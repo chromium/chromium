@@ -9,9 +9,11 @@
 
 #include "base/containers/span.h"
 
-@protocol ConnectionInformation;
 @class SceneState;
 @protocol StartupInformation;
+namespace feature_engagement {
+class Tracker;
+}
 
 namespace metrics_mediator {
 // Key in the UserDefaults to store the date/time that the background fetch
@@ -63,6 +65,7 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms);
 // for this session.
 + (void)applicationDidEnterBackground:(NSInteger)memoryWarningCount;
 
+- (void)notifyCredentialProviderWasUsed:(feature_engagement::Tracker*)tracker;
 @end
 
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_METRICS_MEDIATOR_H_

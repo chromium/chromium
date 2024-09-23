@@ -1,0 +1,22 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Protocol messages used to record the state of the data type store for USS.
+// At the time of writing, the data type store uses leveldb, a schemaless
+// key-value store. This means that the database's schema is mostly implicit.
+// This descriptor isn't intended to fully describe the schema, just keep track
+// of which major changes have been applied.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+message DataTypeStoreSchemaDescriptor {
+  optional int64 version_number = 1;
+}

@@ -148,7 +148,7 @@ def check_distro(options):
   distro_id = subprocess.check_output(["lsb_release", "--id",
                                        "--short"]).decode().strip()
 
-  supported_codenames = ["bionic", "focal", "jammy", "noble"]
+  supported_codenames = ["focal", "jammy", "noble"]
   supported_ids = ["Debian"]
 
   if (distro_codename() not in supported_codenames
@@ -156,12 +156,13 @@ def check_distro(options):
     print(
         "WARNING: The following distributions are supported,",
         "but distributions not in the list below can also try to install",
-        "dependencies by passing the `--unsupported` parameter",
-        "\tUbuntu 18.04 LTS (bionic with EoL April 2028)",
-        "\tUbuntu 20.04 LTS (focal with EoL April 2030)",
-        "\tUbuntu 22.04 LTS (jammy with EoL April 2032)",
-        "\tUbuntu 24.04 LTS (noble with EoL June 2029)",
-        "\tDebian 10 (buster) or later",
+        "dependencies by passing the `--unsupported` parameter.",
+        "EoS refers to end of standard support and does not include",
+        "extended security support.",
+        "\tUbuntu 20.04 LTS (focal with EoS April 2025)",
+        "\tUbuntu 22.04 LTS (jammy with EoS June 2027)",
+        "\tUbuntu 24.04 LTS (noble with EoS June 2029)",
+        "\tDebian 11 (bullseye) or later",
         sep="\n",
         file=sys.stderr,
     )
@@ -170,8 +171,9 @@ def check_distro(options):
 
 def check_architecture():
   architecture = subprocess.check_output(["uname", "-m"]).decode().strip()
-  if architecture not in ["i686", "x86_64"]:
-    print("Only x86 architectures are currently supported", file=sys.stderr)
+  if architecture not in ["i686", "x86_64", 'aarch64']:
+    print("Only x86 and ARM64 architectures are currently supported",
+          file=sys.stderr)
     sys.exit(1)
 
 
@@ -235,6 +237,7 @@ def dev_list():
       "libssl-dev",
       "libsystemd-dev",
       "libudev-dev",
+      "libudev1",
       "libva-dev",
       "libwww-perl",
       "libxshmfence-dev",
@@ -248,7 +251,7 @@ def dev_list():
       "p7zip",
       "patch",
       "perl",
-      "pkg-config",
+      "pkgconf",
       "rpm",
       "ruby",
       "subversion",
@@ -275,11 +278,6 @@ def dev_list():
     packages.append("libjpeg-dev")
   else:
     packages.append("libjpeg62-dev")
-
-  if package_exists("libudev1"):
-    packages.append("libudev1")
-  else:
-    packages.append("libudev0")
 
   if package_exists("libbrlapi0.8"):
     packages.append("libbrlapi0.8")
@@ -313,7 +311,11 @@ def dev_list():
   # pre-built NaCl binaries.
   if "ELF 64-bit" in subprocess.check_output(["file", "-L",
                                               "/sbin/init"]).decode():
-    packages.extend(["libc6-i386", "lib32stdc++6"])
+    # ARM64 may not support these.
+    if package_exists("libc6-i386"):
+      packages.append("libc6-i386")
+    if package_exists("lib32stdc++6"):
+      packages.append("lib32stdc++6")
 
     # lib32gcc-s1 used to be called lib32gcc1 in older distros.
     if package_exists("lib32gcc-s1"):
@@ -327,8 +329,6 @@ def dev_list():
 # List of required run-time libraries
 def lib_list():
   packages = [
-      "lib32z1",
-      "libasound2",
       "libatk1.0-0",
       "libatspi2.0-0",
       "libc6",
@@ -374,8 +374,9 @@ def lib_list():
       "libxrender1",
       "libxtst6",
       "x11-utils",
-      "xserver-xorg-core",  # TODO(crbug.com/1417069): Experimental.
-      "xserver-xorg-video-dummy",  # TODO(crbug.com/1417069): Experimental.
+      "x11-xserver-utils",
+      "xserver-xorg-core",
+      "xserver-xorg-video-dummy",
       "xvfb",
       "zlib1g",
   ]
@@ -386,6 +387,10 @@ def lib_list():
       "libbz2-1.0",
   ]
 
+  # May not exist (e.g. ARM64)
+  if package_exists("lib32z1"):
+    packages.append("lib32z1")
+
   if package_exists("libffi8"):
     packages.append("libffi8")
   elif package_exists("libffi7"):
@@ -393,7 +398,9 @@ def lib_list():
   elif package_exists("libffi6"):
     packages.append("libffi6")
 
-  if package_exists("libpng16-16"):
+  if package_exists("libpng16-16t64"):
+    packages.append("libpng16-16t64")
+  elif package_exists("libpng16-16"):
     packages.append("libpng16-16")
   else:
     packages.append("libpng12-0")
@@ -414,11 +421,15 @@ def lib_list():
   if package_exists("libinput10"):
     packages.append("libinput10")
 
-  # Work around for dependency On Ubuntu 24.04 LTS (noble)
-  if distro_codename() == "noble":
+  if package_exists("libncurses6"):
     packages.append("libncurses6")
   else:
     packages.append("libncurses5")
+
+  if package_exists("libasound2t64"):
+    packages.append("libasound2t64")
+  else:
+    packages.append("libasound2")
 
   return packages
 
@@ -455,6 +466,7 @@ def lib32_list(options):
       "zlib1g:i386",
       # 32-bit libraries needed e.g. to compile V8 snapshot for Android or armhf
       "linux-libc-dev:i386",
+      "libexpat1:i386",
       "libpci3:i386",
   ]
 
@@ -472,8 +484,7 @@ def lib32_list(options):
     pattern = re.compile(r"g\+\+-[0-9.]+-multilib")
     packages += re.findall(pattern, lines)
 
-  # Work around for 32-bit dependency On Ubuntu 24.04 LTS (noble)
-  if distro_codename() == "noble":
+  if package_exists("libncurses6:i386"):
     packages.append("libncurses6:i386")
   else:
     packages.append("libncurses5:i386")
@@ -607,27 +618,22 @@ def arm_list(options):
 
   # arm cross toolchain packages needed to build chrome on armhf
   packages = [
+      "g++-arm-linux-gnueabihf",
+      "gcc-arm-linux-gnueabihf",
       "libc6-dev-armhf-cross",
       "linux-libc-dev-armhf-cross",
-      "g++-arm-linux-gnueabihf",
   ]
 
-  # Work around for dependency issue Ubuntu: http://crbug.com/435056
-  if distro_codename() == "bionic":
-    packages.extend([
-        "g++-5-multilib-arm-linux-gnueabihf",
-        "gcc-5-multilib-arm-linux-gnueabihf",
-        "gcc-arm-linux-gnueabihf",
-    ])
-  elif distro_codename() == "focal":
+  # Work around an Ubuntu dependency issue.
+  # TODO(https://crbug.com/40549424): Remove this when support for Focal
+  # and Jammy are dropped.
+  if distro_codename() == "focal":
     packages.extend([
         "g++-10-multilib-arm-linux-gnueabihf",
         "gcc-10-multilib-arm-linux-gnueabihf",
-        "gcc-arm-linux-gnueabihf",
     ])
   elif distro_codename() == "jammy":
     packages.extend([
-        "gcc-arm-linux-gnueabihf",
         "g++-11-arm-linux-gnueabihf",
         "gcc-11-arm-linux-gnueabihf",
     ])
@@ -640,8 +646,6 @@ def nacl_list(options):
     print("Skipping NaCl, NaCl toolchain, NaCl ports dependencies.",
           file=sys.stderr)
     return []
-  print("Including NaCl, NaCl toolchain, NaCl ports dependencies.",
-        file=sys.stderr)
 
   packages = [
       "g++-mingw-w64-i686",
@@ -652,12 +656,14 @@ def nacl_list(options):
       "libfontconfig1:i386",
       "libglib2.0-0:i386",
       "libgpm2:i386",
+      "libncurses5:i386",
       "libnss3:i386",
       "libpango-1.0-0:i386",
       "libssl-dev:i386",
       "libtinfo-dev",
       "libtinfo-dev:i386",
       "libtool",
+      "libudev1:i386",
       "libuuid1:i386",
       "libxcomposite1:i386",
       "libxcursor1:i386",
@@ -675,37 +681,38 @@ def nacl_list(options):
       "cmake",
       "gawk",
       "intltool",
+      "libtinfo5",
       "xutils-dev",
       "xsltproc",
   ]
 
-  # Some package names have changed over time
-  if package_exists("libssl-dev"):
-    packages.append("libssl-dev:i386")
-  elif package_exists("libssl1.1"):
-    packages.append("libssl1.1:i386")
-  elif package_exists("libssl1.0.2"):
-    packages.append("libssl1.0.2:i386")
-  else:
-    packages.append("libssl1.0.0:i386")
+  for package in packages:
+    if not package_exists(package):
+      print("Skipping NaCl, NaCl toolchain, NaCl ports dependencies because %s "
+            "is not available" % package,
+            file=sys.stderr)
+      return []
 
-  if package_exists("libtinfo5"):
-    packages.append("libtinfo5")
+  print("Including NaCl, NaCl toolchain, NaCl ports dependencies.",
+        file=sys.stderr)
 
-  if package_exists("libudev1"):
-    packages.append("libudev1:i386")
-  else:
-    packages.append("libudev0:i386")
-
-  # Work around for nacl dependency On Ubuntu 24.04 LTS (noble)
-  if distro_codename() == "noble":
-    packages.append("libncurses6:i386")
-    packages.append("lib32ncurses-dev")
-  else:
-    packages.append("libncurses5:i386")
+  # Prefer lib32ncurses5-dev to match libncurses5:i386 if it exists.
+  # In some Ubuntu releases, lib32ncurses5-dev is a transition package to
+  # lib32ncurses-dev, so use that as a fallback.
+  if package_exists("lib32ncurses5-dev"):
     packages.append("lib32ncurses5-dev")
+  else:
+    packages.append("lib32ncurses-dev")
 
   return packages
+
+
+# Packages suffixed with t64 are "transition packages" and should be preferred.
+def maybe_append_t64(package):
+  name = package.split(":")
+  name[0] += "t64"
+  renamed = ":".join(name)
+  return renamed if package_exists(renamed) else package
 
 
 # Debian is in the process of transitioning to automatic debug packages, which
@@ -713,6 +720,7 @@ def nacl_list(options):
 # Untransitioned packages have the -dbg suffix.  And on some systems, neither
 # will be available, so exclude the ones that are missing.
 def dbg_package_name(package):
+  package = maybe_append_t64(package)
   if package_exists(package + "-dbgsym"):
     return [package + "-dbgsym"]
   if package_exists(package + "-dbg"):
@@ -751,10 +759,11 @@ def package_list(options):
   packages = (dev_list() + lib_list() + dbg_list(options) +
               lib32_list(options) + arm_list(options) + nacl_list(options) +
               backwards_compatible_list(options))
+  packages = [maybe_append_t64(package) for package in set(packages)]
 
   # Sort all the :i386 packages to the front, to avoid confusing dpkg-query
   # (https://crbug.com/446172).
-  return sorted(set(packages), key=lambda x: (not x.endswith(":i386"), x))
+  return sorted(packages, key=lambda x: (not x.endswith(":i386"), x))
 
 
 def missing_packages(packages):
@@ -848,7 +857,6 @@ def install_packages(options):
     # An apt-get exit status of 100 indicates that a real error has occurred.
     print("`apt-get --just-print install ...` failed", file=sys.stderr)
     print("It produced the following output:", file=sys.stderr)
-    print(e.output.decode(), file=sys.stderr)
     print(file=sys.stderr)
     print("You will have to install the above packages yourself.",
           file=sys.stderr)

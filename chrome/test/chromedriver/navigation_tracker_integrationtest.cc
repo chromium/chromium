@@ -9,8 +9,9 @@
 #include "base/compiler_specific.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <fcntl.h>
 #include <windows.h>
+
+#include <fcntl.h>
 #endif
 
 #include <optional>
@@ -27,7 +28,6 @@
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
-#include "chrome/test/chromedriver/chrome/javascript_dialog_manager.h"
 #include "chrome/test/chromedriver/chrome/navigation_tracker.h"
 #include "chrome/test/chromedriver/chrome/page_load_strategy.h"
 #include "chrome/test/chromedriver/chrome/page_tracker.h"
@@ -172,7 +172,7 @@ TEST_F(NavigationTrackerTest, SimpleNavigation) {
   ASSERT_TRUE(StatusOk(status));
   WebViewImpl web_view(view_info->id, true, nullptr, &browser_info_,
                        std::move(client), std::nullopt,
-                       PageLoadStrategy::kNormal);
+                       PageLoadStrategy::kNormal, true);
   web_view.AttachTo(browser_client_.get());
 
   http_server_.SetDataForPath("test.html", "<span>DONE!</span>");

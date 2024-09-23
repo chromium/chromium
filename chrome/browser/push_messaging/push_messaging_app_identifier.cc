@@ -176,7 +176,7 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::FindByAppId(
   if (!DisassemblePrefValue(*map_value, &origin,
                             &service_worker_registration_id,
                             &expiration_time)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return PushMessagingAppIdentifier();
   }
 

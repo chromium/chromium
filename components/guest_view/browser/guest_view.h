@@ -5,10 +5,17 @@
 #ifndef COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
 #define COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
 
+#include "base/metrics/histogram_functions.h"
 #include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/guest_view_histogram_value.h"
 #include "components/guest_view/browser/guest_view_manager.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
+
+namespace content {
+class NavigationHandle;
+}  // namespace content
 
 namespace guest_view {
 
@@ -40,6 +47,16 @@ class GuestView : public GuestViewBase {
     return AsDerivedGuest(GuestViewBase::FromRenderFrameHostId(rfh_id));
   }
 
+  static T* FromNavigationHandle(content::NavigationHandle* navigation_handle) {
+    return AsDerivedGuest(
+        GuestViewBase::FromNavigationHandle(navigation_handle));
+  }
+
+  static T* FromFrameTreeNodeId(content::FrameTreeNodeId frame_tree_node_id) {
+    return AsDerivedGuest(
+        GuestViewBase::FromFrameTreeNodeId(frame_tree_node_id));
+  }
+
   GuestView(const GuestView&) = delete;
   GuestView& operator=(const GuestView&) = delete;
 
@@ -50,7 +67,10 @@ class GuestView : public GuestViewBase {
 
  protected:
   explicit GuestView(content::RenderFrameHost* owner_rfh)
-      : GuestViewBase(owner_rfh) {}
+      : GuestViewBase(owner_rfh) {
+    base::UmaHistogramEnumeration("GuestView.GuestViewCreated",
+                                  T::HistogramValue);
+  }
   ~GuestView() override = default;
 
   T* GetOpener() const { return AsDerivedGuest(GuestViewBase::GetOpener()); }

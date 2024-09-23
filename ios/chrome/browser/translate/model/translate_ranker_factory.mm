@@ -10,7 +10,7 @@
 #import "components/translate/core/browser/translate_ranker_impl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace translate {
 
@@ -21,8 +21,8 @@ TranslateRankerFactory* TranslateRankerFactory::GetInstance() {
 }
 
 // static
-translate::TranslateRanker* TranslateRankerFactory::GetForBrowserState(
-    ChromeBrowserState* state) {
+translate::TranslateRanker* TranslateRankerFactory::GetForProfile(
+    ProfileIOS* state) {
   return static_cast<TranslateRanker*>(
       GetInstance()->GetServiceForBrowserState(state, true));
 }
@@ -36,10 +36,9 @@ TranslateRankerFactory::~TranslateRankerFactory() {}
 
 std::unique_ptr<KeyedService> TranslateRankerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<TranslateRankerImpl>(
-      TranslateRankerImpl::GetModelPath(browser_state->GetStatePath()),
+      TranslateRankerImpl::GetModelPath(profile->GetStatePath()),
       TranslateRankerImpl::GetModelURL(),
       GetApplicationContext()->GetUkmRecorder());
 }

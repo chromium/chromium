@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -111,7 +110,7 @@ bool TestPrintViewManager::StartPrinting(content::WebContents* contents) {
 
 void TestPrintViewManager::WaitUntilPreviewIsShownOrCancelled() {
   base::RunLoop run_loop;
-  base::AutoReset<base::RunLoop*> auto_reset(&run_loop_, &run_loop);
+  quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
 }
 
@@ -145,9 +144,15 @@ scoped_refptr<PrintJob> TestPrintViewManager::CreatePrintJob(
   return print_job;
 }
 
+void TestPrintViewManager::PrintPreviewRejectedForTesting() {
+  if (quit_closure_) {
+    std::move(quit_closure_).Run();
+  }
+}
+
 void TestPrintViewManager::PrintPreviewAllowedForTesting() {
-  if (run_loop_) {
-    run_loop_->Quit();
+  if (quit_closure_) {
+    std::move(quit_closure_).Run();
   }
 }
 

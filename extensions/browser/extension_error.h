@@ -20,11 +20,11 @@ namespace extensions {
 
 class ExtensionError {
  public:
-  enum Type {
-    MANIFEST_ERROR = 0,
-    RUNTIME_ERROR,
-    INTERNAL_ERROR,
-    NUM_ERROR_TYPES,  // Put new values above this.
+  enum class Type {
+    kManifestError = 0,
+    kRuntimeError,
+    kInternalError,
+    kNumErrorTypes,  // Put new values above this.
   };
 
   ExtensionError(const ExtensionError&) = delete;

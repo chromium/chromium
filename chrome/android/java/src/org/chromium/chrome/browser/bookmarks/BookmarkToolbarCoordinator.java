@@ -18,6 +18,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.function.BooleanSupplier;
+
 /** Responsible for the business logic for the BookmarkManagerToolbar. */
 public class BookmarkToolbarCoordinator {
     private final BookmarkToolbar mToolbar;
@@ -27,7 +29,7 @@ public class BookmarkToolbarCoordinator {
     BookmarkToolbarCoordinator(
             Context context,
             SelectableListLayout<BookmarkId> selectableListLayout,
-            SelectionDelegate selectionDelegate,
+            SelectionDelegate<BookmarkId> selectionDelegate,
             SearchDelegate searchDelegate,
             DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter,
             boolean isDialogUi,
@@ -37,7 +39,8 @@ public class BookmarkToolbarCoordinator {
             BookmarkUiPrefs bookmarkUiPrefs,
             ModalDialogManager modalDialogManager,
             Runnable endSearchRunnable,
-            BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager) {
+            BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager,
+            BooleanSupplier incognitoEnabledSupplier) {
         mToolbar =
                 (BookmarkToolbar)
                         selectableListLayout.initializeToolbar(
@@ -52,7 +55,6 @@ public class BookmarkToolbarCoordinator {
                 searchDelegate, R.string.bookmark_toolbar_search, R.id.search_menu_id);
 
         mModel = new PropertyModel.Builder(BookmarkToolbarProperties.ALL_KEYS).build();
-        mModel.set(BookmarkToolbarProperties.BOOKMARK_MODEL, bookmarkModel);
         mModel.set(BookmarkToolbarProperties.BOOKMARK_OPENER, bookmarkOpener);
         mModel.set(BookmarkToolbarProperties.SELECTION_DELEGATE, selectionDelegate);
         mModel.set(BookmarkToolbarProperties.BOOKMARK_UI_MODE, BookmarkUiMode.LOADING);
@@ -71,7 +73,8 @@ public class BookmarkToolbarCoordinator {
                         new BookmarkAddNewFolderCoordinator(
                                 context, modalDialogManager, bookmarkModel),
                         endSearchRunnable,
-                        bookmarkMoveSnackbarManager);
+                        bookmarkMoveSnackbarManager,
+                        incognitoEnabledSupplier);
 
         PropertyModelChangeProcessor.create(mModel, mToolbar, BookmarkToolbarViewBinder::bind);
     }

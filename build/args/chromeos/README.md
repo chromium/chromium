@@ -41,13 +41,12 @@ import("//build/args/chromeos/${some_board}.gni")
 That will produce a Chrome OS build of Chrome very similar to what is shipped
 for that device. You can also supply additional args or even overwrite ones
 supplied in the .gni file after the `import()` line. For example, the following
-args will produce a debug build of Chrome for board=eve using goma:
+args will produce a debug build of Chrome for board=eve using rbe:
 ```
 import("//build/args/chromeos/eve.gni")
 
 is_debug = true
-use_goma = true
-goma_dir = "/path/to/goma/"
+use_remoteexec = true
 ```
 
 TODO(bpastene): Make 'cros_boards' a first class citizen in gclient and replace

@@ -65,7 +65,7 @@ CdmDirectoryInfo GetCdmDirectoryInfo(const base::FilePath& path) {
 
 void ApplyCdmStorageQuota(base::FilePath cdm_data_path,
                           uint64_t cdm_data_quota_bytes) {
-  // TODO(crbug.com/1148334): Migrate to using a platform-provided quota
+  // TODO(crbug.com/42050202): Migrate to using a platform-provided quota
   // mechanism to manage CDM storage.
   VLOG(2) << "Enumerating CDM data directories.";
 

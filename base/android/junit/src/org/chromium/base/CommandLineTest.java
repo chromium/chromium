@@ -45,7 +45,7 @@ public class CommandLineTest {
     static final String CL_ADDED_SWITCH_2 = "username";
     static final String CL_ADDED_VALUE_2 = "bozo";
 
-    private CommandLine mCommandLine;
+    private CommandLine.JavaCommandLine mCommandLine;
 
     @Before
     public void setUp() {

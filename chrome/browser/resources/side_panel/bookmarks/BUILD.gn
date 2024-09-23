@@ -18,7 +18,6 @@ build_webui("build") {
   # Files holding a Polymer element definition and have an equivalent .html file.
   web_component_files = [
     "commerce/shopping_list.ts",
-    "power_bookmark_row.ts",
     "power_bookmarks_context_menu.ts",
     "power_bookmarks_edit_dialog.ts",
     "power_bookmarks_labels.ts",
@@ -28,8 +27,13 @@ build_webui("build") {
   non_web_component_files = [
     "bookmarks_api_proxy.ts",
     "power_bookmarks_drag_manager.ts",
+    "power_bookmark_row.html.ts",
+    "power_bookmark_row.ts",
+    "power_bookmarks_utils.ts",
     "power_bookmarks_service.ts",
   ]
+
+  css_files = [ "power_bookmark_row.css" ]
 
   icons_html_files = [
     "commerce/icons.html",
@@ -41,6 +45,7 @@ build_webui("build") {
 
   ts_composite = true
   ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/bookmark_manager_private.d.ts",
     "//tools/typescript/definitions/bookmarks.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
@@ -48,6 +53,7 @@ build_webui("build") {
   ]
   ts_deps = [
     "../shared:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/commerce:build_ts",
@@ -61,4 +67,7 @@ build_webui("build") {
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
             target_gen_dir) ]
+
+  html_to_wrapper_template = "detect"
+  webui_context_type = "trusted"
 }

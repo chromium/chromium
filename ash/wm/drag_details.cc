@@ -74,7 +74,10 @@ gfx::Rect GetRestoreBoundsInParent(aura::Window* window, int window_component) {
       wm::ConvertRectFromScreen(window->parent(), &restore_bounds);
     }
   } else if (window_state->IsSnapped() || window_state->IsMaximized()) {
-    DCHECK(window_state->HasRestoreBounds());
+    // For client controlled windows, the client-side controls the restore
+    // bounds, so it is not always available on ash-side.
+    DCHECK(window_state->is_client_controlled() ||
+           window_state->HasRestoreBounds());
     restore_bounds = window_state->GetRestoreBoundsInParent();
   } else if ((window_state->IsNormalStateType() || window_state->IsFloated()) &&
              window_state->HasRestoreBounds()) {

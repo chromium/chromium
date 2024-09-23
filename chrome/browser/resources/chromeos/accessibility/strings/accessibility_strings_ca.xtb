@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Marró rosat</translation>
 <translation id="249330843868392562">Obre la configuració de text a parla</translation>
 <translation id="2497706219848005458">Groc verdós</translation>
+<translation id="2512979179176933762">mostra les finestres</translation>
 <translation id="2523609930580546572">Tutorial de ChromeVox</translation>
 <translation id="2525706221823668172">Tecles de drecera de Chromebook</translation>
 <translation id="2553108862507765288">error gramatical</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{# més}other{# més}}</translation>
 <translation id="2792200646155001340">També pots fer lliscar un dit de dreta a esquerra per anar a l'element anterior. Prova-ho ara.</translation>
 <translation id="280499067616661124">Cerca a la pàgina amb ChromeVox</translation>
-<translation id="2811019999044652585">Per desplaçar-te a altres parts de la pantalla, com ara les barres d'eines o la safata del sistema, prem Control+Endavant. A Chromebook, la tecla Endavant es troba just a sobre de la tecla del número dos.</translation>
 <translation id="2811204574343810641">Fila</translation>
 <translation id="2816868829355607410">Zona de pràctiques: ordres de salt</translation>
 <translation id="2841013758207633010">Hora</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Blau metàl·lic</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4254798249533888099">Arbre</translation>
+<translation id="4259220820964911921">Vols activar el control facial?</translation>
 <translation id="4271220233568730077">Expressió matemàtica següent</translation>
 <translation id="4275397969489577657">Activa el registre del flux d'esdeveniments</translation>
 <translation id="4278486392851938658">No hi ha cap enllaç visitat anterior</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Vermell indi</translation>
 <translation id="4432896207833262240">Contingut marcat</translation>
 <translation id="4437615272777527928">Escriu per cercar als menús. Fes servir les fletxes amunt i cp avall per moure't entre els resultats. Fes servir les tecles de fletxa esquerra i dreta per ajustar la marca d'inserció de text i per moure't entre els menús.</translation>
+<translation id="4453530046591759283">Per desplaçar-te a altres parts de la pantalla, com ara les barres d'eines o la safata del sistema, prem Control+F1. F1 és la primera tecla a la dreta de la tecla Esc.</translation>
 <translation id="4457472090507035117">Selecciona la veu actual:</translation>
 <translation id="4476183483923481720">línia nova</translation>
 <translation id="4479068155583208887">Maó</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Apèndix</translation>
 <translation id="5761219715606611783">Ben fet! Has après els conceptes bàsics dels tocs a ChromeVox. Pots tornar a consultar el tutorial o sortir-ne amb els botons que trobaràs més avall.</translation>
 <translation id="5776001898637896684">Extensió de text a parla de Google Enhanced Network</translation>
+<translation id="5783252477644995371">El control facial et permet controlar el cursor amb el moviment de la cara i dur a terme accions com, per exemple, fer clic amb el botó esquerre del ratolí per mitjà de gestos facials, com ara somriure</translation>
 <translation id="5805940204952508776">Toca amb dos dits</translation>
 <translation id="5819072574982403430">Element d'arbre</translation>
 <translation id="5822819874379903994">Turquesa fosc</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Blanc navajo</translation>
 <translation id="7095834689119144465">Edita només text numèric</translation>
 <translation id="7096001299300236431">Fitxer multimèdia anterior</translation>
+<translation id="7096668131290451939">Torna a prémer Escapada per sortir del mode d'aprenentatge</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">retorn de paraules</translation>
 <translation id="7137397390322864165">Salmó</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">No hi ha cap casella de selecció més</translation>
 <translation id="8473540203671727883">Llegeix el text que hi ha a sota del cursor del ratolí</translation>
 <translation id="8476408756881832830">Pausa la reproducció quan ChromeVox parli</translation>
-<translation id="8476508772960940536">visió general de la finestra</translation>
 <translation id="8480873377842220259">Ara t'explicarem algunes tècniques bàsiques de navegació. Pots mantenir premuda la tecla de cerca i prémer les tecles de fletxa per moure't per la pantalla. Per continuar, prem Cerca+fletxa dreta.</translation>
 <translation id="8503360654911991865">Disminueix la granularitat de la navegació.</translation>
 <translation id="8520472399088452386">Botó de selecció de valors</translation>

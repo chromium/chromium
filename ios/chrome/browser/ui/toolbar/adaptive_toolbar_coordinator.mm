@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_visibility_configuration.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
 
 @interface AdaptiveToolbarCoordinator () <AdaptiveToolbarViewControllerDelegate>
 
@@ -130,7 +131,18 @@
 #pragma mark - AdaptiveToolbarViewControllerDelegate
 
 - (void)exitFullscreen {
-  FullscreenController::FromBrowser(self.browser)->ExitFullscreen();
+  FullscreenController* fullscreenController =
+      FullscreenController::FromBrowser(self.browser);
+  fullscreenController->ExitFullscreen();
+
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(webState);
+  if (sourceID != ukm::kInvalidSourceId) {
+    ukm::builders::IOS_FullscreenActions(sourceID)
+        .SetHasExitedManually(true)
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
 #pragma mark - NewTabPageControllerDelegate

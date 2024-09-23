@@ -7,7 +7,9 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
+#include "base/check_op.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"

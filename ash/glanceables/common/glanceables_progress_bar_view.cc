@@ -20,8 +20,9 @@
 namespace ash {
 namespace {
 
-constexpr auto kProgressBarContainerPreferredSize = gfx::Size(0, 16);
-constexpr auto kProgressBarContainerMargins = gfx::Insets::VH(0, -16);
+constexpr auto kProgressBarContainerPreferredSize = gfx::Size(0, 12);
+constexpr auto kProgressBarContainerMargins =
+    gfx::Insets::VH(0, -kProgressBarContainerPreferredSize.height());
 constexpr int kProgressBarThickness = 2;
 
 }  // namespace

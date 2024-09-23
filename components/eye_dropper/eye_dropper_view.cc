@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -29,7 +30,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/aura/client/screen_position_client.h"
+#include "ui/aura/window_tree_host.h"
 #endif
 
 namespace eye_dropper {
@@ -114,6 +115,8 @@ EyeDropperView::ScreenCapturer::ScreenCapturer(EyeDropperView* owner)
       capturer_->SelectSource(webrtc::kFullDesktopScreenId);
     }
   }
+
+  // On ChromeOS this will capture `Screen::GetDisplayForNewWindows()`.
   CaptureScreen(std::nullopt);
 }
 
@@ -193,7 +196,7 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
     : listener_(listener),
       view_position_handler_(std::make_unique<ViewPositionHandler>(this)),
       screen_capturer_(std::make_unique<ScreenCapturer>(this)) {
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   // This is owned as a unique_ptr<EyeDropper> elsewhere.
   SetOwnedByWidget(false);
   // TODO(pbos): Remove this, perhaps by separating the contents view from the
@@ -203,9 +206,13 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
 #if BUILDFLAG(IS_LINUX)
   // Use TYPE_MENU for Linux to ensure that the eye dropper view is displayed
   // above the color picker.
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_MENU);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_MENU);
 #else
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
 #endif
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   // Use software compositing to prevent situations when the widget is not
@@ -240,15 +247,14 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
   ignore_selection_time_ = base::TimeTicks::Now() + base::Milliseconds(500);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  GetWidget()->GetNativeWindow()->AddObserver(this);
+  // Add an observation so the capture can be updated as the eye dropper window
+  // moves between displays.
+  window_observation_.Observe(GetWidget()->GetNativeWindow());
 #endif
 }
 
 EyeDropperView::~EyeDropperView() {
   if (GetWidget()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    GetWidget()->GetNativeWindow()->RemoveObserver(this);
-#endif
     GetWidget()->CloseNow();
   }
 }
@@ -285,37 +291,38 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   // Project pixels.
   const int pixel_count = diameter / kPixelSize;
   const SkBitmap frame = screen_capturer_->GetBitmap();
+  gfx::Point center_position_px;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS only captures a single display at a time, and we need to convert
+  // the cursor position to display (root window) local pixel coordinates.
+  aura::Window* window = GetWidget()->GetNativeWindow();
+  const gfx::Point center_position =
+      window->GetBoundsInRootWindow().CenterPoint();
+  center_position_px =
+      window->GetHost()->GetRootTransform().MapPoint(center_position);
+#else
   // The captured frame is not scaled so we need to use widget's bounds in
   // pixels to have the magnified region match cursor position.
-  gfx::Point center_position =
+  center_position_px =
       display::Screen::GetScreen()
           ->DIPToScreenRectInWindow(GetWidget()->GetNativeWindow(),
                                     GetWidget()->GetWindowBoundsInScreen())
           .CenterPoint();
-  center_position.Offset(-screen_capturer_->original_offset_x(),
-                         -screen_capturer_->original_offset_y());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS only captures a single display at a time, and we need to convert
-  // the cursor position to local values for non primary displays.
-  aura::Window* window = GetWidget()->GetNativeWindow()->GetRootWindow();
-  aura::client::ScreenPositionClient* screen_position_client =
-      aura::client::GetScreenPositionClient(window);
-  if (screen_position_client) {
-    screen_position_client->ConvertPointFromScreen(window, &center_position);
-  }
+  center_position_px.Offset(-screen_capturer_->original_offset_x(),
+                            -screen_capturer_->original_offset_y());
 #endif
 
   view_canvas->DrawImageInt(gfx::ImageSkia::CreateFrom1xBitmap(frame),
-                            center_position.x() - pixel_count / 2,
-                            center_position.y() - pixel_count / 2, pixel_count,
-                            pixel_count, padding.width(), padding.height(),
-                            diameter, diameter, false);
+                            center_position_px.x() - pixel_count / 2,
+                            center_position_px.y() - pixel_count / 2,
+                            pixel_count, pixel_count, padding.width(),
+                            padding.height(), diameter, diameter, false);
 
   // Store the pixel color under the cursor as it is the last color seen
   // by the user before selection.
-  selected_color_ =
-      screen_capturer_->GetColor(center_position.x(), center_position.y());
+  selected_color_ = screen_capturer_->GetColor(center_position_px.x(),
+                                               center_position_px.y());
 
   // Paint grid.
   const auto* color_provider = GetColorProvider();
@@ -383,6 +390,10 @@ void EyeDropperView::OnWindowAddedToRootWindow(aura::Window* window) {
       display::Screen::GetScreen()->GetDisplayNearestWindow(window);
   CaptureScreen(display.id());
 }
+
+void EyeDropperView::OnWindowDestroying(aura::Window* window) {
+  window_observation_.Reset();
+}
 #endif
 
 void EyeDropperView::CaptureScreen(
@@ -420,7 +431,7 @@ void EyeDropperView::OnColorSelectionCanceled() {
   listener_->ColorSelectionCanceled();
 }
 
-BEGIN_METADATA(EyeDropperView, views::WidgetDelegateView)
+BEGIN_METADATA(EyeDropperView)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, Size)
 ADD_READONLY_PROPERTY_METADATA(float, Diameter)
 END_METADATA

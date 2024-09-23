@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -22,6 +23,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
@@ -40,9 +42,8 @@ namespace {
 
 class TestAutofillManager : public autofill::BrowserAutofillManager {
  public:
-  TestAutofillManager(autofill::ContentAutofillDriver* driver,
-                      autofill::AutofillClient* client)
-      : BrowserAutofillManager(driver, client, "en-US") {}
+  explicit TestAutofillManager(autofill::ContentAutofillDriver* driver)
+      : BrowserAutofillManager(driver, "en-US") {}
 
   [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
       int min_num_awaited_calls) {
@@ -84,15 +85,16 @@ class BrowserNonClientFrameViewBrowserTest
   // longer be hosted apps when BMO ships.
   void InstallAndLaunchBookmarkApp(std::optional<GURL> app_url = std::nullopt) {
     blink::mojom::Manifest manifest;
+    manifest.manifest_url = embedded_test_server()->GetURL("/manifest");
     manifest.start_url = app_url.value_or(GetAppURL());
     manifest.scope = manifest.start_url.GetWithoutFilename();
     manifest.has_theme_color = true;
     manifest.theme_color = app_theme_color_;
 
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    GURL manifest_url = embedded_test_server()->GetURL("/manifest");
-    web_app::UpdateWebAppInfoFromManifest(manifest, manifest_url,
-                                          web_app_info.get());
+    auto web_app_info =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            manifest.start_url);
+    web_app::UpdateWebAppInfoFromManifest(manifest, web_app_info.get());
 
     webapps::AppId app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
@@ -107,7 +109,7 @@ class BrowserNonClientFrameViewBrowserTest
 
   // Frame view may get reset after theme change, so always access from the
   // browser view and don't retain the pointer.
-  // TODO(crbug.com/1020050): Make it not do this and only refresh the Widget.
+  // TODO(crbug.com/40656280): Make it not do this and only refresh the Widget.
   BrowserNonClientFrameView* GetAppFrameView() {
     return app_browser_view_->frame()->GetFrameView();
   }
@@ -124,6 +126,8 @@ class BrowserNonClientFrameViewBrowserTest
 
  private:
   GURL GetAppURL() { return embedded_test_server()->GetURL("/empty.html"); }
+
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
 // Tests the frame color for a normal browser window.
@@ -250,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 }
 
 // Tests that the custom tab bar is visible in fullscreen mode.
-// TODO(crbug.com/1349592): Flaky on linux-wayland-rel and linux-lacros-rel
+// TODO(crbug.com/40855995): Flaky on linux-wayland-rel and linux-lacros-rel
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_CustomTabBarIsVisibleInFullscreen \
   DISABLED_CustomTabBarIsVisibleInFullscreen
@@ -409,7 +413,7 @@ class SaveCardOfferObserver
   base::RunLoop run_loop_;
 };
 
-// TODO(crbug.com/1366531): Test is flaky.
+// TODO(crbug.com/40866991): Test is flaky.
 // Tests that hosted app frames reflect the theme color set by HTML meta tags.
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                        DISABLED_SaveCardIcon) {

@@ -70,7 +70,7 @@ void ChannelSplitterHandler::Process(uint32_t frames_to_process) {
 void ChannelSplitterHandler::SetChannelCount(unsigned channel_count,
                                              ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   // channelCount cannot be changed from the number of outputs.
   if (channel_count != NumberOfOutputs()) {
@@ -85,7 +85,7 @@ void ChannelSplitterHandler::SetChannelCountMode(
     const String& mode,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   // channcelCountMode must be 'explicit'.
   if (mode != "explicit") {
@@ -99,7 +99,7 @@ void ChannelSplitterHandler::SetChannelInterpretation(
     const String& mode,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   // channelInterpretation must be "discrete"
   if (mode != "discrete") {

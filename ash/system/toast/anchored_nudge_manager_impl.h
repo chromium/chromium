@@ -54,9 +54,6 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // its widget is destroying.
   void HandleNudgeWidgetDestroying(const std::string& id);
 
-  // AnchoredNudge::Delegate:
-  void OnNudgeHoverStateChanged(const std::string& nudge_id, bool is_hovering);
-
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
@@ -93,8 +90,8 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
  private:
   friend class AnchoredNudgeManagerImplTest;
   class AnchorViewObserver;
+  class AnchorViewWidgetObserver;
   class NudgeWidgetObserver;
-  class NudgeHoverObserver;
   class PausableTimer;
 
   // Returns the registry which keeps track of when a nudge was last shown.
@@ -113,6 +110,12 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // nudge pause is activated, or when the session state changes.
   void CloseAllNudges();
 
+  // Pauses or resumes the dismiss timer corresponding to `nudge_id`.
+  // Called when:
+  // 1. A nudge's mouse hover state changes. OR
+  // 2. A nudge's child focus state changes.
+  void PauseOrResumeDismissTimer(const std::string& nudge_id, bool pause);
+
   // Chains the provided `callback` to a `Cancel()` call to dismiss a nudge with
   // `id`, and returns this chained callback. If the provided `callback` is
   // empty, only a `Cancel()` callback will be returned.
@@ -130,14 +133,17 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // they can be dismissed or their contents updated.
   std::map<std::string, raw_ptr<AnchoredNudge>> shown_nudges_;
 
-  std::map<std::string, std::unique_ptr<NudgeHoverObserver>>
-      nudge_hover_observers_;
-
   // Maps an `AnchoredNudge` `id` to an observation of that nudge's
   // `anchor_view`, which is used to close the nudge whenever its anchor view is
   // deleting or hiding.
   std::map<std::string, std::unique_ptr<AnchorViewObserver>>
       anchor_view_observers_;
+
+  // Maps an `AnchoredNudge` `id` to an observation of that nudge's
+  // `anchor_view` widget, which is used to close the nudge whenever its anchor
+  // view widget is deleting or hiding.
+  std::map<std::string, std::unique_ptr<AnchorViewWidgetObserver>>
+      anchor_view_widget_observers_;
 
   // Maps an `AnchoredNudge` `id` to an observation of that nudge's widget,
   // which is used to clean up the cached objects related to that nudge when its

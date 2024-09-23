@@ -94,16 +94,9 @@ UiElementContainerView::UiElementContainerView(AssistantViewDelegate* delegate)
 
 UiElementContainerView::~UiElementContainerView() = default;
 
-const char* UiElementContainerView::GetClassName() const {
-  return "UiElementContainerView";
-}
-
-gfx::Size UiElementContainerView::CalculatePreferredSize() const {
-  return gfx::Size(INT_MAX, GetHeightForWidth(INT_MAX));
-}
-
-int UiElementContainerView::GetHeightForWidth(int width) const {
-  return content_view()->GetHeightForWidth(width);
+gfx::Size UiElementContainerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return gfx::Size(INT_MAX, content_view()->GetHeightForWidth(INT_MAX));
 }
 
 gfx::Size UiElementContainerView::GetMinimumSize() const {

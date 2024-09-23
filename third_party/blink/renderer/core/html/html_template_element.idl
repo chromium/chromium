@@ -35,26 +35,17 @@
 ] interface HTMLTemplateElement : HTMLElement {
     readonly attribute DocumentFragment content;
 
-    // This is the deprecated and removed IDL for `shadowRoot`, which was used
-    // by the old declarative shadow DOM proposal. Note that it was only used
-    // for feature detection - this override of `shadowRoot` returns the same
-    // thing as HTMLElement's `shadowRoot` attribute. For safety, it is here,
-    // guarded by a runtime flag, in case of compat problems.
-    // TODO(crbug.com/1396384) Eventually remove this.
-    [ImplementedAs=OpenShadowRoot, RuntimeEnabled=DeprecatedTemplateShadowRoot]
-    readonly attribute ShadowRoot? shadowRoot;
-
-    // This is the declarative Shadow DOM IDL attribute, which reflects the
-    // 'shadowrootmode' content attribute.
+    // These are the declarative Shadow DOM IDL attributes, which reflect the
+    // equivalent content attributes. Note that these are just the reflections
+    // of HTMLTemplateElement's attribute, which isn't a common use case: in
+    // normal declarative shadow DOM usage, the template element is "converted"
+    // to a shadow root; since the template no longer exists, these reflections
+    // don't have anything to reflect.
     [Reflect,ReflectOnly=("open","closed")] attribute DOMString shadowRootMode;
+    [CEReactions,Reflect] attribute boolean shadowRootDelegatesFocus;
+    [CEReactions,Reflect] attribute boolean shadowRootClonable;
+    [Reflect] attribute boolean shadowRootSerializable;
 
     // Used by the DOM Parts API
     [Reflect, RuntimeEnabled=DOMPartsAPI] attribute boolean parseparts;
-
-    // Declarative shadow dom serializable attribute, which controls whether the
-    // shadow root will be serialized by getHTML({includeShadowRoots:true}).
-    // Note that this is just the reflection of HTMLTemplateElement's attribute,
-    // which isn't a common usage - in normal declarative shadow DOM usage, the
-    // template element is "converted" to a shadow root.
-    [Reflect, RuntimeEnabled=ElementGetHTML] attribute boolean serializable;
 };

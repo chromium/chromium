@@ -6,7 +6,7 @@ When in doubt, reach out to memory-dev@chromium.org.
 
 [TOC]
 
-## Investigating Reproducible Memory Issues
+## Investigating Reproducible Memory Regression
 
 Let's say that there's a CL or feature that reproducibly increases memory usage
 when it's landed/enabled, given a particular set of repro steps.
@@ -134,3 +134,130 @@ available as command line flags, for automated test runs [e.g. telemetry].
 Once the flags have been set appropriately, restart Chrome and take a
 memory-infra trace. The results will have a heap dump.
 
+## Investigating Memory Corruption
+
+In case you can reproduce the corruption locally,
+you are advised to run sanitizers (e.g.
+[ASan](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/asan.md))
+to locate and fix UB.
+
+Otherwise, you can look into
+[minidump](https://sites.google.com/a/google.com/crash/users/how-to/manually-debug-a-minidump)
+(link Googlers-only) if available.
+
+### Known Memory Poisoning Patterns
+
+Memory allocation goes through multiple states,
+and its payload sometimes has a distinctive pattern.
+You may also see some variance on lower bits, introduced by
+e.g. an offset within `struct`.
+
+#### Memory held by the OS
+
+* All memory comes from the OS and returns back to the OS at some point.
+* Access to memory that is already returned to the OS is likely a crash.
+* Large allocations (>= ~1 MiB) tend to go back to the OS quickly when
+  freed, while smaller allocations are mostly reused.
+
+#### Memory held by the allocator
+
+* The allocator holds the memory region borrowed from the OS in a free-list.
+* Payload and behavior are implementation-specific.
+* In Chrome, we use
+  [PartitionAlloc](/base/allocator/partition_allocator/PartitionAlloc.md) as the
+  main allocator.
+  * We embed some data on payload and the original payload before `free()` may
+    or may not be overwritten.
+  * Writes to `free()`d memory may be caught as "free-list corruption".
+* Following patterns can be written at this stage:
+  * `0xCDCDCDCDCDCDCDCD`: when allocation gets returned to PartitionAlloc.
+    * Shows up only in `PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)` builds.
+
+#### Quarantined Memory
+
+* Optionally, the allocator may keep `free()`d memory in quarantine
+  for a while before returning it into a free-list to detect and mitigate
+  UaF bugs.
+* Following patterns can be written at this stage:
+  * `0xCDCDCDCDCDCDCDCD`: PartitionAlloc's `FreeFlags::kZap`.
+    * As of Aug. 2024 this is used by only [AMSC](https://docs.google.com/document/d/12OM0CSKgKv6NhM9YylSqAAXiV_f4uMgYgaH8KABUe-o/edit?usp=sharing).
+  * `0xEFEFEFEFEFEFEFEF`: In [BRP](https://chromium.googlesource.com/chromium/src/+/HEAD/base/memory/raw_ptr.md) quarantine.
+    * You are using a dangling pointer to access invalidated memory region.
+  * `0xEFED????????8000`: In [LUD](https://docs.google.com/document/d/1xfGa_IMtFZiQ3beOmkncEafODwn4U90ZyL4NfPaAtDY/edit?usp=sharing&resourcekey=0-89BZl1SVILB6ylOHula0IA) quarantine.
+    * (Googlers-only) You may have an access to `free()` stack trace on crashpad.
+  * `0xECEC????????8000`: In [E-LUD](https://docs.google.com/document/d/1_9TSOtQuPR3NjorLDjAkuloi8lYqblb6Ykt5nbVnh9I/edit?usp=sharing) quarantine.
+
+
+#### Memory allocation you officially own
+
+In principle, once initialized you should only see values written
+by your code while your allocation is alive.
+However, in rare case, you may see values from Write-after-Free.
+
+```txt
+void YourFunc() {              | void TheirFunc() {
+                               |   int* p1 = new int;
+                               |   delete p1;
+  // The allocator may         |
+  // redistribute `p1` to `p2` |
+  int* p2 = new int;           |
+  *p2 = 123;                   |
+                               |   // Write-after-Free
+                               |   *p1 = 456;
+  // 456 may show up           |
+  printf("%d\n", *p2);         |
+}                              | }
+```
+
+...or values from Double-Free.
+
+```
+void YourFunc() {              | void TheirFunc() {
+                               |   int* p1 = new int;
+                               |   delete p1;
+  // The allocator may         |
+  // redistribute `p1` to `p2` |
+  int* p2 = new int;           |
+  *p2 = 123;                   |
+                               |   // Double-Free
+                               |   delete p1;
+                               |
+                               |   // The allocator may
+                               |   // redistribute `p2` to `p3`
+                               |   int* p3 = new int;
+                               |   *p3 = 456;
+  // 456 may show up           |
+  printf("%d\n", *p2);         |
+}                              | }
+```
+
+* Following patterns can be written at this stage:
+  * `0x0000000000000000`: [zero initialization](https://en.cppreference.com/w/cpp/language/zero_initialization).
+  * `0x0000000000000000`: PartitionAlloc's `AllocFlags::kZeroFill`.
+    * This payload is written as a part of memory allocation but requires
+      explicit opt-in e.g. `calloc()`.
+  - `0xABABABABABABABAB`: PartitionAlloc's newly allocated memory.
+    * Shows up only in `PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)` builds.
+    * MSan should be capable of catching this kind of reads to uninitialized
+      regions.
+
+
+#### Memory allocation owned by someone else
+
+You may see random values written by someone else
+if you keep using pointers to `free()`d region.
+
+```
+void YourFunc() {              | void TheirFunc() {
+  int* p1 = new int;           |
+  *p1 = 123;                   |
+  delete p1;                   |
+                               |   // The allocator may
+                               |   // redistribute `p1` to `p2`
+                               |   int* p2 = new int;
+                               |   *p2 = 456;
+  // Use-after-Free;           |
+  // 456 may show up           |
+  printf("%d\n", *p1);         |
+}                              | }
+```

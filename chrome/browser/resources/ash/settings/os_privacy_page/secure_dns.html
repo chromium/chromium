@@ -7,8 +7,7 @@
         flex: 1;
       }
 
-      #privacyPolicy {
-        display: none;
+      #privacyPolicy, #networkDefaultDescription {
         padding: calc(var(--cr-section-padding) / 2) var(--cr-section-padding);
       }
 
@@ -62,7 +61,8 @@
         <select id="resolverSelect"
             class="md-select"
             aria-labelledby="resolverLabel"
-            on-change="onDropdownSelectionChanged_">
+            on-change="onDropdownSelectionChanged_"
+            aria-describedby$="[[networkDefaultAriaDescribedBy_]]">
           <option value="[[resolverTypeEnum_.AUTOMATIC]]">
             $i18n{secureDnsAutomaticModeDescription}
           </option>
@@ -78,10 +78,18 @@
         </select>
       </div>
 
-      <div id="privacyPolicy">
-        <div class="cr-secondary-text"
-            inner-h-t-m-l="[[privacyPolicyString_]]"></div>
-      </div>
+      <template is="dom-if" if="[[showPrivacyPolicyDescription_]]" restamp>
+        <localized-link id="privacyPolicy"
+            class="cr-secondary-text"
+            localized-string="[[privacyPolicyString_]]">
+        </localized-link>
+      </template>
+
+      <template is="dom-if" if="[[showNetworkDefaultDescription_]]" restamp>
+        <div id="networkDefaultDescription" class="cr-secondary-text">
+          $i18n{secureDnsSecureDropdownModeNetworkDefaultDescription}
+        </div>
+      </template>
 
       <div id="secureDnsInputContainer" class="cr-row continuation">
         <secure-dns-input id="secureDnsInput"

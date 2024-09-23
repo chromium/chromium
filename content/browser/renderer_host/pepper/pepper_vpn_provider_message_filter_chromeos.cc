@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/pepper/pepper_vpn_provider_message_filter_chromeos.h"
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -81,8 +82,7 @@ PepperVpnProviderMessageFilter::PepperVpnProviderMessageFilter(
   browser_context_ = render_process_host->GetBrowserContext();
 
   vpn_service_proxy_ =
-      content::GetContentClient()->browser()->GetVpnServiceProxy(
-          browser_context_);
+      GetContentClient()->browser()->GetVpnServiceProxy(browser_context_);
 }
 
 PepperVpnProviderMessageFilter::~PepperVpnProviderMessageFilter() {
@@ -151,7 +151,7 @@ int32_t PepperVpnProviderMessageFilter::OnBind(
     const std::string& configuration_name) {
   if (!vpn_service_proxy_)
     return PP_ERROR_FAILED;
-  if (!content::GetContentClient()->browser()->IsPepperVpnProviderAPIAllowed(
+  if (!GetContentClient()->browser()->IsPepperVpnProviderAPIAllowed(
           browser_context_, document_url_)) {
     LOG(ERROR) << "Host " << document_url_.host()
                << " cannot use vpnProvider API";
@@ -179,7 +179,11 @@ int32_t PepperVpnProviderMessageFilter::OnSendPacket(
     return PP_ERROR_MESSAGE_TOO_BIG;
 
   char* packet_pointer = static_cast<char*>(send_packet_buffer_->GetBuffer(id));
-  std::vector<char> packet(packet_pointer, packet_pointer + packet_size);
+  std::vector<char> packet = base::ToVector(
+      // TODO(crbug.com/342213636): `VpnProviderSharedBuffer` needs to return a
+      // span over its buffer for us to use the first `packet_size` bytes from
+      // it safely.
+      UNSAFE_TODO(base::span(packet_pointer, packet_size)));
 
   return DoSendPacket(
       packet,

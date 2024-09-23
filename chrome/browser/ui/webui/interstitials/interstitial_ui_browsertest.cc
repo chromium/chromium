@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -27,8 +26,6 @@ class InterstitialUITest : public InProcessBrowserTest {
   ~InterstitialUITest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kRedInterstitialFacelift);
     InProcessBrowserTest::SetUpCommandLine(command_line);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -83,9 +80,6 @@ class InterstitialUITest : public InProcessBrowserTest {
                         int message_id) {
     TestInterstitial(url, page_title, l10n_util::GetStringUTF16(message_id));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, HomePage) {
@@ -139,17 +133,17 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, EnterpriseWarnInterstitial) {
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, MalwareInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/safebrowsing?type=malware"),
-                   "Security error", IDS_HEADING_NEW);
+                   "Security error", IDS_SAFEBROWSING_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, PhishingInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/safebrowsing?type=phishing"),
-                   "Security error", IDS_HEADING_NEW);
+                   "Security error", IDS_SAFEBROWSING_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, UnwantedSoftwareInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/safebrowsing?type=unwanted"),
-                   "Security error", IDS_HEADING_NEW);
+                   "Security error", IDS_SAFEBROWSING_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, MalwareInterstitialQuiet) {
@@ -179,13 +173,13 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, BillingInterstitialQuiet) {
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, ClientsideMalwareInterstitial) {
   TestInterstitial(
       GURL("chrome://interstitials/safebrowsing?type=clientside_malware"),
-      "Security error", IDS_HEADING_NEW);
+      "Security error", IDS_SAFEBROWSING_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, ClientsidePhishingInterstitial) {
   TestInterstitial(
       GURL("chrome://interstitials/safebrowsing?type=clientside_phishing"),
-      "Security error", IDS_HEADING_NEW);
+      "Security error", IDS_SAFEBROWSING_HEADING);
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, BillingInterstitial) {
@@ -208,6 +202,39 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, BlockedInterceptionInterstitial) {
                    "Your activity on example.com is being monitored",
                    u"Anything you type");
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Tests that the interstitials have the expected title and content.
+IN_PROC_BROWSER_TEST_F(InterstitialUITest,
+                       SupervisedUserVerificationInterstitial) {
+  TestInterstitial(GURL("chrome://interstitials/supervised-user-verify"),
+                   "YouTube", IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_HEADING);
+}
+
+IN_PROC_BROWSER_TEST_F(InterstitialUITest,
+                       SupervisedUserVerificationBlockedSiteInterstitial) {
+  TestInterstitial(
+      GURL("chrome://interstitials/supervised-user-verify-blocked-site"),
+      "Site blocked", IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_NOT_SIGNED_IN);
+}
+
+IN_PROC_BROWSER_TEST_F(InterstitialUITest,
+                       SupervisedUserVerificationSubframeInterstitial) {
+  TestInterstitial(
+      GURL("chrome://interstitials/supervised-user-verify-subframe"), "YouTube",
+      IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_YOUTUBE_HEADING);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterstitialUITest,
+    SupervisedUserVerificationBlockedSiteSubframeInterstitial) {
+  TestInterstitial(
+      GURL("chrome://interstitials/"
+           "supervised-user-verify-blocked-site-subframe"),
+      "Site blocked",
+      IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_BLOCKED_SITE_HEADING);
+}
+#endif
 
 // Tests that back button works after opening an interstitial from
 // chrome://interstitials.

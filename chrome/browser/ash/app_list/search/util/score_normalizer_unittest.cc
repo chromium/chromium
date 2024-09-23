@@ -44,8 +44,9 @@ class ScoreNormalizerTest : public testing::Test {
 
   base::FilePath GetPath() { return temp_dir_.GetPath().Append("proto"); }
 
-  PersistentProto<ScoreNormalizerProto> GetProto() {
-    return PersistentProto<ScoreNormalizerProto>(GetPath(), base::Seconds(0));
+  ash::PersistentProto<ScoreNormalizerProto> GetProto() {
+    return ash::PersistentProto<ScoreNormalizerProto>(GetPath(),
+                                                      base::Seconds(0));
   }
 
   ScoreNormalizer::Params TestingParams(size_t bins = 4) {
@@ -121,8 +122,8 @@ TEST_F(ScoreNormalizerTest, StateClearedOnVersionChange) {
     ScoreNormalizer normalizer(GetProto(), TestingParams());
     Wait();
     EXPECT_EQ(get_proto(normalizer)->parameter_version(), 3);
-    // TODO(crbug.com/1199206): Check that state is reset once it's added to the
-    // proto.
+    // TODO(crbug.com/40177716): Check that state is reset once it's added to
+    // the proto.
   }
 }
 

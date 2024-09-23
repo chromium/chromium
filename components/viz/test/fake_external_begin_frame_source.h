@@ -41,9 +41,6 @@ class FakeExternalBeginFrameSource : public BeginFrameSource {
   void RemoveObserver(BeginFrameObserver* obs) override;
   void DidFinishFrame(BeginFrameObserver* obs) override;
   void OnGpuNoLongerBusy() override {}
-  void SetDynamicBeginFrameDeadlineOffsetSource(
-      DynamicBeginFrameDeadlineOffsetSource*
-          dynamic_begin_frame_deadline_offset_source) override;
 
   BeginFrameArgs CreateBeginFrameArgs(
       BeginFrameArgs::CreationLocation location);

@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
@@ -29,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -37,7 +39,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.url.GURL;
@@ -57,7 +58,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
     public void setUp() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAppModalPresenter = new AppModalPresenter(getActivity());
                     mModalDialogManager =
@@ -95,7 +96,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
         Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             getActivity(),
@@ -107,7 +108,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                             false,
                             Arrays.asList(instances));
                 });
-        onData(anything()).atPosition(1).perform(click());
+        onData(anything()).inRoot(isDialog()).atPosition(1).perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
     }
 
@@ -123,7 +124,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                 };
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             getActivity(),
@@ -136,7 +137,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                             Arrays.asList(instances));
                 });
         // 0 ~ 2: instances. 3: 'new window' command.
-        onData(anything()).atPosition(3).perform(click());
+        onData(anything()).inRoot(isDialog()).atPosition(3).perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
     }
 
@@ -153,7 +154,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
         Callback<InstanceInfo> closeCallback = (item) -> itemClickCallbackHelper.notifyCalled();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             getActivity(),
@@ -167,7 +168,9 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                 });
 
         // Verify that we have only [cancel] button.
-        onView(withId(R.id.positive_button)).check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(R.id.positive_button))
+                .inRoot(isDialog())
+                .check(matches(withEffectiveVisibility(GONE)));
         onView(withText(R.string.cancel)).check(matches(withEffectiveVisibility(VISIBLE)));
 
         onData(anything()).atPosition(2).onChildView(withId(R.id.more)).perform(click());
@@ -197,7 +200,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                     new InstanceInfo(4, 61, InstanceInfo.Type.OTHER, "url4", "title4", 1, 1, false)
                 };
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             getActivity(),
@@ -213,6 +216,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
         // Verify that we show a info message that users can have up to 5 windows when there are
         // already maximum number of windows.
         onData(anything())
+                .inRoot(isDialog())
                 .atPosition(5)
                 .onChildView(withText(R.string.max_number_of_windows))
                 .check(matches(isDisplayed()));
@@ -231,7 +235,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
         int itemClickCount = closeCallbackHelper.getCallCount();
         Callback<InstanceInfo> closeCallback = (item) -> closeCallbackHelper.notifyCalled();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             getActivity(),
@@ -245,7 +249,11 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                 });
 
         // Closing a hidden, tab-less instance skips the confirmation.
-        onData(anything()).atPosition(2).onChildView(withId(R.id.more)).perform(click());
+        onData(anything())
+                .inRoot(isDialog())
+                .atPosition(2)
+                .onChildView(withId(R.id.more))
+                .perform(click());
         onView(withText(R.string.instance_switcher_close_window))
                 .inRoot(withDecorView(withClassName(containsString("Popup"))))
                 .perform(click());
@@ -272,7 +280,7 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                     new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
                     new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             getActivity(),
@@ -285,7 +293,11 @@ public class InstanceSwitcherCoordinatorTest extends BlankUiTestActivityTestCase
                             Arrays.asList(instances));
                 });
 
-        onData(anything()).atPosition(2).onChildView(withId(R.id.more)).perform(click());
+        onData(anything())
+                .inRoot(isDialog())
+                .atPosition(2)
+                .onChildView(withId(R.id.more))
+                .perform(click());
         onView(withText(R.string.instance_switcher_close_window))
                 .inRoot(withDecorView(withClassName(containsString("Popup"))))
                 .perform(click());

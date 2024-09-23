@@ -17,7 +17,7 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
  * because no JavaScript events are fired reliably when a page is displayed and
  * hidden. This is especially important when a page remains alive and is re-used
  * from the WebKit page cache.
- * TODO(crbug.com/872134): In iOS 12, the JavaScript pageshow and pagehide
+ * TODO(crbug.com/41406778): In iOS 12, the JavaScript pageshow and pagehide
  *                         events seem reliable, so replace this exposed
  *                         function with a pageshow event listener.
  */

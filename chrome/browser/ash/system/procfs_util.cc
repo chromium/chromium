@@ -2,12 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/system/procfs_util.h"
+
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/threading/thread_restrictions.h"
 
 namespace ash {
 namespace system {
@@ -55,7 +63,7 @@ std::optional<SingleProcStat> GetSingleProcStat(
   const std::string truncated_proc_stat_contents =
       stat_contents.substr(last_parenthesis + 1);
 
-  std::vector<base::StringPiece> proc_stat_split =
+  std::vector<std::string_view> proc_stat_split =
       base::SplitStringPiece(truncated_proc_stat_contents, " \t\n",
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
@@ -98,13 +106,13 @@ std::optional<int64_t> GetCpuTimeJiffies(const base::FilePath& stat_file) {
   // has been running across all states. The last 2 numbers are guest and
   // guest_nice, which are already accounted for in the first 2 numbers of user
   // and nice respectively.
-  std::vector<base::StringPiece> stat_lines = base::SplitStringPiece(
+  std::vector<std::string_view> stat_lines = base::SplitStringPiece(
       stat_contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const auto& line : stat_lines) {
     // Find the line that starts with "cpu " and sum the first 8 numbers to
     // get the total amount of jiffies used.
     if (base::StartsWith(line, "cpu ", base::CompareCase::SENSITIVE)) {
-      std::vector<base::StringPiece> cpu_info_parts = base::SplitStringPiece(
+      std::vector<std::string_view> cpu_info_parts = base::SplitStringPiece(
           line, " \t", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       if (cpu_info_parts.size() != 11)
         return std::nullopt;
@@ -121,6 +129,35 @@ std::optional<int64_t> GetCpuTimeJiffies(const base::FilePath& stat_file) {
     }
   }
   return std::nullopt;
+}
+
+ProcStatFile::ProcStatFile(base::ProcessId process_id) {
+  base::FilePath procfs_stat_path =
+      base::FilePath("/proc")
+          .Append(base::NumberToString(process_id))
+          .Append("stat");
+  // Opening procfs file is not blocking.
+  base::ScopedAllowBlocking allow_blocking;
+  file_ = base::File(procfs_stat_path,
+                     base::File::FLAG_OPEN | base::File::FLAG_READ);
+}
+
+ProcStatFile::~ProcStatFile() {
+  // Closing procfs file is not blocking.
+  base::ScopedAllowBlocking allow_blocking;
+  file_.Close();
+}
+
+bool ProcStatFile::IsValid() const {
+  return file_.IsValid();
+}
+
+bool ProcStatFile::IsPidAlive() {
+  char buf;
+  // Reading procfs is not blocking.
+  base::ScopedAllowBlocking allow_blocking;
+  // If the process/thread dies, read(2)ing stat file fails as ESRCH.
+  return file_.IsValid() && file_.Read(0, &buf, 1) == 1;
 }
 
 }  // namespace system

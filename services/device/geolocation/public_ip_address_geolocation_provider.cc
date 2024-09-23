@@ -33,13 +33,14 @@ void PublicIpAddressGeolocationProvider::Bind(
 
 void PublicIpAddressGeolocationProvider::CreateGeolocation(
     const net::MutablePartialNetworkTrafficAnnotationTag& tag,
-    mojo::PendingReceiver<mojom::Geolocation> receiver) {
+    mojo::PendingReceiver<mojom::Geolocation> receiver,
+    mojom::GeolocationClientId client_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(public_ip_address_location_notifier_);
   geolocation_receiver_set_.Add(
       std::make_unique<PublicIpAddressGeolocator>(
           static_cast<net::PartialNetworkTrafficAnnotationTag>(tag),
-          public_ip_address_location_notifier_.get(),
+          public_ip_address_location_notifier_.get(), client_id,
           base::BindRepeating(
               &mojo::UniqueReceiverSet<mojom::Geolocation>::ReportBadMessage,
               base::Unretained(&geolocation_receiver_set_))),

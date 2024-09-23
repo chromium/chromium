@@ -4,22 +4,45 @@
 
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 
+#import "base/check.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
+#import "ios/chrome/browser/ui/push_notification/metrics.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+
+// Returns the gaia id used for `browser_state`.
+NSString* GetGaiaIdForBrowserState(ChromeBrowserState* browser_state) {
+  const ProfileAttributesIOS attributes =
+      GetApplicationContext()
+          ->GetProfileManager()
+          ->GetProfileAttributesStorage()
+          ->GetAttributesForProfileWithName(browser_state->GetProfileName());
+
+  return base::SysUTF8ToNSString(attributes.GetGaiaId());
+}
+
+}  // namespace
 
 @implementation NotificationsOptInAlertCoordinator {
   SEQUENCE_CHECKER(sequence_checker_);
@@ -118,17 +141,17 @@
 
 // Enables notifications in prefs for the client with `clientID`.
 - (void)enableNotifications {
-  base::FilePath path = self.browser->GetBrowserState()->GetStatePath();
-  BrowserStateInfoCache* infoCache = GetApplicationContext()
-                                         ->GetChromeBrowserStateManager()
-                                         ->GetBrowserStateInfoCache();
-  size_t browserStateIndex = infoCache->GetIndexOfBrowserStateWithPath(path);
-  NSString* gaiaID = base::SysUTF8ToNSString(
-      infoCache->GetGAIAIdOfBrowserStateAtIndex(browserStateIndex));
+  NSString* gaiaID = GetGaiaIdForBrowserState(self.browser->GetBrowserState());
   std::vector<PushNotificationClientId> clientIDs = self.clientIds.value();
   for (PushNotificationClientId clientID : clientIDs) {
     GetApplicationContext()->GetPushNotificationService()->SetPreference(
         gaiaID, clientID, true);
+    if (clientID == PushNotificationClientId::kSendTab) {
+      // Refresh enabled status in DeviceInfo.
+      DeviceInfoSyncServiceFactory::GetForBrowserState(
+          self.browser->GetProfile())
+          ->RefreshLocalDeviceInfo();
+    }
   }
 }
 
@@ -137,21 +160,27 @@
   NSString* buttonText =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_MANAGE_SETTINGS);
   // Show snackbar confirmation.
-  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SnackbarCommands);
-  __weak id<SettingsCommands> weakSettingsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SettingsCommands);
-  [snackbarHandler showSnackbarWithMessage:self.confirmationMessage
-                                buttonText:buttonText
-                             messageAction:^{
-                               [weakSettingsHandler showNotificationsSettings];
-                             }
-                          completionAction:nil];
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<SnackbarCommands> snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  __weak id<SettingsCommands> weakSettingsHandler =
+      HandlerForProtocol(dispatcher, SettingsCommands);
+  __weak id<ApplicationCommands> weakApplicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  [snackbarHandler
+      showSnackbarWithMessage:self.confirmationMessage
+                   buttonText:buttonText
+                messageAction:^{
+                  [weakApplicationHandler prepareToPresentModal:^{
+                    [weakSettingsHandler showNotificationsSettings];
+                  }];
+                }
+             completionAction:nil];
 }
 
 // Opens the iOS settings app to the app's Notification permissions.
 - (void)openSettings {
-  // TODO(crbug.com/1519157): Log metrics.
   NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
   if (@available(iOS 15.4, *)) {
     url = [NSURL URLWithString:UIApplicationOpenNotificationSettingsURLString];
@@ -165,14 +194,34 @@
 
 // Called when the user taps the alert's "cancel" action.
 - (void)didCancelAlert {
-  // TODO(crbug.com/1519157): Log metrics.
   [self setResult:NotificationsOptInAlertResult::kCanceled];
 }
 
 // Tells the delegate the result of the UI flow.
 - (void)setResult:(NotificationsOptInAlertResult)result {
-  // TODO(crbug.com/1519157): Log metrics.
-  [self.delegate notificationsOptInAlertResult:result];
+  [self.delegate notificationsOptInAlertCoordinator:self result:result];
+  switch (result) {
+    case NotificationsOptInAlertResult::kPermissionGranted:
+      base::RecordAction(
+          base::UserMetricsAction(kNotificationsOptInAlertPermissionGranted));
+      break;
+    case NotificationsOptInAlertResult::kPermissionDenied:
+      base::RecordAction(
+          base::UserMetricsAction(kNotificationsOptInAlertPermissionDenied));
+      break;
+    case NotificationsOptInAlertResult::kOpenedSettings:
+      base::RecordAction(
+          base::UserMetricsAction(kNotificationsOptInAlertOpenedSettings));
+      break;
+    case NotificationsOptInAlertResult::kCanceled:
+      base::RecordAction(
+          base::UserMetricsAction(kNotificationsOptInAlertCancelled));
+      break;
+    case NotificationsOptInAlertResult::kError:
+      base::RecordAction(
+          base::UserMetricsAction(kNotificationsOptInAlertError));
+      break;
+  }
 }
 
 @end

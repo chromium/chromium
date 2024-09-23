@@ -21,9 +21,7 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -39,7 +37,6 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
@@ -110,7 +107,6 @@ public class ThreadedInputConnectionFactoryTest {
     @Mock private ThreadedInputConnectionProxyView mProxyView;
     @Mock private InputMethodManager mInputMethodManager;
     @Mock private Context mContext;
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private EditorInfo mEditorInfo;
     private Handler mImeHandler;
@@ -165,7 +161,7 @@ public class ThreadedInputConnectionFactoryTest {
                         (InvocationOnMock invocation) -> {
                             mFactory.setTriggerDelayedOnCreateInputConnection(false);
                             InputConnection connection =
-                                    ThreadUtils.runOnUiThreadBlockingNoException(callable);
+                                    ThreadUtils.runOnUiThreadBlocking(callable);
                             mFactory.setTriggerDelayedOnCreateInputConnection(true);
                             return connection;
                         });

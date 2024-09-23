@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.sync;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.chrome.test.util.browser.signin.LiveSigninTestUtil;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 
 /** Utility class for sign-in functionalities in native Sync browser tests. */
@@ -30,16 +31,30 @@ final class SyncTestSigninUtils {
         sSigninTestRule.signOut();
     }
 
-    /** Sets up the test authentication environment. */
+    /** Sets up the fake authentication environment. */
     @CalledByNative
-    private static void setUpAuthForTesting() {
+    private static void setUpFakeAuthForTesting() {
         sSigninTestRule.setUpRule();
     }
 
-    /** Tears down the test authentication environment. */
+    /** Tears down the fake authentication environment. */
     @CalledByNative
-    private static void tearDownAuthForTesting() {
+    private static void tearDownFakeAuthForTesting() {
         // The seeded account is removed automatically when user signs out
         sSigninTestRule.tearDownRule();
+    }
+
+    /** Add an account to the device and signs in for live testing, but does not enable Sync. */
+    @CalledByNative
+    private static void setUpLiveAccountAndSignInForTesting(String accountName, String password) {
+        LiveSigninTestUtil.getInstance().addAccountWithPasswordThenSignin(accountName, password);
+    }
+
+    /** Add an account to the device and signs in for live testing, and enables Sync-the-feature. */
+    @CalledByNative
+    private static void setUpLiveAccountAndSignInAndEnableSyncForTesting(
+            String accountName, String password) {
+        LiveSigninTestUtil.getInstance()
+                .addAccountWithPasswordThenSigninAndEnableSync(accountName, password);
     }
 }

@@ -21,6 +21,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
 
 #include "third_party/blink/renderer/core/css/css_function_value.h"
@@ -172,7 +177,7 @@ SVGTransformData TransformDataFromValues(SVGTransformType type,
     case SVGTransformType::kMatrix:
       return MatrixTransformValue(arguments);
     case SVGTransformType::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ScaleTransformValue(1, 1);
   }
 }
@@ -193,9 +198,9 @@ SVGTransformList::SVGTransformList(SVGTransformType transform_type,
     return;
   TransformArguments arguments;
   bool success =
-      WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
-        const auto* ptr = chars;
-        const auto* end = chars + length;
+      WTF::VisitCharacters(value, [&](auto chars) {
+        const auto* ptr = chars.data();
+        const auto* end = ptr + chars.size();
         SVGParseStatus status =
             ParseTransformArgumentsForType(transform_type, ptr, end, arguments);
         return status == SVGParseStatus::kNoError &&
@@ -232,7 +237,7 @@ CSSValueID MapTransformFunction(const SVGTransform& transform) {
       return CSSValueID::kSkewY;
     case SVGTransformType::kUnknown:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return CSSValueID::kInvalid;
 }
@@ -286,7 +291,7 @@ CSSValue* CreateTransformCSSValue(const SVGTransform& transform) {
           transform.Matrix().F(), CSSPrimitiveValue::UnitType::kUserUnits));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return transform_value;
 }
@@ -398,8 +403,9 @@ bool SVGTransformList::Parse(const LChar*& ptr, const LChar* end) {
 SVGTransformType ParseTransformType(const String& string) {
   if (string.empty())
     return SVGTransformType::kUnknown;
-  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
-    return ParseAndSkipTransformType(chars, chars + length);
+  return WTF::VisitCharacters(string, [&](auto chars) {
+    const auto* start = chars.data();
+    return ParseAndSkipTransformType(start, start + chars.size());
   });
 }
 
@@ -408,10 +414,10 @@ SVGParsingError SVGTransformList::SetValueAsString(const String& value) {
     Clear();
     return SVGParseStatus::kNoError;
   }
-  SVGParsingError parse_error =
-      WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
-        return ParseInternal(chars, chars + length);
-      });
+  SVGParsingError parse_error = WTF::VisitCharacters(value, [&](auto chars) {
+    const auto* start = chars.data();
+    return ParseInternal(start, start + chars.size());
+  });
   if (parse_error != SVGParseStatus::kNoError)
     Clear();
   return parse_error;

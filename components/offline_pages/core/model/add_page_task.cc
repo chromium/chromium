@@ -31,7 +31,7 @@ AddPageResult ItemActionStatusToAddPageResult(ItemActionStatus status) {
     case ItemActionStatus::NOT_FOUND:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return AddPageResult::STORE_FAILURE;
 }
 

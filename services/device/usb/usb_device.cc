@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/uuid.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
@@ -117,10 +118,11 @@ void UsbDevice::NotifyDeviceRemoved() {
 
 void UsbDevice::OnDisconnect() {
   // Swap out the handle list as HandleClosed() will try to modify it.
-  std::list<UsbDeviceHandle*> handles;
+  std::list<raw_ptr<UsbDeviceHandle, CtnExperimental>> handles;
   handles.swap(handles_);
-  for (auto* handle : handles)
+  for (UsbDeviceHandle* handle : handles) {
     handle->Close();
+  }
 }
 
 void UsbDevice::HandleClosed(UsbDeviceHandle* handle) {

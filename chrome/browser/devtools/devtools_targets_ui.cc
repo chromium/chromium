@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -84,8 +85,8 @@ private:
 
  bool AllowDevToolsFor(DevToolsAgentHost* host);
 
- Profile* profile_;
- media_router::LocalPresentationManager* local_presentation_manager_;
+ raw_ptr<Profile> profile_;
+ raw_ptr<media_router::LocalPresentationManager> local_presentation_manager_;
  std::unique_ptr<base::OneShotTimer> timer_;
  base::WeakPtrFactory<LocalTargetsUIHandler> weak_factory_{this};
 };
@@ -177,8 +178,8 @@ class AdbTargetsUIHandler
 
   DevToolsAndroidBridge* GetAndroidBridge();
 
-  Profile* const profile_;
-  DevToolsAndroidBridge* const android_bridge_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<DevToolsAndroidBridge> android_bridge_;
 
   typedef std::map<std::string,
       scoped_refptr<DevToolsAndroidBridge::RemoteBrowser> > RemoteBrowsers;

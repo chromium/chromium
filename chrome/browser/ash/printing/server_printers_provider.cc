@@ -14,8 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/ash/printing/print_servers_provider.h"
-#include "chrome/browser/ash/printing/print_servers_provider_factory.h"
 #include "chrome/browser/ash/printing/server_printers_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"

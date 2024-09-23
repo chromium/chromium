@@ -34,7 +34,6 @@ using arc::mojom::ArcDoNotDisturbStatusPtr;
 using arc::mojom::ArcNotificationData;
 using arc::mojom::ArcNotificationDataPtr;
 using arc::mojom::ArcNotificationEvent;
-using arc::mojom::ArcNotificationExpandState;
 using arc::mojom::ArcNotificationPriority;
 using arc::mojom::MessageCenterVisibility;
 using arc::mojom::NotificationConfiguration;
@@ -224,7 +223,7 @@ void ArcNotificationManager::OnNotificationPosted(ArcNotificationDataPtr data) {
     return;
   }
 
-  const std::string& key = data->key;
+  const std::string key = data->key;
   auto it = items_.find(key);
   if (it == items_.end()) {
     // Show a notification on the primary logged-in user's desktop and badge the
@@ -240,22 +239,25 @@ void ArcNotificationManager::OnNotificationPosted(ArcNotificationDataPtr data) {
     metrics_utils::LogArcNotificationActionEnabled(data->is_action_enabled);
     metrics_utils::LogArcNotificationInlineReplyEnabled(
         data->is_inline_reply_enabled);
-    metrics_utils::LogArcNotificationExpandState(
-        data->expand_state == ArcNotificationExpandState::FIXED_SIZE
-            ? metrics_utils::ArcNotificationExpandState::kFixedSize
-            : metrics_utils::ArcNotificationExpandState::kExpandable);
     metrics_utils::LogArcNotificationIsCustomNotification(
         data->is_custom_notification);
   }
 
-  std::string app_id =
+  const std::string app_id =
       data->package_name
           ? ArcAppIdProvider::Get()->GetAppIdByPackageName(*data->package_name)
           : std::string();
   it->second->OnUpdatedFromAndroid(std::move(data), app_id);
 
-  for (auto& observer : observers_)
-    observer.OnNotificationUpdated(it->second->GetNotificationId(), app_id);
+  // OnUpdatedFromAndroid may remove the new notification if the number of
+  // notifications are limited.
+  it = items_.find(key);
+  if (it != items_.end()) {
+    const std::string notification_id = it->second->GetNotificationId();
+    for (auto& observer : observers_) {
+      observer.OnNotificationUpdated(notification_id, app_id);
+    }
+  }
 }
 
 void ArcNotificationManager::OnNotificationUpdated(
@@ -564,6 +566,24 @@ void ArcNotificationManager::OpenNotificationSettings(const std::string& key) {
     return;
 
   notifications_instance->OpenNotificationSettings(key);
+}
+
+void ArcNotificationManager::DisableNotification(const std::string& key) {
+  if (!base::Contains(items_, key)) {
+    DVLOG(3) << "Chrome requests to fire a DisableNotification event on the "
+             << "notification  (key: " << key << "), but it is gone.";
+    return;
+  }
+
+  auto* notifications_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      instance_owner_->holder(), PopUpAppNotificationSettings);
+
+  // On shutdown, the ARC channel may quit earlier than notifications.
+  if (!notifications_instance) {
+    return;
+  }
+
+  notifications_instance->PopUpAppNotificationSettings(key);
 }
 
 void ArcNotificationManager::OpenNotificationSnoozeSettings(

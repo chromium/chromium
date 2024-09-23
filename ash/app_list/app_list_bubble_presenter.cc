@@ -11,10 +11,10 @@
 #include "ash/app_list/app_list_bubble_event_filter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_event_targeter.h"
+#include "ash/app_list/apps_collections_controller.h"
 #include "ash/app_list/views/app_list_bubble_apps_collections_page.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
-#include "ash/app_list/views/app_list_drag_and_drop_host.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -147,6 +147,7 @@ gfx::Rect ComputeBubbleBounds(aura::Window* root_window,
 views::Widget* CreateBubbleWidget(aura::Window* root_window) {
   views::Widget* widget = new views::Widget();
   views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "AppListBubble";
   params.parent =
@@ -192,7 +193,7 @@ void AppListBubblePresenter::Show(int64_t display_id) {
 
   is_target_visibility_show_ = true;
 
-  target_page_ = app_list_features::IsAppsCollectionsEnabled()
+  target_page_ = AppsCollectionsController::Get()->ShouldShowAppsCollection()
                      ? AppListBubblePage::kAppsCollections
                      : AppListBubblePage::kApps;
 
@@ -219,8 +220,6 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
     return;
 
   Shelf* shelf = Shelf::ForWindow(root_window);
-  ApplicationDragAndDropHost* drag_and_drop_host =
-      shelf->shelf_widget()->GetDragAndDropHostForAppList();
   HomeButton* home_button = shelf->navigation_widget()->GetHomeButton();
 
   if (!bubble_widget_) {
@@ -233,7 +232,7 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
     bubble_widget_->GetNativeWindow()->SetEventTargeter(
         std::make_unique<AppListEventTargeter>(controller_));
     bubble_view_ = bubble_widget_->SetContentsView(
-        std::make_unique<AppListBubbleView>(controller_, drag_and_drop_host));
+        std::make_unique<AppListBubbleView>(controller_));
     // Some of Assistant UIs have to be initialized explicitly. See details in
     // the comment of AppListBubbleView::InitializeUIForBubbleView.
     bubble_view_->InitializeUIForBubbleView();
@@ -255,9 +254,6 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
                       base::TimeTicks::Now() - time_shown);
   } else {
     DCHECK(bubble_view_);
-    // The bubble widget is cached, but it may change displays. Update pointers
-    // that are tied to the display.
-    bubble_view_->SetDragAndDropHostOfCurrentAppList(drag_and_drop_host);
     // Refresh suggestions now that zero-state search data is updated.
     bubble_view_->UpdateSuggestions();
     bubble_event_filter_->SetButton(home_button);
@@ -271,9 +267,6 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
   // Bubble launcher is always keyboard traversable. Update every show in case
   // we are coming out of tablet mode.
   controller_->SetKeyboardTraversalMode(true);
-
-  shelf_observer_.Reset();
-  shelf_observer_.Observe(shelf);
 
   bubble_widget_->Show();
   // The page must be set before triggering the show animation so the correct
@@ -329,10 +322,6 @@ void AppListBubblePresenter::Dismiss() {
 
   // Clean up assistant if it is showing.
   controller_->ScheduleCloseAssistant();
-
-  shelf_observer_.Reset();
-  if (bubble_view_)
-    bubble_view_->SetDragAndDropHostOfCurrentAppList(nullptr);
 }
 
 aura::Window* AppListBubblePresenter::GetWindow() const {
@@ -456,13 +445,8 @@ void AppListBubblePresenter::OnDisplayMetricsChanged(
   bubble_widget_->SetBounds(ComputeBubbleBounds(root_window, bubble_view_));
 }
 
-void AppListBubblePresenter::OnShelfShuttingDown() {
-  shelf_observer_.Reset();
-  if (bubble_view_)
-    bubble_view_->SetDragAndDropHostOfCurrentAppList(nullptr);
-}
-
-void AppListBubblePresenter::OnPressOutsideBubble() {
+void AppListBubblePresenter::OnPressOutsideBubble(
+    const ui::LocatedEvent& event) {
   // Presses outside the bubble could be activating a shelf item. Record the
   // app list state prior to dismissal.
   controller_->RecordAppListState();

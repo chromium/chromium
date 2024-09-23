@@ -8,6 +8,8 @@
 
 #include "base/barrier_callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/concurrent_callbacks.h"
+#include "base/functional/concurrent_closures.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
@@ -17,7 +19,7 @@
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/media_device_salt/media_device_salt_service.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/permissions/permissions_client.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -30,31 +32,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/permissions/permissions_client.h"
-#endif
-
 namespace {
-
-class DynamicBarrierClosure : public base::RefCounted<DynamicBarrierClosure> {
- public:
-  explicit DynamicBarrierClosure(base::OnceClosure closure)
-      : scoped_closure_(std::move(closure)) {}
-
-  DynamicBarrierClosure(const DynamicBarrierClosure&) = delete;
-  DynamicBarrierClosure& operator=(const DynamicBarrierClosure&) = delete;
-
-  base::OnceClosure CreateCallback() {
-    return base::DoNothingWithBoundArgs(base::WrapRefCounted(this));
-  }
-
- private:
-  friend class base::RefCounted<DynamicBarrierClosure>;
-
-  ~DynamicBarrierClosure() = default;
-
-  base::ScopedClosureRunner scoped_closure_;
-};
 
 #if !BUILDFLAG(IS_ANDROID)
 std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry>
@@ -121,36 +99,33 @@ ChromeBrowsingDataModelDelegate::~ChromeBrowsingDataModelDelegate() = default;
 
 void ChromeBrowsingDataModelDelegate::GetAllDataKeys(
     base::OnceCallback<void(std::vector<DelegateEntry>)> callback) {
-  const auto barrier_callback =
-      base::BarrierCallback<std::vector<DelegateEntry>>(
-          /*num_callbacks=*/2,
-          base::BindOnce(&FlattenDelegateEntries).Then(std::move(callback)));
+  base::ConcurrentCallbacks<std::vector<DelegateEntry>> concurrent;
 
-  GetAllFederatedIdentityDataKeys(barrier_callback, {});
+  GetAllFederatedIdentityDataKeys(concurrent.CreateCallback(), {});
 
 #if !BUILDFLAG(IS_ANDROID)
   auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile_);
   if (web_app_provider && storage_partition_->GetConfig().is_default()) {
     web_app_provider->scheduler().GetIsolatedWebAppBrowsingData(
         base::BindOnce(&IsolatedWebAppBrowsingDataToDelegateEntries)
-            .Then(base::BindOnce(
-                &ChromeBrowsingDataModelDelegate::GetAllMediaDeviceSaltDataKeys,
-                weak_ptr_factory_.GetWeakPtr(), barrier_callback)));
-    return;
+            .Then(concurrent.CreateCallback()));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  GetAllMediaDeviceSaltDataKeys(barrier_callback, {});
+  GetAllMediaDeviceSaltDataKeys(concurrent.CreateCallback(), {});
 
-  // TODO(crbug.com/1271155): Implement data retrieval for remaining data types.
+  // TODO(crbug.com/40205603): Implement data retrieval for remaining data
+  // types.
+
+  std::move(concurrent)
+      .Done(base::BindOnce(&FlattenDelegateEntries).Then(std::move(callback)));
 }
 
 void ChromeBrowsingDataModelDelegate::RemoveDataKey(
     const BrowsingDataModel::DataKey& data_key,
     BrowsingDataModel::StorageTypeSet storage_types,
     base::OnceClosure callback) {
-  auto dynamic_barrier_closure =
-      base::MakeRefCounted<DynamicBarrierClosure>(std::move(callback));
+  base::ConcurrentClosures concurrent;
 
   if (storage_types.Has(
           static_cast<BrowsingDataModel::StorageType>(StorageType::kTopics))) {
@@ -166,8 +141,7 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
           StorageType::kMediaDeviceSalt))) {
     if (const blink::StorageKey* storage_key =
             absl::get_if<blink::StorageKey>(&data_key)) {
-      RemoveMediaDeviceSalt(*storage_key,
-                            dynamic_barrier_closure->CreateCallback());
+      RemoveMediaDeviceSalt(*storage_key, concurrent.CreateClosure());
     }
   }
 
@@ -178,7 +152,7 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
                 absl::get_if<webid::FederatedIdentityDataModel::DataKey>(
                     &data_key)) {
       RemoveFederatedIdentityData(*federated_identity_data_key,
-                                  dynamic_barrier_closure->CreateCallback());
+                                  concurrent.CreateClosure());
     }
   }
 
@@ -188,10 +162,12 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
     CHECK(absl::holds_alternative<url::Origin>(data_key));
     const url::Origin& origin = *absl::get_if<url::Origin>(&data_key);
 
-    web_app::RemoveIsolatedWebAppBrowsingData(
-        profile_, origin, dynamic_barrier_closure->CreateCallback());
+    web_app::RemoveIsolatedWebAppBrowsingData(profile_, origin,
+                                              concurrent.CreateClosure());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  std::move(concurrent).Done(std::move(callback));
 }
 
 std::optional<BrowsingDataModel::DataOwner>
@@ -241,7 +217,7 @@ std::optional<bool> ChromeBrowsingDataModelDelegate::IsStorageTypeCookieLike(
     case StorageType::kMediaDeviceSalt:
       return false;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -249,20 +225,18 @@ std::optional<bool>
 ChromeBrowsingDataModelDelegate::IsBlockedByThirdPartyCookieBlocking(
     const BrowsingDataModel::DataKey& data_key,
     BrowsingDataModel::StorageType storage_type) const {
-  // TODO(crbug.com/1456641): Implement `GetThirdPartyPartitioningSite()` for
+  // TODO(crbug.com/40066162): Implement `GetThirdPartyPartitioningSite()` for
   // delegate-specific data keys.
   return IsStorageTypeCookieLike(storage_type);
 }
 
 bool ChromeBrowsingDataModelDelegate::IsCookieDeletionDisabled(
     const GURL& url) {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   CHECK(profile_);
   if (profile_->IsChild()) {
     auto* client = permissions::PermissionsClient::Get();
     return client->IsCookieDeletionDisabled(profile_, url);
   }
-#endif
   return false;
 }
 

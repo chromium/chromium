@@ -24,13 +24,12 @@ void SelectPredeterminedFileDialog::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* params,
     const GURL* caller) {
   if (result_.size() == 1) {
-    listener_->FileSelected(ui::SelectedFileInfo(result_[0]), 0, params);
+    listener_->FileSelected(ui::SelectedFileInfo(result_[0]), 0);
   } else {
     listener_->MultiFilesSelected(
-        ui::FilePathListToSelectedFileInfoList(result_), params);
+        ui::FilePathListToSelectedFileInfoList(result_));
   }
 }
 

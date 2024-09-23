@@ -425,10 +425,11 @@ TEST_F(ExtendedMouseWarpControllerTest,
   // Move mouse cursor and capture the window.
   gfx::Point location_in_host_native(0, 0);
   DispatchMouseEventWithNative(window_host, location_in_host_native,
-                               ui::ET_MOUSE_MOVED, ui::EF_NONE, ui::EF_NONE);
-  DispatchMouseEventWithNative(window_host, location_in_host_native,
-                               ui::ET_MOUSE_PRESSED, ui::EF_LEFT_MOUSE_BUTTON,
-                               ui::EF_LEFT_MOUSE_BUTTON);
+                               ui::EventType::kMouseMoved, ui::EF_NONE,
+                               ui::EF_NONE);
+  DispatchMouseEventWithNative(
+      window_host, location_in_host_native, ui::EventType::kMousePressed,
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
 
   // Window should be captured.
   ASSERT_TRUE(test_window->HasCapture());
@@ -450,8 +451,8 @@ TEST_F(ExtendedMouseWarpControllerTest,
       location_in_screen_native -
       root_windows[0]->GetHost()->GetBoundsInPixels().OffsetFromOrigin();
   DispatchMouseEventWithNative(window_host, location_in_host_native,
-                               ui::ET_MOUSE_DRAGGED, ui::EF_LEFT_MOUSE_BUTTON,
-                               0);
+                               ui::EventType::kMouseDragged,
+                               ui::EF_LEFT_MOUSE_BUTTON, 0);
 
   // Mouse cursor should be warped into secondary display.
   location_in_screen_dip = aura::Env::GetInstance()->last_mouse_location();
@@ -464,8 +465,8 @@ TEST_F(ExtendedMouseWarpControllerTest,
       location_in_screen_native -
       root_windows[0]->GetHost()->GetBoundsInPixels().OffsetFromOrigin();
   DispatchMouseEventWithNative(window_host, location_in_host_native,
-                               ui::ET_MOUSE_DRAGGED, ui::EF_LEFT_MOUSE_BUTTON,
-                               0);
+                               ui::EventType::kMouseDragged,
+                               ui::EF_LEFT_MOUSE_BUTTON, 0);
 
   // Mouse cursor should be warped into first display.
   location_in_screen_dip = aura::Env::GetInstance()->last_mouse_location();
@@ -488,9 +489,9 @@ TEST_F(ExtendedMouseWarpControllerTest,
   root_windows[0]->GetHost()->ConvertDIPToPixels(&location_in_host_native);
 
   // Release mouse button.
-  DispatchMouseEventWithNative(window_host, location_in_host_native,
-                               ui::ET_MOUSE_RELEASED, ui::EF_LEFT_MOUSE_BUTTON,
-                               ui::EF_LEFT_MOUSE_BUTTON);
+  DispatchMouseEventWithNative(
+      window_host, location_in_host_native, ui::EventType::kMouseReleased,
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
 }
 
 }  // namespace ash

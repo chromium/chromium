@@ -13,7 +13,6 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "ui/aura/env.h"
@@ -27,7 +26,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace ash {
 namespace fast_ink_internal {
@@ -38,19 +36,19 @@ namespace {
 std::unique_ptr<UiResource> AcquireUiResource(
     const gfx::Size& size,
     bool is_overlay_candidate,
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
     UiResourceManager* resource_manager,
     gpu::Mailbox mailbox,
     gpu::SyncToken sync_token) {
+  CHECK(!mailbox.IsZero());
   viz::ResourceId reusable_resource_id = resource_manager->FindResourceToReuse(
       size, kFastInkSharedImageFormat, kFastInkUiSourceId);
   std::unique_ptr<UiResource> resource;
   if (reusable_resource_id != viz::kInvalidResourceId) {
     resource = resource_manager->ReleaseAvailableResource(reusable_resource_id);
-    CHECK(mailbox.IsZero() || mailbox == resource->mailbox());
+    CHECK(mailbox == resource->mailbox());
   } else {
     resource = CreateUiResource(size, kFastInkUiSourceId, is_overlay_candidate,
-                                gpu_memory_buffer, mailbox, sync_token);
+                                mailbox, sync_token);
   }
 
   return resource;
@@ -107,36 +105,25 @@ gfx::Rect BufferRectFromWindowRect(
   return buffer_rect;
 }
 
-std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuBuffer(
-    const gfx::Size& size,
-    const gfx::BufferUsageAndFormat& usage_and_format) {
-  return aura::Env::GetInstance()
-      ->context_factory()
-      ->GetGpuMemoryBufferManager()
-      ->CreateGpuMemoryBuffer(size, usage_and_format.format,
-                              usage_and_format.usage, gpu::kNullSurfaceHandle,
-                              nullptr);
-}
-
 scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
     const gfx::Size& size,
-    uint32_t shared_image_usage,
+    gpu::SharedImageUsageSet shared_image_usage,
     gfx::BufferUsage buffer_usage) {
   return GetContextProvider()->SharedImageInterface()->CreateSharedImage(
-      kFastInkSharedImageFormat, size, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
-      "FastInkHostUIResource", gpu::kNullSurfaceHandle, buffer_usage);
+      {kFastInkSharedImageFormat, size, gfx::ColorSpace(), shared_image_usage,
+       "FastInkHostUIResource"},
+      gpu::kNullSurfaceHandle, buffer_usage);
 }
 
 std::unique_ptr<UiResource> CreateUiResource(
     const gfx::Size& size,
     UiSourceId ui_source_id,
     bool is_overlay_candidate,
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
     gpu::Mailbox mailbox,
     gpu::SyncToken sync_token) {
   DCHECK(!size.IsEmpty());
   DCHECK(ui_source_id > 0);
+  CHECK(!mailbox.IsZero());
 
   auto resource = std::make_unique<UiResource>();
 
@@ -147,28 +134,9 @@ std::unique_ptr<UiResource> CreateUiResource(
     return nullptr;
   }
 
-  if (mailbox.IsZero()) {
-    // The UiResource needs to create its own Mailbox, which it will own.
-    gpu::SharedImageInterface* sii =
-        resource->context_provider->SharedImageInterface();
-
-    uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-    if (is_overlay_candidate) {
-      usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-    }
-
-    auto client_shared_image = sii->CreateSharedImage(
-        kFastInkSharedImageFormat, gpu_memory_buffer->GetSize(),
-        gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-        "FastInkHostUIResource", gpu_memory_buffer->CloneHandle());
-    CHECK(client_shared_image);
-    resource->SetClientSharedImage(std::move(client_shared_image));
-    resource->sync_token = sii->GenVerifiedSyncToken();
-  } else {
-    // This UiResource is operating on a shared SharedImage.
-    resource->SetExternallyOwnedMailbox(mailbox);
-    resource->sync_token = sync_token;
-  }
+  // This UiResource is operating on a shared SharedImage.
+  resource->SetExternallyOwnedMailbox(mailbox);
+  resource->sync_token = sync_token;
 
   resource->damaged = true;
   resource->is_overlay_candidate = is_overlay_candidate;
@@ -185,7 +153,6 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     bool auto_update,
     const aura::Window& host_window,
     const gfx::Size& buffer_size,
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
     UiResourceManager* resource_manager,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token) {
@@ -194,21 +161,19 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
       host_window.GetHost()->GetRootTransform();
   gfx::Size window_size_in_dip = host_window.GetBoundsInScreen().size();
 
-  // TODO(crbug.com/1131619): Should this be ceil? Why do we choose floor?
+  // TODO(crbug.com/40150283): Should this be ceil? Why do we choose floor?
   const gfx::Size window_size_in_pixel = gfx::ToFlooredSize(
       gfx::ConvertSizeToPixels(window_size_in_dip, device_scale_factor));
 
-  if (gpu_memory_buffer) {
-    CHECK_EQ(gpu_memory_buffer->GetSize(), buffer_size);
-  }
-
-  // If FastInkHost is configured to hold a SharedImage, ensure that that
-  // SharedImage is used when creating compositor frames.
-  auto mailbox = shared_image ? shared_image->mailbox() : gpu::Mailbox();
+  // NOTE: `shared_image` is guaranteed to be non-null by contract of this
+  // method, and ClientSharedImage::mailbox() is guaranteed to be non-zero by
+  // contract of *that* method.
+  CHECK(shared_image);
+  auto mailbox = shared_image->mailbox();
 
   // In auto_update mode, we use hardware overlays to render the content.
-  auto resource = AcquireUiResource(buffer_size, auto_update, gpu_memory_buffer,
-                                    resource_manager, mailbox, sync_token);
+  auto resource = AcquireUiResource(buffer_size, auto_update, resource_manager,
+                                    mailbox, sync_token);
 
   if (!resource) {
     return nullptr;

@@ -18,10 +18,11 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
 
   MOCK_METHOD(bool,
               OnGetSingleFieldSuggestions,
-              (const FormFieldData& field,
+              (const FormStructure* form_structure,
+               const FormFieldData& field,
+               const AutofillField* autofill_field,
                const AutofillClient& client,
-               SingleFieldFormFiller::OnSuggestionsReturnedCallback callback,
-               const SuggestionsContext& context),
+               SingleFieldFormFiller::OnSuggestionsReturnedCallback callback),
               (override));
   MOCK_METHOD(void,
               OnWillSubmitFormWithFields,
@@ -35,11 +36,11 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
   MOCK_METHOD(void, CancelPendingQueries, (), (override));
   MOCK_METHOD(void,
               OnRemoveCurrentSingleFieldSuggestion,
-              (const std::u16string&, const std::u16string&, PopupItemId),
+              (const std::u16string&, const std::u16string&, SuggestionType),
               (override));
   MOCK_METHOD(void,
               OnSingleFieldSuggestionSelected,
-              (const std::u16string&, PopupItemId),
+              (const Suggestion& suggestion),
               (override));
 };
 

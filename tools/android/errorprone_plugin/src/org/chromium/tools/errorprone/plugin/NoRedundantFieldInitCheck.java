@@ -4,7 +4,6 @@
 
 package org.chromium.tools.errorprone.plugin;
 
-import com.google.auto.service.AutoService;
 import com.google.errorprone.BugPattern;
 import com.google.errorprone.VisitorState;
 import com.google.errorprone.bugpatterns.BugChecker;
@@ -21,10 +20,12 @@ import com.sun.source.tree.Tree;
 import com.sun.source.tree.VariableTree;
 import com.sun.tools.javac.code.Symbol;
 
+import org.chromium.build.annotations.ServiceImpl;
+
 import javax.lang.model.element.Modifier;
 
 /** Detects when non-final fields are explicitly initialized to default values */
-@AutoService(BugChecker.class)
+@ServiceImpl(BugChecker.class)
 @BugPattern(
         name = "NoRedundantFieldInit",
         summary = "Do not explicitly initialize a non-final field with a default value",

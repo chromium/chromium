@@ -10,7 +10,6 @@
 #import "components/crash/core/common/crash_key.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_user_application_state.h"
-#import "ios/chrome/browser/crash_report/model/main_thread_freeze_detector.h"
 
 namespace crash_keys {
 
@@ -50,13 +49,11 @@ void SetCurrentlyInBackground(bool background) {
   static crash_reporter::CrashKeyString<4> key(kCrashedInBackground);
   if (background) {
     key.Set("yes");
-    [[MainThreadFreezeDetector sharedInstance] stop];
     [[PreviousSessionInfo sharedInstance]
         setReportParameterValue:@"yes"
                          forKey:base::SysUTF8ToNSString(kCrashedInBackground)];
   } else {
     key.Clear();
-    [[MainThreadFreezeDetector sharedInstance] start];
     [[PreviousSessionInfo sharedInstance]
         removeReportParameterForKey:base::SysUTF8ToNSString(
                                         kCrashedInBackground)];

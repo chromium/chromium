@@ -17,11 +17,11 @@ class WebContents;
 namespace sessions {
 
 // A //content-specific subclass of PlatformSpecificTabData that is used to
-// associate TabRestoreService::Tab instances with the
+// associate tab_restore::Tab instances with the
 // content::SessionStorageNamespace of the WebContents from which they were
 // created.
 class SESSIONS_EXPORT ContentPlatformSpecificTabData
-    : public PlatformSpecificTabData {
+    : public tab_restore::PlatformSpecificTabData {
  public:
   explicit ContentPlatformSpecificTabData(content::WebContents* web_contents);
   ContentPlatformSpecificTabData();

@@ -5,20 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_CREDENTIAL_PROVIDER_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_CREDENTIAL_PROVIDER_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class CredentialProviderService;
 
 // Singleton that owns all CredentialProviderServices and associates them with
-// ChromeBrowserState.
+// profiles.
 class CredentialProviderServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static CredentialProviderService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static CredentialProviderService* GetForBrowserState(ProfileIOS* profile);
 
+  static CredentialProviderService* GetForProfile(ProfileIOS* profile);
   static CredentialProviderServiceFactory* GetInstance();
 
   CredentialProviderServiceFactory(const CredentialProviderServiceFactory&) =

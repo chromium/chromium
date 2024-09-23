@@ -30,7 +30,7 @@ class CORE_EXPORT V8ObjectParser final {
                                    const AtomicString list_name,
                                    Vector<CSSPropertyID>* native_properties,
                                    Vector<AtomicString>* custom_properties,
-                                   ExceptionState*);
+                                   ExceptionState&);
 };
 
 }  // namespace blink

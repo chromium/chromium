@@ -229,8 +229,6 @@ int InstallUpdater(const base::FilePath& browser_path) {
   ksadmin_command.AppendArg("--xcpath");
   ksadmin_command.AppendArgPath(browser_path);
   ksadmin_command.AppendArg("--system-store");
-  ksadmin_command.AppendSwitch(
-      base::StrCat({kLoggingModuleSwitch, kLoggingModuleSwitchValue}));
   if (!base::GetAppOutputWithExitCode(ksadmin_command, &output, &exit_code)) {
     return kFailedToRegister;
   }

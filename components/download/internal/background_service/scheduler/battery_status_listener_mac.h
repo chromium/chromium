@@ -25,7 +25,8 @@ class BatteryStatusListenerMac : public BatteryStatusListener {
  private:
   // BatteryStatusListener implementation.
   int GetBatteryPercentage() override;
-  bool IsOnBatteryPower() override;
+  base::PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus()
+      const override;
   void Start(Observer* observer) override;
   void Stop() override;
 };

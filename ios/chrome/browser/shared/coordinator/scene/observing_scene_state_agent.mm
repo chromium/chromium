@@ -10,7 +10,7 @@
 
 + (instancetype)agentFromScene:(SceneState*)sceneState {
   for (id agent in sceneState.connectedAgents) {
-    if ([agent isKindOfClass:[self class]]) {
+    if ([agent isMemberOfClass:[self class]]) {
       return agent;
     }
   }

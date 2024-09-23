@@ -8,6 +8,7 @@ alignItems
 alignSelf
 alignmentBaseline
 all
+anchorName
 animation
 animationComposition
 animationDelay
@@ -106,6 +107,7 @@ borderTopStyle
 borderTopWidth
 borderWidth
 bottom
+boxDecorationBreak
 boxShadow
 boxSizing
 breakAfter
@@ -182,6 +184,7 @@ fontKerning
 fontOpticalSizing
 fontPalette
 fontSize
+fontSizeAdjust
 fontStretch
 fontStyle
 fontSynthesis
@@ -230,12 +233,14 @@ initialLetter
 initialValue
 inlineSize
 inset
+insetArea
 insetBlock
 insetBlockEnd
 insetBlockStart
 insetInline
 insetInlineEnd
 insetInlineStart
+interpolateSize
 isolation
 item
 justifyContent
@@ -289,6 +294,7 @@ minHeight
 minInlineSize
 minWidth
 mixBlendMode
+navigation
 negative
 objectFit
 objectPosition
@@ -346,6 +352,12 @@ placeItems
 placeSelf
 pointerEvents
 position
+positionAnchor
+positionArea
+positionTry
+positionTryFallbacks
+positionTryOrder
+positionVisibility
 prefix
 quotes
 r
@@ -355,6 +367,7 @@ resize
 right
 rotate
 rowGap
+rubyAlign
 rubyPosition
 rx
 ry
@@ -437,10 +450,13 @@ textOverflow
 textRendering
 textShadow
 textSizeAdjust
+textSpacingTrim
 textTransform
 textUnderlineOffset
 textUnderlinePosition
 textWrap
+textWrapMode
+textWrapStyle
 timelineScope
 top
 touchAction
@@ -455,6 +471,7 @@ transitionDuration
 transitionProperty
 transitionTimingFunction
 translate
+types
 unicodeBidi
 unicodeRange
 userSelect
@@ -464,6 +481,7 @@ viewTimeline
 viewTimelineAxis
 viewTimelineInset
 viewTimelineName
+viewTransitionClass
 viewTransitionName
 visibility
 webkitAlignContent

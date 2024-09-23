@@ -25,7 +25,6 @@ EnumTraits<arc::mojom::DeviceType, ash::DeviceType>::ToMojom(
       return arc::mojom::DeviceType::DEVICE_TYPE_UNKNOWN;
   }
   NOTREACHED();
-  return arc::mojom::DeviceType::DEVICE_TYPE_UNKNOWN;
 }
 
 bool EnumTraits<arc::mojom::DeviceType, ash::DeviceType>::FromMojom(
@@ -43,7 +42,6 @@ bool EnumTraits<arc::mojom::DeviceType, ash::DeviceType>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 arc::mojom::MountEvent
@@ -56,7 +54,6 @@ EnumTraits<arc::mojom::MountEvent, ash::disks::DiskMountManager::MountEvent>::
       return arc::mojom::MountEvent::UNMOUNTING;
   }
   NOTREACHED();
-  return arc::mojom::MountEvent::MOUNTING;
 }
 
 bool EnumTraits<arc::mojom::MountEvent,
@@ -72,7 +69,6 @@ bool EnumTraits<arc::mojom::MountEvent,
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 }  // namespace mojo

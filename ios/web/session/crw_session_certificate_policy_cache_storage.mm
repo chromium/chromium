@@ -4,6 +4,8 @@
 
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 
+#import <string_view>
+
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/session/proto/session.pb.h"
@@ -30,7 +32,7 @@ typedef NS_ENUM(NSInteger, DeprecatedSerializationIndices) {
 
 // Converts `certificate` to NSData for serialization.
 NSData* CertificateToNSData(net::X509Certificate* certificate) {
-  base::StringPiece cert_string =
+  std::string_view cert_string =
       net::x509_util::CryptoBufferAsStringPiece(certificate->cert_buffer());
   return [NSData dataWithBytes:cert_string.data() length:cert_string.length()];
 }
@@ -115,7 +117,7 @@ size_t GetCertPolicyBytesEncoded() {
 }
 
 - (void)serializeToProto:(web::proto::CertificateStorage&)storage {
-  const base::StringPiece certString =
+  const std::string_view certString =
       net::x509_util::CryptoBufferAsStringPiece(_certificate->cert_buffer());
 
   storage.set_certificate(certString.data(), certString.size());

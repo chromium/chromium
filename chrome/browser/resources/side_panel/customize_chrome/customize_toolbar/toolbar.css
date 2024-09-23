@@ -1,0 +1,139 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=sp-shared-style-lit cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+.sp-card {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  padding: var(--sp-card-padding);
+  max-width: calc(360px - 2 * var(--sp-body-padding) - 2 * var(
+      --sp-card-inline-padding));
+}
+
+#pinningSelectionCard {
+  /* Remove horizontal padding for highlight */
+  padding: 16px 0px 0px 0px;
+  max-width: calc(360px - 2 * var(--sp-body-padding));
+  overflow: hidden;
+}
+
+.sp-card sp-heading {
+  padding: 0;
+}
+
+.toggle-container {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start;
+}
+
+.toggle-container:hover {
+  background-color: var(--cr-hover-background-color);
+  cursor: pointer;
+}
+
+.toggle-container:focus {
+  background-color: var(--cr-menu-background-focus-color);
+  outline: none;
+}
+
+.sp-hr {
+  width: auto;
+  margin: 8px 16px;
+}
+
+.choose-icons-row {
+  padding: 8px 16px;
+}
+
+.category-title {
+  padding: 0px 16px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sp-card > :first-child {
+  margin-top: 0;
+}
+
+.sp-card > :last-child {
+  margin-bottom: 0;
+}
+
+.toggle-title {
+  flex-grow: 1;
+  margin: 0;
+}
+
+.toggle-icon {
+  height: 16px;
+  object-fit: contain;
+  width: 20px;
+}
+
+#resetToDefaultButton {
+  margin: 0 0 8px 0;
+  width: 100%;
+}
+
+#resetToDefaultIcon {
+  --cr-icon-color: currentColor;
+  --cr-icon-image: url(../icons/reset.svg);
+  --cr-icon-size: 20px;
+  height: 20px;
+  margin-inline-end: 0;
+  margin-inline-start: 0;
+  width: 20px;
+}
+
+.intro-text {
+  color: var(--cr-secondary-text-color);
+  font-weight: 400;
+  text-align: center;
+  padding: 0 0 16px;
+}
+
+#tipCard {
+  background-color: var(--color-sys-surface1);
+  border: 1px var(--color-sys-tonal-outline) solid;
+  display: flex;
+  font-weight: 400;
+  gap: 12px;
+  justify-content: flex-start;
+  line-height: 20px;
+  padding: 16px;
+}
+
+#tipIcon {
+  height: 20px;
+  width: 20px;
+}
+
+#miniToolbar {
+  border: 0;
+  border-radius: 8px;
+  box-shadow: var(--cr-elevation-2);
+  height: 147px; /* should match #miniNewTabPage for customize chrome */
+  width: 278px;
+  z-index: 1;
+}
+
+#miniToolbarBackground {
+  background-color: var(--color-sys-tonal-container);
+  border: 0;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+  padding: 16px;
+}

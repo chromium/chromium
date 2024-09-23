@@ -41,7 +41,7 @@ class VIEWS_EXPORT ViewObserver {
   virtual void OnViewLayerBoundsSet(View* observed_view) {}
 
   // Called when the `observed_view`'s layer transform changes.
-  // TODO(crbug.com/1203386): This is temporarily added to support a migration.
+  // TODO(crbug.com/40763515): This is temporarily added to support a migration.
   // Do not use for new call sites, we should instead figure out how to
   // migrate this method (and possibly others) into callbacks.
   virtual void OnViewLayerTransformed(View* observed_view) {}
@@ -88,6 +88,12 @@ class VIEWS_EXPORT ViewObserver {
   virtual void OnViewPropertyChanged(View* observed_view,
                                      const void* key,
                                      int64_t old_value) {}
+
+  // Called when the observed view's layout is invalidated.
+  // This is useful to invalidate other views in response to the observed
+  // view's layout invalidation, for example, when the view to be invalidated
+  // has style dependency on the observed view.
+  virtual void OnViewLayoutInvalidated(View* observed_view) {}
 
  protected:
   virtual ~ViewObserver() = default;

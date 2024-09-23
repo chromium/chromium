@@ -18,28 +18,27 @@
 #import "components/consent_auditor/consent_sync_bridge_impl.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/sync/base/report_unrecoverable_error.h"
-#import "components/sync/model/client_tag_based_model_type_processor.h"
-#import "components/sync/model/model_type_store_service.h"
+#import "components/sync/model/client_tag_based_data_type_processor.h"
+#import "components/sync/model/data_type_store_service.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/web/public/browser_state.h"
 
 // static
-consent_auditor::ConsentAuditor* ConsentAuditorFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+consent_auditor::ConsentAuditor* ConsentAuditorFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<consent_auditor::ConsentAuditor*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
-consent_auditor::ConsentAuditor*
-ConsentAuditorFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state) {
+consent_auditor::ConsentAuditor* ConsentAuditorFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
   return static_cast<consent_auditor::ConsentAuditor*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+      GetInstance()->GetServiceForBrowserState(profile, false));
 }
 
 // static
@@ -52,22 +51,21 @@ ConsentAuditorFactory::ConsentAuditorFactory()
     : BrowserStateKeyedServiceFactory(
           "ConsentAuditor",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 ConsentAuditorFactory::~ConsentAuditorFactory() {}
 
 std::unique_ptr<KeyedService> ConsentAuditorFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
-  ChromeBrowserState* ios_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
+  ProfileIOS* ios_profile = ProfileIOS::FromBrowserState(browser_state);
 
   std::unique_ptr<consent_auditor::ConsentSyncBridge> consent_sync_bridge;
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForBrowserState(ios_browser_state)
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForProfile(ios_profile)
           ->GetStoreFactory();
   auto change_processor =
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::USER_CONSENTS,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               ::GetChannel()));

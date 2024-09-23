@@ -1,9 +1,11 @@
 # Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//device/bluetooth/cast_bluetooth.gni")
+import("//device/bluetooth/emulation/buildflags.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -26,6 +28,12 @@ config("bluetooth_config") {
   }
 }
 
+config("bluetooth_emulation_config") {
+  if (enable_bluetooth_emulation) {
+    defines = [ "ENABLE_BLUETOOTH_EMULATION" ]
+  }
+}
+
 # Experimental implementation not ready for production use yet. See
 # public/mojom/README.md
 source_set("deprecated_experimental_mojo") {
@@ -40,6 +48,8 @@ source_set("deprecated_experimental_mojo") {
     "device.h",
     "discovery_session.cc",
     "discovery_session.h",
+    "gatt_service.cc",
+    "gatt_service.h",
     "server_socket.cc",
     "server_socket.h",
     "socket.cc",
@@ -79,22 +89,26 @@ source_set("deprecated_experimental_mojo") {
 
 source_set("fake_bluetooth") {
   sources = [
-    "test/fake_bluetooth.cc",
-    "test/fake_bluetooth.h",
+    "emulation/fake_bluetooth.cc",
+    "emulation/fake_bluetooth.h",
+    "emulation/fake_central.cc",
+    "emulation/fake_central.h",
+    "emulation/fake_peripheral.cc",
+    "emulation/fake_peripheral.h",
+    "emulation/fake_read_response.cc",
+    "emulation/fake_read_response.h",
+    "emulation/fake_remote_gatt_characteristic.cc",
+    "emulation/fake_remote_gatt_characteristic.h",
+    "emulation/fake_remote_gatt_descriptor.cc",
+    "emulation/fake_remote_gatt_descriptor.h",
+    "emulation/fake_remote_gatt_service.cc",
+    "emulation/fake_remote_gatt_service.h",
     "test/fake_bluetooth_socket.cc",
     "test/fake_bluetooth_socket.h",
-    "test/fake_central.cc",
-    "test/fake_central.h",
-    "test/fake_peripheral.cc",
-    "test/fake_peripheral.h",
-    "test/fake_read_response.cc",
-    "test/fake_read_response.h",
-    "test/fake_remote_gatt_characteristic.cc",
-    "test/fake_remote_gatt_characteristic.h",
-    "test/fake_remote_gatt_descriptor.cc",
-    "test/fake_remote_gatt_descriptor.h",
-    "test/fake_remote_gatt_service.cc",
-    "test/fake_remote_gatt_service.h",
+    "test/fake_local_gatt_characteristic.cc",
+    "test/fake_local_gatt_characteristic.h",
+    "test/fake_local_gatt_service.cc",
+    "test/fake_local_gatt_service.h",
   ]
 
   deps = [
@@ -105,6 +119,8 @@ source_set("fake_bluetooth") {
     "//mojo/public/cpp/bindings",
     "//net",
   ]
+
+  public_configs = [ ":bluetooth_emulation_config" ]
 }
 
 component("bluetooth") {
@@ -134,11 +150,9 @@ component("bluetooth") {
     "bluetooth_gatt_notify_session.h",
     "bluetooth_gatt_service.cc",
     "bluetooth_gatt_service.h",
-    "bluetooth_local_gatt_characteristic.cc",
     "bluetooth_local_gatt_characteristic.h",
     "bluetooth_local_gatt_descriptor.cc",
     "bluetooth_local_gatt_descriptor.h",
-    "bluetooth_local_gatt_service.cc",
     "bluetooth_local_gatt_service.h",
     "bluetooth_low_energy_scan_filter.cc",
     "bluetooth_low_energy_scan_filter.h",
@@ -168,6 +182,7 @@ component("bluetooth") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/device_event_log",
+    "//components/prefs",
     "//crypto",
     "//device/base",
     "//device/bluetooth/strings",

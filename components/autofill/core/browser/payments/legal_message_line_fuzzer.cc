@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdint.h>
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 
 #include <fuzzer/FuzzedDataProvider.h>
+#include <stdint.h>
+
 #include <optional>
 
 #include "base/json/json_reader.h"
 #include "base/values.h"
-#include "components/autofill/core/browser/payments/legal_message_line.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider provider(data, size);

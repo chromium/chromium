@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace syncer {
 
@@ -22,19 +23,18 @@ bool IsExplicitPassphrase(PassphraseType type) {
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 sync_pb::NigoriSpecifics::PassphraseType ProtoPassphraseInt32ToProtoEnum(
-    ::google::protobuf::int32 type) {
+    std::int32_t type) {
   return sync_pb::NigoriSpecifics::PassphraseType_IsValid(type)
              ? static_cast<sync_pb::NigoriSpecifics::PassphraseType>(type)
              : sync_pb::NigoriSpecifics::UNKNOWN;
 }
 
-std::optional<PassphraseType> ProtoPassphraseInt32ToEnum(
-    ::google::protobuf::int32 type) {
+std::optional<PassphraseType> ProtoPassphraseInt32ToEnum(std::int32_t type) {
   switch (ProtoPassphraseInt32ToProtoEnum(type)) {
     case sync_pb::NigoriSpecifics::IMPLICIT_PASSPHRASE:
       return PassphraseType::kImplicitPassphrase;
@@ -70,12 +70,12 @@ sync_pb::NigoriSpecifics::PassphraseType EnumPassphraseTypeToProto(
       return sync_pb::NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return sync_pb::NigoriSpecifics::IMPLICIT_PASSPHRASE;
 }
 
 std::optional<KeyDerivationMethod> ProtoKeyDerivationMethodToEnum(
-    ::google::protobuf::int32 method) {
+    std::int32_t method) {
   DCHECK_GE(method, 0);
 
   switch (method) {
@@ -103,7 +103,7 @@ sync_pb::NigoriSpecifics::KeyDerivationMethod EnumKeyDerivationMethodToProto(
       return sync_pb::NigoriSpecifics::SCRYPT_8192_8_11;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return sync_pb::NigoriSpecifics::UNSPECIFIED;
 }
 

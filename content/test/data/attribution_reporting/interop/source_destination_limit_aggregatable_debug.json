@@ -1,0 +1,248 @@
+{
+  "description": "Aggregatable debug report for source destination limit",
+  "api_config": {
+    "needs_aggregatable_debug": true,
+    "needs_source_destination_limit": true,
+    "max_destinations_per_source_site_reporting_site": "1",
+    "max_destinations_per_rate_limit_window_reporting_site": "3",
+    "max_destinations_per_rate_limit_window": "3"
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test"
+              }
+            }
+          }
+        ]
+      },
+      // Should be reported as source-destination-limit.
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination1.test",
+                "destination_limit_priority": "-1",
+                "aggregatable_debug_reporting": {
+                  "budget": 123,
+                  "key_piece": "0x1",
+                  "debug_data": [
+                    {
+                      "types": ["source-destination-limit"],
+                      "key_piece": "0x2",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Should be reported as source-success and
+      // source-destination-limit-replaced.
+      {
+        "timestamp": "2000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination1.test",
+                "aggregatable_debug_reporting": {
+                  "budget": 1234,
+                  "key_piece": "0x3",
+                  "debug_data": [
+                    {
+                      "types": ["source-success"],
+                      "key_piece": "0x4",
+                      "value": 8
+                    },
+                    {
+                      "types": ["source-destination-limit-replaced"],
+                      "key_piece": "0x8",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Registers a source for a different reporting site.
+      {
+        "timestamp": "3000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter1.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination2.test",
+                "aggregatable_debug_reporting": {
+                  "budget": 321,
+                  "key_piece": "0x4",
+                  "debug_data": [
+                    {
+                      "types": ["source-success"],
+                      "key_piece": "0x10",
+                      "value": 6
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Should be reported as source-destination-global-rate-limit and
+      // source-destination-limit-replaced.
+      {
+        "timestamp": "4000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination3.test",
+                "aggregatable_debug_reporting": {
+                  "budget": 100,
+                  "key_piece": "0xa",
+                  "debug_data": [
+                    {
+                      "types": ["source-destination-global-rate-limit"],
+                      "key_piece": "0x10",
+                      "value": 1
+                    },
+                    {
+                      "types": ["source-destination-limit-replaced"],
+                      "key_piece": "0x20",
+                      "value": 2
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x3",
+            "value": 10
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination1.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "1",
+            "version": "1.0"
+          }
+        },
+        "report_time": "1000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x7",
+            "value": 8
+          }, {
+            "id": "0",
+            "key": "0xb",
+            "value": 10
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination1.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "2",
+            "version": "1.0"
+          }
+        },
+        "report_time": "2000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x14",
+            "value": 6
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination2.test",
+            "reporting_origin": "https://reporter1.test",
+            "scheduled_report_time": "3",
+            "version": "1.0"
+          }
+        },
+        "report_time": "3000",
+        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x1a",
+            "value": 1
+          }, {
+            "id": "0",
+            "key": "0x2a",
+            "value": 2
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination3.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "4",
+            "version": "1.0"
+          }
+        },
+        "report_time": "4000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      }
+    ]
+  }
+}

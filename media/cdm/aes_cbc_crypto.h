@@ -44,7 +44,7 @@ class MEDIA_EXPORT AesCbcCrypto {
                uint8_t* decrypted_data);
 
  private:
-  EVP_CIPHER_CTX ctx_;
+  bssl::ScopedEVP_CIPHER_CTX ctx_;
 };
 
 }  // namespace media

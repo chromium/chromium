@@ -7,14 +7,14 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutBlockFlow DIV",
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#ADD8E6",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) SPAN class='child'",
+      "name": "LayoutBlockFlow (positioned) SPAN class='child'",
       "position": [50, 50],
       "bounds": [50, 50],
       "contentsOpaque": true,

@@ -4,6 +4,7 @@
 
 #include "ui/views/interaction/interaction_sequence_views.h"
 
+#include <string_view>
 #include <utility>
 
 #include "ui/base/interaction/element_identifier.h"
@@ -46,7 +47,7 @@ InteractionSequenceViews::WithInitialView(
 // static
 void InteractionSequenceViews::NameView(ui::InteractionSequence* sequence,
                                         View* view,
-                                        const base::StringPiece& name) {
+                                        std::string_view name) {
   ui::TrackedElement* element = nullptr;
   if (view) {
     element = ElementTrackerViews::GetInstance()->GetElementForView(

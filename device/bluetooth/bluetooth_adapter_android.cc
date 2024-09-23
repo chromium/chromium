@@ -20,6 +20,8 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_device_android.h"
 #include "device/bluetooth/bluetooth_discovery_session_outcome.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothAdapter_jni.h"
 #include "device/bluetooth/jni_headers/ChromeBluetoothScanFilterBuilder_jni.h"
 #include "device/bluetooth/jni_headers/ChromeBluetoothScanFilterList_jni.h"
@@ -263,7 +265,7 @@ void BluetoothAdapterAndroid::CreateOrUpdateDeviceOnScan(
         // https://developer.android.com/reference/android/bluetooth/le/ScanRecord.html#getTxPowerLevel()
         tx_power == INT32_MIN ? std::nullopt
                               : std::make_optional(clamped_tx_power),
-        std::nullopt, /* TODO(crbug.com/588083) Implement appearance */
+        std::nullopt, /* TODO(crbug.com/41240161) Implement appearance */
         advertised_bluetooth_uuids, service_data_map, manufacturer_data_map);
   }
 

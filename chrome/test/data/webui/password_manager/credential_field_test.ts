@@ -6,7 +6,7 @@ import 'chrome://password-manager/password_manager.js';
 
 import type {CredentialFieldElement} from 'chrome://password-manager/password_manager.js';
 import {Page, PasswordManagerImpl, PasswordViewPageInteractions, Router} from 'chrome://password-manager/password_manager.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -50,15 +50,11 @@ suite('CredentialFieldTest', function() {
 
   test('copy value', async function() {
     const element = await createCredentialFieldElement();
-    assertFalse(element.$.toast.open);
 
     element.$.copyButton.click();
     await passwordManager.whenCalled('extendAuthValidity');
     assertEquals(
         INTERACTION_ID,
         await passwordManager.whenCalled('recordPasswordViewInteraction'));
-
-    assertTrue(element.$.toast.open);
-    assertEquals(VALUE_COPIED_TOAST_LABEL, element.$.toast.textContent!.trim());
   });
 });

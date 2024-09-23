@@ -31,8 +31,7 @@ The build steps must be completed in an environment from `LaunchBuildEnv.cmd`
 in the [Driver Development Kit](#driver-development-kit) section above.
 
 ```
-cd third_party\win_virtual_display\driver
-msbuild /t:build /property:Platform=x64
+msbuild third_party\win_virtual_display\driver\ChromiumVirtualDisplayDriver.vcxproj /t:build /property:Platform=x64
 ```
 
 ### Installing the Driver

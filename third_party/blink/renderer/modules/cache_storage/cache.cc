@@ -79,7 +79,7 @@ bool HasJavascriptMimeType(const Response* response) {
 
 void ValidateRequestForPut(const Request* request,
                            ExceptionState& exception_state) {
-  KURL url(NullURL(), request->url());
+  const KURL& url = request->url();
   if (!url.ProtocolIsInHTTPFamily()) {
     exception_state.ThrowTypeError("Request scheme '" + url.Protocol() +
                                    "' is unsupported");
@@ -91,23 +91,6 @@ void ValidateRequestForPut(const Request* request,
     return;
   }
   DCHECK(!request->HasBody());
-}
-
-void ValidateResponseForPut(const Response* response,
-                            ExceptionState& exception_state) {
-  if (VaryHeaderContainsAsterisk(response)) {
-    exception_state.ThrowTypeError("Vary header contains *");
-    return;
-  }
-  if (response->GetResponse()->Status() == 206) {
-    exception_state.ThrowTypeError(
-        "Partial response (status code 206) is unsupported");
-    return;
-  }
-  if (response->IsBodyLocked() || response->IsBodyUsed()) {
-    exception_state.ThrowTypeError("Response body is already used");
-    return;
-  }
 }
 
 enum class CodeCachePolicy {
@@ -140,8 +123,9 @@ CodeCachePolicy GetCodeCachePolicy(ExecutionContext* context,
   // Count the hint usage regardless of its value.
   context->CountUse(mojom::WebFeature::kCacheStorageCodeCacheHint);
 
-  if (header_value.LowerASCII() == "none")
+  if (EqualIgnoringASCIICase(header_value, "none")) {
     return CodeCachePolicy::kNone;
+  }
 
   return CodeCachePolicy::kAuto;
 }
@@ -182,9 +166,9 @@ class Cache::BarrierCallbackForPutResponse final
                                 const HeapVector<Member<Request>>& request_list,
                                 const ExceptionContext& exception_context,
                                 int64_t trace_id)
-      : resolver_(
-            MakeGarbageCollected<ScriptPromiseResolver>(script_state,
-                                                        exception_context)),
+      : resolver_(MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+            script_state,
+            exception_context)),
         cache_(cache),
         method_name_(method_name),
         request_list_(request_list),
@@ -198,7 +182,7 @@ class Cache::BarrierCallbackForPutResponse final
   }
 
   // Must be called prior to starting the load of any response.
-  ScriptPromise Promise() const { return resolver_->Promise(); }
+  ScriptPromise<IDLUndefined> Promise() const { return resolver_->Promise(); }
 
   AbortSignal* Signal() const {
     return abort_controller_ ? abort_controller_->signal() : nullptr;
@@ -230,23 +214,18 @@ class Cache::BarrierCallbackForPutResponse final
   }
 
   void FailedResponse() {
-    ScriptState* state = resolver_->GetScriptState();
-    if (state->ContextIsValid()) {
-      ScriptState::Scope scope(state);
-      resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
-          state->GetIsolate(), DOMExceptionCode::kNetworkError,
-          method_name_ + " encountered a network error"));
+    if (resolver_->GetScriptState()->ContextIsValid()) {
+      resolver_->RejectWithDOMException(
+          DOMExceptionCode::kNetworkError,
+          method_name_ + " encountered a network error");
     }
     Stop();
   }
 
   void AbortedResponse() {
-    ScriptState* state = resolver_->GetScriptState();
-    if (state->ContextIsValid()) {
-      ScriptState::Scope scope(state);
-      resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
-          state->GetIsolate(), DOMExceptionCode::kAbortError,
-          method_name_ + " was aborted"));
+    if (resolver_->GetScriptState()->ContextIsValid()) {
+      resolver_->RejectWithDOMException(DOMExceptionCode::kAbortError,
+                                        method_name_ + " was aborted");
     }
     Stop();
   }
@@ -256,8 +235,13 @@ class Cache::BarrierCallbackForPutResponse final
     Stop();
   }
 
-  void OnError(ExceptionState& exception_state) {
-    resolver_->Reject(exception_state);
+  void OnError(v8::Local<v8::Value> value) {
+    resolver_->Reject(value);
+    Stop();
+  }
+
+  void OnError(const String& message) {
+    resolver_->RejectWithTypeError(message);
     Stop();
   }
 
@@ -281,7 +265,7 @@ class Cache::BarrierCallbackForPutResponse final
     stopped_ = true;
   }
 
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   Member<AbortController> abort_controller_;
   Member<Cache> cache_;
   const String method_name_;
@@ -321,14 +305,21 @@ class Cache::ResponseBodyLoader final
         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
     if (require_ok_response_ && !response->ok()) {
-      exception_state.ThrowTypeError("Request failed");
-      barrier_callback_->OnError(exception_state);
+      barrier_callback_->OnError("Request failed");
       return;
     }
 
-    ValidateResponseForPut(response, exception_state);
-    if (exception_state.HadException()) {
-      barrier_callback_->OnError(exception_state);
+    if (VaryHeaderContainsAsterisk(response)) {
+      barrier_callback_->OnError("Vary header contains *");
+      return;
+    }
+    if (response->GetResponse()->Status() == 206) {
+      barrier_callback_->OnError(
+          "Partial response (status code 206) is unsupported");
+      return;
+    }
+    if (response->IsBodyLocked() || response->IsBodyUsed()) {
+      barrier_callback_->OnError("Response body is already used");
       return;
     }
 
@@ -384,7 +375,7 @@ class Cache::BarrierCallbackForPutComplete final
   BarrierCallbackForPutComplete(wtf_size_t number_of_operations,
                                 Cache* cache,
                                 const String& method_name,
-                                ScriptPromiseResolver* resolver,
+                                ScriptPromiseResolver<IDLUndefined>* resolver,
                                 int64_t trace_id)
       : number_of_remaining_operations_(number_of_operations),
         cache_(cache),
@@ -419,7 +410,7 @@ class Cache::BarrierCallbackForPutComplete final
         resolver_->WrapCallbackInScriptScope(WTF::BindOnce(
             [](const String& method_name, base::TimeTicks start_time,
                int operation_count, int64_t trace_id, Cache* _,
-               ScriptPromiseResolver* resolver,
+               ScriptPromiseResolver<IDLUndefined>* resolver,
                mojom::blink::CacheStorageVerboseErrorPtr error) {
               base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
               TRACE_EVENT_WITH_FLOW1(
@@ -452,36 +443,26 @@ class Cache::BarrierCallbackForPutComplete final
             WrapPersistent(cache_.Get()))));
   }
 
-  void OnError(ExceptionState& exception_state) {
+  void OnError(v8::Local<v8::Value> exception) {
     if (!StillActive())
       return;
     completed_ = true;
-    resolver_->Reject(exception_state);
+    resolver_->Reject(exception);
   }
 
   void OnError(const String& error_message) {
     if (!StillActive())
       return;
     completed_ = true;
-    ScriptState* state = resolver_->GetScriptState();
-    if (!state->ContextIsValid())
-      return;
-    ScriptState::Scope scope(state);
-    resolver_->Reject(
-        V8ThrowException::CreateTypeError(state->GetIsolate(), error_message));
+    resolver_->RejectWithTypeError(error_message);
   }
 
   void Abort() {
     if (!StillActive())
       return;
     completed_ = true;
-    ScriptState* state = resolver_->GetScriptState();
-    if (!state->ContextIsValid())
-      return;
-    ScriptState::Scope scope(state);
-    resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
-        state->GetIsolate(), DOMExceptionCode::kAbortError,
-        method_name_ + " was aborted"));
+    resolver_->RejectWithDOMException(DOMExceptionCode::kAbortError,
+                                      method_name_ + " was aborted");
   }
 
   virtual void Trace(Visitor* visitor) const {
@@ -532,7 +513,7 @@ class Cache::BarrierCallbackForPutComplete final
   int number_of_remaining_operations_;
   Member<Cache> cache_;
   const String method_name_;
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   Vector<mojom::blink::BatchOperationPtr> batch_operations_;
   const int64_t trace_id_;
 };
@@ -557,8 +538,8 @@ class Cache::FetchHandler final : public ScriptFunction::Callable {
     // promise is never returned to script or chained to another handler.
     // If we return our real result and an exception occurs then unhandled
     // promise errors will occur.
-    ScriptValue rtn =
-        ScriptPromise::CastUndefined(script_state).AsScriptValue();
+    ScriptValue rtn(script_state->GetIsolate(),
+                    ToResolvedUndefinedPromise(script_state).V8Promise());
 
     // If there is no loader, we were created as a reject handler.
     if (!response_loader_) {
@@ -572,10 +553,12 @@ class Cache::FetchHandler final : public ScriptFunction::Callable {
     // Resolve handler, so try to process a Response.
     Response* response = NativeValueTraits<Response>::NativeValue(
         script_state->GetIsolate(), value.V8Value(), exception_state);
-    if (exception_state.HadException())
-      barrier_callback_->OnError(exception_state);
-    else
+    if (exception_state.HadException()) {
+      barrier_callback_->OnError(exception_state.GetException());
+      exception_state.ClearException();
+    } else {
       response_loader_->OnResponse(response, exception_state);
+    }
 
     return rtn;
   }
@@ -639,8 +622,7 @@ class Cache::CodeCacheHandleCallbackForPut final
       base::span<const uint8_t> serialized_data =
           cached_metadata->SerializedData();
       auto side_data_blob_data = std::make_unique<BlobData>();
-      side_data_blob_data->AppendBytes(serialized_data.data(),
-                                       serialized_data.size());
+      side_data_blob_data->AppendBytes(serialized_data);
 
       batch_operation->response->side_data_blob_for_cache_put =
           BlobDataHandle::Create(std::move(side_data_blob_data),
@@ -689,10 +671,8 @@ class Cache::CodeCacheHandleCallbackForPut final
             TextResourceDecoderOptions::CreateUTF8Decode());
 
     return V8CodeCache::GenerateFullCodeCache(
-        script_state_,
-        text_decoder->Decode(static_cast<const char*>(array_buffer->Data()),
-                             array_buffer->ByteLength()),
-        url_, text_decoder->Encoding(), opaque_mode_);
+        script_state_, text_decoder->Decode(array_buffer->ByteSpan()), url_,
+        text_decoder->Encoding(), opaque_mode_);
   }
 
   const Member<ScriptState> script_state_;
@@ -708,10 +688,10 @@ class Cache::CodeCacheHandleCallbackForPut final
   mojom::blink::FetchAPIResponsePtr fetch_api_response_;
 };
 
-ScriptPromise Cache::match(ScriptState* script_state,
-                           const V8RequestInfo* request,
-                           const CacheQueryOptions* options,
-                           ExceptionState& exception_state) {
+ScriptPromise<Response> Cache::match(ScriptState* script_state,
+                                     const V8RequestInfo* request,
+                                     const CacheQueryOptions* options,
+                                     ExceptionState& exception_state) {
   DCHECK(request);
   Request* request_object = nullptr;
   switch (request->GetContentType()) {
@@ -722,22 +702,24 @@ ScriptPromise Cache::match(ScriptState* script_state,
       request_object = Request::Create(script_state, request->GetAsUSVString(),
                                        exception_state);
       if (exception_state.HadException())
-        return ScriptPromise();
+        return EmptyPromise();
       break;
   }
   return MatchImpl(script_state, request_object, options, exception_state);
 }
 
-ScriptPromise Cache::matchAll(ScriptState* script_state,
-                              ExceptionState& exception_state) {
+ScriptPromise<IDLSequence<Response>> Cache::matchAll(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   return MatchAllImpl(script_state, nullptr, CacheQueryOptions::Create(),
                       exception_state);
 }
 
-ScriptPromise Cache::matchAll(ScriptState* script_state,
-                              const V8RequestInfo* request,
-                              const CacheQueryOptions* options,
-                              ExceptionState& exception_state) {
+ScriptPromise<IDLSequence<Response>> Cache::matchAll(
+    ScriptState* script_state,
+    const V8RequestInfo* request,
+    const CacheQueryOptions* options,
+    ExceptionState& exception_state) {
   Request* request_object = nullptr;
   if (request) {
     switch (request->GetContentType()) {
@@ -748,16 +730,16 @@ ScriptPromise Cache::matchAll(ScriptState* script_state,
         request_object = Request::Create(
             script_state, request->GetAsUSVString(), exception_state);
         if (exception_state.HadException())
-          return ScriptPromise();
+          return ScriptPromise<IDLSequence<Response>>();
         break;
     }
   }
   return MatchAllImpl(script_state, request_object, options, exception_state);
 }
 
-ScriptPromise Cache::add(ScriptState* script_state,
-                         const V8RequestInfo* request,
-                         ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> Cache::add(ScriptState* script_state,
+                                       const V8RequestInfo* request,
+                                       ExceptionState& exception_state) {
   DCHECK(request);
   HeapVector<Member<Request>> requests;
   switch (request->GetContentType()) {
@@ -768,15 +750,16 @@ ScriptPromise Cache::add(ScriptState* script_state,
       requests.push_back(Request::Create(
           script_state, request->GetAsUSVString(), exception_state));
       if (exception_state.HadException())
-        return ScriptPromise();
+        return EmptyPromise();
       break;
   }
   return AddAllImpl(script_state, "Cache.add()", requests, exception_state);
 }
 
-ScriptPromise Cache::addAll(ScriptState* script_state,
-                            const HeapVector<Member<V8RequestInfo>>& requests,
-                            ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> Cache::addAll(
+    ScriptState* script_state,
+    const HeapVector<Member<V8RequestInfo>>& requests,
+    ExceptionState& exception_state) {
   HeapVector<Member<Request>> request_objects;
   for (const V8RequestInfo* request : requests) {
     switch (request->GetContentType()) {
@@ -787,7 +770,7 @@ ScriptPromise Cache::addAll(ScriptState* script_state,
         request_objects.push_back(Request::Create(
             script_state, request->GetAsUSVString(), exception_state));
         if (exception_state.HadException())
-          return ScriptPromise();
+          return EmptyPromise();
         break;
     }
   }
@@ -795,10 +778,10 @@ ScriptPromise Cache::addAll(ScriptState* script_state,
                     exception_state);
 }
 
-ScriptPromise Cache::Delete(ScriptState* script_state,
-                            const V8RequestInfo* request,
-                            const CacheQueryOptions* options,
-                            ExceptionState& exception_state) {
+ScriptPromise<IDLBoolean> Cache::Delete(ScriptState* script_state,
+                                        const V8RequestInfo* request,
+                                        const CacheQueryOptions* options,
+                                        ExceptionState& exception_state) {
   DCHECK(request);
   Request* request_object = nullptr;
   switch (request->GetContentType()) {
@@ -809,16 +792,16 @@ ScriptPromise Cache::Delete(ScriptState* script_state,
       request_object = Request::Create(script_state, request->GetAsUSVString(),
                                        exception_state);
       if (exception_state.HadException())
-        return ScriptPromise();
+        return EmptyPromise();
       break;
   }
   return DeleteImpl(script_state, request_object, options, exception_state);
 }
 
-ScriptPromise Cache::put(ScriptState* script_state,
-                         const V8RequestInfo* request_info,
-                         Response* response,
-                         ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> Cache::put(ScriptState* script_state,
+                                       const V8RequestInfo* request_info,
+                                       Response* response,
+                                       ExceptionState& exception_state) {
   DCHECK(request_info);
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW0("CacheStorage", "Cache::put",
@@ -832,13 +815,13 @@ ScriptPromise Cache::put(ScriptState* script_state,
       request = Request::Create(script_state, request_info->GetAsUSVString(),
                                 exception_state);
       if (exception_state.HadException())
-        return ScriptPromise();
+        return EmptyPromise();
       break;
   }
 
   ValidateRequestForPut(request, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise();
+    return EmptyPromise();
 
   auto* barrier_callback = MakeGarbageCollected<BarrierCallbackForPutResponse>(
       script_state, this, "Cache.put()",
@@ -846,7 +829,7 @@ ScriptPromise Cache::put(ScriptState* script_state,
       trace_id);
 
   // We must get the promise before any rejections can happen during loading.
-  ScriptPromise promise = barrier_callback->Promise();
+  auto promise = barrier_callback->Promise();
 
   auto* loader = MakeGarbageCollected<ResponseBodyLoader>(
       script_state, barrier_callback, /*index=*/0,
@@ -856,16 +839,18 @@ ScriptPromise Cache::put(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise Cache::keys(ScriptState* script_state,
-                          ExceptionState& exception_state) {
+ScriptPromise<IDLSequence<Request>> Cache::keys(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   return KeysImpl(script_state, nullptr, CacheQueryOptions::Create(),
                   exception_state);
 }
 
-ScriptPromise Cache::keys(ScriptState* script_state,
-                          const V8RequestInfo* request,
-                          const CacheQueryOptions* options,
-                          ExceptionState& exception_state) {
+ScriptPromise<IDLSequence<Request>> Cache::keys(
+    ScriptState* script_state,
+    const V8RequestInfo* request,
+    const CacheQueryOptions* options,
+    ExceptionState& exception_state) {
   Request* request_object = nullptr;
   if (request) {
     switch (request->GetContentType()) {
@@ -876,7 +861,7 @@ ScriptPromise Cache::keys(ScriptState* script_state,
         request_object = Request::Create(
             script_state, request->GetAsUSVString(), exception_state);
         if (exception_state.HadException())
-          return ScriptPromise();
+          return ScriptPromise<IDLSequence<Request>>();
         break;
     }
   }
@@ -887,14 +872,19 @@ Cache::Cache(GlobalFetch::ScopedFetcher* fetcher,
              CacheStorageBlobClientList* blob_client_list,
              mojo::PendingAssociatedRemote<mojom::blink::CacheStorageCache>
                  cache_pending_remote,
-             scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : scoped_fetcher_(fetcher), blob_client_list_(blob_client_list) {
-  cache_remote_.Bind(std::move(cache_pending_remote), std::move(task_runner));
+             ExecutionContext* execution_context,
+             TaskType task_type)
+    : scoped_fetcher_(fetcher),
+      blob_client_list_(blob_client_list),
+      cache_remote_(execution_context) {
+  cache_remote_.Bind(std::move(cache_pending_remote),
+                     execution_context->GetTaskRunner(task_type));
 }
 
 void Cache::Trace(Visitor* visitor) const {
   visitor->Trace(scoped_fetcher_);
   visitor->Trace(blob_client_list_);
+  visitor->Trace(cache_remote_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -902,10 +892,10 @@ AbortController* Cache::CreateAbortController(ScriptState* script_state) {
   return AbortController::Create(script_state);
 }
 
-ScriptPromise Cache::MatchImpl(ScriptState* script_state,
-                               const Request* request,
-                               const CacheQueryOptions* options,
-                               ExceptionState& exception_state) {
+ScriptPromise<Response> Cache::MatchImpl(ScriptState* script_state,
+                                         const Request* request,
+                                         const CacheQueryOptions* options,
+                                         ExceptionState& exception_state) {
   mojom::blink::FetchAPIRequestPtr mojo_request =
       request->CreateFetchAPIRequest();
   mojom::blink::CacheQueryOptionsPtr mojo_options =
@@ -917,9 +907,9 @@ ScriptPromise Cache::MatchImpl(ScriptState* script_state,
                          "request", CacheStorageTracedValue(mojo_request),
                          "options", CacheStorageTracedValue(mojo_options));
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Response>>(
       script_state, exception_state.GetContext());
-  const ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   if (request->method() != http_names::kGET && !options->ignoreMethod()) {
     resolver->Resolve();
     return promise;
@@ -941,7 +931,8 @@ ScriptPromise Cache::MatchImpl(ScriptState* script_state,
       in_range_fetch_event, trace_id,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, const CacheQueryOptions* options,
-             int64_t trace_id, Cache* self, ScriptPromiseResolver* resolver,
+             int64_t trace_id, Cache* self,
+             ScriptPromiseResolver<Response>* resolver,
              mojom::blink::MatchResultPtr result) {
             base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
             UMA_HISTOGRAM_LONG_TIMES("ServiceWorkerCache.Cache.Renderer.Match",
@@ -998,13 +989,15 @@ ScriptPromise Cache::MatchImpl(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise Cache::MatchAllImpl(ScriptState* script_state,
-                                  const Request* request,
-                                  const CacheQueryOptions* options,
-                                  ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  const ScriptPromise promise = resolver->Promise();
+ScriptPromise<IDLSequence<Response>> Cache::MatchAllImpl(
+    ScriptState* script_state,
+    const Request* request,
+    const CacheQueryOptions* options,
+    ExceptionState& exception_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<Response>>>(
+          script_state, exception_state.GetContext());
+  const auto promise = resolver->Promise();
 
   mojom::blink::CacheQueryOptionsPtr mojo_options =
       mojom::blink::CacheQueryOptions::From(options);
@@ -1032,7 +1025,8 @@ ScriptPromise Cache::MatchAllImpl(ScriptState* script_state,
       std::move(fetch_api_request), std::move(mojo_options), trace_id,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, const CacheQueryOptions* options,
-             int64_t trace_id, Cache* _, ScriptPromiseResolver* resolver,
+             int64_t trace_id, Cache* _,
+             ScriptPromiseResolver<IDLSequence<Response>>* resolver,
              mojom::blink::MatchAllResultPtr result) {
             UMA_HISTOGRAM_LONG_TIMES(
                 "ServiceWorkerCache.Cache.Renderer.MatchAll",
@@ -1064,22 +1058,23 @@ ScriptPromise Cache::MatchAllImpl(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
-                                const String& method_name,
-                                const HeapVector<Member<Request>>& request_list,
-                                ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> Cache::AddAllImpl(
+    ScriptState* script_state,
+    const String& method_name,
+    const HeapVector<Member<Request>>& request_list,
+    ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW0("CacheStorage", "Cache::AddAllImpl",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
 
   if (request_list.empty())
-    return ScriptPromise::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
 
   // Validate all requests before starting to load or store any of them.
   for (wtf_size_t i = 0; i < request_list.size(); ++i) {
     ValidateRequestForPut(request_list[i], exception_state);
     if (exception_state.HadException())
-      return ScriptPromise();
+      return EmptyPromise();
   }
 
   auto* barrier_callback = MakeGarbageCollected<BarrierCallbackForPutResponse>(
@@ -1087,7 +1082,7 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
       exception_state.GetContext(), trace_id);
 
   // We must get the promise before any rejections can happen during loading.
-  ScriptPromise promise = barrier_callback->Promise();
+  auto promise = barrier_callback->Promise();
 
   // Begin loading each of the requests.
   for (wtf_size_t i = 0; i < request_list.size(); ++i) {
@@ -1121,13 +1116,13 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise Cache::DeleteImpl(ScriptState* script_state,
-                                const Request* request,
-                                const CacheQueryOptions* options,
-                                ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+ScriptPromise<IDLBoolean> Cache::DeleteImpl(ScriptState* script_state,
+                                            const Request* request,
+                                            const CacheQueryOptions* options,
+                                            ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
-  const ScriptPromise promise = resolver->Promise();
+  const auto promise = resolver->Promise();
 
   Vector<mojom::blink::BatchOperationPtr> batch_operations;
   batch_operations.push_back(mojom::blink::BatchOperation::New());
@@ -1155,7 +1150,8 @@ ScriptPromise Cache::DeleteImpl(ScriptState* script_state,
       std::move(batch_operations), trace_id,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, const CacheQueryOptions* options,
-             int64_t trace_id, Cache* _, ScriptPromiseResolver* resolver,
+             int64_t trace_id, Cache* _,
+             ScriptPromiseResolver<IDLBoolean>* resolver,
              mojom::blink::CacheStorageVerboseErrorPtr error) {
             UMA_HISTOGRAM_LONG_TIMES(
                 "ServiceWorkerCache.Cache.Renderer.DeleteOne",
@@ -1188,7 +1184,7 @@ ScriptPromise Cache::DeleteImpl(ScriptState* script_state,
   return promise;
 }
 
-void Cache::PutImpl(ScriptPromiseResolver* resolver,
+void Cache::PutImpl(ScriptPromiseResolver<IDLUndefined>* resolver,
                     const String& method_name,
                     const HeapVector<Member<Request>>& requests,
                     const HeapVector<Member<Response>>& responses,
@@ -1242,13 +1238,15 @@ void Cache::PutImpl(ScriptPromiseResolver* resolver,
   }
 }
 
-ScriptPromise Cache::KeysImpl(ScriptState* script_state,
-                              const Request* request,
-                              const CacheQueryOptions* options,
-                              ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  const ScriptPromise promise = resolver->Promise();
+ScriptPromise<IDLSequence<Request>> Cache::KeysImpl(
+    ScriptState* script_state,
+    const Request* request,
+    const CacheQueryOptions* options,
+    ExceptionState& exception_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<Request>>>(
+          script_state, exception_state.GetContext());
+  const auto promise = resolver->Promise();
 
   mojom::blink::CacheQueryOptionsPtr mojo_options =
       mojom::blink::CacheQueryOptions::From(options);
@@ -1265,7 +1263,7 @@ ScriptPromise Cache::KeysImpl(ScriptState* script_state,
 
   if (request && request->method() != http_names::kGET &&
       !options->ignoreMethod()) {
-    resolver->Resolve(HeapVector<Member<Response>>());
+    resolver->Resolve(HeapVector<Member<Request>>());
     return promise;
   }
 
@@ -1276,7 +1274,8 @@ ScriptPromise Cache::KeysImpl(ScriptState* script_state,
       std::move(fetch_api_request), std::move(mojo_options), trace_id,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, const CacheQueryOptions* options,
-             int64_t trace_id, Cache* _, ScriptPromiseResolver* resolver,
+             int64_t trace_id, Cache* _,
+             ScriptPromiseResolver<IDLSequence<Request>>* resolver,
              mojom::blink::CacheKeysResultPtr result) {
             UMA_HISTOGRAM_LONG_TIMES("ServiceWorkerCache.Cache.Renderer.Keys",
                                      base::TimeTicks::Now() - start_time);

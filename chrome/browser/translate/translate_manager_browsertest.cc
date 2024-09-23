@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/translate/core/browser/translate_manager.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_logging_settings.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/language/accept_languages_service_factory.h"
@@ -18,17 +21,20 @@
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/translate/core/browser/translate_browser_metrics.h"
 #include "components/translate/core/browser/translate_error_details.h"
-#include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/translate/core/common/translate_util.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -40,6 +46,7 @@ namespace {
 
 static const char kTestValidScript[] =
     "var google = {};"
+    "window.isTranslationRestored = false;"
     "google.translate = (function() {"
     "  return {"
     "    TranslateService: function() {"
@@ -48,6 +55,7 @@ static const char kTestValidScript[] =
     "          return true;"
     "        },"
     "        restore : function() {"
+    "          isTranslationRestored = true;"
     "          return;"
     "        },"
     "        getDetectedLanguage : function() {"
@@ -267,7 +275,7 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
     chrome_translate_client = GetChromeTranslateClient();
     WaitUntilLanguageDetermined(chrome_translate_client);
 
-    // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+    // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
     // language detection. All pages are detected as "fr".
     //
     // In the case of href translate, we don't actually care if the current
@@ -289,7 +297,7 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
     // Detect language on the new page
-    // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+    // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
     // language detection. All pages are currently detected as "fr" due to the
     // override.
     WaitUntilLanguageDetermined(chrome_translate_client);
@@ -321,7 +329,7 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitchASCII(
         switches::kTranslateScriptURL,
         embedded_test_server()->GetURL("/mock_translate_script.js").spec());
-    // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+    // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
     // language detection.
     // All pages will have language detected as "fr". These tests are around
     // the manager logic so the language detection behavior should be
@@ -349,7 +357,7 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
 };
 
 // Tests that language detection returns a response.
-// TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+// TODO(crbug.com/40200965): Migrate to better mechanism for testing around
 // language detection. Seeding the TFLite model can racy/flaky on browsertests
 // so we override the response.
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageLanguageDetection) {
@@ -372,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageLanguageDetection) {
 // override the HTML attribute. For all other languages, the HTML attribute
 // should be used.
 //
-// TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+// TODO(crbug.com/40200965): Migrate to better mechanism for testing around
 // language detection. All pages will return "fr" as the detected language.
 //
 // Disabled due to language detection always returning French. (See TODO)
@@ -453,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageTranslationSuccess) {
             language_state->translation_type());
 
   histograms.ExpectTotalCount("Translate.LanguageDetection.ContentLength", 1);
-  histograms.ExpectBucketCount("Translate.LanguageDetection.ContentLength", 148,
+  histograms.ExpectBucketCount("Translate.LanguageDetection.ContentLength", 149,
                                1);
   histograms.ExpectTotalCount("Translate.LanguageDeterminedDuration", 1);
 }
@@ -537,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
   WaitUntilLanguageDetermined(chrome_translate_client);
-  // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+  // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
   // language detection. All pages will return "fr" as the detected language.
   EXPECT_EQ("fr",
             chrome_translate_client->GetLanguageState().source_language());
@@ -552,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page.
-  // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+  // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
   // language detection. Note: this only tests that the source language was
   // whatever the page was before. The real test is that the href translate
   // update did not occur, tested by AutoTranslateTo() below and the histograms.
@@ -600,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateUnsupported) {
   ASSERT_TRUE(content::ExecJs(web_contents, click_link_js));
 
   // Detect language on the new page.
-  // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+  // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
   // language detection. Note: this only tests that the source language was
   // whatever the page was before. The real test is that the href translate
   // update did not occur, tested by AutoTranslateTo() below and the histograms.
@@ -633,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateConflict) {
                             ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
-  // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+  // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
   // language detection. All pages will return "fr" as the detected language.
   WaitUntilLanguageDetermined(chrome_translate_client);
   EXPECT_EQ("fr",
@@ -681,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateNoHrefLang) {
                             ui::PAGE_TRANSITION_TYPED));
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
-  // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+  // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
   // language detection. All pages will return "fr" as the detected language.
   WaitUntilLanguageDetermined(chrome_translate_client);
 
@@ -823,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageTranslationError) {
 
   // Open a new tab with a page in French and translate to French to force an
   // error.
-  // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+  // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
   // language detection. All pages will return "fr" as the detected language.
   ASSERT_TRUE(AddTabAtIndex(
       0, GURL(embedded_test_server()->GetURL("/french_page.html")),
@@ -1159,7 +1167,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerPrerenderBrowserTest,
   // Check that the translation service still works well.
   ResetObserver();
   chrome_translate_client = GetChromeTranslateClient();
-  // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
+  // TODO(crbug.com/40200965): Migrate to better mechanism for testing around
   // language detection.
   WaitUntilLanguageDetermined(chrome_translate_client);
   EXPECT_EQ("fr",
@@ -1174,6 +1182,157 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerPrerenderBrowserTest,
 
   // Check noisy data was filtered out.
   histograms.ExpectTotalCount("Translate.LanguageDeterminedDuration", 1);
+}
+
+class TranslateManagerBackForwardCacheBrowserTest
+    : public TranslateManagerBrowserTest {
+ public:
+  TranslateManagerBackForwardCacheBrowserTest() = default;
+  ~TranslateManagerBackForwardCacheBrowserTest() override = default;
+
+ protected:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    TranslateManagerBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SetupFeaturesAndParameters();
+    TranslateManagerBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  content::WebContents* web_contents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::RenderFrameHost* current_frame_host() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+
+  GURL GetURL(const std::string& host) {
+    return embedded_test_server()->GetURL(host, "/french_page.html");
+  }
+
+  void SetupFeaturesAndParameters() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting(
+            {// Entry to the cache can be slow during testing and cause
+             // flakiness.
+             ::features::kBackForwardCacheEntryTimeout}));
+
+    vmodule_switches_.InitWithSwitches("back_forward_cache_impl=1");
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  logging::ScopedVmoduleSwitches vmodule_switches_;
+};
+
+IN_PROC_BROWSER_TEST_F(TranslateManagerBackForwardCacheBrowserTest,
+                       RestorePageTranslatorAfterBackForwardCache) {
+  SetTranslateScript(kTestValidScript);
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("a.com")));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
+
+  WaitUntilLanguageDetermined(GetChromeTranslateClient());
+
+  EXPECT_EQ("fr",
+            GetChromeTranslateClient()->GetLanguageState().source_language());
+  ResetObserver();
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("b.com")));
+  content::RenderFrameHostWrapper rfh_b(current_frame_host());
+  WaitUntilLanguageDetermined(GetChromeTranslateClient());
+
+  // A is frozen in the BackForwardCache.
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  ResetObserver();
+
+  // 3) Navigate back.
+  ASSERT_TRUE(content::HistoryGoBack(web_contents()));
+  WaitUntilLanguageDetermined(GetChromeTranslateClient());
+  ResetObserver();
+
+  // A is restored, B is stored.
+  EXPECT_EQ(rfh_b->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Translate the page through TranslateManager.
+  TranslateManager* manager = GetChromeTranslateClient()->GetTranslateManager();
+
+  LanguageState* language_state = manager->GetLanguageState();
+  EXPECT_EQ(TranslationType::kUninitialized,
+            language_state->translation_type());
+
+  manager->TranslatePage(
+      GetChromeTranslateClient()->GetLanguageState().source_language(), "en",
+      true, TranslationType::kAutomaticTranslationByPref);
+
+  EXPECT_EQ(TranslationType::kAutomaticTranslationByPref,
+            language_state->translation_type());
+  WaitUntilPageTranslated();
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateManagerBackForwardCacheBrowserTest,
+                       RestoreOriginStateAfterCache) {
+  SetTranslateScript(kTestValidScript);
+
+  ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("a.com")));
+  content::RenderFrameHostWrapper rfh_a(current_frame_host());
+
+  ResetObserver();
+  chrome_translate_client = GetChromeTranslateClient();
+  WaitUntilLanguageDetermined(chrome_translate_client);
+
+  TranslateManager* manager = chrome_translate_client->GetTranslateManager();
+
+  manager->TranslatePage(
+      chrome_translate_client->GetLanguageState().source_language(), "en", true,
+      TranslationType::kAutomaticTranslationByPref);
+
+  WaitUntilPageTranslated();
+
+  {
+    // Intentionally check translated state directly in blink. Without any
+    // proxies.
+    ASSERT_EQ(true, content::EvalJs(rfh_a.get(), "cr.googleTranslate.finished",
+                                    content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                    ISOLATED_WORLD_ID_TRANSLATE));
+    ASSERT_EQ(0, content::EvalJs(rfh_a.get(), "cr.googleTranslate.errorCode",
+                                 content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                 ISOLATED_WORLD_ID_TRANSLATE));
+  }
+
+  ResetObserver();
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("b.com")));
+
+  // A is frozen in the BackForwardCache.
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  WaitUntilLanguageDetermined(GetChromeTranslateClient());
+
+  // Navigate back.
+  ResetObserver();
+  ASSERT_TRUE(content::HistoryGoBack(web_contents()));
+  WaitUntilLanguageDetermined(GetChromeTranslateClient());
+
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+
+  {
+    // Intentionally check restored state directly in blink. Without any
+    // proxies.
+    ASSERT_EQ(true, content::EvalJs(rfh_a.get(), "window.isTranslationRestored",
+                                    content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                    ISOLATED_WORLD_ID_TRANSLATE));
+    ASSERT_EQ(0, content::EvalJs(rfh_a.get(), "cr.googleTranslate.errorCode",
+                                 content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                 ISOLATED_WORLD_ID_TRANSLATE));
+  }
 }
 
 }  // namespace

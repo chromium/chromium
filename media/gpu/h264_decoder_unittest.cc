@@ -232,8 +232,7 @@ AcceleratedVideoDecoder::DecodeResult H264DecoderTest::Decode(
     auto input_file = GetTestDataFilePath(input_frame_files_.front());
     input_frame_files_.pop();
     CHECK(base::ReadFileToString(input_file, &bitstream_));
-    decoder_buffer_ = DecoderBuffer::CopyFrom(
-        reinterpret_cast<const uint8_t*>(bitstream_.data()), bitstream_.size());
+    decoder_buffer_ = DecoderBuffer::CopyFrom(base::as_byte_span(bitstream_));
     if (full_sample_encryption) {
       // We only use this in 2 tests, each use the same data where the offset to
       // the byte after the NALU type for the slice header is 669.
@@ -606,8 +605,7 @@ TEST_F(H264DecoderTest, SetEncryptedStream) {
               SubmitDecode(DecryptConfigMatches(decrypt_config.get())))
       .WillOnce(Return(H264Decoder::H264Accelerator::Status::kOk));
 
-  auto buffer = DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(bitstream.data()), bitstream.size());
+  auto buffer = DecoderBuffer::CopyFrom(base::as_byte_span(bitstream));
   ASSERT_NE(buffer.get(), nullptr);
   buffer->set_decrypt_config(std::move(decrypt_config));
   decoder_->SetStream(0, *buffer);

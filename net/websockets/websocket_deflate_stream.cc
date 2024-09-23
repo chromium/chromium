@@ -33,8 +33,8 @@ class NetLogWithSource;
 
 namespace {
 
-const int kWindowBits = 15;
-const size_t kChunkSize = 4 * 1024;
+constexpr int kWindowBits = 15;
+constexpr size_t kChunkSize = 4 * 1024;
 
 }  // namespace
 
@@ -204,7 +204,7 @@ void WebSocketDeflateStream::OnMessageStart(
       writing_state_ = WRITING_POSSIBLY_COMPRESSED_MESSAGE;
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 int WebSocketDeflateStream::AppendCompressedFrame(

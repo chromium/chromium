@@ -5,7 +5,8 @@
 #ifndef MEDIA_BASE_WATCH_TIME_KEYS_H_
 #define MEDIA_BASE_WATCH_TIME_KEYS_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "media/base/media_export.h"
 
 namespace media {
@@ -113,7 +114,7 @@ MEDIA_EXPORT extern const char kDiscardedWatchTimeAudioVideoEme[];
 
 // Returns the UMA key name associated with a given WatchTimeKey or an empty
 // string if they key should not be logged to UMA.
-MEDIA_EXPORT base::StringPiece ConvertWatchTimeKeyToStringForUma(
+MEDIA_EXPORT std::string_view ConvertWatchTimeKeyToStringForUma(
     WatchTimeKey key);
 
 }  // namespace media

@@ -18,7 +18,6 @@ using ::testing::Eq;
 using ::testing::Property;
 
 namespace autofill {
-
 namespace {
 
 const char kTestText[] = "abcd1234";
@@ -51,8 +50,6 @@ class MockNotifiedObject {
 
   MOCK_METHOD(void, NotifyAboutLoggingActivity, (), ());
 };
-
-}  // namespace
 
 class LogManagerTest : public testing::Test {
  protected:
@@ -205,4 +202,5 @@ TEST_F(LogManagerTest, InterleaveSuspendAndLoggingActivation_ActiveFirst) {
   EXPECT_FALSE(manager_->IsLoggingActive());
 }
 
+}  // namespace
 }  // namespace autofill

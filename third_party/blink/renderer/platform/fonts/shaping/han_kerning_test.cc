@@ -10,12 +10,9 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/font_features.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
-
-namespace {
 
 Font CreateNotoCjk() {
   return blink::test::CreateTestFont(
@@ -25,10 +22,35 @@ Font CreateNotoCjk() {
       16.0);
 }
 
-class HanKerningTest : public testing::Test, ScopedCSSTextSpacingTrimForTest {
- public:
-  explicit HanKerningTest() : ScopedCSSTextSpacingTrimForTest(true) {}
-};
+class HanKerningTest : public testing::Test {};
+
+TEST_F(HanKerningTest, MayApply) {
+  Font noto_cjk = CreateNotoCjk();
+  const SimpleFontData* noto_cjk_data = noto_cjk.PrimaryFont();
+  EXPECT_TRUE(noto_cjk_data);
+  scoped_refptr<LayoutLocale> ja =
+      LayoutLocale::CreateForTesting(AtomicString("ja"));
+  HanKerning::FontData ja_data(*noto_cjk_data, *ja, true);
+
+  for (UChar32 ch = 0; ch < kMaxCodepoint; ++ch) {
+    StringBuilder builder;
+    builder.Append(ch);
+    String text = builder.ToString();
+
+    for (wtf_size_t i = 0; i < text.length(); ++i) {
+      const HanKerning::CharType type =
+          HanKerning::GetCharType(text[i], ja_data);
+      if (type == HanKerning::CharType::kOpen ||
+          type == HanKerning::CharType::kOpenQuote ||
+          type == HanKerning::CharType::kClose ||
+          type == HanKerning::CharType::kCloseQuote) {
+        EXPECT_EQ(HanKerning::MayApply(text), true)
+            << String::Format("U+%06X", ch);
+        break;
+      }
+    }
+  }
+}
 
 TEST_F(HanKerningTest, FontDataHorizontal) {
   Font noto_cjk = CreateNotoCjk();
@@ -118,10 +140,9 @@ TEST_F(HanKerningTest, FontDataSizeError) {
     bool is_antialiased_text_enabled_;
   } enable_antialias_text;
 
-  FontFamily family;
-  family.SetFamily(AtomicString("Yu Gothic"), FontFamily::Type::kFamilyName);
   FontDescription font_description;
-  font_description.SetFamily(family);
+  font_description.SetFamily(
+      FontFamily(AtomicString("Yu Gothic"), FontFamily::Type::kFamilyName));
   const float specified_size = 16.f * 1.03f;
   font_description.SetSpecifiedSize(specified_size);
   const float computed_size = specified_size * 1.25f;
@@ -164,7 +185,5 @@ TEST_F(HanKerningTest, ResetFeatures) {
   }
   EXPECT_EQ(features.size(), 1u);
 }
-
-}  // namespace
 
 }  // namespace blink

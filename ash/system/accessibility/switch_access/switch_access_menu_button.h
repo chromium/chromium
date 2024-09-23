@@ -43,8 +43,6 @@ class SwitchAccessMenuButton : public views::Button {
 
   void OnButtonPressed();
 
-  std::string action_name_;
-
   // Owned by the views hierarchy.
   raw_ptr<views::ImageView> image_view_;
   raw_ptr<views::Label> label_;

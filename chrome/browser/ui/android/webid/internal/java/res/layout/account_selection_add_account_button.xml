@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.ui.widget.ButtonCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:descendantFocusability="blocksDescendants"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="@dimen/account_selection_sheet_horizontal_margin"
+    android:layout_marginStart="@dimen/account_selection_sheet_horizontal_margin"
+    android:layout_marginTop="@dimen/account_selection_button_mode_sheet_add_account_button_top_margin"
+    android:layout_marginBottom="@dimen/account_selection_sheet_button_margin"
+    android:ellipsize="end"
+    android:singleLine="true"
+    style="@style/TextButton"/>

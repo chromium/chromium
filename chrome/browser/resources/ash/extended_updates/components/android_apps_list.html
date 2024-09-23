@@ -1,0 +1,65 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<style>
+
+  #androidAppsListDescription {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-body-2-font);
+    margin: 8px 0;
+  }
+
+  #androidAppsList {
+    list-style-type: none;
+    margin: 8px 0 12px;
+    padding: 0;
+  }
+
+  .android-apps-list-item {
+    align-items: start;
+    color: var(--cros-sys-on_surface_variant);
+    display: flex;
+    flex-direction: row;
+    font: var(--cros-body-2-font);
+    margin-bottom: 8px;
+  }
+
+  .android-apps-list-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .android-apps-list-item-icon {
+    flex-shrink: 0;
+    height: 20px;
+    margin-right: 8px;
+    width: 20px;
+  }
+
+  .android-apps-list-item-title {
+    margin: 0;
+  }
+
+  #androidAppsListNote {
+    color: var(--cros-sys-secondary);
+    font: var(--cros-body-2-font);
+    margin: 0;
+  }
+
+</style>
+
+<template is="dom-if" if="[[hasApps(apps)]]">
+  <p id="androidAppsListDescription">[[getDescription()]]</p>
+  <ul id="androidAppsList">
+    <template is="dom-repeat" items="[[apps]]" as="app">
+      <li class="android-apps-list-item">
+        <iron-icon class="android-apps-list-item-icon"
+          src="[[iconUrlFromId(app)]]" aria-hidden="true">
+        </iron-icon>
+        <p class="android-apps-list-item-title">[[app.title]]</p>
+      </li>
+    </template>
+  </ul>
+  <p id="androidAppsListNote">$i18n{androidAppsListNote}</p>
+</template>

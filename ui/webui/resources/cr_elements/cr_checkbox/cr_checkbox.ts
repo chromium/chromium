@@ -25,19 +25,20 @@
  *  --cr-checkbox-size
  *  --cr-checkbox-unchecked-box-color
  */
-import '//resources/polymer/v3_0/paper-styles/color.js';
-import '../cr_shared_vars.css.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrRippleMixin} from '../cr_ripple/cr_ripple_mixin.js';
 
-import {getTemplate} from './cr_checkbox.html.js';
+import {getCss} from './cr_checkbox.css.js';
+import {getHtml} from './cr_checkbox.html.js';
 
-const CrCheckboxElementBase = PaperRippleMixin(PolymerElement);
+const CrCheckboxElementBase = CrRippleMixin(CrLitElement);
 
 export interface CrCheckboxElement {
   $: {
     checkbox: HTMLElement,
+    labelContainer: HTMLElement,
   };
 }
 
@@ -46,70 +47,67 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     return 'cr-checkbox';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       checked: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-        observer: 'checkedChanged_',
+        reflect: true,
         notify: true,
       },
 
       disabled: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-        observer: 'disabledChanged_',
+        reflect: true,
       },
 
-      ariaDescription: String,
-
-      ariaLabelOverride: String,
-
-      tabIndex: {
-        type: Number,
-        value: 0,
-        observer: 'onTabIndexChanged_',
-      },
+      ariaDescription: {type: String},
+      ariaLabelOverride: {type: String},
+      tabIndex: {type: Number},
     };
   }
 
-  checked: boolean;
-  disabled: boolean;
-  ariaDescription: string;
-  ariaLabelOverride: string;
-  override tabIndex: number;
+  checked: boolean = false;
+  disabled: boolean = false;
+  override ariaDescription: string|null = null;
+  ariaLabelOverride?: string;
+  override tabIndex: number = 0;
 
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _rippleContainer: Element;
-
-  override ready() {
-    super.ready();
-
-    // <if expr="chromeos_ash">
-    // TODO(b/309689294) Remove this once CrOS UIs migrate to Jellybean
-    // components and no longer use cr-elements.
-    // Force stamp the ripple element to enable CrOS focus styles. Ripple
-    // visibility is controlled by the event listeners below.
-    if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
-      this.getRipple();
-    }
-    // </if>
-
-    this.removeAttribute('unresolved');
+  override firstUpdated() {
     this.addEventListener('click', this.onClick_.bind(this));
     this.addEventListener('pointerup', this.hideRipple_.bind(this));
-    if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
-      this.addEventListener('pointerdown', this.showRipple_.bind(this));
-      this.addEventListener('pointerleave', this.hideRipple_.bind(this));
-    } else {
-      this.addEventListener('blur', this.hideRipple_.bind(this));
-      this.addEventListener('focus', this.showRipple_.bind(this));
+    this.$.labelContainer.addEventListener(
+        'pointerdown', this.showRipple_.bind(this));
+    this.$.labelContainer.addEventListener(
+        'pointerleave', this.hideRipple_.bind(this));
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('disabled')) {
+      const previousTabIndex = changedProperties.get('disabled');
+      // During initialization, don't alter tabIndex if not disabled. During
+      // subsequent 'disabled' changes, always update tabIndex.
+      if (previousTabIndex !== undefined || this.disabled) {
+        this.tabIndex = this.disabled ? -1 : 0;
+      }
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('tabIndex')) {
+      // :host shouldn't have a tabindex because it's set on #checkbox.
+      this.removeAttribute('tabindex');
     }
   }
 
@@ -121,19 +119,12 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     return this.$.checkbox;
   }
 
-  private checkedChanged_() {
-    this.$.checkbox.setAttribute(
-        'aria-checked', this.checked ? 'true' : 'false');
+  protected getAriaDisabled_(): string {
+    return this.disabled ? 'true' : 'false';
   }
 
-  private disabledChanged_(_current: boolean, previous: boolean) {
-    if (previous === undefined && !this.disabled) {
-      return;
-    }
-
-    this.tabIndex = this.disabled ? -1 : 0;
-    this.$.checkbox.setAttribute(
-        'aria-disabled', this.disabled ? 'true' : 'false');
+  protected getAriaChecked_(): string {
+    return this.checked ? 'true' : 'false';
   }
 
   private showRipple_() {
@@ -148,7 +139,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     this.getRipple().clear();
   }
 
-  private onClick_(e: Event) {
+  private async onClick_(e: Event) {
     if (this.disabled || (e.target as HTMLElement).tagName === 'A') {
       return;
     }
@@ -159,11 +150,11 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     e.preventDefault();
 
     this.checked = !this.checked;
-    this.dispatchEvent(new CustomEvent(
-        'change', {bubbles: true, composed: true, detail: this.checked}));
+    await this.updateComplete;
+    this.fire('change', this.checked);
   }
 
-  private onKeyDown_(e: KeyboardEvent) {
+  protected onKeyDown_(e: KeyboardEvent) {
     if (e.key !== ' ' && e.key !== 'Enter') {
       return;
     }
@@ -179,7 +170,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     }
   }
 
-  private onKeyUp_(e: KeyboardEvent) {
+  protected onKeyUp_(e: KeyboardEvent) {
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation();
@@ -190,19 +181,12 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     }
   }
 
-  private onTabIndexChanged_() {
-    // :host shouldn't have a tabindex because it's set on #checkbox.
-    this.removeAttribute('tabindex');
-  }
-
-  // Overridden from PaperRippleMixin
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _createRipple() {
-    this._rippleContainer = this.$.checkbox;
-    const ripple = super._createRipple();
-    ripple.id = 'ink';
+  // Overridden from CrRippleMixin
+  override createRipple() {
+    this.rippleContainer = this.$.checkbox;
+    const ripple = super.createRipple();
     ripple.setAttribute('recenters', '');
-    ripple.classList.add('circle', 'toggle-ink');
+    ripple.classList.add('circle');
     return ripple;
   }
 }

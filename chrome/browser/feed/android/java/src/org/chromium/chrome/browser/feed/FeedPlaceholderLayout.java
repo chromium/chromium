@@ -25,12 +25,8 @@ import android.widget.LinearLayout;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
-import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,14 +37,6 @@ public class FeedPlaceholderLayout extends LinearLayout {
 
     /** Command line flag to allow rendering tests to disable animation. */
     public static final String DISABLE_ANIMATION_SWITCH = "disable-feed-placeholder-animation";
-
-    public static final String ENABLE_INSTANT_START_ANIMATION_PARAM =
-            "enable-animation-on-instant-start";
-    public static final BooleanCachedFieldTrialParameter ENABLE_INSTANT_START_ANIMATION =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.FEED_LOADING_PLACEHOLDER,
-                    ENABLE_INSTANT_START_ANIMATION_PARAM,
-                    false);
 
     private static final int CARD_MARGIN_DP = 12;
     private static final int CARD_TOP_PADDING_DP = 15;
@@ -87,7 +75,6 @@ public class FeedPlaceholderLayout extends LinearLayout {
     private AnimatorSet mAllAnimations = new AnimatorSet();
     private final AnimatorSet mFadeInAndMoveUp = new AnimatorSet();
     private final AnimatorSet mFadeBounce = new AnimatorSet();
-    private boolean mInstantStart;
 
     public FeedPlaceholderLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -100,7 +87,6 @@ public class FeedPlaceholderLayout extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mUiConfig = new UiConfig(this);
-        mInstantStart = !FeatureList.isNativeInitialized();
         setPlaceholders();
         mLayoutInflationCompleteMs = SystemClock.elapsedRealtime();
     }
@@ -140,9 +126,6 @@ public class FeedPlaceholderLayout extends LinearLayout {
             Log.d(TAG, "Canceling animation.");
             mAllAnimations.cancel();
         } else if (!mAllAnimations.isStarted() && visible) {
-            if (!shouldAnimatePlaceholder()) {
-                return;
-            }
             Log.d(TAG, "Restarting animation.");
             mAllAnimations.start();
         }
@@ -160,10 +143,6 @@ public class FeedPlaceholderLayout extends LinearLayout {
     }
 
     private void setPlaceholders() {
-        // If showing this layout for Instant Start, add some padding to imitate the eventual width
-        // of the feed.
-        if (mInstantStart) setPadding();
-
         LinearLayout cardsParentView = findViewById(R.id.placeholders_layout);
         cardsParentView.removeAllViews();
 
@@ -191,11 +170,7 @@ public class FeedPlaceholderLayout extends LinearLayout {
         mFadeBounce.playTogether(mFadeBounceAnimators);
 
         // Put animations in order.
-        if (shouldFadeIn()) {
-            mAllAnimations.play(mFadeInAndMoveUp).before(mFadeBounce);
-        } else if (shouldAnimatePlaceholder()) {
-            mAllAnimations.playSequentially(mFadeBounce);
-        }
+        mAllAnimations.play(mFadeInAndMoveUp).before(mFadeBounce);
     }
 
     private int setPlaceholders(
@@ -225,8 +200,7 @@ public class FeedPlaceholderLayout extends LinearLayout {
     }
 
     private View animate(View view, int fadeStartDelayMs) {
-        if (CommandLine.getInstance().hasSwitch(DISABLE_ANIMATION_SWITCH)
-                || !shouldAnimatePlaceholder()) {
+        if (CommandLine.getInstance().hasSwitch(DISABLE_ANIMATION_SWITCH)) {
             return view;
         }
 
@@ -374,41 +348,8 @@ public class FeedPlaceholderLayout extends LinearLayout {
                         TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
     }
 
-    /**
-     * Make the padding of placeholder consistent with that of native articles recyclerview which
-     * is resized by {@link ViewResizer} in {@link FeedSurfaceCoordinator}
-     */
-    private void setPadding() {
-        int defaultPadding =
-                mResources.getDimensionPixelSize(R.dimen.content_suggestions_card_modern_margin);
-        int widePadding = mResources.getDimensionPixelSize(R.dimen.ntp_wide_card_lateral_margins);
-
-        ViewResizer.createAndAttach(this, mUiConfig, defaultPadding, widePadding);
-    }
-
     public long getLayoutInflationCompleteMs() {
         return mLayoutInflationCompleteMs;
-    }
-
-    private static boolean isFeatureEnabled() {
-        // If the feature flag is disabled, use the old behavior: Instant Start shows the static
-        // placeholder, and the feed shouldn't show this placeholder view at all.
-        return ChromeFeatureList.sFeedLoadingPlaceholder.isEnabled();
-    }
-
-    private static boolean isInstantStartAnimationEnabled() {
-        return ENABLE_INSTANT_START_ANIMATION.getValue();
-    }
-
-    private boolean shouldAnimatePlaceholder() {
-        // Always animate when showing on the feed. If showing on Instant Start, only animate if the
-        // flags are true.
-        return !mInstantStart
-                || (mInstantStart && isFeatureEnabled() && isInstantStartAnimationEnabled());
-    }
-
-    private boolean shouldFadeIn() {
-        return !mInstantStart;
     }
 
     void setAnimatorSetForTesting(AnimatorSet animatorSet) {

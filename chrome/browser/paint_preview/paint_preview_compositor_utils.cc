@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/paint_preview/android/jni_headers/PaintPreviewCompositorUtils_jni.h"
 #include "components/paint_preview/browser/warm_compositor.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/paint_preview/android/jni_headers/PaintPreviewCompositorUtils_jni.h"
 
 namespace paint_preview {
 

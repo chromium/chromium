@@ -4,6 +4,7 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -32,7 +33,7 @@ class PrivacySandboxDialogViewInteractiveUiTestM1
                                {}},
                               {privacy_sandbox::kPrivacySandboxSettings4,
                                {{"consent-required", "true"}}}},
-        /*disabled_features=*/{});
+        {});
   }
 
  private:
@@ -72,18 +73,22 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewInteractiveUiTestM1,
   auto* privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
   privacy_sandbox_service->PromptActionOccurred(
-      PrivacySandboxService::PromptAction::kConsentShown);
+      PrivacySandboxService::PromptAction::kConsentShown,
+      PrivacySandboxService::SurfaceType::kDesktop);
   privacy_sandbox_service->PromptActionOccurred(
-      PrivacySandboxService::PromptAction::kConsentAccepted);
+      PrivacySandboxService::PromptAction::kConsentAccepted,
+      PrivacySandboxService::SurfaceType::kDesktop);
   privacy_sandbox_service->PromptActionOccurred(
-      PrivacySandboxService::PromptAction::kConsentDeclined);
+      PrivacySandboxService::PromptAction::kConsentDeclined,
+      PrivacySandboxService::SurfaceType::kDesktop);
 
   EXPECT_FALSE(dialog1->IsClosed());
   EXPECT_FALSE(dialog2->IsClosed());
 
   // While completing the notice step, should close all dialogs
   privacy_sandbox_service->PromptActionOccurred(
-      PrivacySandboxService::PromptAction::kNoticeAcknowledge);
+      PrivacySandboxService::PromptAction::kNoticeAcknowledge,
+      PrivacySandboxService::SurfaceType::kDesktop);
   EXPECT_TRUE(dialog1->IsClosed());
   EXPECT_TRUE(dialog2->IsClosed());
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FOLLOW_FOLLOW_SERVICE_OBSERVER_H_
-#define IOS_CHROME_BROWSER_FOLLOW_FOLLOW_SERVICE_OBSERVER_H_
+#ifndef IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_SERVICE_OBSERVER_H_
+#define IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_SERVICE_OBSERVER_H_
 
 #include "base/observer_list_types.h"
 #include "ios/chrome/browser/follow/model/followed_web_site.h"
@@ -28,4 +28,4 @@ class FollowServiceObserver : public base::CheckedObserver {
   virtual void OnFollowedWebSitesLoaded() = 0;
 };
 
-#endif  // IOS_CHROME_BROWSER_FOLLOW_FOLLOW_SERVICE_OBSERVER_H_
+#endif  // IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_SERVICE_OBSERVER_H_

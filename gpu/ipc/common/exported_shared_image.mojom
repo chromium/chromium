@@ -1,0 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gpu.mojom;
+
+import "gpu/ipc/common/mailbox.mojom";
+import "gpu/ipc/common/shared_image_metadata.mojom";
+import "gpu/ipc/common/sync_token.mojom";
+
+// gpu::ExportedSharedImage
+struct ExportedSharedImage {
+  gpu.mojom.Mailbox mailbox;
+  gpu.mojom.SharedImageMetadata metadata;
+  gpu.mojom.SyncToken creation_sync_token;
+
+  // Necessary to allow the ClientSharedImage that is created from this
+  // ExportedSharedImage to use the correct GL texture target.
+  uint32 texture_target;
+};

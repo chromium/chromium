@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
@@ -31,14 +32,14 @@ std::optional<std::string> HashFile(const base::FilePath& file_path) {
       crypto::SecureHash::Create(crypto::SecureHash::Algorithm::SHA256);
   std::vector<char> buffer(base::GetPageSize());
 
-  int bytes_read = 0;
+  std::optional<size_t> bytes_read;
   do {
-    bytes_read = file.ReadAtCurrentPos(buffer.data(), buffer.size());
-    if (bytes_read == -1) {
+    bytes_read = file.ReadAtCurrentPos(base::as_writable_byte_span(buffer));
+    if (!bytes_read.has_value()) {
       return std::nullopt;
     }
-    secure_hash->Update(buffer.data(), bytes_read);
-  } while (bytes_read > 0);
+    secure_hash->Update(buffer.data(), bytes_read.value());
+  } while (bytes_read.value() > 0);
 
   std::string hash(crypto::kSHA256Length, 0);
   secure_hash->Finish(std::data(hash), hash.size());

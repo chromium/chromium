@@ -15,24 +15,15 @@ enum SingleplanarFormat {
   RGB_565,
   BGR_565,
   ETC1,
-  RED_8,
+  R_8,
   RG_88,
   LUMINANCE_F16,
   RGBA_F16,
-  R16_EXT,
-  RG16_EXT,
+  R_16,
+  RG_1616,
   RGBX_8888,
   BGRX_8888,
-  RGBX_1010102,
-  BGRX_1010102,
+  RGBA_1010102,
+  BGRA_1010102,
   R_F16,
-
-  // Legacy multiplanar formats (used before Multiplanar SharedImage was
-  // introduced).
-  // TODO(crbug.com/1366495): Remove these once all clients are converted to
-  // use MultiplanarSharedImage for this use case.
-  YV12_LEGACY,
-  NV12_LEGACY,
-  NV12A_LEGACY,
-  P010_LEGACY,
 };

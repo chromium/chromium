@@ -12,10 +12,8 @@
 
 #include "base/component_export.h"
 #include "base/debug/crash_logging.h"
-#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
-#include "build/buildflag.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/base/request_priority.h"
@@ -23,8 +21,8 @@
 #include "net/filter/source_stream.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log_source.h"
+#include "net/storage_access_api/status.h"
 #include "net/url_request/referrer_policy.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
@@ -63,6 +61,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     // TODO(altimin): Make this move-only to avoid cloning mojo interfaces.
     TrustedParams(const TrustedParams& params);
     TrustedParams& operator=(const TrustedParams& other);
+    TrustedParams(TrustedParams&& other);
+    TrustedParams& operator=(TrustedParams&& other);
 
     bool EqualsForTesting(const TrustedParams& other) const;
 
@@ -70,6 +70,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     bool disable_secure_dns = false;
     bool has_user_activation = false;
     bool allow_cookies_from_browser = false;
+    bool include_request_cookies_with_response = false;
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer;
     mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer;
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
@@ -113,12 +114,12 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     int32_t render_process_id = -1;
   };
 
-#if BUILDFLAG(IS_ANDROID)
-  explicit ResourceRequest(const base::Location& = base::Location::Current());
-#else
   ResourceRequest();
-#endif
   ResourceRequest(const ResourceRequest& request);
+  ResourceRequest& operator=(const ResourceRequest& other);
+  ResourceRequest(ResourceRequest&& other);
+  ResourceRequest& operator=(ResourceRequest&& other);
+
   ~ResourceRequest();
 
   bool EqualsForTesting(const ResourceRequest& request) const;
@@ -136,7 +137,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // consult the doc comment for |request_initiator| in url_request.mojom.
   std::optional<url::Origin> request_initiator;
 
-  // TODO(https://crbug.com/1098410): Remove the `isolated_world_origin` field
+  // TODO(crbug.com/40137011): Remove the `isolated_world_origin` field
   // once Chrome Platform Apps are gone.
   std::optional<url::Origin> isolated_world_origin;
 
@@ -158,7 +159,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
       mojom::CorsPreflightPolicy::kConsiderPreflight;
   bool originated_from_service_worker = false;
   bool skip_service_worker = false;
-  bool corb_detachable = false;
   // `kNoCors` mode is the default request mode for legacy reasons, however this
   // mode is highly discouraged for new requests made on the web platform;
   // please consider using another mode like `kCors` instead, and only use
@@ -169,6 +169,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
       mojom::IPAddressSpace::kUnknown;
   mojom::CredentialsMode credentials_mode = mojom::CredentialsMode::kInclude;
   mojom::RedirectMode redirect_mode = mojom::RedirectMode::kFollow;
+  // Exposed as Request.integrity in Service Workers
   std::string fetch_integrity;
   mojom::RequestDestination destination = mojom::RequestDestination::kEmpty;
   mojom::RequestDestination original_destination =
@@ -212,20 +213,16 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   std::optional<net::NetLogSource> net_log_reference_info;
   mojom::IPAddressSpace target_ip_address_space =
       mojom::IPAddressSpace::kUnknown;
-  bool has_storage_access = false;
+  net::StorageAccessApiStatus storage_access_api_status =
+      net::StorageAccessApiStatus::kNone;
   network::mojom::AttributionSupport attribution_reporting_support =
-      network::mojom::AttributionSupport::kWeb;
+      network::mojom::AttributionSupport::kUnset;
   mojom::AttributionReportingEligibility attribution_reporting_eligibility =
       mojom::AttributionReportingEligibility::kUnset;
-  network::AttributionReportingRuntimeFeatures
-      attribution_reporting_runtime_features;
   bool shared_dictionary_writer_enabled = false;
   std::optional<base::UnguessableToken> attribution_reporting_src_token;
   bool is_ad_tagged = false;
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(https://crbug.com/1456586): Remove this once the issue is fixed.
-  std::string created_location;
-#endif
+  std::optional<base::UnguessableToken> prefetch_token;
 };
 
 // This does not accept |kDefault| referrer policy.

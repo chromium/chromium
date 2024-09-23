@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "cpu", "os", "reclient")
+load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -22,9 +22,10 @@ try_.defaults.set(
     # Max. pending time for builds. CQ considers builds pending >2h as timed
     # out: http://shortn/_8PaHsdYmlq. Keep this in sync.
     expiration_timeout = 2 * time.hour,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
+    siso_enabled = True,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
     subproject_list_view = "luci.chromium.try",
     task_template_canary_percentage = 5,
 )
@@ -53,7 +54,7 @@ swangle_linux_builder(
     mirrors = [
         "ci/linux-swangle-chromium-x64",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -72,7 +73,7 @@ swangle_linux_builder(
     mirrors = [
         "ci/linux-swangle-chromium-x64-exp",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -90,7 +91,7 @@ swangle_linux_builder(
     mirrors = [
         "ci/linux-swangle-tot-swiftshader-x64",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = "ci/linux-swangle-tot-swiftshader-x64",
@@ -103,7 +104,7 @@ swangle_linux_builder(
     mirrors = [
         "ci/linux-swangle-x64",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = "ci/linux-swangle-x64",
@@ -116,7 +117,7 @@ swangle_linux_builder(
     mirrors = [
         "ci/linux-swangle-x64-exp",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = "ci/linux-swangle-x64-exp",
@@ -129,7 +130,7 @@ swangle_mac_builder(
     mirrors = [
         "ci/mac-swangle-chromium-x64",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -148,7 +149,7 @@ swangle_windows_builder(
     mirrors = [
         "ci/win-swangle-chromium-x86",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -166,7 +167,7 @@ swangle_windows_builder(
     mirrors = [
         "ci/win-swangle-tot-swiftshader-x64",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = "ci/win-swangle-tot-swiftshader-x64",
@@ -178,7 +179,7 @@ swangle_windows_builder(
     mirrors = [
         "ci/win-swangle-tot-swiftshader-x86",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
@@ -196,7 +197,7 @@ swangle_windows_builder(
     mirrors = [
         "ci/win-swangle-x64",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = "ci/win-swangle-x64",
@@ -209,7 +210,7 @@ swangle_windows_builder(
     mirrors = [
         "ci/win-swangle-x86",
     ],
-    try_settings = builder_config.try_settings(
+    builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
     gn_args = gn_args.config(

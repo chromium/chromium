@@ -4,17 +4,161 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("mojo_bindings") {
-  sources = [ "indexed_db_internals.mojom" ]
-  webui_module_path = "/"
+source_set("indexed_db") {
+  public = [ "indexed_db_control_wrapper.h" ]
 
-  public_deps = [
-    "//components/services/storage/privileged/mojom:mojom_bucket",
-    "//services/network/public/mojom:mojom_schemeful_site",
+  sources = [
+    "file_path_util.cc",
+    "file_path_util.h",
+    "file_stream_reader_to_data_pipe.cc",
+    "file_stream_reader_to_data_pipe.h",
+    "indexed_db_context_impl.cc",
+    "indexed_db_context_impl.h",
+    "indexed_db_control_wrapper.cc",
+    "indexed_db_data_format_version.cc",
+    "indexed_db_data_format_version.h",
+    "indexed_db_data_loss_info.h",
+    "indexed_db_database_error.cc",
+    "indexed_db_database_error.h",
+    "indexed_db_external_object.cc",
+    "indexed_db_external_object.h",
+    "indexed_db_external_object_storage.cc",
+    "indexed_db_external_object_storage.h",
+    "indexed_db_leveldb_coding.cc",
+    "indexed_db_leveldb_coding.h",
+    "indexed_db_leveldb_operations.cc",
+    "indexed_db_leveldb_operations.h",
+    "indexed_db_reporting.cc",
+    "indexed_db_reporting.h",
+    "indexed_db_return_value.cc",
+    "indexed_db_return_value.h",
+    "indexed_db_value.cc",
+    "indexed_db_value.h",
+    "instance/active_blob_registry.cc",
+    "instance/active_blob_registry.h",
+    "instance/backing_store.cc",
+    "instance/backing_store.h",
+    "instance/backing_store_pre_close_task_queue.cc",
+    "instance/backing_store_pre_close_task_queue.h",
+    "instance/bucket_context.cc",
+    "instance/bucket_context.h",
+    "instance/bucket_context_handle.cc",
+    "instance/bucket_context_handle.h",
+    "instance/callback_helpers.h",
+    "instance/connection.cc",
+    "instance/connection.h",
+    "instance/connection_coordinator.cc",
+    "instance/connection_coordinator.h",
+    "instance/cursor.cc",
+    "instance/cursor.h",
+    "instance/database.cc",
+    "instance/database.h",
+    "instance/database_callbacks.cc",
+    "instance/database_callbacks.h",
+    "instance/factory_client.cc",
+    "instance/factory_client.h",
+    "instance/index_writer.cc",
+    "instance/index_writer.h",
+    "instance/leveldb_compaction_task.cc",
+    "instance/leveldb_compaction_task.h",
+    "instance/leveldb_tombstone_sweeper.cc",
+    "instance/leveldb_tombstone_sweeper.h",
+    "instance/lock_request_data.cc",
+    "instance/lock_request_data.h",
+    "instance/pending_connection.cc",
+    "instance/pending_connection.h",
+    "instance/transaction.cc",
+    "instance/transaction.h",
+    "list_set.h",
+    "mock_browsertest_indexed_db_class_factory.cc",
+    "mock_browsertest_indexed_db_class_factory.h",
   ]
 
-  disable_variants = true
+  deps = [
+    "//base",
+    "//components/services/storage",
+    "//components/services/storage/public/cpp",
+    "//components/services/storage/public/mojom",
+    "//content:export",
+    "//content/public/common:common_sources",
+    "//net",
+    "//storage/browser",
+    "//third_party/blink/public/common",
+    "//third_party/leveldatabase",
+    "//third_party/zlib/google:zip",
+    "//v8:v8_version",
+  ]
 
-  component_output_prefix = "indexed_db_interfaces"
-  component_macro_prefix = "INDEXED_DB_INTERFACES"
+  configs += [ "//content:content_implementation" ]
+
+  friend = [
+    ":unit_tests",
+    "//content/test/*",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  # See content_unittests for justification.
+  if (is_component_build) {
+    check_includes = false
+  }
+
+  sources = [
+    "indexed_db_context_unittest.cc",
+    "indexed_db_leveldb_coding_unittest.cc",
+    "indexed_db_quota_client_unittest.cc",
+    "indexed_db_unittest.cc",
+    "instance/active_blob_registry_unittest.cc",
+    "instance/backing_store_pre_close_task_queue_unittest.cc",
+    "instance/backing_store_unittest.cc",
+    "instance/bucket_context_unittest.cc",
+    "instance/database_unittest.cc",
+    "instance/fake_transaction.cc",
+    "instance/fake_transaction.h",
+    "instance/leveldb_cleanup_on_io_error_unittest.cc",
+    "instance/leveldb_tombstone_sweeper_unittest.cc",
+    "instance/mock_factory_client.cc",
+    "instance/mock_factory_client.h",
+    "instance/transaction_unittest.cc",
+    "list_set_unittest.cc",
+    "mock_mojo_indexed_db_database_callbacks.cc",
+    "mock_mojo_indexed_db_database_callbacks.h",
+    "mock_mojo_indexed_db_factory_client.cc",
+    "mock_mojo_indexed_db_factory_client.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/services/storage",
+    "//components/services/storage:test_support",
+    "//components/services/storage/privileged/mojom",
+    "//components/services/storage/public/cpp",
+    "//components/services/storage/public/mojom",
+    "//content/public/common",
+
+    # This dependency is here to satisfy `gn check` given this target's includes
+    # of :indexed_db headers. This has to be done through //content/browser to
+    # avoid doubling symbols.
+    "//content/browser:for_content_tests",
+    "//storage/browser",
+    "//storage/browser:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common",
+    "//third_party/leveldatabase",
+  ]
+}
+
+mojom("internals_mojo_bindings") {
+  sources = [ "indexed_db_internals.mojom" ]
+  public_deps = [
+    "//components/services/storage/privileged/mojom",
+    "//components/services/storage/public/mojom",
+    "//mojo/public/mojom/base",
+  ]
+  webui_module_path = "/"
+  generate_java = false
 }

@@ -26,9 +26,6 @@ class TestContentAutofillClient
   std::unique_ptr<AutofillManager> CreateManager(
       base::PassKey<ContentAutofillDriver> pass_key,
       ContentAutofillDriver& driver) override;
-  void InitAgent(
-      base::PassKey<ContentAutofillDriverFactory> pass_key,
-      const mojo::AssociatedRemote<mojom::AutofillAgent>& agent) override;
 };
 
 }  // namespace autofill

@@ -1,0 +1,91 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Allowlist of classes that can be shadowed (by @Shadow).
+# Please do not add to this list. See:
+# https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#testing
+
+# TODO(https://crbug.com/341267427): Reduce this list.
++com.google.android.apps.chrome.rlz.RevenueStatsInternal
++org.chromium.base.ApplicationStatus
++org.chromium.base.PathUtils
++org.chromium.base.SysUtils
++org.chromium.base.task.AsyncTask
++org.chromium.base.task.PostTask
++org.chromium.base.version_info.VersionInfo
++org.chromium.chrome.browser.content.WebContentsFactory
++org.chromium.chrome.browser.contextmenu.ContextMenuHeaderCoordinator
++org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController
++org.chromium.chrome.browser.device.DeviceConditions
++org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate$ClipDataItemBuilder
++org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl
++org.chromium.chrome.browser.firstrun.FirstRunUtils
++org.chromium.chrome.browser.homepage.HomepagePolicyManager
++org.chromium.chrome.browser.incognito.IncognitoUtils
++org.chromium.chrome.browser.init.ChromeBrowserInitializer
++org.chromium.chrome.browser.lens.LensController
++org.chromium.chrome.browser.lens.LensPolicyUtils
++org.chromium.chrome.browser.metrics.UmaSessionStats
++org.chromium.chrome.browser.multiwindow.MultiInstanceManagerApi31
++org.chromium.chrome.browser.night_mode.WebContentsDarkModeController
++org.chromium.chrome.browser.omnibox.geo.GeolocationHeader
++org.chromium.chrome.browser.omnibox.geo.GeolocationTracker
++org.chromium.chrome.browser.omnibox.geo.PlatformNetworksManager
++org.chromium.chrome.browser.omnibox.geo.VisibleNetworksTracker
++org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider
++org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager
++org.chromium.chrome.browser.omnibox.UrlBarData
++org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil
++org.chromium.chrome.browser.partnercustomizations.CustomizationProviderDelegateUpstreamImpl
++org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations
++org.chromium.chrome.browser.profiles.Profile
++org.chromium.chrome.browser.profiles.ProfileManager
++org.chromium.chrome.browser.profiles.ProfileManagerUtils
++org.chromium.chrome.browser.rlz.RevenueStats
++org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory
++org.chromium.chrome.browser.searchwidget.SearchActivityUtils
++org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetController
++org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator
++org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator
++org.chromium.chrome.browser.share.qrcode.QrCodeDialog
++org.chromium.chrome.browser.share.ShareHelper
++org.chromium.chrome.browser.share.ShareHelper$ChooserActionHelper
++org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator
++org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder
++org.chromium.chrome.browser.tab.SadTab
++org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper
++org.chromium.chrome.browser.tab.TabBuilder
++org.chromium.chrome.browser.tab.TabUtils
++org.chromium.chrome.browser.tab.TrustedCdn
++org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController$Delegate
++org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory
++org.chromium.chrome.browser.ui.hats.MessageSurveyUiDelegate
++org.chromium.chrome.browser.util.AndroidTaskUtils
++org.chromium.chrome.browser.webapps.WebApkShareTargetUtil
++org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider
++org.chromium.components.browser_ui.share.ShareImageFileUtils
++org.chromium.components.browser_ui.styles.SemanticColorUtils
++org.chromium.components.browser_ui.widget.ContextMenuDialog
++org.chromium.components.embedder_support.util.UrlUtilities
++org.chromium.components.media_router.caf.CastMediaSource
++org.chromium.components.stylus_handwriting.DirectWritingSettingsHelper
++org.chromium.components.url_formatter.UrlFormatter
++org.chromium.components.user_prefs.UserPrefs
++org.chromium.content_public.browser.WebContentsStatics
++org.chromium.gms.ChromiumPlayServicesAvailability
++org.chromium.ui.InsetsRectProvider$BoundingRectHelper
++org.chromium.ui.base.MimeTypeUtils
++org.chromium.ui.display.DisplayAndroid
++org.chromium.ui.display.DisplayAndroidManager
++org.chromium.ui.display.DisplayUtil
++org.chromium.ui.resources.dynamics.CaptureUtils
++org.chromium.ui.util.ColorUtils
++org.chromium.ui.util.WindowInsetsUtils
++org.chromium.ui.widget.AnchoredPopupWindow
++org.chromium.url.Origin
++org.chromium.webapk.shell_apk.LaunchHostBrowserSelector
+
+# Disallow new shadows of chrome-authored code.
+-com.google.android.apps.chrome
+-org.chromium

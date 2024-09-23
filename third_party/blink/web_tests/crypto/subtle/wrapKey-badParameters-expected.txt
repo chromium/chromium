@@ -5,7 +5,7 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 error is: TypeError: Failed to execute 'wrapKey' on 'SubtleCrypto': parameter 2 is not of type 'CryptoKey'.
 error is: TypeError: Failed to execute 'wrapKey' on 'SubtleCrypto': parameter 3 is not of type 'CryptoKey'.
 error is: NotSupportedError: Failed to execute 'wrapKey' on 'SubtleCrypto': Algorithm: Unrecognized name
-error is: TypeError: Invalid keyFormat argument
+error is: TypeError: Failed to execute 'wrapKey' on 'SubtleCrypto': Invalid keyFormat argument
 error is: NotSupportedError: Failed to execute 'wrapKey' on 'SubtleCrypto': SHA-1: Unsupported operation: wrapKey
 error is: InvalidAccessError: key.algorithm does not match that of operation
 PASS successfullyParsed is true

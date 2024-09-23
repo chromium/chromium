@@ -4,22 +4,34 @@
 
 source_set("model") {
   sources = [
-    "geolocation_logger.h",
-    "geolocation_logger.mm",
+    "geolocation_manager.h",
+    "geolocation_manager.mm",
   ]
   deps = [
+    ":util",
     "//base",
-    "//components/google/core/common",
-    "//components/prefs",
-    "//components/strings",
-    "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/tabs/model",
-    "//ios/web/public",
-    "//ios/web/public/navigation",
-    "//ui/base",
-    "//url",
+  ]
+  frameworks = [ "CoreLocation.framework" ]
+}
+
+source_set("util") {
+  sources = [
+    "authorization_status_cache_util.h",
+    "authorization_status_cache_util.mm",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "CoreLocation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "geolocation_manager_unittest.mm" ]
+  deps = [
+    ":model",
+    ":util",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
   ]
   frameworks = [ "CoreLocation.framework" ]
 }

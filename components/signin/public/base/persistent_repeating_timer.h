@@ -7,14 +7,18 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/timer/wall_clock_timer.h"
 
 class PrefService;
 
 namespace signin {
+
+BASE_DECLARE_FEATURE(kPersistentRepeaterTimerUseWallClock);
 
 // This class fires a task repeatedly, across application restarts. The timer
 // stores the date of the last invocation in a preference, which is persisted
@@ -22,10 +26,15 @@ namespace signin {
 class PersistentRepeatingTimer {
  public:
   // The timer is not started at creation.
+  // `prefs` must not be null.
+  // `clock` and `tick_clock` may be null, in which case the default clocks will
+  // be used. (They're injectable for testing purposes.)
   PersistentRepeatingTimer(PrefService* prefs,
                            const char* timer_last_update_pref_name,
                            base::TimeDelta delay,
-                           base::RepeatingClosure task);
+                           base::RepeatingClosure task,
+                           const base::Clock* clock = nullptr,
+                           const base::TickClock* tick_clock = nullptr);
 
   ~PersistentRepeatingTimer();
 
@@ -42,12 +51,15 @@ class PersistentRepeatingTimer {
   // Called when |timer_| fires.
   void OnTimerFired();
 
-  raw_ptr<PrefService> prefs_;
-  std::string last_fired_pref_name_;
-  base::TimeDelta delay_;
+  const raw_ref<PrefService> prefs_;
+  const std::string last_fired_pref_name_;
+  const base::TimeDelta delay_;
   base::RepeatingClosure user_task_;
 
-  base::RetainingOneShotTimer timer_;
+  const raw_ref<const base::Clock> clock_;
+
+  base::WallClockTimer wall_timer_;
+  base::OneShotTimer tick_timer_;
 };
 
 }  // namespace signin

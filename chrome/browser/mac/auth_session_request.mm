@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/mac/auth_session_request.h"
 
 #import <AuthenticationServices/AuthenticationServices.h>
@@ -10,6 +15,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -193,11 +199,8 @@ std::unique_ptr<content::NavigationThrottle> AuthSessionRequest::CreateThrottle(
       break;
   }
 
-  // base::Unretained is safe because throttles are owned by the
-  // NavigationRequest, which won't outlive the WebContents, whose lifetime this
-  // is tied to.
   auto scheme_found = base::BindOnce(&AuthSessionRequest::SchemeWasNavigatedTo,
-                                     base::Unretained(this));
+                                     weak_factory_.GetWeakPtr());
 
   return std::make_unique<AuthNavigationThrottle>(handle, scheme_,
                                                   std::move(scheme_found));

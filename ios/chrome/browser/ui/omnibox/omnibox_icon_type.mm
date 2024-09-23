@@ -10,18 +10,18 @@
 NSString* GetLocationBarSecuritySymbolName(
     LocationBarSecurityIconType iconType) {
   switch (iconType) {
-    case NONE:
+    case LocationBarSecurityIconType::NONE:
       return nil;
-    case INFO:
+    case LocationBarSecurityIconType::INFO:
       return kInfoCircleSymbol;
-    case SECURE:
+    case LocationBarSecurityIconType::SECURE:
       return kSecureLocationBarSymbol;
-    case NOT_SECURE_WARNING:
+    case LocationBarSecurityIconType::NOT_SECURE_WARNING:
       return kWarningFillSymbol;
-    case DANGEROUS:
+    case LocationBarSecurityIconType::DANGEROUS:
       return kDangerousOmniboxSymbol;
-    case LOCATION_BAR_SECURITY_ICON_TYPE_COUNT:
-      NOTREACHED();
+    case LocationBarSecurityIconType::LOCATION_BAR_SECURITY_ICON_TYPE_COUNT:
+      NOTREACHED_IN_MIGRATION();
       return kInfoCircleSymbol;
   }
 }

@@ -2,19 +2,52 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//mojo/public/tools/fuzzers/mojolpm.gni")
+import("//services/webnn/features.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//third_party/tflite/features.gni")
 
-source_set("coreml_graph_builder") {
-  sources = [
-    "coreml/graph_builder.cc",
-    "coreml/graph_builder.h",
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "WEBNN_USE_TFLITE=$webnn_use_tflite",
+    "WEBNN_ENABLE_TFLITE_PROFILER=$webnn_enable_tflite_profiler",
   ]
-  deps = [
+}
+
+if (is_posix) {
+  source_set("coreml_graph_builder") {
+    sources = [
+      "coreml/graph_builder_coreml.cc",
+      "coreml/graph_builder_coreml.h",
+    ]
+    deps = [
+      ":webnn_utils",
+      "//base",
+      "//services/webnn/public/mojom",
+      "//third_party/coremltools:modelformat_proto",
+      "//third_party/fp16",
+    ]
+  }
+}
+
+source_set("tflite_graph_builder") {
+  sources = [
+    "tflite/graph_builder_tflite.cc",
+    "tflite/graph_builder_tflite.h",
+  ]
+  public_deps = [
+    ":webnn_utils",
     "//base",
     "//services/webnn/public/mojom",
-    "//third_party/coremltools:modelformat_proto",
+    "//third_party/flatbuffers",
+    "//third_party/tflite:tflite_public_headers",
   ]
+}
+
+source_set("webnn_switches") {
+  sources = [ "webnn_switches.h" ]
 }
 
 component("webnn_service") {
@@ -24,10 +57,24 @@ component("webnn_service") {
     "webnn_context_impl.h",
     "webnn_context_provider_impl.cc",
     "webnn_context_provider_impl.h",
+    "webnn_graph_builder_impl.cc",
+    "webnn_graph_builder_impl.h",
     "webnn_graph_impl.cc",
     "webnn_graph_impl.h",
-    "webnn_utils.cc",
-    "webnn_utils.h",
+    "webnn_object_impl.h",
+    "webnn_tensor_impl.cc",
+    "webnn_tensor_impl.h",
+  ]
+
+  deps = [
+    ":buildflags",
+    ":webnn_switches",
+    ":webnn_utils",
+    "//base",
+    "//gpu/command_buffer/service:gles2",
+    "//gpu/config",
+    "//mojo/public/cpp/bindings",
+    "//services/webnn/public/mojom",
   ]
 
   if (is_win) {
@@ -38,35 +85,44 @@ component("webnn_service") {
       "dml/command_queue.h",
       "dml/command_recorder.cc",
       "dml/command_recorder.h",
-      "dml/context_impl.cc",
-      "dml/context_impl.h",
+      "dml/context_impl_dml.cc",
+      "dml/context_impl_dml.h",
       "dml/error.h",
-      "dml/graph_builder.cc",
-      "dml/graph_builder.h",
-      "dml/graph_impl.cc",
-      "dml/graph_impl.h",
+      "dml/graph_builder_dml.cc",
+      "dml/graph_builder_dml.h",
+      "dml/graph_impl_dml.cc",
+      "dml/graph_impl_dml.h",
       "dml/platform_functions.cc",
       "dml/platform_functions.h",
       "dml/tensor_desc.cc",
       "dml/tensor_desc.h",
+      "dml/tensor_impl_dml.cc",
+      "dml/tensor_impl_dml.h",
       "dml/utils.cc",
       "dml/utils.h",
     ]
-  }
+    deps += [
+      "//third_party/fp16",
+      "//third_party/microsoft_dxheaders:dxguids",
+      "//ui/gl",
+      "//ui/gl/init",
+    ]
 
-  deps = [
-    "//base",
-    "//components/ml/webnn",
-    "//mojo/public/cpp/bindings",
-    "//services/webnn/public/mojom",
-  ]
+    libs = [ "dxgi.lib" ]
+  }
 
   if (is_mac) {
     sources += [
-      "coreml/context_impl.h",
-      "coreml/context_impl.mm",
-      "coreml/graph_impl.h",
-      "coreml/graph_impl.mm",
+      "coreml/buffer_content.h",
+      "coreml/buffer_content.mm",
+      "coreml/context_impl_coreml.h",
+      "coreml/context_impl_coreml.mm",
+      "coreml/graph_impl_coreml.h",
+      "coreml/graph_impl_coreml.mm",
+      "coreml/tensor_impl_coreml.h",
+      "coreml/tensor_impl_coreml.mm",
+      "coreml/utils_coreml.h",
+      "coreml/utils_coreml.mm",
     ]
     frameworks = [
       "CoreFoundation.framework",
@@ -76,15 +132,59 @@ component("webnn_service") {
     deps += [ ":coreml_graph_builder" ]
   }
 
-  if (is_win) {
+  if (webnn_use_tflite) {
+    sources += [
+      "tflite/buffer_content.cc",
+      "tflite/buffer_content.h",
+      "tflite/context_impl_tflite.cc",
+      "tflite/context_impl_tflite.h",
+      "tflite/graph_impl_tflite.cc",
+      "tflite/graph_impl_tflite.h",
+      "tflite/op_resolver.cc",
+      "tflite/op_resolver.h",
+      "tflite/tensor_impl_tflite.cc",
+      "tflite/tensor_impl_tflite.h",
+    ]
+
     deps += [
-      "//third_party/fp16",
-      "//ui/gl",
-      "//ui/gl/init",
+      ":tflite_graph_builder",
+      "//third_party/tflite",
+      "//third_party/tflite:buildflags",
+      "//third_party/tflite:tflite_builtin_op_resolver",
+    ]
+
+    if (build_tflite_with_xnnpack) {
+      deps += [ "//third_party/xnnpack" ]
+    }
+  }
+
+  if (webnn_use_tflite || is_mac) {
+    sources += [
+      "queueable_resource_state.h",
+      "queueable_resource_state_base.cc",
+      "queueable_resource_state_base.h",
+      "resource_task.cc",
+      "resource_task.h",
     ]
   }
 
   defines = [ "IS_WEBNN_SERVICE_IMPL" ]
+}
+
+component("webnn_utils") {
+  sources = [
+    "webnn_constant_operand.cc",
+    "webnn_constant_operand.h",
+    "webnn_utils.cc",
+    "webnn_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//services/webnn/public/mojom",
+  ]
+
+  defines = [ "IS_WEBNN_UTILS_IMPL" ]
 }
 
 source_set("tests") {
@@ -92,6 +192,7 @@ source_set("tests") {
 
   sources = [
     "webnn_context_provider_impl_unittest.cc",
+    "webnn_graph_builder_impl_unittest.cc",
     "webnn_graph_impl_unittest.cc",
     "webnn_test_utils.cc",
     "webnn_test_utils.h",
@@ -102,9 +203,8 @@ source_set("tests") {
       "dml/adapter_test.cc",
       "dml/command_queue_test.cc",
       "dml/command_recorder_test.cc",
-      "dml/context_impl_test.cc",
-      "dml/graph_builder_test.cc",
-      "dml/graph_impl_test.cc",
+      "dml/context_impl_dml_test.cc",
+      "dml/graph_builder_dml_test.cc",
       "dml/platform_functions_test.cc",
       "dml/tensor_desc_test.cc",
       "dml/test_base.cc",
@@ -112,24 +212,28 @@ source_set("tests") {
     ]
   }
 
-  if (is_mac) {
-    sources += [ "coreml/graph_impl_test.cc" ]
+  if (webnn_use_tflite || is_mac || is_win) {
+    sources += [
+      "webnn_graph_impl_backend_test.cc",
+      "webnn_tensor_impl_backend_test.cc",
+    ]
   }
 
   deps = [
+    ":buildflags",
     ":webnn_service",
+    ":webnn_utils",
     "//base",
     "//base/test:test_support",
-    "//components/ml/webnn",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/test_support:test_utils",
     "//services/webnn/public/mojom",
     "//testing/gtest",
+    "//third_party/fp16",
   ]
 
   if (is_win) {
     deps += [
-      "//third_party/fp16",
       "//ui/gl",
       "//ui/gl/init",
     ]
@@ -144,7 +248,7 @@ mojolpm_fuzzer_test("webnn_graph_mojolpm_fuzzer") {
   proto_deps = [ "//services/webnn/public/mojom:mojom_mojolpm" ]
 
   deps = [
-    ":coreml_graph_builder",
+    ":tflite_graph_builder",
     ":webnn_service",
     "//base",
     "//base/test:test_support",
@@ -152,4 +256,8 @@ mojolpm_fuzzer_test("webnn_graph_mojolpm_fuzzer") {
     "//services/webnn/public/mojom",
     "//third_party/libprotobuf-mutator",
   ]
+
+  if (is_posix) {
+    deps += [ ":coreml_graph_builder" ]
+  }
 }

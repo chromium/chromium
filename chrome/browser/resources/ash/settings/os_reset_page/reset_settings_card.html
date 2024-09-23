@@ -3,6 +3,14 @@
     fill: var(--cros-sys-primary);
     margin-inline-end: 16px;
   }
+  #sanitizeIcon {
+    fill: var(--cros-sys-primary);
+    margin-inline-end: 16px;
+  }
+  #sanitizeCard {
+    padding-bottom: var(--cr-section-vertical-padding);
+    padding-top: var(--cr-section-vertical-padding);
+  }
 </style>
 
 <settings-card header-text="$i18n{resetPageTitle}">
@@ -26,17 +34,19 @@
     </cr-button>
   </div>
   <template is="dom-if" if="[[isSanitizeAllowed_]]">
-    <div class="settings-box two-line hr">
-      <div class="start" id="title" aria-hidden="true">
+    <div class="settings-box two-line hr" id="sanitizeCard">
+      <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+        <iron-icon id="sanitizeIcon" icon="os-settings:sanitize"></iron-icon>
+      </template>
+      <div class="start" id="sanitizeTitle" aria-hidden="true">
         $i18n{sanitizeTitle}
-        <div class="secondary" id="secondaryText" aria-hidden="true">
+        <div class="secondary" aria-hidden="true">
           $i18n{sanitizeShortDescription}
         </div>
       </div>
       <cr-button id="sanitizeButton"
           on-click="onShowSanitizeDialog_"
-          aria-labelledby="title"
-          aria-describedby="secondaryText"
+          aria-labelledby="sanitizeTitle"
           deep-link-focus-id$="[[Setting.kSanitize]]">
         $i18n{sanitizeButton}
       </cr-button>
@@ -48,11 +58,4 @@
       installed-e-sim-profiles="[[installedESimProfiles_]]"
       on-close="onPowerwashDialogClose_">
   </os-settings-powerwash-dialog>
-</template>
-<template is="dom-if" if="[[isSanitizeAllowed_]]">
-  <template is="dom-if" if="[[showSanitizeDialog_]]" restamp>
-    <os-settings-sanitize-dialog
-        on-close="onSanitizeDialogClose_">
-    </os-settings-sanitize-dialog>
-  </template>
 </template>

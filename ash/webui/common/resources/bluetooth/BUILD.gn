@@ -1,0 +1,13 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "This module is Chrome OS only.")
+
+copy("copy_mojo_files") {
+  deps = [ "//ash/public/mojom:hid_preserving_bluetooth_state_controller_ts__generator" ]
+  sources = [ "$root_gen_dir/ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom-webui.ts" ]
+  outputs = [ "$root_gen_dir/ash/webui/common/resources/preprocessed/bluetooth/{{source_file_part}}" ]
+}

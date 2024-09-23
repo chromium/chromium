@@ -1,0 +1,92 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/chrome_build.gni")
+import("//build/util/process_version.gni")
+import("//chrome/browser/request_header_integrity/buildflags.gni")
+
+config("header_name_defines") {
+  defines = []
+
+  if (channel_name_header_name != "") {
+    defines += [ "CHANNEL_NAME_HEADER_NAME=\"$channel_name_header_name\"" ]
+  }
+
+  if (lastchange_year_header_name != "") {
+    defines +=
+        [ "LASTCHANGE_YEAR_HEADER_NAME=\"$lastchange_year_header_name\"" ]
+  }
+
+  if (validate_header_name != "") {
+    defines += [ "VALIDATE_HEADER_NAME=\"$validate_header_name\"" ]
+  }
+
+  if (copyright_header_name != "") {
+    defines += [ "COPYRIGHT_HEADER_NAME=\"$copyright_header_name\"" ]
+  }
+}
+
+source_set("request_header_integrity") {
+  sources = [
+    "request_header_integrity_url_loader_throttle.cc",
+    "request_header_integrity_url_loader_throttle.h",
+  ]
+
+  if (is_chrome_branded) {
+    sources += [ "internal/google_header_names.h" ]
+  }
+
+  configs += [ ":header_name_defines" ]
+
+  deps = [
+    ":build_derived_values",
+    "//base",
+    "//build:branding_buildflags",
+    "//chrome/common:channel_info",
+    "//components/embedder_support:browser_util",
+    "//components/google/core/common",
+    "//google_apis",
+    "//services/network/public/cpp",
+    "//third_party/blink/public/common:headers",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "request_header_integrity_url_loader_throttle_unittest.cc" ]
+
+  deps = [
+    ":request_header_integrity",
+    "//build:branding_buildflags",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  if (is_chrome_branded) {
+    sources += [ "internal/google_header_names.h" ]
+    deps += [ "//chrome/test:test_support" ]
+  }
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "ENABLE_REQUEST_HEADER_INTEGRITY=$enable_request_header_integrity" ]
+}
+
+process_version("build_derived_values") {
+  template_file = "build_derived_values.h.template"
+
+  # Needs to use the actual LASTCHANGE_YEAR instead of LASTCHANGE.dummy based
+  # values for header reporting, which should be fine for caching builds as it
+  # only changes once a year.
+  sources = [
+    "//build/util/LASTCHANGE",
+    branding_file_path,
+  ]
+
+  output = "$target_gen_dir/build_derived_values.h"
+}

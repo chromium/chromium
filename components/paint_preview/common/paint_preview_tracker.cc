@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/paint_preview/common/paint_preview_tracker.h"
 
 #include <stdint.h>
@@ -11,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/not_fatal_until.h"
 #include "components/paint_preview/common/glyph_usage.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -27,7 +33,7 @@ namespace {
 constexpr int kMaxGlyphsForDenseGlyphUsage = 10000;
 
 // Heuristically choose between a dense and sparse glyph usage map.
-// TODO(crbug/1009538): Gather data to make this heuristic better.
+// TODO(crbug.com/40101107): Gather data to make this heuristic better.
 bool ShouldUseDenseGlyphUsage(SkTypeface* typeface) {
   // DenseGlyphUsage is a bitset; it is efficient if lots of glyphs are used.
   // SparseGlyphUsage is a set; it is efficient if few glyphs are used.
@@ -161,7 +167,7 @@ void PaintPreviewTracker::CustomDataToSkPictureCallback(SkCanvas* canvas,
   auto it = subframe_pics_.find(content_id);
   // DCHECK is sufficient as |subframe_pics_| has same entries as
   // |content_id_to_proxy_id|.
-  DCHECK(it != subframe_pics_.end());
+  CHECK(it != subframe_pics_.end(), base::NotFatalUntil::M130);
 
   SkRect rect = it->second->cullRect();
   SkMatrix subframe_offset = SkMatrix::Translate(rect.x(), rect.y());

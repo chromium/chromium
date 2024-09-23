@@ -11,18 +11,9 @@
 CryptData::CryptData()
 {
   Method=CRYPT_NONE;
-  memset(KDF3Cache,0,sizeof(KDF3Cache));
-  memset(KDF5Cache,0,sizeof(KDF5Cache));
   KDF3CachePos=0;
   KDF5CachePos=0;
   memset(CRCTab,0,sizeof(CRCTab));
-}
-
-
-CryptData::~CryptData()
-{
-  cleandata(KDF3Cache,sizeof(KDF3Cache));
-  cleandata(KDF5Cache,sizeof(KDF5Cache));
 }
 
 
@@ -56,16 +47,21 @@ bool CryptData::SetCryptKeys(bool Encrypt,CRYPT_METHOD Method,
      SecPassword *Password,const byte *Salt,
      const byte *InitV,uint Lg2Cnt,byte *HashKey,byte *PswCheck)
 {
-  if (!Password->IsSet() || Method==CRYPT_NONE)
+  if (Method==CRYPT_NONE || !Password->IsSet())
     return false;
 
   CryptData::Method=Method;
 
   wchar PwdW[MAXPASSWORD];
   Password->Get(PwdW,ASIZE(PwdW));
+  PwdW[Min(MAXPASSWORD_RAR,MAXPASSWORD)-1]=0; // For compatibility with existing archives.
+
   char PwdA[MAXPASSWORD];
   WideToChar(PwdW,PwdA,ASIZE(PwdA));
+  PwdA[Min(MAXPASSWORD_RAR,MAXPASSWORD)-1]=0; // For compatibility with existing archives.
 
+  bool Success=true;
+  
   switch(Method)
   {
 #ifndef SFX_MODULE
@@ -83,12 +79,12 @@ bool CryptData::SetCryptKeys(bool Encrypt,CRYPT_METHOD Method,
       SetKey30(Encrypt,Password,PwdW,Salt);
       break;
     case CRYPT_RAR50:
-      SetKey50(Encrypt,Password,PwdW,Salt,InitV,Lg2Cnt,HashKey,PswCheck);
+      Success=SetKey50(Encrypt,Password,PwdW,Salt,InitV,Lg2Cnt,HashKey,PswCheck);
       break;
   }
   cleandata(PwdA,sizeof(PwdA));
   cleandata(PwdW,sizeof(PwdW));
-  return true;
+  return Success;
 }
 
 
@@ -117,7 +113,7 @@ void GetRnd(byte *RndBuf,size_t BufSize)
   HCRYPTPROV hProvider = 0;
   if (CryptAcquireContext(&hProvider, 0, 0, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT | CRYPT_SILENT))
   {
-    Success=CryptGenRandom(hProvider, (DWORD)BufSize, RndBuf) == TRUE;
+    Success=CryptGenRandom(hProvider, (DWORD)BufSize, RndBuf) != FALSE;
     CryptReleaseContext(hProvider, 0);
   }
 #elif defined(_UNIX)

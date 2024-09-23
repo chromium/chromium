@@ -14,6 +14,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_span.h"
 #include "base/values.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
@@ -67,6 +68,8 @@ class GPU_EXPORT GpuControlList {
     kMultiGpuCategoryPrimary,
     // This entry applies if this is a secondary GPU on the system.
     kMultiGpuCategorySecondary,
+    // This entry applies if this is the NPU on the system.
+    kMultiGpuCategoryNpu,
     // This entry applies if this is the active GPU on the system.
     kMultiGpuCategoryActive,
     // This entry applies if this is any of the GPUs on the system.
@@ -199,27 +202,19 @@ class GPU_EXPORT GpuControlList {
     Version os_version;
     uint32_t vendor_id;
     size_t device_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
+    // RAW_PTR_EXCLUSION: since these pointers only ever point to other
+    // globals, and `Conditions` itself is used to construct globals, using
+    // raw_ptr would add additional (unnecessary) complexity with
+    // `NoDestructor`.
     RAW_PTR_EXCLUSION const Device* devices;
     MultiGpuCategory multi_gpu_category;
     MultiGpuStyle multi_gpu_style;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
     RAW_PTR_EXCLUSION const DriverInfo* driver_info;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
     RAW_PTR_EXCLUSION const GLStrings* gl_strings;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
     RAW_PTR_EXCLUSION const MachineModelInfo* machine_model_info;
     size_t intel_gpu_series_list_size;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
     RAW_PTR_EXCLUSION const IntelGpuSeriesType* intel_gpu_series_list;
     Version intel_gpu_generation;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
     RAW_PTR_EXCLUSION const More* more;
 
     bool Contains(OsType os_type,
@@ -350,7 +345,7 @@ class GPU_EXPORT GpuControlList {
 
   // These always point to built-in arrays of constants, so raw_ptr doesn't
   // add any protection but costs some overhead.
-  base::span<const Entry> entries_;
+  base::raw_span<const Entry> entries_;
 
   // This records all the entries that are applicable to the current user
   // machine.  It is updated everytime MakeDecision() is called and is used

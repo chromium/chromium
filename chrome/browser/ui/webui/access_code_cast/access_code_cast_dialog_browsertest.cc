@@ -9,7 +9,9 @@
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_dialog.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_router {
@@ -49,7 +51,9 @@ class AccessCodeCastDialogBrowserTest : public DialogBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AccessCodeCastDialogBrowserTest, InvokeUi_default) {
+// TODO(b/40261456): Test is consistently failing.
+IN_PROC_BROWSER_TEST_F(AccessCodeCastDialogBrowserTest,
+                       DISABLED_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 

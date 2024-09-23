@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_SCHEDULER_BATTERY_STATUS_LISTENER_H_
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_SCHEDULER_BATTERY_STATUS_LISTENER_H_
 
+#include "base/power_monitor/power_observer.h"
+
 namespace download {
 
 // Interface to monitor device battery status.
@@ -13,7 +15,8 @@ class BatteryStatusListener {
   class Observer {
    public:
     // Called when device charging state changed.
-    virtual void OnPowerStateChange(bool on_battery_power) = 0;
+    virtual void OnPowerStateChange(
+        base::PowerStateObserver::BatteryPowerStatus battery_power_status) = 0;
 
    protected:
     virtual ~Observer() {}
@@ -24,7 +27,8 @@ class BatteryStatusListener {
   virtual int GetBatteryPercentage() = 0;
 
   // Is the device is using battery power instead of charging.
-  virtual bool IsOnBatteryPower() = 0;
+  virtual base::PowerStateObserver::BatteryPowerStatus GetBatteryPowerStatus()
+      const = 0;
 
   // Start/Stop to listen to battery status changes.
   virtual void Start(Observer* observer) = 0;

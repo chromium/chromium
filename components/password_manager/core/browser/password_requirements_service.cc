@@ -113,8 +113,9 @@ void PasswordRequirementsService::AddSpec(
   auto iter_by_domain = specs_for_domains_.Get(main_frame_domain);
   if (iter_by_domain != specs_for_domains_.end()) {
     PasswordRequirementsSpec& existing_spec = iter_by_domain->second;
-    if (existing_spec.priority() > spec.priority())
+    if (existing_spec.priority() > spec.priority()) {
       return;
+    }
   }
   specs_for_domains_.Put(main_frame_domain, spec);
 }

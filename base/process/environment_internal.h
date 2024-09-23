@@ -8,9 +8,8 @@
 #ifndef BASE_PROCESS_ENVIRONMENT_INTERNAL_H_
 #define BASE_PROCESS_ENVIRONMENT_INTERNAL_H_
 
-#include <memory>
-
 #include "base/base_export.h"
+#include "base/containers/heap_array.h"
 #include "base/environment.h"
 #include "build/build_config.h"
 
@@ -29,7 +28,7 @@ namespace internal {
 // returned array will have appended to it the storage for the array itself so
 // there is only one pointer to manage, but this means that you can't copy the
 // array without keeping the original around.
-BASE_EXPORT std::unique_ptr<char*[]> AlterEnvironment(
+BASE_EXPORT base::HeapArray<char*> AlterEnvironment(
     const char* const* env,
     const EnvironmentMap& changes);
 #elif BUILDFLAG(IS_WIN)

@@ -17,7 +17,8 @@ import xml_utils
 # The allowlist of namespaces (histogram prefixes, case insensitive) that are
 # split across multiple files.
 _NAMESPACES_IN_MULTIPLE_FILES = [
-    'ash', 'autocomplete', 'chromeos', 'fcminvalidations', 'graphics', 'launch'
+    'ash', 'autocomplete', 'chromeos', 'fcminvalidations', 'graphics', 'launch',
+    'usereducation'
 ]
 
 
@@ -50,7 +51,7 @@ def CheckNamespaces():
 
 def main():
   doc = merge_xml.MergeFiles(histogram_paths.ALL_XMLS,
-                             should_expand_owners=True)
+                             expand_owners_and_extract_components=False)
   _, errors = extract_histograms.ExtractHistogramsFromDom(doc)
   errors = errors or CheckNamespaces()
   sys.exit(errors)

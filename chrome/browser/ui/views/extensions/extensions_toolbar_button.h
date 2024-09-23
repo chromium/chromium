@@ -50,7 +50,8 @@ class ExtensionsToolbarButton : public ToolbarChipButton,
   State state() { return state_; }
 
   // ToolbarButton:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -70,7 +71,8 @@ class ExtensionsToolbarButton : public ToolbarChipButton,
   const raw_ptr<ExtensionsToolbarContainer> extensions_container_;
   // This can be nullptr before `kExtensionsMenuAccessControl` feature is fully
   // rolled out.
-  // TODO(crbug.com/1279986): Remove this disclaimer once feature is rolled out.
+  // TODO(crbug.com/40811196): Remove this disclaimer once feature is rolled
+  // out.
   const raw_ptr<ExtensionsMenuCoordinator> extensions_menu_coordinator_;
 
   // The type for the button icon.

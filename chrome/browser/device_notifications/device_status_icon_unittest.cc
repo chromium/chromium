@@ -45,7 +45,7 @@ std::u16string GetExpectedOriginConnectionCountLabel(Profile* profile,
         (connection_count <= 1 ? "device" : "devices")));
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 class MockStatusIcon : public StatusIcon {

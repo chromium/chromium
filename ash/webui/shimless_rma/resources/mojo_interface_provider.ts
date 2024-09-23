@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrosNetworkConfig, CrosNetworkConfigInterface as NetworkConfigServiceInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
-import {fakeCalibrationComponentsWithFails, fakeChromeVersion, fakeComponents, fakeDeviceCustomLabels, fakeDeviceRegions, fakeDeviceSkus, fakeLog, fakeLogSavePath, fakeRsuChallengeCode, fakeRsuChallengeQrCode, fakeStates} from './fake_data.js';
+import {fakeCalibrationComponentsWithFails, fakeChromeVersion, fakeComponents, fakeDeviceCustomLabels, fakeDeviceRegions, fakeDeviceSkuDescriptions, fakeDeviceSkus, fakeLog, fakeLogSavePath, fakeRsuChallengeCode, fakeRsuChallengeQrCode, fakeStates} from './fake_data.js';
 import {FakeShimlessRmaService, FakeShimlessRmaServiceInterface} from './fake_shimless_rma_service.js';
 import {CalibrationSetupInstruction, FeatureLevel, RmadErrorCode, ShimlessRmaService, ShimlessRmaServiceInterface, WriteProtectDisableCompleteAction} from './shimless_rma.mojom-webui.js';
 
@@ -56,6 +56,7 @@ export function populateFakeShimlessRmaService(
   service.setGetRegionListResult(fakeDeviceRegions);
   service.setGetOriginalRegionResult(1);
   service.setGetSkuListResult(fakeDeviceSkus);
+  service.setGetSkuDescriptionListResult(fakeDeviceSkuDescriptions);
   service.setGetOriginalSkuResult(1);
   service.setGetCustomLabelListResult(fakeDeviceCustomLabels);
   service.setGetOriginalCustomLabelResult(1);

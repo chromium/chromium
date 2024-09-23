@@ -8,12 +8,13 @@
 #include <lib/fdio/directory.h>
 #include <stdio.h>
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/process/process.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/platform_thread.h"
 
 namespace base {
@@ -26,7 +27,7 @@ ScopedFxLogger& ScopedFxLogger::operator=(ScopedFxLogger&& other) = default;
 
 // static
 ScopedFxLogger ScopedFxLogger::CreateForProcess(
-    std::vector<base::StringPiece> tags) {
+    std::vector<std::string_view> tags) {
   // CHECK()ing or LOG()ing inside this function is safe, since it is only
   // called to initialize logging, not during individual logging operations.
 
@@ -53,7 +54,7 @@ ScopedFxLogger ScopedFxLogger::CreateForProcess(
 // static
 ScopedFxLogger ScopedFxLogger::CreateFromLogSink(
     fidl::ClientEnd<fuchsia_logger::LogSink> log_sink_client_end,
-    std::vector<base::StringPiece> tags) {
+    std::vector<std::string_view> tags) {
   // CHECK()ing or LOG()ing inside this function is safe, since it is only
   // called to initialize logging, not during individual logging operations.
 
@@ -77,9 +78,9 @@ ScopedFxLogger ScopedFxLogger::CreateFromLogSink(
   return ScopedFxLogger(std::move(tags), std::move(local));
 }
 
-void ScopedFxLogger::LogMessage(base::StringPiece file,
+void ScopedFxLogger::LogMessage(std::string_view file,
                                 uint32_t line_number,
-                                base::StringPiece msg,
+                                std::string_view msg,
                                 FuchsiaLogSeverity severity) {
   if (!socket_.is_valid())
     return;
@@ -100,7 +101,7 @@ void ScopedFxLogger::LogMessage(base::StringPiece file,
     fprintf(stderr, "fuchsia_syslog.LogBuffer.FlushRecord() failed\n");
 }
 
-ScopedFxLogger::ScopedFxLogger(std::vector<base::StringPiece> tags,
+ScopedFxLogger::ScopedFxLogger(std::vector<std::string_view> tags,
                                zx::socket socket)
     : tags_(tags.begin(), tags.end()), socket_(std::move(socket)) {}
 

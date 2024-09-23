@@ -64,7 +64,7 @@ void URLLoaderMock::ServeAsynchronousRequest(
 
   if (data) {
     for (const auto& span : *data) {
-      delegate->DidReceiveData(client_, span.data(), span.size());
+      delegate->DidReceiveData(client_, span);
       // DidReceiveData() may clear the |self| weak ptr.  We stop iterating
       // when that happens.
       if (!self) {

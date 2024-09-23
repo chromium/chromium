@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/app_list/views/app_list_nudge_controller.h"
+#include "ash/app_list/views/apps_grid_context_menu.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -26,7 +27,6 @@ class AppListA11yAnnouncer;
 class AppListKeyboardController;
 class AppListNudgeController;
 class AppListToastView;
-class AppsGridContextMenu;
 class AppListViewDelegate;
 enum class AppListSortOrder;
 enum class AppListToastType;
@@ -54,6 +54,10 @@ class AppListToastContainerView : public views::View {
 
     // Called when the nudge gets removed by the close or dismiss buttons.
     virtual void OnNudgeRemoved() = 0;
+
+    // Determines the appropriate grid type for the context menu on the
+    // nudge view.
+    virtual AppsGridContextMenu::GridType GetGridTypeForContextMenu();
   };
 
   AppListToastContainerView(AppListNudgeController* nudge_controller,
@@ -82,6 +86,9 @@ class AppListToastContainerView : public views::View {
 
   // Creates a reorder nudge view in the container.
   void CreateReorderNudgeView();
+
+  // Creates a tutorial nudge view in the container.
+  void CreateTutorialNudgeView();
 
   // Removes the reorder nudge view if the nudge view is showing.
   void RemoveReorderNudgeView();
@@ -178,7 +185,7 @@ class AppListToastContainerView : public views::View {
   bool committing_sort_order_ = false;
 
   // The amount of horizontal space available for the toast container.
-  absl::optional<int> available_width_;
+  std::optional<int> available_width_;
 
   // The abort handle for the `toast_view_` fade out animation.
   std::unique_ptr<views::AnimationAbortHandle>

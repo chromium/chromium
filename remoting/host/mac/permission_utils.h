@@ -30,7 +30,7 @@ bool CanRecordScreen();
 // Accessibility and Screen Recording applications.  The Accessibility
 // permission is required for input injection and Screen Recording is required
 // for screen capture.  |task_runner| is used to run the dialog message loop.
-// TODO(https://crbug.com/1462995): Remove.
+// TODO(crbug.com/40275162): Remove.
 void PromptUserToChangeTrustStateIfNeeded(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 

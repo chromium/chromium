@@ -38,7 +38,8 @@
 namespace blink {
 
 EventTarget& EventPath::EventTargetRespectingTargetRules(Node& reference_node) {
-  if (reference_node.IsPseudoElement()) {
+  if (reference_node.IsPseudoElement() &&
+      !reference_node.IsScrollControlPseudoElement()) {
     DCHECK(reference_node.parentNode());
     return *reference_node.parentNode();
   }
@@ -71,6 +72,10 @@ static inline bool EventPathShouldBeEmptyFor(Node& node) {
   // Event path should be empty for orphaned pseudo elements, and nodes
   // whose document is stopped. In corner cases (crbug.com/1210480), the node
   // document can get detached before we can remove event listeners.
+  if (RuntimeEnabledFeatures::PseudoElementsFocusableEnabled() &&
+      node.IsScrollControlPseudoElement()) {
+    return false;
+  }
   return (node.IsPseudoElement() && !node.parentElement()) ||
          node.GetDocument().IsStopped();
 }
@@ -117,13 +122,12 @@ void EventPath::CalculatePath() {
         nodes_in_path.push_back(current);
     }
   }
-
-  node_event_contexts_.reserve(nodes_in_path.size());
-  for (Node* node_in_path : nodes_in_path) {
-    DCHECK(node_in_path);
-    node_event_contexts_.push_back(NodeEventContext(
-        *node_in_path, EventTargetRespectingTargetRules(*node_in_path)));
-  }
+  node_event_contexts_ = HeapVector<NodeEventContext>(
+      nodes_in_path, [](Node* node_in_path) -> NodeEventContext {
+        DCHECK(node_in_path);
+        return NodeEventContext(
+            *node_in_path, EventTargetRespectingTargetRules(*node_in_path));
+      });
 }
 
 void EventPath::CalculateTreeOrderAndSetNearestAncestorClosedTree() {

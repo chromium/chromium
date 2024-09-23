@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 """Runs checks on the files defining tests.
-d
+
 This performs the following checks:
 * Checks that any entry in gn_isolate_map.pyl is referenced by some
   builder (modulo targets known to be used by builders in other projects
@@ -30,6 +30,37 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
     'remoting/client:client',
     'remoting/host:host',
 
+    # These targets are only used by script tests
+    'traffic_annotation_proto',
+
+    # These targets are used by builders setting their tests in starlark
+    'android_lint',
+    'cast_audio_backend_unittests',
+    'cast_base_junit_tests',
+    'cast_base_unittests',
+    'cast_cast_core_unittests',
+    'cast_crash_unittests',
+    'cast_display_settings_unittests',
+    'cast_graphics_unittests',
+    'cast_junit_test_lists',
+    'cast_media_unittests',
+    'cast_shell',
+    'cast_shell_apk',
+    'cast_shell_browsertests',
+    'cast_shell_junit_tests',
+    'cast_shell_unittests',
+    'cast_test_lists',
+    'check_chrome_static_initializers',
+    'core_runtime_simple',
+    'core_runtime_starboard',
+    'cronet_package_ci',
+    'cronet_sizes',
+    'monochrome_public_test_ar_apk',
+    'private_code_failure_test',
+    'resource_sizes_cronet_sample_apk',
+    'telemetry_gpu_integration_test_fuchsia',
+    'webview_trichrome_64_cts_hostside_tests',
+
     # These targets are listed only in build-side recipes.
     'captured_sites_interactive_tests',
     'chrome_official_builder_no_unittests',
@@ -52,6 +83,7 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
     'resource_sizes_monochrome_minimal_apks',
     'resource_sizes_trichrome_google',
     'resource_sizes_system_webview_google_bundle',
+    'trichrome_google_64_32_minimal_apks',
 
     # These are used by https://www.chromium.org/developers/cluster-telemetry.
     'ct_telemetry_perf_tests_without_chrome',
@@ -141,7 +173,10 @@ def main():
   parser = argparse.ArgumentParser(description=sys.modules[__name__].__doc__)
   parser.parse_args()
 
-  with open(os.path.join(THIS_DIR, "gn_isolate_map.pyl")) as fp:
+  gn_isolate_map_pyl_path = os.path.normpath(
+      os.path.join(THIS_DIR, '..', '..', 'infra', 'config', 'generated',
+                   'testing', 'gn_isolate_map.pyl'))
+  with open(gn_isolate_map_pyl_path) as fp:
     gn_isolate_map = ast.literal_eval(fp.read())
     ninja_targets = {k: v['label'] for k, v in gn_isolate_map.items()}
 
@@ -171,5 +206,5 @@ def main():
     return 1
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   sys.exit(main())

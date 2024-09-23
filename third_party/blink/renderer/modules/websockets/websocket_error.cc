@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_close_info.h"
+#include "third_party/blink/renderer/modules/websockets/websocket_channel.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_common.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -29,15 +30,13 @@ WebSocketError* WebSocketError::Create(String message,
 v8::Local<v8::Value> WebSocketError::Create(v8::Isolate* isolate,
                                             String message,
                                             std::optional<uint16_t> close_code,
-                                            String reason,
-                                            ExceptionState& exception_state) {
-  auto* dom_exception = ValidateAndCreate(std::move(message), close_code,
-                                          std::move(reason), exception_state);
-  if (!dom_exception) {
-    CHECK(exception_state.HadException());
-    return v8::Local<v8::Value>();
+                                            String reason) {
+  if (!reason.empty() && !close_code.has_value()) {
+    close_code = WebSocketChannel::kCloseEventCodeNormalClosure;
   }
-  return V8ThrowDOMException::AttachStackProperty(isolate, dom_exception);
+  auto* error = MakeGarbageCollected<WebSocketError>(
+      PassKey(), std::move(message), close_code, std::move(reason));
+  return V8ThrowDOMException::AttachStackProperty(isolate, error);
 }
 
 WebSocketError::WebSocketError(PassKey,

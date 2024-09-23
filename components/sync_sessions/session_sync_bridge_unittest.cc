@@ -14,24 +14,25 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_prefs.h"
+#include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_commit_queue.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
 #include "components/sync_sessions/session_sync_prefs.h"
@@ -51,7 +52,7 @@ using syncer::EntityData;
 using syncer::FailedCommitResponseDataList;
 using syncer::IsEmptyMetadataBatch;
 using syncer::MetadataBatch;
-using syncer::MockModelTypeChangeProcessor;
+using syncer::MockDataTypeLocalChangeProcessor;
 using testing::_;
 using testing::AtLeast;
 using testing::ElementsAre;
@@ -76,14 +77,14 @@ MATCHER_P(EntityDataHasSpecifics, session_specifics_matcher, "") {
                                                    result_listener);
 }
 
-sync_pb::ModelTypeState GetModelTypeStateWithInitialSyncDone() {
-  sync_pb::ModelTypeState state;
+sync_pb::DataTypeState GetDataTypeStateWithInitialSyncDone() {
+  sync_pb::DataTypeState state;
   state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   state.set_cache_guid(kLocalCacheGuid);
   state.set_authenticated_account_id(kAccountId);
   state.mutable_progress_marker()->set_data_type_id(
-      GetSpecificsFieldNumberFromModelType(syncer::SESSIONS));
+      GetSpecificsFieldNumberFromDataType(syncer::SESSIONS));
   return state;
 }
 
@@ -126,12 +127,13 @@ syncer::UpdateResponseData CreateTombstone(const std::string& client_tag) {
   return data;
 }
 
-syncer::CommitResponseData CreateSuccessResponse(
-    const std::string& client_tag) {
+syncer::CommitResponseData CreateSuccessResponse(const std::string& client_tag,
+                                                 int sequence_number = 1) {
   syncer::CommitResponseData response;
   response.client_tag_hash =
       syncer::ClientTagHash::FromUnhashed(syncer::SESSIONS, client_tag);
-  response.sequence_number = 1;
+  response.sequence_number = sequence_number;
+  response.response_version = sequence_number;
   return response;
 }
 
@@ -168,7 +170,7 @@ sync_pb::SessionSpecifics CreateTabSpecifics(const std::string& session_tag,
 class SessionSyncBridgeTest : public ::testing::Test {
  protected:
   SessionSyncBridgeTest()
-      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(
+      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest(
             syncer::SESSIONS)),
         session_sync_prefs_(&pref_service_) {
     SessionSyncPrefs::RegisterProfilePrefs(pref_service_.registry());
@@ -177,7 +179,7 @@ class SessionSyncBridgeTest : public ::testing::Test {
         .WillByDefault(Return(&session_sync_prefs_));
     ON_CALL(mock_sync_sessions_client_, GetStoreFactory())
         .WillByDefault(
-            Return(syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
+            Return(syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
                 store_.get())));
     ON_CALL(mock_sync_sessions_client_, GetSyncedWindowDelegatesGetter())
         .WillByDefault(Return(&window_getter_));
@@ -192,9 +194,8 @@ class SessionSyncBridgeTest : public ::testing::Test {
   ~SessionSyncBridgeTest() override = default;
 
   void InitializeBridge() {
-    real_processor_ =
-        std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-            syncer::SESSIONS, /*dump_stack=*/base::DoNothing());
+    real_processor_ = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+        syncer::SESSIONS, /*dump_stack=*/base::DoNothing());
     mock_processor_.DelegateCallsByDefaultTo(real_processor_.get());
     // Instantiate the bridge.
     bridge_ = std::make_unique<SessionSyncBridge>(
@@ -215,21 +216,17 @@ class SessionSyncBridgeTest : public ::testing::Test {
     request.cache_guid = kLocalCacheGuid;
     request.authenticated_account_id = CoreAccountId::FromGaiaId(kAccountId);
 
-    base::RunLoop loop;
-    real_processor_->OnSyncStarting(
-        request,
-        base::BindLambdaForTesting(
-            [&loop](std::unique_ptr<syncer::DataTypeActivationResponse>) {
-              loop.Quit();
-            }));
-    loop.Run();
+    base::test::TestFuture<std::unique_ptr<syncer::DataTypeActivationResponse>>
+        sync_starting_cb;
+    real_processor_->OnSyncStarting(request, sync_starting_cb.GetCallback());
+    ASSERT_TRUE(sync_starting_cb.Wait());
 
-    // ClientTagBasedModelTypeProcessor requires connecting before other
+    // ClientTagBasedDataTypeProcessor requires connecting before other
     // interactions with the worker happen.
     real_processor_->ConnectSync(
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
 
-    sync_pb::ModelTypeState state = GetModelTypeStateWithInitialSyncDone();
+    sync_pb::DataTypeState state = GetDataTypeStateWithInitialSyncDone();
     syncer::UpdateResponseDataList initial_updates;
     for (const SessionSpecifics& specifics : remote_data) {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));
@@ -239,37 +236,21 @@ class SessionSyncBridgeTest : public ::testing::Test {
   }
 
   std::map<std::string, std::unique_ptr<EntityData>> GetAllData() {
-    base::RunLoop loop;
-    std::unique_ptr<DataBatch> batch;
-    bridge_->GetAllDataForDebugging(base::BindLambdaForTesting(
-        [&loop, &batch](std::unique_ptr<DataBatch> input_batch) {
-          batch = std::move(input_batch);
-          loop.Quit();
-        }));
-    loop.Run();
+    std::unique_ptr<DataBatch> batch = bridge_->GetAllDataForDebugging();
     EXPECT_NE(nullptr, batch);
     return BatchToEntityDataMap(std::move(batch));
   }
 
-  std::map<std::string, std::unique_ptr<EntityData>> GetData(
+  std::map<std::string, std::unique_ptr<EntityData>> GetDataForCommit(
       const std::vector<std::string>& storage_keys) {
-    base::RunLoop loop;
-    std::unique_ptr<DataBatch> batch;
-    bridge_->GetData(
-        storage_keys,
-        base::BindLambdaForTesting(
-            [&loop, &batch](std::unique_ptr<DataBatch> input_batch) {
-              batch = std::move(input_batch);
-              loop.Quit();
-            }));
-    loop.Run();
+    std::unique_ptr<DataBatch> batch = bridge_->GetDataForCommit(storage_keys);
     EXPECT_NE(nullptr, batch);
     return BatchToEntityDataMap(std::move(batch));
   }
 
-  std::unique_ptr<EntityData> GetData(const std::string& storage_key) {
+  std::unique_ptr<EntityData> GetDataForCommit(const std::string& storage_key) {
     std::map<std::string, std::unique_ptr<EntityData>> entity_data_map =
-        GetData(std::vector<std::string>{storage_key});
+        GetDataForCommit(std::vector<std::string>{storage_key});
     EXPECT_LE(entity_data_map.size(), 1U);
     if (entity_data_map.empty()) {
       return nullptr;
@@ -315,19 +296,19 @@ class SessionSyncBridgeTest : public ::testing::Test {
 
   SessionSyncBridge* bridge() { return bridge_.get(); }
 
-  syncer::MockModelTypeChangeProcessor& mock_processor() {
+  syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
   }
 
-  syncer::ClientTagBasedModelTypeProcessor* real_processor() {
+  syncer::ClientTagBasedDataTypeProcessor* real_processor() {
     return real_processor_.get();
   }
 
-  syncer::ModelTypeStore* underlying_store() { return store_.get(); }
+  syncer::DataTypeStore* underlying_store() { return store_.get(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  const std::unique_ptr<syncer::ModelTypeStore> store_;
+  const std::unique_ptr<syncer::DataTypeStore> store_;
 
   // Dependencies.
   TestingPrefServiceSimple pref_service_;
@@ -335,11 +316,11 @@ class SessionSyncBridgeTest : public ::testing::Test {
   testing::NiceMock<base::MockCallback<base::RepeatingClosure>>
       mock_foreign_session_updated_cb_;
   testing::NiceMock<MockSyncSessionsClient> mock_sync_sessions_client_;
-  testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
   TestSyncedWindowDelegatesGetter window_getter_;
 
   std::unique_ptr<SessionSyncBridge> bridge_;
-  std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
+  std::unique_ptr<syncer::ClientTagBasedDataTypeProcessor> real_processor_;
 };
 
 TEST_F(SessionSyncBridgeTest, ShouldCallModelReadyToSyncWhenSyncEnabled) {
@@ -393,9 +374,44 @@ TEST_F(SessionSyncBridgeTest, ShouldCreateHeaderByDefault) {
   EXPECT_THAT(GetAllData(), SizeIs(1));
 }
 
+TEST_F(SessionSyncBridgeTest, ShouldPopulateSessionStartTimeOnFirstSync) {
+  // Store the initial time, in order to later verify that the session start
+  // time is >= this time. Round down to the nearest millisecond, since the
+  // session start time only uses millisecond granularity.
+  const base::Time initial_time = base::Time::FromMillisecondsSinceUnixEpoch(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
+
+  InitializeBridge();
+
+  EXPECT_CALL(mock_processor(), ModelReadyToSync(IsEmptyMetadataBatch()));
+  StartSyncing();
+
+  const std::string header_storage_key =
+      SessionStore::GetHeaderStorageKey(kLocalCacheGuid);
+
+  // The session start time should have been populated.
+  const base::Time session_start_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(
+          GetAllData()[header_storage_key]
+              ->specifics.session()
+              .header()
+              .session_start_time_unix_epoch_millis());
+  EXPECT_GE(session_start_time, initial_time);
+
+  // A browser restart should not change the session start time.
+  ShutdownBridge();
+  InitializeBridge();
+  StartSyncing();
+  EXPECT_THAT(GetAllData(),
+              UnorderedElementsAre(
+                  Pair(header_storage_key,
+                       EntityDataHasSpecifics(MatchesHeader(
+                           kLocalCacheGuid, session_start_time, _, _)))));
+}
+
 // Tests that local windows and tabs that exist at the time the bridge is
 // started (e.g. after a Chrome restart) are properly exposed via the bridge's
-// GetData() and GetAllData() methods, as well as notified via Put().
+// GetDataForCommit() and GetAllData() methods, as well as notified via Put().
 TEST_F(SessionSyncBridgeTest, ShouldExposeInitialLocalTabsToProcessor) {
   const int kWindowId = 1000001;
   const int kTabId1 = 1000002;
@@ -434,7 +450,7 @@ TEST_F(SessionSyncBridgeTest, ShouldExposeInitialLocalTabsToProcessor) {
 
   StartSyncing();
 
-  EXPECT_THAT(GetData(header_storage_key),
+  EXPECT_THAT(GetDataForCommit(header_storage_key),
               EntityDataHasSpecifics(MatchesHeader(kLocalCacheGuid, {kWindowId},
                                                    {kTabId1, kTabId2})));
   EXPECT_THAT(
@@ -454,7 +470,7 @@ TEST_F(SessionSyncBridgeTest, ShouldExposeInitialLocalTabsToProcessor) {
 
 // Tests that the creation of a new tab while sync is enabled is propagated to:
 // 1) The processor, via Put().
-// 2) The in-memory representation exposed via GetData().
+// 2) The in-memory representation exposed via GetDataForCommit().
 // 3) The persisted store, exposed via GetAllData().
 TEST_F(SessionSyncBridgeTest, ShouldReportLocalTabCreation) {
   const int kWindowId = 1000001;
@@ -517,10 +533,10 @@ TEST_F(SessionSyncBridgeTest, ShouldReportLocalTabCreation) {
           Pair(tab_storage_key, EntityDataHasSpecifics(MatchesTab(
                                     kLocalCacheGuid, kWindowId, kTabId2,
                                     /*tab_node_id=*/_, {"http://bar.com/"})))));
-  EXPECT_THAT(GetData(header_storage_key),
+  EXPECT_THAT(GetDataForCommit(header_storage_key),
               EntityDataHasSpecifics(MatchesHeader(kLocalCacheGuid, {kWindowId},
                                                    {kTabId1, kTabId2})));
-  EXPECT_THAT(GetData(tab_storage_key),
+  EXPECT_THAT(GetDataForCommit(tab_storage_key),
               EntityDataHasSpecifics(
                   MatchesTab(kLocalCacheGuid, kWindowId, kTabId2,
                              /*tab_node_id=*/_, {"http://bar.com/"})));
@@ -549,15 +565,15 @@ TEST_F(SessionSyncBridgeTest, ShouldNotUpdatePlaceholderTabsDuringRestore) {
   InitializeBridge();
   StartSyncing();
 
-  ASSERT_THAT(GetData(header_storage_key),
+  ASSERT_THAT(GetDataForCommit(header_storage_key),
               EntityDataHasSpecifics(MatchesHeader(
                   kLocalCacheGuid, {kWindowId1}, {kTabId1, kTabId2})));
   ASSERT_THAT(
-      GetData(tab_storage_key1),
+      GetDataForCommit(tab_storage_key1),
       EntityDataHasSpecifics(MatchesTab(kLocalCacheGuid, kWindowId1, kTabId1,
                                         kTabNodeId1, {"http://foo.com/"})));
   ASSERT_THAT(
-      GetData(tab_storage_key2),
+      GetDataForCommit(tab_storage_key2),
       EntityDataHasSpecifics(MatchesTab(kLocalCacheGuid, kWindowId1, kTabId2,
                                         kTabNodeId2, {"http://bar.com/"})));
 
@@ -589,15 +605,15 @@ TEST_F(SessionSyncBridgeTest, ShouldNotUpdatePlaceholderTabsDuringRestore) {
   // Although we haven't notified the processor about the window-ID change, if
   // it hypothetically asked for these entities, the returned entities are
   // up-to-date.
-  EXPECT_THAT(GetData(header_storage_key),
+  EXPECT_THAT(GetDataForCommit(header_storage_key),
               EntityDataHasSpecifics(MatchesHeader(
                   kLocalCacheGuid, {kWindowId2}, {kTabId1, kTabId2})));
   EXPECT_THAT(
-      GetData(tab_storage_key1),
+      GetDataForCommit(tab_storage_key1),
       EntityDataHasSpecifics(MatchesTab(kLocalCacheGuid, kWindowId2, kTabId1,
                                         kTabNodeId1, {"http://foo.com/"})));
   EXPECT_THAT(
-      GetData(tab_storage_key2),
+      GetDataForCommit(tab_storage_key2),
       EntityDataHasSpecifics(MatchesTab(kLocalCacheGuid, kWindowId2, kTabId2,
                                         kTabNodeId2, {"http://bar.com/"})));
 
@@ -926,7 +942,7 @@ TEST_F(SessionSyncBridgeTest, ShouldRecycleTabNodeAfterCommitCompleted) {
   // Mimic a commit completing for the initial sync.
   ASSERT_TRUE(real_processor()->HasLocalChangesForTest());
   real_processor()->OnCommitCompleted(
-      GetModelTypeStateWithInitialSyncDone(),
+      GetDataTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(kLocalCacheGuid),
        CreateSuccessResponse(tab_client_tag1)},
       /*error_response_list=*/FailedCommitResponseDataList());
@@ -970,9 +986,9 @@ TEST_F(SessionSyncBridgeTest, ShouldRecycleTabNodeAfterCommitCompleted) {
   // Completing the commit for the previously closed tab should issue a
   // deletion. For that to trigger, we need to trigger the next association,
   // which we do by navigating in one of the open tabs.
-  EXPECT_CALL(mock_processor(), Delete(tab_storage_key2, _));
+  EXPECT_CALL(mock_processor(), Delete(tab_storage_key2, _, _));
   real_processor()->OnCommitCompleted(
-      GetModelTypeStateWithInitialSyncDone(),
+      GetDataTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(tab_client_tag2)},
       /*error_response_list=*/FailedCommitResponseDataList());
   tab1->Navigate("http://foo3.com/");
@@ -1020,7 +1036,7 @@ TEST_F(SessionSyncBridgeTest, ShouldRestoreLocalSessionWithFreedTab) {
   InitializeBridge();
   StartSyncing();
 
-  ASSERT_THAT(GetData(header_storage_key),
+  ASSERT_THAT(GetDataForCommit(header_storage_key),
               EntityDataHasSpecifics(MatchesHeader(
                   kLocalCacheGuid, {kWindowId1}, {kTabId1, kTabId2})));
 
@@ -1029,7 +1045,7 @@ TEST_F(SessionSyncBridgeTest, ShouldRestoreLocalSessionWithFreedTab) {
   CloseTab(kTabId2);
   tab1->Navigate("http://foo2.com/");
 
-  ASSERT_THAT(GetData(header_storage_key),
+  ASSERT_THAT(GetDataForCommit(header_storage_key),
               EntityDataHasSpecifics(
                   MatchesHeader(kLocalCacheGuid, {kWindowId1}, {kTabId1})));
 
@@ -1078,7 +1094,7 @@ TEST_F(SessionSyncBridgeTest, ShouldDisableSyncAndReenable) {
 
   const std::string header_storage_key =
       SessionStore::GetHeaderStorageKey(kLocalCacheGuid);
-  ASSERT_THAT(GetData(header_storage_key),
+  ASSERT_THAT(GetDataForCommit(header_storage_key),
               EntityDataHasSpecifics(
                   MatchesHeader(kLocalCacheGuid, {kWindowId}, {kTabId})));
   ASSERT_THAT(GetAllData(), Not(IsEmpty()));
@@ -1087,7 +1103,7 @@ TEST_F(SessionSyncBridgeTest, ShouldDisableSyncAndReenable) {
   real_processor()->OnSyncStopping(syncer::CLEAR_METADATA);
 
   StartSyncing();
-  ASSERT_THAT(GetData(header_storage_key),
+  ASSERT_THAT(GetDataForCommit(header_storage_key),
               EntityDataHasSpecifics(
                   MatchesHeader(kLocalCacheGuid, {kWindowId}, {kTabId})));
 }
@@ -1161,7 +1177,7 @@ TEST_F(SessionSyncBridgeTest, ShouldNotExposeForeignHeaderWithoutTabs) {
       Put(_, EntityDataHasSpecifics(MatchesHeader(kLocalCacheGuid, _, _)), _));
 
   StartSyncing({foreign_header});
-  ASSERT_THAT(GetData(foreign_header_storage_key), NotNull());
+  ASSERT_THAT(GetDataForCommit(foreign_header_storage_key), NotNull());
 
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
       foreign_sessions;
@@ -1172,7 +1188,7 @@ TEST_F(SessionSyncBridgeTest, ShouldNotExposeForeignHeaderWithoutTabs) {
   ShutdownBridge();
   InitializeBridge();
   StartSyncing();
-  ASSERT_THAT(GetData(foreign_header_storage_key), NotNull());
+  ASSERT_THAT(GetDataForCommit(foreign_header_storage_key), NotNull());
 
   EXPECT_FALSE(bridge()->GetOpenTabsUIDelegate()->GetAllForeignSessions(
       &foreign_sessions));
@@ -1264,7 +1280,7 @@ TEST_F(SessionSyncBridgeTest, ShouldHandleRemoteDeletion) {
   // session.
   ASSERT_TRUE(real_processor()->HasLocalChangesForTest());
   real_processor()->OnCommitCompleted(
-      GetModelTypeStateWithInitialSyncDone(),
+      GetDataTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(kLocalCacheGuid)},
       /*error_response_list=*/FailedCommitResponseDataList());
   ASSERT_FALSE(real_processor()->HasLocalChangesForTest());
@@ -1294,7 +1310,7 @@ TEST_F(SessionSyncBridgeTest, ShouldHandleRemoteDeletion) {
   syncer::UpdateResponseDataList updates;
   updates.push_back(
       CreateTombstone(SessionStore::GetClientTag(foreign_header)));
-  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),
+  real_processor()->OnUpdateReceived(GetDataTypeStateWithInitialSyncDone(),
                                      std::move(updates),
                                      /*gc_directive=*/std::nullopt);
 
@@ -1323,9 +1339,8 @@ TEST_F(SessionSyncBridgeTest, ShouldHandleRemoteDeletion) {
         {header_storage_key, tab_storage_key},
         base::BindLambdaForTesting(
             [&](const std::optional<syncer::ModelError>& error,
-                std::unique_ptr<syncer::ModelTypeStore::RecordList>
-                    data_records,
-                std::unique_ptr<syncer::ModelTypeStore::IdList>
+                std::unique_ptr<syncer::DataTypeStore::RecordList> data_records,
+                std::unique_ptr<syncer::DataTypeStore::IdList>
                     missing_id_list) {
               EXPECT_THAT(data_records, Pointee(IsEmpty()));
               EXPECT_THAT(
@@ -1384,7 +1399,7 @@ TEST_F(SessionSyncBridgeTest, ShouldIgnoreRemoteDeletionOfLocalTab) {
   // Mimic receiving a commit ack for both the tab and the header entity,
   // because otherwise it will be treated as conflict, and then local wins.
   real_processor()->OnCommitCompleted(
-      GetModelTypeStateWithInitialSyncDone(),
+      GetDataTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(tab_client_tag1),
        CreateSuccessResponse(kLocalCacheGuid)},
       /*error_response_list=*/FailedCommitResponseDataList());
@@ -1396,7 +1411,7 @@ TEST_F(SessionSyncBridgeTest, ShouldIgnoreRemoteDeletionOfLocalTab) {
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateTombstone(kLocalCacheGuid));
   updates.push_back(CreateTombstone(tab_client_tag1));
-  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),
+  real_processor()->OnUpdateReceived(GetDataTypeStateWithInitialSyncDone(),
                                      std::move(updates),
                                      /*gc_directive=*/std::nullopt);
 
@@ -1504,7 +1519,7 @@ TEST_F(SessionSyncBridgeTest, ShouldIgnoreRemoteDeletionOfLocalPlaceholderTab) {
   // Mimic receiving a commit ack for both the tab and the header entity,
   // because otherwise it will be treated as conflict, and then local wins.
   real_processor()->OnCommitCompleted(
-      GetModelTypeStateWithInitialSyncDone(),
+      GetDataTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(tab_client_tag1),
        CreateSuccessResponse(kLocalCacheGuid)},
       /*error_response_list=*/FailedCommitResponseDataList());
@@ -1531,7 +1546,7 @@ TEST_F(SessionSyncBridgeTest, ShouldIgnoreRemoteDeletionOfLocalPlaceholderTab) {
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateTombstone(kLocalCacheGuid));
   updates.push_back(CreateTombstone(tab_client_tag1));
-  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),
+  real_processor()->OnUpdateReceived(GetDataTypeStateWithInitialSyncDone(),
                                      std::move(updates),
                                      /*gc_directive=*/std::nullopt);
 
@@ -1621,7 +1636,7 @@ TEST_F(SessionSyncBridgeTest, ShouldNotRestoreLocalSessionWithoutMetadata) {
   // Mimic receiving a commit ack for both the tabs and the header entity,
   // because otherwise it will be treated as conflict, and then local wins.
   real_processor()->OnCommitCompleted(
-      GetModelTypeStateWithInitialSyncDone(),
+      GetDataTypeStateWithInitialSyncDone(),
       {CreateSuccessResponse(tab_client_tag1),
        CreateSuccessResponse(tab_client_tag2),
        CreateSuccessResponse(kLocalCacheGuid)},
@@ -1636,7 +1651,7 @@ TEST_F(SessionSyncBridgeTest, ShouldNotRestoreLocalSessionWithoutMetadata) {
   updates.push_back(CreateTombstone(kLocalCacheGuid));
   updates.push_back(CreateTombstone(tab_client_tag1));
   updates.push_back(CreateTombstone(tab_client_tag2));
-  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),
+  real_processor()->OnUpdateReceived(GetDataTypeStateWithInitialSyncDone(),
                                      std::move(updates),
                                      /*gc_directive=*/std::nullopt);
 
@@ -1688,7 +1703,7 @@ TEST_F(SessionSyncBridgeTest, ShouldNotRestoreLocalSessionWithoutMetadata) {
 
   // The header and non-placeholder tab should both be restored, but the
   // placeholder tab got lost.
-  // TODO(crbug/1462305): on Android it should be possible to reupload
+  // TODO(crbug.com/40921830): on Android it should be possible to reupload
   // placeholder tabs.
   EXPECT_FALSE(bridge()->IsLocalDataOutOfSyncForTest());
   EXPECT_THAT(GetAllData(),
@@ -1726,8 +1741,8 @@ TEST_F(SessionSyncBridgeTest, ShouldDeleteForeignSessionFromUI) {
 
   // Test fixture expects the two foreign entities in the model as well as the
   // underlying store.
-  ASSERT_THAT(GetData(foreign_header_storage_key), NotNull());
-  ASSERT_THAT(GetData(foreign_tab_storage_key), NotNull());
+  ASSERT_THAT(GetDataForCommit(foreign_header_storage_key), NotNull());
+  ASSERT_THAT(GetDataForCommit(foreign_tab_storage_key), NotNull());
 
   const sessions::SessionTab* foreign_session_tab = nullptr;
   ASSERT_TRUE(bridge()->GetOpenTabsUIDelegate()->GetForeignTab(
@@ -1745,8 +1760,8 @@ TEST_F(SessionSyncBridgeTest, ShouldDeleteForeignSessionFromUI) {
   ASSERT_TRUE(real_processor()->IsTrackingMetadata());
 
   // Mimic the user requesting a session deletion from the UI.
-  EXPECT_CALL(mock_processor(), Delete(foreign_header_storage_key, _));
-  EXPECT_CALL(mock_processor(), Delete(foreign_tab_storage_key, _));
+  EXPECT_CALL(mock_processor(), Delete(foreign_header_storage_key, _, _));
+  EXPECT_CALL(mock_processor(), Delete(foreign_tab_storage_key, _, _));
   EXPECT_CALL(mock_foreign_session_updated_cb(), Run());
   bridge()->GetOpenTabsUIDelegate()->DeleteForeignSession(kForeignSessionTag);
 
@@ -1759,8 +1774,8 @@ TEST_F(SessionSyncBridgeTest, ShouldDeleteForeignSessionFromUI) {
       &foreign_sessions));
 
   // Verify store.
-  EXPECT_THAT(GetData(foreign_header_storage_key), IsNull());
-  EXPECT_THAT(GetData(foreign_tab_storage_key), IsNull());
+  EXPECT_THAT(GetDataForCommit(foreign_header_storage_key), IsNull());
+  EXPECT_THAT(GetDataForCommit(foreign_tab_storage_key), IsNull());
 }
 
 // Verifies that attempts to delete the local session from the UI are ignored,
@@ -1777,8 +1792,9 @@ TEST_F(SessionSyncBridgeTest, ShouldIgnoreLocalSessionDeletionFromUI) {
   const SyncedSession* session = nullptr;
   EXPECT_TRUE(bridge()->GetOpenTabsUIDelegate()->GetLocalSession(&session));
   EXPECT_THAT(session, NotNull());
-  EXPECT_THAT(GetData(SessionStore::GetHeaderStorageKey(kLocalCacheGuid)),
-              NotNull());
+  EXPECT_THAT(
+      GetDataForCommit(SessionStore::GetHeaderStorageKey(kLocalCacheGuid)),
+      NotNull());
 }
 
 // Verifies that receiving an empty update list does not broadcast a foreign
@@ -1790,7 +1806,7 @@ TEST_F(SessionSyncBridgeTest, ShouldNotBroadcastUpdatesIfEmpty) {
   EXPECT_CALL(mock_foreign_session_updated_cb(), Run()).Times(0);
 
   // Mimic receiving an empty list of remote updates.
-  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(), {},
+  real_processor()->OnUpdateReceived(GetDataTypeStateWithInitialSyncDone(), {},
                                      /*gc_directive=*/std::nullopt);
 }
 
@@ -1827,14 +1843,15 @@ TEST_F(SessionSyncBridgeTest, ShouldDoGarbageCollection) {
       recent_mtime));
 
   // During garbage collection, we expect |kStaleSessionTag| to be deleted.
-  EXPECT_CALL(mock_processor(),
-              Delete(SessionStore::GetHeaderStorageKey(kStaleSessionTag), _));
   EXPECT_CALL(
       mock_processor(),
-      Delete(SessionStore::GetTabStorageKey(kStaleSessionTag, kTabNodeId), _));
+      Delete(SessionStore::GetHeaderStorageKey(kStaleSessionTag), _, _));
+  EXPECT_CALL(mock_processor(), Delete(SessionStore::GetTabStorageKey(
+                                           kStaleSessionTag, kTabNodeId),
+                                       _, _));
 
   EXPECT_CALL(mock_foreign_session_updated_cb(), Run()).Times(AtLeast(1));
-  real_processor()->OnUpdateReceived(GetModelTypeStateWithInitialSyncDone(),
+  real_processor()->OnUpdateReceived(GetDataTypeStateWithInitialSyncDone(),
                                      std::move(updates),
                                      /*gc_directive=*/std::nullopt);
 }
@@ -1849,7 +1866,7 @@ TEST_F(SessionSyncBridgeTest, ShouldReturnBrowserTypeInGetData) {
   InitializeBridge();
   StartSyncing();
 
-  std::unique_ptr<EntityData> tab_data = GetData(
+  std::unique_ptr<EntityData> tab_data = GetDataForCommit(
       SessionStore::GetTabStorageKey(kLocalCacheGuid, /*tab_node_id=*/0));
   ASSERT_THAT(tab_data, NotNull());
 

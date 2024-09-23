@@ -5,8 +5,9 @@
 #ifndef UI_BASE_IME_WIN_TSF_BRIDGE_H_
 #define UI_BASE_IME_WIN_TSF_BRIDGE_H_
 
-#include <msctf.h>
 #include <windows.h>
+
+#include <msctf.h>
 #include <wrl/client.h>
 
 #include <memory>
@@ -90,7 +91,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFBridge {
       ImeKeyEventDispatcher* ime_key_event_dispatcher) = 0;
 
   // Remove ImeKeyEventDispatcher instance from TSFTextStore when not in focus.
-  virtual void RemoveImeKeyEventDispatcher() = 0;
+  virtual void RemoveImeKeyEventDispatcher(
+      ImeKeyEventDispatcher* ime_key_event_dispatcher) = 0;
 
   // Returns whether the system's input language is CJK.
   virtual bool IsInputLanguageCJK() = 0;

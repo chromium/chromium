@@ -1,0 +1,20 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+
+declare_args() {
+  # Screen AI service is only supported on desktop platforms.
+  enable_screen_ai_service = is_linux || is_mac || is_chromeos || is_win
+
+  # Screen AI library is not available for browser tests on ChromeOS. Tast tests
+  # cover library's OCR functionality on ChromeOS.
+  enable_screen_ai_browsertests =
+      is_linux || (is_mac && (target_cpu == "arm64" || target_cpu == "x64")) ||
+      (is_win && (target_cpu == "x64" || target_cpu == "x86"))
+
+  # Screen AI library is not available for MSAN and UBSAN.
+  use_fake_screen_ai = is_msan || is_ubsan || is_ubsan_vptr || is_ubsan_security
+}

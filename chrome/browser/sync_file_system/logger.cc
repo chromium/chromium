@@ -30,7 +30,7 @@ const char* LogSeverityToString(logging::LogSeverity level) {
       return "VERBOSE";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Unknown Log Severity";
 }
 

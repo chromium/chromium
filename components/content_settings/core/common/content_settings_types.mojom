@@ -6,9 +6,13 @@
 module content_settings.mojom;
 
 // A particular type of content to care about. We give the user various types
-// of controls over each of these.
-// When adding/removing values from this enum, be sure to update the
-// kHistogramValue array in c/c/c/browser/content_settings_uma_util.cc as well.
+// of controls over each of these. Values can be added, removed and reshuffled.
+// For persistent values use the strings defined in content_settings_registry
+// or the helpers defined in content_settings_uma_util.
+// When adding values to this enum, be sure to update the
+// kHistogramValue array in c/c/c/browser/content_settings_uma_util.cc.
+// Add "NO_IFTTT=<reason>" in the commit message if it's not applicable.
+// LINT.IfChange(ContentSettingsType)
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
 enum ContentSettingsType {
@@ -173,13 +177,13 @@ enum ContentSettingsType {
 
   // Full access to the system clipboard (sanitized read without user gesture,
   // and unsanitized read and write with user gesture).
-  // TODO(https://crbug.com/1027225): Move CLIPBOARD_READ_WRITE uses to be
+  // TODO(crbug.com/40108655): Move CLIPBOARD_READ_WRITE uses to be
   // ordered in the same order as listed in the enum.
   CLIPBOARD_READ_WRITE,
 
   // This is special-cased in the permissions layer to always allow, and as
   // such doesn't have associated prefs data.
-  // TODO(https://crbug.com/1027225): Move CLIPBOARD_SANITIZED_WRITE uses to be
+  // TODO(crbug.com/40108655): Move CLIPBOARD_SANITIZED_WRITE uses to be
   // ordered in the same order as listed in the enum.
   CLIPBOARD_SANITIZED_WRITE,
 
@@ -200,7 +204,7 @@ enum ContentSettingsType {
   // scoped to the combination of requesting/top-level origin, and are managed
   // through the Storage Access API. For the time being, this content setting
   // exists in parallel to third-party cookie rules stored in COOKIES.
-  // TODO(https://crbug.com/989663): Reconcile the two.
+  // TODO(crbug.com/40638427): Reconcile the two.
   STORAGE_ACCESS,
 
   // Content setting which stores whether to allow a site to control camera
@@ -210,7 +214,7 @@ enum ContentSettingsType {
   // Content setting for Screen Enumeration and Screen Detail functionality.
   // Permits access to detailed multi-screen information, like size and
   // position. Permits placing fullscreen and windowed content on specific
-  // screens. See also: https://w3c.github.io/window-placement
+  // screens. See also: https://w3c.github.io/window-management
   WINDOW_MANAGEMENT,
 
   // Stores whether to allow insecure websites to make private network requests.
@@ -360,6 +364,13 @@ enum ContentSettingsType {
   // requesting-origin/top-level-site combination and persistent.
   TOP_LEVEL_TPCD_TRIAL,
 
+  // Content Setting for a first-party origin trial that allows websites to
+  // enable third-party cookie deprecation.
+  // ALLOW (default): no effect (e.g. third-party cookies allowed, if not
+  //                  blocked otherwise).
+  // BLOCK: third-party cookies blocked, but 3PCD mitigations enabled.
+  TOP_LEVEL_TPCD_ORIGIN_TRIAL,
+
   // Content setting used to indicate whether entering picture-in-picture
   // automatically should be enabled.
   AUTO_PICTURE_IN_PICTURE,
@@ -395,6 +406,57 @@ enum ContentSettingsType {
   // user for the installation of sub apps.
   SUB_APP_INSTALLATION_PROMPTS,
 
-  NUM_TYPES,
-};
+  // Whether an application can enumerate audio output device.
+  SPEAKER_SELECTION,
 
+  // Content settings for access to the Direct Sockets API.
+  DIRECT_SOCKETS,
+
+  // Keyboard Lock API allows a site to capture keyboard inputs that would
+  // otherwise be handled by the OS or the browser.
+  KEYBOARD_LOCK,
+
+  // Pointer Lock API allows a site to hide the cursor and have exclusive access
+  // to mouse inputs.
+  POINTER_LOCK,
+
+  // Website setting which is used for UnusedSitePermissionsService to store
+  // auto-revoked notification permissions from abusive sites.
+  REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
+
+  // Content setting that controls tracking protection status per site.
+  // BLOCK: Protections enabled. This is the default state.
+  // ALLOW: Protections disabled.
+  TRACKING_PROTECTION,
+
+  // With this permission, when the application calls `getDisplayMedia()`, a
+  // system audio track can be returned without showing the display media
+  // selection picker. The application can explicitly specify
+  // `systemAudio: 'exclude'` or `video: true` to still show the display media
+  // selection picker if needed. Please note that the setting only works for
+  // WebUI.
+  DISPLAY_MEDIA_SYSTEM_AUDIO,
+
+  // Whether to use the higher-tier v8 optimizers for running JavaScript on the
+  // page.
+  JAVASCRIPT_OPTIMIZER,
+
+  // Content Setting for the Storage Access Headers persistent origin trial that
+  // allows origins to opt into the storage access header behavior. Should be
+  // scoped to `REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE` in order to
+  // correspond to the design of persistent origin trials. See also:
+  // https://github.com/cfredric/storage-access-headers
+  // ALLOW: storage access request headers will be attached to cross-site
+  //        requests, and url requests will look for response headers from
+  //        origins to retry a request or load with storage access.
+  // BLOCK (default): no effect.
+  STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
+
+  // Whether or not sites can request Hand Tracking data within WebXR Sessions.
+  HAND_TRACKING,
+
+  // Website setting to indicate whether user has opted in to allow web apps to
+  // install other web apps.
+  WEB_APP_INSTALLATION,
+};
+// LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue)

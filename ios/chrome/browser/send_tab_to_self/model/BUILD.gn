@@ -6,6 +6,8 @@ source_set("model") {
   sources = [
     "ios_send_tab_to_self_infobar_delegate.h",
     "ios_send_tab_to_self_infobar_delegate.mm",
+    "send_tab_push_notification_client.h",
+    "send_tab_push_notification_client.mm",
     "send_tab_to_self_browser_agent.h",
     "send_tab_to_self_browser_agent.mm",
   ]
@@ -21,8 +23,13 @@ source_set("model") {
     "//ios/chrome/app/theme:theme_grit",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/push_notification/model:constants",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_util",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
@@ -38,7 +45,10 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "send_tab_to_self_browser_agent_unittest.mm" ]
+  sources = [
+    "send_tab_push_notification_client_unittest.mm",
+    "send_tab_to_self_browser_agent_unittest.mm",
+  ]
   deps = [
     ":model",
     "//base",
@@ -48,12 +58,19 @@ source_set("unit_tests") {
     "//components/send_tab_to_self:test_support",
     "//components/sync",
     "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/push_notification/model:constants",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

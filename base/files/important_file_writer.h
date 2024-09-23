@@ -6,17 +6,17 @@
 #define BASE_FILES_IMPORTANT_FILE_WRITER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
@@ -43,7 +43,7 @@ class BASE_EXPORT ImportantFileWriter {
   // data to be written. This callback is invoked on the sequence where I/O
   // operations are executed. Returning false indicates an error.
   using BackgroundDataProducerCallback =
-      base::OnceCallback<absl::optional<std::string>()>;
+      base::OnceCallback<std::optional<std::string>()>;
 
   // Used by ScheduleSave to lazily provide the data to be saved. Allows us
   // to also batch data serializations.
@@ -52,7 +52,7 @@ class BASE_EXPORT ImportantFileWriter {
     // Returns a string for serialisation when successful, or a nullopt in case
     // it failed to generate the data. Will be called on the same thread on
     // which ImportantFileWriter has been created.
-    virtual absl::optional<std::string> SerializeData() = 0;
+    virtual std::optional<std::string> SerializeData() = 0;
 
    protected:
     virtual ~DataSerializer() = default;
@@ -76,9 +76,10 @@ class BASE_EXPORT ImportantFileWriter {
   // Save |data| to |path| in an atomic manner. Blocks and writes data on the
   // current thread. Does not guarantee file integrity across system crash (see
   // the class comment above).
-  static bool WriteFileAtomically(const FilePath& path,
-                                  StringPiece data,
-                                  StringPiece histogram_suffix = StringPiece());
+  static bool WriteFileAtomically(
+      const FilePath& path,
+      std::string_view data,
+      std::string_view histogram_suffix = std::string_view());
 
   // Initialize the writer.
   // |path| is the name of file to write.
@@ -87,13 +88,13 @@ class BASE_EXPORT ImportantFileWriter {
   // All non-const methods, ctor and dtor must be called on the same thread.
   ImportantFileWriter(const FilePath& path,
                       scoped_refptr<SequencedTaskRunner> task_runner,
-                      StringPiece histogram_suffix = StringPiece());
+                      std::string_view histogram_suffix = std::string_view());
 
   // Same as above, but with a custom commit interval.
   ImportantFileWriter(const FilePath& path,
                       scoped_refptr<SequencedTaskRunner> task_runner,
                       TimeDelta interval,
-                      StringPiece histogram_suffix = StringPiece());
+                      std::string_view histogram_suffix = std::string_view());
 
   ImportantFileWriter(const ImportantFileWriter&) = delete;
   ImportantFileWriter& operator=(const ImportantFileWriter&) = delete;
@@ -179,8 +180,8 @@ class BASE_EXPORT ImportantFileWriter {
   // WriteFileAtomically. When false, the directory containing |path| is added
   // to the set cleaned by the ImportantFileWriterCleaner (Windows only).
   static bool WriteFileAtomicallyImpl(const FilePath& path,
-                                      StringPiece data,
-                                      StringPiece histogram_suffix,
+                                      std::string_view data,
+                                      std::string_view histogram_suffix,
                                       bool from_instance);
 
   void ClearPendingWrite();

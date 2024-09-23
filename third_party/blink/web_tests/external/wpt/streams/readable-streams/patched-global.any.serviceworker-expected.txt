@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] ReadableStream async iterator should use the original values of getReader() and ReadableStreamDefaultReader methods
-  promise_test: Unhandled rejection with value: object "TypeError: rs is not async iterable"
-Harness: the test ran to completion.
-

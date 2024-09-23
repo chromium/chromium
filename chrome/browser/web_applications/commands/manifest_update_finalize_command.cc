@@ -14,7 +14,6 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -28,7 +27,7 @@ namespace web_app {
 ManifestUpdateFinalizeCommand::ManifestUpdateFinalizeCommand(
     const GURL& url,
     const webapps::AppId& app_id,
-    WebAppInstallInfo install_info,
+    std::unique_ptr<WebAppInstallInfo> install_info,
     ManifestWriteCallback write_callback,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive)
@@ -46,14 +45,13 @@ ManifestUpdateFinalizeCommand::ManifestUpdateFinalizeCommand(
       install_info_(std::move(install_info)),
       keep_alive_(std::move(keep_alive)),
       profile_keep_alive_(std::move(profile_keep_alive)) {
-  CHECK(install_info_.manifest_id.is_valid());
-  CHECK(install_info_.start_url.is_valid());
+  CHECK(install_info_);
   GetMutableDebugValue().Set("url", url_.spec());
   GetMutableDebugValue().Set("app_id", app_id_);
-  GetMutableDebugValue().Set("install_info_.manifest_id",
-                             install_info_.manifest_id.spec());
-  GetMutableDebugValue().Set("install_info_.start_url",
-                             install_info_.start_url.spec());
+  GetMutableDebugValue().Set("install_info_->manifest_id",
+                             install_info_->manifest_id().spec());
+  GetMutableDebugValue().Set("install_info_->start_url",
+                             install_info_->start_url().spec());
 }
 
 ManifestUpdateFinalizeCommand::~ManifestUpdateFinalizeCommand() = default;
@@ -63,24 +61,23 @@ void ManifestUpdateFinalizeCommand::StartWithLock(
   lock_ = std::move(lock);
 
   // Preserve the user's choice of form factor to open the app with.
-  install_info_.user_display_mode =
+  install_info_->user_display_mode =
       lock_->registrar().GetAppUserDisplayMode(app_id_);
 
   // ManifestUpdateCheckCommand must have already done validation of origin
   // association data needed by this app and set validated_scope_extensions even
   // if it is empty.
-  CHECK(install_info_.validated_scope_extensions.has_value());
+  CHECK(install_info_->validated_scope_extensions.has_value());
 
   lock_->install_finalizer().FinalizeUpdate(
-      install_info_,
+      *install_info_,
       base::BindOnce(&ManifestUpdateFinalizeCommand::OnInstallationComplete,
                      AsWeakPtr()));
 }
 
 void ManifestUpdateFinalizeCommand::OnInstallationComplete(
     const webapps::AppId& app_id,
-    webapps::InstallResultCode code,
-    OsHooksErrors os_hooks_errors) {
+    webapps::InstallResultCode code) {
   if (!IsSuccess(code)) {
     CompleteCommand(code, ManifestUpdateResult::kAppUpdateFailed);
     return;
@@ -90,7 +87,7 @@ void ManifestUpdateFinalizeCommand::OnInstallationComplete(
   DCHECK(!GetManifestDataChanges(
               *lock_->registrar().GetAppById(app_id_),
               /*existing_app_icon_bitmaps=*/nullptr,
-              /*existing_shortcuts_menu_icon_bitmaps=*/nullptr, install_info_)
+              /*existing_shortcuts_menu_icon_bitmaps=*/nullptr, *install_info_)
               .other_fields_changed);
   DCHECK_EQ(code, webapps::InstallResultCode::kSuccessAlreadyInstalled);
 

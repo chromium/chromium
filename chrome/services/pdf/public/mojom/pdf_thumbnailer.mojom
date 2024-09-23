@@ -1,0 +1,47 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module pdf.mojom;
+
+import "mojo/public/mojom/base/shared_memory.mojom";
+import "skia/public/mojom/bitmap.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Parameters controlling rendering details, such as size, of the thumbnail.
+struct ThumbParams {
+  // The dimensions of the thumbnail.
+  gfx.mojom.Size size_px;
+
+  // The resolution, in dots per inch, of the thumbnail.
+  gfx.mojom.Size dpi;
+
+  // Whether or not to stretch the thumbnail to fill the supplied size.
+  bool stretch;
+
+  // Whether or not to preserve the aspect ratio.
+  bool keep_aspect;
+};
+
+// Interface used to generate a thumbnail for a PDF contents given as a set of
+// bytes. Used by Chrome OS to generate thumbnails for local PDF files.
+interface PdfThumbnailer {
+  // The maximum dimensions of a thumbnail accepted in the GetThumbnail()
+  // `params`. If a specified dimension exceeds the maximum, an empty, invalid
+  // bitmap is returned.
+  const int32 kMaxWidthPixels = 512;
+  const int32 kMaxHeightPixels = 512;
+
+  // Generates a thumbnail for a PDF content.
+  // `params` dictate details (e.g., size) of the thumbnail. `pdf_region`
+  // should hold bytes of the PDF for which the thumbnail is generated.
+  // `bitmap` contains the generated PDF thumbnail.
+  GetThumbnail(ThumbParams params,
+               mojo_base.mojom.ReadOnlySharedMemoryRegion pdf_region)
+      => (skia.mojom.BitmapN32? bitmap);
+
+  // Sets the status for enterprise policy `kPdfUseSkiaRendererEnabled`. It
+  // should be called immediately once `mojom::PdfThumbnailer` remote is bound
+  // and only when this policy is managed.
+  SetUseSkiaRendererPolicy(bool use_skia);
+};

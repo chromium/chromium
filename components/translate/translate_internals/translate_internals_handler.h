@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_TRANSLATE_TRANSLATE_INTERNALS_TRANSLATE_INTERNALS_HANDLER_H_
 #define COMPONENTS_TRANSLATE_TRANSLATE_INTERNALS_TRANSLATE_INTERNALS_HANDLER_H_
 
+#include <string_view>
+
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_language_list.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -44,12 +45,12 @@ class TranslateInternalsHandler {
   // Registers to handle |message| from JavaScript with |callback|.
   using MessageCallback =
       base::RepeatingCallback<void(const base::Value::List&)>;
-  virtual void RegisterMessageCallback(base::StringPiece message,
+  virtual void RegisterMessageCallback(std::string_view message,
                                        MessageCallback callback) = 0;
 
   // Calls a Javascript function with the given name and arguments.
   virtual void CallJavascriptFunction(
-      base::StringPiece function_name,
+      std::string_view function_name,
       base::span<const base::ValueView> args) = 0;
 
  protected:
@@ -88,7 +89,7 @@ class TranslateInternalsHandler {
   void OnRequestInfo(const base::Value::List& args);
 
   // Sends a message to Javascript.
-  void SendMessageToJs(base::StringPiece message,
+  void SendMessageToJs(std::string_view message,
                        const base::Value::Dict& value);
 
   // Sends the current preference to Javascript.

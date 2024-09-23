@@ -1,0 +1,160 @@
+<div id="toolbar">
+  <div id="start">
+    <cr-icon-button id="sidenavToggle" iron-icon="cr20:menu"
+        title="$i18n{menu}" aria-label="$i18n{menu}"
+        aria-expanded="${this.getAriaExpanded_()}"
+<if expr="enable_ink">
+        ?disabled="${this.annotationMode}"
+</if>
+        @click="${this.onSidenavToggleClick_}">
+    </cr-icon-button>
+    <span id="title">${this.docTitle}</span>
+  </div>
+  <div id="center">
+    <viewer-page-selector .docLength="${this.docLength}"
+        .pageNo="${this.pageNo}">
+    </viewer-page-selector>
+    <span class="vertical-separator"></span>
+    <span id="zoom-controls">
+      <cr-icon-button
+          iron-icon="${this.iconsetName_()}:remove"
+          title="$i18n{tooltipZoomOut}"
+          ?disabled="${this.isAtMinimumZoom_()}"
+          aria-label="$i18n{tooltipZoomOut}" @click="${this.onZoomOutClick_}">
+      </cr-icon-button>
+      <input type="text" value="100%"
+          aria-label="$i18n{zoomTextInputAriaLabel}"
+          @change="${this.onZoomChange_}"
+          @pointerup="${this.onZoomInputPointerup_}"
+          @blur="${this.onZoomChange_}">
+      </input>
+      <cr-icon-button
+          iron-icon="${this.iconsetName_()}:add"
+          title="$i18n{tooltipZoomIn}"
+          ?disabled="${this.isAtMaximumZoom_()}"
+          aria-label="$i18n{tooltipZoomIn}" @click="${this.onZoomInClick_}">
+      </cr-icon-button>
+    </span>
+    <span class="vertical-separator"></span>
+    <cr-icon-button id="fit" .ironIcon="${this.fitToButtonIcon_()}"
+        title="${this.getFitToButtonTooltip_('$i18nPolymer{tooltipFitToPage}',
+                                        '$i18nPolymer{tooltipFitToWidth}')}"
+        aria-label="${this.getFitToButtonTooltip_(
+            '$i18nPolymer{tooltipFitToPage}',
+            '$i18nPolymer{tooltipFitToWidth}')}"
+        @click="${this.onFitToButtonClick_}">
+    </cr-icon-button>
+    <cr-icon-button
+        iron-icon="${this.iconsetName_()}:rotate-left"
+        suppress-rtl-flip
+<if expr="enable_ink">
+        ?disabled="${this.annotationMode}"
+</if>
+        aria-label="$i18n{tooltipRotateCCW}" title="$i18n{tooltipRotateCCW}"
+        @click="${this.onRotateClick_}">
+    </cr-icon-button>
+<if expr="enable_pdf_ink2">
+    ${this.showInk2Buttons_() ? html`
+      <span id="annotate-controls">
+        <span class="vertical-separator"></span>
+        <cr-icon-button id="annotate" iron-icon="pdf:annotate"
+            @click="${this.onAnnotationClick_}"
+            aria-label="$i18n{tooltipAnnotate}"
+            ?disabled="${!this.annotationAvailable}"
+            title="$i18n{tooltipAnnotate}"></cr-icon-button>
+        <span class="vertical-separator"></span>
+        <cr-icon-button id="undo" ?disabled="${!this.canUndoAnnotation_}"
+            iron-icon="${this.iconsetName_()}:undo"
+            @click="${this.undo}"
+            aria-label="$i18n{annotationUndo}"
+            title="$i18n{annotationUndo}"></cr-icon-button>
+        <cr-icon-button id="redo" ?disabled="${!this.canRedoAnnotation_}"
+            iron-icon="${this.iconsetName_()}:redo"
+            @click="${this.redo}"
+            aria-label="$i18n{annotationRedo}"
+            title="$i18n{annotationRedo}"></cr-icon-button>
+      </span>` : ''}
+</if>
+  </div>
+  <div id="end">
+  <if expr="enable_ink">
+    ${this.showInkAnnotationButton_() ? html`<cr-icon-button id="annotate"
+          iron-icon="cr:create"
+          @click="${this.onAnnotationClick_}"
+          aria-label="$i18n{tooltipAnnotate}"
+          ?disabled="${!this.annotationAvailable}"
+          title="$i18n{tooltipAnnotate}"></cr-icon-button>` : ''}
+  </if>
+    <viewer-download-controls id="downloads"
+        .hasEdits="${this.hasEdits}"
+        .hasEnteredAnnotationMode="${this.hasEnteredAnnotationMode}"
+<if expr="enable_pdf_ink2">
+        .hasInk2Edits="${this.hasInk2Edits}"
+</if>
+        .isFormFieldFocused="${this.isFormFieldFocused_()}">
+    </viewer-download-controls>
+    <cr-icon-button id="print" iron-icon="cr:print"
+        ?hidden="${!this.printingEnabled}" title="$i18n{tooltipPrint}"
+        aria-label="$i18n{tooltipPrint}" @click="${this.onPrintClick_}">
+    </cr-icon-button>
+    <cr-icon-button id="more" iron-icon="cr:more-vert"
+        title="$i18n{moreActions}" aria-label="$i18n{moreActions}"
+        @click="${this.onMoreClick_}"></cr-icon-button>
+  </div>
+</div>
+<cr-progress id="progress" .value="${this.loadProgress}"
+    ?hidden="${!this.loading_}">
+</cr-progress>
+
+<cr-action-menu id="menu" @open-changed="${this.onMoreOpenChanged_}">
+  <button id="two-page-view-button" class="dropdown-item"
+      @click="${this.toggleTwoPageViewClick_}" role="checkbox"
+<if expr="enable_ink">
+      ?disabled="${this.annotationMode}"
+</if>
+      aria-checked="${this.getAriaChecked_(this.twoUpViewEnabled)}">
+    <span class="check-container">
+      <cr-icon icon="${this.iconsetName_()}:check"
+          ?hidden="${!this.twoUpViewEnabled}"></cr-icon>
+    </span>
+    $i18n{twoUpViewEnable}
+  </button>
+
+  <button id="show-annotations-button"
+      class="dropdown-item" @click="${this.toggleDisplayAnnotations_}"
+      role="checkbox"
+      aria-checked="${this.getAriaChecked_(this.displayAnnotations_)}">
+    <span class="check-container">
+      <cr-icon icon="${this.iconsetName_()}:check"
+          ?hidden="${!this.displayAnnotations_}">
+      </cr-icon>
+    </span>
+    $i18n{annotationsShowToggle}
+  </button>
+
+  <hr>
+
+  <button id="present-button" class="dropdown-item"
+      @click="${this.onPresentClick_}"
+      ?disabled="${!this.presentationModeAvailable_()}">
+    <span class="check-container" aria-hidden="true"></span>
+    $i18n{present}
+  </button>
+
+  <button id="properties-button" class="dropdown-item"
+      @click="${this.onPropertiesClick_}">
+    <span class="check-container" aria-hidden="true"></span>
+    $i18n{propertiesDialogTitle}
+  </button>
+</cr-action-menu>
+
+<if expr="enable_ink">
+  ${this.showAnnotationsModeDialog_ ? html`
+    <viewer-annotations-mode-dialog
+        two-up-view-enabled="${this.twoUpViewEnabled}"
+        rotated="${this.rotated}" @close="${this.onDialogClose_}">
+    </viewer-annotations-mode-dialog>` : ''}
+  ${this.showAnnotationsBar_() ? html`
+    <viewer-annotations-bar annotation-mode="${this.annotationMode}">
+    </viewer-annotations-bar>` : ''}
+</if>

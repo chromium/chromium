@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/platform/web_drag_data.h"
-
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -12,10 +11,12 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(WebDragDataTest, items) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext context;
   DataObject* data_object = DataObject::Create();
 

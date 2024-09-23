@@ -39,6 +39,7 @@ source_set("model") {
     ":password_protection_ts",
     "//base",
     "//build:branding_buildflags",
+    "//components/feature_engagement/public",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/omnibox/common",
@@ -49,12 +50,12 @@ source_set("model") {
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
-    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service",
     "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/safe_browsing/ios/browser/password_protection",
@@ -64,6 +65,7 @@ source_set("model") {
     "//components/sync_user_events",
     "//components/variations/service",
     "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/passwords/model:store_factory",
@@ -72,6 +74,7 @@ source_set("model") {
     "//ios/chrome/browser/safe_browsing/model/tailored_security",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ios/components/security_interstitials",
@@ -105,6 +108,18 @@ source_set("features") {
   ]
 }
 
+source_set("infobar_delegate") {
+  sources = [
+    "enhanced_safe_browsing_infobar_delegate.h",
+    "enhanced_safe_browsing_infobar_delegate.mm",
+  ]
+
+  deps = [
+    "//components/infobars/core",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -114,14 +129,16 @@ source_set("eg2_tests") {
   ]
   deps = [
     "//base",
-    "//components/bookmarks/common",
     "//components/password_manager/core/common:features",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
+    "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/passwords:constants",
+    "//ios/chrome/browser/passwords/ui_bundled:constants",
+    "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/settings/privacy:privacy_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
@@ -159,11 +176,11 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
-    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/security_interstitials/core",
@@ -177,7 +194,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/prerender/model:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/test:test_support",
     "//ios/components/security_interstitials/safe_browsing",

@@ -15,9 +15,7 @@ using ArcGraphicsJankDetectorTest = testing::Test;
 TEST_F(ArcGraphicsJankDetectorTest, Generic) {
   int jank_count = 0;
   ArcGraphicsJankDetector detector(base::BindRepeating(
-      [](int* out_jank_count, const base::Time& timestamp) {
-        *out_jank_count += 1;
-      },
+      [](int* out_jank_count, base::Time timestamp) { *out_jank_count += 1; },
       &jank_count));
 
   base::Time now = base::Time::Now();
@@ -91,9 +89,7 @@ TEST_F(ArcGraphicsJankDetectorTest, Generic) {
 TEST_F(ArcGraphicsJankDetectorTest, FixedRate) {
   int jank_count = 0;
   ArcGraphicsJankDetector detector(base::BindRepeating(
-      [](int* out_jank_count, const base::Time& timestamp) {
-        *out_jank_count += 1;
-      },
+      [](int* out_jank_count, base::Time timestamp) { *out_jank_count += 1; },
       &jank_count));
 
   base::Time now = base::Time::Now();
@@ -131,7 +127,7 @@ TEST_F(ArcGraphicsJankDetectorTest, FixedRate) {
 
 TEST_F(ArcGraphicsJankDetectorTest, CheckEnoughSamples) {
   ArcGraphicsJankDetector detector(
-      base::BindRepeating([](const base::Time& timestamp) {
+      base::BindRepeating([](base::Time timestamp) {
         // Do nothing.
       }));
 

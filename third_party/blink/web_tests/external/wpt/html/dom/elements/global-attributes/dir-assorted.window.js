@@ -64,22 +64,57 @@ test(() => {
   assert_true(ele2.matches(":dir(ltr)"), "child is LTR after change");
 }, "Non-HTML element text contents influence dir=auto");
 
-test(() => {
-  const e1 = document.createElement("div");
-  e1.dir = "auto";
-  const e2 = document.createElement("div");
-  e2.dir = "auto";
-  e2.innerText = "A";
-  e1.append(e2);
-  assert_true(e1.matches(":dir(ltr)"), "parent is LTR before changes");
-  assert_true(e2.matches(":dir(ltr)"), "child is LTR before changes");
-  e2.removeAttribute("dir");
-  assert_true(e1.matches(":dir(ltr)"), "parent is LTR after removing dir attribute on child");
-  assert_true(e2.matches(":dir(ltr)"), "child is LTR after removing dir attribute on child");
-  e2.firstChild.data = "\u05D0";
-  assert_false(e1.matches(":dir(ltr)"), "parent is RTL after changing text in child");
-  assert_false(e2.matches(":dir(ltr)"), "child is RTL after changing text in child");
-}, "text changes apply to dir=auto on further ancestor after removing dir=auto from closer ancestor");
+
+for (const tag of ["style", "script"]) {
+  test(() => {
+    const e1 = document.createElement("div");
+    e1.dir = "auto";
+
+    const e2 = document.createElement(tag);
+    const node = document.createTextNode("\u05D0");
+    e2.appendChild(node);
+    e1.appendChild(e2);
+    assert_true(e1.matches(":dir(ltr)", "is LTR before change"));
+    node.data = "ABC";
+    assert_true(e1.matches(":dir(ltr)", "is LTR after change"));
+
+  }, `${tag} element text contents do not influence dir=auto`);
+}
+
+for (const tag of ["style", "script", "input", "textarea"]) {
+  test(() => {
+    const e1 = document.createElement("div");
+    e1.dir = "auto";
+    const svg = document.createElement("svg");
+    const e2 = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    const node = document.createTextNode("\u05D0");
+    e2.appendChild(node);
+    svg.appendChild(e2);
+    e1.appendChild(svg);
+    assert_true(e1.matches(":dir(rtl)", "is RTL before change"));
+    node.data = "ABC";
+    assert_true(e1.matches(":dir(ltr)", "is LTR after change"));
+  }, `non-html ${tag} element text contents influence dir=auto`);
+}
+
+for (const dir of ["auto", "ltr"]) {
+  test(() => {
+    const e1 = document.createElement("div");
+    e1.dir = "auto";
+    const e2 = document.createElement("div");
+    e2.dir = dir;
+    e2.innerText = "A";
+    e1.append(e2);
+    assert_true(e1.matches(":dir(ltr)"), "parent is LTR before changes");
+    assert_true(e2.matches(":dir(ltr)"), "child is LTR before changes");
+    e2.removeAttribute("dir");
+    assert_true(e1.matches(":dir(ltr)"), "parent is LTR after removing dir attribute on child");
+    assert_true(e2.matches(":dir(ltr)"), "child is LTR after removing dir attribute on child");
+    e2.firstChild.data = "\u05D0";
+    assert_false(e1.matches(":dir(ltr)"), "parent is RTL after changing text in child");
+    assert_false(e2.matches(":dir(ltr)"), "child is RTL after changing text in child");
+  }, `text changes apply to dir=auto on further ancestor after removing dir=${dir} from closer ancestor`);
+}
 
 for (const bdi_test of [
   { markup: "<bdi dir=ltr>A</bdi>", expected: "ltr", desc: "dir=ltr with LTR contents" },
@@ -90,10 +125,11 @@ for (const bdi_test of [
   { markup: "<bdi dir=rtl></bdi>", expected: "rtl", desc: "dir=rtl empty" },
   { markup: "<bdi dir=auto>A</bdi>", expected: "ltr", desc: "dir=auto with LTR contents" },
   { markup: "<bdi dir=auto>\u05d0</bdi>", expected: "rtl", desc: "dir=auto with RTL contents" },
-  { markup: "<bdi dir=auto></bdi>", expected: "parent", desc: "dir=auto empty" },
+  { markup: "<bdi dir=auto></bdi>", expected: "ltr", desc: "dir=auto empty" },
+  { markup: "<bdi dir=auto>123</bdi>", expected: "ltr", desc: "dir=auto numbers" },
   { markup: "<bdi>A</bdi>", expected: "ltr", desc: "no dir attribute with LTR contents" },
   { markup: "<bdi>\u05d0</bdi>", expected: "rtl", desc: "no dir attribute with RTL contents" },
-  { markup: "<bdi></bdi>", expected: "parent", desc: "no dir attribute empty" },
+  { markup: "<bdi></bdi>", expected: "ltr", desc: "no dir attribute empty" },
 ]) {
   for (const parent_dir of [ "ltr", "rtl" ]) {
     test(() => {

@@ -479,15 +479,12 @@
     <div class="flex search-container">
       <input type="text" id="search"
             aria-label="$i18n{search-label}"
-            placeholder="$i18n{search-placeholder}" tabindex="1"
+            placeholder="$i18n{search-placeholder}"
             autocomplete="off" spellcheck="false">
-      <input type="button" class="clear-search" title="$i18n{clear-search}"
-          tabindex="2">
+      <input type="button" class="clear-search" title="$i18n{clear-search}">
     </div>
     <div class="flex">
-      <button id="experiment-reset-all" tabindex="3">
-          $i18n{reset}
-      </button>
+      <button id="experiment-reset-all">$i18n{reset}</button>
     </div>
   </div>
   <div class="screen-reader-only" id="screen-reader-status-message"
@@ -499,8 +496,7 @@
     <div class="os-link-container" id="os-link-container">
       <span id="os-flags-link-container" class="os-link-icon"></span>
       <span aria-hidden="true" id="os-link-desc">$i18n{os-flags-text1}</span>
-      <a href="#" id="os-link-href" tabindex="4"
-        aria-describedby="os-link-desc">
+      <a href="#" id="os-link-href" aria-describedby="os-link-desc">
         $i18n{os-flags-link}
       </a>
       <span aria-hidden="true">$i18n{os-flags-text2}</span>
@@ -536,14 +532,13 @@
       <a href="#tab-content-available" id="tab-available" class="tab selected"
           role="tab"
           aria-selected="true"
-          aria-controls="panel1"
-          tabindex="5">$i18n{available}</a>
+          aria-controls="panel1">$i18n{available}</a>
 <!-- Unsupported experiments are not shown on iOS -->
 <if expr="not is_ios">
       <a href="#tab-content-unavailable" id="tab-unavailable" class="tab"
-          role="tab"
-          aria-selected="false" aria-controls="panel2"
-          tabindex="-1">$i18n{unavailable}</a>
+          role="tab" aria-selected="false" aria-controls="panel2">
+        $i18n{unavailable}
+      </a>
 </if>
     </div>
     <div id="tabpanels">
@@ -570,7 +565,7 @@
         <div class="flex restart-notice">$i18n{flagsRestartNotice}</div>
         <div class="flex">
 <if expr="not is_ios">
-          <button id="experiment-restart-button" class="primary" tabindex="-1">
+          <button id="experiment-restart-button" class="primary">
             $i18n{relaunch}
           </button>
 </if>

@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -29,7 +30,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -78,7 +78,7 @@ public class ChromeHttpAuthHandlerTest {
     public void authDialogDismissOnTabSwitched() throws Exception {
         ChromeHttpAuthHandler handler = triggerAuth();
         verifyAuthDialogVisibility(handler, true);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mActivityTestRule
                                 .getActivity()
@@ -106,7 +106,7 @@ public class ChromeHttpAuthHandlerTest {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         // If the first tab was closed due to OOM, then just exit the test.
-        if (TestThreadUtils.runOnUiThreadBlocking(
+        if (ThreadUtils.runOnUiThreadBlocking(
                 () -> firstTab.isClosing() || SadTab.isShowing(firstTab))) {
             return;
         }
@@ -126,15 +126,15 @@ public class ChromeHttpAuthHandlerTest {
                     handlerRef.set(handler);
                     handlerCallback.notifyCalled();
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeHttpAuthHandler.setTestCreationCallback(callback);
                 });
 
         String url = mTestServer.getURL("/auth-basic");
         ChromeTabUtils.loadUrlOnUiThread(tab, url);
-        handlerCallback.waitForFirst();
-        TestThreadUtils.runOnUiThreadBlocking(
+        handlerCallback.waitForOnly();
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeHttpAuthHandler.setTestCreationCallback(null);
                 });

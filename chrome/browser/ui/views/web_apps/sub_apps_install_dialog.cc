@@ -14,6 +14,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -119,7 +120,7 @@ std::unique_ptr<views::ScrollView> CreateSubAppsListView(
   sub_app_list->SetBetweenChildSpacing(
       GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL));
   sub_app_list->SetInsideBorderInsets(gfx::Insets().set_left(
-      GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL)));
+      GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL)));
 
   // Add a box view for each sub app containing the app's icon and title.
   for (const std::unique_ptr<WebAppInstallInfo>& sub_app : sub_apps) {
@@ -182,7 +183,7 @@ views::Widget* CreateSubAppsInstallDialogWidget(
           .Build();
 
   auto dialog = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::MODAL_TYPE_WINDOW);
+      std::move(dialog_model), ui::mojom::ModalType::kWindow);
   dialog->SetOwnedByWidget(true);
 
   views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(

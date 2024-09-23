@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_ID" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Не ўдалося замяніць файл "crx". Праверце, ці не выкарыстоўваецца гэты файл зараз.</translation>
 <translation id="3163201441334626963">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Не ўдалося распакаваць пашырэнне.  Для бяспечнага распакоўвання пашырэння неабходны шлях да каталога вашага профілю. Шлях павінен пачынаецца з літары дыска і не змяшчаць злучэння, пункта падключэння або сімвальнай спасылкі.  Такі шлях для вашага профілю адсутнічае.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> ад пастаўшчыка "<ph name="VENDOR_ID" />" (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Значэнне ўводу для персанальнага ключа павінна быць дапушчальным шляхам.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Адміністратар гэтай прылады патрабуе, каб пашырэнне "<ph name="EXTENSION_NAME" />" было ўсталявана. Выдаліць яго нельга.</translation>
 <translation id="6027032947578871493">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_NAME" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> ад пастаўшчыка <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Не ўдалося распакаваць пашырэнне.  Для бяспечнага распакоўвання пашырэння патрабуецца шлях да каталога вашага профілю, які не змяшчае сімвальную спасылку.  Для вашага профілю такі шлях не існуе.</translation>
 <translation id="6322279351188361895">Не ўдалося прачытаць закрыты ключ.</translation>
 <translation id="6391538222494443604">Павінен існаваць уваходны каталог.</translation>
 <translation id="641087317769093025">Не ўдалося распакаваць пашырэнне</translation>

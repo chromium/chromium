@@ -15,13 +15,17 @@
 namespace web_app {
 
 IsolatedWebAppExternalInstallOptions::IsolatedWebAppExternalInstallOptions(
-    const GURL& update_manifest_url,
-    const web_package::SignedWebBundleId& web_bundle_id)
-    : update_manifest_url_(update_manifest_url), web_bundle_id_(web_bundle_id) {
+    GURL update_manifest_url,
+    web_package::SignedWebBundleId web_bundle_id)
+    : update_manifest_url_(std::move(update_manifest_url)),
+      web_bundle_id_(std::move(web_bundle_id)) {
   DCHECK(update_manifest_url_.is_valid());
 }
 
 IsolatedWebAppExternalInstallOptions::IsolatedWebAppExternalInstallOptions(
+    const IsolatedWebAppExternalInstallOptions& other) = default;
+IsolatedWebAppExternalInstallOptions&
+IsolatedWebAppExternalInstallOptions::operator=(
     const IsolatedWebAppExternalInstallOptions& other) = default;
 
 IsolatedWebAppExternalInstallOptions::~IsolatedWebAppExternalInstallOptions() =
@@ -62,13 +66,14 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
                      return "Wrong Web Bundle ID value: " + std::move(error);
                    });
 
-  if (web_bundle_id.type() !=
-      web_package::SignedWebBundleId::Type::kEd25519PublicKey) {
-    return base::unexpected("The Wed Bundle Id is not Ed25519 public key");
+  if (web_bundle_id.is_for_proxy_mode()) {
+    return base::unexpected(
+        "This Wed Bundle Id is created for ProxyMode, so the corresponding "
+        "bundle cannot be installed");
   }
 
-  return IsolatedWebAppExternalInstallOptions(update_manifest_url,
-                                              web_bundle_id);
+  return IsolatedWebAppExternalInstallOptions(std::move(update_manifest_url),
+                                              std::move(web_bundle_id));
 }
 
 }  // namespace web_app

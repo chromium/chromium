@@ -71,7 +71,6 @@ PRUNE_PATHS = set([
     os.path.join('third_party', 'chromite'),
     os.path.join('third_party', 'clang-format'),
     os.path.join('third_party', 'cygwin'),
-    os.path.join('third_party', 'gles2_conform'),
     os.path.join('third_party', 'gnu_binutils'),
     os.path.join('third_party', 'gold'),
     os.path.join('third_party', 'gperf'),
@@ -343,11 +342,11 @@ SPECIAL_CASES = {
 # README.chromium files are under third_party/libc*/.
 # So we do not include licensing metadata for these directories.
 # See crbug.com/1458042 for more details.
-THIRD_PARTY_FOR_BUILD_FILES_ONLY = {
+PRUNE_PATHS.update([
     os.path.join('buildtools', 'third_party', 'libc++'),
     os.path.join('buildtools', 'third_party', 'libc++abi'),
     os.path.join('buildtools', 'third_party', 'libunwind'),
-}
+])
 
 # The mandatory metadata fields for a single dependency.
 MANDATORY_FIELDS = {
@@ -425,7 +424,6 @@ KNOWN_NON_IOS_LIBRARIES = set([
     os.path.join('third_party', 'lss'),
     os.path.join('third_party', 'lzma_sdk'),
     os.path.join('third_party', 'mesa'),
-    os.path.join('third_party', 'motemplate'),
     os.path.join('third_party', 'mozc'),
     os.path.join('third_party', 'mozilla'),
     os.path.join('third_party', 'npapi'),
@@ -436,7 +434,6 @@ KNOWN_NON_IOS_LIBRARIES = set([
     os.path.join('third_party', 're2'),
     os.path.join('third_party', 'safe_browsing'),
     os.path.join('third_party', 'smhasher'),
-    os.path.join('third_party', 'sudden_motion_sensor'),
     os.path.join('third_party', 'swiftshader'),
     os.path.join('third_party', 'swig'),
     os.path.join('third_party', 'talloc'),
@@ -638,9 +635,6 @@ def ParseDir(path,
   Returns: A tuple with a list of directory metadata, and accrued parsing errors
 
   """
-  if path in THIRD_PARTY_FOR_BUILD_FILES_ONLY:
-    return [], []
-
   # Get the metadata values, from
   # (a) looking up the path in SPECIAL_CASES; or
   # (b) parsing the metadata from a README.chromium file.
@@ -733,10 +727,10 @@ def process_license_files(
   return license_paths
 
 
-def ContainsFiles(path, root):
+def _ContainsFiles(path):
   """Determines whether any files exist in a directory or in any of its
     subdirectories."""
-  for _, dirs, files in os.walk(os.path.join(root, path)):
+  for _, dirs, files in os.walk(path):
     if files:
       return True
     for vcs_metadata in VCS_METADATA_DIRS:
@@ -745,32 +739,44 @@ def ContainsFiles(path, root):
   return False
 
 
-def FilterDirsWithFiles(dirs_list, root):
-  # If a directory contains no files, assume it's a DEPS directory for a
-  # project not used by our current configuration and skip it.
-  return [x for x in dirs_list if ContainsFiles(x, root)]
+def _MaybeAddThirdPartyPath(root, dirpath, third_party_dirs):
+  """Adds |dirpath| to |third_party_dirs| and processes
+  additional_readme_paths.json."""
+  # Prune paths and guard against cycles.
+  if dirpath in PRUNE_PATHS or dirpath in third_party_dirs:
+    return
+  # Guard against missing / empty dirs (gclient creates empty directories for
+  # conditionally downloaded submodules).
+  resolved_path = os.path.join(root, dirpath)
+  if not os.path.exists(resolved_path) or not _ContainsFiles(resolved_path):
+    return
+  third_party_dirs.add(dirpath)
+
+  additional_paths_file = os.path.join(root, dirpath, ADDITIONAL_PATHS_FILENAME)
+  if not os.path.exists(additional_paths_file):
+    return
+  with codecs.open(additional_paths_file, encoding='utf-8') as paths_file:
+    additional_paths = json.load(paths_file)
+  for p in additional_paths:
+    subpath = os.path.normpath(os.path.join(dirpath, p))
+    _MaybeAddThirdPartyPath(root, subpath, third_party_dirs)
 
 
-def ProcessAdditionalReadmePathsJson(root, dirname, third_party_dirs):
-  """For a given directory, process the additional readme paths, and add to
-    third_party_dirs."""
-  additional_paths_file = os.path.join(root, dirname, ADDITIONAL_PATHS_FILENAME)
-  if os.path.exists(additional_paths_file):
-    with codecs.open(additional_paths_file, encoding='utf-8') as paths_file:
-      extra_paths = json.load(paths_file)
-      third_party_dirs.update([os.path.join(dirname, p) for p in extra_paths])
-
-
-def FindThirdPartyDirs(prune_paths, root, extra_third_party_dirs=None):
+def FindThirdPartyDirs(root, extra_third_party_dirs=None):
   """Find all third_party directories underneath the source root."""
   third_party_dirs = set()
   for path, dirs, files in os.walk(root):
     path = path[len(root) + 1:]  # Pretty up the path.
 
     # .gitignore ignores /out*/, so do the same here.
-    if path in prune_paths or path.startswith('out'):
+    if path in PRUNE_PATHS or path.startswith('out'):
       dirs[:] = []
       continue
+
+    # Don't recurse into paths in ADDITIONAL_PATHS, like we do with regular
+    # third_party/foo paths.
+    if path in ADDITIONAL_PATHS:
+      dirs[:] = []
 
     # Prune out directories we want to skip.
     # (Note that we loop over PRUNE_DIRS so we're not iterating over a
@@ -781,33 +787,19 @@ def FindThirdPartyDirs(prune_paths, root, extra_third_party_dirs=None):
 
     if os.path.basename(path) == 'third_party':
       # Add all subdirectories that are not marked for skipping.
-      for dir in dirs:
-        dirpath = os.path.join(path, dir)
-        if dirpath not in prune_paths:
-          third_party_dirs.add(dirpath)
+      for d in dirs:
+        dirpath = os.path.join(path, d)
+        _MaybeAddThirdPartyPath(root, dirpath, third_party_dirs)
 
-        ProcessAdditionalReadmePathsJson(root, dirpath, third_party_dirs)
-
-    # Don't recurse into paths in ADDITIONAL_PATHS, like we do with regular
-    # third_party/foo paths.
-    if path in ADDITIONAL_PATHS:
-      dirs[:] = []
 
   extra_paths = set(ADDITIONAL_PATHS)
   if extra_third_party_dirs:
     extra_paths.update(extra_third_party_dirs)
 
-  for dir in extra_paths:
-    if dir not in prune_paths:
-      third_party_dirs.add(dir)
-      ProcessAdditionalReadmePathsJson(root, dir, third_party_dirs)
+  for path in extra_paths:
+    _MaybeAddThirdPartyPath(root, path, third_party_dirs)
 
   return sorted(third_party_dirs)
-
-
-def FindThirdPartyDirsWithFiles(root):
-  third_party_dirs = FindThirdPartyDirs(PRUNE_PATHS, root)
-  return FilterDirsWithFiles(third_party_dirs, root)
 
 
 # Many builders do not contain 'gn' in their PATH, so use the GN binary from
@@ -938,7 +930,7 @@ def ScanThirdPartyDirs(root=None):
   """Scan a list of directories and report on any problems we find."""
   if root is None:
     root = os.getcwd()
-  third_party_dirs = FindThirdPartyDirsWithFiles(root)
+  third_party_dirs = FindThirdPartyDirs(root)
 
   errors = []
   for path in sorted(third_party_dirs):
@@ -1001,7 +993,7 @@ def GenerateCredits(file_template_file,
     if not third_party_dirs:
       raise RuntimeError("No deps found.")
   else:
-    third_party_dirs = FindThirdPartyDirs(PRUNE_PATHS, _REPOSITORY_ROOT,
+    third_party_dirs = FindThirdPartyDirs(_REPOSITORY_ROOT,
                                           extra_third_party_dirs)
 
   if not file_template_file:
@@ -1121,7 +1113,7 @@ def GenerateCredits(file_template_file,
   return True
 
 
-def GenerateLicenseFile(args: argparse.Namespace):
+def GenerateLicenseFile(args: argparse.Namespace, root_dir=_REPOSITORY_ROOT):
   """Top level function for the license file generation.
 
   Either saves the text to a file or prints it to stdout depending on if
@@ -1129,6 +1121,7 @@ def GenerateLicenseFile(args: argparse.Namespace):
 
   Args:
     args: parsed arguments passed from the cli
+    root_dir: The root directory to start the third party search
   """
   # Convert the path separators to the OS specific ones
   extra_third_party_dirs = args.extra_third_party_dirs
@@ -1149,25 +1142,26 @@ def GenerateLicenseFile(args: argparse.Namespace):
       raise RuntimeError("No deps found.")
 
   else:
-    third_party_dirs = FindThirdPartyDirs(PRUNE_PATHS, _REPOSITORY_ROOT,
-                                          extra_third_party_dirs)
+    third_party_dirs = FindThirdPartyDirs(root_dir, extra_third_party_dirs)
 
   metadatas = {}
   for d in third_party_dirs:
     try:
       directory_metadata, errors = ParseDir(
           d,
-          _REPOSITORY_ROOT,
+          root_dir,
           require_license_file=True,
           enable_warnings=args.enable_warnings)
       if directory_metadata:
         metadatas[d] = directory_metadata
     except LicenseError as lic_exp:
       # TODO(phajdan.jr): Convert to fatal error (https://crbug.com/39240).
-      print(f"Error: {lic_exp}")
+      if args.enable_warnings:
+        print(f"Error: {lic_exp}")
       continue
 
-    LogParseDirErrors(errors)
+    if args.enable_warnings:
+      LogParseDirErrors(errors)
 
   if args.format == 'spdx':
     license_txt = GenerateLicenseFileSpdx(metadatas, args.spdx_link,
@@ -1178,6 +1172,9 @@ def GenerateLicenseFile(args: argparse.Namespace):
 
   elif args.format == 'csv':
     license_txt = GenerateLicenseFileCsv(metadatas)
+
+  elif args.format == 'notice':
+    license_txt = GenerateNoticeFilePlainText(metadatas)
 
   else:
     raise ValueError(f'Unknown license format: {args.format}')
@@ -1214,7 +1211,7 @@ def GenerateLicenseFileCsv(
   #   * License text for library included in product,
   #   * Mirrored source for reciprocal licences.
   #   * Signoff date.
-  static_data = ["Chromium", "Yes", "No", "N/A"]
+  static_data = ["Chromium", "Yes", "Yes", "N/A"]
 
   # Add informative CSV header row to make it clear which columns represent
   # which data in the review spreadsheet.
@@ -1260,6 +1257,39 @@ def GenerateLicenseFileCsv(
     csv_writer.writerow(data_row + static_data)
 
   return csv_content.getvalue()
+
+
+def GenerateNoticeFilePlainText(
+    metadata: Dict[str, List[Dict[str, Any]]],
+    repo_root: str = _REPOSITORY_ROOT,
+    read_file=lambda x: pathlib.Path(x).read_text(encoding='utf-8')
+) -> str:
+  """Generate a plain-text THIRD_PARTY_NOTICE file which can be used when you
+    ship a part of Chromium code (specified by gn_target) as a stand-alone
+    library (e.g., //ios/web_view).
+
+    The THIRD_PARTY_NOTICE file contains licenses of third-party libraries
+    which gn_target depends on. Each notice contains the following information:
+    * The name of the component.
+    * Identification of the component's license.
+    * The complete text of every unique license (at least once)
+      """
+  # Start with Chromium's THIRD_PARTY_NOTICE file.
+  content = []
+  # Add necessary third_party.
+  for directory in sorted(metadata):
+    dir_metadata = metadata[directory]
+    for dep_metadata in dir_metadata:
+      shipped = dep_metadata['Shipped']
+      license_files = dep_metadata['License File']
+      if shipped == YES and license_files:
+        for license_file in license_files:
+          content.append('-' * 20)
+          content.append('License notice for %s' % dep_metadata["Name"])
+          content.append('-' * 20)
+          content.append(read_file(os.path.join(repo_root, license_file)))
+
+  return '\n'.join(content)
 
 
 def GenerateLicenseFilePlainText(
@@ -1360,7 +1390,7 @@ def main():
   parser.add_argument('--gn-target', help='GN target to scan for dependencies.')
   parser.add_argument('--format',
                       default='txt',
-                      choices=['txt', 'spdx', 'csv'],
+                      choices=['txt', 'spdx', 'csv', 'notice'],
                       help='What format to output in')
   parser.add_argument('--spdx-root',
                       default=_REPOSITORY_ROOT,

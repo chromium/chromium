@@ -11,6 +11,8 @@
 @protocol AutocompleteSuggestionGroup;
 @protocol AutocompleteResultConsumer;
 
+@class SuggestAction;
+
 /// Delegate for AutocompleteResultConsumer.
 @protocol AutocompleteResultConsumerDelegate <NSObject>
 
@@ -25,6 +27,13 @@
 /// Tells the delegate when `suggestion` in `row` was selected.
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
                didSelectSuggestion:(id<AutocompleteSuggestion>)suggestion
+                             inRow:(NSUInteger)row;
+
+/// Tells the delegate when a `suggestion`'s `action` was selected in a given
+/// row index, for example "Directions" button for a local entity suggestion.
+- (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
+         didSelectSuggestionAction:(SuggestAction*)action
+                        suggestion:(id<AutocompleteSuggestion>)suggestion
                              inRow:(NSUInteger)row;
 
 /// Tells the delegate when `suggestion` in `row` was chosen for appending to

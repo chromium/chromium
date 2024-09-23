@@ -426,14 +426,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       cmd.HasSwitch(cc::switches::kShowScreenSpaceRects);
   settings.initial_debug_state.highlight_non_lcd_text_layers =
       cmd.HasSwitch(cc::switches::kHighlightNonLCDTextLayers);
-  settings.initial_debug_state.show_web_vital_metrics =
-      base::FeatureList::IsEnabled(
-          ::features::kHudDisplayForPerformanceMetrics) &&
-      !is_for_embedded_frame;
-  settings.initial_debug_state.show_smoothness_metrics =
-      base::FeatureList::IsEnabled(
-          ::features::kHudDisplayForPerformanceMetrics) &&
-      !is_for_embedded_frame;
 
   settings.initial_debug_state.SetRecordRenderingStats(
       cmd.HasSwitch(cc::switches::kEnableGpuBenchmarking));
@@ -591,13 +583,14 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.enable_image_animation_resync =
       !cmd.HasSwitch(switches::kDisableImageAnimationResync);
 
-  settings.send_compositor_frame_ack = false;
-
   settings.enable_backface_visibility_interop =
       RuntimeEnabledFeatures::BackfaceVisibilityInteropEnabled();
 
   settings.disable_frame_rate_limit =
       cmd.HasSwitch(::switches::kDisableFrameRateLimit);
+
+  settings.enable_hit_test_opaqueness =
+      RuntimeEnabledFeatures::HitTestOpaquenessEnabled();
 
   settings.enable_variable_refresh_rate =
       ::features::IsVariableRefreshRateAlwaysOn();

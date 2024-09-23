@@ -6,27 +6,18 @@
 
 #include <map>
 
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/events/ozone/evdev/imposter_checker_evdev_state.h"
 #include "ui/events/ozone/features.h"
 
 namespace ui {
 
-std::vector<int> ImposterCheckerEvdev::GetIdsOnSamePhys(
-    const std::string& phys_path) {
-  std::vector<int> ids_on_same_phys;
-  std::pair<std::multimap<std::string, int>::iterator,
-            std::multimap<std::string, int>::iterator>
-      iterators = devices_on_phys_path_.equal_range(phys_path);
-  for (auto& it = iterators.first; it != iterators.second; ++it) {
-    ids_on_same_phys.push_back(it->second);
-  }
-  return ids_on_same_phys;
-}
+namespace {
 
-std::string ImposterCheckerEvdev::StandardizedPhys(
-    const std::string& phys_path) {
+std::string StandardizedPhys(const std::string& phys_path) {
   // For input devices on USB, remove the final digits in the phys_path. This
   // means devices with the same USB topology will have identical phys_paths.
   std::string standard_phys = phys_path;
@@ -35,10 +26,22 @@ std::string ImposterCheckerEvdev::StandardizedPhys(
   return standard_phys;
 }
 
+}  // namespace
+
+std::vector<int> ImposterCheckerEvdev::GetIdsOnSamePhys(
+    const std::string& phys_path) {
+  std::vector<int> ids_on_same_phys;
+  auto iterators = devices_on_phys_path_.equal_range(phys_path);
+  for (auto& it = iterators.first; it != iterators.second; ++it) {
+    ids_on_same_phys.push_back(it->second);
+  }
+  return ids_on_same_phys;
+}
+
 bool ImposterCheckerEvdev::IsSuspectedKeyboardImposter(
     EventConverterEvdev* converter,
     bool shared_phys) {
-  if (!base::FeatureList::IsEnabled(kEnableFakeKeyboardHeuristic)) {
+  if (!imposter_checker_evdev_state_->IsKeyboardCheckEnabled()) {
     return false;
   }
 
@@ -47,7 +50,8 @@ bool ImposterCheckerEvdev::IsSuspectedKeyboardImposter(
     fake_keyboard_heuristic_metrics_.RecordUsage(false);
   }
 #endif
-  if (!converter->HasKeyboard() || (!converter->HasMouse() && !shared_phys)) {
+  if (!converter->HasKeyboard() || (!converter->HasMouse() && !shared_phys) ||
+      converter->type() == InputDeviceType::INPUT_DEVICE_INTERNAL) {
     return false;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -121,7 +125,9 @@ std::vector<int> ImposterCheckerEvdev::OnDeviceRemoved(
   return GetIdsOnSamePhys(StandardizedPhys(converter->input_device().phys));
 }
 
-ImposterCheckerEvdev::ImposterCheckerEvdev() = default;
+ImposterCheckerEvdev::ImposterCheckerEvdev()
+    : imposter_checker_evdev_state_(
+          std::make_unique<ImposterCheckerEvdevState>()) {}
 
 ImposterCheckerEvdev::~ImposterCheckerEvdev() = default;
 

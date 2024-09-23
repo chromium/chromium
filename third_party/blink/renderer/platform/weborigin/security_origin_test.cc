@@ -28,9 +28,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 #include <stdint.h>
+
+#include <string_view>
 
 #include "base/test/scoped_command_line.h"
 #include "base/unguessable_token.h"
@@ -1157,7 +1164,7 @@ class BlinkSecurityOriginTestTraits {
  public:
   using OriginType = scoped_refptr<blink::SecurityOrigin>;
 
-  static OriginType CreateOriginFromString(base::StringPiece s) {
+  static OriginType CreateOriginFromString(std::string_view s) {
     return blink::SecurityOrigin::CreateFromString(String::FromUTF8(s));
   }
 
@@ -1166,7 +1173,7 @@ class BlinkSecurityOriginTestTraits {
   }
 
   static OriginType CreateWithReferenceOrigin(
-      base::StringPiece url,
+      std::string_view url,
       const OriginType& reference_origin) {
     return blink::SecurityOrigin::CreateWithReferenceOrigin(
         blink::KURL(String::FromUTF8(url)), reference_origin.get());
@@ -1206,7 +1213,7 @@ class BlinkSecurityOriginTestTraits {
     return origin->ToString().Utf8();
   }
 
-  static bool IsValidUrl(base::StringPiece str) {
+  static bool IsValidUrl(std::string_view str) {
     return blink::KURL(String::FromUTF8(str)).IsValid();
   }
 
@@ -1214,7 +1221,7 @@ class BlinkSecurityOriginTestTraits {
     return origin->IsPotentiallyTrustworthy();
   }
 
-  static bool IsUrlPotentiallyTrustworthy(base::StringPiece str) {
+  static bool IsUrlPotentiallyTrustworthy(std::string_view str) {
     // Note: intentionally avoid constructing GURL() directly from `str`, since
     // this is a test harness intended to exercise the behavior of `KURL` and
     // `SecurityOrigin`.

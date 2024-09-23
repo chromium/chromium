@@ -29,8 +29,16 @@ async function CreateFrameHelper(setUpFrame, fetchTests) {
 // Create an iframe element with content loaded from `sourceURL`, append it to
 // the document, and optionally fetch tests. Returns the loaded frame, once
 // ready.
-function CreateFrame(sourceURL, fetchTests = false) {
+function CreateFrame(
+  sourceURL, fetchTests = false, frameSandboxAttribute = undefined, frameAllowAttribute = undefined) {
   return CreateFrameHelper((frame) => {
+    if (frameSandboxAttribute !== undefined) {
+      frame.sandbox = frameSandboxAttribute;
+    }
+    if (frameAllowAttribute !== undefined) {
+      frame.setAttribute("allow", frameAllowAttribute);
+    }
+
     frame.src = sourceURL;
     document.body.appendChild(frame);
   }, fetchTests);
@@ -38,8 +46,8 @@ function CreateFrame(sourceURL, fetchTests = false) {
 
 // Create a new iframe with content loaded from `sourceURL`, and fetches tests.
 // Returns the loaded frame, once ready.
-function RunTestsInIFrame(sourceURL) {
-  return CreateFrame(sourceURL, true);
+function RunTestsInIFrame(sourceURL, frameSandboxAttribute = undefined) {
+  return CreateFrame(sourceURL, true, frameSandboxAttribute);
 }
 
 function RunTestsInNestedIFrame(sourceURL) {
@@ -221,6 +229,11 @@ function RequestStorageAccessInFrame(frame) {
       { command: "requestStorageAccess" }, frame.contentWindow);
 }
 
+function GetPermissionInFrame(frame) {
+  return PostMessageAndAwaitReply(
+    { command: "get_permission" }, frame.contentWindow);
+}
+
 // Executes test_driver.set_permission in the given frame, with the provided
 // arguments.
 function SetPermissionInFrame(frame, args = []) {
@@ -285,6 +298,13 @@ async function MaybeSetStorageAccess(origin, embedding_origin, value) {
     // by default. If this failed without default blocking we'll notice it later
     // in the test.
   }
+}
+
+
+// Navigate the inner iframe using the given frame.
+function NavigateChild(frame, url) {
+  return PostMessageAndAwaitReply(
+    { command: "navigate_child", url }, frame.contentWindow);
 }
 
 // Starts a dedicated worker in the given frame.

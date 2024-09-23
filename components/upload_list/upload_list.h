@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -44,7 +45,7 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
     UploadInfo(const std::string& local_id,
                const base::Time& capture_time,
                State state,
-               const std::u16string& file_size);
+               int64_t file_size);
     UploadInfo(const std::string& upload_id, const base::Time& upload_time);
     ~UploadInfo();
 
@@ -67,8 +68,8 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
     // The MD5sum of the path of the crash meta file.
     std::string path_hash;
 
-    // Formatted file size for locally stored data.
-    std::u16string file_size;
+    // File size for locally stored data.
+    std::optional<int64_t> file_size;
   };
 
   UploadList();

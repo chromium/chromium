@@ -55,11 +55,10 @@ class BrowserTabsModelControllerTest : public testing::Test {
   MutablePhoneModel* phone_model() { return phone_model_.get(); }
 
  private:
-  std::unique_ptr<BrowserTabsModelController> controller_;
-
   std::unique_ptr<MutablePhoneModel> phone_model_;
   multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
   FakeBrowserTabsModelProvider fake_browser_tabs_model_provider_;
+  std::unique_ptr<BrowserTabsModelController> controller_;
 };
 
 TEST_F(BrowserTabsModelControllerTest, MutablePhoneModelProperlySet) {

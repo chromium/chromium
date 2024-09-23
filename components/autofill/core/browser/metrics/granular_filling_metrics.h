@@ -5,28 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_GRANULAR_FILLING_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_GRANULAR_FILLING_METRICS_H_
 
+#include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
 
 namespace autofill::autofill_metrics {
-
-// Represents the filling method chosen by the user.
-enum class AutofillFillingMethodMetric {
-  // User chose to fill the whole form. Either from the main suggestion or from
-  // the extended menu `PopupItemId::kFillEverything`.
-  kFullForm = 0,
-  // User chose to fill all name fields.
-  kGroupFillingName = 1,
-  // User chose to fill all address fields.
-  kGroupFillingAddress = 2,
-  // User chose to fill all email fields.
-  kGroupFillingEmail = 3,
-  // User chose to fill all phone number fields.
-  kGroupFillingPhoneNumber = 4,
-  // User chose to fill a specific field.
-  kFieldByFieldFilling = 5,
-  kMaxValue = kFieldByFieldFilling
-};
 
 // These values are persisted to UMA logs. Entries should not be renumbered
 // and numeric values should never be reused. This is a subset of field
@@ -63,13 +46,13 @@ void LogEditAddressProfileDialogClosed(bool user_saved_changes);
 // dialog is opened from the Autofill popup.
 void LogDeleteAddressProfileFromExtendedMenu(bool user_accepted_delete);
 
-// Logs the `AutofillFillingMethodMetric` chosen by the user.
+// Logs the `FillingMethod` chosen by the user.
 // `filling_product` defines what type of filling the user chose, for example
 // address or payment. `triggering_field_type_matches_filling_product` defines
 // whether the `filling_product` chosen matches the triggering field type. For
 // example, if an user chose to fill their address profile into an unclassified
 // field, triggering_field_type_matches_filling_product will be false.
-void LogFillingMethodUsed(AutofillFillingMethodMetric filling_method,
+void LogFillingMethodUsed(FillingMethod filling_method,
                           FillingProduct filling_product,
                           bool triggering_field_type_matches_filling_product);
 

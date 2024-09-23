@@ -7,8 +7,8 @@
 <translation id="2577522251608256362">Auzoa</translation>
 <translation id="3050787670591910834">Posta-kodea eman behar duzu, adibidez <ph name="EXAMPLE" />.</translation>
 <translation id="3174168572213147020">Uhartea</translation>
-<translation id="3713769522066937702">Posta-kodearen formatua ezezaguna da. Baliozko posta-kode baten adibidea: <ph name="EXAMPLE" />. Ez dakizu zure posta-kodea zein den? Bila ezazu <ph name="BEGIN_LINK" />hemen<ph name="END_LINK" />.</translation>
-<translation id="3882422586004212847">Posta-kodearen formatua ezezaguna da. Baliozko posta-kode baten adibidea: <ph name="EXAMPLE" />.</translation>
+<translation id="3713769522066937702">Posta-kodearen formatua ezezaguna da. Balio duen posta-kode baten adibidea: <ph name="EXAMPLE" />. Ez dakizu zure posta-kodea zein den? Bila ezazu <ph name="BEGIN_LINK" />hemen<ph name="END_LINK" />.</translation>
+<translation id="3882422586004212847">Posta-kodearen formatua ezezaguna da. Balio duen posta-kode baten adibidea: <ph name="EXAMPLE" />.</translation>
 <translation id="3885155851504623709">Barrutia</translation>
 <translation id="43113324827158664">Ezin duzu hutsik utzi.</translation>
 <translation id="4376888869070172068">Ez da posta-kodearen formatua ezagutzen.</translation>
@@ -23,8 +23,8 @@
 <translation id="6271429879296260742">PIN kodea</translation>
 <translation id="6282194474023008486">Posta-kodea</translation>
 <translation id="6327653052522436195">Hiria</translation>
-<translation id="6403469950615936250">Posta-kodearen formatua ezezaguna da. Baliozko posta-kode baten adibidea: <ph name="EXAMPLE" />. Ez dakizu zure posta-kodea zein den? Bila ezazu <ph name="BEGIN_LINK" />hemen<ph name="END_LINK" />.</translation>
-<translation id="6735419622867539268"><ph name="FIELD_VALUE" /> ez da baliozko balioa eremurako.</translation>
+<translation id="6403469950615936250">Posta-kodearen formatua ezezaguna da. Balio duen posta-kode baten adibidea: <ph name="EXAMPLE" />. Ez dakizu zure posta-kodea zein den? Bila ezazu <ph name="BEGIN_LINK" />hemen<ph name="END_LINK" />.</translation>
+<translation id="6735419622867539268"><ph name="FIELD_VALUE" /> ez da eremurako balio balioduna.</translation>
 <translation id="6768780634682399515">Eircode kodea</translation>
 <translation id="6777217372746654521">Helbidearen lerro hau posta-kutxa bat dela dirudi. Erabili kalearen edo eraikinaren helbidea.</translation>
 <translation id="6839929833149231406">Eskualdea</translation>

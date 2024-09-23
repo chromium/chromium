@@ -32,6 +32,10 @@ inline constexpr int kEventInstall = 2;
 inline constexpr int kEventUpdate = 3;
 inline constexpr int kEventUninstall = 4;
 inline constexpr int kEventDownload = 14;
+
+// App Command Events.
+inline constexpr int kEventAppCommandComplete = 41;
+
 inline constexpr int kEventAction = 42;
 
 struct HW {

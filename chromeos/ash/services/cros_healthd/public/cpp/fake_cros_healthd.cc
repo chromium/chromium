@@ -404,26 +404,16 @@ void FakeCrosHealthd::RunFloatingPointAccuracyRoutine(
       callback_delay_);
 }
 
-void FakeCrosHealthd::DEPRECATED_RunNvmeWearLevelRoutine(
+void FakeCrosHealthd::DEPRECATED_RunNvmeWearLevelRoutineWithThreshold(
     uint32_t wear_level_threshold,
-    RunNvmeWearLevelRoutineCallback callback) {
-  NOTREACHED();
+    DEPRECATED_RunNvmeWearLevelRoutineWithThresholdCallback callback) {
+  NOTREACHED_IN_MIGRATION();
 }
 
-void FakeCrosHealthd::RunNvmeWearLevelRoutine(
+void FakeCrosHealthd::DEPRECATED_RunNvmeWearLevelRoutine(
     mojom::NullableUint32Ptr wear_level_threshold,
-    RunNvmeWearLevelRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  if (!wear_level_threshold.is_null()) {
-    actual_passed_parameters_.Set(
-        "wear_level_threshold", static_cast<int>(wear_level_threshold->value));
-  }
-
-  last_run_routine_ = mojom::DiagnosticRoutineEnum::kNvmeWearLevel;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_.Clone()),
-      callback_delay_);
+    DEPRECATED_RunNvmeWearLevelRoutineCallback callback) {
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::RunNvmeSelfTestRoutine(
@@ -670,7 +660,7 @@ void FakeCrosHealthd::DEPRECATED_RunLedLitUpRoutine(
   actual_passed_parameters_.Set("name", static_cast<int32_t>(name));
   actual_passed_parameters_.Set("color", static_cast<int32_t>(color));
 
-  last_run_routine_ = mojom::DiagnosticRoutineEnum::kLedLitUp;
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::DEPRECATED_kLedLitUp;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
@@ -686,15 +676,15 @@ void FakeCrosHealthd::DEPRECATED_RunAudioSetVolumeRoutine(
     uint8_t volume,
     bool mute_on,
     DEPRECATED_RunAudioSetVolumeRoutineCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::DEPRECATED_RunAudioSetGainRoutine(
     uint64_t node_id,
     uint8_t gain,
-    bool mute_on,
+    bool deprecated_mute_on,
     DEPRECATED_RunAudioSetGainRoutineCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::RunBluetoothPowerRoutine(
@@ -750,17 +740,17 @@ void FakeCrosHealthd::RunFanRoutine(RunFanRoutineCallback callback) {
 
 void FakeCrosHealthd::DEPRECATED_AddBluetoothObserver(
     mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::DEPRECATED_AddLidObserver(
     mojo::PendingRemote<mojom::CrosHealthdLidObserver> observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::DEPRECATED_AddPowerObserver(
     mojo::PendingRemote<mojom::CrosHealthdPowerObserver> observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::AddNetworkObserver(
@@ -771,17 +761,17 @@ void FakeCrosHealthd::AddNetworkObserver(
 
 void FakeCrosHealthd::DEPRECATED_AddAudioObserver(
     mojo::PendingRemote<mojom::CrosHealthdAudioObserver> observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::DEPRECATED_AddThunderboltObserver(
     mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver> observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::DEPRECATED_AddUsbObserver(
     mojo::PendingRemote<mojom::CrosHealthdUsbObserver> observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::AddEventObserver(

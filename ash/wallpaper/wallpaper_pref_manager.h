@@ -21,6 +21,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
+#include "base/values.h"
 #include "components/account_id/account_id.h"
 
 class PrefService;
@@ -58,22 +59,8 @@ class WallpaperProfileHelper {
 // Manages wallpaper preferences and tracks the currently configured wallpaper.
 class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
  public:
-  // Names of nodes with wallpaper info in |kUserWallpaperInfo| dictionary.
-  static const char kNewWallpaperAssetIdNodeName[];
-  static const char kNewWallpaperCollectionIdNodeName[];
-  static const char kNewWallpaperDateNodeName[];
-  static const char kNewWallpaperDedupKeyNodeName[];
-  static const char kNewWallpaperLayoutNodeName[];
-  static const char kNewWallpaperLocationNodeName[];
-  static const char kNewWallpaperUserFilePathNodeName[];
-  static const char kNewWallpaperTypeNodeName[];
-  static const char kNewWallpaperUnitIdNodeName[];
-  static const char kNewWallpaperVariantListNodeName[];
-
-  // Names of nodes for the online wallpaper variant dictionary.
-  static const char kOnlineWallpaperTypeNodeName[];
-  static const char kOnlineWallpaperUrlNodeName[];
-
+  // Returns the name of the syncable pref of the user's wallpaper info.
+  static const char* GetSyncPrefName();
   // Determines whether the wallpaper info is syncable and should be stored in
   // synced prefs.
   static bool ShouldSyncOut(const WallpaperInfo& local_info);
@@ -175,6 +162,15 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
                                       WallpaperInfo* info) const = 0;
   virtual bool SetSyncedWallpaperInfo(const AccountId& account_id,
                                       const WallpaperInfo& info) = 0;
+
+  // Gets the wallpaper info from the deprecated synced prefs
+  // `kSyncableWallpaperInfo`.
+  virtual bool GetSyncedWallpaperInfoFromDeprecatedPref(
+      const AccountId& account_id,
+      WallpaperInfo* info) const = 0;
+
+  // Clears the deprecated synced prefs `kSyncableWallpaperInfo`.
+  virtual void ClearDeprecatedPref(const AccountId& account_id) = 0;
 
   // Returns the delta for the next daily refresh update for `account_id`.
   virtual base::TimeDelta GetTimeToNextDailyRefreshUpdate(

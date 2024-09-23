@@ -71,11 +71,13 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
                                               LocalDOMWindow* dom_window) {
   WebWindowFeatures window_features;
 
-  bool attribution_reporting_enabled =
+  const bool attribution_reporting_enabled =
       dom_window &&
       (RuntimeEnabledFeatures::AttributionReportingEnabled(dom_window) ||
        RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
            dom_window));
+  const bool explicit_opener_enabled =
+      RuntimeEnabledFeatures::RelOpenerBcgDependencyHintEnabled(dom_window);
 
   // This code follows the HTML spec, specifically
   // https://html.spec.whatwg.org/C/#concept-window-open-features-tokenize
@@ -153,20 +155,17 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
 
     // Listing a key with no value is shorthand for key=yes
     int value;
-    constexpr auto kLoose = WTF::NumberParsingOptions::Loose();
     if (value_string.empty() || value_string == "yes" ||
         value_string == "true") {
       value = 1;
-    } else if (value_string.Is8Bit()) {
-      value = CharactersToInt(value_string.Characters8(), value_string.length(),
-                              kLoose, nullptr);
     } else {
-      value = CharactersToInt(value_string.Characters16(),
-                              value_string.length(), kLoose, nullptr);
+      value = CharactersToInt(value_string, WTF::NumberParsingOptions::Loose(),
+                              /*ok=*/nullptr);
     }
 
     if (!ui_features_were_disabled && key_string != "noopener" &&
-        key_string != "noreferrer" && key_string != "fullscreen" &&
+        (!explicit_opener_enabled || key_string != "opener") &&
+        key_string != "noreferrer" &&
         (!attribution_reporting_enabled || key_string != "attributionsrc")) {
       ui_features_were_disabled = true;
       menu_bar = false;
@@ -202,20 +201,17 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       window_features.resizable = value;
     } else if (key_string == "noopener") {
       window_features.noopener = value;
+    } else if (explicit_opener_enabled && key_string == "opener") {
+      window_features.explicit_opener = value;
     } else if (key_string == "noreferrer") {
       window_features.noreferrer = value;
     } else if (key_string == "background") {
       window_features.background = true;
     } else if (key_string == "persistent") {
       window_features.persistent = true;
-    } else if (key_string == "fullscreen" &&
-               RuntimeEnabledFeatures::FullscreenPopupWindowsEnabled(
-                   dom_window)) {
-      // TODO(crbug.com/1142516): Add permission check to give earlier
-      // feedback / console warning if permission isn't granted, and/or just
-      // silently drop the flag. Currently the browser will block the popup
-      // entirely if this flag is set and permission is not granted.
-      window_features.is_fullscreen = value;
+    } else if (RuntimeEnabledFeatures::PartitionedPopinsEnabled(dom_window) &&
+               key_string == "popin") {
+      window_features.is_partitioned_popin = true;
     } else if (attribution_reporting_enabled &&
                key_string == "attributionsrc") {
       if (!window_features.attribution_srcs.has_value()) {
@@ -241,7 +237,8 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
     }
   }
 
-  window_features.is_popup = popup_state == PopupState::kPopup;
+  window_features.is_popup =
+      popup_state == PopupState::kPopup || window_features.is_partitioned_popin;
   if (popup_state == PopupState::kUnknown) {
     window_features.is_popup = !tool_bar || !menu_bar || !scrollbars ||
                                !status_bar || !window_features.resizable;
@@ -250,9 +247,8 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
   if (window_features.noreferrer)
     window_features.noopener = true;
 
-  if (window_features.is_fullscreen) {
-    UseCounter::Count(dom_window->document(),
-                      WebFeature::kWindowOpenFullscreenRequested);
+  if (window_features.noopener) {
+    window_features.explicit_opener = false;
   }
 
   return window_features;
@@ -296,7 +292,7 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   const KURL& url = request.GetResourceRequest().Url();
   if (url.ProtocolIsJavaScript()) {
     if (opener_window
-            .CheckAndGetJavascriptUrl(request.JavascriptWorld().get(), url,
+            .CheckAndGetJavascriptUrl(request.JavascriptWorld(), url,
                                       nullptr /* element */)
             .empty()) {
       return nullptr;

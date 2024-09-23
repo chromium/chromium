@@ -1,0 +1,61 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<meta name=variant content="?method=a">
+<meta name=variant content="?method=a&eligible">
+<meta name=variant content='?method=fetch&eligible={"eventSourceEligible":true,"triggerEligible":false}'>
+<meta name=variant content='?method=fetch&eligible={"eventSourceEligible":true,"triggerEligible":false}&cross-origin'>
+<meta name=variant content="?method=img">
+<meta name=variant content="?method=img&eligible">
+<meta name=variant content="?method=open">
+<meta name=variant content="?method=open&eligible">
+<meta name=variant content="?method=script">
+<meta name=variant content="?method=script&eligible">
+<meta name=variant content='?method=xhr&eligible={"eventSourceEligible":true,"triggerEligible":false}'>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/attribution-reporting/resources/helpers.js"></script>
+<body>
+<script>
+attribution_reporting_promise_test(async t => {
+  const reportingOrigin = getDefaultReportingOrigin();
+  const source = {
+    source_event_id: generateSourceEventId(),
+    destination: 'https://{{host}}',
+    debug_reporting: true,
+  };
+  const sourceType = registerAttributionSrc({
+    source,
+    method: 'variant',
+    reportingOrigin,
+    cookie: attributionDebugCookie,
+    extraHeaders: [
+      {
+        name: 'Attribution-Reporting-Register-OS-Source',
+        value: '"https://r.test"',
+      },
+      {
+        name: 'Attribution-Reporting-Info',
+        value: 'preferred-platform=web',
+      },
+    ]
+  });
+
+  await waitForSourceToBeRegistered(source.source_event_id, reportingOrigin);
+
+  registerAttributionSrc({
+    trigger: {
+      event_trigger_data: [{}],
+    },
+    reportingOrigin,
+  });
+  const payload = await pollEventLevelReports(reportingOrigin);
+  assert_equals(payload.reports.length, 1);
+  const report = JSON.parse(payload.reports[0].body);
+  assert_equals(report.source_event_id, source.source_event_id);
+  assert_equals(report.source_type, sourceType);
+}, 'Source registration succeeds.');
+</script>

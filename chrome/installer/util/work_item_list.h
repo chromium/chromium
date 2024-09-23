@@ -16,6 +16,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/installer/util/work_item.h"
 
 // A WorkItem subclass that recursively contains a list of WorkItems. Thus it
@@ -122,7 +123,7 @@ class WorkItemList : public WorkItem {
  protected:
   friend class WorkItem;
 
-  typedef std::list<WorkItem*> WorkItems;
+  typedef std::list<raw_ptr<WorkItem, CtnExperimental>> WorkItems;
   typedef WorkItems::iterator WorkItemIterator;
 
   WorkItemList();

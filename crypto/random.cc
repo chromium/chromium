@@ -12,15 +12,11 @@
 
 namespace crypto {
 
-void RandBytes(void *bytes, size_t length) {
-  // It's OK to call base::RandBytes(), because it's already strongly random.
-  // But _other_ code should go through this function to ensure that code which
-  // needs secure randomness is easily discoverable.
-  base::RandBytes(bytes, length);
-}
-
 void RandBytes(base::span<uint8_t> bytes) {
-  RandBytes(bytes.data(), bytes.size());
+  // base::RandBytes() is already strongly random, so this is just an alias for
+  // it. If base needs a non-strong RNG function in the future, it will get a
+  // different name.
+  base::RandBytes(bytes);
 }
 
 std::vector<uint8_t> RandBytesAsVector(size_t length) {
@@ -30,4 +26,3 @@ std::vector<uint8_t> RandBytesAsVector(size_t length) {
 }
 
 }  // namespace crypto
-

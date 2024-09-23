@@ -32,12 +32,14 @@ class WaylandServerHandle;
 class WaylandServerController {
  public:
   static std::unique_ptr<WaylandServerController> CreateForArcIfNecessary(
-      std::unique_ptr<DataExchangeDelegate> data_exchange_delegate);
+      std::unique_ptr<DataExchangeDelegate> data_exchange_delegate,
+      std::unique_ptr<SecurityDelegate> security_delegate);
 
   // Creates WaylandServerController. Returns null if controller should not be
   // created.
   static std::unique_ptr<WaylandServerController> CreateIfNecessary(
       std::unique_ptr<DataExchangeDelegate> data_exchange_delegate,
+      std::unique_ptr<SecurityDelegate> security_delegate,
       std::unique_ptr<NotificationSurfaceManager> notification_surface_manager,
       std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
       std::unique_ptr<ToastSurfaceManager> toast_surface_manager);
@@ -60,6 +62,7 @@ class WaylandServerController {
 
   WaylandServerController(
       std::unique_ptr<DataExchangeDelegate> data_exchange_delegate,
+      std::unique_ptr<SecurityDelegate> security_delegate,
       std::unique_ptr<NotificationSurfaceManager> notification_surface_manager,
       std::unique_ptr<InputMethodSurfaceManager> input_method_surface_manager,
       std::unique_ptr<ToastSurfaceManager> toast_surface_manager);

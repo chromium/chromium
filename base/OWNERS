@@ -10,6 +10,7 @@ fdoray@chromium.org
 gab@chromium.org
 kylechar@chromium.org
 mark@chromium.org
+pkasting@chromium.org
 thakis@chromium.org
 thestig@chromium.org
 wez@chromium.org
@@ -30,7 +31,6 @@ per-file ..._fuchsia*=file://build/fuchsia/OWNERS
 # For Windows-specific changes:
 per-file ..._win*=file://base/win/OWNERS
 
-per-file callback_list*=pkasting@chromium.org
 per-file feature_list*=asvitkine@chromium.org
 per-file feature_list*=isherman@chromium.org
 

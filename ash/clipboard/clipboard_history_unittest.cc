@@ -136,7 +136,7 @@ class ClipboardHistoryTest : public AshTestBase {
     {
       ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
       scw.WritePickledData(input_data_pickle,
-                           ui::ClipboardFormatType::WebCustomDataType());
+                           ui::ClipboardFormatType::DataTransferCustomType());
     }
     base::RunLoop().RunUntilIdle();
 
@@ -149,7 +149,7 @@ class ClipboardHistoryTest : public AshTestBase {
 
     std::optional<std::unordered_map<std::u16string, std::u16string>>
         actual_data = ui::ReadCustomDataIntoMap(base::as_bytes(
-            base::span(items.front().data().GetWebCustomData())));
+            base::span(items.front().data().GetDataTransferCustomData())));
 
     EXPECT_EQ(expected_data, actual_data);
   }

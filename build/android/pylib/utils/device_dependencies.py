@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import glob
 import os
+import posixpath
 import re
 
 from pylib import constants
@@ -28,9 +30,6 @@ _EXCLUSIONS = [
 
     # Chrome external extensions config file.
     re.compile(r'.*external_extensions\.json'),
-
-    # Exists just to test the compile, not to be run.
-    re.compile(r'.*jni_generator_tests'),
 
     # v8's blobs and icu data get packaged into APKs.
     re.compile(r'.*snapshot_blob.*\.bin'),
@@ -142,7 +141,33 @@ def GetDataDependencies(runtime_deps_path):
       os.path.abspath(os.path.join(output_directory, r))
       for r in rel_host_files]
   filtered_abs_host_files = _FilterDataDeps(abs_host_files)
-  # TODO(crbug.com/752610): Filter out host executables, and investigate
+  # TODO(crbug.com/40533647): Filter out host executables, and investigate
   # whether other files could be filtered as well.
   return [(f, DevicePathComponentsFor(f, output_directory))
           for f in filtered_abs_host_files]
+
+
+def SubstituteDeviceRootSingle(device_path, device_root):
+  if not device_path:
+    return device_root
+  if isinstance(device_path, list):
+    return posixpath.join(*(p if p else device_root for p in device_path))
+  return device_path
+
+
+def SubstituteDeviceRoot(host_device_tuples, device_root):
+  return [(h, SubstituteDeviceRootSingle(d, device_root))
+          for h, d in host_device_tuples]
+
+
+def ExpandDataDependencies(host_device_tuples):
+  ret = []
+  for h, d in host_device_tuples:
+    if os.path.isdir(h):
+      for subpath in glob.glob(f'{h}/**', recursive=True):
+        if not os.path.isdir(subpath):
+          new_part = subpath[len(h):]
+          ret.append((subpath, d + new_part))
+    else:
+      ret.append((h, d))
+  return ret

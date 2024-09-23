@@ -12,6 +12,7 @@
 #include "base/containers/adapters.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/public/renderer/plugin_ax_tree_action_target_adapter.h"
 #include "content/renderer/accessibility/ax_action_target_factory.h"
 #include "content/renderer/accessibility/render_accessibility_impl_test.h"
 #include "content/renderer/render_frame_impl.h"
@@ -213,9 +214,8 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForFixedNodeAfterScroll) {
   const std::vector<ui::AXTreeUpdate>& updates = GetHandledAccUpdates();
   for (const auto& update : base::Reversed(updates)) {
     for (const ui::AXNodeData& node : update.nodes) {
-      std::string name;
-      if (node.GetStringAttribute(ax::mojom::StringAttribute::kName, &name) &&
-          name == "first") {
+      if (node.GetStringAttribute(ax::mojom::StringAttribute::kName) ==
+          "first") {
         expected_id = node.id;
         expected_bounds = node.relative_bounds;
         expected_bounds.bounds.set_y(expected_bounds.bounds.y() +
@@ -282,8 +282,8 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForMultipleFixedNodeAfterScroll) {
   const std::vector<ui::AXTreeUpdate>& updates = GetHandledAccUpdates();
   for (const ui::AXTreeUpdate& update : updates) {
     for (const ui::AXNodeData& node : update.nodes) {
-      std::string name;
-      node.GetStringAttribute(ax::mojom::StringAttribute::kName, &name);
+      const std::string& name =
+          node.GetStringAttribute(ax::mojom::StringAttribute::kName);
       if (name == "first" || name == "second") {
         ui::AXRelativeBounds ax_bounds = node.relative_bounds;
         ax_bounds.bounds.set_y(ax_bounds.bounds.y() + scroll_offset_y);
@@ -548,7 +548,10 @@ TEST_F(RenderAccessibilityImplTest, TestExpandCollapseTreeItem) {
   EXPECT_TRUE(found_collapsed_update);
 }
 
-class MockPluginAccessibilityTreeSource : public content::PluginAXTreeSource {
+class MockPluginAccessibilityTreeSource
+    : public ui::
+          AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>,
+      public content::PluginAXTreeActionTargetAdapter {
  public:
   MockPluginAccessibilityTreeSource(ui::AXNodeID root_node_id) {
     ax_tree_ = std::make_unique<ui::AXTree>();
@@ -596,7 +599,7 @@ class MockPluginAccessibilityTreeSource : public content::PluginAXTreeSource {
   void ResetAccActionStatus() {}
   bool IsIgnored(const ui::AXNode* node) const override { return false; }
   std::unique_ptr<ui::AXActionTarget> CreateActionTarget(
-      const ui::AXNode& target_node) override {
+      ui::AXNodeID id) override {
     action_target_called_ = true;
     return std::make_unique<ui::NullAXActionTarget>();
   }
@@ -624,24 +627,26 @@ TEST_F(RenderAccessibilityImplTest, TestAXActionTargetFromNodeId) {
 
   // An AxID for an HTML node should produce a Blink action target.
   std::unique_ptr<ui::AXActionTarget> body_action_target =
-      AXActionTargetFactory::CreateFromNodeId(document, nullptr, body.AxID());
+      AXActionTargetFactory::CreateFromNodeIdOrRole(document, nullptr,
+                                                    body.AxID());
   EXPECT_EQ(ui::AXActionTarget::Type::kBlink, body_action_target->GetType());
 
   // An AxID for a Plugin node should produce a Plugin action target.
-  ui::AXNodeID root_node_id = GetRenderAccessibilityImpl()->GenerateAXID();
+  ui::AXNodeID root_node_id = 100;
   MockPluginAccessibilityTreeSource pdf_acc_tree(root_node_id);
-  GetRenderAccessibilityImpl()->SetPluginTreeSource(&pdf_acc_tree);
+  //  GetRenderAccessibilityImpl()->SetPluginTreeSource(&pdf_acc_tree);
 
   // An AxId from Pdf, should call PdfAccessibilityTree::CreateActionTarget.
   std::unique_ptr<ui::AXActionTarget> pdf_action_target =
-      AXActionTargetFactory::CreateFromNodeId(document, &pdf_acc_tree,
-                                              root_node_id);
+      AXActionTargetFactory::CreateFromNodeIdOrRole(document, &pdf_acc_tree,
+                                                    root_node_id);
   EXPECT_TRUE(pdf_acc_tree.GetActionTargetCalled());
   pdf_acc_tree.ResetActionTargetCalled();
 
   // An invalid AxID should produce a null action target.
   std::unique_ptr<ui::AXActionTarget> null_action_target =
-      AXActionTargetFactory::CreateFromNodeId(document, &pdf_acc_tree, -1);
+      AXActionTargetFactory::CreateFromNodeIdOrRole(document, &pdf_acc_tree,
+                                                    -1);
   EXPECT_EQ(ui::AXActionTarget::Type::kNull, null_action_target->GetType());
 }
 
@@ -662,6 +667,8 @@ TEST_F(RenderAccessibilityImplTest, SendPendingAccessibilityEventsPostLoad) {
   // A load started event pauses logging.
   WebDocument document = GetMainFrame()->GetDocument();
   WebAXObject root_obj = WebAXObject::FromWebDocument(document);
+  GetRenderAccessibilityImpl()->DidCommitProvisionalLoad(
+      ui::PAGE_TRANSITION_LINK);
   GetRenderAccessibilityImpl()->HandleAXEvent(
       ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLoadStart));
   SendPendingAccessibilityEvents();
@@ -726,8 +733,8 @@ TEST_F(BlinkAXActionTargetTest, TestSetRangeValue) {
   EXPECT_TRUE(input_range.ValueForRange(&value));
   EXPECT_EQ(2.0f, value);
   std::unique_ptr<ui::AXActionTarget> input_range_action_target =
-      AXActionTargetFactory::CreateFromNodeId(document, nullptr,
-                                              input_range.AxID());
+      AXActionTargetFactory::CreateFromNodeIdOrRole(document, nullptr,
+                                                    input_range.AxID());
   EXPECT_EQ(ui::AXActionTarget::Type::kBlink,
             input_range_action_target->GetType());
 
@@ -786,48 +793,49 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   WebAXObject text_two = body.ChildAt(6).ChildAt(0);
 
   std::unique_ptr<ui::AXActionTarget> input_checkbox_action_target =
-      AXActionTargetFactory::CreateFromNodeId(document, nullptr,
-                                              input_checkbox.AxID());
+      AXActionTargetFactory::CreateFromNodeIdOrRole(document, nullptr,
+                                                    input_checkbox.AxID());
   EXPECT_EQ(ui::AXActionTarget::Type::kBlink,
             input_checkbox_action_target->GetType());
 
   std::unique_ptr<ui::AXActionTarget> input_range_action_target =
-      AXActionTargetFactory::CreateFromNodeId(document, nullptr,
-                                              input_range.AxID());
+      AXActionTargetFactory::CreateFromNodeIdOrRole(document, nullptr,
+                                                    input_range.AxID());
   EXPECT_EQ(ui::AXActionTarget::Type::kBlink,
             input_range_action_target->GetType());
 
   std::unique_ptr<ui::AXActionTarget> input_text_action_target =
-      AXActionTargetFactory::CreateFromNodeId(document, nullptr,
-                                              input_text.AxID());
+      AXActionTargetFactory::CreateFromNodeIdOrRole(document, nullptr,
+                                                    input_text.AxID());
   EXPECT_EQ(ui::AXActionTarget::Type::kBlink,
             input_text_action_target->GetType());
 
   std::unique_ptr<ui::AXActionTarget> option_action_target =
-      AXActionTargetFactory::CreateFromNodeId(document, nullptr, option.AxID());
+      AXActionTargetFactory::CreateFromNodeIdOrRole(document, nullptr,
+                                                    option.AxID());
   EXPECT_EQ(ui::AXActionTarget::Type::kBlink, option_action_target->GetType());
 
   std::unique_ptr<ui::AXActionTarget> scroller_action_target =
-      AXActionTargetFactory::CreateFromNodeId(document, nullptr,
-                                              scroller.AxID());
+      AXActionTargetFactory::CreateFromNodeIdOrRole(document, nullptr,
+                                                    scroller.AxID());
   EXPECT_EQ(ui::AXActionTarget::Type::kBlink,
             scroller_action_target->GetType());
 
   std::unique_ptr<ui::AXActionTarget> scroller_child_action_target =
-      AXActionTargetFactory::CreateFromNodeId(document, nullptr,
-                                              scroller_child.AxID());
+      AXActionTargetFactory::CreateFromNodeIdOrRole(document, nullptr,
+                                                    scroller_child.AxID());
   EXPECT_EQ(ui::AXActionTarget::Type::kBlink,
             scroller_child_action_target->GetType());
 
   std::unique_ptr<ui::AXActionTarget> text_one_action_target =
-      AXActionTargetFactory::CreateFromNodeId(document, nullptr,
-                                              text_one.AxID());
+      AXActionTargetFactory::CreateFromNodeIdOrRole(document, nullptr,
+                                                    text_one.AxID());
   EXPECT_EQ(ui::AXActionTarget::Type::kBlink,
             text_one_action_target->GetType());
 
   std::unique_ptr<ui::AXActionTarget> text_two_action_target =
-      AXActionTargetFactory::CreateFromNodeId(document, nullptr,
-                                              text_two.AxID());
+      AXActionTargetFactory::CreateFromNodeIdOrRole(document, nullptr,
+                                                    text_two.AxID());
   EXPECT_EQ(ui::AXActionTarget::Type::kBlink,
             text_two_action_target->GetType());
 

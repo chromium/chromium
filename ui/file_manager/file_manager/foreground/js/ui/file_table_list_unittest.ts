@@ -9,13 +9,13 @@ import {MockVolumeManager} from '../../../background/js/mock_volume_manager.js';
 import {FakeEntryImpl} from '../../../common/js/files_app_entry_types.js';
 import {RootType} from '../../../common/js/volume_manager_types.js';
 import {FileListModel} from '../file_list_model.js';
-import {MetadataModel} from '../metadata/metadata_model.js';
+import type {MetadataModel} from '../metadata/metadata_model.js';
 import {MockMetadataModel} from '../metadata/mock_metadata.js';
 
 import type {A11yAnnounce} from './a11y_announce.js';
 import {FileListSelectionModel} from './file_list_selection_model.js';
 import {FileTable} from './file_table.js';
-import {FileTableList} from './file_table_list.js';
+import type {FileTableList} from './file_table_list.js';
 
 let volumeManager: MockVolumeManager;
 

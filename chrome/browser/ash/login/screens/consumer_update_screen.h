@@ -15,21 +15,27 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
 namespace ash {
 
 class ConsumerUpdateScreenView;
 class ErrorScreensHistogramHelper;
+struct AccessibilityStatusEventDetails;
 
 // Controller for the Consumer update screen.
-class ConsumerUpdateScreen : public BaseScreen,
-                             public VersionUpdater::Delegate,
-                             public chromeos::PowerManagerClient::Observer {
+class ConsumerUpdateScreen
+    : public BaseScreen,
+      public VersionUpdater::Delegate,
+      public chromeos::PowerManagerClient::Observer,
+      public screens_oobe::mojom::ConsumerUpdatePageHandler,
+      public OobeMojoBinder<screens_oobe::mojom::ConsumerUpdatePageHandler,
+                            screens_oobe::mojom::ConsumerUpdatePage> {
  public:
   using TView = ConsumerUpdateScreenView;
 
@@ -125,16 +131,20 @@ class ConsumerUpdateScreen : public BaseScreen,
     return &wait_reboot_timer_;
   }
 
- protected:
+ private:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
 
   void ExitUpdate(VersionUpdater::Result result);
 
- private:
+  // screens_oobe::mojom::ConsumerUpdatePageHandler:
+  void OnDeclineCellularClicked() override;
+  void OnAcceptCellularClicked() override;
+  void OnSkipClicked() override;
+  void OnBackClicked() override;
+
   void HideErrorMessage();
 
   // Notification of a change in the accessibility settings.
@@ -170,6 +180,10 @@ class ConsumerUpdateScreen : public BaseScreen,
   // the default network.
   bool is_first_portal_notification_ = true;
 
+  // Whether Quick Start was notified of an update. True for users who
+  // previously started Quick Start and will install an update.
+  bool did_prepare_quick_start_for_update_ = false;
+
   base::WeakPtr<ConsumerUpdateScreenView> view_;
   raw_ptr<ErrorScreen> error_screen_;
   ScreenExitCallback exit_callback_;
@@ -204,7 +218,7 @@ class ConsumerUpdateScreen : public BaseScreen,
   base::TimeDelta delay_skip_button_time_ = base::Seconds(15);
 
   // Maximum time estimate to force update
-  base::TimeDelta maximum_time_force_update_ = base::Minutes(5);
+  base::TimeDelta maximum_time_force_update_ = base::Minutes(8);
 
   base::TimeTicks screen_shown_time_;
 
@@ -214,6 +228,9 @@ class ConsumerUpdateScreen : public BaseScreen,
 
   // Timer for the interval to wait to exit screen when no update.
   base::OneShotTimer wait_exit_timer_;
+
+  // Time estimated to finish the updating.
+  base::TimeDelta estimate_update_time_left_;
 
   // PowerManagerClient::Observer is used only when screen is shown.
   base::ScopedObservation<chromeos::PowerManagerClient,
@@ -225,7 +242,7 @@ class ConsumerUpdateScreen : public BaseScreen,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// TODO(crbug.com/40163357): remove after the //chrome/browser/chromeos
 // source migration is finished.
 namespace chromeos {
 using ::ash ::ConsumerUpdateScreen;

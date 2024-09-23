@@ -4,94 +4,75 @@
 
 package org.chromium.base;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.chromium.base.test.util.BaseFlagTestRule.A_OFF_B_ON;
+import static org.chromium.base.test.util.BaseFlagTestRule.A_ON_B_OFF;
+import static org.chromium.base.test.util.BaseFlagTestRule.FEATURE_A;
+import static org.chromium.base.test.util.BaseFlagTestRule.FEATURE_B;
+import static org.chromium.base.test.util.BaseFlagTestRule.FEATURE_MAP;
 
-import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-
-import java.util.Map;
+import org.chromium.base.test.util.BaseFlagTestRule;
 
 /** Unit Tests for {@link MutableFlagWithSafeDefault}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MutableFlagWithSafeDefaultUnitTest {
-    static final String FEATURE_A_NAME = "FeatureA";
-    static final String FEATURE_B_NAME = "FeatureB";
-    static final Map<String, Boolean> A_ON_B_OFF =
-            Map.of(FEATURE_A_NAME, true, FEATURE_B_NAME, false);
-
-    private static class TestFeatureMap extends FeatureMap {
-        @Override
-        protected long getNativeMap() {
-            return 0;
-        }
-    }
-
-    private final TestFeatureMap mFeatureMap = new TestFeatureMap();
-
-    @After
-    public void tearDown() {
-        Flag.resetFlagsForTesting();
-    }
+    @Rule public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
 
     @Test(expected = AssertionError.class)
     public void testDuplicateFeatureInMap_throwsException() {
-        mFeatureMap.mutableFlagWithSafeDefault(FEATURE_A_NAME, false);
-        mFeatureMap.mutableFlagWithSafeDefault(FEATURE_A_NAME, false);
+        FEATURE_MAP.mutableFlagWithSafeDefault(FEATURE_A, false);
+        FEATURE_MAP.mutableFlagWithSafeDefault(FEATURE_A, false);
     }
 
     @Test(expected = AssertionError.class)
     public void testDuplicateFeatureOutsideOfMap_throwsException() {
-        mFeatureMap.mutableFlagWithSafeDefault(FEATURE_A_NAME, false);
-        new MutableFlagWithSafeDefault(mFeatureMap, FEATURE_A_NAME, false);
+        FEATURE_MAP.mutableFlagWithSafeDefault(FEATURE_A, false);
+        new MutableFlagWithSafeDefault(FEATURE_MAP, FEATURE_A, false);
     }
 
     @Test
     public void testNativeInitialized_getsFromChromeFeatureList() {
         MutableFlagWithSafeDefault featureA =
-                mFeatureMap.mutableFlagWithSafeDefault(FEATURE_A_NAME, false);
+                FEATURE_MAP.mutableFlagWithSafeDefault(FEATURE_A, false);
         MutableFlagWithSafeDefault featureB =
-                mFeatureMap.mutableFlagWithSafeDefault(FEATURE_B_NAME, true);
+                FEATURE_MAP.mutableFlagWithSafeDefault(FEATURE_B, true);
 
         // Values from ChromeFeatureList should be used from now on.
         FeatureList.setTestFeatures(A_ON_B_OFF);
 
         // Verify that {@link MutableFlagWithSafeDefault} returns native values.
-        assertTrue(featureA.isEnabled());
-        assertFalse(featureB.isEnabled());
+        BaseFlagTestRule.assertIsEnabledMatches(A_ON_B_OFF, featureA, featureB);
     }
 
     @Test
     public void testNativeNotInitialized_useDefault() {
         MutableFlagWithSafeDefault featureA =
-                mFeatureMap.mutableFlagWithSafeDefault(FEATURE_A_NAME, false);
+                FEATURE_MAP.mutableFlagWithSafeDefault(FEATURE_A, false);
         MutableFlagWithSafeDefault featureB =
-                mFeatureMap.mutableFlagWithSafeDefault(FEATURE_B_NAME, true);
+                FEATURE_MAP.mutableFlagWithSafeDefault(FEATURE_B, true);
 
         // Query the flags to make sure the default values are returned.
-        assertFalse(featureA.isEnabled());
-        assertTrue(featureB.isEnabled());
+        BaseFlagTestRule.assertIsEnabledMatches(A_OFF_B_ON, featureA, featureB);
     }
 
     @Test
     public void testNativeInitializedUsedDefault_getsFromChromeFeatureList() {
         MutableFlagWithSafeDefault featureA =
-                mFeatureMap.mutableFlagWithSafeDefault(FEATURE_A_NAME, false);
+                FEATURE_MAP.mutableFlagWithSafeDefault(FEATURE_A, false);
         MutableFlagWithSafeDefault featureB =
-                mFeatureMap.mutableFlagWithSafeDefault(FEATURE_B_NAME, true);
+                FEATURE_MAP.mutableFlagWithSafeDefault(FEATURE_B, true);
 
         // Query the flags to make sure the default values are returned.
-        assertFalse(featureA.isEnabled());
-        assertTrue(featureB.isEnabled());
+        BaseFlagTestRule.assertIsEnabledMatches(A_OFF_B_ON, featureA, featureB);
 
         // Values from ChromeFeatureList should be used from now on.
         FeatureList.setTestFeatures(A_ON_B_OFF);
 
         // Verify that {@link MutableFlagWithSafeDefault} returns native values.
-        assertTrue(featureA.isEnabled());
-        assertFalse(featureB.isEnabled());
+        BaseFlagTestRule.assertIsEnabledMatches(A_ON_B_OFF, featureA, featureB);
     }
 }

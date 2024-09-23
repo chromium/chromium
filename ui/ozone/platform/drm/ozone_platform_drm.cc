@@ -85,10 +85,12 @@ class OzonePlatformDrm : public OzonePlatform {
   }
 
   std::unique_ptr<PlatformScreen> CreateScreen() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
-  void InitScreen(PlatformScreen* screen) override { NOTREACHED(); }
+  void InitScreen(PlatformScreen* screen) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   GpuPlatformSupportHost* GetGpuPlatformSupportHost() override {
     return drm_device_connector_.get();
@@ -187,6 +189,8 @@ class OzonePlatformDrm : public OzonePlatform {
                                                                    usage);
   }
 
+  bool IsWindowCompositingSupported() const override { return true; }
+
   bool InitializeUI(const InitParams& args) override {
     // Ozone drm can operate in two modes configured at runtime.
     //   1. single-process mode where host and viz components
@@ -245,7 +249,7 @@ class OzonePlatformDrm : public OzonePlatform {
     host_properties_.supports_native_pixmaps = true;
 
     overlay_manager_ = std::make_unique<DrmOverlayManagerGpu>(
-        drm_thread_proxy_.get(),
+        drm_thread_proxy_.get(), args.handle_overlays_swap_failure,
         args.allow_sync_and_real_buffer_page_flip_testing);
 
     // If gpu is in a separate process, rest of the initialization happens after

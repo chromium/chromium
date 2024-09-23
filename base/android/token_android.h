@@ -7,12 +7,14 @@
 
 #include <jni.h>
 
+#include <optional>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/token.h"
 
-namespace base {
-namespace android {
+namespace base::android {
 
 class BASE_EXPORT TokenAndroid {
  public:
@@ -29,7 +31,20 @@ class BASE_EXPORT TokenAndroid {
   TokenAndroid& operator=(const TokenAndroid&) = delete;
 };
 
-}  // namespace android
-}  // namespace base
+}  // namespace base::android
+
+namespace jni_zero {
+template <>
+inline base::Token FromJniType<base::Token>(JNIEnv* env,
+                                            const JavaRef<jobject>& j_object) {
+  return base::android::TokenAndroid::FromJavaToken(env, j_object);
+}
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<base::Token>(
+    JNIEnv* env,
+    const base::Token& token) {
+  return base::android::TokenAndroid::Create(env, token);
+}
+}  // namespace jni_zero
 
 #endif  // BASE_ANDROID_TOKEN_ANDROID_H_

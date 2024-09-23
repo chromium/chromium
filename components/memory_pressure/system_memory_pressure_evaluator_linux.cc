@@ -46,8 +46,9 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     std::unique_ptr<MemoryPressureVoter> voter)
     : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)),
       moderate_pressure_repeat_count_(0) {
-  if (InferThresholds())
+  if (InferThresholds()) {
     StartObserving();
+  }
 }
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
@@ -126,8 +127,9 @@ void SystemMemoryPressureEvaluator::CheckMemoryPressure() {
 bool SystemMemoryPressureEvaluator::InferThresholds() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::SystemMemoryInfoKB mem_info;
-  if (!GetSystemMemoryInfo(&mem_info))
+  if (!GetSystemMemoryInfo(&mem_info)) {
     return false;
+  }
 
   // The computation of the different thresholds assumes that
   // SystemMemoryInfoKB::total is stored as an integer and so the result of
@@ -153,12 +155,14 @@ SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
     int available = GetAvailableSystemMemoryMiB(mem_info);
 
     // Determine if the available memory is under critical memory pressure.
-    if (available <= critical_threshold_mb_)
+    if (available <= critical_threshold_mb_) {
       return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+    }
 
     // Determine if the available memory is under moderate memory pressure.
-    if (available <= moderate_threshold_mb_)
+    if (available <= moderate_threshold_mb_) {
       return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+    }
   }
   // No memory pressure was detected.
   return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;

@@ -6,11 +6,9 @@
 #define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_LEVELDB_SCOPES_H_
 
 #include <stdint.h>
-#include <limits>
 #include <list>
 #include <memory>
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -18,16 +16,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
-namespace content {
+namespace content::indexed_db {
 class LevelDBScope;
 class LevelDBState;
 class PartitionedLockManager;
@@ -61,24 +57,15 @@ class LevelDBScopes {
 
   std::unique_ptr<LevelDBScope> CreateScope(std::vector<PartitionedLock> locks);
 
-  leveldb::Status Commit(std::unique_ptr<LevelDBScope> scope,
-                         bool sync_on_commit);
-
-  // |on_complete| will be called when the cleanup task for the scope has
-  // finished operating.
-  leveldb::Status Commit(std::unique_ptr<LevelDBScope> scope,
-                         bool sync_on_commit,
-                         base::OnceClosure on_complete);
-
-  base::SequencedTaskRunner* RevertRunnerForTesting() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return revert_runner_.get();
-  }
-
-  base::SequencedTaskRunner* CleanupRunnerForTesting() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return cleanup_runner_.get();
-  }
+  // `on_commit_complete` will be called after the commit for `scope` completes
+  // but before the cleanup task (if applicable) is scheduled.
+  // `on_cleanup_complete` will be called when the cleanup task completes. It
+  // will not be called if the task was not scheduled at all.
+  leveldb::Status Commit(
+      std::unique_ptr<LevelDBScope> scope,
+      bool sync_on_commit,
+      base::OnceClosure on_commit_complete = base::OnceClosure(),
+      base::OnceClosure on_cleanup_complete = base::OnceClosure());
 
   const std::vector<uint8_t>& metadata_key_prefix() const {
     return metadata_key_prefix_;
@@ -97,19 +84,11 @@ class LevelDBScopes {
   void OnCleanupTaskResult(base::OnceClosure on_complete,
                            leveldb::Status result);
 
-  void StartRevertTask(int64_t scope_id, std::vector<PartitionedLock> locks);
-
-  void OnRevertTaskResult(int64_t scope_id,
-                          std::vector<PartitionedLock> locks,
-                          leveldb::Status result);
-
   SEQUENCE_CHECKER(sequence_checker_);
   const std::vector<uint8_t> metadata_key_prefix_;
   const size_t max_write_batch_size_bytes_;
   std::vector<StartupScopeToCleanup> startup_scopes_to_clean_;
   std::vector<StartupScopeToRevert> startup_scopes_to_revert_;
-  scoped_refptr<base::SequencedTaskRunner> revert_runner_;
-  scoped_refptr<base::SequencedTaskRunner> cleanup_runner_;
 
   // This gets set to |true| when |Initialize()| succeeds.
   bool recovery_finished_ = false;
@@ -126,6 +105,6 @@ class LevelDBScopes {
   base::WeakPtrFactory<LevelDBScopes> weak_factory_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_LEVELDB_SCOPES_H_

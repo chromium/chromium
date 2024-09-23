@@ -5,6 +5,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 
 #include "base/functional/bind.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -15,7 +16,6 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/sync/service/sync_service.h"
-#include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/buildflags/buildflags.h"
@@ -28,23 +28,14 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
 #else
-#include "chrome/browser/supervised_user/supervised_user_service_platform_delegate.h"
+#include "chrome/browser/supervised_user/desktop/supervised_user_service_platform_delegate.h"
 #endif
 
 class FilterDelegateImpl
     : public supervised_user::SupervisedUserURLFilter::Delegate {
  public:
-  std::string GetCountryCode() override {
-    std::string country;
-    variations::VariationsService* variations_service =
-        g_browser_process->variations_service();
-    if (variations_service) {
-      country = variations_service->GetStoredPermanentCountry();
-      if (country.empty()) {
-        country = variations_service->GetLatestCountry();
-      }
-    }
-    return country;
+  bool SupportsWebstoreURL(const GURL& url) const override {
+    return supervised_user::IsSupportedChromeExtensionURL(url);
   }
 };
 
@@ -84,15 +75,8 @@ KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
       *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
           profile->GetProfileKey()),
       SyncServiceFactory::GetInstance()->GetForProfile(profile),
-      base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL),
       std::make_unique<FilterDelegateImpl>(),
-#if BUILDFLAG(IS_ANDROID)
-      std::make_unique<SupervisedUserServicePlatformDelegate>(
-          SupervisedUserServicePlatformDelegate()),
-#else
-      std::make_unique<SupervisedUserServicePlatformDelegate>(
-          SupervisedUserServicePlatformDelegate(*profile)),
-#endif
+      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
       /*can_show_first_time_interstitial_banner=*/!profile->IsNewProfile());
 }
 

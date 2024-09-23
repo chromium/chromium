@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
@@ -60,31 +59,16 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
         OnActivityLayoutCallback layoutCallback =
                 (left, top, right, bottom, state) ->
                         connection.onActivityLayout(session, left, top, right, bottom, state);
-        if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
-            return new PartialCustomTabDisplayManager(
-                    activity,
-                    intentData,
-                    touchEventProvider,
-                    tab,
-                    resizeCallback,
-                    layoutCallback,
-                    lifecycleDispatcher,
-                    fullscreenManager,
-                    isTablet);
-        } else {
-            return new PartialCustomTabBottomSheetStrategy(
-                    activity,
-                    intentData,
-                    touchEventProvider,
-                    tab,
-                    resizeCallback,
-                    layoutCallback,
-                    lifecycleDispatcher,
-                    fullscreenManager,
-                    isTablet,
-                    /* startMaximized= */ false,
-                    new PartialCustomTabHandleStrategyFactory());
-        }
+        return new PartialCustomTabDisplayManager(
+                activity,
+                intentData,
+                touchEventProvider,
+                tab,
+                resizeCallback,
+                layoutCallback,
+                lifecycleDispatcher,
+                fullscreenManager,
+                isTablet);
     }
 
     /**

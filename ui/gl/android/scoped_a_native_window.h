@@ -40,8 +40,7 @@ class GL_EXPORT ScopedANativeWindow {
 
   void DestroyIfNeeded();
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer, #global-scope
+  // RAW_PTR_EXCLUSION: #global-scope
   RAW_PTR_EXCLUSION ANativeWindow* a_native_window_ = nullptr;
 };
 

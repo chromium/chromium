@@ -6,11 +6,11 @@
 #define BASE_TIME_TIME_OVERRIDE_H_
 
 #include <atomic>
+#include <optional>
 
 #include "base/base_export.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -67,8 +67,8 @@ BASE_EXPORT ThreadTicks ThreadTicksNowIgnoringOverride();
 
 #if BUILDFLAG(IS_POSIX)
 // Equivalent to TimeTicksNowIgnoringOverride(), but is allowed to fail and
-// return absl::nullopt. This may safely be used in a signal handler.
-BASE_EXPORT absl::optional<TimeTicks> MaybeTimeTicksNowIgnoringOverride();
+// return std::nullopt. This may safely be used in a signal handler.
+BASE_EXPORT std::optional<TimeTicks> MaybeTimeTicksNowIgnoringOverride();
 #endif
 
 }  // namespace subtle

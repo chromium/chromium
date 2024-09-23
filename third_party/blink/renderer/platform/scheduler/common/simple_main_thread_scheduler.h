@@ -82,11 +82,20 @@ class SimpleMainThreadScheduler : public MainThreadScheduler {
   v8::Isolate* Isolate() override;
   std::unique_ptr<RendererPauseHandle> PauseScheduler() override;
 
+  // After-task callbacks are dropped, so this is a no-op.
+  void ExecuteAfterCurrentTaskForTesting(
+      base::OnceClosure on_completion_task,
+      ExecuteAfterCurrentTaskRestricted) override;
+
   // Idle tasks are dropped in `PostIdleTask()` and friends, so this is a no-op.
   void StartIdlePeriodForTesting() override;
 
+  // Do nothing. This class does not differentiate between foregrounded and
+  // backgrounded renderers.
+  void SetRendererBackgroundedForTesting(bool) override;
+
  private:
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_ = nullptr;
+  raw_ptr<v8::Isolate> isolate_ = nullptr;
 };
 
 }  // namespace scheduler

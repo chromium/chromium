@@ -21,6 +21,9 @@ void RecordItemSelected(SetUpListItemType type);
 // Records that a Set Up List item was completed.
 void RecordItemCompleted(SetUpListItemType type);
 
+// Records that all Set Up List items were completed.
+void RecordAllItemsCompleted();
+
 }  // namespace set_up_list_metrics
 
 #endif  // IOS_CHROME_BROWSER_NTP_MODEL_SET_UP_LIST_METRICS_H_

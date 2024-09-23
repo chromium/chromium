@@ -14,17 +14,14 @@
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
-#include "chrome/browser/extensions/api/platform_keys/platform_keys_api.h"
+#include "chrome/browser/extensions/api/platform_keys_core/platform_keys_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys_internal.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_function.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/manifest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
@@ -126,18 +123,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kAttestationExtensionAllowlist);
 }
 
-bool IsExtensionAllowed(Profile* profile, const Extension* extension) {
-  if (Manifest::IsComponentLocation(extension->location())) {
-    // Note: For this to even be called, the component extension must also be
-    // allowed in chrome/common/extensions/api/_permission_features.json
-    return true;
-  }
-  const base::Value::List& list =
-      profile->GetPrefs()->GetList(prefs::kAttestationExtensionAllowlist);
-  base::Value value(extension->id());
-  return base::Contains(list, value);
-}
-
 }  // namespace platform_keys
 
 //------------------------------------------------------------------------------
@@ -187,7 +172,7 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
             &EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey,
             this));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     EXTENSION_FUNCTION_VALIDATE(false);
   }
   return RespondLater();
@@ -500,7 +485,7 @@ EnterprisePlatformKeysChallengeKeyFunction::Run() {
       keystore_type = crosapi::mojom::KeystoreType::kDevice;
       break;
     case api::enterprise_platform_keys::Scope::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // Default to RSA when not registering a key.
@@ -527,7 +512,7 @@ EnterprisePlatformKeysChallengeKeyFunction::Run() {
         break;
       }
       case api::enterprise_platform_keys::Algorithm::kNone:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

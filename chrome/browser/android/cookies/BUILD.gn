@@ -1,0 +1,46 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/android/crypto:java",
+    "//chrome/browser/profiles/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:gendeps_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+
+  srcjar_deps = [ ":jni_headers" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/cookies/CanonicalCookie.java",
+    "java/src/org/chromium/chrome/browser/cookies/CookiesFetcher.java",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/cookies/CookiesFetcher.java" ]
+}
+
+robolectric_library("junit") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/cookies/CookiesFetcherTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/android/crypto:java",
+    "//chrome/browser/profiles/android:java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:gendeps_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

@@ -9,12 +9,17 @@
 
 namespace feature_engagement {
 class Tracker;
+class TrackerEventExporter;
 
 // Provides a test feature_engagement::Tracker that makes all non-relevant
 // conditions true so you can test per-feature specific configurations.
 // Note: Your feature config params must have |"availability": "ANY"|
 // or the FeatureConfigConditionValidator will return false.
 std::unique_ptr<Tracker> CreateTestTracker();
+
+// Same as above but accepts event exporter for the tracker as input.
+std::unique_ptr<Tracker> CreateTestTracker(
+    std::unique_ptr<TrackerEventExporter> event_exporter);
 
 }  // namespace feature_engagement
 

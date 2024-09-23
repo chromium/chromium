@@ -1,0 +1,34 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<style include="oobe-dialog-host-styles cros-color-overrides">
+  div[slot="subtitle"] p {
+    margin-top: 0;
+  }
+</style>
+<oobe-adaptive-dialog id="geminiIntroDialog" role="dialog">
+  <iron-icon slot="icon" icon="oobe-illos:gemini-intro-spark"></iron-icon>
+  <h1 slot="title" aria-live="polite">
+    [[i18nDynamic(locale, 'geminiIntroScreenTitle')]]
+  </h1>
+  <div slot="subtitle" inner-h-t-m-l="[[i18nAdvancedDynamic(locale,
+      'geminiIntroScreenSubtitle')]]">
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <iron-icon icon="oobe-illos:gemini-intro-illo"
+        class="illustration-jelly">
+    </iron-icon>
+  </div>
+  <div slot="back-navigation">
+    <oobe-back-button id="backButton" hidden$="[[!backButtonVisible]]"
+        on-click="onBackClicked">
+    </oobe-back-button>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button id="nextButton" class="focus-on-show"
+        on-click="onNextClicked">
+    </oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>

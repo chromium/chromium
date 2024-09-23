@@ -90,10 +90,21 @@ struct BundleResponseParseError {
   string message;
 };
 
+struct BundleIntegrityBlockAttributes {
+  string web_bundle_id;
+
+  // The CBOR representation of this block's attributes. This is only used for
+  // signature verification and never re-parsed in higher layers.
+  array<uint8> cbor;
+};
+
 struct BundleIntegrityBlock {
   // If size is 0, then no integrity block was found.
   uint64 size;
   array<BundleIntegrityBlockSignatureStackEntry> signature_stack;
+
+  // Attributes of this integrity block.
+  BundleIntegrityBlockAttributes attributes;
 };
 
 // Mapped to `web_package::Ed25519PublicKey`
@@ -106,18 +117,43 @@ struct Ed25519Signature {
   array<uint8, 64> bytes;
 };
 
-struct BundleIntegrityBlockSignatureStackEntry {
-  // The CBOR of this signature stack entry.
-  // This is needed for verification of more than one signature later, because
-  // to verify the n+1th signature, the CBOR of the signature stack entries of
-  // all n previous signatures is needed (crbug.com/1366303).
-  array<uint8> complete_entry_cbor;
-  // The CBOR of the attributes of this signature stack entry.
-  array<uint8> attributes_cbor;
+struct SignatureInfoEd25519 {
   // The public key of this signature stack entry.
   Ed25519PublicKey public_key;
   // The signature of this signature stack entry.
   Ed25519Signature signature;
+};
+
+// Mapped to `web_package::EcdsaP256PublicKey`
+struct EcdsaP256PublicKey {
+  array<uint8, 33> bytes;
+};
+
+// Mapped to `web_package::EcdsaP256SHA256Signature`
+struct EcdsaP256SHA256Signature {
+  array<uint8> bytes;
+};
+
+struct SignatureInfoEcdsaP256SHA256 {
+  // The public key of this signature stack entry.
+  EcdsaP256PublicKey public_key;
+  // The signature of this signature stack entry.
+  EcdsaP256SHA256Signature signature;
+};
+
+struct SignatureInfoUnknown {
+};
+
+union SignatureInfo {
+  SignatureInfoUnknown unknown;
+  SignatureInfoEd25519 ed25519;
+  SignatureInfoEcdsaP256SHA256 ecdsa_p256_sha256;
+};
+
+struct BundleIntegrityBlockSignatureStackEntry {
+  // The CBOR of the attributes of this signature stack entry.
+  array<uint8> attributes_cbor;
+  SignatureInfo signature_info;
 };
 
 // Bundle's metadata, i.e. information in sections other than "responses".

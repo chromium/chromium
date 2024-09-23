@@ -11,6 +11,12 @@ import "ui/gfx/mojom/color_space.mojom";
 // same kInvalidDisplayId defined in ui/display/types/display_constants.h
 const int64 kInvalidDisplayId = -1;
 
+struct OcclusionCullerSettings {
+  uint16 quad_split_limit;
+  uint16 maximum_occluder_complexity;
+  uint16 minimum_fragments_reduced;
+};
+
 struct RendererSettings {
   bool allow_antialiasing;
   bool force_antialiasing;
@@ -22,6 +28,8 @@ struct RendererSettings {
   int32 slow_down_compositing_scale_factor;
   bool auto_resize_output_surface;
   bool requires_alpha_channel;
+
+  OcclusionCullerSettings occlusion_culler_settings;
 
   [EnableIf=is_android]
   gfx.mojom.Size initial_screen_size;

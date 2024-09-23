@@ -7,10 +7,6 @@
     padding-inline-start: var(--cr-section-indent-width);
   }
 
-  .settings-box {
-    padding-inline-start: 0;
-  }
-
   settings-toggle-button,
   cr-link-row {
     padding-inline-end: var(--cr-section-padding);
@@ -29,14 +25,6 @@
   #dictationLocaleMenuSubtitle {
     max-width: 450px;
     overflow-wrap: break-word;
-  }
-
-  #stickyKeysDisabledTooltip,
-  #focusHighlightDisabledTooltip {
-    --paper-tooltip-background: var(--cros-tooltip-background-color);
-    --paper-tooltip-border-radius: 4px;
-    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
-    --paper-tooltip-padding: 8px;
   }
 </style>
 
@@ -80,28 +68,26 @@
     </template>
   </div>
 </template>
-<template is="dom-if" if="[[!isKioskModeActive_]]">
-  <settings-toggle-button
-      id="enableSwitchAccess"
-      class="hr"
-      icon="os-settings:switch-access"
-      pref="{{prefs.settings.a11y.switch_access.enabled}}"
-      label="$i18n{switchAccessLabel}"
-      sub-label="$i18n{switchAccessLabelSubtext}"
-      deep-link-focus-id$="[[Setting.kEnableSwitchAccess]]">
-  </settings-toggle-button>
-  <iron-collapse
-      opened="[[prefs.settings.a11y.switch_access.enabled.value]]">
-    <div class="sub-item">
-      <cr-link-row id="switchAccessSubpageButton"
-          class="settings-box"
-          label="$i18n{switchAccessOptionsLabel}"
-          on-click="onSwitchAccessSettingsClick_"
-          role-description="$i18n{subpageArrowRoleDescription}" embedded>
-      </cr-link-row>
-    </div>
-  </iron-collapse>
-</template>
+<settings-toggle-button
+    id="enableSwitchAccess"
+    class="hr"
+    icon="os-settings:switch-access"
+    pref="{{prefs.settings.a11y.switch_access.enabled}}"
+    label="$i18n{switchAccessLabel}"
+    sub-label="$i18n{switchAccessLabelSubtext}"
+    deep-link-focus-id$="[[Setting.kEnableSwitchAccess]]">
+</settings-toggle-button>
+<iron-collapse
+    opened="[[prefs.settings.a11y.switch_access.enabled.value]]">
+  <div class="sub-item">
+    <cr-link-row id="switchAccessSubpageButton"
+        class="settings-box"
+        label="$i18n{switchAccessOptionsLabel}"
+        on-click="onSwitchAccessSettingsClick_"
+        role-description="$i18n{subpageArrowRoleDescription}" embedded>
+    </cr-link-row>
+  </div>
+</iron-collapse>
 <settings-toggle-button
     id="stickyKeysToggle"
     class="hr"
@@ -146,13 +132,33 @@
     sub-label="$i18n{caretHighlightLabelSubtext}"
     deep-link-focus-id$="[[Setting.kHighlightTextCaret]]">
 </settings-toggle-button>
+<template is="dom-if" if="[[isAccessibilityCaretBlinkIntervalSettingEnabled_]]">
+  <div class="settings-box" id="caretBlinkIntervalRow">
+    <div class="flex start settings-box-text">
+      <div class="label" aria-hidden="true">
+        $i18n{caretBlinkIntervalLabel}
+      </div>
+    </div>
+    <settings-slider
+        id="caretBlinkIntervalSlider"
+        pref="{{caretBlinkIntervalVirtualPref_}}"
+        show-markers
+        label-aria="$i18n{caretBlinkIntervalLabel}"
+        label-min="$i18n{caretBlinkIntervalOff}"
+        label-max="$i18n{caretBlinkIntervalFast}"
+        ticks="[[computeCaretBlinkIntervalTicks_()]]"
+        deep-link-focus-id$="[[Setting.kCaretBlinkInterval]]">
+    </settings-slider>
+  </div>
+</template>
 <settings-toggle-button
     id="caretBrowsingToggle"
     class="hr"
     pref="{{prefs.settings.a11y.caretbrowsing.enabled}}"
     on-change="onA11yCaretBrowsingChange_"
     label="$i18n{caretBrowsingLabel}"
-    sub-label="$i18n{caretBrowsingLabelSubtext}">
+    sub-label="$i18n{caretBrowsingLabelSubtext}"
+    deep-link-focus-id$="[[Setting.kCaretBrowsing]]">
 </settings-toggle-button>
 <template is="dom-if" if="[[!isKioskModeActive_]]">
   <cr-link-row id="keyboardSubpageButton" class="hr"

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/containers/small_map.h"
+#include "base/containers/id_map.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
@@ -16,7 +16,7 @@
 namespace media {
 
 class VaapiWrapper;
-class VASurface;
+class ScopedVASurface;
 
 // ImageProcessor that is hardware accelerated with VA-API. This ImageProcessor
 // supports only dma-buf and GpuMemoryBuffer VideoFrames for both input and
@@ -53,19 +53,23 @@ class VaapiImageProcessorBackend : public ImageProcessorBackend {
                              ErrorCB error_cb);
   ~VaapiImageProcessorBackend() override;
 
-  const VASurface* GetSurfaceForVideoFrame(scoped_refptr<FrameResource> frame,
-                                           bool use_protected);
+  // Gets or creates a ScopedVASurface from |frame|; ScopedVASurfaces are stored
+  // and owned in |allocated_va_surfaces_|.
+  const ScopedVASurface* GetOrCreateSurfaceForFrame(const FrameResource& frame,
+                                                    bool use_protected);
 
-  scoped_refptr<VaapiWrapper> vaapi_wrapper_;
-  bool needs_context_ = false;
+  scoped_refptr<VaapiWrapper> vaapi_wrapper_
+      GUARDED_BY_CONTEXT(backend_sequence_checker_);
+  bool needs_context_ GUARDED_BY_CONTEXT(backend_sequence_checker_) = false;
 
-  // VASurfaces are created via importing dma-bufs into libva using
+  // ScopedVASurfaces are created via importing dma-bufs into libva using
   // |vaapi_wrapper_|->CreateVASurfaceForPixmap(). The following map keeps those
-  // VASurfaces for reuse according to the expectations of libva
+  // ScopedVASurfaces for reuse according to the expectations of libva
   // vaDestroySurfaces(): "Surfaces can only be destroyed after all contexts
   // using these surfaces have been destroyed."
-  base::small_map<std::map<gfx::GpuMemoryBufferId, scoped_refptr<VASurface>>>
-      allocated_va_surfaces_;
+  base::IDMap<std::unique_ptr<ScopedVASurface>,
+              decltype(gfx::GenericSharedMemoryId::id)>
+      allocated_va_surfaces_ GUARDED_BY_CONTEXT(backend_sequence_checker_);
 };
 
 }  // namespace media

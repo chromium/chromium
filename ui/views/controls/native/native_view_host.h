@@ -15,6 +15,10 @@ namespace gfx {
 class RoundedCornersF;
 }
 
+namespace ui {
+class Layer;
+}  // namespace ui
+
 namespace views {
 namespace test {
 class NativeViewHostTestBase;
@@ -59,13 +63,6 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // SetCustomMask internally.
   bool SetCornerRadii(const gfx::RoundedCornersF& corner_radii);
 
-  // Sets the custom layer mask for clipping gfx::NativeView. Returns true on
-  // success or false if the platform doesn't support the operation.
-  // NB: This does not interact nicely with fast_resize.
-  // TODO(tluk): This is currently only being used to apply rounded corners in
-  // ash code. Migrate existing use to SetCornerRadii().
-  bool SetCustomMask(std::unique_ptr<ui::LayerOwner> mask);
-
   // Sets the height of the top region where the gfx::NativeView shouldn't be
   // targeted. This will be used when another view is covering there
   // temporarily, like the immersive fullscreen mode of ChromeOS.
@@ -105,6 +102,9 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // Sets the desired background color for repainting when the view is clipped.
   // Defaults to transparent color if unset.
   void SetBackgroundColorWhenClipped(std::optional<SkColor> color);
+
+  // Returns the ui::Layer backing the attached gfx::NativeView.
+  ui::Layer* GetUILayer();
 
   // Overridden from View:
   void Layout(PassKey) override;

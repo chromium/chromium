@@ -4,12 +4,16 @@
 
 #include "components/media_router/common/providers/cast/certificate/cast_cert_test_helpers.h"
 
+#include <string_view>
+
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/media_router/common/providers/cast/certificate/cast_cert_reader.h"
+#include "components/media_router/common/providers/cast/certificate/cast_trust_store.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/pem.h"
@@ -57,7 +61,7 @@ const base::FilePath& GetCastCertificatesSubDirectory() {
   return *kPath;
 }
 
-SignatureTestData ReadSignatureTestData(const base::StringPiece& file_name) {
+SignatureTestData ReadSignatureTestData(std::string_view file_name) {
   SignatureTestData result;
 
   std::string file_data;
@@ -92,13 +96,63 @@ base::Time ConvertUnixTimestampSeconds(uint64_t time) {
 }
 
 std::unique_ptr<bssl::TrustStoreInMemory> LoadTestCert(
-    const base::StringPiece& cert_file_name) {
+    std::string_view cert_file_name) {
   auto store = std::make_unique<bssl::TrustStoreInMemory>();
   CHECK(PopulateStoreWithCertsFromPath(
       store.get(),
-      testing::GetCastCertificatesSubDirectory().AppendASCII(cert_file_name)));
+      GetCastCertificatesSubDirectory().AppendASCII(cert_file_name)));
   CHECK(store);
   return store;
 }
+
+// static
+std::atomic_flag ScopedCastTrustStoreConfig::in_use_ = ATOMIC_FLAG_INIT;
+
+void ScopedCastTrustStoreConfig::SetInUse() {
+  const bool previous_value = in_use_.test_and_set(std::memory_order_relaxed);
+  CHECK(!previous_value) << "Unable to create ScopedCastTrustStoreConfig: "
+                            "there is another instance that is active.";
+}
+
+std::unique_ptr<ScopedCastTrustStoreConfig>
+ScopedCastTrustStoreConfig::BuiltInCertificates() {
+  SetInUse();
+  CastTrustStore* store = CastTrustStore::GetInstance(/*may_block=*/true);
+  store->ClearCertificatesForTesting();
+  store->AddBuiltInCertificates();
+  return std::make_unique<ScopedCastTrustStoreConfig>();
+}
+
+std::unique_ptr<ScopedCastTrustStoreConfig>
+ScopedCastTrustStoreConfig::TestCertificates(std::string_view cert_file_name) {
+  SetInUse();
+  const auto cert_path =
+      GetCastCertificatesSubDirectory().AppendASCII(cert_file_name);
+  CastTrustStore* store = CastTrustStore::GetInstance(/*may_block=*/true);
+  store->ClearCertificatesForTesting();
+  store->AddCertificateFromPath(cert_path);
+  return std::make_unique<ScopedCastTrustStoreConfig>();
+}
+
+std::unique_ptr<ScopedCastTrustStoreConfig>
+ScopedCastTrustStoreConfig::BuiltInAndTestCertificates(
+    std::string_view cert_file_name) {
+  SetInUse();
+  const auto cert_path =
+      GetCastCertificatesSubDirectory().AppendASCII(cert_file_name);
+  CastTrustStore* store = CastTrustStore::GetInstance(/*may_block=*/true);
+  store->ClearCertificatesForTesting();
+  store->AddBuiltInCertificates();
+  store->AddCertificateFromPath(cert_path);
+  return std::make_unique<ScopedCastTrustStoreConfig>();
+}
+
+ScopedCastTrustStoreConfig::~ScopedCastTrustStoreConfig() {
+  CastTrustStore* store = CastTrustStore::GetInstance(/*may_block=*/true);
+  store->ClearCertificatesForTesting();
+  store->AddDefaultCertificates(/*may_block=*/true);
+  in_use_.clear();
+}
+
 }  // namespace testing
 }  // namespace cast_certificate

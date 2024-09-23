@@ -50,7 +50,7 @@ class ResolutionNotificationControllerTest
         base::Seconds(timeout_count));
     if (::display::features::IsListAllDisplayModesEnabled()) {
       return l10n_util::GetStringFUTF16(
-          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED, display_name,
+          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED_NEW, display_name,
           base::UTF8ToUTF16(new_resolution.ToString()),
           ConvertRefreshRateToString16(new_refresh_rate), countdown);
     }
@@ -73,11 +73,11 @@ class ResolutionNotificationControllerTest
         base::Seconds(timeout_count));
     if (::display::features::IsListAllDisplayModesEnabled()) {
       return l10n_util::GetStringFUTF16(
-          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK,
-          {display_name, base::UTF8ToUTF16(specified_resolution.ToString()),
-           ConvertRefreshRateToString16(specified_refresh_rate),
-           base::UTF8ToUTF16(fallback_resolution.ToString()),
-           ConvertRefreshRateToString16(fallback_refresh_rate), countdown},
+          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK_NEW,
+          {display_name, base::UTF8ToUTF16(fallback_resolution.ToString()),
+           ConvertRefreshRateToString16(fallback_refresh_rate),
+           base::UTF8ToUTF16(specified_resolution.ToString()),
+           ConvertRefreshRateToString16(specified_refresh_rate), countdown},
           /*offsets=*/nullptr);
     }
     return l10n_util::GetStringFUTF16(

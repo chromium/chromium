@@ -96,9 +96,8 @@ class SetCookieCallback : public CookieTestCallback {
   void SetCookie(CookieMonster* cm,
                  const GURL& gurl,
                  const std::string& cookie_line) {
-    auto cookie = CanonicalCookie::Create(
-        gurl, cookie_line, base::Time::Now(), std::nullopt /* server_time */,
-        std::nullopt /* cookie_partition_key */);
+    auto cookie =
+        CanonicalCookie::CreateForTesting(gurl, cookie_line, base::Time::Now());
     cm->SetCanonicalCookieAsync(
         std::move(cookie), gurl, options_,
         base::BindOnce(&SetCookieCallback::Run, base::Unretained(this)));

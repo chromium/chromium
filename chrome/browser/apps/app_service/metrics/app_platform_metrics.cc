@@ -6,27 +6,27 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 
 #include "base/check_deref.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/app_constants/constants.h"
 #include "components/prefs/pref_service.h"
@@ -55,17 +55,6 @@ constexpr char kAppsActivatedCountHistogramPrefix[] = "Apps.ActivatedCount.";
 constexpr char kAppsUsageTimeHistogramPrefix[] = "Apps.UsageTime.";
 constexpr char kAppsUsageTimeHistogramPrefixV2[] = "Apps.UsageTimeV2.";
 
-constexpr char kInstallReasonUnknownHistogram[] = "Unknown";
-constexpr char kInstallReasonSystemHistogram[] = "System";
-constexpr char kInstallReasonPolicyHistogram[] = "Policy";
-constexpr char kInstallReasonOemHistogram[] = "Oem";
-constexpr char kInstallReasonPreloadHistogram[] = "Preload";
-constexpr char kInstallReasonSyncHistogram[] = "Sync";
-constexpr char kInstallReasonUserHistogram[] = "User";
-constexpr char kInstallReasonSubAppHistogram[] = "SubApp";
-constexpr char kInstallReasonKioskHistogram[] = "Kiosk";
-constexpr char kInstallReasonCommandLineHistogram[] = "CommandLine";
-
 constexpr base::TimeDelta kMaxDuration = base::Days(1);
 
 constexpr auto kAppTypeNameSet = base::MakeFixedFlatSet<apps::AppTypeName>({
@@ -86,31 +75,6 @@ constexpr auto kAppTypeNameSet = base::MakeFixedFlatSet<apps::AppTypeName>({
     apps::AppTypeName::kStandaloneBrowserWebApp,
     apps::AppTypeName::kBruschetta,
 });
-
-std::string GetInstallReason(apps::InstallReason install_reason) {
-  switch (install_reason) {
-    case apps::InstallReason::kUnknown:
-      return kInstallReasonUnknownHistogram;
-    case apps::InstallReason::kSystem:
-      return kInstallReasonSystemHistogram;
-    case apps::InstallReason::kPolicy:
-      return kInstallReasonPolicyHistogram;
-    case apps::InstallReason::kOem:
-      return kInstallReasonOemHistogram;
-    case apps::InstallReason::kDefault:
-      return kInstallReasonPreloadHistogram;
-    case apps::InstallReason::kSync:
-      return kInstallReasonSyncHistogram;
-    case apps::InstallReason::kUser:
-      return kInstallReasonUserHistogram;
-    case apps::InstallReason::kSubApp:
-      return kInstallReasonSubAppHistogram;
-    case apps::InstallReason::kKiosk:
-      return kInstallReasonKioskHistogram;
-    case apps::InstallReason::kCommandLine:
-      return kInstallReasonCommandLineHistogram;
-  }
-}
 
 // Returns AppTypeNameV2 used for app running metrics.
 apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
@@ -141,7 +105,7 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
         return apps::AppTypeNameV2::kStandaloneBrowserWebAppTab;
       } else if (app_type_name == apps::AppTypeName::kSystemWeb) {
         return apps::AppTypeNameV2::kSystemWeb;
-      } else if (web_app::IsWebAppsCrosapiEnabled()) {
+      } else if (crosapi::browser_util::IsLacrosEnabled()) {
         return apps::AppTypeNameV2::kStandaloneBrowserWebAppWindow;
       } else {
         return apps::AppTypeNameV2::kWebWindow;
@@ -197,7 +161,7 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
         return apps::AppTypeNameV2::kStandaloneBrowserWebAppTab;
       } else if (app_type_name == apps::AppTypeName::kSystemWeb) {
         return apps::AppTypeNameV2::kSystemWeb;
-      } else if (web_app::IsWebAppsCrosapiEnabled()) {
+      } else if (crosapi::browser_util::IsLacrosEnabled()) {
         return apps::AppTypeNameV2::kStandaloneBrowserWebAppWindow;
       } else {
         return apps::AppTypeNameV2::kWebWindow;
@@ -365,6 +329,35 @@ void RecordAppLaunchMetrics(Profile* profile,
   RecordAppLaunchPerAppTypeV2(
       GetAppTypeNameV2(profile, app_type, app_id, container));
 
+  // TODO(b/356937112): Refactor the metrics DemoMode.AppLaunchSource
+  if (ash::DemoSession::IsDeviceInDemoMode()) {
+    ash::DemoSession::AppLaunchSource source;
+    bool will_report = true;
+    // Apps launched from the demo mode app has the launch source of
+    // kFromOtherApp, but we do not report it here since there could be other
+    // places that launch apps with the same launch source of kFromOtherApp. So,
+    // to be more accurate, we report it in
+    // [chrome_demo_mode_app_delegate.cc]ChromeDemoModeAppDelegate::LaunchApp.
+    // Additionally, we report only the following types of launch source based
+    // on the need of demo mode.
+    switch (launch_source) {
+      case apps::LaunchSource::kFromAppListGrid:
+        source = ash::DemoSession::AppLaunchSource::kAppList;
+        break;
+      case apps::LaunchSource::kFromAppListQuery:
+        source = ash::DemoSession::AppLaunchSource::kAppListQuery;
+        break;
+      case apps::LaunchSource::kFromShelf:
+        source = ash::DemoSession::AppLaunchSource::kShelf;
+        break;
+      default:
+        will_report = false;
+    }
+    if (will_report) {
+      ash::DemoSession::RecordAppLaunchSource(source);
+    }
+  }
+
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   if (proxy && proxy->AppPlatformMetrics()) {
     proxy->AppPlatformMetrics()->RecordAppLaunchUkm(app_type, app_id,
@@ -473,7 +466,7 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(Profile* profile,
   }
 
   AppType app_type = GetAppType(profile, app_id);
-  if (!ShouldRecordUkmForAppTypeName(app_type)) {
+  if (!ShouldRecordAppKMForAppTypeName(app_type)) {
     return ukm::kInvalidSourceId;
   }
 
@@ -523,7 +516,7 @@ GURL AppPlatformMetrics::GetURLForApp(Profile* profile,
 
   // If the app should not be recorded, then emit an empty URL so the URL is not
   // recorded for the associated app.
-  if (!ShouldRecordUkmForAppTypeName(app_type)) {
+  if (!ShouldRecordAppKMForAppTypeName(app_type)) {
     return GURL();
   }
 
@@ -764,8 +757,8 @@ void AppPlatformMetrics::RecordAppLaunchUkm(AppType app_type,
     observer.OnAppLaunched(app_id, app_type, launch_source);
   }
 
-  if (app_type == AppType::kUnknown || !ShouldRecordUkm(profile_) ||
-      !ShouldRecordUkmForAppId(app_id, app_registry_cache_.get())) {
+  if (app_type == AppType::kUnknown ||
+      !ShouldRecordAppKMForAppId(profile_, app_registry_cache_.get(), app_id)) {
     return;
   }
 
@@ -795,7 +788,7 @@ void AppPlatformMetrics::RecordAppUninstallUkm(
   for (auto& observer : observers_) {
     observer.OnAppUninstalled(app_id, app_type, uninstall_source);
   }
-  if (!ShouldRecordUkmForAppId(app_id, app_registry_cache_.get())) {
+  if (!ShouldRecordAppKMForAppId(profile_, app_registry_cache_.get(), app_id)) {
     return;
   }
 
@@ -855,8 +848,8 @@ void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {
                             install_time);
   }
 
-  if (!ShouldRecordUkm(profile_) ||
-      !ShouldRecordUkmForAppId(update.AppId(), app_registry_cache_.get())) {
+  if (!ShouldRecordAppKMForAppId(profile_, app_registry_cache_.get(),
+                                 update.AppId())) {
     return;
   }
 
@@ -1103,7 +1096,8 @@ void AppPlatformMetrics::ClearRunningDuration() {
 
 void AppPlatformMetrics::ReadInstalledApps() {
   app_registry_cache_->ForEachApp([this](const apps::AppUpdate& update) {
-    if (ShouldRecordUkmForAppId(update.AppId(), app_registry_cache_.get())) {
+    if (ShouldRecordAppKMForAppId(profile_, app_registry_cache_.get(),
+                                  update.AppId())) {
       RecordAppsInstallUkm(update, InstallTime::kInit);
     }
   });
@@ -1215,7 +1209,7 @@ void AppPlatformMetrics::RecordAppsUsageTime() {
 }
 
 void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
-  if (!ShouldRecordUkm(profile_)) {
+  if (!ShouldRecordAppKM(profile_)) {
     // Attempt to clean up pre-existing data in the pref store. This is useful
     // (and harmless) because we routinely clean up usage data that has already
     // been reported.
@@ -1229,8 +1223,8 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
     ukm::SourceId source_id = it.second.source_id;
     DCHECK_NE(source_id, ukm::kInvalidSourceId);
     if (!it.second.running_time.is_zero()) {
-      if (ShouldRecordUkmForAppId(it.second.app_id,
-                                  app_registry_cache_.get())) {
+      if (ShouldRecordAppKMForAppId(profile_, app_registry_cache_.get(),
+                                    it.second.app_id)) {
         auto new_source_id = GetSourceId(profile_, it.second.app_id);
         if (new_source_id != ukm::kInvalidSourceId) {
           ukm::builders::ChromeOSApp_UsageTime builder(new_source_id);
@@ -1248,6 +1242,13 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
             .SetDuration(it.second.running_time.InMilliseconds())
             .SetUserDeviceMatrix(user_type_by_device_type_)
             .Record(ukm::UkmRecorder::Get());
+      }
+
+      // UMA for Mall app.
+      if (AppIdToName(it.second.app_id) == DefaultAppName::kMall) {
+        base::UmaHistogramCustomTimes("Apps.AppDiscovery.MallUsageTime",
+                                      it.second.running_time, base::Seconds(1),
+                                      base::Hours(2), 100);
       }
 
       // Also reset time in the pref store now that we have reported this data.
@@ -1302,7 +1303,7 @@ void AppPlatformMetrics::UpdateUsageTime(
     observer.OnAppUsage(app_id, GetAppType(profile_, app_id), instance_id,
                         running_time);
   }
-  if (!ShouldRecordUkm(profile_)) {
+  if (!ShouldRecordAppKM(profile_)) {
     // Avoid incrementing app usage counters if it cannot be reported. This
     // ensures we only track usage for the period the user has sync enabled.
     return;
@@ -1324,7 +1325,7 @@ void AppPlatformMetrics::UpdateUsageTime(
 }
 
 void AppPlatformMetrics::SaveUsageTime() {
-  if (!ShouldRecordUkm(profile_)) {
+  if (!ShouldRecordAppKM(profile_)) {
     // Do not persist usage data to the pref store if it cannot be reported.
     // This will prevent unnecessary disk space usage.
     return;
@@ -1364,12 +1365,13 @@ void AppPlatformMetrics::LoadAppsUsageTimeUkmFromPref() {
 }
 
 void AppPlatformMetrics::RecordAppsUsageTimeUkmFromPref() {
-  if (!ShouldRecordUkm(profile_) || usage_times_from_pref_.empty()) {
+  if (!ShouldRecordAppKM(profile_) || usage_times_from_pref_.empty()) {
     return;
   }
 
   for (auto& it : usage_times_from_pref_) {
-    if (ShouldRecordUkmForAppId(it->app_id, app_registry_cache_.get())) {
+    if (ShouldRecordAppKMForAppId(profile_, app_registry_cache_.get(),
+                                  it->app_id)) {
       auto source_id = GetSourceId(profile_, it->app_id);
       if (source_id != ukm::kInvalidSourceId) {
         ukm::builders::ChromeOSApp_UsageTime builder(source_id);
@@ -1423,7 +1425,7 @@ void AppPlatformMetrics::CleanUpAppsUsageInfoInPrefStore() {
 }
 
 void AppPlatformMetrics::ClearAppsUsageTimeForInstance(
-    const base::StringPiece& instance_id) {
+    std::string_view instance_id) {
   ScopedDictPrefUpdate usage_time_pref_update(profile_->GetPrefs(),
                                               kAppUsageTime);
   auto* instance_dict =

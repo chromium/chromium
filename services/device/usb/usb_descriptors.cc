@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/device/usb/usb_descriptors.h"
 
 #include <stddef.h>
@@ -110,7 +115,7 @@ void OnReadConfigDescriptor(UsbDeviceDescriptor* desc,
                             scoped_refptr<base::RefCountedBytes> buffer,
                             size_t length) {
   if (status == UsbTransferStatus::COMPLETED) {
-    if (!desc->Parse(base::make_span(buffer->front(), length))) {
+    if (!desc->Parse(base::span(*buffer).first(length))) {
       LOG(ERROR) << "Failed to parse configuration descriptor.";
     }
   } else {
@@ -128,7 +133,7 @@ void OnReadConfigDescriptorHeader(scoped_refptr<UsbDeviceHandle> device_handle,
                                   size_t length) {
   if (status == UsbTransferStatus::COMPLETED &&
       length == kConfigurationDescriptorLength) {
-    const uint8_t* data = header->front();
+    auto data = base::span<const uint8_t>(*header);
     uint16_t total_length = data[2] | data[3] << 8;
     auto buffer = base::MakeRefCounted<base::RefCountedBytes>(total_length);
     device_handle->ControlTransfer(
@@ -157,7 +162,7 @@ void OnReadDeviceDescriptor(
   }
 
   std::unique_ptr<UsbDeviceDescriptor> desc(new UsbDeviceDescriptor());
-  if (!desc->Parse(base::make_span(buffer->front(), length))) {
+  if (!desc->Parse(base::span(*buffer).first(length))) {
     LOG(ERROR) << "Device descriptor parsing error.";
     std::move(callback).Run(nullptr);
     return;
@@ -199,15 +204,14 @@ void OnReadStringDescriptor(
     UsbTransferStatus status,
     scoped_refptr<base::RefCountedBytes> buffer,
     size_t length) {
-  std::u16string string;
-  if (status == UsbTransferStatus::COMPLETED &&
-      ParseUsbStringDescriptor(
-          std::vector<uint8_t>(buffer->front(), buffer->front() + length),
-          &string)) {
-    std::move(callback).Run(string);
-  } else {
-    std::move(callback).Run(std::u16string());
+  if (status == UsbTransferStatus::COMPLETED) {
+    std::u16string string;
+    if (ParseUsbStringDescriptor(base::span(*buffer).first(length), &string)) {
+      std::move(callback).Run(std::move(string));
+      return;
+    }
   }
+  std::move(callback).Run(std::u16string());
 }
 
 void ReadStringDescriptor(
@@ -363,22 +367,32 @@ void ReadUsbDescriptors(
                      std::move(callback)));
 }
 
-bool ParseUsbStringDescriptor(const std::vector<uint8_t>& descriptor,
+bool ParseUsbStringDescriptor(base::span<const uint8_t> descriptor,
                               std::u16string* output) {
-  if (descriptor.size() < 2 || descriptor[1] != kStringDescriptorType)
+  if (descriptor.size() < 2u) {
     return false;
+  }
+
+  auto [header, body] = descriptor.split_at(2u);
+  if (header[1u] != kStringDescriptorType) {
+    return false;
+  }
 
   // Let the device return a buffer larger than the actual string but prefer the
   // length reported inside the descriptor.
-  size_t length = descriptor[0];
-  length = std::min(length, descriptor.size());
-  if (length < 2)
+  const size_t length_bytes =
+      std::min<size_t>(header[0u], header.size() + body.size());
+  // The header's size is included in the length. If not, it's malformed.
+  if (length_bytes < header.size()) {
     return false;
+  }
+  const size_t body_bytes = length_bytes - header.size();
+  const size_t body_chars = body_bytes / sizeof(char16_t);
 
   // The string is returned by the device in UTF-16LE.
-  *output =
-      std::u16string(reinterpret_cast<const char16_t*>(descriptor.data() + 2),
-                     (length - 2) / sizeof(char16_t));
+  output->resize(body_chars);
+  base::as_writable_byte_span(*output).copy_from(
+      body.first(body_chars * sizeof(char16_t)));
   return true;
 }
 

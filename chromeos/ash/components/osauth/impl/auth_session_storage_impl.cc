@@ -6,18 +6,26 @@
 
 #include <memory>
 #include <optional>
+#include <queue>
 #include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/clock.h"
+#include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {
@@ -96,7 +104,7 @@ std::unique_ptr<UserContext> AuthSessionStorageImpl::Borrow(
 
 void AuthSessionStorageImpl::BorrowAsync(const base::Location& location,
                                          const AuthProofToken& token,
-                                         BorrowCallback callback) {
+                                         BorrowContextCallback callback) {
   auto data_it = tokens_.find(token);
   if (data_it == std::end(tokens_)) {
     LOG(ERROR) << "Accessing expired token";
@@ -182,7 +190,7 @@ void AuthSessionStorageImpl::Return(const AuthProofToken& token,
   }
 
   if (!data_it->second->borrow_queue.empty()) {
-    std::pair<base::Location, BorrowCallback> pending_borrow =
+    std::pair<base::Location, BorrowContextCallback> pending_borrow =
         std::move(data_it->second->borrow_queue.front());
     data_it->second->borrow_queue.pop();
     BorrowAsync(pending_borrow.first, token, std::move(pending_borrow.second));
@@ -190,7 +198,7 @@ void AuthSessionStorageImpl::Return(const AuthProofToken& token,
 }
 
 void AuthSessionStorageImpl::Withdraw(const AuthProofToken& token,
-                                      BorrowCallback callback) {
+                                      BorrowContextCallback callback) {
   auto data_it = tokens_.find(token);
   if (data_it == std::end(tokens_)) {
     LOG(ERROR) << "Accessing expired token";
@@ -220,7 +228,7 @@ void AuthSessionStorageImpl::Withdraw(const AuthProofToken& token,
   CHECK_EQ(data_it->second->state, TokenState::kBorrowed);
   // Drain borrow queue.
   while (!data_it->second->borrow_queue.empty()) {
-    std::pair<base::Location, BorrowCallback> pending_borrow =
+    std::pair<base::Location, BorrowContextCallback> pending_borrow =
         std::move(data_it->second->borrow_queue.front());
     data_it->second->borrow_queue.pop();
     std::move(pending_borrow.second).Run(nullptr);
@@ -247,7 +255,7 @@ void AuthSessionStorageImpl::Invalidate(
   }
   // Drain borrow queue.
   while (!data_it->second->borrow_queue.empty()) {
-    std::pair<base::Location, BorrowCallback> pending_borrow =
+    std::pair<base::Location, BorrowContextCallback> pending_borrow =
         std::move(data_it->second->borrow_queue.front());
     data_it->second->borrow_queue.pop();
     std::move(pending_borrow.second).Run(nullptr);
@@ -279,6 +287,14 @@ std::unique_ptr<ScopedSessionRefresher> AuthSessionStorageImpl::KeepAlive(
   // Not using make_unique due to private constructor.
   return base::WrapUnique(
       new ScopedSessionRefresherImpl(weak_factory_.GetWeakPtr(), token));
+}
+
+bool AuthSessionStorageImpl::CheckHasKeepAliveForTesting(
+    const AuthProofToken& token) const {
+  auto data_it = tokens_.find(token);
+  return data_it == std::end(tokens_)
+             ? false
+             : data_it->second->keep_alive_counter >= 1;
 }
 
 void AuthSessionStorageImpl::OnSessionInvalidated(

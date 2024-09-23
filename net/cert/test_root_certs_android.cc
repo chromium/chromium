@@ -12,9 +12,7 @@
 namespace net {
 
 bool TestRootCerts::AddImpl(X509Certificate* certificate) {
-  android::AddTestRootCertificate(
-      CRYPTO_BUFFER_data(certificate->cert_buffer()),
-      CRYPTO_BUFFER_len(certificate->cert_buffer()));
+  android::AddTestRootCertificate(certificate->cert_span());
   return true;
 }
 

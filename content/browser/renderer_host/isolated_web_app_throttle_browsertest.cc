@@ -58,7 +58,6 @@ class HttpsBrowserTest : public ContentBrowserTest {
   HttpsBrowserTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     mock_cert_verifier_.SetUpCommandLine(command_line);
   }
 

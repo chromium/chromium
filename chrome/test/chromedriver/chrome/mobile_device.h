@@ -17,8 +17,11 @@ class Status;
 struct MobileDevice {
   MobileDevice();
   MobileDevice(const MobileDevice&);
-  ~MobileDevice();
+  MobileDevice(MobileDevice&&);
   MobileDevice& operator=(const MobileDevice&);
+  MobileDevice& operator=(MobileDevice&&);
+  ~MobileDevice();
+
   // Returns the reduced User-agent string for
   // https://github.com/WICG/ua-client-hints.
   Status GetReducedUserAgent(std::string major_version,

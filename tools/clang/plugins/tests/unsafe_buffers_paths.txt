@@ -1,0 +1,12 @@
+# Comment, then empty line with spaces.
+  
+# Another comment
+-unsafe_buffers_not_clean_dir/
++unsafe_buffers_not_clean_dir/clean_header.h
+
+-unsafe_buffers_unchecked.cpp
+
+# Unnecessary exclusion of a directory that is already excluded.
+# This shouldn't produce surprising behaviors, like including
+# `unsafe_buffers_not_clean_dir_2/` again. See https://crbug.com/357649176
+-unsafe_buffers_not_clean_dir/still_not_clean_dir_1/

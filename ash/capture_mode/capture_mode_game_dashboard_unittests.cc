@@ -20,16 +20,18 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/game_dashboard/game_dashboard_context_test_api.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
-#include "ash/game_dashboard/game_dashboard_widget.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
+#include "ash/system/unified/feature_tile.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -138,18 +140,36 @@ TEST_F(GameDashboardCaptureModeTest, GameDashboardBehavior) {
   EXPECT_TRUE(
       active_behavior->SupportsAudioRecordingMode(AudioRecordingMode::kOff));
   EXPECT_TRUE(active_behavior->SupportsAudioRecordingMode(
-      features::IsCaptureModeAudioMixingEnabled()
-          ? AudioRecordingMode::kSystemAndMicrophone
-          : AudioRecordingMode::kMicrophone));
+      AudioRecordingMode::kSystemAndMicrophone));
   EXPECT_TRUE(active_behavior->ShouldCameraSelectionSettingsBeIncluded());
   EXPECT_FALSE(active_behavior->ShouldDemoToolsSettingsBeIncluded());
   EXPECT_TRUE(active_behavior->ShouldSaveToSettingsBeIncluded());
   EXPECT_FALSE(active_behavior->ShouldGifBeSupported());
   EXPECT_TRUE(active_behavior->ShouldShowPreviewNotification());
   EXPECT_FALSE(active_behavior->ShouldSkipVideoRecordingCountDown());
-  EXPECT_FALSE(active_behavior->ShouldCreateRecordingOverlayController());
+  EXPECT_FALSE(active_behavior->ShouldCreateAnnotationsOverlayController());
   EXPECT_FALSE(active_behavior->ShouldShowUserNudge());
   EXPECT_TRUE(active_behavior->ShouldAutoSelectFirstCamera());
+}
+
+// Tests that a fullscreen screenshot can be taken via the keyboard shortcut
+// while a Game-Dashboard-initiated session is active without ending the
+// session.
+TEST_F(GameDashboardCaptureModeTest, FullscreenScreenshotKeyCombo) {
+  StartGameCaptureModeSession();
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN);
+  WaitForCaptureFileToBeSaved();
+  VerifyActiveBehavior(BehaviorType::kGameDashboard);
+}
+
+// Tests that if the user presses the shortcut to switch to default capture
+// mode, it is ignored.
+TEST_F(GameDashboardCaptureModeTest, SwitchToDefaultCaptureMode) {
+  StartGameCaptureModeSession();
+  VerifyActiveBehavior(BehaviorType::kGameDashboard);
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  VerifyActiveBehavior(BehaviorType::kGameDashboard);
 }
 
 // Tests that when starting the capture mode session from game dashboard, the
@@ -406,9 +426,7 @@ TEST_F(GameDashboardCaptureModeTest, GameCaptureModeSessionConfigs) {
   EXPECT_EQ(controller->source(), CaptureModeSource::kWindow);
   EXPECT_EQ(controller->recording_type(), RecordingType::kWebM);
   EXPECT_EQ(controller->audio_recording_mode(),
-            features::IsCaptureModeAudioMixingEnabled()
-                ? AudioRecordingMode::kSystemAndMicrophone
-                : AudioRecordingMode::kMicrophone);
+            AudioRecordingMode::kSystemAndMicrophone);
   EXPECT_EQ(controller->enable_demo_tools(), false);
 
   // Update the audio recording mode and demo tools configs and stop the
@@ -690,14 +708,19 @@ TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightMinimumBelowBar) {
 }
 
 TEST_F(GameDashboardCaptureModeTest, GameCaptureModeRecordInstantlyTest) {
+  AddDefaultCamera();
+
   // Start a game dashboard initiated capture mode session and check the initial
   // configs for game dashboard initiated capture mode.
   auto* controller = StartGameCaptureModeSession();
   EXPECT_FALSE(controller->enable_demo_tools());
   EXPECT_EQ(controller->audio_recording_mode(),
-            features::IsCaptureModeAudioMixingEnabled()
-                ? AudioRecordingMode::kSystemAndMicrophone
-                : AudioRecordingMode::kMicrophone);
+            AudioRecordingMode::kSystemAndMicrophone);
+
+  auto* camera_controller = controller->camera_controller();
+  ASSERT_TRUE(camera_controller->camera_preview_widget());
+  const CameraId camera_id(kDefaultCameraModelId, 1);
+  EXPECT_EQ(camera_id, camera_controller->selected_camera());
 
   // Update the audio recording mode and demo tools configs for the
   // game-dashboard initiated capture mode.
@@ -722,6 +745,111 @@ TEST_F(GameDashboardCaptureModeTest, GameCaptureModeRecordInstantlyTest) {
   // Verify that the configs in `CaptureModeController` are restored.
   EXPECT_EQ(controller->audio_recording_mode(), AudioRecordingMode::kOff);
   EXPECT_FALSE(controller->enable_demo_tools());
+
+  // Verify that selfie camera is visible and is parented correctly to the game
+  // window.
+  const auto* camera_preview_widget =
+      camera_controller->camera_preview_widget();
+  ASSERT_TRUE(camera_preview_widget);
+  EXPECT_EQ(camera_preview_widget->GetNativeWindow()->parent(), game_window());
+}
+
+TEST_F(GameDashboardCaptureModeTest, UserTurnsOffCamera) {
+  AddDefaultCamera();
+
+  // By default, the first available camera should be auto selected.
+  auto* controller = StartGameCaptureModeSession();
+  auto* camera_controller = controller->camera_controller();
+  ASSERT_TRUE(camera_controller->camera_preview_widget());
+  const CameraId camera_id(kDefaultCameraModelId, 1);
+  EXPECT_EQ(camera_id, camera_controller->selected_camera());
+
+  // Now, open the settings menu, and select the "camera off" option.
+  LeftClickOn(GetSettingsButton());
+  CaptureModeSettingsTestApi test_api;
+  CaptureModeMenuGroup* camera_menu_group = test_api.GetCameraMenuGroup();
+  ASSERT_TRUE(camera_menu_group);
+  EXPECT_TRUE(camera_menu_group->GetVisible());
+  auto* off_option = test_api.GetCameraOption(kCameraOff);
+  EXPECT_TRUE(off_option);
+  LeftClickOn(off_option);
+
+  // No camera should be selected, and the preview widget should be closed.
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+
+  // Close the session and start a new one. No camera should be auto selected.
+  controller->Stop();
+  StartGameCaptureModeSession();
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+  controller->Stop();
+
+  // Start a new default session and select a camera, then end the session.
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  camera_controller->SetSelectedCamera(camera_id);
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  controller->Stop();
+
+  // When we start a new Game Dashboard session next, the camera selected from
+  // the previous default session will remain selected.
+  StartGameCaptureModeSession();
+  EXPECT_EQ(camera_id, camera_controller->selected_camera());
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  controller->Stop();
+}
+
+TEST_F(GameDashboardCaptureModeTest, StartWithNoCamera) {
+  // Initially there's no camera connected, so the Game Dashboard auto camera
+  // selection won't work.
+  auto* controller = StartGameCaptureModeSession();
+  auto* camera_controller = controller->camera_controller();
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+
+  // Now stop the current session, connect a camera, and start a new Game
+  // Dashboard session. This new session should be able to auto-select the
+  // camera.
+  controller->Stop();
+  AddDefaultCamera();
+  StartGameCaptureModeSession();
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  const CameraId camera_id(kDefaultCameraModelId, 1);
+  EXPECT_EQ(camera_id, camera_controller->selected_camera());
+  controller->Stop();
+
+  // The next Game Dashboard session should still launch with a camera.
+  StartGameCaptureModeSession();
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  EXPECT_EQ(camera_id, camera_controller->selected_camera());
+}
+
+TEST_F(GameDashboardCaptureModeTest, CameraAutoSelectionDisabledOnChange) {
+  const std::string device_id_1 = "/dev/video0";
+  const std::string display_name_1 = "Integrated Webcam";
+
+  const std::string device_id_2 = "/dev/video1";
+  const std::string display_name_2 = "Integrated Webcam 1";
+
+  AddFakeCamera(device_id_1, display_name_1, display_name_1);
+  AddFakeCamera(device_id_2, display_name_2, display_name_2);
+
+  // The first Game Dashboard session, the first camera will be auto selected.
+  auto* controller = StartGameCaptureModeSession();
+  auto* camera_controller = controller->camera_controller();
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  const CameraId camera_id1(display_name_1, 1);
+  EXPECT_EQ(camera_id1, camera_controller->selected_camera());
+
+  // Now, simulate a change by the user to select a different camera while the
+  // session is still running.
+  const CameraId camera_id2(display_name_2, 1);
+  camera_controller->SetSelectedCamera(camera_id2);
+  EXPECT_EQ(camera_id2, camera_controller->selected_camera());
+
+  // Stop the session and expect that the camera remains selected.
+  controller->Stop();
+  EXPECT_EQ(camera_id2, camera_controller->selected_camera());
 }
 
 TEST_F(GameDashboardCaptureModeTest, NoDimmingOfGameDashboardWidgets) {
@@ -756,6 +884,66 @@ TEST_F(GameDashboardCaptureModeTest, NoDimmingOfGameDashboardWidgets) {
   ASSERT_TRUE(game_dashboard_toolbar_widget);
   EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(
       game_dashboard_toolbar_widget->GetNativeWindow()));
+}
+
+TEST_F(GameDashboardCaptureModeTest, AvoidToolbarAndCameraPreviewIntersection) {
+  UpdateDisplay("1200x1100");
+  AddDefaultCamera();
+
+  // Make the game window large enough to show a camera preview.
+  game_window()->SetBounds({50, 50, 1100, 1000});
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartRecordingInstantlyForGameDashboard(game_window());
+
+  auto* camera_controller = controller->camera_controller();
+  ASSERT_TRUE(camera_controller->should_show_preview());
+
+  // The window that hosts the game dashboard button should not be dimmed.
+  GameDashboardContextTestApi context_test_api{
+      GameDashboardController::Get()->GetGameDashboardContext(game_window()),
+      GetEventGenerator()};
+
+  // Open the game dashboard toolbar.
+  context_test_api.OpenTheMainMenu();
+  context_test_api.OpenTheToolbar();
+  context_test_api.CloseTheMainMenu();
+  auto* game_dashboard_toolbar_widget = context_test_api.GetToolbarWidget();
+  ASSERT_TRUE(game_dashboard_toolbar_widget);
+
+  const auto* camera_preview_widget =
+      camera_controller->camera_preview_widget();
+  ASSERT_TRUE(camera_preview_widget);
+
+  auto* preview_window = camera_preview_widget->GetNativeWindow();
+  auto* toolbar_window = game_dashboard_toolbar_widget->GetNativeWindow();
+
+  // Verify that the toolbar and camera preview do not overlap initially.
+  EXPECT_FALSE(preview_window->GetBoundsInScreen().Intersects(
+      toolbar_window->GetBoundsInScreen()));
+
+  // Drag the camera preview widget and drop it on the toolbar, it should find a
+  // different place to exist.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      preview_window->GetBoundsInScreen().CenterPoint());
+  event_generator->DragMouseTo(
+      toolbar_window->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(preview_window->GetBoundsInScreen().Intersects(
+      toolbar_window->GetBoundsInScreen()));
+
+  // Now drag the toolbar and drop it on top of the camera preview. The camera
+  // preview should move out of the way.
+  auto preview_bounds_before_dragging_toolbar =
+      preview_window->GetBoundsInScreen();
+  event_generator->MoveMouseTo(
+      toolbar_window->GetBoundsInScreen().CenterPoint());
+  event_generator->DragMouseTo(
+      preview_window->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(preview_window->GetBoundsInScreen().Intersects(
+      toolbar_window->GetBoundsInScreen()));
+  EXPECT_NE(preview_window->GetBoundsInScreen(),
+            preview_bounds_before_dragging_toolbar);
 }
 
 TEST_F(GameDashboardCaptureModeTest, CursorAndClickBehaviorWhenAnchored) {
@@ -1045,6 +1233,40 @@ TEST_P(GameDashboardCaptureModeHistogramTest,
   histogram_tester_.ExpectBucketCount(
       histogram_name,
       /*sample=*/EndRecordingReason::kGameToolbarStopRecordingButton,
+      /*expected_count=*/1);
+
+  // Testing stop recording by the tablet mode enum.
+  // Game dashboard is not available on the tablet mode.
+  if (GetParam()) {
+    return;
+  }
+
+  histogram_tester_.ExpectBucketCount(
+      histogram_name,
+      /*sample=*/EndRecordingReason::kGameDashboardTabletMode,
+      /*expected_count=*/0);
+  auto game_dashboard_test_api = std::make_unique<GameDashboardContextTestApi>(
+      GameDashboardController::Get()->GetGameDashboardContext(game_window()),
+      GetEventGenerator());
+
+  game_dashboard_test_api->OpenTheMainMenu();
+  LeftClickOn(game_dashboard_test_api->GetMainMenuRecordGameTile());
+  // Clicking on the record game tile closes the main menu, and asynchronously
+  // starts the capture session. Run until idle to ensure that the posted task
+  // runs synchronously and completes before proceeding.
+  base::RunLoop().RunUntilIdle();
+  LeftClickOn(GetStartRecordingButton());
+  WaitForRecordingToStart();
+  EXPECT_TRUE(CaptureModeController::Get()->is_recording_in_progress());
+  TabletModeControllerTestApi().EnterTabletMode();
+  WaitForCaptureFileToBeSaved();
+  // The histogram name becomes
+  // "ash.CaptureModeController.EndRecordingReason.TabletMode";
+  histogram_tester_.ExpectBucketCount(
+      BuildHistogramName(kHistogramNameBase,
+                         test_api.GetBehavior(BehaviorType::kDefault),
+                         /*append_ui_mode_suffix=*/true),
+      /*sample=*/EndRecordingReason::kGameDashboardTabletMode,
       /*expected_count=*/1);
 }
 

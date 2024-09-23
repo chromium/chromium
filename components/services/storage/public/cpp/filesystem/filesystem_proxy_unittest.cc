@@ -272,7 +272,7 @@ TEST_P(FilesystemProxyTest, OpenFileReadOnly) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314081): Re-enable when OpenFileWriteOnly works on Fuchsia.
+// TODO(crbug.com/40221280): Re-enable when OpenFileWriteOnly works on Fuchsia.
 #define MAYBE_OpenFileWriteOnly DISABLED_OpenFileWriteOnly
 #else
 #define MAYBE_OpenFileWriteOnly OpenFileWriteOnly
@@ -296,7 +296,7 @@ TEST_P(FilesystemProxyTest, MAYBE_OpenFileWriteOnly) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314079): Re-enable when OpenFileAppendOnly works on Fuchsia.
+// TODO(crbug.com/40221278): Re-enable when OpenFileAppendOnly works on Fuchsia.
 #define MAYBE_OpenFileAppendOnly DISABLED_OpenFileAppendOnly
 #else
 #define MAYBE_OpenFileAppendOnly OpenFileAppendOnly

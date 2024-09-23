@@ -17,7 +17,16 @@ namespace blink {
 
 class LengthUnitsChecker : public CSSInterpolationType::CSSConversionChecker {
  public:
-  static std::unique_ptr<LengthUnitsChecker> MaybeCreate(
+  struct UnitLength {
+    explicit UnitLength(CSSPrimitiveValue::LengthUnitType unit,
+                        const CSSToLengthConversionData& conversion_data)
+        : unit(unit), length_pixels(UnitLengthPixels(unit, conversion_data)) {}
+
+    const CSSPrimitiveValue::LengthUnitType unit;
+    const double length_pixels;
+  };
+
+  static LengthUnitsChecker* MaybeCreate(
       const CSSPrimitiveValue::LengthTypeFlags& length_types,
       const StyleResolverState& state) {
     Vector<UnitLength> unit_lengths;
@@ -30,8 +39,11 @@ class LengthUnitsChecker : public CSSInterpolationType::CSSConversionChecker {
     }
     if (unit_lengths.empty())
       return nullptr;
-    return base::WrapUnique(new LengthUnitsChecker(std::move(unit_lengths)));
+    return MakeGarbageCollected<LengthUnitsChecker>(std::move(unit_lengths));
   }
+
+  explicit LengthUnitsChecker(Vector<UnitLength> unit_lengths)
+      : unit_lengths_(std::move(unit_lengths)) {}
 
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
@@ -52,18 +64,6 @@ class LengthUnitsChecker : public CSSInterpolationType::CSSConversionChecker {
     return conversion_data.ZoomedComputedPixels(
         1, CSSPrimitiveValue::LengthUnitTypeToUnitType(length_unit_type));
   }
-
-  struct UnitLength {
-    explicit UnitLength(CSSPrimitiveValue::LengthUnitType unit,
-                        const CSSToLengthConversionData& conversion_data)
-        : unit(unit), length_pixels(UnitLengthPixels(unit, conversion_data)) {}
-
-    const CSSPrimitiveValue::LengthUnitType unit;
-    const double length_pixels;
-  };
-
-  explicit LengthUnitsChecker(Vector<UnitLength> unit_lengths)
-      : unit_lengths_(std::move(unit_lengths)) {}
 
   Vector<UnitLength> unit_lengths_;
 };

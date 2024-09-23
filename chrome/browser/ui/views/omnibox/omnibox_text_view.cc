@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/omnibox/omnibox_text_view.h"
+
 #include <limits.h>
 
 #include <algorithm>
 #include <memory>
-
-#include "chrome/browser/ui/views/omnibox/omnibox_text_view.h"
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
@@ -43,6 +44,10 @@ constexpr int kInherit = INT_MIN;
 // vertically center the cap height of the font instead of centering the
 // entire font.
 static constexpr int kVerticalPadding = 3;
+
+// Dictionary and translation default number of lines for the FormattedString
+// subhead.
+constexpr size_t kDefaultMaxNumLines = 3;
 
 struct TextStyle {
   OmniboxPart part;
@@ -104,6 +109,36 @@ void ApplyTextStyleForType(SuggestionAnswer::TextStyle text_style,
   render_text->ApplyColor(result_view->GetColorProvider()->GetColor(id), range);
 }
 
+void ApplyTextStyleFromColorType(
+    const std::optional<omnibox::FormattedString::ColorType>& color_type,
+    OmniboxResultView* result_view,
+    gfx::RenderText* render_text,
+    const gfx::Range& range) {
+  render_text->ApplyWeight(gfx::Font::Weight::NORMAL, range);
+  render_text->ApplyBaselineStyle(gfx::BaselineStyle::kNormalBaseline, range);
+  const bool selected =
+      result_view->GetThemeState() == OmniboxPartState::SELECTED;
+  ui::ColorId id;
+  if (color_type.value() ==
+      omnibox::FormattedString::COLOR_ON_SURFACE_POSITIVE) {
+    id = selected ? kColorOmniboxResultsTextPositiveSelected
+                  : kColorOmniboxResultsTextPositive;
+  } else if (color_type.value() ==
+             omnibox::FormattedString::COLOR_ON_SURFACE_NEGATIVE) {
+    id = selected ? kColorOmniboxResultsTextNegativeSelected
+                  : kColorOmniboxResultsTextNegative;
+  } else {
+    return;
+  }
+  render_text->ApplyColor(result_view->GetColorProvider()->GetColor(id), range);
+}
+
+// Dictionary and translation answers have a max number of lines > 1.
+bool AnswerHasDefinedMaxLines(omnibox::AnswerType answer_type) {
+  return answer_type == omnibox::ANSWER_TYPE_DICTIONARY ||
+         answer_type == omnibox::ANSWER_TYPE_TRANSLATION;
+}
+
 }  // namespace
 
 OmniboxTextView::OmniboxTextView(OmniboxResultView* result_view)
@@ -111,23 +146,30 @@ OmniboxTextView::OmniboxTextView(OmniboxResultView* result_view)
 
 OmniboxTextView::~OmniboxTextView() = default;
 
-gfx::Size OmniboxTextView::CalculatePreferredSize() const {
-  return render_text_ ? render_text_->GetStringSize() : gfx::Size();
+gfx::Size OmniboxTextView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  if (!render_text_) {
+    return gfx::Size();
+  }
+
+  if (!available_size.width().is_bounded()) {
+    render_text_->SetDisplayRect(gfx::Rect(gfx::Size(INT_MAX, 0)));
+    return render_text_->GetStringSize();
+  }
+
+  int width = available_size.width().value();
+  if (!wrap_text_lines_) {
+    return gfx::Size(width, GetLineHeight());
+  }
+
+  render_text_->SetDisplayRect(gfx::Rect(width, 0));
+  gfx::Size string_size = render_text_->GetStringSize();
+  string_size.Enlarge(0, kVerticalPadding);
+  return string_size;
 }
 
 bool OmniboxTextView::GetCanProcessEventsWithinSubtree() const {
   return false;
-}
-
-int OmniboxTextView::GetHeightForWidth(int width) const {
-  if (!render_text_)
-    return 0;
-  // If text wrapping is not called for we can simply return the font height.
-  if (!wrap_text_lines_)
-    return GetLineHeight();
-  render_text_->SetDisplayRect(gfx::Rect(width, 0));
-  gfx::Size string_size = render_text_->GetStringSize();
-  return string_size.height() + kVerticalPadding;
 }
 
 void OmniboxTextView::OnPaint(gfx::Canvas* canvas) {
@@ -211,6 +253,42 @@ void OmniboxTextView::SetTextWithStyling(
   OnStyleChanged();
 }
 
+void OmniboxTextView::SetTextWithStyling(
+    const omnibox::FormattedString& formatted_string,
+    size_t fragment_index,
+    const omnibox::AnswerType& answer_type) {
+  use_deemphasized_font_ = false;
+  cached_classifications_.reset();
+  wrap_text_lines_ = AnswerHasDefinedMaxLines(answer_type);
+  for (size_t i = fragment_index;
+       i < static_cast<size_t>(formatted_string.fragments_size()); i++) {
+    const std::u16string space_separator = i == 0u ? u"" : u" ";
+    const std::u16string append_text =
+        space_separator +
+        base::UTF8ToUTF16(formatted_string.fragments(i).text());
+    size_t offset = render_text_ ? render_text_->text().length() : 0u;
+    gfx::Range range(offset, offset + append_text.length());
+    render_text_->AppendText(append_text);
+    ApplyTextStyleFromColorType(formatted_string.fragments(i).color(),
+                                result_view_, render_text_.get(), range);
+  }
+  OnStyleChanged();
+}
+
+void OmniboxTextView::SetMultilineText(
+    const omnibox::FormattedString& formatted_string,
+    const omnibox::AnswerType& answer_type) {
+  render_text_ = CreateRenderText(u"");
+  if (formatted_string.fragments_size() > 0 &&
+      AnswerHasDefinedMaxLines(answer_type)) {
+    const size_t kMaxDisplayLines =
+        OmniboxFieldTrial::IsUniformRowHeightEnabled() ? 1 : 3;
+    render_text_->SetMultiline(true);
+    render_text_->SetMaxLines(std::min(kMaxDisplayLines, kDefaultMaxNumLines));
+  }
+  SetTextWithStyling(formatted_string, /*fragment_index=*/0u, answer_type);
+}
+
 void OmniboxTextView::AppendExtraText(const SuggestionAnswer::ImageLine& line) {
   const std::u16string space = u" ";
   const auto* text_field = line.additional_text();
@@ -221,7 +299,7 @@ void OmniboxTextView::AppendExtraText(const SuggestionAnswer::ImageLine& line) {
   if (text_field) {
     AppendText(*text_field, space);
   }
-  SetPreferredSize(CalculatePreferredSize());
+  SetPreferredSize(CalculatePreferredSize({}));
 }
 
 int OmniboxTextView::GetLineHeight() const {
@@ -307,9 +385,7 @@ void OmniboxTextView::OnStyleChanged() {
   font_height_ = std::max(height_normal, height_bold);
   font_height_ += kVerticalPadding;
 
-  render_text_->SetElideBehavior(gfx::NO_ELIDE);
-  SetPreferredSize(CalculatePreferredSize());
-  render_text_->SetElideBehavior(gfx::ELIDE_TAIL);
+  SetPreferredSize(CalculatePreferredSize({}));
   SchedulePaint();
 }
 

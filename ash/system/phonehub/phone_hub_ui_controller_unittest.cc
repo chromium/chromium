@@ -119,8 +119,8 @@ class PhoneHubUiControllerTest : public AshTestBase,
   }
 
   std::unique_ptr<eche_app::EcheConnectionStatusHandler> handler_;
-  std::unique_ptr<PhoneHubUiController> controller_;
   phonehub::FakePhoneHubManager phone_hub_manager_;
+  std::unique_ptr<PhoneHubUiController> controller_;
   bool ui_state_changed_ = false;
 
  private:

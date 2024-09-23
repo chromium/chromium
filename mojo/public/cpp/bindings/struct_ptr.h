@@ -11,7 +11,6 @@
 #include <new>
 
 #include "base/check.h"
-#include "base/template_util.h"
 #include "mojo/public/cpp/bindings/lib/hash_util.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
@@ -95,7 +94,7 @@ class StructPtr {
   StructPtr Clone() const { return is_null() ? StructPtr() : ptr_->Clone(); }
 
   // Compares the pointees (which might both be null).
-  // TODO(crbug.com/735302): Get rid of Equals in favor of the operator. Same
+  // TODO(crbug.com/41326459): Get rid of Equals in favor of the operator. Same
   // for Hash.
   bool Equals(const StructPtr& other) const {
     if (is_null() || other.is_null())

@@ -2,7 +2,7 @@
   :host {
     display: flex;
     justify-content: flex-end;
-    padding: 10px 0 20px 0;
+    padding: 28px 0 28px 0;
   }
 
   #forward:focus {
@@ -14,13 +14,6 @@
   }
 
 </style>
-<cr-button id="backward"
-    class="cancel-button"
-    on-click="onBackwardButtonClicked_"
-    disabled="[[isButtonDisabled_(Button.BACKWARD, buttonState.*)]]"
-    hidden$="[[isButtonHidden_(Button.BACKWARD, buttonState.*)]]">
-  [[i18n('back')]]
-</cr-button>
 <div id="flex"></div>
 <cr-button id="cancel"
     class="cancel-button"

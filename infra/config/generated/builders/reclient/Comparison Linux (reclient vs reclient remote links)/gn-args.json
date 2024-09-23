@@ -7,7 +7,10 @@
         "is_component_build": false,
         "is_debug": false,
         "proprietary_codecs": true,
-        "use_remoteexec": true
+        "target_cpu": "x64",
+        "target_os": "linux",
+        "use_remoteexec": true,
+        "use_siso": true
       }
     },
     "build2": {
@@ -18,8 +21,11 @@
         "is_component_build": false,
         "is_debug": false,
         "proprietary_codecs": true,
+        "target_cpu": "x64",
+        "target_os": "linux",
+        "use_reclient_links": true,
         "use_remoteexec": true,
-        "use_remoteexec_links": true
+        "use_siso": true
       }
     }
   }

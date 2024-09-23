@@ -94,8 +94,10 @@ std::pair<NSString*, NSString*> GetPasswordAlertTitleAndMessageForOrigins(
 id<ReauthenticationProtocol> BuildReauthenticationModule(
     id<SuccessfulReauthTimeAccessor> successfulReauthTimeAccessor) {
   // Return override for tests if one is set or use the real implementation.
-  if (ScopedPasswordSettingsReauthModuleOverride::instance) {
-    return ScopedPasswordSettingsReauthModuleOverride::instance->module;
+  id<ReauthenticationProtocol> overrideModule =
+      ScopedPasswordSettingsReauthModuleOverride::Get();
+  if (overrideModule) {
+    return overrideModule;
   }
 
   return successfulReauthTimeAccessor

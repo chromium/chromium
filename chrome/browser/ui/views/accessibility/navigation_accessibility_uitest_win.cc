@@ -21,11 +21,12 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_view.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/base/test/ui_controls.h"
 #include "url/gurl.h"
 
@@ -213,7 +214,7 @@ class NavigationAccessibilityTest : public InProcessBrowserTest {
 // WinAccessibilityEventMonitor::WaitForNextEvent; see https://crbug.com/791981.
 IN_PROC_BROWSER_TEST_F(NavigationAccessibilityTest,
                        DISABLED_TestNavigateToNewUrl) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("data:text/html;charset=utf-8,"

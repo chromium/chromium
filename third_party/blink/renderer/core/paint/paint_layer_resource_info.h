@@ -30,6 +30,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_RESOURCE_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_RESOURCE_INFO_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/svg/svg_resource_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -62,6 +64,12 @@ class PaintLayerResourceInfo final
   void SetFilterReferenceBox(const gfx::RectF& rect) {
     filter_reference_box_ = rect;
   }
+  const std::optional<gfx::SizeF>& FilterViewport() const {
+    return filter_viewport_;
+  }
+  void SetFilterViewport(std::optional<gfx::SizeF> viewport) {
+    filter_viewport_ = viewport;
+  }
 
   void ClearLayer() { layer_ = nullptr; }
 
@@ -73,6 +81,7 @@ class PaintLayerResourceInfo final
   // |ClearLayer| must be called before *layer_ becomes invalid.
   Member<PaintLayer> layer_;
   gfx::RectF filter_reference_box_;
+  std::optional<gfx::SizeF> filter_viewport_;
 };
 
 }  // namespace blink

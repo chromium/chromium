@@ -7,6 +7,8 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 
@@ -144,6 +146,25 @@ bool ShouldEnumerateCurrentProcessWindows() {
 #else
   return true;
 #endif
+}
+
+void OpenNativeScreenCapturePicker(
+    content::DesktopMediaID::Type type,
+    base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
+    base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+    base::OnceCallback<void()> cancel_callback,
+    base::OnceCallback<void()> error_callback) {
+  content::MediaStreamManager::GetInstance()
+      ->video_capture_manager()
+      ->OpenNativeScreenCapturePicker(
+          type, std::move(created_callback), std::move(picker_callback),
+          std::move(cancel_callback), std::move(error_callback));
+}
+
+void CloseNativeScreenCapturePicker(DesktopMediaID source_id) {
+  content::MediaStreamManager::GetInstance()
+      ->video_capture_manager()
+      ->CloseNativeScreenCapturePicker(source_id);
 }
 
 }  // namespace content::desktop_capture

@@ -87,7 +87,7 @@ GREYElementInteraction* RequestDesktopButton() {
 }
 
 // Returns the XCUIElement to interact with a tab strip tab.
-XCUIElement* TabStripTabWithIdentifier(NSString* tab_identifier) {
+XCUIElement* LegacyTabStripTabWithIdentifier(NSString* tab_identifier) {
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElementQuery* tab_strip =
       [[app descendantsMatchingType:XCUIElementTypeScrollView]
@@ -98,11 +98,12 @@ XCUIElement* TabStripTabWithIdentifier(NSString* tab_identifier) {
 
 // Moves a tab in the tab strip from its position to the position of another
 // existing tab.
-void LongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
-                                   NSString* destination_tab_identifier) {
-  XCUIElement* moving_tab = TabStripTabWithIdentifier(moving_tab_identifier);
+void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
+                                         NSString* destination_tab_identifier) {
+  XCUIElement* moving_tab =
+      LegacyTabStripTabWithIdentifier(moving_tab_identifier);
   XCUIElement* destination_tab =
-      TabStripTabWithIdentifier(destination_tab_identifier);
+      LegacyTabStripTabWithIdentifier(destination_tab_identifier);
 
   XCUICoordinate* start_point =
       [moving_tab coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
@@ -126,6 +127,40 @@ void LongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 
 @implementation PrerenderTestCase
 
+// These tests fail very often on Official builds because of flakiness in the
+// prerender. Only build these tests in non-Official builds.
+#if defined(OFFICIAL_BUILD)
+#define MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab \
+  DISABLED_testLegacyOpenTabInTabStripBeforePrerenderedTab
+#define MAYBE_testOpenTabInTabStripBeforePrerenderedTab \
+  DISABLED_testOpenTabInTabStripBeforePrerenderedTab
+#else
+#define MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab \
+  testLegacyOpenTabInTabStripBeforePrerenderedTab
+#define MAYBE_testOpenTabInTabStripBeforePrerenderedTab \
+  testOpenTabInTabStripBeforePrerenderedTab
+#endif  // defined(OFFICIAL_BUILD)
+
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testMovePrerenderedTabInTabStrip testMovePrerenderedTabInTabStrip
+#else
+#define MAYBE_testMovePrerenderedTabInTabStrip \
+  DISABLED_testMovePrerenderedTabInTabStrip
+#endif  // TARGET_IPHONE_SIMULATOR
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector
+            (MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab)] ||
+      [self isRunningTest:@selector(MAYBE_testMovePrerenderedTabInTabStrip)]) {
+    config.features_disabled.push_back(kModernTabStrip);
+    config.features_disabled.push_back(kTabGroupsIPad);
+  } else {
+    config.features_enabled.push_back(kModernTabStrip);
+  }
+  return config;
+}
+
 - (void)addURLToHistory {
   [ChromeEarlGrey clearBrowsingHistory];
   // Set server up.
@@ -148,12 +183,15 @@ void LongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
 
-  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(pageString)];
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+  [ChromeEarlGrey waitForWebStateVisible];
   [ChromeEarlGrey waitForPageToFinishLoading];
+  GREYAssertEqual(2, _visitCounter, @"The page should have been loaded twice");
+
   [[self class] closeAllTabs];
   [ChromeEarlGrey openNewTab];
 }
@@ -161,9 +199,9 @@ void LongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 #pragma mark - Tests
 
 // Test that tapping the prerendered suggestions opens it.
-// TODO(crbug.com/1315304): Reenable.
+// TODO(crbug.com/40833424): Reenable.
 - (void)DISABLED_testTapPrerenderSuggestions {
-  // TODO(crbug.com/793306): Re-enable the test on iPad once the alternate
+  // TODO(crbug.com/40553918): Re-enable the test on iPad once the alternate
   // letters problem is fixed.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(
@@ -214,7 +252,7 @@ void LongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 
 // Tests that tapping the prerendered suggestions keeps the UserAgent of the
 // previous page.
-// TODO(crbug.com/1110890): Test is flaky.
+// TODO(crbug.com/40708867): Test is flaky.
 - (void)DISABLED_testUserAgentTypeInPreviousLoad {
   [self addURLToHistory];
   const GURL pageURL = self.testServer->GetURL(kPageURL);
@@ -276,8 +314,8 @@ void LongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 // Regression test for crbug.com/1477499. Tests that a pre-rendered tab doesn't
 // lead to an incorrect data source, as can be seen after moving it in the tab
 // strip.
-// TODO(b/324216491): This test is flaky on official bot.
-- (void)FLAKY_testMovePrerenderedTabInTabStrip {
+// TODO(crbug.com/324216491): Test is flaky on devices.
+- (void)MAYBE_testMovePrerenderedTabInTabStrip {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPhone. The test makes use of the tab strip.");
@@ -328,21 +366,81 @@ void LongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
   [ChromeEarlGrey openNewTab];
 
   // Then move the tab that got prerendered to a different position.
-  LongPressAndDragTabInTabStrip([NSString stringWithUTF8String:kPageTitle],
-                                @"New Tab");
+  LegacyLongPressAndDragTabInTabStrip(
+      [NSString stringWithUTF8String:kPageTitle], @"New Tab");
 }
 
 // Regression test for crbug.com/1482622. Tests that a pre-rendered tab doesn't
 // lead to an incorrect data source, as can be seen after opening a new tab in
 // the background before the pre-rendered tab.
-// TODO(crbug.com/1487677): Test fails on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_testOpenTabInTabStripBeforePrerenderedTab \
-  DISABLED_testOpenTabInTabStripBeforePrerenderedTab
-#else
-#define MAYBE_testOpenTabInTabStripBeforePrerenderedTab \
-  testOpenTabInTabStripBeforePrerenderedTab
-#endif
+- (void)MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab {
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped for iPhone. The test makes use of the tab strip.");
+  }
+
+  // Do the steps to add a URL to the history to make it available via inline
+  // autocomplete.
+  [self addURLToHistory];
+  const GURL pageURL = self.testServer->GetURL(kPageURL);
+  NSString* pageString = base::SysUTF8ToNSString(pageURL.GetContent());
+
+  static int visitCountBeforePrerender = _visitCounter;
+
+  // Open a first tab.
+  [ChromeEarlGrey openNewTab];
+
+  // Open a second tab and load the UserAgent page.
+  const GURL userAgentPageURL = self.testServer->GetURL(kUserAgentPageURL);
+  [ChromeEarlGrey loadURL:userAgentPageURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
+
+  // Type the beginning of the address to have the autocomplete suggestion.
+  NSString* typedText = [pageString substringToIndex:(pageString.length - 6)];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:typedText];
+
+  // Wait until prerender request reaches the server.
+  bool prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+    return self->_visitCounter == visitCountBeforePrerender + 1;
+  });
+  GREYAssertEqual(_visitCounter, visitCountBeforePrerender + 1,
+                  @"Visit count mismatch");
+  GREYAssertTrue(prerendered, @"Prerender did not happen");
+
+  // Open the suggestion. The suggestion needs to be the first suggestion to
+  // have the prerenderer activated.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(pageString),
+                                   grey_kindOfClassName(@"FadeTruncatingLabel"),
+                                   grey_ancestor(grey_accessibilityID(
+                                       @"omnibox suggestion 0 0")),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
+
+  GREYAssertEqual(visitCountBeforePrerender + 1, _visitCounter,
+                  @"Prerender should have been the last load");
+
+  // Go back to the first tab.
+  [LegacyTabStripTabWithIdentifier(@"New Tab") tap];
+
+  // Open the first Most Visited tile in a background tab (thus opening it
+  // between the current NTP, and the prerendered tab).
+  id<GREYMatcher> firstMostVisitedTile = grey_accessibilityID(
+      [kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix
+          stringByAppendingString:@"0"]);
+  [[EarlGrey selectElementWithMatcher:firstMostVisitedTile]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForMainTabCount:3];
+}
+
+// Regression test for crbug.com/1482622. Tests that a pre-rendered tab doesn't
+// lead to an incorrect data source, as can be seen after opening a new tab in
+// the background before the pre-rendered tab.
 - (void)MAYBE_testOpenTabInTabStripBeforePrerenderedTab {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
@@ -366,15 +464,16 @@ void LongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
   [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
 
   // Type the beginning of the address to have the autocomplete suggestion.
-  [ChromeEarlGreyUI focusOmnibox];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(
-                        [pageString substringToIndex:[pageString length] - 6])];
+  NSString* beginningOfAddress =
+      [pageString substringToIndex:pageString.length - 6];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:beginningOfAddress];
 
   // Wait until prerender request reaches the server.
   bool prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     return self->_visitCounter == visitCountBeforePrerender + 1;
   });
+  GREYAssertEqual(_visitCounter, visitCountBeforePrerender + 1,
+                  @"Visit count mismatch");
   GREYAssertTrue(prerendered, @"Prerender did not happen");
 
   // Open the suggestion. The suggestion needs to be the first suggestion to
@@ -394,7 +493,10 @@ void LongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
                   @"Prerender should have been the last load");
 
   // Go back to the first tab.
-  [TabStripTabWithIdentifier(@"New Tab") tap];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(@"New Tab"),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
 
   // Open the first Most Visited tile in a background tab (thus opening it
   // between the current NTP, and the prerendered tab).

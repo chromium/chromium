@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -15,7 +16,6 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/actions/action_id.h"
@@ -29,6 +29,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -113,12 +114,12 @@ std::u16string ViewsComboboxModel::GetItemAt(size_t index) const {
     if (IsViewClass<MdTextButton>(view)) {
       std::stringstream ss;
       ss << index;
-      return base::ASCIIToUTF16(base::StringPiece("Button: " + ss.str()));
+      return base::ASCIIToUTF16(std::string_view("Button: " + ss.str()));
     }
     if (IsViewClass<Checkbox>(view)) {
       std::stringstream ss;
       ss << index;
-      return base::ASCIIToUTF16(base::StringPiece("Checkbox: " + ss.str()));
+      return base::ASCIIToUTF16(std::string_view("Checkbox: " + ss.str()));
     }
   }
   return u"<Unknown>";
@@ -200,7 +201,7 @@ std::u16string ControlTypeComboboxModel::GetItemAt(size_t index) const {
     case 1:
       return u"Checkbox";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return u"";
   }
 }
@@ -225,7 +226,7 @@ ProposedLayout FlowLayout::CalculateProposedLayout(
   int max_height = 0;
   for (views::View* view : host_view()->children()) {
     bool view_visible = view->GetVisible();
-    gfx::Size preferred_size = view->GetPreferredSize();
+    gfx::Size preferred_size = view->GetPreferredSize(size_bounds);
     if (view_visible) {
       max_height = std::max(max_height, preferred_size.height());
       if (x > 0 && (x + preferred_size.width() > size_bounds.width())) {
@@ -309,7 +310,7 @@ void ActionsExample::CreateExampleView(View* container) {
             Builder<Combobox>(std::make_unique<Combobox>(std::move(model)))
                 .CopyAddressTo(&combobox))
         .BuildChildren();
-    combobox->SetAccessibleName(label->GetText());
+    combobox->GetViewAccessibility().SetName(label->GetText());
     return {row, combobox};
   };
 
@@ -362,7 +363,7 @@ void ActionsExample::CreateExampleView(View* container) {
         .AfterBuild(base::BindOnce(
             [](Textfield** textfield, Label** label, BoxLayoutView* row) {
               row->SetFlexForView(*textfield, 1);
-              (*textfield)->SetAccessibleName((*label)->GetText());
+              (*textfield)->GetViewAccessibility().SetName((*label)->GetText());
             },
             &textfield, &label))
         .BuildChildren();
@@ -525,7 +526,7 @@ void ActionsExample::CreateControl(actions::ActionItem* action,
               .Build();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   action_panel_->AddChildView(std::move(new_view));
   ++control_num;

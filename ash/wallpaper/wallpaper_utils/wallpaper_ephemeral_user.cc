@@ -20,6 +20,12 @@ bool IsEphemeralUser(const AccountId& account_id) {
     return true;
   }
 
+  if (account_id == user_manager::StubAccountId()) {
+    // Stub user is never ephemeral. Mirrors the logic in
+    // UserManagerBase::IsEphemeralAccountId.
+    return false;
+  }
+
   const UserSession* user_session =
       Shell::Get()->session_controller()->GetUserSessionByAccountId(account_id);
   if (!user_session) {

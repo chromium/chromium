@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 
 class Browser;
 class Profile;
@@ -22,7 +23,7 @@ class Extension;
 
 // A bubble shown for an extension overriding the user's home page (different
 // than the NTP).
-// TODO(https://crbug.com/1505612): Have this class use the new dialog builders
+// TODO(crbug.com/40946250): Have this class use the new dialog builders
 // and remove ToolbarActionsBarBubbleDelegate.
 class ControlledHomeBubbleDelegate
     : public ToolbarActionsBarBubbleDelegate,
@@ -49,7 +50,7 @@ class ControlledHomeBubbleDelegate
   std::u16string GetBodyText(bool anchored_to_action) override;
   std::u16string GetActionButtonText() override;
   std::u16string GetDismissButtonText() override;
-  ui::DialogButton GetDefaultDialogButton() override;
+  ui::mojom::DialogButton GetDefaultDialogButton() override;
   std::unique_ptr<ExtraViewInfo> GetExtraViewInfo() override;
   std::string GetAnchorActionId() override;
   void OnBubbleShown(base::OnceClosure close_bubble_callback) override;

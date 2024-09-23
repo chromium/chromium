@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/certificates_handler.h"
 
 #include <errno.h>
@@ -36,14 +41,16 @@
 #include "chrome/common/net/x509_certificate_model_nss.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
-#include "third_party/boringssl/src/pki/input.h"
-#include "third_party/boringssl/src/pki/parser.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/span.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
@@ -72,30 +79,6 @@ static const char kCertificatesHandlerCertificateErrors[] = "certificateErrors";
 static const char kCertificatesHandlerErrorDescription[] = "description";
 static const char kCertificatesHandlerErrorField[] = "error";
 static const char kCertificatesHandlerErrorTitle[] = "title";
-
-// Enumeration of different callers of SelectFile.  (Start counting at 1 so
-// if SelectFile is accidentally called with params=nullptr it won't match any.)
-enum {
-  EXPORT_PERSONAL_FILE_SELECTED = 1,
-  IMPORT_PERSONAL_FILE_SELECTED,
-  IMPORT_SERVER_FILE_SELECTED,
-  IMPORT_CA_FILE_SELECTED,
-};
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Before this experiment on ChromeOS it was possible to import a PKCS#12 file
-// (a client certificate with a key pair for it) on the
-// chrome://settings/certificates using the "Import" button and then export it
-// as a new PKCS#12 file. All the other certificates (imported using the "Import
-// and Bind" button, imported from extensions and policies) could not be
-// exported as PKCS#12 (primarily to protect their private keys). This
-// experiment, when enabled, prevents export of certificates with their private
-// keys for all certificates. Just the certificates without private keys can
-// still be exported on the "View > Details" dialog.
-BASE_FEATURE(kDeprecatePrivateKeyExport,
-             "DeprecatePrivateKeyExport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 std::string OrgNameToId(const std::string& org) {
   return "org-" + org;
@@ -180,14 +163,10 @@ bool CouldBePFX(std::string_view data) {
 
   // If the SEQUENCE is definite length, it can be parsed through the version
   // tag using DER parser, since INTEGER must be definite length, even in BER.
-  bssl::der::Parser parser((bssl::der::Input(data)));
-  bssl::der::Parser sequence_parser;
-  if (!parser.ReadSequence(&sequence_parser))
-    return false;
-  if (!sequence_parser.SkipTag(bssl::der::kInteger)) {
-    return false;
-  }
-  return true;
+  CBS cbs = bssl::StringAsBytes(data);
+  CBS sequence, version;
+  return CBS_get_asn1(&cbs, &sequence, CBS_ASN1_SEQUENCE) &&
+         CBS_get_asn1(&sequence, &version, CBS_ASN1_INTEGER);
 }
 
 }  // namespace
@@ -205,14 +184,14 @@ class FileAccessProvider
   // parameter is read result.
   typedef base::OnceCallback<void(const int*, const std::string*)> ReadCallback;
 
-  // The first parameter is 0 on success or errno on failure. The second
-  // parameter is the number of bytes written on success.
-  typedef base::OnceCallback<void(const int*, const int*)> WriteCallback;
+  // The first parameter is 0 on success or errno on failure.
+  typedef base::OnceCallback<void(const int*)> WriteCallback;
 
   base::CancelableTaskTracker::TaskId StartRead(
       const base::FilePath& path,
       ReadCallback callback,
-      base::CancelableTaskTracker* tracker);
+      base::CancelableTaskTracker* tracker,
+      file_access::ScopedFileAccess file_access);
   base::CancelableTaskTracker::TaskId StartWrite(
       const base::FilePath& path,
       const std::string& data,
@@ -225,19 +204,22 @@ class FileAccessProvider
 
   // Reads file at |path|. |saved_errno| is 0 on success or errno on failure.
   // When success, |data| has file content.
-  void DoRead(const base::FilePath& path, int* saved_errno, std::string* data);
+  void DoRead(const base::FilePath& path,
+              int* saved_errno,
+              std::string* data,
+              file_access::ScopedFileAccess file_access);
   // Writes data to file at |path|. |saved_errno| is 0 on success or errno on
-  // failure. When success, |bytes_written| has number of bytes written.
+  // failure.
   void DoWrite(const base::FilePath& path,
                const std::string& data,
-               int* saved_errno,
-               int* bytes_written);
+               int* saved_errno);
 };
 
 base::CancelableTaskTracker::TaskId FileAccessProvider::StartRead(
     const base::FilePath& path,
     ReadCallback callback,
-    base::CancelableTaskTracker* tracker) {
+    base::CancelableTaskTracker* tracker,
+    file_access::ScopedFileAccess file_access) {
   // Owned by reply callback posted below.
   int* saved_errno = new int(0);
   std::string* data = new std::string();
@@ -247,8 +229,8 @@ base::CancelableTaskTracker::TaskId FileAccessProvider::StartRead(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   return tracker->PostTaskAndReply(
       task_runner.get(), FROM_HERE,
-      base::BindOnce(&FileAccessProvider::DoRead, this, path, saved_errno,
-                     data),
+      base::BindOnce(&FileAccessProvider::DoRead, this, path, saved_errno, data,
+                     std::move(file_access)),
       base::BindOnce(std::move(callback), base::Owned(saved_errno),
                      base::Owned(data)));
 }
@@ -260,7 +242,6 @@ base::CancelableTaskTracker::TaskId FileAccessProvider::StartWrite(
     base::CancelableTaskTracker* tracker) {
   // Owned by reply callback posted below.
   int* saved_errno = new int(0);
-  int* bytes_written = new int(0);
 
   // This task blocks shutdown because it saves critical user data.
   auto task_runner = base::ThreadPool::CreateTaskRunner(
@@ -269,24 +250,28 @@ base::CancelableTaskTracker::TaskId FileAccessProvider::StartWrite(
   return tracker->PostTaskAndReply(
       task_runner.get(), FROM_HERE,
       base::BindOnce(&FileAccessProvider::DoWrite, this, path, data,
-                     saved_errno, bytes_written),
-      base::BindOnce(std::move(callback), base::Owned(saved_errno),
-                     base::Owned(bytes_written)));
+                     saved_errno),
+      base::BindOnce(std::move(callback), base::Owned(saved_errno)));
 }
 
+// The `file_access` object for reading `path` should be in scope to
+// successfully read the file when Data Leak Prevention policies are enabled.
 void FileAccessProvider::DoRead(const base::FilePath& path,
                                 int* saved_errno,
-                                std::string* data) {
+                                std::string* data,
+                                file_access::ScopedFileAccess file_access) {
   bool success = base::ReadFileToString(path, data);
   *saved_errno = success ? 0 : errno;
 }
 
 void FileAccessProvider::DoWrite(const base::FilePath& path,
                                  const std::string& data,
-                                 int* saved_errno,
-                                 int* bytes_written) {
-  *bytes_written = base::WriteFile(path, data.data(), data.size());
-  *saved_errno = *bytes_written >= 0 ? 0 : errno;
+                                 int* saved_errno) {
+  if (base::WriteFile(path, data)) {
+    *saved_errno = 0;
+  } else {
+    *saved_errno = errno;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -383,40 +368,41 @@ void CertificatesHandler::CertificatesRefreshed() {
 }
 
 void CertificatesHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                       int index,
-                                       void* params) {
-  switch (reinterpret_cast<intptr_t>(params)) {
-    case EXPORT_PERSONAL_FILE_SELECTED:
+                                       int index) {
+  CHECK(pending_operation_.has_value());
+  switch (*pending_operation_) {
+    case EXPORT_PERSONAL_FILE:
       ExportPersonalFileSelected(file.path());
       break;
-    case IMPORT_PERSONAL_FILE_SELECTED:
-      ImportPersonalFileSelected(file.path());
+    case IMPORT_PERSONAL_FILE:
+      file_access::RequestFilesAccessForSystem(
+          {file.path()},
+          base::BindOnce(&CertificatesHandler::ImportPersonalFileSelected,
+                         weak_ptr_factory_.GetWeakPtr(), file.path()));
       break;
-    case IMPORT_SERVER_FILE_SELECTED:
-      ImportServerFileSelected(file.path());
+    case IMPORT_SERVER_FILE:
+      file_access::RequestFilesAccessForSystem(
+          {file.path()},
+          base::BindOnce(&CertificatesHandler::ImportServerFileSelected,
+                         weak_ptr_factory_.GetWeakPtr(), file.path()));
       break;
-    case IMPORT_CA_FILE_SELECTED:
-      ImportCAFileSelected(file.path());
+    case IMPORT_CA_FILE:
+      file_access::RequestFilesAccessForSystem(
+          {file.path()},
+          base::BindOnce(&CertificatesHandler::ImportCAFileSelected,
+                         weak_ptr_factory_.GetWeakPtr(), file.path()));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   select_file_dialog_.reset();
+  pending_operation_ = std::nullopt;
 }
 
-void CertificatesHandler::FileSelectionCanceled(void* params) {
-  switch (reinterpret_cast<intptr_t>(params)) {
-    case EXPORT_PERSONAL_FILE_SELECTED:
-    case IMPORT_PERSONAL_FILE_SELECTED:
-    case IMPORT_SERVER_FILE_SELECTED:
-    case IMPORT_CA_FILE_SELECTED:
-      ImportExportCleanup();
-      RejectCallback(base::Value());
-      break;
-    default:
-      NOTREACHED();
-  }
+void CertificatesHandler::FileSelectionCanceled() {
+  ImportExportCleanup();
+  RejectCallback(base::Value());
 }
 
 void CertificatesHandler::HandleViewCertificate(const base::Value::List& args) {
@@ -539,11 +525,11 @@ void CertificatesHandler::HandleExportPersonal(const base::Value::List& args) {
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
-  select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
-      base::FilePath(), &file_type_info, 1, FILE_PATH_LITERAL("p12"),
-      GetParentWindow(),
-      reinterpret_cast<void*>(EXPORT_PERSONAL_FILE_SELECTED));
+  pending_operation_ = EXPORT_PERSONAL_FILE;
+  select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE,
+                                  std::u16string(), base::FilePath(),
+                                  &file_type_info, 1, FILE_PATH_LITERAL("p12"),
+                                  GetParentWindow());
 }
 
 void CertificatesHandler::ExportPersonalFileSelected(
@@ -595,8 +581,7 @@ void CertificatesHandler::ExportPersonalSlotsUnlocked() {
       &tracker_);
 }
 
-void CertificatesHandler::ExportPersonalFileWritten(const int* write_errno,
-                                                    const int* bytes_written) {
+void CertificatesHandler::ExportPersonalFileWritten(const int* write_errno) {
   ImportExportCleanup();
   if (*write_errno) {
     RejectCallbackWithError(
@@ -641,20 +626,21 @@ void CertificatesHandler::HandleImportPersonal(const base::Value::List& args) {
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
-  select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
-      base::FilePath(), &file_type_info, 1, FILE_PATH_LITERAL("p12"),
-      GetParentWindow(),
-      reinterpret_cast<void*>(IMPORT_PERSONAL_FILE_SELECTED));
+  pending_operation_ = IMPORT_PERSONAL_FILE;
+  select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE,
+                                  std::u16string(), base::FilePath(),
+                                  &file_type_info, 1, FILE_PATH_LITERAL("p12"),
+                                  GetParentWindow());
 }
 
 void CertificatesHandler::ImportPersonalFileSelected(
-    const base::FilePath& path) {
+    const base::FilePath& path,
+    file_access::ScopedFileAccess file_access) {
   file_access_provider_->StartRead(
       path,
       base::BindOnce(&CertificatesHandler::ImportPersonalFileRead,
                      base::Unretained(this)),
-      &tracker_);
+      &tracker_, std::move(file_access));
 }
 
 void CertificatesHandler::ImportPersonalFileRead(const int* read_errno,
@@ -735,11 +721,16 @@ void CertificatesHandler::ImportPersonalSlotUnlocked() {
   // to true if importing into a hardware module. Currently, this only happens
   // for Chrome OS when the "Import and Bind" option is chosen.
   bool is_extractable = !use_hardware_backed_;
-  int result = certificate_manager_model_->ImportFromPKCS12(
-      slot_.get(), file_data_, password_, is_extractable);
+  certificate_manager_model_->ImportFromPKCS12(
+      slot_.get(), file_data_, password_, is_extractable,
+      base::BindOnce(&CertificatesHandler::ImportPersonalResultReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
   ImportExportCleanup();
+}
+
+void CertificatesHandler::ImportPersonalResultReceived(int net_result) {
   int string_id;
-  switch (result) {
+  switch (net_result) {
     case net::OK:
       ResolveCallback(base::Value());
       return;
@@ -786,6 +777,7 @@ void CertificatesHandler::ImportExportCleanup() {
   if (select_file_dialog_.get())
     select_file_dialog_->ListenerDestroyed();
   select_file_dialog_.reset();
+  pending_operation_ = std::nullopt;
 }
 
 void CertificatesHandler::HandleImportServer(const base::Value::List& args) {
@@ -802,18 +794,20 @@ void CertificatesHandler::HandleImportServer(const base::Value::List& args) {
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
-  ShowCertSelectFileDialog(
-      select_file_dialog_.get(), ui::SelectFileDialog::SELECT_OPEN_FILE,
-      base::FilePath(), GetParentWindow(),
-      reinterpret_cast<void*>(IMPORT_SERVER_FILE_SELECTED));
+  pending_operation_ = IMPORT_SERVER_FILE;
+  ShowCertSelectFileDialog(select_file_dialog_.get(),
+                           ui::SelectFileDialog::SELECT_OPEN_FILE,
+                           base::FilePath(), GetParentWindow());
 }
 
-void CertificatesHandler::ImportServerFileSelected(const base::FilePath& path) {
+void CertificatesHandler::ImportServerFileSelected(
+    const base::FilePath& path,
+    file_access::ScopedFileAccess file_access) {
   file_access_provider_->StartRead(
       path,
       base::BindOnce(&CertificatesHandler::ImportServerFileRead,
                      base::Unretained(this)),
-      &tracker_);
+      &tracker_, std::move(file_access));
 }
 
 void CertificatesHandler::ImportServerFileRead(const int* read_errno,
@@ -830,7 +824,7 @@ void CertificatesHandler::ImportServerFileRead(const int* read_errno,
   }
 
   selected_cert_list_ = net::x509_util::CreateCERTCertificateListFromBytes(
-      data->data(), data->size(), net::X509Certificate::FORMAT_AUTO);
+      base::as_byte_span(*data), net::X509Certificate::FORMAT_AUTO);
   if (selected_cert_list_.empty()) {
     ImportExportCleanup();
     RejectCallbackWithError(
@@ -883,18 +877,20 @@ void CertificatesHandler::HandleImportCA(const base::Value::List& args) {
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
+  pending_operation_ = IMPORT_CA_FILE;
   ShowCertSelectFileDialog(select_file_dialog_.get(),
                            ui::SelectFileDialog::SELECT_OPEN_FILE,
-                           base::FilePath(), GetParentWindow(),
-                           reinterpret_cast<void*>(IMPORT_CA_FILE_SELECTED));
+                           base::FilePath(), GetParentWindow());
 }
 
-void CertificatesHandler::ImportCAFileSelected(const base::FilePath& path) {
+void CertificatesHandler::ImportCAFileSelected(
+    const base::FilePath& path,
+    file_access::ScopedFileAccess file_access) {
   file_access_provider_->StartRead(
       path,
       base::BindOnce(&CertificatesHandler::ImportCAFileRead,
                      base::Unretained(this)),
-      &tracker_);
+      &tracker_, std::move(file_access));
 }
 
 void CertificatesHandler::ImportCAFileRead(const int* read_errno,
@@ -911,7 +907,7 @@ void CertificatesHandler::ImportCAFileRead(const int* read_errno,
   }
 
   selected_cert_list_ = net::x509_util::CreateCERTCertificateListFromBytes(
-      data->data(), data->size(), net::X509Certificate::FORMAT_AUTO);
+      base::as_byte_span(*data), net::X509Certificate::FORMAT_AUTO);
   if (selected_cert_list_.empty()) {
     ImportExportCleanup();
     RejectCallbackWithError(
@@ -1095,9 +1091,7 @@ void CertificatesHandler::PopulateTree(const std::string& tab_name,
 
       bool is_extractable = !cert_info->hardware_backed();
 #if BUILDFLAG(IS_CHROMEOS)
-      if (base::FeatureList::IsEnabled(kDeprecatePrivateKeyExport)) {
-        is_extractable = false;
-      }
+      is_extractable = false;
 #endif
 
       auto cert_dict =

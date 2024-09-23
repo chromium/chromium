@@ -5,10 +5,11 @@
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 
 #include <stddef.h>
+
 #include <unordered_set>
 
 #include "base/containers/contains.h"
-#include "base/lazy_instance.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
@@ -26,7 +27,7 @@ namespace {
 
 // From WebKit's WebCore/platform/MIMETypeRegistry.cpp:
 
-const char* const kSupportedImageTypes[] = {
+constexpr auto kSupportedImageTypes = base::MakeFixedFlatSet<std::string_view>({
     "image/jpeg",
     "image/pjpeg",
     "image/jpg",
@@ -42,184 +43,132 @@ const char* const kSupportedImageTypes[] = {
 #if BUILDFLAG(ENABLE_AV1_DECODER)
     "image/avif",
 #endif
-};
+});
 
 //  Support every script type mentioned in the spec, as it notes that "User
 //  agents must recognize all JavaScript MIME types." See
 //  https://html.spec.whatwg.org/#javascript-mime-type.
-const char* const kSupportedJavascriptTypes[] = {
-    "application/ecmascript",
-    "application/javascript",
-    "application/x-ecmascript",
-    "application/x-javascript",
-    "text/ecmascript",
-    "text/javascript",
-    "text/javascript1.0",
-    "text/javascript1.1",
-    "text/javascript1.2",
-    "text/javascript1.3",
-    "text/javascript1.4",
-    "text/javascript1.5",
-    "text/jscript",
-    "text/livescript",
-    "text/x-ecmascript",
-    "text/x-javascript",
-};
+constexpr auto kSupportedJavascriptTypes =
+    base::MakeFixedFlatSet<std::string_view>({
+        "application/ecmascript",
+        "application/javascript",
+        "application/x-ecmascript",
+        "application/x-javascript",
+        "text/ecmascript",
+        "text/javascript",
+        "text/javascript1.0",
+        "text/javascript1.1",
+        "text/javascript1.2",
+        "text/javascript1.3",
+        "text/javascript1.4",
+        "text/javascript1.5",
+        "text/jscript",
+        "text/livescript",
+        "text/x-ecmascript",
+        "text/x-javascript",
+    });
 
 // These types are excluded from the logic that allows all text/ types because
 // while they are technically text, it's very unlikely that a user expects to
 // see them rendered in text form.
-static const char* const kUnsupportedTextTypes[] = {
-    "text/calendar",
-    "text/x-calendar",
-    "text/x-vcalendar",
-    "text/vcalendar",
-    "text/vcard",
-    "text/x-vcard",
-    "text/directory",
-    "text/ldif",
-    "text/qif",
-    "text/x-qif",
-    "text/x-csv",
-    "text/x-vcf",
-    "text/rtf",
-    "text/comma-separated-values",
-    "text/csv",
-    "text/tab-separated-values",
-    "text/tsv",
-    "text/ofx",                          // https://crbug.com/162238
-    "text/vnd.sun.j2me.app-descriptor",  // https://crbug.com/176450
-    "text/x-ms-iqy",                     // https://crbug.com/1054863
-    "text/x-ms-odc",                     // https://crbug.com/1054863
-    "text/x-ms-rqy",                     // https://crbug.com/1054863
-    "text/x-ms-contact"                  // https://crbug.com/1054863
-};
+constexpr auto kUnsupportedTextTypes =
+    base::MakeFixedFlatSet<std::string_view>({
+        "text/calendar",
+        "text/x-calendar",
+        "text/x-vcalendar",
+        "text/vcalendar",
+        "text/vcard",
+        "text/x-vcard",
+        "text/directory",
+        "text/ldif",
+        "text/qif",
+        "text/x-qif",
+        "text/x-csv",
+        "text/x-vcf",
+        "text/rtf",
+        "text/comma-separated-values",
+        "text/csv",
+        "text/tab-separated-values",
+        "text/tsv",
+        "text/ofx",                          // https://crbug.com/162238
+        "text/vnd.sun.j2me.app-descriptor",  // https://crbug.com/176450
+        "text/x-ms-iqy",                     // https://crbug.com/1054863
+        "text/x-ms-odc",                     // https://crbug.com/1054863
+        "text/x-ms-rqy",                     // https://crbug.com/1054863
+        "text/x-ms-contact"                  // https://crbug.com/1054863
+    });
 
 // Note:
 // - does not include javascript types list (see supported_javascript_types)
 // - does not include types starting with "text/" (see
 //   IsSupportedNonImageMimeType())
-static const char* const kSupportedNonImageTypes[] = {
-    "image/svg+xml",  // SVG is text-based XML, even though it has an image/
-                      // type
-    "application/xml", "application/atom+xml", "application/rss+xml",
-    "application/xhtml+xml", "application/json",
-    "message/rfc822",     // For MHTML support.
-    "multipart/related",  // For MHTML support.
-    "multipart/x-mixed-replace"
-    // Note: ADDING a new type here will probably render it AS HTML. This can
-    // result in cross site scripting.
-};
+constexpr auto kSupportedNonImageTypes =
+    base::MakeFixedFlatSet<std::string_view>({
+        "image/svg+xml",  // SVG is text-based XML, even though it has an image/
+                          // type
+        "application/xml", "application/atom+xml", "application/rss+xml",
+        "application/xhtml+xml", "application/json",
+        "message/rfc822",     // For MHTML support.
+        "multipart/related",  // For MHTML support.
+        "multipart/x-mixed-replace"
+        // Note: ADDING a new type here will probably render it AS HTML. This
+        // can result in cross site scripting.
+    });
 
-// Singleton utility class for mime types
-class MimeUtil {
- public:
-  MimeUtil(const MimeUtil&) = delete;
-  MimeUtil& operator=(const MimeUtil&) = delete;
+}  // namespace
 
-  bool IsSupportedImageMimeType(const std::string& mime_type) const;
-  bool IsSupportedNonImageMimeType(const std::string& mime_type) const;
-  bool IsUnsupportedTextMimeType(const std::string& mime_type) const;
-  bool IsSupportedJavascriptMimeType(const std::string& mime_type) const;
-  bool IsJSONMimeType(const std::string&) const;
-
-  bool IsSupportedMimeType(const std::string& mime_type) const;
-
- private:
-  friend struct base::LazyInstanceTraitsBase<MimeUtil>;
-
-  using MimeTypes = std::unordered_set<std::string>;
-
-  MimeUtil();
-
-  MimeTypes image_types_;
-  MimeTypes non_image_types_;
-  MimeTypes unsupported_text_types_;
-  MimeTypes javascript_types_;
-};
-
-MimeUtil::MimeUtil() {
-  for (const char* type : kSupportedNonImageTypes)
-    non_image_types_.insert(type);
-  for (const char* type : kSupportedImageTypes)
-    image_types_.insert(type);
-  for (const char* type : kUnsupportedTextTypes)
-    unsupported_text_types_.insert(type);
-  for (const char* type : kSupportedJavascriptTypes) {
-    javascript_types_.insert(type);
-    non_image_types_.insert(type);
-  }
+bool IsSupportedImageMimeType(std::string_view mime_type) {
+  return kSupportedImageTypes.contains(base::ToLowerASCII(mime_type));
 }
 
-bool MimeUtil::IsSupportedImageMimeType(const std::string& mime_type) const {
-  return base::Contains(image_types_, base::ToLowerASCII(mime_type));
-}
-
-bool MimeUtil::IsSupportedNonImageMimeType(const std::string& mime_type) const {
-  return base::Contains(non_image_types_, base::ToLowerASCII(mime_type)) ||
+bool IsSupportedNonImageMimeType(std::string_view mime_type) {
+  std::string mime_lower = base::ToLowerASCII(mime_type);
+  return kSupportedNonImageTypes.contains(mime_lower) ||
+         kSupportedJavascriptTypes.contains(mime_lower) ||
 #if !BUILDFLAG(IS_IOS)
-         media::IsSupportedMediaMimeType(mime_type) ||
+         media::IsSupportedMediaMimeType(mime_lower) ||
 #endif
-         (base::StartsWith(mime_type, "text/",
-                           base::CompareCase::INSENSITIVE_ASCII) &&
-          !IsUnsupportedTextMimeType(mime_type)) ||
-         (base::StartsWith(mime_type, "application/",
-                           base::CompareCase::INSENSITIVE_ASCII) &&
-          net::MatchesMimeType("application/*+json", mime_type));
+         (base::StartsWith(mime_lower, "text/") &&
+          !kUnsupportedTextTypes.contains(mime_lower)) ||
+         (base::StartsWith(mime_lower, "application/") &&
+          net::MatchesMimeType("application/*+json", mime_lower));
 }
 
-bool MimeUtil::IsUnsupportedTextMimeType(const std::string& mime_type) const {
-  return base::Contains(unsupported_text_types_, base::ToLowerASCII(mime_type));
+bool IsUnsupportedTextMimeType(std::string_view mime_type) {
+  return kUnsupportedTextTypes.contains(base::ToLowerASCII(mime_type));
 }
 
-bool MimeUtil::IsSupportedJavascriptMimeType(
-    const std::string& mime_type) const {
-  return base::Contains(javascript_types_, mime_type);
+bool IsSupportedJavascriptMimeType(std::string_view mime_type) {
+  return kSupportedJavascriptTypes.contains(mime_type);
 }
 
-// TODO(sasebree): Allow non-application `*/*+json` MIME types.
+// TODO(crbug.com/362282752): Allow non-application `*/*+json` MIME types.
 // https://mimesniff.spec.whatwg.org/#json-mime-type
-bool MimeUtil::IsJSONMimeType(const std::string& mime_type) const {
+bool IsJSONMimeType(std::string_view mime_type) {
   return net::MatchesMimeType("application/json", mime_type) ||
          net::MatchesMimeType("text/json", mime_type) ||
          net::MatchesMimeType("application/*+json", mime_type);
 }
 
-bool MimeUtil::IsSupportedMimeType(const std::string& mime_type) const {
+// TODO(crbug.com/362282752): Allow other `*/*+xml` MIME types.
+// https://mimesniff.spec.whatwg.org/#xml-mime-type
+bool IsXMLMimeType(std::string_view mime_type) {
+  return net::MatchesMimeType("text/xml", mime_type) ||
+         net::MatchesMimeType("application/xml", mime_type) ||
+         net::MatchesMimeType("application/*+xml", mime_type);
+}
+
+// From step 3 of
+// https://mimesniff.spec.whatwg.org/#minimize-a-supported-mime-type.
+bool IsSVGMimeType(std::string_view mime_type) {
+  return net::MatchesMimeType("image/svg+xml", mime_type);
+}
+
+bool IsSupportedMimeType(std::string_view mime_type) {
   return (base::StartsWith(mime_type, "image/",
                            base::CompareCase::INSENSITIVE_ASCII) &&
           IsSupportedImageMimeType(mime_type)) ||
          IsSupportedNonImageMimeType(mime_type);
-}
-
-// This variable is Leaky because it is accessed from WorkerPool threads.
-static base::LazyInstance<MimeUtil>::Leaky g_mime_util =
-    LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
-
-bool IsSupportedImageMimeType(const std::string& mime_type) {
-  return g_mime_util.Get().IsSupportedImageMimeType(mime_type);
-}
-
-bool IsSupportedNonImageMimeType(const std::string& mime_type) {
-  return g_mime_util.Get().IsSupportedNonImageMimeType(mime_type);
-}
-
-bool IsUnsupportedTextMimeType(const std::string& mime_type) {
-  return g_mime_util.Get().IsUnsupportedTextMimeType(mime_type);
-}
-
-bool IsSupportedJavascriptMimeType(const std::string& mime_type) {
-  return g_mime_util.Get().IsSupportedJavascriptMimeType(mime_type);
-}
-
-bool IsJSONMimeType(const std::string& mime_type) {
-  return g_mime_util.Get().IsJSONMimeType(mime_type);
-}
-
-bool IsSupportedMimeType(const std::string& mime_type) {
-  return g_mime_util.Get().IsSupportedMimeType(mime_type);
 }
 
 }  // namespace blink

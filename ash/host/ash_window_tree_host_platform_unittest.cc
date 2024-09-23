@@ -45,7 +45,9 @@ class TestInputController : public ui::InputController {
                          const base::TimeDelta& interval) override {}
   void GetAutoRepeatRate(base::TimeDelta* delay,
                          base::TimeDelta* interval) override {}
-  void SetCurrentLayoutByName(const std::string& layout_name) override {}
+  void SetCurrentLayoutByName(
+      const std::string& layout_name,
+      base::OnceCallback<void(bool)> callback) override {}
   void SetKeyboardKeyBitsMapping(
       base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {}
   std::vector<uint64_t> GetKeyboardKeyBits(int id) override {
@@ -128,8 +130,16 @@ class TestInputController : public ui::InputController {
       mojo::PendingReceiver<ui::ozone::mojom::GesturePropertiesService>
           receiver) override {}
   bool AreAnyKeysPressed() override { return false; }
+  void BlockModifiersOnDevices(std::vector<int> device_ids) override {}
 
   bool GetAccelerationSuspended() { return acceleration_suspended_; }
+
+  bool AreInputDevicesEnabled() const override { return true; }
+  std::unique_ptr<ui::ScopedDisableInputDevices> DisableInputDevices()
+      override {
+    return nullptr;
+  }
+  void DisableKeyboardImposterCheck() override {}
 
  private:
   // member variable used to keep track of mouse acceleration suspension

@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 #include "components/services/heap_profiling/public/cpp/switches.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+
 #include "base/command_line.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
+#include "partition_alloc/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace heap_profiling {
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 TEST(HeapProfilingSwitches, GetModeForStartup_Default) {
   EXPECT_EQ(Mode::kNone, GetModeForStartup());

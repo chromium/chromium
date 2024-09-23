@@ -22,7 +22,7 @@ namespace blink {
 // accessibility attribute.
 
 using AXSparseSetterFunc =
-    base::RepeatingCallback<void(AXObject* ax_object,
+    base::RepeatingCallback<void(const AXObject* ax_object,
                                  ui::AXNodeData* node_data,
                                  const AtomicString& value)>;
 using AXSparseAttributeSetterMap = HashMap<QualifiedName, AXSparseSetterFunc>;
@@ -45,7 +45,7 @@ class AXNodeDataAOMPropertyClient : public AOMPropertyClient {
 
  private:
   Persistent<AXObjectCacheImpl> ax_object_cache_;
-  const raw_ref<ui::AXNodeData, ExperimentalRenderer> node_data_;
+  const raw_ref<ui::AXNodeData> node_data_;
 };
 
 }  // namespace blink

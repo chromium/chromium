@@ -6,9 +6,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/download/internal/background_service/blob_task_proxy.h"
 #include "net/base/load_flags.h"
@@ -111,7 +111,7 @@ size_t InMemoryDownloadImpl::EstimateMemoryUsage() const {
   return bytes_downloaded_;
 }
 
-void InMemoryDownloadImpl::OnDataReceived(base::StringPiece string_piece,
+void InMemoryDownloadImpl::OnDataReceived(std::string_view string_piece,
                                           base::OnceClosure resume) {
   data_.append(string_piece);
   bytes_downloaded_ += string_piece.size();

@@ -24,9 +24,11 @@
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/password_manager/core/browser/generation/password_generator.h"
 #include "components/password_manager/core/browser/generation/password_requirements_spec_fetcher.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -47,11 +49,13 @@
 using autofill::AutofillField;
 using autofill::AutofillType;
 using autofill::FieldGlobalId;
+using autofill::FieldSignature;
 using autofill::FieldType;
 using autofill::FormData;
 using autofill::FormSignature;
 using autofill::FormStructure;
 using autofill::PasswordRequirementsSpec;
+using autofill::password_generation::PasswordGenerationType;
 using autofill::test::CreateFieldPrediction;
 using autofill::test::CreateTestFormField;
 using base::ASCIIToUTF16;
@@ -128,7 +132,7 @@ class FakePasswordRequirementsSpecFetcher
                    kHasServerResponse) != std::string::npos) {
       std::move(callback).Run(GetDomainWideRequirements());
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 };
@@ -242,6 +246,19 @@ TEST_F(PasswordGenerationFrameHelperTest, IsGenerationEnabled) {
   EXPECT_FALSE(IsGenerationEnabled());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordGenerationFrameHelperTest,
+       GenerationDisabledDueToOutdatedGMSCore) {
+  EXPECT_CALL(*client_->mock_store(), IsAbleToSavePasswords())
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*client_, IsSavingAndFillingEnabled(_))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*client_->GetPasswordFeatureManager(), ShouldUpdateGmsCore())
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_FALSE(IsGenerationEnabled());
+}
+#endif
+
 // Verify that password requirements received from the autofill server are
 // stored and that domain-wide password requirements are fetched as well.
 TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
@@ -314,11 +331,10 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
                                        : kNoServerResponse));
 
     FormData account_creation_form;
-    account_creation_form.url = origin;
-    account_creation_form.action = origin;
-    account_creation_form.name = u"account_creation_form";
-    account_creation_form.fields.push_back(username);
-    account_creation_form.fields.push_back(password);
+    account_creation_form.set_url(origin);
+    account_creation_form.set_action(origin);
+    account_creation_form.set_name(u"account_creation_form");
+    account_creation_form.set_fields({username, password});
 
     client_->SetLastCommittedEntryUrl(origin);
     GetGenerationHelper()->PrefetchSpec(origin.DeprecatedGetOriginAsURL());
@@ -407,6 +423,36 @@ TEST_F(PasswordGenerationFrameHelperTest, GenerationDisabledForGoogle) {
   EXPECT_CALL(*GetTestDriver(), GetLastCommittedURL())
       .WillOnce(testing::ReturnRef(non_google_url));
   EXPECT_TRUE(IsGenerationEnabled());
+}
+
+TEST_F(PasswordGenerationFrameHelperTest, ShortCrowdsourcedPasswordLength) {
+  const GURL kTestOrigin("https://example.com");
+  constexpr FormSignature kTestFormSignature(123);
+  constexpr FieldSignature kTestFieldSignature(456);
+
+  // Create a spec with a length shorter than default.
+  PasswordRequirementsSpec spec;
+  constexpr size_t kShortLength = 9u;
+  spec.set_max_length(kShortLength);
+  spec.set_priority(10);
+  client_->GetPasswordRequirementsService()->AddSpec(
+      kTestOrigin, kTestFormSignature, kTestFieldSignature, spec);
+
+  // Check that crowdsourced length is used when password is generated
+  // automatically.
+  std::u16string generated_pwd = GetGenerationHelper()->GeneratePassword(
+      kTestOrigin, PasswordGenerationType::kAutomatic, kTestFormSignature,
+      kTestFieldSignature,
+      /*max_length=*/0);
+  EXPECT_EQ(generated_pwd.size(), kShortLength);
+
+  // Check that crowdsourced length is ignored when password generation is
+  // triggered on the manual fallback.
+  generated_pwd = GetGenerationHelper()->GeneratePassword(
+      kTestOrigin, PasswordGenerationType::kManual, kTestFormSignature,
+      kTestFieldSignature,
+      /*max_length=*/0);
+  EXPECT_EQ(generated_pwd.size(), autofill::kDefaultPasswordLength);
 }
 
 }  // namespace password_manager

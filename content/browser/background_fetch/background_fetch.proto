@@ -45,7 +45,7 @@ message BackgroundFetchRegistration {
   optional BackgroundFetchFailureReason failure_reason = 8;
 }
 
-// TODO(crbug.com/1381377): Move ImageResource to generic place.
+// TODO(crbug.com/40245169): Move ImageResource to generic place.
 // Currently also being used within chrome/browser/web_applications
 // https://w3c.github.io/manifest/#dom-imageresource
 //

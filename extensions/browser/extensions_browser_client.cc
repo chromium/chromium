@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -51,6 +52,8 @@ void ExtensionsBrowserClient::AddAPIProvider(
     std::unique_ptr<ExtensionsBrowserAPIProvider> provider) {
   providers_.push_back(std::move(provider));
 }
+
+void ExtensionsBrowserClient::StartTearDown() {}
 
 scoped_refptr<update_client::UpdateClient>
 ExtensionsBrowserClient::CreateUpdateClient(content::BrowserContext* context) {
@@ -153,6 +156,13 @@ void ExtensionsBrowserClient::NotifyExtensionApiDeclarativeNetRequest(
     content::BrowserContext* context,
     const ExtensionId& extension_id,
     const std::vector<api::declarative_net_request::Rule>& rules) const {}
+
+void ExtensionsBrowserClient::
+    NotifyExtensionDeclarativeNetRequestRedirectAction(
+        content::BrowserContext* context,
+        const ExtensionId& extension_id,
+        const GURL& request_url,
+        const GURL& redirect_url) const {}
 
 void ExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
     content::BrowserContext* context,

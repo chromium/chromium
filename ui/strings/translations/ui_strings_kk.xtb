@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Сауалнама</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> ТБ/с</translation>
 <translation id="2353636109065292463">Интернет байланысы тексерілуде.</translation>
+<translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2388990488038464401">Осы нөмірге телефоныңыздан қоңырау шалынсын ба?</translation>
 <translation id="2435457462613246316">Құпия сөзді көрсету</translation>
 <translation id="24452542372838207">Хабарландыруды жаю</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">ЖАҢА</translation>
 <translation id="2666092431469916601">Жоғары</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> құрылғысынан бөлісілді.</translation>
-<translation id="271033894570825754">Жаңа</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 жыл бұрын}other{# жыл бұрын}}</translation>
 <translation id="2878511608894704031">Барлығын жою</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 күнде}other{# күнде}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> жүйесі</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Сол жақ көрсеткісі</translation>
+<translation id="5633029987065897167">Бос</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин}other{# мин}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Бүгін қосылды.}=1{1 күн бұрын қосылды.}other{# күн бұрын қосылды.}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 күн және }other{# күн және }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF контенті</translation>
 <translation id="6539092367496845964">Бірдеңе дұрыс болмады. Кейінірек қайталап көріңіз.</translation>
 <translation id="654149438358937226">Барлық хабарландыруларды бөгеу</translation>
-<translation id="6612467943526193239">Калибрлеуден шығу үшін "Esc" пернесін басыңыз.</translation>
 <translation id="6620110761915583480">Файлды сақтау</translation>
 <translation id="6699343763173986273">Келесі медиатрек</translation>
 <translation id="6808150112686056157">Медианы тоқтату</translation>

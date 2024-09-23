@@ -18,6 +18,7 @@
 # -----------------------------------------------------------------
 
 crbug.com/1181667 [ Linux ] external/wpt/css/selectors/focus-visible-011.html [ Failure Pass ]
+crbug.com/325977041 [ Linux ] external/wpt/document-picture-in-picture/focus-opener.https.html [ Failure Pass ]
 
 
 crbug.com/769885 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Failure ]

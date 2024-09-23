@@ -29,8 +29,8 @@
 
 #include "third_party/blink/renderer/core/css/css_image_set_option_value.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/style/style_image_set.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -82,11 +82,10 @@ const CSSImageSetOptionValue* CSSImageSetValue::GetBestOption(
                          return left->ComputedResolution() <
                                 right->ComputedResolution();
                        });
-      auto* last = std::unique(options_.begin(), options_.end(),
-                               [](auto& left, auto& right) {
-                                 return left->ComputedResolution() ==
-                                        right->ComputedResolution();
-                               });
+      auto last = std::unique(
+          options_.begin(), options_.end(), [](auto& left, auto& right) {
+            return left->ComputedResolution() == right->ComputedResolution();
+          });
       options_.erase(last, options_.end());
     }
   }
@@ -111,9 +110,12 @@ StyleImage* CSSImageSetValue::CachedImage(
   return cached_image_.Get();
 }
 
-StyleImage* CSSImageSetValue::CacheImage(StyleImage* style_image,
-                                         const float device_scale_factor) {
-  cached_image_ = MakeGarbageCollected<StyleImageSet>(style_image, this);
+StyleImage* CSSImageSetValue::CacheImage(
+    StyleImage* style_image,
+    const float device_scale_factor,
+    bool is_origin_clean) {
+  cached_image_ =
+      MakeGarbageCollected<StyleImageSet>(style_image, this, is_origin_clean);
   cached_device_scale_factor_ = device_scale_factor;
   return cached_image_.Get();
 }

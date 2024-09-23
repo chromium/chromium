@@ -13,10 +13,14 @@ source_set("ui") {
     ":constants",
     "//build:branding_buildflags",
     "//components/plus_addresses",
+    "//components/plus_addresses/metrics",
     "//components/resources",
     "//components/strings",
+    "//ios/chrome/browser/plus_addresses/ui/cells",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
@@ -40,21 +44,62 @@ source_set("eg2_tests") {
   sources = [ "plus_addresses_egtest.mm" ]
   deps = [
     ":constants",
+    "//components/feature_engagement/public",
     "//components/plus_addresses",
+    "//components/plus_addresses:test_support",
+    "//components/plus_addresses/metrics",
     "//components/strings:components_strings_grit",
+    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/plus_addresses/ui:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/common:string_util",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net",
     "//net:test_support",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [
+    "plus_address_app_interface.h",
+    "plus_address_app_interface_stub.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [
+    "plus_address_app_interface.h",
+    "plus_address_app_interface.mm",
+  ]
+
+  deps = [
+    "//components/plus_addresses",
+    "//components/plus_addresses:test_support",
+    "//components/plus_addresses:types",
+    "//ios/chrome/browser/plus_addresses/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/test/app:test_support",
+  ]
 }
 
 source_set("unit_tests") {
@@ -64,6 +109,7 @@ source_set("unit_tests") {
     ":ui",
     "//base/test:test_support",
     "//components/plus_addresses",
+    "//components/plus_addresses/metrics",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/common/ui/confirmation_alert",
     "//testing/gtest",

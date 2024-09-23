@@ -5,9 +5,13 @@
 #ifndef NET_SOCKET_UDP_SOCKET_WIN_H_
 #define NET_SOCKET_UDP_SOCKET_WIN_H_
 
+#include <winsock2.h>
+
 #include <qos2.h>
 #include <stdint.h>
-#include <winsock2.h>
+
+// Must be after winsock2.h:
+#include <MSWSock.h>
 
 #include <atomic>
 #include <memory>
@@ -26,6 +30,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
+#include "net/base/sockaddr_storage.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_socket.h"
 #include "net/socket/diff_serv_code_point.h"
@@ -380,9 +385,14 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   }
   bool get_use_non_blocking_io_for_testing() { return use_non_blocking_io_; }
 
-  // For now, no support for Windows TOS reporting to Quiche
-  // TODO(crbug.com/1521435): Add windows support for ECN.
-  DscpAndEcn GetLastTos() const { return {DSCP_DEFAULT, ECN_DEFAULT}; }
+  // Because the windows API separates out DSCP and ECN better than Posix, this
+  // function does not actually return the correct DSCP value, instead always
+  // returning DSCP_DEFAULT rather than the last incoming value.
+  // If a use case arises for reading the incoming DSCP value, it would only
+  // then worth be executing the system call.
+  // However, the ECN member of the return value is correct if SetRecvTos()
+  // was called previously on the socket.
+  DscpAndEcn GetLastTos() const { return last_tos_; }
 
  private:
   enum SocketOptions {
@@ -408,6 +418,8 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   // success, or the net error code on failure.
   void LogRead(int result, const char* bytes, const IPEndPoint* address) const;
   void LogWrite(int result, const char* bytes, const IPEndPoint* address) const;
+  // Reads the last error, maps it, logs it, and returns the mapped result.
+  int LogAndReturnError() const;
 
   // Same as SendTo(), except that address is passed by pointer
   // instead of by reference. It is called from Write() with |address|
@@ -418,6 +430,27 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
                     CompletionOnceCallback callback);
 
   int InternalConnect(const IPEndPoint& address);
+
+  // Returns a function pointer to the platform's instantiation of WSARecvMsg()
+  // or WSASendMsg().
+  LPFN_WSARECVMSG GetRecvMsgPointer();
+  LPFN_WSASENDMSG GetSendMsgPointer();
+
+  // Populates |message| with |storage|, |data_buffer|, and |control_buffer| to
+  // use ECN before calls to either WSASendMsg() (if |send| is true) or
+  // WSARecvMsg().
+  // |data_buffer| is the datagram. |control_buffer| is the storage
+  // space for cmsgs. If |send| is false for an overlapped socket, the caller
+  // must retain a reference to |msghdr|, |storage|, and the buf members of
+  // |data_buffer| and |control_buffer|, in case WSARecvMsg() returns IO_PENDING
+  // and the result is delivered asynchronously.
+  void PopulateWSAMSG(WSAMSG& message,
+                      SockaddrStorage& storage,
+                      WSABUF* data_buffer,
+                      WSABUF& control_buffer,
+                      bool send);
+  // Sets last_tos_ to the last ECN codepoint contained in |message|.
+  void SetLastTosFromWSAMSG(WSAMSG& message);
 
   // Version for using overlapped IO.
   int InternalRecvFromOverlapped(IOBuffer* buf,
@@ -509,6 +542,20 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   // Manages decrementing the global open UDP socket counter when this
   // UDPSocket is destroyed.
   OwnedUDPSocketCount owned_socket_count_;
+
+  DscpAndEcn last_tos_ = {DSCP_DEFAULT, ECN_DEFAULT};
+
+  // If true, the socket has been configured to report ECN on incoming
+  // datagrams.
+  bool report_ecn_ = false;
+
+  // Function pointers to the platform implementations of WSARecvMsg() and
+  // WSASendMsg().
+  LPFN_WSARECVMSG wsa_recv_msg_ = nullptr;
+  LPFN_WSASENDMSG wsa_send_msg_ = nullptr;
+
+  // The ECN codepoint to send on outgoing packets.
+  EcnCodePoint send_ecn_ = ECN_NOT_ECT;
 
   THREAD_CHECKER(thread_checker_);
 

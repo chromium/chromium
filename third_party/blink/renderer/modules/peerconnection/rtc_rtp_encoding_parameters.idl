@@ -10,11 +10,20 @@ enum RTCPriorityType {
     "high"
 };
 
+// https://github.com/w3c/webrtc-extensions/pull/221
+dictionary RTCResolutionRestriction {
+    unsigned long   maxWidth;
+    unsigned long   maxHeight;
+};
+
 // https://w3c.github.io/webrtc-pc/#rtcrtpencodingparameters*
 dictionary RTCRtpEncodingParameters : RTCRtpCodingParameters {
     boolean         active = true;
     unsigned long   maxBitrate;
     double          scaleResolutionDownBy;
+    // https://github.com/w3c/webrtc-extensions/pull/221
+    [RuntimeEnabled=RTCRtpScaleResolutionDownTo]
+    RTCResolutionRestriction scaleResolutionDownTo;
     // https://w3c.github.io/webrtc-priority/#encoding-parameters
     RTCPriorityType priority = "low";
     RTCPriorityType networkPriority = "low";

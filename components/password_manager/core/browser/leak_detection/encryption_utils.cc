@@ -6,10 +6,10 @@
 
 #include <climits>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "crypto/openssl_util.h"
@@ -37,15 +37,15 @@ std::basic_string<CharT> CanonicalizeUsernameT(T username) {
 
 }  // namespace
 
-std::string CanonicalizeUsername(base::StringPiece username) {
+std::string CanonicalizeUsername(std::string_view username) {
   return CanonicalizeUsernameT(username);
 }
 
-std::u16string CanonicalizeUsername(base::StringPiece16 username) {
+std::u16string CanonicalizeUsername(std::u16string_view username) {
   return CanonicalizeUsernameT(username);
 }
 
-std::string HashUsername(base::StringPiece canonicalized_username) {
+std::string HashUsername(std::string_view canonicalized_username) {
   // Needs to stay in sync with server side constant: go/passwords-leak-salts
   static constexpr uint8_t kUsernameSalt[] = {
       0xC4, 0x94, 0xA3, 0x95, 0xF8, 0xC0, 0xE2, 0x3E, 0xA9, 0x23, 0x04,
@@ -58,11 +58,11 @@ std::string HashUsername(base::StringPiece canonicalized_username) {
   DCHECK_EQ(base::ToLowerASCII(canonicalized_username), canonicalized_username);
   return crypto::SHA256HashString(base::StrCat(
       {canonicalized_username,
-       base::StringPiece(reinterpret_cast<const char*>(kUsernameSalt),
-                         std::size(kUsernameSalt))}));
+       std::string_view(reinterpret_cast<const char*>(kUsernameSalt),
+                        std::size(kUsernameSalt))}));
 }
 
-std::string BucketizeUsername(base::StringPiece canonicalized_username) {
+std::string BucketizeUsername(std::string_view canonicalized_username) {
   // Compute the number of bytes necessary to store `kUsernameHashPrefixLength`
   // bits.
   constexpr size_t kPrefixBytes =
@@ -79,14 +79,15 @@ std::string BucketizeUsername(base::StringPiece canonicalized_username) {
   DCHECK_EQ(base::ToLowerASCII(canonicalized_username), canonicalized_username);
   std::string prefix =
       HashUsername(canonicalized_username).substr(0, kPrefixBytes);
-  if (kPrefixRemainder != 0)
+  if (kPrefixRemainder != 0) {
     prefix.back() &= kPrefixMask;
+  }
   return prefix;
 }
 
 std::optional<std::string> ScryptHashUsernameAndPassword(
-    base::StringPiece canonicalized_username,
-    base::StringPiece password) {
+    std::string_view canonicalized_username,
+    std::string_view password) {
   // Constant salt added to the password hash on top of canonicalized_username.
   // Needs to stay in sync with server side constant: go/passwords-leak-salts
   static constexpr uint8_t kPasswordHashSalt[] = {
@@ -108,8 +109,8 @@ std::optional<std::string> ScryptHashUsernameAndPassword(
       base::StrCat({canonicalized_username, password});
   std::string salt = base::StrCat(
       {canonicalized_username,
-       base::StringPiece(reinterpret_cast<const char*>(kPasswordHashSalt),
-                         std::size(kPasswordHashSalt))});
+       std::string_view(reinterpret_cast<const char*>(kPasswordHashSalt),
+                        std::size(kPasswordHashSalt))});
 
   std::string result;
   uint8_t* key_data =
@@ -145,8 +146,9 @@ std::optional<std::string> CipherEncryptWithKey(const std::string& plaintext,
                                                    ECCommutativeCipher::SHA256);
   if (cipher.ok()) {
     auto result = cipher.value()->Encrypt(plaintext);
-    if (result.ok())
+    if (result.ok()) {
       return std::move(result).value();
+    }
   }
   return std::nullopt;
 }
@@ -173,8 +175,9 @@ std::optional<std::string> CipherDecrypt(const std::string& ciphertext,
                                                    ECCommutativeCipher::SHA256);
   if (cipher.ok()) {
     auto result = cipher.value()->Decrypt(ciphertext);
-    if (result.ok())
+    if (result.ok()) {
       return std::move(result).value();
+    }
   }
   return std::nullopt;
 }
@@ -183,8 +186,9 @@ std::optional<std::string> CreateNewKey() {
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
       NID_X9_62_prime256v1, ECCommutativeCipher::SHA256);
-  if (cipher.ok())
+  if (cipher.ok()) {
     return cipher.value()->GetPrivateKeyBytes();
+  }
   return std::nullopt;
 }
 

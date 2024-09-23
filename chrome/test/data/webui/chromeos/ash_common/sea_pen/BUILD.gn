@@ -1,0 +1,14 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../../build_webui_tests.gni")
+
+build_webui_tests("build_webui_tests") {
+  files = [
+    "sea_pen_constants_test.ts",
+    "sea_pen_utils_test.ts",
+  ]
+
+  ts_deps = [ "//ash/webui/common/resources/sea_pen:build_ts" ]
+}

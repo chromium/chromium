@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -127,7 +128,7 @@ class BrowserThemePack : public CustomThemeSupplier {
   typedef std::map<int, scoped_refptr<base::RefCountedMemory> > RawImages;
 
   // The type passed to ui::DataPack::WritePack.
-  typedef std::map<uint16_t, base::StringPiece> RawDataForWriting;
+  typedef std::map<uint16_t, std::string_view> RawDataForWriting;
 
   // Maps scale factors (enum values) to file paths.
   typedef base::flat_map<ui::ResourceScaleFactor, base::FilePath>
@@ -276,7 +277,8 @@ class BrowserThemePack : public CustomThemeSupplier {
   // images in |source|.
   void CopyImagesTo(const ImageCache& source, ImageCache* destination) const;
 
-  // Changes the RefCountedMemory based |images| into StringPiece data in |out|.
+  // Changes the RefCountedMemory based |images| into string_view data in
+  // |out|.
   void AddRawImagesTo(const RawImages& images, RawDataForWriting* out) const;
 
   // Retrieves the tint OR the default tint. Unlike the public interface, we

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/renderers/audio_renderer_impl.h"
 
 #include <memory>
@@ -233,7 +238,7 @@ class AudioRendererImplTest : public ::testing::Test,
 
   // RendererClient implementation.
   MOCK_METHOD1(OnError, void(PipelineStatus));
-  void OnFallback(PipelineStatus status) override { NOTREACHED(); }
+  void OnFallback(PipelineStatus status) override { NOTREACHED_IN_MIGRATION(); }
   void OnEnded() override {
     CHECK(!ended_);
     ended_ = true;
@@ -426,7 +431,7 @@ class AudioRendererImplTest : public ::testing::Test,
     EXPECT_CALL(demuxer_stream_, OnRead(_))
         .WillOnce(RunOnceCallback<0>(DemuxerStream::kOk, buffers));
 
-    // Satify pending |decode_cb_| to trigger a new DemuxerStream::Read().
+    // Satisfy pending |decode_cb_| to trigger a new DemuxerStream::Read().
     main_thread_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(decode_cb_), DecoderStatus::Codes::kOk));
@@ -457,7 +462,7 @@ class AudioRendererImplTest : public ::testing::Test,
 
   // Consumes data from the buffer until what remains drops below the buffer's
   // capacity. Note that the buffer is often over-filled, such that consuming
-  // a fixed amount of data cannot guarantee we fall bellow the full line.
+  // a fixed amount of data cannot guarantee we fall below the full line.
   // Precondition: the buffer must be full when called.
   bool ConsumeBufferedDataUntilNotFull() {
     int buffered = frames_buffered().value;
@@ -601,6 +606,10 @@ class AudioRendererImplTest : public ::testing::Test,
       std::move(reset_cb_).Run();
 
     base::RunLoop().RunUntilIdle();
+  }
+
+  base::TimeDelta CalculateClockAndAlgorithmDrift() {
+    return renderer_->CalculateClockAndAlgorithmDrift();
   }
 
   // Fixture members.
@@ -1106,7 +1115,7 @@ TEST_F(AudioRendererImplTest, CurrentMediaTimeBehavior) {
   EXPECT_EQ(timestamp_helper.GetTimestamp(), CurrentMediaTime());
 
   // Advance current time well past all played audio to simulate an irregular or
-  // delayed OS callback. The value should be clamped to whats been rendered.
+  // delayed OS callback. The value should be clamped to what's been rendered.
   timestamp_helper.AddFrames(frames_to_consume.value);
   tick_clock_.Advance(kConsumptionDuration * 2);
   EXPECT_EQ(timestamp_helper.GetTimestamp(), CurrentMediaTime());
@@ -1411,6 +1420,64 @@ TEST_F(AudioRendererImplTest, TimeSourceBehavior) {
       current_time + timestamp_helper.GetFrameDuration(frames_to_consume.value),
       CurrentMediaWallClockTime(&is_time_moving));
   EXPECT_TRUE(is_time_moving);
+}
+
+TEST_F(AudioRendererImplTest, MultipleRateChangesKeepSync) {
+  Initialize();
+  Preroll();
+
+  AudioTimestampHelper timestamp_helper(kOutputSamplesPerSecond);
+  timestamp_helper.SetBaseTimestamp(base::TimeDelta());
+
+  // Start ticking, but use a zero playback rate, time should still be stopped
+  // until a positive playback rate is set and the first Render() is called.
+  renderer_->SetPlaybackRate(1.0);
+  StartTicking();
+
+  // Issue the first render call to start time moving.
+  OutputFrames frames_to_consume(frames_buffered().value / 10);
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+
+  // Time shouldn't change just yet because we've only sent the initial audio
+  // data to the hardware.
+  bool is_time_moving;
+  EXPECT_EQ(tick_clock_.NowTicks(),
+            ConvertMediaTime(base::TimeDelta(), &is_time_moving));
+  EXPECT_TRUE(is_time_moving);
+
+  // Issue reads w/ multiple playback rate changes from above to below and back.
+  // The drift should remain zero throughout.
+  renderer_->SetPlaybackRate(2.0);
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
+
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
+
+  renderer_->SetPlaybackRate(3.0);
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
+
+  WaitForPendingRead();
+  DeliverRemainingAudio();
+
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
+
+  renderer_->SetPlaybackRate(0.5);
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
+
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
+
+  renderer_->SetPlaybackRate(1.0);
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
+
+  renderer_->SetPlaybackRate(1.5);
+  EXPECT_TRUE(ConsumeBufferedData(frames_to_consume));
+  EXPECT_EQ(CalculateClockAndAlgorithmDrift(), base::TimeDelta());
 }
 
 TEST_F(AudioRendererImplTest, BitstreamEndOfStream) {
@@ -1848,7 +1915,7 @@ TEST_F(AudioRendererImplTest,
 TEST_F(AudioRendererImplTest,
        TranscribeAudioCallback_Muted_WithUserActivation) {
   EnableSpeechRecognition();
-  renderer_->SetWasPlayedWithUserActivation(true);
+  renderer_->SetWasPlayedWithUserActivationAndHighMediaEngagement(true);
 
   EXPECT_CALL(*this, SetOnReadyCallback(_));
   Initialize();

@@ -42,6 +42,7 @@ class TestChildLauncher {
   // test's main broker node. Returns the PID of the new child process. This
   // call either succeeds or crashes, so the return PID will always be valid.
   pid_t Launch(std::string_view node_name,
+               std::string_view feature_set,
                reference_drivers::FileDescriptor socket);
 };
 

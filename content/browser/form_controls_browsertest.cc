@@ -24,7 +24,7 @@
 #include "base/android/build_info.h"
 #endif
 
-// TODO(crbug.com/958242): Move the baselines to skia gold for easier
+// TODO(crbug.com/40625383): Move the baselines to skia gold for easier
 //   rebaselining when all platforms are supported.
 
 // To rebaseline this test on all platforms:
@@ -45,8 +45,6 @@ class FormControlsBrowserTest : public ContentBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-
     // The --disable-lcd-text flag helps text render more similarly on
     // different bots and platform.
     command_line->AppendSwitch(switches::kDisableLCDText);
@@ -72,8 +70,8 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     platform_suffix = "_chromeos";
 #elif BUILDFLAG(IS_ANDROID)
     int sdk_int = base::android::BuildInfo::GetInstance()->sdk_int();
-    if (sdk_int == base::android::SDK_VERSION_KITKAT) {
-      platform_suffix = "_android_kitkat";
+    if (sdk_int >= base::android::SDK_VERSION_T) {
+      platform_suffix = "_android_T";
     } else {
       platform_suffix = "_android";
     }
@@ -232,7 +230,12 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Input) {
           /* screenshot_height */ 330);
 }
 
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Textarea) {
+#if (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
+#define MAYBE_Textarea DISABLED_Textarea
+#else
+#define MAYBE_Textarea Textarea
+#endif
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Textarea) {
   if (SkipTestForOldAndroidVersions())
     return;
 
@@ -359,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Progress) {
 #if BUILDFLAG(IS_MAC) && !defined(ARCH_CPU_ARM64)
   // The pixel comparison fails on Mac Intel GPUs with Graphite due to MSAA
   // issues.
-  // TODO(crbug.com/1500259): Re-enable test if possible.
+  // TODO(crbug.com/40940637): Re-enable test if possible.
   if (features::IsSkiaGraphiteEnabled(base::CommandLine::ForCurrentProcess())) {
     return;
   }

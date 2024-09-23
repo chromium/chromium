@@ -11,24 +11,26 @@
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 class DummyFontFaceSource : public CSSFontFaceSource {
  public:
-  scoped_refptr<SimpleFontData> CreateFontData(
+  const SimpleFontData* CreateFontData(
       const FontDescription&,
       const FontSelectionCapabilities&) override {
-    return SimpleFontData::Create(
-        FontPlatformData(skia::DefaultTypeface(), /* name */ std::string(),
-                         /* text_size */ 0, /* synthetic_bold */ false,
-                         /* synthetic_italic */ false,
-                         TextRenderingMode::kAutoTextRendering, {}));
+    return MakeGarbageCollected<SimpleFontData>(
+        MakeGarbageCollected<FontPlatformData>(
+            skia::DefaultTypeface(), /* name */ std::string(),
+            /* text_size */ 0, /* synthetic_bold */ false,
+            /* synthetic_italic */ false, TextRenderingMode::kAutoTextRendering,
+            ResolvedFontFeatures{}));
   }
 
   DummyFontFaceSource() = default;
 
-  scoped_refptr<SimpleFontData> GetFontDataForSize(float size) {
+  const SimpleFontData* GetFontDataForSize(float size) {
     FontDescription font_description;
     font_description.SetComputedSize(size);
     FontSelectionCapabilities normal_capabilities(
@@ -51,21 +53,23 @@ unsigned SimulateHashCalculation(float size) {
 }  // namespace
 
 TEST(CSSFontFaceSourceTest, HashCollision) {
-  DummyFontFaceSource font_face_source;
+  DummyFontFaceSource* font_face_source =
+      MakeGarbageCollected<DummyFontFaceSource>();
 
-  // Even if the hash value collide, fontface cache should return different
+  // Even if the hash values collide, fontface cache should return different
   // value for different fonts, values determined experimentally.
-  constexpr float kEqualHashesFirst = 950;
-  constexpr float kEqualHashesSecond = 13740;
+  constexpr float kEqualHashesFirst = 46317;
+  constexpr float kEqualHashesSecond = 67002;
   EXPECT_EQ(SimulateHashCalculation(kEqualHashesFirst),
             SimulateHashCalculation(kEqualHashesSecond));
-  EXPECT_NE(font_face_source.GetFontDataForSize(kEqualHashesFirst),
-            font_face_source.GetFontDataForSize(kEqualHashesSecond));
+  EXPECT_NE(font_face_source->GetFontDataForSize(kEqualHashesFirst),
+            font_face_source->GetFontDataForSize(kEqualHashesSecond));
 }
 
 // Exercises the size font_data_table_ assertions in CSSFontFaceSource.
 TEST(CSSFontFaceSourceTest, UnboundedGrowth) {
-  DummyFontFaceSource font_face_source;
+  DummyFontFaceSource* font_face_source =
+      MakeGarbageCollected<DummyFontFaceSource>();
   FontDescription font_description_variable;
   FontSelectionCapabilities normal_capabilities(
       {kNormalWidthValue, kNormalWidthValue},
@@ -80,8 +84,8 @@ TEST(CSSFontFaceSourceTest, UnboundedGrowth) {
       variation_settings->Append(FontVariationAxis(AtomicString("wght"), wght));
       variation_settings->Append(FontVariationAxis(AtomicString("wdth"), wdth));
       font_description_variable.SetVariationSettings(variation_settings);
-      font_face_source.GetFontData(font_description_variable,
-                                   normal_capabilities);
+      font_face_source->GetFontData(font_description_variable,
+                                    normal_capabilities);
     }
   }
 }

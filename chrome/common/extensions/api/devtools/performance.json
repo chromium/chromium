@@ -1,0 +1,25 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+  {
+    "namespace": "devtools.performance",
+    "description": "Use the <code>chrome.devtools.performance</code> API to listen to recording status updates in the Performance panel in DevTools.",
+    "nocompile": true,
+    "events": [
+      {
+        "name": "onProfilingStarted",
+        "type": "function",
+        "description": "Fired when the Performance panel starts recording.",
+        "parameters": []
+      },
+      {
+        "name": "onProfilingStopped",
+        "type": "function",
+        "description": "Fired when the Performance panel stops recording.",
+        "parameters": []
+      }
+    ]
+  }
+]

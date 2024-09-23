@@ -149,7 +149,8 @@ void ChromeOsAppsIntentPickerDelegate::RecordIntentPickerIconEvent(
 
 bool ChromeOsAppsIntentPickerDelegate::ShouldLaunchAppDirectly(
     const GURL& url,
-    const std::string& app_name) {
+    const std::string& app_name,
+    PickerEntryType) {
   // If there is only a single available app, immediately launch it if
   // ShouldShowLinkCapturingUX() is enabled and the app is preferred for this
   // link.
@@ -197,7 +198,7 @@ void ChromeOsAppsIntentPickerDelegate::LaunchApp(
     web_app::WebAppProvider* provider =
         web_app::WebAppProvider::GetForWebApps(&profile_.get());
     provider->ui_manager().ReparentAppTabToWindow(web_contents, launch_name,
-                                                  /*shortcut_created=*/true);
+                                                  base::DoNothing());
   } else {
     CHECK(proxy_);
     proxy_->LaunchAppWithUrl(

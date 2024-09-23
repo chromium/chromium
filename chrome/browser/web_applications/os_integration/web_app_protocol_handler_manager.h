@@ -59,15 +59,6 @@ class WebAppProtocolHandlerManager {
   std::vector<custom_handlers::ProtocolHandler> GetAppProtocolHandlers(
       const webapps::AppId& app_id) const;
 
-  // Registers OS specific protocol handlers for OSs that need them, using the
-  // protocol handler information supplied in the app manifest.
-  void RegisterOsProtocolHandlers(const webapps::AppId& app_id,
-                                  ResultCallback callback);
-
-  // Unregisters OS specific protocol handlers for an app.
-  void UnregisterOsProtocolHandlers(const webapps::AppId& app_id,
-                                    ResultCallback callback);
-
  private:
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;

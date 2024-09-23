@@ -28,7 +28,6 @@ Bu icazəni vermək üçün aşağıda "<ph name="BUTTON_NAME" />" düyməsinə 
 <translation id="2329392777730037872"><ph name="URL" /> keçidini müştəri cihazında açmaq alınmadı</translation>
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2366718077645204424">Hosta çatmaq olmur. İşlətdiyiniz şəbəkənin sazlanmasına görə ola bilər.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> ən son <ph name="RELATIVE_TIMESTAMP" /> onlayn olub.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> üçün "Giriş" icazəsi verin</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> hostuna qoşuldu</translation>
 <translation id="2540992418118313681">Bu komputeri digər istifadəçi ilə paylaşmaq istəyirsiniz ki, o da görsün və kontrol etsin?</translation>
@@ -53,7 +52,6 @@ Bu icazəni vermək üçün aşağıda "<ph name="BUTTON_NAME" />" düyməsinə 
 <translation id="3423542133075182604">Təhlükəsizlik Açarı Uzaqdan İdarəetmə Prosesi</translation>
 <translation id="3581045510967524389">Şəbəkəyə qoşulmaq olmadı. Cihazınızın onlayn olmasını yoxlayın.</translation>
 <translation id="3596628256176442606">Bu xidmət Chromium klientlərindən gələn bağlantılara icazə verir.</translation>
-<translation id="369442766917958684">Oflayn.</translation>
 <translation id="3695446226812920698">Yolunu öyrənin.</translation>
 <translation id="3776024066357219166">Chrome Kənardan İdarəetmə sessiyanız qurtardı.</translation>
 <translation id="3858860766373142691">Ad</translation>
@@ -105,7 +103,6 @@ Bu icazəni vermək üçün aşağıda "<ph name="BUTTON_NAME" />" düyməsinə 
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google MMC</translation>
 <translation id="5708869785009007625">Desktopunuz hazırda <ph name="USER" /> ilə paylaşılıb.</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> olaraq daxil olunub.</translation>
 <translation id="579702532610384533">Təkrar qoşulun</translation>
 <translation id="5810269635982033450">Ekran terkped rejimindəki kimi işləyir</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ekranınızı görmək və klaviatura və mausa nəzarət etmək üçün giriş tələb edir. Bu tələbi gözləmirsinizsə ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' seçiminə basın. Əks halda hazır olduqda, qoşulmağa icazə vermək üçün "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" seçin.</translation>

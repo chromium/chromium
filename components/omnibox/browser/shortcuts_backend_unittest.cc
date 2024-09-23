@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/omnibox/browser/shortcuts_backend.h"
 
 #include <stddef.h>
@@ -15,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -22,6 +28,7 @@
 #include "components/omnibox/browser/shortcuts_constants.h"
 #include "components/omnibox/browser/shortcuts_database.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -58,20 +65,25 @@ class ShortcutsBackendTest : public testing::Test,
     changed_notified_ = changed_notified;
   }
 
+  TemplateURLService* template_url_service() {
+    return search_engines_test_environment_.template_url_service();
+  }
+
   void InitBackend();
   bool AddShortcut(const ShortcutsDatabase::Shortcut& shortcut);
   bool UpdateShortcut(const ShortcutsDatabase::Shortcut& shortcut);
   bool DeleteShortcutsWithURL(const GURL& url);
   bool DeleteShortcutsWithIDs(
       const ShortcutsDatabase::ShortcutIDs& deleted_ids);
+  bool DeleteOldShortcuts();
   bool ShortcutExists(const std::u16string& terms) const;
   std::vector<std::u16string> ShortcutsMapTexts() const;
   void ClearShortcutsMap();
   ShortcutsDatabase::Shortcut::MatchCore MatchToMatchCore(
       const AutocompleteMatch& match) {
     SearchTermsData search_terms_data;
-    return ShortcutsBackend::MatchToMatchCore(
-        match, template_url_service_.get(), &search_terms_data);
+    return ShortcutsBackend::MatchToMatchCore(match, template_url_service(),
+                                              &search_terms_data);
   }
 
   ShortcutsBackend* backend() { return backend_.get(); }
@@ -87,7 +99,7 @@ class ShortcutsBackendTest : public testing::Test,
   // being destroyed.
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TemplateURLService> template_url_service_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<history::HistoryService> history_service_;
 
   scoped_refptr<ShortcutsBackend> backend_;
@@ -122,13 +134,12 @@ void ShortcutsBackendTest::SetSearchProvider() {
   data.SetKeyword(u"foo");
 
   TemplateURL* template_url =
-      template_url_service_->Add(std::make_unique<TemplateURL>(data));
-  template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);
+      template_url_service()->Add(std::make_unique<TemplateURL>(data));
+  template_url_service()->SetUserSelectedDefaultSearchProvider(template_url);
 }
 
 void ShortcutsBackendTest::SetUp() {
   ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
-  template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
   history_service_ =
       history::CreateHistoryService(profile_dir_.GetPath(), true);
   ASSERT_TRUE(history_service_);
@@ -136,7 +147,7 @@ void ShortcutsBackendTest::SetUp() {
   base::FilePath shortcuts_database_path =
       profile_dir_.GetPath().Append(kShortcutsDatabaseName);
   backend_ = new ShortcutsBackend(
-      template_url_service_.get(), std::make_unique<SearchTermsData>(),
+      template_url_service(), std::make_unique<SearchTermsData>(),
       history_service_.get(), shortcuts_database_path, false);
   ASSERT_TRUE(backend_.get());
   backend_->AddObserver(this);
@@ -193,6 +204,10 @@ bool ShortcutsBackendTest::DeleteShortcutsWithURL(const GURL& url) {
 bool ShortcutsBackendTest::DeleteShortcutsWithIDs(
     const ShortcutsDatabase::ShortcutIDs& deleted_ids) {
   return backend_->DeleteShortcutsWithIDs(deleted_ids);
+}
+
+bool ShortcutsBackendTest::DeleteOldShortcuts() {
+  return backend_->DeleteOldShortcuts();
 }
 
 bool ShortcutsBackendTest::ShortcutExists(const std::u16string& terms) const {
@@ -404,6 +419,57 @@ TEST_F(ShortcutsBackendTest, DeleteShortcuts) {
   EXPECT_TRUE(DeleteShortcutsWithIDs(deleted_ids));
 
   ASSERT_EQ(0U, shortcuts_map().size());
+}
+
+TEST_F(ShortcutsBackendTest, DeleteOldShortcuts) {
+  InitBackend();
+
+  // Define shortcuts that are 1, 10, 100 and 1000 days old.
+  ShortcutsDatabase::Shortcut shortcut1(
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880DF", u"google",
+      MatchCoreForTesting("http://www.google.com"),
+      base::Time::Now() - base::Days(1), 100);
+  EXPECT_TRUE(AddShortcut(shortcut1));
+
+  ShortcutsDatabase::Shortcut shortcut2(
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880E0", u"yahoo",
+      MatchCoreForTesting("http://www.yahoo.com"),
+      base::Time::Now() - base::Days(10), 10);
+  EXPECT_TRUE(AddShortcut(shortcut2));
+
+  ShortcutsDatabase::Shortcut shortcut3(
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880E1", u"baidu",
+      MatchCoreForTesting("http://www.baidu.com"),
+      base::Time::Now() - base::Days(100), 1000);
+  EXPECT_TRUE(AddShortcut(shortcut3));
+
+  ShortcutsDatabase::Shortcut shortcut4(
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880E2", u"bing",
+      MatchCoreForTesting("http://www.bing.com"),
+      base::Time::Now() - base::Days(1000), 1);
+  EXPECT_TRUE(AddShortcut(shortcut4));
+
+  ASSERT_EQ(4U, shortcuts_map().size());
+  EXPECT_EQ(shortcut1.id, shortcuts_map().find(shortcut1.text)->second.id);
+  EXPECT_EQ(shortcut2.id, shortcuts_map().find(shortcut2.text)->second.id);
+  EXPECT_EQ(shortcut3.id, shortcuts_map().find(shortcut3.text)->second.id);
+  EXPECT_EQ(shortcut4.id, shortcuts_map().find(shortcut4.text)->second.id);
+
+  EXPECT_TRUE(DeleteOldShortcuts());
+
+  // After deleting old shortcuts, the two that are more than 90 days old should
+  // no longer be present.
+  ASSERT_EQ(2U, shortcuts_map().size());
+  const ShortcutsBackend::ShortcutMap::const_iterator shortcut1_iter(
+      shortcuts_map().find(shortcut1.text));
+  ASSERT_TRUE(shortcut1_iter != shortcuts_map().end());
+  EXPECT_EQ(shortcut1.id, shortcut1_iter->second.id);
+  const ShortcutsBackend::ShortcutMap::const_iterator shortcut2_iter(
+      shortcuts_map().find(shortcut2.text));
+  ASSERT_TRUE(shortcut2_iter != shortcuts_map().end());
+  EXPECT_EQ(shortcut2.id, shortcut2_iter->second.id);
+  EXPECT_EQ(0U, shortcuts_map().count(shortcut3.text));
+  EXPECT_EQ(0U, shortcuts_map().count(shortcut4.text));
 }
 
 TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_3CharShortening) {

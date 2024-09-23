@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/signin/inline_login_ui.h"
 
 #include <memory>
@@ -45,8 +50,8 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/ash/edu_account_login_handler.h"
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
+#include "chrome/browser/ui/webui/signin/ash/edu_account_login_handler.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
 #include "chrome/grit/arc_account_picker_resources.h"
 #include "chrome/grit/arc_account_picker_resources_map.h"
@@ -125,9 +130,12 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
       source,
       base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize),
       IDR_INLINE_LOGIN_INLINE_LOGIN_HTML);
-  // TODO(crbug.com/1399912): Remove this when saml_password_attributes.js is
+  // TODO(crbug.com/40250068): Remove this when saml_password_attributes.js is
   // made TrustedTypes compliant.
   source->DisableTrustedTypesCSP();
+  // Necessary since this UI sends XML Http requests.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ConnectSrc, "connect-src *;");
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddResourcePaths(base::make_span(kArcAccountPickerResources,
@@ -347,7 +355,7 @@ bool IsValidChromeSigninReason(const GURL& url) {
     case signin_metrics::Reason::kUnknownReason:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

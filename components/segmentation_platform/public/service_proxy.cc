@@ -9,10 +9,12 @@ namespace segmentation_platform {
 ServiceProxy::SegmentStatus::SegmentStatus(SegmentId segment_id,
                                            const std::string& segment_metadata,
                                            const std::string& prediction_result,
+                                           base::Time prediction_timestamp,
                                            bool can_execute_segment)
     : segment_id(segment_id),
       segment_metadata(segment_metadata),
       prediction_result(prediction_result),
+      prediction_timestamp(prediction_timestamp),
       can_execute_segment(can_execute_segment) {}
 
 ServiceProxy::ClientInfo::ClientInfo(const std::string& segmentation_key,

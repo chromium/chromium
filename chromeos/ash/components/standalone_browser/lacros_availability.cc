@@ -19,7 +19,7 @@ namespace {
 
 // The conversion map for LacrosAvailability policy data. The values must match
 // the ones from LacrosAvailability.yaml.
-// TODO(crbug.com/1448575): Remove the side_by_side and lacros_primary values
+// TODO(crbug.com/40269372): Remove the side_by_side and lacros_primary values
 // from the policy.
 constexpr auto kLacrosAvailabilityMap =
     base::MakeFixedFlatMap<std::string_view, LacrosAvailability>({
@@ -38,7 +38,7 @@ BASE_FEATURE(kLacrosGooglePolicyRollout,
 
 std::optional<LacrosAvailability> ParseLacrosAvailability(
     std::string_view value) {
-  auto* it = kLacrosAvailabilityMap.find(value);
+  auto it = kLacrosAvailabilityMap.find(value);
   if (it != kLacrosAvailabilityMap.end()) {
     return it->second;
   }
@@ -54,7 +54,7 @@ std::string_view GetLacrosAvailabilityPolicyName(LacrosAvailability value) {
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string_view();
 }
 
@@ -65,6 +65,7 @@ bool IsGoogleInternal(const user_manager::User* user) {
 
   const std::string_view email = user->GetAccountId().GetUserEmail();
   return gaia::IsGoogleInternalAccountEmail(email) ||
+         gaia::IsGoogleRobotAccountEmail(email) ||
          gaia::ExtractDomainName(gaia::SanitizeEmail(email)) ==
              "managedchrome.com";
 }
@@ -74,6 +75,7 @@ LacrosAvailability DetermineLacrosAvailabilityFromPolicyValue(
     std::string_view policy_value) {
   // Users can set this switch in chrome://flags to disable the effect of the
   // lacros-availability policy. This should only be allowed for Googlers.
+  // Note: Flag actively used by CfM to bypass LaCrOS Availability Policy.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(ash::switches::kLacrosAvailabilityIgnore) &&
       IsGoogleInternal(user)) {

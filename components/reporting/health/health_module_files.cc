@@ -14,11 +14,13 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "components/reporting/util/reporting_errors.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace reporting {
@@ -196,6 +198,10 @@ StatusOr<uint32_t> HealthModuleFiles::FileSize(
   base::File::Info file_info;
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid() || !file.GetInfo(&file_info)) {
+    base::UmaHistogramEnumeration(
+        reporting::kUmaDataLossErrorReason,
+        DataLossErrorReason::FAILED_TO_READ_HEALTH_DATA,
+        DataLossErrorReason::MAX_VALUE);
     return base::unexpected(Status(
         error::DATA_LOSS, base::StrCat({"Failed to read health data file info ",
                                         file_path.MaybeAsASCII()})));

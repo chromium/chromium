@@ -176,14 +176,14 @@ TEST_F(AppListNudgeControllerTest, TabletModeVisibilityTest) {
   // Activate the search box. The nudge will become inactive but the nudge view
   // still exists.
   auto* search_box = GetAppListTestHelper()->GetSearchBoxView();
-  search_box->SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
+  search_box->SetSearchBoxActive(true, ui::EventType::kMousePressed);
   // For the case where the nudge is visible but inactive, the count doesn't
   // increment as the nudge is still visible.
   EXPECT_EQ(2, GetReorderNudgeShownCount());
   EXPECT_TRUE(GetToastContainerView()->IsToastVisible());
 
   // Exit the search view. The nudge should be visible and active now.
-  search_box->SetSearchBoxActive(false, ui::ET_MOUSE_PRESSED);
+  search_box->SetSearchBoxActive(false, ui::EventType::kMousePressed);
   EXPECT_TRUE(GetToastContainerView()->IsToastVisible());
   EXPECT_EQ(AppListToastType::kReorderNudge,
             GetToastContainerView()->current_toast());

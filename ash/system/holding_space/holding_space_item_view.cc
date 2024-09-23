@@ -19,6 +19,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/class_property.h"
@@ -89,38 +90,6 @@ class CallbackPainter : public views::Painter {
   Callback callback_;
 };
 
-// MinimumSizableView ---------------------------------------------------------
-
-// A view which respects a minimum size restriction.
-class MinimumSizableView : public views::View {
-  METADATA_HEADER(MinimumSizableView, views::View)
-
- public:
-  explicit MinimumSizableView(const gfx::Size& min_size)
-      : min_size_(min_size) {}
-
-  MinimumSizableView(const MinimumSizableView&) = delete;
-  MinimumSizableView& operator=(const MinimumSizableView&) = delete;
-  ~MinimumSizableView() override = default;
-
- private:
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override {
-    gfx::Size preferred_size(views::View::CalculatePreferredSize());
-    preferred_size.SetToMax(min_size_);
-    return preferred_size;
-  }
-
-  int GetHeightForWidth(int width) const override {
-    return std::max(views::View::GetHeightForWidth(width), min_size_.height());
-  }
-
-  const gfx::Size min_size_;
-};
-
-BEGIN_METADATA(MinimumSizableView, views::View)
-END_METADATA
-
 }  // namespace
 
 // HoldingSpaceItemView --------------------------------------------------------
@@ -144,23 +113,21 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
   SetNotifyEnterExitOnChild(true);
 
   // Accessibility.
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
-  GetViewAccessibility().OverrideName(item->GetAccessibleName());
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
+  GetViewAccessibility().SetName(item->GetAccessibleName(),
+                                 ax::mojom::NameFrom::kAttribute);
 
   // When the description is not specified, tooltip text will be used.
   // That text is redundant to the name, but different enough that it is
   // still exposed to assistive technologies which may then present both.
   // To avoid that redundant presentation, set the description explicitly
   // to the empty string. See crrev.com/c/3218112.
-  GetViewAccessibility().OverrideDescription(
+  GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
   // Background.
   SetBackground(views::CreateThemedRoundedRectBackground(
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
-          : kColorAshControlBackgroundColorInactive,
-      kHoldingSpaceCornerRadius));
+      cros_tokens::kCrosSysSystemOnBase, kHoldingSpaceCornerRadius));
 
   // Layer.
   SetPaintToLayer();
@@ -258,8 +225,8 @@ bool HoldingSpaceItemView::OnKeyPressed(const ui::KeyEvent& event) {
 
 void HoldingSpaceItemView::OnMouseEvent(ui::MouseEvent* event) {
   switch (event->type()) {
-    case ui::ET_MOUSE_ENTERED:
-    case ui::ET_MOUSE_EXITED:
+    case ui::EventType::kMouseEntered:
+    case ui::EventType::kMouseExited:
       UpdatePrimaryAction();
       break;
     default:
@@ -294,7 +261,8 @@ void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
 
   // Accessibility.
   if (updated_fields.previous_accessible_name) {
-    GetViewAccessibility().OverrideName(item_->GetAccessibleName());
+    GetViewAccessibility().SetName(item_->GetAccessibleName(),
+                                   ax::mojom::NameFrom::kAttribute);
     NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
   }
 
@@ -474,11 +442,10 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
 
   // Cancel.
   if (primary_action_cancel_->GetVisible()) {
-    if (!holding_space_util::ExecuteInProgressCommand(
-            item(), HoldingSpaceCommandId::kCancelItem,
-            holding_space_metrics::EventSource::kHoldingSpaceItem)) {
-      NOTREACHED();
-    }
+    const bool success = holding_space_util::ExecuteInProgressCommand(
+        item(), HoldingSpaceCommandId::kCancelItem,
+        holding_space_metrics::EventSource::kHoldingSpaceItem);
+    CHECK(success);
     return;
   }
 
@@ -533,7 +500,7 @@ void HoldingSpaceItemView::UpdatePrimaryAction() {
   OnPrimaryActionVisibilityChanged(primary_action_container_->GetVisible());
 }
 
-BEGIN_METADATA(HoldingSpaceItemView, views::View)
+BEGIN_METADATA(HoldingSpaceItemView)
 END_METADATA
 
 }  // namespace ash

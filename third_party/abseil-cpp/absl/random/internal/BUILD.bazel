@@ -137,7 +137,7 @@ cc_library(
 
 cc_library(
     name = "explicit_seed_seq",
-    testonly = 1,
+    testonly = True,
     hdrs = [
         "explicit_seed_seq.h",
     ],
@@ -151,7 +151,7 @@ cc_library(
 
 cc_library(
     name = "sequence_urbg",
-    testonly = 1,
+    testonly = True,
     hdrs = [
         "sequence_urbg.h",
     ],
@@ -375,7 +375,7 @@ cc_binary(
 
 cc_library(
     name = "distribution_test_util",
-    testonly = 1,
+    testonly = True,
     srcs = [
         "chi_square.cc",
         "distribution_test_util.cc",
@@ -527,6 +527,7 @@ cc_library(
     hdrs = ["mock_helpers.h"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
+        "//absl/base:config",
         "//absl/base:fast_type_id",
         "//absl/types:optional",
     ],
@@ -534,11 +535,12 @@ cc_library(
 
 cc_library(
     name = "mock_overload_set",
-    testonly = 1,
+    testonly = True,
     hdrs = ["mock_overload_set.h"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":mock_helpers",
+        "//absl/base:config",
         "//absl/random:mocking_bit_gen",
         "@com_google_googletest//:gtest",
     ],
@@ -712,7 +714,19 @@ cc_library(
         ":traits",
         "//absl/base:config",
         "//absl/meta:type_traits",
-        "//absl/numeric:int128",
+    ],
+)
+
+cc_library(
+    name = "mock_validators",
+    hdrs = ["mock_validators.h"],
+    deps = [
+        ":iostream_state_saver",
+        ":uniform_helper",
+        "//absl/base:config",
+        "//absl/base:raw_logging_internal",
+        "//absl/strings",
+        "//absl/strings:string_view",
     ],
 )
 

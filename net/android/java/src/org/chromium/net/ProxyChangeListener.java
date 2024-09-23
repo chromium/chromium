@@ -174,6 +174,7 @@ public class ProxyChangeListener {
     // the Android SDK, so we have to use reflection to get at it and invoke
     // methods on it. If we fail, return an empty proxy config (meaning
     // use system properties).
+    @SuppressWarnings({"PrivateApi", "ObsoleteSdkInt"})
     private static ProxyConfig extractNewProxy(Intent intent) {
         Bundle extras = intent.getExtras();
         if (extras == null) {
@@ -293,6 +294,7 @@ public class ProxyChangeListener {
         return configFromConnectivityManager;
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     /* package */ void updateProxyConfigFromConnectivityManager(Intent intent) {
         runOnThread(() -> proxySettingsChanged(getProxyConfig(intent)));
     }

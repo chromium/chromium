@@ -25,6 +25,10 @@ BASE_DECLARE_FEATURE(kSendTabToSelfEnableNotificationTimeOut);
 BASE_DECLARE_FEATURE(kSendTabToSelfV2);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+// If this feature is enabled, allow the user to receive Send Tab to Self
+// notifications as a push notification to their target iOS device.
+BASE_DECLARE_FEATURE(kSendTabToSelfIOSPushNotifications);
+
 }  // namespace send_tab_to_self
 
 #endif  // COMPONENTS_SEND_TAB_TO_SELF_FEATURES_H_

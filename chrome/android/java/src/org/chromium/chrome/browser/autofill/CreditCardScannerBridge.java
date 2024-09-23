@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.content_public.browser.WebContents;
@@ -62,8 +63,8 @@ public class CreditCardScannerBridge implements CreditCardScanner.Delegate {
         void scanCompleted(
                 long nativeCreditCardScannerViewAndroid,
                 CreditCardScannerBridge caller,
-                String cardHolderName,
-                String cardNumber,
+                @JniType("std::u16string") String cardHolderName,
+                @JniType("std::u16string") String cardNumber,
                 int expirationMonth,
                 int expirationYear);
     }

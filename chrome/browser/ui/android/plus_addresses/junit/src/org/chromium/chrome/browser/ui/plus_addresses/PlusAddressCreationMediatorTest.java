@@ -4,12 +4,17 @@
 
 package org.chromium.chrome.browser.ui.plus_addresses;
 
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.ERROR_STATE_INFO;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.PROPOSED_PLUS_ADDRESS;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.REFRESH_ICON_VISIBLE;
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,8 +23,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -30,14 +37,33 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public final class PlusAddressCreationMediatorTest {
-
+    private static final PlusAddressCreationNormalStateInfo FIRST_TIME_USAGE_INFO =
+            new PlusAddressCreationNormalStateInfo(
+                    /* title= */ "lorem ipsum title",
+                    /* description= */ "lorem ipsum description",
+                    /* notice= */ "lorem ipsum description <link>test link</link>",
+                    /* proposedPlusAddressPlaceholder= */ "placeholder",
+                    /* confirmText= */ "ok",
+                    /* cancelText= */ "cancel",
+                    /* errorReportInstruction= */ "error! <link>test link</link>",
+                    /* learnMoreUrl= */ new GURL("learn.more.com"),
+                    /* errorReportUrl= */ new GURL("bug.com"));
     private static final int TAB1_ID = 1;
     private static final int TAB2_ID = 2;
-    private static final String PROPOSED_PLUS_ADDRESS = "foo@bar.com";
+    private static final String PLUS_ADDRESS = "foo@bar.com";
+    private static final PlusAddressCreationErrorStateInfo ERROR_STATE =
+            new PlusAddressCreationErrorStateInfo(
+                    PlusAddressCreationBottomSheetErrorType.RESERVE_TIMEOUT,
+                    "Title",
+                    "Description",
+                    "Ok",
+                    "Cancel");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -47,24 +73,30 @@ public final class PlusAddressCreationMediatorTest {
     @Mock private TabModel mTabModel;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private PlusAddressCreationViewBridge mBridge;
+    @Mock private PlusAddressCreationDelegate mDelegate;
 
+    private PropertyModel mModel;
     private PlusAddressCreationMediator mMediator;
 
     @Before
     public void setUp() {
+        mModel =
+                PlusAddressCreationCoordinator.createDefaultModel(
+                        FIRST_TIME_USAGE_INFO, mDelegate, /* refreshSupported= */ true);
         mMediator =
                 new PlusAddressCreationMediator(
-                        mBottomSheetContent,
+                        RuntimeEnvironment.application,
                         mBottomSheetController,
                         mLayoutStateProvider,
                         mTabModel,
                         mTabModelSelector,
                         mBridge);
+
+        mMediator.setModel(mModel);
     }
 
     @Test
     public void testConstructor_setsUpBottomSheetContentAndAddsObservers() {
-        verify(mBottomSheetContent).setDelegate(mMediator);
         verify(mBottomSheetController).addObserver(mMediator);
         verify(mLayoutStateProvider).addObserver(mMediator);
         verify(mTabModel).addObserver(mMediator);
@@ -74,29 +106,44 @@ public final class PlusAddressCreationMediatorTest {
     public void testRequestShowContent_callsBottomSheetRequestShowContent() {
         mMediator.requestShowContent();
 
-        verify(mBottomSheetController).requestShowContent(mBottomSheetContent, /* animate= */ true);
+        assertTrue(mModel.get(VISIBLE));
     }
 
     @Test
     public void testUpdateProposedPlusAddress_callsBottomSheetSetProposedPlusAddress() {
-        mMediator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
-        verify(mBottomSheetContent).setProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
+        mMediator.updateProposedPlusAddress(PLUS_ADDRESS);
+
+        assertEquals(mModel.get(PROPOSED_PLUS_ADDRESS), PLUS_ADDRESS);
     }
 
     @Test
     public void testShowError_callsBottomSheetShowError() {
-        mMediator.showError();
-        verify(mBottomSheetContent).showError();
+        mMediator.showError(ERROR_STATE);
+        assertEquals(mModel.get(ERROR_STATE_INFO), ERROR_STATE);
+    }
+
+    public void testHideRefreshButton_callsBottomSheetHideRefreshButton() {
+        mMediator.hideRefreshButton();
+        assertFalse(mModel.get(REFRESH_ICON_VISIBLE));
     }
 
     @Test
     public void testDestroy_hidesBottomSheetContentAndRemovesObservers() {
-        mMediator.destroy();
+        mMediator.requestShowContent();
+        assertTrue(mModel.get(VISIBLE));
 
-        verify(mBottomSheetController).hideContent(mBottomSheetContent, /* animate= */ false);
+        mMediator.destroy();
+        assertFalse(mModel.get(VISIBLE));
+
         verify(mBottomSheetController).removeObserver(mMediator);
         verify(mLayoutStateProvider).removeObserver(mMediator);
         verify(mTabModel).removeObserver(mMediator);
+    }
+
+    @Test
+    public void testDidClickRefresh_callsOnRefreshRequested() {
+        mMediator.onRefreshClicked();
+        verify(mBridge).onRefreshClicked();
     }
 
     @Test
@@ -107,24 +154,11 @@ public final class PlusAddressCreationMediatorTest {
 
     @Test
     public void testOnConfirmFinished_hidesBottomSheet() {
+        mMediator.requestShowContent();
+        assertTrue(mModel.get(VISIBLE));
+
         mMediator.onConfirmFinished();
-        verify(mBottomSheetController)
-                .hideContent(
-                        mBottomSheetContent,
-                        /* animate= */ true,
-                        StateChangeReason.INTERACTION_COMPLETE);
-    }
-
-    @Test
-    public void testDidClickCancel_hidesBottomSheetAndCallsOnCanceled() {
-        mMediator.onCanceled();
-
-        verify(mBottomSheetController)
-                .hideContent(
-                        mBottomSheetContent,
-                        /* animate= */ true,
-                        StateChangeReason.INTERACTION_COMPLETE);
-        verify(mBridge).onCanceled();
+        assertFalse(mModel.get(VISIBLE));
     }
 
     @Test
@@ -144,43 +178,51 @@ public final class PlusAddressCreationMediatorTest {
 
     @Test
     public void testOnStartedShowing_hidesContent_whenNotBrowsing() {
-        mMediator.onStartedShowing(LayoutType.TAB_SWITCHER);
+        mMediator.requestShowContent();
+        assertTrue(mModel.get(VISIBLE));
 
-        verify(mBottomSheetController).hideContent(mBottomSheetContent, /* animate= */ true);
+        mMediator.onStartedShowing(LayoutType.TAB_SWITCHER);
+        assertFalse(mModel.get(VISIBLE));
     }
 
     @Test
     public void testDidSelectTab_doesNotHideContent_whenIsSameTab() {
+        mMediator.requestShowContent();
+        assertTrue(mModel.get(VISIBLE));
+
         Tab tab1 = mock(Tab.class);
         doReturn(TAB1_ID).when(tab1).getId();
         mMediator.didSelectTab(tab1, TabSelectionType.FROM_USER, TAB1_ID);
-
-        verify(mBottomSheetController, never())
-                .hideContent(eq(mBottomSheetContent), /* animate= */ anyBoolean());
+        assertTrue(mModel.get(VISIBLE));
     }
 
     @Test
     public void testDidSelectTab_hidesContent_whenIsNotSameTab() {
+        mMediator.requestShowContent();
+        assertTrue(mModel.get(VISIBLE));
+
         Tab tab1 = mock(Tab.class);
         doReturn(TAB1_ID).when(tab1).getId();
         mMediator.didSelectTab(tab1, TabSelectionType.FROM_USER, TAB2_ID);
-
-        verify(mBottomSheetController).hideContent(mBottomSheetContent, /* animate= */ false);
+        assertFalse(mModel.get(VISIBLE));
     }
 
     @Test
     public void testOnStartedShowing_doesNotHideContent_whenIsBrowsing() {
-        mMediator.onStartedShowing(LayoutType.BROWSING);
+        mMediator.requestShowContent();
+        assertTrue(mModel.get(VISIBLE));
 
-        verify(mBottomSheetController, never())
-                .hideContent(eq(mBottomSheetContent), /* animate= */ anyBoolean());
+        mMediator.onStartedShowing(LayoutType.BROWSING);
+        assertTrue(mModel.get(VISIBLE));
     }
 
     @Test
     public void testOnStartedShowing_hidesBottomSheetContent_whenNotBrowsing() {
-        mMediator.onStartedShowing(LayoutType.TAB_SWITCHER);
+        mMediator.requestShowContent();
+        assertTrue(mModel.get(VISIBLE));
 
-        verify(mBottomSheetController).hideContent(mBottomSheetContent, /* animate= */ true);
+        mMediator.onStartedShowing(LayoutType.TAB_SWITCHER);
+        assertFalse(mModel.get(VISIBLE));
     }
 
     @Test

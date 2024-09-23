@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/webapps/browser/android/bottomsheet/pwa_bottom_sheet_controller.h"
+
 #include <string>
 
 #include "base/android/jni_android.h"
@@ -11,8 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
-#include "components/webapps/browser/android/webapps_jni_headers/PwaBottomSheetControllerProvider_jni.h"
-#include "components/webapps/browser/android/webapps_jni_headers/PwaBottomSheetController_jni.h"
+#include "components/webapps/browser/banners/install_banner_config.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "components/webapps/common/constants.h"
@@ -20,6 +20,10 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/text_elider.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/webapps/browser/android/webapps_jni_headers/PwaBottomSheetControllerProvider_jni.h"
+#include "components/webapps/browser/android/webapps_jni_headers/PwaBottomSheetController_jni.h"
 
 using base::ASCIIToUTF16;
 using base::android::ConvertUTF16ToJavaString;
@@ -54,10 +58,16 @@ jboolean JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
   auto* app_banner_manager = static_cast<AppBannerManagerAndroid*>(
       WebappsClient::Get()->GetAppBannerManager(web_contents));
 
+  std::optional<InstallBannerConfig> install_config =
+      app_banner_manager->GetCurrentBannerConfig();
+  if (!install_config.has_value()) {
+    return false;
+  }
+
   WebappInstallSource install_source = InstallableMetrics::GetInstallSource(
       web_contents, static_cast<InstallTrigger>(install_trigger));
   return app_banner_manager->MaybeShowPwaBottomSheetController(
-      /* expand_sheet= */ true, install_source);
+      /* expand_sheet= */ true, install_source, install_config.value());
 }
 
 // static
@@ -138,15 +148,12 @@ void PwaBottomSheetController::OnAddToHomescreen(
       content::WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents)
     return;
-  auto* app_banner_manager = static_cast<AppBannerManagerAndroid*>(
-      WebappsClient::Get()->GetAppBannerManager(web_contents));
-  if (!app_banner_manager)
-    return;
 
   install_triggered_ = true;
-  app_banner_manager->Install(*a2hs_params_, std::move(a2hs_event_callback_));
-  app_banner_manager->TrackInstallPath(/* bottom_sheet= */ true,
-                                       a2hs_params_->install_source);
+  AddToHomescreenInstaller::Install(web_contents, *a2hs_params_,
+                                    std::move(a2hs_event_callback_));
+  PwaInstallPathTracker::TrackInstallPath(/* bottom_sheet= */ true,
+                                          a2hs_params_->install_source);
 }
 
 void PwaBottomSheetController::ShowBottomSheetInstaller(
@@ -193,7 +200,7 @@ void PwaBottomSheetController::UpdateScreenshot(
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> java_screenshot =
       gfx::ConvertToJavaBitmap(screenshot);
-  // TODO(https://crbug.com/1371279): support passing label to use as
+  // TODO(crbug.com/40870351): support passing label to use as
   // the accessibility string.
   Java_PwaBottomSheetController_addWebAppScreenshot(
       env, java_screenshot, web_contents->GetJavaWebContents());

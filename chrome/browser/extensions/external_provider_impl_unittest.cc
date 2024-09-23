@@ -171,7 +171,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     // Create prefs file to make the profile not new.
     params.prefs_content = "{}";
     params.autoupdate_enabled = true;
-    InitializeExtensionService(params);
+    InitializeExtensionService(std::move(params));
     service_->updater()->Start();
     content::RunAllTasksUntilIdle();
   }

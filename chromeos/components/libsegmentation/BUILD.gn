@@ -1,0 +1,14 @@
+# Copyright 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//chromeos/components/libsegmentation/buildflags.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "ENABLE_MERGE_REQUEST=$enable_merge_request",
+    "OVERLAY_INCLUDE_CBX=$overlay_include_cbx",
+  ]
+}

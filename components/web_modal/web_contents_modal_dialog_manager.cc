@@ -12,6 +12,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
@@ -58,6 +59,16 @@ void WebContentsModalDialogManager::FocusTopmostDialog() const {
   child_dialogs_.front().manager->Focus();
 }
 
+void WebContentsModalDialogManager::AddCloseOnNavigationObserver(
+    CloseOnNavigationObserver* observer) {
+  close_on_navigation_observer_list_.AddObserver(observer);
+}
+
+void WebContentsModalDialogManager::RemoveCloseOnNavigationObserver(
+    CloseOnNavigationObserver* observer) {
+  close_on_navigation_observer_list_.RemoveObserver(observer);
+}
+
 content::WebContents* WebContentsModalDialogManager::GetWebContents() const {
   return web_contents();
 }
@@ -86,8 +97,7 @@ WebContentsModalDialogManager::WebContentsModalDialogManager(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<WebContentsModalDialogManager>(
           *web_contents),
-      web_contents_is_hidden_(web_contents->GetVisibility() ==
-                              content::Visibility::HIDDEN) {}
+      web_contents_visibility_(web_contents->GetVisibility()) {}
 
 WebContentsModalDialogManager::DialogState::DialogState(
     gfx::NativeWindow dialog,
@@ -111,7 +121,7 @@ void WebContentsModalDialogManager::BlockWebContentsInteraction(bool blocked) {
   }
 
   if (blocked) {
-    scoped_ignore_input_events_ = contents->IgnoreInputEvents();
+    scoped_ignore_input_events_ = contents->IgnoreInputEvents(std::nullopt);
   } else {
     scoped_ignore_input_events_.reset();
   }
@@ -152,8 +162,13 @@ void WebContentsModalDialogManager::DidFinishNavigation(
   if (!net::registry_controlled_domains::SameDomainOrHost(
           navigation_handle->GetPreviousPrimaryMainFrameURL(),
           navigation_handle->GetURL(),
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES))
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
+    for (auto& observer : close_on_navigation_observer_list_) {
+      observer.OnWillClose();
+    }
+
     CloseAllDialogs();
+  }
 }
 
 void WebContentsModalDialogManager::DidGetIgnoredUIEvent() {
@@ -164,25 +179,29 @@ void WebContentsModalDialogManager::DidGetIgnoredUIEvent() {
 
 void WebContentsModalDialogManager::OnVisibilityChanged(
     content::Visibility visibility) {
-  const bool web_contents_was_hidden = web_contents_is_hidden_;
-  web_contents_is_hidden_ = visibility == content::Visibility::HIDDEN;
-
+  const content::Visibility previous_web_contents_visibility =
+      web_contents_visibility_;
+  web_contents_visibility_ = visibility;
   if (child_dialogs_.empty()) {
     return;
   }
 
-  const bool state_changed = web_contents_is_hidden_ != web_contents_was_hidden;
-  if (web_contents_is_hidden_) {
-    if (state_changed) {
-      child_dialogs_.front().manager->Hide();
-    }
-  } else {
-    // Show the dialog if it transitioned from HIDDEN to VISIBLE or OCCLUDED, or
-    // from OCCLUDED to VISIBLE if the dialog is no longer active.
-    // TODO(crbug.com/1487345): Add an interaction test for this.
-    if (state_changed || !child_dialogs_.front().manager->IsActive()) {
-      child_dialogs_.front().manager->Show();
-    }
+  // Hide the dialog if the web contents are newly hidden.
+  if (previous_web_contents_visibility != content::Visibility::HIDDEN &&
+      web_contents_visibility_ == content::Visibility::HIDDEN) {
+    child_dialogs_.front().manager->Hide();
+    return;
+  }
+
+  // Show the dialog if it transitioned from HIDDEN to VISIBLE or OCCLUDED.
+  if ((previous_web_contents_visibility == content::Visibility::HIDDEN &&
+       web_contents_visibility_ != content::Visibility::HIDDEN) ||
+      // Or from OCCLUDED to VISIBLE if the dialog is no longer active.
+      (previous_web_contents_visibility == content::Visibility::OCCLUDED &&
+       web_contents_visibility_ == content::Visibility::VISIBLE &&
+       !child_dialogs_.front().manager->IsActive())) {
+    // TODO(crbug.com/40283251): Add an interaction test for this.
+    child_dialogs_.front().manager->Show();
   }
 }
 

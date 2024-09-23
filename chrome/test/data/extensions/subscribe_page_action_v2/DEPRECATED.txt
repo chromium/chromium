@@ -1,0 +1,11 @@
+This folder contains the DEPRECATED version of the RSS Subscription Extension,
+with manifest version 2. The extension has been upgraded to manifest version 3,
+but deleting the v2 version would have meant fixing a number of tests in Chrome
+that use it for testing basic Chrome pageAction functionality. In manifest
+version 3, pageActions have been deprecated (merged with browserActions), so
+these tests (and v2 of the RSS subscription extension) can most likely be
+deleted. And if the decision is to re-write the tests, please use something
+other than the subscribe_page_action as a test extension and deleted this
+folder.
+
+For the latest RSS Subscription Extension, please see subscribe_page_action_v3.

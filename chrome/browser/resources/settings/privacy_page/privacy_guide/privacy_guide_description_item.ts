@@ -8,7 +8,7 @@
  * the description of a privacy setting in the privacy guide.
  */
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../../settings_shared.css.js';
 
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
@@ -48,6 +48,12 @@ export class PrivacyGuideDescriptionItemElement extends PolymerElement {
 
   private sanitizeInnerHtml_(rawString: string): TrustedHTML {
     return sanitizeInnerHtml(rawString);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'privacy-guide-description-item': PrivacyGuideDescriptionItemElement;
   }
 }
 

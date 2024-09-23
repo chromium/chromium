@@ -35,7 +35,7 @@ class BookmarkLoadObserver : public BaseBookmarkModelObserver {
  private:
   // BaseBookmarkModelObserver:
   void BookmarkModelChanged() override {}
-  void BookmarkModelLoaded(BookmarkModel* model, bool ids_reassigned) override {
+  void BookmarkModelLoaded(bool ids_reassigned) override {
     std::move(quit_task_).Run();
   }
 

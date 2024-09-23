@@ -129,6 +129,24 @@ class PolicyStorage {
     policy_invalidation_topic_ = policy_invalidation_topic;
   }
 
+  const std::optional<enterprise_management::PolicyData::MarketSegment>
+  market_segment() const {
+    return market_segment_;
+  }
+  void set_market_segment(
+      enterprise_management::PolicyData::MarketSegment segment) {
+    market_segment_ = segment;
+  }
+
+  const std::optional<enterprise_management::PolicyData::MetricsLogSegment>
+  metrics_log_segment() const {
+    return metrics_log_segment_;
+  }
+  void set_metrics_log_segment(
+      enterprise_management::PolicyData::MetricsLogSegment segment) {
+    metrics_log_segment_ = segment;
+  }
+
   base::Time timestamp() const { return timestamp_; }
   void set_timestamp(const base::Time& timestamp) { timestamp_ = timestamp; }
 
@@ -216,6 +234,11 @@ class PolicyStorage {
   std::string policy_user_;
 
   std::string policy_invalidation_topic_;
+
+  std::optional<enterprise_management::PolicyData::MarketSegment>
+      market_segment_;
+  std::optional<enterprise_management::PolicyData::MetricsLogSegment>
+      metrics_log_segment_;
 
   base::Time timestamp_;
 

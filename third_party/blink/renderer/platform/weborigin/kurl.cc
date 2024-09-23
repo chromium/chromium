@@ -25,6 +25,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 #include <algorithm>
@@ -116,7 +121,7 @@ class KURLCharsetConverter final : public url::CharsetConverter {
   }
 
  private:
-  raw_ptr<const WTF::TextEncoding, ExperimentalRenderer> encoding_;
+  raw_ptr<const WTF::TextEncoding> encoding_;
 };
 
 }  // namespace
@@ -198,9 +203,9 @@ bool KURL::IsAboutURL(const char* allowed_path) const {
     return false;
   }
 
-  String path = GetPath();
+  StringView path = ComponentStringView(parsed_.path);
   StringUTF8Adaptor path_utf8(path);
-  return GURL::IsAboutPath(path_utf8.AsStringPiece(), allowed_path);
+  return GURL::IsAboutPath(path_utf8.AsStringView(), allowed_path);
 }
 
 bool KURL::IsAboutBlankURL() const {
@@ -385,6 +390,10 @@ String KURL::Host() const {
   return ComponentString(parsed_.host);
 }
 
+StringView KURL::HostView() const {
+  return ComponentStringView(parsed_.host);
+}
+
 uint16_t KURL::Port() const {
   if (!is_valid_ || parsed_.port.is_empty())
     return 0;
@@ -445,8 +454,8 @@ String KURL::Query() const {
   return String();
 }
 
-String KURL::GetPath() const {
-  return ComponentString(parsed_.path);
+StringView KURL::GetPath() const {
+  return ComponentStringView(parsed_.path);
 }
 
 namespace {
@@ -574,7 +583,7 @@ wtf_size_t FindHostEnd(const String& host, bool is_special) {
 
 void KURL::SetHost(const String& input) {
   String host = RemoveURLWhitespace(input);
-  wtf_size_t value_end = FindHostEnd(host, IsHierarchical());
+  wtf_size_t value_end = FindHostEnd(host, IsStandard());
   String truncated_host = host.Substring(0, value_end);
   StringUTF8Adaptor host_utf8(truncated_host);
   url::Replacements<char> replacements;
@@ -589,7 +598,7 @@ void KURL::SetHostAndPort(const String& input) {
   // theoretically should be doing.
 
   String orig_host_and_port = RemoveURLWhitespace(input);
-  wtf_size_t value_end = FindHostEnd(orig_host_and_port, IsHierarchical());
+  wtf_size_t value_end = FindHostEnd(orig_host_and_port, IsStandard());
   String host_and_port = orig_host_and_port.Substring(0, value_end);
 
   // This logic for handling IPv6 addresses is adapted from ParseServerInfo in
@@ -773,16 +782,16 @@ void KURL::SetPath(const String& input) {
   ReplaceComponents(replacements);
 }
 
-String DecodeURLEscapeSequences(const String& string, DecodeURLMode mode) {
+String DecodeURLEscapeSequences(const StringView& string, DecodeURLMode mode) {
   StringUTF8Adaptor string_utf8(string);
   url::RawCanonOutputT<char16_t> unescaped;
-  url::DecodeURLEscapeSequences(string_utf8.AsStringPiece(), mode, &unescaped);
+  url::DecodeURLEscapeSequences(string_utf8.AsStringView(), mode, &unescaped);
   return StringImpl::Create8BitIfPossible(
       reinterpret_cast<UChar*>(unescaped.data()),
       base::checked_cast<wtf_size_t>(unescaped.length()));
 }
 
-String EncodeWithURLEscapeSequences(const String& not_encoded_string) {
+String EncodeWithURLEscapeSequences(const StringView& not_encoded_string) {
   std::string utf8 =
       UTF8Encoding().Encode(not_encoded_string, WTF::kNoUnencodables);
 
@@ -800,10 +809,32 @@ String EncodeWithURLEscapeSequences(const String& not_encoded_string) {
 
 bool HasInvalidURLEscapeSequences(const String& string) {
   StringUTF8Adaptor string_utf8(string);
-  return url::HasInvalidURLEscapeSequences(string_utf8.AsStringPiece());
+  return url::HasInvalidURLEscapeSequences(string_utf8.AsStringView());
+}
+
+bool KURL::CanSetHostOrPort() const {
+  return IsHierarchical();
+}
+
+bool KURL::CanSetPathname() const {
+  return IsHierarchical();
+}
+
+bool KURL::CanRemoveHost() const {
+  if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
+    return IsHierarchical() && !IncludesCredentials() && !HasPort();
+  }
+  return false;
 }
 
 bool KURL::IsHierarchical() const {
+  if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
+    return IsStandard() || (IsValid() && !HasOpaquePath());
+  }
+  return IsStandard();
+}
+
+bool KURL::IsStandard() const {
   if (string_.IsNull() || parsed_.scheme.is_empty())
     return false;
   return string_.Is8Bit()

@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data_command.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/test/test_future.h"
@@ -22,13 +23,17 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
 namespace {
 
+using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::Ge;
+using ::testing::Lt;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
@@ -38,8 +43,11 @@ class GetIsolatedWebAppBrowsingDataCommandBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
  public:
   GetIsolatedWebAppBrowsingDataCommandBrowserTest()
-      : app_(IsolatedWebAppBuilder(ManifestBuilder())
-                 .AddFolderFromDisk("/", "web_apps/simple_isolated_app")
+      : app_(IsolatedWebAppBuilder(
+                 ManifestBuilder().AddPermissionsPolicy(
+                     blink::mojom::PermissionsPolicyFeature::kControlledFrame,
+                     /*self=*/true,
+                     /*origins=*/{}))
                  .BuildAndStartProxyServer()) {}
 
   GetIsolatedWebAppBrowsingDataCommandBrowserTest(
@@ -48,9 +56,9 @@ class GetIsolatedWebAppBrowsingDataCommandBrowserTest
       const GetIsolatedWebAppBrowsingDataCommandBrowserTest&) = delete;
 
  protected:
-  IsolatedWebAppUrlInfo InstallApp() {
-    return app_->Install(profile()).value();
-  }
+  IsolatedWebAppUrlInfo InstallApp() { return app_->InstallChecked(profile()); }
+
+  GURL proxy_server_url() { return app_->proxy_server().base_url(); }
 
   WebAppProvider& web_app_provider() {
     auto* web_app_provider = WebAppProvider::GetForTest(profile());
@@ -58,15 +66,34 @@ class GetIsolatedWebAppBrowsingDataCommandBrowserTest
     return *web_app_provider;
   }
 
-  void FlushLocalStorage(content::RenderFrameHost* render_frame_host) {
-    base::test::TestFuture<void> test_future;
-    render_frame_host->GetStoragePartition()->GetLocalStorageControl()->Flush(
-        test_future.GetCallback());
-    EXPECT_TRUE(test_future.Wait());
+  void CreateControlledFrame(content::RenderFrameHost* iwa_frame,
+                             GURL url,
+                             std::string_view partition,
+                             int bytes) {
+    EXPECT_TRUE(ExecJs(iwa_frame, content::JsReplace(R"(
+        (async function() {
+          const controlledframe = document.createElement('controlledframe');
+          controlledframe.setAttribute('src', $1);
+          controlledframe.setAttribute('partition', $2);
+          await new Promise((resolve, reject) => {
+            controlledframe.addEventListener('loadcommit', resolve);
+            controlledframe.addEventListener('loadabort', reject);
+            document.body.appendChild(controlledframe);
+          });
+          await new Promise((resolve) => {
+            controlledframe.executeScript({
+              code: 'localStorage.setItem("test", "!".repeat($3))'
+            }, resolve);
+          });
+        })();
+      )",
+                                                     url, partition, bytes)));
   }
 
  private:
   std::unique_ptr<ScopedProxyIsolatedWebApp> app_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kControlledFrame};
 };
 
 IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
@@ -97,13 +124,11 @@ IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
   content::RenderFrameHost* iwa1_frame = OpenApp(iwa1_url_info.app_id());
   EXPECT_TRUE(
       ExecJs(iwa1_frame, "localStorage.setItem('key', '!'.repeat(100))"));
-  FlushLocalStorage(iwa1_frame);
 
   IsolatedWebAppUrlInfo iwa2_url_info = InstallApp();
   content::RenderFrameHost* iwa2_frame = OpenApp(iwa2_url_info.app_id());
   EXPECT_TRUE(
       ExecJs(iwa2_frame, "localStorage.setItem('key', '!'.repeat(5000))"));
-  FlushLocalStorage(iwa2_frame);
 
   base::test::TestFuture<base::flat_map<url::Origin, int64_t>> future;
   web_app_provider().scheduler().GetIsolatedWebAppBrowsingData(
@@ -113,6 +138,22 @@ IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
   EXPECT_THAT(result,
               UnorderedElementsAre(Pair(iwa1_url_info.origin(), Ge(100)),
                                    Pair(iwa2_url_info.origin(), Ge(5000))));
+}
+
+IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
+                       IsolatedWebAppWithControlledFrameData) {
+  IsolatedWebAppUrlInfo iwa_url_info = InstallApp();
+  content::RenderFrameHost* iwa_frame = OpenApp(iwa_url_info.app_id());
+  CreateControlledFrame(iwa_frame, proxy_server_url(), "persist:a", 2000);
+  CreateControlledFrame(iwa_frame, proxy_server_url(), "in_memory", 1000);
+
+  base::test::TestFuture<base::flat_map<url::Origin, int64_t>> future;
+  web_app_provider().scheduler().GetIsolatedWebAppBrowsingData(
+      future.GetCallback());
+  base::flat_map<url::Origin, int64_t> result = future.Get();
+
+  EXPECT_THAT(result, UnorderedElementsAre(Pair(iwa_url_info.origin(),
+                                                AllOf(Ge(2000), Lt(2100)))));
 }
 
 }  // namespace web_app

@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Marrón rosado</translation>
 <translation id="249330843868392562">Abre a configuración da conversión de texto a voz</translation>
 <translation id="2497706219848005458">Amarelo verdoso</translation>
+<translation id="2512979179176933762">mostrar as ventás</translation>
 <translation id="2523609930580546572">Titorial de ChromeVox</translation>
 <translation id="2525706221823668172">Atallos de teclado de Chromebook</translation>
 <translation id="2553108862507765288">erro gramatical</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Tamén podes pasar un dedo da dereita á esquerda para volver ao elemento anterior. Próbao agora.</translation>
 <translation id="280499067616661124">Busca de ChromeVox na páxina</translation>
-<translation id="2811019999044652585">Para saltar a outras partes da pantalla como as barras de ferramentas ou a bandexa do sistema, preme Control + tecla de avance. Nos Chromebooks, a tecla de avance está xusto enriba do número 2.</translation>
 <translation id="2811204574343810641">Fila</translation>
 <translation id="2816868829355607410">Zona de práctica: comandos de desprazamento</translation>
 <translation id="2841013758207633010">Hora</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Azul aceiro</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4254798249533888099">Árbore</translation>
+<translation id="4259220820964911921">Queres activar o control facial?</translation>
 <translation id="4271220233568730077">Seguinte expresión matemática</translation>
 <translation id="4275397969489577657">Activar rexistro de emisión de eventos</translation>
 <translation id="4278486392851938658">Non hai ningunha ligazón visitada anterior</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Vermello indio</translation>
 <translation id="4432896207833262240">Contido marcado</translation>
 <translation id="4437615272777527928">Escribir consulta para buscar nos menús. Usar frechas arriba e abaixo para desprazarse polos resultados. Usar frechas dereita e esquerda para axustar o cursor de texto e moverse entre os menús.</translation>
+<translation id="4453530046591759283">Para ir a outras partes da pantalla, como ás barras de ferramentas ou á bandexa do sistema, preme Control + F1. F1 é a primeira tecla á dereita da tecla Escape.</translation>
 <translation id="4457472090507035117">Selecciona a voz actual:</translation>
 <translation id="4476183483923481720">liña nova</translation>
 <translation id="4479068155583208887">Ladrillo</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Apéndice</translation>
 <translation id="5761219715606611783">Ben feito! Xa aprendiches os conceptos básicos dos toques de ChromeVox. Para reiniciar o titorial ou saír del, usa os botóns que se mostran a continuación.</translation>
 <translation id="5776001898637896684">Extensión de conversión de rede mellorada de texto a voz</translation>
+<translation id="5783252477644995371">O control facial permíteche dirixir o cursor con movementos da cara e levar a cabo accións. Por exemplo, podes usar xestos faciais, como o sorriso, para facer clic co botón esquerdo do rato</translation>
 <translation id="5805940204952508776">Toca con dous dedos</translation>
 <translation id="5819072574982403430">Elemento da árbore</translation>
 <translation id="5822819874379903994">Turquesa escuro</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Branco navajo</translation>
 <translation id="7095834689119144465">Editar só elemento numérico de texto</translation>
 <translation id="7096001299300236431">Ficheiro multimedia anterior</translation>
+<translation id="7096668131290451939">Preme Escape de novo para saír do modo de aprendizaxe</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">dicir palabras</translation>
 <translation id="7137397390322864165">Salmón</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">Non hai ningunha caixa de verificación posterior</translation>
 <translation id="8473540203671727883">Pronunciar texto ao pasar por encima o punteiro do rato</translation>
 <translation id="8476408756881832830">Pausar a reprodución cando ChromeVox estea falando</translation>
-<translation id="8476508772960940536">vista xeral da ventá</translation>
 <translation id="8480873377842220259">Agora aprenderás os conceptos básicos de desprazamento. Se queres desprazarte pola pantalla, podes manter premida a tecla Buscar e usar as das frechas. Para continuar, preme Buscar + Frecha dereita.</translation>
 <translation id="8503360654911991865">Reduce a granularidade da navegación</translation>
 <translation id="8520472399088452386">Botón de control numérico</translation>

@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/google_drive_handler.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_browser_test_mixin.h"
-#include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom-test-utils.h"
+#include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom-test-utils.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"

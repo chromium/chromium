@@ -13,7 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/source_destination_matcher_ash.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/connectors/core/analysis_settings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -48,7 +48,7 @@ enterprise_connectors::FileTransferAnalysisDelegate::
 // a file, the vector will only contain `root`. If `root` is a directory all
 // files lying in that directory or any descended subdirectory are passed to
 // `callback`.
-class GetFileURLsDelegate : public storage::RecursiveOperationDelegate {
+class GetFileURLsDelegate final : public storage::RecursiveOperationDelegate {
  public:
   using FileURLsCallback =
       base::OnceCallback<void(std::vector<storage::FileSystemURL>)>;
@@ -66,7 +66,7 @@ class GetFileURLsDelegate : public storage::RecursiveOperationDelegate {
   ~GetFileURLsDelegate() override = default;
 
   // RecursiveOperationDelegate:
-  void Run() override { NOTREACHED(); }
+  void Run() override { NOTREACHED_IN_MIGRATION(); }
   void RunRecursively() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     StartRecursiveOperation(root_,
@@ -94,6 +94,9 @@ class GetFileURLsDelegate : public storage::RecursiveOperationDelegate {
   void PostProcessDirectory(const storage::FileSystemURL& url,
                             StatusCallback callback) override {
     std::move(callback).Run(base::File::FILE_OK);
+  }
+  base::WeakPtr<storage::RecursiveOperationDelegate> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:

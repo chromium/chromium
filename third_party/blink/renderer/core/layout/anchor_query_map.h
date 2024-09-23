@@ -7,9 +7,9 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 
+#include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment_link.h"
-#include "third_party/blink/renderer/core/layout/anchor_query.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
 namespace blink {
@@ -31,11 +31,6 @@ class CORE_EXPORT LogicalAnchorQueryMap {
   STACK_ALLOCATED();
 
  public:
-  LogicalAnchorQueryMap(const LayoutBox& root_box,
-                        const LogicalFragmentLinkVector& children,
-                        const FragmentItemsBuilder::ItemWithOffsetList* items,
-                        const WritingModeConverter& converter);
-
   // This constructor is for when the size of the container is not known yet.
   // This happens when laying out OOFs in a block fragmentation context, and
   // assumes children are fragmentainers.
@@ -52,9 +47,7 @@ class CORE_EXPORT LogicalAnchorQueryMap {
       const LayoutObject& containing_block) const;
 
   // Update |children| when their anchor queries are changed.
-  void SetChildren(
-      const LogicalFragmentLinkVector& children,
-      const FragmentItemsBuilder::ItemWithOffsetList* items = nullptr);
+  void SetChildren(const LogicalFragmentLinkVector& children);
 
  private:
   void Update(const LayoutObject& layout_object) const;

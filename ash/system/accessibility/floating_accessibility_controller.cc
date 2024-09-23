@@ -71,7 +71,6 @@ void FloatingAccessibilityController::Show(FloatingMenuPosition position) {
   if (!Shell::Get()->session_controller()->IsRunningInAppMode()) {
     NOTREACHED()
         << "Floating accessibility menu can only be run in a kiosk session.";
-    return;
   }
 
   DCHECK(!bubble_view_);

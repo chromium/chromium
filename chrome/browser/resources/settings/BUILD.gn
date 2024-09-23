@@ -28,13 +28,11 @@ build_webui("build") {
     "images/password_check_positive.svg",
     "images/permissions_banner_dark.svg",
     "images/permissions_banner.svg",
+    "images/privacy_guide/ad_topics_graphic.svg",
+    "images/privacy_guide/ad_topics_graphic_dark.svg",
     "images/privacy_guide/clouds_graphic_dark.svg",
     "images/privacy_guide/clouds_graphic.svg",
-    "images/privacy_guide/completion_banner_circle.svg",
     "images/privacy_guide/completion_banner_dark_v2.svg",
-    "images/privacy_guide/completion_banner_pill.svg",
-    "images/privacy_guide/completion_banner_square.svg",
-    "images/privacy_guide/completion_banner_triangle.svg",
     "images/privacy_guide/completion_banner_v2.svg",
     "images/privacy_guide/cookies_graphic_dark_v2.svg",
     "images/privacy_guide/cookies_graphic_v2.svg",
@@ -46,18 +44,10 @@ build_webui("build") {
     "images/privacy_guide/horizon_graphic.svg",
     "images/privacy_guide/msbb_graphic_dark_v2.svg",
     "images/privacy_guide/msbb_graphic_v2.svg",
-    "images/privacy_guide/preload_graphic.svg",
-    "images/privacy_guide/preload_graphic_dark.svg",
-    "images/privacy_guide/privacy_sandbox_graphic_dark.svg",
-    "images/privacy_guide/privacy_sandbox_graphic.svg",
     "images/privacy_guide/promo_banner_dark.svg",
     "images/privacy_guide/promo_banner.svg",
     "images/privacy_guide/safe_browsing_graphic_dark_v2.svg",
     "images/privacy_guide/safe_browsing_graphic_v2.svg",
-    "images/privacy_guide/search_suggestions_graphic.svg",
-    "images/privacy_guide/search_suggestions_graphic_dark.svg",
-    "images/privacy_guide/waa_graphic_dark.svg",
-    "images/privacy_guide/waa_graphic.svg",
     "images/privacy_guide/welcome_banner_dark.svg",
     "images/privacy_guide/welcome_banner.svg",
     "images/safe_browsing_banner_dark.svg",
@@ -73,13 +63,16 @@ build_webui("build") {
   web_component_files = [
     "a11y_page/a11y_page.ts",
     "about_page/about_page.ts",
+    "ai_page/ai_info_card.ts",
     "ai_page/ai_page.ts",
+    "ai_page/ai_tab_organization_subpage.ts",
     "appearance_page/appearance_fonts_page.ts",
     "appearance_page/appearance_page.ts",
     "appearance_page/home_url_input.ts",
     "autofill_page/address_edit_dialog.ts",
     "autofill_page/address_remove_confirmation_dialog.ts",
     "autofill_page/autofill_page.ts",
+    "autofill_page/autofill_prediction_improvements_section.ts",
     "autofill_page/autofill_section.ts",
     "autofill_page/credit_card_edit_dialog.ts",
     "autofill_page/credit_card_list_entry.ts",
@@ -106,9 +99,9 @@ build_webui("build") {
     "on_startup_page/startup_url_entry.ts",
     "on_startup_page/startup_urls_page.ts",
     "performance_page/battery_page.ts",
+    "performance_page/memory_page.ts",
     "performance_page/performance_page.ts",
     "performance_page/speed_page.ts",
-    "performance_page/tab_discard/exception_add_dialog.ts",
     "performance_page/tab_discard/exception_add_input.ts",
     "performance_page/tab_discard/exception_current_sites_list.ts",
     "performance_page/tab_discard/exception_edit_dialog.ts",
@@ -116,20 +109,21 @@ build_webui("build") {
     "performance_page/tab_discard/exception_entry.ts",
     "performance_page/tab_discard/exception_list.ts",
     "performance_page/tab_discard/exception_tabbed_add_dialog.ts",
+    "people_page/history_search_page.ts",
     "people_page/page_content_page.ts",
     "people_page/people_page.ts",
     "people_page/signout_dialog.ts",
-    "people_page/sync_account_control.ts",
     "people_page/sync_controls.ts",
     "people_page/sync_encryption_options.ts",
     "people_page/sync_page.ts",
     "privacy_page/anti_abuse_page.ts",
     "privacy_page/collapse_radio_button.ts",
     "privacy_page/cookies_page.ts",
+    "privacy_page/fingerprint_progress_arc.ts",
     "privacy_page/do_not_track_toggle.ts",
     "privacy_page/personalization_options.ts",
+    "privacy_page/privacy_guide/privacy_guide_ad_topics_fragment.ts",
     "privacy_page/privacy_guide/privacy_guide_completion_fragment.ts",
-    "privacy_page/privacy_guide/privacy_guide_completion_link_row.ts",
     "privacy_page/privacy_guide/privacy_guide_cookies_fragment.ts",
     "privacy_page/privacy_guide/privacy_guide_description_item.ts",
     "privacy_page/privacy_guide/privacy_guide_dialog.ts",
@@ -137,9 +131,7 @@ build_webui("build") {
     "privacy_page/privacy_guide/privacy_guide_msbb_fragment.ts",
     "privacy_page/privacy_guide/privacy_guide_page.ts",
     "privacy_page/privacy_guide/privacy_guide_promo.ts",
-    "privacy_page/privacy_guide/privacy_guide_preload_fragment.ts",
     "privacy_page/privacy_guide/privacy_guide_safe_browsing_fragment.ts",
-    "privacy_page/privacy_guide/privacy_guide_search_suggestions_fragment.ts",
     "privacy_page/privacy_guide/privacy_guide_welcome_fragment.ts",
     "privacy_page/privacy_guide/step_indicator.ts",
     "privacy_page/privacy_page.ts",
@@ -212,6 +204,8 @@ build_webui("build") {
     "site_settings_page/site_settings_list.ts",
     "site_settings_page/site_settings_page.ts",
     "site_settings_page/unused_site_permissions.ts",
+    "site_settings/offer_writing_help_page.ts",
+    "site_settings/smart_card_readers_page.ts",
     "site_settings/pdf_documents.ts",
     "site_settings/protocol_handlers.ts",
     "site_settings/settings_category_default_radio_group.ts",
@@ -230,6 +224,7 @@ build_webui("build") {
   if (!is_chromeos_ash) {
     web_component_files += [
       "people_page/manage_profile.ts",
+      "people_page/sync_account_control.ts",
       "relaunch_confirmation_dialog.ts",
       "languages_page/add_languages_dialog.ts",
       "languages_page/languages_page.ts",
@@ -270,10 +265,7 @@ build_webui("build") {
     web_component_files += [ "autofill_page/passkeys_subpage.ts" ]
   }
   if (is_win || is_mac || is_linux) {
-    web_component_files += [ "a11y_page/pdf_ocr_toggle.ts" ]
-  }
-  if (is_chrome_branded) {
-    web_component_files += [ "get_most_chrome_page/get_most_chrome_page.ts" ]
+    web_component_files += [ "a11y_page/ax_annotations_section.ts" ]
   }
 
   # -----------------web_component_files end ----------------------------------
@@ -283,11 +275,13 @@ build_webui("build") {
   non_web_component_files = [
     "a11y_page/a11y_browser_proxy.ts",
     "about_page/about_page_browser_proxy.ts",
+    "ai_page/constants.ts",
     "appearance_page/appearance_browser_proxy.ts",
     "autofill_page/address_edit_dialog_components.ts",
     "autofill_page/autofill_manager_proxy.ts",
     "autofill_page/password_manager_proxy.ts",
     "autofill_page/payments_manager_proxy.ts",
+    "autofill_page/user_annotations_manager_proxy.ts",
     "base_mixin.ts",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
     "controls/settings_idle_load.ts",
@@ -303,7 +297,6 @@ build_webui("build") {
     "on_startup_page/startup_urls_page_browser_proxy.ts",
     "page_visibility.ts",
     "performance_page/constants.ts",
-    "performance_page/discard_timer_options.ts",
     "performance_page/performance_browser_proxy.ts",
     "performance_page/performance_metrics_proxy.ts",
     "performance_page/tab_discard/exception_validation_mixin.ts",
@@ -319,6 +312,7 @@ build_webui("build") {
     "safety_check_page/safety_check_browser_proxy.ts",
     "safety_check_page/safety_check_extensions_browser_proxy.ts",
     "safety_hub/safety_hub_browser_proxy.ts",
+    "scrollable_mixin.ts",
     "search_engines_page/search_engines_browser_proxy.ts",
     "search_settings.ts",
     "settings.ts",
@@ -364,9 +358,13 @@ build_webui("build") {
 
   icons_html_files = [
     "icons.html",
+    "privacy_icons.html",
+    "privacy_page/fingerprint_icons.html",
     "privacy_sandbox/privacy_sandbox_icons.html",
     "site_settings/all_sites_icons.html",
   ]
+
+  html_to_wrapper_template = "detect"
 
   if (is_chrome_branded) {
     icons_html_files += [ "internal/icons.html" ]
@@ -379,6 +377,7 @@ build_webui("build") {
     "settings_vars.css",
 
     # subfolder files
+    "autofill_page/screen_reader_only.css",
     "autofill_page/passwords_shared.css",
     "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
     "search_engines_page/search_engine_entry.css",
@@ -389,6 +388,7 @@ build_webui("build") {
   ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/autofill_private.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/language_settings_private.d.ts",
     "//tools/typescript/definitions/management.d.ts",
@@ -410,21 +410,18 @@ build_webui("build") {
     "//ui/webui/resources/cr_components/localized_link:build_ts",
     "//ui/webui/resources/cr_components/managed_dialog:build_ts",
     "//ui/webui/resources/cr_components/managed_footnote:build_ts",
-    "//ui/webui/resources/cr_components/settings_prefs:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 
   if (!is_chromeos_ash) {
-    ts_deps += [
-      "//ui/webui/resources/cr_components/customize_themes:build_ts",
-      "//ui/webui/resources/cr_components/theme_color_picker:build_ts",
-    ]
+    ts_deps +=
+        [ "//ui/webui/resources/cr_components/theme_color_picker:build_ts" ]
   } else {
     ts_deps += [ "//ash/webui/common/resources:build_ts" ]
   }
 
-  if (use_nss_certs) {
+  if (use_nss_certs || chrome_root_store_cert_management_ui) {
     ts_deps +=
         [ "//ui/webui/resources/cr_components/certificate_manager:build_ts" ]
   }
@@ -442,6 +439,7 @@ build_webui("build") {
     ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
   }
 
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "settings"

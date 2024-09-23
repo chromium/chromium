@@ -8,17 +8,33 @@
 #import <map>
 #import <optional>
 
+#import "base/observer_list.h"
+#import "base/scoped_multi_source_observation.h"
+#import "base/scoped_observation.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 namespace autofill {
+
+// Observer of ChildFrameRegistrar events.
+class ChildFrameRegistrarObserver : public base::CheckedObserver {
+ public:
+  // Called when there was an attempt made to register the same remote token
+  // twice with a different |local| token. This may mean spoofing so the
+  // receiver of this notification should act accordingly.
+  virtual void OnDidDoubleRegistration(LocalFrameToken local) = 0;
+};
 
 // Child frame registration is the process whereby a frame can assign an ID (a
 // remote frame token) to a child frame, establishing a relationship between
 // that frame in the DOM (and JS) and the corresponding WebFrame object in C++.
 // This class maintains those mappings.
-class ChildFrameRegistrar : public web::WebStateUserData<ChildFrameRegistrar> {
+class ChildFrameRegistrar : public web::WebStateUserData<ChildFrameRegistrar>,
+                            public web::WebFramesManager::Observer,
+                            public web::WebStateObserver {
  public:
   ~ChildFrameRegistrar() override;
 
@@ -61,19 +77,51 @@ class ChildFrameRegistrar : public web::WebStateUserData<ChildFrameRegistrar> {
   // available.
   static ChildFrameRegistrar* GetOrCreateForWebState(web::WebState* web_state);
 
+  // Adds the |observer| to the list of observers.
+  void AddObserver(ChildFrameRegistrarObserver* observer);
+
+  // Removes |observer| from the list of observers.
+  void RemoveObserver(ChildFrameRegistrarObserver* observer);
+
+  // web::WebFramesManager::Observer:
+  void WebFrameBecameUnavailable(web::WebFramesManager* web_frames_manager,
+                                 const std::string& frame_id) override;
+
+  // web::WebStateObserver
+  void WebStateDestroyed(web::WebState* web_state) override;
+
  private:
   explicit ChildFrameRegistrar(web::WebState* web_state);
   friend class web::WebStateUserData<ChildFrameRegistrar>;
   WEB_STATE_USER_DATA_KEY_DECL();
 
-  // Maintains the mapping used by `LookupChildFrame`.
-  std::map<RemoteFrameToken, LocalFrameToken> lookup_map_;
+  // Deletes all entries in `lookup_map_` that contain `frame_id` as local frame
+  // token.
+  void RemoveFrameID(const std::string& frame_id);
+
+  // Maintains the mapping used by `LookupChildFrame`. The value containing the
+  // local frame token is set to std::nullopt if there was at least one attempt
+  // to register the same remote token, as a security precaution, making the
+  // token and thus the frame invalid for the entire registrar's lifetime.
+  std::map<RemoteFrameToken, std::optional<LocalFrameToken>> lookup_map_;
 
   // When `DeclareNewRemoteToken` is called, the RemoteFrameToken may not
   // yet correspond to a known frame. In this case, the callback is stored in
   // this map until a matching remote token is registered.
   std::map<RemoteFrameToken, base::OnceCallback<void(LocalFrameToken)>>
       pending_callbacks_;
+
+  base::ObserverList<ChildFrameRegistrarObserver> observers_;
+
+  // Observation for listening to WebFrame events. Multiple observations are
+  // required because there are two WebFramesManager per WebState, one for each
+  // ContentWorld.
+  base::ScopedMultiSourceObservation<web::WebFramesManager,
+                                     web::WebFramesManager::Observer>
+      web_frames_managers_observation_{this};
+
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
 };
 
 }  // namespace autofill

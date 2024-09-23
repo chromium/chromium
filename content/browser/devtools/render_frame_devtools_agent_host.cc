@@ -60,6 +60,7 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_package/signed_exchange_envelope.h"
+#include "content/browser/worker_host/dedicated_worker_hosts_for_document.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -362,8 +363,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
       base::BindRepeating(
           &RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories,
           base::Unretained(this)),
-      session->GetClient()->MayReadLocalFiles(),
-      session->GetClient()->IsTrusted());
+      session->GetClient());
   session->CreateAndAddHandler<protocol::FetchHandler>(
       GetIOContext(), base::BindRepeating(
                           [](RenderFrameDevToolsAgentHost* self,
@@ -376,19 +376,14 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
   const bool may_attach_to_brower = session->GetClient()->IsTrusted();
   session->CreateAndAddHandler<protocol::ServiceWorkerHandler>(
       /* allow_inspect_worker= */ may_attach_to_brower);
-  session->CreateAndAddHandler<protocol::StorageHandler>(
-      session->GetClient()->IsTrusted());
+  session->CreateAndAddHandler<protocol::StorageHandler>(session->GetClient());
   session->CreateAndAddHandler<protocol::SystemInfoHandler>(
       /* is_browser_session= */ false);
-  auto* target_handler = session->CreateAndAddHandler<protocol::TargetHandler>(
+  session->CreateAndAddHandler<protocol::TargetHandler>(
       may_attach_to_brower
           ? protocol::TargetHandler::AccessMode::kRegular
           : protocol::TargetHandler::AccessMode::kAutoAttachOnly,
       GetId(), auto_attacher_.get(), session);
-  if (session->session_mode() !=
-      DevToolsSession::Mode::kDoesNotSupportTabTarget) {
-    target_handler->DisableAutoAttachOfPortals();
-  }
   session->CreateAndAddHandler<protocol::PreloadHandler>();
   session->CreateAndAddHandler<protocol::PageHandler>(
       emulation_handler, browser_handler,
@@ -442,7 +437,7 @@ void RenderFrameDevToolsAgentHost::InspectElement(RenderFrameHost* frame_host,
   // so we need to transform the coordinates from the root space
   // to the local frame root widget's space.
   if (host->frame_host_) {
-    if (RenderWidgetHostView* view = host->frame_host_->GetView()) {
+    if (RenderWidgetHostViewBase* view = host->frame_host_->GetView()) {
       point = gfx::ToRoundedPoint(
           view->TransformRootPointToViewCoordSpace(gfx::PointF(point)));
     }
@@ -566,7 +561,8 @@ void RenderFrameDevToolsAgentHost::RenderFrameHostChanged(
   // UpdateFrameHost may destruct |this|.
 }
 
-void RenderFrameDevToolsAgentHost::FrameDeleted(int frame_tree_node_id) {
+void RenderFrameDevToolsAgentHost::FrameDeleted(
+    FrameTreeNodeId frame_tree_node_id) {
   for (auto* tracing : protocol::TracingHandler::ForAgentHost(this))
     tracing->FrameDeleted(frame_tree_node_id);
   if (frame_tree_node_ &&
@@ -698,10 +694,6 @@ void RenderFrameDevToolsAgentHost::OnNavigationRequestWillBeSent(
   }
   if (!restricted_sessions.empty())
     ForceDetachRestrictedSessions(restricted_sessions);
-}
-
-void RenderFrameDevToolsAgentHost::UpdatePortals() {
-  auto_attacher_->UpdatePages();
 }
 
 void RenderFrameDevToolsAgentHost::DidCreateFencedFrame(
@@ -866,7 +858,7 @@ bool RenderFrameDevToolsAgentHost::Close() {
 
 base::TimeTicks RenderFrameDevToolsAgentHost::GetLastActivityTime() {
   if (WebContents* contents = web_contents())
-    return contents->GetLastActiveTime();
+    return contents->GetLastActiveTimeTicks();
   return base::TimeTicks();
 }
 
@@ -1008,6 +1000,11 @@ void RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories() {
       return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
     }
     rfh->UpdateSubresourceLoaderFactories();
+    // Network requests from dedicated workers are intercepted through the owner
+    // frame target, so we should update loader factories when interception
+    // parameters change.
+    DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(rfh)
+        ->UpdateSubresourceLoaderFactories();
     return content::RenderFrameHost::FrameIterationAction::kContinue;
   });
 }

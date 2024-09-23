@@ -12,6 +12,8 @@ import "third_party/blink/public/mojom/safe_url_pattern.mojom";
 // if the service worker is not ready to run the fetch handler right away.
 // `kNotRunning` includes `EmbeddedWorkerStatus`'s `kStarting` and `kStopping`
 // in addition to `kStopped`.
+// See:
+// https://w3c.github.io/ServiceWorker/#enumdef-runningstatus
 enum ServiceWorkerRouterRunningStatusEnum {
   // ServiceWorker can run the fetch handler without waiting for starting
   // it up.
@@ -22,21 +24,21 @@ enum ServiceWorkerRouterRunningStatusEnum {
 
 // This represents a running status condition to match.
 // See:
-// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
+// https://w3c.github.io/ServiceWorker/#dom-routercondition-runningstatus
 struct ServiceWorkerRouterRunningStatusCondition {
   ServiceWorkerRouterRunningStatusEnum status;
 };
 
 // This represents a request condition to match.
-// See:
-// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
 struct ServiceWorkerRouterRequestCondition {
   // The request method.
-  // See: https://fetch.spec.whatwg.org/#concept-request-method
+  // See:
+  // https://w3c.github.io/ServiceWorker/#dom-routercondition-requestmethod
   string? method;
 
   // RequestMode
-  // See: https://fetch.spec.whatwg.org/#concept-request-mode
+  // See:
+  // https://w3c.github.io/ServiceWorker/#dom-routercondition-requestmode
   // If it is not set, ServiceWorkerRouterEvaluator won't use it as condition.
   // TODO(http://crbug.com/657632): implement this with optional enum.
   // Since the code is used on Android, we need Java variant, which currently
@@ -45,7 +47,8 @@ struct ServiceWorkerRouterRequestCondition {
   network.mojom.RequestMode mode;
 
   // RequestDestination
-  // See: https://fetch.spec.whatwg.org/#concept-request-destination
+  // See:
+  // https://w3c.github.io/ServiceWorker/#dom-routercondition-requestdestination
   // If it is not set, ServiceWorkerRouterEvaluator won't use it as condition.
   // TODO(http://crbug.com/657632): implement this with optional enum.
   // Since the code is used on Android, we need Java variant, which currently
@@ -54,44 +57,59 @@ struct ServiceWorkerRouterRequestCondition {
   network.mojom.RequestDestination destination;
 };
 
+// This represents a or condition to match.
+// See:
+// https://w3c.github.io/ServiceWorker/#dom-routercondition-or
 struct ServiceWorkerRouterOrCondition {
   array<ServiceWorkerRouterCondition> conditions;
 };
 
+// This represents a not condition to match.
+// See:
+// https://github.com/WICG/service-worker-static-routing-api/blob/main/final-form.md
+struct ServiceWorkerRouterNotCondition {
+  ServiceWorkerRouterCondition condition;
+};
+
 // This represents a condition of the router rule.
-// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// See: https://w3c.github.io/ServiceWorker/#dictdef-routercondition
 // TODO(crbug.com/1371756): implement other conditions in the full picture.
+// https://github.com/WICG/service-worker-static-routing-api
 struct ServiceWorkerRouterCondition {
   // URLPattern to be used for matching.
   SafeUrlPattern? url_pattern;
   ServiceWorkerRouterRequestCondition? request;
   ServiceWorkerRouterRunningStatusCondition? running_status;
   ServiceWorkerRouterOrCondition? or_condition;
+  ServiceWorkerRouterNotCondition? not_condition;
 };
 
 // This is used for specifying the source is network.
-// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// https://w3c.github.io/ServiceWorker/#dom-routersourceenum-network
 // TODO(crbug.com/1371756): implement fields in the full picture.
+// https://github.com/WICG/service-worker-static-routing-api
 struct ServiceWorkerRouterNetworkSource {
 };
 
 // This source is used when the browser should allow a network source and
 // the fetch handler to race, allowing the first one to respond to service
 // the request.
-// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// https://w3c.github.io/ServiceWorker/#dom-routersourceenum-race-network-and-fetch-handler
 // TODO(crbug.com/1371756): implement fields in the full picture.
+// https://github.com/WICG/service-worker-static-routing-api
 struct ServiceWorkerRouterRaceSource {
 };
 
 // This is used for explicitly running the fetch event listeners.
-// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// https://w3c.github.io/ServiceWorker/#dom-routersourceenum-fetch-event
 // TODO(crbug.com/1371756): implement fields in the full picture.
+// https://github.com/WICG/service-worker-static-routing-api
 struct ServiceWorkerRouterFetchEventSource {
 };
 
 // This source is used when the response should be retrieved from the cache
 // storage.
-// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// https://w3c.github.io/ServiceWorker/#dom-routersourcedict-cachename
 struct ServiceWorkerRouterCacheSource {
   // The Cache object's name to be used. Unspecified means looking up from
   // all Cache objects in the Cache Storage.
@@ -99,8 +117,9 @@ struct ServiceWorkerRouterCacheSource {
 };
 
 // This represents a source of the router rule.
-// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// https://w3c.github.io/ServiceWorker/#typedefdef-routersource
 // TODO(crbug.com/1371756): implement other sources in the full picture.
+// https://github.com/WICG/service-worker-static-routing-api
 union ServiceWorkerRouterSource {
   ServiceWorkerRouterNetworkSource network_source;
   ServiceWorkerRouterRaceSource race_source;
@@ -109,7 +128,7 @@ union ServiceWorkerRouterSource {
 };
 
 // This represents a ServiceWorker static routing API's router rule.
-// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// https://w3c.github.io/ServiceWorker/#dictdef-routerrule
 // It represents each route.
 // When an request matches `conditions`, a response is fetched from `sources`.
 // `conditions` are evaluated sequentially to ensure all of them are fulfilled.
@@ -125,7 +144,8 @@ struct ServiceWorkerRouterRule {
 };
 
 // This represents a list of ServiceWorker static routing API's router rules.
-// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// It is usually used as the `addRoutes()` argument.
+// https://w3c.github.io/ServiceWorker/#dom-installevent-addroutes-rules-rules
 struct ServiceWorkerRouterRules {
   array<ServiceWorkerRouterRule> rules;
 };

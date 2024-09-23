@@ -187,7 +187,8 @@ class MockFileSystem(object):
     def glob(self, glob_string):
         # FIXME: This handles '*', but not '?', '[', or ']'.
         glob_string = re.escape(glob_string)
-        glob_string = glob_string.replace('\\*\\*', '.*')
+        # Allow zero directories (e.g., `a/**/b` matches `a/b`).
+        glob_string = glob_string.replace('/\\*\\*', '(|/.*)')
         glob_string = glob_string.replace('\\*', '[^\\/]*')
         glob_string = glob_string.replace('\\/', '/')
         path_filter = lambda path: re.fullmatch(glob_string, path)
@@ -263,12 +264,15 @@ class MockFileSystem(object):
                         directories.append(directory)
                 else:
                     files.append(remaining)
-        file_system_tuples = [(top[:-1], directories, files)]
+        # The real `os.walk(...)` [0] gives the caller a chance to modify which
+        # subdirectories to traverse by mutating the `directories` list, so we
+        # should yield here instead of returning a precomputed list.
+        #
+        # [0]: https://docs.python.org/3/library/os.html#os.walk
+        yield (top[:-1], directories, files)
         for directory in directories:
             directory = top + directory
-            tuples_from_subdirs = self.walk(directory)
-            file_system_tuples += tuples_from_subdirs
-        return file_system_tuples
+            yield from self.walk(directory)
 
     def mtime(self, path):
         if self.exists(path):

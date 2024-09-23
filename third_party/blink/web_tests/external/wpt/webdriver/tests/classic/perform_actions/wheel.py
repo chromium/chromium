@@ -2,8 +2,10 @@ import pytest
 
 from webdriver.error import NoSuchWindowException
 
-
+import time
 from tests.classic.perform_actions.support.refine import get_events
+from tests.support.keys import Keys
+from tests.support.sync import Poll
 
 
 def test_null_response_value(session, wheel_chain):
@@ -54,7 +56,13 @@ def test_scroll_iframe(session, test_actions_scroll_page, wheel_chain):
 
     wheel_chain.scroll(0, 0, 5, 10, origin=target).perform()
 
+    # Chrome requires some time (~10-20ms) to process the event from the iframe, so we wait for it.
+    def wait_for_events(_):
+        return len(get_events(session)) > 0
+
+    Poll(session, timeout=0.5, interval=0.01, message='No wheel events found').until(wait_for_events)
     events = get_events(session)
+
     assert len(events) == 1
     assert events[0]["type"] == "wheel"
     assert events[0]["deltaX"] == 5
@@ -111,3 +119,18 @@ def test_scroll_shadow_tree(session, get_test_page, wheel_chain, mode, nested):
     assert events[0]["deltaX"] == 5
     assert events[0]["deltaY"] == 10
     assert events[0]["target"] == "scrollableShadowTreeContent"
+
+
+def test_scroll_with_key_pressed(
+    session, test_actions_scroll_page, key_chain, wheel_chain
+):
+    scrollable = session.find.css("#scrollable", all=False)
+
+    key_chain.key_down(Keys.R_SHIFT).perform()
+    wheel_chain.scroll(0, 0, 5, 10, origin=scrollable).perform()
+    key_chain.key_up(Keys.R_SHIFT).perform()
+
+    events = get_events(session)
+    assert len(events) == 1
+    assert events[0]["type"] == "wheel"
+    assert events[0]["shiftKey"] == True

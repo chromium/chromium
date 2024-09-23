@@ -21,6 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/display/screen.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/geometry/rect.h"
 
 using crosapi::mojom::BrowserInitParams;
 using crosapi::mojom::BrowserInitParamsPtr;
@@ -37,10 +38,12 @@ const char kWebAppUrl[] = "https://www.example.com/";
 }
 
 void CreateKioskWindow() {
-  web_app::CreateWebApplicationWindow(ProfileManager::GetPrimaryUserProfile(),
-                                      kWebAppUrl,
-                                      WindowOpenDisposition::NEW_POPUP,
-                                      /*restore_id=*/0);
+  Browser::CreateParams params = web_app::CreateParamsForApp(
+      kWebAppUrl,
+      /*is_popup=*/true, /*trusted_source=*/true, /*window_bounds=*/gfx::Rect(),
+      /*profile=*/ProfileManager::GetPrimaryUserProfile(),
+      /*user_gesture*/ true);
+  web_app::CreateWebAppWindowMaybeWithHomeTab(kWebAppUrl, params);
 }
 
 void SetBrowserInitParamsForWebKiosk() {
@@ -116,22 +119,22 @@ class WebKioskAcceleratorTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(NonKioskAcceleratorTest, CloseTabWorks) {
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
-  ASSERT_TRUE(chrome::PressCloseTabAccelerator(browser()));
+  ASSERT_TRUE(PressCloseTabAccelerator(browser()));
   ASSERT_TRUE(WaitUntilBrowserClosed(browser()));
   ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(NonKioskAcceleratorTest, CloseWindowWorks) {
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
-  ASSERT_TRUE(chrome::PressCloseWindowAccelerator(browser()));
+  ASSERT_TRUE(PressCloseWindowAccelerator(browser()));
   ASSERT_TRUE(WaitUntilBrowserClosed(browser()));
   ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, CloseTabAndWindowDontWork) {
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
-  ASSERT_FALSE(chrome::PressCloseTabAccelerator(browser()));
-  ASSERT_FALSE(chrome::PressCloseWindowAccelerator(browser()));
+  ASSERT_FALSE(PressCloseTabAccelerator(browser()));
+  ASSERT_FALSE(PressCloseWindowAccelerator(browser()));
   base::RunLoop loop;
   loop.RunUntilIdle();
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);

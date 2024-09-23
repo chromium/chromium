@@ -47,7 +47,6 @@ SwitchAccessE2ETest = class extends E2ETestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule('SwitchAccess', '/switch_access/switch_access.js');
     await SwitchAccess.ready();
   }
 
@@ -56,7 +55,7 @@ SwitchAccessE2ETest = class extends E2ETestBase {
    * @return {!AutomationNode}
    */
   findNodeById(id) {
-    const predicate = node => node.htmlAttributes.id === id;
+    const predicate = node => node.htmlId === id;
     const nodeString = 'node with id "' + id + '"';
     return this.findNodeMatchingPredicate(predicate, nodeString);
   }
@@ -78,8 +77,7 @@ SwitchAccessE2ETest = class extends E2ETestBase {
    * @param {function()} callback
    */
   waitForPredicate(predicate, callback) {
-    this.listenUntil(
-        predicate, Navigator.byItem.desktopNode, 'childrenChanged', callback);
+    this.listenUntil(predicate, this.desktop_, 'childrenChanged', callback);
   }
 
   /**

@@ -23,10 +23,10 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/side_panel/companion/companion_side_panel_controller_utils.h"
-#include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
-#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
-#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_side_panel_controller_utils.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_tab_helper.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/companion/signin_delegate_impl.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
@@ -109,7 +109,8 @@ void CompanionPageHandler::OnPrimaryAccountChanged(
 
 void CompanionPageHandler::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error) {
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   NotifyURLChanged(/*is_full_reload=*/true);
 }
 
@@ -424,9 +425,12 @@ void CompanionPageHandler::OnPromoAction(
 void CompanionPageHandler::OnRegionSearchClicked() {
   auto* helper = companion::CompanionTabHelper::FromWebContents(web_contents());
   CHECK(helper);
-  helper->StartRegionSearch(
-      web_contents(), /*use_fullscreen_capture=*/false,
-      lens::AmbientSearchEntryPoint::COMPANION_REGION_SEARCH);
+  if (!web_contents()->IsCrashed()) {
+    helper->StartRegionSearch(
+        web_contents(), /*use_fullscreen_capture=*/false,
+        /*force_open_in_new_tab=*/false,
+        lens::AmbientSearchEntryPoint::COMPANION_REGION_SEARCH);
+  }
   feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile())
       ->NotifyEvent("companion_side_panel_region_search_button_clicked");
 }
@@ -437,7 +441,7 @@ void CompanionPageHandler::OnExpsOptInStatusAvailable(bool is_exps_opted_in) {
   pref_service->SetBoolean(kExpsOptInStatusGrantedPref, is_exps_opted_in);
   // Update default value for pref indicating whether companion should be
   // pinned to the toolbar.
-  companion::UpdateCompanionDefaultPinnedToToolbarState(pref_service);
+  companion::UpdateCompanionDefaultPinnedToToolbarState(GetProfile());
 }
 
 void CompanionPageHandler::OnOpenInNewTabButtonURLChanged(

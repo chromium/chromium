@@ -1,14 +1,12 @@
 {
   "description": "Aggregatable report with trigger context ID",
-  "needs_trigger_context_id": true,
   "input": {
     "registrations": [
       {
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -28,13 +26,13 @@
       {
         "timestamp": "1",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
           {
             "url": "https://reporter.test/register-trigger",
             "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Trigger": {
                 "trigger_context_id": 456 // wrong type
               }
@@ -45,15 +43,18 @@
       {
         "timestamp": "2",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
           {
             "url": "https://reporter.test/register-trigger",
             "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Trigger": {
-                "trigger_context_id": "" // empty
+                "aggregatable_values": {
+                  "a": 321
+                },
+                "trigger_context_id": ""
               }
             }
           }
@@ -62,13 +63,13 @@
       {
         "timestamp": "3",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
           {
             "url": "https://reporter.test/register-trigger",
             "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Trigger": {
                 "trigger_context_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" // too long
               }
@@ -79,13 +80,13 @@
       {
         "timestamp": "4",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
           {
             "url": "https://reporter.test/register-trigger",
             "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Trigger": {
                 "aggregatable_source_registration_time": "include",
                 "trigger_context_id": "123" // not allowed
@@ -97,7 +98,6 @@
       {
         "timestamp": "5",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -119,30 +119,127 @@
             }
           }
         ]
+      },
+      {
+        "timestamp": "6",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "b": 123
+                },
+                "trigger_context_id": "654"
+              }
+            }
+          }
+        ]
       }
     ]
   },
   "output": {
-    "unparsable_registrations": [
-      {"time": "1", "type": "trigger"},
-      {"time": "2", "type": "trigger"},
-      {"time": "3", "type": "trigger"},
-      {"time": "4", "type": "trigger"}
-    ],
     "reports": [
       {
+        "payload": [{
+           "body": {
+              "context_site": "https://destination.test",
+              "header": "Attribution-Reporting-Register-Trigger",
+              "value": "{\"trigger_context_id\":456}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "1",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
         "payload": {
-          "attribution_destination": "https://destination.test",
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x159",
+            "value": 321
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "0",
+            "version": "1.0"
+          },
+          "trigger_context_id": ""
+        },
+        "report_time": "2",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://destination.test",
+              "header": "Attribution-Reporting-Register-Trigger",
+              "value": "{\"trigger_context_id\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "3",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://destination.test",
+              "header": "Attribution-Reporting-Register-Trigger",
+              "value": "{\"aggregatable_source_registration_time\":\"include\",\"trigger_context_id\":\"123\"}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "4",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x559",
               "value": 123
             }
           ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "0",
+            "version": "1.0"
+          },
           "trigger_context_id": "456"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "5"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "0",
+            "version": "1.0"
+          },
+          "trigger_context_id": "654"
+        },
+        "report_time": "6",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       }
     ]
   }

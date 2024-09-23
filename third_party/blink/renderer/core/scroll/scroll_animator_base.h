@@ -91,7 +91,6 @@ class CORE_EXPORT ScrollAnimatorBase
   void UpdateCompositorAnimations() override {}
   void NotifyCompositorAnimationFinished(int group_id) override {}
   void NotifyCompositorAnimationAborted(int group_id) override {}
-  void MainThreadScrollingDidChange() override {}
 
   void Trace(Visitor*) const override;
 

@@ -1,0 +1,50 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("cryptauth") {
+  sources = [
+    "client_app_metadata_provider_service.cc",
+    "client_app_metadata_provider_service.h",
+    "client_app_metadata_provider_service_factory.cc",
+    "client_app_metadata_provider_service_factory.h",
+    "cryptauth_device_id_provider_impl.cc",
+    "cryptauth_device_id_provider_impl.h",
+    "gcm_device_info_provider_impl.cc",
+    "gcm_device_info_provider_impl.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/services/device_sync/proto",
+    "//chromeos/ash/services/device_sync/public/cpp",
+    "//components/gcm_driver/instance_id",
+    "//components/leveldb_proto",
+    "//components/prefs",
+    "//components/version_info",
+    "//device/bluetooth",
+    "//skia",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "client_app_metadata_provider_service_unittest.cc" ]
+  deps = [
+    ":cryptauth",
+    "//base",
+    "//testing/gtest",
+  ]
+}

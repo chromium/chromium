@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
 import org.chromium.chrome.browser.notifications.NotificationSettingsBridge;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -42,7 +44,6 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -211,10 +212,10 @@ public class SiteChannelsManagerTest {
                         null,
                         /* isEmbargo= */ true,
                         SessionModel.DURABLE);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     info.setContentSetting(
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getPrimaryOTRProfile(/* createIfNeeded= */ true),
                             ContentSettingValues.BLOCK);
                 });
@@ -232,11 +233,11 @@ public class SiteChannelsManagerTest {
                         null,
                         /* isEmbargo= */ true,
                         SessionModel.DURABLE);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
                     Profile nonPrimaryOTRProfile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
                     assertNotNull(nonPrimaryOTRProfile);

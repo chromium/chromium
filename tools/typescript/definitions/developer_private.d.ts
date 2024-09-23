@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** @fileoverview Definitions for chrome.developerPrivate API */
-// TODO(crbug.com/1203307): Auto-generate this file.
+// TODO(crbug.com/40179454): Auto-generate this file.
 
 import {ChromeEvent} from './chrome_event.js';
 
@@ -60,6 +60,7 @@ declare global {
             'EXTENSION_SERVICE_WORKER_BACKGROUND',
         TAB_CONTENTS = 'TAB_CONTENTS',
         EXTENSION_SIDE_PANEL = 'EXTENSION_SIDE_PANEL',
+        DEVELOPER_TOOLS = 'DEVELOPER_TOOLS',
       }
 
       export enum ErrorType {
@@ -77,7 +78,7 @@ declare global {
         ENABLED = 'ENABLED',
         DISABLED = 'DISABLED',
         TERMINATED = 'TERMINATED',
-        BLACKLISTED = 'BLACKLISTED',
+        BLOCKLISTED = 'BLOCKLISTED',
       }
 
       export enum ComandScope {
@@ -93,6 +94,15 @@ declare global {
       export enum CommandScope {
         GLOBAL = 'GLOBAL',
         CHROME = 'CHROME',
+      }
+
+      export enum SafetyCheckWarningReason {
+        UNPUBLISHED = 'UNPUBLISHED',
+        POLICY = 'POLICY',
+        MALWARE = 'MALWARE',
+        OFFSTORE = 'OFFSTORE',
+        UNWANTED = 'UNWANTED',
+        NO_PRIVACY_PRACTICE = 'NO_PRIVACY_PRACTICE',
       }
 
       export interface AccessModifier {
@@ -143,6 +153,7 @@ declare global {
         reloading: boolean;
         custodianApprovalRequired: boolean;
         parentDisabledPermissions: boolean;
+        unsupportedManifestVersion: boolean;
       }
 
       export interface OptionsPage {
@@ -216,7 +227,7 @@ declare global {
       }
 
       export interface ExtensionInfo {
-        blacklistText?: string;
+        blocklistText?: string;
         safetyCheckText?: SafetyCheckStrings;
         commands: Command[];
         controlledInfo?: ControlledInfo;
@@ -242,6 +253,7 @@ declare global {
         path?: string;
         permissions: Permissions;
         prettifiedPath?: string;
+        recommendationsUrl?: string;
         runtimeErrors: RuntimeError[];
         runtimeWarnings: string[];
         state: ExtensionState;
@@ -253,8 +265,10 @@ declare global {
         webStoreUrl: string;
         showSafeBrowsingAllowlistWarning: boolean;
         showAccessRequestsInToolbar: boolean;
-        acknowledgeSafetyCheckWarning: boolean;
+        safetyCheckWarningReason: SafetyCheckWarningReason;
         pinnedToToolbar?: boolean;
+        isAffectedByMV2Deprecation: boolean;
+        didAcknowledgeMV2DeprecationNotice: boolean;
       }
 
       export interface ProfileInfo {
@@ -263,6 +277,7 @@ declare global {
         isDeveloperModeControlledByPolicy: boolean;
         isIncognitoAvailable: boolean;
         isChildAccount: boolean;
+        isMv2DeprecationNoticeDismissed: boolean;
       }
 
       export interface ExtensionConfigurationUpdate {
@@ -272,12 +287,13 @@ declare global {
         errorCollection?: boolean;
         hostAccess?: HostAccess;
         showAccessRequestsInToolbar?: boolean;
-        acknowledgeSafetyCheckWarning?: boolean;
+        acknowledgeSafetyCheckWarningReason?: SafetyCheckWarningReason;
         pinnedToToolbar?: boolean;
       }
 
       export interface ProfileConfigurationUpdate {
-        inDeveloperMode: boolean;
+        inDeveloperMode?: boolean;
+        isMv2DeprecationNoticeDismissed?: boolean;
       }
 
       export interface ExtensionCommandUpdate {
@@ -489,6 +505,9 @@ declare global {
       export function updateSiteAccess(
           site: string, updates: ExtensionSiteAccessUpdate[]): Promise<void>;
       export function dismissSafetyHubExtensionsMenuNotification(): void;
+      export function dismissMv2DeprecationPanel(): void;
+      export function dismissMv2DeprecationNoticeForExtension(
+          extensionId: string): Promise<void>;
 
       export const onItemStateChanged: ChromeEvent<(data: EventData) => void>;
       export const onProfileStateChanged:

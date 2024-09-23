@@ -5,6 +5,7 @@
 #include "base/task/thread_pool/task_tracker.h"
 
 #include <atomic>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -33,8 +34,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace internal {
@@ -127,7 +126,7 @@ auto EmitThreadPoolTraceEventMetadata(perfetto::EventContext& ctx,
 // posting back to a BLOCK_SHUTDOWN sequence is a coincidence rather than part
 // of a shutdown blocking series of tasks, this prevents racy DCHECKs in those
 // cases.
-ABSL_CONST_INIT thread_local int fizzle_block_shutdown_tasks_ref = 0;
+constinit thread_local int fizzle_block_shutdown_tasks_ref = 0;
 
 }  // namespace
 
@@ -231,7 +230,7 @@ TaskTracker::TaskTracker()
   // |flush_cv_| is only waited upon in FlushForTesting(), avoid instantiating a
   // ScopedBlockingCallWithBaseSyncPrimitives from test threads intentionally
   // idling themselves to wait on the ThreadPool.
-  flush_cv_->declare_only_used_while_idle();
+  flush_cv_.declare_only_used_while_idle();
 }
 
 TaskTracker::~TaskTracker() = default;
@@ -243,7 +242,7 @@ void TaskTracker::StartShutdown() {
   DCHECK(!shutdown_event_);
   DCHECK(!state_->HasShutdownStarted());
 
-  shutdown_event_ = std::make_unique<WaitableEvent>();
+  shutdown_event_.emplace();
 
   const bool tasks_are_blocking_shutdown = state_->StartShutdown();
 
@@ -280,7 +279,7 @@ void TaskTracker::CompleteShutdown() {
   // when shutdown completes.
   {
     CheckedAutoLock auto_lock(flush_lock_);
-    flush_cv_->Broadcast();
+    flush_cv_.Broadcast();
   }
   InvokeFlushCallbacksForTesting();
 }
@@ -290,7 +289,7 @@ void TaskTracker::FlushForTesting() {
   CheckedAutoLock auto_lock(flush_lock_);
   while (num_incomplete_task_sources_.load(std::memory_order_acquire) != 0 &&
          !IsShutdownComplete()) {
-    flush_cv_->Wait();
+    flush_cv_.Wait();
   }
 }
 
@@ -398,7 +397,7 @@ RegisteredTaskSource TaskTracker::RunAndPopNextTask(
   const bool should_run_tasks = BeforeRunTask(task_source->shutdown_behavior());
 
   // Run the next task in |task_source|.
-  absl::optional<Task> task;
+  std::optional<Task> task;
   TaskTraits traits;
   {
     auto transaction = task_source->BeginTransaction();
@@ -462,10 +461,10 @@ void TaskTracker::RunTask(Task task,
       DCHECK_EQ(fizzle_block_shutdown_tasks_ref, 0);
     }
   };
-  absl::optional<ScopedDisallowSingleton> disallow_singleton;
-  absl::optional<ScopedDisallowBlocking> disallow_blocking;
-  absl::optional<ScopedDisallowBaseSyncPrimitives> disallow_sync_primitives;
-  absl::optional<BlockShutdownTaskFizzler> fizzle_block_shutdown_tasks;
+  std::optional<ScopedDisallowSingleton> disallow_singleton;
+  std::optional<ScopedDisallowBlocking> disallow_blocking;
+  std::optional<ScopedDisallowBaseSyncPrimitives> disallow_sync_primitives;
+  std::optional<BlockShutdownTaskFizzler> fizzle_block_shutdown_tasks;
   if (traits.shutdown_behavior() ==
       TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN) {
     disallow_singleton.emplace();
@@ -485,32 +484,32 @@ void TaskTracker::RunTask(Task task,
         scoped_set_task_priority_for_current_thread(traits.priority());
 
     // Local storage map used if none is provided by |environment|.
-    absl::optional<SequenceLocalStorageMap> local_storage_map;
+    std::optional<SequenceLocalStorageMap> local_storage_map;
     if (!environment.sequence_local_storage)
       local_storage_map.emplace();
 
     ScopedSetSequenceLocalStorageMapForCurrentThread
         scoped_set_sequence_local_storage_map_for_current_thread(
             environment.sequence_local_storage
-                ? environment.sequence_local_storage.get()
+                ? environment.sequence_local_storage
                 : &local_storage_map.value());
 
     // Set up TaskRunner CurrentDefaultHandle as expected for the scope of the
     // task.
-    absl::optional<SequencedTaskRunner::CurrentDefaultHandle>
+    std::optional<SequencedTaskRunner::CurrentDefaultHandle>
         sequenced_task_runner_current_default_handle;
-    absl::optional<SingleThreadTaskRunner::CurrentDefaultHandle>
+    std::optional<SingleThreadTaskRunner::CurrentDefaultHandle>
         single_thread_task_runner_current_default_handle;
     if (environment.sequenced_task_runner) {
       DCHECK_EQ(TaskSourceExecutionMode::kSequenced,
                 task_source->execution_mode());
       sequenced_task_runner_current_default_handle.emplace(
-          environment.sequenced_task_runner.get());
+          environment.sequenced_task_runner);
     } else if (environment.single_thread_task_runner) {
       DCHECK_EQ(TaskSourceExecutionMode::kSingleThread,
                 task_source->execution_mode());
       single_thread_task_runner_current_default_handle.emplace(
-          environment.single_thread_task_runner.get());
+          environment.single_thread_task_runner);
     } else {
       DCHECK_NE(TaskSourceExecutionMode::kSequenced,
                 task_source->execution_mode());
@@ -594,7 +593,6 @@ bool TaskTracker::BeforeRunTask(TaskShutdownBehavior shutdown_behavior) {
   }
 
   NOTREACHED();
-  return false;
 }
 
 void TaskTracker::AfterRunTask(TaskShutdownBehavior shutdown_behavior) {
@@ -632,7 +630,7 @@ void TaskTracker::DecrementNumIncompleteTaskSources() {
   if (prev_num_incomplete_task_sources == 1) {
     {
       CheckedAutoLock auto_lock(flush_lock_);
-      flush_cv_->Broadcast();
+      flush_cv_.Broadcast();
     }
     InvokeFlushCallbacksForTesting();
   }

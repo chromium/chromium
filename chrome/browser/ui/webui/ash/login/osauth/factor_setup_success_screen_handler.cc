@@ -24,6 +24,11 @@ void FactorSetupSuccessScreenHandler::Show(base::Value::Dict params) {
   ShowInWebUI(std::move(params));
 }
 
+base::WeakPtr<FactorSetupSuccessScreenView>
+FactorSetupSuccessScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void FactorSetupSuccessScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   const std::u16string device_name = ui::GetChromeOSDeviceName();

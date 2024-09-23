@@ -48,14 +48,14 @@ LockActionHandlerLayoutManager::~LockActionHandlerLayoutManager() = default;
 
 void LockActionHandlerLayoutManager::OnWindowAddedToLayout(
     aura::Window* child) {
-  ::wm::SetWindowVisibilityAnimationTransition(child, ::wm::ANIMATE_NONE);
+  wm::SetWindowVisibilityAnimationTransition(child, wm::ANIMATE_NONE);
 
   // The lock action background should be shown behind the shelf (which is
   // transparent on the lock screen), unlike lock action handler windows.
+  const bool shelf_excluded =
+      !action_background_controller_->IsBackgroundWindow(child);
   WindowState* window_state =
-      action_background_controller_->IsBackgroundWindow(child)
-          ? LockWindowState::SetLockWindowState(child)
-          : LockWindowState::SetLockWindowStateWithShelfExcluded(child);
+      LockWindowState::SetLockWindowState(child, shelf_excluded);
   WMEvent event(WM_EVENT_ADDED_TO_WORKSPACE);
   window_state->OnWMEvent(&event);
 }

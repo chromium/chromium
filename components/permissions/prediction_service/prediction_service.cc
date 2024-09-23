@@ -181,7 +181,7 @@ void PredictionService::OnURLLoaderComplete(
     }
   }
 
-  NOTREACHED() << "Unexpected loader callback.";
+  NOTREACHED_IN_MIGRATION() << "Unexpected loader callback.";
 }
 
 std::unique_ptr<GeneratePredictionsResponse>

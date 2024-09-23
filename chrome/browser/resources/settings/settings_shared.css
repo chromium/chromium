@@ -32,10 +32,12 @@ h2 {
   padding-top: 32px;
 }
 
+cr-icon,
 iron-icon {
   flex-shrink: 0;  /* Prevent distortion of icons in cramped UI. */
 }
 
+cr-icon.policy,
 iron-icon.policy {
   margin-inline-end: var(--cr-controlled-by-spacing);
 }

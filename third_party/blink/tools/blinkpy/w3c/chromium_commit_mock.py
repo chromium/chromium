@@ -5,7 +5,8 @@
 import hashlib
 
 
-class MockChromiumCommit(object):
+class MockChromiumCommit:
+
     def __init__(self,
                  host,
                  position='refs/heads/master@{#123}',
@@ -22,6 +23,9 @@ class MockChromiumCommit(object):
         self._subject = subject
         self._body = body
         self._patch = patch
+
+    def __str__(self):
+        return f'{self.short_sha} "{self.subject()}"'
 
     @property
     def short_sha(self):

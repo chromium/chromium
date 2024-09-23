@@ -32,6 +32,13 @@ void StubWindow::InitDelegate(PlatformWindowDelegate* delegate,
     delegate_->OnAcceleratedWidgetAvailable(gfx::kNullAcceleratedWidget);
 }
 
+void StubWindow::InitDelegateWithWidget(PlatformWindowDelegate* delegate,
+                                        gfx::AcceleratedWidget widget) {
+  DCHECK(delegate);
+  delegate_ = delegate;
+  delegate_->OnAcceleratedWidgetAvailable(widget);
+}
+
 void StubWindow::Show(bool inactive) {}
 
 void StubWindow::Hide() {}

@@ -5,6 +5,7 @@
 #include "gpu/vulkan/tests/native_window.h"
 
 #include "base/containers/flat_map.h"
+#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -74,7 +75,7 @@ gfx::AcceleratedWidget CreateNativeWindow(const gfx::Rect& bounds) {
 
 void DestroyNativeWindow(gfx::AcceleratedWidget window) {
   auto it = g_windows_.find(window);
-  DCHECK(it != g_windows_.end());
+  CHECK(it != g_windows_.end(), base::NotFatalUntil::M130);
   g_windows_.erase(it);
 }
 

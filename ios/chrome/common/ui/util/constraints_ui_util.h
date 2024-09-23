@@ -145,6 +145,12 @@ void AddSameConstraintsWithInsets(id<EdgeLayoutGuideProvider> innerView,
                                   id<EdgeLayoutGuideProvider> outerView,
                                   NSDirectionalEdgeInsets insets);
 
+// Constraints all sides of `innerView` and `outerView` together, with
+// `innerView` inset by `inset` on all sides.
+void AddSameConstraintsWithInset(id<EdgeLayoutGuideProvider> innerView,
+                                 id<EdgeLayoutGuideProvider> outerView,
+                                 CGFloat inset);
+
 // Adds constraints to make `innerView` leading, trailing, top and bottom
 // anchors equals to `outerView` safe area (or view bounds) anchors.
 void PinToSafeArea(id<EdgeLayoutGuideProvider> innerView, UIView* outerView);
@@ -167,6 +173,12 @@ void AddSameConstraintsToSidesWithInsets(id<EdgeLayoutGuideProvider> innerView,
                                          id<EdgeLayoutGuideProvider> outerView,
                                          LayoutSides side_flags,
                                          NSDirectionalEdgeInsets insets);
+
+// Constraints the width and height of `view` to the given `size`.
+void AddSizeConstraints(id<LayoutGuideProvider> view, CGSize size);
+
+// Constraints the width and height of `view` to the given `edge` of a square.
+void AddSquareConstraints(id<LayoutGuideProvider> view, CGFloat edge);
 
 // Adds an optional amount of padding to the top and bottom of a view using a
 // constraint with a lowered priority. One use case is with a collectionview or

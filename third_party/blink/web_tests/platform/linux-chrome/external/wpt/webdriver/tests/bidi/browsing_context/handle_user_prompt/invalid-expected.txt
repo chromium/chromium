@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_no_alert
-  webdriver.bidi.error.UnknownErrorException: unknown error (No dialog is showing)
-Harness: the test ran to completion.

@@ -18,8 +18,8 @@
 #include <mach/mach.h>
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "util/misc/symbolic_constants_common.h"
 
 namespace crashpad {
@@ -42,7 +42,7 @@ std::string ExceptionToString(exception_type_t exception,
 //!
 //! \return `true` on success, `false` if \a string could not be converted as
 //!     requested.
-bool StringToException(const base::StringPiece& string,
+bool StringToException(std::string_view string,
                        StringToSymbolicConstantOptions options,
                        exception_type_t* exception);
 
@@ -64,7 +64,7 @@ std::string ExceptionMaskToString(exception_mask_t exception_mask,
 //!
 //! \return `true` on success, `false` if \a string could not be converted as
 //!     requested.
-bool StringToExceptionMask(const base::StringPiece& string,
+bool StringToExceptionMask(std::string_view string,
                            StringToSymbolicConstantOptions options,
                            exception_mask_t* exception_mask);
 
@@ -89,7 +89,7 @@ std::string ExceptionBehaviorToString(exception_behavior_t behavior,
 //!
 //! \return `true` on success, `false` if \a string could not be converted as
 //!     requested.
-bool StringToExceptionBehavior(const base::StringPiece& string,
+bool StringToExceptionBehavior(std::string_view string,
                                StringToSymbolicConstantOptions options,
                                exception_behavior_t* behavior);
 
@@ -111,7 +111,7 @@ std::string ThreadStateFlavorToString(thread_state_flavor_t flavor,
 //!
 //! \return `true` on success, `false` if \a string could not be converted as
 //!     requested.
-bool StringToThreadStateFlavor(const base::StringPiece& string,
+bool StringToThreadStateFlavor(std::string_view string,
                                StringToSymbolicConstantOptions options,
                                thread_state_flavor_t* flavor);
 

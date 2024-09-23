@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -26,17 +27,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.ui.test.util.UiRestriction;
 
 /** Instrumentation tests for tab switcher long-press menu popup */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 public class TabSwitcherActionMenuTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -113,5 +113,69 @@ public class TabSwitcherActionMenuTest {
                                 .getModel(/* incognito= */ true)
                                 .getCount()
                         > 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    @SmallTest
+    public void testCloseAllIncognitoTabs() {
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ true);
+        onView(withId(R.id.tab_switcher_button)).perform(longClick());
+        onView(withText(R.string.menu_close_all_incognito_tabs)).check(matches(isDisplayed()));
+        onView(withText(R.string.menu_close_all_incognito_tabs)).perform(click());
+        // Confirm on dialog.
+        onViewWaiting(withId(R.id.positive_button), true).perform(click());
+
+        // Incognito tabs closed.
+        assertTrue(
+                mActivityTestRule
+                                .getActivity()
+                                .getTabModelSelector()
+                                .getModel(/* incognito= */ true)
+                                .getCount()
+                        == 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    @SmallTest
+    public void testSwitchToIncognito() {
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ true);
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
+        onView(withId(R.id.tab_switcher_button)).perform(longClick());
+        onView(withText(R.string.menu_switch_to_incognito)).check(matches(isDisplayed()));
+        onView(withText(R.string.menu_switch_to_incognito)).perform(click());
+
+        // Incognito model selected.
+        assertTrue(
+                mActivityTestRule
+                        .getActivity()
+                        .getTabModelSelector()
+                        .isIncognitoBrandedModelSelected());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    @SmallTest
+    public void testSwitchOutOfIncognito() {
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ true);
+        // Start state - Incognito model selected.
+        assertTrue(
+                mActivityTestRule
+                        .getActivity()
+                        .getTabModelSelector()
+                        .isIncognitoBrandedModelSelected());
+
+        onView(withId(R.id.tab_switcher_button)).perform(longClick());
+        onView(withText(R.string.menu_switch_out_of_incognito)).check(matches(isDisplayed()));
+        onView(withText(R.string.menu_switch_out_of_incognito)).perform(click());
+
+        // End state - Standard model selected.
+        assertFalse(
+                mActivityTestRule
+                        .getActivity()
+                        .getTabModelSelector()
+                        .isIncognitoBrandedModelSelected());
     }
 }

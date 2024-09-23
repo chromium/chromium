@@ -61,52 +61,66 @@
         },
         "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "chrome_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-16.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_wpt_tests",
+        "test_id_prefix": "ninja://:chrome_wpt_tests/"
+      },
+      {
+        "args": [
+          "--test-type",
+          "testharness",
+          "reftest",
+          "crashtest",
+          "print-reftest",
+          "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
+          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "headless_shell_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-16.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "headless_shell_wpt",
+        "test_id_prefix": "ninja://:headless_shell_wpt/"
       }
     ]
   },
   "linux_optional_gpu_tests_rel": {
-    "gtest_tests": [
-      {
-        "args": [
-          "--use-gpu-in-tests"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "gles2_conform_test GTX 1660",
-        "swarming": {
-          "dimensions": {
-            "gpu": "10de:2184-440.100",
-            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
-            "pool": "chromium.tests.gpu"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gles2_conform_test",
-        "test_id_prefix": "ninja://gpu/gles2_conform_support:gles2_conform_test/",
-        "variant_id": "GTX 1660"
-      },
-      {
-        "args": [
-          "--use-gpu-in-tests"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "gles2_conform_test UHD 630",
-        "swarming": {
-          "dimensions": {
-            "gpu": "8086:9bc5-20.0.8",
-            "os": "Ubuntu-18.04.6",
-            "pool": "chromium.tests.gpu"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "gles2_conform_test",
-        "test_id_prefix": "ninja://gpu/gles2_conform_support:gles2_conform_test/",
-        "variant_id": "UHD 630"
-      }
-    ],
     "isolated_scripts": [
       {
         "args": [
@@ -121,7 +135,8 @@
           "--expected-vendor-id",
           "10de",
           "--expected-device-id",
-          "2184"
+          "2184",
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -157,7 +172,8 @@
           "--expected-vendor-id",
           "8086",
           "--expected-device-id",
-          "9bc5"
+          "9bc5",
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -169,8 +185,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5-20.0.8",
-            "os": "Ubuntu-18.04.6",
+            "gpu": "8086:9bc5-20.0.8|8086:9bc5-23.2.1",
+            "os": "Ubuntu-18.04.6|Ubuntu-22.04.4",
             "pool": "chromium.tests.gpu"
           },
           "idempotent": false,
@@ -235,8 +251,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5-20.0.8",
-            "os": "Ubuntu-18.04.6",
+            "gpu": "8086:9bc5-20.0.8|8086:9bc5-23.2.1",
+            "os": "Ubuntu-18.04.6|Ubuntu-22.04.4",
             "pool": "chromium.tests.gpu"
           },
           "idempotent": false,
@@ -301,8 +317,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5-20.0.8",
-            "os": "Ubuntu-18.04.6",
+            "gpu": "8086:9bc5-20.0.8|8086:9bc5-23.2.1",
+            "os": "Ubuntu-18.04.6|Ubuntu-22.04.4",
             "pool": "chromium.tests.gpu"
           },
           "idempotent": false,
@@ -342,7 +358,7 @@
           },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "shards": 5
         },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -372,13 +388,13 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5-20.0.8",
-            "os": "Ubuntu-18.04.6",
+            "gpu": "8086:9bc5-20.0.8|8086:9bc5-23.2.1",
+            "os": "Ubuntu-18.04.6|Ubuntu-22.04.4",
             "pool": "chromium.tests.gpu"
           },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "shards": 5
         },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -442,8 +458,8 @@
         },
         "swarming": {
           "dimensions": {
-            "gpu": "8086:9bc5-20.0.8",
-            "os": "Ubuntu-18.04.6",
+            "gpu": "8086:9bc5-20.0.8|8086:9bc5-23.2.1",
+            "os": "Ubuntu-18.04.6|Ubuntu-22.04.4",
             "pool": "chromium.tests.gpu"
           },
           "idempotent": false,

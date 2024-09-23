@@ -69,6 +69,7 @@ public class DragDropMetricUtils {
         DragDropTabResult.IGNORED_TAB_SWITCHER,
         DragDropTabResult.IGNORED_SAME_INSTANCE,
         DragDropTabResult.ERROR_TAB_NOT_FOUND,
+        DragDropTabResult.IGNORED_MAX_INSTANCES,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface DragDropTabResult {
@@ -78,7 +79,8 @@ public class DragDropMetricUtils {
         int IGNORED_TAB_SWITCHER = 3;
         int IGNORED_SAME_INSTANCE = 4;
         int ERROR_TAB_NOT_FOUND = 5;
-        int NUM_ENTRIES = 6;
+        int IGNORED_MAX_INSTANCES = 6;
+        int NUM_ENTRIES = 7;
     }
 
     /**
@@ -120,5 +122,16 @@ public class DragDropMetricUtils {
     public static void recordTabDurationWithinDestStrip(long duration) {
         RecordHistogram.recordMediumTimesHistogram(
                 "Android.DragDrop.Tab.Duration.WithinDestStrip", duration);
+    }
+
+    /**
+     * Record boolean histogram Android.DragDrop.Tab.SourceWindowClosed.
+     *
+     * @param didCloseWindow Whether a successful tab drag/drop resulted in closing the source
+     *     Chrome window.
+     */
+    public static void recordTabDragDropClosedWindow(boolean didCloseWindow) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.DragDrop.Tab.SourceWindowClosed", didCloseWindow);
     }
 }

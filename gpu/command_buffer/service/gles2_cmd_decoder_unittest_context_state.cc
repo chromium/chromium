@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 
 #include <stdint.h>
@@ -16,7 +21,6 @@
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
 
 #include "gpu/command_buffer/service/gpu_switches.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/mocks.h"
 #include "gpu/command_buffer/service/program_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
@@ -137,6 +141,7 @@ void GLES2DecoderRestoreStateTest::AddExpectationsForBindSampler(GLuint unit,
 
 TEST_P(GLES2DecoderRestoreStateTest, NullPreviousStateBGR) {
   InitState init;
+  init.gl_version = "OpenGL ES 2.0";
   init.bind_generates_resource = true;
   InitDecoder(init);
   SetupTexture();
@@ -165,6 +170,7 @@ TEST_P(GLES2DecoderRestoreStateTest, NullPreviousStateBGR) {
 
 TEST_P(GLES2DecoderRestoreStateTest, NullPreviousState) {
   InitState init;
+  init.gl_version = "OpenGL ES 2.0";
   InitDecoder(init);
   SetupTexture();
 
@@ -556,38 +562,6 @@ TEST_P(GLES3DecoderTest, ES3PixelStoreiWithPixelUnpackBuffer) {
   // Bind a PIXEL_UNPACK_BUFFER again.
   SetupUpdateES3UnpackParametersExpectations(gl_.get(), 32, 0);
   DoBindBuffer(GL_PIXEL_UNPACK_BUFFER, client_buffer_id_, kServiceBufferId);
-}
-
-TEST_P(GLES2DecoderManualInitTest, MipmapHintOnCoreProfile) {
-  // On a core profile, glHint(GL_GENERATE_MIPMAP_HINT) should be a noop
-  InitState init;
-  init.gl_version = "3.2";
-  InitDecoder(init);
-
-  cmds::Hint cmd;
-  cmd.Init(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
-
-  EXPECT_CALL(*gl_, Hint(GL_GENERATE_MIPMAP_HINT, GL_NICEST)).Times(0);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-}
-
-TEST_P(GLES2DecoderManualInitTest, MipmapHintOnCompatibilityProfile) {
-  // On a compatibility profile, glHint(GL_GENERATE_MIPMAP_HINT) should be go
-  // through
-  InitState init;
-  init.gl_version = "3.2";
-  init.extensions += " GL_ARB_compatibility";
-  InitDecoder(init);
-
-  cmds::Hint cmd;
-  cmd.Init(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
-
-  EXPECT_CALL(*gl_, Hint(GL_GENERATE_MIPMAP_HINT, GL_NICEST))
-      .Times(1)
-      .RetiresOnSaturation();
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
 // TODO(vmiura): Tests for VAO restore.

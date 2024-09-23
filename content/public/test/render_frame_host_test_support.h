@@ -21,12 +21,16 @@ void LeaveInPendingDeletionState(RenderFrameHost* rfh);
 
 // Runs a check to determine whether the runtime-enabled feature, third-party
 // storage partitioning, is disabled in the current frame.
-bool IsDisableThirdPartyStoragePartitioningEnabled(RenderFrameHost* rfh);
+bool IsDisableThirdPartyStoragePartitioning2Enabled(RenderFrameHost* rfh);
 
 // Create a permission service bound to the specified receiver.
 void CreatePermissionService(
     RenderFrameHost* rfh,
     mojo::PendingReceiver<blink::mojom::PermissionService> receiver);
+
+// Calls RenderFrameHostImpl::DisableUnloadTimerForTesting for the given
+// RenderFrameHost.
+void DisableUnloadTimerForTesting(RenderFrameHost* rfh);
 
 }  // namespace content
 

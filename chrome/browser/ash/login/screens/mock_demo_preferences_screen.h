@@ -31,7 +31,7 @@ class MockDemoPreferencesScreen : public DemoPreferencesScreen {
   void ExitScreen(Result result);
 };
 
-class MockDemoPreferencesScreenView : public DemoPreferencesScreenView {
+class MockDemoPreferencesScreenView final : public DemoPreferencesScreenView {
  public:
   MockDemoPreferencesScreenView();
 
@@ -43,6 +43,13 @@ class MockDemoPreferencesScreenView : public DemoPreferencesScreenView {
 
   MOCK_METHOD(void, Show, ());
   MOCK_METHOD(void, SetInputMethodId, (const std::string& input_method));
+
+  base::WeakPtr<DemoPreferencesScreenView> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<DemoPreferencesScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

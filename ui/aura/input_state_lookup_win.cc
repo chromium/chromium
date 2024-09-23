@@ -5,6 +5,7 @@
 #include "ui/aura/input_state_lookup_win.h"
 
 #include <windows.h>
+
 #include <winuser.h>
 
 #include "base/memory/ptr_util.h"

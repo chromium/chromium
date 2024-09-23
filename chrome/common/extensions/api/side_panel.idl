@@ -74,33 +74,36 @@ namespace sidePanel {
     // Configures the side panel.
     // |options|: The configuration options to apply to the panel.
     // |callback|: Invoked when the options have been set.
-    [supportsPromises] static void setOptions(PanelOptions options,
-                                              optional VoidCallback callback);
+    static void setOptions(
+        PanelOptions options,
+        optional VoidCallback callback);
 
     // Returns the active panel configuration.
     // |options|: Specifies the context to return the configuration for.
     // |callback|: Called with the active panel configuration.
-    [supportsPromises] static void getOptions(GetPanelOptions options,
-                                              PanelOptionsCallback callback);
+    static void getOptions(
+        GetPanelOptions options,
+        PanelOptionsCallback callback);
 
     // Configures the extension's side panel behavior. This is an upsert
     // operation.
     // |behavior|: The new behavior to be set.
     // |callback|: Called when the new behavior has been set.
-    [supportsPromises] static void setPanelBehavior(
+    static void setPanelBehavior(
         PanelBehavior behavior,
         optional VoidCallback callback);
 
     // Returns the extension's current side panel behavior.
     // |callback|: Called with the extension's side panel behavior.
-    [supportsPromises] static void getPanelBehavior(
+    static void getPanelBehavior(
         PanelBehaviorCallback callback);
 
     // Opens the side panel for the extension.
     // This may only be called in response to a user action.
     // |options|: Specifies the context in which to open the side panel.
     // |callback|: Called when the side panel has been opened.
-    [supportsPromises] static void open(OpenOptions options,
-                                        VoidCallback callback);
+    static void open(
+        OpenOptions options,
+        VoidCallback callback);
   };
 };

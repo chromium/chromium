@@ -196,7 +196,8 @@ TEST_F(PowerStatusTest, BatteryImageInfoIconBadge) {
 // Tests that the battery image changes appropriately with various power supply
 // property values.
 TEST_F(PowerStatusTest, BatteryImageInfoChargeLevel) {
-  const std::unique_ptr<views::Widget> test_widget = CreateTestWidget();
+  const std::unique_ptr<views::Widget> test_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   PowerSupplyProperties prop;
 
   // No charge level is drawn when the battery is not present.
@@ -317,7 +318,8 @@ TEST_F(PowerStatusTest, BatteryImageColorResolution) {
   prop.set_external_power(PowerSupplyProperties::DISCONNECTED);
   prop.set_battery_state(PowerSupplyProperties::DISCHARGING);
   power_status_->SetProtoForTesting(prop);
-  const std::unique_ptr<views::Widget> test_widget = CreateTestWidget();
+  const std::unique_ptr<views::Widget> test_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   const ui::ColorProvider* color_provider =
       test_widget->GetRootView()->GetColorProvider();
 
@@ -355,42 +357,6 @@ TEST_F(PowerStatusTest, BatteryImageColorResolution) {
   EXPECT_EQ(resolved_colors.alert_color,
             test_widget->GetRootView()->GetColorProvider()->GetColor(
                 cros_tokens::kColorAlert));
-}
-
-// Tests that toggling battery saver state sends notifications to observers and
-// updates the value returned from IsBatterySaverActive().
-TEST_F(PowerStatusTest, BatterySaver) {
-  // Let any callbacks queued in initialization run.
-  base::RunLoop().RunUntilIdle();
-
-  const int initial_power_changed_count = test_observer_->power_changed_count();
-
-  // Check that we default to off.
-  ASSERT_FALSE(power_status_->IsBatterySaverActive());
-
-  // Turn battery saver on.
-  {
-    power_manager::SetBatterySaverModeStateRequest request;
-    request.set_enabled(true);
-    chromeos::FakePowerManagerClient::Get()->SetBatterySaverModeState(request);
-    base::RunLoop().RunUntilIdle();
-  }
-
-  EXPECT_EQ(initial_power_changed_count + 1,
-            test_observer_->power_changed_count());
-  EXPECT_TRUE(power_status_->IsBatterySaverActive());
-
-  // Turn battery saver off.
-  {
-    power_manager::SetBatterySaverModeStateRequest request;
-    request.set_enabled(false);
-    chromeos::FakePowerManagerClient::Get()->SetBatterySaverModeState(request);
-    base::RunLoop().RunUntilIdle();
-  }
-
-  EXPECT_EQ(initial_power_changed_count + 2,
-            test_observer_->power_changed_count());
-  EXPECT_FALSE(power_status_->IsBatterySaverActive());
 }
 
 }  // namespace ash

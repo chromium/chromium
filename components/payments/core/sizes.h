@@ -7,16 +7,16 @@
 
 namespace payments {
 
-// The default width of the instrument icon for SPC. Based on the size of the
-// default instrument icon.
-constexpr int kSecurePaymentConfirmationInstrumentIconDefaultWidthPx = 20;
+// The default width of icons for the SPC Transaction UX. Used for any fallback
+// icons that may be shown if the caller-supplied icon isn't available.
+inline constexpr int kSecurePaymentConfirmationIconDefaultWidthPx = 20;
 
-// The maximum width of the instrument icon for SPC. Used as the preferred size
-// of downloaded instrument icons.
-constexpr int kSecurePaymentConfirmationInstrumentIconMaximumWidthPx = 32;
+// The maximum width of icons in the SPC Transaction UX. Used as the preferred
+// size of downloaded icons.
+inline constexpr int kSecurePaymentConfirmationIconMaximumWidthPx = 32;
 
-// The default height of the instrument icon for SPC.
-constexpr int kSecurePaymentConfirmationInstrumentIconHeightPx = 20;
+// The default height of icons for the SPC Transaction UX.
+inline constexpr int kSecurePaymentConfirmationIconHeightPx = 20;
 
 }  // namespace payments
 

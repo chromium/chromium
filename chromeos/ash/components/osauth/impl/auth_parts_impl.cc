@@ -6,10 +6,13 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/time/default_clock.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_impl.h"
@@ -17,6 +20,8 @@
 #include "chromeos/ash/components/osauth/impl/cryptohome_core_impl.h"
 #include "chromeos/ash/components/osauth/impl/engines/cryptohome_password_engine.h"
 #include "chromeos/ash/components/osauth/impl/engines/cryptohome_pin_engine.h"
+#include "chromeos/ash/components/osauth/impl/engines/cryptohome_smart_card_engine.h"
+#include "chromeos/ash/components/osauth/impl/engines/prefs_pin_engine.h"
 #include "chromeos/ash/components/osauth/impl/login_screen_auth_policy_connector.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine_factory.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
@@ -67,10 +72,19 @@ void AuthPartsImpl::CreateDefaultComponents(PrefService* local_state) {
   cryptohome_core_ =
       std::make_unique<CryptohomeCoreImpl>(UserDataAuthClient::Get());
   RegisterEngineFactory(std::make_unique<CryptohomePasswordEngineFactory>());
-  RegisterEngineFactory(
-      std::make_unique<CryptohomePinEngineFactory>(local_state));
+
+  if (!features::IsUseAuthPanelInSessionEnabled()) {
+    RegisterEngineFactory(
+        std::make_unique<CryptohomePinEngineFactory>(local_state));
+    RegisterEngineFactory(std::make_unique<CryptohomeSmartCardEngineFactory>());
+    RegisterEngineFactory(
+        std::make_unique<PrefsPinEngineFactory>(*local_state));
+  }
+
   login_screen_policy_connector_ =
       std::make_unique<LoginScreenAuthPolicyConnector>(local_state);
+  legacy_auth_surface_registry_ = std::make_unique<LegacyAuthSurfaceRegistry>();
+  auth_surface_registry_ = std::make_unique<AuthSurfaceRegistry>();
 }
 
 AuthSessionStorage* AuthPartsImpl::GetAuthSessionStorage() {
@@ -152,6 +166,14 @@ void AuthPartsImpl::Shutdown() {
   if (profile_prefs_policy_connector_) {
     profile_prefs_policy_connector_->OnShutdown();
   }
+}
+
+LegacyAuthSurfaceRegistry* AuthPartsImpl::GetLegacyAuthSurfaceRegistry() {
+  return legacy_auth_surface_registry_.get();
+}
+
+AuthSurfaceRegistry* AuthPartsImpl::GetAuthSurfaceRegistry() {
+  return auth_surface_registry_.get();
 }
 
 }  // namespace ash

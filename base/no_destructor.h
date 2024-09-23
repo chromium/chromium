@@ -122,7 +122,7 @@ class NoDestructor {
   alignas(T) char storage_[sizeof(T)];
 
 #if defined(LEAK_SANITIZER)
-  // TODO(https://crbug.com/812277): This is a hack to work around the fact
+  // TODO(crbug.com/40562930): This is a hack to work around the fact
   // that LSan doesn't seem to treat NoDestructor as a root for reachability
   // analysis. This means that code like this:
   //   static base::NoDestructor<std::vector<int>> v({1, 2, 3});

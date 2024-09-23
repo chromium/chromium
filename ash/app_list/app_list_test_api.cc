@@ -32,6 +32,7 @@
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
@@ -111,7 +112,6 @@ size_t GetMenuIndexOfSortingOrder(ash::AppListSortOrder order) {
     case ash::AppListSortOrder::kCustom:
     case ash::AppListSortOrder::kAlphabeticalEphemeralAppFirst:
       NOTREACHED();
-      return 0;
   }
 }
 
@@ -132,7 +132,6 @@ views::MenuItemView* GetReorderOptionForAppListOrFolderItemMenu(
     case ash::AppListSortOrder::kCustom:
     case ash::AppListSortOrder::kAlphabeticalEphemeralAppFirst:
       NOTREACHED();
-      return nullptr;
   }
   return reorder_option;
 }
@@ -215,6 +214,15 @@ RecentAppsView* GetRecentAppsView() {
     return GetAppListBubbleView()->apps_page_for_test()->recent_apps_for_test();
 
   return GetAppsContainerView()->GetRecentAppsView();
+}
+
+ContinueSectionView* GetContinueSectionView() {
+  if (ShouldUseBubbleAppList()) {
+    return GetAppListBubbleView()
+        ->apps_page_for_test()
+        ->GetContinueSectionView();
+  }
+  return GetAppsContainerView()->GetContinueSectionView();
 }
 
 AppListSearchView* GetSearchView() {
@@ -632,6 +640,15 @@ void AppListTestApi::VerifyTopLevelItemVisibility() {
 
 views::View* AppListTestApi::GetRecentAppAt(int index) {
   return GetRecentAppsView()->GetItemViewAt(index);
+}
+
+std::vector<ContinueTaskView*> AppListTestApi::GetContinueTaskViews() {
+  std::vector<ContinueTaskView*> results;
+  ContinueSectionView* const container = GetContinueSectionView();
+  for (size_t i = 0; i < container->GetTasksSuggestionsCount(); ++i) {
+    results.push_back(container->GetTaskViewAtForTesting(i));
+  }
+  return results;
 }
 
 std::vector<std::string> AppListTestApi::GetRecentAppIds() {

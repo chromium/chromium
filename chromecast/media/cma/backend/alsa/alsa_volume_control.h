@@ -6,10 +6,10 @@
 #define CHROMECAST_MEDIA_CMA_BACKEND_ALSA_ALSA_VOLUME_CONTROL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/timer/timer.h"
 #include "chromecast/media/cma/backend/system_volume_control.h"
 #include "media/audio/alsa/alsa_wrapper.h"

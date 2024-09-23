@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
@@ -14,7 +15,7 @@
 class BrowserFrame;
 enum class TabDragKind;
 
-namespace content {
+namespace input {
 struct NativeWebKeyboardEvent;
 }
 
@@ -36,8 +37,9 @@ class NativeBrowserFrame {
   virtual bool ShouldSaveWindowPlacement() const = 0;
 
   // Retrieves the window placement (show state and bounds) for restoring.
-  virtual void GetWindowPlacement(gfx::Rect* bounds,
-                                  ui::WindowShowState* show_state) const = 0;
+  virtual void GetWindowPlacement(
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const = 0;
 
   // Returns HANDLED if the |event| was handled by the platform implementation
   // before sending it to the renderer. E.g., it may be swallowed by a native
@@ -45,11 +47,11 @@ class NativeBrowserFrame {
   // would be handled as a shortcut if the renderer chooses not to handle it.
   // Otherwise returns NOT_HANDLED.
   virtual content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
-      const content::NativeWebKeyboardEvent& event) = 0;
+      const input::NativeWebKeyboardEvent& event) = 0;
 
   // Returns true if the |event| was handled by the platform implementation.
   virtual bool HandleKeyboardEvent(
-      const content::NativeWebKeyboardEvent& event) = 0;
+      const input::NativeWebKeyboardEvent& event) = 0;
 
   // Returns true if there is a previously saved browser widget state that we
   // should restore. Returns false if we want to skip the given widget state

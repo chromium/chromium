@@ -12,12 +12,11 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.contextualsearch.QuickActionCategory;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 
 /**
- * This class is responsible for all the logging triggered by activity of the
- * {@link ContextualSearchPanel}. Typically this consists of tracking user activity
- * logging that to UMA when the interaction ends as the panel is dismissed.
+ * This class is responsible for all the logging triggered by activity of the {@link
+ * ContextualSearchPanel}. Typically this consists of tracking user activity logging that to UMA
+ * when the interaction ends as the panel is dismissed.
  */
 public class ContextualSearchPanelMetrics {
     // Flags for logging.
@@ -104,8 +103,7 @@ public class ContextualSearchPanelMetrics {
             }
 
             if (mWasActivatedByTap) {
-                ContextualSearchUma.logTapResultsSeen(
-                        mWasSearchContentViewSeen, SyncServiceFactory.getForProfile(profile));
+                ContextualSearchUma.logTapResultsSeen(mWasSearchContentViewSeen, profile);
             }
             ContextualSearchUma.logAllResultsSeen(mWasSearchContentViewSeen);
             if (mWasSearchContentViewSeen) {

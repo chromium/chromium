@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/services/media_gallery_util/public/cpp/local_media_data_source_factory.h"
 
 #include <vector>
@@ -45,7 +50,8 @@ void ReadFile(const base::FilePath& file_path,
   base::File file;
 #if BUILDFLAG(IS_ANDROID)
   if (file_path.IsContentUri()) {
-    file = base::OpenContentUriForRead(file_path);
+    file = base::OpenContentUri(file_path,
+                                base::File::FLAG_OPEN | base::File::FLAG_READ);
     if (!file.IsValid()) {
       OnReadComplete(main_task_runner, std::move(cb), false /*success*/,
                      std::vector<char>());
@@ -118,9 +124,8 @@ class LocalMediaDataSource : public chrome::mojom::MediaDataSource {
     // TODO(xingliu): Handle file IO error when success is false, the IPC
     // channel for chrome::mojom::MediaParser should be closed.
     DCHECK(ipc_read_callback_);
-    media_data_callback_.Run(
-        std::move(ipc_read_callback_),
-        std::make_unique<std::string>(buffer.begin(), buffer.end()));
+    media_data_callback_.Run(std::move(ipc_read_callback_),
+                             std::string(buffer.begin(), buffer.end()));
   }
 
   base::FilePath file_path_;

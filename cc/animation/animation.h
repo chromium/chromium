@@ -148,7 +148,7 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation>,
 
   void SetNeedsCommit();
 
-  void set_use_start_time_from_impl() { use_start_time_from_impl_ = true; }
+  void set_is_replacement() { is_replacement_ = true; }
 
   std::optional<base::TimeTicks> GetStartTime() const;
 
@@ -189,8 +189,13 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation>,
   // when such an animation is created so that the first commit pulls the start
   // time into this Animation before pushing it.
   //
+  // When this animation is pushed to the impl thread, it will update the
+  // existing Animation and KeyframeEffect rather than creating new ones. It
+  // will silently replace the effect's keyframe models with the new ones
+  // specified in this animation.
+  //
   // Used only from the main thread and isn't synced to the compositor thread.
-  bool use_start_time_from_impl_ = false;
+  bool is_replacement_ = false;
 
   // Animation's ProtectedSequenceSynchronizer implementation is implemented
   // using this member. As such the various helpers can not be used to protect

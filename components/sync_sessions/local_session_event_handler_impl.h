@@ -61,7 +61,8 @@ class LocalSessionEventHandlerImpl : public LocalSessionEventHandler {
   // changes).
   LocalSessionEventHandlerImpl(Delegate* delegate,
                                SyncSessionsClient* sessions_client,
-                               SyncedSessionTracker* session_tracker);
+                               SyncedSessionTracker* session_tracker,
+                               bool is_new_session);
 
   LocalSessionEventHandlerImpl(const LocalSessionEventHandlerImpl&) = delete;
   LocalSessionEventHandlerImpl& operator=(const LocalSessionEventHandlerImpl&) =

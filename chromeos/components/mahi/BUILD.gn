@@ -1,0 +1,36 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("content_extraction") {
+  sources = [
+    "ax_tree_extractor.cc",
+    "ax_tree_extractor.h",
+    "content_extraction_service.cc",
+    "content_extraction_service.h",
+  ]
+
+  public_deps = [
+    "//chromeos/components/mahi/public/mojom",
+    "//mojo/public/cpp/bindings",
+    "//services/screen_ai/public/mojom",
+    "//ui/accessibility",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "content_extraction_service_unittest.cc" ]
+
+  deps = [
+    ":content_extraction",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/accessibility",
+    "//ui/accessibility:test_support",
+  ]
+}

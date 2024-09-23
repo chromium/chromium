@@ -7,8 +7,8 @@
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/complex_tasks/task_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/features.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_window_delegate.h"
@@ -23,13 +23,13 @@
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
-#endif
-
 using content::NavigationEntry;
 
 namespace {
+
+// The minimum time between two sync updates of `last_active_time` when the tab
+// hasn't changed.
+constexpr base::TimeDelta kSyncActiveTimeThreshold = base::Minutes(10);
 
 // Helper to access the correct NavigationEntry, accounting for pending entries.
 NavigationEntry* GetPossiblyPendingEntryAtIndex(
@@ -42,7 +42,7 @@ NavigationEntry* GetPossiblyPendingEntryAtIndex(
   NavigationEntry* entry = web_contents->GetController().GetEntryAtIndex(i);
   // Don't use the entry for sync if it doesn't exist or is the initial
   // NavigationEntry.
-  // TODO(https://crbug.com/1240138): Guarantee this won't be called when on the
+  // TODO(crbug.com/40194151): Guarantee this won't be called when on the
   // initial NavigationEntry instead of bailing out here.
   if (!entry || entry->IsInitialEntry()) {
     return nullptr;
@@ -57,20 +57,16 @@ void TabContentsSyncedTabDelegate::ResetCachedLastActiveTime() {
 }
 
 base::Time TabContentsSyncedTabDelegate::GetLastActiveTime() {
-  // Use the TimeDelta common ground between the two units to make the
-  // conversion.
-  const base::TimeDelta delta_since_epoch =
-      web_contents_->GetLastActiveTime() - base::TimeTicks::UnixEpoch();
-  const base::Time converted_time = base::Time::UnixEpoch() + delta_since_epoch;
-  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
-    if (cached_last_active_time_.has_value() &&
-        converted_time - cached_last_active_time_.value() <
-            syncer::kSyncSessionOnVisibilityChangedTimeThreshold.Get()) {
-      return cached_last_active_time_.value();
-    }
-    cached_last_active_time_ = converted_time;
+  const base::Time last_active_time = web_contents_->GetLastActiveTime();
+  const base::TimeTicks last_active_time_ticks =
+      web_contents_->GetLastActiveTimeTicks();
+  if (cached_last_active_time_.has_value() &&
+      last_active_time_ticks - cached_last_active_time_.value().first <
+          kSyncActiveTimeThreshold) {
+    return cached_last_active_time_.value().second;
   }
-  return converted_time;
+  cached_last_active_time_ = {last_active_time_ticks, last_active_time};
+  return last_active_time;
 }
 
 bool TabContentsSyncedTabDelegate::IsBeingDestroyed() const {
@@ -126,13 +122,12 @@ bool TabContentsSyncedTabDelegate::ProfileHasChildAccount() const {
 
 const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>*
 TabContentsSyncedTabDelegate::GetBlockedNavigations() const {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   SupervisedUserNavigationObserver* navigation_observer =
       SupervisedUserNavigationObserver::FromWebContents(web_contents_);
 #if BUILDFLAG(IS_ANDROID)
   // TabHelpers::AttachTabHelpers() will not be called for a placeholder tab's
   // WebContents that is temporarily created from a serialized state in
-  // SyncedTabDelegateAndroid::CreatePlaceholderTabSyncedTabDelegate(). When
+  // SyncedTabDelegateAndroid::ReadPlaceholderTabSnapshotIfItShouldSync(). When
   // this occurs, early-out and return a nullptr.
   if (!navigation_observer) {
     return nullptr;
@@ -141,10 +136,6 @@ TabContentsSyncedTabDelegate::GetBlockedNavigations() const {
   DCHECK(navigation_observer);
 
   return &navigation_observer->blocked_navigations();
-#else
-  NOTREACHED();
-  return nullptr;
-#endif
 }
 
 bool TabContentsSyncedTabDelegate::ShouldSync(
@@ -181,12 +172,7 @@ bool TabContentsSyncedTabDelegate::ShouldSync(
 
   int entry_count = GetEntryCount();
   for (int i = 0; i < entry_count; ++i) {
-    const GURL& virtual_url = GetVirtualURLAtIndex(i);
-    if (!virtual_url.is_valid()) {
-      continue;
-    }
-
-    if (sessions_client->ShouldSyncURL(virtual_url)) {
+    if (sessions_client->ShouldSyncURL(GetVirtualURLAtIndex(i))) {
       return true;
     }
   }

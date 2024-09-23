@@ -66,7 +66,7 @@ sync_pb::SyncEnums_PageTransition ToSyncPageTransition(
     case ui::PAGE_TRANSITION_QUALIFIER_MASK:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return sync_pb::SyncEnums_PageTransition_LINK;
 }
 

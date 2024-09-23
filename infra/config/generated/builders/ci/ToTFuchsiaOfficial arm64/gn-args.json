@@ -1,4 +1,5 @@
 {
+  "args_file": "//build/config/fuchsia/size_optimized_cast_receiver_args.gn",
   "gn_args": {
     "is_clang": true,
     "is_component_build": false,
@@ -6,6 +7,7 @@
     "llvm_force_head_revision": true,
     "target_cpu": "arm64",
     "target_os": "fuchsia",
-    "test_host_cpu": "arm64"
+    "test_host_cpu": "arm64",
+    "use_siso": true
   }
 }

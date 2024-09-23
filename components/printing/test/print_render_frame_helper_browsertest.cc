@@ -6,15 +6,19 @@
 
 #include <stddef.h>
 
+#include <cmath>
 #include <memory>
+#include <string_view>
 #include <utility>
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/printing/common/print.mojom-test-utils.h"
@@ -40,6 +44,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "components/printing/browser/print_manager_utils.h"
@@ -506,6 +511,13 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
     printer_ = std::make_unique<MockPrinter>();
 
     content::RenderViewTest::SetUp();
+
+    // For `IDR_PRINT_HEADER_FOOTER_TEMPLATE_PAGE`.
+    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+        base::PathService::CheckedGet(base::DIR_ASSETS)
+            .AppendASCII("components_tests_resources.pak"),
+        ui::kScaleFactorNone);
+
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     preview_ui_ = std::make_unique<FakePrintPreviewUI>();
 #endif
@@ -558,7 +570,7 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  void OnPrintPagesInFrame(base::StringPiece frame_name) {
+  void OnPrintPagesInFrame(std::string_view frame_name) {
     blink::WebFrame* frame =
         GetMainFrame()->FindFrameByName(blink::WebString::FromUTF8(frame_name));
     ASSERT_TRUE(frame);
@@ -626,6 +638,29 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
     ASSERT_TRUE(
         ExecuteJavaScriptAndReturnIntValue(u"afterPrintCount", &result));
     EXPECT_EQ(1, result) << "afterprint event should be dispatched once.";
+  }
+
+  // Count the number of pixels with `target_color` in the selected area, and
+  // the number of the remaining pixels that aren't white.
+  struct PixelCount {
+    unsigned with_target_color = 0;
+    unsigned unknown_nonwhite = 0;
+  };
+  PixelCount CheckPixels(const Image& image,
+                         uint32_t target_color,
+                         const gfx::Rect& rect) {
+    PixelCount count;
+    for (int y = rect.y(); y < rect.bottom(); y++) {
+      for (int x = rect.x(); x < rect.right(); x++) {
+        uint32_t pixel = image.pixel_at(x, y);
+        if (pixel == target_color) {
+          count.with_target_color++;
+        } else if (pixel != 0xffffffU) {
+          count.unknown_nonwhite++;
+        }
+      }
+    }
+    return count;
   }
 
   TestPrintManagerHost* print_manager(content::RenderFrame* frame = nullptr) {
@@ -983,6 +1018,391 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, RoundingAndHeadersAndFooters) {
   EXPECT_EQ(image.pixel_at(3, 12), 0x0000ffU);
 }
 
+TEST_F(MAYBE_PrintRenderFrameHelperTest, HeaderAndFooter) {
+  // The headers and footers template has a padding of 15pt. To fit something
+  // that's 9pt tall, we need 24pt. Also note that all pt values used here are
+  // divisble by 3, so that they convert nicely to CSS pixels (this is what the
+  // layout engine uses) and back.
+  const float kPageWidth = 450;
+  const float kPageHeight = 450;
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 450pt;
+        margin: 24pt 0;
+      }
+      @page second {
+        margin-bottom: 21pt;
+      }
+      @page third {
+        margin-top: 21pt;
+      }
+      body {
+        line-height: 2em;
+        background: red;
+      }
+    </style>
+    <div>Page 1</div>
+    <div style="page:second;">Page 2</div>
+    <div style="page:third;">Page 3</div>
+  )HTML");
+
+  mojom::PrintParams& params = printer()->Params();
+  printer()->set_should_generate_page_images(true);
+  params.display_header_footer = true;
+  params.should_print_backgrounds = true;
+  // Use a border to draw the squares, since backgrounds are omitted for headers
+  // and footers.
+  params.header_template =
+      u"<div class='text' "
+      "style='height:9pt; border-left:9pt solid #00f;'></div>";
+  params.footer_template =
+      u"<div class='text' "
+      "style='height:9pt; border-left:9pt solid #ff0;'></div>";
+
+  OnPrintPages();
+
+  // First page.
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const Image* image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the blue square in the header area.
+  PixelCount pixel_count =
+      CheckPixels(*image, 0x0000ffU, gfx::Rect(0, 0, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the yellow square in the footer area.
+  pixel_count = CheckPixels(*image, 0xffff00U,
+                            gfx::Rect(0, kPageHeight - 24, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Second page.
+  page = printer()->GetPrinterPage(1);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the blue square in the header area.
+  pixel_count = CheckPixels(*image, 0x0000ffU, gfx::Rect(0, 0, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the yellow square in the footer area. It will be missing, because
+  // the margin isn't large enough.
+  pixel_count = CheckPixels(*image, 0xffff00U,
+                            gfx::Rect(0, kPageHeight - 21, kPageWidth, 21));
+  EXPECT_EQ(pixel_count.with_target_color, 0u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Third page.
+  page = printer()->GetPrinterPage(2);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the blue square in the header area. It will be missing, because
+  // the margin isn't large enough.
+  pixel_count = CheckPixels(*image, 0x0000ffU, gfx::Rect(0, 0, kPageWidth, 21));
+  EXPECT_EQ(pixel_count.with_target_color, 0u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the yellow square in the footer area.
+  pixel_count = CheckPixels(*image, 0xffff00U,
+                            gfx::Rect(0, kPageHeight - 24, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+}
+
+TEST_F(MAYBE_PrintRenderFrameHelperTest, HeaderAndFooterFitToPrinter) {
+  const float kPageWidth = 612;
+  const float kPageHeight = 792;
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        /* A large square-sized page will be scaled down (and centered). Since
+           the printer is in portrait mode, it means that there will be
+           additional space above and below the page border-box, which in turn
+           means that the requested margins can be honored. */
+        size: 900pt;
+        margin: 24pt 0;
+      }
+      @page second {
+        /* When the requested page box size needs to be scaled down to fit on
+           "paper", margins will also be scaled down, which may mean that
+            headers and footers no longer fit. */
+        size: 600pt 900pt;
+        margin-top: 60pt;
+      }
+      @page third {
+        /* The requested size is way smaller than the printer size, and the page
+           is centered on "paper". Even if margins are specified as 0, there's
+           still plenty of room for headers and footers. */
+        size: 300px;
+        margin: 0;
+      }
+      body {
+        line-height: 2em;
+        background: red;
+      }
+    </style>
+    <div>Page 1</div>
+    <div style="page:second;">Page 2</div>
+    <div style="page:third;">Page 3</div>
+  )HTML");
+
+  mojom::PrintParams& params = printer()->Params();
+  printer()->set_should_generate_page_images(true);
+  params.display_header_footer = true;
+  params.should_print_backgrounds = true;
+  // Fit content to the printer size (which is US letter).
+  params.print_scaling_option =
+      mojom::PrintScalingOption::kCenterShrinkToFitPaper;
+  params.prefer_css_page_size = false;
+  // Use a border to draw the squares, since backgrounds are omitted for headers
+  // and footers.
+  params.header_template =
+      u"<div class='text' "
+      "style='width:7in; height:9pt; border-left:9pt solid #00f;'></div>";
+  params.footer_template =
+      u"<div class='text' "
+      "style='width:7in; height:9pt; border-left:9pt solid #ff0;'></div>";
+
+  OnPrintPages();
+
+  // First page:
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const Image* image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the blue square in the header area.
+  PixelCount pixel_count =
+      CheckPixels(*image, 0x0000ffU, gfx::Rect(0, 0, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the yellow square in the footer area.
+  pixel_count = CheckPixels(*image, 0xffff00U,
+                            gfx::Rect(0, kPageHeight - 24, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Second page:
+  page = printer()->GetPrinterPage(1);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the blue square in the header area. The margin-top on this
+  // particular page is extral large, so there should be room for the header,
+  // even if the margins have been scaled down along with the rest of the page
+  // box.
+  pixel_count = CheckPixels(*image, 0x0000ffU, gfx::Rect(0, 0, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the yellow square in the footer area. It shouldn't be there, since
+  // there isn't enough room for it.
+  pixel_count = CheckPixels(*image, 0xffff00U,
+                            gfx::Rect(0, kPageHeight - 24, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 0u);
+  // Due to the margin downscaling, the red body background will intersect with
+  // this area.
+  EXPECT_GT(pixel_count.unknown_nonwhite, 0u);
+
+  // Third page:
+  page = printer()->GetPrinterPage(2);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the blue square in the header area. Even if the specified margins
+  // on this particular page are 0, the page is small and centered on the page,
+  // leaving plenty of space for headers and footers.
+  pixel_count = CheckPixels(*image, 0x0000ffU, gfx::Rect(0, 0, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the yellow square in the footer area. Even if the specified
+  // margins on this particular page are 0, the page is small and centered on
+  // the page, leaving plenty of space for headers and footers.
+  pixel_count = CheckPixels(*image, 0xffff00U,
+                            gfx::Rect(0, kPageHeight - 24, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+}
+
+TEST_F(MAYBE_PrintRenderFrameHelperTest, FooterPartiallyOutsidePage) {
+  const float kPageWidth = 150;
+  const float kPageHeight = 150;
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 150pt;
+        margin: 24pt 0;
+      }
+    </style>
+    <!-- Add something wide, to trigger document downscaling. This should have
+         no effect on headers and footers. -->
+    <div style="width:300pt; height:10pt;"></div>
+  )HTML");
+
+  mojom::PrintParams& params = printer()->Params();
+  printer()->set_should_generate_page_images(true);
+  params.display_header_footer = true;
+  params.footer_template =
+      uR"HTML(
+    <style>
+      /* Lose default footer padding. */
+      #footer {
+        padding: 0 !important;
+      }
+    </style>
+    <div>
+      <!-- The bottom 3pt of the rectangle should be pushed off the page edge
+          (and not be seen anywhere), due to the negative bottom margin, so that
+          it should end up as a 9x9 square. -->
+      <div style="break-inside:avoid; margin-bottom:-3pt;
+                  border-left:9pt solid #ff0; height:12pt;"></div>
+    </div>
+    <div style="break-before:page; border-left:9pt solid #00f;
+                height:9pt;"></div>
+  )HTML";
+
+  OnPrintPages();
+
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const Image& image = page->image();
+  ASSERT_EQ(image.size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the yellow square in the footer area.
+  PixelCount pixel_count =
+      CheckPixels(image, 0xffff00U, gfx::Rect(0, kPageHeight - 24, 9, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the blue square in the footer area.
+  pixel_count = CheckPixels(image, 0x0000ffU,
+                            gfx::Rect(9, kPageHeight - 24, kPageWidth - 9, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+}
+
+TEST_F(MAYBE_PrintRenderFrameHelperTest, HeaderObscuredByPageMarginBox) {
+  const float kPageWidth = 150;
+  const float kPageHeight = 150;
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 150pt;
+        margin: 24pt 0;
+
+        @top-right {
+          width: 9pt;
+          height: 9pt;
+          background: #0f0;
+          content: "";
+        }
+      }
+    </style>
+  )HTML");
+
+  mojom::PrintParams& params = printer()->Params();
+  printer()->set_should_generate_page_images(true);
+  params.display_header_footer = true;
+  params.should_print_backgrounds = true;
+
+  // Use a border to draw the squares, since backgrounds are omitted for headers
+  // and footers.
+  params.header_template =
+      u"<div class='text' "
+      "style='width:7in; height:9pt; border-left:9pt solid #f00;'></div>";
+  params.footer_template =
+      u"<div class='text' "
+      "style='width:7in; height:9pt; border-left:9pt solid #ff0;'></div>";
+
+  OnPrintPages();
+
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const Image& image = page->image();
+  ASSERT_EQ(image.size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the green square in the header area, from the @page margin
+  // box. The UA-inserted header will not be painted, since there's a @page
+  // margin box in the header area.
+  PixelCount pixel_count =
+      CheckPixels(image, 0x00ff00U, gfx::Rect(0, 0, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the yellow square in the footer area.
+  pixel_count = CheckPixels(image, 0xffff00U,
+                            gfx::Rect(0, kPageHeight - 24, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+}
+
+TEST_F(MAYBE_PrintRenderFrameHelperTest, FooterObscuredByPageMarginBox) {
+  const float kPageWidth = 150;
+  const float kPageHeight = 150;
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 150pt;
+        margin: 24pt 0;
+
+        @bottom-right {
+          width: 9pt;
+          height: 9pt;
+          background: #0f0;
+          content: "";
+        }
+      }
+    </style>
+  )HTML");
+
+  mojom::PrintParams& params = printer()->Params();
+  printer()->set_should_generate_page_images(true);
+  params.display_header_footer = true;
+  params.should_print_backgrounds = true;
+
+  // Use a border to draw the squares, since backgrounds are omitted for headers
+  // and footers.
+  params.header_template =
+      u"<div class='text' "
+      "style='width:7in; height:9pt; border-left:9pt solid #ff0;'></div>";
+  params.footer_template =
+      u"<div class='text' "
+      "style='width:7in; height:9pt; border-left:9pt solid #f00;'></div>";
+
+  OnPrintPages();
+
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const Image& image = page->image();
+  ASSERT_EQ(image.size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the yellow square in the header area.
+  PixelCount pixel_count =
+      CheckPixels(image, 0xffff00U, gfx::Rect(0, 0, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the green square in the footer area, from the @page margin
+  // box. The UA-inserted header will not be painted, since there's a @page
+  // margin box in the header area.
+  pixel_count = CheckPixels(image, 0x00ff00U,
+                            gfx::Rect(0, kPageHeight - 24, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+}
+
 #endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
 TEST_F(MAYBE_PrintRenderFrameHelperTest, SpecifiedPageSize1) {
@@ -1107,6 +1527,33 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, MediaQueryNoCSSPageMargins) {
   print_manager()->SetExpectedPagesCount(2);
   OnPrintPages();
   VerifyPagesPrinted(true);
+}
+
+// See http:://crbug.com/340732144
+TEST_F(MAYBE_PrintRenderFrameHelperTest, MatchMediaShrinkContent) {
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 500px;
+        margin: 0;
+      }
+      body {
+        margin: 0;
+      }
+    </style>
+    <div id="shrinkme" style="height:5000px;"></div>
+    <script>
+      var mediaQuery = window.matchMedia("print");
+      mediaQuery.addListener(function() {
+        shrinkme.style.height = "2000px";
+      });
+    </script>
+  )HTML");
+
+  // The correct page count here should be 4 (2000px split into pages of 500px),
+  // but due to crbug.com/41154234 , this doesn't work correctly (and the number
+  // will be 10). For now, just make sure that we don't crash.
+  OnPrintPages();
 }
 
 TEST_F(MAYBE_PrintRenderFrameHelperTest, InputScale1) {
@@ -1316,6 +1763,27 @@ class PrintRenderFrameHelperPreviewTest
     preview_ui()->WaitUntilPreviewUpdate();
   }
 
+  // A function to set up the preview environment for `frame`. Done here to
+  // access private members of the test class.
+  void OnPrintPreviewForRenderFrame(WebLocalFrame* frame,
+                                    bool has_selection,
+                                    FakePrintPreviewUI* preview_ui) {
+    content::RenderFrame* render_frame =
+        content::RenderFrame::FromWebFrame(frame);
+    BindPrintManagerHost(render_frame);
+    PrintRenderFrameHelper* print_render_frame_helper =
+        GetPrintRenderFrameHelperForFrame(render_frame);
+    print_render_frame_helper->SetPrintPreviewUI(preview_ui->BindReceiver());
+    print_render_frame_helper->InitiatePrintPreview(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        mojo::NullAssociatedRemote(),
+#endif
+        has_selection);
+
+    print_render_frame_helper->PrintPreview(print_settings().Clone());
+    preview_ui->WaitUntilPreviewUpdate();
+  }
+
   void OnClosePrintPreviewDialog() {
     GetPrintRenderFrameHelper()->OnPrintPreviewDialogClosed();
   }
@@ -1353,7 +1821,7 @@ class PrintRenderFrameHelperPreviewTest
 
       auto mapped = param.content->metafile_data_region.Map();
       ASSERT_TRUE(mapped.IsValid());
-      EXPECT_TRUE(LooksLikePdf(mapped.GetMemoryAsSpan<const char>()));
+      EXPECT_TRUE(LooksLikePdf(mapped.GetMemoryAsSpan<const uint8_t>()));
     }
   }
 
@@ -1362,10 +1830,12 @@ class PrintRenderFrameHelperPreviewTest
   }
 
   // `page_index` is 0-based.
-  void VerifyDidPreviewPage(bool expect_generated, uint32_t page_index) {
+  void VerifyDidPreviewPage(bool expect_generated,
+                            uint32_t page_index,
+                            FakePrintPreviewUI* preview_ui) {
     bool msg_found = false;
     uint32_t data_size = 0;
-    for (const auto& preview : preview_ui()->print_preview_pages()) {
+    for (const auto& preview : preview_ui->print_preview_pages()) {
       if (preview.index == page_index) {
         msg_found = true;
         data_size = preview.content_data_size;
@@ -1376,6 +1846,10 @@ class PrintRenderFrameHelperPreviewTest
         << "For page at index " << page_index;
     if (expect_generated)
       EXPECT_NE(0U, data_size) << "For page at index " << page_index;
+  }
+
+  void VerifyDidPreviewPage(bool expect_generated, uint32_t page_index) {
+    VerifyDidPreviewPage(expect_generated, page_index, preview_ui());
   }
 
   void VerifyDefaultPageLayout(
@@ -1389,12 +1863,12 @@ class PrintRenderFrameHelperPreviewTest
       bool expected_all_pages_have_custom_orientation) {
     const mojom::PageSizeMargins* page_layout = preview_ui()->page_layout();
     ASSERT_TRUE(page_layout);
-    EXPECT_EQ(expected_content_width, page_layout->content_width);
-    EXPECT_EQ(expected_content_height, page_layout->content_height);
-    EXPECT_EQ(expected_margin_top, page_layout->margin_top);
-    EXPECT_EQ(expected_margin_right, page_layout->margin_right);
-    EXPECT_EQ(expected_margin_left, page_layout->margin_left);
-    EXPECT_EQ(expected_margin_bottom, page_layout->margin_bottom);
+    EXPECT_EQ(expected_content_width, std::round(page_layout->content_width));
+    EXPECT_EQ(expected_content_height, std::round(page_layout->content_height));
+    EXPECT_EQ(expected_margin_top, std::round(page_layout->margin_top));
+    EXPECT_EQ(expected_margin_bottom, std::round(page_layout->margin_bottom));
+    EXPECT_EQ(expected_margin_left, std::round(page_layout->margin_left));
+    EXPECT_EQ(expected_margin_right, std::round(page_layout->margin_right));
     EXPECT_EQ(expected_all_pages_have_custom_size,
               preview_ui()->all_pages_have_custom_size());
     EXPECT_EQ(expected_all_pages_have_custom_orientation,
@@ -1491,6 +1965,78 @@ TEST_F(PrintRenderFrameHelperPreviewTest, OnPrintPreview) {
   OnClosePrintPreviewDialog();
 }
 
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewWithSrcdocSelection) {
+  static const char kHTMLWithSrcdocChildFrame[] =
+      "<html><body>"
+      "<iframe name='srcdoc_frame' srcdoc='foo'></iframe>"
+      "</body></html>";
+  LoadHTML(kHTMLWithSrcdocChildFrame);
+
+  // Create selection in the child frame.
+  WebLocalFrame* srcdoc_frame =
+      GetMainFrame()->FindFrameByName("srcdoc_frame")->ToWebLocalFrame();
+  srcdoc_frame->ExecuteCommand("SelectAll");
+  print_settings().Set(kSettingShouldPrintSelectionOnly, true);
+
+  // Verify that print preview succeeds.
+
+  // The subframe will need its own preview UI. Declare it here so it can be
+  // passed to `VerifyDidPreviewPage` after `OnPrintPreviewForRenderFrame`
+  // completes.
+  std::unique_ptr<FakePrintPreviewUI> subframe_preview_ui =
+      std::make_unique<FakePrintPreviewUI>();
+
+  OnPrintPreviewForRenderFrame(srcdoc_frame, /*has_selection=*/true,
+                               subframe_preview_ui.get());
+  VerifyDidPreviewPage(true, 0, subframe_preview_ui.get());
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewUsesSrcdocBaseUrl) {
+  GURL parent_base_url("https://example.com");
+  static const char kHTMLWithSrcdocChildFrame[] =
+      "<html><head><base href='%s'></head><body>"
+      "<iframe name='srcdoc_frame' srcdoc='foo'></iframe>"
+      "</body></html>";
+  LoadHTML(base::StringPrintf(kHTMLWithSrcdocChildFrame,
+                              parent_base_url.spec().c_str()));
+
+  // Create selection in the child frame.
+  WebLocalFrame* srcdoc_frame =
+      GetMainFrame()->FindFrameByName("srcdoc_frame")->ToWebLocalFrame();
+  srcdoc_frame->ExecuteCommand("SelectAll");
+  print_settings().Set(kSettingShouldPrintSelectionOnly, true);
+
+  // Verify that print preview succeeds.
+
+  // The subframe will need its own preview UI. Declare it here so it can be
+  // passed to `VerifyDidPreviewPage` after `OnPrintPreviewForRenderFrame`
+  // completes.
+  auto subframe_preview_ui = std::make_unique<FakePrintPreviewUI>();
+
+  // Setup callback to capture the url and base_url of the intermediate preview
+  // document.
+  content::RenderFrame* render_frame =
+      content::RenderFrame::FromWebFrame(srcdoc_frame);
+  PrintRenderFrameHelper* print_render_frame_helper =
+      GetPrintRenderFrameHelperForFrame(render_frame);
+
+  GURL preview_document_url;
+  GURL preview_document_base_url;
+  print_render_frame_helper->SetWebDocumentCollectionCallbackForTest(
+      base::BindLambdaForTesting([&](const blink::WebDocument& document) {
+        preview_document_url = document.Url();
+        preview_document_base_url = document.BaseURL();
+      }));
+
+  // Do the print preview.
+  OnPrintPreviewForRenderFrame(srcdoc_frame, /*has_selection=*/true,
+                               subframe_preview_ui.get());
+
+  VerifyDidPreviewPage(true, 0, subframe_preview_ui.get());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), preview_document_url);
+  EXPECT_EQ(parent_base_url, preview_document_base_url);
+}
+
 TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewHTMLWithPageMarginsCss) {
   // A simple web page with print margins css.
   static const char kHTMLWithPageMarginsCss[] =
@@ -1510,7 +2056,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewHTMLWithPageMarginsCss) {
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDefaultPageLayout(519, 432, 216, 144, 21, 72, false, false);
+  VerifyDefaultPageLayout(518, 432, 216, 144, 22, 72, false, false);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
@@ -1713,7 +2259,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
   // Since PRINT_TO_PDF is selected, pdf page size is equal to print media page
   // size.
-  VerifyDefaultPageLayout(915, 648, 216, 144, 21, 72, true, true);
+  VerifyDefaultPageLayout(914, 648, 216, 144, 22, 72, true, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
@@ -1766,7 +2312,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewShrinkToFitPage) {
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDefaultPageLayout(576, 637, 89, 66, 20, 16, true, true);
+  VerifyDefaultPageLayout(576, 637, 90, 65, 20, 16, true, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
@@ -2075,6 +2621,291 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   OnClosePrintPreviewDialog();
 }
 
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       MarginsSizeAndInputScaleAndAvoidOverflowScaleToPrinter3) {
+  // The default page size in these tests is US Letter - 8.5 by 11 inches.
+  // Setting the page size to 3 inches and margins to 0.5 inches results in a
+  // page area of 2 by 2 inches. Setting the input scale factor to 200% shrinks
+  // this to 1 inch. There's a 1.5in wide block in the test. To make it fit
+  // without overflowing, Blink will increase the page area size by 3/2 (1.5/1),
+  // i.e. 50% larger, so that the final page area for layout is 1.5 by 1.5
+  // inches. Content that is 5.25 inches tall should therefore require 3 and a
+  // half pages (1.5 * 3.5 = 5.25). The specified page size is smaller than the
+  // paper (8.5x11 inches), and should be centered on paper, meaning that the
+  // margins will be changed so that the sum of the margins and the page size
+  // will be equal to the paper size.
+  LoadHTML(R"HTML(
+    <style>
+      @page { margin:0.5in; size:3in; }
+      body { margin:0; }
+    </style>
+    <div style="width:1.5in; height:5.25in; background:#0000ff;"></div>
+  )HTML");
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingScaleFactor, 200);
+  print_settings().Set(kSettingShouldPrintBackgrounds, true);
+
+  printer()->set_should_generate_page_images(true);
+
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDefaultPageLayout(144, 144, 324, 324, 234, 234, true, true);
+  VerifyPreviewPageCount(4);
+
+  // Look for the #0000ff background on all the pages.
+
+  // First page:
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const printing::Image* image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(612, 792));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(233, 323), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(234, 324), 0x0000ffU);  // blue inside
+  // Bottom right page content area corner.
+  EXPECT_EQ(image->pixel_at(377, 467), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(378, 468), 0xffffffU);  // white outside
+
+  // Second page:
+  page = printer()->GetPrinterPage(1);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(612, 792));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(233, 323), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(234, 324), 0x0000ffU);  // blue inside
+  // Bottom right page content area corner.
+  EXPECT_EQ(image->pixel_at(377, 467), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(378, 468), 0xffffffU);  // white outside
+
+  // Third page:
+  page = printer()->GetPrinterPage(2);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(612, 792));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(233, 323), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(234, 324), 0x0000ffU);  // blue inside
+  // Bottom right page content area corner.
+  EXPECT_EQ(image->pixel_at(377, 467), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(378, 468), 0xffffffU);  // white outside
+
+  // Fourth and last page:
+  page = printer()->GetPrinterPage(3);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(612, 792));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(233, 323), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(234, 324), 0x0000ffU);  // blue inside
+  // Bottom right corner of the DIV (which occupies half of the last page).
+  EXPECT_EQ(image->pixel_at(377, 395), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(378, 396), 0xffffffU);  // white outside
+
+  OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       MarginsSizeAndInputScaleAndAvoidOverflowScaleToPrinter4) {
+  // The default page size in these tests is US Letter - 8.5 by 11 inches.
+  // Setting the page size to 5 by 3 inches and margins to 0.5 inches results in
+  // a page area of 4 by 2 inches. Setting the input scale factor to 200%
+  // shrinks this to 2 by 1 inches. There's a 3in wide block in the test. To
+  // make it fit without overflowing, Blink will increase the page area size by
+  // 3/2, i.e. 50% larger, so that the final page area for layout is 3 by 1.5
+  // inches. Content that is 2.25 inches tall should therefore require one and a
+  // half page (1.5 * 1.5 = 2.25). The specified page size is smaller than the
+  // paper (8.5x11 inches), and should be centered on paper, meaning that the
+  // margins will be changed so that the sum of the margins and the page size
+  // will be equal to the paper size. Additionally, the orientation is
+  // landscape.
+  LoadHTML(R"HTML(
+    <style>
+      @page { margin:0.5in; size:5in 3in; }
+      body { margin:0; }
+    </style>
+    <div style="width:3in; height:2.25in; background:#0000ff;"></div>
+  )HTML");
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingScaleFactor, 200);
+  print_settings().Set(kSettingShouldPrintBackgrounds, true);
+
+  printer()->set_should_generate_page_images(true);
+
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDefaultPageLayout(288, 144, 234, 234, 252, 252, true, true);
+  VerifyPreviewPageCount(2);
+
+  // Look for the #0000ff background on all the pages.
+
+  // First page:
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const printing::Image* image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(792, 612));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(251, 233), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(252, 234), 0x0000ffU);  // blue inside
+  // Bottom right page content area corner.
+  EXPECT_EQ(image->pixel_at(539, 377), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(540, 378), 0xffffffU);  // white outside
+
+  // Second page:
+  page = printer()->GetPrinterPage(1);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(792, 612));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(251, 233), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(252, 234), 0x0000ffU);  // blue inside
+  // Bottom right corner of the DIV (which occupies half of the last page).
+  EXPECT_EQ(image->pixel_at(539, 305), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(540, 306), 0xffffffU);  // white outside
+
+  OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       MarginsSizeAndInputScaleAndAvoidOverflowScaleToPrinter5) {
+  // The default page size in these tests is US Letter - 8.5 by 11 inches.
+  // Setting the page size to 34 inches and margins to 1 inch results in a page
+  // area of 32 inches. Setting the input scale factor to 200% shrinks this to
+  // 16 inches. There's a 24in wide block in the test. To make it fit without
+  // overflowing, Blink will increase the page area size by 3/2 (24/16),
+  // i.e. 50% larger, so that the final page area for layout is 24 by 24 inches.
+  // Content that is 36 inches tall should therefore require one and a half page
+  // (1.5 * 1.5 = 2.25). The specified page size is larger than the paper
+  // (8.5x11 inches), and needs to be zoomed down to fit. The zoom factor will
+  // be 0.25. 8.5 / 34 (short edges) = 0.25, which is less than 11 / 34 (long
+  // edges). Margins are also adjusted accordingly, since it's essentially the
+  // entire page box that's scaled down. The result should be centered on paper.
+  LoadHTML(R"HTML(
+    <style>
+      @page { margin:1in; size:34in; }
+      body { margin:0; }
+    </style>
+    <div style="width:24in; height:36in; background:#0000ff;"></div>
+  )HTML");
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingScaleFactor, 200);
+  print_settings().Set(kSettingShouldPrintBackgrounds, true);
+
+  printer()->set_should_generate_page_images(true);
+
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDefaultPageLayout(576, 576, 108, 108, 18, 18, true, true);
+  VerifyPreviewPageCount(2);
+
+  // Look for the #0000ff background on the first and last pages.
+
+  // First page:
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const printing::Image* image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(612, 792));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(17, 107), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(18, 108), 0x0000ffU);  // blue inside
+  // Bottom right page content area corner.
+  EXPECT_EQ(image->pixel_at(557, 683), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(558, 684), 0xffffffU);  // white outside
+
+  // Second page:
+  page = printer()->GetPrinterPage(1);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(612, 792));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(17, 107), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(18, 108), 0x0000ffU);  // blue inside
+  // Bottom right corner of the DIV (which occupies half of the last page).
+  EXPECT_EQ(image->pixel_at(557, 395), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(558, 396), 0xffffffU);  // white outside
+
+  OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       MarginsSizeAndInputScaleAndAvoidOverflowScaleToPrinter6) {
+  // The default page size in these tests is US Letter - 8.5 by 11 inches.
+  // Setting the page size to 33 by 18 inches and margins to 1 inch results in a
+  // page area of 31 by 16 inches. Setting the input scale factor to 200%
+  // shrinks this to 15.5 by 8 inches. There's a 23.25in wide block in the
+  // test. To make it fit without overflowing, Blink will increase the page area
+  // size by 3/2 (23.25/15.5), i.e. 50% larger, so that the final page area for
+  // layout is 23.25 by 12 inches. Content that is 18 inches tall should
+  // therefore require one and a half page (12 * 1.5 = 18). The specified page
+  // size is larger than the paper (8.5x11 inches), and needs to be zoomed down
+  // to fit. The zoom factor will be 1/3. 11 / 33 (long edges) = 1/3, which is
+  // less than 8.5 / 18 (short edges). Margins are also adjusted accordingly,
+  // since it's essentially the entire page box that's scaled down.
+  // Additionally, the orientation is landscape. The result should be centered
+  // on paper.
+  LoadHTML(R"HTML(
+    <style>
+      @page { margin:1in; size:33in 18in; }
+      body { margin:0; }
+    </style>
+    <div style="width:23.25in; height:18in; background:#0000ff;"></div>
+  )HTML");
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingScaleFactor, 200);
+  print_settings().Set(kSettingShouldPrintBackgrounds, true);
+
+  printer()->set_should_generate_page_images(true);
+
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDefaultPageLayout(744, 384, 114, 114, 24, 24, true, true);
+  VerifyPreviewPageCount(2);
+
+  // Look for the #0000ff background on the first and last pages.
+
+  // First page:
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const printing::Image* image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(792, 612));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(23, 113), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(24, 114), 0x0000ffU);  // blue inside
+  // Bottom right page content area corner.
+  EXPECT_EQ(image->pixel_at(767, 497), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(768, 498), 0xffffffU);  // white outside
+
+  // Second page:
+  page = printer()->GetPrinterPage(1);
+  ASSERT_TRUE(page);
+  image = &page->image();
+  ASSERT_EQ(image->size(), gfx::Size(792, 612));
+  // Top left page content area corner.
+  EXPECT_EQ(image->pixel_at(23, 113), 0xffffffU);  // white outside
+  EXPECT_EQ(image->pixel_at(24, 114), 0x0000ffU);  // blue inside
+  // Bottom right corner of the DIV (which occupies half of the last page).
+  EXPECT_EQ(image->pixel_at(767, 305), 0x0000ffU);  // blue inside
+  EXPECT_EQ(image->pixel_at(768, 306), 0xffffffU);  // white outside
+
+  OnClosePrintPreviewDialog();
+}
+
+#endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
+
 // Test to verify that print preview workflow honor the orientation settings
 // specified in css.
 TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewHonorsOrientationCss) {
@@ -2349,6 +3180,46 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
 
   OnClosePrintPreviewDialog();
 }
+
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+
+TEST_F(PrintRenderFrameHelperPreviewTest, TextSelectionPageRules) {
+  LoadHTML(R"HTML(
+    <style>
+      @page :first {
+        size: 300px;
+        page-orientation: rotate-right;
+      }
+      @page {
+        size: 400px;
+        page-orientation: rotate-left;
+      }
+    </style>
+    <div style="break-after:page;">page 1</div>
+    <div style="break-after:page;">page 2</div>
+  )HTML");
+  GetMainFrame()->ExecuteCommand("SelectAll");
+
+  print_settings().Set(kSettingShouldPrintSelectionOnly, true);
+  printer()->set_should_generate_page_images(true);
+
+  OnPrintPreview();
+
+  VerifyPreviewPageCount(2);
+
+  // The @page rules should be ignored when printing the selection. The default
+  // page size (US Letter in this case) should be used.
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  EXPECT_EQ(page->image().size(), gfx::Size(612, 792));
+  page = printer()->GetPrinterPage(1);
+  ASSERT_TRUE(page);
+  EXPECT_EQ(page->image().size(), gfx::Size(612, 792));
+
+  OnClosePrintPreviewDialog();
+}
+
+#endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
 // Tests that cancelling print preview works.
 TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewCancel) {
@@ -2653,7 +3524,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, LandscapeIgnorePageSizeAndMargin) {
   print_settings().Set(kSettingShouldPrintBackgrounds, true);
 
   base::Value::Dict custom_margins;
-  // TODO(crbug.com/1477190): Would be neat to test with different vertical and
+  // TODO(crbug.com/40280219): Would be neat to test with different vertical and
   // horizontal margins here.
   custom_margins.Set(kSettingMarginTop, 12);
   custom_margins.Set(kSettingMarginRight, 12);

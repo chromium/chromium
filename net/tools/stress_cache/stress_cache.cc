@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // This is a simple application that stress-tests the crash recovery of the disk
 // cache. The main application starts a copy of itself on a loop, checking the
 // exit code of the child process. When the child dies in an unexpected way,
@@ -15,6 +20,7 @@
 // application level crashes, edit stress_support.h.
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/at_exit.h"
@@ -380,8 +386,8 @@ bool StartCrashThread() {
 
 void CrashHandler(const char* file,
                   int line,
-                  const base::StringPiece str,
-                  const base::StringPiece stack_trace) {
+                  const std::string_view str,
+                  const std::string_view stack_trace) {
   g_crashing = true;
   base::debug::BreakDebugger();
 }

@@ -1,0 +1,45 @@
+This is a testharness.js-based test.
+[FAIL] cast float32 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint32 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] cast float32 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type int64 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] cast float16 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint32 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] cast float16 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type int64 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] cast int32 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type int64 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] cast uint32 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint32 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] cast uint32 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint32 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] cast uint32 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint32 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] cast uint32 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint32 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] cast uint32 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint32 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] cast uint32 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint32 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] cast int64 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int64 for input operand named 'castInput', must be one of [float32, float16, int32]."
+[FAIL] cast int64 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int64 for input operand named 'castInput', must be one of [float32, float16, int32]."
+[FAIL] cast int64 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int64 for input operand named 'castInput', must be one of [float32, float16, int32]."
+[FAIL] cast int64 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int64 for input operand named 'castInput', must be one of [float32, float16, int32]."
+[FAIL] cast int64 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int64 for input operand named 'castInput', must be one of [float32, float16, int32]."
+[FAIL] cast int64 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int64 for input operand named 'castInput', must be one of [float32, float16, int32]."
+[FAIL] cast int8 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint32 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] cast int8 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type int64 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] cast uint8 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint32 for output, must be one of [float32, float16, int32, int8, uint8]."
+[FAIL] cast uint8 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type int64 for output, must be one of [float32, float16, int32, int8, uint8]."
+Harness: the test ran to completion.
+

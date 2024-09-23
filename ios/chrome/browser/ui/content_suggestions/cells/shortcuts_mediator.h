@@ -19,9 +19,10 @@ class AuthenticationService;
 @protocol ContentSuggestionsConsumer;
 @class ContentSuggestionsMetricsRecorder;
 enum class ContentSuggestionsModuleType;
-@protocol NewTabPageMetricsDelegate;
+@protocol NewTabPageActionsDelegate;
 class ReadingListModel;
 @class ShortcutsConfig;
+@protocol WhatsNewCommands;
 
 // Delegate used to communicate events back to the owner of
 // ShortcutsMediator.
@@ -48,13 +49,13 @@ class ReadingListModel;
 // Delegate used to communicate events back to the owner of this class.
 @property(nonatomic, weak) id<ShortcutsMediatorDelegate> delegate;
 
-// Delegate for reporting content suggestions actions to the NTP metrics
-// recorder.
-@property(nonatomic, weak) id<NewTabPageMetricsDelegate> NTPMetricsDelegate;
+// Delegate for reporting content suggestions actions to the NTP.
+@property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
 
 // Dispatcher.
-@property(nonatomic, weak) id<ApplicationCommands, BrowserCoordinatorCommands>
-    dispatcher;
+@property(nonatomic, weak)
+    id<ApplicationCommands, BrowserCoordinatorCommands, WhatsNewCommands>
+        dispatcher;
 
 // Default initializer.
 - (instancetype)initWithReadingListModel:(ReadingListModel*)readingListModel

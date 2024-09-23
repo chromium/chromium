@@ -14,6 +14,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -37,6 +38,17 @@ SharingIconView::SharingIconView(
       get_bubble_callback_(std::move(get_bubble_callback)) {
   SetVisible(false);
   SetUpForInOutAnimation();
+
+  auto* controller = GetController();
+  if (controller && !controller->HasAccessibleUi()) {
+    // This should rarely be true. One example where it is true is the
+    // SmsRemoteFetcherUiController: crrev.com/c/2964059 stopped all UI
+    // from being shown and removed the accessible name. Setting the state
+    // to ignored is needed to stop the UI from being shown to assistive
+    // technologies.
+    GetViewAccessibility().SetIsIgnored(true);
+    return;
+  }
 }
 
 SharingIconView::~SharingIconView() = default;
@@ -69,7 +81,8 @@ void SharingIconView::UpdateImpl() {
   if (!controller)
     return;
 
-  SetAccessibleName(controller->GetTextForTooltipAndAccessibleName());
+  GetViewAccessibility().SetName(
+      controller->GetTextForTooltipAndAccessibleName());
 
   // To ensure that we reset error icon badge.
   if (!GetVisible()) {
@@ -170,12 +183,6 @@ const gfx::VectorIcon& SharingIconView::GetVectorIcon() const {
 void SharingIconView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   auto* controller = GetController();
   if (controller && !controller->HasAccessibleUi()) {
-    // This should rarely be true. One example where it is true is the
-    // SmsRemoteFetcherUiController: crrev.com/c/2964059 stopped all UI
-    // from being shown and removed the accessible name. Setting the state
-    // to ignored is needed to stop the UI from being shown to assistive
-    // technologies.
-    node_data->AddState(ax::mojom::State::kIgnored);
     return;
   }
   PageActionIconView::GetAccessibleNodeData(node_data);

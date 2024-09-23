@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_HISTORY_SYNC_HISTORY_SYNC_POPUP_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_HISTORY_SYNC_HISTORY_SYNC_POPUP_COORDINATOR_H_
 
-#import "ios/chrome/browser/ui/first_run/interruptible_chrome_coordinator.h"
+#import "ios/chrome/browser/first_run/ui_bundled/interruptible_chrome_coordinator.h"
 
 namespace signin_metrics {
 enum class AccessPoint : int;

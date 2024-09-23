@@ -101,6 +101,11 @@ PolicyConversions& PolicyConversions::SetDropDefaultValues(bool enabled) {
   return *this;
 }
 
+PolicyConversions& PolicyConversions::EnableShowMachineValues(bool enabled) {
+  client_->EnableShowMachineValues(enabled);
+  return *this;
+}
+
 PolicyConversions& PolicyConversions::UseChromePolicyConversions() {
   delegate_ = std::make_unique<ChromePolicyConversions>(client_.get());
   return *this;

@@ -72,6 +72,10 @@ PermissionManager::PermissionContextMap CreatePermissionContexts(
           browser_context, ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
           blink::mojom::PermissionsPolicyFeature::kEncryptedMedia);
 #endif
+  permission_contexts[ContentSettingsType::WEB_APP_INSTALLATION] =
+      std::make_unique<FakePermissionContext>(
+          browser_context, ContentSettingsType::WEB_APP_INSTALLATION,
+          blink::mojom::PermissionsPolicyFeature::kWebAppInstallation);
   permission_contexts[ContentSettingsType::WINDOW_MANAGEMENT] =
       std::make_unique<WindowManagementPermissionContext>(browser_context);
   permission_contexts[ContentSettingsType::MEDIASTREAM_CAMERA] =
@@ -82,6 +86,10 @@ PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::MEDIASTREAM_MIC,
           blink::mojom::PermissionsPolicyFeature::kMicrophone);
+  permission_contexts[ContentSettingsType::AUTOMATIC_FULLSCREEN] =
+      std::make_unique<FakePermissionContext>(
+          browser_context, ContentSettingsType::AUTOMATIC_FULLSCREEN,
+          blink::mojom::PermissionsPolicyFeature::kFullscreen);
   return permission_contexts;
 }
 

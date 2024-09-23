@@ -94,7 +94,7 @@ def _ChangeAffectsCronetTools(change):
 
 GOOD_CHANGE_ID_TXT = 'good_change_id'
 BAD_CHANGE_ID_TXT = 'bad_change_id'
-BUG_TXT = 'bug'
+BUG_TXT = 'bugs'
 COMMENT_TXT = 'comment'
 
 def _GetBreakagesFilePathIfChanged(change):

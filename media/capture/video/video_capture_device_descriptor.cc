@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capture/video/video_capture_device_descriptor.h"
 
 #include "base/strings/string_util.h"
@@ -101,6 +106,8 @@ const char* VideoCaptureDeviceDescriptor::GetCaptureApiTypeString() const {
       return "Virtual Device";
     case VideoCaptureApi::UNKNOWN:
       return "Unknown";
+    case VideoCaptureApi::WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE:
+      return "WEBRTC Single Plane";
   }
 }
 

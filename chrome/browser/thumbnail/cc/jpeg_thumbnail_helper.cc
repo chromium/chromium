@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/thumbnail/cc/jpeg_thumbnail_helper.h"
 
 #include <algorithm>
@@ -48,11 +53,7 @@ void WriteTask(base::FilePath file_path,
                base::OnceCallback<void(bool)> post_write_task) {
   DCHECK(!compressed_data.empty());
 
-  int bytes_written = base::WriteFile(
-      file_path, reinterpret_cast<const char*>(compressed_data.data()),
-      compressed_data.size());
-
-  if (bytes_written != static_cast<int>(compressed_data.size())) {
+  if (!base::WriteFile(file_path, compressed_data)) {
     base::DeleteFile(file_path);
     std::move(post_write_task).Run(false);
     return;

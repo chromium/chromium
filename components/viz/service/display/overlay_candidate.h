@@ -10,11 +10,12 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -27,14 +28,16 @@
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
+#include "ui/gfx/overlay_type.h"
 #include "ui/gfx/video_types.h"
 
 namespace gfx {
 class Rect;
-}
+}  // namespace gfx
 
 namespace viz {
 class AggregatedRenderPassDrawQuad;
+class DrawQuad;
 class DisplayResourceProvider;
 
 class VIZ_SERVICE_EXPORT OverlayCandidate {
@@ -57,7 +60,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
     kFailBufferFormat,
     kFailNearFilter,
     kFailPriority,
-    kFailNotSharedImage,
     kFailRoundedDisplayMasksNotSupported,
     kFailMaskFilterNotSupported,
     kFailHasTransformButCantClip,
@@ -69,6 +71,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // Returns true if |quad| will not block quads underneath from becoming
   // an overlay.
   static bool IsInvisibleQuad(const DrawQuad* quad);
+
+  // Returns true if `quad` contains rounded display masks textures.
+  static bool QuadHasRoundedDisplayMasks(const DrawQuad* quad);
 
   // Modifies the |candidate|'s |display_rect| to be clipped within |clip_rect|.
   // This function will also update the |uv_rect| based on what clipping was
@@ -134,7 +139,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   gfx::RectF display_rect;
 
   // Format of the buffer to scanout.
-  gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
+  SharedImageFormat format = SinglePlaneFormat::kRGBA_8888;
 
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
@@ -187,10 +192,10 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  // For candidates from TextureDrawQuads with is_stream_video set to true, this
-  // records whether the quad is marked as being backed by a SurfaceTexture or
-  // not.  If so, it's not really promotable to an overlay.
-  bool is_backed_by_surface_texture = false;
+  // Is video using SurfaceView-like architecture. It's currently actually uses
+  // `DialogOverlay` in browser instead of actual SurfaceView. But "SurfaceView"
+  // is used throughout the code so is used here as well for consistency.
+  bool is_video_in_surface_view = false;
   // Crop within the buffer to be placed inside |display_rect| before
   // |clip_rect| was applied. Valid only for surface control.
   gfx::RectF unclipped_uv_rect = gfx::RectF(0.f, 0.f, 1.f, 1.f);
@@ -220,9 +225,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
 
   // If |rpdq| is present, then the renderer must draw the filter effects and
   // copy the result into the buffer backing of a render pass.
-  // This field is not a raw_ptr<> because of missing |.get()| in not-rewritten
-  // platform specific code.
-  RAW_PTR_EXCLUSION const AggregatedRenderPassDrawQuad* rpdq = nullptr;
+  raw_ptr<const AggregatedRenderPassDrawQuad, DanglingUntriaged> rpdq = nullptr;
 
   // Quad |shared_quad_state| opacity is ubiquitous for quad types
   // AggregateRenderPassDrawQuad, TileDrawQuad, SolidColorDrawQuad. A delegate
@@ -248,11 +251,18 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // |tracking_id|.
   TrackingId tracking_id = kDefaultTrackingId;
 
+  // A layer ID packing that includes the namespace.
+  // See |SharedQuadState::layer_id| and |SharedQuadState::layer_namespace_id|.
+  uint64_t aggregated_layer_id = 0;
+
   // Transformation to apply to layer during composition.
   // Note: A |gfx::OverlayTransform| transforms the buffer within its bounds and
   // does not affect |display_rect|.
   absl::variant<gfx::OverlayTransform, gfx::Transform> transform =
       gfx::OVERLAY_TRANSFORM_NONE;
+
+  // Default overlay type.
+  gfx::OverlayType overlay_type = gfx::OverlayType::kSimple;
 };
 
 using OverlayCandidateList = std::vector<OverlayCandidate>;

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+
 #include <set>
 #include <vector>
 
@@ -13,8 +15,8 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/device_service.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
-#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
+#include "services/device/public/mojom/geolocation_client_id.mojom.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "url/origin.h"
 
@@ -43,7 +45,8 @@ class ScopedGeolocationOverrider::FakeGeolocationContext
 
   // mojom::GeolocationContext implementation:
   void BindGeolocation(mojo::PendingReceiver<mojom::Geolocation> receiver,
-                       const GURL& requesting_url) override;
+                       const GURL& requesting_url,
+                       mojom::GeolocationClientId client_id) override;
   void OnPermissionRevoked(const url::Origin& origin) override;
 
   void SetOverride(mojom::GeopositionResultPtr result) override;
@@ -203,7 +206,8 @@ void ScopedGeolocationOverrider::FakeGeolocationContext::BindForOverrideService(
 
 void ScopedGeolocationOverrider::FakeGeolocationContext::BindGeolocation(
     mojo::PendingReceiver<mojom::Geolocation> receiver,
-    const GURL& requesting_origin) {
+    const GURL& requesting_origin,
+    mojom::GeolocationClientId client_id) {
   impls_.insert(std::make_unique<FakeGeolocation>(std::move(receiver),
                                                   requesting_origin, this));
 }

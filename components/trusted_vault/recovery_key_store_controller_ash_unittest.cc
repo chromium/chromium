@@ -16,11 +16,16 @@
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
+#include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/recovery_key_provider_ash.h"
 #include "components/trusted_vault/recovery_key_store_connection.h"
 #include "components/trusted_vault/recovery_key_store_controller.h"
+#include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/test/mock_recovery_key_store_connection.h"
 #include "components/trusted_vault/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,20 +56,26 @@ MATCHER_P(HasAccountId, expected, "") {
 }
 
 MATCHER_P(DeviceIdEquals, expected, "") {
-  const trusted_vault_pb::UpdateVaultRequest& request = arg;
+  const trusted_vault_pb::Vault& request = arg;
   return request.chrome_os_metadata().device_id() == expected;
 }
 
 MATCHER(VaultHasPasskeysApplicationKey, "") {
-  const trusted_vault_pb::UpdateVaultRequest& request = arg;
-  auto application_keys = request.vault().application_keys();
+  const trusted_vault_pb::Vault& request = arg;
+  auto application_keys = request.application_keys();
   return application_keys.size() == 1 &&
          application_keys.at(0).key_name() == kSecurityDomainKeyName;
 }
 
-MATCHER(ContainsPasskeyApplicationKey, "") {
-  return arg.size() == 1 && arg.front().name == kSecurityDomainKeyName;
+MATCHER_P(RecoveryKeyStoreStatePublicKeyEq, expected, "") {
+  const trusted_vault_pb::RecoveryKeyStoreState& state = arg;
+  std::vector<uint8_t> public_key{state.public_key().begin(),
+                                  state.public_key().end()};
+  return public_key == expected;
 }
+
+static const std::vector<uint8_t> kPublicKeyBytes =
+    SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
 
 class GetRecoverableKeyStoresReplyBuilder {
  public:
@@ -77,8 +88,13 @@ class GetRecoverableKeyStoresReplyBuilder {
     cryptohome::RecoverableKeyStore* key_store = reply_.add_key_stores();
     key_store->mutable_key_store_metadata()->set_knowledge_factor_type(
         cryptohome::KNOWLEDGE_FACTOR_TYPE_PIN);
+    key_store->mutable_key_store_metadata()->set_hash_type(
+        cryptohome::HASH_TYPE_PBKDF2_AES256_1234);
     key_store->mutable_wrapped_security_domain_key()->set_key_name(
         kSecurityDomainKeyName);
+    AssignBytesToProtoString(
+        kPublicKeyBytes,
+        key_store->mutable_wrapped_security_domain_key()->mutable_public_key());
     return *this;
   }
 
@@ -86,8 +102,13 @@ class GetRecoverableKeyStoresReplyBuilder {
     cryptohome::RecoverableKeyStore* key_store = reply_.add_key_stores();
     key_store->mutable_key_store_metadata()->set_knowledge_factor_type(
         cryptohome::KNOWLEDGE_FACTOR_TYPE_PASSWORD);
+    key_store->mutable_key_store_metadata()->set_hash_type(
+        cryptohome::HASH_TYPE_SHA256_TOP_HALF);
     key_store->mutable_wrapped_security_domain_key()->set_key_name(
         kSecurityDomainKeyName);
+    AssignBytesToProtoString(
+        kPublicKeyBytes,
+        key_store->mutable_wrapped_security_domain_key()->mutable_public_key());
     return *this;
   }
 
@@ -95,29 +116,27 @@ class GetRecoverableKeyStoresReplyBuilder {
   user_data_auth::GetRecoverableKeyStoresReply reply_ = {};
 };
 
-class MockRecoveryKeyStoreConnection : public RecoveryKeyStoreConnection {
+class FakeRecoveryKeyStoreControllerDelegate
+    : public RecoveryKeyStoreController::Delegate {
  public:
-  MockRecoveryKeyStoreConnection() = default;
-  ~MockRecoveryKeyStoreConnection() override = default;
+  FakeRecoveryKeyStoreControllerDelegate() = default;
+  ~FakeRecoveryKeyStoreControllerDelegate() = default;
 
-  MOCK_METHOD(std::unique_ptr<Request>,
-              UpdateRecoveryKeyStore,
-              (const CoreAccountInfo& account_info,
-               const trusted_vault_pb::UpdateVaultRequest& request,
-               UpdateRecoveryKeyStoreCallback callback),
-              (override));
-};
+  const trusted_vault_pb::RecoveryKeyStoreState& state() { return state_; }
 
-class MockRecoveryKeyStoreControllerObserver
-    : public RecoveryKeyStoreController::Observer {
- public:
-  MockRecoveryKeyStoreControllerObserver() = default;
-  ~MockRecoveryKeyStoreControllerObserver() = default;
+  void WriteRecoveryKeyStoreState(
+      const trusted_vault_pb::RecoveryKeyStoreState& state) override {
+    state_ = state;
+  }
 
-  MOCK_METHOD(void,
-              OnUpdateRecoveryKeyStore,
-              (const std::vector<RecoveryKeyStoreController::ApplicationKey>&),
-              (override));
+  void AddRecoveryKeyToSecurityDomain(
+      const std::vector<uint8_t>& public_key,
+      RecoveryKeyRegistrationCallback callback) override {
+    std::move(callback).Run(TrustedVaultRegistrationStatus::kSuccess);
+  }
+
+ private:
+  trusted_vault_pb::RecoveryKeyStoreState state_;
 };
 
 CoreAccountInfo TestAccountInfo() {
@@ -130,8 +149,6 @@ CoreAccountInfo TestAccountInfo() {
 
 class RecoveryKeyStoreControllerAshTest : public testing::Test {
  protected:
-  using ApplicationKey = RecoveryKeyStoreController::ApplicationKey;
-
   RecoveryKeyStoreControllerAshTest() {
     ash::UserDataAuthClient::OverrideGlobalInstanceForTesting(&user_data_auth_);
     connection_holder_ =
@@ -155,7 +172,7 @@ class RecoveryKeyStoreControllerAshTest : public testing::Test {
                                        _))
         .WillOnce(
             [status](const CoreAccountInfo& account_info,
-                     const trusted_vault_pb::UpdateVaultRequest& request,
+                     const trusted_vault_pb::Vault& request,
                      RecoveryKeyStoreConnection::UpdateRecoveryKeyStoreCallback
                          callback) {
               // Invoke `callback` asynchronously to avoid hair pinning.
@@ -165,12 +182,7 @@ class RecoveryKeyStoreControllerAshTest : public testing::Test {
             });
   }
 
-  void ExpectObserverUpdateWithPasskeyApplicationKey() {
-    EXPECT_CALL(observer_,
-                OnUpdateRecoveryKeyStore(ContainsPasskeyApplicationKey()));
-  }
-
-  void StartController(base::Time last_update = base::Time(),
+  void StartController(base::Time last_update = base::Time::UnixEpoch(),
                        base::TimeDelta update_period = base::TimeDelta::Max()) {
     CHECK(!controller_);
     CHECK(connection_holder_);
@@ -178,10 +190,16 @@ class RecoveryKeyStoreControllerAshTest : public testing::Test {
         base::SequencedTaskRunner::GetCurrentDefault(), account_id_,
         kTestDeviceId);
     controller_ = std::make_unique<RecoveryKeyStoreController>(
-        account_info_, std::move(recovery_key_provider),
-        std::move(connection_holder_), &observer_, /*last_update=*/last_update,
-        /*update_period=*/update_period);
+        std::move(recovery_key_provider), std::move(connection_holder_),
+        &delegate_);
+    trusted_vault_pb::RecoveryKeyStoreState last_state;
+    last_state.set_recovery_key_store_upload_enabled(true);
+    last_state.set_last_recovery_key_store_update_millis_since_unix_epoch(
+        last_update.InMillisecondsSinceUnixEpoch());
+    controller_->StartPeriodicUploads(account_info_, last_state, update_period);
   }
+
+  void StopController() { controller_->StopPeriodicUploads(); }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -194,7 +212,7 @@ class RecoveryKeyStoreControllerAshTest : public testing::Test {
   std::unique_ptr<RecoveryKeyStoreController> controller_;
   raw_ptr<MockRecoveryKeyStoreConnection> connection_;
   std::unique_ptr<MockRecoveryKeyStoreConnection> connection_holder_;
-  MockRecoveryKeyStoreControllerObserver observer_;
+  FakeRecoveryKeyStoreControllerDelegate delegate_;
 };
 
 TEST_F(RecoveryKeyStoreControllerAshTest,
@@ -210,9 +228,10 @@ TEST_F(RecoveryKeyStoreControllerAshTest,
       GetRecoverableKeyStoresReplyBuilder().AddPinKeyStore().Build());
   ExpectConnectionUpdateRecoveryKeyStoreCallAndReply(
       UpdateRecoveryKeyStoreStatus::kSuccess);
-  ExpectObserverUpdateWithPasskeyApplicationKey();
   StartController();
   task_environment_.RunUntilIdle();
+  EXPECT_THAT(delegate_.state(),
+              RecoveryKeyStoreStatePublicKeyEq(kPublicKeyBytes));
 }
 
 TEST_F(RecoveryKeyStoreControllerAshTest,
@@ -221,9 +240,10 @@ TEST_F(RecoveryKeyStoreControllerAshTest,
       GetRecoverableKeyStoresReplyBuilder().AddPasswordKeyStore().Build());
   ExpectConnectionUpdateRecoveryKeyStoreCallAndReply(
       UpdateRecoveryKeyStoreStatus::kSuccess);
-  ExpectObserverUpdateWithPasskeyApplicationKey();
   StartController();
   task_environment_.RunUntilIdle();
+  EXPECT_THAT(delegate_.state(),
+              RecoveryKeyStoreStatePublicKeyEq(kPublicKeyBytes));
 }
 
 TEST_F(
@@ -236,9 +256,10 @@ TEST_F(
           .Build());
   ExpectConnectionUpdateRecoveryKeyStoreCallAndReply(
       UpdateRecoveryKeyStoreStatus::kSuccess);
-  ExpectObserverUpdateWithPasskeyApplicationKey();
   StartController();
   task_environment_.RunUntilIdle();
+  EXPECT_THAT(delegate_.state(),
+              RecoveryKeyStoreStatePublicKeyEq(kPublicKeyBytes));
 }
 
 TEST_F(RecoveryKeyStoreControllerAshTest,
@@ -257,11 +278,12 @@ TEST_F(RecoveryKeyStoreControllerAshTest,
       GetRecoverableKeyStoresReplyBuilder().AddPinKeyStore().Build());
   ExpectConnectionUpdateRecoveryKeyStoreCallAndReply(
       UpdateRecoveryKeyStoreStatus::kSuccess);
-  ExpectObserverUpdateWithPasskeyApplicationKey();
   StartController(
       /*last_update=*/base::Time::Now() - kTestUpdatePeriod - base::Seconds(1),
       /*update_period=*/kTestUpdatePeriod);
   task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_THAT(delegate_.state(),
+              RecoveryKeyStoreStatePublicKeyEq(kPublicKeyBytes));
 }
 
 TEST_F(RecoveryKeyStoreControllerAshTest, ShouldScheduleUpdateAfterSuccess) {
@@ -269,7 +291,6 @@ TEST_F(RecoveryKeyStoreControllerAshTest, ShouldScheduleUpdateAfterSuccess) {
       GetRecoverableKeyStoresReplyBuilder().AddPinKeyStore().Build());
   ExpectConnectionUpdateRecoveryKeyStoreCallAndReply(
       UpdateRecoveryKeyStoreStatus::kSuccess);
-  ExpectObserverUpdateWithPasskeyApplicationKey();
   StartController(/*last_update=*/base::Time(),
                   /*update_period=*/kTestUpdatePeriod);
 
@@ -281,8 +302,9 @@ TEST_F(RecoveryKeyStoreControllerAshTest, ShouldScheduleUpdateAfterSuccess) {
       GetRecoverableKeyStoresReplyBuilder().AddPinKeyStore().Build());
   ExpectConnectionUpdateRecoveryKeyStoreCallAndReply(
       UpdateRecoveryKeyStoreStatus::kSuccess);
-  ExpectObserverUpdateWithPasskeyApplicationKey();
   task_environment_.FastForwardBy(base::Seconds(1) + base::Milliseconds(1));
+  EXPECT_THAT(delegate_.state(),
+              RecoveryKeyStoreStatePublicKeyEq(kPublicKeyBytes));
 }
 
 TEST_F(RecoveryKeyStoreControllerAshTest, ShouldScheduleUpdateAfterError) {
@@ -302,8 +324,28 @@ TEST_F(RecoveryKeyStoreControllerAshTest, ShouldScheduleUpdateAfterError) {
       GetRecoverableKeyStoresReplyBuilder().AddPinKeyStore().Build());
   ExpectConnectionUpdateRecoveryKeyStoreCallAndReply(
       UpdateRecoveryKeyStoreStatus::kSuccess);
-  ExpectObserverUpdateWithPasskeyApplicationKey();
   task_environment_.FastForwardBy(base::Seconds(1) + base::Milliseconds(1));
+  EXPECT_THAT(delegate_.state(),
+              RecoveryKeyStoreStatePublicKeyEq(kPublicKeyBytes));
+}
+
+TEST_F(RecoveryKeyStoreControllerAshTest, ShouldCeaseUploadsAfterStopping) {
+  ExpectGetRecoverableKeyStoresCallAndReply(
+      GetRecoverableKeyStoresReplyBuilder().AddPinKeyStore().Build());
+  ExpectConnectionUpdateRecoveryKeyStoreCallAndReply(
+      UpdateRecoveryKeyStoreStatus::kSuccess);
+  StartController(/*last_update=*/base::Time(),
+                  /*update_period=*/kTestUpdatePeriod);
+
+  // Allow the initial upload to proceed.
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_THAT(delegate_.state(),
+              RecoveryKeyStoreStatePublicKeyEq(kPublicKeyBytes));
+
+  StopController();
+
+  // No further uploads should occur.
+  task_environment_.FastForwardBy(2 * kTestUpdatePeriod);
 }
 
 }  // namespace

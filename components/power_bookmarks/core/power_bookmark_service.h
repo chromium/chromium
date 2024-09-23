@@ -25,7 +25,7 @@ class BookmarkModel;
 }  // namespace bookmarks
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 namespace power_bookmarks {
@@ -69,7 +69,7 @@ class PowerBookmarkService : public KeyedService,
 
   // For sync codebase only: instantiates a controller delegate to interact with
   // PowerBookmarkSyncBridge. Must be called from the UI thread.
-  std::unique_ptr<syncer::ModelTypeControllerDelegate>
+  std::unique_ptr<syncer::DataTypeControllerDelegate>
   CreateSyncControllerDelegate();
 
   // Returns a vector of Powers for the given `url` through the given
@@ -115,7 +115,7 @@ class PowerBookmarkService : public KeyedService,
 
   // Delete the given `guid` in the database, if it exists. Success of the
   // operation is returned through the given `callback`.
-  // TODO(crbug.com/1378793): Encapsulate the storage key if possible.
+  // TODO(crbug.com/40875199): Encapsulate the storage key if possible.
   void DeletePower(const base::Uuid& guid, SuccessCallback callback);
 
   // Delete all powers for the given `url`. Success of the operation is
@@ -137,8 +137,7 @@ class PowerBookmarkService : public KeyedService,
   void RemoveDataProvider(PowerBookmarkDataProvider* data_provider);
 
   // BaseBookmarkModelObserver implementation.
-  void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
-                         const bookmarks::BookmarkNode* parent,
+  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
                          size_t index,
                          bool newly_added) override;
   void BookmarkModelChanged() override {}

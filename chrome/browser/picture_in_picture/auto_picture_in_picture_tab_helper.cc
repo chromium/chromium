@@ -13,6 +13,7 @@
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "content/public/browser/media_session.h"
@@ -162,14 +163,22 @@ void AutoPictureInPictureTabHelper::MediaSessionActionsChanged(
 
 void AutoPictureInPictureTabHelper::MaybeEnterAutoPictureInPicture() {
   if (!IsEligibleForAutoPictureInPicture()) {
+    MaybeGetVisibility();
     return;
   }
+
+  EnterAutoPictureInPicture();
+}
+
+void AutoPictureInPictureTabHelper::EnterAutoPictureInPicture() {
   auto_picture_in_picture_activation_time_ =
       base::TimeTicks::Now() + blink::kActivationLifespan;
   content::MediaSession::Get(web_contents())->EnterAutoPictureInPicture();
 }
 
 void AutoPictureInPictureTabHelper::MaybeExitAutoPictureInPicture() {
+  get_visibility_weak_factory_.InvalidateWeakPtrs();
+
   if (!is_in_auto_picture_in_picture_) {
     return;
   }
@@ -187,19 +196,17 @@ void AutoPictureInPictureTabHelper::MaybeStartOrStopObservingTabStrip() {
   }
 }
 
-bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture() const {
-  // The tab must either have playback or be using camera/microphone to autopip.
-  if (!HasSufficientPlayback() && !IsUsingCameraOrMicrophone()) {
+bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
+    HasSufficientlyVisibleVideo has_sufficiently_visible_video) {
+  // Don't try to autopip if picture-in-picture is currently disabled.
+  if (PictureInPictureWindowManager::GetInstance()
+          ->IsPictureInPictureDisabled()) {
     return false;
   }
 
-  // The user may block autopip via a content setting. Also, if we're in an
-  // incognito window, then we should treat "ask" as "block".
-  ContentSetting setting = GetCurrentContentSetting();
-  if (setting == CONTENT_SETTING_BLOCK ||
-      (setting == CONTENT_SETTING_ASK &&
-       Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-           ->IsIncognitoProfile())) {
+  // The tab must either have playback or be using camera/microphone to autopip.
+  if (!MeetsVideoPlaybackConditions(has_sufficiently_visible_video) &&
+      !IsUsingCameraOrMicrophone()) {
     return false;
   }
 
@@ -219,24 +226,50 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture() const {
     return false;
   }
 
+  // The user may block autopip via a content setting. Also, if we're in an
+  // incognito window, then we should treat "ask" as "block". This should be the
+  // final check before triggering autopip since it will record metrics about
+  // why autopip has been blocked.
+  ContentSetting setting = GetCurrentContentSetting();
+  if (setting == CONTENT_SETTING_BLOCK) {
+    EnsureAutoPipSettingHelper();
+    auto_pip_setting_helper_->OnAutoPipBlockedByPermission();
+    return false;
+  } else if (setting == CONTENT_SETTING_ASK &&
+             Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+                 ->IsIncognitoProfile()) {
+    EnsureAutoPipSettingHelper();
+    auto_pip_setting_helper_->OnAutoPipBlockedByIncognito();
+    return false;
+  }
+
   return true;
 }
 
-bool AutoPictureInPictureTabHelper::HasSufficientPlayback() const {
+bool AutoPictureInPictureTabHelper::MeetsVideoPlaybackConditions(
+    HasSufficientlyVisibleVideo has_sufficiently_visible_video) const {
   if (!base::FeatureList::IsEnabled(
           media::kAutoPictureInPictureForVideoPlayback)) {
     return false;
   }
 
-  // TODO(https://crbug.com/1464351): Make sure that there is a video that is
-  // large enough and visible.
-  return has_audio_focus_ && is_playing_;
+  return has_audio_focus_ && is_playing_ && WasRecentlyAudible() &&
+         (has_sufficiently_visible_video == HasSufficientlyVisibleVideo::kYes);
 }
 
 bool AutoPictureInPictureTabHelper::IsUsingCameraOrMicrophone() const {
   return MediaCaptureDevicesDispatcher::GetInstance()
       ->GetMediaStreamCaptureIndicator()
       ->IsCapturingUserMedia(web_contents());
+}
+
+bool AutoPictureInPictureTabHelper::WasRecentlyAudible() const {
+  auto* audible_helper = RecentlyAudibleHelper::FromWebContents(web_contents());
+  if (!audible_helper) {
+    return false;
+  }
+
+  return audible_helper->WasRecentlyAudible();
 }
 
 ContentSetting AutoPictureInPictureTabHelper::GetCurrentContentSetting() const {
@@ -249,6 +282,39 @@ ContentSetting AutoPictureInPictureTabHelper::GetCurrentContentSetting() const {
     return CONTENT_SETTING_BLOCK;
   }
   return setting;
+}
+
+void AutoPictureInPictureTabHelper::MaybeGetVisibility() {
+  get_visibility_weak_factory_.InvalidateWeakPtrs();
+  content::MediaSession* media_session =
+      content::MediaSession::GetIfExists(web_contents());
+  if (!media_session || is_in_picture_in_picture_) {
+    return;
+  }
+
+  media_session->GetVisibility(
+      base::BindOnce(&AutoPictureInPictureTabHelper::GetVideoVisibility,
+                     get_visibility_weak_factory_.GetWeakPtr()));
+}
+
+void AutoPictureInPictureTabHelper::GetVideoVisibility(
+    bool has_sufficiently_visible_video) {
+  if (!has_sufficiently_visible_video || is_in_picture_in_picture_) {
+    return;
+  }
+
+  if (!IsEligibleForAutoPictureInPicture(HasSufficientlyVisibleVideo::kYes)) {
+    return;
+  }
+
+  EnterAutoPictureInPicture();
+}
+
+void AutoPictureInPictureTabHelper::EnsureAutoPipSettingHelper() {
+  if (!auto_pip_setting_helper_) {
+    auto_pip_setting_helper_ = AutoPipSettingHelper::CreateForWebContents(
+        web_contents(), host_content_settings_map_, auto_blocker_);
+  }
 }
 
 bool AutoPictureInPictureTabHelper::IsInAutoPictureInPicture() const {
@@ -265,7 +331,6 @@ bool AutoPictureInPictureTabHelper::AreAutoPictureInPicturePreconditionsMet()
 std::unique_ptr<AutoPipSettingOverlayView>
 AutoPictureInPictureTabHelper::CreateOverlayPermissionViewIfNeeded(
     base::OnceClosure close_pip_cb,
-    const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow) {
   // Check both preconditions and "in pip", since we don't know if pip is
@@ -279,14 +344,10 @@ AutoPictureInPictureTabHelper::CreateOverlayPermissionViewIfNeeded(
 
   // If we don't have a setting helper associated with this session (site) yet,
   // then create one.
-  if (!auto_pip_setting_helper_) {
-    auto_pip_setting_helper_ = AutoPipSettingHelper::CreateForWebContents(
-        web_contents(), host_content_settings_map_, auto_blocker_);
-  }
+  EnsureAutoPipSettingHelper();
 
   return auto_pip_setting_helper_->CreateOverlayViewIfNeeded(
-      std::move(close_pip_cb), browser_view_overridden_bounds, anchor_view,
-      arrow);
+      std::move(close_pip_cb), anchor_view, arrow);
 }
 
 void AutoPictureInPictureTabHelper::OnUserClosedWindow() {

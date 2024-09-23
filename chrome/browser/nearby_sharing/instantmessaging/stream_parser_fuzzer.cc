@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/nearby_sharing/instantmessaging/stream_parser.h"
+
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stdint.h>
 
 #include <tuple>
 
-#include <fuzzer/FuzzedDataProvider.h>
-
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
-#include "chrome/browser/nearby_sharing/instantmessaging/stream_parser.h"
 #include "third_party/protobuf/src/google/protobuf/stubs/logging.h"
 
 // Does initialization and holds state that's shared across all runs.

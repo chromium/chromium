@@ -1,0 +1,63 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("signin") {
+  sources = [
+    "signin_screen_coordinator.h",
+    "signin_screen_coordinator.mm",
+    "signin_screen_mediator.h",
+    "signin_screen_mediator.mm",
+  ]
+  deps = [
+    ":signin_ui",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/web_resource",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
+    "//ios/chrome/browser/first_run/ui_bundled:utils",
+    "//ios/chrome/browser/first_run/ui_bundled/tos",
+    "//ios/chrome/browser/first_run/ui_bundled/uma",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
+    "//ios/chrome/browser/ui/authentication/identity_chooser",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/chrome/browser/ui/authentication/signin/logging",
+  ]
+}
+
+source_set("signin_ui") {
+  sources = [
+    "signin_screen_consumer.h",
+    "signin_screen_view_controller.h",
+    "signin_screen_view_controller.mm",
+  ]
+  deps = [
+    "//components/signin/public/base:signin_switches",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/first_run/ui_bundled:field_trial",
+    "//ios/chrome/browser/first_run/ui_bundled:utils",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/elements:elements_internal",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/authentication/views",
+    "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:popover_label_view_controller",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  public_deps = [ "//ios/chrome/browser/first_run/ui_bundled:interruptible_chrome_coordinator" ]
+}

@@ -19,8 +19,8 @@
 
 #include <algorithm>
 #include <iterator>
-#include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "client/crashpad_info.h"
@@ -183,17 +183,17 @@ bool PEImageReader::DebugDirectoryInformation(UUID* uuid,
         continue;
       }
 
-      std::unique_ptr<char[]> data(new char[debug_directory.SizeOfData]);
+      auto data = base::HeapArray<char>::Uninit(debug_directory.SizeOfData);
       if (!module_subrange_reader_.ReadMemory(
               Address() + debug_directory.AddressOfRawData,
-              debug_directory.SizeOfData,
-              data.get())) {
+              data.size(),
+              data.data())) {
         LOG(WARNING) << "could not read debug directory from "
                      << module_subrange_reader_.name();
         return false;
       }
 
-      if (*reinterpret_cast<DWORD*>(data.get()) !=
+      if (*reinterpret_cast<DWORD*>(data.data()) !=
           CodeViewRecordPDB70::kSignature) {
         LOG(WARNING) << "encountered non-7.0 CodeView debug record in "
                      << module_subrange_reader_.name();
@@ -201,7 +201,7 @@ bool PEImageReader::DebugDirectoryInformation(UUID* uuid,
       }
 
       CodeViewRecordPDB70* codeview =
-          reinterpret_cast<CodeViewRecordPDB70*>(data.get());
+          reinterpret_cast<CodeViewRecordPDB70*>(data.data());
       *uuid = codeview->uuid;
       *age = codeview->age;
       // This is a NUL-terminated string encoded in the codepage of the system

@@ -7,7 +7,7 @@ var TEST_MESSAGE = 'test_message';
 function assertValidExternalMessageSender(sender) {
   chrome.test.assertEq(chrome.runtime.id, sender.id);
   chrome.test.assertEq(undefined, sender.tlsChannelId);
-  // TODO(crbug.com/931962): Enable after the API implementation gets fixed:
+  // TODO(crbug.com/41441298): Enable after the API implementation gets fixed:
   // chrome.test.assertEq(undefined, sender.tab);
   // chrome.test.assertEq(undefined, sender.frameId);
   // chrome.test.assertEq(undefined, sender.url);

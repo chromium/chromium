@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "ios/chrome/browser/omaha/model/omaha_service.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/chrome/grit/ios_resources.h"
 #include "ios/web/public/webui/web_ui_ios.h"
@@ -95,8 +95,8 @@ OmahaUI::OmahaUI(web::WebUIIOS* web_ui, const std::string& host)
   web_ui->AddMessageHandler(std::make_unique<OmahaDOMHandler>());
 
   // Set up the chrome://omaha/ source.
-  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
-  web::WebUIIOSDataSource::Add(browser_state, CreateOmahaUIHTMLSource());
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
+  web::WebUIIOSDataSource::Add(profile, CreateOmahaUIHTMLSource());
 }
 
 OmahaUI::~OmahaUI() {}

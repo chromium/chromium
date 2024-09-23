@@ -66,7 +66,7 @@ std::string GetFeatureName(crosapi::TelemetryEventCategoryEnum category) {
     case crosapi::TelemetryEventCategoryEnum::kStylusConnected:
       return "os.events.onStylusConnectedEvent";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

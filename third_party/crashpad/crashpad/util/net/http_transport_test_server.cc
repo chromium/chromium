@@ -92,6 +92,18 @@ int HttpTransportTestServerMain(int argc, char* argv[]) {
                  }
                  to_stdout += "\r\n";
                  to_stdout += req.body;
+                 if (req.is_multipart_form_data()) {
+                   std::string boundary;
+                   httplib::detail::parse_multipart_boundary(
+                       req.get_header_value("Content-Type"), boundary);
+                   for (const auto& part : req.files) {
+                     to_stdout += "--" + boundary + "\r\n";
+                     to_stdout += "Content-Disposition: form-data; name=\"" +
+                                  part.first + "\"\r\n\r\n";
+                     to_stdout += part.second.content + "\r\n";
+                   }
+                   to_stdout += "--" + boundary + "--\r\n";
+                 }
 
                  server->stop();
                });

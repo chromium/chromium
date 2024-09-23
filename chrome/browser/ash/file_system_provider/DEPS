@@ -1,0 +1,40 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/file_system_provider",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/fileapi",
+  "+chrome/browser/ash/file_manager",
+  "+chrome/browser/ash/guest_os",
+  "+chrome/browser/ash/login/users",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/chromeos/extensions/file_system_provider",
+  "+chrome/browser/extensions/chrome_app_icon_loader.h",
+  "+chrome/browser/extensions/extension_system_factory.h",
+  "+chrome/browser/extensions/window_controller_list.h",
+  "+chrome/browser/notifications",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ui/app_icon_loader.h",
+  "+chrome/browser/ui/ash/multi_user",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/tabs",
+  "+chrome/common/chrome_features.h",
+  "+chrome/common/extensions",
+  "+chrome/common/pref_names.h",
+  "+chrome/common/webui_url_constants.h",
+  "+chrome/test/base",
+]

@@ -9,7 +9,13 @@ blink_modules_sources("document_picture_in_picture") {
     "picture_in_picture_controller_impl.cc",
     "picture_in_picture_controller_impl.h",
   ]
-  if (!is_android) {
+
+  # This uses target_os rather than current_os (which is what is_android is set
+  # from) for the case of generating the v8 context snapshot for android. When
+  # generating the snapshot for android, blink is compiled with
+  # current_os="linux" and target_os="android". Using target_os is necessary as
+  # we need to compile in the same way as would happen when current_os="android".
+  if (!target_os_is_android) {
     sources += [
       "document_picture_in_picture.cc",
       "document_picture_in_picture.h",

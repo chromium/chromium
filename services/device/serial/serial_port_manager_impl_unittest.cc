@@ -42,6 +42,7 @@ namespace device {
 
 namespace {
 
+using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
 using ::testing::_;
@@ -68,6 +69,7 @@ class MockSerialPortManagerClient : public mojom::SerialPortManagerClient {
   // mojom::SerialPortManagerClient
   MOCK_METHOD1(OnPortAdded, void(mojom::SerialPortInfoPtr));
   MOCK_METHOD1(OnPortRemoved, void(mojom::SerialPortInfoPtr));
+  MOCK_METHOD1(OnPortConnectedStateChanged, void(mojom::SerialPortInfoPtr));
 
  private:
   mojo::Receiver<mojom::SerialPortManagerClient> receiver_{this};
@@ -119,7 +121,8 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
   // other service UUIDs.
   std::unique_ptr<MockBluetoothDevice> CreateSerialPortProfileDevice() {
     auto mock_device = std::make_unique<MockBluetoothDevice>(
-        adapter_.get(), 0, "Test Device", kDeviceAddress, false, false);
+        adapter_.get(), /*bluetooth_class=*/0, "Test Device", kDeviceAddress,
+        /*initially_paired=*/true, /*connected=*/true);
     mock_device->AddUUID(GetSerialPortProfileUUID());
     return mock_device;
   }
@@ -128,9 +131,6 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
   // is called at the beginning of test cases that do require a
   // MockBluetoothAdapter.
   void SetupBluetoothEnumerator() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kEnableBluetoothSerialPortProfileInSerialApi}, {});
-
     ON_CALL(*adapter_, GetDevices())
         .WillByDefault(
             Invoke(adapter_.get(), &MockBluetoothAdapter::GetConstMockDevices));
@@ -145,16 +145,9 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
 
     manager_->SetBluetoothSerialEnumeratorForTesting(
         std::move(bluetooth_enumerator));
-
-    base::RunLoop run_loop;
-    bluetooth_enumerator_->OnGotAdapterForTesting(run_loop.QuitClosure());
-    run_loop.Run();
   }
 
   void SetupBluetoothEnumeratorWithExpectations() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kEnableBluetoothSerialPortProfileInSerialApi}, {});
-
     ON_CALL(*adapter_, GetDevices())
         .WillByDefault(
             Invoke(adapter_.get(), &MockBluetoothAdapter::GetConstMockDevices));
@@ -179,10 +172,6 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
 
     manager_->SetBluetoothSerialEnumeratorForTesting(
         std::move(bluetooth_enumerator));
-
-    base::RunLoop run_loop;
-    bluetooth_enumerator_->OnGotAdapterForTesting(run_loop.QuitClosure());
-    run_loop.Run();
   }
 
  protected:
@@ -197,7 +186,6 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
       base::MakeRefCounted<MockBluetoothAdapter>();
   scoped_refptr<MockBluetoothSocket> mock_socket_ =
       base::MakeRefCounted<MockBluetoothSocket>();
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   void Bind(mojo::PendingReceiver<mojom::SerialPortManager> receiver) {
     manager_->Bind(std::move(receiver));
@@ -448,9 +436,7 @@ TEST_F(SerialPortManagerImplTest, BluetoothDeviceChanged) {
   updated_device->AddUUID(
       device::BluetoothUUID("25e97ff7-24ce-4c4c-8951-f764a708f7b5"));
   TestFuture<mojom::SerialPortInfoPtr> port_added_future;
-  EXPECT_CALL(client, OnPortAdded).WillOnce([&](mojom::SerialPortInfoPtr port) {
-    port_added_future.SetValue(std::move(port));
-  });
+  EXPECT_CALL(client, OnPortAdded).WillOnce(InvokeFuture(port_added_future));
   bluetooth_enumerator_->DeviceChangedForTesting(adapter_.get(),
                                                  updated_device.get());
   ASSERT_TRUE(port_added_future.Get());
@@ -461,11 +447,43 @@ TEST_F(SerialPortManagerImplTest, BluetoothDeviceChanged) {
             mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM);
 }
 
+TEST_F(SerialPortManagerImplTest, BluetoothDeviceConnectedStateChanged) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kSerialPortConnected);
+  SetupBluetoothEnumerator();
+  mojo::Remote<mojom::SerialPortManager> port_manager;
+  Bind(port_manager.BindNewPipeAndPassReceiver());
+
+  MockSerialPortManagerClient client;
+  port_manager->SetClient(client.BindNewPipeAndPassRemote());
+
+  // Call GetDevices to ensure the port manager is initialized and the client is
+  // set.
+  TestFuture<std::vector<mojom::SerialPortInfoPtr>> get_devices_future;
+  port_manager->GetDevices(get_devices_future.GetCallback());
+  auto port_it =
+      base::ranges::find_if(get_devices_future.Get(), [&](const auto& port) {
+        return port->path == base::FilePath::FromASCII(kDeviceAddress);
+      });
+  ASSERT_NE(port_it, get_devices_future.Get().end());
+  EXPECT_EQ((*port_it)->path, base::FilePath::FromASCII(kDeviceAddress));
+  EXPECT_EQ((*port_it)->type, mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM);
+  const base::UnguessableToken token = (*port_it)->token;
+
+  // Simulate the device becoming disconnected.
+  TestFuture<mojom::SerialPortInfoPtr> disconnect_future;
+  EXPECT_CALL(client, OnPortConnectedStateChanged)
+      .WillOnce(InvokeFuture(disconnect_future));
+  auto updated_device = CreateSerialPortProfileDevice();
+  updated_device->SetConnected(false);
+  bluetooth_enumerator_->DeviceChangedForTesting(adapter_.get(),
+                                                 updated_device.get());
+  EXPECT_EQ(disconnect_future.Get()->token, token);
+  EXPECT_FALSE(disconnect_future.Get()->connected);
+}
+
 TEST_F(SerialPortManagerImplTest,
        BluetoothSerialDeviceEnumerator_DeleteBeforeAdapterInit) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kEnableBluetoothSerialPortProfileInSerialApi}, {});
-
   auto adapter = base::MakeRefCounted<TestingBluetoothAdapter>();
   BluetoothAdapterFactory::SetAdapterForTesting(adapter);
 

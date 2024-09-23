@@ -1,3 +1,62 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/accessibility",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/app",
+  "+chrome/browser/accessibility",
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/app_list",
+  "+chrome/browser/ash/base",
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/login",
+  "+chrome/browser/ash/policy/enrollment",
+  "+chrome/browser/ash/preferences/preferences.h",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/system_web_apps",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/extensions/api/braille_display_private",
+  "+chrome/browser/extensions/component_loader.h",
+  "+chrome/browser/extensions/error_console",
+  "+chrome/browser/extensions/extension_apitest.h",
+  "+chrome/browser/extensions/extension_browsertest.h",
+  "+chrome/browser/extensions/extension_service.h",
+  "+chrome/browser/lifetime",
+  "+chrome/browser/prefs",
+  "+chrome/browser/profiles",
+  "+chrome/browser/speech",
+  "+chrome/browser/ui/ash",
+  "+chrome/browser/ui/aura/accessibility",
+  "+chrome/browser/ui/browser_commands.h",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/chrome_pages.h",
+  "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  "+chrome/browser/ui/singleton_tabs.h",
+  "+chrome/browser/ui/tabs",
+  "+chrome/browser/ui/view_ids.h",
+  "+chrome/common/chrome_paths.h",
+  "+chrome/common/chrome_switches.h",
+  "+chrome/common/extensions",
+  "+chrome/common/pref_names.h",
+  "+chrome/common/url_constants.h",
+  "+chrome/common/webui_url_constants.h",
+  "+chrome/grit",
+  "+chrome/test/base",
+]
+
 specific_include_rules = {
   # Testing
   ".*_browsertest\.cc": [

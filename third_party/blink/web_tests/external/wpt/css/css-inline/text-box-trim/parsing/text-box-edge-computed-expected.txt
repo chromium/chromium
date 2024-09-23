@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] Property text-box-edge value 'ideographic'
+  assert_true: 'ideographic' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'ideographic-ink'
+  assert_true: 'ideographic-ink' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'text ideographic'
+  assert_true: 'text ideographic' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'text ideographic-ink'
+  assert_true: 'text ideographic-ink' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'cap ideographic'
+  assert_true: 'cap ideographic' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'cap ideographic-ink'
+  assert_true: 'cap ideographic-ink' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'ex ideographic'
+  assert_true: 'ex ideographic' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'ex ideographic-ink'
+  assert_true: 'ex ideographic-ink' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'ideographic text'
+  assert_true: 'ideographic text' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'ideographic alphabetic'
+  assert_true: 'ideographic alphabetic' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'ideographic ideographic'
+  assert_true: 'ideographic ideographic' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'ideographic ideographic-ink'
+  assert_true: 'ideographic ideographic-ink' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'ideographic-ink text'
+  assert_true: 'ideographic-ink text' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'ideographic-ink alphabetic'
+  assert_true: 'ideographic-ink alphabetic' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'ideographic-ink ideographic'
+  assert_true: 'ideographic-ink ideographic' is a supported value for text-box-edge. expected true got false
+[FAIL] Property text-box-edge value 'ideographic-ink ideographic-ink'
+  assert_true: 'ideographic-ink ideographic-ink' is a supported value for text-box-edge. expected true got false
+Harness: the test ran to completion.
+

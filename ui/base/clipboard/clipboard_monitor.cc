@@ -25,15 +25,13 @@ ClipboardMonitor* ClipboardMonitor::GetInstance() {
 
 void ClipboardMonitor::NotifyClipboardDataChanged() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  for (ClipboardObserver& observer : observers_)
-    observer.OnClipboardDataChanged();
+  observers_.Notify(&ClipboardObserver::OnClipboardDataChanged);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ClipboardMonitor::NotifyClipboardDataRead() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  for (ClipboardObserver& observer : observers_)
-    observer.OnClipboardDataRead();
+  observers_.Notify(&ClipboardObserver::OnClipboardDataRead);
 }
 #endif
 

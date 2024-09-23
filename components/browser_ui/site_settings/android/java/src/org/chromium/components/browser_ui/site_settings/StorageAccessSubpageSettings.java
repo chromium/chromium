@@ -8,7 +8,10 @@ import android.os.Bundle;
 
 import androidx.preference.PreferenceScreen;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -20,7 +23,8 @@ import java.util.List;
  * if they are allowed or blocked. This fragment is opened on top of {@link SingleCategorySettings}.
  */
 public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
-        implements CustomDividerFragment,
+        implements SettingsPage,
+                CustomDividerFragment,
                 StorageAccessWebsitePreference.OnStorageAccessWebsiteReset {
     public static final String SUBTITLE_KEY = "subtitle";
 
@@ -30,6 +34,7 @@ public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
     private Website mSite;
     private Boolean mIsAllowed;
     private TextMessagePreference mSubtitle;
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public boolean hasDivider() {
@@ -43,7 +48,7 @@ public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
         Object extraSite = getArguments().getSerializable(EXTRA_STORAGE_ACCESS_STATE);
         assert extraSite != null;
         mSite = (Website) extraSite;
-        getActivity().setTitle(mSite.getTitleForPreferenceRow());
+        mPageTitle.set(mSite.getTitleForPreferenceRow());
 
         mIsAllowed = getArguments().getBoolean(StorageAccessSubpageSettings.EXTRA_ALLOWED);
         mSubtitle = (TextMessagePreference) findPreference(SUBTITLE_KEY);
@@ -57,6 +62,11 @@ public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
                                 mSite.getTitleForPreferenceRow()));
 
         updateEmbeddedSites();
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     private void resetList() {

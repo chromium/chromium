@@ -13,12 +13,12 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_deletion_observer.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
@@ -52,6 +52,10 @@ class MockHost : public ProfilePickerWebContentsHost {
   MOCK_METHOD(web_modal::WebContentsModalDialogHost*,
               GetWebContentsModalDialogHost,
               ());
+  MOCK_METHOD(void, Reset, (StepSwitchFinishedCallback callback));
+  MOCK_METHOD(void,
+              ShowForceSigninErrorDialog,
+              (const ForceSigninUIError& error, bool success));
 };
 
 Profile* GetContentsProfile(content::WebContents* contents) {

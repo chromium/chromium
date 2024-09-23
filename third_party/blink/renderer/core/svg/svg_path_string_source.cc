@@ -18,6 +18,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/svg/svg_path_string_source.h"
 
 #include "base/notreached.h"
@@ -26,30 +31,31 @@
 
 namespace blink {
 
-SVGPathStringSource::SVGPathStringSource(StringView source)
-    : is_8bit_source_(source.Is8Bit()),
-      previous_command_(kPathSegUnknown),
-      source_(source) {
-  DCHECK(!source.IsNull());
+namespace {
 
-  if (is_8bit_source_) {
-    current_.character8_ = source.Characters8();
-    end_.character8_ = current_.character8_ + source.length();
-  } else {
-    current_.character16_ = source.Characters16();
-    end_.character16_ = current_.character16_ + source.length();
+// only used to parse largeArcFlag and sweepFlag which must be a "0" or "1"
+// and might not have any whitespace/comma after it
+template <typename CharType>
+bool ParseArcFlag(const CharType*& ptr, const CharType* end, bool& flag) {
+  if (ptr >= end) {
+    return false;
   }
-  EatWhitespace();
+  const CharType flag_char = *ptr;
+  if (flag_char == '0') {
+    flag = false;
+  } else if (flag_char == '1') {
+    flag = true;
+  } else {
+    return false;
+  }
+
+  ptr++;
+  SkipOptionalSVGSpacesOrDelimiter(ptr, end);
+
+  return true;
 }
 
-void SVGPathStringSource::EatWhitespace() {
-  if (is_8bit_source_)
-    SkipOptionalSVGSpaces(current_.character8_, end_.character8_);
-  else
-    SkipOptionalSVGSpaces(current_.character16_, end_.character16_);
-}
-
-static SVGPathSegType MapLetterToSegmentType(unsigned lookahead) {
+SVGPathSegType MapLetterToSegmentType(unsigned lookahead) {
   switch (lookahead) {
     case 'Z':
     case 'z':
@@ -95,14 +101,14 @@ static SVGPathSegType MapLetterToSegmentType(unsigned lookahead) {
   }
 }
 
-static bool IsNumberStart(unsigned lookahead) {
+bool IsNumberStart(unsigned lookahead) {
   return (lookahead >= '0' && lookahead <= '9') || lookahead == '+' ||
          lookahead == '-' || lookahead == '.';
 }
 
-static bool MaybeImplicitCommand(unsigned lookahead,
-                                 SVGPathSegType previous_command,
-                                 SVGPathSegType& next_command) {
+bool MaybeImplicitCommand(unsigned lookahead,
+                          SVGPathSegType previous_command,
+                          SVGPathSegType& next_command) {
   // Check if the current lookahead may start a number - in which case it
   // could be the start of an implicit command. The 'close' command does not
   // have any parameters though and hence can't have an implicit
@@ -122,6 +128,32 @@ static bool MaybeImplicitCommand(unsigned lookahead,
   return true;
 }
 
+}  // namespace
+
+SVGPathStringSource::SVGPathStringSource(StringView source)
+    : is_8bit_source_(source.Is8Bit()),
+      previous_command_(kPathSegUnknown),
+      source_(source) {
+  DCHECK(!source.IsNull());
+
+  if (is_8bit_source_) {
+    current_.character8_ = source.Characters8();
+    end_.character8_ = current_.character8_ + source.length();
+  } else {
+    current_.character16_ = source.Characters16();
+    end_.character16_ = current_.character16_ + source.length();
+  }
+  EatWhitespace();
+}
+
+void SVGPathStringSource::EatWhitespace() {
+  if (is_8bit_source_) {
+    SkipOptionalSVGSpaces(current_.character8_, end_.character8_);
+  } else {
+    SkipOptionalSVGSpaces(current_.character16_, end_.character16_);
+  }
+}
+
 void SVGPathStringSource::SetErrorMark(SVGParseStatus status) {
   if (error_.Status() != SVGParseStatus::kNoError)
     return;
@@ -139,8 +171,9 @@ float SVGPathStringSource::ParseNumberWithError() {
   else
     error =
         !ParseNumber(current_.character16_, end_.character16_, number_value);
-  if (UNLIKELY(error))
+  if (error) [[unlikely]] {
     SetErrorMark(SVGParseStatus::kExpectedNumber);
+  }
   return number_value;
 }
 
@@ -151,8 +184,9 @@ bool SVGPathStringSource::ParseArcFlagWithError() {
     error = !ParseArcFlag(current_.character8_, end_.character8_, flag_value);
   else
     error = !ParseArcFlag(current_.character16_, end_.character16_, flag_value);
-  if (UNLIKELY(error))
+  if (error) [[unlikely]] {
     SetErrorMark(SVGParseStatus::kExpectedArcFlag);
+  }
   return flag_value;
 }
 
@@ -162,7 +196,7 @@ PathSegmentData SVGPathStringSource::ParseSegment() {
   unsigned lookahead =
       is_8bit_source_ ? *current_.character8_ : *current_.character16_;
   SVGPathSegType command = MapLetterToSegmentType(lookahead);
-  if (UNLIKELY(previous_command_ == kPathSegUnknown)) {
+  if (previous_command_ == kPathSegUnknown) [[unlikely]] {
     // First command has to be a moveto.
     if (command != kPathSegMoveToRel && command != kPathSegMoveToAbs) {
       SetErrorMark(SVGParseStatus::kExpectedMoveToCommand);
@@ -241,11 +275,12 @@ PathSegmentData SVGPathStringSource::ParseSegment() {
       segment.target_point.set_y(ParseNumberWithError());
       break;
     case kPathSegUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
-  if (UNLIKELY(error_.Status() != SVGParseStatus::kNoError))
+  if (error_.Status() != SVGParseStatus::kNoError) [[unlikely]] {
     segment.command = kPathSegUnknown;
+  }
   return segment;
 }
 

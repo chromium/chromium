@@ -1,39 +1,17 @@
 <style>
-  /* Invert cr-button colors. These are normally dark mode colors. */
-  cr-button {
-    --ink-color: var(--google-blue-300);
-    --text-color: var(--google-blue-300);
-  }
-
-  :host-context(body.jelly-enabled) cr-button {
-    --ink-color: var(--cros-color-primary-inverted);
-    --text-color: var(--cros-color-primary-inverted);
-  }
-
   /* Override some cr-button variables. */
-  cr-button {
+  #container cr-button {
     --active-shadow-rgb: transparent;
     --border-color: transparent;
+    --cr-button-height: 36px;
     --hover-border-color: transparent;
     --hover-bg-color: transparent;
     --hover-bg-action: transparent;
-    --cr-button-height: 36px;
+    --ink-color: var(--cros-color-primary-inverted);
+    --text-color: var(--cros-color-primary-inverted);
     border: 0;
     margin: 0;
     padding: 8px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    /* Invert cr-button colors. These are normally light mode colors. */
-    cr-button {
-      --ink-color: var(--google-blue-600);
-      --text-color: var(--google-blue-600);
-    }
-
-    :host-context(body.jelly-enabled) cr-button {
-    --ink-color: var(--cros-color-primary-inverted);
-    --text-color: var(--cros-color-primary-inverted);
-    }
   }
 
   #container {
@@ -53,7 +31,6 @@
     margin: 0;
     margin-inline-end: 16px;
   }
-
 </style>
 <template is="dom-if" if="[[showError_]]">
   <div id="container">

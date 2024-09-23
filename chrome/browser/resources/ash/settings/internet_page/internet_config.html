@@ -10,8 +10,10 @@
 </style>
 
 <cr-dialog id="dialog" close-text="$i18n{close}">
-  <div slot="title">[[getDialogTitle_(name, type, showConnect)]]</div>
-  <div slot="body">
+  <div id="dialogTitle" slot="title">
+    [[getDialogTitle_(name, type, showConnect)]]
+  </div>
+  <div id="dialogBody" slot="body">
     <network-config id="networkConfig" class="flex"
         guid="[[guid]]" name="{{name}}" type="{{type}}"
         enable-connect="{{enableConnect_}}" enable-save="{{enableSave_}}"

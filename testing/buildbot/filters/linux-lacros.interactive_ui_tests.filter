@@ -1,4 +1,4 @@
-# TODO(crbug.com/1443374) Fix BookmarkBarViewTests.
+# TODO(crbug.com/40267327) Fix BookmarkBarViewTests.
 # The following tests fail consistently.
 -BookmarkBarViewTest22.CloseSourceBrowserDuringDrag
 -BookmarkBarViewTest28.ClickWithModifierOnFolderOpensAllBookmarks
@@ -9,7 +9,7 @@
 # The following test is flaky.
 -BookmarkBarViewTest21.ContextMenusForEmptyFolder
 
-# TODO(crbug.com/1111979) Enable all tests on lacros.
+# TODO(crbug.com/40142821) Enable all tests on lacros.
 # The following tests fail consistently.
 -CrossSiteSubframe/DragAndDropBrowserTest.CrossTabDrag/0
 -CrossSiteSubframe/DragAndDropBrowserTest.DragCorsSameOriginImageBetweenFrames/0
@@ -30,10 +30,10 @@
 -MenuViewDragAndDropTestNestedDrag.MenuViewDragAndDropNestedDrag
 -TouchMode/InteractionTestUtilMouseUiTest.Drag/0
 
-# TODO(crbug.com/1195712): Implement the feature for Wayland.
+# TODO(crbug.com/40759171): Implement the feature for Wayland.
 -GlobalCommandsApiTest.GlobalCommand
 
-# TODO(crbug.com/1208111): Was flaky with weston-test, fails consistently with
+# TODO(crbug.com/40765889): Was flaky with weston-test, fails consistently with
 # ui-controls.
 -MenuControllerUITest.TestMouseOverShownMenu
 
@@ -42,7 +42,7 @@
 # of the SendKey*() functions currently DCHECK if the command key is pressed.
 -CommandsApiTest.ChromeOSConversions
 
-# TODO(crbug.com/1336691) Fix TabDragging tests.
+# TODO(crbug.com/40228994) Fix TabDragging tests.
 # The following tests fail consistently.
 -TabDragging/DetachToBrowserTabDragControllerTest.DragAllToSeparateWindow/*
 -TabDragging/DetachToBrowserTabDragControllerTest.DragDirectlyToSecondWindow/0
@@ -54,20 +54,12 @@
 -TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/3
 -TabDragging/DetachToBrowserTabDragControllerTest.DragWindowIntoGroup/1
 -TabDragging/DetachToBrowserTabDragControllerTest.DragWindowIntoGroup/3
+-TabDragging/DetachToBrowserTabDragControllerTest.FastResizeDuringDragging/*
+-TabDragging/DetachToBrowserTabDragControllerTest.NewBrowserWindowState/*
+-TabDragging/DetachToBrowserTabDragControllerTest.OffsetForDraggingInMaximizedWindow/*
 -TabDragging/DetachToBrowserTabDragControllerTest.OffsetForDraggingTab/*
--TabDragging/DetachToBrowserTabDragControllerTest.RevertDragSingleTabGroupIntoGroup/*
--TabDragging/DetachToBrowserTabDragControllerTest.RevertDragSingleTabIntoGroup/*
--TabDragging/DetachToBrowserTabDragControllerTest.RevertHeaderDragLeft/*
--TabDragging/DetachToBrowserTabDragControllerTest.RevertHeaderDragRight/*
-# The following tests are flaky.
--TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/0
--TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/1
--TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/2
--TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/3
--TabDragging/DetachToBrowserTabDragControllerTest.DragGroupHeaderToSeparateWindow/0
--TabDragging/DetachToBrowserTabDragControllerTest.DragGroupHeaderToSeparateWindow/2
--TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/0
--TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/2
+-TabDragging/DetachToBrowserTabDragControllerTestTouch.FlingDownAtEndOfDrag/*
+-TabDragging/DetachToBrowserTabDragControllerTestTouch.FlingOnStartingDrag/*
 
 # TODO(b/256212431): Re-enable when linux-lacros-rel support
 # signin::MakePrimaryAccountAvailable().

@@ -8,58 +8,82 @@ assert(enterprise_client_certificates)
 
 source_set("core") {
   public = [
+    "browser_cloud_management_delegate.h",
     "certificate_provisioning_service.h",
     "certificate_store.h",
+    "client_certificates_service.h",
     "client_identity.h",
+    "cloud_management_delegate.h",
     "constants.h",
+    "context_delegate.h",
+    "dm_server_client.h",
+    "ec_private_key.h",
+    "ec_private_key_factory.h",
+    "features.h",
     "key_upload_client.h",
+    "metrics_util.h",
     "prefs.h",
     "private_key.h",
     "private_key_factory.h",
     "private_key_types.h",
+    "profile_cloud_management_delegate.h",
     "store_error.h",
+    "unexportable_private_key.h",
+    "unexportable_private_key_factory.h",
+    "upload_client_error.h",
   ]
 
   sources = [
+    "browser_cloud_management_delegate.cc",
     "certificate_provisioning_service.cc",
     "certificate_store.cc",
+    "client_certificates_service.cc",
     "client_identity.cc",
     "constants.cc",
+    "dm_server_client.cc",
     "ec_private_key.cc",
-    "ec_private_key.h",
     "ec_private_key_factory.cc",
-    "ec_private_key_factory.h",
+    "features.cc",
+    "key_upload_client.cc",
+    "metrics_util.cc",
     "prefs.cc",
     "private_key.cc",
     "private_key_factory.cc",
     "private_key_types.cc",
+    "profile_cloud_management_delegate.cc",
+    "ssl_client_cert_identity_wrapper.cc",
+    "ssl_client_cert_identity_wrapper.h",
+    "ssl_key_converter.cc",
+    "ssl_key_converter.h",
+    "store_error.cc",
+    "unexportable_private_key.cc",
+    "unexportable_private_key_factory.cc",
+    "upload_client_error.cc",
   ]
 
   public_deps = [
     "//base",
     "//components/enterprise/client_certificates/proto:db_client_certs",
+    "//components/enterprise/core",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
     "//crypto",
   ]
 
   deps = [
+    "//components/enterprise",
+    "//components/enterprise/browser/identifiers",
+    "//components/policy/core/common",
+    "//components/policy/proto",
     "//components/prefs",
     "//net",
+    "//third_party/boringssl",
   ]
 
-  friend = [ ":unit_tests" ]
-
-  if (is_win) {
-    sources += [
-      "unexportable_private_key.cc",
-      "unexportable_private_key.h",
-      "unexportable_private_key_factory.cc",
-      "unexportable_private_key_factory.h",
-    ]
-
-    deps += [ "//crypto" ]
-  }
+  friend = [
+    ":test_support",
+    ":unit_tests",
+  ]
 }
 
 source_set("test_support") {
@@ -69,19 +93,30 @@ source_set("test_support") {
     "mock_certificate_provisioning_service.h",
     "mock_certificate_store.cc",
     "mock_certificate_store.h",
+    "mock_cloud_management_delegate.cc",
+    "mock_cloud_management_delegate.h",
+    "mock_dm_server_client.cc",
+    "mock_dm_server_client.h",
     "mock_key_upload_client.cc",
     "mock_key_upload_client.h",
     "mock_private_key.cc",
     "mock_private_key.h",
     "mock_private_key_factory.cc",
     "mock_private_key_factory.h",
+    "scoped_ssl_key_converter.cc",
+    "scoped_ssl_key_converter.h",
   ]
 
   deps = [
     ":core",
     "//components/leveldb_proto",
+    "//components/policy/proto",
+    "//crypto",
+    "//crypto:test_support",
     "//net",
+    "//net:test_support",
     "//testing/gmock",
+    "//third_party/boringssl",
   ]
 }
 
@@ -91,9 +126,15 @@ source_set("unit_tests") {
   sources = [
     "certificate_provisioning_service_unittest.cc",
     "certificate_store_unittest.cc",
+    "client_certificates_service_unittest.cc",
+    "dm_server_client_unittest.cc",
     "ec_private_key_factory_unittest.cc",
     "ec_private_key_unittest.cc",
+    "key_upload_client_unittest.cc",
     "private_key_factory_unittest.cc",
+    "ssl_client_cert_identity_wrapper_unittest.cc",
+    "unexportable_private_key_factory_unittest.cc",
+    "unexportable_private_key_unittest.cc",
   ]
 
   deps = [
@@ -103,22 +144,17 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/enterprise/client_certificates/proto:db_client_certs",
     "//components/leveldb_proto:test_support",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//crypto",
+    "//crypto:test_support",
     "//net",
     "//net:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (is_win) {
-    sources += [
-      "unexportable_private_key_factory_unittest.cc",
-      "unexportable_private_key_unittest.cc",
-    ]
-
-    deps += [
-      "//crypto",
-      "//crypto:test_support",
-    ]
-  }
 }

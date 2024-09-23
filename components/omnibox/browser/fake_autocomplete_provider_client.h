@@ -18,12 +18,16 @@
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
-#include "components/query_tiles/tile_service.h"
+#include "components/search_engines/search_engines_test_environment.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/omnibox/browser/fake_autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/fake_on_device_tail_model_service.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+#if !BUILDFLAG(IS_IOS)
+#include "components/history_embeddings/history_embeddings_service.h"  // nogncheck
+#endif  // IS_IOS
 
 namespace bookmarks {
 class BookmarkModel;
@@ -33,9 +37,12 @@ namespace history {
 class HistoryService;
 }  // namespace history
 
+namespace history_clusters {
+class HistoryClustersService;
+}
+
 class InMemoryURLIndex;
 class PrefService;
-class TestingPrefServiceSimple;
 
 // Fully operational AutocompleteProviderClient for usage in tests.
 // Note: The history index rebuild task is created from main thread, usually
@@ -63,11 +70,14 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   history::HistoryService* GetHistoryService() override;
   history_clusters::HistoryClustersService* GetHistoryClustersService()
       override;
-  bookmarks::BookmarkModel* GetLocalOrSyncableBookmarkModel() override;
+#if !BUILDFLAG(IS_IOS)
+  history_embeddings::HistoryEmbeddingsService* GetHistoryEmbeddingsService()
+      override;
+#endif
+  bookmarks::BookmarkModel* GetBookmarkModel() override;
   InMemoryURLIndex* GetInMemoryURLIndex() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackend() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() override;
-  query_tiles::TileService* GetQueryTileService() const override;
   const TabMatcher& GetTabMatcher() const override;
   scoped_refptr<history::TopSites> GetTopSites() override;
 
@@ -91,6 +101,13 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     history_clusters_service_ = service;
   }
 
+#if !BUILDFLAG(IS_IOS)
+  void set_history_embeddings_service(
+      std::unique_ptr<history_embeddings::HistoryEmbeddingsService> service) {
+    history_embeddings_service_ = std::move(service);
+  }
+#endif
+
   // There should be no reason to set this unless the tested provider actually
   // uses the AutocompleteProviderClient's InMemoryURLIndex, like the
   // HistoryQuickProvider does.
@@ -106,11 +123,8 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     shortcuts_backend_ = std::move(backend);
   }
 
-  void set_tile_service(std::unique_ptr<query_tiles::TileService> tile_svc) {
-    tile_service_ = std::move(tile_svc);
-  }
-
  private:
+  search_engines::SearchEnginesTestEnvironment search_engines_test_enviroment_;
   base::ScopedTempDir history_dir_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   TestSchemeClassifier scheme_classifier_;
@@ -118,15 +132,18 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   std::unique_ptr<history::HistoryService> history_service_;
   raw_ptr<history_clusters::HistoryClustersService> history_clusters_service_ =
       nullptr;
-  std::unique_ptr<TestingPrefServiceSimple> local_state_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+#if !BUILDFLAG(IS_IOS)
+  std::unique_ptr<history_embeddings::HistoryEmbeddingsService>
+      history_embeddings_service_;
+#endif
   scoped_refptr<ShortcutsBackend> shortcuts_backend_;
-  std::unique_ptr<query_tiles::TileService> tile_service_;
   FakeTabMatcher fake_tab_matcher_;
   scoped_refptr<history::TopSites> top_sites_;
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::unique_ptr<FakeOnDeviceTailModelService> on_device_tail_model_service_;
   std::unique_ptr<FakeAutocompleteScoringModelService> scoring_model_service_;
+#endif
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FAKE_AUTOCOMPLETE_PROVIDER_CLIENT_H_

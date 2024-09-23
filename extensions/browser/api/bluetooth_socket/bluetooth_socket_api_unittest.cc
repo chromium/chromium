@@ -35,7 +35,7 @@ TEST_F(BluetoothSocketApiUnittest, Permission) {
 
 // Tests bluetoothSocket.create() and bluetoothSocket.close().
 // Regression test for https://crbug.com/831651.
-// TODO(https://crbug.com/1251347): Port //device/bluetooth to Fuchsia to enable
+// TODO(crbug.com/40198321): Port //device/bluetooth to Fuchsia to enable
 // bluetooth extensions.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_CreateThenClose DISABLED_CreateThenClose

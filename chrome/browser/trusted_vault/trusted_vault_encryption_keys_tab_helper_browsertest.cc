@@ -16,6 +16,7 @@
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -36,19 +37,22 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
 #include "components/site_isolation/features.h"
 #else
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/trusted_vault.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
 namespace {
 
@@ -553,122 +557,6 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   EXPECT_THAT(actual_keys, ElementsAreArray(kEncryptionKeys));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
-                       ShouldSetPasskeysEncryptionKeysInAsh) {
-  const GURL initial_url =
-      https_server()->GetURL("accounts.google.com", "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
-  EXPECT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
-
-  content::WebContentsConsoleObserver console_observer(web_contents());
-  console_observer.SetPattern(kConsoleSuccessMessage);
-
-  base::HistogramTester histogram_tester;
-
-  // Attempt to set keys for the passkeys domain. This should work only in Ash.
-  const std::vector<uint8_t> kEncryptionKey = {7};
-  ExecJsSetClientEncryptionKeysForSecurityDomain(
-      web_contents()->GetPrimaryMainFrame(),
-      trusted_vault::kPasskeysSecurityDomainName, kEncryptionKey);
-  ASSERT_TRUE(console_observer.Wait());
-  EXPECT_EQ(console_observer.messages().size(), 1u);
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.JavascriptSetClientEncryptionKeysValidArgs", 1 /*Valid*/,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain",
-      2 /*Passkeys*/, 1);
-
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.SetEncryptionKeysForSecurityDomain.AllProfiles",
-      2 /*Passkeys*/, 1);
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.SetEncryptionKeysForSecurityDomain.OffTheRecordOnly",
-      2 /*Passkeys*/, 0);
-
-  histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito",
-      0 /*Not Incognito*/, 1);
-
-  // Test that keys for the passkeys domain have been set.
-  std::vector<std::vector<uint8_t>> actual_keys =
-      FetchTrustedVaultKeysForProfile(
-          browser()->profile(), trusted_vault::SecurityDomainId::kPasskeys,
-          FakeAccount());
-  EXPECT_THAT(actual_keys, testing::ElementsAre(kEncryptionKey));
-
-  // No keys should have been set for chromesync.
-  EXPECT_THAT(FetchTrustedVaultKeysForProfile(
-                  browser()->profile(),
-                  trusted_vault::SecurityDomainId::kChromeSync, FakeAccount()),
-              IsEmpty());
-}
-#else
-IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
-                       ShouldNotSetPasskeysEncryptionKeys) {
-  // When default-enabling `kWebAuthnEnclaveAuthenticator` this test should
-  // only be run for BUILDFLAG(IS_CHROMEOS_LACROS).
-  CHECK(!base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator));
-
-  const GURL initial_url =
-      https_server()->GetURL("accounts.google.com", "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
-  // EncryptionKeysApi is created for the primary page as the origin is allowed.
-  EXPECT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
-
-  content::WebContentsConsoleObserver console_observer(web_contents());
-  console_observer.SetPattern(kConsoleSuccessMessage);
-
-  base::HistogramTester histogram_tester;
-
-  // Attempt to set keys for the passkeys domain. Outside of Ash, this succeeds,
-  // though no corresponding security domain client is instantiated, and so the
-  // keys are never persisted anywhere.
-  const std::vector<uint8_t> kEncryptionKey = {7};
-  ExecJsSetClientEncryptionKeysForSecurityDomain(
-      web_contents()->GetPrimaryMainFrame(),
-      trusted_vault::kPasskeysSecurityDomainName, kEncryptionKey);
-  ASSERT_TRUE(console_observer.Wait());
-  EXPECT_EQ(console_observer.messages().size(), 1u);
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.JavascriptSetClientEncryptionKeysValidArgs", 1 /*Valid*/,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain",
-      2 /*Passkeys*/, 1);
-
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.SetEncryptionKeysForSecurityDomain.AllProfiles",
-      2 /*Passkeys*/, 1);
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.SetEncryptionKeysForSecurityDomain.OffTheRecordOnly",
-      2 /*Passkeys*/, 0);
-
-  histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito",
-      0 /*Not Incognito*/, 1);
-
-  // No security domain client for passkeys, so no keys could have been set.
-  EXPECT_EQ(
-      TrustedVaultServiceFactory::GetForProfile(browser()->profile())
-          ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kPasskeys),
-      nullptr);
-
-  // No keys should have been set for chromesync either.
-  EXPECT_THAT(FetchTrustedVaultKeysForProfile(
-                  browser()->profile(),
-                  trusted_vault::SecurityDomainId::kChromeSync, FakeAccount()),
-              IsEmpty());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(
     TrustedVaultEncryptionKeysTabHelperWithEnclaveBrowserTest,
@@ -685,7 +573,8 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
 
   EnclaveManager* const enclave_manager =
-      EnclaveManagerFactory::GetForProfile(browser()->profile());
+      EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
+          browser()->profile());
   const unsigned initial_count = enclave_manager->store_keys_count();
 
   const std::vector<uint8_t> kEncryptionKey = {7};
@@ -1031,6 +920,51 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
       1 /*Incognito*/, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
+                       ShouldNotSetKeysIfCallingFrameIsDeleted_364338802) {
+  const GURL initial_url =
+      https_server()->GetURL("accounts.google.com", "/iframe.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+
+  const GURL frame_url =
+      https_server()->GetURL("accounts.google.com", "/title1.html");
+  EXPECT_TRUE(NavigateIframeToURL(web_contents(), "test", frame_url));
+  content::RenderFrameHost* child_frame =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_frame);
+
+  // EncryptionKeysApi is created for the child frame as the origin is allowed.
+  ASSERT_TRUE(HasEncryptionKeysApi(child_frame));
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  content::RenderFrameDeletedObserver frame_deleted_observer(child_frame);
+
+  // Ensure that deleting the calling frame in the middle of the request doesn't
+  // crash. Keys will not be set successfully.
+  constexpr std::string_view script = R"(
+      var childFrame = document.querySelector("iframe");
+      let trustedVaultKey = new Object();
+      childFrame.contentWindow.Object.defineProperty(
+          trustedVaultKey, "key", { get: () => {
+              document.body.remove(childFrame);
+              return new ArrayBuffer(1);
+      }});
+      trustedVaultKey.key = new ArrayBuffer(1);
+      trustedVaultKey.epoch = 1;
+      childFrame.contentWindow.chrome.setClientEncryptionKeys(
+          () => { console.log("test:OK") },
+          "fake_gaia_id",
+          new Map([['chromesync', [trustedVaultKey]]]));
+    )";
+
+  ASSERT_TRUE(content::ExecJs(web_contents(), script));
+  EXPECT_TRUE(frame_deleted_observer.WaitUntilDeleted());
+  EXPECT_EQ(console_observer.messages().size(), 0u);
+  EXPECT_THAT(FetchTrustedVaultKeysForProfile(
+                  browser()->profile(),
+                  trusted_vault::SecurityDomainId::kChromeSync, FakeAccount()),
+              IsEmpty());
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Tests that chrome.addTrustedSyncEncryptionRecoveryMethod() works in the main
@@ -1109,7 +1043,8 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   const GURL prerendering_url =
       https_server()->GetURL("accounts.google.com", "/simple.html");
 
-  int host_id = prerender_helper().AddPrerender(prerendering_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerendering_url);
   content::RenderFrameHostWrapper prerendered_frame_host(
       prerender_helper().GetPrerenderedMainFrameHost(host_id));
 

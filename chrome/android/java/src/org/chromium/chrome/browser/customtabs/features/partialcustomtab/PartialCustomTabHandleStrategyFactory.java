@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import android.content.Context;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -23,13 +22,11 @@ public class PartialCustomTabHandleStrategyFactory {
             Context context,
             BooleanSupplier isFullHeight,
             Supplier<Integer> status,
-            PartialCustomTabHandleStrategy.DragEventCallback dragEventCallback,
-            Callback<Runnable> closeAnimation) {
+            PartialCustomTabHandleStrategy.DragEventCallback dragEventCallback) {
         return switch (type) {
             case PartialCustomTabType.BOTTOM_SHEET -> new PartialCustomTabHandleStrategy(
-                    context, isFullHeight, status, dragEventCallback, closeAnimation);
-            case PartialCustomTabType.SIDE_SHEET,
-                    PartialCustomTabType.FULL_SIZE -> new SimpleHandleStrategy(closeAnimation);
+                    context, isFullHeight, status, dragEventCallback);
+            case PartialCustomTabType.SIDE_SHEET, PartialCustomTabType.FULL_SIZE -> null;
             default -> {
                 assert false : "Partial Custom Tab type not supported: " + type;
                 yield null;

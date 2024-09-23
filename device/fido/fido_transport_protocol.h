@@ -29,11 +29,11 @@ enum class FidoTransportProtocol : uint8_t {
 };
 
 // String representation of above FidoTransportProtocol enum.
-extern const char kUsbHumanInterfaceDevice[];
-extern const char kNearFieldCommunication[];
-extern const char kBluetoothLowEnergy[];
-extern const char kHybrid[];
-extern const char kInternal[];
+inline constexpr std::string_view kUsbHumanInterfaceDevice = "usb";
+inline constexpr std::string_view kNearFieldCommunication = "nfc";
+inline constexpr std::string_view kBluetoothLowEnergy = "ble";
+inline constexpr std::string_view kHybrid = "hybrid";
+inline constexpr std::string_view kInternal = "internal";
 
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(

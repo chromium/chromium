@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer.h"
 
 #include "base/ranges/algorithm.h"
@@ -32,47 +37,32 @@ constexpr char kFeaturePolicyBlocked[] =
 
 }  // namespace
 
-PressureObserver::PressureObserver(V8PressureUpdateCallback* observer_callback,
-                                   PressureObserverOptions* options,
-                                   ExceptionState& exception_state)
-    : observer_callback_(observer_callback),
-      sample_rate_(options->sampleRate()) {
-  if (sample_rate_ <= 0.0) {
-    exception_state.ThrowRangeError("sampleRate must be positive");
-    return;
-  }
-}
+PressureObserver::PressureObserver(V8PressureUpdateCallback* observer_callback)
+    : observer_callback_(observer_callback) {}
 
 PressureObserver::~PressureObserver() = default;
 
 // static
-PressureObserver* PressureObserver::Create(V8PressureUpdateCallback* callback,
-                                           PressureObserverOptions* options,
-                                           ExceptionState& exception_state) {
-  return MakeGarbageCollected<PressureObserver>(callback, options,
-                                                exception_state);
+PressureObserver* PressureObserver::Create(V8PressureUpdateCallback* callback) {
+  return MakeGarbageCollected<PressureObserver>(callback);
 }
 
 // static
-Vector<V8PressureSource> PressureObserver::supportedSources() {
+Vector<V8PressureSource> PressureObserver::knownSources() {
   return Vector<V8PressureSource>(
       {V8PressureSource(V8PressureSource::Enum::kCpu)});
 }
 
-ScriptPromise PressureObserver::observe(ScriptState* script_state,
-                                        V8PressureSource source,
-                                        ExceptionState& exception_state) {
-  if (!base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Compute Pressure API is not available.");
-    return ScriptPromise();
-  }
-
+ScriptPromise<IDLUndefined> PressureObserver::observe(
+    ScriptState* script_state,
+    V8PressureSource source,
+    PressureObserverOptions* options,
+    ExceptionState& exception_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsContextDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   // Checks whether the document is allowed by Permissions Policy to call
@@ -82,10 +72,11 @@ ScriptPromise PressureObserver::observe(ScriptState* script_state,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       kFeaturePolicyBlocked);
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  sample_interval_ = options->sampleInterval();
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   pending_resolvers_[ToSourceIndex(source.AsEnum())].insert(resolver);
 
@@ -107,6 +98,7 @@ void PressureObserver::unobserve(V8PressureSource source) {
   manager_->RemoveObserver(source.AsEnum(), this);
   last_record_map_[source_index].Clear();
   after_penalty_records_[source_index].Clear();
+  pending_delayed_report_to_callback_[source_index].Cancel();
   // Reject all pending promises for `source`.
   RejectPendingResolvers(source.AsEnum(), DOMExceptionCode::kAbortError,
                          "Called unobserve method.");
@@ -130,8 +122,13 @@ void PressureObserver::disconnect() {
   for (auto& after_penalty_record : after_penalty_records_) {
     after_penalty_record.Clear();
   }
+
+  for (auto& pending_callback : pending_delayed_report_to_callback_) {
+    pending_callback.Cancel();
+  }
+
   // Reject all pending promises.
-  for (const auto& source : supportedSources()) {
+  for (const auto& source : knownSources()) {
     RejectPendingResolvers(source.AsEnum(), DOMExceptionCode::kAbortError,
                            "Called disconnect method.");
   }
@@ -246,7 +243,7 @@ void PressureObserver::OnBindingFailed(V8PressureSource::Enum source,
 }
 
 void PressureObserver::OnConnectionError() {
-  for (const auto& source : supportedSources()) {
+  for (const auto& source : knownSources()) {
     RejectPendingResolvers(source.AsEnum(),
                            DOMExceptionCode::kNotSupportedError,
                            "Connection error.");
@@ -286,8 +283,7 @@ bool PressureObserver::PassesRateTest(
     return true;
 
   const double time_delta_milliseconds = timestamp - last_record->time();
-  const double interval_seconds = 1.0 / sample_rate_;
-  return (time_delta_milliseconds / 1000.0) >= interval_seconds;
+  return time_delta_milliseconds >= static_cast<double>(sample_interval_);
 }
 
 // https://w3c.github.io/compute-pressure/#dfn-has-change-in-data
@@ -312,12 +308,6 @@ bool PressureObserver::PassesRateObfuscation(
 void PressureObserver::ResolvePendingResolvers(V8PressureSource::Enum source) {
   const auto source_index = ToSourceIndex(source);
   for (const auto& resolver : pending_resolvers_[source_index]) {
-    ScriptState* const script_state = resolver->GetScriptState();
-    // Check if callback's resolver is still valid.
-    if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
-                                       script_state)) {
-      continue;
-    }
     resolver->Resolve();
   }
   pending_resolvers_[source_index].clear();
@@ -328,14 +318,6 @@ void PressureObserver::RejectPendingResolvers(V8PressureSource::Enum source,
                                               const String& message) {
   const auto source_index = ToSourceIndex(source);
   for (const auto& resolver : pending_resolvers_[source_index]) {
-    ScriptState* const script_state = resolver->GetScriptState();
-    // Check if callback's resolver is still valid.
-    if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
-                                       script_state)) {
-      continue;
-    }
-    // Enter into resolver's context to support creating DOMException.
-    ScriptState::Scope script_state_scope(resolver->GetScriptState());
     resolver->RejectWithDOMException(exception_code, message);
   }
   pending_resolvers_[source_index].clear();

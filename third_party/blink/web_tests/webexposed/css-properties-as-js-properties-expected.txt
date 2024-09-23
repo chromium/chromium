@@ -8,8 +8,8 @@ alignItems
 alignSelf
 alignmentBaseline
 all
-anchorDefault
 anchorName
+anchorScope
 animation
 animationComposition
 animationDelay
@@ -108,6 +108,7 @@ borderTopStyle
 borderTopWidth
 borderWidth
 bottom
+boxDecorationBreak
 boxShadow
 boxSizing
 breakAfter
@@ -196,6 +197,7 @@ fontVariant
 fontVariantAlternates
 fontVariantCaps
 fontVariantEastAsian
+fontVariantEmoji
 fontVariantLigatures
 fontVariantNumeric
 fontVariantPosition
@@ -241,6 +243,7 @@ insetBlockStart
 insetInline
 insetInlineEnd
 insetInlineStart
+interpolateSize
 isolation
 item
 justifyContent
@@ -251,6 +254,7 @@ length
 letterSpacing
 lightingColor
 lineBreak
+lineClamp
 lineGapOverride
 lineHeight
 listStyle
@@ -282,6 +286,11 @@ maskPosition
 maskRepeat
 maskSize
 maskType
+masonrySlack
+masonryTemplateTracks
+masonryTrack
+masonryTrackEnd
+masonryTrackStart
 mathDepth
 mathShift
 mathStyle
@@ -294,6 +303,7 @@ minHeight
 minInlineSize
 minWidth
 mixBlendMode
+navigation
 negative
 objectFit
 objectPosition
@@ -355,19 +365,23 @@ pointerEvents
 popoverHideDelay
 popoverShowDelay
 position
-positionFallback
-positionFallbackBounds
-positionTryOptions
+positionAnchor
+positionArea
+positionTry
+positionTryFallbacks
 positionTryOrder
+positionVisibility
 prefix
 quotes
 r
 range
+readingFlow
 removeProperty
 resize
 right
 rotate
 rowGap
+rubyAlign
 rubyPosition
 rx
 ry
@@ -384,6 +398,7 @@ scrollMarginInlineStart
 scrollMarginLeft
 scrollMarginRight
 scrollMarginTop
+scrollMarkerGroup
 scrollPadding
 scrollPaddingBlock
 scrollPaddingBlockEnd
@@ -444,6 +459,8 @@ textAlign
 textAlignLast
 textAnchor
 textAutospace
+textBox
+textBoxEdge
 textBoxTrim
 textCombineUpright
 textDecoration
@@ -467,6 +484,8 @@ textTransform
 textUnderlineOffset
 textUnderlinePosition
 textWrap
+textWrapMode
+textWrapStyle
 timelineScope
 top
 touchAction
@@ -481,6 +500,7 @@ transitionDuration
 transitionProperty
 transitionTimingFunction
 translate
+types
 unicodeBidi
 unicodeRange
 userSelect
@@ -491,6 +511,7 @@ viewTimelineAxis
 viewTimelineInset
 viewTimelineName
 viewTransitionClass
+viewTransitionGroup
 viewTransitionName
 visibility
 webkitAlignContent

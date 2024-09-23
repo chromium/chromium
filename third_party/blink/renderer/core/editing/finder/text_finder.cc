@@ -60,6 +60,8 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -165,7 +167,7 @@ static void ScrollToVisible(Range* match) {
                           : mojom::blink::ScrollBehavior::kInstant;
   scroll_into_view_util::ScrollRectToVisible(
       *first_node.GetLayoutObject(), PhysicalRect(match->BoundingBox()),
-      ScrollAlignment::CreateScrollIntoViewParams(
+      scroll_into_view_util::CreateScrollIntoViewParams(
           ScrollAlignment::CenterIfNeeded(), ScrollAlignment::CenterIfNeeded(),
           mojom::blink::ScrollType::kUser,
           true /* make_visible_in_visual_viewport */, scroll_behavior,
@@ -241,11 +243,12 @@ bool TextFinder::FindInternal(int identifier,
 
   DCHECK(OwnerFrame().GetFrame());
   DCHECK(OwnerFrame().GetFrame()->View());
-  const FindOptions find_options =
-      (options.forward ? 0 : kBackwards) |
-      (options.match_case ? 0 : kCaseInsensitive) |
-      (wrap_within_frame ? kWrapAround : 0) |
-      (options.new_session ? kStartInSelection : 0);
+  const auto find_options = FindOptions()
+                                .SetBackwards(!options.forward)
+                                .SetCaseInsensitive(!options.match_case)
+                                .SetWrappingAround(wrap_within_frame)
+                                .SetStartingInSelection(options.new_session)
+                                .SetRubySupported(true);
   active_match_ = Editor::FindRangeOfString(
       *OwnerFrame().GetFrame()->GetDocument(), search_text,
       EphemeralRangeInFlatTree(active_match_.Get()), find_options,
@@ -483,8 +486,8 @@ void TextFinder::ReportFindInPageResultToAccessibility(int identifier) {
   Node* end_node = active_match_->endContainer();
   ax_object_cache->HandleTextMarkerDataAdded(start_node, end_node);
 
-  int32_t start_id = ax_object_cache->GetAXID(start_node);
-  int32_t end_id = ax_object_cache->GetAXID(end_node);
+  int32_t start_id = start_node->GetDomNodeId();
+  int32_t end_id = end_node->GetDomNodeId();
 
   auto params = mojom::blink::FindInPageResultAXParams::New(
       identifier, active_match_index_ + 1, start_id,
@@ -795,7 +798,7 @@ int TextFinder::SelectFindMatch(unsigned index, gfx::Rect* selection_rect) {
       scroll_into_view_util::ScrollRectToVisible(
           *active_match_->FirstNode()->GetLayoutObject(),
           PhysicalRect(active_match_bounding_box),
-          ScrollAlignment::CreateScrollIntoViewParams(
+          scroll_into_view_util::CreateScrollIntoViewParams(
               ScrollAlignment::CenterIfNeeded(),
               ScrollAlignment::CenterIfNeeded(),
               mojom::blink::ScrollType::kUser));

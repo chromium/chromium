@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport"
     content="initial-scale=1, minimum-scale=1, width=device-width, interactive-widget=resizes-content">
-    <!-- TODO(crbug.com/1400469): Once fixed, "interactive-widget=resizes-content" can be removed. -->
+    <!-- TODO(crbug.com/40250276): Once fixed, "interactive-widget=resizes-content" can be removed. -->
 <title>$i18n{blockPageTitle}</title>
 <link rel="stylesheet" href="../../../../../components/security_interstitials/core/common/resources/interstitial_core.css">
 <link rel="stylesheet" href="supervised_user_block_interstitial_v2.css">
@@ -50,9 +50,9 @@
     <div id="main-message">
       <h1 id="block-page-header" tabindex="-1">$i18n{blockPageHeader}</h1>
       <p id="block-page-message" tabindex="-1">$i18n{blockPageMessage}</p>
-      <h1 id="request-failed-message" aria-live="assertive" aria-atomic="true" hidden>$i18n{requestFailedMessage}</h1>
-      <h1 id="request-sent-message" aria-live="assertive" aria-atomic="true" hidden>$i18n{requestSentMessage}</h1>
-      <p id="request-sent-description" hidden>$i18n{requestSentDescription}</p>
+      <h1 id="request-failed-message" tabindex="-1" aria-live="assertive" aria-atomic="true" hidden>$i18n{requestFailedMessage}</h1>
+      <h1 id="request-sent-message" tabindex="-1" aria-live="assertive" aria-atomic="true" hidden>$i18n{requestSentMessage}</h1>
+      <p id="request-sent-description" tabindex="-1" hidden>$i18n{requestSentDescription}</p>
     </div>
     <div id="block-reason-container">
       <p id="block-reason-show-details-link" tabindex="-1">$i18n{showDetailsLink}</p>

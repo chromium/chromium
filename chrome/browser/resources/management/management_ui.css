@@ -1,0 +1,214 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_page_host_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit cr-hidden-style-lit cr-page-host-style-lit cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  color: var(--cr-secondary-text-color);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+a {
+  color: var(--cr-link-color);
+}
+
+cr-toolbar {
+  flex-shrink: 0;
+}
+
+main {
+  height: 100%;
+  overflow: overlay;
+}
+
+.card {
+  background-color: var(--cr-card-background-color);
+  box-shadow: var(--cr-card-shadow);
+  margin: 0 3px;
+  min-height: 100%;
+}
+
+.page-subtitle {
+  align-items: center;
+  box-sizing: border-box;
+  flex-direction: row;
+  justify-content: start;
+  min-height: 73px;
+  padding-bottom: 24px;
+  padding-top: 6px;
+}
+
+.page-subtitle cr-icon-button {
+  margin-inline-end: 10px;
+  margin-inline-start: -10px;
+}
+
+<if expr="chromeos_ash">
+.eol-section {
+  border: 1px solid var(--google-grey-300);
+  border-radius: var(--cr-card-border-radius);
+  flex-direction: row;
+  justify-content: start;
+  margin-inline-end: 20px;
+  margin-inline-start: 20px;
+  padding: 16px var(--cr-section-padding);
+}
+
+.eol-section .eol-warning-icon {
+  --google-yellow-50-rgb: 254, 247, 224;  /* #fef7e0 */
+  --google-yellow-50: rgb(var(--google-yellow-50-rgb));
+  align-items: center;
+  background: var(--google-yellow-50);
+  border-radius: 50%;
+  display: flex;
+  height: 40px;
+  justify-content: center;
+  margin-inline-end: 20px;
+  width: 40px;
+}
+
+.eol-section cr-icon {
+  --iron-icon-fill-color: #E8710A;
+  height: var(--cr-icon-size);
+  width: var(--cr-icon-size);
+}
+
+.eol-section .eol-admin-title {
+  font-weight: 500;
+}
+</if>
+
+.overview-section div + div {
+  margin-top: 16px;
+}
+
+.overview-container {
+  align-items: center;
+  display: flex;
+}
+
+.overview-container img {
+  float: left;
+  margin-inline-end: 10px;
+  vertical-align: top;
+  width: 20%;
+}
+
+.overview-container div {
+  display: block;
+  overflow: hidden;
+  width: auto;
+}
+
+.overview-messages {
+  margin-top: 0;
+}
+
+.overview-messages li {
+  margin-top: 8px;
+}
+
+th {
+  font-weight: 500;
+}
+
+.subtitle {
+  margin-top: 16px;
+}
+
+section {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: var(--cr-section-min-height);
+  padding: 12px var(--cr-section-padding);
+}
+
+section:not(.page-subtitle) h2 {
+  font-size: 100%;
+  margin: 0;
+}
+
+.report cr-icon {
+  height: 20px;
+  margin-inline-end: 16px;
+  width: 20px;
+}
+
+.report {
+  align-items: start;
+  display: flex;
+  margin-top: 16px;
+}
+
+.content-indented {
+  padding-inline-start: 24px;
+}
+
+table {
+  border-spacing: 0 16px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+th,
+td {
+  text-align: start;
+}
+
+td > div {
+  align-items: center;
+  display: flex;
+}
+
+.extension-name,
+.application-name,
+.protection-name {
+  width: 40%;
+}
+
+.extension-name span,
+.application-name span {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.extension-permissions,
+.application-permissions,
+.protection-permissions {
+  width: 60%;
+}
+
+.protection-name,
+.protection-permissions {
+  vertical-align: top;
+}
+
+.extension-name img,
+.application-name img {
+  height: 20px;
+  margin-inline-end: 12px;
+  width: 20px;
+}
+
+.extension-permissions ul,
+.application-permissions ul,
+.report ul.browser {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}

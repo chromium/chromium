@@ -20,7 +20,7 @@ namespace perfetto {
 class EventContext;
 namespace protos {
 namespace pbzero {
-class BeginFrameArgs;
+class BeginFrameArgsV2;
 }
 }  // namespace protos
 }  // namespace perfetto
@@ -165,12 +165,6 @@ struct VIZ_COMMON_EXPORT BeginFrameArgs {
   // max interval supported by the Display.
   static constexpr base::TimeDelta MinInterval() { return base::Seconds(0); }
 
-  // This is the preferred interval to use when the producer doesn't have any
-  // frame rate preference. The Display can use any value which is appropriate.
-  static constexpr base::TimeDelta MaxInterval() {
-    return base::TimeDelta::Max();
-  }
-
   // This is a hard-coded deadline adjustment used by the display compositor.
   // Using 1/3 of the vsync as the default adjustment gives the display
   // compositor the last 1/3 of a frame to produce output, the client impl
@@ -192,7 +186,7 @@ struct VIZ_COMMON_EXPORT BeginFrameArgs {
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue() const;
   void AsValueInto(base::trace_event::TracedValue* dict) const;
   void AsProtozeroInto(perfetto::EventContext& ctx,
-                       perfetto::protos::pbzero::BeginFrameArgs* args) const;
+                       perfetto::protos::pbzero::BeginFrameArgsV2* args) const;
 
   std::string ToString() const;
 
@@ -284,6 +278,12 @@ struct VIZ_COMMON_EXPORT BeginFrameAck {
   // |true| if the observer has produced damage (e.g. sent a CompositorFrame or
   // damaged a surface) as part of responding to the BeginFrame.
   bool has_damage = false;
+
+  // Specifies the interval at which the client's content is updated. This can
+  // be used to configure the display to the optimal vsync interval available.
+  // If unspecified, or set to BeginFrameArgs::MinInterval, it is assumed that
+  // the client can animate at the maximum frame rate supported by the Display.
+  std::optional<base::TimeDelta> preferred_frame_interval;
 };
 
 }  // namespace viz

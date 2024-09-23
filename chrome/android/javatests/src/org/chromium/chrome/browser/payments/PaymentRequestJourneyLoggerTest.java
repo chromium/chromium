@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
-import org.chromium.components.payments.Event;
+import org.chromium.components.payments.Event2;
 
 import java.util.concurrent.TimeoutException;
 
@@ -103,175 +103,6 @@ public class PaymentRequestJourneyLoggerTest {
     }
 
     /**
-     * Expect that the metric that records whether the user had complete suggestions for the
-     * requested information is logged correctly.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testUserHadCompleteSuggestions_Shipping() throws TimeoutException {
-        // Ensure Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS is present.
-        int expectedSample =
-                Event.SHOWN
-                        | Event.USER_ABORTED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                        | Event.REQUEST_SHIPPING
-                        | Event.REQUEST_METHOD_OTHER
-                        | Event.AVAILABLE_METHOD_OTHER;
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("PaymentRequest.Events", expectedSample)
-                        .build();
-
-        // Cancel the payment request.
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
-                "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
-                mPaymentRequestTestRule.getReadyToPay());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.close_button, mPaymentRequestTestRule.getDismissed());
-        mPaymentRequestTestRule.expectResultContains(
-                new String[] {"User closed the Payment Request UI."});
-
-        // Make sure the events were logged correctly.
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    /**
-     * Expect that the metric that records whether the user had complete suggestions for the
-     * requested information is logged correctly.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testUserDidNotHaveCompleteSuggestions_IncompleteShipping() throws Exception {
-        int expectedSample =
-                Event.SHOWN
-                        | Event.USER_ABORTED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.REQUEST_SHIPPING
-                        | Event.REQUEST_METHOD_OTHER
-                        | Event.AVAILABLE_METHOD_OTHER
-                        | Event.NEEDS_COMPLETION_SHIPPING;
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("PaymentRequest.Events", expectedSample)
-                        .build();
-        // Set only an incomplete address (no region).
-        var autofillTestHelper = new AutofillTestHelper();
-        autofillTestHelper.clearAllDataForTesting();
-        autofillTestHelper.setProfile(
-                AutofillProfile.builder()
-                        .setFullName("Jon Doe")
-                        .setCompanyName("Google")
-                        .setStreetAddress("340 Main St")
-                        .setLocality("Los Angeles")
-                        .setPostalCode("90291")
-                        .setCountryCode("US")
-                        .setPhoneNumber("650-253-0000")
-                        .setLanguageCode("en-US")
-                        .build());
-
-        // Cancel the payment request.
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
-                "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
-                mPaymentRequestTestRule.getReadyForInput());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.close_button, mPaymentRequestTestRule.getDismissed());
-        mPaymentRequestTestRule.expectResultContains(
-                new String[] {"User closed the Payment Request UI."});
-
-        // Make sure the events were logged correctly, particularly NEEDS_COMPLETION_SHIPPING is
-        // set.
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    /**
-     * Expect that the metric that records whether the user had complete suggestions for the
-     * requested information is logged correctly.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testUserHadCompleteSuggestions_PaymentApp_HasValidPaymentApp()
-            throws TimeoutException {
-        int expectedSample =
-                Event.SHOWN
-                        | Event.USER_ABORTED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                        | Event.REQUEST_SHIPPING
-                        | Event.REQUEST_METHOD_OTHER
-                        | Event.AVAILABLE_METHOD_OTHER;
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("PaymentRequest.Events", expectedSample)
-                        .build();
-        mPaymentRequestTestRule.addPaymentAppFactory(
-                "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-
-        // Cancel the payment request.
-        mPaymentRequestTestRule.triggerUIAndWait(
-                "buyWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.close_button, mPaymentRequestTestRule.getDismissed());
-        mPaymentRequestTestRule.expectResultContains(
-                new String[] {"User closed the Payment Request UI."});
-
-        // Make sure the events were logged correctly.
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    /**
-     * Expect that the metric that records whether the user had complete suggestions for the
-     * requested information is logged correctly.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testUserHadCompleteSuggestions_ShippingAndPaymentApp_HasInvalidShipping()
-            throws TimeoutException {
-        int expectedSample =
-                Event.SHOWN
-                        | Event.USER_ABORTED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.REQUEST_SHIPPING
-                        | Event.REQUEST_METHOD_OTHER
-                        | Event.AVAILABLE_METHOD_OTHER
-                        | Event.NEEDS_COMPLETION_SHIPPING;
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("PaymentRequest.Events", expectedSample)
-                        .build();
-        // Add a card and an incomplete address (no region).
-        AutofillTestHelper autofillTestHelper = new AutofillTestHelper();
-        autofillTestHelper.clearAllDataForTesting();
-        autofillTestHelper.setProfile(
-                AutofillProfile.builder()
-                        .setFullName("Jon Doe")
-                        .setCompanyName("Google")
-                        .setStreetAddress("340 Main St")
-                        .setLocality("Los Angeles")
-                        .setPostalCode("90291")
-                        .setCountryCode("US")
-                        .setPhoneNumber("650-253-0000")
-                        .setLanguageCode("en-US")
-                        .build());
-
-        // Cancel the payment request.
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
-                "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
-                mPaymentRequestTestRule.getReadyForInput());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.close_button, mPaymentRequestTestRule.getDismissed());
-        mPaymentRequestTestRule.expectResultContains(
-                new String[] {"User closed the Payment Request UI."});
-
-        // Make sure the events were logged correctly.
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    /**
      * Expect that that the journey metrics are logged correctly on a second consecutive payment
      * request.
      */
@@ -297,19 +128,16 @@ public class PaymentRequestJourneyLoggerTest {
 
         // Make sure the events were logged correctly.
         int expectedSample =
-                Event.SHOWN
-                        | Event.COMPLETED
-                        | Event.REQUEST_SHIPPING
-                        | Event.REQUEST_METHOD_OTHER
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                        | Event.RECEIVED_INSTRUMENT_DETAILS
-                        | Event.PAY_CLICKED
-                        | Event.AVAILABLE_METHOD_OTHER
-                        | Event.SELECTED_OTHER;
+                Event2.SHOWN
+                        | Event2.COMPLETED
+                        | Event2.REQUEST_SHIPPING
+                        | Event2.REQUEST_METHOD_OTHER
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.PAY_CLICKED
+                        | Event2.SELECTED_OTHER;
         Assert.assertEquals(
                 2,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
+                        "PaymentRequest.Events2", expectedSample));
     }
 }

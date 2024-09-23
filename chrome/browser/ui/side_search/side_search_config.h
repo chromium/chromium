@@ -71,7 +71,7 @@ class SideSearchConfig : public base::SupportsUserData::Data,
   // changes.
   void ResetStateAndNotifyConfigChanged();
 
-  // TODO(crbug.com/1304513): Allow tests to specify the Google Search
+  // TODO(crbug.com/40217768): Allow tests to specify the Google Search
   // configuration on all supported platforms until tests are fully migrated.
   void ApplyGoogleSearchConfigurationForTesting();
 

@@ -1,0 +1,68 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// See chromeos/ash/services/chromebox_for_meetings/public/mojom/README.md
+// before changing this file.
+//
+// Next MinVersion: 1
+
+module chromeos.cfm.mojom;
+
+// Interface used to store details regarding hotline mojom disconnect.
+[Stable, Uuid="b81bdc0e-19d8-4887-924d-d31202db82e8"]
+interface DisconnectReason {
+ // Indicates that the reason for disconnection is unknown
+ // Code for unknown disconnect reason
+ const int32 kUnknownCode = 0;
+ // Message for unknown disconnect reason
+ const string kUnknownMessage = "unknown";
+
+ // Indicates that the disconnect occurred due to the service being unavailable.
+ // Code for unavailable service
+ const int32 kServiceUnavailableCode = 1;
+ // Message for unavailable service
+ const string kServiceUnavailableMessage = "Hotline Disabled";
+
+ // Indicates that the disconnect occurred due to a disabled finch experiment.
+ // Code for disabled finch experiment
+ const int32 kFinchDisabledCode = 2;
+ // Message for disabled finch experiment
+ const string kFinchDisabledMessage = "Finch Disabled";
+};
+
+// Interface used during bootstrapping in order to
+// 1. Add services to the primary interface broker.
+// 2. Obtain handle/s to the |CfmServiceRegistry|
+[Stable, Uuid="032f4099-f7f3-42c3-8fc8-3bbc9b229442"]
+interface CfmServiceContext {
+  // Request to add an |adaptor_remote| by its |interface_name|,
+  // to the service registry assuming it's |interface_name| is allowlisted.
+  // Note: |interface_name| MUST be the interface name, i.e. Interface::Name_
+  ProvideAdaptor@0(
+      string interface_name,
+      pending_remote<CfmServiceAdaptor> adaptor_remote) => (bool success);
+
+  // Attempt to bind the |receiver_pipe| of an intended mojo::Receiver
+  // to a remote service that is internally identified as |interface_name|
+  // Note: |interface_name| MUST be the interface name, i.e. Interface::Name_
+  RequestBindService@1(
+      string interface_name,
+      handle<message_pipe> receiver_pipe) => (bool success);
+};
+
+// Interface implemented by interfaces that want to be registered with the Cfm
+// interface broker. Services that intend to accept incoming connections MUST
+// implement this interface and facilitate multiple connections, through the use
+// of a BindingSet. The broker calls BindService when a bind request for
+// interface comes.
+[Stable, Uuid="96091cfb-7564-42d0-b87d-4583d28b2c3d"]
+interface CfmServiceAdaptor {
+  // Called by the CfmServiceRegistry to bind a |receiver_pipe| of an
+  // intended mojo::Receiver to a service's implementation. For example,
+  // this method should bind |receiver_pipe| to the interface Foo implemented by
+  // FooImpl assuming FooImpl also implements the CfmServiceAdaptor.
+  // Note: Ideally services should handle multiple clients (i.e BindingSet)
+  // unless explicitly stated.
+  OnBindService@0(handle<message_pipe> receiver_pipe);
+};

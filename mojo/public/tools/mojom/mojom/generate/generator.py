@@ -250,7 +250,6 @@ class Generator:
                export_attribute=None,
                export_header=None,
                generate_non_variant_code=False,
-               support_lazy_serialization=False,
                disallow_native_types=False,
                disallow_interfaces=False,
                generate_message_ids=False,
@@ -268,7 +267,6 @@ class Generator:
     self.export_attribute = export_attribute
     self.export_header = export_header
     self.generate_non_variant_code = generate_non_variant_code
-    self.support_lazy_serialization = support_lazy_serialization
     self.disallow_native_types = disallow_native_types
     self.disallow_interfaces = disallow_interfaces
     self.generate_message_ids = generate_message_ids

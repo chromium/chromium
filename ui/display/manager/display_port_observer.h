@@ -29,9 +29,9 @@ class DISPLAY_MANAGER_EXPORT DisplayPortObserver
   ~DisplayPortObserver() override;
 
   // Overridden from DisplayConfigurator::Observer:
-  void OnDisplayModeChanged(
+  void OnDisplayConfigurationChanged(
       const DisplayConfigurator::DisplayStateList& outputs) override;
-  void OnDisplayModeChangeFailed(
+  void OnDisplayConfigurationChangeFailed(
       const DisplayConfigurator::DisplayStateList& displays,
       MultipleDisplayState failed_new_state) override;
 
@@ -45,10 +45,10 @@ class DISPLAY_MANAGER_EXPORT DisplayPortObserver
   // Used to determine if there is a change in ports.
   std::set<uint64_t> prev_base_connector_ids_;
 
-  // Callback function to be called by OnDisplayModeChanged. The parameter is a
-  // list of port numbers that has displays connected. This shall be initialized
-  // and set by ash to call a D-bus method that notifies ChromeOS Type C Daemon
-  // on which ports are driving displays.
+  // Callback function to be called by OnDisplayConfigurationChanged. The
+  // parameter is a list of port numbers that has displays connected. This shall
+  // be initialized and set by ash to call a D-bus method that notifies ChromeOS
+  // Type C Daemon on which ports are driving displays.
   const base::RepeatingCallback<void(const std::vector<uint32_t>&)>
       on_port_change_callback_;
 

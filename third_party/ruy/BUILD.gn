@@ -806,6 +806,7 @@ source_set("ruy") {
     ":ruy_mul_params",
     ":ruy_path",
     ":ruy_platform",
+    ":ruy_profiler_instrumentation",
     ":ruy_size_util",
     ":ruy_trace",
   ]

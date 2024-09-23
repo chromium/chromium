@@ -5,6 +5,7 @@
 #ifndef CC_BASE_REGION_H_
 #define CC_BASE_REGION_H_
 
+#include <iosfwd>
 #include <memory>
 #include <string>
 
@@ -163,6 +164,11 @@ inline Region UnionRegions(const Region& a, const gfx::Rect& b) {
   result.Union(b);
   return result;
 }
+
+// This is declared here for use in gtest-based unit tests but is defined in
+// the //cc:test_support target. Depend on that to use this in your unit test.
+// This should not be used in production code - call ToString() instead.
+void PrintTo(const Region& region, std::ostream* os);
 
 }  // namespace cc
 

@@ -19,6 +19,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -179,7 +180,7 @@ void VerifyPowersForURL(GURL url,
               ContainerEq(GetPowersForURLAsString(url, service1)));
 }
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class TwoClientPowerBookmarksSyncTestNoTestingConfig
     : public TwoClientPowerBookmarksSyncTest {
  public:
@@ -202,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPowerBookmarksSyncTestNoTestingConfig,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPowerBookmarksSyncTest,
-                       // TODO(crbug.com/1430600): Re-enable this test.
+                       // TODO(crbug.com/40901832): Re-enable this test.
                        DISABLED_UpdateOnePower) {
   ASSERT_TRUE(SetupSync());
   SetupServices();

@@ -87,14 +87,14 @@ VulkanImplementationWayland::GetOptionalDeviceExtensions() {
 
 VkFence VulkanImplementationWayland::CreateVkFenceForGpuFence(
     VkDevice vk_device) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return VK_NULL_HANDLE;
 }
 
 std::unique_ptr<gfx::GpuFence>
 VulkanImplementationWayland::ExportVkFenceToGpuFence(VkDevice vk_device,
                                                      VkFence vk_fence) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

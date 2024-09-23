@@ -27,7 +27,7 @@ RequestNotifier::BackgroundSavePageResult ToBackgroundSavePageResult(
       return RequestNotifier::BackgroundSavePageResult::RETRY_COUNT_EXCEEDED;
     case OfflinerPolicyUtils::RequestExpirationStatus::VALID:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return RequestNotifier::BackgroundSavePageResult::EXPIRED;
   }
 }
@@ -85,7 +85,8 @@ void CleanupTask::OnRequestsExpired(UpdateRequestsResult result) {
     // Ensure we have an expiration reason for this request.
     auto iter = expired_request_ids_and_reasons_.find(request.request_id());
     if (iter == expired_request_ids_and_reasons_.end()) {
-      NOTREACHED() << "Expired request not found in deleted results.";
+      NOTREACHED_IN_MIGRATION()
+          << "Expired request not found in deleted results.";
       continue;
     }
 

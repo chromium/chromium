@@ -17,6 +17,7 @@ namespace media {
 CAPTURE_EXPORT
 void LogFirstCapturedVideoFrame(const AVCaptureDeviceFormat* bestCaptureFormat,
                                 const CMSampleBufferRef buffer);
+CAPTURE_EXPORT void LogReactionEffectsGesturesState();
 
 }  // namespace media
 

@@ -5,7 +5,8 @@
 # found in the LICENSE file.
 
 # - Downloads all dependencies listed in package.json
-# - Makes Chromium specific modifications.
+# - Makes Chromium specific modifications. To make further changes, see
+#   /third_party/polymer/README.chromium.
 # - Places the final output in components-chromium/
 
 check_dep() {
@@ -54,6 +55,7 @@ find components-chromium/polymer/ -mindepth 3 -maxdepth 3 -name '*.js' \
 # Apply additional chrome specific patches.
 patch -p1 --forward < chromium.patch
 patch -p1 --forward < iron_icon.patch
+patch -p1 --forward < iron_iconset_svg.patch
 patch -p1 --forward < iron_list.patch
 patch -p1 --forward < iron_overlay_backdrop.patch
 patch -p1 --forward < paper_progress.patch
@@ -112,10 +114,6 @@ fi
 
 echo 'Stripping unnecessary prefixed CSS rules...'
 python css_strip_prefixes.py --file_extension=js
-
-echo 'Generating -rgb versions of --google-* vars in paper-style/colors.js...'
-python rgbify_hex_vars.py --filter-prefix=google --replace \
-    components-chromium/paper-styles/color.js
 
 # TODO create components summary
 

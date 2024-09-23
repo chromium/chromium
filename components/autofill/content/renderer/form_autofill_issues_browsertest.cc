@@ -19,19 +19,25 @@
 using blink::WebFormControlElement;
 using blink::WebFormElement;
 using blink::WebLocalFrame;
+using blink::WebString;
 using blink::mojom::GenericIssueErrorType;
 
 namespace autofill::form_issues {
 namespace {
 
+constexpr CallTimerState kCallTimerStateDummy = {
+    .call_site = CallTimerState::CallSite::kUpdateFormCache,
+    .last_autofill_agent_reset = {},
+    .last_dom_content_loaded = {},
+};
+
 // Checks if the provided list `form_issues` contains a certain issue type.
 // Optionally checks whether the expected issue type has the specified
 // `violating_attr`.
-bool FormIssuesContainIssueType(
-    const std::vector<blink::WebAutofillClient::FormIssue>& form_issues,
-    GenericIssueErrorType expected_issue,
-    const std::string& violating_attr = "") {
-  return base::ranges::any_of(form_issues, [&](const auto& form_issue) {
+bool FormIssuesContainIssueType(const std::vector<FormIssue>& form_issues,
+                                GenericIssueErrorType expected_issue,
+                                const std::string& violating_attr = "") {
+  return std::ranges::any_of(form_issues, [&](const auto& form_issue) {
     return form_issue.issue_type == expected_issue &&
            (violating_attr.empty() ||
             violating_attr == form_issue.violating_node_attribute.Utf8());
@@ -61,8 +67,8 @@ TEST_F(FormAutofillIssuesTest, FormLabelHasNeitherForNorNestedInput) {
       </form>)";
   WebFormElement form_target = WebFormElementFromHTML(kHtml);
 
-  std::vector<blink::WebAutofillClient::FormIssue> form_issues =
-      GetFormIssues(form_target.GetFormControlElements(), {});
+  std::vector<FormIssue> form_issues =
+      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
 
   EXPECT_TRUE(FormIssuesContainIssueType(
       form_issues,
@@ -79,11 +85,11 @@ TEST_F(FormAutofillIssuesTest, FormDuplicateIdForInputError) {
       </form>)";
   WebFormElement form_target = WebFormElementFromHTML(kHtml);
 
-  std::vector<blink::WebAutofillClient::FormIssue> form_issues =
-      GetFormIssues(form_target.GetFormControlElements(), {});
+  std::vector<FormIssue> form_issues =
+      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
 
-  int duplicated_ids_issue_count = base::ranges::count_if(
-      form_issues, [](const blink::WebAutofillClient::FormIssue& form_issue) {
+  int duplicated_ids_issue_count =
+      base::ranges::count_if(form_issues, [](const FormIssue& form_issue) {
         return form_issue.issue_type ==
                    GenericIssueErrorType::kFormDuplicateIdForInputError &&
                form_issue.violating_node_attribute.Utf8() == "id";
@@ -97,11 +103,11 @@ TEST_F(FormAutofillIssuesTest, FormAriaLabelledByToNonExistingId) {
         <input aria-labelledby=non_existing>
       </form>)";
   WebFormElement form_target = WebFormElementFromHTML(kHtml);
-  std::vector<blink::WebAutofillClient::FormIssue> form_issues =
-      GetFormIssues(form_target.GetFormControlElements(), {});
+  std::vector<FormIssue> form_issues =
+      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
 
-  std::vector<blink::WebAutofillClient::FormIssue> form_issues_2 =
-      GetFormIssues(form_target.GetFormControlElements(), form_issues);
+  std::vector<FormIssue> form_issues_2 = GetFormIssuesForTesting(
+      form_target.GetFormControlElements(), form_issues);
   EXPECT_TRUE(FormIssuesContainIssueType(
       form_issues, GenericIssueErrorType::kFormAriaLabelledByToNonExistingId,
       /*violating_attr=*/"aria-labelledby"));
@@ -114,8 +120,8 @@ TEST_F(FormAutofillIssuesTest, FormAutocompleteAttributeEmptyError) {
       </form>)";
   WebFormElement form_target = WebFormElementFromHTML(kHtml);
 
-  std::vector<blink::WebAutofillClient::FormIssue> form_issues =
-      GetFormIssues(form_target.GetFormControlElements(), {});
+  std::vector<FormIssue> form_issues =
+      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
 
   EXPECT_TRUE(FormIssuesContainIssueType(
       form_issues, GenericIssueErrorType::kFormAutocompleteAttributeEmptyError,
@@ -130,10 +136,36 @@ TEST_F(FormAutofillIssuesTest,
       </form>)";
   WebFormElement form_target = WebFormElementFromHTML(kHtml);
 
-  std::vector<blink::WebAutofillClient::FormIssue> form_issues =
-      GetFormIssues(form_target.GetFormControlElements(), {});
+  std::vector<FormIssue> form_issues =
+      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
 
   EXPECT_TRUE(FormIssuesContainIssueType(
+      form_issues,
+      GenericIssueErrorType::
+          kFormInputHasWrongButWellIntendedAutocompleteValueError,
+      /*violating_attr=*/"autocomplete"));
+}
+
+// Having an autocomplete attribute that is too large does not trigger issues,
+// even if it contains a substring that would match a "honest" developer
+// error/typo. This is done to avoid large string comparisons during form
+// parsing.
+TEST_F(
+    FormAutofillIssuesTest,
+    FormInputHasWrongButWellIntendedAutocompleteValueError_LargeAutocompleteString_DoNotCalculateIssue) {
+  std::string autocomplete(100, 'a');
+  autocomplete += "address-line-1";
+  constexpr char kHtml[] = R"(
+      <form id=target>
+        <input>
+      </form>)";
+  WebFormElement form_target = WebFormElementFromHTML(kHtml);
+  form_target.GetFormControlElements()[0].SetAttribute(
+      "autocomplete", WebString::FromUTF8(autocomplete));
+  std::vector<FormIssue> form_issues =
+      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
+
+  EXPECT_FALSE(FormIssuesContainIssueType(
       form_issues,
       GenericIssueErrorType::
           kFormInputHasWrongButWellIntendedAutocompleteValueError,
@@ -147,8 +179,8 @@ TEST_F(FormAutofillIssuesTest, FormEmptyIdAndNameAttributesForInputError) {
       </form>)";
   WebFormElement form_target = WebFormElementFromHTML(kHtml);
 
-  std::vector<blink::WebAutofillClient::FormIssue> form_issues =
-      GetFormIssues(form_target.GetFormControlElements(), {});
+  std::vector<FormIssue> form_issues =
+      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
 
   EXPECT_TRUE(FormIssuesContainIssueType(
       form_issues,
@@ -164,8 +196,8 @@ TEST_F(FormAutofillIssuesTest,
 
   WebFormElement form_target = WebFormElementFromHTML(kHtml);
 
-  std::vector<blink::WebAutofillClient::FormIssue> form_issues =
-      GetFormIssues(form_target.GetFormControlElements(), {});
+  std::vector<FormIssue> form_issues =
+      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
 
   EXPECT_TRUE(FormIssuesContainIssueType(
       form_issues,
@@ -185,10 +217,10 @@ TEST_F(
   LoadHTML(kHtml);
   WebLocalFrame* web_frame = GetMainFrame();
 
-  std::vector<blink::WebAutofillClient::FormIssue> form_issues =
-      GetFormIssues(form_util::GetAutofillableFormControlElements(
-                        web_frame->GetDocument(), WebFormElement()),
-                    {});
+  std::vector<FormIssue> form_issues =
+      GetFormIssuesForTesting(form_util::GetOwnedAutofillableFormControls(
+                                  web_frame->GetDocument(), WebFormElement()),
+                              {});
 
   EXPECT_TRUE(FormIssuesContainIssueType(
       form_issues,
@@ -209,14 +241,13 @@ TEST_F(FormAutofillIssuesTest, FormLabelForNameError) {
       </form>)";
   LoadHTML(kHtml);
   WebLocalFrame* web_frame = GetMainFrame();
-  FormData form_data = *form_util::WebFormElementToFormDataForTesting(
-      WebFormElementFromHTML(kHtml), WebFormControlElement(),
-      *base::MakeRefCounted<FieldDataManager>(),
-      {form_util::ExtractOption::kValue}, nullptr);
+  FormData form_data = *form_util::ExtractFormData(
+      web_frame->GetDocument(), WebFormElementFromHTML(kHtml),
+      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy);
 
-  std::vector<blink::WebAutofillClient::FormIssue> form_issues =
-      CheckForLabelsWithIncorrectForAttribute(web_frame->GetDocument(),
-                                              form_data.fields, {});
+  std::vector<FormIssue> form_issues =
+      CheckForLabelsWithIncorrectForAttributeForTesting(
+          web_frame->GetDocument(), form_data.fields(), {});
 
   EXPECT_EQ(form_issues.size(), 2u);
   EXPECT_TRUE(FormIssuesContainIssueType(
@@ -233,14 +264,13 @@ TEST_F(FormAutofillIssuesTest, FormLabelForMatchesNonExistingIdError) {
       </form>)";
   LoadHTML(kHtml);
   WebLocalFrame* web_frame = GetMainFrame();
-  FormData form_data = *form_util::WebFormElementToFormDataForTesting(
-      WebFormElementFromHTML(kHtml), WebFormControlElement(),
-      *base::MakeRefCounted<FieldDataManager>(),
-      {form_util::ExtractOption::kValue}, nullptr);
+  FormData form_data = *form_util::ExtractFormData(
+      web_frame->GetDocument(), WebFormElementFromHTML(kHtml),
+      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy);
 
-  std::vector<blink::WebAutofillClient::FormIssue> form_issues =
-      CheckForLabelsWithIncorrectForAttribute(web_frame->GetDocument(),
-                                              form_data.fields, {});
+  std::vector<FormIssue> form_issues =
+      CheckForLabelsWithIncorrectForAttributeForTesting(
+          web_frame->GetDocument(), form_data.fields(), {});
 
   EXPECT_EQ(form_issues.size(), 1u);
   EXPECT_TRUE(FormIssuesContainIssueType(

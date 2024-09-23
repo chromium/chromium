@@ -62,7 +62,7 @@ EyeDropperView::PreEventDispatchHandler::KeyboardHandler::~KeyboardHandler() {
 
 void EyeDropperView::PreEventDispatchHandler::KeyboardHandler::OnKeyEvent(
     ui::KeyEvent* event) {
-  if (event->type() != ui::ET_KEY_PRESSED) {
+  if (event->type() != ui::EventType::kKeyPressed) {
     return;
   }
 
@@ -150,11 +150,11 @@ EyeDropperView::PreEventDispatchHandler::~PreEventDispatchHandler() {
 
 void EyeDropperView::PreEventDispatchHandler::OnMouseEvent(
     ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_PRESSED) {
+  if (event->type() == ui::EventType::kMousePressed) {
     // Avoid closing the color popup when the eye dropper is clicked.
     event->StopPropagation();
   }
-  if (event->type() == ui::ET_MOUSE_RELEASED) {
+  if (event->type() == ui::EventType::kMouseReleased) {
     view_->OnColorSelected();
     event->StopPropagation();
   }
@@ -162,7 +162,7 @@ void EyeDropperView::PreEventDispatchHandler::OnMouseEvent(
 
 void EyeDropperView::PreEventDispatchHandler::OnGestureEvent(
     ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_TAP) {
+  if (event->type() == ui::EventType::kGestureTap) {
     view_->OnColorSelected();
     event->StopPropagation();
   }
@@ -170,13 +170,13 @@ void EyeDropperView::PreEventDispatchHandler::OnGestureEvent(
 
 void EyeDropperView::PreEventDispatchHandler::OnTouchEvent(
     ui::TouchEvent* event) {
-  if (event->type() == ui::ET_TOUCH_PRESSED) {
+  if (event->type() == ui::EventType::kTouchPressed) {
     // For touch-move, we don't move the center of the EyeDropper to be at the
     // touch point, but rather maintain the offset from the first press.
     touch_offset_ = event->root_location() -
                     view_->GetWidget()->GetWindowBoundsInScreen().CenterPoint();
   }
-  if (event->type() == ui::ET_TOUCH_MOVED) {
+  if (event->type() == ui::EventType::kTouchMoved) {
     // Keep EyeDropper always inside a display, but adjust offset when position
     // is clamped.
     gfx::Point position = event->root_location() - touch_offset_;

@@ -8,7 +8,10 @@
 #include "base/containers/enum_set.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -38,7 +41,7 @@ using HTMLFragmentParsingBehaviorSet =
 // If this fails because of an unsupported tag and
 // `failed_because_unsupported_tag` is non-null, then it is set to true.
 CORE_EXPORT bool TryParsingHTMLFragment(
-    const String& source,
+    const WTF::String& source,
     Document& document,
     ContainerNode& root_node,
     Element& context_element,

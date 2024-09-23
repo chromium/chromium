@@ -14,7 +14,9 @@
           "UserFeedbackAllowed": false
         },
         "prefs": {
-          "feedback_allowed": {}
+          "feedback_allowed": {
+            "value": false
+          }
         }
       }
     ]

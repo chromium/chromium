@@ -61,6 +61,13 @@ target(_libcxx_target_type, "libc++") {
     visibility +=
         [ "//remoting/host/linux:remoting_me2me_host_copy_user_session" ]
   }
+  if (build_with_chromium && is_win && is_component_build) {
+    # PartitionAlloc uses no_default_deps=true when is_win && is_component_build
+    # but it depends on libc++. So need to add an explicit dependency on
+    # libc++.
+    visibility +=
+        [ "//base/allocator/partition_allocator/src/partition_alloc:*" ]
+  }
   if (libcxx_is_shared) {
     no_default_deps = true
   }
@@ -74,7 +81,8 @@ target(_libcxx_target_type, "libc++") {
     "__config_site",
   ]
 
-  # TODO(crbug.com/1458042): Move this build file to third_party/libc++/BUILD.gn once submodule migration is done
+  # TODO(crbug.com/40273848): Move this build file to third_party/libc++/BUILD.gn
+  # once submodule migration is done.
   sources = [
     "//third_party/libc++/src/src/algorithm.cpp",
     "//third_party/libc++/src/src/any.cpp",
@@ -167,6 +175,9 @@ target(_libcxx_target_type, "libc++") {
     "//build/config/compiler:no_rtti",
     "//build/config/coverage:default_coverage",
   ]
+  if (use_libcxx_modules) {
+    configs -= [ "//build/config/compiler:libcxx_module" ]
+  }
   if ((is_android || is_apple) && libcxx_is_shared) {
     # Use libc++_chrome to avoid conflicting with system libc++
     output_name = "libc++_chrome"
@@ -196,12 +207,7 @@ target(_libcxx_target_type, "libc++") {
       # specified in the C++ spec 3.7.4p2, which makes them always have default
       # visibility.  This option is needed to force hidden visibility since
       # -fvisibility=hidden doesn't have the desired effect.
-      if (llvm_force_head_revision) {
-        cflags = [ "-fvisibility-global-new-delete=force-hidden" ]
-      } else {
-        # TODO(b/41496712): Remove when updating Clang.
-        cflags = [ "-fvisibility-global-new-delete-hidden" ]
-      }
+      cflags = [ "-fvisibility-global-new-delete=force-hidden" ]
     } else {
       defines += [
         # This resets the visibility to default only for the various

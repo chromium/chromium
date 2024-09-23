@@ -5,15 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_MODEL_SYNC_UTILS_SYNC_ERROR_INFOBAR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_SETTINGS_MODEL_SYNC_UTILS_SYNC_ERROR_INFOBAR_DELEGATE_H_
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
 #import "base/memory/raw_ptr.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_service_observer.h"
+#import "components/infobars/core/confirm_infobar_delegate.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_service_observer.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 @protocol SyncPresenter;
 
 namespace infobars {

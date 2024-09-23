@@ -112,7 +112,7 @@ using ZoomBubbleImmersiveDisabledBrowserTest = ZoomBubbleBrowserTest;
 // shows in fullscreen. And when the toolbar hides in fullscreen, the zoom
 // bubble should close and re-show in a new un-anchored position.
 //
-// TODO(crbug.com/1142682): Fails on Lacros bots.
+// TODO(crbug.com/40727884): Fails on Lacros bots.
 // TODO(lgrey): Disable this test for Mac or delete it when immersive is the
 // only code path. This was originally added for a Mac bug that is impossible
 // to trigger in immersive mode, and is very implementation-coupled.
@@ -166,8 +166,8 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleImmersiveDisabledBrowserTest,
     views::test::WidgetDestroyedWaiter waiter(zoom_bubble->GetWidget());
     // Press the zoom-in button. This will open a new bubble in an un-anchored
     // position.
-    const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                               ui::EventTimeForNow(), 0, 0);
+    const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                               gfx::Point(), ui::EventTimeForNow(), 0, 0);
     views::test::ButtonTestApi(zoom_bubble->zoom_in_button_).NotifyClick(event);
     zoom_bubble = ZoomBubbleView::GetZoomBubble();
     EXPECT_NE(org_zoom_bubble, zoom_bubble);

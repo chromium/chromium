@@ -507,7 +507,7 @@ function webGpuDrawVideoFrames(
           functionDuration}ms,  longer than 33.3 ms (1sec/30fps)`);
     }
 
-    // TODO(crbug.com/1289482): Workaround for backpressure mechanism
+    // TODO(crbug.com/40817530): Workaround for backpressure mechanism
     // not working properly.
     if (enableBackPressureWorkaround) {
       await device.queue.onSubmittedWorkDone();
@@ -588,7 +588,7 @@ function webGpuDrawVideoFrames(
           functionDuration}ms,  longer than 33.3 ms (1sec/30fps)`);
     }
 
-    // TODO(crbug.com/1289482): Workaround for backpressure mechanism
+    // TODO(crbug.com/40817530): Workaround for backpressure mechanism
     // not working properly.
     if (enableBackPressureWorkaround) {
       await device.queue.onSubmittedWorkDone();

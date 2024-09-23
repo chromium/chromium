@@ -26,7 +26,7 @@ constexpr size_t kNumBuffers = 4;
 // keep latency reasonably low, while making playback reliable under normal
 // conditions.
 //
-// TODO(crbug.com/1153909): It may be possible to reduce this value to reduce
+// TODO(crbug.com/40159229): It may be possible to reduce this value to reduce
 // total latency, but that requires that an elevated scheduling profile is
 // applied to this thread.
 constexpr base::TimeDelta kLeadTimeExtra = base::Milliseconds(20);
@@ -148,7 +148,7 @@ bool WebEngineAudioOutputDevice::SetVolume(double volume) {
 media::OutputDeviceInfo WebEngineAudioOutputDevice::GetOutputDeviceInfo() {
   // AudioConsumer doesn't provider any information about the output device.
   //
-  // TODO(crbug.com/852834): Update this method when that functionality is
+  // TODO(crbug.com/42050621): Update this method when that functionality is
   // implemented.
   return media::OutputDeviceInfo(
       std::string(), media::OUTPUT_DEVICE_STATUS_OK,

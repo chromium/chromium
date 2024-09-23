@@ -20,7 +20,6 @@
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/pattern.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -43,6 +42,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -66,7 +66,6 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -408,17 +407,17 @@ class DragStartWaiter : public aura::client::DragDropClient {
       message_loop_runner_->Quit();
 
       source_origin_ = data->GetRendererTaintedOrigin();
-      std::u16string text;
-      if (data->GetString(&text)) {
-        text_ = base::UTF16ToUTF8(text);
+      std::optional<std::u16string> text = data->GetString();
+      if (text) {
+        text_ = base::UTF16ToUTF8(*text);
       } else {
         text_ = "<no text>";
       }
 
-      GURL base_url;
-      std::u16string html;
-      if (data->GetHtml(&html, &base_url)) {
-        html_ = base::UTF16ToUTF8(html);
+      std::optional<ui::OSExchangeData::HtmlInfo> html_content =
+          data->GetHtml();
+      if (html_content.has_value()) {
+        html_ = base::UTF16ToUTF8(html_content->html);
       } else {
         html_ = "<no html>";
       }
@@ -901,9 +900,9 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   }
 
   gfx::Point expected_location_of_drag_start_in_left_frame() {
-    // TODO(crbug.com/653490): The delta below should exceed kDragThresholdX and
-    // kDragThresholdY from MouseEventManager.cpp in blink.  Ideally, it would
-    // come from the OS instead.
+    // TODO(crbug.com/41279378): The delta below should exceed kDragThresholdX
+    // and kDragThresholdY from MouseEventManager.cpp in blink.  Ideally, it
+    // would come from the OS instead.
     return kMiddleOfLeftFrame + gfx::Vector2d(10, 10);
   }
 
@@ -1029,10 +1028,8 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
 // Scenario: drag text from outside the browser and drop to the right frame.
 // Test coverage: dragover, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropTextFromOutside) {
-  // TODO (crbug/1521094): Test fails when ChromeRefresh2023 and
-  //                       ChromeRefreshSecondary2023 is enabled. Evaluate cause
-  //                       and fix.
-  if (features::IsChromeRefresh2023() && std::get<double>(GetParam()) > 1.5) {
+  // TODO (crbug/1521094): Test fails since 2023 refresh.
+  if (std::get<double>(GetParam()) > 1.5) {
     GTEST_SKIP();
   }
   std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
@@ -1129,7 +1126,13 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
 
 // Scenario: drag a URL into the Omnibox.  This is a regression test for
 // https://crbug.com/670123.
-IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropUrlIntoOmnibox) {
+// TODO(crbug.com/344168586): Very flaky on linux-chromeos-rel bots.
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(NDEBUG)
+#define MAYBE_DropUrlIntoOmnibox DISABLED_DropUrlIntoOmnibox
+#else
+#define MAYBE_DropUrlIntoOmnibox DropUrlIntoOmnibox
+#endif
+IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DropUrlIntoOmnibox) {
   std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
   ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "title1.html"));
@@ -1372,10 +1375,8 @@ struct DragAndDropBrowserTest::DragImageBetweenFrames_TestState {
 // Test coverage: dragleave, dragenter, dragover, dragend, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragSameOriginImageBetweenFrames) {
-  // TODO (crbug/1521094): Disabled when scale factor is > 1.5 and
-  //                       ChromeRefresh2023 and ChromeRefreshSecondary2023 is
-  //                       enabled.
-  if (features::IsChromeRefresh2023() && std::get<1>(GetParam()) > 1.5) {
+  // TODO (crbug/1521094): Test fails since 2023 refresh.
+  if (std::get<1>(GetParam()) > 1.5) {
     GTEST_SKIP();
   }
   DragImageBetweenFrames_Start(/*image_same_origin=*/true,
@@ -1399,10 +1400,8 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
 // Test coverage: dragleave, dragenter, dragover, dragend, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragCorsSameOriginImageBetweenFrames) {
-  // TODO (crbug/1521094): Disabled when scale factor is > 1.5 and
-  //                       ChromeRefresh2023 and ChromeRefreshSecondary2023 is
-  //                       enabled.
-  if (features::IsChromeRefresh2023() && std::get<1>(GetParam()) > 1.5) {
+  // TODO (crbug/1521094): Test fails since 2023 refresh.
+  if (std::get<1>(GetParam()) > 1.5) {
     GTEST_SKIP();
   }
   DragImageBetweenFrames_Start(/*image_same_origin=*/false,
@@ -1426,10 +1425,8 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
 // Regression test for https://crbug.com/1264873.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragCrossOriginImageBetweenFrames) {
-  // TODO (crbug/1521094): Disabled when scale factor is > 1.5 and
-  //                       ChromeRefresh2023 and ChromeRefreshSecondary2023 is
-  //                       enabled.
-  if (features::IsChromeRefresh2023() && std::get<1>(GetParam()) > 1.5) {
+  // TODO (crbug/1521094): Test fails since 2023 refresh.
+  if (std::get<1>(GetParam()) > 1.5) {
     GTEST_SKIP();
   }
   DragImageBetweenFrames_Start(/*image_same_origin=*/false,
@@ -1618,10 +1615,17 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
 
   // Verify dragend DOM event.
   {
-    // TODO(lukasza): Figure out why the drop event sees different values of
-    // DataTransfer.dropEffect and DataTransfer.types properties.
+    // Different values of DataTransfer.dropEffect is observed and is
+    // being tracked by https://crbug.com/1470718.
+    // Different values of DataTransfer.types is seen due to
+    // https://crbug.com/394955. This causes certain File objects to be
+    // mapped to text/plain in `DataObject::ToWebDragData()` and thus
+    // text/plain is seen in "dragleave", "dragenter", "dragover" and "drop"
+    // events. While dragend doesn't use WebDragData object and that is why
+    // text/plain is not seen in this event.
     state->expected_dom_event_data.set_expected_drop_effect("copy");
-    state->expected_dom_event_data.set_expected_mime_types("");
+    state->expected_dom_event_data.set_expected_mime_types(
+        "Files,text/html,text/uri-list");
 
     // TODO: https://crbug.com/686136: dragEnd coordinates for non-OOPIF
     // scenarios are currently broken.
@@ -1658,9 +1662,9 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
 // There is no known way to execute test-controlled tasks during
 // a drag-and-drop loop run by Windows OS.
 // Also disable the test on Linux due to flaky: crbug.com/1164442
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
 // complete.
-// TODO(crbug.com/1380803): Enable on ChromeOS ASAN once flakiness is fixed.
+// TODO(crbug.com/40876472): Enable on ChromeOS ASAN once flakiness is fixed.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS) ||            \
     (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER))
@@ -1684,10 +1688,8 @@ struct DragAndDropBrowserTest::DragImageFromDisappearingFrame_TestState {
 // Test coverage: dragenter, dragover, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                        MAYBE_DragImageFromDisappearingFrame) {
-  // TODO (crbug/1521094): Disabled when scale factor is > 1.5 and
-  //                       ChromeRefresh2023 and ChromeRefreshSecondary2023 is
-  //                       enabled.
-  if (features::IsChromeRefresh2023() && std::get<1>(GetParam()) > 1.5) {
+  // TODO (crbug/1521094): Test fails since 2023 refresh.
+  if (std::get<1>(GetParam()) > 1.5) {
     GTEST_SKIP();
   }
   // Load the test page.
@@ -1786,7 +1788,10 @@ void DragAndDropBrowserTest::DragImageFromDisappearingFrame_Step3(
 
 // There is no known way to execute test-controlled tasks during
 // a drag-and-drop loop run by Windows OS.
+// TODO(b:361552512): Flaky on Chrome OS
 #if BUILDFLAG(IS_WIN)
+#define MAYBE_CrossSiteDrag DISABLED_CrossSiteDrag
+#elif BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CrossSiteDrag DISABLED_CrossSiteDrag
 #else
 #define MAYBE_CrossSiteDrag CrossSiteDrag
@@ -1856,7 +1861,7 @@ void DragAndDropBrowserTest::CrossSiteDrag_Step2(
     GetRightFrame()->ExecuteJavaScriptWithUserGestureForTests(
         base::UTF8ToUTF16(base::StringPrintf(
             "domAutomationController.send(%s);", expected_response.c_str())),
-        base::NullCallback());
+        base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
 
     // Wait until our response comes back (it might be mixed with responses
     // carrying events that are sent by event_monitoring.js).
@@ -1969,7 +1974,7 @@ void DragAndDropBrowserTest::CrossNavCrossSiteDrag_Step2(
             base::UTF8ToUTF16(
                 base::StringPrintf("domAutomationController.send(%s);",
                                    expected_response.c_str())),
-            base::NullCallback());
+            base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
 
     // Wait until our response comes back (it might be mixed with responses
     // carrying events that are sent by event_monitoring.js).
@@ -2032,10 +2037,8 @@ struct DragAndDropBrowserTest::CrossTabDrag_TestState {
 //
 // Test coverage: dragenter, dragover, dragend, drop DOM events.
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossTabDrag) {
-  // TODO (crbug/1521094): Disabled when scale factor is > 1.5 and
-  //                       ChromeRefresh2023 and ChromeRefreshSecondary2023 is
-  //                       enabled.
-  if (features::IsChromeRefresh2023() && std::get<1>(GetParam()) > 1.5) {
+  // TODO (crbug/1521094): Test fails since 2023 refresh.
+  if (std::get<1>(GetParam()) > 1.5) {
     GTEST_SKIP();
   }
   std::string right_frame_site =
@@ -2203,10 +2206,17 @@ void DragAndDropBrowserTest::CrossTabDrag_Step3(
 
   // Verify dragend DOM event.
   {
-    // TODO(lukasza): Figure out why the drop event sees different values of
-    // DataTransfer.dropEffect and DataTransfer.types properties.
+    // Different values of DataTransfer.dropEffect is observed and is
+    // being tracked by https://crbug.com/1470718.
+    // Different values of DataTransfer.types is seen due to
+    // https://crbug.com/394955. This causes certain File objects to be
+    // mapped to text/plain in `DataObject::ToWebDragData()` and thus
+    // text/plain is seen in "dragleave", "dragenter", "dragover" and "drop"
+    // events. While dragend doesn't use WebDragData object and that is why
+    // text/plain is not seen in this event.
     state->expected_dom_event_data.set_expected_drop_effect("copy");
-    state->expected_dom_event_data.set_expected_mime_types("");
+    state->expected_dom_event_data.set_expected_mime_types(
+        "Files,text/html,text/uri-list");
 
     // TODO: https://crbug.com/686136: dragEnd coordinates for non-OOPIF
     // scenarios are currently broken.
@@ -2276,7 +2286,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragUpdateScreenCoordinates) {
 // navigation.
 
 // Injecting input with scaling works as expected on Chromeos.
-// TODO(crbug.com/1344579): Enable tests with a scale factor on lacros.
+// TODO(crbug.com/40231833): Enable tests with a scale factor on lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr std::initializer_list<double> ui_scaling_factors = {1.0, 1.25, 2.0};
 #else

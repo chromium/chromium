@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/paint/skottie_wrapper.h"
 
 #include <cstdint>
@@ -63,7 +68,7 @@ class MockFrameDataCallback {
 
 TEST(SkottieWrapperTest, LoadsValidLottieFileNonSerializable) {
   scoped_refptr<SkottieWrapper> skottie =
-      SkottieWrapper::CreateNonSerializable(base::span<const uint8_t>(
+      SkottieWrapper::UnsafeCreateNonSerializable(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()),
           kLottieDataWithoutAssets1.length()));
   EXPECT_TRUE(skottie->is_valid());
@@ -71,7 +76,7 @@ TEST(SkottieWrapperTest, LoadsValidLottieFileNonSerializable) {
 
 TEST(SkottieWrapperTest, LoadsValidLottieFileSerializable) {
   scoped_refptr<SkottieWrapper> skottie =
-      SkottieWrapper::CreateSerializable(std::vector<uint8_t>(
+      SkottieWrapper::UnsafeCreateSerializable(std::vector<uint8_t>(
           reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()),
           reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()) +
               kLottieDataWithoutAssets1.length()));
@@ -79,9 +84,9 @@ TEST(SkottieWrapperTest, LoadsValidLottieFileSerializable) {
 }
 
 TEST(SkottieWrapperTest, DetectsInvalidLottieFile) {
-  static constexpr base::StringPiece kInvalidJson = "this is invalid json";
+  static constexpr std::string_view kInvalidJson = "this is invalid json";
   scoped_refptr<SkottieWrapper> skottie =
-      SkottieWrapper::CreateNonSerializable(base::span<const uint8_t>(
+      SkottieWrapper::UnsafeCreateNonSerializable(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(kInvalidJson.data()),
           kInvalidJson.length()));
   EXPECT_FALSE(skottie->is_valid());
@@ -89,11 +94,11 @@ TEST(SkottieWrapperTest, DetectsInvalidLottieFile) {
 
 TEST(SkottieWrapperTest, IdMatchesForSameLottieFile) {
   scoped_refptr<SkottieWrapper> skottie_1 =
-      SkottieWrapper::CreateNonSerializable(base::span<const uint8_t>(
+      SkottieWrapper::UnsafeCreateNonSerializable(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()),
           kLottieDataWithoutAssets1.length()));
   scoped_refptr<SkottieWrapper> skottie_2 =
-      SkottieWrapper::CreateSerializable(std::vector<uint8_t>(
+      SkottieWrapper::UnsafeCreateSerializable(std::vector<uint8_t>(
           reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()),
           reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()) +
               kLottieDataWithoutAssets1.length()));
@@ -104,11 +109,11 @@ TEST(SkottieWrapperTest, IdMatchesForSameLottieFile) {
 
 TEST(SkottieWrapperTest, IdDoesNotMatchForDifferentLottieFile) {
   scoped_refptr<SkottieWrapper> skottie_1 =
-      SkottieWrapper::CreateNonSerializable(base::span<const uint8_t>(
+      SkottieWrapper::UnsafeCreateNonSerializable(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()),
           kLottieDataWithoutAssets1.length()));
   scoped_refptr<SkottieWrapper> skottie_2 =
-      SkottieWrapper::CreateNonSerializable(base::span<const uint8_t>(
+      SkottieWrapper::UnsafeCreateNonSerializable(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets2.data()),
           kLottieDataWithoutAssets2.length()));
   ASSERT_TRUE(skottie_1->is_valid());
@@ -118,7 +123,7 @@ TEST(SkottieWrapperTest, IdDoesNotMatchForDifferentLottieFile) {
 
 TEST(SkottieWrapperTest, LoadsImageAssetsMetadata) {
   scoped_refptr<SkottieWrapper> skottie =
-      SkottieWrapper::CreateNonSerializable(base::span<const uint8_t>(
+      SkottieWrapper::UnsafeCreateNonSerializable(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(kLottieDataWith2Assets.data()),
           kLottieDataWith2Assets.length()));
   ASSERT_TRUE(skottie->is_valid());

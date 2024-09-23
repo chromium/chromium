@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_manager.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/policy_types.h"
 
 namespace policy {
@@ -31,7 +32,7 @@ class DeviceLocalAccountPolicyProvider
  public:
   DeviceLocalAccountPolicyProvider(const std::string& user_id,
                                    DeviceLocalAccountPolicyService* service,
-                                   DeviceLocalAccount::Type type);
+                                   DeviceLocalAccountType type);
 
   DeviceLocalAccountPolicyProvider(const DeviceLocalAccountPolicyProvider&) =
       delete;
@@ -75,7 +76,7 @@ class DeviceLocalAccountPolicyProvider
   scoped_refptr<DeviceLocalAccountExternalDataManager> external_data_manager_;
 
   raw_ptr<DeviceLocalAccountPolicyService> service_;
-  DeviceLocalAccount::Type type_;
+  DeviceLocalAccountType type_;
 
   bool store_initialized_;
   bool waiting_for_policy_refresh_;

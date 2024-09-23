@@ -4,11 +4,15 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util_test_support.h"
 
+#import "ios/chrome/app/application_delegate/app_state.h"
+
 @interface FakeSceneSession : NSObject
 
 - (instancetype)initWithIdentifier:(NSString*)identifier;
 
 @property(nonatomic, strong, readonly) NSString* persistentIdentifier;
+
+@property(nonatomic, copy) NSDictionary<NSString*, id>* userInfo;
 
 @end
 
@@ -56,6 +60,17 @@
 
 - (NSArray<UIWindow*>*)windows {
   return nil;
+}
+
+@end
+
+@implementation SceneStateWithFakeScene
+
+- (instancetype)initWithScene:(id)scene appState:(AppState*)appState {
+  if ((self = [super initWithAppState:appState])) {
+    [self setScene:scene];
+  }
+  return self;
 }
 
 @end

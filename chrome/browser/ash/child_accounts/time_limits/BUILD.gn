@@ -1,0 +1,136 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("time_limits") {
+  sources = [
+    "app_activity_registry.cc",
+    "app_activity_registry.h",
+    "app_activity_report_interface.cc",
+    "app_activity_report_interface.h",
+    "app_service_wrapper.cc",
+    "app_service_wrapper.h",
+    "app_time_controller.cc",
+    "app_time_controller.h",
+    "app_time_limit_interface.cc",
+    "app_time_limit_interface.h",
+    "app_time_limit_utils.cc",
+    "app_time_limit_utils.h",
+    "app_time_limits_allowlist_policy_wrapper.cc",
+    "app_time_limits_allowlist_policy_wrapper.h",
+    "app_time_notification_delegate.h",
+    "app_time_policy_helpers.cc",
+    "app_time_policy_helpers.h",
+    "app_types.cc",
+    "app_types.h",
+    "persisted_app_info.cc",
+    "persisted_app_info.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos/ash/components/dbus/system_clock",
+    "//chromeos/ash/components/settings",
+    "//components/policy/proto",
+    "//components/services/app_service/public/cpp:instance_update",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/common",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/ui/vector_icons",
+    "//components/app_constants",
+    "//extensions/browser",
+    "//extensions/common",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "app_time_limits_allowlist_policy_test_utils.cc",
+    "app_time_limits_allowlist_policy_test_utils.h",
+    "app_time_limits_policy_builder.cc",
+    "app_time_limits_policy_builder.h",
+  ]
+
+  deps = [
+    ":time_limits",
+    "//base",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "app_activity_registry_unittest.cc",
+    "app_service_wrapper_unittest.cc",
+    "app_time_controller_unittest.cc",
+    "app_time_limit_utils_unittest.cc",
+    "app_types_unittest.cc",
+    "persisted_app_info_unittest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    ":time_limits",
+    "//ash/components/arc:arc_test_support",
+    "//base/test:test_support",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/child_accounts/apps",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/app_constants",
+    "//extensions/common",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "app_time_browsertest.cc" ]
+
+  deps = [
+    ":test_support",
+    ":time_limits",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc:notification_test_support",
+    "//ash/components/arc/mojom",
+    "//base",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/child_accounts",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support_ui",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}

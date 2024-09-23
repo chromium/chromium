@@ -5,14 +5,18 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_RESOLVED_FRAME_DATA_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_RESOLVED_FRAME_DATA_H_
 
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/bind_internal.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/draw_quad.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/display/display_resource_provider.h"
@@ -51,11 +55,6 @@ struct VIZ_SERVICE_EXPORT FixedPassData {
   // duration of aggregation (until it's set to null).
   raw_ptr<CompositorRenderPass> render_pass = nullptr;
 
-  // DrawQuads in |render_pass| that can contribute additional damage (eg.
-  // surface and render passes) that need to be visited during the prewalk phase
-  // of aggregation. Stored in front-to-back order like in |render_pass|.
-  std::vector<raw_ptr<const DrawQuad, VectorExperimental>> prewalk_quads;
-
   // How many times this render pass is embedded by another render pass in the
   // same frame.
   int embed_count = 0;
@@ -81,7 +80,7 @@ struct VIZ_SERVICE_EXPORT AggregationPassData {
   void Reset();
 
   // Embedded render passes that contribute pixels to this render pass.
-  base::flat_set<ResolvedPassData*> embedded_passes;
+  base::flat_set<raw_ptr<ResolvedPassData, CtnExperimental>> embedded_passes;
 
   // True if the render pass is drawn to fulfil part of a copy request. This
   // property is transitive from parent pass to embedded passes.
@@ -119,6 +118,12 @@ struct VIZ_SERVICE_EXPORT AggregationPassData {
   // The damage added from its descandant surfaces during aggregation. This is
   // not part of the original render_pass->damage_rect from CC.
   gfx::Rect added_damage;
+
+  // |true| to if this pass should embedded and not merged. This is to support
+  // |kDelegatedCompositingLimitToUi| on Windows to keep the web contents
+  // surface in a swap chain instead of delegating its quads.
+  // TODO(crbug.com/324460866): Used for partially delegated compositing.
+  bool prevent_merge = false;
 };
 
 // Render pass data that must be recomputed each aggregation and needs to be
@@ -161,10 +166,6 @@ class VIZ_SERVICE_EXPORT ResolvedPassData {
   bool is_root() const { return fixed_.is_root; }
   const std::vector<ResolvedQuadData>& draw_quads() const {
     return fixed_.draw_quads;
-  }
-  const std::vector<raw_ptr<const DrawQuad, VectorExperimental>>&
-  prewalk_quads() const {
-    return fixed_.prewalk_quads;
   }
 
   // Returns true if the render pass is not embedded by another render pass and
@@ -226,8 +227,17 @@ enum FrameDamageType {
 // CompositorFrame computed information will be updated whenever the active
 // frame for the surface has changed. On destruction any resources registered
 // with DisplayResourceProvider will be released.
+//
+// The first time a resolved frame is needed during aggregation
+// UpdateForAggregation() then UpdateOffsetTags() must be called. That will
+// populate all of the internal data. During aggregation the fixed data is
+// viewed and aggregation data can be modified. After aggregation is over
+// ResetAfterAggregation() will be called which resets aggregation data.
 class VIZ_SERVICE_EXPORT ResolvedFrameData {
  public:
+  using OffsetTagLookupFn =
+      base::FunctionRef<gfx::Vector2dF(const OffsetTagDefinition&)>;
+
   ResolvedFrameData(DisplayResourceProvider* resource_provider,
                     Surface* surface,
                     uint64_t prev_frame_index,
@@ -241,6 +251,9 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   bool is_valid() const { return valid_; }
   uint64_t previous_frame_index() const { return previous_frame_index_; }
 
+  gfx::Size size_in_pixels() const;
+  float device_scale_factor() const;
+
   // Returns namespace ID for the client that submitted this frame. This is used
   // to deduplicate layer IDs from different clients.
   uint32_t GetClientNamespaceId() const;
@@ -252,27 +265,22 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   // resources since resources (might) be missing on next draw.
   void ForceReleaseResource();
 
-  // Updates resolved frame data for a new active frame. This will recompute
-  // ResolvedPassData. It also updates display resource provider with resources
-  // used in new active frame.
-  //
-  // This performs the following validation on the active CompositorFrame.
-  // 1. Checks each ResourceId was registered with DisplayResourceProvider and
-  //    is in |child_to_parent_map|.
-  // 2. Checks that CompositorRenderPasses have unique ids.
-  // 3. Checks that CompositorRenderPassDrawQuads only embed render passes that
-  //    are drawn before. This has the side effect of disallowing any cycles.
-  //
-  // If validation fails then ResolvedPassData will be cleared and is_valid()
-  // will return false.
-  void UpdateForActiveFrame(
+  // This must be called once before using ResolvedFrameData during aggregation.
+  // If there is a new active CompositorFrame data will be fully updated, see
+  // UpdatedActiveFrame() for details, otherwise previous data will be reused.
+  void UpdateForAggregation(
       AggregatedRenderPassId::Generator& render_pass_id_generator);
+
+  // This should be called each aggregation after UpdateForAggregation() to
+  // update resolved frame for OffsetTags. If the active CompositorFrame defines
+  // any tags, the tag values will be found and the resolved frame will be
+  // modified.
+  void UpdateOffsetTags(OffsetTagLookupFn lookup_value);
 
   // Sets frame index and marks as invalid. This also clears any existing
   // resolved pass data.
   void SetInvalid();
 
-  void MarkAsUsedInAggregation();
   bool WasUsedInAggregation() const;
 
   // Resets aggregation data and WasUsedInAggregation() will now return false.
@@ -280,6 +288,8 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
   // All functions after this point are accessors for the resolved frame and
   // should only be called if is_valid() returns true.
+
+  const CompositorFrameMetadata& GetMetadata() const;
 
   // Returns true if the root render pass is embedded from the the root surface
   // root render pass.
@@ -312,14 +322,48 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   // Returns the root render pass output_rect.
   const gfx::Rect& GetOutputRect() const;
 
+ private:
+  friend class ResolvedFrameDataTestHelper;
+
+  // Data for a specific `OffsetTag`.
+  struct OffsetTagData {
+    // The offset value that is used.
+    gfx::Vector2dF last_offset;
+    gfx::Vector2dF current_offset;
+    // The containing rect is the union of all tagged quad visible rects in
+    // root render pass coordinate space before applying any offsets.
+    gfx::Rect last_containing_rect;
+    gfx::Rect current_containing_rect;
+    bool defined_in_frame = false;
+  };
+
+  // Updates ResolvedPassData for a new active frame. It also updates surface
+  // client and display resource provider with resources used in the new active
+  // frame.
+  //
+  // This performs the following validation on the active CompositorFrame.
+  // 1. Checks each ResourceId was registered with DisplayResourceProvider and
+  //    is in |child_to_parent_map|.
+  // 2. Checks that CompositorRenderPasses have unique ids.
+  // 3. Checks that CompositorRenderPassDrawQuads only embed render passes that
+  //    are drawn before. This has the side effect of disallowing any cycles.
+  //
+  // If validation fails then ResolvedPassData will be cleared and is_valid()
+  // will return false.
+  void UpdateActiveFrame(
+      AggregatedRenderPassId::Generator& render_pass_id_generator);
+
   // Set `CompositorRenderPass` for all `resolved_passes_`. Each
   // `ResolvedPassData` must have been aggregated before.
-  void SetRenderPassPointers();
+  void ReuseActiveFrame();
 
- private:
   void RegisterWithResourceProvider();
   void MovePersistentPassDataFromPreviousFrame(
       const std::vector<ResolvedPassData>& previoius_resolved_passes);
+
+  void ComputeOffsetTagContainingRects();
+  void RebuildRenderPassesForOffsetTags();
+  void RecomputeOffsetTagDamage();
 
   const raw_ptr<DisplayResourceProvider> resource_provider_;
   const SurfaceId surface_id_;
@@ -331,12 +375,21 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   // Data associated with CompositorFrame with |frame_index_|.
   bool valid_ = false;
   uint64_t frame_index_ = kInvalidFrameIndex;
+  uint64_t previous_frame_index_ = kInvalidFrameIndex;
+
+  base::flat_map<OffsetTag, OffsetTagData> offset_tag_data_;
+  // Additional damage that is due to OffsetTag changes between aggregations
+  // that is unioned into the surface damage.
+  gfx::Rect offset_tag_added_damage_;
+  bool has_non_zero_offset_tag_value_ = false;
+
+  // Holds a modified copy of render passes from current active CompositorFrame.
+  std::vector<std::unique_ptr<CompositorRenderPass>> offset_tag_render_passes_;
+
   std::vector<ResolvedPassData> resolved_passes_;
   base::flat_map<CompositorRenderPassId, ResolvedPassData*> render_pass_id_map_;
   base::flat_map<CompositorRenderPassId, AggregatedRenderPassId>
       aggregated_id_map_;
-
-  uint64_t previous_frame_index_ = kInvalidFrameIndex;
 
   const AggregatedRenderPassId prev_root_pass_id_;
 

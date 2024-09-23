@@ -1,14 +1,15 @@
 include_rules = [
   "+chrome/browser/image_decoder",
   "+chrome/browser/share",
-  "-chrome/browser/ui/views",
   "+chrome/updater",
   "+components/browser_ui/client_certificate",
   "+components/browser_ui/device_lock/android",
   "+components/browser_ui/util/android/url_constants.h",
   "+components/country_codes",
+  "+components/data_sharing/public",
   "+components/endpoint_fetcher",
   "+components/enterprise",
+  "+components/fingerprinting_protection_filter/browser",
   "+components/infobars/android",
   "+components/live_caption",
   "+components/omnibox",
@@ -20,19 +21,19 @@ include_rules = [
   "+components/safety_check",
   "+components/saved_tab_groups",
   "+components/segmentation_platform/content",
-  "+components/services/screen_ai",
   "+components/soda",
   "+components/supervised_user/core/common",
   "+components/tab_groups",
+  "+components/tpcd/enterprise_reporting",
   "+components/translate/content/android",
   "+components/user_education/common",
   "+components/user_education/test",
   "+components/user_education/webui",
   "+components/user_notes",
   "+components/web_package",
-  "+pdf/pdf_features.h",
   "+services/content/public",
   "+services/device/public/mojom",
+  "+services/screen_ai",
 ]
 
 specific_include_rules = {
@@ -50,12 +51,6 @@ specific_include_rules = {
   "dark_mode_manager_linux(_unittest)?\.cc": [
     "+dbus",
   ],
-  "delete_address_profile_dialog_controller_impl_interactive_uitest.cc": [
-    "+chrome/browser/ui/views/autofill"
-  ],
-  "edit_address_profile_dialog_controller_impl_interactive_uitest.cc": [
-    "+chrome/browser/ui/views/autofill"
-  ],
   "fullscreen_controller_interactive_browsertest\.cc": [
     "+ash/shell.h",
   ],
@@ -65,16 +60,10 @@ specific_include_rules = {
   "sad_tab_helper.cc": [
     "+content/common/content_navigation_policy.h",
   ],
-  "startup_browser_creator_browsertest.cc": [
-    "+chrome/browser/ui/views/web_apps/protocol_handler_launch_dialog_view.h",
+  "settings_window_manager_chromeos\.cc": [
+    "+ash/wm/window_properties.h",
   ],
   "hid_chooser_controller_unittest\.cc": [
     "+services/device/hid",
   ],
-  "signin_intercept_first_run_experience_dialog_browsertest.cc": [
-    "+chrome/browser/ui/views/profiles/avatar_toolbar_button.h",
-  ],
-  "save_update_address_profile_bubble_controller_impl_interactive_uitest.cc": [
-    "+chrome/browser/ui/views/autofill"
-  ]
 }

@@ -1,0 +1,18 @@
+<style include="healthd-internals-shared cr-shared-style">
+  #telemetryInfoContainer {
+    overflow: overlay;
+    max-height: 100vh;
+  }
+</style>
+<div id="telemetryInfoContainer">
+  <div class="cr-centered-card-container">
+    <healthd-internals-cpu-card id="cpuCard"></healthd-internals-cpu-card>
+    <healthd-internals-memory-card id="memoryCard">
+    </healthd-internals-memory-card>
+    <healthd-internals-fan-card id="fanCard"></healthd-internals-fan-card>
+    <healthd-internals-power-card id="powerCard">
+    </healthd-internals-power-card>
+    <healthd-internals-thermal-card id="thermalCard">
+    </healthd-internals-thermal-card>
+  </div>
+</div>

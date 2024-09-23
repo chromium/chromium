@@ -8,9 +8,10 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/picker/model/picker_action_type.h"
+#include "ash/picker/views/picker_item_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/button/button.h"
 
 namespace views {
 class ImageView;
@@ -19,20 +20,22 @@ class ImageView;
 namespace ash {
 
 // Picker item which contains just an image.
-class ASH_EXPORT PickerImageItemView : public views::Button {
-  METADATA_HEADER(PickerImageItemView, views::Button)
+class ASH_EXPORT PickerImageItemView : public PickerItemView {
+  METADATA_HEADER(PickerImageItemView, PickerItemView)
 
  public:
-  PickerImageItemView(views::Button::PressedCallback callback,
-                      std::unique_ptr<views::ImageView> image);
+  PickerImageItemView(std::unique_ptr<views::ImageView> image,
+                      std::u16string accessible_name,
+                      SelectItemCallback select_item_callback);
   PickerImageItemView(const PickerImageItemView&) = delete;
   PickerImageItemView& operator=(const PickerImageItemView&) = delete;
   ~PickerImageItemView() override;
 
-  void SetImageSizeFromWidth(int width);
+  void SetAction(PickerActionType action);
 
  private:
   raw_ptr<views::ImageView> image_view_ = nullptr;
+  std::u16string accessible_name_;
 };
 
 }  // namespace ash

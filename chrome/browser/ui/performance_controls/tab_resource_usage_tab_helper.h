@@ -9,12 +9,11 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-namespace content {
-class NavigationHandle;
-}
-
 class TabResourceUsage : public base::RefCounted<TabResourceUsage> {
  public:
+  // Threshold was selected based on the 99th percentile of tab memory usage
+  static const uint64_t kHighMemoryUsageThresholdBytes = 800 * 1024 * 1024;
+
   TabResourceUsage() = default;
 
   uint64_t memory_usage_in_bytes() const { return memory_usage_bytes_; }
@@ -44,8 +43,6 @@ class TabResourceUsageTabHelper
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
 
   uint64_t GetMemoryUsageInBytes();
   void SetMemoryUsageInBytes(uint64_t memory_usage_bytes);

@@ -13,7 +13,6 @@ mojom("mojom") {
     "producer.mojom",
     "testing_controls.mojom",
     "video_capture_service.mojom",
-    "video_effects_manager.mojom",
     "video_frame_handler.mojom",
     "video_source.mojom",
     "video_source_provider.mojom",
@@ -24,10 +23,14 @@ mojom("mojom") {
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:video_capture",
     "//media/mojo/mojom",
+    "//services/video_effects/public/mojom:mojom",
     "//ui/gfx/geometry/mojom",
   ]
 
-  public_deps = [ "//sandbox/policy/mojom" ]
+  public_deps = [
+    "//media/capture/mojom:video_effects_manager",
+    "//sandbox/policy/mojom",
+  ]
 
   if (is_chromeos_ash) {
     deps += [

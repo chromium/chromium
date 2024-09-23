@@ -41,8 +41,7 @@ class UdpSocket final : public openscreen::UdpSocket,
       openscreen::NetworkInterfaceIndex ifindex) final;
   void JoinMulticastGroup(const openscreen::IPAddress& address,
                           openscreen::NetworkInterfaceIndex ifindex) final;
-  void SendMessage(const void* data,
-                   size_t length,
+  void SendMessage(openscreen::ByteView data,
                    const openscreen::IPEndpoint& dest) final;
   void SetDscp(openscreen::UdpSocket::DscpMode state) final;
 

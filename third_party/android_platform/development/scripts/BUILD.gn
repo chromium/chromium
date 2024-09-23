@@ -7,6 +7,10 @@ import("//build/config/python.gni")
 
 python_library("stack_py") {
   pydeps_file = "stack.pydeps"
-  data = [ "stack" ]
+  data = [
+    "stack",
+    "//third_party/llvm-build/Release+Asserts/bin/llvm-readelf",
+    "//third_party/llvm-build/Release+Asserts/bin/llvm-readobj",
+  ]
   data_deps = [ "//build/config/clang:llvm-symbolizer_data($host_toolchain)" ]
 }

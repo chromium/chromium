@@ -8,13 +8,13 @@ import "content/common/agent_scheduling_group.mojom";
 import "content/common/native_types.mojom";
 import "ipc/ipc.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
+import "mojo/public/mojom/base/process_priority.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_types.mojom";
-import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
-import "ui/color/color_id.mojom";
 
 struct UpdateScrollbarThemeParams {
   // TODO(avi): Update these to optional values when optional numeric types are
@@ -32,33 +32,8 @@ struct UpdateScrollbarThemeParams {
 };
 
 struct UpdateSystemColorInfoParams {
-  bool is_dark_mode;
-  bool forced_colors;
-
-  // uint32 represents a SkColor in the map.
-  // TODO(crbug.com/1251637): These colors should be consolidated into the
-  // renderer's ColorProviders.
-  map<SystemThemeColor, uint32> colors;
-
   // Accent color used by the system. Currently only set on ChromeOS.
   uint32? accent_color;
-
-  // Maps used to reconstruct ColorProvider instances in the renderer.
-  map<color.mojom.RendererColorId, skia.mojom.SkColor> light_colors;
-  map<color.mojom.RendererColorId, skia.mojom.SkColor> dark_colors;
-  map<color.mojom.RendererColorId, skia.mojom.SkColor> forced_colors_map;
-};
-
-// The background state for the render process.  When backgrounded the process's
-// priority will be lower (via base::Process::SetPriority()) if allowed on the
-// current platform (as determined by base::Process::CanSetPriority()).
-enum RenderProcessBackgroundState {
-  // The renderer process has not been backgrounded, a hidden renderer may still
-  // be foregrounded, e.g. when it is playing audio.
-  kForegrounded,
-  // The renderer process has been backgrounded, a visible renderer may still
-  // be backgrounded, e.g. when it is hosting only low priority frames.
-  kBackgrounded,
 };
 
 // The visibility state for the renderer process, indicating whether or not any
@@ -79,11 +54,8 @@ interface Renderer {
   // This will create an "independent" agent scheduling group that is not
   // associated with the process-wide or other groups' IPC channels, meaning
   // there is no guaranteed ordering between them.
-  // `broker_remote` is the BrowserInterfaceBroker bound to the newly-created
-  // AgentSchedulingGroup.
   CreateAgentSchedulingGroup(
-    pending_receiver<IPC.mojom.ChannelBootstrap> bootstrap,
-    pending_remote<blink.mojom.BrowserInterfaceBroker> broker_remote);
+    pending_receiver<IPC.mojom.ChannelBootstrap> bootstrap);
 
   // Tells the renderer to create a new AgentSchedulingGroup, that will
   // listen to messages sent by the host via the pending
@@ -91,11 +63,15 @@ interface Renderer {
   // This will create an agent scheduling group that is associated with the
   // process-wide IPC channel, preserving message ordering across different
   // agent scheduling groups.
-  // `broker_remote` is the BrowserInterfaceBroker bound to the newly-created
-  // AgentSchedulingGroup.
   CreateAssociatedAgentSchedulingGroup(
-    pending_associated_receiver<AgentSchedulingGroup> agent_scheduling_group,
-    pending_remote<blink.mojom.BrowserInterfaceBroker> broker_remote);
+    pending_associated_receiver<AgentSchedulingGroup> agent_scheduling_group);
+
+  // Transfers the ReadOnlySharedMemoryRegion which is used to communicate the
+  // `std::atomic<base::TimeTicks>` representing the time at which this renderer
+  // was last upgraded to run at foreground priority or a null TimeTicks if it's
+  // currently running at best-effort priority.
+  TransferSharedLastForegroundTime(
+      mojo_base.mojom.ReadOnlySharedMemoryRegion last_foreground_time_region);
 
   // Tells the renderer that the network type has changed so that
   // navigator.onLine and navigator.connection can be updated.
@@ -136,14 +112,9 @@ interface Renderer {
   // Tells the renderer to purge its in-memory resource cache.
   PurgeResourceCache() => ();
 
-  // Tells the renderer process of a change in visibility or background state.
-  SetProcessState(RenderProcessBackgroundState background_state,
+  // Tells the renderer process of a change in visibility or priority state.
+  SetProcessState(mojo_base.mojom.ProcessPriority process_priority,
                   RenderProcessVisibleState visible_state);
-
-  // Asks the renderer process to modify its internal settings to bias towards
-  // energy efficiency because the embedder is in battery saver mode. The
-  // default is `false`.
-  SetBatterySaverMode(bool battery_saver_mode_enabled);
 
   // Tells the renderer process that it has been locked to a site (i.e., a
   // scheme plus eTLD+1, such as https://google.com), or to a more specific
@@ -173,7 +144,7 @@ interface Renderer {
   // Similarly to the `SetIsCrossOriginIsolated()` method above, this flag is
   // process global, and called at most once, prior to committing a navigation.
   //
-  // TODO(crbug.com/1206150): We need a specification for this restriction.
+  // TODO(crbug.com/40180791): We need a specification for this restriction.
   SetIsIsolatedContext(bool value);
 
   // Initialize renderer user agent string, user agent metadata, CORS exempt

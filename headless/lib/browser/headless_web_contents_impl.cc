@@ -42,6 +42,7 @@
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/protocol/headless_handler.h"
+#include "headless/public/switches.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -49,6 +50,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/switches.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -116,13 +118,14 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     headless_contents->Close();
   }
 
-  void AddNewContents(content::WebContents* source,
-                      std::unique_ptr<content::WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& window_features,
-                      bool user_gesture,
-                      bool* was_blocked) override {
+  content::WebContents* AddNewContents(
+      content::WebContents* source,
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override {
     DCHECK(new_contents->GetBrowserContext() ==
            headless_web_contents_->browser_context());
 
@@ -139,11 +142,14 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
                                ? default_rect
                                : window_features.bounds;
     raw_child_contents->SetBounds(rect);
+    return nullptr;
   }
 
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
-      const content::OpenURLParams& params) override {
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override {
     DCHECK_EQ(source, headless_web_contents_->web_contents());
     content::WebContents* target = nullptr;
     switch (params.disposition) {
@@ -173,8 +179,17 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
         return nullptr;
     }
 
-    target->GetController().LoadURLWithParams(
-        content::NavigationController::LoadURLParams(params));
+    content::NavigationController::LoadURLParams load_url_params(params);
+    load_url_params.force_new_browsing_instance =
+        headless_web_contents_->browser()
+            ->options()
+            ->force_new_browsing_instance;
+
+    base::WeakPtr<content::NavigationHandle> navigation =
+        target->GetController().LoadURLWithParams(load_url_params);
+    if (navigation_handle_callback && navigation) {
+      std::move(navigation_handle_callback).Run(*navigation);
+    }
     return target;
   }
 
@@ -195,6 +210,17 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     DirectoryEnumerator::Start(path, std::move(listener));
   }
 
+  content::PictureInPictureResult EnterPictureInPicture(
+      content::WebContents* web_contents) override {
+    return content::PictureInPictureResult::kSuccess;
+  }
+
+  bool IsBackForwardCacheSupported(
+      content::WebContents& web_contents) override {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    return command_line->HasSwitch(switches::kEnableBackForwardCache);
+  }
+
   void RequestPointerLock(content::WebContents* web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override {
@@ -202,19 +228,69 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
         blink::mojom::PointerLockResult::kSuccess);
   }
 
+  void EnterFullscreenModeForTab(
+      content::RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override {
+    SetFullscreenModeForTab(
+        content::WebContents::FromRenderFrameHost(requesting_frame),
+        /*fullscreen=*/true);
+  }
+
+  void ExitFullscreenModeForTab(content::WebContents* web_contents) override {
+    SetFullscreenModeForTab(web_contents, /*fullscreen=*/false);
+  }
+
+  bool IsFullscreenForTabOrPending(
+      const content::WebContents* web_contents) override {
+    return is_fullscreen_;
+  }
+
  private:
   HeadlessBrowserImpl* browser() { return headless_web_contents_->browser(); }
 
+  void SetFullscreenModeForTab(content::WebContents* web_contents,
+                               bool fullscreen) {
+    if (is_fullscreen_ == fullscreen) {
+      return;
+    }
+
+    is_fullscreen_ = fullscreen;
+
+    content::RenderViewHost* rvh =
+        web_contents->GetPrimaryMainFrame()->GetRenderViewHost();
+    CHECK(rvh);
+
+    content::RenderWidgetHostView* view = rvh->GetWidget()->GetView();
+    if (view) {
+      if (fullscreen) {
+        // Headless chrome does not have screen to set the view bounds to, so
+        // just double the size of the existing view to trigger the expected
+        // window size change notifications.
+        before_fullscreen_bounds_ = view->GetViewBounds();
+        gfx::Rect bounds = before_fullscreen_bounds_;
+        bounds.set_width(bounds.width() * 2);
+        bounds.set_height(bounds.height() * 2);
+        view->SetBounds(bounds);
+      } else {
+        view->SetBounds(before_fullscreen_bounds_);
+      }
+    }
+
+    rvh->GetWidget()->SynchronizeVisualProperties();
+  }
+
   raw_ptr<HeadlessWebContentsImpl> headless_web_contents_;  // Not owned.
+
+  bool is_fullscreen_ = false;
+  gfx::Rect before_fullscreen_bounds_;
 };
 
 namespace {
 constexpr uint64_t kBeginFrameSourceId = viz::BeginFrameArgs::kManualSourceId;
 }
 
-class HeadlessWebContentsImpl::PendingFrame
-    : public base::RefCounted<HeadlessWebContentsImpl::PendingFrame>,
-      public base::SupportsWeakPtr<HeadlessWebContentsImpl::PendingFrame> {
+class HeadlessWebContentsImpl::PendingFrame final
+    : public base::RefCounted<HeadlessWebContentsImpl::PendingFrame> {
  public:
   PendingFrame(uint64_t sequence_number, FrameFinishedCallback callback)
       : sequence_number_(sequence_number), callback_(std::move(callback)) {}
@@ -239,6 +315,10 @@ class HeadlessWebContentsImpl::PendingFrame
     bitmap_ = std::make_unique<SkBitmap>(bitmap);
   }
 
+  base::WeakPtr<PendingFrame> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   friend class base::RefCounted<PendingFrame>;
 
@@ -251,6 +331,7 @@ class HeadlessWebContentsImpl::PendingFrame
   FrameFinishedCallback callback_;
   bool has_damage_ = false;
   std::unique_ptr<SkBitmap> bitmap_;
+  base::WeakPtrFactory<PendingFrame> weak_ptr_factory_{this};
 };
 
 // static
@@ -337,10 +418,10 @@ HeadlessWebContentsImpl::HeadlessWebContentsImpl(
       browser_context->options()->font_render_hinting();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kForceWebRtcIPHandlingPolicy)) {
+  if (command_line->HasSwitch(::switches::kForceWebRtcIPHandlingPolicy)) {
     web_contents_->GetMutableRendererPrefs()->webrtc_ip_handling_policy =
         command_line->GetSwitchValueASCII(
-            switches::kForceWebRtcIPHandlingPolicy);
+            ::switches::kForceWebRtcIPHandlingPolicy);
   }
 
   web_contents_->SetDelegate(web_contents_delegate_.get());
@@ -376,6 +457,9 @@ bool HeadlessWebContentsImpl::OpenURL(const GURL& url) {
   content::NavigationController::LoadURLParams params(url);
   params.transition_type = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+  params.force_new_browsing_instance =
+      browser()->options()->force_new_browsing_instance;
+
   web_contents_->GetController().LoadURLWithParams(params);
   web_contents_delegate_->ActivateContents(web_contents_.get());
   web_contents_->Focus();

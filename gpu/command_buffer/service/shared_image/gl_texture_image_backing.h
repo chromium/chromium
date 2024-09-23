@@ -24,7 +24,7 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
                         const gfx::ColorSpace& color_space,
                         GrSurfaceOrigin surface_origin,
                         SkAlphaType alpha_type,
-                        uint32_t usage,
+                        SharedImageUsageSet usage,
                         std::string debug_layer,
                         bool is_passthrough);
   GLTextureImageBacking(const GLTextureImageBacking&) = delete;

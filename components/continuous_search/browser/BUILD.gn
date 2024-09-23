@@ -2,21 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-if (is_android) {
-  import("//build/config/android/rules.gni")
-}
-
-if (is_android) {
-  java_cpp_enum("search_result_extractor_client_status_generated_enum") {
-    sources = [ "search_result_extractor_client_status.h" ]
-  }
-}
-
 source_set("browser") {
   sources = [
     "search_result_extractor_client.cc",
     "search_result_extractor_client.h",
-    "search_result_extractor_client_status.h",
   ]
 
   deps = [

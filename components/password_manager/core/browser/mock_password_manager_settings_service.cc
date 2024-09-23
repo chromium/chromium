@@ -4,7 +4,9 @@
 
 #include "components/password_manager/core/browser/mock_password_manager_settings_service.h"
 
+namespace password_manager {
 MockPasswordManagerSettingsService::MockPasswordManagerSettingsService() =
     default;
 MockPasswordManagerSettingsService::~MockPasswordManagerSettingsService() =
     default;
+}  // namespace password_manager

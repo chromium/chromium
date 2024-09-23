@@ -85,8 +85,9 @@ class SVGSVGElement final : public SVGGraphicsElement,
   void unsuspendRedrawAll() {}
   void forceRedraw() {}
 
-  StaticNodeList* getIntersectionList(SVGRectTearOff*,
-                                      SVGElement* reference_element) const;
+  StaticNodeTypeList<Element>* getIntersectionList(
+      SVGRectTearOff*,
+      SVGElement* reference_element) const;
   StaticNodeList* getEnclosureList(SVGRectTearOff*,
                                    SVGElement* reference_element) const;
   bool checkIntersection(SVGElement*, SVGRectTearOff*) const;
@@ -104,8 +105,10 @@ class SVGSVGElement final : public SVGGraphicsElement,
 
   AffineTransform ViewBoxToViewTransform(const gfx::SizeF& viewport_size) const;
 
-  void SetupInitialView(const String& fragment_identifier,
-                        Element* anchor_node);
+  const SVGViewSpec* ParseViewSpec(const String& fragment_identifier,
+                                   Element* anchor_node) const;
+  void SetViewSpec(const SVGViewSpec*);
+
   bool ZoomAndPanEnabled() const;
 
   SVGAnimatedLength* x() const { return x_.Get(); }
@@ -116,8 +119,6 @@ class SVGSVGElement final : public SVGGraphicsElement,
   void Trace(Visitor*) const override;
 
  private:
-  void SetViewSpec(const SVGViewSpec*);
-
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(
@@ -143,15 +144,7 @@ class SVGSVGElement final : public SVGGraphicsElement,
 
   void FinishParsingChildren() override;
 
-  enum GeometryMatchingMode { kCheckIntersection, kCheckEnclosure };
-
-  bool CheckIntersectionOrEnclosure(const SVGElement&,
-                                    const gfx::RectF&,
-                                    GeometryMatchingMode) const;
-  StaticNodeList* CollectIntersectionOrEnclosureList(
-      const gfx::RectF&,
-      SVGElement*,
-      GeometryMatchingMode) const;
+  bool CheckEnclosure(const SVGElement&, const gfx::RectF&) const;
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;

@@ -6,16 +6,15 @@
 
 namespace bookmarks {
 
-void BaseBookmarkModelObserver::BookmarkModelLoaded(BookmarkModel* model,
-                                                    bool ids_reassigned) {}
+void BaseBookmarkModelObserver::BookmarkModelLoaded(bool ids_reassigned) {
+  BookmarkModelChanged();
+}
 
-void BaseBookmarkModelObserver::BookmarkModelBeingDeleted(
-    BookmarkModel* model) {
+void BaseBookmarkModelObserver::BookmarkModelBeingDeleted() {
   BookmarkModelChanged();
 }
 
 void BaseBookmarkModelObserver::BookmarkNodeMoved(
-    BookmarkModel* model,
     const BookmarkNode* old_parent,
     size_t old_index,
     const BookmarkNode* new_parent,
@@ -23,40 +22,37 @@ void BaseBookmarkModelObserver::BookmarkNodeMoved(
   BookmarkModelChanged();
 }
 
-void BaseBookmarkModelObserver::BookmarkNodeAdded(BookmarkModel* model,
-                                                  const BookmarkNode* parent,
+void BaseBookmarkModelObserver::BookmarkNodeAdded(const BookmarkNode* parent,
                                                   size_t index,
                                                   bool added_by_user) {
   BookmarkModelChanged();
 }
 
 void BaseBookmarkModelObserver::BookmarkNodeRemoved(
-    BookmarkModel* model,
     const BookmarkNode* parent,
     size_t old_index,
     const BookmarkNode* node,
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   BookmarkModelChanged();
 }
 
 void BaseBookmarkModelObserver::BookmarkAllUserNodesRemoved(
-    BookmarkModel* model,
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   BookmarkModelChanged();
 }
 
-void BaseBookmarkModelObserver::BookmarkNodeChanged(BookmarkModel* model,
-                                                    const BookmarkNode* node) {
+void BaseBookmarkModelObserver::BookmarkNodeChanged(const BookmarkNode* node) {
   BookmarkModelChanged();
 }
 
 void BaseBookmarkModelObserver::BookmarkNodeFaviconChanged(
-    BookmarkModel* model,
     const BookmarkNode* node) {
+  // Report no change, as observers typically don't care as much about favicons.
 }
 
 void BaseBookmarkModelObserver::BookmarkNodeChildrenReordered(
-    BookmarkModel* model,
     const BookmarkNode* node) {
   BookmarkModelChanged();
 }

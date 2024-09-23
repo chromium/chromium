@@ -25,17 +25,20 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_launcher_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/key_system_names.h"
+#include "media/base/key_systems.h"
 #include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "media/cdm/supported_cdm_versions.h"
 #include "media/media_buildflags.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
@@ -100,11 +103,19 @@ enum class ConfigChangeType {
 // Whether the video should be not played or played once or twice.
 enum class PlayCount { ZERO = 0, ONCE = 1, TWICE = 2 };
 
-using ::testing::Bool;
-using ::testing::Combine;
-using ::testing::UnitTest;
-using ::testing::Values;
-using ::testing::WithParamInterface;
+using testing::Bool;
+using testing::Combine;
+using testing::Eq;
+using testing::Not;
+using testing::Pair;
+using testing::UnitTest;
+using testing::UnorderedElementsAre;
+using testing::Values;
+using testing::WithParamInterface;
+using ukm::builders::Media_EME_ApiPromiseRejection;
+using ukm::builders::Media_EME_CreateMediaKeys;
+using ukm::builders::Media_EME_RequestMediaKeySystemAccess;
+using ukm::builders::Media_EME_Usage;
 
 // Base class for encrypted media tests.
 class EncryptedMediaTestBase : public MediaBrowserTest {
@@ -322,10 +333,8 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);
-    InProcessBrowserTest::SetUpDefaultCommandLine(&default_command_line);
-    test_launcher_utils::RemoveCommandLineSwitch(
-        default_command_line, switches::kDisableComponentUpdate, command_line);
+    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+    command_line->RemoveSwitch(switches::kDisableComponentUpdate);
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
@@ -341,7 +350,7 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
       command_line->AppendSwitch(switches::kDisableWebSecurity);
     }
 
-    // TODO(crbug.com/1243903): WhatsNewUI might be causing timeouts.
+    // TODO(crbug.com/40787541): WhatsNewUI might be causing timeouts.
     command_line->AppendSwitch(switches::kNoFirstRun);
 
     std::vector<base::test::FeatureRefAndParams> enabled_features;
@@ -372,7 +381,7 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
       // other than use a software OpenGL implementation. This can be configured
       // via `switches::kUseGpuInTests` or `--use-gpu-in-tests`.
       if (command_line->HasSwitch(switches::kUseGpuInTests)) {
-        // TODO(crbug.com/1421444): Investigate why the video playback doesn't
+        // TODO(crbug.com/40896253): Investigate why the video playback doesn't
         // work with `switches::kDisableGpu` and remove this line if possible.
         // For now, `switches::kDisableGpu` should not be set. Otherwise,
         // the video playback will not work with software rendering. Note that
@@ -393,16 +402,14 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
 // Tests encrypted media playback using ExternalClearKey key system with a
 // specific library CDM interface version as test parameter:
 // - int: CDM interface version to test
-// - bool: Whether the kCdmStorageDatabase feature is enabled
-// - bool: Whether the kCdmStorageDatabaseMigration feature is enabled
-class ECKEncryptedMediaTest
-    : public EncryptedMediaTestBase,
-      public WithParamInterface<std::tuple<int, bool, bool>> {
+class ECKEncryptedMediaTest : public EncryptedMediaTestBase,
+                              public WithParamInterface<int> {
  public:
-  int GetCdmInterfaceVersion() { return std::get<0>(GetParam()); }
+  int GetCdmInterfaceVersion() { return GetParam(); }
 
   // We use special |key_system| names to do non-playback related tests,
-  // e.g. media::kExternalClearKeyFileIOTestKeySystem is used to test file IO.
+  // e.g. media::kExternalClearKeyPlatformVerificationTestKeySystem is used to
+  // test the platform verification.
   void TestNonPlaybackCases(const std::string& key_system,
                             const std::string& expected_title) {
     // Since we do not test playback, arbitrarily choose a test file and source
@@ -423,12 +430,53 @@ class ECKEncryptedMediaTest
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EncryptedMediaTestBase::SetUpCommandLine(command_line);
+
+    SetUpCommandLineForKeySystem(media::kExternalClearKeyKeySystem,
+                                 command_line);
+    // Override enabled CDM interface version for testing.
+    command_line->AppendSwitchASCII(
+        switches::kOverrideEnabledCdmInterfaceVersion,
+        base::NumberToString(GetCdmInterfaceVersion()));
+  }
+};
+
+// Tests FileIO capabilities in Encrypted Media with the following test
+// parameters:
+// - bool: Whether the kCdmStorageDatabase feature is enabled
+// - bool: Whether the kCdmStorageDatabaseMigration feature is enabled
+class ECKEncryptedMediaFileIOTest
+    : public EncryptedMediaTestBase,
+      public WithParamInterface<std::tuple<int, bool, bool>> {
+ public:
+  int GetCdmInterfaceVersion() { return std::get<0>(GetParam()); }
+
+  void TestPlaybackCase(const std::string& key_system,
+                        const std::string& session_to_load,
+                        const std::string& expected_title) {
+    RunEncryptedMediaTest(kDefaultEmePlayer, "bear-320x240-v_enc-v.webm",
+                          key_system, SrcType::MSE, session_to_load, false,
+                          PlayCount::ONCE, expected_title);
+  }
+  // We use special |key_system| names to do non-playback related tests,
+  // e.g. media::kExternalClearKeyFileIOTestKeySystem is used to test file IO.
+  void TestNonPlaybackCases(const std::string& key_system,
+                            const std::string& expected_title) {
+    // Since we do not test playback, arbitrarily choose a test file and source
+    // type.
+    RunEncryptedMediaTest(kDefaultEmePlayer, "bear-a_enc-a.webm", key_system,
+                          SrcType::SRC, kNoSessionToLoad, false,
+                          PlayCount::ONCE, expected_title);
+  }
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaTestBase::SetUpCommandLine(command_line);
     // If we are testing the FileIO functionalities, we should parameterize to
     // test the different combinations of the CdmStorageDatabase flags to make
     // sure that end to end functionalities do not break with changes made, so
     // that the MediaLicenseDatabase, the CdmStorageDatabaseMigration, and the
     // final CdmStorageDatabase all work as expected.
-    // TODO(crbug.com/1454512): Remove logic here when fully transitioned to
+    // TODO(crbug.com/40272342): Remove logic here when fully transitioned to
     // CdmStorageDatabase.
     std::vector<base::test::FeatureRefAndParams> storage_feature_list;
 
@@ -443,6 +491,7 @@ class ECKEncryptedMediaTest
 
     SetUpCommandLineForKeySystem(media::kExternalClearKeyKeySystem,
                                  command_line, storage_feature_list);
+
     // Override enabled CDM interface version for testing.
     command_line->AppendSwitchASCII(
         switches::kOverrideEnabledCdmInterfaceVersion,
@@ -490,8 +539,6 @@ class ECKEncryptedMediaOutputProtectionTest
 
 class ECKIncognitoEncryptedMediaTest : public EncryptedMediaTestBase {
  public:
-  // We use special |key_system| names to do non-playback related tests,
-  // e.g. media::kExternalClearKeyFileIOTestKeySystem is used to test file IO.
   void TestNonPlaybackCases(const std::string& key_system,
                             const std::string& expected_title) {
     // Since we do not test playback, arbitrarily choose a test file and source
@@ -509,6 +556,52 @@ class ECKIncognitoEncryptedMediaTest : public EncryptedMediaTestBase {
     command_line->AppendSwitch(switches::kIncognito);
   }
 };
+
+// Tests FileIO capabilities in Encrypted Media in Incognito mode with the
+// following test parameters:
+// - bool: Whether the kCdmStorageDatabase feature is enabled
+// - bool: Whether the kCdmStorageDatabaseMigration feature is enabled
+class ECKIncognitoEncryptedMediaFileIOTest
+    : public EncryptedMediaTestBase,
+      public WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  // We use special |key_system| names to do non-playback related tests,
+  // e.g. media::kExternalClearKeyFileIOTestKeySystem is used to test file IO.
+  void TestNonPlaybackCases(const std::string& key_system,
+                            const std::string& expected_title) {
+    // Since we do not test playback, arbitrarily choose a test file and source
+    // type.
+    RunEncryptedMediaTest(kDefaultEmePlayer, "bear-a_enc-a.webm", key_system,
+                          SrcType::SRC, kNoSessionToLoad, false,
+                          PlayCount::ONCE, expected_title);
+  }
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaTestBase::SetUpCommandLine(command_line);
+    // If we are testing the FileIO functionalities, we should parameterize to
+    // test the different combinations of the CdmStorageDatabase flags to make
+    // sure that end to end functionalities do not break with changes made, so
+    // that the MediaLicenseDatabase, the CdmStorageDatabaseMigration, and the
+    // final CdmStorageDatabase all work as expected.
+    // TODO(crbug.com/40272342): Remove logic here when fully transitioned to
+    // CdmStorageDatabase.
+    std::vector<base::test::FeatureRefAndParams> storage_feature_list;
+
+    if (std::get<0>(GetParam())) {
+      storage_feature_list.push_back({features::kCdmStorageDatabase, {}});
+    }
+
+    if (std::get<1>(GetParam())) {
+      storage_feature_list.push_back(
+          {features::kCdmStorageDatabaseMigration, {}});
+    }
+
+    SetUpCommandLineForKeySystem(media::kExternalClearKeyKeySystem,
+                                 command_line, storage_feature_list);
+    command_line->AppendSwitch(switches::kIncognito);
+  }
+};
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if BUILDFLAG(IS_WIN)
@@ -517,7 +610,7 @@ class ECKIncognitoEncryptedMediaTest : public EncryptedMediaTestBase {
 // proper renderer selection occurs when Media Foundation Renderer
 // is set as the default but the playback requires another (e.g.
 // default) renderer.
-// TODO(crbug.com/1442997): We should create a browser test suite
+// TODO(crbug.com/40267198): We should create a browser test suite
 // intended explicitly for Media Foundation scenarios and move
 // the MFClearEncryptedMediaTest tests there.
 class MFClearEncryptedMediaTest : public EncryptedMediaTestBase {
@@ -739,15 +832,14 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_AudioOnly_MP4_OPUS) {
   TestSimplePlayback("bear-opus-cenc.mp4");
 }
 
-// TODO(crbug.com/1045393): Flaky on multiple platforms.
+// TODO(crbug.com/40116010): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
                        DISABLED_Playback_VideoOnly_MP4_VP9) {
   TestSimplePlayback("bear-320x240-v_frag-vp9-cenc.mp4");
 }
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
-// TODO(https://crbug.com/1250305): Fails on dcheck-enabled builds on 11.0.
-// TODO(https://crbug.com/1280308): Fails on Fuchsia-arm64
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/40197943): Fails on dcheck-enabled builds on 11.0.
 #define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
   DISABLED_Playback_VideoOnly_WebM_VP9Profile2
 #else
@@ -759,9 +851,8 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
   TestSimplePlayback("bear-320x240-v-vp9_profile2_subsample_cenc-v.webm");
 }
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
-// TODO(https://crbug.com/1250305): Fails on dcheck-enabled builds on 11.0.
-// TODO(https://crbug.com/1280308): Fails on Fuchsia-arm64
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/40197943): Fails on dcheck-enabled builds on 11.0.
 #define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
   DISABLED_Playback_VideoOnly_MP4_VP9Profile2
 #else
@@ -878,6 +969,131 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, EncryptedMediaDisabled) {
                         expected_title);
 }
 
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_Check_Ukm) {
+  bool is_widevine =
+#if BUILDFLAG(ENABLE_WIDEVINE)
+      IsWidevine(CurrentKeySystem());
+#else
+      false;
+#endif  // BUILDFLAG(ENABLE_WIDEVINE)
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  TestSimplePlayback("bear-320x240-av_enc-a.webm");
+
+  // Check Media_EME_RequestMediaKeySystemAccess UKM. It is only recorded for
+  // Widevine.
+  auto request_entries = ukm_recorder.GetEntries(
+      Media_EME_RequestMediaKeySystemAccess::kEntryName,
+      {Media_EME_RequestMediaKeySystemAccess::kIsAdFrameName,
+       Media_EME_RequestMediaKeySystemAccess::kIsCrossOriginName,
+       Media_EME_RequestMediaKeySystemAccess::kIsFromMediaCapabilitiesName,
+       Media_EME_RequestMediaKeySystemAccess::kIsTopFrameName,
+       Media_EME_RequestMediaKeySystemAccess::kKeySystemName,
+       Media_EME_RequestMediaKeySystemAccess::kVideoCapabilitiesName,
+       Media_EME_RequestMediaKeySystemAccess::
+           kVideoCapabilities_HasEmptyRobustnessName,
+       Media_EME_RequestMediaKeySystemAccess::
+           kVideoCapabilities_HasHwSecureAllRobustnessName});
+  if (is_widevine) {
+    EXPECT_EQ(request_entries.size(), 1u);
+    EXPECT_THAT(
+        request_entries[0].metrics,
+        UnorderedElementsAre(
+            Pair(Media_EME_RequestMediaKeySystemAccess::kIsAdFrameName,
+                 /*false=*/0),
+            Pair(Media_EME_RequestMediaKeySystemAccess::kIsCrossOriginName,
+                 /*false=*/0),
+            Pair(Media_EME_RequestMediaKeySystemAccess::
+                     kIsFromMediaCapabilitiesName,
+                 /*false=*/0),
+            Pair(Media_EME_RequestMediaKeySystemAccess::kIsTopFrameName,
+                 /*true=*/1),
+            Pair(Media_EME_RequestMediaKeySystemAccess::kKeySystemName,
+                 /*blink::KeySystemForUkmLegacy::kWidevine=*/1),
+            Pair(Media_EME_RequestMediaKeySystemAccess::kVideoCapabilitiesName,
+                 /*true=*/1),
+            Pair(Media_EME_RequestMediaKeySystemAccess::
+                     kVideoCapabilities_HasEmptyRobustnessName,
+                 /*true=*/1),
+            Pair(Media_EME_RequestMediaKeySystemAccess::
+                     kVideoCapabilities_HasHwSecureAllRobustnessName,
+                 /*false=*/0)));
+  } else {
+    // Not Widevine, so nothing should be recorded.
+    EXPECT_EQ(request_entries.size(), 0u);
+  }
+
+  // Check Media_EME_CreateMediaKeys UKM. It is also only recorded for Widevine.
+  auto create_entries =
+      ukm_recorder.GetEntries(Media_EME_CreateMediaKeys::kEntryName,
+                              {Media_EME_CreateMediaKeys::kIsAdFrameName,
+                               Media_EME_CreateMediaKeys::kIsCrossOriginName,
+                               Media_EME_CreateMediaKeys::kIsTopFrameName,
+                               Media_EME_CreateMediaKeys::kKeySystemName});
+  if (is_widevine) {
+    EXPECT_EQ(create_entries.size(), 1u);
+    EXPECT_THAT(create_entries[0].metrics,
+                UnorderedElementsAre(
+                    Pair(Media_EME_CreateMediaKeys::kIsAdFrameName,
+                         /*false=*/0),
+                    Pair(Media_EME_CreateMediaKeys::kIsCrossOriginName,
+                         /*false=*/0),
+                    Pair(Media_EME_CreateMediaKeys::kIsTopFrameName,
+                         /*true=*/1),
+                    Pair(Media_EME_CreateMediaKeys::kKeySystemName,
+                         /*blink::KeySystemForUkmLegacy::kWidevine=*/1)));
+  } else {
+    // Not Widevine, so nothing should be recorded.
+    EXPECT_EQ(create_entries.size(), 0u);
+  }
+
+  // Check Media_EME_Usage UKM. It is recorded for all key systems. Currently
+  // only update() will be called during playback.
+  auto usage_entries = ukm_recorder.GetEntries(
+      Media_EME_Usage::kEntryName,
+      {Media_EME_Usage::kApiName, Media_EME_Usage::kIsPersistentSessionName,
+       Media_EME_Usage::kKeySystemName,
+       Media_EME_Usage::kUseHardwareSecureCodecsName});
+  EXPECT_EQ(usage_entries.size(), 1u);
+  EXPECT_THAT(
+      usage_entries[0].metrics,
+      UnorderedElementsAre(
+          Pair(Media_EME_Usage::kApiName, /*blink::EmeApiType::kUpdate=*/6),
+          Pair(Media_EME_Usage::kIsPersistentSessionName, /*false=*/0),
+          Pair(Media_EME_Usage::kKeySystemName,
+               media::GetKeySystemIntForUKM(CurrentKeySystem())),
+          Pair(Media_EME_Usage::kUseHardwareSecureCodecsName, /*false=*/0)));
+
+  // Check Media_EME_ApiPromiseRejection. With Widevine if there is no license
+  // server Update() will fail. With ClearKey a valid response is provided, so
+  // there is no failure.
+  auto promise_entries = ukm_recorder.GetEntries(
+      Media_EME_ApiPromiseRejection::kEntryName,
+      {Media_EME_ApiPromiseRejection::kApiName,
+       Media_EME_ApiPromiseRejection::kKeySystemName,
+       Media_EME_ApiPromiseRejection::kSystemCodeName,
+       Media_EME_ApiPromiseRejection::kUseHardwareSecureCodecsName});
+  if (is_widevine && !license_server_) {
+    // Update() should have failed due to invalid license response.
+    EXPECT_EQ(promise_entries.size(), 1u);
+    // Media_EME_ApiPromiseRejection::kSystemCodeName is key system
+    // implementation specific, so exact value may change.
+    EXPECT_THAT(
+        promise_entries[0].metrics,
+        UnorderedElementsAre(
+            Pair(Media_EME_ApiPromiseRejection::kApiName,
+                 /*blink::EmeApiType::kUpdate=*/6),
+            Pair(Media_EME_ApiPromiseRejection::kKeySystemName,
+                 media::GetKeySystemIntForUKM(CurrentKeySystem())),
+            Pair(Media_EME_ApiPromiseRejection::kSystemCodeName, Not(Eq(0))),
+            Pair(Media_EME_ApiPromiseRejection::kUseHardwareSecureCodecsName,
+                 /*false=*/0)));
+  } else {
+    // No error with ClearKey or with Widevine if a license server is available.
+    EXPECT_EQ(promise_entries.size(), 0u);
+  }
+}
+
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_VideoOnly_MP4) {
@@ -929,19 +1145,21 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
 // Test CDM_10 through CDM_11.
 static_assert(media::CheckSupportedCdmInterfaceVersions(10, 11),
               "Mismatch between implementation and test coverage");
+INSTANTIATE_TEST_SUITE_P(CDM_10, ECKEncryptedMediaTest, Values(10));
+INSTANTIATE_TEST_SUITE_P(CDM_11, ECKEncryptedMediaTest, Values(11));
 INSTANTIATE_TEST_SUITE_P(CDM_10,
-                         ECKEncryptedMediaTest,
+                         ECKEncryptedMediaFileIOTest,
                          Combine(Values(10), Bool(), Bool()));
 INSTANTIATE_TEST_SUITE_P(CDM_11,
-                         ECKEncryptedMediaTest,
-                         Combine(Values(11), Bool(), Bool()));
+                         ECKEncryptedMediaFileIOTest,
+                         Combine(Values(10), Bool(), Bool()));
 
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, InitializeCDMFail) {
   TestNonPlaybackCases(kExternalClearKeyInitializeFailKeySystem,
                        kEmeNotSupportedError);
 }
 
-// TODO(https://crbug.com/1019187): Failing on Windows.
+// TODO(crbug.com/40105240): Failing on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_CDMCrashDuringDecode DISABLED_CDMCrashDuringDecode
 #else
@@ -954,15 +1172,15 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_CDMCrashDuringDecode) {
                        kEmeSessionClosedAndError);
 }
 
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, FileIOTest) {
-  TestNonPlaybackCases(media::kExternalClearKeyFileIOTestKeySystem,
-                       kUnitTestSuccess);
-}
-
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, PlatformVerificationTest) {
   TestNonPlaybackCases(
       media::kExternalClearKeyPlatformVerificationTestKeySystem,
       kUnitTestSuccess);
+}
+
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaFileIOTest, FileIOTest) {
+  TestNonPlaybackCases(media::kExternalClearKeyFileIOTestKeySystem,
+                       kUnitTestSuccess);
 }
 
 // Intermittent leaks on ASan/LSan runs: crbug.com/889923
@@ -982,12 +1200,14 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_MessageTypeTest) {
                 "document.querySelector('video').receivedMessageTypes.size;"));
 }
 
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, LoadPersistentLicense) {
+// Exercises Storage Path, so use ECKEncryptedMediaFileIOTest
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaFileIOTest, LoadPersistentLicense) {
   TestPlaybackCase(media::kExternalClearKeyKeySystem, kPersistentLicense,
                    media::kEndedTitle);
 }
 
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, LoadUnknownSession) {
+// Exercises Storage Path, so use ECKEncryptedMediaFileIOTest
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaFileIOTest, LoadUnknownSession) {
   TestPlaybackCase(media::kExternalClearKeyKeySystem, kUnknownSession,
                    kEmeSessionNotFound);
 }
@@ -1064,13 +1284,20 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, VerifyCdmHostTest) {
 }
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, StorageIdTest) {
+// TODO(b/326134178): Disable this test on branded builder
+// ci/linux_lacros_chrome since it fails.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_StorageIdTest DISABLED_StorageIdTest
+#else
+#define MAYBE_StorageIdTest StorageIdTest
+#endif
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_StorageIdTest) {
   TestNonPlaybackCases(media::kExternalClearKeyStorageIdTestKeySystem,
                        kUnitTestSuccess);
 }
 
-// TODO(crbug.com/902310): Times out in debug builds.
-// TODO(crbug.com/1452030): Sometimes crashes on win and chromeos.
+// TODO(crbug.com/40601162): Times out in debug builds.
+// TODO(crbug.com/40916095, crbug.com/348996697): Test flakiness.
 #if !defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_MultipleCdmTypes DISABLED_MultipeCdmTypes
 #else
@@ -1097,7 +1324,7 @@ INSTANTIATE_TEST_SUITE_P(Capture_Browser,
                          ECKEncryptedMediaOutputProtectionTest,
                          Values("browser"));
 
-// TODO(https://crbug.com/1047944): Failing on Win.
+// TODO(crbug.com/40671674): Failing on Win.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_BeforeMediaKeys DISABLED_BeforeMediaKeys
 #else
@@ -1108,7 +1335,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaOutputProtectionTest,
   TestOutputProtection(/*create_recorder_before_media_keys=*/true);
 }
 
-// TODO(https://crbug.com/1047944): Failing on Win.
+// TODO(crbug.com/40671674): Failing on Win.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AfterMediaKeys DISABLED_AfterMediaKeys
 #else
@@ -1124,8 +1351,11 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaOutputProtectionTest,
 // that aren't really testing anything different, as normal playback does not
 // save anything to disk. Instead we are only running the tests that actually
 // have the CDM do file access.
+INSTANTIATE_TEST_SUITE_P(,
+                         ECKIncognitoEncryptedMediaFileIOTest,
+                         Combine(Bool(), Bool()));
 
-IN_PROC_BROWSER_TEST_F(ECKIncognitoEncryptedMediaTest, FileIO) {
+IN_PROC_BROWSER_TEST_P(ECKIncognitoEncryptedMediaFileIOTest, FileIO) {
   // Try the FileIO test using the default CDM API while running in incognito.
   TestNonPlaybackCases(media::kExternalClearKeyFileIOTestKeySystem,
                        kUnitTestSuccess);
@@ -1307,10 +1537,11 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
 
   std::string expected_title = media::kEndedTitle;
 
-  // TODO(crbug.com/1452165): "Activate failed to create mediasink (0xC00D36FA)"
-  // kPlaybackError is expected when playing encrypted audio only content if no
-  // audio device. Remove this temporary fix for test machines once the
-  // permenent solution is implemented (i.e., a null sink for no audio device).
+  // TODO(crbug.com/40270855): "Activate failed to create mediasink
+  // (0xC00D36FA)" kPlaybackError is expected when playing encrypted audio only
+  // content if no audio device. Remove this temporary fix for test machines
+  // once the permenent solution is implemented (i.e., a null sink for no audio
+  // device).
   if (!IsDefaultAudioOutputDeviceAvailable()) {
     LOG(INFO)
         << "Test method "

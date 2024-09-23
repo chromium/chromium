@@ -36,9 +36,7 @@ class SimNetwork final : public URLLoaderTestDelegate {
 
   // URLLoaderTestDelegate
   void DidReceiveResponse(URLLoaderClient*, const WebURLResponse&) override;
-  void DidReceiveData(URLLoaderClient*,
-                      const char* data,
-                      size_t data_length) override;
+  void DidReceiveData(URLLoaderClient*, base::span<const char> data) override;
   void DidFail(URLLoaderClient*,
                const WebURLError&,
                int64_t total_encoded_data_length,

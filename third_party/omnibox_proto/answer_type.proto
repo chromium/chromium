@@ -1,0 +1,29 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'AnswerTypeProto';
+
+package omnibox;
+
+// Possible answer types for Omnibox/Realbox answer verticals.
+enum AnswerType {
+  ANSWER_TYPE_UNSPECIFIED = 0;
+  ANSWER_TYPE_DICTIONARY = 1;
+  ANSWER_TYPE_FINANCE = 2;
+  ANSWER_TYPE_GENERIC_ANSWER = 3;
+  ANSWER_TYPE_SPORTS = 5;
+  ANSWER_TYPE_SUNRISE_SUNSET = 6;
+  ANSWER_TYPE_TRANSLATION = 7;
+  ANSWER_TYPE_WEATHER = 8;
+  ANSWER_TYPE_WHEN_IS = 9;
+  ANSWER_TYPE_CURRENCY = 10;
+  ANSWER_TYPE_LOCAL_TIME = 11;
+  ANSWER_TYPE_PLAY_INSTALL = 12;
+  ANSWER_TYPE_WEB_ANSWER = 14;
+  reserved 4, 13;
+}

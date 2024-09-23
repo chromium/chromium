@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -27,6 +28,12 @@ using ::testing::Mock;
 
 MATCHER_P(ConfigModeMatches, mode, "") {
   return arg.mode == mode;
+}
+
+MATCHER_P(ConfigModeIsTokenEnrollmentAndTokenMatches, enrollment_token, "") {
+  return arg.enrollment_token == enrollment_token &&
+         arg.mode == policy::EnrollmentConfig::
+                         MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
 }
 
 }  // namespace
@@ -48,17 +55,24 @@ void EnrollmentHelperMixin::ResetMock() {
 }
 
 void EnrollmentHelperMixin::ExpectNoEnrollment() {
-  EXPECT_CALL(mock_enrollment_launcher_, Setup(_, _, _)).Times(0);
+  EXPECT_CALL(mock_enrollment_launcher_, Setup(_, _)).Times(0);
 }
 
 void EnrollmentHelperMixin::ExpectEnrollmentMode(
     policy::EnrollmentConfig::Mode mode) {
-  EXPECT_CALL(mock_enrollment_launcher_, Setup(ConfigModeMatches(mode), _, _));
+  EXPECT_CALL(mock_enrollment_launcher_, Setup(ConfigModeMatches(mode), _));
+}
+
+void EnrollmentHelperMixin::ExpectEnrollmentTokenConfig(
+    const std::string& enrollment_token) {
+  EXPECT_CALL(
+      mock_enrollment_launcher_,
+      Setup(ConfigModeIsTokenEnrollmentAndTokenMatches(enrollment_token), _));
 }
 
 void EnrollmentHelperMixin::ExpectEnrollmentModeRepeated(
     policy::EnrollmentConfig::Mode mode) {
-  EXPECT_CALL(mock_enrollment_launcher_, Setup(ConfigModeMatches(mode), _, _))
+  EXPECT_CALL(mock_enrollment_launcher_, Setup(ConfigModeMatches(mode), _))
       .Times(AtLeast(1));
 }
 
@@ -101,10 +115,27 @@ void EnrollmentHelperMixin::ExpectAttestationEnrollmentErrorRepeated(
       }));
 }
 
+void EnrollmentHelperMixin::ExpectTokenBasedEnrollmentSuccess() {
+  EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingEnrollmentToken())
+      .WillOnce(InvokeWithoutArgs([this]() {
+        mock_enrollment_launcher_.status_consumer()->OnDeviceEnrolled();
+      }));
+}
+
+void EnrollmentHelperMixin::ExpectTokenBasedEnrollmentError(
+    policy::EnrollmentStatus status) {
+  EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingEnrollmentToken())
+      .WillOnce(InvokeWithoutArgs([this, status]() {
+        mock_enrollment_launcher_.status_consumer()->OnEnrollmentError(status);
+      }));
+}
+
 void EnrollmentHelperMixin::SetupClearAuth() {
-  ON_CALL(mock_enrollment_launcher_, ClearAuth(_))
-      .WillByDefault(Invoke(
-          [](base::OnceClosure callback) { std::move(callback).Run(); }));
+  ON_CALL(mock_enrollment_launcher_, ClearAuth(_, _))
+      .WillByDefault(
+          Invoke([](base::OnceClosure callback, bool revoke_oauth2_tokens) {
+            std::move(callback).Run();
+          }));
 }
 
 void EnrollmentHelperMixin::ExpectEnrollmentCredentials() {

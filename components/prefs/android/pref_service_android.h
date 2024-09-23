@@ -5,10 +5,7 @@
 #ifndef COMPONENTS_PREFS_ANDROID_PREF_SERVICE_ANDROID_H_
 #define COMPONENTS_PREFS_ANDROID_PREF_SERVICE_ANDROID_H_
 
-#include <jni.h>
-
-#include "base/android/jni_string.h"
-#include "base/android/scoped_java_ref.h"
+#include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/prefs_export.h"
 
@@ -25,7 +22,7 @@ class COMPONENTS_PREFS_EXPORT PrefServiceAndroid {
 
   // Returns the native counterpart of a Java `PrefService`.
   static PrefService* FromPrefServiceAndroid(
-      const base::android::JavaParamRef<jobject>& obj);
+      const base::android::JavaRef<jobject>& obj);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
@@ -49,6 +46,11 @@ class COMPONENTS_PREFS_EXPORT PrefServiceAndroid {
   void SetDouble(JNIEnv* env,
                  const base::android::JavaParamRef<jstring>& j_preference,
                  const jdouble j_value);
+  jlong GetLong(JNIEnv* env,
+                const base::android::JavaParamRef<jstring>& j_preference);
+  void SetLong(JNIEnv* env,
+               const base::android::JavaParamRef<jstring>& j_preference,
+               const jlong j_value);
   base::android::ScopedJavaLocalRef<jstring> GetString(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_preference);
@@ -66,5 +68,13 @@ class COMPONENTS_PREFS_EXPORT PrefServiceAndroid {
   raw_ptr<PrefService> pref_service_;
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 };
+
+namespace jni_zero {
+template <>
+inline PrefService* FromJniType<PrefService*>(JNIEnv* env,
+                                              const JavaRef<jobject>& obj) {
+  return PrefServiceAndroid::FromPrefServiceAndroid(obj);
+}
+}  // namespace jni_zero
 
 #endif  // COMPONENTS_PREFS_ANDROID_PREF_SERVICE_ANDROID_H_

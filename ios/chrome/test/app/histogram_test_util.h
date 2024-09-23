@@ -13,7 +13,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 
-// TODO(crbug.com/640141): factorize with base::HistogramTester and add
+// TODO(crbug.com/41271490): factorize with base::HistogramTester and add
 // unittests.
 
 typedef void (^FailureBlock)(NSString*);

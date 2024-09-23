@@ -37,7 +37,7 @@ TEST(CookieConstantsTest, TestCookiePriority) {
   }
 }
 
-// TODO(crbug.com/996811): Add tests for multiple possibly-invalid attributes.
+// TODO(crbug.com/40641705): Add tests for multiple possibly-invalid attributes.
 TEST(CookieConstantsTest, TestCookieSameSite) {
   // Test case insensitivity
   EXPECT_EQ(CookieSameSite::NO_RESTRICTION, StringToCookieSameSite("None"));

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/viz/public/cpp/compositing/bitmap_in_shared_memory_mojom_traits.h"
 
 #include <cstdint>
@@ -104,6 +109,10 @@ bool StructTraits<viz::mojom::BitmapInSharedMemoryDataView, SkBitmap>::Read(
       std::make_unique<base::WritableSharedMemoryMapping>(region_opt->Map());
   if (!mapping_ptr->IsValid())
     return false;
+
+  if (mapping_ptr->size() < image_info.computeByteSize(data.row_bytes())) {
+    return false;
+  }
 
   if (!sk_bitmap->installPixels(image_info, mapping_ptr->memory(),
                                 data.row_bytes(), &DeleteSharedMemoryMapping,

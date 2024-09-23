@@ -18,9 +18,6 @@ namespace apps {
 
 class AppFetcherManager;
 
-// Enables App Discovery Service to use the Almanac system for fetching games.
-BASE_DECLARE_FEATURE(kAlmanacGameMigration);
-
 // API for consumers to use to fetch apps.
 class AppDiscoveryService : public KeyedService {
  public:

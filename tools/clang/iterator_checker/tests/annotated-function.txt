@@ -1,0 +1,7 @@
+annotated-function.cpp:19:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it;
+   ^
+annotated-function.cpp:30:6: error: [iterator-checker] Potentially invalid iterator used.
+    *it;
+     ^
+2 errors generated.

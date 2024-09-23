@@ -37,6 +37,7 @@ dictionary WebGLContextAttributes {
 
 [Exposed=(Window,Worker)]
 interface WebGLObject {
+    attribute USVString label;
 };
 
 [Exposed=(Window,Worker)]
@@ -518,6 +519,9 @@ interface mixin WebGLRenderingContextBase
     readonly attribute GLsizei drawingBufferWidth;
     readonly attribute GLsizei drawingBufferHeight;
     readonly attribute GLenum drawingBufferFormat;
+
+    /* Upon context creation, drawingBufferColorSpace and unpackColorSpace both
+       default to the value "srgb". */
     attribute PredefinedColorSpace drawingBufferColorSpace;
     attribute PredefinedColorSpace unpackColorSpace;
 
@@ -557,12 +561,12 @@ interface mixin WebGLRenderingContextBase
     undefined copyTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset,
                                 GLint x, GLint y, GLsizei width, GLsizei height);
 
-    WebGLBuffer? createBuffer();
-    WebGLFramebuffer? createFramebuffer();
-    WebGLProgram? createProgram();
-    WebGLRenderbuffer? createRenderbuffer();
+    WebGLBuffer createBuffer();
+    WebGLFramebuffer createFramebuffer();
+    WebGLProgram createProgram();
+    WebGLRenderbuffer createRenderbuffer();
     WebGLShader? createShader(GLenum type);
-    WebGLTexture? createTexture();
+    WebGLTexture createTexture();
 
     undefined cullFace(GLenum mode);
 

@@ -1,2 +1,2 @@
-CONSOLE ERROR: Access to font at 'cid:xxxxxx' from origin '' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https, chrome-untrusted.
+CONSOLE ERROR: Access to font at 'cid:xxxxxx' from origin '' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: chrome, chrome-untrusted, data, http, https.
 No Content-ID url are expected outside of an MHTML document. The document should load without crashing.

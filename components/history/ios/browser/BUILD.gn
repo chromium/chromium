@@ -14,7 +14,7 @@ source_set("browser") {
     "//base",
     "//components/history/core/browser",
     "//components/version_info",
-    "//ios/web",
+    "//ios/web/public",
     "//url",
   ]
 }

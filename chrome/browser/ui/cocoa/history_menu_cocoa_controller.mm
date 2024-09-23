@@ -28,7 +28,7 @@ using content::Referrer;
 
 namespace {
 
-// TODO(crbug.com/1334721): Single-tab windows get restored as tabs instead of
+// TODO(crbug.com/40228273): Single-tab windows get restored as tabs instead of
 // windows, which is confusing.
 //
 // NB: Takes |node| by value, because the HistoryMenuBridge could be destroyed

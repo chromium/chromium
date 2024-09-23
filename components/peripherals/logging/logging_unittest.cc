@@ -6,8 +6,10 @@
 
 #include <stddef.h>
 
+#include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/peripherals/logging/log_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,6 +46,9 @@ class PeripheralsLoggingTest : public testing::Test {
   PeripheralsLoggingTest() = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kEnablePeripheralsLogging);
+
     PeripheralsLogBuffer::GetInstance()->Clear();
     GetStandardLogs().clear();
 
@@ -72,7 +77,7 @@ TEST_F(PeripheralsLoggingTest, LogsSavedToBuffer) {
 
   auto iterator = logs->begin();
   const PeripheralsLogBuffer::LogMessage& log_message1 = *iterator;
-  EXPECT_EQ(kLog1, log_message1.text);
+  EXPECT_EQ(base::JoinString({"[ACCEL]", kLog1}, " "), log_message1.text);
   EXPECT_EQ(__FILE__, log_message1.file);
   EXPECT_EQ(Feature::ACCEL, log_message1.feature);
   EXPECT_EQ(base_line_number + 1, log_message1.line);
@@ -80,7 +85,7 @@ TEST_F(PeripheralsLoggingTest, LogsSavedToBuffer) {
 
   ++iterator;
   const PeripheralsLogBuffer::LogMessage& log_message2 = *iterator;
-  EXPECT_EQ(kLog2, log_message2.text);
+  EXPECT_EQ(base::JoinString({"[IDS]", kLog2}, " "), log_message2.text);
   EXPECT_EQ(__FILE__, log_message2.file);
   EXPECT_EQ(Feature::IDS, log_message2.feature);
   EXPECT_EQ(base_line_number + 2, log_message2.line);
@@ -88,7 +93,7 @@ TEST_F(PeripheralsLoggingTest, LogsSavedToBuffer) {
 
   ++iterator;
   const PeripheralsLogBuffer::LogMessage& log_message3 = *iterator;
-  EXPECT_EQ(kLog3, log_message3.text);
+  EXPECT_EQ(base::JoinString({"[ACCEL]", kLog3}, " "), log_message3.text);
   EXPECT_EQ(__FILE__, log_message3.file);
   EXPECT_EQ(Feature::ACCEL, log_message3.feature);
   EXPECT_EQ(base_line_number + 3, log_message3.line);
@@ -96,7 +101,7 @@ TEST_F(PeripheralsLoggingTest, LogsSavedToBuffer) {
 
   ++iterator;
   const PeripheralsLogBuffer::LogMessage& log_message4 = *iterator;
-  EXPECT_EQ(kLog4, log_message4.text);
+  EXPECT_EQ(base::JoinString({"[IDS]", kLog4}, " "), log_message4.text);
   EXPECT_EQ(__FILE__, log_message4.file);
   EXPECT_EQ(Feature::IDS, log_message4.feature);
   EXPECT_EQ(base_line_number + 4, log_message4.line);
@@ -117,10 +122,10 @@ TEST_F(PeripheralsLoggingTest, LogWhenBufferIsFull) {
 
   auto iterator = log_buffer->logs()->begin();
   for (size_t i = 0; i < log_buffer->MaxBufferSize() - 1; ++iterator, ++i) {
-    std::string expected_text = "log " + base::NumberToString(i + 1);
+    std::string expected_text = "[IDS] log " + base::NumberToString(i + 1);
     EXPECT_EQ(expected_text, (*iterator).text);
   }
-  EXPECT_EQ(kLog1, (*iterator).text);
+  EXPECT_EQ(base::JoinString({"[IDS]", kLog1}, " "), (*iterator).text);
 }
 
 TEST_F(PeripheralsLoggingTest, StandardLogsCreated) {
@@ -129,10 +134,11 @@ TEST_F(PeripheralsLoggingTest, StandardLogsCreated) {
   PR_LOG(ERROR, Feature::IDS) << kLog3;
   PR_LOG(VERBOSE, Feature::IDS) << kLog4;
 
-  ASSERT_EQ(3u, GetStandardLogs().size());
+  ASSERT_EQ(4u, GetStandardLogs().size());
   EXPECT_NE(std::string::npos, GetStandardLogs()[0].find(kLog1));
   EXPECT_NE(std::string::npos, GetStandardLogs()[1].find(kLog2));
   EXPECT_NE(std::string::npos, GetStandardLogs()[2].find(kLog3));
+  EXPECT_NE(std::string::npos, GetStandardLogs()[3].find(kLog4));
 }
 
 }  // namespace ash

@@ -111,6 +111,8 @@ out_manifest: Specifies a file where the list of output files and their
               preprocessed files are instead passed to ts_library in WebUIs
               that have been migrated to TypeScript, this is only used by
               WebUIs that have not been migrated to TypeScript yet.
+defines: Optional parameter. Specifies additional variables that can be used in
+         conditional expressions.
 ```
 #### **Example:**
 ```
@@ -130,6 +132,7 @@ preprocess_if_expr("preprocess_generated") {
     "my_web_component.html.ts",
   ]
   out_folder = "$target_gen_dir/$preprocess_folder"
+  defines = [ "foo_enabled=false" ]
 }
 
 # Preprocess "my_web_component.ts" and "my_webui.ts" in the src dir into
@@ -141,6 +144,7 @@ preprocess_if_expr("preprocess_src") {
     "my_webui.ts",
   ]
   out_folder = "$target_gen_dir/$preprocess_folder"
+  defines = [ "foo_enabled=true" ]
 }
 ```
 
@@ -195,10 +199,20 @@ path_mappings: Additional non-default path mappings for absolute imports. The
                adding "//ui/webui/resources/cr_elements:build_ts" in deps will
                automatically add the mapping for imports from that library
                (e.g. 'chrome://resources/cr_elements/cr_button/cr_button.js').
-               Important: Don't add path_mappings without also adding the
-               ts_library() target(s) responsible for the files being mapped to
-               deps! path_mappings without corresponding deps can result in
-               flaky build errors.
+               Important: Adding path_mappings *does not* add the files mapped
+               in |inputs| or the targets generating files to |deps|. To prevent
+               flaky build errors, *always* do one of the following when adding
+               a path_mapping:
+               - Add the ts_library() target responsible for compiling .ts files
+                 into the mapped generated directory to |deps|.
+               - Add the ts_definitions(), copy(), preprocess_if_expr(), or
+                 other target responsible for generating definitions files in
+                 the mapped generated directory to |extra_deps|
+               - Add all source .d.ts files your target uses from the mapped
+                 source directory to |definitions|.
+path_mappings_file: A .json file containing path mappings in the form
+                    {url: [ dir1, dir2, ... ] } where dir* are relative to the
+                   |target_gen_dir|.
 manifest_excludes: List of input files to exclude from the output
                    the manifest file.
 enable_source_maps: Defaults to the value of the enable_webui_inline_sourcemaps
@@ -237,6 +251,43 @@ ts_library("build_ts") {
     ":preprocess_generated",
   ]
 }
+```
+
+### **webui_path_mappings**
+
+This rule generates a path mappings .json file named
+'path_mappings_<target_name>.json' in |target_gen_dir| from a list of target
+dependencies. Its output can be passed to ts_library's |path_mappings_file|
+parameter.
+
+Note that the rule only generates mappings for dependencies that are mapped
+in path_mappings.py (e.g. //ui/webui/resources/ deps).
+
+#### **Arguments**
+```
+ts_deps: List of ts_library() dependencies to generate path mappings for.
+webui_context_type: What import scheme(s) should be mapped for the UI. Options:
+                    'trusted': Maps chrome:// and scheme-relative imports.
+                               Default value.
+                    'untrusted': Maps chrome-untrusted:// and scheme-relative
+                                 imports.
+                    'relative': Maps scheme-relative imports only.
+                    'trusted_only': Maps chrome:// imports only.
+```
+
+### **webui_ts_library**
+
+This rule is a thin wrapper around ts_library() that defines 2 targets:
+(1) a webui_path_mappings() ("path_mappings") target to generate a path mappings
+    file from |deps|.
+(2) a ts_library() target ("build_ts") that consumes the generated path
+    mappings file along with all remaining arguments.
+
+#### **Arguments**
+webui_ts_library uses all the same arguments as ts_library, in addition to
+the following:
+```
+webui_context_type: See |webui_context_type| in webui_path_mappings().
 ```
 
 ### **bundle_js**
@@ -450,7 +501,7 @@ grit("resources") {
 
 ### **build_webui**
 
-<!-- TODO(crbug.com/1340376): Elevate build_webui() to the top of this document
+<!-- TODO(crbug.com/40230335): Elevate build_webui() to the top of this document
       after it has been deployed to a few places. -->
 
 See the [go/build-webui-pipeline](http://go/build-webui-pipeline) design doc for
@@ -477,6 +528,7 @@ Under the cover, build_webui() defines the following targets
 * html_to_wrapper("html_wrapper_files")
 * css_to_wrapper("css_wrapper_files")
 * copy("copy_mojo")
+* webui_path_mappings("build_path_map")
 * ts_library("build_ts")
 * merge_js_source_maps("merge_source_maps")
 * bundle_js("build_bundle")
@@ -516,8 +568,8 @@ css_files: List of CSS files that hold Polymer style modules, or CSS variable
            definitions. These are passed css_to_wrapper(). Optional parameter.
 
 mojo_files: List of Mojo JS generated files. These will be copied to a temporary
-            location so that they can be passed to ts_library() along with other
-            files. Optional parameter.
+            location so that they can be passed to ts_library() along with
+            other files. Optional parameter.
 
 mojo_files_deps: List of Mojo targets that generate |mojo_files|. Must be
                  defined if |mojo_files| is defined.
@@ -535,15 +587,18 @@ ts_composite: See |composite| in ts_library(). Defaults to false, optional.
 ts_out_dir: See |out_dir| in ts_library(). Optional parameter, defaults
             '$target_gen_dir/tsc'
 ts_definitions: See |definitions| in ts_library(). Optional parameter.
-ts_deps: See |deps| in ts_library(). Optional parameter.
+ts_deps: See |deps| in ts_library(). Also used for webui_path_mappings().
+         Optional parameter.
 ts_extra_deps: See |extra_deps| in ts_library(). Optional parameter.
 ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.
-ts_tsconfig_base: The tsconfig file to use for ts_library(). Optional, defaults
-                  to "//tools/typescript/tsconfig_base_polymer.json" for Polymer
-                  UIs (i.e. UIs that specify |web_component_files| and/or
-                  |icons_html_files| and do not set |html_to_wrapper_template|
-                  to "native"). Defaults to
-                  "//tools/typescript/tsconfig_base.json" for non-Polymer UIs.
+ts_tsconfig_base: The tsconfig file to use for ts_library(). Optional. Defaults
+                  to "//tools/typescript/tsconfig_base_polymer.json" for UIs
+                  that depend on Polymer (i.e. have
+                  "//third_party/polymer/v3_0:library" in their |ts_deps|).
+                  Defaults to "//tools/typescript/tsconfig_base_lit.json" for
+                  UIs that do not depend on Polymer and depend on Lit (i.e. have
+                  "//third_party/lit/v3_0:build_ts" in |ts_deps|). Defaults to
+                  "//tools/typescript/tsconfig_base.json" for all other UIs.
 
 HTML/CSS/JS optimization related params:
 optimize: Specifies whether any optimization steps will be used. Defaults to the
@@ -555,13 +610,15 @@ optimize: Specifies whether any optimization steps will be used. Defaults to the
           invoked to bundle JS code (using Rollup).
           |optimize_webui_host| must be specified if |optimize_webui_in_files|
           is provided.
+optimize_ webui_host: See |host| in bundle_js().
 optimize_webui_excludes: See |excludes| in bundle_js(). Optional.
 optimize_webui_external_paths: See |external_paths| in optimize_webui().
                                Optional.
-optimize_webui_host: See |host| in bundle_js().
 optimize_webui_in_files: See |in_files| in bundle_js().
 
 Other params:
+webui_context_type: See |webui_context_type| in webui_path_mappings(). Optional,
+                    defaults to "relative".
 generate_grdp: Whether to generate grdp file instead of a grd file. Defaults to
                false.
 grd_prefix: See |grd_prefix| in generate_grd(). Required parameter.
@@ -574,6 +631,7 @@ extra_grdp_deps: List of external generate_grd() targets that generate .grdp
                  resources.grd file. Optional parameter.
 extra_grdp_files: Output .grdp files of external generate_grd() targets. Must be
                   defined if |extra_grdp_deps| is defined.
+preprocessor_defines: Optional parameter. See |defines| in preprocess_if_expr().
 grit_output_dir: See |output_dir| in grit(). Optional parameter, defaults to
                  "$root_gen_dir/chrome"
 enable_source_maps: Defaults to "false". Incompatible with |optimize=true|.
@@ -626,6 +684,8 @@ build_webui("build") {
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+
+  preprocessor_defines = [ "foo_enabled=false" ]
 }
 
 ```
@@ -647,7 +707,7 @@ chrome://webui-test/<webui_name>/
 Under the cover, build_webui_tests() defines the following targets
 
 * preprocess_if_expr("preprocess")
-* ts_library("build_ts")
+* webui_ts_library("build_ts")
 * generate_grd("build_grdp")
 
 The parameters passed to build_webui_tests() are forwarded as needed to
@@ -659,7 +719,9 @@ to from other parts of the build.
 is_chrome_untrusted: Set to true if testing a chrome-untrusted:// UI. Optional
                      parameter. Allows importing shared test files from
                      chrome-untrusted://webui-test/ instead of
-                     chrome://webui-test.
+                     chrome://webui-test. Passing true will set
+                     |webui_context_type| to 'untrusted' rather than 'trusted'
+                     for webui_ts_library().
 
 List of files params:
 files: Required parameter. List of all test related files.
@@ -668,6 +730,7 @@ TypeScript (ts_library()) related params:
 ts_tsconfig_base: See |tsconfig_base| in ts_library(). Optional parameter. If
                   not provided the default configuration at
                   '//chrome/test/data/webui/tsconfig_base.json' is used.
+ts_composite: See |composite| in ts_library(). Defaults to false, optional.
 ts_definitions: See |definitions| in ts_library(). Optional parameter.
 ts_deps: See |deps| in ts_library(). Required parameter.
 ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.

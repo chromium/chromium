@@ -1,0 +1,503 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//build/util/branding.gni")
+import("//components/signin/features.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("autofill") {
+  sources = [
+    "autofill_bubble_base.h",
+    "autofill_bubble_controller_base.h",
+    "autofill_bubble_handler.h",
+    "autofill_client_provider.h",
+    "autofill_client_provider_factory.h",
+    "autofill_popup_controller.h",
+    "autofill_popup_hide_helper.h",
+    "autofill_popup_view.h",
+    "autofill_popup_view_delegate.h",
+    "autofill_suggestion_controller.h",
+    "autofill_suggestion_controller_utils.h",
+    "chrome_autofill_client.h",
+    "next_idle_barrier.h",
+    "popup_controller_common.h",
+    "risk_util.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//base:i18n",
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/page_action:icon_type",
+    "//components/autofill/content/browser",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/input",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/signin/public/identity_manager",
+    "//components/zoom",
+    "//content/public/browser",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+
+  if (is_android) {
+    sources += [
+      "autofill_keyboard_accessory_controller.h",
+      "autofill_keyboard_accessory_controller_impl.h",
+      "autofill_keyboard_accessory_view.h",
+    ]
+    public_deps += [
+      "//components/autofill/android:autofill_core_browser_java_enums",
+      "//components/password_manager/core/browser:metrics_util",
+      "//components/password_manager/core/browser:password_manager_java_enums_srcjar",
+      "//content/public/android:content_public_android_java_enums_srcjar",
+    ]
+  } else {
+    sources += [
+      "add_new_address_bubble_controller.h",
+      "address_bubble_controller_delegate.h",
+      "address_bubbles_controller.h",
+      "address_bubbles_icon_controller.h",
+      "address_editor_controller.h",
+      "autofill_context_menu_manager.h",
+      "autofill_field_promo_controller.h",
+      "autofill_field_promo_controller_impl.h",
+      "autofill_field_promo_view.h",
+      "autofill_popup_controller_impl.h",
+      "autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h",
+      "autofill_prediction_improvements/save_autofill_prediction_improvements_controller_impl.h",
+      "delete_address_profile_dialog_controller.h",
+      "delete_address_profile_dialog_controller_impl.h",
+      "delete_address_profile_dialog_view.h",
+      "edit_address_profile_dialog_controller.h",
+      "edit_address_profile_dialog_controller_impl.h",
+      "edit_address_profile_view.h",
+      "save_address_bubble_controller.h",
+      "update_address_bubble_controller.h",
+    ]
+    public_deps += [
+      "//components/password_manager/core/browser",
+      "//components/password_manager/core/browser:password_form",
+      "//components/renderer_context_menu",
+      "//third_party/abseil-cpp:absl",
+      "//ui/base",
+      "//ui/views",
+    ]
+  }
+
+  if (enable_dice_support) {
+    sources += [
+      "autofill_bubble_signin_promo_controller.h",
+      "autofill_signin_promo_tab_helper.h",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "autofill_popup_controller_impl_mac.h" ]
+  }
+
+  allow_circular_includes_from = [ "//chrome/browser/ui/autofill/payments" ]
+}
+
+source_set("impl") {
+  sources = [
+    "autofill_bubble_controller_base.cc",
+    "autofill_client_provider.cc",
+    "autofill_client_provider_factory.cc",
+    "autofill_popup_hide_helper.cc",
+    "autofill_suggestion_controller.cc",
+    "autofill_suggestion_controller_utils.cc",
+    "chrome_autofill_client.cc",
+    "next_idle_barrier.cc",
+    "popup_controller_common.cc",
+    "risk_util.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":autofill",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/autofill",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/hats",
+    "//components/autofill/content/browser",
+    "//components/autofill/content/browser:risk_proto",
+    "//components/compose/core/browser",
+    "//components/compose/core/browser:features",
+    "//components/embedder_support:browser_util",
+    "//components/feature_engagement/public",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//components/language/core/browser",
+    "//components/password_manager/content/browser",
+    "//components/password_manager/content/browser:password_form_classification_util",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:metrics_util",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser/form_parsing",
+    "//components/plus_addresses:features",
+    "//components/plus_addresses:types",
+    "//components/profile_metrics",
+    "//components/security_state/content",
+    "//components/unified_consent",
+    "//components/variations/service",
+  ]
+
+  if (is_android) {
+    sources += [ "autofill_keyboard_accessory_controller_impl.cc" ]
+    deps += [
+      "//chrome/browser/autofill/android:jni_headers",
+      "//chrome/browser/keyboard_accessory/android:public",
+      "//chrome/browser/password_manager/android/access_loss:public",
+      "//components/android_autofill/browser:android",
+      "//components/messages/android:feature_flags",
+      "//components/password_manager/core/browser/features:password_features",
+    ]
+  } else {
+    sources += [
+      "add_new_address_bubble_controller.cc",
+      "address_bubbles_controller.cc",
+      "address_bubbles_icon_controller.cc",
+      "address_editor_controller.cc",
+      "autofill_context_menu_manager.cc",
+      "autofill_field_promo_controller_impl.cc",
+      "autofill_popup_controller_impl.cc",
+      "autofill_prediction_improvements/save_autofill_prediction_improvements_controller_impl.cc",
+      "delete_address_profile_dialog_controller_impl.cc",
+      "edit_address_profile_dialog_controller_impl.cc",
+      "save_address_bubble_controller.cc",
+      "update_address_bubble_controller.cc",
+    ]
+    deps += [
+      "//chrome/app:command_ids",
+      "//chrome/app/vector_icons",
+      "//chrome/browser/accessibility:utils",
+      "//chrome/browser/apps/platform_apps",
+      "//chrome/browser/feedback",
+      "//chrome/browser/ui:ui_features",
+      "//components/autofill_prediction_improvements/core/browser",
+      "//components/password_manager/core/browser/features:password_features",
+      "//components/plus_addresses",
+      "//extensions/browser",
+    ]
+
+    if (is_chrome_branded) {
+      deps += [ "//components/plus_addresses/resources:vector_icons" ]
+    }
+  }
+
+  if (enable_dice_support) {
+    sources += [
+      "autofill_bubble_signin_promo_controller.cc",
+      "autofill_signin_promo_tab_helper.cc",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "autofill_popup_controller_impl_mac.mm" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "autofill_client_provider_unittest.cc",
+    "autofill_suggestion_controller_unittest.cc",
+    "chrome_autofill_client_unittest.cc",
+  ]
+
+  deps = [
+    ":autofill",
+    ":test_support",
+    ":test_support_unit",
+    "//base",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/accessibility:utils",
+    "//chrome/browser/autofill",
+    "//chrome/browser/autofill:test_support",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui/autofill/payments",
+    "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/test:test_support",
+    "//components/autofill/content/browser:test_support",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common:test_support",
+    "//components/input",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/common",
+    "//components/plus_addresses:features",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_strings",
+    "//components/sync:test_support",
+    "//components/unified_consent",
+    "//components/user_education/common",
+    "//components/user_education/test",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//ui/accessibility",
+    "//ui/accessibility:ax_base",
+    "//ui/base",
+    "//ui/events",
+    "//ui/events:dom_keycode_converter",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/gfx/range",
+  ]
+
+  if (is_android) {
+    sources += [ "autofill_keyboard_accessory_controller_impl_unittest.cc" ]
+  } else {
+    sources += [
+      "add_new_address_bubble_controller_unittest.cc",
+      "address_bubbles_controller_unittest.cc",
+      "address_editor_controller_unittest.cc",
+      "autofill_field_promo_controller_impl_unittest.cc",
+      "autofill_popup_controller_impl_unittest.cc",
+      "delete_address_profile_dialog_controller_impl_unittest.cc",
+      "edit_address_profile_dialog_controller_impl_unittest.cc",
+      "save_address_bubble_controller_unittest.cc",
+      "update_address_bubble_controller_unittest.cc",
+    ]
+    deps += [ "//chrome/browser/ui/hats:test_support" ]
+  }
+
+  if (enable_dice_support) {
+    sources += [ "autofill_bubble_signin_promo_controller_unittest.cc" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test/test_autofill_bubble_handler.cc",
+    "test/test_autofill_bubble_handler.h",
+  ]
+
+  public_deps = [ ":autofill" ]
+
+  if (is_android) {
+    sources += [ "autofill_keyboard_accessory_controller_impl_test_api.h" ]
+    public_deps +=
+        [ "//chrome/browser/password_manager/android/access_loss:public" ]
+  } else {
+    sources += [
+      "autofill_popup_controller_impl_test_api.h",
+      "mock_autofill_popup_controller.cc",
+      "mock_autofill_popup_controller.h",
+    ]
+    public_deps += [
+      "//testing/gmock",
+      "//ui/gfx:test_support",
+    ]
+  }
+}
+
+if (!is_android && !is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    deps = [
+      ":autofill",
+      "//base",
+      "//base:i18n",
+      "//base/test:test_support",
+      "//build:buildflag_header_h",
+      "//build:chromeos_buildflags",
+      "//chrome/app:command_ids",
+      "//chrome/browser/autofill:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/sync",
+      "//chrome/browser/sync:factories",
+      "//chrome/browser/ui",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/autofill/content/browser:test_support",
+      "//components/autofill/core/browser:test_support",
+      "//components/autofill/core/common:features",
+      "//components/autofill/core/common:test_support",
+      "//components/feature_engagement/public",
+      "//components/feature_engagement/test:test_support",
+      "//components/keyed_service/content",
+      "//components/prefs:test_support",
+      "//components/sync:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/blink/public/common",
+      "//ui/base",
+      "//ui/compositor",
+      "//ui/gfx/geometry",
+      "//ui/views",
+      "//url",
+    ]
+
+    sources = [
+      "autofill_context_menu_manager_interactive_uitest.cc",
+      "autofill_popup_controller_interactive_uitest.cc",
+      "chrome_autofill_client_interactive_uitest.cc",
+    ]
+
+    if (toolkit_views) {
+      sources += [
+        "address_bubbles_controller_interactive_uitest.cc",
+        "delete_address_profile_dialog_controller_impl_interactive_uitest.cc",
+        "edit_address_profile_dialog_controller_impl_interactive_uitest.cc",
+      ]
+    }
+  }
+}
+
+source_set("test_support_unit") {
+  testonly = true
+
+  sources = [
+    "autofill_suggestion_controller_test_base.cc",
+    "autofill_suggestion_controller_test_base.h",
+    "mock_autofill_popup_view.cc",
+    "mock_autofill_popup_view.h",
+  ]
+
+  public_deps = [
+    ":autofill",
+    ":test_support",
+    "//base",
+    "//chrome/browser/autofill",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/autofill/content/browser:test_support",
+    "//components/autofill/core/common:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_android) {
+    sources += [
+      "mock_autofill_keyboard_accessory_view.cc",
+      "mock_autofill_keyboard_accessory_view.h",
+      "test_autofill_keyboard_accessory_controller_autofill_client.h",
+    ]
+    public_deps += [
+      "//chrome/browser/keyboard_accessory/test_utils/android",
+      "//chrome/browser/password_manager/android/access_loss:test_support",
+    ]
+  } else {
+    sources += [ "test_autofill_popup_controller_autofill_client.h" ]
+  }
+}
+
+if (is_chromeos_lacros) {
+  source_set("lacros_chrome_browsertests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "autofill_context_menu_manager_lacros_browsertest.cc" ]
+
+    deps = [
+      ":autofill",
+      "//base/test:test_support",
+      "//chrome/app:command_ids",
+      "//chrome/browser/ui",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/autofill/core/browser:test_support",
+      "//components/autofill/core/common:features",
+      "//components/prefs:test_support",
+      "//content/test:test_support",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = []
+
+    deps = [
+      ":autofill",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/app:command_ids",
+      "//chrome/app:generated_resources",
+      "//chrome/browser",
+      "//chrome/browser/autofill",
+      "//chrome/browser/autofill:test_support",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/autofill/content/browser:test_support",
+      "//components/autofill/core/browser:test_support",
+      "//components/autofill/core/common",
+      "//components/autofill_prediction_improvements/core/browser",
+      "//components/keyed_service/content",
+      "//components/keyed_service/core",
+      "//components/password_manager/content/browser",
+      "//components/password_manager/core/browser",
+      "//components/password_manager/core/browser:password_form",
+      "//components/password_manager/core/browser:test_support",
+      "//components/password_manager/core/browser/features:password_features",
+      "//components/password_manager/core/browser/password_store:password_store_interface",
+      "//components/password_manager/core/browser/password_store:test_support",
+      "//components/password_manager/core/common",
+      "//components/plus_addresses:blocklist_data",
+      "//components/plus_addresses:plus_address_blocklist_proto",
+      "//components/plus_addresses:test_support",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/strings:components_strings",
+      "//components/sync:test_support",
+      "//components/sync/base:features",
+      "//components/user_manager",
+      "//components/variations/service",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base",
+      "//url",
+    ]
+
+    if (!is_chromeos_lacros) {
+      sources += [ "autofill_context_menu_manager_browsertest.cc" ]
+    }
+
+    if (enable_dice_support) {
+      sources += [ "autofill_signin_promo_tab_helper_browsertest.cc" ]
+    }
+  }
+}

@@ -1,0 +1,53 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("language_packs") {
+  sources = [
+    "language_pack_font_service.cc",
+    "language_pack_font_service.h",
+    "language_pack_font_service_factory.cc",
+    "language_pack_font_service_factory.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/language_packs",
+    "//components/keyed_service/core",
+    "//components/language/core/browser",
+    "//components/language/core/common",
+    "//components/prefs",
+    "//content/public/browser",
+    "//ui/gfx",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "language_pack_font_service_unittest.cc" ]
+
+  deps = [
+    ":language_packs",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus",
+    "//components/keyed_service/core",
+    "//components/language/core/browser",
+    "//components/language/core/common",
+    "//components/prefs",
+    "//content/public/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

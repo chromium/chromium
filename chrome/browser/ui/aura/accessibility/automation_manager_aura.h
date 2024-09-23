@@ -19,6 +19,7 @@
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/accessibility/ax_tree_serializer.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/accessibility/ax_event_observer.h"
 #include "ui/views/accessibility/ax_tree_source_views.h"
@@ -35,7 +36,10 @@ class View;
 
 using AuraAXTreeSerializer = ui::AXTreeSerializer<
     views::AXAuraObjWrapper*,
-    std::vector<raw_ptr<views::AXAuraObjWrapper, VectorExperimental>>>;
+    std::vector<raw_ptr<views::AXAuraObjWrapper, VectorExperimental>>,
+    ui::AXTreeUpdate*,
+    ui::AXTreeData*,
+    ui::AXNodeData>;
 
 // Manages a tree of automation nodes backed by aura constructs.
 class AutomationManagerAura : public ui::AXActionHandler,

@@ -273,7 +273,7 @@ void ArcRequirementChecker::OnAndroidManagementChecked(
           .Run(RequirementCheckResult::kAndroidManagementCheckError);
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ArcRequirementChecker::OnBackgroundAndroidManagementChecked(
@@ -308,7 +308,7 @@ void ArcRequirementChecker::OnBackgroundAndroidManagementChecked(
     case ArcAndroidManagementChecker::CheckResult::ERROR:
       // This code should not be reached. For background check,
       // retry_on_error should be set.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

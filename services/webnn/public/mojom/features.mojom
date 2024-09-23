@@ -1,0 +1,18 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn.mojom.features;
+
+// Enables the Web Machine Learning Neural Network API. Explainer:
+// https://github.com/webmachinelearning/webnn/blob/main/explainer.md
+feature kWebMachineLearningNeuralNetwork {
+  const string name = "WebMachineLearningNeuralNetwork";
+  const bool default_state = false;
+};
+
+// Enables experimental Web Machine Learning Neural Network API features.
+feature kExperimentalWebMachineLearningNeuralNetwork {
+  const string name = "ExperimentalWebMachineLearningNeuralNetwork";
+  const bool default_state = false;
+};

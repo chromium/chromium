@@ -9,9 +9,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_request_usvstring.h"
@@ -71,20 +71,18 @@ const char kSecurityErrorMessage[] =
 }  // namespace
 
 void CacheStorage::IsCacheStorageAllowed(ExecutionContext* context,
-                                         ScriptPromiseResolver* resolver,
+                                         ScriptPromiseResolverBase* resolver,
                                          base::OnceCallback<void()> callback) {
   DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
 
-  auto wrapped_callback = resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&CacheStorage::OnCacheStorageAllowed,
-                    WrapWeakPersistent(this), std::move(callback)));
+  auto wrapped_callback = WTF::BindOnce(
+      &CacheStorage::OnCacheStorageAllowed, WrapWeakPersistent(this),
+      std::move(callback), WrapPersistent(resolver));
 
   if (allowed_.has_value()) {
     std::move(wrapped_callback).Run(allowed_.value());
     return;
   }
-
-  WebContentSettingsClient* settings_client = nullptr;
 
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     LocalFrame* frame = window->GetFrame();
@@ -92,23 +90,28 @@ void CacheStorage::IsCacheStorageAllowed(ExecutionContext* context,
       std::move(wrapped_callback).Run(false);
       return;
     }
-    settings_client = window->GetFrame()->GetContentSettingsClient();
+    frame->AllowStorageAccessAndNotify(
+        WebContentSettingsClient::StorageType::kCacheStorage,
+        std::move(wrapped_callback));
   } else {
-    settings_client = To<WorkerGlobalScope>(context)->ContentSettingsClient();
+    WebContentSettingsClient* settings_client =
+        To<WorkerGlobalScope>(context)->ContentSettingsClient();
+    if (!settings_client) {
+      std::move(wrapped_callback).Run(true);
+      return;
+    }
+    settings_client->AllowStorageAccess(
+        WebContentSettingsClient::StorageType::kCacheStorage,
+        std::move(wrapped_callback));
   }
-
-  if (!settings_client) {
-    std::move(wrapped_callback).Run(true);
-    return;
-  }
-  settings_client->AllowStorageAccess(
-      WebContentSettingsClient::StorageType::kCacheStorage,
-      std::move(wrapped_callback));
 }
 
 void CacheStorage::OnCacheStorageAllowed(base::OnceCallback<void()> callback,
-                                         ScriptPromiseResolver* resolver,
+                                         ScriptPromiseResolverBase* resolver,
                                          bool allow_access) {
+  if (!resolver->GetScriptState()->ContextIsValid()) {
+    return;
+  }
   if (allowed_.has_value()) {
     DCHECK_EQ(allowed_.value(), allow_access);
   } else {
@@ -124,17 +127,17 @@ void CacheStorage::OnCacheStorageAllowed(base::OnceCallback<void()> callback,
                                     kSecurityErrorMessage);
 }
 
-ScriptPromise CacheStorage::open(ScriptState* script_state,
-                                 const String& cache_name,
-                                 ExceptionState& exception_state) {
+ScriptPromise<Cache> CacheStorage::open(ScriptState* script_state,
+                                        const String& cache_name,
+                                        ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::Open",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT,
                          "name", CacheStorageTracedValue(cache_name));
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Cache>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
@@ -149,7 +152,7 @@ ScriptPromise CacheStorage::open(ScriptState* script_state,
 
 void CacheStorage::OpenImpl(const String& cache_name,
                             int64_t trace_id,
-                            ScriptPromiseResolver* resolver) {
+                            ScriptPromiseResolver<Cache>* resolver) {
   MaybeInit();
 
   // The context may be destroyed and the mojo connection unbound. However the
@@ -168,7 +171,7 @@ void CacheStorage::OpenImpl(const String& cache_name,
           [](GlobalFetch::ScopedFetcher* fetcher,
              CacheStorageBlobClientList* blob_client_list,
              base::TimeTicks start_time, int64_t trace_id,
-             ScriptPromiseResolver* resolver,
+             ScriptPromiseResolver<Cache>* resolver,
              mojom::blink::OpenResultPtr result) {
             base::UmaHistogramTimes(
                 "ServiceWorkerCache.CacheStorage.Renderer.Open",
@@ -187,8 +190,8 @@ void CacheStorage::OpenImpl(const String& cache_name,
               // See https://bit.ly/2S0zRAS for task types.
               resolver->Resolve(MakeGarbageCollected<Cache>(
                   fetcher, blob_client_list, std::move(result->get_cache()),
-                  resolver->GetExecutionContext()->GetTaskRunner(
-                      blink::TaskType::kMiscPlatformAPI)));
+                  resolver->GetExecutionContext(),
+                  blink::TaskType::kMiscPlatformAPI));
             }
           },
           WrapPersistent(scoped_fetcher_.Get()),
@@ -196,17 +199,17 @@ void CacheStorage::OpenImpl(const String& cache_name,
           trace_id)));
 }
 
-ScriptPromise CacheStorage::has(ScriptState* script_state,
-                                const String& cache_name,
-                                ExceptionState& exception_state) {
+ScriptPromise<IDLBoolean> CacheStorage::has(ScriptState* script_state,
+                                            const String& cache_name,
+                                            ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::Has",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT,
                          "name", CacheStorageTracedValue(cache_name));
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
@@ -221,7 +224,7 @@ ScriptPromise CacheStorage::has(ScriptState* script_state,
 
 void CacheStorage::HasImpl(const String& cache_name,
                            int64_t trace_id,
-                           ScriptPromiseResolver* resolver) {
+                           ScriptPromiseResolver<IDLBoolean>* resolver) {
   MaybeInit();
 
   // The context may be destroyed and the mojo connection unbound. However the
@@ -239,7 +242,7 @@ void CacheStorage::HasImpl(const String& cache_name,
       cache_name, trace_id,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, int64_t trace_id,
-             ScriptPromiseResolver* resolver,
+             ScriptPromiseResolver<IDLBoolean>* resolver,
              mojom::blink::CacheStorageError result) {
             base::UmaHistogramTimes(
                 "ServiceWorkerCache.CacheStorage.Renderer.Has",
@@ -263,17 +266,18 @@ void CacheStorage::HasImpl(const String& cache_name,
           base::TimeTicks::Now(), trace_id)));
 }
 
-ScriptPromise CacheStorage::Delete(ScriptState* script_state,
-                                   const String& cache_name,
-                                   ExceptionState& exception_state) {
+ScriptPromise<IDLBoolean> CacheStorage::Delete(
+    ScriptState* script_state,
+    const String& cache_name,
+    ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   TRACE_EVENT_WITH_FLOW1("CacheStorage", "CacheStorage::Delete",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT,
                          "name", CacheStorageTracedValue(cache_name));
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
@@ -288,7 +292,7 @@ ScriptPromise CacheStorage::Delete(ScriptState* script_state,
 
 void CacheStorage::DeleteImpl(const String& cache_name,
                               int64_t trace_id,
-                              ScriptPromiseResolver* resolver) {
+                              ScriptPromiseResolver<IDLBoolean>* resolver) {
   MaybeInit();
 
   // The context may be destroyed and the mojo connection unbound. However the
@@ -306,7 +310,7 @@ void CacheStorage::DeleteImpl(const String& cache_name,
       cache_name, trace_id,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, int64_t trace_id,
-             ScriptPromiseResolver* resolver,
+             ScriptPromiseResolver<IDLBoolean>* resolver,
              mojom::blink::CacheStorageError result) {
             base::UmaHistogramTimes(
                 "ServiceWorkerCache.CacheStorage.Renderer.Delete",
@@ -331,7 +335,7 @@ void CacheStorage::DeleteImpl(const String& cache_name,
           base::TimeTicks::Now(), trace_id)));
 }
 
-ScriptPromiseTyped<IDLSequence<IDLString>> CacheStorage::keys(
+ScriptPromise<IDLSequence<IDLString>> CacheStorage::keys(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
@@ -339,9 +343,9 @@ ScriptPromiseTyped<IDLSequence<IDLString>> CacheStorage::keys(
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLSequence<IDLString>>>(
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<IDLString>>>(
           script_state, exception_state.GetContext());
-  ScriptPromiseTyped<IDLSequence<IDLString>> promise = resolver->Promise();
+  ScriptPromise<IDLSequence<IDLString>> promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
@@ -356,7 +360,7 @@ ScriptPromiseTyped<IDLSequence<IDLString>> CacheStorage::keys(
 
 void CacheStorage::KeysImpl(
     int64_t trace_id,
-    ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver) {
+    ScriptPromiseResolver<IDLSequence<IDLString>>* resolver) {
   MaybeInit();
 
   // The context may be destroyed and the mojo connection unbound. However the
@@ -374,7 +378,7 @@ void CacheStorage::KeysImpl(
       trace_id,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, int64_t trace_id,
-             ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
+             ScriptPromiseResolver<IDLSequence<IDLString>>* resolver,
              const Vector<String>& keys) {
             base::UmaHistogramTimes(
                 "ServiceWorkerCache.CacheStorage.Renderer.Keys",
@@ -388,10 +392,11 @@ void CacheStorage::KeysImpl(
           base::TimeTicks::Now(), trace_id)));
 }
 
-ScriptPromise CacheStorage::match(ScriptState* script_state,
-                                  const V8RequestInfo* request,
-                                  const MultiCacheQueryOptions* options,
-                                  ExceptionState& exception_state) {
+ScriptPromise<Response> CacheStorage::match(
+    ScriptState* script_state,
+    const V8RequestInfo* request,
+    const MultiCacheQueryOptions* options,
+    ExceptionState& exception_state) {
   DCHECK(request);
   Request* request_object = nullptr;
   switch (request->GetContentType()) {
@@ -402,17 +407,18 @@ ScriptPromise CacheStorage::match(ScriptState* script_state,
       request_object = Request::Create(script_state, request->GetAsUSVString(),
                                        exception_state);
       if (exception_state.HadException()) {
-        return ScriptPromise();
+        return EmptyPromise();
       }
       break;
   }
   return MatchImpl(script_state, request_object, options, exception_state);
 }
 
-ScriptPromise CacheStorage::MatchImpl(ScriptState* script_state,
-                                      const Request* request,
-                                      const MultiCacheQueryOptions* options,
-                                      ExceptionState& exception_state) {
+ScriptPromise<Response> CacheStorage::MatchImpl(
+    ScriptState* script_state,
+    const Request* request,
+    const MultiCacheQueryOptions* options,
+    ExceptionState& exception_state) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
   mojom::blink::FetchAPIRequestPtr mojo_request =
       request->CreateFetchAPIRequest();
@@ -432,9 +438,9 @@ ScriptPromise CacheStorage::MatchImpl(ScriptState* script_state,
                          "request", CacheStorageTracedValue(mojo_request),
                          "options", CacheStorageTracedValue(mojo_options));
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Response>>(
       script_state, exception_state.GetContext());
-  const ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   if (request->method() != http_names::kGET && !options->ignoreMethod()) {
     resolver->Resolve();
@@ -459,7 +465,7 @@ void CacheStorage::MatchImplHelper(
     bool in_related_fetch_event,
     bool in_range_fetch_event,
     int64_t trace_id,
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolver<Response>* resolver) {
   MaybeInit();
 
   // The context may be destroyed and the mojo connection unbound. However the
@@ -479,7 +485,7 @@ void CacheStorage::MatchImplHelper(
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
           [](base::TimeTicks start_time, const MultiCacheQueryOptions* options,
              int64_t trace_id, CacheStorage* self,
-             ScriptPromiseResolver* resolver,
+             ScriptPromiseResolver<Response>* resolver,
              mojom::blink::MatchResultPtr result) {
             base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
             if (!options->hasCacheName() || options->cacheName().empty()) {

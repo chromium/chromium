@@ -7,8 +7,9 @@
 
 #include <cstdint>
 #include <functional>
-#include <vector>
+#include <string>
 
+#include "services/on_device_model/ml/chrome_ml_types.h"
 #include "third_party/dawn/include/dawn/dawn_proc_table.h"
 #include "third_party/dawn/include/dawn/webgpu.h"
 
@@ -25,51 +26,60 @@ using ChromeMLFatalErrorFn = void (*)(const char* msg);
 using ChromeMLScheduleFn = void (*)(uintptr_t context,
                                     std::function<void()>* task);
 
-enum ContextMode {
-  kNone = 0,
-  kReset = 1 << 0,
-  kSave = 1 << 1,
-  kIgnoreContext = 1 << 2,
-};
+#if defined(_WIN32)
+using PlatformFile = void*;
+#else
+using PlatformFile = int;
+#endif
 
 // Opaque handle to an instance of a ChromeML model.
 using ChromeMLModel = uintptr_t;
+// Opaque handle to an instance of a ChromeML session.
+using ChromeMLSession = uintptr_t;
+// Opaque handle to an object that allows canceling operations.
+using ChromeMLCancel = uintptr_t;
+// Opaque handle to an instance of a ChromeMLTS model.
+using ChromeMLTSModel = uintptr_t;
+// Opaque handle to a video-frame-specific ML inference engine.
+using ChromeMLInferenceEngine = uintptr_t;
 
-// Function called to release resources.
-using ChromeMLDisposeFn = std::function<void()>;
+// Type of the backend to run the model.
+enum ModelBackendType {
+  // The default WebGPU backend.
+  kGpuBackend = 0,
+  // The APU accelerator backend. Only available on devices with APU, and need
+  // special APU model files.
+  kApuBackend = 1,
+};
+
+// A contiguous byte span.
+struct ChromeMLByteSpan {
+  uint8_t* data;
+  size_t size;
+};
 
 // Describes a ChromeML model's underlying tensors.
 struct ChromeMLModelData {
-  // Points to a serialized description of the model's tensors.
-  const void* model_proto_data;
+  // File holding the weights data. The file will be owned by the inference
+  // library and closed once weight loading is complete. kApuBackend provides
+  // the `model_path` and not this field.
+  PlatformFile weights_file;
 
-  // The size in bytes of the serialized proto at `model_proto_data`.
-  size_t model_proto_size;
+  // Null-terminated model path pointing to the model to use. Only kApuBackend
+  // provides this field. Other backends provide model through the
+  // `weights_file` field.
+  const char* model_path = nullptr;
 
-  // Called when the model_proto data is no longer needed.
-  const ChromeMLDisposeFn* model_proto_dispose;
-
-  // Points to raw tensor weight data, indexed by fields encoded in the above
-  // proto. This memory must be mutable.
-  void* weights_data;
-
-  // The size in bytes of the data at `weights_data`.
-  size_t weights_size;
-
-  // Called when the weights data is no longer needed.
-  const ChromeMLDisposeFn* weights_dispose;
+  // Null-terminated sentencepiece model path. kApuBackend models have a
+  // separate sentencepiece model file and require this to be set. Other
+  // backends have the sentencepiece model wrapped into the `weights_file`.
+  const char* sentencepiece_model_path = nullptr;
 };
 
 // Describes a model to use with ChromeML.
 struct ChromeMLModelDescriptor {
-  // Points to a serialized sentencepiece.ModelProto proto.
-  const void* sentencepiece_model_proto_data;
-
-  // The size in bytes of the serialized proto at `sentencepiece_model_data`.
-  size_t sentencepiece_model_proto_size;
-
-  // Called when the sentencepiece_model_proto data is no longer needed.
-  const ChromeMLDisposeFn* sentencepiece_model_proto_dispose;
+  // The backend to run this model.
+  ModelBackendType backend_type;
 
   // The model data to use.
   const ChromeMLModelData* model_data;
@@ -90,6 +100,11 @@ struct ChromeMLModelDescriptor {
 
   const uint32_t* adaptation_ranks;
   size_t adaptation_ranks_size;
+
+  bool prefer_texture_weights;
+  bool enable_host_mapped_pointer;
+  bool use_low_power;
+  bool allow_fp16;
 };
 
 // Describes an adaptation for a model.
@@ -116,15 +131,29 @@ struct ChromeMLExecutionOutput {
   // Null-terminated text content for this output chunk, or null if there is no
   // new text output.
   const char* text;
+};
 
-  // Optional TS scores for the full output so far, up to and including this
-  // chunk. Only included as specified by `score_ts_interval` in
-  // ChromeMLExecuteOptions.
-  //
-  // If no new scores are provided for this output, this field is null and
-  // `num_ts_scores` is zero.
-  float* ts_scores;
-  size_t num_ts_scores;
+struct ChromeMLTSModelDescriptor {
+  ChromeMLByteSpan model;
+  ChromeMLByteSpan sp_model;
+  size_t dimensions;
+};
+
+// Status value indicating the result of ad hoc safety classification.
+enum class ChromeMLSafetyResult {
+  // Safety classification succeeded and the caller's output buffer has been
+  // populated with the requested class scores.
+  kOk,
+
+  // The given ChromeMLModel does not have a valid safety classifier to use.
+  kNoClassifier,
+
+  // The caller's output buffer is insufficient to hold the complete set of
+  // safety scores that would be output by the model's safety classifier.
+  kInsufficientStorage,
+
+  // Classification failed due to an internal model execution error.
+  kModelExecutionFailure,
 };
 
 // Function provided from the library that will cancel the corresponding input
@@ -140,40 +169,18 @@ using ChromeMLCancelFn = std::function<void()>;
 using ChromeMLExecutionOutputFn =
     std::function<void(const ChromeMLExecutionOutput* output)>;
 
-// Receives tokens from a call to RunModel(). This will be called on the
-// internal thread executing the model. If no completion callback is provided to
-// ExecuteModel(), this function will be invoked with std::nullopt to signify
-// that model execution is complete.
-//
-// DEPRECATED: Use a ChromeMLExecutionOutputFn instead.
-using ChromeMLOutputFn = std::function<void(const std::optional<std::string>&)>;
-
-// Receives periodic updates to TS scores, per `score_ts_interval` set in
-// ChromeMLExecuteOptions.
-//
-// DEPRECATED: Use a ChromeMLExecutionOutputFn instead.
-using ChromeMLScoreTSFn = std::function<void(const std::vector<float>&)>;
-
 // Called with the number of tokens processed after a call to RunModel()
 // which has the kSave ContextMode set. This will be called on the internal
 // thread executing the model.
 using ChromeMLContextSavedFn = std::function<void(int)>;
 
-// Conveys details regarding a completed model execution.
-struct ChromeMLExecutionResult {
-  // If true, all prior output received for this model execution is effectively
-  // retracted by the library and should be discarded by the client.
-  //
-  // DEPRECATED: Clients should ignore this field. It will be deleted.
-  bool retracted;
-};
+// Called with the number of tokens after a call to SizeInTokens().
+// This will be called on the internal thread executing the model.
+using ChromeMLSizeInTokensFn = std::function<void(int)>;
 
-// Called when a model has finished executing. No other functions given to
-// ExecuteModel() will be invoked after this.
-//
-// DEPRECATED: Use a ChromeMLExecutionOutputFn instead.
-using ChromeMLCompletionFn =
-    std::function<void(const ChromeMLExecutionResult&)>;
+// Called with a probability score after a call to Score().
+// This will be called on the internal thread executing the model.
+using ChromeMLScoreFn = std::function<void(float)>;
 
 struct ChromeMLExecuteOptions {
   const char* prompt;
@@ -181,14 +188,15 @@ struct ChromeMLExecuteOptions {
   uint32_t max_tokens;
   uint32_t token_offset;
   uint32_t max_output_tokens;
-  int32_t score_ts_interval;
-  const ChromeMLOutputFn* output_fn;
-  const ChromeMLScoreTSFn* score_ts_fn;
   const ChromeMLContextSavedFn* context_saved_fn;
-  const ChromeMLCompletionFn* completion_fn;
   const ChromeMLExecutionOutputFn* execution_output_fn;
   // Optional adaptation ID for this request.
   uint32_t* adaptation_id;
+  uint32_t top_k;
+  float temperature;
+
+  const ml::InputPiece* input;
+  size_t input_size;
 };
 
 // Performance data filled out by GetEstimatedPerformance().
@@ -228,6 +236,35 @@ struct ChromeMLMetricsFns {
                                       size_t buckets);
 };
 
+struct ChromeMLTSAPI {
+  // Construct a text safety model.
+  // Destroy the returned object by passing it to DestroyModel.
+  ChromeMLTSModel (*CreateModel)(const ChromeMLTSModelDescriptor* descriptor);
+
+  // Destroy a text safety model.
+  void (*DestroyModel)(ChromeMLTSModel model);
+
+  // Performs ad hoc safety classification on a chunk of text using the
+  // classifier defined by `model`.
+  //
+  // On input, `scores` must point to an output buffer to receive the safety
+  // class scores, and `num_scores` must point to the capacity of that buffer in
+  // number of elements.
+  //
+  // On success this returns kOk on and `*num_scores` is set to the actual
+  // number of score values written into the output buffer. This number is
+  // guaranteed to be no larger than the input value of `*num_scores`.
+  //
+  // If this fails with kInsufficientStorage, no `scores` are populated and
+  // `*num_scores` is set to the correct number scores the caller should expect.
+  //
+  // If `model` does not define a safety classifier, this returns kNoClassifier.
+  ChromeMLSafetyResult (*ClassifyTextSafety)(ChromeMLTSModel model,
+                                             const char* text,
+                                             float* scores,
+                                             size_t* num_scores);
+};
+
 // IMPORTANT: All functions that call ChromeMLAPI should be annotated with
 // DISABLE_CFI_DLSYM.
 
@@ -244,39 +281,114 @@ struct ChromeMLAPI {
   // SetFatalErrorNonGpuFn.
   void (*SetFatalErrorFn)(ChromeMLFatalErrorFn error_fn);
 
-  // Creates a new ChromeML model instance as described by `model`. The returned
-  // object can be destroyed by passing it to DestroyModel(). `context` is
-  // forwarded to any invocations of `schedule` or `token_output` made by this
-  // model.
-  ChromeMLModel (*CreateModel)(const ChromeMLModelDescriptor* descriptor,
-                               uintptr_t context,
-                               ChromeMLScheduleFn schedule);
+  // Performs ad hoc safety classification on a chunk of text using the
+  // classifier defined by `model`.
+  //
+  // On input, `scores` must point to an output buffer to receive the safety
+  // class scores, and `num_scores` must point to the capacity of that buffer in
+  // number of elements.
+  //
+  // On success this returns kOk on and `*num_scores` is set to the actual
+  // number of score values written into the output buffer. This number is
+  // guaranteed to be no larger than the input value of `*num_scores`.
+  //
+  // If this fails with kInsufficientStorage, no `scores` are populated and
+  // `*num_scores` is set to the correct number scores the caller should expect.
+  //
+  // If `model` does not define a safety classifier, this returns kNoClassifier.
+  ChromeMLSafetyResult (*ClassifyTextSafety)(ChromeMLModel model,
+                                             const char* text,
+                                             float* scores,
+                                             size_t* num_scores);
 
-  // Executes a model given the input `prompt`. Results are fed incrementally
-  // to the model's given ChromeMLOutputFn.
-  bool (*ExecuteModel)(ChromeMLModel model,
-                       const ChromeMLExecuteOptions* options,
-                       ChromeMLCancelFn* cancel_fn);
-
-  // Destroys a model that was created by CreateModel().
+  // Destroys a model that was created by SessionCreateModel().
   void (*DestroyModel)(ChromeMLModel model);
 
   // Estimates the tokens per second this device will be able to achieve when
   // running a typical model.
   bool (*GetEstimatedPerformance)(ChromeMLPerformanceInfo* performance_info);
 
-  // Returns the GpuConfig in `config`. Returns true on success, false if there
-  // was an error calculating it.
-  bool (*GetGpuConfig)(GpuConfig& config);
+  // Query the GPU adapter used.
+  // Synchronously calls `adapter_callback_fn` with a non-owning pointer to the
+  // adapter. Returns false if there was an error getting an adapter at all; the
+  // callback is not called. It is not safe to save reference to this adapter as
+  // it is allocated in another dll. Use of the adapter must only be scoped to
+  // the duration of `adapter_callback_fn`.
+  bool (*QueryGPUAdapter)(void (*adapter_callback_fn)(WGPUAdapter adapter,
+                                                      void* userdata),
+                          void* userdata);
 
   // Same as SetFatalErrorFn(), but for fatal errors that occur outside of the
   // gpu.
   void (*SetFatalErrorNonGpuFn)(ChromeMLFatalErrorFn error_fn);
 
-  // Loads an adaptation and outputs an identifier for this adaptation in `id`.
-  bool (*CreateAdaptation)(ChromeMLModel model,
-                           const ChromeMLAdaptationDescriptor* descriptor,
-                           uint32_t& id);
+  // Creates a new ChromeML model instance as described by `descriptor`. The
+  // returned object can be destroyed by passing it to DestroyModel(). `context`
+  // is forwarded to any invocations of `schedule` or `token_output` made by
+  // this model.
+  ChromeMLModel (*SessionCreateModel)(const ChromeMLModelDescriptor* descriptor,
+                                      uintptr_t context,
+                                      ChromeMLScheduleFn schedule);
+
+  // Executes a model given the input `options.prompt`. Results are fed
+  // incrementally to `options.execution_output_fn`. Execution may be cancelled
+  // by calling CancelExecuteModel on `cancel`.
+  bool (*SessionExecuteModel)(ChromeMLSession session,
+                              ChromeMLModel model,
+                              const ChromeMLExecuteOptions* options,
+                              ChromeMLCancel cancel);
+
+  // Get the size of the given text in tokens.
+  void (*SessionSizeInTokens)(ChromeMLSession session,
+                              const std::string& text,
+                              const ChromeMLSizeInTokensFn& fn);
+  void (*SessionSizeInTokensInputPiece)(ChromeMLSession session,
+                                        ChromeMLModel model,
+                                        const ml::InputPiece* input,
+                                        size_t input_size,
+                                        const ChromeMLSizeInTokensFn& fn);
+
+  // Scores the first token of the given text.
+  void (*SessionScore)(ChromeMLSession session,
+                       const std::string& text,
+                       const ChromeMLScoreFn& fn);
+
+  // Create a new session in the model, optionally loading adaptation data.
+  ChromeMLSession (*CreateSession)(
+      ChromeMLModel model,
+      const ChromeMLAdaptationDescriptor* descriptor);
+
+  // Clone an existing session.
+  ChromeMLSession (*CloneSession)(ChromeMLSession session);
+
+  // Destroy a session.
+  void (*DestroySession)(ChromeMLSession session);
+
+  ChromeMLCancel (*CreateCancel)();
+  void (*DestroyCancel)(ChromeMLCancel cancel);
+  void (*CancelExecuteModel)(ChromeMLCancel cancel);
+
+  // Create new instance of ML inference engine, using the passed in `device`.
+  // `model_blob` should contain a binary blob of a TFLite model (read from
+  // .tflite file). `model_blob_size` is the size in bytes of `model_blob`. On
+  // failure, will return `0`.
+  ChromeMLInferenceEngine (*CreateInferenceEngine)(WGPUAdapterInfo adapter_info,
+                                                   WGPUDevice device,
+                                                   const char* model_blob,
+                                                   size_t model_blob_size);
+
+  // Runs inference on `source`, producing results into `destination`. `engine`
+  // must have been obtained from `CreateInferenceEngine()` call.
+  bool (*RunInference)(ChromeMLInferenceEngine engine,
+                       WGPUTexture source,
+                       WGPUTexture destination);
+
+  // Cleans up the instance of ML inference engine returned from
+  // `CreateInferenceEngine()` call. It is invalid to use `engine` for inference
+  // after this call.
+  void (*DestroyInferenceEngine)(ChromeMLInferenceEngine engine);
+
+  ChromeMLTSAPI ts_api;
 };
 
 // Signature of the GetChromeMLAPI() function which the shared library exports.

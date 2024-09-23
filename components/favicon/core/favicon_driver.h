@@ -29,7 +29,7 @@ class FaviconDriver {
   void AddObserver(FaviconDriverObserver* observer);
   void RemoveObserver(FaviconDriverObserver* observer);
 
-  // Initiates loading the favicon for the specified url. |is_same_document|
+  // Initiates loading the favicon for the specified url. `is_same_document`
   // is true for cases where this page URL follows a navigation within the same
   // document (e.g. fragment navigation).
   virtual void FetchFavicon(const GURL& page_url, bool is_same_document) = 0;

@@ -288,8 +288,12 @@ public class VersionSafeCallbacks {
     /** Wrap a {@link org.chromium.net.ApiVersion} in a version safe manner. */
     public static final class ApiVersion {
         public static int getMaximumAvailableApiLevel() {
-            // No version check as we never shipped an API-only package that did no contain this
-            // method.
+            // Prior to M59 the ApiVersion.getMaximumAvailableApiLevel API didn't exist
+            int cronetMajorVersion =
+                    Integer.parseInt(ApiVersion.getCronetVersion().split("\\.")[0]);
+            if (cronetMajorVersion < 59) {
+                return org.chromium.net.ApiVersion.getApiLevel();
+            }
             return org.chromium.net.ApiVersion.getMaximumAvailableApiLevel();
         }
 

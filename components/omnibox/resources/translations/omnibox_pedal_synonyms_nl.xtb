@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
-<translation id="101606685846791463">browsercache wissen, geschiedenis wissen, cookies verwijderen, browsegeschiedenis wissen</translation>
 <translation id="132297926492792130">mijn google-account beheren, google-account herstellen, google-account beheren, mijn google-account regelen</translation>
 <translation id="1455865776268085776">incognitomodus openen, nieuw incognitovenster, incognitotabblad openen</translation>
 <translation id="1545931455576308147">deze pagina delen, dit tabblad delen</translation>
@@ -28,6 +27,7 @@
 <translation id="7153639895359139570">adres toevoegen, verzendadres wijzigen, adressen bewerken, adressen beheren</translation>
 <translation id="7242693601647412075">beveiligingsinstellingen beheren</translation>
 <translation id="7441773108452086364">gmail-wachtwoord wijzigen, mijn gmail-wachtwoord wijzigen, google-wachtwoord wijzigen, gmail-accountwachtwoord resetten</translation>
+<translation id="7469628627013714019">browsercache verwijderen, geschiedenis verwijderen, cookies verwijderen, browsegeschiedenis wissen</translation>
 <translation id="7660956169713698963">chrome os-toegankelijkheid aanpassen, toegankelijkheidsinstellingen beheren</translation>
 <translation id="7700496593710078083">chrome-geschiedenis bekijken, browsegeschiedenis bekijken</translation>
 <translation id="7739523284295786564">chrome-downloads beheren, downloads bekijken</translation>

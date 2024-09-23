@@ -11,7 +11,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/search_engines/model/template_url_fetcher_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -39,8 +39,8 @@ std::u16string GenerateKeywordFromNavigationItem(
   // The code from Desktop will try NavigationEntry::GetUserTypedURL() first if
   // available since that represents what the user typed to get here, and fall
   // back on the regular URL if not.
-  // TODO(crbug.com/433824): Use GetUserTypedURL() once NavigationItem supports
-  // it.
+  // TODO(crbug.com/40394195): Use GetUserTypedURL() once NavigationItem
+  // supports it.
   GURL url = item->GetURL();
   if (!url.is_valid()) {
     return std::u16string();

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener_options.h"
@@ -40,7 +45,7 @@ LocalFrame* GetLocalFrameForTarget(EventTarget* target) {
   } else if (LocalDOMWindow* dom_window = target->ToLocalDOMWindow()) {
     frame = dom_window->GetFrame();
   } else {
-    NOTREACHED() << "Unexpected target type for event handler.";
+    NOTREACHED_IN_MIGRATION() << "Unexpected target type for event handler.";
   }
   return frame;
 }
@@ -123,7 +128,7 @@ void EventHandlerRegistry::UpdateEventHandlerTargets(
       targets->RemoveAll(target);
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool EventHandlerRegistry::UpdateEventHandlerInternal(
@@ -280,7 +285,7 @@ void EventHandlerRegistry::NotifyHandlersChanged(
       break;
 #endif
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -366,7 +371,7 @@ void EventHandlerRegistry::DocumentDetached(Document& document) {
           // DOMWindows may outlive their documents, so we shouldn't remove
           // their handlers here.
         } else {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
         }
       }
     }

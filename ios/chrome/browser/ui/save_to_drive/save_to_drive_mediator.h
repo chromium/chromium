@@ -12,8 +12,10 @@
 @protocol AccountPickerCommands;
 @protocol AccountPickerConsumer;
 @protocol ApplicationCommands;
+class ChromeAccountManagerService;
 @protocol FileDestinationPickerConsumer;
 @protocol ManageStorageAlertCommands;
+class PrefService;
 @protocol SaveToDriveCommands;
 @protocol SystemIdentity;
 
@@ -40,6 +42,9 @@ class DownloadTask;
                   applicationHandler:(id<ApplicationCommands>)applicationHandler
                 accountPickerHandler:
                     (id<AccountPickerCommands>)accountPickerHandler
+                         prefService:(PrefService*)prefService
+               accountManagerService:
+                   (ChromeAccountManagerService*)accountManagerService
                         driveService:(drive::DriveService*)driveService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
@@ -53,6 +58,9 @@ class DownloadTask;
 // file destination is Drive then `identity` will be used to upload the file to
 // Drive.
 - (void)saveWithSelectedIdentity:(id<SystemIdentity>)identity;
+
+// Called when the user taps "Cancel" in the account picker view.
+- (void)cancelSaveToDrive;
 
 @end
 

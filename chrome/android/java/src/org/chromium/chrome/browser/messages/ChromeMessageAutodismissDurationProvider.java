@@ -31,14 +31,13 @@ public class ChromeMessageAutodismissDurationProvider
     @Override
     public long get(@MessageIdentifier int messageIdentifier, long customDuration) {
         long nonA11yDuration = Math.max(mAutodismissDurationMs, customDuration);
+        long minDuration =
+                AccessibilityState.isPerformGesturesEnabled()
+                        ? mAutodismissDurationWithA11yMs
+                        : nonA11yDuration;
 
-        // If no a11y service that can perform gestures is enabled, use the set duration. Otherwise
-        // multiply the duration by the recommended multiplier and use that with a minimum of 30s.
-        return !AccessibilityState.isPerformGesturesEnabled()
-                ? nonA11yDuration
-                : (long)
-                        AccessibilityState.getRecommendedTimeoutMillis(
-                                (int) mAutodismissDurationWithA11yMs, (int) nonA11yDuration);
+        return AccessibilityState.getRecommendedTimeoutMillis(
+                (int) minDuration, (int) nonA11yDuration);
     }
 
     public void setDefaultAutodismissDurationMsForTesting(long duration) {

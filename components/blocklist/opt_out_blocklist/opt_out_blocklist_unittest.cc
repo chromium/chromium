@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist.h"
 
 #include <algorithm>
@@ -160,8 +165,9 @@ class TestOptOutBlocklist : public OptOutBlocklist {
   bool ShouldUseSessionPolicy(base::TimeDelta* duration,
                               size_t* history,
                               int* threshold) const override {
-    if (!session_policy_)
+    if (!session_policy_) {
       return false;
+    }
     *duration = session_policy_->duration;
     *history = session_policy_->history;
     *threshold = session_policy_->threshold;
@@ -172,8 +178,9 @@ class TestOptOutBlocklist : public OptOutBlocklist {
   bool ShouldUsePersistentPolicy(base::TimeDelta* duration,
                                  size_t* history,
                                  int* threshold) const override {
-    if (!persistent_policy_)
+    if (!persistent_policy_) {
       return false;
+    }
     *duration = persistent_policy_->duration;
     *history = persistent_policy_->history;
     *threshold = persistent_policy_->threshold;
@@ -185,8 +192,9 @@ class TestOptOutBlocklist : public OptOutBlocklist {
                            size_t* history,
                            int* threshold,
                            size_t* max_hosts) const override {
-    if (!host_policy_)
+    if (!host_policy_) {
       return false;
+    }
     *duration = host_policy_->duration;
     *history = host_policy_->history;
     *threshold = host_policy_->threshold;
@@ -198,8 +206,9 @@ class TestOptOutBlocklist : public OptOutBlocklist {
   bool ShouldUseTypePolicy(base::TimeDelta* duration,
                            size_t* history,
                            int* threshold) const override {
-    if (!type_policy_)
+    if (!type_policy_) {
       return false;
+    }
     *duration = type_policy_->duration;
     *history = type_policy_->history;
     *threshold = type_policy_->threshold;

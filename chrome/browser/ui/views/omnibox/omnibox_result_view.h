@@ -26,8 +26,8 @@
 
 class OmniboxMatchCellView;
 class OmniboxPopupViewViews;
-class OmniboxSuggestionButtonRowView;
 class OmniboxResultSelectionIndicator;
+class OmniboxSuggestionButtonRowView;
 enum class OmniboxPart;
 enum class OmniboxPartState;
 
@@ -87,6 +87,8 @@ class OmniboxResultView : public views::View {
   // Helper to emit accessibility events (may only emit if conditions are met).
   void EmitTextChangedAccessiblityEvent();
 
+  void UpdateAccessibilityProperties();
+
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -99,15 +101,25 @@ class OmniboxResultView : public views::View {
  private:
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, DeleteSuggestion);
 
+  void OpenIphLink();
+
   gfx::Image GetIcon() const;
 
   // Updates the highlight state of the row, as well as conditionally shows
   // controls that are only visible on row hover.
   void UpdateHoverState();
 
+  // Sets the visibility of the |thumbs_up_button_| and |thumbs_down_button_|
+  // based on the current state.
+  void UpdateFeedbackButtonsVisibility();
+
   // Sets the visibility of the |remove_suggestion_button_| based on the current
   // state.
   void UpdateRemoveSuggestionVisibility();
+
+  // Updates the 'selected' state of the view as applicable based on whether or
+  // not the view is selected.
+  void UpdateAccessibilitySelectedState();
 
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -116,7 +128,7 @@ class OmniboxResultView : public views::View {
   const raw_ptr<OmniboxPopupViewViews> popup_view_;
 
   // This result's model index.
-  size_t model_index_;
+  const size_t model_index_;
 
   // The data this class is built to display (the "Omnibox Result").
   AutocompleteMatch match_;
@@ -130,6 +142,12 @@ class OmniboxResultView : public views::View {
 
   // The blue bar used to indicate selection.
   raw_ptr<OmniboxResultSelectionIndicator> selection_indicator_ = nullptr;
+
+  // The thumbs up button used to submit feedback for suggestions.
+  raw_ptr<views::ImageButton> thumbs_up_button_;
+
+  // The thumbs down button used to submit feedback for suggestions.
+  raw_ptr<views::ImageButton> thumbs_down_button_;
 
   // The "X" button at the end of the match cell, used to remove suggestions.
   raw_ptr<views::ImageButton> remove_suggestion_button_;

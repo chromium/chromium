@@ -9,8 +9,8 @@ namespace switches {
 
 // Launch web_instance in the web_engine_with_webui package rather than the
 // standard web_engine package.
-// TODO(crbug.com/1395054): Replace the with_webui component with direct routing
-// of the resources from web_engine_shell.
+// TODO(crbug.com/40248894): Replace the with_webui component with direct
+// routing of the resources from web_engine_shell.
 inline constexpr char kWithWebui[] = "with-webui";
 
 }  // namespace switches

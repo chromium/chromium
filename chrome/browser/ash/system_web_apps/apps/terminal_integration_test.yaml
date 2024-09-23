@@ -1,0 +1,20 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Schema can be found at: platform/dev/test/gtest/gtest_schema.yaml
+---
+name: "AshIntegrationTest"
+harness: "crosier"
+category: "integration"
+owners:
+  - email: "brettw@chromium.org"
+  - email: "jamescook@chromium.org"
+  - email: "chromeos-sw-engprod@google.com"
+hw_agnostic: True
+criteria: |
+  Sends the given text to the element as individual key press commands
+cases:
+  - id: "Crosh"
+    tags: ["crosier:crosierdemosuite", "crosier:cq", "group:hw_agnostic", "informational"]
+...

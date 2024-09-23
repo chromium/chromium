@@ -20,6 +20,11 @@
  *
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RULE_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RULE_SET_H_
 
@@ -29,7 +34,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
-#include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
+#include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/core/css/robin_hood_map.h"
@@ -45,6 +50,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -59,7 +65,9 @@ enum AddRuleFlag {
 };
 
 // Some CSS properties do not apply to certain pseudo-elements, and need to be
-// ignored when resolving styles.
+// ignored when resolving styles. Be aware that these values are used in a
+// bitfield. Make sure that it's large enough to hold new values.
+// See MatchedProperties::Data::valid_property_filter.
 enum class ValidPropertyFilter : unsigned {
   // All properties are valid. This is the common case.
   kNoFilter,
@@ -86,9 +94,16 @@ enum class ValidPropertyFilter : unsigned {
   // ::target-text. Only properties listed in
   // https://drafts.csswg.org/css-pseudo-4/#highlight-styling are valid.
   kHighlight,
-  // Defined in @try block of a @position-fallback rule. Only properties listed
-  // in https://drafts.csswg.org/css-anchor-position-1/#fallback-rule are valid.
-  kPositionFallback,
+  // Defined in a @position-try rule. Only properties listed in
+  // https://drafts.csswg.org/css-anchor-position-1/#fallback-rule are valid.
+  kPositionTry,
+  // Defined in an @page rule. Will only allow properties and descriptors that
+  // have an effect with PageMarginBoxes disabled (i.e. page size, margins and
+  // orientation).
+  kLimitedPageContext,
+  // Defined in an @page rule.
+  // See https://drafts.csswg.org/css-page-3/#page-property-list
+  kPageContext,
 };
 
 class CSSSelector;
@@ -366,9 +381,16 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void AddRulesFromSheet(StyleSheetContents*,
                          const MediaQueryEvaluator&,
                          CascadeLayer* = nullptr);
+
+  // “within_mixin” means that we are currently adding this rule
+  // as part of @apply in a mixin, and all rules we add must be
+  // duplicated and reparented. This is also propagated through
+  // AddChildRules().
   void AddStyleRule(StyleRule* style_rule,
+                    StyleRule* parent_rule,
                     const MediaQueryEvaluator& medium,
                     AddRuleFlags add_rule_flags,
+                    bool within_mixin,
                     const ContainerQuery* container_query = nullptr,
                     CascadeLayer* cascade_layer = nullptr,
                     const StyleScope* style_scope = nullptr);
@@ -466,9 +488,11 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
       const {
     return view_transition_rules_;
   }
-  const HeapVector<Member<StyleRulePositionFallback>>& PositionFallbackRules()
-      const {
-    return position_fallback_rules_;
+  const HeapVector<Member<StyleRulePositionTry>>& PositionTryRules() const {
+    return position_try_rules_;
+  }
+  const HeapVector<Member<StyleRuleFunction>>& FunctionRules() const {
+    return function_rules_;
   }
   base::span<const RuleData> SlottedPseudoElementRules() const {
     return slotted_pseudo_element_rules_;
@@ -496,8 +520,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   bool HasBucketForStyleAttribute() const { return has_bucket_for_style_attr_; }
 
-  bool MayHaveScopeInUniversalBucket() const {
-    return may_have_scope_in_universal_bucket_;
+  bool MustCheckUniversalBucketForShadowHost() const {
+    return must_check_universal_bucket_for_shadow_host_;
   }
 
   bool HasUAShadowPseudoElementRules() const {
@@ -588,17 +612,20 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void AddCounterStyleRule(StyleRuleCounterStyle*);
   void AddFontPaletteValuesRule(StyleRuleFontPaletteValues*);
   void AddFontFeatureValuesRule(StyleRuleFontFeatureValues*);
-  void AddPositionFallbackRule(StyleRulePositionFallback*);
+  void AddPositionTryRule(StyleRulePositionTry*);
+  void AddFunctionRule(StyleRuleFunction*);
   void AddViewTransitionRule(StyleRuleViewTransition*);
 
   bool MatchMediaForAddRules(const MediaQueryEvaluator& evaluator,
                              const MediaQuerySet* media_queries);
-  void AddChildRules(const HeapVector<Member<StyleRuleBase>>&,
+  void AddChildRules(StyleRule* parent_rule,
+                     const HeapVector<Member<StyleRuleBase>>&,
                      const MediaQueryEvaluator& medium,
                      AddRuleFlags,
                      const ContainerQuery*,
                      CascadeLayer*,
-                     const StyleScope*);
+                     const StyleScope*,
+                     bool within_mixin);
 
   // Determines whether or not CSSSelector::is_covered_by_bucketing_ should
   // be computed during calls to FindBestRuleSetAndAdd.
@@ -701,8 +728,10 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<StyleRuleKeyframes>> keyframes_rules_;
   HeapVector<Member<StyleRuleProperty>> property_rules_;
   HeapVector<Member<StyleRuleCounterStyle>> counter_style_rules_;
-  HeapVector<Member<StyleRulePositionFallback>> position_fallback_rules_;
+  HeapVector<Member<StyleRulePositionTry>> position_try_rules_;
   HeapVector<MediaQuerySetResult> media_query_set_results_;
+  HeapVector<Member<StyleRuleFunction>> function_rules_;
+  HeapHashMap<AtomicString, Member<StyleRuleMixin>> mixins_;
 
   // Whether there is a ruleset bucket for rules with a selector on
   // the style attribute (which is rare, but allowed). If so, the caller
@@ -710,12 +739,23 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   // an element before looking for appropriate buckets.
   bool has_bucket_for_style_attr_ = false;
 
-  // Since the :scope pseudo-class can match a shadow host when that host
-  // is the scoping root, ElementRuleCollector::CollectMatchingShadowHostRules
-  // also needs to collect rules from the universal bucket, but this is only
-  // required when :scope is actually present. Nothing else in the universal
-  // bucket can match the host from inside the shadow tree.
-  bool may_have_scope_in_universal_bucket_ = false;
+  // Whether we need to check the universal bucket for rules when calculating
+  // style for the shadow host. There are two reasons why this may need to
+  // be checked:
+  //
+  // 1. Since the :scope pseudo-class can match a shadow host when that host
+  //    is the scoping root,
+  //    ElementRuleCollector::CollectMatchingShadowHostRules also needs to
+  //    collect rules from the universal bucket, but this is only required when
+  //    :scope is actually present.
+  //
+  // 2. Combination rules such as :is(:host, .foo) will be bucketed into the
+  //    universal bucket and not into the bucket for :host. If this happens,
+  //    we will need to check the universal bucket, too.
+  //
+  // Nothing else in the universal bucket can match the host from inside
+  // the shadow tree.
+  bool must_check_universal_bucket_for_shadow_host_ = false;
 
   unsigned rule_count_ = 0;
   bool need_compaction_ = false;

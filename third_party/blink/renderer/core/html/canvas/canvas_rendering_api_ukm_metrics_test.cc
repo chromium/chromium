@@ -14,8 +14,6 @@
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
-using testing::Mock;
-
 namespace blink {
 
 class CanvasRenderingAPIUkmMetricsTest : public PageTestBase {

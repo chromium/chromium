@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -68,6 +69,7 @@ class StubWebThemeEngine : public WebThemeEngine {
              const gfx::Rect&,
              const ExtraParams*,
              mojom::blink::ColorScheme color_scheme,
+             bool in_forced_colors,
              const ui::ColorProvider* color_provider,
              const std::optional<SkColor>& accent_color) override {
     // Make  sure we don't overflow the array.
@@ -77,6 +79,12 @@ class StubWebThemeEngine : public WebThemeEngine {
 
   mojom::blink::ColorScheme GetPaintedPartColorScheme(Part part) const {
     return painted_color_scheme_[part];
+  }
+
+  SkColor4f GetScrollbarThumbColor(State,
+                                   const ExtraParams*,
+                                   const ui::ColorProvider*) const override {
+    return SkColors::kRed;
   }
 
  private:
@@ -151,10 +159,13 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
                                            Vector<WebMouseEvent>());
   }
 
-  void HandleMousePressEvent(int x, int y) {
+  void HandleMousePressEvent(int x,
+                             int y,
+                             WebPointerProperties::Button button =
+                                 WebPointerProperties::Button::kLeft) {
     WebMouseEvent event(WebInputEvent::Type::kMouseDown, gfx::PointF(x, y),
-                        gfx::PointF(x, y), WebPointerProperties::Button::kLeft,
-                        0, WebInputEvent::Modifiers::kLeftButtonDown,
+                        gfx::PointF(x, y), button, 0,
+                        WebInputEvent::Modifiers::kLeftButtonDown,
                         base::TimeTicks::Now());
     event.SetFrameScale(1);
     GetEventHandler().HandleMousePressEvent(event);
@@ -169,10 +180,13 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
     GetEventHandler().SendContextMenuEvent(event);
   }
 
-  void HandleMouseReleaseEvent(int x, int y) {
+  void HandleMouseReleaseEvent(int x,
+                               int y,
+                               WebPointerProperties::Button button =
+                                   WebPointerProperties::Button::kLeft) {
     WebMouseEvent event(WebInputEvent::Type::kMouseUp, gfx::PointF(x, y),
-                        gfx::PointF(x, y), WebPointerProperties::Button::kLeft,
-                        0, WebInputEvent::Modifiers::kNoModifiers,
+                        gfx::PointF(x, y), button, 0,
+                        WebInputEvent::Modifiers::kNoModifiers,
                         base::TimeTicks::Now());
     event.SetFrameScale(1);
     GetEventHandler().HandleMouseReleaseEvent(event);
@@ -477,7 +491,7 @@ TEST_P(ScrollbarsTest, CustomScrollbarsCauseLayoutOnExistenceChange) {
   ASSERT_FALSE(layout_viewport->HorizontalScrollbar());
 }
 
-TEST_P(ScrollbarsTest, TransparentBackgroundUsesDarkOverlayColorTheme) {
+TEST_P(ScrollbarsTest, TransparentBackgroundUsesLightOverlayColorScheme) {
   // This test is specifically checking the behavior when overlay scrollbars
   // are enabled.
   ENABLE_OVERLAY_SCROLLBARS(true);
@@ -498,8 +512,8 @@ TEST_P(ScrollbarsTest, TransparentBackgroundUsesDarkOverlayColorTheme) {
 
   ScrollableArea* layout_viewport = GetDocument().View()->LayoutViewport();
 
-  EXPECT_EQ(kScrollbarOverlayColorThemeDark,
-            layout_viewport->GetScrollbarOverlayColorTheme());
+  EXPECT_EQ(mojom::blink::ColorScheme::kLight,
+            layout_viewport->GetOverlayScrollbarColorScheme());
 }
 
 TEST_P(ScrollbarsTest, BodyBackgroundChangesOverlayColorTheme) {
@@ -520,15 +534,15 @@ TEST_P(ScrollbarsTest, BodyBackgroundChangesOverlayColorTheme) {
 
   ScrollableArea* layout_viewport = GetDocument().View()->LayoutViewport();
 
-  EXPECT_EQ(kScrollbarOverlayColorThemeDark,
-            layout_viewport->GetScrollbarOverlayColorTheme());
+  EXPECT_EQ(mojom::blink::ColorScheme::kLight,
+            layout_viewport->GetOverlayScrollbarColorScheme());
 
   MainFrame().ExecuteScriptAndReturnValue(
       WebScriptSource("document.body.style.backgroundColor = 'black';"));
 
   Compositor().BeginFrame();
-  EXPECT_EQ(kScrollbarOverlayColorThemeLight,
-            layout_viewport->GetScrollbarOverlayColorTheme());
+  EXPECT_EQ(mojom::blink::ColorScheme::kDark,
+            layout_viewport->GetOverlayScrollbarColorScheme());
 }
 
 // Ensure overlay scrollbar change to display:none correctly.
@@ -1984,6 +1998,11 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
 #else
 TEST_P(ScrollbarsTestWithVirtualTimer, TestNonCompositedOverlayScrollbarsFade) {
 #endif
+  // Scrollbars are always composited in RasterInducingScroll.
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    return;
+  }
+
   // This test relies on mock overlay scrollbars.
   ScopedMockOverlayScrollbars mock_overlay_scrollbars(true);
 
@@ -2741,7 +2760,7 @@ TEST_P(ScrollbarsTest, PLSADisposeShouldClearPointerInLayers) {
 
   PaintLayer* paint_layer = scrollable_div->Layer();
   ASSERT_TRUE(paint_layer);
-  EXPECT_TRUE(scrollable_div->UsesCompositedScrolling());
+  EXPECT_EQ(scrollable_div, paint_layer->GetScrollableArea());
 
   div->setAttribute(html_names::kClassAttr, AtomicString("hide"));
   document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
@@ -2843,7 +2862,44 @@ TEST_P(ScrollbarsTest, RecorderedOverlayScrollbarHitTest) {
             result.InnerNode());
 }
 
-TEST_P(ScrollbarsTest, AllowMiddleButtonPressOnScrollbar) {
+TEST_P(ScrollbarsTest,
+       AllowMiddleButtonPressOnScrollbarWhenDisableMiddleClickAutoScroll) {
+  ScopedMiddleClickAutoscrollForTest middle_click_autoscroll(false);
+  // This test requires that scrollbars take up space.
+  ENABLE_OVERLAY_SCROLLBARS(false);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #big {
+      height: 800px;
+    }
+    </style>
+    <div id='big'>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  ScrollableArea* scrollable_area =
+      WebView().MainFrameImpl()->GetFrameView()->LayoutViewport();
+
+  Scrollbar* scrollbar = scrollable_area->VerticalScrollbar();
+  ASSERT_TRUE(scrollbar);
+  ASSERT_TRUE(scrollbar->Enabled());
+
+  // allow press scrollbar with middle button.
+  HandleMouseMoveEvent(195, 5);
+  HandleMouseMiddlePressEvent(195, 5);
+  EXPECT_EQ(scrollbar->PressedPart(), ScrollbarPart::kThumbPart);
+  HandleMouseMiddleReleaseEvent(195, 5);
+}
+
+TEST_P(ScrollbarsTest,
+       NotAllowMiddleButtonPressOnScrollbarWhenEnableMiddleClickAutoScroll) {
+  ScopedMiddleClickAutoscrollForTest middle_click_autoscroll(true);
   // This test requires that scrollbars take up space.
   ENABLE_OVERLAY_SCROLLBARS(false);
 
@@ -2872,8 +2928,42 @@ TEST_P(ScrollbarsTest, AllowMiddleButtonPressOnScrollbar) {
   // Not allow press scrollbar with middle button.
   HandleMouseMoveEvent(195, 5);
   HandleMouseMiddlePressEvent(195, 5);
-  EXPECT_EQ(scrollbar->PressedPart(), ScrollbarPart::kThumbPart);
+  EXPECT_EQ(scrollbar->PressedPart(), ScrollbarPart::kNoPart);
   HandleMouseMiddleReleaseEvent(195, 5);
+}
+
+TEST_P(ScrollbarsTest, NotAllowNonLeftButtonPressOnScrollbar) {
+  ScopedMiddleClickAutoscrollForTest middle_click_autoscroll(true);
+  // This test requires that scrollbars take up space.
+  ENABLE_OVERLAY_SCROLLBARS(false);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #big {
+      height: 800px;
+    }
+    </style>
+    <div id='big'>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  ScrollableArea* scrollable_area =
+      WebView().MainFrameImpl()->GetFrameView()->LayoutViewport();
+
+  Scrollbar* scrollbar = scrollable_area->VerticalScrollbar();
+  ASSERT_TRUE(scrollbar);
+  ASSERT_TRUE(scrollbar->Enabled());
+
+  // Not allow press scrollbar with non-left button.
+  HandleMouseMoveEvent(195, 5);
+  HandleMousePressEvent(195, 5, WebPointerProperties::Button::kForward);
+  EXPECT_EQ(scrollbar->PressedPart(), ScrollbarPart::kNoPart);
+  HandleMouseReleaseEvent(195, 5, WebPointerProperties::Button::kForward);
 }
 
 // Ensure Scrollbar not release press by middle button down.
@@ -3959,6 +4049,43 @@ TEST_P(ScrollbarsTest, ScrollbarsRestoredAfterCapturePaintPreview) {
   Compositor().BeginFrame();
   ASSERT_TRUE(layout_viewport->VerticalScrollbar() &&
               layout_viewport->HorizontalScrollbar());
+}
+
+// Tests that when overlay scrollbars are on, Scrollbar::UsedColorScheme follows
+// the overlay theme, and when overlay scrollbars are disabled, the function
+// returns the scrollable area's color scheme.
+TEST_P(ScrollbarsTest, ScrollbarsUsedColorSchemeFollowsOverlayTheme) {
+  ENABLE_OVERLAY_SCROLLBARS(true);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body { height: 3000px; background-color: white; }
+      :root{ color-scheme: dark;}
+    </style>)HTML");
+
+  Compositor().BeginFrame();
+  auto* layout_viewport = GetDocument().View()->LayoutViewport();
+  EXPECT_TRUE(layout_viewport->VerticalScrollbar()->IsOverlayScrollbar());
+  // With a white background, the overlay scrollbar theme should compute to
+  // light despite the dark preferred color scheme.
+  EXPECT_EQ(mojom::blink::ColorScheme::kLight,
+            layout_viewport->GetOverlayScrollbarColorScheme());
+  EXPECT_EQ(mojom::blink::ColorScheme::kLight,
+            layout_viewport->VerticalScrollbar()->UsedColorScheme());
+
+  ENABLE_OVERLAY_SCROLLBARS(false);
+  Compositor().BeginFrame();
+  EXPECT_FALSE(layout_viewport->VerticalScrollbar()->IsOverlayScrollbar());
+  // Non overlay scrollbars used color scheme should follow the preferred
+  // scrollable area's color scheme.
+  EXPECT_EQ(mojom::blink::ColorScheme::kLight,
+            layout_viewport->GetOverlayScrollbarColorScheme());
+  EXPECT_EQ(mojom::blink::ColorScheme::kDark,
+            layout_viewport->VerticalScrollbar()->UsedColorScheme());
 }
 
 }  // namespace blink

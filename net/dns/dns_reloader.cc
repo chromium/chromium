@@ -66,8 +66,8 @@ namespace {
 // Android does not have /etc/resolv.conf. The system takes care of nameserver
 // changes, so none of this is needed.
 //
-// TODO(crbug.com/971411): Convert to SystemDnsConfigChangeNotifier because this
-// really only cares about system DNS config changes, not Chrome effective
+// TODO(crbug.com/40630884): Convert to SystemDnsConfigChangeNotifier because
+// this really only cares about system DNS config changes, not Chrome effective
 // config changes.
 
 class DnsReloader : public NetworkChangeNotifier::DNSObserver {
@@ -109,7 +109,7 @@ class DnsReloader : public NetworkChangeNotifier::DNSObserver {
   DnsReloader() { NetworkChangeNotifier::AddDNSObserver(this); }
 
   ~DnsReloader() override {
-    NOTREACHED();  // LeakyLazyInstance is not destructed.
+    NOTREACHED_IN_MIGRATION();  // LeakyLazyInstance is not destructed.
   }
 
   base::Lock lock_;  // Protects resolver_generation_.

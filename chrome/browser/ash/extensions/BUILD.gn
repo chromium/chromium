@@ -1,0 +1,189 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("extensions") {
+  sources = [
+    "default_app_order.cc",
+    "default_app_order.h",
+    "device_local_account_management_policy_provider.cc",
+    "device_local_account_management_policy_provider.h",
+    "dictionary_event_router.cc",
+    "dictionary_event_router.h",
+    "extensions_permissions_tracker.cc",
+    "extensions_permissions_tracker.h",
+    "external_cache.cc",
+    "external_cache.h",
+    "external_cache_delegate.cc",
+    "external_cache_delegate.h",
+    "external_cache_impl.cc",
+    "external_cache_impl.h",
+    "gfx_utils.cc",
+    "gfx_utils.h",
+    "ime_menu_event_router.cc",
+    "ime_menu_event_router.h",
+    "input_method_api.cc",
+    "input_method_api.h",
+    "input_method_event_router.cc",
+    "input_method_event_router.h",
+    "install_limiter.cc",
+    "install_limiter.h",
+    "install_limiter_factory.cc",
+    "install_limiter_factory.h",
+    "media_player_api.cc",
+    "media_player_api.h",
+    "media_player_event_router.cc",
+    "media_player_event_router.h",
+    "signin_screen_extensions_external_loader.cc",
+    "signin_screen_extensions_external_loader.h",
+    "signin_screen_policy_provider.cc",
+    "signin_screen_policy_provider.h",
+    "url_constants.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/mall:app_id",
+    "//ash/webui/projector_app/public/cpp",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/extensions/language_packs",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/extensions/api/input_ime",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos:app_icon_resources",
+    "//chrome/browser/ui/ash/keyboard",
+    "//chrome/browser/ui/ash/multi_user",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//chromeos/ash/components/language_packs",
+    "//chromeos/ash/components/settings",
+    "//chromeos/components/kiosk",
+    "//chromeos/constants",
+    "//components/app_constants",
+    "//components/prefs",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/browser/updater",
+    "//extensions/common",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/policy/core",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "test_external_cache.cc",
+    "test_external_cache.h",
+  ]
+
+  deps = [
+    ":extensions",
+    "//base",
+    "//chrome/browser",
+    "//extensions/browser",
+    "//extensions/browser/updater",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "default_app_order_unittest.cc",
+    "device_local_account_management_policy_provider_unittest.cc",
+    "extensions_permissions_tracker_unittest.cc",
+    "external_cache_impl_unittest.cc",
+    "gfx_utils_unittest.cc",
+    "install_limiter_unittest.cc",
+    "signin_screen_policy_provider_unittest.cc",
+  ]
+
+  deps = [
+    ":extensions",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/login/demo_mode:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/login/login_state:test_support",
+    "//components/app_constants",
+    "//components/user_manager",
+    "//components/version_info",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/common",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "accessibility_features_apitest.cc",
+    "default_keyboard_extension_browser_test.cc",
+    "default_keyboard_extension_browser_test.h",
+    "incoming_native_messaging_apitest.cc",
+    "input_method_apitest_chromeos.cc",
+  ]
+
+  deps = [
+    ":extensions",
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/accessibility:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/keyboard",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/common",
+    "//ipc:message_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/ime/ash",
+    "//url",
+  ]
+}

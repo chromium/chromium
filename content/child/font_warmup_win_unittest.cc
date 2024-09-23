@@ -5,6 +5,7 @@
 #include "content/child/font_warmup_win.h"
 
 #include <windows.h>
+
 #include <dwrite.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -17,9 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
-
 #include "content/child/dwrite_font_proxy/dwrite_font_proxy_win.h"
 #include "content/public/common/content_paths.h"
 #include "content/test/dwrite_font_fake_sender_win.h"

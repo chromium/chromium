@@ -15,9 +15,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "components/performance_manager/service_worker_context_adapter.h"
 #include "content/public/browser/dedicated_worker_service.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/shared_worker_service.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -38,7 +38,7 @@ class WorkerNodeImpl;
 // The simplest case is dedicated workers, where each worker always has exactly
 // one frame client. Technically, it is possible to create a nested dedicated
 // worker, but for now they are treated as child of the ancestor frame.
-// TODO(1128645): Expose nested dedicated workers correctly.
+// TODO(crbug.com/40149051): Expose nested dedicated workers correctly.
 //
 // Shared workers are quite similar to dedicated workers but they can have any
 // number of clients. Also, a shared worker can temporarily appear to have no
@@ -60,7 +60,7 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   WorkerWatcher(const std::string& browser_context_id,
                 content::DedicatedWorkerService* dedicated_worker_service,
                 content::SharedWorkerService* shared_worker_service,
-                content::ServiceWorkerContext* service_worker_context,
+                ServiceWorkerContextAdapter* service_worker_context_adapter,
                 ProcessNodeSource* process_node_source,
                 FrameNodeSource* frame_node_source);
 
@@ -77,6 +77,7 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   void OnWorkerCreated(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
       int worker_process_id,
+      const url::Origin& security_origin,
       content::DedicatedWorkerCreator creator) override;
   void OnBeforeWorkerDestroyed(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
@@ -88,6 +89,7 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   // content::SharedWorkerService::Observer:
   void OnWorkerCreated(const blink::SharedWorkerToken& shared_worker_token,
                        int worker_process_id,
+                       const url::Origin& security_origin,
                        const base::UnguessableToken& dev_tools_token) override;
   void OnBeforeWorkerDestroyed(
       const blink::SharedWorkerToken& shared_worker_token) override;
@@ -102,8 +104,6 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
       content::GlobalRenderFrameHostId render_frame_host_id) override;
 
   // content::ServiceWorkerContextObserver:
-  // Note: If you add a new function here, make sure it is also added to
-  // ServiceWorkerContextAdapter.
   void OnVersionStartedRunning(
       int64_t version_id,
       const content::ServiceWorkerRunningInfo& running_info) override;
@@ -218,9 +218,9 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
                           content::SharedWorkerService::Observer>
       shared_worker_service_observation_{this};
 
-  base::ScopedObservation<content::ServiceWorkerContext,
+  base::ScopedObservation<ServiceWorkerContextAdapter,
                           content::ServiceWorkerContextObserver>
-      service_worker_context_observation_{this};
+      service_worker_context_adapter_observation_{this};
 
   // Used to retrieve an existing process node from its render process ID.
   const raw_ptr<ProcessNodeSource> process_node_source_;
@@ -268,7 +268,8 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
       frame_node_child_worker_connections_;
 
   // Maps each dedicated worker to all its child workers.
-  using WorkerNodeSet = base::flat_set<WorkerNodeImpl*>;
+  using WorkerNodeSet =
+      base::flat_set<raw_ptr<WorkerNodeImpl, CtnExperimental>>;
   base::flat_map<blink::DedicatedWorkerToken, WorkerNodeSet>
       dedicated_worker_child_workers_;
 

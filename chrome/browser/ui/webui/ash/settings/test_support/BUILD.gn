@@ -8,22 +8,46 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 static_library("test_support") {
   testonly = true
+
   sources = [
+    "fake_hierarchy.cc",
+    "fake_hierarchy.h",
+    "fake_os_settings_section.cc",
+    "fake_os_settings_section.h",
+    "fake_os_settings_sections.cc",
+    "fake_os_settings_sections.h",
     "os_settings_browser_test_mixin.cc",
     "os_settings_browser_test_mixin.h",
     "os_settings_lock_screen_browser_test_base.cc",
     "os_settings_lock_screen_browser_test_base.h",
   ]
+
+  public_deps = [
+    "//ash/webui/settings/public/constants:mojom",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/settings/pages",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/test:test_support_ui",
+    "//chrome/test/data/webui/chromeos/settings:test_api_mojom",
+    "//chromeos/ash/components/osauth/public",
+    "//components/account_id",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+  ]
+
   deps = [
     "//ash/constants",
-    "//chrome:browser_tests_pak",
-    "//chrome/browser/ash:test_support",
-    "//chrome/browser/ui",
-    "//chrome/test:test_support",
-    "//chrome/test/data/webui:resources_grit",
-  ]
-  public_deps = [
-    "//chrome/test/data/webui/settings/chromeos:test_api_mojom",
-    "//mojo/public/cpp/bindings",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui/webui/ash/settings:settings",
+    "//chrome/browser/ui/webui/ash/settings/constants",
+    "//chromeos/ash/components/osauth/impl",
+    "//content/public/browser",
+    "//ui/base",
   ]
 }

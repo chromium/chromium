@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/navigation_body_loader.h"
 
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -37,8 +40,9 @@ namespace {
 using ::testing::ElementsAre;
 
 class UppercaseDecoder : public BodyTextDecoder {
-  String Decode(const char* data, size_t length) override {
-    return String(data, length).UpperASCII();
+  String Decode(base::span<const char> data) override {
+    return String(data.data(), base::checked_cast<wtf_size_t>(data.size()))
+        .UpperASCII();
   }
 
   String Flush() override { return String(); }
@@ -100,10 +104,11 @@ class NavigationBodyLoaderTest : public ::testing::Test,
   }
 
   void Write(const std::string& buffer) {
-    uint32_t size = static_cast<uint32_t>(buffer.size());
-    MojoResult result = writer_->WriteData(buffer.c_str(), &size, kNone);
+    size_t actually_written_bytes = 0;
+    MojoResult result = writer_->WriteData(base::as_byte_span(buffer), kNone,
+                                           actually_written_bytes);
     ASSERT_EQ(MOJO_RESULT_OK, result);
-    ASSERT_EQ(buffer.size(), size);
+    ASSERT_EQ(buffer.size(), actually_written_bytes);
   }
 
   void WriteAndFlush(const std::string& buffer) {
@@ -127,9 +132,10 @@ class NavigationBodyLoaderTest : public ::testing::Test,
       run_loop_->Quit();
   }
 
-  void DecodedBodyDataReceived(const WebString& data,
-                               const WebEncodingData& encoding_data,
-                               base::span<const char> encoded_data) override {
+  void DecodedBodyDataReceived(
+      const WebString& data,
+      const WebEncodingData& encoding_data,
+      base::SpanOrSize<const char> encoded_data) override {
     ASSERT_FALSE(did_receive_data_);
     ASSERT_TRUE(expecting_decoded_data_received_);
     did_receive_decoded_data_ = true;
@@ -429,9 +435,9 @@ TEST_F(NavigationBodyLoaderTest, FillResponseWithSecurityDetails) {
       {"subjectAltName_sanity_check.pem", "root_ca_cert.pem"}, &certs));
   ASSERT_EQ(2U, certs.size());
 
-  base::StringPiece cert0_der =
+  std::string_view cert0_der =
       net::x509_util::CryptoBufferAsStringPiece(certs[0]->cert_buffer());
-  base::StringPiece cert1_der =
+  std::string_view cert1_der =
       net::x509_util::CryptoBufferAsStringPiece(certs[1]->cert_buffer());
 
   response->ssl_info->cert =
@@ -519,10 +525,13 @@ TEST_F(NavigationBodyLoaderTest, FillResponseReferrerRedirects) {
 // single PostTask.
 class ChunkingLoaderClient : public WebNavigationBodyLoader::Client {
  public:
-  void BodyDataReceived(base::span<const char> data) override { NOTREACHED(); }
-  void DecodedBodyDataReceived(const WebString& data,
-                               const WebEncodingData& encoding_data,
-                               base::span<const char> encoded_data) override {
+  void BodyDataReceived(base::span<const char> data) override {
+    NOTREACHED_IN_MIGRATION();
+  }
+  void DecodedBodyDataReceived(
+      const WebString& data,
+      const WebEncodingData& encoding_data,
+      base::SpanOrSize<const char> encoded_data) override {
     scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
         FROM_HERE, base::BindOnce(&ChunkingLoaderClient::CreateNewChunk,
                                   base::Unretained(this)));

@@ -1,0 +1,25 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module payments.facilitated.mojom;
+
+import "url/mojom/url.mojom";
+
+// Implemented in the browser process, to invoke eWallet push payment logic
+// there, which allows Chrome to offer a native payment experience with users'
+// approval. The flow is invoked in renderer process when a payment link is seen
+// during DOM construction.
+// Implementation:
+//   components/facilitated_payments/content/browser/content_payment_link_handler_impl.h
+interface PaymentLinkHandler {
+    // Method to handle payment link.
+    // This method takes a URL as an argument and processes it as a payment link.
+    // The provided URL should conform to the expected format for payment links
+    // (Payment Link Examples section and Security section in
+    // https://bit.ly/html-payment-link-dd).
+    // The payment link will be parsed and validated to support expected partners.
+    // The implementation of this method must be asynchronous, because it is called in
+    // the critical path of the DOM parser.
+    HandlePaymentLink(url.mojom.Url url);
+};

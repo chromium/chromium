@@ -22,8 +22,113 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="LanguageDetection.TFLiteModel.ClassifyText.Detected"
+    enum="BooleanDetected" expires_after="2025-01-20">
+  <owner>fergal@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether a language was detected by the TFLite detection model.
+
+    This histogram is recorded once for each invocation of the model. The model
+    may be invoked multiple times after pageload, running against samples of
+    text from the page.
+  </summary>
+</histogram>
+
+<histogram name="LanguageDetection.TFLiteModel.ClassifyText.Duration"
+    units="ms" expires_after="2025-01-20">
+  <owner>fergal@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The time taken to prepare the input and run the TFLite detection model.
+
+    This histogram is recorded once for each invocation of the model. The model
+    may be invoked multiple times after pageload, running against samples of
+    text from the page.
+  </summary>
+</histogram>
+
+<histogram
+    name="LanguageDetection.TFLiteModel.ClassifyText.HighestConfidenceLanguage"
+    enum="LocaleCodeISO639" expires_after="2025-01-20">
+  <owner>fergal@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The language code with the highest confidence according to the TFLite
+    detection model.
+
+    This histogram is recorded once for each invocation of the model. The model
+    may be invoked multiple times after pageload, running against samples of
+    text from the page. A successful invocation will record Detected (above) as
+    true.
+  </summary>
+</histogram>
+
+<histogram name="LanguageDetection.TFLiteModel.ClassifyText.Size"
+    units="characters" expires_after="2025-01-20">
+  <owner>fergal@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The size of the input to the TFLite detection model.
+
+    This histogram is recorded once for each invocation of the model. The model
+    may be invoked multiple times after pageload, running against samples of
+    text from the page.
+  </summary>
+</histogram>
+
+<histogram name="LanguageDetection.TFLiteModel.ClassifyText.Size.PreTruncation"
+    units="characters" expires_after="2025-01-20">
+  <owner>fergal@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The size of the input to LanguageDetectionModel::Predict before truncation
+    for passing to the TFLite detection model.
+
+    This histogram is recorded once for each invocation of the model. The model
+    may be invoked multiple times after pageload, running against samples of
+    text from the page.
+  </summary>
+</histogram>
+
+<histogram name="LanguageDetection.TFLiteModel.Create.Duration" units="ms"
+    expires_after="2025-01-20">
+  <owner>fergal@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The time taken to load the file and create the TFLite detection model. Note
+    that on Windows, this operation is a file read, on other platforms it is an
+    MMAP.
+
+    This histogram is recorded once for each successful creation of the model.
+  </summary>
+</histogram>
+
+<histogram name="LanguageDetection.TFLiteModel.DetectPageLanguage.Duration"
+    units="ms" expires_after="2025-01-20">
+  <owner>fergal@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The total time taken to prepare the input and run the TFLite detection model
+    possibly multiple times on samples of text from the page.
+
+    This histogram is recorded once for each pageload.
+  </summary>
+</histogram>
+
+<histogram name="LanguageDetection.TFLiteModel.DetectPageLanguage.Size"
+    units="characters" expires_after="2025-01-20">
+  <owner>fergal@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The total size in chracters of the page under consideration.
+
+    This histogram is recorded once for each pageload.
+  </summary>
+</histogram>
+
 <histogram name="LanguageDetection.TFLiteModel.LanguageDetectionModelState"
-    enum="LanguageDetectionModelState" expires_after="2024-12-10">
+    enum="LanguageDetectionModelState" expires_after="2025-02-10">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -32,8 +137,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="LanguageDetection.TFLiteModel.UpdateLanaguageDetectionModelTime"
+    units="ms" expires_after="2025-02-10">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The duration of `TranslateAgent::UpdateLanaguageDetectionModel`. This is
+    recorded whenever this method is called. It is used to measure and breakdown
+    the initilization time incurred by `TranslateAgent` for the renderer process
+    initilization.
+  </summary>
+</histogram>
+
 <histogram name="LanguageDetection.TFLiteModel.WasModelAvailableForDetection"
-    enum="BooleanAvailable" expires_after="2024-12-10">
+    enum="BooleanAvailable" expires_after="2025-02-09">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -44,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageDetection.TFLiteModel.WasModelRequestDeferred"
-    enum="BooleanDeferred" expires_after="2024-12-10">
+    enum="BooleanDeferred" expires_after="2025-02-10">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -56,7 +174,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="LanguageDetection.TFLiteModel.WasModelUnavailableDueToDeferredLoad"
-    enum="Boolean" expires_after="2024-12-10">
+    enum="Boolean" expires_after="2025-02-10">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -79,7 +197,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.Action"
-    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2024-12-10">
+    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2025-02-09">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -158,7 +276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.TopULPMatchStatus"
-    enum="ULPTopLanguageMatch" expires_after="2024-12-10">
+    enum="ULPTopLanguageMatch" expires_after="2025-02-09">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -171,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.PageImpression"
-    enum="LanguageSettingsPageType" expires_after="2024-12-10">
+    enum="LanguageSettingsPageType" expires_after="2025-02-10">
   <owner>googleo@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -182,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.SplitInstallFinalStatus"
-    enum="LanguageSettingsSplitInstallStatus" expires_after="2024-12-10">
+    enum="LanguageSettingsSplitInstallStatus" expires_after="2025-02-10">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -194,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage" enum="LanguageName"
-    expires_after="2024-12-10">
+    expires_after="2025-02-10">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -204,7 +322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage.Count" units="count"
-    expires_after="2024-12-10">
+    expires_after="2025-02-10">
   <owner>dvallet@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -214,9 +332,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguageAndContentLanguageUsage"
-    enum="AcceptLanguageAndContentLanguageUsage" expires_after="2024-12-10">
+    enum="AcceptLanguageAndContentLanguageUsage" expires_after="2025-02-10">
   <owner>victortan@chromium.org</owner>
-  <owner>potassium-katabolism@google.com</owner>
+  <owner>katabolism-finch@google.com</owner>
   <summary>
     Metrics that record matches between the Content-Language response header and
     Accept-Language request header values. This is recorded every time
@@ -225,9 +343,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguageAndXmlHtmlLangUsage"
-    enum="AcceptLanguageAndXmlHtmlLangUsage" expires_after="2024-12-10">
+    enum="AcceptLanguageAndXmlHtmlLangUsage" expires_after="2025-02-10">
   <owner>victortan@chromium.org</owner>
-  <owner>potassium-katabolism@google.com</owner>
+  <owner>katabolism-finch@google.com</owner>
   <summary>
     Metrics that record matches between the xml:lang, html lang and
     Accept-Language request header values. This is recorded every time the
@@ -236,7 +354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.MostFrequentPageLanguages" enum="LanguageName"
-    expires_after="2024-12-10">
+    expires_after="2025-02-10">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -312,7 +430,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LanguageUsage.UI.Android.IsLocaleUpdated"
     enum="LanguageUsage.UI.Android.LocaleUpdateStatus"
-    expires_after="2024-12-10">
+    expires_after="2025-02-10">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -399,7 +517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.Count" units="count"
-    expires_after="2024-12-10">
+    expires_after="2025-02-10">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

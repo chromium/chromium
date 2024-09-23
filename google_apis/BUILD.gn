@@ -83,7 +83,7 @@ declare_args() {
 # internal:generate_metrics_key_header must be a deps when
 # USE_OFFICIAL_GOOGLE_API_KEYS` is defined. Use this variable for both.
 # On iOS, Chrome branding had been overriding use_official_google_api_keys.
-# TODO(crbug.com/1362160): Fix this logic on iOS. Can this variable be replaced
+# TODO(crbug.com/40864074): Fix this logic on iOS. Can this variable be replaced
 # with just use_official_google_api_keys?
 _use_official_google_keys_and_generate_metrics_key_header =
     use_official_google_api_keys || (is_ios && is_chrome_branded)
@@ -159,8 +159,10 @@ component("google_apis") {
     "gaia/oauth_multilogin_result.h",
     "gaia/oauth_request_signer.cc",
     "gaia/oauth_request_signer.h",
-    "google_api_keys.cc",
+    "google_api_keys-inc.cc",
     "google_api_keys.h",
+    "google_api_keys_utils.cc",
+    "google_api_keys_utils.h",
   ]
 
   configs += [
@@ -177,7 +179,7 @@ component("google_apis") {
 
   deps = [
     ":proto",
-    "//base/third_party/dynamic_annotations",
+    "//base/version_info:channel",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//crypto",
@@ -275,6 +277,7 @@ test("google_apis_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//base/version_info:channel",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//google_apis/calendar:calendar_unittests",
@@ -322,6 +325,8 @@ bundle_data("google_apis_unittest_bundle_data") {
     "test/data/calendar/calendar_list.json",
     "test/data/calendar/event_self_response_statuses.json",
     "test/data/calendar/event_statuses.json",
+    "test/data/calendar/event_with_attachments.json",
+    "test/data/calendar/event_with_invalid_attachments.json",
     "test/data/calendar/event_with_invalid_conference_data_uri.json",
     "test/data/calendar/event_with_missing_entry_point_type.json",
     "test/data/calendar/events.json",

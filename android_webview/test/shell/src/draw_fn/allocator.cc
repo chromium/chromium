@@ -22,18 +22,20 @@ AwDrawFnRenderMode QueryRenderMode() {
 
 int CreateFunctor(void* data, AwDrawFnFunctorCallbacks* functor_callbacks) {
   NOTREACHED();
-  return 0;
 }
 
 int CreateFunctor_v3(void* data,
                      int version,
                      AwDrawFnFunctorCallbacks* functor_callbacks) {
-  DCHECK_EQ(version, 3);
+  DCHECK_GE(version, 3);
   return Allocator::Get()->allocate(data, functor_callbacks);
 }
 
 void ReleaseFunctor(int functor) {
   Allocator::Get()->MarkReleasedByFunctor(functor);
+}
+
+void ReportRenderingThreads(int functor, const pid_t* thread_ids, size_t size) {
 }
 
 }  // namespace
@@ -43,9 +45,9 @@ void SetDrawFnUseVulkan(bool use_vulkan) {
 }
 
 AwDrawFnFunctionTable* GetDrawFnFunctionTable() {
-  static AwDrawFnFunctionTable table{kAwDrawFnVersion, &QueryRenderMode,
-                                     &CreateFunctor, &ReleaseFunctor,
-                                     &CreateFunctor_v3};
+  static AwDrawFnFunctionTable table{
+      kAwDrawFnVersion, &QueryRenderMode,  &CreateFunctor,
+      &ReleaseFunctor,  &CreateFunctor_v3, &ReportRenderingThreads};
   return &table;
 }
 
@@ -79,14 +81,14 @@ int Allocator::allocate(void* data,
 FunctorData& Allocator::get(int functor) {
   base::AutoLock lock(lock_);
   auto itr = map_.find(functor);
-  DCHECK(itr != map_.end());
+  CHECK(itr != map_.end());
   return itr->second;
 }
 
 void Allocator::MarkReleasedByFunctor(int functor) {
   base::AutoLock lock(lock_);
   auto itr = map_.find(functor);
-  DCHECK(itr != map_.end());
+  CHECK(itr != map_.end());
   DCHECK(!itr->second.released_by_functor);
   itr->second.released_by_functor = true;
   MaybeReleaseFunctorAlreadyLocked(functor);
@@ -95,7 +97,7 @@ void Allocator::MarkReleasedByFunctor(int functor) {
 void Allocator::MarkReleasedByManager(int functor) {
   base::AutoLock lock(lock_);
   auto itr = map_.find(functor);
-  DCHECK(itr != map_.end());
+  CHECK(itr != map_.end());
   DCHECK(!itr->second.released_by_manager);
   MaybeReleaseFunctorAlreadyLocked(functor);
 }

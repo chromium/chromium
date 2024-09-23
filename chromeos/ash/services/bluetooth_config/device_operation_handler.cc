@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/device_operation_handler.h"
 
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"

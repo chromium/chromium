@@ -8,64 +8,68 @@
         testRunner.waitUntilDone();
     }
 
-    tests = 6;
-    window.addEventListener("message", function(message) {
-        tests -= 1;
-        test();
-    }, false);
-
-    function setup() {
-        var iframe = document.getElementById('testiframe');
-        iframe.onload = function () {
-            window.postMessage("next", "*");
-        };
-        test();
+    function waitForIframeLoad() {
+        return new Promise(resolve => {
+            document.getElementById('testiframe').onload = resolve;
+        });
     }
 
-    function test() {
+    function waitForMessage() {
+        return new Promise(resolve => {
+            window.onmessage = (message) => {
+                alert(message.data);
+                resolve();
+            }
+        });
+    }
+
+    async function test() {
         function setIframeSrc(isolated, num) {
             var iframe = document.getElementById('testiframe');
             iframe.src = "resources/iframe.php?test=" + num;
         }
 
-        alert("Running test #" + tests + "\n");
-        switch (tests) {
-            case 6:
-                setIframeSrc(false, tests);
-                break;
-            case 5:
-                // Clear any existing isolated world CSP or security origin to
-                // prevent side-effects from other tests.
-                testRunner.setIsolatedWorldInfo(1, null, null);
-                testRunner.evaluateScriptInIsolatedWorld(1, String(eval("setIframeSrc")) + "\nsetIframeSrc(true, " + tests + ");");
-                break;
-            case 4:
-                alert("Starting to bypass main world's CSP:");
-                testRunner.setIsolatedWorldInfo(1, "chrome-extension://123", "frame-src 'none'");
-                testRunner.evaluateScriptInIsolatedWorld(1, String(eval("setIframeSrc")) + "\nsetIframeSrc(true, " + tests + ");");
-                break;
-            case 3:
-                // Main world, then isolated world -> should load
-                setIframeSrc(false, tests);
-                testRunner.evaluateScriptInIsolatedWorld(1, String(eval("setIframeSrc")) + "\nsetIframeSrc(true, " + tests + ".5);");
-                break;
-            case 2:
-                // Isolated world, then main world -> should block
-                testRunner.evaluateScriptInIsolatedWorld(1, String(eval("setIframeSrc")) + "\nsetIframeSrc(true, " + tests + ");");
-                setIframeSrc(false, tests + 0.5);
-                break;
-            case 1:
-                setIframeSrc(false, tests);
-                break;
-            case 0:
-                testRunner.setIsolatedWorldInfo(1, null, null);
-                testRunner.notifyDone();
-                break;
-        }
+        let tests = 0;
+        alert("Running test #" + (++tests) + "\n");
+        setIframeSrc(false, tests);
+        await waitForIframeLoad();
+
+        alert("Running test #" + (++tests) + "\n");
+        // Clear any existing isolated world CSP or security origin to
+        // prevent side-effects from other tests.
+        testRunner.setIsolatedWorldInfo(1, null, null);
+        testRunner.evaluateScriptInIsolatedWorld(1, String(eval("setIframeSrc")) + "\nsetIframeSrc(true, " + tests + ");");
+        await waitForIframeLoad();
+
+        alert("Running test #" + (++tests) + "\n");
+        alert("Starting to bypass main world's CSP:");
+        testRunner.setIsolatedWorldInfo(1, "chrome-extension://123", "frame-src 'none'");
+        testRunner.evaluateScriptInIsolatedWorld(1, String(eval("setIframeSrc")) + "\nsetIframeSrc(true, " + tests + ");");
+        await waitForMessage();
+
+        alert("Running test #" + (++tests) + "\n");
+        // Main world, then isolated world -> should load
+        setIframeSrc(false, tests);
+        testRunner.evaluateScriptInIsolatedWorld(1, String(eval("setIframeSrc")) + "\nsetIframeSrc(true, " + tests + ".5);");
+        await waitForMessage();
+
+        alert("Running test #" + (++tests) + "\n");
+        // Isolated world, then main world -> should block
+        testRunner.evaluateScriptInIsolatedWorld(1, String(eval("setIframeSrc")) + "\nsetIframeSrc(true, " + tests + ");");
+        setIframeSrc(false, tests + 0.5);
+        await waitForIframeLoad();
+
+        alert("Running test #" + (++tests) + "\n");
+        setIframeSrc(false, tests);
+        await waitForIframeLoad();
+
+        alert("Running test #" + (++tests) + "\n");
+        testRunner.setIsolatedWorldInfo(1, null, null);
+        testRunner.notifyDone();
     }
 </script>
 </head>
-<body onload='setup();'>
+<body onload='test();'>
     <p>
         <iframe id="testiframe"></iframe>
         This test ensures that iframes loaded from isolated worlds marked with

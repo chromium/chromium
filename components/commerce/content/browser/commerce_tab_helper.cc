@@ -50,6 +50,12 @@ void CommerceTabHelper::DidFinishNavigation(
   if (web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     shopping_service_->DidFinishLoad(web_wrapper_.get());
   }
+
+  if (navigation_handle->HasCommitted() &&
+      navigation_handle->ShouldUpdateHistory() &&
+      web_contents()->GetFocusedFrame()) {
+    shopping_service_->OnWebWrapperViewed(web_wrapper_.get());
+  }
 }
 
 void CommerceTabHelper::DidStopLoading() {
@@ -70,6 +76,14 @@ void CommerceTabHelper::DidFinishLoad(
   web_wrapper_->SetIsFirstLoadForNavigationFinished(true);
 
   shopping_service_->DidFinishLoad(web_wrapper_.get());
+}
+
+void CommerceTabHelper::OnWebContentsFocused(content::RenderWidgetHost* host) {
+  if (!shopping_service_) {
+    return;
+  }
+
+  shopping_service_->OnWebWrapperSwitched(web_wrapper_.get());
 }
 
 void CommerceTabHelper::WebContentsDestroyed() {

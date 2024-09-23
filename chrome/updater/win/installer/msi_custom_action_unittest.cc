@@ -12,9 +12,10 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
-#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/installer_api.h"
+#include "chrome/updater/win/win_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -145,7 +146,7 @@ class MsiSetInstallerResultTest
         registry_override_manager_.OverrideRegistry(HKEY_LOCAL_MACHINE));
     if (SetResults()) {
       InstallerOutcome installer_outcome = {};
-      installer_outcome.installer_result = InstallerResult::kCustomError;
+      installer_outcome.installer_result = InstallerApiResult::kCustomError;
       installer_outcome.installer_text = "some text";
       EXPECT_TRUE(SetInstallerOutcomeForTesting(
           UpdaterScope::kSystem, base::WideToASCII(kAppId), installer_outcome));

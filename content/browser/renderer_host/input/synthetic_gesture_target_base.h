@@ -54,6 +54,8 @@ class SyntheticGestureTargetBase : public SyntheticGestureTarget {
 
   // SyntheticGestureTarget:
   void DispatchInputEventToPlatform(const blink::WebInputEvent& event) override;
+  void GetVSyncParameters(base::TimeTicks& timebase,
+                          base::TimeDelta& interval) const override;
 
   base::TimeDelta PointerAssumedStoppedTime() const override;
 

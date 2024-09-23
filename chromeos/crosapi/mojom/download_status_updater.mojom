@@ -4,9 +4,9 @@
 
 module crosapi.mojom;
 
-import "mojo/public/mojom/base/string16.mojom";
 import "chromeos/crosapi/mojom/download_controller.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 
 // Indicates a download's progress.
@@ -24,7 +24,7 @@ struct DownloadProgress {
   int64 received_bytes@1;
 
   // The total number of bytes expected to be written to the underlying download
-  // file, or -1 if the total number of bytes is unknown.
+  // file, or 0 if the total number of bytes is unknown.
   int64 total_bytes@2;
 
   // Indicates whether the progress should be visibly represented.
@@ -34,8 +34,8 @@ struct DownloadProgress {
 // Representation of a Lacros download's status to be passed into Ash Chrome
 // and rendered in the appropriate System UI surface(s).
 //
-// Next MinVersion: 6
-// Next ID: 12
+// Next MinVersion: 7
+// Next ID: 13
 //
 [Stable, Uuid="d18b6479-e70d-44aa-b657-58ffff57735d"]
 struct DownloadStatus {
@@ -52,7 +52,7 @@ struct DownloadStatus {
   [MinVersion=1] int64? received_bytes_deprecated@2;
 
   // Deprecated. The total number of bytes expected to be written to the
-  // underlying download file, or -1 if the total number of bytes is unknown.
+  // underlying download file, or 0 if the total number of bytes is unknown.
   [MinVersion=1] int64? total_bytes_deprecated@3;
 
   // The target path of an in-progress download. Note that the actual path being
@@ -84,6 +84,24 @@ struct DownloadStatus {
 
   // Indicates the progress of the underlying download.
   [MinVersion=5] DownloadProgress? progress@11;
+
+  // The icons that suggest the underlying download's status.
+  // TODO(http://b/328070365): Sending icons across the crosapi has some
+  // drawbacks (see the attached issue). Implement it in a better way.
+  [MinVersion=6] DownloadStatusIcons? icons@12;
+};
+
+// The icons that indicate a download's status for dark/light modes.
+//
+// Next MinVersion: 1
+// Next ID: 2
+//
+// WARNING: Sending UI icons directly has drawbacks (see http://b/328070365).
+// Prefer sending metadata to construct the UI instead.
+[Stable, Uuid="9258a38a-0005-466c-9e5f-89516993cea6"]
+struct DownloadStatusIcons {
+  gfx.mojom.ImageSkia dark_mode@0;
+  gfx.mojom.ImageSkia light_mode@1;
 };
 
 // The interface for the client of the `DownloadStatusUpdater` in Ash Chrome

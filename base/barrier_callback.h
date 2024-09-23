@@ -17,7 +17,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/synchronization/lock.h"
-#include "base/template_util.h"
 #include "base/thread_annotations.h"
 
 namespace base {

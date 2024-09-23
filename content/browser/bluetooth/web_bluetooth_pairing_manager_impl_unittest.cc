@@ -136,7 +136,7 @@ class BluetoothPairingManagerTest : public testing::Test,
             std::move(callback).Run(/*error_code=*/std::nullopt);
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             std::move(callback).Run(BluetoothDevice::ERROR_UNKNOWN);
         }
         break;
@@ -157,7 +157,7 @@ class BluetoothPairingManagerTest : public testing::Test,
         }
         break;
       case AuthBehavior::kUnspecified:
-        NOTREACHED() << "Test must set auth behavior";
+        NOTREACHED_IN_MIGRATION() << "Test must set auth behavior";
         break;
     }
   }

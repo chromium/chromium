@@ -43,7 +43,7 @@
 <translation id="134645005685694099">기기의 저장공간이 부족하여 파일 동기화를 사용 설정할 수 없습니다. 새 파일이 더 이상 자동으로 동기화되지 않습니다.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">파일 또는 디렉터리를 사용할 수 없습니다.</translation>
-<translation id="1363028406613469049">트랙</translation>
+<translation id="1363028406613469049">추적</translation>
 <translation id="1378727793141957596">Google Drive에 오신 것을 환영합니다.</translation>
 <translation id="1379911846207762492">파일을 오프라인에서 사용하도록 설정하면 인터넷에 연결되어 있지 않을 때도 액세스할 수 있습니다.</translation>
 <translation id="1383876407941801731">검색</translation>
@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS 호스트</translation>
 <translation id="3104793765551262433">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 차단함, 세부정보</translation>
-<translation id="3113153474486991170">이 위치에서 "<ph name="PATH" />" 경로를 열 수 없습니다. 열려면 '내 파일'로 복사하세요.</translation>
 <translation id="3113592018909187986">기회가 1번 남았습니다. 새 PIN을 설정할 때까지 이 네트워크를 사용할 수 없습니다.</translation>
 <translation id="3124404833828281817">공상에 빠진 사람</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> 작업을 취소합니다.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째 네트워크, <ph name="NETWORK_NAME" />, 비활성화됨, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="3691184985318546178">싱할라어</translation>
+<translation id="3702842351052426940">SIM 카드 또는 eSIM 프로필이 비활성화되었을 수 있습니다. SIM 카드를 교체하거나 eSIM 프로필을 전환해 보세요.</translation>
 <translation id="3722341589402358578">오류가 발생했습니다. 일부 항목이 휴지통으로 이동되지 않았을 수도 있습니다.</translation>
 <translation id="3726463242007121105">파일 시스템이 지원되지 않아 이 기기를 열 수 없습니다.</translation>
 <translation id="3727148787322499904">이 설정을 변경하면 모든 공유 네트워크에 영향을 줍니다.</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">이 프록시는 관리자가 강제로 설정해 놓았습니다.</translation>
 <translation id="3830674330436234648">재생을 사용할 수 없음</translation>
 <translation id="383652340667548381">세르비아어</translation>
+<translation id="3839045880592694915">이동통신사에서 모뎀 연결을 허용하지 않습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
 <translation id="385051799172605136">뒤로</translation>
-<translation id="3851491607336266896">연결됨, 제한된 연결</translation>
 <translation id="3855472144336161447">독일어 Neo 2</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="3866249974567520381">설명</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">최근에 연 Microsoft 파일이 OneDrive로 이동되었습니다.</translation>
 <translation id="4002066346123236978">제목</translation>
 <translation id="4017788180641807848">영어(미국, 워크맨 키보드)</translation>
-<translation id="4019998208269143058">빠른 파일에 고정</translation>
 <translation id="4040753847560036377">잘못된 PUK</translation>
 <translation id="4057991113334098539">활성화 중...</translation>
 <translation id="4092890906744441904">아일랜드어</translation>
+<translation id="4101601646343868113">모바일 네트워크에 로그인하여 모바일 데이터 요금제가 활성화되어 있는지 확인하세요.</translation>
 <translation id="4124731372776320263">Drive 파일 1개 동기화 중</translation>
 <translation id="4124935795427217608">유니콘</translation>
 <translation id="4131235941541910880">필요하지 않은 항목은 휴지통으로 옮기세요.</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">타밀어(Tamil99 키보드)</translation>
 <translation id="5633226425545095130">이 항목을 옮기면 '<ph name="DESTINATION_NAME" />' 공유 폴더를 볼 수 있는 모든 사용자와 항목이 공유됩니다.</translation>
 <translation id="5649768706273821470">듣기</translation>
+<translation id="5650895901941743674">APN 구성을 확인하세요.</translation>
 <translation id="5669691691057771421">새 PIN 입력</translation>
 <translation id="5678784840044122290">단말기 내에서 Linux 애플리케이션을 사용할 수 있게 되며 런처에 아이콘이 표시될 수도 있습니다.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />아카이브 또는 가상 디스크의 연결을 해제할 수 없습니다.<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 휴대전화 배터리 <ph name="BATTERY_STATUS" />%, 연결</translation>
 <translation id="6269630227984243955">말레이어</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />"의 저장용량이 부족하여 파일을 업로드할 수 없습니다.</translation>
+<translation id="6279140785485544797">모바일 데이터 요금제가 만료되었을 수 있습니다. 지원이 필요한 경우 이동통신사에 문의하세요.</translation>
 <translation id="6287852322318138013">이 파일을 열 때 사용할 앱 선택</translation>
 <translation id="6295542640242147836">SIM 잠금</translation>
 <translation id="6296410173147755564">무효한 PUK</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> 보관 파일</translation>
 <translation id="6321303798550928047">손 흔들기</translation>
 <translation id="6327785803543103246">웹 프록시 자동검색</translation>
-<translation id="6337014272874260727">빠른 파일에서 고정 해제</translation>
 <translation id="6339145975392024142">미국 국제(PC)</translation>
 <translation id="6356685157277930264">파일 의견 창</translation>
 <translation id="6358884629796491903">용</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">현재 디렉터리</translation>
 <translation id="6751256176799620176">폴더 1개 선택됨</translation>
 <translation id="6755827872271341378">ChromeOS Flex 기기</translation>
+<translation id="6777029074498310250">자세한 내용은 <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" />을 참고하세요</translation>
 <translation id="6790428901817661496">재생</translation>
 <translation id="6794539005637808366">항목을 복원하거나 휴지통 외부의 새 폴더로 드래그하세요.</translation>
 <translation id="6795884519221689054">판다</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">타밀어(인스크립트 키보드)</translation>
 <translation id="7088615885725309056">다음</translation>
 <translation id="7103992300314999525">마케도니아어</translation>
+<translation id="7104338189998813914">OneDrive 계정에 액세스하는 중에 문제가 발생했습니다</translation>
 <translation id="7106346894903675391">추가 저장용량 구입...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;드라이브 검색&lt;/em&gt;</translation>
 <translation id="7135561821015524160">칸나다어(표음)</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">잠시만 기다려 주세요.</translation>
 <translation id="7600126690270271294">세르비아어</translation>
 <translation id="7603724359189955920">격자</translation>
+<translation id="7624010287655004652">다른 이동통신사에 의해 잠김</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" />이(가) 이미 있습니다. 이름을 변경한 후 다시 시도해 주세요.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% 완료</translation>
 <translation id="7649070708921625228">도움말</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">파일 목록을 썸네일 이미지 보기로 변경했습니다.</translation>
 <translation id="8601932370724196034">Crostini 이미지 파일</translation>
 <translation id="8609695766746872526">아이슬란드어</translation>
+<translation id="8630384863424041081">SIM 카드 PIN 또는 이동통신사에서 제공한 기본 PIN을 입력하세요. 지원이 필요할 경우 이동통신사에 문의하세요</translation>
 <translation id="863903787380594467">잘못된 PIN입니다. 기회가 <ph name="RETRIES" />번 남았습니다.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 포트</translation>
 <translation id="8656407365183407932">오프라인 파일이 삭제됨</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">이 파일은 기밀이며 관리자 정책의 제한사항이 적용됩니다.</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8713112442029511308">몰타어</translation>
-<translation id="8714138378966541668">제공업체가 잠금</translation>
 <translation id="8714406895390098252">자전거</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> 항목이 선택되었습니다.</translation>
 <translation id="872537912056138402">크로아티아어</translation>

@@ -7,6 +7,208 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(is_chromeos_ash)
 
+static_library("guest_os") {
+  sources = [
+    "guest_id.cc",
+    "guest_id.h",
+    "guest_os_diagnostics_builder.cc",
+    "guest_os_diagnostics_builder.h",
+    "guest_os_dlc_helper.cc",
+    "guest_os_dlc_helper.h",
+    "guest_os_external_protocol_handler.cc",
+    "guest_os_external_protocol_handler.h",
+    "guest_os_file_watcher.cc",
+    "guest_os_file_watcher.h",
+    "guest_os_launcher.cc",
+    "guest_os_launcher.h",
+    "guest_os_mime_types_service.cc",
+    "guest_os_mime_types_service.h",
+    "guest_os_mime_types_service_factory.cc",
+    "guest_os_mime_types_service_factory.h",
+    "guest_os_pref_names.cc",
+    "guest_os_pref_names.h",
+    "guest_os_registry_service.cc",
+    "guest_os_registry_service.h",
+    "guest_os_registry_service_factory.cc",
+    "guest_os_registry_service_factory.h",
+    "guest_os_remover.cc",
+    "guest_os_remover.h",
+    "guest_os_security_delegate.cc",
+    "guest_os_security_delegate.h",
+    "guest_os_session_tracker.cc",
+    "guest_os_session_tracker.h",
+    "guest_os_session_tracker_factory.cc",
+    "guest_os_session_tracker_factory.h",
+    "guest_os_share_path.cc",
+    "guest_os_share_path.h",
+    "guest_os_share_path_factory.cc",
+    "guest_os_share_path_factory.h",
+    "guest_os_shelf_utils.cc",
+    "guest_os_shelf_utils.h",
+    "guest_os_stability_monitor.cc",
+    "guest_os_stability_monitor.h",
+    "guest_os_terminal.cc",
+    "guest_os_terminal.h",
+    "vm_shutdown_observer.h",
+    "vm_sk_forwarding_native_message_host.cc",
+    "vm_sk_forwarding_native_message_host.h",
+    "vm_starting_observer.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":guest_os_diagnostics_mojom",
+    "//ash/components/arc",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//base",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/apps/app_service/app_icon:util",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/arc/adbd",
+    "//chrome/browser/ash/borealis",
+    "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/crostini/ansible",
+    "//chrome/browser/ash/crostini/throttle",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/exo",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/smb_client",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/icon_transcoder",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources",
+    "//chrome/common",
+    "//chromeos/ash/components/dbus:vm_applications_apps_proto",
+    "//chromeos/ash/components/dbus:vm_launch_proto",
+    "//chromeos/ash/components/dbus/chunneld",
+    "//chromeos/ash/components/dbus/cicerone",
+    "//chromeos/ash/components/dbus/cicerone:cicerone_proto",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+    "//chromeos/ash/components/dbus/seneschal",
+    "//chromeos/ash/components/drivefs",
+    "//components/app_restore",
+    "//components/crx_file",
+    "//components/exo",
+    "//components/exo/server",
+    "//components/keyed_service/content",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//net",
+    "//storage/browser",
+    "//ui/base",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/native_theme",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/arc/adbd",
+    "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ash/borealis",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/crostini/ansible",
+    "//chrome/browser/ash/crostini/throttle",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/exo",
+    "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/system_web_apps/apps",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "dbus_test_helper.cc",
+    "dbus_test_helper.h",
+    "guest_os_test_helpers.cc",
+    "guest_os_test_helpers.h",
+  ]
+
+  deps = [
+    ":guest_os",
+    "//base",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/guest_os/public",
+    "//chromeos/ash/components/dbus/chunneld",
+    "//chromeos/ash/components/dbus/cicerone",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/seneschal",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "guest_id_unittest.cc",
+    "guest_os_diagnostics_builder_unittest.cc",
+    "guest_os_dlc_helper_unittest.cc",
+    "guest_os_external_protocol_handler_unittest.cc",
+    "guest_os_file_watcher_unittest.cc",
+    "guest_os_mime_types_service_unittest.cc",
+    "guest_os_registry_service_unittest.cc",
+    "guest_os_session_tracker_unittest.cc",
+    "guest_os_share_path_unittest.cc",
+    "guest_os_shelf_utils_unittest.cc",
+    "guest_os_stability_monitor_unittest.cc",
+    "guest_os_terminal_unittest.cc",
+    "vm_sk_forwarding_native_message_host_unittest.cc",
+  ]
+
+  deps = [
+    ":guest_os",
+    ":test_support",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/ash/borealis",
+    "//chrome/browser/ash/borealis/testing:test_support",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/plugin_vm:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/chunneld",
+    "//chromeos/ash/components/dbus/cicerone:cicerone_proto",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/seneschal",
+    "//chromeos/ash/components/disks:test_support",
+    "//components/component_updater/ash:test_support",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//testing/gtest",
+
+    # Gather unit tests from subdirectoies.
+    "//chrome/browser/ash/guest_os/infra:unit_tests",
+    "//chrome/browser/ash/guest_os/public:unit_tests",
+  ]
+}
+
 mojom("guest_os_diagnostics_mojom") {
   sources = [ "guest_os_diagnostics.mojom" ]
 
@@ -15,4 +217,25 @@ mojom("guest_os_diagnostics_mojom") {
 
   # For Closure Compiler targets in chrome/browser/resources/ash/vm
   generate_webui_js_bindings = true
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "guest_os_registry_service_icon_browsertest.cc" ]
+
+  deps = [
+    ":guest_os",
+    "//base/test:test_support",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/cicerone",
+    "//chromeos/ash/components/dbus/cicerone:cicerone_proto",
+    "//chromeos/ash/components/dbus/seneschal",
+    "//content/test:test_support",
+  ]
 }

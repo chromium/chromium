@@ -7,6 +7,8 @@
 
 #include "services/device/public/mojom/pressure_manager.mojom-blink.h"
 #include "services/device/public/mojom/pressure_update.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_update_callback.h"
@@ -34,29 +36,26 @@ class ExceptionState;
 class PressureObserverManager;
 class PressureObserverOptions;
 class PressureRecord;
-class ScriptPromise;
-class ScriptPromiseResolver;
 class ScriptState;
 
-class PressureObserver final : public ScriptWrappable {
+class MODULES_EXPORT PressureObserver final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  PressureObserver(V8PressureUpdateCallback*,
-                   PressureObserverOptions*,
-                   ExceptionState&);
+  explicit PressureObserver(V8PressureUpdateCallback*);
   ~PressureObserver() override;
 
-  static PressureObserver* Create(V8PressureUpdateCallback*,
-                                  PressureObserverOptions*,
-                                  ExceptionState&);
+  static PressureObserver* Create(V8PressureUpdateCallback*);
 
   // PressureObserver IDL implementation.
-  ScriptPromise observe(ScriptState*, V8PressureSource, ExceptionState&);
+  ScriptPromise<IDLUndefined> observe(ScriptState*,
+                                      V8PressureSource,
+                                      PressureObserverOptions*,
+                                      ExceptionState&);
   void unobserve(V8PressureSource);
   void disconnect();
   HeapVector<Member<PressureRecord>> takeRecords();
-  static Vector<V8PressureSource> supportedSources();
+  static Vector<V8PressureSource> knownSources();
 
   PressureObserver(const PressureObserver&) = delete;
   PressureObserver operator=(const PressureObserver&) = delete;
@@ -74,6 +73,10 @@ class PressureObserver final : public ScriptWrappable {
   void OnBindingSucceeded(V8PressureSource::Enum);
   void OnBindingFailed(V8PressureSource::Enum, DOMExceptionCode);
   void OnConnectionError();
+
+  ChangeRateMonitor& change_rate_monitor_for_testing() {
+    return change_rate_monitor_;
+  }
 
  private:
   // Verifies if the latest update was at least longer than the sample period.
@@ -108,11 +111,11 @@ class PressureObserver final : public ScriptWrappable {
   // The callback that receives pressure state updates.
   Member<V8PressureUpdateCallback> observer_callback_;
 
-  // Requested sample rate from the user.
-  // https://w3c.github.io/compute-pressure/#dfn-samplerate
-  double sample_rate_;
+  // Requested sample interval from the user.
+  // https://w3c.github.io/compute-pressure/#dfn-sampleinterval
+  uint32_t sample_interval_ = 0;
 
-  HeapHashSet<Member<ScriptPromiseResolver>>
+  HeapHashSet<Member<ScriptPromiseResolver<IDLUndefined>>>
       pending_resolvers_[V8PressureSource::kEnumSize];
 
   // Manages rate obfuscation mitigation parameters.

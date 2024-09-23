@@ -1,16 +1,16 @@
 AXWebArea
 ++AXTable
-++++AXRow
+++++AXRow AXTitle='BrowserRendering Engine'
 ++++++AXCell
 ++++++++AXStaticText AXValue='Browser'
 ++++++AXCell
 ++++++++AXStaticText AXValue='Rendering Engine'
-++++AXRow
+++++AXRow AXTitle='ChromeBlink'
 ++++++AXCell
 ++++++++AXStaticText AXValue='Chrome'
 ++++++AXCell
 ++++++++AXStaticText AXValue='Blink'
-++++AXRow
+++++AXRow AXTitle='SafariWebKit'
 ++++++AXCell
 ++++++++AXStaticText AXValue='Safari'
 ++++++AXCell

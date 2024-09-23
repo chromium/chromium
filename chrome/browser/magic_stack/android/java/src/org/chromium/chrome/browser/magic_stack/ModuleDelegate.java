@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
-
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -27,6 +27,8 @@ public interface ModuleDelegate {
         ModuleType.SINGLE_TAB,
         ModuleType.PRICE_CHANGE,
         ModuleType.TAB_RESUMPTION,
+        ModuleType.SAFETY_HUB,
+        ModuleType.EDUCATIONAL_TIP,
         ModuleType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -34,7 +36,9 @@ public interface ModuleDelegate {
         int SINGLE_TAB = 0;
         int PRICE_CHANGE = 1;
         int TAB_RESUMPTION = 2;
-        int NUM_ENTRIES = 3;
+        int SAFETY_HUB = 3;
+        int EDUCATIONAL_TIP = 4;
+        int NUM_ENTRIES = 5;
     }
 
     /**
@@ -75,13 +79,17 @@ public interface ModuleDelegate {
      * Called when the user clicks a module.
      *
      * @param moduleType The type of the module clicked.
+     * @param modulePosition The position of the module clicked.
      */
-    void onModuleClicked(@ModuleType int moduleType);
-
-    /** Returns the type of the home surface which owns the magic stack. */
-    @HostSurface
-    int getHostSurfaceType();
+    void onModuleClicked(@ModuleType int moduleType, int modulePosition);
 
     /** Gets the instance of the module {@link ModuleProvider} of the given type. */
     ModuleProvider getModuleProvider(@ModuleType int moduleType);
+
+    /** Gets the local Tab that is showing on the magic stack. */
+    @Nullable
+    Tab getTrackingTab();
+
+    /** Called before build and show modules. */
+    void prepareBuildAndShow();
 }

@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/input/touch_action.h"
+#include "components/input/event_with_latency_info.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/resources/returned_resource.h"
@@ -25,7 +26,6 @@
 #include "content/browser/compositor/image_transport_factory.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/common/content_export.h"
-#include "content/common/input/event_with_latency_info.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
@@ -60,7 +60,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       public RenderFrameMetadataProvider::Observer,
       public viz::HostFrameSinkClient {
  public:
-  // TODO(crbug.com/1182855): Pass multi-screen info from the parent.
+  // TODO(crbug.com/40170974): Pass multi-screen info from the parent.
   static RenderWidgetHostViewChildFrame* Create(
       RenderWidgetHost* widget,
       const display::ScreenInfos& parent_screen_infos);
@@ -119,6 +119,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
                                  const gfx::Rect& bounds) override;
   void ClearKeyboardTriggeredTooltip() override;
   void GestureEventAck(const blink::WebGestureEvent& event,
+                       blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
   // Since the URL of content rendered by this class is not displayed in
   // the URL bar, this method does not need an implementation.
@@ -142,11 +143,12 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   viz::FrameSinkId GetRootFrameSinkId() override;
   viz::SurfaceId GetCurrentSurfaceId() const override;
   bool HasSize() const override;
+  double GetCSSZoomFactor() const override;
   gfx::PointF TransformPointToRootCoordSpaceF(
       const gfx::PointF& point) override;
   bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,
-      RenderWidgetHostViewBase* target_view,
+      input::RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point) override;
   void DidNavigate() override;
   gfx::PointF TransformRootPointToViewCoordSpace(
@@ -201,10 +203,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
     return frame_connector_;
   }
 
-  // Returns the view into which this view is directly embedded. This can
-  // return nullptr when this view's associated child frame is not connected
-  // to the frame tree.
-  virtual RenderWidgetHostViewBase* GetParentView();
+  RenderWidgetHostViewBase* GetParentViewInput() override;
 
   void RegisterFrameSinkId();
   void UnregisterFrameSinkId();
@@ -291,6 +290,8 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       HiddenOOPIFWillNotGenerateCompositorFramesAfterNavigation);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            SubframeVisibleAfterRenderViewBecomesSwappedOut);
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostInputEventRouterTest,
+                           FilteredGestureDoesntInterruptBubbling);
 
   virtual void FirstSurfaceActivation(const viz::SurfaceInfo& surface_info);
 
@@ -306,6 +307,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   void ProcessTouchpadZoomEventAckInRoot(
       const blink::WebGestureEvent& event,
+      blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result);
   void ForwardTouchpadZoomEventIfNecessary(
       const blink::WebGestureEvent& event,

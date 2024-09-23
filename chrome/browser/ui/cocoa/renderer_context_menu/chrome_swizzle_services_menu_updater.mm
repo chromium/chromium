@@ -90,7 +90,7 @@ NSMutableArray* g_filtered_entries_array = nil;
     // the bots - NOTREACHED() will get them to tell us if compatibility breaks.
     if (![NSClassFromString(@"_NSServiceEntry")
             instancesRespondToSelector:@selector(bundleIdentifier)]) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
 
@@ -99,7 +99,7 @@ NSMutableArray* g_filtered_entries_array = nil;
     SEL targetSelector = @selector(populateMenu:withServiceEntries:forDisplay:);
     Class targetClass = NSClassFromString(@"_NSServicesMenuUpdater");
     if (![targetClass instancesRespondToSelector:targetSelector]) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
 

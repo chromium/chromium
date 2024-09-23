@@ -1,0 +1,198 @@
+<style include="cr-page-host-style cr-shared-style cr-nav-menu-item-style certificate-manager-style-v2">
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .menu-icon {
+    padding-inline-end: 8px;
+  }
+
+  #main {
+    flex: 1;
+  }
+
+  cr-menu-selector {
+    box-sizing: border-box;
+    display: block;
+    height: 100%;
+    overflow: auto;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    width: 250px;
+  }
+
+  #cr-container-shadow-top {
+    /* Needs to be higher than #container's z-index to appear above
+     * scrollbars. */
+    z-index: 2;
+  }
+
+  #container {
+   /* CrContainerShadowMixin creates a div inside of #container to
+    * calculate when the div is off-screen, indicating that the user has
+    * scrolled #container. Since this div needs to be at the top of
+    * #container, set align-items to flex-start. Otherwise, the flex layout
+    * will stretch the div across the entire height of #container and never
+    * appear off-screen. */
+    display: flex;
+    align-items: flex-start;
+    overflow: auto;
+    flex: 1;
+    z-index: 1;
+  }
+
+  #adminCertsSection,
+  #platformCertsSection,
+  #platformClientCertsSection {
+    box-shadow: var(--cr-card-shadow);
+    /* Do not shorten '0px' below to '0' as the calc function requires
+     * units. */
+    min-height: calc(100vh - var(--cr-toolbar-height) -
+            var(--cr-toolbar-padding-top, 0px));
+  }
+
+  #sidebar {
+    position: sticky;
+    top: 0;
+  }
+
+</style>
+
+<cr-toolbar id="toolbar"
+    page-name="[[i18n('certificateManagerV2Title')]]"
+    show-search="[[showSearch_]]" always-show-logo>
+</cr-toolbar>
+<div id="container">
+  <div id="sidebar" role="navigation">
+    <cr-menu-selector id="menu" selectable="a" attr-for-selected="href"
+        selected-attribute="selected"
+        selected="[[getSelectedTopLevelHref_(selectedPage_)]]"
+        on-iron-activate="onMenuItemActivate_">
+      <a id="localMenuItem" role="menuitem" class="cr-nav-menu-item"
+          href$="[[generateHrefForPage_(pageEnum_.LOCAL_CERTS)]]"
+          on-click="onMenuItemClick_">
+        <cr-icon icon="cr:computer" class="menu-icon"></cr-icon>
+        [[i18n('certificateManagerV2LocalCerts')]]
+      </a>
+      <a id="clientMenuItem" role="menuitem" class="cr-nav-menu-item"
+          href$="[[generateHrefForPage_(pageEnum_.CLIENT_CERTS)]]"
+          on-click="onMenuItemClick_">
+        <cr-icon icon="certmanager:card" class="menu-icon"></cr-icon>
+        [[i18n('certificateManagerV2ClientCerts')]]
+      </a>
+      <a id="crsMenuItem" role="menuitem" class="cr-nav-menu-item"
+          href$="[[generateHrefForPage_(pageEnum_.CRS_CERTS)]]"
+          on-click="onMenuItemClick_">
+        <cr-icon icon="cr:chrome-product" class="menu-icon"></cr-icon>
+        [[i18n('certificateManagerV2CRSCerts')]]
+      </a>
+    </cr-menu-selector>
+  </div>
+
+  <cr-page-selector id="main" attr-for-selected="path"
+      selected="[[selectedPage_]]">
+
+    <div id="clientCertSection" class="cr-centered-card-container"
+        path$="[[pageEnum_.CLIENT_CERTS]]">
+      <h2 class="page-title">[[i18n('certificateManagerV2ClientCerts')]]</h2>
+      [[i18n("certificateManagerV2ClientCertsDescription")]]
+
+      <if expr="is_win or is_macosx or is_linux">
+        <certificate-list-v2
+            id="provisionedClientCerts"
+            cert-source="[[certificateSourceEnum_.kProvisionedClientCert]]"
+            header-text="[[i18n('certificateManagerV2ClientCertsFromAdmin')]]"
+            hide-export hide-if-empty
+            on-hash-copied="onHashCopied_">
+        </certificate-list-v2>
+      </if>
+      <if expr="is_chromeos">
+        <certificate-list-v2
+            id="extensionsClientCerts"
+            cert-source="[[certificateSourceEnum_.kExtensionsClientCert]]"
+            header-text="[[i18n('certificateManagerV2ClientCertsFromExtension')]]"
+            hide-export hide-if-empty
+            on-hash-copied="onHashCopied_">
+        </certificate-list-v2>
+      </if>
+
+      <h3 class="section-title">[[i18n("certificateManagerV2Platform")]]</h3>
+
+      <div class="card">
+        <cr-link-row id="viewOsImportedClientCerts"
+            label="[[i18n('certificateManagerV2PlatformCertsViewLink')]]"
+            on-click="onClientPlatformCertsLinkRowClick_">
+        </cr-link-row>
+        <if expr="is_win or is_macosx">
+          <cr-link-row external id="manageOsImportedClientCerts" class="hr"
+              label="[[i18n('certificateManagerV2PlatformCertsManageLink')]]"
+              button-aria-description="[[i18n('certificateManagerV2PlatformCertsManageLinkAriaDescription')]]"
+              on-click="onManageCertsExternal_">
+          </cr-link-row>
+        </if>
+      </div>
+    </div>
+
+    <local-certs-section-v2 id="localCertSection"
+        path$="[[pageEnum_.LOCAL_CERTS]]" on-hash-copied="onHashCopied_">
+    </local-certs-section-v2>
+
+    <!-- Chrome Root Store section -->
+    <crs-section-v2 id="crsCertSection"
+        path$="[[pageEnum_.CRS_CERTS]]" on-hash-copied="onHashCopied_">
+    </crs-section-v2>
+
+    <certificate-subpage-v2 id="adminCertsSection"
+        path$="[[pageEnum_.ADMIN_CERTS]]"
+        class="cr-centered-card-container"
+        on-hash-copied="onHashCopied_"
+        navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
+        subpage-title="[[i18n('certificateManagerV2AdminCertsTitle')]]"
+        subpage-cert-lists="[[enterpriseSubpageLists_]]">
+    </certificate-subpage-v2>
+
+    <certificate-subpage-v2 id="platformCertsSection"
+        path$="[[pageEnum_.PLATFORM_CERTS]]"
+        class="cr-centered-card-container"
+        on-hash-copied="onHashCopied_"
+        navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
+        subpage-title="[[i18n('certificateManagerV2PlatformCertsTitle')]]"
+        subpage-cert-lists="[[platformSubpageLists_]]">
+    </certificate-subpage-v2>
+
+    <certificate-subpage-v2 id="platformClientCertsSection"
+        path$="[[pageEnum_.PLATFORM_CLIENT_CERTS]]"
+        class="cr-centered-card-container"
+        on-hash-copied="onHashCopied_"
+        navigate-back-target="[[pageEnum_.CLIENT_CERTS]]"
+        on-import-result="onImportResult_"
+        on-delete-result="onDeleteResult_"
+        subpage-title="[[i18n('certificateManagerV2ClientCertsFromPlatform')]]"
+        subpage-cert-lists="[[clientPlatformSubpageLists_]]">
+    </certificate-subpage-v2>
+  </cr-page-selector>
+</div>
+
+<cr-toast id="toast" duration="5000">
+  <span id="toast-message">[[toastMessage_]]</span>
+</cr-toast>
+
+<template is="dom-if" if="[[showInfoDialog_]]" restamp>
+  <certificate-info-dialog id="infoDialog" dialog-title="[[infoDialogTitle_]]"
+      dialog-message="[[infoDialogMessage_]]" on-close="onInfoDialogClose_">
+  </certificate-info-dialog>
+</template>
+<template is="dom-if" if="[[showPasswordDialog_]]" restamp>
+  <certificate-password-dialog id="passwordDialog"
+      on-close="onPasswordDialogClose_">
+  </certificate-password-dialog>
+</template>
+<template is="dom-if" if="[[showConfirmationDialog_]]" restamp>
+  <certificate-confirmation-dialog id="confirmationDialog"
+      dialog-title="[[confirmationDialogTitle_]]"
+      dialog-message="[[confirmationDialogMessage_]]"
+      on-close="onConfirmationDialogClose_">
+  </certificate-confirmation-dialog>
+</template>

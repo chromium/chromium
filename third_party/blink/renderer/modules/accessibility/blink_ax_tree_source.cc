@@ -15,6 +15,10 @@
 #include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_link_element.h"
+#include "third_party/blink/renderer/core/html/html_meta_element.h"
+#include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/html/html_title_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
@@ -27,31 +31,6 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
-
-namespace {
-
-#if DCHECK_IS_ON()
-AXObject* ParentObjectUnignored(AXObject* child) {
-  if (!child || child->IsDetached())
-    return nullptr;
-  AXObject* parent = child->ParentObjectIncludedInTree();
-  while (parent && !parent->IsDetached() &&
-         !parent->AccessibilityIsIncludedInTree())
-    parent = parent->ParentObjectIncludedInTree();
-  return parent;
-}
-
-// Check that |parent| is the first unignored parent of |child|.
-void CheckParentUnignoredOf(AXObject* parent, AXObject* child) {
-  AXObject* preexisting_parent = ParentObjectUnignored(child);
-  DCHECK(preexisting_parent == parent)
-      << "Child thinks it has a different preexisting parent:"
-      << "\nChild: " << child << "\nPassed-in parent: " << parent
-      << "\nPreexisting parent: " << preexisting_parent;
-}
-#endif
-
-}  // namespace
 
 BlinkAXTreeSource::BlinkAXTreeSource(AXObjectCacheImpl& ax_object_cache,
                                      bool truncate_inline_textboxes)
@@ -67,7 +46,7 @@ static ax::mojom::blink::TextAffinity ToAXAffinity(TextAffinity affinity) {
     case TextAffinity::kDownstream:
       return ax::mojom::blink::TextAffinity::kDownstream;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ax::mojom::blink::TextAffinity::kDownstream;
   }
 }
@@ -75,10 +54,10 @@ static ax::mojom::blink::TextAffinity ToAXAffinity(TextAffinity affinity) {
 void BlinkAXTreeSource::Selection(
     const AXObject* obj,
     bool& is_selection_backward,
-    AXObject** anchor_object,
+    const AXObject** anchor_object,
     int& anchor_offset,
     ax::mojom::blink::TextAffinity& anchor_affinity,
-    AXObject** focus_object,
+    const AXObject** focus_object,
     int& focus_offset,
     ax::mojom::blink::TextAffinity& focus_affinity) const {
   is_selection_backward = false;
@@ -92,7 +71,7 @@ void BlinkAXTreeSource::Selection(
   if (!obj || obj->IsDetached())
     return;
 
-  AXObject* focus = GetFocusedObject();
+  const AXObject* focus = GetFocusedObject();
   if (!focus || focus->IsDetached())
     return;
 
@@ -103,10 +82,10 @@ void BlinkAXTreeSource::Selection(
   if (!ax_selection)
     return;
 
-  const AXPosition base = ax_selection.Base();
-  *anchor_object = const_cast<AXObject*>(base.ContainerObject());
-  const AXPosition extent = ax_selection.Extent();
-  *focus_object = const_cast<AXObject*>(extent.ContainerObject());
+  const AXPosition base = ax_selection.Anchor();
+  *anchor_object = base.ContainerObject();
+  const AXPosition extent = ax_selection.Focus();
+  *focus_object = extent.ContainerObject();
 
   is_selection_backward = base > extent;
   if (base.IsTextPosition()) {
@@ -134,7 +113,7 @@ static ui::AXTreeID GetAXTreeID(LocalFrame* local_frame) {
 
 bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
   CHECK(frozen_);
-  AXObject* root = GetRoot();
+  const AXObject* root = GetRoot();
   tree_data->doctype = "html";
   tree_data->loaded = root->IsLoaded();
   tree_data->loading_progress = root->EstimatedLoadingProgress();
@@ -143,11 +122,11 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
   tree_data->title = document.title().Utf8();
   tree_data->url = document.Url().GetString().Utf8();
 
-  if (AXObject* focus = GetFocusedObject())
+  if (const AXObject* focus = GetFocusedObject())
     tree_data->focus_id = focus->AXObjectID();
 
   bool is_selection_backward = false;
-  AXObject *anchor_object, *focus_object;
+  const AXObject *anchor_object, *focus_object;
   int anchor_offset, focus_offset;
   ax::mojom::blink::TextAffinity anchor_affinity, focus_affinity;
   Selection(root, is_selection_backward, &anchor_object, anchor_offset,
@@ -178,17 +157,18 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
     if (HTMLHeadElement* head = ax_object_cache_->GetDocument().head()) {
       for (Node* child = head->firstChild(); child;
            child = child->nextSibling()) {
-        if (!child->IsElementNode())
+        const Element* elem = DynamicTo<Element>(*child);
+        if (!elem) {
           continue;
-        Element* elem = To<Element>(child);
-        if (elem->IsHTMLWithTagName("SCRIPT")) {
+        }
+        if (IsA<HTMLScriptElement>(*elem)) {
           if (elem->getAttribute(html_names::kTypeAttr) !=
               "application/ld+json") {
             continue;
           }
-        } else if (!elem->IsHTMLWithTagName("LINK") &&
-                   !elem->IsHTMLWithTagName("TITLE") &&
-                   !elem->IsHTMLWithTagName("META")) {
+        } else if (!IsA<HTMLLinkElement>(*elem) &&
+                   !IsA<HTMLTitleElement>(*elem) &&
+                   !IsA<HTMLMetaElement>(*elem)) {
           continue;
         }
         // TODO(chrishtr): replace the below with elem->outerHTML().
@@ -226,33 +206,33 @@ void BlinkAXTreeSource::Thaw() {
   focus_ = nullptr;
 }
 
-AXObject* BlinkAXTreeSource::GetRoot() const {
+const AXObject* BlinkAXTreeSource::GetRoot() const {
   CHECK(frozen_);
   CHECK(root_);
-  return root_.Get();
+  return root_;
 }
 
-AXObject* BlinkAXTreeSource::GetFocusedObject() const {
+const AXObject* BlinkAXTreeSource::GetFocusedObject() const {
   CHECK(frozen_);
   CHECK(focus_);
-  return focus_.Get();
+  return focus_;
 }
 
-AXObject* BlinkAXTreeSource::GetFromId(int32_t id) const {
-  AXObject* result = ax_object_cache_->ObjectFromAXID(id);
-  if (result && !result->AccessibilityIsIncludedInTree()) {
-    DCHECK(false) << "Should not serialize an unincluded object:"
-                  << "\nChild: " << result->ToString(true).Utf8();
+const AXObject* BlinkAXTreeSource::GetFromId(int32_t id) const {
+  const AXObject* result = ax_object_cache_->ObjectFromAXID(id);
+  if (result && !result->IsIncludedInTree()) {
+    DCHECK(false) << "Should not serialize an unincluded object:" << "\nChild: "
+                  << result->ToString().Utf8();
     return nullptr;
   }
   return result;
 }
 
-int32_t BlinkAXTreeSource::GetId(AXObject* node) const {
+int32_t BlinkAXTreeSource::GetId(const AXObject* node) const {
   return node->AXObjectID();
 }
 
-size_t BlinkAXTreeSource::GetChildCount(AXObject* node) const {
+size_t BlinkAXTreeSource::GetChildCount(const AXObject* node) const {
   if (truncate_inline_textboxes_ &&
       ui::CanHaveInlineTextBoxChildren(node->RoleValue())) {
     return 0;
@@ -260,7 +240,7 @@ size_t BlinkAXTreeSource::GetChildCount(AXObject* node) const {
   return node->ChildCountIncludingIgnored();
 }
 
-AXObject* BlinkAXTreeSource::ChildAt(AXObject* node, size_t index) const {
+AXObject* BlinkAXTreeSource::ChildAt(const AXObject* node, size_t index) const {
   if (truncate_inline_textboxes_) {
     CHECK(!ui::CanHaveInlineTextBoxChildren(node->RoleValue()));
   }
@@ -269,17 +249,17 @@ AXObject* BlinkAXTreeSource::ChildAt(AXObject* node, size_t index) const {
   // The child may be invalid due to issues in blink accessibility code.
   CHECK(child);
   if (child->IsDetached()) {
-    DCHECK(false) << "Should not try to serialize an invalid child:"
-                  << "\nParent: " << node->ToString(true).Utf8()
-                  << "\nChild: " << child->ToString(true).Utf8();
+    NOTREACHED(base::NotFatalUntil::M127)
+        << "Should not try to serialize an invalid child:" << "\nParent: "
+        << node->ToString().Utf8() << "\nChild: " << child->ToString().Utf8();
     return nullptr;
   }
 
-  if (!child->AccessibilityIsIncludedInTree()) {
-    // TODO(https://crbug.com/1407396) resolve and restore to NOTREACHED().
-    DCHECK(false) << "Should not receive unincluded child."
-                  << "\nChild: " << child->ToString(true).Utf8()
-                  << "\nParent: " << node->ToString(true).Utf8();
+  if (!child->IsIncludedInTree()) {
+    NOTREACHED(base::NotFatalUntil::M127)
+        << "Should not receive unincluded child."
+        << "\nChild: " << child->ToString().Utf8()
+        << "\nParent: " << node->ToString().Utf8();
     return nullptr;
   }
 
@@ -287,35 +267,25 @@ AXObject* BlinkAXTreeSource::ChildAt(AXObject* node, size_t index) const {
   // handled in AXTableInfo on the browser side.
   DCHECK_NE(child->RoleValue(), ax::mojom::blink::Role::kColumn);
   DCHECK_NE(child->RoleValue(), ax::mojom::blink::Role::kTableHeaderContainer);
-
-#if DCHECK_IS_ON()
-  CheckParentUnignoredOf(node, child);
-#endif
+  DCHECK(child->ParentObjectIncludedInTree() == node)
+      << "Child thinks it has a different preexisting parent:"
+      << "\nChild: " << child << "\nPassed-in parent: " << node
+      << "\nPreexisting parent: " << child->ParentObjectIncludedInTree();
 
   return child;
 }
 
-AXObject* BlinkAXTreeSource::GetParent(AXObject* node) const {
-  // Blink returns ignored objects when walking up the parent chain,
-  // we have to skip those here. Also, stop when we get to the root
-  // element.
-  do {
-    if (node == GetRoot())
-      return nullptr;
-    node = node->ParentObject();
-  } while (node && !node->IsDetached() &&
-           !node->AccessibilityIsIncludedInTree());
-
-  return node;
+AXObject* BlinkAXTreeSource::GetParent(const AXObject* node) const {
+  return node->ParentObjectIncludedInTree();
 }
 
-bool BlinkAXTreeSource::IsIgnored(AXObject* node) const {
+bool BlinkAXTreeSource::IsIgnored(const AXObject* node) const {
   if (!node || node->IsDetached())
     return false;
-  return node->AccessibilityIsIgnored();
+  return node->IsIgnored();
 }
 
-bool BlinkAXTreeSource::IsEqual(AXObject* node1, AXObject* node2) const {
+bool BlinkAXTreeSource::IsEqual(const AXObject* node1, const AXObject* node2) const {
   return node1 == node2;
 }
 
@@ -323,13 +293,13 @@ AXObject* BlinkAXTreeSource::GetNull() const {
   return nullptr;
 }
 
-std::string BlinkAXTreeSource::GetDebugString(AXObject* node) const {
+std::string BlinkAXTreeSource::GetDebugString(const AXObject* node) const {
   if (!node || node->IsDetached())
     return "";
-  return node->ToString(true).Utf8();
+  return node->ToString().Utf8();
 }
 
-void BlinkAXTreeSource::SerializeNode(AXObject* src,
+void BlinkAXTreeSource::SerializeNode(const AXObject* src,
                                       ui::AXNodeData* dst) const {
 #if DCHECK_IS_ON()
   // Never causes a document lifecycle change during serialization,
@@ -338,108 +308,21 @@ void BlinkAXTreeSource::SerializeNode(AXObject* src,
       ax_object_cache_->GetDocument().Lifecycle());
 #endif
 
-  if (!src || src->IsDetached() || !src->AccessibilityIsIncludedInTree()) {
+  if (!src || src->IsDetached() || !src->IsIncludedInTree()) {
     dst->AddState(ax::mojom::blink::State::kIgnored);
     dst->id = -1;
     dst->role = ax::mojom::blink::Role::kUnknown;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
-  dst->id = src->AXObjectID();
-  dst->role = src->RoleValue();
-
-  // TODO(crbug.com/1068668): AX onion soup - finish migrating the rest of
-  // this function inside of AXObject::Serialize and removing
-  // unneeded AXObject interfaces.
   src->Serialize(dst, ax_object_cache_->GetAXMode());
-
-  if (dst->id == ax_object_cache_->image_data_node_id()) {
-    // In general, string attributes should be truncated using
-    // TruncateAndAddStringAttribute, but ImageDataUrl contains a data url
-    // representing an image, so add it directly using AddStringAttribute.
-    dst->AddStringAttribute(ax::mojom::blink::StringAttribute::kImageDataUrl,
-                            src->ImageDataUrl(max_image_data_size_).Utf8());
-  }
-
-  WTF::Vector<TextChangedOperation>* offsets =
-      ax_object_cache_->GetFromTextOperationInNodeIdMap(src->AXObjectID());
-  if (src->IsEditable() && offsets) {
-    std::vector<int> start_offsets;
-    std::vector<int> end_offsets;
-    std::vector<int> start_anchor_ids;
-    std::vector<int> end_anchor_ids;
-    std::vector<int> operations_ints;
-
-    start_offsets.reserve(offsets->size());
-    end_offsets.reserve(offsets->size());
-    start_anchor_ids.reserve(offsets->size());
-    end_anchor_ids.reserve(offsets->size());
-    operations_ints.reserve(offsets->size());
-
-    for (auto operation : *offsets) {
-      start_offsets.push_back(operation.start);
-      end_offsets.push_back(operation.end);
-      start_anchor_ids.push_back(operation.start_anchor_id);
-      end_anchor_ids.push_back(operation.end_anchor_id);
-      operations_ints.push_back(static_cast<int>(operation.op));
-    }
-
-    dst->AddIntListAttribute(
-        ax::mojom::blink::IntListAttribute::kTextOperationStartOffsets,
-        start_offsets);
-    dst->AddIntListAttribute(
-        ax::mojom::blink::IntListAttribute::kTextOperationEndOffsets,
-        end_offsets);
-    dst->AddIntListAttribute(
-        ax::mojom::blink::IntListAttribute::kTextOperationStartAnchorIds,
-        start_anchor_ids);
-    dst->AddIntListAttribute(
-        ax::mojom::blink::IntListAttribute::kTextOperationEndAnchorIds,
-        end_anchor_ids);
-    dst->AddIntListAttribute(
-        ax::mojom::blink::IntListAttribute::kTextOperations, operations_ints);
-    ax_object_cache_->ClearTextOperationInNodeIdMap();
-  }
 }
 
 void BlinkAXTreeSource::Trace(Visitor* visitor) const {
   visitor->Trace(ax_object_cache_);
   visitor->Trace(root_);
   visitor->Trace(focus_);
-}
-
-AXObject* BlinkAXTreeSource::GetPluginRoot() {
-  AXObject* root = GetRoot();
-
-  HeapDeque<Member<AXObject>> objs_to_explore;
-  objs_to_explore.push_back(root);
-  while (objs_to_explore.size()) {
-    AXObject* obj = objs_to_explore.front();
-    objs_to_explore.pop_front();
-
-    Node* node = obj->GetNode();
-    if (node && node->IsElementNode()) {
-      Element* element = To<Element>(node);
-      if (element->IsHTMLWithTagName("embed")) {
-        return obj;
-      }
-    }
-
-    // Explore children of this object.
-    CacheChildrenIfNeeded(obj);
-    auto num_children = GetChildCount(obj);
-    for (size_t i = 0; i < num_children; i++) {
-      auto* child = ChildAt(obj, i);
-      if (!child) {
-        continue;
-      }
-      objs_to_explore.push_back(child);
-    }
-    ClearChildCache(obj);
-  }
-
-  return nullptr;
 }
 
 }  // namespace blink

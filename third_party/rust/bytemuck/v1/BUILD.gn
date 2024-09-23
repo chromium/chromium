@@ -1,0 +1,53 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "bytemuck"
+  epoch = "1"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/src/allocation.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/src/anybitpattern.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/src/checked.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/src/contiguous.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/src/internal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/src/must.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/src/no_uninit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/src/offset_of.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/src/pod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/src/pod_in_option.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/src/transparent.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/src/zeroable.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bytemuck-1.18.0/src/zeroable_in_option.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2018"
+  cargo_pkg_version = "1.18.0"
+  cargo_pkg_authors = "Lokathor <zefria@gmail.com>"
+  cargo_pkg_name = "bytemuck"
+  cargo_pkg_description = "A crate for mucking around with piles of bytes."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [ "//third_party/rust/bytemuck_derive/v1:lib" ]
+  features = [
+    "bytemuck_derive",
+    "derive",
+    "min_const_generics",
+  ]
+}

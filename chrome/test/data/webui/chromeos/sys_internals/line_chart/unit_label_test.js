@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {UnitLabel} from 'chrome://sys-internals/line_chart/unit_label.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {assertCloseTo} from '../test_util.js';
 

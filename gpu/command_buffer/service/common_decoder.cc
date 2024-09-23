@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/service/common_decoder.h"
 
 #include <stddef.h>
@@ -11,6 +16,7 @@
 #include <algorithm>
 
 #include "base/numerics/safe_math.h"
+#include "base/pickle.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
@@ -415,15 +421,15 @@ bool CommonDecoder::ReadColorSpace(uint32_t shm_id,
     return true;
   }
 
-  const char* data = static_cast<const char*>(
+  const uint8_t* data = static_cast<const uint8_t*>(
       GetAddressAndCheckSize(shm_id, shm_offset, color_space_size));
   if (!data) {
     return false;
   }
 
-  // Make a copy to reduce the risk of a time of check to time of use attack.
-  std::vector<char> color_space_data(data, data + color_space_size);
-  base::Pickle color_space_pickle(color_space_data.data(), color_space_size);
+  base::span<const uint8_t> color_space_data(data, data + color_space_size);
+  base::Pickle color_space_pickle =
+      base::Pickle::WithUnownedBuffer(color_space_data);
   base::PickleIterator iterator(color_space_pickle);
   if (!IPC::ParamTraits<gfx::ColorSpace>::Read(&color_space_pickle, &iterator,
                                                color_space)) {

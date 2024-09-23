@@ -1,136 +1,274 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/picker/metrics/picker_session_metrics.h"
 
-#include "ash/test/ash_test_base.h"
-#include "base/scoped_observation.h"
-#include "base/test/bind.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/test/test_structured_metrics_recorder.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/widget/widget.h"
+#include "ui/base/ime/fake_text_input_client.h"
 
 namespace ash {
 namespace {
 
-using ::testing::IsEmpty;
+namespace cros_events = metrics::structured::events::v2::cr_os_events;
 
-void WaitUntilNextFramePresented(ui::Compositor* compositor) {
-  base::RunLoop run_loop;
-  compositor->RequestSuccessfulPresentationTimeForNextFrame(
-      base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-}
+using ::testing::AllOf;
+using ::testing::Contains;
+using ::testing::Eq;
+using ::testing::Property;
 
-class PickerSessionMetricsTest : public AshTestBase {
+class PickerSessionMetricsTest : public testing::Test {
  public:
-  PickerSessionMetricsTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  void SetUp() override {
+    metrics_recorder_ =
+        std::make_unique<metrics::structured::TestStructuredMetricsRecorder>();
+    metrics_recorder_->Initialize();
+  }
+
+  void TearDown() override { metrics_recorder_.reset(); }
+
+ protected:
+  std::unique_ptr<metrics::structured::TestStructuredMetricsRecorder>
+      metrics_recorder_;
 };
 
-TEST_F(PickerSessionMetricsTest,
-       DoesNotRecordMetricsWithoutCallingStartRecording) {
+TEST_F(PickerSessionMetricsTest, RecordsUmaSessionOutcomeOnce) {
   base::HistogramTester histogram;
+  {
+    PickerSessionMetrics metrics;
 
-  PickerSessionMetrics metrics(base::TimeTicks::Now());
-  metrics.MarkInputFocus();
-  metrics.MarkContentsChanged();
-  metrics.MarkSearchResultsUpdated();
+    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
+    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
+    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kAbandoned);
+    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kUnknown);
+  }
 
-  EXPECT_THAT(histogram.GetTotalCountsForPrefix("Ash.Picker.Session"),
-              IsEmpty());
+  histogram.ExpectUniqueSample(
+      "Ash.Picker.Session.Outcome",
+      PickerSessionMetrics::SessionOutcome::kInsertedOrCopied, 1);
 }
 
-TEST_F(PickerSessionMetricsTest, RecordsFirstFocusLatency) {
+TEST_F(PickerSessionMetricsTest, RecordsUmaUnknownOutcomeOnDestruction) {
   base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  { PickerSessionMetrics metrics; }
 
-  const auto trigger_event_timestamp = base::TimeTicks::Now();
-  task_environment()->FastForwardBy(base::Seconds(1));
-  PickerSessionMetrics metrics(trigger_event_timestamp);
-  metrics.StartRecording(*widget);
-  task_environment()->FastForwardBy(base::Seconds(1));
-  metrics.MarkInputFocus();
-
-  histogram.ExpectUniqueTimeSample("Ash.Picker.Session.InputReadyLatency",
-                                   base::Seconds(2), 1);
+  histogram.ExpectUniqueSample("Ash.Picker.Session.Outcome",
+                               PickerSessionMetrics::SessionOutcome::kUnknown,
+                               1);
 }
 
-TEST_F(PickerSessionMetricsTest, RecordsOnlyFirstFocusLatency) {
-  base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
-
-  const auto trigger_event_timestamp = base::TimeTicks::Now();
-  task_environment()->FastForwardBy(base::Seconds(1));
-  PickerSessionMetrics metrics(trigger_event_timestamp);
-  metrics.StartRecording(*widget);
-  task_environment()->FastForwardBy(base::Seconds(1));
-  metrics.MarkInputFocus();
-  // Mark a second focus. Only the first focus should be recorded.
-  task_environment()->FastForwardBy(base::Seconds(1));
-  metrics.MarkInputFocus();
-
-  histogram.ExpectUniqueTimeSample("Ash.Picker.Session.InputReadyLatency",
-                                   base::Seconds(2), 1);
+auto ContainsEvent(const metrics::structured::Event& event) {
+  return Contains(AllOf(
+      Property("event name", &metrics::structured::Event::event_name,
+               Eq(event.event_name())),
+      Property("metric values", &metrics::structured::Event::metric_values,
+               Eq(std::ref(event.metric_values())))));
 }
 
-TEST_F(PickerSessionMetricsTest, RecordsPresentationLatencyForSearchField) {
-  base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
-
-  PickerSessionMetrics metrics(base::TimeTicks::Now());
-  metrics.StartRecording(*widget);
-  metrics.MarkContentsChanged();
-  WaitUntilNextFramePresented(widget->GetCompositor());
-
-  histogram.ExpectTotalCount(
-      "Ash.Picker.Session.PresentationLatency.SearchField", 1);
-}
-
-TEST_F(PickerSessionMetricsTest, RecordsPresentationLatencyForResults) {
-  base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
-
-  PickerSessionMetrics metrics(base::TimeTicks::Now());
-  metrics.StartRecording(*widget);
-  metrics.MarkSearchResultsUpdated();
-  WaitUntilNextFramePresented(widget->GetCompositor());
-
-  histogram.ExpectTotalCount(
-      "Ash.Picker.Session.PresentationLatency.SearchResults", 1);
-}
-
-TEST_F(PickerSessionMetricsTest, RecordsSearchLatencyOnSearchFinished) {
-  base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+TEST_F(PickerSessionMetricsTest, OnStartSessionMetricsOnPlainTextField) {
+  ui::FakeTextInputClient client(ui::TEXT_INPUT_TYPE_TEXT);
+  client.SetTextAndSelection(u"abcd", gfx::Range(1, 1));
 
   PickerSessionMetrics metrics;
-  metrics.StartRecording(*widget);
-  metrics.MarkContentsChanged();
-  task_environment()->FastForwardBy(base::Seconds(1));
-  metrics.MarkSearchResultsUpdated();
 
-  histogram.ExpectUniqueTimeSample("Ash.Picker.Session.SearchLatency",
-                                   base::Seconds(1), 1);
+  metrics.OnStartSession(&client);
+
+  cros_events::Picker_StartSession expected_event;
+  expected_event
+      .SetInputFieldType(cros_events::PickerInputFieldType::PLAIN_TEXT)
+      .SetSelectionLength(0);
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_->GetEvents();
+  ASSERT_EQ(events.size(), 1U);
+  EXPECT_THAT(events, ContainsEvent(expected_event));
 }
 
-TEST_F(PickerSessionMetricsTest, DoesNotRecordSearchLatencyOnCanceledSearch) {
-  base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+TEST_F(PickerSessionMetricsTest, OnStartSessionMetricsOnRichTextField) {
+  ui::FakeTextInputClient client(
+      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
+  client.SetTextAndSelection(u"abcd", gfx::Range(1, 4));
 
   PickerSessionMetrics metrics;
-  metrics.StartRecording(*widget);
-  metrics.MarkContentsChanged();
-  task_environment()->FastForwardBy(base::Seconds(1));
-  metrics.MarkContentsChanged();
-  task_environment()->FastForwardBy(base::Seconds(2));
-  metrics.MarkSearchResultsUpdated();
 
-  histogram.ExpectUniqueTimeSample("Ash.Picker.Session.SearchLatency",
-                                   base::Seconds(2), 1);
+  metrics.OnStartSession(&client);
+
+  cros_events::Picker_StartSession expected_event;
+  expected_event.SetInputFieldType(cros_events::PickerInputFieldType::RICH_TEXT)
+      .SetSelectionLength(3);
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_->GetEvents();
+  ASSERT_EQ(events.size(), 1U);
+  EXPECT_THAT(events, ContainsEvent(expected_event));
+}
+
+TEST_F(PickerSessionMetricsTest, OnStartSessionMetricsForNullTextInputClient) {
+  PickerSessionMetrics metrics;
+
+  metrics.OnStartSession(nullptr);
+
+  EXPECT_EQ(metrics_recorder_->GetEvents().size(), 1U);
+  cros_events::Picker_StartSession expected_event;
+  expected_event.SetInputFieldType(cros_events::PickerInputFieldType::NONE)
+      .SetSelectionLength(0);
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_->GetEvents();
+  ASSERT_EQ(events.size(), 1U);
+  EXPECT_THAT(events, ContainsEvent(expected_event));
+}
+
+TEST_F(PickerSessionMetricsTest, RecordsDefaultFinishSessionEvent) {
+  { PickerSessionMetrics metrics; }
+
+  cros_events::Picker_FinishSession expected_event;
+  expected_event.SetOutcome(cros_events::PickerSessionOutcome::UNKNOWN)
+      .SetAction(cros_events::PickerAction::UNKNOWN)
+      .SetResultSource(cros_events::PickerResultSource::UNKNOWN)
+      .SetResultType(cros_events::PickerResultType::UNKNOWN)
+      .SetTotalEdits(0)
+      .SetFinalQuerySize(0)
+      .SetResultIndex(-1);
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_->GetEvents();
+  ASSERT_EQ(events.size(), 1U);
+  EXPECT_THAT(events, ContainsEvent(expected_event));
+}
+
+TEST_F(PickerSessionMetricsTest, RecordsFinishSessionEventForInsert) {
+  {
+    PickerSessionMetrics metrics;
+    metrics.SetSelectedCategory(PickerCategory::kDatesTimes);
+    metrics.UpdateSearchQuery(u"abc");
+    metrics.UpdateSearchQuery(u"abcdef");
+    metrics.UpdateSearchQuery(u"abcde");
+    metrics.SetSelectedResult(
+        PickerTextResult(u"primary", PickerTextResult::Source::kDate), 3);
+    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
+  }
+
+  cros_events::Picker_FinishSession expected_event;
+  expected_event
+      .SetOutcome(cros_events::PickerSessionOutcome::INSERTED_OR_COPIED)
+      .SetAction(cros_events::PickerAction::OPEN_DATES_TIMES)
+      .SetResultSource(cros_events::PickerResultSource::DATES_TIMES)
+      .SetResultType(cros_events::PickerResultType::TEXT)
+      .SetTotalEdits(7)
+      .SetFinalQuerySize(5)
+      .SetResultIndex(3);
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_->GetEvents();
+  ASSERT_EQ(events.size(), 1U);
+  EXPECT_THAT(events, ContainsEvent(expected_event));
+}
+
+TEST_F(PickerSessionMetricsTest, RecordsFinishSessionEventForCaseTransform) {
+  {
+    PickerSessionMetrics metrics;
+    metrics.SetSelectedResult(
+        PickerCaseTransformResult(PickerCaseTransformResult::Type::kUpperCase),
+        0);
+    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
+  }
+
+  cros_events::Picker_FinishSession expected_event;
+  expected_event.SetOutcome(cros_events::PickerSessionOutcome::FORMAT)
+      .SetAction(cros_events::PickerAction::UNKNOWN)
+      .SetResultSource(cros_events::PickerResultSource::CASE_TRANSFORM)
+      .SetResultType(cros_events::PickerResultType::TEXT)
+      .SetTotalEdits(0)
+      .SetFinalQuerySize(0)
+      .SetResultIndex(0);
+  const std::vector<metrics::structured::Event>& events =
+      metrics_recorder_->GetEvents();
+  ASSERT_EQ(events.size(), 1U);
+  EXPECT_THAT(events, ContainsEvent(expected_event));
+}
+
+TEST_F(PickerSessionMetricsTest, UpdatesCapsLockPrefsWhenNotSelected) {
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterIntegerPref(
+      prefs::kPickerCapsLockDislayedCountPrefName, 2);
+  prefs.registry()->RegisterIntegerPref(
+      prefs::kPickerCapsLockSelectedCountPrefName, 1);
+
+  {
+    PickerSessionMetrics metrics(&prefs);
+    metrics.SetCapsLockDisplayed(true);
+    metrics.SetSelectedResult(
+        PickerCaseTransformResult(PickerCaseTransformResult::Type::kUpperCase),
+        0);
+    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
+  }
+
+  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockDislayedCountPrefName), 3);
+  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockSelectedCountPrefName), 1);
+}
+
+TEST_F(PickerSessionMetricsTest, UpdatesCapsLockPrefsWhenSelected) {
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterIntegerPref(
+      prefs::kPickerCapsLockDislayedCountPrefName, 2);
+  prefs.registry()->RegisterIntegerPref(
+      prefs::kPickerCapsLockSelectedCountPrefName, 1);
+
+  {
+    PickerSessionMetrics metrics(&prefs);
+    metrics.SetCapsLockDisplayed(true);
+    metrics.SetSelectedResult(
+        PickerCapsLockResult(
+            /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch),
+        0);
+    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
+  }
+
+  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockDislayedCountPrefName), 3);
+  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockSelectedCountPrefName), 2);
+}
+
+TEST_F(PickerSessionMetricsTest, DoesNotUpdateCapsLockPrefsWhenNotDisplayed) {
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterIntegerPref(
+      prefs::kPickerCapsLockDislayedCountPrefName, 2);
+  prefs.registry()->RegisterIntegerPref(
+      prefs::kPickerCapsLockSelectedCountPrefName, 1);
+
+  {
+    PickerSessionMetrics metrics(&prefs);
+    metrics.SetSelectedResult(
+        PickerCaseTransformResult(PickerCaseTransformResult::Type::kUpperCase),
+        0);
+    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
+  }
+
+  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockDislayedCountPrefName), 2);
+  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockSelectedCountPrefName), 1);
+}
+
+TEST_F(PickerSessionMetricsTest, HalvesCapsLockPrefs) {
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterIntegerPref(
+      prefs::kPickerCapsLockDislayedCountPrefName, 19);
+  prefs.registry()->RegisterIntegerPref(
+      prefs::kPickerCapsLockSelectedCountPrefName, 9);
+
+  {
+    PickerSessionMetrics metrics(&prefs);
+    metrics.SetCapsLockDisplayed(true);
+    metrics.SetSelectedResult(
+        PickerCapsLockResult(
+            /*enabled=*/true, PickerCapsLockResult::Shortcut::kAltSearch),
+        0);
+    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
+  }
+
+  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockDislayedCountPrefName), 10);
+  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockSelectedCountPrefName), 5);
 }
 
 }  // namespace

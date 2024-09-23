@@ -61,7 +61,7 @@ class FactoryTest(unittest.TestCase):
     def test_mac(self):
         self.assert_port(port_name='mac',
                          os_name='mac',
-                         os_version='mac10.15',
+                         os_version='mac14',
                          cls=mac.MacPort)
 
     def test_linux(self):
@@ -188,6 +188,12 @@ class FactoryTest(unittest.TestCase):
     def test_unknown_dir(self):
         with self.assertRaises(ValueError):
             self.get_port(target='unknown')
+
+    def test_both_configuration_and_target_uses_configuration_without_gn(self):
+        port = self.get_port(
+            target='Debug',
+            configuration='Release')
+        self.assertEqual(port._options.configuration, 'Release')
 
     def test_both_configuration_and_target_is_an_error(self):
         with self.assertRaises(ValueError):

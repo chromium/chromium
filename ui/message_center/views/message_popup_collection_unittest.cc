@@ -4,11 +4,14 @@
 
 #include "ui/message_center/views/message_popup_collection.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/display/display.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -17,6 +20,8 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/desktop_message_popup_collection.h"
 #include "ui/message_center/views/message_popup_view.h"
+#include "ui/message_center/views/notification_view.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_base.h"
 
 using message_center::MessageCenter;
@@ -47,9 +52,7 @@ class MockMessagePopupCollection : public DesktopMessagePopupCollection {
       AnimationProgressed(animation());
   }
 
-  void RemovePopup(MockMessagePopupView* popup) {
-    base::Erase(popups_, popup);
-  }
+  void RemovePopup(MockMessagePopupView* popup) { std::erase(popups_, popup); }
 
   bool IsAnimating() { return animation()->is_animating(); }
 
@@ -138,7 +141,7 @@ class MockMessagePopupView : public MessagePopupView {
         title_(base::UTF16ToUTF8(
             MessageCenter::Get()->FindVisibleNotificationById(id)->title())) {
     auto* view = new views::View;
-    view->SetPreferredSize(gfx::Size(kNotificationWidth, init_height));
+    view->SetPreferredSize(gfx::Size(GetNotificationWidth(), init_height));
     AddChildView(view);
   }
 
@@ -167,21 +170,23 @@ class MockMessagePopupView : public MessagePopupView {
 
   void AutoCollapse() override {
     if (expandable_)
-      children().front()->SetPreferredSize(gfx::Size(kNotificationWidth, 42));
+      children().front()->SetPreferredSize(
+          gfx::Size(GetNotificationWidth(), 42));
   }
 
   void SetPreferredHeight(int height) {
-    children().front()->SetPreferredSize(gfx::Size(kNotificationWidth, height));
+    children().front()->SetPreferredSize(
+        gfx::Size(GetNotificationWidth(), height));
   }
 
   void SetHovered(bool is_hovered) {
     if (is_hovered) {
-      ui::MouseEvent enter_event(ui::ET_MOUSE_ENTERED, gfx::Point(),
+      ui::MouseEvent enter_event(ui::EventType::kMouseEntered, gfx::Point(),
                                  gfx::Point(), ui::EventTimeForNow(), 0, 0);
       OnMouseEntered(enter_event);
     } else {
-      ui::MouseEvent exit_event(ui::ET_MOUSE_EXITED, gfx::Point(), gfx::Point(),
-                                ui::EventTimeForNow(), 0, 0);
+      ui::MouseEvent exit_event(ui::EventType::kMouseExited, gfx::Point(),
+                                gfx::Point(), ui::EventTimeForNow(), 0, 0);
       OnMouseExited(exit_event);
     }
   }
@@ -347,6 +352,8 @@ class MessagePopupCollectionTest : public views::ViewsTestBase,
     return popup_collection_->popups()[index];
   }
 
+  void CloseAllPopupsNow() { popup_collection()->CloseAllPopupsNow(); }
+
   size_t GetPopupCounts() const { return popup_collection_->popups().size(); }
 
   void SetDisplayInfo(const gfx::Rect& work_area,
@@ -458,7 +465,7 @@ TEST_F(MessagePopupCollectionTest, UpdateContents) {
   EXPECT_TRUE(GetPopup(id)->updated());
 }
 
-// TODO(crbug.com/1403996): Flaky on all platforms.
+// TODO(crbug.com/40885754): Flaky on all platforms.
 TEST_F(MessagePopupCollectionTest, DISABLED_UpdateContentsCausesPopupClose) {
   std::string id = AddNotification();
   AnimateToEnd();
@@ -932,7 +939,7 @@ TEST_F(MessagePopupCollectionTest, PopupCollectionBounds) {
   int expected_height = r0.height() + kMarginBetweenPopups + r1.height() +
                         kMarginBetweenPopups + r2.height();
 
-  EXPECT_EQ(gfx::Rect(r2.x(), r2.y(), kNotificationWidth, expected_height),
+  EXPECT_EQ(gfx::Rect(r2.x(), r2.y(), GetNotificationWidth(), expected_height),
             popup_collection()->popup_collection_bounds());
 
   MessageCenter::Get()->RemoveNotification(id0, true);
@@ -941,7 +948,7 @@ TEST_F(MessagePopupCollectionTest, PopupCollectionBounds) {
   r1 = GetPopup(id1)->GetBoundsInScreen();
   r2 = GetPopup(id2)->GetBoundsInScreen();
 
-  EXPECT_EQ(gfx::Rect(r2.x(), r2.y(), kNotificationWidth,
+  EXPECT_EQ(gfx::Rect(r2.x(), r2.y(), GetNotificationWidth(),
                       r1.height() + kMarginBetweenPopups + r2.height()),
             popup_collection()->popup_collection_bounds());
 }
@@ -1140,6 +1147,21 @@ TEST_F(MessagePopupCollectionTest, PopupWidgetClosedOutsideDuringFadeOut) {
   EXPECT_FALSE(IsAnimating());
 }
 
+TEST_F(MessagePopupCollectionTest, NotifyPopupClosedThenCloseAllPopups) {
+  std::string id1 = AddNotification();
+  std::string id2 = AddNotification();
+  AnimateUntilIdle();
+
+  // This test make sure that when `NotifyPopupClosed()` is called and then
+  // `CloseAllPopupsNow()` is triggered, no crash would happen. This scenerio
+  // can happen when `MessagePopupView::~MessagePopupView()` is called, and then
+  // at the same time another entity (i.e.
+  // AshMessagePopupCollection::NotifierCollisionHandler) calls
+  // `CloseAllPopupsNow()` (b/312515706).
+  popup_collection()->NotifyPopupClosed(GetPopup(id1));
+  CloseAllPopupsNow();
+}
+
 // Notification removing may occur while the animation triggered by the previous
 // operation is running. As result, notification is removed from the message
 // center but its popup is still kept. At this moment, a new notification with
@@ -1178,6 +1200,15 @@ TEST_F(MessagePopupCollectionTest, RemoveNotificationWhileAnimating) {
   // Verifies that the new notification popup is shown.
   EXPECT_EQ(1u, GetPopupCounts());
   EXPECT_EQ(new_notification_title, GetPopup(notification_id)->title());
+}
+
+TEST_F(MessagePopupCollectionTest, AccessibileAttributes) {
+  // Add a notification.
+  std::string id = AddNotification();
+
+  ui::AXNodeData data;
+  GetPopup(id)->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kAlertDialog);
 }
 
 }  // namespace message_center

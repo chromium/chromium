@@ -51,7 +51,7 @@ int32_t DeviceEnumerationResourceHelper::EnumerateDevices(
       PluginResource::RENDERER, msg,
       base::BindOnce(
           &DeviceEnumerationResourceHelper::OnPluginMsgEnumerateDevicesReply,
-          AsWeakPtr(), output, callback));
+          weak_ptr_factory_.GetWeakPtr(), output, callback));
   return PP_OK_COMPLETIONPENDING;
 }
 

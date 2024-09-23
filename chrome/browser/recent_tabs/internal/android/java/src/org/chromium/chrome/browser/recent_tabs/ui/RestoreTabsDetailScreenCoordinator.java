@@ -26,6 +26,7 @@ public class RestoreTabsDetailScreenCoordinator {
     private static final int RECYLCER_VIEW_DIRECTION_UP = -1;
     private static final int RECYLCER_VIEW_DIRECTION_DOWN = 1;
     private final RecyclerView mRecyclerView;
+    private BindContext mBindContext;
     private FaviconHelper mFaviconHelper;
 
     /** The delegate of the class. */
@@ -40,7 +41,7 @@ public class RestoreTabsDetailScreenCoordinator {
     public RestoreTabsDetailScreenCoordinator(
             Context context, View view, PropertyModel model, Profile profile) {
         mFaviconHelper = new FaviconHelper();
-        BindContext bindContext =
+        mBindContext =
                 new BindContext(
                         new DefaultFaviconHelper(),
                         FaviconUtils.createCircularIconGenerator(context),
@@ -75,7 +76,7 @@ public class RestoreTabsDetailScreenCoordinator {
                 });
 
         RestoreTabsDetailScreenViewBinder.ViewHolder viewHolder =
-                new RestoreTabsDetailScreenViewBinder.ViewHolder(view, bindContext);
+                new RestoreTabsDetailScreenViewBinder.ViewHolder(view, mBindContext);
 
         PropertyModelChangeProcessor.create(
                 model, viewHolder, RestoreTabsDetailScreenViewBinder::bind);
@@ -84,5 +85,7 @@ public class RestoreTabsDetailScreenCoordinator {
     public void destroy() {
         mFaviconHelper.destroy();
         mFaviconHelper = null;
+        mBindContext.destroy();
+        mBindContext = null;
     }
 }

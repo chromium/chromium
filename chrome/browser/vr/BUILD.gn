@@ -35,8 +35,6 @@ component("vr_ui") {
     "elements/rect.h",
     "elements/scaled_depth_adjuster.cc",
     "elements/scaled_depth_adjuster.h",
-    "elements/spinner.cc",
-    "elements/spinner.h",
     "elements/text.cc",
     "elements/text.h",
     "elements/textured_element.cc",
@@ -69,8 +67,6 @@ component("vr_ui") {
     "renderers/grid_renderer.h",
     "renderers/radial_gradient_quad_renderer.cc",
     "renderers/radial_gradient_quad_renderer.h",
-    "renderers/texture_copy_renderer.cc",
-    "renderers/texture_copy_renderer.h",
     "renderers/textured_quad_renderer.cc",
     "renderers/textured_quad_renderer.h",
     "skia_surface_provider.cc",
@@ -90,6 +86,13 @@ component("vr_ui") {
     "ui_scene_creator.h",
     "vr_ui_export.h",
   ]
+
+  if (is_win) {
+    sources += [
+      "elements/spinner.cc",
+      "elements/spinner.h",
+    ]
+  }
 
   deps = [
     ":vr_base",
@@ -149,6 +152,8 @@ component("vr_common") {
     "frame_type.h",
     "graphics_delegate.cc",
     "graphics_delegate.h",
+    "vr_browser_renderer_thread.cc",
+    "vr_browser_renderer_thread.h",
     "vr_export.h",
     "vr_web_contents_observer.cc",
     "vr_web_contents_observer.h",
@@ -160,11 +165,10 @@ component("vr_common") {
   ]
 
   deps = [
+    ":vr_ui",
     "//base",
     "//cc/paint",
     "//chrome/common:constants",
-    "//components/omnibox/browser",
-    "//components/omnibox/browser",
     "//components/ukm/content",
     "//content/public/browser",
     "//device/base",
@@ -186,22 +190,25 @@ component("vr_common") {
 
   if (is_win) {
     sources += [
-      "win/graphics_delegate_win.cc",
-      "win/graphics_delegate_win.h",
-      "win/vr_browser_renderer_thread_win.cc",
-      "win/vr_browser_renderer_thread_win.h",
+      "graphics_delegate_win.cc",
+      "graphics_delegate_win.h",
+    ]
+
+    deps += [ "//services/viz/public/cpp/gpu" ]
+  }
+
+  if (is_android) {
+    sources += [
+      "graphics_delegate_android.cc",
+      "graphics_delegate_android.h",
     ]
 
     deps += [
-      "//gpu/command_buffer/client:gles2_c_lib",
-      "//services/viz/public/cpp/gpu",
+      "//components/webxr",
+      "//device/vr/android:vr_android",
+      "//gpu/command_buffer/service:gles2",
+      "//ui/gl/init",
     ]
-
-    # Windows doesn't have app bundles, so include the UI directly.
-    deps += [ ":vr_ui" ]
-  }
-
-  if (!use_command_buffer) {
   }
 }
 
@@ -214,8 +221,6 @@ component("vr_base") {
     "macros.h",
     "model/camera_model.h",
     "model/capturing_state_model.h",
-    "model/controller_model.cc",
-    "model/controller_model.h",
     "model/web_vr_model.h",
     "pose_util.cc",
     "pose_util.h",
@@ -232,7 +237,6 @@ component("vr_base") {
   defines = [ "VR_BASE_IMPLEMENTATION" ]
 
   public_deps = [
-    "//components/omnibox/browser",
     "//components/strings:components_strings_grit",
     "//content/public/common",
     "//device/vr:vr_gl_bindings",
@@ -264,7 +268,6 @@ test("vr_common_unittests") {
     "elements/linear_layout_unittest.cc",
     "elements/rect_unittest.cc",
     "elements/scaled_depth_adjuster_unittest.cc",
-    "elements/spinner_unittest.cc",
     "elements/text_unittest.cc",
     "elements/transient_element_unittest.cc",
     "elements/ui_element_unittest.cc",
@@ -278,6 +281,10 @@ test("vr_common_unittests") {
     "ui_scene_unittest.cc",
     "ui_unittest.cc",
   ]
+
+  if (is_win) {
+    sources += [ "elements/spinner_unittest.cc" ]
+  }
 
   deps = [
     ":vr_test_support",
@@ -299,9 +306,6 @@ test("vr_common_unittests") {
       "//chrome:chrome_android_core",
       "//ui/android:ui_java",
     ]
-  }
-  if (is_win) {
-    configs += [ "//build/config/win:delayloads" ]
   }
 }
 
@@ -429,6 +433,7 @@ if (!is_android) {
       "//chrome/common:constants",
       "//chrome/test:xr_browser_tests_common",
       "//device/vr:vr",
+      "//device/vr:vr_test_hook",
       "//device/vr/buildflags:buildflags",
       "//device/vr/orientation",
       "//device/vr/public/mojom:isolated_xr_service",

@@ -4,7 +4,8 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_linux || is_chromeos || is_win || is_mac || is_fuchsia)
+assert(is_linux || is_chromeos || is_win || is_mac)
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 mojom("mojo_bindings") {
   sources = [ "tab_search.mojom" ]

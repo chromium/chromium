@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package plus_addresses;
+
+option optimize_for = LITE_RUNTIME;
+option java_multiple_files = true;
+
+message CompactPlusAddressBlockedFacets {
+  // Regular expression that specifies which domains should not have Plus
+  // Addresses offered on them.
+  optional string exclusion_pattern = 1;
+
+  // Regular expression that specifies which domains should be exempt from
+  // a blocklist rule.
+  optional string exception_pattern = 2;
+}

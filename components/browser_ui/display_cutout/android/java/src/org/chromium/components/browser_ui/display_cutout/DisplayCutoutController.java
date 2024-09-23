@@ -22,9 +22,9 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -69,8 +69,8 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     private final SafeAreaInsetsTrackerImpl mSafeAreaInsetsTracker;
 
     /**
-     * An interface to track general changes to Safe Area Insets. TODO(https://crbug.com/1475820)
-     * Develop beyond this minimal stub.
+     * An interface to track general changes to Safe Area Insets. TODO(crbug.com/40279791) Develop
+     * beyond this minimal stub.
      */
     public interface SafeAreaInsetsTracker {
 
@@ -79,8 +79,8 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     }
 
     /**
-     * Tracks general changes to Safe Area Insets. TODO(https://crbug.com/1475820) Track the Notch
-     * and bottom in a class in a separate file.
+     * Tracks general changes to Safe Area Insets. TODO(crbug.com/40279791) Track the Notch and
+     * bottom in a class in a separate file.
      */
     private static class SafeAreaInsetsTrackerImpl implements SafeAreaInsetsTracker {
         private boolean mIsViewportFitCover;
@@ -110,9 +110,11 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         @Nullable
         WebContents getWebContents();
 
-        /** Returns the view this controller uses for safe area updates, if there is one. */
+        /**
+         * Returns the InsetObserver this controller uses for safe area updates, if there is one.
+         */
         @Nullable
-        InsetObserver getInsetObserverView();
+        InsetObserver getInsetObserver();
 
         /** Returns whether the user can interact with the associated WebContents/UI element. */
         boolean isInteractable();
@@ -161,7 +163,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
      * drawing around the Notch and pushing Safe Area Insets back to Blink for the web page.
      *
      * @param delegate Provides access to the environment in which this runs, e.g. the Activity.
-     *     TODO(https://crbug.com/1475820) make this constructor package-private when refactoring.
+     *     TODO(crbug.com/40279791) make this constructor package-private when refactoring.
      */
     @VisibleForTesting
     public DisplayCutoutController(Delegate delegate) {
@@ -177,9 +179,9 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     @VisibleForTesting
     public void maybeAddObservers() {
         Activity activity = mDelegate.getAttachedActivity();
-        if (activity == null) return;
+        if (activity == null || mWebContentsObserver != null) return;
 
-        updateInsetObserver(mDelegate.getInsetObserverView());
+        updateInsetObserver(mDelegate.getInsetObserver());
         updateBrowserCutoutObserver(mDelegate.getBrowserDisplayCutoutModeSupplier());
         mWebContentsObserver =
                 new WebContentsObserver(mDelegate.getWebContents()) {
@@ -212,6 +214,11 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         mInsetObserver = observer;
         if (mInsetObserver != null) {
             mInsetObserver.addObserver(this);
+
+            // For E2E pages, populate the SAI during initialization.
+            if (mDelegate.isDrawEdgeToEdgeEnabled()) {
+                maybePushSafeAreaInsets(mInsetObserver.getCurrentSafeArea());
+            }
         }
     }
 
@@ -246,7 +253,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         mSafeAreaInsetsTracker.setIsViewportFitCover(
                 value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT);
 
-        // TODO(crbug.com/1480477): Investigate whether if() can be turned into assert.
+        // TODO(crbug.com/40281421): Investigate whether if() can be turned into assert.
         // Most likely we will need to just remove this section when E2E is launched.
         if (!mDelegate.isDrawEdgeToEdgeEnabled()
                 && !mDelegate.getWebContents().isFullscreenForCurrentTab()
@@ -275,22 +282,29 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     /** Implements {@link WindowInsetsObserver}. */
     @Override
     public void onSafeAreaChanged(Rect area) {
+        maybePushSafeAreaInsets(area);
+    }
+
+    private void maybePushSafeAreaInsets(Rect area) {
         WebContents webContents = mDelegate.getWebContents();
         if (webContents == null) return;
+        if (webContents.getTopLevelNativeWindow() == null) return;
 
         float dipScale = getDipScale();
-        area.set(
-                adjustInsetForScale(area.left, dipScale),
-                adjustInsetForScale(area.top, dipScale),
-                adjustInsetForScale(area.right, dipScale),
-                adjustInsetForScale(area.bottom, dipScale));
+        Rect safeArea =
+                new Rect(
+                        adjustInsetForScale(area.left, dipScale),
+                        adjustInsetForScale(area.top, dipScale),
+                        adjustInsetForScale(area.right, dipScale),
+                        adjustInsetForScale(area.bottom, dipScale));
 
         // Notify Blink of the new insets for css env() variables.
-        webContents.setDisplayCutoutSafeArea(area);
+        webContents.setDisplayCutoutSafeArea(safeArea);
     }
 
     /**
      * Adjusts a WindowInset inset to a CSS pixel value.
+     *
      * @param inset The inset as an integer.
      * @param dipScale The devices dip scale as an integer.
      * @return The CSS pixel value adjusted for scale.

@@ -10,7 +10,6 @@
 
 #include "base/no_destructor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-
 namespace actions {
 
 namespace {
@@ -296,6 +295,17 @@ ActionItem::ActionItemBuilder::SetInvokeActionCallback(
   return std::move(this->SetInvokeActionCallback(std::move(callback)));
 }
 
+ActionItem::ActionItemBuilder&
+ActionItem::ActionItemBuilder::SetIsShowingBubble(bool showing_bubble) & {
+  action_item_->SetIsShowingBubble(showing_bubble);
+  return *this;
+}
+
+ActionItem::ActionItemBuilder&&
+ActionItem::ActionItemBuilder::SetIsShowingBubble(bool showing_bubble) && {
+  return std::move(this->SetIsShowingBubble(showing_bubble));
+}
+
 std::unique_ptr<ActionItem> ActionItem::ActionItemBuilder::Build() && {
   CreateChildren();
   return std::move(action_item_);
@@ -352,6 +362,10 @@ void ActionItem::SetAccelerator(ui::Accelerator accelerator) {
     return;
   }
   accelerator_ = accelerator;
+  ActionItemChanged();
+}
+
+void ActionItem::AfterPropertyChange(const void* key, int64_t old_value) {
   ActionItemChanged();
 }
 
@@ -456,6 +470,15 @@ void ActionItem::SetInvokeActionCallback(InvokeActionCallback callback) {
     return;
   }
   callback_ = std::move(callback);
+  ActionItemChanged();
+}
+
+bool ActionItem::GetIsShowingBubble() const {
+  return is_showing_bubble_;
+}
+
+void ActionItem::SetIsShowingBubble(bool showing_bubble) {
+  is_showing_bubble_ = showing_bubble;
   ActionItemChanged();
 }
 

@@ -4,6 +4,7 @@
 
 #include "content/browser/media/capture/frame_sink_video_capture_device.h"
 
+#include <array>
 #include <memory>
 
 #include "base/containers/flat_map.h"
@@ -220,7 +221,7 @@ class MockVideoFrameReceiver : public media::VideoFrameReceiver {
   MOCK_METHOD1(OnLog, void(const std::string& message));
   MOCK_METHOD0(OnStarted, void());
   MOCK_METHOD0(OnStopped, void());
-  void OnStartedUsingGpuDecode() final { NOTREACHED(); }
+  void OnStartedUsingGpuDecode() final { NOTREACHED_IN_MIGRATION(); }
 
   base::ReadOnlySharedMemoryRegion TakeBufferHandle(int buffer_id) {
     DCHECK_NOT_ON_DEVICE_THREAD();
@@ -429,7 +430,8 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
     const size_t frame_allocation_size =
         media::VideoFrame::AllocationSize(kFormat, kResolution);
     CHECK_LE(frame_allocation_size, mapping.size());
-    const uint8_t* src = mapping.GetMemoryAs<const uint8_t>();
+    const base::span<const uint8_t> src =
+        mapping.GetMemoryAsSpan<const uint8_t>();
     const uint8_t expected_value = GetFrameFillValue(frame_number);
     for (size_t i = 0; i < frame_allocation_size; ++i) {
       if (src[i] != expected_value) {
@@ -472,9 +474,10 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, CapturesAndDeliversFrames) {
   for (int in_flight_count = 1; in_flight_count <= kMaxSimultaneousFrames;
        ++in_flight_count) {
     for (int iteration = 0; iteration < kNumFramesToDeliver; ++iteration) {
-      int buffer_ids[kMaxSimultaneousFrames] = {-1};
-      MockFrameSinkVideoConsumerFrameCallbacks
-          callbackses[kMaxSimultaneousFrames];
+      std::array<int, kMaxSimultaneousFrames> buffer_ids = {-1, -1, -1};
+      std::array<MockFrameSinkVideoConsumerFrameCallbacks,
+                 kMaxSimultaneousFrames>
+          callbackses;
 
       // Simulate |in_flight_count| frame captures and expect the frames to be
       // delivered to the VideoFrameReceiver.

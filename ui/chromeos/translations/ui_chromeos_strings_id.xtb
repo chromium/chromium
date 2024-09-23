@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Host SOCKS</translation>
 <translation id="3104793765551262433">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Diblokir oleh Administrator Anda, Detail</translation>
-<translation id="3113153474486991170">Tidak dapat membuka "<ph name="PATH" />" dari lokasi ini. Salin ke "File saya" untuk membuka.</translation>
 <translation id="3113592018909187986">Tersisa 1 upaya lagi. Anda tidak akan dapat menggunakan jaringan ini hingga Anda menyiapkan PIN baru.</translation>
 <translation id="3124404833828281817">Orang melamun</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Batalkan <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Tidak Diaktifkan, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="3691184985318546178">Sinhala</translation>
+<translation id="3702842351052426940">Kartu SIM atau profil eSIM Anda mungkin dinonaktifkan. Coba ganti kartu SIM atau profil eSIM.</translation>
 <translation id="3722341589402358578">Terjadi error. Beberapa item mungkin belum dibuang.</translation>
 <translation id="3726463242007121105">Perangkat ini tidak dapat dibuka karena sistem berkasnya tidak didukung.</translation>
 <translation id="3727148787322499904">Perubahan pada setelan ini akan berpengaruh pada semua jaringan bersama</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Proxy ini diberlakukan oleh administrator Anda</translation>
 <translation id="3830674330436234648">Pemutaran tidak tersedia</translation>
 <translation id="383652340667548381">Serb</translation>
+<translation id="3839045880592694915">Modem tidak diizinkan untuk terhubung oleh operator Anda. Hubungi operator untuk mengetahui detail selengkapnya.</translation>
 <translation id="385051799172605136">Kembali</translation>
-<translation id="3851491607336266896">Terhubung, konektivitas terbatas</translation>
 <translation id="3855472144336161447">Neo 2 Jerman</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3866249974567520381">Deskripsi</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">File Microsoft yang baru saja dibuka telah dipindahkan ke OneDrive</translation>
 <translation id="4002066346123236978">Judul</translation>
 <translation id="4017788180641807848">Inggris (AS) dengan keyboard Workman</translation>
-<translation id="4019998208269143058">Sematkan ke file cepat</translation>
 <translation id="4040753847560036377">PUK salah</translation>
 <translation id="4057991113334098539">Mengaktifkan...</translation>
 <translation id="4092890906744441904">Irlandia</translation>
+<translation id="4101601646343868113">Login ke jaringan seluler Anda dan konfirmasi paket data seluler Anda aktif</translation>
 <translation id="4124731372776320263">Menyinkronkan 1 file Drive</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Pindahkan item yang tidak Anda butuhkan ke sampah</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Tamil dengan keyboard Tamil99</translation>
 <translation id="5633226425545095130">Memindahkan item ini akan membagikannya ke siapa saja yang dapat melihat folder bersama '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">Dengar</translation>
+<translation id="5650895901941743674">Periksa konfigurasi APN Anda</translation>
 <translation id="5669691691057771421">Masukkan PIN baru</translation>
 <translation id="5678784840044122290">Aplikasi Linux akan tersedia dalam Terminal Anda dan juga mungkin menampilkan ikon di Peluncur.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Tidak dapat memutuskan hubungan dari arsip atau disk virtual<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Baterai Ponsel <ph name="BATTERY_STATUS" />%, Sambungkan</translation>
 <translation id="6269630227984243955">Malaysia</translation>
 <translation id="6271903698064569429">File tidak dapat diupload karena "<ph name="SHARED_DRIVE_NAME" />" tidak memiliki penyimpanan yang cukup.</translation>
+<translation id="6279140785485544797">Masa berlaku paket data seluler Anda mungkin sudah berakhir. Hubungi operator untuk mendapatkan dukungan.</translation>
 <translation id="6287852322318138013">Pilih aplikasi untuk membuka file ini</translation>
 <translation id="6295542640242147836">Kunci SIM</translation>
 <translation id="6296410173147755564">PUK tidak valid</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423">Arsip <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Melambaikan tangan</translation>
 <translation id="6327785803543103246">Penemuan otomatis proxy web</translation>
-<translation id="6337014272874260727">Lepaskan dari file cepat</translation>
 <translation id="6339145975392024142">Internasional AS (PC)</translation>
 <translation id="6356685157277930264">Jendela masukan file</translation>
 <translation id="6358884629796491903">Naga</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Direktori saat ini</translation>
 <translation id="6751256176799620176">1 folder dipilih</translation>
 <translation id="6755827872271341378">Perangkat ChromeOS Flex</translation>
+<translation id="6777029074498310250">Kunjungi <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> untuk informasi selengkapnya</translation>
 <translation id="6790428901817661496">Putar</translation>
 <translation id="6794539005637808366">Pulihkan item atau tarik ke folder baru di luar sampah</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Tamil dengan keyboard InScript</translation>
 <translation id="7088615885725309056">Lawas</translation>
 <translation id="7103992300314999525">Makedonia</translation>
+<translation id="7104338189998813914">Terjadi masalah saat mengakses akun OneDrive Anda</translation>
 <translation id="7106346894903675391">Beli penyimpanan lagi...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;telusuri Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Fonetik Kannada</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Tunggu sebentar</translation>
 <translation id="7600126690270271294">Serbia</translation>
 <translation id="7603724359189955920">Petak</translation>
+<translation id="7624010287655004652">Dikunci oleh operator seluler lain</translation>
 <translation id="7627790789328695202">Ups, <ph name="FILE_NAME" /> sudah ada. Ganti nama dan coba lagi.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% selesai.</translation>
 <translation id="7649070708921625228">Bantuan</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Daftar file telah diubah menjadi tampilan thumbnail.</translation>
 <translation id="8601932370724196034">File gambar Crostini</translation>
 <translation id="8609695766746872526">Islandia</translation>
+<translation id="8630384863424041081">Masukkan PIN kartu SIM Anda atau PIN default yang disediakan oleh operator Anda. Hubungi operator Anda untuk mendapatkan dukungan.</translation>
 <translation id="863903787380594467">PIN salah. Tersisa <ph name="RETRIES" /> upaya lagi.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>
 <translation id="8656407365183407932">File offline Anda harus dihapus</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">File ini bersifat rahasia dan tunduk kepada pembatasan oleh kebijakan administrator.</translation>
 <translation id="8712637175834984815">Mengerti</translation>
 <translation id="8713112442029511308">Malta</translation>
-<translation id="8714138378966541668">Dikunci oleh penyedia</translation>
 <translation id="8714406895390098252">Sepeda</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> dipilih.</translation>
 <translation id="872537912056138402">Kroat</translation>

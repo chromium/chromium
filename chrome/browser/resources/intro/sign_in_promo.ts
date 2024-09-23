@@ -2,23 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://intro/tangible_sync_style_shared.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import './strings.m.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {IntroBrowserProxy} from './browser_proxy.js';
 import {IntroBrowserProxyImpl} from './browser_proxy.js';
-import {getTemplate} from './sign_in_promo.html.js';
+import {getCss} from './sign_in_promo.css.js';
+import {getHtml} from './sign_in_promo.html.js';
 
 export interface SignInPromoElement {
   $: {
@@ -38,7 +36,8 @@ export interface BenefitCard {
   iconId: string;
 }
 
-const SignInPromoElementBase = WebUiListenerMixin(I18nMixin(PolymerElement));
+const SignInPromoElementBase =
+    WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
 
 export class SignInPromoElement extends SignInPromoElementBase {
   static get is() {
@@ -66,43 +65,35 @@ export class SignInPromoElement extends SignInPromoElementBase {
     ];
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The list of benefits the user will get when signed in to Chrome
        */
-      benefitCards_: {
-        type: Array,
-      },
+      benefitCards_: {type: Array},
 
-      managedDeviceDisclaimer_: {
-        type: String,
-        value: '',
-      },
-
-      isDeviceManaged_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('isDeviceManaged'),
-      },
-
-      anyButtonClicked_: {
-        type: Boolean,
-        value: false,
-      },
+      managedDeviceDisclaimer_: {type: String},
+      isDeviceManaged_: {type: Boolean},
+      anyButtonClicked_: {type: Boolean},
     };
   }
 
   private browserProxy_: IntroBrowserProxy =
       IntroBrowserProxyImpl.getInstance();
-  private benefitCards_: BenefitCard[];
+  protected benefitCards_: BenefitCard[];
   private divisionLineResizeObserver_: ResizeObserver|null = null;
-  private managedDeviceDisclaimer_: string;
-  private isDeviceManaged_: boolean;
-  private anyButtonClicked_: boolean;
+  protected managedDeviceDisclaimer_: string = '';
+  protected isDeviceManaged_: boolean =
+      loadTimeData.getBoolean('isDeviceManaged');
+  private anyButtonClicked_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -124,8 +115,7 @@ export class SignInPromoElement extends SignInPromoElementBase {
     this.divisionLineResizeObserver_!.disconnect();
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.addEventListener(
         'view-enter-start', this.onViewEnterStart_.bind(this));
   }
@@ -150,15 +140,13 @@ export class SignInPromoElement extends SignInPromoElementBase {
 
   private handleManagedDeviceDisclaimerUpdate_(disclaimer: string) {
     this.managedDeviceDisclaimer_ = disclaimer;
-    this.$.managedDeviceDisclaimer.classList.remove('temporarily-hidden');
-    this.$.managedDeviceDisclaimer.classList.toggle('fast-fade-in');
   }
 
   /**
    * Disable buttons if the device is managed until the management
    * disclaimer is loaded or if a button was clicked.
    */
-  private areButtonsDisabled_() {
+  protected areButtonsDisabled_(): boolean {
     return (this.isDeviceManaged_ &&
             this.managedDeviceDisclaimer_.length === 0) ||
         this.anyButtonClicked_;
@@ -187,25 +175,21 @@ export class SignInPromoElement extends SignInPromoElementBase {
         '--safe-zone-animation-translation-height', translationHeight + 'px');
   }
 
-  private onContinueWithAccountClick_() {
+  protected onContinueWithAccountClick_() {
     this.anyButtonClicked_ = true;
     this.browserProxy_.continueWithAccount();
   }
 
-  private onContinueWithoutAccountClick_() {
+  protected onContinueWithoutAccountClick_() {
     this.anyButtonClicked_ = true;
     this.browserProxy_.continueWithoutAccount();
   }
 
-  // To keep the layout stable during animations, for non-managed devices the
-  // disclaimer is omitted from the layout, and for managed devices it is
+  // To keep the layout stable during animations, for managed devices it is
   // invisible while we're fetching the text to display.
-  private getDisclaimerVisibilityClass_() {
-    if (!this.isDeviceManaged_) {
-      return 'hidden';
-    }
+  protected getDisclaimerVisibilityClass_() {
     return this.managedDeviceDisclaimer_.length === 0 ? 'temporarily-hidden' :
-                                                        '';
+                                                        'fast-fade-in';
   }
 }
 

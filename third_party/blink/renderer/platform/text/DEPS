@@ -8,6 +8,7 @@ include_rules = [
     # Dependencies.
     "+base/apple",
     "+base/mac",
+    "+third_party/blink/renderer/platform/geometry/physical_direction.h",
     "+third_party/blink/renderer/platform/text/date_components.h",
     "+third_party/blink/renderer/platform/heap",
     "+third_party/blink/renderer/platform/language.h",

@@ -46,29 +46,53 @@
           </if>
           <include name="IDR_CHROME_PASSWORD_MANAGER_LOGO" file="${branding_path_component}/google_password_manager_logo.svg" type="BINDATA" />
           <include name="IDR_CHROME_PASSWORD_MANAGER_PWA_ICON" file="${branding_path_component}/google_password_manager_pwa_icon.svg" type="BINDATA" />
-          <include name="IDR_PRODUCT_LOGO_24PX_1X" file="${branding_path_component}/chrome_24px_1x.svg" type="BINDATA" />
           <include name="IDR_PRODUCT_LOGO_128PX_SVG" file="${branding_path_component}/chrome_128px.svg" type="BINDATA" />
           <include name="IDR_GSHIELD_ICON_SVG" file="${branding_path_component}/gshield.svg" type="BINDATA" />
           <if expr="chromeos_ash">
-            <include name="IDR_PRODUCT_LOGO_24PX_2X" file="${branding_path_component}/chrome_24px_2x.svg" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_24PX_1X" file="${branding_path_component}/chromeos/chrome_24px_1x.svg" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_24PX_2X" file="${branding_path_component}/chromeos/chrome_24px_2x.svg" type="BINDATA" />
             <!-- Used by lacros. -->
             <include name="IDR_PRODUCT_LOGO_256_CANARY" file="${branding_path_component}/product_logo_256_canary.png" type="BINDATA" />
             <!-- Used by ChromeOS OOBE -->
             <include name="IDR_CROS_OOBE_PRODUCT_NAME" file="${branding_path_component}/chromeos/oobe/project_simon/product_name.txt" type="BINDATA" />
             <include name="IDR_CROS_OOBE_WELCOME_BACKDROP" file="${branding_path_component}/chromeos/oobe/project_simon/welcome_backdrop.svg" type="BINDATA" />
           </if>
+            <include name="IDR_PRODUCT_LOGO_16_STABLE_SHORTCUTS" file="google_chrome/product_logo_16.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_CANARY_16_SHORTCUTS" file="google_chrome/product_logo_16_canary.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_DEV_16_SHORTCUTS" file="google_chrome/product_logo_16_dev.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_BETA_16_SHORTCUTS" file="google_chrome/product_logo_16_beta.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_24_STABLE_SHORTCUTS" file="google_chrome/product_logo_24.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_CANARY_24_SHORTCUTS" file="google_chrome/product_logo_24_canary.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_DEV_24_SHORTCUTS" file="google_chrome/product_logo_24_dev.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_BETA_24_SHORTCUTS" file="google_chrome/product_logo_24_beta.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_64_STABLE_SHORTCUTS" file="google_chrome/product_logo_64.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_CANARY_64_SHORTCUTS" file="google_chrome/product_logo_64_canary.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_DEV_64_SHORTCUTS" file="google_chrome/product_logo_64_dev.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_BETA_64_SHORTCUTS" file="google_chrome/product_logo_64_beta.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_128_STABLE_SHORTCUTS" file="google_chrome/product_logo_128.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_CANARY_128_SHORTCUTS" file="google_chrome/product_logo_128_canary.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_DEV_128_SHORTCUTS" file="google_chrome/product_logo_128_dev.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_BETA_128_SHORTCUTS" file="google_chrome/product_logo_128_beta.png" type="BINDATA" />
         </then>
         <else> <!-- not _google_chrome -->
           <if expr="_is_chrome_for_testing_branded">
             <then>
               <include name="IDR_PRODUCT_LOGO_SVG" file="chromium/product_logo.svg" type="BINDATA" />
               <include name="IDR_PRODUCT_LOGO_ANIMATION_SVG" file="chromium/product_logo_animation.svg" type="BINDATA" />
+              <include name="IDR_PRODUCT_LOGO_16_CFT_SHORTCUTS" file="google_chrome/google_chrome_for_testing/product_logo_16.png" type="BINDATA" />
+              <include name="IDR_PRODUCT_LOGO_24_CFT_SHORTCUTS" file="google_chrome/google_chrome_for_testing/product_logo_24.png" type="BINDATA" />
+              <include name="IDR_PRODUCT_LOGO_64_CFT_SHORTCUTS" file="google_chrome/google_chrome_for_testing/product_logo_64.png" type="BINDATA" />
+              <include name="IDR_PRODUCT_LOGO_128_CFT_SHORTCUTS" file="google_chrome/google_chrome_for_testing/product_logo_128.png" type="BINDATA" />
             </then>
             <else> <!-- not _is_chrome_for_testing_branded -->
               <include name="IDR_PRODUCT_LOGO_SVG" file="${branding_path_component}/product_logo.svg" type="BINDATA" />
               <include name="IDR_PRODUCT_LOGO_ANIMATION_SVG" file="${branding_path_component}/product_logo_animation.svg" type="BINDATA" />
             </else>
           </if> <!-- _is_chrome_for_testing_branded -->
+            <include name="IDR_PRODUCT_LOGO_16_SHORTCUTS" file="chromium/product_logo_16.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_24_SHORTCUTS" file="chromium/product_logo_24.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_64_SHORTCUTS" file="chromium/product_logo_64.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_128_SHORTCUTS" file="chromium/product_logo_128.png" type="BINDATA" />
         </else>
       </if> <!-- _google_chrome -->
       <!-- NOTE: product_logo_*.* files beyond what's listed above are

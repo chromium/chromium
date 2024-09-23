@@ -9,11 +9,13 @@ found in the LICENSE file.
     padding-top: 16px;
   }
 
-  :host-context([orientation=vertical]) #oldPasswordInput2 {
-    padding-top: 24px;
-    text-align: initial;
-    width: calc(var(--oobe-adaptive-dialog-width) - 48px
-        - 2 * var(--oobe-adaptive-dialog-content-padding));
+  @media (orientation: portrait) {
+    #oldPasswordInput2 {
+      padding-top: 24px;
+      text-align: initial;
+      width: calc(var(--oobe-adaptive-dialog-width) - 48px
+          - 2 * var(--oobe-adaptive-dialog-content-padding));
+    }
   }
 
   :host-context(.jelly-enabled)

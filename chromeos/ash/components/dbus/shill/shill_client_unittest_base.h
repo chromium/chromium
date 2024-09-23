@@ -18,7 +18,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_client_helper.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_observer.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
 #include "dbus/object_proxy.h"
@@ -110,6 +110,10 @@ class ShillClientUnittestBase : public testing::Test {
 
   // Expects the reader to have a uint32_t
   static void ExpectUint32Argument(uint32_t expected_value,
+                                   dbus::MessageReader* reader);
+
+  // Expects the reader to have a int
+  static void ExpectIntArgument(int expected_value,
                                    dbus::MessageReader* reader);
 
   // Expects the reader to have an array of bytes

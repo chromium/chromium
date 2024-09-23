@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/cast.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//build/config/fuchsia/gn_configs.gni")
@@ -13,7 +12,7 @@ assert(!is_posix, "Fuchsia is not POSIX.")
 config("compiler") {
   configs = [ "//third_party/fuchsia-gn-sdk/src/config:compiler" ]
 
-  # TODO(https://crbug.com/706592): The stack defaults to 256k on Fuchsia (see
+  # TODO(crbug.com/40513182): The stack defaults to 256k on Fuchsia (see
   # https://fuchsia.googlesource.com/zircon/+/master/system/private/zircon/stack.h#9),
   # but on other platforms it's much higher, so a variety of code assumes more
   # will be available. Raise to 8M which matches e.g. macOS.
@@ -31,52 +30,29 @@ group("deployment_resources") {
     "//build/util/lib/",
     "//third_party/fuchsia-sdk/sdk/.build-id/",
     "//third_party/fuchsia-sdk/sdk/meta/manifest.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx-meta.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvm",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvm-meta.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/merkleroot",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/merkleroot-meta.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/pm",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/pm-meta.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/symbolizer",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/symbolizer-meta.json",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/zbi",
-    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/zbi-meta.json",
+    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/",
   ]
 
   if (fuchsia_additional_boot_images == []) {
     data += [ "${boot_image_root}" ]
-  }
-
-  foreach(fuchsia_additional_boot_image, fuchsia_additional_boot_images) {
-    data += [ "${fuchsia_additional_boot_image}/" ]
-  }
-
-  if (test_isolate_uses_emulator) {
-    if (test_host_cpu == "x64") {
-      data += [
-        "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/aemu_internal",
-        "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/aemu_internal-meta.json",
-        "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/qemu_internal",
-        "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/qemu_internal-meta.json",
-      ]
-    } else if (test_host_cpu == "arm64") {
-      data += [
-        "//third_party/qemu-${host_os}-${test_host_cpu}/",
-
-        # TODO(https://crbug.com/1336776): remove when ffx has native support
-        # for starting emulator on arm64 host.
-        "//third_party/fuchsia-sdk/sdk/tools/x64/qemu_internal-meta.json",
-      ]
+  } else {
+    # We never need to use both qemu images and device images.
+    foreach(fuchsia_additional_boot_image, fuchsia_additional_boot_images) {
+      data += [ "${fuchsia_additional_boot_image}/" ]
     }
+  }
+
+  if (test_isolate_uses_emulator && test_host_cpu == "arm64") {
+    data += [
+      "//third_party/qemu-${host_os}-${test_host_cpu}/",
+      "//third_party/edk2/",
+    ]
   }
 }
 
 # Copy the loader to place it at the expected path in the final package.
 copy("sysroot_asan_libs") {
-  sources =
-      [ "${fuchsia_sdk}/arch/${target_cpu}/sysroot/dist/lib/asan/ld.so.1" ]
+  sources = [ "${fuchsia_arch_root}/sysroot/dist/lib/asan/ld.so.1" ]
   outputs = [ "${root_out_dir}/lib/asan/{{source_file_part}}" ]
 }
 

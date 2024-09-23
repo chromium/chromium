@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SYSTEM_ACTUATOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -30,6 +32,9 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
     virtual void ProcessConsentAction(ConsentAction consent_action) = 0;
     virtual void ShowUI() = 0;
     virtual void CloseUI() = 0;
+    virtual void HandleTrigger(
+        std::optional<std::string_view> preset_query_id,
+        std::optional<std::string_view> freeform_text) = 0;
     virtual EditorMetricsRecorder* GetMetricsRecorder() = 0;
     virtual size_t GetSelectedTextLength() = 0;
   };
@@ -48,6 +53,9 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
   void ShowUI() override;
   void CloseUI() override;
   void SubmitFeedback(const std::string& description) override;
+  void OnTrigger(orca::mojom::TriggerContextPtr trigger_context) override;
+  void EmitMetricEvent(orca::mojom::MetricEvent metric_event) override;
+  void OnInputContextUpdated(const GURL& url);
 
   // Relevant input events
   void OnFocus(int context_id);
@@ -67,6 +75,8 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
   // Only one text insertion can be queued at a time, with new text insertions
   // overwriting previously queued insertions.
   std::unique_ptr<EditorTextInsertion> queued_text_insertion_;
+
+  GURL current_url_;
 
   base::OneShotTimer announcement_delay_;
   base::WeakPtrFactory<EditorSystemActuator> weak_ptr_factory_{this};

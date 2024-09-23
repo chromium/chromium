@@ -9,18 +9,20 @@ import org.chromium.ui.dragdrop.DropDataAndroid;
 
 /** */
 public class ChromeDropDataAndroid extends DropDataAndroid {
-    private static final String TAB_DATA_PREFIX = "TabId=";
-    private static final String TAB_DATA_DELIMITER = "\n";
-    public final Tab mTab;
+    public final Tab tab;
+    public final boolean isTabInGroup;
+    public final boolean allowTabDragToCreateInstance;
 
     /** Not generated from java */
     ChromeDropDataAndroid(Builder builder) {
         super(null, null, null, null, null);
-        this.mTab = builder.mTab;
+        tab = builder.mTab;
+        isTabInGroup = builder.mIsTabInGroup;
+        allowTabDragToCreateInstance = builder.mAllowTabDragToCreateInstance;
     }
 
     public boolean hasTab() {
-        return mTab != null;
+        return tab != null;
     }
 
     @Override
@@ -31,7 +33,7 @@ public class ChromeDropDataAndroid extends DropDataAndroid {
     /** Build clip data text with tab info. */
     public String buildTabClipDataText() {
         if (hasTab()) {
-            return mTab.getUrl().getSpec();
+            return tab.getUrl().getSpec();
         }
         return null;
     }
@@ -39,13 +41,34 @@ public class ChromeDropDataAndroid extends DropDataAndroid {
     /** Builder for @{@link ChromeDropDataAndroid} instance. */
     public static class Builder {
         private Tab mTab;
+        private boolean mIsTabInGroup;
+        private boolean mAllowTabDragToCreateInstance;
 
         /**
          * @param tab to be set in clip data.
-         * @return @{@link ChromeDropDataAndroid.Builder} instance.
+         * @return {@link ChromeDropDataAndroid.Builder} instance.
          */
         public Builder withTab(Tab tab) {
-            this.mTab = tab;
+            mTab = tab;
+            return this;
+        }
+
+        /**
+         * @param isTabInGroup Whether the dragged tab is in a tab group.
+         * @return {@link ChromeDropDataAndroid.Builder} instance.
+         */
+        public Builder withTabInGroup(boolean isTabInGroup) {
+            mIsTabInGroup = isTabInGroup;
+            return this;
+        }
+
+        /**
+         * @param allowDragToCreateInstance Whether tab drag to create new instance should be
+         *     allowed.
+         * @return {@link ChromeDropDataAndroid.Builder} instance.
+         */
+        public Builder withAllowDragToCreateInstance(boolean allowDragToCreateInstance) {
+            mAllowTabDragToCreateInstance = allowDragToCreateInstance;
             return this;
         }
 

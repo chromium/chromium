@@ -70,6 +70,10 @@ const InstallConstants kInstallModes[] = {
         .app_icon_resource_index =
             icon_resources::kApplicationIndex,  // App icon resource index.
         .app_icon_resource_id = IDR_MAINFRAME,  // App icon resource id.
+        .html_doc_icon_resource_index =
+            icon_resources::kHtmlDocIndex,  // HTML doc icon resource index.
+        .pdf_doc_icon_resource_index =
+            icon_resources::kPDFDocIndex,  // PDF doc icon resource index.
         .sandbox_sid_prefix =
             L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
             L"924012149-",  // App container sid prefix for sandbox.
@@ -118,6 +122,14 @@ const InstallConstants kInstallModes[] = {
         .app_icon_resource_index =
             icon_resources::kBetaApplicationIndex,  // App icon resource index.
         .app_icon_resource_id = IDR_X005_BETA,      // App icon resource id.
+        // Using Beta icon instead of html/pdf-specific icons. The PDF bar would
+        // interfere with the 'B' on the icon.
+        .html_doc_icon_resource_index =
+            icon_resources::kBetaApplicationIndex,  // HTML doc icon resource
+                                                    // index.
+        .pdf_doc_icon_resource_index =
+            icon_resources::kBetaApplicationIndex,  // PDF doc icon resource
+                                                    // index.
         .sandbox_sid_prefix =
             L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
             L"924012151-",  // App container sid prefix for sandbox.
@@ -166,6 +178,14 @@ const InstallConstants kInstallModes[] = {
         .app_icon_resource_index =
             icon_resources::kDevApplicationIndex,  // App icon resource index.
         .app_icon_resource_id = IDR_X004_DEV,      // App icon resource id.
+        // Using Dev icon instead of html/pdf-specific icons. The PDF bar would
+        // interfere with the 'D' on the icon.
+        .html_doc_icon_resource_index =
+            icon_resources::kDevApplicationIndex,  // HTML doc icon resource
+                                                   // index.
+        .pdf_doc_icon_resource_index =
+            icon_resources::kDevApplicationIndex,  // PDF doc icon resource
+                                                   // index.
         .sandbox_sid_prefix =
             L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
             L"924012152-",  // App container sid prefix for sandbox.
@@ -217,6 +237,13 @@ const InstallConstants kInstallModes[] = {
         .app_icon_resource_index =
             icon_resources::kSxSApplicationIndex,  // App icon resource index.
         .app_icon_resource_id = IDR_SXS,           // App icon resource id.
+        // Using Canary icon instead of html/pdf-specific icons.
+        .html_doc_icon_resource_index =
+            icon_resources::kSxSApplicationIndex,  // HTML doc icon resource
+                                                   // index.
+        .pdf_doc_icon_resource_index =
+            icon_resources::kSxSApplicationIndex,  // PDF doc icon resource
+                                                   // index.
         .sandbox_sid_prefix =
             L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
             L"924012150-",  // App container sid prefix for sandbox.

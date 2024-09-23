@@ -10,11 +10,11 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './online_authentication_screen.html.js';
 
@@ -25,13 +25,8 @@ enum DialogMode {
   LOADING = 'loading',
 }
 
-const OnlineAuthenticationScreenElementBase = mixinBehaviors(
-  [LoginScreenBehavior, MultiStepBehavior, OobeI18nBehavior],
-  PolymerElement) as { new (): PolymerElement
-    & LoginScreenBehaviorInterface
-    & MultiStepBehaviorInterface
-    & OobeI18nBehaviorInterface,
-  };
+const OnlineAuthenticationScreenElementBase =
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 export class OnlineAuthenticationScreenElement extends OnlineAuthenticationScreenElementBase {
   static get is() {

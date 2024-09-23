@@ -59,7 +59,7 @@ class POLICY_EXPORT URLBlocklist {
   void Block(const base::Value::List& filters);
 
   // URLs matching one of the |filters| will be allowed. If a URL is both
-  // Blocked and Allowed, Allow takes precedence.
+  // blocked and allowed, allow takes precedence.
   void Allow(const base::Value::List& filters);
 
   // Returns true if the URL is blocked.
@@ -67,14 +67,11 @@ class POLICY_EXPORT URLBlocklist {
 
   URLBlocklistState GetURLBlocklistState(const GURL& url) const;
 
-  // Returns the number of items in the list.
-  size_t Size() const;
-
  private:
-  // Returns true if |lhs| takes precedence over |rhs|.
-  static bool FilterTakesPrecedence(
-      const url_matcher::util::FilterComponents& lhs,
-      const url_matcher::util::FilterComponents& rhs);
+  // Returns the highest priority filter in `filters_` matching the given URL,
+  // or nullptr if none found.
+  const url_matcher::util::FilterComponents* GetHighestPriorityFilterFor(
+      const GURL& url) const;
 
   base::MatcherStringPattern::ID id_ = 0;
   std::map<base::MatcherStringPattern::ID, url_matcher::util::FilterComponents>
@@ -86,7 +83,7 @@ class POLICY_EXPORT URLBlocklist {
 // blocklist.
 class BlocklistSource {
  public:
-  virtual ~BlocklistSource() {}
+  virtual ~BlocklistSource() = default;
 
   // Returns the blocklist which can contains URLs, domain/subdomains and
   // schemes.

@@ -63,7 +63,7 @@ CrosAppsApiInfo& CrosAppsApiInfo::AddAllowlistedOrigins(
 }
 
 CrosAppsApiInfo& CrosAppsApiInfo::SetRequiredFeatures(
-    std::initializer_list<const std::reference_wrapper<const base::Feature>>
+    std::initializer_list<std::reference_wrapper<const base::Feature>>
         features) {
   required_features_ = decltype(required_features_)(features);
   return *this;

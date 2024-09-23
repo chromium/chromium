@@ -25,6 +25,7 @@
 #define CHROME_CHROME_ELF_NT_REGISTRY_NT_REGISTRY_H_
 
 #include <windows.h>
+
 #include <winternl.h>  // NTSTATUS
 
 #include <string>

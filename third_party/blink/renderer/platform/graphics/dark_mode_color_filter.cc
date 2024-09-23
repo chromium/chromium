@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/dark_mode_color_filter.h"
 
+#include <array>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "cc/paint/color_filter.h"
@@ -161,13 +163,13 @@ std::unique_ptr<DarkModeColorFilter> DarkModeColorFilter::FromSettings(
     const DarkModeSettings& settings) {
   switch (settings.mode) {
     case DarkModeInversionAlgorithm::kSimpleInvertForTesting:
-      uint8_t identity[256], invert[256];
+      std::array<uint8_t, 256> identity, invert;
       for (int i = 0; i < 256; ++i) {
         identity[i] = i;
         invert[i] = 255 - i;
       }
-      return ColorFilterWrapper::Create(
-          cc::ColorFilter::MakeTableARGB(identity, invert, invert, invert));
+      return ColorFilterWrapper::Create(cc::ColorFilter::MakeTableARGB(
+          identity.data(), invert.data(), invert.data(), invert.data()));
 
     case DarkModeInversionAlgorithm::kInvertBrightness:
       return ColorFilterWrapper::Create(
@@ -180,7 +182,7 @@ std::unique_ptr<DarkModeColorFilter> DarkModeColorFilter::FromSettings(
     case DarkModeInversionAlgorithm::kInvertLightnessLAB:
       return std::make_unique<LABColorFilter>();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 DarkModeColorFilter::~DarkModeColorFilter() {}

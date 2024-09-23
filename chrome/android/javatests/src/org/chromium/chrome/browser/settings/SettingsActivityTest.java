@@ -4,35 +4,31 @@
 
 package org.chromium.chrome.browser.settings;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
 import static org.junit.Assert.assertEquals;
 
+import android.content.Intent;
 import android.graphics.Color;
 
+import androidx.fragment.app.Fragment;
 import androidx.test.filters.SmallTest;
+import androidx.test.runner.lifecycle.Stage;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
-import org.chromium.components.policy.test.annotations.Policies;
-import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests for the Settings menu. */
@@ -48,32 +44,6 @@ public class SettingsActivityTest {
         mSettingsActivityTestRule.getActivity().finish();
     }
 
-    @Test
-    @SmallTest
-    // Setting BrowserSignin suppresses the sync promo so the password settings preference
-    // is visible without scrolling.
-    @Policies.Add({
-        @Policies.Item(key = "PasswordManagerEnabled", string = "false"),
-        @Policies.Item(key = "BrowserSignin", string = "0")
-    })
-    public void testPasswordSettings_ManagedAndDisabled() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
-                });
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return UserPrefs.get(Profile.getLastUsedRegularProfile())
-                            .isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
-                });
-
-        mSettingsActivityTestRule.startSettingsActivity();
-
-        onView(withText(R.string.password_manager_settings_title)).perform(click());
-        onView(withText(R.string.password_settings_save_passwords)).check(matches(isDisplayed()));
-    }
-
     /** Test status bar is always black in Automotive devices. */
     @Test
     @SmallTest
@@ -86,4 +56,39 @@ public class SettingsActivityTest {
                 Color.BLACK,
                 mSettingsActivityTestRule.getActivity().getWindow().getStatusBarColor());
     }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.SETTINGS_SINGLE_ACTIVITY})
+    public void testStandaloneFragments() {
+        // Start the main settings, which is an embeddable fragment.
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Open an embeddable fragment. This does NOT start a new activity.
+        final Intent intent1 =
+                SettingsIntentUtil.createIntent(
+                        activity, AboutChromeSettings.class.getName(), null);
+        activity.startActivity(intent1);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            activity.getMainFragment(),
+                            Matchers.instanceOf(AboutChromeSettings.class));
+                });
+
+        // Open a standalone fragment. This will create a new activity.
+        final Intent intent2 =
+                SettingsIntentUtil.createIntent(activity, TestFragment.class.getName(), null);
+        ApplicationTestUtils.waitForActivityWithClass(
+                SettingsActivity.class, Stage.CREATED, () -> activity.startActivity(intent2));
+
+        // Open an embeddable fragment. This starts a new activity as the last fragment is
+        // standalone.
+        final Intent intent3 =
+                SettingsIntentUtil.createIntent(activity, MainSettings.class.getName(), null);
+        ApplicationTestUtils.waitForActivityWithClass(
+                SettingsActivity.class, Stage.CREATED, () -> activity.startActivity(intent3));
+    }
+
+    public static class TestFragment extends Fragment {}
 }

@@ -125,6 +125,9 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
 
   void ResetRecurrentErrorCountForTesting();
 
+  bool HttpsFirstBalancedModeSuppressedForTesting();
+  void SetHttpsFirstBalancedModeSuppressedForTesting(bool suppressed);
+
   // SetClockForTesting takes ownership of the passed in clock.
   void SetClockForTesting(std::unique_ptr<base::Clock> clock);
 
@@ -223,6 +226,8 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   int recurrent_interstitial_threshold_for_testing;
   enum RecurrentInterstitialMode recurrent_interstitial_mode_for_testing;
   int recurrent_interstitial_reset_time_for_testing;
+
+  bool https_first_balanced_mode_suppressed_for_testing;
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_STATEFUL_SSL_HOST_STATE_DELEGATE_H_

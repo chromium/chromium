@@ -104,8 +104,7 @@ class MODULES_EXPORT WebEmbeddedWorkerImpl final : public WebEmbeddedWorker {
       const WebFetchClientSettingsObject& passed_settings_object);
 
   // Client must remain valid through the entire life time of the worker.
-  const raw_ptr<WebServiceWorkerContextClient, ExperimentalRenderer>
-      worker_context_client_;
+  const raw_ptr<WebServiceWorkerContextClient> worker_context_client_;
 
   std::unique_ptr<ServiceWorkerThread> worker_thread_;
 

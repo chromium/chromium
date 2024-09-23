@@ -5,7 +5,9 @@
 #include "components/metrics/drive_metrics_provider.h"
 
 #include <windows.h>
+
 #include <winioctl.h>
+
 #include <vector>
 
 #include "base/files/file.h"

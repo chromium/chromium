@@ -125,8 +125,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest, AuraWindowLookup) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
-                       // TODO(crbug.com/1377184): Re-enable this test
-                       // TODO(crbug.com/1376643): Re-enable this test
+                       // TODO(crbug.com/40874148): Re-enable this test
+                       // TODO(crbug.com/40873813): Re-enable this test
                        DISABLED_StaleFrameContentOnEvictionNormal) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kMinimalPageDataURL)));
 
@@ -245,8 +245,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
 }
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(1126339): fix the way how exo creates accelerated widgets. At the
-// moment, they are created only after the client attaches a buffer to a
+// TODO(crbug.com/40148102): fix the way how exo creates accelerated widgets. At
+// the moment, they are created only after the client attaches a buffer to a
 // surface, which is incorrect and results in the "[destroyed object]: error 1:
 // popup parent not constructed" error.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -491,16 +491,16 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDevtoolsBrowserTest,
   // Send down and enter to select next item and cause change listener to fire.
   // The event listener causes devtools to break (and enter a nested event
   // loop).
-  ui::KeyEvent press_down(ui::ET_KEY_PRESSED, ui::VKEY_DOWN,
+  ui::KeyEvent press_down(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
                           ui::DomCode::ARROW_DOWN, ui::EF_NONE,
                           ui::DomKey::ARROW_DOWN, ui::EventTimeForNow());
-  ui::KeyEvent release_down(ui::ET_KEY_RELEASED, ui::VKEY_DOWN,
+  ui::KeyEvent release_down(ui::EventType::kKeyReleased, ui::VKEY_DOWN,
                             ui::DomCode::ARROW_DOWN, ui::EF_NONE,
                             ui::DomKey::ARROW_DOWN, ui::EventTimeForNow());
-  ui::KeyEvent press_enter(ui::ET_KEY_PRESSED, ui::VKEY_RETURN,
+  ui::KeyEvent press_enter(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
                            ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
                            ui::EventTimeForNow());
-  ui::KeyEvent release_enter(ui::ET_KEY_RELEASED, ui::VKEY_RETURN,
+  ui::KeyEvent release_enter(ui::EventType::kKeyReleased, ui::VKEY_RETURN,
                              ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
                              ui::EventTimeForNow());
   auto* host_view_aura = static_cast<content::RenderWidgetHostViewAura*>(
@@ -635,7 +635,6 @@ class RenderWidgetHostViewAuraActiveWidgetTest : public ContentBrowserTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kExposeInternalsForTesting);
   }
 

@@ -323,7 +323,7 @@ CohortImpl::GenerateImportRequestBody() {
       GetParams()->GetChromeDeviceParams().market_segment;
 
   DeviceMetadata* device_metadata = import_request.mutable_device_metadata();
-  device_metadata->set_chromeos_version(utils::GetChromeMilestone());
+  device_metadata->set_chrome_milestone(utils::GetChromeMilestone());
   device_metadata->set_hardware_id(utils::GetFullHardwareClass());
   device_metadata->set_chromeos_channel(
       utils::GetChromeChannel(version_channel));
@@ -352,6 +352,28 @@ CohortImpl::GenerateImportRequestBody() {
   if (!new_cohort_metadata.has_value()) {
     LOG(ERROR) << "Failed to calculate new cohort metadata.";
     return std::nullopt;
+  }
+
+  base::Time active_ts = GetParams()->GetActiveTs();
+  std::optional<base::Time> first_active_week_ts = utils::GetFirstActiveWeek();
+
+  if (!first_active_week_ts.has_value() ||
+      first_active_week_ts.value() == base::Time() ||
+      first_active_week_ts.value() == base::Time::UnixEpoch()) {
+    LOG(ERROR) << "Failed to retrieve first active week from VPD. "
+                  "Setting first active week to UNKNOWN.";
+    cohort_metadata->set_first_active_week("UNKNOWN");
+  } else {
+    int max_days_in_5_weeks = 7 * 5;
+    bool within_date_range = utils::IsFirstActiveUnderNDaysAgo(
+        active_ts, first_active_week_ts.value(), max_days_in_5_weeks);
+
+    // Privacy approved 5 weeks of first active week history in cohort ping.
+    // In order for analysts to avoid double counting on the server-side.
+    if (within_date_range) {
+      cohort_metadata->set_first_active_week(
+          utils::ConvertTimeToISO8601String(first_active_week_ts.value()));
+    }
   }
 
   *cohort_metadata = new_cohort_metadata.value();

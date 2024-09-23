@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_FAKE_UDP_SOCKET_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/time/time.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -118,7 +119,7 @@ class FakeUdpSocket : public network::mojom::UDPSocket {
   net::Error udp_connect_code_ = net::ERR_FAILED;
   net::Error udp_send_code_ = net::ERR_FAILED;
   net::Error udp_on_received_code_ = net::ERR_FAILED;
-  base::span<const uint8_t> udp_on_received_data_ = {};
+  base::raw_span<const uint8_t> udp_on_received_data_ = {};
   bool mojo_disconnect_on_connect_ = false;
   bool mojo_disconnect_on_send_ = false;
   bool mojo_disconnect_on_receive_ = false;

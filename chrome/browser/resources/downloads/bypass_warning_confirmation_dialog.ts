@@ -3,71 +3,74 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'bypass-warning-confirmation-dialog' is the dialog that allows
- * bypassing a download warning (keeping a file flagged as dangerous). A
- * 'success' indicates the warning bypass was confirmed and the dangerous file
- * was downloaded.
+ * @fileoverview 'downloads-bypass-warning-confirmation-dialog' is the dialog
+ * that allows bypassing a download warning (keeping a file flagged as
+ * dangerous). A 'success' indicates the warning bypass was confirmed and the
+ * dangerous file was downloaded.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './bypass_warning_confirmation_dialog.html.js';
+import {getCss} from './bypass_warning_confirmation_dialog.css.js';
+import {getHtml} from './bypass_warning_confirmation_dialog.html.js';
 
 
-export interface DownloadBypassWarningConfirmationDialogElement {
+export interface DownloadsBypassWarningConfirmationDialogElement {
   $: {
     dialog: CrDialogElement,
   };
 }
 
-const DownloadBypassWarningConfirmationDialogBase = PolymerElement;
-
-export class DownloadBypassWarningConfirmationDialogElement extends
-    DownloadBypassWarningConfirmationDialogBase {
+export class DownloadsBypassWarningConfirmationDialogElement extends
+    CrLitElement {
   static get is() {
-    return 'download-bypass-warning-confirmation-dialog';
+    return 'downloads-bypass-warning-confirmation-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      fileName: String,
+      fileName: {type: String},
     };
   }
 
-  fileName: string;
+  fileName: string = '';
 
   wasConfirmed(): boolean {
     return this.$.dialog.getNative().returnValue === 'success';
   }
 
-  private onDownloadDangerousClick_() {
+  protected onDownloadDangerousClick_() {
     getAnnouncerInstance().announce(
         loadTimeData.getString('screenreaderSavedDangerous'));
     this.$.dialog.close();
   }
 
-  private onCancelClick_() {
+  protected onCancelClick_() {
     this.$.dialog.cancel();
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'download-bypass-warning-confirmation-dialog':
-        DownloadBypassWarningConfirmationDialogElement;
+    'downloads-bypass-warning-confirmation-dialog':
+        DownloadsBypassWarningConfirmationDialogElement;
   }
 }
 
 customElements.define(
-    DownloadBypassWarningConfirmationDialogElement.is,
-    DownloadBypassWarningConfirmationDialogElement);
+    DownloadsBypassWarningConfirmationDialogElement.is,
+    DownloadsBypassWarningConfirmationDialogElement);

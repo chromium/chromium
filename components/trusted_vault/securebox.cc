@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "crypto/hkdf.h"
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"
@@ -43,7 +43,7 @@ const char kHkdfInfoWithPublicKey[] = "P256 HKDF-SHA-256 AES-128-GCM";
 const char kHkdfInfoWithoutPublicKey[] = "SHARED HKDF-SHA-256 AES-128-GCM";
 
 // Returns bytes representation of |str| (without trailing \0).
-base::span<const uint8_t> StringToBytes(base::StringPiece str) {
+base::span<const uint8_t> StringToBytes(std::string_view str) {
   return base::as_bytes(base::make_span(str));
 }
 

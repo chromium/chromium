@@ -5,6 +5,7 @@
 ts_definition_files = [
   "//tools/typescript/definitions/bluetooth.d.ts",
   "//tools/typescript/definitions/bluetooth_private.d.ts",
+  "//tools/typescript/definitions/chrome_event.d.ts",
   "//tools/typescript/definitions/chrome_send.d.ts",
   "//tools/typescript/definitions/input_method_private.d.ts",
   "//tools/typescript/definitions/language_settings_private.d.ts",

@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/win/scoped_handle.h"
+#include "media/base/win/media_foundation_package_runtime_locator.h"
 
 namespace {
 
@@ -28,12 +29,26 @@ bool LoadMediaFoundationLibraries() {
   static const bool kDidLoadSucceed = []() {
     for (const wchar_t* mfdll : {L"mf.dll", L"mfplat.dll"}) {
       if (!::LoadLibrary(mfdll)) {
-        LOG(ERROR) << kMediaFoundationLoadFailedMessage << "Could not load "
-                   << mfdll << ". "
-                   << logging::SystemErrorCodeToString(::GetLastError());
+        PLOG(ERROR) << kMediaFoundationLoadFailedMessage << "Could not load "
+                    << mfdll;
         return false;
       }
     }
+
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+    if (media::LoadMediaFoundationPackageDecoder(media::AudioCodec::kEAC3)) {
+      DVLOG(2)
+          << __func__
+          << ": EAC3(AC3) decoder loaded from MediaFoundation codec package";
+    }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+    if (media::LoadMediaFoundationPackageDecoder(media::AudioCodec::kAC4)) {
+      DVLOG(2) << __func__
+               << ": AC4 decoder loaded from MediaFoundation codec package";
+    }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+
     return true;
   }();
   return kDidLoadSucceed;

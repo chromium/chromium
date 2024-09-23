@@ -8,8 +8,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/reporting/encryption/primitives.h"
 
 namespace reporting {

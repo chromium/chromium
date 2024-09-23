@@ -20,6 +20,8 @@ namespace media {
 
 class FilterBase : public IBaseFilter, public base::RefCounted<FilterBase> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   FilterBase();
 
   FilterBase(const FilterBase&) = delete;

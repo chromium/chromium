@@ -1,0 +1,7 @@
+monorail: {
+  component: "UI>Browser>Mobile>TabSwitcher>Grid"
+}
+team_email: "memex-team@google.com"
+buganizer_public: {
+  component_id: 1457139
+}

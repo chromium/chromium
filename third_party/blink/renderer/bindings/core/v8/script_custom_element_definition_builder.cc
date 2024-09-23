@@ -104,7 +104,7 @@ bool ScriptCustomElementDefinitionBuilder::RememberOriginalProperties() {
   if (data_.attribute_changed_callback_) {
     v8::Isolate* isolate = Isolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-    v8::TryCatch try_catch(isolate);
+    TryRethrowScope rethrow_scope(isolate, exception_state_);
     v8::Local<v8::Value> v8_observed_attributes;
 
     if (!Constructor()
@@ -112,7 +112,6 @@ bool ScriptCustomElementDefinitionBuilder::RememberOriginalProperties() {
              ->Get(current_context,
                    V8AtomicString(isolate, "observedAttributes"))
              .ToLocal(&v8_observed_attributes)) {
-      exception_state_.RethrowV8Exception(try_catch.Exception());
       return false;
     }
 
@@ -131,14 +130,13 @@ bool ScriptCustomElementDefinitionBuilder::RememberOriginalProperties() {
   {
     auto* isolate = Isolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-    v8::TryCatch try_catch(isolate);
+    TryRethrowScope rethrow_scope(isolate, exception_state_);
     v8::Local<v8::Value> v8_disabled_features;
 
     if (!Constructor()
              ->CallbackObject()
              ->Get(current_context, V8AtomicString(isolate, "disabledFeatures"))
              .ToLocal(&v8_disabled_features)) {
-      exception_state_.RethrowV8Exception(try_catch.Exception());
       return false;
     }
 
@@ -154,14 +152,13 @@ bool ScriptCustomElementDefinitionBuilder::RememberOriginalProperties() {
   {
     auto* isolate = Isolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-    v8::TryCatch try_catch(isolate);
+    TryRethrowScope rethrow_scope(isolate, exception_state_);
     v8::Local<v8::Value> v8_form_associated;
 
     if (!Constructor()
              ->CallbackObject()
              ->Get(current_context, V8AtomicString(isolate, "formAssociated"))
              .ToLocal(&v8_form_associated)) {
-      exception_state_.RethrowV8Exception(try_catch.Exception());
       return false;
     }
 

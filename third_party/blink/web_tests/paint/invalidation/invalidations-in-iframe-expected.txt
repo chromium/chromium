@@ -10,7 +10,7 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutBlockFlow DIV",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#8888FF",

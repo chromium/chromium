@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -57,11 +58,11 @@ std::u16string GetLastUpdatedTime(const TargetDeviceInfo& device_info) {
   } else if (time_in_days == 1) {
     return l10n_util::GetStringFUTF16(
         IDS_OMNIBOX_BUBBLE_ITEM_SUBTITLE_DAY_SEND_TAB_TO_SELF,
-        base::UTF8ToUTF16(std::to_string(time_in_days)));
+        base::UTF8ToUTF16(base::NumberToString(time_in_days)));
   }
   return l10n_util::GetStringFUTF16(
       IDS_OMNIBOX_BUBBLE_ITEM_SUBTITLE_DAYS_SEND_TAB_TO_SELF,
-      base::UTF8ToUTF16(std::to_string(time_in_days)));
+      base::UTF8ToUTF16(base::NumberToString(time_in_days)));
 }
 
 }  // namespace

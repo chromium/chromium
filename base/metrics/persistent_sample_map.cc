@@ -147,7 +147,7 @@ Count PersistentSampleMap::TotalCount() const {
   // Have to override "const" in order to make sure all samples have been
   // loaded before trying to iterate over the map.
   const_cast<PersistentSampleMap*>(this)->ImportSamples(
-      /*until_value=*/absl::nullopt);
+      /*until_value=*/std::nullopt);
 
   Count count = 0;
   for (const auto& entry : sample_counts_) {
@@ -160,14 +160,14 @@ std::unique_ptr<SampleCountIterator> PersistentSampleMap::Iterator() const {
   // Have to override "const" in order to make sure all samples have been
   // loaded before trying to iterate over the map.
   const_cast<PersistentSampleMap*>(this)->ImportSamples(
-      /*until_value=*/absl::nullopt);
+      /*until_value=*/std::nullopt);
   return std::make_unique<PersistentSampleMapIterator>(sample_counts_);
 }
 
 std::unique_ptr<SampleCountIterator> PersistentSampleMap::ExtractingIterator() {
   // Make sure all samples have been loaded before trying to iterate over the
   // map.
-  ImportSamples(/*until_value=*/absl::nullopt);
+  ImportSamples(/*until_value=*/std::nullopt);
   return std::make_unique<ExtractingPersistentSampleMapIterator>(
       sample_counts_);
 }
@@ -175,10 +175,6 @@ std::unique_ptr<SampleCountIterator> PersistentSampleMap::ExtractingIterator() {
 bool PersistentSampleMap::IsDefinitelyEmpty() const {
   // Not implemented.
   NOTREACHED();
-
-  // Always return false. If we are wrong, this will just make the caller
-  // perform some extra work thinking that |this| is non-empty.
-  return false;
 }
 
 // static
@@ -207,12 +203,12 @@ PersistentSampleMap::CreatePersistentRecord(
   if (!record) {
     if (!allocator->IsFull()) {
 #if !BUILDFLAG(IS_NACL)
-      // TODO(crbug/1432981): Remove these. They are used to investigate
+      // TODO(crbug.com/40064026): Remove these. They are used to investigate
       // unexpected failures.
       SCOPED_CRASH_KEY_BOOL("PersistentSampleMap", "corrupted",
                             allocator->IsCorrupt());
 #endif  // !BUILDFLAG(IS_NACL)
-      NOTREACHED() << "corrupt=" << allocator->IsCorrupt();
+      DUMP_WILL_BE_NOTREACHED() << "corrupt=" << allocator->IsCorrupt();
     }
     return 0;
   }
@@ -304,7 +300,7 @@ PersistentSampleMapRecords* PersistentSampleMap::GetRecords() {
   return records_.get();
 }
 
-Count* PersistentSampleMap::ImportSamples(absl::optional<Sample> until_value) {
+Count* PersistentSampleMap::ImportSamples(std::optional<Sample> until_value) {
   std::vector<PersistentMemoryAllocator::Reference> refs;
   PersistentSampleMapRecords* records = GetRecords();
   while (!(refs = records->GetNextRecords(until_value)).empty()) {

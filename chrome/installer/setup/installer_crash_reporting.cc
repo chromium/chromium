@@ -21,7 +21,6 @@
 #include "chrome/install_static/install_details.h"
 #include "chrome/installer/setup/installer_crash_reporter_client.h"
 #include "chrome/installer/setup/installer_state.h"
-#include "chrome/installer/util/google_update_settings.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
@@ -40,15 +39,15 @@ const char* OperationToString(InstallerState::Operation operation) {
       // Fall out of switch.
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
-// Returns the path returned by `base::GetSecureSystemTemp` if available.
-// Otherwise, retrieves the SYSTEM version of TEMP. We do this instead of
-// GetTempPath so that both elevated and SYSTEM runs share the same directory.
+// Returns `SystemTemp` if available. Otherwise, retrieves the SYSTEM version of
+// TEMP. We do this instead of GetTempPath so that both elevated and SYSTEM runs
+// share the same directory.
 bool GetSystemTemp(base::FilePath* temp) {
-  if (base::GetSecureSystemTemp(temp)) {
+  if (base::PathService::Get(base::DIR_SYSTEM_TEMP, temp)) {
     return true;
   }
 
@@ -93,12 +92,6 @@ void ConfigureCrashReporting(const InstallerState& installer_state) {
 
   crash_reporter::InitializeCrashpadWithEmbeddedHandler(
       true, "Chrome Installer", "", base::FilePath());
-
-  // Set up the metrics client id (a la child_process_logging::Init()).
-  std::unique_ptr<metrics::ClientInfo> client_info =
-      GoogleUpdateSettings::LoadMetricsClientInfo();
-  if (client_info)
-    crash_keys::SetMetricsClientIdFromGUID(client_info->client_id);
 }
 
 void SetInitialCrashKeys(const InstallerState& state) {

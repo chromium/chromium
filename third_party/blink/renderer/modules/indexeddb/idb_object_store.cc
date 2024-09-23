@@ -33,6 +33,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
@@ -54,7 +55,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -314,9 +314,9 @@ static Vector<std::unique_ptr<IDBKey>> GenerateIndexKeysForValue(
   NonThrowableExceptionState exception_state;
 
   // Look up the key using the index's key path.
-  std::unique_ptr<IDBKey> index_key = ScriptValue::To<std::unique_ptr<IDBKey>>(
-      isolate, object_value, exception_state, store_metadata.key_path,
-      index_metadata.key_path);
+  std::unique_ptr<IDBKey> index_key = CreateIDBKeyFromValueAndKeyPaths(
+      isolate, object_value.V8Value(), store_metadata.key_path,
+      index_metadata.key_path, exception_state);
 
   // No match. (In the special case for a store with a key generator and in-line
   // keys and where the store and index key paths match, the back-end will
@@ -389,8 +389,8 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
   std::unique_ptr<IDBKey> key =
       key_value.IsUndefined()
           ? nullptr
-          : ScriptValue::To<std::unique_ptr<IDBKey>>(
-                script_state->GetIsolate(), key_value, exception_state);
+          : CreateIDBKeyFromValue(script_state->GetIsolate(),
+                                  key_value.V8Value(), exception_state);
   if (exception_state.HadException())
     return nullptr;
   return DoPut(script_state, put_mode,
@@ -478,8 +478,8 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
     value_wrapper.Clone(script_state, &clone);
 
     DCHECK(!key_path_key);
-    key_path_key = ScriptValue::To<std::unique_ptr<IDBKey>>(
-        script_state->GetIsolate(), clone, exception_state, key_path);
+    key_path_key = CreateIDBKeyFromValueAndKeyPath(
+        script_state->GetIsolate(), clone.V8Value(), key_path, exception_state);
     if (exception_state.HadException())
       return nullptr;
     if (!key_path_key || !key_path_key->IsEqual(key)) {
@@ -507,8 +507,9 @@ IDBRequest* IDBObjectStore::DoPut(ScriptState* script_state,
       value_wrapper.Clone(script_state, &clone);
 
       DCHECK(!key_path_key);
-      key_path_key = ScriptValue::To<std::unique_ptr<IDBKey>>(
-          script_state->GetIsolate(), clone, exception_state, key_path);
+      key_path_key = CreateIDBKeyFromValueAndKeyPath(script_state->GetIsolate(),
+                                                     clone.V8Value(), key_path,
+                                                     exception_state);
       if (exception_state.HadException())
         return nullptr;
       if (key_path_key && !key_path_key->IsValid()) {
@@ -1185,7 +1186,9 @@ void IDBObjectStore::RenameIndex(int64_t index_id, const String& new_name) {
   db().RenameIndex(transaction_->Id(), Id(), index_id, new_name);
 
   auto metadata_iterator = metadata_->indexes.find(index_id);
-  DCHECK_NE(metadata_iterator, metadata_->indexes.end()) << "Invalid index_id";
+  CHECK_NE(metadata_iterator, metadata_->indexes.end(),
+           base::NotFatalUntil::M130)
+      << "Invalid index_id";
   const String& old_name = metadata_iterator->value->name;
 
   DCHECK(index_map_.Contains(old_name))

@@ -1,3 +1,6 @@
+@mediapipe/tasks-vision/wasm/vision_wasm_internal.js
+@mediapipe/tasks-vision/vision.d.ts
+@mediapipe/tasks-vision/vision_bundle.mjs
 @types/chai/index.d.ts
 @types/d3/index.d.ts
 @types/d3-array/index.d.ts
@@ -19,6 +22,7 @@
 @types/dom-mediacapture-record/*.d.ts
 @types/dom-mediacapture-transform/index.d.ts
 @types/dom-speech-recognition/index.d.ts
+@types/dom-view-transitions/index.d.ts
 @types/dom-webcodecs
 @types/dom-webcodecs/*.d.ts
 @types/emscripten/index.d.ts
@@ -35,6 +39,8 @@
 @types/webrtc
 @types/webrtc/*.d.ts
 @types/wicg-file-system-access/index.d.ts
+@typescript-eslint/types/dist/**.d.ts
+@typescript-eslint/utils/dist/**.d.ts
 /chai/chai.js
 /chai/LICENSE
 /chai/package.json

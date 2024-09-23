@@ -22,7 +22,7 @@ base::Value TestUtils::GetContentSettingValue(const ProviderInterface* provider,
                                               RuleMetaData* metadata) {
   return HostContentSettingsMap::GetContentSettingValueAndPatterns(
       provider, primary_url, secondary_url, content_type, include_incognito,
-      nullptr, nullptr, metadata, base::DefaultClock::GetInstance());
+      nullptr, nullptr, metadata);
 }
 
 // static
@@ -50,23 +50,10 @@ base::Time TestUtils::GetLastModified(
 }
 
 // static
-base::Value TestUtils::GetContentSettingValueAndPatterns(
-    content_settings::RuleIterator* rule_iterator,
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    ContentSettingsPattern* primary_pattern,
-    ContentSettingsPattern* secondary_pattern,
-    RuleMetaData* metadata) {
-  return HostContentSettingsMap::GetContentSettingValueAndPatterns(
-      rule_iterator, primary_url, secondary_url, primary_pattern,
-      secondary_pattern, metadata, base::DefaultClock::GetInstance());
-}
-
-// static
 void TestUtils::OverrideProvider(
     HostContentSettingsMap* map,
     std::unique_ptr<content_settings::ObservableProvider> provider,
-    HostContentSettingsMap::ProviderType type) {
+    content_settings::ProviderType type) {
   if (map->content_settings_providers_[type]) {
     map->content_settings_providers_[type]->ShutdownOnUIThread();
   }

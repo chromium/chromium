@@ -24,10 +24,15 @@ message ReadingListSpecifics {
   optional string entry_id = 1;
   optional string title = 2;
   optional string url = 3;
+
+  // The timestamps are microseconds since the unix epoch.
+  // TODO(crbug.com/353449026): Consider renaming the fields to use the
+  // preferred naming scheme, i.e. `_unix_epoch_micros`.
   optional int64 creation_time_us = 4;
   optional int64 update_time_us = 5;
   optional int64 first_read_time_us = 7;
   optional int64 update_title_time_us = 8;
+
   optional int32 estimated_read_time_seconds = 9;
 
   enum ReadingListEntryStatus {

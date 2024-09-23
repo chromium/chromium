@@ -15,15 +15,17 @@
 
 namespace blink {
 
-ScriptPromise NavigationPreloadManager::enable(ScriptState* script_state) {
+ScriptPromise<IDLUndefined> NavigationPreloadManager::enable(
+    ScriptState* script_state) {
   return SetEnabled(true, script_state);
 }
 
-ScriptPromise NavigationPreloadManager::disable(ScriptState* script_state) {
+ScriptPromise<IDLUndefined> NavigationPreloadManager::disable(
+    ScriptState* script_state) {
   return SetEnabled(false, script_state);
 }
 
-ScriptPromise NavigationPreloadManager::setHeaderValue(
+ScriptPromise<IDLUndefined> NavigationPreloadManager::setHeaderValue(
     ScriptState* script_state,
     const String& value,
     ExceptionState& exception_state) {
@@ -31,18 +33,22 @@ ScriptPromise NavigationPreloadManager::setHeaderValue(
     exception_state.ThrowTypeError(
         "The string provided to setHeaderValue ('" + value +
         "') is not a valid HTTP header field value.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  auto promise = resolver->Promise();
   registration_->SetNavigationPreloadHeader(value, resolver);
   return promise;
 }
 
-ScriptPromise NavigationPreloadManager::getState(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromise<NavigationPreloadState> NavigationPreloadManager::getState(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<NavigationPreloadState>>(
+          script_state);
+  auto promise = resolver->Promise();
   registration_->GetNavigationPreloadState(resolver);
   return promise;
 }
@@ -51,10 +57,12 @@ NavigationPreloadManager::NavigationPreloadManager(
     ServiceWorkerRegistration* registration)
     : registration_(registration) {}
 
-ScriptPromise NavigationPreloadManager::SetEnabled(bool enable,
-                                                   ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromise<IDLUndefined> NavigationPreloadManager::SetEnabled(
+    bool enable,
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  auto promise = resolver->Promise();
   registration_->EnableNavigationPreload(enable, resolver);
   return promise;
 }

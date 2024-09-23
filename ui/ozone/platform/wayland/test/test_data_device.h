@@ -50,10 +50,18 @@ class TestDataDevice : public TestSelectionDevice {
 
   uint32_t drag_serial() const { return drag_serial_; }
 
+  // Configure this data device to not send offer/enter events next time it
+  // receives a start_drag request. Useful for tests that wish to emulate
+  // some specific compositor behavior when starting a drag session.
+  void disable_auto_send_start_drag_events() {
+    auto_send_start_drag_events_ = false;
+  }
+
  private:
   const raw_ptr<TestDataDeviceManager> manager_;
 
   uint32_t drag_serial_ = 0;
+  bool auto_send_start_drag_events_ = true;
 };
 
 }  // namespace wl

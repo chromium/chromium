@@ -49,7 +49,7 @@ class ListMarkerTest : public RenderingTest {
 };
 
 TEST_F(ListMarkerTest, FallbackToTextWhenImagesDisable) {
-  GetDocument().Fetcher()->SetImagesEnabled(false);
+  GetDocument().GetSettings()->SetImagesEnabled(false);
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #decimal {
@@ -275,7 +275,7 @@ TEST_F(ListMarkerTest, ModifyShadowDOMWithOwnCounterStyles) {
 
   // Attach a shadow tree with counter styles. Shouldn't affect anything outside
   ShadowRoot& shadow1 = GetElementById("host1")->AttachShadowRootForTesting(
-      ShadowRootType::kOpen);
+      ShadowRootMode::kOpen);
   shadow1.setInnerHTML(R"HTML(
     <style>
       @counter-style foo {
@@ -298,7 +298,7 @@ TEST_F(ListMarkerTest, ModifyShadowDOMWithOwnCounterStyles) {
   // Attach another shadow tree with counter styles. Shouldn't affect anything
   // outside.
   ShadowRoot& shadow2 = GetElementById("host2")->AttachShadowRootForTesting(
-      ShadowRootType::kOpen);
+      ShadowRootMode::kOpen);
   shadow2.setInnerHTML(R"HTML(
     <style>
       @counter-style foo {

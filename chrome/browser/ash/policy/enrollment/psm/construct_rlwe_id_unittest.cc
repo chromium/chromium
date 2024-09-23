@@ -27,8 +27,8 @@ class ConstructRlweIdTest : public testing::Test {
 TEST_F(ConstructRlweIdTest, VerifyConstructedRlweId) {
   // Sets the values for serial number and RLZ brand code as the values must be
   // present to construct the RLWE ID without CHECK-failures.
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kTestSerialNumber);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                kTestSerialNumber);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
                                                 kTestBrandCode);
 

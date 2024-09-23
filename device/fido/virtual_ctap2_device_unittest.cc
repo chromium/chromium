@@ -4,24 +4,40 @@
 
 #include "device/fido/virtual_ctap2_device.h"
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <string_view>
+#include <utility>
+#include <vector>
 
-#include "base/functional/callback.h"
+#include "base/check.h"
+#include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "device/fido/attestation_statement.h"
 #include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/authenticator_make_credential_response.h"
+#include "device/fido/ctap_get_assertion_request.h"
+#include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/device_response_converter.h"
+#include "device/fido/fido_constants.h"
+#include "device/fido/fido_device.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
+#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
-#include "device/fido/test_callback_receiver.h"
+#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/virtual_fido_device.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -32,8 +48,7 @@ namespace device {
 
 namespace {
 
-using TestCallbackReceiver =
-    test::ValueCallbackReceiver<std::optional<std::vector<uint8_t>>>;
+using TestFuture = base::test::TestFuture<std::optional<std::vector<uint8_t>>>;
 
 void SendCommand(VirtualCtap2Device* device,
                  base::span<const uint8_t> command,
@@ -175,12 +190,12 @@ TEST_F(VirtualCtap2DeviceTest, DestroyInsideSimulatePressCallback) {
 // https://w3c.github.io/webauthn/#sctn-packed-attestation-cert-requirements
 TEST_F(VirtualCtap2DeviceTest, AttestationCertificateIsValid) {
   MakeDevice();
-  TestCallbackReceiver callback_receiver;
+  TestFuture future;
   SendCommand(device_.get(), test_data::kCtapSimpleMakeCredentialRequest,
-              callback_receiver.callback());
-  callback_receiver.WaitForCallback();
+              future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 
-  std::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
+  std::optional<cbor::Value> cbor = DecodeCBOR(future.Take().value());
   ASSERT_TRUE(cbor);
   std::optional<AuthenticatorMakeCredentialResponse> response =
       ReadCTAPMakeCredentialResponse(
@@ -253,12 +268,12 @@ TEST_F(VirtualCtap2DeviceTest, RejectsCredentialsWithExtraKeys) {
         static_cast<uint8_t>(CtapRequestCommand::kAuthenticatorGetAssertion));
 
     MakeDevice();
-    TestCallbackReceiver callback_receiver;
-    SendCommand(device_.get(), *bytes, callback_receiver.callback());
-    callback_receiver.WaitForCallback();
+    TestFuture future;
+    SendCommand(device_.get(), *bytes, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
 
-    ASSERT_TRUE(callback_receiver.value().has_value());
-    base::span<const uint8_t> result = *callback_receiver.value();
+    ASSERT_TRUE(future.Get().has_value());
+    base::span<const uint8_t> result = future.Get().value();
     ASSERT_EQ(result.size(), 1u);
     EXPECT_EQ(result[0],
               static_cast<uint8_t>(
@@ -277,7 +292,7 @@ TEST_F(VirtualCtap2DeviceTest, OnGetAssertionBogusSignature) {
   device_->mutable_state()->InjectRegistration(kCredentialId,
                                                test_data::kRelyingPartyId);
 
-  TestCallbackReceiver callback_receiver;
+  TestFuture future;
   device::CtapGetAssertionRequest request = CtapGetAssertionRequest(
       test_data::kRelyingPartyId, test_data::kClientDataJson);
   std::vector<uint8_t> credential_id =
@@ -289,10 +304,10 @@ TEST_F(VirtualCtap2DeviceTest, OnGetAssertionBogusSignature) {
   request.allow_list.push_back(std::move(descriptor));
   device_->DeviceTransact(
       ToCTAP2Command(AsCTAPRequestValuePair(std::move(request))),
-      base::BindOnce(callback_receiver.callback()));
-  callback_receiver.WaitForCallback();
+      base::BindOnce(future.GetCallback()));
+  EXPECT_TRUE(future.Wait());
 
-  std::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
+  std::optional<cbor::Value> cbor = DecodeCBOR(future.Take().value());
   ASSERT_TRUE(cbor);
 
   std::optional<AuthenticatorGetAssertionResponse> response =
@@ -307,11 +322,11 @@ TEST_F(VirtualCtap2DeviceTest, OnMakeCredentialBogusSignature) {
   device_->mutable_state()->ctap2_invalid_signature = true;
 
   constexpr uint8_t bogus_sig[] = {0x00};
-  TestCallbackReceiver callback_receiver;
+  TestFuture future;
   SendCommand(device_.get(), test_data::kCtapSimpleMakeCredentialRequest,
-              callback_receiver.callback());
-  callback_receiver.WaitForCallback();
-  std::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
+              future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  std::optional<cbor::Value> cbor = DecodeCBOR(future.Take().value());
   ASSERT_TRUE(cbor);
   std::optional<AuthenticatorMakeCredentialResponse> response =
       ReadCTAPMakeCredentialResponse(
@@ -333,7 +348,7 @@ TEST_F(VirtualCtap2DeviceTest, OnGetAssertionUnsetUPBit) {
   device_->mutable_state()->InjectRegistration(kCredentialId,
                                                test_data::kRelyingPartyId);
 
-  TestCallbackReceiver callback_receiver;
+  TestFuture future;
   device::CtapGetAssertionRequest request = CtapGetAssertionRequest(
       test_data::kRelyingPartyId, test_data::kClientDataJson);
   std::vector<uint8_t> credential_id =
@@ -345,10 +360,10 @@ TEST_F(VirtualCtap2DeviceTest, OnGetAssertionUnsetUPBit) {
   request.allow_list.push_back(std::move(descriptor));
   device_->DeviceTransact(
       ToCTAP2Command(AsCTAPRequestValuePair(std::move(request))),
-      base::BindOnce(callback_receiver.callback()));
-  callback_receiver.WaitForCallback();
+      base::BindOnce(future.GetCallback()));
+  EXPECT_TRUE(future.Wait());
 
-  std::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
+  std::optional<cbor::Value> cbor = DecodeCBOR(future.Take().value());
   ASSERT_TRUE(cbor);
 
   std::optional<AuthenticatorGetAssertionResponse> response =
@@ -370,7 +385,7 @@ TEST_F(VirtualCtap2DeviceTest, OnGetAssertionUnsetUVBit) {
   state->InjectRegistration(kCredentialId, test_data::kRelyingPartyId);
   MakeDevice(state, config);
 
-  TestCallbackReceiver callback_receiver;
+  TestFuture future;
   device::CtapGetAssertionRequest request = CtapGetAssertionRequest(
       test_data::kRelyingPartyId, test_data::kClientDataJson);
   std::vector<uint8_t> credential_id =
@@ -383,10 +398,10 @@ TEST_F(VirtualCtap2DeviceTest, OnGetAssertionUnsetUVBit) {
   request.user_verification = UserVerificationRequirement::kRequired;
   device_->DeviceTransact(
       ToCTAP2Command(AsCTAPRequestValuePair(std::move(request))),
-      base::BindOnce(callback_receiver.callback()));
-  callback_receiver.WaitForCallback();
+      base::BindOnce(future.GetCallback()));
+  EXPECT_TRUE(future.Wait());
 
-  std::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
+  std::optional<cbor::Value> cbor = DecodeCBOR(future.Take().value());
   ASSERT_TRUE(cbor);
 
   std::optional<AuthenticatorGetAssertionResponse> response =
@@ -400,11 +415,11 @@ TEST_F(VirtualCtap2DeviceTest, OnMakeCredentialUnsetUPBit) {
   MakeDevice();
   device_->mutable_state()->unset_up_bit = true;
 
-  TestCallbackReceiver callback_receiver;
+  TestFuture future;
   SendCommand(device_.get(), test_data::kCtapSimpleMakeCredentialRequest,
-              callback_receiver.callback());
-  callback_receiver.WaitForCallback();
-  std::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
+              future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  std::optional<cbor::Value> cbor = DecodeCBOR(future.Take().value());
   ASSERT_TRUE(cbor);
   std::optional<AuthenticatorMakeCredentialResponse> response =
       ReadCTAPMakeCredentialResponse(
@@ -424,12 +439,12 @@ TEST_F(VirtualCtap2DeviceTest, OnMakeCredentialUnsetUVBit) {
   state->unset_uv_bit = true;
   MakeDevice(state, config);
 
-  TestCallbackReceiver callback_receiver;
+  TestFuture future;
   SendCommand(device_.get(), test_data::kCtapMakeCredentialRequest,
-              callback_receiver.callback());
-  callback_receiver.WaitForCallback();
+              future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 
-  std::optional<cbor::Value> cbor = DecodeCBOR(*callback_receiver.value());
+  std::optional<cbor::Value> cbor = DecodeCBOR(future.Take().value());
   ASSERT_TRUE(cbor);
   std::optional<AuthenticatorMakeCredentialResponse> response =
       ReadCTAPMakeCredentialResponse(

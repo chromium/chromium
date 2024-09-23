@@ -18,7 +18,6 @@ enum IPCMessageStart {
   NaClMsgStart,
   PpapiMsgStart,
   NaClHostMsgStart,
-  GinJavaBridgeMsgStart,
   LastIPCMsgStart  // Must come last.
 };
 

@@ -17,6 +17,7 @@
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/common/api/storage.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 
 using content::BrowserThread;
 
@@ -65,7 +66,7 @@ base::WeakPtr<SyncValueStoreCache> SyncValueStoreCache::AsWeakPtr() {
 }
 
 syncer::SyncableService* SyncValueStoreCache::GetSyncableService(
-    syncer::ModelType type) {
+    syncer::DataType type) {
   DCHECK(IsOnBackendSequence());
   DCHECK(initialized_);
 
@@ -75,7 +76,7 @@ syncer::SyncableService* SyncValueStoreCache::GetSyncableService(
     case syncer::EXTENSION_SETTINGS:
       return extension_backend_.get();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -90,7 +91,7 @@ void SyncValueStoreCache::RunWithValueStoreForExtension(
   std::move(callback).Run(backend->GetStorage(extension->id()));
 }
 
-void SyncValueStoreCache::DeleteStorageSoon(const std::string& extension_id) {
+void SyncValueStoreCache::DeleteStorageSoon(const ExtensionId& extension_id) {
   DCHECK(IsOnBackendSequence());
   app_backend_->DeleteStorage(extension_id);
   extension_backend_->DeleteStorage(extension_id);

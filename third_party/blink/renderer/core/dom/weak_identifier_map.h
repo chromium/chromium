@@ -34,9 +34,10 @@ class WeakIdentifierMap final
 
     auto it = Instance().object_to_identifier_.find(object);
     if (it == Instance().object_to_identifier_.end()) {
-      do {
+      result = Next();
+      while (!Instance().Put(object, result)) [[unlikely]] {
         result = Next();
-      } while (!LIKELY(Instance().Put(object, result)));
+      }
     } else {
       result = it->value;
     }
@@ -72,8 +73,10 @@ class WeakIdentifierMap final
   static IdentifierType Next() {
     // On overflow, skip negative values for signed IdentifierType, and 0 which
     // is not a valid key in HashMap by default.
-    if (UNLIKELY(LastIdRef() == std::numeric_limits<IdentifierType>::max()))
+    if (LastIdRef() == std::numeric_limits<IdentifierType>::max())
+        [[unlikely]] {
       LastIdRef() = 0;
+    }
     return ++LastIdRef();
   }
 
@@ -83,8 +86,10 @@ class WeakIdentifierMap final
   }
 
   bool Put(T* object, IdentifierType identifier) {
-    if (!LIKELY(identifier_to_object_.insert(identifier, object).is_new_entry))
+    if (!identifier_to_object_.insert(identifier, object).is_new_entry)
+        [[unlikely]] {
       return false;
+    }
     DCHECK(object && !object_to_identifier_.Contains(object));
     object_to_identifier_.Set(object, identifier);
     DCHECK_EQ(object_to_identifier_.size(), identifier_to_object_.size());

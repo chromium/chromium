@@ -38,7 +38,6 @@ import androidx.core.content.ContextCompat;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -52,17 +51,15 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabHoverCardViewUnitTest.ShadowSysUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabThumbnailView;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
@@ -70,9 +67,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link StripTabHoverCardView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP
-})
 @Config(
         manifest = Config.NONE,
         qualifiers = "sw600dp",
@@ -88,7 +82,6 @@ public class StripTabHoverCardViewUnitTest {
         }
     }
 
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Captor private ArgumentCaptor<Callback<Bitmap>> mGetThumbnailCallbackCaptor;
@@ -97,6 +90,7 @@ public class StripTabHoverCardViewUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     @Mock private TabContentManager mTabContentManager;
+    @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
 
     private static final float STRIP_STACK_HEIGHT = 500.f;
     private static final float TAB_WIDTH = 100f;
@@ -128,6 +122,7 @@ public class StripTabHoverCardViewUnitTest {
         mContext.getResources().getDisplayMetrics().density = 1f;
 
         when(mTabContentManagerSupplier.get()).thenReturn(mTabContentManager);
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
         mTabHoverCardView.initialize(mTabModelSelector, mTabContentManagerSupplier);
         mBitmap = Bitmap.createBitmap(100, 200, Bitmap.Config.RGB_565);
 
@@ -171,9 +166,7 @@ public class StripTabHoverCardViewUnitTest {
                 .getTabThumbnailWithCallback(
                         anyInt(),
                         refEq(new Size(mThumbnailView.getWidth(), mThumbnailView.getHeight())),
-                        mGetThumbnailCallbackCaptor.capture(),
-                        eq(false),
-                        eq(false));
+                        mGetThumbnailCallbackCaptor.capture());
         mGetThumbnailCallbackCaptor.getValue().onResult(mBitmap);
 
         assertEquals(
@@ -220,9 +213,7 @@ public class StripTabHoverCardViewUnitTest {
                 .getTabThumbnailWithCallback(
                         anyInt(),
                         refEq(new Size(mThumbnailView.getWidth(), mThumbnailView.getHeight())),
-                        mGetThumbnailCallbackCaptor.capture(),
-                        eq(false),
-                        eq(false));
+                        mGetThumbnailCallbackCaptor.capture());
         mGetThumbnailCallbackCaptor.getValue().onResult(null);
         assertFalse(
                 "Thumbnail drawable should not contain a bitmap.",
@@ -245,9 +236,7 @@ public class StripTabHoverCardViewUnitTest {
                 .getTabThumbnailWithCallback(
                         anyInt(),
                         refEq(new Size(mThumbnailView.getWidth(), mThumbnailView.getHeight())),
-                        mGetThumbnailCallbackCaptor.capture(),
-                        eq(false),
-                        eq(false));
+                        mGetThumbnailCallbackCaptor.capture());
         mGetThumbnailCallbackCaptor.getValue().onResult(mBitmap);
         assertFalse(
                 "Thumbnail drawable should not contain a bitmap.",
@@ -277,9 +266,7 @@ public class StripTabHoverCardViewUnitTest {
                 .getTabThumbnailWithCallback(
                         anyInt(),
                         refEq(new Size(mThumbnailView.getWidth(), mThumbnailView.getHeight())),
-                        mGetThumbnailCallbackCaptor.capture(),
-                        eq(false),
-                        eq(false));
+                        mGetThumbnailCallbackCaptor.capture());
         mGetThumbnailCallbackCaptor.getValue().onResult(mBitmap);
         assertFalse(
                 "Thumbnail drawable should not contain a bitmap.",
@@ -458,25 +445,25 @@ public class StripTabHoverCardViewUnitTest {
     }
 
     @Test
-    public void tabModelSelectorObserver_OnTabModelSelected() {
+    public void currentTabModelObserver_OnTabModelSelected() {
         var standardTabModel = mock(TabModel.class);
         var incognitoTabModel = mock(TabModel.class);
-        when(standardTabModel.isIncognito()).thenReturn(false);
-        when(incognitoTabModel.isIncognito()).thenReturn(true);
+        when(standardTabModel.isIncognitoBranded()).thenReturn(false);
+        when(incognitoTabModel.isIncognitoBranded()).thenReturn(true);
 
         // Assume standard tab model.
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
-        // TabModelSelectorObserver should be added after the view is inflated.
+        // TabModelObserver should be added after the view is inflated.
         mTabHoverCardView.initialize(mTabModelSelector, mTabContentManagerSupplier);
-        var tabModelSelectorObserver = mTabHoverCardView.getTabModelSelectorObserverForTesting();
-        assertNotNull("TabModelSelectorObserver should be set.", tabModelSelectorObserver);
+        var tabModelObserver = mTabHoverCardView.getCurrentTabModelObserverForTesting();
+        assertNotNull("TabModelSelectorObserver should be set.", tabModelObserver);
 
         // Switch to the incognito tab model.
-        tabModelSelectorObserver.onTabModelSelected(incognitoTabModel, standardTabModel);
+        tabModelObserver.onResult(incognitoTabModel);
         verify(mTabHoverCardView).updateHoverCardColors(true);
 
         // Switch to the standard tab model.
-        tabModelSelectorObserver.onTabModelSelected(standardTabModel, incognitoTabModel);
+        tabModelObserver.onResult(standardTabModel);
         // Invoked in #initialize() in setup and in test, and in #onTabModelSelected().
         verify(mTabHoverCardView, times(3)).updateHoverCardColors(false);
     }

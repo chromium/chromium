@@ -7,9 +7,8 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "base/apple/scoped_cftyperef.h"
-#include "base/gtest_prod_util.h"
 #include "net/base/net_export.h"
+#include "net/cert/internal/platform_trust_store.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 
 namespace net {
@@ -21,15 +20,14 @@ namespace net {
 // methods may be called from multiple threads simultaneously. It is the owner's
 // responsibility to ensure the TrustStoreMac object outlives any threads
 // accessing it.
-class NET_EXPORT TrustStoreMac : public bssl::TrustStore {
+class NET_EXPORT TrustStoreMac : public PlatformTrustStore {
  public:
   // NOTE: When updating this enum, also update ParamToTrustImplType in
   // system_trust_store.cc
   enum class TrustImplType {
-    // Values 1 and 3 were used for implementation strategies that have since
-    // been removed.
+    // Values 1, 2, and 3 were used for implementation strategies that have
+    // since been removed.
     kUnknown = 0,
-    kSimple = 2,
     kDomainCacheFullCerts = 4,
     kKeychainCacheFullCerts = 5,
   };
@@ -54,24 +52,14 @@ class NET_EXPORT TrustStoreMac : public bssl::TrustStore {
                         bssl::ParsedCertificateList* issuers) override;
   bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) override;
 
+  // net::PlatformTrustStore implementation:
+  std::vector<net::PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts()
+      override;
+
  private:
   class TrustImpl;
   class TrustImplDomainCacheFullCerts;
   class TrustImplKeychainCacheFullCerts;
-  class TrustImplNoCache;
-
-  // Finds certificates in the OS keychains whose Subject matches |name_data|.
-  // The result is an array of CRYPTO_BUFFERs containing the DER certificate
-  // data.
-  static std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>
-  FindMatchingCertificatesForMacNormalizedSubject(CFDataRef name_data);
-
-  // Returns the OS-normalized issuer of |cert|.
-  // macOS internally uses a normalized form of subject/issuer names for
-  // comparing, roughly similar to RFC3280's normalization scheme. The
-  // normalized form is used for any database lookups and comparisons.
-  static base::apple::ScopedCFTypeRef<CFDataRef> GetMacNormalizedIssuer(
-      const bssl::ParsedCertificate* cert);
 
   std::unique_ptr<TrustImpl> trust_cache_;
 };

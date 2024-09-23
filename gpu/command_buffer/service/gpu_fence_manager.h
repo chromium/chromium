@@ -41,7 +41,7 @@ class GPU_GLES2_EXPORT GpuFenceManager {
 
    private:
     friend class GpuFenceManager;
-    // TODO(crbug.com/1196892): We defer creation of GL fences from fence file
+    // TODO(crbug.com/40176671): We defer creation of GL fences from fence file
     // descriptors because some drivers wait on the context set at the time of
     // GL fence creation from a file descriptor, rather than the context set
     // at the time the wait is issued.

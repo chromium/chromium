@@ -57,6 +57,17 @@ class CONTENT_EXPORT AuctionProcessManager {
     kSeller,
   };
 
+  // Outcome of RequestWorkletService.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class RequestWorkletServiceOutcome {
+    kHitProcessLimit = 0,
+    kUsedSharedProcess = 1,
+    kUsedExistingDedicatedProcess = 2,
+    kCreatedNewDedicatedProcess = 3,
+    kMaxValue = kCreatedNewDedicatedProcess
+  };
+
   // Refcounted class that creates / holds Mojo Remote for an
   // AuctionWorkletService. Only public so it can be used by ProcessHandle.
   class WorkletProcess;
@@ -101,6 +112,7 @@ class CONTENT_EXPORT AuctionProcessManager {
         base::OnceCallback<void(base::ProcessId)> callback);
 
    private:
+    friend class ProcessHandleTestPeer;
     friend class AuctionProcessManager;
     friend class InRendererAuctionProcessManager;
     friend class DedicatedAuctionProcessManager;
@@ -109,7 +121,7 @@ class CONTENT_EXPORT AuctionProcessManager {
     // the process lifetime, it needs to call |OnBaseProcessLaunched| once the
     // process has been launched successfully in order to properly figure out
     // the PID.
-    void OnBaseProcessLaunched(const base::Process& process);
+    void OnBaseProcessLaunched(const base::Process& process) const;
 
     // Assigns `worklet_process` to `this`. If `callback_` is non-null, queues a
     // task to invoke it asynchronously, and GetService() will return nullptr
@@ -137,7 +149,8 @@ class CONTENT_EXPORT AuctionProcessManager {
 
     // Entry in the corresponding PendingRequestQueue if the handle has yet to
     // be assigned a process.
-    std::list<ProcessHandle*>::iterator queued_request_;
+    std::list<raw_ptr<ProcessHandle, CtnExperimental>>::iterator
+        queued_request_;
 
     base::WeakPtrFactory<ProcessHandle> weak_ptr_factory_{this};
   };
@@ -199,6 +212,10 @@ class CONTENT_EXPORT AuctionProcessManager {
       const ProcessHandle* process_handle,
       const std::string& display_name) = 0;
 
+  // Hook called when a new process is assigned at the end of
+  // TryCreateOrGetProcessForHandle. This function is used for testing.
+  virtual void OnNewProcessAssigned(const ProcessHandle* process_handle) {}
+
   // Used to compute the value of `site_instance_` field of ProcessHandle.
   // A subclass can return nullptr if it is not using SiteInstance to place
   // worklets in appropriate renderers, but some other mechanism implementing a
@@ -228,7 +245,8 @@ class CONTENT_EXPORT AuctionProcessManager {
   // bidder further up the queue with a matching owner receives a process).
   // ProcessHandles are owned by consumers, and destroyed when they no longer
   // need to keep their processes alive.
-  using PendingRequestQueue = std::list<ProcessHandle*>;
+  using PendingRequestQueue =
+      std::list<raw_ptr<ProcessHandle, CtnExperimental>>;
 
   // Contains ProcessHandles for bidder or seller requests which have not yet
   // been assigned processes, indexed by origin. When the request in the
@@ -245,7 +263,8 @@ class CONTENT_EXPORT AuctionProcessManager {
   // Tries to reuse an existing process for `process_handle` or create a new
   // one. `process_handle`'s WorkletType and Origin must be populated. Respects
   // the bidder and seller limits.
-  bool TryCreateOrGetProcessForHandle(ProcessHandle* process_handle);
+  RequestWorkletServiceOutcome TryCreateOrGetProcessForHandle(
+      ProcessHandle* process_handle);
 
   // Invoked by ProcessHandle's destructor, if it has previously been passed to
   // RequestWorkletService(). Checks if a new seller worklet can be created.

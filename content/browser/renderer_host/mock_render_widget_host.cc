@@ -14,33 +14,16 @@ namespace content {
 
 MockRenderWidgetHost::~MockRenderWidgetHost() {}
 
-void MockRenderWidgetHost::OnTouchEventAck(
-    const TouchEventWithLatencyInfo& event,
-    blink::mojom::InputEventResultSource ack_source,
-    blink::mojom::InputEventResultState ack_result) {
-  // Sniff touch acks.
-  acked_touch_event_type_ = event.event.GetType();
-  RenderWidgetHostImpl::OnTouchEventAck(event, ack_source, ack_result);
-}
-
-void MockRenderWidgetHost::DisableGestureDebounce() {
-  InputRouter::Config config;
-  config.touch_config.task_runner =
-      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
-  input_router_ = std::make_unique<InputRouterImpl>(
-      this, this, fling_scheduler_.get(), config);
-}
-
 void MockRenderWidgetHost::ExpectForceEnableZoom(bool enable) {
-  EXPECT_EQ(enable, force_enable_zoom_);
+  EXPECT_EQ(enable, render_input_router_->GetForceEnableZoom());
 
-  InputRouterImpl* input_router =
-      static_cast<InputRouterImpl*>(input_router_.get());
-  EXPECT_EQ(enable, input_router->touch_action_filter_.force_enable_zoom_);
+  input::InputRouterImpl* input_router_impl =
+      static_cast<input::InputRouterImpl*>(input_router());
+  EXPECT_EQ(enable, input_router_impl->touch_action_filter_.force_enable_zoom_);
 }
 
 void MockRenderWidgetHost::SetupForInputRouterTest() {
-  input_router_ = std::make_unique<MockInputRouter>(this);
+  mock_render_input_router()->SetupForInputRouterTest();
 }
 
 // static
@@ -66,9 +49,8 @@ std::unique_ptr<MockRenderWidgetHost> MockRenderWidgetHost::Create(
       std::move(pending_blink_widget)));
 }
 
-blink::mojom::WidgetInputHandler*
-MockRenderWidgetHost::GetWidgetInputHandler() {
-  return &mock_widget_input_handler_;
+input::RenderInputRouter* MockRenderWidgetHost::GetRenderInputRouter() {
+  return render_input_router_.get();
 }
 
 void MockRenderWidgetHost::NotifyNewContentRenderingTimeoutForTesting() {
@@ -90,13 +72,19 @@ MockRenderWidgetHost::MockRenderWidgetHost(
                            /*hidden=*/false,
                            /*renderer_initiated_creation=*/false,
                            std::make_unique<FrameTokenMessageQueue>()),
-      new_content_rendering_timeout_fired_(false),
-      fling_scheduler_(std::make_unique<FlingScheduler>(this)) {
-  acked_touch_event_type_ = blink::WebInputEvent::Type::kUndefined;
+      new_content_rendering_timeout_fired_(false) {
+  SetupMockRenderInputRouter();
   mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
   BindWidgetInterfaces(
       blink_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
       std::move(pending_blink_widget));
+}
+
+void MockRenderWidgetHost::SetupMockRenderInputRouter() {
+  render_input_router_ = std::make_unique<MockRenderInputRouter>(
+      this, MakeFlingScheduler(), this,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  SetupInputRouter();
 }
 
 }  // namespace content

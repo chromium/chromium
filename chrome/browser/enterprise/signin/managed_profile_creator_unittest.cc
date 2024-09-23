@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -17,11 +18,22 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/utf_string_conversions.h"
+#include "base/win/wmi.h"
+#endif  // BUILDFLAG(IS_WIN)
+
+using enterprise::ProfileIdServiceFactory;
 using testing::_;
+
+const char kExampleGuid[] = "GUID-1234";
+constexpr char kFakeDeviceID[] = "fake-id";
 
 class MockManagedProfileCreationDelegate
     : public ManagedProfileCreationDelegate {
@@ -52,6 +64,8 @@ class ManagedProfileCreatorTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("test_profile");
     mock_delegate_ = std::make_unique<MockManagedProfileCreationDelegate>();
+    policy::BrowserDMTokenStorage::SetForTesting(&storage_);
+    storage_.SetClientId(kFakeDeviceID);
   }
 
   // Callback for the ManagedProfileCreator.
@@ -80,6 +94,7 @@ class ManagedProfileCreatorTest : public testing::Test {
   raw_ptr<Profile> created_profile_;
   bool creator_callback_called_ = false;
   std::unique_ptr<MockManagedProfileCreationDelegate> mock_delegate_;
+  policy::FakeBrowserDMTokenStorage storage_;
 };
 
 TEST_F(ManagedProfileCreatorTest, CreatesNewProfile) {
@@ -92,8 +107,11 @@ TEST_F(ManagedProfileCreatorTest, CreatesNewProfile) {
   ManagedProfileCreator creator(
       profile_, "id", u"local_profile_name", std::move(mock_delegate_),
       base::BindOnce(&ManagedProfileCreatorTest::OnProfileCreated,
-                     base::Unretained(this), loop.QuitClosure()));
+                     base::Unretained(this), loop.QuitClosure()),
+      kExampleGuid);
+
   loop.Run();
+
   EXPECT_TRUE(creator_callback_called_);
   ASSERT_TRUE(created_profile_);
 
@@ -104,6 +122,19 @@ TEST_F(ManagedProfileCreatorTest, CreatesNewProfile) {
   ASSERT_TRUE(entry);
   EXPECT_EQ("id", entry->GetProfileManagementId());
   EXPECT_EQ(u"local_profile_name", entry->GetName());
+
+  std::string device_id = kFakeDeviceID;
+#if BUILDFLAG(IS_WIN)
+  device_id +=
+      base::WideToUTF8(base::win::WmiComputerSystemInfo::Get().serial_number());
+#endif  // (BUILDFLAG(IS_WIN)
+
+  EXPECT_EQ(ProfileIdServiceFactory::GetForProfile(profile_)
+                ->GetProfileIdWithGuidAndDeviceId(kExampleGuid, device_id)
+                .value(),
+            ProfileIdServiceFactory::GetForProfile(created_profile_)
+                ->GetProfileId()
+                .value());
 }
 
 TEST_F(ManagedProfileCreatorTest, LoadsExistingProfile) {

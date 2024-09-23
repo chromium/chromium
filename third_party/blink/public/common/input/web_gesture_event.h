@@ -121,8 +121,6 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
     struct {
       float delta_x;
       float delta_y;
-      float velocity_x;
-      float velocity_y;
       InertialPhaseState inertial_phase;
       // Default initialized to kScrollByPrecisePixel.
       ui::ScrollGranularity delta_units;
@@ -242,9 +240,6 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
   InertialPhaseState InertialPhase() const;
   bool Synthetic() const;
 
-  float VelocityX() const;
-  float VelocityY() const;
-
   gfx::SizeF TapAreaInRootFrame() const;
   int TapCount() const;
   int TapDownCount() const;
@@ -278,7 +273,7 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       case Type::kGestureDoubleTap:
         return false;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }
@@ -316,7 +311,7 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       case Type::kGestureDoubleTap:
         return data.tap.needs_wheel_event;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }

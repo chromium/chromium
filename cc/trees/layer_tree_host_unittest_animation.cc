@@ -41,6 +41,12 @@
 namespace cc {
 namespace {
 
+#define SAMPLE(curve, time)                                                  \
+  curve->GetTransformedValue(time,                                           \
+                             time < base::TimeDelta()                        \
+                                 ? gfx::TimingFunction::LimitDirection::LEFT \
+                                 : gfx::TimingFunction::LimitDirection::RIGHT)
+
 class LayerTreeHostAnimationTest : public LayerTreeTest {
  public:
   LayerTreeHostAnimationTest()
@@ -399,15 +405,15 @@ class LayerTreeHostAnimationTestAddKeyframeModelWithTimingFunction
     const gfx::FloatAnimationCurve* curve =
         gfx::FloatAnimationCurve::ToFloatAnimationCurve(
             keyframe_model->curve());
-    float start_opacity = curve->GetValue(base::TimeDelta());
-    float end_opacity = curve->GetValue(curve->Duration());
+    float start_opacity = SAMPLE(curve, base::TimeDelta());
+    float end_opacity = SAMPLE(curve, curve->Duration());
     float linearly_interpolated_opacity =
         0.25f * end_opacity + 0.75f * start_opacity;
     base::TimeDelta time = curve->Duration() * 0.25f;
     // If the linear timing function associated with this animation was not
     // picked up, then the linearly interpolated opacity would be different
     // because of the default ease timing function.
-    EXPECT_FLOAT_EQ(linearly_interpolated_opacity, curve->GetValue(time));
+    EXPECT_FLOAT_EQ(linearly_interpolated_opacity, SAMPLE(curve, time));
 
     EndTest();
   }
@@ -894,7 +900,7 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationTakeover
   scoped_refptr<FakePictureLayer> scroll_layer_;
 };
 
-// TODO(crbug.com/1018213):  [BlinkGenPropertyTrees] Scroll Animation should be
+// TODO(crbug.com/40655283):  [BlinkGenPropertyTrees] Scroll Animation should be
 // taken over from cc when scroll is unpromoted.
 // MULTI_THREAD_TEST_F(LayerTreeHostAnimationTestScrollOffsetAnimationTakeover);
 
@@ -1081,7 +1087,7 @@ class LayerTreeHostPresentationDuringAnimation
   }
 
  private:
-  void OnPresentation(base::TimeTicks presentation_timestamp) { EndTest(); }
+  void OnPresentation(const viz::FrameTimingDetails& details) { EndTest(); }
 
   // Disable sub-sampling to deterministically record histograms under test.
   base::MetricsSubSampler::ScopedAlwaysSampleForTesting no_subsampling_;
@@ -1672,7 +1678,7 @@ class LayerTreeHostAnimationTestIsAnimating
       case 3:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1701,7 +1707,7 @@ class LayerTreeHostAnimationTestIsAnimating
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1721,7 +1727,7 @@ class LayerTreeHostAnimationTestIsAnimating
         EXPECT_FALSE(child->screen_space_transform_is_animating());
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1730,8 +1736,10 @@ class LayerTreeHostAnimationTestIsAnimating
   FakeContentLayerClient client_;
 };
 
-// Disabled on ASAN/debug due to test flakiness. See https://crbug.com/1517464
-#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+// TODO(https://issues.chromium.org/41490442): Flaky on Linux/ASAN/debug.
+// TODO(crbug.com/364634743): Flaky on Android.
+#if BUILDFLAG(IS_LINUX) || defined(ADDRESS_SANITIZER) || !defined(NDEBUG) || \
+    BUILDFLAG(IS_ANDROID)
 SINGLE_THREAD_TEST_F(LayerTreeHostAnimationTestIsAnimating);
 #else
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostAnimationTestIsAnimating);

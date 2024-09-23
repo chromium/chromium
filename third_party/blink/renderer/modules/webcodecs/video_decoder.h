@@ -40,9 +40,9 @@ class EncodedVideoChunk;
 class ExceptionState;
 class VideoDecoderConfig;
 class VideoDecoderInit;
+class VideoDecoderSupport;
 class VideoFrame;
 class V8VideoFrameOutputCallback;
-class ScriptPromise;
 
 class MODULES_EXPORT VideoDecoderTraits {
  public:
@@ -81,9 +81,8 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
                               const VideoDecoderInit*,
                               ExceptionState&);
 
-  static ScriptPromise isConfigSupported(ScriptState*,
-                                         const VideoDecoderConfig*,
-                                         ExceptionState&);
+  static ScriptPromise<VideoDecoderSupport>
+  isConfigSupported(ScriptState*, const VideoDecoderConfig*, ExceptionState&);
 
   static HardwarePreference GetHardwareAccelerationPreference(
       const ConfigType& config);
@@ -100,7 +99,7 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
       bool* needs_converter_out = nullptr);
 
   VideoDecoder(ScriptState*, const VideoDecoderInit*, ExceptionState&);
-  ~VideoDecoder() override = default;
+  ~VideoDecoder() override;
 
   // EventTarget interface
   const AtomicString& InterfaceName() const override;
@@ -119,6 +118,8 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
       ExecutionContext*) override;
 
  private:
+  struct DecoderSpecificData;
+
   // DecoderTemplate implementation.
   HardwarePreference GetHardwarePreference(const ConfigType& config) override;
   bool GetLowDelayPreference(const ConfigType& config) override;
@@ -127,12 +128,11 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   static std::optional<media::VideoDecoderConfig>
   MakeMediaVideoDecoderConfigInternal(
       const ConfigType& config,
-      std::unique_ptr<VideoDecoderHelper>& decoder_helper,
+      DecoderSpecificData& decoder_specific_data,
       String* js_error_message,
       bool* needs_converter_out = nullptr);
 
-  // Bitstream converter to annex B for AVC/HEVC.
-  std::unique_ptr<VideoDecoderHelper> decoder_helper_;
+  std::unique_ptr<DecoderSpecificData> decoder_specific_data_;
 
   media::VideoCodec current_codec_ = media::VideoCodec::kUnknown;
 

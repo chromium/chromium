@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/layout/inline/inline_items_builder.h"
 
 #include <type_traits>
@@ -16,12 +21,36 @@
 #include "third_party/blink/renderer/core/layout/inline/transformed_string.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
 
 namespace blink {
 class HTMLAreaElement;
+
+template <typename MappingBuilder>
+InlineItemsBuilderTemplate<MappingBuilder>::InlineItemsBuilderTemplate(
+    LayoutBlockFlow* block_flow,
+    HeapVector<InlineItem>* items,
+    const String& previous_text_content,
+    const SvgTextChunkOffsets* chunk_offsets)
+    : block_flow_(block_flow),
+      items_(items),
+      text_chunk_offsets_(chunk_offsets),
+      is_text_combine_(block_flow_->IsLayoutTextCombine()) {
+  const LayoutObject* child = block_flow->FirstChild();
+  if (!previous_text_content.IsNull() && child && child->NextSibling()) {
+    // 10 avoids reallocations in many cases of Speedometer3.
+    constexpr wtf_size_t kAdditionalSize = 10;
+    wtf_size_t capacity = previous_text_content.length() + kAdditionalSize;
+    if (previous_text_content.Is8Bit()) {
+      text_.ReserveCapacity(capacity);
+    } else {
+      text_.Reserve16BitCapacity(capacity);
+    }
+  }
+}
 
 // Returns true if items builder is used for other than offset mapping.
 template <typename MappingBuilder>
@@ -41,6 +70,13 @@ String InlineItemsBuilderTemplate<MappingBuilder>::ToString() {
 }
 
 namespace {
+
+// TODO(curbug.com/324111880): We can't support forced-breaks in ruby-base boxes
+// until ruby-columns become actually line-breakable. So we replace
+// forced-breaks in ruby-base boxes with spaces for now. This flag should be
+// removed before shipping RubyLineBreakable.
+constexpr bool kDisableForcedBreakInRubyColumn = true;
+
 // The spec turned into a discussion that may change. Put this logic on hold
 // until CSSWG resolves the issue.
 // https://github.com/w3c/csswg-drafts/issues/337
@@ -188,6 +224,10 @@ InlineItem* LastItemToCollapseWith(HeapVector<InlineItem>* items) {
   return nullptr;
 }
 
+inline bool IsNonOrc16BitCharacter(UChar ch) {
+  return ch >= 0x100 && ch != kObjectReplacementCharacter;
+}
+
 }  // anonymous namespace
 
 template <typename MappingBuilder>
@@ -322,8 +362,10 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
   // TODO(layout-dev): Handle cases where the old items are not consecutive.
   const ComputedStyle& new_style = layout_text->StyleRef();
   const bool collapse_spaces = new_style.ShouldCollapseWhiteSpaces();
-  const bool preserve_newlines =
-      new_style.ShouldPreserveBreaks() && LIKELY(!is_text_combine_);
+  bool preserve_newlines = new_style.ShouldPreserveBreaks();
+  if (preserve_newlines && is_text_combine_) [[unlikely]] {
+    preserve_newlines = false;
+  }
   if (InlineItem* last_item = LastItemToCollapseWith(items_)) {
     if (collapse_spaces) {
       switch (last_item->EndCollapseType()) {
@@ -381,7 +423,7 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
           RestoreTrailingCollapsibleSpace(last_item);
           return false;
         case InlineItem::kOpaqueToCollapsing:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     } else if (last_item->EndCollapseType() == InlineItem::kCollapsed) {
@@ -413,9 +455,9 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
     }
   }
 
-  if (UNLIKELY(old_item0.StartOffset() > 0 &&
-               ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
-                   layout_text->TransformedText(), new_style))) {
+  if (old_item0.StartOffset() > 0 &&
+      ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
+          layout_text->TransformedText(), new_style)) [[unlikely]] {
     // e.g. <p>abc xyz</p> => <p> xyz</p> where "abc" and " xyz" are different
     // Text node. |text_| is " \u200Bxyz".
     return false;
@@ -446,6 +488,8 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
     }
 
     unsigned start = text_.length();
+    has_non_orc_16bit_ =
+        has_non_orc_16bit_ || original_data.HasNonOrc16BitCharacters();
     text_.Append(original_string, item.StartOffset(), item.Length());
 
     // If the item's position within the container remains unchanged the item
@@ -468,8 +512,9 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
       // The following should be true, but some unit tests fail.
       // DCHECK_EQ(item->Type(), InlineItem::kControl);
     }
-    InlineItem adjusted_item(item, start, end, adjusted_shape_result);
 
+    InlineItem& adjusted_item =
+        items_->emplace_back(item, start, end, adjusted_shape_result);
 #if DCHECK_IS_ON()
     DCHECK_EQ(start, adjusted_item.StartOffset());
     DCHECK_EQ(end, adjusted_item.EndOffset());
@@ -479,8 +524,6 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
     }
     DCHECK_EQ(item.IsEmptyItem(), adjusted_item.IsEmptyItem());
 #endif
-
-    items_->push_back(adjusted_item);
     DidAppendTextReusing(adjusted_item);
   }
   return true;
@@ -490,7 +533,7 @@ template <>
 bool InlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
     const InlineNodeData&,
     LayoutText*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -506,10 +549,10 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
   }
 
   // If not create a new item as needed.
-  if (UNLIKELY(layout_text->IsWordBreak())) {
+  if (layout_text->IsWordBreak()) [[unlikely]] {
     typename MappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                    layout_text);
-    if (UNLIKELY(is_text_combine_)) {
+    if (is_text_combine_) [[unlikely]] {
       // We don't break text runs in text-combine-upright:all.
       // Note: Even if we have overflow-wrap:normal and word-break:keep-all,
       // <wbr> causes line break.
@@ -520,22 +563,23 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
     return;
   }
 
-  if (!RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled() ||
-      !layout_text->HasVariableLengthTransform()) {
+  if (!layout_text->HasVariableLengthTransform()) {
     AppendText(TransformedString(layout_text->TransformedText()), *layout_text);
     return;
   }
-  String original = layout_text->OriginalText();
-  TextOffsetMap offset_map;
-  String transformed =
-      layout_text->TransformAndSecureText(original, offset_map);
-  CHECK_EQ(layout_text->TransformedText().length(), transformed.length());
+  // Do not use LayoutText::OriginalText() here.  This code is used when
+  // OriginalText() was updated but TransformedText() is not updated yet, and we
+  // need to use TransformedText() in that case.  It is required to make
+  // InlineNode::SetTextWithOffset() workable.
+  auto [original_length, offset_map] =
+      layout_text->GetVariableLengthTransformResult();
+  String transformed = layout_text->TransformedText();
   const Vector<unsigned> length_map = TransformedString::CreateLengthMap(
-      original.length(), transformed.length(), offset_map);
+      original_length, transformed.length(), offset_map);
   CHECK(transformed.length() == length_map.size() || length_map.size() == 0);
-  AppendText(TransformedString(layout_text->TransformedText(),
-                               {length_map.data(), length_map.size()}),
-             *layout_text);
+  AppendText(
+      TransformedString(transformed, {length_map.data(), length_map.size()}),
+      *layout_text);
 }
 
 template <typename MappingBuilder>
@@ -573,8 +617,13 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
                                                  &layout_object);
 
   const ComputedStyle& style = layout_object.StyleRef();
-  const bool should_not_preserve_newline =
-      layout_object.IsSVGInlineText() || UNLIKELY(is_text_combine_);
+  bool should_not_preserve_newline;
+  if (layout_object.IsSVGInlineText() || is_text_combine_ ||
+      ruby_text_nesting_level_ > 0) [[unlikely]] {
+    should_not_preserve_newline = true;
+  } else {
+    should_not_preserve_newline = false;
+  }
 
   RestoreTrailingCollapsibleSpaceIfRemoved();
 
@@ -632,6 +681,7 @@ template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::AppendTransformedString(
     const TransformedString& transformed,
     const LayoutText& layout_text) {
+  has_non_orc_16bit_ = has_non_orc_16bit_ || !transformed.View().Is8Bit();
   text_.Append(transformed.View());
   if (!transformed.HasLengthMap()) {
     mapping_builder_.AppendIdentityMapping(transformed.View().length());
@@ -710,9 +760,10 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
     space_run_has_newline = MoveToEndOfCollapsibleSpaces(string, &i, &c);
 
     // LayoutBR does not set preserve_newline, but should be preserved.
-    if (UNLIKELY(space_run_has_newline && string.length() == 1 &&
-                 layout_object && layout_object->IsBR())) {
-      if (UNLIKELY(is_text_combine_)) {
+    if (space_run_has_newline && string.length() == 1 && layout_object &&
+        layout_object->IsBR()) [[unlikely]] {
+      // https://drafts.csswg.org/css-ruby/#anon-gen-unbreak
+      if (is_text_combine_ || ruby_text_nesting_level_ > 0) [[unlikely]] {
         AppendTextItem(TransformedString(" "), layout_object);
       } else {
         AppendForcedBreakCollapseWhitespace(layout_object);
@@ -845,7 +896,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
       bool remove_newline = space_run_has_newline &&
                             ShouldRemoveNewline(text_, text_.length(), style,
                                                 StringView(string, i), style);
-      if (UNLIKELY(remove_newline)) {
+      if (remove_newline) [[unlikely]] {
         // |kNotCollapsible| because the newline is removed, not collapsed.
         end_collapse = InlineItem::kNotCollapsible;
         space_run_has_newline = false;
@@ -869,7 +920,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
   }
 
   DCHECK_GE(text_.length(), start_offset);
-  if (UNLIKELY(text_.length() == start_offset)) {
+  if (text_.length() == start_offset) [[unlikely]] {
     AppendEmptyTextItem(layout_object);
     return;
   }
@@ -888,8 +939,9 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::
         const ComputedStyle& style,
         unsigned index) const {
   DCHECK_LE(index, string.length());
-  if (UNLIKELY(is_text_combine_))
+  if (is_text_combine_) [[unlikely]] {
     return false;
+  }
   // Check if we are at a preserved space character and auto-wrap is enabled.
   if (style.ShouldCollapseWhiteSpaces() || !style.ShouldWrapLine() ||
       !string.length() || index >= string.length() ||
@@ -913,8 +965,8 @@ void InlineItemsBuilderTemplate<MappingBuilder>::
         unsigned* start) {
   DCHECK(start);
   StringView string = transformed.View();
-  if (UNLIKELY(ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
-          string, style, *start))) {
+  if (ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
+          string, style, *start)) [[unlikely]] {
     wtf_size_t end = *start;
     do {
       ++end;
@@ -944,15 +996,40 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveWhitespace(
   unsigned start = 0;
   InsertBreakOpportunityAfterLeadingPreservedSpaces(transformed, *style,
                                                     layout_object, &start);
-  String string = transformed.View().ToString();
-  for (; start < string.length();) {
-    UChar c = string[start];
-    if (IsControlItemCharacter(c)) {
-      if (c == kNewlineCharacter) {
-        if (UNLIKELY(is_text_combine_)) {
+  const StringView transformed_view = transformed.View();
+  const wtf_size_t length = transformed_view.length();
+  if (start >= length) [[unlikely]] {
+    return;
+  }
+  if (layout_object->HasNoControlItems()) {
+    AppendTextItem(transformed.Substring(start), layout_object);
+    return;
+  }
+  wtf_size_t control = transformed_view.Find(IsControlItemCharacter, start);
+  if (control == kNotFound) {
+    layout_object->SetHasNoControlItems();
+    AppendTextItem(transformed.Substring(start), layout_object);
+    return;
+  }
+
+  // Split the transformed string by control items.
+  while (start < length) {
+    if (control != start) {
+      AppendTextItem(transformed.Substring(start, control - start),
+                     layout_object);
+      if (control >= length) {
+        break;
+      }
+      start = control;
+    }
+
+    const UChar c = transformed_view[start];
+    switch (c) {
+      case kNewlineCharacter:
+        if (is_text_combine_ || ruby_text_nesting_level_ > 0) [[unlikely]] {
           start++;
           AppendTextItem(TransformedString(" "), layout_object);
-          continue;
+          break;
         }
         AppendForcedBreak(layout_object);
         start++;
@@ -961,35 +1038,44 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveWhitespace(
         // breaker. Generate an opportunity to make it easy.
         InsertBreakOpportunityAfterLeadingPreservedSpaces(
             transformed, *style, layout_object, &start);
-        continue;
-      }
-      if (c == kTabulationCharacter) {
-        wtf_size_t end = string.Find(
+        break;
+      case kTabulationCharacter: {
+        wtf_size_t tab_end = transformed_view.Find(
             [](UChar c) { return c != kTabulationCharacter; }, start + 1);
-        if (end == kNotFound)
-          end = string.length();
+        if (tab_end == kNotFound) {
+          tab_end = length;
+        }
         InlineItem& item = AppendTextItem(
-            InlineItem::kControl, transformed.Substring(start, end - start),
+            InlineItem::kControl, transformed.Substring(start, tab_end - start),
             layout_object);
         item.SetTextType(TextItemType::kFlowControl);
-        start = end;
+        start = tab_end;
         is_score_line_break_disabled_ = true;
-        continue;
+        break;
       }
-      // ZWNJ splits item, but it should be text.
-      if (c != kZeroWidthNonJoinerCharacter) {
+      case kZeroWidthNonJoinerCharacter:
+        // ZWNJ splits item, but it should be text.
+        control = transformed_view.Find(IsControlItemCharacter, start + 1);
+        if (control == kNotFound) {
+          control = length;
+        }
+        continue;
+      default: {
+        DCHECK(IsControlItemCharacter(c));
         InlineItem& item = Append(InlineItem::kControl, c, layout_object);
         item.SetTextType(TextItemType::kFlowControl);
         start++;
-        continue;
+        break;
       }
     }
+    if (start >= length) {
+      break;
+    }
 
-    wtf_size_t end = string.Find(IsControlItemCharacter, start + 1);
-    if (end == kNotFound)
-      end = string.length();
-    AppendTextItem(transformed.Substring(start, end - start), layout_object);
-    start = end;
+    control = transformed_view.Find(IsControlItemCharacter, start);
+    if (control == kNotFound) {
+      control = length;
+    }
   }
 }
 
@@ -1097,7 +1183,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitAndEnterSvgTextChunk(
 template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::EnterSvgTextChunk(
     const ComputedStyle* style) {
-  if (LIKELY(!block_flow_->IsSVGText() || !text_chunk_offsets_)) {
+  if (!block_flow_->IsSVGText() || !text_chunk_offsets_) [[likely]] {
     return;
   }
   EnterBidiContext(nullptr, style, kLeftToRightIsolateCharacter,
@@ -1113,6 +1199,7 @@ InlineItem& InlineItemsBuilderTemplate<MappingBuilder>::Append(
     LayoutObject* layout_object) {
   DCHECK_NE(character, kSpaceCharacter);
 
+  has_non_orc_16bit_ = has_non_orc_16bit_ || IsNonOrc16BitCharacter(character);
   text_.Append(character);
   mapping_builder_.AppendIdentityMapping(1);
   unsigned end_offset = text_.length();
@@ -1194,6 +1281,7 @@ InlineItem& InlineItemsBuilderTemplate<MappingBuilder>::AppendOpaque(
     InlineItem::InlineItemType type,
     UChar character,
     LayoutObject* layout_object) {
+  has_non_orc_16bit_ = has_non_orc_16bit_ || IsNonOrc16BitCharacter(character);
   text_.Append(character);
   mapping_builder_.AppendIdentityMapping(1);
   unsigned end_offset = text_.length();
@@ -1256,7 +1344,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::RemoveTrailingCollapsibleSpace(
 
   // Trailing spaces can be removed across non-character items.
   // Adjust their offsets if after the removed index.
-  for (item++; item != items_->end(); item++) {
+  for (item++; item != items_->data() + items_->size(); item++) {
     item->SetOffset(item->StartOffset() - 1, item->EndOffset() - 1);
   }
 }
@@ -1296,7 +1384,7 @@ void InlineItemsBuilderTemplate<
   item->SetEndOffset(item->EndOffset() + 1);
   item->SetEndCollapseType(InlineItem::kCollapsible);
 
-  for (item++; item != items_->end(); item++) {
+  for (item++; item != items_->data() + items_->size(); item++) {
     item->SetOffset(item->StartOffset() + 1, item->EndOffset() + 1);
   }
 }
@@ -1407,20 +1495,48 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
     }
   }
 
+  has_ruby_ = has_ruby_ || node->IsInlineRubyText();
+  if (node->IsInlineRubyText()) {
+    ++ruby_text_nesting_level_;
+    typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
+    if (!node->Parent()->IsInlineRuby()) {
+      // This creates a ruby column with a placeholder-only ruby-base.
+      AppendOpaque(InlineItem::kOpenRubyColumn,
+                   IsLtr(style->Direction()) ? kLeftToRightIsolateCharacter
+                                             : kRightToLeftIsolateCharacter,
+                   nullptr);
+      AppendOpaque(InlineItem::kRubyLinePlaceholder, nullptr);
+    } else {
+      AppendOpaque(InlineItem::kRubyLinePlaceholder, node->Parent());
+    }
+  }
   AppendOpaque(InlineItem::kOpenTag, node);
 
-  if (!NeedsBoxInfo())
-    return;
-
-  // Set |ShouldCreateBoxFragment| of the parent box if needed.
-  BoxInfo* current_box =
-      &boxes_.emplace_back(items_->size() - 1, items_->back());
-  if (boxes_.size() > 1) {
-    BoxInfo* parent_box = std::prev(current_box);
-    if (!parent_box->should_create_box_fragment &&
-        parent_box->ShouldCreateBoxFragmentForChild(*current_box)) {
-      parent_box->SetShouldCreateBoxFragment(items_);
+  if (NeedsBoxInfo()) {
+    // Set |ShouldCreateBoxFragment| of the parent box if needed.
+    BoxInfo* current_box =
+        &boxes_.emplace_back(items_->size() - 1, items_->back());
+    if (boxes_.size() > 1) {
+      BoxInfo* parent_box = std::prev(current_box);
+      if (!parent_box->should_create_box_fragment &&
+          parent_box->ShouldCreateBoxFragmentForChild(*current_box)) {
+        parent_box->SetShouldCreateBoxFragment(items_);
+      }
     }
+  }
+
+  typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
+  if (node->IsInlineRuby()) {
+    AppendOpaque(InlineItem::kOpenRubyColumn,
+                 IsLtr(style->Direction()) ? kLeftToRightIsolateCharacter
+                                           : kRightToLeftIsolateCharacter,
+                 node);
+    if (kDisableForcedBreakInRubyColumn) {
+      ++ruby_text_nesting_level_;
+    }
+    AppendOpaque(InlineItem::kRubyLinePlaceholder, node);
+  } else if (node->IsInlineRubyText()) {
+    AppendOpaque(InlineItem::kRubyLinePlaceholder, node);
   }
 }
 
@@ -1438,6 +1554,30 @@ template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
     LayoutObject* node) {
   DCHECK(node);
+
+  if (node->IsInlineRuby()) {
+    if (kDisableForcedBreakInRubyColumn) {
+      --ruby_text_nesting_level_;
+    }
+    typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
+    wtf_size_t size = items_->size();
+    if (size >= 3 &&
+        items_->at(size - 3).Type() == InlineItem::kCloseRubyColumn &&
+        items_->at(size - 2).Type() == InlineItem::kOpenRubyColumn &&
+        items_->at(size - 1).Type() == InlineItem::kRubyLinePlaceholder) {
+      // Remove the last kOpenRubyColumn and kRubyLinePlaceholder.
+      text_.Resize(items_->at(size - 2).StartOffset());
+      items_->Shrink(size - 2);
+      // kOpenRubyColumn called AppendIdentityMapping(1).
+      mapping_builder_.RevertIdentityMapping1();
+    } else {
+      AppendOpaque(InlineItem::kCloseRubyColumn,
+                   kPopDirectionalIsolateCharacter, node);
+    }
+  } else if (node->IsInlineRubyText()) {
+    typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
+    AppendOpaque(InlineItem::kRubyLinePlaceholder, node);
+  }
 
   if (NeedsBoxInfo()) {
     BoxInfo* current_box = &boxes_.back();
@@ -1480,6 +1620,27 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
 
   AppendOpaque(InlineItem::kCloseTag, node);
 
+  if (node->IsInlineRubyText()) {
+    --ruby_text_nesting_level_;
+    typename MappingBuilder::SourceNodeScope scope(&mapping_builder_, nullptr);
+    if (node->Parent()->IsInlineRuby()) {
+      LayoutObject* ruby_container = node->Parent();
+      AppendOpaque(InlineItem::kCloseRubyColumn,
+                   kPopDirectionalIsolateCharacter, ruby_container);
+      // This produces almost-empty ruby-columns if </ruby> follows.
+      // The beginning part of this function removes such ruby-columns.
+      AppendOpaque(InlineItem::kOpenRubyColumn,
+                   IsLtr(node->Parent()->Style()->Direction())
+                       ? kLeftToRightIsolateCharacter
+                       : kRightToLeftIsolateCharacter,
+                   ruby_container);
+      AppendOpaque(InlineItem::kRubyLinePlaceholder, node);
+    } else {
+      AppendOpaque(InlineItem::kCloseRubyColumn,
+                   kPopDirectionalIsolateCharacter, nullptr);
+    }
+  }
+
   Exit(node);
 }
 
@@ -1492,20 +1653,18 @@ void InlineItemsBuilderTemplate<MappingBuilder>::Exit(LayoutObject* node) {
 }
 
 template <typename MappingBuilder>
-bool InlineItemsBuilderTemplate<MappingBuilder>::MayBeBidiEnabled() const {
-  return !text_.Is8Bit() || HasBidiControls();
-}
-
-template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::DidFinishCollectInlines(
     InlineNodeData* data) {
   data->text_content = ToString();
+  data->has_non_orc_16bit_ = has_non_orc_16bit_;
 
   // Set |is_bidi_enabled_| for all UTF-16 strings for now, because at this
   // point the string may or may not contain RTL characters.
   // |SegmentText()| will analyze the text and reset |is_bidi_enabled_| if it
   // doesn't contain any RTL characters.
-  data->is_bidi_enabled_ = MayBeBidiEnabled();
+  data->is_bidi_enabled_ =
+      HasBidiControls() ||
+      (has_non_orc_16bit_ && Character::MaybeBidiRtl(data->text_content));
   data->has_floats_ = has_floats_;
   data->has_initial_letter_box_ = has_initial_letter_box_;
   data->has_ruby_ = has_ruby_;

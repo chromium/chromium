@@ -158,7 +158,7 @@ VirtualAuthenticator::ConstructDevice() {
       return std::make_unique<device::VirtualCtap2Device>(state_, config);
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::make_unique<device::VirtualU2fDevice>(state_);
   }
 }
@@ -173,6 +173,18 @@ void VirtualAuthenticator::RemoveObserver(Observer* observer) {
 
 bool VirtualAuthenticator::HasObserversForTest() {
   return !observers_.empty();
+}
+
+void VirtualAuthenticator::SetBackupEligibility(
+    const std::vector<uint8_t>& key_handle,
+    bool backup_eligibility) {
+  state_->registrations.at(key_handle).backup_eligible = backup_eligibility;
+}
+
+void VirtualAuthenticator::SetBackupState(
+    const std::vector<uint8_t>& key_handle,
+    bool backup_state) {
+  state_->registrations.at(key_handle).backup_state = backup_state;
 }
 
 void VirtualAuthenticator::GetLargeBlob(const std::vector<uint8_t>& key_handle,

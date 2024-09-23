@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "components/sessions/core/base_session_service_commands.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace sessions {
 
@@ -156,8 +157,8 @@ struct VisibleOnAllWorkspacesPayload {
   bool visible_on_all_workspaces;
 };
 
-// Persisted versions of ui::WindowShowState that are written to disk and can
-// never change.
+// Persisted versions of ui::mojom::WindowShowState that are written to disk and
+// can never change.
 enum PersistedWindowShowState {
   // SHOW_STATE_DEFAULT (0) never persisted.
   PERSISTED_SHOW_STATE_NORMAL = 1,
@@ -170,7 +171,7 @@ enum PersistedWindowShowState {
   PERSISTED_SHOW_STATE_END = 8,
 };
 
-// TODO(crbug.com/1506068): Remove this around December 2024. This is part of a
+// TODO(crbug.com/40946710): Remove this around December 2024. This is part of a
 // workaround added to support the transition from storing the last_active_time
 // as TimeTicks to Time that was added in December 2023. This is the threshold
 // at which we consider that if a tab is so far in the past, it must be a tab
@@ -179,51 +180,52 @@ const base::TimeDelta kLastActiveWorkaroundThreshold = base::Days(366 * 15);
 
 // Assert to ensure PersistedWindowShowState is updated if ui::WindowShowState
 // is changed.
-static_assert(ui::SHOW_STATE_END ==
-                  static_cast<ui::WindowShowState>(PERSISTED_SHOW_STATE_END -
-                                                   2),
-              "SHOW_STATE_END must equal PERSISTED_SHOW_STATE_END minus the "
-              "deprecated entries");
+// TODO(crbug.com/361560784): Investigate and Remove `kEnd`
+static_assert(
+    ui::mojom::WindowShowState::kEnd ==
+        static_cast<ui::mojom::WindowShowState>(PERSISTED_SHOW_STATE_END - 2),
+    "WindowShowState::kEnd must equal PERSISTED_SHOW_STATE_END minus the "
+    "deprecated entries");
 // Returns the show state to store to disk based |state|.
 PersistedWindowShowState ShowStateToPersistedShowState(
-    ui::WindowShowState state) {
+    ui::mojom::WindowShowState state) {
   switch (state) {
-    case ui::SHOW_STATE_NORMAL:
+    case ui::mojom::WindowShowState::kNormal:
       return PERSISTED_SHOW_STATE_NORMAL;
-    case ui::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kMinimized:
       return PERSISTED_SHOW_STATE_MINIMIZED;
-    case ui::SHOW_STATE_MAXIMIZED:
+    case ui::mojom::WindowShowState::kMaximized:
       return PERSISTED_SHOW_STATE_MAXIMIZED;
-    case ui::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kFullscreen:
       return PERSISTED_SHOW_STATE_FULLSCREEN;
-    case ui::SHOW_STATE_DEFAULT:
-    case ui::SHOW_STATE_INACTIVE:
+    case ui::mojom::WindowShowState::kDefault:
+    case ui::mojom::WindowShowState::kInactive:
       return PERSISTED_SHOW_STATE_NORMAL;
 
-    case ui::SHOW_STATE_END:
+    case ui::mojom::WindowShowState::kEnd:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PERSISTED_SHOW_STATE_NORMAL;
 }
 
 // Lints show state values when read back from persited disk.
-ui::WindowShowState PersistedShowStateToShowState(int state) {
+ui::mojom::WindowShowState PersistedShowStateToShowState(int state) {
   switch (state) {
     case PERSISTED_SHOW_STATE_NORMAL:
-      return ui::SHOW_STATE_NORMAL;
+      return ui::mojom::WindowShowState::kNormal;
     case PERSISTED_SHOW_STATE_MINIMIZED:
-      return ui::SHOW_STATE_MINIMIZED;
+      return ui::mojom::WindowShowState::kMinimized;
     case PERSISTED_SHOW_STATE_MAXIMIZED:
-      return ui::SHOW_STATE_MAXIMIZED;
+      return ui::mojom::WindowShowState::kMaximized;
     case PERSISTED_SHOW_STATE_FULLSCREEN:
-      return ui::SHOW_STATE_FULLSCREEN;
+      return ui::mojom::WindowShowState::kFullscreen;
     case PERSISTED_SHOW_STATE_DETACHED_DEPRECATED:
     case PERSISTED_SHOW_STATE_DOCKED_DEPRECATED:
-      return ui::SHOW_STATE_NORMAL;
+      return ui::mojom::WindowShowState::kNormal;
   }
-  NOTREACHED();
-  return ui::SHOW_STATE_NORMAL;
+  DUMP_WILL_BE_NOTREACHED();
+  return ui::mojom::WindowShowState::kNormal;
 }
 
 // Iterates through the vector updating the selected_tab_index of each
@@ -488,8 +490,8 @@ void CreateTabsAndWindows(
         GetWindow(window_id, windows)
             ->bounds.SetRect(payload.x, payload.y, payload.w, payload.h);
         GetWindow(window_id, windows)->show_state =
-            payload.is_maximized ? ui::SHOW_STATE_MAXIMIZED
-                                 : ui::SHOW_STATE_NORMAL;
+            payload.is_maximized ? ui::mojom::WindowShowState::kMaximized
+                                 : ui::mojom::WindowShowState::kNormal;
         break;
       }
 
@@ -652,8 +654,8 @@ void CreateTabsAndWindows(
       }
 
       case kCommandSetTabGroupMetadata2: {
-        std::unique_ptr<base::Pickle> pickle = command->PayloadAsPickle();
-        base::PickleIterator iter(*pickle);
+        base::Pickle pickle = command->PayloadAsPickle();
+        base::PickleIterator iter(pickle);
 
         std::optional<base::Token> group_token = ReadTokenFromPickle(&iter);
         if (!group_token.has_value())
@@ -690,8 +692,12 @@ void CreateTabsAndWindows(
           if (!iter.ReadString(&saved_guid)) {
             return;
           }
-
           group->saved_guid = saved_guid;
+        } else {
+          // Explicitly update the |saved_guid| to nullopt if the group
+          // isn't saved. This is to ensure the right value is set when there
+          // are multiple entries in the append log file.
+          group->saved_guid = std::nullopt;
         }
 
         break;
@@ -766,11 +772,10 @@ void CreateTabsAndWindows(
       }
 
       case kCommandSessionStorageAssociated: {
-        std::unique_ptr<base::Pickle> command_pickle(
-            command->PayloadAsPickle());
+        base::Pickle command_pickle = command->PayloadAsPickle();
+        base::PickleIterator iter(command_pickle);
         SessionID::id_type command_tab_id;
         std::string session_storage_persistent_id;
-        base::PickleIterator iter(*command_pickle);
         if (!iter.ReadInt(&command_tab_id) ||
             !iter.ReadString(&session_storage_persistent_id))
           return;
@@ -803,7 +808,7 @@ void CreateTabsAndWindows(
 
         if (base::Time::Now() - deserialized_time >
             kLastActiveWorkaroundThreshold) {
-          // TODO(crbug.com/1506068): Remove this once enough time has passed
+          // TODO(crbug.com/40946710): Remove this once enough time has passed
           // (added in December 2023, can be removed after ~1 year). This is a
           // workaround put in place during the migration from base::TimeTicks
           // internal representation to microseconds since Windows epoch. As the
@@ -829,8 +834,8 @@ void CreateTabsAndWindows(
       }
 
       case kCommandSetWindowWorkspace2: {
-        std::unique_ptr<base::Pickle> pickle(command->PayloadAsPickle());
-        base::PickleIterator it(*pickle);
+        base::Pickle pickle = command->PayloadAsPickle();
+        base::PickleIterator it(pickle);
         SessionID::id_type window_id = -1;
         std::string workspace;
          if (!it.ReadInt(&window_id) || !it.ReadString(&workspace)) {
@@ -854,8 +859,8 @@ void CreateTabsAndWindows(
       }
 
       case kCommandSetTabGuid: {
-        std::unique_ptr<base::Pickle> pickle(command->PayloadAsPickle());
-        base::PickleIterator it(*pickle);
+        base::Pickle pickle = command->PayloadAsPickle();
+        base::PickleIterator it(pickle);
         SessionID::id_type tab_id = -1;
         std::string guid;
         if (!it.ReadInt(&tab_id) || !it.ReadString(&guid) ||
@@ -868,8 +873,8 @@ void CreateTabsAndWindows(
       }
 
       case kCommandSetTabData: {
-        std::unique_ptr<base::Pickle> pickle(command->PayloadAsPickle());
-        base::PickleIterator it(*pickle);
+        base::Pickle pickle = command->PayloadAsPickle();
+        base::PickleIterator it(pickle);
         SessionID::id_type tab_id = -1;
         int size = 0;
         if (!it.ReadInt(&tab_id) || !it.ReadInt(&size)) {
@@ -964,7 +969,7 @@ std::unique_ptr<SessionCommand> CreateSetTabWindowCommand(SessionID window_id,
 std::unique_ptr<SessionCommand> CreateSetWindowBoundsCommand(
     SessionID window_id,
     const gfx::Rect& bounds,
-    ui::WindowShowState show_state) {
+    ui::mojom::WindowShowState show_state) {
   WindowBoundsPayload3 payload = { 0 };
   payload.window_id = window_id.id();
   payload.x = bounds.x();
@@ -1087,16 +1092,11 @@ std::unique_ptr<SessionCommand> CreateSetActiveWindowCommand(
 
 std::unique_ptr<SessionCommand> CreateLastActiveTimeCommand(
     SessionID tab_id,
-    base::TimeTicks last_active_time) {
+    base::Time last_active_time) {
   LastActiveTimePayload payload = {0};
   payload.tab_id = tab_id.id();
-
-  // Convert the last_active_time from TimeTicks to Time.
-  base::TimeDelta delta_since_epoch =
-      last_active_time - base::TimeTicks::UnixEpoch();
-  base::Time converted_time = base::Time::UnixEpoch() + delta_since_epoch;
   payload.last_active_time =
-      converted_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+      last_active_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
 
   return CreateSessionCommandForPayload(kCommandLastActiveTime, payload);
 }
@@ -1215,9 +1215,8 @@ bool ReplacePendingCommand(CommandStorageManager* command_storage_manager,
     SessionCommand* existing_command = i->get();
     if ((*command)->id() == kCommandUpdateTabNavigation &&
         existing_command->id() == kCommandUpdateTabNavigation) {
-      std::unique_ptr<base::Pickle> command_pickle(
-          (*command)->PayloadAsPickle());
-      base::PickleIterator iterator(*command_pickle);
+      base::Pickle command_pickle = (*command)->PayloadAsPickle();
+      base::PickleIterator iterator(command_pickle);
       SessionID::id_type command_tab_id;
       int command_nav_index;
       if (!iterator.ReadInt(&command_tab_id) ||
@@ -1230,9 +1229,8 @@ bool ReplacePendingCommand(CommandStorageManager* command_storage_manager,
         // Creating a pickle like this means the Pickle references the data from
         // the command. Make sure we delete the pickle before the command, else
         // the pickle references deleted memory.
-        std::unique_ptr<base::Pickle> existing_pickle(
-            existing_command->PayloadAsPickle());
-        iterator = base::PickleIterator(*existing_pickle);
+        base::Pickle existing_pickle = existing_command->PayloadAsPickle();
+        iterator = base::PickleIterator(existing_pickle);
         if (!iterator.ReadInt(&existing_tab_id) ||
             !iterator.ReadInt(&existing_nav_index)) {
           return false;

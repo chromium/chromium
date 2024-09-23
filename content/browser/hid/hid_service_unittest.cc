@@ -19,6 +19,7 @@
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/hid_delegate.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/navigation_simulator.h"
@@ -277,7 +278,7 @@ class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
         }
         break;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -510,7 +511,7 @@ TEST_F(HidServiceRenderFrameHostTest, OpenAndNavigateCrossOrigin) {
   // The test assumes the previous page gets deleted after navigation,
   // disconnecting the device. Disable back/forward cache to ensure that it
   // doesn't get preserved in the cache.
-  // TODO(crbug.com/1346021): Integrate WebHID with bfcache and remove this.
+  // TODO(crbug.com/40232335): Integrate WebHID with bfcache and remove this.
   DisableBackForwardCacheForTesting(web_contents(),
                                     BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
@@ -905,7 +906,8 @@ TEST_P(HidServiceTest, Forget) {
 
   EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(false));
   EXPECT_CALL(hid_delegate(), RevokeDevicePermission)
-      .WillOnce([this](content::BrowserContext* browser_context,
+      .WillOnce([this](BrowserContext* browser_context,
+                       RenderFrameHost* render_frame_host,
                        const url::Origin& origin,
                        const device::mojom::HidDeviceInfo& device) {
         hid_delegate().OnPermissionRevoked(origin);

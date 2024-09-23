@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/page_info/page_info_ui.h"
 
 #include <utility>
@@ -49,6 +54,8 @@
 #endif
 
 namespace {
+
+using content_settings::SettingSource;
 
 const int kInvalidResourceID = -1;
 
@@ -196,6 +203,8 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
        IDS_SITE_SETTINGS_TYPE_VR_MID_SENTENCE},
       {ContentSettingsType::AR, IDS_SITE_SETTINGS_TYPE_AR,
        IDS_SITE_SETTINGS_TYPE_AR_MID_SENTENCE},
+      {ContentSettingsType::HAND_TRACKING, IDS_SITE_SETTINGS_TYPE_HAND_TRACKING,
+       IDS_SITE_SETTINGS_TYPE_HAND_TRACKING_MID_SENTENCE},
       {ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
        IDS_SITE_SETTINGS_TYPE_CAMERA_PAN_TILT_ZOOM,
        IDS_SITE_SETTINGS_TYPE_CAMERA_PAN_TILT_ZOOM_MID_SENTENCE},
@@ -216,15 +225,22 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
       {ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
        IDS_SITE_SETTINGS_TYPE_AUTO_PICTURE_IN_PICTURE,
        IDS_SITE_SETTINGS_TYPE_AUTO_PICTURE_IN_PICTURE_MID_SENTENCE},
+      {ContentSettingsType::CAPTURED_SURFACE_CONTROL,
+       IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL,
+       IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_MID_SENTENCE},
       {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
        IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE,
        IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE_MID_SENTENCE},
+      {ContentSettingsType::KEYBOARD_LOCK, IDS_SITE_SETTINGS_TYPE_KEYBOARD_LOCK,
+       IDS_SITE_SETTINGS_TYPE_KEYBOARD_LOCK_MID_SENTENCE},
       {ContentSettingsType::LOCAL_FONTS, IDS_SITE_SETTINGS_TYPE_FONT_ACCESS,
        IDS_SITE_SETTINGS_TYPE_FONT_ACCESS_MID_SENTENCE},
       {ContentSettingsType::HID_GUARD, IDS_SITE_SETTINGS_TYPE_HID_DEVICES,
        IDS_SITE_SETTINGS_TYPE_HID_DEVICES_MID_SENTENCE},
       {ContentSettingsType::IMAGES, IDS_SITE_SETTINGS_TYPE_IMAGES,
        IDS_SITE_SETTINGS_TYPE_IMAGES_MID_SENTENCE},
+      {ContentSettingsType::POINTER_LOCK, IDS_SITE_SETTINGS_TYPE_POINTER_LOCK,
+       IDS_SITE_SETTINGS_TYPE_POINTER_LOCK_MID_SENTENCE},
       {ContentSettingsType::SERIAL_GUARD, IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS,
        IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS_MID_SENTENCE},
       {ContentSettingsType::WEB_PRINTING, IDS_SITE_SETTINGS_TYPE_WEB_PRINTING,
@@ -232,6 +248,9 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
       {ContentSettingsType::WINDOW_MANAGEMENT,
        IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT,
        IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT_MID_SENTENCE},
+      {ContentSettingsType::WEB_APP_INSTALLATION,
+       IDS_SITE_SETTINGS_TYPE_WEB_APP_INSTALLATION,
+       IDS_SITE_SETTINGS_TYPE_WEB_APP_INSTALLATION_MID_SENTENCE},
 #endif
   };
   return kPermissionUIInfo;
@@ -289,15 +308,6 @@ ContentSetting GetEffectiveSetting(ContentSettingsType type,
   return effective_setting;
 }
 
-void SetTargetContentSetting(PageInfo::PermissionInfo& permission,
-                             ContentSetting target_setting) {
-  // If content setting's default setting matches target setting, set
-  // default setting to avoid crearing a site exception.
-  permission.setting = permission.default_setting == target_setting
-                           ? CONTENT_SETTING_DEFAULT
-                           : target_setting;
-}
-
 void CreateOppositeToDefaultSiteException(
     PageInfo::PermissionInfo& permission,
     ContentSetting opposite_to_block_setting) {
@@ -337,6 +347,9 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
       message_id = IDS_PAGE_INFO_STATE_TEXT_CAMERA_PAN_TILT_ZOOM_ASK;
       break;
+    case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_CAPTURED_SURFACE_CONTROL_ASK;
+      break;
     case ContentSettingsType::MEDIASTREAM_MIC:
       message_id = IDS_PAGE_INFO_STATE_TEXT_MIC_ASK;
       break;
@@ -345,6 +358,9 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
       break;
     case ContentSettingsType::AUTOMATIC_DOWNLOADS:
       message_id = IDS_PAGE_INFO_STATE_TEXT_AUTOMATIC_DOWNLOADS_ASK;
+      break;
+    case ContentSettingsType::HAND_TRACKING:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_HAND_TRACKING_ASK;
       break;
     case ContentSettingsType::VR:
       message_id = IDS_PAGE_INFO_STATE_TEXT_VR_ASK;
@@ -386,8 +402,22 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
     case ContentSettingsType::AUTO_PICTURE_IN_PICTURE:
       message_id = IDS_PAGE_INFO_STATE_TEXT_AUTO_PICTURE_IN_PICTURE_ASK;
       break;
+    case ContentSettingsType::KEYBOARD_LOCK:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_KEYBOARD_LOCK_ASK;
+      break;
+    case ContentSettingsType::POINTER_LOCK:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_POINTER_LOCK_ASK;
+      break;
+    case ContentSettingsType::WEB_APP_INSTALLATION:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_WEB_APP_INSTALLATION_ASK;
+      break;
+#if BUILDFLAG(IS_CHROMEOS)
+    case ContentSettingsType::WEB_PRINTING:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_WEB_PRINTING_ASK;
+      break;
+#endif
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (message_id == kInvalidResourceID)
@@ -402,10 +432,10 @@ PageInfoUI::CookiesNewInfo::CookiesNewInfo(CookiesNewInfo&& cookie_info) =
     default;
 PageInfoUI::CookiesNewInfo::~CookiesNewInfo() = default;
 
-PageInfoUI::CookiesFpsInfo::CookiesFpsInfo(const std::u16string& owner_name)
+PageInfoUI::CookiesRwsInfo::CookiesRwsInfo(const std::u16string& owner_name)
     : owner_name(owner_name) {}
 
-PageInfoUI::CookiesFpsInfo::~CookiesFpsInfo() = default;
+PageInfoUI::CookiesRwsInfo::~CookiesRwsInfo() = default;
 
 PageInfoUI::ChosenObjectInfo::ChosenObjectInfo(
     const PageInfo::ChooserUIInfo& ui_info,
@@ -441,35 +471,20 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
     case PageInfo::SAFE_BROWSING_STATUS_NONE:
       break;
     case PageInfo::SAFE_BROWSING_STATUS_MALWARE:
-      return CreateSecurityDescription(
-          SecuritySummaryColor::RED,
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_PAGE_INFO_MALWARE_SUMMARY_NEW
-              : IDS_PAGE_INFO_MALWARE_SUMMARY,
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_PAGE_INFO_MALWARE_DETAILS_NEW
-              : IDS_PAGE_INFO_MALWARE_DETAILS,
-          SecurityDescriptionType::SAFE_BROWSING);
+      return CreateSecurityDescription(SecuritySummaryColor::RED,
+                                       IDS_PAGE_INFO_SAFE_BROWSING_SUMMARY,
+                                       IDS_PAGE_INFO_MALWARE_DETAILS,
+                                       SecurityDescriptionType::SAFE_BROWSING);
     case PageInfo::SAFE_BROWSING_STATUS_SOCIAL_ENGINEERING:
-      return CreateSecurityDescription(
-          SecuritySummaryColor::RED,
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_PAGE_INFO_SOCIAL_ENGINEERING_SUMMARY_NEW
-              : IDS_PAGE_INFO_SOCIAL_ENGINEERING_SUMMARY,
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS_NEW
-              : IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS,
-          SecurityDescriptionType::SAFE_BROWSING);
+      return CreateSecurityDescription(SecuritySummaryColor::RED,
+                                       IDS_PAGE_INFO_SAFE_BROWSING_SUMMARY,
+                                       IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS,
+                                       SecurityDescriptionType::SAFE_BROWSING);
     case PageInfo::SAFE_BROWSING_STATUS_UNWANTED_SOFTWARE:
-      return CreateSecurityDescription(
-          SecuritySummaryColor::RED,
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_PAGE_INFO_UNWANTED_SOFTWARE_SUMMARY_NEW
-              : IDS_PAGE_INFO_UNWANTED_SOFTWARE_SUMMARY,
-          base::FeatureList::IsEnabled(safe_browsing::kRedInterstitialFacelift)
-              ? IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS_NEW
-              : IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS,
-          SecurityDescriptionType::SAFE_BROWSING);
+      return CreateSecurityDescription(SecuritySummaryColor::RED,
+                                       IDS_PAGE_INFO_SAFE_BROWSING_SUMMARY,
+                                       IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS,
+                                       SecurityDescriptionType::SAFE_BROWSING);
     case PageInfo::SAFE_BROWSING_STATUS_SAVED_PASSWORD_REUSE: {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
       auto security_description = CreateSecurityDescription(
@@ -479,7 +494,7 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
       security_description->details = identity_info.safe_browsing_details;
       return security_description;
 #endif
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
     case PageInfo::SAFE_BROWSING_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE:
@@ -492,7 +507,7 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
       security_description->details = identity_info.safe_browsing_details;
       return security_description;
 #endif
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
     case PageInfo::SAFE_BROWSING_STATUS_BILLING:
@@ -501,14 +516,14 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
                                        IDS_PAGE_INFO_BILLING_DETAILS,
                                        SecurityDescriptionType::SAFE_BROWSING);
     case PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_WARN:
-      return CreateSecurityDescription(SecuritySummaryColor::RED,
+      return CreateSecurityDescription(SecuritySummaryColor::ENTERPRISE,
                                        IDS_PAGE_INFO_ENTERPRISE_WARN_SUMMARY,
                                        IDS_PAGE_INFO_ENTERPRISE_WARN_DETAILS,
                                        SecurityDescriptionType::SAFE_BROWSING);
     case PageInfo::SAFE_BROWSING_STATUS_MANAGED_POLICY_BLOCK:
-      return CreateSecurityDescription(SecuritySummaryColor::RED,
-                                       IDS_PAGE_INFO_ENTERPRISE_WARN_SUMMARY,
-                                       IDS_PAGE_INFO_ENTERPRISE_WARN_DETAILS,
+      return CreateSecurityDescription(SecuritySummaryColor::ENTERPRISE,
+                                       IDS_PAGE_INFO_ENTERPRISE_BLOCK_SUMMARY,
+                                       IDS_PAGE_INFO_ENTERPRISE_BLOCK_DETAILS,
                                        SecurityDescriptionType::SAFE_BROWSING);
   }
 
@@ -563,7 +578,7 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
     case PageInfo::SITE_IDENTITY_STATUS_INTERNAL_PAGE:
       // Internal pages on desktop have their own UI implementations which
       // should never call this function.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_CERT:
@@ -619,7 +634,7 @@ std::u16string PageInfoUI::PermissionTypeToUIString(ContentSettingsType type) {
     if (info.type == type)
       return l10n_util::GetStringUTF16(info.string_id);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -630,7 +645,7 @@ std::u16string PageInfoUI::PermissionTypeToUIStringMidSentence(
     if (info.type == type)
       return l10n_util::GetStringUTF16(info.string_id_mid_sentence);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -654,6 +669,14 @@ std::u16string PageInfoUI::PermissionTooltipUiString(
 }
 
 // static
+std::u16string PageInfoUI::PermissionSubpageButtonTooltipString(
+    ContentSettingsType type) {
+  return l10n_util::GetStringFUTF16(
+      IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_BUTTON_TOOLTIP,
+      PageInfoUI::PermissionTypeToUIStringMidSentence(type));
+}
+
+// static
 base::span<const PageInfoUI::PermissionUIInfo>
 PageInfoUI::GetContentSettingsUIInfoForTesting() {
   return GetContentSettingsUIInfo();
@@ -665,13 +688,13 @@ std::u16string PageInfoUI::PermissionActionToUIString(
     ContentSettingsType type,
     ContentSetting setting,
     ContentSetting default_setting,
-    content_settings::SettingSource source,
+    SettingSource source,
     bool is_one_time) {
   ContentSetting effective_setting =
       GetEffectiveSetting(type, setting, default_setting);
   const int* button_text_ids = nullptr;
   switch (source) {
-    case content_settings::SETTING_SOURCE_USER:
+    case SettingSource::kUser:
       if (setting == CONTENT_SETTING_DEFAULT) {
 #if !BUILDFLAG(IS_ANDROID)
         if (type == ContentSettingsType::SOUND) {
@@ -693,8 +716,8 @@ std::u16string PageInfoUI::PermissionActionToUIString(
         break;
       }
       [[fallthrough]];
-    case content_settings::SETTING_SOURCE_POLICY:
-    case content_settings::SETTING_SOURCE_EXTENSION:
+    case SettingSource::kPolicy:
+    case SettingSource::kExtension:
 #if !BUILDFLAG(IS_ANDROID)
       if (type == ContentSettingsType::SOUND) {
         button_text_ids = kSoundPermissionButtonTextIDUserManaged;
@@ -703,16 +726,16 @@ std::u16string PageInfoUI::PermissionActionToUIString(
 #endif
       button_text_ids = kPermissionButtonTextIDUserManaged;
       break;
-    case content_settings::SETTING_SOURCE_ALLOWLIST:
-    case content_settings::SETTING_SOURCE_NONE:
+    case SettingSource::kAllowList:
+    case SettingSource::kNone:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
   int button_text_id = button_text_ids[effective_setting];
 
   if (is_one_time) {
-    DCHECK_EQ(source, content_settings::SETTING_SOURCE_USER);
+    DCHECK_EQ(source, SettingSource::kUser);
     DCHECK_EQ(type, ContentSettingsType::GEOLOCATION);
     DCHECK_EQ(button_text_id, IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_USER);
     button_text_id = IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_ONCE_BY_USER;
@@ -742,8 +765,8 @@ std::u16string PageInfoUI::PermissionStateToUIString(
         message_id = IDS_PAGE_INFO_STATE_TEXT_ALLOWED_BY_DEFAULT;
 #if !BUILDFLAG(IS_ANDROID)
       } else if (permission.is_one_time) {
-        DCHECK_EQ(permission.source, content_settings::SETTING_SOURCE_USER);
-        DCHECK(permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+        DCHECK_EQ(permission.source, SettingSource::kUser);
+        DCHECK(permissions::PermissionUtil::DoesSupportTemporaryGrants(
             permission.type));
         message_id = IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE;
 #endif
@@ -773,7 +796,7 @@ std::u16string PageInfoUI::PermissionStateToUIString(
     case CONTENT_SETTING_ASK:
       return GetPermissionAskStateString(permission.type);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return l10n_util::GetStringUTF16(message_id);
@@ -820,11 +843,11 @@ std::u16string PageInfoUI::PermissionManagedTooltipToUIString(
     const PageInfo::PermissionInfo& permission) {
   int message_id = kInvalidResourceID;
   switch (permission.source) {
-    case content_settings::SettingSource::SETTING_SOURCE_POLICY:
+    case SettingSource::kPolicy:
       message_id = IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY;
       break;
-    case content_settings::SettingSource::SETTING_SOURCE_EXTENSION:
-      // TODO(crbug.com/1225563): Consider "enforced" instead of "managed".
+    case SettingSource::kExtension:
+      // TODO(crbug.com/40775890): Consider "enforced" instead of "managed".
       message_id = IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION;
       break;
     default:
@@ -841,7 +864,7 @@ std::u16string PageInfoUI::PermissionAutoBlockedToUIString(
     PageInfoUiDelegate* delegate,
     const PageInfo::PermissionInfo& permission) {
   int message_id = kInvalidResourceID;
-  // TODO(crbug.com/1063023): PageInfo::PermissionInfo should be modified
+  // TODO(crbug.com/40123120): PageInfo::PermissionInfo should be modified
   // to contain all needed information regarding Automatically Blocked flag.
   if (permission.setting == CONTENT_SETTING_BLOCK &&
       permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
@@ -886,12 +909,14 @@ void PageInfoUI::ToggleBetweenAllowAndBlock(
   switch (permission.setting) {
     case CONTENT_SETTING_ALLOW:
       DCHECK_EQ(opposite_to_block_setting, CONTENT_SETTING_ALLOW);
-      SetTargetContentSetting(permission, CONTENT_SETTING_BLOCK);
+      permission.setting = CONTENT_SETTING_BLOCK;
       permission.is_one_time = false;
+      permission.is_in_use = false;
       break;
     case CONTENT_SETTING_BLOCK:
-      SetTargetContentSetting(permission, opposite_to_block_setting);
+      permission.setting = opposite_to_block_setting;
       permission.is_one_time = false;
+      permission.is_in_use = false;
       break;
     case CONTENT_SETTING_DEFAULT: {
       CreateOppositeToDefaultSiteException(permission,
@@ -899,18 +924,19 @@ void PageInfoUI::ToggleBetweenAllowAndBlock(
 
       // If one-time permissions are supported, permission should go from
       // default state to allow once state, not directly to allow.
-      if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+      if (permissions::PermissionUtil::DoesSupportTemporaryGrants(
               permission.type)) {
         permission.is_one_time = true;
       }
+      permission.is_in_use = false;
       break;
     }
     case CONTENT_SETTING_ASK:
       DCHECK_EQ(opposite_to_block_setting, CONTENT_SETTING_ASK);
-      SetTargetContentSetting(permission, CONTENT_SETTING_BLOCK);
+      permission.setting = CONTENT_SETTING_BLOCK;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -923,7 +949,7 @@ void PageInfoUI::ToggleBetweenRememberAndForget(
     case CONTENT_SETTING_ALLOW: {
       // If one-time permissions are supported, toggle is_one_time.
       // Otherwise, go directly to default.
-      if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+      if (permissions::PermissionUtil::DoesSupportTemporaryGrants(
               permission.type)) {
         permission.is_one_time = !permission.is_one_time;
       } else {
@@ -949,7 +975,7 @@ void PageInfoUI::ToggleBetweenRememberAndForget(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

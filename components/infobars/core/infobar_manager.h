@@ -108,6 +108,8 @@ class InfoBarManager {
     animations_enabled_ = animations_enabled;
   }
 
+  bool ShouldShowInfoBar(const InfoBar* infobar) const;
+
  private:
   friend class ::TestInfoBar;
 

@@ -103,6 +103,10 @@ class ASH_EXPORT AmbientAnimationPhotoProvider
   void NotifyObserverOfNewTopics();
   void RecordDynamicAssetMetrics();
 
+  // Whether the tree shadow asset should be set. See the comment in
+  // `AmbientAnimationView::OnViewBoundsChanged()`.
+  bool enable_tree_shadow_ = false;
+
   // Unowned pointers. Must outlive the |AmbientAnimationPhotoProvider|.
   const raw_ptr<const AmbientAnimationStaticResources> static_resources_;
   const raw_ptr<const AmbientBackendModel> backend_model_;

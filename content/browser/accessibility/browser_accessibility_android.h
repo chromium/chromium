@@ -12,15 +12,16 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
 
 namespace content {
 
-class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
+class CONTENT_EXPORT BrowserAccessibilityAndroid
+    : public ui::BrowserAccessibility {
  public:
   static BrowserAccessibilityAndroid* GetFromUniqueId(int32_t unique_id);
   static void ResetLeafCache();
@@ -31,9 +32,8 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
 
   ~BrowserAccessibilityAndroid() override;
 
-  int32_t unique_id() const { return GetUniqueId().Get(); }
-
   // BrowserAccessibility Overrides.
+  using BrowserAccessibility::GetUniqueId;
   bool CanFireEvents() const override;
   void OnDataChanged() override;
   void OnLocationChanged() override;
@@ -65,6 +65,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   bool IsMultiselectable() const;
   bool IsRangeControlWithoutAriaValueText() const;
   bool IsReportingCheckable() const;
+  bool IsRequired() const;
   bool IsScrollable() const;
   bool IsSeekControl() const;
   bool IsSelected() const;
@@ -117,11 +118,12 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   // ...-android-external.txt files. On other platforms this may be ::GetName().
   std::u16string GetTextContentUTF16() const override;
   std::u16string GetValueForControl() const override;
+  int GetTextContentLengthUTF16() const override;
 
   typedef base::RepeatingCallback<bool(const std::u16string& partial)>
       EarlyExitPredicate;
   std::u16string GetSubstringTextContentUTF16(
-      std::optional<EarlyExitPredicate>) const;
+      std::optional<size_t> min_length) const;
   static EarlyExitPredicate NonEmptyPredicate();
   static EarlyExitPredicate LengthAtLeast(size_t length);
 
@@ -230,8 +232,10 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   std::u16string GenerateAccessibilityNodeInfoString() const;
 
  protected:
-  BrowserAccessibilityAndroid(BrowserAccessibilityManager* manager,
+  BrowserAccessibilityAndroid(ui::BrowserAccessibilityManager* manager,
                               ui::AXNode* node);
+
+  std::u16string GetLocalizedString(int message_id) const override;
 
   friend class BrowserAccessibility;  // Needs access to our constructor.
 

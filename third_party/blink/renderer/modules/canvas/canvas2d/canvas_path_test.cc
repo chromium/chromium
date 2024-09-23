@@ -5,8 +5,20 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+
+// GoogleTest macros trigger a bug in IWYU:
+// https://github.com/include-what-you-use/include-what-you-use/issues/1546
+// IWYU pragma: no_include <string>
 
 namespace blink {
 
@@ -230,6 +242,38 @@ TEST_F(CanvasPathTest, MoveToLineClosePath) {
   path.MoveTo(p1);
   path.AddLineTo(p2);
   path.CloseSubpath();
+  EXPECT_EQ(canvas_path->GetPath(), path);
+}
+
+TEST_F(CanvasPathTest, Arc) {
+  CanvasPath* canvas_path = MakeGarbageCollected<TestCanvasPath>(context_);
+  NonThrowableExceptionState exception_state;
+  canvas_path->arc(0, 1, 5, 2, 3, false, exception_state);
+  EXPECT_TRUE(canvas_path->IsArc());
+
+  Path path;
+  path.AddArc(gfx::PointF(0, 1), 5, 2, 3);
+  EXPECT_EQ(canvas_path->GetPath(), path);
+  EXPECT_TRUE(canvas_path->IsArc());
+
+  canvas_path->closePath();
+  path.CloseSubpath();
+  EXPECT_EQ(canvas_path->GetPath(), path);
+  EXPECT_TRUE(canvas_path->IsArc());
+}
+
+TEST_F(CanvasPathTest, ArcThenLine) {
+  CanvasPath* canvas_path = MakeGarbageCollected<TestCanvasPath>(context_);
+  NonThrowableExceptionState exception_state;
+  canvas_path->arc(0, 1, 5, 2, 3, false, exception_state);
+  EXPECT_TRUE(canvas_path->IsArc());
+  canvas_path->lineTo(8, 9);
+  EXPECT_FALSE(canvas_path->IsArc());
+  EXPECT_FALSE(canvas_path->IsLine());
+
+  Path path;
+  path.AddArc(gfx::PointF(0, 1), 5, 2, 3);
+  path.AddLineTo(gfx::PointF(8, 9));
   EXPECT_EQ(canvas_path->GetPath(), path);
 }
 

@@ -17,7 +17,7 @@
 #include "media/base/data_source.h"
 #include "media/base/ranges.h"
 #include "media/base/tuneable.h"
-#include "third_party/blink/public/platform/media/url_index.h"
+#include "third_party/blink/renderer/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "url/gurl.h"
@@ -136,7 +136,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
                                    int64_t last_byte_position);
 
   // Set reader_ while asserting proper locking.
-  void SetReader(MultiBufferReader* reader);
+  void SetReader(std::unique_ptr<MultiBufferReader> reader);
 
   friend class MultiBufferDataSourceTest;
 

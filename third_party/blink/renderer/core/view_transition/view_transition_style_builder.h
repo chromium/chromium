@@ -8,7 +8,6 @@
 #include "base/containers/flat_map.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_tracker.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -34,11 +33,13 @@ class ViewTransitionStyleBuilder {
   void AddAnimations(AnimationType type,
                      const String& tag,
                      const ContainerProperties& source_properties,
-                     const CapturedCssProperties& animated_css_properties);
+                     const CapturedCssProperties& animated_css_properties,
+                     const gfx::Transform& parent_inverse_transform);
 
   void AddContainerStyles(const String& tag,
                           const ContainerProperties& properties,
-                          const CapturedCssProperties& captured_css_properites);
+                          const CapturedCssProperties& captured_css_properites,
+                          const gfx::Transform& parent_inverse_transform);
 
   String Build();
 
@@ -46,7 +47,8 @@ class ViewTransitionStyleBuilder {
   // Adds the needed keyframes and returns the animation name to use.
   String AddKeyframes(const String& tag,
                       const ContainerProperties& source_properties,
-                      const CapturedCssProperties& captured_css_properties);
+                      const CapturedCssProperties& captured_css_properties,
+                      const gfx::Transform& parent_inverse_transform);
   void AddRules(const String& selector, const String& tag, const String& rules);
   void AddSelector(const String& name, const String& tag);
 

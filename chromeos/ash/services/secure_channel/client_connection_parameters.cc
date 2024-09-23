@@ -52,7 +52,7 @@ void ClientConnectionParameters::SetConnectionSucceeded(
 
 void ClientConnectionParameters::SetBleDiscoveryState(
     mojom::DiscoveryResult discovery_result,
-    absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {
+    std::optional<mojom::DiscoveryErrorCode> potential_error_code) {
   UpdateBleDiscoveryState(discovery_result, potential_error_code);
 }
 
@@ -88,14 +88,14 @@ void ClientConnectionParameters::VerifyDelegateWaitingForResponse(
     PA_LOG(ERROR) << "ClientConnectionParameters::" << function_name << "(): "
                   << "Attempted to notify ConnectionDelegate when a delegate "
                   << "function had already been invoked. Cannot proceed.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (HasClientCanceledRequest()) {
     PA_LOG(ERROR) << "ClientConnectionParameters::" << function_name << "(): "
                   << "Attempted to notify ConnectionDelegate when the client "
                   << "had already canceled the connection. Cannot proceed.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

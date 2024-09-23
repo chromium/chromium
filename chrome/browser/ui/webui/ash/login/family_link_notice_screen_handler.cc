@@ -49,4 +49,8 @@ void FamilyLinkNoticeScreenHandler::SetDomain(const std::string& value) {
   CallExternalAPI("setDomain", value);
 }
 
+base::WeakPtr<FamilyLinkNoticeView> FamilyLinkNoticeScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

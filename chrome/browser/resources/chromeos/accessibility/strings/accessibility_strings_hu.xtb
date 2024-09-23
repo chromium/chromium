@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Rózsásbarna</translation>
 <translation id="249330843868392562">A szövegfelolvasóhoz tartozó beállítások megnyitása</translation>
 <translation id="2497706219848005458">Zöldessárga</translation>
+<translation id="2512979179176933762">ablakok megjelenítése</translation>
 <translation id="2523609930580546572">ChromeVox-útmutató</translation>
 <translation id="2525706221823668172">Chromebook-billentyűparancsok</translation>
 <translation id="2553108862507765288">nyelvtani hiba</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Egy ujjal jobbról balra csúsztatva pedig az előző elemre léphet. Próbálja ki most.</translation>
 <translation id="280499067616661124">ChromeVox-keresés az oldalon</translation>
-<translation id="2811019999044652585">A képernyő más részeihez, például az eszköztárakhoz vagy a tálcához való ugráshoz nyomja le a Control + „előre” billentyűkombinációt. A Chromebookokon az „előre” billentyű közvetlenül a 2-es gomb felett található.</translation>
 <translation id="2811204574343810641">Sor</translation>
 <translation id="2816868829355607410">Gyakorlóterület: Ugrási parancsok</translation>
 <translation id="2841013758207633010">Idő</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Acélkék</translation>
 <translation id="4253168017788158739">Jegyzet</translation>
 <translation id="4254798249533888099">Fa</translation>
+<translation id="4259220820964911921">Engedélyezi az arcvezérlést?</translation>
 <translation id="4271220233568730077">Következő művelet</translation>
 <translation id="4275397969489577657">Esemény streamnaplózásának engedélyezése</translation>
 <translation id="4278486392851938658">Nincs előző felkeresett link</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Indiai vörös</translation>
 <translation id="4432896207833262240">Megjelölt tartalom</translation>
 <translation id="4437615272777527928">Kezdjen el gépelni a menükben való kereséshez. A találatok között a felfelé és lefelé mutató nyilakkal mozoghat. A jobbra és balra mutató nyílbillentyűkkel a szövegbeszúrási pontot módosíthatja, illetve a menükben mozoghat.</translation>
+<translation id="4453530046591759283">A képernyő más részeihez, például az eszköztárakhoz vagy a tálcához való ugráshoz nyomja le a Control + F1 billentyűkombinációt. Az F1 az Esc billentyűtől jobbra található első billentyű.</translation>
 <translation id="4457472090507035117">Az aktuális hang kiválasztása:</translation>
 <translation id="4476183483923481720">új sor</translation>
 <translation id="4479068155583208887">Téglavörös</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Függelék</translation>
 <translation id="5761219715606611783">Ügyes! Megtanulta a ChromeVox érintéses használatának alapjait. Az alábbi gombokkal bezárhatja az útmutatót, illetve újra végig is csinálhatja.</translation>
 <translation id="5776001898637896684">A Google Enhanced Network szövegfelolvasó bővítménye</translation>
+<translation id="5783252477644995371">Az Arcvezérlés funkcióval a kurzor arccal vezérelhető, továbbá arckifejezések használatával különféle műveletek (például kattintás a bal egérgombbal mosoly segítségével) végezhetők el</translation>
 <translation id="5805940204952508776">Koppintson két ujjal</translation>
 <translation id="5819072574982403430">Faelem</translation>
 <translation id="5822819874379903994">Sötéttürkiz</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Navahó fehér</translation>
 <translation id="7095834689119144465">Szövegszerkesztés – csak numerikus</translation>
 <translation id="7096001299300236431">Előző médiaelem</translation>
+<translation id="7096668131290451939">A tanuló módból való kilépéshez nyomja meg újra az Escape billentyűt</translation>
 <translation id="7116595520562830928">többsoros</translation>
 <translation id="712735679809149106">szavak visszaolvasása</translation>
 <translation id="7137397390322864165">Lazacrózsaszín</translation>
@@ -1071,7 +1075,6 @@
 <translation id="847040613207937740">Nincs következő jelölőnégyzet</translation>
 <translation id="8473540203671727883">Kurzor alatti szöveg felolvasása</translation>
 <translation id="8476408756881832830">Lejátszás szüneteltetése, amikor a ChromeVox beszél</translation>
-<translation id="8476508772960940536">ablakáttekintési mód</translation>
 <translation id="8480873377842220259">Most bemutatjuk a navigáció alapjait. A képernyőn való mozgáshoz tartsa nyomva a Keresés gombot, és nyomja le a nyílbillentyűket. A folytatáshoz nyomja le a Keresés + Jobbra nyíl billentyűparancsot.</translation>
 <translation id="8503360654911991865">Navigáció részletezettségének csökkentése</translation>
 <translation id="8520472399088452386">Léptetőnyíl</translation>

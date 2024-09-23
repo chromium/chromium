@@ -20,7 +20,9 @@ static const int kToTBlinkRevision = 999999;
 struct BrowserInfo {
   BrowserInfo();
   BrowserInfo(const BrowserInfo&);
+  BrowserInfo(BrowserInfo&&);
   BrowserInfo& operator=(const BrowserInfo&);
+  BrowserInfo& operator=(BrowserInfo&&);
   ~BrowserInfo();
 
   std::string android_package;

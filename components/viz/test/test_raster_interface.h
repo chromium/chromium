@@ -83,28 +83,10 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   void WritePixels(const gpu::Mailbox& dest_mailbox,
                    int dst_x_offset,
                    int dst_y_offset,
-                   int dst_plane_index,
                    GLenum texture_target,
                    const SkPixmap& src_sk_pixmap) override {}
   void WritePixelsYUV(const gpu::Mailbox& dest_mailbox,
                       const SkYUVAPixmaps& src_yuv_pixmap) override {}
-  void ConvertYUVAMailboxesToRGB(
-      const gpu::Mailbox& dest_mailbox,
-      GLint src_x,
-      GLint src_y,
-      GLsizei width,
-      GLsizei height,
-      SkYUVColorSpace planes_yuv_color_space,
-      const SkColorSpace* planes_rgb_color_space,
-      SkYUVAInfo::PlaneConfig plane_config,
-      SkYUVAInfo::Subsampling subsampling,
-      const gpu::Mailbox yuva_plane_mailboxes[]) override {}
-  void ConvertRGBAToYUVAMailboxes(SkYUVColorSpace planes_yuv_color_space,
-                                  SkYUVAInfo::PlaneConfig plane_config,
-                                  SkYUVAInfo::Subsampling subsampling,
-                                  const gpu::Mailbox yuva_plane_mailboxes[],
-                                  const gpu::Mailbox& source_mailbox) override {
-  }
   void BeginRasterCHROMIUM(SkColor4f sk_color_4f,
                            GLboolean needs_clear,
                            GLuint msaa_sample_count,
@@ -122,6 +104,7 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
                       const gfx::Vector2dF& post_translate,
                       const gfx::Vector2dF& post_scale,
                       bool requires_clear,
+                      const ScrollOffsetMap* raster_inducing_scroll_offsets,
                       size_t* max_op_size_hint) override {}
   void EndRasterCHROMIUM() override {}
   gpu::SyncToken ScheduleImageDecode(base::span<const uint8_t> encoded_data,
@@ -154,13 +137,13 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
       const gfx::Point& paste_location,
       base::OnceCallback<void()> release_mailbox,
       base::OnceCallback<void(bool)> readback_done) override {}
-  void ReadbackImagePixels(const gpu::Mailbox& source_mailbox,
+  bool ReadbackImagePixels(const gpu::Mailbox& source_mailbox,
                            const SkImageInfo& dst_info,
                            GLuint dst_row_bytes,
                            int src_x,
                            int src_y,
                            int plane_index,
-                           void* dst_pixels) override {}
+                           void* dst_pixels) override;
   GLuint CreateAndConsumeForGpuRaster(const gpu::Mailbox& mailbox) override;
   GLuint CreateAndConsumeForGpuRaster(
       const scoped_refptr<gpu::ClientSharedImage>& shared_image) override;

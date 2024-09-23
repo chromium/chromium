@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">玫瑰褐色</translation>
 <translation id="249330843868392562">開啟文字轉語音設定</translation>
 <translation id="2497706219848005458">綠黃色</translation>
+<translation id="2512979179176933762">顯示視窗</translation>
 <translation id="2523609930580546572">ChromeVox 教學課程</translation>
 <translation id="2525706221823668172">Chromebook 鍵盤快速鍵</translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">如要移至上一個項目，亦可以單指由右至左滑動。立即試試吧。</translation>
 <translation id="280499067616661124">ChromeVox 從網頁中尋找</translation>
-<translation id="2811019999044652585">如要跳到畫面上的其他部分 (例如工具列或系統列)，請按 Control + Forward 鍵。Chromebook 的 Forward 鍵位於數字 2 鍵的正上方。</translation>
 <translation id="2811204574343810641">列</translation>
 <translation id="2816868829355607410">練習區：跳轉指令</translation>
 <translation id="2841013758207633010">時間</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">鋼青色</translation>
 <translation id="4253168017788158739">注意事項</translation>
 <translation id="4254798249533888099">樹狀結構</translation>
+<translation id="4259220820964911921">要啟用面部控制嗎？</translation>
 <translation id="4271220233568730077">下一個數學元素</translation>
 <translation id="4275397969489577657">啟用活動串流記錄</translation>
 <translation id="4278486392851938658">冇上一個瀏覽過嘅連結</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">印度紅色</translation>
 <translation id="4432896207833262240">已標示的內容</translation>
 <translation id="4437615272777527928">輸入要喺選單度搵嘅字詞。用向上/向下箭咀就可以切換搜尋結果，用向左/向右箭咀就可以調整文字插入符號，同埋喺選單之間移動。</translation>
+<translation id="4453530046591759283">如要跳至螢幕的其他部分 (例如工具列或系統列)，請按下 Control + F1 鍵。F1 是 Escape 鍵右側的第一個鍵。</translation>
 <translation id="4457472090507035117">選取目前的語音：</translation>
 <translation id="4476183483923481720">換行</translation>
 <translation id="4479068155583208887">磚紅色</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">附錄</translation>
 <translation id="5761219715606611783">做得好！您已順利學完 ChromeVox 的基礎觸控操作。您可從頭再學一次，或使用下方的按鈕結束此教學課程。</translation>
 <translation id="5776001898637896684">Google 強化網絡文字轉語音擴充程式</translation>
+<translation id="5783252477644995371">「面部控制」可讓你透過面部表情控制游標及執行操作，例如微笑等於按下左鍵</translation>
 <translation id="5805940204952508776">以兩隻手指輕按</translation>
 <translation id="5819072574982403430">樹狀目錄項目</translation>
 <translation id="5822819874379903994">深綠松石色</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">那瓦霍白色</translation>
 <translation id="7095834689119144465">編輯文字時只限輸入數字</translation>
 <translation id="7096001299300236431">上一個媒體元素</translation>
+<translation id="7096668131290451939">再㩒一下 Escape 掣就可以退出學習模式</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">字詞語音回應</translation>
 <translation id="7137397390322864165">鮭紅色</translation>
@@ -1071,7 +1075,6 @@
 <translation id="847040613207937740">冇下一個選框</translation>
 <translation id="8473540203671727883">說出滑鼠游標下的文字</translation>
 <translation id="8476408756881832830">在 ChromeVox 朗讀時暫停播放音訊</translation>
-<translation id="8476508772960940536">視窗概覽</translation>
 <translation id="8480873377842220259">現在，我們來學習一些基本操作吧。按住搜尋鍵並按下箭咀鍵，即可在畫面上到處移動。如要繼續，請按下搜尋鍵 + 向右箭咀。</translation>
 <translation id="8503360654911991865">降低瀏覽精細度</translation>
 <translation id="8520472399088452386">微調按鈕</translation>

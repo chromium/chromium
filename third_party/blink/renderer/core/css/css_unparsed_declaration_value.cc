@@ -10,6 +10,7 @@ void CSSUnparsedDeclarationValue::TraceAfterDispatch(
     blink::Visitor* visitor) const {
   CSSValue::TraceAfterDispatch(visitor);
   visitor->Trace(parser_context_);
+  visitor->Trace(data_);
 }
 
 String CSSUnparsedDeclarationValue::CustomCSSText() const {

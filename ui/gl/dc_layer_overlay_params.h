@@ -63,22 +63,29 @@ struct GL_EXPORT DCLayerOverlayParams {
   // blended behind |overlay_image|.
   std::optional<SkColor4f> background_color;
 
-  //
-  // Below are parameters only used for |SwapChainPresenter|.
-  //
+  // Used to detect when multiple overlays are part of the same tile layer.
+  uint64_t aggregated_layer_id = 0;
 
-  gfx::ProtectedVideoType protected_video_type =
-      gfx::ProtectedVideoType::kClear;
+  // Parameters for video overlays, only used by |SwapChainPresenter|.
+  struct VideoParams {
+    VideoParams();
+    ~VideoParams();
 
-  gfx::ColorSpace color_space;
+    gfx::ProtectedVideoType protected_video_type =
+        gfx::ProtectedVideoType::kClear;
 
-  gfx::HDRMetadata hdr_metadata;
+    gfx::ColorSpace color_space;
 
-  // Indication of the overlay to be detected as possible full screen
-  // letterboxing.
-  // Go to viz::OverlayCandidate::possible_video_fullscreen_letterboxing for the
-  // details.
-  bool possible_video_fullscreen_letterboxing = false;
+    gfx::HDRMetadata hdr_metadata;
+
+    // Indication of the overlay to be detected as possible full screen
+    // letterboxing.
+    // Go to viz::OverlayCandidate::possible_video_fullscreen_letterboxing for
+    // the details.
+    bool possible_video_fullscreen_letterboxing = false;
+  };
+
+  VideoParams video_params;
 };
 
 }  // namespace gl

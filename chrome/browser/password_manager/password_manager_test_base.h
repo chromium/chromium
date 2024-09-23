@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
@@ -39,6 +38,10 @@ class BubbleObserver {
   // manual fallback or successful login.
   bool IsUpdatePromptAvailable() const;
 
+  // Checks if the default store changed warning prompt is being currently
+  // available.
+  bool IsDefaultStoreChangedPromptAvailable() const;
+
   // Checks if the save prompt was shown automatically.
   // |web_contents| must be the custom one returned by
   // PasswordManagerBrowserTestBase.
@@ -48,6 +51,11 @@ class BubbleObserver {
   // |web_contents| must be the custom one returned by
   // PasswordManagerBrowserTestBase.
   bool IsUpdatePromptShownAutomatically() const;
+
+  // Checks if the default store changed prompt was shown automatically.
+  // |web_contents| must be the custom one returned by
+  // PasswordManagerBrowserTestBase.
+  bool IsDefaultStoreChangedPromptShownAutomatically() const;
 
   // Hide the currently open prompt.
   void Hide() const;
@@ -59,6 +67,11 @@ class BubbleObserver {
   // Expecting that the prompt is available, updates the password. At the end,
   // checks that the prompt is no longer visible afterwards.
   void AcceptUpdatePrompt() const;
+
+  // Expecting that the prompt is available. Clicks "Continue" in the default
+  // store changed warning prompt. At the end, checks that the  default store
+  // changed prompt is no longer visible afterwards.
+  void AcknowledgeDefaultStoreChange() const;
 
   // Returns once the account chooser pops up or it's already shown.
   // |web_contents| must be the custom one returned by
@@ -118,9 +131,8 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   void TearDownOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
-  // Creates a new tab with all the password manager test hooks and returns it
-  // in |web_contents|.
-  static void GetNewTab(Browser* browser, content::WebContents** web_contents);
+  // Creates a new tab with all the password manager test hooks and returns it.
+  static content::WebContents* GetNewTab(Browser* browser);
 
   // Make sure that the password store associated with the given browser
   // processed all the previous calls, calls executed on another thread.
@@ -187,12 +199,12 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   content::RenderFrameHost* RenderFrameHost() const;
   net::EmbeddedTestServer& https_test_server() { return https_test_server_; }
 
+  void ClearWebContentsPtr();
+
  private:
   net::EmbeddedTestServer https_test_server_;
   // A tab with some hooks injected.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 
   base::CallbackListSubscription create_services_subscription_;
 };

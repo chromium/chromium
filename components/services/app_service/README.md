@@ -119,9 +119,9 @@ The `App`, `Readiness` and `OptionalBool` types are:
       // The fields above are mandatory. Everything else below is optional.
 
       Readiness readiness;
-      absl::optional<std::string> name;
-      absl::optional<IconKey> icon_key;
-      absl::optional<bool> show_in_launcher;
+      std::optional<std::string> name;
+      std::optional<IconKey> icon_key;
+      std::optional<bool> show_in_launcher;
       // etc.
     };
 
@@ -141,8 +141,8 @@ which have the same type: `App`). Specifically, last known value wins. Any
 known field in the delta overwrites the corresponding field in the old state,
 any unknown field in the delta is ignored. For example, if an app's name
 changed but its icon didn't, the delta's `App.name` field (a
-`absl::optional<std::string>`) would be known (not `absl::nullopt`) and copied
-over but its `App.icon` field would be unknown (`absl::nullopt`) and not copied
+`std::optional<std::string>`) would be known (not `std::nullopt`) and copied
+over but its `App.icon` field would be unknown (`std::nullopt`) and not copied
 over.
 
 The current state is thus the merger or sum of all previous deltas, including

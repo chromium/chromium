@@ -1,6 +1,6 @@
-import {SpeechAudioErrorDetails} from '/gen/third_party/blink/public/mojom/speech/speech_recognition_error.mojom.m.js';
-import {SpeechRecognitionErrorCode} from '/gen/third_party/blink/public/mojom/speech/speech_recognition_error_code.mojom.m.js';
-import {SpeechRecognitionSessionReceiver, SpeechRecognizer, SpeechRecognizerReceiver} from '/gen/third_party/blink/public/mojom/speech/speech_recognizer.mojom.m.js';
+import {SpeechAudioErrorDetails} from '/gen/media/mojo/mojom/speech_recognition_error.mojom.m.js';
+import {SpeechRecognitionErrorCode} from '/gen/media/mojo/mojom/speech_recognition_error_code.mojom.m.js';
+import {SpeechRecognitionSessionReceiver, SpeechRecognizer, SpeechRecognizerReceiver} from '/gen/media/mojo/mojom/speech_recognizer.mojom.m.js';
 
 // MockSpeechRecognizer is a mock implementation of blink.mojom.SpeechRecognizer
 // and the browser speech recognition service. Mock results can be set using
@@ -88,6 +88,14 @@ export class MockSpeechRecognizer {
     }
 
     this.dispatchResult();
+  }
+
+  onDeviceWebSpeechAvailable(params) {
+    return Promise.resolve(false);
+  }
+
+  installOnDeviceSpeechRecognition(params) {
+    return Promise.resolve(false);
   }
 }
 

@@ -26,7 +26,7 @@ struct Configuration {
   // alternative to manual feature override for applications which don't use
   // base::FeatureList.
   //
-  // TODO(https://crbug.com/1299283): Remove this once dependents are gone.
+  // TODO(crbug.com/40058840): Remove this once dependents are gone.
   bool disable_ipcz = false;
 
   // If |true|, this process will always attempt to allocate shared memory

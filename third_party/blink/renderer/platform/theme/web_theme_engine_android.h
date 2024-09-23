@@ -22,10 +22,9 @@ class WebThemeEngineAndroid : public blink::WebThemeEngine {
              const gfx::Rect& rect,
              const blink::WebThemeEngine::ExtraParams* extra_params,
              blink::mojom::ColorScheme color_scheme,
+             bool in_forced_colors,
              const ui::ColorProvider* color_provider,
              const std::optional<SkColor>& accent_color) override;
-  blink::ForcedColors GetForcedColors() const override;
-  void SetForcedColors(const blink::ForcedColors forced_colors) override;
 };
 
 }  // namespace blink

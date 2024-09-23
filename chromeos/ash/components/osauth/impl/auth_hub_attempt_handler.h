@@ -8,11 +8,11 @@
 #include <optional>
 
 #include "base/callback_list.h"
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
@@ -117,13 +117,19 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubAttemptHandler
   void PropagateStatusUpdates();
   void UpdateAllFactorStates();
 
-  raw_ptr<Owner> owner_;
+  // TODO(b/271248452): Those `raw_ptr`s are currently dangling due to a problem
+  // with the destruction order. Something causes those ptrs to be freed before
+  // the execution reaches the destruction of this class. Likely a higher level
+  // component in the ownership graph has the objects pointed to below and the
+  // current class as downstream dependencies.
+  raw_ptr<Owner, DanglingUntriaged> owner_;
+  raw_ptr<AuthFactorStatusConsumer, DanglingUntriaged> status_consumer_;
+
   AuthAttemptVector attempt_;
   AuthEnginesMap engines_;
   AuthFactorsSet initial_factors_;
 
   AuthFactorsSet available_factors_;
-  raw_ptr<AuthFactorStatusConsumer> status_consumer_;
 
   base::flat_map<AshAuthFactor, FactorAttemptState> factor_state_;
 

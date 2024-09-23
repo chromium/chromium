@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">بني وردي</translation>
 <translation id="249330843868392562">فتح إعدادات تحويل النص إلى كلام</translation>
 <translation id="2497706219848005458">أصفر مخضر</translation>
+<translation id="2512979179176933762">إظهار النوافذ</translation>
 <translation id="2523609930580546572">‏برنامج ChromeVox التعليمي</translation>
 <translation id="2525706221823668172">‏اختصارات لوحة المفاتيح لـ Chromebook</translation>
 <translation id="2553108862507765288">خطأ نحوي</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{بالإضافة إلى عنصر واحد}zero{بالإضافة إلى # عنصر}two{بالإضافة إلى عنصرَين (#)}few{بالإضافة إلى # عناصر}many{بالإضافة إلى # عنصرًا}other{بالإضافة إلى # عنصر}}</translation>
 <translation id="2792200646155001340">يمكنك أيضًا تمرير إصبع واحد من اليسار إلى اليمين للانتقال إلى العنصر السابق. جرِّب ذلك الآن.</translation>
 <translation id="280499067616661124">‏البحث في صفحة ChromeVox</translation>
-<translation id="2811019999044652585">‏للانتقال السريع إلى أجزاء أخرى من الشاشة، مثل أشرطة الأدوات أو لوحة النظام، اضغط على Control+Forward، على جهاز Chromebook، يوجد مفتاح Forward أعلى مفتاح رقم 2 مباشرةً.</translation>
 <translation id="2811204574343810641">صف</translation>
 <translation id="2816868829355607410">التدريب العملي: طلبات الانتقال السريع</translation>
 <translation id="2841013758207633010">الوقت</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">أزرق معدني</translation>
 <translation id="4253168017788158739">ملاحظة</translation>
 <translation id="4254798249533888099">متفرع</translation>
+<translation id="4259220820964911921">‏هل تريد تفعيل التحكّم في ميزة FaceGaze؟</translation>
 <translation id="4271220233568730077">التعبير الرياضي التالي</translation>
 <translation id="4275397969489577657">تفعيل ميزة تسجيل بث الحدث</translation>
 <translation id="4278486392851938658">ليس هناك رابط سابق تم الانتقال إليه.</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">أحمر هندي</translation>
 <translation id="4432896207833262240">محتوى مميز</translation>
 <translation id="4437615272777527928">اكتب للبحث في القائمة. واستخدِم السهمَين المتّجِهين للأعلى وللأسفل للتنقّل بين النتائج. واستخدِم السهمَين الأيمن والأيسر لضبط علامة إقحام النص والتنقّل بين القوائم.</translation>
+<translation id="4453530046591759283">‏للانتقال سريعًا إلى أجزاء أخرى من الشاشة، مثل أشرطة الأدوات أو لوحة النظام، اضغط على مفتاحَي Control+F1. المفتاح F1 هو المفتاح الأول على يمين مفتاح Escape.</translation>
 <translation id="4457472090507035117">تحديد الصوت الحالي:</translation>
 <translation id="4476183483923481720">سطر جديد</translation>
 <translation id="4479068155583208887">أحمر قرميدي ناري</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">ملحق</translation>
 <translation id="5761219715606611783">‏أحسنت. لقد تعلمت أساسيات استخدام ChromeVox. يمكنك الاطّلاع على البرنامج التعليمي مجددًا أو الخروج منه عن طريق استخدام أحد الأزرار الواردة أدناه.</translation>
 <translation id="5776001898637896684">‏الإضافة "تحويل النص إلى كلام" في Google Enhanced Network</translation>
+<translation id="5783252477644995371">‏يتيح لك التحكّم في ميزة FaceGaze توجيه المؤشر من خلال الإشارة بالوجه بالإضافة إلى إمكانية تنفيذ بعض الإجراءات، مثل النقر بزر الماوس الأيسر باستخدام إيماءات الوجه مثل الابتسامة</translation>
 <translation id="5805940204952508776">النقر بإصبعين</translation>
 <translation id="5819072574982403430">عنصر متفرع</translation>
 <translation id="5822819874379903994">فيروزي داكن</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">أبيض مائل إلى الأصفر</translation>
 <translation id="7095834689119144465">تعديل النص الرقمي فقط</translation>
 <translation id="7096001299300236431">الوسائط السابقة</translation>
+<translation id="7096668131290451939">‏اضغط على مفتاح Escape مرة أخرى للخروج من "وضع التعلّم"</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">صدى الكلمة</translation>
 <translation id="7137397390322864165">برتقالي وردي</translation>
@@ -1071,7 +1075,6 @@
 <translation id="847040613207937740">ليس هناك مربع اختيار تالٍ.</translation>
 <translation id="8473540203671727883">قول النص أسفل الماوس</translation>
 <translation id="8476408756881832830">‏إيقاف التشغيل مؤقتًا أثناء تحدُّث ChromeVox</translation>
-<translation id="8476508772960940536">نظرة عامة للنافذة</translation>
 <translation id="8480873377842220259">ستتعرَّف الآن على بعض طلبات التنقُّل الأساسي. يمكنك الضغط مع الاستمرار على مفتاح البحث ثم الضغط على مفاتيح الأسهم للتنقُّل على الشاشة. للمواصلة، اضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين.</translation>
 <translation id="8503360654911991865">خفض دقة التنقل</translation>
 <translation id="8520472399088452386">زر الدوران</translation>

@@ -35,7 +35,7 @@ NSString* const kReadingListActivityType =
 - (instancetype)initWithURL:(const GURL&)activityURL
                       title:(NSString*)title
     readingListBrowserAgent:(ReadingListBrowserAgent*)readingListBrowserAgent {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _activityURL = activityURL;
     _title = [title copy];
     _readingListBrowserAgent = readingListBrowserAgent;

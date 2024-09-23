@@ -1,12 +1,11 @@
-static bool AnyMessageDisplayed=0; // For console -idn switch.
+static bool AnyMessageDisplayed=false; // For console -idn switch.
 
 // Purely user interface function. Gets and returns user input.
-UIASKREP_RESULT uiAskReplace(wchar *Name,size_t MaxNameSize,int64 FileSize,RarTime *FileTime,uint Flags)
+UIASKREP_RESULT uiAskReplace(std::wstring &Name,int64 FileSize,RarTime *FileTime,uint Flags)
 {
   wchar SizeText1[20],DateStr1[50],SizeText2[20],DateStr2[50];
 
-  FindData ExistingFD;
-  memset(&ExistingFD,0,sizeof(ExistingFD)); // In case find fails.
+  FindData ExistingFD={}; // Init in case find fails.
   FindFile::FastFind(Name,&ExistingFD);
   itoa(ExistingFD.Size,SizeText1,ASIZE(SizeText1));
   ExistingFD.mtime.GetText(DateStr1,ASIZE(DateStr1),false);
@@ -14,16 +13,16 @@ UIASKREP_RESULT uiAskReplace(wchar *Name,size_t MaxNameSize,int64 FileSize,RarTi
   if (FileSize==INT64NDF || FileTime==NULL)
   {
     eprintf(L"\n");
-    eprintf(St(MAskOverwrite),Name);
+    eprintf(St(MAskOverwrite),Name.c_str());
   }
   else
   {
     itoa(FileSize,SizeText2,ASIZE(SizeText2));
     FileTime->GetText(DateStr2,ASIZE(DateStr2),false);
     if ((Flags & UIASKREP_F_EXCHSRCDEST)==0)
-      eprintf(St(MAskReplace),Name,SizeText1,DateStr1,SizeText2,DateStr2);
+      eprintf(St(MAskReplace),Name.c_str(),SizeText1,DateStr1,SizeText2,DateStr2);
     else
-      eprintf(St(MAskReplace),Name,SizeText2,DateStr2,SizeText1,DateStr1);
+      eprintf(St(MAskReplace),Name.c_str(),SizeText2,DateStr2,SizeText1,DateStr1);
   }
 
   bool AllowRename=(Flags & UIASKREP_F_NORENAME)==0;
@@ -46,7 +45,7 @@ UIASKREP_RESULT uiAskReplace(wchar *Name,size_t MaxNameSize,int64 FileSize,RarTi
   if (AllowRename && Choice==5)
   {
     mprintf(St(MAskNewName));
-    if (getwstr(Name,MaxNameSize))
+    if (getwstr(Name))
       return UIASKREP_R_RENAME;
     else
       return UIASKREP_R_SKIP; // Process fwgets failure as if user answered 'No'.
@@ -57,13 +56,13 @@ UIASKREP_RESULT uiAskReplace(wchar *Name,size_t MaxNameSize,int64 FileSize,RarTi
 
 
 
-void uiStartArchiveExtract(bool Extract,const wchar *ArcName)
+void uiStartArchiveExtract(bool Extract,const std::wstring &ArcName)
 {
-  mprintf(St(Extract ? MExtracting : MExtrTest), ArcName);
+  mprintf(St(Extract ? MExtracting : MExtrTest), ArcName.c_str());
 }
 
 
-bool uiStartFileExtract(const wchar *FileName,bool Extract,bool Test,bool Skip)
+bool uiStartFileExtract(const std::wstring &FileName,bool Extract,bool Test,bool Skip)
 {
   return true;
 }
@@ -71,7 +70,10 @@ bool uiStartFileExtract(const wchar *FileName,bool Extract,bool Test,bool Skip)
 
 void uiExtractProgress(int64 CurFileSize,int64 TotalFileSize,int64 CurSize,int64 TotalSize)
 {
-  int CurPercent=ToPercent(CurSize,TotalSize);
+  // We set the total size to 0 to update only the current progress and keep
+  // the total progress intact in WinRAR. Unlike WinRAR, console RAR has only
+  // the total progress and updates it with current values in such case.
+  int CurPercent=TotalSize!=0 ? ToPercent(CurSize,TotalSize) : ToPercent(CurFileSize,TotalFileSize);
   mprintf(L"\b\b\b\b%3d%%",CurPercent);
 }
 
@@ -85,7 +87,18 @@ void uiProcessProgress(const char *Command,int64 CurSize,int64 TotalSize)
 
 void uiMsgStore::Msg()
 {
-  AnyMessageDisplayed=true;
+  // When creating volumes, AnyMessageDisplayed must be reset for UIEVENT_NEWARCHIVE,
+  // so it ignores this and all earlier messages like UIEVENT_PROTECTEND
+  // and UIEVENT_PROTECTEND, because they precede "Creating archive" message
+  // and do not interfere with -idn and file names. If we do not ignore them,
+  // uiEolAfterMsg() in uiStartFileAddit() can cause unneeded carriage return
+  // in archiving percent after creating a new volume with -v -idn (and -rr
+  // for UIEVENT_PROTECT*) switches. AnyMessageDisplayed is set for messages
+  // after UIEVENT_NEWARCHIVE, so archiving percent with -idn is moved to
+  // next line and does not delete their last characters.
+  // Similarly we ignore UIEVENT_RRTESTINGEND for volumes, because it is issued
+  // before "Testing archive" and would add an excessive \n otherwise.
+  AnyMessageDisplayed=(Code!=UIEVENT_NEWARCHIVE && Code!=UIEVENT_RRTESTINGEND);
 
   switch(Code)
   {
@@ -169,6 +182,7 @@ void uiMsgStore::Msg()
       Log(NULL,St(MNeedAdmin));
       break;
     case UIERROR_ARCBROKEN:
+      mprintf(L"\n"); // So it is not merged with preceding UIERROR_HEADERBROKEN.
       Log(Str[0],St(MErrBrokenArc));
       break;
     case UIERROR_HEADERBROKEN:
@@ -222,6 +236,12 @@ void uiMsgStore::Msg()
     case UIERROR_RECVOLCANNOTFIX:
       mprintf(St(MRecVolCannotFix));
       break;
+    case UIERROR_EXTRDICTOUTMEM:
+      Log(Str[0],St(MExtrDictOutMem),Num[0]);
+#ifdef _WIN_32
+      Log(Str[0],St(MSuggest64bit));
+#endif
+      break;
     case UIERROR_UNEXPEOF:
       Log(Str[0],St(MLogUnexpEOF));
       break;
@@ -236,6 +256,9 @@ void uiMsgStore::Msg()
       mprintf(L"\n"); // Needed when called from CmdExtract::ExtractCurrentFile.
       break;
 #ifndef SFX_MODULE
+    case UIERROR_OPFAILED:
+      Log(NULL,St(MOpFailed));
+      break;
     case UIERROR_NEWRARFORMAT:
       Log(Str[0],St(MNewRarFormat));
       break;
@@ -245,6 +268,7 @@ void uiMsgStore::Msg()
       break;
     case UIERROR_MISSINGVOL:
       Log(Str[0],St(MAbsNextVol),Str[0]);
+      mprintf(L"     "); // For progress percent.
       break;
 #ifndef SFX_MODULE
     case UIERROR_NEEDPREVVOL:
@@ -318,6 +342,16 @@ void uiMsgStore::Msg()
     case UIERROR_DIRNAMEEXISTS:
       Log(NULL,St(MDirNameExists));
       break;
+    case UIERROR_TRUNCPSW:
+      eprintf(St(MTruncPsw),Num[0]);
+      eprintf(L"\n");
+      break;
+    case UIERROR_ADJUSTVALUE:
+      Log(NULL,St(MAdjustValue),Str[0],Str[1]);
+      break;
+    case UIERROR_SKIPUNSAFELINK:
+      Log(NULL,St(MSkipUnsafeLink),Str[0],Str[1]);
+      break;
 
 #ifndef SFX_MODULE
     case UIMSG_STRING:
@@ -358,7 +392,9 @@ void uiMsgStore::Msg()
       mprintf(St(MFAT32Size));
       mprintf(L"     "); // For progress percent.
       break;
-
+    case UIMSG_SKIPENCARC:
+      Log(NULL,St(MSkipEncArc),Str[0]);
+      break;
 
 
     case UIEVENT_RRTESTINGSTART:
@@ -368,7 +404,8 @@ void uiMsgStore::Msg()
 }
 
 
-bool uiGetPassword(UIPASSWORD_TYPE Type,const wchar *FileName,SecPassword *Password)
+bool uiGetPassword(UIPASSWORD_TYPE Type,const std::wstring &FileName,
+                   SecPassword *Password,CheckPassword *CheckPwd)
 {
   // Unlike GUI we cannot provide Cancel button here, so we use the empty
   // password to abort. Otherwise user not knowing a password would need to
@@ -403,14 +440,14 @@ void uiAlarm(UIALARM_TYPE Type)
 
 
 
-bool uiAskNextVolume(wchar *VolName,size_t MaxSize)
+bool uiAskNextVolume(std::wstring &VolName)
 {
-  eprintf(St(MAskNextVol),VolName);
+  eprintf(St(MAskNextVol),VolName.c_str());
   return Ask(St(MContinueQuit))!=2;
 }
 
 
-void uiAskRepeatRead(const wchar *FileName,bool &Ignore,bool &All,bool &Retry,bool &Quit)
+void uiAskRepeatRead(const std::wstring &FileName,bool &Ignore,bool &All,bool &Retry,bool &Quit)
 {
   eprintf(St(MErrReadInfo));
   int Code=Ask(St(MIgnoreAllRetryQuit));
@@ -422,16 +459,37 @@ void uiAskRepeatRead(const wchar *FileName,bool &Ignore,bool &All,bool &Retry,bo
 }
 
 
-bool uiAskRepeatWrite(const wchar *FileName,bool DiskFull)
+bool uiAskRepeatWrite(const std::wstring &FileName,bool DiskFull)
 {
   mprintf(L"\n");
-  Log(NULL,St(DiskFull ? MNotEnoughDisk:MErrWrite),FileName);
+  Log(NULL,St(DiskFull ? MNotEnoughDisk:MErrWrite),FileName.c_str());
   return Ask(St(MRetryAbort))==1;
 }
 
 
+bool uiDictLimit(CommandData *Cmd,const std::wstring &FileName,uint64 DictSize,uint64 MaxDictSize)
+{
+  mprintf(L"\n%s",FileName.c_str());
+  const uint64 GB=1024*1024*1024; // We display sizes in GB here.
+
+  // Include the reminder for switches like -md6400m.
+  DictSize=DictSize/GB+(DictSize%GB!=0 ? 1:0);
+
+  // Exclude reminder for in case it is less than archive dictionary size,
+  // but still more than nearest GB value. Otherwise we could have message
+  // like "7 GB dictionary exceeds 7 GB limit", where first 7 might be actually
+  // 6272 MB and second is 6400 MB.
+  MaxDictSize/=GB;
+
+  mprintf(St(MDictNotAllowed),(uint)DictSize,(uint)MaxDictSize,(uint)DictSize);
+  mprintf(St(MDictExtrAnyway),(uint)DictSize,(uint)DictSize);
+  mprintf(L"\n");
+  return false; // Stop extracting.
+}
+
+
 #ifndef SFX_MODULE
-const wchar *uiGetMonthName(int Month)
+const wchar *uiGetMonthName(uint Month)
 {
   static MSGID MonthID[12]={
          MMonthJan,MMonthFeb,MMonthMar,MMonthApr,MMonthMay,MMonthJun,

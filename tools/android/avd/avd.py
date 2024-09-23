@@ -145,7 +145,7 @@ def main(raw_args):
   subparser.add_argument('--no-read-only',
                          action='store_false',
                          dest='read_only')
-  # TODO(crbug.com/1278096): Default to False when AVDs with sideloaded
+  # TODO(crbug.com/40208043): Default to False when AVDs with sideloaded
   # system apks are rolled.
   subparser.set_defaults(read_only=True)
   subparser.add_argument(
@@ -182,8 +182,9 @@ def main(raw_args):
   subparser.add_argument(
       '--require-fast-start',
       action='store_true',
-      help='Shortens the start-up timeout. Used by bots to avoid startup '
-      'regressions.')
+      help='Shortens the start-up timeout and turns off the customization for '
+      'local AVD run, e.g. larger disk space. Should be set when used by bots '
+      'for AVD create or start.')
 
   def start_cmd(args):
     avd_config = avd.AvdConfig(args.avd_config)

@@ -8,7 +8,7 @@ assert(is_chromeos_ash)
 
 # This test_support library doesn't use extensions. It must not depend on
 # //chrome/test:test_support_ui as it is depended upon by those targets.
-source_set("test_support") {
+static_library("test_support") {
   testonly = true
 
   sources = [
@@ -33,6 +33,8 @@ source_set("test_support") {
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//components/crx_file",
@@ -50,7 +52,7 @@ source_set("test_support") {
 # Browsertest base classes that depend on //chrome/test:test_support_ui. Must
 # be separate from :test_support because that is depended upon by
 # //chrome/test:test_support_ui.
-source_set("test_support_ui") {
+static_library("test_support_ui") {
   testonly = true
 
   sources = [

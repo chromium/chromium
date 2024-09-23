@@ -13,13 +13,13 @@
  */
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/md_select.css.js';
-import '//resources/cr_elements/policy/cr_policy_pref_indicator.js';
+import '/shared/settings/controls/cr_policy_pref_indicator.js';
 
 import {assert} from '//resources/js/assert.js';
 import {microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrPolicyPrefMixin} from '/shared/settings/controls/cr_policy_pref_mixin.js';
 import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';
-import {prefToString, stringToPrefValue} from 'chrome://resources/cr_components/settings_prefs/pref_util.js';
+import {prefToString, stringToPrefValue} from '/shared/settings/prefs/pref_util.js';
 
 import {getTemplate} from './settings_dropdown_menu.html.js';
 
@@ -132,6 +132,14 @@ export class SettingsDropdownMenuElement extends
         this.set('pref.value', prefValue);
       }
     }
+  }
+
+  /**
+   * Allow access to the selected value without having to go through the shadow
+   * dom.
+   */
+  getSelectedValue() {
+    return this.$.dropdownMenu.value;
   }
 
   /**

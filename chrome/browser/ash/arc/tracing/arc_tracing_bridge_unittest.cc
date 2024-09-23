@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/arc/tracing/arc_tracing_bridge.h"
+
 #include <memory>
 
 #include "ash/components/arc/session/arc_bridge_service.h"
@@ -11,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/trace_test_utils.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/ash/arc/tracing/arc_tracing_bridge.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -70,10 +71,8 @@ class ArcTracingBridgeTest : public testing::Test {
   ArcBridgeService bridge_service_;
   std::unique_ptr<ArcTracingBridge> tracing_bridge_;
   FakeTracingInstance fake_tracing_instance_;
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
  private:
   ::base::test::TracingEnvironment tracing_environment_;
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 };
 
 TEST_F(ArcTracingBridgeTest, Creation) {

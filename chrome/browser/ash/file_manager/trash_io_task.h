@@ -60,7 +60,7 @@ struct TrashEntry {
 // This class represents a trash task. A trash task attempts to trash zero or
 // more files by first moving them to a .Trash/files or .Trash-{UID}/files
 // folder that resides in a parent folder for:
-//   - My files
+//   - MyFiles
 //   - Downloads
 //   - Crostini
 //   - Drive

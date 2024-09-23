@@ -40,6 +40,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -48,7 +50,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/core/browser/signin_header_helper.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/value_store/value_store_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -73,11 +74,11 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/extensions/api/file_handlers/non_native_file_system_delegate_chromeos.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_ash.h"
 #include "chrome/browser/extensions/api/media_perception_private/media_perception_api_delegate_chromeos.h"
 #include "chrome/browser/extensions/api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -93,11 +94,6 @@
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/browser/printing/printing_init.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #endif
 
 namespace extensions {
@@ -414,12 +410,8 @@ ManagementAPIDelegate* ChromeExtensionsAPIClient::CreateManagementAPIDelegate()
 std::unique_ptr<SupervisedUserExtensionsDelegate>
 ChromeExtensionsAPIClient::CreateSupervisedUserExtensionsDelegate(
     content::BrowserContext* browser_context) const {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   return std::make_unique<SupervisedUserExtensionsDelegateImpl>(
       browser_context);
-#else
-  return nullptr;
-#endif
 }
 
 std::unique_ptr<DisplayInfoProvider>
@@ -511,9 +503,7 @@ ChromeExtensionsAPIClient::GetFactoryDependencies() {
   // clang-format off
   return {
       InstantServiceFactory::GetInstance(),
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
       SupervisedUserServiceFactory::GetInstance(),
-#endif
   };
   // clang-format on
 }

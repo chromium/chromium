@@ -17,7 +17,6 @@ async function getKeyValue(data) {
         ' or `keyCharCodeArray` is not an Array.');
     return null;
   }
-  console.log(`key: '${key}'`);
 
   let value = null;
   if (data.hasOwnProperty('value')) {
@@ -33,7 +32,6 @@ async function getKeyValue(data) {
         ' or `valueCharCodeArray` is not an Array.');
     return null;
   }
-  console.log(`value: '${value}'`);
   return {key, value};
 }
 
@@ -74,13 +72,12 @@ class SetGetOperation {
 
     let retrieved = await sharedStorage.get(key);
     if (!retrieved) {
-      console.log(`Nothing retrieved by sharedStorage.get('${key}').`);
-      console.log(`original value '${value}' was retrieved: false`);
+      console.log(`no value retrieved`);
+      console.log(`original value was retrieved: false`);
       return;
     }
-    console.log(`retrieved sharedStorage.get('${key}'): '${retrieved}'`);
     const equalsSet = (retrieved === value);
-    console.log(`original value '${value}' was retrieved: ${equalsSet}`);
+    console.log(`original value was retrieved: ${equalsSet}`);
   }
 }
 
@@ -101,9 +98,8 @@ class SetKeysOperation {
 
     let count = 0;
     for await (const retrievedKey of sharedStorage.keys()) {
-      console.log(`retrieved key: '${retrievedKey}'`);
       const equalsSet = (retrievedKey === key);
-      console.log(`original key '${key}' was retrieved: ${equalsSet}`);
+      console.log(`original key was retrieved: ${equalsSet}`);
       count++;
     }
     if (count !== 1) {
@@ -156,11 +152,8 @@ class AppendEntriesOperation {
     let count = 0;
     for await (
         const [retrievedKey, retrievedValue] of sharedStorage.entries()) {
-      console.log(`retrieved key: '${retrievedKey}'; retrieved value: '${
-          retrievedValue}'`);
       const equalsSet = (retrievedKey === key && retrievedValue === value);
-      console.log(
-          `original entry '${key},${value}' was retrieved: ${equalsSet}`);
+      console.log(`original entry was retrieved: ${equalsSet}`);
       count++;
     }
     if (count !== 1) {

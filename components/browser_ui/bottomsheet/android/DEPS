@@ -3,6 +3,7 @@ include_rules = [
   "+base/android",
   "+base/test/android",
   "+components/browser_ui/widget/android",
+  "+components/browser_ui/styles/android",
   "+content/public/test/android",
   "+ui/accessibility",
   "+ui/android",

@@ -1,0 +1,39 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//testing/test.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+generate_jni("jni_headers") {
+  sources = [ "src/org/chromium/components/ip_protection_auth/test/IpProtectionAuthTestNatives.java" ]
+}
+
+android_library("ip_protection_test_support_java") {
+  testonly = true
+  srcjar_deps = [ ":jni_headers" ]
+  sources = [ "src/org/chromium/components/ip_protection_auth/test/IpProtectionAuthTestNatives.java" ]
+  deps = [ "//third_party/jni_zero:jni_zero_java" ]
+}
+
+android_library("ip_protection_auth_javatests") {
+  testonly = true
+  sources = [ "src/org/chromium/components/ip_protection_auth/test/IpProtectionAuthTest.java" ]
+  deps = [
+    ":ip_protection_test_support_java",
+    "../client:ip_protection_auth_client_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//components/ip_protection/android/android_auth_client_lib/common/proto:ip_protection_auth_proto_java",
+    "//net/third_party/quiche:blind_sign_auth_proto_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/google-truth:google_truth_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit:junit",
+  ]
+}

@@ -35,10 +35,22 @@ class ProfileManagementStepController {
                             const GURL& initial_url);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Forwards the profile and account specific arguments obtained from the
+  // sign-in step to the caller, see
+  // `ProfilePickerDiceSignInProvider::SignedInCallback` for more info.
+  // If a step if shown after this one, the `StepSwitchFinishedCallback` will
+  // be called when the new step is shown. Otherwise, it might just be dropped
+  // as the host gets cleared.
+  using DiceSignInStepFinishedCallback = base::OnceCallback<void(
+      Profile*,
+      const CoreAccountInfo&,
+      std::unique_ptr<content::WebContents>,
+      StepSwitchFinishedCallback step_switch_finished_callback)>;
+
   static std::unique_ptr<ProfileManagementStepController> CreateForDiceSignIn(
       ProfilePickerWebContentsHost* host,
       std::unique_ptr<ProfilePickerDiceSignInProvider> dice_sign_in_provider,
-      ProfilePickerDiceSignInProvider::SignedInCallback signed_in_callback);
+      DiceSignInStepFinishedCallback signed_in_callback);
 
   // Creates a step controller that will take over from the Dice sign-in step
   // during a SAML sign-in flow, and transition the flow into a browser window
@@ -68,7 +80,7 @@ class ProfileManagementStepController {
       SearchEngineChoiceDialogService* search_engine_choice_dialog_service,
       content::WebContents* web_contents,
       SearchEngineChoiceDialogService::EntryPoint entry_point,
-      base::OnceClosure callback);
+      base::OnceCallback<void(StepSwitchFinishedCallback)> callback);
 
   // Creates the step that will finish the flow and launch the browser.
   static std::unique_ptr<ProfileManagementStepController>

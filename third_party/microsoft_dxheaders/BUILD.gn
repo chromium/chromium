@@ -1,0 +1,12 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Clients should add "//third_party/microsoft_dxheaders:dxguids" as a
+# dependency if they will be using any GUIDs that are present in the
+# dependency but not in the Windows SDK.
+source_set("dxguids") {
+  include_dirs = [ "src/include" ]
+
+  sources = [ "src/src/dxguids.cpp" ]
+}

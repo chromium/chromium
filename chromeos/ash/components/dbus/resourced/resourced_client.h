@@ -5,15 +5,19 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_RESOURCED_RESOURCED_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_RESOURCED_RESOURCED_CLIENT_H_
 
+#include <cstdint>
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "base/process/process_handle.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "components/memory_pressure/reclaim_target.h"
-
-#include <cstdint>
-#include <vector>
+#include "dbus/dbus_result.h"
+#include "dbus/object_proxy.h"
+#include "third_party/cros_system_api/dbus/resource_manager/dbus-constants.h"
 
 namespace dbus {
 class Bus;
@@ -47,17 +51,6 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
                                   memory_pressure::ReclaimTarget target) = 0;
   };
 
-  enum class PressureLevelArcVm {
-    // There is enough memory to use.
-    NONE = 0,
-    // ARCVM is advised to kill cached apps to free memory.
-    CACHED = 1,
-    // ARCVM is advised to kill perceptible apps to free memory.
-    PERCEPTIBLE = 2,
-    // ARCVM is advised to kill foreground apps to free memory.
-    FOREGROUND = 3,
-  };
-
   // Indicates whether game mode is on, and which kind of game mode if it is on.
   // Borealis game mode will put more memory pressure on ARCVM processes than
   // will ARC game mode.
@@ -66,15 +59,6 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
     OFF = 0,
     BOREALIS = 1,
     ARC = 2,
-  };
-
-  // Observer class for ARCVM memory pressure signal.
-  class ArcVmObserver : public base::CheckedObserver {
-   public:
-    ~ArcVmObserver() override = default;
-
-    virtual void OnMemoryPressure(PressureLevelArcVm level,
-                                  uint64_t reclaim_target_kb) = 0;
   };
 
   enum class PressureLevelArcContainer {
@@ -121,43 +105,57 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
       uint32_t refresh_seconds,
       chromeos::DBusMethodCallback<GameMode> callback) = 0;
 
-  using SetMemoryMarginsBpsCallback =
-      base::OnceCallback<void(bool, uint64_t, uint64_t)>;
+  // The bps fields are in basis points which represent one-one hundredth of a
+  // percent, e.g., 1354 bps = 13.54%.
+  struct MemoryMargins {
+    uint32_t moderate_bps = 0;
+    uint32_t critical_bps = 0;
+    uint32_t critical_protected_bps = 0;
+  };
 
-  // Informs resourced that it should use a different value for the critical
-  // threshold. The value provided for |critical_bps| and |moderate_bps| must be
-  // in basis points which represent one-one hundredth of a percent, eg. 1354
-  // = 13.54%.
-  virtual void SetMemoryMarginsBps(uint32_t critical_bps,
-                                   uint32_t moderate_bps,
-                                   SetMemoryMarginsBpsCallback callback) = 0;
+  // Informs resourced that it should use a different value for the memory
+  // margins.
+  virtual void SetMemoryMargins(MemoryMargins margins) = 0;
 
   enum class Component {
     kAsh = 0,
     kLacros = 1,
   };
 
-  virtual void ReportBackgroundProcesses(Component component,
-                                         const std::vector<int32_t>& pids) = 0;
-
   struct Process {
     Process(base::ProcessHandle pid,
             bool is_protected,
             bool is_visible,
-            bool is_focused)
+            bool is_focused,
+            base::TimeTicks last_visible)
         : pid(pid),
           is_protected(is_protected),
           is_visible(is_visible),
-          is_focused(is_focused) {}
+          is_focused(is_focused),
+          last_visible(last_visible) {}
     base::ProcessHandle pid;
     bool is_protected;
     bool is_visible;
     bool is_focused;
+    base::TimeTicks last_visible;
   };
 
   virtual void ReportBrowserProcesses(
       Component component,
       const std::vector<Process>& processes) = 0;
+
+  using SetQoSStateCallback = base::OnceCallback<void(dbus::DBusResult)>;
+
+  // Set qos state of a process.
+  virtual void SetProcessState(base::ProcessId,
+                               resource_manager::ProcessState,
+                               SetQoSStateCallback) = 0;
+
+  // Set qos state of a thread.
+  virtual void SetThreadState(base::ProcessId,
+                              base::PlatformThreadId,
+                              resource_manager::ThreadState,
+                              SetQoSStateCallback) = 0;
 
   // Adds an observer to the observer list to listen on memory pressure events.
   virtual void AddObserver(Observer* observer) = 0;
@@ -165,17 +163,18 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
   // Removes an observer from observer list.
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Adds an observer to be called when there is an ARCVM memory pressure
-  // signal.
-  virtual void AddArcVmObserver(ArcVmObserver* observer) = 0;
-
-  // Stops a previously added observer from being called on ARCVM memory
-  // pressure signals.
-  virtual void RemoveArcVmObserver(ArcVmObserver* observer) = 0;
-
   virtual void AddArcContainerObserver(ArcContainerObserver* observer) = 0;
 
   virtual void RemoveArcContainerObserver(ArcContainerObserver* observer) = 0;
+
+  // Registers |callback| to run when the ResourceManager service becomes
+  // available. If the service is already available, or if connecting to the
+  // name-owner-changed signal fails, |callback| will be run once
+  // asynchronously.
+  // Otherwise, |callback| will be run once in the future after the service
+  // becomes available.
+  virtual void WaitForServiceToBeAvailable(
+      dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) = 0;
 
  protected:
   ResourcedClient();

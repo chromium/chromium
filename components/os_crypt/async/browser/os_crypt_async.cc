@@ -70,9 +70,10 @@ OSCryptAsync::~OSCryptAsync() = default;
 // CallbackHelper is needed so the sequence checker member can be accessed in
 // the callback, which it can't from a lambda without breaking the
 // sequence_checker abstraction.
-void OSCryptAsync::CallbackHelper(InitCallback callback) const {
+void OSCryptAsync::CallbackHelper(InitCallback callback,
+                                  Encryptor::Option option) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::move(callback).Run(encryptor_instance_->Clone(), /*result=*/true);
+  std::move(callback).Run(encryptor_instance_->Clone(option), /*result=*/true);
 }
 
 void OSCryptAsync::HandleKey(ProviderIterator current,
@@ -85,19 +86,24 @@ void OSCryptAsync::HandleKey(ProviderIterator current,
     for (const auto& [key_name, key_value] : key_ring_) {
       // Check for overlapping names. Two providers called TEST and TEST2 are
       // likely incorrectly named, since TEST might try to decrypt TEST2's data.
-      DCHECK(!std::equal(key_name.begin(), key_name.end(), tag.begin()))
-          << "Tags must not overlap.";
-      DCHECK(!std::equal(tag.begin(), tag.end(), key_name.begin()))
-          << "Tags must not overlap.";
+      if (tag.size() > key_name.size()) {
+        DCHECK(!std::equal(key_name.begin(), key_name.end(), tag.begin()))
+            << "Tags must not overlap.";
+      } else {
+        DCHECK(!std::equal(tag.begin(), tag.end(), key_name.begin()))
+            << "Tags must not overlap.";
+      }
     }
 #endif  // DCHECK_IS_ON()
+    key->is_os_crypt_sync_compatible_ =
+        ((*current)->IsCompatibleWithOsCryptSync());
     key_ring_.emplace(tag, std::move(*key));
     if ((*current)->UseForEncryption()) {
       provider_for_encryption_ = tag;
     }
   } else {
-    // TODO(crbug.com/1373092): Return errors back via a callback.
-    LOG(WARNING) << "Provider " << tag << " failed to return a key.";
+    // TODO(crbug.com/40241934): Return errors back via a callback.
+    DVLOG(1) << "Provider " << tag << " failed to return a key.";
   }
 
   if (++current == providers_.end()) {
@@ -115,17 +121,24 @@ void OSCryptAsync::HandleKey(ProviderIterator current,
 
 base::CallbackListSubscription OSCryptAsync::GetInstance(
     InitCallback callback) {
+  return GetInstance(std::move(callback), Encryptor::Option::kNone);
+}
+
+base::CallbackListSubscription OSCryptAsync::GetInstance(
+    InitCallback callback,
+    Encryptor::Option option) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (is_initialized_) {
     DCHECK(!is_initializing_);
-    std::move(callback).Run(encryptor_instance_->Clone(), /*result=*/true);
+    std::move(callback).Run(encryptor_instance_->Clone(option),
+                            /*result=*/true);
     return base::CallbackListSubscription();
   }
 
   auto subscription = callbacks_.Add(
       base::BindOnce(&OSCryptAsync::CallbackHelper, weak_factory_.GetWeakPtr(),
-                     std::move(callback)));
+                     std::move(callback), option));
 
   if (is_initializing_) {
     return subscription;

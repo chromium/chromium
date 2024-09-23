@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/child/dwrite_font_proxy/dwrite_font_proxy_win.h"
 
 #include <stddef.h>
@@ -34,7 +39,7 @@ namespace {
 // input delay. It will not ship as-is, because it breaks some pages. Local
 // experiments show that accessing >20 fonts is typically done by fingerprinting
 // scripts.
-// TODO(https://crbug.com/1089390): Remove this feature when the experiment is
+// TODO(crbug.com/40133493): Remove this feature when the experiment is
 // complete. If the experiment shows a significant input delay improvement,
 // replace with a more refined mitigation for pages that access many fonts.
 BASE_FEATURE(kLimitFontFamilyNamesPerRenderer,
@@ -78,7 +83,7 @@ DWriteFontCollectionProxy::DWriteFontCollectionProxy() = default;
 
 DWriteFontCollectionProxy::~DWriteFontCollectionProxy() = default;
 
-// TODO(crbug.com/1256946): Confirm this is useful and remove it otherwise.
+// TODO(crbug.com/40200438): Confirm this is useful and remove it otherwise.
 void DWriteFontCollectionProxy::InitializePrewarmer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -202,8 +207,9 @@ std::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
     DCHECK(family_names_.find(family_name) == family_names_.end() ||
            family_names_[family_name] == family_index);
     family_names_[family_name] = family_index;
-    if (UNLIKELY(family_index == kFamilyNotFound))
+    if (family_index == kFamilyNotFound) [[unlikely]] {
       return std::nullopt;
+    }
     DCHECK(IsValidFamilyIndex(family_index));
 
     if (DWriteFontFamilyProxy* family =
@@ -234,8 +240,9 @@ void DWriteFontCollectionProxy::PrewarmFamily(
   if (!prewarm_task_runner_) {
     // |BindHostReceiverOnMainThread| requires |ChildThread::Get()|, but it may
     // not be available in some tests. Disable the prewarmer.
-    if (UNLIKELY(!ChildThread::Get()))
+    if (!ChildThread::Get()) [[unlikely]] {
       return;
+    }
     InitializePrewarmer();
   }
 

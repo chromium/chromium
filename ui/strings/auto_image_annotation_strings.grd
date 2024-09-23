@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file contains definitions of resources that will be translated for
+each locale. Specifically, these are accessibility UI strings that are used by content that
+need to be translated for each locale. Note that some accessibility strings remain in blink_strings.grd; those strings need to be part of Android webview. -->
+
+<grit base_dir="." latest_public_release="0" current_release="1"
+      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+  <outputs>
+    <output filename="grit/auto_image_annotation_strings.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="auto_image_annotation_strings_af.pak" type="data_package" lang="af" />
+    <output filename="auto_image_annotation_strings_am.pak" type="data_package" lang="am" />
+    <output filename="auto_image_annotation_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="auto_image_annotation_strings_as.pak" type="data_package" lang="as" />
+    <output filename="auto_image_annotation_strings_az.pak" type="data_package" lang="az" />
+    <output filename="auto_image_annotation_strings_be.pak" type="data_package" lang="be" />
+    <output filename="auto_image_annotation_strings_bg.pak" type="data_package" lang="bg" />
+    <output filename="auto_image_annotation_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="auto_image_annotation_strings_bs.pak" type="data_package" lang="bs" />
+    <output filename="auto_image_annotation_strings_ca.pak" type="data_package" lang="ca" />
+    <output filename="auto_image_annotation_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="auto_image_annotation_strings_cy.pak" type="data_package" lang="cy" />
+    <output filename="auto_image_annotation_strings_da.pak" type="data_package" lang="da" />
+    <output filename="auto_image_annotation_strings_de.pak" type="data_package" lang="de" />
+    <output filename="auto_image_annotation_strings_el.pak" type="data_package" lang="el" />
+    <output filename="auto_image_annotation_strings_en-GB.pak" type="data_package" lang="en-GB" />
+    <output filename="auto_image_annotation_strings_en-US.pak" type="data_package" lang="en" />
+    <output filename="auto_image_annotation_strings_es.pak" type="data_package" lang="es" />
+    <if expr="is_ios">
+      <!-- iOS uses es-MX for es-419 -->
+      <output filename="auto_image_annotation_strings_es-MX.pak" type="data_package" lang="es-419" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="auto_image_annotation_strings_es-419.pak" type="data_package" lang="es-419" />
+    </if>
+    <output filename="auto_image_annotation_strings_et.pak" type="data_package" lang="et" />
+    <output filename="auto_image_annotation_strings_eu.pak" type="data_package" lang="eu" />
+    <output filename="auto_image_annotation_strings_fa.pak" type="data_package" lang="fa" />
+    <output filename="auto_image_annotation_strings_fi.pak" type="data_package" lang="fi" />
+    <output filename="auto_image_annotation_strings_fil.pak" type="data_package" lang="fil" />
+    <output filename="auto_image_annotation_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
+    <output filename="auto_image_annotation_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="auto_image_annotation_strings_gl.pak" type="data_package" lang="gl" />
+    <output filename="auto_image_annotation_strings_gu.pak" type="data_package" lang="gu" />
+    <output filename="auto_image_annotation_strings_he.pak" type="data_package" lang="he" />
+    <output filename="auto_image_annotation_strings_hi.pak" type="data_package" lang="hi" />
+    <output filename="auto_image_annotation_strings_hr.pak" type="data_package" lang="hr" />
+    <output filename="auto_image_annotation_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="auto_image_annotation_strings_hy.pak" type="data_package" lang="hy" />
+    <output filename="auto_image_annotation_strings_id.pak" type="data_package" lang="id" />
+    <output filename="auto_image_annotation_strings_is.pak" type="data_package" lang="is" />
+    <output filename="auto_image_annotation_strings_it.pak" type="data_package" lang="it" />
+    <output filename="auto_image_annotation_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="auto_image_annotation_strings_ka.pak" type="data_package" lang="ka" />
+    <output filename="auto_image_annotation_strings_kk.pak" type="data_package" lang="kk" />
+    <output filename="auto_image_annotation_strings_km.pak" type="data_package" lang="km" />
+    <output filename="auto_image_annotation_strings_kn.pak" type="data_package" lang="kn" />
+    <output filename="auto_image_annotation_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="auto_image_annotation_strings_ky.pak" type="data_package" lang="ky" />
+    <output filename="auto_image_annotation_strings_lo.pak" type="data_package" lang="lo" />
+    <output filename="auto_image_annotation_strings_lt.pak" type="data_package" lang="lt" />
+    <output filename="auto_image_annotation_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="auto_image_annotation_strings_mk.pak" type="data_package" lang="mk" />
+    <output filename="auto_image_annotation_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="auto_image_annotation_strings_mn.pak" type="data_package" lang="mn" />
+    <output filename="auto_image_annotation_strings_mr.pak" type="data_package" lang="mr" />
+    <output filename="auto_image_annotation_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="auto_image_annotation_strings_my.pak" type="data_package" lang="my" />
+    <output filename="auto_image_annotation_strings_ne.pak" type="data_package" lang="ne" />
+    <output filename="auto_image_annotation_strings_nl.pak" type="data_package" lang="nl" />
+    <!-- The translation console uses 'no' for Norwegian Bokmål. It should
+         be 'nb'. -->
+    <output filename="auto_image_annotation_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="auto_image_annotation_strings_pa.pak" type="data_package" lang="pa" />
+    <output filename="auto_image_annotation_strings_pl.pak" type="data_package" lang="pl" />
+    <if expr="is_ios">
+      <!-- iOS uses pt for pt-BR -->
+      <output filename="auto_image_annotation_strings_pt.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="auto_image_annotation_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <output filename="auto_image_annotation_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="auto_image_annotation_strings_or.pak" type="data_package" lang="or" />
+    <output filename="auto_image_annotation_strings_ro.pak" type="data_package" lang="ro" />
+    <output filename="auto_image_annotation_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="auto_image_annotation_strings_si.pak" type="data_package" lang="si" />
+    <output filename="auto_image_annotation_strings_sk.pak" type="data_package" lang="sk" />
+    <output filename="auto_image_annotation_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="auto_image_annotation_strings_sq.pak" type="data_package" lang="sq" />
+    <output filename="auto_image_annotation_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+    <output filename="auto_image_annotation_strings_sr.pak" type="data_package" lang="sr" />
+    <output filename="auto_image_annotation_strings_sv.pak" type="data_package" lang="sv" />
+    <output filename="auto_image_annotation_strings_sw.pak" type="data_package" lang="sw" />
+    <output filename="auto_image_annotation_strings_ta.pak" type="data_package" lang="ta" />
+    <output filename="auto_image_annotation_strings_te.pak" type="data_package" lang="te" />
+    <output filename="auto_image_annotation_strings_th.pak" type="data_package" lang="th" />
+    <output filename="auto_image_annotation_strings_tr.pak" type="data_package" lang="tr" />
+    <output filename="auto_image_annotation_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="auto_image_annotation_strings_ur.pak" type="data_package" lang="ur" />
+    <output filename="auto_image_annotation_strings_uz.pak" type="data_package" lang="uz" />
+    <output filename="auto_image_annotation_strings_vi.pak" type="data_package" lang="vi" />
+    <output filename="auto_image_annotation_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="auto_image_annotation_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
+    <output filename="auto_image_annotation_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+    <output filename="auto_image_annotation_strings_zu.pak" type="data_package" lang="zu" />
+    <!-- Pseudolocales -->
+    <output filename="auto_image_annotation_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="auto_image_annotation_strings_en-XA.pak" type="data_package" lang="en-XA" />
+  </outputs>
+  <translations>
+    <file path="translations/auto_image_annotation_strings_af.xtb" lang="af" />
+    <file path="translations/auto_image_annotation_strings_am.xtb" lang="am" />
+    <file path="translations/auto_image_annotation_strings_ar.xtb" lang="ar" />
+    <file path="translations/auto_image_annotation_strings_as.xtb" lang="as" />
+    <file path="translations/auto_image_annotation_strings_az.xtb" lang="az" />
+    <file path="translations/auto_image_annotation_strings_be.xtb" lang="be" />
+    <file path="translations/auto_image_annotation_strings_bg.xtb" lang="bg" />
+    <file path="translations/auto_image_annotation_strings_bn.xtb" lang="bn" />
+    <file path="translations/auto_image_annotation_strings_bs.xtb" lang="bs" />
+    <file path="translations/auto_image_annotation_strings_ca.xtb" lang="ca" />
+    <file path="translations/auto_image_annotation_strings_cs.xtb" lang="cs" />
+    <file path="translations/auto_image_annotation_strings_cy.xtb" lang="cy" />
+    <file path="translations/auto_image_annotation_strings_da.xtb" lang="da" />
+    <file path="translations/auto_image_annotation_strings_de.xtb" lang="de" />
+    <file path="translations/auto_image_annotation_strings_el.xtb" lang="el" />
+    <file path="translations/auto_image_annotation_strings_en-GB.xtb" lang="en-GB" />
+    <file path="translations/auto_image_annotation_strings_es.xtb" lang="es" />
+    <file path="translations/auto_image_annotation_strings_es-419.xtb" lang="es-419" />
+    <file path="translations/auto_image_annotation_strings_et.xtb" lang="et" />
+    <file path="translations/auto_image_annotation_strings_eu.xtb" lang="eu" />
+    <file path="translations/auto_image_annotation_strings_fa.xtb" lang="fa" />
+    <file path="translations/auto_image_annotation_strings_fi.xtb" lang="fi" />
+    <file path="translations/auto_image_annotation_strings_fil.xtb" lang="fil" />
+    <file path="translations/auto_image_annotation_strings_fr.xtb" lang="fr" />
+    <file path="translations/auto_image_annotation_strings_fr-CA.xtb" lang="fr-CA" />
+    <file path="translations/auto_image_annotation_strings_gl.xtb" lang="gl" />
+    <file path="translations/auto_image_annotation_strings_gu.xtb" lang="gu" />
+    <file path="translations/auto_image_annotation_strings_hi.xtb" lang="hi" />
+    <file path="translations/auto_image_annotation_strings_hr.xtb" lang="hr" />
+    <file path="translations/auto_image_annotation_strings_hu.xtb" lang="hu" />
+    <file path="translations/auto_image_annotation_strings_hy.xtb" lang="hy" />
+    <file path="translations/auto_image_annotation_strings_id.xtb" lang="id" />
+    <file path="translations/auto_image_annotation_strings_is.xtb" lang="is" />
+    <file path="translations/auto_image_annotation_strings_it.xtb" lang="it" />
+    <!-- The translation console uses 'iw' for Hebrew, but we use 'he'. -->
+    <file path="translations/auto_image_annotation_strings_iw.xtb" lang="he" />
+    <file path="translations/auto_image_annotation_strings_ja.xtb" lang="ja" />
+    <file path="translations/auto_image_annotation_strings_ka.xtb" lang="ka" />
+    <file path="translations/auto_image_annotation_strings_kk.xtb" lang="kk" />
+    <file path="translations/auto_image_annotation_strings_km.xtb" lang="km" />
+    <file path="translations/auto_image_annotation_strings_kn.xtb" lang="kn" />
+    <file path="translations/auto_image_annotation_strings_ko.xtb" lang="ko" />
+    <file path="translations/auto_image_annotation_strings_ky.xtb" lang="ky" />
+    <file path="translations/auto_image_annotation_strings_lo.xtb" lang="lo" />
+    <file path="translations/auto_image_annotation_strings_lt.xtb" lang="lt" />
+    <file path="translations/auto_image_annotation_strings_lv.xtb" lang="lv" />
+    <file path="translations/auto_image_annotation_strings_mk.xtb" lang="mk" />
+    <file path="translations/auto_image_annotation_strings_ml.xtb" lang="ml" />
+    <file path="translations/auto_image_annotation_strings_mn.xtb" lang="mn" />
+    <file path="translations/auto_image_annotation_strings_mr.xtb" lang="mr" />
+    <file path="translations/auto_image_annotation_strings_ms.xtb" lang="ms" />
+    <file path="translations/auto_image_annotation_strings_my.xtb" lang="my" />
+    <file path="translations/auto_image_annotation_strings_ne.xtb" lang="ne" />
+    <file path="translations/auto_image_annotation_strings_nl.xtb" lang="nl" />
+    <file path="translations/auto_image_annotation_strings_no.xtb" lang="no" />
+    <file path="translations/auto_image_annotation_strings_or.xtb" lang="or" />
+    <file path="translations/auto_image_annotation_strings_pa.xtb" lang="pa" />
+    <file path="translations/auto_image_annotation_strings_pl.xtb" lang="pl" />
+    <file path="translations/auto_image_annotation_strings_pt-BR.xtb" lang="pt-BR" />
+    <file path="translations/auto_image_annotation_strings_pt-PT.xtb" lang="pt-PT" />
+    <file path="translations/auto_image_annotation_strings_ro.xtb" lang="ro" />
+    <file path="translations/auto_image_annotation_strings_ru.xtb" lang="ru" />
+    <file path="translations/auto_image_annotation_strings_si.xtb" lang="si" />
+    <file path="translations/auto_image_annotation_strings_sk.xtb" lang="sk" />
+    <file path="translations/auto_image_annotation_strings_sl.xtb" lang="sl" />
+    <file path="translations/auto_image_annotation_strings_sq.xtb" lang="sq" />
+    <file path="translations/auto_image_annotation_strings_sr.xtb" lang="sr" />
+    <file path="translations/auto_image_annotation_strings_sr-Latn.xtb" lang="sr-Latn" />
+    <file path="translations/auto_image_annotation_strings_sv.xtb" lang="sv" />
+    <file path="translations/auto_image_annotation_strings_sw.xtb" lang="sw" />
+    <file path="translations/auto_image_annotation_strings_ta.xtb" lang="ta" />
+    <file path="translations/auto_image_annotation_strings_te.xtb" lang="te" />
+    <file path="translations/auto_image_annotation_strings_th.xtb" lang="th" />
+    <file path="translations/auto_image_annotation_strings_tr.xtb" lang="tr" />
+    <file path="translations/auto_image_annotation_strings_uk.xtb" lang="uk" />
+    <file path="translations/auto_image_annotation_strings_ur.xtb" lang="ur" />
+    <file path="translations/auto_image_annotation_strings_uz.xtb" lang="uz" />
+    <file path="translations/auto_image_annotation_strings_vi.xtb" lang="vi" />
+    <file path="translations/auto_image_annotation_strings_zh-CN.xtb" lang="zh-CN" />
+    <file path="translations/auto_image_annotation_strings_zh-HK.xtb" lang="zh-HK" />
+    <file path="translations/auto_image_annotation_strings_zh-TW.xtb" lang="zh-TW" />
+    <file path="translations/auto_image_annotation_strings_zu.xtb" lang="zu" />
+  </translations>
+  <release seq="1">
+    <messages fallback_to_english="true">
+      <!-- Automatic image annotations for accessibility -->
+      <if expr="is_win">
+        <then>
+          <message name="IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION" desc="Accessibility role description for a graphic (image) on a web page or PDF that does not have a description for blind users." is_accessibility_with_no_ui="true">
+            Unlabeled graphic
+          </message>
+        </then>
+        <else>
+          <message name="IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION" desc="Accessibility role description for an image on a web page or PDF that does not have a description for blind users." is_accessibility_with_no_ui="true">
+            Unlabeled image
+          </message>
+        </else>
+      </if>
+      <if expr="is_android">
+        <message name="IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION_ANDROID_LTR" desc="Accessibility message spoken out loud to screen reader users on Android to inform them that they can get a description of an image by opening the 'More Options' menu on the top right. This is only for LTR languages. The 'more options' text should match TC ID 8110367050267853536" is_accessibility_with_no_ui="true">
+          This image isn‘t labeled. Open the More Options menu at the top right to get image descriptions.
+        </message>
+        <message name="IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION_ANDROID_RTL" desc="Accessibility message spoken out loud to screen reader users on Android to inform them that they can get a description of an image by opening the 'More Options' menu on the top left. This is only for RTL languages. The 'more options' text should match TC ID 8110367050267853536" is_accessibility_with_no_ui="true">
+          This image isn‘t labeled. Open the More Options menu at the top left to get image descriptions.
+        </message>
+      </if>
+      <message name="IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION" desc="Accessibility message spoken out loud to screen reader users to inform them that they can get a description of an image by opening the context menu." is_accessibility_with_no_ui="true">
+        To get missing image descriptions, open the context menu.
+      </message>
+      <message name="IDS_AX_IMAGE_ANNOTATION_PENDING" desc="Accessibility message spoken out loud to screen reader users saying that the browser is in the middle of trying to get a description for an image." is_accessibility_with_no_ui="true">
+        Getting description...
+      </message>
+      <message name="IDS_AX_IMAGE_ANNOTATION_ADULT" desc="Accessibility message spoken out loud to screen reader users indicating that an image appears to be something like nudity or pornography or other policy violation that is not appropriate for children." is_accessibility_with_no_ui="true">
+        Appears to contain adult content. No description available.
+      </message>
+      <message name="IDS_AX_IMAGE_ANNOTATION_NO_DESCRIPTION" desc="Accessibility message spoken out loud to screen reader users indicating that the browser was unable to provide a description for an image." is_accessibility_with_no_ui="true">
+        No description available.
+      </message>
+      <message name="IDS_AX_IMAGE_ANNOTATION_OCR_CONTEXT" desc="Accessibility message spoken out loud to screen reader users when reading text that was automatically extracted from an image, for an example the word 'stop' could be extracted from a photo of a stop sign. Because automatic text extraction sometimes contains errors it is important that the language used indicates some uncertainty - it may say 'stop' or it appears to say 'stop', not it definitely says 'stop'." is_accessibility_with_no_ui="true">
+        Appears to say: <ph name="OCR_TEXT">$1<ex>Stop</ex></ph>
+      </message>
+      <message name="IDS_AX_IMAGE_ANNOTATION_DESCRIPTION_CONTEXT" desc="Accessibility message spoken out loud to screen reader users when reading a computer-generated description of an image, for example a photo of the president at a press conference might be described as 'A person at a podium'. Because automatic image description is sometimes incorrect, it is important that the langauge used indicates some uncertainty - it may be a person, it appears to be a person, not it definitely is a person." is_accessibility_with_no_ui="true">
+        Appears to be: <ph name="DESCRIPTION">$1<ex>A person at a podium</ex></ph>
+      </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PLUS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a plus icon, which often is used to add">
+          Plus icon, may mean Add
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_BACKWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an arrow pointing left, which often means back">
+          Left arrow icon, may mean Back
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_FORWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an arrow pointing to the right, which often means forwards">
+          Right arrow icon, may mean Forwards
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CALL" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an icon of a phone handset, which often means to call">
+          Phone handset icon, may mean Call
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CHAT" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a cartoon bubble, which often means chat">
+          Cartoon bubble icon, may mean Chat
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CHECK" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a check mark icon">
+          Check mark icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_X" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an X, which may mean close or delete">
+          X icon, may mean Close or Delete
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_DELETE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a trash can, which may mean delete">
+          Trash icon, may mean Delete
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_EDIT" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a pencil, which may mean edit">
+          Pencil icon, may mean Edit
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_EMOJI" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a smiley face, which may mean Emoji">
+          Smiley face icon, may mean Emoji
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_END_CALL" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a phone handset pointing down, indicating end call">
+          End Call icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_V_DOWNWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a down pointing chevron icon, which may mean Expand">
+          Down chevron icon, may mean Expand
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_HEART" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a heart icon, which may mean Favorite">
+          Heart icon, may mean Favorite
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_HOME" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a home icon">
+          Home icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_INFO" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a lowercase 'i' icon, which may mean 'information'">
+          Lowercase i icon, may mean Information
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_LAUNCH_APPS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a 'launch apps' icon">
+          Launch apps icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_THUMBS_UP" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a thumbs up icon, which may mean Like">
+          Thumbs up icon, may mean Like
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_THREE_BARS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a three horizontal bars or hamburger shaped menu, which may indicate a menu">
+          Three bars icon, may mean Menu
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_THREE_DOTS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a three dots or ellipsis shaped icon, which may mean More or may open a menu">
+          Three dots, may mean More
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_NOTIFICATIONS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a notification bell icon">
+          Bell icon, may mean Notifications
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PAUSE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a pause icon">
+          Pause icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PLAY" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a Play icon">
+          Play icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_REFRESH" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a Refresh icon">
+          Refresh icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_MAGNIFYING_GLASS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a magnifying glass, which could mean either Search or Zoom">
+          Magnifying glass icon, may mean Search or Zoom
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SEND" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a paper airplane icon meaning Send">
+          Paper airplane icon, may mean Send
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SETTINGS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a gear or wrench icon meaning Settings">
+          Gear or wrench icon, may mean Settings
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SHARE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a share iconE">
+          Share icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_STAR" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a star icon">
+          Star icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_TAKE_PHOTO" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a camera icon, which may mean to take a photo">
+          Camera icon, may mean Take Photo
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_TIME" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a clock icon, may mean Time">
+          Clock icon, may mean Time
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_VIDEOCAM" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a video camera icon, which may mean Record Video">
+          Videocamera icon, may mean Record Video
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_EXPAND" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case four diagonal arrows pointing outward indicating Expand">
+          Four outward arrows icon, may mean Expand
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CONTRACT" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case four inward arrows, indicating Contract">
+          Four inward arrows icon, may mean Contract
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_GOOGLE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case the Google logo">
+          Google icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_TWITTER" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case the Twitter logo">
+          Twitter icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_FACEBOOK" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case the Facebook logo">
+          Facebook icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ASSISTANT" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a Google Assistant icon">
+          Google Assistant icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_WEATHER" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a weather icon">
+          Weather icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SHOPPING_CART" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a shopping cart">
+          Shopping cart icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_UPLOAD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an upward arrow indicating Upload">
+          Upward arrow, may mean Upload
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_QUESTION" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a question mark icon">
+          Question mark icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_MIC" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a microphone, which may mean Record">
+          Microphone icon, may mean Record
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_MIC_MUTE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a mute microphone icon">
+          Mute microphone icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_GALLERY" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a gallery icon">
+          Gallery icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_COMPASS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a compass icon">
+          Compass icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PEOPLE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a group of people">
+          People icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_UPWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an up arrow">
+          Up arrow icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ENVELOPE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an envelope icon">
+          Envelope icon, may mean Mail
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_EMOJI_FACE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case happy and sad face emoji">
+          Happy and sad face emoji icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PAPERCLIP" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a paperclip icon, which may mean attachment">
+          Paperclip icon, may mean attachment
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CAST" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a cast icon, meaning to cast a video to a remote screen">
+          Cast icon, may mean to cast a video to a remote screen
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_UP" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a volume up icon">
+          Volume up icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_DOWN" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a volume down icon">
+          Volume down icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_STATE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a speaker icon, usually meaning volume">
+          Speaker icon, may mean volume
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_MUTE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a mute icon">
+          Mute icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_STOP" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a stop icon">
+          Stop icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SHOPPING_BAG" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a shopping bag">
+          Shopping bag icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_LIST" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a bulleted list">
+          Bulleted list icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_LOCATION" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a location icon">
+          Location icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CALENDAR" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a calendar icon">
+          Calendar icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_THUMBS_DOWN" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a thumbs down icon, meaning dislike">
+          Thumbs down icon, may mean dislike
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_HEADSET" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a headset icon">
+          Headset icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_REDO" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a clockwise arrow, may mean redo">
+          Clockwise arrow icon, may mean Redo
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_UNDO" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a counterclockwise arrow, may mean undo">
+          Counterclockwise arrow icon, may mean Undo
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_DOWNLOAD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a download icon">
+          Download icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_DOWNWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a down arrow icon">
+          Down arrow icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_V_UPWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a chevron pointing up, which man mean Collapse">
+          Down chevron icon, may mean Collapse
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_V_FORWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a chevron pointing right">
+          Right chevron icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_V_BACKWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a chevron pointing left">
+          Left chevron icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_HISTORY" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a clock with a circular arrow, may mean History">
+          Clock with circular arrow, may mean History
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PERSON" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a person">
+          Person icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_HAPPY_FACE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a happy face icon">
+          Happy face icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SAD_FACE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a sad face icon">
+          Sad face icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_MOON" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a moon, may mean nighttime or sleep">
+          Moon icon, may mean nighttime or sleep
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CLOUD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a cloud icon">
+          Cloud icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SUN" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a sun icon, may mean daytime">
+          Sun icon, may mean daytime
+        </message>
+    </messages>
+  </release>
+</grit>

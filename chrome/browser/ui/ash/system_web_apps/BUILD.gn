@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("system_web_apps") {
+static_library("system_web_apps") {
   sources = [
     "color_helpers_ui_impl.cc",
     "system_web_app_delegate_ui_impl.cc",
@@ -18,14 +18,20 @@ source_set("system_web_apps") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
-    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/scalable_iph",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/scalable_iph:scalable_iph_factory",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/scalable_iph:scalable_iph",
@@ -35,9 +41,42 @@ source_set("system_web_apps") {
     "//ui/display",
   ]
 
-  # TODO(crbug.com/1402148): Remove crosapi dep. Needed only to allow circular includes.
-  deps += [ "//chrome/browser/ash/crosapi" ]
+  # TODO(crbug.com/40251081): Remove these deps. Needed only to allow circular includes.
+  deps += [
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/extensions/autotest_private",
+    "//chrome/browser/ash/extensions/file_manager",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/scanning",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/ash/system_web_apps/apps/camera_app",
+    "//chrome/browser/ash/system_web_apps/apps/media_app",
+    "//chrome/browser/chromeos/app_mode",
+    "//chrome/browser/ui/views/borealis",
+    "//chrome/browser/ui/webui/ash/diagnostics_dialog",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
+  ]
 
-  # TODO(crbug.com/1402148): Remove circular includes.
-  allow_circular_includes_from = [ "//chrome/browser/ash/crosapi" ]
+  # TODO(crbug.com/40251081): Remove circular includes.
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/extensions/autotest_private",
+    "//chrome/browser/ash/extensions/file_manager",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/ash/scanning",
+    "//chrome/browser/ash/scalable_iph",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/ash/system_web_apps/apps/camera_app",
+    "//chrome/browser/ash/system_web_apps/apps/media_app",
+    "//chrome/browser/chromeos/app_mode",
+    "//chrome/browser/ui/views/borealis",
+    "//chrome/browser/ui/webui/ash/diagnostics_dialog",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
+  ]
 }

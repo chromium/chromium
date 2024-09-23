@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 
 class Browser;
-@protocol TabCollectionConsumer;
+@protocol PinnedTabCollectionConsumer;
 
 // Mediates between model layer and pinned tabs collection UI layer.
 @interface PinnedTabsMediator : NSObject <TabCollectionDragDropHandler>
@@ -19,7 +19,7 @@ class Browser;
 @property(nonatomic, assign) Browser* browser;
 
 // Initializer with `consumer` as the receiver of model layer updates.
-- (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer
+- (instancetype)initWithConsumer:(id<PinnedTabCollectionConsumer>)consumer
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -88,6 +88,9 @@ class BrowserViewLayout : public views::LayoutManager {
   void set_contents_border_widget(views::Widget* contents_border_widget) {
     contents_border_widget_ = contents_border_widget;
   }
+  void set_compact_mode(bool is_compact_mode) {
+    is_compact_mode_ = is_compact_mode;
+  }
   views::Widget* contents_border_widget() { return contents_border_widget_; }
 
   // Sets the bounds for the contents border.
@@ -114,6 +117,9 @@ class BrowserViewLayout : public views::LayoutManager {
   // views::LayoutManager overrides:
   void Layout(views::View* host) override;
   gfx::Size GetMinimumSize(const views::View* host) const override;
+  gfx::Size GetPreferredSize(
+      const views::View* host,
+      const views::SizeBounds& available_size) const override;
   gfx::Size GetPreferredSize(const views::View* host) const override;
   std::vector<raw_ptr<views::View, VectorExperimental>>
   GetChildViewsInPaintOrder(const views::View* host) const override;
@@ -207,6 +213,8 @@ class BrowserViewLayout : public views::LayoutManager {
   // The widget displaying a border on top of contents container for
   // highlighting the content. Not created by default.
   raw_ptr<views::Widget, DanglingUntriaged> contents_border_widget_ = nullptr;
+
+  bool is_compact_mode_ = false;
 
   // The bounds within which the vertically-stacked contents of the BrowserView
   // should be laid out within. This is just the local bounds of the

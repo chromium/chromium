@@ -38,12 +38,11 @@ class NET_EXPORT TCPSocketPosix {
  public:
   // |socket_performance_watcher| is notified of the performance metrics related
   // to this socket. |socket_performance_watcher| may be null.
-  TCPSocketPosix(
+  static std::unique_ptr<TCPSocketPosix> Create(
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
       NetLog* net_log,
       const NetLogSource& source);
-
-  TCPSocketPosix(
+  static std::unique_ptr<TCPSocketPosix> Create(
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
       NetLogWithSource net_log_source);
 
@@ -180,6 +179,14 @@ class NET_EXPORT TCPSocketPosix {
   int BindToNetwork(handles::NetworkHandle network);
 
  private:
+  TCPSocketPosix(
+      std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      NetLog* net_log,
+      const NetLogSource& source);
+  TCPSocketPosix(
+      std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      NetLogWithSource net_log_source);
+
   void AcceptCompleted(std::unique_ptr<TCPSocketPosix>* tcp_socket,
                        IPEndPoint* address,
                        CompletionOnceCallback callback,

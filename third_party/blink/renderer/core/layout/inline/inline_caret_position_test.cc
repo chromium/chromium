@@ -530,22 +530,28 @@ TEST_F(InlineCaretPositionTest, InlineBoxesLTR) {
       "<bdo id=box2 dir=ltr style='font-size: 150%'>EFG</bdo></div>");
 
   // text_content:
-  //    [0] U+202D LEFT-TO_RIGHT_OVERRIDE
-  //    [1:4] "ABCD"
-  //    [5] U+202C POP DIRECTIONAL FORMATTING
-  //    [6] U+202D LEFT-TO_RIGHT_OVERRIDE
-  //    [7:8] "EF"
-  //    [9] U+202C POP DIRECTIONAL FORMATTING
+  //    [0] U+2068 FIRST STRONG ISOLATE
+  //    [1] U+202D LEFT-TO_RIGHT_OVERRIDE
+  //    [2:5] "ABCD"
+  //    [6] U+202C POP DIRECTIONAL FORMATTING
+  //    [7] U+2069 POP DIRECTIONAL ISOLATE
+  //    [8] U+2068 FIRST STRONG ISOLATE
+  //    [9] U+202D LEFT-TO_RIGHT_OVERRIDE
+  //    [10:12] "EFG"
+  //    [13] U+202C POP DIRECTIONAL FORMATTING
+  //    [14] U+2069 POP DIRECTIONAL ISOLATE
+  // For details on injected codes, see:
+  // https://drafts.csswg.org/css-writing-modes-3/#bidi-control-codes-injection-table
   const Node& box1 = *GetElementById("box1")->firstChild();
   const Node& box2 = *GetElementById("box1")->firstChild();
 
   TEST_CARET(blink::ComputeInlineCaretPosition(
                  PositionWithAffinity(Position(box1, 4))),
-             FragmentOf(&box1), kAtTextOffset, std::optional<unsigned>(5));
+             FragmentOf(&box1), kAtTextOffset, std::optional<unsigned>(6));
 
   TEST_CARET(blink::ComputeInlineCaretPosition(
                  PositionWithAffinity(Position(box2, 0))),
-             FragmentOf(&box2), kAtTextOffset, std::optional<unsigned>(1));
+             FragmentOf(&box2), kAtTextOffset, std::optional<unsigned>(2));
 }
 
 TEST_F(InlineCaretPositionTest, InlineBoxesRTL) {
@@ -555,22 +561,28 @@ TEST_F(InlineCaretPositionTest, InlineBoxesRTL) {
       "<bdo id=box2 dir=rtl style='font-size: 150%'>EFG</bdo></div>");
 
   // text_content:
-  //    [0] U+202E RIGHT-TO_LEFT _OVERRIDE
-  //    [1:4] "ABCD"
-  //    [5] U+202C POP DIRECTIONAL FORMATTING
-  //    [6] U+202E RIGHT-TO_LEFT _OVERRIDE
-  //    [7:8] "EF"
-  //    [9] U+202C POP DIRECTIONAL FORMATTING
+  //    [0] U+2068 FIRST STRONG ISOLATE
+  //    [1] U+202E RIGHT-TO_LEFT _OVERRIDE
+  //    [2:5] "ABCD"
+  //    [6] U+202C POP DIRECTIONAL FORMATTING
+  //    [7] U+2069 POP DIRECTIONAL ISOLATE
+  //    [8] U+2068 FIRST STRONG ISOLATE
+  //    [9] U+202E RIGHT-TO_LEFT _OVERRIDE
+  //    [10:12] "EFG"
+  //    [13] U+202C POP DIRECTIONAL FORMATTING
+  //    [14] U+2069 POP DIRECTIONAL ISOLATE
+  // For details on injected codes, see:
+  // https://drafts.csswg.org/css-writing-modes-3/#bidi-control-codes-injection-table
   const Node& box1 = *GetElementById("box1")->firstChild();
   const Node& box2 = *GetElementById("box1")->firstChild();
 
   TEST_CARET(blink::ComputeInlineCaretPosition(
                  PositionWithAffinity(Position(box1, 4))),
-             FragmentOf(&box1), kAtTextOffset, std::optional<unsigned>(5));
+             FragmentOf(&box1), kAtTextOffset, std::optional<unsigned>(6));
 
   TEST_CARET(blink::ComputeInlineCaretPosition(
                  PositionWithAffinity(Position(box2, 0))),
-             FragmentOf(&box2), kAtTextOffset, std::optional<unsigned>(1));
+             FragmentOf(&box2), kAtTextOffset, std::optional<unsigned>(2));
 }
 
 // https://crbug.com/1340236

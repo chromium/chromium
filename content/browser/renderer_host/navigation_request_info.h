@@ -9,6 +9,7 @@
 
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/referrer.h"
@@ -39,7 +40,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       bool is_outermost_main_frame,
       bool is_main_frame,
       bool are_ancestors_secure,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       bool report_raw_headers,
       bool upgrade_if_insecure,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -59,7 +60,8 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       bool allow_cookies_from_browser,
       int64_t navigation_id,
       bool shared_storage_writable,
-      bool is_ad_tagged);
+      bool is_ad_tagged,
+      bool force_no_https_upgrade);
   NavigationRequestInfo(const NavigationRequestInfo& other) = delete;
   ~NavigationRequestInfo();
 
@@ -96,17 +98,17 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   const bool is_outermost_main_frame;
 
   // Whether this navigation is for a main frame; one that is the root of its
-  // own frame tree. This can include embedded frame trees such as Portals and
-  // FencedFrames. Both `is_primary_main_frame` and `is_outermost_main_frame`
-  // imply `is_main_frame`, however, `is_main_frame` does not imply either
-  // primary or outermost.
+  // own frame tree. This can include embedded frame trees such as FencedFrames.
+  // Both `is_primary_main_frame` and `is_outermost_main_frame` imply
+  // `is_main_frame`, however, `is_main_frame` does not imply either primary or
+  // outermost.
   const bool is_main_frame;
 
   // Whether all ancestor frames of the frame that is navigating have a secure
   // origin. True for main frames.
   const bool are_ancestors_secure;
 
-  const int frame_tree_node_id;
+  const FrameTreeNodeId frame_tree_node_id;
 
   const bool report_raw_headers;
 
@@ -127,7 +129,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // Specifies the security state applying to the navigation. For iframes, this
   // is the security state of their parent. Nullptr otherwise.
   //
-  // TODO(https://crbug.com/1129326): Set this for top-level navigation requests
+  // TODO(crbug.com/40149351): Set this for top-level navigation requests
   // too once the UX story is sorted out.
   const network::mojom::ClientSecurityStatePtr client_security_state;
 
@@ -168,6 +170,9 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // Whether the embedder indicated this navigation is being used for
   // advertising purposes.
   bool is_ad_tagged;
+
+  // If true, the navigation will not be upgraded to HTTPS.
+  bool force_no_https_upgrade;
 };
 
 }  // namespace content

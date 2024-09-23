@@ -11,9 +11,12 @@ import android.view.MenuItem;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -24,6 +27,7 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     // this argument is part of the AutofillOptionsReferrer enum containing all entry points.
     public static final String AUTOFILL_OPTIONS_REFERRER = "autofill-options-referrer";
     public static final String PREF_AUTOFILL_THIRD_PARTY_FILLING = "autofill_third_party_filling";
+    public static final String PREF_THIRD_PARTY_TOGGLE_HINT = "third_party_toggle_hint";
 
     private @AutofillOptionsReferrer int mReferrer;
 
@@ -49,6 +53,8 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         int COUNT = 2;
     }
 
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
     /** This default constructor is required to instantiate the fragment. */
     public AutofillOptionsFragment() {}
 
@@ -59,11 +65,22 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         return thirdPartyFillingSwitch;
     }
 
+    TextMessagePreference getHint() {
+        TextMessagePreference hint = findPreference(PREF_THIRD_PARTY_TOGGLE_HINT);
+        assert hint != null;
+        return hint;
+    }
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getActivity().setTitle(R.string.autofill_options_title);
+        mPageTitle.set(getString(R.string.autofill_options_title));
         setHasOptionsMenu(true);
         SettingsUtils.addPreferencesFromResource(this, R.xml.autofill_options_preferences);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

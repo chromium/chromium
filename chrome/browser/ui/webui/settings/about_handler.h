@@ -22,7 +22,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/task/cancelable_task_tracker.h"
-#include "chrome/browser/ash/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
@@ -84,9 +84,6 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   void HandleOpenHelpPage(const base::Value::List& args);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Opens the Extended Updates dialog. |args| must be empty.
-  void HandleOpenExtendedUpdatesDialog(const base::Value::List& args);
-
   // Checks if ReleaseNotes is enabled.
   void HandleGetEnabledReleaseNotes(const base::Value::List& args);
 
@@ -188,6 +185,8 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   void OnGetEndOfLifeInfo(std::string callback_id,
                           ash::UpdateEngineClient::EolInfo eol_info);
 
+  std::u16string GetEndOfLifeMessage(base::Time eol_date) const;
+
   // Opens the end of life incentive URL.
   void HandleOpenEndOfLifeIncentive(const base::Value::List& args);
 
@@ -205,8 +204,28 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   void HandleSetConsumerAutoUpdate(const base::Value::List& args);
   void HandleOpenProductLicenseOther(const base::Value::List& args);
 
+  // Handles the check for extended updates eligibility.
+  // |args| should have 4 values:
+  //   - [string] Name of the callback function
+  //   - [bool] Whether eol has passed
+  //   - [bool] Whether extended updates date has passed
+  //   - [bool] Whether opt-in is required for extended updates
+  void HandleIsExtendedUpdatesOptInEligible(const base::Value::List& args);
+
+  // Opens the Extended Updates dialog. |args| must be empty.
+  void HandleOpenExtendedUpdatesDialog(const base::Value::List& args);
+
+  // Records metric indicating that the Extended Updates option was shown.
+  void HandleRecordExtendedUpdatesShown(const base::Value::List& args);
+
+  // Called when the |kDeviceExtendedAutoUpdateEnabled| setting is changed.
+  void OnExtendedUpdatesSettingChanged();
+
   // Whether the end of life incentive includes an offer.
   bool eol_incentive_shows_offer_ = false;
+
+  // Subscription for changes to the |kDeviceExtendedAutoUpdateEnabled| setting.
+  base::CallbackListSubscription extended_updates_setting_change_subscription_;
 #endif
 
   const raw_ptr<Profile> profile_;

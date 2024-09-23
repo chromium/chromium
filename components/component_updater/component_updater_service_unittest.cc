@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,8 +23,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "components/component_updater/component_updater_service_internal.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/update_client/crx_update_item.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_installer.h"
 #include "components/update_client/update_client.h"
@@ -55,8 +58,8 @@ class MockInstaller : public update_client::CrxInstaller {
                     std::unique_ptr<InstallParams> install_params,
                     ProgressCallback progress_callback,
                     Callback callback));
-  MOCK_METHOD2(GetInstalledFile,
-               bool(const std::string& file, base::FilePath* installed_file));
+  MOCK_METHOD1(GetInstalledFile,
+               std::optional<base::FilePath>(const std::string& file));
   MOCK_METHOD0(Uninstall, bool());
 
  private:
@@ -91,15 +94,9 @@ class MockUpdateClient : public UpdateClient {
                      bool(const std::string& id, CrxUpdateItem* update_item));
   MOCK_CONST_METHOD1(IsUpdating, bool(const std::string& id));
   MOCK_METHOD0(Stop, void());
-  MOCK_METHOD3(SendUninstallPing,
+  MOCK_METHOD3(SendPing,
                void(const CrxComponent& crx_component,
-                    int reason,
-                    Callback callback));
-  MOCK_METHOD5(SendInstallPing,
-               void(const CrxComponent& crx_component,
-                    bool success,
-                    int error_code,
-                    int extra_code1,
+                    PingParams ping_params,
                     Callback callback));
   MOCK_METHOD2(SendRegistrationPing,
                void(const CrxComponent& crx_component, Callback callback));
@@ -323,7 +320,8 @@ TEST_F(ComponentUpdaterTest, RegisterComponent) {
       /*requires_network_encryption=*/false,
       /*supports_group_policy_enable_component_updates=*/true,
       /*allow_cached_copies=*/true,
-      /*allow_updates_on_metered_connection=*/true);
+      /*allow_updates_on_metered_connection=*/true,
+      /*allow_updates=*/true);
 
   hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
   ComponentRegistration component2(
@@ -333,7 +331,8 @@ TEST_F(ComponentUpdaterTest, RegisterComponent) {
       /*requires_network_encryption=*/false,
       /*supports_group_policy_enable_component_updates=*/true,
       /*allow_cached_copies=*/true,
-      /*allow_updates_on_metered_connection=*/true);
+      /*allow_updates_on_metered_connection=*/true,
+      /*allow_updates=*/true);
 
   // Quit after two update checks have fired.
   LoopHandler loop_handler(2, quit_closure());
@@ -398,7 +397,8 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
         /*requires_network_encryption=*/false,
         /*supports_group_policy_enable_component_updates=*/true,
         /*allow_cached_copies=*/true,
-        /*allow_updates_on_metered_connection=*/true)));
+        /*allow_updates_on_metered_connection=*/true,
+        /*allow_updates=*/true)));
   }
   {
     using update_client::abag_hash;
@@ -412,7 +412,8 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
         /*requires_network_encryption=*/false,
         /*supports_group_policy_enable_component_updates=*/true,
         /*allow_cached_copies=*/true,
-        /*allow_updates_on_metered_connection=*/true)));
+        /*allow_updates_on_metered_connection=*/true,
+        /*allow_updates=*/true)));
   }
 
   OnDemandTester ondemand_tester;
@@ -457,7 +458,8 @@ TEST_F(ComponentUpdaterTest, MaybeThrottle) {
       /*requires_network_encryption=*/false,
       /*supports_group_policy_enable_component_updates=*/true,
       /*allow_cached_copies=*/true,
-      /*allow_updates_on_metered_connection=*/true)));
+      /*allow_updates_on_metered_connection=*/true,
+      /*allow_updates=*/true)));
   component_updater().MaybeThrottle("jebgalgnebhfojomionfpkfelancnnkf",
                                     base::DoNothing());
 
@@ -466,6 +468,73 @@ TEST_F(ComponentUpdaterTest, MaybeThrottle) {
   ht.ExpectUniqueSample("ComponentUpdater.Calls", 0, 1);
   ht.ExpectUniqueSample("ComponentUpdater.UpdateCompleteResult", 0, 1);
   ht.ExpectTotalCount("ComponentUpdater.UpdateCompleteTime", 1);
+}
+
+TEST_F(ComponentUpdaterTest, ComponentDetails) {
+  const std::string id = "abagagagagagagagagagagagagagagag";
+  const std::string name = "test_name";
+
+  using update_client::abag_hash;
+  std::vector<uint8_t> hash;
+  hash.assign(std::begin(abag_hash), std::end(abag_hash));
+
+  const auto version = base::Version("1.0");
+
+  ComponentRegistration component(
+      id, name, hash, version, /*fingerprint=*/{}, {},
+      /*action_handler=*/nullptr, base::MakeRefCounted<MockInstaller>(),
+      /*requires_network_encryption=*/false,
+      /*supports_group_policy_enable_component_updates=*/true,
+      /*allow_cached_copies=*/true,
+      /*allow_updates_on_metered_connection=*/true,
+      /*allow_updates=*/true);
+
+  ASSERT_TRUE(component_updater().RegisterComponent(component));
+
+  CrxUpdateItem item;
+  ASSERT_TRUE(component_updater().GetComponentDetails(id, &item));
+  ASSERT_TRUE(item.component);
+  const CrxComponent& registered = *item.component;
+
+  EXPECT_EQ(registered.app_id, id);
+  EXPECT_EQ(registered.version, version);
+  EXPECT_EQ(registered.name, name);
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  // In Chrome for Testing component updates are disabled.
+  EXPECT_FALSE(registered.updates_enabled);
+#else
+  EXPECT_TRUE(registered.updates_enabled);
+#endif  // BUILDFLAG(CHROME_FOR_TESTING)
+}
+
+TEST_F(ComponentUpdaterTest, UpdatesDisabled) {
+  const std::string id = "abagagagagagagagagagagagagagagag";
+  const std::string name = "test_name";
+
+  using update_client::abag_hash;
+  std::vector<uint8_t> hash;
+  hash.assign(std::begin(abag_hash), std::end(abag_hash));
+
+  const auto version = base::Version("1.0");
+
+  ComponentRegistration component(
+      id, name, hash, version, /*fingerprint=*/{}, {},
+      /*action_handler=*/nullptr, base::MakeRefCounted<MockInstaller>(),
+      /*requires_network_encryption=*/false,
+      /*supports_group_policy_enable_component_updates=*/true,
+      /*allow_cached_copies=*/true,
+      /*allow_updates_on_metered_connection=*/true,
+      /*allow_updates=*/false);
+
+  ASSERT_TRUE(component_updater().RegisterComponent(component));
+
+  CrxUpdateItem item;
+  ASSERT_TRUE(component_updater().GetComponentDetails(id, &item));
+  ASSERT_TRUE(item.component);
+  const CrxComponent& registered = *item.component;
+
+  EXPECT_FALSE(registered.updates_enabled);
 }
 
 }  // namespace component_updater

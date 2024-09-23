@@ -12,7 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -33,7 +32,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests for ScreenshotTabObserver class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
+// TODO(crbug.com/344675714): Failing when batched, batch this again.
 public class ScreenshotTabObserverTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
@@ -49,7 +48,7 @@ public class ScreenshotTabObserverTest {
     @Before
     public void setUp() throws Exception {
         mTab = sActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 (Runnable) () -> mObserver = ScreenshotTabObserver.from(mTab));
     }
 
@@ -76,7 +75,7 @@ public class ScreenshotTabObserverTest {
         int count = callbackHelper.getCallCount();
 
         mObserver.onScreenshotTaken();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivityTestRule.getActivity().getTabModelSelector().closeTab(mTab);
                 });
@@ -96,7 +95,7 @@ public class ScreenshotTabObserverTest {
 
         mObserver.onScreenshotTaken();
         mObserver.onScreenshotTaken();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivityTestRule.getActivity().getTabModelSelector().closeTab(mTab);
                 });
@@ -115,7 +114,7 @@ public class ScreenshotTabObserverTest {
 
         mObserver.onScreenshotTaken();
         mObserver.onActionPerformedAfterScreenshot(ScreenshotTabObserver.SCREENSHOT_ACTION_SHARE);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivityTestRule.getActivity().getTabModelSelector().closeTab(mTab);
                 });

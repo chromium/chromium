@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 
 #include <gtest/gtest.h>
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_init.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -198,7 +200,7 @@ TEST_F(WhitespaceAttacherTest, SlottedWhitespaceAfterReattachedBlock) {
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML("<div id=block></div><slot></slot>");
   UpdateAllLifecyclePhasesForTest();
 
@@ -225,7 +227,7 @@ TEST_F(WhitespaceAttacherTest, SlottedWhitespaceAfterReattachedInline) {
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML("<span id=inline></span><slot></slot>");
   UpdateAllLifecyclePhasesForTest();
 
@@ -411,7 +413,7 @@ TEST_F(WhitespaceAttacherTest, SlottedWhitespaceInsideDisplayContents) {
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(
       "<span id=inline></span>"
       "<div style='display:contents'><slot></slot></div>");
@@ -504,6 +506,76 @@ TEST_F(WhitespaceAttacherTest, RemoveSpaceBeforeSpace) {
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_TRUE(space2->GetLayoutObject());
+}
+
+TEST_F(WhitespaceAttacherTest, CreateSpaceForScrollMarkerGroup) {
+  GetDocument().body()->setInnerHTML(
+      "<span>x</span> <span id=test></span> <span>y</span>"
+      "<style>"
+      "#test { scroll-marker-group: before; overflow: auto; }"
+      "#test::scroll-marker-group { background: green; display: inline-flex; "
+      "width: 100px; height: 100px; }"
+      "</style>");
+  UpdateAllLifecyclePhasesForTest();
+
+  Node* span = GetDocument().body()->firstChild();
+  Node* first_space = LayoutTreeBuilderTraversal::NextLayoutSibling(*span);
+  ASSERT_TRUE(first_space);
+  EXPECT_TRUE(first_space->IsTextNode());
+  EXPECT_TRUE(first_space->GetLayoutObject());
+
+  Node* scroll_marker_group =
+      LayoutTreeBuilderTraversal::NextLayoutSibling(*first_space);
+  ASSERT_TRUE(scroll_marker_group);
+  EXPECT_TRUE(scroll_marker_group->IsScrollMarkerGroupBeforePseudoElement());
+  EXPECT_TRUE(scroll_marker_group->GetLayoutObject());
+
+  Node* scroller =
+      LayoutTreeBuilderTraversal::NextLayoutSibling(*scroll_marker_group);
+  ASSERT_TRUE(scroller);
+
+  Node* space2 = LayoutTreeBuilderTraversal::NextLayoutSibling(*scroller);
+  ASSERT_TRUE(space2);
+  EXPECT_TRUE(space2->IsTextNode());
+  EXPECT_TRUE(space2->GetLayoutObject());
+}
+
+TEST_F(WhitespaceAttacherTest, RemoveSpaceForScrollMarkerGroup) {
+  GetDocument().body()->setInnerHTML(
+      "<span>x</span> <span id=test></span> <span>y</span>"
+      "<style>"
+      "#test { scroll-marker-group: after; overflow: auto; }"
+      "#test::scroll-marker-group { background: green; display: inline-flex; "
+      "width: 100px; height: 100px; }"
+      "</style>");
+  UpdateAllLifecyclePhasesForTest();
+
+  Node* span = GetDocument().body()->firstChild();
+  Node* first_space = LayoutTreeBuilderTraversal::NextLayoutSibling(*span);
+  ASSERT_TRUE(first_space);
+  EXPECT_TRUE(first_space->IsTextNode());
+  EXPECT_TRUE(first_space->GetLayoutObject());
+
+  Node* scroller = LayoutTreeBuilderTraversal::NextLayoutSibling(*first_space);
+
+  ASSERT_TRUE(scroller);
+  Node* scroll_marker_group =
+      LayoutTreeBuilderTraversal::NextLayoutSibling(*scroller);
+  ASSERT_TRUE(scroll_marker_group);
+  EXPECT_TRUE(scroll_marker_group->IsScrollMarkerGroupAfterPseudoElement());
+  EXPECT_TRUE(scroll_marker_group->GetLayoutObject());
+
+  Node* space2 =
+      LayoutTreeBuilderTraversal::NextLayoutSibling(*scroll_marker_group);
+  ASSERT_TRUE(space2);
+  EXPECT_TRUE(space2->IsTextNode());
+  EXPECT_TRUE(space2->GetLayoutObject());
+
+  To<Element>(scroller)->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                                CSSValueID::kFlex);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(space2->GetLayoutObject());
 }
 
 TEST_F(WhitespaceAttacherTest, RemoveInlineBeforeDisplayContentsWithSpace) {

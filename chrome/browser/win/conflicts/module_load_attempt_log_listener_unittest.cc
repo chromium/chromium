@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "chrome/chrome_elf/sha1/sha1.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,5 +80,19 @@ TEST_F(ModuleLoadAttemptLogListenerTest, DrainLog) {
   WaitForNotification();
 
   // Only the blocked entry is returned.
+  // See chrome/chrome_elf/chrome_elf_test_stubs.cc for the fake blocked module.
   ASSERT_EQ(1u, blocked_modules().size());
+}
+
+TEST_F(ModuleLoadAttemptLogListenerTest, SplitLogicalDriveStrings) {
+  const auto kInput = base::MakeStringViewWithNulChars(L"C:\\\0D:\\\0E:\\\0");
+  const std::vector<std::wstring_view> kExpected = {
+      L"C:\\",
+      L"D:\\",
+      L"E:\\",
+  };
+
+  EXPECT_EQ(
+      kExpected,
+      ModuleLoadAttemptLogListener::SplitLogicalDriveStringsForTesting(kInput));
 }

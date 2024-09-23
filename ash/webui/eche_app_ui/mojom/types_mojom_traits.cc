@@ -39,7 +39,6 @@ bool EnumTraits<ash::eche_app::mojom::ScreenBacklightState,
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 }  // namespace mojo

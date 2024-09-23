@@ -5,15 +5,17 @@
 #ifndef NET_CERT_INTERNAL_SYSTEM_TRUST_STORE_H_
 #define NET_CERT_INTERNAL_SYSTEM_TRUST_STORE_H_
 
-#include <vector>
-
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
+#include "net/cert/internal/platform_trust_store.h"
 #include "net/net_buildflags.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 
 namespace net {
+
+struct ChromeRootCertConstraints;
 
 // The SystemTrustStore interface is used to encapsulate a bssl::TrustStore for
 // the current platform, with some extra bells and whistles. Implementations
@@ -35,13 +37,32 @@ class SystemTrustStore {
   // IsKnownRoot() returns true if the given certificate originated from the
   // system trust store and is a "standard" one. The meaning of "standard" is
   // that it is one of default trust anchors for the system, as opposed to a
-  // user-installed one.
+  // user-installed one. (It may *also* be trusted as a user-installed root.)
   virtual bool IsKnownRoot(const bssl::ParsedCertificate* cert) const = 0;
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  // Returns the PlatformTrustStore that can be used to look for
+  // platform-specific user-added trust settings. This pointer is non-owned,
+  // and valid only for the lifetime of |this|. Any net::PlatformTrustStore
+  // objects returned from this method must be thread-safe.
+  //
+  // May return null if there is no PlatformTrustStore.
+  virtual net::PlatformTrustStore* GetPlatformTrustStore() = 0;
+
+  // IsLocallyTrustedRoot returns true if the given certificate is trusted in
+  // the user-installed root store. (It may *also* be trusted in the Chrome
+  // Root Store.)
+  virtual bool IsLocallyTrustedRoot(
+      const bssl::ParsedCertificate* trust_anchor) = 0;
+
   // Returns the current version of the Chrome Root Store being used. If
   // Chrome Root Store is not in use, returns 0.
   virtual int64_t chrome_root_store_version() const = 0;
+
+  // Returns the Chrome Root Store constraints for `cert`, or nullptr if the
+  // certificate is not constrained.
+  virtual base::span<const ChromeRootCertConstraints> GetChromeRootConstraints(
+      const bssl::ParsedCertificate* cert) const = 0;
 #endif
 };
 
@@ -70,7 +91,7 @@ NET_EXPORT std::unique_ptr<SystemTrustStore> CreateChromeOnlySystemTrustStore(
 NET_EXPORT_PRIVATE std::unique_ptr<SystemTrustStore>
 CreateSystemTrustStoreChromeForTesting(
     std::unique_ptr<TrustStoreChrome> trust_store_chrome,
-    std::unique_ptr<bssl::TrustStore> trust_store_system);
+    std::unique_ptr<net::PlatformTrustStore> trust_store_system);
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 #if BUILDFLAG(IS_MAC)

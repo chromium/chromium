@@ -136,8 +136,9 @@ bool UniquePosition::LessThan(const UniquePosition& other) const {
 }
 
 bool UniquePosition::Equals(const UniquePosition& other) const {
-  if (!this->IsValid() && !other.IsValid())
+  if (!this->IsValid() && !other.IsValid()) {
     return true;
+  }
 
   return compressed_ == other.compressed_;
 }
@@ -166,8 +167,9 @@ bool UniquePosition::IsValid() const {
 
 std::string UniquePosition::ToDebugString() const {
   const std::string bytes = Uncompress(compressed_);
-  if (bytes.empty())
+  if (bytes.empty()) {
     return std::string("INVALID[]");
+  }
 
   std::string debug_string = base::HexEncode(bytes);
   if (!IsValid()) {

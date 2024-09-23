@@ -1,0 +1,10 @@
+# https://crbug.com/1189284
+# Not applicable to emulator due to not supporting fence sync
+-PaintCanvasVideoRendererWithGLTest.CopyVideoFrameTexturesToGLTexture*
+-PaintCanvasVideoRendererWithGLTest.CopyVideoFrameYUVDataToGLTexture*
+
+# crbug/355466660
+-PaintCanvasVideoRendererWithGLTest.PaintI420
+-PaintCanvasVideoRendererWithGLTest.PaintI420NotSubset
+-PaintCanvasVideoRendererWithGLTest.PaintNV12
+-PaintCanvasVideoRendererWithGLTest.PaintRGBA

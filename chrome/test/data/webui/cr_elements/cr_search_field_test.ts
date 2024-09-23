@@ -6,9 +6,8 @@
 import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 
 import type {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr-search-field. */
@@ -61,12 +60,11 @@ suite('cr-search-field', function() {
     field.click();
 
     simulateSearch(' ');
-    flush();
     assertTrue(field.hasSearchText);
 
     field.$.clearSearch.click();
     assertEquals('', field.getValue());
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(field.$.searchInput, field.shadowRoot!.activeElement);
     assertFalse(field.hasSearchText);
   });
@@ -75,12 +73,11 @@ suite('cr-search-field', function() {
     field.click();
 
     simulateSearch('query1');
-    flush();
     assertTrue(field.hasSearchText);
 
     field.$.clearSearch.click();
     assertEquals('', field.getValue());
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(field.$.searchInput, field.shadowRoot!.activeElement);
     assertFalse(field.hasSearchText);
   });
@@ -88,7 +85,6 @@ suite('cr-search-field', function() {
   test('notifies on new searches and setValue', function() {
     field.click();
     simulateSearch('query1');
-    flush();
     assertEquals('query1', field.getValue());
 
     field.$.clearSearch.click();

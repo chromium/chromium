@@ -53,12 +53,10 @@ ForceInstalledMetrics::UserType ConvertUserType(
       return ForceInstalledMetrics::UserType::USER_TYPE_KIOSK_APP;
     case user_manager::UserType::kChild:
       return ForceInstalledMetrics::UserType::USER_TYPE_CHILD;
-    case user_manager::UserType::kArcKioskApp:
-      return ForceInstalledMetrics::UserType::USER_TYPE_ARC_KIOSK_APP;
     case user_manager::UserType::kWebKioskApp:
       return ForceInstalledMetrics::UserType::USER_TYPE_WEB_KIOSK_APP;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return ForceInstalledMetrics::UserType::kMaxValue;
 }
@@ -385,7 +383,7 @@ bool IsStatusGood(ExtensionStatus status) {
     case ExtensionStatus::kFailed:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace
@@ -455,8 +453,8 @@ void ForceInstalledMetrics::ReportMetrics() {
   size_t enabled_missing_count = missing_forced_extensions.size();
   size_t blocklisted_count = 0;
   auto installed_extensions = registry_->GenerateInstalledExtensionsSet();
-  auto blocklisted_extensions = registry_->GenerateInstalledExtensionsSet(
-      ExtensionRegistry::IncludeFlag::BLOCKLISTED);
+  const ExtensionSet& blocklisted_extensions =
+      registry_->blocklisted_extensions();
   for (const auto& entry : installed_extensions) {
     if (missing_forced_extensions.count(entry->id())) {
       missing_forced_extensions.erase(entry->id());

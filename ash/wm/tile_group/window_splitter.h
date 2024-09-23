@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
@@ -34,7 +35,7 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // Keep this in sync with `WindowSplittingSplitRegion` in
-  // tools/metrics/histograms/enums.xml.
+  // tools/metrics/histograms/metadata/ash/enums.xml.
   enum class SplitRegion {
     kNone = 0,
     kLeft = 1,
@@ -48,7 +49,7 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // Keep this in sync with `WindowSplittingDragType` in
-  // tools/metrics/histograms/enums.xml.
+  // tools/metrics/histograms/metadata/ash/enums.xml.
   enum class DragType {
     kIncomplete = 0,
     kNoSplit = 1,
@@ -71,11 +72,15 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
   // Amount of time the cursor has to dwell to activate the window splitting
   // phantom window.
   static constexpr base::TimeDelta kDwellActivationDuration =
-      base::Milliseconds(380);
+      base::Milliseconds(450);
+
+  // Amount of time the phantom window stays shown before cancelling.
+  static constexpr base::TimeDelta kDwellCancellationDuration =
+      base::Milliseconds(1500);
 
   // Max cursor movement velocity threshold, which if exceeded will reset window
   // splitting activation.
-  static constexpr double kDwellMaxVelocityPixelsPerSec = 70.0;
+  static constexpr double kDwellMaxVelocityPixelsPerSec = 60.0;
 
   // Calculates window bounds and other info resulting from window splitting.
   // `topmost_window` is the window to be split.
@@ -111,18 +116,30 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
   }
 
  private:
+  aura::Window* dragged_window() {
+    return dragged_window_observation_.GetSource();
+  }
+
+  aura::Window* topmost_window() {
+    return topmost_window_observation_.GetSource();
+  }
+
+  void UpdateTopMostWindow(aura::Window* topmost_window);
+
+  // Starts or refreshes the dwell timer.
+  void RestartDwellTimer();
+
+  // Removes any phantom window and any running dwell timer.
+  void RemovePhantomWindow();
+
   // Callback to show the phantom window with precondition checking.
-  // The `initial_topmost_window` is the topmost window when the dwell timer
-  // started.
-  void ShowPhantomWindowCallback(aura::Window* initial_topmost_window);
+  void ShowPhantomWindowCallback();
 
   // Shows the phantom window.
   void ShowPhantomWindow(const gfx::Rect& bounds);
 
-  // Whether the window can be split upon completing drag.
-  bool CanSplitWindow() const { return !!phantom_window_controller_; }
-
-  void MaybeClearDraggedWindow();
+  // Whether the window is ready to split upon completing drag.
+  bool ReadyToSplit() const { return !!phantom_window_controller_; }
 
   void RecordMetricsOnEndDrag();
 
@@ -132,14 +149,14 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
 
   double GetCursorVelocitySquared() const;
 
-  // The window being dragged.
-  raw_ptr<aura::Window> dragged_window_ = nullptr;
-
-  raw_ptr<aura::Window> last_topmost_window_ = nullptr;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      dragged_window_observation_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      topmost_window_observation_{this};
 
   gfx::PointF last_location_in_screen_;
 
-  SplitWindowInfo last_split_window_info_;
+  std::optional<SplitWindowInfo> last_split_window_info_;
 
   // Whether the cursor actually moved enough to be considered a drag.
   bool is_drag_updated_ = false;
@@ -162,6 +179,9 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
 
   // Timer for activating phantom window.
   base::OneShotTimer dwell_activation_timer_;
+
+  // Timer for cancelling window splitting.
+  base::OneShotTimer dwell_cancellation_timer_;
 
   // Tracks cursor velocity.
   ui::VelocityTracker velocity_tracker_;

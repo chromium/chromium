@@ -73,7 +73,7 @@ These are the cases where you can't rebaseline:
 
 ## Handling flaky tests
 
-<!-- TODO(crbug.com/1429690): Describe the current flakiness dashboard and
+<!-- TODO(crbug.com/40262793): Describe the current flakiness dashboard and
     LUCI test history. -->
 
 Once you decide that a test is truly flaky, you can suppress it using the
@@ -282,10 +282,10 @@ The syntax of a line is roughly:
   `Bug(username)`.
 * If no modifiers are specified, the test applies to all of the configurations
   applicable to that file.
-* If specified, modifiers can be one of `Fuchsia`, `Mac`, `Mac10.13`,
-  `Mac10.14`, `Mac10.15`, `Mac11`, `Mac11-arm64`, `Mac12`, `Mac12-arm64`,
-  `Mac13`, `Mac13-arm64`, `Linux`, `Chrome`, `Win`, `Win10.20h2`,
-  `Win11`, `iOS16-Simulator`, and, optionally, `Release`, or `Debug`.
+* If specified, modifiers can be one of `Fuchsia`, `Mac`, `Mac11`,
+  `Mac11-arm64`, `Mac12`, `Mac12-arm64`, `Mac13`, `Mac13-arm64`, `Mac14`,
+  `Mac14-arm64`, `Mac15`, `Mac15-arm64`, `Linux`, `Chrome`, `Win`, `Win10.20h2`,
+  `Win11`, `iOS17-Simulator`, and, optionally, `Release`, or `Debug`.
   Check the `# tags: ...` comments [at the top of each
   file](/third_party/blink/web_tests/TestExpectations#1) to see which modifiers
   that file supports.

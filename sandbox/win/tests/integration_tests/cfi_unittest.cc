@@ -1,9 +1,9 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include <intrin.h>
-
 #include <windows.h>
+
+#include <intrin.h>
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -70,7 +70,7 @@ TEST(CFGSupportTests, LongJmp) {
   }
   // Call another function to perform the longjmp.
   PerformLongJump();
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Make sure Microsoft binaries compiled with CFG cannot call indirect pointers

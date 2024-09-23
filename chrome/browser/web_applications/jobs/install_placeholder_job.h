@@ -12,15 +12,18 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 
 class Profile;
 
 namespace content {
 class WebContents;
 }
+
+namespace webapps {
+class WebAppUrlLoader;
+enum class WebAppUrlLoaderResult;
+}  // namespace webapps
 
 namespace web_app {
 
@@ -51,7 +54,7 @@ class InstallPlaceholderJob {
   void Abort(webapps::InstallResultCode code);
   void FetchCustomIcon(const GURL& url, int retries_left);
 
-  void OnUrlLoaded(WebAppUrlLoader::Result load_url_result);
+  void OnUrlLoaded(webapps::WebAppUrlLoaderResult load_url_result);
   void OnCustomIconFetched(const GURL& image_url,
                            int retries_left,
                            IconsDownloadedResult result,
@@ -63,8 +66,7 @@ class InstallPlaceholderJob {
           bitmaps);
 
   void OnInstallFinalized(const webapps::AppId& app_id,
-                          webapps::InstallResultCode code,
-                          OsHooksErrors os_hooks_errors);
+                          webapps::InstallResultCode code);
 
   const raw_ref<Profile> profile_;
   const raw_ref<base::Value::Dict> debug_value_;
@@ -78,7 +80,7 @@ class InstallPlaceholderJob {
   InstallAndReplaceCallback callback_;
 
   raw_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<WebAppUrlLoader> url_loader_;
+  std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
   base::WeakPtrFactory<InstallPlaceholderJob> weak_factory_{this};

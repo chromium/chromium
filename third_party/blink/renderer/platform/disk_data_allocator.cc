@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_restrictions.h"
 #include "third_party/blink/public/common/features.h"
@@ -170,7 +172,7 @@ void DiskDataAllocator::Read(const DiskDataMetadata& metadata, void* data) {
   {
     base::AutoLock locker(lock_);
     auto it = allocated_chunks_.find(metadata.start_offset());
-    DCHECK(it != allocated_chunks_.end());
+    CHECK(it != allocated_chunks_.end(), base::NotFatalUntil::M130);
     DCHECK_EQ(metadata.size(), it->second);
   }
 #endif
@@ -182,7 +184,7 @@ void DiskDataAllocator::Discard(std::unique_ptr<DiskDataMetadata> metadata) {
 
 #if DCHECK_IS_ON()
   auto it = allocated_chunks_.find(metadata->start_offset());
-  DCHECK(it != allocated_chunks_.end());
+  CHECK(it != allocated_chunks_.end(), base::NotFatalUntil::M130);
   DCHECK_EQ(metadata->size(), it->second);
   allocated_chunks_.erase(it);
 #endif
@@ -191,7 +193,7 @@ void DiskDataAllocator::Discard(std::unique_ptr<DiskDataMetadata> metadata) {
 }
 
 int DiskDataAllocator::DoWrite(int64_t offset, const char* data, int size) {
-  int rv = file_.Write(offset, data, size);
+  int rv = UNSAFE_TODO(file_.Write(offset, data, size));
 
   // No PCHECK(), since a file writing error is recoverable.
   if (rv != size) {
@@ -207,7 +209,7 @@ void DiskDataAllocator::DoRead(int64_t offset, char* data, int size) {
   // pressure, in which case writing to/reading from disk is better than
   // swapping out random parts of the memory. See crbug.com/1029320 for details.
   base::ScopedAllowBlocking allow_blocking;
-  int rv = file_.Read(offset, data, size);
+  int rv = UNSAFE_TODO(file_.Read(offset, data, size));
   // Can only crash, since we cannot continue without the data.
   PCHECK(rv == size) << "Likely file corruption.";
 }

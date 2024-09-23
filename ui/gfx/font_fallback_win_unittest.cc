@@ -4,7 +4,8 @@
 
 #include "ui/gfx/font_fallback_win.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -79,7 +80,7 @@ TEST_F(FontFallbackWinTest, EmptyStringFallback) {
   Font base_font;
   Font fallback_font;
   bool result = GetFallbackFont(base_font, kDefaultApplicationLocale,
-                                base::StringPiece16(), &fallback_font);
+                                std::u16string_view(), &fallback_font);
   EXPECT_FALSE(result);
 }
 
@@ -89,18 +90,18 @@ TEST_F(FontFallbackWinTest, NulTerminatedStringPiece) {
   // Multiple ending NUL characters.
   const char16_t kTest1[] = {0x0540, 0x0541, 0, 0, 0};
   EXPECT_FALSE(GetFallbackFont(base_font, kDefaultApplicationLocale,
-                               base::StringPiece16(kTest1, std::size(kTest1)),
+                               std::u16string_view(kTest1, std::size(kTest1)),
                                &fallback_font));
   // No ending NUL character.
   const char16_t kTest2[] = {0x0540, 0x0541};
   EXPECT_TRUE(GetFallbackFont(base_font, kDefaultApplicationLocale,
-                              base::StringPiece16(kTest2, std::size(kTest2)),
+                              std::u16string_view(kTest2, std::size(kTest2)),
                               &fallback_font));
 
   // NUL only characters.
   const char16_t kTest3[] = {0, 0, 0};
   EXPECT_FALSE(GetFallbackFont(base_font, kDefaultApplicationLocale,
-                               base::StringPiece16(kTest3, std::size(kTest3)),
+                               std::u16string_view(kTest3, std::size(kTest3)),
                                &fallback_font));
 }
 

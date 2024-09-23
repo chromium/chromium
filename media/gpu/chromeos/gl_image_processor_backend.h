@@ -61,6 +61,9 @@ class MEDIA_GPU_EXPORT GLImageProcessorBackend : public ImageProcessorBackend {
   scoped_refptr<gl::GLSurface> gl_surface_;
   scoped_refptr<gl::GLContext> gl_context_;
 
+  bool got_unrecoverable_gl_error_ = false;
+  GLuint vbo_id_ = 0u;
+  GLuint vao_id_ = 0u;
   GLuint src_texture_id_ = 0u;
   GLuint dst_texture_id_ = 0u;
   GLuint fb_id_ = 0u;

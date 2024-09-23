@@ -12,8 +12,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/auth/cryptohome_pin_engine.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chrome/browser/ui/ash/auth/cryptohome_pin_engine.h"
 
 namespace ash {
 
@@ -23,7 +23,13 @@ class WizardContext;
 class PinSetupScreen : public BaseScreen {
  public:
   using TView = PinSetupScreenView;
-  enum class Result { DONE, USER_SKIP, NOT_APPLICABLE, TIMED_OUT };
+  enum class Result {
+    kDone = 0,
+    kUserSkip = 1,
+    kNotApplicable = 2,
+    kTimedOut = 3,
+    kMaxValue = kTimedOut
+  };
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
@@ -71,6 +77,9 @@ class PinSetupScreen : public BaseScreen {
   // This information is retrived in an async way and will not be available
   // immediately.
   std::optional<bool> has_login_support_;
+
+  // Whether PIN is being offered as the main sign-in factor (PIN-only OOBE).
+  std::optional<bool> using_pin_as_main_factor_;
 
   base::WeakPtr<PinSetupScreenView> view_;
   ScreenExitCallback exit_callback_;

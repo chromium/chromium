@@ -10,6 +10,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
@@ -33,9 +34,12 @@ ExternalInstallOptions GetConfigForYouTube() {
   options.load_and_await_service_worker_registration = false;
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating([]() {
-    auto info = std::make_unique<WebAppInstallInfo>();
+    GURL start_url = GURL("https://www.youtube.com/?feature=ytca");
+    // `manifest_id` must remain fixed even if start_url changes.
+    webapps::ManifestId manifest_id = GenerateManifestIdFromStartUrlOnly(
+        GURL("https://www.youtube.com/?feature=ytca"));
+    auto info = std::make_unique<WebAppInstallInfo>(manifest_id, start_url);
     info->title = u"YouTube";
-    info->start_url = GURL("https://www.youtube.com/?feature=ytca");
     info->scope = GURL("https://www.youtube.com/");
     info->display_mode = DisplayMode::kMinimalUi;
     info->icon_bitmaps.any =

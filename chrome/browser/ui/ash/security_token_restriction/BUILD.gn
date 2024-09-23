@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("security_token_restriction") {
+  sources = [
+    "security_token_session_restriction_view.cc",
+    "security_token_session_restriction_view.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/login",
+    "//chromeos/ui/vector_icons",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login" ]
+}

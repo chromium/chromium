@@ -29,11 +29,6 @@ std::u16string GetDoNotDisturbDescription() {
       IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_DESCRIPTION);
 }
 
-std::u16string GetDoNotDisturbInFocusModeDescription() {
-  return l10n_util::GetStringUTF16(
-      IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_DESCRIPTION);
-}
-
 message_center::Notification* GetDoNotDisturbNotification() {
   return MessageCenter::Get()->FindNotificationById(
       DoNotDisturbNotificationController::kDoNotDisturbNotificationId);
@@ -156,7 +151,10 @@ TEST_F(DoNotDisturbNotificationControllerWithFocusModeTest,
   EXPECT_TRUE(focus_mode_controller->in_focus_session());
   auto* notification = GetDoNotDisturbNotification();
   EXPECT_TRUE(notification);
-  EXPECT_EQ(notification->message(), GetDoNotDisturbInFocusModeDescription());
+  const base::Time end_time = focus_mode_controller->GetActualEndTime();
+  EXPECT_EQ(
+      notification->message(),
+      focus_mode_util::GetNotificationDescriptionForFocusSession(end_time));
   // Check that quiet mode is active, and it was triggered by focus mode.
   EXPECT_TRUE(message_center->IsQuietMode());
   EXPECT_EQ(message_center::QuietModeSourceType::kFocusMode,
@@ -192,8 +190,9 @@ TEST_F(DoNotDisturbNotificationControllerWithFocusModeTest,
 
   auto* notification = GetDoNotDisturbNotification();
   EXPECT_TRUE(notification);
-  EXPECT_EQ(notification->title(),
-            focus_mode_util::GetNotificationTitleForFocusSession(end_time1));
+  EXPECT_EQ(
+      notification->message(),
+      focus_mode_util::GetNotificationDescriptionForFocusSession(end_time1));
 
   // Extend the focus duration.
   focus_mode_controller->ExtendSessionDuration();
@@ -202,8 +201,9 @@ TEST_F(DoNotDisturbNotificationControllerWithFocusModeTest,
 
   notification = GetDoNotDisturbNotification();
   EXPECT_TRUE(notification);
-  EXPECT_EQ(notification->title(),
-            focus_mode_util::GetNotificationTitleForFocusSession(end_time2));
+  EXPECT_EQ(
+      notification->message(),
+      focus_mode_util::GetNotificationDescriptionForFocusSession(end_time2));
 
   // End the focus session, and the system DND state will be restored to
   // `false`.

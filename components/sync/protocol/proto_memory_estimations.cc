@@ -6,13 +6,14 @@
 
 #include "components/sync/protocol/proto_memory_estimations.h"
 
+#include <concepts>
 #include <string>
 
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/persisted_entity_data.pb.h"
 #include "components/sync/protocol/proto_visitors.h"
@@ -64,9 +65,8 @@ class MemoryUsageVisitor {
 
   // Types derived from MessageLite (i.e. protos)
   template <class P, class F>
-  typename std::enable_if<
-      std::is_base_of<google::protobuf::MessageLite, F>::value>::type
-  Visit(const P&, const char* field_name, const F& field) {
+    requires(std::derived_from<F, google::protobuf::MessageLite>)
+  void Visit(const P&, const char* field_name, const F& field) {
     using base::trace_event::EstimateMemoryUsage;
     // All object fields are dynamically allocated.
     memory_usage_ += sizeof(F) + EstimateMemoryUsage(field);
@@ -74,8 +74,8 @@ class MemoryUsageVisitor {
 
   // Arithmetic types
   template <class P, class F>
-  typename std::enable_if<std::is_arithmetic<F>::value>::type
-  Visit(const P&, const char* field_name, const F& field) {
+    requires(std::is_arithmetic_v<F>)
+  void Visit(const P&, const char* field_name, const F& field) {
     // Arithmetic fields (integers, floats & bool) don't allocate.
   }
 
@@ -105,10 +105,10 @@ class MemoryUsageVisitor {
 
   // RepeatedField<arithmetic type>
   template <class P, class F>
-  typename std::enable_if<std::is_arithmetic<F>::value>::type Visit(
-      const P&,
-      const char* field_name,
-      const google::protobuf::RepeatedField<F>& fields) {
+    requires(std::is_arithmetic_v<F>)
+  void Visit(const P&,
+             const char* field_name,
+             const google::protobuf::RepeatedField<F>& fields) {
     memory_usage_ += fields.SpaceUsedExcludingSelf();
     // Arithmetic fields (integers, floats & bool) don't allocate, so no point
     // in iterating over |fields|.
@@ -149,9 +149,10 @@ size_t EstimateMemoryUsage(const P& proto) {
 INSTANTIATE(CrossUserSharingPublicKey)
 INSTANTIATE(DataTypeContext)
 INSTANTIATE(DataTypeProgressMarker)
+INSTANTIATE(DataTypeState)
+INSTANTIATE(DeletionOrigin)
 INSTANTIATE(EntityMetadata)
 INSTANTIATE(EntitySpecifics)
-INSTANTIATE(ModelTypeState)
 INSTANTIATE(PersistedEntityData)
 INSTANTIATE(SyncEntity)
 INSTANTIATE(UniquePosition)

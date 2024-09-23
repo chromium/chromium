@@ -55,6 +55,10 @@ class UpdateModel {
   // Whether a notice about the device reaching end of life should be shown.
   void SetShowEolNotice(bool show);
 
+  // Whether a notice about extended updates support being available for
+  // the device should be shown.
+  void SetShowExtendedUpdatesNotice(bool show);
+
   UpdateSeverity GetSeverity() const;
 
   // Sets |update_required_| back to false.
@@ -72,6 +76,9 @@ class UpdateModel {
   DeferredUpdateState update_deferred() const { return update_deferred_; }
 
   bool show_eol_notice() const { return show_eol_notice_; }
+  bool show_extended_updates_notice() const {
+    return show_extended_updates_notice_;
+  }
 
  private:
   void NotifyUpdateAvailable();
@@ -84,6 +91,7 @@ class UpdateModel {
   bool update_over_cellular_available_ = false;
   DeferredUpdateState update_deferred_ = DeferredUpdateState::kNone;
   bool show_eol_notice_ = false;
+  bool show_extended_updates_notice_ = false;
 
   base::ObserverList<UpdateObserver>::Unchecked observers_;
 };

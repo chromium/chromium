@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] html5lib_tests10.html fee2541ab7080ca5b363bb4b7b0c18ee1d3699ba
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <svg svg>"
+[FAIL] html5lib_tests10.html 679fbaa80e9d15416f17eb041a8fe04c373f0e12
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <option>" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <option>\\n|         <svg svg>"
+[FAIL] html5lib_tests10.html badaa2069df3f2bb2d2da79f8ae2598f66ab2d0f
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <table>\\n|       <tbody>\\n|         <tr>\\n|           <td>\\n|             <select>\\n|               \\"foobarbaz\\"\\n|     <p>\\n|       \\"quux\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <table>\\n|       <tbody>\\n|         <tr>\\n|           <td>\\n|             <select>\\n|               <svg svg>\\n|                 <svg g>\\n|                   \\"foo\\"\\n|                 <svg g>\\n|                   \\"bar\\"\\n|               <p>\\n|                 \\"baz\\"\\n|     <p>\\n|       \\"quux\\""
+[FAIL] html5lib_tests10.html 64e72bd5af825a0b014a78c77d6d0be8c330892b
+  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       \\"foobarbaz\\"\\n|     <table>\\n|     <p>\\n|       \\"quux\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <select>\\n|       <svg svg>\\n|         <svg g>\\n|           \\"foo\\"\\n|         <svg g>\\n|           \\"bar\\"\\n|       <p>\\n|         \\"baz\\"\\n|     <table>\\n|     <p>\\n|       \\"quux\\""
+Harness: the test ran to completion.
+

@@ -52,7 +52,8 @@ class SavedDeskIconContainer : public views::BoxLayoutView {
     int count;
   };
 
-  using IconIdentifierAndIconInfo = std::pair<std::string, IconInfo>;
+  using IconIdentifierAndIconInfo =
+      std::pair<SavedDeskIconIdentifier, IconInfo>;
 
   SavedDeskIconContainer();
   SavedDeskIconContainer(const SavedDeskIconContainer&) = delete;

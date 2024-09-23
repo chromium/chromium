@@ -1,0 +1,73 @@
+<style include="cr-icons">
+  :host {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center;
+    outline: none;
+  }
+
+  #container {
+    align-items: center;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    width: 48px;
+    height: 40px;
+  }
+
+  #image {
+    display: initial;
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  /* TODO(b/328294049): Switch all hard-coded colors to CSS color tokens. */
+  .overlay {
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    background-color: #0000000D;
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+
+  :host(:hover) .overlay,
+  :host(:focus-visible) .overlay {
+    background-color: #4285F466;
+  }
+
+  #remove {
+    display: none;
+  }
+
+  :host(:hover) #remove,
+  :host(:focus-visible) #remove {
+    display: flex;
+  }
+
+  :host(:focus-visible) #container {
+    border: solid 3px #4285F4;
+    box-sizing: border-box;
+  }
+
+  #remove {
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    --cr-icon-button-fill-color: white;
+    background-color: transparent;
+  }
+</style>
+<div id="container" aria-hidden="true">
+  <img id="image" src="[[thumbnailUrl_]]"></img>
+  <div class="overlay">
+    <cr-icon-button id="remove" class="action-icon icon-clear"
+        on-click="onRemoveButtonClick_">
+    </cr-icon-button>
+  </div>
+</div>

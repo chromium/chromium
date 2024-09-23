@@ -111,7 +111,7 @@ void RemoteDeviceLifeCycleImpl::OnConnectionAttemptFailure(
                     << " stopped because Bluetooth is not available.";
     TransitionToState(RemoteDeviceLifeCycle::State::STOPPED);
   } else {
-    // TODO(crbug.com/991644): Improve the name AUTHENTICATION_FAILED (it can
+    // TODO(crbug.com/41474905): Improve the name AUTHENTICATION_FAILED (it can
     // encompass errors other than authentication failures) and create a metric
     // with buckets corresponding to the ConnectionAttemptFailureReason.
     PA_LOG(ERROR) << "Failed to authenticate with remote device: "

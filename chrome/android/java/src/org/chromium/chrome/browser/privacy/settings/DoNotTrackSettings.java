@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.privacy.settings;
 
 import android.os.Bundle;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -19,10 +21,12 @@ public class DoNotTrackSettings extends ChromeBaseSettingsFragment {
     // Must match key in do_not_track_preferences.xml.
     private static final String PREF_DO_NOT_TRACK_SWITCH = "do_not_track_switch";
 
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.do_not_track_preferences);
-        getActivity().setTitle(R.string.do_not_track_title);
+        mPageTitle.set(getString(R.string.do_not_track_title));
 
         ChromeSwitchPreference doNotTrackSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_DO_NOT_TRACK_SWITCH);
@@ -36,5 +40,10 @@ public class DoNotTrackSettings extends ChromeBaseSettingsFragment {
                     prefService.setBoolean(Pref.ENABLE_DO_NOT_TRACK, (boolean) newValue);
                     return true;
                 });
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 }

@@ -1,0 +1,27 @@
+caption: Enable Application Bound Encryption
+default: true
+desc: |-
+  Setting the policy to Enabled or leaving it unset binds encryption keys used for local data storage to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> whenever that is possible.
+
+  Setting the policy to Disabled has a detrimental effect on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s security as unknown and potentially hostile apps can retrieve encryption keys used to secure data.
+
+  Only turn off the policy if there are compatibility issues, such as other applications that need legitimate access to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s data, encrypted user data is expected to be fully portable between different computers or the integrity and location of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s executable files is not consistent.
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: false
+items:
+- caption: Enable Application Bound Encryption
+  value: true
+- caption: Disable Application Bound Encryption
+  value: false
+owners:
+- wfh@chromium.org
+- nparker@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.win:125-
+tags:
+- system-security
+type: main

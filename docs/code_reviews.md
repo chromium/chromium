@@ -125,7 +125,7 @@ the following process:
       with no objections from anyone else, the change may be landed.
     * If the directory does not have 4 owners, then the decision should
       be escalated to the owners of the parent directory (or directories)
-      as necessary to provide enough of votes.
+      as necessary to provide enough votes.
     * If there are objections, then the decision should be escalated to
       the [../ATL_OWNERS](../ATL_OWNERS) for resolution.
 

@@ -1,0 +1,280 @@
+<style include="searchbox-shared-style">
+  :host {
+    --cr-searchbox-height: 48px;
+    --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
+    --cr-searchbox-min-width: 306px;
+  }
+
+  .app-container {
+    height: 100%;
+    width: 100%;
+  }
+
+  #backgroundScrim {
+    background-color: rgba(0, 0 ,0, 0.3);
+    cursor: default;
+    inset: 0;
+    position: absolute;
+  }
+
+  .button-container {
+    display: flex;
+    pointer-events: none;
+    position: absolute;
+    z-index: 6; /* Keep aligned with cursor and context menu. */
+  }
+
+  .button-container.button-container {
+    transition: opacity 150ms, visibility 150ms;
+  }
+
+  :host([should-fade-out-buttons]) .button-container,
+  :host(:not([initial-flash-animation-has-ended])) .button-container {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  #optionsButtonContainer {
+    gap: 12px;
+    inset-block-start: 34px;
+    inset-inline-end: 28px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #optionsButtonContainer {
+    inset-block-start: 36px;
+  }
+
+  :host([close-button-hidden]) #optionsButtonContainer {
+    inset-inline-end: 24px;
+  }
+
+  #translateButtonContainer {
+    inset-block-start: 28px;
+    inset-inline-end: 135px;
+  }
+
+  :host([close-button-hidden]) #translateButtonContainer {
+    inset-inline-end: 84px;
+  }
+
+  .action-button {
+    --cr-icon-button-icon-size: 24px;
+    --cr-icon-button-size: 36px;
+    --cr-icon-button-fill-color: var(--color-overlay-icon);
+    background-color: rgba(var(--color-scrim-rgb), 0.6);
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    pointer-events: all;
+  }
+
+  #closeButton {
+    --cr-icon-image: url("icon_clear.svg");
+  }
+
+  :host([close-button-hidden]) #closeButton,
+  :host([search-box-hidden]) #searchboxContainer {
+    display: none;
+  }
+
+  #toast {
+    justify-content: space-between;
+  }
+
+  #moreOptions {
+    width: 156px;
+  }
+
+  #moreOptionsButton {
+    margin-inline-start: 120px;
+  }
+
+  #moreOptionsMenu {
+    background: var(--color-selection-element);
+    border-radius: 8px;
+    /* Needed to prevent mouse flicker on option hover. */
+    cursor: default;
+    display: none;
+    margin-top: 8px;
+    padding: 8px 0px;
+    pointer-events: all;
+  }
+
+  :host([more-options-menu-visible]) #moreOptionsMenu {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menu-item {
+    align-items: center;
+    display: flex;
+    padding-inline-start: 16px;
+    height: 36px;
+  }
+
+  .menu-item:focus, .menu-item:hover {
+    background-color: rgba(var(--color-scrim-rgb), 0.05);
+  }
+
+  .menu-item:active {
+    background-color: rgba(var(--color-scrim-rgb), 0.10);
+  }
+
+  .menu-item-label {
+    color: var(--color-scrim);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  .menu-item-icon {
+    background-color: var(--color-primary);
+    height: 20px;
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: 100%;
+    width: 20px;
+    margin-inline-end: 12px;
+  }
+
+  .feedback {
+    mask-image: url("feedback.svg");
+  }
+
+  .activity {
+    mask-image: url("//resources/cr_components/searchbox/icons/google_g_cr23.svg");
+  }
+
+  .learn-more {
+    mask-image: url("learn_more.svg");
+  }
+
+  :host(:not([is-image-rendered])) lens-selection-overlay {
+    display: none;
+  }
+
+  .app-container :not(lens-selection-overlay) {
+    transition: opacity 150ms linear;
+  }
+
+  :host([is-closing]) .app-container :not(lens-selection-overlay) {
+    opacity: 0;
+  }
+
+  :host([is-closing]) cursor-tooltip {
+    /* When the overlay is closing, immediately hide the cursor tooltip. */
+    display: none;
+  }
+
+  cursor-tooltip {
+    left: 0;
+    position: fixed;
+    top: 0;
+    /* Don't display the tooltip until the cursor location is determined. */
+    transform: scale(0);
+    width: 100%;
+    z-index: 6;  /* Keep aligned with cursor and context menu. */
+  }
+
+  initial-gradient {
+    pointer-events: none;
+  }
+
+  #searchboxContainer {
+    --color-searchbox-results-background: #ffffffff;
+    position: absolute;
+    inset-block-start: 36px;
+    inset-inline-end: 140px;
+  }
+
+  :host([dark-mode]) #searchboxContainer {
+    --color-searchbox-results-background: #3c3c3cff;
+  }
+</style>
+<div class="app-container"
+    on-initial-flash-animation-end="onInitialFlashAnimationEnd"
+    on-screenshot-rendered="onScreenshotRendered"
+    on-selection-started="handleSelectionStarted"
+    on-selection-finished="handleSelectionFinished"
+    on-pointerenter="handlePointerEnter"
+    on-pointerleave="handlePointerLeave"
+    style="
+    --color-primary: [[skColorToHex_(theme.primary)]];
+    --color-shader-layer-1: [[skColorToHex_(theme.shaderLayer1)]];
+    --color-shader-layer-2: [[skColorToHex_(theme.shaderLayer2)]];
+    --color-shader-layer-3: [[skColorToHex_(theme.shaderLayer3)]];
+    --color-shader-layer-4: [[skColorToHex_(theme.shaderLayer4)]];
+    --color-shader-layer-5: [[skColorToHex_(theme.shaderLayer5)]];
+    --color-scrim: [[skColorToHex_(theme.scrim)]];
+    --color-scrim-rgb: [[skColorToRgb_(theme.scrim)]];
+    --color-surface-container-highest-light: [[skColorToHex_(theme.surfaceContainerHighestLight)]];
+    --color-surface-container-highest-dark: [[skColorToHex_(theme.surfaceContainerHighestDark)]];
+    --color-selection-element: [[skColorToHex_(theme.selectionElement)]];
+    --color-overlay-icon: white;
+    --color-overlay-button-label: white;">
+  <cr-toast id="toast" duration="4000">
+    <div>[[toastMessage]]</div>
+    <cr-button on-click="onHideToastClick">
+      $i18n{dismiss}
+    </cr-button>
+  </cr-toast>
+  <div id="backgroundScrim" on-click="onBackgroundScrimClicked"
+      hidden$="[[!isImageRendered]]"
+      on-pointerenter="handlePointerEnterBackgroundScrim"
+      on-pointerleave="handlePointerLeaveBackgroundScrim"></div>
+  <lens-selection-overlay id="selectionOverlay" theme="[[theme]]"
+      is-searchbox-focused="[[isSearchboxFocused]]"
+      on-pointerenter="handlePointerEnterSelectionOverlay"
+      on-pointerleave="handlePointerLeaveSelectionOverlay">
+  </lens-selection-overlay>
+  <initial-gradient id="initialGradient"></initial-gradient>
+  <template is="dom-if" if="[[isLensOverlayContextualSearchboxEnabled]]">
+    <div id="searchboxContainer">
+      <cr-searchbox id="searchbox" on-focus="handleSearchboxFocused"
+          on-blur="handleSearchboxBlurred">
+      </cr-searchbox>
+    </div>
+  </template>
+  <template is="dom-if" if="[[isTranslateButtonVisible]]">
+    <div id="translateButtonContainer" class="button-container">
+      <translate-button></translate-button>
+    </div>
+  </template>
+  <div id="optionsButtonContainer" class="button-container">
+    <div id="moreOptions">
+      <cr-icon-button iron-icon="cr:more-vert" id="moreOptionsButton"
+          class="action-button" on-click="onMoreOptionsButtonClick"
+          role="button" aria-label="$i18n{moreOptions}"
+          aria-controls="moreOptionsMenu" aria-haspopup="menu"
+          aria-expanded="[[moreOptionsMenuVisible]]" title="$i18n{moreOptions}">
+      </cr-icon-button>
+      <div id="moreOptionsMenu" role="menu" aria-labelledby="moreOptionsButton">
+        <div class="menu-item" on-click="onMyActivityClick"
+            on-keydown="onMyActivityClick" role="menuitem" tabindex="0"
+            aria-labelledby="myActivity">
+          <span class="menu-item-icon activity"></span>
+          <span id="myActivity"
+              class="menu-item-label">$i18n{myActivity}</span>
+        </div>
+        <div class="menu-item" on-click="onLearnMoreClick"
+            on-keydown="onLearnMoreClick" role="menuitem" tabindex="0"
+            aria-labelledby="learnMore">
+          <span class="menu-item-icon learn-more"></span>
+          <span id="learnMore"
+              class="menu-item-label">$i18n{learnMore}</span>
+        </div>
+        <div class="menu-item" on-click="onFeedbackClick"
+            on-keydown="onFeedbackClick" role="menuitem" tabindex="0"
+            aria-labelledby="sendFeedback">
+          <span class="menu-item-icon feedback"></span>
+          <span id="sendFeedback"
+              class="menu-item-label">$i18n{sendFeedback}</span>
+        </div>
+      </div>
+    </div>
+    <cr-icon-button id="closeButton" class="action-button"
+        on-click="onCloseButtonClick" aria-label="$i18n{close}"
+        title="$i18n{close}"></cr-icon-button>
+  </div>
+  <cursor-tooltip id="cursorTooltip"></cursor-tooltip>
+</div>

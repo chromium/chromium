@@ -17,13 +17,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule.RerunWithUpdatedContainerView;
 
@@ -52,9 +52,9 @@ public class ClipboardTest {
     }
 
     /**
-     * Tests that copying document fragments will put at least a plain-text representation
-     * of the contents on the clipboard. For Android JellyBean and higher, we also expect
-     * the HTML representation of the fragment to be available.
+     * Tests that copying document fragments will put at least a plain-text representation of the
+     * contents on the clipboard. For Android JellyBean and higher, we also expect the HTML
+     * representation of the fragment to be available.
      */
     @Test
     @LargeTest
@@ -63,7 +63,7 @@ public class ClipboardTest {
     @DisabledTest(message = "https://crbug.com/791021")
     public void testCopyDocumentFragment() {
         ClipboardManager clipboardManager =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<ClipboardManager>() {
                             @Override
                             public ClipboardManager call() {
@@ -89,7 +89,7 @@ public class ClipboardTest {
 
         // Verify that the data on the clipboard is what we expect it to be. For Android JB MR2
         // and higher we expect HTML content, for other versions the plain-text representation.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final ClipData clip = clipboardManager.getPrimaryClip();
                     Assert.assertEquals(
@@ -103,14 +103,14 @@ public class ClipboardTest {
     }
 
     private void copy(final WebContentsImpl webContents) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     webContents.copy();
                 });
     }
 
     private void selectAll(final WebContentsImpl webContents) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     webContents.selectAll();
                 });

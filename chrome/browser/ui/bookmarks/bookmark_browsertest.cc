@@ -16,6 +16,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -58,14 +59,6 @@ const char16_t kPersistBookmarkTitle[] = u"CNN";
 const base::Time kPersistLastUsedTime =
     base::Time() + base::Days(7) + base::Hours(2) + base::Minutes(55) +
     base::Seconds(24) + base::Milliseconds(133);
-
-bool IsShowingInterstitial(content::WebContents* tab) {
-  security_interstitials::SecurityInterstitialTabHelper* helper =
-      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
-          tab);
-  return helper &&
-         helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting();
-}
 
 }  // namespace
 
@@ -170,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, PRE_Persist) {
 }
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/935607): The test fails on Windows.
+// TODO(crbug.com/41443454): The test fails on Windows.
 #define MAYBE_Persist DISABLED_Persist
 #else
 #define MAYBE_Persist Persist
@@ -404,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
     bookmark_model->AddURL(bbar, 3, u"Gmail", GURL("http://mail.google.com"));
     open_urls_and_test();
     open_urls_from_incognito_and_test();
-    bookmark_model->RemoveAllUserBookmarks();
+    bookmark_model->RemoveAllUserBookmarks(FROM_HERE);
   }
   {
     // Bookmark 4 pages, with the second and fourth one not being able to be
@@ -417,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
                            GURL(chrome::kChromeUIExtensionsURL));
     open_urls_and_test();
     open_urls_from_incognito_and_test();
-    bookmark_model->RemoveAllUserBookmarks();
+    bookmark_model->RemoveAllUserBookmarks(FROM_HERE);
   }
 }
 
@@ -442,14 +435,16 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
 
   // Go to a bookmarked url. Bookmark star should show.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bookmark_url));
-  EXPECT_FALSE(IsShowingInterstitial(web_contents));
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingInterstitial(web_contents));
   EXPECT_TRUE(bookmark_observer.is_starred());
   // Now go to a non-bookmarked url which triggers an SSL warning. Bookmark
   // star should disappear.
   GURL error_url = https_server.GetURL("/");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url));
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(IsShowingInterstitial(web_contents));
+  EXPECT_TRUE(
+      chrome_browser_interstitials::IsShowingInterstitial(web_contents));
   EXPECT_FALSE(bookmark_observer.is_starred());
 }
 
@@ -470,12 +465,12 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
           std::unique_ptr<ui::OSExchangeData> drag_data,
           gfx::NativeView native_view, ui::mojom::DragEventSource source,
           gfx::Point point, int operation) {
-        GURL url;
-        std::u16string title;
-        EXPECT_TRUE(drag_data->provider().GetURLAndTitle(
-            ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url, &title));
-        EXPECT_EQ(page_url, url);
-        EXPECT_EQ(page_title, title);
+        std::optional<ui::OSExchangeData::UrlInfo> url_info =
+            drag_data->GetURLAndTitle(
+                ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+        ASSERT_TRUE(url_info.has_value());
+        EXPECT_EQ(page_url, url_info->url);
+        EXPECT_EQ(page_title, url_info->title);
 #if !BUILDFLAG(IS_WIN)
         // On Windows, GetDragImage() is a NOTREACHED() as the Windows
         // implementation of OSExchangeData just sets the drag image on the OS
@@ -540,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, FaviconChangeDuringBookmarkDrag) {
 // generation for dragging multiple bookmarks.
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
   BookmarkModel* model = WaitForBookmarkModel(browser()->profile());
-  const std::u16string page_title(u"foo");
+  const std::u16string page_title = u"foo";
   const GURL page_url("http://www.google.com");
   const BookmarkNode* root = model->bookmark_bar_node();
   const BookmarkNode* node1 = model->AddURL(root, 0, page_title, page_url);
@@ -550,35 +545,36 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
   auto run_loop = std::make_unique<base::RunLoop>();
 
   chrome::DoBookmarkDragCallback cb = base::BindLambdaForTesting(
-      [&run_loop, expected_point](std::unique_ptr<ui::OSExchangeData> drag_data,
-                                  gfx::NativeView native_view,
-                                  ui::mojom::DragEventSource source,
-                                  gfx::Point point, int operation) {
-        GURL url;
-        std::u16string title;
-        // The platform difference here is due to platform capabilities. On the
-        // Mac, the clipboard can hold multiple items, each with different
-        // representations. Therefore, in `bookmark_node_data_mac.mm`'s version
-        // of `BookmarkNodeData::Read`/`Write`, a full-fledged array of objects
-        // and types are written to the clipboard, providing rich
-        // interoperability with the rest of the OS and other apps. Then, when
-        // `GetURLAndTitle` is called, it looks at the clipboard, sees URL and
-        // title data, and returns true. On the other hand, in
-        // `bookmark_node_data_views.cc`'s version used on other platforms,
-        // because other platforms don't have the concept of multiple items on
-        // the clipboard, single URLs are added as a URL, but multiple URLs are
-        // added as a data blob opaque to the outside world. Then, when
-        // `GetURLAndTitle` is called, it's unable to extract any single URL,
-        // and returns false. This is a core difference in the capabilities of
-        // the platform. Because interoperability and a good user experience
-        // outweigh strict platform consistency, expect different behaviors on
-        // different platforms.
+      [&run_loop, expected_point, page_title, page_url](
+          std::unique_ptr<ui::OSExchangeData> drag_data,
+          gfx::NativeView native_view, ui::mojom::DragEventSource source,
+          gfx::Point point, int operation) {
 #if BUILDFLAG(IS_MAC)
-        EXPECT_TRUE(drag_data->provider().GetURLAndTitle(
-            ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url, &title));
+        // On the Mac, the clipboard can hold multiple items, each with
+        // different representations. Therefore, when the "write multiple URLs"
+        // call is made, a full-fledged array of objects and types are written
+        // to the clipboard, providing rich interoperability with the rest of
+        // the OS and other apps. Then, when `GetURLAndTitle` is called, it
+        // looks at the clipboard, sees URL and title data, and returns true.
+        std::optional<ui::OSExchangeData::UrlInfo> url_info =
+            drag_data->GetURLAndTitle(
+                ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+        ASSERT_TRUE(url_info.has_value());
+
+        // The bookmarks are added in order, and the first is retrieved, so
+        // expect the values from the first bookmark.
+        EXPECT_EQ(page_title, url_info->title);
+        EXPECT_EQ(page_url, url_info->url);
 #else
-        EXPECT_FALSE(drag_data->provider().GetURLAndTitle(
-            ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url, &title));
+        // On other platforms, because they don't have the concept of multiple
+        // items on the clipboard, single URLs are added as a URL, but multiple
+        // URLs are added as a data blob opaque to the outside world. Then, when
+        // `GetURLAndTitle` is called, it's unable to extract any single URL,
+        // and returns false.
+        EXPECT_FALSE(drag_data
+                         ->GetURLAndTitle(
+                             ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES)
+                         .has_value());
 #endif
 #if !BUILDFLAG(IS_WIN)
         // On Windows, GetDragImage() is a NOTREACHED() as the Windows
@@ -837,7 +833,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkPrerenderBrowsertest,
 
   // Load a prerender page and prerendering should not notify to
   // URLStarredChanged listener.
-  const int host_id = prerender_test_helper().AddPrerender(bookmark_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_test_helper().AddPrerender(bookmark_url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   EXPECT_FALSE(host_observer.was_activated());

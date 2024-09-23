@@ -115,7 +115,7 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
       ui::Cursor* cursor) override;
 
   void DidReceiveResponse(const blink::WebURLResponse& response) override;
-  void DidReceiveData(const char* data, size_t data_length) override;
+  void DidReceiveData(base::span<const char> data) override;
   void DidFinishLoading() override;
   void DidFailLoading(const blink::WebURLError& error) override;
 
@@ -139,12 +139,12 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
   // Manages its own lifetime.
-  raw_ptr<Delegate, ExperimentalRenderer> delegate_;
+  raw_ptr<Delegate> delegate_;
 
   ui::Cursor current_cursor_;
 
   // Owns us.
-  raw_ptr<blink::WebPluginContainer, ExperimentalRenderer> container_;
+  raw_ptr<blink::WebPluginContainer> container_;
 
   gfx::Rect rect_;
 
@@ -215,14 +215,14 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
     void UpdateTooltip(const std::u16string& tooltip_text);
 
    private:
-    raw_ptr<WebViewPlugin, ExperimentalRenderer> plugin_;
-    raw_ptr<blink::WebNavigationControl, ExperimentalRenderer> frame_ = nullptr;
+    raw_ptr<WebViewPlugin> plugin_;
+    raw_ptr<blink::WebNavigationControl> frame_ = nullptr;
 
     std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
         agent_group_scheduler_;
 
     // Owned by us, deleted via |close()|.
-    raw_ptr<blink::WebView, ExperimentalRenderer> web_view_;
+    raw_ptr<blink::WebView, DanglingUntriaged> web_view_;
 
     mojo::AssociatedReceiver<blink::mojom::WidgetHost>
         blink_widget_host_receiver_{this};

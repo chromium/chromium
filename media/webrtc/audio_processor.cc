@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/webrtc/audio_processor.h"
 
 #include <stddef.h>
@@ -82,8 +87,8 @@ bool ApmNeedsPlayoutReference(const webrtc::AudioProcessing* apm,
     // needed.
     return false;
   }
-  // TODO(crbug.com/1410129): Move the logic below into WebRTC APM since APM may
-  // use injected sub-modules the usage of which is not reflected in the APM
+  // TODO(crbug.com/40889535): Move the logic below into WebRTC APM since APM
+  // may use injected sub-modules the usage of which is not reflected in the APM
   // config (e.g., render side processing).
   const webrtc::AudioProcessing::Config config = apm->GetConfig();
   const bool aec = config.echo_canceller.enabled;
@@ -336,8 +341,10 @@ void AudioProcessor::ProcessCapturedAudio(const media::AudioBus& audio_source,
   DCHECK_EQ(audio_source.frames(), input_format_.frames_per_buffer());
 
   base::TimeDelta capture_delay = base::TimeTicks::Now() - audio_capture_time;
-  TRACE_EVENT1("audio", "AudioProcessor::ProcessCapturedAudio", "delay (ms)",
-               capture_delay.InMillisecondsF());
+  TRACE_EVENT("audio", "AudioProcessor::ProcessCapturedAudio",
+              "capture_time (ms)",
+              (audio_capture_time - base::TimeTicks()).InMillisecondsF(),
+              "capture_delay (ms)", capture_delay.InMillisecondsF());
 
   capture_fifo_->Push(audio_source, capture_delay);
 
@@ -411,7 +418,7 @@ void AudioProcessor::OnStopDump() {
 void AudioProcessor::OnPlayoutData(const AudioBus& audio_bus,
                                    int sample_rate,
                                    base::TimeDelta audio_delay) {
-  TRACE_EVENT1("audio", "AudioProcessor::OnPlayoutData", "delay (ms)",
+  TRACE_EVENT1("audio", "AudioProcessor::OnPlayoutData", "playout_delay (ms)",
                audio_delay.InMillisecondsF());
 
   if (!webrtc_audio_processing_) {
@@ -444,8 +451,9 @@ void AudioProcessor::AnalyzePlayoutData(const AudioBus& audio_bus,
       unbuffered_playout_delay_ +
       AudioTimestampHelper::FramesToTime(frame_delay, *playout_sample_rate_hz_);
   playout_delay_ = playout_delay;
-  TRACE_EVENT1("audio", "AudioProcessor::AnalyzePlayoutData", "delay (ms)",
-               playout_delay.InMillisecondsF());
+  TRACE_EVENT("audio", "AudioProcessor::AnalyzePlayoutData", "delay (frames)",
+              frame_delay, "playout_delay (ms)",
+              playout_delay.InMillisecondsF());
 
   webrtc::StreamConfig input_stream_config(*playout_sample_rate_hz_,
                                            audio_bus.channels());
@@ -622,14 +630,15 @@ AudioParameters AudioProcessor::GetDefaultOutputFormat(
   // TODO(crbug.com/1336055): Investigate why chromecast devices need special
   // logic here.
   const int output_sample_rate =
-      need_webrtc_audio_processing ?
+      need_webrtc_audio_processing
+          ?
 #if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-                                   std::min(media::kAudioProcessingSampleRateHz,
-                                            input_format.sample_rate())
+          std::min(media::WebRtcAudioProcessingSampleRateHz(),
+                   input_format.sample_rate())
 #else
-                                   media::kAudioProcessingSampleRateHz
+          media::WebRtcAudioProcessingSampleRateHz()
 #endif
-                                   : input_format.sample_rate();
+          : input_format.sample_rate();
 
   media::ChannelLayoutConfig output_channel_layout_config;
   if (!need_webrtc_audio_processing) {

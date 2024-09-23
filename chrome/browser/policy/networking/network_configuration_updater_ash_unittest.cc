@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
@@ -27,6 +26,7 @@
 #include "chromeos/ash/components/network/mock_managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/onc/onc_certificate_importer.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/components/onc/certificate_scope.h"
@@ -137,7 +137,7 @@ class FakeCertificateImporter : public ash::onc::CertificateImporter {
     // imported, only ImportClientCertificaates should be called.
     // ImportAllCertificatesUserInitiated should never be called from
     // UserNetworkConfigurationUpdater.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ImportClientCertificates(
@@ -312,8 +312,8 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
     ash::UserSessionManager::GetInstance()->set_start_session_type_for_testing(
         ash::UserSessionManager::StartSessionType::kPrimary);
 
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, kFakeSerialNumber);
+    fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                  kFakeSerialNumber);
 
     EXPECT_CALL(provider_, IsInitializationComplete(_))
         .WillRepeatedly(Return(false));

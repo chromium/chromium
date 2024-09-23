@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ash/arc/input_method_manager/input_method_prefs.h"
 
+#include <vector>
+
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/pref_names.h"
@@ -29,7 +30,7 @@ void InputMethodPrefs::UpdateEnabledImes(
   std::vector<std::string> enabled_ime_list = base::SplitString(
       enabled_ime_ids, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  base::EraseIf(enabled_ime_list, [](const auto& id) {
+  std::erase_if(enabled_ime_list, [](const auto& id) {
     return ash::extension_ime_util::IsArcIME(id);
   });
   for (const auto& descriptor : enabled_arc_imes)

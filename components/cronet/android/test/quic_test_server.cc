@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
@@ -16,14 +17,17 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_support_android.h"
 #include "base/threading/thread.h"
-#include "components/cronet/android/cronet_test_apk_jni/QuicTestServer_jni.h"
 #include "components/cronet/android/test/cronet_test_util.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/quic/crypto/proof_source_chromium.h"
 #include "net/test/test_data_directory.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_backend_response.h"
 #include "net/third_party/quiche/src/quiche/quic/tools/quic_memory_cache_backend.h"
 #include "net/tools/quic/quic_simple_server.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/cronet/android/cronet_test_apk_jni/QuicTestServer_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -33,6 +37,7 @@ namespace cronet {
 namespace {
 
 static const int kServerPort = 6121;
+static const std::string kConnectionClosePath = "/close_connection";
 
 std::unique_ptr<base::Thread> g_quic_server_thread;
 std::unique_ptr<quic::QuicMemoryCacheBackend> g_quic_memory_cache_backend;
@@ -83,8 +88,15 @@ void StartOnServerThread(const base::FilePath& test_files_root,
       quic::AllSupportedVersions(), g_quic_memory_cache_backend.get());
 
   // Start listening.
-  int rv = g_quic_server->Listen(
+  bool rv = g_quic_server->Listen(
       net::IPEndPoint(net::IPAddress::IPv4AllZeros(), kServerPort));
+  if (rv) {
+    // TODO(crbug.com/40283192): Stop hardcoding server hostname.
+    g_quic_memory_cache_backend->AddSpecialResponse(
+        base::StringPrintf("%s:%d", "test.example.com", kServerPort),
+        kConnectionClosePath,
+        quic::QuicBackendResponse::SpecialResponseType::CLOSE_CONNECTION);
+  }
   CHECK_GE(rv, 0) << "Quic server fails to start";
 }
 
@@ -93,7 +105,7 @@ void SetResponseDelayOnServerThread(const std::string& path,
   CHECK(g_quic_server_thread->task_runner()->BelongsToCurrentThread());
   CHECK(g_quic_memory_cache_backend);
 
-  // TODO(crbug.com/1487185): Stop hardcoding server hostname.
+  // TODO(crbug.com/40283192): Stop hardcoding server hostname.
   CHECK(g_quic_memory_cache_backend->SetResponseDelay(
       base::StringPrintf("%s:%d", "test.example.com", kServerPort), path,
       quic::QuicTime::Delta::FromMicroseconds(delay.InMicroseconds())));
@@ -130,6 +142,11 @@ void JNI_QuicTestServer_StartQuicTestServer(
       base::android::ConvertJavaStringToUTF8(env, jtest_files_root));
   ExecuteSynchronouslyOnServerThread(
       base::BindOnce(&StartOnServerThread, test_files_root, test_data_dir));
+}
+
+ScopedJavaLocalRef<jstring> JNI_QuicTestServer_GetConnectionClosePath(
+    JNIEnv* env) {
+  return base::android::ConvertUTF8ToJavaString(env, kConnectionClosePath);
 }
 
 void JNI_QuicTestServer_ShutdownQuicTestServer(JNIEnv* env) {

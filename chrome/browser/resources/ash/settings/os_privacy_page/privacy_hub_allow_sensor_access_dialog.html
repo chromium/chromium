@@ -1,0 +1,19 @@
+<style include="settings-shared"></style>
+<cr-dialog id="allowSensorAccessDialog" show-on-attach>
+  <div slot="title">[[title_]]</div>
+  <div slot="body" id="dialogBody">[[body_]]</div>
+  <div slot="button-container">
+    <cr-button
+        id="cancelButton"
+        class="cancel-button"
+        on-click="onCancelButtonClick_">
+      $i18n{privacyHubDialogCancelButtonLabel}
+    </cr-button>
+    <cr-button
+        id="confirmButton"
+        class="action-button"
+        on-click="onConfirmButtonClick_">
+      $i18n{privacyHubDialogConfirmButtonLabel}
+    </cr-button>
+  </div>
+</cr-dialog>

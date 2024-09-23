@@ -2,6 +2,7 @@ include_rules = [
   "+components/app_constants/constants.h",
   "+components/crash/content/browser/error_reporting",
   "+components/guest_view/common",
+  "+components/security_state/content",
   "+components/live_caption",
   "+extensions/strings/grit/extensions_strings.h",
   "+services/network/public",
@@ -42,18 +43,18 @@ specific_include_rules = {
   ],
 
   "chrome_extension_cookies\.h": [
-    # TODO(crbug.com/1049894): Remove.
+    # TODO(crbug.com/40672800): Remove.
     "+services/network/cookie_settings.h",
   ],
 
   "chrome_extension_cookies\.cc": [
-    # TODO(crbug.com/1049894): Remove.
+    # TODO(crbug.com/40672800): Remove.
     "+services/network/cookie_manager.h",
     "+services/network/restricted_cookie_manager.h",
   ],
 
   "webstore_private_apitest.cc" : [
-    # TODO(crbug/1095814): Remove this layering violation.
+    # TODO(crbug.com/40135906): Remove this layering violation.
     "+chrome/browser/ui/views/supervised_user/parent_permission_dialog_view.h",
   ],
 

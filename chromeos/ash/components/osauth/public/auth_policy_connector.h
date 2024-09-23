@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_PUBLIC_AUTH_POLICY_CONNECTOR_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_PUBLIC_AUTH_POLICY_CONNECTOR_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"

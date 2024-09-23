@@ -9,7 +9,9 @@
           "PdfAnnotationsEnabled": true
         },
         "prefs": {
-          "pdf.enable_annotations": {}
+          "pdf.enable_annotations": {
+            "value": true
+          }
         }
       }
     ]

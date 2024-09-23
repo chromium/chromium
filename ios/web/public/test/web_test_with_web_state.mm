@@ -24,19 +24,17 @@
 #import "url/url_constants.h"
 
 using base::test::ios::WaitUntilConditionOrTimeout;
-using base::test::ios::kWaitForActionTimeout;
-using base::test::ios::kWaitForJSCompletionTimeout;
-using base::test::ios::kWaitForPageLoadTimeout;
 
 namespace web {
 
-WebTestWithWebState::WebTestWithWebState(WebTaskEnvironment::Options options)
-    : WebTest(options) {}
+WebTestWithWebState::WebTestWithWebState(
+    WebTaskEnvironment::MainThreadType main_thread_type)
+    : WebTest(main_thread_type) {}
 
 WebTestWithWebState::WebTestWithWebState(
     std::unique_ptr<web::WebClient> web_client,
-    WebTaskEnvironment::Options options)
-    : WebTest(std::move(web_client), options) {}
+    WebTaskEnvironment::MainThreadType main_thread_type)
+    : WebTest(std::move(web_client), main_thread_type) {}
 
 WebTestWithWebState::~WebTestWithWebState() {}
 
@@ -98,7 +96,7 @@ void WebTestWithWebState::LoadHtmlInWebState(NSString* html,
 bool WebTestWithWebState::LoadHtmlInWebState(const std::string& html,
                                              WebState* web_state) {
   LoadHtmlInWebState(base::SysUTF8ToNSString(html), web_state);
-  // TODO(crbug.com/780062): LoadHtmlInWebState(NSString*) should return bool.
+  // TODO(crbug.com/40547442): LoadHtmlInWebState(NSString*) should return bool.
   return true;
 }
 

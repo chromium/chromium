@@ -119,7 +119,8 @@ std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromList(
       break;
     }
     default:
-      NOTREACHED() << "Unexpected version_number: " << version_number;
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected version_number: " << version_number;
   }
 
   if (!serialized[3].is_string())

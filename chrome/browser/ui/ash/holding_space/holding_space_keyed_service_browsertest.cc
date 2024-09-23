@@ -29,14 +29,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/download_controller_ash.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
@@ -44,6 +40,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -303,8 +300,8 @@ class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == ProfileHelper::GetSigninProfileDir() ||
-        profile->GetPath() == ProfileHelper::GetLockScreenAppProfilePath()) {
+    if (ash::IsSigninBrowserContext(profile) ||
+        ash::IsLockScreenAppBrowserContext(profile)) {
       return nullptr;
     }
 
@@ -785,113 +782,6 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceFlexibleFsBrowserTest,
         return item->type() == HoldingSpaceItem::Type::kDownload &&
                item->file().file_path == GetPredefinedTestFile(0);
       }));
-}
-
-// HoldingSpaceKeyedServiceLacrosBrowserTest -----------------------------------
-
-// TODO(http://b/306459683): Remove the code that relates to the download
-// controller when the downloads integration V2 feature is enabled.
-class HoldingSpaceKeyedServiceLacrosBrowserTest
-    : public HoldingSpaceKeyedServiceBrowserTest,
-      public ::testing::WithParamInterface<
-          std::tuple<FileSystemType,
-                     /*from_incognito_profile=*/bool,
-                     /*in_progress_downloads_eligible_client=*/bool,
-                     /*enable_downloads_integration_v2=*/bool>> {
- public:
-  HoldingSpaceKeyedServiceLacrosBrowserTest()
-      : HoldingSpaceKeyedServiceBrowserTest(std::get<0>(GetParam())) {
-    scoped_feature_list.InitWithFeatureState(
-        features::kSysUiDownloadsIntegrationV2,
-        IsDownloadsIntegrationV2Enabled());
-  }
-
-  bool FromIncognitoProfile() const { return std::get<1>(GetParam()); }
-  bool InProgressDownloadsEligibleClient() const {
-    return std::get<2>(GetParam());
-  }
-  bool IsDownloadsIntegrationV2Enabled() const {
-    return std::get<3>(GetParam());
-  }
-
-  crosapi::DownloadControllerAsh* download_controller() {
-    return crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->download_controller_ash();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    FileSystem,
-    HoldingSpaceKeyedServiceLacrosBrowserTest,
-    ::testing::Combine(
-        ::testing::Values(FileSystemType::kDownloads, FileSystemType::kDriveFs),
-        /*from_incognito_profile=*/::testing::Bool(),
-        /*in_progress_downloads_eligible_client=*/::testing::Bool(),
-        /*enable_downloads_integration_v2=*/::testing::Bool()));
-
-// Tests -----------------------------------------------------------------------
-
-IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceLacrosBrowserTest,
-                       AddLacrosDownloadItem) {
-  // Verify the holding space `model` is empty.
-  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
-  ASSERT_EQ(0u, model->items().size());
-
-  // Create a `crosapi::mojom::DownloadItem`.
-  auto download = crosapi::mojom::DownloadItem::New();
-  download->guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  download->received_bytes = 0;
-  download->has_received_bytes = true;
-  download->total_bytes = -1;
-  download->has_total_bytes = true;
-  download->is_from_incognito_profile = FromIncognitoProfile();
-
-  // Lacros clients which are eligible for in-progress downloads integration
-  // have `has_is_insecure` present. This field was the last field to be
-  // implemented in Lacros. Its presence indicates that other required metadata
-  // and APIs (e.g. pause, resume, cancel, etc.) are also implemented and is
-  // therefore used to gate eligibility.
-  if (InProgressDownloadsEligibleClient())
-    download->has_is_insecure = true;
-
-  // Notify observers of `download` creation.
-  download->state = crosapi::mojom::DownloadState::kInProgress;
-  download_controller()->OnDownloadCreated(download.Clone());
-
-  // Simulate a target file path being chosen and notify observers.
-  download->full_path = CreateTextFile(GetTestMountPoint(), "file.crdownload");
-  download->target_file_path = CreateTextFile(GetTestMountPoint(), "file.txt");
-  download_controller()->OnDownloadUpdated(download.Clone());
-
-  // In-progress downloads should only be added to holding space if the Lacros
-  // client owning the download is supported.
-  if (!IsDownloadsIntegrationV2Enabled() &&
-      InProgressDownloadsEligibleClient()) {
-    ASSERT_EQ(1u, model->items().size());
-    const auto& download_item = model->items().front();
-    EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kLacrosDownload);
-    EXPECT_EQ(download_item->file().file_path, download->full_path);
-  } else {
-    EXPECT_EQ(0u, model->items().size());
-  }
-
-  // Complete `download` and notify observers.
-  download->state = crosapi::mojom::DownloadState::kComplete;
-  download->full_path = download->target_file_path;
-  download_controller()->OnDownloadUpdated(download.Clone());
-
-  if (!IsDownloadsIntegrationV2Enabled()) {
-    // Completed downloads should always be added to holding space.
-    const auto& download_item = model->items().front();
-    EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kLacrosDownload);
-    EXPECT_EQ(download_item->file().file_path, download->full_path);
-  } else {
-    EXPECT_EQ(0u, model->items().size());
-  }
 }
 
 }  // namespace ash

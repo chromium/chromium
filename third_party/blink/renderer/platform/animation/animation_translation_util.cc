@@ -24,7 +24,6 @@
 
 #include "third_party/blink/renderer/platform/animation/animation_translation_util.h"
 
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/interpolated_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_transform_operation.h"
@@ -53,7 +52,7 @@ void ToGfxTransformOperations(
       case TransformOperation::kScale3D:
       case TransformOperation::kScale: {
         auto* transform =
-            static_cast<const ScaleTransformOperation*>(operation.get());
+            static_cast<const ScaleTransformOperation*>(operation.Get());
         out_transform_operations->AppendScale(SkDoubleToScalar(transform->X()),
                                               SkDoubleToScalar(transform->Y()),
                                               SkDoubleToScalar(transform->Z()));
@@ -65,7 +64,7 @@ void ToGfxTransformOperations(
       case TransformOperation::kTranslate3D:
       case TransformOperation::kTranslate: {
         auto* transform =
-            static_cast<const TranslateTransformOperation*>(operation.get());
+            static_cast<const TranslateTransformOperation*>(operation.Get());
         out_transform_operations->AppendTranslate(
             SkDoubleToScalar(transform->X(box_size)),
             SkDoubleToScalar(transform->Y(box_size)),
@@ -78,7 +77,7 @@ void ToGfxTransformOperations(
       case TransformOperation::kRotate3D:
       case TransformOperation::kRotate: {
         auto* transform =
-            static_cast<const RotateTransformOperation*>(operation.get());
+            static_cast<const RotateTransformOperation*>(operation.Get());
         out_transform_operations->AppendRotate(
             SkDoubleToScalar(transform->X()), SkDoubleToScalar(transform->Y()),
             SkDoubleToScalar(transform->Z()),
@@ -87,21 +86,21 @@ void ToGfxTransformOperations(
       }
       case TransformOperation::kSkewX: {
         auto* transform =
-            static_cast<const SkewTransformOperation*>(operation.get());
+            static_cast<const SkewTransformOperation*>(operation.Get());
         out_transform_operations->AppendSkewX(
             SkDoubleToScalar(transform->AngleX()));
         break;
       }
       case TransformOperation::kSkewY: {
         auto* transform =
-            static_cast<const SkewTransformOperation*>(operation.get());
+            static_cast<const SkewTransformOperation*>(operation.Get());
         out_transform_operations->AppendSkewY(
             SkDoubleToScalar(transform->AngleY()));
         break;
       }
       case TransformOperation::kSkew: {
         auto* transform =
-            static_cast<const SkewTransformOperation*>(operation.get());
+            static_cast<const SkewTransformOperation*>(operation.Get());
         out_transform_operations->AppendSkew(
             SkDoubleToScalar(transform->AngleX()),
             SkDoubleToScalar(transform->AngleY()));
@@ -109,19 +108,19 @@ void ToGfxTransformOperations(
       }
       case TransformOperation::kMatrix: {
         auto* transform =
-            static_cast<const MatrixTransformOperation*>(operation.get());
+            static_cast<const MatrixTransformOperation*>(operation.Get());
         out_transform_operations->AppendMatrix(transform->Matrix());
         break;
       }
       case TransformOperation::kMatrix3D: {
         auto* transform =
-            static_cast<const Matrix3DTransformOperation*>(operation.get());
+            static_cast<const Matrix3DTransformOperation*>(operation.Get());
         out_transform_operations->AppendMatrix(transform->Matrix());
         break;
       }
       case TransformOperation::kPerspective: {
         auto* transform =
-            static_cast<const PerspectiveTransformOperation*>(operation.get());
+            static_cast<const PerspectiveTransformOperation*>(operation.Get());
         std::optional<double> depth = transform->Perspective();
         if (depth) {
           out_transform_operations->AppendPerspective(
@@ -139,7 +138,7 @@ void ToGfxTransformOperations(
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }  // switch
   }    // for each operation

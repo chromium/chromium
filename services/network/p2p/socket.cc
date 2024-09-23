@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/big_endian.h"
+#include "base/containers/span_reader.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "net/base/net_errors.h"
@@ -36,7 +36,7 @@ const uint32_t kStunMagicCookie = 0x2112A442;
 static SocketErrorCode MapNetErrorToSocketErrorCode(int net_err) {
   switch (net_err) {
     case net::OK:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SocketErrorCode::ERR_OTHER;
     case net::ERR_MSG_TOO_BIG:
       return SocketErrorCode::ERR_MSG_TOO_BIG;
@@ -79,14 +79,14 @@ P2PSocket::~P2PSocket() = default;
 bool P2PSocket::GetStunPacketType(base::span<const uint8_t> data,
                                   StunMessageType* type) {
   // See https://www.rfc-editor.org/rfc/rfc5389.html#section-6
-  base::BigEndianReader reader(data);
+  auto reader = base::SpanReader(data);
   uint16_t message_type, length;
   uint32_t cookie;
   if (data.size() < kStunHeaderSize ||            //
-      !reader.ReadU16(&message_type) ||           //
-      !reader.ReadU16(&length) ||                 //
+      !reader.ReadU16BigEndian(message_type) ||   //
+      !reader.ReadU16BigEndian(length) ||         //
       length != data.size() - kStunHeaderSize ||  //
-      !reader.ReadU32(&cookie) ||                 //
+      !reader.ReadU32BigEndian(cookie) ||         //
       cookie != kStunMagicCookie) {
     return false;
   }
@@ -137,7 +137,7 @@ std::unique_ptr<P2PSocket> P2PSocket::Create(
     net::NetLog* net_log,
     ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory,
     P2PMessageThrottler* throttler,
-    absl::optional<base::UnguessableToken> devtools_token) {
+    std::optional<base::UnguessableToken> devtools_token) {
   switch (type) {
     case P2P_SOCKET_UDP:
       return std::make_unique<P2PSocketUdp>(
@@ -158,7 +158,7 @@ std::unique_ptr<P2PSocket> P2PSocket::Create(
           traffic_annotation, proxy_resolving_socket_factory);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

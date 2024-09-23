@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/utility/persistent_proto.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/ranking/removed_results.pb.h"
-#include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,7 +20,7 @@ class RemovedResultsProtoTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    proto_ = std::make_unique<PersistentProto<RemovedResultsProto>>(
+    proto_ = std::make_unique<ash::PersistentProto<RemovedResultsProto>>(
         GetPath(), /*write_delay=*/base::TimeDelta());
     proto_->Init();
   }
@@ -29,7 +29,7 @@ class RemovedResultsProtoTest : public testing::Test {
 
   base::FilePath GetPath() { return temp_dir_.GetPath().Append("proto"); }
 
-  PersistentProto<RemovedResultsProto>* proto() { return proto_.get(); }
+  ash::PersistentProto<RemovedResultsProto>* proto() { return proto_.get(); }
 
   void PersistIds(const std::vector<std::string>& ids) {
     for (const auto& id : ids)
@@ -52,7 +52,7 @@ class RemovedResultsProtoTest : public testing::Test {
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<PersistentProto<RemovedResultsProto>> proto_;
+  std::unique_ptr<ash::PersistentProto<RemovedResultsProto>> proto_;
 };
 
 TEST_F(RemovedResultsProtoTest, CheckInitializeEmpty) {

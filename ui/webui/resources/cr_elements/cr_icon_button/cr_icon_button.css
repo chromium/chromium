@@ -1,0 +1,127 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-icon-button-fill-color: currentColor;
+  --cr-icon-button-icon-start-offset: 0;
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-size: 32px;
+  --cr-icon-button-height: var(--cr-icon-button-size);
+  --cr-icon-button-transition: 150ms ease-in-out;
+  --cr-icon-button-width: var(--cr-icon-button-size);
+  /* Copied from paper-fab.html. Prevents square touch highlight. */
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 50%;
+  color: var(--cr-icon-button-stroke-color,
+      var(--cr-icon-button-fill-color));
+  cursor: pointer;
+  display: inline-flex;
+  flex-shrink: 0;
+  height: var(--cr-icon-button-height);
+  margin-inline-end: var(--cr-icon-button-margin-end,
+      var(--cr-icon-ripple-margin));
+  margin-inline-start: var(--cr-icon-button-margin-start);
+  outline: none;
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+  vertical-align: middle;
+  width: var(--cr-icon-button-width);
+}
+
+:host(:hover) {
+  background-color: var(--cr-icon-button-hover-background-color,
+      var(--cr-hover-background-color));
+}
+
+:host(:focus-visible:focus) {
+  box-shadow: inset 0 0 0 2px var(--cr-icon-button-focus-outline-color,
+      var(--cr-focus-outline-color));
+}
+
+@media (forced-colors: active) {
+  :host(:focus-visible:focus) {
+    /* Use outline instead of box-shadow (which does not work) in Windows
+       HCM. */
+    outline: var(--cr-focus-outline-hcm);
+  }
+}
+
+#ink {
+  --paper-ripple-opacity: 1;
+  color: var(--cr-icon-button-active-background-color,
+      var(--cr-active-background-color));
+}
+
+:host([disabled]) {
+  cursor: initial;
+  opacity: var(--cr-disabled-opacity);
+  pointer-events: none;
+}
+
+:host(.no-overlap) {
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+}
+
+:host-context([dir=rtl]):host(
+    :not([suppress-rtl-flip]):not([multiple-icons_])) {
+  transform: scaleX(-1);  /* Invert X: flip on the Y axis (aka mirror). */
+}
+
+:host-context([dir=rtl]):host(
+    :not([suppress-rtl-flip])[multiple-icons_]) cr-icon {
+  transform: scaleX(-1);  /* Invert X: flip on the Y axis (aka mirror). */
+}
+
+:host(:not([iron-icon])) #maskedImage {
+  -webkit-mask-image: var(--cr-icon-image);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: var(--cr-icon-button-icon-size);
+  -webkit-transform: var(--cr-icon-image-transform, none);
+  background-color: var(--cr-icon-button-fill-color);
+  height: 100%;
+  transition: background-color var(--cr-icon-button-transition);
+  width: 100%;
+}
+
+@media (forced-colors: active) {
+  :host(:not([iron-icon])) #maskedImage {
+    background-color: ButtonText;
+  }
+}
+
+#icon {
+  align-items: center;
+  border-radius: 4px;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  padding-inline-start: var(--cr-icon-button-icon-start-offset);
+  /* The |_rippleContainer| must be position relative. */
+  position: relative;
+  width: 100%;
+}
+
+cr-icon {
+  --iron-icon-fill-color: var(--cr-icon-button-fill-color);
+  --iron-icon-stroke-color: var(--cr-icon-button-stroke-color, none);
+  --iron-icon-height: var(--cr-icon-button-icon-size);
+  --iron-icon-width: var(--cr-icon-button-icon-size);
+  transition: fill var(--cr-icon-button-transition),
+      stroke var(--cr-icon-button-transition);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --cr-icon-button-fill-color: var(--google-grey-500);
+  }
+}

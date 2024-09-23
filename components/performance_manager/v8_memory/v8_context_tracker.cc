@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -38,7 +39,7 @@ using V8ContextData = internal::V8ContextData;
 
 // A function that can be bound to as a mojo::ReportBadMessage
 // callback. Only used in testing.
-void FakeReportBadMessageForTesting(base::StringPiece error) {
+void FakeReportBadMessageForTesting(std::string_view error) {
   // This is used in DCHECK death tests, so must use a DCHECK.
   DCHECK(false) << "Bad mojo message: " << error;
 }
@@ -245,7 +246,7 @@ void V8ContextTracker::OnRemoteIframeAttached(
     // OnRemoteIframeAttached, but the parent frame disappears shortly
     // afterward.
     //
-    // TODO(crbug.com/1085129): Write an end-to-end browsertest that covers
+    // TODO(crbug.com/40132061): Write an end-to-end browsertest that covers
     // this case once all parts of the measure memory API are hooked up.
     if (data->frame_node && data->parent_frame_node) {
       auto* frame_node = FrameNodeImpl::FromNode(data->frame_node.get());
@@ -364,45 +365,29 @@ void V8ContextTracker::OnBeforeExecutionContextRemoved(
     data_store_->MarkDestroyed(ec_data);
 }
 
-void V8ContextTracker::OnBeforeGraphDestroyed(Graph* graph) {
-  DCHECK_ON_GRAPH_SEQUENCE(graph);
-  // Remove ourselves from the execution context registry observer list here as
-  // it may get torn down before our OnTakenFromGraph is called. This is also
-  // called from "OnTakenFromGraph", so it is resistant to the
-  // ExecutionContextRegistry no longer existing.
-  auto* registry =
-      execution_context::ExecutionContextRegistry::GetFromGraph(graph);
-  if (registry && registry->HasObserver(this))
-    registry->RemoveObserver(this);
-}
-
 void V8ContextTracker::OnPassedToGraph(Graph* graph) {
   DCHECK_ON_GRAPH_SEQUENCE(graph);
 
-  graph->AddGraphObserver(this);
   graph->AddProcessNodeObserver(this);
-  graph->RegisterObject(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            "V8ContextTracker");
   auto* registry =
       execution_context::ExecutionContextRegistry::GetFromGraph(graph);
   // We expect the registry to exist before we are passed to the graph.
-  DCHECK(registry);
+  CHECK(registry);
   registry->AddObserver(this);
 }
 
 void V8ContextTracker::OnTakenFromGraph(Graph* graph) {
   DCHECK_ON_GRAPH_SEQUENCE(graph);
 
-  // Call OnBeforeGraphDestroyed as well. This unregisters us from the
-  // ExecutionContextRegistry in case we're being removed from the graph
-  // prior to its destruction.
-  OnBeforeGraphDestroyed(graph);
+  auto* registry =
+      execution_context::ExecutionContextRegistry::GetFromGraph(graph);
+  CHECK(registry);
+  registry->RemoveObserver(this);
 
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
-  graph->UnregisterObject(this);
   graph->RemoveProcessNodeObserver(this);
-  graph->RemoveGraphObserver(this);
 }
 
 base::Value::Dict V8ContextTracker::DescribeFrameNodeData(
@@ -453,7 +438,7 @@ base::Value::Dict V8ContextTracker::DescribeWorkerNodeData(
   DCHECK_ON_GRAPH_SEQUENCE(node->GetGraph());
   size_t v8_context_count = 0;
   const auto* ec_data =
-      data_store_->Get(ToExecutionContextToken(node->GetWorkerToken()));
+      data_store_->Get(blink::ExecutionContextToken(node->GetWorkerToken()));
   if (ec_data)
     v8_context_count = ec_data->v8_context_count();
 

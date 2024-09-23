@@ -48,8 +48,9 @@ promise_test(async (t) => {
                   Function.prototype);
     assert_equals(gamepad.vibrationActuator.reset.__proto__,
                   Function.prototype);
-    assert_equals(gamepad.vibrationActuator.canPlay.__proto__,
-                  Function.prototype);
+    assert_equals(gamepad.vibrationActuator.effects.__proto__, Array.prototype);
+    assert_true(gamepad.vibrationActuator.effects.includes('dual-rumble'));
+    assert_false(gamepad.vibrationActuator.effects.includes('trigger-rumble'));
 }, "validate gamepad haptic actuator API");
 
 promise_test(async (t) => {
@@ -147,26 +148,13 @@ promise_test(async (t) => {
     await connectPromise;
 
     let dualRumbleGamepad = navigator.getGamepads()[0];
-    assert_true(dualRumbleGamepad.vibrationActuator.canPlay("dual-rumble"));
-    assert_false(dualRumbleGamepad.vibrationActuator.canPlay("trigger-rumble"));
+    assert_true(dualRumbleGamepad.vibrationActuator.effects.includes("dual-rumble"));
+    assert_false(dualRumbleGamepad.vibrationActuator.effects.includes("trigger-rumble"));
 
     let triggerRumbleGamepad = navigator.getGamepads()[1];
-    assert_true(triggerRumbleGamepad.vibrationActuator.canPlay("dual-rumble"));
-    assert_true(triggerRumbleGamepad.vibrationActuator.canPlay("trigger-rumble"));
+    assert_true(triggerRumbleGamepad.vibrationActuator.effects.includes("dual-rumble"));
+    assert_true(triggerRumbleGamepad.vibrationActuator.effects.includes("trigger-rumble"));
 }, "canPlay should report correct the gamepad capabilites");
-
-promise_test(async (t) => {
-    // Connect a gamepad with trigger-rumble vibration actuator.
-    connectPromise = ongamepadconnected(t);
-    gamepadController.connect(0);
-    gamepadController.setId(0, "Xbox Elite");
-    gamepadController.setTriggerRumbleVibrationActuator(0, true);
-    gamepadController.dispatchConnected(0);
-    await connectPromise;
-
-    let triggerRumbleGamepad = navigator.getGamepads()[0];
-    assert_throws_js(TypeError, () => triggerRumbleGamepad.vibrationActuator.canPlay("unknown-rumble"));
-}, "canPlay should throw a TypeError for unknown effect types");
 
 </script>
 </body>

@@ -5,6 +5,7 @@
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -13,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "url/gurl.h"
@@ -68,7 +68,7 @@ void TestNavigationListener::RunUntilUrlEquals(const GURL& expected_url) {
 }
 
 void TestNavigationListener::RunUntilTitleEquals(
-    const base::StringPiece expected_title) {
+    const std::string_view expected_title) {
   fuchsia::web::NavigationState state;
   state.set_title(std::string(expected_title));
   state.set_page_type(fuchsia::web::PageType::NORMAL);
@@ -77,7 +77,7 @@ void TestNavigationListener::RunUntilTitleEquals(
 
 void TestNavigationListener::RunUntilUrlAndTitleEquals(
     const GURL& expected_url,
-    const base::StringPiece expected_title) {
+    const std::string_view expected_title) {
   fuchsia::web::NavigationState state;
   state.set_url(expected_url.spec());
   state.set_title(std::string(expected_title));
@@ -86,7 +86,7 @@ void TestNavigationListener::RunUntilUrlAndTitleEquals(
 }
 
 void TestNavigationListener::RunUntilErrorPageIsLoadedAndTitleEquals(
-    base::StringPiece expected_title) {
+    std::string_view expected_title) {
   fuchsia::web::NavigationState state;
   state.set_title(std::string(expected_title));
   state.set_page_type(fuchsia::web::PageType::ERROR);
@@ -96,7 +96,7 @@ void TestNavigationListener::RunUntilErrorPageIsLoadedAndTitleEquals(
 
 void TestNavigationListener::RunUntilUrlTitleBackForwardEquals(
     const GURL& expected_url,
-    base::StringPiece expected_title,
+    std::string_view expected_title,
     bool expected_can_go_back,
     bool expected_can_go_forward) {
   fuchsia::web::NavigationState state;

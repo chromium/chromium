@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+enum class ToolbarTabGridButtonStyle;
+
 // ToolbarConsumer sets the current appearance of the Toolbar.
 @protocol ToolbarConsumer
 // Updates the toolbar with the current forward navigation state.
@@ -35,6 +37,8 @@
 - (void)setTabGridButtonIPHHighlighted:(BOOL)iphHighlighted;
 // Sets the IPH highlighted state of the new tab button.
 - (void)setNewTabButtonIPHHighlighted:(BOOL)iphHighlighted;
+// Sets the Tab Grid button style.
+- (void)setTabGridButtonStyle:(ToolbarTabGridButtonStyle)tabGridButtonStyle;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_CONSUMER_H_

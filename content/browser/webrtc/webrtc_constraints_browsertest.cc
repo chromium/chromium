@@ -58,7 +58,7 @@ class WebRtcConstraintsBrowserTest
 // Test fails under MSan, https://crbug.com/445745.
 // Test is also flaky (on Mac, Linux, LaCrOS, Android, but mostly on Mac):
 // https://crbug.com/1241538
-// TODO(https://crbug.com/1318234): Fix and enable on Fuchsia.
+// TODO(crbug.com/40835236): Fix and enable on Fuchsia.
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_GetUserMediaConstraints DISABLED_GetUserMediaConstraints
 #else

@@ -37,8 +37,8 @@ class DeviceCloudPolicyClientFactoryAshTest : public testing::Test {
 };
 
 TEST_F(DeviceCloudPolicyClientFactoryAshTest, ValidStatistics) {
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kHardwareClassKey,
                                                 kHardwareClassValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,

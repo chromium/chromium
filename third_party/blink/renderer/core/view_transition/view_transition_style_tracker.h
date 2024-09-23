@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_STYLE_TRACKER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/unguessable_token.h"
+#include "cc/layers/view_transition_content_layer.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -14,15 +16,18 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/style/style_view_transition_group.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
-#include "third_party/blink/renderer/platform/graphics/view_transition_element_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace blink {
+
+class ClipPaintPropertyNode;
 class PaintLayer;
 class PseudoElement;
 
@@ -74,7 +79,9 @@ class ViewTransitionStyleTracker
     gfx::Transform snapshot_matrix;
   };
 
-  explicit ViewTransitionStyleTracker(Document& document);
+  explicit ViewTransitionStyleTracker(
+      Document& document,
+      const blink::ViewTransitionToken& transition_token);
   ViewTransitionStyleTracker(Document& document, ViewTransitionState);
   ~ViewTransitionStyleTracker();
 
@@ -86,9 +93,11 @@ class ViewTransitionStyleTracker
                          const AtomicString& view_transition_name) const;
 
   // Indicate that capture was requested. This verifies that the combination of
-  // set elements and names is valid. Returns true if capture phase started, and
-  // false if the transition should be aborted.
-  bool Capture();
+  // set elements and names is valid. Returns true if capture phase started,
+  // and false if the transition should be aborted. If `snap_browser_controls`
+  // is set, browser controls will be forced to a fully shown state to ensure a
+  // consistent state for cross-document transitions.
+  bool Capture(bool snap_browser_controls);
 
   // Notifies when caching snapshots for elements in the old DOM finishes. This
   // is dispatched before script is notified to ensure this class releases any
@@ -108,16 +117,26 @@ class ViewTransitionStyleTracker
   // is initiated.
   void Abort();
 
-  void UpdateElementIndicesAndSnapshotId(
-      Element*,
-      ViewTransitionElementId&,
-      viz::ViewTransitionElementResourceId&) const;
+  // Notifies when rendering is throttled for the local subframe associated with
+  // this transition.
+  void DidThrottleLocalSubframeRendering();
+
+  // Returns the snapshot ID to identify the render pass based image produced by
+  // this Element. Returns an invalid ID if this element is not participating in
+  // the transition.
+  viz::ViewTransitionElementResourceId GetSnapshotId(const Element&) const;
+
+  // The layer used to paint the old Document rendered in a LocalFrame subframe
+  // until the new Document can start rendering.
+  const scoped_refptr<cc::ViewTransitionContentLayer>&
+  GetSubframeSnapshotLayer() const;
 
   // Creates a PseudoElement for the corresponding |pseudo_id| and
   // |view_transition_name|. The |pseudo_id| must be a ::transition* element.
-  PseudoElement* CreatePseudoElement(Element* parent,
-                                     PseudoId pseudo_id,
-                                     const AtomicString& view_transition_name);
+  PseudoElement* CreatePseudoElement(
+      Element* parent,
+      PseudoId pseudo_id,
+      const AtomicString& view_transition_name) const;
 
   // Dispatched after the pre-paint lifecycle stage after each rendering
   // lifecycle update when a transition is in progress.
@@ -133,19 +152,6 @@ class ViewTransitionStyleTracker
   // Returns true if any of the pseudo elements are currently participating in
   // an animation.
   bool HasActiveAnimations() const;
-
-  // Updates an effect node with the given state. The return value is a result
-  // of updating the effect node.
-  PaintPropertyChangeType UpdateEffect(
-      const Element& element,
-      EffectPaintPropertyNode::State state,
-      const EffectPaintPropertyNodeOrAlias& current_effect);
-  PaintPropertyChangeType UpdateRootEffect(
-      EffectPaintPropertyNode::State state,
-      const EffectPaintPropertyNodeOrAlias& current_effect);
-
-  const EffectPaintPropertyNode* GetEffect(const Element& element) const;
-  const EffectPaintPropertyNode* GetRootEffect() const;
 
   // Updates a clip node with the given state. The return value is a result of
   // updating the clip node.
@@ -206,6 +212,10 @@ class ViewTransitionStyleTracker
   const Vector<AtomicString>& GetViewTransitionClassList(
       const AtomicString& name) const;
 
+  // This returns the resolved containing group name for a given view transition
+  // name. Note that this only works once the transition starts.
+  AtomicString GetContainingGroupName(const AtomicString& name) const;
+
  private:
   class ImageWrapperPseudoElement;
 
@@ -213,6 +223,10 @@ class ViewTransitionStyleTracker
   // transition is aborted.
   enum class State { kIdle, kCapturing, kCaptured, kStarted, kFinished };
   static const char* StateToString(State state);
+
+  AtomicString ComputeContainingGroupName(
+      const AtomicString& name,
+      const StyleViewTransitionGroup& group) const;
 
   struct ElementData : public GarbageCollected<ElementData> {
     void Trace(Visitor* visitor) const;
@@ -244,13 +258,10 @@ class ViewTransitionStyleTracker
     // Valid if there is an element in the new DOM generating a snapshot.
     viz::ViewTransitionElementResourceId new_snapshot_id;
 
-    // An effect used to represent the `target_element`'s contents, including
-    // any of element's own effects, in a pseudo element layer.
-    scoped_refptr<EffectPaintPropertyNode> effect_node;
-
     // A clip used to specify the subset of the `target_element`'s visual
     // overflow rect rendered into the element's snapshot.
-    scoped_refptr<ClipPaintPropertyNode> clip_node;
+    // TODO(khushalsagar): Move this to ObjectPaintProperties.
+    Member<ClipPaintPropertyNode> clip_node;
 
     // Index to add to the view transition element id.
     int element_index;
@@ -278,6 +289,8 @@ class ViewTransitionStyleTracker
 
     // https://drafts.csswg.org/css-view-transitions-2/#captured-element-class-list
     Vector<AtomicString> class_list;
+
+    AtomicString containing_group_name;
   };
 
   // In physical pixels. Returns the snapshot root rect, relative to the
@@ -290,10 +303,17 @@ class ViewTransitionStyleTracker
   void EndTransition();
 
   void AddConsoleError(String message, Vector<DOMNodeId> related_nodes = {});
-  void AddTransitionElement(Element*, const AtomicString&);
+  void AddTransitionElement(Element*,
+                            const AtomicString& name,
+                            const AtomicString& nearest_containing_group,
+                            const AtomicString& current_containing_group_name);
   bool FlattenAndVerifyElements(VectorOf<Element>&, VectorOf<AtomicString>&);
 
-  void AddTransitionElementsFromCSSRecursive(PaintLayer*);
+  void AddTransitionElementsFromCSSRecursive(
+      PaintLayer*,
+      const TreeScope*,
+      Vector<AtomicString>& containing_group_stack,
+      const AtomicString& current_containing_group_name);
 
   void InvalidateHitTestingCache();
 
@@ -313,10 +333,20 @@ class ViewTransitionStyleTracker
       PhysicalRect& visual_overflow_rect_in_layout_space,
       std::optional<gfx::RectF>& captured_rect_in_layout_space) const;
 
+  viz::ViewTransitionElementResourceId GenerateResourceId() const;
+
+  void SnapBrowserControlsToFullyShown();
+
+  // This computes the containing group name, validating that the given name is
+  // found in one of the ancestors of the given element.
+  AtomicString ComputeContainingGroupName(Element*) const;
+
   Member<Document> document_;
 
   // Indicates which step during the transition we're currently at.
   State state_ = State::kIdle;
+
+  const blink::ViewTransitionToken transition_token_;
 
   // Set if this style tracker was created by deserializing captured state
   // instead of running through the capture phase. This is done for transitions
@@ -343,11 +373,6 @@ class ViewTransitionStyleTracker
   // sync with the Document during RunPostPrePaintSteps().
   float device_pixel_ratio_ = 0.f;
 
-  // The paint property node for the |documentElement|. This is generated if the
-  // element has a valid |view-transition-name| and ensures correct generation
-  // of its snapshot.
-  scoped_refptr<EffectPaintPropertyNode> root_effect_node_;
-
   // The dynamically generated UA stylesheet for default styles on
   // pseudo-elements.
   Member<CSSStyleSheet> ua_style_sheet_;
@@ -367,6 +392,25 @@ class ViewTransitionStyleTracker
   // transition. This is a purely performance optimization since this check is
   // used in hot code-paths.
   bool is_root_transitioning_ = false;
+
+  // Set if this transition is in a LocalFrame sub-frame, when the capture is
+  // initiated until the start phase of the animation.
+  scoped_refptr<cc::ViewTransitionContentLayer> subframe_snapshot_layer_;
+
+  // Returns true if GetViewTransitionState() has already been called. This is
+  // used only to enforce additional captures don't happen after that.
+  mutable bool state_extracted_ = false;
+
+  // Used to save hierarchical information about the nearest
+  // view-transition-group as well as the nearest one with "contain".
+  struct AncestorGroupNames {
+    AtomicString nearest;
+
+    // This is the nearest ancestor view-transition-name that is set to contain
+    // all of its descendants.
+    AtomicString contain;
+  };
+  HashMap<AtomicString, AncestorGroupNames> group_state_map_;
 };
 
 }  // namespace blink

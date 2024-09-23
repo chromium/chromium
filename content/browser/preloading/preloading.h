@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRELOADING_H_
 #define CONTENT_BROWSER_PRELOADING_PRELOADING_H_
 
+#include <string_view>
+
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
 
@@ -20,6 +22,8 @@ namespace content {
 // go/preloading-dashboard-updates to update the mapping reflected in
 // dashboard, or if you are not a Googler, please file an FYI bug on
 // https://crbug.new with component Internals>Preload.
+//
+// LINT.IfChange
 namespace content_preloading_predictor {
 // Advance numbering by +1 when adding a new element.
 //
@@ -48,15 +52,13 @@ static constexpr PreloadingPredictor kSpeculationRulesFromIsolatedWorld(
 static constexpr PreloadingPredictor kSpeculationRulesFromAutoSpeculationRules(
     53,
     "SpeculationRulesFromAutoSpeculationRules");
-
-// TODO(crbug.com/1309934): Add more predictors as we integrate Preloading
-// logging.
 }  // namespace content_preloading_predictor
+// LINT.ThenChange()
 
-CONTENT_EXPORT base::StringPiece PreloadingTypeToString(PreloadingType type);
+CONTENT_EXPORT std::string_view PreloadingTypeToString(PreloadingType type);
 
-PreloadingPredictor GetPredictorForPreloadingTriggerType(
-    PreloadingTriggerType trigger_type);
+CONTENT_EXPORT PreloadingPredictor
+GetPredictorForPreloadingTriggerType(PreloadingTriggerType trigger_type);
 
 }  // namespace content
 

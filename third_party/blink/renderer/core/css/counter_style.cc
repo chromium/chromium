@@ -27,6 +27,11 @@
  *
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/css/counter_style.h"
 
 #include "base/auto_reset.h"
@@ -644,7 +649,7 @@ CounterStyleSystem CounterStyle::ToCounterStyleSystemEnum(
     case CSSValueID::kExtends:
       return CounterStyleSystem::kUnresolvedExtends;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CounterStyleSystem::kSymbolic;
   }
 }
@@ -662,7 +667,7 @@ CounterStyleSpeakAs ToCounterStyleSpeakAsEnum(
     case CSSValueID::kWords:
       return CounterStyleSpeakAs::kWords;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CounterStyleSpeakAs::kAuto;
   }
 }
@@ -846,7 +851,7 @@ bool CounterStyle::RangeContains(int value) const {
     case CounterStyleSystem::kUpperArmenian:
       return value >= 1 && value <= 99999999;
     case CounterStyleSystem::kUnresolvedExtends:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -876,7 +881,7 @@ bool CounterStyle::NeedsNegativeSign(int value) const {
     case CounterStyleSystem::kFixed:
       return false;
     case CounterStyleSystem::kUnresolvedExtends:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -978,7 +983,7 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
     case CounterStyleSystem::kEthiopicNumeric:
       return EthiopicNumericAlgorithm(abs_value);
     case CounterStyleSystem::kUnresolvedExtends:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return String();
   }
 }
@@ -1059,7 +1064,7 @@ CounterStyleSpeakAs CounterStyle::EffectiveSpeakAs() const {
         case CounterStyleSystem::kEthiopicNumeric:
           return CounterStyleSpeakAs::kNumbers;
         case CounterStyleSystem::kUnresolvedExtends:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return CounterStyleSpeakAs::kNumbers;
       }
   }
@@ -1102,7 +1107,7 @@ String CounterStyle::GenerateTextAlternativeWithoutPrefixSuffix(
       return GenerateRepresentation(value);
     case CounterStyleSpeakAs::kAuto:
     case CounterStyleSpeakAs::kReference:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return String();
   }
 }

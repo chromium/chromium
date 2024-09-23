@@ -32,11 +32,9 @@ AutocompleteKey::~AutocompleteKey() = default;
 AutocompleteEntry::AutocompleteEntry() = default;
 
 AutocompleteEntry::AutocompleteEntry(const AutocompleteKey& key,
-                             const base::Time& date_created,
-                             const base::Time& date_last_used)
-    : key_(key),
-      date_created_(date_created),
-      date_last_used_(date_last_used) {}
+                                     base::Time date_created,
+                                     base::Time date_last_used)
+    : key_(key), date_created_(date_created), date_last_used_(date_last_used) {}
 
 AutocompleteEntry::~AutocompleteEntry() = default;
 

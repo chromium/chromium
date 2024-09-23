@@ -32,14 +32,15 @@ TEST_F(OverlayDialogTest, ShowAndClose) {
   for (auto& dialog_view : dialog_views) {
     const bool has_dialog_view = !!dialog_view;
 
-    auto widget = CreateTestWidget();
+    auto widget =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     bool called = false;
     widget->SetContentsView(CreateTestOverlayDialog(
         base::BindLambdaForTesting([&]() { called = true; }),
         std::move(dialog_view)));
 
     const auto& view_ax = widget->GetRootView()->GetViewAccessibility();
-    EXPECT_EQ(!has_dialog_view, view_ax.IsIgnored());
+    EXPECT_EQ(!has_dialog_view, view_ax.GetIsIgnored());
 
     widget->Show();
     EXPECT_FALSE(called);

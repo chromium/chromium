@@ -415,6 +415,7 @@ xsltExtModuleRegisterDynamic(const xmlChar * URI)
                      module_filename, URI);
 #endif
 
+#if LIBXML_VERSION < 21300
     if (1 != xmlCheckFilename(module_filename)) {
 
 #ifdef WITH_XSLT_DEBUG_EXTENSIONS
@@ -425,6 +426,7 @@ xsltExtModuleRegisterDynamic(const xmlChar * URI)
         xmlFree(ext_name);
         return (-1);
     }
+#endif
 
     /* attempt to open the module */
     m = xmlModuleOpen(module_filename, 0);

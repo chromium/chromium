@@ -97,10 +97,15 @@ void RecordUpdateStages(const base::TimeDelta check_time,
   RecordFinalizeTime(finalize_time);
 }
 
+void RecordUpdateCheckTimeout(bool timeout) {
+  base::UmaHistogramBoolean("OOBE.UpdateScreen.CheckTimeout", timeout);
+}
+
 }  // namespace
 
 // static
 std::string UpdateScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::UPDATE_NOT_REQUIRED:
       return "UpdateNotRequired";
@@ -113,6 +118,7 @@ std::string UpdateScreen::GetResultString(Result result) {
     case Result::UPDATE_CHECK_TIMEOUT:
       return "UpdateCheckTimeout";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 UpdateScreen::UpdateScreen(base::WeakPtr<UpdateView> view,
@@ -297,6 +303,9 @@ void UpdateScreen::DelayErrorMessage() {
 
 void UpdateScreen::UpdateInfoChanged(
     const VersionUpdater::UpdateInfo& update_info) {
+  if (is_hidden()) {
+    return;
+  }
   const update_engine::StatusResult& status = update_info.status;
   hide_progress_on_exit_ = false;
   has_critical_update_ =
@@ -314,8 +323,12 @@ void UpdateScreen::UpdateInfoChanged(
       context()->quick_start_setup_ongoing) {
     WizardController::default_controller()
         ->quick_start_controller()
-        ->PrepareForUpdate();
+        ->PrepareForUpdate(/*is_forced=*/true);
+    did_prepare_quick_start_for_update_ = true;
     view_->SetUpdateState(UpdateView::UIState::kUpdateInProgress);
+    // Set that critical update applied in OOBE.
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kOobeCriticalUpdateCompleted, true);
     wait_reboot_timer_.Start(FROM_HERE, wait_before_reboot_time_,
                              version_updater_.get(),
                              &VersionUpdater::RebootAfterUpdate);
@@ -379,7 +392,8 @@ void UpdateScreen::UpdateInfoChanged(
       if (context()->quick_start_setup_ongoing) {
         WizardController::default_controller()
             ->quick_start_controller()
-            ->PrepareForUpdate();
+            ->PrepareForUpdate(/*is_forced=*/true);
+        did_prepare_quick_start_for_update_ = true;
       }
       break;
     case update_engine::Operation::VERIFYING:
@@ -441,12 +455,20 @@ void UpdateScreen::UpdateInfoChanged(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   UpdateBatteryWarningVisibility();
 }
 
 void UpdateScreen::FinishExitUpdate(Result result) {
+  if (did_prepare_quick_start_for_update_) {
+    WizardController::default_controller()
+        ->quick_start_controller()
+        ->ResumeSessionAfterCancelledUpdate();
+  }
+
+  RecordUpdateCheckTimeout(result == Result::UPDATE_CHECK_TIMEOUT);
+
   if (!start_update_stage_.is_null() && check_time_.is_zero()) {
     check_time_ = tick_clock_->NowTicks() - start_update_stage_;
     RecordCheckTime(check_time_);

@@ -179,6 +179,32 @@ inline void HasMediaSequenceNumber(types::DecimalInteger number,
   EXPECT_EQ(segment.GetMediaSequenceNumber(), number) << from.ToString();
 }
 
+// Checks that the latest media segment has the given media sequence number.
+inline void HasEncryptionData(
+    std::optional<std::tuple<GURL,
+                             XKeyTagMethod,
+                             XKeyTagKeyFormat,
+                             MediaSegment::EncryptionData::IVContainer>> pack,
+    const base::Location& from,
+    const MediaSegment& segment) {
+  auto enc_data = segment.GetEncryptionData();
+  if (!pack.has_value()) {
+    ASSERT_EQ(enc_data.get(), nullptr) << from.ToString();
+  } else {
+    ASSERT_NE(enc_data.get(), nullptr) << from.ToString();
+    GURL uri;
+    XKeyTagMethod method;
+    XKeyTagKeyFormat format;
+    MediaSegment::EncryptionData::IVContainer iv;
+    std::tie(uri, method, format, iv) = pack.value();
+    EXPECT_EQ(enc_data->GetUri(), uri) << from.ToString();
+    EXPECT_EQ(enc_data->GetMethod(), method) << from.ToString();
+    EXPECT_EQ(enc_data->GetKeyFormat(), format) << from.ToString();
+    EXPECT_EQ(enc_data->GetIV(segment.GetMediaSequenceNumber()), iv)
+        << from.ToString();
+  }
+}
+
 // Checks that the latest media segment has the given discontinuity sequence
 // number.
 inline void HasDiscontinuitySequenceNumber(types::DecimalInteger number,
@@ -279,4 +305,4 @@ inline void IsIFramesOnly(bool value,
 
 }  // namespace media::hls
 
-#endif
+#endif  // MEDIA_FORMATS_HLS_MEDIA_PLAYLIST_TEST_BUILDER_H_

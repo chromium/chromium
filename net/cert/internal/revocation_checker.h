@@ -116,6 +116,7 @@ NET_EXPORT_PRIVATE void CheckValidatedChainRevocation(
     const RevocationPolicy& policy,
     base::TimeTicks deadline,
     std::string_view stapled_leaf_ocsp_response,
+    base::Time current_time,
     CertNetFetcher* net_fetcher,
     bssl::CertPathErrors* errors,
     bssl::OCSPVerifyResult* stapled_ocsp_verify_result);

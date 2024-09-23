@@ -14,18 +14,15 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
+#include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "extensions/browser/api/management/management_api.h"
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 using extensions::Extension;
 
@@ -93,15 +90,13 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
   const Extension* extension =
       registry->disabled_extensions().GetByID(extension_id_);
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   extensions::SupervisedUserExtensionsDelegate*
       supervised_user_extensions_delegate =
           extensions::ManagementAPI::GetFactoryInstance()
               ->Get(profile_)
               ->GetSupervisedUserExtensionsDelegate();
   DCHECK(supervised_user_extensions_delegate);
-  if (supervised_user::AreExtensionsPermissionsEnabled(*profile_->GetPrefs()) &&
-      extension &&
+  if (supervised_user::AreExtensionsPermissionsEnabled(profile_) && extension &&
 
       // Only ask for parent approval if the extension still requires approval.
       !supervised_user_extensions_delegate->IsExtensionAllowedByParent(
@@ -112,10 +107,12 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
         base::BindOnce(&ExtensionEnableFlow::OnExtensionApprovalDone,
                        weak_ptr_factory_.GetWeakPtr());
     supervised_user_extensions_delegate->RequestToEnableExtensionOrShowError(
-        *extension, parent_contents_, std::move(extension_approval_callback));
+        *extension, parent_contents_,
+        SupervisedUserExtensionParentApprovalEntryPoint::
+            kOnTerminatedExtensionEnableFlowOperation,
+        std::move(extension_approval_callback));
     return;
   }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   bool abort = !extension ||
                // The extension might be force-disabled by policy.
@@ -164,7 +161,6 @@ void ExtensionEnableFlow::CreatePrompt() {
                     : new ExtensionInstallPrompt(profile_, nullptr));
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 void ExtensionEnableFlow::OnExtensionApprovalDone(
     extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult
         result) {
@@ -187,7 +183,6 @@ void ExtensionEnableFlow::OnExtensionApprovalDone(
       break;
   }
 }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 void ExtensionEnableFlow::StartObserving() {
   extension_registry_observation_.Observe(
@@ -243,8 +238,7 @@ void ExtensionEnableFlow::EnableExtension() {
         /*user_initiated=*/true);  // |delegate_| may delete us.
     return;
   }
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  if (supervised_user::AreExtensionsPermissionsEnabled(*profile_->GetPrefs())) {
+  if (supervised_user::AreExtensionsPermissionsEnabled(profile_)) {
     // We need to add parent approval first.
     extensions::SupervisedUserExtensionsDelegate*
         supervised_user_extensions_delegate =
@@ -253,10 +247,10 @@ void ExtensionEnableFlow::EnableExtension() {
                 ->GetSupervisedUserExtensionsDelegate();
     CHECK(supervised_user_extensions_delegate);
     supervised_user_extensions_delegate->AddExtensionApproval(*extension);
+    supervised_user_extensions_delegate->MaybeRecordPermissionsIncreaseMetrics(*extension);
     supervised_user_extensions_delegate->RecordExtensionEnablementUmaMetrics(
         /*enabled=*/true);
   }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   service->GrantPermissionsAndEnableExtension(extension);
 
   DCHECK(service->IsExtensionEnabled(extension_id_));
@@ -271,7 +265,7 @@ void ExtensionEnableFlow::InstallPromptDone(
       break;
     case ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS:
       // This dialog doesn't support the "withhold permissions" checkbox.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case ExtensionInstallPrompt::Result::USER_CANCELED:
     case ExtensionInstallPrompt::Result::ABORTED:

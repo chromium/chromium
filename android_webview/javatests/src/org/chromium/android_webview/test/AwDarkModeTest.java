@@ -25,11 +25,11 @@ import org.chromium.android_webview.AwDarkMode;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.DarkModeHelper;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.Callable;
@@ -128,7 +128,7 @@ public class AwDarkModeTest extends AwParameterizedTest {
         DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
         Configuration newConfig = new Configuration();
         newConfig.uiMode = Configuration.UI_MODE_NIGHT_YES;
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.onConfigurationChanged(newConfig));
+        ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.onConfigurationChanged(newConfig));
         loadUrlSync(url);
         assertEquals("true", getPrefersColorSchemeDark());
     }
@@ -242,7 +242,7 @@ public class AwDarkModeTest extends AwParameterizedTest {
     }
 
     private boolean isForceDarkening() throws Throwable {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 new Callable<Boolean>() {
                     @Override
                     public Boolean call() {

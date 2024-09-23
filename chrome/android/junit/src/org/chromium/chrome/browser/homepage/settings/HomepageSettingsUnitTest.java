@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithEditText;
@@ -112,6 +113,7 @@ public class HomepageSettingsUnitTest {
                     mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
                 });
         mActionTester = new UserActionTester();
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
     }
 
     @After
@@ -399,7 +401,8 @@ public class HomepageSettingsUnitTest {
                 mCustomUriRadioButton.getPrimaryText().toString());
 
         Assert.assertTrue(
-                ASSERT_HOMEPAGE_MANAGER_SETTINGS, HomepageManager.getHomepageGurl().isEmpty());
+                ASSERT_HOMEPAGE_MANAGER_SETTINGS,
+                HomepageManager.getInstance().getHomepageGurl().isEmpty());
     }
 
     /** Test toggle switch to enable/disable homepage. */
@@ -412,11 +415,12 @@ public class HomepageSettingsUnitTest {
 
         launchHomepageSettings();
 
+        HomepageManager homepageManager = HomepageManager.getInstance();
         Assert.assertTrue(ASSERT_MESSAGE_SWITCH_ENABLE, mSwitch.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_TITLE_ENABLED, mTitleTextView.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mCustomUriRadioButton.isEnabled());
-        Assert.assertTrue("Homepage should be enabled.", HomepageManager.isHomepageEnabled());
+        Assert.assertTrue("Homepage should be enabled.", homepageManager.isHomepageEnabled());
 
         // Check the widget status
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_NTP_CHECK, mChromeNtpRadioButton.isChecked());
@@ -440,7 +444,7 @@ public class HomepageSettingsUnitTest {
                 mCustomUriRadioButton.isEnabled());
         Assert.assertFalse(
                 "Homepage should be disabled after toggle switch.",
-                HomepageManager.isHomepageEnabled());
+                homepageManager.isHomepageEnabled());
 
         // Check the widget status - everything should remain unchanged.
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_NTP_CHECK, mChromeNtpRadioButton.isChecked());
@@ -455,7 +459,7 @@ public class HomepageSettingsUnitTest {
         Assert.assertTrue(ASSERT_MESSAGE_TITLE_ENABLED, mTitleTextView.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mCustomUriRadioButton.isEnabled());
-        Assert.assertTrue("Homepage should be enabled again.", HomepageManager.isHomepageEnabled());
+        Assert.assertTrue("Homepage should be enabled again.", homepageManager.isHomepageEnabled());
 
         // Check the widget status - everything should remain unchanged.
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_NTP_CHECK, mChromeNtpRadioButton.isChecked());
@@ -478,6 +482,8 @@ public class HomepageSettingsUnitTest {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_FOO);
         launchHomepageSettings();
 
+        HomepageManager homepageManager = HomepageManager.getInstance();
+
         // Initial state check
         Assert.assertTrue(ASSERT_MESSAGE_SWITCH_CHECK, mSwitch.isChecked());
         Assert.assertTrue(ASSERT_MESSAGE_TITLE_ENABLED, mTitleTextView.isEnabled());
@@ -492,7 +498,7 @@ public class HomepageSettingsUnitTest {
         Assert.assertEquals(
                 ASSERT_HOMEPAGE_MANAGER_SETTINGS,
                 TEST_URL_FOO,
-                HomepageManager.getHomepageGurl().getSpec());
+                homepageManager.getHomepageGurl().getSpec());
         assertUserActionRecorded(false);
 
         // Check radio button to select NTP as homepage. Homepage is not changed yet at this time.
@@ -522,7 +528,7 @@ public class HomepageSettingsUnitTest {
         Assert.assertEquals(
                 ASSERT_HOMEPAGE_MANAGER_SETTINGS,
                 TEST_URL_FOO,
-                HomepageManager.getHomepageGurl().getSpec());
+                homepageManager.getHomepageGurl().getSpec());
         assertUserActionRecorded(false);
     }
 
@@ -534,6 +540,8 @@ public class HomepageSettingsUnitTest {
         mHomepageTestRule.useChromeNtpForTest();
         launchHomepageSettings();
 
+        HomepageManager homepageManager = HomepageManager.getInstance();
+
         // Initial state check
         Assert.assertTrue(ASSERT_MESSAGE_SWITCH_CHECK, mSwitch.isChecked());
         Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_NTP_CHECK, mChromeNtpRadioButton.isChecked());
@@ -543,7 +551,7 @@ public class HomepageSettingsUnitTest {
                 ASSERT_MESSAGE_EDIT_TEXT, "", mCustomUriRadioButton.getPrimaryText().toString());
         Assert.assertTrue(
                 ASSERT_HOMEPAGE_MANAGER_SETTINGS,
-                UrlUtilities.isNtpUrl(HomepageManager.getHomepageGurl()));
+                UrlUtilities.isNtpUrl(homepageManager.getHomepageGurl()));
         assertUserActionRecorded(false);
 
         // Update the text box. To do this, request focus for customized radio button so that the
@@ -567,7 +575,7 @@ public class HomepageSettingsUnitTest {
         Assert.assertEquals(
                 ASSERT_HOMEPAGE_MANAGER_SETTINGS,
                 TEST_URL_BAR,
-                HomepageManager.getHomepageGurl().getSpec());
+                homepageManager.getHomepageGurl().getSpec());
         assertUserActionRecorded(true);
     }
 

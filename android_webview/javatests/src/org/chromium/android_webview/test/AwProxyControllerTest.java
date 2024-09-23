@@ -18,12 +18,11 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwProxyController;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
 /** AwProxyController tests. */
@@ -296,12 +295,9 @@ public class AwProxyControllerTest extends AwParameterizedTest {
 
     private void runOnUiThreadBlocking(Runnable r) throws Exception {
         try {
-            TestThreadUtils.runOnUiThreadBlocking(r);
-        } catch (RuntimeException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof ExecutionException) cause = cause.getCause();
-            if (cause instanceof IllegalArgumentException) throw (IllegalArgumentException) cause;
-            throw e;
+            ThreadUtils.runOnUiThreadBlocking(r);
+        } catch (Exception e) {
+            throw (Exception) e.getCause();
         }
     }
 

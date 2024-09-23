@@ -9,8 +9,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/observer_list.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "content/browser/service_worker/service_worker_container_host.h"
+#include "content/browser/service_worker/service_worker_client.h"
+#include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_info.h"
@@ -28,6 +30,9 @@ namespace content {
 
 namespace {
 
+constexpr base::TimeDelta kSelfUpdateDelay = base::Seconds(30);
+constexpr base::TimeDelta kMaxSelfUpdateDelay = base::Minutes(3);
+
 // If an outgoing active worker has no controllees or the waiting worker called
 // skipWaiting(), it is given |kMaxLameDuckTime| time to finish its requests
 // before it is removed. If the waiting worker called skipWaiting() more than
@@ -43,6 +48,28 @@ ServiceWorkerVersionInfo GetVersionInfo(ServiceWorkerVersion* version) {
 }
 
 }  // namespace
+
+// static
+scoped_refptr<ServiceWorkerRegistration> ServiceWorkerRegistration::Create(
+    const blink::mojom::ServiceWorkerRegistrationOptions& options,
+    const blink::StorageKey& key,
+    int64_t registration_id,
+    base::WeakPtr<ServiceWorkerContextCore> context,
+    blink::mojom::AncestorFrameType ancestor_frame_type) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_NE(blink::mojom::kInvalidServiceWorkerRegistrationId, registration_id);
+  DCHECK(context);
+
+  // A scoped ref pointer of `ServiceWorkerRegistration` is explicitly created
+  // here so that the instance won't be unexpectedly destroyed due to a
+  // scoped_refptr operation on the registration inside `AddLiveRegistration()`.
+  auto registration_ref =
+      base::WrapRefCounted(std::move(new ServiceWorkerRegistration(
+          options, key, registration_id, context, ancestor_frame_type)));
+
+  registration_ref->context_->AddLiveRegistration(registration_ref.get());
+  return registration_ref;
+}
 
 ServiceWorkerRegistration::ServiceWorkerRegistration(
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
@@ -61,17 +88,13 @@ ServiceWorkerRegistration::ServiceWorkerRegistration(
       context_(context),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       ancestor_frame_type_(ancestor_frame_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_NE(blink::mojom::kInvalidServiceWorkerRegistrationId, registration_id);
-  DCHECK(context_);
-  context_->AddLiveRegistration(this);
 }
 
 ServiceWorkerRegistration::~ServiceWorkerRegistration() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(listeners_.empty());
 
-  // TODO(crbug.com/1159778): Remove once the bug is fixed.
+  // TODO(crbug.com/40737650): Remove once the bug is fixed.
   CHECK(!in_activate_waiting_version_)
       << "ServiceWorkerRegistration was destroyed while activating waiting "
          "version";
@@ -93,7 +116,7 @@ void ServiceWorkerRegistration::SetStatus(Status status) {
       // - To kUninstalled: finished uninstalling.
       break;
     case Status::kUninstalled:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 #endif  // DCHECK_IS_ON()
@@ -291,41 +314,44 @@ void ServiceWorkerRegistration::ClaimClients() {
   const bool include_reserved_clients = false;
   // Include clients in BackForwardCache in order to evict them if needed.
   const bool include_back_forward_cached_clients = true;
-  for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
-           context_->GetClientContainerHostIterator(
+  for (auto it =
+           context_->service_worker_client_owner().GetServiceWorkerClients(
                key_, include_reserved_clients,
                include_back_forward_cached_clients);
-       !it->IsAtEnd(); it->Advance()) {
-    ServiceWorkerContainerHost* container_host = it->GetContainerHost();
+       !it.IsAtEnd(); ++it) {
     // "1. If client’s execution ready flag is unset or client’s discarded flag
     //     is set, continue."
     // |include_reserved_clients| ensures only execution ready clients are
     // returned.
-    DCHECK(container_host->is_execution_ready());
+    DCHECK(it->is_execution_ready());
 
     // This is part of step 5 but performed here as an optimization. Do nothing
     // if this version is already the controller.
-    if (container_host->controller() == active_version())
+    if (it->controller() == active_version()) {
       continue;
+    }
 
     // "2. If client is not a secure context, continue."
-    if (!container_host->IsEligibleForServiceWorkerController())
+    if (!it->IsEligibleForServiceWorkerController()) {
       continue;
+    }
 
     // "3. Let registration be the result of running Match Service Worker
     //     Registration algorithm passing client’s creation URL as the argument.
     //  4. If registration is not the service worker's containing service worker
     //     registration, continue."
-    if (container_host->MatchRegistration() != this)
+    if (it->MatchRegistration() != this) {
       continue;
+    }
 
     // Evict the client in BackForwardCache.
-    if (container_host->IsInBackForwardCache())
-      container_host->EvictFromBackForwardCache(
+    if (it->IsInBackForwardCache()) {
+      it->EvictFromBackForwardCache(
           BackForwardCacheMetrics::NotRestoredReason::kServiceWorkerClaim);
+    }
 
     // The remaining steps are performed here:
-    container_host->ClaimedByRegistration(this);
+    it->ClaimedByRegistration(this);
   }
 }
 
@@ -366,7 +392,7 @@ void ServiceWorkerRegistration::AbortPendingClear(StatusCallback callback) {
     case Status::kUninstalling:
       break;
     case Status::kUninstalled:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "attempt to resurrect a completely uninstalled registration";
       break;
   }
@@ -685,9 +711,9 @@ void ServiceWorkerRegistration::OnActivateEventFinished(
   // 'activated' as the arguments."
   activating_version->SetStatus(ServiceWorkerVersion::ACTIVATED);
 
-  // If router rules are registered, record the number of rules.
+  // If router rules are registered, record the information on rules.
   if (activating_version->router_evaluator()) {
-    activating_version->router_evaluator()->RecordRouterRuleCount();
+    activating_version->router_evaluator()->RecordRouterRuleInfo();
   }
 
   context_->registry()->UpdateToActiveState(id(), key_, base::DoNothing());
@@ -760,6 +786,126 @@ void ServiceWorkerRegistration::OnRestoreFinished(
   context_->registry()->NotifyDoneInstallingRegistration(this, version.get(),
                                                          status);
   std::move(callback).Run(status);
+}
+
+void ServiceWorkerRegistration::DelayUpdate(
+    ServiceWorkerVersion& version,
+    blink::mojom::FetchClientSettingsObjectPtr
+        outside_fetch_client_settings_object,
+    blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
+        callback) {
+  if (ServiceWorkerVersion::Status::INSTALLING == version.status()) {
+    // This can happen if update() is called during execution of the
+    // install-event-handler.
+    std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kState,
+                            ComposeUpdateErrorMessagePrefix(&version) +
+                                ServiceWorkerConsts::kInvalidStateErrorMessage);
+    return;
+  }
+
+  if (version.HasControllee()) {
+    // Don't delay update() if called by ServiceWorkers with controllees.
+    ExecuteUpdate(std::move(outside_fetch_client_settings_object),
+                  std::move(callback));
+    return;
+  }
+
+  base::TimeDelta delay = self_update_delay();
+  if (delay > kMaxSelfUpdateDelay) {
+    // The delay was already very long and update() is rejected immediately.
+    std::move(callback).Run(
+        blink::mojom::ServiceWorkerErrorType::kTimeout,
+        ComposeUpdateErrorMessagePrefix(GetNewestVersion()) +
+            ServiceWorkerConsts::kUpdateTimeoutErrorMesage);
+    return;
+  }
+
+  if (delay < kSelfUpdateDelay) {
+    set_self_update_delay(kSelfUpdateDelay);
+  } else {
+    set_self_update_delay(delay * 2);
+  }
+
+  if (delay < base::TimeDelta::Min()) {
+    // Only enforce the delay of update() iff |delay| exists.
+    ExecuteUpdate(std::move(outside_fetch_client_settings_object),
+                  std::move(callback));
+    return;
+  }
+
+  // Delays an update if it is called by a worker without controllee, to prevent
+  // workers from running forever (see https://crbug.com/805496).
+  GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &ServiceWorkerRegistration::ExecuteUpdate, base::WrapRefCounted(this),
+          std::move(outside_fetch_client_settings_object), std::move(callback)),
+      delay);
+}
+
+void ServiceWorkerRegistration::ExecuteUpdate(
+    blink::mojom::FetchClientSettingsObjectPtr
+        outside_fetch_client_settings_object,
+    blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback
+        callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!context_) {
+    std::move(callback).Run(
+        blink::mojom::ServiceWorkerErrorType::kAbort,
+        ComposeUpdateErrorMessagePrefix(GetNewestVersion()) +
+            ServiceWorkerConsts::kShutdownErrorMessage);
+    return;
+  }
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      context_->GetLiveRegistration(id());
+  if (!registration) {
+    // The service worker is no longer running, so update() won't be rejected.
+    // We still run the callback so the caller knows.
+    std::move(callback).Run(
+        blink::mojom::ServiceWorkerErrorType::kTimeout,
+        ComposeUpdateErrorMessagePrefix(GetNewestVersion()) +
+            ServiceWorkerConsts::kUpdateTimeoutErrorMesage);
+    return;
+  }
+
+  context_->UpdateServiceWorker(
+      registration.get(),
+      /*force_bypass_cache=*/false, /*skip_script_comparison=*/false,
+      std::move(outside_fetch_client_settings_object),
+      base::BindOnce(&ServiceWorkerRegistration::UpdateComplete,
+                     base::WrapRefCounted(this), std::move(callback)));
+}
+
+void ServiceWorkerRegistration::UpdateComplete(
+    blink::mojom::ServiceWorkerRegistrationObjectHost::UpdateCallback callback,
+    blink::ServiceWorkerStatusCode status,
+    const std::string& status_message,
+    int64_t registration_id) {
+  if (status != blink::ServiceWorkerStatusCode::kOk) {
+    std::string error_message;
+    blink::mojom::ServiceWorkerErrorType error_type;
+    GetServiceWorkerErrorTypeForRegistration(status, status_message,
+                                             &error_type, &error_message);
+    std::move(callback).Run(
+        error_type,
+        ComposeUpdateErrorMessagePrefix(GetNewestVersion()) + error_message);
+    return;
+  }
+
+  std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kNone,
+                          std::nullopt);
+}
+
+std::string ServiceWorkerRegistration::ComposeUpdateErrorMessagePrefix(
+    const ServiceWorkerVersion* version_to_update) const {
+  const char* script_url = version_to_update
+                               ? version_to_update->script_url().spec().c_str()
+                               : "Unknown";
+  return base::StringPrintf(
+      ServiceWorkerConsts::kServiceWorkerUpdateErrorPrefix,
+      scope().spec().c_str(), script_url);
 }
 
 }  // namespace content

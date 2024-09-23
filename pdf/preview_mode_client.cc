@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "pdf/buildflags.h"
 #include "pdf/document_layout.h"
 #include "pdf/loader/url_loader.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -88,18 +89,15 @@ void PreviewModeClient::Alert(const std::string& message) {
 
 bool PreviewModeClient::Confirm(const std::string& message) {
   NOTREACHED();
-  return false;
 }
 
 std::string PreviewModeClient::Prompt(const std::string& question,
                                       const std::string& default_answer) {
   NOTREACHED();
-  return std::string();
 }
 
 std::string PreviewModeClient::GetURL() {
   NOTREACHED();
-  return std::string();
 }
 
 void PreviewModeClient::Email(const std::string& to,
@@ -122,19 +120,17 @@ void PreviewModeClient::SubmitForm(const std::string& url,
 
 std::unique_ptr<UrlLoader> PreviewModeClient::CreateUrlLoader() {
   NOTREACHED();
-  return nullptr;
 }
 
 v8::Isolate* PreviewModeClient::GetIsolate() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
-std::vector<PDFEngine::Client::SearchStringResult>
+std::vector<PDFiumEngineClient::SearchStringResult>
 PreviewModeClient::SearchString(const char16_t* string,
                                 const char16_t* term,
                                 bool case_sensitive) {
   NOTREACHED();
-  return std::vector<SearchStringResult>();
 }
 
 void PreviewModeClient::DocumentLoadComplete() {
@@ -150,7 +146,8 @@ void PreviewModeClient::DocumentHasUnsupportedFeature(
   NOTREACHED();
 }
 
-void PreviewModeClient::FormFieldFocusChange(PDFEngine::FocusFieldType type) {
+void PreviewModeClient::FormFieldFocusChange(
+    PDFiumEngineClient::FocusFieldType type) {
   NOTREACHED();
 }
 
@@ -160,7 +157,6 @@ bool PreviewModeClient::IsPrintPreview() const {
 
 SkColor PreviewModeClient::GetBackgroundColor() const {
   NOTREACHED();
-  return SK_ColorTRANSPARENT;
 }
 
 void PreviewModeClient::SetSelectedText(const std::string& selected_text) {
@@ -174,7 +170,12 @@ void PreviewModeClient::SetLinkUnderCursor(
 
 bool PreviewModeClient::IsValidLink(const std::string& url) {
   NOTREACHED();
-  return false;
 }
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+bool PreviewModeClient::IsInAnnotationMode() const {
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 }  // namespace chrome_pdf

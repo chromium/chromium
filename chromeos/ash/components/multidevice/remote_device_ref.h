@@ -99,7 +99,7 @@ class RemoteDeviceRef {
   FRIEND_TEST_ALL_PREFIXES(RemoteDeviceRefTest, TestFields);
   FRIEND_TEST_ALL_PREFIXES(RemoteDeviceRefTest, TestCopyAndAssign);
 
-  // TODO(crbug.com/752273): Remove these once clients have migrated to Device
+  // TODO(crbug.com/40533499): Remove these once clients have migrated to Device
   // Sync service.
   friend class EasyUnlockService;
   friend class tether::TetherHostFetcherImplTest;

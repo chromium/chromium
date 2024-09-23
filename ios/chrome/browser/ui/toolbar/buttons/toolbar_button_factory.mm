@@ -15,11 +15,13 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_visibility_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
+#import "ios/public/provider/chrome/browser/raccoon/raccoon_api.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -43,10 +45,15 @@ const CGFloat kSymbolToolbarPointSize = 24;
 #pragma mark - Buttons
 
 - (ToolbarButton*)backButton {
-  UIImage* backImage =
-      DefaultSymbolWithPointSize(kBackSymbol, kSymbolToolbarPointSize);
-  ToolbarButton* backButton = [[ToolbarButton alloc]
-      initWithImage:[backImage imageFlippedForRightToLeftLayoutDirection]];
+  auto loadImageBlock = ^UIImage* {
+    UIImage* backImage =
+        DefaultSymbolWithPointSize(kBackSymbol, kSymbolToolbarPointSize);
+    return [backImage imageFlippedForRightToLeftLayoutDirection];
+  };
+
+  ToolbarButton* backButton =
+      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock];
+
   [self configureButton:backButton width:kAdaptiveToolbarButtonWidth];
   backButton.accessibilityLabel = l10n_util::GetNSString(IDS_ACCNAME_BACK);
   [backButton addTarget:self.actionHandler
@@ -58,10 +65,15 @@ const CGFloat kSymbolToolbarPointSize = 24;
 
 // Returns a forward button without visibility mask configured.
 - (ToolbarButton*)forwardButton {
-  UIImage* forwardImage =
-      DefaultSymbolWithPointSize(kForwardSymbol, kSymbolToolbarPointSize);
-  ToolbarButton* forwardButton = [[ToolbarButton alloc]
-      initWithImage:[forwardImage imageFlippedForRightToLeftLayoutDirection]];
+  auto loadImageBlock = ^UIImage* {
+    UIImage* forwardImage =
+        DefaultSymbolWithPointSize(kForwardSymbol, kSymbolToolbarPointSize);
+    return [forwardImage imageFlippedForRightToLeftLayoutDirection];
+  };
+
+  ToolbarButton* forwardButton =
+      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock];
+
   [self configureButton:forwardButton width:kAdaptiveToolbarButtonWidth];
   forwardButton.visibilityMask =
       self.visibilityConfiguration.forwardButtonVisibility;
@@ -74,13 +86,21 @@ const CGFloat kSymbolToolbarPointSize = 24;
 }
 
 - (ToolbarTabGridButton*)tabGridButton {
-  UIImage* tabGridImage =
-      CustomSymbolWithPointSize(kSquareNumberSymbol, kSymbolToolbarPointSize);
+  auto styledImageBlock = ^UIImage*(ToolbarTabGridButtonStyle style) {
+    switch (style) {
+      case ToolbarTabGridButtonStyle::kNormal:
+        return CustomSymbolWithPointSize(kSquareNumberSymbol,
+                                         kSymbolToolbarPointSize);
+      case ToolbarTabGridButtonStyle::kTabGroup:
+        return DefaultSymbolWithPointSize(kSquareFilledOnSquareSymbol,
+                                          kSymbolToolbarPointSize);
+    }
+  };
+
   ToolbarTabGridButton* tabGridButton =
-      [[ToolbarTabGridButton alloc] initWithImage:tabGridImage];
+      [[ToolbarTabGridButton alloc] initWithStyledImageLoader:styledImageBlock];
+
   [self configureButton:tabGridButton width:kAdaptiveToolbarButtonWidth];
-  SetA11yLabelAndUiAutomationName(tabGridButton, IDS_IOS_TOOLBAR_SHOW_TABS,
-                                  kToolbarStackButtonIdentifier);
   [tabGridButton addTarget:self.actionHandler
                     action:@selector(tabGridTouchDown)
           forControlEvents:UIControlEventTouchDown];
@@ -93,9 +113,21 @@ const CGFloat kSymbolToolbarPointSize = 24;
 }
 
 - (ToolbarButton*)toolsMenuButton {
-  ToolbarButton* toolsMenuButton = [[ToolbarButton alloc]
-      initWithImage:DefaultSymbolWithPointSize(kMenuSymbol,
-                                               kSymbolToolbarPointSize)];
+  auto loadImageBlock = ^UIImage* {
+    return DefaultSymbolWithPointSize(kMenuSymbol, kSymbolToolbarPointSize);
+  };
+  UIColor* locationBarBackgroundColor =
+      [self.toolbarConfiguration locationBarBackgroundColorWithVisibility:1];
+
+  auto loadIPHHighlightedImageBlock = ^UIImage* {
+    return SymbolWithPalette(
+        CustomSymbolWithPointSize(kEllipsisSquareFillSymbol,
+                                  kSymbolToolbarPointSize),
+        @[ [UIColor colorNamed:kGrey600Color], locationBarBackgroundColor ]);
+  };
+  ToolbarButton* toolsMenuButton =
+      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock
+                       IPHHighlightedImageLoader:loadIPHHighlightedImageBlock];
 
   SetA11yLabelAndUiAutomationName(toolsMenuButton, IDS_IOS_TOOLBAR_SETTINGS,
                                   kToolbarToolsMenuButtonIdentifier);
@@ -112,9 +144,13 @@ const CGFloat kSymbolToolbarPointSize = 24;
 }
 
 - (ToolbarButton*)shareButton {
-  UIImage* shareImage =
-      DefaultSymbolWithPointSize(kShareSymbol, kSymbolToolbarPointSize);
-  ToolbarButton* shareButton = [[ToolbarButton alloc] initWithImage:shareImage];
+  auto loadImageBlock = ^UIImage* {
+    return DefaultSymbolWithPointSize(kShareSymbol, kSymbolToolbarPointSize);
+  };
+
+  ToolbarButton* shareButton =
+      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock];
+
   [self configureButton:shareButton width:kAdaptiveToolbarButtonWidth];
   SetA11yLabelAndUiAutomationName(shareButton, IDS_IOS_TOOLS_MENU_SHARE,
                                   kToolbarShareButtonIdentifier);
@@ -128,10 +164,14 @@ const CGFloat kSymbolToolbarPointSize = 24;
 }
 
 - (ToolbarButton*)reloadButton {
-  UIImage* reloadImage =
-      CustomSymbolWithPointSize(kArrowClockWiseSymbol, kSymbolToolbarPointSize);
+  auto loadImageBlock = ^UIImage* {
+    return CustomSymbolWithPointSize(kArrowClockWiseSymbol,
+                                     kSymbolToolbarPointSize);
+  };
+
   ToolbarButton* reloadButton =
-      [[ToolbarButton alloc] initWithImage:reloadImage];
+      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock];
+
   [self configureButton:reloadButton width:kAdaptiveToolbarButtonWidth];
   reloadButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_ACCNAME_RELOAD);
@@ -144,9 +184,13 @@ const CGFloat kSymbolToolbarPointSize = 24;
 }
 
 - (ToolbarButton*)stopButton {
-  UIImage* stopImage =
-      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolToolbarPointSize);
-  ToolbarButton* stopButton = [[ToolbarButton alloc] initWithImage:stopImage];
+  auto loadImageBlock = ^UIImage* {
+    return DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolToolbarPointSize);
+  };
+
+  ToolbarButton* stopButton =
+      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock];
+
   [self configureButton:stopButton width:kAdaptiveToolbarButtonWidth];
   stopButton.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_STOP);
   [stopButton addTarget:self.actionHandler
@@ -157,23 +201,34 @@ const CGFloat kSymbolToolbarPointSize = 24;
 }
 
 - (ToolbarButton*)openNewTabButton {
-  UIImage* image = SymbolWithPalette(
-      CustomSymbolWithPointSize(kPlusCircleFillSymbol, kSymbolToolbarPointSize),
-      @[
-        [UIColor colorNamed:kGrey600Color],
-        [self.toolbarConfiguration locationBarBackgroundColorWithVisibility:1]
-      ]);
-  UIImage* IPHHighlightedImage = SymbolWithPalette(
-      CustomSymbolWithPointSize(kPlusCircleFillSymbol, kSymbolToolbarPointSize),
-      @[
-        // The color of the 'plus'.
-        _toolbarConfiguration.buttonsTintColorIPHHighlighted,
-        // The filling color of the circle.
-        _toolbarConfiguration.buttonsIPHHighlightColor
-      ]);
+  UIColor* locationBarBackgroundColor =
+      [self.toolbarConfiguration locationBarBackgroundColorWithVisibility:1];
+  UIColor* buttonsTintColorIPHHighlighted =
+      self.toolbarConfiguration.buttonsTintColorIPHHighlighted;
+  UIColor* buttonsIPHHighlightColor =
+      self.toolbarConfiguration.buttonsIPHHighlightColor;
+
+  auto loadImageBlock = ^UIImage* {
+    return SymbolWithPalette(
+        CustomSymbolWithPointSize(kPlusCircleFillSymbol,
+                                  kSymbolToolbarPointSize),
+        @[ [UIColor colorNamed:kGrey600Color], locationBarBackgroundColor ]);
+  };
+
+  auto loadIPHHighlightedImageBlock = ^UIImage* {
+    return SymbolWithPalette(CustomSymbolWithPointSize(kPlusCircleFillSymbol,
+                                                       kSymbolToolbarPointSize),
+                             @[
+                               // The color of the 'plus'.
+                               buttonsTintColorIPHHighlighted,
+                               // The filling color of the circle.
+                               buttonsIPHHighlightColor
+                             ]);
+  };
+
   ToolbarButton* newTabButton =
-      [[ToolbarButton alloc] initWithImage:image
-                       IPHHighlightedImage:IPHHighlightedImage];
+      [[ToolbarButton alloc] initWithImageLoader:loadImageBlock
+                       IPHHighlightedImageLoader:loadIPHHighlightedImageBlock];
 
   [newTabButton addTarget:self.actionHandler
                    action:@selector(newTabAction:)
@@ -239,8 +294,12 @@ const CGFloat kSymbolToolbarPointSize = 24;
   button.toolbarConfiguration = self.toolbarConfiguration;
   button.exclusiveTouch = YES;
   button.pointerInteractionEnabled = YES;
-  button.layer.cornerRadius = width / 2;
-  button.clipsToBounds = YES;
+  if (ios::provider::IsRaccoonEnabled()) {
+    if (@available(iOS 17.0, *)) {
+      button.hoverStyle = [UIHoverStyle
+          styleWithShape:[UIShape rectShapeWithCornerRadius:width / 4]];
+    }
+  }
   button.pointerStyleProvider =
       ^UIPointerStyle*(UIButton* uiButton, UIPointerEffect* proposedEffect,
                        UIPointerShape* proposedShape) {

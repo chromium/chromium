@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 // Allows Chrome to add the bookmarks of `bookmarkModel` in the systemwide
 // Spotlight search index.

@@ -33,7 +33,7 @@ const char kEcheAppToastId[] = "eche_app_toast_id";
 const char kEcheAppNetworkSettingNotifierId[] =
     "eche_app_notification_ids.network_settings";
 
-// TODO(crbug.com/1241352): This should probably have a ?p=<FEATURE_NAME> at
+// TODO(crbug.com/40785967): This should probably have a ?p=<FEATURE_NAME> at
 // some point.
 const char kEcheAppLearnMoreUrl[] = "https://support.google.com/chromebook";
 

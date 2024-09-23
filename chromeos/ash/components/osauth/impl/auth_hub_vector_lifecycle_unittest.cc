@@ -5,20 +5,19 @@
 #include "chromeos/ash/components/osauth/impl/auth_hub_vector_lifecycle.h"
 
 #include <memory>
+#include <utility>
 
-#include "base/functional/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_future.h"
-#include "chromeos/ash/components/osauth/impl/auth_hub_impl.h"
+#include "base/time/time.h"
+#include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
 #include "chromeos/ash/components/osauth/impl/auth_parts_impl.h"
-#include "chromeos/ash/components/osauth/public/auth_hub.h"
-#include "chromeos/ash/components/osauth/test_support/mock_auth_attempt_consumer.h"
+#include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/components/osauth/test_support/mock_auth_factor_engine.h"
-#include "chromeos/ash/components/osauth/test_support/mock_auth_factor_engine_factory.h"
-#include "chromeos/ash/components/osauth/test_support/mock_auth_factor_status_consumer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,8 +35,10 @@ using testing::AtMost;
 using testing::ByMove;
 using testing::DoAll;
 using testing::Eq;
+using testing::InSequence;
 using testing::Invoke;
 using testing::Mock;
+using testing::MockFunction;
 using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
@@ -56,6 +57,8 @@ class MockVectorLifecycleOwner : public AuthHubVectorLifecycle::Owner {
               (const AuthAttemptVector&, AuthFactorsSet, AuthFactorsSet),
               (override));
   MOCK_METHOD(void, OnAttemptFinished, (const AuthAttemptVector&), (override));
+  MOCK_METHOD(void, OnAttemptCancelled, (const AuthAttemptVector&), (override));
+  MOCK_METHOD(void, OnAttemptCleanedUp, (const AuthAttemptVector&), (override));
   MOCK_METHOD(void, OnIdle, (), (override));
 };
 
@@ -112,6 +115,8 @@ class AuthHubVectorLifecycleTest : public ::testing::Test {
 
   void ExpectAllFactorsShutdown() {
     for (const auto& engine : engines_) {
+      EXPECT_CALL(*engine.second, CleanUp(_))
+          .WillOnce(RunOnceCallback<0>(engine.first));
       EXPECT_CALL(*engine.second, StopAuthFlow(_))
           .WillOnce(RunOnceCallback<0>(engine.first));
     }
@@ -196,20 +201,36 @@ TEST_F(AuthHubVectorLifecycleTest, SingleFactorAttemptStartCancel) {
 
   Mock::VerifyAndClearExpectations(&owner_);
 
-  AuthFactorEngine::ShutdownCallback callback;
-  EXPECT_CALL(*engine, StopAuthFlow(_)).WillOnce(MoveArg<0>(&callback));
-
-  // Upon attempt cancellation, Lifecycle should provide callback.
+  AuthFactorEngine::CleanupCallback cleanup_callback;
+  AuthFactorEngine::ShutdownCallback shutdown_callback;
+  EXPECT_CALL(*engine, CleanUp(_)).WillOnce(MoveArg<0>(&cleanup_callback));
+  EXPECT_CALL(*engine, StopAuthFlow(_))
+      .WillOnce(MoveArg<0>(&shutdown_callback));
+  MockFunction<void(std::string check_point_name)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(owner_, OnAttemptCleanedUp(Eq(attempt)));
+    EXPECT_CALL(check, Call("NotifyCleanedUp"));
+    EXPECT_CALL(owner_, OnAttemptCancelled(Eq(attempt)));
+    EXPECT_CALL(owner_, OnIdle());
+    EXPECT_CALL(check, Call("NotifyFinished"));
+  }
   lifecycle_->CancelAttempt();
 
-  ASSERT_FALSE(callback.is_null());
+  // Upon attempt cancellation, Lifecycle should provide callback
+  // to CleanUp first.
+  ASSERT_FALSE(cleanup_callback.is_null());
 
-  EXPECT_CALL(owner_, OnAttemptFinished(Eq(attempt)));
-  EXPECT_CALL(owner_, OnIdle());
+  // Once engine finishes attempt cleanup, Lifecycle should notify the Owner,
+  // and provide callback to StopAuthFlow.
+  std::move(cleanup_callback).Run(kFactor);
+  check.Call("NotifyCleanedUp");
+  ASSERT_FALSE(shutdown_callback.is_null());
 
-  // Once engine finishes attempt cleanup, Lifecycle should notify
-  // the Owner.
-  std::move(callback).Run(kFactor);
+  // Once engine finishes shutdown, Lifecycle should
+  // notify the Owner.
+  std::move(shutdown_callback).Run(kFactor);
+  check.Call("NotifyFinished");
 
   EXPECT_TRUE(lifecycle_->IsIdle());
 }
@@ -248,7 +269,8 @@ TEST_F(AuthHubVectorLifecycleTest, FactorNotPresent) {
   // to stop auth flow.
   ExpectAllFactorsShutdown();
 
-  EXPECT_CALL(owner_, OnAttemptFinished(_));
+  EXPECT_CALL(owner_, OnAttemptCleanedUp(_));
+  EXPECT_CALL(owner_, OnAttemptCancelled(_));
   EXPECT_CALL(owner_, OnIdle());
 
   lifecycle_->CancelAttempt();
@@ -286,7 +308,8 @@ TEST_F(AuthHubVectorLifecycleTest, FactorTimedOutDuringInit) {
   // to stop auth flow.
   ExpectAllFactorsShutdown();
 
-  EXPECT_CALL(owner_, OnAttemptFinished(_));
+  EXPECT_CALL(owner_, OnAttemptCleanedUp(_));
+  EXPECT_CALL(owner_, OnAttemptCancelled(_));
   EXPECT_CALL(owner_, OnIdle());
 
   lifecycle_->CancelAttempt();
@@ -322,10 +345,37 @@ TEST_F(AuthHubVectorLifecycleTest, FactorCriticalErrorDuringInit) {
   // Upon cleanup, failed factor should still be asked to stop auth flow.
   ExpectAllFactorsShutdown();
 
-  EXPECT_CALL(owner_, OnAttemptFinished(_));
+  EXPECT_CALL(owner_, OnAttemptCleanedUp(_));
+  EXPECT_CALL(owner_, OnAttemptCancelled(_));
   EXPECT_CALL(owner_, OnIdle());
 
   lifecycle_->CancelAttempt();
+}
+
+TEST_F(AuthHubVectorLifecycleTest, FactorTimedOutDuringCleanup) {
+  auto* engine = SetUpEngine(kFactor);
+  auto* timeout_engine = SetUpEngine(kSpecialFactor);
+  InitLifecycle();
+
+  AuthAttemptVector attempt{account_, AuthPurpose::kLogin};
+  StartAttemptWithAllFactors(attempt);
+
+  EXPECT_CALL(*engine, CleanUp(_)).WillOnce(RunOnceCallback<0>(kFactor));
+  EXPECT_CALL(*engine, StopAuthFlow(_)).WillOnce(RunOnceCallback<0>(kFactor));
+  AuthFactorEngine::CleanupCallback callback;
+  EXPECT_CALL(*timeout_engine, CleanUp(_)).WillOnce(MoveArg<0>(&callback));
+  EXPECT_CALL(*timeout_engine, StopAuthFlow(_))
+      .WillOnce(RunOnceCallback<0>(kSpecialFactor));
+  lifecycle_->CancelAttempt();
+
+  ASSERT_FALSE(callback.is_null());
+
+  EXPECT_CALL(owner_, OnAttemptCleanedUp(_));
+  EXPECT_CALL(owner_, OnAttemptCancelled(_));
+  EXPECT_CALL(owner_, OnIdle());
+  EXPECT_CALL(*timeout_engine, StopFlowTimedOut());
+
+  TriggerTimeout();
 }
 
 TEST_F(AuthHubVectorLifecycleTest, FactorTimedOutDuringShutdown) {
@@ -336,14 +386,18 @@ TEST_F(AuthHubVectorLifecycleTest, FactorTimedOutDuringShutdown) {
   AuthAttemptVector attempt{account_, AuthPurpose::kLogin};
   StartAttemptWithAllFactors(attempt);
 
+  EXPECT_CALL(*engine, CleanUp(_)).WillOnce(RunOnceCallback<0>(kFactor));
   EXPECT_CALL(*engine, StopAuthFlow(_)).WillOnce(RunOnceCallback<0>(kFactor));
   AuthFactorEngine::ShutdownCallback callback;
+  EXPECT_CALL(*timeout_engine, CleanUp(_))
+      .WillOnce(RunOnceCallback<0>(kSpecialFactor));
   EXPECT_CALL(*timeout_engine, StopAuthFlow(_)).WillOnce(MoveArg<0>(&callback));
+  EXPECT_CALL(owner_, OnAttemptCleanedUp(_));
   lifecycle_->CancelAttempt();
 
   ASSERT_FALSE(callback.is_null());
 
-  EXPECT_CALL(owner_, OnAttemptFinished(_));
+  EXPECT_CALL(owner_, OnAttemptCancelled(_));
   EXPECT_CALL(owner_, OnIdle());
   EXPECT_CALL(*timeout_engine, StopFlowTimedOut());
 
@@ -360,6 +414,7 @@ TEST_F(AuthHubVectorLifecycleTest, SwitchAttemptDuringInit) {
 
   lifecycle_->StartAttempt(attempt1);
 
+  EXPECT_CALL(*engine, CleanUp(_)).WillOnce(RunOnceCallback<0>(kFactor));
   EXPECT_CALL(*engine, StopAuthFlow(_)).WillOnce(RunOnceCallback<0>(kFactor));
   ExpectAuthOnEngine(kFactor, attempt2);
 

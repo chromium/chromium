@@ -18,21 +18,23 @@ source_set("contacts") {
     "nearby_share_contacts_sorter.h",
   ]
 
+  public_deps = [
+    "//third_party/nearby:contact_rpc_proto",
+    "//third_party/nearby:rpc_resources_proto",
+  ]
+
   deps = [
     "//base",
     "//chrome/browser/nearby_sharing/client",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/nearby_sharing/local_device_data",
-    "//chrome/browser/nearby_sharing/logging",
     "//chromeos/ash/components/nearby/common/client",
     "//chromeos/ash/components/nearby/common/scheduling",
     "//chromeos/ash/services/nearby/public/mojom",
     "//components/cross_device/logging:logging",
     "//components/prefs",
     "//crypto",
-    "//third_party/nearby:contact_rpc_proto",
     "//third_party/nearby:device_rpc_proto",
-    "//third_party/nearby:rpc_resources_proto",
   ]
 }
 

@@ -47,12 +47,12 @@ TEST_F(VirtualKeyboardTrayTest, PerformActionTogglesVirtualKeyboard) {
   // First tap should show the virtual keyboard.
   GestureTapOn(tray);
   EXPECT_TRUE(tray->is_active());
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   // Second tap should hide the virtual keyboard.
   GestureTapOn(tray);
   EXPECT_FALSE(tray->is_active());
-  ASSERT_TRUE(keyboard::WaitUntilHidden());
+  ASSERT_TRUE(keyboard::test::WaitUntilHidden());
 }
 
 }  // namespace ash

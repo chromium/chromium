@@ -7,27 +7,27 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='outer'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='outer'",
       "position": [2, 2],
       "bounds": [400, 400],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='outer'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='outer'",
       "position": [2, 2],
       "bounds": [400, 704],
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='inner'",
+      "name": "LayoutBlockFlow (positioned) DIV id='inner'",
       "position": [2, 2],
       "bounds": [200, 200],
       "drawsContent": false,
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='inner'",
+      "name": "LayoutBlockFlow (positioned) DIV id='inner'",
       "position": [2, 2],
       "bounds": [5000, 9000],
       "transform": 3

@@ -132,7 +132,7 @@ class WaylandWindowManager {
   // well. See crbug.com/1324548.
   std::unique_ptr<WaylandSubsurface> subsurface_recycle_cache_;
 
-  raw_ptr<WaylandWindow, DanglingUntriaged> located_events_grabber_ = nullptr;
+  raw_ptr<WaylandWindow> located_events_grabber_ = nullptr;
 
   // Stores strictly monotonically increasing counter for allocating unique
   // AccelerateWidgets.

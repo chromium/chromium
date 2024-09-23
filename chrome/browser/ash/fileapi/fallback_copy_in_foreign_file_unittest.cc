@@ -17,6 +17,7 @@
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace ash {
 
@@ -98,11 +99,11 @@ TEST_P(FallbackCopyInForeignFileTest, Basic) {
       storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
           mount_name, storage::kFileSystemTypeLocal,
           storage::FileSystemMountOption(), dest_temp_dir.GetPath()));
-  base::ScopedClosureRunner mount_points_unregisterer(base::BindOnce([]() {
+  absl::Cleanup mount_points_unregisterer = [] {
     EXPECT_TRUE(
         storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
             mount_name));
-  }));
+  };
 
   // Call FallbackCopyInForeignFile.
   {

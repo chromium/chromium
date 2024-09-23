@@ -11,6 +11,7 @@
     "system_webview_package_name": "com.google.android.apps.chrome",
     "target_cpu": "arm64",
     "target_os": "android",
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

@@ -4,15 +4,20 @@
 
 #include "ash/glanceables/glanceables_controller.h"
 
+#include <utility>
+
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
+#include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
 #include "ash/glanceables/glanceables_metrics.h"
+#include "ash/glanceables/tasks/glanceables_tasks_combobox_model.h"
 #include "ash/public/cpp/session/session_controller.h"
-#include "ash/system/unified/classroom_bubble_student_view.h"
-#include "ash/system/unified/tasks_combobox_model.h"
+#include "ash/system/unified/glanceable_tray_bubble_view.h"
 #include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 
@@ -31,15 +36,26 @@ GlanceablesController::~GlanceablesController() {
 // static
 void GlanceablesController::RegisterUserProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kGlanceablesEnabled, true);
-  ClassroomBubbleStudentView::RegisterUserProfilePrefs(registry);
-  TasksComboboxModel::RegisterUserProfilePrefs(registry);
+  base::Value::List default_integrations;
+  default_integrations.Append(prefs::kGoogleCalendarIntegrationName);
+  default_integrations.Append(prefs::kGoogleClassroomIntegrationName);
+  default_integrations.Append(prefs::kGoogleTasksIntegrationName);
+  default_integrations.Append(prefs::kChromeSyncIntegrationName);
+  default_integrations.Append(prefs::kGoogleDriveIntegrationName);
+  default_integrations.Append(prefs::kWeatherIntegrationName);
+  registry->RegisterListPref(prefs::kContextualGoogleIntegrationsConfiguration,
+                             std::move(default_integrations));
+
+  GlanceableTrayBubbleView::RegisterUserProfilePrefs(registry);
+  GlanceablesClassroomStudentView::RegisterUserProfilePrefs(registry);
+  GlanceablesTasksComboboxModel::RegisterUserProfilePrefs(registry);
 }
 
 // static
 void GlanceablesController::ClearUserStatePrefs(PrefService* prefs) {
-  ClassroomBubbleStudentView::ClearUserStatePrefs(prefs);
-  TasksComboboxModel::ClearUserStatePrefs(prefs);
+  GlanceableTrayBubbleView::ClearUserStatePrefs(prefs);
+  GlanceablesClassroomStudentView::ClearUserStatePrefs(prefs);
+  GlanceablesTasksComboboxModel::ClearUserStatePrefs(prefs);
 }
 
 void GlanceablesController::OnActiveUserSessionChanged(
@@ -77,7 +93,7 @@ void GlanceablesController::NotifyGlanceablesBubbleClosed() {
       clients.second.classroom_client->OnGlanceablesBubbleClosed();
     }
     if (clients.second.tasks_client) {
-      clients.second.tasks_client->OnGlanceablesBubbleClosed();
+      clients.second.tasks_client->OnGlanceablesBubbleClosed(base::DoNothing());
     }
   }
 

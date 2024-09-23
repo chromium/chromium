@@ -175,9 +175,8 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
   bool GetSourceTextTruncatedForTest() { return source_text_truncated_; }
 
   void NotifyTranslated() {
-    for (PartialTranslateBubbleModel::Observer& obs : observers_) {
-      obs.OnPartialTranslateComplete();
-    }
+    observers_.Notify(
+        &PartialTranslateBubbleModel::Observer::OnPartialTranslateComplete);
   }
 
   ViewState current_view_state_;
@@ -199,7 +198,9 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     // Create an anchor for the bubble.
-    anchor_widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
+    anchor_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                         views::Widget::InitParams::TYPE_WINDOW);
     anchor_widget_->Show();
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);

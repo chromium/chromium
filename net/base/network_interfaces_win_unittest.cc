@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/base/network_interfaces_win.h"
 
-#include <iphlpapi.h>
 #include <objbase.h>
+
+#include <iphlpapi.h>
 
 #include <ostream>
 #include <string>
@@ -318,7 +324,7 @@ void TryChangeWifiOptions(int options) {
   EXPECT_EQ(previous_options, GetWifiOptions());
 }
 
-// Test fails on Win Arm64 bots. TODO(https://crbug.com/1425465): Fix on bot.
+// Test fails on Win Arm64 bots. TODO(crbug.com/40260910): Fix on bot.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 #define MAYBE_SetWifiOptions DISABLED_SetWifiOptions
 #else

@@ -11,6 +11,7 @@
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_crypto.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "net/http/http_status_code.h"
 
 namespace trusted_vault {
 
@@ -19,7 +20,6 @@ namespace {
 const char kServerPathPrefix[] = "sds/";
 const int kSharedKeyLength = 16;
 
-// TODO(crbug.com/1234719): use most appropriate error codes for all callers.
 std::unique_ptr<net::test_server::HttpResponse> CreateErrorResponse(
     net::HttpStatusCode response_code) {
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -96,6 +96,14 @@ bool ValidateJoinSecurityDomainsRequest(
                   "wrapped key";
       return false;
     }
+  }
+
+  if (member.member_type() !=
+          trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_UNSPECIFIED &&
+      request.member_type_hint() != 0 &&
+      static_cast<int>(member.member_type()) != request.member_type_hint()) {
+    DVLOG(1) << "JoinSecurityDomains request has inconsistent member type hint";
+    return false;
   }
 
   return true;
@@ -209,7 +217,7 @@ FakeSecurityDomainsServer::HandleRequest(
     base::AutoLock autolock(lock_);
     DVLOG(1) << "Unknown request url: " << http_request.GetURL().spec();
     state_.received_invalid_request = true;
-    response = CreateErrorResponse(net::HTTP_BAD_REQUEST);
+    response = CreateErrorResponse(net::HTTP_NOT_FOUND);
   }
 
   observers_->Notify(FROM_HERE, &Observer::OnRequestHandled);
@@ -220,7 +228,7 @@ std::vector<uint8_t> FakeSecurityDomainsServer::RotateTrustedVaultKey(
     const std::vector<uint8_t>& last_trusted_vault_key) {
   base::AutoLock autolock(lock_);
   std::vector<uint8_t> new_trusted_vault_key(kSharedKeyLength);
-  base::RandBytes(new_trusted_vault_key.data(), kSharedKeyLength);
+  base::RandBytes(new_trusted_vault_key);
 
   state_.current_epoch++;
   state_.trusted_vault_keys.push_back(new_trusted_vault_key);
@@ -345,28 +353,28 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
     DVLOG(1) << "JoinSecurityDomains request has wrong method: "
              << http_request.method;
     state_.received_invalid_request = true;
-    return CreateErrorResponse(net::HTTP_BAD_REQUEST);
+    return CreateErrorResponse(net::HTTP_INTERNAL_SERVER_ERROR);
   }
-  // TODO(crbug.com/1113599): consider verifying content type and access token
+  // TODO(crbug.com/40143545): consider verifying content type and access token
   // headers.
 
   trusted_vault_pb::JoinSecurityDomainsRequest deserialized_content;
   if (!deserialized_content.ParseFromString(http_request.content)) {
     DVLOG(1) << "Failed to deserialize JoinSecurityDomains request content";
     state_.received_invalid_request = true;
-    return CreateErrorResponse(net::HTTP_BAD_REQUEST);
+    return CreateErrorResponse(net::HTTP_INTERNAL_SERVER_ERROR);
   }
 
   if (!ValidateJoinSecurityDomainsRequest(deserialized_content)) {
     state_.received_invalid_request = true;
-    return CreateErrorResponse(net::HTTP_BAD_REQUEST);
+    return CreateErrorResponse(net::HTTP_INTERNAL_SERVER_ERROR);
   }
 
   const trusted_vault_pb::SecurityDomainMember& member =
       deserialized_content.security_domain_member();
   if (state_.public_key_to_shared_keys.count(member.public_key()) != 0) {
     // Member already exists.
-    return CreateErrorResponse(net::HTTP_BAD_REQUEST);
+    return CreateErrorResponse(net::HTTP_CONFLICT);
   }
 
   int last_shared_key_epoch =

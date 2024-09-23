@@ -14,8 +14,6 @@
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/login/login_constants.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/saml/mock_lock_handler.h"
 #include "chrome/browser/ash/login/signin/offline_signin_limiter_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -536,11 +534,6 @@ TEST_F(OfflineSigninLimiterTest, GaiaLogInOfflineWithExpiredLimit) {
   limiter_->SignedIn(UserContext::AUTH_FLOW_OFFLINE);
   EXPECT_TRUE(user->force_online_signin());
 
-  InSessionPasswordSyncManager* password_sync_manager =
-      InSessionPasswordSyncManagerFactory::GetForProfile(profile_.get());
-  ASSERT_TRUE(password_sync_manager);
-  EXPECT_FALSE(password_sync_manager->IsLockReauthEnabled());
-
   const base::Time last_online_signin_time =
       known_user_->GetLastOnlineSignin(user->GetAccountId());
   EXPECT_EQ(gaia_signin_time, last_online_signin_time);
@@ -589,13 +582,9 @@ TEST_F(OfflineSigninLimiterTest, GaiaLogInOfflineWithOnLockReauth) {
   // Advance time by four weeks.
   task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
 
-  // Authenticate offline and check if InSessionPasswordSyncManager is created.
+  // Authenticate offline.
   CreateLimiter();
   limiter_->SignedIn(UserContext::AUTH_FLOW_OFFLINE);
-  InSessionPasswordSyncManager* password_sync_manager =
-      InSessionPasswordSyncManagerFactory::GetForProfile(profile_.get());
-  // Verify that we enter InSessionPasswordSyncManager::ForceReauthOnLockScreen.
-  EXPECT_TRUE(password_sync_manager->IsLockReauthEnabled());
   // After changing the re-auth flag timer should be stopped.
   EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
@@ -1211,9 +1200,6 @@ TEST_F(OfflineSigninLimiterTest, SAMLLogInOfflineWithExpiredLimit) {
   EXPECT_FALSE(user->force_online_signin());
   limiter_->SignedIn(UserContext::AUTH_FLOW_OFFLINE);
   EXPECT_TRUE(user->force_online_signin());
-  InSessionPasswordSyncManager* password_sync_manager =
-      InSessionPasswordSyncManagerFactory::GetForProfile(profile_.get());
-  EXPECT_FALSE(password_sync_manager->IsLockReauthEnabled());
 
   const base::Time last_online_signin_time =
       known_user_->GetLastOnlineSignin(user->GetAccountId());
@@ -1260,13 +1246,9 @@ TEST_F(OfflineSigninLimiterTest, SAMLLogInOfflineWithOnLockReauth) {
   // Advance time by four weeks.
   task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
 
-  // Authenticate offline and check if InSessionPasswordSyncManager is created.
+  // Authenticate offline.
   CreateLimiter();
   limiter_->SignedIn(UserContext::AUTH_FLOW_OFFLINE);
-  InSessionPasswordSyncManager* password_sync_manager =
-      InSessionPasswordSyncManagerFactory::GetForProfile(profile_.get());
-  // Verify that we enter InSessionPasswordSyncManager::ForceReauthOnLockScreen.
-  EXPECT_TRUE(password_sync_manager->IsLockReauthEnabled());
   // After changing the re-auth flag timer should be stopped.
   EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }

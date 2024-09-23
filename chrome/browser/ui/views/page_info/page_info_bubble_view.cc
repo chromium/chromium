@@ -115,6 +115,8 @@ InternalPageInfoBubbleView::InternalPageInfoBubbleView(
   title_label->SetMultiLine(true);
   title_label->SetElideBehavior(gfx::NO_ELIDE);
 
+  // TODO(crbug.com/343325197) Remove this SizeToContents() once this bug is
+  // fixed.
   SizeToContents();
 }
 
@@ -216,7 +218,7 @@ void PageInfoBubbleView::OpenMainPage(base::OnceClosure initialized_callback) {
 
 void PageInfoBubbleView::OpenSecurityPage() {
   presenter_->RecordPageInfoAction(
-      PageInfo::PageInfoAction::PAGE_INFO_SECURITY_DETAILS_OPENED);
+      page_info::PAGE_INFO_SECURITY_DETAILS_OPENED);
   std::unique_ptr<views::View> security_page_view =
       view_factory_->CreateSecurityPageView();
   security_page_view->SetID(
@@ -228,7 +230,7 @@ void PageInfoBubbleView::OpenSecurityPage() {
 
 void PageInfoBubbleView::OpenPermissionPage(ContentSettingsType type) {
   presenter_->RecordPageInfoAction(
-      PageInfo::PageInfoAction::PAGE_INFO_PERMISSION_DIALOG_OPENED);
+      page_info::PAGE_INFO_PERMISSION_DIALOG_OPENED);
   std::unique_ptr<views::View> permissions_page_view =
       view_factory_->CreatePermissionPageView(type, web_contents());
   permissions_page_view->SetID(
@@ -239,7 +241,7 @@ void PageInfoBubbleView::OpenPermissionPage(ContentSettingsType type) {
 
 void PageInfoBubbleView::OpenAdPersonalizationPage() {
   presenter_->RecordPageInfoAction(
-      PageInfo::PageInfoAction::PAGE_INFO_AD_PERSONALIZATION_PAGE_OPENED);
+      page_info::PAGE_INFO_AD_PERSONALIZATION_PAGE_OPENED);
   std::unique_ptr<views::View> ad_personalization_page_view =
       view_factory_->CreateAdPersonalizationPageView();
   ad_personalization_page_view->SetID(
@@ -288,9 +290,10 @@ void PageInfoBubbleView::WebContentsDestroyed() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-gfx::Size PageInfoBubbleView::CalculatePreferredSize() const {
+gfx::Size PageInfoBubbleView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (page_container_ == nullptr) {
-    return views::View::CalculatePreferredSize();
+    return views::View::CalculatePreferredSize(available_size);
   }
 
   int width = PageInfoViewFactory::kMinBubbleWidth;
@@ -298,11 +301,13 @@ gfx::Size PageInfoBubbleView::CalculatePreferredSize() const {
     width = std::max(width, page_container_->GetPreferredSize().width());
     width = std::min(width, PageInfoViewFactory::kMaxBubbleWidth);
   }
-  return gfx::Size(width, views::View::GetHeightForWidth(width));
+  return gfx::Size(width,
+                   GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
 void PageInfoBubbleView::ChildPreferredSizeChanged(views::View* child) {
-  DeprecatedLayoutImmediately();
+  // TODO(crbug.com/343325197) Remove this SizeToContents() once this bug is
+  // fixed.
   SizeToContents();
 }
 

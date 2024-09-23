@@ -103,10 +103,12 @@ void EntropyState::RegisterPrefs(PrefRegistrySimple* registry) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
-void EntropyState::SetExternalPrefs(PrefService* local_state,
-                                    int low_entropy_source,
-                                    int old_low_entropy_source,
-                                    int pseudo_low_entropy_source) {
+void EntropyState::SetExternalPrefs(
+    PrefService* local_state,
+    int low_entropy_source,
+    int old_low_entropy_source,
+    int pseudo_low_entropy_source,
+    std::string_view limited_entropy_randomization_source) {
   if (!g_entropy_source_has_been_set) {
     g_entropy_source_has_been_set = true;
     // As an |EntropyState| object has an internal state, we need to make sure
@@ -124,6 +126,11 @@ void EntropyState::SetExternalPrefs(PrefService* local_state,
                           old_low_entropy_source);
   local_state->SetInteger(prefs::kMetricsPseudoLowEntropySource,
                           pseudo_low_entropy_source);
+  if (IsValidLimitedEntropyRandomizationSource(
+          limited_entropy_randomization_source)) {
+    local_state->SetString(prefs::kMetricsLimitedEntropyRandomizationSource,
+                           limited_entropy_randomization_source);
+  }
 }
 #endif
 

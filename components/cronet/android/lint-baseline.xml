@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.3.0-alpha12" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha12">
+<issues format="6" by="lint 8.7.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.7.0-alpha03">
 
     <issue
         id="WrongCommentType"
@@ -24,13 +24,1454 @@
     </issue>
 
     <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.util.Date#toInstant`"
+        errorLine1="                hostName, pinsSha256, includeSubdomains, expirationDate.toInstant());"
+        errorLine2="                                                                        ~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapper.java"
+            line="112"
+            column="73"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofMillis`"
+        errorLine1="            staleDnsOptionBuilder.setFreshLookupTimeout(Duration.ofMillis(staleDnsDelay));"
+        errorLine2="                                                                 ~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapper.java"
+            line="192"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofMillis`"
+        errorLine1="            staleDnsOptionBuilder.setMaxExpiredDelay(Duration.ofMillis(expiredDelay));"
+        errorLine2="                                                              ~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapper.java"
+            line="197"
+            column="63"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofMillis`"
+        errorLine1="            dnsOptionsBuilder.setPersistHostCachePeriod(Duration.ofMillis(persistHostCachePeriod));"
+        errorLine2="                                                                 ~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapper.java"
+            line="224"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofSeconds`"
+        errorLine1="                    Duration.ofSeconds(idleConnectionTimeoutSeconds));"
+        errorLine2="                             ~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapper.java"
+            line="254"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `parseConnectionMigrationOptions`"
+        errorLine1="                parseConnectionMigrationOptions(options);"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="70"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.ConnectionMigrationOptions#getDefaultNetworkMigration`"
+        errorLine1="        assertThat(CMOptions.getDefaultNetworkMigration())"
+        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="71"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.ConnectionMigrationOptions#getPathDegradationMigration`"
+        errorLine1="        assertThat(CMOptions.getPathDegradationMigration())"
+        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="73"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.ConnectionMigrationOptions#getAllowNonDefaultNetworkUsage`"
+        errorLine1="        assertThat(CMOptions.getAllowNonDefaultNetworkUsage())"
+        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="75"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `AndroidHttpEngineBuilderWrapper`"
+        errorLine1="                new AndroidHttpEngineBuilderWrapper("
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="91"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `setExperimentalOptions`"
+        errorLine1="        httpEngineBuilder.setExperimentalOptions(&quot;{\&quot;QUIC\&quot;:{\&quot;migrate_sessions_early_v2\&quot;:true}}&quot;);"
+        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="96"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `build`"
+        errorLine1="        httpEngineBuilder.build();"
+        errorLine2="                          ~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="97"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `AndroidHttpEngineBuilderWrapper`"
+        errorLine1="                new AndroidHttpEngineBuilderWrapper("
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="111"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `setExperimentalOptions`"
+        errorLine1="        httpEngineBuilder.setExperimentalOptions("
+        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="116"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `build`"
+        errorLine1="        httpEngineBuilder.build();"
+        errorLine2="                          ~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="118"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `AndroidHttpEngineBuilderWrapper`"
+        errorLine1="                new AndroidHttpEngineBuilderWrapper("
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="132"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `setExperimentalOptions`"
+        errorLine1="        httpEngineBuilder.setExperimentalOptions("
+        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="137"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `build`"
+        errorLine1="        httpEngineBuilder.build();"
+        errorLine2="                          ~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="139"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `AndroidHttpEngineBuilderWrapper`"
+        errorLine1="                new AndroidHttpEngineBuilderWrapper("
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="153"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `setExperimentalOptions`"
+        errorLine1="        httpEngineBuilder.setExperimentalOptions("
+        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="158"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `build`"
+        errorLine1="        httpEngineBuilder.build();"
+        errorLine2="                          ~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="160"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `AndroidHttpEngineBuilderWrapper`"
+        errorLine1="                new AndroidHttpEngineBuilderWrapper("
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="174"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `setExperimentalOptions`"
+        errorLine1="        httpEngineBuilder.setExperimentalOptions("
+        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="179"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `build`"
+        errorLine1="        httpEngineBuilder.build();"
+        errorLine2="                          ~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="181"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `parseDnsOptions`"
+        errorLine1="        android.net.http.DnsOptions dnsOptions = parseDnsOptions(options);"
+        errorLine2="                                                 ~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="209"
+            column="50"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions#getUseHttpStackDnsResolver`"
+        errorLine1="        assertThat(dnsOptions.getUseHttpStackDnsResolver())"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="211"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions#getPersistHostCache`"
+        errorLine1="        assertThat(dnsOptions.getPersistHostCache())"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="214"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions#getPersistHostCachePeriod`"
+        errorLine1="        assertThat(dnsOptions.getPersistHostCachePeriod())"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="216"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Implicit cast from `Duration` to `Comparable` requires API level 26, or core library desugaring (current min is 21)"
+        errorLine1="        assertThat(dnsOptions.getPersistHostCachePeriod())"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="216"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofMillis`"
+        errorLine1="                .isEqualTo(Duration.ofMillis(persist_delay_ms));"
+        errorLine2="                                    ~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="217"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions#getStaleDns`"
+        errorLine1="        assertThat(dnsOptions.getStaleDns())"
+        errorLine2="                              ~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="218"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions#getPreestablishConnectionsToStaleDnsResults`"
+        errorLine1="        assertThat(dnsOptions.getPreestablishConnectionsToStaleDnsResults())"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="221"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions#getStaleDnsOptions`"
+        errorLine1="                dnsOptions.getStaleDnsOptions();"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="225"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofMillis`"
+        errorLine1="        assertThat(staleDnsOptions.getFreshLookupTimeout()).isEqualTo(Duration.ofMillis(delay_ms));"
+        errorLine2="                                                                               ~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="226"
+            column="80"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions.StaleDnsOptions#getFreshLookupTimeout`"
+        errorLine1="        assertThat(staleDnsOptions.getFreshLookupTimeout()).isEqualTo(Duration.ofMillis(delay_ms));"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="226"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Implicit cast from `Duration` to `Comparable` requires API level 26, or core library desugaring (current min is 21)"
+        errorLine1="        assertThat(staleDnsOptions.getFreshLookupTimeout()).isEqualTo(Duration.ofMillis(delay_ms));"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="226"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions.StaleDnsOptions#getMaxExpiredDelay`"
+        errorLine1="        assertThat(staleDnsOptions.getMaxExpiredDelay())"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="227"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Implicit cast from `Duration` to `Comparable` requires API level 26, or core library desugaring (current min is 21)"
+        errorLine1="        assertThat(staleDnsOptions.getMaxExpiredDelay())"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="227"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofMillis`"
+        errorLine1="                .isEqualTo(Duration.ofMillis(max_expired_time_ms));"
+        errorLine2="                                    ~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="228"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions.StaleDnsOptions#getAllowCrossNetworkUsage`"
+        errorLine1="        assertThat(staleDnsOptions.getAllowCrossNetworkUsage())"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="230"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions.StaleDnsOptions#getUseStaleOnNameNotResolved`"
+        errorLine1="        assertThat(staleDnsOptions.getUseStaleOnNameNotResolved())"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="232"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `parseDnsOptions`"
+        errorLine1="        android.net.http.DnsOptions dnsOptions = parseDnsOptions(options);"
+        errorLine2="                                                 ~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="243"
+            column="50"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions#getUseHttpStackDnsResolver`"
+        errorLine1="        assertThat(dnsOptions.getUseHttpStackDnsResolver())"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="245"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions#getPersistHostCache`"
+        errorLine1="        assertThat(dnsOptions.getPersistHostCache())"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="248"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions#getPersistHostCachePeriod`"
+        errorLine1="        assertThat(dnsOptions.getPersistHostCachePeriod()).isNull();"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="250"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Implicit cast from `Duration` to `Comparable` requires API level 26, or core library desugaring (current min is 21)"
+        errorLine1="        assertThat(dnsOptions.getPersistHostCachePeriod()).isNull();"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="250"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions#getStaleDns`"
+        errorLine1="        assertThat(dnsOptions.getStaleDns())"
+        errorLine2="                              ~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="251"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions#getPreestablishConnectionsToStaleDnsResults`"
+        errorLine1="        assertThat(dnsOptions.getPreestablishConnectionsToStaleDnsResults())"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="254"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions#getStaleDnsOptions`"
+        errorLine1="                dnsOptions.getStaleDnsOptions();"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="258"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions.StaleDnsOptions#getFreshLookupTimeout`"
+        errorLine1="        assertThat(staleDnsOptions.getFreshLookupTimeout()).isNull();"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="259"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Implicit cast from `Duration` to `Comparable` requires API level 26, or core library desugaring (current min is 21)"
+        errorLine1="        assertThat(staleDnsOptions.getFreshLookupTimeout()).isNull();"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="259"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions.StaleDnsOptions#getMaxExpiredDelay`"
+        errorLine1="        assertThat(staleDnsOptions.getMaxExpiredDelay()).isNull();"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="260"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Implicit cast from `Duration` to `Comparable` requires API level 26, or core library desugaring (current min is 21)"
+        errorLine1="        assertThat(staleDnsOptions.getMaxExpiredDelay()).isNull();"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="260"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions.StaleDnsOptions#getAllowCrossNetworkUsage`"
+        errorLine1="        assertThat(staleDnsOptions.getAllowCrossNetworkUsage())"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="262"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.DnsOptions.StaleDnsOptions#getUseStaleOnNameNotResolved`"
+        errorLine1="        assertThat(staleDnsOptions.getUseStaleOnNameNotResolved())"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="264"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `parseQuicOptions`"
+        errorLine1="        android.net.http.QuicOptions quicOptions = parseQuicOptions(options);"
+        errorLine2="                                                   ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="286"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.QuicOptions#getAllowedQuicHosts`"
+        errorLine1="        assertThat(quicOptions.getAllowedQuicHosts())"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="288"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.QuicOptions#getInMemoryServerConfigsCacheSize`"
+        errorLine1="        assertThat(quicOptions.getInMemoryServerConfigsCacheSize()).isEqualTo(max_server_config);"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="290"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.QuicOptions#getHandshakeUserAgent`"
+        errorLine1="        assertThat(quicOptions.getHandshakeUserAgent()).isEqualTo(user_agent_id);"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="291"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.QuicOptions#getIdleConnectionTimeout`"
+        errorLine1="        assertThat(quicOptions.getIdleConnectionTimeout())"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="292"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Implicit cast from `Duration` to `Comparable` requires API level 26, or core library desugaring (current min is 21)"
+        errorLine1="        assertThat(quicOptions.getIdleConnectionTimeout())"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="292"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofSeconds`"
+        errorLine1="                .isEqualTo(Duration.ofSeconds(idle_conn_timeout));"
+        errorLine2="                                    ~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="293"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `parseQuicOptions`"
+        errorLine1="        android.net.http.QuicOptions quicOptions = parseQuicOptions(options);"
+        errorLine2="                                                   ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="300"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.QuicOptions#getAllowedQuicHosts`"
+        errorLine1="        assertThat(quicOptions.getAllowedQuicHosts()).isEmpty();"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="302"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.QuicOptions#hasInMemoryServerConfigsCacheSize`"
+        errorLine1="        assertThat(quicOptions.hasInMemoryServerConfigsCacheSize()).isFalse();"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="303"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.QuicOptions#getHandshakeUserAgent`"
+        errorLine1="        assertThat(quicOptions.getHandshakeUserAgent()).isNull();"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="304"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.QuicOptions#getIdleConnectionTimeout`"
+        errorLine1="        assertThat(quicOptions.getIdleConnectionTimeout()).isNull();"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="305"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Implicit cast from `Duration` to `Comparable` requires API level 26, or core library desugaring (current min is 21)"
+        errorLine1="        assertThat(quicOptions.getIdleConnectionTimeout()).isNull();"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="305"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `AndroidHttpEngineBuilderWrapper`"
+        errorLine1="                        new AndroidHttpEngineBuilderWrapper(null) {"
+        errorLine2="                        ^">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="316"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Extending AndroidHttpEngineBuilderWrapper requires version 7 of the S Extensions SDK (current min is 0): `AndroidHttpEngineBuilderWrapper`"
+        errorLine1="                        new AndroidHttpEngineBuilderWrapper(null) {"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="316"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `AndroidHttpEngineBuilderWrapper`"
+        errorLine1="                        new AndroidHttpEngineBuilderWrapper(null) {"
+        errorLine2="                        ^">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="347"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Extending AndroidHttpEngineBuilderWrapper requires version 7 of the S Extensions SDK (current min is 0): `AndroidHttpEngineBuilderWrapper`"
+        errorLine1="                        new AndroidHttpEngineBuilderWrapper(null) {"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="347"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `AndroidHttpEngineBuilderWrapper`"
+        errorLine1="                        new AndroidHttpEngineBuilderWrapper(null) {"
+        errorLine2="                        ^">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="379"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Extending AndroidHttpEngineBuilderWrapper requires version 7 of the S Extensions SDK (current min is 0): `AndroidHttpEngineBuilderWrapper`"
+        errorLine1="                        new AndroidHttpEngineBuilderWrapper(null) {"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="379"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26 (current min is 21): `setIdleConnectionTimeout`"
+        errorLine1="        optionsBuilder.setIdleConnectionTimeout(Duration.ZERO);"
+        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="396"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ZERO`"
+        errorLine1="        optionsBuilder.setIdleConnectionTimeout(Duration.ZERO);"
+        errorLine2="                                                ~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="396"
+            column="49"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `AndroidHttpEngineBuilderWrapper`"
+        errorLine1="                        new AndroidHttpEngineBuilderWrapper(null) {"
+        errorLine2="                        ^">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="410"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Extending AndroidHttpEngineBuilderWrapper requires version 7 of the S Extensions SDK (current min is 0): `AndroidHttpEngineBuilderWrapper`"
+        errorLine1="                        new AndroidHttpEngineBuilderWrapper(null) {"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="410"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.HttpEngine.Builder`"
+        errorLine1="        public static class MockHttpEngineBuilder extends HttpEngine.Builder {"
+        errorLine2="                                                          ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="431"
+            column="59"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `new android.net.http.HttpEngine.Builder`"
+        errorLine1="                super(context);"
+        errorLine2="                ~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="435"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.ConnectionMigrationOptions#getPathDegradationMigration`"
+        errorLine1="                        stateToBoolean(options.getPathDegradationMigration());"
+        errorLine2="                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="446"
+            column="48"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `android.net.http.ConnectionMigrationOptions#getAllowNonDefaultNetworkUsage`"
+        errorLine1="                        stateToBoolean(options.getAllowNonDefaultNetworkUsage());"
+        errorLine2="                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java"
+            line="452"
+            column="48"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 28 (current min is 21): `android.net.Network#fromNetworkHandle`"
+        errorLine1="                : Network.fromNetworkHandle(networkHandle);"
+        errorLine2="                          ~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineWrapper.java"
+            line="280"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `AndroidHttpEngineWrapper`"
+        errorLine1="                new AndroidHttpEngineWrapper(null, Process.THREAD_PRIORITY_FOREGROUND);"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineWrapperTest.java"
+            line="33"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `setThreadPriority`"
+        errorLine1="        assertThat(engine.setThreadPriority()).isTrue();"
+        errorLine2="                          ~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineWrapperTest.java"
+            line="35"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `setThreadPriority`"
+        errorLine1="        assertThat(engine.setThreadPriority()).isFalse();"
+        errorLine2="                          ~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/AndroidHttpEngineWrapperTest.java"
+            line="36"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 23 (current min is 21): `android.net.Network#getNetworkHandle`"
+        errorLine1="        builder.bindToNetwork(defaultNetwork.getNetworkHandle());"
+        errorLine2="                                             ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/BidirectionalStreamTest.java"
+            line="1903"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofMillis`"
+        errorLine1="                    Duration.ofMillis("
+        errorLine2="                             ~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java"
+            line="922"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofSeconds`"
+        errorLine1="            headersLatency = Duration.ofSeconds(0);"
+        errorLine2="                                      ~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java"
+            line="926"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofMillis`"
+        errorLine1="                    Duration.ofMillis("
+        errorLine2="                             ~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java"
+            line="932"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofSeconds`"
+        errorLine1="            totalLatency = Duration.ofSeconds(0);"
+        errorLine2="                                    ~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java"
+            line="936"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `CronetLoggerImpl`"
+        errorLine1="        mCronetLoggerImpl = spy(new CronetLoggerImpl(1));"
+        errorLine2="                                ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="55"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `generateId`"
+        errorLine1="        long id = mCronetLoggerImpl.generateId();"
+        errorLine2="                                    ~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="60"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `logCronetEngineCreation`"
+        errorLine1="        mCronetLoggerImpl.logCronetEngineCreation(CRONET_ENGINE_ID, mBuilderInfo, mVersion, SOURCE);"
+        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="69"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `writeCronetEngineCreation`"
+        errorLine1="                .writeCronetEngineCreation(CRONET_ENGINE_ID, mBuilderInfo, mVersion, SOURCE);"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="72"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `logCronetEngineCreation`"
+        errorLine1="        mCronetLoggerImpl.logCronetEngineCreation(CRONET_ENGINE_ID, null, mVersion, SOURCE);"
+        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="77"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `writeCronetEngineCreation`"
+        errorLine1="                .writeCronetEngineCreation(CRONET_ENGINE_ID, null, mVersion, SOURCE);"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="80"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `logCronetTrafficInfo`"
+        errorLine1="        mCronetLoggerImpl.logCronetTrafficInfo(CRONET_ENGINE_ID, mTrafficInfo);"
+        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="85"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `writeCronetTrafficReported`"
+        errorLine1="                .writeCronetTrafficReported(CRONET_ENGINE_ID, mTrafficInfo, 0);"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="88"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `logCronetTrafficInfo`"
+        errorLine1="        mCronetLoggerImpl.logCronetTrafficInfo(CRONET_ENGINE_ID, null);"
+        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="93"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `writeCronetTrafficReported`"
+        errorLine1="        verify(mCronetLoggerImpl, never()).writeCronetTrafficReported(CRONET_ENGINE_ID, null, 0);"
+        errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="95"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `CronetLoggerImpl`"
+        errorLine1="        mCronetLoggerImpl = spy(new CronetLoggerImpl(2));"
+        errorLine2="                                ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="108"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `logCronetTrafficInfo`"
+        errorLine1="        mCronetLoggerImpl.logCronetTrafficInfo(CRONET_ENGINE_ID, mTrafficInfo);"
+        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="110"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `logCronetTrafficInfo`"
+        errorLine1="        mCronetLoggerImpl.logCronetTrafficInfo(CRONET_ENGINE_ID, mTrafficInfo);"
+        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="111"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `logCronetTrafficInfo`"
+        errorLine1="        mCronetLoggerImpl.logCronetTrafficInfo(CRONET_ENGINE_ID, mTrafficInfo);"
+        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="112"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `writeCronetTrafficReported`"
+        errorLine1="                .writeCronetTrafficReported(CRONET_ENGINE_ID, mTrafficInfo, 0);"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="115"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 30 (current min is 21): `logCronetTrafficInfo`"
+        errorLine1="            mLogger.logCronetTrafficInfo(CRONET_ENGINE_ID, mTrafficInfo);"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/telemetry/CronetLoggerImplTest.java"
+            line="135"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofSeconds`"
+        errorLine1="        assertThat(trafficInfo.getHeadersLatency()).isNotEqualTo(Duration.ofSeconds(0));"
+        errorLine2="                                                                          ~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java"
+            line="667"
+            column="75"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Implicit cast from `Duration` to `Comparable` requires API level 26, or core library desugaring (current min is 21)"
+        errorLine1="        assertThat(trafficInfo.getHeadersLatency()).isNotEqualTo(Duration.ofSeconds(0));"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java"
+            line="667"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofSeconds`"
+        errorLine1="        assertThat(trafficInfo.getTotalLatency()).isNotEqualTo(Duration.ofSeconds(0));"
+        errorLine2="                                                                        ~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java"
+            line="668"
+            column="73"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Implicit cast from `Duration` to `Comparable` requires API level 26, or core library desugaring (current min is 21)"
+        errorLine1="        assertThat(trafficInfo.getTotalLatency()).isNotEqualTo(Duration.ofSeconds(0));"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java"
+            line="668"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofSeconds`"
+        errorLine1="            assertThat(trafficInfo.getHeadersLatency()).isNotEqualTo(Duration.ofSeconds(0));"
+        errorLine2="                                                                              ~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java"
+            line="866"
+            column="79"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 21): `java.time.Duration#ofSeconds`"
+        errorLine1="            assertThat(trafficInfo.getTotalLatency()).isNotEqualTo(Duration.ofSeconds(0));"
+        errorLine2="                                                                            ~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java"
+            line="867"
+            column="77"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires version 7 of the S Extensions SDK (current min is 0): `createBuilder`"
+        errorLine1="                                new HttpEngineNativeProvider(context).createBuilder());"
+        errorLine2="                                                                      ~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/CronetTestRule.java"
+            line="693"
+            column="71"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 23 (current min is 21): `android.net.Network#getNetworkHandle`"
+        errorLine1="                        context.getUrlRequestContextAdapter(), network.getNetworkHandle());"
+        errorLine2="                                                                       ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/src/org/chromium/net/CronetTestUtil.java"
+            line="86"
+            column="72"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 23 (current min is 21): `android.net.Network#getNetworkHandle`"
+        errorLine1="        urlRequestBuilder.bindToNetwork(defaultNetwork.getNetworkHandle());"
+        errorLine2="                                                       ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java"
+            line="595"
+            column="56"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 23 (current min is 21): `android.net.Network#getNetworkHandle`"
+        errorLine1="                                        defaultNetwork.getNetworkHandle());"
+        errorLine2="                                                       ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java"
+            line="621"
+            column="56"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 23 (current min is 21): `android.net.Network#getNetworkHandle`"
+        errorLine1="        urlRequestBuilder.bindToNetwork(defaultNetwork.getNetworkHandle());"
+        errorLine2="                                                       ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java"
+            line="653"
+            column="56"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 23 (current min is 21): `android.net.Network#getNetworkHandle`"
+        errorLine1="                                defaultNetwork.getNetworkHandle());"
+        errorLine2="                                               ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java"
+            line="671"
+            column="48"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 23 (current min is 21): `android.net.Network#getNetworkHandle`"
+        errorLine1="        cronetEngine.bindToNetwork(defaultNetwork.getNetworkHandle());"
+        errorLine2="                                                  ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java"
+            line="727"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 23 (current min is 21): `android.net.Network#getNetworkHandle`"
+        errorLine1="        builder.bindToNetwork(defaultNetwork.getNetworkHandle());"
+        errorLine2="                                             ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestTest.java"
+            line="3113"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 23 (current min is 21): `android.net.Network#getNetworkHandle`"
+        errorLine1="            if (network.getNetworkHandle() == networkHandle) return network;"
+        errorLine2="                        ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/JavaUrlRequest.java"
+            line="1111"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 23 (current min is 21): `android.net.Network#getNetworkHandle`"
+        errorLine1="                                network.getNetworkHandle(), ConnectionType.CONNECTION_4G);"
+        errorLine2="                                        ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/NetworkChangesTest.java"
+            line="119"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 23 (current min is 21): `android.net.Network#getNetworkHandle`"
+        errorLine1="                        NetworkChangeNotifier.fakeNetworkDisconnected(network.getNetworkHandle());"
+        errorLine2="                                                                              ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/NetworkChangesTest.java"
+            line="126"
+            column="79"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 23 (current min is 21): `android.net.Network#getNetworkHandle`"
+        errorLine1="                                network.getNetworkHandle(), ConnectionType.CONNECTION_4G);"
+        errorLine2="                                        ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/test/javatests/src/org/chromium/net/NetworkChangesTest.java"
+            line="134"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 31, or core library desugaring (current min is 26): `java.time.Duration#toSeconds`"
+        errorLine1="            return setIdleConnectionTimeoutSeconds(idleConnectionTimeout.toSeconds());"
+        errorLine2="                                                                         ~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/api/src/org/chromium/net/QuicOptions.java"
+            line="362"
+            column="74"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 24 (current min is 21): `new java.util.concurrent.CompletableFuture`"
+        errorLine1="        CompletableFuture&lt;CronetResponse&lt;T>> completableFuture = new CompletableFuture&lt;>();"
+        errorLine2="                                                                 ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/api/src/org/chromium/net/apihelpers/UrlRequestCallbacks.java"
+            line="98"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 24 (current min is 21): `java.util.concurrent.CompletableFuture#completeExceptionally`"
+        errorLine1="                        completableFuture.completeExceptionally(exception);"
+        errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/api/src/org/chromium/net/apihelpers/UrlRequestCallbacks.java"
+            line="104"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 24 (current min is 21): `java.util.concurrent.CompletableFuture#completeExceptionally`"
+        errorLine1="                        completableFuture.completeExceptionally("
+        errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/api/src/org/chromium/net/apihelpers/UrlRequestCallbacks.java"
+            line="109"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 24 (current min is 21): `java.util.concurrent.CompletableFuture#complete`"
+        errorLine1="                        completableFuture.complete(new CronetResponse&lt;>(info, body));"
+        errorLine2="                                          ~~~~~~~~">
+        <location
+            file="../../components/cronet/android/api/src/org/chromium/net/apihelpers/UrlRequestCallbacks.java"
+            line="115"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: BidirectionalStream.STREAM_PRIORITY_IDLE, BidirectionalStream.STREAM_PRIORITY_LOWEST, BidirectionalStream.STREAM_PRIORITY_LOW, BidirectionalStream.STREAM_PRIORITY_MEDIUM, BidirectionalStream.STREAM_PRIORITY_HIGHEST"
+        errorLine1="        streamBuilder.setPriority(priority);"
+        errorLine2="                                  ~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineWrapper.java"
+            line="205"
+            column="35"/>
+    </issue>
+
+    <issue
         id="SupportAnnotationUsage"
         message="Top level class can&apos;t have private or protected access level"
         errorLine1="@VisibleForTesting"
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java"
-            line="14"
+            line="12"
             column="1"/>
     </issue>
 
@@ -41,7 +1482,7 @@
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java"
-            line="47"
+            line="56"
             column="1"/>
     </issue>
 
@@ -52,17 +1493,6 @@
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetLibraryLoader.java"
-            line="32"
-            column="1"/>
-    </issue>
-
-    <issue
-        id="SupportAnnotationUsage"
-        message="Top level class can&apos;t have private or protected access level"
-        errorLine1="@VisibleForTesting"
-        errorLine2="~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetManifest.java"
             line="39"
             column="1"/>
     </issue>
@@ -73,18 +1503,7 @@
         errorLine1="@VisibleForTesting"
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java"
-            line="17"
-            column="1"/>
-    </issue>
-
-    <issue
-        id="SupportAnnotationUsage"
-        message="Top level class can&apos;t have private or protected access level"
-        errorLine1="@VisibleForTesting"
-        errorLine2="~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java"
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetManifest.java"
             line="40"
             column="1"/>
     </issue>
@@ -95,8 +1514,30 @@
         errorLine1="@VisibleForTesting"
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetMetrics.java"
+            line="15"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="SupportAnnotationUsage"
+        message="Top level class can&apos;t have private or protected access level"
+        errorLine1="@VisibleForTesting"
+        errorLine2="~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetUploadDataStream.java"
+            line="39"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="SupportAnnotationUsage"
+        message="Top level class can&apos;t have private or protected access level"
+        errorLine1="@VisibleForTesting"
+        errorLine2="~~~~~~~~~~~~~~~~~~">
+        <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequest.java"
-            line="55"
+            line="56"
             column="1"/>
     </issue>
 
@@ -107,30 +1548,19 @@
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetUrlRequestContext.java"
-            line="58"
+            line="56"
             column="1"/>
     </issue>
 
     <issue
-        id="AssertionSideEffect"
-        message="Assertion condition has a side effect: mThreadId = Thread.currentThread().getId()"
-        errorLine1="        assert calledOnValidThread();"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~">
+        id="UnusedResources"
+        message="The resource `R.bool.is_running_in_aosp` appears to be unused"
+        errorLine1="    &lt;bool name=&quot;is_running_in_aosp&quot;>false&lt;/bool>"
+        errorLine2="          ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../components/cronet/android/java/src/org/chromium/net/urlconnection/MessageLoop.java"
-            line="100"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="AssertionSideEffect"
-        message="Assertion condition has a side effect: mThreadId = Thread.currentThread().getId()"
-        errorLine1="        assert calledOnValidThread();"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/cronet/android/java/src/org/chromium/net/urlconnection/MessageLoop.java"
-            line="143"
-            column="16"/>
+            file="../../components/cronet/android/test/res/values/cronet-test-rule-configuration.xml"
+            line="3"
+            column="11"/>
     </issue>
 
 </issues>

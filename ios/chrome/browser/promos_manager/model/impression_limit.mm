@@ -8,7 +8,7 @@
 
 - (instancetype)initWithLimit:(NSInteger)numImpressions
                    forNumDays:(NSInteger)numDays {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _numImpressions = numImpressions;
     _numDays = numDays;
   }

@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/repetition_checker.h"
 
+#include "components/optimization_guide/core/optimization_guide_features.h"
+
 namespace optimization_guide {
 
 bool HasRepeatingSuffix(int min_chars, int num_repeats, std::string_view text) {
@@ -29,6 +31,15 @@ bool HasRepeatingSuffix(int min_chars, int num_repeats, std::string_view text) {
     cur_size++;
   }
   return false;
+}
+
+bool HasRepeatingSuffix(std::string_view text) {
+  int num_repeats = features::GetOnDeviceModelNumRepeats();
+  if (num_repeats <= 1) {
+    return false;
+  }
+  return HasRepeatingSuffix(features::GetOnDeviceModelMinRepeatChars(),
+                            num_repeats, text);
 }
 
 }  // namespace optimization_guide

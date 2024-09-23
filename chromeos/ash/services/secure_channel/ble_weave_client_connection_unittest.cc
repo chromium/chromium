@@ -132,7 +132,7 @@ class MockBluetoothLowEnergyWeavePacketGenerator
                max_packet_size_ == kLargeMaxPacketSize) {
       return kLargePackets;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::vector<Packet>();
     }
   }
@@ -555,7 +555,7 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
       EXPECT_EQ(receiver_->GetMaxPacketSize(), kLargeMaxPacketSize);
       EXPECT_EQ(generator_->GetMaxPacketSize(), kLargeMaxPacketSize);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     EXPECT_EQ(connection->sub_status(), SubStatus::CONNECTED_AND_IDLE);

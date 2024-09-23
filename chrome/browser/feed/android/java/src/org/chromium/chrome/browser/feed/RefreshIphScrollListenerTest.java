@@ -199,26 +199,6 @@ public final class RefreshIphScrollListenerTest {
                     public boolean canScrollUp() {
                         return canScrollUp;
                     }
-
-                    @Override
-                    public int getHeaderCount() {
-                        return 0;
-                    }
-
-                    @Override
-                    public int getItemCount() {
-                        return 0;
-                    }
-
-                    @Override
-                    public int getFirstVisiblePosition() {
-                        return 0;
-                    }
-
-                    @Override
-                    public int getLastVisiblePosition() {
-                        return 0;
-                    }
                 };
 
         ScrollableContainerDelegate scrollableContainerDelegate =

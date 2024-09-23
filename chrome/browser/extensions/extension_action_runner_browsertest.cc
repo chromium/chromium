@@ -17,9 +17,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/scripting_permissions_modifier.h"
-#include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -269,9 +270,11 @@ class ExtensionActionRunnerBrowserTestWithContextType
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExtensionActionRunnerBrowserTestWithContextType,
                          ::testing::Values(ContextType::kPersistentBackground));
+// These tests use chrome.tabs.executeScript, which is not available in MV3 and
+// above. See crbug.com/332328868.
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionActionRunnerBrowserTestWithContextType,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 // Load up different combinations of extensions, and verify that script
 // injection is properly withheld and indicated to the user.
@@ -414,9 +417,9 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param ? "AcceptReload" : "DismissReload";
     });
 
-// TODO(crbug.com/1378775): Test an extension that can be granted tab permission
-// but without a reload. And also running an action without granting tab
-// permission.
+// TODO(crbug.com/40875193): Test an extension that can be granted tab
+// permission but without a reload. And also running an action without granting
+// tab permission.
 
 // Tests that when running an action and accepting the reload bubble blocked
 // actions are run (script injects), but when the user dismissed the bubble

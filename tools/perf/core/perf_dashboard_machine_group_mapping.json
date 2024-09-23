@@ -10,7 +10,6 @@
   "chromium.fuchsia.fyi": "ChromiumFuchsiaFyi",
   "chromium.fyi": "ChromiumFYI",
   "chromium.gatekeeper": "Gatekeeper",
-  "chromium.goma": "ChromiumGoma",
   "chromium.gpu": "ChromiumGPU",
   "chromium.gpu.fyi": "ChromiumGPUFYI",
   "chromium.infra": "Infra",
@@ -77,4 +76,3 @@
   "tryserver.nacl": "NativeClientTryServer",
   "tryserver.webrtc": "WebRTCTryServer"
 }
-

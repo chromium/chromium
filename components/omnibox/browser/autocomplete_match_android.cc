@@ -14,10 +14,12 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_factory_android.h"
 #include "components/omnibox/browser/clipboard_provider.h"
-#include "components/omnibox/browser/jni_headers/AutocompleteMatch_jni.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
-#include "components/query_tiles/android/tile_conversion_bridge.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/omnibox/browser/jni_headers/AutocompleteMatch_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
@@ -55,7 +57,17 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
 
   base::android::ScopedJavaLocalRef<jobject> janswer;
   if (answer)
-    janswer = answer->CreateJavaObject();
+    janswer = answer->CreateJavaObject(answer_type);
+
+  ScopedJavaLocalRef<jbyteArray> j_answer_template;
+  if (answer_template) {
+    std::string str_answer_template;
+    if (answer_template->SerializeToString(&str_answer_template)) {
+      j_answer_template =
+          base::android::ToJavaByteArray(env, str_answer_template);
+    }
+  }
+
   ScopedJavaLocalRef<jstring> j_image_dominant_color;
   ScopedJavaLocalRef<jstring> j_post_content_type;
   ScopedJavaLocalRef<jbyteArray> j_post_content;
@@ -75,27 +87,9 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
     clipboard_image_data = search_terms_args->image_thumbnail_content;
   }
 
-  ScopedJavaLocalRef<jobject> j_query_tiles =
-      query_tiles::TileConversionBridge::CreateJavaTiles(env, query_tiles);
-
-  std::vector<std::u16string> suggest_titles;
-  suggest_titles.reserve(suggest_tiles.size());
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> suggest_urls;
-  suggest_urls.reserve(suggest_tiles.size());
-  // Note: vector<bool> is a specialized version of vector that behaves
-  // differently, storing values as individual bits. This makes it impossible
-  // for us to use it to represent tile.is_search on the Java side.
-  std::vector<int> suggest_types;
-  suggest_types.reserve(suggest_tiles.size());
-  for (const auto& tile : suggest_tiles) {
-    suggest_titles.push_back(tile.title);
-    suggest_urls.push_back(url::GURLAndroid::FromNativeGURL(env, tile.url));
-    suggest_types.push_back(tile.is_search);
-  }
-
   std::vector<int> temp_subtypes(subtypes.begin(), subtypes.end());
 
-  base::android::ScopedJavaLocalRef<jobjectArray> actions_list;
+  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> actions_list;
   if (actions.empty() && takeover_action) {
     actions_list = ToJavaOmniboxActionsList(env, {takeover_action});
   } else {
@@ -112,16 +106,17 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
           ConvertUTF16ToJavaString(env, description),
           ToJavaIntArray(env, description_class_offsets),
           ToJavaIntArray(env, description_class_styles), janswer,
+          j_answer_template, answer_type,
           ConvertUTF16ToJavaString(env, fill_into_edit),
           url::GURLAndroid::FromNativeGURL(env, destination_url),
           url::GURLAndroid::FromNativeGURL(env, image_url),
           j_image_dominant_color, SupportsDeletion(), j_post_content_type,
           j_post_content, suggestion_group_id.value_or(omnibox::GROUP_INVALID),
-          j_query_tiles, ToJavaByteArray(env, clipboard_image_data),
-          has_tab_match.value_or(false),
-          ToJavaArrayOfStrings(env, suggest_titles),
-          url::GURLAndroid::ToJavaArrayOfGURLs(env, suggest_urls),
-          ToJavaIntArray(env, suggest_types), actions_list));
+          ToJavaByteArray(env, clipboard_image_data),
+          has_tab_match.value_or(false), actions_list,
+          allowed_to_be_default_match,
+          ConvertUTF16ToJavaString(env, inline_autocompletion),
+          ConvertUTF16ToJavaString(env, additional_text)));
 
   return ScopedJavaLocalRef<jobject>(*java_match_);
 }
@@ -173,8 +168,8 @@ void AutocompleteMatch::UpdateMatchingJavaTab(
 
   // Default state is: we don't have a matching tab. If that default state has
   // changed, reflect it in the UI.
-  // TODO(crbug.com/1266558): when Tab.java is relocated to Components, pass the
-  // Tab object directly to Java. This is not possible right now due to
+  // TODO(crbug.com/40204147): when Tab.java is relocated to Components, pass
+  // the Tab object directly to Java. This is not possible right now due to
   // //components being explicitly denied to depend on //chrome targets.
   if (!java_match_ || !has_tab_match.value_or(false))
     return;
@@ -223,8 +218,23 @@ void AutocompleteMatch::UpdateJavaDestinationUrl() {
 void AutocompleteMatch::UpdateJavaAnswer() {
   if (java_match_) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AutocompleteMatch_setAnswer(
-        env, *java_match_, answer ? answer->CreateJavaObject() : nullptr);
+    if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
+      ScopedJavaLocalRef<jbyteArray> j_answer_template;
+      if (answer_template) {
+        std::string str_answer_template;
+        if (answer_template->SerializeToString(&str_answer_template)) {
+          j_answer_template =
+              base::android::ToJavaByteArray(env, str_answer_template);
+        }
+      }
+      Java_AutocompleteMatch_setAnswerTemplate(
+          env, *java_match_, answer_template ? j_answer_template : nullptr);
+    } else {
+      Java_AutocompleteMatch_setAnswer(
+          env, *java_match_,
+          answer ? answer->CreateJavaObject(answer_type) : nullptr);
+    }
+    Java_AutocompleteMatch_setAnswerType(env, *java_match_, answer_type);
   }
 }
 

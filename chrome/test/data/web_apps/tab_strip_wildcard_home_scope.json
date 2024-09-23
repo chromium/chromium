@@ -7,7 +7,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/web_apps/get_manifest.html",
+  "start_url": "/web_apps/get_manifest.html?tab_strip_wildcard_home_scope.json",
   "scope": "/",
   "display": "standalone",
   "display_override": [ "tabbed" ],

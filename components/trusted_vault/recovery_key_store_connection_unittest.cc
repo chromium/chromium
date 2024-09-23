@@ -36,7 +36,7 @@ constexpr char kPasskeysApplicationKeyName[] =
 class RecoveryKeyStoreConnectionImplTest : public testing::Test {
  protected:
   static constexpr char kUpdateVaultUrl[] =
-      "https://cryptauthvault.googleapis.com/v1/vaults/?alt=proto";
+      "https://cryptauthvault.googleapis.com/v1/vaults/0?alt=proto";
 
   RecoveryKeyStoreConnectionImplTest() {}
   ~RecoveryKeyStoreConnectionImplTest() override = default;
@@ -45,22 +45,17 @@ class RecoveryKeyStoreConnectionImplTest : public testing::Test {
 
   std::unique_ptr<RecoveryKeyStoreConnection::Request> UpdateRecoveryKeyStore(
       const CoreAccountInfo& account_info,
-      const trusted_vault_pb::UpdateVaultRequest& update_vault_request,
+      const trusted_vault_pb::Vault& request,
       RecoveryKeyStoreConnection::UpdateRecoveryKeyStoreCallback callback) {
-    return connection()->UpdateRecoveryKeyStore(
-        account_info, update_vault_request, std::move(callback));
+    return connection()->UpdateRecoveryKeyStore(account_info, request,
+                                                std::move(callback));
   }
 
-  trusted_vault_pb::UpdateVaultRequest MakeUpdateVaultRequest() {
-    trusted_vault_pb::UpdateVaultRequest request;
-    trusted_vault_pb::ApplicationKey* application_key =
-        request.mutable_vault()->add_application_keys();
-    application_key->set_key_name(kPasskeysApplicationKeyName);
-    trusted_vault_pb::ChromeOsMetadata* metadata =
-        request.mutable_chrome_os_metadata();
-    metadata->set_device_id("test device id");
-    metadata->set_chrome_os_version("test chrome os version");
-    return request;
+  trusted_vault_pb::Vault MakeRequest() {
+    trusted_vault_pb::Vault vault;
+    vault.add_application_keys()->set_key_name(kPasskeysApplicationKeyName);
+    vault.mutable_chrome_os_metadata()->set_device_id("test device id");
+    return vault;
   }
 
   bool SimulateUpdateRecoveryKeyStoreResponse(
@@ -94,7 +89,8 @@ class RecoveryKeyStoreConnectionImplTest : public testing::Test {
   std::unique_ptr<RecoveryKeyStoreConnection> connection_ =
       std::make_unique<RecoveryKeyStoreConnectionImpl>(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              &test_url_loader_factory_),
+              &test_url_loader_factory_)
+              ->Clone(),
           std::make_unique<FakeTrustedVaultAccessTokenFetcher>(
               signin::AccessTokenInfo(
                   "test access token",
@@ -104,8 +100,7 @@ class RecoveryKeyStoreConnectionImplTest : public testing::Test {
 
 TEST_F(RecoveryKeyStoreConnectionImplTest,
        ShouldUpdateRecoveryKeyStoreAndHandleSuccess) {
-  const trusted_vault_pb::UpdateVaultRequest request_proto =
-      MakeUpdateVaultRequest();
+  const trusted_vault_pb::Vault request_proto = MakeRequest();
 
   base::MockCallback<RecoveryKeyStoreConnection::UpdateRecoveryKeyStoreCallback>
       callback;
@@ -121,7 +116,7 @@ TEST_F(RecoveryKeyStoreConnectionImplTest,
   EXPECT_THAT(resource_request.method, Eq("PATCH"));
   EXPECT_THAT(resource_request.url, Eq(kUpdateVaultUrl));
 
-  trusted_vault_pb::UpdateVaultRequest deserialized_body;
+  trusted_vault_pb::Vault deserialized_body;
   EXPECT_TRUE(deserialized_body.ParseFromString(
       network::GetUploadData(resource_request)));
   EXPECT_THAT(network::GetUploadData(resource_request),
@@ -137,7 +132,8 @@ TEST_F(RecoveryKeyStoreConnectionImplTest,
   // RecoveryKeyStoreConnection requests.
   auto connection = std::make_unique<RecoveryKeyStoreConnectionImpl>(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory_),
+          &test_url_loader_factory_)
+          ->Clone(),
       std::make_unique<FakeTrustedVaultAccessTokenFetcher>(
           base::unexpected(TrustedVaultAccessTokenFetcher::FetchingError::
                                kPersistentAuthError)));
@@ -149,8 +145,8 @@ TEST_F(RecoveryKeyStoreConnectionImplTest,
       Run(Eq(UpdateRecoveryKeyStoreStatus::kPersistentAccessTokenFetchError)));
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection->UpdateRecoveryKeyStore(
-          CoreAccountInfo(), MakeUpdateVaultRequest(), callback.Get());
+      connection->UpdateRecoveryKeyStore(CoreAccountInfo(), MakeRequest(),
+                                         callback.Get());
   ASSERT_THAT(request, NotNull());
 
   // No network requests should be made.
@@ -166,8 +162,8 @@ TEST_F(RecoveryKeyStoreConnectionImplTest,
         RecoveryKeyStoreConnection::UpdateRecoveryKeyStoreCallback>
         callback;
     std::unique_ptr<TrustedVaultConnection::Request> request =
-        connection()->UpdateRecoveryKeyStore(
-            CoreAccountInfo(), MakeUpdateVaultRequest(), callback.Get());
+        connection()->UpdateRecoveryKeyStore(CoreAccountInfo(), MakeRequest(),
+                                             callback.Get());
     ASSERT_THAT(request, NotNull());
 
     EXPECT_CALL(callback, Run(Eq(UpdateRecoveryKeyStoreStatus::kOtherError)));
@@ -180,8 +176,8 @@ TEST_F(RecoveryKeyStoreConnectionImplTest,
   base::MockCallback<RecoveryKeyStoreConnection::UpdateRecoveryKeyStoreCallback>
       callback;
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->UpdateRecoveryKeyStore(
-          CoreAccountInfo(), MakeUpdateVaultRequest(), callback.Get());
+      connection()->UpdateRecoveryKeyStore(CoreAccountInfo(), MakeRequest(),
+                                           callback.Get());
   ASSERT_THAT(request, NotNull());
 
   EXPECT_CALL(callback, Run(Eq(UpdateRecoveryKeyStoreStatus::kNetworkError)));

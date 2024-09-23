@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Upload content to GCS and set DEPS
+# 1) The Python script uploads content to Google Cloud Storage and returns a
+#    string that part of it contains the JSON which need be used to
+#    update the DEPS file. Here is a sample response.
+#Uploading node_modules.tar.gz as gs://chromium-nodejs/<sha1>
+#{
+#  "path": {
+#    "dep_type": "gcs",
+#    "bucket": "chromium-nodejs",
+#    "objects": [
+#      {
+#        "object_name":
+#          "97a0b3c4c39cf05de1eafb6ffdec0fddd643f0a2",
+#        "sha256sum":
+#          "dcfaea4d353d1df3d4ac2d245ea7e32ad177d4bea1351f363714c9c22ca5c4f8",
+#        "size_bytes": 9761601,
+#        "generation": 1716489161461140
+#      }
+#    ]
+#  }
+#}
+# 2) grep gets only the JSON part in the string.
+# 3) jq extracts the `objects` in the returned JSON.
+# 4) sed generates the output by replacing newlines with commas and
+#    removing any trailing commas.
+# 5) The output will be like
+#    `{object_name},{sha256sum},{size_bytes},{generation}`
+# These values will be used to update the DEPS file using `gclient setdep`.
+
+set -eu
+current_dir=$(dirname "$0" | pwd)
+cd "${current_dir}"
+
+sha1="$(sha1sum $1 | cut -d ' ' -f1)"
+response="$(upload_to_google_storage_first_class.py \
+    --bucket=chromium-nodejs \
+    --object-name=${sha1} \
+    $1)"
+object_info=$(echo ${response} | \
+  grep -o '{.*}' |
+  jq -r .path.objects[0][] |
+  sed -z 's/\n/,/g;s/,$/\n/')
+# The current working directory is set to `src/third_party/node` at the top,
+# which is where this script located.
+# `--deps-file` needs to be set to specify the DEPS file location.
+# Using a relative path, i.e. `../../DEPS`, would not work because
+# gclient runs from the src/ directory and it uses the `--deps-file` in some
+# processes. A relative path may result in a fatal message in those processes.
+gclient setdep -r $2@"${object_info}" \
+  --deps-file="${current_dir}"/../../DEPS
+
+cd -

@@ -15,7 +15,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -32,13 +31,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(PAUSED)
 @Features.EnableFeatures({
-    MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION,
     MessageFeatureList.MESSAGES_FOR_ANDROID_FULLY_VISIBLE_CALLBACK,
     MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS
 })
 public class MessageDispatcherUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock private MessageQueueManager mQueueManager;
     @Mock private MessageAnimationCoordinator mAnimationCoordinator;

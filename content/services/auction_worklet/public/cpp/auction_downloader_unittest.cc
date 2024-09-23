@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/base/net_errors.h"
@@ -84,12 +85,15 @@ class AuctionDownloaderTest
     raw_ref<network::URLLoaderCompletionStatus> completetion_status_ref_;
   };
 
-  std::unique_ptr<std::string> RunRequest() {
+  std::unique_ptr<std::string> RunRequest(
+      std::optional<std::string> post_body = std::nullopt,
+      std::optional<std::string> content_type = std::nullopt) {
     DCHECK(!run_loop_);
 
     // reset values
     observed_request_id_ = std::nullopt;
     observed_request_url_ = std::nullopt;
+    observed_request_content_type_ = std::nullopt;
     observed_response_url_ = std::nullopt;
     observed_completion_status_ =
         network::URLLoaderCompletionStatus(net::Error());
@@ -99,13 +103,19 @@ class AuctionDownloaderTest
         observed_completion_status_, observed_response_url_,
         observed_request_id_, observed_request_url_, observed_response_head_);
 
-    url_loader_factory_.SetInterceptor(
-        base::BindRepeating([](const network::ResourceRequest& request) {
+    url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+        [this](const network::ResourceRequest& request) {
           EXPECT_TRUE(request.devtools_request_id);
+          observed_request_post_body_ = request.request_body;
+          observed_request_content_type_ =
+              request.headers.GetHeader(net::HttpRequestHeaders::kContentType);
+          observed_request_method_ = request.method;
         }));
 
     AuctionDownloader downloader(
         &url_loader_factory_, url_, download_mode(), mime_type_,
+        std::move(post_body), std::move(content_type),
+        response_started_callback_,
         base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
                        base::Unretained(this)),
         std::move(test_network_events_delegate));
@@ -145,7 +155,7 @@ class AuctionDownloaderTest
 
   base::test::TaskEnvironment task_environment_;
 
-  const GURL url_ = GURL("https://url.test/script.js");
+  GURL url_ = GURL("https://url.test/script.js");
 
   AuctionDownloader::MimeType mime_type_ =
       AuctionDownloader::MimeType::kJavascript;
@@ -159,9 +169,15 @@ class AuctionDownloaderTest
 
   std::optional<GURL> observed_request_url_;
   std::optional<std::string> observed_request_id_;
+  scoped_refptr<network::ResourceRequestBody> observed_request_post_body_;
+  std::optional<std::string> observed_request_content_type_;
+  std::optional<std::string> observed_request_method_;
   std::optional<GURL> observed_response_url_;
   std::optional<network::mojom::URLResponseHeadPtr> observed_response_head_;
   network::URLLoaderCompletionStatus observed_completion_status_;
+
+  base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
+      response_started_callback_;
 };
 
 TEST_P(AuctionDownloaderTest, NetworkError) {
@@ -176,7 +192,39 @@ TEST_P(AuctionDownloaderTest, NetworkError) {
   EXPECT_EQ(observed_completion_status_.error_code, net::ERR_FAILED);
 }
 
-// HTTP 404 responses are trested as failures.
+TEST_P(AuctionDownloaderTest, NetworkErrorTruncatesUrl) {
+  network::URLLoaderCompletionStatus status;
+  status.error_code = net::ERR_FAILED;
+  std::string almost_too_long_url_base = "https://url.test/";
+  almost_too_long_url_base += std::string(
+      AuctionDownloader::kMaxErrorUrlLength - almost_too_long_url_base.size(),
+      '1');
+  GURL almost_too_long_url = GURL(almost_too_long_url_base);
+  GURL too_long_url = GURL(almost_too_long_url_base + "2");
+
+  url_ = almost_too_long_url;
+  url_loader_factory_.AddResponse(url_, /*head=*/nullptr, kAsciiResponseBody,
+                                  status);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(base::StringPrintf("Failed to load %s error = net::ERR_FAILED.",
+                               almost_too_long_url.spec().c_str()),
+            last_error_msg());
+  EXPECT_EQ(observed_completion_status_.error_code, net::ERR_FAILED);
+
+  url_ = too_long_url;
+  url_loader_factory_.AddResponse(url_, /*head=*/nullptr, kAsciiResponseBody,
+                                  status);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(base::StringPrintf(
+                "Failed to load %s... error = net::ERR_FAILED.",
+                too_long_url.spec()
+                    .substr(0, AuctionDownloader::kMaxErrorUrlLength - 3)
+                    .c_str()),
+            last_error_msg());
+  EXPECT_EQ(observed_completion_status_.error_code, net::ERR_FAILED);
+}
+
+// HTTP 404 responses are treated as failures.
 TEST_P(AuctionDownloaderTest, HttpError) {
   // This is an unlikely response for an error case, but should fail if it ever
   // happens.
@@ -230,6 +278,7 @@ TEST_P(AuctionDownloaderTest, AllowAdAuction) {
       "Rejecting load of https://url.test/script.js due to lack of "
       "Ad-Auction-Allowed: true (or the deprecated X-Allow-FLEDGE: true).",
       last_error_msg());
+  EXPECT_EQ(observed_completion_status_.error_code, net::ERR_ABORTED);
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody, "Ad-Auction-Allowed: true");
@@ -339,6 +388,40 @@ TEST_P(AuctionDownloaderTest, PassesHeaders) {
       headers_->GetNormalizedHeader("Data-Version", &data_version_string));
 }
 
+TEST_P(AuctionDownloaderTest, ResponseStartedCallback) {
+  bool called = false;
+  response_started_callback_ = base::BindLambdaForTesting(
+      [&](const network::mojom::URLResponseHead& response_head) {
+        EXPECT_FALSE(called);
+        // If this callback is called, it's called before the result one.
+        EXPECT_TRUE(run_loop_);
+        called = true;
+        ASSERT_TRUE(response_head.headers);
+        std::string test_header_str;
+        EXPECT_TRUE(response_head.headers->GetNormalizedHeader(
+            "Test-Header", &test_header_str));
+        EXPECT_EQ("test-val", test_header_str);
+      });
+
+  // Since response doesn't have Ad-Auction-Allowed, this will fail and not
+  // get the `response_started_callback_` invoked, either.
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, "Test-Header: test-val");
+  EXPECT_FALSE(RunRequest());
+  EXPECT_FALSE(called);
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to lack of "
+      "Ad-Auction-Allowed: true (or the deprecated X-Allow-FLEDGE: true).",
+      last_error_msg());
+
+  // This will succeed and invoke the callback as well.
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody,
+              "Test-Header: test-val\r\nAd-Auction-Allowed: true");
+  EXPECT_TRUE(RunRequest());
+  EXPECT_TRUE(called);
+}
+
 // Redirect responses are treated as failures.
 TEST_P(AuctionDownloaderTest, Redirect) {
   // None of these fields actually matter for this test, but a bit strange for
@@ -357,6 +440,7 @@ TEST_P(AuctionDownloaderTest, Redirect) {
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ("Unexpected redirect on https://url.test/script.js.",
             last_error_msg());
+  EXPECT_EQ(observed_completion_status_.error_code, net::ERR_ABORTED);
 }
 
 TEST_P(AuctionDownloaderTest, Success) {
@@ -364,6 +448,27 @@ TEST_P(AuctionDownloaderTest, Success) {
               kAsciiResponseBody);
   std::unique_ptr<std::string> body = RunRequest();
   ASSERT_TRUE(body);
+  EXPECT_EQ(EmptyIfSimulated(kAsciiResponseBody), *body);
+}
+
+TEST_P(AuctionDownloaderTest, SuccessWithPostBody) {
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody);
+  const std::string kPostBody = "TEST BODY";
+  const std::string kContentType = "text/javascript";
+  std::unique_ptr<std::string> body =
+      RunRequest(std::move(kPostBody), std::move(kContentType));
+  ASSERT_TRUE(body);
+  ASSERT_TRUE(observed_request_post_body_);
+  ASSERT_EQ(1u, observed_request_post_body_->elements()->size());
+  const network::DataElement& elem =
+      observed_request_post_body_->elements()->at(0);
+  ASSERT_EQ(network::DataElement::Tag::kBytes, elem.type());
+  const network::DataElementBytes& byte_elem =
+      elem.As<network::DataElementBytes>();
+  EXPECT_EQ(kPostBody, byte_elem.AsStringPiece());
+  EXPECT_EQ(observed_request_method_, "POST");
+  EXPECT_EQ(observed_request_content_type_, kContentType);
   EXPECT_EQ(EmptyIfSimulated(kAsciiResponseBody), *body);
 }
 
@@ -511,6 +616,44 @@ TEST_P(AuctionDownloaderTest, MimeTypeWasm) {
       "Rejecting load of https://url.test/script.js due to unexpected MIME "
       "type.",
       last_error_msg());
+}
+
+TEST_P(AuctionDownloaderTest, MimeTypeTrustedSignals) {
+  mime_type_ = AuctionDownloader::MimeType::kAdAuctionTrustedSignals;
+
+  // AdAuctionTrustedSignals request, Javascript response type.
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
+
+  // AdAuctionTrustedSignals request, no response type.
+  AddResponse(&url_loader_factory_, url_, /*mime_type=*/std::nullopt,
+              /*charset=*/std::nullopt, kAsciiResponseBody);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
+
+  // AdAuctionTrustedSignals request, JSON response type.
+  AddResponse(&url_loader_factory_, url_, kJsonMimeType, kUtf8Charset,
+              kAsciiResponseBody);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
+
+  // AdAuctionTrustedSignals request, AdAuctionTrustedSignals response type.
+  AddResponse(&url_loader_factory_, url_, kAdAuctionTrustedSignalsMimeType,
+              /*charset=*/std::nullopt, kUtf8ResponseBody);
+  std::unique_ptr<std::string> body = RunRequest();
+  ASSERT_TRUE(body);
+  EXPECT_EQ(EmptyIfSimulated(kUtf8ResponseBody), *body);
 }
 
 // Test all Javascript and JSON MIME type strings.

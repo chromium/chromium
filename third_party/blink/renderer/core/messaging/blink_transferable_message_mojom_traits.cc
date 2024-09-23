@@ -6,7 +6,6 @@
 
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "skia/ext/skia_utils_base.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/messaging/static_bitmap_image.mojom-blink.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom-blink.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
@@ -67,9 +66,7 @@ StructTraits<blink::mojom::blink::TransferableMessage::DataView,
   out.ReserveInitialCapacity(
       input.message->GetImageBitmapContentsArray().size());
   for (auto& bitmap_contents : input.message->GetImageBitmapContentsArray()) {
-    if (!bitmap_contents->IsTextureBacked() ||
-        !base::FeatureList::IsEnabled(
-            blink::features::kAcceleratedStaticBitmapImageSerialization)) {
+    if (!bitmap_contents->IsTextureBacked()) {
       // Software images are passed as skia.mojom.BitmapN32,
       // so SkBitmap should be in N32 format.
       auto bitmap_n32 = ToSkBitmapN32(bitmap_contents);

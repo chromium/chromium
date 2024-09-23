@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 
 #include <string>
@@ -110,8 +115,6 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
       "isOnePageOnboardingEnabled",
       base::FeatureList::IsEnabled(features::kNearbySharingOnePageOnboarding));
   RegisterNearbySharedStrings(html_source);
-  html_source->AddBoolean("isJellyEnabled",
-                          chromeos::features::IsJellyEnabled());
   html_source->UseStringsJs();
 
   // Register callback to handle "cancel-button-event" from nearby_*.html files.
@@ -129,10 +132,6 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
 
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
   SetAttachmentFromQueryParameter(url);
-
-  html_source->AddBoolean(
-      "isSelfShareEnabled",
-      base::FeatureList::IsEnabled(features::kNearbySharingSelfShare));
 }
 
 NearbyShareDialogUI::~NearbyShareDialogUI() = default;
@@ -180,7 +179,7 @@ void NearbyShareDialogUI::BindInterface(
 
 bool NearbyShareDialogUI::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   if (!web_view_) {
     return false;
   }

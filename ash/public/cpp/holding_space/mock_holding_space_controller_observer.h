@@ -21,10 +21,6 @@ class MockHoldingSpaceControllerObserver
 
   // HoldingSpaceControllerObserver:
   MOCK_METHOD(void, OnHoldingSpaceControllerDestroying, (), (override));
-  MOCK_METHOD(void,
-              OnHoldingSpaceTrayBubbleVisibilityChanged,
-              (const HoldingSpaceTray*, bool),
-              (override));
 };
 }  // namespace ash
 

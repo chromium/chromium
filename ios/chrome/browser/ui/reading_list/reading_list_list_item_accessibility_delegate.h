@@ -11,6 +11,9 @@
 // ReadingListListItems.
 @protocol ReadingListListItemAccessibilityDelegate
 
+// Returns true if owner is in edit mode.
+- (BOOL)isEditing;
+
 // Returns whether the entry is read.
 - (BOOL)isItemRead:(id<ReadingListListItem>)item;
 

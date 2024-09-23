@@ -10,6 +10,7 @@
 #include <functional>
 #include <initializer_list>
 #include <ostream>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -31,7 +32,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -79,7 +79,7 @@ struct TypedResult {
   bool HasErrors() const { return !error_log.empty(); }
 };
 
-std::string CreateError(std::initializer_list<base::StringPiece> parts) {
+std::string CreateError(std::initializer_list<std::string_view> parts) {
   std::string error = base::StrCat(parts);
   LOG(ERROR) << error;
   return error;
@@ -242,14 +242,14 @@ TypedResult<SkBitmap> ReadIconBlocking(scoped_refptr<FileUtilsWrapper> utils,
   TRACE_EVENT0("ui", "web_app_icon_manager::ReadIconBlocking");
   base::FilePath icon_file = GetIconFileName(web_apps_directory, icon_id);
   auto icon_data = base::MakeRefCounted<base::RefCountedString>();
-  if (!utils->ReadFileToString(icon_file, &icon_data->data())) {
+  if (!utils->ReadFileToString(icon_file, &icon_data->as_string())) {
     return {.error_log = {CreateError(
                 {"Could not read icon file: ", icon_file.AsUTF8Unsafe()})}};
   }
 
   TypedResult<SkBitmap> result;
 
-  if (!gfx::PNGCodec::Decode(icon_data->front(), icon_data->size(),
+  if (!gfx::PNGCodec::Decode(icon_data->data(), icon_data->size(),
                              &result.value)) {
     return {.error_log = {CreateError({"Could not decode icon data for file: ",
                                        icon_file.AsUTF8Unsafe()})}};
@@ -497,7 +497,7 @@ std::optional<IconSrcAndSize> FindBestImageResourceMatch(
 
   for (const IconPurpose& purpose : purposes) {
     for (const blink::Manifest::ImageResource& icon : icons) {
-      // TODO(crbug.com/1381377): Need to add check if icon has been
+      // TODO(crbug.com/40245169): Need to add check if icon has been
       // successfully downloaded.
       if (!base::Contains(icon.purpose, purpose)) {
         continue;

@@ -23,9 +23,11 @@ tags must be opened and closed on the same line to avoid validation errors.
 * Google Admin console: `<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>`
 * Google Calendar: `<ph name="GOOGLE_CALENDAR_NAME">Google Calendar</ph>`
 * Google Cast: `<ph name="PRODUCT_NAME">Google Cast</ph>`
+* Google Classroom: `<ph name="GOOGLE_CLASSROOM_NAME">Google Classroom</ph>`
 * Google Cloud Print: `<ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>`
 * Google Drive: `<ph name="GOOGLE_DRIVE_NAME">Google Drive</ph>`
 * Google Photos: `<ph name="GOOGLE_PHOTOS_PRODUCT_NAME">Google Photos</ph>`
+* Google Tasks: `<ph name="GOOGLE_TASKS_NAME">Google Tasks</ph>`
 * Google Update: `<ph name="GOOGLE_UPDATE_NAME">Google Update</ph>`
 * Google Workspace: `<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>`
 * Lacros: `<ph name="LACROS_NAME">Lacros</ph>`

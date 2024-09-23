@@ -18,16 +18,16 @@
 #include "media/cast/cast_environment.h"
 #include "media/cast/sender/audio_sender.h"
 #include "media/cast/sender/video_sender.h"
-#include "media/cast/test/mock_cast_transport.h"
 #include "media/cast/test/utility/audio_utility.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::InvokeWithoutArgs;
-using ::testing::_;
 using media::cast::TestAudioBusFactory;
+using ::testing::_;
+using ::testing::InvokeWithoutArgs;
+using ::testing::StrictMock;
 
 namespace mirroring {
 
@@ -89,6 +89,24 @@ class StreamClient final : public RtpStreamClient {
   base::WeakPtrFactory<StreamClient> weak_factory_{this};
 };
 
+class MockVideoSender : public media::cast::VideoSender {
+ public:
+  MockVideoSender() = default;
+  MOCK_METHOD(void,
+              InsertRawVideoFrame,
+              (scoped_refptr<media::VideoFrame>, base::TimeTicks),
+              (override));
+};
+
+class MockAudioSender : public media::cast::AudioSender {
+ public:
+  MockAudioSender() = default;
+  MOCK_METHOD(void,
+              InsertAudio,
+              (std::unique_ptr<media::AudioBus>, base::TimeTicks),
+              (override));
+};
+
 }  // namespace
 
 class RtpStreamTest : public ::testing::Test {
@@ -109,25 +127,6 @@ class RtpStreamTest : public ::testing::Test {
   ~RtpStreamTest() override { task_environment_.RunUntilIdle(); }
 
  protected:
-  void ExpectVideoFrames(VideoRtpStream& video_stream, int num_frames) {
-    base::RunLoop run_loop;
-    int loop_count = 0;
-    // Expect the video frame is sent to video sender for encoding, and the
-    // encoded frame is sent to the transport.
-    EXPECT_CALL(transport_, InsertFrame(_, _))
-        .WillRepeatedly(
-            InvokeWithoutArgs([&run_loop, &loop_count, &num_frames] {
-              if (++loop_count == num_frames) {
-                run_loop.Quit();
-              }
-            }));
-
-    // We insert the first frame; the remaining frames (if any) will be update
-    // requests.
-    video_stream.InsertVideoFrame(client_.CreateVideoFrame());
-    run_loop.Run();
-  }
-
   void ExpectTimerRunning(const VideoRtpStream& video_stream) {
     EXPECT_TRUE(video_stream.refresh_timer_.IsRunning());
   }
@@ -141,60 +140,47 @@ class RtpStreamTest : public ::testing::Test {
   base::SimpleTestTickClock testing_clock_;
   const scoped_refptr<media::cast::CastEnvironment> cast_environment_;
   StreamClient client_;
-
-  // We currently don't care about sender reports, so we use a nice mock here.
-  testing::NiceMock<media::cast::MockCastTransport> transport_;
 };
 
 // Test the video streaming pipeline.
 TEST_F(RtpStreamTest, VideoStreaming) {
-  auto video_sender = std::make_unique<media::cast::VideoSender>(
-      cast_environment_, media::cast::GetDefaultVideoSenderConfig(),
-      base::DoNothing(), base::DoNothing(), &transport_,
-      std::make_unique<media::MockVideoEncoderMetricsProvider>(),
-      base::DoNothing(), base::DoNothing());
+  auto video_sender = std::make_unique<MockVideoSender>();
+  EXPECT_CALL(*video_sender, InsertRawVideoFrame(_, _)).Times(1);
   VideoRtpStream video_stream(std::move(video_sender), client_.GetWeakPtr(),
                               base::Milliseconds(1));
   client_.SetVideoRtpStream(&video_stream);
-  ExpectVideoFrames(video_stream, 1);
+  video_stream.InsertVideoFrame(client_.CreateVideoFrame());
   ExpectTimerRunning(video_stream);
   client_.SetVideoRtpStream(nullptr);
 }
 
 TEST_F(RtpStreamTest, VideoStreamEmitsFramesWhenNoUpdates) {
-  auto video_sender = std::make_unique<media::cast::VideoSender>(
-      cast_environment_, media::cast::GetDefaultVideoSenderConfig(),
-      base::DoNothing(), base::DoNothing(), &transport_,
-      std::make_unique<media::MockVideoEncoderMetricsProvider>(),
-      base::DoNothing(), base::DoNothing());
+  auto video_sender = std::make_unique<MockVideoSender>();
+  EXPECT_CALL(*video_sender, InsertRawVideoFrame(_, _)).Times(6);
   VideoRtpStream video_stream(std::move(video_sender), client_.GetWeakPtr(),
                               base::Milliseconds(1));
   client_.SetVideoRtpStream(&video_stream);
-  ExpectVideoFrames(video_stream, 5);
+  video_stream.InsertVideoFrame(client_.CreateVideoFrame());
+  task_environment_.FastForwardBy(base::Milliseconds(5));
   ExpectTimerRunning(video_stream);
   client_.SetVideoRtpStream(nullptr);
 }
 
 TEST_F(RtpStreamTest, VideoStreamDoesNotRefreshWithZeroInterval) {
-  auto video_sender = std::make_unique<media::cast::VideoSender>(
-      cast_environment_, media::cast::GetDefaultVideoSenderConfig(),
-      base::DoNothing(), base::DoNothing(), &transport_,
-      std::make_unique<media::MockVideoEncoderMetricsProvider>(),
-      base::DoNothing(), base::DoNothing());
+  auto video_sender = std::make_unique<MockVideoSender>();
+  EXPECT_CALL(*video_sender, InsertRawVideoFrame(_, _)).Times(1);
   VideoRtpStream video_stream(std::move(video_sender), client_.GetWeakPtr(),
                               base::TimeDelta());
   client_.SetVideoRtpStream(&video_stream);
-  ExpectVideoFrames(video_stream, 1);
+  video_stream.InsertVideoFrame(client_.CreateVideoFrame());
+  task_environment_.FastForwardBy(base::Milliseconds(5));
   ExpectTimerNotRunning(video_stream);
   client_.SetVideoRtpStream(nullptr);
 }
 
 TEST_F(RtpStreamTest, VideoStreamTimerNotRunningWhenNoFramesDelivered) {
-  auto video_sender = std::make_unique<media::cast::VideoSender>(
-      cast_environment_, media::cast::GetDefaultVideoSenderConfig(),
-      base::DoNothing(), base::DoNothing(), &transport_,
-      std::make_unique<media::MockVideoEncoderMetricsProvider>(),
-      base::DoNothing(), base::DoNothing());
+  auto video_sender = std::make_unique<MockVideoSender>();
+  EXPECT_CALL(*video_sender, InsertRawVideoFrame(_, _)).Times(1);
   VideoRtpStream video_stream(std::move(video_sender), client_.GetWeakPtr(),
                               base::Milliseconds(1));
   client_.SetVideoRtpStream(&video_stream);
@@ -202,17 +188,13 @@ TEST_F(RtpStreamTest, VideoStreamTimerNotRunningWhenNoFramesDelivered) {
   video_stream.InsertVideoFrame(client_.CreateVideoFrame());
   // Fast forward by enough time for the refresh_timer_ to fire 2 times.
   task_environment_.FastForwardBy(base::Milliseconds(5));
-
   ExpectTimerNotRunning(video_stream);
   client_.SetVideoRtpStream(nullptr);
 }
 
 TEST_F(RtpStreamTest, VideoStreamTimerRestartsWhenFramesDeliveredAgain) {
-  auto video_sender = std::make_unique<media::cast::VideoSender>(
-      cast_environment_, media::cast::GetDefaultVideoSenderConfig(),
-      base::DoNothing(), base::DoNothing(), &transport_,
-      std::make_unique<media::MockVideoEncoderMetricsProvider>(),
-      base::DoNothing(), base::DoNothing());
+  auto video_sender = std::make_unique<MockVideoSender>();
+  EXPECT_CALL(*video_sender, InsertRawVideoFrame(_, _)).Times(7);
   VideoRtpStream video_stream(std::move(video_sender), client_.GetWeakPtr(),
                               base::Milliseconds(1));
   client_.SetVideoRtpStream(&video_stream);
@@ -242,20 +224,11 @@ TEST_F(RtpStreamTest, AudioStreaming) {
       TestAudioBusFactory(audio_config.channels, audio_config.rtp_timebase,
                           TestAudioBusFactory::kMiddleANoteFreq, 0.5f)
           .NextAudioBus(kDuration);
-  auto audio_sender = std::make_unique<media::cast::AudioSender>(
-      cast_environment_, audio_config, base::DoNothing(), &transport_);
-  AudioRtpStream audio_stream(std::move(audio_sender), client_.GetWeakPtr());
-  {
-    base::RunLoop run_loop;
-    // Expect the audio data is sent to audio sender for encoding, and the
-    // encoded frame is sent to the transport.
-    EXPECT_CALL(transport_, InsertFrame(_, _))
-        .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-    audio_stream.InsertAudio(std::move(audio_bus), testing_clock_.NowTicks());
-    run_loop.Run();
-  }
 
-  task_environment_.RunUntilIdle();
+  auto audio_sender = std::make_unique<MockAudioSender>();
+  EXPECT_CALL(*audio_sender, InsertAudio(_, _)).Times(1);
+  AudioRtpStream audio_stream(std::move(audio_sender), client_.GetWeakPtr());
+  audio_stream.InsertAudio(std::move(audio_bus), testing_clock_.NowTicks());
 }
 
 }  // namespace mirroring

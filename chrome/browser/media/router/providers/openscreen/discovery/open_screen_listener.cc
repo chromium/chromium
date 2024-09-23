@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 
 using openscreen::osp::ServiceInfo;
@@ -153,7 +154,7 @@ void OpenScreenListener::OnDeviceRemoved(const std::string& service_type,
       base::ranges::find(receivers_, service_name, &ServiceInfo::service_id);
 
   // Move the receiver we want to remove to the end, so we don't have to shift.
-  DCHECK(removed_it != receivers_.end());
+  CHECK(removed_it != receivers_.end(), base::NotFatalUntil::M130);
   const ServiceInfo removed_info = std::move(*removed_it);
   if (removed_it != receivers_.end() - 1) {
     *removed_it = std::move(receivers_.back());

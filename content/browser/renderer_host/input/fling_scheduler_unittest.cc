@@ -31,13 +31,13 @@ class FakeFlingScheduler : public FlingScheduler {
   FakeFlingScheduler& operator=(const FakeFlingScheduler&) = delete;
 
   void ScheduleFlingProgress(
-      base::WeakPtr<FlingController> fling_controller) override {
+      base::WeakPtr<input::FlingController> fling_controller) override {
     FlingScheduler::ScheduleFlingProgress(fling_controller);
     fling_in_progress_ = true;
   }
 
   void DidStopFlingingOnBrowser(
-      base::WeakPtr<FlingController> fling_controller) override {
+      base::WeakPtr<input::FlingController> fling_controller) override {
     FlingScheduler::DidStopFlingingOnBrowser(fling_controller);
     fling_in_progress_ = false;
   }
@@ -47,7 +47,7 @@ class FakeFlingScheduler : public FlingScheduler {
   ui::Compositor* compositor() { return GetCompositor(); }
   ui::Compositor* observed_compositor() { return observed_compositor_; }
 
-  base::WeakPtr<FlingController> fling_controller() const {
+  base::WeakPtr<input::FlingController> fling_controller() const {
     return fling_controller_;
   }
 
@@ -56,7 +56,7 @@ class FakeFlingScheduler : public FlingScheduler {
 };
 
 class FlingSchedulerTest : public testing::Test,
-                           public FlingControllerEventSenderClient {
+                           public input::FlingControllerEventSenderClient {
  public:
   FlingSchedulerTest() {}
 
@@ -68,8 +68,8 @@ class FlingSchedulerTest : public testing::Test,
     widget_host_->SetView(view_.get());
 
     fling_scheduler_ = std::make_unique<FakeFlingScheduler>(widget_host_.get());
-    fling_controller_ = std::make_unique<FlingController>(
-        this, fling_scheduler_.get(), FlingController::Config());
+    fling_controller_ = std::make_unique<input::FlingController>(
+        this, fling_scheduler_.get(), input::FlingController::Config());
   }
 
   void TearDown() override {
@@ -92,7 +92,7 @@ class FlingSchedulerTest : public testing::Test,
         base::TimeTicks::Now(), blink::WebGestureDevice::kTouchscreen);
     fling_start.data.fling_start.velocity_x = velocity.x();
     fling_start.data.fling_start.velocity_y = velocity.y();
-    GestureEventWithLatencyInfo fling_start_with_latency(fling_start);
+    input::GestureEventWithLatencyInfo fling_start_with_latency(fling_start);
     fling_controller_->ObserveAndMaybeConsumeGestureEvent(
         fling_start_with_latency);
   }
@@ -102,21 +102,21 @@ class FlingSchedulerTest : public testing::Test,
         blink::WebInputEvent::Type::kGestureFlingCancel, 0,
         base::TimeTicks::Now(), blink::WebGestureDevice::kTouchscreen);
     fling_cancel.data.fling_cancel.prevent_boosting = true;
-    GestureEventWithLatencyInfo fling_cancel_with_latency(fling_cancel);
+    input::GestureEventWithLatencyInfo fling_cancel_with_latency(fling_cancel);
     fling_controller_->ObserveAndMaybeConsumeGestureEvent(
         fling_cancel_with_latency);
   }
 
   // FlingControllerEventSenderClient
   void SendGeneratedWheelEvent(
-      const MouseWheelEventWithLatencyInfo& wheel_event) override {}
+      const input::MouseWheelEventWithLatencyInfo& wheel_event) override {}
   void SendGeneratedGestureScrollEvents(
-      const GestureEventWithLatencyInfo& gesture_event) override {}
+      const input::GestureEventWithLatencyInfo& gesture_event) override {}
   gfx::Size GetRootWidgetViewportSize() override {
     return gfx::Size(1920, 1080);
   }
 
-  FlingController* fling_controller() { return fling_controller_.get(); }
+  input::FlingController* fling_controller() { return fling_controller_.get(); }
   FakeFlingScheduler* fling_scheduler() { return fling_scheduler_.get(); }
 
  private:
@@ -134,7 +134,8 @@ class FlingSchedulerTest : public testing::Test,
         /* frame_tree= */ nullptr, delegate_.get(),
         RenderWidgetHostImpl::DefaultFrameSinkId(*site_instance_group_,
                                                  routing_id),
-        site_instance_group_->GetSafeRef(), routing_id, false);
+        site_instance_group_->GetSafeRef(), routing_id, /* hidden= */ false,
+        /* renderer_initiated_creation= */ false);
     delegate_->set_widget_host(widget_host_.get());
     return std::make_unique<TestRenderWidgetHostView>(widget_host_.get());
   }
@@ -143,7 +144,7 @@ class FlingSchedulerTest : public testing::Test,
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<RenderWidgetHostImpl> widget_host_;
   std::unique_ptr<FakeFlingScheduler> fling_scheduler_;
-  std::unique_ptr<FlingController> fling_controller_;
+  std::unique_ptr<input::FlingController> fling_controller_;
   std::unique_ptr<MockRenderProcessHost> process_host_;
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
   std::unique_ptr<TestRenderWidgetHostView> view_;

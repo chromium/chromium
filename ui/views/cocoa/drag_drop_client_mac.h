@@ -45,10 +45,8 @@ class VIEWS_EXPORT DragDropClientMac : public remote_cocoa::DragDropClient {
 
   ~DragDropClientMac() override;
 
-  // Initiates a drag and drop session. Returns the drag operation that was
-  // applied at the end of the drag drop session.
-  void StartDragAndDrop(View* view,
-                        std::unique_ptr<ui::OSExchangeData> data,
+  // Initiates a drag and drop session.
+  void StartDragAndDrop(std::unique_ptr<ui::OSExchangeData> data,
                         int operation,
                         ui::mojom::DragEventSource source);
 
@@ -65,6 +63,7 @@ class VIEWS_EXPORT DragDropClientMac : public remote_cocoa::DragDropClient {
 
   // Converts the given NSPoint to the coordinate system in Views.
   gfx::Point LocationInView(NSPoint point) const;
+  gfx::Point LocationInView(NSPoint point, NSWindow* destination_window) const;
 
   // Provides the data for the drag and drop session.
   std::unique_ptr<ui::OSExchangeData> exchange_data_;

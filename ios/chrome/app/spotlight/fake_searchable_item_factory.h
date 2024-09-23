@@ -14,6 +14,8 @@
 
 - (instancetype)initWithDomain:(spotlight::Domain)domain;
 
+@property(nonatomic, assign) NSInteger cancelItemsGenerationCallCount;
+
 @end
 
 #endif  // IOS_CHROME_APP_SPOTLIGHT_FAKE_SEARCHABLE_ITEM_FACTORY_H_

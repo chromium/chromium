@@ -129,8 +129,9 @@ void ChildTestFunction() {
 
 CRASHPAD_CHILD_TEST_MAIN(ChildToBeSanitized) {
   ChildTestFunction();
+
+  // This isn't reachable unless assertions inside ChildTestFunction fail.
   NOTREACHED();
-  return EXIT_SUCCESS;
 }
 
 void ExpectAnnotations(ProcessSnapshot* snapshot, bool sanitized) {

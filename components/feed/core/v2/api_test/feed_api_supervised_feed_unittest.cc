@@ -4,11 +4,12 @@
 
 #include "components/feed/core/proto/v2/wire/feed_entry_point_source.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_query.pb.h"
-
 #include "components/feed/core/v2/api_test/feed_api_test.h"
+#include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -25,6 +26,7 @@ class FeedApiSupervisedUserTest : public FeedApiTest {
   void SetUp() override {
     supervised_user::RegisterProfilePrefs(profile_prefs_.registry());
     supervised_user::EnableParentalControls(profile_prefs_);
+    is_supervised_account_ = true;
 
     feature_list_.InitAndEnableFeature(
         supervised_user::kKidFriendlyContentFeed);
@@ -96,6 +98,22 @@ TEST_F(FeedApiSupervisedUserTest, SupervisedFeedShouldIgnoreQuota) {
   }
 
   ASSERT_EQ(LoadStreamStatus::kNoStatus, status);
+}
+
+TEST_F(FeedApiSupervisedUserTest, WebFeedsDisabledForSupervisedAccounts) {
+  SetFeedConfigForTesting(Config());
+  response_translator_.InjectResponse(
+      MakeTypicalInitialModelStateForSupervisedUser());
+  TestSupervisedFeedSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  ASSERT_FALSE(stream_->IsWebFeedEnabled());
+
+  // Wait until the delayed task would normally run, verify no request is made.
+  task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
+                                  base::Seconds(1));
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(0, network_.GetListFollowedWebFeedsRequestCount());
 }
 
 }  // namespace

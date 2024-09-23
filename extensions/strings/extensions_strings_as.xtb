@@ -19,7 +19,6 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" />ৰ অজ্ঞাত প্ৰডাক্ট <ph name="PRODUCT_ID" /> (ক্ৰমিক নং <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ফাইল সলনি কৰিব পৰা নগ‘ল। ফাইলটো ব্যৱহাৰ হৈ আছে নেকি চাওক।</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" />ৰ অজ্ঞাত প্ৰডাক্ট <ph name="PRODUCT_ID" /></translation>
-<translation id="3369521687965833290">এক্সটেনশ্বন আনপেক কৰিব নোৱাৰি।  এক্সটেনশ্বনটো সুৰক্ষিতভাৱে আনপেক কৰিবলৈ আপোনাৰ প্ৰ’ফাইল ডাইৰেক্টৰীলৈ এটা পথ থাকিব লাগিব যিটো ড্ৰাইভৰ এটা আখৰেৰে আৰম্ভ হয় আৰু য’ত জাংশ্বন, মাউণ্ট কৰা পইণ্ট বা symlink নাথাকে।  আপোনাৰ প্ৰ’ফাইলৰ কাৰণে তেনেকুৱা কোনো পথ নাই।</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ক্ৰমিক নম্বৰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">বিক্ৰেতা <ph name="VENDOR_ID" />ৰ <ph name="PRODUCT_NAME" /> (ক্ৰমিক নম্বৰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ব্যক্তিগত কীৰ বাবে ইনপুট মান কোনো মান্য পথ হ'বই লাগিব।</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">এই মেচিনটোৰ প্ৰশাসকৰ বাবে <ph name="EXTENSION_NAME" /> ইনষ্টল হৈ থকাটো আৱশ্যক। ইয়াক আনইনষ্টল কৰিব নোৱাৰি।</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" />ৰ অজ্ঞাত প্ৰডাক্ট <ph name="PRODUCT_ID" /> (ক্ৰমিক নম্বৰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> বিক্ৰেতাৰ <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">এক্সটেনশ্বন আনপেক কৰিব নোৱাৰি।  কোনো এক্সটেনশ্বন সুৰক্ষিতভাৱে আনপেক কৰিবলৈ, আপোনাৰ প্ৰ’ফাইল ডাইৰেক্টৰীলৈ symlink অন্তর্ভুক্ত নোহোৱা এটা পথ থাকিবই লাগিব।  আপোনাৰ প্ৰ’ফাইলত তেনে কোনো পথ নাই।</translation>
 <translation id="6322279351188361895">ব্যক্তিগত চাবিটো পঢ়িব পৰা নগ’ল।</translation>
 <translation id="6391538222494443604">ইনপুট ডাইৰেক্টৰী থাকিবই লাগিব৷</translation>
 <translation id="641087317769093025">এক্সটেনশ্বন আনজিপ কৰিব পৰা নগ'ল</translation>

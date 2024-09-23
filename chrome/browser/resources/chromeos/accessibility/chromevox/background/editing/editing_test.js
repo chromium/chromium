@@ -13,37 +13,6 @@ ChromeVoxEditingTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'BrailleCommandHandler',
-          '/chromevox/background/braille/braille_command_handler.js'),
-      importModule(
-          'BrailleDisplayManager',
-          '/chromevox/background/braille/braille_display_manager.js'),
-      importModule(
-          'BrailleTranslatorManager',
-          '/chromevox/background/braille/braille_translator_manager.js'),
-      importModule(
-          'EditableLine', '/chromevox/background/editing/editable_line.js'),
-      importModule(
-          'AutomationRichEditableText',
-          '/chromevox/background/editing/rich_editable_text.js'),
-      importModule(
-          'TextEditHandler',
-          '/chromevox/background/editing/text_edit_handler.js'),
-      importModule(
-          'DesktopAutomationInterface',
-          '/chromevox/background/event/desktop_automation_interface.js'),
-      importModule(
-          ['BrailleKeyEvent', 'BrailleKeyCommand'],
-          '/chromevox/common/braille/braille_key_types.js'),
-      importModule('EventGenerator', '/common/event_generator.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-      importModule('LocalStorage', '/common/local_storage.js'),
-      importModule('SettingsManager', '/chromevox/common/settings_manager.js'),
-    ]);
-
     globalThis.EventType = chrome.automation.EventType;
     globalThis.IntentCommandType = chrome.automation.IntentCommandType;
     globalThis.RoleType = chrome.automation.RoleType;
@@ -1946,7 +1915,7 @@ AX_TEST_F(
       // that.
     });
 
-// TODO(https://crbug.com/1254742): flakes due to underlying bug with
+// TODO(crbug.com/40794522): flakes due to underlying bug with
 // accessibility intents.
 AX_TEST_F(
     'ChromeVoxEditingTest', 'DISABLED_ParagraphNavigation', async function() {
@@ -2373,7 +2342,7 @@ AX_TEST_F(
     });
 
 // Regression test that large text areas produce output.
-// TODO(crbug.com/1503691): re-enable this test once its flakiness is resolved.
+// TODO(crbug.com/40944160): re-enable this test once its flakiness is resolved.
 AX_TEST_F('ChromeVoxEditingTest', 'GiantTextAreaPerformance', async function() {
   const mockFeedback = this.createMockFeedback();
   const site = `

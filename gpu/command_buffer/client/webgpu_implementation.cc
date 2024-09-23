@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/client/webgpu_implementation.h"
+
+#include <dawn/wire/client/webgpu.h>
 
 #include <algorithm>
 #include <vector>
@@ -22,7 +29,7 @@ namespace webgpu {
 
 #if BUILDFLAG(USE_DAWN)
 DawnWireServices::~DawnWireServices() {
-  GetProcs().instanceRelease(wgpu_instance_);
+  wgpuDawnWireClientInstanceRelease(wgpu_instance_);
 }
 
 DawnWireServices::DawnWireServices(
@@ -41,10 +48,6 @@ DawnWireServices::DawnWireServices(
       }),
       wgpu_instance_(wire_client_.ReserveInstance().instance) {
   DCHECK(wgpu_instance_);
-}
-
-const DawnProcTable& DawnWireServices::GetProcs() const {
-  return dawn::wire::client::GetProcs();
 }
 
 WGPUInstance DawnWireServices::GetWGPUInstance() const {
@@ -160,54 +163,54 @@ void WebGPUImplementation::SetErrorMessageCallback(
 }
 bool WebGPUImplementation::ThreadSafeShallowLockDiscardableTexture(
     uint32_t texture_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 void WebGPUImplementation::CompleteLockDiscardableTexureOnContextThread(
     uint32_t texture_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 bool WebGPUImplementation::ThreadsafeDiscardableTextureIsDeletedForTracing(
     uint32_t texture_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 void* WebGPUImplementation::MapTransferCacheEntry(uint32_t serialized_size) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 void WebGPUImplementation::UnmapAndCreateTransferCacheEntry(uint32_t type,
                                                             uint32_t id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 bool WebGPUImplementation::ThreadsafeLockTransferCacheEntry(uint32_t type,
                                                             uint32_t id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 void WebGPUImplementation::UnlockTransferCacheEntries(
     const std::vector<std::pair<uint32_t, uint32_t>>& entries) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void WebGPUImplementation::DeleteTransferCacheEntry(uint32_t type,
                                                     uint32_t id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 unsigned int WebGPUImplementation::GetTransferBufferFreeSize() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 bool WebGPUImplementation::IsJpegDecodeAccelerationSupported() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 bool WebGPUImplementation::IsWebPDecodeAccelerationSupported() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 bool WebGPUImplementation::CanDecodeWithHardwareAcceleration(
     const cc::ImageHeaderMetadata* image_metadata) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -327,7 +330,7 @@ void WebGPUImplementation::OnGpuControlReturnData(
     } break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 #endif
 }
@@ -386,17 +389,17 @@ ReservedTexture WebGPUImplementation::ReserveTexture(
     optionalDesc = &placeholderDesc;
   }
 
-  auto reservation =
+  auto reserved =
       dawn_wire_->wire_client()->ReserveTexture(device, optionalDesc);
   ReservedTexture result;
-  result.texture = reservation.texture;
-  result.id = reservation.id;
-  result.generation = reservation.generation;
-  result.deviceId = reservation.deviceId;
-  result.deviceGeneration = reservation.deviceGeneration;
+  result.texture = reserved.texture;
+  result.id = reserved.handle.id;
+  result.generation = reserved.handle.generation;
+  result.deviceId = reserved.deviceHandle.id;
+  result.deviceGeneration = reserved.deviceHandle.generation;
   return result;
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 #endif
 }
@@ -411,7 +414,8 @@ void WebGPUImplementation::AssociateMailbox(
     GLuint device_generation,
     GLuint texture_id,
     GLuint texture_generation,
-    GLuint usage,
+    uint64_t usage,
+    uint64_t internal_usage,
     const WGPUTextureFormat* view_formats,
     GLuint view_format_count,
     MailboxFlags flags,
@@ -441,7 +445,7 @@ void WebGPUImplementation::AssociateMailbox(
 
   helper_->AssociateMailboxImmediate(
       device_id, device_generation, texture_id, texture_generation, usage,
-      flags, view_format_count, num_entries,
+      internal_usage, flags, view_format_count, num_entries,
       reinterpret_cast<GLuint*>(immediate_data.data()));
 #endif
 }

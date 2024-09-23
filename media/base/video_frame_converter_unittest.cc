@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/video_frame_converter.h"
 
 #include "base/logging.h"
@@ -164,6 +169,14 @@ TEST_P(VideoFrameConverterTest, ConvertAndScale) {
         plane_size.width(), plane_size.height());
     EXPECT_DOUBLE_EQ(ssim, 1.0);
     EXPECT_EQ(psnr, libyuv::kMaxPsnr);
+  }
+
+  // Ensure memory pool is functioning correctly by running conversions which
+  // use scratch space twice.
+  if (converter_.get_pool_size_for_testing() > 0) {
+    EXPECT_EQ(converter_.get_pool_size_for_testing(), 1u);
+    ASSERT_TRUE(converter_.ConvertAndScale(*src_frame, *dest_frame).is_ok());
+    EXPECT_EQ(converter_.get_pool_size_for_testing(), 1u);
   }
 }
 

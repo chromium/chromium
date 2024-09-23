@@ -4,9 +4,10 @@
 
 #include "chrome/browser/preloading/preview/preview_navigation_throttle.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
@@ -72,8 +73,8 @@ std::string MakeErrorPage(content::NavigationHandle& navigation_handle,
   std::string extracted_string =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_NET_ERROR_HTML);
-  base::StringPiece template_html(extracted_string.data(),
-                                  extracted_string.size());
+  std::string_view template_html(extracted_string.data(),
+                                 extracted_string.size());
   CHECK(!template_html.empty()) << "unable to load template.";
   return webui::GetLocalizedHtml(template_html, page_state.strings);
 }

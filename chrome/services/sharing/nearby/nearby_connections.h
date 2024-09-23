@@ -34,6 +34,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/nearby/src/connections/implementation/service_controller_router.h"
 #include "third_party/nearby/src/presence/presence_device.h"
+#include "third_party/nearby/src/presence/presence_device_provider.h"
 
 namespace nearby::connections {
 
@@ -54,6 +55,7 @@ class NearbyConnections : public mojom::NearbyConnections {
   // destroy this instance.
   NearbyConnections(
       mojo::PendingReceiver<mojom::NearbyConnections> nearby_connections,
+      NearbyDeviceProvider* presence_device_provider,
       nearby::api::LogMessage::Severity min_log_severity,
       base::OnceClosure on_disconnect);
 
@@ -140,6 +142,8 @@ class NearbyConnections : public mojom::NearbyConnections {
       const std::string& service_id,
       ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
       DisconnectFromDeviceV3Callback callback) override;
+  void RegisterServiceWithPresenceDeviceProvider(
+      const std::string& service_id) override;
 
   // Returns the file associated with |payload_id| for InputFile.
   base::File ExtractInputFile(int64_t payload_id);
@@ -163,6 +167,12 @@ class NearbyConnections : public mojom::NearbyConnections {
                             const std::string& endpoint_id);
 
   mojo::Receiver<mojom::NearbyConnections> nearby_connections_;
+
+  // This field is only used in `RegisterServiceWithPresenceDeviceProvider()`
+  // for authentication of connections when using Nearby Presence. Nearby
+  // Connections clients who do not also use Nearby Presence should not call
+  // this method.
+  raw_ptr<NearbyDeviceProvider> presence_local_device_provider_;
 
   std::unique_ptr<ServiceControllerRouter> service_controller_router_;
 

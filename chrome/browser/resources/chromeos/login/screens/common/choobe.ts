@@ -16,23 +16,18 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
-import {OobeScreensList, ScreenItem} from '../../components/oobe_screens_list.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
+import {OobeScreensList, OobeScreensListData} from '../../components/oobe_screens_list.js';
 
 import {getTemplate} from './choobe.html.js';
 
-export const ChoobeScreenElementBase =
-  mixinBehaviors(
-      [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-      PolymerElement) as {
-    new (): PolymerElement & OobeI18nBehaviorInterface &
-        LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-  };
+const ChoobeScreenElementBase =
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 enum ChoobeStep {
   OVERVIEW = 'overview',
@@ -47,7 +42,7 @@ enum UserAction {
 }
 
 interface ChoobeScreenData {
-  screens: ScreenItem[];
+  screens: OobeScreensListData;
 }
 
 class ChoobeScreen extends ChoobeScreenElementBase {
@@ -84,7 +79,8 @@ class ChoobeScreen extends ChoobeScreenElementBase {
     this.initializeLoginScreen('ChoobeScreen');
   }
 
-  onBeforeShow(data: ChoobeScreenData): void {
+  override onBeforeShow(data: ChoobeScreenData): void {
+    super.onBeforeShow(data);
     if ('screens' in data) {
       this.shadowRoot!.querySelector<OobeScreensList>('#screensList')!.init(
         data['screens']);
@@ -92,8 +88,8 @@ class ChoobeScreen extends ChoobeScreenElementBase {
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): OOBE_UI_STATE {
-    return OOBE_UI_STATE.CHOOBE;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.CHOOBE;
   }
 
   private onNextClicked_(): void {

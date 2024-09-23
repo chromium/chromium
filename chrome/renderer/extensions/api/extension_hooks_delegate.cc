@@ -4,6 +4,8 @@
 
 #include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
 
+#include <string_view>
+
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/constants.h"
@@ -103,6 +105,15 @@ void ThrowDeprecatedAccessError(
       v8::Exception::Error(gin::StringToV8(isolate, kError)));
 }
 
+void EmptySetterCallback(v8::Local<v8::Name> name,
+                         v8::Local<v8::Value> value,
+                         const v8::PropertyCallbackInfo<void>& info) {
+  // Empty setter is required to keep the native data property in "accessor"
+  // state even in case the value is updated by user code.
+  // TODO(337075390): consider not using empty setter and let the property
+  // be reconfigured to a data property on write.
+}
+
 }  // namespace
 
 ExtensionHooksDelegate::ExtensionHooksDelegate(
@@ -122,7 +133,7 @@ RequestResult ExtensionHooksDelegate::HandleRequest(
       ScriptContext*, const APISignature::V8ParseResult&);
   static struct {
     Handler handler;
-    base::StringPiece method;
+    std::string_view method;
   } kHandlers[] = {
       {&ExtensionHooksDelegate::HandleSendRequest, kSendExtensionRequest},
       {&ExtensionHooksDelegate::HandleGetURL, kGetURL},
@@ -182,9 +193,9 @@ void ExtensionHooksDelegate::InitializeInstance(
     static constexpr const char* kDeprecatedSendRequestProperties[] = {
         "sendRequest", "onRequest", "onRequestExternal"};
     for (const char* property : kDeprecatedSendRequestProperties) {
-      v8::Maybe<bool> success =
-          instance->SetAccessor(context, gin::StringToV8(isolate, property),
-                                &ThrowDeprecatedAccessError);
+      v8::Maybe<bool> success = instance->SetNativeDataProperty(
+          context, gin::StringToV8(isolate, property),
+          &ThrowDeprecatedAccessError, &EmptySetterCallback);
       DCHECK(success.IsJust());
       DCHECK(success.FromJust());
     }
@@ -201,8 +212,9 @@ void ExtensionHooksDelegate::InitializeInstance(
     };
 
     for (const auto* alias : kAliases) {
-      v8::Maybe<bool> success = instance->SetAccessor(
-          context, gin::StringToV8(isolate, alias), &GetAliasedFeature);
+      v8::Maybe<bool> success = instance->SetNativeDataProperty(
+          context, gin::StringToV8(isolate, alias), &GetAliasedFeature,
+          &EmptySetterCallback);
       DCHECK(success.IsJust());
       DCHECK(success.FromJust());
     }
@@ -286,7 +298,7 @@ APIBindingHooks::RequestResult ExtensionHooksDelegate::HandleGetViews(
     if (!options_dict.Get("windowId", &v8_window_id) ||
         !options_dict.Get("tabId", &v8_tab_id) ||
         !options_dict.Get("type", &v8_view_type)) {
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "Unexpected exception: argument parsing produces plain objects";
       return RequestResult(RequestResult::THROWN);
     }

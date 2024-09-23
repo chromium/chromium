@@ -99,14 +99,6 @@ bool IsAdAuctionHeadersEligible(
         AdAuctionHeadersIsEligibleOutcomeForMetrics::kInFencedFrame);
     return false;
   }
-  // TODO(crbug.com/1244137): IsPrimary() doesn't actually detect portals yet.
-  // Remove this when it does.
-  if (!initiator_rfh.GetMainFrame()->IsOutermostMainFrame()) {
-    base::UmaHistogramEnumeration(
-        "Ads.InterestGroup.NetHeaderResponse.StartRequestOutcome",
-        AdAuctionHeadersIsEligibleOutcomeForMetrics::kNotOutermostMainFrame);
-    return false;
-  }
 
   const blink::PermissionsPolicy* permissions_policy =
       initiator_rfh.permissions_policy();
@@ -256,19 +248,17 @@ void ProcessAdAuctionResponseHeaders(
   }
   headers->RemoveHeader(kAdAuctionSignalsResponseHeaderKey);
 
-  if (base::FeatureList::IsEnabled(blink::features::kFledgeNegativeTargeting)) {
-    std::map<std::string, std::vector<std::string>> nonce_additional_bids_map;
-    size_t iter = 0;
-    std::string header_line;
-    while (headers->EnumerateHeader(
-        &iter, kAdAuctionAdditionalBidResponseHeaderKey, &header_line)) {
-      ParseAdAuctionAdditionalBidResponseHeader(header_line,
-                                                nonce_additional_bids_map);
-    }
-    if (!nonce_additional_bids_map.empty()) {
-      ad_auction_page_data->AddAuctionAdditionalBidsWitnessForOrigin(
-          request_origin, nonce_additional_bids_map);
-    }
+  std::map<std::string, std::vector<std::string>> nonce_additional_bids_map;
+  size_t iter = 0;
+  std::string header_line;
+  while (headers->EnumerateHeader(
+      &iter, kAdAuctionAdditionalBidResponseHeaderKey, &header_line)) {
+    ParseAdAuctionAdditionalBidResponseHeader(header_line,
+                                              nonce_additional_bids_map);
+  }
+  if (!nonce_additional_bids_map.empty()) {
+    ad_auction_page_data->AddAuctionAdditionalBidsWitnessForOrigin(
+        request_origin, nonce_additional_bids_map);
   }
   headers->RemoveHeader(kAdAuctionAdditionalBidResponseHeaderKey);
 }

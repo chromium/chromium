@@ -74,6 +74,8 @@
 #include "chromeos/startup/browser_params_proxy.h"
 #endif
 
+namespace web_app {
+
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -115,9 +117,25 @@ base::OnceClosure& ManifestUpdateAppliedCallbackForTesting() {
   return *callback;
 }
 
-}  // namespace
+// Returns the list of patterns to match URLs against for tabbed mode home
+// tab navigations.
+std::vector<TabbedModeScopeMatcher> CreateTabbedHomeTabScope(
+    const WebApp* web_app) {
+  std::vector<TabbedModeScopeMatcher> matchers;
+  if (!web_app) {
+    return matchers;
+  }
+  TabStrip tab_strip = web_app->tab_strip().value();
+  if (const auto* params =
+          absl::get_if<blink::Manifest::HomeTabParams>(&tab_strip.home_tab)) {
+    for (auto& pattern : params->scope_patterns) {
+      matchers.emplace_back(pattern);
+    }
+  }
+  return matchers;
+}
 
-namespace web_app {
+}  // namespace
 
 WebAppBrowserController::WebAppBrowserController(
     WebAppProvider& provider,
@@ -233,7 +251,24 @@ bool WebAppBrowserController::HasReloadButton() const {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 bool WebAppBrowserController::HasProfileMenuButton() const {
+#if BUILDFLAG(IS_MAC)
+  return true;
+#else
   return app_id() == web_app::kPasswordManagerAppId;
+#endif
+}
+
+bool WebAppBrowserController::IsProfileMenuButtonVisible() const {
+  CHECK(HasProfileMenuButton());
+  if (app_id() == web_app::kPasswordManagerAppId) {
+    return true;
+  }
+#if BUILDFLAG(IS_MAC)
+  return AppShimRegistry::Get()->GetInstalledProfilesForApp(app_id()).size() >
+         1;
+#else
+  NOTREACHED();
+#endif
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -407,8 +442,7 @@ std::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // System Apps with dynamic color ignore manifest and pull theme color from
   // the OS.
-  if (system_app() && system_app()->UseSystemThemeColor() &&
-      chromeos::features::IsJellyEnabled()) {
+  if (system_app() && system_app()->UseSystemThemeColor()) {
     return ash::GetSystemThemeColor();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -444,17 +478,10 @@ std::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
       web_contents_color ? web_contents_color : manifest_color;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (system_app()) {
-    if (chromeos::features::IsJellyEnabled() &&
-        system_app()->UseSystemThemeColor()) {
-      // With jelly enabled, some system apps prefer system color over manifest.
-      SkColor os_color = ash::GetSystemBackgroundColor();
-      result = web_contents_color ? web_contents_color : os_color;
-    } else if (system_app()->PreferManifestBackgroundColor()) {
-      // Some system web apps prefer their web content background color to be
-      // ignored in favour of their manifest background color.
-      result = manifest_color ? manifest_color : web_contents_color;
-    }
+  if (system_app() && system_app()->UseSystemThemeColor()) {
+    // With jelly enabled, some system apps prefer system color over manifest.
+    SkColor os_color = ash::GetSystemBackgroundColor();
+    result = web_contents_color ? web_contents_color : os_color;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -471,9 +498,10 @@ GURL WebAppBrowserController::GetAppNewTabUrl() const {
 
 bool WebAppBrowserController::ShouldHideNewTabButton() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Show new tab button for Terminal System App.
+  // Configure new tab button visibility for system apps based on their delegate
+  // implementation.
   if (system_app() && system_app()->ShouldHaveTabStrip()) {
-    return false;
+    return system_app()->ShouldHideNewTabButton();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -496,29 +524,32 @@ bool WebAppBrowserController::IsUrlInHomeTabScope(const GURL& url) const {
     return false;
   }
 
+  // Retrieve the start URL for the app. Start URL is always in home tab scope.
+  // TODO(b/330640982): rename GetAppPinnedHomeTabUrl() to something more
+  // sensible.
   std::optional<GURL> pinned_home_url =
       registrar().GetAppPinnedHomeTabUrl(app_id());
   if (!pinned_home_url) {
     return false;
   }
 
-  // We ignore query params and hash ref when deciding what should be
-  // opened as the home tab.
+  // We ignore hash ref when deciding what should be opened as the home tab.
   GURL::Replacements replacements;
-  replacements.ClearQuery();
   replacements.ClearRef();
   if (url.ReplaceComponents(replacements) ==
       pinned_home_url.value().ReplaceComponents(replacements)) {
     return true;
   }
 
-  if (!home_tab_scope_.has_value()) {
-    home_tab_scope_ = GetTabbedHomeTabScope();
+  if (!home_tab_scope_) {
+    home_tab_scope_ = std::make_unique<std::vector<TabbedModeScopeMatcher>>(
+        CreateTabbedHomeTabScope(registrar().GetAppById(app_id())));
   }
 
-  if (home_tab_scope_.has_value()) {
-    std::vector<int> vec;
-    return home_tab_scope_.value().Match(url.path(), &vec);
+  for (auto& matcher : *home_tab_scope_) {
+    if (matcher.Match(url)) {
+      return true;
+    }
   }
   return false;
 }
@@ -591,7 +622,7 @@ std::u16string WebAppBrowserController::GetTitle() const {
   // When showing the toolbar, display the name of the app, instead of the
   // current page as the title.
   if (ShouldShowCustomTabBar()) {
-    // TODO(crbug.com/1051379): Use name instead of short_name.
+    // TODO(crbug.com/40118430): Use name instead of short_name.
     return base::UTF8ToUTF16(registrar().GetAppShortName(app_id()));
   }
 
@@ -601,16 +632,19 @@ std::u16string WebAppBrowserController::GetTitle() const {
       provider_->registrar_unsafe().GetAppShortName(app_id()));
 
   // If app title is set, then use that with the app name as the title.
-  std::u16string app_title;
+  std::optional<std::u16string> app_title;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   if (web_contents) {
     app_title = web_contents->GetAppTitle();
   }
 
-  if (!app_title.empty()) {
-    return l10n_util::GetStringFUTF16(IDS_WEB_APP_WITH_APP_TITLE, app_name,
-                                      app_title);
+  // If the app title is empty, then use the app name.
+  if (app_title.has_value()) {
+    return app_title.value().empty()
+               ? app_name
+               : l10n_util::GetStringFUTF16(IDS_WEB_APP_WITH_APP_TITLE,
+                                            app_name, app_title.value());
   }
   if (base::StartsWith(raw_title, app_name)) {
     return raw_title;
@@ -672,22 +706,18 @@ void WebAppBrowserController::SetManifestUpdateAppliedCallbackForTesting(
 
 void WebAppBrowserController::OnTabInserted(content::WebContents* contents) {
   AppBrowserController::OnTabInserted(contents);
-  SetAppPrefsForWebContents(contents);
 
-  // If a `WebContents` is inserted into an app browser (e.g. after
-  // installation), it is "appy". Note that if and when it's moved back into a
-  // tabbed browser window (e.g. via "Open in Chrome" menu item), it is still
-  // considered "appy".
-  WebAppTabHelper::FromWebContents(contents)->set_acting_as_app(true);
+  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(contents);
+  tab_helper->SetIsInAppWindow(true);
 
   if (AppUsesTabbed() && IsUrlInHomeTabScope(contents->GetLastCommittedURL())) {
-    WebAppTabHelper::FromWebContents(contents)->set_is_pinned_home_tab(true);
+    tab_helper->set_is_pinned_home_tab(true);
   }
 }
 
 void WebAppBrowserController::OnTabRemoved(content::WebContents* contents) {
   AppBrowserController::OnTabRemoved(contents);
-  ClearAppPrefsForWebContents(contents);
+  WebAppTabHelper::FromWebContents(contents)->SetIsInAppWindow(false);
 }
 
 const WebAppRegistrar& WebAppBrowserController::registrar() const {
@@ -799,34 +829,6 @@ WebAppBrowserController::GetResolvedManifestBackgroundColor() const {
     }
   }
   return registrar().GetAppBackgroundColor(app_id());
-}
-
-std::optional<RE2::Set> WebAppBrowserController::GetTabbedHomeTabScope() const {
-  const WebApp* web_app = registrar().GetAppById(app_id());
-  if (!web_app) {
-    return std::nullopt;
-  }
-  TabStrip tab_strip = web_app->tab_strip().value();
-  if (const auto* params =
-          absl::get_if<blink::Manifest::HomeTabParams>(&tab_strip.home_tab)) {
-    std::vector<blink::SafeUrlPattern> scope_patterns = params->scope_patterns;
-
-    RE2::Set scope_set = RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED);
-    for (auto& scope : scope_patterns) {
-      liburlpattern::Options options = {.delimiter_list = "/",
-                                        .prefix_list = "/",
-                                        .sensitive = true,
-                                        .strict = false};
-      liburlpattern::Pattern pattern(scope.pathname, options, "[^/]+?");
-      std::string error;
-      scope_set.Add(pattern.GenerateRegexString(), &error);
-    }
-
-    if (scope_set.Compile()) {
-      return scope_set;
-    }
-  }
-  return std::nullopt;
 }
 
 }  // namespace web_app

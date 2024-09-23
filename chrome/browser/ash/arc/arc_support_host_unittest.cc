@@ -114,12 +114,11 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
 
   // BrowserWithTestWindowTest:
   TestingProfile::TestingFactories GetTestingFactories() override {
-    TestingProfile::TestingFactories factories = {
-        {ConsentAuditorFactory::GetInstance(),
-         base::BindRepeating(&BuildFakeConsentAuditor)}};
-    IdentityTestEnvironmentProfileAdaptor::
-        AppendIdentityTestEnvironmentFactories(&factories);
-    return factories;
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+            {TestingProfile::TestingFactory{
+                ConsentAuditorFactory::GetInstance(),
+                base::BindRepeating(&BuildFakeConsentAuditor)}});
   }
 
  private:

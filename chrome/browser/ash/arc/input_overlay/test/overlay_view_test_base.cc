@@ -44,6 +44,20 @@ void OverlayViewTestBase::PressAddButton() {
   LeftClickOn(editing_list_->GetAddButtonForTesting());
 }
 
+void OverlayViewTestBase::PressAddContainerButton() {
+  if (!editing_list_) {
+    return;
+  }
+  LeftClickOn(editing_list_->GetAddContainerButtonForTesting());
+}
+
+void OverlayViewTestBase::PressDoneButton() {
+  if (!editing_list_) {
+    return;
+  }
+  LeftClickOn(editing_list_->done_button_);
+}
+
 void OverlayViewTestBase::AddNewActionInCenter() {
   DCHECK(editing_list_);
 
@@ -125,6 +139,20 @@ TargetView* OverlayViewTestBase::GetTargetView() const {
   return controller_->GetTargetView();
 }
 
+EditLabel* OverlayViewTestBase::GetEditLabel(ActionViewListItem* list_item,
+                                             size_t index) const {
+  auto& labels = list_item->labels_view_->labels_;
+  DCHECK_LT(index, labels.size());
+  return labels[index];
+}
+
+EditLabel* OverlayViewTestBase::GetEditLabel(ButtonOptionsMenu* menu,
+                                             size_t index) const {
+  auto& labels = menu->action_edit_->labels_view_->labels_;
+  DCHECK_LT(index, labels.size());
+  return labels[index];
+}
+
 Action* OverlayViewTestBase::GetButtonOptionsMenuAction() const {
   if (auto* menu = controller_->GetButtonOptionsMenu()) {
     return menu->action();
@@ -185,25 +213,16 @@ void OverlayViewTestBase::SetUp() {
   DCHECK(editing_list_->scroll_content_);
   const auto& items = editing_list_->scroll_content_->children();
   DCHECK_EQ(items.size(), 3u);
-  tap_action_list_item_ = static_cast<ActionViewListItem*>(items[0]);
-  tap_action_list_item_two_ = static_cast<ActionViewListItem*>(items[1]);
-  move_action_list_item_ = static_cast<ActionViewListItem*>(items[2]);
+  tap_action_list_item_ = views::AsViewClass<ActionViewListItem>(items[0]);
+  tap_action_list_item_two_ = views::AsViewClass<ActionViewListItem>(items[1]);
+  move_action_list_item_ = views::AsViewClass<ActionViewListItem>(items[2]);
   DCHECK(tap_action_list_item_);
   DCHECK(move_action_list_item_);
 }
 
 ActionViewListItem* OverlayViewTestBase::GetEditingListItem(
     Action* action) const {
-  if (auto* const editing_list = GetEditingList()) {
-    for (const auto& child : editing_list->scroll_content_->children()) {
-      auto* const list_item = views::AsViewClass<ActionViewListItem>(child);
-      DCHECK(list_item);
-      if (list_item->action() == action) {
-        return list_item;
-      }
-    }
-  }
-  return nullptr;
+  return controller_->GetEditingListItemForAction(action);
 }
 
 void OverlayViewTestBase::VerifyButtonOptionsMenu(

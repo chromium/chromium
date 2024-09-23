@@ -4,7 +4,8 @@
 
 #include "components/exo/vsync_timing_manager.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <vector>
+
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
@@ -29,7 +30,7 @@ void VSyncTimingManager::AddObserver(Observer* obs) {
 void VSyncTimingManager::RemoveObserver(Observer* obs) {
   DCHECK(obs);
 
-  base::Erase(observers_, obs);
+  std::erase(observers_, obs);
 
   // There are no more observers so stop receiving IPCs.
   if (observers_.empty())

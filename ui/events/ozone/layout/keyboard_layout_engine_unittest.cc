@@ -183,15 +183,13 @@ void TestLookup(const char* name, KeyboardLayoutEngine* engine) {
   static const struct {
     DomCode input_dom_code;
     int input_flags;
-    DomKey::Base output_dom_key;
+    DomKey output_dom_key;
     KeyboardCode output_keycode;
     char16_t output_character;
   } kTestCases[] = {
-      {DomCode::US_A, EF_NONE, DomKey::Constant<'a'>::Character, VKEY_A, 'a'},
-      {DomCode::US_A, EF_SHIFT_DOWN, DomKey::Constant<'A'>::Character, VKEY_A,
-       'A'},
-      {DomCode::US_A, EF_CONTROL_DOWN, DomKey::Constant<'a'>::Character,
-       VKEY_A, 1},
+      {DomCode::US_A, EF_NONE, DomKey::FromCharacter('a'), VKEY_A, 'a'},
+      {DomCode::US_A, EF_SHIFT_DOWN, DomKey::FromCharacter('A'), VKEY_A, 'A'},
+      {DomCode::US_A, EF_CONTROL_DOWN, DomKey::FromCharacter('a'), VKEY_A, 1},
       {DomCode::LAUNCH_ASSISTANT, EF_NONE, DomKey::LAUNCH_ASSISTANT,
        VKEY_ASSISTANT, 0},
   };
@@ -207,8 +205,8 @@ void TestLookup(const char* name, KeyboardLayoutEngine* engine) {
         engine->Lookup(t.input_dom_code, t.input_flags, &dom_key, &keycode));
     EXPECT_EQ(t.output_dom_key, dom_key);
     EXPECT_EQ(t.output_keycode, keycode);
-    KeyEvent key_event(ET_KEY_PRESSED, keycode, t.input_dom_code, t.input_flags,
-                       dom_key, EventTimeForNow());
+    KeyEvent key_event(EventType::kKeyPressed, keycode, t.input_dom_code,
+                       t.input_flags, dom_key, EventTimeForNow());
     EXPECT_EQ(t.output_character, key_event.GetCharacter());
   }
 }

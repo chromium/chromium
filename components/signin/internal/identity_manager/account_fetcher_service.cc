@@ -60,7 +60,6 @@ AccountFetcherService::AccountFetcherService() = default;
 
 AccountFetcherService::~AccountFetcherService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  token_service_->RemoveObserver(this);
 #if BUILDFLAG(IS_ANDROID)
   // child_info_request_ is an invalidation handler and needs to be
   // unregistered during the lifetime of the invalidation service.
@@ -90,7 +89,8 @@ void AccountFetcherService::Initialize(
   DCHECK(token_service);
   DCHECK(!token_service_);
   token_service_ = token_service;
-  token_service_->AddObserver(this);
+  token_service_observation_.Observe(token_service_);
+
   DCHECK(image_decoder);
   DCHECK(!image_decoder_);
   image_decoder_ = std::move(image_decoder);
@@ -143,9 +143,9 @@ void AccountFetcherService::EnableAccountRemovalForTest() {
   enable_account_removal_for_test_ = true;
 }
 
-void AccountFetcherService::EnableAccountCapabilitiesFetcherForTest(
-    bool enabled) {
-  enable_account_capabilities_fetcher_for_test_ = enabled;
+AccountCapabilitiesFetcherFactory*
+AccountFetcherService::GetAccountCapabilitiesFetcherFactoryForTest() {
+  return account_capabilities_fetcher_factory_.get();
 }
 
 void AccountFetcherService::RefreshAllAccountInfo(bool only_fetch_if_invalid) {
@@ -173,7 +173,7 @@ void AccountFetcherService::UpdateChildInfo() {
     // If a child account is present then there can be only one child account,
     // and it must be the first account on the device.
     //
-    // TODO(crbug/1268858): consider removing this assumption.
+    // TODO(crbug.com/40803816): consider removing this assumption.
     const CoreAccountId& candidate = accounts[0];
     if (candidate == child_request_account_id_)
       return;
@@ -233,7 +233,7 @@ void AccountFetcherService::ResetChildInfo() {
   if (!child_request_account_id_.empty()) {
     AccountInfo account_info =
         account_tracker_service_->GetAccountInfo(child_request_account_id_);
-    // TODO(https://crbug.com/1226501): Reset the status to kUnknown, rather
+    // TODO(crbug.com/40776452): Reset the status to kUnknown, rather
     // than kFalse.
     if (account_info.is_child_account != signin::Tribool::kUnknown)
       SetIsChildAccount(child_request_account_id_, false);
@@ -249,12 +249,9 @@ void AccountFetcherService::SetIsChildAccount(const CoreAccountId& account_id,
 }
 #endif
 
-bool AccountFetcherService::IsAccountCapabilitiesFetchingEnabled() {
-  if (enable_account_capabilities_fetcher_for_test_)
-    return true;
-
-  return base::FeatureList::IsEnabled(
-      switches::kEnableFetchingAccountCapabilities);
+void AccountFetcherService::DestroyFetchers(const CoreAccountId& account_id) {
+  user_info_requests_.erase(account_id);
+  account_capabilities_requests_.erase(account_id);
 }
 
 void AccountFetcherService::PrepareForFetchingAccountCapabilities() {
@@ -290,10 +287,10 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
                                                bool only_fetch_if_invalid) {
   DCHECK(network_fetches_enabled_);
 
-  // TODO(crbug.com/1488399): It seems quite suspect account tracker needs to start
-  // tracking the account when refreshing the account info. Understand why this
-  // is needed and ideally remove this call (it may have been added just for
-  // tests).
+  // TODO(crbug.com/40283608): It seems quite suspect account tracker needs to
+  // start tracking the account when refreshing the account info. Understand why
+  // this is needed and ideally remove this call (it may have been added just
+  // for tests).
   base::UmaHistogramBoolean(
       "Signin.AccountTracker.RefreshAccountInfo.IsAlreadyTrackingAccount",
       account_tracker_service_->IsTrackingAccount(account_id));
@@ -302,9 +299,7 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
   const AccountInfo& info =
       account_tracker_service_->GetAccountInfo(account_id);
 
-  if ((!only_fetch_if_invalid ||
-       !info.capabilities.AreAllCapabilitiesKnown()) &&
-      IsAccountCapabilitiesFetchingEnabled()) {
+  if (!only_fetch_if_invalid || !info.capabilities.AreAllCapabilitiesKnown()) {
     StartFetchingAccountCapabilities(info);
   }
 
@@ -457,8 +452,7 @@ void AccountFetcherService::OnRefreshTokenRevoked(
     return;
   }
 
-  user_info_requests_.erase(account_id);
-  account_capabilities_requests_.erase(account_id);
+  DestroyFetchers(account_id);
 #if BUILDFLAG(IS_ANDROID)
   UpdateChildInfo();
 #endif

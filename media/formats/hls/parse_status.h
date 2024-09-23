@@ -5,7 +5,8 @@
 #ifndef MEDIA_FORMATS_HLS_PARSE_STATUS_H_
 #define MEDIA_FORMATS_HLS_PARSE_STATUS_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "media/base/media_export.h"
 #include "media/base/status.h"
 
@@ -24,6 +25,7 @@ enum class ParseStatusCode : StatusCodeType {
   kFailedToParseStableId,
   kFailedToParseInstreamId,
   kFailedToParseAudioChannels,
+  kFailedToParseHexadecimalString,
   kInvalidPlaylistVersion,
   kUnknownPlaylistType,
   kMalformedAttributeList,
@@ -62,6 +64,7 @@ enum class ParseStatusCode : StatusCodeType {
   kRenditionGroupHasMultipleDefaultRenditions,
   kRenditionGroupHasDuplicateRenditionNames,
   kRenditionGroupDoesNotExist,
+  kUnsupportedEncryptionMethod,
 };
 
 struct ParseStatusTraits {
@@ -71,7 +74,7 @@ struct ParseStatusTraits {
 
 using ParseStatus = TypedStatus<ParseStatusTraits>;
 
-MEDIA_EXPORT base::StringPiece ParseStatusCodeToString(ParseStatusCode code);
+MEDIA_EXPORT std::string_view ParseStatusCodeToString(ParseStatusCode code);
 
 }  // namespace media::hls
 

@@ -28,8 +28,8 @@ limitations under the License.
 #include "flatbuffers/flexbuffers.h"  // flatbuffer
 #include "tensorflow/lite/string_util.h"
 #include "tf_ops/projection_normalizer_util.h"  // seq_flow_lite
-#include "tf_ops/projection_util.h"  // seq_flow_lite
-#include "tflite_ops/quantization_util.h"  // seq_flow_lite
+#include "tf_ops/projection_util.h"             // seq_flow_lite
+#include "tflite_ops/quantization_util.h"       // seq_flow_lite
 
 namespace seq_flow_lite {
 namespace ops {
@@ -144,8 +144,17 @@ class ProjectionParams {
   void WordNoveltyFeature(uint8_t* data, int word_count) const {
     float word_novelty_feature;
     WordNoveltyFeature(&word_novelty_feature, word_count);
-    *data = PodQuantize<uint8_t>(word_novelty_feature, 127.0f, 127);
+    *data = PodQuantize<uint8_t>(word_novelty_feature, /*zero_point=*/127,
+                                 /*inverse_scale=*/127.0f);
   }
+
+  void WordNoveltyFeature(int8_t* data, int word_count) const {
+    float word_novelty_feature;
+    WordNoveltyFeature(&word_novelty_feature, word_count);
+    *data = PodQuantize<int8_t>(word_novelty_feature, /*zero_point=*/0,
+                                /*inverse_scale=*/127.5f);
+  }
+
   bool DocSizeFeatureEnabled() const { return (doc_size_levels_ != 0); }
   bool FirstCap() const { return add_first_cap_feature_; }
   bool AllCaps() const { return add_all_caps_feature_; }
@@ -161,8 +170,17 @@ class ProjectionParams {
   void DocSizeFeature(uint8_t* data, int num_tokens) {
     float doc_size_feature;
     DocSizeFeature(&doc_size_feature, num_tokens);
-    *data = PodQuantize<uint8_t>(doc_size_feature, 127.0f, 127);
+    *data = PodQuantize<uint8_t>(doc_size_feature, /*zero_point=*/127,
+                                 /*inverse_scale=*/127.0f);
   }
+
+  void DocSizeFeature(int8_t* data, int num_tokens) {
+    float doc_size_feature;
+    DocSizeFeature(&doc_size_feature, num_tokens);
+    *data = PodQuantize<int8_t>(doc_size_feature, /*zero_point=*/0,
+                                /*inverse_scale=*/127.5f);
+  }
+
   void Hash(const std::string& word, std::vector<uint64_t>& hash_codes) {
     hasher_->GetHashCodes(word, hash_codes);
   }
@@ -473,11 +491,15 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
   if (output->type == kTfLiteUInt8) {
     const uint8_t kMappingTable[1 << kMapBits] = {127, 255, 0, 127};
     TypedEval(kMappingTable, params, output->data.uint8);
+  } else if (output->type == kTfLiteInt8) {
+    const int8_t kMappingTable[1 << kMapBits] = {0, 127, -128, 0};
+    TypedEval(kMappingTable, params, output->data.int8);
   } else if (output->type == kTfLiteFloat32) {
     const float kMappingTable[1 << kMapBits] = {0.0, 1.0, -1.0, 0.0};
     TypedEval(kMappingTable, params, output->data.f);
   } else {
-    context->ReportError(context, "Output type must be UInt8 or Float32.");
+    context->ReportError(context,
+                         "Output type must be Int8, UInt8, or Float32.");
     return kTfLiteError;
   }
 

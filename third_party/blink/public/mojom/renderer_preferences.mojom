@@ -29,7 +29,7 @@ struct RendererPreferences {
   bool use_autohinter = false;
 
   // Whether embedded bitmap strikes in fonts should be used.
-  // Current only used by Linux.
+  // Currently only used by Linux.
   bool use_bitmaps = false;
 
   // The type of subpixel rendering to use for text.
@@ -40,6 +40,13 @@ struct RendererPreferences {
   // Whether subpixel positioning should be used, permitting fractional X
   // positions for glyphs.  Currently only used by Linux.
   bool use_subpixel_positioning = false;
+
+  // Gamma correction and contrast values for glyph rendering. Currently
+  // only used by Windows.
+  [EnableIf=is_win]
+  float text_contrast = 0.5;
+  [EnableIf=is_win]
+  float text_gamma = 0.0;
 
   // The color of the focus ring.
   uint32 focus_ring_color = 0xFFE59700;
@@ -58,8 +65,8 @@ struct RendererPreferences {
   bool browser_handles_all_top_level_requests = false;
 
   // Cursor blink rate.
-  // Currently only changed from default on Linux.  Uses |gtk-cursor-blink|
-  // from GtkSettings.
+  // On Linux, uses |gtk-cursor-blink| from GtkSettings.
+  // On platforms with views toolkit, uses the system value from ui::NativeTheme.
   // Note: Null |caret_blink_interval| should be interpreted as the default
   // value kDefaultCaretBlinkIntervalInMilliseconds.
   mojo_base.mojom.TimeDelta? caret_blink_interval;
@@ -168,4 +175,13 @@ struct RendererPreferences {
   bool selection_clipboard_buffer_available = false;
 
   array<uint16> explicitly_allowed_network_ports;
+
+  // Whether the prefixed video-specific fullscreen APIs (e.g.
+  // video.webkitEnterFullscreen() and others) are available or not.
+  // - If not set, the availability of the APIs is determined by the
+  //   PrefixedVideoFullscreen RuntimeEnabled feature.
+  // - If set, enables/disables the APIs by overriding the
+  //   PrefixedVideoFullscreen RuntimeEnabled feature.
+  // TODO(crbug.com/40352864): Remove this when the APIs are removed for good.
+  bool? prefixed_fullscreen_video_api_availability;
 };

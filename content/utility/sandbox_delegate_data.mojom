@@ -11,8 +11,4 @@ struct UtilityConfig {
   // `preload_libraries` are absolute paths to libraries to be loaded prior to
   // lockdown - see ServiceProcessHost::Options::WithPreloadedLibraries().
   array<mojo_base.mojom.FilePath> preload_libraries;
-
-  // `pin_user32` preloads user32.dll prior to sandbox lockdown - see
-  // ServiceProcessHost::Options::WithPinUser32().
-  bool pin_user32;
 };

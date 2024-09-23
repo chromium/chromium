@@ -15,8 +15,9 @@ constexpr char kFavicon[] = "favicon.ico";
 }  // namespace
 
 AffiliatedGroup::AffiliatedGroup() = default;
-AffiliatedGroup::AffiliatedGroup(std::vector<CredentialUIEntry> credentials,
-                                 const FacetBrandingInfo& branding)
+AffiliatedGroup::AffiliatedGroup(
+    std::vector<CredentialUIEntry> credentials,
+    const affiliations::FacetBrandingInfo& branding)
     : branding_info_(branding), credential_groups_(std::move(credentials)) {}
 AffiliatedGroup::AffiliatedGroup(const AffiliatedGroup& other) = default;
 AffiliatedGroup::AffiliatedGroup(AffiliatedGroup&& other) = default;

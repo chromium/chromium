@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/attestation/attestation_flow.h"
+
 #include <memory>
 #include <optional>
 #include <utility>
@@ -17,7 +19,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
-#include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/attestation_flow_factory.h"
 #include "chromeos/ash/components/attestation/attestation_flow_integrated.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
@@ -148,7 +149,7 @@ TEST_F(AttestationFlowTest, GetCertificate) {
       &MockObserver::MockCertificateCallback, base::Unretained(&observer));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/account_id,
@@ -229,7 +230,7 @@ TEST_F(AttestationFlowTest, GetCertificate_DeviceSetupCertificate) {
   profile_specific_data.set_id("random_id");
   profile_specific_data.set_content_binding("content_binding");
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   const std::string kOrigin = "fake_origin";
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_DEVICE_SETUP_CERTIFICATE,
@@ -387,7 +388,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Ecc) {
       &MockObserver::MockCertificateCallback, base::Unretained(&observer));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/account_id,
@@ -471,7 +472,7 @@ TEST_F(AttestationFlowTest, GetCertificate_TestACA) {
       &MockObserver::MockCertificateCallback, base::Unretained(&observer));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/account_id,
@@ -547,7 +548,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Prepared) {
                                     base::Unretained(&observer)));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.set_retry_delay(base::Milliseconds(30));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
@@ -589,7 +590,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Prepared) {
                                     base::Unretained(&observer)));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.set_ready_timeout(base::Milliseconds(20));
   flow.set_retry_delay(base::Milliseconds(6));
   flow.GetCertificate(
@@ -627,7 +628,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Available) {
                                     base::Unretained(&observer)));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.set_ready_timeout(base::Milliseconds(20));
   flow.set_retry_delay(base::Milliseconds(6));
   flow.GetCertificate(
@@ -666,7 +667,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Confirm_Prepared) {
                                     base::Unretained(&observer)));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.set_ready_timeout(base::Milliseconds(20));
   flow.set_retry_delay(base::Milliseconds(6));
   flow.GetCertificate(
@@ -707,7 +708,7 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Verified) {
                                     base::Unretained(&observer)));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.set_ready_timeout(base::Milliseconds(20));
   flow.set_retry_delay(base::Milliseconds(6));
   flow.GetCertificate(
@@ -743,7 +744,7 @@ TEST_F(AttestationFlowTest, GetCertificate_NoEK) {
       &MockObserver::MockCertificateCallback, base::Unretained(&observer));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
@@ -778,7 +779,7 @@ TEST_F(AttestationFlowTest, GetCertificate_EKRejected) {
       &MockObserver::MockCertificateCallback, base::Unretained(&observer));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
@@ -816,7 +817,7 @@ TEST_F(AttestationFlowTest, GetCertificate_FailEnroll) {
       &MockObserver::MockCertificateCallback, base::Unretained(&observer));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
@@ -861,7 +862,7 @@ TEST_F(AttestationFlowTest, GetMachineCertificateAlreadyEnrolled) {
       &MockObserver::MockCertificateCallback, base::Unretained(&observer));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
       /*account_id=*/EmptyAccountId(),
@@ -920,7 +921,7 @@ TEST_F(AttestationFlowTest, GetMachineCertificateWithUsername) {
       &MockObserver::MockCertificateCallback, base::Unretained(&observer));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
       /*account_id=*/account_id, /*request_origin=*/"",
@@ -971,7 +972,7 @@ TEST_F(AttestationFlowTest, GetEnrollmentCertificateAlreadyEnrolled) {
       &MockObserver::MockCertificateCallback, base::Unretained(&observer));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
@@ -1010,7 +1011,7 @@ TEST_F(AttestationFlowTest, GetCertificate_FailCreateCertRequest) {
       &MockObserver::MockCertificateCallback, base::Unretained(&observer));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
@@ -1050,7 +1051,7 @@ TEST_F(AttestationFlowTest, GetCertificate_CertRequestRejected) {
       &MockObserver::MockCertificateCallback, base::Unretained(&observer));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
@@ -1095,7 +1096,7 @@ TEST_F(AttestationFlowTest, GetCertificate_CertRequestBadRequest) {
       &MockObserver::MockCertificateCallback, base::Unretained(&observer));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
@@ -1123,7 +1124,7 @@ TEST_F(AttestationFlowTest, GetCertificate_FailIsEnrolled) {
       &MockObserver::MockCertificateCallback, base::Unretained(&observer));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
@@ -1168,7 +1169,7 @@ TEST_F(AttestationFlowTest, GetCertificate_CheckExisting) {
       &MockObserver::MockCertificateCallback, base::Unretained(&observer));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
@@ -1206,7 +1207,7 @@ TEST_F(AttestationFlowTest, GetCertificate_AlreadyExists) {
       &MockObserver::MockCertificateCallback, base::Unretained(&observer));
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/"",
@@ -1244,7 +1245,7 @@ TEST_F(AttestationFlowTest, GetCertificate_LookupMachineKeyWithAccountId) {
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
   const AccountId account_id = AccountId::FromUserEmail(kFakeUserEmail);
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   flow.GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
       /*account_id=*/account_id, /*request_origin=*/"",
@@ -1278,7 +1279,7 @@ TEST_F(AttestationFlowDeathTest,
       AttestationClient::Get()->GetTestInterface()->GetFakePcaCertResponse());
 
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
-  AttestationFlow flow(std::move(proxy_interface));
+  AttestationFlowLegacy flow(std::move(proxy_interface));
   const std::string kOrigin = "fake_origin";
   // Do not supply `profile_specific_data`.
   flow.GetCertificate(

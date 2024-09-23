@@ -155,13 +155,14 @@ public class RenderTestRule extends TestWatcher {
         Component.UI_BROWSER_MOBILE_TAB_GROUPS,
         Component.UI_BROWSER_MOBILE_TAB_SWITCHER,
         Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID,
+        Component.UI_BROWSER_NAVIGATION_GESTURENAV,
         Component.UI_BROWSER_NEW_TAB_PAGE,
-        Component.UI_BROWSER_NEW_TAB_PAGE_EXPLORE_SITES,
         Component.UI_BROWSER_OMNIBOX,
         Component.UI_BROWSER_PASSWORDS,
         Component.UI_BROWSER_SEARCH_VOICE,
         Component.UI_BROWSER_SHARING,
         Component.UI_BROWSER_SHOPPING,
+        Component.UI_BROWSER_SHOPPING_DEALS,
         Component.UI_BROWSER_SHOPPING_MERCHANT_TRUST,
         Component.UI_BROWSER_SHOPPING_PRICE_TRACKING,
         Component.UI_BROWSER_TOOLBAR,
@@ -202,13 +203,14 @@ public class RenderTestRule extends TestWatcher {
         String UI_BROWSER_MOBILE_TAB_GROUPS = "UI>Browser>Mobile>TabGroups";
         String UI_BROWSER_MOBILE_TAB_SWITCHER = "UI>Browser>Mobile>TabSwitcher";
         String UI_BROWSER_MOBILE_TAB_SWITCHER_GRID = "UI>Browser>Mobile>TabSwitcher>Grid";
+        String UI_BROWSER_NAVIGATION_GESTURENAV = "UI>Browser>Navigation>GestureNav";
         String UI_BROWSER_NEW_TAB_PAGE = "UI>Browser>NewTabPage";
-        String UI_BROWSER_NEW_TAB_PAGE_EXPLORE_SITES = "UI>Browser>NewTabPage>ExploreSites";
         String UI_BROWSER_OMNIBOX = "UI>Browser>Omnibox";
         String UI_BROWSER_PASSWORDS = "UI>Browser>Passwords";
         String UI_BROWSER_SEARCH_VOICE = "UI>Browser>Search>Voice";
         String UI_BROWSER_SHARING = "UI>Browser>Sharing";
         String UI_BROWSER_SHOPPING = "UI>Browser>Shopping";
+        String UI_BROWSER_SHOPPING_DEALS = "UI>Browser>Shopping>Deals";
         String UI_BROWSER_SHOPPING_MERCHANT_TRUST = "UI>Browser>Shopping>MerchantTrust";
         String UI_BROWSER_SHOPPING_PRICE_TRACKING = "UI>Browser>Shopping>PriceTracking";
         String UI_BROWSER_THUMBNAIL = "UI>Browser>Thumbnail";
@@ -269,10 +271,10 @@ public class RenderTestRule extends TestWatcher {
         Assert.assertTrue("Render Tests must have the RenderTest feature.", mHasRenderTestFeature);
 
         // De-flake by flushing the tasks that are already queued on the Looper's Handler.
-        // TODO(https://crbug.com/1424788): Remove this and properly fix flaky tests.
+        // TODO(crbug.com/40260566): Remove this and properly fix flaky tests.
         TestThreadUtils.flushNonDelayedLooperTasks();
         Bitmap testBitmap =
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<Bitmap>() {
                             @Override
                             public Bitmap call() {

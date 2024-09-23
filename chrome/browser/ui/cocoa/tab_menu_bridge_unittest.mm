@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "testing/gtest/include/gtest/gtest.h"
+#include "chrome/browser/ui/cocoa/tab_menu_bridge.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -10,14 +10,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/ui/cocoa/tab_menu_bridge.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 
 constexpr int kStaticItemCount = 4;
@@ -38,7 +39,7 @@ class TabMenuBridgeTest : public ::testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     rvh_test_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
     delegate_ = std::make_unique<TabStripModelUiHelperDelegate>();
-    model_ = std::make_unique<TabStripModel>(delegate_.get(), nullptr);
+    model_ = std::make_unique<TabStripModel>(delegate_.get(), profile_.get());
     menu_root_ = ItemWithTitle(@"Tab");
     menu_ = [[NSMenu alloc] initWithTitle:@"Tab"];
     menu_root_.submenu = menu_;
@@ -112,7 +113,7 @@ class TabMenuBridgeTest : public ::testing::Test {
     int index = ModelIndexForTabNamed(old_name);
     if (index >= 0) {
       std::unique_ptr<content::WebContents> old_contents =
-          model()->ReplaceWebContentsAt(index, CreateWebContents(new_name));
+          model()->DiscardWebContentsAt(index, CreateWebContents(new_name));
       // Let the old WebContents be destroyed here.
     }
   }
@@ -156,6 +157,8 @@ class TabMenuBridgeTest : public ::testing::Test {
     EXPECT_EQ(name, active_items[0]);
   }
 
+  TestingProfile* profile() { return profile_.get(); }
+
  private:
   NSMenuItem* ItemWithTitle(NSString* title) {
     return [[NSMenuItem alloc] initWithTitle:title
@@ -173,6 +176,7 @@ class TabMenuBridgeTest : public ::testing::Test {
   std::unique_ptr<TabStripModel> model_;
   NSMenuItem* __strong menu_root_;
   NSMenu* __strong menu_;
+  tabs::PreventTabFeatureInitialization prevent_;
 };
 
 TEST_F(TabMenuBridgeTest, CreatesBlankMenu) {
@@ -260,7 +264,7 @@ TEST_F(TabMenuBridgeTest, SwappingBridgeRecreatesMenu) {
 
   AddModelTabNamed("Tab 1");
 
-  auto model2 = std::make_unique<TabStripModel>(delegate(), nullptr);
+  auto model2 = std::make_unique<TabStripModel>(delegate(), profile());
   model2->AppendWebContents(CreateWebContents("Tab 2"), true);
 
   bridge = std::make_unique<TabMenuBridge>(model2.get(), menu_root());

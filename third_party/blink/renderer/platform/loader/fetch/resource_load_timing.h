@@ -52,6 +52,8 @@ class PLATFORM_EXPORT ResourceLoadTiming
   void SetWorkerReady(base::TimeTicks);
   void SetWorkerFetchStart(base::TimeTicks);
   void SetWorkerRespondWithSettled(base::TimeTicks);
+  void SetWorkerRouterEvaluationStart(base::TimeTicks);
+  void SetWorkerCacheLookupStart(base::TimeTicks);
   void SetSendStart(base::TimeTicks);
   void SetSendEnd(base::TimeTicks);
   void SetReceiveHeadersStart(base::TimeTicks);
@@ -73,6 +75,12 @@ class PLATFORM_EXPORT ResourceLoadTiming
   base::TimeTicks ConnectStart() const { return connect_start_; }
   base::TimeTicks ConnectEnd() const { return connect_end_; }
   base::TimeTicks WorkerStart() const { return worker_start_; }
+  base::TimeTicks WorkerRouterEvaluationStart() const {
+    return worker_router_evaluation_start_;
+  }
+  base::TimeTicks WorkerCacheLokupStart() const {
+    return worker_cache_lookup_start_;
+  }
   base::TimeTicks WorkerReady() const { return worker_ready_; }
   base::TimeTicks WorkerFetchStart() const { return worker_fetch_start_; }
   base::TimeTicks WorkerRespondWithSettled() const {
@@ -122,6 +130,8 @@ class PLATFORM_EXPORT ResourceLoadTiming
   base::TimeTicks worker_ready_;
   base::TimeTicks worker_fetch_start_;
   base::TimeTicks worker_respond_with_settled_;
+  base::TimeTicks worker_router_evaluation_start_;
+  base::TimeTicks worker_cache_lookup_start_;
   base::TimeTicks send_start_;
   base::TimeTicks send_end_;
   base::TimeTicks receive_headers_start_;

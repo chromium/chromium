@@ -76,14 +76,14 @@ class VideoDecodeStatsDBImplTest : public ::testing::Test {
     VerifyNoPendingOps();
   }
 
-  void VerifyOnePendingOp(std::string op_name) {
+  void VerifyOnePendingOp(std::string_view op_name) {
     EXPECT_EQ(stats_db_->pending_operations_.get_pending_ops_for_test().size(),
               1u);
     PendingOperations::PendingOperation* pending_op =
         stats_db_->pending_operations_.get_pending_ops_for_test()
             .begin()
             ->second.get();
-    EXPECT_EQ(pending_op->uma_str_, op_name);
+    EXPECT_TRUE(pending_op->uma_str_.ends_with(op_name));
   }
 
   void VerifyNoPendingOps() {
@@ -669,7 +669,7 @@ TEST_F(VideoDecodeStatsDBImplTest, EnableUnweightedEntries) {
   // Append 200 frames with 10% dropped, 1% efficient.
   AppendStats(kStatsKeyVp9, DecodeStatsEntry(200, 0.10 * 200, 0.01 * 200));
   // Use real doubles to keep track of these things to make sure the precision
-  // math for repeating decimals works out with whats done internally.
+  // math for repeating decimals works out with what's done internally.
   int num_appends = 1;
   double unweighted_smoothness_avg = 0.10;
   double unweighted_efficiency_avg = 0.01;

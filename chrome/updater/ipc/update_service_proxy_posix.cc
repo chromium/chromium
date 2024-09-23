@@ -94,6 +94,9 @@ constexpr base::TimeDelta kConnectionTimeout = base::Minutes(3);
   app_state.brand_code = app_state_mojo->brand_code;
   app_state.brand_path = app_state_mojo->brand_path;
   app_state.ecp = app_state_mojo->ecp;
+  if (app_state_mojo->cohort) {
+    app_state.cohort = *app_state_mojo->cohort;
+  }
 
   return app_state;
 }
@@ -110,8 +113,9 @@ constexpr base::TimeDelta kConnectionTimeout = base::Minutes(3);
 class StateChangeObserverImpl : public mojom::StateChangeObserver {
  public:
   explicit StateChangeObserverImpl(
-      UpdateService::StateChangeCallback state_change_callback,
-      UpdateService::Callback complete_callback)
+      base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+          state_change_callback,
+      base::OnceCallback<void(UpdateService::Result)> complete_callback)
       : state_change_callback_(std::move(state_change_callback)),
         complete_callback_(std::move(complete_callback)) {}
   StateChangeObserverImpl(const StateChangeObserverImpl&) = delete;
@@ -134,8 +138,9 @@ class StateChangeObserverImpl : public mojom::StateChangeObserver {
   }
 
  private:
-  UpdateService::StateChangeCallback state_change_callback_;
-  UpdateService::Callback complete_callback_;
+  base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+      state_change_callback_;
+  base::OnceCallback<void(UpdateService::Result)> complete_callback_;
 };
 
 template <typename T>
@@ -153,12 +158,14 @@ base::OnceCallback<void(T)> ToMojoCallback(
 [[nodiscard]] base::OnceCallback<
     void(mojo::PendingReceiver<mojom::StateChangeObserver>)>
 MakeStateChangeObserver(
-    UpdateService::StateChangeCallback state_change_callback,
+    base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+        state_change_callback,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
         complete_callback) {
   return base::BindOnce(
-      [](UpdateService::StateChangeCallback state_change_callback,
-         UpdateService::Callback complete_callback,
+      [](base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+             state_change_callback,
+         base::OnceCallback<void(UpdateService::Result)> complete_callback,
          mojo::PendingReceiver<mojom::StateChangeObserver> receiver) {
         mojo::MakeSelfOwnedReceiver(
             std::make_unique<StateChangeObserverImpl>(
@@ -302,7 +309,8 @@ void UpdateServiceProxyImpl::CheckForUpdate(
     const std::string& app_id,
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
-    UpdateService::StateChangeCallback state_update,
+    base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+        state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
         callback) {
   VLOG(1) << __func__;
@@ -320,7 +328,8 @@ void UpdateServiceProxyImpl::Update(
     const std::string& install_data_index,
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
-    UpdateService::StateChangeCallback state_update,
+    base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+        state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
         callback) {
   VLOG(1) << __func__;
@@ -335,7 +344,8 @@ void UpdateServiceProxyImpl::Update(
 }
 
 void UpdateServiceProxyImpl::UpdateAll(
-    UpdateService::StateChangeCallback state_update,
+    base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+        state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
         callback) {
   VLOG(1) << __func__;
@@ -350,7 +360,8 @@ void UpdateServiceProxyImpl::Install(
     const std::string& client_install_data,
     const std::string& install_data_index,
     UpdateService::Priority priority,
-    UpdateService::StateChangeCallback state_update,
+    base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+        state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
         callback) {
   VLOG(1) << __func__;
@@ -375,7 +386,8 @@ void UpdateServiceProxyImpl::RunInstaller(
     const std::string& install_args,
     const std::string& install_data,
     const std::string& install_settings,
-    UpdateService::StateChangeCallback state_update,
+    base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+        state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
         callback) {
   VLOG(1) << __func__;

@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/display/win/audio_edid_scan.h"
 
 #include <objbase.h>
+
 #include <oleauto.h>
 #include <string.h>
 
@@ -139,9 +145,11 @@ uint32_t ScanEdidBitstreams() {
 
     if (first) {
       first = false;
-      bitstream_mask = display::EdidParser(edid_blob).audio_formats();
+      bitstream_mask =
+          display::EdidParser(std::move(edid_blob)).audio_formats();
     } else {
-      bitstream_mask &= display::EdidParser(edid_blob).audio_formats();
+      bitstream_mask &=
+          display::EdidParser(std::move(edid_blob)).audio_formats();
     }
   }
 

@@ -16,7 +16,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
@@ -350,7 +350,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // settings; all of them will affect the default setting UI.
     if (entries[i].primary_pattern == ContentSettingsPattern::Wildcard() &&
         entries[i].secondary_pattern == ContentSettingsPattern::Wildcard() &&
-        entries[i].source != "preference") {
+        entries[i].source != content_settings::ProviderType::kPrefProvider) {
       continue;
     }
     // The content settings UI does not support secondary content settings
@@ -360,7 +360,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // wildcard pattern. So only show settings that the user is able to modify.
     if (entries[i].secondary_pattern == ContentSettingsPattern::Wildcard() &&
         entries[i].GetContentSetting() == CONTENT_SETTING_ALLOW) {
-      if (entries[i].source == "policy") {
+      if (entries[i].source ==
+          content_settings::ProviderType::kPolicyProvider) {
         // Add the urls to `_allowPopupsByPolicy` if the allowed urls are set by
         // the policy.
         _allowPopupsByPolicy.Append(entries[i].primary_pattern.ToString());

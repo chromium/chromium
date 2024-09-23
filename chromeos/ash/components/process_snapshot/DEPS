@@ -1,0 +1,8 @@
+specific_include_rules = {
+  "process_snapshot_server\.cc": [
+    "+content/public/browser/browser_thread.h",
+  ],
+  "process_snapshot_server_unittest\.cc": [
+    "+content/public/test/browser_task_environment.h",
+  ],
+}

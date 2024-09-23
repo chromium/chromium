@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/components/osauth/impl/auth_surface_registry.h"
+#include "chromeos/ash/components/osauth/impl/legacy_auth_surface_registry.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
-#include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {
 
@@ -35,6 +35,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthPartsImpl
   AuthSessionStorage* GetAuthSessionStorage() override;
   AuthHub* GetAuthHub() override;
   CryptohomeCore* GetCryptohomeCore() override;
+  LegacyAuthSurfaceRegistry* GetLegacyAuthSurfaceRegistry() override;
+  AuthSurfaceRegistry* GetAuthSurfaceRegistry() override;
   void RegisterEngineFactory(
       std::unique_ptr<AuthFactorEngineFactory> factory) override;
   const std::vector<std::unique_ptr<AuthFactorEngineFactory>>&
@@ -54,6 +56,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthPartsImpl
 
  private:
   friend class AuthParts;
+
   void CreateDefaultComponents(PrefService* local_state);
 
   std::unique_ptr<AuthFactorPresenceCache> factors_cache_;
@@ -62,6 +65,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthPartsImpl
   std::unique_ptr<AuthPolicyConnector> login_screen_policy_connector_;
   std::unique_ptr<AuthPolicyConnector> early_login_policy_connector_;
   raw_ptr<AuthPolicyConnector> profile_prefs_policy_connector_ = nullptr;
+  std::unique_ptr<LegacyAuthSurfaceRegistry> legacy_auth_surface_registry_;
+  std::unique_ptr<AuthSurfaceRegistry> auth_surface_registry_;
 
   std::vector<std::unique_ptr<AuthFactorEngineFactory>> engine_factories_;
   std::unique_ptr<AuthHub> auth_hub_;

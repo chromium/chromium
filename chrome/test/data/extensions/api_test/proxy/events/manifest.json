@@ -1,7 +1,8 @@
 {
   "name": "chrome.proxy",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "end-to-end browser test for chrome.proxy API",
-  "permissions": ["proxy", "http://127.0.0.1/"]
+  "permissions": ["proxy"],
+  "host_permissions": ["http://127.0.0.1/"]
 }

@@ -112,7 +112,7 @@ TEST_P(SurfaceAggregatorPixelTest, DrawSimpleFrame) {
       this->root_allocator_.GetCurrentLocalSurfaceId(), std::move(root_frame));
 
   SurfaceAggregator aggregator(this->manager_.surface_manager(),
-                               this->resource_provider_.get(), true, false);
+                               this->resource_provider_.get(), false);
   auto aggregated_frame = aggregator.Aggregate(
       root_surface_id, this->GetNextDisplayTime(), gfx::OVERLAY_TRANSFORM_NONE);
 
@@ -190,7 +190,7 @@ TEST_P(SurfaceAggregatorPixelTest, DrawSimpleAggregatedFrame) {
   }
 
   SurfaceAggregator aggregator(this->manager_.surface_manager(),
-                               this->resource_provider_.get(), true, false);
+                               this->resource_provider_.get(), false);
   auto aggregated_frame = aggregator.Aggregate(
       root_surface_id, this->GetNextDisplayTime(), gfx::OVERLAY_TRANSFORM_NONE);
 
@@ -323,7 +323,7 @@ TEST_P(SurfaceAggregatorPixelTest, DrawAggregatedFrameWithSurfaceTransforms) {
   }
 
   SurfaceAggregator aggregator(this->manager_.surface_manager(),
-                               this->resource_provider_.get(), true, false);
+                               this->resource_provider_.get(), false);
   auto aggregated_frame = aggregator.Aggregate(
       root_surface_id, this->GetNextDisplayTime(), gfx::OVERLAY_TRANSFORM_NONE);
 
@@ -375,7 +375,7 @@ TEST_P(SurfaceAggregatorPixelTest, DrawAndEraseDelegatedInkTrail) {
       this->root_allocator_.GetCurrentLocalSurfaceId(), std::move(root_frame));
 
   SurfaceAggregator aggregator(this->manager_.surface_manager(),
-                               this->resource_provider_.get(), true, false);
+                               this->resource_provider_.get(), false);
   auto aggregated_frame = aggregator.Aggregate(
       root_surface_id, this->GetNextDisplayTime(), gfx::OVERLAY_TRANSFORM_NONE);
 

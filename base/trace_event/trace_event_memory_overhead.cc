@@ -53,7 +53,6 @@ const char* ObjectTypeToString(TraceEventMemoryOverhead::ObjectType type) {
       NOTREACHED();
   }
   NOTREACHED();
-  return "BUG";
 }
 
 }  // namespace
@@ -91,7 +90,7 @@ void TraceEventMemoryOverhead::AddString(const std::string& str) {
 void TraceEventMemoryOverhead::AddRefCountedString(
     const RefCountedString& str) {
   Add(kOther, sizeof(RefCountedString));
-  AddString(str.data());
+  AddString(str.as_string());
 }
 
 void TraceEventMemoryOverhead::AddValue(const Value& value) {

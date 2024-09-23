@@ -1,0 +1,65 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "ranking_test_util.cc",
+    "ranking_test_util.h",
+    "search_controller_test_util.cc",
+    "search_controller_test_util.h",
+    "search_metrics_test_util.cc",
+    "search_metrics_test_util.h",
+    "search_results_changed_waiter.cc",
+    "search_results_changed_waiter.h",
+    "test_continue_files_search_provider.cc",
+    "test_continue_files_search_provider.h",
+    "test_ranker_manager.cc",
+    "test_ranker_manager.h",
+    "test_result.cc",
+    "test_result.h",
+    "test_search_controller.cc",
+    "test_search_controller.h",
+    "test_search_provider.cc",
+    "test_search_provider.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/ranking",
+    "//chrome/browser/ui",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+# This cannot live in ":test_support" because it use InProcessBrowserTest which
+# requires HAS_OUT_OF_PROC_TEST_RUNNER.
+static_library("browser_test_support") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "app_list_search_test_helper.cc",
+    "app_list_search_test_helper.h",
+  ]
+
+  deps = [
+    ":test_support",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/test:test_support",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+  ]
+}

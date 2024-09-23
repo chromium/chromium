@@ -54,8 +54,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::vector<std::string> sources;
   for (;;) {
     std::string source = provider.ConsumeRandomLengthString();
-    if (source.empty())
+    if (source.empty()) {
       break;
+    }
     sources.push_back(std::move(source));
   }
 
@@ -78,8 +79,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       break;
     }
   }
-  if (!parser)
+  if (!parser) {
     return 0;
+  }
 
   // Run the parser.
   for (const auto& source : sources) {

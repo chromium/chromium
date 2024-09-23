@@ -48,6 +48,7 @@ PermissionController::SubscriptionId SubscribeToPermissionStatusChange(
     RenderProcessHost* render_process_host,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
+    bool should_include_device_status,
     const base::RepeatingCallback<void(PermissionStatus)>& callback);
 
 }  // namespace content

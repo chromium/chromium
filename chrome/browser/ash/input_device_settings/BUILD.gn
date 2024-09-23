@@ -1,0 +1,50 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("input_device_settings") {
+  sources = [
+    "peripherals_app_delegate_impl.cc",
+    "peripherals_app_delegate_impl.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//ash/public/mojom:input_device_settings",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//ash",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service/app_install",
+    "//chrome/browser/apps/peripherals/proto",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/version_info",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "peripherals_app_delegate_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":input_device_settings",
+    "//base",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

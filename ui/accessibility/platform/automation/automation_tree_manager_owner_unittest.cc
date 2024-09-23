@@ -97,7 +97,7 @@ class FakeAutomationV8Router : public AutomationV8Router {
   }
 
   std::string GetMarkerTypeString(ax::mojom::MarkerType type) const override {
-    return ui::ToString(type);
+    return ToString(type);
   }
 
   std::string GetFocusedStateString() const override { return "focused"; }
@@ -106,19 +106,19 @@ class FakeAutomationV8Router : public AutomationV8Router {
 
   std::string GetLocalizedStringForImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus status) const override {
-    return ui::ToString(status);
+    return ToString(status);
   }
 
   std::string GetTreeChangeTypeString(
       ax::mojom::Mutation change_type) const override {
-    return ui::ToString(change_type);
+    return ToString(change_type);
   }
 
   std::string GetEventTypeString(
       const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type)
       const override {
-    std::string first = ui::ToString(std::get<0>(event_type));
-    std::string second = ui::ToString(std::get<1>(event_type));
+    std::string first = ToString(std::get<0>(event_type));
+    std::string second = ToString(std::get<1>(event_type));
     return first + " " + second;
   }
 
@@ -146,7 +146,7 @@ class FakeAutomationV8Router : public AutomationV8Router {
         event_name == "automationInternal.onAccessibilityTreeDestroyed") {
       const std::string* tree_id_str = event_args[0].GetIfString();
       ASSERT_TRUE(tree_id_str);
-      ui::AXTreeID tree_id = ui::AXTreeID::FromString(*tree_id_str);
+      AXTreeID tree_id = AXTreeID::FromString(*tree_id_str);
       notify_tree_destroyed_.Run(tree_id);
     }
 
@@ -154,10 +154,10 @@ class FakeAutomationV8Router : public AutomationV8Router {
         event_name == "automationInternal.onGetTextLocationResult") {
       const base::Value::Dict* params = event_args[0].GetIfDict();
       ASSERT_TRUE(params);
-      ui::AXActionData data;
+      AXActionData data;
       const std::string* tree_id = params->FindString("treeID");
       ASSERT_TRUE(tree_id);
-      data.target_tree_id = ui::AXTreeID::FromString(*tree_id);
+      data.target_tree_id = AXTreeID::FromString(*tree_id);
       std::optional<int> node_id = params->FindInt("nodeID");
       ASSERT_TRUE(node_id);
       data.target_node_id = *node_id;
@@ -189,13 +189,13 @@ class FakeAutomationV8Router : public AutomationV8Router {
 
   // For tests.
   void AddTreeDestroyedCallback(
-      base::RepeatingCallback<void(const ui::AXTreeID&)> callback) {
+      base::RepeatingCallback<void(const AXTreeID&)> callback) {
     notify_tree_destroyed_ = std::move(callback);
   }
 
   // For tests.
   void AddGetTextLocationResultCallback(
-      base::RepeatingCallback<void(const ui::AXActionData&,
+      base::RepeatingCallback<void(const AXActionData&,
                                    const std::optional<gfx::Rect>&)> callback) {
     notify_get_text_location_ = std::move(callback);
   }
@@ -204,8 +204,8 @@ class FakeAutomationV8Router : public AutomationV8Router {
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
   std::unique_ptr<gin::ContextHolder> context_holder_;
   base::RepeatingCallback<void(const std::string&)> notify_event_;
-  base::RepeatingCallback<void(const ui::AXTreeID&)> notify_tree_destroyed_;
-  base::RepeatingCallback<void(const ui::AXActionData&,
+  base::RepeatingCallback<void(const AXTreeID&)> notify_tree_destroyed_;
+  base::RepeatingCallback<void(const AXActionData&,
                                const std::optional<gfx::Rect>&)>
       notify_get_text_location_;
 };
@@ -233,24 +233,24 @@ class AutomationTreeManagerOwnerTest : public testing::Test {
   }
 
  protected:
-  std::map<ui::AXTreeID, std::unique_ptr<ui::AutomationAXTreeWrapper>>&
+  std::map<AXTreeID, std::unique_ptr<AutomationAXTreeWrapper>>&
   GetTreeIDToTreeMap() {
     return tree_manager_owner_->tree_id_to_tree_wrapper_map_;
   }
 
-  void SendAccessibilityEvents(const ui::AXTreeID& tree_id,
-                               const std::vector<ui::AXTreeUpdate>& updates,
+  void SendAccessibilityEvents(const AXTreeID& tree_id,
+                               const std::vector<AXTreeUpdate>& updates,
                                const gfx::Point& mouse_location,
-                               const std::vector<ui::AXEvent>& events) {
+                               const std::vector<AXEvent>& events) {
     tree_manager_owner_->DispatchAccessibilityEvents(tree_id, updates,
                                                      mouse_location, events);
   }
 
-  void SendOnTreeDestroyedEvent(const ui::AXTreeID& tree_id) {
+  void SendOnTreeDestroyedEvent(const AXTreeID& tree_id) {
     tree_manager_owner_->DispatchTreeDestroyedEvent(tree_id);
   }
 
-  void SendGetTextLocationResult(const ui::AXActionData& data,
+  void SendGetTextLocationResult(const AXActionData& data,
                                  const std::optional<gfx::Rect>& rect) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     tree_manager_owner_->DispatchGetTextLocationResult(data, rect);
@@ -259,19 +259,19 @@ class AutomationTreeManagerOwnerTest : public testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
-  bool CallGetFocusInternal(ui::AutomationAXTreeWrapper* top_wrapper,
-                            ui::AutomationAXTreeWrapper** focused_wrapper,
-                            ui::AXNode** focused_node) {
+  bool CallGetFocusInternal(AutomationAXTreeWrapper* top_wrapper,
+                            AutomationAXTreeWrapper** focused_wrapper,
+                            AXNode** focused_node) {
     return tree_manager_owner_->GetFocusInternal(top_wrapper, focused_wrapper,
                                                  focused_node);
   }
 
-  gfx::Rect CallComputeGlobalNodeBounds(ui::AutomationAXTreeWrapper* wrapper,
-                                        ui::AXNode* node) {
+  gfx::Rect CallComputeGlobalNodeBounds(AutomationAXTreeWrapper* wrapper,
+                                        AXNode* node) {
     return tree_manager_owner_->ComputeGlobalNodeBounds(wrapper, node);
   }
 
-  std::vector<ui::AXNode*> CallGetRootsOfChildTree(ui::AXNode* node) {
+  std::vector<AXNode*> CallGetRootsOfChildTree(AXNode* node) {
     return tree_manager_owner_->GetRootsOfChildTree(node);
   }
 
@@ -281,12 +281,12 @@ class AutomationTreeManagerOwnerTest : public testing::Test {
   }
 
   void AddTreeDestroyedCallback(
-      base::RepeatingCallback<void(const ui::AXTreeID&)> callback) {
+      base::RepeatingCallback<void(const AXTreeID&)> callback) {
     router_->AddTreeDestroyedCallback(std::move(callback));
   }
 
   void AddGetTextLocationResultCallback(
-      base::RepeatingCallback<void(const ui::AXActionData&,
+      base::RepeatingCallback<void(const AXActionData&,
                                    const std::optional<gfx::Rect>&)> callback) {
     router_->AddGetTextLocationResultCallback(std::move(callback));
   }
@@ -301,36 +301,35 @@ class AutomationTreeManagerOwnerTest : public testing::Test {
 TEST_F(AutomationTreeManagerOwnerTest, GetDesktop) {
   EXPECT_TRUE(GetTreeIDToTreeMap().empty());
 
-  std::vector<ui::AXTreeUpdate> updates;
+  std::vector<AXTreeUpdate> updates;
   updates.emplace_back();
   auto& tree_update = updates.back();
   auto& tree_data = tree_update.tree_data;
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   tree_update.root_id = 1;
   tree_update.nodes.emplace_back();
   auto& node_data = tree_update.nodes.back();
   node_data.role = ax::mojom::Role::kDesktop;
   node_data.id = 1;
-  std::vector<ui::AXEvent> events;
+  std::vector<AXEvent> events;
   SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(), events);
 
   ASSERT_EQ(1U, GetTreeIDToTreeMap().size());
 
-  ui::AutomationAXTreeWrapper* desktop =
-      GetTreeIDToTreeMap().begin()->second.get();
+  AutomationAXTreeWrapper* desktop = GetTreeIDToTreeMap().begin()->second.get();
   ASSERT_TRUE(desktop);
   EXPECT_TRUE(desktop->IsDesktopTree());
 }
 
 TEST_F(AutomationTreeManagerOwnerTest, GetFocusOneTree) {
   // A desktop tree with focus on a button.
-  std::vector<ui::AXTreeUpdate> updates;
+  std::vector<AXTreeUpdate> updates;
   updates.emplace_back();
   auto& tree_update = updates.back();
   tree_update.has_tree_data = true;
   tree_update.root_id = 1;
   auto& tree_data = tree_update.tree_data;
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   tree_data.focus_id = 2;
   tree_update.nodes.emplace_back();
   auto& node_data1 = tree_update.nodes.back();
@@ -341,17 +340,16 @@ TEST_F(AutomationTreeManagerOwnerTest, GetFocusOneTree) {
   auto& node_data2 = tree_update.nodes.back();
   node_data2.id = 2;
   node_data2.role = ax::mojom::Role::kButton;
-  std::vector<ui::AXEvent> events;
+  std::vector<AXEvent> events;
   SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(), events);
 
   ASSERT_EQ(1U, GetTreeIDToTreeMap().size());
 
-  ui::AutomationAXTreeWrapper* desktop =
-      GetTreeIDToTreeMap().begin()->second.get();
+  AutomationAXTreeWrapper* desktop = GetTreeIDToTreeMap().begin()->second.get();
   ASSERT_TRUE(desktop);
 
-  ui::AutomationAXTreeWrapper* focused_wrapper = nullptr;
-  ui::AXNode* focused_node = nullptr;
+  AutomationAXTreeWrapper* focused_wrapper = nullptr;
+  AXNode* focused_node = nullptr;
   CallGetFocusInternal(desktop, &focused_wrapper, &focused_node);
   ASSERT_TRUE(focused_wrapper);
   ASSERT_TRUE(focused_node);
@@ -382,9 +380,9 @@ TEST_F(AutomationTreeManagerOwnerTest, GetFocusOneTree) {
 TEST_F(AutomationTreeManagerOwnerTest,
        GetFocusMultipleTreesChildTreeConstruction) {
   // Three trees each with a button and link.
-  std::vector<std::vector<ui::AXTreeUpdate>> updates_list;
+  std::vector<std::vector<AXTreeUpdate>> updates_list;
   for (int i = 0; i < 3; i++) {
-    std::vector<ui::AXTreeUpdate>& updates = updates_list.emplace_back();
+    std::vector<AXTreeUpdate>& updates = updates_list.emplace_back();
     updates.emplace_back();
     auto& tree_update = updates.back();
     tree_update.has_tree_data = true;
@@ -393,7 +391,7 @@ TEST_F(AutomationTreeManagerOwnerTest,
 
     // This is a point of inconsistency as the mojo representation allows
     // updates from multiple trees.
-    tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
     tree_data.focus_id = 2;
     tree_update.nodes.emplace_back();
     auto& node_data1 = tree_update.nodes.back();
@@ -413,13 +411,13 @@ TEST_F(AutomationTreeManagerOwnerTest,
 
   // Link up the trees so that the first is a parent of the other two using
   // child tree id.
-  ui::AXTreeID tree_0_id = updates_list[0][0].tree_data.tree_id;
-  ui::AXTreeID tree_1_id = updates_list[1][0].tree_data.tree_id;
-  ui::AXTreeID tree_2_id = updates_list[2][0].tree_data.tree_id;
+  AXTreeID tree_0_id = updates_list[0][0].tree_data.tree_id;
+  AXTreeID tree_1_id = updates_list[1][0].tree_data.tree_id;
+  AXTreeID tree_2_id = updates_list[2][0].tree_data.tree_id;
   updates_list[0][0].nodes[1].AddChildTreeId(tree_1_id);
   updates_list[0][0].nodes[2].AddChildTreeId(tree_2_id);
 
-  std::vector<ui::AXEvent> empty_events;
+  std::vector<AXEvent> empty_events;
   for (auto& updates : updates_list) {
     SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
                             empty_events);
@@ -427,18 +425,15 @@ TEST_F(AutomationTreeManagerOwnerTest,
 
   ASSERT_EQ(3U, GetTreeIDToTreeMap().size());
 
-  ui::AutomationAXTreeWrapper* wrapper_0 =
-      GetTreeIDToTreeMap()[tree_0_id].get();
+  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
   ASSERT_TRUE(wrapper_0);
-  ui::AutomationAXTreeWrapper* wrapper_1 =
-      GetTreeIDToTreeMap()[tree_1_id].get();
+  AutomationAXTreeWrapper* wrapper_1 = GetTreeIDToTreeMap()[tree_1_id].get();
   ASSERT_TRUE(wrapper_1);
-  ui::AutomationAXTreeWrapper* wrapper_2 =
-      GetTreeIDToTreeMap()[tree_2_id].get();
+  AutomationAXTreeWrapper* wrapper_2 = GetTreeIDToTreeMap()[tree_2_id].get();
   ASSERT_TRUE(wrapper_2);
 
-  ui::AutomationAXTreeWrapper* focused_wrapper = nullptr;
-  ui::AXNode* focused_node = nullptr;
+  AutomationAXTreeWrapper* focused_wrapper = nullptr;
+  AXNode* focused_node = nullptr;
   CallGetFocusInternal(wrapper_0, &focused_wrapper, &focused_node);
   ASSERT_TRUE(focused_wrapper);
   ASSERT_TRUE(focused_node);
@@ -464,9 +459,9 @@ TEST_F(AutomationTreeManagerOwnerTest,
 
 TEST_F(AutomationTreeManagerOwnerTest, GetFocusMultipleTreesAppIdConstruction) {
   // Three trees each with a button and link.
-  std::vector<std::vector<ui::AXTreeUpdate>> updates_list;
+  std::vector<std::vector<AXTreeUpdate>> updates_list;
   for (int i = 0; i < 3; i++) {
-    std::vector<ui::AXTreeUpdate>& updates = updates_list.emplace_back();
+    std::vector<AXTreeUpdate>& updates = updates_list.emplace_back();
     updates.emplace_back();
     auto& tree_update = updates.back();
     tree_update.has_tree_data = true;
@@ -475,7 +470,7 @@ TEST_F(AutomationTreeManagerOwnerTest, GetFocusMultipleTreesAppIdConstruction) {
 
     // This is a point of inconsistency as the mojo representation allows
     // updates from ultiple trees.
-    tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
     tree_data.focus_id = 2;
     tree_update.nodes.emplace_back();
     auto& node_data1 = tree_update.nodes.back();
@@ -495,9 +490,9 @@ TEST_F(AutomationTreeManagerOwnerTest, GetFocusMultipleTreesAppIdConstruction) {
 
   // Link up the trees so that the first is a parent of the other two using app
   // ids.
-  ui::AXTreeID tree_0_id = updates_list[0][0].tree_data.tree_id;
-  ui::AXTreeID tree_1_id = updates_list[1][0].tree_data.tree_id;
-  ui::AXTreeID tree_2_id = updates_list[2][0].tree_data.tree_id;
+  AXTreeID tree_0_id = updates_list[0][0].tree_data.tree_id;
+  AXTreeID tree_1_id = updates_list[1][0].tree_data.tree_id;
+  AXTreeID tree_2_id = updates_list[2][0].tree_data.tree_id;
   auto& wrapper0_button_data = updates_list[0][0].nodes[1];
   auto& wrapper0_link_data = updates_list[0][0].nodes[2];
   auto& wrapper1_link_data = updates_list[1][0].nodes[2];
@@ -514,7 +509,7 @@ TEST_F(AutomationTreeManagerOwnerTest, GetFocusMultipleTreesAppIdConstruction) {
   wrapper2_button_data.AddStringAttribute(ax::mojom::StringAttribute::kAppId,
                                           "app2");
 
-  std::vector<ui::AXEvent> empty_events;
+  std::vector<AXEvent> empty_events;
   for (auto& updates : updates_list) {
     SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
                             empty_events);
@@ -522,18 +517,15 @@ TEST_F(AutomationTreeManagerOwnerTest, GetFocusMultipleTreesAppIdConstruction) {
 
   ASSERT_EQ(3U, GetTreeIDToTreeMap().size());
 
-  ui::AutomationAXTreeWrapper* wrapper_0 =
-      GetTreeIDToTreeMap()[tree_0_id].get();
+  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
   ASSERT_TRUE(wrapper_0);
-  ui::AutomationAXTreeWrapper* wrapper_1 =
-      GetTreeIDToTreeMap()[tree_1_id].get();
+  AutomationAXTreeWrapper* wrapper_1 = GetTreeIDToTreeMap()[tree_1_id].get();
   ASSERT_TRUE(wrapper_1);
-  ui::AutomationAXTreeWrapper* wrapper_2 =
-      GetTreeIDToTreeMap()[tree_2_id].get();
+  AutomationAXTreeWrapper* wrapper_2 = GetTreeIDToTreeMap()[tree_2_id].get();
   ASSERT_TRUE(wrapper_2);
 
-  ui::AutomationAXTreeWrapper* focused_wrapper = nullptr;
-  ui::AXNode* focused_node = nullptr;
+  AutomationAXTreeWrapper* focused_wrapper = nullptr;
+  AXNode* focused_node = nullptr;
   CallGetFocusInternal(wrapper_0, &focused_wrapper, &focused_node);
   ASSERT_TRUE(focused_wrapper);
   ASSERT_TRUE(focused_node);
@@ -562,15 +554,15 @@ TEST_F(AutomationTreeManagerOwnerTest, GetFocusMultipleTreesAppIdConstruction) {
 
 TEST_F(AutomationTreeManagerOwnerTest, GetBoundsAppIdConstruction) {
   // two trees each with a button.
-  std::vector<std::vector<ui::AXTreeUpdate>> updates_list;
+  std::vector<std::vector<AXTreeUpdate>> updates_list;
   for (int i = 0; i < 2; i++) {
-    std::vector<ui::AXTreeUpdate>& updates = updates_list.emplace_back();
+    std::vector<AXTreeUpdate>& updates = updates_list.emplace_back();
     updates.emplace_back();
     auto& tree_update = updates.back();
     tree_update.has_tree_data = true;
     tree_update.root_id = 1;
     auto& tree_data = tree_update.tree_data;
-    tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
     tree_update.nodes.emplace_back();
     auto& node_data1 = tree_update.nodes.back();
     node_data1.id = 1;
@@ -586,8 +578,8 @@ TEST_F(AutomationTreeManagerOwnerTest, GetBoundsAppIdConstruction) {
   }
 
   // Link up the trees by app id.
-  ui::AXTreeID tree_0_id = updates_list[0][0].tree_data.tree_id;
-  ui::AXTreeID tree_1_id = updates_list[1][0].tree_data.tree_id;
+  AXTreeID tree_0_id = updates_list[0][0].tree_data.tree_id;
+  AXTreeID tree_1_id = updates_list[1][0].tree_data.tree_id;
   auto& wrapper0_button_data = updates_list[0][0].nodes[1];
   auto& wrapper1_button_data = updates_list[1][0].nodes[1];
 
@@ -601,7 +593,7 @@ TEST_F(AutomationTreeManagerOwnerTest, GetBoundsAppIdConstruction) {
   wrapper0_button_data.AddFloatAttribute(
       ax::mojom::FloatAttribute::kChildTreeScale, 2.0);
 
-  std::vector<ui::AXEvent> empty_events;
+  std::vector<AXEvent> empty_events;
   for (auto& updates : updates_list) {
     SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
                             empty_events);
@@ -609,14 +601,12 @@ TEST_F(AutomationTreeManagerOwnerTest, GetBoundsAppIdConstruction) {
 
   ASSERT_EQ(2U, GetTreeIDToTreeMap().size());
 
-  ui::AutomationAXTreeWrapper* wrapper_0 =
-      GetTreeIDToTreeMap()[tree_0_id].get();
+  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
   ASSERT_TRUE(wrapper_0);
-  ui::AutomationAXTreeWrapper* wrapper_1 =
-      GetTreeIDToTreeMap()[tree_1_id].get();
+  AutomationAXTreeWrapper* wrapper_1 = GetTreeIDToTreeMap()[tree_1_id].get();
   ASSERT_TRUE(wrapper_1);
 
-  ui::AXNode* wrapper1_button = wrapper_1->ax_tree()->GetFromId(2);
+  AXNode* wrapper1_button = wrapper_1->ax_tree()->GetFromId(2);
   ASSERT_TRUE(wrapper1_button);
 
   // The button in wrapper 1 is scaled by .5 (200 * .5). It's root is also
@@ -628,15 +618,15 @@ TEST_F(AutomationTreeManagerOwnerTest, GetBoundsAppIdConstruction) {
 
 TEST_F(AutomationTreeManagerOwnerTest, GetBoundsNestedAppIdConstruction) {
   // two trees each with a button and a client node.
-  std::vector<std::vector<ui::AXTreeUpdate>> updates_list;
+  std::vector<std::vector<AXTreeUpdate>> updates_list;
   for (int i = 0; i < 2; i++) {
-    std::vector<ui::AXTreeUpdate>& updates = updates_list.emplace_back();
+    std::vector<AXTreeUpdate>& updates = updates_list.emplace_back();
     updates.emplace_back();
     auto& tree_update = updates.back();
     tree_update.has_tree_data = true;
     tree_update.root_id = 1;
     auto& tree_data = tree_update.tree_data;
-    tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
     tree_update.nodes.emplace_back();
     auto& node_data1 = tree_update.nodes.back();
     node_data1.id = 1;
@@ -659,8 +649,8 @@ TEST_F(AutomationTreeManagerOwnerTest, GetBoundsNestedAppIdConstruction) {
 
   // Link up the trees by app id. One button -> child button; client -> child
   // root.
-  ui::AXTreeID tree_0_id = updates_list[0][0].tree_data.tree_id;
-  ui::AXTreeID tree_1_id = updates_list[1][0].tree_data.tree_id;
+  AXTreeID tree_0_id = updates_list[0][0].tree_data.tree_id;
+  AXTreeID tree_1_id = updates_list[1][0].tree_data.tree_id;
   auto& wrapper0_button_data = updates_list[0][0].nodes[1];
   auto& wrapper0_client_data = updates_list[0][0].nodes[2];
   auto& wrapper1_root_data = updates_list[1][0].nodes[0];
@@ -682,7 +672,7 @@ TEST_F(AutomationTreeManagerOwnerTest, GetBoundsNestedAppIdConstruction) {
   wrapper1_root_data.AddStringAttribute(ax::mojom::StringAttribute::kAppId,
                                         "lacrosHost");
 
-  std::vector<ui::AXEvent> empty_events;
+  std::vector<AXEvent> empty_events;
   for (auto& updates : updates_list) {
     SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
                             empty_events);
@@ -690,14 +680,12 @@ TEST_F(AutomationTreeManagerOwnerTest, GetBoundsNestedAppIdConstruction) {
 
   ASSERT_EQ(2U, GetTreeIDToTreeMap().size());
 
-  ui::AutomationAXTreeWrapper* wrapper_0 =
-      GetTreeIDToTreeMap()[tree_0_id].get();
+  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
   ASSERT_TRUE(wrapper_0);
-  ui::AutomationAXTreeWrapper* wrapper_1 =
-      GetTreeIDToTreeMap()[tree_1_id].get();
+  AutomationAXTreeWrapper* wrapper_1 = GetTreeIDToTreeMap()[tree_1_id].get();
   ASSERT_TRUE(wrapper_1);
 
-  ui::AXNode* wrapper1_button = wrapper_1->ax_tree()->GetFromId(2);
+  AXNode* wrapper1_button = wrapper_1->ax_tree()->GetFromId(2);
   ASSERT_TRUE(wrapper1_button);
 
   // The button in wrapper 1 is scaled by .5 (200 * .5). It's root is also
@@ -706,7 +694,7 @@ TEST_F(AutomationTreeManagerOwnerTest, GetBoundsNestedAppIdConstruction) {
   EXPECT_EQ(gfx::Rect(50, 50, 100, 100),
             CallComputeGlobalNodeBounds(wrapper_1, wrapper1_button));
 
-  ui::AXNode* wrapper1_root = wrapper_1->ax_tree()->GetFromId(1);
+  AXNode* wrapper1_root = wrapper_1->ax_tree()->GetFromId(1);
   ASSERT_TRUE(wrapper1_root);
 
   // Similar to the button, but not scaled. This does not cross an app id
@@ -717,9 +705,9 @@ TEST_F(AutomationTreeManagerOwnerTest, GetBoundsNestedAppIdConstruction) {
 
 TEST_F(AutomationTreeManagerOwnerTest, IgnoredAncestorTrees) {
   // Three trees each with a button and link.
-  std::vector<std::vector<ui::AXTreeUpdate>> updates_list;
+  std::vector<std::vector<AXTreeUpdate>> updates_list;
   for (int i = 0; i < 3; i++) {
-    std::vector<ui::AXTreeUpdate>& updates = updates_list.emplace_back();
+    std::vector<AXTreeUpdate>& updates = updates_list.emplace_back();
     updates.emplace_back();
     auto& tree_update = updates.back();
     tree_update.has_tree_data = true;
@@ -728,7 +716,7 @@ TEST_F(AutomationTreeManagerOwnerTest, IgnoredAncestorTrees) {
 
     // This is a point of inconsistency as the mojo representation allows
     // updates from multiple trees.
-    tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
     tree_data.focus_id = 2;
     tree_update.nodes.emplace_back();
     auto& node_data1 = tree_update.nodes.back();
@@ -748,9 +736,9 @@ TEST_F(AutomationTreeManagerOwnerTest, IgnoredAncestorTrees) {
 
   // Link up the trees so that the first is a parent of the second and the
   // second a parent of the third.
-  ui::AXTreeID tree_0_id = updates_list[0][0].tree_data.tree_id;
-  ui::AXTreeID tree_1_id = updates_list[1][0].tree_data.tree_id;
-  ui::AXTreeID tree_2_id = updates_list[2][0].tree_data.tree_id;
+  AXTreeID tree_0_id = updates_list[0][0].tree_data.tree_id;
+  AXTreeID tree_1_id = updates_list[1][0].tree_data.tree_id;
+  AXTreeID tree_2_id = updates_list[2][0].tree_data.tree_id;
   updates_list[0][0].nodes[1].AddChildTreeId(tree_1_id);
 
   // Make the hosting node ignored.
@@ -758,7 +746,7 @@ TEST_F(AutomationTreeManagerOwnerTest, IgnoredAncestorTrees) {
 
   updates_list[1][0].nodes[1].AddChildTreeId(tree_2_id);
 
-  std::vector<ui::AXEvent> empty_events;
+  std::vector<AXEvent> empty_events;
   for (auto& updates : updates_list) {
     SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
                             empty_events);
@@ -766,14 +754,11 @@ TEST_F(AutomationTreeManagerOwnerTest, IgnoredAncestorTrees) {
 
   ASSERT_EQ(3U, GetTreeIDToTreeMap().size());
 
-  ui::AutomationAXTreeWrapper* wrapper_0 =
-      GetTreeIDToTreeMap()[tree_0_id].get();
+  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
   ASSERT_TRUE(wrapper_0);
-  ui::AutomationAXTreeWrapper* wrapper_1 =
-      GetTreeIDToTreeMap()[tree_1_id].get();
+  AutomationAXTreeWrapper* wrapper_1 = GetTreeIDToTreeMap()[tree_1_id].get();
   ASSERT_TRUE(wrapper_1);
-  ui::AutomationAXTreeWrapper* wrapper_2 =
-      GetTreeIDToTreeMap()[tree_2_id].get();
+  AutomationAXTreeWrapper* wrapper_2 = GetTreeIDToTreeMap()[tree_2_id].get();
   ASSERT_TRUE(wrapper_2);
 
   // The root tree isn't ignored.
@@ -785,8 +770,8 @@ TEST_F(AutomationTreeManagerOwnerTest, IgnoredAncestorTrees) {
   EXPECT_TRUE(wrapper_2->IsTreeIgnored());
 
   // No longer invisible.
-  ui::AXNode* button = wrapper_0->ax_tree()->GetFromId(2);
-  ui::AXNodeData data = button->TakeData();
+  AXNode* button = wrapper_0->ax_tree()->GetFromId(2);
+  AXNodeData data = button->TakeData();
   data.RemoveState(ax::mojom::State::kInvisible);
   button->SetData(data);
 
@@ -797,15 +782,15 @@ TEST_F(AutomationTreeManagerOwnerTest, IgnoredAncestorTrees) {
 
 TEST_F(AutomationTreeManagerOwnerTest, GetMultipleChildRootsAppIdConstruction) {
   // Two trees each with a button and a client node.
-  std::vector<std::vector<ui::AXTreeUpdate>> updates_list;
+  std::vector<std::vector<AXTreeUpdate>> updates_list;
   for (int i = 0; i < 2; i++) {
-    std::vector<ui::AXTreeUpdate>& updates = updates_list.emplace_back();
+    std::vector<AXTreeUpdate>& updates = updates_list.emplace_back();
     updates.emplace_back();
     auto& tree_update = updates.back();
     tree_update.has_tree_data = true;
     tree_update.root_id = 1;
     auto& tree_data = tree_update.tree_data;
-    tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
     tree_update.nodes.emplace_back();
     auto& node_data1 = tree_update.nodes.back();
     node_data1.id = 1;
@@ -828,8 +813,8 @@ TEST_F(AutomationTreeManagerOwnerTest, GetMultipleChildRootsAppIdConstruction) {
 
   // Link up the trees by using one app id. Tree 0's client has two children
   // from tree 1.
-  ui::AXTreeID tree_0_id = updates_list[0][0].tree_data.tree_id;
-  ui::AXTreeID tree_1_id = updates_list[1][0].tree_data.tree_id;
+  AXTreeID tree_0_id = updates_list[0][0].tree_data.tree_id;
+  AXTreeID tree_1_id = updates_list[1][0].tree_data.tree_id;
   auto& wrapper0_client_data = updates_list[0][0].nodes[2];
   auto& wrapper1_button_data = updates_list[1][0].nodes[1];
   auto& wrapper1_client_data = updates_list[1][0].nodes[2];
@@ -843,7 +828,7 @@ TEST_F(AutomationTreeManagerOwnerTest, GetMultipleChildRootsAppIdConstruction) {
   wrapper1_client_data.AddStringAttribute(ax::mojom::StringAttribute::kAppId,
                                           "app1");
 
-  std::vector<ui::AXEvent> empty_events;
+  std::vector<AXEvent> empty_events;
   for (auto& updates : updates_list) {
     SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
                             empty_events);
@@ -851,15 +836,13 @@ TEST_F(AutomationTreeManagerOwnerTest, GetMultipleChildRootsAppIdConstruction) {
 
   ASSERT_EQ(2U, GetTreeIDToTreeMap().size());
 
-  ui::AutomationAXTreeWrapper* wrapper_0 =
-      GetTreeIDToTreeMap()[tree_0_id].get();
+  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
   ASSERT_TRUE(wrapper_0);
 
-  ui::AXNode* wrapper0_client = wrapper_0->ax_tree()->GetFromId(3);
+  AXNode* wrapper0_client = wrapper_0->ax_tree()->GetFromId(3);
   ASSERT_TRUE(wrapper0_client);
 
-  std::vector<ui::AXNode*> child_roots =
-      CallGetRootsOfChildTree(wrapper0_client);
+  std::vector<AXNode*> child_roots = CallGetRootsOfChildTree(wrapper0_client);
   EXPECT_EQ(2U, child_roots.size());
   EXPECT_EQ(tree_1_id, child_roots[0]->tree()->GetAXTreeID());
   EXPECT_EQ(tree_1_id, child_roots[1]->tree()->GetAXTreeID());
@@ -869,13 +852,13 @@ TEST_F(AutomationTreeManagerOwnerTest, GetMultipleChildRootsAppIdConstruction) {
 
 TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
   // A simple tree.
-  std::vector<ui::AXTreeUpdate> updates;
+  std::vector<AXTreeUpdate> updates;
   updates.emplace_back();
   auto& tree_update = updates.back();
   tree_update.has_tree_data = true;
   tree_update.root_id = 1;
   auto& tree_data = tree_update.tree_data;
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   tree_update.nodes.emplace_back();
   auto& node_data1 = tree_update.nodes.back();
   node_data1.id = 1;
@@ -895,7 +878,7 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
   AddEventCallback(base::BindLambdaForTesting(
       [&](const std::string& event) { events.push_back(event); }));
 
-  std::vector<ui::AXEvent> ax_events;
+  std::vector<AXEvent> ax_events;
   SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
                           ax_events);
 
@@ -922,8 +905,8 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
   auto* wrapper = GetTreeIDToTreeMap()[tree_data.tree_id].get();
   auto* tree = wrapper->ax_tree();
   // The button is id 2.
-  std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event> event_type(
-      ax::mojom::Event::kNone, ui::AXEventGenerator::Event::ROLE_CHANGED);
+  std::tuple<ax::mojom::Event, AXEventGenerator::Event> event_type(
+      ax::mojom::Event::kNone, AXEventGenerator::Event::ROLE_CHANGED);
   wrapper->EventListenerAdded(event_type, tree->GetFromId(2));
   EXPECT_EQ(1U, wrapper->EventListenerCount());
   EXPECT_TRUE(wrapper->HasEventListener(event_type, tree->GetFromId(2)));
@@ -941,8 +924,8 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
   // We have to add another listener to ensure we don't shut down (no event
   // listeners means this renderer closes).
   wrapper->EventListenerAdded(
-      std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>(
-          ax::mojom::Event::kLoadComplete, ui::AXEventGenerator::Event::NONE),
+      std::tuple<ax::mojom::Event, AXEventGenerator::Event>(
+          ax::mojom::Event::kLoadComplete, AXEventGenerator::Event::NONE),
       tree->GetFromId(1));
   tree_update.nodes[0].role = ax::mojom::Role::kSwitch;
   SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
@@ -970,8 +953,8 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
   // Now, add the click listener to the root, and fire the click event on the
   // button.
   wrapper->EventListenerAdded(
-      std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>(
-          ax::mojom::Event::kClicked, ui::AXEventGenerator::Event::NONE),
+      std::tuple<ax::mojom::Event, AXEventGenerator::Event>(
+          ax::mojom::Event::kClicked, AXEventGenerator::Event::NONE),
       tree->GetFromId(1));
   SendAccessibilityEvents(updates[0].tree_data.tree_id, updates, gfx::Point(),
                           ax_events);
@@ -983,11 +966,11 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
   // Verify that the manager forwards the text location.
   bool text_location_sent = false;
   AddGetTextLocationResultCallback(base::BindLambdaForTesting(
-      [&](const ui::AXActionData& data, const std::optional<gfx::Rect>& rect) {
+      [&](const AXActionData& data, const std::optional<gfx::Rect>& rect) {
         text_location_sent = true;
       }));
 
-  ui::AXActionData action_data;
+  AXActionData action_data;
   action_data.target_tree_id = updates[0].tree_data.tree_id;
   action_data.target_node_id = 1;
   action_data.request_id = 1;
@@ -1002,7 +985,7 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
   // listeners.
   bool tree_destroyed = false;
   AddTreeDestroyedCallback(base::BindLambdaForTesting(
-      [&](const ui::AXTreeID& tree_id) { tree_destroyed = true; }));
+      [&](const AXTreeID& tree_id) { tree_destroyed = true; }));
 
   SendOnTreeDestroyedEvent(updates[0].tree_data.tree_id);
 

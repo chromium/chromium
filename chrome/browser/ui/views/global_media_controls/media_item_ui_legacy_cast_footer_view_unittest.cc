@@ -40,7 +40,7 @@ class MediaItemUIFooterLegacyCastViewTest : public ChromeViewsTestBase {
 
   void SimulateButtonClicked(views::View* view) {
     views::test::ButtonTestApi(static_cast<views::Button*>(view))
-        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(), 0, 0));
   }
 

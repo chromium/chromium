@@ -12,13 +12,9 @@ build_webui("build") {
   grd_prefix = "feedback"
 
   static_files = [
-    "css/about_sys.css",
-    "css/feedback_shared_styles.css",
-    "css/feedback_shared_vars.css",
-    "css/logs_map_page.css",
     "feedback.html",
     "html/autofill_metadata_info.html",
-    "html/sys_info.html",
+    "html/system_info.html",
     "images/2x/button_butter_bar_close_hover.png",
     "images/2x/button_butter_bar_close.png",
     "images/2x/button_butter_bar_close_pressed.png",
@@ -27,28 +23,23 @@ build_webui("build") {
     "images/button_butter_bar_close_pressed.png",
   ]
 
-  if (is_chromeos_ash) {
-    static_files += [
-      "css/logs_info.css",
-      "html/assistant_logs_info.html",
-      "html/bluetooth_logs_info.html",
-    ]
-  }
-
-  web_component_files = [ "app.ts" ]
-
   non_web_component_files = [
-    "js/autofill_metadata.ts",
+    "app.html.ts",
+    "app.ts",
+    "autofill_metadata_app.html.ts",
+    "autofill_metadata_app.ts",
     "js/feedback_browser_proxy.ts",
     "js/feedback_regexes.ts",
     "js/feedback_util.ts",
-    "js/logs_map_page.ts",
     "js/questionnaire.ts",
-    "js/sys_info.ts",
     "js/take_screenshot.ts",
+    "system_info_app.html.ts",
+    "system_info_app.ts",
   ]
 
   css_files = [
+    "app.css",
+    "css/about_sys.css",
     "feedback_shared_styles.css",
     "feedback_shared_vars.css",
   ]
@@ -63,7 +54,8 @@ build_webui("build") {
     "//tools/typescript/definitions/chrome_send.d.ts",
   ]
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//chrome/browser/resources/key_value_pair_viewer_shared:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
@@ -71,4 +63,8 @@ build_webui("build") {
     ts_deps +=
         [ "//ui/webui/resources/cr_components/color_change_listener:build_ts" ]
   }
+  ts_path_mappings = [ "/shared/key_value_pair_viewer/*|" + rebase_path(
+                           "$root_gen_dir/chrome/browser/resources/key_value_pair_viewer_shared/tsc/*",
+                           target_gen_dir) ]
+  webui_context_type = "trusted"
 }

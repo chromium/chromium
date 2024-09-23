@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -19,21 +20,18 @@
 
 namespace {
 
-const std::vector<uint8_t> kSecretId_Local_1 = {0x11, 0x12, 0x13,
-                                                0x14, 0x15, 0x16};
-const std::vector<uint8_t> kSecretId_Shared_1 = {0x12, 0x13, 0x14,
-                                                 0x15, 0x16, 0x17};
+constexpr int64_t kId_1 = 111;
 const std::vector<uint8_t> kMetadataEncryptionKeyV0_1 = {
     0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
     0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e};
 constexpr int64_t kStartTimeMillis_1 = 255486129307;
-constexpr int64_t kEndtimeMillis_1 = 265486239507;
+constexpr int64_t kEndTimeMillis_1 = 265486239507;
 const std::vector<uint8_t> kKeySeed_1 = {
     0x21, 0x22, 0x23, 0x24, 0x2A, 0x21, 0x27, 0x28, 0x29, 0x2A, 0x2B,
     0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x37, 0x32, 0x33, 0x34, 0x35, 0x36,
     0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40};
-const std::vector<uint8_t> kEncryptedMetadataBytes_1 = {0x33, 0x33, 0x33,
-                                                        0x33, 0x33, 0x33};
+const std::vector<uint8_t> kEncryptedMetadataBytesV0_1 = {0x33, 0x33, 0x33,
+                                                          0x33, 0x33, 0x33};
 const std::vector<uint8_t> kMetadataEncryptionTag_1 = {0x44, 0x44, 0x44,
                                                        0x44, 0x44, 0x44};
 const std::vector<uint8_t> kConnectionSignatureVerificationKey_1 = {
@@ -41,35 +39,42 @@ const std::vector<uint8_t> kConnectionSignatureVerificationKey_1 = {
 const std::vector<uint8_t> kAdvertisementSignatureVerificationKey_1 = {
     0x66, 0x66, 0x66, 0x66, 0x66, 0x66};
 const std::vector<uint8_t> kVersion_1 = {0x77, 0x77, 0x77, 0x77, 0x77, 0x77};
+const std::vector<uint8_t> kEncryptedMetadataBytesV1_1 = {0x81, 0x81, 0x81,
+                                                          0x81, 0x81, 0x81};
+const std::vector<uint8_t> kIdentityTokenShortSaltAdvHmacKeyV1_1 = {
+    0xA1, 0xA1, 0xA1, 0xA1, 0xA1, 0xA1};
+const std::vector<uint8_t> kIdentityTokenExtendedSaltAdvHmacKeyV1_1 = {
+    0xB2, 0xB2, 0xB2, 0xB2, 0xB2, 0xB2};
+const std::vector<uint8_t> kIdentityTokenSignedAdvHmacKeyV1_1 = {
+    0xC3, 0xC3, 0xC3, 0xC3, 0xC3, 0xC3};
+const char kSignatureVersion_1[] = "2981212593";
 const char AdvertisementSigningKeyCertificateAlias_1[] =
     "NearbySharingABCDEF123456";
+const char kDusi_1[] = "11";
 const std::vector<uint8_t> kAdvertisementPrivateKey_1 = {0x41, 0x42, 0x43,
                                                          0x44, 0x45, 0x46};
 const char ConnectionSigningKeyCertificateAlias_1[] = "NearbySharingXYZ789";
 const std::vector<uint8_t> kConnectionPrivateKey_1 = {0x51, 0x52, 0x53,
                                                       0x54, 0x55, 0x56};
-const std::vector<uint8_t> kMetadataEncryptionKeyV1_1 = {
+const std::vector<uint8_t> kIdentityTokenV1_1 = {
     0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,
     0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70};
 const base::flat_map<uint32_t, bool> kConsumedSalts_1 = {{0xb412, true},
                                                          {0x34b2, false},
                                                          {0x5171, false}};
 
-const std::vector<uint8_t> kSecretId_Local_2 = {0xA1, 0xA2, 0xA3,
-                                                0xA4, 0xA5, 0xA6};
-const std::vector<uint8_t> kSecretId_Shared_2 = {0xB1, 0xB2, 0xB3,
-                                                 0xB4, 0xB5, 0xB6};
+constexpr int64_t kId_2 = 222;
 const std::vector<uint8_t> kMetadataEncryptionKeyV0_2 = {
     0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3,
     0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA};
 constexpr int64_t kStartTimeMillis_2 = 255486129307;
-constexpr int64_t kEndtimeMillis_2 = 265486239725;
+constexpr int64_t kEndTimeMillis_2 = 265486239725;
 const std::vector<uint8_t> kKeySeed_2 = {
     0x21, 0x22, 0x23, 0x24, 0x2A, 0x24, 0x27, 0x28, 0x29, 0x2A, 0x2B,
     0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x32, 0x31, 0x23, 0x14, 0x12, 0x21,
     0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3A, 0x3E, 0x3F, 0x31};
-const std::vector<uint8_t> kEncryptedMetadataBytes_2 = {0x44, 0x44, 0x44,
-                                                        0x44, 0x44, 0x44};
+const std::vector<uint8_t> kEncryptedMetadataBytesV0_2 = {0x44, 0x44, 0x44,
+                                                          0x44, 0x44, 0x44};
 const std::vector<uint8_t> kMetadataEncryptionTag_2 = {0x55, 0x55, 0x55,
                                                        0x55, 0x55, 0x55};
 const std::vector<uint8_t> kConnectionSignatureVerificationKey_2 = {
@@ -77,6 +82,16 @@ const std::vector<uint8_t> kConnectionSignatureVerificationKey_2 = {
 const std::vector<uint8_t> kAdvertisementSignatureVerificationKey_2 = {
     0x66, 0x66, 0x66, 0x66, 0x66, 0x66};
 const std::vector<uint8_t> kVersion_2 = {0x88, 0x88, 0x88, 0x88, 0x88, 0x88};
+const std::vector<uint8_t> kEncryptedMetadataBytesV1_2 = {0x82, 0x82, 0x82,
+                                                          0x82, 0x82, 0x82};
+const std::vector<uint8_t> kIdentityTokenShortSaltAdvHmacKeyV1_2 = {
+    0xA2, 0xA2, 0xA2, 0xA2, 0xA2, 0xA2};
+const std::vector<uint8_t> kIdentityTokenExtendedSaltAdvHmacKeyV1_2 = {
+    0xB3, 0xB3, 0xB3, 0xB3, 0xB3, 0xB3};
+const std::vector<uint8_t> kIdentityTokenSignedAdvHmacKeyV1_2 = {
+    0xC4, 0xC4, 0xC4, 0xC4, 0xC4, 0xC4};
+const char kSignatureVersion_2[] = "2998055602";
+const char kDusi_2[] = "22";
 const char AdvertisementSigningKeyCertificateAlias_2[] =
     "NearbySharingFEDCBA987654";
 const std::vector<uint8_t> kAdvertisementPrivateKey_2 = {0xBB, 0xBC, 0xBD,
@@ -84,28 +99,25 @@ const std::vector<uint8_t> kAdvertisementPrivateKey_2 = {0xBB, 0xBC, 0xBD,
 const char ConnectionSigningKeyCertificateAlias_2[] = "NearbySharingZYX543";
 const std::vector<uint8_t> kConnectionPrivateKey_2 = {0xC1, 0xC2, 0xC3,
                                                       0xC4, 0xC5, 0xC6};
-const std::vector<uint8_t> kMetadataEncryptionKeyV1_2 = {
+const std::vector<uint8_t> kIdentityTokenV1_2 = {
     0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE,
     0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6};
 const base::flat_map<uint32_t, bool> kConsumedSalts_2 = {{0xb412, false},
                                                          {0x34b2, true},
                                                          {0x5171, false}};
 
-const std::vector<uint8_t> kSecretId_Local_3 = {0x04, 0x05, 0x06,
-                                                0x07, 0x08, 0x09};
-const std::vector<uint8_t> kSecretId_Shared_3 = {0x07, 0x06, 0x05,
-                                                 0x04, 0x03, 0x02};
+constexpr int64_t kId_3 = 333;
 const std::vector<uint8_t> kMetadataEncryptionKeyV0_3 = {
     0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13,
     0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A};
 constexpr int64_t kStartTimeMillis_3 = 255486129307;
-constexpr int64_t kEndtimeMillis_3 = 263485225725;
+constexpr int64_t kEndTimeMillis_3 = 263485225725;
 const std::vector<uint8_t> kKeySeed_3 = {
     0x21, 0x22, 0x23, 0x24, 0x2A, 0x22, 0x27, 0x21, 0x29, 0x2A, 0x2B,
     0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x31, 0x22, 0x14, 0x12, 0x21,
     0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3B, 0x3E, 0x3F, 0x31};
-const std::vector<uint8_t> kEncryptedMetadataBytes_3 = {0x55, 0x55, 0x55,
-                                                        0x55, 0x55, 0x55};
+const std::vector<uint8_t> kEncryptedMetadataBytesV0_3 = {0x55, 0x55, 0x55,
+                                                          0x55, 0x55, 0x55};
 const std::vector<uint8_t> kMetadataEncryptionTag_3 = {0x66, 0x66, 0x66,
                                                        0x66, 0x66, 0x66};
 const std::vector<uint8_t> kConnectionSignatureVerificationKey_3 = {
@@ -113,6 +125,16 @@ const std::vector<uint8_t> kConnectionSignatureVerificationKey_3 = {
 const std::vector<uint8_t> kAdvertisementSignatureVerificationKey_3 = {
     0x88, 0x88, 0x88, 0x88, 0x88, 0x88};
 const std::vector<uint8_t> kVersion_3 = {0x11, 0x12, 0x13, 0x14, 0x15, 0x16};
+const std::vector<uint8_t> kEncryptedMetadataBytesV1_3 = {0x83, 0x83, 0x83,
+                                                          0x83, 0x83, 0x83};
+const std::vector<uint8_t> kIdentityTokenShortSaltAdvHmacKeyV1_3 = {
+    0xA3, 0xA3, 0xA3, 0xA3, 0xA3, 0xA3};
+const std::vector<uint8_t> kIdentityTokenExtendedSaltAdvHmacKeyV1_3 = {
+    0xB4, 0xB4, 0xB4, 0xB4, 0xB4, 0xB4};
+const std::vector<uint8_t> kIdentityTokenSignedAdvHmacKeyV1_3 = {
+    0xC5, 0xC5, 0xC5, 0xC5, 0xC5, 0xC5};
+const char kSignatureVersion_3[] = "3014898611";
+const char kDusi_3[] = "33";
 const char AdvertisementSigningKeyCertificateAlias_3[] =
     "NearbySharingJIHGFED3210";
 const std::vector<uint8_t> kAdvertisementPrivateKey_3 = {0x1B, 0x1C, 0x1D,
@@ -120,7 +142,7 @@ const std::vector<uint8_t> kAdvertisementPrivateKey_3 = {0x1B, 0x1C, 0x1D,
 const char ConnectionSigningKeyCertificateAlias_3[] = "NearbySharingWVU109";
 const std::vector<uint8_t> kConnectionPrivateKey_3 = {0x21, 0x22, 0x23,
                                                       0x24, 0x25, 0x26};
-const std::vector<uint8_t> kMetadataEncryptionKeyV1_3 = {
+const std::vector<uint8_t> kIdentityTokenV1_3 = {
     0x27, 0x28, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE,
     0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6};
 const base::flat_map<uint32_t, bool> kConsumedSalts_3 = {{0xb402, false},
@@ -151,9 +173,10 @@ class TestNearbyPresenceCredentialStorage
 };
 
 ash::nearby::presence::mojom::LocalCredentialPtr CreateLocalCredential(
-    const std::vector<uint8_t>& secret_id,
+    const int64_t id,
     const std::vector<uint8_t>& key_seed,
-    const int start_time_millis,
+    const int64_t start_time_millis,
+    const int64_t end_time_millis,
     const std::vector<uint8_t>& metadata_encryption_key_v0,
     const std::string& advertisement_signing_key_certificate_alias,
     const std::vector<uint8_t>& advertisement_signing_key_data,
@@ -161,47 +184,46 @@ ash::nearby::presence::mojom::LocalCredentialPtr CreateLocalCredential(
     const std::vector<uint8_t>& connection_signing_key_data,
     const ash::nearby::presence::mojom::IdentityType identity_type,
     const base::flat_map<uint32_t, bool>& consumed_salts,
-    const std::vector<uint8_t>& metadata_encryption_key_v1) {
-  auto local_credential = ash::nearby::presence::mojom::LocalCredential::New();
-
-  local_credential->secret_id = secret_id;
-  local_credential->key_seed = key_seed;
-  local_credential->start_time_millis = start_time_millis;
-  local_credential->metadata_encryption_key_v0 = metadata_encryption_key_v0;
-  local_credential->identity_type = identity_type;
-  local_credential->consumed_salts = consumed_salts;
-  local_credential->metadata_encryption_key_v1 = metadata_encryption_key_v1;
-
-  auto advertisement_key = ash::nearby::presence::mojom::PrivateKey::New();
-  advertisement_key->certificate_alias =
-      advertisement_signing_key_certificate_alias;
-  advertisement_key->key = advertisement_signing_key_data;
-  local_credential->advertisement_signing_key = std::move(advertisement_key);
-
-  auto connection_key = ash::nearby::presence::mojom::PrivateKey::New();
-  connection_key->certificate_alias = connection_signing_key_certificate_alias;
-  connection_key->key = connection_signing_key_data;
-  local_credential->connection_signing_key = std::move(connection_key);
-
-  return local_credential;
+    const std::vector<uint8_t>& identity_token_v1,
+    const std::string& signature_version) {
+  return ash::nearby::presence::mojom::LocalCredential::New(
+      /*secret_id=*/std::vector<uint8_t>(), key_seed, start_time_millis,
+      end_time_millis, metadata_encryption_key_v0,
+      ash::nearby::presence::mojom::PrivateKey::New(
+          advertisement_signing_key_certificate_alias,
+          advertisement_signing_key_data),
+      ash::nearby::presence::mojom::PrivateKey::New(
+          connection_signing_key_certificate_alias,
+          connection_signing_key_data),
+      identity_type, consumed_salts, identity_token_v1, id, signature_version);
 }
 
 ash::nearby::presence::mojom::SharedCredentialPtr CreateSharedCredential(
-    const std::vector<uint8_t>& secret_id,
     const std::vector<uint8_t>& key_seed,
     const int64_t start_time_millis,
     const int64_t end_time_millis,
-    const std::vector<uint8_t>& encrypted_metadata_bytes,
-    const std::vector<uint8_t>& metadata_encryption_key_tag,
+    const std::vector<uint8_t>& encrypted_metadata_bytes_v0,
+    const std::vector<uint8_t>& metadata_encryption_key_tag_v0,
     const std::vector<uint8_t>& connection_signature_verification_key,
     const std::vector<uint8_t>& advertisement_signature_verification_key,
     const ash::nearby::presence::mojom::IdentityType identity_type,
-    const std::vector<uint8_t>& version) {
+    const std::vector<uint8_t>& version,
+    const ash::nearby::presence::mojom::CredentialType credential_type,
+    const std::vector<uint8_t>& encrypted_metadata_bytes_v1,
+    const std::vector<uint8_t>& identity_token_short_salt_adv_hmac_key_v1,
+    const int64_t id,
+    const std::string& dusi,
+    const std::string& signature_version,
+    const std::vector<uint8_t>& identity_token_extended_salt_adv_hmac_key_v1,
+    const std::vector<uint8_t>& identity_token_signed_adv_hmac_key_v1) {
   return ash::nearby::presence::mojom::SharedCredential::New(
-      secret_id, key_seed, start_time_millis, end_time_millis,
-      encrypted_metadata_bytes, metadata_encryption_key_tag,
-      connection_signature_verification_key,
-      advertisement_signature_verification_key, identity_type, version);
+      key_seed, start_time_millis, end_time_millis, encrypted_metadata_bytes_v0,
+      metadata_encryption_key_tag_v0, connection_signature_verification_key,
+      advertisement_signature_verification_key, identity_type, version,
+      credential_type, encrypted_metadata_bytes_v1,
+      identity_token_short_salt_adv_hmac_key_v1, id, dusi, signature_version,
+      identity_token_extended_salt_adv_hmac_key_v1,
+      identity_token_signed_adv_hmac_key_v1);
 }
 
 }  // namespace
@@ -286,23 +308,38 @@ class NearbyPresenceCredentialStorageTest : public testing::Test {
                                   public_credential_type) {
     std::vector<mojom::SharedCredentialPtr> shared_credentials;
     shared_credentials.emplace_back(CreateSharedCredential(
-        kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
-        kEncryptedMetadataBytes_1, kMetadataEncryptionTag_1,
+        kKeySeed_1, kStartTimeMillis_1, kEndTimeMillis_1,
+        kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
         kConnectionSignatureVerificationKey_1,
         kAdvertisementSignatureVerificationKey_1,
-        mojom::IdentityType::kIdentityTypePrivate, kVersion_1));
+        mojom::IdentityType::kIdentityTypePrivateGroup, kVersion_1,
+        mojom::CredentialType::kCredentialTypeDevice,
+        kEncryptedMetadataBytesV1_1, kIdentityTokenShortSaltAdvHmacKeyV1_1,
+        kId_1, kDusi_1, kSignatureVersion_1,
+        kIdentityTokenExtendedSaltAdvHmacKeyV1_1,
+        kIdentityTokenSignedAdvHmacKeyV1_1));
     shared_credentials.emplace_back(CreateSharedCredential(
-        kSecretId_Shared_2, kKeySeed_2, kStartTimeMillis_2, kEndtimeMillis_2,
-        kEncryptedMetadataBytes_2, kMetadataEncryptionTag_2,
+        kKeySeed_2, kStartTimeMillis_2, kEndTimeMillis_2,
+        kEncryptedMetadataBytesV0_2, kMetadataEncryptionTag_2,
         kConnectionSignatureVerificationKey_2,
         kAdvertisementSignatureVerificationKey_2,
-        mojom::IdentityType::kIdentityTypePrivate, kVersion_2));
+        mojom::IdentityType::kIdentityTypePrivateGroup, kVersion_2,
+        mojom::CredentialType::kCredentialTypeDevice,
+        kEncryptedMetadataBytesV1_2, kIdentityTokenShortSaltAdvHmacKeyV1_2,
+        kId_2, kDusi_2, kSignatureVersion_2,
+        kIdentityTokenExtendedSaltAdvHmacKeyV1_2,
+        kIdentityTokenSignedAdvHmacKeyV1_2));
     shared_credentials.emplace_back(CreateSharedCredential(
-        kSecretId_Shared_3, kKeySeed_3, kStartTimeMillis_3, kEndtimeMillis_3,
-        kEncryptedMetadataBytes_3, kMetadataEncryptionTag_3,
+        kKeySeed_3, kStartTimeMillis_3, kEndTimeMillis_3,
+        kEncryptedMetadataBytesV0_3, kMetadataEncryptionTag_3,
         kConnectionSignatureVerificationKey_3,
         kAdvertisementSignatureVerificationKey_3,
-        mojom::IdentityType::kIdentityTypePrivate, kVersion_3));
+        mojom::IdentityType::kIdentityTypePrivateGroup, kVersion_3,
+        mojom::CredentialType::kCredentialTypeDevice,
+        kEncryptedMetadataBytesV1_3, kIdentityTokenShortSaltAdvHmacKeyV1_3,
+        kId_3, kDusi_3, kSignatureVersion_3,
+        kIdentityTokenExtendedSaltAdvHmacKeyV1_3,
+        kIdentityTokenSignedAdvHmacKeyV1_3));
 
     std::vector<mojom::LocalCredentialPtr> local_credentials;
     // Prevent passing local credentials to a remote credential save.
@@ -310,23 +347,26 @@ class NearbyPresenceCredentialStorageTest : public testing::Test {
         ash::nearby::presence::mojom::PublicCredentialType::
             kLocalPublicCredential) {
       local_credentials.emplace_back(CreateLocalCredential(
-          kSecretId_Local_1, kKeySeed_1, kStartTimeMillis_1,
+          kId_1, kKeySeed_1, kStartTimeMillis_1, kEndTimeMillis_1,
           kMetadataEncryptionKeyV0_1, AdvertisementSigningKeyCertificateAlias_1,
           kAdvertisementPrivateKey_1, ConnectionSigningKeyCertificateAlias_1,
-          kConnectionPrivateKey_1, mojom::IdentityType::kIdentityTypePrivate,
-          kConsumedSalts_1, kMetadataEncryptionKeyV1_1));
+          kConnectionPrivateKey_1,
+          mojom::IdentityType::kIdentityTypePrivateGroup, kConsumedSalts_1,
+          kIdentityTokenV1_1, kSignatureVersion_1));
       local_credentials.emplace_back(CreateLocalCredential(
-          kSecretId_Local_2, kKeySeed_2, kStartTimeMillis_2,
+          kId_2, kKeySeed_2, kStartTimeMillis_2, kEndTimeMillis_2,
           kMetadataEncryptionKeyV0_2, AdvertisementSigningKeyCertificateAlias_2,
           kAdvertisementPrivateKey_2, ConnectionSigningKeyCertificateAlias_2,
-          kConnectionPrivateKey_2, mojom::IdentityType::kIdentityTypePrivate,
-          kConsumedSalts_2, kMetadataEncryptionKeyV1_2));
+          kConnectionPrivateKey_2,
+          mojom::IdentityType::kIdentityTypePrivateGroup, kConsumedSalts_2,
+          kIdentityTokenV1_2, kSignatureVersion_2));
       local_credentials.emplace_back(CreateLocalCredential(
-          kSecretId_Local_3, kKeySeed_3, kStartTimeMillis_3,
+          kId_3, kKeySeed_3, kStartTimeMillis_3, kEndTimeMillis_3,
           kMetadataEncryptionKeyV0_3, AdvertisementSigningKeyCertificateAlias_3,
           kAdvertisementPrivateKey_3, ConnectionSigningKeyCertificateAlias_3,
-          kConnectionPrivateKey_3, mojom::IdentityType::kIdentityTypePrivate,
-          kConsumedSalts_3, kMetadataEncryptionKeyV1_3));
+          kConnectionPrivateKey_3,
+          mojom::IdentityType::kIdentityTypePrivateGroup, kConsumedSalts_3,
+          kIdentityTokenV1_3, kSignatureVersion_3));
     }
 
     SaveCredentialsWithExpectedResult(
@@ -466,43 +506,55 @@ TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Local_Success) {
 
   std::vector<mojom::LocalCredentialPtr> local_credentials;
   local_credentials.emplace_back(CreateLocalCredential(
-      kSecretId_Local_1, kKeySeed_1, kStartTimeMillis_1,
+      kId_1, kKeySeed_1, kStartTimeMillis_1, kEndTimeMillis_1,
       kMetadataEncryptionKeyV0_1, AdvertisementSigningKeyCertificateAlias_1,
       kAdvertisementPrivateKey_1, ConnectionSigningKeyCertificateAlias_1,
-      kConnectionPrivateKey_1, mojom::IdentityType::kIdentityTypePrivate,
-      kConsumedSalts_1, kMetadataEncryptionKeyV1_1));
+      kConnectionPrivateKey_1, mojom::IdentityType::kIdentityTypePrivateGroup,
+      kConsumedSalts_1, kIdentityTokenV1_1, kSignatureVersion_1));
   local_credentials.emplace_back(CreateLocalCredential(
-      kSecretId_Local_2, kKeySeed_2, kStartTimeMillis_2,
+      kId_2, kKeySeed_2, kStartTimeMillis_2, kEndTimeMillis_2,
       kMetadataEncryptionKeyV0_2, AdvertisementSigningKeyCertificateAlias_2,
       kAdvertisementPrivateKey_2, ConnectionSigningKeyCertificateAlias_2,
-      kConnectionPrivateKey_2, mojom::IdentityType::kIdentityTypePrivate,
-      kConsumedSalts_2, kMetadataEncryptionKeyV1_2));
+      kConnectionPrivateKey_2, mojom::IdentityType::kIdentityTypePrivateGroup,
+      kConsumedSalts_2, kIdentityTokenV1_2, kSignatureVersion_2));
   local_credentials.emplace_back(CreateLocalCredential(
-      kSecretId_Local_3, kKeySeed_3, kStartTimeMillis_3,
+      kId_3, kKeySeed_3, kStartTimeMillis_3, kEndTimeMillis_3,
       kMetadataEncryptionKeyV0_3, AdvertisementSigningKeyCertificateAlias_3,
       kAdvertisementPrivateKey_3, ConnectionSigningKeyCertificateAlias_3,
-      kConnectionPrivateKey_3, mojom::IdentityType::kIdentityTypePrivate,
-      kConsumedSalts_3, kMetadataEncryptionKeyV1_3));
+      kConnectionPrivateKey_3, mojom::IdentityType::kIdentityTypePrivateGroup,
+      kConsumedSalts_3, kIdentityTokenV1_3, kSignatureVersion_3));
 
   std::vector<mojom::SharedCredentialPtr> shared_credentials;
   shared_credentials.emplace_back(CreateSharedCredential(
-      kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
-      kEncryptedMetadataBytes_1, kMetadataEncryptionTag_1,
+      kKeySeed_1, kStartTimeMillis_1, kEndTimeMillis_1,
+      kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
       kConnectionSignatureVerificationKey_1,
       kAdvertisementSignatureVerificationKey_1,
-      mojom::IdentityType::kIdentityTypePrivate, kVersion_1));
+      mojom::IdentityType::kIdentityTypePrivateGroup, kVersion_1,
+      mojom::CredentialType::kCredentialTypeDevice, kEncryptedMetadataBytesV1_1,
+      kIdentityTokenShortSaltAdvHmacKeyV1_1, kId_1, kDusi_1,
+      kSignatureVersion_1, kIdentityTokenExtendedSaltAdvHmacKeyV1_1,
+      kIdentityTokenSignedAdvHmacKeyV1_1));
   shared_credentials.emplace_back(CreateSharedCredential(
-      kSecretId_Shared_2, kKeySeed_2, kStartTimeMillis_2, kEndtimeMillis_2,
-      kEncryptedMetadataBytes_2, kMetadataEncryptionTag_2,
+      kKeySeed_2, kStartTimeMillis_2, kEndTimeMillis_2,
+      kEncryptedMetadataBytesV0_2, kMetadataEncryptionTag_2,
       kConnectionSignatureVerificationKey_2,
       kAdvertisementSignatureVerificationKey_2,
-      mojom::IdentityType::kIdentityTypePrivate, kVersion_2));
+      mojom::IdentityType::kIdentityTypePrivateGroup, kVersion_2,
+      mojom::CredentialType::kCredentialTypeDevice, kEncryptedMetadataBytesV1_2,
+      kIdentityTokenShortSaltAdvHmacKeyV1_2, kId_2, kDusi_2,
+      kSignatureVersion_2, kIdentityTokenExtendedSaltAdvHmacKeyV1_2,
+      kIdentityTokenSignedAdvHmacKeyV1_2));
   shared_credentials.emplace_back(CreateSharedCredential(
-      kSecretId_Shared_3, kKeySeed_3, kStartTimeMillis_3, kEndtimeMillis_3,
-      kEncryptedMetadataBytes_3, kMetadataEncryptionTag_3,
+      kKeySeed_3, kStartTimeMillis_3, kEndTimeMillis_3,
+      kEncryptedMetadataBytesV0_3, kMetadataEncryptionTag_3,
       kConnectionSignatureVerificationKey_3,
       kAdvertisementSignatureVerificationKey_3,
-      mojom::IdentityType::kIdentityTypePrivate, kVersion_3));
+      mojom::IdentityType::kIdentityTypePrivateGroup, kVersion_3,
+      mojom::CredentialType::kCredentialTypeDevice, kEncryptedMetadataBytesV1_3,
+      kIdentityTokenShortSaltAdvHmacKeyV1_3, kId_3, kDusi_3,
+      kSignatureVersion_3, kIdentityTokenExtendedSaltAdvHmacKeyV1_3,
+      kIdentityTokenSignedAdvHmacKeyV1_3));
 
   {
     base::RunLoop run_loop;
@@ -537,19 +589,23 @@ TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Local_PublicFails) {
 
   std::vector<mojom::LocalCredentialPtr> local_credentials;
   local_credentials.emplace_back(CreateLocalCredential(
-      kSecretId_Local_1, kKeySeed_1, kStartTimeMillis_1,
+      kId_1, kKeySeed_1, kStartTimeMillis_1, kEndTimeMillis_1,
       kMetadataEncryptionKeyV0_1, AdvertisementSigningKeyCertificateAlias_1,
       kAdvertisementPrivateKey_1, ConnectionSigningKeyCertificateAlias_1,
-      kConnectionPrivateKey_1, mojom::IdentityType::kIdentityTypePrivate,
-      kConsumedSalts_1, kMetadataEncryptionKeyV1_1));
+      kConnectionPrivateKey_1, mojom::IdentityType::kIdentityTypePrivateGroup,
+      kConsumedSalts_1, kIdentityTokenV1_1, kSignatureVersion_1));
 
   std::vector<mojom::SharedCredentialPtr> shared_credentials;
   shared_credentials.emplace_back(CreateSharedCredential(
-      kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
-      kEncryptedMetadataBytes_1, kMetadataEncryptionTag_1,
+      kKeySeed_1, kStartTimeMillis_1, kEndTimeMillis_1,
+      kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
       kConnectionSignatureVerificationKey_1,
       kAdvertisementSignatureVerificationKey_1,
-      mojom::IdentityType::kIdentityTypePrivate, kVersion_1));
+      mojom::IdentityType::kIdentityTypePrivateGroup, kVersion_1,
+      mojom::CredentialType::kCredentialTypeDevice, kEncryptedMetadataBytesV1_1,
+      kIdentityTokenShortSaltAdvHmacKeyV1_1, kId_1, kDusi_1,
+      kSignatureVersion_1, kIdentityTokenExtendedSaltAdvHmacKeyV1_1,
+      kIdentityTokenSignedAdvHmacKeyV1_1));
 
   {
     base::RunLoop run_loop;
@@ -585,19 +641,23 @@ TEST_F(NearbyPresenceCredentialStorageTest,
 
   std::vector<mojom::LocalCredentialPtr> local_credentials;
   local_credentials.emplace_back(CreateLocalCredential(
-      kSecretId_Local_1, kKeySeed_1, kStartTimeMillis_1,
+      kId_1, kKeySeed_1, kStartTimeMillis_1, kEndTimeMillis_1,
       kMetadataEncryptionKeyV0_1, AdvertisementSigningKeyCertificateAlias_1,
       kAdvertisementPrivateKey_1, ConnectionSigningKeyCertificateAlias_1,
-      kConnectionPrivateKey_1, mojom::IdentityType::kIdentityTypePrivate,
-      kConsumedSalts_1, kMetadataEncryptionKeyV1_1));
+      kConnectionPrivateKey_1, mojom::IdentityType::kIdentityTypePrivateGroup,
+      kConsumedSalts_1, kIdentityTokenV1_1, kSignatureVersion_1));
 
   std::vector<mojom::SharedCredentialPtr> shared_credentials;
   shared_credentials.emplace_back(CreateSharedCredential(
-      kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
-      kEncryptedMetadataBytes_1, kMetadataEncryptionTag_1,
+      kKeySeed_1, kStartTimeMillis_1, kEndTimeMillis_1,
+      kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
       kConnectionSignatureVerificationKey_1,
       kAdvertisementSignatureVerificationKey_1,
-      mojom::IdentityType::kIdentityTypePrivate, kVersion_1));
+      mojom::IdentityType::kIdentityTypePrivateGroup, kVersion_1,
+      mojom::CredentialType::kCredentialTypeDevice, kEncryptedMetadataBytesV1_1,
+      kIdentityTokenShortSaltAdvHmacKeyV1_1, kId_1, kDusi_1,
+      kSignatureVersion_1, kIdentityTokenExtendedSaltAdvHmacKeyV1_1,
+      kIdentityTokenSignedAdvHmacKeyV1_1));
 
   {
     base::RunLoop run_loop;
@@ -634,11 +694,16 @@ TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Remote_Success) {
     std::vector<mojom::LocalCredentialPtr> local_credentials;
     std::vector<mojom::SharedCredentialPtr> shared_credentials;
     shared_credentials.emplace_back(CreateSharedCredential(
-        kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
-        kEncryptedMetadataBytes_1, kMetadataEncryptionTag_1,
+        kKeySeed_1, kStartTimeMillis_1, kEndTimeMillis_1,
+        kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
         kConnectionSignatureVerificationKey_1,
         kAdvertisementSignatureVerificationKey_1,
-        mojom::IdentityType::kIdentityTypePrivate, kVersion_1));
+        mojom::IdentityType::kIdentityTypePrivateGroup, kVersion_1,
+        mojom::CredentialType::kCredentialTypeDevice,
+        kEncryptedMetadataBytesV1_1, kIdentityTokenShortSaltAdvHmacKeyV1_1,
+        kId_1, kDusi_1, kSignatureVersion_1,
+        kIdentityTokenExtendedSaltAdvHmacKeyV1_1,
+        kIdentityTokenSignedAdvHmacKeyV1_1));
 
     SaveCredentialsWithExpectedResult(
         run_loop, mojo_base::mojom::AbslStatusCode::kOk,
@@ -671,11 +736,16 @@ TEST_F(NearbyPresenceCredentialStorageTest,
     std::vector<mojom::LocalCredentialPtr> local_credentials;
     std::vector<mojom::SharedCredentialPtr> shared_credentials;
     shared_credentials.emplace_back(CreateSharedCredential(
-        kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
-        kEncryptedMetadataBytes_1, kMetadataEncryptionTag_1,
+        kKeySeed_1, kStartTimeMillis_1, kEndTimeMillis_1,
+        kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
         kConnectionSignatureVerificationKey_1,
         kAdvertisementSignatureVerificationKey_1,
-        mojom::IdentityType::kIdentityTypePrivate, kVersion_1));
+        mojom::IdentityType::kIdentityTypePrivateGroup, kVersion_1,
+        mojom::CredentialType::kCredentialTypeDevice,
+        kEncryptedMetadataBytesV1_1, kIdentityTokenShortSaltAdvHmacKeyV1_1,
+        kId_1, kDusi_1, kSignatureVersion_1,
+        kIdentityTokenExtendedSaltAdvHmacKeyV1_1,
+        kIdentityTokenSignedAdvHmacKeyV1_1));
 
     SaveCredentialsWithExpectedResult(
         run_loop, mojo_base::mojom::AbslStatusCode::kAborted,
@@ -704,17 +774,22 @@ TEST_F(NearbyPresenceCredentialStorageTest,
     std::vector<mojom::LocalCredentialPtr> local_credentials;
     std::vector<mojom::SharedCredentialPtr> shared_credentials;
     local_credentials.emplace_back(CreateLocalCredential(
-        kSecretId_Local_1, kKeySeed_1, kStartTimeMillis_1,
+        kId_1, kKeySeed_1, kStartTimeMillis_1, kEndTimeMillis_1,
         kMetadataEncryptionKeyV0_1, AdvertisementSigningKeyCertificateAlias_1,
         kAdvertisementPrivateKey_1, ConnectionSigningKeyCertificateAlias_1,
-        kConnectionPrivateKey_1, mojom::IdentityType::kIdentityTypePrivate,
-        kConsumedSalts_1, kMetadataEncryptionKeyV1_1));
+        kConnectionPrivateKey_1, mojom::IdentityType::kIdentityTypePrivateGroup,
+        kConsumedSalts_1, kIdentityTokenV1_1, kSignatureVersion_1));
     shared_credentials.emplace_back(CreateSharedCredential(
-        kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
-        kEncryptedMetadataBytes_1, kMetadataEncryptionTag_1,
+        kKeySeed_1, kStartTimeMillis_1, kEndTimeMillis_1,
+        kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
         kConnectionSignatureVerificationKey_1,
         kAdvertisementSignatureVerificationKey_1,
-        mojom::IdentityType::kIdentityTypePrivate, kVersion_1));
+        mojom::IdentityType::kIdentityTypePrivateGroup, kVersion_1,
+        mojom::CredentialType::kCredentialTypeDevice,
+        kEncryptedMetadataBytesV1_1, kIdentityTokenShortSaltAdvHmacKeyV1_1,
+        kId_1, kDusi_1, kSignatureVersion_1,
+        kIdentityTokenExtendedSaltAdvHmacKeyV1_1,
+        kIdentityTokenSignedAdvHmacKeyV1_1));
 
     SaveCredentialsWithExpectedResult(
         run_loop, mojo_base::mojom::AbslStatusCode::kOk,
@@ -736,11 +811,16 @@ TEST_F(NearbyPresenceCredentialStorageTest,
     std::vector<mojom::LocalCredentialPtr> local_credentials;
     std::vector<mojom::SharedCredentialPtr> shared_credentials;
     shared_credentials.emplace_back(CreateSharedCredential(
-        kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
-        kEncryptedMetadataBytes_1, kMetadataEncryptionTag_1,
+        kKeySeed_1, kStartTimeMillis_1, kEndTimeMillis_1,
+        kEncryptedMetadataBytesV0_1, kMetadataEncryptionTag_1,
         kConnectionSignatureVerificationKey_1,
         kAdvertisementSignatureVerificationKey_1,
-        mojom::IdentityType::kIdentityTypePrivate, kVersion_1));
+        mojom::IdentityType::kIdentityTypePrivateGroup, kVersion_1,
+        mojom::CredentialType::kCredentialTypeDevice,
+        kEncryptedMetadataBytesV1_1, kIdentityTokenShortSaltAdvHmacKeyV1_1,
+        kId_1, kDusi_1, kSignatureVersion_1,
+        kIdentityTokenExtendedSaltAdvHmacKeyV1_1,
+        kIdentityTokenSignedAdvHmacKeyV1_1));
 
     SaveCredentialsWithExpectedResult(
         run_loop, mojo_base::mojom::AbslStatusCode::kOk,
@@ -794,6 +874,15 @@ TEST_F(NearbyPresenceCredentialStorageTest,
 
     run_loop.Run();
   }
+
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveLocalPublicCredentialsDuration",
+      1);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveRemotePublicCredentialsDuration",
+      0);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, GetPublicCredentials_Local_Fail) {
@@ -831,6 +920,16 @@ TEST_F(NearbyPresenceCredentialStorageTest, GetPublicCredentials_Local_Fail) {
 
     run_loop.Run();
   }
+
+  // Only record duration for successful loads.
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveLocalPublicCredentialsDuration",
+      0);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveRemotePublicCredentialsDuration",
+      0);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest,
@@ -870,6 +969,15 @@ TEST_F(NearbyPresenceCredentialStorageTest,
 
     run_loop.Run();
   }
+
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveLocalPublicCredentialsDuration",
+      0);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveRemotePublicCredentialsDuration",
+      1);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, GetPublicCredentials_Remote_Fail) {
@@ -906,6 +1014,15 @@ TEST_F(NearbyPresenceCredentialStorageTest, GetPublicCredentials_Remote_Fail) {
 
     run_loop.Run();
   }
+
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveLocalPublicCredentialsDuration",
+      0);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage."
+      "RetrieveRemotePublicCredentialsDuration",
+      0);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, GetPrivateCredentials_Success) {
@@ -939,6 +1056,10 @@ TEST_F(NearbyPresenceCredentialStorageTest, GetPrivateCredentials_Success) {
 
     run_loop.Run();
   }
+
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage.RetrievePrivateCredentialsDuration",
+      1);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, GetPrivateCredentials_Fail) {
@@ -973,6 +1094,10 @@ TEST_F(NearbyPresenceCredentialStorageTest, GetPrivateCredentials_Fail) {
 
     run_loop.Run();
   }
+
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.Storage.RetrievePrivateCredentialsDuration",
+      0);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, UpdateLocalCredential_Success) {
@@ -991,14 +1116,14 @@ TEST_F(NearbyPresenceCredentialStorageTest, UpdateLocalCredential_Success) {
   }
 
   // Since the pre-population step populates credentials with each parameter
-  // to the matching number (ie, _1 values are assigned to kSecretId_Local_1),
+  // to the matching number (ie, _1 values are assigned to kId_1),
   // update the credential details for _1 to _2.
   auto local_credential_to_be_updated = CreateLocalCredential(
-      kSecretId_Local_1, kKeySeed_2, kStartTimeMillis_2,
+      kId_1, kKeySeed_2, kStartTimeMillis_2, kEndTimeMillis_2,
       kMetadataEncryptionKeyV0_2, AdvertisementSigningKeyCertificateAlias_2,
       kAdvertisementPrivateKey_2, ConnectionSigningKeyCertificateAlias_2,
-      kConnectionPrivateKey_2, mojom::IdentityType::kIdentityTypePrivate,
-      kConsumedSalts_2, kMetadataEncryptionKeyV1_2);
+      kConnectionPrivateKey_2, mojom::IdentityType::kIdentityTypePrivateGroup,
+      kConsumedSalts_2, kIdentityTokenV1_2, kSignatureVersion_2);
 
   {
     base::RunLoop run_loop;
@@ -1014,18 +1139,17 @@ TEST_F(NearbyPresenceCredentialStorageTest, UpdateLocalCredential_Success) {
     run_loop.Run();
   }
 
-  std::string secretId(kSecretId_Local_1.begin(), kSecretId_Local_1.end());
-  auto it = private_db_entries_.find(secretId);
+  auto it = private_db_entries_.find(base::NumberToString(kId_1));
   ASSERT_NE(it, private_db_entries_.end());
   auto updated_local_credential = it->second;
 
   EXPECT_EQ(std::vector<uint8_t>(updated_local_credential.key_seed().begin(),
                                  updated_local_credential.key_seed().end()),
             kKeySeed_2);
-  EXPECT_EQ(std::vector<uint8_t>(
-                updated_local_credential.metadata_encryption_key_v1().begin(),
-                updated_local_credential.metadata_encryption_key_v1().end()),
-            kMetadataEncryptionKeyV1_2);
+  EXPECT_EQ(
+      std::vector<uint8_t>(updated_local_credential.identity_token_v1().begin(),
+                           updated_local_credential.identity_token_v1().end()),
+      kIdentityTokenV1_2);
 }
 
 TEST_F(NearbyPresenceCredentialStorageTest, UpdateLocalCredential_Failure) {
@@ -1044,11 +1168,11 @@ TEST_F(NearbyPresenceCredentialStorageTest, UpdateLocalCredential_Failure) {
   }
 
   auto local_credential_to_be_updated = CreateLocalCredential(
-      kSecretId_Local_1, kKeySeed_2, kStartTimeMillis_2,
+      kId_1, kKeySeed_2, kStartTimeMillis_2, kEndTimeMillis_2,
       kMetadataEncryptionKeyV0_2, AdvertisementSigningKeyCertificateAlias_2,
       kAdvertisementPrivateKey_2, ConnectionSigningKeyCertificateAlias_2,
-      kConnectionPrivateKey_2, mojom::IdentityType::kIdentityTypePrivate,
-      kConsumedSalts_2, kMetadataEncryptionKeyV1_2);
+      kConnectionPrivateKey_2, mojom::IdentityType::kIdentityTypePrivateGroup,
+      kConsumedSalts_2, kIdentityTokenV1_2, kSignatureVersion_2);
 
   {
     base::RunLoop run_loop;

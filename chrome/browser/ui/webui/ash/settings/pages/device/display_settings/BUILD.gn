@@ -19,3 +19,48 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
   ]
 }
+
+static_library("display_settings") {
+  sources = [
+    "display_settings_provider.cc",
+    "display_settings_provider.h",
+  ]
+
+  public_deps = [
+    ":mojom",
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/dbus/power",
+    "//mojo/public/cpp/bindings",
+    "//ui/display",
+    "//ui/display/manager",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//ui/display/util",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "display_settings_provider_unittest.cc" ]
+
+  deps = [
+    ":display_settings",
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support_unit",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/display",
+  ]
+}

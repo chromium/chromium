@@ -7,11 +7,11 @@
 #import <Foundation/Foundation.h>
 
 #import "base/logging.h"
-#import "components/password_manager/core/browser/affiliation/affiliation_service.h"
+#import "components/affiliations/core/browser/affiliation_service.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "net/base/apple/url_conversions.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
@@ -25,7 +25,7 @@ WellKnownChangePasswordTabHelper::WellKnownChangePasswordTabHelper(
     web::WebState* web_state)
     : web::WebStatePolicyDecider(web_state), web_state_(web_state) {
   affiliation_service_ = IOSChromeAffiliationServiceFactory::GetForBrowserState(
-      web_state->GetBrowserState());
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
   web_state->AddObserver(this);
 }
 

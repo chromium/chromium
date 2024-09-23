@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 
 namespace base {
@@ -104,7 +104,7 @@ void LogGetDetailsForEnrollmentRequestResult(VirtualCardEnrollmentSource source,
                                              bool succeeded);
 void LogGetDetailsForEnrollmentRequestLatency(
     VirtualCardEnrollmentSource source,
-    AutofillClient::PaymentsRpcResult result,
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
     base::TimeDelta latency);
 
 // UpdateVirtualCardEnrollmentRequest related metrics. Attempts and results
@@ -141,8 +141,7 @@ void LogVirtualCardEnrollBubbleCardArtAvailable(
 // Latency Since Upstream metrics. Used to determine the time that it takes for
 // the server calls that need to be made between Save Card Bubble accept and
 // when the Virtual Card Enroll Bubble is shown.
-void LogVirtualCardEnrollBubbleLatencySinceUpstream(
-    const base::TimeDelta& latency);
+void LogVirtualCardEnrollBubbleLatencySinceUpstream(base::TimeDelta latency);
 
 // Logs the reason from strikedatabase perspective why virtual card enrollment
 // is not offered.
@@ -150,6 +149,18 @@ void LogVirtualCardEnrollmentNotOfferedDueToMaxStrikes(
     VirtualCardEnrollmentSource source);
 void LogVirtualCardEnrollmentNotOfferedDueToRequiredDelay(
     VirtualCardEnrollmentSource source);
+
+// Logs whether the loading or confirmation views are shown.
+void LogVirtualCardEnrollmentLoadingViewShown(bool is_shown);
+void LogVirtualCardEnrollmentConfirmationViewShown(bool is_shown,
+                                                   bool is_card_enrolled);
+
+// Logs the loading or confirmation views results when the view is closed.
+void LogVirtualCardEnrollmentLoadingViewResult(
+    VirtualCardEnrollmentBubbleResult result);
+void LogVirtualCardEnrollmentConfirmationViewResult(
+    VirtualCardEnrollmentBubbleResult result,
+    bool is_card_enrolled);
 
 // Helper function used to convert VirtualCardEnrollmentBubbleSource enum to
 // name suffix.

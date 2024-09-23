@@ -80,6 +80,10 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
   // becomes ready for the first time.
   void RecordPrivacySandboxAttestationsFirstReady(base::TimeTicks ticks);
 
+  // Call this with the time when a Privacy Sandbox API attestation is checked
+  // for the first time.
+  void RecordPrivacySandboxAttestationFirstCheck(base::TimeTicks ticks);
+
   // Call this with the time when the first web contents had a non-empty paint,
   // only if the first web contents was unimpeded in its attempt to do so. Must
   // be called after RecordApplicationStartTime(), because it computes time
@@ -128,6 +132,19 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
 
   bool ShouldLogStartupHistogram() const;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, the time at which the first browser window is opened may not
+  // match the application start time mainly because the login screen is often
+  // shown first and the user must log in before a browser window can be opened.
+  // ChromeOS code can call this if it knows a browser window is being opened to
+  // mark the start time for all `Startup.FirstWebContents.*` metrics. This is
+  // a no-op if a start time has already been recorded.
+  //
+  // For all other platforms, `application_start_ticks_` is used for
+  // `Startup.FirstWebContents.*` metrics.
+  void RecordWebContentsStartTime(base::TimeTicks ticks);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
  private:
   // Returns the globally unique `BrowserStartupMetricRecorder`.
   friend COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
@@ -144,6 +161,14 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
 
   void RecordMessageLoopStartTicks(base::TimeTicks ticks);
 
+  base::TimeTicks GetWebContentsStartTicks() const;
+
+  void EmitHistogramWithTemperatureAndTraceEvent(
+      void (*histogram_function)(const std::string& name, base::TimeDelta),
+      const char* histogram_basename,
+      base::TimeTicks begin_ticks,
+      base::TimeTicks end_ticks);
+
   // Mark as volatile to defensively make sure usage is thread-safe.
   // Note that at the time of this writing, access is only on the UI thread.
   volatile bool main_window_startup_interrupted_ = false;
@@ -154,7 +179,13 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
 
   base::TimeTicks browser_window_first_paint_ticks_;
 
-  bool is_privacy_sandbox_attestations_histogram_recorded_ = false;
+  // May be null, in which case, fall back to
+  // `CommonStartupMetricRecorder.application_start_ticks_`.
+  base::TimeTicks web_contents_start_ticks_;
+
+  bool is_privacy_sandbox_attestations_component_ready_recorded_ = false;
+
+  bool is_privacy_sandbox_attestations_first_check_recorded_ = false;
 };
 
 COMPONENT_EXPORT(STARTUP_METRIC_UTILS)

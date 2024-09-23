@@ -90,7 +90,8 @@
       },
       "expectedParsedImportMap": {
         "imports": {},
-        "scopes": {}
+        "scopes": {},
+        "integrity": {}
       }
     }
   }

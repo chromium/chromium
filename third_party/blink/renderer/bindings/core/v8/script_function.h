@@ -92,6 +92,8 @@ class CORE_EXPORT ScriptFunction final
     return function_.Get(script_state_->GetIsolate());
   }
 
+  ScriptState* GetScriptState() const { return script_state_; }
+
  private:
   Member<ScriptState> script_state_;
   TraceWrapperV8Reference<v8::Function> function_;

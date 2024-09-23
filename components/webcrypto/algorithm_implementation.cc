@@ -117,7 +117,7 @@ Status AlgorithmImplementation::SerializeKeyForClone(
       return status;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Status::ErrorUnexpected();
 }
 

@@ -349,7 +349,8 @@ ShillDeviceClient::TestInterface* FakeShillDeviceClient::GetTestInterface() {
 
 void FakeShillDeviceClient::AddDevice(const std::string& device_path,
                                       const std::string& type,
-                                      const std::string& name) {
+                                      const std::string& name,
+                                      const std::string& address) {
   ShillManagerClient::Get()->GetTestInterface()->AddDevice(device_path);
 
   base::Value::Dict* properties = stub_devices_.EnsureDict(device_path);
@@ -358,6 +359,9 @@ void FakeShillDeviceClient::AddDevice(const std::string& device_path,
   properties->Set(shill::kDBusObjectProperty, device_path);
   properties->Set(shill::kDBusServiceProperty,
                   modemmanager::kModemManager1ServiceName);
+  if (!address.empty()) {
+    properties->Set(shill::kAddressProperty, address);
+  }
   if (type == shill::kTypeCellular) {
     properties->Set(shill::kCellularPolicyAllowRoamingProperty, false);
   }
@@ -505,7 +509,7 @@ void FakeShillDeviceClient::SetSimLockStatus(const std::string& device_path,
                                              const SimLockStatus& status) {
   base::Value::Dict* device_properties = stub_devices_.FindDict(device_path);
   if (!device_properties) {
-    NOTREACHED() << "Device not found: " << device_path;
+    NOTREACHED_IN_MIGRATION() << "Device not found: " << device_path;
     return;
   }
 

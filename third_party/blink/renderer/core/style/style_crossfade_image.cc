@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/style/style_crossfade_image.h"
 
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
@@ -33,7 +38,8 @@ CSSValue* StyleCrossfadeImage::CssValue() const {
 
 CSSValue* StyleCrossfadeImage::ComputedCSSValue(
     const ComputedStyle& style,
-    bool allow_visited_style) const {
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
   // If either of the images are null (meaning that they are 'none'),
   // then use the original value. This is only possible in the older
   // -webkit-cross-fade version; the newer does not allow it.
@@ -41,7 +47,8 @@ CSSValue* StyleCrossfadeImage::ComputedCSSValue(
       image_and_percentages;
   for (unsigned i = 0; i < images_.size(); ++i) {
     CSSValue* value =
-        images_[i] ? images_[i]->ComputedCSSValue(style, allow_visited_style)
+        images_[i] ? images_[i]->ComputedCSSValue(style, allow_visited_style,
+                                                  value_phase)
                    : original_value_->GetImagesAndPercentages()[i].first.Get();
     CSSPrimitiveValue* percentage =
         original_value_->GetImagesAndPercentages()[i].second;

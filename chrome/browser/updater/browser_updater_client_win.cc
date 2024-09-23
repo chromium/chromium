@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -27,4 +28,9 @@ updater::RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
   req.ap =
       base::SysWideToUTF8(install_static::InstallDetails::Get().update_ap());
   return req;
+}
+
+bool BrowserUpdaterClient::AppMatches(
+    const updater::UpdateService::AppState& app) {
+  return base::EqualsCaseInsensitiveASCII(app.app_id, GetAppId());
 }

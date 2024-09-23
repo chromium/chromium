@@ -15,7 +15,7 @@
 namespace ui {
 
 // Optional tri-state object.
-using AXOptionalObject = ui::AXOptional<AXTargetWin>;
+using AXOptionalObject = AXOptional<AXTargetWin>;
 
 // Invokes a script instruction describing a call unit which represents
 // a sequence of calls.

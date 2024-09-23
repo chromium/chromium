@@ -41,8 +41,9 @@ class DataSharingNetworkLoaderAndroid {
 
  private:
   // Called when network response is received.
-  void OnResponseAvailable(ScopedJavaGlobalRef<jobject> j_callback,
-                           std::unique_ptr<std::string> response);
+  void OnResponseAvailable(
+      ScopedJavaGlobalRef<jobject> j_callback,
+      std::unique_ptr<DataSharingNetworkLoader::LoadResult> response);
 
   // A reference to the Java counterpart of this class.  See
   // DataSharingNetworkLoaderImpl.java.

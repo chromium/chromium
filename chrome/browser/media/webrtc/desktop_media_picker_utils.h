@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "ui/gfx/image/image_skia.h"
 
-// TODO(crbug.com/1445035): Move GDMPreferCurrentTabResult, RecordUma to
+// TODO(crbug.com/40267977): Move GDMPreferCurrentTabResult, RecordUma to
 // share_this_tab_dialog_views.cc when no longer needed by
 // desktop_media_picker_views.cc
 //

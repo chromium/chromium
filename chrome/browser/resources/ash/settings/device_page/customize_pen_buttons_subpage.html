@@ -35,11 +35,11 @@
 </style>
 <div id="helpSection">
   <div id="helpIconSection">
-    <iron-icon icon="os-settings:mouse-banner"></iron-icon>
+    <iron-icon icon="os-settings:pen-buttons-banner"></iron-icon>
   </div>
   <div id="helpSectionText">
     <div class="help-title">
-      $i18n{customizePenButtonsNudgeHeader}
+      [[getcustomizePenButtonsNudgeHeader_(selectedTablet.*)]]
     </div>
     <div class="secondary">
       [[getDescription_(selectedTablet.*)]]
@@ -50,6 +50,6 @@
   <customize-buttons-subsection
       button-remapping-list="{{selectedTablet.settings.penButtonRemappings}}"
       action-list$="[[buttonActionList_]]"
-      has-launcher-button="[[hasLauncherButton_]]">
+      meta-key="[[metaKey_]]">
   </customize-buttons-subsection>
 </div>

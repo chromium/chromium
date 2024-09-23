@@ -94,3 +94,4 @@ links: {
 }
 
 tree_status_host: "chromium-status.appspot.com"
+tree_name: "chromium"

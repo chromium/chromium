@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<title>Test that window.fence.reportEvent() fails after disableUntrustedNetwork().</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+  <script>
+  promise_test(async(t) => {
+    const fencedframe = await attachFencedFrameContext({generator_api: 'fledge',
+                                                        register_beacon: true});
+    // This page will call reportEvent twice: Once for an enum event, and once
+    // for a custom URL event. Both beacons are expected not to send, because
+    // network revocation should prevent the requests from going out.
+    await fencedframe.execute(async () => {
+      // This fenced frame will not have its network revoked. This is done to
+      // check that popup navigations do not work regardless of the network status
+      // of a frame's descendants.
+      await attachFencedFrameContext({generator_api: 'sharedstorage'});
+
+      let timeout_promise = new Promise(
+          resolve => setTimeout(() => {resolve('timeout')}, 500));
+      const result =
+          await Promise.race([
+              window.fence.disableUntrustedNetwork(), timeout_promise]);
+      assert_equals(result, 'timeout',
+          "The disableUntrustedNetwork() promise should not resolve.");
+
+      const destination_enum_event = {
+        eventType: 'click',
+        eventData: 'enum',
+        destination: ['buyer']
+      }
+      window.fence.reportEvent(destination_enum_event);
+
+      const destination_url = new URL(BEACON_URL + "?type=url",
+          get_host_info().HTTPS_ORIGIN);
+
+      const destination_url_event = {
+        destinationURL: destination_url
+      }
+      window.fence.reportEvent(destination_url_event);
+    });
+
+  const enum_promise = nextBeacon('click', 'enum');
+  const enum_result = await Promise.race([
+      enum_promise,
+      new Promise((resolve, reject) => t.step_timeout(
+        () => resolve('timeout'), 2000))]);
+  assert_equals(enum_result, 'timeout');
+
+  const url_promise = nextBeacon('url', '<No data>');
+  const url_result = await Promise.race([
+      url_promise,
+      new Promise((resolve, reject) => t.step_timeout(
+        () => resolve('timeout'), 2000))]);
+  assert_equals(url_result, 'timeout');
+
+  }, 'Test that window.fence.reportEvent() fails after disableUntrustedNetwork().');
+  </script>
+  </body>

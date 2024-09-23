@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "url/gurl.h"
 
 #include <stddef.h>
@@ -87,6 +92,24 @@ TEST(GURLTest, Components) {
   EXPECT_EQ("%40!$&%27()*+,%3B%3D%3A", url_special_pass.password());
   EXPECT_EQ("google.com", url_special_pass.host());
   EXPECT_EQ("12345", url_special_pass.port());
+
+  // Test path collapsing.
+  GURL url_path_collapse("http://example.com/a/./b/c/d/../../e");
+  EXPECT_EQ("/a/b/e", url_path_collapse.path());
+
+  // Test an IDNA (Internationalizing Domain Names in Applications) host.
+  GURL url_idna("http://Bücher.exAMple/");
+  EXPECT_EQ("xn--bcher-kva.example", url_idna.host());
+
+  // Test non-ASCII characters, outside of the host (IDNA).
+  GURL url_non_ascii("http://example.com/foo/aβc%2Etxt?q=r🙂s");
+  EXPECT_EQ("/foo/a%CE%B2c.txt", url_non_ascii.path());
+  EXPECT_EQ("q=r%F0%9F%99%82s", url_non_ascii.query());
+
+  // Test already percent-escaped strings.
+  GURL url_percent_escaped("http://example.com/a/./%2e/i%2E%2F%2fj?q=r%2Es");
+  EXPECT_EQ("/a/i.%2F%2fj", url_percent_escaped.path());
+  EXPECT_EQ("q=r%2Es", url_percent_escaped.query());
 }
 
 TEST(GURLTest, Empty) {
@@ -457,22 +480,33 @@ TEST_P(GURLTypedTest, Resolve) {
   // Existing tests in GURLTest::Resolve cover common cases.
   if (use_standard_compliant_non_special_scheme_url_parsing_) {
     ResolveCase cases[] = {
+        // Non-special base URLs whose paths are empty.
         {"git://host", "", "git://host"},
         {"git://host", ".", "git://host/"},
         {"git://host", "..", "git://host/"},
         {"git://host", "a", "git://host/a"},
         {"git://host", "/a", "git://host/a"},
 
+        // Non-special base URLs whose paths are "/".
         {"git://host/", "", "git://host/"},
         {"git://host/", ".", "git://host/"},
         {"git://host/", "..", "git://host/"},
         {"git://host/", "a", "git://host/a"},
         {"git://host/", "/a", "git://host/a"},
 
+        // Non-special base URLs whose hosts and paths are non-empty.
         {"git://host/b", "a", "git://host/a"},
         {"git://host/b/c", "a", "git://host/b/a"},
         {"git://host/b/c", "../a", "git://host/a"},
 
+        // An opaque path can be specified.
+        {"git://host", "git:opaque", "git:opaque"},
+        {"git://host/path#ref", "git:opaque", "git:opaque"},
+        {"git:/path", "git:opaque", "git:opaque"},
+        {"https://host/path", "git:opaque", "git:opaque"},
+
+        // Path-only base URLs should remain path-only URLs unless a host is
+        // specified.
         {"git:/", "", "git:/"},
         {"git:/", ".", "git:/"},
         {"git:/", "..", "git:/"},
@@ -481,12 +515,16 @@ TEST_P(GURLTypedTest, Resolve) {
         {"git:/#ref", "", "git:/"},
         {"git:/#ref", "a", "git:/a"},
 
+        // Non-special base URLs whose hosts and path are both empty. The
+        // result's host should remain empty unless a relative URL specify a
+        // host.
         {"git://", "", "git://"},
         {"git://", ".", "git:///"},
         {"git://", "..", "git:///"},
         {"git://", "a", "git:///a"},
         {"git://", "/a", "git:///a"},
 
+        // Non-special base URLs whose hosts are empty, but with non-empty path.
         {"git:///", "", "git:///"},
         {"git:///", ".", "git:///"},
         {"git:///", "..", "git:///"},
@@ -494,6 +532,16 @@ TEST_P(GURLTypedTest, Resolve) {
         {"git:///", "/a", "git:///a"},
         {"git:///#ref", "", "git:///"},
         {"git:///#ref", "a", "git:///a"},
+
+        // Relative URLs can specify empty hosts for non-special base URLs.
+        // e.g. "///path"
+        {"git://host/", "//", "git://"},
+        {"git://host/", "//a", "git://a"},
+        {"git://host/", "///", "git:///"},
+        {"git://host/", "////", "git:////"},
+        {"git://host/", "////..", "git:///"},
+        {"git://host/", "////../..", "git:///"},
+        {"git://host/", "////../../..", "git:///"},
     };
     for (const auto& i : cases) {
       TestResolve(i);
@@ -871,6 +919,9 @@ TEST_P(GURLTypedTest, Replacements) {
 
     ReplacePathCase replace_path_cases[] = {
         {"git:/", "a", "git:/a"},
+        {"git:/", "", "git:/"},
+        {"git:/", "//a", "git:/.//a"},
+        {"git:/", "/.//a", "git:/.//a"},
         {"git://", "a", "git:///a"},
         {"git:///", "a", "git:///a"},
         {"git://host", "a", "git://host/a"},

@@ -26,6 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_UNIT_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_UNIT_TEST_HELPERS_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -98,8 +100,8 @@ String StylePerfTestDataPath(const String& relative_path = String());
 base::FilePath HyphenationDictionaryDir();
 
 // Reads the file at the given path and returns its data.
-// Returns nullptr if the file does not exist or couldn't be read.
-scoped_refptr<SharedBuffer> ReadFromFile(const String& path);
+// Returns nullopt if the file does not exist or couldn't be read.
+std::optional<Vector<char>> ReadFromFile(const String& path);
 
 class LineReader {
   DISALLOW_NEW();

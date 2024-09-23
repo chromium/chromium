@@ -28,7 +28,6 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="2329392777730037872"><ph name="URL" /> kunne ikke åbnes i klienten.</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2366718077645204424">Værten kunne ikke nås. Dette skyldes sandsynligvis konfigurationen af det netværk, du bruger.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Sidst set online <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Giv tilladelsen "Tilgængelighed" til <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Der er oprettet forbindelse til <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Vil du dele denne computer, så en anden bruger kan se og styre den?</translation>
@@ -53,7 +52,6 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="3423542133075182604">Fjernproces for sikkerhedsnøglen</translation>
 <translation id="3581045510967524389">Der kunne ikke oprettes forbindelse til netværket. Kontrollér, at din enhed er på nettet.</translation>
 <translation id="3596628256176442606">Denne tjeneste muliggør indgående forbindelser fra Chromoting-klienter.</translation>
-<translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Få flere oplysninger om, hvordan du gør</translation>
 <translation id="3776024066357219166">Din session med Chrome Fjernskrivebord er afsluttet.</translation>
 <translation id="3858860766373142691">Navn</translation>
@@ -100,12 +98,11 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="5308380583665731573">Opret forbindelse</translation>
 <translation id="533625276787323658">Der er intet at oprette forbindelse til</translation>
 <translation id="5397086374758643919">Afinstallationsprogram til host for Chrome Fjernskrivebord</translation>
-<translation id="5419418238395129586">Sidst online: <ph name="DATE" /></translation>
+<translation id="5419418238395129586">Senest online: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Hosten har lukket ned.</translation>
 <translation id="5601503069213153581">Pinkode</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Dit skrivebord deles i øjeblikket med <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Du er logget ind som <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Genopret forbindelse</translation>
 <translation id="5810269635982033450">Skærmen fungerer som touchplade</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> har anmodet om tilladelse til at se din skærm og styre dit tastatur og din mus. Tryk på ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'', hvis denne anmodning er uventet. Eller vælg ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' for at tillade forbindelsen, når du er klar.</translation>
@@ -192,5 +189,5 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="9213184081240281106">Ugyldig hostkonfiguration.</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="985602178874221306">Forfatterne til Chromium</translation>
-<translation id="992215271654996353"><ph name="HOSTNAME" /> (sidst online <ph name="DATE_OR_TIME" />)</translation>
+<translation id="992215271654996353"><ph name="HOSTNAME" /> (senest online <ph name="DATE_OR_TIME" />)</translation>
 </translationbundle>

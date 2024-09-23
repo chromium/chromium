@@ -27,7 +27,7 @@ class MODULES_EXPORT ImageTrackList final : public ScriptWrappable {
   ImageTrack* AnonymousIndexedGetter(uint32_t index) const;
   int32_t selectedIndex() const;
   ImageTrack* selectedTrack() const;
-  ScriptPromiseTyped<IDLUndefined> ready(ScriptState* script_state);
+  ScriptPromise<IDLUndefined> ready(ScriptState* script_state);
 
   bool IsEmpty() const { return tracks_.empty(); }
 

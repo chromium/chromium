@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/openscreen_platform/udp_socket.h"
 
 #include <utility>
@@ -52,6 +57,7 @@ namespace openscreen_platform {
 
 namespace {
 
+using openscreen::ByteView;
 using openscreen::Error;
 using openscreen::IPAddress;
 using openscreen::IPEndpoint;
@@ -134,13 +140,9 @@ void UdpSocket::JoinMulticastGroup(const IPAddress& address,
                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
-void UdpSocket::SendMessage(const void* data,
-                            size_t length,
-                            const IPEndpoint& dest) {
+void UdpSocket::SendMessage(ByteView data, const IPEndpoint& dest) {
   const auto send_to_address = openscreen_platform::ToNetEndPoint(dest);
-  base::span<const uint8_t> data_span(static_cast<const uint8_t*>(data),
-                                      length);
-
+  base::span<const uint8_t> data_span(data.data(), data.size());
   udp_socket_->SendTo(
       send_to_address, data_span,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),

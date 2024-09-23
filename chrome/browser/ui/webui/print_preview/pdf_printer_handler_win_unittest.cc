@@ -48,14 +48,13 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
         save_failed_(false) {}
 
   void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override {
+                    int index) override {
     // Since we always cancel the dialog as soon as it is initialized, this
     // should never be called.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
-  void FileSelectionCanceled(void* params) override {
+  void FileSelectionCanceled() override {
     save_failed_ = true;
     run_loop_.Quit();
   }
@@ -83,8 +82,7 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
     select_file_dialog_->SelectFile(
         ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
         default_filename, &file_type_info, 0, base::FilePath::StringType(),
-        platform_util::GetTopLevel(preview_web_contents_->GetNativeView()),
-        nullptr);
+        platform_util::GetTopLevel(preview_web_contents_->GetNativeView()));
   }
 
   bool save_failed_;

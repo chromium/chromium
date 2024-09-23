@@ -51,11 +51,12 @@ class ASH_EXPORT LocalAuthenticationRequestWidget {
   // Creates and shows the instance of LocalAuthenticationRequestWidget.
   // This widget is modal and only one instance can be created at a time. It
   // will be destroyed when dismissed.
-  static void Show(LocalAuthenticationCallback local_authentication_callback,
-                   const std::u16string& title,
-                   const std::u16string& description,
-                   LocalAuthenticationRequestView::Delegate* delegate,
-                   std::unique_ptr<UserContext> user_context);
+  static void Show(
+      LocalAuthenticationCallback local_authentication_callback,
+      const std::u16string& title,
+      const std::u16string& description,
+      base::WeakPtr<LocalAuthenticationRequestView::Delegate> delegate,
+      std::unique_ptr<UserContext> user_context);
 
   // Returns the instance of LocalAuthenticationRequestWidget or nullptr if it
   // does not exits.
@@ -85,7 +86,7 @@ class ASH_EXPORT LocalAuthenticationRequestWidget {
       LocalAuthenticationCallback local_authentication_callback,
       const std::u16string& title,
       const std::u16string& description,
-      LocalAuthenticationRequestView::Delegate* delegate,
+      base::WeakPtr<LocalAuthenticationRequestView::Delegate> delegate,
       std::unique_ptr<UserContext> user_context);
   ~LocalAuthenticationRequestWidget();
 

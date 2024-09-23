@@ -30,4 +30,27 @@ TEST_F(CredentialProviderUtilTest, GetFaviconFileKey) {
       @"9DD8ED2F4B375E5DDDEA137D8985FFD32521694331753E70AA815692CFE0653B");
 }
 
+TEST_F(CredentialProviderUtilTest, ShouldFetchFavicon) {
+  // Setup some dates for later.
+  NSDate* today = [NSDate date];
+  NSCalendar* calendar = [NSCalendar currentCalendar];
+  NSDateComponents* offsetComponents = [[NSDateComponents alloc] init];
+  [offsetComponents setDay:-13];
+  NSDate* thirteenDaysAgo = [calendar dateByAddingComponents:offsetComponents
+                                                      toDate:today
+                                                     options:0];
+  [offsetComponents setDay:-15];
+  NSDate* fifteenDaysAgo = [calendar dateByAddingComponents:offsetComponents
+                                                     toDate:today
+                                                    options:0];
+
+  EXPECT_TRUE(ShouldFetchFavicon(@"TEST", @{}));
+
+  EXPECT_FALSE(ShouldFetchFavicon(@"TEST", @{@"TEST" : today}));
+  EXPECT_FALSE(ShouldFetchFavicon(@"TEST", @{@"TEST" : thirteenDaysAgo}));
+  EXPECT_TRUE(ShouldFetchFavicon(@"TEST", @{@"TEST" : fifteenDaysAgo}));
+
+  EXPECT_TRUE(ShouldFetchFavicon(@"TEST", @{@"OtherFavicon" : today}));
+}
+
 }  // namespace

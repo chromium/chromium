@@ -5,10 +5,10 @@
 import json
 import pickle
 import unittest
+from unittest import mock
 
-# TODO(crbug.com/996778): Figure out how to get httplib2 hermetically.
+# TODO(crbug.com/40641687): Figure out how to get httplib2 hermetically.
 import httplib2  # pylint: disable=import-error
-import mock
 
 from core.services import request
 
@@ -33,16 +33,16 @@ class TestRequest(unittest.TestCase):
         'http://example.com/', method='GET', body=None, headers=mock.ANY)
 
   def testRequest_acceptJson(self):
-    self.http.request.return_value = Response(200, '{"code": "ok!"}')
-    self.assertEqual(
-        request.Request('http://example.com/', accept='json'), {'code': 'ok!'})
+    self.http.request.return_value = Response(200, b'{"code": "ok!"}')
+    self.assertEqual(request.Request('http://example.com/', accept='json'),
+                     {'code': 'ok!'})
     self.http.request.assert_called_once_with(
         'http://example.com/', method='GET', body=None, headers=mock.ANY)
 
   def testRequest_acceptJsonWithSecurityPrefix(self):
-    self.http.request.return_value = Response(200, ')]}\'{"code": "ok!"}')
-    self.assertEqual(
-        request.Request('http://example.com/', accept='json'), {'code': 'ok!'})
+    self.http.request.return_value = Response(200, b')]}\'{"code": "ok!"}')
+    self.assertEqual(request.Request('http://example.com/', accept='json'),
+                     {'code': 'ok!'})
     self.http.request.assert_called_once_with(
         'http://example.com/', method='GET', body=None, headers=mock.ANY)
 

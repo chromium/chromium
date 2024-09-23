@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/certificate_dialogs.h"
 
 #include <stddef.h>
@@ -13,6 +18,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -72,21 +78,37 @@ std::string GetBase64String(const CRYPTO_BUFFER* cert) {
 ////////////////////////////////////////////////////////////////////////////////
 // General utility functions.
 
+void ShowCertSelectFileDialogFullExport(
+    ui::SelectFileDialog* select_file_dialog,
+    const base::FilePath& suggested_path,
+    gfx::NativeWindow parent) {
+  ui::SelectFileDialog::FileTypeInfo file_type_info;
+  file_type_info.extensions = {
+      {FILE_PATH_LITERAL("pem"), FILE_PATH_LITERAL("crt")}};
+  file_type_info.extension_description_overrides.push_back(
+      l10n_util::GetStringUTF16(IDS_CERT_EXPORT_TYPE_BASE64_ALL));
+  file_type_info.include_all_files = true;
+  select_file_dialog->SelectFile(
+      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
+      suggested_path, &file_type_info,
+      1,  // 1-based index for |file_type_info.extensions| to specify default.
+      FILE_PATH_LITERAL("crt"), parent);
+}
+
 class Exporter : public ui::SelectFileDialog::Listener {
  public:
   Exporter(content::WebContents* web_contents,
            gfx::NativeWindow parent,
            std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain,
-           const std::string& cert_title);
+           const std::string& suggested_file_name,
+           bool full_export);
 
   Exporter(const Exporter&) = delete;
   Exporter& operator=(const Exporter&) = delete;
 
   // SelectFileDialog::Listener implementation.
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
  private:
   ~Exporter() override;
@@ -97,32 +119,41 @@ class Exporter : public ui::SelectFileDialog::Listener {
 
   // The certificate hierarchy (leaf cert first).
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain_list_;
+
+  const bool full_export_;
 };
 
 Exporter::Exporter(content::WebContents* web_contents,
                    gfx::NativeWindow parent,
                    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain,
-                   const std::string& cert_title)
+                   const std::string& suggested_file_name,
+                   bool full_export)
     : select_file_dialog_(ui::SelectFileDialog::Create(
           this,
           std::make_unique<ChromeSelectFilePolicy>(web_contents))),
-      cert_chain_list_(std::move(cert_chain)) {
+      cert_chain_list_(std::move(cert_chain)),
+      full_export_(full_export) {
   base::FilePath suggested_name =
-      net::GenerateFileName(GURL(),          // url
-                            std::string(),   // content_disposition
-                            std::string(),   // referrer_charset
-                            cert_title,      // suggested_name
-                            std::string(),   // mime_type
-                            "certificate");  // default_name
+      net::GenerateFileName(GURL(),               // url
+                            std::string(),        // content_disposition
+                            std::string(),        // referrer_charset
+                            suggested_file_name,  // suggested_name
+                            std::string(),        // mime_type
+                            "certificate");       // default_name
 
   DownloadPrefs* download_prefs =
       DownloadPrefs::FromBrowserContext(web_contents->GetBrowserContext());
   base::FilePath suggested_path =
       download_prefs->SaveFilePath().Append(suggested_name);
 
-  ShowCertSelectFileDialog(select_file_dialog_.get(),
-                           ui::SelectFileDialog::SELECT_SAVEAS_FILE,
-                           suggested_path, parent, nullptr);
+  if (full_export_) {
+    ShowCertSelectFileDialogFullExport(select_file_dialog_.get(),
+                                       suggested_path, parent);
+  } else {
+    ShowCertSelectFileDialog(select_file_dialog_.get(),
+                             ui::SelectFileDialog::SELECT_SAVEAS_FILE,
+                             suggested_path, parent);
+  }
 }
 
 Exporter::~Exporter() {
@@ -132,10 +163,15 @@ Exporter::~Exporter() {
     select_file_dialog_->ListenerDestroyed();
 }
 
-void Exporter::FileSelected(const ui::SelectedFileInfo& file,
-                            int index,
-                            void* params) {
+void Exporter::FileSelected(const ui::SelectedFileInfo& file, int index) {
   std::string data;
+
+  // If we're doing a full export, the behaviour that is desired is the same as
+  // doing the full chain export.
+  if (full_export_) {
+    index = kBase64Chain + 1;
+  }
+
   switch (index - 1) {
     case kBase64Chain:
       for (const auto& cert : cert_chain_list_)
@@ -166,7 +202,7 @@ void Exporter::FileSelected(const ui::SelectedFileInfo& file,
   delete this;
 }
 
-void Exporter::FileSelectionCanceled(void* params) {
+void Exporter::FileSelectionCanceled() {
   delete this;
 }
 
@@ -192,8 +228,7 @@ std::string Exporter::GetCMSString(size_t start, size_t end) const {
 void ShowCertSelectFileDialog(ui::SelectFileDialog* select_file_dialog,
                               ui::SelectFileDialog::Type type,
                               const base::FilePath& suggested_path,
-                              gfx::NativeWindow parent,
-                              void* params) {
+                              gfx::NativeWindow parent) {
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.extensions.resize(kNumCertFileTypes);
   file_type_info.extensions[kBase64].push_back(FILE_PATH_LITERAL("pem"));
@@ -217,7 +252,7 @@ void ShowCertSelectFileDialog(ui::SelectFileDialog* select_file_dialog,
   select_file_dialog->SelectFile(
       type, std::u16string(), suggested_path, &file_type_info,
       1,  // 1-based index for |file_type_info.extensions| to specify default.
-      FILE_PATH_LITERAL("crt"), parent, params);
+      FILE_PATH_LITERAL("crt"), parent);
 }
 
 void ShowCertExportDialog(content::WebContents* web_contents,
@@ -226,7 +261,8 @@ void ShowCertExportDialog(content::WebContents* web_contents,
                           const std::string& cert_title) {
   DCHECK(!certs.empty());
   // Exporter is self-deleting.
-  new Exporter(web_contents, parent, std::move(certs), cert_title);
+  new Exporter(web_contents, parent, std::move(certs), cert_title,
+               /*full_export=*/false);
 }
 
 #if BUILDFLAG(USE_NSS_CERTS)
@@ -238,11 +274,25 @@ void ShowCertExportDialog(content::WebContents* web_contents,
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain;
   for (auto it = certs_begin; it != certs_end; ++it) {
     cert_chain.push_back(net::x509_util::CreateCryptoBuffer(
-        base::make_span((*it)->derCert.data, (*it)->derCert.len)));
+        net::x509_util::CERTCertificateAsSpan(it->get())));
   }
 
   // Exporter is self-deleting.
   new Exporter(web_contents, parent, std::move(cert_chain),
-               x509_certificate_model::GetTitle(certs_begin->get()));
+               x509_certificate_model::GetTitle(certs_begin->get()),
+               /*full_export=*/false);
 }
 #endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+void ShowCertExportDialogSaveAll(
+    content::WebContents* web_contents,
+    gfx::NativeWindow parent,
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
+    const std::string& suggested_file_name) {
+  DCHECK(!certs.empty());
+  // Exporter is self-deleting.
+  new Exporter(web_contents, parent, std::move(certs), suggested_file_name,
+               /*full_export=*/true);
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)

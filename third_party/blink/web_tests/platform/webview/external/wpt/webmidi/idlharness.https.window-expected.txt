@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] idl_test setup
+  promise_test: Unhandled rejection with value: "error: Action set_permission failed"
+[FAIL] MIDIOutput interface: operation clear()
+  assert_own_property: interface prototype object missing non-static operation expected property "clear" missing
+Harness: the test ran to completion.

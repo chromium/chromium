@@ -6,6 +6,7 @@
 #define ASH_WM_DESKS_DESK_ACTION_CONTEXT_MENU_H_
 
 #include "ash/public/cpp/desk_profiles_delegate.h"
+#include "ash/wm/desks/desk_mini_view.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
@@ -46,6 +47,14 @@ class DeskActionContextMenu : public views::ContextMenuController,
     // Invoked with the lacros profile id if the user picks a profile.
     base::RepeatingCallback<void(uint64_t)> set_lacros_profile_id;
 
+    // If set, the option to save the selected desk as a template is shown.
+    std::optional<std::u16string> save_template_target_name;
+    base::RepeatingClosure save_template_callback;
+
+    // If set, the option to save the selected desk for later is shown.
+    std::optional<std::u16string> save_later_target_name;
+    base::RepeatingClosure save_later_callback;
+
     // If the menu option to combine desks is to be shown, then this, as well as
     // the callback, need to be set.
     std::optional<std::u16string> combine_desks_target_name;
@@ -62,6 +71,10 @@ class DeskActionContextMenu : public views::ContextMenuController,
   // An enum with identifiers to link context menu items to their associated
   // functions.
   enum CommandId {
+    // Saves target desk as a template that can be repeatedly opened.
+    kSaveAsTemplate = 1,
+    // Saves target desk to be restored later.
+    kSaveForLater,
     // Closes target desk and moves its windows to another desk.
     kCombineDesks,
     // Saves target desk in DesksController and gives user option to undo the
@@ -74,10 +87,12 @@ class DeskActionContextMenu : public views::ContextMenuController,
     kDynamicProfileStart,
   };
 
-  explicit DeskActionContextMenu(Config config);
+  DeskActionContextMenu(Config config, DeskMiniView* mini_view);
   DeskActionContextMenu(const DeskActionContextMenu&) = delete;
   DeskActionContextMenu& operator=(const DeskActionContextMenu&) = delete;
   ~DeskActionContextMenu() override;
+
+  views::MenuItemView* root_menu_item_view() { return root_menu_item_view_; }
 
   // Closes the context menu if one is running.
   void MaybeCloseMenu();
@@ -100,14 +115,18 @@ class DeskActionContextMenu : public views::ContextMenuController,
 
   Config config_;
 
+  // Cache the `DeskMiniView` this menu is associated with, so we can use it to
+  // access the `OverviewGrid` later.
+  raw_ptr<DeskMiniView> mini_view_;
+
   ui::SimpleMenuModel context_menu_model_;
   std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
-  // The root menu item view. Cached for testing.
+  // The root menu item view. Cached for tooltips and accessible names.
   raw_ptr<views::MenuItemView> root_menu_item_view_ = nullptr;
 };
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_WM_DESKS_DESK_ACTION_CONTEXT_MENU_H_

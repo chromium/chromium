@@ -454,6 +454,10 @@ dialog.target-discovery .port-forwarding {
   flex-grow: 1
 }
 
+#bubble-locking-label {
+  width: unset;
+}
+
 @media (forced-colors: active) {
   .content-header {
     background: Canvas;

@@ -1,11 +1,24 @@
+# Want to be an OWNER?
+# This directory contains a number of building blocks for Chrome's ui, as well
+# as sub-directories containing feature specific code. Owners should generally
+# be knowledgeable of the core pieces of Chrome's ui building blocks, as well as
+# a number of features. To demonstrate this we generally look for contributions
+# of at least 40 non-trivial CLs across at least 3 different features. We also
+# encourage becoming an owner of a sub-directory first. These rules are not set
+# in stone, if you feel you should be an owner and do not need meet these
+# criteria, reach out to owners with specific criteria as to why you should be
+# an owner.
+#
 dfried@chromium.org
+dljames@chromium.org
+dpenning@chromium.org
 ellyjones@chromium.org
 estalin@chromium.org
+jkeitel@google.com
 msw@chromium.org
 pbos@chromium.org
 pkasting@chromium.org
 sky@chromium.org
-tapted@chromium.org
 # NOTE: Do not use the above owners when you're in a subdirectory that has
 # OWNERS file. Prefer these instead as these OWNERS will be more familiar, and
 # to load balance. Only use the above for subdirectories when doing refactorings

@@ -1,0 +1,192 @@
+# Copyright 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+import("//chromecast/starboard/starboard.gni")
+import("//testing/test.gni")
+
+if (!remove_starboard_headers) {
+  import(
+      "//chromecast/starboard/third_party/starboard/sabi/base_configuration.gni")
+}
+
+source_set("starboard") {
+  sources = [
+    "cast_media_starboard.cc",
+    "drm_util.cc",
+    "drm_util.h",
+    "media_pipeline_backend_starboard.cc",
+    "media_pipeline_backend_starboard.h",
+    "starboard_audio_decoder.cc",
+    "starboard_audio_decoder.h",
+    "starboard_decoder.cc",
+    "starboard_decoder.h",
+    "starboard_resampler.cc",
+    "starboard_resampler.h",
+    "starboard_video_decoder.cc",
+    "starboard_video_decoder.h",
+    "starboard_video_plane.cc",
+    "starboard_video_plane.h",
+    "starboard_volume_control.cc",
+  ]
+  deps = [
+    ":mime_utils",
+    ":starboard_api_wrapper",
+    "//base",
+    "//chromecast/public",
+    "//chromecast/public/media",
+    "//chromecast/starboard/chromecast/starboard_adapter",
+    "//chromecast/starboard/chromecast/starboard_cast_api:cast_starboard_api_types",
+    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
+    "//ui/display",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("mock_starboard_api_wrapper") {
+  testonly = true
+  sources = [
+    "mock_starboard_api_wrapper.cc",
+    "mock_starboard_api_wrapper.h",
+  ]
+  deps = [
+    ":starboard_api_wrapper",
+    "//testing/gmock",
+  ]
+}
+
+cast_source_set("starboard_api_wrapper") {
+  sources = []
+  deps = []
+
+  # TODO(b/333131992): remove this case.
+  if (remove_starboard_headers) {
+    sources += [
+      "starboard_api_wrapper.cc",
+      "starboard_api_wrapper.h",
+      "starboard_api_wrapper_dummy.cc",
+    ]
+  } else {
+    sources += [
+      "starboard_api_wrapper.cc",
+      "starboard_api_wrapper.h",
+      "starboard_api_wrapper_base.cc",
+      "starboard_api_wrapper_base.h",
+    ]
+    if (sb_api_version == 15) {
+      sources += [ "starboard_api_wrapper_15.cc" ]
+    } else {
+      assert(sb_api_version == 13 || sb_api_version == 14,
+             "Only SB 13 and 14 are supported by starboard_api_wrapper_14.cc")
+      sources += [ "starboard_api_wrapper_14.cc" ]
+    }
+    deps += [
+      "//base",
+      "//chromecast/starboard/chromecast/starboard_adapter",
+      "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
+    ]
+  }
+}
+
+cast_source_set("mime_utils") {
+  sources = [
+    "mime_utils.cc",
+    "mime_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//chromecast/public/media",
+  ]
+}
+
+test("media_pipeline_backend_starboard_test") {
+  sources = [ "media_pipeline_backend_starboard_test.cc" ]
+  deps = [
+    ":mock_starboard_api_wrapper",
+    ":starboard",
+    ":starboard_api_wrapper",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//chromecast/public",
+    "//chromecast/public/media",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+test("starboard_audio_decoder_test") {
+  sources = [ "starboard_audio_decoder_test.cc" ]
+  deps = [
+    ":mock_starboard_api_wrapper",
+    ":starboard",
+    ":starboard_api_wrapper",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//chromecast/media/base",
+    "//chromecast/media/cma/base",
+    "//chromecast/public",
+    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
+    "//media",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+test("starboard_video_decoder_test") {
+  sources = [ "starboard_video_decoder_test.cc" ]
+  deps = [
+    ":mock_starboard_api_wrapper",
+    ":starboard",
+    ":starboard_api_wrapper",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//chromecast/media/base",
+    "//chromecast/media/cma/base",
+    "//chromecast/public",
+    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
+    "//media",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+test("starboard_resampler_test") {
+  sources = [ "starboard_resampler_test.cc" ]
+  deps = [
+    ":mock_starboard_api_wrapper",
+    ":starboard",
+    ":starboard_api_wrapper",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//chromecast/media/base",
+    "//chromecast/media/cma/base",
+    "//chromecast/public",
+    "//chromecast/starboard/chromecast/starboard_cast_api:cast_starboard_api_types",
+    "//media",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+test("starboard_video_plane_test") {
+  sources = [ "starboard_video_plane_test.cc" ]
+  deps = [
+    ":starboard",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+test("mime_utils_test") {
+  sources = [ "mime_utils_test.cc" ]
+  deps = [
+    ":mime_utils",
+    "//base/test:run_all_unittests",
+    "//chromecast/public/media",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

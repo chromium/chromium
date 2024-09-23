@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -34,38 +33,32 @@ class SuggestionListViewBinder {
      */
     public static void bind(
             PropertyModel model, SuggestionListViewHolder view, PropertyKey propertyKey) {
-        if (SuggestionListProperties.VISIBLE.equals(propertyKey)) {
-            boolean visible = model.get(SuggestionListProperties.VISIBLE);
-            // Actual View showing the dropdown.
-            View dropdownView = view.dropdown.getViewGroup();
-            if (visible) {
-                // Ensure the tracked keyboard state is consistent with actual keyboard state.
-                // The keyboard is about to be called up.
-                view.dropdown.resetKeyboardShownState();
-                if (dropdownView.getParent() == null) {
-                    view.container.addView(dropdownView);
-                    // When showing the suggestions list for the first time, make sure to apply
-                    // appropriate visibility to freshly inflated container.
-                    // This is later handled by subsequent calls to updateContainerVisibility()
-                    // performed whenever the suggestion model list changes.
-                    updateContainerVisibility(model, view.container);
-                }
-            } else {
-                UiUtils.removeViewFromParent(dropdownView);
-            }
+        if (SuggestionListProperties.ALPHA.equals(propertyKey)) {
+            view.dropdown.setChildAlpha(model.get(SuggestionListProperties.ALPHA));
+        } else if (SuggestionListProperties.CHILD_TRANSLATION_Y.equals(propertyKey)) {
+            view.dropdown.translateChildrenVertical(
+                    model.get(SuggestionListProperties.CHILD_TRANSLATION_Y));
         } else if (SuggestionListProperties.EMBEDDER.equals(propertyKey)) {
             view.dropdown.setEmbedder(model.get(SuggestionListProperties.EMBEDDER));
+        } else if (SuggestionListProperties.OMNIBOX_SESSION_ACTIVE.equals(propertyKey)) {
+            updateContainerVisibility(model, view);
+            view.dropdown.onOmniboxSessionStateChange(
+                    model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE));
         } else if (SuggestionListProperties.GESTURE_OBSERVER.equals(propertyKey)) {
             view.dropdown.setGestureObserver(model.get(SuggestionListProperties.GESTURE_OBSERVER));
         } else if (SuggestionListProperties.DROPDOWN_HEIGHT_CHANGE_LISTENER.equals(propertyKey)) {
             view.dropdown.setHeightChangeListener(
                     model.get(SuggestionListProperties.DROPDOWN_HEIGHT_CHANGE_LISTENER));
         } else if (SuggestionListProperties.DROPDOWN_SCROLL_LISTENER.equals(propertyKey)) {
-            view.dropdown.setSuggestionDropdownScrollListener(
-                    model.get(SuggestionListProperties.DROPDOWN_SCROLL_LISTENER));
+            view.dropdown
+                    .getLayoutScrollListener()
+                    .setSuggestionDropdownScrollListener(
+                            model.get(SuggestionListProperties.DROPDOWN_SCROLL_LISTENER));
         } else if (SuggestionListProperties.DROPDOWN_SCROLL_TO_TOP_LISTENER.equals(propertyKey)) {
-            view.dropdown.setSuggestionDropdownOverscrolledToTopListener(
-                    model.get(SuggestionListProperties.DROPDOWN_SCROLL_TO_TOP_LISTENER));
+            view.dropdown
+                    .getLayoutScrollListener()
+                    .setSuggestionDropdownOverscrolledToTopListener(
+                            model.get(SuggestionListProperties.DROPDOWN_SCROLL_TO_TOP_LISTENER));
         } else if (SuggestionListProperties.LIST_IS_FINAL.equals(propertyKey)) {
             if (model.get(SuggestionListProperties.LIST_IS_FINAL)) {
                 view.dropdown.emitWindowContentChanged();
@@ -86,15 +79,18 @@ class SuggestionListViewBinder {
                         @Override
                         public void onItemRangeInserted(
                                 ListObservable source, int index, int count) {
-                            updateContainerVisibility(model, view.container);
+                            updateContainerVisibility(model, view);
                         }
 
                         @Override
                         public void onItemRangeRemoved(
                                 ListObservable source, int index, int count) {
-                            updateContainerVisibility(model, view.container);
+                            updateContainerVisibility(model, view);
                         }
                     });
+            // When the suggestions list is installed for the first time, it may already contain
+            // elements. Be sure to capture and reflect this fact appropriately.
+            updateContainerVisibility(model, view);
         } else if (SuggestionListProperties.COLOR_SCHEME.equals(propertyKey)) {
             view.dropdown.refreshPopupBackground(model.get(SuggestionListProperties.COLOR_SCHEME));
         } else if (SuggestionListProperties.DRAW_OVER_ANCHOR == propertyKey) {
@@ -109,8 +105,13 @@ class SuggestionListViewBinder {
         }
     }
 
-    private static void updateContainerVisibility(PropertyModel model, ViewGroup container) {
+    private static void updateContainerVisibility(
+            PropertyModel model, SuggestionListViewHolder holder) {
         ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);
-        container.setVisibility(listItems.size() == 0 ? View.GONE : View.VISIBLE);
+        boolean shouldBeVisible =
+                model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE) && listItems.size() > 0;
+        int visibility = shouldBeVisible ? View.VISIBLE : View.GONE;
+        holder.container.setVisibility(visibility);
+        holder.dropdown.setVisibility(visibility);
     }
 }

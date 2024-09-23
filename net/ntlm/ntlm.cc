@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/ntlm/ntlm.h"
 
 #include <string.h>
@@ -74,7 +79,7 @@ void UpdateTargetInfoAvPairs(bool is_mic_enabled,
         // the list. Additionally |kChannelBindings| and |kTargetName| pairs
         // would have been rejected during the initial parsing. See
         // |NtlmBufferReader::ReadTargetInfo|.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       default:
         // Ignore entries we don't care about.
@@ -97,8 +102,8 @@ void UpdateTargetInfoAvPairs(bool is_mic_enabled,
     // Hash the channel bindings if they exist otherwise they remain zeros.
     if (!channel_bindings.empty()) {
       GenerateChannelBindingHashV2(
-          channel_bindings,
-          base::make_span<kChannelBindingsHashLen>(channel_bindings_hash));
+          channel_bindings, *base::span(channel_bindings_hash)
+                                 .to_fixed_extent<kChannelBindingsHashLen>());
     }
 
     av_pairs->emplace_back(TargetInfoAvId::kChannelBindings,
@@ -293,7 +298,7 @@ void GenerateNtlmHashV2(const std::u16string& domain,
   // NOTE: According to [MS-NLMP] Section 3.3.2 only the username and not the
   // domain is uppercased.
 
-  // TODO(https://crbug.com/1051924): Using a locale-sensitive upper casing
+  // TODO(crbug.com/40674019): Using a locale-sensitive upper casing
   // algorithm is problematic. A more predictable approach would be to only
   // uppercase ASCII characters, so the hash does not change depending on the
   // user's locale.

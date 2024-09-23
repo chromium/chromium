@@ -5,6 +5,7 @@
 #include "base/task/sequence_manager/task_queue_selector.h"
 
 #include <bit>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -14,14 +15,10 @@
 #include "base/task/task_features.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/base_tracing.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
 namespace internal {
-
-std::atomic_int TaskQueueSelector::g_max_delayed_starvation_tasks =
-    TaskQueueSelector::kDefaultMaxDelayedStarvationTasks;
 
 TaskQueueSelector::TaskQueueSelector(
     scoped_refptr<const AssociatedThreadId> associated_thread,
@@ -37,12 +34,6 @@ TaskQueueSelector::TaskQueueSelector(
 }
 
 TaskQueueSelector::~TaskQueueSelector() = default;
-
-// static
-void TaskQueueSelector::InitializeFeatures() {
-  g_max_delayed_starvation_tasks.store(kMaxDelayedStarvationTasksParam.Get(),
-                                       std::memory_order_relaxed);
-}
 
 void TaskQueueSelector::AddQueue(internal::TaskQueueImpl* queue,
                                  TaskQueue::QueuePriority priority) {
@@ -237,11 +228,11 @@ void TaskQueueSelector::SetTaskQueueSelectorObserver(Observer* observer) {
   task_queue_selector_observer_ = observer;
 }
 
-absl::optional<TaskQueue::QueuePriority>
+std::optional<TaskQueue::QueuePriority>
 TaskQueueSelector::GetHighestPendingPriority(SelectTaskOption option) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!active_priority_tracker_.HasActivePriority())
-    return absl::nullopt;
+    return std::nullopt;
 
   TaskQueue::QueuePriority highest_priority =
       active_priority_tracker_.HighestActivePriority();
@@ -256,7 +247,7 @@ TaskQueueSelector::GetHighestPendingPriority(SelectTaskOption option) const {
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void TaskQueueSelector::SetImmediateStarvationCountForTest(

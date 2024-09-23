@@ -116,7 +116,7 @@ class ProfileTokenQuality {
   // The `pdm` is necessary to access the other profiles of the user and derive
   // observation types like `kEditedToSameTokenOfOtherProfile`.
   // The function returns true if at least one new observation was collected.
-  // TODO(crbug.com/1331312): Get rid of the `form_data` parameter.
+  // TODO(crbug.com/40227496): Get rid of the `form_data` parameter.
   bool AddObservationsForFilledForm(const FormStructure& form_structure,
                                     const FormData& form_data,
                                     const PersonalDataManager& pdm);
@@ -144,7 +144,7 @@ class ProfileTokenQuality {
   // first byte represents the `ObservationType` and the second byte the
   // `FormSignatureHash`.
   // Changing the encoding requires adding migration logic to `AutofillTable`.
-  // Tested by autofill_table_unittest.cc.
+  // Tested partially by autofill_table_unittest.cc.
   std::vector<uint8_t> SerializeObservationsForStoredType(FieldType type) const;
   void LoadSerializedObservationsForStoredType(
       FieldType type,
@@ -166,10 +166,6 @@ class ProfileTokenQuality {
   // differ. This is used as a mechanism to reset outdated observations, by
   // setting `other` to the profile before modifications took place.
   void ResetObservationsForDifferingTokens(const AutofillProfile& other);
-
-  void disable_randomization_for_testing() {
-    diable_randomization_for_testing_ = true;
-  }
 
  private:
   friend class ProfileTokenQualityTestApi;
@@ -241,7 +237,7 @@ class ProfileTokenQuality {
   ObservationType GetObservationTypeFromField(
       const AutofillField& field,
       std::u16string_view current_field_value,
-      const std::vector<AutofillProfile*>& other_profiles,
+      const std::vector<const AutofillProfile*>& other_profiles,
       const std::string& app_locale) const;
 
   // The profile for which observations are collected.

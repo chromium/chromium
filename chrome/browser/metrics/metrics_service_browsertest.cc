@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // Tests the MetricsService stat recording to make sure that the numbers are
 // what we expect.
 
@@ -346,8 +351,9 @@ class MetricsServiceBrowserFilesTest : public InProcessBrowserTest {
       const MetricsServiceBrowserFilesTest&) = delete;
 
   bool SetUpUserDataDirectory() override {
-    if (!super::SetUpUserDataDirectory())
+    if (!super::SetUpUserDataDirectory()) {
       return false;
+    }
 
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::FilePath user_dir;
@@ -389,24 +395,30 @@ class MetricsServiceBrowserFilesTest : public InProcessBrowserTest {
     super::SetUp();
   }
 
-  // Check for the existence of any non-pma files that were created as part
-  // of the test. PMA files may be created as part of the browser setup and
-  // cannot be deleted while open on all operating systems.
-  bool HasNonPMAFiles() {
+  // Finds any non-pma files that were created as part of the test. PMA files
+  // may be created as part of the browser setup and cannot be deleted while
+  // open on all operating systems.
+  std::vector<base::FilePath> FindNonPMAFiles() {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
-    if (!base::PathExists(upload_dir_))
-      return false;
+    std::vector<base::FilePath> files;
+    if (!base::PathExists(upload_dir_)) {
+      return files;
+    }
 
     base::FileEnumerator file_iter(upload_dir_, true,
                                    base::FileEnumerator::FILES);
     while (!file_iter.Next().empty()) {
-      if (file_iter.GetInfo().GetName().Extension() !=
-          FILE_PATH_LITERAL(".pma")) {
-        return true;
+      base::FilePath name = file_iter.GetInfo().GetName();
+      if (name.Extension() != FILE_PATH_LITERAL(".pma")) {
+        files.push_back(std::move(name));
       }
     }
-    return false;
+    return files;
+  }
+
+  bool HasNonPMAFiles() {
+    return !FindNonPMAFiles().empty();
   }
 
   base::FilePath& upload_dir() { return upload_dir_; }
@@ -466,11 +478,13 @@ class MetricsServiceBrowserNoUploadTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1378228): Fix flakiness.
-IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserNoUploadTest,
-                       DISABLED_FilesRemoved) {
+IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserNoUploadTest, FilesRemoved) {
   // SetUp() has removed consent and made metrics "sampled-in" (enabled).
-  EXPECT_FALSE(HasNonPMAFiles());
+  auto non_pma_files = FindNonPMAFiles();
+  for (const auto& file : non_pma_files) {
+    LOG(INFO) << "Found non-PMA file:" << file;
+  }
+  EXPECT_TRUE(non_pma_files.empty());
 }
 
 // Specific class for testing when metrics upload is disabled by sampling.
@@ -495,17 +509,13 @@ class MetricsServiceBrowserSampledOutTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1380375): Flaky on Mac and ChromeOS, fix flakiness and
-// re-enable the test.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_FilesRemoved DISABLED_FilesRemoved
-#else
-#define MAYBE_FilesRemoved FilesRemoved
-#endif
-IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserSampledOutTest,
-                       MAYBE_FilesRemoved) {
+IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserSampledOutTest, FilesRemoved) {
   // SetUp() has provided consent and made metrics "sampled-out" (disabled).
-  EXPECT_FALSE(HasNonPMAFiles());
+  auto non_pma_files = FindNonPMAFiles();
+  for (const auto& file : non_pma_files) {
+    LOG(INFO) << "Found non-PMA file:" << file;
+  }
+  EXPECT_TRUE(non_pma_files.empty());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -530,4 +540,4 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, EntropyTransfer) {
                  << "- Ash version does not support entropy transfer yet";
   }
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

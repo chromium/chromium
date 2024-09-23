@@ -9,7 +9,7 @@
 
 namespace media::cast {
 
-// TODO(https://crbug.com/1343116): this typedef should be removed and
+// TODO(crbug.com/40231271): this typedef should be removed and
 // the openscreen type used directly.
 using RtpTimeDelta = openscreen::cast::RtpTimeDelta;
 using RtpTimeTicks = openscreen::cast::RtpTimeTicks;

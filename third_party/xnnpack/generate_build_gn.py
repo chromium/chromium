@@ -32,15 +32,19 @@
 
 import atexit
 import collections
+import io
 import json
 import logging
 import os
 import platform
+import tempfile
 import shutil
 import subprocess
 import sys
+import urllib.request
 
 from dataclasses import dataclass, field
+
 
 _HEADER = '''
 # Copyright 2022 The Chromium Authors
@@ -75,6 +79,8 @@ config("xnnpack_config") {
   ]
 
   defines = [
+    "CHROMIUM",
+
     # Don't enable this without first talking to Chrome Security!
     # XNNPACK runs in the browser process. The hardening and fuzzing needed
     # to ensure JIT can be used safely is not in place yet.
@@ -95,6 +101,12 @@ config("xnnpack_config") {
       "XNN_ENABLE_ARM_I8MM=1",
     ]
   }
+
+  if (current_cpu == "x86" || current_cpu == "x64") {
+    defines += [
+      "XNN_ENABLE_AVXVNNI=1",
+    ]
+  }
 }
 '''.strip()
 
@@ -107,6 +119,8 @@ source_set("xnnpack") {
   configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
 
   sources = [
+  "src/include/xnnpack.h",
+  "build_identifier.c",
 %SRCS%
   ]
 
@@ -129,6 +143,8 @@ source_set("xnnpack_standalone") {
   configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
 
   sources = [
+  "src/include/xnnpack.h",
+  "build_identifier.c",
 %SRCS%
   ]
 
@@ -154,6 +170,7 @@ source_set("%TARGET_NAME%") {
   ]
 %ASMFLAGS%
   sources = [
+    "src/include/xnnpack.h",
 %SRCS%
   ]
 
@@ -178,6 +195,7 @@ source_set("%TARGET_NAME%_standalone") {
   ]
 %ASMFLAGS%
   sources = [
+    "src/include/xnnpack.h",
 %SRCS%
   ]
 
@@ -471,7 +489,9 @@ def _run_bazel_cmd(args):
   Runs a bazel command in the form of bazel <args...>. Returns the stdout,
   raising an Exception if the command failed.
   """
-  exec_path = shutil.which("bazel")
+
+  # Use standard Bazel install instead of the one included with depot_tools.
+  exec_path = "/usr/bin/bazel"
   if not exec_path:
     raise Exception(
         "bazel is not installed. Please run `sudo apt-get install " +
@@ -509,6 +529,10 @@ def GenerateObjectBuilds(cpu):
     cpu: aarch64 or k8
   """
   logging.info(f'Querying xnnpack compile commands for {cpu} with bazel...')
+  # Make sure we have a clean start, this is important if the Android NDK
+  # version changed.
+  _run_bazel_cmd(['clean'])
+
   basename = os.path.basename(_TOOLCHAIN_DIR)
   crosstool_top = f'//{basename}:cc_suite'
   logs = _run_bazel_cmd([
@@ -622,6 +646,36 @@ def MakeXNNPACKDepsList(target_sss):
   return deps_list
 
 
+def EnsureAndroidNDK():
+  """
+  Ensures that the Android NDK is available and bazel can find it later.
+
+  This must use command line utilities instead of native Python as a workaround
+  for https://github.com/python/cpython/issues/59999.
+  """
+  tempdir = tempfile.mkdtemp()
+  zipdownload = os.path.join(tempdir, 'android-ndk-r25b-linux.zip')
+  extractdir = os.path.join(tempdir, 'android-ndk-r25b')
+  logging.info('Downloading a copy of the Android NDK')
+  subprocess.check_call(
+    [
+      'curl',
+      'https://dl.google.com/android/repository/android-ndk-r25b-linux.zip',
+      '-o',
+      zipdownload,
+    ],
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
+  )
+  logging.info('Unpacking the Android NDK')
+  subprocess.check_call(
+    ['unzip', zipdownload, '-d', extractdir],
+    stdout=subprocess.DEVNULL,
+    stderr=subprocess.DEVNULL,
+  )
+  os.environ['ANDROID_NDK_HOME'] = os.path.join(extractdir, 'android-ndk-r25b')
+
+
 def MakeXNNPACKSourceSet(ss):
   """
   Generates the BUILD file text for the main XNNPACK build target, given the
@@ -632,6 +686,16 @@ def MakeXNNPACKSourceSet(ss):
       '%SRCS%', ',\n'.join(['    "%s"' % src for src in sorted(ss.srcs)]))
   return target
 
+
+# Generates the `build_identifier.c` using bazel and copies to the correct directory.
+def GenerateBuildIdentifier():
+  _run_bazel_cmd(['build', 'generate_build_identifier'])
+  bazel_bin_dir =_run_bazel_cmd(['info', 'bazel-bin']).strip()
+  build_identifier_src = os.path.join(bazel_bin_dir, 'src', 'build_identifier.c')
+  assert os.path.exists(build_identifier_src)
+  build_identifier_dst = os.path.join(_xnnpack_dir(), 'build_identifier.c')
+  logging.info(f'Copying {build_identifier_src} to {build_identifier_dst}')
+  shutil.copyfile(build_identifier_src, build_identifier_dst)
 
 def main():
   logging.basicConfig(level=logging.INFO)
@@ -644,6 +708,8 @@ def main():
     logging.error(f'{_AARCH64_LINUX_GCC} and {_X86_64_LINUX_GCC} are required!')
     logging.error('On x86-64 Debian, install gcc-aarch64-linux-gnu and gcc.')
     sys.exit(1)
+
+  EnsureAndroidNDK()
 
   CreateToolchainFiles()
 
@@ -693,6 +759,8 @@ def main():
         f.write(target)
         f.write('\n\n')
       f.write('}\n')
+
+  GenerateBuildIdentifier()
 
   logging.info('Running `git cl format` for you.')
 

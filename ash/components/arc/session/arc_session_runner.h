@@ -16,6 +16,7 @@
 #include "ash/components/arc/session/arc_upgrade_params.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -47,7 +48,7 @@ enum class ArcContainerLifetimeEvent {
 class ArcSessionRunner : public ArcSession::Observer {
  public:
   // Observer to notify events across multiple ARC session runs.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when ARC instance is stopped. If |restarting| is true, another
     // ARC session is being restarted (practically after certain delay).
@@ -62,7 +63,7 @@ class ArcSessionRunner : public ArcSession::Observer {
     virtual void OnSessionRestarting() = 0;
 
    protected:
-    virtual ~Observer() = default;
+    ~Observer() override = default;
   };
 
   // This is the factory interface to inject ArcSession instance
@@ -164,7 +165,7 @@ class ArcSessionRunner : public ArcSession::Observer {
   THREAD_CHECKER(thread_checker_);
 
   // Observers for the ARC instance state change events.
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   // Target ARC instance running mode. If nullopt, it means the ARC instance
   // should stop eventually.

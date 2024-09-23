@@ -43,32 +43,26 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
     AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS);
     AddSeparator(ui::NORMAL_SEPARATOR);
   }
-  if (features::IsChromeRefresh2023()) {
-    AddItemWithStringId(IDC_SHOW_BOOKMARK_BAR,
-                        browser->profile()->GetPrefs()->GetBoolean(
-                            bookmarks::prefs::kShowBookmarkBar)
-                            ? IDS_HIDE_BOOKMARK_BAR
-                            : IDS_SHOW_BOOKMARK_BAR);
-  } else {
-    AddCheckItemWithStringId(IDC_SHOW_BOOKMARK_BAR, IDS_SHOW_BOOKMARK_BAR);
-  }
+  AddItemWithStringId(IDC_SHOW_BOOKMARK_BAR,
+                      browser->profile()->GetPrefs()->GetBoolean(
+                          bookmarks::prefs::kShowBookmarkBar)
+                          ? IDS_HIDE_BOOKMARK_BAR
+                          : IDS_SHOW_BOOKMARK_BAR);
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_BOOKMARK_BAR).value(),
                          kShowBookmarkBarMenuItem);
 
-  if (features::IsChromeRefresh2023()) {
     AddItemWithStringId(IDC_SHOW_BOOKMARK_SIDE_PANEL,
                         IDS_SHOW_BOOKMARK_SIDE_PANEL);
     SetElementIdentifierAt(
         GetIndexOfCommandId(IDC_SHOW_BOOKMARK_SIDE_PANEL).value(),
         kShowBookmarkSidePanelItem);
-  }
+
   AddItemWithStringId(IDC_SHOW_BOOKMARK_MANAGER, IDS_BOOKMARK_MANAGER);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   AddItemWithStringId(IDC_IMPORT_SETTINGS, IDS_IMPORT_SETTINGS_MENU_LABEL);
 #endif
 
-  if (features::IsChromeRefresh2023()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
 
     reading_list_sub_menu_model_ =
@@ -76,9 +70,7 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
     AddSubMenuWithStringIdAndIcon(
         IDC_READING_LIST_MENU, IDS_READING_LIST_MENU,
         reading_list_sub_menu_model_.get(),
-        ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                           ? kReadingListIcon
-                                           : kReadLaterIcon));
+        ui::ImageModel::FromVectorIcon(kReadingListIcon));
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_READING_LIST_MENU).value(),
                            kReadingListMenuItem);
 
@@ -94,9 +86,6 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
     set_icon(IDC_BOOKMARK_ALL_TABS, kBookmarkAllTabsChromeRefreshIcon);
     set_icon(IDC_SHOW_BOOKMARK_BAR, kToolbarChromeRefreshIcon);
     set_icon(IDC_SHOW_BOOKMARK_MANAGER, kBookmarksManagerIcon);
-    set_icon(IDC_SHOW_BOOKMARK_SIDE_PANEL, features::IsChromeRefresh2023()
-                                               ? kBookmarksSidePanelRefreshIcon
-                                               : kBookmarksSidePanelIcon);
+    set_icon(IDC_SHOW_BOOKMARK_SIDE_PANEL, kBookmarksSidePanelRefreshIcon);
     set_icon(IDC_IMPORT_SETTINGS, kMenuBookChromeRefreshIcon);
-  }
 }

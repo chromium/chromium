@@ -50,10 +50,7 @@ void LayoutTable::Trace(Visitor* visitor) const {
 // would perform inlinification of its children), then an inline-table box must
 // be generated; otherwise it must be a table box.
 bool LayoutTable::ShouldCreateInlineAnonymous(const LayoutObject& parent) {
-  return RuntimeEnabledFeatures::RubyInlinifyEnabled()
-             ? (parent.IsLayoutInline() || parent.IsRubyBase() ||
-                parent.IsRubyText())
-             : parent.IsLayoutInline();
+  return parent.IsLayoutInline() || parent.IsRubyBase() || parent.IsRubyText();
 }
 
 LayoutTable* LayoutTable::CreateAnonymousWithParent(
@@ -93,28 +90,17 @@ LayoutTableSection* LayoutTable::FirstSection() const {
       BlockNode(const_cast<LayoutTable*>(this)));
   auto first_section = grouped_children.begin();
   if (first_section != grouped_children.end()) {
-    return To<LayoutTableSection>((*first_section).GetLayoutBox());
-  }
-  return nullptr;
-}
-
-LayoutTableSection* LayoutTable::FirstNonEmptySection() const {
-  NOT_DESTROYED();
-  TableGroupedChildren grouped_children(
-      BlockNode(const_cast<LayoutTable*>(this)));
-  auto first_section = grouped_children.begin();
-  if (first_section != grouped_children.end()) {
     auto* section_object =
         To<LayoutTableSection>((*first_section).GetLayoutBox());
     if ((*first_section).IsEmptyTableSection()) {
-      return NextSection(section_object, kSkipEmptySections);
+      return NextSection(section_object);
     }
     return section_object;
   }
   return nullptr;
 }
 
-LayoutTableSection* LayoutTable::LastNonEmptySection() const {
+LayoutTableSection* LayoutTable::LastSection() const {
   NOT_DESTROYED();
   TableGroupedChildren grouped_children(
       BlockNode(const_cast<LayoutTable*>(this)));
@@ -123,7 +109,7 @@ LayoutTableSection* LayoutTable::LastNonEmptySection() const {
     auto* section_object =
         To<LayoutTableSection>((*last_section).GetLayoutBox());
     if ((*last_section).IsEmptyTableSection()) {
-      return PreviousSection(section_object, kSkipEmptySections);
+      return PreviousSection(section_object);
     }
     return section_object;
   }
@@ -131,15 +117,13 @@ LayoutTableSection* LayoutTable::LastNonEmptySection() const {
 }
 
 LayoutTableSection* LayoutTable::NextSection(
-    const LayoutTableSection* current,
-    SkipEmptySectionsValue skip) const {
+    const LayoutTableSection* current) const {
   NOT_DESTROYED();
   TableGroupedChildren grouped_children(
       BlockNode(const_cast<LayoutTable*>(this)));
   bool found = false;
   for (BlockNode section : grouped_children) {
-    if (found &&
-        (skip == kDoNotSkipEmptySections || !section.IsEmptyTableSection())) {
+    if (found && !section.IsEmptyTableSection()) {
       return To<LayoutTableSection>(section.GetLayoutBox());
     }
     if (current == To<LayoutTableSection>(section.GetLayoutBox())) {
@@ -150,8 +134,7 @@ LayoutTableSection* LayoutTable::NextSection(
 }
 
 LayoutTableSection* LayoutTable::PreviousSection(
-    const LayoutTableSection* current,
-    SkipEmptySectionsValue skip) const {
+    const LayoutTableSection* current) const {
   NOT_DESTROYED();
   TableGroupedChildren grouped_children(
       BlockNode(const_cast<LayoutTable*>(this)));
@@ -159,8 +142,7 @@ LayoutTableSection* LayoutTable::PreviousSection(
   bool found = false;
   for (auto it = --grouped_children.end(); it != stop; --it) {
     BlockNode section = *it;
-    if (found &&
-        (skip == kDoNotSkipEmptySections || !section.IsEmptyTableSection())) {
+    if (found && !section.IsEmptyTableSection()) {
       return To<LayoutTableSection>(section.GetLayoutBox());
     }
     if (current == To<LayoutTableSection>(section.GetLayoutBox())) {
@@ -442,7 +424,7 @@ unsigned LayoutTable::AbsoluteColumnToEffectiveColumn(
     unsigned absolute_column_index) const {
   NOT_DESTROYED();
   if (!cached_table_columns_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return absolute_column_index;
   }
   unsigned effective_column_index = 0;

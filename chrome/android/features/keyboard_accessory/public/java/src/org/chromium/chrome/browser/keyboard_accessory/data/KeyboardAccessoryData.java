@@ -224,6 +224,41 @@ public class KeyboardAccessoryData {
         }
     }
 
+    public static final class PlusAddressInfo {
+        private final String mOrigin;
+        private final UserInfoField mPlusAddressInfo;
+
+        public PlusAddressInfo(String origin, UserInfoField plusAddressInfo) {
+            mOrigin = origin;
+            mPlusAddressInfo = plusAddressInfo;
+        }
+
+        public String getOrigin() {
+            return mOrigin;
+        }
+
+        public UserInfoField getPlusAddress() {
+            return mPlusAddressInfo;
+        }
+    }
+
+    public static final class PlusAddressSection {
+        private final String mTitle;
+        private final List<PlusAddressInfo> mPlusAddressInfoList = new ArrayList<>();
+
+        public PlusAddressSection(String title) {
+            mTitle = title;
+        }
+
+        public String getTitle() {
+            return mTitle;
+        }
+
+        public List<PlusAddressInfo> getPlusAddressInfoList() {
+            return mPlusAddressInfoList;
+        }
+    }
+
     /** Represents a Passkey (name and ID), to be shown on the manual fallback UI. */
     public static final class PasskeySection {
         private final String mDisplayName;
@@ -316,6 +351,28 @@ public class KeyboardAccessoryData {
         }
     }
 
+    /**
+     * Represents a list of Profiles, or a Credit Cards, or the credentials for a website (username
+     * + password), to be shown on the manual fallback UI. Contains a possibly empty title for the
+     * user info section.
+     */
+    public static final class UserInfoSection {
+        private final String mTitle;
+        private final List<UserInfo> mUserInfoList = new ArrayList();
+
+        public UserInfoSection(String title) {
+            mTitle = title;
+        }
+
+        public String getTitle() {
+            return mTitle;
+        }
+
+        public List<UserInfo> getUserInfoList() {
+            return mUserInfoList;
+        }
+    }
+
     /** Represents a Promo Code Offer to be shown on the manual fallback UI. */
     public static final class PromoCodeInfo {
         private UserInfoField mPromoCode;
@@ -337,6 +394,21 @@ public class KeyboardAccessoryData {
 
         public String getDetailsText() {
             return mDetailsText;
+        }
+    }
+
+    /** Represents an IBAN to be shown on the manual fallback UI. */
+    public static final class IbanInfo {
+        private UserInfoField mIbanInfo;
+
+        public IbanInfo() {}
+
+        public void setValue(UserInfoField ibanInfo) {
+            mIbanInfo = ibanInfo;
+        }
+
+        public UserInfoField getValue() {
+            return mIbanInfo;
         }
     }
 
@@ -372,29 +444,38 @@ public class KeyboardAccessoryData {
 
     /**
      * Represents the contents of a accessory sheet tab below the keyboard accessory, which can
-     * correspond to passwords, credit cards, or profiles data. Created natively.
+     * correspond to passwords, credit cards, IBANs, or profiles data. Created natively.
      */
     public static final class AccessorySheetData {
-        private final String mTitle;
         private final String mWarning;
         private final @AccessoryTabType int mSheetType;
         private OptionToggle mToggle;
-        private final List<UserInfo> mUserInfoList = new ArrayList<>();
+        private final PlusAddressSection mPlusAddressSection;
+        private final UserInfoSection mUserInfoSection;
         private final List<PasskeySection> mPasskeySectionList = new ArrayList<>();
         private final List<PromoCodeInfo> mPromoCodeInfoList = new ArrayList<>();
+        private final List<IbanInfo> mIbanInfoList = new ArrayList<>();
         private final List<FooterCommand> mFooterCommands = new ArrayList<>();
 
         /**
          * Creates the AccessorySheetData object.
          *
-         * @param title The title of accessory sheet tab.
+         * @param sheetType The type of the accessory manual filling sheet (addresses, credit cards,
+         *     passwords).
+         * @param userInfoTitle The user info title of accessory sheet tab.
+         * @param plusAddressTitle The plus address section title.
          * @param warning An optional warning to be displayed the beginning of the sheet.
          */
-        public AccessorySheetData(@AccessoryTabType int sheetType, String title, String warning) {
-            mSheetType = sheetType;
-            mTitle = title;
+        public AccessorySheetData(
+                @AccessoryTabType int sheetType,
+                String userInfoTitle,
+                String plusAddressTitle,
+                String warning) {
             mWarning = warning;
+            mSheetType = sheetType;
             mToggle = null;
+            mUserInfoSection = new UserInfoSection(userInfoTitle);
+            mPlusAddressSection = new PlusAddressSection(plusAddressTitle);
         }
 
         public @AccessoryTabType int getSheetType() {
@@ -409,11 +490,6 @@ public class KeyboardAccessoryData {
             return mToggle;
         }
 
-        /** Returns the title of the accessory sheet. This text is also used for accessibility. */
-        public String getTitle() {
-            return mTitle;
-        }
-
         /**
          * Returns a warning to be displayed at the beginning of the sheet. Empty string otherwise.
          */
@@ -421,9 +497,32 @@ public class KeyboardAccessoryData {
             return mWarning;
         }
 
+        /**
+         * Returns the possible empty title for the user info section to be shown on the accessory
+         * sheet
+         */
+        public String getUserInfoTitle() {
+            return mUserInfoSection.getTitle();
+        }
+
         /** Returns the list of {@link UserInfo} to be shown on the accessory sheet. */
         public List<UserInfo> getUserInfoList() {
-            return mUserInfoList;
+            return mUserInfoSection.getUserInfoList();
+        }
+
+        /**
+         * @return a possibly empty title for the plus address section to be shown on the accessory
+         *     sheet
+         */
+        public String getPlusAddressSectionTitle() {
+            return mPlusAddressSection.getTitle();
+        }
+
+        /**
+         * @return a list if {@link PlusAddressInfo} to be shown on the accessory sheet.
+         */
+        public List<PlusAddressInfo> getPlusAddressInfoList() {
+            return mPlusAddressSection.getPlusAddressInfoList();
         }
 
         /** Returns the list of {@link PasskeySection} to be shown on the accessory sheet. */
@@ -434,6 +533,11 @@ public class KeyboardAccessoryData {
         /** Returns the list of {@link PromoCodeInfo} to be shown on the accessory sheet. */
         public List<PromoCodeInfo> getPromoCodeInfoList() {
             return mPromoCodeInfoList;
+        }
+
+        /** Returns the list of {@link IbanInfo} to be shown on the accessory sheet. */
+        public List<IbanInfo> getIbanInfoList() {
+            return mIbanInfoList;
         }
 
         /** Returns the list of {@link FooterCommand} to be shown on the accessory sheet. */

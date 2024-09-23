@@ -16,13 +16,15 @@
 
 namespace auction_worklet {
 
+class AuctionV8Logger;
+
 // Class to manage bindings for setting a report URL. Expected to be used for a
 // context managed by ContextRecycler. Allows only a single call for a report
 // URL. On any subsequent calls, clears the report URL and throws an exception.
 // Also throws on invalid URLs or non-HTTPS URLs.
 class ReportBindings : public Bindings {
  public:
-  explicit ReportBindings(AuctionV8Helper* v8_helper);
+  ReportBindings(AuctionV8Helper* v8_helper, AuctionV8Logger* v8_logger);
   ReportBindings(const ReportBindings&) = delete;
   ReportBindings& operator=(const ReportBindings&) = delete;
   ~ReportBindings() override;
@@ -38,6 +40,7 @@ class ReportBindings : public Bindings {
   static void SendReportTo(const v8::FunctionCallbackInfo<v8::Value>& args);
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
+  const raw_ptr<AuctionV8Logger> v8_logger_;
 
   // This is cleared if an exception is thrown.
   std::optional<GURL> report_url_;

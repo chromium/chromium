@@ -78,7 +78,7 @@ void PepperPlayerDelegate::OnEnterPictureInPicture(int player_id) {
 void PepperPlayerDelegate::OnSetAudioSinkId(int player_id,
                                             const std::string& raw_device_id) {
   // Pepper player cannot change audio sinks. Do nothing.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PepperPlayerDelegate::OnSetMute(int player_id, bool mute) {}
@@ -91,6 +91,11 @@ std::optional<media_session::MediaPosition> PepperPlayerDelegate::GetPosition(
 }
 
 bool PepperPlayerDelegate::IsPictureInPictureAvailable(int player_id) const {
+  DCHECK_EQ(player_id, kPlayerId);
+  return false;
+}
+
+bool PepperPlayerDelegate::HasSufficientlyVisibleVideo(int player_id) const {
   DCHECK_EQ(player_id, kPlayerId);
   return false;
 }
@@ -113,6 +118,10 @@ bool PepperPlayerDelegate::HasAudio(int player_id) const {
 bool PepperPlayerDelegate::HasVideo(int player_id) const {
   // We don't actually know whether a pepper player has both audio/video.
   return true;
+}
+
+bool PepperPlayerDelegate::IsPaused(int player_id) const {
+  return false;
 }
 
 std::string PepperPlayerDelegate::GetAudioOutputSinkId(int player_id) const {

@@ -140,7 +140,7 @@ void ScriptController::DisableEvalForIsolatedWorld(
     int32_t world_id,
     const String& error_message) {
   DCHECK(DOMWrapperWorld::IsIsolatedWorldId(world_id));
-  scoped_refptr<DOMWrapperWorld> world =
+  DOMWrapperWorld* world =
       DOMWrapperWorld::EnsureIsolatedWorld(GetIsolate(), world_id);
   SetEvalForWorld(*world, false /* allow_eval */, error_message);
 }
@@ -149,7 +149,7 @@ void ScriptController::SetWasmEvalErrorMessageForIsolatedWorld(
     int32_t world_id,
     const String& error_message) {
   DCHECK(DOMWrapperWorld::IsIsolatedWorldId(world_id));
-  scoped_refptr<DOMWrapperWorld> world =
+  DOMWrapperWorld* world =
       DOMWrapperWorld::EnsureIsolatedWorld(GetIsolate(), world_id);
   SetWasmEvalErrorMessageForWorld(*world, /*allow_eval=*/false, error_message);
 }
@@ -227,6 +227,20 @@ v8::ExtensionConfiguration ScriptController::ExtensionsFor(
 
 void ScriptController::UpdateDocument() {
   window_proxy_manager_->UpdateDocument();
+}
+
+void ScriptController::DiscardFrame() {
+  DCHECK(window_->GetFrame());
+  auto* previous_document_loader =
+      window_->GetFrame()->Loader().GetDocumentLoader();
+  DCHECK(previous_document_loader);
+  auto params =
+      previous_document_loader->CreateWebNavigationParamsToCloneDocument();
+  WebNavigationParams::FillStaticResponse(params.get(), "text/html", "UTF-8",
+                                          base::span<const char>());
+  params->frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
+  window_->GetFrame()->Loader().CommitNavigation(std::move(params), nullptr,
+                                                 CommitReason::kDiscard);
 }
 
 void ScriptController::ExecuteJavaScriptURL(
@@ -364,9 +378,9 @@ v8::Isolate* ScriptController::GetIsolate() const {
   return window_proxy_manager_->GetIsolate();
 }
 
-scoped_refptr<DOMWrapperWorld>
-ScriptController::CreateNewInspectorIsolatedWorld(const String& world_name) {
-  scoped_refptr<DOMWrapperWorld> world = DOMWrapperWorld::Create(
+DOMWrapperWorld* ScriptController::CreateNewInspectorIsolatedWorld(
+    const String& world_name) {
+  DOMWrapperWorld* world = DOMWrapperWorld::Create(
       GetIsolate(), DOMWrapperWorld::WorldType::kInspectorIsolated);
   // Bail out if we could not create an isolated world.
   if (!world)

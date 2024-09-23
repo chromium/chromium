@@ -61,37 +61,6 @@ constexpr int kKiB = 1024;
 // Indicates whether we prefer to have more free CPU memory over GPU memory.
 constexpr bool kPreferCPUMemory = true;
 
-unsigned int NextPowerOfTwo(int a) {
-  DCHECK(a >= 0);
-  auto x = static_cast<unsigned int>(a);
-  --x;
-  x |= x >> 1u;
-  x |= x >> 2u;
-  x |= x >> 4u;
-  x |= x >> 8u;
-  x |= x >> 16u;
-  return x + 1;
-}
-
-unsigned int RoundUpMod4(int a) {
-  DCHECK(a >= 0);
-  auto x = static_cast<unsigned int>(a);
-  return (x + 3u) & ~3u;
-}
-
-gfx::Size GetEncodedSize(const gfx::Size& bitmap_size, bool supports_npot) {
-  DCHECK(bitmap_size.width() >= 0);
-  DCHECK(bitmap_size.height() >= 0);
-  DCHECK(!bitmap_size.IsEmpty());
-  if (!supports_npot) {
-    return gfx::Size(NextPowerOfTwo(bitmap_size.width()),
-                     NextPowerOfTwo(bitmap_size.height()));
-  } else {
-    return gfx::Size(RoundUpMod4(bitmap_size.width()),
-                     RoundUpMod4(bitmap_size.height()));
-  }
-}
-
 // Borrowed from GetDelayForNextMemoryLog() in browser_metrics.cc.
 //
 // A Poisson distributed delay with a mean of `mean_time` for computing time
@@ -464,11 +433,9 @@ void ThumbnailCache::CompressThumbnailIfNecessary(
           base::BindOnce(&ThumbnailCache::PostEtc1CompressionTask,
                          weak_factory_.GetWeakPtr(), tab_id, time_stamp, scale);
 
-  gfx::Size raw_data_size(bitmap.width(), bitmap.height());
-  gfx::Size encoded_size = GetEncodedSize(
-      raw_data_size, ui_resource_provider_->SupportsETC1NonPowerOfTwo());
-
-  etc1_helper_.Compress(bitmap, encoded_size, std::move(post_compression_task));
+  etc1_helper_.Compress(bitmap,
+                        ui_resource_provider_->SupportsETC1NonPowerOfTwo(),
+                        std::move(post_compression_task));
 
   if (save_jpeg_thumbnails_) {
     SaveAsJpeg(tab_id, std::move(tracker), bitmap);

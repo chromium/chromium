@@ -69,6 +69,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void SetBounds(const gfx::Rect& rect) override;
   gfx::NativeView GetNativeView() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
+  gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override;
   void Focus() override;
   bool HasFocus() override;
   void Hide() override;
@@ -126,6 +127,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
       base::OnceCallback<void(const SkBitmap&)> callback) override;
   ui::Compositor* GetCompositor() override;
   void GestureEventAck(const blink::WebGestureEvent& event,
+                       blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
   void ChildDidAckGestureEvent(
       const blink::WebGestureEvent& event,
@@ -150,10 +152,10 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void TransformPointToRootSurface(gfx::PointF* point) override;
   bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,
-      RenderWidgetHostViewBase* target_view,
+      input::RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point) override;
   void ProcessAckedTouchEvent(
-      const TouchEventWithLatencyInfo& touch,
+      const input::TouchEventWithLatencyInfo& touch,
       blink::mojom::InputEventResultState ack_result) override;
 
   // ui::CALayerFrameSink overrides:
@@ -167,6 +169,11 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void OnUpdateTextInputStateCalled(TextInputManager* text_input_manager,
                                     RenderWidgetHostViewBase* updated_view,
                                     bool did_update_state) override;
+  void OnTextSelectionChanged(TextInputManager* text_input_manager,
+                              RenderWidgetHostViewBase* updated_view) override;
+  void OnSelectionBoundsChanged(
+      TextInputManager* text_input_manager,
+      RenderWidgetHostViewBase* updated_view) override;
 
   // RenderFrameMetadataProvider::Observer implementation.
   void OnRenderFrameMetadataChangedBeforeActivation(

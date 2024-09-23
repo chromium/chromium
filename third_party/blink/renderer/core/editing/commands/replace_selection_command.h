@@ -57,10 +57,14 @@ class CORE_EXPORT ReplaceSelectionCommand final : public CompositeEditCommand {
 
   void Trace(Visitor*) const override;
 
+  String TextDataForInputEvent() const final;
+
  private:
   void DoApply(EditingState*) override;
   InputEvent::InputType GetInputType() const override;
   bool IsReplaceSelectionCommand() const override;
+  void HandleStyleSpansBeforeInsertion(ReplacementFragment& fragment,
+                                       const Position& insertion_pos);
 
   class InsertedNodes {
     STACK_ALLOCATED();
@@ -146,6 +150,7 @@ class CORE_EXPORT ReplaceSelectionCommand final : public CompositeEditCommand {
   InputEvent::InputType input_type_;
   const bool sanitize_fragment_;
   bool should_merge_end_;
+  String input_event_data_;
 
   Position start_of_inserted_range_;
   Position end_of_inserted_range_;

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // This file is here so other GLES2 related files can have a common set of
 // includes where appropriate.
 
@@ -250,9 +255,6 @@ class GLES2_UTILS_EXPORT GLES2Util {
                                         uint32_t* rt_unpadded_row_size,
                                         uint32_t* rt_padded_row_size,
                                         uint32_t* rt_padding);
-
-  static const EnumToString* const enum_to_string_table_;
-  static const size_t enum_to_string_table_len_;
 
   int num_compressed_texture_formats_;
   int num_shader_binary_formats_;

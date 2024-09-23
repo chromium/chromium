@@ -5,6 +5,7 @@
 #include "net/quic/quic_proxy_client_socket.h"
 
 #include <cstdio>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -220,7 +221,7 @@ int QuicProxyClientSocket::Write(
                                 buf->data());
 
   int rv = stream_->WriteStreamData(
-      base::StringPiece(buf->data(), buf_len), false,
+      std::string_view(buf->data(), buf_len), false,
       base::BindOnce(&QuicProxyClientSocket::OnWriteComplete,
                      weak_factory_.GetWeakPtr()));
   if (rv == OK)
@@ -305,7 +306,7 @@ int QuicProxyClientSocket::DoLoop(int last_io_result) {
             NetLogEventType::HTTP_TRANSACTION_TUNNEL_READ_HEADERS, rv);
         break;
       default:
-        NOTREACHED() << "bad state";
+        NOTREACHED_IN_MIGRATION() << "bad state";
         rv = ERR_UNEXPECTED;
         break;
     }
@@ -341,8 +342,11 @@ int QuicProxyClientSocket::DoSendRequest() {
 
   if (proxy_delegate_) {
     HttpRequestHeaders proxy_delegate_headers;
-    proxy_delegate_->OnBeforeTunnelRequest(proxy_chain_, proxy_chain_index_,
-                                           &proxy_delegate_headers);
+    int result = proxy_delegate_->OnBeforeTunnelRequest(
+        proxy_chain_, proxy_chain_index_, &proxy_delegate_headers);
+    if (result < 0) {
+      return result;
+    }
     request_.extra_headers.MergeFrom(proxy_delegate_headers);
   }
 
@@ -354,7 +358,7 @@ int QuicProxyClientSocket::DoSendRequest() {
                        NetLogEventType::HTTP_TRANSACTION_SEND_TUNNEL_HEADERS,
                        request_line, &request_.extra_headers);
 
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   CreateSpdyHeadersFromHttpRequest(request_, std::nullopt,
                                    request_.extra_headers, &headers);
 
@@ -430,7 +434,7 @@ int QuicProxyClientSocket::DoReadReplyComplete(int result) {
 }
 
 void QuicProxyClientSocket::OnReadResponseHeadersComplete(int result) {
-  // Convert the now-populated spdy::Http2HeaderBlock to HttpResponseInfo
+  // Convert the now-populated quiche::HttpHeaderBlock to HttpResponseInfo
   if (result > 0)
     result = ProcessResponseHeaders(response_header_block_);
 
@@ -439,7 +443,7 @@ void QuicProxyClientSocket::OnReadResponseHeadersComplete(int result) {
 }
 
 int QuicProxyClientSocket::ProcessResponseHeaders(
-    const spdy::Http2HeaderBlock& headers) {
+    const quiche::HttpHeaderBlock& headers) {
   if (SpdyHeadersToHttpResponse(headers, &response_) != OK) {
     DLOG(WARNING) << "Invalid headers";
     return ERR_QUIC_PROTOCOL_ERROR;

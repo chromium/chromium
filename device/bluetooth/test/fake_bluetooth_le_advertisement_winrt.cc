@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/win/reference.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/vector.h"

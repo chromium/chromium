@@ -189,7 +189,7 @@ TEST(UIResourceLayerImplTest, Occlusion) {
   impl.host_impl()->CreateUIResource(uid, bitmap);
 
   UIResourceLayerImpl* ui_resource_layer_impl =
-      impl.AddLayer<UIResourceLayerImpl>();
+      impl.AddLayerInActiveTree<UIResourceLayerImpl>();
   ui_resource_layer_impl->SetBounds(layer_size);
   ui_resource_layer_impl->SetDrawsContent(true);
   ui_resource_layer_impl->SetUIResourceId(uid);

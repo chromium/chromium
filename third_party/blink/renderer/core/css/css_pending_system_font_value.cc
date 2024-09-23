@@ -22,14 +22,6 @@ CSSPendingSystemFontValue* CSSPendingSystemFontValue::Create(
   return MakeGarbageCollected<CSSPendingSystemFontValue>(system_font_id);
 }
 
-const FontSelectionValue& CSSPendingSystemFontValue::ResolveFontStyle() const {
-  return LayoutThemeFontProvider::SystemFontStyle(system_font_id_);
-}
-
-const FontSelectionValue& CSSPendingSystemFontValue::ResolveFontWeight() const {
-  return LayoutThemeFontProvider::SystemFontWeight(system_font_id_);
-}
-
 const AtomicString& CSSPendingSystemFontValue::ResolveFontFamily() const {
   return LayoutThemeFontProvider::SystemFontFamily(system_font_id_);
 }

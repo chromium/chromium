@@ -109,7 +109,7 @@ TEST_F(ContentFaviconDriverTest, ShouldCauseImageDownload) {
 
 // Ensures that we do not consider a manifest URL if it arrives before the
 // onload handler has fired.
-// TODO(crbug.com/1205018): This may not necessarily the desired behavior, but
+// TODO(crbug.com/40180290): This may not necessarily the desired behavior, but
 // this test will prevent unintentional behavioral changes until the issue is
 // resolved.
 TEST_F(ContentFaviconDriverTest, IgnoreManifestURLBeforeOnLoad) {

@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "extensions/browser/api/socket/udp_socket.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/ranges/algorithm.h"
@@ -308,7 +313,7 @@ void UDPSocket::OnLeaveGroupCompleted(net::CompletionOnceCallback callback,
                                       const std::string& normalized_address,
                                       int result) {
   if (result == net::OK) {
-    base::Erase(multicast_groups_, normalized_address);
+    std::erase(multicast_groups_, normalized_address);
   }
 
   std::move(callback).Run(result);

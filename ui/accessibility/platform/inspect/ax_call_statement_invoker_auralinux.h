@@ -21,7 +21,7 @@ using Target =
     absl::variant<absl::monostate, std::string, int, const AtspiAccessible*>;
 
 // Optional tri-state object.
-using AXOptionalObject = ui::AXOptional<Target>;
+using AXOptionalObject = AXOptional<Target>;
 
 // Invokes a script instruction describing a call unit which represents
 // a sequence of calls.

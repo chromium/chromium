@@ -4,6 +4,8 @@
 
 package org.chromium.net.impl;
 
+import org.chromium.net.ConnectionCloseSource;
+
 import java.time.Duration;
 import java.util.List;
 
@@ -21,6 +23,8 @@ public abstract class CronetLogger {
         CRONET_SOURCE_FALLBACK,
         // The library is loaded through the bootclasspath.
         CRONET_SOURCE_PLATFORM,
+        // The application is using the fake implementation.
+        CRONET_SOURCE_FAKE,
     }
 
     /** Generates a new unique ID suitable for use as reference for cross-linking log events. */
@@ -54,7 +58,7 @@ public abstract class CronetLogger {
      */
     public abstract void logCronetTrafficInfo(long cronetEngineId, CronetTrafficInfo trafficInfo);
 
-    // TODO(https://crbug.com/1521339): consider using AutoValue for this.
+    // TODO(crbug.com/41494309): consider using AutoValue for this.
     public static final class CronetEngineBuilderInitializedInfo {
         public long cronetInitializationRef;
 
@@ -185,6 +189,19 @@ public abstract class CronetLogger {
      * particular CronetEngine.
      */
     public static class CronetTrafficInfo {
+        public static enum RequestTerminalState {
+            SUCCEEDED,
+            ERROR,
+            CANCELLED,
+        }
+
+        // TODO(b/355615357): Add more specific failure reasons.
+        public static enum RequestFailureReason {
+            UNKNOWN,
+            NETWORK,
+            OTHER,
+        }
+
         private final long mRequestHeaderSizeInBytes;
         private final long mRequestBodySizeInBytes;
         private final long mResponseHeaderSizeInBytes;
@@ -195,6 +212,18 @@ public abstract class CronetLogger {
         private final String mNegotiatedProtocol;
         private final boolean mWasConnectionMigrationAttempted;
         private final boolean mDidConnectionMigrationSucceed;
+        private final RequestTerminalState mTerminalState;
+        private final int mNonfinalUserCallbackExceptionCount;
+        private final int mReadCount;
+        private final int mOnUploadReadCount;
+        private final boolean mIsBidiStream;
+        private final boolean mFinalUserCallbackThrew;
+        private final int mUid;
+        private final int mNetworkInternalErrorCode;
+        private final int mQuicErrorCode;
+        private final @ConnectionCloseSource int mSource;
+        private final RequestFailureReason mFailureReason;
+        private final boolean mSocketReused;
 
         public CronetTrafficInfo(
                 long requestHeaderSizeInBytes,
@@ -206,7 +235,19 @@ public abstract class CronetLogger {
                 Duration totalLatency,
                 String negotiatedProtocol,
                 boolean wasConnectionMigrationAttempted,
-                boolean didConnectionMigrationSucceed) {
+                boolean didConnectionMigrationSucceed,
+                RequestTerminalState terminalState,
+                int nonfinalUserCallbackExceptionCount,
+                int readCount,
+                int uploadReadCount,
+                boolean isBidiStream,
+                boolean finalUserCallbackThrew,
+                int uid,
+                int networkInternalErrorCode,
+                int quicErrorCode,
+                @ConnectionCloseSource int source,
+                RequestFailureReason failureReason,
+                boolean sockedReused) {
             mRequestHeaderSizeInBytes = requestHeaderSizeInBytes;
             mRequestBodySizeInBytes = requestBodySizeInBytes;
             mResponseHeaderSizeInBytes = responseHeaderSizeInBytes;
@@ -217,9 +258,23 @@ public abstract class CronetLogger {
             mNegotiatedProtocol = negotiatedProtocol;
             mWasConnectionMigrationAttempted = wasConnectionMigrationAttempted;
             mDidConnectionMigrationSucceed = didConnectionMigrationSucceed;
+            mTerminalState = terminalState;
+            mNonfinalUserCallbackExceptionCount = nonfinalUserCallbackExceptionCount;
+            mReadCount = readCount;
+            mOnUploadReadCount = uploadReadCount;
+            mIsBidiStream = isBidiStream;
+            mFinalUserCallbackThrew = finalUserCallbackThrew;
+            mUid = uid;
+            mNetworkInternalErrorCode = networkInternalErrorCode;
+            mQuicErrorCode = quicErrorCode;
+            mSource = source;
+            mFailureReason = failureReason;
+            mSocketReused = sockedReused;
         }
 
-        /** @return The total size of headers sent in bytes */
+        /**
+         * @return The total size of headers sent in bytes
+         */
         public long getRequestHeaderSizeInBytes() {
             return mRequestHeaderSizeInBytes;
         }
@@ -277,6 +332,54 @@ public abstract class CronetLogger {
         /** @return True if the connection migration was attempted and succeeded, else False */
         public boolean didConnectionMigrationSucceed() {
             return mDidConnectionMigrationSucceed;
+        }
+
+        public RequestTerminalState getTerminalState() {
+            return mTerminalState;
+        }
+
+        public int getNonfinalUserCallbackExceptionCount() {
+            return mNonfinalUserCallbackExceptionCount;
+        }
+
+        public int getReadCount() {
+            return mReadCount;
+        }
+
+        public int getOnUploadReadCount() {
+            return mOnUploadReadCount;
+        }
+
+        public boolean getIsBidiStream() {
+            return mIsBidiStream;
+        }
+
+        public boolean getFinalUserCallbackThrew() {
+            return mFinalUserCallbackThrew;
+        }
+
+        public int getUid() {
+            return mUid;
+        }
+
+        public int getNetworkInternalErrorCode() {
+            return mNetworkInternalErrorCode;
+        }
+
+        public int getQuicErrorCode() {
+            return mQuicErrorCode;
+        }
+
+        public @ConnectionCloseSource int getConnectionCloseSource() {
+            return mSource;
+        }
+
+        public RequestFailureReason getFailureReason() {
+            return mFailureReason;
+        }
+
+        public boolean getIsSocketReused() {
+            return mSocketReused;
         }
     }
 

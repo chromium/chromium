@@ -24,7 +24,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -464,9 +463,11 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         }
 
         mPopupWindow.show();
-        assert sSkipShowCheckForTesting || mPopupWindow.isShowing()
-                : "TextBubble is not presented: " + mString;
-        if (!mPopupWindow.isShowing()) return;
+
+        boolean popupShowing = sSkipShowCheckForTesting || mPopupWindow.isShowing();
+        assert popupShowing : "TextBubble is not presented: " + mString;
+
+        if (!popupShowing) return;
 
         sBubbles.add(this);
         sCountSupplier.set(sBubbles.size());
@@ -663,8 +664,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
      */
     protected void updateTextStyle(TextView view, boolean isInverse) {
         if (isInverse) {
-            ApiCompatibilityUtils.setTextAppearance(
-                    view, R.style.TextAppearance_TextMediumThick_Accent1);
+            view.setTextAppearance(R.style.TextAppearance_TextMediumThick_Accent1);
         }
     }
 

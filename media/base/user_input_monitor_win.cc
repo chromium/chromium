@@ -6,8 +6,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -40,9 +42,8 @@ std::unique_ptr<RAWINPUTDEVICE> GetRawInputDevices(HWND hwnd, DWORD flags) {
 
 // This is the actual implementation of event monitoring. It's separated from
 // UserInputMonitorWin since it needs to be deleted on the UI thread.
-class UserInputMonitorWinCore
-    : public base::SupportsWeakPtr<UserInputMonitorWinCore>,
-      public base::CurrentThread::DestructionObserver,
+class UserInputMonitorWinCore final
+    : public base::CurrentThread::DestructionObserver,
       public ui::KeyboardHookObserver {
  public:
   enum EventBitMask {
@@ -70,6 +71,10 @@ class UserInputMonitorWinCore
   void StartMonitorWithMapping(base::WritableSharedMemoryMapping mapping);
   void StopMonitor();
 
+  base::WeakPtr<UserInputMonitorWinCore> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // Handles WM_INPUT messages.
   LRESULT OnInput(HRAWINPUT input_handle);
@@ -94,6 +99,8 @@ class UserInputMonitorWinCore
 
   bool pause_monitoring_ = false;
   bool start_monitoring_after_hook_removed_ = false;
+
+  base::WeakPtrFactory<UserInputMonitorWinCore> weak_ptr_factory_{this};
 };
 
 class UserInputMonitorWin : public UserInputMonitorBase {
@@ -251,10 +258,10 @@ LRESULT UserInputMonitorWinCore::OnInput(HRAWINPUT input_handle) {
   DCHECK_EQ(0u, result);
 
   // Retrieve the input record itself.
-  std::unique_ptr<uint8_t[]> buffer(new uint8_t[size]);
-  RAWINPUT* input = reinterpret_cast<RAWINPUT*>(buffer.get());
-  result = GetRawInputData(
-      input_handle, RID_INPUT, buffer.get(), &size, sizeof(RAWINPUTHEADER));
+  auto buffer = base::HeapArray<uint8_t>::Uninit(size);
+  RAWINPUT* input = reinterpret_cast<RAWINPUT*>(buffer.data());
+  result = GetRawInputData(input_handle, RID_INPUT, buffer.data(), &size,
+                           sizeof(RAWINPUTHEADER));
   if (result == static_cast<UINT>(-1)) {
     PLOG(ERROR) << "GetRawInputData() failed";
     return 0;
@@ -265,8 +272,8 @@ LRESULT UserInputMonitorWinCore::OnInput(HRAWINPUT input_handle) {
   if (input->header.dwType == RIM_TYPEKEYBOARD &&
       input->header.hDevice != NULL) {
     ui::EventType event = (input->data.keyboard.Flags & RI_KEY_BREAK)
-                              ? ui::ET_KEY_RELEASED
-                              : ui::ET_KEY_PRESSED;
+                              ? ui::EventType::kKeyReleased
+                              : ui::EventType::kKeyPressed;
     ui::KeyboardCode key_code =
         ui::KeyboardCodeForWindowsKeyCode(input->data.keyboard.VKey);
     counter_.OnKeyboardEvent(event, key_code);

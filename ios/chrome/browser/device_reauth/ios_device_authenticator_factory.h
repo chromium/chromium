@@ -7,7 +7,11 @@
 
 #import <memory>
 
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class DeviceAuthenticatorProxy;
 class IOSDeviceAuthenticator;
 
 namespace device_reauth {
@@ -15,6 +19,34 @@ class DeviceAuthParams;
 }
 
 @protocol ReauthenticationProtocol;
+
+// Singleton that owns all DeviceAuthenticatorProxy and associates them with
+// profiles.
+class DeviceAuthenticatorProxyFactory : public BrowserStateKeyedServiceFactory {
+ public:
+  // TODO(crbug.com/358301380): remove this method.
+  static DeviceAuthenticatorProxy* GetForBrowserState(ProfileIOS* profile);
+
+  static DeviceAuthenticatorProxy* GetForProfile(ProfileIOS* profile);
+  static DeviceAuthenticatorProxyFactory* GetInstance();
+
+ private:
+  friend class base::NoDestructor<DeviceAuthenticatorProxyFactory>;
+
+  friend std::unique_ptr<IOSDeviceAuthenticator> CreateIOSDeviceAuthenticator(
+      id<ReauthenticationProtocol> reauth_module,
+      ChromeBrowserState* browser_state,
+      const device_reauth::DeviceAuthParams& params);
+
+  DeviceAuthenticatorProxyFactory();
+  ~DeviceAuthenticatorProxyFactory() override;
+
+  // BrowserStateKeyedServiceFactory:
+  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      web::BrowserState* context) const override;
+  web::BrowserState* GetBrowserStateToUse(
+      web::BrowserState* context) const override;
+};
 
 // Creates an IOSDeviceAuthenticator. It is built on top of a
 // DeviceAuthenticatorProxy. `reauth_module` is the component that provides the

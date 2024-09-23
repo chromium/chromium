@@ -40,7 +40,7 @@ void DoNotOptimize(void* value) {
 // beginning of the decompression hook to ensure that the arrays are not
 // optimized away.
 //
-// TODO(https://crbug.com/998082): Check if dl_iterate_phdr can replace the
+// TODO(crbug.com/41478372): Check if dl_iterate_phdr can replace the
 // magic bytes approach.
 unsigned char g_dummy_cut_range_begin[8] = {0x2e, 0x2a, 0xee, 0xf6,
                                             0x45, 0x03, 0xd2, 0x50};
@@ -56,7 +56,7 @@ static void DecompressPage(void* cut_start,
                            void* page_start,
                            size_t page_size,
                            void* buffer) {
-  // TODO(https://crbug.com/998082): Update the method to work with arbitrary
+  // TODO(crbug.com/41478372): Update the method to work with arbitrary
   // block sizes.
 
   // This method is a stub to plug the decompression login into.
@@ -143,7 +143,7 @@ static void* WatcherThreadFunc(void* thread_args) {
   struct pollfd poll_fd = {.fd = args->uffd, .events = POLLIN};
   PollArrayPush(poll_array, poll_fd);
 
-  // TODO(https://crbug.com/998082): Use epoll instead
+  // TODO(crbug.com/41478372): Use epoll instead
   while (poll_array->size &&
          poll(poll_array->pollfd_array, poll_array->size, -1) >= 0) {
     for (int i = 0; i < poll_array->size; i++) {

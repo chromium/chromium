@@ -29,8 +29,7 @@ void FragmentPainter::PaintOutline(const PaintInfo& paint_info,
     return;
 
   OutlinePainter::PaintOutlineRects(paint_info, GetDisplayItemClient(),
-                                    outline_rects, info, style_to_use,
-                                    fragment.GetLayoutObject()->GetDocument());
+                                    outline_rects, info, style_to_use);
 }
 
 void FragmentPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
@@ -38,7 +37,7 @@ void FragmentPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
   DCHECK(paint_info.ShouldAddUrlMetadata());
 
   const PhysicalBoxFragment& fragment = PhysicalFragment();
-  if (fragment.Style().Visibility() != EVisibility::kVisible) {
+  if (fragment.Style().UsedVisibility() != EVisibility::kVisible) {
     return;
   }
 

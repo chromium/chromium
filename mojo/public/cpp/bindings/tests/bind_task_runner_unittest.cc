@@ -42,7 +42,6 @@ class TestTaskRunner : public base::SequencedTaskRunner {
                                   base::OnceClosure task,
                                   base::TimeDelta delay) override {
     NOTREACHED();
-    return false;
   }
 
   bool PostDelayedTask(const base::Location& from_here,

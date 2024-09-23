@@ -224,8 +224,9 @@ class ActivityIconLoaderOnIconsReadyTest : public ::testing::Test {
                       ActivityIconLoader::ActivityName("p2", "a2")));
     EXPECT_EQ(1U, activity_to_icons->count(
                       ActivityIconLoader::ActivityName("p3", "a3")));
-    if (!on_icon_ready_callback_.is_null())
+    if (!on_icon_ready_callback_.is_null()) {
       std::move(on_icon_ready_callback_).Run();
+    }
   }
 
   void WaitForIconReady() {

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
@@ -77,6 +78,7 @@ class DevToolsFileHelper {
   void Save(const std::string& url,
             const std::string& content,
             bool save_as,
+            bool is_base64,
             SaveCallback saveCallback,
             base::OnceClosure cancelCallback);
 
@@ -130,6 +132,7 @@ class DevToolsFileHelper {
                           platform_util::OpenOperationResult result);
   void SaveAsFileSelected(const std::string& url,
                           const std::string& content,
+                          bool is_base64,
                           SaveCallback callback,
                           const base::FilePath& path);
   void InnerAddFileSystem(const ShowInfoBarCallback& show_info_bar_callback,
@@ -144,9 +147,9 @@ class DevToolsFileHelper {
                         const std::vector<std::string>& added_paths,
                         const std::vector<std::string>& removed_paths);
 
-  content::WebContents* web_contents_;
-  Profile* profile_;
-  DevToolsFileHelper::Delegate* delegate_;
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<DevToolsFileHelper::Delegate> delegate_;
   typedef std::map<std::string, base::FilePath> PathsMap;
   PathsMap saved_files_;
   PrefChangeRegistrar pref_change_registrar_;

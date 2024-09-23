@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/layout/inline/inline_text_auto_space.h"
 
 #include <unicode/uchar.h>
@@ -52,8 +57,8 @@ class SpacingApplier {
                   const InlineItem* current_item,
                   const ComputedStyle& style) {
     DCHECK(current_item->TextShapeResult());
-    const float spacing = TextAutoSpace::GetSpacingWidth(style.GetFont());
-    const wtf_size_t* offset = offsets.begin();
+    const float spacing = TextAutoSpace::GetSpacingWidth(&style.GetFont());
+    auto offset = offsets.begin();
     if (!offsets.empty() && *offset == current_item->StartOffset()) {
       DCHECK(last_item_);
       // If the previous item's direction is from the left to the right, it is
@@ -112,7 +117,7 @@ class SpacingApplier {
 
 void InlineTextAutoSpace::Initialize(const InlineItemsData& data) {
   const HeapVector<InlineItem>& items = data.items;
-  if (UNLIKELY(items.empty())) {
+  if (items.empty()) [[unlikely]] {
     return;
   }
 
@@ -156,7 +161,7 @@ void InlineTextAutoSpace::Apply(InlineItemsData& data,
 
   Vector<wtf_size_t, 16> offsets;
   CHECK(!ranges_.empty());
-  const RunSegmenter::RunSegmenterRange* range = ranges_.begin();
+  auto range = ranges_.begin();
   std::optional<CharType> last_type = kOther;
 
   // The initial value does not matter, as the value is used for determine
@@ -171,20 +176,20 @@ void InlineTextAutoSpace::Apply(InlineItemsData& data,
       }
       continue;
     }
-    if (UNLIKELY(!item.Length())) {
+    if (!item.Length()) [[unlikely]] {
       // Empty items may not have `ShapeResult`. Skip it.
       continue;
     }
     DCHECK(offsets.empty());
     const ComputedStyle* style = item.Style();
     DCHECK(style);
-    if (UNLIKELY(style->TextAutospace() != ETextAutospace::kNormal)) {
+    if (style->TextAutospace() != ETextAutospace::kNormal) [[unlikely]] {
       applier.SetSpacing(offsets, &item, *style);
       last_type = kOther;
       continue;
     }
-    if (UNLIKELY(!style->IsHorizontalWritingMode()) &&
-        UNLIKELY(style->GetTextOrientation() == ETextOrientation::kUpright)) {
+    if (style->GetFontDescription().Orientation() ==
+        FontOrientation::kVerticalUpright) [[unlikely]] {
       applier.SetSpacing(offsets, &item, *style);
       // Upright non-ideographic characters are `kOther`.
       // https://drafts.csswg.org/css-text-4/#non-ideographic-letters
@@ -215,11 +220,15 @@ void InlineTextAutoSpace::Apply(InlineItemsData& data,
           const wtf_size_t saved_offset = offset;
           const CharType type = GetTypeAndNext(text, offset);
           DCHECK_NE(type, kIdeograph);
-          if (type == kLetterOrNumeral &&
-              LIKELY(last_direction == item.Direction())) {
+          if (type == kLetterOrNumeral && [&] {
+                if (last_direction == item.Direction()) [[likely]] {
+                  return true;
+                }
+                return false;
+              }()) {
             offsets.push_back(saved_offset);
-          } else if (UNLIKELY(last_direction == TextDirection::kLtr &&
-                              item.Direction() == TextDirection::kRtl)) {
+          } else if (last_direction == TextDirection::kLtr &&
+                     item.Direction() == TextDirection::kRtl) [[unlikely]] {
             // (1) Fall into the first case of RTL-LTR mixing text.
             // Given an index i which is the last character of item[a], add
             // spacing to the end of the last item if: str[i] is ideograph &&
@@ -253,8 +262,8 @@ void InlineTextAutoSpace::Apply(InlineItemsData& data,
              (last_type == kIdeograph && type == kLetterOrNumeral))) {
           if (last_direction == item.Direction()) {
             offsets.push_back(saved_offset);
-          } else if (UNLIKELY(last_direction == TextDirection::kRtl &&
-                              item.Direction() == TextDirection::kLtr)) {
+          } else if (last_direction == TextDirection::kRtl &&
+                     item.Direction() == TextDirection::kLtr) [[unlikely]] {
             // (2) Fall into the second case of RTL-LTR mixing text.
             // Given an index i which is the first character of item[a], add
             // spacing to the *offset* of i's glyph if: str[i] is ideograph &&

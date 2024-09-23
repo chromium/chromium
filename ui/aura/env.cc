@@ -4,8 +4,9 @@
 
 #include "ui/aura/env.h"
 
+#include <vector>
+
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -275,7 +276,7 @@ void Env::NotifyHostInitialized(WindowTreeHost* host) {
 }
 
 void Env::NotifyHostDestroyed(WindowTreeHost* host) {
-  base::Erase(window_tree_hosts_, host);
+  std::erase(window_tree_hosts_, host);
   for (EnvObserver& observer : observers_)
     observer.OnHostDestroyed(host);
 }
@@ -296,7 +297,7 @@ std::unique_ptr<ui::EventTargetIterator> Env::GetChildIterator() const {
 }
 
 ui::EventTargeter* Env::GetEventTargeter() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

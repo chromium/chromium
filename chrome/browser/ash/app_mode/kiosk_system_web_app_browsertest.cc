@@ -15,7 +15,7 @@ namespace ash {
 
 class KioskSystemWebAppTestDisabled : public WebKioskBaseTest {
  public:
-  KioskSystemWebAppTestDisabled() : WebKioskBaseTest() { SetUpSystemWebApps(); }
+  KioskSystemWebAppTestDisabled() { SetUpSystemWebApps(); }
   KioskSystemWebAppTestDisabled(const KioskSystemWebAppTestDisabled&) = delete;
   KioskSystemWebAppTestDisabled& operator=(
       const KioskSystemWebAppTestDisabled&) = delete;

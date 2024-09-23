@@ -4,24 +4,22 @@
 
 #include "device/fido/virtual_u2f_device.h"
 
+#include <cstdint>
 #include <memory>
 
-#include "base/functional/callback.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
-#include "device/fido/test_callback_receiver.h"
+#include "device/fido/virtual_fido_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
 
 namespace {
-
-using TestCallbackReceiver =
-    test::ValueCallbackReceiver<std::optional<std::vector<uint8_t>>>;
 
 void SendCommand(VirtualU2fDevice* device, base::span<const uint8_t> command) {
   device->DeviceTransact(fido_parsing_utils::Materialize(command),

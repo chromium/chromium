@@ -15,6 +15,7 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -22,11 +23,11 @@ import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpda
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -173,7 +174,7 @@ public class RuntimePermissionTestUtils {
         final PermissionUpdateWaiter permissionUpdateWaiter =
                 new PermissionUpdateWaiter(
                         expectPermissionAllowed ? "Granted" : "Denied", activity);
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(permissionUpdateWaiter));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(permissionUpdateWaiter));
 
         permissionTestRule.setUpUrl(testUrl);
 
@@ -187,8 +188,7 @@ public class RuntimePermissionTestUtils {
             // deny.
             PermissionTestRule.waitForDialog(activity);
             final ModalDialogManager manager =
-                    TestThreadUtils.runOnUiThreadBlockingNoException(
-                            activity::getModalDialogManager);
+                    ThreadUtils.runOnUiThreadBlocking(activity::getModalDialogManager);
             askPermissionDialogModel = manager.getCurrentDialogForTest();
 
             PermissionTestRule.replyToDialog(promptDecision, activity);
@@ -201,8 +201,7 @@ public class RuntimePermissionTestUtils {
 
         if (waitForMissingPermissionPrompt) {
             final ModalDialogManager manager =
-                    TestThreadUtils.runOnUiThreadBlockingNoException(
-                            activity::getModalDialogManager);
+                    ThreadUtils.runOnUiThreadBlocking(activity::getModalDialogManager);
 
             // Wait for the dialog that informs the user permissions are missing, when the initial
             // prompt is rejected or expected to not be shown.
@@ -220,11 +219,15 @@ public class RuntimePermissionTestUtils {
                     ((TextView) dialogText).getText(),
                     activity.getResources().getString(missingPermissionPromptTextId, appName));
 
-            TestThreadUtils.runOnUiThreadBlocking(
+            int dialogType = activity.getModalDialogManager().getCurrentType();
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         manager.getCurrentPresenterForTest()
                                 .dismissCurrentDialog(
-                                        DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                                        dialogType == ModalDialogType.APP
+                                                ? DialogDismissalCause
+                                                        .NAVIGATE_BACK_OR_TOUCH_OUTSIDE
+                                                : DialogDismissalCause.NAVIGATE_BACK);
                     });
         }
 
@@ -233,6 +236,6 @@ public class RuntimePermissionTestUtils {
             permissionUpdateWaiter.waitForNumUpdates(0);
         }
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(permissionUpdateWaiter));
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(permissionUpdateWaiter));
     }
 }

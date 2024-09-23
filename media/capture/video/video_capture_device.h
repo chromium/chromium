@@ -185,24 +185,28 @@ class CAPTURE_EXPORT VideoCaptureDevice
     // OnConsumerReportingUtilization(). This identifier is needed because
     // frames are consumed asynchronously and multiple frames can be "in flight"
     // at the same time.
-    virtual void OnIncomingCapturedData(const uint8_t* data,
-                                        int length,
-                                        const VideoCaptureFormat& frame_format,
-                                        const gfx::ColorSpace& color_space,
-                                        int clockwise_rotation,
-                                        bool flip_y,
-                                        base::TimeTicks reference_time,
-                                        base::TimeDelta timestamp,
-                                        int frame_feedback_id) = 0;
+    virtual void OnIncomingCapturedData(
+        const uint8_t* data,
+        int length,
+        const VideoCaptureFormat& frame_format,
+        const gfx::ColorSpace& color_space,
+        int clockwise_rotation,
+        bool flip_y,
+        base::TimeTicks reference_time,
+        base::TimeDelta timestamp,
+        std::optional<base::TimeTicks> capture_begin_timestamp,
+        int frame_feedback_id) = 0;
     // Convenience wrapper that passes in 0 as |frame_feedback_id|.
-    void OnIncomingCapturedData(const uint8_t* data,
-                                int length,
-                                const VideoCaptureFormat& frame_format,
-                                const gfx::ColorSpace& color_space,
-                                int clockwise_rotation,
-                                bool flip_y,
-                                base::TimeTicks reference_time,
-                                base::TimeDelta timestamp);
+    void OnIncomingCapturedData(
+        const uint8_t* data,
+        int length,
+        const VideoCaptureFormat& frame_format,
+        const gfx::ColorSpace& color_space,
+        int clockwise_rotation,
+        bool flip_y,
+        base::TimeTicks reference_time,
+        base::TimeDelta timestamp,
+        std::optional<base::TimeTicks> capture_begin_timestamp);
 
     // Captured a new video frame, data for which is stored in the
     // GpuMemoryBuffer pointed to by |buffer|.  The format of the frame is
@@ -218,13 +222,16 @@ class CAPTURE_EXPORT VideoCaptureDevice
         int clockwise_rotation,
         base::TimeTicks reference_time,
         base::TimeDelta timestamp,
+        std::optional<base::TimeTicks> capture_begin_timestamp,
         int frame_feedback_id) = 0;
     // Convenience wrapper that passes in 0 as |frame_feedback_id|.
-    void OnIncomingCapturedGfxBuffer(gfx::GpuMemoryBuffer* buffer,
-                                     const VideoCaptureFormat& frame_format,
-                                     int clockwise_rotation,
-                                     base::TimeTicks reference_time,
-                                     base::TimeDelta timestamp);
+    void OnIncomingCapturedGfxBuffer(
+        gfx::GpuMemoryBuffer* buffer,
+        const VideoCaptureFormat& frame_format,
+        int clockwise_rotation,
+        base::TimeTicks reference_time,
+        base::TimeDelta timestamp,
+        std::optional<base::TimeTicks> capture_begin_timestamp);
 
     // Captured a new video frame. The data for this frame is in
     // |buffer.handle|, which is owned by the platform-specific capture device.
@@ -239,6 +246,7 @@ class CAPTURE_EXPORT VideoCaptureDevice
         CapturedExternalVideoBuffer buffer,
         base::TimeTicks reference_time,
         base::TimeDelta timestamp,
+        std::optional<base::TimeTicks> capture_begin_timestamp,
         const gfx::Rect& visible_rect) = 0;
 
     // Reserve an output buffer into which contents can be captured directly.
@@ -247,7 +255,10 @@ class CAPTURE_EXPORT VideoCaptureDevice
     // of |dimensions| frame dimensions. It is permissible for |dimensions| to
     // be zero; in which case the returned Buffer does not guarantee memory
     // backing, but functions as a reservation for external input for the
-    // purposes of buffer throttling.
+    // purposes of buffer throttling. |require_new_buffer_id| and
+    // |retire_old_buffer_id| returns the NEW and/or RETIRED buffer id which
+    // needs to notify the buffer pool synchronizer to register or retire the
+    // buffer object.
     //
     // The buffer stays reserved for use by the caller as long as it
     // holds on to the contained |buffer_read_write_permission|.
@@ -255,17 +266,21 @@ class CAPTURE_EXPORT VideoCaptureDevice
         const gfx::Size& dimensions,
         VideoPixelFormat format,
         int frame_feedback_id,
-        Buffer* buffer) = 0;
+        Buffer* buffer,
+        int* require_new_buffer_id,
+        int* retire_old_buffer_id) = 0;
 
     // Provides VCD::Client with a populated Buffer containing the content of
     // the next video frame. The |buffer| must originate from an earlier call to
     // ReserveOutputBuffer().
     // See OnIncomingCapturedData for details of |reference_time| and
     // |timestamp|.
-    virtual void OnIncomingCapturedBuffer(Buffer buffer,
-                                          const VideoCaptureFormat& format,
-                                          base::TimeTicks reference_time,
-                                          base::TimeDelta timestamp) = 0;
+    virtual void OnIncomingCapturedBuffer(
+        Buffer buffer,
+        const VideoCaptureFormat& format,
+        base::TimeTicks reference_time,
+        base::TimeDelta timestamp,
+        std::optional<base::TimeTicks> capture_begin_timestamp) = 0;
 
     // Extended version of OnIncomingCapturedBuffer() allowing clients to
     // pass a custom |visible_rect| and |additional_metadata|.
@@ -275,6 +290,7 @@ class CAPTURE_EXPORT VideoCaptureDevice
         const gfx::ColorSpace& color_space,
         base::TimeTicks reference_time,
         base::TimeDelta timestamp,
+        std::optional<base::TimeTicks> capture_begin_timestamp,
         gfx::Rect visible_rect,
         const VideoFrameMetadata& additional_metadata) = 0;
 
@@ -398,7 +414,7 @@ class CAPTURE_EXPORT VideoCaptureDevice
   // Asynchronously takes a photo, possibly reconfiguring the capture objects
   // and/or interrupting the capture flow. Runs |callback|, if the photo was
   // successfully taken. On failure, drops callback without invoking it.
-  // Note that |callback| may be runned on a thread different than the thread
+  // Note that |callback| may be run on a thread different than the thread
   // where TakePhoto() was called.
   using TakePhotoCallback = base::OnceCallback<void(mojom::BlobPtr blob)>;
   virtual void TakePhoto(TakePhotoCallback callback);

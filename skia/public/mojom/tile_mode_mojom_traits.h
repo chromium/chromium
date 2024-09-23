@@ -25,7 +25,6 @@ struct EnumTraits<skia::mojom::TileMode, SkTileMode> {
         return skia::mojom::TileMode::DECAL;
     }
     NOTREACHED();
-    return skia::mojom::TileMode::DECAL;
   }
 
   static bool FromMojom(skia::mojom::TileMode input, SkTileMode* out) {

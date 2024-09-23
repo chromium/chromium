@@ -5,52 +5,35 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_RE_SIGNIN_INFOBAR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_RE_SIGNIN_INFOBAR_DELEGATE_H_
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
 #import "base/memory/raw_ptr.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
-#include "components/infobars/core/infobar.h"
-#include "ui/gfx/image/image.h"
+#import "base/scoped_observation.h"
+#import "components/infobars/core/confirm_infobar_delegate.h"
+#import "components/infobars/core/infobar.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "ui/gfx/image/image.h"
 
-class ChromeBrowserState;
+@class AppState;
+class AuthenticationService;
 @protocol SigninPresenter;
 
-namespace infobars {
-class InfoBarManager;
-}  // namespace infobars
-
-namespace web {
-class WebState;
-}  // namespace web
-
 // A confirmation infobar prompting user to bring up the sign-in screen.
-class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate {
+class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate,
+                                public signin::IdentityManager::Observer {
  public:
-  ReSignInInfoBarDelegate(ChromeBrowserState* browser_state,
-                          id<SigninPresenter> presenter);
+  // Returns nullptr if the infobar must not be shown.
+  static std::unique_ptr<ReSignInInfoBarDelegate> Create(
+      AuthenticationService* authentication_service,
+      signin::IdentityManager* identity_manager,
+      AppState* app_state,
+      id<SigninPresenter> signin_presenter);
 
   ReSignInInfoBarDelegate(const ReSignInInfoBarDelegate&) = delete;
   ReSignInInfoBarDelegate& operator=(const ReSignInInfoBarDelegate&) = delete;
 
   ~ReSignInInfoBarDelegate() override;
-
-  // Creates a re-sign-in error infobar and adds it to the `web_state`. Returns
-  // whether the infobar was actually added.
-  static bool Create(ChromeBrowserState* browser_state,
-                     web::WebState* web_state,
-                     id<SigninPresenter> presenter);
-
-  // Creates a re-sign-in error infobar, but does not add it to tab content.
-  static std::unique_ptr<infobars::InfoBar> CreateInfoBar(
-      infobars::InfoBarManager* infobar_manager,
-      ChromeBrowserState* browser_state,
-      id<SigninPresenter> presenter);
-
-  // Creates a re-sign-in error infobar delegate, visible for testing.
-  static std::unique_ptr<ReSignInInfoBarDelegate> CreateInfoBarDelegate(
-      ChromeBrowserState* browser_state,
-      id<SigninPresenter> presenter);
 
   // InfobarDelegate implementation.
   InfoBarIdentifier GetIdentifier() const override;
@@ -65,10 +48,20 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool Accept() override;
   void InfoBarDismissed() override;
 
+  // IdentityManager::Observer.
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
+
  private:
-  raw_ptr<ChromeBrowserState> browser_state_;
-  gfx::Image icon_;
-  id<SigninPresenter> presenter_;
+  ReSignInInfoBarDelegate(AuthenticationService* authentication_service,
+                          signin::IdentityManager* identity_manager,
+                          id<SigninPresenter> signin_presenter);
+
+  const raw_ptr<AuthenticationService> authentication_service_;
+  const id<SigninPresenter> signin_presenter_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observer_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_RE_SIGNIN_INFOBAR_DELEGATE_H_

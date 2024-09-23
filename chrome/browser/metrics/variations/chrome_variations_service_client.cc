@@ -10,7 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/metrics/variations/google_groups_updater_service_factory.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -19,7 +19,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/seed_response.h"
-#include "components/variations/service/google_groups_updater_service.h"
+#include "components/variations/service/google_groups_manager.h"
 #include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/synthetic_trials.h"
@@ -35,8 +35,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -162,11 +162,4 @@ void ChromeVariationsServiceClient::
   for (const auto& profile : variations_profiles_to_delete) {
     variations_prefs_dict.Remove(profile);
   }
-}
-
-void ChromeVariationsServiceClient::RegisterLimitedEntropySyntheticTrial(
-    std::string_view group_name) {
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      variations::kLimitedEntropySyntheticTrialName, group_name,
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }

@@ -20,7 +20,7 @@ chrome.test.runTests([
       chrome.test.log("Creating tab...");
       var test_url = ("http://a.com:PORT/extensions/api_test" +
           "/content_scripts/other_extensions/iframe_content.html#" +
-          escape(chrome.extension.getURL("test.html")))
+          escape(chrome.runtime.getURL("test.html")))
           .replace(/PORT/, config.testServer.port);
       console.log('Opening frame: ' + test_url);
       document.getElementById('content_frame').src = test_url;

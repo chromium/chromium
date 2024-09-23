@@ -17,6 +17,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 
 namespace ui {
 class DataTransferEndpoint;
@@ -50,10 +51,10 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
       absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
       content::RenderFrameHost* rfh,
       base::OnceCallback<void(bool)> paste_cb) override;
-  void DropIfAllowed(
-      const ui::OSExchangeData* drag_data,
-      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-      base::OnceClosure drop_cb) override;
+  void DropIfAllowed(std::optional<ui::DataTransferEndpoint> data_src,
+                     std::optional<ui::DataTransferEndpoint> data_dst,
+                     std::optional<std::vector<ui::FileInfo>> filenames,
+                     base::OnceClosure drop_cb) override;
 
  protected:
   explicit DataTransferDlpController(const DlpRulesManager& dlp_rules_manager);
@@ -127,10 +128,9 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
       bool is_clipboard_event,
       const DlpRulesManager::RuleMetadata& rule_metadata);
 
-  void ContinueDropIfAllowed(
-      base::optional_ref<const ui::DataTransferEndpoint> data_src,
-      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-      base::OnceClosure drop_cb);
+  void ContinueDropIfAllowed(std::optional<ui::DataTransferEndpoint> data_src,
+                             std::optional<ui::DataTransferEndpoint> data_dst,
+                             base::OnceClosure drop_cb);
 
   // Performs clipbpoard restriction related checks.
   void ContinuePasteIfClipboardRestrictionsAllow(

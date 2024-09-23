@@ -61,7 +61,7 @@ const net::NetworkTrafficAnnotationTag kEarlyHintsPreloadTrafficAnnotation =
       cookies_store: "user"
       setting:
         "This feature cannot be disabled by Settings. This feature is not "
-        "enabled by default yet. TODO(crbug.com/671310): Update this "
+        "enabled by default yet. TODO(crbug.com/40496584): Update this "
         "description once the feature is ready."
       chrome_policy {
         URLBlocklist {
@@ -97,7 +97,7 @@ network::mojom::CSPDirectiveName LinkAsAttributeToCSPDirective(
     case network::mojom::LinkAsAttribute::kFetch:
       return network::mojom::CSPDirectiveName::ConnectSrc;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return network::mojom::CSPDirectiveName::Unknown;
 }
 
@@ -117,14 +117,15 @@ bool CheckContentSecurityPolicyForPreload(
            network::CSPFallbackDirective(effective_directive, directive)) {
     for (auto& policy : content_security_policies) {
       const auto& it = policy->directives.find(effective_directive);
-      if (it == policy->directives.end())
+      if (it == policy->directives.end()) {
         continue;
+      }
 
-      if (!network::CheckCSPSourceList(
-              directive, *it->second, link->href, *(policy->self_origin),
-              /*has_followed_redirect=*/false, /*is_response_check=*/false,
-              /*is_opaque_fenced_frame=*/false)) {
-        // TODO(https://crbug.com/1305896): Report CSP violation once the final
+      if (!network::CheckCSPSourceList(directive, *it->second, link->href,
+                                       *(policy->self_origin),
+                                       /*has_followed_redirect=*/false,
+                                       /*is_opaque_fenced_frame=*/false)) {
+        // TODO(crbug.com/40218207): Report CSP violation once the final
         // response is received.
         return false;
       }
@@ -174,7 +175,7 @@ network::mojom::RequestMode CalculateRequestMode(
     case network::mojom::CrossOriginAttribute::kUseCredentials:
       return network::mojom::RequestMode::kCors;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return network::mojom::RequestMode::kSameOrigin;
 }
 
@@ -194,7 +195,7 @@ network::mojom::CredentialsMode CalculateCredentialsMode(
     case network::mojom::CrossOriginAttribute::kAnonymous:
       return network::mojom::CredentialsMode::kSameOrigin;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return network::mojom::CredentialsMode::kOmit;
 }
 
@@ -253,8 +254,9 @@ bool NavigationEarlyHintsManager::PreconnectEntry::operator==(
 
 bool NavigationEarlyHintsManager::PreconnectEntry::operator<(
     const PreconnectEntry& other) const {
-  if (origin == other.origin)
+  if (origin == other.origin) {
     return cross_origin < other.cross_origin;
+  }
   return origin < other.origin;
 }
 
@@ -309,8 +311,9 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
       return;
     }
 
-    if (!body)
+    if (!body) {
       return;
+    }
 
     if (response_body_drainer_) {
       mojo::ReportBadMessage("NEHM_BAD_RESPONSE_BODY");
@@ -324,7 +327,7 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
     network::RecordOnTransferSizeUpdatedUMA(
@@ -341,7 +344,7 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
   }
 
   // mojo::DataPipeDrainer::Client overrides:
-  void OnDataAvailable(const void* data, size_t num_bytes) override {}
+  void OnDataAvailable(base::span<const uint8_t> data) override {}
   void OnDataComplete() override {
     DCHECK(response_body_drainer_);
     response_body_drainer_.reset();
@@ -349,10 +352,12 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
   }
 
   bool CanCompletePreload() {
-    if (result_.was_canceled)
+    if (result_.was_canceled) {
       return true;
-    if (result_.error_code.has_value() && !response_body_drainer_)
+    }
+    if (result_.error_code.has_value() && !response_body_drainer_) {
       return true;
+    }
     return false;
   }
 
@@ -373,7 +378,7 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
 NavigationEarlyHintsManager::NavigationEarlyHintsManager(
     BrowserContext& browser_context,
     StoragePartition& storage_partition,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     NavigationEarlyHintsManagerParams params)
     : browser_context_(browser_context),
       storage_partition_(storage_partition),
@@ -405,7 +410,7 @@ void NavigationEarlyHintsManager::HandleEarlyHints(
       Referrer::ReferrerPolicyForUrlRequest(early_hints->referrer_policy);
 
   for (const auto& link : early_hints->headers->link_headers) {
-    // TODO(crbug.com/671310): Support other `rel` attributes.
+    // TODO(crbug.com/40496584): Support other `rel` attributes.
     if (link->rel == network::mojom::LinkRelAttribute::kPreconnect) {
       MaybePreconnect(link);
     } else if (link->rel == network::mojom::LinkRelAttribute::kPreload ||
@@ -432,10 +437,11 @@ bool NavigationEarlyHintsManager::HasInflightPreloads() const {
 void NavigationEarlyHintsManager::WaitForPreloadsFinishedForTesting(
     base::OnceCallback<void(PreloadedResources)> callback) {
   DCHECK(!preloads_completion_callback_for_testing_);
-  if (inflight_preloads_.empty())
+  if (inflight_preloads_.empty()) {
     std::move(callback).Run(preloaded_resources_);
-  else
+  } else {
     preloads_completion_callback_for_testing_ = std::move(callback);
+  }
 }
 
 void NavigationEarlyHintsManager::SetNetworkContextForTesting(
@@ -447,8 +453,9 @@ void NavigationEarlyHintsManager::SetNetworkContextForTesting(
 
 network::mojom::NetworkContext*
 NavigationEarlyHintsManager::GetNetworkContext() {
-  if (network_context_for_testing_)
+  if (network_context_for_testing_) {
     return network_context_for_testing_;
+  }
 
   return storage_partition_->GetNetworkContext();
 }
@@ -457,16 +464,19 @@ void NavigationEarlyHintsManager::MaybePreconnect(
     const network::mojom::LinkHeaderPtr& link) {
   was_resource_hints_received_ = true;
 
-  if (!ShouldHandleResourceHints(link))
+  if (!ShouldHandleResourceHints(link)) {
     return;
+  }
 
   PreconnectEntry entry(url::Origin::Create(link->href), link->cross_origin);
-  if (preconnect_entries_.contains(entry))
+  if (preconnect_entries_.contains(entry)) {
     return;
+  }
 
   network::mojom::NetworkContext* network_context = GetNetworkContext();
-  if (!network_context)
+  if (!network_context) {
     return;
+  }
 
   bool allow_credentials =
       link->cross_origin != network::mojom::CrossOriginAttribute::kAnonymous;
@@ -489,8 +499,9 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
 
   was_resource_hints_received_ = true;
 
-  if (!ShouldHandleResourceHints(link))
+  if (!ShouldHandleResourceHints(link)) {
     return;
+  }
 
   // Step 2. If options's destination is not a destination, then return null.
   // https://html.spec.whatwg.org/multipage/semantics.html#create-a-link-request
@@ -500,8 +511,9 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
     return;
   }
 
-  if (!CheckContentSecurityPolicyForPreload(link, content_security_policies))
+  if (!CheckContentSecurityPolicyForPreload(link, content_security_policies)) {
     return;
+  }
 
   if (inflight_preloads_.contains(link->href) ||
       preloaded_resources_.contains(link->href)) {
@@ -536,7 +548,7 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
           base::BindRepeating(&WebContents::FromFrameTreeNodeId,
                               frame_tree_node_id_),
           /*navigation_ui_data=*/nullptr, frame_tree_node_id_,
-          /*navigation_id=*/absl::nullopt);
+          /*navigation_id=*/std::nullopt);
 
   auto loader_client = std::make_unique<PreloadURLLoaderClient>(*this, request);
   auto loader = blink::ThrottlingURLLoader::CreateLoaderAndStart(
@@ -554,8 +566,9 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
 
 bool NavigationEarlyHintsManager::ShouldHandleResourceHints(
     const network::mojom::LinkHeaderPtr& link) {
-  if (!link->href.SchemeIsHTTPOrHTTPS())
+  if (!link->href.SchemeIsHTTPOrHTTPS()) {
     return false;
+  }
   return true;
 }
 
@@ -572,12 +585,12 @@ void NavigationEarlyHintsManager::OnPreloadComplete(
         .Run(preloaded_resources_);
   }
 
-  // TODO(crbug.com/671310): Consider to delete `this` when there is no inflight
-  // preloads.
+  // TODO(crbug.com/40496584): Consider to delete `this` when there is no
+  // inflight preloads.
 }
 
 // Used to determine a priority for a speculative subresource request.
-// TODO(crbug.com/671310): This is almost the same as GetRequestPriority() in
+// TODO(crbug.com/40496584): This is almost the same as GetRequestPriority() in
 // loading_predictor_tab_helper.cc and the purpose is the same. Consider merging
 // them if the logic starts to be more mature.
 // platform/loader/fetch/README.md in blink contains more details on
@@ -614,7 +627,7 @@ net::RequestPriority NavigationEarlyHintsManager::CalculateRequestPriority(
           return net::IDLE;
       }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace content

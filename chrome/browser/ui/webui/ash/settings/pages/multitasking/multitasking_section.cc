@@ -16,18 +16,20 @@
 namespace ash::settings {
 
 namespace mojom {
-using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
-using ::chromeos::settings::mojom::Section;
-using ::chromeos::settings::mojom::Setting;
-using ::chromeos::settings::mojom::Subpage;
+using chromeos::settings::mojom::kPersonalizationSectionPath;
+using chromeos::settings::mojom::kSystemPreferencesSectionPath;
+using chromeos::settings::mojom::Section;
+using chromeos::settings::mojom::Setting;
+using chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
 
-const std::vector<SearchConcept>& GetSnapWindowSuggestionsSearchConcepts() {
+const std::vector<SearchConcept>& GetSnapWindowSuggestionsSearchConcepts(
+    const char* section_path) {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW,
-       mojom::kSystemPreferencesSectionPath,
+       section_path,
        mojom::SearchResultIcon::kSnapWindowSuggestions,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -48,12 +50,10 @@ MultitaskingSection::MultitaskingSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry) {
   CHECK(profile);
   CHECK(search_tag_registry);
-  CHECK(ash::features::IsOsSettingsRevampWayfindingEnabled());
 
-  if (ShouldShowMultitasking()) {
-    SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-    updater.AddSearchTags(GetSnapWindowSuggestionsSearchConcepts());
-  }
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.AddSearchTags(
+      GetSnapWindowSuggestionsSearchConcepts(GetSectionPath()));
 }
 
 MultitaskingSection::~MultitaskingSection() = default;
@@ -70,6 +70,8 @@ void MultitaskingSection::AddLoadTimeData(
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddBoolean("shouldShowMultitasking", ShouldShowMultitasking());
+  html_source->AddBoolean("shouldShowMultitaskingInPersonalization",
+                          ShouldShowMultitaskingInPersonalization());
 }
 
 void MultitaskingSection::AddHandlers(content::WebUI* web_ui) {
@@ -84,16 +86,19 @@ mojom::Section MultitaskingSection::GetSection() const {
   // Note: This is a subsection that exists under System Preferences. This is
   // not a top-level section and does not have a respective declaration in
   // chromeos::settings::mojom::Section.
-  return mojom::Section::kSystemPreferences;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::Section::kSystemPreferences
+             : mojom::Section::kPersonalization;
 }
 
 mojom::SearchResultIcon MultitaskingSection::GetSectionIcon() const {
-  // TODO(sophiewen): See if we should use a different section icon.
-  return mojom::SearchResultIcon::kSystemPreferences;
+  return mojom::SearchResultIcon::kSnapWindowSuggestions;
 }
 
 const char* MultitaskingSection::GetSectionPath() const {
-  return mojom::kSystemPreferencesSectionPath;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::kSystemPreferencesSectionPath
+             : mojom::kPersonalizationSectionPath;
 }
 
 bool MultitaskingSection::LogMetric(mojom::Setting setting,

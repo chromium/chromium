@@ -1,0 +1,314 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit cr-icons-lit sp-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+sp-heading {
+  margin: 0 0 8px;
+}
+
+.content {
+  margin: 16px 16px 8px;
+  position: relative;
+}
+
+#error {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  line-height: 20px;
+}
+
+#errorTitle {
+  color: var(--color-side-panel-card-primary-foreground);
+  flex-basis: 100%;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+#errorDescription {
+  color: var(--color-side-panel-card-secondary-foreground);
+  flex-basis: 100%;
+  font-size: 13px;
+}
+
+#errorCTA {
+  background-color: var(
+      --color-side-panel-wallpaper-search-error-button-background);
+  border-color: var(
+      --color-side-panel-wallpaper-search-error-button-background);
+  color: var(
+      --color-side-panel-wallpaper-search-error-button-text);
+  margin-inline-start: auto;
+  min-width: auto;
+}
+
+customize-chrome-combobox {
+  color: var(--color-side-panel-card-primary-foreground);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+#descriptorComboboxA {
+  width: 100%;
+}
+
+#optionalDetails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+#optionalDetailsLabel {
+  color: var(--color-side-panel-card-secondary-foreground);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  width: 100%;
+}
+
+#optionalDetails customize-chrome-combobox {
+  width: 132px;
+}
+
+#descriptorComboboxB,
+#descriptorComboboxC {
+  flex-grow: 1;
+}
+
+#descriptorMenuD {
+  --cr-column-width: 1fr;
+  --cr-grid-gap: 6.5px;
+  --cr-grid-width: 100%;
+  margin-top: 8px;
+  width: 100%;
+}
+
+#descriptorMenuD button {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-menu-button-background);
+  border-radius: 8px;
+  border: 0;
+  padding: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+#descriptorMenuD button:hover::before {
+  display: block;
+  content: '';
+  inset: 0;
+  position: absolute;
+  background-color: var(--cr-hover-background-color);
+}
+
+#descriptorMenuD button cr-ripple {
+  --paper-ripple-opacity: 1;
+  color: var(--cr-active-background-color);
+}
+
+:host-context(.focus-outline-visible) #descriptorMenuD button:focus {
+  outline: 2px solid var(--cr-focus-outline-color);
+  outline-offset: 2px;
+}
+
+.color-check-mark {
+  --customize-chrome-check-mark-wrapper-end: -2px;
+  --customize-chrome-check-mark-wrapper-size: 16px;
+  --customize-chrome-check-mark-wrapper-top: -2px;
+}
+
+.descriptor-d {
+  border-radius: 50%;
+  display: block;
+  height: 28px;
+  width: 28px;
+}
+
+@media (forced-colors: active) {
+  #descriptorMenuD button {
+    border: solid 1px ButtonBorder;
+  }
+
+  .descriptor-d {
+    forced-color-adjust: none;
+  }
+}
+
+#colorPickerIcon {
+  -webkit-mask-image: url(chrome://resources/images/colorize.svg);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100%;
+  background-color: var(
+      --color-theme-color-picker-custom-color-icon-background,
+      var(--cr-fallback-color-on-surface-subtle));
+  height: 16px;
+  left: calc(50% - 8px);
+  pointer-events: none;
+  position: absolute;
+  top: calc(50% - 8px);
+  width: 16px;
+}
+
+#deleteSelectedHueButton {
+  --cr-icon-image: url(icons/delete.svg);
+  margin-inline-start: 0;
+  margin-inline-end: -24px;
+}
+
+#btnContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+#imageIcon {
+  --cr-icon-color: currentColor;
+  --cr-icon-image: url(icons/generated_image.svg);
+  --cr-icon-size: 20px;
+  height: 20px;
+  margin-inline-end: 0;
+  margin-inline-start: 0;
+  width: 20px;
+}
+
+.sp-hr {
+  margin: 16px 0;
+}
+
+cr-grid {
+  --cr-column-width: 1fr;
+  --cr-grid-gap: 10px;
+  --cr-grid-width: 100%;
+  display: block;
+}
+
+.tile {
+  outline-width: 0;
+  place-self: stretch;
+}
+
+:host-context(.focus-outline-visible) .tile:focus {
+  box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+}
+
+.result {
+  background: none;
+  cursor: pointer;
+}
+
+.result img {
+  height: 100%;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.image-check-mark {
+  --customize-chrome-check-mark-wrapper-end: -4px;
+  --customize-chrome-check-mark-wrapper-size: 20px;
+  --customize-chrome-check-mark-wrapper-top: -6px;
+}
+
+.image-check-mark[checked] .image-container {
+  padding-top: calc(100% - 4px);
+  width: calc(100% - 4px);
+}
+
+.image-container {
+  background-color: var(
+      --color-side-panel-wallpaper-search-tile-background);
+  border-radius: 12px;
+  overflow: hidden;
+  padding-top: 100%;
+  position: relative;
+  width: 100%;
+}
+
+.image-container img {
+  position: absolute;
+}
+
+@media (forced-colors: active) {
+  :host-context(.focus-outline-visible) .tile:focus {
+    /* Set outline to hcm (high contrast mode) value. */
+    outline: var(--cr-focus-outline-hcm);
+  }
+}
+
+#footer {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  margin-block-start: 16px;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--color-side-panel-card-secondary-foreground);
+}
+
+#footer a {
+  color: var(--cr-link-color);
+}
+
+.inspirations-content {
+  margin-bottom: 8px;
+  margin-inline-end: 16px;
+  margin-inline-start: 16px;
+}
+
+.inspirations-content h3 {
+  margin: 0;
+}
+
+.inspiration-title {
+  color: var(--color-side-panel-wallpaper-search-inspiration-descriptors);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  width: 100%;
+  margin-bottom: 8px;
+  margin-top: 8px;
+}
+
+#inspirationCard .tile {
+  margin-bottom: 8px;
+}
+
+#inspirationToggle {
+  cursor: pointer;
+}
+
+#inspirationToggle:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+#inspirationToggle .cr-icon {
+  margin-inline-start: 0;
+}
+
+.collapse-carets {
+  --cr-icon-image: url(icons/collapse_carets.svg);
+}
+
+.expand-carets {
+  --cr-icon-image: url(icons/expand_carets.svg);
+}

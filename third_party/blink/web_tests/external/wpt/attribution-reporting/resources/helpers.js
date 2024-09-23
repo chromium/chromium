@@ -16,8 +16,9 @@ const resetWptServer = () =>
           resetAttributionReports(eventLevelReportsUrl),
           resetAttributionReports(aggregatableReportsUrl),
           resetAttributionReports(eventLevelDebugReportsUrl),
-          resetAttributionReports(aggregatableDebugReportsUrl),
+          resetAttributionReports(attributionSuccessDebugAggregatableReportsUrl),
           resetAttributionReports(verboseDebugReportsUrl),
+          resetAttributionReports(aggregatableDebugReportsUrl),
           resetRegisteredSources(),
         ]);
 
@@ -27,10 +28,12 @@ const eventLevelDebugReportsUrl =
     '/.well-known/attribution-reporting/debug/report-event-attribution';
 const aggregatableReportsUrl =
     '/.well-known/attribution-reporting/report-aggregate-attribution';
-const aggregatableDebugReportsUrl =
+const attributionSuccessDebugAggregatableReportsUrl =
     '/.well-known/attribution-reporting/debug/report-aggregate-attribution';
 const verboseDebugReportsUrl =
     '/.well-known/attribution-reporting/debug/verbose';
+const aggregatableDebugReportsUrl =
+    '/.well-known/attribution-reporting/debug/report-aggregate-debug';
 
 const attributionDebugCookie = 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/';
 
@@ -163,13 +166,15 @@ const registerAttributionSrcByImg = (attributionSrc) => {
   element.attributionSrc = attributionSrc;
 };
 
-const registerAttributionSrc = async ({
+const registerAttributionSrc = ({
   source,
   trigger,
   cookie,
   method = 'img',
   extraQueryParams = {},
   reportingOrigin,
+  extraHeaders = [],
+  referrerPolicy = '',
 }) => {
   const searchParams = new URLSearchParams(location.search);
 
@@ -200,13 +205,14 @@ const registerAttributionSrc = async ({
     headers.push({name, value: cookie});
   }
 
-
   let credentials;
   if (method === 'fetch') {
     const params = getFetchParams(reportingOrigin, cookie);
     credentials = params.credentials;
     headers = headers.concat(params.headers);
   }
+
+  headers = headers.concat(extraHeaders);
 
   const url = blankURLWithHeaders(headers, reportingOrigin);
 
@@ -216,36 +222,28 @@ const registerAttributionSrc = async ({
   switch (method) {
     case 'img':
       const img = document.createElement('img');
+      img.referrerPolicy = referrerPolicy;
       if (eligible === null) {
         img.attributionSrc = url;
       } else {
-        await new Promise(resolve => {
-          img.onload = resolve;
-          // Since the resource being fetched isn't a valid image, onerror will
-          // be fired, but the browser will still process the
-          // attribution-related headers, so resolve the promise instead of
-          // rejecting.
-          img.onerror = resolve;
-          img.attributionSrc = '';
-          img.src = url;
-        });
+        img.attributionSrc = '';
+        img.src = url;
       }
       return 'event';
     case 'script':
       const script = document.createElement('script');
+      script.referrerPolicy = referrerPolicy;
       if (eligible === null) {
         script.attributionSrc = url;
       } else {
-        await new Promise(resolve => {
-          script.onload = resolve;
-          script.attributionSrc = '';
-          script.src = url;
-          document.body.appendChild(script);
-        });
+        script.attributionSrc = '';
+        script.src = url;
+        document.body.appendChild(script);
       }
       return 'event';
     case 'a':
       const a = document.createElement('a');
+      a.referrerPolicy = referrerPolicy;
       a.target = '_blank';
       a.textContent = 'link';
       if (eligible === null) {
@@ -256,16 +254,17 @@ const registerAttributionSrc = async ({
         a.href = url;
       }
       document.body.appendChild(a);
-      await test_driver.click(a);
+      test_driver.click(a);
       return 'navigation';
     case 'open':
-      await test_driver.bless('open window', () => {
+      test_driver.bless('open window', () => {
+        const feature = referrerPolicy === 'no-referrer' ? 'noreferrer' : '';
         if (eligible === null) {
           open(
               blankURL(), '_blank',
-              `attributionsrc=${encodeURIComponent(url)}`);
+              `attributionsrc=${encodeURIComponent(url)} ${feature}`);
         } else {
-          open(url, '_blank', 'attributionsrc');
+          open(url, '_blank', `attributionsrc ${feature}`);
         }
       });
       return 'navigation';
@@ -274,20 +273,16 @@ const registerAttributionSrc = async ({
       if (eligible !== null) {
         attributionReporting = JSON.parse(eligible);
       }
-      await fetch(url, {credentials, attributionReporting});
+      fetch(url, {credentials, attributionReporting, referrerPolicy});
       return 'event';
     }
     case 'xhr':
-      await new Promise((resolve, reject) => {
-        const req = new XMLHttpRequest();
-        req.open('GET', url);
-        if (eligible !== null) {
-          req.setAttributionReporting(JSON.parse(eligible));
-        }
-        req.onload = resolve;
-        req.onerror = () => reject(req.statusText);
-        req.send();
-      });
+      const req = new XMLHttpRequest();
+      req.open('GET', url);
+      if (eligible !== null) {
+        req.setAttributionReporting(JSON.parse(eligible));
+      }
+      req.send();
       return 'event';
     default:
       throw `unknown method "${method}"`;
@@ -341,10 +336,12 @@ const pollEventLevelDebugReports = (origin) =>
     pollAttributionReports(eventLevelDebugReportsUrl, origin);
 const pollAggregatableReports = (origin) =>
     pollAttributionReports(aggregatableReportsUrl, origin);
-const pollAggregatableDebugReports = (origin) =>
-    pollAttributionReports(aggregatableDebugReportsUrl, origin);
+const pollAttributionSuccessDebugAggregatableReports = (origin) =>
+    pollAttributionReports(attributionSuccessDebugAggregatableReportsUrl, origin);
 const pollVerboseDebugReports = (origin) =>
     pollAttributionReports(verboseDebugReportsUrl, origin);
+const pollAggregatableDebugReports = (origin) =>
+  pollAttributionReports(aggregatableDebugReportsUrl, origin);
 
 const validateReportHeaders = headers => {
   assert_array_equals(headers['content-type'], ['application/json']);

@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -19,8 +20,6 @@
 #include "content/browser/direct_sockets/direct_sockets_test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/direct_sockets_delegate.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -40,6 +39,7 @@
 #include "services/network/test/test_network_context.h"
 #include "services/network/test/test_udp_socket.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 #include "url/gurl.h"
 
@@ -79,8 +79,7 @@ constexpr char kUDPNetworkFailuresHistogramName[] =
 class MockOpenNetworkContext : public content::test::MockNetworkContext {
  public:
   explicit MockOpenNetworkContext(net::Error result) : result_(result) {}
-  MockOpenNetworkContext(net::Error result,
-                         base::StringPiece host_mapping_rules)
+  MockOpenNetworkContext(net::Error result, std::string_view host_mapping_rules)
       : MockNetworkContext(host_mapping_rules), result_(result) {}
 
   ~MockOpenNetworkContext() override = default;
@@ -192,7 +191,7 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kIsolatedWebApps};
+  base::test::ScopedFeatureList feature_list_{blink::features::kDirectSockets};
 
   std::unique_ptr<test::IsolatedWebAppContentBrowserClient> client_;
 };
@@ -503,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
 class MockOpenNetworkContextWithDnsQueryType : public MockOpenNetworkContext {
  public:
   MockOpenNetworkContextWithDnsQueryType(net::Error result,
-                                         base::StringPiece host_mapping_rules)
+                                         std::string_view host_mapping_rules)
       : MockOpenNetworkContext(result, host_mapping_rules) {}
 
   // MockOpenNetworkContext:
@@ -531,14 +530,14 @@ class MockOpenNetworkContextWithDnsQueryType : public MockOpenNetworkContext {
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, Open_DnsQueryType) {
-  constexpr base::StringPiece kHostname = "direct-sockets.com";
+  constexpr std::string_view kHostname = "direct-sockets.com";
 
   MockOpenNetworkContextWithDnsQueryType mock_network_context(
       net::OK, base::StringPrintf("MAP %s 98.76.54.32", kHostname.data()));
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
   constexpr auto kDnsQueryTypeMapping =
-      base::MakeFixedFlatMap<net::DnsQueryType, base::StringPiece>({
+      base::MakeFixedFlatMap<net::DnsQueryType, std::string_view>({
           {net::DnsQueryType::A, "ipv4"},
           {net::DnsQueryType::AAAA, "ipv6"},
       });

@@ -8,19 +8,3 @@ interface XMLSerializer {
   constructor();
   DOMString serializeToString(Node root);
 };
-
-interface mixin InnerHTML {
-  [CEReactions] attribute [LegacyNullToEmptyString] DOMString innerHTML;
-};
-
-Element includes InnerHTML;
-ShadowRoot includes InnerHTML;
-
-partial interface Element {
-  [CEReactions] attribute [LegacyNullToEmptyString] DOMString outerHTML;
-  [CEReactions] undefined insertAdjacentHTML(DOMString position, DOMString text);
-};
-
-partial interface Range {
-  [CEReactions, NewObject] DocumentFragment createContextualFragment(DOMString fragment);
-};

@@ -5,8 +5,10 @@
 #include "services/shape_detection/barcode_detection_impl_barhopper.h"
 
 #include <stdint.h>
+
 #include <limits>
 #include <memory>
+#include <vector>
 
 #include "base/logging.h"
 #include "services/shape_detection/public/mojom/barcodedetection.mojom-shared.h"
@@ -64,7 +66,7 @@ mojom::BarcodeFormat BarhopperFormatToMojo(barhopper::BarcodeFormat format) {
     case barhopper::BarcodeFormat::UNRECOGNIZED:
       return mojom::BarcodeFormat::UNKNOWN;
     default:
-      NOTREACHED() << "Invalid barcode format";
+      NOTREACHED_IN_MIGRATION() << "Invalid barcode format";
       return mojom::BarcodeFormat::UNKNOWN;
   }
 }
@@ -149,19 +151,18 @@ void BarcodeDetectionImplBarhopper::Detect(
     shape_detection::mojom::BarcodeDetection::DetectCallback callback) {
   int width = bitmap.width();
   int height = bitmap.height();
-  auto luminances = std::make_unique<uint8_t[]>(height * width);
-  uint8_t* luminances_ptr = luminances.get();
+  std::vector<uint8_t> luminances(height * width);
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
       SkColor color = bitmap.getColor(x, y);
       // Fast and approximate luminance calculation: (2*R + 5*G + B) / 8
       uint32_t luminance =
           2 * SkColorGetR(color) + 5 * SkColorGetG(color) + SkColorGetB(color);
-      luminances_ptr[y * width + x] = luminance / 8;
+      luminances[y * width + x] = luminance / 8;
     }
   }
   std::vector<barhopper::Barcode> barcodes;
-  barhopper::Barhopper::Recognize(width, height, luminances_ptr,
+  barhopper::Barhopper::Recognize(width, height, luminances.data(),
                                   recognition_options_, &barcodes);
 
   std::vector<mojom::BarcodeDetectionResultPtr> results;

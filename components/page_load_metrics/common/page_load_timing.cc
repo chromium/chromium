@@ -11,13 +11,13 @@ namespace page_load_metrics {
 mojom::PageLoadTimingPtr CreatePageLoadTiming() {
   return mojom::PageLoadTiming::New(
       base::Time(), std::optional<base::TimeDelta>(),
-      mojom::DocumentTiming::New(), mojom::InteractiveTiming::New(),
-      mojom::PaintTiming::New(std::nullopt, std::nullopt, std::nullopt,
-                              std::nullopt,
-                              mojom::LargestContentfulPaintTiming::New(),
-                              mojom::LargestContentfulPaintTiming::New(),
-                              std::nullopt, std::nullopt, std::nullopt),
-      mojom::ParseTiming::New(),
+      std::optional<base::TimeDelta>(), mojom::DocumentTiming::New(),
+      mojom::InteractiveTiming::New(),
+      mojom::PaintTiming::New(
+          std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+          CreateLargestContentfulPaintTiming(),
+          CreateLargestContentfulPaintTiming(), std::nullopt, std::nullopt),
+      mojom::ParseTiming::New(), mojom::DomainLookupTiming::New(),
       std::vector<mojo::StructPtr<mojom::BackForwardCacheTiming>>{},
       std::optional<base::TimeDelta>(), std::optional<base::TimeDelta>(),
       std::optional<base::TimeDelta>(), std::optional<base::TimeDelta>(),
@@ -25,13 +25,15 @@ mojom::PageLoadTimingPtr CreatePageLoadTiming() {
 }
 
 mojom::LargestContentfulPaintTimingPtr CreateLargestContentfulPaintTiming() {
-  return mojom::LargestContentfulPaintTiming::New();
+  auto timing = mojom::LargestContentfulPaintTiming::New();
+  timing->resource_load_timings = mojom::LcpResourceLoadTimings::New();
+  return timing;
 }
 
 mojom::SoftNavigationMetricsPtr CreateSoftNavigationMetrics() {
   return mojom::SoftNavigationMetrics::New(
       blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-      std::string(), mojom::LargestContentfulPaintTiming::New());
+      std::string(), CreateLargestContentfulPaintTiming());
 }
 
 bool IsEmpty(const page_load_metrics::mojom::DocumentTiming& timing) {
@@ -66,8 +68,13 @@ bool IsEmpty(const page_load_metrics::mojom::ParseTiming& timing) {
          !timing.parse_blocked_on_script_execution_from_document_write_duration;
 }
 
+bool IsEmpty(const page_load_metrics::mojom::DomainLookupTiming& timing) {
+  return !timing.domain_lookup_start && !timing.domain_lookup_end;
+}
+
 bool IsEmpty(const page_load_metrics::mojom::PageLoadTiming& timing) {
-  return timing.navigation_start.is_null() && !timing.response_start &&
+  return timing.navigation_start.is_null() && !timing.connect_start &&
+         !timing.response_start &&
          (!timing.document_timing ||
           page_load_metrics::IsEmpty(*timing.document_timing)) &&
          (!timing.interactive_timing ||
@@ -76,6 +83,8 @@ bool IsEmpty(const page_load_metrics::mojom::PageLoadTiming& timing) {
           page_load_metrics::IsEmpty(*timing.paint_timing)) &&
          (!timing.parse_timing ||
           page_load_metrics::IsEmpty(*timing.parse_timing)) &&
+         (!timing.domain_lookup_timing ||
+          page_load_metrics::IsEmpty(*timing.domain_lookup_timing)) &&
          timing.back_forward_cache_timings.empty() &&
          !timing.user_timing_mark_fully_loaded &&
          !timing.user_timing_mark_fully_visible &&
@@ -84,12 +93,13 @@ bool IsEmpty(const page_load_metrics::mojom::PageLoadTiming& timing) {
 
 void InitPageLoadTimingForTest(mojom::PageLoadTiming* timing) {
   timing->document_timing = mojom::DocumentTiming::New();
+  timing->domain_lookup_timing = mojom::DomainLookupTiming::New();
   timing->interactive_timing = mojom::InteractiveTiming::New();
   timing->paint_timing = mojom::PaintTiming::New();
   timing->paint_timing->largest_contentful_paint =
-      mojom::LargestContentfulPaintTiming::New();
+      CreateLargestContentfulPaintTiming();
   timing->paint_timing->experimental_largest_contentful_paint =
-      mojom::LargestContentfulPaintTiming::New();
+      CreateLargestContentfulPaintTiming();
   timing->parse_timing = mojom::ParseTiming::New();
   timing->back_forward_cache_timings.clear();
 }

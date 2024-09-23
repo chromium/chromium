@@ -29,7 +29,7 @@
 #include "components/update_client/net/url_loader_post_interceptor.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/browser/content_verifier.h"
+#include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/mock_external_provider.h"
@@ -649,7 +649,8 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, Backoff) {
 
   ASSERT_EQ(4, update_interceptor_->GetCount())
       << update_interceptor_->GetRequestsAsString();
-  EXPECT_EQ(4, get_interceptor_count());
+  // Only one download because retries are cached.
+  EXPECT_EQ(1, get_interceptor_count());
 
   const std::vector<base::TimeDelta>& calls = delay_tracker.calls();
 

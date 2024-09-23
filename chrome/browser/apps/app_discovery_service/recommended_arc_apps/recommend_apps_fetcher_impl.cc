@@ -4,13 +4,14 @@
 
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher_impl.h"
 
+#include <string_view>
+
 #include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
@@ -299,7 +300,7 @@ void RecommendAppsFetcherImpl::PopulateDeviceConfig() {
   const gpu::GPUInfo gpu_info = GetGPUInfo();
   device_config_.set_gl_es_version(GetGLVersionInfo(gpu_info));
 
-  for (const base::StringPiece& gl_extension : GetGLExtensions(gpu_info)) {
+  for (std::string_view gl_extension : GetGLExtensions(gpu_info)) {
     if (!gl_extension.empty()) {
       device_config_.add_gl_extension(std::string(gl_extension));
     }

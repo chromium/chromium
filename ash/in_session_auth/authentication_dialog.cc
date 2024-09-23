@@ -5,27 +5,33 @@
 #include "ash/in_session_auth/authentication_dialog.h"
 
 #include <memory>
+#include <optional>
+#include <utility>
 
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/auth_panel/public/shared_types.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/cryptohome/error_util.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
-#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -34,6 +40,7 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace ash {
 
@@ -53,7 +60,7 @@ void AddMargins(views::View* view) {
 void ConfigurePasswordField(views::Textfield* password_field) {
   const auto password_field_name =
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_PASSWORD_PLACEHOLDER);
-  password_field->SetAccessibleName(password_field_name);
+  password_field->GetViewAccessibility().SetName(password_field_name);
   password_field->SetReadOnly(false);
   password_field->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_PASSWORD);
   password_field->SetPlaceholderText(password_field_name);
@@ -76,7 +83,7 @@ void CenterWidgetOnPrimaryDisplay(views::Widget* widget) {
 }  // namespace
 
 AuthenticationDialog::AuthenticationDialog(
-    InSessionAuthDialogController::OnAuthComplete on_auth_complete,
+    auth_panel::AuthCompletionCallback on_auth_complete,
     InSessionAuthTokenProvider* auth_token_provider,
     std::unique_ptr<AuthPerformer> auth_performer,
     const AccountId& account_id)
@@ -89,7 +96,7 @@ AuthenticationDialog::AuthenticationDialog(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   SetTitle(l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_TITLE));
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
+  SetModalType(ui::mojom::ModalType::kSystem);
 
   // Callback setup
   SetCancelCallback(base::BindOnce(&AuthenticationDialog::CancelAuthAttempt,
@@ -151,8 +158,8 @@ void AuthenticationDialog::ConfigureOkButton() {
 }
 
 void AuthenticationDialog::SetUIDisabled(bool is_disabled) {
-  SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_OK, !is_disabled);
-  SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_CANCEL, !is_disabled);
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, !is_disabled);
+  SetButtonEnabled(ui::mojom::DialogButton::kCancel, !is_disabled);
   password_field_->SetReadOnly(is_disabled);
 }
 
@@ -201,7 +208,7 @@ void AuthenticationDialog::OnAuthFactorValidityChecked(
     }
     LOG(ERROR) << "An error happened during the attempt to validate"
                   "the password: "
-               << authentication_error.value().get_cryptohome_code();
+               << authentication_error.value().get_cryptohome_error();
     ShowAuthError();
     return;
   }
@@ -255,7 +262,7 @@ void AuthenticationDialog::OnAuthSessionStarted(
     std::optional<AuthenticationError> authentication_error) {
   if (authentication_error.has_value()) {
     LOG(ERROR) << "Error starting authsession for in session authentication: "
-               << authentication_error.value().get_cryptohome_code();
+               << authentication_error.value().get_cryptohome_error();
     CancelAuthAttempt();
   } else if (!user_exists) {
     LOG(ERROR) << "Attempting to authenticate a user which does not exist. "

@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_response_parser.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 
@@ -24,13 +26,15 @@ class FakeUploadClient : public UploadClient {
 
   static void Create(CreatedCallback created_cb);
 
-  Status EnqueueUpload(
+  void EnqueueUpload(
       bool need_encryption_key,
       int config_file_version,
       std::vector<EncryptedRecord> records,
       ScopedReservation scoped_reservation,
+      UploadEnqueuedCallback enqueued_cb,
       ReportSuccessfulUploadCallback report_upload_success_cb,
-      EncryptionKeyAttachedCallback encryption_key_attached_cb) override;
+      EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      ConfigFileAttachedCallback config_file_attached_cb) override;
 
  private:
   FakeUploadClient();
@@ -38,7 +42,8 @@ class FakeUploadClient : public UploadClient {
   void OnUploadComplete(
       ReportSuccessfulUploadCallback report_upload_success_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
-      StatusOr<base::Value::Dict> response);
+      ConfigFileAttachedCallback config_file_attached_cb,
+      StatusOr<UploadResponseParser> response);
 };
 
 }  // namespace reporting

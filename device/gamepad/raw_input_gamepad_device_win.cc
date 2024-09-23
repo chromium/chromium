@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <string_view>
 
 #include "raw_input_gamepad_device_win.h"
@@ -178,9 +183,8 @@ void RawInputGamepadDeviceWin::UpdateGamepad(RAWINPUT* input) {
                      reinterpret_cast<PCHAR>(input->data.hid.bRawData),
                      input->data.hid.dwSizeHid);
 
-    std::unique_ptr<USAGE_AND_PAGE[]> usages(
-        new USAGE_AND_PAGE[buttons_length]);
-    status = HidP_GetUsagesEx(HidP_Input, 0, usages.get(), &buttons_length,
+    auto usages = base::HeapArray<USAGE_AND_PAGE>::Uninit(buttons_length);
+    status = HidP_GetUsagesEx(HidP_Input, 0, usages.data(), &buttons_length,
                               preparsed_data_,
                               reinterpret_cast<PCHAR>(input->data.hid.bRawData),
                               input->data.hid.dwSizeHid);
@@ -292,8 +296,8 @@ bool RawInputGamepadDeviceWin::QueryDeviceInfo() {
   // "DEV" instead of "VID" and "PID". PCI HID devices are typically not
   // gamepads and are ignored.
   // Example PCI device name: \\?\HID#VEN_1234&DEV_ABCD
-  // TODO(crbug/881539): Potentially allow PCI HID devices to be enumerated, but
-  // prefer known gamepads when there is contention.
+  // TODO(crbug.com/41412324): Potentially allow PCI HID devices to be
+  // enumerated, but prefer known gamepads when there is contention.
   std::wstring pci_prefix = L"\\\\?\\HID#VEN_";
   if (!name_.compare(0, pci_prefix.size(), pci_prefix))
     return false;
@@ -338,16 +342,16 @@ bool RawInputGamepadDeviceWin::QueryHidInfo() {
   }
   DCHECK_EQ(0u, result);
 
-  std::unique_ptr<uint8_t[]> buffer(new uint8_t[size]);
+  auto buffer = base::HeapArray<uint8_t>::Uninit(size);
   result =
-      ::GetRawInputDeviceInfo(handle_, RIDI_DEVICEINFO, buffer.get(), &size);
+      ::GetRawInputDeviceInfo(handle_, RIDI_DEVICEINFO, buffer.data(), &size);
   if (result == static_cast<UINT>(-1)) {
     PLOG(ERROR) << "GetRawInputDeviceInfo() failed";
     return false;
   }
   DCHECK_EQ(size, result);
   RID_DEVICE_INFO* device_info =
-      reinterpret_cast<RID_DEVICE_INFO*>(buffer.get());
+      reinterpret_cast<RID_DEVICE_INFO*>(buffer.data());
 
   DCHECK_EQ(device_info->dwType, static_cast<DWORD>(RIM_TYPEHID));
   vendor_id_ = static_cast<uint16_t>(device_info->hid.dwVendorId);
@@ -369,16 +373,16 @@ bool RawInputGamepadDeviceWin::QueryDeviceName() {
   }
   DCHECK_EQ(0u, result);
 
-  std::unique_ptr<wchar_t[]> buffer(new wchar_t[size]);
-  result =
-      ::GetRawInputDeviceInfo(handle_, RIDI_DEVICENAME, buffer.get(), &size);
+  std::wstring buffer;
+  result = ::GetRawInputDeviceInfo(handle_, RIDI_DEVICENAME,
+                                   base::WriteInto(&buffer, size), &size);
   if (result == static_cast<UINT>(-1)) {
     PLOG(ERROR) << "GetRawInputDeviceInfo() failed";
     return false;
   }
   DCHECK_EQ(size, result);
 
-  name_ = buffer.get();
+  name_ = std::move(buffer);
 
   return true;
 }
@@ -426,10 +430,10 @@ bool RawInputGamepadDeviceWin::QueryDeviceCapabilities() {
   }
   DCHECK_EQ(0u, result);
 
-  ppd_buffer_.reset(new uint8_t[size]);
-  preparsed_data_ = reinterpret_cast<PHIDP_PREPARSED_DATA>(ppd_buffer_.get());
+  ppd_buffer_ = base::HeapArray<uint8_t>::Uninit(size);
+  preparsed_data_ = reinterpret_cast<PHIDP_PREPARSED_DATA>(ppd_buffer_.data());
   result = ::GetRawInputDeviceInfo(handle_, RIDI_PREPARSEDDATA,
-                                   ppd_buffer_.get(), &size);
+                                   ppd_buffer_.data(), &size);
   if (result == static_cast<UINT>(-1)) {
     PLOG(ERROR) << "GetRawInputDeviceInfo() failed";
     return false;
@@ -536,8 +540,8 @@ void RawInputGamepadDeviceWin::QuerySpecialButtonCapabilities(
 }
 
 void RawInputGamepadDeviceWin::QueryAxisCapabilities(uint16_t axis_count) {
-  std::unique_ptr<HIDP_VALUE_CAPS[]> axes_caps(new HIDP_VALUE_CAPS[axis_count]);
-  HidP_GetValueCaps(HidP_Input, axes_caps.get(), &axis_count, preparsed_data_);
+  auto axes_caps = base::HeapArray<HIDP_VALUE_CAPS>::Uninit(axis_count);
+  HidP_GetValueCaps(HidP_Input, axes_caps.data(), &axis_count, preparsed_data_);
 
   bool mapped_all_axes = true;
 

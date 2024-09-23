@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "crypto/scoped_nss_types.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_type.h"
 #include "net/cert/scoped_nss_types.h"
@@ -21,6 +22,13 @@ typedef struct PK11SlotInfoStr PK11SlotInfo;
 typedef struct SECItemStr SECItem;
 
 namespace net::x509_util {
+
+// Returns a span containing the DER encoded certificate data for `nss_cert`.
+NET_EXPORT base::span<const uint8_t> CERTCertificateAsSpan(
+    const CERTCertificate* nss_cert);
+
+// Returns a span containing the data pointed to by SECItem `item`.
+NET_EXPORT base::span<const uint8_t> SECItemAsSpan(const SECItem& item);
 
 // Returns true if two certificate handles refer to identical certificates.
 NET_EXPORT bool IsSameCertificate(CERTCertificate* a, CERTCertificate* b);
@@ -66,7 +74,7 @@ CreateCERTCertificateListFromX509Certificate(
 // certificates may have been serialized as. If an error occurs, an empty
 // collection will be returned.
 NET_EXPORT ScopedCERTCertificateList
-CreateCERTCertificateListFromBytes(const char* data, size_t length, int format);
+CreateCERTCertificateListFromBytes(base::span<const uint8_t> data, int format);
 
 // Increments the refcount of |cert| and returns a handle for that reference.
 NET_EXPORT ScopedCERTCertificate DupCERTCertificate(CERTCertificate* cert);
@@ -161,9 +169,11 @@ NET_EXPORT SHA256HashValue CalculateFingerprint256(CERTCertificate* cert);
 
 // Prefer using NSSCertDatabase::ImportUserCert. Temporary public for Kcer.
 // Import a user certificate. The private key for the user certificate must
-// already be installed, otherwise returns ERR_NO_PRIVATE_KEY_FOR_CERT.
-// Returns OK or a network error code.
-NET_EXPORT int ImportUserCert(CERTCertificate* cert);
+// already be installed, the cert will be installed on the same slot, otherwise
+// returns ERR_NO_PRIVATE_KEY_FOR_CERT. If the key exists on multiple slots,
+// prioritizes the `preferred_slot`. Returns OK or a network error code.
+NET_EXPORT int ImportUserCert(CERTCertificate* cert,
+                              crypto::ScopedPK11Slot preferred_slot);
 
 }  // namespace net::x509_util
 

@@ -96,7 +96,8 @@ void FinishImportCredentialsFromProvider(const CoreAccountId& account_id,
     new TurnSyncOnHelper(profile, browser, kCredentialsProviderAccessPointWin,
                          signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
                          account_id,
-                         TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+                         TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+                         /*is_sync_promo=*/false);
   }
 }
 

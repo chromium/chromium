@@ -1,0 +1,38 @@
+﻿<style include="cr-icons cr-shared-style">
+  #header {
+    align-items: center;
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    margin-bottom: 28px;
+  }
+
+  #backButton {
+    --cr-icon-button-margin-end: 10px;
+    --cr-icon-button-margin-start: -10px;
+  }
+
+  certificate-list-v2 {
+    padding: 20px 0;
+  }
+</style>
+
+<div id="header" class="cr-row first">
+  <cr-icon-button id="backButton" class="icon-arrow-back"
+      aria-label$="[[i18n('certificateManagerV2SubpageBackButtonAriaLabel', subpageTitle)]]"
+      aria-roledescription$="[[i18n('certificateManagerV2SubpageBackButtonAriaRoleDescription',subpageTitle)]]"
+      on-click="onBackButtonClick_">
+  </cr-icon-button>
+  <h2 class="cr-title-text">[[subpageTitle]]</h2>
+</div>
+<template is="dom-repeat" items="[[subpageCertLists]]">
+  <certificate-list-v2
+      cert-source="[[item.certSource]]"
+      header-text="[[item.headerText]]"
+      hide-export="[[item.hideExport]]"
+      show-import="[[item.showImport]]"
+      show-import-and-bind="[[item.showImportAndBind]]"
+      hide-if-empty="[[item.hideIfEmpty]]"
+      hide-header="[[item.hideHeader]]"
+      in-subpage>
+  </certificate-list-v2>
+</template>

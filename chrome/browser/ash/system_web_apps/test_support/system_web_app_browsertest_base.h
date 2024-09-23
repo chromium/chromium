@@ -109,8 +109,6 @@ class SystemWebAppBrowserTestBase
                                   bool wait_for_load,
                                   Browser** out_browser);
 
-  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
-
   std::unique_ptr<TestSystemWebAppInstallation> installation_ = nullptr;
 };
 

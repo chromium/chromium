@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_MOJO_MENU_MODEL_H_
 #define COMPONENTS_REMOTE_COCOA_APP_SHIM_MOJO_MENU_MODEL_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/remote_cocoa/common/menu.mojom.h"
 #include "ui/base/models/menu_model.h"
 
@@ -16,13 +17,14 @@ namespace remote_cocoa {
 // Instances of this model are never re-used for multiple showings of the same
 // menu, so dynamic behavior would be limited to submenus anyway. And currently
 // nowhere in Chrome are dynamic items used in submenus.
-class MojoMenuModel : public ui::MenuModel {
+class MojoMenuModel final : public ui::MenuModel {
  public:
   MojoMenuModel(std::vector<mojom::MenuItemPtr> menu_items,
                 mojom::MenuHost* menu_host);
   ~MojoMenuModel() override;
 
   // ui::MenuModel:
+  base::WeakPtr<ui::MenuModel> AsWeakPtr() override;
   size_t GetItemCount() const override;
   ItemType GetTypeAt(size_t index) const override;
   ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override;
@@ -53,6 +55,8 @@ class MojoMenuModel : public ui::MenuModel {
   // MenuModel instances for sub-menus. Created on demand when GetSubmenuModelAt
   // is called.
   mutable std::vector<std::unique_ptr<MojoMenuModel>> submenus_;
+
+  base::WeakPtrFactory<MojoMenuModel> weak_ptr_factory_{this};
 };
 
 }  // namespace remote_cocoa

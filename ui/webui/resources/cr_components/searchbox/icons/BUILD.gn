@@ -1,0 +1,92 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generate_grd("build_grdp") {
+  grd_prefix = "searchbox_icons"
+  resource_path_prefix = "cr_components/searchbox/icons"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files = [
+    "bookmark_cr23.svg",
+    "calculator_cr23.svg",
+    "calculator.svg",
+    "calendar.svg",
+    "chrome_product_cr23.svg",
+    "chrome_product.svg",
+    "clock_cr23.svg",
+    "currency_cr23.svg",
+    "currency.svg",
+    "default.svg",
+    "definition_cr23.svg",
+    "definition.svg",
+    "dino_cr23.svg",
+    "dino.svg",
+    "drive_docs.svg",
+    "drive_folder.svg",
+    "drive_form.svg",
+    "drive_image.svg",
+    "drive_logo.svg",
+    "drive_pdf.svg",
+    "drive_sheets.svg",
+    "drive_slides.svg",
+    "drive_video.svg",
+    "extension_app.svg",
+    "finance_cr23.svg",
+    "finance.svg",
+    "history_cr23.svg",
+    "incognito_cr23.svg",
+    "incognito.svg",
+    "journeys_cr23.svg",
+    "journeys.svg",
+    "mac_share_cr23.svg",
+    "mac_share.svg",
+    "note.svg",
+    "page_cr23.svg",
+    "page.svg",
+    "search_cr23.svg",
+    "share_cr23.svg",
+    "share.svg",
+    "sites.svg",
+    "spark.svg",
+    "star_active.svg",
+    "sunrise_cr23.svg",
+    "sunrise.svg",
+    "tab_cr23.svg",
+    "tab.svg",
+    "translation_cr23.svg",
+    "translation.svg",
+    "trending_up_cr23.svg",
+    "trending_up.svg",
+    "when_is_cr23.svg",
+    "when_is.svg",
+    "win_share_cr23.svg",
+    "win_share.svg",
+  ]
+  if (!is_chrome_branded) {
+    input_files += [
+      "mic.svg",
+      "camera.svg",
+    ]
+  }
+  input_files_base_dir = rebase_path(".", "//")
+}
+
+if (is_chrome_branded) {
+  generate_grd("chrome_branded_build_grdp") {
+    grd_prefix = "searchbox_icons"
+    resource_path_prefix = "cr_components/searchbox/icons"
+    out_grd = "$target_gen_dir/chrome_branded_resources.grdp"
+    input_files = [
+      "camera.svg",
+      "google_g.svg",
+      "google_g_cr23.svg",
+      "google_logo.svg",
+      "mic.svg",
+    ]
+    input_files_base_dir =
+        rebase_path("//chrome/app/theme/google_chrome/realbox", "//")
+  }
+}

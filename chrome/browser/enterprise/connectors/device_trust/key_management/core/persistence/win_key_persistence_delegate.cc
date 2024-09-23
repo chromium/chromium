@@ -37,7 +37,7 @@ std::unique_ptr<crypto::UnexportableSigningKey> CreateSigningKey(
   std::unique_ptr<crypto::UnexportableKeyProvider> provider;
 
   if (trust_level == BPKUR::CHROME_BROWSER_HW_KEY) {
-    provider = crypto::GetUnexportableKeyProvider();
+    provider = crypto::GetUnexportableKeyProvider(/*config=*/{});
   } else if (trust_level == BPKUR::CHROME_BROWSER_OS_KEY) {
     provider = std::make_unique<ECSigningKeyProvider>();
   }
@@ -130,7 +130,7 @@ scoped_refptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair(
   KeyTrustLevel trust_level = BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED;
   if (trust_level_dw == BPKUR::CHROME_BROWSER_HW_KEY) {
     trust_level = BPKUR::CHROME_BROWSER_HW_KEY;
-    provider = crypto::GetUnexportableKeyProvider();
+    provider = crypto::GetUnexportableKeyProvider(/*config=*/{});
   } else if (trust_level_dw == BPKUR::CHROME_BROWSER_OS_KEY) {
     trust_level = BPKUR::CHROME_BROWSER_OS_KEY;
     provider = std::make_unique<ECSigningKeyProvider>();

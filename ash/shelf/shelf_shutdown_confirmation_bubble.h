@@ -57,7 +57,6 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
 
   // views::View:
   void OnThemeChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::u16string GetAccessibleWindowTitle() const override;
 
  protected:
@@ -80,7 +79,7 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::LabelButton> cancel_ = nullptr;
   raw_ptr<views::LabelButton> confirm_ = nullptr;
-  raw_ptr<LoginShelfButton> anchor_ = nullptr;
+  raw_ptr<LoginShelfButton, DanglingUntriaged> anchor_ = nullptr;
 
   enum class DialogResult { kNone, kCancelled, kConfirmed };
 

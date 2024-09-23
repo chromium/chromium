@@ -314,6 +314,14 @@ Field **NetworkConfigurations** is an array of
       update frequency, and may be used as a hint for apps to conserve data.
       When not specified, the system will set this to the detected value.
 
+* **TrafficCounterResetTime**
+    * (optional, defaults to "0") - **double**
+    * A UTC timestamp, in milliseconds, representing when
+      the traffic counters for a Service were last reset.
+      The timestamp's value equals the number of milli-
+      seconds since the Windows epoch (1601-01-01
+      00:00:00 UTC).
+
 * **NameServersConfigType**
     * (optional if **Remove** is *false*, otherwise ignored. Defaults to *DHCP*
     if **IPAddressConfigType** is specified) - **string**
@@ -443,6 +451,19 @@ Field **NetworkConfigurations** is an array of
       system to determine which network to connect to when multiple configured
       networks are available (or may be ignored).
 
+* **CheckCaptivePortal**
+    * (optional, defaults to *False*) - **string**
+    * Indicates whether captive portal detection is configured for this
+    * network. The configurations are:
+        * *False*: Captive portal detection is disabled
+        * *True*: Captive portal detection is enabled
+        * *HTTPOnly*: Captive portal detection is enabled
+          and the portal detector will only use HTTP web
+          probes.
+    * Allowed values are:
+        * *False*,
+        * *True*,
+        * *HTTPOnly*
 
 ## Ethernet networks
 
@@ -531,6 +552,10 @@ static IP configuration (see **StaticIPConfig**).
     * (optional if part of **IPConfigs**, read-only) - **string**
     * The Web Proxy Auto-Discovery URL for this network as reported over DHCP.
 
+* **MTU**
+    * (optional) - **integer**
+    * Maximum transmission unit for this network. If not specified (or set to
+      0), the value will be determined automatically.
 
 ## WiFi networks
 
@@ -1967,8 +1992,13 @@ that reference APNs contained in **AdminAPNList**.
 
 * **ApnTypes**
     * (optional) - **array of string**
-    * The type(s) of the APN. Possible values are "Default"
-      and or "Attach".
+    * The type(s) of the APN. If provided, must be a non-empty array.
+      Possible values are "Default", "Attach", or "Tether".
+
+* **Source**
+    * (optional) - **string**
+    * The source of the APN. Possible values are "", "Modem", "Modb", "Ui", or
+      "Admin".
 
 ## Certificates
 

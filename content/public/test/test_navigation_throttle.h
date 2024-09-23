@@ -80,8 +80,8 @@ class TestNavigationThrottle : public NavigationThrottle {
   // throttle responds, either by returning synchronously, or by calling
   // CancelDeferredNavigation() asynchronously.
   //
-  // TODO(crbug.com/770292): Support setting a callback instead, and use that to
-  // get rid of the following classes:
+  // TODO(crbug.com/40542516): Support setting a callback instead, and use that
+  // to get rid of the following classes:
   // - ResourceLoadingCancellingThrottle in
   //   ads_page_load_metrics_observer_unittest.cc
   // - DeletingNavigationThrottle in navigation_throttle_runner_unittest.cc

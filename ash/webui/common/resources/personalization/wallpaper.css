@@ -4,7 +4,7 @@
 
 /* #css_wrapper_metadata_start
  * #type=style
- * #import=chrome://resources/polymer/v3_0/paper-styles/color.js
+ * #scheme=relative
  * #css_wrapper_metadata_end */
 
 main {
@@ -18,7 +18,8 @@ main:focus-within {
   outline: none;
 }
 
-h2.wallpaper-collections-heading{
+h2.wallpaper-collections-heading,
+h3.wallpaper-collections-heading {
   color: var(--cros-sys-secondary);
   font: var(--cros-button-2-font);
   height: 20px;

@@ -24,10 +24,10 @@ download::DownloadItem::DownloadState ToContentDownloadState(
       return download::DownloadItem::INTERRUPTED;
     case DownloadState::INVALID:
     case DownloadState::BUG_140687:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return download::DownloadItem::MAX_DOWNLOAD_STATE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return download::DownloadItem::MAX_DOWNLOAD_STATE;
 }
 
@@ -43,10 +43,10 @@ DownloadState ToHistoryDownloadState(
     case download::DownloadItem::INTERRUPTED:
       return DownloadState::INTERRUPTED;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return DownloadState::INVALID;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DownloadState::INVALID;
 }
 
@@ -92,15 +92,21 @@ download::DownloadDangerType ToContentDownloadDangerType(
     case DownloadDangerType::PROMPT_FOR_SCANNING:
       return download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING;
     case DownloadDangerType::BLOCKED_UNSUPPORTED_FILETYPE:
-      return download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE;
-    case DownloadDangerType::DANGEROUS_ACCOUNT_COMRPOMISE:
+      // BLOCKED_UNSUPPORTED_FILETYPE has been deprecated in
+      // https://crbug.com/330373911. Any remaining entries in history are
+      // mapped to NOT_DANGEROUS. Since these downloads were canceled at
+      // shutdown, this does not result in any user-visible change.
+      return download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
+    case DownloadDangerType::DANGEROUS_ACCOUNT_COMPROMISE:
       return download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE;
     case DownloadDangerType::DEEP_SCANNED_FAILED:
       return download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED;
     case DownloadDangerType::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
       return download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING;
+    case DownloadDangerType::BLOCKED_SCAN_FAILED:
+      return download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED;
     case DownloadDangerType::INVALID:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return download::DOWNLOAD_DANGER_TYPE_MAX;
   }
 }
@@ -144,18 +150,18 @@ DownloadDangerType ToHistoryDownloadDangerType(
       return DownloadDangerType::DEEP_SCANNED_OPENED_DANGEROUS;
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
       return DownloadDangerType::PROMPT_FOR_SCANNING;
-    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
-      return DownloadDangerType::BLOCKED_UNSUPPORTED_FILETYPE;
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
-      return DownloadDangerType::DANGEROUS_ACCOUNT_COMRPOMISE;
+      return DownloadDangerType::DANGEROUS_ACCOUNT_COMPROMISE;
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
       return DownloadDangerType::DEEP_SCANNED_FAILED;
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
       return DownloadDangerType::PROMPT_FOR_LOCAL_PASSWORD_SCANNING;
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
       return DownloadDangerType::ASYNC_LOCAL_PASSWORD_SCANNING;
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
+      return DownloadDangerType::BLOCKED_SCAN_FAILED;
     case download::DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return DownloadDangerType::INVALID;
   }
 }

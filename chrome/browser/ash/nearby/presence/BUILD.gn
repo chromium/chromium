@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("presence") {
+  sources = [
+    "nearby_presence_service_factory.cc",
+    "nearby_presence_service_factory.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/nearby",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/nearby/presence",
+    "//components/keyed_service/content",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/push_notification",
+    "//components/user_manager",
+    "//content/public/browser",
+  ]
+}

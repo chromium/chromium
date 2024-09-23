@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/startup/automation_infobar_delegate.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/startup/bidding_and_auction_consented_debugging_infobar_delegate.h"
-#include "chrome/browser/ui/startup/default_browser_prompt.h"
 #include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -29,6 +28,10 @@
 #include "content/public/common/content_switches.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/network_switches.h"
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt.h"
+#endif
 
 #if BUILDFLAG(CHROME_FOR_TESTING)
 #include "chrome/browser/ui/startup/chrome_for_testing_infobar_delegate.h"
@@ -80,8 +83,9 @@ void AddInfoBarsIfNecessary(Browser* browser,
                             const base::CommandLine& startup_command_line,
                             chrome::startup::IsFirstRun is_first_run,
                             bool is_web_app) {
-  if (!browser || !profile || browser->tab_strip_model()->count() == 0)
+  if (!browser || !profile || browser->tab_strip_model()->count() == 0) {
     return;
+  }
 
   // Show the Automation info bar unless it has been disabled by policy.
   bool show_bad_flags_security_warnings = ShouldShowBadFlagsSecurityWarnings();
@@ -97,8 +101,9 @@ void AddInfoBarsIfNecessary(Browser* browser,
     }
 #endif
 
-    if (IsAutomationEnabled())
+    if (IsAutomationEnabled()) {
       AutomationInfoBarDelegate::Create();
+    }
 
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kProtectedAudiencesConsentedDebugToken)) {
@@ -113,8 +118,9 @@ void AddInfoBarsIfNecessary(Browser* browser,
 
   // Do not show any other info bars in Kiosk mode, because it's unlikely that
   // the viewer can act upon or dismiss them.
-  if (IsKioskModeEnabled())
+  if (IsKioskModeEnabled()) {
     return;
+  }
 
   // Web apps should not display the session restore bubble (crbug.com/1264121)
   if (!is_web_app && HasPendingUncleanExit(browser->profile()))
@@ -136,32 +142,37 @@ void AddInfoBarsIfNecessary(Browser* browser,
     // picker, which means that `chrome::startup::IsProcessStartup` will already
     // be `kNo` when the first browser window is opened.
     static bool infobars_shown = false;
-    if (infobars_shown)
+    if (infobars_shown) {
       return;
+    }
     infobars_shown = true;
 
-    if (show_bad_flags_security_warnings)
+    if (show_bad_flags_security_warnings) {
       chrome::ShowBadFlagsPrompt(web_contents);
+    }
 
     infobars::ContentInfoBarManager* infobar_manager =
         infobars::ContentInfoBarManager::FromWebContents(web_contents);
 
-    if (!google_apis::HasAPIKeyConfigured())
+    if (!google_apis::HasAPIKeyConfigured()) {
       GoogleApiKeysInfoBarDelegate::Create(infobar_manager);
+    }
 
     if (ObsoleteSystem::IsObsoleteNowOrSoon()) {
       PrefService* local_state = g_browser_process->local_state();
       if (!local_state ||
-          !local_state->GetBoolean(prefs::kSuppressUnsupportedOSWarning))
+          !local_state->GetBoolean(prefs::kSuppressUnsupportedOSWarning)) {
         ObsoleteSystemInfoBarDelegate::Create(infobar_manager);
+      }
     }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
     if (!is_web_app &&
         !startup_command_line.HasSwitch(switches::kNoDefaultBrowserCheck)) {
       // The default browser prompt should only be shown after the first run.
-      if (is_first_run == chrome::startup::IsFirstRun::kNo)
+      if (is_first_run == chrome::startup::IsFirstRun::kNo) {
         ShowDefaultBrowserPrompt(profile);
+      }
     }
 #endif
   }

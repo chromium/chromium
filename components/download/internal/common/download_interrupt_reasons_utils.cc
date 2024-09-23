@@ -118,7 +118,7 @@ DownloadInterruptReason ConvertNetErrorToInterruptReason(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 
   return DOWNLOAD_INTERRUPT_REASON_NONE;
 }
@@ -147,7 +147,7 @@ DownloadInterruptReason ConvertMojoNetworkRequestStatusToInterruptReason(
     case mojom::NetworkRequestStatus::NETWORK_FAILED:
       return DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return DOWNLOAD_INTERRUPT_REASON_NONE;

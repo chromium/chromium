@@ -61,6 +61,8 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
 
   void OnBeforeRedirect(URLRequest* request, const GURL& new_location) override;
 
+  void OnBeforeRetry(URLRequest* request) override;
+
   void OnResponseStarted(URLRequest* request, int net_error) override;
 
   void OnCompleted(URLRequest* request, bool started, int net_error) override;
@@ -81,6 +83,12 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
       CookieOptions* options,
       const net::FirstPartySetMetadata& first_party_set_metadata,
       CookieInclusionStatus* inclusion_status) override;
+
+  std::optional<cookie_util::StorageAccessStatus> OnGetStorageAccessStatus(
+      const URLRequest& request) const override;
+
+  bool OnIsStorageAccessHeaderEnabled(const url::Origin* top_frame_origin,
+                                      const GURL& url) const override;
 
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const URLRequest& request) const override;

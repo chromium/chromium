@@ -30,12 +30,6 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
 
  private:
   // ash::UserEducationDelegate:
-  std::unique_ptr<user_education::HelpBubble> CreateHelpBubble(
-      const AccountId& account_id,
-      ash::HelpBubbleId help_bubble_id,
-      user_education::HelpBubbleParams help_bubble_params,
-      ui::ElementIdentifier element_id,
-      ui::ElementContext element_context) override;
   std::optional<ui::ElementIdentifier> GetElementIdentifierForAppId(
       const std::string& app_id) const override;
   const std::optional<bool>& IsNewUser(
@@ -56,6 +50,7 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
       std::optional<ash::TutorialId> tutorial_id = std::nullopt) override;
   void LaunchSystemWebAppAsync(const AccountId& account_id,
                                ash::SystemWebAppType system_web_app_type,
+                               apps::LaunchSource launch_source,
                                int64_t display_id) override;
   bool IsRunningTutorial(
       const AccountId& account_id,

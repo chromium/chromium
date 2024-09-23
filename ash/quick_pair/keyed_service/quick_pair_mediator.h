@@ -97,6 +97,7 @@ class Mediator final
                      PairFailure failure) override;
   void OnAccountKeyWrite(scoped_refptr<Device> device,
                          std::optional<AccountKeyFailure> error) override;
+  void OnDisplayPasskey(std::u16string device_name, uint32_t passkey) override;
 
   // UIBroker::Observer
   void OnDiscoveryAction(scoped_refptr<Device> device,

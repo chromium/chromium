@@ -5,13 +5,16 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_ATTRIBUTES_H_
 #define CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_ATTRIBUTES_H_
 
+#include <optional>
 #include <string>
 
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "net/http/http_no_vary_search_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
@@ -29,26 +32,29 @@ struct CONTENT_EXPORT PrerenderAttributes {
       std::optional<blink::mojom::SpeculationTargetHint> target_hint,
       Referrer referrer,
       std::optional<blink::mojom::SpeculationEagerness> eagerness,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       std::optional<url::Origin> initiator_origin,
       int initiator_process_id,
       base::WeakPtr<WebContents> initiator_web_contents,
       std::optional<blink::LocalFrameToken> initiator_frame_token,
-      int initiator_frame_tree_node_id,
+      FrameTreeNodeId initiator_frame_tree_node_id,
       ukm::SourceId initiator_ukm_id,
       ui::PageTransition transition_type,
-      std::optional<base::RepeatingCallback<bool(const GURL&)>>
+      bool should_warm_up_compositor,
+      base::RepeatingCallback<bool(const GURL&,
+                                   const std::optional<UrlMatchType>&)>
           url_match_predicate,
-      std::optional<base::RepeatingCallback<void(NavigationHandle&)>>
+      base::RepeatingCallback<void(NavigationHandle&)>
           prerender_navigation_handle_callback,
-      // TODO(crbug/1384419): use pattern other than default parameter.
+      // TODO(crbug.com/40246462): use pattern other than default parameter.
       const std::optional<base::UnguessableToken>&
           initiator_devtools_navigation_token = std::nullopt);
 
   ~PrerenderAttributes();
   PrerenderAttributes(const PrerenderAttributes&);
-  PrerenderAttributes& operator=(const PrerenderAttributes&) = delete;
+  PrerenderAttributes& operator=(const PrerenderAttributes&);
   PrerenderAttributes(PrerenderAttributes&&);
-  PrerenderAttributes& operator=(PrerenderAttributes&&) = delete;
+  PrerenderAttributes& operator=(PrerenderAttributes&&);
 
   bool IsBrowserInitiated() const { return !initiator_origin.has_value(); }
 
@@ -70,6 +76,10 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // This is std::nullopt when prerendering is initiated by the browser.
   std::optional<blink::mojom::SpeculationEagerness> eagerness;
 
+  // Records the No-Vary-Search hint of the corresponding speculation rule.
+  // This is std::nullopt when No-Vary-Search hint is not specified.
+  std::optional<net::HttpNoVarySearchData> no_vary_search_expected;
+
   // This is std::nullopt when prerendering is initiated by the browser
   // (not by a renderer using Speculation Rules API).
   std::optional<url::Origin> initiator_origin;
@@ -84,15 +94,19 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // This is std::nullopt when prerendering is initiated by the browser.
   std::optional<blink::LocalFrameToken> initiator_frame_token;
 
-  // This is RenderFrameHost::kNoFrameTreeNodeId when prerendering is initiated
-  // by the browser.
-  int initiator_frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
+  // This is invalid when prerendering is initiated by the browser.
+  FrameTreeNodeId initiator_frame_tree_node_id;
 
   // This is ukm::kInvalidSourceId when prerendering is initiated by the
   // browser.
   ukm::SourceId initiator_ukm_id = ukm::kInvalidSourceId;
 
   ui::PageTransition transition_type;
+
+  // If true, warms up compositor on a certain loading event of prerender
+  // initial navigation. Please see crbug.com/41496019 and comments on
+  // Page::should_warm_up_compositor_on_prerender_ for more details.
+  bool should_warm_up_compositor = false;
 
   // If the caller wants to override the default holdback processing, they can
   // set this. Otherwise, it will be computed as part of
@@ -103,9 +117,10 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // Triggers can specify their own predicate judging whether two URLs are
   // considered as pointing to the same destination. The URLs must be in
   // same-origin.
-  std::optional<base::RepeatingCallback<bool(const GURL&)>> url_match_predicate;
+  base::RepeatingCallback<bool(const GURL&, const std::optional<UrlMatchType>&)>
+      url_match_predicate;
 
-  std::optional<base::RepeatingCallback<void(NavigationHandle&)>>
+  base::RepeatingCallback<void(NavigationHandle&)>
       prerender_navigation_handle_callback;
 
   // This is std::nullopt when prerendering is initiated by the browser.

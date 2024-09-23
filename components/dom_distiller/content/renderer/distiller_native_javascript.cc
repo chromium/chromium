@@ -14,7 +14,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "gin/arguments.h"
 #include "gin/function_template.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8.h"
@@ -113,7 +113,7 @@ void DistillerNativeJavaScript::BindFunctionToObject(
 
 void DistillerNativeJavaScript::EnsureServiceConnected() {
   if (!distiller_js_service_) {
-    render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame_->GetBrowserInterfaceBroker().GetInterface(
         distiller_js_service_.BindNewPipeAndPassReceiver());
   }
 }

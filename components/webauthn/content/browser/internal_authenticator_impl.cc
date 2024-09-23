@@ -67,7 +67,7 @@ void InternalAuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
 }
 
 bool InternalAuthenticatorImpl::IsGetMatchingCredentialIdsSupported() {
-  // TODO(crbug.com/1368590): Not yet supported on any desktop platform.
+  // TODO(crbug.com/40868539): Not yet supported on any desktop platform.
   return false;
 }
 
@@ -77,7 +77,7 @@ void InternalAuthenticatorImpl::GetMatchingCredentialIds(
     bool require_third_party_payment_bit,
     webauthn::GetMatchingCredentialIdsCallback callback) {
   // Not yet supported on any desktop platform.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void InternalAuthenticatorImpl::Cancel() {

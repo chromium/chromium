@@ -1,0 +1,61 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+toolchain("clang") {
+  ar = "llvm-ar"
+  cc = "clang"
+  cxx = "clang++"
+  link = "clang++"
+
+  tool("cc") {
+    depfile = "{{output}}.d"
+    command = "$cc -MD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} -c {{source}} -o {{output}}"
+    depsformat = "gcc"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+    description = "CC {{source}}"
+  }
+
+  tool("cxx") {
+    depfile = "{{output}}.d"
+    command = "$cxx -MD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} -c {{source}} -o {{output}}"
+    depsformat = "gcc"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+    description = "CXX {{source}}"
+  }
+
+  tool("alink") {
+    rspfile = "{{output}}.rsp"
+    rspfile_content = "{{inputs}}"
+    rm_py = rebase_path("../rm.py")
+    command =
+        "python3 \"$rm_py\" \"{{output}}\" && $ar rcs {{output}} @$rspfile"
+
+    outputs = [ "{{root_out_dir}}/{{target_output_name}}{{output_extension}}" ]
+    default_output_extension = ".a"
+    output_prefix = "lib"
+    description = "LINK (static) {{output}}"
+  }
+
+  tool("solink") {
+    soname = "{{target_output_name}}{{output_extension}}"
+
+    rpath = "-Wl,-soname,$soname"
+
+    rspfile = "{{output}}.rsp"
+    rspfile_content = "{{inputs}}"
+
+    command = "$link -shared {{ldflags}} @$rspfile {{frameworks}} {{solibs}} {{libs}} $rpath -o {{output}}"
+    outputs = [ "{{root_out_dir}}/$soname" ]
+    output_prefix = "lib"
+    default_output_extension = ".so"
+    description = "LINK (shared) {{output}}"
+  }
+
+  tool("stamp") {
+    command = "touch {{output}}"
+    description = "STAMP {{output}}"
+  }
+}

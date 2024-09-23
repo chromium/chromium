@@ -16,10 +16,10 @@
 
 #include <stdio.h>
 
-#include <memory>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
+#include "base/containers/heap_array.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "package.h"
@@ -77,7 +77,7 @@ void ToolSupport::UsageHint(const std::string& me, const char* hint) {
 
 // static
 int ToolSupport::Wmain(int argc, wchar_t* argv[], int (*entry)(int, char* [])) {
-  std::unique_ptr<char* []> argv_as_utf8(new char*[argc + 1]);
+  auto argv_as_utf8 = base::HeapArray<char*>::Uninit(argc + 1);
   std::vector<std::string> storage;
   storage.reserve(argc);
   for (int i = 0; i < argc; ++i) {
@@ -85,14 +85,14 @@ int ToolSupport::Wmain(int argc, wchar_t* argv[], int (*entry)(int, char* [])) {
     argv_as_utf8[i] = &storage[i][0];
   }
   argv_as_utf8[argc] = nullptr;
-  return entry(argc, argv_as_utf8.get());
+  return entry(argc, argv_as_utf8.data());
 }
 
 #endif  // BUILDFLAG(IS_WIN)
 
 // static
 base::FilePath::StringType ToolSupport::CommandLineArgumentToFilePathStringType(
-    const base::StringPiece& path) {
+    std::string_view path) {
 #if BUILDFLAG(IS_POSIX)
   return std::string(path.data(), path.size());
 #elif BUILDFLAG(IS_WIN)

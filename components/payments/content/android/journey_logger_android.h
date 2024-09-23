@@ -14,7 +14,7 @@ namespace payments {
 // Forwarding calls to payments::JourneyLogger.
 class JourneyLoggerAndroid {
  public:
-  JourneyLoggerAndroid(bool is_incognito, ukm::SourceId source_id);
+  explicit JourneyLoggerAndroid(ukm::SourceId source_id);
 
   JourneyLoggerAndroid(const JourneyLoggerAndroid&) = delete;
   JourneyLoggerAndroid& operator=(const JourneyLoggerAndroid&) = delete;
@@ -31,14 +31,6 @@ class JourneyLoggerAndroid {
       jint jsection,
       jint jnumber,
       jboolean jhas_complete_suggestion);
-  void SetCanMakePaymentValue(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      jboolean jvalue);
-  void SetHasEnrolledInstrumentValue(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      jboolean jvalue);
   void SetOptOutOffered(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& jcaller);
   void SetActivationlessShow(
@@ -48,17 +40,11 @@ class JourneyLoggerAndroid {
                       const base::android::JavaParamRef<jobject>& jcaller);
   void SetShown(JNIEnv* env,
                 const base::android::JavaParamRef<jobject>& jcaller);
-  void SetReceivedInstrumentDetails(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller);
   void SetPayClicked(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& jcaller);
   void SetSelectedMethod(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& jcaller,
                          jint jPaymentMethodCategory);
-  void SetAvailableMethod(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& jcaller,
-                          jint jPaymentMethodCategory);
   void SetRequestedInformation(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,

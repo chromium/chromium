@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/json/json_reader.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -28,7 +27,7 @@ namespace {
 
 // Return the first unknown variable in |input|, or |nullopt| if no unknown
 // variables exist.
-std::optional<base::StringPiece> FindUnknownVariable(const std::string& input) {
+std::optional<std::string_view> FindUnknownVariable(const std::string& input) {
   const std::string variable_matcher = base::StringPrintf(
       "%s|%s|%s|%s|%s|%s|%s", kUserEmail, kUserEmailName, kUserEmailDomain,
       kDeviceDirectoryId, kDeviceSerialNumber, kDeviceAssetId,
@@ -70,7 +69,7 @@ void WarnInvalidVariablesInManagedConfiguration(
     if (!value.is_string())
       continue;
 
-    std::optional<base::StringPiece> unknown_variable =
+    std::optional<std::string_view> unknown_variable =
         FindUnknownVariable(value.GetString());
     if (!unknown_variable.has_value())
       continue;

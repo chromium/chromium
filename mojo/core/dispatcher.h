@@ -80,7 +80,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Dispatcher
   Dispatcher(const Dispatcher&) = delete;
   Dispatcher& operator=(const Dispatcher&) = delete;
 
-  // TODO(crbug.com/1229671): Remove these and all callers.
+  // TODO(crbug.com/40778522): Remove these and all callers.
   //
   // The assert is invoked at various points of handle deserialization failure.
   // Such failures are expected and innocuous when destroying unread or unsent,

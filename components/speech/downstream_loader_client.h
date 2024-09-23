@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SPEECH_DOWNSTREAM_LOADER_CLIENT_H_
 #define COMPONENTS_SPEECH_DOWNSTREAM_LOADER_CLIENT_H_
 
-#include "base/strings/string_piece.h"
-
 namespace speech {
 
 // An interface containing the callback functions required by consumers
@@ -25,8 +23,7 @@ class DownstreamLoaderClient {
   friend class DownstreamLoader;
 
   // Executed when downstream data is received.
-  virtual void OnDownstreamDataReceived(
-      base::StringPiece new_response_data) = 0;
+  virtual void OnDownstreamDataReceived(std::string_view new_response_data) = 0;
 
   // Executed when downstream data is completed.
   // success: True on 2xx responses where the entire body was successfully

@@ -38,11 +38,13 @@ class TokenWebDataBackend
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
-  WebDatabase::State SetTokenForService(const std::string& service,
-                                        const std::string& token,
-                                        WebDatabase* db) {
-    if (TokenServiceTable::FromWebDatabase(db)->SetTokenForService(service,
-                                                                   token)) {
+  WebDatabase::State SetTokenForService(
+      const std::string& service,
+      const std::string& token,
+      const std::vector<uint8_t>& wrapped_binding_key,
+      WebDatabase* db) {
+    if (TokenServiceTable::FromWebDatabase(db)->SetTokenForService(
+            service, token, wrapped_binding_key)) {
       return WebDatabase::COMMIT_NEEDED;
     }
     return WebDatabase::COMMIT_NOT_NEEDED;
@@ -50,8 +52,8 @@ class TokenWebDataBackend
 
   std::unique_ptr<WDTypedResult> GetAllTokens(WebDatabase* db) {
     TokenResult result;
-    result.db_result =
-        TokenServiceTable::FromWebDatabase(db)->GetAllTokens(&result.tokens);
+    result.db_result = TokenServiceTable::FromWebDatabase(db)->GetAllTokens(
+        &result.tokens, result.should_reencrypt);
     return std::make_unique<WDResult<TokenResult>>(TOKEN_RESULT, result);
   }
 
@@ -63,23 +65,24 @@ class TokenWebDataBackend
   friend class base::DeleteHelper<TokenWebDataBackend>;
 };
 
-TokenResult::TokenResult()
-    : db_result(TokenServiceTable::TOKEN_DB_RESULT_SQL_INVALID_STATEMENT) {}
+TokenResult::TokenResult() = default;
 TokenResult::TokenResult(const TokenResult& other) = default;
-TokenResult::~TokenResult() {}
+TokenResult& TokenResult::operator=(const TokenResult& other) = default;
+TokenResult::~TokenResult() = default;
 
 TokenWebData::TokenWebData(
     scoped_refptr<WebDatabaseService> wdbs,
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> db_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : WebDataServiceBase(wdbs, std::move(ui_task_runner)),
-      token_backend_(new TokenWebDataBackend(std::move(db_task_runner))) {}
+      token_backend_(new TokenWebDataBackend(wdbs->GetDbSequence())) {}
 
-void TokenWebData::SetTokenForService(const std::string& service,
-                                      const std::string& token) {
-  wdbs_->ScheduleDBTask(FROM_HERE,
-                        BindOnce(&TokenWebDataBackend::SetTokenForService,
-                                 token_backend_, service, token));
+void TokenWebData::SetTokenForService(
+    const std::string& service,
+    const std::string& token,
+    const std::vector<uint8_t>& wrapped_binding_key) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE, BindOnce(&TokenWebDataBackend::SetTokenForService,
+                          token_backend_, service, token, wrapped_binding_key));
 }
 
 void TokenWebData::RemoveAllTokens() {
@@ -101,11 +104,5 @@ WebDataServiceBase::Handle TokenWebData::GetAllTokens(
       FROM_HERE, BindOnce(&TokenWebDataBackend::GetAllTokens, token_backend_),
       consumer);
 }
-
-TokenWebData::TokenWebData(
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> db_task_runner)
-    : WebDataServiceBase(nullptr, std::move(ui_task_runner)),
-      token_backend_(new TokenWebDataBackend(std::move(db_task_runner))) {}
 
 TokenWebData::~TokenWebData() {}

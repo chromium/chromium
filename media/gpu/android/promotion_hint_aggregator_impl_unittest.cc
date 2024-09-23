@@ -58,7 +58,7 @@ TEST_F(PromotionHintAggregatorImplTest, SomePromotableFramesArePromotable) {
     ASSERT_FALSE(SendFrame(true));
   ASSERT_TRUE(SendFrame(true));
 
-  // Waiting a while should't cause un-promotion.
+  // Waiting a while shouldn't cause un-promotion.
   ASSERT_TRUE(SendFrame(true, base::Milliseconds(10000)));
   ASSERT_TRUE(SendFrame(true, base::Milliseconds(10000)));
 }

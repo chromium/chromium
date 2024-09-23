@@ -22,6 +22,11 @@ class CursorShapeStub;
 // MouseCursorMonitor and sending it to a CursorShapeStub.
 class MouseShapePump : public webrtc::MouseCursorMonitor::Callback {
  public:
+  // This initializes `mouse_cursor_monitor` to capture both the cursor
+  // shape and position. The caller should not set any monitor-callback on
+  // `mouse_cursor_monitor` - it will be overwritten by this class.
+  // `cursor_shape_stub` is optional - if provided, mouse-cursor messages will
+  // be sent to it.
   MouseShapePump(
       std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor,
       protocol::CursorShapeStub* cursor_shape_stub);

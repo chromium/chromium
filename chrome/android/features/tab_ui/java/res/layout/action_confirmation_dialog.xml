@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.components.browser_ui.widget.FadingEdgeScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <org.chromium.ui.widget.TextViewWithLeading
+      android:id="@+id/description_text_view"
+      style="@style/AlertDialogContent"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+    <CheckBox
+      android:id="@+id/stop_showing_check_box"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginHorizontal="16dp"
+      android:layout_marginTop="@dimen/dialog_padding_top"
+      android:text="@string/confirmation_stop_showing"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+  </LinearLayout>
+</org.chromium.components.browser_ui.widget.FadingEdgeScrollView>

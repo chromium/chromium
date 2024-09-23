@@ -45,6 +45,7 @@ class PasswordReuseDetectorImpl : public PasswordReuseDetector {
       const password_manager::PasswordStoreChangeList& changes) override;
 
   void OnLoginsRetained(
+      PasswordForm::Store password_store_type,
       const std::vector<PasswordForm>& retained_passwords) override;
 
   // Clears all the cached passwords which are stored on the account store.
@@ -97,6 +98,10 @@ class PasswordReuseDetectorImpl : public PasswordReuseDetector {
   // Remove password of |form| from
   // |passwords_with_matching_reused_credentials_|;
   void RemovePassword(const PasswordForm& form);
+
+  // Removes all the credentials coming from |store_type| store from
+  // |passwords_with_matching_reused_credentials_|.
+  void RemoveAllLoginsByStoreType(PasswordForm::Store store_type);
 
   // If Gaia password reuse is found, return the PasswordHashData of the reused
   // password. If no reuse is found, return |std::nullopt|.

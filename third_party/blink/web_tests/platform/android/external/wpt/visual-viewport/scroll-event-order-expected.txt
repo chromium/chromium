@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Scroll event ordering
+  assert_greater_than: Must have zoomed in expected a number greater than 1 but got 0.36734694242477417
+Harness: the test ran to completion.

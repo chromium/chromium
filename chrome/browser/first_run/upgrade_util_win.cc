@@ -4,10 +4,10 @@
 
 #include "chrome/browser/first_run/upgrade_util_win.h"
 
-// Must be first.
+#include <objbase.h>
+
 #include <windows.h>
 
-#include <objbase.h>
 #include <psapi.h>
 #include <shellapi.h>
 #include <wrl/client.h>
@@ -21,15 +21,25 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
@@ -42,8 +52,10 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/app_command.h"
+#include "chrome/installer/util/per_install_values.h"
 #include "chrome/installer/util/util_constants.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/ui_base_switches.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -59,22 +71,170 @@ bool GetNewerChromeFile(base::FilePath* path) {
   return true;
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Holds the result of the IPC to CoCreate the process launcher.
+struct CreateProcessLauncherResult
+    : public base::RefCountedThreadSafe<CreateProcessLauncherResult> {
+  Microsoft::WRL::ComPtr<IStream> stream;
+  base::WaitableEvent completion_event;
+
+ private:
+  friend class base::RefCountedThreadSafe<CreateProcessLauncherResult>;
+  virtual ~CreateProcessLauncherResult() = default;
+};
+
+// CoCreates the `ProcessLauncher` class, and if successful, marshals the
+// resulting interface into `result->stream`. Signals `result->completion_event`
+// on successful or failed completion.
+void CreateAndMarshalProcessLauncher(
+    scoped_refptr<CreateProcessLauncherResult> result) {
+  const absl::Cleanup signal_completion_event = [&result] {
+    result->completion_event.Signal();
+  };
+
+  Microsoft::WRL::ComPtr<IUnknown> unknown;
+  {
+    TRACE_EVENT0("startup", "InvokeGoogleUpdateForRename CoCreateInstance");
+    const HRESULT hr =
+        ::CoCreateInstance(__uuidof(ProcessLauncherClass), nullptr, CLSCTX_ALL,
+                           IID_PPV_ARGS(&unknown));
+    if (FAILED(hr)) {
+      TRACE_EVENT_INSTANT1(
+          "startup", "InvokeGoogleUpdateForRename CoCreateInstance failed",
+          TRACE_EVENT_SCOPE_THREAD, "hr", hr);
+      LOG(ERROR) << "CoCreate ProcessLauncherClass failed; hr = " << std::hex
+                 << hr;
+      return;
+    }
+  }
+  const HRESULT hr = ::CoMarshalInterThreadInterfaceInStream(
+      __uuidof(IUnknown), unknown.Get(), &result->stream);
+  if (FAILED(hr)) {
+    TRACE_EVENT_INSTANT1("startup",
+                         "InvokeGoogleUpdateForRename "
+                         "CoMarshalInterThreadInterfaceInStream failed",
+                         TRACE_EVENT_SCOPE_THREAD, "hr", hr);
+    LOG(ERROR) << "CoMarshalInterThreadInterfaceInStream "
+                  "ProcessLauncherClass failed; hr = "
+               << std::hex << hr;
+  }
+}
+
+// CoCreates the Google Update `ProcessLauncherClass` in a `ThreadPool` thread
+// with a timeout, if the `ThreadPool` is operational. The starting value for
+// the timeout is 15 seconds. If the CoCreate times out, the timeout is
+// increased by 15 seconds at each failed attempt and persisted for the next
+// attempt.
+//
+// If the `ThreadPool` is not operational, the CoCreate is done
+// without a timeout.
+Microsoft::WRL::ComPtr<IUnknown> CreateProcessLauncher() {
+  constexpr int kDefaultTimeoutIncrementSeconds = 15;
+  constexpr base::TimeDelta kMaxTimeAfterSystemStartup = base::Seconds(150);
+
+  auto result = base::MakeRefCounted<CreateProcessLauncherResult>();
+  if (base::ThreadPool::CreateCOMSTATaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING})
+          ->PostTask(FROM_HERE, base::BindOnce(&CreateAndMarshalProcessLauncher,
+                                               result))) {
+    installer::PerInstallValue creation_timeout(
+        L"ProcessLauncherCreationTimeout");
+    const base::TimeDelta timeout = base::Seconds(
+        creation_timeout.Get()
+            .value_or(base::Value(kDefaultTimeoutIncrementSeconds))
+            .GetIfInt()
+            .value_or(kDefaultTimeoutIncrementSeconds));
+    const base::ElapsedTimer timer;
+    const bool is_at_startup =
+        base::SysInfo::Uptime() <= kMaxTimeAfterSystemStartup;
+    if (!result->completion_event.TimedWait(timeout)) {
+      base::UmaHistogramMediumTimes(
+          is_at_startup
+              ? "Startup.CreateProcessLauncher2.TimedWaitFailedAtStartup"
+              : "Startup.CreateProcessLauncher2.TimedWaitFailed",
+          timer.Elapsed());
+      creation_timeout.Set(base::Value(static_cast<int>(timeout.InSeconds()) +
+                                       kDefaultTimeoutIncrementSeconds));
+      TRACE_EVENT_INSTANT0(
+          "startup", "InvokeGoogleUpdateForRename CoCreateInstance timed out",
+          TRACE_EVENT_SCOPE_THREAD);
+      LOG(ERROR) << "CoCreate ProcessLauncherClass timed out";
+      return {};
+    }
+
+    if (!result->stream) {
+      return {};
+    }
+    base::UmaHistogramMediumTimes(
+        is_at_startup
+            ? "Startup.CreateProcessLauncher2.TimedWaitSucceededAtStartup"
+            : "Startup.CreateProcessLauncher2.TimedWaitSucceeded",
+        timer.Elapsed());
+
+    Microsoft::WRL::ComPtr<IUnknown> unknown;
+    const HRESULT hr =
+        ::CoUnmarshalInterface(result->stream.Get(), __uuidof(IUnknown),
+                               IID_PPV_ARGS_Helper(&unknown));
+    if (FAILED(hr)) {
+      TRACE_EVENT_INSTANT1(
+          "startup", "InvokeGoogleUpdateForRename CoUnmarshalInterface failed",
+          TRACE_EVENT_SCOPE_THREAD, "hr", hr);
+      LOG(ERROR) << "CoUnmarshalInterface ProcessLauncherClass failed; hr = "
+                 << std::hex << hr;
+      return {};
+    }
+
+    return unknown;
+  }
+
+  // The task could not be posted to the task runner, so CoCreate without a
+  // timeout. This could happen in shutdown, where the `ThreadPool` is not
+  // operational.
+  {
+    TRACE_EVENT0("startup", "InvokeGoogleUpdateForRename CoCreateInstance");
+    Microsoft::WRL::ComPtr<IUnknown> unknown;
+    const HRESULT hr =
+        ::CoCreateInstance(__uuidof(ProcessLauncherClass), nullptr, CLSCTX_ALL,
+                           IID_PPV_ARGS(&unknown));
+    if (FAILED(hr)) {
+      TRACE_EVENT_INSTANT1(
+          "startup", "InvokeGoogleUpdateForRename CoCreateInstance failed",
+          TRACE_EVENT_SCOPE_THREAD, "hr", hr);
+      LOG(ERROR) << "CoCreate ProcessLauncherClass failed; hr = " << std::hex
+                 << hr;
+      return {};
+    }
+
+    return unknown;
+  }
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 bool InvokeGoogleUpdateForRename() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // This has been identified as very slow on some startups. Detailed trace
   // events below try to shine a light on each steps. crbug.com/1252004
   TRACE_EVENT0("startup", "upgrade_util::InvokeGoogleUpdateForRename");
 
+  Microsoft::WRL::ComPtr<IUnknown> unknown = CreateProcessLauncher();
+  if (!unknown) {
+    return false;
+  }
+
+  // Chrome queries for the SxS IIDs first, with a fallback to the legacy IID,
+  // to make sure that marshaling loads the proxy/stub from the correct (HKLM)
+  // hive.
   Microsoft::WRL::ComPtr<IProcessLauncher> ipl;
   {
-    TRACE_EVENT0("startup", "InvokeGoogleUpdateForRename CoCreateInstance");
-    HRESULT hr = ::CoCreateInstance(__uuidof(ProcessLauncherClass), nullptr,
-                                    CLSCTX_ALL, IID_PPV_ARGS(&ipl));
+    HRESULT hr = unknown.CopyTo(__uuidof(IProcessLauncherSystem),
+                                IID_PPV_ARGS_Helper(&ipl));
+    if (FAILED(hr)) {
+      hr = unknown.As(&ipl);
+    }
     if (FAILED(hr)) {
       TRACE_EVENT0("startup",
-                   "InvokeGoogleUpdateForRename CoCreateInstance failed");
-      LOG(ERROR) << "CoCreate ProcessLauncherClass failed; hr = " << std::hex
-                 << hr;
+                   "InvokeGoogleUpdateForRename QueryInterface failed");
+      LOG(ERROR) << "QueryInterface failed; hr = " << std::hex << hr;
       return false;
     }
   }
@@ -129,7 +289,7 @@ bool RelaunchChromeBrowserImpl(const base::CommandLine& command_line) {
 
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -242,7 +402,7 @@ bool DoUpgradeTasks(const base::CommandLine& command_line) {
   // At this point the chrome.exe has been swapped with the new one.
   if (!RelaunchChromeBrowser(command_line)) {
     // The relaunch failed. Feel free to panic now.
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED();
   }
   return true;
 }

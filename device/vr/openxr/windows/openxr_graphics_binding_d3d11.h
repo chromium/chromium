@@ -23,7 +23,6 @@ class OpenXrPlatformHelperWindows;
 class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
  public:
   explicit OpenXrGraphicsBindingD3D11(
-      D3D11TextureHelper* texture_helper,
       base::WeakPtr<OpenXrPlatformHelperWindows> weak_platform_helper);
   ~OpenXrGraphicsBindingD3D11() override;
 
@@ -39,14 +38,27 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
   void CreateSharedImages(gpu::SharedImageInterface* sii) override;
   const SwapChainInfo& GetActiveSwapchainImage() override;
   bool WaitOnFence(gfx::GpuFence& gpu_fence) override;
+  bool Render(
+      const scoped_refptr<viz::ContextProvider>& context_provider) override;
+  void CleanupWithoutSubmit() override;
   bool ShouldFlipSubmittedImage() override;
+  void SetOverlayAndWebXrVisibility(bool overlay_visible,
+                                    bool webxr_visible) override;
+  void SetWebXrTexture(mojo::PlatformHandle texture_handle,
+                       const gpu::SyncToken& sync_token,
+                       const gfx::RectF& left,
+                       const gfx::RectF& right) override;
+  bool SetOverlayTexture(gfx::GpuMemoryBufferHandle texture,
+                         const gpu::SyncToken& sync_token,
+                         const gfx::RectF& left,
+                         const gfx::RectF& right) override;
 
  private:
   void OnSwapchainImageSizeChanged() override;
   void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) override;
 
   bool initialized_ = false;
-  raw_ptr<D3D11TextureHelper> texture_helper_;
+  std::unique_ptr<D3D11TextureHelper> texture_helper_;
   base::WeakPtr<OpenXrPlatformHelperWindows> weak_platform_helper_;
   std::vector<SwapChainInfo> color_swapchain_images_;
 

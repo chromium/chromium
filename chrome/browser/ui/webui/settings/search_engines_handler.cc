@@ -28,7 +28,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
-#include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -218,8 +218,7 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
   dict.Set("displayName",
            table_model->GetText(index,
                                 IDS_SEARCH_ENGINES_EDITOR_DESCRIPTION_COLUMN));
-  dict.Set("keyword", table_model->GetText(
-                          index, IDS_SEARCH_ENGINES_EDITOR_KEYWORD_COLUMN));
+  dict.Set("keyword", table_model->GetKeywordToDisplay(index));
   Profile* profile = Profile::FromWebUI(web_ui());
   dict.Set("url",
            template_url->url_ref().DisplayURL(UIThreadSearchTermsData()));
@@ -229,10 +228,6 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
   if (icon_url.is_valid())
     dict.Set("iconURL", icon_url.spec());
 
-  const bool is_search_engine_choice_settings_ui =
-      search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny);
-
   // The icons that are used for search engines in the EEA region are bundled
   // with Chrome. We use the favicon service for countries outside the EEA
   // region to guarantee having icons for all search engines.
@@ -240,8 +235,7 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
       search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile);
   const bool is_eea_region = search_engines::IsEeaChoiceCountry(
       search_engine_choice_service->GetCountryId());
-  if (is_search_engine_choice_settings_ui && is_eea_region &&
-      template_url->prepopulate_id() != 0) {
+  if (is_eea_region && template_url->prepopulate_id() != 0) {
     std::string_view icon_path =
         GetSearchEngineGeneratedIconPath(template_url->keyword());
     if (!icon_path.empty()) {
@@ -266,6 +260,8 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
   dict.Set("isManaged", list_controller_.IsManaged(template_url));
   TemplateURL::Type type = template_url->type();
   dict.Set("isOmniboxExtension", type == TemplateURL::OMNIBOX_API_EXTENSION);
+  dict.Set("isPrepopulated", template_url->prepopulate_id() > 0);
+  dict.Set("isStarterPack", template_url->starter_pack_id() > 0);
   if (type == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION ||
       type == TemplateURL::OMNIBOX_API_EXTENSION) {
     const extensions::Extension* extension =
@@ -396,7 +392,7 @@ bool SearchEnginesHandler::CheckFieldValidity(const std::string& field_name,
   else if (field_name.compare(kQueryUrlField) == 0)
     is_valid = edit_controller_->IsURLValid(field_value);
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   return is_valid;
 }

@@ -12,8 +12,9 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros_local.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/MinidumpUploadServiceImpl_jni.h"
-#include "ui/base/text/bytes_formatting.h"
 
 namespace {
 
@@ -137,6 +138,6 @@ void CrashUploadListAndroid::LoadUnsuccessfulUploadList(
         UnsuccessfulUploadListState::ADDING_AN_UPLOAD_ENTRY);
     id = id.substr(pos + 1);
     uploads->push_back(std::make_unique<UploadList::UploadInfo>(
-        id, info.creation_time, upload_state, ui::FormatBytes(file_size)));
+        id, info.creation_time, upload_state, file_size));
   }
 }

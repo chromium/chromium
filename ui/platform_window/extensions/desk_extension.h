@@ -16,7 +16,7 @@ class PlatformWindow;
 // A desk extension that platforms can use to add support for virtual desktop.
 // The APIs currently match with what ash provides from desks_controller to
 // support "Move window to desk" menu in LaCrOS.
-// TODO(crbug.com/1214795): Support virtual desktop protocol for linux/wayland
+// TODO(crbug.com/40769556): Support virtual desktop protocol for linux/wayland
 // as well.
 class COMPONENT_EXPORT(PLATFORM_WINDOW) DeskExtension {
  public:

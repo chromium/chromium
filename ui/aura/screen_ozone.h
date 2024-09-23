@@ -6,6 +6,7 @@
 #define UI_AURA_SCREEN_OZONE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/values.h"
@@ -55,6 +56,8 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
   std::string GetCurrentWorkspace() override;
   base::Value::List GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info) override;
+  std::optional<float> GetPreferredScaleFactorForWindow(
+      gfx::NativeWindow window) const override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   display::TabletState GetTabletState() const override;
   void OverrideTabletStateForTesting(

@@ -57,7 +57,7 @@ dependencies.constraints {
 dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
-    compile 'com.google.android.material:material:1.11.0-beta01'
+    compile 'com.google.android.material:material:1.13.0-alpha05'
 
     compile 'com.google.android.play:feature-delivery:2.0.1'
 
@@ -78,20 +78,17 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:20.1.0'
     compile "com.google.android.gms:play-services-cast:${castGmsVersion}"
     compile "com.google.android.gms:play-services-cast-framework:${castGmsVersion}"
+    compile "com.google.android.gms:play-services-identity-credentials:16.0.0-alpha02"
     compile "com.google.android.gms:play-services-iid:${gcmGmsVersion}"
     compile "com.google.android.gms:play-services-instantapps:${baseGmsVersion}"
     compile "com.google.android.gms:play-services-gcm:${gcmGmsVersion}"
-    compile 'com.google.android.gms:play-services-location:19.0.1'
+    compile 'com.google.android.gms:play-services-location:21.0.1'
     compile 'com.google.android.gms:play-services-vision-common:19.1.3'
     compile 'com.google.android.gms:play-services-vision:20.1.3'
 
-    // TODO (bjoyce): Remove after androidx migration crbug.com/896775
-    // Support v4 libraries
-    String supportLibVersion = '28.0.0'
-    compile "com.android.support:drawerlayout:${supportLibVersion}"
-    compile "com.android.support:support-annotations:${supportLibVersion}"
-    compile "com.android.support:support-compat:${supportLibVersion}"
-    compile "com.android.support:support-core-ui:${supportLibVersion}"
+    // Needed only by internal targets:
+    compile "com.android.support:support-annotations:28.0.0"
+    buildCompile 'com.google.auto.service:auto-service-annotations:1.0-rc6'
 
     compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'com.google.firebase:firebase-iid:21.0.1'
@@ -100,7 +97,7 @@ dependencies {
     // buildCompile needed because we add a custom dep of onto this from guava
     // to fix "unknown enum constant ReflectionSupport$Level.FULL".
     buildCompile 'com.google.j2objc:j2objc-annotations:2.8'
-    compile 'com.google.protobuf:protobuf-javalite:3.19.3'
+    compile 'com.google.protobuf:protobuf-javalite:4.28.0'
     compile 'javax.annotation:javax.annotation-api:1.3.2'
     compile 'javax.annotation:jsr250-api:1.0'
     compile 'javax.inject:javax.inject:1'
@@ -111,18 +108,23 @@ dependencies {
     compile 'io.grpc:grpc-stub:1.49.0'
     compile 'io.grpc:grpc-api:1.49.0'
 
+    // Needed by androidx.room, but by default it selects a lower version that
+    // does not exist in CIPD.
+    compile 'org.jetbrains.kotlinx:atomicfu-jvm:0.23.2'
     // Needed by androidx and by doubledown targets.
     // Note: These have version overrides set in ChromiumDepGraph.groovy.
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4"
-    compile "org.jetbrains.kotlinx:atomicfu-jvm:0.23.2"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20"
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.4"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.1"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.8.1"
+    compile "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.7.2"
     compile "org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22"
 
+    // Needed by androidx.datastore
+    compile "com.squareup.okio:okio-jvm:3.9.0"
     // Needed by androidx.macrobenchmarks
     androidTestCompile "com.squareup.wire:wire-runtime-jvm:4.4.3"
+    // Needed by androidx.benchmark
+    androidTestCompile "com.squareup.moshi:moshi-adapters:1.15.0"
 
     // There is an -jre flavor of guava as well, but it requires Android O+ (for MethodHandle).
     // The -android version is missing symbols (e.g. ImmutableList stream APIs).
@@ -131,14 +133,12 @@ dependencies {
     compile "com.google.guava:guava:32.1.3-android"
     buildCompile "com.google.guava:guava:32.1.3-jre"
 
-    String daggerVersion = '2.30'
+    String daggerVersion = '2.52'
     compile "com.google.dagger:dagger:${daggerVersion}"
-    buildCompile "com.google.dagger:dagger-compiler:${daggerVersion}"
+    compile "com.google.dagger:hilt-core:${daggerVersion}"
 
-    // Matches version depended on by Dagger.
+    // Used by ModuleInterfaceProcessor.java
     buildCompile 'com.squareup:javapoet:1.13.0'
-
-    String errorproneVersion = '2.11.0'
 
     // Provides annotations used to opt into checks.
     compile "com.google.errorprone:error_prone_annotations:2.23.0"
@@ -147,14 +147,6 @@ dependencies {
     compile 'org.checkerframework:checker-util:3.25.0'
     compile 'org.codehaus.mojo:animal-sniffer-annotations:1.17'
 
-    buildCompile "com.google.errorprone:error_prone_core:${errorproneVersion}"
-    buildCompile "com.google.errorprone:error_prone_check_api:${errorproneVersion}"
-    // Provides annotations needed when writing custom checks.
-    buildCompile "com.google.errorprone:error_prone_annotation:${errorproneVersion}"
-    buildCompile 'com.google.errorprone:javac:9+181-r4173-1'
-
-    buildCompile 'com.google.auto.service:auto-service:1.0-rc6'
-    buildCompile 'com.google.auto.service:auto-service-annotations:1.0-rc6'
     buildCompile 'com.google.code.gson:gson:2.8.0'
     buildCompile 'org.ow2.asm:asm:7.0'
     buildCompile 'org.ow2.asm:asm-commons:7.0'
@@ -170,9 +162,8 @@ dependencies {
     buildCompileNoDeps "com.android.tools:sdk-common:${androidToolsVersion}"
     buildCompileNoDeps "com.android.tools:common:${androidToolsVersion}"
     buildCompileNoDeps "com.android.tools.layoutlib:layoutlib-api:${androidToolsVersion}"
-    buildCompile 'org.jetbrains.kotlin:kotlin-stdlib:1.8.0'
 
-    androidTestCompile 'com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:4.1.0'
+    androidTestCompile 'com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:4.0.0'
     // accessibility-test-framework:3.1.2 depends on jsoup 1.12, which has a security
     // vulnerability, so grab a later version.
     androidTestCompile 'org.jsoup:jsoup:1.14.3'
@@ -180,7 +171,12 @@ dependencies {
     // Version 1.2 is needed by espresso-web, but we'll newer 1.2.1.
     androidTestCompile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
 
-    String mockitoVersion = '5.8.0'
+    // accessibility-test-framework has a phantom dependency on the really old
+    // protobuf runtime which trips our asserts. Manually add dep here but
+    // exclude it in ChromiumDepGraph.
+    androidTestCompile 'com.google.protobuf:protobuf-lite:3.0.0'
+
+    String mockitoVersion = '5.11.0'
     androidTestCompile "org.mockito:mockito-android:${mockitoVersion}"
     androidTestCompile "org.mockito:mockito-core:${mockitoVersion}"
     androidTestCompile "org.mockito:mockito-subclass:${mockitoVersion}"
@@ -189,7 +185,7 @@ dependencies {
     androidTestCompile "net.bytebuddy:byte-buddy:1.14.5"
 
     // Use testCompile to have is_robolectric = true set on targets.
-    testCompile "org.robolectric:robolectric:4.11.1"
+    testCompile "org.robolectric:robolectric:4.12.1"
 }
 
 task setUpRepository(type: BuildConfigGenerator) {

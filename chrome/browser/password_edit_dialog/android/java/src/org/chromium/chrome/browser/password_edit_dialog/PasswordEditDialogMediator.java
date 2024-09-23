@@ -8,6 +8,7 @@ import android.content.res.Resources;
 
 import androidx.annotation.StringRes;
 
+import org.chromium.build.BuildConfig;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -17,13 +18,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.List;
 
 /**
- * Contains the logic for save & update password edit dialog.
- * Handles models updates and reacts to UI events.
+ * Contains the logic for save & update password edit dialog. Handles models updates and reacts to
+ * UI events.
  */
 class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
     private PropertyModel mDialogViewModel;
     private PropertyModel mModalDialogModel;
     private List<String> mSavedUsernames;
+    private String mAccount;
 
     private final ModalDialogManager mModalDialogManager;
     private final Resources mResources;
@@ -41,10 +43,12 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
     void initialize(
             PropertyModel dialogViewModel,
             PropertyModel modalDialogModel,
-            List<String> savedUsernames) {
+            List<String> savedUsernames,
+            String account) {
         mDialogViewModel = dialogViewModel;
         mModalDialogModel = modalDialogModel;
         mSavedUsernames = savedUsernames;
+        mAccount = account;
     }
 
     /**
@@ -54,6 +58,10 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
      */
     void handleUsernameChanged(String username) {
         mDialogViewModel.set(PasswordEditDialogProperties.USERNAME, username);
+        mDialogViewModel.set(
+                PasswordEditDialogProperties.FOOTER,
+                createEditPasswordDialogFooter(
+                        mAccount, mDialogInteractions.isUsingAccountStorage(username), mResources));
         mModalDialogModel.set(
                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                 isUpdate(mSavedUsernames, username)
@@ -112,13 +120,27 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
             // If there is more than one username possible,
             // the user is asked to confirm the one to be saved.
             // Otherwise, they are just asked if they want to update the password.
-            // TODO(crbug.com/1378591): Take care that confirm username dialog should
+            // TODO(crbug.com/40243989): Take care that confirm username dialog should
             // not be navigated through the cog button.
             return displayUsernames.size() < 2
                     ? R.string.password_update_dialog_title
                     : R.string.confirm_username_dialog_title;
         }
         return R.string.save_password;
+    }
+
+    public static String createEditPasswordDialogFooter(
+            String account, boolean isUsingAccountStorage, Resources resources) {
+        @StringRes int footerId;
+        if (isUsingAccountStorage) {
+            footerId = R.string.password_edit_dialog_synced_footer_google;
+        } else {
+            footerId =
+                    BuildConfig.IS_CHROME_BRANDED
+                            ? R.string.password_edit_dialog_unsynced_footer_google
+                            : R.string.password_edit_dialog_unsynced_footer;
+        }
+        return resources.getString(footerId, account);
     }
 
     /**

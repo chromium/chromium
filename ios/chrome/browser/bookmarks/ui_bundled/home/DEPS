@@ -1,0 +1,13 @@
+include_rules = [
+  "+ios/chrome/browser/default_browser/model/default_browser_interest_signals.h",
+  "+ios/chrome/browser/drag_and_drop/model",
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/intents/intents_donation_helper.h",
+  "+ios/chrome/browser/metrics/model/new_tab_page_uma.h",
+  "+ios/chrome/browser/net/model/crurl.h",
+  "+ios/chrome/browser/policy/model/policy_util.h",
+  "+ios/chrome/browser/tabs/model/tab_title_util.h",
+  "+ios/chrome/browser/url_loading/model",
+  "+ios/chrome/browser/window_activities/model/window_activity_helpers.h",
+]

@@ -1,0 +1,49 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("link_preview") {
+  sources = [
+    "link_preview_coordinator.h",
+    "link_preview_coordinator.mm",
+    "link_preview_mediator.h",
+    "link_preview_mediator.mm",
+  ]
+  deps = [
+    ":link_preview_ui",
+    "//components/url_formatter",
+    "//ios/chrome/browser/history/model:tab_helper",
+    "//ios/chrome/browser/ntp/ui_bundled:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/web/common:features",
+    "//ios/web/public",
+    "//url",
+  ]
+}
+
+source_set("link_preview_ui") {
+  sources = [
+    "link_preview_consumer.h",
+    "link_preview_view_controller.h",
+    "link_preview_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/third_party/material_components_ios",
+    "//ui/gfx",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "link_preview_constants.h",
+    "link_preview_constants.mm",
+  ]
+}

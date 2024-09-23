@@ -258,7 +258,8 @@ void PriceTrackingPageActionController::MaybeDoProductImageFetch(
     return;
   }
 
-  // TODO(1360850): Delay this fetch by possibly waiting until page load has
+  // TODO(crbug.com/40863328): Delay this fetch by possibly waiting until page
+  // load has
   //                finished.
   image_fetcher_->FetchImage(
       info.value().image_url,

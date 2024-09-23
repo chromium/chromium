@@ -11,6 +11,10 @@ assert(is_chromeos_ash)
 source_set("ash") {
   output_name = "ui_events_ash"
   sources = [
+    "caps_lock_event_rewriter.cc",
+    "caps_lock_event_rewriter.h",
+    "discard_key_event_rewriter.cc",
+    "discard_key_event_rewriter.h",
     "event_property.cc",
     "event_property.h",
     "event_rewriter_ash.cc",
@@ -22,16 +26,24 @@ source_set("ash") {
     "keyboard_capability.h",
     "keyboard_device_id_event_rewriter.cc",
     "keyboard_device_id_event_rewriter.h",
+    "keyboard_info_metrics.cc",
+    "keyboard_info_metrics.h",
     "keyboard_layout_util.cc",
     "keyboard_layout_util.h",
     "keyboard_modifier_event_rewriter.cc",
     "keyboard_modifier_event_rewriter.h",
+    "modifier_split_dogfood_controller.cc",
+    "modifier_split_dogfood_controller.h",
     "pref_names.h",
+    "top_row_action_keys.cc",
+    "top_row_action_keys.h",
   ]
   deps = [
     "//ash/constants",
     "//base",
+    "//components/user_manager",
     "//device/udev_linux",
+    "//google_apis",
     "//ui/base",
     "//ui/base:features",
     "//ui/base/ime/ash",
@@ -41,6 +53,7 @@ source_set("ash") {
     "//ui/events/devices",
     "//ui/events/ozone/evdev",
     "//ui/events/ozone/evdev:event_device_info",
+    "//ui/events/ozone/layout",
   ]
   if (ozone_platform_x11) {
     deps += [
@@ -51,15 +64,28 @@ source_set("ash") {
 }
 
 source_set("unit_tests") {
-  sources = [ "keyboard_device_id_event_rewriter_unittest.cc" ]
+  sources = [
+    "keyboard_capability_unittest.cc",
+    "keyboard_device_id_event_rewriter_unittest.cc",
+    "keyboard_info_metrics_unittest.cc",
+    "top_row_action_keys_unittest.cc",
+  ]
 
   deps = [
     ":ash",
+    "//ash/constants",
     "//base",
+    "//base/test:test_support",
+    "//components/user_manager:test_support",
+    "//device/udev_linux:test_support",
     "//testing/gtest",
+    "//ui/base",
     "//ui/events",
+    "//ui/events/ash/mojom",
     "//ui/events/devices",
     "//ui/events/devices:test_support",
+    "//ui/events/ozone/evdev:event_device_info",
+    "//ui/events/ozone/evdev:event_device_info_test_utils",
   ]
   testonly = true
 }

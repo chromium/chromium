@@ -1,20 +1,12 @@
-<style>
-  cr-dialog::part(dialog) {
-    max-width: 100%;
-    position: fixed;
-  }
-
-  cr-dialog [slot='body'] {
-    line-height: 20px;
-  }
-</style>
-<cr-dialog id="dialog" consume-keydown-event>
+<cr-dialog id="dialog" consume-keydown-event
+    ?show-on-attach="${this.showOnAttach}">
   <div slot="title">$i18n{modulesTasksInfoTitle}</div>
   <div slot="body">
     <slot></slot>
   </div>
   <div slot="button-container">
-    <cr-button id="closeButton" class="action-button" on-click="onCloseClick_">
+    <cr-button id="closeButton" class="action-button"
+        @click="${this.onCloseClick_}">
       $i18n{modulesTasksInfoClose}
     </cr-button>
   </div>

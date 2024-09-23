@@ -39,14 +39,10 @@ class PasswordSettingsUpdaterAndroidDispatcherBridge {
   virtual void SetPasswordSettingValue(std::optional<SyncingAccount> account,
                                        PasswordManagerSetting setting,
                                        bool value) = 0;
-  // Method that checks whether the settings accessor can be created or whether
-  // `Create` would fail. It returns true iff all nontransient prerequisistes
-  // are fulfilled. E.g. if the accessor requires a minimum GMS version this
-  // method would return false.
-  static bool CanCreateAccessor();
 
   // Factory function for creating the bridge. Before calling create, ensure
-  // that `CanCreateAccessor` returns true.
+  // that `password_manager_android_util::AreMinUpmRequirementsMet`
+  // returns true.
   static std::unique_ptr<PasswordSettingsUpdaterAndroidDispatcherBridge>
   Create();
 };

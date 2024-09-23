@@ -15,6 +15,8 @@ found in the LICENSE file.
     <color name="baseline_primary_80_alpha_10" tools:ignore="UnusedResources">#19A8C7FA</color>
     <color name="baseline_primary_80_alpha_20">#33A8C7FA</color>
     <color name="baseline_primary_80_alpha_50">#80A8C7FA</color>
+    <color name="baseline_primary_60">#4C8DF6</color>
+    <color name="baseline_primary_50">#1B6EF3</color>
     <color name="baseline_primary_40">#0B57D0</color>
     <color name="baseline_primary_40_alpha_6">#0F0B57D0</color>
     <color name="baseline_primary_40_alpha_10">#190B57D0</color>
@@ -88,6 +90,8 @@ found in the LICENSE file.
     <color name="gm3_baseline_surface_container_dark">#1E1F20</color>
     <color name="gm3_baseline_surface_light">#FFFFFF</color>
     <color name="gm3_baseline_surface_dark">#131314</color>
+    <color name="gm3_baseline_surface_container_low_light">#F8FAFD</color>
+    <color name="gm3_baseline_surface_container_highest_dark">#333537</color>
 
     <!-- System colors that point to the baseline palette for below Android S.-->
     <color name="system_neutral1_10">@color/baseline_neutral_99</color>
@@ -95,27 +99,9 @@ found in the LICENSE file.
 
     <!-- Remapped to 2021 color palette. Do not add new references to these. -->
     <color name="modern_white">@color/baseline_neutral_100</color>
-    <!-- Correct for most places to use 200 instead of 300 now. -->
-    <color name="modern_blue_300">@color/baseline_primary_80</color>
-    <color name="modern_blue_300_alpha_10" tools:ignore="UnusedResources">@color/baseline_primary_80_alpha_10</color>
-    <color name="modern_blue_300_alpha_50">@color/baseline_primary_80_alpha_50</color>
-    <color name="modern_blue_600">@color/baseline_primary_40</color>
-    <color name="modern_blue_600_alpha_6">@color/baseline_primary_40_alpha_6</color>
-    <color name="modern_blue_600_alpha_10">@color/baseline_primary_40_alpha_10</color>
-    <color name="modern_blue_600_alpha_12">@color/baseline_primary_40_alpha_12</color>
-    <color name="modern_blue_600_alpha_65" tools:ignore="UnusedResources">@color/baseline_primary_40_alpha_65</color>
-    <color name="modern_blue_700">@color/baseline_primary_30</color>
-    <color name="modern_blue_800" tools:ignore="UnusedResources">@color/baseline_primary_20</color>
 
     <color name="google_green_300">@color/baseline_tertiary_80</color>
     <color name="google_green_600">@color/baseline_tertiary_40</color>
-    <color name="modern_grey_50" tools:ignore="UnusedResources">@color/baseline_neutral_95</color>
-    <color name="modern_grey_100">@color/baseline_neutral_90</color>
-    <color name="modern_grey_100_alpha_38">@color/baseline_neutral_90_alpha_38</color>
-    <color name="modern_grey_200">@color/baseline_neutral_80</color>
-    <color name="modern_grey_300">@color/baseline_neutral_70</color>
-    <color name="modern_grey_300_alpha_38">@color/baseline_neutral_70_alpha_38</color>
-    <color name="modern_grey_400" tools:ignore="UnusedResources">@color/baseline_neutral_60</color>
     <color name="modern_grey_500" tools:ignore="UnusedResources">@color/baseline_neutral_50</color>
     <color name="modern_grey_600">@color/baseline_neutral_40</color>
     <color name="modern_grey_700">@color/baseline_neutral_30</color>
@@ -155,6 +141,8 @@ found in the LICENSE file.
     <color name="material_primary_95">@color/baseline_primary_95</color>
     <color name="material_primary_90">@color/baseline_primary_90</color>
     <color name="material_primary_80">@color/baseline_primary_80</color>
+    <color name="material_primary_60">@color/baseline_primary_60</color>
+    <color name="material_primary_50">@color/baseline_primary_50</color>
     <color name="material_primary_40">@color/baseline_primary_40</color>
     <color name="material_primary_20">@color/baseline_primary_20</color>
     <color name="material_primary_10">@color/baseline_primary_10</color>

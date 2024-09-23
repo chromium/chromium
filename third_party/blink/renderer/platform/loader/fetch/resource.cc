@@ -22,6 +22,11 @@
     Boston, MA 02110-1301, USA.
 */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 
 #include <stdint.h>
@@ -29,6 +34,7 @@
 #include <algorithm>
 #include <cassert>
 #include <memory>
+#include <utility>
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
@@ -51,6 +57,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_finish_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -179,6 +186,7 @@ void Resource::Trace(Visitor* visitor) const {
   visitor->Trace(clients_awaiting_callback_);
   visitor->Trace(finished_clients_);
   visitor->Trace(finish_observers_);
+  visitor->Trace(options_);
   MemoryPressureListener::Trace(visitor);
 }
 
@@ -208,21 +216,8 @@ void Resource::CheckResourceIntegrity() {
     return;
   }
 
-  const char* data = nullptr;
-  size_t data_length = 0;
-
-  // Edge case: If a resource actually has zero bytes then it will not
-  // typically have a resource buffer, but we still need to check integrity
-  // because people might want to assert a zero-length resource.
-  CHECK(DecodedSize() == 0 || Data());
-  if (Data()) {
-    data = Data()->Data();
-    data_length = Data()->size();
-  }
-
-  if (SubresourceIntegrity::CheckSubresourceIntegrity(IntegrityMetadata(), data,
-                                                      data_length, Url(), *this,
-                                                      integrity_report_info_)) {
+  if (SubresourceIntegrity::CheckSubresourceIntegrity(
+          IntegrityMetadata(), Data(), Url(), *this, integrity_report_info_)) {
     integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
   } else {
     integrity_disposition_ = ResourceIntegrityDisposition::kFailed;
@@ -248,24 +243,48 @@ void Resource::MarkClientFinished(ResourceClient* client) {
   }
 }
 
-void Resource::AppendData(const char* data, size_t length) {
-  TRACE_EVENT1("blink", "Resource::appendData", "length", length);
+void Resource::AppendData(
+    absl::variant<SegmentedBuffer, base::span<const char>> data) {
   DCHECK(!IsCacheValidator());
   DCHECK(!ErrorOccurred());
-  if (options_.data_buffering_policy == kBufferData) {
-    if (data_)
-      data_->Append(data, length);
-    else
-      data_ = SharedBuffer::Create(data, length);
-    SetEncodedSize(data_->size());
+  if (absl::holds_alternative<SegmentedBuffer>(data)) {
+    AppendDataImpl(std::move(absl::get<SegmentedBuffer>(data)));
+  } else {
+    CHECK(absl::holds_alternative<base::span<const char>>(data));
+    AppendDataImpl(absl::get<base::span<const char>>(data));
   }
-  NotifyDataReceived(data, length);
 }
 
-void Resource::NotifyDataReceived(const char* data, size_t length) {
+void Resource::AppendDataImpl(SegmentedBuffer&& buffer) {
+  TRACE_EVENT1("blink", "Resource::appendData", "length", buffer.size());
+  SegmentedBuffer* data_ptr = &buffer;
+  if (options_.data_buffering_policy == kBufferData) {
+    CHECK(!data_);
+    data_ = SharedBuffer::Create(std::move(buffer));
+    data_ptr = data_.get();
+    SetEncodedSize(data_->size());
+  }
+  for (const auto& span : *data_ptr) {
+    NotifyDataReceived(span);
+  }
+}
+
+void Resource::AppendDataImpl(base::span<const char> data) {
+  TRACE_EVENT1("blink", "Resource::appendData", "length", data.size());
+  if (options_.data_buffering_policy == kBufferData) {
+    if (!data_) {
+      data_ = SharedBuffer::Create();
+    }
+    data_->Append(data);
+    SetEncodedSize(data_->size());
+  }
+  NotifyDataReceived(data);
+}
+
+void Resource::NotifyDataReceived(base::span<const char> data) {
   ResourceClientWalker<ResourceClient> w(Clients());
   while (ResourceClient* c = w.Next())
-    c->DataReceived(this, data, length);
+    c->DataReceived(this, data);
 }
 
 void Resource::SetResourceBuffer(scoped_refptr<SharedBuffer> resource_buffer) {
@@ -570,7 +589,7 @@ String Resource::ReasonNotDeletable() const {
 void Resource::DidAddClient(ResourceClient* client) {
   if (scoped_refptr<SharedBuffer> data = Data()) {
     for (const auto& span : *data) {
-      client->DataReceived(this, span.data(), span.size());
+      client->DataReceived(this, span);
       // Stop pushing data if the client removed itself.
       if (!HasClient(client))
         break;
@@ -1088,44 +1107,73 @@ void Resource::DidChangePriority(ResourceLoadPriority load_priority,
     loader_->DidChangePriority(load_priority, intra_priority_value);
 }
 
+void Resource::UpdateResourceWidth(const AtomicString& resource_width) {
+  if (resource_width) {
+    resource_request_.SetHttpHeaderField(AtomicString("sec-ch-width"),
+                                         resource_width);
+  } else {
+    resource_request_.ClearHttpHeaderField(AtomicString("sec-ch-width"));
+  }
+}
+
 // TODO(toyoshim): Consider to generate automatically. https://crbug.com/675515.
 static const char* InitiatorTypeNameToString(
     const AtomicString& initiator_type_name) {
-  if (initiator_type_name == fetch_initiator_type_names::kAudio)
+  if (initiator_type_name == fetch_initiator_type_names::kAudio) {
     return "Audio";
-  if (initiator_type_name == fetch_initiator_type_names::kAttributionsrc)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kAttributionsrc) {
     return "Attribution resource";
-  if (initiator_type_name == fetch_initiator_type_names::kCSS)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kCSS) {
     return "CSS resource";
-  if (initiator_type_name == fetch_initiator_type_names::kDocument)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kDocument) {
     return "Document";
-  if (initiator_type_name == fetch_initiator_type_names::kIcon)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kIcon) {
     return "Icon";
-  if (initiator_type_name == fetch_initiator_type_names::kInternal)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kInternal) {
     return "Internal resource";
-  if (initiator_type_name == fetch_initiator_type_names::kFetch)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kFetch) {
     return "Fetch";
-  if (initiator_type_name == fetch_initiator_type_names::kLink)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kLink) {
     return "Link element resource";
-  if (initiator_type_name == fetch_initiator_type_names::kOther)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kOther) {
     return "Other resource";
-  if (initiator_type_name == fetch_initiator_type_names::kProcessinginstruction)
+  }
+  if (initiator_type_name ==
+      fetch_initiator_type_names::kProcessinginstruction) {
     return "Processing instruction";
-  if (initiator_type_name == fetch_initiator_type_names::kTrack)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kScript) {
+    return "Script";
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kTrack) {
     return "Track";
-  if (initiator_type_name == fetch_initiator_type_names::kUacss)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kUacss) {
     return "User Agent CSS resource";
-  if (initiator_type_name == fetch_initiator_type_names::kUse)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kUse) {
     return "SVG Use element resource";
-  if (initiator_type_name == fetch_initiator_type_names::kVideo)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kVideo) {
     return "Video";
-  if (initiator_type_name == fetch_initiator_type_names::kXml)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kXml) {
     return "XML resource";
-  if (initiator_type_name == fetch_initiator_type_names::kXmlhttprequest)
+  }
+  if (initiator_type_name == fetch_initiator_type_names::kXmlhttprequest) {
     return "XMLHttpRequest";
+  }
 
   static_assert(
-      fetch_initiator_type_names::kNamesCount == 19,
+      fetch_initiator_type_names::kNamesCount == 20,
       "New FetchInitiatorTypeNames should be handled correctly here.");
 
   return "Resource";
@@ -1166,7 +1214,7 @@ const char* Resource::ResourceTypeToString(
     case ResourceType::kDictionary:
       return "Dictionary";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return InitiatorTypeNameToString(fetch_initiator_name);
 }
 
@@ -1192,7 +1240,7 @@ bool Resource::IsLoadEventBlockingResourceType() const {
     case ResourceType::kDictionary:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -1213,6 +1261,11 @@ void Resource::SetIsAdResource() {
 
 void Resource::UpdateMemoryCacheLastAccessedTime() {
   memory_cache_last_accessed_ = base::TimeTicks::Now();
+}
+
+std::unique_ptr<BackgroundResponseProcessorFactory>
+Resource::MaybeCreateBackgroundResponseProcessorFactory() {
+  return nullptr;
 }
 
 }  // namespace blink

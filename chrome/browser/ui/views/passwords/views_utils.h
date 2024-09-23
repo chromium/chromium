@@ -7,15 +7,14 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "ui/base/models/image_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace views {
-class Combobox;
 class EditableCombobox;
 class EditablePasswordCombobox;
 }  // namespace views
@@ -23,7 +22,7 @@ class EditablePasswordCombobox;
 namespace views {
 class Label;
 class StyledLabel;
-}
+}  // namespace views
 
 namespace password_manager {
 struct PasswordForm;
@@ -71,15 +70,12 @@ std::unique_ptr<views::Label> CreatePasswordLabel(
 int ComboboxIconSize();
 
 // Builds a credential rows, adds the given elements to the |parent_view|.
-// |destination_field| is nullptr if the destination field shouldn't be shown.
 // Generated UI will look like this:
 //
-//  | destination combobox |
 //  Username  | username combobox |
 //  Password  | password combobox |
 //
 void BuildCredentialRows(views::View* parent_view,
-                         std::unique_ptr<views::View> destination_field,
                          std::unique_ptr<views::View> username_field,
                          std::unique_ptr<views::View> password_field);
 
@@ -95,13 +91,16 @@ std::unique_ptr<views::EditablePasswordCombobox> CreateEditablePasswordCombobox(
     const password_manager::PasswordForm& form,
     views::Button::PressedCallback reveal_password_callback);
 
-// Creates a Combobox with account / device destination.
-std::unique_ptr<views::Combobox> CreateDestinationCombobox(
-    std::u16string primary_account_email,
-    ui::ImageModel primary_account_avatar,
-    bool is_using_account_store);
-
 // Creates a view with PasswordManager icon and a `title` string.
 std::unique_ptr<views::View> CreateTitleView(const std::u16string& title);
+
+// Looks up for `tokens` and highlight them in the `label` text. It uses
+// `Label::SetTextStyleRange()` which reqiures the emphasize style to change
+// the weight of the `label`'s font only, so, make sure the `label` text style
+// and `emphasize_style` are in sync, e.g. like `TextStyle::STYLE_BODY_3` and
+// `TextStyle::STYLE_BODY_3_EMPHASIS`.
+void EmphasizeTokens(views::Label* label,
+                     views::style::TextStyle emphasize_style,
+                     const std::vector<std::u16string>& tokens);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_VIEWS_UTILS_H_

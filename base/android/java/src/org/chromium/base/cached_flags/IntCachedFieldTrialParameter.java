@@ -4,6 +4,8 @@
 
 package org.chromium.base.cached_flags;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.AnyThread;
 
 import org.chromium.base.FeatureMap;
@@ -58,18 +60,18 @@ public class IntCachedFieldTrialParameter extends CachedFieldTrialParameter {
     }
 
     @Override
-    void cacheToDisk() {
-        int value =
+    void writeCacheValueToEditor(final SharedPreferences.Editor editor) {
+        final int value =
                 mFeatureMap.getFieldTrialParamByFeatureAsInt(
                         getFeatureName(), getParameterName(), getDefaultValue());
-        CachedFlagsSharedPreferences.getInstance().writeInt(getSharedPreferenceKey(), value);
+        editor.putInt(getSharedPreferenceKey(), value);
     }
 
     /**
      * Forces the parameter to return a specific value for testing.
      *
-     * Caveat: this does not affect the value returned by native, only by
-     * {@link CachedFieldTrialParameter}.
+     * <p>Caveat: this does not affect the value returned by native, only by {@link
+     * CachedFieldTrialParameter}.
      *
      * @param overrideValue the value to be returned
      */

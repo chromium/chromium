@@ -32,4 +32,4 @@ class GPUHeapProperty : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_MEMORY_HEAP_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_HEAP_PROPERTY_H_

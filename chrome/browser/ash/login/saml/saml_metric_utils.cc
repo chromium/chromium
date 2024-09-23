@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/login/saml/saml_metric_utils.h"
 
+#include <string>
+
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"

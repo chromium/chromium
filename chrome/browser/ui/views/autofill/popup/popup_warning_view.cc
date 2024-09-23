@@ -13,16 +13,21 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/fill_layout.h"
 
 namespace autofill {
 
 PopupWarningView::PopupWarningView(const Suggestion& suggestion)
     : text_value_(suggestion.main_text.value) {
-  SetUseDefaultFillLayout(true);
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-      PopupBaseView::GetCornerRadius(), PopupBaseView::GetHorizontalMargin())));
+  // TODO(crbug.com/327247047): SetUseDefaultFillLayout(true) ignore insets by
+  // default. But we need insets for broder.
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(PopupBaseView::GetCornerRadius(),
+                      PopupBaseView::ArrowHorizontalMargin())));
 
   AddChildView(views::Builder<views::Label>()
                    .SetText(text_value_)
@@ -32,14 +37,12 @@ PopupWarningView::PopupWarningView(const Suggestion& suggestion)
                    .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                    .SetEnabledColorId(ui::kColorAlertHighSeverity)
                    .Build());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
+  GetViewAccessibility().SetName(text_value_);
 }
 
 PopupWarningView::~PopupWarningView() = default;
-
-void PopupWarningView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kAlert;
-  node_data->SetNameChecked(text_value_);
-}
 
 BEGIN_METADATA(PopupWarningView)
 END_METADATA

@@ -4,9 +4,9 @@
 
 #include "components/safe_search_api/safe_search_util.h"
 
-#include "base/strings/string_piece.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -140,9 +140,8 @@ TEST(SafeSearchUtilTest, SetYoutubeHeader) {
   safe_search_api::ForceYouTubeRestrict(
       GURL("http://www.youtube.com"), &headers,
       safe_search_api::YOUTUBE_RESTRICT_MODERATE);
-  std::string value;
-  EXPECT_TRUE(headers.GetHeader("Youtube-Restrict", &value));
-  EXPECT_EQ("Moderate", value);
+  EXPECT_THAT(headers.GetHeader("Youtube-Restrict"),
+              testing::Optional(std::string("Moderate")));
 }
 
 TEST(SafeSearchUtilTest, OverrideYoutubeHeader) {
@@ -151,9 +150,8 @@ TEST(SafeSearchUtilTest, OverrideYoutubeHeader) {
   safe_search_api::ForceYouTubeRestrict(
       GURL("http://www.youtube.com"), &headers,
       safe_search_api::YOUTUBE_RESTRICT_MODERATE);
-  std::string value;
-  EXPECT_TRUE(headers.GetHeader("Youtube-Restrict", &value));
-  EXPECT_EQ("Moderate", value);
+  EXPECT_THAT(headers.GetHeader("Youtube-Restrict"),
+              testing::Optional(std::string("Moderate")));
 }
 
 TEST(SafeSearchUtilTest, DoesntTouchNonYoutubeURL) {
@@ -162,9 +160,8 @@ TEST(SafeSearchUtilTest, DoesntTouchNonYoutubeURL) {
   safe_search_api::ForceYouTubeRestrict(
       GURL("http://www.notyoutube.com"), &headers,
       safe_search_api::YOUTUBE_RESTRICT_MODERATE);
-  std::string value;
-  EXPECT_TRUE(headers.GetHeader("Youtube-Restrict", &value));
-  EXPECT_EQ("Off", value);
+  EXPECT_THAT(headers.GetHeader("Youtube-Restrict"),
+              testing::Optional(std::string("Off")));
 }
 
 }  // namespace

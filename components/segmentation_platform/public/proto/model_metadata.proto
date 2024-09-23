@@ -162,6 +162,12 @@ message CustomInput {
     // Output type: float
     // Output length: 1
     FILL_RANDOM = 10;
+
+    // Fill various metrics from the shopping service. Currently only support
+    // shopping bookmark count.
+    // Output type: float
+    // Output length: 1
+    FILL_FROM_SHOPPING_SERVICE = 11;
   }
 
   // The fill type of the custom input.
@@ -281,8 +287,8 @@ message TrainingOutputs {
         // The user action or histogram to trigger a training data output
         // collection. Note: Only the name and type should be used with
         // bucket_duration = 0.
-        // TODO(crbug.com/1364292): Figure out how to include the trigger as one
-        // of the outputs automatically.
+        // TODO(crbug.com/40239034): Figure out how to include the trigger as
+        // one of the outputs automatically.
         UMAOutput uma_trigger = 2;
       }
     }
@@ -371,6 +377,11 @@ message SegmentationModelMetadata {
   // Describes how long after a valid result has been calculated for this model
   // it is OK to cache the result without recalculating with updated data.
   optional int64 result_time_to_live = 6;
+
+  // The model always executes with a fixed timestamp. This is used when the
+  // model is trained on data from a specific time period, and needs to evaluate
+  // on the same date.
+  optional int64 fixed_prediction_timestamp = 17;
 
   message DiscreteMapping {
     // A mapping result from the raw continuous result to a discrete and

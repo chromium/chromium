@@ -7,8 +7,9 @@
 #include <optional>
 #include <string>
 
+#include "ash/calendar/calendar_client.h"
+#include "ash/calendar/calendar_controller.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
@@ -17,16 +18,13 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "ui/views/layout/table_layout.h"
 
-namespace ash {
+namespace ash::calendar_utils {
 
-namespace calendar_utils {
-
-bool IsForGlanceablesV2() {
-  return features::IsGlanceablesV2CalendarViewEnabled();
+bool IsMultiCalendarEnabled() {
+  return features::IsMultiCalendarSupportEnabled();
 }
 
 bool IsToday(const base::Time selected_date) {
@@ -252,7 +250,7 @@ ASH_EXPORT base::Time GetStartOfNextMonthUTC(base::Time date) {
   return GetStartOfMonthUTC(GetStartOfMonthUTC(date) + base::Days(33));
 }
 
-ASH_EXPORT bool ShouldFetchEvents() {
+ASH_EXPORT bool ShouldFetchCalendarData() {
   return IsActiveUser() && !IsDisabledByAdmin();
 }
 
@@ -265,9 +263,8 @@ ASH_EXPORT bool IsActiveUser() {
 }
 
 ASH_EXPORT bool IsDisabledByAdmin() {
-  auto* pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  return !pref_service->GetBoolean(prefs::kCalendarIntegrationEnabled);
+  const auto* const client = Shell::Get()->calendar_controller()->GetClient();
+  return !client || client->IsDisabledByAdmin();
 }
 
 base::TimeDelta GetTimeDifference(base::Time date) {
@@ -375,6 +372,4 @@ const std::tuple<base::Time, base::Time> GetMidnight(const base::Time time) {
   return std::make_tuple(utc_midnight, local_midnight);
 }
 
-}  // namespace calendar_utils
-
-}  // namespace ash
+}  // namespace ash::calendar_utils

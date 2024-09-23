@@ -1,0 +1,17 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/ash/annotator",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/tabs",
+  "+chrome/common/channel_info.h",
+  "+chrome/common/webui_url_constants.h",
+  "+chrome/test/base",
+  "+chrome/browser/ui/ash/projector/projector_utils.h"
+]

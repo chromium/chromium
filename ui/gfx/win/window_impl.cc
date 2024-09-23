@@ -135,7 +135,7 @@ ATOM ClassRegistrar::RetrieveClassAtom(const ClassInfo& class_info) {
   // gets above a certain small threshold, we may as well have a resource leak
   // caused by repeatedly registering a class with auto-generated name, which
   // would eventually lead to user atom table exhaustion.
-  // TODO(crbug.com/1470483): remove when source of ATOM leak is found.
+  // TODO(crbug.com/40925772): remove when source of ATOM leak is found.
   if (registered_count_ == 128) {
     base::debug::DumpWithoutCrashing();
   }

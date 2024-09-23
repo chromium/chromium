@@ -1,0 +1,34 @@
+The test verifies functionality of protocol method CSS.setStyleTexts for editing @position-try rules.
+==== Initial style sheet text ====
+#anchor {
+    anchor-name: --fallback;
+}
+
+#anchored {
+    position: absolute;
+    position-try-fallbacks: --fallback;
+}
+
+@position-try --fallback {
+    bottom: anchor(--anchor bottom);
+    right: anchor(--anchor right);
+}
+
+
+Running test: testBasicSetStyle
+==== Style sheet text ====
+#anchor {
+    anchor-name: --fallback;
+}
+
+#anchored {
+    position: absolute;
+    position-try-fallbacks: --fallback;
+}
+
+@position-try --fallback {
+    bottom: EDITED;
+    right: EDITED
+}
+
+

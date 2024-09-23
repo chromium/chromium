@@ -52,6 +52,9 @@ chromium-metrics-reviews@google.com.
   <int value="5"
       label="Returned result as not enabled because model execution
              capability was disabled for the user account"/>
+  <int value="6"
+      label="Returned result as enabled because the feature has graduated
+             from experimental AI settings"/>
 </enum>
 
 <enum name="FeaturesSettingsVisibilityResult">
@@ -66,6 +69,9 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="Not visible because model execution capability was disabled for
              the user account"/>
+  <int value="7" label="Not visible because the feature is already graduated"/>
+  <int value="8"
+      label="Not visible because the device is unsupported by the feature."/>
 </enum>
 
 <enum name="HintCacheStoreEntryType">
@@ -78,6 +84,22 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Fetched Hint"/>
   <int value="4" label="Prediction Model"/>
   <int value="5" label="[Deprecated] Host Model Features"/>
+</enum>
+
+<enum name="OnDeviceModelAdaptationAvailability">
+  <int value="0" label="Adaptation model was available"/>
+  <int value="1" label="Base model was not available"/>
+  <int value="2"
+      label="Base model spec was invalid, so adaptation model cannot be
+             fetched"/>
+  <int value="3" label="Adaptation model was not available"/>
+  <int value="4" label="The recieved adaptation model was invalid"/>
+  <int value="5"
+      label="The received adaptation model was incompatible with the base
+             model"/>
+  <int value="6"
+      label="The execution config in the adaptation model was invalid"/>
+  <int value="7" label="The model execution feature was not recently used."/>
 </enum>
 
 <enum name="OnDeviceModelLoadResult">
@@ -100,6 +122,15 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Failed to load library"/>
 </enum>
 
+<enum name="OnDeviceModelValidationResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Pending"/>
+  <int value="2" label="Success"/>
+  <int value="3" label="Non matching output"/>
+  <int value="4" label="Service crash"/>
+  <int value="5" label="Interrupted"/>
+</enum>
+
 <enum name="OnDeviceTextSafetyModelMetadataValidity">
   <int value="0" label="Unknown"/>
   <int value="1" label="No metadata"/>
@@ -114,34 +145,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="User not signed-in"/>
   <int value="3" label="Failed with transient error"/>
   <int value="4" label="Failed with persistent error"/>
-</enum>
-
-<enum name="OptimizationGuideEntityAnnotatorCreationStatus">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="Native library invalid"/>
-  <int value="3" label="Missing model metadata">
-    The entity annotator was requested to be created but no metadata for how to
-    create it was present.
-  </int>
-  <int value="4" label="Missing entities model metadata">
-    The entity annotator was requested to be created but the metadata specific
-    to this model was not present.
-  </int>
-  <int value="5" label="Missing slices in entities model metaata">
-    The entity annotator was requested to be created but no slices were
-    specified in the entities model metadata.
-  </int>
-  <int value="6" label="Missing entities model metadata file path"/>
-  <int value="7" label="Missing word embeddings file path"/>
-  <int value="8" label="Missing names filter file path"/>
-  <int value="9" label="Missing names table file path"/>
-  <int value="10" label="Missing prefix filter file path"/>
-  <int value="11" label="Missing metadata table file path"/>
-  <int value="12" label="Initialization failure">
-    All required files were present but the creation failed for a different
-    reason
-  </int>
 </enum>
 
 <enum name="OptimizationGuideExecutionStatus">
@@ -255,18 +258,22 @@ chromium-metrics-reviews@google.com.
 
 <enum name="OptimizationGuideModelQualityLogsUploadStatus">
   <int value="0" label="Unknown"/>
-  <int value="1" label="UploadSuccessful">Logs upload was successful.</int>
+  <int value="1" label="Upload Successful">Logs upload was successful.</int>
   <int value="2" label="Logging Not Enabled">
     Upload is disabled due to logging feature not enabled.
   </int>
   <int value="3" label="Net Error">
     Upload was not successful because of network error.
   </int>
-  <int value="4" label="No User Metrics Consent">
-    Upload was not allowed due to user metrics consent.
+  <int value="4" label="Metrics reporting disabled">
+    Upload was not allowed due to metrics reporting being disabled in
+    chrome://settings.
   </int>
   <int value="5" label="Disabled due to Enterprise Policy">
     Upload was disabled due to enterprise policy.
+  </int>
+  <int value="6" label="Feature Not Enabled For User">
+    Upload is disabled because the feature is not enabled for the user.
   </int>
 </enum>
 
@@ -281,7 +288,9 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="OptimizationGuideOnDeviceExecuteModelResult">
-  <int value="0" label="Used Server"/>
+  <int value="0" label="On-device not used">
+    Session was not eligible for on-device and the on-device model was not used.
+  </int>
   <int value="1" label="Used on-device">
     On-device model was used and it completed successfully.
   </int>
@@ -292,8 +301,8 @@ chromium-metrics-reviews@google.com.
     Failed to create the response message.
   </int>
   <int value="4" label="Timed out">Timed out, and a result used server.</int>
-  <int value="5" label="Disconnect and fallback">
-    Received a disconnect and as a result used server.
+  <int value="5" label="Disconnect and maybe fallback">
+    Received a disconnect and maybe fallback.
   </int>
   <int value="6" label="Disconnect and cancel">
     Received a disconnect and cancelled.
@@ -326,6 +335,21 @@ chromium-metrics-reviews@google.com.
              is not supported by the safety model">
     Used on-device and got output, but the detected output language is not
     supported by the safety model
+  </int>
+  <int value="14"
+      label="Used on-device and got output, but failed to create remote text
+             safety request">
+    Used on-device and got output, but failed to create the remote text safety
+    request to evaluate safety of the response.
+  </int>
+  <int value="15"
+      label="Used on-device and got output, but remote text safety request
+             failed">
+    Used on-device and got output, but the remote text safety request failed to
+    evaluate safety of the response.
+  </int>
+  <int value="16" label="Used on-device, but a request safety check failed">
+    Used on-device, but a request safety check failed.
   </int>
 </enum>
 
@@ -360,6 +384,24 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Language detection model not available for feature">
     The on-device safety model is available, but it requires specific output
     languages and the language detection model is unavailable.
+  </int>
+  <int value="11" label="On-device execution is not enabled for this feature">
+    The feature is enabled, and on-device execution is available, but it is not
+    enabled for this feature.
+  </int>
+  <int value="12" label="DEPRECATED: On-device model adaptation not available">
+    The feature is enabled with model adaptation, and on-device foundation model
+    is available, but model adaptation is not available for this feature.
+  </int>
+  <int value="13" label="Model validation is pending">
+    The model requires validation which has not finished yet.
+  </int>
+  <int value="14" label="Model validation failed">
+    Model validation failed for this device.
+  </int>
+  <int value="15" label="Model to be installed">
+    The on-device model is not available, but it may be downloaded and installed
+    later.
   </int>
 </enum>
 
@@ -465,31 +507,6 @@ chromium-metrics-reviews@google.com.
     Previously, this was combined with &quot;No hint available for page
     load&quot;.)
   </int>
-</enum>
-
-<enum name="OptimizationGuidePageContentAnnotationsStorageStatus">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Success">
-    The specific visit that we wanted to annotate content for was found in the
-    History Service and the content annotations for the visit were required to
-    be stored in the History Service.
-  </int>
-  <int value="2" label="No visits for URL found">
-    There were no visits found in the History Service for the URL that the
-    content annotations are associated with.
-  </int>
-  <int value="3" label="Specific visit for URL not found">
-    Visits for the URL the content annotations are for were found, but not the
-    specific visit we were annotating for.
-  </int>
-</enum>
-
-<enum name="OptimizationGuidePageTopicsOverrideListFileLoadResult">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="Could not read file"/>
-  <int value="3" label="Could not uncompress file"/>
-  <int value="4" label="Could not unmarshal the encoded protobuf"/>
 </enum>
 
 <enum name="OptimizationGuidePredictionModelDownloadState">
@@ -633,8 +650,8 @@ chromium-metrics-reviews@google.com.
 
 <enum name="OptimizationGuideUserFeedback">
   <int value="0" label="Unknown"/>
-  <int value="1" label="Thumbs Up"/>
-  <int value="2" label="Thumbs Down"/>
+  <int value="1" label="Thumbs Down"/>
+  <int value="2" label="Thumbs Up"/>
 </enum>
 
 <enum name="OptimizationType">
@@ -687,6 +704,41 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS"/>
   <int value="47" label="AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS"/>
   <int value="48" label="AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS"/>
+  <int value="55" label="CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED"/>
+  <int value="56" label="VCN_MERCHANT_OPT_OUT_DISCOVER"/>
+  <int value="57" label="VCN_MERCHANT_OPT_OUT_MASTERCARD"/>
+  <int value="58" label="PIX_MERCHANT_ORIGINS_ALLOWLIST"/>
+  <int value="59" label="HISTORY_EMBEDDINGS"/>
+  <int value="60" label="AUTOFILL_ABLATION_SITES_LIST1"/>
+  <int value="61" label="AUTOFILL_ABLATION_SITES_LIST2"/>
+  <int value="62" label="AUTOFILL_ABLATION_SITES_LIST3"/>
+  <int value="63" label="AUTOFILL_ABLATION_SITES_LIST4"/>
+  <int value="64" label="AUTOFILL_ABLATION_SITES_LIST5"/>
+  <int value="65" label="AUTOFILL_ABLATION_SITES_LIST6"/>
+  <int value="67" label="AMOUNT_EXTRACTION_ALLOWLIST"/>
+  <int value="68" label="AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST"/>
+  <int value="69" label="BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM"/>
+  <int value="70" label="BUY_NOW_PAY_LATER_ALLOWLIST_ZIP"/>
+  <int value="71" label="SAVED_TAB_GROUP"/>
+  <int value="73" label="FORMS_ANNOTATIONS"/>
+  <int value="74" label="TEXT_CLASSIFIER_ENTITY_DETECTION"/>
+</enum>
+
+<enum name="PageContentAnnotationsStorageStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success">
+    The specific visit that we wanted to annotate content for was found in the
+    History Service and the content annotations for the visit were required to
+    be stored in the History Service.
+  </int>
+  <int value="2" label="No visits for URL found">
+    There were no visits found in the History Service for the URL that the
+    content annotations are associated with.
+  </int>
+  <int value="3" label="Specific visit for URL not found">
+    Visits for the URL the content annotations are for were found, but not the
+    specific visit we were annotating for.
+  </int>
 </enum>
 
 </enums>

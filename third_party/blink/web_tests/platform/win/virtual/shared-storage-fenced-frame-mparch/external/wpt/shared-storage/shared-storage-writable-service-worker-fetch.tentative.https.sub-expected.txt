@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: assert_equals: expected 3 but got 2
+Harness: the test ran to completion.
+

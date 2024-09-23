@@ -1,0 +1,106 @@
+<style include="print-preview-cros-shared">
+  :host {
+    /* TODO(b/323421684): Replace dropdown CSS with shared CSS variables. */
+    --dropdown-border-radius: 8px;
+    --dropdown-outline-ring-width: 2px;
+    --dropdown-width: 216px;
+    --dropdown-disabled-opacity: .38;
+
+    display: inline-block;
+    font: var(--cros-button-2-font);
+    width: var(--dropdown-width);
+  }
+
+  :host([disabled]) {
+    pointer-events: none;
+  }
+
+  :host([disabled]) .select,
+  :host([disabled]) .select-background {
+    opacity: var(--dropdown-disabled-opacity);
+  }
+
+  :host([hidden]) {
+    display:none;
+  }
+
+  #content {
+    background: var(--cros-sys-base_elevated);
+    border-radius: var(--dropdown-border-radius);
+    box-shadow: 0 1px 2px var(--cros-sys-shadow_key),
+                0 2px 6px var(--cros-sys-shadow_ambient);
+    left: var(--dropdown-outline-ring-width);
+    margin: 0;
+    padding-block: 10px;
+    position: absolute;
+    right: var(--dropdown-outline-ring-width);
+    width: calc(100% - 2 * var(--dropdown-outline-ring-width));
+    z-index: 1;
+  }
+
+  #selected {
+    z-index: 1;
+  }
+
+  .main {
+    display: block;
+    position: relative;
+  }
+
+  .main:focus-within .select-background,
+  .select:focus-within .select-background {
+    border-radius: var(--dropdown-border-radius);
+    outline: var(--cros-sys-focus_ring) solid 2px;
+  }
+
+  .select {
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 36px;
+    padding-inline: 16px 12px;
+    width: calc(100% - 28px);
+  }
+
+  .select-background {
+    background: var(--cros-sys-input_field_on_shaded);
+    bottom: var(--dropdown-outline-ring-width);
+    border-radius: var(--dropdown-border-radius);
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-button-2-font);
+    left: var(--dropdown-outline-ring-width);
+    min-height: 36px;
+    position: absolute;
+    right: var(--dropdown-outline-ring-width);
+    top: var(--dropdown-outline-ring-width);
+  }
+
+  .select-item {
+    display: inline-block;
+    padding-inline: 16px 12px;
+    width: calc(100% - 28px);
+  }
+
+  .select-item:hover {
+    background-color: var(--cros-sys-hover_on_subtle);
+  }
+</style>
+<div class="main">
+  <div class="flex-container select">
+    <div class="select-background"></div>
+    <!-- TODO(b/323421684): Add dropdown carat, move select clicked handler and
+      tabindex to wrapper div to ensure whole select responds to user
+      interaction. -->
+    <destination-row id="selected" destination="[[selectedDestination]]"
+        on-click="onSelectedClicked">
+    </destination-row>
+  </div>
+  <div id="content" class="flex-container-column" hidden="[[!open]]">
+    <!-- TODO(b/323421684): Replace with list of recent destinations, digital
+    destinations, and add button to open destination dialog. -->
+    <template is="dom-repeat" items="[[destinations]]">
+      <destination-row destination="[[item]]" class="select-item"
+          id="row-[[item.id]]" on-click="onDestinationClicked">
+      </destination-row>
+    </template>
+  </div>
+</div>

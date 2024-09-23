@@ -20,3 +20,6 @@ per-file chrome_content_renderer_client_browsertest.cc=*
 per-file chrome_content_renderer_client.cc=*
 per-file chrome_content_renderer_client.h=*
 per-file chrome_content_renderer_client_unittest.cc=*
+
+# Link Preview.
+per-file web_link_preview_triggerer_impl*=file://chrome/browser/preloading/preview/OWNERS

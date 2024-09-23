@@ -41,7 +41,8 @@ content::WebContents* GetWebContentsForResource(
       return content::WebContents::FromRenderFrameHost(rfh);
     }
   }
-  return content::WebContents::FromFrameTreeNodeId(resource.frame_tree_node_id);
+  return content::WebContents::FromFrameTreeNodeId(
+      content::FrameTreeNodeId(resource.frame_tree_node_id));
 }
 
 }  // namespace safe_browsing::unsafe_resource_util

@@ -77,7 +77,7 @@ void TabletModeFloatWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
 
   const ui::GestureEventDetails& details = event->details();
   float velocity_x = 0.f, velocity_y = 0.f;
-  if (event->type() == ui::ET_SCROLL_FLING_START) {
+  if (event->type() == ui::EventType::kScrollFlingStart) {
     velocity_x = details.velocity_x();
     velocity_y = details.velocity_y();
 
@@ -89,7 +89,7 @@ void TabletModeFloatWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
       return;
     }
   } else {
-    CHECK_EQ(ui::ET_GESTURE_SWIPE, event->type());
+    CHECK_EQ(ui::EventType::kGestureSwipe, event->type());
 
     // Use any negative value if `swipe_left()` or `swipe_up()`, otherwise use
     // any positive value.

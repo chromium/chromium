@@ -25,7 +25,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_SKEW_TRANSFORM_OPERATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_SKEW_TRANSFORM_OPERATION_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -33,11 +32,8 @@ namespace blink {
 
 class PLATFORM_EXPORT SkewTransformOperation final : public TransformOperation {
  public:
-  static scoped_refptr<SkewTransformOperation> Create(double angle_x,
-                                                      double angle_y,
-                                                      OperationType type) {
-    return base::AdoptRef(new SkewTransformOperation(angle_x, angle_y, type));
-  }
+  SkewTransformOperation(double angle_x, double angle_y, OperationType type)
+      : angle_x_(angle_x), angle_y_(angle_y), type_(type) {}
 
   double AngleX() const { return angle_x_; }
   double AngleY() const { return angle_y_; }
@@ -60,16 +56,11 @@ class PLATFORM_EXPORT SkewTransformOperation final : public TransformOperation {
     transform.Skew(angle_x_, angle_y_);
   }
 
-  scoped_refptr<TransformOperation> Accumulate(
-      const TransformOperation& other) override;
-  scoped_refptr<TransformOperation> Blend(
-      const TransformOperation* from,
-      double progress,
-      bool blend_to_identity = false) override;
-  scoped_refptr<TransformOperation> Zoom(double factor) final { return this; }
-
-  SkewTransformOperation(double angle_x, double angle_y, OperationType type)
-      : angle_x_(angle_x), angle_y_(angle_y), type_(type) {}
+  TransformOperation* Accumulate(const TransformOperation& other) override;
+  TransformOperation* Blend(const TransformOperation* from,
+                            double progress,
+                            bool blend_to_identity = false) override;
+  TransformOperation* Zoom(double factor) final { return this; }
 
   double angle_x_;
   double angle_y_;

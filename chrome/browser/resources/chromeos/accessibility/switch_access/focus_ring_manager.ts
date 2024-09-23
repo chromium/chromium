@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {RectUtil} from '/common/rect_util.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {MenuManager} from './menu_manager.js';
 import {SAChildNode, SANode} from './nodes/switch_access_node.js';
@@ -31,9 +32,20 @@ export class FocusRingManager {
     this.rings_ = this.createRings_();
   }
 
+  static init(): void {
+    if (FocusRingManager.instance_) {
+      throw SwitchAccess.error(
+          ErrorType.DUPLICATE_INITIALIZATION,
+          'Cannot initialize focus ring manager twice.');
+    }
+    FocusRingManager.instance_ = new FocusRingManager();
+  }
+
   static get instance(): FocusRingManager {
     if (!FocusRingManager.instance_) {
-      FocusRingManager.instance_ = new FocusRingManager();
+      throw SwitchAccess.error(
+          ErrorType.UNINITIALIZED,
+          'FocusRingManager cannot be accessed before being initialized');
     }
     return FocusRingManager.instance_;
   }
@@ -256,3 +268,5 @@ const PREVIEW_COLOR = '#8AB4F880';  // Google Blue 300, 50% opacity
 
 /** The inner color of the primary focus ring. */
 const PRIMARY_COLOR = '#8AB4F8';  // Google Blue 300
+
+TestImportManager.exportForTesting(FocusRingManager, ['RingId', RingId]);

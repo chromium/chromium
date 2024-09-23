@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_readable_stream_wrapper.h"
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "net/base/net_errors.h"
@@ -63,11 +64,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
   void ResetPipe() { data_pipe_producer_.reset(); }
 
   void WriteToPipe(Vector<uint8_t> data) {
-    uint32_t num_bytes = data.size();
-    EXPECT_EQ(data_pipe_producer_->WriteData(data.data(), &num_bytes,
-                                             MOJO_WRITE_DATA_FLAG_ALL_OR_NONE),
-              MOJO_RESULT_OK);
-    EXPECT_EQ(num_bytes, data.size());
+    EXPECT_EQ(data_pipe_producer_->WriteAllData(data), MOJO_RESULT_OK);
   }
 
   // Copies the contents of a v8::Value containing a Uint8Array to a Vector.
@@ -97,7 +94,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
   // static Iterator Read(const V8TestingScope& scope,
   Iterator Read(V8TestingScope& scope, ReadableStreamDefaultReader* reader) {
     auto* script_state = scope.GetScriptState();
-    ScriptPromise read_promise =
+    ScriptPromiseUntyped read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION);
     ScriptPromiseTester tester(script_state, read_promise);
     tester.WaitUntilSettled();
@@ -193,7 +190,8 @@ TEST(TCPReadableStreamWrapperTest, WriteToPipeWithPendingRead) {
   auto* reader =
       tcp_readable_stream_wrapper->Readable()->GetDefaultReaderForTesting(
           script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseUntyped read_promise =
+      reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, read_promise);
 
   stream_creator->WriteToPipe({'A'});
@@ -225,7 +223,8 @@ TEST_P(TCPReadableStreamWrapperCloseTest, TriggerClose) {
   auto* reader =
       tcp_readable_stream_wrapper->Readable()->GetDefaultReaderForTesting(
           script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseUntyped read_promise =
+      reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, read_promise);
 
   stream_creator->WriteToPipe({'A'});
@@ -259,7 +258,8 @@ TEST_P(TCPReadableStreamWrapperCloseTest, TriggerCloseInReverseOrder) {
   auto* reader =
       tcp_readable_stream_wrapper->Readable()->GetDefaultReaderForTesting(
           script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseUntyped read_promise =
+      reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, read_promise);
 
   stream_creator->WriteToPipe({'A'});

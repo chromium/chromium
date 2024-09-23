@@ -1,0 +1,4 @@
+android.webkit.WebView focusable focused
+++android.view.View role_description='marquee' focusable
+++android.view.View role_description='marquee' focusable live_region_type=1
+++android.view.View role_description='marquee' focusable live_region_type=2

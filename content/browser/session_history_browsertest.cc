@@ -458,8 +458,7 @@ IN_PROC_BROWSER_TEST_F(SessionHistoryTest, JavascriptHistory) {
   // types.  For example, load about:network in a tab, then a real page, then
   // try to go back and forward with JavaScript.  Bug 1136715.
   // (Hard to test right now, because pages like about:network cause the
-  // TabProxy to hang.  This is because they do not appear to use the
-  // NotificationService.)
+  // TabProxy to hang.)
 }
 
 IN_PROC_BROWSER_TEST_F(SessionHistoryTest, LocationReplace) {

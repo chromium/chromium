@@ -16,7 +16,11 @@ repositories {
 // gradle errors where it couldn't determine which variants we wanted. The
 // seemingly obvious choice, setting "org.jetbrains.kotlin.platform.type" to
 // "androidJvm" globally did not work (although it did on a per-library basis).
-// See crbug.com/41497313 and crbug.com/1511597 for other prior issues.
+// It would be ideal to use org.gradle.jvm.environment as android or
+// org.jetbrains.kotlin.platform.type as androidJvm, but currently setting that
+// fails for transitive deps that don't define that attribute. See
+// https://crbug.com/359896493 for latest context, and also
+// crbug.com/41497313 and crbug.com/1511597 for prior issues.
 configurations.androidTestCompile {
     attributes.attribute(Attribute.of("org.gradle.category", String), "library")
     attributes.attribute(Attribute.of("org.gradle.usage", String), "java-runtime")
@@ -28,6 +32,13 @@ configurations.compile {
 
 dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
+
+    compile 'androidx.compose.runtime:runtime-android:{{androidx_dependency_version}}'
+    compile 'androidx.compose.material3:material3:{{androidx_dependency_version}}'
+    compile 'androidx.compose.ui:ui:{{androidx_dependency_version}}'
+    compile 'androidx.compose.ui:ui-text-google-fonts:{{androidx_dependency_version}}'
+    compile 'androidx.activity:activity-compose:{{androidx_dependency_version}}'
+    compile 'androidx.lifecycle:lifecycle-viewmodel-compose:{{androidx_dependency_version}}'
 
     compile 'androidx.lifecycle:lifecycle-runtime:{{androidx_dependency_version}}'
     compile 'androidx.lifecycle:lifecycle-runtime-ktx:{{androidx_dependency_version}}'
@@ -58,6 +69,8 @@ dependencies {
     compile 'androidx.core:core:{{androidx_dependency_version}}'
     compile 'androidx.core:core-animation:{{androidx_dependency_version}}'
     compile 'androidx.customview:customview:{{androidx_dependency_version}}'
+    compile 'androidx.datastore:datastore-android:{{androidx_dependency_version}}'
+    compile 'androidx.datastore:datastore-core:{{androidx_dependency_version}}'
     compile 'androidx.drawerlayout:drawerlayout:{{androidx_dependency_version}}'
     compile 'androidx.dynamicanimation:dynamicanimation:{{androidx_dependency_version}}'
     compile 'androidx.exifinterface:exifinterface:{{androidx_dependency_version}}'
@@ -69,14 +82,20 @@ dependencies {
     compile 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     compile 'androidx.media:media:{{androidx_dependency_version}}'
     compile 'androidx.mediarouter:mediarouter:{{androidx_dependency_version}}'
+    compile 'androidx.navigation:navigation-compose:{{androidx_dependency_version}}'
+    compile 'androidx.navigation:navigation-runtime:{{androidx_dependency_version}}'
+    compile 'androidx.pdf:pdf-viewer:{{androidx_dependency_version}}'
+    compile 'androidx.pdf:pdf-viewer-fragment:{{androidx_dependency_version}}'
     compile 'androidx.preference:preference:{{androidx_dependency_version}}'
-    // This library version is hard-coded as it does not match the
-    // version of the filepath in the snapshot.
-    compile 'androidx.privacysandbox.ads:ads-adservices:1.0.0-alpha01'
-    compile 'androidx.privacysandbox.ads:ads-adservices-java:1.0.0-alpha01'
+    // Privacy Sandbox is less stable than others. Use only release versions.
+    compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta07'
+    compile 'androidx.privacysandbox.ads:ads-adservices-java:1.1.0-beta07'
     compile 'androidx.recyclerview:recyclerview:{{androidx_dependency_version}}'
     compile 'androidx.room:room-guava:{{androidx_dependency_version}}'
+    // TODO(https://crbug.com/359896493): Remove the following dep once rolls
+    // succeed again. Deps on it will need to be removed first.
     compile 'androidx.savedstate:savedstate:{{androidx_dependency_version}}'
+    compile 'androidx.savedstate:savedstate-android:{{androidx_dependency_version}}'
     compile 'androidx.slice:slice-builders:{{androidx_dependency_version}}'
     compile 'androidx.slice:slice-core:{{androidx_dependency_version}}'
     compile 'androidx.slice:slice-view:{{androidx_dependency_version}}'
@@ -87,18 +106,20 @@ dependencies {
     compile 'androidx.viewpager:viewpager:{{androidx_dependency_version}}'
     compile 'androidx.window:window:{{androidx_dependency_version}}'
     compile 'androidx.window.extensions:extensions:{{androidx_dependency_version}}'
-    compile 'androidx.window:window-java:{{androidx_dependency_version}}'
     compile 'androidx.window.sidecar:sidecar:{{androidx_dependency_version}}'
 
     // Those are for use by doubledown libraries.
     compile 'androidx.arch.core:core-common:{{androidx_dependency_version}}'
     compile 'androidx.annotation:annotation-experimental:{{androidx_dependency_version}}'
     compile 'androidx.emoji:emoji:{{androidx_dependency_version}}'
+    compile 'androidx.room:room-runtime:{{androidx_dependency_version}}'
+    compile 'androidx.room:room-runtime-android:{{androidx_dependency_version}}'
     compile 'androidx.transition:transition:{{androidx_dependency_version}}'
     compile 'androidx.viewpager2:viewpager2:{{androidx_dependency_version}}'
     compile 'androidx.legacy:legacy-support-core-utils:1.0.0'
     compile 'androidx.documentfile:documentfile:{{androidx_dependency_version}}'
     compile 'androidx.print:print:{{androidx_dependency_version}}'
+    compile 'androidx.sqlite:sqlite-android:{{androidx_dependency_version}}'
 
     String media3Version = '1.2.0'
     compile "androidx.media3:media3-common:${media3Version}"
@@ -112,10 +133,7 @@ dependencies {
 
     compile 'androidx.multidex:multidex:2.0.0'
     compile 'androidx.webkit:webkit:{{androidx_dependency_version}}'
-
-    // For some reason ConstraintLayout is not shipped with the rest of
-    // androidx, and not included in snapshots.
-    compile 'androidx.constraintlayout:constraintlayout:2.1.0-beta02'
+    compile 'androidx.constraintlayout:constraintlayout:{{androidx_dependency_version}}'
 
     // Used by 1p Play Services.
     compile 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -125,17 +143,26 @@ dependencies {
     androidTestCompile 'androidx.benchmark:benchmark-macro:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.benchmark:benchmark-macro-junit4:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.benchmark:benchmark-junit4:{{androidx_dependency_version}}'
+    androidTestCompile 'androidx.core:core-animation-testing:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.test:core:1.4.0-rc01'
     androidTestCompile 'androidx.test:monitor:1.4.0-rc01'
     androidTestCompile 'androidx.test:rules:1.2.0'
     androidTestCompile 'androidx.test:runner:1.5.2'
-    androidTestCompile 'androidx.test.espresso:espresso-contrib:3.2.0'
-    androidTestCompile 'androidx.test.espresso:espresso-core:3.2.0'
-    androidTestCompile 'androidx.test.espresso:espresso-intents:3.2.0'
-    androidTestCompile 'androidx.test.espresso:espresso-web:3.2.0'
+    androidTestCompile 'androidx.test.espresso:espresso-contrib:3.5.1'
+    androidTestCompile 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestCompile 'androidx.test.espresso:espresso-intents:3.5.1'
+    androidTestCompile 'androidx.test.espresso:espresso-web:3.5.1'
     androidTestCompile 'androidx.test.ext:junit:1.1.1'
     androidTestCompile 'androidx.test.services:storage:1.4.1'
-    androidTestCompile 'androidx.test.uiautomator:uiautomator:2.2.0'
+    androidTestCompile 'androidx.test.uiautomator:uiautomator:{{androidx_dependency_version}}'
+
+    // accessibility-test-framework (dependancy of anroidx.espresso) somehow
+    // pulls in files from these dependencies without actually depending on
+    // them. This breaks some of our assumptions in the code so adding these
+    // explicitly to fix the asserts.  Remove when no longer needed.
+    androidTestCompile 'org.checkerframework:checker-compat-qual:2.5.5'
+    androidTestCompile 'com.google.errorprone:error_prone_annotations:2.3.4'
+    androidTestCompile 'com.google.j2objc:j2objc-annotations:1.3'
 }
 
 // The snapshot repository only has the latest version of each dependency.  When
@@ -152,10 +179,11 @@ ext {
 
 task setUpRepository(type: BuildConfigGenerator) {
     // Paths are relative to the chromium source root.
-    repositoryPath 'third_party/androidx'
-    chromiumSourceRoot '../..'
+    repositoryPath 'third_party/androidx/cipd'
+    chromiumSourceRoot '../../..'
     cipdBucket 'chromium'
     internalTargetVisibility = [ '//third_party/android_deps:*', ':*' ]
+    allFilesInCipd true
     skipLicenses false
     ignoreDEPS true
 }

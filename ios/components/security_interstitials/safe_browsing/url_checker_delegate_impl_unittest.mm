@@ -99,7 +99,7 @@ class UrlCheckerDelegateImplTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::IO_MAINLOOP};
+      web::WebTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<web::FakeBrowserState> browser_state_;
   FakeSafeBrowsingClient client_;
   scoped_refptr<safe_browsing::UrlCheckerDelegate> delegate_;
@@ -120,7 +120,6 @@ TEST_F(UrlCheckerDelegateImplTest, DontProceedForDestroyedWebState) {
   // Instruct the delegate to display the blocking page.
   delegate_->StartDisplayingBlockingPageHelper(resource, /*method=*/"",
                                                net::HttpRequestHeaders(),
-                                               /*is_main_frame*/ true,
                                                /*has_user_gesture=*/true);
   EXPECT_TRUE(WaitForUnsafeResourceCallbackExecution(&callback_state));
 
@@ -142,7 +141,6 @@ TEST_F(UrlCheckerDelegateImplTest, DontProceedIfBlockedByClient) {
   // Instruct the delegate to display the blocking page.
   delegate_->StartDisplayingBlockingPageHelper(resource, /*method=*/"",
                                                net::HttpRequestHeaders(),
-                                               /*is_main_frame*/ true,
                                                /*has_user_gesture=*/true);
   EXPECT_TRUE(WaitForUnsafeResourceCallbackExecution(&callback_state));
 
@@ -156,11 +154,9 @@ TEST_F(UrlCheckerDelegateImplTest, DontProceedIfBlockedByClient) {
 TEST_F(UrlCheckerDelegateImplTest, ProceedForAllowedUnsafeNavigation) {
   // Construct the UnsafeResource.
   safe_browsing::SBThreatType threat_type =
-      safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   UnsafeResourceCallbackState callback_state;
   UnsafeResource resource = CreateUnsafeResource(&callback_state);
-  resource.is_subresource = false;
-  resource.is_subframe = false;
   resource.threat_type = threat_type;
 
   // Add the resource to the allow list.
@@ -169,7 +165,6 @@ TEST_F(UrlCheckerDelegateImplTest, ProceedForAllowedUnsafeNavigation) {
   // Instruct the delegate to display the blocking page.
   delegate_->StartDisplayingBlockingPageHelper(resource, /*method=*/"",
                                                net::HttpRequestHeaders(),
-                                               /*is_main_frame*/ true,
                                                /*has_user_gesture=*/true);
   EXPECT_TRUE(WaitForUnsafeResourceCallbackExecution(&callback_state));
 

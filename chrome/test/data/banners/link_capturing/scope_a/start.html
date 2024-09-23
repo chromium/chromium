@@ -1,0 +1,204 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web app scope_a test page for link capturing tests</title>
+  <script src="../launch_detector.js"></script>
+  <script>
+    let serviceWorkerRegistration = undefined;
+    let aDestinationUrl = new URL("destination.html", window.location.href).href;
+    let bDestinationUrl = new URL("../scope_b/destination.html", window.location.href).href;
+    let xDestinationUrl = new URL("../scope_x/destination.html", window.location.href).href;
+
+    function triggerNotificationForUrlOpen(url) {
+      console.assert(serviceWorkerRegistration);
+      console.assert(url);
+      serviceWorkerRegistration.showNotification("Fake notification to open " + url,
+        { data: { url: url } })
+    }
+
+    function notifyReady(delay) {
+      // Launches can simply focus this window without navigating, so start listening.
+      listenForNextLaunchParams(delay);
+      if (delay <= 0) {
+        domAutomationController.send('ReadyForLinkCaptureTesting')
+        return;
+      }
+
+      setTimeout(() => {
+        console.log("Delay start for a bit (" + delay + ")");
+        domAutomationController.send('ReadyForLinkCaptureTesting')
+      }, delay);
+    }
+
+    function getModifierString(event) {
+      let ctrl = event.ctrlKey;
+      let shift = event.shiftKey;
+      let meta = event.metaKey;
+      let left = event.button == 0;
+      let middle = event.button == 1;
+
+      if ((ctrl && left) || (meta && left)) {
+        middle = true;
+        left = false;
+        ctrl = false;
+        meta = false;
+      }
+
+      let modifier = 'click=';
+      if (ctrl) modifier += 'Ctrl ';
+      if (meta) modifier += 'Meta ';
+      if (shift) modifier += 'Shift ';
+      if (left) modifier += 'Left ';
+      if (middle) modifier += 'Middle ';
+      return modifier;
+    }
+
+    window.addEventListener("load", async () => {
+      navigator.serviceWorker.register("sw.js");
+      serviceWorkerRegistration = await navigator.serviceWorker.ready;
+      console.assert(serviceWorkerRegistration);
+
+      var links = document.querySelectorAll('.linkA, .linkB, .linkX');
+      for (let link of links) {
+        link.addEventListener("click", (event) => {
+          // Pass the ID as a query param, so we can show it on the destination
+          // page.
+          let param = '?' + link.id + '&' + getModifierString(event);
+          let destination = link.classList.contains('linkA') ? aDestinationUrl :
+          link.classList.contains('linkB') ? bDestinationUrl : xDestinationUrl;
+          destination += param;
+          link.setAttribute('href', destination);
+          console.log('link ' + link.id + ' clicked, dest ' + destination);
+        });
+      }
+      var buttons = document.querySelectorAll('.btnA, .btnB, .btnX');
+      for (let button of buttons) {
+        button.addEventListener("click", (event) => {
+          // Pass the ID as a query param, so we can show it on the destination
+          // page.
+          let param = '?' + button.id + '&' + getModifierString(event);
+
+          let target = button.getAttribute("data-target");
+          let rel = button.getAttribute("data-rel");
+          let url = button.classList.contains('btnA') ? aDestinationUrl :
+          button.classList.contains('btnB') ? bDestinationUrl : xDestinationUrl;
+          url += param;
+          console.log('button ' + button.id + ' clicked, dest ' + url);
+          if (rel) {
+            window.open(url, target, rel);
+          } else {
+            window.open(url, target);
+          }
+        });
+      }
+
+      // Pro-tip: Use `delay` to slow down execution of the test (so that you can
+      // see what is happening during manual runs).
+      notifyReady(/*delay=*/ 0);
+    });
+  </script>
+</head>
+
+<body>
+<h1>Start page scope A</h1>
+
+<table>
+<tr><td width="250px"><h2>Same scope (A)</h2></td><td width="250px"><h2>Scope B</h2></td><td width="250px"><h2>Scope X</h2></td></tr>
+<tr>
+<td>
+<!-- Links to same scope-->
+<a href="destination.html" target="_self"   rel="opener"   id="id-LINK-A_TO_A-SELF-OPENER" class="linkA">target="_self" rel=opener</a><br>
+<a href="destination.html" target="_self"   rel="noopener" id="id-LINK-A_TO_A-SELF-NO_OPENER" class="linkA">target="_self" rel=noopener</a><br>
+<a href="destination.html" target="iframe"  rel="opener"   id="id-LINK-A_TO_A-FRAME-OPENER" class="linkA">target="iframe" rel=opener</a><br>
+<a href="destination.html" target="iframe"  rel="noopener" id="id-LINK-A_TO_A-FRAME-NO_OPENER" class="linkA">target="iframe" rel=noopener</a><br>
+<a href="destination.html" target="_blank"  rel="opener"   id="id-LINK-A_TO_A-BLANK-OPENER" class="linkA">target="_blank" rel=opener</a><br>
+<a href="destination.html" target="_blank"  rel="noopener" id="id-LINK-A_TO_A-BLANK-NO_OPENER" class="linkA">target="_blank" rel=noopener</a><br>
+<a href="destination.html" target="noframe" rel="opener"   id="id-LINK-A_TO_A-NO_FRAME-OPENER" class="linkA">target="noframe" rel=opener</a><br>
+<a href="destination.html" target="noframe" rel="noopener" id="id-LINK-A_TO_A-NO_FRAME-NO_OPENER" class="linkA">target="noframe" rel=noopener</a><br>
+<!-- Buttons to same scope-->
+<button  id="id-BTN-A_TO_A-SELF-OPENER" class="btnA" data-target="_self" >window.open(url, '_self')</button><br>
+<button  id="id-BTN-A_TO_A-SELF-NO_OPENER" class="btnA" data-target="_self" data-rel="noopener">window.open(url, '_self',' 'noopener')</button><br>
+<button  id="id-BTN-A_TO_A-FRAME-OPENER" class="btnA" data-target="iframe">window.open(url, 'iframe')</button><br>
+<button  id="id-BTN-A_TO_A-FRAME-NO_OPENER" class="btnA" data-target="iframe" data-rel="noopener">window.open(url, 'iframe',' 'noopener')</button><br>
+<button  id="id-BTN-A_TO_A-BLANK-OPENER" class="btnA" data-target="_blank">window.open(url, '_blank')</button><br>
+<button  id="id-BTN-A_TO_A-BLANK-NO_OPENER" class="btnA" data-target="_blank" data-rel="noopener">window.open(url, '_blank',' 'noopener')</button><br>
+<button  id="id-BTN-A_TO_A-NO_FRAME-OPENER" class="btnA" data-target="noframe">window.open(url, 'noframe')</button><br>
+<button  id="id-BTN-A_TO_A-NO_FRAME-NO_OPENER" class="btnA" data-target="noframe" data-rel="noopener">window.open(url, 'noframe', 'noopener')</button><br>
+</td>
+
+<td>
+<!-- Links to scope B -->
+<a href="scope_b.html" target="_self"   rel="opener"   id="id-LINK-A_TO_B-SELF-OPENER" class="linkB">target="_self" rel=opener</a><br>
+<a href="scope_b.html" target="_self"   rel="noopener" id="id-LINK-A_TO_B-SELF-NO_OPENER" class="linkB">target="_self" rel=noopener</a><br>
+<a href="scope_b.html" target="iframe"  rel="opener"   id="id-LINK-A_TO_B-FRAME-OPENER" class="linkB">target="iframe" rel=opener</a><br>
+<a href="scope_b.html" target="iframe"  rel="noopener" id="id-LINK-A_TO_B-FRAME-NO_OPENER" class="linkB">target="iframe" rel=noopener</a><br>
+<a href="scope_b.html" target="_blank"  rel="opener"   id="id-LINK-A_TO_B-BLANK-OPENER" class="linkB">target="_blank" rel=opener</a><br>
+<a href="scope_b.html" target="_blank"  rel="noopener" id="id-LINK-A_TO_B-BLANK-NO_OPENER" class="linkB">target="_blank" rel=noopener</a><br>
+<a href="scope_b.html" target="noframe" rel="opener"   id="id-LINK-A_TO_B-NO_FRAME-OPENER" class="linkB">target="noframe" rel=opener</a><br>
+<a href="scope_b.html" target="noframe" rel="noopener" id="id-LINK-A_TO_B-NO_FRAME-NO_OPENER" class="linkB">target="noframe" rel=noopener</a><br>
+<!-- Buttons to scope B (Note: onclick handlers are provided programmatically, see load event above). -->
+<button id="id-BTN-A_TO_B-SELF-OPENER" class="btnB" data-target="_self" data-rel="opener">window.open(url,
+'_self')</button><br>
+<button id="id-BTN-A_TO_B-SELF-NO_OPENER" class="btnB" data-target="_self" data-rel="noopener">window.open(url,
+'_self',' 'noopener')</button><br>
+<button id="id-BTN-A_TO_B-FRAME-OPENER" class="btnB" data-target="iframe" data-rel="opener">window.open(url,
+'iframe')</button><br>
+<button id="id-BTN-A_TO_B-FRAME-NO_OPENER" class="btnB" data-target="iframe" data-rel="noopener">
+window.open(url, 'iframe' ,' 'noopener' )</button><br>
+<button id="id-BTN-A_TO_B-BLANK-OPENER" class="btnB" data-target="_blank" data-rel="opener">window.open(url,
+'_blank')</button><br>
+<button id="id-BTN-A_TO_B-BLANK-NO_OPENER" class="btnB" data-target="_blank" data-rel="noopener">window.open(url,
+'_blank',' 'noopener')</button><br>
+<button id="id-BTN-A_TO_B-NO_FRAME-OPENER" class="btnB" data-target="no_frame" data-rel="opener">window.open(url,
+'noframe')</button><br>
+<button id="id-BTN-A_TO_B-NO_FRAME-NO_OPENER" class="btnB" data-target="no_frame" data-rel="noopener">window.open(url,
+'noframe', 'noopener')</button><br>
+</td>
+
+<td>
+<!-- Links to scope X (href is updated programmatically, see load event above). -->
+<a href="scope_x.html" target="_self"   rel="opener"   id="id-LINK-A_TO_X-SELF-OPENER" class="linkX">target="_self" rel=opener</a><br>
+<a href="scope_x.html" target="_self"   rel="noopener" id="id-LINK-A_TO_X-SELF-NO_OPENER" class="linkX">target="_self" rel=noopener</a><br>
+<a href="scope_x.html" target="iframe"  rel="opener"   id="id-LINK-A_TO_X-FRAME-OPENER" class="linkX">target="iframe" rel=opener</a><br>
+<a href="scope_x.html" target="iframe"  rel="noopener" id="id-LINK-A_TO_X-FRAME-NO_OPENER" class="linkX">target="iframe" rel=noopener</a><br>
+<a href="scope_x.html" target="_blank"  rel="opener"   id="id-LINK-A_TO_X-BLANK-OPENER" class="linkX">target="_blank" rel=opener</a><br>
+<a href="scope_x.html" target="_blank"  rel="noopener" id="id-LINK-A_TO_X-BLANK-NO_OPENER" class="linkX">target="_blank" rel=noopener</a><br>
+<a href="scope_x.html" target="noframe" rel="opener"   id="id-LINK-A_TO_X-NO_FRAME-OPENER" class="linkX">target="noframe" rel=opener</a><br>
+<a href="scope_x.html" target="noframe" rel="noopener" id="id-LINK-A_TO_X-NO_FRAME-NO_OPENER" class="linkX">target="noframe" rel=noopener</a><br>
+<!-- Buttons to scope X (Note: onclick handlers are provided programmatically, see load event above). -->
+<button id="id-BTN-A_TO_X-SELF-OPENER" class="btnX" data-target="_self" data-rel="opener">window.open(url,
+  '_self')</button><br>
+<button id="id-BTN-A_TO_X-SELF-NO_OPENER" class="btnX" data-target="_self" data-rel="noopener">window.open(url,
+  '_self',' 'noopener')</button><br>
+<button id="id-BTN-A_TO_X-FRAME-OPENER" class="btnX" data-target="iframe" data-rel="opener">window.open(url,
+  'iframe')</button><br>
+<button id="id-BTN-A_TO_X-FRAME-NO_OPENER" class="btnX" data-target="iframe" data-rel="noopener">
+  window.open(url, 'iframe' ,' 'noopener' )</button><br>
+<button id="id-BTN-A_TO_X-BLANK-OPENER" class="btnX" data-target="_blank" data-rel="opener">window.open(url,
+  '_blank')</button><br>
+<button id="id-BTN-A_TO_X-BLANK-NO_OPENER" class="btnX" data-target="_blank" data-rel="noopener">window.open(url,
+  '_blank',' 'noopener')</button><br>
+<button id="id-BTN-A_TO_X-NO_FRAME-OPENER" class="btnX" data-target="no_frame" data-rel="opener">window.open(url,
+  'noframe')</button><br>
+<button id="id-BTN-A_TO_X-NO_FRAME-NO_OPENER" class="btnX" data-target="no_frame" data-rel="noopener">window.open(url,
+  'noframe', 'noopener')</button><br>
+</td>
+</tr>
+<tr>
+  <td>
+  <!-- Buttons to trigger the service worker to open the url in a new client. -->
+  <button id="id-BTN_SW-A_TO_A-BLANK-NO_OPENER" onclick="javascript:triggerNotificationForUrlOpen(aDestinationUrl)">Open
+    Scope A from Service
+    Worker</button><br>
+  <button id="id-BTN_SW-A_TO_B-BLANK-NO_OPENER" onclick="javascript:triggerNotificationForUrlOpen(bDestinationUrl)">Open
+    Scope B from Service
+    Worker</button><br>
+</td>
+<td>
+  <iframe src="about:blank" name="iframe" />
+</td>
+</tr>
+</table>
+</body>
+</html>

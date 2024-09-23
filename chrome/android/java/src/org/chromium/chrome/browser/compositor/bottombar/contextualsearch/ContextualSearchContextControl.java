@@ -70,11 +70,13 @@ public class ContextualSearchContextControl extends OverlayPanelRepaddingTextVie
         super.onFinishInflate();
 
         View view = getView();
-        mSelectedText = (TextView) view.findViewById(R.id.selected_text);
-        mEndText = (TextView) view.findViewById(R.id.surrounding_text_end);
+        mSelectedText = view.findViewById(R.id.selected_text);
+        mEndText = view.findViewById(R.id.surrounding_text_end);
     }
 
-    /** @return the Search Context's TextView height. */
+    /**
+     * @return the Search Context's TextView height.
+     */
     @Px
     int getTextViewHeight() {
         return Math.max(

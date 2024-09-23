@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -26,8 +27,7 @@ class DataTransferEndpoint;
 struct FileInfo;
 }  // namespace ui
 
-namespace file_manager {
-namespace util {
+namespace file_manager::util {
 
 // Absolute path for FuseBox media mount point (sans a trailing slash).
 extern const base::FilePath::CharType kFuseBoxMediaPath[];
@@ -117,7 +117,8 @@ bool MigratePathFromOldFormat(Profile* profile,
 // undefined.
 //
 // Introduced in M73.  This code updates values stored in prefs.
-// TODO(crbug.com/911946) Remove this when no users are running M72 or earlier.
+// TODO(crbug.com/41430020) Remove this when no users are running M72 or
+// earlier.
 bool MigrateFromDownloadsToMyFiles(Profile* profile,
                                    const base::FilePath& old_path,
                                    base::FilePath* new_path);
@@ -168,6 +169,12 @@ bool ConvertFileSystemURLToPathInsideCrostini(
     const storage::FileSystemURL& file_system_url,
     base::FilePath* inside);
 
+// Convert a Fusebox Moniker path to a path inside VM mounted at `vm_mount`.
+// `inside` is modified only when the return value is true (success).
+bool ConvertFuseboxMonikerPathToPathInsideVM(const base::FilePath& path,
+                                             const base::FilePath& vm_mount,
+                                             base::FilePath* inside);
+
 // Convert a path inside a VM mounted at |vm_mount| (e.g. /mnt/chromeos) to a
 // FileSystemURL. If |map_crostini_home| is set, paths
 // under the user's home directory (e.g. /home/user) are translated to be under
@@ -199,6 +206,11 @@ using ConvertToContentUrlsCallback =
     base::OnceCallback<void(const std::vector<GURL>& content_urls,
                             const std::vector<base::FilePath>& paths_to_share)>;
 
+// Converts the given FileSystemURL to a file path which can be passed to
+// ConvertPathToArcUrl().
+base::FilePath ConvertFileSystemURLToPathForSharingWithArc(
+    const storage::FileSystemURL& file_system_url);
+
 // Asynchronously converts Chrome OS file system URLs to content:// URLs.
 // Always returns a vector of the same size as |file_system_urls|.
 // Empty GURLs are filled in the vector if conversion fails.
@@ -207,23 +219,25 @@ void ConvertToContentUrls(
     const std::vector<storage::FileSystemURL>& file_system_urls,
     ConvertToContentUrlsCallback callback);
 
-// Replace `prefix` with `replacement` on `s`.
+// Replace `prefix` with `replacement` at the beginning of `*s`.
 bool ReplacePrefix(std::string* s,
-                   const std::string& prefix,
-                   const std::string& replacement);
+                   std::string_view prefix,
+                   std::string_view replacement);
 
 // Convert path into a string suitable for display in settings.
-// Replacements:
-// * /home/chronos/user/Downloads                => Downloads
-// * /home/chronos/u-<hash>/Downloads            => Downloads
-// * /media/fuse/drivefs-<hash>/root             => Google Drive
-// * /media/fuse/drivefs-<hash>/team_drives      => Team Drives
-// * /media/fuse/drivefs-<hash>/Computers        => Computers
+// Replacement examples:
+// * /home/chronos/user/MyFiles                  => My files
+// * /home/chronos/u-<hash>/MyFiles              => My files
+// * /media/fuse/drivefs-<hash>/root             => Google Drive › My Drive
+// * /media/fuse/drivefs-<hash>/team_drives      => Google Drive › Team Drives
+// * /media/fuse/drivefs-<hash>/Computers        => Google Drive › Computers
 // * /run/arc/sdcard/write/emulated/0            => Play files
 // * /media/fuse/crostini_<hash>_termina_penguin => Linux files
-// * '/' with ' \u203a ' (angled quote sign) for display purposes.
+// * /media/archive/<id>                         => <id>
+// * /media/removable/<id>                       => <id>
+// * '/' with ' › ' (angled quote sign) for display purposes.
 std::string GetPathDisplayTextForSettings(Profile* profile,
-                                          const std::string& path);
+                                          std::string_view path);
 
 // Extracts |mount_name|, |file_system_name|, and |full_path| from given
 // |absolute_path|.
@@ -253,7 +267,6 @@ std::vector<ui::FileInfo> ParseFileSystemSources(
     const ui::DataTransferEndpoint* source,
     const base::Pickle& pickle);
 
-}  // namespace util
-}  // namespace file_manager
+}  // namespace file_manager::util
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_PATH_UTIL_H_

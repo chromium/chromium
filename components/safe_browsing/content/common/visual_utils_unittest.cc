@@ -4,6 +4,9 @@
 
 #include "components/safe_browsing/content/common/visual_utils.h"
 
+#include <array>
+
+#include "base/containers/span.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -42,19 +45,24 @@ class VisualUtilsTest : public testing::Test {
     base::DiscardableMemoryAllocator::SetInstance(nullptr);
   }
 
-  void ExpectPixel(const char* pixel,
+  void ExpectPixel(base::span<const unsigned char> pixel,
                    const VisualFeatures::BlurredImage& image,
                    size_t row,
                    size_t col) {
     ASSERT_LT(static_cast<int>(row), image.height());
     ASSERT_LT(static_cast<int>(col), image.width());
-    EXPECT_EQ(pixel[0], image.data()[3 * row * image.width() + 3 * col])
+    EXPECT_EQ(pixel[0], static_cast<unsigned char>(
+                            image.data()[3 * row * image.width() + 3 * col]))
         << "R component of pixel at row " << row << " and column " << col
         << " is incorrect.";
-    EXPECT_EQ(pixel[1], image.data()[3 * row * image.width() + 3 * col + 1])
+    EXPECT_EQ(pixel[1],
+              static_cast<unsigned char>(
+                  image.data()[3 * row * image.width() + 3 * col + 1]))
         << "G component of pixel at row " << row << " and column " << col
         << " is incorrect.";
-    EXPECT_EQ(pixel[2], image.data()[3 * row * image.width() + 3 * col + 2])
+    EXPECT_EQ(pixel[2],
+              static_cast<unsigned char>(
+                  image.data()[3 * row * image.width() + 3 * col + 2]))
         << "B component of pixel at row " << row << " and column " << col
         << " is incorrect.";
   }
@@ -75,13 +83,15 @@ TEST_F(VisualUtilsTest, BlurImageWhite) {
   bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1000, 1000));
 
   ASSERT_TRUE(GetBlurredImage(bitmap_, &blurred));
+
+  constexpr std::array<const unsigned char, 3> kWhite = {0xff, 0xff, 0xff};
 #if BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(18, blurred.width());
   ASSERT_EQ(32, blurred.height());
   ASSERT_EQ(3u * 18u * 32u, blurred.data().size());
   for (size_t i = 0; i < 32u; i++) {
     for (size_t j = 0; i < 18u; i++) {
-      ExpectPixel("\xff\xff\xff", blurred, i, j);
+      ExpectPixel(kWhite, blurred, i, j);
     }
   }
 #else
@@ -90,7 +100,7 @@ TEST_F(VisualUtilsTest, BlurImageWhite) {
   ASSERT_EQ(3u * 48u * 48u, blurred.data().size());
   for (size_t i = 0; i < 48u; i++) {
     for (size_t j = 0; i < 48u; i++) {
-      ExpectPixel("\xff\xff\xff", blurred, i, j);
+      ExpectPixel(kWhite, blurred, i, j);
     }
   }
 #endif
@@ -105,13 +115,14 @@ TEST_F(VisualUtilsTest, BlurImageRed) {
       *bitmap_.getAddr32(x, y) = kSkPMRed;
 
   ASSERT_TRUE(GetBlurredImage(bitmap_, &blurred));
+  constexpr std::array<const unsigned char, 3> kRed = {0xff, 0x00, 0x00};
 #if BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(18, blurred.width());
   ASSERT_EQ(32, blurred.height());
   ASSERT_EQ(3u * 18u * 32u, blurred.data().size());
   for (size_t i = 0; i < 32u; i++) {
     for (size_t j = 0; i < 18u; i++) {
-      ExpectPixel("\xff\x00\x00", blurred, i, j);
+      ExpectPixel(kRed, blurred, i, j);
     }
   }
 #else
@@ -120,7 +131,7 @@ TEST_F(VisualUtilsTest, BlurImageRed) {
   ASSERT_EQ(3u * 48u * 48u, blurred.data().size());
   for (size_t i = 0; i < 48u; i++) {
     for (size_t j = 0; i < 48u; i++) {
-      ExpectPixel("\xff\x00\x00", blurred, i, j);
+      ExpectPixel(kRed, blurred, i, j);
     }
   }
 #endif
@@ -136,6 +147,8 @@ TEST_F(VisualUtilsTest, BlurImageHalfWhiteHalfBlack) {
   bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 500, 1000, 1000));
 
   ASSERT_TRUE(GetBlurredImage(bitmap_, &blurred));
+  constexpr std::array<const unsigned char, 3> kBlack = {0x00, 0x00, 0x00};
+  constexpr std::array<const unsigned char, 3> kWhite = {0xff, 0xff, 0xff};
 #if BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(18, blurred.width());
   ASSERT_EQ(32, blurred.height());
@@ -144,13 +157,13 @@ TEST_F(VisualUtilsTest, BlurImageHalfWhiteHalfBlack) {
   // black, so only verify the first 14 and last 14 rows.
   for (size_t i = 0; i < 14u; i++) {
     for (size_t j = 0; j < 18u; j++) {
-      ExpectPixel("\x00\x00\x00", blurred, i, j);
+      ExpectPixel(kBlack, blurred, i, j);
     }
   }
 
   for (size_t i = 18u; i < 32u; i++) {
     for (size_t j = 0; j < 18u; j++) {
-      ExpectPixel("\xff\xff\xff", blurred, i, j);
+      ExpectPixel(kWhite, blurred, i, j);
     }
   }
 #else
@@ -161,13 +174,13 @@ TEST_F(VisualUtilsTest, BlurImageHalfWhiteHalfBlack) {
   // black, so only verify the first 22 and last 22 rows.
   for (size_t i = 0; i < 22u; i++) {
     for (size_t j = 0; j < 48u; j++) {
-      ExpectPixel("\x00\x00\x00", blurred, i, j);
+      ExpectPixel(kBlack, blurred, i, j);
     }
   }
 
   for (size_t i = 26u; i < 48u; i++) {
     for (size_t j = 0; j < 48u; j++) {
-      ExpectPixel("\xff\xff\xff", blurred, i, j);
+      ExpectPixel(kWhite, blurred, i, j);
     }
   }
 #endif

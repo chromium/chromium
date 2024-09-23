@@ -45,11 +45,6 @@ class CORE_EXPORT LayoutTableColumn : public LayoutBox {
 
   // LayoutObject methods start.
 
-  void UpdateLayout() final {
-    NOT_DESTROYED();
-    NOTREACHED_NORETURN();
-  }
-
   const char* GetName() const override {
     NOT_DESTROYED();
     if (IsColumn())

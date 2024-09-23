@@ -17,7 +17,8 @@ then readonly SYSTEM=""
 else readonly SYSTEM="--system"
 fi
 
-"${2}/@PRODUCT_FULLNAME@.app/Contents/MacOS/@PRODUCT_FULLNAME@" "--install" "$SYSTEM" "--enable-logging" "--vmodule=*/updater/*=2"
+"${2}/Contents/MacOS/@PRODUCT_FULLNAME@" "--install" "$SYSTEM"
 
-# We don't need the .app in /tmp anymore.
-rm -rf "${2}/@PRODUCT_FULLNAME@.app"
+# We don't need the temporarily staged app bundle anymore.
+set +e
+rm -rf "${2}"

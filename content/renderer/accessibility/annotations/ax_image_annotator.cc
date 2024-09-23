@@ -5,6 +5,7 @@
 #include "content/renderer/accessibility/annotations/ax_image_annotator.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "services/image_annotation/public/mojom/image_annotation.mojom-forward.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -43,6 +43,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/strings/grit/auto_image_annotation_strings.h"
 #include "url/gurl.h"
 
 using blink::WebAXObject;
@@ -58,7 +59,7 @@ namespace {
 
 int GetMessageIdForIconEnum(const std::string& icon_type) {
   static constexpr auto kIconTypeToMessageIdMap =
-      base::MakeFixedFlatMap<base::StringPiece, int>({
+      base::MakeFixedFlatMap<std::string_view, int>({
           {"ICON_PLUS", IDS_AX_IMAGE_ANNOTATION_ICON_PLUS},
           {"ICON_ARROW_BACKWARD", IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_BACKWARD},
           {"ICON_ARROW_FORWARD", IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_FORWARD},
@@ -138,7 +139,7 @@ int GetMessageIdForIconEnum(const std::string& icon_type) {
           {"ICON_SUN", IDS_AX_IMAGE_ANNOTATION_ICON_SUN},
       });
 
-  auto* iter = kIconTypeToMessageIdMap.find(icon_type);
+  auto iter = kIconTypeToMessageIdMap.find(icon_type);
   if (iter == kIconTypeToMessageIdMap.end())
     return 0;
 
@@ -178,7 +179,7 @@ bool SearchForExactlyOneInnerImage(WebAXObject obj,
   }
 
   // Don't count ignored nodes toward depth.
-  int next_depth = obj.AccessibilityIsIgnored() ? max_depth : max_depth - 1;
+  int next_depth = obj.IsIgnored() ? max_depth : max_depth - 1;
 
   // Recurse.
   for (unsigned int i = 0; i < obj.ChildCount(); i++) {
@@ -213,19 +214,19 @@ AXImageAnnotator::AXImageAnnotator(
 AXImageAnnotator::~AXImageAnnotator() {}
 
 void AXImageAnnotator::EnableAnnotations() {
-  if (annotator_.is_bound() || !render_accessibility_->render_frame()) {
+  if (annotator_remote_.is_bound() || !render_accessibility_->render_frame()) {
     return;
   }
   mojo::PendingRemote<image_annotation::mojom::Annotator> annotator;
   render_accessibility_->render_frame()
       ->GetBrowserInterfaceBroker()
-      ->GetInterface(annotator.InitWithNewPipeAndPassReceiver());
-  annotator_.Bind(std::move(annotator));
+      .GetInterface(annotator.InitWithNewPipeAndPassReceiver());
+  annotator_remote_.Bind(std::move(annotator));
 }
 
 void AXImageAnnotator::BindAnnotatorForTesting(
     mojo::PendingRemote<image_annotation::mojom::Annotator> annotator) {
-  annotator_.Bind(std::move(annotator));
+  annotator_remote_.Bind(std::move(annotator));
 }
 
 void AXImageAnnotator::CancelAnnotations() {
@@ -233,16 +234,20 @@ void AXImageAnnotator::CancelAnnotations() {
   // Remove the image annotator if the page is loading and it was added for
   // the one-shot image annotation (i.e. AXMode for image annotation is not
   // set).
-  if (!annotator_.is_bound() ||
+  if (!annotator_remote_.is_bound() ||
       render_accessibility_->GetAccessibilityMode().has_mode(
-          ui::AXMode::kLabelImages)) {
+          GetAXModeToEnableAnnotations())) {
     return;
   }
-  annotator_.reset();
+  annotator_remote_.reset();
 }
 
 uint32_t AXImageAnnotator::GetAXModeToEnableAnnotations() {
   return ui::AXMode::kLabelImages;
+}
+
+bool AXImageAnnotator::HasAXActionToEnableAnnotations() {
+  return true;
 }
 
 ax::mojom::Action AXImageAnnotator::GetAXActionToEnableAnnotations() {
@@ -294,7 +299,7 @@ void AXImageAnnotator::AddImageAnnotationsForNode(WebAXObject& src,
   static const int kMinImageAnnotationHeight = 16;
 
   // Reject ignored objects
-  if (src.AccessibilityIsIgnored()) {
+  if (src.IsIgnored()) {
     return;
   }
 
@@ -316,12 +321,10 @@ void AXImageAnnotator::AddImageAnnotationsForNode(WebAXObject& src,
     should_annotate_image_with_nonempty_name = true;
   }
 
-  if (features::IsAugmentExistingImageLabelsEnabled()) {
-    // If the name consists of mostly stopwords, we can add an image
-    // annotations. See ax_image_stopwords.h for details.
-    if (ImageNameHasMostlyStopwords(web_name.Utf8())) {
-      should_annotate_image_with_nonempty_name = true;
-    }
+  // If the name consists of mostly stopwords, we can add an image
+  // annotations. See ax_image_stopwords.h for details.
+  if (ImageNameHasMostlyStopwords(web_name.Utf8())) {
+    should_annotate_image_with_nonempty_name = true;
   }
 
   // If the image's name is explicitly empty, or if it has a name (and
@@ -394,7 +397,7 @@ void AXImageAnnotator::AddImageAnnotationsForNode(WebAXObject& src,
     return;
   }
 
-  if (!annotator_.is_bound()) {
+  if (!annotator_remote_.is_bound()) {
     if (!render_accessibility_->first_unlabeled_image_id_.has_value() ||
         render_accessibility_->first_unlabeled_image_id_.value() ==
             src.AxID()) {
@@ -544,10 +547,11 @@ void AXImageAnnotator::OnImageAdded(blink::WebAXObject& image) {
   image_annotations_.emplace(image.AxID(), image);
   ImageInfo& image_info = image_annotations_.at(image.AxID());
   // Fetch image annotation.
-  annotator_->AnnotateImage(image_id, render_accessibility_->GetLanguage(),
-                            image_info.GetImageProcessor(),
-                            base::BindOnce(&AXImageAnnotator::OnImageAnnotated,
-                                           weak_factory_.GetWeakPtr(), image));
+  annotator_remote_->AnnotateImage(
+      image_id, render_accessibility_->GetLanguage(),
+      image_info.GetImageProcessor(),
+      base::BindOnce(&AXImageAnnotator::OnImageAnnotated,
+                     weak_factory_.GetWeakPtr(), image));
   VLOG(1) << "Requesting annotation for " << image_id << " with language '"
           << render_accessibility_->GetLanguage() << "' from page "
           << GetDocumentUrl();
@@ -562,10 +566,11 @@ void AXImageAnnotator::OnImageUpdated(blink::WebAXObject& image) {
 
   ImageInfo& image_info = image_annotations_.at(image.AxID());
   // Update annotation.
-  annotator_->AnnotateImage(image_id, render_accessibility_->GetLanguage(),
-                            image_info.GetImageProcessor(),
-                            base::BindOnce(&AXImageAnnotator::OnImageAnnotated,
-                                           weak_factory_.GetWeakPtr(), image));
+  annotator_remote_->AnnotateImage(
+      image_id, render_accessibility_->GetLanguage(),
+      image_info.GetImageProcessor(),
+      base::BindOnce(&AXImageAnnotator::OnImageAnnotated,
+                     weak_factory_.GetWeakPtr(), image));
 }
 
 void AXImageAnnotator::OnImageRemoved(blink::WebAXObject& image) {
@@ -661,7 +666,7 @@ void AXImageAnnotator::MarkDirty(const blink::WebAXObject& image) const {
   blink::WebAXObject parent = image.ParentObject();
   for (int ancestor_count = 0; !parent.IsDetached() && ancestor_count < 2;
        parent = parent.ParentObject()) {
-    if (!parent.AccessibilityIsIgnored()) {
+    if (!parent.IsIgnored()) {
       ++ancestor_count;
       if (ui::IsLink(parent.Role()) || ui::IsPlatformDocument(parent.Role())) {
         render_accessibility_->MarkWebAXObjectDirty(parent);
@@ -736,60 +741,56 @@ void AXImageAnnotator::OnImageAnnotated(
     return;
   }
 
-  if (features::IsAugmentExistingImageLabelsEnabled()) {
-    // Get the image size as minimum and maximum dimension.
-    blink::WebAXObject offset_container;
-    gfx::RectF bounds;
-    gfx::Transform container_transform;
-    bool clips_children = false;
-    image.GetRelativeBounds(offset_container, bounds, container_transform,
-                            &clips_children);
-    int min_dimension =
-        static_cast<int>(std::min(bounds.width(), bounds.height()));
-    int max_dimension =
-        static_cast<int>(std::max(bounds.width(), bounds.height()));
+  // Get the image size as minimum and maximum dimension.
+  blink::WebAXObject offset_container;
+  gfx::RectF bounds;
+  gfx::Transform container_transform;
+  bool clips_children = false;
+  image.GetRelativeBounds(offset_container, bounds, container_transform,
+                          &clips_children);
+  int min_dimension =
+      static_cast<int>(std::min(bounds.width(), bounds.height()));
+  int max_dimension =
+      static_cast<int>(std::max(bounds.width(), bounds.height()));
 
-    // Collect some histograms on the number of characters in the
-    // image name, and also the image name after removing stopwords,
-    // and also the minimum and maximum dimension,
-    // as a function of whether the retrieved image label was
-    // a success, an error, or empty.
-    ax::mojom::NameFrom name_from;
-    blink::WebVector<blink::WebAXObject> name_objects;
-    blink::WebString web_name = image.GetName(name_from, name_objects);
-    int non_stop_length = GetLengthAfterRemovingStopwords(web_name.Utf8());
+  // Collect some histograms on the number of characters in the
+  // image name, and also the image name after removing stopwords,
+  // and also the minimum and maximum dimension,
+  // as a function of whether the retrieved image label was
+  // a success, an error, or empty.
+  ax::mojom::NameFrom name_from;
+  blink::WebVector<blink::WebAXObject> name_objects;
+  blink::WebString web_name = image.GetName(name_from, name_objects);
+  int non_stop_length = GetLengthAfterRemovingStopwords(web_name.Utf8());
 
-    if (result->is_error_code()) {
-      base::UmaHistogramCounts100("Accessibility.ImageLabels.ErrorByNameLength",
-                                  web_name.length());
-      base::UmaHistogramCounts100(
-          "Accessibility.ImageLabels.ErrorByNonStopNameLength",
-          non_stop_length);
-      base::UmaHistogramCounts1000(
-          "Accessibility.ImageLabels.ErrorByMaxDimension", max_dimension);
-      base::UmaHistogramCounts1000(
-          "Accessibility.ImageLabels.ErrorByMinDimension", min_dimension);
-    } else if (!result->is_annotations()) {
-      base::UmaHistogramCounts100("Accessibility.ImageLabels.EmptyByNameLength",
-                                  web_name.length());
-      base::UmaHistogramCounts100(
-          "Accessibility.ImageLabels.EmptyByNonStopNameLength",
-          non_stop_length);
-      base::UmaHistogramCounts1000(
-          "Accessibility.ImageLabels.EmptyByMaxDimension", max_dimension);
-      base::UmaHistogramCounts1000(
-          "Accessibility.ImageLabels.EmptyByMinDimension", min_dimension);
-    } else {
-      base::UmaHistogramCounts100(
-          "Accessibility.ImageLabels.SuccessByNameLength", web_name.length());
-      base::UmaHistogramCounts100(
-          "Accessibility.ImageLabels.SuccessByNonStopNameLength",
-          non_stop_length);
-      base::UmaHistogramCounts1000(
-          "Accessibility.ImageLabels.SuccessByMaxDimension", max_dimension);
-      base::UmaHistogramCounts1000(
-          "Accessibility.ImageLabels.SuccessByMinDimension", min_dimension);
-    }
+  if (result->is_error_code()) {
+    base::UmaHistogramCounts100("Accessibility.ImageLabels.ErrorByNameLength",
+                                web_name.length());
+    base::UmaHistogramCounts100(
+        "Accessibility.ImageLabels.ErrorByNonStopNameLength", non_stop_length);
+    base::UmaHistogramCounts1000(
+        "Accessibility.ImageLabels.ErrorByMaxDimension", max_dimension);
+    base::UmaHistogramCounts1000(
+        "Accessibility.ImageLabels.ErrorByMinDimension", min_dimension);
+  } else if (!result->is_annotations()) {
+    base::UmaHistogramCounts100("Accessibility.ImageLabels.EmptyByNameLength",
+                                web_name.length());
+    base::UmaHistogramCounts100(
+        "Accessibility.ImageLabels.EmptyByNonStopNameLength", non_stop_length);
+    base::UmaHistogramCounts1000(
+        "Accessibility.ImageLabels.EmptyByMaxDimension", max_dimension);
+    base::UmaHistogramCounts1000(
+        "Accessibility.ImageLabels.EmptyByMinDimension", min_dimension);
+  } else {
+    base::UmaHistogramCounts100("Accessibility.ImageLabels.SuccessByNameLength",
+                                web_name.length());
+    base::UmaHistogramCounts100(
+        "Accessibility.ImageLabels.SuccessByNonStopNameLength",
+        non_stop_length);
+    base::UmaHistogramCounts1000(
+        "Accessibility.ImageLabels.SuccessByMaxDimension", max_dimension);
+    base::UmaHistogramCounts1000(
+        "Accessibility.ImageLabels.SuccessByMinDimension", min_dimension);
   }
 
   if (result->is_error_code()) {
@@ -892,8 +893,6 @@ void AXImageAnnotator::OnImageAnnotated(
     return;
   }
 
-  ax::mojom::NameFrom name_from;
-  blink::WebVector<blink::WebAXObject> name_objects;
   blink::WebString name = image.GetName(name_from, name_objects);
   bool has_existing_label = !name.IsEmpty();
 

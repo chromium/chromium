@@ -1,0 +1,11 @@
+abhijithnair@chromium.org
+awillia@chromium.org
+brgoldstein@google.com
+djmitche@chromium.org
+edechamps@google.com
+ciaramcmullin@google.com
+
+per-file masked_domain_list*=aakallam@chromium.org
+per-file url_matcher_with_bypass*=aakallam@chromium.org
+
+file://net/OWNERS

@@ -33,26 +33,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="REFERRER"/>
 </enum>
 
-<enum name="CustomTabsBrandingDecision">
-  <summary>Used by CustomTabs.Branding.BrandingDecision</summary>
-  <int value="0" label="None">
-    Branding is not shown. Used when branding is already shown in the past set
-    cadence (e.g. one hour).
-  </int>
-  <int value="1" label="Shown on toolbar">
-    Branding is shown on the toolbar. Used when the client app launches CCT past
-    the set branding cadence.
-  </int>
-  <int value="2" label="Shown with Toast">
-    Branding is shown with a toast. Used when the client app launches CCT for
-    the first time.
-  </int>
-</enum>
-
 <enum name="CustomTabsCloseCause">
   <int value="0" label="User action in Chrome (back press, close button)"/>
   <int value="1" label="User action in Android (home)"/>
   <int value="2" label="Auto-closed"/>
+  <int value="3" label="AuthTab success"/>
 </enum>
 
 <enum name="CustomTabsConnection">
@@ -129,6 +114,12 @@ chromium-metrics-reviews@google.com.
   <int value="54"
       label="Scroll content may resize tab
              EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE"/>
+  <int value="55" label="Ephemeral EXTRA_ENABLE_EPHEMERAL_BROWSING"/>
+  <int value="56"
+      label="Enable google bottom bar EXTRA_ENABLE_GOOGLE_BOTTOM_BAR"/>
+  <int value="57"
+      label="Google bottom bar buttons EXTRA_GOOGLE_BOTTOM_BAR_BUTTONS"/>
+  <int value="58" label="Support multi-network EXTRA_NETWORK"/>
 </enum>
 
 <enum name="CustomTabsMinimizedEvents">
@@ -164,21 +155,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Partial Custom Tab is full-size"/>
 </enum>
 
-<enum name="CustomTabsResizeType">
-  <obsolete>
-    Obsolete as of November 2022.
-  </obsolete>
-  <int value="0" label="Partial Custom Tab is expanded"/>
-  <int value="1" label="Partial Custom Tab is minimized"/>
-</enum>
-
-<enum name="CustomTabsResizeType2">
-  <int value="0" label="Partial Custom Tab is manually expanded"/>
-  <int value="1" label="Partial Custom Tab is manually minimized"/>
-  <int value="2" label="Partial Custom Tab is automatically expanded"/>
-  <int value="3" label="Partial Custom Tab is automatically minimized"/>
-</enum>
-
 <enum name="CustomTabsSessionDisconnectStatus">
   <int value="0" label="Unknown"/>
   <int value="1" label="Custom Tab in Foreground"/>
@@ -195,12 +171,45 @@ chromium-metrics-reviews@google.com.
              memory"/>
 </enum>
 
+<enum name="GoogleBottomBarButtonEvent">
+  <int value="0" label="Unknown button"/>
+  <int value="1" label="Chrome Page Insights button"/>
+  <int value="2" label="Embedder Page Insights button"/>
+  <int value="3" label="Disabled Save button"/>
+  <int value="4" label="Embedder Save button"/>
+  <int value="5" label="Chrome Share button"/>
+  <int value="6" label="Embedder Share button"/>
+  <int value="7" label="Embedder Custom button"/>
+  <int value="8" label="Embedder Search button"/>
+  <int value="9" label="Chrome Search button"/>
+  <int value="10" label="Embedder Home button"/>
+  <int value="11" label="Chrome Home button"/>
+  <int value="12" label="Searchbox Home button"/>
+  <int value="13" label="Searchbox Search entrypoint"/>
+  <int value="14" label="Searchbox Voice Search button"/>
+  <int value="15" label="Searchbox Lens button"/>
+</enum>
+
+<enum name="GoogleBottomBarCreatedEvent">
+  <int value="0" label="Even layout"/>
+  <int value="1" label="Spotlight layout"/>
+</enum>
+
+<enum name="GoogleBottomBarVariantCreatedEvent">
+  <int value="0" label="Unknown variant"/>
+  <int value="1" label="No variant"/>
+  <int value="2" label="Double decker"/>
+  <int value="3" label="Single decker"/>
+  <int value="4" label="Single decker with right buttons"/>
+</enum>
+
 <enum name="IncognitoCCTCallerId">
   <int value="0" label="Other Apps"/>
   <int value="1" label="Google Apps"/>
   <int value="2" label="Chrome - Other features"/>
   <int value="3" label="Chrome - Reader mode"/>
   <int value="4" label="Chrome - Read later"/>
+  <int value="5" label="Ephemeral Tab"/>
 </enum>
 
 <enum name="MayLaunchUrlType">
@@ -233,19 +242,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Low-end and Pip"/>
   <int value="2" label="High-end and no Pip"/>
   <int value="3" label="High-end and Pip"/>
-</enum>
-
-<enum name="ShareOptionLocation">
-  <int value="0" label="TOOLBAR"/>
-  <int value="1" label="MENU">Share option chosen to be shown in the menu.</int>
-  <int value="2" label="TOOLBAR_FULL_MENU_FALLBACK">
-    Share option shown in the menu because the toolbar is full.
-  </int>
-  <int value="3" label="NO_SPACE">
-    No share option shown despite share being enabled. This is due to the
-    existence of custom buttons and menu items, which take precedence.
-  </int>
-  <int value="4" label="SHARE_DISABLED"/>
 </enum>
 
 <enum name="TrustedWebActivityDelegatedNotificationSmallIconFallback">

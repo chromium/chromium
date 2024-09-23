@@ -22,8 +22,6 @@ extern const char kDeviceActiveChurnCohortMonthlyPingTimestamp[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT)
 extern const char kDeviceActiveChurnObservationMonthlyPingTimestamp[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT)
-extern const char kDeviceActiveChurnObservationFirstObservedNewChurnMetadata[];
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT)
 extern const char kDeviceActiveLastKnownChurnActiveStatus[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT)
 extern const char kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0[];

@@ -69,26 +69,27 @@ enum class AddressProfileImportRequirementMetric {
   kMaxValue = kNoSythesizedTypesRequirementViolated,
 };
 
-// Represents the status of the field type requirements that are specific to
-// countries.
+// These values are persisted to UMA logs. Entries should not be renumbered
+// and numeric values should never be reused. Represents the status of the field
+// type requirements that are specific to countries.
 enum class AddressProfileImportCountrySpecificFieldRequirementsMetric {
-  ALL_GOOD = 0,
-  ZIP_REQUIREMENT_VIOLATED = 1,
-  STATE_REQUIREMENT_VIOLATED = 2,
-  ZIP_STATE_REQUIREMENT_VIOLATED = 3,
-  CITY_REQUIREMENT_VIOLATED = 4,
-  ZIP_CITY_REQUIREMENT_VIOLATED = 5,
-  STATE_CITY_REQUIREMENT_VIOLATED = 6,
-  ZIP_STATE_CITY_REQUIREMENT_VIOLATED = 7,
-  LINE1_REQUIREMENT_VIOLATED = 8,
-  LINE1_ZIP_REQUIREMENT_VIOLATED = 9,
-  LINE1_STATE_REQUIREMENT_VIOLATED = 10,
-  LINE1_ZIP_STATE_REQUIREMENT_VIOLATED = 11,
-  LINE1_CITY_REQUIREMENT_VIOLATED = 12,
-  LINE1_ZIP_CITY_REQUIREMENT_VIOLATED = 13,
-  LINE1_STATE_CITY_REQUIREMENT_VIOLATED = 14,
-  LINE1_ZIP_STATE_CITY_REQUIREMENT_VIOLATED = 15,
-  kMaxValue = LINE1_ZIP_STATE_CITY_REQUIREMENT_VIOLATED,
+  kAllGood = 0,
+  kZipRequirementViolated = 1,
+  kStateRequirementViolated = 2,
+  kZipStateRequirementViolated = 3,
+  kCityRequirementViolated = 4,
+  kZipCityRequirementViolated = 5,
+  kStateCityRequirementViolated = 6,
+  kZipStateCityRequirementViolated = 7,
+  kLine1RequirementViolated = 8,
+  kLine1ZipRequirementViolated = 9,
+  kLine1StateRequirementViolated = 10,
+  kLine1ZipStateRequirementViolated = 11,
+  kLine1CityRequirementViolated = 12,
+  kLine1ZipCityRequirementViolated = 13,
+  kLine1StateCityRequirementViolated = 14,
+  kLine1ZipStateCityRequirementViolated = 15,
+  kMaxValue = kLine1ZipStateCityRequirementViolated,
 };
 
 // These values are persisted to UMA logs. Entries should not be renumbered
@@ -111,9 +112,12 @@ void LogAddressProfileImportUkm(
     ukm::UkmRecorder* ukm_recorder,
     ukm::SourceId source_id,
     AutofillProfileImportType import_type,
-    AutofillClient::SaveAddressProfileOfferUserDecision user_decision,
+    AutofillClient::AddressPromptUserDecision user_decision,
     const ProfileImportMetadata& profile_import_metadata,
-    size_t num_edited_fields);
+    size_t num_edited_fields,
+    std::optional<AutofillProfile> import_candidate,
+    const std::vector<const AutofillProfile*>& existing_profiles,
+    std::string_view app_locale);
 
 // Logs the status of an address import requirement defined by type.
 void LogAddressFormImportRequirementMetric(
@@ -132,13 +136,25 @@ void LogProfileImportType(AutofillProfileImportType import_type);
 // Logs the type of a profile import that are used for the silent updates.
 void LogSilentUpdatesProfileImportType(AutofillProfileImportType import_type);
 
-// Logs the user decision for importing a new profile.
+// Logs the user decision for importing a new profile with variants for ready
+// users (users who have at least one profile stored already) and non-ready
+// users. Besides this, decision is also recorded for the subset of ready users
+// who have a a quasi-duplicate profile stored, and also in a separate histogram
+// for all users.
 void LogNewProfileImportDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision);
+    AutofillClient::AddressPromptUserDecision decision,
+    const std::vector<const AutofillProfile*>& existing_profiles,
+    const AutofillProfile& import_candidate,
+    std::string_view app_locale);
 
-// Logs the user decision for updating an exiting profile.
+// Logs the user decision for updating an exiting profile with variants for
+// users who have a quasi-duplicate profile stored (that is not
+// `import_candidate`), and also in a separate histogram for all users
 void LogProfileUpdateImportDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision);
+    AutofillClient::AddressPromptUserDecision decision,
+    const std::vector<const AutofillProfile*>& existing_profiles,
+    const AutofillProfile& import_candidate,
+    std::string_view app_locale);
 
 // Logs if at least one setting-inaccessible field was removed on import.
 void LogRemovedSettingInaccessibleFields(bool did_remove);
@@ -155,39 +171,33 @@ void LogPhoneNumberImportParsingResult(bool parsed_successfully);
 // Logs that a specific type was edited in a save prompt.
 void LogNewProfileEditedType(FieldType edited_type);
 
-// Logs the number of edited fields for an accepted profile save.
-void LogNewProfileNumberOfEditedFields(int number_of_edited_fields);
+// Logs which storage a newly imported profile will be saved to.
+void LogNewProfileStorageLocation(const AutofillProfile& import_candidate);
 
 // Logs that a specific type changed in a profile update that received the
 // user |decision|. Note that additional manual edits in the update prompt are
 // not accounted for in this metric.
 void LogProfileUpdateAffectedType(
     FieldType affected_type,
-    AutofillClient::SaveAddressProfileOfferUserDecision decision);
+    AutofillClient::AddressPromptUserDecision decision);
 
 // Logs that a specific type was edited in an update prompt.
 void LogProfileUpdateEditedType(FieldType edited_type);
-
-// Logs the number of edited fields for an accepted profile update.
-void LogUpdateProfileNumberOfEditedFields(int number_of_edited_fields);
 
 // Logs the number of changed fields for a profile update that received the
 // user |decision|. Note that additional manual edits in the update prompt are
 // not accounted for in this metric.
 void LogUpdateProfileNumberOfAffectedFields(
     int number_of_affected_fields,
-    AutofillClient::SaveAddressProfileOfferUserDecision decision);
+    AutofillClient::AddressPromptUserDecision decision);
 
 // Logs the user's decision for migrating an existing `kLocalOrSyncable` profile
 // to `kAccount`.
 void LogProfileMigrationImportDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision);
+    AutofillClient::AddressPromptUserDecision decision);
 
 // Logs that a specific type was edited in a migration prompt.
 void LogProfileMigrationEditedType(FieldType edited_type);
-
-// Logs the number of edited fields for an accepted profile migration.
-void LogProfileMigrationNumberOfEditedFields(int number_of_edited_fields);
 
 }  // namespace autofill::autofill_metrics
 

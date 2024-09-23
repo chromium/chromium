@@ -36,7 +36,11 @@ bool WaitableEventWatcher::StartWatching(
   // out from under the watcher, a signal can still be observed.
   receive_right_ = event->receive_right_;
 
-  callback_ = BindOnce(std::move(callback), event);
+  // UnsafeDanglingUntriaged triggered by test:
+  // WaitableEventWatcherDeletionTest.SignalAndDelete
+  // TODO(crbug.com/40061562): Remove `UnsafeDanglingUntriaged`
+  callback_ =
+      BindOnce(std::move(callback), base::UnsafeDanglingUntriaged(event));
 
   // Use the global concurrent queue here, since it is only used to thunk
   // to the real callback on the target task runner.

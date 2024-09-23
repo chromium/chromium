@@ -250,7 +250,7 @@ class AutocompleteActionPredictorTest : public testing::Test {
             profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
     ASSERT_TRUE(history_service);
 
-    predictor_->OnURLsDeleted(
+    predictor_->OnHistoryDeletions(
         history_service,
         history::DeletionInfo(history::DeletionTimeRange::Invalid(), expired,
                               rows, std::set<GURL>(), std::nullopt));

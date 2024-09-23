@@ -9,10 +9,14 @@
 #import <UserNotifications/UserNotifications.h>
 #import <optional>
 
+#import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
-enum class TipsNotificationType;
+class Browser;
+@class CommandDispatcher;
 class PrefRegistrySimple;
+enum class TipsNotificationType;
+enum class TipsNotificationUserType;
 
 // A notification client responsible for registering notification requests and
 // handling the receiving of user notifications that are user-ed "Tips".
@@ -22,9 +26,9 @@ class TipsNotificationClient : public PushNotificationClient {
   ~TipsNotificationClient() override;
 
   // Override PushNotificationClient::
-  void HandleNotificationInteraction(
+  bool HandleNotificationInteraction(
       UNNotificationResponse* notification_response) override;
-  UIBackgroundFetchResult HandleNotificationReception(
+  std::optional<UIBackgroundFetchResult> HandleNotificationReception(
       NSDictionary<NSString*, id>* notification) override;
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
   void OnSceneActiveForegroundBrowserReady() override;
@@ -48,20 +52,31 @@ class TipsNotificationClient : public PushNotificationClient {
   // if there isn't one.
   void GetPendingRequest(GetPendingRequestCallback callback);
 
-  // Clears any previously requested notification(s), and calls `completion`.
-  void ClearNotification(base::OnceClosure callback);
-  void OnNotificationCleared(UNNotificationRequest* request);
+  // Called when a pending request is found. Or called with `nil` when none is
+  // found.
+  void OnPendingRequestFound(UNNotificationRequest* request);
+
+  // Checks for any pending requests and schedules the next notification if
+  // none are pending and there are any left in inventory.
+  void CheckAndMaybeRequestNotification(base::OnceClosure callback);
 
   // Request a new tips notification, if the conditions are right (i.e. the
   // user has opted-in, etc).
-  void MaybeRequestNotification();
+  void MaybeRequestNotification(base::OnceClosure completion);
+
+  // Clears all pending requests for this client.
+  void ClearAllRequestedNotifications();
 
   // Request a notification of the given `type`.
-  void RequestNotification(TipsNotificationType type);
+  void RequestNotification(TipsNotificationType type,
+                           base::OnceClosure completion);
   void OnNotificationRequested(TipsNotificationType type, NSError* error);
 
   // Returns true if a notification of the given `type` should be sent.
   bool ShouldSendNotification(TipsNotificationType type);
+
+  // Returns true if a Default Browser notification should be sent.
+  bool ShouldSendDefaultBrowser();
 
   // Returns true if a Signin notification should be sent.
   bool ShouldSendSignin();
@@ -69,22 +84,75 @@ class TipsNotificationClient : public PushNotificationClient {
   // Returns true if a WhatsNew notification should be sent.
   bool ShouldSendWhatsNew();
 
+  // Returns true if a SetUpList continuation notification should be sent.
+  bool ShouldSendSetUpListContinuation();
+
+  // Returns true if a Docking promo notification should be sent.
+  bool ShouldSendDocking();
+
+  // Returns true if an Omnibox Position promo notification should be sent.
+  bool ShouldSendOmniboxPosition();
+
+  // Returns true if a Lens promo notification should be sent.
+  bool ShouldSendLens();
+
+  // Returns true if an Enhanced Safe Browsing promo notification should be
+  // sent.
+  bool ShouldSendEnhancedSafeBrowsing();
+
   // Returns `true` if there is foreground active browser.
   bool IsSceneLevelForegroundActive();
 
   // Helpers to handle notification interactions.
-  void ShowDefaultBrowserPromo();
-  void ShowWhatsNew();
-  void ShowSignin();
+  void ShowUIForNotificationType(TipsNotificationType type, Browser* browser);
+  void ShowDefaultBrowserPromo(Browser* browser);
+  void ShowWhatsNew(Browser* browser);
+  void ShowSignin(Browser* browser);
+  void ShowSetUpListContinuation(Browser* browser);
+  void ShowDocking(Browser* browser);
+  void ShowOmniboxPosition(Browser* browser);
+  void ShowLensPromo(Browser* browser);
+  void ShowEnhancedSafeBrowsingPromo(Browser* browser);
 
   // Helpers to store state in local state prefs.
   void MarkNotificationTypeSent(TipsNotificationType type);
   void MarkNotificationTypeNotSent(TipsNotificationType type);
 
+  // Logs to a histogram if a notification that was requested has been
+  // triggered.
+  void MaybeLogTriggeredNotification();
+
+  // Logs to a histogram if a notification that was triggered has been
+  // dismissed.
+  void MaybeLogDismissedNotification();
+  void OnGetDeliveredNotifications(NSArray<UNNotification*>* notifications);
+
+  // Returns true if Tips notifications are permitted.
+  bool IsPermitted();
+
+  // Returns true if the Dismiss Limit has been reached.
+  bool DismissLimitReached();
+
+  // Called when the pref that stores whether Tips notifications are permitted
+  // changes.
+  void OnPermittedPrefChanged(const std::string& name);
+
+  // Classifies the user and sets the `user_type`, if possible.
+  void ClassifyUser();
+
+  // Stores whether Tips notifications are permitted.
+  bool permitted_ = false;
+
+  // Stores the user's classification.
+  TipsNotificationUserType user_type_;
+
   // When the user interacts with a Tips notification but there are no
   // foreground scenes, this will store the notification type so it can
   // be handled when there is a foreground scene.
   std::optional<TipsNotificationType> interacted_type_;
+
+  // Observes changes to permitted pref.
+  PrefChangeRegistrar pref_change_registrar_;
 
   // Used to assert that asynchronous callback are invoked on the correct
   // sequence.

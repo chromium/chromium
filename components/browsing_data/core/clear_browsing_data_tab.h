@@ -18,7 +18,7 @@ namespace browsing_data {
 //
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.browsing_data
-enum class ClearBrowsingDataTab { BASIC, ADVANCED, NUM_TYPES };
+enum class ClearBrowsingDataTab { BASIC, ADVANCED, MAX_VALUE = ADVANCED };
 
 }  // namespace browsing_data
 

@@ -64,7 +64,7 @@ DOMException* BluetoothError::CreateDOMException(
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotFoundError, detailed_message);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError);
 }
 
@@ -80,7 +80,7 @@ DOMException* BluetoothError::CreateDOMException(
       // an error and the others have a detailed message and are
       // expected to be redirected to the switch above that handles
       // BluetoothErrorCode.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kUnknownError);
 #define MAP_ERROR(enumeration, name, message)         \
@@ -118,6 +118,8 @@ DOMException* BluetoothError::CreateDOMException(
                 "Connection Error: Already exists.");
       MAP_ERROR(CONNECT_NOT_CONNECTED, DOMExceptionCode::kInvalidStateError,
                 "Connection Error: Not connected.");
+      MAP_ERROR(CONNECT_NON_AUTH_TIMEOUT, DOMExceptionCode::kInvalidStateError,
+                "Connection Error: Non-authentication timeout.");
 
       // NetworkErrors:
       MAP_ERROR(CONNECT_ALREADY_IN_PROGRESS, DOMExceptionCode::kNetworkError,
@@ -227,10 +229,24 @@ DOMException* BluetoothError::CreateDOMException(
       MAP_ERROR(SCANNING_BLOCKED, DOMExceptionCode::kNotAllowedError,
                 "requestLEScan() call is blocked by user.");
 
+      // UnknownErrors:
+      MAP_ERROR(CONNECT_NO_MEMORY, DOMExceptionCode::kUnknownError,
+                "Connection Error: An internal error has occurred.");
+      MAP_ERROR(CONNECT_JNI_ENVIRONMENT, DOMExceptionCode::kUnknownError,
+                "Connection Error: An internal error has occurred.");
+      MAP_ERROR(CONNECT_JNI_THREAD_ATTACH, DOMExceptionCode::kUnknownError,
+                "Connection Error: An internal error has occurred.");
+      MAP_ERROR(CONNECT_WAKELOCK, DOMExceptionCode::kUnknownError,
+                "Connection Error: An internal error has occurred.");
+      MAP_ERROR(CONNECT_UNEXPECTED_STATE, DOMExceptionCode::kUnknownError,
+                "Connection Error: An internal error has occurred.");
+      MAP_ERROR(CONNECT_SOCKET_ERROR, DOMExceptionCode::kUnknownError,
+                "Connection Error: An internal error has occurred.");
+
 #undef MAP_ERROR
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError);
 }
 

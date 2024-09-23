@@ -20,7 +20,12 @@ class FaviconLoader;
 @protocol GridToolbarsMutator;
 @protocol RecentTabsConsumer;
 @class SceneState;
-@protocol TabGridToolbarsMainTabGridDelegate;
+@protocol TabGridCommands;
+@class TabGridModeHolder;
+
+namespace feature_engagement {
+class Tracker;
+}
 
 namespace signin {
 class IdentityManager;
@@ -56,9 +61,8 @@ class TabRestoreService;
 @property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;
 // Grid consumer.
 @property(nonatomic, weak) id<GridConsumer> gridConsumer;
-// Delegate handling the Tab Grid modifications.
-@property(nonatomic, weak) id<TabGridToolbarsMainTabGridDelegate>
-    toolbarTabGridDelegate;
+// Handler for the Tab Grid commands.
+@property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
 
 - (instancetype)
     initWithSessionSyncService:
@@ -69,7 +73,10 @@ class TabRestoreService;
                    syncService:(syncer::SyncService*)syncService
                    browserList:(BrowserList*)browserList
                     sceneState:(SceneState*)sceneState
-              disabledByPolicy:(BOOL)disabled NS_DESIGNATED_INITIALIZER;
+              disabledByPolicy:(BOOL)disabled
+             engagementTracker:(feature_engagement::Tracker*)engagementTracker
+                    modeHolder:(TabGridModeHolder*)modeHolder
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

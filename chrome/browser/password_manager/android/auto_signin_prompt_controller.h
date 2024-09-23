@@ -7,7 +7,6 @@
 
 #include <string>
 
-
 namespace content {
 class WebContents;
 }

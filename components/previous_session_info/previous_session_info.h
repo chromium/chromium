@@ -176,9 +176,6 @@ enum class DeviceBatteryState {
 // startRecordingMemoryFootprintWithInterval was no called.
 - (void)stopRecordingMemoryFootprint;
 
-// Updates the currently available device storage, in kilobytes.
-- (void)updateAvailableDeviceStorage:(NSInteger)availableStorage;
-
 // Updates the saved last known session time.
 - (void)updateSessionEndTime;
 

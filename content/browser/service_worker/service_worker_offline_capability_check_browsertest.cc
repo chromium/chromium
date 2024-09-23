@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -618,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerOfflineCapabilityCheckBrowserTest,
 // Sites with a service worker are identified as supporting offline capability
 // only when it returns a valid response in the offline mode.
 
-// TODO(crbug.com/1365409): Flaky on all platforms.
+// TODO(crbug.com/40866226): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerOfflineCapabilityCheckBrowserTest,
                        DISABLED_CheckOfflineCapability) {
   EXPECT_TRUE(NavigateToURL(shell(),

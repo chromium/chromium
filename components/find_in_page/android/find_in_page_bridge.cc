@@ -5,10 +5,12 @@
 #include "components/find_in_page/android/find_in_page_bridge.h"
 
 #include "base/android/jni_string.h"
-#include "components/find_in_page/android/jni_headers/FindInPageBridge_jni.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/find_in_page/android/jni_headers/FindInPageBridge_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaParamRef;

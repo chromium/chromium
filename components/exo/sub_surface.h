@@ -6,7 +6,6 @@
 #define COMPONENTS_EXO_SUB_SURFACE_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -49,9 +48,6 @@ class SubSurface : public SurfaceDelegate,
   // moved so, that its origin (top-left corner pixel) will be at the |position|
   // of the parent surface coordinate system.
   void SetPosition(const gfx::PointF& position);
-
-  // This schedules a clip rect to be applied when drawing this sub-surface.
-  void SetClipRect(const std::optional<gfx::RectF>& clip_rect);
 
   // This schedules a matrix transform to be applied when drawing this
   // sub-surface.

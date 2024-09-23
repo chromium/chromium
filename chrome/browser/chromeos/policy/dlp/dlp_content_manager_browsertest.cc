@@ -29,12 +29,13 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/enterprise/data_controls/dlp_histogram_helper.h"
-#include "components/enterprise/data_controls/dlp_policy_event.pb.h"
+#include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
+#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
 #include "components/reporting/client/report_queue_impl.h"
 #include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -364,7 +365,10 @@ class DlpContentManagerReportingBrowserTest
         .WillByDefault(testing::Return(::reporting::Status::StatusOK()));
 
     auto config_result = ::reporting::ReportQueueConfiguration::Create(
-        ::reporting::EventType::kDevice, destination_, policy_check_callback_);
+                             {.event_type = ::reporting::EventType::kDevice,
+                              .destination = destination_})
+                             .SetPolicyCheckCallback(policy_check_callback_)
+                             .Build();
 
     ASSERT_TRUE(config_result.has_value());
 
@@ -421,8 +425,8 @@ class DlpContentManagerReportingBrowserTest
     EXPECT_CALL(*test_storage_module(), AddRecord)
         .Times(times)
         .WillRepeatedly(testing::WithArgs<1, 2>(testing::Invoke(
-            [=](::reporting::Record record,
-                base::OnceCallback<void(::reporting::Status)> callback) {
+            [=, this](::reporting::Record record,
+                      base::OnceCallback<void(::reporting::Status)> callback) {
               content::GetUIThreadTaskRunner({})->PostTask(
                   FROM_HERE,
                   base::BindOnce(

@@ -151,8 +151,11 @@ arc::mojom::WindowInfoPtr WindowPredictor::PredictAppWindowInfo(
 
   if (display::Screen::GetScreen()->InTabletMode()) {
     // TODO: Figure out why setting kMaximized doesn't work.
+    // Note that the ghost window state type is default, but the ARC app
+    // window state will be assigned by ARC and not be affected by this state.
     window_info->state =
         static_cast<int32_t>(chromeos::WindowStateType::kDefault);
+    window_info->bounds = disp.work_area();
     return window_info;
   }
 

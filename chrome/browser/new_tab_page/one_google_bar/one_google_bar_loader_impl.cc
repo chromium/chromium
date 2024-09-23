@@ -208,8 +208,8 @@ void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::SetRequestHeaders(
                    signin::PROFILE_MODE_ADD_ACCOUNT_DISABLED;
   }
 
-  // TODO(crbug.com/1134045): Check whether the child account status should also
-  // be sent in the Mirror request header when loading the local version of
+  // TODO(crbug.com/40151268): Check whether the child account status should
+  // also be sent in the Mirror request header when loading the local version of
   // OneGoogleBar.
   std::string chrome_connected_header_value =
       chrome_connected_header_helper.BuildRequestHeader(
@@ -259,6 +259,8 @@ void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::Start() {
   SetRequestHeaders(resource_request.get());
   resource_request->request_initiator =
       url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+  // Adds cookies even if 3P cookies are blocked. See b/297160590.
+  resource_request->site_for_cookies = net::SiteForCookies::FromUrl(api_url_);
 
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     traffic_annotation);

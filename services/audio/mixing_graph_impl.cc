@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/audio/mixing_graph_impl.h"
 
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/loopback_audio_converter.h"
@@ -26,7 +32,7 @@ void SanitizeOutput(media::AudioBus* bus) {
     float* data = bus->channel(channel);
     for (int frame = 0; frame < bus->frames(); frame++) {
       float value = data[frame];
-      if (LIKELY(value * value <= 1.0f)) {
+      if (value * value <= 1.0f) [[likely]] {
         continue;
       }
       // The sample is out of range. Negative values are clamped to -1. Positive
@@ -183,7 +189,7 @@ void MixingGraphImpl::Remove(const AudioConverterKey& key,
   }
 
   auto converter = converters_.find(key);
-  DCHECK(converter != converters_.end());
+  CHECK(converter != converters_.end(), base::NotFatalUntil::M130);
   media::LoopbackAudioConverter* parent = converter->second.get();
   {
     base::AutoLock scoped_lock(lock_);
@@ -221,13 +227,15 @@ int MixingGraphImpl::OnMoreData(base::TimeDelta delay,
                                 const media::AudioGlitchInfo& glitch_info,
                                 media::AudioBus* dest) {
   const base::TimeTicks start_time(base::TimeTicks::Now());
-  TRACE_EVENT_BEGIN2(TRACE_DISABLED_BY_DEFAULT("audio"),
-                     "MixingGraphImpl::OnMoreData", "delay", delay,
-                     "delay_timestamp", delay_timestamp);
 
   uint32_t frames_delayed = media::AudioTimestampHelper::TimeToFrames(
       delay, output_params_.sample_rate());
 
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("audio"), "MixingGraphImpl::OnMoreData",
+              "playout_delay (ms)", delay.InMillisecondsF(),
+              "delay_timestamp (ms)",
+              (delay_timestamp - base::TimeTicks()).InMillisecondsF(),
+              "delay (frames)", frames_delayed);
   {
     base::AutoLock scoped_lock(lock_);
     main_converter_.ConvertWithInfo(frames_delayed, glitch_info, dest);
@@ -237,9 +245,6 @@ int MixingGraphImpl::OnMoreData(base::TimeDelta delay,
 
   on_more_data_cb_.Run(*dest, delay);
 
-  TRACE_EVENT_END1(TRACE_DISABLED_BY_DEFAULT("audio"),
-                   "MixingGraphImpl::OnMoreData", "frames_delayed",
-                   frames_delayed);
   overtime_logger_->Log(start_time);
   return dest->frames();
 }

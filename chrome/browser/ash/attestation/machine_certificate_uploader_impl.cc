@@ -23,7 +23,7 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/user_manager/known_user.h"
@@ -207,7 +207,7 @@ void MachineCertificateUploaderImpl::CheckCertificateExpiry(
       CheckIfUploaded(reply);
       return;
   }
-  NOTREACHED() << "Unknown certificate status";
+  NOTREACHED_IN_MIGRATION() << "Unknown certificate status";
 }
 
 void MachineCertificateUploaderImpl::UploadCertificate(
@@ -251,6 +251,9 @@ void MachineCertificateUploaderImpl::OnUploadComplete(
     AttestationClient::Get()->GetKeyInfo(
         request, base::BindOnce(&MachineCertificateUploaderImpl::MarkAsUploaded,
                                 weak_factory_.GetWeakPtr()));
+  } else if (result.IsClientNotRegisteredError()) {
+    LOG(WARNING) << "Attempted to upload a certificate but cloud policy client "
+                    "is not registered.";
   }
   certificate_uploaded_ = result.IsSuccess();
   RunCallbacks(certificate_uploaded_.value());
@@ -302,7 +305,7 @@ void MachineCertificateUploaderImpl::HandleGetCertificateFailure(
       break;
 
     case ATTESTATION_SUCCESS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

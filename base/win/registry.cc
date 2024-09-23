@@ -180,7 +180,6 @@ LONG RegKey::CreateKey(const wchar_t* name, REGSAM access) {
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa384129.aspx.
   if ((access & kWow64AccessMask) != wow64access_) {
     NOTREACHED();
-    return ERROR_INVALID_PARAMETER;
   }
   HKEY subkey = nullptr;
   LONG result = RegCreateKeyEx(key_, name, 0, nullptr, REG_OPTION_NON_VOLATILE,
@@ -214,7 +213,6 @@ LONG RegKey::OpenKey(const wchar_t* relative_key_name, REGSAM access) {
   // http://msdn.microsoft.com/en-us/library/windows/desktop/aa384129.aspx.
   if ((access & kWow64AccessMask) != wow64access_) {
     NOTREACHED();
-    return ERROR_INVALID_PARAMETER;
   }
   HKEY subkey = nullptr;
   LONG result = RegOpenKeyEx(key_, relative_key_name, 0, access, &subkey);
@@ -493,11 +491,11 @@ expected<bool, LONG> RegKey::IsLink() const {
   return unexpected(result);
 }
 
-absl::optional<LONG> RegKey::DeleteIfLink() {
+std::optional<LONG> RegKey::DeleteIfLink() {
   if (auto is_link = IsLink(); !is_link.has_value()) {
     return is_link.error();  // Failed to determine if a link.
   } else if (is_link.value() == false) {
-    return absl::nullopt;  // Not a link.
+    return std::nullopt;  // Not a link.
   }
 
   const NTSTATUS delete_result = ::NtDeleteKey(key_);

@@ -107,23 +107,33 @@ message FeatureSpecificFields {
   // Tracks whether the SendTabToSelf feature is enabled on the device. For this
   // to be true, two things must be true: (1) The receiving side of the feature
   // must be enabled on the device (2) The user has enabled sync for this
-  // feature
+  // feature.
   optional bool send_tab_to_self_receiving_enabled = 1;
+
+  // Tracks which type of Send Tab To Self message(s) can be sent to the
+  // receiving device.
+  // If not set, the in-app message type will be assumed.
+  optional SyncEnums.SendTabReceivingType send_tab_to_self_receiving_type = 2;
+
+  // Tracks the last time this device signed-in with the floating workspace
+  // feature enabled. As of 07/2024, this feature is only supported on ChromeOS.
+  optional int64 floating_workspace_last_signin_time_windows_epoch_micros = 3;
 }
 
 // Device specific information for Sharing feature. Used to send end-to-end
-// encrypted message through FCM to other devices.
+// encrypted message through FCM or unencrypted message through Chime to other
+// devices.
 message SharingSpecificFields {
   // FCM registration token of device subscribed using VAPID key.
-  // TODO(crbug.com/1012226): Deprecate when VAPID migration is over.
+  // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
   optional string vapid_fcm_token = 1;
 
   // Public key for message encryption [RFC8291] using VAPID key.
-  // TODO(crbug.com/1012226): Deprecate when VAPID migration is over.
+  // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
   optional bytes vapid_p256dh = 2;
 
   // Auth secret for message encryption [RFC8291] using VAPID key.
-  // TODO(crbug.com/1012226): Deprecate when VAPID migration is over.
+  // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
   optional bytes vapid_auth_secret = 3;
 
   // Enum defining available Sharing features.
@@ -167,6 +177,10 @@ message SharingSpecificFields {
 
   // Auth secret for message encryption [RFC8291] using Sharing sender ID.
   optional bytes sender_id_auth_secret_v2 = 10;
+
+  // Identifier used to send notifications to a specific device in Chime. Added
+  // in M128.
+  optional string chime_representative_target_id = 11;
 }
 
 // Device specific information telling how to send invalidations to this device.

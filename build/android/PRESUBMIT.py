@@ -42,7 +42,7 @@ def CommonChecks(input_api, output_api):
               J(),
               J('gyp'),
               J('buildbot'),
-              J('..', 'util', 'lib', 'common'),
+              J('..', 'util'),
               J('..', '..', 'third_party', 'catapult', 'common',
                 'py_trace_event'),
               J('..', '..', 'third_party', 'catapult', 'common', 'py_utils'),
@@ -79,10 +79,6 @@ def CommonChecks(input_api, output_api):
           version='2.7'))
   # yapf: enable
 
-  # Disabled due to http://crbug.com/410936
-  #output.extend(input_api.canned_checks.RunUnitTestsInDirectory(
-  #input_api, output_api, J('buildbot', 'tests')))
-
   pylib_test_env = dict(input_api.environ)
   pylib_test_env.update({
       'PYTHONPATH': build_android_dir,
@@ -94,19 +90,38 @@ def CommonChecks(input_api, output_api):
           output_api,
           unit_tests=[
               J('.', 'list_class_verification_failures_test.py'),
+              J('.', 'convert_dex_profile_tests.py'),
+              J('gyp', 'compile_java_tests.py'),
+              J('gyp', 'create_unwind_table_tests.py'),
+              J('gyp', 'dex_test.py'),
+              J('gyp', 'extract_unwind_tables_tests.py'),
+              J('gyp', 'gcc_preprocess_tests.py'),
+              J('gyp', 'java_cpp_enum_tests.py'),
+              J('gyp', 'java_cpp_features_tests.py'),
+              J('gyp', 'java_cpp_strings_tests.py'),
+              J('gyp', 'java_google_api_keys_tests.py'),
+              J('gyp', 'util', 'build_utils_test.py'),
+              J('gyp', 'util', 'manifest_utils_test.py'),
+              J('gyp', 'util', 'md5_check_test.py'),
+              J('gyp', 'util', 'resource_utils_test.py'),
+              J('pylib', 'base', 'output_manager_test_case.py'),
               J('pylib', 'constants', 'host_paths_unittest.py'),
               J('pylib', 'gtest', 'gtest_test_instance_test.py'),
+              J('pylib', 'instrumentation', 'instrumentation_parser_test.py'),
               J('pylib', 'instrumentation',
                 'instrumentation_test_instance_test.py'),
               J('pylib', 'local', 'device', 'local_device_gtest_run_test.py'),
               J('pylib', 'local', 'device',
                 'local_device_instrumentation_test_run_test.py'),
               J('pylib', 'local', 'device', 'local_device_test_run_test.py'),
+              J('pylib', 'local', 'emulator', 'ini_test.py'),
               J('pylib', 'local', 'machine',
                 'local_machine_junit_test_run_test.py'),
               J('pylib', 'output', 'local_output_manager_test.py'),
               J('pylib', 'output', 'noop_output_manager_test.py'),
               J('pylib', 'output', 'remote_output_manager_test.py'),
+              J('pylib', 'results', 'flakiness_dashboard',
+                'json_results_generator_unittest.py'),
               J('pylib', 'results', 'json_results_test.py'),
               J('pylib', 'utils', 'chrome_proxy_utils_test.py'),
               J('pylib', 'utils', 'code_coverage_utils_test.py'),
@@ -115,11 +130,6 @@ def CommonChecks(input_api, output_api):
               J('pylib', 'utils', 'dexdump_test.py'),
               J('pylib', 'utils', 'gold_utils_test.py'),
               J('pylib', 'utils', 'test_filter_test.py'),
-              J('gyp', 'dex_test.py'),
-              J('gyp', 'util', 'build_utils_test.py'),
-              J('gyp', 'util', 'manifest_utils_test.py'),
-              J('gyp', 'util', 'md5_check_test.py'),
-              J('gyp', 'util', 'resource_utils_test.py'),
           ],
           env=pylib_test_env))
 

@@ -1,3 +1,8 @@
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SEEKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SEEKER_H_
 
@@ -37,7 +42,7 @@ class Seeker {
 
  private:
   const HeapVector<RuleSet::Interval<T>>& intervals_;
-  const RuleSet::Interval<T>* iter_;
+  HeapVector<RuleSet::Interval<T>>::const_iterator iter_;
 #if DCHECK_IS_ON()
   unsigned last_rule_position_ = 0;
 #endif

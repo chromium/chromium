@@ -148,7 +148,8 @@ class AutoResizeWebContentsDelegate : public WebContentsDelegate {
 // resizes the top level widget.
 // d) When auto-resize is enabled for the nested main frame and the renderer
 // resizes the nested widget.
-#if BUILDFLAG(IS_FUCHSIA)
+// TODO(b/40945321): Flaky on Fuchsia and Linux.
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
 #define MAYBE_VisualPropertiesPropagation_VisibleViewportSize \
   DISABLED_VisualPropertiesPropagation_VisibleViewportSize
 #else
@@ -432,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     // cancelled something else is wrong, so the loop will time out and fail
     // the test.
     //
-    // TODO(crbug.com/1288560): Remove this once the race condition is
+    // TODO(crbug.com/40817022): Remove this once the race condition is
     // fixed.
     if (!got_incomplete_tab_switch &&
         !histogram_tester
@@ -461,7 +462,7 @@ class DisplayModeControllingWebContentsDelegate : public WebContentsDelegate {
   blink::mojom::DisplayMode mode_ = blink::mojom::DisplayMode::kBrowser;
 };
 
-// TODO(crbug.com/1060336): Unlike most VisualProperties, the DisplayMode does
+// TODO(crbug.com/40121997): Unlike most VisualProperties, the DisplayMode does
 // not propagate down the tree of RenderWidgets, but is sent independently to
 // each RenderWidget.
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
@@ -545,19 +546,19 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
                    "window.matchMedia('(display-mode: standalone)').matches"));
 }
 
-// Validate that the root widget's window segments are correctly propagated
+// Validate that the root widget's viewport segments are correctly propagated
 // via the SynchronizeVisualProperties cascade.
 // Flaky on Mac, Linux and Android (http://crbug/1089994).
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_ANDROID)
-#define MAYBE_VisualPropertiesPropagation_RootWindowSegments \
-  DISABLED_VisualPropertiesPropagation_RootWindowSegments
+#define MAYBE_VisualPropertiesPropagation_RootViewportSegments \
+  DISABLED_VisualPropertiesPropagation_RootViewportSegments
 #else
-#define MAYBE_VisualPropertiesPropagation_RootWindowSegments \
-  VisualPropertiesPropagation_RootWindowSegments
+#define MAYBE_VisualPropertiesPropagation_RootViewportSegments \
+  VisualPropertiesPropagation_RootViewportSegments
 #endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
-                       MAYBE_VisualPropertiesPropagation_RootWindowSegments) {
+                       MAYBE_VisualPropertiesPropagation_RootViewportSegments) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c),a)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -619,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
                        ->LastComputedVisualProperties();
       if (properties && properties->local_surface_id &&
           oopchild_initial_lsid < properties->local_surface_id) {
-        EXPECT_EQ(properties->root_widget_window_segments, expected_segments);
+        EXPECT_EQ(properties->root_widget_viewport_segments, expected_segments);
         break;
       }
       base::RunLoop().RunUntilIdle();
@@ -630,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
                        ->LastComputedVisualProperties();
       if (properties && properties->local_surface_id &&
           oopdescendant_initial_lsid < properties->local_surface_id) {
-        EXPECT_EQ(properties->root_widget_window_segments, expected_segments);
+        EXPECT_EQ(properties->root_widget_viewport_segments, expected_segments);
         break;
       }
       base::RunLoop().RunUntilIdle();
@@ -657,8 +658,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       // and comes in via the CrossProcessFrameConnector, which can happen
       // after NavigateToURLFromRenderer completes.
       if (properties &&
-          properties->root_widget_window_segments == expected_segments)
+          properties->root_widget_viewport_segments == expected_segments) {
         break;
+      }
       base::RunLoop().RunUntilIdle();
     }
   }

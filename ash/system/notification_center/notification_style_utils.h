@@ -25,7 +25,6 @@ class Background;
 class FlexLayoutView;
 class Label;
 class LabelButton;
-class View;
 }  // namespace views
 
 namespace ash::notification_style_utils {
@@ -66,7 +65,7 @@ std::unique_ptr<views::Background> CreateNotificationBackground(
 
 // Applies background color, background blur, highlight border and rounded
 // corners for notification views that are contained in notification popups.
-void StyleNotificationPopup(views::View* notification_view);
+void StyleNotificationPopup(message_center::MessageView* notification_view);
 
 // Returns a floating iconless `PillButton` with the provided callback and
 // label.

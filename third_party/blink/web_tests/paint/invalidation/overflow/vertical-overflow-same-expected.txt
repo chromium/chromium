@@ -8,6 +8,12 @@
       "invalidations": [
         [29, 21, 100, 100]
       ]
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [29, 206],
+      "bounds": [285, 15],
+      "contentsOpaque": true
     }
   ]
 }

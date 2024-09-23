@@ -1,17 +1,20 @@
 <!--
 @AURALINUX-DENY:STATE-CHANGE:DEFUNCT*
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
 -->
 <!DOCTYPE html>
-<p id="p1" tabindex="0" aria-label="p1">One</p>
-<p id="p2" tabindex="0" aria-label="p2">Two</p>
-<p id="p3" tabindex="0" aria-label="p3">Three</p>
-<p id="p4" tabindex="0" aria-label="p4">Four</p>
-<p id="p5" tabindex="0" aria-label="p5">Five</p>
-<p id="p6" tabindex="0" aria-label="p6">Six</p>
-<p id="p7" tabindex="0" aria-label="p7">Seven</p>
-<p id="p8" tabindex="0" aria-label="p8">Eight</p>
-<p id="p9" tabindex="0" aria-label="p9">Nine</p>
-<p id="p10">Ten<span tabindex="0" aria-label="span10" id="span10">10</span></p>
+<div contenteditable>
+  <p id="p1" tabindex="0" aria-label="p1">One</p>
+  <p id="p2" tabindex="0" aria-label="p2">Two</p>
+  <p id="p3" tabindex="0" aria-label="p3">Three</p>
+  <p id="p4" tabindex="0" aria-label="p4">Four</p>
+  <p id="p5" tabindex="0" aria-label="p5">Five</p>
+  <p id="p6" tabindex="0" aria-label="p6">Six</p>
+  <p id="p7" tabindex="0" aria-label="p7">Seven</p>
+  <p id="p8" tabindex="0" aria-label="p8">Eight</p>
+  <p id="p9" tabindex="0" aria-label="p9">Nine</p>
+  <p id="p10">Ten<span tabindex="0" aria-label="span10" id="span10">10</span></p>
+</div>
 <script>
   function go() {
     document.getElementById("p1").style.backgroundColor = "red";

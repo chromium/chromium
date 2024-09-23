@@ -90,7 +90,7 @@ class ContentSettingsManagerImpl
   const int render_process_id_;
 
   // Used to look up storage permissions.
-  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  const scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

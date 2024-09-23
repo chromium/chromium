@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -163,7 +164,7 @@ void AccountManagerMojoService::CreateAccessTokenFetcher(
     mojom::AccountKeyPtr mojo_account_key,
     const std::string& oauth_consumer_name,
     CreateAccessTokenFetcherCallback callback) {
-  // TODO(https://crbug.com/1175741): Add metrics.
+  // TODO(crbug.com/40747515): Add metrics.
   VLOG(1) << "Received a request for access token from: "
           << oauth_consumer_name;
 
@@ -269,7 +270,7 @@ void AccountManagerMojoService::FinishUpsertAccount(
 
 void AccountManagerMojoService::DeletePendingAccessTokenFetchRequest(
     AccessTokenFetcher* request) {
-  base::EraseIf(
+  std::erase_if(
       pending_access_token_requests_,
       [&request](const std::unique_ptr<AccessTokenFetcher>& pending_request)
           -> bool { return pending_request.get() == request; });

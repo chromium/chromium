@@ -14,17 +14,16 @@ import org.json.JSONObject;
 import org.junit.Assert;
 
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayContentProgressObserver;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContent;
+import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentFactory;
+import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentProgressObserver;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -42,11 +41,9 @@ class ContextualSearchFakeServer
     private final ContextualSearchTestHost mTestHost;
     private final ContextualSearchNetworkCommunicator mBaseManager;
 
-    private final OverlayContentDelegate mContentDelegate;
-    private final OverlayContentProgressObserver mProgressObserver;
+    private final OverlayPanelContentDelegate mContentDelegate;
+    private final OverlayPanelContentProgressObserver mProgressObserver;
     private final ChromeActivity mActivity;
-
-    private final ArrayList<String> mRemovedUrls = new ArrayList<String>();
 
     private final Map<String, FakeResolveSearch> mFakeResolveSearches = new HashMap<>();
     private final Map<String, FakeNonResolveSearch> mFakeNonResolveSearches = new HashMap<>();
@@ -416,8 +413,8 @@ class ContextualSearchFakeServer
     /** A wrapper around OverlayPanelContent to be used during tests. */
     public class OverlayPanelContentWrapper extends OverlayPanelContent {
         OverlayPanelContentWrapper(
-                OverlayContentDelegate contentDelegate,
-                OverlayContentProgressObserver progressObserver,
+                OverlayPanelContentDelegate contentDelegate,
+                OverlayPanelContentProgressObserver progressObserver,
                 ChromeActivity activity,
                 float barHeight) {
             super(
@@ -440,12 +437,6 @@ class ContextualSearchFakeServer
             super.loadUrl(url, shouldLoadImmediately);
             mContentsObserver = new ContentsObserver(getWebContents());
         }
-
-        @Override
-        public void removeLastHistoryEntry(String url, long timeInMs) {
-            // Override to prevent call to native code.
-            mRemovedUrls.add(url);
-        }
     }
 
     // ============================================================================================
@@ -462,8 +453,8 @@ class ContextualSearchFakeServer
             ContextualSearchPolicy policy,
             ContextualSearchTestHost testHost,
             ContextualSearchNetworkCommunicator baseManager,
-            OverlayContentDelegate contentDelegate,
-            OverlayContentProgressObserver progressObserver,
+            OverlayPanelContentDelegate contentDelegate,
+            OverlayPanelContentProgressObserver progressObserver,
             ChromeActivity activity) {
         mPolicy = policy;
 
@@ -546,18 +537,6 @@ class ContextualSearchFakeServer
      */
     void setExpectations(String nodeId, ResolvedSearchTerm resolvedSearchTermResponse) {
         mExpectedFakeResolveSearch = new FakeResolveSearch(nodeId, resolvedSearchTermResponse);
-    }
-
-    // ============================================================================================
-    // History Removal Helpers
-    // ============================================================================================
-
-    /**
-     * @param url The URL to be checked.
-     * @return Whether the given URL was removed from history.
-     */
-    public boolean hasRemovedUrl(String url) {
-        return mRemovedUrls.contains(url);
     }
 
     // ============================================================================================

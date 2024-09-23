@@ -1,0 +1,1 @@
+-Xclang -plugin-arg-raw-ptr-plugin -Xclang check-raw-ptr-fields -Wno-unknown-attributes -ferror-limit=0 -DCMD_INT=int -DCMD_INTP=int* -DCMD_CONST=const -DCMD_ATTR=[[fake_attribute]] -DCMD_INTP_FIELD()=int*macro_ptr -DCMD_TYPE_WITH_SUFFIX(TYP)=TYP##Suffix -DCMD_SYMBOL(SYM)=SYM -DCMD_SYMBOL_WITH_SUFFIX(SYM)=SYM##_suffix -DCMD_EQ== -DCMD_NULLPTR=nullptr

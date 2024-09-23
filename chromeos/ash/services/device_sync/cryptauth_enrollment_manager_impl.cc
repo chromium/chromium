@@ -82,6 +82,7 @@ CryptAuthEnrollmentManagerImpl::Factory*
     CryptAuthEnrollmentManagerImpl::Factory::factory_instance_ = nullptr;
 
 // static
+// TODO: b/365057260 - This is now unused and can be removed.
 std::unique_ptr<CryptAuthEnrollmentManager>
 CryptAuthEnrollmentManagerImpl::Factory::Create(
     base::Clock* clock,
@@ -110,6 +111,7 @@ void CryptAuthEnrollmentManagerImpl::Factory::SetFactoryForTesting(
 CryptAuthEnrollmentManagerImpl::Factory::~Factory() = default;
 
 // static
+// TODO: b/365057260 - This is now unused and can be removed.
 void CryptAuthEnrollmentManagerImpl::RegisterPrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
@@ -286,7 +288,9 @@ void CryptAuthEnrollmentManagerImpl::OnSyncRequested(
   NotifyEnrollmentStarted();
 
   sync_request_ = std::move(sync_request);
-  if (gcm_manager_->GetRegistrationId().empty() ||
+  const std::string& registration_id = gcm_manager_->GetRegistrationId();
+  if (registration_id.empty() ||
+      CryptAuthGCMManager::IsRegistrationIdDeprecated(registration_id) ||
       pref_service_->GetInteger(prefs::kCryptAuthEnrollmentReason) ==
           cryptauth::INVOCATION_REASON_MANUAL) {
     gcm_manager_->RegisterWithGCM();

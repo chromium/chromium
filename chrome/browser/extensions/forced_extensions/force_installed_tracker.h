@@ -82,6 +82,10 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
   // Returns true if all extensions installed/failed installing.
   bool IsReady() const;
 
+  // Returns true if all extensions installed/failed installing and there is
+  // at least one such extension.
+  bool IsComplete() const;
+
   // Adds observers to this object, to get notified when installation is
   // finished.
   void AddObserver(Observer* observer);

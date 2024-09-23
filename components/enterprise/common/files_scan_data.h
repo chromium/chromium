@@ -20,13 +20,6 @@ namespace enterprise_connectors {
 // directories, aggregating verdicts, etc.
 class FilesScanData final {
  public:
-  FilesScanData();
-  explicit FilesScanData(std::vector<ui::FileInfo> paths);
-  explicit FilesScanData(std::vector<base::FilePath> paths);
-  FilesScanData(const FilesScanData&) = delete;
-  FilesScanData& operator=(const FilesScanData&) = delete;
-  ~FilesScanData();
-
   // Represents an expansion of the paths in `base_paths_` where each directory
   // has been traversed to include each sub-file as a key. The map value
   // represents the index in `base_paths_` for the parent entry of that file.
@@ -34,6 +27,32 @@ class FilesScanData final {
   // `ExpandedPathsIndexes` might be populated with { "a.txt": 0,
   // "dir/sub_1.txt": 1, "dir/sub_2.txt": 1 }.
   using ExpandedPathsIndexes = std::map<base::FilePath, size_t>;
+
+  // Used internally by FilesScanData to return information about the path
+  // expansion.  This structure is public because it is used by the anonymous
+  // GetPathsToScan() function in the implementation file.
+  struct PathsToScanResult {
+    PathsToScanResult(
+        std::vector<base::FilePath> base_paths,
+        FilesScanData::ExpandedPathsIndexes expanded_paths_indexes,
+        std::vector<base::FilePath> paths);
+    PathsToScanResult(const PathsToScanResult&) = delete;
+    PathsToScanResult(PathsToScanResult&&);
+    PathsToScanResult& operator=(const PathsToScanResult&) = delete;
+    PathsToScanResult& operator=(PathsToScanResult&&);
+    ~PathsToScanResult();
+
+    std::vector<base::FilePath> base_paths;
+    FilesScanData::ExpandedPathsIndexes expanded_paths_indexes;
+    std::vector<base::FilePath> paths;
+  };
+
+  FilesScanData();
+  explicit FilesScanData(std::vector<ui::FileInfo> paths);
+  explicit FilesScanData(std::vector<base::FilePath> paths);
+  FilesScanData(const FilesScanData&) = delete;
+  FilesScanData& operator=(const FilesScanData&) = delete;
+  ~FilesScanData();
 
   // Starts a task on a background thread to traverse `base_paths_` directories
   // and build of map of all sub-files. The result is stored into
@@ -46,13 +65,17 @@ class FilesScanData final {
   // `expanded_paths_`.
   std::set<size_t> IndexesToBlock(const std::vector<bool>& allowed_paths);
 
-  const ExpandedPathsIndexes& expanded_paths_indexes();
-  const std::vector<base::FilePath>& expanded_paths();
+  // Once ExpandPaths() is called, accessing base paths is not allowed until
+  // the done closure is called.  After take_base_paths() is called, further
+  // calls to get the base paths will return empty vectors.
+  const std::vector<base::FilePath>& base_paths() const;
+  std::vector<base::FilePath> take_base_paths();
+
+  const ExpandedPathsIndexes& expanded_paths_indexes() const;
+  const std::vector<base::FilePath>& expanded_paths() const;
 
  private:
-  void OnExpandPathsDone(
-      std::pair<ExpandedPathsIndexes, std::vector<base::FilePath>>
-          indexes_and_paths);
+  void OnExpandPathsDone(PathsToScanResult result);
 
   // The file paths given as input for a scan. This does not include any
   // expansion of directories.

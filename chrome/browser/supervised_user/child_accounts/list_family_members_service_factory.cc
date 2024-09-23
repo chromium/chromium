@@ -12,11 +12,10 @@
 #include "components/supervised_user/core/browser/list_family_members_service.h"
 #include "content/public/browser/browser_context.h"
 
-namespace supervised_user {
 // static
-ListFamilyMembersService* ListFamilyMembersServiceFactory::GetForProfile(
-    Profile* profile) {
-  return static_cast<ListFamilyMembersService*>(
+supervised_user::ListFamilyMembersService*
+ListFamilyMembersServiceFactory::GetForProfile(Profile* profile) {
+  return static_cast<supervised_user::ListFamilyMembersService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
@@ -39,9 +38,7 @@ ListFamilyMembersServiceFactory::~ListFamilyMembersServiceFactory() = default;
 KeyedService* ListFamilyMembersServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
-  return new ListFamilyMembersService(
+  return new supervised_user::ListFamilyMembersService(
       IdentityManagerFactory::GetForProfile(profile),
-      profile->GetURLLoaderFactory());
+      profile->GetURLLoaderFactory(), *profile->GetPrefs());
 }
-
-}  // namespace supervised_user

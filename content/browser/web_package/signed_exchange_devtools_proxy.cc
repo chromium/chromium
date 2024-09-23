@@ -21,7 +21,7 @@ namespace content {
 SignedExchangeDevToolsProxy::SignedExchangeDevToolsProxy(
     const GURL& outer_request_url,
     network::mojom::URLResponseHeadPtr outer_response,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     std::optional<const base::UnguessableToken> devtools_navigation_token,
     bool report_raw_headers)
     : outer_request_url_(outer_request_url),

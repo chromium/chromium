@@ -8,11 +8,10 @@
 namespace viz {
 
 class GpuHostImpl;
-class HostGpuMemoryBufferManager;
 
-// Delegate interface that GpuClient uses to get the current GpuHost and/or
-// GpuMemoryBufferManager instances. These functions are guaranteed to be called
-// on the thread corresponding to GpuClient's task runner.
+// Delegate interface that GpuClient uses to get the current GpuHost instance.
+// This function is guaranteed to be called on the thread corresponding to
+// GpuClient's task runner.
 class GpuClientDelegate {
  public:
   virtual ~GpuClientDelegate() {}
@@ -20,9 +19,6 @@ class GpuClientDelegate {
   // Returns the current instance of GpuHostImpl. If GPU service is not running,
   // tries to launch it. If the launch is unsuccessful, returns nullptr.
   virtual GpuHostImpl* EnsureGpuHost() = 0;
-
-  // Returns the current HostGpuMemoryBufferManager instance.
-  virtual HostGpuMemoryBufferManager* GetGpuMemoryBufferManager() = 0;
 };
 
 }  // namespace viz

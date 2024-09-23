@@ -10,7 +10,7 @@
 namespace content {
 
 // Dummy implementation to prevent a browser crash, see crbug.com/1019511
-// TODO(crbug.com/1019819): Provide an implementation for Fuchsia.
+// TODO(crbug.com/40105502): Provide an implementation for Fuchsia.
 class TtsPlatformImplFuchsia : public TtsPlatformImpl {
  public:
   TtsPlatformImplFuchsia() = default;

@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser;
 
+import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 
 /** A class that provides the current {@link Tab} for various states of the browser's activity. */
@@ -76,7 +75,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
     private TabModelSelectorTabModelObserver mTabModelObserver;
 
     /** An observer for watching tab model switching event. */
-    private TabModelSelectorObserver mTabModelSelectorObserver;
+    private final Callback<TabModel> mCurrentTabModelObserver;
 
     /** Default constructor. */
     public ActivityTabProvider() {
@@ -100,11 +99,16 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
                     public void onStartedHiding(@LayoutType int layout) {
                         if (mTabModelSelector == null) return;
 
-                        if (LayoutType.START_SURFACE == layout
-                                || LayoutType.TAB_SWITCHER == layout) {
+                        if (LayoutType.TAB_SWITCHER == layout) {
                             set(mTabModelSelector.getCurrentTab());
                         }
                     }
+                };
+        mCurrentTabModelObserver =
+                (tabModel) -> {
+                    // Send a signal with null tab if a new model has no tab. Other cases
+                    // are taken care of by TabModelSelectorTabModelObserver#didSelectTab.
+                    if (tabModel.getCount() == 0) triggerActivityTabChangeEvent(null);
                 };
     }
 
@@ -122,7 +126,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
                     }
 
                     @Override
-                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
                         // If this is the last tab to close, make sure a signal is sent to the
                         // observers.
                         if (mTabModelSelector.getCurrentModel().getCount() <= 1) {
@@ -131,16 +135,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
                     }
                 };
 
-        mTabModelSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                        // Send a signal with null tab if a new model has no tab. Other cases
-                        // are taken care of by TabModelSelectorTabModelObserver#didSelectTab.
-                        if (newModel.getCount() == 0) triggerActivityTabChangeEvent(null);
-                    }
-                };
-        mTabModelSelector.addObserver(mTabModelSelectorObserver);
+        mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
     }
 
     /**
@@ -150,13 +145,6 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
         assert mLayoutStateProvider == null;
         mLayoutStateProvider = layoutStateProvider;
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
-        // https://crbug.com/1385536 Start surface might be displayed before native is ready.
-        if (ChromeFeatureList.sInstantStart.isEnabled()) {
-            if (mTabModelSelector == null
-                    || !layoutStateProvider.isLayoutVisible(LayoutType.BROWSING)) {
-                triggerActivityTabChangeEvent(null);
-            }
-        }
     }
 
     /**
@@ -181,9 +169,8 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
         if (mLayoutStateProvider != null) mLayoutStateProvider.removeObserver(mLayoutStateObserver);
         mLayoutStateProvider = null;
         if (mTabModelObserver != null) mTabModelObserver.destroy();
-        if (mTabModelSelectorObserver != null) {
-            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
-            mTabModelSelectorObserver = null;
+        if (mTabModelSelector != null) {
+            mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
         }
         mTabModelSelector = null;
     }

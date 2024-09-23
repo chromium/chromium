@@ -64,7 +64,7 @@ def full_configuration():
 
     host - WebDriver server host.
     port -  WebDriver server port.
-    capabilites - Capabilites passed when creating the WebDriver session
+    capabilities - Capabilities passed when creating the WebDriver session
     timeout_multiplier - Multiplier for timeout values
     webdriver - Dict with keys `binary`: path to webdriver binary, and
                 `args`: Additional command line arguments passed to the webdriver
@@ -174,12 +174,8 @@ async def session(capabilities, configuration):
 
     # Enforce a fixed default window size and position
     if _current_session.capabilities.get("setWindowRect"):
-        # Only resize and reposition if needed to workaround a bug for Chrome:
-        # https://bugs.chromium.org/p/chromedriver/issues/detail?id=4642#c4
-        if _current_session.window.size != defaults.WINDOW_SIZE:
-            _current_session.window.size = defaults.WINDOW_SIZE
-        if _current_session.window.position != defaults.WINDOW_POSITION:
-            _current_session.window.position = defaults.WINDOW_POSITION
+        _current_session.window.size = defaults.WINDOW_SIZE
+        _current_session.window.position = defaults.WINDOW_POSITION
 
     # Set default timeouts
     multiplier = configuration["timeout_multiplier"]
@@ -226,12 +222,8 @@ async def bidi_session(capabilities, configuration):
 
     # Enforce a fixed default window size and position
     if _current_session.capabilities.get("setWindowRect"):
-        # Only resize and reposition if needed to workaround a bug for Chrome:
-        # https://bugs.chromium.org/p/chromedriver/issues/detail?id=4642#c4
-        if _current_session.window.size != defaults.WINDOW_SIZE:
-            _current_session.window.size = defaults.WINDOW_SIZE
-        if _current_session.window.position != defaults.WINDOW_POSITION:
-            _current_session.window.position = defaults.WINDOW_POSITION
+        _current_session.window.size = defaults.WINDOW_SIZE
+        _current_session.window.position = defaults.WINDOW_POSITION
 
     yield _current_session.bidi_session
 
@@ -242,6 +234,11 @@ async def bidi_session(capabilities, configuration):
 @pytest.fixture(scope="function")
 def current_session():
     return _current_session
+
+
+@pytest.fixture
+def target_platform(configuration):
+    return configuration["target_platform"]
 
 
 @pytest.fixture

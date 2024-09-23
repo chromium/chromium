@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 
 #include <memory>
@@ -15,9 +20,9 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -71,7 +76,7 @@ void FlatTreeTraversalTest::AttachOpenShadowRoot(
     Element& shadow_host,
     std::string_view shadow_inner_html) {
   ShadowRoot& shadow_root =
-      shadow_host.AttachShadowRootForTesting(ShadowRootType::kOpen);
+      shadow_host.AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(String::FromUTF8(shadow_inner_html));
 }
 

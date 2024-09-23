@@ -40,6 +40,7 @@ class StubNotificationDispatcherMac : public NotificationDispatcherMac {
       GetDisplayedNotificationsCallback callback) override;
   void GetAllDisplayedNotifications(
       GetAllDisplayedNotificationsCallback callback) override;
+  void UserInitiatedShutdown() override;
 
   const std::vector<mac_notifications::mojom::NotificationPtr>& notifications()
       const {

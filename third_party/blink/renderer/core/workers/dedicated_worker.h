@@ -21,17 +21,20 @@
 #include "third_party/blink/public/platform/web_dedicated_worker.h"
 #include "third_party/blink/public/platform/web_dedicated_worker_host_factory_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_structured_serialize_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_worker_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/workers/abstract_worker.h"
+#include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "v8/include/v8-inspector.h"
 
 namespace blink {
@@ -89,6 +92,17 @@ class CORE_EXPORT DedicatedWorker final
                    const ScriptValue& message,
                    const PostMessageOptions*,
                    ExceptionState&);
+
+  void PostCustomEvent(
+      TaskType,
+      ScriptState*,
+      CrossThreadFunction<Event*(ScriptState*, CustomEventMessage)>
+          event_factory_callback,
+      CrossThreadFunction<Event*(ScriptState*)> event_factory_error_callback,
+      const ScriptValue& message,
+      HeapVector<ScriptValue>& transfer,
+      ExceptionState&);
+
   void terminate();
 
   // Implements ExecutionContextLifecycleObserver (via AbstractWorker).
@@ -103,7 +117,8 @@ class CORE_EXPORT DedicatedWorker final
       CrossVariantMojoRemote<mojom::blink::BrowserInterfaceBrokerInterfaceBase>
           browser_interface_broker,
       CrossVariantMojoRemote<mojom::blink::DedicatedWorkerHostInterfaceBase>
-          dedicated_worker_host) override;
+          dedicated_worker_host,
+      const WebSecurityOrigin& origin) override;
   void OnScriptLoadStarted(
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params,
@@ -131,6 +146,17 @@ class CORE_EXPORT DedicatedWorker final
   // Starts the worker.
   void Start();
   void ContinueStart(
+      const KURL& script_url,
+      std::unique_ptr<WorkerMainScriptLoadParameters>
+          worker_main_script_load_params,
+      network::mojom::ReferrerPolicy,
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+          response_content_security_policies,
+      const String& source_code,
+      RejectCoepUnsafeNone reject_coep_unsafe_none,
+      mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
+          back_forward_cache_controller_host);
+  void ContinueStartInternal(
       const KURL& script_url,
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params,
@@ -192,8 +218,15 @@ class CORE_EXPORT DedicatedWorker final
   mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
       pending_dedicated_worker_host_;
 
+  // The timestamp taken when Start() is called.
+  base::TimeTicks start_time_;
+
   // Whether the worker is frozen due to a call from this context.
   bool requested_frozen_ = false;
+
+  // The origin used by this dedicated worker on the renderer side, calculated
+  // from the browser side.
+  scoped_refptr<SecurityOrigin> origin_;
 };
 
 }  // namespace blink

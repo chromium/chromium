@@ -29,7 +29,12 @@ class ContentSettingsInfo {
     // with an initial value of ASK will be inherited if it is set to BLOCK or
     // ASK but ALLOW will become ASK in incognito mode. This should be used for
     // all settings that allow access to user data, e.g. geolocation.
-    INHERIT_IF_LESS_PERMISSIVE
+    INHERIT_IF_LESS_PERMISSIVE,
+
+    // Content settings will not be inherited from regular to incognito
+    // profiles. This should only be used in special cases, for settings that
+    // are not controlled-by/exposed-to the user.
+    DONT_INHERIT_IN_INCOGNITO
   };
 
   enum OriginRestriction {

@@ -5,8 +5,8 @@
 #ifndef SERVICES_VIDEO_CAPTURE_DEVICE_H_
 #define SERVICES_VIDEO_CAPTURE_DEVICE_H_
 
+#include "media/capture/video/video_capture_device_client.h"
 #include "services/video_capture/public/mojom/device.mojom.h"
-#include "services/video_capture/public/mojom/video_effects_manager.mojom-forward.h"
 
 namespace media {
 class VideoFrameReceiver;
@@ -19,7 +19,7 @@ class Device : public mojom::Device {
   virtual void StartInProcess(
       const media::VideoCaptureParams& requested_settings,
       const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
-      mojo::PendingRemote<mojom::VideoEffectsManager> video_effects_manager) {}
+      media::VideoEffectsContext context) {}
   virtual void StopInProcess() {}
 };
 

@@ -32,13 +32,14 @@
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/html_summary_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -49,8 +50,7 @@ namespace blink {
 HTMLDetailsElement::HTMLDetailsElement(Document& document)
     : HTMLElement(html_names::kDetailsTag, document) {
   UseCounter::Count(document, WebFeature::kDetailsElement);
-  EnsureUserAgentShadowRoot().SetSlotAssignmentMode(
-      SlotAssignmentMode::kManual);
+  EnsureUserAgentShadowRoot(SlotAssignmentMode::kManual);
 }
 
 HTMLDetailsElement::~HTMLDetailsElement() = default;
@@ -58,14 +58,9 @@ HTMLDetailsElement::~HTMLDetailsElement() = default;
 void HTMLDetailsElement::DispatchPendingEvent(
     const AttributeModificationReason reason) {
   Event* toggle_event = nullptr;
-  if (RuntimeEnabledFeatures::DetailsElementToggleEventEnabled()) {
-    CHECK(pending_toggle_event_);
-    toggle_event = pending_toggle_event_.Get();
-    pending_toggle_event_ = nullptr;
-  } else {
-    CHECK(!pending_toggle_event_);
-    toggle_event = Event::Create(event_type_names::kToggle);
-  }
+  CHECK(pending_toggle_event_);
+  toggle_event = pending_toggle_event_.Get();
+  pending_toggle_event_ = nullptr;
 
   if (reason == AttributeModificationReason::kByParser)
     GetDocument().SetToggleDuringParsing(true);
@@ -136,13 +131,10 @@ Element* HTMLDetailsElement::FindMainSummary() const {
   if (HTMLSummaryElement* summary =
           Traversal<HTMLSummaryElement>::FirstChild(*this))
     return summary;
-
-  auto* element = UserAgentShadowRoot()->firstChild();
-  CHECK(!element || IsA<HTMLSlotElement>(element));
-  HTMLSlotElement* slot = To<HTMLSlotElement>(element);
-  DCHECK(slot->firstChild());
-  CHECK(IsA<HTMLSummaryElement>(*slot->firstChild()));
-  return To<Element>(slot->firstChild());
+  HTMLSlotElement& slot =
+      To<HTMLSlotElement>(*UserAgentShadowRoot()->firstChild());
+  CHECK(IsA<HTMLSummaryElement>(*slot.firstChild()));
+  return To<Element>(slot.firstChild());
 }
 
 void HTMLDetailsElement::ManuallyAssignSlots() {
@@ -188,28 +180,29 @@ void HTMLDetailsElement::ParseAttribute(
       return;
 
     // Dispatch toggle event asynchronously.
-    if (RuntimeEnabledFeatures::DetailsElementToggleEventEnabled()) {
-      String old_state = is_open_ ? "closed" : "open";
-      String new_state = is_open_ ? "open" : "closed";
-      if (pending_toggle_event_) {
-        old_state = pending_toggle_event_->oldState();
-      }
-      pending_toggle_event_ =
-          ToggleEvent::Create(event_type_names::kToggle, Event::Cancelable::kNo,
-                              old_state, new_state);
+    String old_state = is_open_ ? "closed" : "open";
+    String new_state = is_open_ ? "open" : "closed";
+    if (pending_toggle_event_) {
+      old_state = pending_toggle_event_->oldState();
     }
+    pending_toggle_event_ =
+        ToggleEvent::Create(event_type_names::kToggle, Event::Cancelable::kNo,
+                            old_state, new_state);
     pending_event_task_ = PostCancellableTask(
         *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
         WTF::BindOnce(&HTMLDetailsElement::DispatchPendingEvent,
                       WrapPersistent(this), params.reason));
 
-    Element* content = EnsureUserAgentShadowRoot().getElementById(
-        shadow_element_names::kIdDetailsContent);
+    Element* content =
+        EnsureUserAgentShadowRoot(SlotAssignmentMode::kManual)
+            .getElementById(shadow_element_names::kIdDetailsContent);
     DCHECK(content);
 
     if (is_open_) {
       content->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
-      content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+      if (!RuntimeEnabledFeatures::DetailsStylingEnabled()) {
+        content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+      }
 
       // https://html.spec.whatwg.org/multipage/interactive-elements.html#ensure-details-exclusivity-by-closing-other-elements-if-needed
       //
@@ -237,8 +230,10 @@ void HTMLDetailsElement::ParseAttribute(
         }
       }
     } else {
-      content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
-                                      CSSValueID::kBlock);
+      if (!RuntimeEnabledFeatures::DetailsStylingEnabled()) {
+        content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                        CSSValueID::kBlock);
+      }
       content->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
                                       CSSValueID::kHidden);
       content->EnsureDisplayLockContext().SetIsDetailsSlotElement(true);
@@ -323,6 +318,7 @@ bool HTMLDetailsElement::IsInteractiveContent() const {
 
 // static
 bool HTMLDetailsElement::ExpandDetailsAncestors(const Node& node) {
+  CHECK(&node);
   // Since setting the open attribute fires mutation events which could mess
   // with the FlatTreeTraversal iterator, we should first iterate details
   // elements to open and then open them all.
@@ -356,37 +352,41 @@ bool HTMLDetailsElement::ExpandDetailsAncestors(const Node& node) {
   return details_to_open.size();
 }
 
-bool HTMLDetailsElement::HandleInvokeInternal(HTMLElement& invoker,
-                                              AtomicString& action) {
-  if (HTMLElement::HandleInvokeInternal(invoker, action)) {
+bool HTMLDetailsElement::IsValidCommand(HTMLElement& invoker,
+                                        CommandEventType command) {
+  bool parent_is_valid = HTMLElement::IsValidCommand(invoker, command);
+  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
+    return parent_is_valid;
+  }
+  return parent_is_valid || command == CommandEventType::kToggle ||
+         command == CommandEventType::kOpen ||
+         command == CommandEventType::kClose;
+}
+
+bool HTMLDetailsElement::HandleCommandInternal(HTMLElement& invoker,
+                                               CommandEventType command) {
+  CHECK(IsValidCommand(invoker, command));
+
+  if (HTMLElement::HandleCommandInternal(invoker, command)) {
     return true;
   }
 
-  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
-    return false;
-  }
-
-  if (!(EqualIgnoringASCIICase(action, keywords::kAuto) ||
-        EqualIgnoringASCIICase(action, keywords::kToggle) ||
-        EqualIgnoringASCIICase(action, keywords::kClose) ||
-        EqualIgnoringASCIICase(action, keywords::kOpen))) {
-    return false;
-  }
-
-  if (EqualIgnoringASCIICase(action, keywords::kAuto) ||
-      EqualIgnoringASCIICase(action, keywords::kToggle)) {
+  if (command == CommandEventType::kToggle) {
     ToggleOpen();
-  } else if (EqualIgnoringASCIICase(action, keywords::kClose)) {
+    return true;
+  } else if (command == CommandEventType::kClose) {
     if (is_open_) {
       setAttribute(html_names::kOpenAttr, g_null_atom);
     }
-  } else {
+    return true;
+  } else if (command == CommandEventType::kOpen) {
     if (!is_open_) {
       setAttribute(html_names::kOpenAttr, g_empty_atom);
     }
+    return true;
   }
 
-  return true;
+  return false;
 }
 
 }  // namespace blink

@@ -254,6 +254,7 @@ public class PaneManagerImplUnitTest {
         mHubVisibilitySupplier.set(false);
         ShadowLooper.runUiThreadTasks();
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.COLD));
+        verify(mIncognitoTabSwitcherPane, times(2)).notifyLoadHint(eq(LoadHint.WARM));
         verify(mIncognitoTabSwitcherPane).notifyLoadHint(eq(LoadHint.COLD));
 
         paneManager.focusPane(PaneId.TAB_SWITCHER);
@@ -265,7 +266,7 @@ public class PaneManagerImplUnitTest {
         mHubVisibilitySupplier.set(true);
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.HOT));
         ShadowLooper.runUiThreadTasks();
-        verify(mIncognitoTabSwitcherPane, times(2)).notifyLoadHint(eq(LoadHint.WARM));
+        verify(mIncognitoTabSwitcherPane, times(3)).notifyLoadHint(eq(LoadHint.WARM));
 
         paneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
         verify(mIncognitoTabSwitcherPane, times(2)).notifyLoadHint(eq(LoadHint.HOT));

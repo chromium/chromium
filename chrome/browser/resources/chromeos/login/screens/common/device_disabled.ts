@@ -12,30 +12,24 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './device_disabled.html.js';
 
 
 const DeviceDisabledElementBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, LoginScreenBehavior, OobeDialogHostBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
-    };
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
 
 interface DeviceDisabledScreenData {
   serial: string;
   domain: string;
   message: string;
-  isDisabledAdDevice: boolean;
 }
 
 export class DeviceDisabled extends DeviceDisabledElementBase {
@@ -72,22 +66,12 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
         type: String,
         value: '',
       },
-
-      /**
-       * Flag indicating if the device was disabled because it's in AD mode,
-       * which is no longer supported.
-       */
-      isDisabledAdDevice: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
   private serial: string;
   private enrollmentDomain: string;
   private message: string;
-  private isDisabledAdDevice: boolean;
 
   override ready(): void {
     super.ready();
@@ -101,8 +85,8 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
 
   /** Initial UI State for screen */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): OOBE_UI_STATE {
-    return OOBE_UI_STATE.BLOCKING;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.BLOCKING;
   }
 
   override get defaultControl(): HTMLElement|null {
@@ -114,6 +98,7 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
    * data Screen init payload.
    */
   override onBeforeShow(data: DeviceDisabledScreenData): void {
+    super.onBeforeShow(data);
     if ('serial' in data) {
       this.serial = data.serial;
     }
@@ -122,9 +107,6 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
     }
     if ('message' in data) {
       this.message = data.message;
-    }
-    if ('isDisabledAdDevice' in data) {
-      this.isDisabledAdDevice = data.isDisabledAdDevice;
     }
   }
 
@@ -138,22 +120,14 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
   /**
    * Updates the explanation shown to the user. The explanation contains the
    * device serial number and may contain the domain the device is enrolled to,
-   * if that information is available. However, if `isDisabledAdDevice` is true,
-   * a custom explanation about Chromad disabling will be used.
+   * if that information is available.
    * locale The i18n locale.
    * serial The device serial number.
    * domain The enrollment domain.
-   * isDisabledAdDevice Flag indicating if the device was
-   * disabled because it's in AD mode.
    * return The internationalized explanation.
    */
-  private disabledText(
-      locale: string, serial: string, domain: string,
-      isDisabledAdDevice: boolean): string {
-    if (isDisabledAdDevice) {
-      return this.i18nAdvancedDynamic(
-          locale, 'deviceDisabledAdModeExplanation', {substitutions: [serial]});
-    }
+  private disabledText(locale: string, serial: string, domain: string):
+      TrustedHTML {
     if (domain) {
       return this.i18nAdvancedDynamic(
           locale, 'deviceDisabledExplanationWithDomain',

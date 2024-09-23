@@ -43,9 +43,6 @@ void TimeTrayItemView::HandleLocaleChange() {
 }
 
 void TimeTrayItemView::UpdateLabelOrImageViewColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
   const auto color_id = active ? cros_tokens::kCrosSysSystemOnPrimaryContainer

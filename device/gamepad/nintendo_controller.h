@@ -115,7 +115,8 @@ class NintendoController final : public AbstractHapticGamepad {
 
   ~NintendoController() override;
 
-  // Create a NintendoController for a newly-connected HID device.
+  // Create a NintendoController for a newly-connected HID device. It may return
+  // a nullptr if `device_info`, does not represent a compatible device.
   static std::unique_ptr<NintendoController> Create(
       int source_id,
       mojom::HidDeviceInfoPtr device_info,
@@ -188,6 +189,7 @@ class NintendoController final : public AbstractHapticGamepad {
   base::WeakPtr<AbstractHapticGamepad> GetWeakPtr() override;
 
   NintendoController(int source_id,
+                     GamepadBusType bus_type,
                      mojom::HidDeviceInfoPtr device_info,
                      mojom::HidManager* hid_manager);
   NintendoController(int source_id,

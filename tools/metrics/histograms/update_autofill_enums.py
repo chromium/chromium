@@ -129,12 +129,22 @@ def GenerateAutofillPreFilledFieldStatusByFieldType(field_types):
   return result
 
 
+def GenerateAutofillDataUtilizationByFieldType(field_types):
+  result = {}
+  for enum_id, enum_name in field_types.items():
+    result[64 * enum_id +
+           0] = f'{enum_name}: Not autofilled or autofilled value edited'
+    result[64 * enum_id + 1] = f'{enum_name}: Autofilled value accepted'
+  return result
+
+
 if __name__ == '__main__':
   server_field_types = ReadFieldTypes(FIELD_TYPES_PATH)
 
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/enums.xml', 'AutofillFieldType',
-      server_field_types, FIELD_TYPES_PATH, os.path.basename(__file__))
+      'tools/metrics/histograms/metadata/autofill/enums.xml',
+      'AutofillFieldType', server_field_types, FIELD_TYPES_PATH,
+      os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(
       'tools/metrics/histograms/metadata/autofill/enums.xml',
@@ -155,7 +165,13 @@ if __name__ == '__main__':
       FIELD_PREDICTION_GROUPS_PATH, os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(
-      'tools/metrics/histograms/enums.xml',
+      'tools/metrics/histograms/metadata/autofill/enums.xml',
       'AutofillPreFilledFieldStatusByFieldType',
       GenerateAutofillPreFilledFieldStatusByFieldType(server_field_types),
+      FIELD_TYPES_PATH, os.path.basename(__file__))
+
+  update_histogram_enum.UpdateHistogramFromDict(
+      'tools/metrics/histograms/metadata/autofill/enums.xml',
+      'AutofillDataUtilizationByFieldType',
+      GenerateAutofillDataUtilizationByFieldType(server_field_types),
       FIELD_TYPES_PATH, os.path.basename(__file__))

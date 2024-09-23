@@ -5,7 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_UTIL_H_
 
+#include <optional>
+
 #include "base/time/time.h"
+#include "media/base/video_codecs.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -21,6 +24,9 @@ ConvertToSdpVideoFormatParameters(
     const ParsedContentHeaderFieldParameters& parameters);
 
 base::TimeTicks PLATFORM_EXPORT ConvertToBaseTimeTicks(webrtc::Timestamp time);
+
+std::optional<media::VideoCodecProfile> PLATFORM_EXPORT
+WebRTCFormatToCodecProfile(const webrtc::SdpVideoFormat& sdp);
 
 }  // namespace blink
 

@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <cstring>
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/build_time.h"
 #include "base/command_line.h"
@@ -20,7 +22,6 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/time/clock.h"
@@ -39,6 +40,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/hashing.h"
+#include "crypto/random.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/metrics_proto/histogram_event.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -50,6 +52,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include "base/win/current_module.h"
 #endif
 
@@ -89,11 +92,12 @@ static int64_t ToMonotonicSeconds(base::TimeTicks time_ticks) {
   return (time_ticks - base::TimeTicks()).InSeconds();
 }
 
-// Helper function to get, and increment, the next metrics log record id.
-// This value is cached in local state.
-int GetNextRecordId(PrefService* local_state) {
-  const int value = local_state->GetInteger(prefs::kMetricsLogRecordId) + 1;
-  local_state->SetInteger(prefs::kMetricsLogRecordId, value);
+// Helper function to get, increment, update and return an integer value stored
+// in |local_state| using |key|. This helper is used to manage the log record id
+// and the finalized log record id.
+int IncrementAndUpdate(PrefService* local_state, const std::string& key) {
+  const int value = local_state->GetInteger(key) + 1;
+  local_state->SetInteger(key, value);
   return value;
 }
 
@@ -162,7 +166,7 @@ metrics::SystemProfileProto::OS::XdgSessionType ToProtoSessionType(
       return metrics::SystemProfileProto::OS::MIR;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return metrics::SystemProfileProto::OS::UNSET;
 }
 
@@ -194,17 +198,25 @@ metrics::SystemProfileProto::OS::XdgCurrentDesktop ToProtoCurrentDesktop(
       return metrics::SystemProfileProto::OS::LXQT;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return metrics::SystemProfileProto::OS::OTHER;
 }
 #endif  // BUILDFLAG(IS_LINUX)
+
+// Gets the hash of this session. A random hash is generated the first time this
+// is called (which is cached and returned for the remainder of the session).
+uint64_t GetSessionHash() {
+  static const std::vector<uint8_t> session_hash =
+      crypto::RandBytesAsVector(/*length=*/8);
+  return *reinterpret_cast<const uint64_t*>(session_hash.data());
+}
 
 }  // namespace
 
 namespace internal {
 
 SystemProfileProto::InstallerPackage ToInstallerPackage(
-    base::StringPiece installer_package_name) {
+    std::string_view installer_package_name) {
   if (installer_package_name.empty())
     return SystemProfileProto::INSTALLER_PACKAGE_NONE;
   if (installer_package_name == "com.android.vending")
@@ -268,6 +280,7 @@ MetricsLog::~MetricsLog() = default;
 // static
 void MetricsLog::RegisterPrefs(PrefRegistrySimple* registry) {
   EnvironmentRecorder::RegisterPrefs(registry);
+  registry->RegisterIntegerPref(prefs::kMetricsLogFinalizedRecordId, 0);
   registry->RegisterIntegerPref(prefs::kMetricsLogRecordId, 0);
 }
 
@@ -299,9 +312,16 @@ int64_t MetricsLog::GetCurrentTime() {
   return ToMonotonicSeconds(base::TimeTicks::Now());
 }
 
+void MetricsLog::AssignFinalizedRecordId(PrefService* local_state) {
+  DCHECK(!uma_proto_.has_finalized_record_id());
+  uma_proto_.set_finalized_record_id(
+      IncrementAndUpdate(local_state, prefs::kMetricsLogFinalizedRecordId));
+}
+
 void MetricsLog::AssignRecordId(PrefService* local_state) {
   DCHECK(!uma_proto_.has_record_id());
-  uma_proto_.set_record_id(GetNextRecordId(local_state));
+  uma_proto_.set_record_id(
+      IncrementAndUpdate(local_state, prefs::kMetricsLogRecordId));
 }
 
 void MetricsLog::RecordUserAction(const std::string& key,
@@ -364,6 +384,8 @@ void MetricsLog::RecordCoreSystemProfile(
   // Set if a build is instrumented (e.g. built with ASAN, or with DCHECKs).
   system_profile->set_is_instrumented_build(true);
 #endif
+
+  system_profile->set_session_hash(GetSessionHash());
 
   metrics::SystemProfileProto::Hardware* hardware =
       system_profile->mutable_hardware();

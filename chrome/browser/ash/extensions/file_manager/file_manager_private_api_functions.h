@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/extensions/file_manager/private_api_file_system.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_guest_os.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_holding_space.h"
+#include "chrome/browser/ash/extensions/file_manager/private_api_materialized_views.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_media_parser.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_misc.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_mount.h"

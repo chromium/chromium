@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <utility>
+
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
@@ -108,12 +109,13 @@ bool CanRendererActOnBehalfOfExtension(
   // TODO(lukasza): Investigate if the exception below can be avoided if
   // `render_process_host` hosts HTTP origins (i.e. if the exception can be
   // restricted to NTP, and/or chrome://... cases.
-  if (extension_id.empty())
+  if (extension_id.empty()) {
     return true;
+  }
 
   // Did `render_process_id` run a content script or user script from
   // `extension_id`?
-  // TODO(https://crbug.com/1186557): Ideally, we'd only check content script/
+  // TODO(crbug.com/40055126): Ideally, we'd only check content script/
   // user script status if the renderer claimed to be acting on behalf of the
   // corresponding type (e.g. mojom::ContextType::kContentScript). We evaluate
   // this later in ProcessMap::CanProcessHostContextType(), but we could be
@@ -125,10 +127,18 @@ bool CanRendererActOnBehalfOfExtension(
     return true;
   }
 
+  // CanRendererHostExtensionOrigin() needs to know if the extension is
+  // sandboxed, so check the sandbox flags if this request is for an extension
+  // frame. Note that extension workers cannot be sandboxed since workers aren't
+  // supported in opaque origins.
+  bool is_sandboxed =
+      render_frame_host &&
+      render_frame_host->IsSandboxed(network::mojom::WebSandboxFlags::kOrigin);
+
   // Can `render_process_id` host a chrome-extension:// origin (frame, worker,
   // etc.)?
   if (util::CanRendererHostExtensionOrigin(render_process_host.GetID(),
-                                           extension_id)) {
+                                           extension_id, is_sandboxed)) {
     return true;
   }
 
@@ -178,7 +188,7 @@ std::optional<bad_message::BadMessageReason> ValidateRequest(
     return bad_message::EFD_INVALID_EXTENSION_ID_FOR_PROCESS;
   }
 
-  // TODO(https://crbug.com/1186447): Validate `params.user_gesture`.
+  // TODO(crbug.com/40055124): Validate `params.user_gesture`.
 
   return std::nullopt;
 }
@@ -190,7 +200,7 @@ const char* ToString(bad_message::BadMessageReason bad_message_code) {
     case bad_message::BadMessageReason::EFD_INVALID_EXTENSION_ID_FOR_PROCESS:
       return "LocalFrameHost::Request: renderer never hosted such extension";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "LocalFrameHost::Request encountered unrecognized validation "
              "error.";
   }
@@ -277,7 +287,7 @@ void ExtensionFunctionDispatcher::Dispatch(
     return;
   }
 
-  // TODO(https://crbug.com/1227812): Validate (or remove) `params.source_url`.
+  // TODO(crbug.com/40056469): Validate (or remove) `params.source_url`.
   DispatchWithCallbackInternal(
       *params, &frame, *frame.GetProcess(),
       base::BindOnce(
@@ -384,7 +394,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
 
   if (!process_map->CanProcessHostContextType(extension, render_process_host,
                                               params.context_type)) {
-    // TODO(https://crbug.com/1186557): Ideally, we'd be able to mark some
+    // TODO(crbug.com/40055126): Ideally, we'd be able to mark some
     // of these as bad messages. We can't do that in all cases because there
     // are times some of these might legitimately fail (for instance, during
     // extension unload), but there are others that should never, ever happen
@@ -397,7 +407,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
   }
 
   if (params.context_type == mojom::ContextType::kUntrustedWebUi) {
-    // TODO(https://crbug.com/1435575): We should, at minimum, be using an
+    // TODO(crbug.com/40265193): We should, at minimum, be using an
     // origin here. It'd be even better if we could have a more robust way of
     // checking that a process can host untrusted webui.
     if (extension || !render_frame_host_url ||
@@ -417,8 +427,9 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
       render_frame_host_url, params.context_type,
       ExtensionAPI::GetSharedInstance(), std::move(callback),
       render_frame_host);
-  if (!function.get())
+  if (!function.get()) {
     return;
+  }
 
   if (extension &&
       ExtensionsBrowserClient::Get()->CanExtensionCrossIncognito(
@@ -455,21 +466,55 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
       quota->Assess(extension->id(), function.get(), params.arguments,
                     base::TimeTicks::Now());
 
+  function->set_request_uuid(base::Uuid::GenerateRandomV4());
+
+  // Increment the keepalive to ensure the extension doesn't shut down while
+  // it's executing an API function. This is balanced in
+  // `OnExtensionFunctionCompleted()`.
+  if (IsRequestFromServiceWorker(params)) {
+    CHECK(function->worker_id());
+    content::ServiceWorkerExternalRequestTimeoutType timeout_type =
+        function->ShouldKeepWorkerAliveIndefinitely()
+            ? content::ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout
+            : content::ServiceWorkerExternalRequestTimeoutType::kDefault;
+    function->set_service_worker_keepalive(
+        std::make_unique<ServiceWorkerKeepalive>(
+            browser_context_, *function->worker_id(), timeout_type,
+            Activity::API_FUNCTION, function->name()));
+  } else {
+    process_manager->IncrementLazyKeepaliveCount(
+        function->extension(), Activity::API_FUNCTION, function->name());
+  }
+
   if (violation_error.empty()) {
     // See crbug.com/39178.
     ExtensionsBrowserClient::Get()->PermitExternalProtocolHandler();
     NotifyApiFunctionCalled(extension->id(), params.name, params.arguments,
                             browser_context_);
 
+    // Since sandboxed frames listed in the manifest don't get access to the
+    // extension APIs, this will only be true in an extension frame in an iframe
+    // with the sandbox attribute specified, or served with a CSP header.
+    bool is_sandboxed =
+        render_frame_host && render_frame_host->IsSandboxed(
+                                 network::mojom::WebSandboxFlags::kOrigin);
     // Note: Deliberately don't include external component extensions here -
     // this lets us differentiate between "built-in" extension calls and
     // external extension calls
     if (extension->location() == mojom::ManifestLocation::kComponent) {
       base::UmaHistogramSparse("Extensions.Functions.ComponentExtensionCalls",
                                function->histogram_value());
+      if (is_sandboxed) {
+        base::UmaHistogramBoolean(
+            "Extensions.Functions.DidSandboxedComponentExtensionAPICall", true);
+      }
     } else {
       base::UmaHistogramSparse("Extensions.Functions.ExtensionCalls",
                                function->histogram_value());
+      if (is_sandboxed) {
+        base::UmaHistogramBoolean(
+            "Extensions.Functions.DidSandboxedExtensionAPICall", true);
+      }
     }
 
     if (IsRequestFromServiceWorker(params)) {
@@ -498,30 +543,8 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
   }
 
   // Note: do not access |this| after this point. We may have been deleted
-  // if function->Run() ended up closing the tab that owns us.
-
-  // Check if extension was uninstalled by management.uninstall.
-  if (!registry->enabled_extensions().GetByID(params.extension_id))
-    return;
-
-  function->set_request_uuid(base::Uuid::GenerateRandomV4());
-
-  // Increment the keepalive to ensure the extension doesn't shut down while
-  // it's executing an API function.
-  if (IsRequestFromServiceWorker(params)) {
-    CHECK(function->worker_id());
-    content::ServiceWorkerExternalRequestTimeoutType timeout_type =
-        function->ShouldKeepWorkerAliveIndefinitely()
-            ? content::ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout
-            : content::ServiceWorkerExternalRequestTimeoutType::kDefault;
-    function->set_service_worker_keepalive(
-        std::make_unique<ServiceWorkerKeepalive>(
-            browser_context_, *function->worker_id(), timeout_type,
-            Activity::API_FUNCTION, function->name()));
-  } else {
-    process_manager->IncrementLazyKeepaliveCount(
-        function->extension(), Activity::API_FUNCTION, function->name());
-  }
+  // if `function->RunWithValidation()` resulted in closing the execution
+  // context for this function.
 }
 
 void ExtensionFunctionDispatcher::OnExtensionFunctionCompleted(
@@ -624,7 +647,7 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
   // We can't use the frame URL in the case of a worker-based request (where
   // there is no frame).
   if (is_worker_request) {
-    // TODO(https://crbug.com/1227812): Validate this URL further. Or, better,
+    // TODO(crbug.com/40056469): Validate this URL further. Or, better,
     // remove it from `mojom::RequestParams`.
     function->set_source_url(params.source_url);
   } else {
@@ -635,6 +658,9 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
   function->set_has_callback(params.has_callback);
   function->set_user_gesture(params.user_gesture);
   function->set_extension(extension);
+  if (params.js_callstack.has_value()) {
+    function->set_js_callstack(*params.js_callstack);
+  }
   function->set_response_callback(std::move(callback));
   function->set_source_context_type(context_type);
   function->set_source_process_id(requesting_process_id);

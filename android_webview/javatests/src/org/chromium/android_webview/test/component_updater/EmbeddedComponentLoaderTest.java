@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test.component_updater;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import android.content.Intent;
 
 import androidx.test.filters.MediumTest;
@@ -25,9 +27,11 @@ import org.chromium.android_webview.test.AwActivityTestRule;
 import org.chromium.android_webview.test.AwJUnit4ClassRunnerWithParameters;
 import org.chromium.android_webview.test.AwParameterizedTest;
 import org.chromium.android_webview.test.AwSettingsMutation;
+import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.android_webview.test.util.EmbeddedComponentLoaderFactory;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
 
@@ -41,9 +45,10 @@ import java.util.concurrent.TimeUnit;
  * Test for {@link EmbeddedComponentLoader}. It's an integeration-like test where it uses mock
  * native loaders and connect to {@link MockComponentProviderService}.
  *
- * Some test assertion are made in test/browser/embedded_component_loader_test_helper.cc
+ * <p>Some test assertion are made in test/browser/embedded_component_loader_test_helper.cc
  */
 @RunWith(Parameterized.class)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @JNINamespace("component_updater")
 public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
@@ -120,7 +125,7 @@ public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
                 TEST_COMPONENT_ID,
                 new String[] {file.getAbsolutePath(), manifestFile.getAbsolutePath()});
 
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     EmbeddedComponentLoader mLoader =
                             EmbeddedComponentLoaderFactory.makeEmbeddedComponentLoader();

@@ -48,10 +48,9 @@ public abstract class SuggestionsMetrics {
     // Histogram recordings
 
     /** Records whether article suggestions are set visible by user. */
-    public static void recordArticlesListVisible() {
+    public static void recordArticlesListVisible(Profile profile) {
         RecordHistogram.recordBooleanHistogram(
                 "NewTabPage.ContentSuggestions.ArticlesListVisible",
-                UserPrefs.get(Profile.getLastUsedRegularProfile())
-                        .getBoolean(Pref.ARTICLES_LIST_VISIBLE));
+                UserPrefs.get(profile).getBoolean(Pref.ARTICLES_LIST_VISIBLE));
     }
 }

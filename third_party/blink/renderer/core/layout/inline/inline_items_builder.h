@@ -47,13 +47,11 @@ class InlineItemsBuilderTemplate {
 
  public:
   // Create a builder that appends items to |items|.
-  InlineItemsBuilderTemplate(LayoutBlockFlow* block_flow,
-                             HeapVector<InlineItem>* items,
-                             const SvgTextChunkOffsets* chunk_offsets = nullptr)
-      : block_flow_(block_flow),
-        items_(items),
-        text_chunk_offsets_(chunk_offsets),
-        is_text_combine_(block_flow_->IsLayoutTextCombine()) {}
+  InlineItemsBuilderTemplate(
+      LayoutBlockFlow* block_flow,
+      HeapVector<InlineItem>* items,
+      const String& previous_text_content = String(),
+      const SvgTextChunkOffsets* chunk_offsets = nullptr);
   ~InlineItemsBuilderTemplate();
 
   LayoutBlockFlow* GetLayoutBlockFlow() const { return block_flow_; }
@@ -193,6 +191,7 @@ class InlineItemsBuilderTemplate {
 
   const SvgTextChunkOffsets* text_chunk_offsets_;
 
+  uint32_t ruby_text_nesting_level_ = 0;
   const bool is_text_combine_;
   bool has_bidi_controls_ = false;
   bool has_floats_ = false;
@@ -202,6 +201,9 @@ class InlineItemsBuilderTemplate {
   bool has_unicode_bidi_plain_text_ = false;
   bool is_bisect_line_break_disabled_ = false;
   bool is_score_line_break_disabled_ = false;
+  // True if `text_` contains non-latin1 characters other than
+  // kObjectReplacementCharacter.
+  bool has_non_orc_16bit_ = false;
 
   // Append a character.
   // Currently this function is for adding control characters such as
@@ -249,8 +251,6 @@ class InlineItemsBuilderTemplate {
   void AppendGeneratedBreakOpportunity(LayoutObject*);
 
   void Exit(LayoutObject*);
-
-  bool MayBeBidiEnabled() const;
 
   bool ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
       StringView,

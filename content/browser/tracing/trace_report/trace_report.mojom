@@ -57,6 +57,14 @@ struct ClientTraceReport {
   // The reason for which a report was not uploaded even if the upload rules
   // were met.
   SkipUploadReason skip_reason;
+
+  // Whether the report has content (payload) attached to it.
+  bool has_trace_content;
+};
+
+struct Scenario {
+  string hash;
+  string scenario_name;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -83,6 +91,18 @@ interface PageHandler {
   // Download locally the trace file.
   DownloadTrace(mojo_base.mojom.Token uuid)
     => (mojo_base.mojom.BigBuffer? trace);
+
+  // Get the tracing list of scenarios for local tracing.
+  GetAllPresetScenarios() => (array<Scenario> config);
+
+  // Get the tracing list of scenarios for field tracing.
+  GetAllFieldScenarios() => (array<Scenario> config);
+
+  // Get enabled tracing scenarios hashes for local tracing.
+  GetEnabledScenarios() => (array<string> config);
+
+  // Set the tracing scenario hashes for local tracing.
+  SetEnabledScenarios(array<string> new_config) => (bool success);
 };
 
 // WebUI-side handler for requests from the browser.

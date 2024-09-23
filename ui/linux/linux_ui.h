@@ -294,6 +294,9 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {
   // setting is provided by org.freedesktop.appearance instead of the toolkit.
   virtual void SetDarkTheme(bool dark) = 0;
 
+  // Override the toolkit's accent color.
+  virtual void SetAccentColor(std::optional<SkColor> accent_color) = 0;
+
   // Returns a new NavButtonProvider, or nullptr if the underlying
   // toolkit does not support drawing client-side navigation buttons.
   virtual std::unique_ptr<NavButtonProvider> CreateNavButtonProvider() = 0;

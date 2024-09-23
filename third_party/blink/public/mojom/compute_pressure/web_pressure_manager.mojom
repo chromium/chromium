@@ -1,0 +1,17 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "services/device/public/mojom/pressure_manager.mojom";
+import "services/device/public/mojom/pressure_update.mojom";
+
+// Partial view into the device.mojom.PressureManager Mojo interface.
+// This interface does not expose the privileged automation-related methods
+// that the device.mojom version does.
+interface WebPressureManager {
+  // See PressureManager.AddClient()'s documentation for more details.
+  AddClient(device.mojom.PressureSource source) =>
+      (device.mojom.PressureManagerAddClientResult result);
+};

@@ -34,7 +34,6 @@ base::FilePath CreateClientBucketPath(const base::FilePath& profile_path,
       return bucket_directory.Append(kMediaLicenseDirectory);
     case QuotaClientType::kDatabase:
       NOTREACHED() << "Unsupported QuotaClientType";
-      return base::FilePath();
   }
 }
 

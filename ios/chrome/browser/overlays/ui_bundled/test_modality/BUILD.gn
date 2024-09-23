@@ -1,0 +1,46 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_modality") {
+  testonly = true
+  sources = [
+    "test_contained_overlay_coordinator.h",
+    "test_contained_overlay_coordinator.mm",
+    "test_presented_overlay_coordinator.h",
+    "test_presented_overlay_coordinator.mm",
+    "test_resizing_presented_overlay_coordinator.h",
+    "test_resizing_presented_overlay_coordinator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/test_modality",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled:presentation_controller",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "test_contained_overlay_coordinator_unittest.mm",
+    "test_presented_overlay_coordinator_unittest.mm",
+    "test_resizing_presented_overlay_coordinator_unittest.mm",
+  ]
+
+  deps = [
+    ":test_modality",
+    "//base/test:test_support",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/test_modality",
+    "//ios/chrome/browser/overlays/ui_bundled/test",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

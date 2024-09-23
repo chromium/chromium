@@ -283,10 +283,9 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
   test_widget_delegate =
       std::make_unique<PanedWidgetDelegate>(browser_widget.get());
   views::Widget::InitParams widget_params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
   widget_params.delegate = test_widget_delegate.get();
-  widget_params.ownership =
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget_params.context = GetContext();
   browser_widget->Init(std::move(widget_params));
   browser_widget->Show();
@@ -391,10 +390,9 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes_MoveOntoNext) {
   std::unique_ptr<PanedWidgetDelegate> test_widget_delegate =
       std::make_unique<PanedWidgetDelegate>(browser_widget.get());
   views::Widget::InitParams widget_params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
   widget_params.delegate = test_widget_delegate.get();
-  widget_params.ownership =
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
 
   widget_params.context = GetContext();
   browser_widget->Init(std::move(widget_params));

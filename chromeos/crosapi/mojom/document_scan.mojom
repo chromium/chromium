@@ -374,6 +374,10 @@ struct CloseScannerResponse {
 struct StartScanOptions {
   // The desired MIME type for returned scans.
   string format@0;
+
+  // Maximum size of chunks returned from ReadScanData for this job.
+  [MinVersion=1]
+  uint32? max_read_size@1;
 };
 
 // The response from calling `StartPreparedScan()`.

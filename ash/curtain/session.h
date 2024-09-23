@@ -19,6 +19,10 @@ namespace aura {
 class Window;
 }  // namespace aura
 
+namespace ui {
+class ScopedDisableInputDevices;
+}  // namespace ui
+
 namespace ash::curtain {
 
 // Helper class, created when the security curtain is enabled and destroyed
@@ -54,6 +58,7 @@ class Session {
   class ScopedAudioInputMuter;
   // Helper class to disable camera access during the session.
   class ScopedCameraDisabler;
+  // Helper class to disable input devices during the session.
 
   raw_ref<Shell> shell_;
   SecurityCurtainController::InitParams init_params_;
@@ -61,6 +66,7 @@ class Session {
   std::unique_ptr<ScopedAudioOutputMuter> scoped_audio_output_muter_;
   std::unique_ptr<ScopedAudioInputMuter> scoped_audio_input_muter_;
   std::unique_ptr<ScopedCameraDisabler> scoped_camera_disabler_;
+  std::unique_ptr<ui::ScopedDisableInputDevices> scoped_input_devices_disabler_;
   base::OneShotTimer audio_output_mute_timer_;
 };
 

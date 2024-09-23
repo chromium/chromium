@@ -140,7 +140,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
     public void groupsDetails_restoreDetailsFromEmptyCache() {
         // Note: purge cache explicitly, because tests are run on an actual device
         // and cache may hold content from other test runs.
-        AutocompleteResult dataToCache = AutocompleteResult.EMPTY_RESULT;
+        AutocompleteResult dataToCache = AutocompleteResult.fromCache(null, null);
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
         assertAutocompleteResultEquals(dataToCache, dataFromCache);
@@ -188,7 +188,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
         data = data.substring(0, data.length() - 10);
         manager.writeString(ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO, data);
         dataFromCache = CachedZeroSuggestionsManager.readFromCache();
-        assertAutocompleteResultEquals(dataFromCache, AutocompleteResult.EMPTY_RESULT);
+        assertAutocompleteResultEquals(dataFromCache, AutocompleteResult.fromCache(null, null));
         Assert.assertNull(
                 manager.readString(
                         ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO, null));
@@ -197,7 +197,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
         manager.writeString(
                 ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO, "abcdefgh");
         dataFromCache = CachedZeroSuggestionsManager.readFromCache();
-        assertAutocompleteResultEquals(dataFromCache, AutocompleteResult.EMPTY_RESULT);
+        assertAutocompleteResultEquals(dataFromCache, AutocompleteResult.fromCache(null, null));
         Assert.assertNull(
                 manager.readString(
                         ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO, null));
@@ -205,7 +205,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
         // Remove the data.
         manager.removeKey(ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO);
         dataFromCache = CachedZeroSuggestionsManager.readFromCache();
-        assertAutocompleteResultEquals(dataFromCache, AutocompleteResult.EMPTY_RESULT);
+        assertAutocompleteResultEquals(dataFromCache, AutocompleteResult.fromCache(null, null));
     }
 
     @Test
@@ -362,7 +362,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
                 garbageSubtypes);
 
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
-        assertAutocompleteResultEquals(AutocompleteResult.EMPTY_RESULT, dataFromCache);
+        assertAutocompleteResultEquals(AutocompleteResult.fromCache(null, null), dataFromCache);
     }
 
     @Test
@@ -386,6 +386,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
                 garbageSubtypes);
 
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
-        assertAutocompleteResultEquals(AutocompleteResult.EMPTY_RESULT, dataFromCache);
+        assertAutocompleteResultEquals(AutocompleteResult.fromCache(null, null), dataFromCache);
     }
 }

@@ -1,0 +1,18 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/chrome_build.gni")
+
+declare_args() {
+  # The legacy password store backend is supported on android but usually disabled
+  # in favor of a downstream implementation. Important: the support for this flag
+  # is planned to be removed in November 2024.
+  use_login_database_as_backend = !is_android
+}
+
+# Drawables from the downstream clank/ repository are
+# used for branded builds.
+password_manager_use_internal_android_resources =
+    is_android && enable_chrome_android_internal && is_chrome_branded

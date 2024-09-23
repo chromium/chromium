@@ -2,15 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/views/task_manager_view.h"
 
 #include <stddef.h>
 
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
@@ -29,6 +36,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/table_model_observer.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -161,7 +169,17 @@ void TaskManagerView::SetSortDescriptor(const TableSortDescriptor& descriptor) {
   tab_table_->SetSortDescriptors(descriptor_list);
 }
 
-gfx::Size TaskManagerView::CalculatePreferredSize() const {
+void TaskManagerView::MaybeHighlightActiveTask() {
+  if (table_model_ && tab_table_->selection_model().empty()) {
+    std::optional<size_t> row = table_model_->GetRowForActiveTask();
+    if (row.has_value()) {
+      tab_table_->Select(row.value());
+    }
+  }
+}
+
+gfx::Size TaskManagerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // The TaskManagerView's preferred size is used to size the hosting Widget
   // when the Widget does not have `initial_restored_bounds_` set. The minimum
   // width below ensures that there is sufficient space for the task manager's
@@ -193,7 +211,7 @@ bool TaskManagerView::ExecuteWindowsCommand(int command_id) {
 ui::ImageModel TaskManagerView::GetWindowIcon() {
   TRACE_EVENT0("ui", "TaskManagerView::GetWindowIcon");
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1162514): Move apps::CreateStandardIconImage to some
+  // TODO(crbug.com/40739545): Move apps::CreateStandardIconImage to some
   // where lower in the stack.
   return ui::ImageModel::FromImageSkia(apps::CreateStandardIconImage(
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -218,7 +236,8 @@ bool TaskManagerView::Accept() {
   return false;
 }
 
-bool TaskManagerView::IsDialogButtonEnabled(ui::DialogButton button) const {
+bool TaskManagerView::IsDialogButtonEnabled(
+    ui::mojom::DialogButton button) const {
   const ui::ListSelectionModel::SelectedIndices& selections(
       tab_table_->selection_model().selected_indices());
   for (const auto& selection : selections) {
@@ -299,8 +318,8 @@ TaskManagerView::TaskManagerView()
       tab_table_parent_(nullptr),
       is_always_on_top_(false) {
   set_use_custom_frame(false);
-  SetButtons(ui::DIALOG_BUTTON_OK);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
   SetHasWindowSizeControls(true);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -345,8 +364,21 @@ void TaskManagerView::Init() {
   tab_table->set_context_menu_controller(this);
   set_context_menu_controller(this);
 
-  tab_table_parent_ = AddChildView(
-      views::TableView::CreateScrollViewWithTable(std::move(tab_table)));
+  const bool tm_refresh_enabled =
+      base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh);
+
+  // Has a border if the feature is disabled, since the redesign version doesn't
+  // have a border.
+  bool table_has_border = !tm_refresh_enabled;
+
+  if (tm_refresh_enabled) {
+    views::TableHeaderStyle header_style = {/*vertical_padding=*/16,
+                                            /*horizontal_padding=*/8};
+    tab_table->SetHeaderStyle(header_style);
+  }
+
+  tab_table_parent_ = AddChildView(views::TableView::CreateScrollViewWithTable(
+      std::move(tab_table), table_has_border));
 
   SetUseDefaultFillLayout(true);
 

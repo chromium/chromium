@@ -40,6 +40,8 @@ component("client") {
     "lightweight_detector/poison_metadata_recorder.cc",
     "lightweight_detector/poison_metadata_recorder.h",
     "lightweight_detector/shared_state.h",
+    "sampling_helpers.cc",
+    "sampling_helpers.h",
     "sampling_state.h",
     "thread_local_random_bit_generator.h",
     "thread_local_state.h",
@@ -98,6 +100,7 @@ source_set("unit_tests") {
     "guarded_page_allocator_unittest.cc",
     "gwp_asan_unittest.cc",
     "lightweight_detector/poison_metadata_recorder_unittest.cc",
+    "sampling_helpers_unittest.cc",
   ]
 
   if (use_allocator_shim) {

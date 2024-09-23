@@ -216,7 +216,6 @@ bool EnumTraits<arc::mojom::VideoPixelFormat, media::VideoPixelFormat>::
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 // static
@@ -290,10 +289,10 @@ EnumTraits<arc::mojom::DecoderStatus, media::DecoderStatus>::ToMojom(
     case media::DecoderStatus::Codes::kFailedToCreateDecoder:
       return arc::mojom::DecoderStatus::CREATION_FAILED;
     case media::DecoderStatus::Codes::kInvalidArgument:
+    case media::DecoderStatus::Codes::kUnsupportedConfig:
       return arc::mojom::DecoderStatus::INVALID_ARGUMENT;
     default:
       NOTREACHED() << "unknown status: " << static_cast<int>(input.code());
-      return arc::mojom::DecoderStatus::INVALID_ARGUMENT;
   }
 }
 
@@ -319,7 +318,6 @@ bool EnumTraits<arc::mojom::DecoderStatus, media::DecoderStatus>::FromMojom(
       return true;
   }
   NOTREACHED() << "unknown status: " << static_cast<int>(input);
-  return false;
 }
 
 }  // namespace mojo

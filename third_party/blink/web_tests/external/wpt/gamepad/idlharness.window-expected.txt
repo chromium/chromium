@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] GamepadHapticActuator interface: operation playEffect(GamepadHapticEffectType, optional GamepadEffectParameters)
+  assert_equals: property has wrong .length expected 1 but got 2
+[FAIL] GamepadEvent interface object length
+  assert_equals: wrong value for GamepadEvent.length expected 2 but got 1
+[FAIL] HTMLBodyElement interface: attribute ongamepadconnected
+  assert_true: The prototype object must have a property "ongamepadconnected" expected true got false
+[FAIL] HTMLBodyElement interface: attribute ongamepaddisconnected
+  assert_true: The prototype object must have a property "ongamepaddisconnected" expected true got false
+[FAIL] Window interface: attribute ongamepadconnected
+  assert_own_property: The global object must have a property "ongamepadconnected" expected property "ongamepadconnected" missing
+[FAIL] Window interface: attribute ongamepaddisconnected
+  assert_own_property: The global object must have a property "ongamepaddisconnected" expected property "ongamepaddisconnected" missing
+[FAIL] HTMLFrameSetElement interface: attribute ongamepadconnected
+  assert_true: The prototype object must have a property "ongamepadconnected" expected true got false
+[FAIL] HTMLFrameSetElement interface: attribute ongamepaddisconnected
+  assert_true: The prototype object must have a property "ongamepaddisconnected" expected true got false
+Harness: the test ran to completion.
+

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 
+#include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -28,6 +30,20 @@ BoxStrut::BoxStrut(const LineBoxStrut& line_relative, bool is_flipped_lines) {
   }
 }
 
+BoxStrut::BoxStrut(const LogicalSize& outer_size, const LogicalRect& inner_rect)
+    : inline_start(inner_rect.offset.inline_offset),
+      inline_end(outer_size.inline_size - inner_rect.InlineEndOffset()),
+      block_start(inner_rect.offset.block_offset),
+      block_end(outer_size.block_size - inner_rect.BlockEndOffset()) {}
+
+BoxStrut& BoxStrut::Intersect(const BoxStrut& other) {
+  inline_start = std::min(inline_start, other.inline_start);
+  inline_end = std::min(inline_end, other.inline_end);
+  block_start = std::min(block_start, other.block_start);
+  block_end = std::min(block_end, other.block_end);
+  return *this;
+}
+
 LineBoxStrut::LineBoxStrut(const BoxStrut& flow_relative,
                            bool is_flipped_lines) {
   if (!is_flipped_lines) {
@@ -44,6 +60,13 @@ std::ostream& operator<<(std::ostream& stream, const LineBoxStrut& value) {
                 << ") Line: (" << value.line_over << " " << value.line_under
                 << ") ";
 }
+
+PhysicalBoxStrut::PhysicalBoxStrut(const PhysicalSize& outer_size,
+                                   const PhysicalRect& inner_rect)
+    : top(inner_rect.offset.top),
+      right(outer_size.width - inner_rect.Right()),
+      bottom(outer_size.height - inner_rect.Bottom()),
+      left(inner_rect.offset.left) {}
 
 PhysicalBoxStrut& PhysicalBoxStrut::Unite(const PhysicalBoxStrut& other) {
   top = std::max(top, other.top);

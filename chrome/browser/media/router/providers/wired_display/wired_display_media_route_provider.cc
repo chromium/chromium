@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver_factory.h"
@@ -71,7 +71,7 @@ const mojom::MediaRouteProviderId WiredDisplayMediaRouteProvider::kProviderId =
 // static
 std::string WiredDisplayMediaRouteProvider::GetSinkIdForDisplay(
     const Display& display) {
-  return "wired_display_" + std::to_string(display.id());
+  return "wired_display_" + base::NumberToString(display.id());
 }
 
 // static
@@ -161,14 +161,14 @@ void WiredDisplayMediaRouteProvider::SendRouteMessage(
     const std::string& media_route_id,
     const std::string& message) {
   // Messages should be handled by LocalPresentationManager.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WiredDisplayMediaRouteProvider::SendRouteBinaryMessage(
     const std::string& media_route_id,
     const std::vector<uint8_t>& data) {
   // Messages should be handled by LocalPresentationManager.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WiredDisplayMediaRouteProvider::StartObservingMediaSinks(
@@ -198,7 +198,7 @@ void WiredDisplayMediaRouteProvider::StartObservingMediaRoutes() {
 
 void WiredDisplayMediaRouteProvider::DetachRoute(const std::string& route_id) {
   // Detaching should be handled by LocalPresentationManager.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WiredDisplayMediaRouteProvider::EnableMdnsDiscovery() {}
@@ -233,17 +233,20 @@ void WiredDisplayMediaRouteProvider::OnDisplayAdded(
   NotifySinkObservers();
 }
 
-void WiredDisplayMediaRouteProvider::OnDisplayRemoved(
-    const Display& old_display) {
-  const std::string sink_id =
-      WiredDisplayMediaRouteProvider::GetSinkIdForDisplay(old_display);
-  auto it =
-      base::ranges::find(presentations_, sink_id,
-                         [](const Presentations::value_type& presentation) {
-                           return presentation.second.route().media_sink_id();
-                         });
-  if (it != presentations_.end())
-    it->second.receiver()->ExitFullscreen();
+void WiredDisplayMediaRouteProvider::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
+  for (const auto& display : removed_displays) {
+    const std::string sink_id =
+        WiredDisplayMediaRouteProvider::GetSinkIdForDisplay(display);
+    auto it =
+        base::ranges::find(presentations_, sink_id,
+                           [](const Presentations::value_type& presentation) {
+                             return presentation.second.route().media_sink_id();
+                           });
+    if (it != presentations_.end()) {
+      it->second.receiver()->ExitFullscreen();
+    }
+  }
   NotifySinkObservers();
 }
 
@@ -342,7 +345,7 @@ std::vector<Display> WiredDisplayMediaRouteProvider::GetAvailableDisplays()
   // Remove displays that mirror the primary display. On some platforms such as
   // Windows, mirrored displays are reported as one display. On others, mirrored
   // displays are reported separately but with the same bounds.
-  base::EraseIf(displays, [&primary_display](const Display& display) {
+  std::erase_if(displays, [&primary_display](const Display& display) {
     return display.id() != primary_display.id() &&
            display.bounds() == primary_display.bounds();
   });

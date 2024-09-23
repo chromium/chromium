@@ -52,6 +52,10 @@ void FakeHidDetectionManager::SetPairingState(
   NotifyHidDetectionStatusChanged();
 }
 
+base::WeakPtr<FakeHidDetectionManager> FakeHidDetectionManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void FakeHidDetectionManager::GetIsHidDetectionRequired(
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(IsInputMissing(pointer_metadata_) ||

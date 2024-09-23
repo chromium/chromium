@@ -148,7 +148,7 @@ class PLATFORM_EXPORT WebProcessMemoryDump final {
 
   // The underlying ProcessMemoryDump instance to which the
   // createMemoryAllocatorDump() calls will be proxied to.
-  raw_ptr<base::trace_event::ProcessMemoryDump, ExperimentalRenderer>
+  raw_ptr<base::trace_event::ProcessMemoryDump>
       process_memory_dump_;  // Not owned.
 
   // TODO(ssid): Remove it once this information is added to ProcessMemoryDump.

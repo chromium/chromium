@@ -16,12 +16,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
-#include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/oobe_dialog_size_utils.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/base_lock_dialog.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_captive_portal_dialog.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_network_dialog.h"
@@ -36,7 +36,6 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "ui/aura/window.h"
@@ -139,7 +138,7 @@ LockScreenStartReauthDialog* LockScreenStartReauthDialog::GetInstance() {
 
 void LockScreenStartReauthDialog::OnProfileInitialized(Profile* profile) {
   if (!profile) {
-    // TODO(mohammedabdon): Create some generic way to show an error on
+    // TODO(b/333278160): Create some generic way to show an error on
     // the lock screen.
     LOG(ERROR) << "Failed to load lockscreen profile";
     return;
@@ -414,7 +413,7 @@ void LockScreenStartReauthDialog::TransferHttpAuthCaches() {
             &TransferHttpAuthCacheToSystemNetworkContext, base::DoNothing()));
 
     const user_manager::User* user =
-        user_manager::UserManager::Get()->GetActiveUser();
+        user_manager::UserManager::Get()->GetPrimaryUser();
     Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
     // Transfer auth cache to the active user's profile so that there is no need
     // to enter them again after unlocking the device.

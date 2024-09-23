@@ -23,6 +23,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_manager_builder.h"
 #include "components/signin/public/webdata/token_web_data.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/network_service_instance.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -32,7 +33,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/web_data_service_factory.h"
+#include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
@@ -67,9 +68,12 @@ IdentityManagerFactory::IdentityManagerFactory()
           "IdentityManager",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DependsOn(WebDataServiceFactory::GetInstance());
@@ -85,7 +89,7 @@ IdentityManagerFactory::IdentityManagerFactory()
       base::BindRepeating([](content::BrowserContext* context) {
         return GetForProfile(Profile::FromBrowserContext(context));
       }));
-  // TODO(crbug.com/1380593): This should declare a dependency to
+  // TODO(crbug.com/40244790): This should declare a dependency to
   // CookieSettingsFactory but this causes a hang for some reason.
 }
 
@@ -186,6 +190,9 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
       base::BindRepeating(&signin_util::ReauthWithCredentialProviderIfPossible,
                           base::Unretained(profile));
 #endif
+
+  params.require_sync_consent_for_scope_verification =
+      !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
 
   std::unique_ptr<signin::IdentityManager> identity_manager =
       signin::BuildIdentityManager(&params);

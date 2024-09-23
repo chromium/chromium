@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '../common_styles/oobe_common_styles.css.js';
@@ -12,19 +11,15 @@ import '../oobe_vars/oobe_shared_vars.css.js';
 import {CrLazyRenderElement} from '//resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeFocusBehavior, OobeFocusBehaviorInterface} from '../behaviors/oobe_focus_behavior.js';
-import {OobeScrollableBehavior, OobeScrollableBehaviorInterface} from '../behaviors/oobe_scrollable_behavior.js';
+import {OobeFocusMixin} from '../mixins/oobe_focus_mixin.js';
+import {OobeScrollableMixin} from '../mixins/oobe_scrollable_mixin.js';
 
 import {getTemplate} from './oobe_content_dialog.html.js';
 
 const OobeContentDialogBase =
-    mixinBehaviors(
-        [OobeFocusBehavior, OobeScrollableBehavior], PolymerElement) as {
-      new (): PolymerElement & OobeFocusBehaviorInterface &
-          OobeScrollableBehaviorInterface,
-    };
+    OobeScrollableMixin(OobeFocusMixin(PolymerElement));
 
 export class OobeContentDialog extends OobeContentDialogBase {
   static get is() {

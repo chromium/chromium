@@ -7,6 +7,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/test/base_unittests_jni_headers/ContentUriTestUtils_jni.h"
 
 using base::android::ScopedJavaLocalRef;

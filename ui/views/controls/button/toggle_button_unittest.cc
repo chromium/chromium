@@ -13,7 +13,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -65,8 +67,8 @@ class ToggleButtonTest : public ViewsTestBase {
     // correctly.
     widget_ = std::make_unique<Widget>();
     Widget::InitParams params =
-        CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 650, 650);
     widget_->Init(std::move(params));
     widget_->Show();
@@ -96,7 +98,7 @@ class ToggleButtonTest : public ViewsTestBase {
 TEST_F(ToggleButtonTest, ToggleButtonDestroyed) {
   gfx::Point center(10, 10);
   button()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(1, counter());
   delete button();
@@ -147,6 +149,25 @@ TEST_F(ToggleButtonTest, AcceptEvents) {
   EXPECT_TRUE(button()->GetIsOn());
   generator.ClickLeftButton();
   EXPECT_FALSE(button()->GetIsOn());
+}
+
+TEST_F(ToggleButtonTest, AccessibleCheckedStateChange) {
+  views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
+  ui::AXNodeData data;
+  EXPECT_EQ(
+      ax_counter.GetCount(ax::mojom::Event::kCheckedStateChanged, button()), 0);
+  button()->SetIsOn(true);
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      ax_counter.GetCount(ax::mojom::Event::kCheckedStateChanged, button()), 1);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  data = ui::AXNodeData();
+  button()->SetIsOn(false);
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+  EXPECT_EQ(
+      ax_counter.GetCount(ax::mojom::Event::kCheckedStateChanged, button()), 2);
 }
 
 }  // namespace views

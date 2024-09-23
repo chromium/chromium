@@ -166,19 +166,17 @@ class PasswordStoreAndroidBackend
   PrefService* prefs() { return prefs_; }
 
   // Subclasses can override this method
-  // to have a special handling for different errors. This function returns
-  // whether the error is recoverable or not.
-  virtual PasswordStoreBackendErrorRecoveryType RecoverOnErrorAndReturnResult(
-      AndroidBackendAPIErrorCode error) = 0;
+  // to have a special handling for different errors.
+  virtual void RecoverOnError(AndroidBackendAPIErrorCode error) = 0;
   // Subclasses can override this method to react when GMSCore responds
   // successfully.
   virtual void OnCallToGMSCoreSucceeded() = 0;
   // Subclasses have to provide an account which will be used for retries.
   virtual std::string GetAccountToRetryOperation() = 0;
-  // Subclasses have to provide a store type that is used for tracking metrics
-  // that are split for local and account.
+  // Subclasses have to provide a store backend type that is used for tracking
+  // metrics that are split for local and account.
   virtual PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
-  GetStoreType() = 0;
+  GetStorageType() = 0;
 
  private:
   SEQUENCE_CHECKER(main_sequence_checker_);

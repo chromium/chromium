@@ -9,6 +9,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/sessions/content/content_live_tab.h"
+#include "components/sessions/core/tab_restore_types.h"
 
 AndroidLiveTabContextCloseWrapper::AndroidLiveTabContextCloseWrapper(
     TabModel* tab_model,
@@ -16,11 +17,14 @@ AndroidLiveTabContextCloseWrapper::AndroidLiveTabContextCloseWrapper(
     std::map<int, tab_groups::TabGroupId>&& tab_id_to_tab_group,
     std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>&&
         tab_group_visual_data,
+    std::map<tab_groups::TabGroupId, std::optional<base::Uuid>>&&
+        saved_tab_group_ids,
     std::vector<WebContentsStateByteBuffer>&& web_contents_state)
     : AndroidLiveTabContext(tab_model),
       closed_tabs_(closed_tabs),
       tab_id_to_tab_group_(tab_id_to_tab_group),
       tab_group_visual_data_(tab_group_visual_data),
+      saved_tab_group_ids_(saved_tab_group_ids),
       web_contents_state_(std::move(web_contents_state)) {}
 
 AndroidLiveTabContextCloseWrapper::~AndroidLiveTabContextCloseWrapper() =
@@ -60,6 +64,13 @@ AndroidLiveTabContextCloseWrapper::GetVisualDataForGroup(
   return it == tab_group_visual_data_.end() ? nullptr : &it->second;
 }
 
+const std::optional<base::Uuid>
+AndroidLiveTabContextCloseWrapper::GetSavedTabGroupIdForGroup(
+    const tab_groups::TabGroupId& group_id) const {
+  auto it = saved_tab_group_ids_.find(group_id);
+  return it == saved_tab_group_ids_.end() ? std::nullopt : it->second;
+}
+
 TabAndroid* AndroidLiveTabContextCloseWrapper::GetTabAt(
     int relative_index) const {
   DCHECK_LT(base::checked_cast<size_t>(relative_index), closed_tabs_.size());
@@ -90,28 +101,21 @@ void AndroidLiveTabContextRestoreWrapper::SetVisualDataForGroup(
 }
 
 sessions::LiveTab* AndroidLiveTabContextRestoreWrapper::AddRestoredTab(
-    const std::vector<sessions::SerializedNavigationEntry>& navigations,
+    const sessions::tab_restore::Tab& tab,
     int tab_index,
-    int selected_navigation,
-    const std::string& extension_app_id,
-    std::optional<tab_groups::TabGroupId> group,
-    const tab_groups::TabGroupVisualData& group_visual_data,
     bool select,
-    bool pin,
-    const sessions::PlatformSpecificTabData* storage_namespace,
-    const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, std::string>& extra_data,
-    const SessionID* tab_id) {
-  auto* live_tab = AndroidLiveTabContext::AddRestoredTab(
-      navigations, tab_index, selected_navigation, extension_app_id, group,
-      group_visual_data, select, pin, storage_namespace, user_agent_override,
-      extra_data, tab_id);
-  if (group) {
-    TabAndroid* tab = TabAndroid::FromWebContents(
+    sessions::tab_restore::Type original_session_type) {
+  auto* live_tab =
+      AndroidLiveTabContext::AddRestoredTab(tab, tab_index, select,
+                                            original_session_type);
+  if (tab.group) {
+    TabAndroid* restored_tab = TabAndroid::FromWebContents(
         static_cast<sessions::ContentLiveTab*>(live_tab)->web_contents());
-    DCHECK(tab);
-    tab_groups_[*group].visual_data = group_visual_data;
-    tab_groups_[*group].tab_ids.push_back(tab->GetAndroidId());
+    DCHECK(restored_tab);
+    TabGroup& tab_group = tab_groups_[*tab.group];
+    tab_group.visual_data = *tab.group_visual_data;
+    tab_group.saved_tab_group_id = tab.saved_group_id;
+    tab_group.tab_ids.push_back(restored_tab->GetAndroidId());
   }
   return live_tab;
 }

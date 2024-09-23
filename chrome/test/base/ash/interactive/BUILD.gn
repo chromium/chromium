@@ -1,0 +1,56 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  sources = [ "interactive_ash_test_uitest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":test_support",
+    "//chrome/test/base/ash/interactive/bluetooth:interactive_ui_tests",
+    "//chrome/test/base/ash/interactive/cellular:interactive_ui_tests",
+    "//chrome/test/base/ash/interactive/hotspot:interactive_ui_tests",
+    "//chrome/test/base/ash/interactive/vpn:interactive_ui_tests",
+    "//chrome/test/base/ash/interactive/wifi:interactive_ui_tests",
+    "//content/test:test_support",
+    "//url:url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "interactive_ash_test.cc",
+    "interactive_ash_test.h",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//ash",
+    "//base",
+    "//base/test:test_config",
+    "//chrome/browser",
+    "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chrome/test/base/ash/interactive/bluetooth:test_support",
+    "//chrome/test/base/ash/interactive/cellular:test_support",
+    "//chrome/test/base/ash/interactive/hotspot:test_support",
+    "//chrome/test/base/ash/interactive/network:test_support",
+    "//chrome/test/base/ash/interactive/settings:test_support",
+    "//chromeos/services/network_config/public/mojom",
+  ]
+}

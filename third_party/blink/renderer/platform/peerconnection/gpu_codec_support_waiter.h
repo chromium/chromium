@@ -28,8 +28,7 @@ class GpuCodecSupportWaiter {
  private:
   bool IsCodecSupportKnown(bool is_encoder) const;
 
-  raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_;
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
   const std::optional<base::TimeDelta> wait_timeout_ms_;
 };

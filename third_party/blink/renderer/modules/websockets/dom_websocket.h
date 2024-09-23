@@ -161,7 +161,6 @@ class MODULES_EXPORT DOMWebSocket
     }
 
     explicit EventQueue(EventTarget*);
-    ~EventQueue();
 
     // Dispatches the event if this queue is active.
     // Queues the event if this queue is suspended.

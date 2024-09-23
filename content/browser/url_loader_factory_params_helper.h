@@ -5,7 +5,8 @@
 #ifndef CONTENT_BROWSER_URL_LOADER_FACTORY_PARAMS_HELPER_H_
 #define CONTENT_BROWSER_URL_LOADER_FACTORY_PARAMS_HELPER_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
@@ -65,12 +66,12 @@ class URLLoaderFactoryParamsHelper {
       network::mojom::TrustTokenOperationPolicyVerdict
           trust_token_redemption_policy,
       net::CookieSettingOverrides cookie_setting_overrides,
-      base::StringPiece debug_tag);
+      std::string_view debug_tag);
 
   // Creates URLLoaderFactoryParams to be used by |isolated_world_origin| hosted
   // within the |frame|.
   //
-  // TODO(https://crbug.com/1098410): Remove the CreateForIsolatedWorld method
+  // TODO(crbug.com/40137011): Remove the CreateForIsolatedWorld method
   // once Chrome Platform Apps are gone.
   static network::mojom::URLLoaderFactoryParamsPtr CreateForIsolatedWorld(
       RenderFrameHostImpl* frame,
@@ -101,7 +102,8 @@ class URLLoaderFactoryParamsHelper {
           url_loader_network_observer,
       mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      base::StringPiece debug_tag);
+      std::string_view debug_tag,
+      bool require_cross_site_request_for_cookies);
 
   // Creates URLLoaderFactoryParams for Early Hints preload.
   // When a redirect happens, a URLLoaderFactory created from the

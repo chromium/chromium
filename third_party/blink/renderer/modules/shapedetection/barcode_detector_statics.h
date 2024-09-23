@@ -36,7 +36,7 @@ class BarcodeDetectorStatics final
   void CreateBarcodeDetection(
       mojo::PendingReceiver<shape_detection::mojom::blink::BarcodeDetection>,
       shape_detection::mojom::blink::BarcodeDetectorOptionsPtr);
-  ScriptPromiseTyped<IDLSequence<V8BarcodeFormat>> EnumerateSupportedFormats(
+  ScriptPromise<IDLSequence<V8BarcodeFormat>> EnumerateSupportedFormats(
       ScriptState*);
 
   void Trace(Visitor*) const override;
@@ -44,7 +44,7 @@ class BarcodeDetectorStatics final
  private:
   void EnsureServiceConnection();
   void OnEnumerateSupportedFormats(
-      ScriptPromiseResolverTyped<IDLSequence<V8BarcodeFormat>>*,
+      ScriptPromiseResolver<IDLSequence<V8BarcodeFormat>>*,
       const Vector<shape_detection::mojom::blink::BarcodeFormat>&);
   void OnConnectionError();
 
@@ -53,7 +53,7 @@ class BarcodeDetectorStatics final
 
   // Holds Promises returned by EnumerateSupportedFormats() so that they can be
   // resolve in the case of a Mojo connection error.
-  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLSequence<V8BarcodeFormat>>>>
+  HeapHashSet<Member<ScriptPromiseResolver<IDLSequence<V8BarcodeFormat>>>>
       get_supported_format_requests_;
 };
 

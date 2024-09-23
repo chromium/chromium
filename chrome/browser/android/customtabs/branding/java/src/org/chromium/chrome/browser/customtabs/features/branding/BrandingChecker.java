@@ -156,10 +156,6 @@ class BrandingChecker extends AsyncTask<Integer> {
             mStorage.put(mAppId, taskFinishedTime);
         }
 
-        RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.Branding.BrandingDecision",
-                brandingDecision,
-                BrandingDecision.NUM_ENTRIES);
         // Remove the storage from reference.
         mStorage = null;
     }

@@ -85,26 +85,6 @@ void MediaDevicesDispatcherHost::Create(
       std::make_unique<MediaDevicesDispatcherHost>(render_frame_host_id,
                                                    media_stream_manager),
       std::move(receiver));
-
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](GlobalRenderFrameHostId render_frame_host_id) {
-                       RenderFrameHost* render_frame_host =
-                           RenderFrameHost::FromID(render_frame_host_id);
-
-                       if (!render_frame_host)
-                         return;
-
-                       if (!blink::features::
-                               IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
-                         BackForwardCache::DisableForRenderFrameHost(
-                             render_frame_host,
-                             BackForwardCacheDisable::DisabledReason(
-                                 BackForwardCacheDisable::DisabledReasonId::
-                                     kMediaDevicesDispatcherHost));
-                       }
-                     },
-                     render_frame_host_id));
 }
 
 MediaDevicesDispatcherHost::MediaDevicesDispatcherHost(
@@ -150,7 +130,7 @@ void MediaDevicesDispatcherHost::EnumerateDevices(
       request_audio_input;
   devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
       request_video_input;
-  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
       request_audio_output;
 
   media_stream_manager_->media_devices_manager()->EnumerateAndRankDevices(
@@ -243,7 +223,7 @@ void MediaDevicesDispatcherHost::AddMediaDevicesListener(
       subscribe_audio_input;
   devices_to_subscribe[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
       subscribe_video_input;
-  devices_to_subscribe[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
+  devices_to_subscribe[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
       subscribe_audio_output;
 
   uint32_t subscription_id =
@@ -428,7 +408,7 @@ void MediaDevicesDispatcherHost::GetVideoInputDeviceFormatsWithRawId(
   if (scoped_trace)
     scoped_trace->AddStep(__func__);
   if (!raw_id) {
-    // TODO(https://crbug.com/1337706): return an error.
+    // TODO(crbug.com/40848542): return an error.
     MediaStreamManager::SendMessageToNativeLog(
         base::StringPrintf("MDDH::GetVideoInputDeviceFormats: Failed to find "
                            "raw device id for '%s'",

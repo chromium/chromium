@@ -18,6 +18,7 @@
 #include "remoting/protocol/audio_pump.h"
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/audio_writer.h"
+#include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/host_control_dispatcher.h"
@@ -47,7 +48,6 @@ std::unique_ptr<AudioEncoder> CreateAudioEncoder(
 #endif
 
   NOTREACHED();
-  return nullptr;
 }
 
 }  // namespace
@@ -93,7 +93,7 @@ void IceConnectionToClient::Disconnect(ErrorCode error) {
 }
 
 std::unique_ptr<VideoStream> IceConnectionToClient::StartVideoStream(
-    const std::string& stream_name,
+    webrtc::ScreenId screen_id,
     std::unique_ptr<DesktopCapturer> desktop_capturer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -123,6 +123,11 @@ std::unique_ptr<AudioStream> IceConnectionToClient::StartAudioStream(
   return base::WrapUnique(
       new AudioPump(audio_task_runner_, std::move(audio_source),
                     std::move(audio_encoder), audio_writer_.get()));
+}
+
+void IceConnectionToClient::ApplyNetworkSettings(
+    const NetworkSettings& settings) {
+  transport_.ApplyNetworkSettings(settings);
 }
 
 // Return pointer to ClientStub.
@@ -183,14 +188,15 @@ void IceConnectionToClient::OnSessionStateChange(Session::State state) {
 
       // Notify the handler after initializing the channels, so that
       // ClientSession can get a client clipboard stub.
-      event_handler_->OnConnectionAuthenticated();
+      event_handler_->OnConnectionAuthenticated(
+          session_->authenticator().GetSessionPolicies());
       break;
 
     case Session::CLOSED:
     case Session::FAILED:
       CloseChannels();
       event_handler_->OnConnectionClosed(
-          state == Session::FAILED ? session_->error() : OK);
+          state == Session::FAILED ? session_->error() : ErrorCode::OK);
       break;
   }
 }
@@ -216,7 +222,7 @@ void IceConnectionToClient::OnChannelInitialized(
 void IceConnectionToClient::OnChannelClosed(
     ChannelDispatcherBase* channel_dispatcher) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  Disconnect(OK);
+  Disconnect(ErrorCode::OK);
 }
 
 void IceConnectionToClient::NotifyIfChannelsReady() {

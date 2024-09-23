@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "crypto/crypto_export.h"
 
 namespace crypto {
@@ -30,9 +31,16 @@ class CRYPTO_EXPORT SecureHash {
 
   static std::unique_ptr<SecureHash> Create(Algorithm type);
 
-  virtual void Update(const void* input, size_t len) = 0;
-  virtual void Finish(void* output, size_t len) = 0;
+  virtual void Update(base::span<const uint8_t> input) = 0;
+  virtual void Finish(base::span<uint8_t> output) = 0;
+
   virtual size_t GetHashLength() const = 0;
+
+  // Deprecated non-span APIs - do not add new uses of them, and please remove
+  // existing uses.
+  // TODO(https://crbug.com/364687923): Delete these.
+  void Update(const void* input, size_t len);
+  void Finish(void* output, size_t len);
 
   // Create a clone of this SecureHash. The returned clone and this both
   // represent the same hash state. But from this point on, calling

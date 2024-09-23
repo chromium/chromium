@@ -7,8 +7,10 @@
 #include "base/path_service.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -39,7 +41,7 @@ void CopyFileItem() {
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
     scw.WritePickledData(input_data_pickle,
-                         ui::ClipboardFormatType::WebCustomDataType());
+                         ui::ClipboardFormatType::DataTransferCustomType());
   }
   base::RunLoop().RunUntilIdle();
 }

@@ -110,9 +110,10 @@ class CORE_EXPORT CompositorAnimations {
     // Cases where the scroll timeline source is not composited.
     kTimelineSourceHasInvalidCompositingState = 1 << 16,
 
-    // Cases where there is an animation of compositor properties but they have
-    // been optimized out so the animation of those properties has no effect.
-    kCompositorPropertyAnimationsHaveNoEffect = 1 << 17,
+    // Cases where there is an animation that has no visible change through the
+    // active phase. This could be due to optimizing out an off-screen
+    // composited animation or due to having only constant valued properties.
+    kAnimationHasNoVisibleChange = 1 << 17,
 
     // Cases where we are animating a property that is marked important.
     kAffectsImportantProperty = 1 << 18,
@@ -206,7 +207,7 @@ class CORE_EXPORT CompositorAnimations {
   static CompositorElementIdNamespace CompositorElementNamespaceForProperty(
       CSSPropertyID property);
 
-  static bool CheckUsesCompositedScrolling(Node* target);
+  static bool CanStartScrollTimelineOnCompositor(Node* target);
 
   static bool CanStartTransformAnimationOnCompositorForSVG(const SVGElement&);
 

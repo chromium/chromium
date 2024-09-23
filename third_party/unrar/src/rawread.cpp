@@ -2,7 +2,7 @@
 
 RawRead::RawRead()
 {
-  RawRead::SrcFile=NULL;
+  RawRead::SrcFile=nullptr;
   Reset();
 }
 
@@ -16,7 +16,7 @@ RawRead::RawRead(File *SrcFile)
 
 void RawRead::Reset()
 {
-  Data.SoftReset();
+  Data.clear();
   ReadPos=0;
   DataSize=0;
   Crypt=NULL;
@@ -31,7 +31,7 @@ size_t RawRead::Read(size_t Size)
   {
     // Full size of buffer with already read data including data read 
     // for encryption block alignment.
-    size_t FullSize=Data.Size();
+    size_t FullSize=Data.size();
 
     // Data read for alignment and not processed yet.
     size_t DataLeft=FullSize-DataSize;
@@ -40,7 +40,7 @@ size_t RawRead::Read(size_t Size)
     {
       size_t SizeToRead=Size-DataLeft;
       size_t AlignedReadSize=SizeToRead+((~SizeToRead+1) & CRYPT_BLOCK_MASK);
-      Data.Add(AlignedReadSize);
+      Data.resize(FullSize+AlignedReadSize);
       ReadSize=SrcFile->Read(&Data[FullSize],AlignedReadSize);
       Crypt->DecryptBlock(&Data[FullSize],AlignedReadSize);
       DataSize+=ReadSize==0 ? 0:Size;
@@ -55,7 +55,7 @@ size_t RawRead::Read(size_t Size)
 #endif
     if (Size!=0)
     {
-      Data.Add(Size);
+      Data.resize(Data.size()+Size);
       ReadSize=SrcFile->Read(&Data[DataSize],Size);
       DataSize+=ReadSize;
     }
@@ -67,7 +67,7 @@ void RawRead::Read(byte *SrcData,size_t Size)
 {
   if (Size!=0)
   {
-    Data.Add(Size);
+    Data.resize(Data.size()+Size);
     memcpy(&Data[DataSize],SrcData,Size);
     DataSize+=Size;
   }
@@ -96,8 +96,7 @@ uint RawRead::Get4()
 {
   if (ReadPos+3<DataSize)
   {
-    uint Result=Data[ReadPos]+(Data[ReadPos+1]<<8)+(Data[ReadPos+2]<<16)+
-                (Data[ReadPos+3]<<24);
+    uint Result=RawGet4(&Data[ReadPos]);
     ReadPos+=4;
     return Result;
   }

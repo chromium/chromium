@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.AttributeSet;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -19,7 +20,6 @@ import android.view.ViewOutlineProvider;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,18 +28,20 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
+
+import java.util.Optional;
 
 /** A widget for showing a list of omnibox suggestions. */
 public class OmniboxSuggestionsDropdown extends RecyclerView {
@@ -50,24 +52,21 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      */
     private static final long LIST_COMPOSITION_ACCESSIBILITY_ANNOUNCEMENT_DELAY_MS = 300;
 
-    private final int mStandardBgColor;
-    private final int mIncognitoBgColor;
-
     private final SuggestionLayoutScrollListener mLayoutScrollListener;
     private final RecyclerViewSelectionController mSelectionController;
 
     private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
-    private @Nullable OmniboxSuggestionsDropdownEmbedder mEmbedder;
+    private Optional<OmniboxSuggestionsDropdownEmbedder> mEmbedder = Optional.empty();
     private @Nullable GestureObserver mGestureObserver;
     private @Nullable Callback<Integer> mHeightChangeListener;
-    private @Nullable Runnable mSuggestionDropdownScrollListener;
-    private @Nullable Runnable mSuggestionDropdownOverscrolledToTopListener;
     private @NonNull OmniboxAlignment mOmniboxAlignment = OmniboxAlignment.UNSPECIFIED;
 
     private int mListViewMaxHeight;
     private int mLastBroadcastedListViewMaxHeight;
-    private @Nullable Callback<OmniboxAlignment> mOmniboxAlignmentObserver;
-    private final boolean mForcePhoneStyleOmnibox;
+    private @Nullable Callback<OmniboxAlignment> mOmniboxAlignmentObserver =
+            this::onOmniboxAlignmentChanged;
+    private float mChildVerticalTranslation;
+    private float mChildAlpha = 1.0f;
 
     /**
      * Interface that will receive notifications when the user is interacting with an item on the
@@ -86,9 +85,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     /** Scroll manager that propagates scroll event notification to registered observers. */
     @VisibleForTesting
-    /* package */ class SuggestionLayoutScrollListener extends LinearLayoutManager {
+    /* package */ static class SuggestionLayoutScrollListener extends LinearLayoutManager {
         private boolean mLastKeyboardShownState;
         private boolean mCurrentGestureAffectedKeyboardState;
+        private @Nullable Runnable mSuggestionDropdownScrollListener;
+        private @Nullable Runnable mSuggestionDropdownOverscrolledToTopListener;
 
         public SuggestionLayoutScrollListener(Context context) {
             super(context);
@@ -209,6 +210,20 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         /* package */ void onNewGesture() {
             mCurrentGestureAffectedKeyboardState = false;
         }
+
+        /**
+         * @param listener A listener will be invoked whenever the User scrolls the list.
+         */
+        public void setSuggestionDropdownScrollListener(@NonNull Runnable listener) {
+            mSuggestionDropdownScrollListener = listener;
+        }
+
+        /**
+         * @param listener A listener will be invoked whenever the User scrolls the list to the top.
+         */
+        public void setSuggestionDropdownOverscrolledToTopListener(@NonNull Runnable listener) {
+            mSuggestionDropdownOverscrolledToTopListener = listener;
+        }
     }
 
     /**
@@ -216,56 +231,55 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      *
      * @param context Context used for contained views.
      */
-    public OmniboxSuggestionsDropdown(
-            @NonNull Context context,
-            RecycledViewPool recycledViewPool,
-            boolean forcePhoneStyleOmnibox) {
-        super(context, null, android.R.attr.dropDownListViewStyle);
+    public OmniboxSuggestionsDropdown(@NonNull Context context, AttributeSet attrs) {
+        super(context, attrs, android.R.attr.dropDownListViewStyle);
         setFocusable(true);
         setFocusableInTouchMode(true);
-        setRecycledViewPool(recycledViewPool);
-        mForcePhoneStyleOmnibox = forcePhoneStyleOmnibox;
         setId(R.id.omnibox_suggestions_dropdown);
 
         // By default RecyclerViews come with item animators.
         setItemAnimator(null);
+        addItemDecoration(new SuggestionHorizontalDivider(context));
 
         mLayoutScrollListener = new SuggestionLayoutScrollListener(context);
         setLayoutManager(mLayoutScrollListener);
         mSelectionController = new RecyclerViewSelectionController(mLayoutScrollListener);
         addOnChildAttachStateChangeListener(mSelectionController);
 
-        boolean shouldShowModernizeVisualUpdate =
-                OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
         final Resources resources = context.getResources();
         int paddingBottom =
                 resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_bottom);
         int paddingTop =
                 resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_top);
-        ViewCompat.setPaddingRelative(this, 0, paddingTop, 0, paddingBottom);
+        this.setPaddingRelative(0, paddingTop, 0, paddingBottom);
 
-        mStandardBgColor =
-                shouldShowModernizeVisualUpdate
-                        ? ChromeColors.getSurfaceColor(
-                                context, R.dimen.omnibox_suggestion_dropdown_bg_elevation)
-                        : ChromeColors.getDefaultThemeColor(context, false);
-        int incognitoBgColorRes = R.color.omnibox_dropdown_bg_incognito;
-        mIncognitoBgColor =
-                shouldShowModernizeVisualUpdate
-                        ? context.getColor(incognitoBgColorRes)
-                        : ChromeColors.getDefaultThemeColor(context, true);
-        if (!mForcePhoneStyleOmnibox
-                && OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && context.getResources().getConfiguration().screenWidthDp
+        if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
+            setRecycledViewPool(new PreWarmingRecycledViewPool(mAdapter, context));
+        }
+    }
+
+    /**
+     * Override the visuals of the Omnibox. This method is particularly relevant for SearchActivity,
+     * which presents Phone-style omnibox even when running on Tablets.
+     *
+     * @param shouldForce whether Omnibox should be forced to use Phone-style visuals
+     */
+    public void forcePhoneStyleOmnibox(boolean shouldForce) {
+        if (!shouldForce
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+                && getContext().getResources().getConfiguration().screenWidthDp
                         >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP) {
             setOutlineProvider(
                     new RoundedCornerOutlineProvider(
-                            context.getResources()
+                            getContext()
+                                    .getResources()
                                     .getDimensionPixelSize(
                                             R.dimen
                                                     .omnibox_suggestion_dropdown_round_corner_radius)));
             setClipToOutline(true);
+        } else {
+            setOutlineProvider(null);
+            setClipToOutline(false);
         }
     }
 
@@ -279,8 +293,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         getRecycledViewPool().clear();
         mGestureObserver = null;
         mHeightChangeListener = null;
-        mSuggestionDropdownScrollListener = null;
-        mSuggestionDropdownOverscrolledToTopListener = null;
     }
 
     /**
@@ -302,23 +314,49 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         mHeightChangeListener = listener;
     }
 
-    /**
-     * @param listener A listener will be invoked whenever the User scrolls the list.
-     */
-    public void setSuggestionDropdownScrollListener(@NonNull Runnable listener) {
-        mSuggestionDropdownScrollListener = listener;
-    }
-
-    /**
-     * @param listener A listener will be invoked whenever the User scrolls the list to the top.
-     */
-    public void setSuggestionDropdownOverscrolledToTopListener(@NonNull Runnable listener) {
-        mSuggestionDropdownOverscrolledToTopListener = listener;
-    }
-
     /** Resets selection typically in response to changes to the list. */
     public void resetSelection() {
         mSelectionController.resetSelection();
+    }
+
+    /**
+     * Translates all children by {@code translation}. This translation is applied to newly-added
+     * added children as well.
+     */
+    public void translateChildrenVertical(float translation) {
+        mChildVerticalTranslation = translation;
+        final int childCount = getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            getChildAt(i).setTranslationY(translation);
+        }
+        invalidateItemDecorations();
+    }
+
+    /**
+     * Sets the alpha of all child views. This alpha is applied to newly-added added children as
+     * well.
+     */
+    public void setChildAlpha(float alpha) {
+        mChildAlpha = alpha;
+        final int childCount = getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            getChildAt(i).setAlpha(alpha);
+        }
+        invalidateItemDecorations();
+    }
+
+    @Override
+    public void onChildAttachedToWindow(@NonNull View child) {
+        child.setAlpha(mChildAlpha);
+        if (mChildVerticalTranslation != 0.0f) {
+            child.setTranslationY(mChildVerticalTranslation);
+        }
+    }
+
+    @Override
+    public void onChildDetachedFromWindow(@NonNull View child) {
+        child.setTranslationY(0.0f);
+        child.setAlpha(1.0f);
     }
 
     /** Resests the tracked keyboard shown state to properly respond to scroll events. */
@@ -350,9 +388,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      */
     public void refreshPopupBackground(@BrandedColorScheme int brandedColorScheme) {
         int color =
-                brandedColorScheme == BrandedColorScheme.INCOGNITO
-                        ? mIncognitoBgColor
-                        : mStandardBgColor;
+                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColorForColorScheme(
+                        getContext(), brandedColorScheme);
+
         if (!isHardwareAccelerated()) {
             // When HW acceleration is disabled, changing mSuggestionList' items somehow erases
             // mOmniboxResultsContainer' background from the area not covered by
@@ -373,35 +411,15 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     @Override
-    public void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        mEmbedder.onAttachedToWindow();
-        mOmniboxAlignmentObserver = this::onOmniboxAlignmentChanged;
-        mOmniboxAlignment = mEmbedder.addAlignmentObserver(mOmniboxAlignmentObserver);
-        resetSelection();
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        mEmbedder.onDetachedFromWindow();
-        mOmniboxAlignment = OmniboxAlignment.UNSPECIFIED;
-        if (!OmniboxFeatures.shouldPreWarmRecyclerViewPool()) {
-            getRecycledViewPool().clear();
-        }
-        mAdapter.recordSessionMetrics();
-        mEmbedder.removeAlignmentObserver(mOmniboxAlignmentObserver);
-    }
-
-    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        boolean isTablet = mEmbedder.map(e -> e.isTablet()).orElse(false);
+
         try (TraceEvent tracing = TraceEvent.scoped("OmniboxSuggestionsList.Measure");
                 TimingMetric metric = OmniboxMetrics.recordSuggestionListMeasureTime();
                 TimingMetric metric2 = OmniboxMetrics.recordSuggestionListMeasureWallTime()) {
-            OmniboxAlignment omniboxAlignment = mEmbedder.getCurrentAlignment();
-            maybeUpdateLayoutParams(omniboxAlignment.top);
-            int availableViewportHeight = omniboxAlignment.height;
-            int desiredWidth = omniboxAlignment.width;
+            maybeUpdateLayoutParams(mOmniboxAlignment.top);
+            int availableViewportHeight = mOmniboxAlignment.height;
+            int desiredWidth = mOmniboxAlignment.width;
             adjustHorizontalPosition();
             notifyObserversIfViewportHeightChanged(availableViewportHeight);
 
@@ -409,9 +427,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             heightMeasureSpec =
                     MeasureSpec.makeMeasureSpec(
                             availableViewportHeight,
-                            mEmbedder.isTablet() ? MeasureSpec.AT_MOST : MeasureSpec.EXACTLY);
+                            isTablet ? MeasureSpec.AT_MOST : MeasureSpec.EXACTLY);
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-            if (mEmbedder.isTablet()) {
+            if (isTablet) {
                 setRoundBottomCorners(
                         getMeasuredHeight() < availableViewportHeight
                                 || !KeyboardVisibilityDelegate.getInstance()
@@ -470,6 +488,15 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             return true;
         }
 
+        if (keyCode == KeyEvent.KEYCODE_TAB) {
+            boolean maybeProcessed = super.onKeyDown(keyCode, event);
+            if (maybeProcessed) return true;
+            if (event.isShiftPressed()) {
+                return mSelectionController.selectPreviousItem();
+            }
+            return mSelectionController.selectNextItem();
+        }
+
         if (KeyNavigationUtil.isGoDown(event)) {
             mSelectionController.selectNextItem();
             return true;
@@ -513,9 +540,43 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      * @param embedder the embedder of this list.
      */
     public void setEmbedder(@NonNull OmniboxSuggestionsDropdownEmbedder embedder) {
-        assert mEmbedder == null;
-        mEmbedder = embedder;
-        mOmniboxAlignment = mEmbedder.getCurrentAlignment();
+        // Don't reset the current value of `mOmniboxAlignment`, and don't read the value from newly
+        // installed embedder to ensure the `onOmniboxAlignmentChanged` does the right thing when we
+        // install our observers.
+        mEmbedder = Optional.of(embedder);
+    }
+
+    /**
+     * Respond to Omnibox session state change.
+     *
+     * @param urlHasFocus whether URL has focus (signaling the session is active)
+     */
+    /* package */ void onOmniboxSessionStateChange(boolean urlHasFocus) {
+        if (urlHasFocus) {
+            installAlignmentObserver();
+        } else {
+            removeAlignmentObserver();
+        }
+    }
+
+    private void installAlignmentObserver() {
+        mEmbedder.ifPresent(
+                e -> {
+                    e.onAttachedToWindow();
+                    mOmniboxAlignment = e.addAlignmentObserver(mOmniboxAlignmentObserver);
+                });
+    }
+
+    private void removeAlignmentObserver() {
+        mEmbedder.ifPresent(
+                e -> {
+                    e.onDetachedFromWindow();
+                    e.removeAlignmentObserver(mOmniboxAlignmentObserver);
+                });
+
+        if (!OmniboxFeatures.shouldPreWarmRecyclerViewPool()) {
+            getRecycledViewPool().clear();
+        }
     }
 
     private void onOmniboxAlignmentChanged(@NonNull OmniboxAlignment omniboxAlignment) {
@@ -555,18 +616,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     private void adjustHorizontalPosition() {
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
-            // Set our left edge using translation x. This avoids needing to relayout (like setting
-            // a left margin would) and is less risky than calling View#setLeft(), which is intended
-            // for use by the layout system.
-            setTranslationX(mOmniboxAlignment.left);
-        } else {
-            setPadding(
-                    mOmniboxAlignment.paddingLeft,
-                    getPaddingTop(),
-                    mOmniboxAlignment.paddingRight,
-                    getPaddingBottom());
-        }
+        // Set our left edge using translation x. This avoids needing to relayout (like setting
+        // a left margin would) and is less risky than calling View#setLeft(), which is intended
+        // for use by the layout system.
+        setTranslationX(mOmniboxAlignment.left);
     }
 
     private void setRoundBottomCorners(boolean roundBottomCorners) {
@@ -589,16 +642,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                                             mAdapter.getItemCount()));
                 },
                 LIST_COMPOSITION_ACCESSIBILITY_ANNOUNCEMENT_DELAY_MS);
-    }
-
-    @VisibleForTesting
-    public int getStandardBgColor() {
-        return mStandardBgColor;
-    }
-
-    @VisibleForTesting
-    public int getIncognitoBgColor() {
-        return mIncognitoBgColor;
     }
 
     @VisibleForTesting

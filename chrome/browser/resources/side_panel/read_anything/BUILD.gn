@@ -16,14 +16,37 @@ build_webui("build") {
 
   web_component_files = [
     "app.ts",
+    "language_menu.ts",
     "read_anything_toolbar.ts",
     "voice_selection_menu.ts",
+    "menus/simple_action_menu.ts",
+    "menus/color_menu.ts",
+    "menus/highlight_menu.ts",
+    "menus/line_spacing_menu.ts",
+    "menus/letter_spacing_menu.ts",
+  ]
+  non_web_component_files = [
+    "read_anything.ts",
+    "common.ts",
+    "metrics_browser_proxy.ts",
+    "read_anything_logger.ts",
+    "voice_language_util.ts",
+    "app_style_updater.ts",
+    "menus/menu_util.ts",
+  ]
+  css_files = [
+    "app.css",
+    "language_menu.css",
+    "voice_selection_menu.css",
+    "read_anything_toolbar.css",
   ]
   icons_html_files = [ "icons.html" ]
+  html_to_wrapper_template = "detect"
 
   ts_composite = true
   ts_deps = [
     "//chrome/browser/resources/side_panel/shared:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
@@ -40,4 +63,17 @@ build_webui("build") {
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
             target_gen_dir) ]
+
+  webui_context_type = "untrusted"
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host =
+        "chrome-untrusted://read-anything-side-panel.top-chrome"
+    optimize_webui_in_files = [ "read_anything.js" ]
+    optimize_webui_external_paths =
+        [ "//read-anything-side-panel.top-chrome/shared|" +
+          rebase_path(
+              "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc",
+              root_build_dir) ]
+  }
 }

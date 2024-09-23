@@ -1,0 +1,62 @@
+{
+  "description": "trigger header error debug report",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://trigger.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": null,
+              "Attribution-Reporting-Info": "report-header-errors"
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "context_origin": "https://trigger.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": "!!!",
+              "Attribution-Reporting-Info": "report-header-errors"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [ {
+      "payload": [ {
+         "body": {
+            "context_site": "https://trigger.test",
+            "header": "Attribution-Reporting-Register-Trigger",
+            "value": "null"
+         },
+         "type": "header-parsing-error"
+      } ],
+      "report_time": "0",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+   }, {
+      "payload": [ {
+         "body": {
+            "context_site": "https://trigger.test",
+            "header": "Attribution-Reporting-Register-Trigger",
+            "value": "!!!"
+         },
+         "type": "header-parsing-error"
+      } ],
+      "report_time": "1",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+   } ]
+  }
+}

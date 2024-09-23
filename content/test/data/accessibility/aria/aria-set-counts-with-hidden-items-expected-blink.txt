@@ -8,8 +8,8 @@ rootWebArea
 ++++++++listBoxOption name='Item 2' setSize=4 posInSet=2 selected=false
 ++++++++++staticText name='Item 2'
 ++++++++++++inlineTextBox name='Item 2'
-++++++++listBoxOption ignored invisible name='Hidden' setSize=4 posInSet=4 selected=false
-++++++++++staticText ignored invisible name='Hidden'
+++++++++listBoxOption ignored invisible setSize=4 posInSet=4 selected=false
+++++++++++staticText ignored invisible
 ++++++++listBoxOption name='Item 3' setSize=4 posInSet=3 selected=false
 ++++++++++staticText name='Item 3'
 ++++++++++++inlineTextBox name='Item 3'
@@ -23,8 +23,8 @@ rootWebArea
 ++++++++listBoxOption name='Item 2' setSize=5 posInSet=2 selected=false
 ++++++++++staticText name='Item 2'
 ++++++++++++inlineTextBox name='Item 2'
-++++++++listBoxOption ignored invisible name='Hidden' selected=false
-++++++++++staticText ignored invisible name='Hidden'
+++++++++listBoxOption ignored invisible selected=false
+++++++++++staticText ignored invisible
 ++++++++listBoxOption name='Item 3' setSize=5 posInSet=3 selected=false
 ++++++++++staticText name='Item 3'
 ++++++++++++inlineTextBox name='Item 3'

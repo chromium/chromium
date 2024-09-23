@@ -51,23 +51,35 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "oop_read_failure",
     "gpu-gl-error-message",
 
-    // components/android_autofill
-    "crbug1523259-pw_form.username_id",
-    "crbug1523259-pw_form.password_id",
-    "crbug1523259-fs.fields.size",
-    "crbug1523259-fs.fields.global_ids",
-
     // components/viz
     "viz_deserialization",
 
     // content/:
     "bad_message_reason",
+    "can_access_data_failure_reason",
+    "cpspi_can_commit_url_failure_reason",
     "discardable-memory-allocated",
     "discardable-memory-free",
     "mojo-message-error",
     "total-discardable-memory-allocated",
 
     // Navigation
+    "ever_had_loaddatawithbaseurl_exemption",
+    "ever_had_universal_access_exemption",
+    "rfhi_can_commit_failure_reason",
+    "is_same_document",
+    "is_main_frame",
+    "is_opaque_origin",
+    "is_file_origin",
+    "is_data_url",
+    "is_srcdoc_url",
+    "is_loaddatawithbaseurl_navrequest",
+    "is_loaddatawithbaseurl_samedoc",
+    "is_process_locked",
+    "is_on_initial_empty_doc",
+    "is_renderer_initiated",
+    "is_error_page",
+
     "VerifyDidCommit-prev_ldwb",
     "VerifyDidCommit-prev_ldwbu",
     "VerifyDidCommit-base_url_fdu_type",
@@ -152,6 +164,9 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "num-experiments",
     "variations-seed-version",
 
+    // CRX components
+    "crx-components",
+
     // sandbox/linux
     "seccomp-sigsys",
 
@@ -162,6 +177,26 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "commandline-disabled-feature-*",
     "switch-*",
     "num-switches",
+
+    // NavigationListener investigation
+    "NoTrackedNav-message",
+    "NoTrackedNav-nav_id",
+    "NoTrackedNav-url_type",
+    "NoTrackedNav-prev_url_type",
+
+    "NoTrackedNav-discard_reason",
+    "NoTrackedNav-tracked_navs_size",
+    "NoTrackedNav-all_navs_size",
+    "NoTrackedNav-net_error_code",
+
+    "NoTrackedNav-has_committed",
+    "NoTrackedNav-was_redirect",
+    "NoTrackedNav-is_activation",
+    "NoTrackedNav-is_same_doc",
+    "NoTrackedNav-is_renderer",
+    "NoTrackedNav-is_reload",
+    "NoTrackedNav-is_history",
+    "NoTrackedNav-is_restore",
 
     nullptr};
 // clang-format on

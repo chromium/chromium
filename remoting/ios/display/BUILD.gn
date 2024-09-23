@@ -43,6 +43,6 @@ source_set("display") {
     "OpenGLES.framework",
   ]
 
-  # TODO(crbug.com/875022) fix for OpenGLES deprecation.
+  # TODO(crbug.com/40589733) fix for OpenGLES deprecation.
   defines = [ "GLES_SILENCE_DEPRECATION" ]
 }

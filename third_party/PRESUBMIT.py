@@ -90,29 +90,23 @@ def CheckThirdPartyReadmesUpdated(input_api, output_api):
     local_path = f.LocalPath()
     if input_api.os_path.dirname(local_path) == 'third_party':
       continue
+    exclusions = [
+      'third_party/android_deps/',
+      'third_party/blink/',
+      'third_party/boringssl/',
+      'third_party/closure_compiler/externs/',
+      'third_party/closure_compiler/interfaces/',
+      'third_party/feed_library/',
+      'third_party/ipcz/',
+      'third_party/jni_zero/',
+      # TODO(danakj): We should look for the README.chromium file in
+      # third_party/rust/CRATE_NAME/vVERSION/.
+      'third_party/rust/',
+      'third_party/webxr_test_pages/',
+    ]
+    exclusions = [e.replace('/', input_api.os_path.sep) for e in exclusions]
     if (local_path.startswith('third_party' + input_api.os_path.sep) and
-        not local_path.startswith('third_party' + input_api.os_path.sep +
-                                  'blink' + input_api.os_path.sep) and
-        not local_path.startswith('third_party' + input_api.os_path.sep +
-                                  'boringssl' + input_api.os_path.sep) and
-        not local_path.startswith('third_party' + input_api.os_path.sep +
-                                  'closure_compiler' + input_api.os_path.sep +
-                                  'externs' + input_api.os_path.sep) and
-        not local_path.startswith('third_party' + input_api.os_path.sep +
-                                  'closure_compiler' + input_api.os_path.sep +
-                                  'interfaces' + input_api.os_path.sep) and
-        not local_path.startswith('third_party' + input_api.os_path.sep +
-                                  'feed_library' + input_api.os_path.sep) and
-        not local_path.startswith('third_party' + input_api.os_path.sep +
-                                  'ipcz' + input_api.os_path.sep) and
-        not local_path.startswith('third_party' + input_api.os_path.sep +
-                                  'jni_zero' + input_api.os_path.sep) and
-        # TODO(danakj): We should look for the README.chromium file in
-        # third_party/rust/CRATE_NAME/vVERSION/.
-        not local_path.startswith('third_party' + input_api.os_path.sep +
-                                  'rust' + input_api.os_path.sep) and
-        not local_path.startswith('third_party' + input_api.os_path.sep +
-                                  'webxr_test_pages' + input_api.os_path.sep)):
+        not any(local_path.startswith(prefix) for prefix in exclusions)):
       files.append(f)
       if local_path.endswith("README.chromium"):
         readmes.append(f)

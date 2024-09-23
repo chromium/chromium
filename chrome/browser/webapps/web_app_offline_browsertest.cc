@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -12,17 +15,17 @@
 #include "chrome/browser/web_applications/test/web_app_icon_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/webapps/browser/test/service_worker_registration_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -70,7 +73,7 @@ class WebAppOfflineTest : public InProcessBrowserTest {
 
   // Start a web app without a service worker and disconnect.
   webapps::AppId StartWebAppAndDisconnect(content::WebContents* web_contents,
-                                          base::StringPiece relative_url) {
+                                          std::string_view relative_url) {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::NavigateViaLinkClickToURLAndWait(browser(), target_url);
     webapps::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
@@ -87,7 +90,7 @@ class WebAppOfflineTest : public InProcessBrowserTest {
 
   // Start a PWA with a service worker and disconnect.
   void StartPwaAndDisconnect(content::WebContents* web_contents,
-                             base::StringPiece relative_url) {
+                             std::string_view relative_url) {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::ServiceWorkerRegistrationWaiter registration_waiter(
         browser()->profile(), target_url);
@@ -204,147 +207,144 @@ IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
   constexpr char kExpectedIconUrl[] =
       "data:image/"
       "png;base64,"
-      "iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAIAAAAErfB6AAAO8ElEQVR4nO2ce4xc9XXHz/"
-      "f87rx2d2Z3Z20cMCYGjHHMyw6PADYYWjVRUkLTFrWlSoOiKFFTQgohjYHwCE8Tq6REbaENld"
-      "oKgdKiqGraNCGpAGFTY/M0YCAQwJAQG3sfs6953fs7p3/"
-      "8Zpdde9d4sZ29++P30Whs7czcuTOf+f3u+"
-      "Z1z7sX8u7ZTwF94tncgcGgJgj0nCPacINhzgmDPCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCY"
-      "M8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0nCPacINhzgmDPC"
-      "YI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4JgzwmCP"
-      "ScI9pwg2HOCYM8Jgj0nCPacINhzgmDPCYI9Jwj2nGi2d+"
-      "D9o6oMRFP9REUpEQUwC7uVMuaqYCUFkIjuqgqpEoFIicj9JxOhnDdWKCiek4JVFUAsurCd/"
-      "+63ezqzRsk5JlFl4Kl3Grc+PlAuGKuzva+"
-      "zzdwTrEQAmLQRy9dP6754WXHv57RncEMijCB4DgomVcMYbOgfH99+"
-      "8bJiIupGrXswEY0YQw0hQD/"
-      "wduekYANUY1lcMlee1pU1sKIRgwE3bxNRxDAMIsL4cfkDzBxbJqmqVWXgio+"
-      "WTpyfs6pmst3AHswlwc5iPdFPLM5fcmIpETWAEu0cSQBomJGnYs4IdrGVFZ1f4FvOLmcNMyk"
-      "RKnX7rU39Ln6e7X1MI3NGMKkaoobV687sXlLOiqgSAXTnU4NbdjSJSDVM0VMwNwSrasSoNO2"
-      "njy78ybIOUbWqhvnpnbW7tw4xExEFv1MyBwQrKQO1RI4qRted3V3IsFUFUGnYmzdX+"
-      "hqaM3AZrBlsUxVEDDITbozWQ+6ffbx4bBsKmrSFPTeSAubAMgkKgorSFad2Lu/"
-      "JxVYBihj3bht+6K16ewYzPfqqEoCm1Woy6YUMas/"
-      "sR0zeCugAUMNqbfJGDKittZFUJErTLlhVDWioKRccU/"
-      "j8CcXEKpFGjK27anc+PRgxYlGd2eglAxqK5eKl7dd8rEvGktgg7Komf/Y/u/"
-      "obkjG8L8eqABg01JALjsnfdk6PVWIiUYoYO0aSv3y479VKXIg4DaM47YIBNEUXFaPrPlbORZ"
-      "xYMYx6rLdvGdxRla4c1+uCGX6RQtQe4YevjV60tO2Tx3SM/31Jd+bb55a/"
-      "8NPdIG3F7dPtFWk91uO7o/"
-      "Xn9izuzE586K5nKi8PNDsyqbCb9mOwqhJpbPXylaWTDstZEcNg0H0vj/"
-      "zHL6rFDCdWQZjhAG5N0QnhKw/1bdtdJyIrYkWs6B8c13HpitJwUwyPHWsnzv/"
-      "aEi9KuQi3n1Ne3JlNRKxIbEVV/+GZyt3PDbdnjFBaEqXpFexiq2qsH1+c/"
-      "+IpJVUFiAivD8S3b6m0Z1jcLDrz4xxApJph7K7J2g39g3VLhPGC45Wnda1ZmB+"
-      "sa8TQPQ6kgKoaxkhTLl9Z+sTR7aJqABAyhp/"
-      "a2Vj3xGAhYqiCNA0H4PQKViUQEtH5Bb55VdnAzXgA9NrH+neOWgM6oNwkoKr5CI/"
-      "8srH+iQHDIFIGlLSnEK1f03NUkUdj4ckJMrdaG6jZzxzbduVpXaJKqu5oPVCzVzzS19+"
-      "QiCHADIP6Q0hKBQPKRKOxrD29c3lPVlQTUQb+9YXhB9+s5QwfeIQKgAiFDO5+"
-      "buTfXhoyzIkoQLGVk+bnrj2rO8ewk+0apmqsJ87L3Ly6nB1rJVEiQK/"
-      "e0Pf0rmZbxJKyhEsaBauqAYaa9veXtH12eVGURDVr+BcDje8+"
-      "M5gIRXxwFprujVTpW49XntvVyBhWhQFZkc8uL31ueUc9UTeI3aooEcpHdOPZXUu6s7EVUrVK"
-      "hvkftw79+6vVtoxbGqXKbyoFM1CLdWGH+cbpXR1ZTqyrMcgdTw6+"
-      "0Bu3jSU6DvyNAFjVXITtQ/"
-      "bajX0jDeu2CiJVvWlV96rDcyNNa+"
-      "Bqy1qP5fKVpQuOLSYiEUOIMoa37Kitf6Ii0prhD8LnP6ikTrCqiipBv7KitHJBPhGNDCKmH7"
-      "8x+v2fj5bzbA9qN50rYHRm+cG36rduHmAQAa421Z413zm/54gO0xRxv7lPHV24/"
-      "NQuK8qAC692jSZrH+3bMSqF8aAvZaRLsAtYGlbPWZj/"
-      "4smdsbiEIt4ZSW7aVBGCEg56eOrGcWfOfO/"
-      "54Qd+"
-      "PuLkOfEnzMvddFa3KDVEjy5F69f0FDIMUrgnqN6yeWDzzrgrz6lt4kyRYH13POG21eW2DBty"
-      "35qu21J5ZSApGByiEMa5EcUNmyrbehuG2aqCNLH6R8uKXzqpWG/Kd87rXtyZFVEAQmDg/"
-      "pdG/"
-      "nnbSDHLiaQjLTkVKRJMqkxUt3L1GV0nzc+"
-      "50IaBH79Wvfel0bYMDtahd5o315zB9sFk7aN9o7E1ABEx1DC++"
-      "tHOH1y44LxFbaLqQi7DePad2rUb+zOAutzlIdqtAyYtglUpYgw27cc/"
-      "XLjkhKJrzSFCby258fGB2E2Ah/RrBKxSKcsP/"
-      "bJxy6aBRMgS3I4dWcx86tj2yDADokRAbzW5/OG+SlMjA02z3tQIVoY2rB7eFl1/"
-      "Znd71ogqCIaxfktlW1+cj6CHeH0JIkBFtSOD7z0/8sPXRjOMsYCaxGVNVZUgSjc/"
-      "XnlyV1yI5kAvWCoEq4IITSuXrSieclguFhUlw/"
-      "jZ9tF7XxzJtkLb38COQAEAVumaDf0v9zbYZStJGSBVqxox7n9x6F9eHC5EUELK7aZCsBIxaL"
-      "gpv7Uo/+crS6oE1Yzh3mpyx5OD1YTasjAgA+xRWp9424O96/"
-      "DYvyI8iES1EOGt4eT6TQMunFZVt3gzwOYdtes3VSLAuCxmSkoK0zP75UIQNa0c0WGuO6tciI"
-      "wrCDYSWbd54MFXR/NtZsfotIU7ECVN6a/LWOmpVYpvWLVV2xuhOVbvLURoi/"
-      "g9o10dc5yPcNHStr2L/4bIYEI6I/"
-      "UjOCWCdX7BnP6hfGzFMAAM1JPBpn5uRed7foGNRD9cilz+a/"
-      "x+UTH6zEmlcoGtkigx6NWB+IXeOB+9V+24ddqEvWxF6aLjiq6c4LLWDLKqpx1euG11+cs/"
-      "601ArUGcbseYf9f22d4HqsZyYk9m058uTJQyfEgil7ueHbz0p71HdEaxTPucVmtfw646PPf9"
-      "CxaUC0ZbJ8WAqDVXW6UIdNWG3r/"
-      "fOlIwaHXu7Ks5YJZJxQgmaiUIMVZ9U9V9mJiIEjFRprVcad2LaiytLTetZg2GGkK8ryK8c1m"
-      "NZWG7WXdueV5bZEUYIEDV1Q3d3qpVXHVGeevu5LG36/"
-      "nMPpt7UkAqgiwiItVENBG1Su6esV83M83y2Ex+2n4ogKgaxjdO73IHCxAloiC6Z+vQTf/"
-      "X7xQzCKRdeXPn+T0L2jm2kvKTKlIxgl1uKGJE/P6HghtGGDsSj2/"
-      "JbbMt4lbCaSoXbviONPXiZW1fOqVkxUVSyBg8v7vx3WeG3hyKV8zPXnhc0VUarMjx5ewda3o"
-      "u+"
-      "cluIgXSO0fPvmAlihhDTfnR69WJJ4LuDyBKVEtZPm9Rwb3W3e8cTTb9up6P2F3LIWI819vMR"
-      "pAp7RK5cuSJPZl15/QQASQuQK7G9rrH+rcP2faM+fqj/"
-      "UvL2WU9ORFhIlG98Nj2r53auH3LYClnxtLRqRM9+0GW+"
-      "0oS0YGanXAlhv0mliWH5V79wlGxlYxhd/"
-      "+DV0Yvuv9XphRZac0RhQyXcrzXRR1cWx0JUQb0wKcXrD6yoGOddQy64bH+"
-      "27cMdueNENUTOXdh/r7fPawjw27aIcJw037+J7sffLPWmTPpLCjN/"
-      "gjGWPh6RHHGOwOiaiwfajd7TNGFCNlSdHjx3ZjZKu1dSFYCKRmm4bq9dXX36iMLiSiTKpFh/"
-      "u/Xhu/aOtyZY6tEpPkID/+qvn7LwK3nzHPxl1Xtykd/vabntf/"
-      "c+caQbUtlSXj2g6xxK7G8n1tTKNkr3lai5uSnyZTNNKoRU6Vu//C4tstWdoq+a/"
-      "eNSvPajQPu94FW1RJt0aQGLgYlVo7tzt6yutyRhWvpGnv/"
-      "tJAKwbNCa12U6Ak92evPKruzGYiIgEYi12zof6Vi89G78XergYvohk2VZ8cbuBiJyIVLOi49"
-      "pdS0ymOptFn+bBP44Ap2LRlZphvO6lpazroFjyVA6W+fqfzXG7Vilq3QeK6q1cBl8Naw/"
-      "ebGvqGGBUhVmUhVrzqj+5OL84MNG6Vs1fQBFezqBNVY/"
-      "+KU4oVLOlyZyHXDb3y79jdPDeUMESmgAMYrCq7hpJTl/32rfvOm/"
-      "okNXJHBHefN+0g5Gk3EIEVnF34QBbvJuZbo+Ytya8/"
-      "otqoug8bArtHkrx7tG2xqhll0LM824eDtxnFXzvzTCyP3bRt2oZYTv6iU+fa589ozSJTSk/"
-      "2Y24LHT9R1WbDxmxWd7hRfVWKgYaWc53WryvkIVtQqKYFA39zY93xfUszuqzMXgBIRcOPmyt"
-      "Pv1CPmplWrWkvkvKMKX11RGm4KpSacntuCJ2bB8hGP35dyPF2jFECimje453d6Tl6QZyBrOG"
-      "PYMO7ZOvTAK9WOCGMr2mmHoGvgenvYrt3QN9K0uYizhgsRZxhXn1n+8snFhtWUxNKzvw4+"
-      "EPbOgo1fyjAb8ZR5KyYaSXTVEfmG4EevV3Xs5OChpl33xCBN6vyadggCsELFHD/"
-      "26+bXHun7vSUdVtWAXCPKR3qy5TwPNnXKC6X+"
-      "hpn9TNaBMFUW7D0uRqpKDKolOtywROMWlYCeAs/"
-      "kklvqZvvhWGpNmfBrUDDKeZ5RzvXQMbdH8HRZsH1cTthN0YUIxeyenz0WmkntD25TnVnuzk0"
-      "aqkqUzGxTh5C5LXhiFmzKv0/"
-      "3Ep3qJft+1XSbskpTXvI0DXbnfJAVeE+"
-      "CYM8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0nCPacINhzgmD"
-      "PCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4Jgzwm"
-      "CPScI9pwg2HOCYM8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0"
-      "nCPacINhzgmDPCYI95/8B/D/AG3nStoAAAAAASUVORK5CYII=";
+      "iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAIAAAAErfB6AAAAAXNSR0IArs4c6QAADvBJREFU"
+      "eJztnHuMXPV1x8/3/"
+      "O68dndmd2dtHDAmBoxxzMsOjwA2GFo1UVJC0xa1pUqDoihRU0IKIY2B8AhPE6ukRG2hDZXaC"
+      "oHSoqhq2jQhqQBhU2PzNGAgEMCQEBt7H7Oved37O6d//"
+      "GaXXXvXeLGdvfvj99FobO3M3Lkzn/n97vmdc+7F/"
+      "Lu2U8BfeLZ3IHBoCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0nCPacINhzgmDPCYI9J"
+      "wj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4JgzwmCPScI9"
+      "pwg2HOCYM8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0nCPacI"
+      "NhzgmDPCYI9Jwj2nCDYc4JgzwmCPScI9pxotnfg/aOqDERT/"
+      "URFKREFMAu7lTLmqmAlBZCI7qoKqRKBSInI/ScToZw3VigonpOCVRVALLqwnf/"
+      "ut3s6s0bJOSZRZeCpdxq3Pj5QLhirs72vs83cE6xEAJi0EcvXT+u+eFlx7+"
+      "e0Z3BDIowgeA4KJlXDGGzoHx/ffvGyYiLqRq17MBGNGEMNIUA/"
+      "8HbnpGADVGNZXDJXntaVNbCiEYMBN28TUcQwDCLC+"
+      "HH5A8wcWyapqlVl4IqPlk6cn7OqZrLdwB7MJcHOYj3RTyzOX3JiKRE1gBLtHEkAaJiRp2LOC"
+      "HaxlRWdX+Bbzi5nDTMpESp1+61N/"
+      "S5+nu19TCNzRjCpGqKG1evO7F5SzoqoEgF051ODW3Y0iUg1TNFTMDcEq2rEqDTtp48u/"
+      "MmyDlG1qob56Z21u7cOMRMRBb9TMgcEKykDtUSOKkbXnd1dyLBVBVBp2Js3V/"
+      "oamjNwGawZbFMVRAwyE26M1kPun328eGwbCpq0hT03kgLmwDIJCoKK0hWndi7vycVWAYoY92"
+      "4bfuitensGMz36qhKAptVqMumFDGrP7EdM3groAFDDam3yRgyorbWRVCRK0y5YVQ1oqCkXHF"
+      "P4/AnFxCqRRoytu2p3Pj0YMWJRndnoJQMaiuXipe3XfKxLxpLYIOyqJn/2P7v6G5IxvC/"
+      "HqgAYNNSQC47J33ZOj1ViIlGKGDtGkr98uO/"
+      "VSlyIOA2jOO2CATRFFxWj6z5WzkWcWDGMeqy3bxncUZWuHNfrghl+"
+      "kULUHuGHr41etLTtk8d0jP99SXfm2+eWv/DT3SBtxe3T7RVpPdbju6P15/"
+      "Ys7sxOfOiuZyovDzQ7Mqmwm/ZjsKoSaWz18pWlkw7LWRHDYNB9L4/"
+      "8xy+qxQwnVkGY4QBuTdEJ4SsP9W3bXSciK2JFrOgfHNdx6YrScFMMjx1rJ87/"
+      "2hIvSrkIt59TXtyZTUSsSGxFVf/hmcrdzw23Z4xQWhKl6RXsYqtqrB9fnP/iKSVVBYgIrw/"
+      "Et2+ptGdY3Cw68+McQKSaYeyuydoN/"
+      "YN1S4TxguOVp3WtWZgfrGvE0D0OpICqGsZIUy5fWfrE0e2iagAQMoaf2tlY98RgIWKogjQNB"
+      "+D0ClYlEBLR+QW+eVXZwM14APTax/p3jloDOqDcJKCq+QiP/LKx/"
+      "okBwyBSBpS0pxCtX9NzVJFHY+HJCTK3Whuo2c8c23blaV2iSqruaD1Qs1c80tffkIghwAyD+"
+      "kNISgUDykSjsaw9vXN5T1ZUE1EG/"
+      "vWF4QffrOUMH3iECoAIhQzufm7k314aMsyJKECxlZPm5649qzvHsJPtGqZqrCfOy9y8upwda"
+      "yVRIkCv3tD39K5mW8SSsoRLGgWrqgGGmvb3l7R9dnlRlEQ1a/"
+      "gXA43vPjOYCEV8cBaa7o1U6VuPV57b1cgYVoUBWZHPLi99bnlHPVE3iN2qKBHKR3Tj2V1Lur"
+      "OxFVK1Sob5H7cO/fur1baMWxqlym8qBTNQi3Vhh/"
+      "nG6V0dWU6sqzHIHU8OvtAbt40lOg78jQBY1VyE7UP22o19Iw3rtgoiVb1pVfeqw3MjTWvgas"
+      "taj+XylaULji0mIhFDiDKGt+yorX+iItKa4Q/C5z+opE6wqooqQb+yorRyQT4RjQwiph+/"
+      "Mfr9n4+W82wPajedK2B0ZvnBt+q3bh5gEAGuNtWeNd85v+eIDtMUcb+"
+      "5Tx1duPzULivKgAuvdo0max/t2zEqhfGgL2WkS7ALWBpWz1mY/"
+      "+LJnbG4hCLeGUlu2lQRghIOenjqxnFnznzv+"
+      "eEHfj7i5DnxJ8zL3XRWtyg1RI8uRevX9BQyDFK4J6jesnlg8864K8+"
+      "pbeJMkWB9dzzhttXltgwbct+arttSeWUgKRgcohDGuRHFDZsq23obhtmqgjSx+"
+      "kfLil86qVhvynfO617cmRVRAEJg4P6XRv5520gxy4mkIy05FSkSTKpMVLdy9RldJ83PudCGg"
+      "R+/"
+      "Vr33pdG2DA7WoXeaN9ecwfbBZO2jfaOxNQARMdQwvvrRzh9cuOC8RW2i6kIuw3j2ndq1G/"
+      "szgLrc5SHarQMmLYJVKWIMNu3HP1y45ISia80hQm8tufHxgdhNgIf0awSsUinLD/"
+      "2yccumgUTIEtyOHVnMfOrY9sgwA6JEQG81ufzhvkpTIwNNs97UCFaGNqwe3hZdf2Z3e9aIKg"
+      "iGsX5LZVtfnI+gh3h9CSJARbUjg+89P/"
+      "LD10YzjLGAmsRlTVWVIEo3P155cldciOZAL1gqBKuCCE0rl60onnJYLhYVJcP42fbRe18cyb"
+      "ZC29/AjkABAFbpmg39L/c22GUrSRkgVasaMe5/cehfXhwuRFBCyu2mQrASMWi4Kb+1KP/"
+      "nK0uqBNWM4d5qcseTg9WE2rIwIAPsUVqfeNuDvevw2L8iPIhEtRDhreHk+"
+      "k0DLpxWVbd4M8DmHbXrN1UiwLgsZkpKCtMz++"
+      "VCEDWtHNFhrjurXIiMKwg2Elm3eeDBV0fzbWbH6LSFOxAlTemvy1jpqVWKb1i1VdsboTlW7y"
+      "1EaIv4PaNdHXOcj3DR0ra9i/"
+      "+GyGBCOiP1IzglgnV+wZz+oXxsxTAADNSTwaZ+bkXne36BjUQ/XIpc/"
+      "mv8flEx+"
+      "sxJpXKBrZIoMejVgfiF3jgfvVftuHXahL1sRemi44qunOCy1gyyqqcdXrhtdfnLP+"
+      "tNQK1BnG7HmH/X9tneB6rGcmJPZtOfLkyUMnxIIpe7nh289Ke9R3RGsUz7nFZrX8OuOjz3/"
+      "QsWlAtGWyfFgKg1V1ulCHTVht6/"
+      "3zpSMGh17uyrOWCWScUIJmolCDFWfVPVfZiYiBIxUaa1XGndi2osrS03rWYNhhpCvK8ivHNZ"
+      "jWVhu1l3bnleW2RFGCBA1dUN3d6qVVx1Rnnr7uSxt+"
+      "v5zD6be1JAKoIsIiLVRDQRtUrunrFfNzPN8thMftp+KICoGsY3Tu9yBwsQJaIgumfr0E3/"
+      "1+8UMwikXXlz5/"
+      "k9C9o5tpLykypSMYJdbihiRPz+"
+      "h4IbRhg7Eo9vyW2zLeJWwmkqF274jjT14mVtXzqlZMVFUsgYPL+"
+      "78d1nht4cilfMz154XNFVGqzI8eXsHWt6LvnJbiIF0jtHz75gJYoYQ0350evViSeC7g8gSlR"
+      "LWT5vUcG91t3vHE02/bqej9hdyyFiPNfbzEaQKe0SuXLkiT2Zdef0EAEkLkCuxva6x/"
+      "q3D9n2jPn6o/"
+      "1Ly9llPTkRYSJRvfDY9q+d2rh9y2ApZ8bS0akTPftBlvtKEtGBmp1wJYb9JpYlh+Ve/"
+      "cJRsZWMYXf/g1dGL7r/V6YUWWnNEYUMl3K810UdXFsdCVEG9MCnF6w+sqBjnXUMuuGx/"
+      "tu3DHbnjRDVEzl3Yf6+3z2sI8Nu2iHCcNN+/"
+      "ie7H3yz1pkz6Swozf4Ixlj4ekRxxjsDomosH2o3e0zRhQjZUnR48d2Y2SrtXUhWAikZpuG6v"
+      "XV19+ojC4kokyqRYf7v14bv2jrcmWOrRKT5CA//qr5+y8Ct58xz8ZdV7cpHf72m57X/"
+      "3PnGkG1LZUl49oOscSuxvJ9bUyjZK95Woubkp8mUzTSqEVOlbv/"
+      "wuLbLVnaKvmv3jUrz2o0D7veBVtUSbdGkBi4GJVaO7c7esrrckYVr6Rp7/"
+      "7SQCsGzQmtdlOgJPdnrzyq7sxmIiIBGItds6H+lYvPRu/"
+      "F3q4GL6IZNlWfHG7gYiciFSzouPaXUtMpjqbRZ/"
+      "mwT+"
+      "OAKdi0ZWaYbzupaWs66BY8lQOlvn6n81xu1Ypat0HiuqtXAZfDWsP3mxr6hhgVIVZlIVa86o"
+      "/uTi/ODDRulbNX0ARXs6gTVWP/ilOKFSzpcmch1w298u/"
+      "Y3Tw3lDBEpoADGKwqu4aSU5f99q37zpv6JDVyRwR3nzftIORpNxCBFZxd+"
+      "EAW7ybmW6PmLcmvP6LaqLoPGwK7R5K8e7RtsaoZZdCzPNuHg7cZxV8780wsj920bdqGWE7+"
+      "olPn2ufPaM0iU0pP9mNuCx0/UdVmw8ZsVne4UX1VioGGlnOd1q8r5CFbUKimBQN/"
+      "c2Pd8X1LM7qszF4ASEXDj5srT79Qj5qZVq1pL5LyjCl9dURpuCqUmnJ7bgidmwfIRj9+"
+      "XcjxdoxRAopo3uOd3ek5ekGcgazhj2DDu2Tr0wCvVjghjK9pph6Br4Hp72K7d0DfStLmIs4Y"
+      "LEWcYV59Z/vLJxYbVlMTSs78OPhD2zoKNX8owG/"
+      "GUeSsmGkl01RH5huBHr1d17OTgoaZd98QgTer8mnYIArBCxRw/"
+      "9uvm1x7p+70lHVbVgFwjykd6suU8DzZ1ygul/oaZ/"
+      "UzWgTBVFuw9LkaqSgyqJTrcsETjFpWAngLP5JJb6mb74VhqTZnwa1AwynmeUc710DG3R/"
+      "B0WbB9XE7YTdGFCMXsnp89FppJ7Q9uU51Z7s5NGqpKlMxsU4eQuS14YhZsyr9P9xKd6iX7ft"
+      "V0m7JKU17yNA1253yQFXhPgmDPCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0nCPacIN"
+      "hzgmDPCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4"
+      "JgzwmCPScI9pwg2HOCYM8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4JgzwmCPScI9pwg2HOCYM"
+      "8Jgj0nCPacINhzgmDPCYI9Jwj2nCDYc4JgzwmCPef/Afw/wBt50raAAAAAAElFTkSuQmCC";
 
-    // Ensure that we don't proceed until the icon loading is finished.
-    ASSERT_EQ(
-        true,
-        EvalJs(web_contents,
-               "var promiseResolve;"
-               "var imageLoadedPromise = new Promise(resolve => {"
-               "  promiseResolve = resolve;"
-               "});"
-               "function mutatedCallback(mutations) {"
-               "  let mutation = mutations[0];"
-               "  if (mutation.attributeName == 'src' &&"
-               "      mutation.target.src.startsWith('data:image/png')) {"
-               "    console.log('Change in src observed, resolving promise');"
-               "    promiseResolve();"
-               "  }"
-               "}"
-               "let observer = new MutationObserver(mutatedCallback);"
-               "observer.observe(document.getElementById('icon'),"
-               "                 {attributes: true});"
-               "if (document.getElementById('icon').src.startsWith("
-               "    'data:image/png')) {"
-               "  console.log('Inline src already set, resolving promise');"
-               "  promiseResolve();"
-               "}"
-               "imageLoadedPromise.then(function(e) {"
-               "  return true;"
-               "});")
-            .ExtractBool());
+  // Ensure that we don't proceed until the icon loading is finished.
+  ASSERT_EQ(
+      true,
+      EvalJs(web_contents,
+             "var promiseResolve;"
+             "var imageLoadedPromise = new Promise(resolve => {"
+             "  promiseResolve = resolve;"
+             "});"
+             "function mutatedCallback(mutations) {"
+             "  let mutation = mutations[0];"
+             "  if (mutation.attributeName == 'src' &&"
+             "      mutation.target.src.startsWith('data:image/png')) {"
+             "    console.log('Change in src observed, resolving promise');"
+             "    promiseResolve();"
+             "  }"
+             "}"
+             "let observer = new MutationObserver(mutatedCallback);"
+             "observer.observe(document.getElementById('icon'),"
+             "                 {attributes: true});"
+             "if (document.getElementById('icon').src.startsWith("
+             "    'data:image/png')) {"
+             "  console.log('Inline src already set, resolving promise');"
+             "  promiseResolve();"
+             "}"
+             "imageLoadedPromise.then(function(e) {"
+             "  return true;"
+             "});")
+          .ExtractBool());
 
-    // Expect that the icon on the default offline page is showing.
-    EXPECT_EQ(
-        "You're offline",
-        EvalJs(web_contents,
-               "document.getElementById('default-web-app-msg').textContent")
-            .ExtractString());
-    EXPECT_EQ("Manifest test app",
-              EvalJs(web_contents, "document.title").ExtractString());
-    EXPECT_EQ(kExpectedIconUrl,
-              EvalJs(web_contents, "document.getElementById('icon').src")
-                  .ExtractString());
-    EXPECT_EQ("inline",
-              EvalJs(web_contents,
-                     "document.getElementById('offlineIcon').style.display")
-                  .ExtractString());
+  // Expect that the icon on the default offline page is showing.
+  EXPECT_EQ("You're offline",
+            EvalJs(web_contents,
+                   "document.getElementById('default-web-app-msg').textContent")
+                .ExtractString());
+  EXPECT_EQ("Manifest test app",
+            EvalJs(web_contents, "document.title").ExtractString());
+  EXPECT_EQ(kExpectedIconUrl,
+            EvalJs(web_contents, "document.getElementById('icon').src")
+                .ExtractString());
+  EXPECT_EQ("inline",
+            EvalJs(web_contents,
+                   "document.getElementById('offlineIcon').style.display")
+                .ExtractString());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppOfflinePageTest, WebAppOfflineMetricsNavigation) {
@@ -438,17 +438,11 @@ class WebAppOfflineDarkModeTest
     : public WebAppOfflineTest,
       public testing::WithParamInterface<blink::mojom::PreferredColorScheme> {
  public:
-  WebAppOfflineDarkModeTest() {
-    std::vector<base::test::FeatureRef> disabled_features;
-    feature_list_.InitWithFeatures({blink::features::kWebAppEnableDarkMode},
-                                   {disabled_features});
-  }
-
   void SetUp() override {
 #if BUILDFLAG(IS_WIN)
     InProcessBrowserTest::SetUp();
 #elif BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/1298658): Get this test suite working.
+    // TODO(crbug.com/40215627): Get this test suite working.
     GTEST_SKIP();
 #else
     InProcessBrowserTest::SetUp();
@@ -473,14 +467,11 @@ class WebAppOfflineDarkModeTest
     if (GetParam() == blink::mojom::PreferredColorScheme::kDark)
       command_line->AppendSwitch(switches::kForceDarkMode);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Testing offline page in dark mode for a web app with a manifest and no
 // service worker.
-// TODO(crbug.com/1373750): tests are flaky on Lacros and Linux.
+// TODO(crbug.com/40871921): tests are flaky on Lacros and Linux.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_WebAppOfflineDarkModeNoServiceWorker \
   DISABLED_WebAppOfflineDarkModeNoServiceWorker
@@ -499,74 +490,11 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  StartWebAppAndDisconnect(
-      web_contents, "/web_apps/get_manifest.html?color_scheme_dark.json");
+  StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
 
-  // Expect that the default offline page is showing with dark mode colors.
-  if (GetParam() == blink::mojom::PreferredColorScheme::kDark) {
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "window.matchMedia('(prefers-color-scheme: dark)').matches")
-            .ExtractBool());
-    EXPECT_EQ(
-        EvalJs(web_contents,
-               "window.getComputedStyle(document.querySelector('div')).color")
-            .ExtractString(),
-        "rgb(227, 227, 227)");
-    EXPECT_EQ(EvalJs(web_contents,
-                     "window.getComputedStyle(document.querySelector('body'))."
-                     "backgroundColor")
-                  .ExtractString(),
-              "rgb(31, 31, 31)");
-  } else {
-    EXPECT_TRUE(
-        EvalJs(web_contents,
-               "window.matchMedia('(prefers-color-scheme: light)').matches")
-            .ExtractBool());
-    EXPECT_EQ(
-        EvalJs(web_contents,
-               "window.getComputedStyle(document.querySelector('div')).color")
-            .ExtractString(),
-        "rgb(31, 31, 31)");
-    EXPECT_EQ(EvalJs(web_contents,
-                     "window.getComputedStyle(document.querySelector('body'))."
-                     "backgroundColor")
-                  .ExtractString(),
-              "rgb(255, 255, 255)");
-  }
-}
-
-// Testing offline page in dark mode for a web app with a manifest and service
-// worker that does not handle offline error.
-// TODO(crbug.com/1373750): tests are flaky on Lacros and Linux.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_WebAppOfflineDarkModeEmptyServiceWorker \
-  DISABLED_WebAppOfflineDarkModeEmptyServiceWorker
-#else
-#define MAYBE_WebAppOfflineDarkModeEmptyServiceWorker \
-  WebAppOfflineDarkModeEmptyServiceWorker
-#endif
-IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
-                       MAYBE_WebAppOfflineDarkModeEmptyServiceWorker) {
-#if BUILDFLAG(IS_WIN)
-  if (GetParam() == blink::mojom::PreferredColorScheme::kLight &&
-      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
-    GTEST_SKIP() << "Host is in dark mode; skipping test";
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  StartPwaAndDisconnect(
-      web_contents,
-      "/banners/manifest_test_page_empty_fetch_handler.html?manifest=../"
-      "web_apps/color_scheme_dark.json");
   if (GetParam() == blink::mojom::PreferredColorScheme::kDark) {
     // Expect that the default offline page is showing with dark mode colors.
     EXPECT_TRUE(
@@ -602,18 +530,18 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
   }
 }
 
-// Testing offline page in dark mode for a web app with a manifest that has not
-// provided dark mode colors.
-// TODO(crbug.com/1373750): tests are flaky on Lacros and Linux.
+// Testing offline page in dark mode for a web app with a manifest and service
+// worker that does not handle offline error.
+// TODO(crbug.com/40871921): tests are flaky on Lacros and Linux.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_WebAppOfflineNoDarkModeColorsProvided \
-  DISABLED_WebAppOfflineNoDarkModeColorsProvided
+#define MAYBE_WebAppOfflineDarkModeEmptyServiceWorker \
+  DISABLED_WebAppOfflineDarkModeEmptyServiceWorker
 #else
-#define MAYBE_WebAppOfflineNoDarkModeColorsProvided \
-  WebAppOfflineNoDarkModeColorsProvided
+#define MAYBE_WebAppOfflineDarkModeEmptyServiceWorker \
+  WebAppOfflineDarkModeEmptyServiceWorker
 #endif
 IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
-                       MAYBE_WebAppOfflineNoDarkModeColorsProvided) {
+                       MAYBE_WebAppOfflineDarkModeEmptyServiceWorker) {
 #if BUILDFLAG(IS_WIN)
   if (GetParam() == blink::mojom::PreferredColorScheme::kLight &&
       ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
@@ -625,8 +553,8 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
-
+  StartPwaAndDisconnect(web_contents,
+                        "/banners/manifest_test_page_empty_fetch_handler.html");
   if (GetParam() == blink::mojom::PreferredColorScheme::kDark) {
     // Expect that the default offline page is showing with dark mode colors.
     EXPECT_TRUE(

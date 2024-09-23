@@ -1,0 +1,47 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph className='p1'
+++++++++mark
+++++++paragraph ignored
+++++++genericContainer
+=== Start Continuation ===
+rootWebArea name='p2IsOwner'
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph className='p1'
+++++++++mark
+++++++paragraph ignored
+++++++genericContainer
+=== Start Continuation ===
+rootWebArea name='p1IsNotOwner'
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph ignored
+++++++paragraph className='p2'
+++++++++mark
+++++++genericContainer
+=== Start Continuation ===
+rootWebArea name='p1IsOwner'
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph ignored
+++++++paragraph className='p2'
+++++++++mark
+++++++genericContainer
+=== Start Continuation ===
+rootWebArea name='noOwner'
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph ignored
+++++++paragraph ignored
+++++++genericContainer
+++++++++mark
+=== Start Continuation ===
+rootWebArea name='p2IsOwner'
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph ignored
+++++++paragraph className='p2'
+++++++++mark
+++++++genericContainer

@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/bluetooth_state_cache.h"
+#include "ash/system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_state_service.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -22,8 +23,10 @@
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -51,6 +54,11 @@ BluetoothFeaturePodController::BluetoothFeaturePodController(
       remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
   remote_cros_bluetooth_config_->ObserveSystemProperties(
       cros_system_properties_observer_receiver_.BindNewPipeAndPassRemote());
+
+  if (features::IsBluetoothDisconnectWarningEnabled()) {
+    GetHidPreservingBluetoothStateControllerService(
+        remote_hid_preserving_bluetooth_.BindNewPipeAndPassReceiver());
+  }
 }
 
 BluetoothFeaturePodController::~BluetoothFeaturePodController() = default;
@@ -68,6 +76,8 @@ std::unique_ptr<FeatureTile> BluetoothFeaturePodController::CreateTile(
   tile_->icon_button()->SetProperty(views::kElementIdentifierKey,
                                     kBluetoothFeatureTileToggleElementId);
   tile_->CreateDecorativeDrillInArrow();
+  tile_->drill_in_arrow()->SetProperty(
+      views::kElementIdentifierKey, kBluetoothFeatureTileDrillInArrowElementId);
   // UpdateTileStateIfExists() will update visibility.
   tile_->SetVisible(false);
   UpdateTileStateIfExists();
@@ -78,13 +88,22 @@ QsFeatureCatalogName BluetoothFeaturePodController::GetCatalogName() {
   return QsFeatureCatalogName::kBluetooth;
 }
 
+bool BluetoothFeaturePodController::IsBluetoothAvailable() const {
+  return system_state_ != BluetoothSystemState::kUnavailable;
+}
+
 void BluetoothFeaturePodController::OnIconPressed() {
   if (!IsButtonEnabled()) {
     return;
   }
 
   const bool is_toggled = IsButtonToggled();
-  remote_cros_bluetooth_config_->SetBluetoothEnabledState(!is_toggled);
+  if (features::IsBluetoothDisconnectWarningEnabled()) {
+    remote_hid_preserving_bluetooth_->TryToSetBluetoothEnabledState(
+        !is_toggled, mojom::HidWarningDialogSource::kQuickSettings);
+  } else {
+    remote_cros_bluetooth_config_->SetBluetoothEnabledState(!is_toggled);
+  }
   TrackToggleUMA(/*target_toggle_state=*/!is_toggled);
 
   if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
@@ -170,6 +189,11 @@ int BluetoothFeaturePodController::
 }
 
 std::u16string BluetoothFeaturePodController::ComputeButtonSubLabel() const {
+  if (chromeos::features::IsBluetoothWifiQSPodRefreshEnabled() &&
+      !IsBluetoothAvailable()) {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_SHORT);
+  }
   if (!IsButtonToggled()) {
     return l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_SHORT);
@@ -195,6 +219,11 @@ std::u16string BluetoothFeaturePodController::ComputeButtonSubLabel() const {
 }
 
 std::u16string BluetoothFeaturePodController::ComputeTooltip() const {
+  if (chromeos::features::IsBluetoothWifiQSPodRefreshEnabled() &&
+      !IsBluetoothAvailable()) {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_TOOLTIP);
+  }
   if (!first_connected_device_.has_value())
     return l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP);
@@ -230,7 +259,8 @@ void BluetoothFeaturePodController::UpdateTileStateIfExists() {
   if (!tile_) {
     return;
   }
-  if (system_state_ == BluetoothSystemState::kUnavailable) {
+  if (!chromeos::features::IsBluetoothWifiQSPodRefreshEnabled() &&
+      !IsBluetoothAvailable()) {
     tile_->SetVisible(false);
     tile_->SetEnabled(false);
     return;
@@ -251,6 +281,13 @@ void BluetoothFeaturePodController::UpdateTileStateIfExists() {
   tile_->SetSubLabel(ComputeButtonSubLabel());
 
   if (!tile_->IsToggled()) {
+    if (chromeos::features::IsBluetoothWifiQSPodRefreshEnabled() &&
+        !IsBluetoothAvailable()) {
+      tile_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_TOOLTIP));
+      tile_->icon_button()->SetEnabled(false);
+      return;
+    }
     std::u16string tooltip = l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP,
         l10n_util::GetStringUTF16(

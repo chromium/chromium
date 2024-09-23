@@ -199,8 +199,18 @@ targets.compile_target(
 )
 
 targets.compile_target(
+    name = "core_runtime_starboard",
+    label = "//chromecast/cast_core:core_runtime_starboard",
+)
+
+targets.compile_target(
     name = "cronet_package",
     label = "//components/cronet:cronet_package",
+)
+
+targets.compile_target(
+    name = "cronet_package_ci",
+    label = "//components/cronet/android:cronet_package_ci",
 )
 
 targets.compile_target(
@@ -211,11 +221,6 @@ targets.compile_target(
 targets.compile_target(
     name = "empty_main",
     label = "//testing:empty_main",
-)
-
-targets.compile_target(
-    name = "test_ash_chrome_cipd_yaml",
-    label = "//chrome/test:test_ash_chrome_cipd_yaml",
 )
 
 targets.compile_target(
@@ -294,7 +299,7 @@ targets.compile_target(
 
 targets.compile_target(
     name = "pdfium_test",
-    label = "//third_party/pdfium/samples:pdfium_test",
+    label = "//third_party/pdfium/testing:pdfium_test",
 )
 
 targets.compile_target(
@@ -328,11 +333,6 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "strip_lacros_files",
-    label = "//chrome:strip_lacros_files",
-)
-
-targets.compile_target(
     name = "symupload",
     label = "//third_party/breakpad:symupload",
 )
@@ -360,6 +360,11 @@ targets.compile_target(
 targets.compile_target(
     name = "traffic_annotation_auditor_dependencies",
     label = "//:traffic_annotation_auditor_dependencies",
+)
+
+targets.compile_target(
+    name = "traffic_annotation_proto",
+    label = "//chrome/browser/privacy:traffic_annotation_proto",
 )
 
 targets.compile_target(
@@ -395,4 +400,9 @@ targets.compile_target(
 targets.compile_target(
     name = "web_engine_shell_pkg",
     label = "//fuchsia_web/shell:web_engine_shell_pkg",
+)
+
+targets.compile_target(
+    name = "chrome/enterprise_companion:all",
+    label = "//chrome/enterprise_companion:all",
 )

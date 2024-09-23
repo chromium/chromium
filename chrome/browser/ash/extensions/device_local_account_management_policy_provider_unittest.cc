@@ -76,8 +76,8 @@ scoped_refptr<const extensions::Extension> CreatePlatformApp() {
 }  // namespace
 
 TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
-  DeviceLocalAccountManagementPolicyProvider
-      provider(policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
+  DeviceLocalAccountManagementPolicyProvider provider(
+      policy::DeviceLocalAccountType::kPublicSession);
   // Set the login state to a public session.
   ash::ScopedTestPublicSessionLoginState login_state;
 
@@ -308,11 +308,12 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
 }
 
 TEST(DeviceLocalAccountManagementPolicyProviderTest, KioskAppSessions) {
-  std::vector<policy::DeviceLocalAccount::Type> types = {
-      policy::DeviceLocalAccount::TYPE_KIOSK_APP,
-      policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP};
+  static constexpr policy::DeviceLocalAccountType kTypes[] = {
+      policy::DeviceLocalAccountType::kKioskApp,
+      policy::DeviceLocalAccountType::kWebKioskApp,
+  };
 
-  for (auto type : types) {
+  for (auto type : kTypes) {
     LOG(INFO) << "Testing device local account type = "<< static_cast<int>(type);
     DeviceLocalAccountManagementPolicyProvider provider(type);
 

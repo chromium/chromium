@@ -8,6 +8,11 @@
 //    clang-format -i -style=chromium filename
 // DO NOT EDIT!
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // It is included by raster_cmd_decoder.cc
 #ifndef GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_AUTOGEN_H_
@@ -137,22 +142,6 @@ error::Error RasterDecoderImpl::HandleBeginRasterCHROMIUMImmediate(
   }
   DoBeginRasterCHROMIUM(r, g, b, a, needs_clear, msaa_sample_count, msaa_mode,
                         can_use_lcd_text, visible, hdr_headroom, mailbox);
-  return error::kNoError;
-}
-
-error::Error RasterDecoderImpl::HandleRasterCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile raster::cmds::RasterCHROMIUM& c =
-      *static_cast<const volatile raster::cmds::RasterCHROMIUM*>(cmd_data);
-  GLuint raster_shm_id = static_cast<GLuint>(c.raster_shm_id);
-  GLuint raster_shm_offset = static_cast<GLuint>(c.raster_shm_offset);
-  GLuint raster_shm_size = static_cast<GLuint>(c.raster_shm_size);
-  GLuint font_shm_id = static_cast<GLuint>(c.font_shm_id);
-  GLuint font_shm_offset = static_cast<GLuint>(c.font_shm_offset);
-  GLuint font_shm_size = static_cast<GLuint>(c.font_shm_size);
-  DoRasterCHROMIUM(raster_shm_id, raster_shm_offset, raster_shm_size,
-                   font_shm_id, font_shm_offset, font_shm_size);
   return error::kNoError;
 }
 
@@ -308,7 +297,6 @@ error::Error RasterDecoderImpl::HandleWritePixelsINTERNALImmediate(
           cmd_data);
   GLint x_offset = static_cast<GLint>(c.x_offset);
   GLint y_offset = static_cast<GLint>(c.y_offset);
-  GLint plane_index = static_cast<GLint>(c.plane_index);
   GLuint src_width = static_cast<GLuint>(c.src_width);
   GLuint src_height = static_cast<GLuint>(c.src_height);
   GLuint src_row_bytes = static_cast<GLuint>(c.src_row_bytes);
@@ -330,7 +318,7 @@ error::Error RasterDecoderImpl::HandleWritePixelsINTERNALImmediate(
   if (mailbox == nullptr) {
     return error::kOutOfBounds;
   }
-  DoWritePixelsINTERNAL(x_offset, y_offset, plane_index, src_width, src_height,
+  DoWritePixelsINTERNAL(x_offset, y_offset, src_width, src_height,
                         src_row_bytes, src_sk_color_type, src_sk_alpha_type,
                         shm_id, shm_offset, pixels_offset, mailbox);
   return error::kNoError;
@@ -448,77 +436,6 @@ error::Error RasterDecoderImpl::HandleReadbackYUVImagePixelsINTERNALImmediate(
   DoReadbackYUVImagePixelsINTERNAL(dst_width, dst_height, shm_id, shm_offset,
                                    y_offset, y_stride, u_offset, u_stride,
                                    v_offset, v_stride, mailbox);
-  return error::kNoError;
-}
-
-error::Error
-RasterDecoderImpl::HandleConvertYUVAMailboxesToRGBINTERNALImmediate(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile raster::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate& c =
-      *static_cast<const volatile raster::cmds::
-                       ConvertYUVAMailboxesToRGBINTERNALImmediate*>(cmd_data);
-  GLint src_x = static_cast<GLint>(c.src_x);
-  GLint src_y = static_cast<GLint>(c.src_y);
-  GLsizei width = static_cast<GLsizei>(c.width);
-  GLsizei height = static_cast<GLsizei>(c.height);
-  GLenum planes_yuv_color_space = static_cast<GLenum>(c.planes_yuv_color_space);
-  GLenum plane_config = static_cast<GLenum>(c.plane_config);
-  GLenum subsampling = static_cast<GLenum>(c.subsampling);
-  uint32_t mailboxes_size;
-  if (!gles2::GLES2Util::ComputeDataSize<GLbyte, 144>(1, &mailboxes_size)) {
-    return error::kOutOfBounds;
-  }
-  if (mailboxes_size > immediate_data_size) {
-    return error::kOutOfBounds;
-  }
-  volatile const GLbyte* mailboxes =
-      gles2::GetImmediateDataAs<volatile const GLbyte*>(c, mailboxes_size,
-                                                        immediate_data_size);
-  if (width < 0) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glConvertYUVAMailboxesToRGBINTERNAL",
-                       "width < 0");
-    return error::kNoError;
-  }
-  if (height < 0) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glConvertYUVAMailboxesToRGBINTERNAL",
-                       "height < 0");
-    return error::kNoError;
-  }
-  if (mailboxes == nullptr) {
-    return error::kOutOfBounds;
-  }
-  DoConvertYUVAMailboxesToRGBINTERNAL(src_x, src_y, width, height,
-                                      planes_yuv_color_space, plane_config,
-                                      subsampling, mailboxes);
-  return error::kNoError;
-}
-
-error::Error
-RasterDecoderImpl::HandleConvertRGBAToYUVAMailboxesINTERNALImmediate(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile raster::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate& c =
-      *static_cast<const volatile raster::cmds::
-                       ConvertRGBAToYUVAMailboxesINTERNALImmediate*>(cmd_data);
-  GLenum planes_yuv_color_space = static_cast<GLenum>(c.planes_yuv_color_space);
-  GLenum plane_config = static_cast<GLenum>(c.plane_config);
-  GLenum subsampling = static_cast<GLenum>(c.subsampling);
-  uint32_t mailboxes_size;
-  if (!gles2::GLES2Util::ComputeDataSize<GLbyte, 80>(1, &mailboxes_size)) {
-    return error::kOutOfBounds;
-  }
-  if (mailboxes_size > immediate_data_size) {
-    return error::kOutOfBounds;
-  }
-  volatile const GLbyte* mailboxes =
-      gles2::GetImmediateDataAs<volatile const GLbyte*>(c, mailboxes_size,
-                                                        immediate_data_size);
-  if (mailboxes == nullptr) {
-    return error::kOutOfBounds;
-  }
-  DoConvertRGBAToYUVAMailboxesINTERNAL(planes_yuv_color_space, plane_config,
-                                       subsampling, mailboxes);
   return error::kNoError;
 }
 

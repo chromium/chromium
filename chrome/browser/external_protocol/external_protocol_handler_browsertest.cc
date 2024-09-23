@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
@@ -132,7 +133,7 @@ class TabAddedRemovedObserver : public TabStripModelObserver {
       loop_.Quit();
       return;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void Wait() {
@@ -267,7 +268,7 @@ class AlwaysBlockedExternalProtocolHandlerDelegate
 
   scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
       const GURL& url) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,
@@ -282,12 +283,12 @@ class AlwaysBlockedExternalProtocolHandlerDelegate
       bool has_user_gesture,
       const std::optional<url::Origin>& initiating_origin,
       const std::u16string& program_name) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void LaunchUrlWithoutSecurityCheck(
       const GURL& url,
       content::WebContents* web_contents) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void FinishedProcessingCheck() override {}
 };

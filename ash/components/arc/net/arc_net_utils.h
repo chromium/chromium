@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/arc_wifi.mojom.h"
 #include "ash/components/arc/mojom/net.mojom.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_service.pb.h"
@@ -69,6 +70,12 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
     const ash::NetworkStateHandler::NetworkStateList& network_states,
     const std::map<std::string, base::Value::Dict>& shill_network_properties);
 
+// Translates a vector of NetworkStates to a vector of ScanResults.
+// For each state, fill the fields in ScanResult.
+// TODO(b/329552433): Move this method to a separate util file for WiFi.
+std::vector<arc::mojom::WifiScanResultPtr> TranslateScanResults(
+    const ash::NetworkStateHandler::NetworkStateList& network_states);
+
 // Translates a vector of NetworkDevices to a vector of NetworkConfigurations.
 // For each device, fill the fields in NetworkConfiguration. For each active
 // state, the corresponding fields of the associated device is added. A state
@@ -89,6 +96,14 @@ base::Value::List TranslateSubjectNameMatchListToValue(
 // event.
 std::unique_ptr<patchpanel::SocketConnectionEvent>
 TranslateSocketConnectionEvent(const mojom::SocketConnectionEventPtr& mojom);
+
+// Duplicate of ARC's ArcNetworkUtils#areConfigurationsEquivalent. This is meant
+// as a short-term solution to prevent spurious mojo calls to ARC if we know ARC
+// is going to ignore the configuration update anyways. ARC's implementation
+// should be the source of truth. See b/342973880 for more details.
+bool AreConfigurationsEquivalent(
+    std::vector<arc::mojom::NetworkConfigurationPtr>& latest_networks,
+    std::vector<arc::mojom::NetworkConfigurationPtr>& cached_networks);
 }  // namespace arc::net_utils
 
 #endif  // ASH_COMPONENTS_ARC_NET_ARC_NET_UTILS_H_

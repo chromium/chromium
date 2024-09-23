@@ -1,0 +1,191 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("scalable_iph") {
+  sources = [
+    "scalable_iph_delegate_impl.cc",
+    "scalable_iph_delegate_impl.h",
+    "scalable_iph_factory.cc",
+    "scalable_iph_factory.h",
+    "scalable_iph_factory_impl.cc",
+    "scalable_iph_factory_impl.h",
+  ]
+
+  public_deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/printing",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/phonehub",
+    "//chromeos/ash/components/scalable_iph:iph_session",
+    "//chromeos/ash/components/scalable_iph:logger",
+    "//chromeos/ash/components/scalable_iph:scalable_iph_delegate",
+    "//chromeos/dbus/power",
+    "//chromeos/services/network_config/public/cpp",
+    "//chromeos/services/network_config/public/mojom",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    "//apps",
+    "//ash/constants",
+    "//ash/webui/print_management/resources",
+    "//ash/webui/print_management/resources:resources_grit",
+    "//ash/webui/settings/public/constants:mojom",
+    "//build:buildflag_header_h",
+    "//chrome/app/theme:chrome_unscaled_resources",
+    "//chrome/app/theme:chrome_unscaled_resources_grit",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/phonehub",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/printing",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/system_web_apps/apps/help_app",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/scalable_iph",
+    "//chromeos/ash/components/scalable_iph:buildflags",
+    "//chromeos/ash/resources",
+    "//chromeos/ash/resources:resources_grit",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
+    "//chromeos/ui/vector_icons",
+    "//components/variations/service",
+    "//net",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/message_center/public/cpp",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/printing",
+    "//chrome/browser/ash/system_web_apps/apps/help_app",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "customizable_test_env_browser_test_base.cc",
+    "customizable_test_env_browser_test_base.h",
+    "mock_scalable_iph_delegate.cc",
+    "mock_scalable_iph_delegate.h",
+    "scalable_iph_browser_test_base.cc",
+    "scalable_iph_browser_test_base.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/multi_user",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/scalable_iph",
+    "//chromeos/ash/components/scalable_iph:iph_session",
+    "//chromeos/ash/components/scalable_iph:logger",
+    "//chromeos/ash/components/scalable_iph:scalable_iph_delegate",
+    "//chromeos/services/network_config/public/cpp:test_support",
+    "//components/feature_engagement/test:test_support",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  deps = [
+    ":scalable_iph",
+    "//ash/constants",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/scalable_iph",
+    "//chrome/browser/ui",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/scalable_iph:constants",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/services/network_config:in_process_instance",
+    "//chromeos/ash/services/network_config/public/cpp:test_support",
+    "//chromeos/services/network_config/public/mojom",
+    "//components/keyed_service/content",
+    "//components/signin/public/identity_manager:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "scalable_iph_browsertest.cc",
+    "scalable_iph_e2e_browsertest.cc",
+  ]
+
+  deps = [
+    ":scalable_iph",
+    ":test_support",
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/test:test_support",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/ash/printing",
+    "//chrome/browser/ash/scalable_iph",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/multi_user",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/web_applications",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/phonehub",
+    "//chromeos/ash/components/phonehub:debug",
+    "//chromeos/ash/components/scalable_iph",
+    "//chromeos/ash/components/scalable_iph:constants",
+    "//chromeos/ash/components/scalable_iph:iph_session",
+    "//chromeos/ash/components/scalable_iph:scalable_iph_delegate",
+    "//chromeos/dbus/power",
+    "//chromeos/printing",
+    "//components/account_id",
+    "//components/feature_engagement/test:test_support",
+    "//components/user_manager",
+    "//components/variations/field_trial_config",
+    "//components/variations/service",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/common:common_constants",
+    "//net",
+    "//services/network/public/mojom:url_loader_base",
+    "//testing/gmock",
+    "//ui/aura",
+    "//ui/aura:test_support",
+    "//ui/compositor",
+    "//ui/message_center",
+    "//ui/message_center/public/cpp",
+  ]
+}

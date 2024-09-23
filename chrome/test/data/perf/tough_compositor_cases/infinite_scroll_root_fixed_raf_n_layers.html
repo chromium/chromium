@@ -1,0 +1,274 @@
+<!doctype html>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title>infinite-scroll</title>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <style>
+      html {
+        height: 100%;
+      }
+      body {
+        display: block;
+        height: 100%;
+        margin: 0;
+      }
+      #container {
+        overflow-y: scroll;
+        height: 100%;
+        margin: 0;
+        contain: layout;
+      }
+      #runway {
+        height: 100000px;
+        contain: layout;
+      }
+      .item {
+        will-change: transform;
+        -webkit-transform: translate3d(0,0,0);
+        box-sizing: border-box;
+        overflow: hidden;
+        contain: layout;
+      }
+
+      .conversation {
+        font-family: sans-serif;
+        height: 35px;
+        display: flex;
+        border-bottom: 1px solid lightgray;
+      }
+      .avatar {
+        will-change: transform;
+        display: flex;
+        flex-shrink: 0;
+        color: white;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        width: 25px;
+        height: 25px;
+        margin: 5px;
+        background-color: lightblue;
+      }
+      .summary {
+        flex: 1;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        padding: 5px 5px 5px 0px;
+      }
+      .topline {
+        display: flex;
+        flex-shrink: 0;
+      }
+      .participants {
+        will-change: transform;
+        flex: 1;
+        flex-shrink: 0;
+        font-weight: bold;
+      }
+      .time {
+        will-change: transform;
+        flex-shrink: 0;
+        font-size: 6px;
+        color: #444;
+      }
+      .bottomline {
+        flex-shrink: 0;
+        display: flex;
+      }
+      .preview {
+        flex: 1;
+        flex-shrink: 0;
+        font-size: 6px;
+        height: 2em;
+        text-overflow: ellipsis;
+      }
+      .subject {
+        font-weight: bold;
+      }
+      .snippet {
+        color: #444;
+      }
+      .trinkets {
+        will-change: transform;
+        flex-shrink: 0;
+        font-size: 10px;
+      }
+      .fixed {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, 0);
+        border: 3px solid #73AD21;
+      }
+    </style>
+  </head>
+  
+  <script type="text/javascript" src="bench.js"></script>
+  <script type="text/javascript">
+    function draw() {
+      let opacity = document.getElementById("animatingDiv").style.opacity * 100;
+      opacity = 50 + ((opacity + 1) % 50);
+      document.getElementById("animatingDiv").style.opacity = opacity / 100;
+    };
+
+    function init() {
+      bench.run(draw);
+    }
+
+    // call init once the document is fully loaded
+    window.addEventListener('load', init, false);
+  </script>
+
+  <body>
+    <div id="runway">
+      <template>
+        <div class="item conversation">
+          <div class="avatar">A</div>
+          <div class="summary">
+            <div class="topline">
+              <div class="participants">{{ participants }}</div>
+              <div class="time">{{ time }}</div>
+            </div>
+            <div class="bottomline">
+              <div class="preview"><span class="subject">{{ subject }}</span> &mdash;
+                <span class="snippet">{{ snippet }}</span></div>
+              <div class="trinkets">&#x2606;</div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+    <div id="animatingDiv" class="fixed">This div element has position: fixed</div>
+    <script>
+      var qs = (function(a) {
+        if (a == "") return {};
+        var b = {};
+        for (var i = 0; i < a.length; ++i)
+        {
+          var p=a[i].split('=', 2);
+          if (p.length == 1)
+            b[p[0]] = "";
+          else
+            b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+        }
+        return b;
+      })(window.location.search.substr(1).split('&'));
+
+      function getRandomItem(array) {
+        return array[Math.floor(Math.random() * array.length)];
+      }
+      function generateFakeData() {
+        var kNumberOfItems = 500;
+        var possibleParticipants = [
+          'Adam', 'Ojan', 'Elliot', 'Chris',
+        ];
+        var possibleTimes = [
+          'Now', 'Yesterday', 'Last week',
+        ];
+        var possibleSubjects = [
+          'Do you even bench?',
+          'I like to scroll forever',
+          'Lunch',
+          'What if my subject is really long? Longer than that. Like really, really, long?',
+        ];
+        var possibleSnippets = [
+          'Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.',
+          'When, in disgrace with fortune and men\'s eyes, I all alone beweep my outcast state,',
+          'We the People of the United States, in Order to form a more perfect Union, establish Justice, insure domestic Tranquility',
+        ];
+        var data = new Array(kNumberOfItems);
+        for (var i = 0; i < kNumberOfItems; ++i) {
+          data[i] = {
+            participants: getRandomItem(possibleParticipants),
+            time: getRandomItem(possibleTimes),
+            subject: getRandomItem(possibleSubjects),
+            snippet: getRandomItem(possibleSnippets),
+          }
+        }
+        return data;
+      }
+
+      var data = generateFakeData();
+
+      "use strict";
+      (function(exports) {
+        var kHeight = 35;
+        var kLayerPerItem = 5;
+        var kPhysicalCount = Math.ceil(qs['layer_count'] / kLayerPerItem);
+
+        var container = window;
+        var runway = document.getElementById('runway');
+
+
+        var template = runway.querySelector('template');
+        var items = new Array(kPhysicalCount);
+        for (var i = 0; i < kPhysicalCount; ++i) {
+          var fragment = template.content.cloneNode(true);
+          runway.appendChild(fragment);
+          var item = runway.lastElementChild;
+          items[i] = item;
+          item.transformValue_ = 0;
+          item.participants_ = item.querySelector('.participants').firstChild;
+          item.time_ = item.querySelector('.time').firstChild;
+          item.subject_ = item.querySelector('.subject').firstChild;
+          item.snippet_ = item.querySelector('.snippet').firstChild;
+
+          updateText(item, i);
+        }
+
+        var physicalHeight = kHeight * kPhysicalCount;
+
+        function updateText(item, index) {
+          var datum = data[index % data.length];
+          item.participants_.nodeValue = datum.participants;
+          item.time_.nodeValue = datum.time;
+          item.subject_.nodeValue = datum.subject;
+          item.snippet_.nodeValue = datum.snippet;
+        }
+
+        container.addEventListener('scroll', function(e) {
+          var scrollTop = container.scrollY;
+
+          var firstVirtualIndex = Math.floor(scrollTop / kHeight);
+          var firstPhysicalIndex = firstVirtualIndex % kPhysicalCount;
+
+          var baseVirtualIndex = firstVirtualIndex - firstPhysicalIndex;
+
+          var baseTransformValue = kHeight * baseVirtualIndex;
+          var nextTransformValue = baseTransformValue + physicalHeight;
+
+          var baseTransformString = 'translate3d(0,' + baseTransformValue + 'px,0)';
+          var nextTransformString = 'translate3d(0,' + nextTransformValue + 'px,0)';
+
+          window.requestAnimationFrame(function() {
+            for (var i = 0; i < firstPhysicalIndex; ++i) {
+              var item = items[i];
+              if (item.transformValue_ != nextTransformValue) {
+                // NOTE(vmiura): Removed updateText to remove layout changes from the benchmark.
+                //updateText(item, baseVirtualIndex + kPhysicalCount + i);
+                item.style.WebkitTransform = nextTransformString;
+                item.transformValue_ = nextTransformValue;
+              }
+
+            }
+            for (var i = firstPhysicalIndex; i < kPhysicalCount; ++i) {
+              var item = items[i];
+              if (item.transformValue_ != baseTransformValue) {
+                // NOTE(vmiura): Removed updateText to remove layout changes from the benchmark.
+                //updateText(item, baseVirtualIndex + i);
+                item.style.WebkitTransform = baseTransformString;
+                item.transformValue_ = baseTransformValue;
+              }
+            }
+          });
+        });
+      })(window);
+    </script>
+  </body>
+</html>

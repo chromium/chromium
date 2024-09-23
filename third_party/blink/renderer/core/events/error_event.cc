@@ -124,6 +124,7 @@ ScriptValue ErrorEvent::error(ScriptState* script_state) const {
 
 void ErrorEvent::Trace(Visitor* visitor) const {
   visitor->Trace(error_);
+  visitor->Trace(world_);
   Event::Trace(visitor);
 }
 

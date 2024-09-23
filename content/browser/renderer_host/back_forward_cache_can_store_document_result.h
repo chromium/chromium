@@ -79,7 +79,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   void NoDueToDisableForRenderFrameHostCalled(
       const DisabledReasonsMap& reasons);
   void NoDueToDisallowActivation(uint64_t reason);
-  // TODO(crbug.com/1341507): Remove this function.
+  // TODO(crbug.com/40060145): Remove this function.
   void NoDueToAXEvents(const std::vector<ui::AXEvent>& events);
 
   // The conditions for storing and restoring the pages are different in that
@@ -114,7 +114,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   const std::set<ax::mojom::Event>& ax_events() const { return ax_events_; }
 
   std::string ToString() const;
-  std::vector<std::string> GetStringReasons() const;
+  std::unordered_set<std::string> GetStringReasons() const;
 
   void WriteIntoTrace(
       perfetto::TracedProto<

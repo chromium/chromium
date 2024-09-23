@@ -115,7 +115,6 @@ NotificationTypeDetailed GetNotificationTypeForArc(
         return ARC_PRIORITY_TWO_PINNED;
       default:
         NOTREACHED();
-        return OTHER;
     }
   } else {
     switch (priority) {
@@ -131,7 +130,6 @@ NotificationTypeDetailed GetNotificationTypeForArc(
         return ARC_PRIORITY_TWO;
       default:
         NOTREACHED();
-        return OTHER;
     }
   }
 }
@@ -208,7 +206,6 @@ NotificationTypeDetailed GetNotificationTypeForCros(
         return CROS_PRIORITY_TWO_PINNED;
       default:
         NOTREACHED();
-        return OTHER;
     }
   } else {
     switch (priority) {
@@ -224,7 +221,6 @@ NotificationTypeDetailed GetNotificationTypeForCros(
         return CROS_PRIORITY_TWO;
       default:
         NOTREACHED();
-        return OTHER;
     }
   }
 }
@@ -252,7 +248,6 @@ NotificationTypeDetailed GetNotificationTypeForPhoneHub(
       return PHONEHUB_PRIORITY_TWO;
     default:
       NOTREACHED();
-      return OTHER;
   }
 }
 
@@ -647,6 +642,18 @@ void LogExpandButtonClickAction(ExpandButtonClickAction action) {
 void LogGroupNotificationAddedType(GroupNotificationType type) {
   base::UmaHistogramEnumeration("Ash.Notification.GroupNotificationAdded",
                                 type);
+}
+
+void LogOngoingProcessShownWithoutIcon(NotificationCatalogName catalog_name) {
+  base::UmaHistogramEnumeration(
+      "Ash.NotifierFramework.PinnedSystemNotification.ShownWithoutIcon",
+      catalog_name);
+}
+
+void LogOngoingProcessShownWithoutTitle(NotificationCatalogName catalog_name) {
+  base::UmaHistogramEnumeration(
+      "Ash.NotifierFramework.PinnedSystemNotification.ShownWithoutTitle",
+      catalog_name);
 }
 
 }  // namespace metrics_utils

@@ -181,10 +181,11 @@ public class UrlUtilities {
 
     /**
      * Returns a new URL without the port in the hostname if it was present.
+     *
      * @param url The url to process.
      * @return
      */
-    // TODO(crbug/783819): Expose GURL::Replacements to Java.
+    // TODO(crbug.com/40549331): Expose GURL::Replacements to Java.
     public static GURL clearPort(GURL url) {
         if (url == null || TextUtils.isEmpty(url.getPort())) return url;
         return UrlUtilitiesJni.get().clearPort(url);
@@ -195,14 +196,13 @@ public class UrlUtilities {
      *
      * @param uri A URI
      * @param includePrivateRegistries Whether or not to consider private registries.
-     *
      * @return The registered, organization-identifying host and all its registry information, but
-     * no subdomains, from the given URI. Returns an empty string if the URI is invalid, has no host
-     * (e.g. a file: URI), has multiple trailing dots, is an IP address, has only one subcomponent
-     * (i.e. no dots other than leading/trailing ones), or is itself a recognized registry
-     * identifier.
+     *     no subdomains, from the given URI. Returns an empty string if the URI is invalid, has no
+     *     host (e.g. a file: URI), has multiple trailing dots, is an IP address, has only one
+     *     subcomponent (i.e. no dots other than leading/trailing ones), or is itself a recognized
+     *     registry identifier.
      */
-    // TODO(crbug/783819): Convert to GURL.
+    // TODO(crbug.com/40549331): Convert to GURL.
     public static String getDomainAndRegistry(String uri, boolean includePrivateRegistries) {
         if (TextUtils.isEmpty(uri)) return uri;
         return UrlUtilitiesJni.get().getDomainAndRegistry(uri, includePrivateRegistries);
@@ -240,7 +240,8 @@ public class UrlUtilities {
     }
 
     /**
-     * TODO(https://crbug.com/783819): This should use UrlFormatter, or GURL machinery.
+     * TODO(crbug.com/40549331): This should use UrlFormatter, or GURL machinery.
+     *
      * @param url An HTTP or HTTPS URL.
      * @return The URL without the scheme.
      */
@@ -276,7 +277,8 @@ public class UrlUtilities {
      */
     public static boolean isNtpUrl(GURL gurl) {
         if (!gurl.isValid() || !isInternalScheme(gurl)) return false;
-        return UrlConstants.NTP_HOST.equals(gurl.getHost());
+        return UrlConstants.NTP_HOST.equals(gurl.getHost())
+                || UrlConstants.NEW_TAB_PAGE_URL_LEGACY.equals(gurl.getValidSpecOrEmpty());
     }
 
     /**
@@ -306,7 +308,7 @@ public class UrlUtilities {
      * @return Whether the given URL matches the NTP urls exactly.
      */
     public static boolean isCanonicalizedNtpUrl(String url) {
-        // TODO(crbug.com/1267266): Let callers check if the library is initialized and make them
+        // TODO(crbug.com/40204389): Let callers check if the library is initialized and make them
         // call this method only before native is initialized.
         // After native initialization, the homepage url could become
         // "chrome://newtab/#most_visited" on carrier phones. Simply comparing the text of the URL

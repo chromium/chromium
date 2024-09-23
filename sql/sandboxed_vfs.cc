@@ -6,17 +6,23 @@
 
 #include <algorithm>
 #include <cstring>
+#include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
-#include "build/build_config.h"
+#include "base/time/time.h"
 #include "sql/initialization.h"
 #include "sql/sandboxed_vfs_file.h"
 #include "sql/vfs_wrapper.h"
@@ -121,27 +127,23 @@ base::Time SqliteEpoch() {
 #if DCHECK_IS_ON()
 // `full_path_cstr` must be a filename argument passed to the VFS from SQLite.
 SandboxedVfsFileType VfsFileTypeFromPath(const char* full_path_cstr) {
-  base::StringPiece full_path(full_path_cstr);
+  std::string_view full_path(full_path_cstr);
 
-  const char* database_file_cstr = sqlite3_filename_database(full_path_cstr);
-  base::StringPiece database_file(database_file_cstr);
-  if (full_path == database_file)
+  if (full_path == sqlite3_filename_database(full_path_cstr)) {
     return SandboxedVfsFileType::kDatabase;
+  }
 
-  const char* journal_file_cstr = sqlite3_filename_journal(full_path_cstr);
-  base::StringPiece journal_file(journal_file_cstr);
-  if (full_path == journal_file)
+  if (full_path == sqlite3_filename_journal(full_path_cstr)) {
     return SandboxedVfsFileType::kJournal;
+  }
 
-  const char* wal_file_cstr = sqlite3_filename_wal(full_path_cstr);
-  base::StringPiece wal_file(wal_file_cstr);
-  if (full_path == wal_file)
+  if (full_path == sqlite3_filename_wal(full_path_cstr)) {
     return SandboxedVfsFileType::kWal;
+  }
 
   NOTREACHED()
       << "Argument is not a file name buffer passed from SQLite to a VFS: "
       << full_path;
-  return SandboxedVfsFileType::kDatabase;
 }
 #endif  // DCHECK_IS_ON()
 
@@ -215,7 +217,6 @@ int SandboxedVfs::Access(const char* full_path, int flags, int& result) {
       break;
     default:
       NOTREACHED() << "Unsupported xAccess flags: " << flags;
-      return SQLITE_ERROR;
   }
   return SQLITE_OK;
 }

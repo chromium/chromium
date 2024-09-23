@@ -10,15 +10,14 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/RequestCoordinatorBridge_jni.h"
-#include "chrome/android/chrome_jni_headers/SavePageRequest_jni.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
 
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/RequestCoordinatorBridge_jni.h"
+#include "chrome/android/chrome_jni_headers/SavePageRequest_jni.h"
+
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
@@ -48,7 +47,7 @@ UpdateRequestResult ToUpdateRequestResult(ItemActionStatus status) {
     case ItemActionStatus::STORE_ERROR:
       return UpdateRequestResult::STORE_FAILURE;
     case ItemActionStatus::ALREADY_EXISTS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return UpdateRequestResult::STORE_FAILURE;
 }
@@ -82,14 +81,6 @@ void SavePageLaterCallback(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
                                        static_cast<int32_t>(value));
 }
 
-RequestCoordinator* GetRequestCoordinator(
-    const JavaParamRef<jobject>& j_profile) {
-  content::BrowserContext* context =
-      ProfileAndroid::FromProfileAndroid(j_profile);
-  return offline_pages::RequestCoordinatorFactory::GetInstance()
-      ->GetForBrowserContext(context);
-}
-
 }  // namespace
 
 ScopedJavaLocalRef<jobjectArray> CreateJavaSavePageRequests(
@@ -103,19 +94,12 @@ ScopedJavaLocalRef<jobjectArray> CreateJavaSavePageRequests(
 
   for (size_t i = 0; i < requests.size(); ++i) {
     const SavePageRequest& request = *(requests[i]);
-    ScopedJavaLocalRef<jstring> name_space =
-        ConvertUTF8ToJavaString(env, request.client_id().name_space);
-    ScopedJavaLocalRef<jstring> id =
-        ConvertUTF8ToJavaString(env, request.client_id().id);
-    ScopedJavaLocalRef<jstring> url =
-        ConvertUTF8ToJavaString(env, request.url().spec());
-    ScopedJavaLocalRef<jstring> origin =
-        ConvertUTF8ToJavaString(env, request.request_origin());
-
     ScopedJavaLocalRef<jobject> j_save_page_request =
         Java_SavePageRequest_create(
             env, static_cast<int>(request.request_state()),
-            request.request_id(), url, name_space, id, origin,
+            request.request_id(), request.url().spec(),
+            request.client_id().name_space, request.client_id().id,
+            request.request_origin(),
             static_cast<int>(request.auto_fetch_notification_state()));
     env->SetObjectArrayElement(joa, i, j_save_page_request.obj());
   }
@@ -125,20 +109,21 @@ ScopedJavaLocalRef<jobjectArray> CreateJavaSavePageRequests(
 
 JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const JavaParamRef<jobject>& j_callback_obj,
-    const JavaParamRef<jstring>& j_url,
-    const JavaParamRef<jstring>& j_namespace,
-    const JavaParamRef<jstring>& j_client_id,
-    const JavaParamRef<jstring>& j_origin,
+    std::string& url_spec,
+    std::string& namespace_str,
+    std::string& client_id_str,
+    std::string& origin,
     jboolean user_requested) {
   DCHECK(j_callback_obj);
 
   offline_pages::ClientId client_id;
-  client_id.name_space = ConvertJavaStringToUTF8(env, j_namespace);
-  client_id.id = ConvertJavaStringToUTF8(env, j_client_id);
+  client_id.name_space = namespace_str;
+  client_id.id = client_id_str;
 
-  RequestCoordinator* coordinator = GetRequestCoordinator(j_profile);
+  RequestCoordinator* coordinator =
+      offline_pages::RequestCoordinatorFactory::GetForBrowserContext(profile);
 
   if (!coordinator) {
     // Callback with null to signal that results are unavailable.
@@ -147,12 +132,12 @@ JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
   }
 
   RequestCoordinator::SavePageLaterParams params;
-  params.url = GURL(ConvertJavaStringToUTF8(env, j_url));
+  params.url = GURL(url_spec);
   params.client_id = client_id;
   params.user_requested = static_cast<bool>(user_requested);
   params.availability =
       RequestCoordinator::RequestAvailability::ENABLED_FOR_OFFLINER;
-  params.request_origin = ConvertJavaStringToUTF8(env, j_origin);
+  params.request_origin = origin;
 
   coordinator->SavePageLater(
       params, base::BindOnce(&SavePageLaterCallback,
@@ -161,11 +146,12 @@ JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
 
 JNI_EXPORT void JNI_RequestCoordinatorBridge_GetRequestsInQueue(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const JavaParamRef<jobject>& j_callback_obj) {
   ScopedJavaGlobalRef<jobject> j_callback_ref(j_callback_obj);
 
-  RequestCoordinator* coordinator = GetRequestCoordinator(j_profile);
+  RequestCoordinator* coordinator =
+      offline_pages::RequestCoordinatorFactory::GetForBrowserContext(profile);
 
   if (!coordinator) {
     // Callback with null to signal that results are unavailable.
@@ -180,7 +166,7 @@ JNI_EXPORT void JNI_RequestCoordinatorBridge_GetRequestsInQueue(
 
 JNI_EXPORT void JNI_RequestCoordinatorBridge_RemoveRequestsFromQueue(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile,
+    Profile* profile,
     const JavaParamRef<jlongArray>& j_request_ids_array,
     const JavaParamRef<jobject>& j_callback_obj) {
   std::vector<int64_t> request_ids;
@@ -188,7 +174,8 @@ JNI_EXPORT void JNI_RequestCoordinatorBridge_RemoveRequestsFromQueue(
                                             &request_ids);
   ScopedJavaGlobalRef<jobject> j_callback_ref(j_callback_obj);
 
-  RequestCoordinator* coordinator = GetRequestCoordinator(j_profile);
+  RequestCoordinator* coordinator =
+      offline_pages::RequestCoordinatorFactory::GetForBrowserContext(profile);
 
   if (!coordinator) {
     // Callback with null to signal that results are unavailable.

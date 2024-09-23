@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "device/fido/fido_constants.h"
 
 namespace device {
@@ -27,7 +28,8 @@ class FidoBleFrameContinuationFragment;
 // The specification of what constitues a frame can be found here:
 // https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-bt-protocol-v1.2-ps-20170411.html#h2_framing
 //
-// TODO(crbug/763303): Consider refactoring U2fMessage to support BLE frames.
+// TODO(crbug.com/40539129): Consider refactoring U2fMessage to support BLE
+// frames.
 class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleFrame {
  public:
   // The values which can be carried in the |data| section of a KEEPALIVE
@@ -114,7 +116,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleFrameFragment {
   virtual ~FidoBleFrameFragment();
 
  private:
-  base::span<const uint8_t> fragment_;
+  base::raw_span<const uint8_t> fragment_;
 };
 
 // An initialization fragment of a frame.

@@ -4,6 +4,9 @@
 
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/containers/span.h"
+#import "base/location.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -20,7 +23,7 @@
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "net/base/apple/url_conversions.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -51,8 +54,8 @@ favicon_base::FaviconRawBitmapResult CreateTestBitmap(int w, int h) {
   CGSize size = CGSizeMake(w, h);
   UIImage* favicon = UIImageWithSizeAndSolidColor(size, [UIColor redColor]);
   NSData* png = UIImagePNGRepresentation(favicon);
-  scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes(
-      static_cast<const unsigned char*>([png bytes]), [png length]));
+  scoped_refptr<base::RefCountedBytes> data(
+      new base::RefCountedBytes(base::apple::NSDataToSpan(png)));
 
   result.bitmap_data = data;
   result.pixel_size = gfx::Size(w, h);
@@ -79,7 +82,7 @@ class ReadingListSpotlightManagerTest : public PlatformTest {
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::move(initial_entries)));
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     model_ = ReadingListModelFactory::GetInstance()->GetForBrowserState(
         browser_state_.get());
@@ -201,12 +204,93 @@ TEST_F(ReadingListSpotlightManagerTest, testRemoveEntry) {
             spotlightInterface:fakeSpotlightInterface
          searchableItemFactory:searchableItemFactory_];
 
-  model_->RemoveEntryByURL(GURL(kTestURL1));
+  model_->RemoveEntryByURL(GURL(kTestURL1), FROM_HERE);
 
   // We expect to attempt deleting the item that was removed, from spotlight.
   EXPECT_EQ(
       fakeSpotlightInterface.deleteSearchableItemsWithIdentifiersCallsCount,
       1u);
+
+  [manager shutdown];
+}
+
+// Test that model updates in background don't do anything until the app is
+// foregrounded, at which point they cause a full reindex.
+TEST_F(ReadingListSpotlightManagerTest, testBackgroundPausesModelUpdates) {
+  FakeSpotlightInterface* fakeSpotlightInterface =
+      [[FakeSpotlightInterface alloc] init];
+
+  ReadingListSpotlightManager* manager = [[ReadingListSpotlightManager alloc]
+      initWithLargeIconService:large_icon_service_.get()
+              readingListModel:model_
+            spotlightInterface:fakeSpotlightInterface
+         searchableItemFactory:searchableItemFactory_];
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidEnterBackgroundNotification
+                    object:nil
+                  userInfo:nil];
+
+  EXPECT_EQ(fakeSpotlightInterface
+                .deleteSearchableItemsWithDomainIdentifiersCallsCount,
+            1u);
+
+  model_->RemoveEntryByURL(GURL(kTestURL1), FROM_HERE);
+
+  EXPECT_EQ(
+      fakeSpotlightInterface.deleteSearchableItemsWithIdentifiersCallsCount,
+      0u);
+  EXPECT_EQ(fakeSpotlightInterface
+                .deleteSearchableItemsWithDomainIdentifiersCallsCount,
+            1u);
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationWillEnterForegroundNotification
+                    object:nil
+                  userInfo:nil];
+
+  EXPECT_EQ(
+      fakeSpotlightInterface.deleteSearchableItemsWithIdentifiersCallsCount,
+      0u);
+  EXPECT_EQ(fakeSpotlightInterface
+                .deleteSearchableItemsWithDomainIdentifiersCallsCount,
+            2u);
+
+  [manager shutdown];
+}
+
+// Test that attempting public API calls don't have an immediate effect in
+// background, and the update only happens when the app is foregrounded again.
+TEST_F(ReadingListSpotlightManagerTest, testBackgroundPausesAPICalls) {
+  FakeSpotlightInterface* fakeSpotlightInterface =
+      [[FakeSpotlightInterface alloc] init];
+
+  ReadingListSpotlightManager* manager = [[ReadingListSpotlightManager alloc]
+      initWithLargeIconService:large_icon_service_.get()
+              readingListModel:model_
+            spotlightInterface:fakeSpotlightInterface
+         searchableItemFactory:searchableItemFactory_];
+  EXPECT_EQ(fakeSpotlightInterface
+                .deleteSearchableItemsWithDomainIdentifiersCallsCount,
+            1u);
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidEnterBackgroundNotification
+                    object:nil
+                  userInfo:nil];
+
+  [manager clearAndReindexReadingList];
+  EXPECT_EQ(fakeSpotlightInterface
+                .deleteSearchableItemsWithDomainIdentifiersCallsCount,
+            1u);
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationWillEnterForegroundNotification
+                    object:nil
+                  userInfo:nil];
+  EXPECT_EQ(fakeSpotlightInterface
+                .deleteSearchableItemsWithDomainIdentifiersCallsCount,
+            2u);
 
   [manager shutdown];
 }

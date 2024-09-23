@@ -2,21 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
-
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/resource_coordinator/tab_manager.h"
+#include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
+#include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -33,18 +36,19 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync_bookmarks/bookmark_sync_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/styled_label.h"
@@ -90,6 +94,11 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUpOnMainThread();
 
     SetUpTabHelperAndShoppingService();
+
+    // Pretend sync is on for bookmarks, required for price tracking.
+    LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(
+        browser()->profile())
+        ->SetIsTrackingMetadataForTesting();
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -151,7 +160,10 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
                image_fetcher::ImageFetcherCallback* image_callback,
                image_fetcher::ImageFetcherParams params) {
               SkBitmap bitmap;
-              bitmap.allocN32Pixels(1, 1);
+              // The image size must not be too small (e.g., 1x1), as it becomes
+              // empty when cropped for rounded corners in BubbleFrameView,
+              // triggering a DCHECK in ImageSkiaRep.
+              bitmap.allocN32Pixels(10, 10);
               gfx::Image image =
                   gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
 
@@ -159,9 +171,10 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
                   .Run(std::move(image), image_fetcher::RequestMetadata());
             });
 
-    tab_helper_ = static_cast<commerce::CommerceUiTabHelper*>(
-        commerce::CommerceUiTabHelper::FromWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents()));
+    tab_helper_ = browser()
+                      ->GetActiveTabInterface()
+                      ->GetTabFeatures()
+                      ->commerce_ui_tab_helper();
     tab_helper_->GetPriceTrackingControllerForTesting()
         ->SetImageFetcherForTesting(image_fetcher_.get());
 
@@ -184,22 +197,22 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
       this};
 };
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       FUEBubbleShownOnPress) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_FUEBubbleShownOnPress DISABLED_FUEBubbleShownOnPress
+#else
+#define MAYBE_FUEBubbleShownOnPress FUEBubbleShownOnPress
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_FUEBubbleShownOnPress) {
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
   RunTestSequence(
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
-      PressButton(kPriceTrackingChipElementId), FlushEvents(),
+      WaitForShow(kPriceTrackingChipElementId),
+      PressButton(kPriceTrackingChipElementId),
       WaitForShow(kPriceTrackingBubbleDialogId));
 
   auto* bubble = static_cast<PriceTrackingBubbleDialogView*>(
@@ -210,9 +223,18 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
             PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE);
 }
 
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PriceTrackingBubbleShownOnPress_BeforeFUEOnTrackedProduct \
+  DISABLED_PriceTrackingBubbleShownOnPress_BeforeFUEOnTrackedProduct
+#else
+#define MAYBE_PriceTrackingBubbleShownOnPress_BeforeFUEOnTrackedProduct \
+  PriceTrackingBubbleShownOnPress_BeforeFUEOnTrackedProduct
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(
     PriceTrackingIconViewInteractiveTest,
-    PriceTrackingBubbleShownOnPress_BeforeFUEOnTrackedProduct) {
+    MAYBE_PriceTrackingBubbleShownOnPress_BeforeFUEOnTrackedProduct) {
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kShouldShowPriceTrackFUEBubble));
   bookmarks::BookmarkModel* bookmark_model =
@@ -226,19 +248,13 @@ IN_PROC_BROWSER_TEST_F(
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
+      WaitForShow(kPriceTrackingChipElementId),
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
-                  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-                      features::IsChromeRefresh2023()) {
-                    return view->GetVectorIcon().name ==
-                           omnibox::kPriceTrackingEnabledRefreshIcon.name;
-                  } else {
-                    return view->GetVectorIcon().name ==
-                           omnibox::kPriceTrackingEnabledFilledIcon.name;
-                  }
+                  return view->GetVectorIcon().name ==
+                         omnibox::kPriceTrackingEnabledRefreshIcon.name;
                 })),
-      PressButton(kPriceTrackingChipElementId), FlushEvents(),
+      PressButton(kPriceTrackingChipElementId),
       WaitForShow(kPriceTrackingBubbleDialogId));
 
   auto* bubble = static_cast<PriceTrackingBubbleDialogView*>(
@@ -249,15 +265,17 @@ IN_PROC_BROWSER_TEST_F(
             PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       PriceTrackingBubbleShownOnPress_AfterFUE) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_PriceTrackingBubbleShownOnPress_AfterFUE \
+  DISABLED_PriceTrackingBubbleShownOnPress_AfterFUE
+#else
+#define MAYBE_PriceTrackingBubbleShownOnPress_AfterFUE \
+  PriceTrackingBubbleShownOnPress_AfterFUE
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_PriceTrackingBubbleShownOnPress_AfterFUE) {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kShouldShowPriceTrackFUEBubble, false);
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
@@ -266,8 +284,8 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
-      PressButton(kPriceTrackingChipElementId), FlushEvents(),
+      WaitForShow(kPriceTrackingChipElementId),
+      PressButton(kPriceTrackingChipElementId),
       WaitForShow(kPriceTrackingBubbleDialogId));
 
   auto* bubble = static_cast<PriceTrackingBubbleDialogView*>(
@@ -278,23 +296,23 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
             PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       BubbleCanBeReshowOnPress) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_BubbleCanBeReshowOnPress DISABLED_BubbleCanBeReshowOnPress
+#else
+#define MAYBE_BubbleCanBeReshowOnPress BubbleCanBeReshowOnPress
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_BubbleCanBeReshowOnPress) {
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
 
   RunTestSequence(
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
-      PressButton(kPriceTrackingChipElementId), FlushEvents(),
+      WaitForShow(kPriceTrackingChipElementId),
+      PressButton(kPriceTrackingChipElementId),
       WaitForShow(kPriceTrackingBubbleDialogId));
 
   auto* widget =
@@ -309,11 +327,11 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
 
   RunTestSequence(WaitForHide(kPriceTrackingBubbleDialogId),
                   // Click the icon again to reshow the bubble.
-                  PressButton(kPriceTrackingChipElementId), FlushEvents(),
+                  PressButton(kPriceTrackingChipElementId),
                   WaitForShow(kPriceTrackingBubbleDialogId));
 }
 
-// TODO(crbug.com/1510975): fix and re-enable for CR2023.
+// TODO(crbug.com/41483562): fix and re-enable for CR2023.
 IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
                        DISABLED_EnablePriceTrackOnPress) {
   browser()->profile()->GetPrefs()->SetBoolean(
@@ -324,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
 
   RunTestSequence(
       InstrumentTab(kShoppingTab),
-      NavigateWebContents(kShoppingTab, shopping_url), FlushEvents(),
+      NavigateWebContents(kShoppingTab, shopping_url),
       WaitForShow(kPriceTrackingChipElementId),
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
@@ -333,16 +351,10 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
                 })),
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
-                  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-                      features::IsChromeRefresh2023()) {
-                    return view->GetVectorIcon().name ==
-                           omnibox::kPriceTrackingDisabledRefreshIcon.name;
-                  } else {
-                    return view->GetVectorIcon().name ==
-                           omnibox::kPriceTrackingDisabledIcon.name;
-                  }
+                  return view->GetVectorIcon().name ==
+                          omnibox::kPriceTrackingDisabledRefreshIcon.name;
                 })),
-      PressButton(kPriceTrackingChipElementId), FlushEvents(),
+      PressButton(kPriceTrackingChipElementId),
       WaitForShow(kPriceTrackingBubbleDialogId));
 
   SimulateServerPriceTrackStateUpdated(true, shopping_url);
@@ -360,26 +372,21 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
           l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE)),
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
-                  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-                      features::IsChromeRefresh2023()) {
-                    return view->GetVectorIcon().name ==
-                           omnibox::kPriceTrackingEnabledRefreshIcon.name;
-                  } else {
-                    return view->GetVectorIcon().name ==
-                           omnibox::kPriceTrackingEnabledFilledIcon.name;
-                  }
+                  return view->GetVectorIcon().name ==
+                          omnibox::kPriceTrackingEnabledRefreshIcon.name;
                 })));
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       CreateBookmarkOnPressIfNotExist) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_CreateBookmarkOnPressIfNotExist \
+  DISABLED_CreateBookmarkOnPressIfNotExist
+#else
+#define MAYBE_CreateBookmarkOnPressIfNotExist CreateBookmarkOnPressIfNotExist
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_CreateBookmarkOnPressIfNotExist) {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kShouldShowPriceTrackFUEBubble, false);
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
@@ -387,25 +394,25 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
   const GURL shopping_url = embedded_test_server()->GetURL(kShoppingURL);
   RunTestSequence(InstrumentTab(kShoppingTab),
                   NavigateWebContents(kShoppingTab, shopping_url),
-                  FlushEvents(), WaitForShow(kPriceTrackingChipElementId));
+                  WaitForShow(kPriceTrackingChipElementId));
 
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   EXPECT_FALSE(bookmarks::IsBookmarkedByUser(bookmark_model, shopping_url));
-  RunTestSequence(PressButton(kPriceTrackingChipElementId), FlushEvents());
+  RunTestSequence(PressButton(kPriceTrackingChipElementId));
 
   EXPECT_TRUE(bookmarks::IsBookmarkedByUser(bookmark_model, shopping_url));
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       RecordOmniboxChipClicked) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_RecordOmniboxChipClicked DISABLED_RecordOmniboxChipClicked
+#else
+#define MAYBE_RecordOmniboxChipClicked RecordOmniboxChipClicked
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_RecordOmniboxChipClicked) {
   base::UserActionTester user_action_tester;
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
   EXPECT_EQ(user_action_tester.GetActionCount(
@@ -415,23 +422,24 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
-      PressButton(kPriceTrackingChipElementId), FlushEvents());
+      WaitForShow(kPriceTrackingChipElementId),
+      PressButton(kPriceTrackingChipElementId));
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Commerce.PriceTracking.OmniboxChipClicked"),
             1);
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       RecordOmniboxChipTracked) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_RecordOmniboxChipTracked DISABLED_RecordOmniboxChipTracked
+#else
+#define MAYBE_RecordOmniboxChipTracked RecordOmniboxChipTracked
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_RecordOmniboxChipTracked) {
   base::UserActionTester user_action_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kShouldShowPriceTrackFUEBubble, false);
@@ -443,22 +451,31 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
-      PressButton(kPriceTrackingChipElementId), FlushEvents());
+      WaitForShow(kPriceTrackingChipElementId),
+      PressButton(kPriceTrackingChipElementId));
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Commerce.PriceTracking.OmniboxChip.Tracked"),
             1);
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Shopping_ShoppingAction::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::Shopping_ShoppingAction::kPriceTrackedName, 1);
+  ukm_recorder.ExpectEntrySourceHasUrl(
+      entries[0], embedded_test_server()->GetURL(kShoppingURL));
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       NoRecordOmniboxChipTracked_ForTrackedProduct) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_NoRecordOmniboxChipTracked_ForTrackedProduct \
+  DISABLED_NoRecordOmniboxChipTracked_ForTrackedProduct
+#else
+#define MAYBE_NoRecordOmniboxChipTracked_ForTrackedProduct \
+  NoRecordOmniboxChipTracked_ForTrackedProduct
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_NoRecordOmniboxChipTracked_ForTrackedProduct) {
   base::UserActionTester user_action_tester;
   mock_shopping_service_->SetIsSubscribedCallbackValue(true);
   browser()->profile()->GetPrefs()->SetBoolean(
@@ -471,23 +488,25 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
-      PressButton(kPriceTrackingChipElementId), FlushEvents());
+      WaitForShow(kPriceTrackingChipElementId),
+      PressButton(kPriceTrackingChipElementId));
 
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Commerce.PriceTracking.OmniboxChip.Tracked"),
             0);
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       NoRecordOmniboxChipTracked_ForFUEFlow) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_NoRecordOmniboxChipTracked_ForFUEFlow \
+  DISABLED_NoRecordOmniboxChipTracked_ForFUEFlow
+#else
+#define MAYBE_NoRecordOmniboxChipTracked_ForFUEFlow \
+  NoRecordOmniboxChipTracked_ForFUEFlow
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_NoRecordOmniboxChipTracked_ForFUEFlow) {
   base::UserActionTester user_action_tester;
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
   EXPECT_EQ(user_action_tester.GetActionCount(
@@ -497,8 +516,8 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
-      PressButton(kPriceTrackingChipElementId), FlushEvents());
+      WaitForShow(kPriceTrackingChipElementId),
+      PressButton(kPriceTrackingChipElementId));
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Commerce.PriceTracking.OmniboxChip.Tracked"),
             0);
@@ -511,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
+      WaitForShow(kPriceTrackingChipElementId),
       CheckViewProperty(kPriceTrackingChipElementId,
                         &PriceTrackingIconView::GetAccessibleName,
                         l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE)),
@@ -548,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewErrorHandelingTest,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
+      WaitForShow(kPriceTrackingChipElementId),
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
                   return view->GetIconLabelForTesting() ==
@@ -556,16 +575,10 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewErrorHandelingTest,
                 })),
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
-                  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-                      features::IsChromeRefresh2023()) {
-                    return view->GetVectorIcon().name ==
-                           omnibox::kPriceTrackingDisabledRefreshIcon.name;
-                  } else {
-                    return view->GetVectorIcon().name ==
-                           omnibox::kPriceTrackingDisabledIcon.name;
-                  }
+                  return view->GetVectorIcon().name ==
+                          omnibox::kPriceTrackingDisabledRefreshIcon.name;
                 })),
-      PressButton(kPriceTrackingChipElementId), FlushEvents(),
+      PressButton(kPriceTrackingChipElementId),
 
       // After the button press, nothing should have changes since the
       // subscription failed.
@@ -576,14 +589,8 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewErrorHandelingTest,
                 })),
       CheckView(kPriceTrackingChipElementId,
                 base::BindOnce([](PriceTrackingIconView* view) {
-                  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-                      features::IsChromeRefresh2023()) {
-                    return view->GetVectorIcon().name ==
-                           omnibox::kPriceTrackingDisabledRefreshIcon.name;
-                  } else {
-                    return view->GetVectorIcon().name ==
-                           omnibox::kPriceTrackingDisabledIcon.name;
-                  }
+                  return view->GetVectorIcon().name ==
+                          omnibox::kPriceTrackingDisabledRefreshIcon.name;
                 })),
       EnsureNotPresent(kPriceTrackingBubbleDialogId));
 }
@@ -604,15 +611,15 @@ class PriceTrackingBubbleInteractiveTest
   base::UserActionTester user_action_tester_;
 };
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
-                       RecordFirstRunBubbleShown) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_RecordFirstRunBubbleShown DISABLED_RecordFirstRunBubbleShown
+#else
+#define MAYBE_RecordFirstRunBubbleShown RecordFirstRunBubbleShown
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
+                       MAYBE_RecordFirstRunBubbleShown) {
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "Commerce.PriceTracking.FirstRunBubbleShown"),
@@ -622,8 +629,8 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
-      PressButton(kPriceTrackingChipElementId), FlushEvents(),
+      WaitForShow(kPriceTrackingChipElementId),
+      PressButton(kPriceTrackingChipElementId),
       WaitForShow(kPriceTrackingBubbleDialogId));
 
   EXPECT_EQ(user_action_tester_.GetActionCount(
@@ -631,15 +638,15 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
             1);
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
-                       RecordConfirmationShown) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_RecordConfirmationShown DISABLED_RecordConfirmationShown
+#else
+#define MAYBE_RecordConfirmationShown RecordConfirmationShown
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
+                       MAYBE_RecordConfirmationShown) {
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kShouldShowPriceTrackFUEBubble, false);
@@ -651,23 +658,23 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
-      PressButton(kPriceTrackingChipElementId), FlushEvents());
+      WaitForShow(kPriceTrackingChipElementId),
+      PressButton(kPriceTrackingChipElementId));
 
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "Commerce.PriceTracking.ConfirmationShown"),
             1);
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
-                       RecordConfirmationUntracked) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_RecordConfirmationUntracked DISABLED_RecordConfirmationUntracked
+#else
+#define MAYBE_RecordConfirmationUntracked RecordConfirmationUntracked
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
+                       MAYBE_RecordConfirmationUntracked) {
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kShouldShowPriceTrackFUEBubble, false);
@@ -679,8 +686,8 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
-      PressButton(kPriceTrackingChipElementId), FlushEvents(),
+      WaitForShow(kPriceTrackingChipElementId),
+      PressButton(kPriceTrackingChipElementId),
       WaitForShow(kPriceTrackingBubbleDialogId));
 
   static_cast<PriceTrackingBubbleDialogView*>(
@@ -707,8 +714,8 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), WaitForShow(kPriceTrackingChipElementId),
-      PressButton(kPriceTrackingChipElementId), FlushEvents(),
+      WaitForShow(kPriceTrackingChipElementId),
+      PressButton(kPriceTrackingChipElementId),
       WaitForShow(kPriceTrackingBubbleDialogId));
 
   static_cast<PriceTrackingBubbleDialogView*>(
@@ -721,4 +728,43 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "Commerce.PriceTracking.EditedBookmarkFolderFromOmniboxBubble"),
             1);
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       TabDiscardDuringNavigationNoCrash) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+  constexpr char kEmptyDocumentURL[] = "/empty.html";
+  mock_shopping_service_->SetIsSubscribedCallbackValue(false);
+  const GURL shopping_url = embedded_test_server()->GetURL(kShoppingURL);
+
+  RunTestSequence(
+      InstrumentTab(kShoppingTab),
+
+      // Make a second tab.
+      AddInstrumentedTab(kSecondTab,
+                         embedded_test_server()->GetURL(kEmptyDocumentURL)),
+      SelectTab(kTabStripElementId, 0),
+
+      // Navigate the first tab to a shopping URL and wait for the chip to show.
+      NavigateWebContents(kShoppingTab, shopping_url),
+      WaitForShow(kPriceTrackingChipElementId),
+
+      // Start a navigation to an empty URL. Do not wait for the navigation to
+      // finish.
+      Do(base::BindLambdaForTesting([&]() {
+        ui_test_utils::NavigateToURLWithDisposition(
+            browser(), embedded_test_server()->GetURL(kEmptyDocumentURL),
+            WindowOpenDisposition::CURRENT_TAB,
+            ui_test_utils::BROWSER_TEST_NO_WAIT);
+      })),
+
+      // Immediately switch tabs and discard the navigating tab.
+      SelectTab(kTabStripElementId, 1), Do(base::BindLambdaForTesting([&]() {
+        // Note that because the active tab cannot be discarded, this line is
+        // guaranteed to discard the first tab.
+        g_browser_process->GetTabManager()->DiscardTab(
+            mojom::LifecycleUnitDiscardReason::EXTERNAL);
+      })));
+
+  // There should not be a crash.
 }

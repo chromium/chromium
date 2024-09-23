@@ -8,6 +8,7 @@
 
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -46,7 +47,7 @@ ScriptFetchOptions::~ScriptFetchOptions() = default;
 FetchParameters ScriptFetchOptions::CreateFetchParameters(
     const KURL& url,
     const SecurityOrigin* security_origin,
-    scoped_refptr<const DOMWrapperWorld> world_for_csp,
+    const DOMWrapperWorld* world_for_csp,
     CrossOriginAttributeValue cross_origin,
     const WTF::TextEncoding& encoding,
     FetchParameters::DeferOption defer) const {
@@ -55,8 +56,9 @@ FetchParameters ScriptFetchOptions::CreateFetchParameters(
   ResourceRequest resource_request(url);
 
   // Step 1. ... "script", ... [spec text]
-  ResourceLoaderOptions resource_loader_options(std::move(world_for_csp));
-  resource_loader_options.initiator_info.name = AtomicString("script");
+  ResourceLoaderOptions resource_loader_options(world_for_csp);
+  resource_loader_options.initiator_info.name =
+      fetch_initiator_type_names::kScript;
   resource_loader_options.reject_coep_unsafe_none = reject_coep_unsafe_none_;
   FetchParameters params(std::move(resource_request), resource_loader_options);
   params.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);

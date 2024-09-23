@@ -170,6 +170,8 @@ TesterBrowsingTopicsCalculator::TesterBrowsingTopicsCalculator(
     history::HistoryService* history_service,
     content::BrowsingTopicsSiteDataManager* site_data_manager,
     Annotator* annotator,
+    int previous_timeout_count,
+    base::Time session_start_time,
     const base::circular_deque<EpochTopics>& epochs,
     CalculateCompletedCallback callback,
     base::queue<uint64_t> rand_uint64_queue)
@@ -179,6 +181,8 @@ TesterBrowsingTopicsCalculator::TesterBrowsingTopicsCalculator(
                                annotator,
                                epochs,
                                /*is_manually_triggered=*/false,
+                               previous_timeout_count,
+                               session_start_time,
                                std::move(callback)),
       rand_uint64_queue_(std::move(rand_uint64_queue)) {}
 
@@ -187,6 +191,8 @@ TesterBrowsingTopicsCalculator::TesterBrowsingTopicsCalculator(
     history::HistoryService* history_service,
     content::BrowsingTopicsSiteDataManager* site_data_manager,
     Annotator* annotator,
+    int previous_timeout_count,
+    base::Time session_start_time,
     CalculateCompletedCallback callback,
     EpochTopics mock_result,
     base::TimeDelta mock_result_delay)
@@ -196,6 +202,8 @@ TesterBrowsingTopicsCalculator::TesterBrowsingTopicsCalculator(
                                annotator,
                                base::circular_deque<EpochTopics>(),
                                /*is_manually_triggered=*/false,
+                               previous_timeout_count,
+                               session_start_time,
                                base::DoNothing()),
       use_mock_result_(true),
       mock_result_(std::move(mock_result)),
@@ -257,6 +265,21 @@ void TestAnnotator::SetModelAvailable(bool model_available) {
 
 void TestAnnotator::BatchAnnotate(BatchAnnotationCallback callback,
                                   const std::vector<std::string>& inputs) {
+  auto run_callback_after_delay = base::BindLambdaForTesting(
+      [callback = std::move(callback),
+       this](const std::vector<Annotation>& result) mutable {
+        std::vector<Annotation> copied_result = result;
+
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindLambdaForTesting(
+                [callback = std::move(callback),
+                 copied_result = std::move(copied_result)]() mutable {
+                  std::move(callback).Run(copied_result);
+                }),
+            annotation_request_delay_);
+      });
+
   std::vector<Annotation> annotations;
   annotations.reserve(inputs.size());
   for (const std::string& input : inputs) {
@@ -268,15 +291,26 @@ void TestAnnotator::BatchAnnotate(BatchAnnotationCallback callback,
     }
     annotations.push_back(annotation);
   }
-  std::move(callback).Run(annotations);
+  std::move(std::move(run_callback_after_delay)).Run(annotations);
 }
 
 void TestAnnotator::NotifyWhenModelAvailable(base::OnceClosure callback) {
+  auto run_callback_after_delay = base::BindLambdaForTesting(
+      [callback = std::move(callback), this]() mutable {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindLambdaForTesting(
+                [callback = std::move(callback)]() mutable {
+                  std::move(callback).Run();
+                }),
+            model_request_delay_);
+      });
+
   if (!model_available_) {
-    model_available_callbacks_.AddUnsafe(std::move(callback));
+    model_available_callbacks_.AddUnsafe(std::move(run_callback_after_delay));
     return;
   }
-  std::move(callback).Run();
+  std::move(run_callback_after_delay).Run();
 }
 
 std::optional<optimization_guide::ModelInfo>

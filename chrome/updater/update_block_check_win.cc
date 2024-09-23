@@ -21,7 +21,7 @@ namespace {
 // Returns true in situations where we allow background updates on metered
 // networks.
 bool AllowBackgroundUpdatesOnMeteredNetwork() {
-  // TODO(crbug.com/1254481): Modify this function to enable background updates
+  // TODO(crbug.com/40199605): Modify this function to enable background updates
   // on metered networks when a toggle is set in the browser.
   return true;
 }

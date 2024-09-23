@@ -11,7 +11,7 @@
 namespace password_manager {
 
 // WebUI constants for Password Manager that are needed for other components.
-extern const char kChromeUIPasswordManagerHost[];
+inline constexpr char kChromeUIPasswordManagerHost[] = "password-manager";
 
 }  // namespace password_manager
 

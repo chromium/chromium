@@ -5,8 +5,6 @@
 #ifndef MEDIA_CAST_OPENSCREEN_CONFIG_CONVERSIONS_H_
 #define MEDIA_CAST_OPENSCREEN_CONFIG_CONVERSIONS_H_
 
-#include <vector>
-
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "third_party/openscreen/src/cast/streaming/capture_configs.h"
@@ -30,20 +28,6 @@ media::VideoDecoderConfig ToVideoDecoderConfig(
 openscreen::cast::AudioCodec ToAudioCaptureConfigCodec(media::AudioCodec codec);
 
 openscreen::cast::VideoCodec ToVideoCaptureConfigCodec(media::VideoCodec codec);
-
-template <typename... TCodecs>
-std::vector<openscreen::cast::AudioCodec> ToAudioCaptureConfigCodecs(
-    TCodecs... codecs) {
-  return std::vector<openscreen::cast::AudioCodec>{
-      ToAudioCaptureConfigCodec(codecs)...};
-}
-
-template <typename... TCodecs>
-std::vector<openscreen::cast::VideoCodec> ToVideoCaptureConfigCodecs(
-    TCodecs... codecs) {
-  return std::vector<openscreen::cast::VideoCodec>{
-      ToVideoCaptureConfigCodec(codecs)...};
-}
 
 }  // namespace media::cast
 

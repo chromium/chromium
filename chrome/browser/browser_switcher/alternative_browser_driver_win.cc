@@ -13,15 +13,16 @@
 
 #include <string_view>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/registry.h"
+#include "base/win/win_util.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -159,20 +160,6 @@ bool ExpandUrlVarName(std::wstring* arg, const std::wstring& url_spec) {
   return true;
 }
 
-void ExpandEnvironmentVariables(std::wstring* arg) {
-  DWORD expanded_size = 0;
-  expanded_size = ::ExpandEnvironmentStrings(arg->c_str(), NULL, expanded_size);
-  if (expanded_size == 0)
-    return;
-
-  // The expected buffer length as defined in MSDN is chars + null + 1.
-  std::unique_ptr<wchar_t[]> out(new wchar_t[expanded_size + 2]);
-  expanded_size =
-      ::ExpandEnvironmentStrings(arg->c_str(), out.get(), expanded_size);
-  if (expanded_size != 0)
-    *arg = out.get();
-}
-
 void AppendCommandLineArguments(base::CommandLine* cmd_line,
                                 const std::vector<std::string>& raw_args,
                                 const GURL& url) {
@@ -183,8 +170,10 @@ void AppendCommandLineArguments(base::CommandLine* cmd_line,
   std::vector<std::wstring> command_line;
   bool contains_url = false;
   for (const auto& arg : raw_args) {
-    std::wstring expanded_arg = base::UTF8ToWide(arg);
-    ExpandEnvironmentVariables(&expanded_arg);
+    auto wide_arg = base::UTF8ToWide(arg);
+    auto expanded_arg =
+        base::win::ExpandEnvironmentVariables(wide_arg).value_or(
+            std::move(wide_arg));
     if (ExpandUrlVarName(&expanded_arg, url_spec))
       contains_url = true;
     cmd_line->AppendArgNative(expanded_arg);
@@ -193,7 +182,7 @@ void AppendCommandLineArguments(base::CommandLine* cmd_line,
     cmd_line->AppendArgNative(url_spec);
 }
 
-bool IsInternetExplorer(base::StringPiece path) {
+bool IsInternetExplorer(std::string_view path) {
   // We don't treat IExplore.exe as Internet Explorer here. This way, admins can
   // set |AlternativeBrowserPath| to IExplore.exe to disable DDE, if it's
   // causing issues or slowness.
@@ -270,8 +259,9 @@ base::CommandLine CreateCommandLine(const GURL& url,
                                     const std::vector<std::string>& params) {
   std::wstring path = base::UTF8ToWide(utf8_path);
   ExpandPresetBrowsers(&path);
-  ExpandEnvironmentVariables(&path);
-  base::CommandLine cmd_line(std::vector<std::wstring>{path});
+  auto expanded_path =
+      base::win::ExpandEnvironmentVariables(path).value_or(std::move(path));
+  base::CommandLine cmd_line(std::vector<std::wstring>{expanded_path});
 
   AppendCommandLineArguments(&cmd_line, params, url);
 

@@ -26,7 +26,7 @@ namespace privacy_sandbox {
 class TrackingProtectionSettings;
 }
 
-class DIPSService;
+class DIPSServiceImpl;
 class OpenerHeuristicServiceFactory;
 
 class OpenerHeuristicService
@@ -50,7 +50,7 @@ class OpenerHeuristicService
   // TrackingProtectionSettingsObserver overrides:
   void OnTrackingProtection3pcdChanged() override;
 
-  raw_ptr<DIPSService> dips_;
+  raw_ptr<DIPSServiceImpl> dips_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;

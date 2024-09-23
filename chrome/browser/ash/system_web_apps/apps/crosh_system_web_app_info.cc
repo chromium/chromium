@@ -18,12 +18,13 @@
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForCroshSystemWebApp() {
-  auto info = std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(chrome::kChromeUIUntrustedCroshURL);
+  GURL start_url(chrome::kChromeUIUntrustedCroshURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(chrome::kChromeUIUntrustedCroshURL);
   info->title = std::u16string(u"crosh");
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url, {{"app_icon_256.png", 256, IDR_LOGO_CROSH}}, *info);
+      info->start_url(), {{"app_icon_256.png", 256, IDR_LOGO_CROSH}}, *info);
   info->background_color = 0xFF202124;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   return info;

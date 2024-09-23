@@ -58,7 +58,7 @@ WaylandInputEmulate::WaylandInputEmulate(
   auto* wayland_proxy = wl::WaylandProxy::GetInstance();
   wayland_proxy->SetDelegate(this);
 
-  registry_ = wl_display_get_registry(wayland_proxy->GetDisplayWrapper());
+  registry_ = wayland_proxy->GetRegistry();
   if (!registry_) {
     // If we can't get the registry, this means there is a bigger problem with
     // the Wayland connection than just ui_controls not being available.

@@ -6,9 +6,14 @@
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [18, 130, 251, 39],
-        [295, 102, 15, 400]
+        [18, 130, 251, 39]
       ]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [295, 102],
+      "bounds": [15, 400],
+      "contentsOpaque": true
     }
   ]
 }

@@ -39,6 +39,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
@@ -58,6 +59,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -67,7 +69,6 @@ import org.chromium.chrome.browser.compositor.layouts.Layout.ViewportMode;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.scene_layer.SolidColorSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.SolidColorSceneLayerJni;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
@@ -78,7 +79,9 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -88,7 +91,8 @@ import java.util.function.DoubleConsumer;
 /**
  * Unit tests for {@link HubLayout}.
  *
- * <p>TODO(crbug/1487209): Once integrated with LayoutManager we should also add integration tests.
+ * <p>TODO(crbug.com/40283200): Once integrated with LayoutManager we should also add integration
+ * tests.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HubLayoutUnitTest {
@@ -124,6 +128,7 @@ public class HubLayoutUnitTest {
     @Mock private HubLayoutScrimController mScrimController;
     @Mock private Pane mTabSwitcherPane;
     @Mock private Pane mIncognitoTabSwitcherPane;
+    @Mock private Pane mTabGroupPane;
     @Mock private HubLayoutAnimator mHubLayoutAnimatorMock;
     @Mock private HubLayoutAnimatorProvider mHubLayoutAnimatorProviderMock;
     @Mock private Bitmap mBitmap;
@@ -132,6 +137,7 @@ public class HubLayoutUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab;
     @Mock private DoubleConsumer mOnAlphaChange;
+    @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     private UserActionTester mActionTester;
 
@@ -142,7 +148,9 @@ public class HubLayoutUnitTest {
     private HubContainerView mHubContainerView;
 
     private SyncOneshotSupplierImpl<HubLayoutAnimator> mHubLayoutAnimatorSupplier;
+    private Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private ObservableSupplierImpl<Pane> mPaneSupplier = new ObservableSupplierImpl<>();
+    private HubShowPaneHelper mHubShowPaneHelper;
 
     @Before
     public void setUp() {
@@ -156,6 +164,12 @@ public class HubLayoutUnitTest {
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
         when(mTabSwitcherPane.createShowHubLayoutAnimatorProvider(any()))
+                .thenReturn(mHubLayoutAnimatorProviderMock);
+        when(mTabSwitcherPane.createHideHubLayoutAnimatorProvider(any()))
+                .thenReturn(mHubLayoutAnimatorProviderMock);
+        when(mTabGroupPane.getPaneId()).thenReturn(PaneId.TAB_GROUPS);
+        when(mTabGroupPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
+        when(mTabGroupPane.createShowHubLayoutAnimatorProvider(any()))
                 .thenReturn(mHubLayoutAnimatorProviderMock);
         when(mTabSwitcherPane.createHideHubLayoutAnimatorProvider(any()))
                 .thenReturn(mHubLayoutAnimatorProviderMock);
@@ -206,6 +220,9 @@ public class HubLayoutUnitTest {
                                 case PaneId.INCOGNITO_TAB_SWITCHER:
                                     mPaneSupplier.set(mIncognitoTabSwitcherPane);
                                     break;
+                                case PaneId.TAB_GROUPS:
+                                    mPaneSupplier.set(mTabGroupPane);
+                                    break;
                                 default:
                                     fail("Invalid pane id" + paneId);
                             }
@@ -215,6 +232,8 @@ public class HubLayoutUnitTest {
                 .focusPane(anyInt());
         when(mHubManager.getPaneManager()).thenReturn(mPaneManager);
         when(mHubManager.getHubController()).thenReturn(mHubController);
+        mHubShowPaneHelper = new HubShowPaneHelper();
+        when(mHubManager.getHubShowPaneHelper()).thenReturn(mHubShowPaneHelper);
         doAnswer(
                         invocation -> {
                             Pane pane = (Pane) invocation.getArguments()[0];
@@ -260,6 +279,8 @@ public class HubLayoutUnitTest {
         mFrameLayout = new FrameLayout(mActivity);
         mHubContainerView = new HubContainerView(mActivity);
         View hubLayout = LayoutInflater.from(activity).inflate(R.layout.hub_layout, null);
+        mHubContainerView.setLayoutParams(
+                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
         mHubContainerView.addView(hubLayout);
         mActivity.setContentView(mFrameLayout);
 
@@ -275,6 +296,7 @@ public class HubLayoutUnitTest {
                 new HubLayoutDependencyHolder(
                         hubManagerSupplier, rootViewSupplier, mScrimController, mOnAlphaChange);
 
+        mTabModelSelectorSupplier = () -> mTabModelSelector;
         mHubLayout =
                 spy(
                         new HubLayout(
@@ -282,7 +304,9 @@ public class HubLayoutUnitTest {
                                 mUpdateHost,
                                 mRenderHost,
                                 mLayoutStateProvider,
-                                dependencyHolder));
+                                dependencyHolder,
+                                mTabModelSelectorSupplier,
+                                mDesktopWindowStateProvider));
         mHubLayout.setTabModelSelector(mTabModelSelector);
         mHubLayout.setTabContentManager(mTabContentManager);
         mHubLayout.onFinishNativeInitialization();
@@ -304,7 +328,7 @@ public class HubLayoutUnitTest {
         assertNull(mHubLayout.getEventFilter());
         assertEquals(LayoutType.TAB_SWITCHER, mHubLayout.getLayoutType());
 
-        // TODO(crbug/1487209): These may be dynamic after further development.
+        // TODO(crbug.com/40283200): These may be dynamic after further development.
         assertFalse(mHubLayout.onBackPressed());
         assertTrue(mHubLayout.canHostBeFocusable());
     }
@@ -339,21 +363,26 @@ public class HubLayoutUnitTest {
 
     @Test
     @SmallTest
-    public void testShowFromStartSurface() {
-        show(LayoutType.START_SURFACE, true, HubLayoutAnimationType.FADE_IN);
-        verify(mTabContentManager, never())
-                .cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
-        verify(mTabSwitcherPane, never()).createShowHubLayoutAnimatorProvider(any());
-    }
-
-    @Test
-    @SmallTest
     public void testShowWithNoSelectedPane() {
         setupHubLayoutAnimatorAndProvider(HubLayoutAnimationType.SHRINK_TAB);
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
         show(LayoutType.BROWSING, true, HubLayoutAnimationType.SHRINK_TAB);
         verify(mTabContentManager).cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
         verify(mPaneManager).focusPane(PaneId.TAB_SWITCHER);
+
+        verify(mSolidColorSceneLayerJni).setBackgroundColor(FAKE_NATIVE_ADDRESS_2, DEFAULT_COLOR);
+    }
+
+    @Test
+    @SmallTest
+    public void testShowWithSelectedPane() {
+        setupHubLayoutAnimatorAndProvider(HubLayoutAnimationType.SHRINK_TAB);
+
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
+        mHubShowPaneHelper.setPaneToShow(PaneId.TAB_GROUPS);
+        show(LayoutType.BROWSING, true, HubLayoutAnimationType.SHRINK_TAB);
+        verify(mTabContentManager).cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
+        verify(mPaneManager).focusPane(PaneId.TAB_GROUPS);
 
         verify(mSolidColorSceneLayerJni).setBackgroundColor(FAKE_NATIVE_ADDRESS_2, DEFAULT_COLOR);
     }
@@ -455,23 +484,6 @@ public class HubLayoutUnitTest {
 
     @Test
     @SmallTest
-    public void testShowFromStartSurfaceWithThumbnailCallback() {
-        setupHubLayoutAnimatorAndProvider(HubLayoutAnimationType.SHRINK_TAB);
-        when(mHubLayoutAnimatorProviderMock.getThumbnailCallback()).thenReturn(mThumbnailCallback);
-        doReturn(mHubLayoutAnimatorProviderMock).when(mHubLayout).createShowAnimatorProvider(any());
-
-        show(LayoutType.START_SURFACE, true, HubLayoutAnimationType.SHRINK_TAB);
-
-        // No TabContentManager callbacks will be invoked because there is no tab to capture.
-        // This will still invoke the callback with a null result.
-        verify(mThumbnailCallback).bind(isNull());
-        verify(mTabContentManager, never())
-                .cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
-        verify(mTabContentManager, never()).getEtc1TabThumbnailWithCallback(anyInt(), any());
-    }
-
-    @Test
-    @SmallTest
     @Config(qualifiers = "sw600dp")
     public void testHideTablet() {
         hide(
@@ -480,19 +492,6 @@ public class HubLayoutUnitTest {
                 /* skipStartHiding= */ false,
                 HubLayoutAnimationType.TRANSLATE_DOWN);
         verify(mTabContentManager, never()).getEtc1TabThumbnailWithCallback(anyInt(), any());
-    }
-
-    @Test
-    @SmallTest
-    public void testHideToStartSurface() {
-        mPaneSupplier.set(mTabSwitcherPane);
-        hide(
-                LayoutType.START_SURFACE,
-                Tab.INVALID_TAB_ID,
-                /* skipStartHiding= */ false,
-                HubLayoutAnimationType.FADE_OUT);
-        verify(mTabContentManager, never()).getEtc1TabThumbnailWithCallback(anyInt(), any());
-        verify(mTabSwitcherPane, never()).createHideHubLayoutAnimatorProvider(any());
     }
 
     @Test
@@ -566,9 +565,7 @@ public class HubLayoutUnitTest {
         setupHubLayoutAnimatorAndProvider(HubLayoutAnimationType.EXPAND_TAB);
         mPaneSupplier.set(mTabSwitcherPane);
         when(mHubLayoutAnimatorProviderMock.getThumbnailCallback()).thenReturn(mThumbnailCallback);
-        doReturn(mHubLayoutAnimatorProviderMock)
-                .when(mHubLayout)
-                .createHideAnimatorProvider(any(), anyInt());
+        doReturn(mHubLayoutAnimatorProviderMock).when(mHubLayout).createHideAnimatorProvider(any());
         when(mTab.isNativePage()).thenReturn(true);
 
         // Succeed on the thumbnail attempt
@@ -587,26 +584,6 @@ public class HubLayoutUnitTest {
                 HubLayoutAnimationType.EXPAND_TAB);
 
         verify(mThumbnailCallback).onResult(isNotNull());
-    }
-
-    @Test
-    @SmallTest
-    public void testHideToStartSurfaceThumbnailCallback() {
-        setupHubLayoutAnimatorAndProvider(HubLayoutAnimationType.EXPAND_TAB);
-        when(mHubLayoutAnimatorProviderMock.getThumbnailCallback()).thenReturn(mThumbnailCallback);
-        doReturn(mHubLayoutAnimatorProviderMock)
-                .when(mHubLayout)
-                .createHideAnimatorProvider(any(), anyInt());
-        when(mTab.isNativePage()).thenReturn(true);
-
-        hide(
-                LayoutType.START_SURFACE,
-                TAB_ID,
-                /* skipStartHiding= */ false,
-                HubLayoutAnimationType.EXPAND_TAB);
-
-        verify(mThumbnailCallback).onResult(isNull());
-        verify(mTabContentManager, never()).getEtc1TabThumbnailWithCallback(anyInt(), any());
     }
 
     @Test
@@ -653,13 +630,14 @@ public class HubLayoutUnitTest {
             @HubLayoutAnimationType int expectedAnimationType) {
         assertFalse(mHubLayout.isRunningAnimations());
         assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
+        assertFalse(mHubLayout.forceHideBrowserControlsAndroidView());
 
         startShowing(fromLayout, animate);
 
         verify(mHubController, times(1)).onHubLayoutShow();
         assertEquals(1, mFrameLayout.getChildCount());
 
-        if (animate && fromLayout != LayoutType.START_SURFACE) {
+        if (animate) {
             assertEquals(expectedAnimationType, mHubLayout.getCurrentAnimationType());
             assertTrue(mHubLayout.isRunningAnimations());
             assertTrue(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
@@ -672,13 +650,10 @@ public class HubLayoutUnitTest {
         assertFalse(mHubLayout.isRunningAnimations());
         assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
         verify(mHubLayout).doneShowing();
+        assertTrue(mHubLayout.forceHideBrowserControlsAndroidView());
         assertEquals(1, mActionTester.getActionCount("MobileToolbarShowStackView"));
         verify(mTab).hide(eq(TabHidingType.TAB_SWITCHER_SHOWN));
-        if (fromLayout == LayoutType.START_SURFACE) {
-            verify(mScrimController).forceAnimationToFinish();
-        } else {
-            verify(mScrimController, never()).forceAnimationToFinish();
-        }
+        verify(mScrimController, never()).forceAnimationToFinish();
     }
 
     private void hide(
@@ -693,6 +668,7 @@ public class HubLayoutUnitTest {
             assertFalse(mHubLayout.isRunningAnimations());
             assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
             startHiding(nextLayout, nextTabId);
+            assertFalse(mHubLayout.forceHideBrowserControlsAndroidView());
         }
 
         assertEquals(expectedAnimationType, mHubLayout.getCurrentAnimationType());
@@ -708,13 +684,10 @@ public class HubLayoutUnitTest {
         verify(mHubController, times(1)).onHubLayoutDoneHiding();
         assertEquals(0, mFrameLayout.getChildCount());
         verify(mHubLayout).doneHiding();
+        assertFalse(mHubLayout.forceHideBrowserControlsAndroidView());
         assertEquals(1, mActionTester.getActionCount("MobileExitStackView"));
 
-        if (nextLayout == LayoutType.START_SURFACE) {
-            verify(mScrimController).forceAnimationToFinish();
-        } else {
-            verify(mScrimController, never()).forceAnimationToFinish();
-        }
+        verify(mScrimController, never()).forceAnimationToFinish();
     }
 
     private void startShowing(@LayoutType int fromLayout, boolean animate) {

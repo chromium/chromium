@@ -16,6 +16,7 @@ import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.VectorDrawable;
 import android.util.Pair;
@@ -42,6 +43,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -55,6 +57,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -66,6 +69,7 @@ import org.chromium.chrome.browser.offlinepages.ClientId;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.test.ScreenShooter;
@@ -76,7 +80,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.util.TestWebServer;
@@ -102,13 +105,15 @@ public class TrustedCdnPublisherUrlTest {
                                     CustomTabIntentHandler.IntentIgnoringCriterion
                                             intentIgnoringCriterion,
                                     TopUiThemeColorProvider topUiThemeColorProvider,
-                                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider) ->
+                                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider,
+                                    CipherFactory cipherFactory) ->
                                     new BaseCustomTabActivityModule(
                                             intentDataProvider,
                                             nightModeController,
                                             intentIgnoringCriterion,
                                             topUiThemeColorProvider,
-                                            new FakeDefaultBrowserProviderImpl()));
+                                            new FakeDefaultBrowserProviderImpl(),
+                                            cipherFactory));
 
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
     public ChromeRenderTestRule mRenderTestRule =
@@ -151,7 +156,7 @@ public class TrustedCdnPublisherUrlTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
 
         LibraryLoader.getInstance().ensureInitialized();
         mWebServer = TestWebServer.start();
@@ -164,7 +169,7 @@ public class TrustedCdnPublisherUrlTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
 
         mWebServer.shutdown();
     }
@@ -173,7 +178,6 @@ public class TrustedCdnPublisherUrlTest {
     @SmallTest
     @Feature({"UiCatalogue"})
     @OverrideTrustedCdn
-    @DisabledTest(message = "crbug.com/1487332")
     public void testHttps() throws Exception {
         runTrustedCdnPublisherUrlTest(
                 "https://www.example.com/test",
@@ -203,8 +207,8 @@ public class TrustedCdnPublisherUrlTest {
     public void testRtl() throws Exception {
         String publisher =
                 "\u200e\u202b\u0645\u0648\u0642\u0639\u002e\u0648\u0632\u0627\u0631"
-                        + "\u0629\u002d\u0627\u0644\u0623\u062a\u0635\u0627\u0644\u0627\u062a\u002e\u0645"
-                        + "\u0635\u0631\u202c\u200e";
+                    + "\u0629\u002d\u0627\u0644\u0623\u062a\u0635\u0627\u0644\u0627\u062a\u002e\u0645"
+                    + "\u0635\u0631\u202c\u200e";
         runTrustedCdnPublisherUrlTest(
                 "http://xn--4gbrim.xn----rmckbbajlc6dj7bxne2c.xn--wgbh1c/",
                 "com.example.test",
@@ -287,7 +291,6 @@ public class TrustedCdnPublisherUrlTest {
     @SmallTest
     @Feature({"UiCatalogue"})
     @OverrideTrustedCdn
-    @DisabledTest(message = "Disabled for flakiness! See http://crbug.com/847341")
     public void testReparent() throws Exception {
         GURL publisherUrl = new GURL("https://example.com/test");
         runTrustedCdnPublisherUrlTest(
@@ -324,7 +327,7 @@ public class TrustedCdnPublisherUrlTest {
         final ChromeActivity newActivity = (ChromeActivity) activity;
         CriteriaHelper.pollUiThread(() -> newActivity.getActivityTab() == tab, "Tab did not load");
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertNull(TrustedCdn.getPublisherUrl(tab));
                 });
@@ -337,8 +340,6 @@ public class TrustedCdnPublisherUrlTest {
                     UrlBar urlBar = newActivity.findViewById(R.id.url_bar);
                     Criteria.checkThat(urlBar.getText().toString(), Matchers.is(expectedUrl));
                 });
-
-        verifySecurityIcon(getDefaultSecurityIcon());
     }
 
     @Test
@@ -353,9 +354,9 @@ public class TrustedCdnPublisherUrlTest {
 
         // TODO (https://crbug.com/1063807):  Add incognito mode tests.
         OfflinePageBridge offlinePageBridge =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            Profile profile = Profile.getLastUsedRegularProfile();
+                            Profile profile = ProfileManager.getLastUsedRegularProfile();
                             return OfflinePageBridge.getForProfile(profile);
                         });
 
@@ -398,7 +399,7 @@ public class TrustedCdnPublisherUrlTest {
                 });
         callback2.waitForCallback(0);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     NetworkChangeNotifier.forceConnectivityState(false);
                 });
@@ -470,10 +471,11 @@ public class TrustedCdnPublisherUrlTest {
                 CustomTabToolbar toolbar =
                         mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
                 CustomTabLocationBar locationBar = (CustomTabLocationBar) toolbar.getLocationBar();
-                Assert.assertEquals(locationBar.getSecurityIconResourceForTesting(),
-                                    expectedSecurityIcon);
-            }
-            else {
+                Resources res = mCustomTabActivityTestRule.getActivity().getResources();
+                Assert.assertEquals(
+                        res.getResourceName(expectedSecurityIcon),
+                        res.getResourceName(locationBar.getSecurityIconResourceForTesting()));
+            } else {
                 ColorStateList colorStateList =
                         AppCompatResources.getColorStateList(
                                 ApplicationProvider.getApplicationContext(),

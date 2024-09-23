@@ -14,6 +14,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 /** Implementation of {@link ExperimentalBidirectionalStream.Builder}. */
@@ -49,16 +50,14 @@ public class BidirectionalStreamBuilderImpl extends ExperimentalBidirectionalStr
     private long mNetworkHandle = CronetEngineBase.DEFAULT_NETWORK_HANDLE;
 
     /**
-     * Creates a builder for {@link BidirectionalStream} objects. All callbacks for
-     * generated {@code BidirectionalStream} objects will be invoked on
-     * {@code executor}. {@code executor} must not run tasks on the
-     * current thread, otherwise the networking operations may block and exceptions
+     * Creates a builder for {@link BidirectionalStream} objects. All callbacks for generated {@code
+     * BidirectionalStream} objects will be invoked on {@code executor}. {@code executor} must not
+     * run tasks on the current thread, otherwise the networking operations may block and exceptions
      * may be thrown at shutdown time.
      *
      * @param url the URL for the generated stream
      * @param callback the {@link BidirectionalStream.Callback} object that gets invoked upon
-     * different events
-     *     occuring
+     *     different events occurring
      * @param executor the {@link Executor} on which {@code callback} methods will be invoked
      * @param cronetEngine the {@link CronetEngine} used to create the stream
      */
@@ -68,41 +67,24 @@ public class BidirectionalStreamBuilderImpl extends ExperimentalBidirectionalStr
             Executor executor,
             CronetEngineBase cronetEngine) {
         super();
-        if (url == null) {
-            throw new NullPointerException("URL is required.");
-        }
-        if (callback == null) {
-            throw new NullPointerException("Callback is required.");
-        }
-        if (executor == null) {
-            throw new NullPointerException("Executor is required.");
-        }
-        if (cronetEngine == null) {
-            throw new NullPointerException("CronetEngine is required.");
-        }
-        mUrl = url;
-        mCallback = callback;
-        mExecutor = executor;
-        mCronetEngine = cronetEngine;
+
+        mUrl = Objects.requireNonNull(url, "URL is required.");
+        mCallback = Objects.requireNonNull(callback, "Callback is required.");
+        mExecutor = Objects.requireNonNull(executor, "Executor is required.");
+        mCronetEngine = Objects.requireNonNull(cronetEngine, "CronetEngine is required.");
     }
 
     @Override
     public BidirectionalStreamBuilderImpl setHttpMethod(String method) {
-        if (method == null) {
-            throw new NullPointerException("Method is required.");
-        }
-        mHttpMethod = method;
+        mHttpMethod = Objects.requireNonNull(method, "Method is required.");
         return this;
     }
 
     @Override
     public BidirectionalStreamBuilderImpl addHeader(String header, String value) {
-        if (header == null) {
-            throw new NullPointerException("Invalid header name.");
-        }
-        if (value == null) {
-            throw new NullPointerException("Invalid header value.");
-        }
+        Objects.requireNonNull(header, "Invalid header name.");
+        Objects.requireNonNull(value, "Invalid header value.");
+
         mRequestHeaders.add(new AbstractMap.SimpleImmutableEntry<>(header, value));
         return this;
     }
@@ -123,11 +105,9 @@ public class BidirectionalStreamBuilderImpl extends ExperimentalBidirectionalStr
 
     @Override
     public ExperimentalBidirectionalStream.Builder addRequestAnnotation(Object annotation) {
-        if (annotation == null) {
-            throw new NullPointerException("Invalid metrics annotation.");
-        }
+        Objects.requireNonNull(annotation, "Invalid metrics annotation.");
         if (mRequestAnnotations == null) {
-            mRequestAnnotations = new ArrayList<Object>();
+            mRequestAnnotations = new ArrayList<>();
         }
         mRequestAnnotations.add(annotation);
         return this;

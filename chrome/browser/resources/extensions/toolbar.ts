@@ -8,7 +8,6 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './pack_dialog.js';
 
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
@@ -42,10 +41,6 @@ export interface ExtensionsToolbarElement {
     packExtensions: HTMLElement,
     toolbar: CrToolbarElement,
     updateNow: HTMLElement,
-
-    // <if expr="chromeos_ash">
-    kioskExtensions: HTMLElement,
-    // </if>
   };
 }
 
@@ -75,10 +70,6 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
       devModeControlledByPolicy: Boolean,
       isChildAccount: Boolean,
 
-      // <if expr="chromeos_ash">
-      kioskEnabled: Boolean,
-      // </if>
-
       narrow: {
         type: Boolean,
         notify: true,
@@ -101,10 +92,6 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
   inDevMode: boolean;
   devModeControlledByPolicy: boolean;
   isChildAccount: boolean;
-
-  // <if expr="chromeos_ash">
-  kioskEnabled: boolean;
-  // </if>
 
   narrow: boolean;
   canLoadUnpacked: boolean;
@@ -199,12 +186,6 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
     this.showPackDialog_ = false;
     this.$.packExtensions.focus();
   }
-
-  // <if expr="chromeos_ash">
-  private onKioskClick_() {
-    this.fire_('kiosk-tap');
-  }
-  // </if>
 
   private onUpdateNowClick_() {
     // If already updating, do not initiate another update.

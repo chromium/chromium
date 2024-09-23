@@ -150,7 +150,7 @@ MetricReportingManagerDelegateBase::CreateSlidingWindowRateLimiter(
 
 bool MetricReportingManagerDelegateBase::IsUserAffiliated(
     Profile& profile) const {
-  return ::chrome::enterprise_util::IsProfileAffiliated(&profile);
+  return ::enterprise_util::IsProfileAffiliated(&profile);
 }
 
 base::TimeDelta MetricReportingManagerDelegateBase::GetInitDelay() const {

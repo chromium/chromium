@@ -46,7 +46,7 @@ class PushMessagingRouter {
                              std::optional<std::string> payload,
                              PushEventCallback deliver_message_callback);
 
-  // TODO(https://crbug.com/753163): Add the ability to trigger a push
+  // TODO(crbug.com/41338108): Add the ability to trigger a push
   // subscription change event in DevTools
   // Fires a pushsubscriptionchangeevent with the arguments |new_subscription|
   // and |old_subscription| to service workers.

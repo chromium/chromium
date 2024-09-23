@@ -10,8 +10,10 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "media/base/android/media_jni_headers/MediaPlayerListener_jni.h"
 #include "media/base/android/media_player_bridge.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "media/base/android/media_jni_headers/MediaPlayerListener_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::CheckException;

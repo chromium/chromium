@@ -15,6 +15,7 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_span.h"
 #include "base/version.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/common/extension_id.h"
@@ -84,7 +85,7 @@ class VerifiedContents {
                        const std::string& signature_bytes);
 
   // The public key we should use for signature verification.
-  base::span<const uint8_t> public_key_;
+  base::raw_span<const uint8_t, DanglingUntriaged> public_key_;
 
   // Indicates whether the signature was successfully validated or not.
   bool valid_signature_;
@@ -106,8 +107,8 @@ class VerifiedContents {
   // might not have the exact right capitalization. Note that this doesn't
   // affect case-sensitive systems (linux, chromeos) as we use the exact cased
   // keys.
-  // TODO(crbug.com/29941) - we should give developers client-side warnings in
-  // each of those cases, and have the webstore reject the cases they can
+  // TODO(crbug.com/40334716) - we should give developers client-side warnings
+  // in each of those cases, and have the webstore reject the cases they can
   // statically detect.
   typedef std::multimap<CanonicalRelativePath, std::string> RootHashes;
   RootHashes root_hashes_;

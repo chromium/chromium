@@ -44,7 +44,7 @@ public class ImeInputActionTest {
         mRule.waitAndVerifyUpdateSelection(0, 0, 0, -1, -1);
         mRule.waitForKeyboardInputActionStates(
                 1, 0, 1, new Integer[] {type}, new Integer[] {textAction});
-        mRule.waitForEventLogs("selectionchange");
+        mRule.waitForEventLogState("selectionchange");
         mRule.clearEventLogs();
         mRule.waitForEditorAction(editorAction);
         mRule.performEditorAction(editorAction);
@@ -176,7 +176,7 @@ public class ImeInputActionTest {
                 1,
                 new Integer[] {TextInputType.TEXT},
                 new Integer[] {TextInputAction.DEFAULT});
-        mRule.waitForEventLogs("selectionchange");
+        mRule.waitForEventLogState("selectionchange");
         mRule.clearEventLogs();
         mRule.waitForEditorAction(EditorInfo.IME_ACTION_NEXT);
         mRule.performEditorAction(EditorInfo.IME_ACTION_NEXT);

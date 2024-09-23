@@ -1,0 +1,18 @@
+<script>
+  var isPageShowPersisted = false;
+
+  window.addEventListener('pageshow', (event) => {
+    isPageShowPersisted = event.persisted;
+    // awFullyLoadedFuture is created in AwBackForwardCacheTest.java
+    awFullyLoadedFuture.done();
+  });
+</script>
+<html>
+  <head>
+    <title>Hello, World!</title>
+  </head>
+  <body>
+    Hello, World!
+    This is the second page.
+  </body>
+</html>

@@ -6,8 +6,9 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/action_link.js';
@@ -17,17 +18,14 @@ import './shared_style.css.js';
 import './shared_vars.css.js';
 import './strings.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
-import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ExtensionsHatsBrowserProxyImpl} from './extension_hats_browser_proxy.js';
 import {getTemplate} from './item.html.js';
 import {ItemMixin} from './item_mixin.js';
 import {computeInspectableViewLabel, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, userCanChangeEnablement} from './item_util.js';
@@ -53,7 +51,9 @@ export interface ItemDelegate {
   getExtensionSize(id: string): Promise<string>;
   addRuntimeHostPermission(id: string, host: string): Promise<void>;
   removeRuntimeHostPermission(id: string, host: string): Promise<void>;
-  setItemSafetyCheckWarningAcknowledged(id: string): void;
+  setItemSafetyCheckWarningAcknowledged(
+      id: string,
+      reason: chrome.developerPrivate.SafetyCheckWarningReason): void;
   setShowAccessRequestsInToolbar(id: string, showRequests: boolean): void;
   setItemPinnedToToolbar(id: string, pinnedToToolbar: boolean): void;
 
@@ -129,8 +129,6 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   data: chrome.developerPrivate.ExtensionInfo;
   private showingDetails_: boolean;
   private firstInspectView_: chrome.developerPrivate.ExtensionView;
-  /** Prevents reloading the same item while it's already being reloaded. */
-  private isReloading_: boolean = false;
 
   private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
@@ -190,8 +188,6 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
       const actionToRecord = this.data.safetyCheckText ?
           'SafetyCheck.ReviewPanelRemoveClicked' :
           'SafetyCheck.NonTriggeringExtensionRemoved';
-      ExtensionsHatsBrowserProxyImpl.getInstance()
-          .nonTriggerExtensionRemovedAction();
       chrome.metricsPrivate.recordUserAction(actionToRecord);
     }
     this.delegate.deleteItem(this.data.id);
@@ -228,30 +224,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   }
 
   private onReloadClick_() {
-    // Don't reload if in the middle of an update.
-    if (this.isReloading_) {
-      return;
-    }
-
-    this.isReloading_ = true;
-
-    const toastManager = getToastManager();
-    // Keep the toast open indefinitely.
-    toastManager.duration = 0;
-    toastManager.show(this.i18n('itemReloading'));
-    this.delegate.reloadItem(this.data.id)
-        .then(
-            () => {
-              toastManager.hide();
-              toastManager.duration = 3000;
-              toastManager.show(this.i18n('itemReloaded'));
-              this.isReloading_ = false;
-            },
-            loadError => {
-              this.fire_('load-error', loadError);
-              toastManager.hide();
-              this.isReloading_ = false;
-            });
+    this.reloadItem().catch((loadError) => this.fire_('load-error', loadError));
   }
 
   private onRepairClick_() {
@@ -344,20 +317,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   }
 
   private computeDevReloadButtonHidden_(): boolean {
-    // Only display the reload spinner if the extension is unpacked and
-    // enabled or disabled for reload. If an extension fails to reload (due to
-    // e.g. a parsing error), it will
-    // remain disabled with the "reloading" reason. We show the reload button
-    // when it's disabled for reload to enable developers to reload the fixed
-    // version. (Note that trying to reload an extension that is currently
-    // trying to reload is a no-op.) For other
-    // disableReasons, there's no point in reloading a disabled extension, and
-    // we'll show a crashed reload button if it's terminated.
-    const showIcon =
-        this.data.location === chrome.developerPrivate.Location.UNPACKED &&
-        (this.data.state === chrome.developerPrivate.ExtensionState.ENABLED ||
-         this.data.disableReasons.reloading);
-    return !showIcon;
+    return !this.canReloadItem();
   }
 
   private computeExtraInspectLabel_(): string {
@@ -365,24 +325,59 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
         'itemInspectViewsExtra', (this.data.views.length - 1).toString());
   }
 
+  /**
+   * @return Whether the extension has severe warnings. Doesn't determine the
+   *     warning's visibility.
+   */
   private hasSevereWarnings_(): boolean {
     return this.data.disableReasons.corruptInstall ||
         this.data.disableReasons.suspiciousInstall ||
-        this.data.runtimeWarnings.length > 0 || !!this.data.blacklistText;
+        this.data.runtimeWarnings.length > 0 || !!this.data.blocklistText;
+  }
+
+  /**
+   * @return Whether the extension has an MV2 warning. Doesn't determine the
+   *     warning's visibility.
+   */
+  private hasMv2DeprecationWarning_(): boolean {
+    return this.data.disableReasons.unsupportedManifestVersion;
+  }
+
+  /**
+   * @return Whether the extension has an allowlist warning. Doesn't determine
+   *     the warning's visibility.
+   */
+  private hasAllowlistWarning_(): boolean {
+    return this.data.showSafeBrowsingAllowlistWarning;
   }
 
   private showDescription_(): boolean {
-    return !this.hasSevereWarnings_() &&
-        !this.data.showSafeBrowsingAllowlistWarning;
+    // Description is only visible iff no warnings are visible.
+    return !this.hasSevereWarnings_() && !this.hasMv2DeprecationWarning_() &&
+        !this.hasAllowlistWarning_();
+  }
+
+  private showSevereWarnings(): boolean {
+    // Severe warning are always visible, if they exist.
+    return this.hasSevereWarnings_();
+  }
+
+  private showMv2DeprecationWarning_(): boolean {
+    // MV2 deprecation warning is visible, if existent, if there are no severe
+    // warnings visible.
+    // Note: The item card has a fixed height and the content might get cropped
+    // if too many warnings are displayed.
+    return this.hasMv2DeprecationWarning_() && !this.hasSevereWarnings_();
   }
 
   private showAllowlistWarning_(): boolean {
-    // Only show the allowlist warning if there are no other warnings. The item
-    // card has a fixed height and the content might get cropped if too many
-    // warnings are displayed. This should be a rare edge case and the allowlist
-    // warning will still be shown in the item detail view.
-    return this.data.showSafeBrowsingAllowlistWarning &&
-        !this.hasSevereWarnings_();
+    // Allowlist warning is visible, if existent, if there are no severe
+    // warnings or mv2 deprecation warnings visible.
+    // Note: The item card has a fixed height and the content might get cropped
+    // if too many warnings are displayed. This should be a rare edge case and
+    // the allowlist warning will still be shown in the item detail view.
+    return this.hasAllowlistWarning_() && !this.hasSevereWarnings_() &&
+        !this.hasMv2DeprecationWarning_();
   }
 }
 

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/thread_pool.h"
@@ -53,14 +54,15 @@ class BlobBytesStreamer {
     DCHECK_EQ(result, MOJO_RESULT_OK);
 
     while (true) {
-      uint32_t num_bytes = base::saturated_cast<uint32_t>(
-          data_[current_item_]->length() - current_item_offset_);
-      MojoResult write_result =
-          pipe_->WriteData(data_[current_item_]->data() + current_item_offset_,
-                           &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+      base::span<const uint8_t> bytes =
+          base::as_byte_span(*data_[current_item_])
+              .subspan(current_item_offset_);
+      size_t actually_written_bytes = 0;
+      MojoResult write_result = pipe_->WriteData(
+          bytes, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
       if (write_result == MOJO_RESULT_OK) {
-        current_item_offset_ += num_bytes;
-        if (current_item_offset_ >= data_[current_item_]->length()) {
+        current_item_offset_ += actually_written_bytes;
+        if (current_item_offset_ >= data_[current_item_]->size()) {
           data_[current_item_] = nullptr;
           current_item_++;
           current_item_offset_ = 0;
@@ -115,7 +117,7 @@ void BlobBytesProvider::AppendData(scoped_refptr<RawData> data) {
 
   if (!data_.empty()) {
     uint64_t last_offset = offsets_.empty() ? 0 : offsets_.back();
-    offsets_.push_back(last_offset + data_.back()->length());
+    offsets_.push_back(last_offset + data_.back()->size());
   }
   data_.push_back(std::move(data));
 }
@@ -124,11 +126,10 @@ void BlobBytesProvider::AppendData(base::span<const char> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (data_.empty() ||
-      data_.back()->length() + data.size() > kMaxConsolidatedItemSizeInBytes) {
+      data_.back()->size() + data.size() > kMaxConsolidatedItemSizeInBytes) {
     AppendData(RawData::Create());
   }
-  data_.back()->MutableData()->Append(
-      data.data(), base::checked_cast<wtf_size_t>(data.size()));
+  data_.back()->MutableData()->AppendSpan(data);
 }
 
 // static
@@ -161,7 +162,7 @@ void BlobBytesProvider::RequestAsReply(RequestAsReplyCallback callback) {
   // to reduce the number of copies of data that are made here.
   Vector<uint8_t> result;
   for (const auto& d : data_)
-    result.Append(d->data(), base::checked_cast<wtf_size_t>(d->length()));
+    result.AppendSpan(base::span(*d));
   std::move(callback).Run(result);
 }
 
@@ -213,22 +214,22 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
     // Offset within this chunk where writing needs to start from.
     uint64_t data_offset = offset > source_offset ? 0 : source_offset - offset;
     uint64_t data_size =
-        std::min(data->length() - data_offset,
+        std::min(data->size() - data_offset,
                  source_offset + source_size - offset - data_offset);
-    size_t written = 0;
-    while (written < data_size) {
-      int writing_size = base::saturated_cast<int>(data_size - written);
-      int actual_written = file.WriteAtCurrentPos(
-          data->data() + data_offset + written, writing_size);
-      bool write_failed = actual_written < 0;
-      if (write_failed) {
+    auto partial_data = base::as_byte_span(*data).subspan(
+        base::checked_cast<size_t>(data_offset),
+        base::checked_cast<size_t>(data_size));
+    while (!partial_data.empty()) {
+      std::optional<size_t> actual_written =
+          file.WriteAtCurrentPos(partial_data);
+      if (!actual_written.has_value()) {
         std::move(callback).Run(std::nullopt);
         return;
       }
-      written += actual_written;
+      partial_data = partial_data.subspan(*actual_written);
     }
 
-    offset += data->length();
+    offset += data->size();
   }
 
   if (!file.Flush()) {

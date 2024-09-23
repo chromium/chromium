@@ -5,7 +5,6 @@
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
-import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './shortcut_input.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

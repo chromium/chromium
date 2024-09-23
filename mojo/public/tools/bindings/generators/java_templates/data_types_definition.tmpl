@@ -109,7 +109,12 @@ if ({{variable}} != null) {
 {
 {%-     endif %}
     for (int i{{level+1}} = 0; i{{level+1}} < {{variable}}.length; ++i{{level+1}}) {
+{%-     if kind.kind|is_nullable_kind %}
+        if ({{variable}}[i{{level+1}}] == null)
+          continue;
+{%-     endif %}
         {{kind.kind|java_class_for_enum}}.validate({{variable}}[i{{level+1}}]);
+        {{variable}}[i{{level+1}}] = {{kind.kind|java_class_for_enum}}.toKnownValue({{variable}}[i{{level+1}}]);
     }
 }
 {%-   elif kind|is_enum_kind %}

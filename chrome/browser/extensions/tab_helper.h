@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/active_tab_permission_granter.h"
+#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -85,14 +85,6 @@ class TabHelper : public content::WebContentsObserver,
   // in the tab.
   bool IsReloadRequired();
 
-  // Returns whether `extension_id` has dismissed site access requests on this
-  // tab.
-  bool HasExtensionDismissedRequests(const ExtensionId& extension_id);
-
-  // Adds `extension_id` to the set of extensions that cannot show site access
-  // requests on this tab.
-  void DismissExtensionRequests(const ExtensionId& extension_id);
-
   ScriptExecutor* script_executor() {
     return script_executor_.get();
   }
@@ -116,9 +108,6 @@ class TabHelper : public content::WebContentsObserver,
   explicit TabHelper(content::WebContents* web_contents);
 
   friend class content::WebContentsUserData<TabHelper>;
-
-  // Removes all the entries in `dismissed_extensions_`.
-  void ClearDismissedExtensions();
 
   // content::WebContentsObserver overrides.
   void RenderFrameCreated(content::RenderFrameHost* host) override;

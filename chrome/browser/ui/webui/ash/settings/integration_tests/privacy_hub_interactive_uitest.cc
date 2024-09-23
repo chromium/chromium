@@ -2,18 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace ash {
 namespace {
+
+enum class SensorType { kCamera, kMicrophone, kGeolocation };
+enum class ControlElementType { kToggle, kSubpageLink, kLegacyToggle };
 
 // Base class for privacy hub tests in this file.
 class PrivacyHubInteractiveUiTest : public InteractiveAshTest {
@@ -26,50 +33,36 @@ class PrivacyHubInteractiveUiTest : public InteractiveAshTest {
     });
   }
 
-  // Returns a query to pierce through Shadow DOM to find the camera settings
-  // toggle button.
-  static DeepQuery GetCameraSettingsToggleButtonQuery() {
-    return {"os-settings-ui",
-            "os-settings-main",
-            "main-page-container",
-            "os-settings-privacy-page",
-            "settings-privacy-hub-subpage",
-            "settings-toggle-button#cameraToggle"};
-  }
+  static DeepQuery ControlElementQuery(SensorType sensor,
+                                       ControlElementType element_type) {
+    const DeepQuery query_prefix{
+        "os-settings-ui", "os-settings-main", "main-page-container",
+        "os-settings-privacy-page", "settings-privacy-hub-subpage"};
+    const std::string last_segment = [element_type, sensor]() -> std::string {
+      if (SensorType::kGeolocation == sensor) {
+        return "cr-link-row#geolocationAreaLinkRow";
+      }
 
-  // Returns a query to find the microphone settings toggle button.
-  static DeepQuery GetMicrophoneSettingsToggleButtonQuery() {
-    return {
-        "os-settings-ui",
-        "os-settings-main",
-        "main-page-container",
-        "os-settings-privacy-page",
-        "settings-privacy-hub-subpage",
-        "settings-toggle-button#microphoneToggle",
-    };
-  }
+      const std::string html_tag = [element_type]() {
+        switch (element_type) {
+          case ControlElementType::kToggle:
+            return "cr-toggle";
+          case ControlElementType::kSubpageLink:
+            return "cr-link-row";
+          case ControlElementType::kLegacyToggle:
+            return "settings-toggle-button";
+        }
+      }();
+      const std::string element_id_prefix =
+          (sensor == SensorType::kCamera) ? "camera" : "microphone";
+      const std::string element_id_suffix =
+          (element_type == ControlElementType::kSubpageLink) ? "SubpageLink"
+                                                             : "Toggle";
 
-  // Returns a query to find the location toggle.
-  static DeepQuery GetGeolocationToggleQuery() {
-    return {
-        "os-settings-ui",
-        "os-settings-main",
-        "main-page-container",
-        "os-settings-privacy-page",
-        "settings-privacy-hub-subpage",
-        "cr-link-row#geolocationAreaLinkRow",
-    };
-  }
+      return html_tag + "#" + element_id_prefix + element_id_suffix;
+    }();
 
-  // Returns a query to find the privacy controls subpage trigger.
-  static DeepQuery GetPrivacyControlsSubpageTrigger() {
-    return {
-        "os-settings-ui",
-        "os-settings-main",
-        "main-page-container",
-        "os-settings-privacy-page",
-        "cr-link-row#privacyHubSubpageTrigger",
-    };
+    return query_prefix + last_segment;
   }
 
   // InteractiveAshTest:
@@ -84,73 +77,47 @@ class PrivacyHubInteractiveUiTest : public InteractiveAshTest {
   }
 };
 
-// Tests for privacy hub app permissions feature.
-class PrivacyHubAppPermissionsInteractiveUiTest
-    : public PrivacyHubInteractiveUiTest {
+class PrivacyHubSettingsPageTest
+    : public PrivacyHubInteractiveUiTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  PrivacyHubAppPermissionsInteractiveUiTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kCrosPrivacyHubV0,
-                              features::kCrosPrivacyHubAppPermissions},
-        /*disabled_features=*/{});
-    CHECK(features::IsCrosPrivacyHubV0Enabled());
-    CHECK(features::IsCrosPrivacyHubAppPermissionsEnabled());
-  }
-
-  // Privacy hub app permissions features replaces the camera settings toggle
-  // button in the Privacy hub subpage with a camera subpage trigger followed by
-  // a toggle button.
-  // Returns a query to find the camera subpage trigger.
-  static DeepQuery GetCameraSubpageTriggerQuery() {
-    return {
-        "os-settings-ui",
-        "os-settings-main",
-        "main-page-container",
-        "os-settings-privacy-page",
-        "settings-privacy-hub-subpage",
-        "cr-link-row#cameraSubpageLink",
+  PrivacyHubSettingsPageTest() {
+    using FeatureList = std::vector<base::test::FeatureRef>;
+    FeatureList enabled_features;
+    FeatureList disabled_features;
+    const auto feature_set = [&](bool flag_on) -> FeatureList& {
+      return flag_on ? enabled_features : disabled_features;
     };
+    feature_set(LocationFlagOn()).push_back(features::kCrosPrivacyHub);
+    feature_set(PerAppPermissionFlagOn())
+        .push_back(features::kCrosPrivacyHubAppPermissions);
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  // Returns a query to find the camera toggle button.
-  static DeepQuery GetCameraToggleButtonQuery() {
-    return {"os-settings-ui",
-            "os-settings-main",
-            "main-page-container",
-            "os-settings-privacy-page",
-            "settings-privacy-hub-subpage",
-            "cr-toggle#cameraToggle"};
-  }
+  bool LocationFlagOn() const { return std::get<0>(GetParam()); }
+  bool PerAppPermissionFlagOn() const { return std::get<1>(GetParam()); }
 
-  // Returns a query to find the microphone subpage trigger.
-  static DeepQuery GetMicrophoneSubpageTriggerQuery() {
-    return {
-        "os-settings-ui",
-        "os-settings-main",
-        "main-page-container",
-        "os-settings-privacy-page",
-        "settings-privacy-hub-subpage",
-        "cr-link-row#microphoneSubpageLink",
-    };
-  }
-
-  // Returns a query to find the microphone toggle button.
-  static DeepQuery GetMicrophoneToggleButtonQuery() {
-    return {"os-settings-ui",
-            "os-settings-main",
-            "main-page-container",
-            "os-settings-privacy-page",
-            "settings-privacy-hub-subpage",
-            "cr-toggle#microphoneToggle"};
+  auto WaitForElement(bool condition,
+                      const ui::ElementIdentifier& element_id,
+                      const DeepQuery& query) {
+    return condition ? WaitForElementExists(element_id, query)
+                     : WaitForElementDoesNotExist(element_id, query);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrivacyHubAppPermissionsInteractiveUiTest,
-                       PrivacyHubSubpage) {
+// This test checks for the presence of the control elements for all sensors
+// (camera, microphone, geolocation). The particular control elements and the
+// set of sensors differs based on the feature flags. This test verifies the
+// right composition of control elements on the Privacy Controls subpage in
+// settings for all combinations of feature flags.
+IN_PROC_BROWSER_TEST_P(PrivacyHubSettingsPageTest, PrivacyControls) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
+  ASSERT_EQ(features::IsCrosPrivacyHubLocationEnabled(), LocationFlagOn());
+  ASSERT_EQ(features::IsCrosPrivacyHubAppPermissionsEnabled(),
+            PerAppPermissionFlagOn());
 
   RunTestSequence(
       Log("Opening OS settings system web app"),
@@ -164,24 +131,66 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubAppPermissionsInteractiveUiTest,
           chrome::GetOSSettingsUrl(
               chromeos::settings::mojom::kPrivacyHubSubpagePath)),
 
-      Log("Waiting for camera subpage trigger to exist"),
-      WaitForElementExists(kOsSettingsWebContentsId,
-                           GetCameraSubpageTriggerQuery()),
+      Log("Waiting for camera subpage trigger to exist or not"),
+      WaitForElement(PerAppPermissionFlagOn(), kOsSettingsWebContentsId,
+                     ControlElementQuery(SensorType::kCamera,
+                                         ControlElementType::kSubpageLink)),
 
-      Log("Waiting for camera toggle button to exist"),
-      WaitForElementExists(kOsSettingsWebContentsId,
-                           GetCameraToggleButtonQuery()),
+      Log("Waiting for the camera toggle button to exist or not"),
+      WaitForElement(PerAppPermissionFlagOn(), kOsSettingsWebContentsId,
+                     ControlElementQuery(SensorType::kCamera,
+                                         ControlElementType::kToggle)),
 
-      Log("Waiting for microphone subpage trigger to exist"),
-      WaitForElementExists(kOsSettingsWebContentsId,
-                           GetMicrophoneSubpageTriggerQuery()),
+      Log("Waiting for the legacy camera toggle button to exist or not"),
+      WaitForElement(!PerAppPermissionFlagOn(), kOsSettingsWebContentsId,
+                     ControlElementQuery(SensorType::kCamera,
+                                         ControlElementType::kLegacyToggle)),
 
-      Log("Waiting for microphone toggle button to exist"),
-      WaitForElementExists(kOsSettingsWebContentsId,
-                           GetMicrophoneToggleButtonQuery()),
+      Log("Waiting for microphone subpage trigger to exist or not"),
+      WaitForElement(PerAppPermissionFlagOn(), kOsSettingsWebContentsId,
+                     ControlElementQuery(SensorType::kMicrophone,
+                                         ControlElementType::kSubpageLink)),
+
+      Log("Waiting for the microphone toggle button to exist or not"),
+      WaitForElement(PerAppPermissionFlagOn(), kOsSettingsWebContentsId,
+                     ControlElementQuery(SensorType::kMicrophone,
+                                         ControlElementType::kToggle)),
+
+      Log("Waiting for the legacy microphone toggle button to exist or not"),
+      WaitForElement(!PerAppPermissionFlagOn(), kOsSettingsWebContentsId,
+                     ControlElementQuery(SensorType::kMicrophone,
+                                         ControlElementType::kLegacyToggle)),
+
+      Log("Waiting for geolocation subpage trigger to exist or not"),
+      WaitForElement(LocationFlagOn(), kOsSettingsWebContentsId,
+                     ControlElementQuery(SensorType::kGeolocation,
+                                         ControlElementType::kSubpageLink)),
 
       Log("Test complete"));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrivacyHubSettingsPageTest,
+                         testing::Combine(
+                             /*location_on=*/testing::Bool(),
+                             /*per_app_permissions_on=*/testing::Bool()));
+
+// Tests for privacy hub app permissions feature.
+class PrivacyHubAppPermissionsInteractiveUiTest
+    : public PrivacyHubInteractiveUiTest {
+ public:
+  PrivacyHubAppPermissionsInteractiveUiTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kCrosPrivacyHub,
+                              features::kCrosPrivacyHubAppPermissions},
+        /*disabled_features=*/{});
+    CHECK(features::IsCrosPrivacyHubLocationEnabled());
+    CHECK(features::IsCrosPrivacyHubAppPermissionsEnabled());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(PrivacyHubAppPermissionsInteractiveUiTest,
                        CameraSubpage) {
@@ -223,126 +232,22 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubAppPermissionsInteractiveUiTest,
       Log("Test complete"));
 }
 
-// Tests for "V1" privacy hub, which has a geolocation toggle.
-class PrivacyHubV1InteractiveUiTest : public PrivacyHubInteractiveUiTest {
- public:
-  PrivacyHubV1InteractiveUiTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kCrosPrivacyHub,
-                              features::kCrosPrivacyHubV0},
-        /*disabled_features=*/{features::kCrosPrivacyHubAppPermissions});
-    CHECK(features::IsCrosPrivacyHubEnabled());
-    CHECK(features::IsCrosPrivacyHubLocationEnabled());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PrivacyHubV1InteractiveUiTest, SettingsPage) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
-
-  RunTestSequence(
-      Log("Opening OS settings system web app"),
-      InstrumentNextTab(kOsSettingsWebContentsId, AnyBrowser()),
-      ShowOSSettingsSubPage(chromeos::settings::mojom::kPrivacyHubSubpagePath),
-      WaitForShow(kOsSettingsWebContentsId),
-
-      Log("Waiting for OS settings privacy hub page to load"),
-      WaitForWebContentsReady(
-          kOsSettingsWebContentsId,
-          chrome::GetOSSettingsUrl(
-              chromeos::settings::mojom::kPrivacyHubSubpagePath)),
-
-      Log("Waiting for camera settings toggle button to exist"),
-      WaitForElementExists(kOsSettingsWebContentsId,
-                           GetCameraSettingsToggleButtonQuery()),
-
-      Log("Waiting for microphone settings toggle button to exist"),
-      WaitForElementExists(kOsSettingsWebContentsId,
-                           GetMicrophoneSettingsToggleButtonQuery()),
-
-      Log("Waiting for geolocation toggle to exist"),
-      WaitForElementExists(kOsSettingsWebContentsId,
-                           GetGeolocationToggleQuery()),
-
-      Log("Test complete"));
-}
-
-// Tests for "V0" privacy hub, which does not have a geolocation toggle.
-class PrivacyHubV0InteractiveUiTest : public PrivacyHubInteractiveUiTest {
- public:
-  PrivacyHubV0InteractiveUiTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kCrosPrivacyHubV0},
-        /*disabled_features=*/{features::kCrosPrivacyHubAppPermissions});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PrivacyHubV0InteractiveUiTest, SettingsPage) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
-
-  RunTestSequence(
-      Log("Opening OS settings system web app"),
-      InstrumentNextTab(kOsSettingsWebContentsId, AnyBrowser()),
-      ShowOSSettingsSubPage(chromeos::settings::mojom::kPrivacyHubSubpagePath),
-      WaitForShow(kOsSettingsWebContentsId),
-
-      Log("Waiting for OS settings privacy hub page to load"),
-      WaitForWebContentsReady(
-          kOsSettingsWebContentsId,
-          chrome::GetOSSettingsUrl(
-              chromeos::settings::mojom::kPrivacyHubSubpagePath)),
-
-      Log("Waiting for camera settings toggle button to exist"),
-      WaitForElementExists(kOsSettingsWebContentsId,
-                           GetCameraSettingsToggleButtonQuery()),
-
-      Log("Waiting for microphone settings toggle button to exist"),
-      WaitForElementExists(kOsSettingsWebContentsId,
-                           GetMicrophoneSettingsToggleButtonQuery()),
-
-      Log("Test complete"));
-}
-
-// Tests for privacy hub disabled.
-class PrivacyHubDisabledInteractiveUiTest : public PrivacyHubInteractiveUiTest {
- public:
-  PrivacyHubDisabledInteractiveUiTest() {
-    // Privacy hub can be enabled by multiple feature flags, which can be true
-    // in the field trial config JSON file. Ensure all features are disabled.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{}, /*disabled_features=*/{
-            features::kCrosPrivacyHub, features::kCrosPrivacyHubV0,
-            features::kVideoConference});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PrivacyHubDisabledInteractiveUiTest, SettingsPage) {
+IN_PROC_BROWSER_TEST_F(PrivacyHubAppPermissionsInteractiveUiTest,
+                       GeolocationSubpage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
 
   RunTestSequence(
       Log("Opening OS settings system web app"),
       InstrumentNextTab(kOsSettingsWebContentsId, AnyBrowser()),
       ShowOSSettingsSubPage(
-          chromeos::settings::mojom::kPrivacyAndSecuritySectionPath),
+          chromeos::settings::mojom::kPrivacyHubGeolocationSubpagePath),
       WaitForShow(kOsSettingsWebContentsId),
 
-      Log("Waiting for OS settings privacy section to load"),
+      Log("Waiting for OS settings privacy hub geolocation subpage to load"),
       WaitForWebContentsReady(
           kOsSettingsWebContentsId,
           chrome::GetOSSettingsUrl(
-              chromeos::settings::mojom::kPrivacyAndSecuritySectionPath)),
-
-      Log("Verifying that privacy controls subpage trigger does not exist"),
-      WaitForElementDoesNotExist(kOsSettingsWebContentsId,
-                                 GetPrivacyControlsSubpageTrigger()),
+              chromeos::settings::mojom::kPrivacyHubGeolocationSubpagePath)),
 
       Log("Test complete"));
 }

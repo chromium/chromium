@@ -10,7 +10,6 @@
 
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
-#include "gpu/ipc/common/sync_token_mojom_traits.h"
 #include "mojo/public/cpp/bindings/optional_as_pointer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/public/cpp/compositing/bitmap_in_shared_memory_mojom_traits.h"
@@ -58,9 +57,6 @@ struct StructTraits<viz::mojom::CopyOutputResultDataView,
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
   static mojo::OptionalAsPointer<const gpu::Mailbox> mailbox(
-      const std::unique_ptr<viz::CopyOutputResult>& result);
-
-  static mojo::OptionalAsPointer<const gpu::SyncToken> sync_token(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
   static mojo::OptionalAsPointer<const gfx::ColorSpace> color_space(

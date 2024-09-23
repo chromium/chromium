@@ -256,8 +256,8 @@ class Graphics2D : public Resource {
   // TODO(darin): We should ensure that the completion callback always runs, so
   // that it is easier for consumers to manage memory referenced by a callback.
 
-  // TODO(): Add back in the synchronous mode description once we have support
-  // for it.
+  // TODO(crbug.com/): Add back in the synchronous mode description once we have
+  // support for it.
   int32_t Flush(const CompletionCallback& cc);
 
   /// SetScale() sets the scale factor that will be applied when painting the

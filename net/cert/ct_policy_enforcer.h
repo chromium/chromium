@@ -5,6 +5,9 @@
 #ifndef NET_CERT_CT_POLICY_ENFORCER_H_
 #define NET_CERT_CT_POLICY_ENFORCER_H_
 
+#include <optional>
+#include <string_view>
+
 #include <stddef.h>
 
 #include "base/memory/ref_counted.h"
@@ -38,7 +41,20 @@ class NET_EXPORT CTPolicyEnforcer
   virtual ct::CTPolicyCompliance CheckCompliance(
       X509Certificate* cert,
       const ct::SCTList& verified_scts,
+      base::Time current_time,
       const NetLogWithSource& net_log) const = 0;
+
+  // Returns the timestamp that the log identified by |log_id| (the SHA-256
+  // hash of the log's DER-encoded SPKI) has been disqualified, or nullopt if
+  // the log has not been disqualified.
+  // Any SCTs that are embedded in certificates issued after the
+  // disqualification time should not be trusted, nor contribute to any
+  // uniqueness or freshness
+  virtual std::optional<base::Time> GetLogDisqualificationTime(
+      std::string_view log_id) const = 0;
+
+  // Returns true if Certificate Transparency enforcement is enabled.
+  virtual bool IsCtEnabled() const = 0;
 
  protected:
   virtual ~CTPolicyEnforcer() = default;
@@ -58,7 +74,13 @@ class NET_EXPORT DefaultCTPolicyEnforcer : public net::CTPolicyEnforcer {
   ct::CTPolicyCompliance CheckCompliance(
       X509Certificate* cert,
       const ct::SCTList& verified_scts,
+      base::Time current_time,
       const NetLogWithSource& net_log) const override;
+
+  std::optional<base::Time> GetLogDisqualificationTime(
+      std::string_view log_id) const override;
+
+  bool IsCtEnabled() const override;
 
  protected:
   ~DefaultCTPolicyEnforcer() override = default;

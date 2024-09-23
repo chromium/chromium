@@ -8,6 +8,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/browser_process.h"

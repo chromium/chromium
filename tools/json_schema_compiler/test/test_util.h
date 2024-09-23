@@ -6,14 +6,14 @@
 #define TOOLS_JSON_SCHEMA_COMPILER_TEST_TEST_UTIL_H_
 
 #include <memory>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 namespace json_schema_compiler {
 namespace test_util {
 
-base::Value ReadJson(const base::StringPiece& json);
+base::Value ReadJson(std::string_view json);
 
 template <typename T>
 std::vector<T> Vector(const T& a) {

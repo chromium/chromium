@@ -46,12 +46,12 @@ due to other work (e.g. tasks) as they see fit.
 Issues should be evaluated for release blocking status using the following
 matrix based on the issue's severity and prevalence:
 
-              | Low Impact          | Medium              | High                | Critical
-------------- | ------------------- | ------------------- | ------------------- | --------
-**Few Users** |                     |                     | ReleaseBlock:Stable | ReleaseBlock:Dev
-**Some**      |                     | ReleaseBlock:Stable | ReleaseBlock:Beta   | ReleaseBlock:Dev
-**Most**      | ReleaseBlock:Stable | ReleaseBlock:Beta   | ReleaseBlock:Beta   | ReleaseBlock:Dev
-**All**       | ReleaseBlock:Stable | ReleaseBlock:Beta   | ReleaseBlock:Dev    | ReleaseBlock:Dev
+|               | Low Impact          | Medium              | High                | Critical         |
+| ------------- | ------------------- | ------------------- | ------------------- | ---------------- |
+| **Few Users** |                     |                     | ReleaseBlock:Stable | ReleaseBlock:Dev |
+| **Some**      |                     | ReleaseBlock:Stable | ReleaseBlock:Beta   | ReleaseBlock:Dev |
+| **Most**      | ReleaseBlock:Stable | ReleaseBlock:Beta   | ReleaseBlock:Beta   | ReleaseBlock:Dev |
+| **All**       | ReleaseBlock:Stable | ReleaseBlock:Beta   | ReleaseBlock:Dev    | ReleaseBlock:Dev |
 
 ### Severity
 
@@ -143,8 +143,8 @@ are some general guidelines to follow:
     to ship the bug to users and have to respin due to unanticipated
     consequences. You can always loop in the release management team (by CC'ing
     onto the bug, pinging, or e-mailing) the platform owners listed on the
-    [Chrome Calendar](https://chromepmo.appspot.com/calendar) (Googlers only,
-    opening to all in the near future) for their input if you need assistance.
+    [ChromiumDash](https://chromiumdash.appspot.com/schedule) for their input if
+    you need assistance.
 *   These guidelines should be used with the data we have available at the time.
     **If we need more data to make a good decision, get help in finding it!**
     When new information arises, re-assess the bug using the new details as soon

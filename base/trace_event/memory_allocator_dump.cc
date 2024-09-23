@@ -58,7 +58,6 @@ void MemoryAllocatorDump::AddString(const char* name,
   // String attributes are disabled in background mode.
   if (level_of_detail_ == MemoryDumpLevelOfDetail::kBackground) {
     NOTREACHED();
-    return;
   }
   entries_.emplace_back(name, units, value);
 }
@@ -173,7 +172,6 @@ bool MemoryAllocatorDump::Entry::operator==(const Entry& rhs) const {
       return value_string == rhs.value_string;
   }
   NOTREACHED();
-  return false;
 }
 
 void PrintTo(const MemoryAllocatorDump::Entry& entry, std::ostream* out) {

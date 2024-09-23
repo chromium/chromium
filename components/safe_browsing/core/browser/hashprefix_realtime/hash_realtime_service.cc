@@ -11,10 +11,10 @@
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
@@ -24,7 +24,6 @@
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/oblivious_http_request.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -67,8 +66,8 @@ SBThreatType MapFullHashDetailToSbThreatType(
     default:
       // Using "default" because exhaustive switch statements are not
       // recommended for proto3 enums.
-      NOTREACHED() << "Unexpected ThreatType encountered: "
-                   << detail.threat_type();
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected ThreatType encountered: " << detail.threat_type();
       return SBThreatType::SB_THREAT_TYPE_UNUSED;
   }
 }
@@ -165,13 +164,11 @@ HashRealTimeService::HashRealTimeService(
 HashRealTimeService::~HashRealTimeService() = default;
 
 // static
-bool HashRealTimeService::CanCheckUrl(
-    const GURL& url,
-    network::mojom::RequestDestination request_destination) {
+bool HashRealTimeService::CanCheckUrl(const GURL& url) {
   if (VerdictCacheManager::has_artificial_cached_url()) {
     return true;
   }
-  return hash_realtime_utils::CanCheckUrl(url, request_destination);
+  return hash_realtime_utils::CanCheckUrl(url);
 }
 
 HashRealTimeService::SBThreatInfo::SBThreatInfo(SBThreatType threat_type,
@@ -225,8 +222,8 @@ int HashRealTimeService::GetThreatSeverity(
     default:
       // Using "default" because exhaustive switch statements are not
       // recommended for proto3 enums.
-      NOTREACHED() << "Unexpected ThreatType encountered: "
-                   << detail.threat_type();
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected ThreatType encountered: " << detail.threat_type();
       return kLeastSeverity;
   }
 }
@@ -350,9 +347,6 @@ void HashRealTimeService::OnGetOhttpKey(
     std::optional<std::string> key) {
   base::UmaHistogramBoolean("SafeBrowsing.HPRT.HasOhttpKey", key.has_value());
   if (!key.has_value()) {
-    backoff_operator_->ReportError();
-    base::UmaHistogramEnumeration("SafeBrowsing.HPRT.BackoffReportErrorReason",
-                                  BackoffReportErrorReason::kInvalidKey);
     lookup_completer->CompleteLookup(/*is_lookup_successful=*/false,
                                      /*sb_threat_type=*/std::nullopt,
                                      OperationOutcome::kOhttpKeyFetchFailed);
@@ -511,8 +505,6 @@ HashRealTimeService::ParseResponseAndUpdateBackoff(
           "SafeBrowsing.HPRT.Network.Result.WhenEnteringBackoff", net_error,
           response_code);
     }
-    base::UmaHistogramEnumeration("SafeBrowsing.HPRT.BackoffReportErrorReason",
-                                  BackoffReportErrorReason::kResponseError);
   }
   return response;
 }

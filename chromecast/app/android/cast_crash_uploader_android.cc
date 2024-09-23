@@ -22,11 +22,13 @@
 #include "chromecast/app/android/cast_crash_reporter_client_android.h"
 #include "chromecast/base/cast_paths.h"
 #include "chromecast/base/pref_names.h"
-#include "chromecast/browser/android/crash_handler_jni_headers/CastCrashHandler_jni.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/common/crash_key.h"
 #include "content/public/common/content_switches.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chromecast/browser/android/crash_handler_jni_headers/CastCrashHandler_jni.h"
 
 namespace chromecast {
 // static

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <list>
 #include <memory>
 #include <optional>
@@ -21,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
@@ -54,6 +56,33 @@
 using testing::UnorderedElementsAre;
 
 namespace content {
+class ProcessHandleTestPeer {
+ public:
+  explicit ProcessHandleTestPeer(
+      const AuctionProcessManager::ProcessHandle* handle)
+      : handle_(handle) {}
+
+  void CallOnLaunchedWithPid() {
+    handle_->OnBaseProcessLaunched(base::Process::Current());
+  }
+
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> CloneHandle(
+      AuctionProcessManager& auction_process_manager) {
+    auto new_handle = std::make_unique<AuctionProcessManager::ProcessHandle>();
+    base::test::TestFuture<void> process_available;
+    if (!auction_process_manager.RequestWorkletService(
+            handle_->worklet_type_, handle_->origin_,
+            /*frame_site_instance=*/nullptr, new_handle.get(),
+            process_available.GetCallback())) {
+      CHECK(process_available.Wait());
+    }
+    return new_handle;
+  }
+
+ private:
+  raw_ptr<const AuctionProcessManager::ProcessHandle> handle_;
+};
+
 namespace {
 
 const char kAuction1[] = "a";
@@ -189,16 +218,17 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       const url::Origin& browser_signal_seller_origin,
       const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
       const base::TimeDelta browser_signal_recency,
-      auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
+      blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       const std::optional<blink::AdSize>& requested_ad_size,
+      uint16_t multi_bid_limit,
       uint64_t trace_id,
       mojo::PendingAssociatedRemote<auction_worklet::mojom::GenerateBidClient>
           generate_bid_client,
       mojo::PendingAssociatedReceiver<
           auction_worklet::mojom::GenerateBidFinalizer> bid_finalizer)
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void SendPendingSignalsRequests() override {
@@ -211,8 +241,10 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
 
   void ReportWin(
       bool is_for_additional_bid,
-      auction_worklet::mojom::ReportingIdField reporting_id_field,
-      const std::string& reporting_id,
+      const std::optional<std::string>& interest_group_name_reporting_id,
+      const std::optional<std::string>& buyer_reporting_id,
+      const std::optional<std::string>& buyer_and_seller_reporting_id,
+      const std::optional<std::string>& selected_buyer_and_seller_reporting_id,
       const std::optional<std::string>& auction_signals_json,
       const std::optional<std::string>& per_buyer_signals_json,
       const std::optional<GURL>& direct_from_seller_per_buyer_signals,
@@ -237,15 +269,16 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       uint8_t browser_signal_recency,
       const url::Origin& browser_signal_seller_origin,
       const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
-      std::optional<uint32_t> browser_signal_data_version,
+      const std::optional<base::TimeDelta> browser_signal_reporting_timeout,
+      std::optional<uint32_t> bidding_signals_data_version,
       uint64_t trace_id,
       ReportWinCallback report_win_callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ConnectDevToolsAgent(
-      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
-      override {
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+      uint32_t thread_index) override {
     ADD_FAILURE()
         << "ConnectDevToolsAgent should not be called on MockBidderWorklet";
   }
@@ -360,14 +393,19 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       const std::optional<blink::AdCurrency>& component_expect_bid_currency,
       const url::Origin& browser_signal_interest_group_owner,
       const GURL& browser_signal_render_url,
+      const std::optional<std::string>&
+          browser_signal_selected_buyer_and_seller_reporting_id,
+      const std::optional<std::string>&
+          browser_signal_buyer_and_seller_reporting_id,
       const std::vector<GURL>& browser_signal_ad_components,
       uint32_t browser_signal_bidding_duration_msecs,
+      const std::optional<blink::AdSize>& browser_signal_render_size,
       bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
       const std::optional<base::TimeDelta> seller_timeout,
       uint64_t trace_id,
       mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
           score_ad_client) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void SendPendingSignalsRequests() override {
@@ -392,6 +430,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       const url::Origin& browser_signal_interest_group_owner,
       const std::optional<std::string>&
           browser_signal_buyer_and_seller_reporting_id,
+      const std::optional<std::string>&
+          browser_signal_selected_buyer_and_seller_reporting_id,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
       const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -404,12 +444,12 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       std::optional<uint32_t> browser_signal_data_version,
       uint64_t trace_id,
       ReportResultCallback report_result_callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ConnectDevToolsAgent(
-      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
-      override {
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+      uint32_t thread_index) override {
     ADD_FAILURE()
         << "ConnectDevToolsAgent should not be called on MockSellerWorklet";
   }
@@ -513,6 +553,24 @@ class MockAuctionProcessManager
     return nullptr;
   }
 
+  void OnNewProcessAssigned(const ProcessHandle* handle) override {
+    if (defer_on_launched_for_handles_) {
+      deferred_on_launch_call_handles_.push_back(
+          ProcessHandleTestPeer(handle).CloneHandle(*this));
+    } else {
+      ProcessHandleTestPeer(handle).CallOnLaunchedWithPid();
+    }
+  }
+
+  void DeferOnLaunchedForHandles() { defer_on_launched_for_handles_ = true; }
+
+  void CallOnLaunchedWithPidForAllHandles() {
+    for (auto& handle : deferred_on_launch_call_handles_) {
+      ProcessHandleTestPeer(handle.get()).CallOnLaunchedWithPid();
+    }
+    deferred_on_launch_call_handles_.clear();
+  }
+
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
       SiteInstance* frame_site_instance,
       const url::Origin& worklet_origin) override {
@@ -532,8 +590,9 @@ class MockAuctionProcessManager
   void LoadBidderWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
           bidder_worklet_receiver,
-      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>
-          shared_storage_host_remote,
+      std::vector<
+          mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
+          shared_storage_hosts,
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
@@ -546,7 +605,8 @@ class MockAuctionProcessManager
       const url::Origin& top_window_origin,
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
-      std::optional<uint16_t> experiment_group_id) override {
+      std::optional<uint16_t> experiment_group_id,
+      auction_worklet::mojom::TrustedSignalsPublicKeyPtr public_key) override {
     DCHECK(!bidder_worklet_);
 
     // Make sure this request came over the right pipe.
@@ -568,8 +628,9 @@ class MockAuctionProcessManager
   void LoadSellerWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
           seller_worklet_receiver,
-      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>
-          shared_storage_host_remote,
+      std::vector<
+          mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
+          shared_storage_hosts,
       bool should_pause_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
@@ -649,6 +710,10 @@ class MockAuctionProcessManager
   // callback over the pipe will not DCHECK.
   mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService>
       receiver_set_;
+
+  bool defer_on_launched_for_handles_ = false;
+  std::vector<std::unique_ptr<AuctionProcessManager::ProcessHandle>>
+      deferred_on_launch_call_handles_;
 };
 
 class AuctionWorkletManagerTest : public RenderViewHostTestHarness,
@@ -670,6 +735,9 @@ class AuctionWorkletManagerTest : public RenderViewHostTestHarness,
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
+    auction_metrics_recorder_manager_ =
+        std::make_unique<AuctionMetricsRecorderManager>(
+            ukm::AssignNewSourceId());
     auction_worklet_manager_ = std::make_unique<AuctionWorkletManager>(
         &auction_process_manager_, kTopWindowOrigin, kFrameOrigin, this);
   }
@@ -737,6 +805,8 @@ class AuctionWorkletManagerTest : public RenderViewHostTestHarness,
 
   network::TestURLLoaderFactory url_loader_factory_;
   MockAuctionProcessManager auction_process_manager_;
+  std::unique_ptr<AuctionMetricsRecorderManager>
+      auction_metrics_recorder_manager_;
   std::unique_ptr<AuctionWorkletManager> auction_worklet_manager_;
 };
 
@@ -748,8 +818,9 @@ TEST_F(AuctionWorkletManagerTest, SingleBidderWorklet) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
-      worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle);
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
+      worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(), handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetBidderWorklet());
   EXPECT_THAT(handle->GetDevtoolsAuctionIdsForTesting(),
@@ -797,7 +868,8 @@ TEST_F(AuctionWorkletManagerTest, SingleSellerWorklet) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, worklet_available.GetCallback(),
-      NeverInvokedFatalErrorCallback(), handle);
+      NeverInvokedFatalErrorCallback(), handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetSellerWorklet());
   EXPECT_THAT(handle->GetDevtoolsAuctionIdsForTesting(),
@@ -847,8 +919,9 @@ TEST_F(AuctionWorkletManagerTest,
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
-      worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle);
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
+      worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(), handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetBidderWorklet());
   handle->AuthorizeSubresourceUrls(kEmptySubresourceBuilder);
@@ -867,7 +940,8 @@ TEST_F(AuctionWorkletManagerTest,
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, worklet_available.GetCallback(),
-      NeverInvokedFatalErrorCallback(), handle);
+      NeverInvokedFatalErrorCallback(), handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetSellerWorklet());
   handle->AuthorizeSubresourceUrls(kEmptySubresourceBuilder);
@@ -904,8 +978,10 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletAsync) {
         /*needs_cors_for_additional_bid=*/false,
         /*experiment_group_id=*/std::nullopt,
         /*trusted_bidding_signals_slot_size_param=*/"",
+        /*trusted_bidding_signals_coordinator=*/std::nullopt,
         worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(),
-        handle);
+        handle,
+        auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
     ASSERT_TRUE(worklet_available.Wait());
     EXPECT_TRUE(handle->GetBidderWorklet());
     EXPECT_EQ(i + 1,
@@ -939,8 +1015,10 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletAsync) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available2.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle);
+      handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   EXPECT_EQ(AuctionProcessManager::kMaxBidderProcesses,
             auction_process_manager_.GetBidderProcessCountForTesting());
   task_environment()->RunUntilIdle();
@@ -992,7 +1070,8 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletAsync) {
         kAuction1, decision_logic_url,
         /*trusted_scoring_signals_url=*/std::nullopt,
         /*experiment_group_id=*/std::nullopt, worklet_available.GetCallback(),
-        NeverInvokedFatalErrorCallback(), handle);
+        NeverInvokedFatalErrorCallback(), handle,
+        auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
     ASSERT_TRUE(worklet_available.Wait());
     EXPECT_TRUE(handle->GetSellerWorklet());
     EXPECT_EQ(i + 1,
@@ -1024,7 +1103,8 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletAsync) {
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt,
       worklet_available_loop.QuitClosure(), NeverInvokedFatalErrorCallback(),
-      handle);
+      handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   EXPECT_EQ(AuctionProcessManager::kMaxSellerProcesses,
             auction_process_manager_.GetSellerProcessCountForTesting());
   task_environment()->RunUntilIdle();
@@ -1062,8 +1142,10 @@ TEST_F(AuctionWorkletManagerTest, ReuseBidderWorklet) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available1.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle1);
+      handle1,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet1 =
@@ -1088,8 +1170,10 @@ TEST_F(AuctionWorkletManagerTest, ReuseBidderWorklet) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available2.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle2);
+      handle2,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_EQ(handle1->GetBidderWorklet(), handle2->GetBidderWorklet());
   EXPECT_FALSE(auction_process_manager_.HasBidderWorkletRequest());
@@ -1118,8 +1202,10 @@ TEST_F(AuctionWorkletManagerTest, ReuseBidderWorklet) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available3.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle3);
+      handle3,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available3.Wait());
   EXPECT_EQ(handle2->GetBidderWorklet(), handle3->GetBidderWorklet());
   EXPECT_FALSE(auction_process_manager_.HasBidderWorkletRequest());
@@ -1146,8 +1232,10 @@ TEST_F(AuctionWorkletManagerTest, ReuseBidderWorklet) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available4.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle4);
+      handle4,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available4.Wait());
   EXPECT_TRUE(handle4->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet2 =
@@ -1171,7 +1259,8 @@ TEST_F(AuctionWorkletManagerTest, ReuseSellerWorklet) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, worklet_available1.GetCallback(),
-      NeverInvokedFatalErrorCallback(), handle1);
+      NeverInvokedFatalErrorCallback(), handle1,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet1 =
@@ -1193,7 +1282,8 @@ TEST_F(AuctionWorkletManagerTest, ReuseSellerWorklet) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction2, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, worklet_available2.GetCallback(),
-      NeverInvokedFatalErrorCallback(), handle2);
+      NeverInvokedFatalErrorCallback(), handle2,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_EQ(handle1->GetSellerWorklet(), handle2->GetSellerWorklet());
   EXPECT_FALSE(auction_process_manager_.HasSellerWorkletRequest());
@@ -1220,7 +1310,8 @@ TEST_F(AuctionWorkletManagerTest, ReuseSellerWorklet) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction3, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, worklet_available3.GetCallback(),
-      NeverInvokedFatalErrorCallback(), handle3);
+      NeverInvokedFatalErrorCallback(), handle3,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available3.Wait());
   EXPECT_EQ(handle2->GetSellerWorklet(), handle3->GetSellerWorklet());
   EXPECT_FALSE(auction_process_manager_.HasSellerWorkletRequest());
@@ -1245,7 +1336,8 @@ TEST_F(AuctionWorkletManagerTest, ReuseSellerWorklet) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction4, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, worklet_available4.GetCallback(),
-      NeverInvokedFatalErrorCallback(), handle4);
+      NeverInvokedFatalErrorCallback(), handle4,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available4.Wait());
   EXPECT_TRUE(handle4->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet2 =
@@ -1271,8 +1363,10 @@ TEST_F(AuctionWorkletManagerTest, DifferentBidderWorklets) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available1.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle1);
+      handle1,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet1 =
@@ -1297,8 +1391,10 @@ TEST_F(AuctionWorkletManagerTest, DifferentBidderWorklets) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available2.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle2);
+      handle2,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle1->GetBidderWorklet());
   EXPECT_NE(handle1->GetBidderWorklet(), handle2->GetBidderWorklet());
@@ -1323,8 +1419,10 @@ TEST_F(AuctionWorkletManagerTest, DifferentBidderWorklets) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available3.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle3);
+      handle3,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available3.Wait());
   EXPECT_TRUE(handle3->GetBidderWorklet());
   EXPECT_NE(handle1->GetBidderWorklet(), handle3->GetBidderWorklet());
@@ -1350,8 +1448,10 @@ TEST_F(AuctionWorkletManagerTest, DifferentBidderWorklets) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available4.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle4);
+      handle4,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   EXPECT_TRUE(handle4->GetBidderWorklet());
   EXPECT_NE(handle1->GetBidderWorklet(), handle4->GetBidderWorklet());
   EXPECT_NE(handle2->GetBidderWorklet(), handle4->GetBidderWorklet());
@@ -1379,8 +1479,10 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletExperimentIDs) {
       kAuction1, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
       /*needs_cors_for_additional_bid=*/false, kExperiment1,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available1.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle1);
+      handle1,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet1 =
@@ -1394,8 +1496,10 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletExperimentIDs) {
       kAuction2, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
       /*needs_cors_for_additional_bid=*/false, kExperiment2,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available2.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle2);
+      handle2,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle2->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet2 =
@@ -1409,8 +1513,10 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletExperimentIDs) {
       kAuction3, kDecisionLogicUrl, kWasmUrl, kWasmUrl,
       /*needs_cors_for_additional_bid=*/false, kExperiment1,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available3.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle3);
+      handle3,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available3.Wait());
   EXPECT_TRUE(handle3->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet3 =
@@ -1427,8 +1533,10 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletExperimentIDs) {
       /*trusted_bidding_signals_url=*/std::nullopt,
       /*needs_cors_for_additional_bid=*/false, kExperiment1,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available4.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle4);
+      handle4,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available4.Wait());
   EXPECT_TRUE(handle4->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet4 =
@@ -1445,8 +1553,10 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletExperimentIDs) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available5.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle5);
+      handle5,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available5.Wait());
   EXPECT_TRUE(handle5->GetBidderWorklet());
   EXPECT_EQ(handle5->GetBidderWorklet(), handle4->GetBidderWorklet());
@@ -1463,8 +1573,10 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletCORSForAdditionalBid) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available1.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle1);
+      handle1,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet1 =
@@ -1479,8 +1591,10 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletCORSForAdditionalBid) {
       /*needs_cors_for_additional_bid=*/true,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available2.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle2);
+      handle2,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle2->GetBidderWorklet());
   std::unique_ptr<MockBidderWorklet> bidder_worklet2 =
@@ -1496,7 +1610,8 @@ TEST_F(AuctionWorkletManagerTest, DifferentSellerWorklets) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, worklet_available1.GetCallback(),
-      NeverInvokedFatalErrorCallback(), handle1);
+      NeverInvokedFatalErrorCallback(), handle1,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet1 =
@@ -1516,7 +1631,8 @@ TEST_F(AuctionWorkletManagerTest, DifferentSellerWorklets) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDifferentDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, worklet_available2.GetCallback(),
-      NeverInvokedFatalErrorCallback(), handle2);
+      NeverInvokedFatalErrorCallback(), handle2,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle1->GetSellerWorklet());
   EXPECT_NE(handle1->GetSellerWorklet(), handle2->GetSellerWorklet());
@@ -1536,7 +1652,8 @@ TEST_F(AuctionWorkletManagerTest, DifferentSellerWorklets) {
       kAuction1, kDecisionLogicUrl,
       /*trusted_scoring_signals_url=*/std::nullopt,
       /*experiment_group_id=*/std::nullopt, worklet_available3.GetCallback(),
-      NeverInvokedFatalErrorCallback(), handle3);
+      NeverInvokedFatalErrorCallback(), handle3,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available3.Wait());
   EXPECT_TRUE(handle3->GetSellerWorklet());
   EXPECT_NE(handle1->GetSellerWorklet(), handle3->GetSellerWorklet());
@@ -1560,7 +1677,8 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl, kExperiment1,
       worklet_available1.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle1);
+      handle1,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available1.Wait());
   EXPECT_TRUE(handle1->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet1 =
@@ -1573,7 +1691,8 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl, kExperiment2,
       worklet_available2.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle2);
+      handle2,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle2->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet2 =
@@ -1586,7 +1705,8 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kWasmUrl, kExperiment1,
       worklet_available3.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle3);
+      handle3,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available3.Wait());
   EXPECT_TRUE(handle3->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet3 =
@@ -1603,7 +1723,8 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
       kAuction1, kDecisionLogicUrl,
       /*trusted_scoring_signals_url=*/std::nullopt, kExperiment1,
       worklet_available4.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle4);
+      handle4,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available4.Wait());
   EXPECT_TRUE(handle4->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet4 =
@@ -1618,7 +1739,8 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletExperimentIDs) {
       kAuction1, kDecisionLogicUrl,
       /*trusted_scoring_signals_url=*/std::nullopt,
       /*experiment_group_id=*/std::nullopt, worklet_available5.GetCallback(),
-      NeverInvokedFatalErrorCallback(), handle5);
+      NeverInvokedFatalErrorCallback(), handle5,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available5.Wait());
   EXPECT_TRUE(handle5->GetSellerWorklet());
   std::unique_ptr<MockSellerWorklet> seller_worklet5 =
@@ -1641,7 +1763,9 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletLoadError) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
-      worklet_available.GetCallback(), load_error_helper.Callback(), handle);
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
+      worklet_available.GetCallback(), load_error_helper.Callback(), handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetBidderWorklet());
 
@@ -1671,7 +1795,9 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletLoadError) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
-      worklet_available2.GetCallback(), load_error_helper.Callback(), handle2);
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
+      worklet_available2.GetCallback(), load_error_helper.Callback(), handle2,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle2->GetBidderWorklet());
   EXPECT_NE(handle->GetBidderWorklet(), handle2->GetBidderWorklet());
@@ -1703,6 +1829,7 @@ TEST_F(AuctionWorkletManagerTest, LoadErrorWithoutProcessAssigned) {
         /*needs_cors_for_additional_bid=*/false,
         /*experiment_group_id=*/std::nullopt,
         /*trusted_bidding_signals_slot_size_param=*/"",
+        /*trusted_bidding_signals_coordinator=*/std::nullopt,
         base::BindOnce(
             [](size_t* success_callbacks_ptr, size_t worklet_index) {
               // Successes must be invoked in order, starting from the one for
@@ -1720,7 +1847,8 @@ TEST_F(AuctionWorkletManagerTest, LoadErrorWithoutProcessAssigned) {
               EXPECT_THAT(errors, ::testing::ElementsAre(
                                       "https://origin.test/script crashed."));
             }),
-        handles.back());
+        handles.back(),
+        auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   }
 
   // Grab the first worklet to inject a simulated crash.
@@ -1749,6 +1877,7 @@ TEST_F(AuctionWorkletManagerTest, LoadSuccessOrder) {
         /*needs_cors_for_additional_bid=*/false,
         /*experiment_group_id=*/std::nullopt,
         /*trusted_bidding_signals_slot_size_param=*/"",
+        /*trusted_bidding_signals_coordinator=*/std::nullopt,
         base::BindOnce(
             [](size_t* success_callbacks_ptr, size_t limit,
                base::RunLoop* run_loop, size_t worklet_index) {
@@ -1761,7 +1890,8 @@ TEST_F(AuctionWorkletManagerTest, LoadSuccessOrder) {
               }
             },
             &success_callbacks, kNumWorklets, &run_loop, i),
-        NeverInvokedFatalErrorCallback(), handles.back());
+        NeverInvokedFatalErrorCallback(), handles.back(),
+        auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   }
 
   run_loop.Run();
@@ -1780,7 +1910,8 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletLoadError) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, worklet_available.GetCallback(),
-      load_error_helper.Callback(), handle);
+      load_error_helper.Callback(), handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetSellerWorklet());
 
@@ -1808,7 +1939,8 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletLoadError) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, worklet_available2.GetCallback(),
-      load_error_helper.Callback(), handle2);
+      load_error_helper.Callback(), handle2,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle2->GetSellerWorklet());
   EXPECT_NE(handle->GetSellerWorklet(), handle2->GetSellerWorklet());
@@ -1826,7 +1958,9 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletCrash) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
-      worklet_available.GetCallback(), load_error_helper.Callback(), handle);
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
+      worklet_available.GetCallback(), load_error_helper.Callback(), handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetBidderWorklet());
 
@@ -1858,7 +1992,9 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletCrash) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
-      worklet_available2.GetCallback(), load_error_helper.Callback(), handle2);
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
+      worklet_available2.GetCallback(), load_error_helper.Callback(), handle2,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle2->GetBidderWorklet());
   EXPECT_NE(handle->GetBidderWorklet(), handle2->GetBidderWorklet());
@@ -1874,7 +2010,8 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletCrash) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, worklet_available.GetCallback(),
-      load_error_helper.Callback(), handle);
+      load_error_helper.Callback(), handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetSellerWorklet());
 
@@ -1904,7 +2041,8 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletCrash) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction2, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, worklet_available2.GetCallback(),
-      load_error_helper.Callback(), handle2);
+      load_error_helper.Callback(), handle2,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available2.Wait());
   EXPECT_TRUE(handle2->GetSellerWorklet());
   EXPECT_NE(handle->GetSellerWorklet(), handle2->GetSellerWorklet());
@@ -1927,6 +2065,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletDeleteOnError) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
       worklet_available.GetCallback(),
       base::BindLambdaForTesting(
           [&](AuctionWorkletManager::FatalErrorType fatal_error_type,
@@ -1934,7 +2073,8 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletDeleteOnError) {
             handle.reset();
             run_loop.Quit();
           }),
-      handle);
+      handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetBidderWorklet());
 
@@ -1970,6 +2110,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletDeleteOnSuccess) {
         /*needs_cors_for_additional_bid=*/false,
         /*experiment_group_id=*/std::nullopt,
         /*trusted_bidding_signals_slot_size_param=*/"",
+        /*trusted_bidding_signals_coordinator=*/std::nullopt,
         base::BindOnce(
             [](int worklet_index, int* worklets_received_ptr,
                std::vector<std::unique_ptr<
@@ -1996,7 +2137,8 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletDeleteOnSuccess) {
                   AuctionWorkletManager::FatalErrorType::kScriptLoadFailed);
               EXPECT_THAT(errors, ::testing::ElementsAre(kErrorText));
             }),
-        handles.back());
+        handles.back(),
+        auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   }
   task_environment()->RunUntilIdle();
   // We expect the first worklet + 6 that weren't cancelled.
@@ -2029,7 +2171,8 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletDeleteOnError) {
             handle.reset();
             run_loop.Quit();
           }),
-      handle);
+      handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetSellerWorklet());
 
@@ -2053,25 +2196,27 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletUrlRequestProtection) {
       /*needs_cors_for_additional_bid=*/false,
       /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"",
-      worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(),
-      handle);
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
+      worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(), handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetBidderWorklet());
 
   std::unique_ptr<MockBidderWorklet> bidder_worklet =
       auction_process_manager_.WaitForBidderWorklet();
 
-  const struct {
+  struct AllowedUrls {
     GURL url;
     const char* mime_type;
-  } kAllowedUrls[] = {
+  };
+  const auto kAllowedUrls = std::to_array<AllowedUrls>({
       {kDecisionLogicUrl, "application/javascript"},
       {kWasmUrl, "application/wasm"},
       {GURL("https://origin.test/"
             "trusted_signals?hostname=top.window.origin.test&render_urls=not_"
             "validated"),
        "application/json"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kAllowedUrls); ++i) {
     network::ResourceRequest request;
@@ -2117,23 +2262,28 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletUrlRequestProtection) {
   auction_worklet_manager_->RequestSellerWorklet(
       kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
       /*experiment_group_id=*/std::nullopt, worklet_available.GetCallback(),
-      NeverInvokedFatalErrorCallback(), handle);
+      NeverInvokedFatalErrorCallback(), handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
   ASSERT_TRUE(worklet_available.Wait());
   EXPECT_TRUE(handle->GetSellerWorklet());
 
   std::unique_ptr<MockSellerWorklet> seller_worklet =
       auction_process_manager_.WaitForSellerWorklet();
 
-  const struct {
+  struct AllowedUrlMapping {
     GURL url;
     const char* mime_type;
-  } kAllowedUrls[] = {
-      {kDecisionLogicUrl, "application/javascript"},
+  };
+  const auto kAllowedUrls = std::to_array<AllowedUrlMapping>({
+      {
+          kDecisionLogicUrl,
+          "application/javascript",
+      },
       {GURL("https://origin.test/"
             "trusted_signals?hostname=top.window.origin.test&render_urls=not_"
             "validated"),
        "application/json"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kAllowedUrls); ++i) {
     network::ResourceRequest request;
@@ -2178,7 +2328,8 @@ TEST(WorkletKeyTest, HashConsistentForEqualKeys) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   AuctionWorkletManager::WorkletKey key2(
       AuctionWorkletManager::WorkletType::kBidder,
@@ -2186,7 +2337,8 @@ TEST(WorkletKeyTest, HashConsistentForEqualKeys) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   EXPECT_FALSE(key1 < key2);
   EXPECT_FALSE(key2 < key1);
@@ -2200,7 +2352,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentType) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   AuctionWorkletManager::WorkletKey key2(
       AuctionWorkletManager::WorkletType::kSeller,
@@ -2208,7 +2361,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentType) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   EXPECT_TRUE(key1 < key2 || key2 < key1);
   EXPECT_NE(key1.GetHash(), key2.GetHash());
@@ -2221,7 +2375,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentScriptUrl) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   AuctionWorkletManager::WorkletKey key2(
       AuctionWorkletManager::WorkletType::kBidder,
@@ -2229,7 +2384,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentScriptUrl) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   EXPECT_TRUE(key1 < key2 || key2 < key1);
   EXPECT_NE(key1.GetHash(), key2.GetHash());
@@ -2242,7 +2398,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentWasmUrl) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   AuctionWorkletManager::WorkletKey key2(
       AuctionWorkletManager::WorkletType::kBidder,
@@ -2250,7 +2407,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentWasmUrl) {
       GURL("https://different.example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   EXPECT_TRUE(key1 < key2 || key2 < key1);
   EXPECT_NE(key1.GetHash(), key2.GetHash());
@@ -2263,14 +2421,16 @@ TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptWasmUrl) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   AuctionWorkletManager::WorkletKey key2(
       AuctionWorkletManager::WorkletType::kBidder,
       GURL("https://example.test/script_url"), std::nullopt,
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   EXPECT_TRUE(key1 < key2 || key2 < key1);
   EXPECT_NE(key1.GetHash(), key2.GetHash());
@@ -2283,7 +2443,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentSignalsUrl) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   AuctionWorkletManager::WorkletKey key2(
       AuctionWorkletManager::WorkletType::kBidder,
@@ -2291,7 +2452,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentSignalsUrl) {
       GURL("https://example.test/wasm_url"),
       GURL("https://different.example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   EXPECT_TRUE(key1 < key2 || key2 < key1);
   EXPECT_NE(key1.GetHash(), key2.GetHash());
@@ -2304,14 +2466,16 @@ TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptSignalsUrl) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   AuctionWorkletManager::WorkletKey key2(
       AuctionWorkletManager::WorkletType::kBidder,
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"), std::nullopt,
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   EXPECT_TRUE(key1 < key2 || key2 < key1);
   EXPECT_NE(key1.GetHash(), key2.GetHash());
@@ -2324,7 +2488,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentExperiment) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   AuctionWorkletManager::WorkletKey key2(
       AuctionWorkletManager::WorkletType::kBidder,
@@ -2332,7 +2497,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentExperiment) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x48u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   EXPECT_TRUE(key1 < key2 || key2 < key1);
   EXPECT_NE(key1.GetHash(), key2.GetHash());
@@ -2345,7 +2511,8 @@ TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptExperiment) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   AuctionWorkletManager::WorkletKey key2(
       AuctionWorkletManager::WorkletType::kBidder,
@@ -2353,7 +2520,8 @@ TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptExperiment) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, std::nullopt,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   EXPECT_TRUE(key1 < key2 || key2 < key1);
   EXPECT_NE(key1.GetHash(), key2.GetHash());
@@ -2366,7 +2534,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentCORSForAdditionalBid) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   AuctionWorkletManager::WorkletKey key2(
       AuctionWorkletManager::WorkletType::kBidder,
@@ -2374,7 +2543,8 @@ TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentCORSForAdditionalBid) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/true, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   EXPECT_TRUE(key1 < key2 || key2 < key1);
   EXPECT_NE(key1.GetHash(), key2.GetHash());
@@ -2386,14 +2556,16 @@ TEST(WorkletKeyTest, HashIsSameForDifferentSlotSizeParamWhenNoSignalsUrl) {
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"), /*signals_url=*/std::nullopt,
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   AuctionWorkletManager::WorkletKey key2(
       AuctionWorkletManager::WorkletType::kBidder,
       GURL("https://example.test/script_url"),
       GURL("https://example.test/wasm_url"), /*signals_url=*/std::nullopt,
       /*needs_cors_for_additional_bid=*/true, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"foo=bar");
+      /*trusted_bidding_signals_slot_size_param=*/"foo=bar",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   EXPECT_TRUE(key1 < key2 || key2 < key1);
   EXPECT_NE(key1.GetHash(), key2.GetHash());
@@ -2406,7 +2578,8 @@ TEST(WorkletKeyTest, HashIsDifferentForDifferentSlotSizeParamWithSignalsUrl) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/false, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"");
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   AuctionWorkletManager::WorkletKey key2(
       AuctionWorkletManager::WorkletType::kBidder,
@@ -2414,10 +2587,82 @@ TEST(WorkletKeyTest, HashIsDifferentForDifferentSlotSizeParamWithSignalsUrl) {
       GURL("https://example.test/wasm_url"),
       GURL("https://example.test/signals_url"),
       /*needs_cors_for_additional_bid=*/true, 0x85u,
-      /*trusted_bidding_signals_slot_size_param=*/"foo=bar");
+      /*trusted_bidding_signals_slot_size_param=*/"foo=bar",
+      /*trusted_signals_coordinator=*/std::nullopt);
 
   EXPECT_TRUE(key1 < key2 || key2 < key1);
   EXPECT_NE(key1.GetHash(), key2.GetHash());
+}
+
+TEST(WorkletKeyTest, HashIsDifferentForKeysWithDifferentCoordinator) {
+  AuctionWorkletManager::WorkletKey key1(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"),
+      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      url::Origin::Create(GURL("https://foo.test")));
+
+  AuctionWorkletManager::WorkletKey key2(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"),
+      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      url::Origin::Create(GURL("https://bar.test")));
+
+  EXPECT_TRUE(key1 < key2 || key2 < key1);
+  EXPECT_NE(key1.GetHash(), key2.GetHash());
+}
+
+TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptCoordinator) {
+  AuctionWorkletManager::WorkletKey key1(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"),
+      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      url::Origin::Create(GURL("https://foo.test")));
+
+  AuctionWorkletManager::WorkletKey key2(
+      AuctionWorkletManager::WorkletType::kBidder,
+      GURL("https://example.test/script_url"),
+      GURL("https://example.test/wasm_url"),
+      GURL("https://example.test/signals_url"),
+      /*needs_cors_for_additional_bid=*/false, 0x85u,
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_signals_coordinator=*/std::nullopt);
+
+  EXPECT_TRUE(key1 < key2 || key2 < key1);
+  EXPECT_NE(key1.GetHash(), key2.GetHash());
+}
+
+TEST_F(AuctionWorkletManagerTest,
+       DoesNotCrashWhenProcessReadyAfterWorkletDestroyed) {
+  auction_process_manager_.DeferOnLaunchedForHandles();
+
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle;
+  base::test::TestFuture<void> worklet_available;
+  auction_worklet_manager_->RequestBidderWorklet(
+      kAuction1, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
+      /*needs_cors_for_additional_bid=*/false,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
+      worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(), handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+  ASSERT_TRUE(worklet_available.Wait());
+  EXPECT_TRUE(handle->GetBidderWorklet());
+  std::unique_ptr<MockBidderWorklet> bidder_worklet =
+      auction_process_manager_.WaitForBidderWorklet();
+
+  bidder_worklet.reset();
+
+  handle.reset();
+  auction_process_manager_.CallOnLaunchedWithPidForAllHandles();
 }
 
 }  // namespace

@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/settings/google_services/parcel_tracking_settings_mediator.h"
 
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
@@ -35,7 +35,7 @@ class ParcelTrackingSettingsMediatorUnittest : public PlatformTest {
     PlatformTest::SetUp();
 
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     consumer_ = [[MockParcelTrackingSettingsModelConsumer alloc] init];
     mediator_ = [[ParcelTrackingSettingsMediator alloc]
@@ -56,7 +56,8 @@ class ParcelTrackingSettingsMediatorUnittest : public PlatformTest {
 TEST_F(ParcelTrackingSettingsMediatorUnittest, TestLoadModel) {
   mediator_.consumer = consumer_;
 
-  EXPECT_EQ(consumer_.latestStatus, IOSParcelTrackingOptInStatus::kAskToTrack);
+  EXPECT_EQ(consumer_.latestStatus,
+            IOSParcelTrackingOptInStatus::kStatusNotSet);
 
   [mediator_ disconnect];
 }

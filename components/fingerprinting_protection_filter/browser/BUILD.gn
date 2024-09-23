@@ -1,0 +1,94 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+# For this component iOS is explicitly not supported.
+if (use_blink) {
+  source_set("browser") {
+    sources = [
+      "fingerprinting_protection_child_navigation_throttle.cc",
+      "fingerprinting_protection_child_navigation_throttle.h",
+      "fingerprinting_protection_observer.h",
+      "fingerprinting_protection_page_activation_throttle.cc",
+      "fingerprinting_protection_page_activation_throttle.h",
+      "fingerprinting_protection_profile_interaction_manager.cc",
+      "fingerprinting_protection_profile_interaction_manager.h",
+      "fingerprinting_protection_ruleset_publisher.cc",
+      "fingerprinting_protection_ruleset_publisher.h",
+      "fingerprinting_protection_web_contents_helper.cc",
+      "fingerprinting_protection_web_contents_helper.h",
+      "throttle_manager.cc",
+      "throttle_manager.h",
+    ]
+    public_deps = [
+      "//base",
+      "//components/content_settings/core/browser:cookie_settings",
+      "//components/content_settings/core/common:common",
+      "//components/fingerprinting_protection_filter/common:common",
+      "//components/fingerprinting_protection_filter/common:features",
+      "//components/fingerprinting_protection_filter/mojom",
+      "//components/privacy_sandbox:tracking_protection_settings",
+      "//components/site_engagement/content",
+      "//components/subresource_filter/content/shared/browser",
+      "//components/subresource_filter/content/shared/common",
+      "//components/subresource_filter/core/browser",
+      "//components/subresource_filter/core/mojom",
+      "//content/public/browser",
+      "//services/metrics/public/cpp:ukm_builders",
+    ]
+    deps = [
+      "//components/content_settings/browser",
+      "//components/subresource_filter/core/common",
+      "//net",
+      "//url",
+    ]
+  }
+
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "test_support.cc",
+      "test_support.h",
+    ]
+    public_deps = [
+      ":browser",
+      "//base",
+      "//components/sync_preferences:test_support",
+    ]
+    deps = [
+      "//components/content_settings/core/browser",
+      "//components/privacy_sandbox:tracking_protection_settings",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "fingerprinting_protection_child_navigation_throttle_unittest.cc",
+      "fingerprinting_protection_page_activation_throttle_unittest.cc",
+      "fingerprinting_protection_profile_interaction_manager_unittest.cc",
+      "fingerprinting_protection_web_contents_helper_unittest.cc",
+      "throttle_manager_unittest.cc",
+    ]
+    deps = [
+      ":test_support",
+      "//base",
+      "//components/content_settings/core/browser:browser",
+      "//components/privacy_sandbox:features",
+      "//components/subresource_filter/content/shared/browser:test_support",
+      "//components/subresource_filter/core/browser",
+      "//components/subresource_filter/core/common",
+      "//components/subresource_filter/core/mojom",
+      "//components/sync_preferences:test_support",
+      "//components/ukm:test_support",
+      "//components/ukm/content:content",
+      "//components/url_pattern_index/proto:url_pattern_index",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+}

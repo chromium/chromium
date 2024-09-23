@@ -46,28 +46,22 @@
 - (void)start {
   [super start];
 
-  self.viewController = [[FamilyPromoViewController alloc] init];
-  self.viewController.actionHandler = self;
-  self.viewController.presentationController.delegate = self;
-  self.mediator = [[FamilyPromoMediator alloc]
+  FamilyPromoViewController* viewController =
+      [[FamilyPromoViewController alloc] init];
+  viewController.actionHandler = self;
+  viewController.presentationController.delegate = self;
+  viewController.sheetPresentationController.detents = @[
+    viewController.preferredHeightDetent,
+    UISheetPresentationControllerDetent.largeDetent,
+  ];
+  self.viewController = viewController;
+
+  FamilyPromoMediator* mediator = [[FamilyPromoMediator alloc]
       initWithFamilyPromoType:self.familyPromoType];
-  self.mediator.consumer = self.viewController;
+  mediator.consumer = viewController;
+  self.mediator = mediator;
 
-  UISheetPresentationController* sheetPresentationController =
-      self.viewController.sheetPresentationController;
-  if (@available(iOS 16, *)) {
-    sheetPresentationController.detents = @[
-      self.viewController.preferredHeightDetent,
-      UISheetPresentationControllerDetent.largeDetent,
-    ];
-  } else {
-    sheetPresentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-  }
-
-  [self.baseViewController presentViewController:self.viewController
+  [self.baseViewController presentViewController:viewController
                                         animated:YES
                                       completion:nil];
 }

@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/partition_alloc_base/scoped_clear_last_error.h"
-
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
+#include "partition_alloc/partition_alloc_base/scoped_clear_last_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #include <windows.h>
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
 
 namespace partition_alloc::internal::base {
 
@@ -32,7 +31,7 @@ TEST(PAScopedClearLastError, TestError) {
   EXPECT_EQ(1, errno);
 }
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 
 TEST(PAScopedClearLastError, TestNoErrorWin) {
   ::SetLastError(1);
@@ -52,6 +51,6 @@ TEST(PAScopedClearLastError, TestErrorWin) {
   EXPECT_EQ(logging::SystemErrorCode(1), ::GetLastError());
 }
 
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
 
 }  // namespace partition_alloc::internal::base

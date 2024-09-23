@@ -10,26 +10,9 @@
 #include "components/media_router/browser/media_router_factory.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/types/event_type.h"
-#include "ui/views/view.h"
+#include "ui/views/test/button_test_api.h"
 
 namespace media_router {
-
-namespace {
-
-ui::MouseEvent CreateMouseEvent(ui::EventType type) {
-  return ui::MouseEvent(type, gfx::Point(0, 0), gfx::Point(0, 0),
-                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0);
-}
-
-ui::MouseEvent CreateMousePressedEvent() {
-  return CreateMouseEvent(ui::ET_MOUSE_PRESSED);
-}
-
-ui::MouseEvent CreateMouseReleasedEvent() {
-  return CreateMouseEvent(ui::ET_MOUSE_RELEASED);
-}
-
-}  // namespace
 
 void MediaRouterUiForTestBase::TearDown() {
   if (IsDialogShown()) {
@@ -39,9 +22,10 @@ void MediaRouterUiForTestBase::TearDown() {
 }
 
 // static
-void MediaRouterUiForTestBase::ClickOnView(views::View* view) {
-  view->OnMousePressed(CreateMousePressedEvent());
-  view->OnMouseReleased(CreateMouseReleasedEvent());
+void MediaRouterUiForTestBase::ClickOnButton(views::Button* button) {
+  views::test::ButtonTestApi(button).NotifyClick(ui::MouseEvent(
+      ui::EventType::kMousePressed, gfx::Point(0, 0), gfx::Point(0, 0),
+      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
   base::RunLoop().RunUntilIdle();
 }
 

@@ -123,8 +123,7 @@ public class AdsBlockedDialogTest {
         createAndShowDialog(false);
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
-        dialogController.onDismiss(
-                mModalDialogModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+        dialogController.onDismiss(mModalDialogModel, DialogDismissalCause.NAVIGATE_BACK);
         Mockito.verify(mDialogHandler).removeCallbacksAndMessages(null);
         Mockito.verify(mNativeMock).onDismissed(anyLong());
     }

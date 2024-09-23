@@ -25,6 +25,10 @@ class AddUsernameBubbleController
 
  private:
   void ReportInteractions() override;
+
+  // Used to not include this initial form in the confirmation bubble after
+  // username is added.
+  const password_manager::PasswordForm ininial_pending_password_;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_ADD_USERNAME_BUBBLE_CONTROLLER_H_

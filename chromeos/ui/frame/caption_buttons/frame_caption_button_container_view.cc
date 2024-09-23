@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 
 #include <algorithm>
@@ -17,6 +22,7 @@
 #include "base/metrics/user_metrics.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -181,7 +187,7 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
       case views::CAPTION_BUTTON_ICON_COUNT:
         break;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   bool IsEnabled(views::CaptionButtonIcon type) const override {
@@ -216,6 +222,8 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
     bool is_close_button_enabled,
     std::unique_ptr<views::FrameCaptionButton> custom_button)
     : views::AnimationDelegateViews(frame->GetRootView()), frame_(frame) {
+  SetID(ViewID::VIEW_ID_CAPTION_BUTTON_CONTAINER);
+
   auto default_caption_button_model =
       std::make_unique<DefaultCaptionButtonModel>(frame,
                                                   is_close_button_enabled);
@@ -736,10 +744,11 @@ void FrameCaptionButtonContainerView::MenuButtonPressed() {
 
   // Send up event as well as down event as ARC++ clients expect this sequence.
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
-  ui::KeyEvent press_key_event(ui::ET_KEY_PRESSED, ui::VKEY_APPS, ui::EF_NONE);
+  ui::KeyEvent press_key_event(ui::EventType::kKeyPressed, ui::VKEY_APPS,
+                               ui::EF_NONE);
   std::ignore = root_window->GetHost()->GetEventSink()->OnEventFromSource(
       &press_key_event);
-  ui::KeyEvent release_key_event(ui::ET_KEY_RELEASED, ui::VKEY_APPS,
+  ui::KeyEvent release_key_event(ui::EventType::kKeyReleased, ui::VKEY_APPS,
                                  ui::EF_NONE);
   std::ignore = root_window->GetHost()->GetEventSink()->OnEventFromSource(
       &release_key_event);
@@ -905,7 +914,7 @@ FrameCaptionButtonContainerView::GetMultitaskMenuNudgeController() {
   return &nudge_controller_;
 }
 
-BEGIN_METADATA(FrameCaptionButtonContainerView, views::View)
+BEGIN_METADATA(FrameCaptionButtonContainerView)
 END_METADATA
 
 }  // namespace chromeos

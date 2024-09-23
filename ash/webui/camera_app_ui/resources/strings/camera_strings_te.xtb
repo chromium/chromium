@@ -32,20 +32,28 @@
 <translation id="2175927920773552910">QR కోడ్</translation>
 <translation id="2244252133441425811">వీడియో FPS పికర్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="2271433936731426666">ఫుల్ సైజ్‌లో ఉన్న వీడియో స్నాప్‌షాట్‌ను ఎనేబుల్ చేయండి</translation>
+<translation id="2281736597583450397">మెరుగుపరిచిన జూమ్‌తో స్పష్టమైన వివరాలు పొందండి</translation>
 <translation id="2320741269052147773">ఎడమ వైపునకు ప్యాన్ చేయి</translation>
+<translation id="2360840973209616515">కెమెరా యాప్ మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయడం జరుగుతుంది.
+        వివరాల కోసం, అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
+<translation id="2442754296994859145">కంటెంట్‌ను వెరిఫై చేయడానికి కాపీ చేయండి లేదా స్కానింగ్‌ను ఆపడానికి విస్తరించండి.</translation>
+<translation id="2486151619109781620">డైలాగ్‌ను కుదించి, స్కానింగ్ ప్రారంభించండి</translation>
 <translation id="2501278716633472235">వెనుకకు వెళ్ళు</translation>
 <translation id="2501853267655415902">రికార్డింగ్ ఆపివేయబడింది</translation>
-<translation id="2517472476991765520">స్కాన్ చేయి</translation>
+<translation id="2517472476991765520">స్కాన్ చేయండి</translation>
 <translation id="2549985041256363841">రికార్డింగ్‌ను ప్రారంభించండి</translation>
 <translation id="2577915835281444458">రికార్డింగ్ త్వరలోనే ఆపివేయబడుతుంది. పరికర స్టోరేజ్‌కు వెళ్లి, స్పేస్‌ను ఖాళీ చేయండి.</translation>
 <translation id="2599796128805996109">వెనుకవైపు కెమెరా</translation>
+<translation id="2654491636277477479">గుర్తించిన టెక్స్ట్‌ను కాపీ చేయండి</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />సె</translation>
 <translation id="2761536921376153655">స్కాన్ రకం</translation>
 <translation id="28682968802727151">మిర్రర్ ప్రివ్యూ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ప్లగ్-ఇన్ చేశారు.</translation>
 <translation id="3067436040345934772">కుడి వైపునకు ప్యాన్ చేయి</translation>
 <translation id="3081586908890909590">వీడియో రికార్డింగ్ మోడ్‌కు మార్చు</translation>
+<translation id="3091480460059548935">ప్రివ్యూలో టెక్స్ట్‌ను గుర్తించడం</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3157038259444425153">ఇప్పుడు మీ ఫోటోలోని టెక్స్ట్‌ను నేరుగా కాపీ చేయవచ్చు</translation>
 <translation id="3158534262962737808">"<ph name="WIFINAME" />"లో చేరండి</translation>
 <translation id="3227137524299004712">మైక్రోఫోన్</translation>
 <translation id="3240426699337459095">లింక్ కాపీ చేయబడింది</translation>
@@ -65,9 +73,7 @@
 <translation id="4118525110028899586">రికార్డింగ్‌ను పాజ్ చేయి</translation>
 <translation id="4121305183798804752">డాక్యుమెంట్ గుర్తించబడింది</translation>
 <translation id="414641094616694804">ఈ కెమెరా రిజల్యూషన్‌ను మార్చలేదు</translation>
-<translation id="4176463684765177261">డిజేబుల్ చేయబడింది</translation>
 <translation id="428234092390943511">పేజీ థంబ్‌నెయిల్</translation>
-<translation id="4349714250734879769">Chrome ద్వారా ఫ్రేమ్‌లను స్కేల్ చేయండి</translation>
 <translation id="4383571725254449280">పనితీరు లాగ్‌లను ప్రింట్ చేయండి</translation>
 <translation id="4445542136948522167">ఫోటోను తీయడం ఆపివేయి</translation>
 <translation id="4570032796877367747">ముందువైపు కెమెరా</translation>
@@ -80,7 +86,6 @@
 <translation id="4864143361253542638">స్కాన్ చేసిన పేజీ లిస్ట్</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733"><ph name="URL" /> లింక్ అడ్రస్‌ను కాపీ చేయండి</translation>
-<translation id="491895758387112773">మల్టీస్ట్రీమ్ వీడియో రికార్డింగ్</translation>
 <translation id="495170559598752135">చర్యలు</translation>
 <translation id="4984613436295737187">క్వాడ్ HD (1440p)</translation>
 <translation id="5034763830503483128">ఫోటో ఆకార నిష్పత్తి</translation>
@@ -93,6 +98,7 @@
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
 <translation id="5320594929574852403">ఎడమ వైపునకు కదులుతోంది</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5634947914995388399">డైలాగ్‌ను విస్తరించండి, స్కానింగ్‌ను ఆపివేయండి</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />వ పేజీని స్కాన్ చేస్తోంది</translation>
 <translation id="5671277269877808209">చతురస్రం</translation>
 <translation id="574392208103952083">మధ్యస్థం</translation>
@@ -106,6 +112,7 @@
 <translation id="5975083100439434680">దూరంగా జూమ్ చేయి</translation>
 <translation id="5976160379964388480">ఇతర</translation>
 <translation id="6073451960410192870">రికార్డ్ చేయడం ఆపివేయి</translation>
+<translation id="6165508094623778733">మరింత తెలుసుకోండి</translation>
 <translation id="6197807149213783179">మెటాడేటాను సేవ్ చేయండి</translation>
 <translation id="6233780560267770709">3 బై 3</translation>
 <translation id="6243827288366940320">గోల్డెన్ నిష్పత్తి</translation>
@@ -115,11 +122,14 @@
 మీ ఫీడ్‌బ్యాక్ ఇమేజ్ లేదా వీడియో క్వాలిటీ గురించి అయితే, దయచేసి నమూనా ఫోటో లేదా వీడియోను జోడించి, అందులో తప్పు ఏమిటో వివరించండి. (ఉదాహరణకు, ఫోటో మరీ మసకగా ఉండటం, లేదా తీయాల్సిన దానిపై ఫోకస్ చేయకపోవడం వంటివి)</translation>
 <translation id="6519884562954018934"><ph name="WIFINAME" />‌లో చేరండి</translation>
 <translation id="6527303717912515753">షేర్ చేయండి</translation>
+<translation id="6586509689874700895">ముందుగా, జూమ్ - ఇన్ చేయడానికి <ph name="BUTTON_NAME" />‌ను నొక్కండి. ఆపై, మీరు ఫోటోను తీసిన తర్వాత, మీకు మెరుగుపరిచిన వివరాలు కనిపిస్తాయి.</translation>
+<translation id="659539649712855529"><ph name="CONTENT" /> కాపీ అయింది</translation>
 <translation id="6617916774429601017">అన్ని రిజల్యూషన్‌లను చూడండి</translation>
 <translation id="6631515515009660915">మిర్రర్ బటన్‌ను ఆఫ్ చేయండి</translation>
 <translation id="6652737148136672975">డాక్యుమెంట్ మూలన స్థానాన్ని బాణం కీలతో జరపండి</translation>
 <translation id="667999046851023355">డాక్యుమెంట్‌</translation>
 <translation id="6681668084120808868">ఫోటోను తీయి</translation>
+<translation id="6692092766759105707">కంటెంట్‌ను వెరిఫై చేయడానికి కాపీ చేయండి.</translation>
 <translation id="6778482348691154169">ఫోటో తీయలేకపోయింది</translation>
 <translation id="6888362557094394345">దిగువకు కదులుతోంది</translation>
 <translation id="695140971690006676">అన్నీ రీసెట్ చేయండి</translation>
@@ -132,8 +142,8 @@
 <translation id="7337660886763914220">ఫైల్ సిస్టమ్ ఎర్రర్‌లు.</translation>
 <translation id="7450541714075000668">టెక్స్ట్ కాపీ చేయబడింది</translation>
 <translation id="7488619942230388918">GIF వీడియోను రికార్డ్ చేయండి</translation>
+<translation id="7527714402753141485">కాపీ చేయడానికి టెక్స్ట్, బటన్‌ను డిస్‌ప్లే చేస్తుంది</translation>
 <translation id="7557677699350329807">తర్వాతి కెమెరాకు మార్చు</translation>
-<translation id="7562584071994185503"><ph name="TEXT" /> టెక్స్ట్‌ను కాపీ చేయండి</translation>
 <translation id="7607002721634913082">పాజ్ చేయబడింది</translation>
 <translation id="7608223098072244877">4 బై 4</translation>
 <translation id="761421184377987513">దిగువ-ఎడమ వైపునకు కదులుతోంది</translation>
@@ -153,12 +163,12 @@
 <translation id="8145038249676204903">ఫోటోను తీయడానికి మార్చు</translation>
 <translation id="8167081290930651932">ఫోటో ఫార్మాట్‌లో సేవ్ చేయండి</translation>
 <translation id="8239780215768881278">స్నాప్‌షాట్ వీడియోను తీయండి</translation>
-<translation id="8346544573713510785">కెమెరా HAL ద్వారా ఫ్రేమ్‌లను స్కేల్ చేయండి</translation>
 <translation id="8425673304802773841">కిందికి టిల్ట్ చేయి</translation>
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8609951387004618906"><ph name="URL" />‌ను తెరవండి</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">మైక్రోఫోన్‌ను మ్యూట్‌కు టోగుల్ చేయండి. మ్యూట్ ఆన్‌లో ఉంది</translation>
+<translation id="8712637175834984815">అర్థమైంది</translation>
 <translation id="8730621377337864115">పూర్తయింది</translation>
 <translation id="8732462232047530626">మెటాడేటాను ప్రివ్యూ చేయి</translation>
 <translation id="874854738381978209">Wi-Fi నెట్‌వర్క్ గుర్తించబడింది.</translation>

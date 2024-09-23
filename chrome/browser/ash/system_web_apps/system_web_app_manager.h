@@ -58,6 +58,10 @@ class SystemWebAppManager : public KeyedService,
     kOnVersionChange,
   };
 
+  // Number of attempts to install a given version & locale of the SWAs before
+  // bailing out.
+  static constexpr int kInstallFailureAttempts = 3;
+
   static constexpr char kSystemWebAppSessionHasBrokenIconsPrefName[] =
       "web_apps.system_web_app_has_broken_icons_in_session";
 
@@ -193,7 +197,7 @@ class SystemWebAppManager : public KeyedService,
       const base::TimeTicks& install_start_time,
       std::map<GURL, web_app::ExternallyManagedAppManager::InstallResult>
           install_results,
-      std::map<GURL, bool> uninstall_results);
+      std::map<GURL, webapps::UninstallResultCode> uninstall_results);
   bool ShouldForceInstallApps() const;
   void UpdateLastAttemptedInfo();
   // Returns if we have exceeded the number of retry attempts allowed for this

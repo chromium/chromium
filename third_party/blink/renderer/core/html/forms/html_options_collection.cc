@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_options_collection.h"
 
+#include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"

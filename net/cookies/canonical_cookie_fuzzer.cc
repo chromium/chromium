@@ -66,7 +66,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
           url, name, value, domain, path, creation, expiration, last_access,
           data_provider.ConsumeBool() /* secure */,
           data_provider.ConsumeBool() /* httponly */, same_site, priority,
-          partition_key);
+          partition_key, /*status=*/nullptr);
 
   if (sanitized_cookie) {
     CHECK(sanitized_cookie->IsCanonical());

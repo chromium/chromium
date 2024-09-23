@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] CSS Values and Units Test: attr() security limitations 5
+  assert_equals: 'background-image: src("https://does-not-exist.test/404.png")' with data-foo='https://does-not-exist.test/404.png' expected "src(url(\\"https://does-not-exist.test/404.png\\"))" but got "none"
+[FAIL] CSS Values and Units Test: attr() security limitations 8
+  assert_equals: 'background-image: src(string("https://does-not-exist.test/""404.png")))' with data-foo='/404.png' expected "src(url(\\"https://does-not-exist.test/404.png\\"))" but got "none"
+[FAIL] CSS Values and Units Test: attr() security limitations 11
+  assert_equals: 'background-image: image("https://does-not-exist.test/404.png")' with data-foo='https://does-not-exist.test/404.png' expected "image(url(\\"https://does-not-exist.test/404.png\\"))" but got "none"
+[FAIL] CSS Values and Units Test: attr() security limitations 14
+  assert_equals: 'background-image: image("https://does-not-exist.test/404.png")' with data-foo='https://does-not-exist.test/404.png' expected "image(url(\\"https://does-not-exist.test/404.png\\"))" but got "none"
+Harness: the test ran to completion.
+

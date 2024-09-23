@@ -36,11 +36,13 @@
 #include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/important_file_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/http/transport_security_state.h"
 
@@ -49,6 +51,10 @@ class SequencedTaskRunner;
 }
 
 namespace net {
+
+// Exists only to hold a "commit-interval" param. If disabled, the default
+// ImportantFileWriter commit interval is used.
+NET_EXPORT BASE_DECLARE_FEATURE(kTransportSecurityFileWriterSchedule);
 
 // Reads and updates on-disk TransportSecurity state. Clients of this class
 // should create, destroy, and call into it from one thread.
@@ -118,6 +124,9 @@ class NET_EXPORT TransportSecurityPersister
   // Clears any existing non-static entries, and then re-populates
   // |transport_security_state_|.
   void LoadEntries(const std::string& serialized);
+
+  // Returns the commit interval used by the ImportantFileWriter.
+  static base::TimeDelta GetCommitInterval();
 
  private:
   // Populates |state| from the JSON string |serialized|.

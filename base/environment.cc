@@ -4,8 +4,10 @@
 
 #include "base/environment.h"
 
+#include <array>
+#include <string_view>
+
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -22,7 +24,7 @@ namespace {
 
 class EnvironmentImpl : public Environment {
  public:
-  bool GetVar(StringPiece variable_name, std::string* result) override {
+  bool GetVar(std::string_view variable_name, std::string* result) override {
     if (GetVarImpl(variable_name, result))
       return true;
 
@@ -41,31 +43,35 @@ class EnvironmentImpl : public Environment {
     return GetVarImpl(alternate_case_var, result);
   }
 
-  bool SetVar(StringPiece variable_name,
+  bool SetVar(std::string_view variable_name,
               const std::string& new_value) override {
     return SetVarImpl(variable_name, new_value);
   }
 
-  bool UnSetVar(StringPiece variable_name) override {
+  bool UnSetVar(std::string_view variable_name) override {
     return UnSetVarImpl(variable_name);
   }
 
  private:
-  bool GetVarImpl(StringPiece variable_name, std::string* result) {
+  bool GetVarImpl(std::string_view variable_name, std::string* result) {
 #if BUILDFLAG(IS_WIN)
-    DWORD value_length =
-        ::GetEnvironmentVariable(UTF8ToWide(variable_name).c_str(), nullptr, 0);
-    if (value_length == 0)
-      return false;
-    if (result) {
-      std::unique_ptr<wchar_t[]> value(new wchar_t[value_length]);
-      ::GetEnvironmentVariable(UTF8ToWide(variable_name).c_str(), value.get(),
-                               value_length);
-      *result = WideToUTF8(value.get());
+    std::wstring wide_name = UTF8ToWide(variable_name);
+    if (!result) {
+      return ::GetEnvironmentVariable(wide_name.c_str(), nullptr, 0) != 0;
     }
+    // Documented to be the maximum environment variable size.
+    std::array<wchar_t, 32767> value;
+    DWORD value_length =
+        ::GetEnvironmentVariable(wide_name.c_str(), value.data(), value.size());
+    if (value_length == 0) {
+      return false;
+    }
+    CHECK_LE(value_length, value.size() - 1)
+        << "value should fit in the buffer (including the null terminator)";
+    WideToUTF8(value.data(), value_length, result);
     return true;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-    const char* env_value = getenv(variable_name.data());
+    const char* env_value = getenv(std::string(variable_name).c_str());
     if (!env_value)
       return false;
     // Note that the variable may be defined but empty.
@@ -75,7 +81,8 @@ class EnvironmentImpl : public Environment {
 #endif
   }
 
-  bool SetVarImpl(StringPiece variable_name, const std::string& new_value) {
+  bool SetVarImpl(std::string_view variable_name,
+                  const std::string& new_value) {
 #if BUILDFLAG(IS_WIN)
     // On success, a nonzero value is returned.
     return !!SetEnvironmentVariable(UTF8ToWide(variable_name).c_str(),
@@ -86,7 +93,7 @@ class EnvironmentImpl : public Environment {
 #endif
   }
 
-  bool UnSetVarImpl(StringPiece variable_name) {
+  bool UnSetVarImpl(std::string_view variable_name) {
 #if BUILDFLAG(IS_WIN)
     // On success, a nonzero value is returned.
     return !!SetEnvironmentVariable(UTF8ToWide(variable_name).c_str(), nullptr);
@@ -116,7 +123,7 @@ std::unique_ptr<Environment> Environment::Create() {
   return std::make_unique<EnvironmentImpl>();
 }
 
-bool Environment::HasVar(StringPiece variable_name) {
+bool Environment::HasVar(std::string_view variable_name) {
   return GetVar(variable_name, nullptr);
 }
 

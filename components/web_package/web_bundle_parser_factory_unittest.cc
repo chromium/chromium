@@ -76,12 +76,9 @@ TEST_F(WebBundleParserFactoryTest, FileDataSource) {
   constexpr int64_t test_length = 16;
   ASSERT_LE(test_length, file_length);
   std::vector<uint8_t> first16b(test_length);
-  ASSERT_EQ(test_length, file.Read(0, reinterpret_cast<char*>(first16b.data()),
-                                   first16b.size()));
+  ASSERT_TRUE(file.ReadAndCheck(0, first16b));
   std::vector<uint8_t> last16b(test_length);
-  ASSERT_EQ(test_length,
-            file.Read(file_length - test_length,
-                      reinterpret_cast<char*>(last16b.data()), last16b.size()));
+  ASSERT_TRUE(file.ReadAndCheck(file_length - test_length, last16b));
 
   auto data_source = CreateFileDataSource(std::move(file));
 

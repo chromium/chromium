@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -19,7 +20,6 @@
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
-#include "content/browser/url_loader_factory_getter.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -120,12 +120,11 @@ class MockNetwork {
       return true;
     }
 
-    uint32_t bytes_written = response.body.size();
     mojo::ScopedDataPipeConsumerHandle consumer;
     mojo::ScopedDataPipeProducerHandle producer;
     CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
-    MojoResult result = producer->WriteData(
-        response.body.data(), &bytes_written, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+    MojoResult result =
+        producer->WriteAllData(base::as_byte_span(response.body));
     CHECK_EQ(MOJO_RESULT_OK, result);
     client->OnReceiveResponse(std::move(response_head), std::move(consumer),
                               std::nullopt);
@@ -242,7 +241,7 @@ class ServiceWorkerNewScriptLoaderTest : public testing::Test {
     *out_client = std::make_unique<network::TestURLLoaderClient>();
     *out_loader = ServiceWorkerNewScriptLoader::CreateAndStart(
         request_id, options, request, (*out_client)->CreateRemote(), version_,
-        helper_->url_loader_factory_getter()->GetNetworkFactory(),
+        helper_->GetNetworkFactory(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         resource_id, /*is_throttle_needed=*/false,
         /*requesting_frame_id=*/GlobalRenderFrameHostId());
@@ -415,7 +414,7 @@ class BodyDataPipeTestURLLoaderFactory final
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   mojo::ScopedDataPipeProducerHandle body_producer_;
@@ -459,16 +458,17 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Success_ClientConsumeBodyLater) {
   // Keep writing body until ServiceWorkerNewScriptLoader's client producer
   // data pipe becomes full.
   mojo::ScopedDataPipeProducerHandle body_producer = loader_factory.TakeBody();
-  uint32_t total_bytes_written = 0;
+  size_t total_bytes_written = 0;
   while (true) {
-    uint32_t bytes_written = ServiceWorkerNewScriptLoader::kReadBufferSize;
-    MojoResult result = body_producer->WriteData(kBody.data(), &bytes_written,
-                                                 MOJO_WRITE_DATA_FLAG_NONE);
+    size_t actually_written_bytes = 0;
+    MojoResult result = body_producer->WriteData(base::as_byte_span(kBody),
+                                                 MOJO_WRITE_DATA_FLAG_NONE,
+                                                 actually_written_bytes);
     if (result != MOJO_RESULT_OK) {
       ASSERT_EQ(result, MOJO_RESULT_SHOULD_WAIT);
       break;
     }
-    total_bytes_written += bytes_written;
+    total_bytes_written += actually_written_bytes;
     // Make sure ServiceWorkerNewScriptLoader have a chance to write data to the
     // client's producer data pipe. This should not enter an infinite loop.
     base::RunLoop().RunUntilIdle();

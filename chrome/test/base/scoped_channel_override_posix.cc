@@ -7,10 +7,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/environment.h"
-#include "base/strings/string_piece.h"
 
 namespace chrome {
 
@@ -20,7 +20,7 @@ namespace {
 // returning its previous value or null if it was not set. The variable is
 // removed from the environment if `new_value` is null.
 std::optional<std::string> ExchangeEnvironmentVariable(
-    base::StringPiece name,
+    std::string_view name,
     std::optional<std::string> new_value) {
   auto environment = base::Environment::Create();
   std::string old_value;
@@ -33,7 +33,7 @@ std::optional<std::string> ExchangeEnvironmentVariable(
                          : std::nullopt;
 }
 
-constexpr base::StringPiece kChromeVersionExtra = "CHROME_VERSION_EXTRA";
+constexpr std::string_view kChromeVersionExtra = "CHROME_VERSION_EXTRA";
 
 std::string GetVersionExtra(ScopedChannelOverride::Channel channel) {
   switch (channel) {
@@ -45,6 +45,10 @@ std::string GetVersionExtra(ScopedChannelOverride::Channel channel) {
       return "beta";
     case ScopedChannelOverride::Channel::kDev:
       return "unstable";
+#if BUILDFLAG(IS_LINUX)
+    case ScopedChannelOverride::Channel::kCanary:
+      return "canary";
+#endif  // BUILDFLAG(IS_LINUX)
   }
 }
 

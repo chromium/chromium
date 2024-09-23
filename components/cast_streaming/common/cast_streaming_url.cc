@@ -9,7 +9,7 @@
 namespace cast_streaming {
 namespace {
 
-// TODO(crbug.com/1211062): Update this constant to a proper scheme.
+// TODO(crbug.com/40182730): Update this constant to a proper scheme.
 constexpr char kCastStreamingReceiverUrl[] = "data:cast_streaming_receiver";
 
 }  // namespace

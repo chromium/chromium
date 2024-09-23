@@ -41,7 +41,7 @@ void LayoutInlineListItem::WillBeRemovedFromTree() {
 
 LayoutObject* LayoutInlineListItem::Marker() const {
   NOT_DESTROYED();
-  return To<Element>(GetNode())->PseudoElementLayoutObject(kPseudoIdMarker);
+  return GetNode()->PseudoElementLayoutObject(kPseudoIdMarker);
 }
 
 void LayoutInlineListItem::UpdateMarkerTextIfNeeded() {
@@ -86,9 +86,7 @@ void LayoutInlineListItem::UpdateCounterStyle() {
     return;
   }
   list_marker->CounterStyleChanged(*marker);
-  if (RuntimeEnabledFeatures::CounterStyleChangeShouleCollectInlinesEnabled()) {
-    SetNeedsCollectInlines();
-  }
+  SetNeedsCollectInlines();
 }
 
 int LayoutInlineListItem::Value() const {

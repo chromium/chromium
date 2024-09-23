@@ -16,17 +16,20 @@
 <!-- ruby with base text as direct child -->
 <p>
   <ruby>
-    ruby base
-    <rt>ruby text</rt>
+    ruby base<rt>ruby text</rt>
   </ruby>
 </p>
 
 <!-- ruby inline with other content -->
 <p>
   Hi! <ruby>
-    <rb>ruby base</rb>
-    <rt>ruby text</rt>
+    <rb>ruby base</rb><rt>ruby text</rt>
   </ruby>
+</p>
+
+<!-- Line-broken ruby -->
+<p style="font-family:monospace; width:5ch;">
+<ruby>ruby base<rt>ruby text</rt></ruby>
 </p>
 
 </body>

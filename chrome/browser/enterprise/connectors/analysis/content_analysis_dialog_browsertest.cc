@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_browsertest_base.h"
@@ -27,9 +28,12 @@
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
@@ -149,7 +153,8 @@ class ContentAnalysisDialogBehaviorBrowserTest
     }
 
     // The dialog's buttons should be Cancel in the pending and fail case.
-    EXPECT_EQ(dialog_->GetDialogButtons(), ui::DIALOG_BUTTON_CANCEL);
+    EXPECT_EQ(dialog_->buttons(),
+              static_cast<int>(ui::mojom::DialogButton::kCancel));
 
     // Record the number of AX events until now to check if the text update adds
     // one later.
@@ -193,16 +198,16 @@ class ContentAnalysisDialogBehaviorBrowserTest
 
     // The dialog's buttons should be Cancel in the fail case and nothing in the
     // success case.
-    ui::DialogButton expected_buttons = dialog_->is_success()
-                                            ? ui::DIALOG_BUTTON_NONE
-                                            : ui::DIALOG_BUTTON_CANCEL;
-    EXPECT_EQ(expected_buttons, dialog_->GetDialogButtons());
+    ui::mojom::DialogButton expected_buttons =
+        dialog_->is_success() ? ui::mojom::DialogButton::kNone
+                              : ui::mojom::DialogButton::kCancel;
+    EXPECT_EQ(static_cast<int>(expected_buttons), dialog_->buttons());
 
     // The dialog should only be updated once some time after being shown.
     EXPECT_TRUE(dialog_first_shown_);
     EXPECT_FALSE(dialog_updated_);
 
-    // TODO(crbug/1131565): Re-enable this for Mac.
+    // TODO(crbug.com/40150258): Re-enable this for Mac.
 #if !BUILDFLAG(IS_MAC)
     // The dialog being updated implies an accessibility alert is sent.
     EXPECT_EQ(ax_events_count_when_first_shown_ + 1,
@@ -255,9 +260,11 @@ class ContentAnalysisDialogBehaviorBrowserTest
             dtor_called_timestamp_ - dialog_updated_timestamp_;
         EXPECT_GE(delay, ContentAnalysisDialog::GetSuccessDialogTimeout());
 
-        EXPECT_EQ(ui::DIALOG_BUTTON_NONE, dialog_->GetDialogButtons());
+        EXPECT_EQ(static_cast<int>(ui::mojom::DialogButton::kNone),
+                  dialog_->buttons());
       } else {
-        EXPECT_EQ(ui::DIALOG_BUTTON_CANCEL, dialog_->GetDialogButtons());
+        EXPECT_EQ(static_cast<int>(ui::mojom::DialogButton::kCancel),
+                  dialog_->buttons());
       }
     } else {
       // Ensure the dialog update didn't occur if no dialog was shown.
@@ -356,7 +363,8 @@ class ContentAnalysisDialogWarningBrowserTest
     // The dialog is first shown in the pending state.
     ASSERT_TRUE(dialog->is_pending());
 
-    ASSERT_EQ(dialog->GetDialogButtons(), ui::DIALOG_BUTTON_CANCEL);
+    ASSERT_EQ(dialog->buttons(),
+              static_cast<int>(ui::mojom::DialogButton::kCancel));
   }
 
   void DialogUpdated(ContentAnalysisDialog* dialog,
@@ -364,8 +372,9 @@ class ContentAnalysisDialogWarningBrowserTest
     ASSERT_TRUE(dialog->is_warning());
 
     // The dialog's buttons should be Ok and Cancel.
-    ASSERT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
-              dialog->GetDialogButtons());
+    ASSERT_EQ(static_cast<int>(ui::mojom::DialogButton::kOk) |
+                  static_cast<int>(ui::mojom::DialogButton::kCancel),
+              dialog->buttons());
 
     SimulateClickAndEndTest(dialog);
   }
@@ -983,7 +992,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomMessage) {
       std::move(delegate), FinalContentAnalysisResult::SUCCESS);
   dialog->ShowResult(FinalContentAnalysisResult::WARNING);
 
-  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
   EXPECT_EQ(dialog->GetMessageForTesting()->GetText(), u"Test");
 }
 
@@ -999,7 +1008,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomRuleMessage) {
       std::move(delegate), FinalContentAnalysisResult::SUCCESS);
   dialog->ShowResult(FinalContentAnalysisResult::WARNING);
 
-  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
   EXPECT_EQ(dialog->GetMessageForTesting()->GetText(), u"Test");
 }
 
@@ -1014,10 +1023,10 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
       std::move(delegate), FinalContentAnalysisResult::SUCCESS);
   dialog->ShowResult(FinalContentAnalysisResult::WARNING);
 
-  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
   dialog->GetBypassJustificationTextareaForTesting()->InsertOrReplaceText(
       u"test");
-  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
@@ -1031,14 +1040,14 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
       std::move(delegate), FinalContentAnalysisResult::SUCCESS);
   dialog->ShowResult(FinalContentAnalysisResult::WARNING);
 
-  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
   dialog->GetBypassJustificationTextareaForTesting()->InsertOrReplaceText(
       u"This is a very long string. In fact, it is over two hundred characters "
       u"long because that is the maximum length of a bypass justification that "
       u"can be entered by a user. When the justification is this long, the "
       u"user will not be able to submit it. The maximum length just happens to "
       u"be the same as a popular bird-based service's character limit.");
-  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
@@ -1199,10 +1208,11 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
   ui::AXNodeData textarea_data;
   textarea->GetViewAccessibility().GetAccessibleNodeData(&textarea_data);
   EXPECT_EQ(textarea_data.role, ax::mojom::Role::kTextField);
-  EXPECT_EQ(textarea->GetAccessibleRole(), ax::mojom::Role::kTextField);
+  EXPECT_EQ(textarea->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kTextField);
   EXPECT_EQ(
       textarea_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-      label->GetAccessibleName());
+      label->GetViewAccessibility().GetCachedName());
   EXPECT_EQ(textarea_data.GetNameFrom(), ax::mojom::NameFrom::kRelatedElement);
   EXPECT_EQ(textarea_data.GetIntListAttribute(
                 ax::mojom::IntListAttribute::kLabelledbyIds)[0],

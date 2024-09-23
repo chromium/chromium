@@ -19,6 +19,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -31,16 +32,16 @@
 #include "net/base/transport_info.h"
 #include "net/base/upload_progress.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_service.h"
-#include "services/network/network_service_memory_cache.h"
 #include "services/network/private_network_access_checker.h"
-#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
+#include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -66,9 +67,10 @@
 
 namespace net {
 class HttpResponseHeaders;
+class IOBufferWithSize;
 class IPEndPoint;
-struct RedirectInfo;
 class URLRequestContext;
+struct RedirectInfo;
 }  // namespace net
 
 namespace network {
@@ -77,11 +79,27 @@ namespace cors {
 class OriginAccessList;
 }
 
+namespace internal {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(FetchKeepAliveRequestNetworkMetricType)
+enum class FetchKeepAliveRequestNetworkMetricType {
+  kOnCreate = 0,
+  kOnResponse = 1,
+  kMaxValue = kOnResponse
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:FetchKeepAliveRequestNetworkMetricType)
+
+}  // namespace internal
+
 constexpr size_t kMaxFileUploadRequestsPerBatch = 64;
 
 class KeepaliveStatisticsRecorder;
 class NetToMojoPendingBuffer;
 class ScopedThrottlingToken;
+class SharedDictionaryManager;
 class SlopBucket;
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
@@ -162,11 +180,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojo::PendingRemote<mojom::URLLoaderClient> url_loader_client,
       base::WeakPtr<mojom::URLLoaderClient> sync_url_loader_client,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      uint32_t request_id,
+      base::StrictNumeric<int32_t> request_id,
       int keepalive_request_size,
       base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder,
       std::unique_ptr<TrustTokenRequestHelperFactory>
           trust_token_helper_factory,
+      SharedDictionaryManager* shared_dictionary_manager,
       std::unique_ptr<SharedDictionaryAccessChecker> shared_dictionary_checker,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
       mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer,
@@ -175,7 +194,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
-      net::CookieSettingOverrides cookie_setting_overrides,
       std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
       bool shared_storage_writable_eligible);
 
@@ -183,10 +201,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   URLLoader& operator=(const URLLoader&) = delete;
 
   ~URLLoader() override;
-
-  void SetMemoryCache(base::WeakPtr<NetworkServiceMemoryCache> memory_cache) {
-    memory_cache_ = std::move(memory_cache);
-  }
 
   // mojom::URLLoader implementation:
   void FollowRedirect(
@@ -246,6 +260,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojo::PendingRemote<mojom::SSLPrivateKey> ssl_private_key) override;
   void ContinueWithoutCertificate() override;
   void CancelRequest() override;
+
+  // Cancel the request because network revocation was triggered.
+  void CancelRequestIfNonceMatchesAndUrlNotExempted(
+      const base::UnguessableToken& nonce,
+      const std::set<GURL>& exemptions);
 
   net::LoadState GetLoadState() const;
   net::UploadProgress GetUploadProgress() const;
@@ -313,6 +332,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   static std::optional<net::IsolationInfo> GetIsolationInfo(
       const net::IsolationInfo& factory_isolation_info,
       bool automatically_assign_isolation_info,
+      const ResourceRequest& request);
+
+  static net::CookieSettingOverrides CalculateCookieSettingOverrides(
+      net::CookieSettingOverrides factory_overrides,
       const ResourceRequest& request);
 
  private:
@@ -513,6 +536,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void CompletePendingWrite(bool success);
   void SetRawResponseHeaders(scoped_refptr<const net::HttpResponseHeaders>);
   void NotifyEarlyResponse(scoped_refptr<const net::HttpResponseHeaders>);
+  void MaybeNotifyEarlyResponseToDevtools(const net::HttpResponseHeaders&);
   void SetRawRequestHeadersAndNotify(net::HttpRawRequestHeaders);
   bool IsSharedDictionaryReadAllowed();
   void DispatchOnRawRequest(
@@ -539,23 +563,23 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   void CompleteBlockedResponse(
       int error_code,
-      bool should_report_corb_blocking,
+      bool should_report_orb_blocking,
       std::optional<mojom::BlockedByResponseReason> reason = std::nullopt);
 
-  enum BlockResponseForCorbResult {
-    // Returned when caller of BlockResponseForCorb doesn't need to continue,
+  enum BlockResponseForOrbResult {
+    // Returned when caller of BlockResponseForOrb doesn't need to continue,
     // because the request will be cancelled soon.
     kWillCancelRequest,
 
-    // Returned when the caller of BlockResponseForCorb should continue
+    // Returned when the caller of BlockResponseForOrb should continue
     // processing the request (e.g. by calling ReadMore as necessary).
     kContinueRequest,
   };
-  // Block the response because of CORB (or ORB).
-  BlockResponseForCorbResult BlockResponseForCorb();
-  // Decide whether to call block a response via BlockResponseForCorb.
+  // Block the response because of ORB.
+  BlockResponseForOrbResult BlockResponseForOrb();
+  // Decide whether to call block a response via BlockResponseForOrb.
   // Returns true if the request should be cancelled.
-  bool MaybeBlockResponseForCorb(corb::ResponseAnalyzer::Decision);
+  bool MaybeBlockResponseForOrb(orb::ResponseAnalyzer::Decision);
 
   void ReportFlaggedResponseCookies(bool call_cookie_observer);
   void StartReading();
@@ -590,13 +614,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Returns whether TransferSizeUpdated IPC should be sent.
   bool ShouldSendTransferSizeUpdated() const;
 
+  // Records metrics about GET requests.
+  void RecordRequestMetrics();
+
   raw_ptr<net::URLRequestContext> url_request_context_;
 
   raw_ptr<mojom::NetworkContextClient> network_context_client_;
   DeleteCallback delete_callback_;
 
   int32_t options_;
-  const bool corb_detachable_;
   const int resource_type_;
   const bool is_load_timing_enabled_;
   bool has_received_response_ = false;
@@ -607,7 +633,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // This also belongs to URLLoaderFactory and outlives this loader.
   const raw_ptr<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
-  const uint32_t request_id_;
+  const int32_t request_id_;
   const int keepalive_request_size_;
   const bool keepalive_;
   const bool do_not_prompt_for_login_;
@@ -627,6 +653,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   mojo::SimpleWatcher writable_handle_watcher_;
   mojo::SimpleWatcher peer_closed_handle_watcher_;
 
+  scoped_refptr<net::IOBufferWithSize> discard_buffer_;
+
   // True if there's a URLRequest::Read() call in progress.
   bool read_in_progress_ = false;
 
@@ -638,18 +666,21 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   mojom::URLResponseHeadPtr response_;
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
 
-  // Sniffing state and CORB state.
-  bool is_more_corb_sniffing_needed_ = false;
+  // Sniffing state and ORB state.
+  bool is_more_orb_sniffing_needed_ = false;
   bool is_more_mime_sniffing_needed_ = false;
-  const raw_ref<corb::PerFactoryState> per_factory_corb_state_;
-  // `corb_analyzer_` must be destructed before `per_factory_corb_state_`.
-  std::unique_ptr<corb::ResponseAnalyzer> corb_analyzer_;
+  const raw_ref<orb::PerFactoryState> per_factory_orb_state_;
+  // `orb_analyzer_` must be destructed before `per_factory_orb_state_`.
+  std::unique_ptr<orb::ResponseAnalyzer> orb_analyzer_;
 
   std::unique_ptr<ResourceScheduler::ScheduledResourceRequest>
       resource_scheduler_request_handle_;
 
   bool enable_reporting_raw_headers_ = false;
   bool seen_raw_request_headers_ = false;
+  // Used for metrics.
+  size_t raw_request_line_size_ = 0;
+  size_t raw_request_headers_size_ = 0;
   scoped_refptr<const net::HttpResponseHeaders> raw_response_headers_;
 
   std::unique_ptr<UploadProgressTracker> upload_progress_tracker_;
@@ -687,11 +718,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder_;
 
-  base::WeakPtr<NetworkServiceMemoryCache> memory_cache_;
-  std::unique_ptr<NetworkServiceMemoryCacheWriter> memory_cache_writer_;
-  // Passed to `memory_cache_writer_`. Do not use other purposes.
-  net::TransportInfo transport_info_;
-
   bool first_auth_attempt_ = true;
 
   std::unique_ptr<ScopedThrottlingToken> throttling_token_;
@@ -720,6 +746,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // operations, the field remains null, as does |trust_token_helper_factory_|.
   std::unique_ptr<TrustTokenRequestHelper> trust_token_helper_;
   std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory_;
+
+  // The current Trust Token operation being processed by the request.
+  std::optional<mojom::TrustTokenOperationType> trust_token_operation_;
 
   // The cached result of the request's Trust Tokens protocol operation, if any.
   // This can describe the result of either an outbound (request-annotating)
@@ -778,10 +807,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // body.
   const bool has_fetch_streaming_upload_body_;
 
-  // Indicates whether fetch upload streaming is allowed/rejected over H/1.
-  // Even if this is false but there is a QUIC/H2 stream, the upload is allowed.
-  const bool allow_http1_for_streaming_upload_;
-
   bool emitted_devtools_raw_request_ = false;
   bool emitted_devtools_raw_response_ = false;
 
@@ -791,6 +816,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // request. This prevents the network stack from overriding them.
   bool allow_cookies_from_browser_ = false;
   std::string cookies_from_browser_;
+
+  // Specifies that the response head should include request cookies.
+  bool include_request_cookies_with_response_ = false;
+  net::cookie_util::ParsedRequestCookies request_cookies_;
 
   std::vector<network::mojom::CookieAccessDetailsPtr> cookie_access_details_;
 

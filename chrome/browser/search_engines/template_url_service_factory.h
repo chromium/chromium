@@ -40,8 +40,6 @@ class TemplateURLServiceFactory : public ProfileKeyedServiceFactory {
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   bool ServiceIsNULLWhileTesting() const override;
-  void BrowserContextDestroyed(
-      content::BrowserContext* browser_context) override;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_FACTORY_H_

@@ -23,6 +23,14 @@ def _get_arguments(target_store):
     return arguments
 
 
+def _get_async_iterables(target_store):
+    async_iterables = []
+    for interface in target_store.get(INTERFACES):
+        if interface.async_iterable:
+            async_iterables.append(interface.async_iterable)
+    return async_iterables
+
+
 def _get_attributes(target_store):
     attributes = []
     for interface in target_store.get(INTERFACES):
@@ -103,11 +111,27 @@ def _get_interfaces(target_store):
     return target_store.web_idl_database.interfaces
 
 
+def _get_iterables(target_store):
+    iterables = []
+    for interface in target_store.get(INTERFACES):
+        if interface.iterable:
+            iterables.append(interface.iterable)
+    return iterables
+
+
 def _get_legacy_window_aliases(target_store):
     legacy_window_aliases = []
     for interface in target_store.get(INTERFACES):
         legacy_window_aliases.extend(interface.legacy_window_aliases)
     return legacy_window_aliases
+
+
+def _get_map_likes(target_store):
+    map_likes = []
+    for interface in target_store.get(INTERFACES):
+        if interface.maplike:
+            map_likes.append(interface.maplike)
+    return iterables
 
 
 def _get_namespaces(target_store):
@@ -120,6 +144,7 @@ def _get_observable_arrays(target_store):
 
 def _get_objects_with_extended_attributes(target_store):
     objects = []
+    objects.extend(target_store.get(ASYNC_ITERABLES))
     objects.extend(target_store.get(ATTRIBUTES))
     objects.extend(target_store.get(CALLBACK_FUNCTIONS))
     objects.extend(target_store.get(CALLBACK_INTERFACES))
@@ -129,9 +154,18 @@ def _get_objects_with_extended_attributes(target_store):
     objects.extend(target_store.get(ENUMERATIONS))
     objects.extend(target_store.get(FUNCTION_LIKES))
     objects.extend(target_store.get(INTERFACES))
+    objects.extend(target_store.get(ITERABLES))
     objects.extend(target_store.get(LEGACY_WINDOW_ALIASES))
     objects.extend(target_store.get(NAMESPACES))
     return objects
+
+
+def _get_set_likes(target_store):
+    set_likes = []
+    for interface in target_store.get(INTERFACES):
+        if interface.setlike:
+            set_likes.append(interface.setlike)
+    return iterables
 
 
 """
@@ -139,21 +173,25 @@ TargetType constants. These are used as a key of dictionary
 in TargetStore and RuleStore.
 """
 ARGUMENTS = TargetType("arguments", _get_arguments)
+ASYNC_ITERABLES = TargetType("async_iterables", _get_async_iterables)
 ATTRIBUTES = TargetType("attributes", _get_attributes)
-CALLBACK_FUNCTIONS = TargetType("callback_function", _get_callback_functions)
-CALLBACK_INTERFACES = TargetType("callback_interface",
+CALLBACK_FUNCTIONS = TargetType("callback_functions", _get_callback_functions)
+CALLBACK_INTERFACES = TargetType("callback_interfaces",
                                  _get_callback_interfaces)
 CONSTANTS = TargetType("constants", _get_constants)
 DICTIONARIES = TargetType("dictionaries", _get_dictionaries)
 DICTIONARY_MEMBERS = TargetType("dictionary_members", _get_dictionary_members)
 ENUMERATIONS = TargetType("enumerations", _get_enumerations)
-FUNCTION_LIKES = TargetType("function_like", _get_function_likes)
+FUNCTION_LIKES = TargetType("function_likes", _get_function_likes)
 IDL_TYPES = TargetType("idl_types", _get_idl_types)
-INTERFACES = TargetType("callback_function", _get_interfaces)
+INTERFACES = TargetType("interfaces", _get_interfaces)
+ITERABLES = TargetType("iterables", _get_iterables)
 LEGACY_WINDOW_ALIASES = TargetType("legacy_window_aliases",
                                    _get_legacy_window_aliases)
+MAP_LIKES = TargetType("map_likes", _get_map_likes)
 NAMESPACES = TargetType("namespaces", _get_namespaces)
 # Target objects which have extended attributes except for web_idl.IdlType
 OBJECTS_WITH_EXTENDED_ATTRIBUTES = TargetType(
     "objects_with_extended_attributes", _get_objects_with_extended_attributes)
 OBSERVABLE_ARRAYS = TargetType("observable_arrays", _get_observable_arrays)
+SET_LIKES = TargetType("set_likes", _get_set_likes)

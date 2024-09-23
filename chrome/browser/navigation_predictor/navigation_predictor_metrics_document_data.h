@@ -45,7 +45,7 @@ class NavigationPredictorMetricsDocumentData
     bool is_bold_ : 1;
     bool is_in_iframe_ : 1;
     bool is_url_incremented_by_one_ : 1;
-    bool is_same_origin_ : 1;
+    bool is_same_host_ : 1;
     base::TimeDelta navigation_start_to_link_logged;
     uint8_t path_length_;
     uint8_t path_depth_;
@@ -98,6 +98,14 @@ class NavigationPredictorMetricsDocumentData
     std::optional<double> mouse_velocity;
     // Mouse acceleration when the on-hover event was triggered.
     std::optional<double> mouse_acceleration;
+    // Vertical position of the anchor element's center in the viewport
+    // (recorded as a percentage of the viewport's height).
+    std::optional<int> percent_vertical_position;
+    // Vertical distance of the anchor element from the most recently recorded
+    // pointerdown that initiated a scroll. This is recorded as a _signed_
+    // percentage of the screen height, so that the cases of the link being
+    // above and below the pointer are distinguishable.
+    std::optional<int> percent_distance_from_pointer_down;
   };
 
   struct PreloadOnHoverData {

@@ -87,7 +87,7 @@ DestinationRanking SortByUsage(
 #pragma mark - Public methods
 
 - (instancetype)initWithPrefService:(PrefService*)prefService {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _prefService = prefService;
   }
 

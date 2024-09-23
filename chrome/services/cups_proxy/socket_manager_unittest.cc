@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/services/cups_proxy/socket_manager.h"
+
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -19,7 +22,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/services/cups_proxy/fake_cups_proxy_service_delegate.h"
 #include "chrome/services/cups_proxy/public/cpp/type_conversions.h"
-#include "chrome/services/cups_proxy/socket_manager.h"
 #include "chrome/services/cups_proxy/test/paths.h"
 #include "net/base/io_buffer.h"
 #include "net/socket/unix_domain_client_socket_posix.h"
@@ -72,8 +74,8 @@ class FakeSocket : public net::UnixDomainClientSocket {
   ~FakeSocket() override = default;
 
   // Saves expected request and corresponding response to send back.
-  void set_request(base::StringPiece request) { request_ = request; }
-  void set_response(base::StringPiece response) { response_ = response; }
+  void set_request(std::string_view request) { request_ = request; }
+  void set_response(std::string_view response) { response_ = response; }
 
   // Controls whether each method runs synchronously or asynchronously.
   void set_connect_async() { connect_async = true; }
@@ -168,7 +170,7 @@ class FakeSocket : public net::UnixDomainClientSocket {
  private:
   bool is_connected = false;
   bool connect_async = false, read_async = false, write_async = false;
-  base::StringPiece request_, response_;
+  std::string_view request_, response_;
 };
 
 class SocketManagerTest : public testing::Test {
@@ -237,7 +239,7 @@ TEST_F(SocketManagerTest, SyncEverything) {
   EXPECT_TRUE(http_handshake);
 
   // Pre-load |socket_| with request/response.
-  // TODO(crbug.com/495409): Test with actual http response.
+  // TODO(crbug.com/41179657): Test with actual http response.
   socket_->set_request(*http_handshake);
   socket_->set_response(*http_handshake);
 

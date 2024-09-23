@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_runner.h"
@@ -17,6 +16,7 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace reporting {
 
@@ -77,25 +77,22 @@ void CrosHealthdPsrSamplerHandler::HandleResultImpl(
     cros_healthd::TelemetryInfoPtr result) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<MetricData> metric_data;
-  base::ScopedClosureRunner run_callback_on_return(base::BindOnce(
-      [](base::WeakPtr<const CrosHealthdPsrSamplerHandler> self,
-         OptionalMetricCallback callback,
-         std::optional<MetricData>* metric_data, size_t num_retries_left) {
-        DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
-        if (!metric_data->has_value() && num_retries_left > 0) {
-          // Failed to obtain PSR info, try again in 10 seconds. May be due to
-          // some race condition in healthd when reading PSR devices.
-          base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-              FROM_HERE,
-              base::BindOnce(&CrosHealthdPsrSamplerHandler::Retry, self,
-                             std::move(callback), num_retries_left - 1),
-              self->wait_time_);
-          return;
-        }
-        std::move(callback).Run(std::move(*metric_data));
-      },
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback), &metric_data,
-      num_retries_left));
+  absl::Cleanup run_callback_on_return = [this, &callback, &metric_data,
+                                          num_retries_left] {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!metric_data.has_value() && num_retries_left > 0) {
+      // Failed to obtain PSR info, try again in 10 seconds. May be due to
+      // some race condition in healthd when reading PSR devices.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&CrosHealthdPsrSamplerHandler::Retry,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         num_retries_left - 1),
+          wait_time_);
+      return;
+    }
+    std::move(callback).Run(std::move(metric_data));
+  };
 
   const auto& system_result = result->system_result;
   if (system_result.is_null()) {

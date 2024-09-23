@@ -11,9 +11,10 @@
 #include <sys/user.h>
 #include <unistd.h>
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/posix/sysctl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -29,7 +30,7 @@ ProcessId GetParentProcessId(ProcessHandle process) {
 }
 
 FilePath GetProcessExecutablePath(ProcessHandle process) {
-  absl::optional<std::string> pathname =
+  std::optional<std::string> pathname =
       base::StringSysctl({CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, process});
 
   return FilePath(pathname.value_or(std::string{}));

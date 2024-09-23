@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/app_list/search/app_search_data_source.h"
 
 #include <algorithm>
@@ -415,7 +420,7 @@ void AppSearchDataSource::Refresh() {
           return;
         }
 
-        // TODO(crbug.com/826982): add the "can load in incognito" concept to
+        // TODO(crbug.com/40569217): add the "can load in incognito" concept to
         // the App Service and use it here, similar to ExtensionDataSource.
         const std::string name = update.Name();
 
@@ -426,7 +431,7 @@ void AppSearchDataSource::Refresh() {
         apps_.back()->set_recommendable(
             update.Recommendable().value_or(false) &&
             !update.Paused().value_or(false) &&
-            update.Readiness() != apps::Readiness::kDisabledByPolicy &&
+            !apps_util::IsDisabled(update.Readiness()) &&
             update.ShowInLauncher());
         apps_.back()->set_searchable(update.Searchable().value_or(false));
 

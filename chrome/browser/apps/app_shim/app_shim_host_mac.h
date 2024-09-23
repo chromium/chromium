@@ -14,8 +14,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/threading/thread_checker.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/os_integration/mac/app_shim_launch.h"
 #include "chrome/common/mac/app_shim.mojom.h"
+#include "components/metrics/histogram_child_process.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -34,7 +35,8 @@ class AppShimHostBootstrap;
 // This is the counterpart to AppShimController in
 // chrome/app/chrome_main_app_mode_mac.mm. The AppShimHost is owned by the
 // AppShimManager, which implements its client interface.
-class AppShimHost : public chrome::mojom::AppShimHost {
+class AppShimHost : public chrome::mojom::AppShimHost,
+                    public metrics::HistogramChildProcess {
  public:
   // The interface through which the AppShimHost interacts with
   // AppShimManager.
@@ -85,6 +87,12 @@ class AppShimHost : public chrome::mojom::AppShimHost {
     // Invoked by the shim host when the app is about to terminate (for example
     // because the user quit it).
     virtual void OnShimWillTerminate(AppShimHost* host) = 0;
+
+    // Invoked by the shim host when a change to the system level notification
+    // permission status has been detected.
+    virtual void OnNotificationPermissionStatusChanged(
+        AppShimHost* host,
+        mac_notifications::mojom::PermissionStatus status) = 0;
   };
 
   AppShimHost(Client* client,
@@ -153,7 +161,16 @@ class AppShimHost : public chrome::mojom::AppShimHost {
   void OpenAppSettings() override;
   void UrlsOpened(const std::vector<GURL>& urls) override;
   void OpenAppWithOverrideUrl(const GURL& override_url) override;
+  void EnableAccessibilitySupport(
+      chrome::mojom::AppShimScreenReaderSupportMode mode) override;
   void ApplicationWillTerminate() override;
+  void NotificationPermissionStatusChanged(
+      mac_notifications::mojom::PermissionStatus status) override;
+
+  // content::HistogramChildProcess:
+  void BindChildHistogramFetcherFactory(
+      mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
+          factory) override;
 
   // Weak, owns |this|.
   const raw_ptr<Client> client_;
@@ -175,6 +192,15 @@ class AppShimHost : public chrome::mojom::AppShimHost {
   base::OnceClosure on_shim_connected_for_testing_;
   base::FilePath profile_path_;
   const bool uses_remote_views_;
+
+  // Not a system-level PID, rather an ID assigned by content::ChildProcessHost
+  // used to identify this process when registering with
+  // metrics::SubprocessMetricsProvider.
+  const int child_process_host_id_;
+
+  // This holds the histogram allocator to be used for this app shim before it
+  // gets passed to the remote host when it finished launching.
+  std::unique_ptr<base::PersistentMemoryAllocator> histogram_allocator_;
 
   // This class is only ever to be used on the UI thread.
   THREAD_CHECKER(thread_checker_);

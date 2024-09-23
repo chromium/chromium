@@ -1,0 +1,20 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+static_library("language_detection_model_service") {
+  sources = [
+    "language_detection_model_service.cc",
+    "language_detection_model_service.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/language_detection/core",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//mojo/public/cpp/bindings",
+  ]
+}

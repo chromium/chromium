@@ -1,0 +1,148 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("lock_screen_apps") {
+  sources = [
+    "app_manager.h",
+    "app_manager_impl.cc",
+    "app_manager_impl.h",
+    "first_app_run_toast_manager.cc",
+    "first_app_run_toast_manager.h",
+    "focus_cycler_delegate.h",
+    "lock_screen_apps.cc",
+    "lock_screen_apps.h",
+    "lock_screen_profile_creator.cc",
+    "lock_screen_profile_creator.h",
+    "lock_screen_profile_creator_impl.cc",
+    "lock_screen_profile_creator_impl.h",
+    "state_controller.cc",
+    "state_controller.h",
+    "state_observer.h",
+    "toast_dialog_view.cc",
+    "toast_dialog_view.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//apps",
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/note_taking",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//components/keyed_service/content",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/browser",
+    "//extensions/common",
+    "//ui/aura",
+    "//ui/events/devices",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/wm",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/note_taking",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_lock_screen_profile_creator.cc",
+    "fake_lock_screen_profile_creator.h",
+  ]
+
+  deps = [
+    ":lock_screen_apps",
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "app_manager_impl_unittest.cc",
+    "lock_screen_profile_creator_impl_unittest.cc",
+    "state_controller_unittest.cc",
+  ]
+
+  deps = [
+    ":lock_screen_apps",
+    ":test_support",
+    "//ash/components/arc/session",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/note_taking",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/ui/apps",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//components/account_id",
+    "//components/crx_file",
+    "//components/prefs",
+    "//components/user_manager",
+    "//extensions/browser",
+    "//extensions/common",
+    "//testing/gtest",
+    "//ui/events/devices:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "note_taking_browsertest.cc" ]
+
+  deps = [
+    ":lock_screen_apps",
+    "//apps",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/note_taking",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//testing/gtest",
+  ]
+}

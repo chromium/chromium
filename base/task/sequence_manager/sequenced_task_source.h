@@ -5,6 +5,8 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_SEQUENCED_TASK_SOURCE_H_
 #define BASE_TASK_SEQUENCE_MANAGER_SEQUENCED_TASK_SOURCE_H_
 
+#include <optional>
+
 #include "base/base_export.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -12,7 +14,6 @@
 #include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/tasks.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace perfetto {
 class EventContext;
@@ -64,7 +65,7 @@ class SequencedTaskSource {
   // there're no more tasks ready to run. If a task is returned,
   // DidRunTask() must be invoked before the next call to SelectNextTask().
   // |option| allows control on which kind of tasks can be selected.
-  virtual absl::optional<SelectedTask> SelectNextTask(
+  virtual std::optional<SelectedTask> SelectNextTask(
       LazyNow& lazy_now,
       SelectTaskOption option = SelectTaskOption::kDefault) = 0;
 
@@ -76,7 +77,7 @@ class SequencedTaskSource {
   // next task can run immediately, or nullopt if there are no more immediate or
   // delayed tasks. |option| allows control on which kind of tasks can be
   // selected. May delete canceled tasks.
-  virtual absl::optional<WakeUp> GetPendingWakeUp(
+  virtual std::optional<WakeUp> GetPendingWakeUp(
       LazyNow* lazy_now,
       SelectTaskOption option = SelectTaskOption::kDefault) = 0;
 

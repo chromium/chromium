@@ -38,11 +38,11 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -85,12 +85,12 @@ public class IncognitoReauthControllerImplTest {
     private boolean mIsIncognitoReauthPendingOnRestore;
 
     private void switchToIncognitoTabModel() {
-        doReturn(true).when(mTabModelSelectorMock).isIncognitoSelected();
+        doReturn(true).when(mTabModelSelectorMock).isIncognitoBrandedModelSelected();
         mIncognitoReauthController.onBeforeIncognitoTabModelSelected();
     }
 
     private void switchToRegularTabModel() {
-        doReturn(false).when(mTabModelSelectorMock).isIncognitoSelected();
+        doReturn(false).when(mTabModelSelectorMock).isIncognitoBrandedModelSelected();
         mIncognitoReauthController.onAfterRegularTabModelChanged();
     }
 
@@ -106,7 +106,7 @@ public class IncognitoReauthControllerImplTest {
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(true);
 
         doReturn(false).when(mTabModelSelectorMock).isTabStateInitialized();
-        doReturn(false).when(mTabModelSelectorMock).isIncognitoSelected();
+        doReturn(false).when(mTabModelSelectorMock).isIncognitoBrandedModelSelected();
 
         doNothing()
                 .when(mTabModelSelectorMock)
@@ -171,8 +171,6 @@ public class IncognitoReauthControllerImplTest {
 
         verify(mActivityLifecycleDispatcherMock, times(1)).unregister(any());
         verify(mTabModelSelectorMock, times(1))
-                .removeObserver(mTabModelSelectorObserverCaptor.capture());
-        verify(mTabModelSelectorMock, times(1))
                 .removeIncognitoTabModelObserver(mIncognitoTabModelObserverCaptor.capture());
     }
 
@@ -230,7 +228,7 @@ public class IncognitoReauthControllerImplTest {
     @MediumTest
     public void testIncognitoTabsExisting_AndChromeForegroundedWithRegularTabs_DoesNotShowReauth() {
         doReturn(1).when(mIncognitoTabModelMock).getCount();
-        doReturn(false).when(mTabModelSelectorMock).isIncognitoSelected();
+        doReturn(false).when(mTabModelSelectorMock).isIncognitoBrandedModelSelected();
         mIncognitoReauthController.onTaskVisibilityChanged(TASK_ID, false);
         mIncognitoReauthController.onStartWithNative();
 
@@ -347,7 +345,7 @@ public class IncognitoReauthControllerImplTest {
         mIncognitoReauthController.onTaskVisibilityChanged(TASK_ID, false);
         // Chrome coming to foregrounded. Re-auth would now be required since there are existing
         // Incognito tabs.
-        doReturn(true).when(mTabModelSelectorMock).isIncognitoSelected();
+        doReturn(true).when(mTabModelSelectorMock).isIncognitoBrandedModelSelected();
         mIncognitoReauthController.onStartWithNative();
         switchToIncognitoTabModel();
         assertTrue(
@@ -406,7 +404,7 @@ public class IncognitoReauthControllerImplTest {
         mIncognitoReauthController.onTaskVisibilityChanged(TASK_ID, false);
         // Chrome coming to foregrounded. Re-auth would now be required since there are existing
         // Incognito tabs.
-        doReturn(true).when(mTabModelSelectorMock).isIncognitoSelected();
+        doReturn(true).when(mTabModelSelectorMock).isIncognitoBrandedModelSelected();
         mIncognitoReauthController.onStartWithNative();
         assertTrue(mIncognitoReauthController.isReauthPageShowing());
 

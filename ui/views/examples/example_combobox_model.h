@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_EXAMPLES_EXAMPLE_COMBOBOX_MODEL_H_
 #define UI_VIEWS_EXAMPLES_EXAMPLE_COMBOBOX_MODEL_H_
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/combobox_model.h"
 
@@ -12,7 +13,7 @@ namespace views::examples {
 
 class ExampleComboboxModel : public ui::ComboboxModel {
  public:
-  ExampleComboboxModel(const char* const* strings, size_t count);
+  explicit ExampleComboboxModel(base::span<const char* const> items);
 
   ExampleComboboxModel(const ExampleComboboxModel&) = delete;
   ExampleComboboxModel& operator=(const ExampleComboboxModel&) = delete;
@@ -24,8 +25,7 @@ class ExampleComboboxModel : public ui::ComboboxModel {
   std::u16string GetItemAt(size_t index) const override;
 
  private:
-  const raw_ptr<const char* const, AllowPtrArithmetic> strings_;
-  const size_t count_;
+  const base::span<const char* const> items_;
 };
 
 }  // namespace views::examples

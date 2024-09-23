@@ -33,6 +33,11 @@ public class MockRenderFrameHost implements RenderFrameHost {
     }
 
     @Override
+    public RenderFrameHost getMainFrame() {
+        return null;
+    }
+
+    @Override
     public void getCanonicalUrlForSharing(Callback<GURL> callback) {}
 
     @Override
@@ -99,8 +104,8 @@ public class MockRenderFrameHost implements RenderFrameHost {
             String relyingPartyId,
             Origin effectiveOrigin,
             boolean isPaymentCredentialCreation,
-            Callback<Integer> callback) {
-        callback.onResult(AuthenticatorStatus.SUCCESS);
+            Callback<WebAuthSecurityChecksResults> callback) {
+        callback.onResult(new WebAuthSecurityChecksResults(AuthenticatorStatus.SUCCESS, false));
     }
 
     @Override

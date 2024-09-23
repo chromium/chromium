@@ -31,7 +31,6 @@ class ProgressReporter;
 namespace gpu {
 
 struct GpuPreferences;
-class MailboxManager;
 class SharedImageManager;
 class SharedImageRepresentationFactory;
 class ServiceDiscardableManager;
@@ -61,7 +60,6 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
  public:
   ContextGroup(const GpuPreferences& gpu_preferences,
                bool supports_passthrough_command_decoders,
-               MailboxManager* mailbox_manager,
                std::unique_ptr<MemoryTracker> memory_tracker,
                ShaderTranslatorCache* shader_translator_cache,
                FramebufferCompletenessCache* framebuffer_completeness_cache,
@@ -85,8 +83,6 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
   // Destroys all the resources when called for the last context in the group.
   // It should only be called by DecoderContext.
   void Destroy(DecoderContext* decoder, bool have_context);
-
-  MailboxManager* mailbox_manager() const { return mailbox_manager_; }
 
   gpu::SharedImageManager* shared_image_manager() const {
     return shared_image_manager_;
@@ -261,7 +257,6 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
   // It's safer to make a copy of the GpuPreferences struct rather
   // than refer to the one passed in to the constructor.
   const GpuPreferences gpu_preferences_;
-  raw_ptr<MailboxManager> mailbox_manager_;
   std::unique_ptr<MemoryTracker> memory_tracker_;
   raw_ptr<ShaderTranslatorCache> shader_translator_cache_;
   raw_ptr<FramebufferCompletenessCache> framebuffer_completeness_cache_;

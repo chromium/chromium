@@ -9,6 +9,7 @@ import plistlib
 import struct
 import subprocess
 import time
+from typing import Tuple, List
 
 import shard_util
 import test_runner
@@ -278,40 +279,6 @@ class GTestsApp(object):
       ])
     return cmd
 
-  def get_all_tests(self):
-    """Gets all tests to run in this object."""
-    # Method names that starts with test* and also are in *TestCase classes
-    # but they are not test-methods.
-    # TODO(crbug.com/982435): Rename not test methods with test-suffix.
-    non_test_prefixes = [
-        'ChromeTestCase/testServer', 'FindInPageTestCase/testURL',
-        'setUpForTestCase'
-    ]
-    # TODO(crbug.com/1123681): Move all_tests to class var. Set all_tests,
-    # disabled_tests values in initialization to avoid multiple calls to otool.
-    all_tests = []
-    self.disabled_tests = []
-    for test_class, test_method in shard_util.fetch_test_names(
-        self.test_app_path,
-        self.host_app_path,
-        self.release,
-        enabled_tests_only=False):
-      test_name = '%s/%s' % (test_class, test_method)
-
-      if any(test_name.startswith(prefix) for prefix in non_test_prefixes):
-        continue
-      # |self.initial_included_tests| contains the tests to execute, which
-      # may be a subset of all tests b/c of the iOS test sharding logic in
-      # run.py. Filter by |self.initial_included_tests| if specified.
-      # |self.initial_included_tests| might store test class or full name.
-      included = self.initial_included_tests
-      if not included or test_name in included or test_class in included:
-        if test_method.startswith('test'):
-          all_tests.append(test_name)
-        else:
-          self.disabled_tests.append(test_name)
-    return all_tests
-
 
 class EgtestsApp(GTestsApp):
   """Egtests to run.
@@ -324,11 +291,14 @@ class EgtestsApp(GTestsApp):
     excluded_tests: List of tests not to run.
   """
 
-  def __init__(self, egtests_app, **kwargs):
+  def __init__(self, egtests_app: str, all_eg_test_names: List[Tuple[str, str]],
+               **kwargs):
     """Initialize Egtests.
 
     Args:
       egtests_app: (str) full path to egtests app.
+      all_eg_test_names: (list) list in the form [(TestCase, testMethod)]
+        which contains all the test methods present in the EG test app binary.
       (Following are potential args in **kwargs)
       included_tests: (list) Specific tests to run
          E.g.
@@ -351,36 +321,38 @@ class EgtestsApp(GTestsApp):
       AppNotFoundError: If the given app does not exist
     """
     super(EgtestsApp, self).__init__(egtests_app, **kwargs)
+    self.all_eg_test_names = all_eg_test_names
     self.record_video_option = kwargs.get('record_video_option')
 
-  def _xctest_path(self):
-    """Gets xctest-file from egtests/PlugIns folder.
+  def get_all_tests(self):
+    """Gets all tests to run in this object."""
+    all_tests = []
+    for test_class, test_method in self.all_eg_test_names:
+      test_name = '%s/%s' % (test_class, test_method)
 
-    Returns:
-      A path for xctest in the format of /PlugIns/file.xctest
-
-    Raises:
-      PlugInsNotFoundError: If no PlugIns folder found in egtests.app.
-      XCTestPlugInNotFoundError: If no xctest-file found in PlugIns.
-    """
-    plugins_dir = os.path.join(self.test_app_path, 'PlugIns')
-    if not os.path.exists(plugins_dir):
-      raise test_runner.PlugInsNotFoundError(plugins_dir)
-    plugin_xctest = None
-    if os.path.exists(plugins_dir):
-      for plugin in os.listdir(plugins_dir):
-        if plugin.endswith('.xctest'):
-          plugin_xctest = os.path.join(plugins_dir, plugin)
-    if not plugin_xctest:
-      raise test_runner.XCTestPlugInNotFoundError(plugin_xctest)
-    return plugin_xctest.replace(self.test_app_path, '')
+      # |self.initial_included_tests| contains the tests to execute, which
+      # may be a subset of all tests b/c of the iOS test sharding logic in
+      # shard_util.py. Filter by |self.initial_included_tests| if specified.
+      # |self.initial_included_tests| might store test class or full name.
+      included = self.initial_included_tests
+      if not included or test_name in included or test_class in included:
+        all_tests.append(test_name)
+    return all_tests
 
   def _additional_inserted_libs(self):
     """Returns additional libraries to add to inserted_libs."""
-    libs = [
-        '__PLATFORMS__/iPhoneSimulator.platform/Developer/'
-        'usr/lib/libXCTestBundleInject.dylib'
-    ]
+    libs = []
+
+    # Do not insert libXCTestBundleInject.dylib if running EG2 or XCUITest
+    # tests (which set self.host_app_path), this is no longer needed and
+    # broken as of Xcode16 Beta4.
+    # However, it is still needed for unit tests which are run as XCTests
+    # (and in this case without the GTest framework). See crbug.com/361610467
+    # for more details.
+    if not self.host_app_path:
+      libs.append('__PLATFORMS__/iPhoneSimulator.platform/Developer/'
+                  'usr/lib/libXCTestBundleInject.dylib')
+
     for child in os.listdir(self.test_app_path):
       if child.startswith('libclang_rt.asan'):
         libs.append(os.path.join('@executable_path', child))
@@ -401,7 +373,7 @@ class EgtestsApp(GTestsApp):
             'Test repeat is only supported in Xcode 13 or higher!')
     return cmd
 
-  def fill_xctestrun_node(self):
+  def fill_xctestrun_node(self, include_disabled=False):
     """Fills only required nodes for egtests in xctestrun file.
 
     Returns:
@@ -409,9 +381,14 @@ class EgtestsApp(GTestsApp):
     """
     xctestrun_data = super(EgtestsApp, self).fill_xctestrun_node()
     module_data = xctestrun_data[self.module_name + '_module']
-    module_data['TestBundlePath'] = '__TESTHOST__%s' % self._xctest_path()
+    module_data['TestBundlePath'] = '__TESTHOST__%s' % xcode_util.xctest_path(
+        self.test_app_path)
     module_data['TestingEnvironmentVariables'][
         'XCInjectBundleInto'] = '__TESTHOST__/%s' % self.module_name
+
+    if include_disabled:
+      module_data['TestingEnvironmentVariables'][
+          'RUN_DISABLED_EARL_GREY_TESTS'] = '1'
 
     if self.host_app_path:
       # Module data specific to EG2 tests
@@ -481,29 +458,6 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
 
     super(DeviceXCTestUnitTestsApp, self).__init__(tests_app, **kwargs)
 
-  # TODO(crbug.com/1077277): Refactor class structure and remove duplicate code.
-  def _xctest_path(self):
-    """Gets xctest-file from egtests/PlugIns folder.
-
-    Returns:
-      A path for xctest in the format of /PlugIns/file.xctest
-
-    Raises:
-      PlugInsNotFoundError: If no PlugIns folder found in egtests.app.
-      XCTestPlugInNotFoundError: If no xctest-file found in PlugIns.
-    """
-    plugins_dir = os.path.join(self.test_app_path, 'PlugIns')
-    if not os.path.exists(plugins_dir):
-      raise test_runner.PlugInsNotFoundError(plugins_dir)
-    plugin_xctest = None
-    if os.path.exists(plugins_dir):
-      for plugin in os.listdir(plugins_dir):
-        if plugin.endswith('.xctest'):
-          plugin_xctest = os.path.join(plugins_dir, plugin)
-    if not plugin_xctest:
-      raise test_runner.XCTestPlugInNotFoundError(plugin_xctest)
-    return plugin_xctest.replace(self.test_app_path, '')
-
   def fill_xctestrun_node(self):
     """Fills only required nodes for XCTest hosted unit tests in xctestrun file.
 
@@ -512,10 +466,14 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
     """
     xctestrun_data = {
         'TestTargetName': {
-            'IsAppHostedTestBundle': True,
-            'TestBundlePath': '__TESTHOST__%s' % self._xctest_path(),
-            'TestHostBundleIdentifier': get_bundle_id(self.test_app_path),
-            'TestHostPath': '%s' % self.test_app_path,
+            'IsAppHostedTestBundle':
+                True,
+            'TestBundlePath':
+                '__TESTHOST__%s' % xcode_util.xctest_path(self.test_app_path),
+            'TestHostBundleIdentifier':
+                get_bundle_id(self.test_app_path),
+            'TestHostPath':
+                '%s' % self.test_app_path,
             'TestingEnvironmentVariables': {
                 'DYLD_INSERT_LIBRARIES':
                     '__TESTHOST__/Frameworks/libXCTestBundleInject.dylib',
@@ -592,29 +550,6 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
     kwargs['test_args'] = test_args
     super(SimulatorXCTestUnitTestsApp, self).__init__(tests_app, **kwargs)
 
-  # TODO(crbug.com/1077277): Refactor class structure and remove duplicate code.
-  def _xctest_path(self):
-    """Gets xctest-file from egtests/PlugIns folder.
-
-    Returns:
-      A path for xctest in the format of /PlugIns/file.xctest
-
-    Raises:
-      PlugInsNotFoundError: If no PlugIns folder found in egtests.app.
-      XCTestPlugInNotFoundError: If no xctest-file found in PlugIns.
-    """
-    plugins_dir = os.path.join(self.test_app_path, 'PlugIns')
-    if not os.path.exists(plugins_dir):
-      raise test_runner.PlugInsNotFoundError(plugins_dir)
-    plugin_xctest = None
-    if os.path.exists(plugins_dir):
-      for plugin in os.listdir(plugins_dir):
-        if plugin.endswith('.xctest'):
-          plugin_xctest = os.path.join(plugins_dir, plugin)
-    if not plugin_xctest:
-      raise test_runner.XCTestPlugInNotFoundError(plugin_xctest)
-    return plugin_xctest.replace(self.test_app_path, '')
-
   def fill_xctestrun_node(self):
     """Fills only required nodes for XCTest hosted unit tests in xctestrun file.
 
@@ -623,10 +558,14 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
     """
     xctestrun_data = {
         'TestTargetName': {
-            'IsAppHostedTestBundle': True,
-            'TestBundlePath': '__TESTHOST__%s' % self._xctest_path(),
-            'TestHostBundleIdentifier': get_bundle_id(self.test_app_path),
-            'TestHostPath': '%s' % self.test_app_path,
+            'IsAppHostedTestBundle':
+                True,
+            'TestBundlePath':
+                '__TESTHOST__%s' % xcode_util.xctest_path(self.test_app_path),
+            'TestHostBundleIdentifier':
+                get_bundle_id(self.test_app_path),
+            'TestHostPath':
+                '%s' % self.test_app_path,
             'TestingEnvironmentVariables': {
                 'DYLD_INSERT_LIBRARIES':
                     '__PLATFORMS__/iPhoneSimulator.platform/Developer/usr/lib/'

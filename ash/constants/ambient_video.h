@@ -36,4 +36,4 @@ std::string_view ToString(AmbientVideo video);
 
 }  // namespace ash
 
-#endif  // ASH_CONSTANTS_AMBIENT_THEME_H_
+#endif  // ASH_CONSTANTS_AMBIENT_VIDEO_H_

@@ -141,7 +141,7 @@ const std::vector<std::string> GetVpnNetworkTypeHistograms(
              vpn_provider_type == shill::kProviderWireGuard) {
     vpn_histograms.emplace_back(kVPNBuiltIn);
   } else {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED();
     vpn_histograms.emplace_back(kVPNUnknown);
   }
   return vpn_histograms;
@@ -247,6 +247,18 @@ void NetworkMetricsHelper::LogConnectionStateResult(
   const NetworkState* network_state =
       GetNetworkStateHandler()->GetNetworkStateFromGuid(guid);
   if (!network_state) {
+    return;
+  }
+
+  // Only when WiFi network becomes "failure" from a connected state indicates
+  // there's a real disconnection without user action. If the network becomes
+  // "idle" from a connected state with a shill error, it usually indicates the
+  // disconnections are triggered by device suspend. See
+  // go/cros-wifi-disconnection-metrics for details.
+  if (network_state->GetNetworkTechnologyType() ==
+          NetworkState::NetworkTechnologyType::kWiFi &&
+      connection_state == ConnectionState::kDisconnectedWithoutUserAction &&
+      network_state->connection_state() != shill::kStateFailure) {
     return;
   }
 

@@ -30,6 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
+#include "media/base/supported_types.h"
 #include "media/base/test_data_util.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "media/media_buildflags.h"
@@ -86,11 +87,23 @@ const char16_t kUnexpectedResult16[] = u"unexpected result";
 // For any usage of EXPECT_ANY, add a TODO explaining the plan to fix it.
 #define EXPECT_ANY(test) std::ignore = test
 
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#define EXPECT_AC3 EXPECT_SUCCESS
+#else
+#define EXPECT_AC3 EXPECT_UNSUPPORTED
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+
 #if BUILDFLAG(ENABLE_AV1_DECODER)
 #define EXPECT_AV1 EXPECT_SUCCESS
 #else
 #define EXPECT_AV1 EXPECT_UNSUPPORTED
 #endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#define EXPECT_DTS EXPECT_SUCCESS
+#else
+#define EXPECT_DTS EXPECT_UNSUPPORTED
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #define EXPECT_PROPRIETARY EXPECT_SUCCESS
@@ -101,22 +114,30 @@ const char16_t kUnexpectedResult16[] = u"unexpected result";
 // Expectations for External Clear Key.
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #define EXPECT_ECK EXPECT_SUCCESS
+#define EXPECT_ECK_AC3 EXPECT_AC3
 #define EXPECT_ECK_AV1 EXPECT_AV1
+#define EXPECT_ECK_DTS EXPECT_DTS
 #define EXPECT_ECK_PROPRIETARY EXPECT_PROPRIETARY
 #else
 #define EXPECT_ECK EXPECT_UNSUPPORTED
+#define EXPECT_ECK_AC3 EXPECT_UNSUPPORTED
 #define EXPECT_ECK_AV1 EXPECT_UNSUPPORTED
+#define EXPECT_ECK_DTS EXPECT_UNSUPPORTED
 #define EXPECT_ECK_PROPRIETARY EXPECT_UNSUPPORTED
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 // Expectations for Widevine.
 #if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
 #define EXPECT_WV EXPECT_SUCCESS
+#define EXPECT_WV_AC3 EXPECT_AC3
 #define EXPECT_WV_AV1 EXPECT_AV1
+#define EXPECT_WV_DTS EXPECT_DTS
 #define EXPECT_WV_PROPRIETARY EXPECT_PROPRIETARY
 #else
 #define EXPECT_WV EXPECT_UNSUPPORTED
+#define EXPECT_WV_AC3 EXPECT_UNSUPPORTED
 #define EXPECT_WV_AV1 EXPECT_UNSUPPORTED
+#define EXPECT_WV_DTS EXPECT_UNSUPPORTED
 #define EXPECT_WV_PROPRIETARY EXPECT_UNSUPPORTED
 #endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
 
@@ -177,7 +198,7 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     vp9_profile0_codecs_.push_back("vp09.00.10.08");
 
     // VP9 profile 2 is supported in WebM/MP4 with ClearKey/ExternalClearKey.
-    // TODO(crbug.com/707128): Add support in Widevine CDM.
+    // TODO(crbug.com/40513453): Add support in Widevine CDM.
     vp9_profile2_codecs_.push_back("vp09.02.10.10");
 
     // AV1 codec string: https://aomediacodec.github.io/av1-isobmff/#codecsparam
@@ -189,6 +210,12 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     // [Dolby_Vision_fourCC].[Dovi_Profile_ID].[Dovi_Level_ID]
     // For example: "dvhe.05.07"
     dolby_vision_codecs_.push_back("dvhe.05.07");
+
+    dts_codecs_.push_back("dtsc");
+    dts_codecs_.push_back("mp4a.a9");
+
+    ac3_codecs_.push_back("ac-3");
+    ac3_codecs_.push_back("mp4a.a5");
 
     // Extended codecs are used, so make sure generic ones fail. These will be
     // tested against all init data types as they should always fail to be
@@ -242,6 +269,8 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
   const CodecVector& dolby_vision_codecs() const {
     return dolby_vision_codecs_;
   }
+  const CodecVector& ac3_codecs() const { return ac3_codecs_; }
+  const CodecVector& dts_codecs() const { return dts_codecs_; }
 
   const CodecVector& invalid_codecs() const { return invalid_codecs_; }
 
@@ -257,13 +286,11 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-    base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);
-    InProcessBrowserTest::SetUpDefaultCommandLine(&default_command_line);
-    test_launcher_utils::RemoveCommandLineSwitch(
-        default_command_line, switches::kDisableComponentUpdate, command_line);
+    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+    command_line->RemoveSwitch(switches::kDisableComponentUpdate);
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-    // TODO(crbug.com/1243903): WhatsNewUI might be causing timeouts.
+    // TODO(crbug.com/40787541): WhatsNewUI might be causing timeouts.
     command_line->AppendSwitch(switches::kNoFirstRun);
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features_,
@@ -356,7 +383,7 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
         return "persistent-license";
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   std::string IsSupportedByKeySystem(
@@ -467,18 +494,12 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     // On Windows & Linux platforms, HEVC support is detected through the GPU
     // capabilities which won't indicate support when running the tests.
-    // TODO(crbug/1327470): Fix this so that we can inject HEVC support on
+    // TODO(crbug.com/40226210): Fix this so that we can inject HEVC support on
     // Windows.
     EXPECT_UNSUPPORTED(hevc_supported);
-#elif BUILDFLAG(IS_MAC)
-    // On Mac platforms, HEVC support should be available if OS >= Big Sur 11.0
-    // and kPlatformHEVCDecoderSupport is enabled.
-    if (__builtin_available(macOS 11.0, *)) {
-      EXPECT_ECK_PROPRIETARY(hevc_supported);
-    } else {
-      EXPECT_UNSUPPORTED(hevc_supported);
-    }
 #else
+    // On other platforms, HEVC support should be available if
+    // kPlatformHEVCDecoderSupport is enabled.
     EXPECT_ECK_PROPRIETARY(hevc_supported);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #else
@@ -507,6 +528,8 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
   CodecVector vp9_profile2_codecs_;
   CodecVector av1_codecs_;
   CodecVector dolby_vision_codecs_;
+  CodecVector dts_codecs_;
+  CodecVector ac3_codecs_;
   CodecVector invalid_codecs_;
 };
 
@@ -855,7 +878,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Audio_WebM) {
                                             video_mp4_hevc_codecs()));
 }
 
-// TODO(crbug.com/1451037): Flaky on "Mac12 Tests" builder.
+// TODO(crbug.com/40915599): Flaky on "Mac12 Tests" builder.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Video_MP4 DISABLED_Video_MP4
 #else
@@ -878,13 +901,13 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
 
 // High 10-bit Profile is supported when using ClearKey if it is supported for
 // clear content on this platform.
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  EXPECT_PROPRIETARY(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
-                                            video_mp4_hi10p_codecs()));
-#else
-  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
-                                            video_mp4_hi10p_codecs()));
-#endif
+  if (media::IsBuiltInVideoCodec(media::VideoCodec::kH264)) {
+    EXPECT_PROPRIETARY(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
+                                              video_mp4_hi10p_codecs()));
+  } else {
+    EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
+                                              video_mp4_hi10p_codecs()));
+  }
 
   // Non-video MP4 codecs.
   EXPECT_UNSUPPORTED(
@@ -909,6 +932,10 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Audio_MP4) {
       IsSupportedByKeySystem(kClearKey, kAudioMP4MimeType, opus_codecs()));
   EXPECT_SUCCESS(IsSupportedByKeySystem(kClearKey, kAudioMP4MimeType,
                                         audio_mp4_flac_codecs()));
+  EXPECT_AC3(
+      IsSupportedByKeySystem(kClearKey, kAudioMP4MimeType, ac3_codecs()));
+  EXPECT_DTS(
+      IsSupportedByKeySystem(kClearKey, kAudioMP4MimeType, dts_codecs()));
 
   // Non-audio MP4 codecs.
   EXPECT_UNSUPPORTED(
@@ -1091,7 +1118,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
       kExternalClearKey, kAudioWebMMimeType, video_mp4_hevc_codecs()));
 }
 
-// TODO(crbug.com/1451037): Flaky on "Mac12 Tests" builder.
+// TODO(crbug.com/40915599): Flaky on "Mac12 Tests" builder.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Video_MP4 DISABLED_Video_MP4
 #else
@@ -1140,6 +1167,10 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
                                     opus_codecs()));
   EXPECT_ECK(IsSupportedByKeySystem(kExternalClearKey, kAudioMP4MimeType,
                                     audio_mp4_flac_codecs()));
+  EXPECT_ECK_AC3(IsSupportedByKeySystem(kExternalClearKey, kAudioMP4MimeType,
+                                        ac3_codecs()));
+  EXPECT_ECK_DTS(IsSupportedByKeySystem(kExternalClearKey, kAudioMP4MimeType,
+                                        dts_codecs()));
 
   // Non-audio MP4 codecs.
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
@@ -1382,6 +1413,10 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Audio_MP4) {
       IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType, opus_codecs()));
   EXPECT_WV(IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType,
                                    audio_mp4_flac_codecs()));
+  EXPECT_WV_AC3(
+      IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType, ac3_codecs()));
+  EXPECT_WV_DTS(
+      IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType, dts_codecs()));
 
   // Non-audio MP4 codecs.
   EXPECT_UNSUPPORTED(

@@ -12,19 +12,21 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
@@ -56,6 +58,16 @@ std::string GetClientTagFromCreditCardCloudTokenData(
 
 std::string GetClientTagFromIban(const Iban& iban) {
   return base::NumberToString(iban.instrument_id());
+}
+
+std::string GetClientTagFromBankAccount(const BankAccount& bank_account) {
+  return base::NumberToString(
+      bank_account.payment_instrument().instrument_id());
+}
+
+std::string GetClientTagFromPaymentInstrument(
+    const sync_pb::PaymentInstrument& payment_instrument) {
+  return base::NumberToString(payment_instrument.instrument_id());
 }
 
 // Returns the storage key to be used for wallet data for the specified wallet
@@ -130,6 +142,48 @@ std::unique_ptr<EntityData> CreateEntityDataFromIban(const Iban& iban,
   return entity_data;
 }
 
+// Creates a EntityData object corresponding to the specified `bank_account`.
+std::unique_ptr<EntityData> CreateEntityDataFromBankAccount(
+    const BankAccount& bank_account) {
+  auto entity_data = std::make_unique<EntityData>();
+  entity_data->name =
+      "Bank Account " +
+      base::Base64Encode(GetClientTagFromBankAccount(bank_account));
+
+  AutofillWalletSpecifics* wallet_specifics =
+      entity_data->specifics.mutable_autofill_wallet();
+  SetAutofillWalletSpecificsFromBankAccount(bank_account, wallet_specifics);
+  return entity_data;
+}
+
+// Creates a EntityData object corresponding to the specified
+// `payment_instrument`.
+std::unique_ptr<EntityData> CreateEntityDataFromPaymentInstrument(
+    const sync_pb::PaymentInstrument& payment_instrument) {
+  auto entity_data = std::make_unique<EntityData>();
+  entity_data->name =
+      base::StrCat({"Payment Instrument ",
+                    base::Base64Encode(GetClientTagFromPaymentInstrument(
+                        payment_instrument))});
+
+  AutofillWalletSpecifics* wallet_specifics =
+      entity_data->specifics.mutable_autofill_wallet();
+  SetAutofillWalletSpecificsFromPaymentInstrument(payment_instrument,
+                                                  *wallet_specifics);
+  return entity_data;
+}
+
+// Sets a EntityData object corresponding to the specified `benefit`.
+void SetEntityDataFromBenefit(const CreditCardBenefit& benefit,
+                              bool enforce_utf8,
+                              EntityData& entity_data) {
+  AutofillWalletSpecifics* wallet_specifics =
+      entity_data.specifics.mutable_autofill_wallet();
+  CHECK(wallet_specifics);
+  SetAutofillWalletSpecificsFromCardBenefit(benefit, enforce_utf8,
+                                            *wallet_specifics);
+}
+
 }  // namespace
 
 // static
@@ -140,14 +194,14 @@ void AutofillWalletSyncBridge::CreateForWebDataServiceAndBackend(
   web_data_service->GetDBUserData()->SetUserData(
       &kAutofillWalletSyncBridgeUserDataKey,
       std::make_unique<AutofillWalletSyncBridge>(
-          std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+          std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::AUTOFILL_WALLET_DATA,
               /*dump_stack=*/base::DoNothing()),
           web_data_backend));
 }
 
 // static
-syncer::ModelTypeSyncBridge* AutofillWalletSyncBridge::FromWebDataService(
+syncer::DataTypeSyncBridge* AutofillWalletSyncBridge::FromWebDataService(
     AutofillWebDataService* web_data_service) {
   return static_cast<AutofillWalletSyncBridge*>(
       web_data_service->GetDBUserData()->GetUserData(
@@ -155,9 +209,9 @@ syncer::ModelTypeSyncBridge* AutofillWalletSyncBridge::FromWebDataService(
 }
 
 AutofillWalletSyncBridge::AutofillWalletSyncBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     AutofillWebDataBackend* web_data_backend)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       web_data_backend_(web_data_backend) {
   DCHECK(web_data_backend_);
 
@@ -173,7 +227,7 @@ AutofillWalletSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
       GetSyncMetadataStore(), syncer::AUTOFILL_WALLET_DATA,
-      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+      base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
 
@@ -184,8 +238,8 @@ std::optional<syncer::ModelError> AutofillWalletSyncBridge::MergeFullSyncData(
   // metadata bridge can track changes in the data bridge and react accordingly.
   SetSyncData(entity_data, /*notify_webdata_backend=*/true);
 
-  // TODO(crbug.com/853688): Update the PaymentsAutofillTable API to know about
-  // write errors and report them here.
+  // TODO(crbug.com/40581165): Update the PaymentsAutofillTable API to know
+  // about write errors and report them here.
   return std::nullopt;
 }
 
@@ -199,14 +253,16 @@ AutofillWalletSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
-void AutofillWalletSyncBridge::GetData(StorageKeyList storage_keys,
-                                       DataCallback callback) {
+std::unique_ptr<syncer::DataBatch> AutofillWalletSyncBridge::GetDataForCommit(
+    StorageKeyList storage_keys) {
   // This data type is never synced "up" so we don't need to implement this.
   NOTIMPLEMENTED();
+  return nullptr;
 }
 
-void AutofillWalletSyncBridge::GetAllDataForDebugging(DataCallback callback) {
-  GetAllDataImpl(std::move(callback), /*enforce_utf8=*/true);
+std::unique_ptr<syncer::DataBatch>
+AutofillWalletSyncBridge::GetAllDataForDebugging() {
+  return GetAllDataImpl(/*enforce_utf8=*/true);
 }
 
 std::string AutofillWalletSyncBridge::GetClientTag(
@@ -243,32 +299,54 @@ void AutofillWalletSyncBridge::ApplyDisableSyncChanges(
   SetSyncData(syncer::EntityChangeList(), /*notify_webdata_backend=*/false);
 }
 
-void AutofillWalletSyncBridge::GetAllDataForTesting(DataCallback callback) {
-  GetAllDataImpl(std::move(callback), /*enforce_utf8=*/false);
+std::unique_ptr<syncer::DataBatch>
+AutofillWalletSyncBridge::GetAllDataForTesting() {
+  return GetAllDataImpl(/*enforce_utf8=*/false);
 }
 
-void AutofillWalletSyncBridge::GetAllDataImpl(DataCallback callback,
-                                              bool enforce_utf8) {
+std::unique_ptr<syncer::DataBatch> AutofillWalletSyncBridge::GetAllDataImpl(
+    bool enforce_utf8) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<std::unique_ptr<CreditCard>> cards;
   std::vector<std::unique_ptr<Iban>> ibans;
   std::vector<std::unique_ptr<CreditCardCloudTokenData>> cloud_token_data;
   std::unique_ptr<PaymentsCustomerData> customer_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
   if (!GetAutofillTable()->GetServerCreditCards(cards) ||
       !GetAutofillTable()->GetServerIbans(ibans) ||
       !GetAutofillTable()->GetCreditCardCloudTokenData(cloud_token_data) ||
-      !GetAutofillTable()->GetPaymentsCustomerData(customer_data)) {
+      !GetAutofillTable()->GetPaymentsCustomerData(customer_data) ||
+      (AreMaskedBankAccountSupported() &&
+       !GetAutofillTable()->GetMaskedBankAccounts(bank_accounts)) ||
+      (IsGenericPaymentInstrumentSupported() &&
+       !GetAutofillTable()->GetPaymentInstruments(payment_instruments))) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from table."});
-    return;
+    return nullptr;
   }
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::unique_ptr<CreditCard>& entry : cards) {
+    std::unique_ptr<EntityData> card_data =
+        CreateEntityDataFromCard(*entry, enforce_utf8);
+    std::vector<CreditCardBenefit> benefits;
+    if (!GetAutofillTable()->GetCreditCardBenefitsForInstrumentId(
+            entry->instrument_id(), benefits)) {
+      change_processor()->ReportError(
+          {FROM_HERE, "Failed to load entries from table."});
+      return nullptr;
+    }
+    for (const CreditCardBenefit& benefit : benefits) {
+      CHECK(*absl::visit(
+                [](const auto& a) { return a.linked_card_instrument_id(); },
+                benefit) == entry->instrument_id());
+      SetEntityDataFromBenefit(benefit, enforce_utf8, *card_data);
+    }
     batch->Put(
         GetStorageKeyForWalletDataClientTag(GetClientTagFromCreditCard(*entry)),
-        CreateEntityDataFromCard(*entry, enforce_utf8));
+        std::move(card_data));
   }
   for (const std::unique_ptr<CreditCardCloudTokenData>& entry :
        cloud_token_data) {
@@ -288,7 +366,23 @@ void AutofillWalletSyncBridge::GetAllDataImpl(DataCallback callback,
         GetStorageKeyForWalletDataClientTag(GetClientTagFromIban(*entry)),
         CreateEntityDataFromIban(*entry, enforce_utf8));
   }
-  std::move(callback).Run(std::move(batch));
+  if (AreMaskedBankAccountSupported()) {
+    for (const BankAccount& entry : bank_accounts) {
+      batch->Put(GetStorageKeyForWalletDataClientTag(
+                     GetClientTagFromBankAccount(entry)),
+                 CreateEntityDataFromBankAccount(entry));
+    }
+  }
+
+  if (IsGenericPaymentInstrumentSupported()) {
+    for (const sync_pb::PaymentInstrument& entry : payment_instruments) {
+      batch->Put(GetStorageKeyForWalletDataClientTag(
+                     GetClientTagFromPaymentInstrument(entry)),
+                 CreateEntityDataFromPaymentInstrument(entry));
+    }
+  }
+
+  return batch;
 }
 
 void AutofillWalletSyncBridge::SetSyncData(
@@ -301,21 +395,36 @@ void AutofillWalletSyncBridge::SetSyncData(
   std::vector<Iban> wallet_ibans;
   std::vector<PaymentsCustomerData> customer_data;
   std::vector<CreditCardCloudTokenData> cloud_token_data;
-  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
-                                  customer_data, cloud_token_data);
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> card_benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  PopulateWalletTypesFromSyncData(
+      entity_data, wallet_cards, wallet_ibans, customer_data, cloud_token_data,
+      bank_accounts, card_benefits, payment_instruments);
 
-  wallet_data_changed |=
+  bool wallet_card_data_changed =
       SetWalletCards(std::move(wallet_cards), notify_webdata_backend);
+  wallet_data_changed |= wallet_card_data_changed;
+  wallet_data_changed |= SetCardBenefits(std::move(card_benefits));
   wallet_data_changed |=
       SetWalletIbans(std::move(wallet_ibans), notify_webdata_backend);
   wallet_data_changed |= SetPaymentsCustomerData(std::move(customer_data));
   wallet_data_changed |=
       SetCreditCardCloudTokenData(std::move(cloud_token_data));
-
+  if (AreMaskedBankAccountSupported()) {
+    wallet_data_changed |= SetBankAccountsData(std::move(bank_accounts));
+  }
+  if (IsGenericPaymentInstrumentSupported()) {
+    wallet_data_changed |=
+        SetPaymentInstrumentsData(std::move(payment_instruments));
+  }
+  if (wallet_card_data_changed) {
+    ReconcileServerCvcForWalletCards();
+  }
   // Commit the transaction to make sure the data and the metadata with the
   // new progress marker is written down (especially on Android where we
-  // cannot rely on commiting transactions on shutdown). We need to commit
-  // even if the wallet data has not changed because the model type state incl.
+  // cannot rely on committing transactions on shutdown). We need to commit
+  // even if the wallet data has not changed because the data type state incl.
   // the progress marker always changes.
   web_data_backend_->CommitChanges();
 
@@ -346,7 +455,7 @@ bool AutofillWalletSyncBridge::SetWalletCards(
   bool found_diff = false;
   for (const std::unique_ptr<CreditCard>& existing_card : existing_cards) {
     bool has_orphan_card =
-        base::ranges::none_of(wallet_cards, [&](const CreditCard& card) {
+        std::ranges::none_of(wallet_cards, [&](const CreditCard& card) {
           return card.Compare(*existing_card) == 0;
         });
     if (has_orphan_card) {
@@ -359,7 +468,7 @@ bool AutofillWalletSyncBridge::SetWalletCards(
     }
   }
   for (const CreditCard& wallet_card : wallet_cards) {
-    bool has_new_card = base::ranges::none_of(
+    bool has_new_card = std::ranges::none_of(
         existing_cards, [&](const std::unique_ptr<CreditCard>& card) {
           return card->Compare(wallet_card) == 0;
         });
@@ -379,6 +488,21 @@ bool AutofillWalletSyncBridge::SetWalletCards(
   return found_diff;
 }
 
+bool AutofillWalletSyncBridge::SetCardBenefits(
+    std::vector<CreditCardBenefit> card_benefits) {
+  PaymentsAutofillTable* table = GetAutofillTable();
+
+  std::vector<CreditCardBenefit> existing_benefits;
+  if (!table->GetAllCreditCardBenefits(existing_benefits)) {
+    return false;
+  }
+
+  if (AreAnyItemsDifferent(existing_benefits, card_benefits)) {
+    return table->SetCreditCardBenefits(card_benefits);
+  }
+  return false;
+}
+
 bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
                                               bool notify_webdata_backend) {
   PaymentsAutofillTable* table = GetAutofillTable();
@@ -391,7 +515,7 @@ bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
   GetAutofillTable()->SetServerIbansData(wallet_ibans);
   bool found_diff = false;
     for (const std::unique_ptr<Iban>& existing_iban : existing_ibans) {
-      bool has_orphan_iban = base::ranges::none_of(
+      bool has_orphan_iban = std::ranges::none_of(
           wallet_ibans,
           [&](const Iban& iban) { return iban.Compare(*existing_iban) == 0; });
       if (has_orphan_iban) {
@@ -404,7 +528,7 @@ bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
       }
     }
     for (const Iban& wallet_iban : wallet_ibans) {
-      bool has_new_iban = base::ranges::none_of(
+      bool has_new_iban = std::ranges::none_of(
           existing_ibans, [&](const std::unique_ptr<Iban>& iban) {
             return iban->Compare(wallet_iban) == 0;
           });
@@ -462,6 +586,28 @@ bool AutofillWalletSyncBridge::SetCreditCardCloudTokenData(
   return false;
 }
 
+bool AutofillWalletSyncBridge::SetBankAccountsData(
+    const std::vector<BankAccount>& bank_accounts) {
+  PaymentsAutofillTable* table = GetAutofillTable();
+  std::vector<BankAccount> existing_data;
+  table->GetMaskedBankAccounts(existing_data);
+  if (AreAnyItemsDifferent(existing_data, bank_accounts)) {
+    return table->SetMaskedBankAccounts(bank_accounts);
+  }
+  return false;
+}
+
+bool AutofillWalletSyncBridge::SetPaymentInstrumentsData(
+    const std::vector<sync_pb::PaymentInstrument>& payment_instruments) {
+  PaymentsAutofillTable* table = GetAutofillTable();
+  std::vector<sync_pb::PaymentInstrument> existing_data;
+  table->GetPaymentInstruments(existing_data);
+  if (AreAnyItemsDifferent(existing_data, payment_instruments)) {
+    return table->SetPaymentInstruments(payment_instruments);
+  }
+  return false;
+}
+
 PaymentsAutofillTable* AutofillWalletSyncBridge::GetAutofillTable() {
   return PaymentsAutofillTable::FromWebDatabase(
       web_data_backend_->GetDatabase());
@@ -513,6 +659,18 @@ void AutofillWalletSyncBridge::LogVirtualCardMetadataChanges(
         (*old_data_iterator)->card_art_url() != new_card.card_art_url()) {
       AutofillMetrics::LogVirtualCardMetadataSynced(/*existing_card=*/true);
     }
+  }
+}
+
+void AutofillWalletSyncBridge::ReconcileServerCvcForWalletCards() {
+  const std::vector<std::unique_ptr<ServerCvc>>& deleted_server_cvc_list =
+      GetAutofillTable()->DeleteOrphanedServerCvcs();
+
+  for (const std::unique_ptr<ServerCvc>& deleted_server_cvc :
+       deleted_server_cvc_list) {
+    web_data_backend_->NotifyOnServerCvcChanged(
+        ServerCvcChange{ServerCvcChange::REMOVE,
+                        deleted_server_cvc->instrument_id, ServerCvc{}});
   }
 }
 

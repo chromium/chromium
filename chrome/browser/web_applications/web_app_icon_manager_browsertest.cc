@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -36,7 +36,7 @@
 
 namespace web_app {
 
-class WebAppIconManagerBrowserTest : public WebAppControllerBrowserTest {
+class WebAppIconManagerBrowserTest : public WebAppBrowserTestBase {
  public:
   WebAppIconManagerBrowserTest() = default;
   WebAppIconManagerBrowserTest(const WebAppIconManagerBrowserTest&) = delete;
@@ -54,10 +54,10 @@ class WebAppIconManagerBrowserTest : public WebAppControllerBrowserTest {
     web_app::test::WaitUntilReady(WebAppProvider::GetForTest(profile));
   }
 
-  // WebAppControllerBrowserTest:
+  // WebAppBrowserTestBase:
   void SetUp() override {
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
-    WebAppControllerBrowserTest::SetUp();
+    WebAppBrowserTestBase::SetUp();
   }
 
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
@@ -75,8 +75,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
   webapps::AppId app_id;
   {
     std::unique_ptr<WebAppInstallInfo> install_info =
-        std::make_unique<WebAppInstallInfo>();
-    install_info->start_url = start_url;
+        WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     install_info->scope = start_url.GetWithoutFilename();
     install_info->title = u"App Name";
     install_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
@@ -91,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
     base::RunLoop run_loop;
 
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
-    provider->scheduler().InstallFromInfo(
+    provider->scheduler().InstallFromInfoNoIntegrationForTesting(
         std::move(install_info),
         /*overwrite_existing_manifest_fields=*/false,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,

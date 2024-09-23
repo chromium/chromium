@@ -28,6 +28,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEXIBLE_BOX_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEXIBLE_BOX_ALGORITHM_H_
 
@@ -38,8 +43,8 @@
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/physical_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -55,13 +60,6 @@ struct NGFlexLine;
 enum FlexSign {
   kPositiveFlexibility,
   kNegativeFlexibility,
-};
-
-enum class TransformedWritingMode {
-  kTopToBottomWritingMode,
-  kRightToLeftWritingMode,
-  kLeftToRightWritingMode,
-  kBottomToTopWritingMode
 };
 
 typedef HeapVector<FlexItem, 8> FlexItemVector;
@@ -80,15 +78,14 @@ class FlexItem {
            const ComputedStyle& style,
            LayoutUnit flex_base_content_size,
            MinMaxSizes min_max_main_sizes,
-           // Ignored for legacy, required for NG:
-           std::optional<MinMaxSizes> min_max_cross_sizes,
            LayoutUnit main_axis_border_padding,
-           LayoutUnit cross_axis_border_padding,
            PhysicalBoxStrut physical_margins,
            BoxStrut scrollbars,
            WritingMode baseline_writing_mode,
-           BaselineGroup baseline_group = BaselineGroup::kMajor,
-           bool depends_on_min_max_sizes = false);
+           BaselineGroup baseline_group,
+           bool is_initial_block_size_indefinite,
+           bool is_used_flex_basis_indefinite,
+           bool depends_on_min_max_sizes);
 
   LayoutUnit HypotheticalMainAxisMarginBoxSize() const {
     return hypothetical_main_content_size_ + main_axis_border_padding_ +
@@ -117,10 +114,16 @@ class FlexItem {
 
   bool MainAxisIsInlineAxis() const;
 
+  // Returns the main-start margin value.
   LayoutUnit FlowAwareMarginStart() const;
+  // Returns the main-end margin value.
   LayoutUnit FlowAwareMarginEnd() const;
+  // Returns the cross-start margin value ignoring flex-wrap.
   LayoutUnit FlowAwareMarginBefore() const;
+  // Returns the cross-end margin value ignoring flex-wrap.
   LayoutUnit FlowAwareMarginAfter() const;
+  // Returns the margin value on the block-end in the container writing-mode.
+  // This isn't aware of `flex-direction` and `flex-wrap`.
   LayoutUnit MarginBlockEnd() const;
 
   LayoutUnit MainAxisMarginExtent() const;
@@ -128,36 +131,26 @@ class FlexItem {
 
   LayoutUnit MarginBoxAscent(bool is_last_baseline, bool is_wrap_reverse) const;
 
-  LayoutUnit AvailableAlignmentSpace() const;
-
   void UpdateAutoMarginsInMainAxis(LayoutUnit auto_margin_offset);
-
-  // Computes the cross-axis size that a stretched item should have and stores
-  // it in cross_axis_size. DCHECKs if the item is not stretch aligned.
-  void ComputeStretchedSize();
 
   // Returns true if the margins were adjusted due to auto margin resolution.
   bool UpdateAutoMarginsInCrossAxis(LayoutUnit available_alignment_space);
 
-  inline const FlexLine* Line() const;
+  LayoutUnit CrossAxisOffset(const NGFlexLine&, LayoutUnit cross_axis_size);
 
   static LayoutUnit AlignmentOffset(LayoutUnit available_free_space,
                                     ItemPosition position,
                                     LayoutUnit baseline_offset,
-                                    bool is_wrap_reverse,
-                                    bool is_deprecated_webkit_box);
+                                    bool is_wrap_reverse);
 
   void Trace(Visitor*) const;
 
   const FlexibleBoxAlgorithm* algorithm_;
-  wtf_size_t line_number_;
   Member<const ComputedStyle> style_;
   const LayoutUnit flex_base_content_size_;
   const MinMaxSizes min_max_main_sizes_;
-  const std::optional<MinMaxSizes> min_max_cross_sizes_;
   const LayoutUnit hypothetical_main_content_size_;
   const LayoutUnit main_axis_border_padding_;
-  const LayoutUnit cross_axis_border_padding_;
   PhysicalBoxStrut physical_margins_;
   const BoxStrut scrollbars_;
   const WritingDirectionMode baseline_writing_direction_;
@@ -167,8 +160,9 @@ class FlexItem {
 
   // When set by the caller, this should be the size pre-stretching.
   LayoutUnit cross_axis_size_;
-  FlexOffset* offset_ = nullptr;
 
+  const bool is_initial_block_size_indefinite_;
+  const bool is_used_flex_basis_indefinite_;
   const bool depends_on_min_max_sizes_;
   bool frozen_;
 
@@ -197,10 +191,10 @@ class FlexItemVectorView {
     return vector_->at(start_ + i);
   }
 
-  FlexItem* begin() { return vector_->begin() + start_; }
-  const FlexItem* begin() const { return vector_->begin() + start_; }
-  FlexItem* end() { return vector_->begin() + end_; }
-  const FlexItem* end() const { return vector_->begin() + end_; }
+  FlexItem* begin() { return vector_->data() + start_; }
+  const FlexItem* begin() const { return vector_->data() + start_; }
+  FlexItem* end() { return vector_->data() + end_; }
+  const FlexItem* end() const { return vector_->data() + end_; }
 
  private:
   FlexItemVector* vector_;
@@ -217,7 +211,6 @@ class FlexLine {
   // This will std::move the passed-in line_items.
   FlexLine(FlexibleBoxAlgorithm* algorithm,
            FlexItemVectorView line_items,
-           LayoutUnit container_logical_width,
            LayoutUnit sum_flex_base_size,
            double total_flex_grow,
            double total_flex_shrink,
@@ -225,7 +218,6 @@ class FlexLine {
            LayoutUnit sum_hypothetical_main_size)
       : algorithm_(algorithm),
         line_items_(std::move(line_items)),
-        container_logical_width_(container_logical_width),
         sum_flex_base_size_(sum_flex_base_size),
         total_flex_grow_(total_flex_grow),
         total_flex_shrink_(total_flex_shrink),
@@ -262,13 +254,10 @@ class FlexLine {
   // flexed_content_size set as the override main axis size, and
   // cross_axis_size needs to be set correctly on each flex item (to the size
   // the item has without stretching).
-  void ComputeLineItemsPosition(LayoutUnit main_axis_offset,
-                                LayoutUnit main_axis_end_offset,
-                                LayoutUnit& cross_axis_offset);
+  void ComputeLineItemsPosition();
 
   FlexibleBoxAlgorithm* algorithm_;
   FlexItemVectorView line_items_;
-  const LayoutUnit container_logical_width_;
   const LayoutUnit sum_flex_base_size_;
   double total_flex_grow_;
   double total_flex_shrink_;
@@ -289,9 +278,6 @@ class FlexLine {
   LayoutUnit remaining_free_space_;
 
   // These get filled in by ComputeLineItemsPosition
-  LayoutUnit main_axis_offset_;
-  LayoutUnit main_axis_extent_;
-  LayoutUnit cross_axis_offset_;
   LayoutUnit cross_axis_extent_;
 
   LayoutUnit max_major_ascent_ = LayoutUnit::Min();
@@ -306,7 +292,6 @@ class FlexLine {
 //     for (each child) {
 //       algorithm.emplace_back(...caller must compute these values...)
 //     }
-//     LayoutUnit cross_axis_offset = border + padding;
 //     while ((FlexLine* line = algorithm.ComputenextLine(LogicalWidth()))) {
 //       // Compute main axis size, using sum_hypothetical_main_size if
 //       // indefinite
@@ -316,8 +301,7 @@ class FlexLine {
 //        while (!current_line->ResolveFlexibleLengths()) { continue; }
 //        // Now, lay out the items, forcing their main axis size to
 //        // item.flexed_content_size
-//        LayoutUnit main_axis_offset = border + padding + scrollbar;
-//        line->ComputeLineItemsPosition(main_axis_offset, cross_axis_offset);
+//        line->ComputeLineItemsPosition();
 //     }
 // The final position of each flex item is in item.offset
 class CORE_EXPORT FlexibleBoxAlgorithm {
@@ -348,16 +332,22 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
 
   // Computes the next flex line, stores it in FlexLines(), and returns a
   // pointer to it. Returns nullptr if there are no more lines.
-  // container_logical_width is the border box width.
-  FlexLine* ComputeNextFlexLine(LayoutUnit container_logical_width);
+  FlexLine* ComputeNextFlexLine();
 
   bool IsHorizontalFlow() const;
   bool IsColumnFlow() const;
   bool IsMultiline() const { return style_->FlexWrap() != EFlexWrap::kNowrap; }
   static bool IsHorizontalFlow(const ComputedStyle&);
   static bool IsColumnFlow(const ComputedStyle&);
-  bool IsLeftToRightFlow() const;
-  TransformedWritingMode GetTransformedWritingMode() const;
+  // Returns the physical direction of the main axis.
+  // This function is aware of `writing-mode`, `direction`, and
+  // `flex-direction`, but assumes `flex-direction:column-reverse` is same as
+  // `flex-direction:column`.
+  PhysicalDirection MainAxisDirection() const;
+  // Returns the physical direction of the cross axis.
+  // This function is aware of `writing-mode`, `flex-direction`, and
+  // no `flex-wrap`.
+  PhysicalDirection CrossAxisDirection() const;
 
   bool ShouldApplyMinSizeAutoForChild(const LayoutBox& child) const;
 
@@ -370,49 +360,16 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   // line. In both cases, border/padding is not included.
   LayoutUnit IntrinsicContentBlockSize() const;
 
-  // Positions flex lines by modifying FlexLine::cross_axis_offset, and
-  // FlexItem::desired_position. When lines stretch, also modifies
-  // FlexLine::cross_axis_extent.
-  void AlignFlexLines(LayoutUnit cross_axis_content_extent,
-                      HeapVector<NGFlexLine>* flex_line_outputs = nullptr);
-
-  // Positions flex items by modifying FlexItem::offset.
-  // When lines stretch, also modifies FlexItem::cross_axis_size.
-  void AlignChildren();
-
-  void FlipForWrapReverse(LayoutUnit cross_axis_start_edge,
-                          LayoutUnit cross_axis_content_size,
-                          HeapVector<NGFlexLine>* flex_line_outputs = nullptr);
-
-  static TransformedWritingMode GetTransformedWritingMode(const ComputedStyle&);
-
   static const StyleContentAlignmentData& ContentAlignmentNormalBehavior();
   static StyleContentAlignmentData ResolvedJustifyContent(const ComputedStyle&);
   static StyleContentAlignmentData ResolvedAlignContent(const ComputedStyle&);
   static ItemPosition AlignmentForChild(const ComputedStyle& flexbox_style,
                                         const ComputedStyle& child_style);
 
-  // Translates [self-]{start,end}, left, right to flex-{start,end} based on the
-  // flex flow and container/item writing-modes. Note that callers of this
-  // function treat flex-{start,end} as {start,end}. That convention will be
-  // easy to fix when legacy flex code is deleted.
-  static ItemPosition TranslateItemPosition(const ComputedStyle& flexbox_style,
-                                            const ComputedStyle& child_style,
-                                            ItemPosition align);
-
-  static LayoutUnit InitialContentPositionOffset(
-      const ComputedStyle& style,
-      LayoutUnit available_free_space,
-      const StyleContentAlignmentData&,
-      unsigned number_of_items,
-      bool is_reversed = false);
   static LayoutUnit ContentDistributionSpaceBetweenChildren(
       LayoutUnit available_free_space,
       const StyleContentAlignmentData&,
       unsigned number_of_items);
-
-  void LayoutColumnReverse(LayoutUnit main_axis_content_size,
-                           LayoutUnit border_scrollbar_padding_before);
 
   FlexItem* FlexItemAtIndex(wtf_size_t line_index, wtf_size_t item_index) const;
 
@@ -428,7 +385,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
 
  private:
   friend class FlexLayoutAlgorithm;
-  EOverflow MainAxisOverflowForChild(const LayoutBox& child) const;
 
   Member<const ComputedStyle> style_;
   const LayoutUnit line_break_length_;
@@ -436,10 +392,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   Vector<FlexLine> flex_lines_;
   wtf_size_t next_item_index_;
 };
-
-inline const FlexLine* FlexItem::Line() const {
-  return &algorithm_->FlexLines()[line_number_];
-}
 
 }  // namespace blink
 

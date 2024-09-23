@@ -19,7 +19,7 @@ std::string ClusterActionToString(ClusterAction action) {
     case ClusterAction::kVisitClicked:
       return "VisitClicked";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -32,7 +32,7 @@ std::string VisitActionToString(VisitAction action) {
     case VisitAction::kDeleted:
       return "Deleted";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -43,7 +43,7 @@ std::string VisitTypeToString(VisitType action) {
     case VisitType::kNonSRP:
       return "nonSRP";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -52,7 +52,7 @@ std::string RelatedSearchActionToString(RelatedSearchAction action) {
     case RelatedSearchAction::kClicked:
       return "Clicked";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

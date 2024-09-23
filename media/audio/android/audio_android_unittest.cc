@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stdint.h>
 
 #include <memory>
@@ -11,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -223,7 +229,7 @@ class FileAudioSource : public AudioOutputStream::AudioSourceCallback {
 
   void OnError(ErrorType type) override {}
 
-  int file_size() { return file_->data_size(); }
+  int file_size() { return base::checked_cast<int>(file_->size()); }
 
  private:
   raw_ptr<base::WaitableEvent> event_;
@@ -480,7 +486,14 @@ class AudioAndroidOutputTest : public testing::Test {
 
   void GetDefaultOutputStreamParametersOnAudioThread() {
     RunOnAudioThread(base::BindOnce(
-        &AudioAndroidOutputTest::GetDefaultOutputStreamParameters,
+        [](AudioAndroidOutputTest* self) {
+          std::string default_device_id =
+              AudioDeviceDescription::kDefaultDeviceId;
+          self->audio_output_parameters_ =
+              self->audio_manager_device_info()->GetOutputStreamParameters(
+                  default_device_id);
+          EXPECT_TRUE(self->audio_output_parameters_.IsValid());
+        },
         base::Unretained(this)));
   }
 
@@ -549,13 +562,6 @@ class AudioAndroidOutputTest : public testing::Test {
               0.70 * expected_time_between_callbacks_ms);
     EXPECT_LE(average_time_between_callbacks_ms,
               1.50 * expected_time_between_callbacks_ms);
-  }
-
-  void GetDefaultOutputStreamParameters() {
-    DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
-    audio_output_parameters_ =
-        audio_manager_device_info()->GetDefaultOutputStreamParameters();
-    EXPECT_TRUE(audio_output_parameters_.IsValid());
   }
 
   void MakeOutputStream(const AudioParameters& params) {
@@ -739,12 +745,6 @@ TEST_P(AudioAndroidInputTest, GetDefaultInputStreamParameters) {
   DVLOG(1) << audio_input_parameters();
 }
 
-// Get the default audio output parameters and log the result.
-TEST_F(AudioAndroidOutputTest, GetDefaultOutputStreamParameters) {
-  GetDefaultOutputStreamParametersOnAudioThread();
-  DVLOG(1) << audio_output_parameters();
-}
-
 // Verify input device enumeration.
 TEST_F(AudioAndroidInputTest, GetAudioInputDeviceDescriptions) {
   ABORT_AUDIO_TEST_IF_NOT(audio_manager_device_info()->HasAudioInputDevices());
@@ -829,7 +829,7 @@ TEST_F(AudioAndroidOutputTest, StartOutputStreamCallbacks) {
 // select a 10ms buffer size instead of the default size and to open up the
 // device in mono.
 // TODO(henrika): possibly add support for more variations.
-// TODO(https://crbug.com/1314750): Flaky.
+// TODO(crbug.com/40833066): Flaky.
 TEST_F(AudioAndroidOutputTest,
        DISABLED_StartOutputStreamCallbacksNonDefaultParameters) {
   GetDefaultOutputStreamParametersOnAudioThread();

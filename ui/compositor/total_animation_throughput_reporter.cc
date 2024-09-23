@@ -51,6 +51,8 @@ TotalAnimationThroughputReporter::~TotalAnimationThroughputReporter() {
 void TotalAnimationThroughputReporter::OnFirstAnimationStarted(
     ui::Compositor* compositor) {
   if (!throughput_tracker_) {
+    timestamp_first_animation_started_at_ = base::TimeTicks::Now();
+
     throughput_tracker_ = compositor->RequestNewThroughputTracker();
     throughput_tracker_->Start(base::BindRepeating(
         &TotalAnimationThroughputReporter::Report, ptr_factory_.GetWeakPtr()));
@@ -61,6 +63,8 @@ void TotalAnimationThroughputReporter::OnFirstNonAnimatedFrameStarted(
     ui::Compositor* compositor) {
   if (IsBlocked())
     return;
+
+  timestamp_last_animation_finished_at_ = base::TimeTicks::Now();
 
   throughput_tracker_->Stop();
   throughput_tracker_.reset();
@@ -115,7 +119,9 @@ void TotalAnimationThroughputReporter::Report(
     const cc::FrameSequenceMetrics::CustomReportData& data) {
   if (!report_once_callback_.is_null()) {
     compositor_->RemoveObserver(this);
-    std::move(report_once_callback_).Run(data);
+    std::move(report_once_callback_)
+        .Run(data, timestamp_first_animation_started_at_,
+             timestamp_last_animation_finished_at_);
     if (should_delete_)
       delete this;
     return;

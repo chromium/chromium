@@ -1,0 +1,8 @@
+android.webkit.WebView focusable focused
+++android.widget.Button role_description='button' clickable focusable name='Native button'
+++android.widget.Button role_description='button' clickable name='ARIA button'
+++android.widget.Button role_description='Clicky' clickable name='Clicky button'
+++android.widget.TextView name='foo'
+++android.widget.TextView focusable name='bar'
+++android.widget.TextView role_description='Texty' name='baz'
+++android.view.View role_description='SuperContainer' name='SuperContainer group'

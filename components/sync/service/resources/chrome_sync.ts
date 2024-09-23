@@ -78,13 +78,6 @@ export function requestStart() {
 }
 
 /**
- * Stops the SyncService and clears the sync data.
- */
-export function requestStopClearData() {
-  chrome.send('requestStopClearData');
-}
-
-/**
  * Triggers a GetUpdates call for all enabled datatypes.
  */
 export function triggerRefresh() {
@@ -109,7 +102,7 @@ export interface SyncNode {
   SERVER_VERSION_TIME: string;
   SERVER_SPECIFICS: ServerSpecifics;
   SPECIFICS: Specifics;
-  modelType: string;
+  dataType: string;
   positionIndex?: number;
 }
 

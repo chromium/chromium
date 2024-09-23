@@ -62,7 +62,7 @@ std::unique_ptr<JavaType> CreateFromArrayComponentTypeName(
       break;
     default:
       // Includes void (V).
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return result;
 }
@@ -155,7 +155,7 @@ std::string JavaType::JNIName() const {
     case JavaType::TypeObject:
       return class_jni_name;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

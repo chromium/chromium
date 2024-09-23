@@ -8,7 +8,6 @@
 
 #include "base/logging.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "ui/gfx/geometry/size.h"
@@ -23,19 +22,29 @@ void VAContextAndScopedVASurfaceDeleter::operator()(
 }
 
 VaapiImageDecoder::VaapiImageDecoder(VAProfile va_profile)
-    : va_profile_(va_profile) {}
+    : va_profile_(va_profile) {
+  DETACH_FROM_SEQUENCE(decoder_sequence_checker_);
+}
 
-VaapiImageDecoder::~VaapiImageDecoder() = default;
+VaapiImageDecoder::~VaapiImageDecoder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+}
 
 bool VaapiImageDecoder::Initialize(const ReportErrorToUMACB& error_uma_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  if (vaapi_wrapper_) {
+    return true;
+  }
   vaapi_wrapper_ =
       VaapiWrapper::Create(VaapiWrapper::kDecode, va_profile_,
-                           EncryptionScheme::kUnencrypted, error_uma_cb);
+                           EncryptionScheme::kUnencrypted, error_uma_cb)
+          .value_or(nullptr);
   return !!vaapi_wrapper_;
 }
 
 VaapiImageDecodeStatus VaapiImageDecoder::Decode(
     base::span<const uint8_t> encoded_image) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   if (!vaapi_wrapper_) {
     VLOGF(1) << "VaapiImageDecoder has not been initialized";
     scoped_va_context_and_surface_.reset();
@@ -59,37 +68,13 @@ VaapiImageDecodeStatus VaapiImageDecoder::Decode(
 }
 
 const ScopedVASurface* VaapiImageDecoder::GetScopedVASurface() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   return scoped_va_context_and_surface_.get();
-}
-
-gpu::ImageDecodeAcceleratorSupportedProfile
-VaapiImageDecoder::GetSupportedProfile() const {
-  if (!vaapi_wrapper_) {
-    DVLOGF(1) << "The VAAPI has not been initialized";
-    return gpu::ImageDecodeAcceleratorSupportedProfile();
-  }
-
-  gpu::ImageDecodeAcceleratorSupportedProfile profile;
-  profile.image_type = GetType();
-  DCHECK_NE(gpu::ImageDecodeAcceleratorType::kUnknown, profile.image_type);
-
-  // Note that since |vaapi_wrapper_| was created successfully, we expect the
-  // following call to be successful. Hence the DCHECK.
-  const bool got_supported_resolutions = VaapiWrapper::GetSupportedResolutions(
-      va_profile_, VaapiWrapper::CodecMode::kDecode,
-      profile.min_encoded_dimensions, profile.max_encoded_dimensions);
-  DCHECK(got_supported_resolutions);
-
-  // TODO(andrescj): Ideally, we would advertise support for all the formats
-  // supported by the driver. However, for now, we will only support exposing
-  // YUV 4:2:0 surfaces as DmaBufs.
-  DCHECK(VaapiWrapper::GetDecodeSupportedInternalFormats(va_profile_).yuv420);
-  profile.subsamplings.push_back(gpu::ImageDecodeAcceleratorSubsampling::k420);
-  return profile;
 }
 
 std::unique_ptr<NativePixmapAndSizeInfo>
 VaapiImageDecoder::ExportAsNativePixmapDmaBuf(VaapiImageDecodeStatus* status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(status);
 
   // We need to take ownership of the ScopedVASurface so that the next Decode()

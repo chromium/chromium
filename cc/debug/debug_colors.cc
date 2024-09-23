@@ -137,12 +137,13 @@ DebugColors::TintCompositedContentColorTransformMatrix() {
   // new_G =     0.7 G
   // new_B =             0.7 B
   // clang-format off
-  static constexpr float kColorTransform[] = {1.0f, 0.0f, 0.0f, 0.0f,
+  static constexpr auto kColorTransform = std::to_array<float>({
+                                              1.0f, 0.0f, 0.0f, 0.0f,
                                               0.3f, 0.7f, 0.0f, 0.0f,
                                               0.3f, 0.0f, 0.7f, 0.0f,
-                                              0.0f, 0.0f, 0.0f, 1.0f};
+                                              0.0f, 0.0f, 0.0f, 1.0f});
   // clang-format on
-  return base::span<const float>(kColorTransform, sizeof(kColorTransform));
+  return base::span<const float>(kColorTransform);
 }
 
 // Compressed tile borders are blue.
@@ -260,24 +261,37 @@ SkColor4f DebugColors::ScrollEventHandlerRectFillColor() {
   return {24.0f / 255.0f, 167.0f / 255.0f, 181.0f / 255.0f, 30.0f / 255.0f};
 }
 
-// Non-fast-scrollable rects in orange.
-SkColor4f DebugColors::NonFastScrollableRectBorderColor() {
+// Main-thread scroll hit-test rects in orange.
+SkColor4f DebugColors::MainThreadScrollHitTestRectBorderColor() {
   return {238.0f / 255.0f, 163.0f / 255.0f, 59.0f / 255.0f, 1.0f};
 }
-int DebugColors::NonFastScrollableRectBorderWidth() { return 2; }
-SkColor4f DebugColors::NonFastScrollableRectFillColor() {
+int DebugColors::MainThreadScrollHitTestRectBorderWidth() {
+  return 2;
+}
+SkColor4f DebugColors::MainThreadScrollHitTestRectFillColor() {
   return {238.0f / 255.0f, 163.0f / 255.0f, 59.0f / 255.0f, 30.0f / 255.0f};
 }
 
-// Main-thread scrolling reason rects in yellow-orange.
-SkColor4f DebugColors::MainThreadScrollingReasonRectBorderColor() {
+// Main-thread scroll repaint rects in yellow-orange.
+SkColor4f DebugColors::MainThreadScrollRepaintRectBorderColor() {
   return {200.0f / 255.0f, 100.0f / 255.0f, 0.0f, 1.0f};
 }
-int DebugColors::MainThreadScrollingReasonRectBorderWidth() {
+int DebugColors::MainThreadScrollRepaintRectBorderWidth() {
   return 2;
 }
-SkColor4f DebugColors::MainThreadScrollingReasonRectFillColor() {
+SkColor4f DebugColors::MainThreadScrollRepaintRectFillColor() {
   return {200.0f / 255.0f, 100.0f / 255.0f, 0.0f, 30.0f / 255.0f};
+}
+
+// Raster-inducing scroll rects in light yellow-orange.
+SkColor4f DebugColors::RasterInducingScrollRectBorderColor() {
+  return {200.0f / 255.0f, 100.0f / 255.0f, 0.0f, 0.5f};
+}
+int DebugColors::RasterInducingScrollRectBorderWidth() {
+  return 2;
+}
+SkColor4f DebugColors::RasterInducingScrollRectFillColor() {
+  return {200.0f / 255.0f, 100.0f / 255.0f, 0.0f, 15.0f / 255.0f};
 }
 
 // Animation bounds are lime-green.
@@ -362,7 +376,7 @@ SkColor4f DebugColors::NonLCDTextHighlightColor(
     case LCDTextDisallowedReason::kPixelOrColorEffect:
       return {0.0f, 0.5f, 0.0f, 96.0f / 255.0f};
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SkColors::kTransparent;
 }
 

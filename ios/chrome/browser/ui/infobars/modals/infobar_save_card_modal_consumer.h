@@ -14,7 +14,7 @@ extern NSString* const kCardNumberPrefKey;
 extern NSString* const kExpirationMonthPrefKey;
 extern NSString* const kExpirationYearPrefKey;
 extern NSString* const kLegalMessagesPrefKey;
-extern NSString* const kCurrentCardSavedPrefKey;
+extern NSString* const kCurrentCardSaveAcceptedPrefKey;
 extern NSString* const kSupportsEditingPrefKey;
 extern NSString* const kDisplayedTargetAccountEmailPrefKey;
 extern NSString* const kDisplayedTargetAccountAvatarPrefKey;
@@ -24,6 +24,12 @@ extern NSString* const kDisplayedTargetAccountAvatarPrefKey;
 
 // Informs the consumer of the current state of important prefs.
 - (void)setupModalViewControllerWithPrefs:(NSDictionary*)prefs;
+
+// Updates modal to show progress of card upload. With `uploadCompleted` as
+// `NO`, informs the consumer to show loading state after save card button is
+// pressed. With `uploadCompleted` as `YES`, informs the consumer to show card
+// upload success.
+- (void)showProgressWithUploadCompleted:(BOOL)uploadCompleted;
 
 @end
 

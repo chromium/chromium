@@ -1,7 +1,11 @@
 {
   "test1": {
     "channel": "stable",
-    "contexts": ["content_script", "blessed_extension", "unblessed_extension"],
+    "contexts": [
+      "content_script",
+      "privileged_extension",
+      "unprivileged_extension"
+    ],
     "extension_types": ["extension"]
   },
   "test2": {
@@ -17,16 +21,16 @@
     "contexts": ["content_script"]
   },
   "test3.foo": {
-    "contexts": ["web_page", "blessed_extension"],
+    "contexts": ["web_page", "privileged_extension"],
     "matches": ["<all_urls>"]
   },
   "test4": {
     "channel": "stable",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "dependencies": ["api:test3.foo"]
   },
   "test4.foo": {
-    "contexts": ["unblessed_extension"],
+    "contexts": ["unprivileged_extension"],
     "dependencies": ["api:test4"]
   },
   "test4.foo.foo": {
@@ -43,7 +47,7 @@
     "contexts": ["content_script"]
   },
   "test6.foo": {
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "test7": {
     "channel": "stable",
@@ -109,57 +113,85 @@
   },
   "parent2": {
     "channel": "stable",
-    "contexts": ["content_script", "blessed_extension", "unblessed_extension"]
+    "contexts": [
+      "content_script",
+      "privileged_extension",
+      "unprivileged_extension"
+    ]
   },
   "parent2.child3": {
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "parent2.child3.child.child": {
-    "contexts": ["content_script", "unblessed_extension"]
+    "contexts": ["content_script", "unprivileged_extension"]
   },
   "parent3": {
     "dependencies": ["api:parent1"],
-    "contexts": ["content_script", "blessed_extension", "unblessed_extension"]
+    "contexts": [
+      "content_script",
+      "privileged_extension",
+      "unprivileged_extension"
+    ]
   },
   "parent3.noparent": {
     "channel": "stable",
     "noparent": true,
-    "contexts": ["content_script", "blessed_extension", "unblessed_extension"]
+    "contexts": [
+      "content_script",
+      "privileged_extension",
+      "unprivileged_extension"
+    ]
   },
   "parent3.noparent.child": {
   },
   "kiosk_only": {
     "channel": "stable",
-    "contexts": ["content_script", "blessed_extension", "unblessed_extension"],
+    "contexts": [
+      "content_script",
+      "privileged_extension",
+      "unprivileged_extension"
+    ],
     "session_types": ["kiosk"]
   },
   "non_kiosk": {
     "channel": "stable",
-    "contexts": ["content_script", "blessed_extension", "unblessed_extension"],
+    "contexts": [
+      "content_script",
+      "privileged_extension",
+      "unprivileged_extension"
+    ],
     "session_types": ["regular"]
   },
   "autolaunched_kiosk": {
     "channel": "stable",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "session_types": ["kiosk.autolaunched"]
   },
   "multiple_session_types": {
     "channel": "stable",
-    "contexts": ["content_script", "blessed_extension", "unblessed_extension"],
+    "contexts": [
+      "content_script",
+      "privileged_extension",
+      "unprivileged_extension"
+    ],
     "session_types": ["kiosk", "regular"]
   },
   "alias_api": {
     "channel": "stable",
     "source": "alias_api_source",
-    "contexts": ["content_script", "blessed_extension", "unblessed_extension"]
+    "contexts": [
+      "content_script",
+      "privileged_extension",
+      "unprivileged_extension"
+    ]
   },
   "alias_api.foo": {
     "channel": "dev",
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   },
   "alias_api_source": {
     "channel": "dev",
     "alias": "alias_api",
-    "contexts": ["blessed_extension"]
+    "contexts": ["privileged_extension"]
   }
 }

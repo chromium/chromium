@@ -21,7 +21,7 @@
   TabGridTransitionDirection _direction;
 
   UIViewController<TabGridTransitionLayoutProviding>* _tabGridViewController;
-  BVCContainerViewController* _BVCContainerViewController;
+  UIViewController* _BVCContainerViewController;
 
   // Transition item for the selected cell in tab grid.
   TabGridTransitionItem* _tabGridCellItem;
@@ -38,7 +38,7 @@
                      (UIViewController<TabGridTransitionLayoutProviding>*)
                          tabGridViewController
             bvcContainerViewController:
-                (BVCContainerViewController*)bvcContainerViewController {
+                (UIViewController*)bvcContainerViewController {
   self = [super init];
   if (self) {
     CHECK(tabGridViewController.transitionLayout);
@@ -183,7 +183,7 @@
 }
 
 // Returns Browser to TabGrid normal motion animation.
-// TODO(crbug.com/1499268): Finish this animation.
+// TODO(crbug.com/40287759): Finish this animation.
 - (id<TabGridTransitionAnimation>)browserToTabGridNormalAnimation {
   // Main animation.
   PointZoomAnimationParameters animationParam = PointZoomAnimationParameters{
@@ -204,7 +204,7 @@
 }
 
 // Returns TabGrid to Browser normal motion animation.
-// TODO(crbug.com/1499268): Finish this animation.
+// TODO(crbug.com/40287759): Finish this animation.
 - (id<TabGridTransitionAnimation>)tabGridToBrowserNormalAnimation {
   // Set the frame to be the same as the active cell.
   _BVCContainerViewController.view.frame = _tabGridCellItem.originalFrame;

@@ -35,8 +35,8 @@ class ASH_EXPORT ShelfControlButton : public ShelfButton {
   void set_ideal_bounds(const gfx::Rect& bounds) { ideal_bounds_ = bounds; }
 
   // ShelfButton:
-  gfx::Size CalculatePreferredSize() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
   gfx::Rect ideal_bounds_;

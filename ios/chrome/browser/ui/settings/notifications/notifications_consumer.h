@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_consumer.h"
 
 @class TableViewItem;
+@class TableViewHeaderFooterItem;
 
 // Consumer protocol for Notifications settings.
 @protocol NotificationsConsumer <LegacyChromeTableViewConsumer>
@@ -20,17 +21,22 @@
 // Initializes the content notifications item.
 - (void)setContentNotificationsItem:(TableViewItem*)contentNotificationsItem;
 
-// Initializes the content notifications footer item.
-- (void)setContentNotificationsFooterItem:
-    (TableViewHeaderFooterItem*)contentNotificationsFooterItem;
-
 // Initializes the tips notifications item.
 - (void)setTipsNotificationsItem:(TableViewItem*)tipsNotificationsItem;
+
+// Initializes the Safety Check notifications item.
+- (void)setSafetyCheckItem:(TableViewItem*)safetyCheckItem;
 
 // Initializes the tips notifications footer item.
 - (void)setTipsNotificationsFooterItem:
     (TableViewHeaderFooterItem*)tipsNotificationsFooterItem;
 
+// Initializes the send tab notifications item.
+- (void)setSendTabNotificationsItem:(TableViewItem*)sendTabNotificationsItem;
+
+// Called when an item is updated and needs to be reloaded.
+- (void)reloadData;
+
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_NOTIFICATIONS_NOTIFICATIONS_CONSUMER_H_

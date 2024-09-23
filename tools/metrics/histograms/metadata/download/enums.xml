@@ -26,6 +26,16 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="BooleanOpenFromDuplicates">
+  <int value="0" label="Created New file"/>
+  <int value="1" label="Opened existing duplicate"/>
+</enum>
+
+<enum name="BooleanOpenInline">
+  <int value="0" label="Open in external app"/>
+  <int value="1" label="Open inline"/>
+</enum>
+
 <enum name="BooleanReplaced">
   <int value="0" label="Did Not Replace"/>
   <int value="1" label="Replaced"/>
@@ -47,6 +57,28 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Dialog canceled"/>
   <int value="3" label="Dialog dismissed"/>
 </enum>
+
+<!-- LINT.IfChange(DangerousDownloadInterstitialAction) -->
+
+<enum name="DangerousDownloadInterstitialAction">
+  <int value="0" label="OpenInterstitial"/>
+  <int value="1" label="CancelInterstitial"/>
+  <int value="2" label="OpenSurvey"/>
+  <int value="3" label="SaveDangerous"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/downloads/downloads_dom_handler.h:DangerousDownloadInterstitialAction)-->
+
+<!-- LINT.IfChange(DangerousDownloadInterstitialSurveyOptions) -->
+
+<enum name="DangerousDownloadInterstitialSurveyOptions">
+  <int value="0" label="User did not respond to survey"/>
+  <int value="1" label="User created file"/>
+  <int value="2" label="User trust site"/>
+  <int value="3" label="User accepts risk"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/downloads/downloads.mojom:DangerousDownloadInterstitialSurveyOptions)-->
 
 <enum name="Download.DragInfo">
   <int value="0" label="DRAG_STARTED"/>
@@ -264,7 +296,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="GetDownloads"/>
   <int value="1" label="OpenFile"/>
   <int value="2" label="Drag"/>
-  <int value="3" label="SaveDangerous"/>
+  <int value="3" label="SaveDangerous (obsolete)"/>
   <int value="4" label="DiscardDangerous"/>
   <int value="5" label="Show"/>
   <int value="6" label="Pause"/>
@@ -282,6 +314,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="OpenBypassWarningPrompt"/>
   <int value="19" label="SaveDangerousFromPrompt"/>
   <int value="20" label="CancelBypassWarningPrompt"/>
+  <int value="21" label="OpenSurveyOnDangerousInterstitial"/>
 </enum>
 
 <enum name="DownloadedFileAction">
@@ -427,12 +460,13 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="DEEP_SCANNED_SAFE"/>
   <int value="16" label="DEEP_SCANNED_OPENED_DANGEROUS"/>
   <int value="17" label="PROMPT_FOR_SCANNING"/>
-  <int value="18" label="BLOCKED_UNSUPPORTED_FILETYPE"/>
+  <int value="18" label="BLOCKED_UNSUPPORTED_FILETYPE (deprecated)"/>
   <int value="19" label="DANGEROUS_ACCOUNT_COMPROMISE"/>
   <int value="20" label="DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED"/>
   <int value="21"
       label="DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING"/>
   <int value="22" label="DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING"/>
+  <int value="23" label="DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED"/>
 </enum>
 
 <enum name="DownloadLaterDialogChoice">
@@ -470,6 +504,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Opened in browser by default"/>
   <int value="2" label="Opened with plaform handler by user choice"/>
   <int value="3" label="Opened with an alternate rename handler"/>
+  <int value="4" label="Opened with the Media App on ChromeOS"/>
 </enum>
 
 <enum name="DownloadPassKitResult">

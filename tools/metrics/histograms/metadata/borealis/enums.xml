@@ -55,6 +55,18 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Main app never showed up"/>
 </enum>
 
+<enum name="BorealisLaunchSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="chromeos-steam://install"/>
+  <int value="2" label="Unified App Installer"/>
+  <int value="3" label="Steam installer Launcher app"/>
+  <int value="4" label="insert_coin crosh command"/>
+  <int value="5" label="App uninstaller"/>
+  <int value="6" label="App URL handler"/>
+  <int value="7" label="Retry clicked on launch error dialog"/>
+  <int value="8" label="Launch button on successful install"/>
+</enum>
+
 <enum name="BorealisStartupResult">
   <int value="0" label="Success"/>
   <int value="1" label="Cancelled"/>
@@ -77,8 +89,8 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Borealis DLC is not supported"/>
   <int value="17" label="DLC faced an unknown error"/>
   <int value="18" label="Concierge was unavailable"/>
-  <int value="19" label="Recieved an empty disk response from Concierge"/>
-  <int value="20" label="Recieved an empty startup response from Concierge"/>
+  <int value="19" label="Received an empty disk response from Concierge"/>
+  <int value="20" label="Received an empty startup response from Concierge"/>
 </enum>
 
 </enums>

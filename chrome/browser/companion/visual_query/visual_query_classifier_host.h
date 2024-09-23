@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_CLASSIFIER_HOST_H_
 
 #include <memory>
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
 #include "chrome/browser/companion/visual_query/visual_query_suggestions_service.h"
 #include "chrome/common/companion/visual_query.mojom.h"
 #include "content/public/browser/render_frame_host.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "url/gurl.h"
@@ -120,6 +123,10 @@ class VisualQueryClassifierHost : mojom::VisualSuggestionsResultHandler {
   // the current url that we are processing.
   std::optional<VisualSuggestionsResults> GetVisualResult(const GURL& url);
 
+  void set_model_loaded_callback_for_testing(base::OnceClosure callback) {
+    model_loaded_callback_for_testing_ = std::move(callback);
+  }
+
  private:
   // This method performs the actual mojom IPC to start classifier agent after
   // we have obtained the model from |visual_query_service_|.
@@ -127,7 +134,7 @@ class VisualQueryClassifierHost : mojom::VisualSuggestionsResultHandler {
       mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler>
           visual_query,
       base::File file,
-      const std::string& base64_config);
+      std::optional<mojo_base::ProtoWrapper> wrapped_config);
 
   // Pointer to visual query service which we do not own.
   raw_ptr<VisualQuerySuggestionsService> visual_query_service_ = nullptr;
@@ -147,6 +154,8 @@ class VisualQueryClassifierHost : mojom::VisualSuggestionsResultHandler {
   // Used to store last |VisualQueryResult|, this is needed for instances where
   // the result is ready before the WebUI is ready to render it.
   std::optional<VisualQueryResultPair> current_result_;
+
+  base::OnceClosure model_loaded_callback_for_testing_;
 
   // Pointer factory necessary for scheduling tasks on different threads.
   base::WeakPtrFactory<VisualQueryClassifierHost> weak_ptr_factory_{this};

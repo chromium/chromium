@@ -8,6 +8,7 @@
 #include "base/token.h"
 #include "content/browser/tracing/trace_report/trace_report.mojom.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
+#include "content/public/browser/background_tracing_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -58,15 +59,19 @@ class TraceReportHandlerTest : public testing::Test {
   ~TraceReportHandlerTest() override = default;
 
   void SetUp() override {
+    background_tracing_manager_ =
+        std::make_unique<BackgroundTracingManagerImpl>();
     // Expect the Database to be opened before executing each test.
     EXPECT_CALL(fake_trace_upload_list_, OpenDatabaseIfExists());
     handler_ = std::make_unique<TraceReportHandler>(
         mojo::PendingReceiver<trace_report::mojom::PageHandler>(),
-        mock_page_.BindAndGetRemote(), fake_trace_upload_list_);
+        mock_page_.BindAndGetRemote(), fake_trace_upload_list_,
+        *background_tracing_manager_);
   }
 
  protected:
   BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<BackgroundTracingManagerImpl> background_tracing_manager_;
   testing::StrictMock<FakeTraceUploadList> fake_trace_upload_list_;
   testing::NiceMock<MockTracePage> mock_page_;
   std::unique_ptr<TraceReportHandler> handler_;

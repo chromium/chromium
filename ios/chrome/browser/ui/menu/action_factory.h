@@ -7,12 +7,19 @@
 
 #import <UIKit/UIKit.h>
 
+#ifdef __cplusplus
+#import <set>
+#endif
+
 #import "base/ios/block_types.h"
 
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 
 @class CrURL;
-@class GroupTitleAndIdentifier;
+@protocol SystemIdentity;
+#ifdef __cplusplus
+class TabGroup;
+#endif
 
 // Factory providing methods to create UIActions with consistent titles, images
 // and metrics structure. When using any action from this class, an histogram
@@ -31,6 +38,12 @@
 // Creates a UIAction instance configured for sharing which will invoke
 // the given `block` upon execution.
 - (UIAction*)actionToShareWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance configured to show the full `URLString` that
+// appears in the web context menu and which will invoke the given `block` upon
+// execution.
+- (UIAction*)actionToShowFullURL:(NSString*)URLString
+                           block:(ProceduralBlock)block;
 
 // Creates a UIAction instance configured for pinning a tab which will invoke
 // the given `block` upon execution.
@@ -127,38 +140,91 @@
 - (ProceduralBlock)recordMobileWebContextMenuOpenTabActionWithBlock:
     (ProceduralBlock)block;
 
-// Creates a UIAction instance for adding a tab in a new tab group.
+// Creates a UIAction instance for adding `tabsNumber` tab in a new tab group.
+// `inSubmenu` changes the string to be displayed.
 - (UIAction*)actionToAddTabsToNewGroupWithTabsNumber:(int)tabsNumber
+                                           inSubmenu:(BOOL)inSubmenu
                                                block:(ProceduralBlock)block;
 
+// Creates a UIAction instance for opening  a link in new tab group. `inSubmenu`
+// changes the string to be displayed.
+- (UIAction*)actionToOpenLinkInNewGroupWithBlock:(ProceduralBlock)block
+                                       inSubmenu:(BOOL)inSubmenu;
+
+#ifdef __cplusplus
 // Creates a UIMenu instance for adding a tab to an existing group or to a new
-// group using a block that takes a group id as an argument, which is nil
-// when adding a tab to a new group.
-- (UIMenu*)menuToAddTabToGroupWithGroupTitleAndIdentifiers:
-               (NSArray<GroupTitleAndIdentifier*>*)groupTitleAndIdentifiers
-                                                     block:(void (^)(NSString*))
-                                                               block;
+// group using a block that takes a group as an argument. This argument will be
+// `nullptr` if it should be added to a new group.
+//
+// If there is no existing groups, it will only have the option to add to a new
+// group.
+- (UIMenuElement*)
+    menuToAddTabToGroupWithGroups:(const std::set<const TabGroup*>&)groups
+                     numberOfTabs:(int)tabsNumber
+                            block:(void (^)(const TabGroup*))block;
+
+// Creates a UIMenu instance for opening a link in an existing group or in a new
+// group using a block that takes a group as an argument. This argument will be
+// `nullptr` if it should be added to a new group. If there is no existing
+// groups, it will only have the option to open in a new group.
+- (UIMenuElement*)
+    menuToOpenLinkInGroupWithGroups:(const std::set<const TabGroup*>&)groups
+                              block:(void (^)(const TabGroup*))block;
+
+// Creates a UIMenu instance for moving a tab from `currentGroup` in or out of
+// an existing group. `groups` cannot be empty.
+- (UIMenuElement*)
+    menuToMoveTabToGroupWithGroups:(const std::set<const TabGroup*>&)groups
+                      currentGroup:(const TabGroup*)currentGroup
+                         moveBlock:(void (^)(const TabGroup*))moveBlock
+                       removeBlock:(ProceduralBlock)removeBlock;
+#endif
 
 // Creates a UIAction instance for renaming a tab group.
 - (UIAction*)actionToRenameTabGroupWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance for adding a new tab to the tab group.
-- (UIAction*)actionToAddNewTabInGroupWithBlock:(ProceduralBlock)block;
+- (UIAction*)actionToAddNewTabInGroupWithBlock:(ProceduralBlock)block
+    NS_SWIFT_NAME(actionToAddNewTabInGroup(with:));
 
 // Creates a UIAction instance for ungrouping a tab group.
 - (UIAction*)actionToUngroupTabGroupWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance for deleting a tab group.
+- (UIAction*)actionToDeleteTabGroupWithBlock:(ProceduralBlock)block;
+
 // Creates a UIAction instance for closing a tab group.
 - (UIAction*)actionToCloseTabGroupWithBlock:(ProceduralBlock)block;
 
-@end
+// Creates a UIAction instance whose title and icon are configured for showing
+// details, which will invoke the given `block` when executed.
+- (UIAction*)actionToShowDetailsWithBlock:(ProceduralBlock)block;
 
-// This object holds the necessary elements (id and title) to identify a tab
-// group.
-@interface GroupTitleAndIdentifier : NSObject
+// Creates a UIAction instance to sort drive items by name.
+- (UIAction*)actionToSortDriveItemsByNameWithBlock:(ProceduralBlock)block;
 
-@property(nonatomic, strong) NSString* groupID;
-@property(nonatomic, strong) NSString* groupTitle;
+// Creates a UIAction instance to sort drive items by modification time.
+- (UIAction*)actionToSortDriveItemsByModificationTimeWithBlock:
+    (ProceduralBlock)block;
+
+// Creates a UIAction instance to sort drive items by opening time.
+- (UIAction*)actionToSortDriveItemsByOpeningTimeWithBlock:
+    (ProceduralBlock)block;
+
+// Creates a UIMenu instance for identity selection within drive file picker.
+- (UIMenuElement*)
+    menuToSelectDriveIdentityWithIdentities:
+        (NSArray<id<SystemIdentity>>*)identities
+                            currentIdentity:(id<SystemIdentity>)currentIdentity
+                                      block:(void (^)(const id<SystemIdentity>))
+                                                block;
+
+// Creates a UIAction instance to add an account to choose drive files from.
+- (UIAction*)actionToAddAccountForDriveWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance whose title and icon are configured for showing
+// manage in a new tab, which will invoke the given `block` when executed.
+- (UIAction*)actionToManageLinkInNewTabWithBlock:(ProceduralBlock)block;
 
 @end
 

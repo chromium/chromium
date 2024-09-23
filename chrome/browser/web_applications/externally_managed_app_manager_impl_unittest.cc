@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/not_fatal_until.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -56,7 +57,8 @@ namespace {
 
 using InstallAppsResults =
     std::vector<std::pair<GURL, webapps::InstallResultCode>>;
-using UninstallAppsResults = std::vector<std::pair<GURL, bool>>;
+using UninstallAppsResults =
+    std::vector<std::pair<GURL, webapps::UninstallResultCode>>;
 
 ExternalInstallOptions GetInstallOptions(
     const GURL& url,
@@ -74,8 +76,7 @@ ExternalInstallOptions GetInstallOptions(
 
 std::unique_ptr<WebAppInstallInfo> GetWebAppInstallInfo(const GURL& url) {
   std::unique_ptr<WebAppInstallInfo> info =
-      std::make_unique<WebAppInstallInfo>();
-  info->start_url = url;
+      WebAppInstallInfo::CreateWithStartUrlForTesting(url);
   info->scope = url.GetWithoutFilename();
   info->title = u"Foo Web App";
   return info;
@@ -327,7 +328,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
 
       const GURL install_url =
           install_options().only_use_app_info_factory
-              ? install_options().app_info_factory.Run()->start_url
+              ? install_options().app_info_factory.Run()->start_url()
               : install_options().install_url;
       test_install_task_manager_->RunOrSaveRequest(base::BindLambdaForTesting(
           [&, install_url, callback = std::move(callback)]() mutable {
@@ -398,8 +399,8 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
   base::OneShotEvent web_contents_released_event_;
 };
 
-// TODO(crbug.com/1464507): Avoid mocking the scheduler in favor of only mocking
-// external dependencies.
+// TODO(crbug.com/40275639): Avoid mocking the scheduler in favor of only
+// mocking external dependencies.
 class TestWebAppCommandScheduler : public WebAppCommandScheduler {
  public:
   TestWebAppCommandScheduler(Profile& profile,
@@ -430,12 +431,13 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
   }
 
   // WebAppCommandScheduler:
-  void RemoveInstallUrl(std::optional<webapps::AppId> app_id,
-                        WebAppManagement::Type install_source,
-                        const GURL& install_url,
-                        webapps::WebappUninstallSource uninstall_source,
-                        UninstallJob::Callback callback,
-                        const base::Location& location = FROM_HERE) override {
+  void RemoveInstallUrlMaybeUninstall(
+      std::optional<webapps::AppId> app_id,
+      WebAppManagement::Type install_source,
+      const GURL& install_url,
+      webapps::WebappUninstallSource uninstall_source,
+      UninstallJob::Callback callback,
+      const base::Location& location = FROM_HERE) override {
     uninstall_external_web_app_urls_.push_back(install_url);
 
     auto [preset_app_id, code] =
@@ -453,7 +455,7 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
               std::move(callback).Run(code);
             }));
   }
-  void RemoveInstallSource(
+  void RemoveInstallManagementMaybeUninstall(
       const webapps::AppId& app_id,
       WebAppManagement::Type install_source,
       webapps::WebappUninstallSource uninstall_source,
@@ -462,13 +464,13 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
     UnregisterApp(app_id);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         location, base::BindOnce(std::move(callback),
-                                 webapps::UninstallResultCode::kSuccess));
+                                 webapps::UninstallResultCode::kAppRemoved));
   }
 
  private:
   void UnregisterApp(const webapps::AppId& app_id) {
     auto it = registrar_->registry().find(app_id);
-    DCHECK(it != registrar_->registry().end());
+    CHECK(it != registrar_->registry().end(), base::NotFatalUntil::M130);
     registrar_->registry().erase(it);
   }
 
@@ -573,11 +575,12 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
     return results;
   }
 
-  std::vector<std::pair<GURL, bool>> UninstallAppsAndWait(
+  std::vector<std::pair<GURL, webapps::UninstallResultCode>>
+  UninstallAppsAndWait(
       ExternallyManagedAppManager* externally_managed_app_manager,
       ExternalInstallSource install_source,
       std::vector<GURL> apps_to_uninstall) {
-    std::vector<std::pair<GURL, bool>> results;
+    std::vector<std::pair<GURL, webapps::UninstallResultCode>> results;
 
     base::RunLoop run_loop;
     auto barrier_closure =
@@ -585,8 +588,8 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
     externally_managed_app_manager->UninstallApps(
         std::move(apps_to_uninstall), install_source,
         base::BindLambdaForTesting(
-            [&](const GURL& url, bool successfully_uninstalled) {
-              results.emplace_back(url, successfully_uninstalled);
+            [&](const GURL& url, webapps::UninstallResultCode code) {
+              results.emplace_back(url, code);
               barrier_closure.Run();
             }));
     run_loop.Run();
@@ -658,7 +661,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_Succeeds) {
   externally_managed_app_manager_impl().SetNextInstallationLaunchURL(
       kFooWebAppUrl);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   auto [url, code] = InstallAndWait(&externally_managed_app_manager_impl(),
                                     GetInstallOptions(kFooWebAppUrl));
@@ -684,7 +687,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_SerialCallsDifferentApps) {
   externally_managed_app_manager_impl().SetNextInstallationLaunchURL(
       kFooWebAppUrl);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   {
     auto [url, code] = InstallAndWait(&externally_managed_app_manager_impl(),
                                       GetInstallOptions(kFooWebAppUrl));
@@ -705,7 +708,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_SerialCallsDifferentApps) {
   externally_managed_app_manager_impl().SetNextInstallationLaunchURL(
       kBarWebAppUrl);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kBarWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kBarWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   {
     auto [url, code] = InstallAndWait(&externally_managed_app_manager_impl(),
                                       GetInstallOptions(kBarWebAppUrl));
@@ -734,9 +737,9 @@ TEST_F(ExternallyManagedAppManagerImplTest,
   externally_managed_app_manager_impl().SetNextInstallationTaskResult(
       kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kBarWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kBarWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   base::RunLoop run_loop;
   externally_managed_app_manager_impl().InstallNow(
@@ -782,9 +785,9 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_PendingSuccessfulTask) {
       kBarWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
   install_task_manager().SaveInstallRequests();
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kBarWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kBarWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   base::RunLoop foo_run_loop;
   base::RunLoop bar_run_loop;
@@ -838,7 +841,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, InstallWithWebAppInfo_Succeeds) {
   externally_managed_app_manager_impl().SetNextInstallationTaskResult(
       kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   base::RunLoop foo_run_loop;
 
@@ -870,9 +873,9 @@ TEST_F(ExternallyManagedAppManagerImplTest,
   externally_managed_app_manager_impl().SetNextInstallationTaskResult(
       kBarWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kBarWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kBarWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   std::vector<ExternalInstallOptions> apps_to_install;
   apps_to_install.push_back(GetInstallOptionsWithWebAppInfo(kFooWebAppUrl));
@@ -897,7 +900,7 @@ TEST_F(ExternallyManagedAppManagerImplTest,
   externally_managed_app_manager_impl().SetNextInstallationTaskResult(
       kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   base::RunLoop foo_run_loop;
   base::RunLoop bar_run_loop;
@@ -946,9 +949,9 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_PendingFailingTask) {
       kBarWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
   install_task_manager().SaveInstallRequests();
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kBarWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kBarWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   base::RunLoop foo_run_loop;
   base::RunLoop bar_run_loop;
@@ -1002,9 +1005,9 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_ReentrantCallback) {
   externally_managed_app_manager_impl().SetNextInstallationTaskResult(
       kBarWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kBarWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kBarWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   base::RunLoop run_loop;
   auto final_callback = base::BindLambdaForTesting(
@@ -1037,7 +1040,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_ReentrantCallback) {
 TEST_F(ExternallyManagedAppManagerImplTest, Install_SerialCallsSameApp) {
   const GURL kFooWebAppUrl("https://foo.example");
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   {
     externally_managed_app_manager_impl().SetNextInstallationTaskResult(
         kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
@@ -1067,7 +1070,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_ConcurrentCallsSameApp) {
   externally_managed_app_manager_impl().SetNextInstallationTaskResult(
       kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   base::RunLoop run_loop;
   bool first_callback_ran = false;
@@ -1110,7 +1113,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_AlwaysUpdate) {
   externally_managed_app_manager_impl().SetNextInstallationTaskResult(
       kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   auto get_force_reinstall_info = [kFooWebAppUrl]() {
     ExternalInstallOptions options(kFooWebAppUrl,
@@ -1151,7 +1154,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_InstallationFails) {
   externally_managed_app_manager_impl().SetNextInstallationTaskResult(
       kFooWebAppUrl, webapps::InstallResultCode::kWebAppDisabled);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   auto [url, code] = InstallAndWait(&externally_managed_app_manager_impl(),
                                     GetInstallOptions(kFooWebAppUrl));
@@ -1168,7 +1171,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_PlaceholderApp) {
       kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall,
       /*did_install_placeholder=*/true);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   auto install_options = GetInstallOptions(kFooWebAppUrl);
   install_options.install_placeholder = true;
@@ -1188,7 +1191,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, InstallApps_Succeeds) {
   externally_managed_app_manager_impl().SetNextInstallationTaskResult(
       kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   std::vector<ExternalInstallOptions> apps_to_install;
   apps_to_install.push_back(GetInstallOptions(kFooWebAppUrl));
@@ -1211,7 +1214,7 @@ TEST_F(ExternallyManagedAppManagerImplTest,
   externally_managed_app_manager_impl().SetNextInstallationTaskResult(
       kFooWebAppUrl, webapps::InstallResultCode::kWebAppDisabled);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   std::vector<ExternalInstallOptions> apps_to_install;
   apps_to_install.push_back(GetInstallOptions(kFooWebAppUrl));
@@ -1233,7 +1236,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, InstallApps_PlaceholderApp) {
       kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall,
       /*did_install_placeholder=*/true);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   auto install_options = GetInstallOptions(kFooWebAppUrl);
   install_options.install_placeholder = true;
@@ -1260,9 +1263,9 @@ TEST_F(ExternallyManagedAppManagerImplTest, InstallApps_Multiple) {
   externally_managed_app_manager_impl().SetNextInstallationTaskResult(
       kBarWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kBarWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kBarWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   std::vector<ExternalInstallOptions> apps_to_install;
   apps_to_install.push_back(GetInstallOptions(kFooWebAppUrl));
@@ -1289,9 +1292,9 @@ TEST_F(ExternallyManagedAppManagerImplTest, InstallApps_PendingInstallApps) {
   externally_managed_app_manager_impl().SetNextInstallationTaskResult(
       kBarWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kBarWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kBarWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   base::RunLoop run_loop;
   {
@@ -1354,11 +1357,11 @@ TEST_F(ExternallyManagedAppManagerImplTest,
   externally_managed_app_manager_impl().SetNextInstallationLaunchURL(
       kQuxWebAppUrl);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kBarWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kBarWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kQuxWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kQuxWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   std::vector<ExternalInstallOptions> apps_to_install;
   apps_to_install.push_back(GetInstallOptions(kFooWebAppUrl));
@@ -1389,7 +1392,7 @@ TEST_F(ExternallyManagedAppManagerImplTest,
               EXPECT_EQ(GetInstallOptions(kBarWebAppUrl),
                         last_install_options());
             } else {
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
             }
           }));
 
@@ -1429,11 +1432,11 @@ TEST_F(ExternallyManagedAppManagerImplTest, InstallApps_PendingInstall) {
   externally_managed_app_manager_impl().SetNextInstallationTaskResult(
       kQuxWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kBarWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kBarWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kQuxWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kQuxWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
   base::RunLoop run_loop;
 
@@ -1488,7 +1491,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, InstallApps_PendingInstall) {
               run_loop.Quit();
               return;
             }
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
           }));
   run_loop.Run();
 }
@@ -1498,7 +1501,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, AppUninstalled) {
   externally_managed_app_manager_impl().SetNextInstallationTaskResult(
       kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   {
     auto [url, code] = InstallAndWait(&externally_managed_app_manager_impl(),
                                       GetInstallOptions(kFooWebAppUrl));
@@ -1534,12 +1537,14 @@ TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_Succeeds) {
   AddAppToRegistry(std::move(web_app));
 
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   UninstallAppsResults results = UninstallAppsAndWait(
       &externally_managed_app_manager_impl(),
       ExternalInstallSource::kExternalPolicy, std::vector<GURL>{kFooWebAppUrl});
 
-  EXPECT_EQ(results, UninstallAppsResults({{kFooWebAppUrl, true}}));
+  EXPECT_EQ(results,
+            UninstallAppsResults(
+                {{kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved}}));
 
   EXPECT_EQ(1u, scheduler().uninstall_call_count());
   EXPECT_EQ(kFooWebAppUrl, scheduler().last_uninstalled_app_url());
@@ -1552,7 +1557,9 @@ TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_Fails) {
   UninstallAppsResults results = UninstallAppsAndWait(
       &externally_managed_app_manager_impl(),
       ExternalInstallSource::kExternalPolicy, std::vector<GURL>{kFooWebAppUrl});
-  EXPECT_EQ(results, UninstallAppsResults({{kFooWebAppUrl, false}}));
+  EXPECT_EQ(results,
+            UninstallAppsResults(
+                {{kFooWebAppUrl, webapps::UninstallResultCode::kError}}));
 
   EXPECT_EQ(1u, scheduler().uninstall_call_count());
   EXPECT_EQ(kFooWebAppUrl, scheduler().last_uninstalled_app_url());
@@ -1567,15 +1574,17 @@ TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_Multiple) {
   AddAppToRegistry(std::move(web_app));
 
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   scheduler().SetNextUninstallExternalWebAppResult(
-      kBarWebAppUrl, webapps::UninstallResultCode::kSuccess);
+      kBarWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
   UninstallAppsResults results =
       UninstallAppsAndWait(&externally_managed_app_manager_impl(),
                            ExternalInstallSource::kExternalPolicy,
                            std::vector<GURL>{kFooWebAppUrl, kBarWebAppUrl});
-  EXPECT_EQ(results, UninstallAppsResults(
-                         {{kFooWebAppUrl, true}, {kBarWebAppUrl, true}}));
+  EXPECT_EQ(results,
+            UninstallAppsResults(
+                {{kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved},
+                 {kBarWebAppUrl, webapps::UninstallResultCode::kAppRemoved}}));
 
   EXPECT_EQ(2u, scheduler().uninstall_call_count());
   EXPECT_EQ(std::vector<GURL>({kFooWebAppUrl, kBarWebAppUrl}),
@@ -1605,8 +1614,10 @@ TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_PendingInstall) {
       &externally_managed_app_manager_impl(),
       ExternalInstallSource::kExternalPolicy, std::vector<GURL>{kFooWebAppUrl});
   scheduler().SetNextUninstallExternalWebAppResult(
-      kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
-  EXPECT_EQ(uninstall_results, UninstallAppsResults({{kFooWebAppUrl, false}}));
+      kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
+  EXPECT_EQ(uninstall_results,
+            UninstallAppsResults(
+                {{kFooWebAppUrl, webapps::UninstallResultCode::kError}}));
   EXPECT_EQ(1u, scheduler().uninstall_call_count());
 
   run_loop.Run();
@@ -1623,7 +1634,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, ReinstallPlaceholderApp_Success) {
         kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall,
         /*did_install_placeholder=*/true);
     scheduler().SetNextUninstallExternalWebAppResult(
-        kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+        kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
     auto [url, code] =
         InstallAndWait(&externally_managed_app_manager_impl(), install_options);
     ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
@@ -1657,7 +1668,7 @@ TEST_F(ExternallyManagedAppManagerImplTest,
         kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall,
         /*did_install_placeholder=*/true);
     scheduler().SetNextUninstallExternalWebAppResult(
-        kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+        kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
     auto [url, code] =
         InstallAndWait(&externally_managed_app_manager_impl(), install_options);
     ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
@@ -1695,7 +1706,7 @@ TEST_F(ExternallyManagedAppManagerImplTest,
         kFooWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall,
         /*did_install_placeholder=*/true);
     scheduler().SetNextUninstallExternalWebAppResult(
-        kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+        kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
     auto [url, code] =
         InstallAndWait(&externally_managed_app_manager_impl(), install_options);
     ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
@@ -1758,7 +1769,7 @@ TEST_F(ExternallyManagedAppManagerImplTest,
     }));
     ui_manager().SetOnNotifyOnAllAppWindowsClosedCallback(callback.Get());
     scheduler().SetNextUninstallExternalWebAppResult(
-        kFooWebAppUrl, webapps::UninstallResultCode::kSuccess);
+        kFooWebAppUrl, webapps::UninstallResultCode::kAppRemoved);
 
     auto [url, code] =
         InstallAndWait(&externally_managed_app_manager_impl(), install_options);

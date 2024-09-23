@@ -10,6 +10,7 @@
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/security_state/core/security_state.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -27,51 +28,37 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
   switch (security_level) {
     case security_state::NONE:
-      return IsChromeRefreshIconsEnabled() ? omnibox::kHttpChromeRefreshIcon
-                                           : omnibox::kHttpIcon;
+      return omnibox::kHttpChromeRefreshIcon;
     case security_state::SECURE:
-      return IsChromeRefreshIconsEnabled()
-                 ? omnibox::kSecurePageInfoChromeRefreshIcon
-                 : vector_icons::kHttpsValidIcon;
+      return omnibox::kSecurePageInfoChromeRefreshIcon;
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
-      return IsChromeRefreshIconsEnabled()
-                 ? vector_icons::kBusinessChromeRefreshIcon
-                 : vector_icons::kBusinessIcon;
+      return vector_icons::kBusinessChromeRefreshIcon;
     case security_state::WARNING:
-      return IsChromeRefreshIconsEnabled()
-                 ? vector_icons::kNotSecureWarningChromeRefreshIcon
-                 : vector_icons::kNotSecureWarningIcon;
+      return vector_icons::kNotSecureWarningChromeRefreshIcon;
     case security_state::DANGEROUS:
-      if (base::FeatureList::IsEnabled(
-              safe_browsing::kRedInterstitialFacelift) &&
-          malicious_content_status !=
-              security_state::MALICIOUS_CONTENT_STATUS_BILLING) {
-        return IsChromeRefreshIconsEnabled()
-                   ? vector_icons::kDangerousChromeRefreshIcon
-                   : vector_icons::kDangerousIcon;
+      if (malicious_content_status ==
+              security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_WARN ||
+          malicious_content_status ==
+              security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK) {
+        return vector_icons::kBusinessChromeRefreshIcon;
       }
-      return IsChromeRefreshIconsEnabled()
-                 ? vector_icons::kNotSecureWarningChromeRefreshIcon
-                 : vector_icons::kNotSecureWarningIcon;
+      if (malicious_content_status !=
+          security_state::MALICIOUS_CONTENT_STATUS_BILLING) {
+        return vector_icons::kDangerousChromeRefreshIcon;
+      }
+      return vector_icons::kNotSecureWarningChromeRefreshIcon;
 
     case security_state::SECURITY_LEVEL_COUNT:
-      NOTREACHED();
-      return IsChromeRefreshIconsEnabled() ? omnibox::kHttpChromeRefreshIcon
-                                           : omnibox::kHttpIcon;
+      NOTREACHED_IN_MIGRATION();
+      return omnibox::kHttpChromeRefreshIcon;
   }
-  NOTREACHED();
-  return IsChromeRefreshIconsEnabled() ? omnibox::kHttpChromeRefreshIcon
-                                       : omnibox::kHttpIcon;
+  NOTREACHED_IN_MIGRATION();
+  return omnibox::kHttpChromeRefreshIcon;
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   static const gfx::VectorIcon dummy = {};
   return dummy;
 #endif
-}
-
-bool IsChromeRefreshIconsEnabled() {
-  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
-      omnibox::kOmniboxCR23SteadyStateIcons);
 }
 
 }  // namespace location_bar_model

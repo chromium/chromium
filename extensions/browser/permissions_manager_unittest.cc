@@ -44,12 +44,16 @@ class PermissionsManagerUnittest : public ExtensionsTest {
   scoped_refptr<const Extension> AddExtension(const std::string& name);
   scoped_refptr<const Extension> AddExtensionWithAPIPermission(
       const std::string& name,
-      const std::string& permission);
+      const std::string& permission,
+      extensions::mojom::ManifestLocation location =
+          extensions::mojom::ManifestLocation::kUnpacked);
   scoped_refptr<const Extension> AddExtensionWithHostPermission(
       const std::string& name,
       const std::string& host_permission);
   scoped_refptr<const Extension> AddExtensionWithActiveTab(
-      const std::string& name);
+      const std::string& name,
+      extensions::mojom::ManifestLocation location =
+          extensions::mojom::ManifestLocation::kUnpacked);
 
   // Returns the restricted sites stored in `manager_`.
   std::set<url::Origin> GetRestrictedSitesFromManager();
@@ -94,11 +98,13 @@ scoped_refptr<const Extension> PermissionsManagerUnittest::AddExtension(
 scoped_refptr<const Extension>
 PermissionsManagerUnittest::AddExtensionWithAPIPermission(
     const std::string& name,
-    const std::string& permission) {
+    const std::string& permission,
+    extensions::mojom::ManifestLocation location) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
           .SetManifestVersion(3)
-          .AddPermission(permission)
+          .AddAPIPermission(permission)
+          .SetLocation(location)
           .Build();
   DCHECK(extension->permissions_data()->HasAPIPermission(permission));
 
@@ -115,8 +121,7 @@ PermissionsManagerUnittest::AddExtensionWithHostPermission(
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
           .SetManifestVersion(3)
-          .SetManifestKey("host_permissions",
-                          base::Value::List().Append(host_permission))
+          .AddHostPermission(host_permission)
           .Build();
 
   ExtensionRegistryFactory::GetForBrowserContext(browser_context())
@@ -126,8 +131,10 @@ PermissionsManagerUnittest::AddExtensionWithHostPermission(
 }
 
 scoped_refptr<const Extension>
-PermissionsManagerUnittest::AddExtensionWithActiveTab(const std::string& name) {
-  return AddExtensionWithAPIPermission(name, "activeTab");
+PermissionsManagerUnittest::AddExtensionWithActiveTab(
+    const std::string& name,
+    extensions::mojom::ManifestLocation location) {
+  return AddExtensionWithAPIPermission(name, "activeTab", location);
 }
 
 const base::Value* PermissionsManagerUnittest::GetRestrictedSitesFromPrefs() {
@@ -395,7 +402,7 @@ TEST_F(PermissionsManagerUnittest, CanAffectExtension_ByLocation) {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("test")
             .SetLocation(test_case.location)
-            .AddPermission("<all_urls>")
+            .AddHostPermission("<all_urls>")
             .Build();
     EXPECT_EQ(manager_->CanAffectExtension(*extension),
               test_case.can_be_affected)
@@ -478,6 +485,59 @@ TEST_F(PermissionsManagerUnittest, CanUserSelectSiteAccess_ActiveTab) {
                                                  UserSiteAccess::kOnSite));
   EXPECT_FALSE(manager_->CanUserSelectSiteAccess(*extension, url,
                                                  UserSiteAccess::kOnAllSites));
+}
+
+TEST_F(PermissionsManagerUnittest, HasActiveTabAndCanAccess_PolicyUrl) {
+  auto extension = AddExtensionWithActiveTab("ActiveTab Extension");
+  auto enterprise_extension = AddExtensionWithActiveTab(
+      "ActiveTab Extension",
+      extensions::mojom::ManifestLocation::kExternalPolicy);
+
+  int context_id = extensions::util::GetBrowserContextId(browser_context());
+  extension->permissions_data()->SetContextId(context_id);
+  extension->permissions_data()->SetUsesDefaultHostRestrictions();
+  enterprise_extension->permissions_data()->SetContextId(context_id);
+  enterprise_extension->permissions_data()->SetUsesDefaultHostRestrictions();
+
+  // Add a policy-blocked site.
+  URLPattern default_policy_blocked_pattern =
+      URLPattern(URLPattern::SCHEME_ALL, "*://*.policy-blocked.com/*");
+  extensions::URLPatternSet default_allowed_hosts;
+  extensions::URLPatternSet default_blocked_hosts;
+  default_blocked_hosts.AddPattern(default_policy_blocked_pattern);
+  extensions::PermissionsData::SetDefaultPolicyHostRestrictions(
+      context_id, default_blocked_hosts, default_allowed_hosts);
+
+  // Allow enterprise extension access to policy-blocked site.
+  extensions::URLPatternSet allowed_hosts;
+  extensions::URLPatternSet blocked_hosts;
+  allowed_hosts.AddPattern(default_policy_blocked_pattern);
+  enterprise_extension->permissions_data()->SetPolicyHostRestrictions(
+      blocked_hosts, allowed_hosts);
+
+  // Verify only enterprise extension can have access with activeTab to
+  // policy-blocked site.
+  const GURL policy_url("http://www.policy-blocked.com");
+  EXPECT_FALSE(manager_->HasActiveTabAndCanAccess(*extension, policy_url));
+  EXPECT_TRUE(
+      manager_->HasActiveTabAndCanAccess(*enterprise_extension, policy_url));
+}
+
+// Tests that HasRequestedHostPermissions returns true only for extensions
+// that explicitly requested host permissions.
+TEST_F(PermissionsManagerUnittest, HasRequestedHostPermissions) {
+  auto no_permissions_extension = AddExtension("Extension");
+  auto requested_site_extension = AddExtensionWithHostPermission(
+      "RequestedUrl Extension", "*://*.requested.com/*");
+  auto all_urls_extension = AddExtensionWithHostPermission(
+      "RequestedUrl Extension", "*://*.requested.com/*");
+  auto active_tab_extension = AddExtensionWithActiveTab("ActiveTab Extension");
+
+  EXPECT_FALSE(
+      manager_->HasRequestedHostPermissions(*no_permissions_extension));
+  EXPECT_TRUE(manager_->HasRequestedHostPermissions(*requested_site_extension));
+  EXPECT_TRUE(manager_->HasRequestedHostPermissions(*all_urls_extension));
+  EXPECT_FALSE(manager_->HasRequestedHostPermissions(*active_tab_extension));
 }
 
 TEST_F(PermissionsManagerUnittest,

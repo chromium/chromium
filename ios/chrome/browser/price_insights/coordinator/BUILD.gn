@@ -1,0 +1,84 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "price_insights_modulator.h",
+    "price_insights_modulator.mm",
+  ]
+
+  deps = [
+    ":delegates",
+    "//components/commerce/core:commerce_constants",
+    "//components/commerce/core:shopping_service",
+    "//components/image_fetcher/core",
+    "//components/payments/core",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/contextual_panel/coordinator:public",
+    "//ios/chrome/browser/contextual_panel/utils",
+    "//ios/chrome/browser/price_insights/model",
+    "//ios/chrome/browser/price_insights/ui:price_insights_ui",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/price_notifications",
+    "//ios/chrome/browser/ui/price_notifications:price_notifications_ui",
+    "//ios/web/public",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("delegates") {
+  sources = [ "price_insights_consumer.h" ]
+
+  deps = [ "//ios/chrome/browser/price_insights/ui:price_insights_ui" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_price_insights_consumer.h",
+    "test_price_insights_consumer.mm",
+  ]
+
+  deps = [
+    ":delegates",
+    "//ios/chrome/browser/price_insights/ui:price_insights_ui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "price_insights_modulator_unittest.mm" ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core:commerce_types",
+    "//components/commerce/core:shopping_service_test_support",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/price_insights/model",
+    "//ios/chrome/browser/price_insights/model:feature",
+    "//ios/chrome/browser/price_insights/ui:price_insights_ui",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/fakes",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

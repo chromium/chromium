@@ -51,7 +51,8 @@ class EnterpriseStartupDialogView : public views::DialogDelegateView {
   bool ShouldShowWindowTitle() const override;
 
   // override views::View
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // Remove all existing child views from the dialog, show/hide dialog buttons.
   void ResetDialog(bool show_accept_button);

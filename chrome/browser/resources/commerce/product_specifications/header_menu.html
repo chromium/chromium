@@ -1,0 +1,38 @@
+<style>
+  cr-action-menu {
+    --cr-menu-border-radius: 12px;
+  }
+
+  cr-icon {
+    --icon-size: 20px;
+    --iron-icon-height: var(--icon-size);
+    --iron-icon-width: var(--icon-size);
+  }
+
+  .dropdown-item {
+    gap: 8px;
+    padding: 0 20px;
+  }
+</style>
+
+<cr-lazy-render id="menu">
+  <template>
+    <cr-action-menu>
+      <button id="rename" class="dropdown-item" role="menuitem"
+          on-click="onRenameClick_">
+        <cr-icon icon="product-specifications:edit"></cr-icon>
+        $i18n{renameGroup}
+      </button>
+      <button id="seeAll" class="dropdown-item" role="menuitem"
+          on-click="onSeeAllClick_">
+        <cr-icon icon="product-specifications:see-all"></cr-icon>
+        $i18n{seeAll}
+      </button>
+      <button id="delete" class="dropdown-item" role="menuitem"
+          on-click="onDeleteClick_">
+        <cr-icon icon="product-specifications:delete"></cr-icon>
+        $i18n{delete}
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>

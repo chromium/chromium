@@ -6,9 +6,9 @@ UNKNOWN focusable has_input_focus
 ++++++++++UNKNOWN label='A non focusable child of a control should not be '
 ++++++++++UNKNOWN label='interesting on Android'
 ++++++UNKNOWN actions='{DEFAULT}'
-++++++++STATIC_TEXT label='Div with click handler' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='Div with click handler'
 ++++++++++UNKNOWN label='Div with click handler'
 ++++++BUTTON label='I am interesting' actions='{DEFAULT}'
-++++++++PARAGRAPH actions='{DEFAULT}'
-++++++++++STATIC_TEXT label='I should not be interesting' actions='{DEFAULT}'
+++++++++PARAGRAPH
+++++++++++STATIC_TEXT label='I should not be interesting'
 ++++++++++++UNKNOWN label='I should not be interesting'

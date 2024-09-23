@@ -199,11 +199,13 @@ class CustomTabBarTitleOriginView : public views::View {
     return gfx::Size(GetMinimumWidth(), GetPreferredSize().height());
   }
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     // If we don't also override CalculatePreferredSize, we violate some
     // assumptions in the FlexLayout (that our PreferredSize is always larger
     // than our MinimumSize).
-    gfx::Size preferred_size = views::View::CalculatePreferredSize();
+    gfx::Size preferred_size =
+        views::View::CalculatePreferredSize(available_size);
     preferred_size.SetToMax(gfx::Size(GetMinimumWidth(), 0));
     return preferred_size;
   }
@@ -297,7 +299,8 @@ void CustomTabBarView::SetVisible(bool visible) {
   View::SetVisible(visible);
 }
 
-gfx::Size CustomTabBarView::CalculatePreferredSize() const {
+gfx::Size CustomTabBarView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // ToolbarView::GetMinimumSize() uses the preferred size of its children, so
   // tell it the minimum size this control will fit into (its layout will
   // automatically have this control fill available space).

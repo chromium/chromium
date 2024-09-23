@@ -10,40 +10,39 @@
 
 namespace grpc_support {
 
+namespace {
+
 // Provides stream_engine support for testing of bidirectional_stream C API for
 // GRPC using native Cronet_Engine.
+class TestStreamEngineGetterImpl : public TestStreamEngineGetter {
+ public:
+  explicit TestStreamEngineGetterImpl(int port)
+      : cronet_engine_(cronet::test::CreateTestEngine(port)) {
+    CHECK(cronet_engine_);
+  }
 
-Cronet_EnginePtr g_cronet_engine = nullptr;
-int quic_server_port = 0;
+  ~TestStreamEngineGetterImpl() override {
+    Cronet_Engine_Destroy(cronet_engine_);
+  }
 
-// Returns a stream_engine* for testing with the QuicTestServer.
-// The engine returned resolve "test.example.com" as localhost:|port|,
-// and should have "test.example.com" configured as a QUIC server.
-stream_engine* GetTestStreamEngine(int port) {
-  CHECK(g_cronet_engine);
-  CHECK_EQ(port, quic_server_port);
-  return Cronet_Engine_GetStreamEngine(g_cronet_engine);
-}
+  stream_engine* Get() override {
+    return Cronet_Engine_GetStreamEngine(cronet_engine_);
+  }
 
-// Starts the stream_engine* for testing with the QuicTestServer.
-// Has the same properties as GetTestStreamEngine.  This function is
-// used when the stream_engine* needs to be shut down and restarted
-// between test cases (including between all of the bidirectional
-// stream test cases and all other tests for the engine; this is the
-// situation for Cronet).
-void StartTestStreamEngine(int port) {
-  CHECK(!g_cronet_engine);
-  quic_server_port = port;
-  g_cronet_engine = cronet::test::CreateTestEngine(port);
-}
+ private:
+  Cronet_EnginePtr cronet_engine_;
+};
 
-// Shuts a stream_engine* started with |StartTestStreamEngine| down.
-// See comment above.
-void ShutdownTestStreamEngine() {
-  CHECK(g_cronet_engine);
-  Cronet_Engine_Destroy(g_cronet_engine);
-  g_cronet_engine = nullptr;
-  quic_server_port = 0;
+}  // namespace
+
+// WARNING: An alternative implementation of Create() exists in
+// //components/grpc_support/test/get_stream_engine.cc. They are never both
+// linked into the same binary.
+
+// static
+std::unique_ptr<TestStreamEngineGetter> TestStreamEngineGetter::Create(
+    int port) {
+  return std::make_unique<TestStreamEngineGetterImpl>(port);
 }
 
 }  // namespace grpc_support

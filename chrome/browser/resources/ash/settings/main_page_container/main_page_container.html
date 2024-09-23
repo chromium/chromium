@@ -1,10 +1,15 @@
 <style include="cr-hidden-style settings-shared">
+  :host {
+    box-sizing: border-box;
+    display: block;
+    position: relative;
+  }
+
   :host-context(body.revamp-wayfinding-enabled):host {
     --page-backdrop-bg-color: var(--cros-sys-surface1);
 
     background-color: var(--page-backdrop-bg-color);
     border-radius: 20px;
-    box-sizing: border-box;
     padding-bottom: 16px;
     padding-inline-end: 16px;
     padding-inline-start: 16px;
@@ -253,7 +258,9 @@
         if="[[shouldStampPage_(pageAvailability, Section.kAccessibility)]]"
         restamp>
       <page-displayer section="[[Section.kAccessibility]]">
-        <os-settings-a11y-page prefs="{{prefs}}">
+        <os-settings-a11y-page prefs="{{prefs}}"
+            languages="[[languages_]]"
+            language-helper="[[languageHelper_]]">
         </os-settings-a11y-page>
       </page-displayer>
     </template>

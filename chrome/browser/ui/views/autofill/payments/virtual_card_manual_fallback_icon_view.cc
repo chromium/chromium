@@ -11,11 +11,11 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_bubble_views.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace autofill {
 
@@ -28,10 +28,8 @@ VirtualCardManualFallbackIconView::VirtualCardManualFallbackIconView(
                          icon_label_bubble_delegate,
                          delegate,
                          "VirtualCardManualFallback") {
-  SetAccessibilityProperties(
-      /*role*/ std::nullopt,
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_ICON_TOOLTIP));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_ICON_TOOLTIP));
 }
 
 VirtualCardManualFallbackIconView::~VirtualCardManualFallbackIconView() =
@@ -64,9 +62,7 @@ void VirtualCardManualFallbackIconView::OnExecuting(
 
 const gfx::VectorIcon& VirtualCardManualFallbackIconView::GetVectorIcon()
     const {
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? kCreditCardChromeRefreshIcon
-             : kCreditCardIcon;
+  return kCreditCardChromeRefreshIcon;
 }
 
 VirtualCardManualFallbackBubbleController*

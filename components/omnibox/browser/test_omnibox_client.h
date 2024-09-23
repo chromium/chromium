@@ -14,7 +14,9 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_log.h"
+#include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/sessions/core/session_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/window_open_disposition.h"
@@ -44,12 +46,23 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
   bool IsUsingFakeHttpsForHttpsUpgradeTesting() const override;
   gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,
                           SkColor vector_icon_color) const override;
+  std::u16string GetFormattedFullURL() const override;
+  std::u16string GetURLForDisplay() const override;
+  GURL GetNavigationEntryURL() const override;
+  metrics::OmniboxEventProto::PageClassification GetPageClassification(
+      bool is_prefetch) const override;
+  security_state::SecurityLevel GetSecurityLevel() const override;
+  net::CertStatus GetCertStatus() const override;
+  const gfx::VectorIcon& GetVectorIcon() const override;
   void OnURLOpenedFromOmnibox(OmniboxLog* log) override;
 
   MOCK_METHOD(gfx::Image,
               GetFaviconForPageUrl,
               (const GURL& page_url,
                FaviconFetchedCallback on_favicon_fetched));
+  MOCK_METHOD(void,
+              ShowFeedbackPage,
+              (const std::u16string& input_text, const GURL& destination_url));
   MOCK_METHOD(void,
               OnAutocompleteAccept,
               (const GURL& destination_url,
@@ -64,9 +77,9 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
                const AutocompleteMatch& match,
                const AutocompleteMatch& alternative_nav_match,
                IDNA2008DeviationCharacter deviation_char_in_hostname));
-  MOCK_METHOD(LocationBarModel*, GetLocationBarModel, ());
   MOCK_METHOD(bookmarks::BookmarkModel*, GetBookmarkModel, ());
-  MOCK_METHOD(PrefService*, GetPrefs, ());
+  MOCK_METHOD(PrefService*, GetPrefs, (), (override));
+  MOCK_METHOD(const PrefService*, GetPrefs, (), (const, override));
 
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
@@ -74,9 +87,12 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
     return last_log_disposition_;
   }
 
+  TestLocationBarModel* location_bar_model() { return &location_bar_model_; }
+
  private:
   SessionID session_id_;
-  raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
+  TestLocationBarModel location_bar_model_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   TestSchemeClassifier scheme_classifier_;
   AutocompleteClassifier autocomplete_classifier_;
   WindowOpenDisposition last_log_disposition_;

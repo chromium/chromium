@@ -9,9 +9,9 @@
 #import "components/sessions/core/tab_restore_service_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/sessions/model/live_tab_context_browser_agent.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web/model/load_timing_tab_helper.h"
@@ -26,12 +26,12 @@ bool IsURLAllowedInIncognito(const GURL& url) {
 }
 
 void LoadJavaScriptURL(const GURL& url,
-                       ChromeBrowserState* browser_state,
+                       ProfileIOS* profile,
                        web::WebState* web_state) {
   DCHECK(url.SchemeIs(url::kJavaScriptScheme));
   DCHECK(web_state);
   PrerenderService* prerenderService =
-      PrerenderServiceFactory::GetForBrowserState(browser_state);
+      PrerenderServiceFactory::GetForProfile(profile);
   if (prerenderService) {
     prerenderService->CancelPrerender();
   }
@@ -46,7 +46,7 @@ void RestoreTab(const SessionID session_id,
                 WindowOpenDisposition disposition,
                 Browser* browser) {
   // iOS Chrome doesn't yet support restoring tabs to new windows.
-  // TODO(crbug.com/1056596) : Support WINDOW restoration under multi-window.
+  // TODO(crbug.com/40676931) : Support WINDOW restoration under multi-window.
   DCHECK(disposition != WindowOpenDisposition::NEW_WINDOW);
   LiveTabContextBrowserAgent* context =
       LiveTabContextBrowserAgent::FromBrowser(browser);
@@ -54,9 +54,8 @@ void RestoreTab(const SessionID session_id,
   // service requesting a new window. This is unsupported on iOS (see above
   // TODO).
   DCHECK(context);
-  ChromeBrowserState* browser_state =
-      browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
   sessions::TabRestoreService* restoreService =
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state);
+      IOSChromeTabRestoreServiceFactory::GetForProfile(profile);
   restoreService->RestoreEntryById(context, session_id, disposition);
 }

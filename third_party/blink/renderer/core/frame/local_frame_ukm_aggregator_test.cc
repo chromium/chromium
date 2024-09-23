@@ -696,10 +696,10 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
     observer_init->setRoot(
         MakeGarbageCollected<V8UnionDocumentOrElement>(&document));
     TestIntersectionObserverDelegate* internal_delegate =
-        MakeGarbageCollected<TestIntersectionObserverDelegate>(
-            document, LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
-    IntersectionObserver* internal_observer =
-        IntersectionObserver::Create(observer_init, *internal_delegate);
+        MakeGarbageCollected<TestIntersectionObserverDelegate>(document);
+    IntersectionObserver* internal_observer = IntersectionObserver::Create(
+        observer_init, *internal_delegate,
+        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
     DCHECK(!Compositor().NeedsBeginFrame());
     internal_observer->observe(target1);
     internal_observer->observe(target2);
@@ -714,10 +714,10 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
         0);
 
     TestIntersectionObserverDelegate* javascript_delegate =
-        MakeGarbageCollected<TestIntersectionObserverDelegate>(
-            document, LocalFrameUkmAggregator::kJavascriptIntersectionObserver);
-    IntersectionObserver* javascript_observer =
-        IntersectionObserver::Create(observer_init, *javascript_delegate);
+        MakeGarbageCollected<TestIntersectionObserverDelegate>(document);
+    IntersectionObserver* javascript_observer = IntersectionObserver::Create(
+        observer_init, *javascript_delegate,
+        LocalFrameUkmAggregator::kJavascriptIntersectionObserver);
     javascript_observer->observe(target1);
     javascript_observer->observe(target2);
     Compositor().BeginFrame();
@@ -839,98 +839,6 @@ TEST_F(LocalFrameUkmAggregatorSimTest, LocalFrameRootPrePostFCPMetrics) {
   // Simulate the first contentful paint.
   PaintTiming::From(*local_frame_root.GetDocument()).MarkFirstContentfulPaint();
   EXPECT_FALSE(IsBeforeFCPForTesting());
-}
-
-TEST_F(LocalFrameUkmAggregatorSimTest, DidReachFirstContentfulPaintMetric) {
-  base::HistogramTester histogram_tester;
-
-  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
-  SimRequest main_resource("https://example.com/", "text/html");
-  LoadURL("https://example.com/");
-  main_resource.Complete(R"HTML(
-    <!doctype html>
-    <div id=target></div>
-  )HTML");
-
-  // Do a pre-FCP frame.
-  Compositor().BeginFrame();
-
-  // Cause FCP on the next frame.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
-  target->setInnerHTML("hello world");
-
-  // Do a frame that will cause FCP, but the frame itself will still be pre-FCP.
-  Compositor().BeginFrame();
-
-  GetDocument().Shutdown();
-
-  histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PreFCP", 2);
-  histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PostFCP", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.MainFrame.UpdateTime.AggregatedPreFCP", 1);
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Blink.LocalFrameRoot.DidReachFirstContentfulPaint"),
-              BucketsAre(base::Bucket(false, 0), base::Bucket(true, 1)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "Blink.LocalFrameRoot.DidReachFirstContentfulPaint.MainFrame"),
-      BucketsAre(base::Bucket(false, 0), base::Bucket(true, 1)));
-}
-
-TEST_F(LocalFrameUkmAggregatorSimTest,
-       RemoteDidReachFirstContentfulPaintMetric) {
-  base::HistogramTester histogram_tester;
-
-  InitializeRemote();
-  LocalFrame& local_frame_root = *LocalFrameRoot().GetFrame();
-  ASSERT_FALSE(local_frame_root.IsMainFrame());
-  ASSERT_TRUE(local_frame_root.IsLocalRoot());
-
-  // Simulate the first contentful paint.
-  PaintTiming::From(*local_frame_root.GetDocument()).MarkFirstContentfulPaint();
-
-  local_frame_root.GetDocument()->Shutdown();
-
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Blink.LocalFrameRoot.DidReachFirstContentfulPaint"),
-              BucketsAre(base::Bucket(false, 0), base::Bucket(true, 1)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "Blink.LocalFrameRoot.DidReachFirstContentfulPaint.MainFrame"),
-      BucketsAre(base::Bucket(false, 0), base::Bucket(true, 0)));
-}
-
-TEST_F(LocalFrameUkmAggregatorSimTest, DidNotReachFirstContentfulPaintMetric) {
-  base::HistogramTester histogram_tester;
-
-  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
-  SimRequest main_resource("https://example.com/", "text/html");
-  LoadURL("https://example.com/");
-  main_resource.Complete(R"HTML(
-    <!doctype html>
-    <div id=target></div>
-  )HTML");
-
-  // Do a pre-FCP frame.
-  Compositor().BeginFrame();
-
-  // Make a change that does not result in FCP on the next frame.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
-  target->setAttribute(html_names::kStyleAttr,
-                       AtomicString("background: blue;"));
-
-  // Do another pre-FCP frame.
-  Compositor().BeginFrame();
-
-  GetDocument().Shutdown();
-
-  histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PreFCP", 2);
-  histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PostFCP", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.MainFrame.UpdateTime.AggregatedPreFCP", 0);
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Blink.LocalFrameRoot.DidReachFirstContentfulPaint"),
-              BucketsAre(base::Bucket(false, 1), base::Bucket(true, 0)));
 }
 
 TEST_F(LocalFrameUkmAggregatorSimTest, PrePostFCPMetricsWithChildFrameFCP) {
@@ -1156,7 +1064,7 @@ class LocalFrameUkmAggregatorSyncScrollTest
       case SyncScrollPositionAccess::kSyncScrollDoesNotAccessScrollOffset:
         return "100";
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   std::string GenerateMutation() {
@@ -1178,7 +1086,7 @@ class LocalFrameUkmAggregatorSyncScrollTest
       case SyncScrollMutation::kSyncScrollMutatesNothing:
         return "";
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   std::string GenerateScrollHandler() {
@@ -1209,7 +1117,7 @@ class LocalFrameUkmAggregatorSyncScrollTest
       case SyncScrollHandlerStrategy::kSyncScrollNoEventHandler:
         return "";
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>

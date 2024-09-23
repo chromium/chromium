@@ -12,11 +12,14 @@
 
 #include "ash/ash_export.h"
 #include "ash/user_education/user_education_help_bubble_controller.h"
-#include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/user_education_private_api_key.h"
 #include "ash/user_education/user_education_tutorial_controller.h"
 
 class PrefRegistrySimple;
+
+namespace apps {
+enum class LaunchSource;
+}  // namespace apps
 
 namespace ui {
 class ElementIdentifier;
@@ -57,13 +60,14 @@ class ASH_EXPORT UserEducationController {
   // user. As such, this value is absent until the first app list sync of the
   // session is completed.
   // NOTE: Currently only the primary user profile is supported.
-  const std::optional<bool>& IsNewUser(UserEducationPrivateApiKey) const;
+  std::optional<bool> IsNewUser(UserEducationPrivateApiKey) const;
 
   // Attempts to launch the system web app associated with the given type on
   // the display associated with the given ID asynchronously.
   // NOTE: Currently only the primary user profile is supported.
   void LaunchSystemWebAppAsync(UserEducationPrivateApiKey,
                                SystemWebAppType system_web_app_type,
+                               apps::LaunchSource launch_source,
                                int64_t display_id);
 
  private:
@@ -73,9 +77,6 @@ class ASH_EXPORT UserEducationController {
 
   // The controller responsible for creation/management of help bubbles.
   UserEducationHelpBubbleController help_bubble_controller_{delegate_.get()};
-
-  // The controller responsible for creation/management of pings.
-  UserEducationPingController ping_controller_;
 
   // The controller responsible for creation/management of tutorials.
   UserEducationTutorialController tutorial_controller_{delegate_.get()};

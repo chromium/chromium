@@ -8,17 +8,24 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/system/unified/feature_tile.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+namespace views {
+class BoxLayoutView;
+}  // namespace views
+
 namespace ash {
 
 class AnchoredNudge;
-class FeatureTile;
+class GameDashboardBatteryView;
 class GameDashboardContext;
+class IconButton;
 class PillButton;
 class Switch;
+class TimeView;
 
 // GameDashboardMainMenuView is the expanded menu view attached to the game
 // dashboard button.
@@ -54,6 +61,7 @@ class ASH_EXPORT GameDashboardMainMenuView
  private:
   friend class GameDashboardContextTestApi;
 
+  class ScreenSizeRow;
   class GameControlsDetailsRow;
 
   // Callbacks for the tiles and buttons in the main menu view.
@@ -63,6 +71,13 @@ class ASH_EXPORT GameDashboardMainMenuView
   void OnRecordGameTilePressed();
   // Handles taking a screenshot of the game window when pressed.
   void OnScreenshotTilePressed();
+
+  // Callbacks for the buttons in the settings view.
+  // Handles going back to the main menu view when pressed.
+  void OnSettingsBackButtonPressed();
+  // Handles toggling the welcome dialog preference and updating the Switch
+  // state.
+  void OnWelcomeDialogSwitchPressed();
 
   // Handles functions for Game Controls buttons.
   void OnGameControlsTilePressed();
@@ -76,28 +91,42 @@ class ASH_EXPORT GameDashboardMainMenuView
   // Opens up the Game Dashboard Settings.
   void OnSettingsButtonPressed();
 
-  // Adds a row of shortcut tiles to the main menu view for users to quickly
-  // access common functionality.
+  // Creates the `main_menu_container_` and adds all rows of views pertaining to
+  // the main menu view to it.
+  void AddMainMenuViews();
+
+  // Adds a row of shortcut tiles to the `main_menu_container_` for users to
+  // quickly access common functionality.
   void AddShortcutTilesRow();
 
   // Adds feature details rows, for example, including Game Controls or window
-  // size.
+  // size to the `main_menu_container_`.
   void MaybeAddArcFeatureRows();
 
-  // Adds Game Controls feature tile in `container` if it is the ARC game window
-  // and Game Controls is available.
-  void MaybeAddGameControlsTile(views::View* container);
+  // Adds Game Controls feature tile of type `tile_type` to a specified
+  // `container`.
+  void AddGameControlsTile(views::View* container,
+                           FeatureTile::TileType tile_type);
 
   // Adds menu controls row for Game Controls.
-  void AddGameControlsDetailsRow(views::View* container);
+  void AddGameControlsDetailsRow(views::View* container,
+                                 const gfx::RoundedCornersF& row_corners);
+
+  // Adds Record Game feature tile of type `tile_type` to a specified
+  // `container`.
+  void AddRecordGameTile(views::View* container,
+                         FeatureTile::TileType tile_type);
 
   // Adds a row to access a settings page controlling the screen size if the
   // given game window is an ARC app.
   void AddScreenSizeSettingsRow(views::View* container);
 
   // Adds the dashboard cluster (containing feedback, settings, and help
-  // buttons) to the Game Controls tile view.
+  // buttons) to the `main_menu_container_`.
   void AddUtilityClusterRow();
+
+  // Adds utility features to the utility `container` in the Main Menu.
+  void AddUtilityFeatureViews(views::View* container);
 
   // views::View:
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
@@ -107,27 +136,41 @@ class ASH_EXPORT GameDashboardMainMenuView
   // the default UI.
   void UpdateRecordGameTile(bool is_recording_game_window);
 
-  // Adds pulse animation and an education nudge for
-  // `game_controls_setup_button_` if it exists and `is_o4c` is false. `is_o4c`
-  // is true if the ARC game is optimized for ChromeOS.
-  void MaybeDecorateSetupButton(bool is_o4c);
-  // Performs pulse animation for `game_controls_setup_button_`.
-  void PerformPulseAnimationForSetupButton(int pulse_count);
-  // Shows education nudge for `game_controls_setup_button_`.
-  void ShowNudgeForSetupButton();
+  // Creates the `settings_view_container_` and adds all rows pertaining to the
+  // settings view to it.
+  void AddSettingsViews();
+
+  // Adds a row displaying the title and back button.
+  void AddSettingsTitleRow();
+
+  // Adds a row displaying the welcome dialog setting.
+  void AddWelcomeDialogSettingsRow();
+
+  // Updates the accessible name for the `welcome_dialog_settings_switch_`.
+  void OnWelcomeDialogSwitchStateChanged(bool is_enabled);
 
   // Gets UI elements from Game Controls details row.
   PillButton* GetGameControlsSetupButton();
-  Switch* GetGameControlsFeatureSwith();
+  Switch* GetGameControlsFeatureSwitch();
 
   // For test to access the nudge ID in the anonymous namespace.
   AnchoredNudge* GetGameControlsSetupNudgeForTesting();
+
+  // Returns the screen size row sub-label. If the screen size row or the
+  // sub-label aren't available, returns null. Visible for testing.
+  const views::Label* GetScreenSizeRowSubtitle();
 
   // views::Views:
   void OnThemeChanged() override;
 
   // Allows this class to access `GameDashboardContext` owned functions/objects.
   const raw_ptr<GameDashboardContext> context_;
+
+  // Container holding all views displayed in the main menu view.
+  raw_ptr<views::BoxLayoutView> main_menu_container_ = nullptr;
+
+  // Container holding all views displayed in the settings view.
+  raw_ptr<views::BoxLayoutView> settings_view_container_ = nullptr;
 
   // Shortcut Tiles:
   // Toolbar button to toggle the `GameDashboardToolbarView`.
@@ -140,11 +183,23 @@ class ASH_EXPORT GameDashboardMainMenuView
   // screen capture tool, allowing the user to select recording options.
   raw_ptr<FeatureTile> record_game_tile_ = nullptr;
 
+  // Screen Size Settings detail row. Visible for testing.
+  raw_ptr<ScreenSizeRow> screen_size_row_ = nullptr;
+
   // Game Controls details row to configure Game Controls.
   raw_ptr<GameControlsDetailsRow> game_controls_details_ = nullptr;
 
-  // Layer for setup button pulse animation.
-  std::unique_ptr<ui::Layer> gc_setup_button_pulse_layer_;
+  // The `Switch` representing toggling the welcome dialog within the settings.
+  raw_ptr<Switch> welcome_dialog_settings_switch_ = nullptr;
+
+  // Back button in the `settings_view_container_`. Visible for testing.
+  raw_ptr<IconButton> settings_view_back_button_ = nullptr;
+
+  // The clock displayed in the utility cluster row. Visible for testing.
+  raw_ptr<TimeView> clock_view_ = nullptr;
+
+  // The battery displayed in the utility cluster row. Visible for testing.
+  raw_ptr<GameDashboardBatteryView> battery_view_ = nullptr;
 };
 
 }  // namespace ash

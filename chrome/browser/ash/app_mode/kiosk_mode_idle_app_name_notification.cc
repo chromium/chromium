@@ -61,7 +61,7 @@ KioskModeIdleAppNameNotification::KioskModeIdleAppNameNotification()
 KioskModeIdleAppNameNotification::~KioskModeIdleAppNameNotification() {
   ui::UserActivityDetector* user_activity_detector =
       ui::UserActivityDetector::Get();
-  if (user_activity_detector && user_activity_detector->HasObserver(this)) {
+  if (user_activity_detector->HasObserver(this)) {
     user_activity_detector->RemoveObserver(this);
   }
 
@@ -108,8 +108,10 @@ void KioskModeIdleAppNameNotification::SuspendDone(
 }
 
 void KioskModeIdleAppNameNotification::Start() {
-  if (!ui::UserActivityDetector::Get()->HasObserver(this)) {
-    ui::UserActivityDetector::Get()->AddObserver(this);
+  ui::UserActivityDetector* user_activity_detector =
+      ui::UserActivityDetector::Get();
+  if (!user_activity_detector->HasObserver(this)) {
+    user_activity_detector->AddObserver(this);
     chromeos::PowerManagerClient::Get()->AddObserver(this);
   }
   ResetTimer();

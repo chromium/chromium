@@ -14,8 +14,9 @@ ArcIconCacheDelegateProvider* g_delegate_provider = nullptr;
 
 // static
 ArcIconCacheDelegate* ArcIconCacheDelegate::GetInstance() {
-  if (!g_delegate_provider)
+  if (!g_delegate_provider) {
     return nullptr;
+  }
   return g_delegate_provider->GetInstance();
 }
 

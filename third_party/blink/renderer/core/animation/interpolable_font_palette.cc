@@ -9,23 +9,23 @@
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 InterpolableFontPalette::InterpolableFontPalette(
-    scoped_refptr<FontPalette> font_palette)
+    scoped_refptr<const FontPalette> font_palette)
     : font_palette_(font_palette) {
   DCHECK(font_palette);
 }
 
 // static
 InterpolableFontPalette* InterpolableFontPalette::Create(
-    scoped_refptr<FontPalette> font_palette) {
+    scoped_refptr<const FontPalette> font_palette) {
   return MakeGarbageCollected<InterpolableFontPalette>(font_palette);
 }
 
-scoped_refptr<FontPalette> InterpolableFontPalette::GetFontPalette() const {
+scoped_refptr<const FontPalette> InterpolableFontPalette::GetFontPalette()
+    const {
   return font_palette_;
 }
 

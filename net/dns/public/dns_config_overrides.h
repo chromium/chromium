@@ -5,10 +5,10 @@
 #ifndef NET_DNS_PUBLIC_DNS_CONFIG_OVERRIDES_H_
 #define NET_DNS_PUBLIC_DNS_CONFIG_OVERRIDES_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"

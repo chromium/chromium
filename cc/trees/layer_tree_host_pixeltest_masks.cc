@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include "build/build_config.h"
@@ -38,7 +43,7 @@ std::vector<RasterTestConfig> const kTestCases = {
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     {viz::RendererType::kSkiaVk, TestRasterType::kGpu},
 #if !BUILDFLAG(IS_FUCHSIA)
-    // TODO(crbug.com/1485883): Fix NativePixmap creation when running GPU
+    // TODO(crbug.com/40282729): Fix NativePixmap creation when running GPU
     // service in process and re-enable these tests.
     {viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy},
 #endif
@@ -195,6 +200,7 @@ class SolidColorEmptyMaskContentLayerClient : public ContentLayerClient {
     // Intentionally return a solid color, empty mask display list. This
     // is a situation where all content should be masked out.
     auto display_list = base::MakeRefCounted<DisplayItemList>();
+    display_list->Finalize();
     return display_list;
   }
 
@@ -873,7 +879,7 @@ MaskTestConfig const kTestConfigs[] = {
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 #if !BUILDFLAG(IS_FUCHSIA)
-    // TODO(crbug.com/1485883): Fix NativePixmap creation when running GPU
+    // TODO(crbug.com/40282729): Fix NativePixmap creation when running GPU
     // service in process and re-enable these tests.
     MaskTestConfig{{viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy}, 0},
     MaskTestConfig{{viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy},

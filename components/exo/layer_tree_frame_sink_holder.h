@@ -39,18 +39,6 @@ class SurfaceTreeHost;
 // requests. crbug.com/1408614
 BASE_DECLARE_FEATURE(kExoReactiveFrameSubmission);
 
-// When this feature is enabled, unsolicited compositor frame submission via
-// LayerTreeFrameSinkHolder::SubmitCompositorFrame() will also be treated as the
-// client wishes to receive subsequent BeginFrame events, as if
-// CompositorFrameSink::SetNeedsBeginFrame(true) is called. Also, if the client
-// does not produce frames for a few consecutive BeginFrame requests,
-// CompositorFrameSink::SetNeedsBeginFrame(false) will be called to stop
-// subsequent BeginFrame requests.
-//
-// Note: Enabling kExoAutoNeedsBeginFrame only takes effect if
-// kExoReactiveFrameSubmission is also enabled.
-BASE_DECLARE_FEATURE(kExoAutoNeedsBeginFrame);
-
 // This class talks to CompositorFrameSink and keeps track of references to
 // the contents of Buffers.
 class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,

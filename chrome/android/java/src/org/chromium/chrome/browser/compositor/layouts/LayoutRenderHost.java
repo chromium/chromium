@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
-import android.graphics.Rect;
-
 import org.chromium.ui.resources.ResourceManager;
 
 /**
@@ -32,14 +30,6 @@ public interface LayoutRenderHost {
 
     /** Indicates that the rendering surface has been resized. */
     void onSurfaceResized(int width, int height);
-
-    /**
-     * Pushes a debug rectangle that will be drawn.
-     *
-     * @param rect  The rect to be drawn.
-     * @param color The color of the rect.
-     */
-    void pushDebugRect(Rect rect, int color);
 
     /**
      * @return The {@link ResourceManager}.

@@ -201,7 +201,7 @@ class TpmManagerClientImpl : public TpmManagerClient {
   }
 
   // D-Bus proxy for the TpmManager daemon, not owned.
-  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, LeakedDanglingUntriaged> proxy_ = nullptr;
 
   // The observer list of ownership taken signal.
   base::ObserverList<Observer> observer_list_;

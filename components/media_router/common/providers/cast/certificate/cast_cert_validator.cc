@@ -9,18 +9,20 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
-#include "base/synchronization/lock.h"
+#include "base/path_service.h"
 #include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "components/media_router/common/providers/cast/certificate/cast_cert_printer.h"
+#include "components/media_router/common/providers/cast/certificate/cast_cert_reader.h"
 #include "components/media_router/common/providers/cast/certificate/cast_crl.h"
+#include "components/media_router/common/providers/cast/certificate/cast_trust_store.h"
+#include "components/media_router/common/providers/cast/certificate/switches.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -30,19 +32,10 @@
 #include "third_party/boringssl/src/pki/certificate_policies.h"
 #include "third_party/boringssl/src/pki/common_cert_errors.h"
 #include "third_party/boringssl/src/pki/input.h"
-#include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "third_party/boringssl/src/pki/parse_name.h"
-#include "third_party/boringssl/src/pki/parsed_certificate.h"
 #include "third_party/boringssl/src/pki/path_builder.h"
 #include "third_party/boringssl/src/pki/simple_path_builder_delegate.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
-
-// Used specifically when CAST_ALLOW_DEVELOPER_CERTIFICATE is true:
-#include "base/command_line.h"
-#include "base/memory/weak_ptr.h"
-#include "base/path_service.h"
-#include "components/media_router/common/providers/cast/certificate/cast_cert_reader.h"
-#include "components/media_router/common/providers/cast/certificate/switches.h"
 
 namespace cast_certificate {
 namespace {
@@ -50,98 +43,6 @@ namespace {
 #define RETURN_STRING_LITERAL(x) \
   case x:                        \
     return #x;
-
-// -------------------------------------------------------------------------
-// Cast trust anchors.
-// -------------------------------------------------------------------------
-
-// There are two trusted roots for Cast certificate chains:
-//
-//   (1) CN=Cast Root CA    (kCastRootCaDer)
-//   (2) CN=Eureka Root CA  (kEurekaRootCaDer)
-//
-// These constants are defined by the files included next:
-
-#include "components/media_router/common/providers/cast/certificate/cast_root_ca_cert_der-inc.h"
-#include "components/media_router/common/providers/cast/certificate/eureka_root_ca_der-inc.h"
-
-class CastTrustStore {
- public:
-  using AccessCallback = base::OnceCallback<void(bssl::TrustStore*)>;
-
-  CastTrustStore(const CastTrustStore&) = delete;
-  CastTrustStore& operator=(const CastTrustStore&) = delete;
-
-  static void AccessInstance(AccessCallback callback) {
-    CastTrustStore* instance = GetInstance();
-    const base::AutoLock guard(instance->lock_);
-    std::move(callback).Run(&instance->store_);
-  }
-
- private:
-  friend class base::NoDestructor<CastTrustStore>;
-
-  static CastTrustStore* GetInstance() {
-    static base::NoDestructor<CastTrustStore> instance;
-    return instance.get();
-  }
-
-  CastTrustStore() {
-    AddAnchor(kCastRootCaDer);
-    AddAnchor(kEurekaRootCaDer);
-
-    // Adding developer certificates must be done off of the IO thread due
-    // to blocking file access.
-#if defined(CAST_ALLOW_DEVELOPER_CERTIFICATE)
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock()},
-        // NOTE: the singleton instance is never destroyed, so we can use
-        // Unretained here instead of a weak pointer.
-        base::BindOnce(&CastTrustStore::AddDeveloperCertificates,
-                       base::Unretained(this)));
-  }
-
-  // Check for custom root developer certificate and create a trust store
-  // from it if present and enabled.
-  void AddDeveloperCertificates() {
-    base::AutoLock guard(lock_);
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    std::string cert_path_arg = command_line->GetSwitchValueASCII(
-        switches::kCastDeveloperCertificatePath);
-    if (!cert_path_arg.empty()) {
-      base::FilePath cert_path(cert_path_arg);
-      if (!cert_path.IsAbsolute()) {
-        base::FilePath path;
-        base::PathService::Get(base::DIR_CURRENT, &path);
-        cert_path = path.Append(cert_path);
-      }
-      VLOG(1) << "Using cast developer certificate path " << cert_path;
-      if (!PopulateStoreWithCertsFromPath(&store_, cert_path)) {
-        LOG(WARNING) << "No developer certs added to store, only official"
-                        "Google root CA certificates will work.";
-      }
-    }
-#endif
-  }
-
-  // Adds a trust anchor given a DER-encoded certificate from static
-  // storage.
-  template <size_t N>
-  void AddAnchor(const uint8_t (&data)[N]) {
-    bssl::CertErrors errors;
-    std::shared_ptr<const bssl::ParsedCertificate> cert =
-        bssl::ParsedCertificate::Create(
-            net::x509_util::CreateCryptoBufferFromStaticDataUnsafe(data), {},
-            &errors);
-    CHECK(cert) << errors.ToDebugString();
-    // Enforce pathlen constraints and policies defined on the root certificate.
-    base::AutoLock guard(lock_);
-    store_.AddTrustAnchorWithConstraints(std::move(cert));
-  }
-
-  base::Lock lock_;
-  bssl::TrustStoreInMemory store_ GUARDED_BY(lock_);
-};
 
 // Returns the OID for the Audio-Only Cast policy
 // (1.3.6.1.4.1.11129.2.5.2) in DER form.
@@ -172,12 +73,12 @@ class CertVerificationContextImpl : public CertVerificationContext {
  public:
   // Save a copy of the passed in public key and common name (text).
   CertVerificationContextImpl(bssl::UniquePtr<EVP_PKEY> key,
-                              base::StringPiece common_name)
+                              std::string_view common_name)
       : key_(std::move(key)), common_name_(common_name) {}
 
   bool VerifySignatureOverData(
-      const base::StringPiece& signature,
-      const base::StringPiece& data,
+      std::string_view signature,
+      std::string_view data,
       CastDigestAlgorithm digest_algorithm) const override {
     const EVP_MD* digest = nullptr;
     switch (digest_algorithm) {
@@ -360,7 +261,8 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
     const CastCRL* fallback_crl,
     CRLPolicy crl_policy,
     bssl::TrustStore* trust_store) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+  if (base::CommandLine::InitializedForCurrentProcess() &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kCastLogDeviceCertChain)) {
     VLOG(3) << "Cast Cert Chain for validation:\n"
             << CastCertificateChainAsPEM(certs);

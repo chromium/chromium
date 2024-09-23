@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/constrained_window/constrained_window_views.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/constrained_window/constrained_window_views_client.h"
 #include "components/web_modal/test_web_contents_modal_dialog_host.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
@@ -100,7 +101,8 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
 
     // Create a dialog host sufficiently large enough to accommodate dialog
     // size changes during testing.
-    dialog_host_widget_ = CreateTestWidget();
+    dialog_host_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     dialog_host_widget_->SetBounds(GetPrimaryDisplayWorkArea());
     dialog_host_ = std::make_unique<web_modal::TestWebContentsModalDialogHost>(
         dialog_host_widget_->GetNativeView());
@@ -108,7 +110,7 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
 
     // Make sure the dialog size is dominated by the preferred size of the
     // contents.
-    gfx::Size preferred_size = dialog()->GetRootView()->GetPreferredSize();
+    gfx::Size preferred_size = dialog()->GetRootView()->GetPreferredSize({});
     preferred_size.Enlarge(300, 300);
     contents_->SetPreferredSize(preferred_size);
   }
@@ -153,7 +155,7 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
 TEST_F(ConstrainedWindowViewsTest, GrowModalDialogSize) {
   UpdateWidgetModalDialogPosition(dialog(), dialog_host());
   gfx::Size expected_size = GetDialogSize();
-  gfx::Size preferred_size = contents()->GetPreferredSize();
+  gfx::Size preferred_size = contents()->GetPreferredSize({});
   expected_size.Enlarge(50, 50);
   preferred_size.Enlarge(50, 50);
   contents()->SetPreferredSize(preferred_size);
@@ -166,7 +168,7 @@ TEST_F(ConstrainedWindowViewsTest, GrowModalDialogSize) {
 TEST_F(ConstrainedWindowViewsTest, ShrinkModalDialogSize) {
   UpdateWidgetModalDialogPosition(dialog(), dialog_host());
   gfx::Size expected_size = GetDialogSize();
-  gfx::Size preferred_size = contents()->GetPreferredSize();
+  gfx::Size preferred_size = contents()->GetPreferredSize({});
   expected_size.Enlarge(-50, -50);
   preferred_size.Enlarge(-50, -50);
   contents()->SetPreferredSize(preferred_size);
@@ -225,7 +227,7 @@ TEST_F(ConstrainedWindowViewsTest, MAYBE_NullModalParent) {
   SetConstrainedWindowViewsClient(
       std::make_unique<TestConstrainedWindowViewsClient>());
   auto delegate = std::make_unique<views::DialogDelegate>();
-  delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
+  delegate->SetModalType(ui::mojom::ModalType::kWindow);
   views::Widget* widget =
       CreateBrowserModalDialogViews(delegate.get(), nullptr);
   widget->Show();

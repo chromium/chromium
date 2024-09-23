@@ -46,6 +46,10 @@
 #include "ui/ozone/platform/wayland/host/org_gnome_mutter_idle_monitor.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#endif
+
 namespace ui {
 namespace {
 
@@ -68,7 +72,7 @@ display::Display::Rotation WaylandTransformToRotation(int32_t transform) {
       NOTIMPLEMENTED_LOG_ONCE();
       return display::Display::ROTATE_0;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return display::Display::ROTATE_0;
 }
 
@@ -95,10 +99,10 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
     if (format == gfx::BufferFormat::RGBA_8888)
       image_format_alpha_ = gfx::BufferFormat::RGBA_8888;
 
-      // TODO(1128997): |image_format_no_alpha_| should use RGBX_8888 when it's
-      // available, but for some reason Chromium gets broken when it's used.
-      // Though,  we can import RGBX_8888 dma buffer to EGLImage successfully.
-      // Enable that back when the issue is resolved.
+      // TODO(crbug.com/40719968): |image_format_no_alpha_| should use RGBX_8888
+      // when it's available, but for some reason Chromium gets broken when it's
+      // used. Though,  we can import RGBX_8888 dma buffer to EGLImage
+      // successfully. Enable that back when the issue is resolved.
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
     if (format == gfx::BufferFormat::RGBA_F16)
@@ -127,6 +131,13 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   tablet_state_ = connection_->GetTabletState();
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    OnDeviceScaleFactorChanged();
+    display_scale_factor_observer_.Observe(linux_ui);
+  }
 #endif
 }
 
@@ -361,7 +372,7 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
 
   if (display_id_map_.find(entered_output_id.value()) ==
       display_id_map_.end()) {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED();
     return GetPrimaryDisplay();
   }
 
@@ -373,7 +384,7 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
       return display;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return GetPrimaryDisplay();
 }
 
@@ -550,6 +561,14 @@ base::Value::List WaylandScreen::GetGpuExtraInfo(
   return values;
 }
 
+std::optional<float> WaylandScreen::GetPreferredScaleFactorForAcceleratedWidget(
+    gfx::AcceleratedWidget widget) const {
+  if (auto* window = connection_->window_manager()->GetWindow(widget)) {
+    return window->GetPreferredScaleFactor();
+  }
+  return std::nullopt;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {
   tablet_state_ = tablet_state;
@@ -586,6 +605,20 @@ bool WaylandScreen::VerifyOutputStateConsistentForTesting() const {
   }
   return true;
 }
+
+#if BUILDFLAG(IS_LINUX)
+void WaylandScreen::OnDeviceScaleFactorChanged() {
+  if (const auto* linux_ui = ui::LinuxUi::instance()) {
+    const float new_font_scale = linux_ui->display_config().font_scale;
+    if (new_font_scale != font_scale_) {
+      font_scale_ = new_font_scale;
+      for (auto* window : connection_->window_manager()->GetAllWindows()) {
+        window->OnFontScaleFactorChanged(new_font_scale);
+      }
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 void WaylandScreen::DumpState(std::ostream& out) const {
   out << "WaylandScreen:" << std::endl;

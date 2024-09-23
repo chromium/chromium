@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
+
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -130,12 +132,11 @@ class DevToolsUIBindingsSyncInfoTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
 
   TestingProfile profile_;
-  syncer::TestSyncService* sync_service_;
+  raw_ptr<syncer::TestSyncService> sync_service_;
 };
 
 TEST_F(DevToolsUIBindingsSyncInfoTest, SyncDisabled) {
-  sync_service_->SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
+  sync_service_->SetSignedOut();
 
   base::Value::Dict info =
       DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
@@ -158,7 +159,7 @@ TEST_F(DevToolsUIBindingsSyncInfoTest, PreferencesNotSynced) {
 TEST_F(DevToolsUIBindingsSyncInfoTest, ImageAlwaysProvided) {
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       "sync@devtools.dev", signin::ConsentLevel::kSync);
-  sync_service_->SetAccountInfo(account_info);
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSync, account_info);
 
   EXPECT_TRUE(account_info.account_image.IsEmpty());
 

@@ -4,6 +4,8 @@
 
 #include "components/segmentation_platform/internal/execution/processing/sync_device_info_observer.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -44,9 +46,10 @@ base::TimeDelta Age(base::Time last_update, base::Time now) {
 // active, given the current time.
 bool IsDeviceActive(base::Time last_update,
                     base::Time now,
-                    base::TimeDelta active_threshold) {
+                    std::optional<base::TimeDelta> active_threshold) {
   TRACE_EVENT0("ui", "sync_device_info_observer.cc::GetActivePeriodForMetrics");
-  base::TimeDelta active_days_threshold = GetActivePeriodForMetrics();
+  base::TimeDelta active_days_threshold =
+      active_threshold ? *active_threshold : GetActivePeriodForMetrics();
   return Age(last_update, now) < active_days_threshold;
 }
 
@@ -135,7 +138,7 @@ std::map<OsType, int> SyncDeviceInfoObserver::CountActiveDevicesByOsType(
   std::map<OsType, int> count_by_os_type;
   const base::Time now = base::Time::Now();
   for (const syncer::DeviceInfo* device_info :
-       device_info_tracker_->GetAllDeviceInfo()) {
+       device_info_tracker_->GetAllChromeDeviceInfo()) {
     if (!IsDeviceActive(device_info->last_updated_timestamp(), now,
                         active_threshold)) {
       continue;
@@ -210,14 +213,15 @@ void SyncDeviceInfoObserver::ReadyToFinishProcessing(
     return;
   }
 
-  int active_threshold = kActiveDayThresholdForInputDelegate;
+  std::optional<base::TimeDelta> active_threshold;
   if (input_context) {
+    active_threshold = base::Days(kActiveDayThresholdForInputDelegate);
     auto input_context_iter =
         input_context->metadata_args.find("active_days_limit");
     if (input_context_iter != input_context->metadata_args.end()) {
       const auto& processed_value = input_context_iter->second;
       if (processed_value.type == ProcessedValue::INT) {
-        active_threshold = processed_value.int_val;
+        active_threshold = base::Days(processed_value.int_val);
       }
     }
   }
@@ -234,7 +238,7 @@ void SyncDeviceInfoObserver::ReadyToFinishProcessing(
     }
 
     if (!IsDeviceActive(device_info->last_updated_timestamp(), now,
-                        base::Days(active_threshold))) {
+                        active_threshold)) {
       continue;
     }
 

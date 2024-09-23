@@ -5,6 +5,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"

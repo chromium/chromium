@@ -11,10 +11,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 
 namespace autofill {
 
@@ -26,7 +26,7 @@ class PaymentsAutofillTable;
 // Sync bridge responsible for applying remote changes of offer data to the
 // local database.
 class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
-                                      public syncer::ModelTypeSyncBridge {
+                                      public syncer::DataTypeSyncBridge {
  public:
   // Factory method that hides dealing with change_processor and also stores the
   // created bridge within |web_data_service|. This method should only be
@@ -35,11 +35,11 @@ class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
       AutofillWebDataBackend* webdata_backend,
       AutofillWebDataService* web_data_service);
 
-  static syncer::ModelTypeSyncBridge* FromWebDataService(
+  static syncer::DataTypeSyncBridge* FromWebDataService(
       AutofillWebDataService* web_data_service);
 
   AutofillWalletOfferSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       AutofillWebDataBackend* web_data_backend);
   ~AutofillWalletOfferSyncBridge() override;
 
@@ -47,7 +47,7 @@ class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
   AutofillWalletOfferSyncBridge& operator=(
       const AutofillWalletOfferSyncBridge&) = delete;
 
-  // ModelTypeSyncBridge
+  // DataTypeSyncBridge
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(
@@ -56,8 +56,9 @@ class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
   std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
-  void GetData(StorageKeyList storage_keys, DataCallback callback) override;
-  void GetAllDataForDebugging(DataCallback callback) override;
+  std::unique_ptr<syncer::DataBatch> GetDataForCommit(
+      StorageKeyList storage_keys) override;
+  std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   bool SupportsIncrementalUpdates() const override;
@@ -65,8 +66,8 @@ class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
                                    delete_metadata_change_list) override;
 
  private:
-  // Helper function to send all offer data to the callback.
-  void GetAllDataImpl(DataCallback callback);
+  // Helper function to retrieve all offer data.
+  std::unique_ptr<syncer::DataBatch> GetAllDataImpl();
 
   // Merges synced remote offer data.
   void MergeRemoteData(const syncer::EntityChangeList& entity_data);

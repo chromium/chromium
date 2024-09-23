@@ -9,17 +9,22 @@ assert(is_chromeos_ash, "Shortcut Input is for Chrome OS only.")
 copy("copy_mojo_files") {
   deps = [
     "//ash/public/mojom:accelerator_actions_ts__generator",
+    "//ash/public/mojom:accelerator_info_ts__generator",
     "//ash/public/mojom:accelerator_keys_ts__generator",
     "//ash/public/mojom:input_device_settings_ts__generator",
+    "//ash/webui/common/mojom:accelerator_fetcher_ts__generator",
     "//ash/webui/common/mojom:shortcut_input_provider_ts__generator",
     "//ui/events/ash/mojom:mojom_ts__generator",
   ]
   sources = [
     "$root_gen_dir/ash/public/mojom/accelerator_actions.mojom-webui.ts",
+    "$root_gen_dir/ash/public/mojom/accelerator_info.mojom-webui.ts",
     "$root_gen_dir/ash/public/mojom/accelerator_keys.mojom-webui.ts",
     "$root_gen_dir/ash/public/mojom/input_device_settings.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/common/mojom/accelerator_fetcher.mojom-webui.ts",
     "$root_gen_dir/ash/webui/common/mojom/shortcut_input_provider.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/extended_fkeys_modifier.mojom-webui.ts",
+    "$root_gen_dir/ui/events/ash/mojom/meta_key.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/modifier_key.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/simulate_right_click_modifier.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-webui.ts",

@@ -36,10 +36,10 @@ class NET_EXPORT ElementsUploadDataStream : public UploadDataStream {
   ~ElementsUploadDataStream() override;
 
   // Creates an ElementsUploadDataStream with a single reader.  Returns a
-  // std::unique_ptr<UploadDataStream> for ease of use.
+  // std::unique_ptr<UploadDataStream> for ease of use. The UploadDataStream
+  // will use an identifier value of 0, indicating an unspecified identifier.
   static std::unique_ptr<UploadDataStream> CreateWithReader(
-      std::unique_ptr<UploadElementReader> reader,
-      int64_t identifier);
+      std::unique_ptr<UploadElementReader> reader);
 
  private:
   // UploadDataStream implementation.

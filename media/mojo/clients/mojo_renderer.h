@@ -38,7 +38,7 @@ class VideoRendererSink;
 // connected and passed in the constructor. Then Initialize() will be called on
 // the |task_runner| and starting from that point this class is bound to the
 // |task_runner|*. That means all Renderer and RendererClient methods will be
-// called/dispached on the |task_runner|. The only exception is GetMediaTime(),
+// called/dispatched on the |task_runner|. The only exception is GetMediaTime(),
 // which can be called on any thread.
 class MojoRenderer : public Renderer, public mojom::RendererClient {
  public:
@@ -118,7 +118,7 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
 
   // Video frame overlays are rendered onto this sink.
   // Rendering of a new overlay is only needed when video natural size changes.
-  // TODO(https://crbug.com/1517922) Investigate dangling pointer.
+  // TODO(crbug.com/41490899) Investigate dangling pointer.
   raw_ptr<VideoRendererSink,
           FlakyDanglingUntriaged | AcrossTasksDanglingUntriaged>
       video_renderer_sink_ = nullptr;

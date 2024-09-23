@@ -128,7 +128,7 @@ TEST_F(CpuProbeTest, DestroyWhileSampling) {
   run_loop.Run();
 }
 
-// TODO(crbug.com/1513286): Fix test flakily timing out and re-enable.
+// TODO(crbug.com/41485857): Fix test flakily timing out and re-enable.
 TEST_F(CpuProbeDeathTest, DISABLED_CpuUtilizationTooLarge) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -149,7 +149,7 @@ TEST_F(CpuProbeDeathTest, DISABLED_CpuUtilizationTooLarge) {
   EXPECT_CHECK_DEATH_WITH(run_loop.Run(), "cpu_utilization <= 1.0");
 }
 
-// TODO(crbug.com/1513286): Fix test flakily timing out and re-enable.
+// TODO(crbug.com/41485857): Fix test flakily timing out and re-enable.
 TEST_F(CpuProbeDeathTest, DISABLED_CpuUtilizationTooSmall) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -170,7 +170,7 @@ TEST_F(CpuProbeDeathTest, DISABLED_CpuUtilizationTooSmall) {
   EXPECT_CHECK_DEATH_WITH(run_loop.Run(), "cpu_utilization >= 0.0");
 }
 
-// TODO(crbug.com/1513286): Fix test flakily timing out and re-enable.
+// TODO(crbug.com/41485857): Fix test flakily timing out and re-enable.
 TEST_F(CpuProbeDeathTest, DISABLED_RequestSampleWithoutStartSampling) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

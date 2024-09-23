@@ -24,6 +24,7 @@
 #include "ui/message_center/views/notification_view.h"
 #include "ui/message_center/views/relative_time_formatter.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
@@ -83,8 +84,9 @@ void ConfigureLabel(views::Label* label,
 // ExpandButton forwards all mouse and key events to NotificationHeaderView, but
 // takes tab focus for accessibility purpose.
 class ExpandButton : public views::ImageView {
+  METADATA_HEADER(ExpandButton, views::ImageView)
+
  public:
-  METADATA_HEADER(ExpandButton);
   ExpandButton();
   ~ExpandButton() override;
 
@@ -93,7 +95,7 @@ class ExpandButton : public views::ImageView {
   void OnFocus() override;
   void OnBlur() override;
   void OnThemeChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void SetTooltipText(const std::u16string& tooltip) override;
 
  private:
   std::unique_ptr<views::Painter> focus_painter_;
@@ -101,6 +103,12 @@ class ExpandButton : public views::ImageView {
 
 ExpandButton::ExpandButton() {
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+
+  if (GetTooltipText().empty()) {
+    GetViewAccessibility().SetName(
+        GetTooltipText(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
 }
 
 ExpandButton::~ExpandButton() = default;
@@ -129,15 +137,16 @@ void ExpandButton::OnThemeChanged() {
       gfx::Insets::TLBR(0, 0, 1, 1));
 }
 
-void ExpandButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kButton;
-  node_data->SetName(GetTooltipText(gfx::Point()));
+void ExpandButton::SetTooltipText(const std::u16string& tooltip) {
+  views::ImageView::SetTooltipText(tooltip);
 
-  if (GetTooltipText().empty())
-    node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  if (GetTooltipText().empty()) {
+    GetViewAccessibility().SetName(
+        GetTooltipText(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
 }
 
-BEGIN_METADATA(ExpandButton, views::ImageView)
+BEGIN_METADATA(ExpandButton)
 END_METADATA
 
 }  // namespace
@@ -168,7 +177,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   app_icon_view_->SetBorder(views::CreateEmptyBorder(kAppIconPadding));
   app_icon_view_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   app_icon_view_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
-  DCHECK_EQ(kInnerHeaderHeight, app_icon_view_->GetPreferredSize().height());
+  DCHECK_EQ(kInnerHeaderHeight, app_icon_view_->GetPreferredSize({}).height());
   AddChildView(app_icon_view_.get());
 
   // App name view
@@ -219,7 +228,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   expand_button_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   expand_button_->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   expand_button_->SetImageSize(gfx::Size(kExpandIconSize, kExpandIconSize));
-  DCHECK_EQ(kInnerHeaderHeight, expand_button_->GetPreferredSize().height());
+  DCHECK_EQ(kInnerHeaderHeight, expand_button_->GetPreferredSize({}).height());
   detail_views_->AddChildView(expand_button_.get());
 
   // Spacer between left-aligned views and right-aligned views
@@ -229,10 +238,29 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   spacer->SetProperty(views::kFlexBehaviorKey, kSpacerFlex);
   spacer_ = AddChildView(std::move(spacer));
 
-  SetPreferredSize(gfx::Size(kNotificationWidth, kHeaderHeight));
+  SetPreferredSize(gfx::Size(GetNotificationWidth(), kHeaderHeight));
 
   // Not focusable by default, only for accessibility.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  UpdateExpandedCollapsedAccessibleState();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
+
+  if (app_name_view_->GetText().empty()) {
+    GetViewAccessibility().SetName(
+        app_name_view_->GetText(),
+        ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(app_name_view_->GetText());
+  }
+
+  OnTextChanged();
+  summary_text_changed_callback_ =
+      summary_text_view_->AddTextChangedCallback(base::BindRepeating(
+          &NotificationHeaderView::OnTextChanged, base::Unretained(this)));
+  timestamp_changed_callback_ =
+      timestamp_view_->AddTextChangedCallback(base::BindRepeating(
+          &NotificationHeaderView::OnTextChanged, base::Unretained(this)));
 }
 
 NotificationHeaderView::~NotificationHeaderView() = default;
@@ -265,6 +293,12 @@ void NotificationHeaderView::ClearAppIcon() {
 
 void NotificationHeaderView::SetAppName(const std::u16string& name) {
   app_name_view_->SetText(name);
+  if (name.empty()) {
+    GetViewAccessibility().SetName(
+        name, ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(name);
+  }
 }
 
 void NotificationHeaderView::SetAppNameElideBehavior(
@@ -290,21 +324,6 @@ void NotificationHeaderView::SetOverflowIndicator(int count) {
       IDS_MESSAGE_CENTER_LIST_NOTIFICATION_HEADER_OVERFLOW_INDICATOR, count));
   has_progress_ = false;
   UpdateSummaryTextAndTimestampVisibility();
-}
-
-void NotificationHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Button::GetAccessibleNodeData(node_data);
-
-  node_data->role = ax::mojom::Role::kGenericContainer;
-  node_data->SetName(app_name_view_->GetText());
-  node_data->SetDescription(summary_text_view_->GetText() + u" " +
-                            timestamp_view_->GetText());
-
-  // If the expand button is not shown to the user, this view is not expandable.
-  if (expand_button_ && expand_button_->GetVisible()) {
-    node_data->AddState(is_expanded_ ? ax::mojom::State::kExpanded
-                                     : ax::mojom::State::kCollapsed);
-  }
 }
 
 void NotificationHeaderView::OnThemeChanged() {
@@ -344,23 +363,19 @@ void NotificationHeaderView::SetExpandButtonEnabled(bool enabled) {
   // We shouldn't execute this method if the expand button is not here.
   DCHECK(expand_button_);
   expand_button_->SetVisible(enabled);
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 void NotificationHeaderView::SetExpanded(bool expanded) {
   // We shouldn't execute this method if the expand button is not here.
   DCHECK(expand_button_);
-  bool was_expanded = is_expanded_;
   is_expanded_ = expanded;
   UpdateColors();
   expand_button_->SetTooltipText(l10n_util::GetStringUTF16(
       expanded ? IDS_MESSAGE_CENTER_COLLAPSE_NOTIFICATION
                : IDS_MESSAGE_CENTER_EXPAND_NOTIFICATION));
 
-  // If the expand button is not shown to the user, this view is presumably not
-  // expandable.
-  if (expand_button_->GetVisible() && was_expanded != is_expanded_) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
-  }
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 void NotificationHeaderView::SetColor(std::optional<SkColor> color) {
@@ -404,7 +419,7 @@ void NotificationHeaderView::SetIsInAshNotificationView(
   spacer_->SetPreferredSize(
       gfx::Size(kControlButtonSpacing,
                 kHeaderHeightInAsh - kHeaderOuterPadding.height()));
-  SetPreferredSize(gfx::Size(kNotificationWidth, kHeaderHeightInAsh));
+  SetPreferredSize(gfx::Size(GetNotificationWidth(), kHeaderHeightInAsh));
 }
 
 void NotificationHeaderView::SetIsInGroupChildNotification(
@@ -438,7 +453,7 @@ void NotificationHeaderView::UpdateSummaryTextAndTimestampVisibility() {
   const bool timestamp_visible = !has_progress_ && timestamp_;
   SetTimestampVisible(timestamp_visible);
 
-  // TODO(crbug.com/991492): this should not be necessary.
+  // TODO(crbug.com/40639286): this should not be necessary.
   detail_views_->InvalidateLayout();
 }
 
@@ -475,7 +490,25 @@ void NotificationHeaderView::UpdateColors() {
   }
 }
 
-BEGIN_METADATA(NotificationHeaderView, views::Button)
+void NotificationHeaderView::UpdateExpandedCollapsedAccessibleState() const {
+  if (!expand_button_ || !expand_button_->GetVisible()) {
+    GetViewAccessibility().RemoveExpandCollapseState();
+    return;
+  }
+
+  if (is_expanded_) {
+    GetViewAccessibility().SetIsExpanded();
+  } else {
+    GetViewAccessibility().SetIsCollapsed();
+  }
+}
+
+void NotificationHeaderView::OnTextChanged() {
+  GetViewAccessibility().SetDescription(summary_text_view_->GetText() + u" " +
+                                        timestamp_view_->GetText());
+}
+
+BEGIN_METADATA(NotificationHeaderView)
 END_METADATA
 
 }  // namespace message_center

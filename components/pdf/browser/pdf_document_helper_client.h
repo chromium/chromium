@@ -20,9 +20,6 @@ class PDFDocumentHelperClient {
  public:
   virtual ~PDFDocumentHelperClient() = default;
 
-  virtual content::RenderFrameHost* FindPdfFrame(
-      content::WebContents* contents) = 0;
-
   virtual void UpdateContentRestrictions(
       content::RenderFrameHost* render_frame_host,
       int content_restrictions) = 0;

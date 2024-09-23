@@ -13,6 +13,7 @@ namespace blink {
 using VersionType = V8PrivateTokenVersion::Enum;
 using OperationType = V8OperationType::Enum;
 using RefreshPolicy = V8RefreshPolicy::Enum;
+using network::mojom::blink::TrustTokenOperationStatus;
 using network::mojom::blink::TrustTokenOperationType;
 
 PSTFeatures GetPSTFeatures(const ExecutionContext& execution_context) {
@@ -125,38 +126,51 @@ bool ConvertTrustTokenToMojomAndCheckPermissions(
   return true;
 }
 
-DOMException* TrustTokenErrorToDOMException(
-    network::mojom::blink::TrustTokenOperationStatus error) {
+DOMException* TrustTokenErrorToDOMException(TrustTokenOperationStatus error) {
+  auto create = [](const String& message, DOMExceptionCode code) {
+    return DOMException::Create(message, DOMException::GetErrorName(code));
+  };
+
   // This should only be called on failure.
-  DCHECK_NE(error, network::mojom::blink::TrustTokenOperationStatus::kOk);
+  DCHECK_NE(error, TrustTokenOperationStatus::kOk);
 
   switch (error) {
-    case network::mojom::blink::TrustTokenOperationStatus::kAlreadyExists:
-      return DOMException::Create(
-          "Redemption operation aborted due to Signed Redemption Record "
-          "cache hit",
-          DOMException::GetErrorName(
-              DOMExceptionCode::kNoModificationAllowedError));
-    case network::mojom::blink::TrustTokenOperationStatus::
-        kOperationSuccessfullyFulfilledLocally:
-      return DOMException::Create(
-          "Trust Tokens operation satisfied locally, without needing to send "
-          "the request to its initial destination",
-          DOMException::GetErrorName(
-              DOMExceptionCode::kNoModificationAllowedError));
-    case network::mojom::blink::TrustTokenOperationStatus::kMissingIssuerKeys:
-      return DOMException::Create(
+    case TrustTokenOperationStatus::kAlreadyExists:
+      return create(
+          "Redemption operation aborted due to Redemption Record cache hit",
+          DOMExceptionCode::kNoModificationAllowedError);
+    case TrustTokenOperationStatus::kOperationSuccessfullyFulfilledLocally:
+      return create(
+          "Private State Tokens operation satisfied locally, without needing "
+          "to send the request to its initial destination",
+          DOMExceptionCode::kNoModificationAllowedError);
+    case TrustTokenOperationStatus::kMissingIssuerKeys:
+      return create(
           "No keys currently available for PST issuer. Issuer may need to "
           "register their key commitments.",
-          DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError));
-    case network::mojom::blink::TrustTokenOperationStatus::kFailedPrecondition:
-      return DOMException::Create(
-          "Precondition failed during Trust Tokens operation",
-          DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError));
+          DOMExceptionCode::kInvalidStateError);
+    case TrustTokenOperationStatus::kFailedPrecondition:
+      return create("Precondition failed during Private State Tokens operation",
+                    DOMExceptionCode::kInvalidStateError);
+    case TrustTokenOperationStatus::kInvalidArgument:
+      return create("Invalid arguments for Private State Tokens operation",
+                    DOMExceptionCode::kOperationError);
+    case TrustTokenOperationStatus::kResourceExhausted:
+      return create("Tokens exhausted for Private State Tokens operation",
+                    DOMExceptionCode::kOperationError);
+    case TrustTokenOperationStatus::kResourceLimited:
+      return create("Quota hit for Private State Tokens operation",
+                    DOMExceptionCode::kOperationError);
+    case TrustTokenOperationStatus::kUnauthorized:
+      return create(
+          "Private State Tokens API unavailable due to user settings.",
+          DOMExceptionCode::kOperationError);
+    case TrustTokenOperationStatus::kBadResponse:
+      return create("Unknown response for Private State Tokens operation",
+                    DOMExceptionCode::kOperationError);
     default:
-      return DOMException::Create(
-          "Error executing Trust Tokens operation",
-          DOMException::GetErrorName(DOMExceptionCode::kOperationError));
+      return create("Error executing Trust Tokens operation",
+                    DOMExceptionCode::kOperationError);
   }
 }
 

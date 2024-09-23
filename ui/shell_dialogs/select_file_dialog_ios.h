@@ -31,8 +31,7 @@ class SelectFileDialogImpl : public SelectFileDialog {
   bool IsRunning(gfx::NativeWindow parent_window) const override;
   void ListenerDestroyed() override;
 
-  void FileWasSelected(void* params,
-                       bool is_multi,
+  void FileWasSelected(bool is_multi,
                        bool was_cancelled,
                        const std::vector<base::FilePath>& files,
                        int index);
@@ -46,7 +45,6 @@ class SelectFileDialogImpl : public SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
                       const GURL* caller) override;
   bool HasMultipleFileTypeChoicesImpl() override;
 

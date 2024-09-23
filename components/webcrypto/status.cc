@@ -374,10 +374,7 @@ Status Status::ErrorHkdfLengthNotWholeByte() {
 }
 
 Status Status::ErrorHkdfDeriveBitsLengthNotSpecified() {
-  // TODO(nharper): The spec might change so that an OperationError should be
-  // thrown here instead of a TypeError.
-  // (https://www.w3.org/Bugs/Public/show_bug.cgi?id=27771)
-  return Status(blink::kWebCryptoErrorTypeType,
+  return Status(blink::kWebCryptoErrorTypeOperation,
                 "No length was specified for the HKDF Derive Bits operation.");
 }
 

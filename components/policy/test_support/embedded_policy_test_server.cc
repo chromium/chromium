@@ -61,8 +61,9 @@ const char kExternalEntityIdParam[] = "entity_id";
 std::unique_ptr<HttpResponse> LogStatusAndReturn(
     GURL url,
     std::unique_ptr<HttpResponse> response) {
-  if (!response)
+  if (!response) {
     return nullptr;
+  }
 
   CustomHttpResponse* basic_response =
       static_cast<CustomHttpResponse*>(response.get());
@@ -130,6 +131,7 @@ EmbeddedPolicyTestServer::EmbeddedPolicyTestServer()
   RegisterHandler(std::make_unique<RequestHandlerForPsmAutoEnrollment>(this));
 #endif  // BUILDFLAG(IS_CHROMEOS)
   RegisterHandler(std::make_unique<RequestHandlerForRegisterBrowser>(this));
+  RegisterHandler(std::make_unique<RequestHandlerForRegisterPolicyAgent>(this));
   RegisterHandler(std::make_unique<RequestHandlerForRegisterCertBased>(this));
   RegisterHandler(
       std::make_unique<RequestHandlerForRegisterDeviceAndUser>(this));
@@ -193,8 +195,9 @@ std::unique_ptr<HttpResponse> EmbeddedPolicyTestServer::HandleRequest(
   GURL url = request.GetURL();
   LOG(INFO) << "Request URL: " << url;
 
-  if (url.path() == kExternalPolicyDataPath)
+  if (url.path() == kExternalPolicyDataPath) {
     return HandleExternalPolicyDataRequest(url);
+  }
 
   std::string request_type = KeyValueFromUrl(url, dm_protocol::kParamRequest);
 

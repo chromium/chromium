@@ -20,7 +20,7 @@ source_set("libc++abi") {
     deps = [ "//buildtools/third_party/libunwind" ]
   }
 
-  # TODO(crbug.com/1458042): Move this build file to third_party/libc++/BUILD.gn once submodule migration is done
+  # TODO(crbug.com/40273848): Move this build file to third_party/libc++/BUILD.gn once submodule migration is done
   sources = [
     "//third_party/libc++abi/src/src/abort_message.cpp",
     "//third_party/libc++abi/src/src/cxa_aux_runtime.cpp",
@@ -98,4 +98,8 @@ source_set("libc++abi") {
 
   # libc++abi depends on libc++ internals.
   include_dirs = [ "//third_party/libc++/src/src" ]
+
+  if (use_libcxx_modules) {
+    configs -= [ "//build/config/compiler:libcxx_module" ]
+  }
 }

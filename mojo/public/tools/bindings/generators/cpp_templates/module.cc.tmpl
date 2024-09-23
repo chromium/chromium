@@ -23,11 +23,12 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/lib/default_construct_tag_internal.h"
 #include "mojo/public/cpp/bindings/lib/generated_code_util.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
-#include "mojo/public/cpp/bindings/lib/send_message_helper.h"
 #include "mojo/public/cpp/bindings/lib/proxy_to_responder.h"
+#include "mojo/public/cpp/bindings/lib/send_message_helper.h"
 #include "mojo/public/cpp/bindings/lib/serialization_util.h"
 #include "mojo/public/cpp/bindings/lib/unserialized_message_context.h"
 #include "mojo/public/cpp/bindings/lib/validate_params.h"
@@ -122,7 +123,12 @@ namespace mojo {
 void {{interface.name}}InterceptorForTesting::{{method.name}}({{interface_macros.declare_request_params("", method)}}) {
   GetForwardingInterface()->{{method.name}}(
     {%- for param in method.parameters -%}
-    std::move({{param.name}}){%- if not loop.last %}, {% endif %}
+    {%- if param.kind|is_non_const_ref_kind %}
+    {{param.name}}
+    {%- else %}
+    std::move({{param.name}})
+    {% endif %}
+    {%- if not loop.last %}, {% endif %}
     {%- endfor %}
     {%-   if method.response_parameters != None -%}
     {%-     if method.parameters %}, {% endif -%}
@@ -144,7 +150,11 @@ void {{interface.name}}AsyncWaiter::{{method.name}}(
   base::RunLoop loop;
   proxy_->{{method.name}}(
 {%-   for param in method.parameters -%}
+{%- if param.kind|is_non_const_ref_kind %}
+      {{param.name}},
+{%- else %}
       std::move({{param.name}}),
+{%- endif %}
 {%-   endfor %}
       base::BindOnce(
           [](base::RunLoop* loop

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_HIBERNATION_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_HIBERNATION_HANDLER_H_
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -15,6 +16,8 @@
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
+
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasHibernationSnapshotZstd);
 
 // All the fields are main-thread only. See DCheckInvariant() for invariants.
 class PLATFORM_EXPORT CanvasHibernationHandler {
@@ -59,15 +62,30 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
     background_thread_task_runner_for_testing_ = background_thread_task_runner;
   }
 
+  // Sets a callback that will be invoked on each completion of OnEncoded().
+  // The client can then check whether encoding has succeeded by check
+  // CanvasHibernationHandler::IsEncoded().
+  void SetOnEncodedCallbackForTesting(
+      base::RepeatingClosure on_encoded_callback) {
+    on_encoded_callback_for_testing_ = std::move(on_encoded_callback);
+  }
+  void SetBeforeCompressionDelayForTesting(base::TimeDelta delay) {
+    before_compression_delay_ = delay;
+  }
+
+  enum class CompressionAlgorithm { kZlib, kZstd };
+
  private:
   struct BackgroundTaskParams final {
     BackgroundTaskParams(
         sk_sp<SkImage> image,
         uint64_t epoch,
+        CompressionAlgorithm algorithm,
         base::WeakPtr<CanvasHibernationHandler> weak_instance,
         scoped_refptr<base::SingleThreadTaskRunner> reply_task_runner)
         : image(image),
           epoch(epoch),
+          algorithm(algorithm),
           weak_instance(weak_instance),
           reply_task_runner(reply_task_runner) {}
 
@@ -77,6 +95,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
 
     const sk_sp<SkImage> image;
     const uint64_t epoch;
+    const CompressionAlgorithm algorithm;
     const base::WeakPtr<CanvasHibernationHandler> weak_instance;
     const scoped_refptr<base::SingleThreadTaskRunner> reply_task_runner;
   };
@@ -99,11 +118,14 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
   sk_sp<SkImage> image_ = nullptr;
   // Compressed hibernation image.
   sk_sp<SkData> encoded_ = nullptr;
+  CompressionAlgorithm algorithm_ = CompressionAlgorithm::kZlib;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
   scoped_refptr<base::SingleThreadTaskRunner>
       main_thread_task_runner_for_testing_;
   scoped_refptr<base::SingleThreadTaskRunner>
       background_thread_task_runner_for_testing_;
+  base::RepeatingClosure on_encoded_callback_for_testing_;
+  base::TimeDelta before_compression_delay_ = kBeforeCompressionDelay;
   int width_;
   int height_;
   int bytes_per_pixel_;
@@ -133,4 +155,4 @@ class PLATFORM_EXPORT HibernatedCanvasMemoryDumpProvider
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_HIBERNATION_HANDLER_H_

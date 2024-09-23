@@ -7,24 +7,21 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/data_sharing/public/features.h"
-#include "components/password_manager/core/browser/features/password_features.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #include "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-
-using syncer::DataTypeController;
 
 class SyncServiceFactoryTest : public PlatformTest {
  public:
@@ -41,7 +38,7 @@ class SyncServiceFactoryTest : public PlatformTest {
     browser_state_builder.AddTestingFactory(
         ios::WebDataServiceFactory::GetInstance(),
         ios::WebDataServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = browser_state_builder.Build();
+    chrome_browser_state_ = std::move(browser_state_builder).Build();
   }
 
   void TearDown() override {
@@ -50,15 +47,18 @@ class SyncServiceFactoryTest : public PlatformTest {
 
  protected:
   // Returns the collection of default datatypes.
-  syncer::ModelTypeSet DefaultDatatypes() {
-    static_assert(49 == syncer::GetNumModelTypes(),
+  syncer::DataTypeSet DefaultDatatypes() {
+    static_assert(53 == syncer::GetNumDataTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
-    syncer::ModelTypeSet datatypes;
+    syncer::DataTypeSet datatypes;
 
-    // Common types. This excludes PASSWORDS because the password store factory
-    // is null for testing and hence no controller gets instantiated.
+    // Common types. This excludes PASSWORDS,
+    // INCOMING_PASSWORD_SHARING_INVITATION and
+    // INCOMING_PASSWORD_SHARING_INVITATION, because the password store factory
+    // is null for testing and hence no controller gets instantiated for those
+    // types.
     datatypes.Put(syncer::AUTOFILL);
     datatypes.Put(syncer::AUTOFILL_PROFILE);
     if (base::FeatureList::IsEnabled(
@@ -69,6 +69,9 @@ class SyncServiceFactoryTest : public PlatformTest {
     datatypes.Put(syncer::AUTOFILL_WALLET_METADATA);
     datatypes.Put(syncer::AUTOFILL_WALLET_OFFER);
     datatypes.Put(syncer::BOOKMARKS);
+    if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
+      datatypes.Put(syncer::PRODUCT_COMPARISON);
+    }
     datatypes.Put(syncer::CONTACT_INFO);
     datatypes.Put(syncer::DEVICE_INFO);
     datatypes.Put(syncer::HISTORY);
@@ -76,33 +79,26 @@ class SyncServiceFactoryTest : public PlatformTest {
     datatypes.Put(syncer::PREFERENCES);
     datatypes.Put(syncer::PRIORITY_PREFERENCES);
     datatypes.Put(syncer::READING_LIST);
-    if (base::FeatureList::IsEnabled(syncer::kSyncSegmentationDataType)) {
-      datatypes.Put(syncer::SEGMENTATION);
-    }
-    // TODO(crbug.com/919489) Add SECURITY_EVENTS data type once it is enabled.
+    // TODO(crbug.com/41434211) Add SECURITY_EVENTS data type once it is
+    // enabled.
     datatypes.Put(syncer::SESSIONS);
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     datatypes.Put(syncer::SUPERVISED_USER_SETTINGS);
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
     datatypes.Put(syncer::USER_EVENTS);
     datatypes.Put(syncer::USER_CONSENTS);
     datatypes.Put(syncer::SEND_TAB_TO_SELF);
     if (base::FeatureList::IsEnabled(
-            password_manager::features::
-                kPasswordManagerEnableReceiverService)) {
-      datatypes.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);
-    }
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kPasswordManagerEnableSenderService)) {
-      datatypes.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
-    }
-    if (base::FeatureList::IsEnabled(
             data_sharing::features::kDataSharingFeature)) {
+      datatypes.Put(syncer::COLLABORATION_GROUP);
       datatypes.Put(syncer::SHARED_TAB_GROUP_DATA);
     }
-
+    // syncer::PLUS_ADDRESS is excluded because GoogleGroupsManagerFactory is
+    // null for testing and hence no controller gets instantiated for the type.
+    if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
+      datatypes.Put(syncer::PLUS_ADDRESS_SETTING);
+    }
+    if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
+      datatypes.Put(syncer::WEBAUTHN_CREDENTIAL);
+    }
     return datatypes;
   }
 
@@ -128,10 +124,10 @@ TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDefault) {
   syncer::SyncServiceImpl* sync_service =
       SyncServiceFactory::GetAsSyncServiceImplForBrowserStateForTesting(
           chrome_browser_state());
-  syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
-  const syncer::ModelTypeSet default_types = DefaultDatatypes();
-  EXPECT_EQ(default_types.Size(), types.Size());
-  for (syncer::ModelType type : default_types) {
+  syncer::DataTypeSet types = sync_service->GetRegisteredDataTypesForTest();
+  const syncer::DataTypeSet default_types = DefaultDatatypes();
+  EXPECT_EQ(default_types.size(), types.size());
+  for (syncer::DataType type : default_types) {
     EXPECT_TRUE(types.Has(type)) << type << " not found in datatypes map";
   }
 }

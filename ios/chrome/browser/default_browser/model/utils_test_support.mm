@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 
-#import "ios/chrome/browser/default_browser/model/utils.h"
-
 // Visible for testing.
 extern NSString* const kDefaultBrowserUtilsKey;
 
@@ -29,4 +27,33 @@ void ResetStorageAndSetTimestampForKey(NSString* key, base::Time timestamp) {
 void SetValuesInStorage(NSDictionary<NSString*, NSObject*>* dict) {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults setObject:dict forKey:kDefaultBrowserUtilsKey];
+}
+
+void SimulateUserInteractionWithPromos(const base::TimeDelta& timeAgo,
+                                       BOOL interactedWithFRE,
+                                       int genericCount,
+                                       int tailoredCount,
+                                       int totalCount) {
+  NSDictionary<NSString*, NSObject*>* values = @{
+    kUserHasInteractedWithFirstRunPromo :
+        [NSNumber numberWithBool:interactedWithFRE],
+    kUserHasInteractedWithFullscreenPromo : genericCount > 0 ? @YES : @NO,
+    kUserHasInteractedWithTailoredFullscreenPromo : tailoredCount > 0 ? @YES
+                                                                      : @NO,
+    kLastTimeUserInteractedWithFullscreenPromo : (base::Time::Now() - timeAgo)
+        .ToNSDate(),
+    kGenericPromoInteractionCount : [NSNumber numberWithInt:genericCount],
+    kTailoredPromoInteractionCount : [NSNumber numberWithInt:tailoredCount],
+    kDisplayedFullscreenPromoCount : [NSNumber numberWithInt:totalCount]
+  };
+  SetValuesInStorage(values);
+}
+
+void SimulateUserInterestedDefaultBrowserUserActivity(
+    DefaultPromoType type,
+    const base::TimeDelta& timeAgo) {
+  std::vector<base::Time> times = LoadTimestampsForPromoType(type);
+  times.push_back(base::Time::Now() - timeAgo);
+
+  StoreTimestampsForPromoType(type, std::move(times));
 }

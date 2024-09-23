@@ -15,6 +15,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -59,6 +60,7 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/shortcuts/chrome_webloc_file.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -69,7 +71,6 @@
 #include "chrome/browser/ui/browser_mac.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#import "chrome/browser/ui/cocoa/apps/app_shim_menu_controller_mac.h"
 #include "chrome/browser/ui/cocoa/apps/quit_with_apps_controller_mac.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 #import "chrome/browser/ui/cocoa/confirm_quit.h"
@@ -82,14 +83,12 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
-#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths_internal.h"
@@ -200,7 +199,7 @@ void LaunchBrowserStartup(Profile* profile) {
   browser_creator.LaunchBrowser(
       *base::CommandLine::ForCurrentProcess(), profile, base::FilePath(),
       chrome::startup::IsProcessStartup::kNo, chrome::startup::IsFirstRun::kYes,
-      nullptr, /*restore_tabbed_browser=*/true);
+      /*restore_tabbed_browser=*/true);
 }
 
 // Creates an empty browser window with the given profile and returns a pointer
@@ -268,7 +267,7 @@ void RecordLastRunAppBundlePath() {
                                        .DirName()
                                        .DirName();
   base::apple::ScopedCFTypeRef<CFStringRef> app_bundle_path_cfstring =
-      base::SysUTF8ToCFStringRef(app_bundle_path.value());
+      base::apple::FilePathToCFString(app_bundle_path);
   CFPreferencesSetAppValue(
       base::apple::NSToCFPtrCast(app_mode::kLastRunAppBundlePathPrefsKey),
       app_bundle_path_cfstring.get(),
@@ -369,7 +368,7 @@ void FocusWindowSetOnCurrentSpace(const std::set<gfx::NativeWindow>& windows) {
 base::FilePath GetStartupProfilePathMac() {
   // This profile path is used to open URLs passed in application:openURLs: and
   // should not default to Guest when the profile picker is shown.
-  // TODO(https://crbug.com/1155158): Remove the ignore_profile_picker parameter
+  // TODO(crbug.com/40159795): Remove the ignore_profile_picker parameter
   // once the picker supports opening URLs.
   StartupProfilePathInfo profile_path_info = GetStartupProfilePath(
       /*cur_dir=*/base::FilePath(), *base::CommandLine::ForCurrentProcess(),
@@ -382,9 +381,85 @@ base::FilePath GetStartupProfilePathMac() {
 // Open the urls in the last used browser. Loads the profile asynchronously if
 // needed.
 void OpenUrlsInBrowser(const std::vector<GURL>& urls) {
-  app_controller_mac::RunInLastProfileSafely(
-      base::BindOnce(&OpenUrlsInBrowserWithProfile, urls),
-      app_controller_mac::kShowProfilePickerOnFailure);
+  if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
+    std::vector<GURL> regular_urls;
+    std::vector<base::FilePath> shortcuts;
+
+    for (const auto& url : urls) {
+      base::FilePath path;
+      if (net::FileURLToFilePath(url, &path) &&
+          path.Extension() == shortcuts::ChromeWeblocFile::kFileExtension) {
+        shortcuts.push_back(path);
+      } else {
+        regular_urls.push_back(url);
+      }
+    }
+
+    if (!shortcuts.empty()) {
+      // Parse/read the shortcut files on the thread pool to avoid blocking the
+      // UI thread.
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+          base::BindOnce(
+              [](const std::vector<base::FilePath>& shortcuts) {
+                base::flat_map<base::FilePath, std::vector<GURL>>
+                    profile_url_map;
+                for (const auto& path : shortcuts) {
+                  auto shortcut =
+                      shortcuts::ChromeWeblocFile::LoadFromFile(path);
+                  if (!shortcut.has_value()) {
+                    // TODO: Consider opening the original file URL?
+                    continue;
+                  }
+                  profile_url_map[shortcut->profile_path_name().path()]
+                      .push_back(shortcut->target_url());
+                }
+                return profile_url_map;
+              },
+              std::move(shortcuts)),
+          base::BindOnce(
+              [](const base::flat_map<base::FilePath, std::vector<GURL>>
+                     profile_url_map) {
+                const base::FilePath& user_data_dir =
+                    g_browser_process->profile_manager()->user_data_dir();
+                ProfileAttributesStorage& profile_attributes_storage =
+                    g_browser_process->profile_manager()
+                        ->GetProfileAttributesStorage();
+                for (const auto& [profile, urls_for_profile] :
+                     profile_url_map) {
+                  const base::FilePath profile_path =
+                      user_data_dir.Append(profile);
+                  if (profile_attributes_storage.GetProfileAttributesWithPath(
+                          profile_path)) {
+                    RunInProfileSafely(
+                        profile_path,
+                        base::BindOnce(&OpenUrlsInBrowserWithProfile,
+                                       urls_for_profile),
+                        app_controller_mac::kShowProfilePickerOnFailure);
+                  } else {
+                    // If the target profile doesn't exist, fall back to the
+                    // last profile.
+                    RunInLastProfileSafely(
+                        base::BindOnce(&OpenUrlsInBrowserWithProfile,
+                                       urls_for_profile),
+                        app_controller_mac::kShowProfilePickerOnFailure);
+                  }
+                }
+              }));
+    }
+
+    if (!regular_urls.empty()) {
+      app_controller_mac::RunInLastProfileSafely(
+          base::BindOnce(&OpenUrlsInBrowserWithProfile, regular_urls),
+          app_controller_mac::kShowProfilePickerOnFailure);
+    }
+  } else {
+    app_controller_mac::RunInLastProfileSafely(
+        base::BindOnce(&OpenUrlsInBrowserWithProfile, urls),
+        app_controller_mac::kShowProfilePickerOnFailure);
+  }
 }
 
 }  // namespace
@@ -398,7 +473,7 @@ Profile* GetLastProfileMac() {
 
   base::FilePath profile_path = GetStartupProfilePathMac();
   // ProfileManager::GetProfile() is blocking if the profile was not loaded yet.
-  // TODO(https://crbug.com/1176734): Change this code to return nullptr when
+  // TODO(crbug.com/40054768): Change this code to return nullptr when
   // the profile is not loaded, and update all callers to handle this case.
   base::ScopedAllowBlocking allow_blocking;
   return profile_manager->GetProfile(profile_path);
@@ -585,9 +660,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   std::unique_ptr<HistoryMenuBridge> _historyMenuBridge;
 
-  // Controller that manages main menu items for packaged apps.
-  AppShimMenuController* __strong _appShimMenuController;
-
   // The profile menu, which appears right before the Help menu. It is only
   // available when multiple profiles is enabled.
   ProfileMenuController* __strong _profileMenuController;
@@ -603,11 +675,10 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   std::vector<GURL> _startupUrls;
   BOOL _startupComplete;
 
-  // Outlets for the close tab/window menu items so that we can adjust the
-  // command-key equivalent depending on the kind of window and how many
-  // tabs it has.
-  NSMenuItem* __strong _closeTabMenuItemForTesting;
-  NSMenuItem* __strong _closeWindowMenuItemForTesting;
+  // Outlets for testing close tab/window menu items.
+  NSMenuItem* __strong _cmdWMenuItemForTesting;
+  NSMenuItem* __strong _shiftCmdWMenuItemForTesting;
+  NSWindow* __strong _mainWindowForTesting;
 
   std::unique_ptr<PrefChangeRegistrar> _profilePrefRegistrar;
   PrefChangeRegistrar _localPrefRegistrar;
@@ -697,27 +768,68 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 }
 
 - (void)dealloc {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (NSMenu*)fileMenu {
   return [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu];
 }
 
-- (NSMenuItem*)closeTabMenuItem {
-  if (_closeTabMenuItemForTesting != nil) {
-    return _closeTabMenuItemForTesting;
+// Returns the ⌘W menu item in the File menu. Returns nil if no such menu item
+// exists (e.g. the user has custom shortcut settings).
+
+- (NSMenuItem*)cmdWMenuItem {
+  NSArray* fileMenuItemArray = [self fileMenu].itemArray;
+  if (_cmdWMenuItemForTesting) {
+    fileMenuItemArray = @[ _cmdWMenuItemForTesting ];
   }
 
-  return [[self fileMenu] itemWithTag:IDC_CLOSE_TAB];
+  NSMenuItem* cmdWMenuItem = nil;
+
+  for (NSMenuItem* item in fileMenuItemArray) {
+    if ([@"w" isEqualToString:item.keyEquivalent] &&
+        item.keyEquivalentModifierMask == NSEventModifierFlagCommand) {
+      cmdWMenuItem = item;
+      break;
+    }
+  }
+
+  // Make sure the user hasn't reassigned ⌘W.
+  if (cmdWMenuItem.tag != 0 && cmdWMenuItem.tag != IDC_CLOSE_WINDOW &&
+      cmdWMenuItem.tag != IDC_CLOSE_TAB) {
+    return nil;
+  }
+
+  return cmdWMenuItem;
 }
 
-- (NSMenuItem*)closeWindowMenuItem {
-  if (_closeWindowMenuItemForTesting != nil) {
-    return _closeWindowMenuItemForTesting;
+// Returns the ⇧⌘W menu item in the File menu. Returns nil if no such menu item
+// exists (e.g. the user has custom shortcut settings).
+- (NSMenuItem*)shiftCmdWMenuItem {
+  NSArray* fileMenuItemArray = [self fileMenu].itemArray;
+  if (_shiftCmdWMenuItemForTesting) {
+    fileMenuItemArray = @[ _shiftCmdWMenuItemForTesting ];
   }
 
-  return [[self fileMenu] itemWithTag:IDC_CLOSE_WINDOW];
+  NSMenuItem* shiftCmdWMenuItem = nil;
+
+  for (NSMenuItem* item in fileMenuItemArray) {
+    // "Shift" is part of the keyEquivalent. It doesn't live in the modifier
+    // mask.
+    if ([@"W" isEqualToString:item.keyEquivalent] &&
+        item.keyEquivalentModifierMask == NSEventModifierFlagCommand) {
+      shiftCmdWMenuItem = item;
+      break;
+    }
+  }
+
+  // Make sure the user hasn't reassigned ⇧⌘W.
+  if (shiftCmdWMenuItem.tag != 0 && shiftCmdWMenuItem.tag != IDC_CLOSE_WINDOW &&
+      shiftCmdWMenuItem.tag != IDC_CLOSE_TAB) {
+    return nil;
+  }
+
+  return shiftCmdWMenuItem;
 }
 
 // This method is called very early in application startup (ie, before
@@ -741,9 +853,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
          selector:@selector(willPowerOff:)
              name:NSWorkspaceWillPowerOffNotification
            object:nil];
-
-  DCHECK([self closeTabMenuItem]);
-  DCHECK([self closeWindowMenuItem]);
 
   // Set up the command updater for when there are no windows open
   [self initMenuState];
@@ -803,7 +912,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     // At this point, the user has already chosen to cancel downloads. If we
     // were to shut down as usual, the downloads would be cancelled in
     // DownloadCoreService::Shutdown().
-    DownloadCoreService::CancelAllDownloads();
+    DownloadCoreService::CancelAllDownloads(
+        DownloadCoreService::CancelDownloadsTrigger::kShutdown);
 
     return NO;
   }
@@ -889,7 +999,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   _profileAttributesStorageObserver.reset();
   [self unregisterEventHandlers];
-  _appShimMenuController = nil;
   _profileBookmarkMenuBridgeMap.clear();
 }
 
@@ -1044,10 +1153,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
       KeepAliveOrigin::APP_CONTROLLER, KeepAliveRestartOption::DISABLED);
 
   [self setUpdateCheckInterval];
-
-  // Start managing the menu for app windows. This needs to be done here because
-  // main menu item titles are not yet initialized in awakeFromNib.
-  [self initAppShimMenuController];
 
   // If enabled, keep Chrome alive when apps are open instead of quitting all
   // apps.
@@ -1313,6 +1418,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
         // Profile-level items that affect how the profile's UI looks should
         // only be available while there is a Profile opened.
         case IDC_SHOW_FULL_URLS:
+        case IDC_SHOW_GOOGLE_LENS_SHORTCUT:
           enable = hasLoadedProfile;
           break;
         // Browser-level items that open in new tabs or perform an action in a
@@ -1595,7 +1701,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
         ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
   } else {
     // Asynchronously load profile first if needed.
-    // TODO(crbug.com/1426857): Replace CreateBrowser by LaunchBrowserStartup
+    // TODO(crbug.com/40261514): Replace CreateBrowser by LaunchBrowserStartup
     app_controller_mac::RunInLastProfileSafely(
         base::BindOnce(base::IgnoreResult(&CreateBrowser)),
         app_controller_mac::kShowProfilePickerOnFailure);
@@ -1647,7 +1753,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
 - (void)initShareMenu {
   _shareMenuController = [[ShareMenuController alloc] init];
-  NSMenu* fileMenu = [NSApp.mainMenu itemWithTag:IDC_FILE_MENU].submenu;
+  NSMenu* fileMenu = [self fileMenu];
   NSString* shareMenuTitle = l10n_util::GetNSString(IDS_SHARE_MAC);
   NSMenuItem* shareMenuItem = [fileMenu itemWithTitle:shareMenuTitle];
   NSMenu* shareSubmenu = [[NSMenu alloc] initWithTitle:shareMenuTitle];
@@ -1702,7 +1808,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
 // Returns null if Chrome is not ready or there is no ProfileManager.
 // DEPRECATED: use lastProfileIfLoaded instead.
-// TODO(https://crbug.com/1176734): May be blocking, migrate all callers to
+// TODO(crbug.com/40054768): May be blocking, migrate all callers to
 // |-lastProfileIfLoaded|.
 - (Profile*)lastProfile {
   Profile* lastLoadedProfile = [self lastProfileIfLoaded];
@@ -1854,11 +1960,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   return _tabMenuBridge.get();
 }
 
-- (void)initAppShimMenuController {
-  if (!_appShimMenuController)
-    _appShimMenuController = [[AppShimMenuController alloc] init];
-}
-
 - (void)setLastProfile:(Profile*)profile {
   if (profile == _lastProfile)
     return;
@@ -1967,20 +2068,19 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   }
 }
 
-- (BOOL)windowHasBrowserTabs:(NSWindow*)window {
-  if (!window) {
-    return NO;
-  }
-  Browser* browser = chrome::FindBrowserWithWindow(window);
-  return browser && browser->is_type_normal();
+- (id)targetForPerformClose {
+  return _mainWindowForTesting
+             ? _mainWindowForTesting
+             : [NSApp targetForAction:@selector(performClose:)];
 }
 
-- (void)updateMenuItemKeyEquivalents {
-  id target = [NSApp targetForAction:@selector(performClose:)];
-
-  // If `target` is a popover (likely the dictionary lookup popover) the
-  // main window should handle the close menu item action.
+// Returns the NSWindow that's the target of the Close Window command.
+- (NSWindow*)windowForPerformClose {
   NSWindow* targetWindow = nil;
+  id target = [self targetForPerformClose];
+
+  // If `target` is a popover (likely the dictionary lookup popover), the
+  // main window should handle the close menu item action.
   if ([target isKindOfClass:[NSPopover class]]) {
     targetWindow =
         [[[base::apple::ObjCCast<NSPopover>(target) contentViewController] view]
@@ -1989,30 +2089,93 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     targetWindow = base::apple::ObjCCast<NSWindow>(target);
   }
 
-  if (targetWindow != nil) {
-    // If `targetWindow` is a child (a popover or bubble) the parent should
-    // handle the command.
-    if ([targetWindow parentWindow] != nil) {
-      targetWindow = [targetWindow parentWindow];
-    }
+  // If `targetWindow` is a child (a popover or bubble), the topmost parent
+  // window should handle the command.
+  while (targetWindow.parentWindow) {
+    targetWindow = targetWindow.parentWindow;
   }
 
-  NSMenuItem* closeTabMenuItem = [self closeTabMenuItem];
-  NSMenuItem* closeWindowMenuItem = [self closeWindowMenuItem];
+  return targetWindow;
+}
 
-  // If the browser window has tabs, assign Cmd-Shift-W to "Close Window",
-  // otherwise leave it as the normal Cmd-W. Capitalization of the key
-  // equivalent affects whether the Shift modifier is used.
-  if ([self windowHasBrowserTabs:targetWindow]) {
-    [closeTabMenuItem cr_setKeyEquivalent:@"w"
-                             modifierMask:NSEventModifierFlagCommand];
-    [closeWindowMenuItem cr_setKeyEquivalent:@"W"
-                                modifierMask:NSEventModifierFlagCommand];
+- (BOOL)windowHasBrowserTabs:(NSWindow*)window {
+  if (!window) {
+    return NO;
+  }
+  Browser* browser = chrome::FindBrowserWithWindow(window);
+
+  return browser && browser->is_type_normal() &&
+         !browser->tab_strip_model()->empty();
+}
+
+- (void)configureMenuItemForCloseTab:(NSMenuItem*)menuItem {
+  menuItem.title = l10n_util::GetNSStringWithFixup(IDS_CLOSE_TAB_MAC);
+  menuItem.hidden = NO;
+  menuItem.tag = IDC_CLOSE_TAB;
+  menuItem.action = @selector(commandDispatch:);
+}
+
+- (void)configureMenuItemForCloseWindow:(NSMenuItem*)menuItem {
+  menuItem.title = l10n_util::GetNSStringWithFixup(IDS_CLOSE_WINDOW_MAC);
+  menuItem.hidden = NO;
+  menuItem.tag = IDC_CLOSE_WINDOW;
+  menuItem.action = @selector(performClose:);
+}
+
+- (void)hideMenuItem:(NSMenuItem*)menuItem {
+  menuItem.hidden = YES;
+  menuItem.tag = 0;
+  menuItem.action = 0;
+}
+
+// Updates menu items in the File menu to match the main window.
+- (void)updateMenuItemKeyEquivalents {
+  // If the browser window has tabs, assign ⇧⌘W to "Close Window"
+  // and ⌘W to "Close Tab", otherwise hide the "Close Tab" item and
+  // assign ⌘W to "Close Window".
+  //
+  // One way to shuffle these shortcuts is to simply find the "Close Window"
+  // and "Close Tab" menu items and change their key equivalents. For some
+  // reason, the AppKit won't let us do that. For example, if the "Close Tab"
+  // item has @"w" as its equivalent and we temporarily assign @"w" to
+  // "Close Window", we can never set @"w" as the key equivalent for the
+  // "Close Tab" item. It doesn't appear to be an issue with some other item
+  // having that same equivalent, the AppKit just won't take it. We get around
+  // this problem by leaving key equivalents alone and instead change the
+  // titles and actions of the menu items that own those equivalents.
+  NSMenuItem* cmdWMenuItem = [self cmdWMenuItem];
+  NSMenuItem* shiftCmdWMenuItem = [self shiftCmdWMenuItem];
+
+  // If we can't find a ⌘W or ⇧⌘W item with IDC_CLOSE_WINDOW or IDC_CLOSE_TAB
+  // as the tag, assume the user has assigned a custom shortcut to one or both
+  // of these items. If the user has assigned a custom shortcut, it doesn't
+  // make sense to perform any shuffling.
+  if (cmdWMenuItem == nil || shiftCmdWMenuItem == nil) {
+    return;
+  }
+
+  if ([self windowHasBrowserTabs:[self windowForPerformClose]]) {
+    // Close Window   ⇧⌘W
+    // Close All     ⌥⇧⌘W (alternate, replaces "Close Window" when ⌥ pressed)
+    // Close Tab       ⌘W
+    [self configureMenuItemForCloseWindow:shiftCmdWMenuItem];
+    [self configureMenuItemForCloseTab:cmdWMenuItem];
   } else {
-    [closeTabMenuItem cr_clearKeyEquivalent];
-    [closeWindowMenuItem cr_setKeyEquivalent:@"w"
-                                modifierMask:NSEventModifierFlagCommand];
+    // (no ⇧⌘W menu item)
+    // Close All     ⌥⇧⌘W (alternate, appears when ⌥ pressed)
+    // Close Window    ⌘W
+    //
+    // Having "Close All" appear out of nowhere when the ⌥ key is pressed is
+    // less than ideal, but "Close All" is a non-primary piece of UI and
+    // non-tabbed windows are significantly less common, so this will do for
+    // now. This may need to be revisited if it turns out to become an issue.
+    [self hideMenuItem:shiftCmdWMenuItem];
+    [self configureMenuItemForCloseWindow:cmdWMenuItem];
   }
+
+  // Force no longer hidden items to appear, or newly hidden items to
+  // disappear.
+  [[self fileMenu] update];
 }
 
 // This only has an effect on macOS 12+, and requests any state restoration
@@ -2147,12 +2310,16 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   });
 }
 
-- (void)setCloseWindowMenuItemForTesting:(NSMenuItem*)menuItem {
-  _closeWindowMenuItemForTesting = menuItem;
+- (void)setCmdWMenuItemForTesting:(NSMenuItem*)menuItem {
+  _cmdWMenuItemForTesting = menuItem;
 }
 
-- (void)setCloseTabMenuItemForTesting:(NSMenuItem*)menuItem {
-  _closeTabMenuItemForTesting = menuItem;
+- (void)setShiftCmdWMenuItemForTesting:(NSMenuItem*)menuItem {
+  _shiftCmdWMenuItemForTesting = menuItem;
+}
+
+- (void)setMainWindowForTesting:(NSWindow*)window {
+  _mainWindowForTesting = window;
 }
 
 - (void)setLastProfileForTesting:(Profile*)profile {
@@ -2221,7 +2388,6 @@ void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
 
 // Returns the profile to be used for new windows (or nullptr if it fails).
 Profile* GetSafeProfile(Profile* loaded_profile) {
-  DCHECK(loaded_profile);
   return
       [AppController.sharedController safeProfileForNewWindows:loaded_profile];
 }
@@ -2294,10 +2460,8 @@ void RunInProfileSafely(const base::FilePath& profile_dir,
     OnProfileLoaded(std::move(callback), on_failure, profile);
     return;
   }
-  // Pass the OnceCallback by reference because CreateProfileAsync() needs a
-  // repeating callback. It will be called at most once.
-  g_browser_process->profile_manager()->CreateProfileAsync(
-      profile_dir,
+  g_browser_process->profile_manager()->LoadProfileByPath(
+      profile_dir, /*incognito=*/false,
       base::BindOnce(&OnProfileLoaded, std::move(callback), on_failure));
 }
 

@@ -7,7 +7,6 @@ package org.chromium.tools.errorprone.plugin;
 import static com.google.errorprone.matchers.Matchers.anyOf;
 import static com.google.errorprone.matchers.Matchers.instanceMethod;
 
-import com.google.auto.service.AutoService;
 import com.google.errorprone.BugPattern;
 import com.google.errorprone.VisitorState;
 import com.google.errorprone.bugpatterns.BugChecker;
@@ -19,6 +18,8 @@ import com.sun.source.tree.IdentifierTree;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.MethodInvocationTree;
 
+import org.chromium.build.annotations.ServiceImpl;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,13 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Checks for direct calls to blocklisted methods to make network requests. Chromium code should
- * use ChromiumNetworkAdapter instead, with a NetworkTrafficAnnotationTag documenting the
- * network request for static analysis.
+ * Checks for direct calls to blocklisted methods to make network requests. Chromium code should use
+ * ChromiumNetworkAdapter instead, with a NetworkTrafficAnnotationTag documenting the network
+ * request for static analysis.
  *
- * Currently, only URL#openConnection() is blocklisted by this BugChecker.
+ * <p>Currently, only URL#openConnection() is blocklisted by this BugChecker.
  */
-@AutoService(BugChecker.class)
+@ServiceImpl(BugChecker.class)
 @BugPattern(
         name = "UseNetworkAnnotations",
         summary = "Use wrapper network APIs with NetworkTrafficAnnotationTag",
@@ -54,15 +55,15 @@ public class UseNetworkAnnotations extends BugChecker
 
     /**
      * Allow-listed prefixes, starting relative to the src/ dir. It is OK to call
-     * URL#openConnection() from Java code inside these directories, either because they're not
-     * part of clank, or because they're //net implementation details.
+     * URL#openConnection() from Java code inside these directories, either because they're not part
+     * of clank, or because they're //net implementation details.
      */
     private static final ArrayList<String> ALLOWLISTED_FILES =
             new ArrayList<>(
                     List.of(
                             "net/android/java/src/org/chromium/net/ChromiumNetworkAdapter.java",
                             "android_webview/nonembedded/java/src/org/chromium/android_webview/nonembedded/"
-                                    + "NetworkFetcherTask.java",
+                                + "NetworkFetcherTask.java",
                             "components/cronet/",
                             "chromecast/",
                             "clank/test/"));

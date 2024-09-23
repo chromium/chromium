@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">အမည်မသိ ပစ္စည်း <ph name="PRODUCT_ID" /> သည် ရောင်းသူ <ph name="VENDOR_ID" /> ထံမှဖြစ်၏ (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Failed to replace crx ဖိုင်ကို အစားထိုးပေး မရခဲ့ပါ။ ဖိုင်ကို သုံးနေသလား စစ်ကြည့်ပါ။</translation>
 <translation id="3163201441334626963">အမည်မသိပစ္စည်း <ph name="PRODUCT_ID" /> သည် ရောင်းသူ <ph name="VENDOR_ID" /> မှဖြစ်၏</translation>
-<translation id="3369521687965833290">အိတ်စတန်းရှင်း ရှင်းလင်းမရပါ။ အိတ်စတန်းရှင်းကို သေချာစွာရှင်းနိုင်ရန်၊ junction၊ mount point သို့မဟုတ် symlink မပါဘဲ၊ ဒရိုက်ဗ် စာလုံးတစ်ခုနှင့်စသည့် သင့်ပရိုဖိုင်းထံသွား တိုက်ရိုက် လမ်းကြောင်းရှိရမည်။ သင့်ပရိုဖိုင်းတွင် အဆိုပါလမ်းကြောင်း မရှိပါ။</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> သည် ရောင်းသူ <ph name="VENDOR_ID" /> ထံမှဖြစ်၏ (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ကိုယ်ပိုင် သော့ အတွက် ထည့်သွင်းမှု တန်ဖိုးမှာ မှန်ကန်သည့် လမ်းကြောင်း ရှိရမည်။</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">ဤကိရိယာကို စီမံသူသည် <ph name="EXTENSION_NAME" /> အား ရယူတပ်ဆင်ရန်လိုအပ်သည်။ တပ်ပြီးပါက ပြန်ဖြုတ်မရပါ။</translation>
 <translation id="6027032947578871493">အမည်မသိပစ္စည်း <ph name="PRODUCT_ID" /> သည် <ph name="VENDOR_NAME" /> မှဖြစ်၏ (နံပါတ်စဉ် <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> သည် <ph name="VENDOR_ID" /> ထံမှဖြစ်၏</translation>
-<translation id="6143635259298204954">တိုးချဲ့မှုကို အထုပ်ကို မဖြေနိုင်ခဲ့ပါ။ တိုးချဲ့မှု အထုပ်ကို လုံခြုံစွာ ​ဖြေနိုင်ရန်၊ သင့် ပရိုဖိုင် ဒါရိုက်ထရီသို့ သင်္ကေတာလင့် မပါသည့် လမ်းကြောင်း ရှိရမည်။ သင့် ပရိုဖိုင် အတွက် ယင်းလမ်းကြောင်းမျိုး မရှိပါ။</translation>
 <translation id="6322279351188361895">ကိုယ်ရေးကိုယ်တာ ကီးဖတ်ရန် မအောင်မြင်ပါ။</translation>
 <translation id="6391538222494443604">ထည့်သွင်းမှု လမ်းကြောင်းထွက်ရပါမည်။</translation>
 <translation id="641087317769093025">တိုးချဲ့မှု ဇီပ်ကို မဖွင့်နိုင်ခဲ့ပါ</translation>

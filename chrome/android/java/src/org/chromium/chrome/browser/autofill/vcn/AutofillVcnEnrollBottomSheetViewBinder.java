@@ -79,6 +79,21 @@ import org.chromium.ui.modelutil.PropertyModel;
         } else if (AutofillVcnEnrollBottomSheetProperties.CANCEL_BUTTON_LABEL == propertyKey) {
             view.mCancelButton.setText(
                     model.get(AutofillVcnEnrollBottomSheetProperties.CANCEL_BUTTON_LABEL));
+        } else if (AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE == propertyKey) {
+            if (model.get(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE)) {
+                view.mAcceptButton.setVisibility(View.GONE);
+                view.mCancelButton.setVisibility(View.GONE);
+                view.mLoadingView.showLoadingUI(/* skipDelay= */ true);
+                view.mLoadingViewContainer.setVisibility(View.VISIBLE);
+            } else {
+                view.mLoadingViewContainer.setVisibility(View.GONE);
+                view.mLoadingView.hideLoadingUI();
+                view.mAcceptButton.setVisibility(View.VISIBLE);
+                view.mCancelButton.setVisibility(View.VISIBLE);
+            }
+        } else if (AutofillVcnEnrollBottomSheetProperties.LOADING_DESCRIPTION == propertyKey) {
+            view.mLoadingViewContainer.setContentDescription(
+                    model.get(AutofillVcnEnrollBottomSheetProperties.LOADING_DESCRIPTION));
         }
     }
 

@@ -1065,5 +1065,12 @@ TEST_F(MediatorTest, ShowCompanionApp_OnDevicePaired_Enabled) {
   mock_pairer_broker_->NotifyDevicePaired(initial_device_);
 }
 
+TEST_F(MediatorTest, ShowPasskey_OnDisplayPasskey) {
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_ui_broker_, ShowPasskey);
+  mock_pairer_broker_->NotifyDisplayPasskey(/*device name=*/std::u16string(),
+                                            /*passkey=*/0);
+}
+
 }  // namespace quick_pair
 }  // namespace ash

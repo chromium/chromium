@@ -1,0 +1,150 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/ai/ai_assistant.mojom";
+import "third_party/blink/public/mojom/ai/ai_rewriter.mojom";
+import "third_party/blink/public/mojom/ai/ai_writer.mojom";
+import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
+
+// LINT.IfChange(ModelAvailabilityCheckResult)
+enum ModelAvailabilityCheckResult {
+  // The model is readily available and the text session can be created.
+  kReadily = 0,
+  // The model is not available but the test session can be created after
+  // downloading the model
+  kAfterDownload = 1,
+  // The model cannot be created because the service is not running.
+  kNoServiceNotRunning = 2,
+
+  // The following reasons are from
+  // `optimization_guide::OnDeviceModelEligibilityReason`.
+
+  // The model is not available because of unknown reason.
+  kNoUnknown = 3,
+  // The model is not available because the feature flag gating on-device model
+  // execution was disabled.
+  kNoFeatureNotEnabled = 4,
+  // The model is not available because there was no on-device model available.
+  kNoModelNotAvailable = 5,
+  // The model is not available because the on-device model was available but
+  // there was not an execution config available for the feature.
+  kNoConfigNotAvailableForFeature = 6,
+  // The model is not available because the GPU is blocked.
+  kNoGpuBlocked = 7,
+  // The model is not available because the on-device model process crashed too
+  // many times for this version.
+  kNoTooManyRecentCrashes = 8,
+  // The model is not available because the on-device model took too long too
+  // many times for this version.
+  kNoTooManyRecentTimeouts = 9,
+  // The model is not available because the on-device safety model was required
+  // but not available.
+  kNoSafetyModelNotAvailable = 10,
+  // The model is not available because the on-device safety model was
+  // available but there was not a safety config available for the feature.
+  kNoSafetyConfigNotAvailableForFeature = 11,
+  // The model is not available because the on-device language detection model
+  // was required but not available.
+  kNoLanguageDetectionModelNotAvailable = 12,
+  // The model is not available because the on-device model execution for this
+  // feature was not enabled.
+  kNoFeatureExecutionNotEnabled = 13,
+  // The model is not available because the on-device model adaptation was
+  // required but not available.
+  kNoModelAdaptationNotAvailable = 14,
+  // Validation has not completed for the model yet.
+  kNoValidationPending = 15,
+  // Validation failed for the model.
+  kNoValidationFailed = 16,
+
+  // Append new line here
+};
+// LINT.ThenChange(//third_party/blink/renderer/modules/ai/exception_helpers.cc:ConvertModelAvailabilityCheckResultToDebugString)
+
+// The client interface that receives an AIWriter from an AIManager.
+interface AIManagerCreateWriterClient {
+  // Called with a created writer's mojo interface as a result for the
+  // CreateWriter() method of the AIManager. When failed to create a
+  // AIWriter, this method is called with a null pending remote.
+  OnResult(pending_remote<blink.mojom.AIWriter>? writer);
+};
+
+// The client interface that receives an AIRewriter from an AIManager.
+interface AIManagerCreateRewriterClient {
+  // Called with a created rewriter's mojo interface as a result for the
+  // CreateRewriter() method of the AIManager. When failed to create a
+  // AIRewriter, this method is called with a null pending remote.
+  OnResult(pending_remote<blink.mojom.AIRewriter>? rewriter);
+};
+
+// The client interface that receives an AISummarizer from an AIManager.
+interface AIManagerCreateSummarizerClient {
+  // Called with a created summarizer's mojo interface as a result for the
+  // CreateSummarizer() method of the AIManager. When failed to create a
+  // AISummarizer, this method is called with a null pending remote.
+  OnResult(pending_remote<blink.mojom.AISummarizer>? summarizer);
+};
+
+// The enum describes the possible roles in the initial prompt.
+enum AIAssistantInitialPromptRole {
+  kSystem = 0,
+  kUser = 1,
+  kAssistant = 2,
+
+  // Append new line here
+};
+
+// Each initial prompt contains a role and the actual content.
+struct AIAssistantInitialPrompt {
+  AIAssistantInitialPromptRole role;
+  string content;
+};
+
+// The manager that could create a new session for the model.
+interface AIManager {
+  // Returns if it is possible to create a text session. For example, when
+  // the service in charge of model loading and session creation is not
+  // available, this should return false.
+  CanCreateAssistant() => (ModelAvailabilityCheckResult result);
+  // Creates a new session and returns the text session info if the session is
+  // created successfully.
+  // Note that this could return nullptr even if the previous
+  // `CanCreateAssistant()` returns `kReadily`, because some errors can only
+  // occur when we actually create the text session.
+  // See the explainer (https://github.com/explainers-by-googlers/prompt-api)
+  // for more information about the meaning of each parameter.
+  CreateAssistant(
+    pending_receiver<blink.mojom.AIAssistant> session,
+    AIAssistantSamplingParams? sampling_params,
+    string? system_prompt,
+    array<AIAssistantInitialPrompt> initial_prompts
+  ) => (AIAssistantInfo? info);
+  // Returns if it is possible to create a summarizer. For example, when
+  // the service in charge of model loading and session creation is not
+  // available, this should return false.
+  CanCreateSummarizer() => (ModelAvailabilityCheckResult result);
+  // Creates a summarizer.
+  CreateSummarizer(
+    pending_remote<AIManagerCreateSummarizerClient> client,
+    AISummarizerCreateOptions options);
+  // Returns the default configuration for the text model information.
+  GetModelInfo() => (
+    AIModelInfo model_info
+  );
+  // Creates a new AIWriter, and returns it through the passed client. When
+  // the passed client is disconnected, the creation process will be aborted.
+  // `shared_context` in `options` is a string that is set in the
+  // AIWriterCreateOptions when the JS API `ai.writer.create()` is called.
+  CreateWriter(pending_remote<AIManagerCreateWriterClient> client,
+               AIWriterCreateOptions options);
+  // Creates a new AIRewriter, and returns it through the passed client.
+  // When the passed client is disconnected, the creation process will be
+  // aborted.
+  // `shared_context`, `tone` and `length` in `options` are set in the
+  // AIRewriterCreateOptions when the JS API `ai.rewriter.create()` is called.
+  CreateRewriter(pending_remote<AIManagerCreateRewriterClient> client,
+                 AIRewriterCreateOptions options);
+};

@@ -15,8 +15,8 @@ import sys
 
 from pylib.constants import host_paths
 
-with host_paths.SysPath(host_paths.BUILD_COMMON_PATH):
-  import perf_tests_results_helper # pylint: disable=import-error
+with host_paths.SysPath(host_paths.BUILD_UTIL_PATH):
+  from lib.common import perf_tests_results_helper
 
 with host_paths.SysPath(host_paths.TRACING_PATH):
   from tracing.value import convert_chart_json # pylint: disable=import-error

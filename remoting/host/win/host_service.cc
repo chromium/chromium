@@ -8,6 +8,7 @@
 #include "remoting/host/win/host_service.h"
 
 #include <windows.h>
+
 #include <sddl.h>
 #include <wtsapi32.h>
 

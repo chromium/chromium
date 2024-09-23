@@ -6,7 +6,6 @@
 import json
 import logging
 import os
-import re
 import signal
 import shutil
 import subprocess
@@ -15,6 +14,7 @@ import time
 
 from argparse import ArgumentParser
 from typing import Iterable, List, Optional, Tuple
+from dataclasses import dataclass
 
 from compatible_utils import get_ssh_prefix, get_host_arch
 
@@ -64,15 +64,37 @@ def _find_fuchsia_sdk_root() -> str:
 
 SDK_ROOT = os.path.abspath(_find_fuchsia_sdk_root())
 
+
+def _find_fuchsia_gn_sdk_root() -> str:
+    """Define the root of the fuchsia sdk."""
+    if os.environ.get('FUCHSIA_GN_SDK_ROOT'):
+        return os.environ['FUCHSIA_GN_SDK_ROOT']
+    return os.path.join(DIR_SRC_ROOT, 'third_party', 'fuchsia-gn-sdk', 'src')
+
+
+GN_SDK_ROOT = os.path.abspath(_find_fuchsia_gn_sdk_root())
+
 SDK_TOOLS_DIR = os.path.join(SDK_ROOT, 'tools', get_host_arch())
 _FFX_TOOL = os.path.join(SDK_TOOLS_DIR, 'ffx')
+_FFX_ISOLATE_DIR = 'FFX_ISOLATE_DIR'
 
 
 def set_ffx_isolate_dir(isolate_dir: str) -> None:
-    """Overwrites the global environment so the following ffx calls will have
-    the isolate dir being carried."""
+    """Sets the global environment so the following ffx calls will have the
+    isolate dir being carried."""
+    assert not has_ffx_isolate_dir(), 'The isolate dir is already set.'
+    os.environ[_FFX_ISOLATE_DIR] = isolate_dir
 
-    os.environ['FFX_ISOLATE_DIR'] = isolate_dir
+
+def get_ffx_isolate_dir() -> str:
+    """Returns the global environment of the isolate dir of ffx. This function
+    should only be called after set_ffx_isolate_dir."""
+    return os.environ[_FFX_ISOLATE_DIR]
+
+
+def has_ffx_isolate_dir() -> bool:
+    """Returns whether the isolate dir of ffx is set."""
+    return _FFX_ISOLATE_DIR in os.environ
 
 
 def get_hash_from_sdk():
@@ -119,14 +141,13 @@ def _get_daemon_status():
     """
     status = json.loads(
         run_ffx_command(cmd=('daemon', 'socket'),
-                        check=True,
                         capture_output=True,
-                        json_out=True,
-                        suppress_repair=True).stdout.strip())
+                        json_out=True).stdout.strip())
     return status.get('pid', {}).get('status', {'NotRunning': True})
 
 
-def _is_daemon_running():
+def is_daemon_running() -> bool:
+    """Returns if the daemon is running."""
     return 'Running' in _get_daemon_status()
 
 
@@ -147,35 +168,13 @@ def _wait_for_daemon(start=True, timeout_seconds=100):
     sleep_period_seconds = 5
     attempts = int(timeout_seconds / sleep_period_seconds)
     for i in range(attempts):
-        if _is_daemon_running() == start:
+        if is_daemon_running() == start:
             return
         if i != attempts:
             logging.info('Waiting for daemon to %s...', wanted_status)
             time.sleep(sleep_period_seconds)
 
     raise TimeoutError(f'Daemon did not {wanted_status} in time.')
-
-
-def _run_repair_command(output):
-    """Scans |output| for a self-repair command to run and, if found, runs it.
-
-    Returns:
-      True if a repair command was found and ran successfully. False otherwise.
-    """
-    # Check for a string along the lines of:
-    # "Run `ffx doctor --restart-daemon` for further diagnostics."
-    match = re.search('`ffx ([^`]+)`', output)
-    if not match or len(match.groups()) != 1:
-        return False  # No repair command found.
-    args = match.groups()[0].split()
-
-    try:
-        run_ffx_command(cmd=args, suppress_repair=True)
-        # Need the daemon to be up at the end of this.
-        _wait_for_daemon(start=True)
-    except subprocess.CalledProcessError:
-        return False  # Repair failed.
-    return True  # Repair succeeded.
 
 
 # The following two functions are the temporary work around before
@@ -191,7 +190,7 @@ def start_ffx_daemon():
     should be used with caution unless it's really needed to "restart" the
     daemon by explicitly calling stop daemon first.
     """
-    assert not _is_daemon_running(), "Call stop_ffx_daemon first."
+    assert not is_daemon_running(), "Call stop_ffx_daemon first."
     run_ffx_command(cmd=('doctor', '--restart-daemon'), check=False)
     _wait_for_daemon(start=True)
 
@@ -202,28 +201,18 @@ def stop_ffx_daemon():
     _wait_for_daemon(start=False)
 
 
-def run_ffx_command(suppress_repair: bool = False,
-                    check: bool = True,
+def run_ffx_command(check: bool = True,
                     capture_output: Optional[bool] = None,
                     timeout: Optional[int] = None,
                     **kwargs) -> subprocess.CompletedProcess:
     """Runs `ffx` with the given arguments, waiting for it to exit.
 
-    If `ffx` exits with a non-zero exit code, the output is scanned for a
-    recommended repair command (e.g., "Run `ffx doctor --restart-daemon` for
-    further diagnostics."). If such a command is found, it is run and then the
-    original command is retried. This behavior can be suppressed via the
-    `suppress_repair` argument.
-
     **
-    Except for `suppress_repair`, the arguments below are named after
-    |subprocess.run| arguments. They are overloaded to avoid them from being
-    forwarded to |subprocess.Popen|.
+    The arguments below are named after |subprocess.run| arguments. They are
+    overloaded to avoid them from being forwarded to |subprocess.Popen|.
     **
     See run_continuous_ffx_command for additional arguments.
     Args:
-        suppress_repair: If True, do not attempt to find and run a repair
-            command.
         check: If True, CalledProcessError is raised if ffx returns a non-zero
             exit code.
         capture_output: Whether to capture both stdout/stderr.
@@ -234,12 +223,9 @@ def run_ffx_command(suppress_repair: bool = False,
     Raises:
         CalledProcessError if |check| is true.
     """
-    # Always capture output when:
-    # - Repair does not need to be suppressed
-    # - capture_output is Truthy
-    if capture_output or not suppress_repair:
+    if capture_output:
         kwargs['stdout'] = subprocess.PIPE
-        kwargs['stderr'] = subprocess.STDOUT
+        kwargs['stderr'] = subprocess.PIPE
     proc = None
     try:
         proc = run_continuous_ffx_command(**kwargs)
@@ -254,24 +240,14 @@ def run_ffx_command(suppress_repair: bool = False,
             completed_proc.check_returncode()
         return completed_proc
     except subprocess.CalledProcessError as cpe:
-        if proc is None:
-            raise
         logging.error('%s %s failed with returncode %s.',
                       os.path.relpath(_FFX_TOOL),
                       subprocess.list2cmdline(proc.args[1:]), cpe.returncode)
-        if cpe.output:
-            logging.error('stdout of the command: %s', cpe.output)
-        if suppress_repair or (cpe.output
-                               and not _run_repair_command(cpe.output)):
-            raise
-
-    # If the original command failed but a repair command was found and
-    # succeeded, try one more time with the original command.
-    return run_ffx_command(suppress_repair=True,
-                           check=check,
-                           capture_output=capture_output,
-                           timeout=timeout,
-                           **kwargs)
+        if cpe.stdout:
+            logging.error('stdout of the command: %s', cpe.stdout)
+        if cpe.stderr:
+            logging.error('stderr or the command: %s', cpe.stderr)
+        raise
 
 
 def run_continuous_ffx_command(cmd: Iterable[str],
@@ -362,11 +338,19 @@ def get_component_uri(package: str) -> str:
     return f'fuchsia-pkg://{REPO_ALIAS}/{package}#meta/{package}.cm'
 
 
+def ssh_run(cmd: List[str],
+            target_id: Optional[str],
+            check=True,
+            **kwargs) -> subprocess.CompletedProcess:
+    """Runs a command on the |target_id| via ssh."""
+    ssh_prefix = get_ssh_prefix(get_ssh_address(target_id))
+    return subprocess.run(ssh_prefix + ['--'] + cmd, check=check, **kwargs)
+
+
 def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
     """Ensure that all |packages| are installed on a device."""
 
-    ssh_prefix = get_ssh_prefix(get_ssh_address(target_id))
-    subprocess.run(ssh_prefix + ['--', 'pkgctl', 'gc'], check=False)
+    ssh_run(['pkgctl', 'gc'], target_id, check=False)
 
     def _retry_command(cmd: List[str],
                        retries: int = 2,
@@ -375,9 +359,9 @@ def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
 
         for i in range(retries):
             if i == retries - 1:
-                proc = subprocess.run(cmd, **kwargs, check=True)
+                proc = ssh_run(cmd, **kwargs, check=True)
                 return proc
-            proc = subprocess.run(cmd, **kwargs, check=False)
+            proc = ssh_run(cmd, **kwargs, check=False)
             if proc.returncode == 0:
                 return proc
             time.sleep(3)
@@ -385,10 +369,10 @@ def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
 
     for package in packages:
         resolve_cmd = [
-            '--', 'pkgctl', 'resolve',
+            'pkgctl', 'resolve',
             'fuchsia-pkg://%s/%s' % (REPO_ALIAS, package)
         ]
-        _retry_command(ssh_prefix + resolve_cmd)
+        _retry_command(resolve_cmd, target_id=target_id)
 
 
 def get_ssh_address(target_id: Optional[str]) -> str:
@@ -460,23 +444,53 @@ def wait_for_sigterm(extra_msg: str = '') -> None:
         logging.info('SIGTERM received; %s', extra_msg)
 
 
+@dataclass
+class BuildInfo:
+    """A structure replica of the output of build section in `ffx target show`.
+    """
+    version: Optional[str] = None
+    product: Optional[str] = None
+    board: Optional[str] = None
+    commit: Optional[str] = None
+
+
+def get_build_info(target: Optional[str] = None) -> Optional[BuildInfo]:
+    """Retrieves build info from the device.
+
+    Returns:
+        A BuildInfo struct, or None if anything goes wrong.
+        Any field in BuildInfo can be None to indicate the missing of the field.
+    """
+    info_cmd = run_ffx_command(cmd=('--machine', 'json', 'target', 'show'),
+                               target_id=target,
+                               capture_output=True,
+                               check=False)
+    # If the information was not retrieved, return empty strings to indicate
+    # unknown system info.
+    if info_cmd.returncode != 0:
+        logging.error('ffx target show returns %d', info_cmd.returncode)
+        return None
+    try:
+        info_json = json.loads(info_cmd.stdout.strip())
+    except json.decoder.JSONDecodeError as error:
+        logging.error('Unexpected json string: %s, exception: %s',
+                      info_cmd.stdout, error)
+        return None
+    if isinstance(info_json, dict) and 'build' in info_json and isinstance(
+            info_json['build'], dict):
+        return BuildInfo(**info_json['build'])
+    return None
+
+
 def get_system_info(target: Optional[str] = None) -> Tuple[str, str]:
-    """Retrieves installed OS version frm device.
+    """Retrieves installed OS version from the device.
 
     Returns:
         Tuple of strings, containing {product, version number), or a pair of
         empty strings to indicate an error.
     """
-    info_cmd = run_ffx_command(cmd=('target', 'show', '--json'),
-                               target_id=target,
-                               capture_output=True,
-                               check=False)
-    if info_cmd.returncode == 0:
-        info_json = json.loads(info_cmd.stdout.strip())
-        for info in info_json:
-            if info['title'] == 'Build':
-                return (info['child'][1]['value'], info['child'][0]['value'])
+    build_info = get_build_info(target)
+    if not build_info:
+        return ('', '')
 
-    # If the information was not retrieved, return empty strings to indicate
-    # unknown system info.
-    return ('', '')
+    return (build_info.product or '', build_info.version or '')

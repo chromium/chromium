@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/installer/util/scoped_token_privilege.h"
 
 #include <shlobj.h>
+
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,9 +41,9 @@ bool CurrentProcessHasPrivilege(const wchar_t* privilege_name) {
   EXPECT_FALSE(
       ::GetTokenInformation(token.Get(), TokenPrivileges, nullptr, 0, &size));
 
-  std::unique_ptr<BYTE[]> privileges_bytes(new BYTE[size]);
+  auto privileges_bytes = base::HeapArray<BYTE>::WithSize(size);
   TOKEN_PRIVILEGES* privileges =
-      reinterpret_cast<TOKEN_PRIVILEGES*>(privileges_bytes.get());
+      reinterpret_cast<TOKEN_PRIVILEGES*>(privileges_bytes.data());
 
   if (!::GetTokenInformation(token.Get(), TokenPrivileges, privileges, size,
                              &size)) {
@@ -48,14 +55,14 @@ bool CurrentProcessHasPrivilege(const wchar_t* privilege_name) {
   // anything longer will obviously not be equal to |privilege_name|.
   const DWORD desired_size = static_cast<DWORD>(wcslen(privilege_name));
   const DWORD buffer_size = desired_size + 1;
-  std::unique_ptr<wchar_t[]> name_buffer(new wchar_t[buffer_size]);
+  auto name_buffer = base::HeapArray<wchar_t>::WithSize(buffer_size);
   for (int i = privileges->PrivilegeCount - 1; i >= 0; --i) {
     LUID_AND_ATTRIBUTES& luid_and_att = privileges->Privileges[i];
     size = buffer_size;
-    ::LookupPrivilegeName(nullptr, &luid_and_att.Luid, name_buffer.get(),
+    ::LookupPrivilegeName(nullptr, &luid_and_att.Luid, name_buffer.data(),
                           &size);
     if (size == desired_size &&
-        wcscmp(name_buffer.get(), privilege_name) == 0) {
+        wcscmp(name_buffer.data(), privilege_name) == 0) {
       return luid_and_att.Attributes == SE_PRIVILEGE_ENABLED;
     }
   }

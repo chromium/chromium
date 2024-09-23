@@ -45,8 +45,7 @@ class MEDIA_EXPORT DecryptingMediaResource : public MediaResource {
 
   // MediaResource implementation:
   MediaResource::Type GetType() const override;
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> GetAllStreams()
-      override;
+  std::vector<DemuxerStream*> GetAllStreams() override;
 
   void Initialize(InitCB init_cb, WaitingCB waiting_cb_);
 
@@ -68,7 +67,7 @@ class MEDIA_EXPORT DecryptingMediaResource : public MediaResource {
   // will be returned when GetAllStreams() is invoked. |owned_streams_| is the
   // set of DecryptingDemuxerStreams that we have created and own (i.e.
   // responsible for destructing).
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams_;
+  std::vector<DemuxerStream*> streams_;
   std::vector<std::unique_ptr<DecryptingDemuxerStream>> owned_streams_;
 
   // Called when the final DecryptingDemuxerStream has been initialized *or*

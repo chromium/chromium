@@ -8,10 +8,11 @@
 #include <optional>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
-#include "base/run_loop.h"
 #include "chrome/browser/printing/print_view_manager.h"
-#include "content/public/browser/web_contents.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace printing {
 
@@ -54,22 +55,20 @@ class TestPrintViewManager : public PrintViewManager {
   bool PrintNow(content::RenderFrameHost* rfh) override;
 
  protected:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
+  // `PrintViewManager` overrides
+  void PrintPreviewRejectedForTesting() override;
+  void PrintPreviewAllowedForTesting() override;
 
  private:
   // `PrintViewManagerBase` overrides.
   scoped_refptr<PrintJob> CreatePrintJob(
       PrintJobManager* print_job_manager) override;
 
-  // `PrintViewManager` overrides
-  void PrintPreviewAllowedForTesting() override;
-
   // printing::mojom::PrintManagerHost:
   void UpdatePrintSettings(base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override;
 
+  base::OnceClosure quit_closure_;
   mojom::PrintPagesParamsPtr snooped_params_;
   std::optional<bool> print_now_result_;
 #if BUILDFLAG(IS_WIN)

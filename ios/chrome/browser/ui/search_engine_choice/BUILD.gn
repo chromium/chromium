@@ -9,8 +9,13 @@ source_set("search_engine_choice") {
     "search_engine_choice_coordinator.mm",
     "search_engine_choice_mediator.h",
     "search_engine_choice_mediator.mm",
+    "search_engine_choice_mutator.h",
     "search_engine_choice_view_controller.h",
     "search_engine_choice_view_controller.mm",
+    "snippet_search_engine_button.h",
+    "snippet_search_engine_button.mm",
+    "snippet_search_engine_element.h",
+    "snippet_search_engine_element.mm",
   ]
   deps = [
     ":constants",
@@ -18,23 +23,27 @@ source_set("search_engine_choice") {
     "//base",
     "//components/search_engines",
     "//components/strings",
+    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
+    "//ios/chrome/browser/search_engine_choice/model",
+    "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/list_model:list_model",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/first_run:screen_delegate",
-    "//ios/chrome/browser/ui/search_engine_choice/fake_omnibox",
-    "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table",
-    "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells",
-    "//ios/chrome/browser/ui/search_engine_choice/why_am_i_seeing_this",
+    "//ios/chrome/browser/ui/scoped_iphone_portrait_only",
+    "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more",
     "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/common/ui/promo_style:utils",
     "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:image_util",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -54,17 +63,10 @@ source_set("ui_util") {
   ]
   deps = [
     "//base",
-    "//base:i18n",
     "//components/search_engines",
-    "//components/strings",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/search_engine_choice:constants",
-    "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/util",
-    "//ios/chrome/common/ui/util:image_util",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -85,37 +87,12 @@ source_set("earl_grey_ui_test_util") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/search_engine_choice:constants",
     "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "search_engine_choice_coordinator_unittest.mm" ]
-  deps = [
-    ":search_engine_choice",
-    "//base/test:test_support",
-    "//components/country_codes",
-    "//components/prefs:test_support",
-    "//components/search_engines",
-    "//components/strings",
-    "//components/sync_preferences:test_support",
-    "//ios/chrome/browser/promos_manager/model:test_support",
-    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
-    "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/browser_view",
-    "//ios/chrome/browser/ui/first_run:screen_delegate",
-    "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table",
-    "//ios/chrome/test:test_support",
-    "//ios/web/public/test",
-    "//testing/gtest",
-    "//third_party/ocmock",
-  ]
 }
 
 source_set("eg2_tests") {
@@ -130,6 +107,7 @@ source_set("eg2_tests") {
     "//build:branding_buildflags",
     "//components/search_engines",
     "//components/signin/public/base:signin_switches",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

@@ -5,6 +5,8 @@
 /**
  * @fileoverview Interface to prevent circular dependencies.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {TextEditHandler} from '../editing/text_edit_handler.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
@@ -25,3 +27,5 @@ export abstract class DesktopAutomationInterface extends BaseAutomationHandler {
 export namespace DesktopAutomationInterface {
   export let instance: DesktopAutomationInterface|undefined;
 }
+
+TestImportManager.exportForTesting(DesktopAutomationInterface);

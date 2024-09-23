@@ -9,7 +9,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/xr/service/xr_runtime_manager_impl.h"
 #include "content/browser/xr/webxr_internals/mojom/webxr_internals.mojom.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,7 +21,8 @@ namespace content {
 class WebXrInternalsHandlerImpl : public webxr::mojom::WebXrInternalsHandler {
  public:
   explicit WebXrInternalsHandlerImpl(
-      mojo::PendingReceiver<webxr::mojom::WebXrInternalsHandler> receiver);
+      mojo::PendingReceiver<webxr::mojom::WebXrInternalsHandler> receiver,
+      WebContents* web_contents);
 
   WebXrInternalsHandlerImpl(const WebXrInternalsHandlerImpl&) = delete;
   WebXrInternalsHandlerImpl& operator=(const WebXrInternalsHandlerImpl&) =

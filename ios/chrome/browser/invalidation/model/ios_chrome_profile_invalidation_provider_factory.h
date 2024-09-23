@@ -5,12 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_INVALIDATION_MODEL_IOS_CHROME_PROFILE_INVALIDATION_PROVIDER_FACTORY_H_
 #define IOS_CHROME_BROWSER_INVALIDATION_MODEL_IOS_CHROME_PROFILE_INVALIDATION_PROVIDER_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace invalidation {
 class ProfileInvalidationProvider;
@@ -21,11 +20,12 @@ class ProfileInvalidationProvider;
 class IOSChromeProfileInvalidationProviderFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // Returns the ProfileInvalidationProvider for the given `browser_state`,
-  // lazily creating one first if required.
+  // TODO(crbug.com/358301380): remove this method.
   static invalidation::ProfileInvalidationProvider* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
 
+  static invalidation::ProfileInvalidationProvider* GetForProfile(
+      ProfileIOS* profile);
   static IOSChromeProfileInvalidationProviderFactory* GetInstance();
 
   IOSChromeProfileInvalidationProviderFactory(

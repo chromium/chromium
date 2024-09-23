@@ -165,6 +165,29 @@ class MetricsLogTest : public testing::Test {
   TestingPrefServiceSimple prefs_;
 };
 
+TEST_F(MetricsLogTest, FinalizedRecordId) {
+  MetricsLog log1(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
+  MetricsLog log2(kClientId, kSessionId, MetricsLog::INDEPENDENT_LOG, &client_);
+  MetricsLog log3(kClientId, kSessionId, MetricsLog::INITIAL_STABILITY_LOG,
+                  &client_);
+
+  ASSERT_FALSE(log1.uma_proto()->has_finalized_record_id());
+  ASSERT_FALSE(log2.uma_proto()->has_finalized_record_id());
+  ASSERT_FALSE(log3.uma_proto()->has_finalized_record_id());
+
+  // Set an initial finalized record-id value in prefs, so test values are
+  // predictable.
+  prefs_.SetInteger(prefs::kMetricsLogFinalizedRecordId, 500);
+
+  log1.AssignFinalizedRecordId(&prefs_);
+  log2.AssignFinalizedRecordId(&prefs_);
+  log3.AssignFinalizedRecordId(&prefs_);
+
+  EXPECT_EQ(501, log1.uma_proto()->finalized_record_id());
+  EXPECT_EQ(502, log2.uma_proto()->finalized_record_id());
+  EXPECT_EQ(503, log3.uma_proto()->finalized_record_id());
+}
+
 TEST_F(MetricsLogTest, RecordId) {
   MetricsLog log1(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
   MetricsLog log2(kClientId, kSessionId, MetricsLog::INDEPENDENT_LOG, &client_);
@@ -185,6 +208,17 @@ TEST_F(MetricsLogTest, RecordId) {
   EXPECT_EQ(501, log1.uma_proto()->record_id());
   EXPECT_EQ(502, log2.uma_proto()->record_id());
   EXPECT_EQ(503, log3.uma_proto()->record_id());
+}
+
+TEST_F(MetricsLogTest, SessionHash) {
+  MetricsLog log1(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
+  MetricsLog log2(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
+
+  // Verify that created logs are tagged with the same session hash.
+  EXPECT_TRUE(log1.uma_proto()->system_profile().has_session_hash());
+  EXPECT_TRUE(log2.uma_proto()->system_profile().has_session_hash());
+  EXPECT_EQ(log1.uma_proto()->system_profile().session_hash(),
+            log2.uma_proto()->system_profile().session_hash());
 }
 
 TEST_F(MetricsLogTest, LogType) {
@@ -245,6 +279,9 @@ TEST_F(MetricsLogTest, BasicRecord) {
   // Hashes of "mock-flag-1" and "mock-flag-2" from SetUpCommandLine.
   system_profile->add_command_line_key_hash(2578836236);
   system_profile->add_command_line_key_hash(2867288449);
+  // The session hash.
+  system_profile->set_session_hash(
+      log.uma_proto()->system_profile().session_hash());
 
 #if defined(ADDRESS_SANITIZER) || DCHECK_IS_ON()
   system_profile->set_is_instrumented_build(true);

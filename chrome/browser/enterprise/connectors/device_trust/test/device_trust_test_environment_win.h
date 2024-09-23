@@ -12,6 +12,10 @@
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 
+namespace policy {
+class DeviceManagementService;
+}  // namespace policy
+
 namespace enterprise_connectors {
 
 class DeviceTrustTestEnvironmentWin : public DeviceTrustTestEnvironment,
@@ -22,8 +26,8 @@ class DeviceTrustTestEnvironmentWin : public DeviceTrustTestEnvironment,
 
   // KeyRotationCommandFactory:
   std::unique_ptr<KeyRotationCommand> CreateCommand(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      override;
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      policy::DeviceManagementService* device_management_service) override;
 
   // DeviceTrustTestEnvironment:
   void SetUpExistingKey() override;

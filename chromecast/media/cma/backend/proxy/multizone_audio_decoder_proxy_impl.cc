@@ -77,8 +77,6 @@ void MultizoneAudioDecoderProxyImpl::LogicalResume() {
 int64_t MultizoneAudioDecoderProxyImpl::GetCurrentPts() const {
   CheckCalledOnCorrectThread();
   NOTREACHED();
-
-  return 0;
 }
 
 CmaBackend::Decoder::BufferStatus MultizoneAudioDecoderProxyImpl::PushBuffer(

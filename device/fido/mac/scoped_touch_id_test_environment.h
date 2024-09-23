@@ -54,6 +54,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ScopedTouchIdTestEnvironment {
   // Will prevent the next call to PromptTouchId from running the callback.
   void DoNotResolveNextPrompt();
 
+  crypto::ScopedFakeAppleKeychainV2* keychain() { return keychain_.get(); }
+
  private:
   static std::unique_ptr<TouchIdContext> ForwardCreate();
   static bool ForwardTouchIdAvailable(AuthenticatorConfig);

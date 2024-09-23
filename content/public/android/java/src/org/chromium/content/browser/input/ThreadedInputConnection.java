@@ -821,7 +821,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
     /**
      * @see InputConnection#closeConnection()
      */
-    // TODO(crbug.com/635567): Fix this properly.
+    // TODO(crbug.com/40479664): Fix this properly.
     @Override
     @SuppressLint("MissingSuperCall")
     public void closeConnection() {

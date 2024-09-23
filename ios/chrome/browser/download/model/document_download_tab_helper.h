@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/web/public/download/download_task.h"
 #import "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
@@ -26,6 +27,9 @@ class DocumentDownloadTabHelper
   explicit DocumentDownloadTabHelper(web::WebState* web_state);
 
   ~DocumentDownloadTabHelper() override;
+
+  // Returns whether the current download task was created by this TabHelper.
+  bool IsDownloadTaskCreatedByCurrentTabHelper();
 
   // web::WebStateObserver implementation.
   void WebStateDestroyed(web::WebState* web_state) override;
@@ -65,10 +69,19 @@ class DocumentDownloadTabHelper
 
   // Whether the download should be triggered but there is already an ongoing
   // task.
-  bool waiting_for_previous_task_;
+  bool waiting_for_previous_task_ = false;
+
+  // Whether `observed_task_` was created by this TabHelper.
+  bool current_task_is_document_download_ = false;
 
   // The download task that is currently observed. Kept for cleanup purpose.
   raw_ptr<web::DownloadTask> observed_task_;
+
+  // The current state of the `observed_task_`.
+  // This is used to track the state before it is set to `kCancelled` for
+  // destruction.
+  web::DownloadTask::State observed_task_state_ =
+      web::DownloadTask::State::kNotStarted;
 
   // The size of the file in bytes, if reported in the response headers.
   int64_t file_size_ = -1;

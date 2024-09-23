@@ -2,6 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="enable_pdf_ink2">
+// The different types of annotation brushes.
+export enum AnnotationBrushType {
+  ERASER = 'eraser',
+  HIGHLIGHTER = 'highlighter',
+  PEN = 'pen',
+}
+
+export interface Color {
+  r: number;
+  g: number;
+  b: number;
+}
+
+// The brush with parameters. Colors are optional, since some brushes do not
+// need colors.
+export interface AnnotationBrush {
+  type: AnnotationBrushType;
+  color?: Color;
+  size: number;
+}
+// </if>
+
 export interface Attachment {
   name: string;
   size: number;
@@ -40,6 +63,17 @@ export enum FittingType {
   FIT_TO_BOUNDING_BOX_HEIGHT = 'fit-to-bounding-box-height',
 }
 
+/**
+ * The different types of form fields that can be focused.
+ */
+export enum FormFieldFocusType {
+  // LINT.IfChange(FocusFieldTypes)
+  NONE = 'none',
+  NON_TEXT = 'non-text',
+  TEXT = 'text',
+  // LINT.ThenChange(//pdf/pdf_view_web_plugin.cc:FocusFieldTypes)
+}
+
 export interface NamedDestinationMessageData {
   messageId: string;
   pageNumber: number;
@@ -72,20 +106,3 @@ export type ExtendedKeyEvent = KeyboardEvent&{
   fromScriptingAPI?: boolean,
   fromPlugin?: boolean,
 };
-
-/**
- * These values are persisted to logs. Entries should not be renumbered and
- * numeric values should never be reused. This enum is tied directly to a UMA
- * enum, PdfOcrUserSelection, defined in
- * //tools/metrics/histograms/metadata/accessibility/enums.xml and should always
- * reflect it (do not change one without changing the other).
- */
-export enum PdfOcrUserSelection {
-  DEPRECATED_TURN_ON_ONCE_FROM_CONTEXT_MENU = 0,
-  TURN_ON_ALWAYS_FROM_CONTEXT_MENU = 1,
-  TURN_OFF_FROM_CONTEXT_MENU = 2,
-  TURN_ON_ALWAYS_FROM_MORE_ACTIONS = 3,
-  TURN_OFF_FROM_MORE_ACTIONS = 4,
-  TURN_ON_ALWAYS_FROM_SETTINGS = 5,
-  TURN_OFF_FROM_SETTINGS = 6,
-}

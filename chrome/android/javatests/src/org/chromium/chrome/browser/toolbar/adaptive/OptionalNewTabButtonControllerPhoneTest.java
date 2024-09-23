@@ -32,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -45,7 +46,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
@@ -123,7 +123,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
         // 2: opened by the click
         assertEquals(
                 Integer.valueOf(2),
-                TestThreadUtils.<Integer>runOnUiThreadBlockingNoException(
+                ThreadUtils.<Integer>runOnUiThreadBlocking(
                         () ->
                                 sActivityTestRule
                                         .getActivity()
@@ -148,7 +148,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
                                         isEnabled(),
                                         withContentDescription(mButtonDescription))));
         // Clicking with espresso is flaky, perform click directly.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivityTestRule
                             .getActivity()
@@ -161,7 +161,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
         // 2: opened by the click
         assertEquals(
                 Integer.valueOf(2),
-                TestThreadUtils.<Integer>runOnUiThreadBlockingNoException(
+                ThreadUtils.<Integer>runOnUiThreadBlocking(
                         () -> {
                             return sActivityTestRule
                                     .getActivity()
@@ -189,7 +189,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
         // 2: opened by the click
         assertEquals(
                 Integer.valueOf(2),
-                TestThreadUtils.<Integer>runOnUiThreadBlockingNoException(
+                ThreadUtils.<Integer>runOnUiThreadBlocking(
                         () ->
                                 sActivityTestRule
                                         .getActivity()
@@ -197,7 +197,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
                                         .getComprehensiveModel()
                                         .getCount()));
         assertTrue(
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 sActivityTestRule
                                         .getActivity()
@@ -231,7 +231,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
     @DisabledTest(message = "crbug.com/1450561")
     public void testButton_hidesOnNtp() {
         sActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> sActivityTestRule.getActivity().getActivityTab().reload());
         onViewWaiting(
                 allOf(

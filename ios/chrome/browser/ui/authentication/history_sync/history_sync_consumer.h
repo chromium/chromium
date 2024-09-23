@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/signin/public/identity_manager/tribool.h"
+
 // Handles history sync UI updates
 @protocol HistorySyncConsumer
 
@@ -19,6 +21,9 @@
 
 // Set the text for the disclaimer footer.
 - (void)setFooterText:(NSString*)footerText;
+
+// Set the button style and update button visibility.
+- (void)displayButtonsWithRestrictionCapability:(signin::Tribool)capability;
 
 @end
 

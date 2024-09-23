@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share.share_sheet;
 
 import android.app.Activity;
-import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.text.TextUtils;
 import android.view.View;
@@ -13,7 +12,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -29,6 +27,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper;
+import org.chromium.chrome.browser.share.ShareMetricsUtils;
+import org.chromium.chrome.browser.share.ShareMetricsUtils.ShareCustomAction;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
@@ -50,12 +50,11 @@ import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
 /** Coordinator for displaying the share sheet. */
-// TODO(crbug/1022172): Should be package-protected once modularization is complete.
+// TODO(crbug.com/40106499): Should be package-protected once modularization is complete.
 public class ShareSheetCoordinator
         implements ActivityStateObserver,
                 ChromeOptionShareCallback,
@@ -95,14 +94,14 @@ public class ShareSheetCoordinator
      *
      * @param controller The {@link BottomSheetController} for the current activity.
      * @param lifecycleDispatcher Dispatcher for activity lifecycle events, e.g. configuration
-     * changes.
+     *     changes.
      * @param tabProvider Supplier for the current activity tab.
      * @param modelBuilder The {@link ShareSheetPropertyModelBuilder} for the share sheet.
      * @param isIncognito Whether the share sheet was opened in incognito mode or not.
      * @param profile The current profile of the User.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
-    // TODO(crbug/1022172): Should be package-protected once modularization is complete.
+    // TODO(crbug.com/40106499): Should be package-protected once modularization is complete.
     public ShareSheetCoordinator(
             BottomSheetController controller,
             ActivityLifecycleDispatcher lifecycleDispatcher,
@@ -181,7 +180,7 @@ public class ShareSheetCoordinator
         }
     }
 
-    // TODO(crbug/1022172): Should be package-protected once modularization is complete.
+    // TODO(crbug.com/40106499): Should be package-protected once modularization is complete.
     @Override
     public void showShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime) {
@@ -203,7 +202,7 @@ public class ShareSheetCoordinator
 
         mBottomSheet =
                 new ShareSheetBottomSheetContent(
-                        mActivity, mIconBridge, this, params, mFeatureEngagementTracker);
+                        mActivity, mProfile, mIconBridge, this, params, mFeatureEngagementTracker);
 
         mShareStartTime = shareStartTime;
         mLinkGenerationStatusForMetrics = mBottomSheet.getLinkGenerationState();
@@ -356,7 +355,7 @@ public class ShareSheetCoordinator
                         mLinkToggleMetricsDetails,
                         mProfile,
                         mDeviceLockActivityLauncher);
-        mIsMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
+        mIsMultiWindow = activity.isInMultiWindowMode();
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(
                 contentTypes, chromeShareExtras.getDetailedContentType(), mIsMultiWindow);
@@ -371,14 +370,10 @@ public class ShareSheetCoordinator
     /**
      * Create third-party property models.
      *
-     * <p>
-     * This method delivers its result asynchronously through {@code callback},
-     * to allow for the upcoming ShareRanking backend, which is asynchronous.
-     * The existing backend is synchronous, but this method is an asynchronous
-     * wrapper around it so that the design of the rest of this class won't need
-     * to change when ShareRanking is hooked up.
-     * TODO(https://crbug.com/1217186)
-     * </p>
+     * <p>This method delivers its result asynchronously through {@code callback}, to allow for the
+     * upcoming ShareRanking backend, which is asynchronous. The existing backend is synchronous,
+     * but this method is an asynchronous wrapper around it so that the design of the rest of this
+     * class won't need to change when ShareRanking is hooked up. TODO(crbug.com/40185097)
      */
     @VisibleForTesting
     void createThirdPartyPropertyModels(
@@ -396,14 +391,8 @@ public class ShareSheetCoordinator
                 activity, params, contentTypes, saveLastUsed, callback);
     }
 
-    class ResolveInfoPackageNameComparator implements Comparator<ResolveInfo> {
-        @Override
-        public int compare(ResolveInfo a, ResolveInfo b) {
-            return a.activityInfo.packageName.compareTo(b.activityInfo.packageName);
-        }
-    }
-
     static void recordShareMetrics(
+            @ShareCustomAction int shareActionType,
             String featureName,
             @LinkGeneration int linkGenerationStatus,
             LinkToggleMetricsDetails linkToggleMetricsDetails,
@@ -411,6 +400,9 @@ public class ShareSheetCoordinator
             Profile profile) {
         recordShareMetrics(featureName, linkGenerationStatus, linkToggleMetricsDetails, profile);
         recordTimeToShare(shareStartTime);
+        if (shareActionType != ShareCustomAction.INVALID) {
+            ShareMetricsUtils.recordShareUserAction(shareActionType, shareStartTime);
+        }
     }
 
     private static void recordSharedHighlightingUsage(Profile profile) {
@@ -487,7 +479,7 @@ public class ShareSheetCoordinator
         if (mActivity == null) {
             return;
         }
-        boolean isMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(mActivity);
+        boolean isMultiWindow = mActivity.isInMultiWindowMode();
         // mContentTypes is null if Chrome features should not be shown.
         if (mIsMultiWindow == isMultiWindow || mContentTypes == null) {
             return;

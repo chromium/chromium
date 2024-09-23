@@ -10,10 +10,12 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
@@ -28,8 +30,9 @@ namespace {
 // Returns true iff |suffix_candidate| is a suffix of |str|.
 bool IsSuffix(const std::u16string& str,
               const std::u16string& suffix_candidate) {
-  if (str.size() < suffix_candidate.size())
+  if (str.size() < suffix_candidate.size()) {
     return false;
+  }
   return std::equal(suffix_candidate.rbegin(), suffix_candidate.rend(),
                     str.rbegin());
 }
@@ -42,8 +45,9 @@ std::optional<PasswordHashData> FindPasswordReuse(
   std::optional<PasswordHashData> longest_match = std::nullopt;
   size_t longest_match_size = 0;
   for (const PasswordHashData& hash_data : password_hash_list) {
-    if (input.size() < hash_data.length)
+    if (input.size() < hash_data.length) {
       continue;
+    }
     size_t offset = input.size() - hash_data.length;
     std::u16string reuse_candidate = input.substr(offset);
     // It is possible that input matches multiple passwords in the list,
@@ -77,8 +81,9 @@ PasswordReuseDetectorImpl::~PasswordReuseDetectorImpl() {
 void PasswordReuseDetectorImpl::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& form : results)
+  for (const auto& form : results) {
     AddPassword(*form);
+  }
 }
 
 void PasswordReuseDetectorImpl::OnLoginsChanged(
@@ -86,22 +91,26 @@ void PasswordReuseDetectorImpl::OnLoginsChanged(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& change : changes) {
     if (change.type() == PasswordStoreChange::ADD ||
-        change.type() == PasswordStoreChange::UPDATE)
+        change.type() == PasswordStoreChange::UPDATE) {
       AddPassword(change.form());
-    if (change.type() == PasswordStoreChange::REMOVE)
+    }
+    if (change.type() == PasswordStoreChange::REMOVE) {
       RemovePassword(change.form());
+    }
   }
 }
 
 void PasswordReuseDetectorImpl::OnLoginsRetained(
+    PasswordForm::Store password_store_type,
     const std::vector<PasswordForm>& retained_passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RemoveAllLoginsByStoreType(password_store_type);
 
-  passwords_with_matching_reused_credentials_.clear();
   // |retained_passwords| contains also blacklisted entities, but since they
   // don't have password value they will be skipped inside AddPassword().
-  for (const auto& form : retained_passwords)
+  for (const auto& form : retained_passwords) {
     AddPassword(form);
+  }
 }
 
 void PasswordReuseDetectorImpl::ClearCachedAccountStorePasswords() {
@@ -175,10 +184,9 @@ void PasswordReuseDetectorImpl::CheckReuse(
                              domain, reused_password_hash);
 }
 
-std::optional<PasswordHashData> 
-PasswordReuseDetectorImpl::CheckGaiaPasswordReuse(
-    const std::u16string& input,
-    const std::string& domain) {
+std::optional<PasswordHashData>
+PasswordReuseDetectorImpl::CheckGaiaPasswordReuse(const std::u16string& input,
+                                                  const std::string& domain) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!gaia_password_hash_data_list_.has_value() ||
       gaia_password_hash_data_list_->empty()) {
@@ -247,8 +255,9 @@ std::u16string PasswordReuseDetectorImpl::CheckSavedPasswordReuse(
     }
     // If the page's URL matches a saved domain for this password,
     // this isn't password-reuse.
-    if (base::Contains(signon_realms, registry_controlled_domain))
+    if (base::Contains(signon_realms, registry_controlled_domain)) {
       continue;
+    }
 
     matching_reused_credentials_set.insert(credentials.begin(),
                                            credentials.end());
@@ -295,10 +304,11 @@ void PasswordReuseDetectorImpl::UseEnterprisePasswordURLs(
 }
 
 void PasswordReuseDetectorImpl::ClearGaiaPasswordHash(
-  const std::string& username) {
+    const std::string& username) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!gaia_password_hash_data_list_)
+  if (!gaia_password_hash_data_list_) {
     return;
+  }
 
   std::erase_if(*gaia_password_hash_data_list_,
                 [&username](const PasswordHashData& data) {
@@ -319,8 +329,9 @@ void PasswordReuseDetectorImpl::ClearAllEnterprisePasswordHash() {
 
 void PasswordReuseDetectorImpl::ClearAllNonGmailPasswordHash() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!gaia_password_hash_data_list_)
+  if (!gaia_password_hash_data_list_) {
     return;
+  }
 
   std::erase_if(
       *gaia_password_hash_data_list_, [](const PasswordHashData& data) {
@@ -375,6 +386,27 @@ void PasswordReuseDetectorImpl::RemovePassword(const PasswordForm& form) {
   }
 }
 
+void PasswordReuseDetectorImpl::RemoveAllLoginsByStoreType(
+    PasswordForm::Store store_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto i = passwords_with_matching_reused_credentials_.begin();
+       i != passwords_with_matching_reused_credentials_.end();) {
+    // Remove all the matching credentials from the corresponding store.
+    std::erase_if(
+        i->second,
+        [store_type](const MatchingReusedCredential& matched_credential) {
+          return matched_credential.in_store == store_type;
+        });
+    // Remove the map entry if there are no matching credentials left for this
+    // password.
+    if (i->second.empty()) {
+      passwords_with_matching_reused_credentials_.erase(i++);
+    } else {
+      ++i;
+    }
+  }
+}
+
 PasswordReuseDetectorImpl::passwords_iterator
 PasswordReuseDetectorImpl::FindFirstSavedPassword(const std::u16string& input) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -385,8 +417,9 @@ PasswordReuseDetectorImpl::FindFirstSavedPassword(const std::u16string& input) {
   // largest key in the |passwords_with_matching_reused_credentials_| keys order
   // that is equal or smaller to |input|. There may be more, shorter, matches as
   // well -- call FindNextSavedPassword(it) to find the next one.
-  if (passwords_with_matching_reused_credentials_.empty())
+  if (passwords_with_matching_reused_credentials_.empty()) {
     return passwords_with_matching_reused_credentials_.end();
+  }
 
   // lower_bound returns the first key that is bigger or equal to input.
   passwords_iterator it =
@@ -405,8 +438,9 @@ PasswordReuseDetectorImpl::FindNextSavedPassword(
     const std::u16string& input,
     PasswordReuseDetectorImpl::passwords_iterator it) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (it == passwords_with_matching_reused_credentials_.begin())
+  if (it == passwords_with_matching_reused_credentials_.begin()) {
     return passwords_with_matching_reused_credentials_.end();
+  }
   --it;
   return IsSuffix(input, it->first)
              ? it

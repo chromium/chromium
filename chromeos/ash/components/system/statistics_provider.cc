@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/system/statistics_provider.h"
 
+#include <array>
 #include <string_view>
 
 #include "base/memory/singleton.h"
@@ -29,61 +30,12 @@ namespace {
 // some kevin devices and thus needs to be supported until AUE of these
 // devices. It's known *not* to be present on caroline.
 // TODO(tnagel): Remove "Product_S/N" after all devices that have it are AUE.
-const char* const kMachineInfoSerialNumberKeys[] = {
-    "flex_id",        // Used by Reven devices
-    "Product_S/N",    // Samsung legacy
-    "serial_number",  // VPD v2+ devices (Samsung: caroline and later)
+constexpr std::array kMachineInfoSerialNumberKeys = {
+    kSerialNumberKey,        // VPD v2+ devices (Samsung: caroline and later)
+    kFlexIdKey,              // Used by Reven devices
+    kLegacySerialNumberKey,  // Samsung legacy
 };
 }  // namespace
-
-// Key values for `GetMachineStatistic()`/`GetMachineFlag()` calls.
-const char kActivateDateKey[] = "ActivateDate";
-const char kBlockDevModeKey[] = "block_devmode";
-const char kCheckEnrollmentKey[] = "check_enrollment";
-const char kShouldSendRlzPingKey[] = "should_send_rlz_ping";
-const char kShouldSendRlzPingValueFalse[] = "0";
-const char kShouldSendRlzPingValueTrue[] = "1";
-const char kRlzEmbargoEndDateKey[] = "rlz_embargo_end_date";
-const char kEnterpriseManagementEmbargoEndDateKey[] =
-    "enterprise_management_embargo_end_date";
-const char kCustomizationIdKey[] = "customization_id";
-const char kDevSwitchBootKey[] = "devsw_boot";
-const char kDevSwitchBootValueDev[] = "1";
-const char kDevSwitchBootValueVerified[] = "0";
-const char kDockMacAddressKey[] = "dock_mac";
-const char kEthernetMacAddressKey[] = "ethernet_mac0";
-const char kFirmwareWriteProtectCurrentKey[] = "wpsw_cur";
-const char kFirmwareWriteProtectCurrentValueOn[] = "1";
-const char kFirmwareWriteProtectCurrentValueOff[] = "0";
-const char kFirmwareTypeKey[] = "mainfw_type";
-const char kFirmwareTypeValueDeveloper[] = "developer";
-const char kFirmwareTypeValueNonchrome[] = "nonchrome";
-const char kFirmwareTypeValueNormal[] = "normal";
-const char kHardwareClassKey[] = "hardware_class";
-const char kIsVmKey[] = "is_vm";
-const char kIsVmValueFalse[] = "0";
-const char kIsVmValueTrue[] = "1";
-const char kIsCrosDebugKey[] = "is_cros_debug";
-const char kIsCrosDebugValueFalse[] = "0";
-const char kIsCrosDebugValueTrue[] = "1";
-const char kManufactureDateKey[] = "mfg_date";
-const char kOffersCouponCodeKey[] = "ubind_attribute";
-const char kOffersGroupCodeKey[] = "gbind_attribute";
-const char kRlzBrandCodeKey[] = "rlz_brand_code";
-const char kRegionKey[] = "region";
-const char kSerialNumberKeyForTest[] = "serial_number";
-const char kInitialLocaleKey[] = "initial_locale";
-const char kInitialTimezoneKey[] = "initial_timezone";
-const char kKeyboardLayoutKey[] = "keyboard_layout";
-const char kKeyboardMechanicalLayoutKey[] = "keyboard_mechanical_layout";
-const char kAttestedDeviceIdKey[] = "attested_device_id";
-const char kDisplayProfilesKey[] = "display_profiles";
-
-// OEM specific statistics. Must be prefixed with "oem_".
-const char kOemCanExitEnterpriseEnrollmentKey[] = "oem_can_exit_enrollment";
-const char kOemDeviceRequisitionKey[] = "oem_device_requisition";
-const char kOemIsEnterpriseManagedKey[] = "oem_enterprise_managed";
-const char kOemKeyboardDrivenOobeKey[] = "oem_keyboard_driven_oobe";
 
 // The StatisticsProvider implementation used in production.
 class StatisticsProviderSingleton final : public StatisticsProviderImpl {

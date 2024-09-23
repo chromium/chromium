@@ -8,9 +8,10 @@ import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
- * Common tab UI feature utils for public use.
- * TODO(crbug.com/1302456) Move other @{@link TabUiFeatureUtilities} methods that are required by
- * chrome/browser.
+* Common tab UI feature utils for public use.
+* TODO(crbug.com/40825348) Move other @{@link TabUiFeatureUtilities} methods that are required by
+* chrome/browser.
+ * TabUiFeatureUtilities} methods that are required by chrome/browser.
  */
 public class TabManagementFieldTrial {
     private static final String DELAY_TEMP_STRIP_REMOVAL_TIMEOUT_MS_PARAM = "timeout_ms";

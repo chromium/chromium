@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 import collections
 
+import core.bot_platforms
 import core.path_util
 import core.cli_utils
 
@@ -133,7 +134,7 @@ def generate_sharding_map(benchmarks_to_shard,
   # For efficient removal of story timing list's elements & to keep the
   # ordering of benchmark alphabetically sorted in the shards' assignment, we
   # reverse the |story_timing_list|.
-  #TODO(crbug/1195146): fix extra story repeat
+  #TODO(crbug.com/40175917): fix extra story repeat
   for i in range(num_shards):
     if len(repeating_benchmark_timing_list) == 0:
       for benchmark, timing_list in repeated_benchmark_to_timing_list.items():
@@ -228,8 +229,6 @@ def generate_sharding_map(benchmarks_to_shard,
           benchmark_config['begin'] = begin
         if end:
           benchmark_config['end'] = end
-        benchmark_config['abridged'] = benchmark_name_to_config[
-            benchmark].abridged
       elif len(merged_sections) > 1:
         for section in merged_sections:
           sections_config.append({'begin': section[0], 'end': section[1]})
@@ -237,7 +236,17 @@ def generate_sharding_map(benchmarks_to_shard,
             'sections': sections_config,
             'abridged': benchmark_name_to_config[benchmark].abridged
         }
+
+      abridged = benchmark_name_to_config[benchmark].abridged
+      benchmark_config['abridged'] = abridged
+
+      pageset_repeat_override = benchmark_name_to_config[
+          benchmark].pageset_repeat_override
+      if pageset_repeat_override:
+        benchmark_config['pageset_repeat'] = pageset_repeat_override
+
       new_benchmark_configs[benchmark] = benchmark_config
+
     sharding_map[str(i)]['benchmarks'] = new_benchmark_configs
     if i != num_shards - 1:
       total_time -= shard_time
@@ -279,8 +288,21 @@ def _add_benchmarks_to_shard(sharding_map, shard_index, stories_in_shard,
   # Format the benchmark's stories by indices
   benchmarks_in_shard = collections.OrderedDict()
   executables_in_shard = collections.OrderedDict()
+  crossbench_in_shard = collections.OrderedDict()
   for b in benchmarks:
-    if benchmark_name_to_config[b].is_telemetry:
+    config = benchmark_name_to_config[b]
+    if isinstance(config, core.bot_platforms.CrossbenchConfig):
+      crossbench_in_shard[config.crossbench_name] = {
+          'display_name': b,
+          'arguments': config.arguments,
+      }
+      first_story = all_stories[b].index(benchmarks[b][0])
+      last_story = all_stories[b].index(benchmarks[b][-1]) + 1
+      if first_story != 0:
+        crossbench_in_shard[config.crossbench_name]['begin'] = first_story
+      if last_story != len(all_stories[b]):
+        crossbench_in_shard[config.crossbench_name]['end'] = last_story
+    elif config.is_telemetry:
       benchmarks_in_shard[b] = {}
       first_story = all_stories[b].index(benchmarks[b][0])
       last_story = all_stories[b].index(benchmarks[b][-1]) + 1
@@ -290,7 +312,6 @@ def _add_benchmarks_to_shard(sharding_map, shard_index, stories_in_shard,
         benchmarks_in_shard[b]['end'] = last_story
       benchmarks_in_shard[b]['abridged'] = benchmark_name_to_config[b].abridged
     else:
-      config = benchmark_name_to_config[b]
       executables_in_shard[b] = {}
       if config.flags:
         executables_in_shard[b]['arguments'] = config.flags
@@ -300,6 +321,8 @@ def _add_benchmarks_to_shard(sharding_map, shard_index, stories_in_shard,
     sharding_map[str(shard_index)]['benchmarks'] = benchmarks_in_shard
   if executables_in_shard:
     sharding_map[str(shard_index)]['executables'] = executables_in_shard
+  if crossbench_in_shard:
+    sharding_map[str(shard_index)]['crossbench'] = crossbench_in_shard
 
 
 def _gather_timing_data(benchmarks_to_shard, timing_data, repeat):
@@ -317,7 +340,7 @@ def _gather_timing_data(benchmarks_to_shard, timing_data, repeat):
     run_count = b.repeat if repeat else 1
     for s in b.stories:
       test_name = '%s/%s' % (b.name, s)
-      test_duration = DEFAULT_STORY_DURATION
+      test_duration = getattr(b, 'estimated_runtime', DEFAULT_STORY_DURATION)
       if test_name in timing_data_dict:
         test_duration = timing_data_dict[test_name] * run_count
       timing_data_list.append((test_name, test_duration))

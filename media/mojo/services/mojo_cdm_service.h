@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "media/base/cdm_factory.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
@@ -37,10 +38,10 @@ class MEDIA_MOJO_EXPORT MojoCdmService final
     : public mojom::ContentDecryptionModule {
  public:
   // Callback for Initialize(). Non-null `cdm_context` indicates success. Null
-  // `cdm_context` indicates failure and the `error_message` provides a reason.
-  using InitializeCB =
-      base::OnceCallback<void(mojom::CdmContextPtr cdm_context,
-                              const std::string& error_message)>;
+  // `cdm_context` indicates failure and the `status` provides a
+  // reason.
+  using InitializeCB = base::OnceCallback<void(mojom::CdmContextPtr cdm_context,
+                                               CreateCdmStatus status)>;
 
   explicit MojoCdmService(MojoCdmServiceContext* context);
 
@@ -90,7 +91,7 @@ class MEDIA_MOJO_EXPORT MojoCdmService final
   // Callback for CdmFactory::Create().
   void OnCdmCreated(InitializeCB callback,
                     const scoped_refptr<::media::ContentDecryptionModule>& cdm,
-                    const std::string& error_message);
+                    CreateCdmStatus status);
 
   // Callbacks for firing session events.
   void OnSessionMessage(const std::string& session_id,

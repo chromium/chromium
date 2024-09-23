@@ -7,8 +7,10 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "url/gurl.h"
-#include "url/j_test_jni_headers/OriginJavaTestHelper_jni.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "url/j_test_jni_headers/OriginJavaTestHelper_jni.h"
 
 namespace url {
 

@@ -9,9 +9,10 @@
 
 namespace password_manager {
 
-extern const base::FilePath::CharType kAffiliationDatabaseFileName[];
 extern const base::FilePath::CharType kLoginDataForProfileFileName[];
 extern const base::FilePath::CharType kLoginDataForAccountFileName[];
+extern const base::FilePath::CharType kLoginDataJournalForProfileFileName[];
+extern const base::FilePath::CharType kLoginDataJournalForAccountFileName[];
 
 // URL to the password manager account dashboard.
 extern const char kPasswordManagerAccountDashboardURL[];
@@ -20,7 +21,7 @@ extern const char kPasswordManagerAccountDashboardURL[];
 extern const char kPasswordManagerHelpCenteriOSURL[];
 
 // URL to the help center article about Smart Lock;
-// TODO(crbug.com/862269): remove when "Smart Lock" is completely gone.
+// TODO(crbug.com/40584353): remove when "Smart Lock" is completely gone.
 extern const char kPasswordManagerHelpCenterSmartLock[];
 
 // URL which open native Password Manager UI.

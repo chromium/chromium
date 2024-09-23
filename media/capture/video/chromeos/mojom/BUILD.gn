@@ -53,3 +53,16 @@ mojom("system_event_monitor") {
   sources = [ "system_event_monitor.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
 }
+
+mojom("video_capture_device_info_monitor") {
+  sources = [ "video_capture_device_info_monitor.mojom" ]
+}
+
+mojom("document_scanner") {
+  sources = [ "document_scanner.mojom" ]
+
+  deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+  ]
+}

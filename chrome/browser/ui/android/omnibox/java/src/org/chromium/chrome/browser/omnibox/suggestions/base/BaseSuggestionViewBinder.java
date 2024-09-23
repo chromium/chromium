@@ -93,12 +93,15 @@ public final class BaseSuggestionViewBinder<T extends View>
         mContentBinder.bind(model, view.contentView, propertyKey);
         ActionChipsBinder.bind(model, view.actionChipsView, propertyKey);
 
-        if (BaseSuggestionViewProperties.ICON == propertyKey) {
+        if (BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING == propertyKey) {
+            view.setActionChipLeadInSpacing(
+                    model.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING));
+        } else if (BaseSuggestionViewProperties.ICON == propertyKey) {
             updateSuggestionIcon(model, view);
         } else if (SuggestionCommonProperties.LAYOUT_DIRECTION == propertyKey) {
             ViewCompat.setLayoutDirection(
                     view, model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));
-            // TODO(crbug/1515321): migrate this to SuggestionLayout.
+            // TODO(crbug.com/41487873): migrate this to SuggestionLayout.
             updateMargin(model, view);
         } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
             updateColorScheme(model, view);
@@ -143,6 +146,13 @@ public final class BaseSuggestionViewBinder<T extends View>
                             return false;
                         });
             }
+        } else if (BaseSuggestionViewProperties.SHOW_DECORATION == propertyKey) {
+            view.setShowDecorationIcon(model.get(BaseSuggestionViewProperties.SHOW_DECORATION));
+        } else if (BaseSuggestionViewProperties.TOP_PADDING == propertyKey) {
+            view.setPadding(0, model.get(BaseSuggestionViewProperties.TOP_PADDING), 0, 0);
+        } else if (BaseSuggestionViewProperties.USE_LARGE_DECORATION == propertyKey) {
+            view.setUseLargeDecorationIcon(
+                    model.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
         }
     }
 

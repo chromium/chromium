@@ -6,6 +6,7 @@ package org.chromium.ui.dragdrop;
 
 import android.content.ContentProvider;
 import android.content.ContentResolver;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
@@ -33,9 +34,8 @@ import java.io.OutputStream;
  * each class loader, the chromium one {@link DropDataContentProvider}.
  *
  * @see DropDataProviderImpl#FULL_AUTH_URI
- *
- * TODO(https://crbug.com/1353048): Add the reference to //android_webview/support_library content
- * provider to this java doc.
+ *     <p>TODO(crbug.com/40235067): Add the reference to //android_webview/support_library content
+ *     provider to this java doc.
  */
 @UsedByReflection("Webview Support Lib")
 public class DropDataProviderImpl {
@@ -170,14 +170,12 @@ public class DropDataProviderImpl {
      * Clear the image data of Drag and Drop when event ACTION_DRAG_ENDED is received.
      *
      * @param imageInUse Indicate if the image is needed by the drop target app. This is true when
-     *        the image is dropped outside of Chrome AND the drop target app returns true for event
-     *        ACTION_DROP.
+     *     the image is dropped outside of Chrome AND the drop target app returns true for event
+     *     ACTION_DROP.
      */
     public void onDragEnd(boolean imageInUse) {
         if (!imageInUse) {
-            // Clear the image data immediately when:
-            // 1. Image is dropped within Clank and we know it is not used;
-            // 2. Image is dropped outside of Clank and the drop target app rejects the data.
+            // Clear the image data immediately when the drop target app rejects the data.
             clearCache();
         } else {
             // Otherwise, clear it with a delay to allow asynchronous data transfer.
@@ -231,7 +229,7 @@ public class DropDataProviderImpl {
     /** A static initializer for the class. */
     @UsedByReflection("DropDataContentProvider")
     public static DropDataProviderImpl onCreate() {
-        // TODO(crbug.com/1302383): Lazily create DropPipeDataWriter in #openFile.
+        // TODO(crbug.com/40825314): Lazily create DropPipeDataWriter in #openFile.
         return new DropDataProviderImpl();
     }
 
@@ -286,10 +284,10 @@ public class DropDataProviderImpl {
     }
 
     /**
-     * @see ContentProvider#openFile(Uri, String)
+     * @see ContentProvider#openAssetFile(Uri, String)
      */
-    public ParcelFileDescriptor openFile(ContentProvider providerWrapper, Uri uri)
-            throws FileNotFoundException {
+    public AssetFileDescriptor openAssetFile(ContentProvider providerWrapper, Uri uri, String mode)
+            throws FileNotFoundException, SecurityException {
         if (uri == null) {
             return null;
         }
@@ -318,8 +316,19 @@ public class DropDataProviderImpl {
             mOpenFileLastAccessTime = elapsedRealtime;
             imageBytes = this.mImageBytes;
         }
-        return providerWrapper.openPipeHelper(
-                uri, getType(uri), null, imageBytes, mDropPipeDataWriter);
+        ParcelFileDescriptor fd =
+                providerWrapper.openPipeHelper(
+                        uri, getType(uri), null, imageBytes, mDropPipeDataWriter);
+        return new AssetFileDescriptor(fd, 0, imageBytes.length);
+    }
+
+    /**
+     * @see ContentProvider#openFile(Uri, String)
+     */
+    public ParcelFileDescriptor openFile(ContentProvider providerWrapper, Uri uri)
+            throws FileNotFoundException {
+        AssetFileDescriptor afd = openAssetFile(providerWrapper, uri, "r");
+        return afd != null ? afd.getParcelFileDescriptor() : null;
     }
 
     /**

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 
 namespace blink {
 
@@ -29,16 +30,11 @@ void GetFontsUsedByFragment(const PhysicalBoxFragment& fragment,
   for (InlineCursor cursor(fragment); cursor; cursor.MoveToNext()) {
     const FragmentItem& item = *cursor.Current().Item();
     if (item.IsText()) {
-      const ShapeResultView* shape_result_view = item.TextShapeResult();
-      if (shape_result_view) {
-        const String font_family =
-            shape_result_view->PrimaryFont()->PlatformData().FontFamilyName();
-        if (!font_family.empty())
-          result.font_names.insert(font_family);
-        HashSet<const SimpleFontData*> fallback_font_data;
-        shape_result_view->FallbackFonts(&fallback_font_data);
-        for (const SimpleFontData* font_data : fallback_font_data) {
-          result.font_names.insert(font_data->PlatformData().FontFamilyName());
+      if (const ShapeResultView* shape_result_view = item.TextShapeResult()) {
+        HeapHashSet<Member<const SimpleFontData>> used_fonts =
+            shape_result_view->UsedFonts();
+        for (const auto& used_font : used_fonts) {
+          result.font_names.insert(used_font->PlatformData().FontFamilyName());
         }
       }
       continue;

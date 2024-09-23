@@ -48,7 +48,7 @@ using SyncAndNotificationPermissions =
 
 namespace content {
 
-// TODO(crbug.com/932591): Use blink::mojom::BackgroundSyncError
+// TODO(crbug.com/40614176): Use blink::mojom::BackgroundSyncError
 // directly and eliminate these checks.
 #define COMPILE_ASSERT_MATCHING_ENUM(mojo_name, manager_name) \
   static_assert(static_cast<int>(blink::mojo_name) ==         \
@@ -316,7 +316,10 @@ std::string GetEventStatusString(blink::ServiceWorkerStatusCode status_code) {
     case blink::ServiceWorkerStatusCode::kErrorTimeout:
       return "timeout";
     default:
-      NOTREACHED();
+      SCOPED_CRASH_KEY_NUMBER("BGSM", "status_code",
+                              static_cast<int>(status_code));
+      DUMP_WILL_BE_NOTREACHED()
+          << "status_code " << static_cast<int>(status_code);
       return "unknown error";
   }
 }
@@ -981,7 +984,7 @@ void BackgroundSyncManager::RegisterDidAskForPermission(
   registration.set_origin(origin);
   *registration.options() = std::move(options);
 
-  // TODO(crbug.com/963487): This section below is really confusing. Add a
+  // TODO(crbug.com/40627578): This section below is really confusing. Add a
   // comment explaining what's going on here, or annotate permission_statuses.
   registration.set_max_attempts(
       permission_statuses.second == PermissionStatus::GRANTED
@@ -1945,7 +1948,7 @@ void BackgroundSyncManager::FireReadyEventsImpl(
   }
 
   if (to_fire.empty()) {
-    // TODO(crbug.com/996166): Reschedule wakeup after a non-zero delay if
+    // TODO(crbug.com/40641360): Reschedule wakeup after a non-zero delay if
     // called from a wakeup task.
     if (reschedule)
       ScheduleOrCancelDelayedProcessing(sync_type);

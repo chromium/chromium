@@ -115,7 +115,7 @@ class OverflowViewTest : public testing::Test {
   // size.
   static gfx::Size StepwiseFlexRule(const views::View* view,
                                     const views::SizeBounds& bounds) {
-    const gfx::Size preferred = view->GetPreferredSize();
+    const gfx::Size preferred = view->GetPreferredSize(bounds);
     const gfx::Size minimum = view->GetMinimumSize();
     return gfx::Size(
         InterpolateByTens(minimum.width(), preferred.width(), bounds.width()),
@@ -131,7 +131,7 @@ class OverflowViewTest : public testing::Test {
   // size.
   static gfx::Size ProportionalFlexRule(const views::View* view,
                                         const views::SizeBounds& bounds) {
-    const gfx::Size preferred = view->GetPreferredSize();
+    const gfx::Size preferred = view->GetPreferredSize(bounds);
     const gfx::Size minimum = view->GetMinimumSize();
     const int width =
         std::max(minimum.width(), bounds.width().min_of(preferred.width()));
@@ -180,7 +180,6 @@ TEST_F(OverflowViewTest, SizesNoFlexRulesIndicatorIsLarger) {
       std::max(kMinimumSize.height(), kMinimumSize2.height()));
   EXPECT_EQ(expected_min, overflow_view_->GetMinimumSize());
   EXPECT_EQ(kPreferredSize2, overflow_view_->GetPreferredSize());
-  EXPECT_EQ(kPreferredSize.height(), overflow_view_->GetHeightForWidth(200));
 }
 
 TEST_F(OverflowViewTest, SizesNoFlexRulesVertical) {
@@ -201,7 +200,6 @@ TEST_F(OverflowViewTest, SizesNoFlexRulesIndicatorIsLargerVertical) {
       std::min(kMinimumSize.height(), kMinimumSize2.height()));
   EXPECT_EQ(expected_min, overflow_view_->GetMinimumSize());
   EXPECT_EQ(kPreferredSize2, overflow_view_->GetPreferredSize());
-  EXPECT_EQ(kPreferredSize.height(), overflow_view_->GetHeightForWidth(200));
 }
 
 class OverflowViewLayoutTest : public OverflowViewTest {
@@ -239,7 +237,7 @@ class OverflowViewLayoutTest : public OverflowViewTest {
 
   static gfx::Size TransposingFlexRule(const views::View* view,
                                        const views::SizeBounds& size_bounds) {
-    const gfx::Size preferred = Transpose(view->GetPreferredSize());
+    const gfx::Size preferred = Transpose(view->GetPreferredSize(size_bounds));
     const gfx::Size minimum = Transpose(view->GetMinimumSize());
     int height;
     int width;

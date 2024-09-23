@@ -17,6 +17,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #import "base/time/time.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/policy/core/common/async_policy_provider.h"
 #include "components/policy/core/common/configuration_policy_provider_test.h"
@@ -132,8 +134,8 @@ void TestHarness::InstallStringListPolicy(
     const std::string& policy_name,
     const base::Value::List& policy_value) {
   NSString* key = base::SysUTF8ToNSString(policy_name);
-  base::apple::ScopedCFTypeRef<CFPropertyListRef> value(
-      ValueToProperty(base::Value(policy_value.Clone())));
+  base::apple::ScopedCFTypeRef<CFPropertyListRef> value =
+      ValueToProperty(base::Value(policy_value.Clone()));
 
   if (encode_complex_data_as_json_) {
     // Convert |policy_value| to a JSON-encoded string.
@@ -160,8 +162,8 @@ void TestHarness::InstallDictionaryPolicy(
 
     AddPolicies(@{key : base::SysUTF8ToNSString(json_string)});
   } else {
-    base::apple::ScopedCFTypeRef<CFPropertyListRef> value(
-        ValueToProperty(base::Value(policy_value.Clone())));
+    base::apple::ScopedCFTypeRef<CFPropertyListRef> value =
+        ValueToProperty(base::Value(policy_value.Clone()));
     AddPolicies(@{key : (__bridge NSDictionary*)(value.get())});
   }
 }
@@ -221,9 +223,9 @@ class PolicyLoaderIosTest : public PlatformTest {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
-    std::string error = RegisterSchema(GetPolicyNamespace(), kTestChromeSchema);
-    ASSERT_TRUE(error.empty())
-        << "Registration of schema failed with error: " << error;
+    auto result = RegisterSchema(GetPolicyNamespace(), kTestChromeSchema);
+    ASSERT_TRUE(result.has_value())
+        << "Registration of schema failed with error: " << result.error();
   }
 
   void TearDown() override {
@@ -248,15 +250,11 @@ class PolicyLoaderIosTest : public PlatformTest {
   std::unique_ptr<AsyncPolicyProvider> provider_;
 
  private:
-  std::string RegisterSchema(const PolicyNamespace& ns,
-                             const std::string& schema_string) {
-    std::string error;
-    Schema schema = Schema::Parse(schema_string, &error);
-    if (schema.valid()) {
-      schema_registry_.RegisterComponent(ns, schema);
-      return std::string();
-    }
-    return error;
+  base::expected<void, std::string> RegisterSchema(const PolicyNamespace& ns,
+                                                   const std::string& schema) {
+    ASSIGN_OR_RETURN(const auto parsed_schema, Schema::Parse(schema));
+    schema_registry_.RegisterComponent(ns, parsed_schema);
+    return base::ok();
   }
 };
 

@@ -74,7 +74,7 @@ InterpolationValue CSSNumberInterpolationType::MaybeConvertInherit(
   std::optional<double> inherited =
       NumberPropertyFunctions::GetNumber(CssProperty(), *state.ParentStyle());
   conversion_checkers.push_back(
-      std::make_unique<InheritedNumberChecker>(CssProperty(), inherited));
+      MakeGarbageCollected<InheritedNumberChecker>(CssProperty(), inherited));
   if (!inherited)
     return nullptr;
   return CreateNumberValue(*inherited);

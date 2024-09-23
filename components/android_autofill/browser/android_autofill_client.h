@@ -18,24 +18,19 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/android/view_android.h"
 
 namespace autofill {
 class AutocompleteHistoryManager;
-class AutofillPopupDelegate;
-class CreditCard;
+class AutofillSuggestionDelegate;
 class PersonalDataManager;
 class StrikeDatabase;
+enum class SuggestionType;
 }  // namespace autofill
 
 namespace content {
 class WebContents;
-}
-
-namespace gfx {
-class RectF;
 }
 
 namespace syncer {
@@ -67,13 +62,11 @@ namespace android_autofill {
 // Neither WebView nor Chrome can control whether e.g. a dropdown or
 // keyboard-inlined suggestion are served to the user.
 //
-// Lifetime is the same as the WebContents object it's attachted to.
+// It is created by either AwContents or ChromeAutofillClient and owned by the
+// WebContents that it is attached to.
 class AndroidAutofillClient : public autofill::ContentAutofillClient {
  public:
-  static void CreateForWebContents(
-      content::WebContents* contents,
-      base::FunctionRef<void(const base::android::JavaRef<jobject>&)>
-          notify_client_created);
+  static void CreateForWebContents(content::WebContents* contents);
 
   AndroidAutofillClient(const AndroidAutofillClient&) = delete;
   AndroidAutofillClient& operator=(const AndroidAutofillClient&) = delete;
@@ -81,7 +74,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   ~AndroidAutofillClient() override;
 
   // AutofillClient:
-  bool IsOffTheRecord() override;
+  bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
@@ -92,8 +85,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
   autofill::FormDataImporter* GetFormDataImporter() override;
-  autofill::payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface()
-      override;
   autofill::StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;
@@ -103,14 +94,11 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
   const translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
-  void ShowAutofillSettings(
-      autofill::FillingProduct main_filling_product) override;
-  void ConfirmCreditCardFillAssist(const autofill::CreditCard& card,
-                                   base::OnceClosure callback) override;
+  void ShowAutofillSettings(autofill::SuggestionType suggestion_type) override;
   void ConfirmSaveAddressProfile(
       const autofill::AutofillProfile& profile,
       const autofill::AutofillProfile* original_profile,
-      SaveAddressProfilePromptOptions options,
+      bool is_migration_to_account,
       AddressProfileSavePromptCallback callback) override;
   void ShowEditAddressProfileDialog(
       const autofill::AutofillProfile& profile,
@@ -118,79 +106,39 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void ShowDeleteAddressProfileDialog(
       const autofill::AutofillProfile& profile,
       AddressProfileDeleteDialogCallback delete_dialog_callback) override;
-  bool HasCreditCardScanFeature() const override;
-  void ScanCreditCard(CreditCardScanCallback callback) override;
-  bool ShowTouchToFillCreditCard(
-      base::WeakPtr<autofill::TouchToFillDelegate> delegate,
-      base::span<const autofill::CreditCard> cards_to_suggest) override;
-  void HideTouchToFillCreditCard() override;
-  void ShowAutofillPopup(
+  SuggestionUiSessionId ShowAutofillSuggestions(
       const autofill::AutofillClient::PopupOpenArgs& open_args,
-      base::WeakPtr<autofill::AutofillPopupDelegate> delegate) override;
-  void UpdateAutofillPopupDataListValues(
+      base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) override;
+  void UpdateAutofillDataListValues(
       base::span<const autofill::SelectOption> datalist) override;
-  std::vector<autofill::Suggestion> GetPopupSuggestions() const override;
-  void PinPopupView() override;
-  autofill::AutofillClient::PopupOpenArgs GetReopenPopupArgs(
-      autofill::AutofillSuggestionTriggerSource trigger_source) const override;
-  void UpdatePopup(
-      const std::vector<autofill::Suggestion>& suggestions,
-      autofill::FillingProduct main_filling_product,
-      autofill::AutofillSuggestionTriggerSource trigger_source) override;
-  void HideAutofillPopup(autofill::PopupHidingReason reason) override;
+  void PinAutofillSuggestions() override;
+  void HideAutofillSuggestions(
+      autofill::SuggestionHidingReason reason) override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void DidFillOrPreviewForm(
       autofill::mojom::ActionPersistence action_persistence,
       autofill::AutofillTriggerSource trigger_source,
       bool is_refill) override;
-  void DidFillOrPreviewField(const std::u16string& autofilled_value,
-                             const std::u16string& profile_full_name) override;
   bool IsContextSecure() const override;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
-
-  void Dismissed(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  void SuggestionSelected(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj,
-                          jint position);
 
   // ContentAutofillClient:
   std::unique_ptr<autofill::AutofillManager> CreateManager(
       base::PassKey<autofill::ContentAutofillDriver> pass_key,
       autofill::ContentAutofillDriver& driver) override;
-  void InitAgent(base::PassKey<autofill::ContentAutofillDriverFactory> pass_key,
-                 const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>&
-                     agent) override;
+
+ protected:
+  // Protected for testing.
+  explicit AndroidAutofillClient(content::WebContents* web_contents);
 
  private:
   friend class content::WebContentsUserData<AndroidAutofillClient>;
-
-  // Ownership: The native object is created by either AwContents or
-  // ChromeAutofillClient and owned by the WebContents it's attached to.
-  // The native object creates the Java peer which delegates autofill
-  // functionality at the Java side to the Android Autofill API. The Java peer
-  // is owned by Java AwContents or the ContentView. The native object only
-  // maintains a weak ref to it.
-  // TODO(b/322164882): Use the WebContentsUserData template or return the Ref.
-  explicit AndroidAutofillClient(
-      content::WebContents* web_contents,
-      base::FunctionRef<void(const base::android::JavaRef<jobject>&)>
-          notify_client_created);
-
-  void ShowAutofillPopupImpl(
-      const gfx::RectF& element_bounds,
-      bool is_rtl,
-      const std::vector<autofill::Suggestion>& suggestions);
 
   content::WebContents& GetWebContents() const;
 
   JavaObjectWeakGlobalRef java_ref_;
 
-  ui::ViewAndroid::ScopedAnchorView anchor_view_;
-
-  // The current Autofill query values.
-  std::vector<autofill::Suggestion> suggestions_;
-  base::WeakPtr<autofill::AutofillPopupDelegate> delegate_;
   std::unique_ptr<autofill::AutofillCrowdsourcingManager>
       crowdsourcing_manager_;
 };

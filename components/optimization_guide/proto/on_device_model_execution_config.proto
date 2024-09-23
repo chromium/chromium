@@ -1,0 +1,113 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "ModelExecutionProto";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/common_types.proto";
+import "components/optimization_guide/proto/descriptors.proto";
+import "components/optimization_guide/proto/redaction.proto";
+import "components/optimization_guide/proto/substitution.proto";
+import "components/optimization_guide/proto/model_execution.proto";
+import "components/optimization_guide/proto/parser_kind.proto";
+
+message OnDeviceModelExecutionConfig {
+  // The set of configs for features that leverage the on-device model.
+  //
+  // It is expected that there is only one feature config per feature.
+  repeated OnDeviceModelExecutionFeatureConfig feature_configs = 1;
+
+  // A config used for validating the model and device after download.
+  optional OnDeviceModelValidationConfig validation_config = 2;
+}
+
+message OnDeviceModelExecutionFeatureConfig {
+  // The feature this configuration is for.
+  optional ModelExecutionFeature feature = 1;
+
+  // The config used to construct the input for on-device model execution.
+  optional OnDeviceModelExecutionInputConfig input_config = 2;
+
+  // The config used to construct the output for on-device model execution.
+  optional OnDeviceModelExecutionOutputConfig output_config = 3;
+
+  // The config used to construct the request for server fallback text safety
+  // evaluation.
+  optional TextSafetyFallbackConfig text_safety_fallback_config = 4;
+
+  // Whether text safety can be skipped for this feature, if not configured.
+  optional bool can_skip_text_safety = 5;
+
+  // Sampling parameters to use with the model.
+  // These will override global defaults, but not per session configurations.
+  optional SamplingParams sampling_params = 6;
+
+  // Feature defined metadata.
+  optional Any feature_metadata = 7;
+}
+
+message OnDeviceModelExecutionInputConfig {
+  // The base name of the request metadata proto this input config is applicable
+  // for.
+  optional string request_base_name = 1;
+
+  // An ordered list of substituted strings to apply for input context.
+  //
+  // These will be concatenated in the order they appear here if the conditions
+  // apply based on the input request.
+  repeated SubstitutedString input_context_substitutions = 3;
+
+  // An ordered list of substituted strings to apply when the model is executed.
+  //
+  // These will be concatenated in the order they appear here if the conditions
+  // apply based on the input request.
+  //
+  // It is expected that the resulting string here will be concatenated with the
+  // resulting string for the input context if `should_ignore_input_context` is
+  // not set on any of the used substitutions.
+  repeated SubstitutedString execute_substitutions = 2;
+}
+
+message OnDeviceModelExecutionOutputConfig {
+  // The proto type to use for the response metadata.
+  optional string proto_type = 1;
+
+  // The proto field to populate the output string with.
+  optional ProtoField proto_field = 2;
+
+  // Rules that result in redacting the output.
+  optional RedactRules redact_rules = 3;
+
+  // Which output parsing implementation to use.
+  optional ParserKind parser_kind = 4;
+}
+
+message TextSafetyFallbackConfig {
+  // The proto field in the input request that contains the URL this request was
+  // activated on, if any.
+  optional ProtoField input_url_proto_field = 1;
+}
+
+message OnDeviceModelValidationConfig {
+  // Prompts and responses used for basic model validation.
+  repeated ValidationPrompt validation_prompts = 1;
+}
+
+message ValidationPrompt {
+  // The input prompt to send.
+  optional string prompt = 1;
+
+  // A string that the output is expected to contain. This is not case
+  // sensitive.
+  optional string expected_output = 2;
+}
+
+message SamplingParams {
+  optional uint32 top_k = 1;
+  optional float temperature = 2;
+}

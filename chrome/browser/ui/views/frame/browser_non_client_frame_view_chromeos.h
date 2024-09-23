@@ -53,6 +53,8 @@ class BrowserNonClientFrameViewChromeOS
       const BrowserNonClientFrameViewChromeOS&) = delete;
   ~BrowserNonClientFrameViewChromeOS() override;
 
+  static BrowserNonClientFrameViewChromeOS* Get(aura::Window* window);
+
   void Init();
 
   // BrowserNonClientFrameView:
@@ -67,7 +69,6 @@ class BrowserNonClientFrameViewChromeOS
   bool CanUserExitFullscreen() const override;
   SkColor GetCaptionColor(BrowserFrameActiveState active_state) const override;
   SkColor GetFrameColor(BrowserFrameActiveState active_state) const override;
-  TabSearchBubbleHost* GetTabSearchBubbleHost() override;
   void UpdateMinimumSize() override;
 
   // views::NonClientFrameView:
@@ -86,7 +87,6 @@ class BrowserNonClientFrameViewChromeOS
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
   void Layout(PassKey) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size GetMinimumSize() const override;
   void OnThemeChanged() override;
   void ChildPreferredSizeChanged(views::View* child) override;
@@ -235,8 +235,6 @@ class BrowserNonClientFrameViewChromeOS
   // View which contains the window controls.
   raw_ptr<chromeos::FrameCaptionButtonContainerView> caption_button_container_ =
       nullptr;
-
-  raw_ptr<TabSearchBubbleHost> tab_search_bubble_host_ = nullptr;
 
   // For popups, the window icon.
   raw_ptr<TabIconView> window_icon_ = nullptr;

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
+
 #include <memory>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
@@ -14,7 +16,6 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_util.h"
@@ -724,7 +725,7 @@ TEST_F(TabletModeMultitaskMenuTest, ShowBottomMenuPortraitPrimary) {
   split_view_controller->SnapWindow(bottom_window.get(),
                                     SnapPosition::kSecondary);
   EXPECT_FALSE(
-      IsPhysicalLeftOrTop(SnapPosition::kSecondary, bottom_window.get()));
+      IsPhysicallyLeftOrTop(SnapPosition::kSecondary, bottom_window.get()));
   wm::ActivateWindow(bottom_window.get());
 
   // Event generation coordinates are relative to the natural origin, but
@@ -763,7 +764,7 @@ TEST_F(TabletModeMultitaskMenuTest, DISABLED_ShowBottomMenuPortraitSecondary) {
                                     SnapPosition::kPrimary);
   split_view_controller->SnapWindow(top_window.get(), SnapPosition::kSecondary);
   EXPECT_FALSE(
-      IsPhysicalLeftOrTop(SnapPosition::kPrimary, bottom_window.get()));
+      IsPhysicallyLeftOrTop(SnapPosition::kPrimary, bottom_window.get()));
   wm::ActivateWindow(bottom_window.get());
 
   // Event generation coordinates are relative to the natural origin, but
@@ -836,9 +837,9 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashDuringUpdateDrag) {
 }
 
 // Test that the window is created on the target window. This can crash if
-// ET_SCROLL_FLING_START is sent quickly enough after ET_GESTURE_SCROLL_UPDATE,
-// causing the controller to create the menu on the split view divider
-// (b/293954921).
+// EventType::kScrollFlingStart is sent quickly enough after
+// EventType::kGestureScrollUpdate, causing the controller to create the menu on
+// the split view divider (b/293954921).
 TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenDraggingSplitViewDivider) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -869,7 +870,7 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenDraggingSplitViewDivider) {
   // Test that, even though the target window is the divider, we don't try to
   // create the menu on the split view divider.
   CHECK_EQ(GetMultitaskMenuController()->target_window_for_test(),
-           split_view_divider->divider_widget()->GetNativeWindow());
+           split_view_divider->GetDividerWindow());
   EXPECT_FALSE(GetMultitaskMenu());
 }
 
@@ -883,15 +884,14 @@ TEST_F(TabletModeMultitaskMenuTest, HidesWhenMinimized) {
   EXPECT_FALSE(GetMultitaskMenu());
 }
 
-TEST_F(TabletModeMultitaskMenuTest, NotShownInKioskMode) {
-  // Enter kiosk mode and try swiping down. The multitask menu and cue should
-  // not show.
+TEST_F(TabletModeMultitaskMenuTest, NoTabletModeWindowManagerInKiosk) {
   SimulateKioskMode(user_manager::UserType::kKioskApp);
   auto window = CreateAppWindow(gfx::Rect(800, 600));
-  EXPECT_FALSE(
-      GetMultitaskMenuController()->multitask_cue_controller()->cue_layer());
-  ShowMultitaskMenu(*window);
-  EXPECT_FALSE(GetMultitaskMenu());
+
+  // In Kiosk session there is no `TabletModeWindowManager` since the UI tablet
+  // mode is blocked.
+  EXPECT_EQ(TabletModeControllerTestApi().tablet_mode_window_manager(),
+            nullptr);
 }
 
 namespace {

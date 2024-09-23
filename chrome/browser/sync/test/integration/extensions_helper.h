@@ -80,11 +80,7 @@ bool AwaitAllProfilesHaveSameExtensions();
 }  // namespace extensions_helper
 
 // A helper class to implement waiting for a set of profiles to have matching
-// extensions lists. It waits for calls on both interfaces:
-// ExtensionRegistryObserver and NotificationObserver. Observing
-// NOTIFICATION_EXTENSION_UPDATING_STARTED notification is needed for tests
-// against local server because in such tests extensions are not installed and
-// ExtensionRegistryObserver methods are not called.
+// extensions lists.
 class ExtensionsMatchChecker : public StatusChangeChecker,
                                public extensions::ExtensionRegistryObserver {
  public:

@@ -90,6 +90,10 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gl/gl_switches.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif  // BUILDFLAG(IS_OZONE)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <fontconfig/fontconfig.h>
 #include <signal.h>
@@ -470,6 +474,13 @@ void CastBrowserMainParts::PreCreateMainMessageLoop() {
 void CastBrowserMainParts::PostCreateMainMessageLoop() {
   // Ensure CastMetricsHelper initialized on UI thread.
   metrics::CastMetricsHelper::GetInstance();
+
+#if BUILDFLAG(IS_OZONE)
+  // Pass the UI task runner to the ozone platform.
+  CHECK(base::SingleThreadTaskRunner::HasCurrentDefault());
+  ui::OzonePlatform::GetInstance()->PostCreateMainMessageLoop(
+      base::DoNothing(), base::SingleThreadTaskRunner::GetCurrentDefault());
+#endif  // BUILDFLAG(IS_OZONE)
 }
 
 void CastBrowserMainParts::ToolkitInitialized() {
@@ -610,8 +621,8 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
       ::ui_devtools::UiDevToolsServer::IsUiDevToolsEnabled(
           ::ui_devtools::switches::kEnableUiDevTools)) {
     // Starts the UI Devtools server for browser Aura UI
-    ui_devtools_ = std::make_unique<CastUIDevTools>(
-        cast_content_browser_client_->GetSystemNetworkContext());
+    ui_devtools_ =
+        std::make_unique<CastUIDevTools>(content::GetIOThreadTaskRunner({}));
   }
 #endif
 
@@ -718,7 +729,6 @@ void CastBrowserMainParts::PostMainMessageLoopRun() {
   // Android does not use native main MessageLoop.
   NOTREACHED();
 #else
-
 #if defined(USE_AURA)
   // Reset display change observer here to ensure it is deleted before
   // display_configurator since display_configurator is deleted when
@@ -739,9 +749,9 @@ void CastBrowserMainParts::PostMainMessageLoopRun() {
 #if !BUILDFLAG(IS_FUCHSIA)
   DeregisterKillOnAlarm();
 #endif  // !BUILDFLAG(IS_FUCHSIA)
-#endif
 
   service_manager_context_.reset();
+#endif
 }
 
 void CastBrowserMainParts::PostDestroyThreads() {

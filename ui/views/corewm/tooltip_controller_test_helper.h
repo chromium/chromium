@@ -46,6 +46,9 @@ class TooltipControllerTestHelper : public aura::WindowObserver {
   ~TooltipControllerTestHelper() override;
 
   TooltipController* controller() { return controller_; }
+  void set_controller(TooltipController* controller) {
+    controller_ = controller;
+  }
 
   TooltipStateManager* state_manager() {
     return controller_->state_manager_.get();

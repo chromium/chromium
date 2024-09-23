@@ -12,10 +12,8 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/memory_pressure_monitor.h"
-#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -33,6 +31,7 @@
 #include "components/paint_preview/public/paint_preview_compositor_service.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "components/version_info/version_info.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
@@ -46,7 +45,7 @@ std::pair<base::UnguessableToken, std::unique_ptr<HitTester>> BuildHitTester(
   std::optional<base::UnguessableToken> embedding_token =
       base::UnguessableToken::Deserialize(proto.embedding_token_high(),
                                           proto.embedding_token_low());
-  // TODO(https://crbug.com/1406995): Investigate whether a deserialization
+  // TODO(crbug.com/40252979): Investigate whether a deserialization
   // failure can actually occur here and if it can, add a comment discussing how
   // this can happen.
   if (!embedding_token.has_value()) {
@@ -74,21 +73,6 @@ BuildHitTesters(std::unique_ptr<PaintPreviewProto> proto) {
       std::move(hit_testers));
 }
 
-std::optional<base::ReadOnlySharedMemoryRegion> ToReadOnlySharedMemory(
-    paint_preview::PaintPreviewProto&& proto) {
-  TRACE_EVENT0("paint_preview", "PaintPreviewProto ToReadOnlySharedMemory");
-  auto region = base::WritableSharedMemoryRegion::Create(proto.ByteSizeLong());
-  if (!region.IsValid())
-    return std::nullopt;
-
-  auto mapping = region.Map();
-  if (!mapping.IsValid())
-    return std::nullopt;
-
-  proto.SerializeToArray(mapping.memory(), mapping.size());
-  return base::WritableSharedMemoryRegion::ConvertToReadOnly(std::move(region));
-}
-
 paint_preview::mojom::PaintPreviewBeginCompositeRequestPtr
 PrepareCompositeRequest(std::unique_ptr<CaptureResult> capture_result) {
   TRACE_EVENT0("paint_preview", "PaintPreview PrepareCompositeRequest");
@@ -101,13 +85,8 @@ PrepareCompositeRequest(std::unique_ptr<CaptureResult> capture_result) {
   if (begin_composite_request->recording_map.empty())
     return nullptr;
 
-  auto read_only_proto =
-      ToReadOnlySharedMemory(std::move(map_and_proto.second));
-  if (!read_only_proto) {
-    DVLOG(1) << "Failed to read proto to read-only shared memory.";
-    return nullptr;
-  }
-  begin_composite_request->proto = std::move(read_only_proto.value());
+  begin_composite_request->preview =
+      mojo_base::ProtoWrapper(std::move(map_and_proto.second));
   return begin_composite_request;
 }
 
@@ -349,7 +328,7 @@ void PlayerCompositorDelegate::OnCompositorReadyStatusAdapter(
       new_status = CompositorStatus::INVALID_ROOT_FRAME_SKP;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   OnCompositorReady(new_status, std::move(composite_response),
                     page_scale_factor, std::move(ax_tree_update_));
@@ -429,7 +408,7 @@ void PlayerCompositorDelegate::ValidateProtoAndLoadAXTree(
     // treat this as a new failure type to catch any possible regressions.
     OnCompositorReady(CompositorStatus::UNEXPECTED_VERSION, nullptr, 0.0,
                       nullptr);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -489,7 +468,7 @@ void PlayerCompositorDelegate::SendCompositeRequest(
     mojom::PaintPreviewBeginCompositeRequestPtr begin_composite_request) {
   TRACE_EVENT0("paint_preview",
                "PlayerCompositorDelegate::SendCompositeRequest");
-  // TODO(crbug.com/1021590): Handle initialization errors.
+  // TODO(crbug.com/40106234): Handle initialization errors.
   if (!begin_composite_request) {
     OnCompositorReady(CompositorStatus::INVALID_REQUEST, nullptr, 0.0, nullptr);
     return;

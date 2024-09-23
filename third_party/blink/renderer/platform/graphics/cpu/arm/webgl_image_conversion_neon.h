@@ -24,10 +24,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CPU_ARM_WEBGL_IMAGE_CONVERSION_NEON_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CPU_ARM_WEBGL_IMAGE_CONVERSION_NEON_H_
 
 #include "base/compiler_specific.h"
+#include "build/build_config.h"
 
 #if defined(CPU_ARM_NEON)
 

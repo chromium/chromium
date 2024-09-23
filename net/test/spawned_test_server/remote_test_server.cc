@@ -41,7 +41,7 @@ std::string GetServerTypeString(BaseTestServer::Type type) {
     case BaseTestServer::TYPE_WSS:
       return "ws";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return std::string();
 }
@@ -99,7 +99,7 @@ RemoteTestServer::RemoteTestServer(Type type,
                                    const base::FilePath& document_root)
     : BaseTestServer(type), io_thread_("RemoteTestServer IO Thread") {
   if (!Init(document_root))
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 RemoteTestServer::RemoteTestServer(Type type,
@@ -108,7 +108,7 @@ RemoteTestServer::RemoteTestServer(Type type,
     : BaseTestServer(type, ssl_options),
       io_thread_("RemoteTestServer IO Thread") {
   if (!Init(document_root))
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 RemoteTestServer::~RemoteTestServer() {

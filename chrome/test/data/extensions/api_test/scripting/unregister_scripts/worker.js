@@ -99,7 +99,7 @@ chrome.test.runTests([
 
   // Test that unregisterContentScripts with empty filter ids unregisters all
   // content scripts.
-  // TODO(crbug.com/1300657): This is incorrect, when filter ids is empty it
+  // TODO(crbug.com/40216362): This is incorrect, when filter ids is empty it
   // should not unregister any script.
   async function unregisterScript_EmptyFilterIds() {
     await chrome.scripting.unregisterContentScripts();

@@ -44,9 +44,7 @@ bool DisableUpgradeSigninPromo() {
 bool DisableUpdateService() {
   return false;
 }
-bool DisableMainThreadFreezeDetection() {
-  return false;
-}
+
 bool DelayAppLaunchPromos() {
   return false;
 }
@@ -56,8 +54,19 @@ policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
 std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {
   return nullptr;
 }
+std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend() {
+  return nullptr;
+}
+std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
+    ChromeBrowserState* browser_state) {
+  return nullptr;
+}
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
 GetOverriddenBulkLeakCheckService() {
+  return nullptr;
+}
+std::unique_ptr<plus_addresses::PlusAddressService>
+GetOverriddenPlusAddressService(ProfileIOS* profile) {
   return nullptr;
 }
 std::unique_ptr<password_manager::RecipientsFetcher>
@@ -72,8 +81,16 @@ base::TimeDelta PasswordCheckMinimumDuration() {
   return base::Seconds(3);
 }
 
+base::TimeDelta GetOverriddenSnackbarDuration() {
+  return base::Seconds(0);
+}
+
 std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
   return nullptr;
+}
+
+std::optional<std::string> FETDemoModeOverride() {
+  return std::nullopt;
 }
 
 }  // namespace tests_hook

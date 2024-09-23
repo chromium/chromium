@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("fileapi") {
+  sources = [
+    "drivefs_async_file_util.cc",
+    "drivefs_async_file_util.h",
+    "drivefs_file_system_backend_delegate.cc",
+    "drivefs_file_system_backend_delegate.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ash/fileapi",
+    "//storage/browser",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser/ash/drive",
+    "//components/drive",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//storage/common",
+  ]
+}

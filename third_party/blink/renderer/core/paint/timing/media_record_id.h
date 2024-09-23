@@ -34,4 +34,4 @@ class MediaRecordId {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_MEDIA_RECORD_ID_H_

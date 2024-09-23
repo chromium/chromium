@@ -79,20 +79,61 @@ size_t EventEmitter::GetNumListeners() const {
   return listeners_->GetNumListeners();
 }
 
+int EventEmitter::PushFilter(mojom::EventFilteringInfoPtr filter) {
+  // In order to dispatch (potentially) asynchronously (such as when script is
+  // suspended), use a helper function to run once JS is allowed to run,
+  // currying in the necessary information about the arguments and filter.
+  // We do this (rather than simply queuing up each listener and running them
+  // asynchronously) for a few reasons:
+  // - It allows us to catch exceptions when the listener is running.
+  // - Listeners could be removed between the time the event is received and the
+  //   listeners are notified.
+  // - It allows us to group the listeners responses.
+
+  // We always set a filter id (rather than leaving filter undefined in the
+  // case of no filter being present) to avoid ever hitting the Object prototype
+  // chain when checking for it on the data value in DispatchAsyncHelper().
+  int filter_id = kInvalidFilterId;
+
+  if (filter) {
+    filter_id = next_filter_id_++;
+    pending_filters_[filter_id] = std::move(filter);
+  }
+
+  return filter_id;
+}
+
+mojom::EventFilteringInfoPtr EventEmitter::PopFilter(int filter_id) {
+  mojom::EventFilteringInfoPtr filter;
+
+  if (filter_id == kInvalidFilterId) {
+    return filter;
+  }
+
+  auto filter_iter = pending_filters_.find(filter_id);
+  CHECK(filter_iter != pending_filters_.end());
+  filter = std::move(filter_iter->second);
+  pending_filters_.erase(filter_iter);
+
+  return filter;
+}
+
 void EventEmitter::AddListener(gin::Arguments* arguments) {
   // If script from another context maintains a reference to this object, it's
   // possible that functions can be called after this object's owning context
   // is torn down and released by blink. We don't support this behavior, but
   // we need to make sure nothing crashes, so early out of methods.
-  if (!valid_)
+  if (!valid_) {
     return;
+  }
 
   v8::Local<v8::Function> listener;
   // TODO(devlin): For some reason, we don't throw an error when someone calls
   // add/removeListener with no argument. We probably should. For now, keep
   // the status quo, but we should revisit this.
-  if (!arguments->GetNext(&listener))
+  if (!arguments->GetNext(&listener)) {
     return;
+  }
 
   if (!arguments->PeekNext().IsEmpty() && !supports_filters_) {
     arguments->ThrowTypeError("This event does not support filters");
@@ -106,8 +147,9 @@ void EventEmitter::AddListener(gin::Arguments* arguments) {
   }
 
   v8::Local<v8::Context> context = arguments->GetHolderCreationContext();
-  if (!gin::PerContextData::From(context))
+  if (!gin::PerContextData::From(context)) {
     return;
+  }
 
   std::string error;
   if (!listeners_->AddListener(listener, filter, context, &error) &&
@@ -118,13 +160,15 @@ void EventEmitter::AddListener(gin::Arguments* arguments) {
 
 void EventEmitter::RemoveListener(gin::Arguments* arguments) {
   // See comment in AddListener().
-  if (!valid_)
+  if (!valid_) {
     return;
+  }
 
   v8::Local<v8::Function> listener;
   // See comment in AddListener().
-  if (!arguments->GetNext(&listener))
+  if (!arguments->GetNext(&listener)) {
     return;
+  }
 
   listeners_->RemoveListener(listener, arguments->GetHolderCreationContext());
 }
@@ -138,11 +182,13 @@ bool EventEmitter::HasListeners() {
 }
 
 void EventEmitter::Dispatch(gin::Arguments* arguments) {
-  if (!valid_)
+  if (!valid_) {
     return;
+  }
 
-  if (listeners_->GetNumListeners() == 0)
+  if (listeners_->GetNumListeners() == 0) {
     return;
+  }
 
   v8::Isolate* isolate = arguments->isolate();
   v8::HandleScope handle_scope(isolate);
@@ -188,8 +234,9 @@ v8::Local<v8::Value> EventEmitter::DispatchSync(
 
     // Any of the listeners could invalidate the context. If that happens,
     // bail out.
-    if (!binding::IsContextValid(context))
+    if (!binding::IsContextValid(context)) {
       return v8::Undefined(isolate);
+    }
 
     v8::Local<v8::Value> listener_result;
     if (maybe_result.ToLocal(&listener_result)) {
@@ -229,24 +276,7 @@ void EventEmitter::DispatchAsync(v8::Local<v8::Context> context,
   v8::HandleScope handle_scope(isolate);
   v8::Context::Scope context_scope(context);
 
-  // In order to dispatch (potentially) asynchronously (such as when script is
-  // suspended), use a helper function to run once JS is allowed to run,
-  // currying in the necessary information about the arguments and filter.
-  // We do this (rather than simply queuing up each listener and running them
-  // asynchronously) for a few reasons:
-  // - It allows us to catch exceptions when the listener is running.
-  // - Listeners could be removed between the time the event is received and the
-  //   listeners are notified.
-  // - It allows us to group the listeners responses.
-
-  // We always set a filter id (rather than leaving filter undefined in the
-  // case of no filter being present) to avoid ever hitting the Object prototype
-  // chain when checking for it on the data value in DispatchAsyncHelper().
-  int filter_id = kInvalidFilterId;
-  if (filter) {
-    filter_id = next_filter_id_++;
-    pending_filters_[filter_id] = std::move(filter);
-  }
+  int filter_id = PushFilter(std::move(filter));
 
   v8::Local<v8::Array> args_array = v8::Array::New(isolate, args->size());
   for (size_t i = 0; i < args->size(); ++i) {
@@ -276,8 +306,9 @@ void EventEmitter::DispatchAsyncHelper(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  if (!binding::IsContextValid(context))
+  if (!binding::IsContextValid(context)) {
     return;
+  }
 
   v8::Local<v8::Object> data = info.Data().As<v8::Object>();
 
@@ -292,13 +323,7 @@ void EventEmitter::DispatchAsyncHelper(
       data->Get(context, gin::StringToSymbol(isolate, kFilterKey))
           .ToLocalChecked();
   int filter_id = filter_id_value.As<v8::Int32>()->Value();
-  mojom::EventFilteringInfoPtr filter;
-  if (filter_id != kInvalidFilterId) {
-    auto filter_iter = emitter->pending_filters_.find(filter_id);
-    DCHECK(filter_iter != emitter->pending_filters_.end());
-    filter = std::move(filter_iter->second);
-    emitter->pending_filters_.erase(filter_iter);
-  }
+  mojom::EventFilteringInfoPtr filter = emitter->PopFilter(filter_id);
 
   v8::Local<v8::Value> arguments_value =
       data->Get(context, gin::StringToSymbol(isolate, kArgumentsKey))
@@ -308,8 +333,9 @@ void EventEmitter::DispatchAsyncHelper(
   v8::LocalVector<v8::Value> arguments(isolate);
   uint32_t arguments_count = arguments_array->Length();
   arguments.reserve(arguments_count);
-  for (uint32_t i = 0; i < arguments_count; ++i)
+  for (uint32_t i = 0; i < arguments_count; ++i) {
     arguments.push_back(arguments_array->Get(context, i).ToLocalChecked());
+  }
 
   // We know that dispatching synchronously should be safe because this function
   // was triggered by JS execution.

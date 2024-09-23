@@ -1,0 +1,42 @@
+<script>
+  let allEventsPromise;
+
+  let kDurationThreshold = 104;
+
+  const mainThreadBusy = (ms) => {
+    const target = performance.now() + ms;
+    while (performance.now() < target);
+  }
+
+  const registerEventListeners = () => {
+    mouseupPromise = new Promise(resolve => {
+      window.addEventListener('mouseup', () => { mainThreadBusy(kDurationThreshold + 4); resolve(); }, { once: true });
+    });
+
+    pointerupPromise = new Promise(resolve => {
+      window.addEventListener('pointerup', () => { mainThreadBusy(kDurationThreshold + 4); resolve(); }, { once: true });
+    });
+
+    clickPromise = new Promise(resolve => {
+      window.addEventListener('click', () => { mainThreadBusy(kDurationThreshold + 4); resolve(); }, { once: true });
+    });
+
+    allEventsPromise = Promise.all([mouseupPromise, pointerupPromise, clickPromise])
+    return true;
+  };
+
+  const waitForEvent = async () => {
+    await allEventsPromise;
+    return true;
+  }
+
+  // Assuming the PerformanceObserver callback would not fire until the `click` is finished.
+  // This could be flaky depending on the loading state of the test page and render scheduling.
+  const getEntriesCntAndDroppedEntriesCnt = async () => {
+    return await new Promise(resolve => {
+      const observer = new PerformanceObserver((list, _, options) => {
+        resolve([list.getEntries().length, options['droppedEntriesCount']]);
+      }).observe({ type: "event", durationThreshold: kDurationThreshold, buffered: true });
+    });
+  }
+</script>

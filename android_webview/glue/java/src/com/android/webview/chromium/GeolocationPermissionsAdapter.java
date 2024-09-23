@@ -7,16 +7,20 @@ package com.android.webview.chromium;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
 
+import com.android.webview.chromium.WebViewChromium.ApiCall;
+
 import org.chromium.android_webview.AwGeolocationPermissions;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 
 import java.util.Set;
 
 /**
- * Chromium implementation of GeolocationPermissions -- forwards calls to the
- * chromium internal implementation.
+ * Chromium implementation of GeolocationPermissions -- forwards calls to the chromium internal
+ * implementation.
  */
 final class GeolocationPermissionsAdapter extends GeolocationPermissions {
+
     private final WebViewChromiumFactoryProvider mFactory;
     private final AwGeolocationPermissions mChromeGeolocationPermissions;
 
@@ -29,80 +33,77 @@ final class GeolocationPermissionsAdapter extends GeolocationPermissions {
 
     @Override
     public void allow(final String origin) {
-        if (checkNeedsPost()) {
-            mFactory.addTask(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mChromeGeolocationPermissions.allow(origin);
-                        }
-                    });
-            return;
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.GEOLOCATION_PERMISSIONS_ALLOW")) {
+            WebViewChromium.recordWebViewApiCall(ApiCall.GEOLOCATION_PERMISSIONS_ALLOW);
+            if (checkNeedsPost()) {
+                mFactory.addTask(() -> mChromeGeolocationPermissions.allow(origin));
+                return;
+            }
+            mChromeGeolocationPermissions.allow(origin);
         }
-        mChromeGeolocationPermissions.allow(origin);
     }
 
     @Override
     public void clear(final String origin) {
-        if (checkNeedsPost()) {
-            mFactory.addTask(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mChromeGeolocationPermissions.clear(origin);
-                        }
-                    });
-            return;
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.GEOLOCATION_PERMISSIONS_CLEAR")) {
+            WebViewChromium.recordWebViewApiCall(ApiCall.GEOLOCATION_PERMISSIONS_CLEAR);
+            if (checkNeedsPost()) {
+                mFactory.addTask(() -> mChromeGeolocationPermissions.clear(origin));
+                return;
+            }
+            mChromeGeolocationPermissions.clear(origin);
         }
-        mChromeGeolocationPermissions.clear(origin);
     }
 
     @Override
     public void clearAll() {
-        if (checkNeedsPost()) {
-            mFactory.addTask(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mChromeGeolocationPermissions.clearAll();
-                        }
-                    });
-            return;
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.GEOLOCATION_PERMISSIONS_CLEAR_ALL")) {
+            WebViewChromium.recordWebViewApiCall(ApiCall.GEOLOCATION_PERMISSIONS_CLEAR_ALL);
+            if (checkNeedsPost()) {
+                mFactory.addTask(mChromeGeolocationPermissions::clearAll);
+                return;
+            }
+            mChromeGeolocationPermissions.clearAll();
         }
-        mChromeGeolocationPermissions.clearAll();
     }
 
     @Override
     public void getAllowed(final String origin, final ValueCallback<Boolean> callback) {
-        if (checkNeedsPost()) {
-            mFactory.addTask(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mChromeGeolocationPermissions.getAllowed(
-                                    origin, CallbackConverter.fromValueCallback(callback));
-                        }
-                    });
-            return;
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.GEOLOCATION_PERMISSIONS_GET_ALLOWED")) {
+            WebViewChromium.recordWebViewApiCall(ApiCall.GEOLOCATION_PERMISSIONS_GET_ALLOWED);
+            if (checkNeedsPost()) {
+                mFactory.addTask(
+                        () ->
+                                mChromeGeolocationPermissions.getAllowed(
+                                        origin, CallbackConverter.fromValueCallback(callback)));
+                return;
+            }
+            mChromeGeolocationPermissions.getAllowed(
+                    origin, CallbackConverter.fromValueCallback(callback));
         }
-        mChromeGeolocationPermissions.getAllowed(
-                origin, CallbackConverter.fromValueCallback(callback));
     }
 
     @Override
     public void getOrigins(final ValueCallback<Set<String>> callback) {
-        if (checkNeedsPost()) {
-            mFactory.addTask(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mChromeGeolocationPermissions.getOrigins(
-                                    CallbackConverter.fromValueCallback(callback));
-                        }
-                    });
-            return;
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.GEOLOCATION_PERMISSIONS_GET_ORIGINS")) {
+            WebViewChromium.recordWebViewApiCall(ApiCall.GEOLOCATION_PERMISSIONS_GET_ORIGINS);
+
+            if (checkNeedsPost()) {
+                mFactory.addTask(
+                        () ->
+                                mChromeGeolocationPermissions.getOrigins(
+                                        CallbackConverter.fromValueCallback(callback)));
+                return;
+            }
+            mChromeGeolocationPermissions.getOrigins(CallbackConverter.fromValueCallback(callback));
         }
-        mChromeGeolocationPermissions.getOrigins(CallbackConverter.fromValueCallback(callback));
     }
 
     private static boolean checkNeedsPost() {

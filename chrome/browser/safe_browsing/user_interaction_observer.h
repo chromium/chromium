@@ -70,13 +70,10 @@ class SafeBrowsingUserInteractionObserver
  public:
   // Creates an observer for given |web_contents|. |resource| is the unsafe
   // resource for which a delayed interstitial will be displayed.
-  // |is_main_frame| is true if the interstitial is for the top frame. If false,
-  // it's for a subresource / subframe.
   // |ui_manager| is the UIManager that shows the actual warning.
   static void CreateForWebContents(
       content::WebContents* web_contents,
       const security_interstitials::UnsafeResource& resource,
-      bool is_main_frame,
       scoped_refptr<SafeBrowsingUIManager> ui_manager);
 
   ~SafeBrowsingUserInteractionObserver() override;
@@ -116,10 +113,9 @@ class SafeBrowsingUserInteractionObserver
   SafeBrowsingUserInteractionObserver(
       content::WebContents* web_contents,
       const security_interstitials::UnsafeResource& resource,
-      bool is_main_frame,
       scoped_refptr<SafeBrowsingUIManager> ui_manager);
 
-  bool HandleKeyPress(const content::NativeWebKeyboardEvent& event);
+  bool HandleKeyPress(const input::NativeWebKeyboardEvent& event);
   bool HandleMouseEvent(const blink::WebMouseEvent& event);
 
   void ShowInterstitial(DelayedWarningEvent event);

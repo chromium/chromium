@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/numerics/clamped_math.h"
 #include "base/ranges/algorithm.h"
@@ -50,43 +50,30 @@ namespace {
 constexpr double kMMPerInch = 25.4;
 constexpr double kCmPerInch = kMMPerInch * 0.1;
 
-struct ColorMap {
-  const char* color;
-  mojom::ColorModel model;
-};
+constexpr auto kColorMap =
+    base::MakeFixedFlatMap<std::string_view, mojom::ColorModel>({
+        {CUPS_PRINT_COLOR_MODE_COLOR, mojom::ColorModel::kColorModeColor},
+        {CUPS_PRINT_COLOR_MODE_MONOCHROME,
+         mojom::ColorModel::kColorModeMonochrome},
+    });
 
-struct DuplexMap {
-  const char* name;
-  mojom::DuplexMode mode;
-};
+constexpr auto kDuplexMap =
+    base::MakeFixedFlatMap<std::string_view, mojom::DuplexMode>({
+        {CUPS_SIDES_ONE_SIDED, mojom::DuplexMode::kSimplex},
+        {CUPS_SIDES_TWO_SIDED_PORTRAIT, mojom::DuplexMode::kLongEdge},
+        {CUPS_SIDES_TWO_SIDED_LANDSCAPE, mojom::DuplexMode::kShortEdge},
+    });
 
-const ColorMap kColorList[]{
-    {CUPS_PRINT_COLOR_MODE_COLOR, mojom::ColorModel::kColorModeColor},
-    {CUPS_PRINT_COLOR_MODE_MONOCHROME, mojom::ColorModel::kColorModeMonochrome},
-};
-
-const DuplexMap kDuplexList[]{
-    {CUPS_SIDES_ONE_SIDED, mojom::DuplexMode::kSimplex},
-    {CUPS_SIDES_TWO_SIDED_PORTRAIT, mojom::DuplexMode::kLongEdge},
-    {CUPS_SIDES_TWO_SIDED_LANDSCAPE, mojom::DuplexMode::kShortEdge},
-};
-
-mojom::ColorModel ColorModelFromIppColor(std::string_view ippColor) {
-  for (const ColorMap& color : kColorList) {
-    if (ippColor.compare(color.color) == 0) {
-      return color.model;
-    }
-  }
-
-  return mojom::ColorModel::kUnknownColorModel;
+mojom::ColorModel ColorModelFromIppColor(std::string_view ipp_color) {
+  auto it = kColorMap.find(ipp_color);
+  return it != kColorMap.end() ? it->second
+                               : mojom::ColorModel::kUnknownColorModel;
 }
 
 mojom::DuplexMode DuplexModeFromIpp(std::string_view ipp_duplex) {
-  for (const DuplexMap& entry : kDuplexList) {
-    if (base::EqualsCaseInsensitiveASCII(ipp_duplex, entry.name))
-      return entry.mode;
-  }
-  return mojom::DuplexMode::kUnknownDuplexMode;
+  auto it = kDuplexMap.find(ipp_duplex);
+  return it != kDuplexMap.end() ? it->second
+                                : mojom::DuplexMode::kUnknownDuplexMode;
 }
 
 mojom::ColorModel DefaultColorModel(const CupsOptionProvider& printer) {
@@ -414,7 +401,7 @@ void ExtractMediaTypes(const CupsOptionProvider& printer,
   ipp_t* media_col_default =
       ippGetCollection(printer.GetDefaultOptionValue(kIppMediaCol), 0);
   const char* media_type_default = ippGetString(
-      ippFindAttribute(media_col_default, "media-type", IPP_TAG_KEYWORD), 0,
+      ippFindAttribute(media_col_default, kIppMediaType, IPP_TAG_KEYWORD), 0,
       nullptr);
   if (media_type_default) {
     // Don't set the "default" media type if it isn't in the list of supported
@@ -505,7 +492,7 @@ size_t AddAttributes(const CupsOptionProvider& printer,
 size_t AddInputTray(const CupsOptionProvider& printer,
                     AdvancedCapabilities* caps) {
   size_t previous_size = caps->size();
-  KeywordHandler(printer, "media-source", caps);
+  KeywordHandler(printer, kIppMediaSource, caps);
   return caps->size() - previous_size;
 }
 

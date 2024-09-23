@@ -54,12 +54,10 @@ void ContentData::Trace(Visitor* visitor) const {
   visitor->Trace(next_);
 }
 
-LayoutObject* ImageContentData::CreateLayoutObject(
-    PseudoElement& pseudo,
-    const ComputedStyle& pseudo_style) const {
-  LayoutImage* image = LayoutImage::CreateAnonymous(pseudo);
+LayoutObject* ImageContentData::CreateLayoutObject(LayoutObject& owner) const {
+  LayoutImage* image = LayoutImage::CreateAnonymous(owner.GetDocument());
   bool match_parent_size = image_ && image_->IsGeneratedImage();
-  image->SetPseudoElementStyle(&pseudo_style, match_parent_size);
+  image->SetPseudoElementStyle(owner, match_parent_size);
   if (image_) {
     image->SetImageResource(
         MakeGarbageCollected<LayoutImageResourceStyleImage>(image_.Get()));
@@ -74,30 +72,26 @@ void ImageContentData::Trace(Visitor* visitor) const {
   ContentData::Trace(visitor);
 }
 
-LayoutObject* TextContentData::CreateLayoutObject(
-    PseudoElement& pseudo,
-    const ComputedStyle& pseudo_style) const {
+LayoutObject* TextContentData::CreateLayoutObject(LayoutObject& owner) const {
   LayoutObject* layout_object =
-      LayoutTextFragment::CreateAnonymous(pseudo, text_);
-  layout_object->SetPseudoElementStyle(&pseudo_style);
+      LayoutTextFragment::CreateAnonymous(owner.GetDocument(), text_);
+  layout_object->SetPseudoElementStyle(owner);
   return layout_object;
 }
 
 LayoutObject* AltTextContentData::CreateLayoutObject(
-    PseudoElement& pseudo,
-    const ComputedStyle& pseudo_style) const {
+    LayoutObject& owner) const {
   // Does not require a layout object. Calling site should first check
   // IsAltContentData() before calling this method.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 LayoutObject* CounterContentData::CreateLayoutObject(
-    PseudoElement& pseudo,
-    const ComputedStyle& pseudo_style) const {
+    LayoutObject& owner) const {
   LayoutObject* layout_object =
-      MakeGarbageCollected<LayoutCounter>(pseudo, *this);
-  layout_object->SetPseudoElementStyle(&pseudo_style);
+      MakeGarbageCollected<LayoutCounter>(owner.GetDocument(), *this);
+  layout_object->SetPseudoElementStyle(owner);
   return layout_object;
 }
 
@@ -106,19 +100,15 @@ void CounterContentData::Trace(Visitor* visitor) const {
   ContentData::Trace(visitor);
 }
 
-LayoutObject* QuoteContentData::CreateLayoutObject(
-    PseudoElement& pseudo,
-    const ComputedStyle& pseudo_style) const {
+LayoutObject* QuoteContentData::CreateLayoutObject(LayoutObject& owner) const {
   LayoutObject* layout_object =
-      MakeGarbageCollected<LayoutQuote>(pseudo, quote_);
-  layout_object->SetPseudoElementStyle(&pseudo_style);
+      MakeGarbageCollected<LayoutQuote>(owner, quote_);
+  layout_object->SetPseudoElementStyle(owner);
   return layout_object;
 }
 
-LayoutObject* NoneContentData::CreateLayoutObject(
-    PseudoElement& pseudo,
-    const ComputedStyle& pseudo_style) const {
-  NOTREACHED();
+LayoutObject* NoneContentData::CreateLayoutObject(LayoutObject& owner) const {
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

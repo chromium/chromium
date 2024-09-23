@@ -32,6 +32,7 @@
 
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -46,8 +47,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
+#include "third_party/blink/renderer/platform/feature_context.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap_observer_set.h"
+#include "third_party/blink/renderer/platform/heap_observer_list.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/https_state.h"
@@ -201,7 +203,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   // Returns a reference to the current world we are in. If the current v8
   // context is empty, returns null.
-  scoped_refptr<const DOMWrapperWorld> GetCurrentWorld() const;
+  const DOMWrapperWorld* GetCurrentWorld() const;
 
   // Returns the content security policy to be used based on the current
   // JavaScript world we are in.
@@ -385,7 +387,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       const String& message = g_empty_string,
       const String& source_file = g_empty_string) const {}
 
-  HeapObserverSet<ContextLifecycleObserver>& ContextLifecycleObserverSet();
+  HeapObserverList<ContextLifecycleObserver>& ContextLifecycleObserverSet();
   unsigned ContextLifecycleStateObserverCountForTesting() const;
 
   // Implementation of WindowOrWorkerGlobalScope.crossOriginIsolated.
@@ -401,6 +403,11 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   //
   // TODO(mkwst): We need a specification for the necessary restrictions.
   virtual bool IsIsolatedContext() const = 0;
+
+  // Returns true if scripts within this ExecutionContext are considered
+  // sufficiently protected from injection attacks (e.g. by enforcing a strict
+  // CSP, a la https://csp.withgoogle.com/docs/strict-csp.html.
+  bool IsInjectionMitigatedContext() const;
 
   // Returns true if SharedArrayBuffers can be transferred via PostMessage,
   // false otherwise. SharedArrayBuffer allows pages to craft high-precision
@@ -433,7 +440,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // they are also a ScriptWrappable. This casts the ExecutionContext to a
   // ScriptWrappable if possible.
   virtual ScriptWrappable* ToScriptWrappable() {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -471,9 +478,10 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
     ExecutionContext* context_;
   };
 
-  // Returns true if this execution context has obtained storage access via the
-  // Storage Access API.
-  virtual bool HasStorageAccess() const { return false; }
+  // Returns the context's Storage Access API status.
+  virtual net::StorageAccessApiStatus GetStorageAccessApiStatus() const {
+    return net::StorageAccessApiStatus::kNone;
+  }
 
  protected:
   ExecutionContext(v8::Isolate* isolate, Agent* agent, bool is_window = false);

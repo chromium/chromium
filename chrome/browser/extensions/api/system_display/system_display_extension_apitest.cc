@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/browser/api/system_display/system_display_api.h"
@@ -47,7 +48,7 @@ class SystemDisplayExtensionApiTest
       std::make_unique<MockDisplayInfoProvider>();
 };
 
-// TODO(crbug.com/1231357): Revisit this after screen creation refactoring.
+// TODO(crbug.com/40779611): Revisit this after screen creation refactoring.
 #if !BUILDFLAG(IS_WIN)
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

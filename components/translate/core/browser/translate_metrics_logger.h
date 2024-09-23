@@ -126,7 +126,8 @@ enum class TriggerDecision {
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. Keep in sync with
+// |TranslateUIInteraction| in translate/enums.xml.
 enum class UIInteraction {
   kUninitialized = 0,
   kTranslate = 1,
@@ -148,7 +149,8 @@ enum class UIInteraction {
   kRemoveNeverTranslateLanguage = 14,
   kAddNeverTranslateSite = 15,
   kRemoveNeverTranslateSite = 16,
-  kMaxValue = kRemoveNeverTranslateSite,
+  kOpenLanguageSettings = 17,
+  kMaxValue = kOpenLanguageSettings,
 };
 
 // TranslateMetricsLogger tracks and logs various UKM and UMA metrics for Chrome

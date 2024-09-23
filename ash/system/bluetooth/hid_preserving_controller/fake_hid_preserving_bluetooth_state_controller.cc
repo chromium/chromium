@@ -19,9 +19,11 @@ FakeHidPreservingBluetoothStateController::
     ~FakeHidPreservingBluetoothStateController() = default;
 
 void FakeHidPreservingBluetoothStateController::TryToSetBluetoothEnabledState(
-    bool enabled) {
+    bool enabled,
+    mojom::HidWarningDialogSource source) {
   if (should_show_warning_dialog_) {
     pending_bluetooth_enabled_request_ = enabled;
+    dialog_shown_count_++;
     return;
   }
 
@@ -44,9 +46,15 @@ void FakeHidPreservingBluetoothStateController::CompleteShowDialog(
   SetBluetoothEnabledState(pending_bluetooth_enabled_request_);
 }
 
+void FakeHidPreservingBluetoothStateController::SetScopedBluetoothConfigHelper(
+    bluetooth_config::ScopedBluetoothConfigTestHelper* helper) {
+  scoped_bluetooth_config_test_helper_ = helper;
+}
+
 void FakeHidPreservingBluetoothStateController::SetBluetoothEnabledState(
     bool enabled) {
-  scoped_bluetooth_config_test_helper_.fake_bluetooth_power_controller()
+  CHECK(scoped_bluetooth_config_test_helper_);
+  scoped_bluetooth_config_test_helper_->fake_bluetooth_power_controller()
       ->SetBluetoothEnabledState(enabled);
 }
 

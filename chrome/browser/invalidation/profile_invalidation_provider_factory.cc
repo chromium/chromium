@@ -21,12 +21,10 @@
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#include "components/invalidation/impl/fcm_invalidation_service.h"
-#include "components/invalidation/impl/fcm_network_handler.h"
-#include "components/invalidation/impl/invalidation_prefs.h"
-#include "components/invalidation/impl/per_user_topic_subscription_manager.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
-#include "components/invalidation/impl/profile_invalidation_provider.h"
+#include "components/invalidation/invalidation_factory.h"
+#include "components/invalidation/invalidation_listener.h"
+#include "components/invalidation/profile_invalidation_provider.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
@@ -36,37 +34,31 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/device_identity/device_identity_provider.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
 namespace invalidation {
 namespace {
 
-std::unique_ptr<InvalidationService> CreateInvalidationServiceForSenderId(
-    Profile* profile,
-    IdentityProvider* identity_provider,
-    const std::string& sender_id) {
-  auto service = std::make_unique<FCMInvalidationService>(
+std::variant<std::unique_ptr<InvalidationService>,
+             std::unique_ptr<InvalidationListener>>
+CreateInvalidationServiceOrListenerImpl(Profile* profile,
+                                        IdentityProvider* identity_provider,
+                                        std::string sender_id,
+                                        std::string project_number,
+                                        std::string log_prefix) {
+  return CreateInvalidationServiceOrListener(
       identity_provider,
-      base::BindRepeating(
-          &FCMNetworkHandler::Create,
-          gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
-          instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
-              ->driver()),
-      base::BindRepeating(&invalidation::FCMInvalidationListener::Create),
-      base::BindRepeating(
-          &PerUserTopicSubscriptionManager::Create, identity_provider,
-          profile->GetPrefs(),
-          base::RetainedRef(profile->GetDefaultStoragePartition()
-                                ->GetURLLoaderFactoryForBrowserProcess())),
+      gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
           ->driver(),
-      profile->GetPrefs(), sender_id);
-  service->Init();
-  return service;
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      profile->GetPrefs(), std::move(sender_id), std::move(project_number),
+      std::move(log_prefix));
 }
 
 }  // namespace
@@ -75,11 +67,7 @@ std::unique_ptr<InvalidationService> CreateInvalidationServiceForSenderId(
 ProfileInvalidationProvider* ProfileInvalidationProviderFactory::GetForProfile(
     Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Using ProfileHelper::GetSigninProfile() here would lead to an infinite loop
-  // when this method is called during the creation of the sign-in profile
-  // itself. Using ProfileHelper::GetSigninProfileDir() is safe because it does
-  // not try to access the sign-in profile.
-  if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
+  if (ash::IsSigninBrowserContext(profile) ||
       (user_manager::UserManager::IsInitialized() &&
        user_manager::UserManager::Get()->IsLoggedInAsGuest())) {
     // The Chrome OS login and Chrome OS guest profiles do not have GAIA
@@ -103,9 +91,12 @@ ProfileInvalidationProviderFactory::ProfileInvalidationProviderFactory()
           "InvalidationService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
@@ -116,15 +107,16 @@ ProfileInvalidationProviderFactory::~ProfileInvalidationProviderFactory() =
     default;
 
 void ProfileInvalidationProviderFactory::RegisterTestingFactory(
-    TestingFactory testing_factory) {
+    GlobalTestingFactory testing_factory) {
   testing_factory_ = std::move(testing_factory);
 }
 
 std::unique_ptr<KeyedService>
 ProfileInvalidationProviderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (testing_factory_)
+  if (testing_factory_) {
     return testing_factory_.Run(context);
+  }
 
   std::unique_ptr<IdentityProvider> identity_provider;
 
@@ -145,10 +137,12 @@ ProfileInvalidationProviderFactory::BuildServiceInstanceForBrowserContext(
     identity_provider = std::make_unique<ProfileIdentityProvider>(
         IdentityManagerFactory::GetForProfile(profile));
   }
-  auto custom_sender_id_factory = base::BindRepeating(
-      &CreateInvalidationServiceForSenderId, profile, identity_provider.get());
+  ProfileInvalidationProvider::InvalidationServiceOrListenerFactory
+      service_or_listener_factory =
+          base::BindRepeating(&CreateInvalidationServiceOrListenerImpl, profile,
+                              identity_provider.get());
   return std::make_unique<ProfileInvalidationProvider>(
-      std::move(identity_provider), std::move(custom_sender_id_factory));
+      std::move(identity_provider), std::move(service_or_listener_factory));
 }
 
 void ProfileInvalidationProviderFactory::RegisterProfilePrefs(

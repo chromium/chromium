@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/render_thread_impl.h"
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -19,6 +17,7 @@
 #include "base/memory/madv_free_discardable_memory_allocator_posix.h"
 #include "base/memory/madv_free_discardable_memory_posix.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/time/time.h"
@@ -32,6 +31,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/renderer/discardable_memory_utils.h"
+#include "content/renderer/render_thread_impl.h"
 #include "content/shell/browser/shell.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -90,11 +90,17 @@ class RenderThreadImplDiscardableMemoryBrowserTest : public ContentBrowserTest {
         RenderThreadImpl::current()->GetDiscardableMemoryAllocatorForTest();
   }
 
-  base::DiscardableMemoryAllocator* discardable_memory_allocator_;
+  raw_ptr<base::DiscardableMemoryAllocator> discardable_memory_allocator_;
 };
 
+// TODO(crbug.com/362224383): This test was flaky on Windows ASan bots.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_LockDiscardableMemory DISABLED_LockDiscardableMemory
+#else
+#define MAYBE_LockDiscardableMemory LockDiscardableMemory
+#endif
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
-                       LockDiscardableMemory) {
+                       MAYBE_LockDiscardableMemory) {
   const size_t kSize = 1024 * 1024;  // 1MiB.
 
   std::unique_ptr<base::DiscardableMemory> memory =
@@ -121,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
 // See http://crbug.com/667837 for detail.
 #if !(BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER))
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
-                       // TODO(crbug.com/1065493): Re-enable this test
+                       // TODO(crbug.com/40681859): Re-enable this test
                        DISABLED_DiscardableMemoryAddressSpace) {
   const size_t kLargeSize = 4 * 1024 * 1024;   // 4MiB.
   const size_t kNumberOfInstances = 1024 + 1;  // >4GiB total.

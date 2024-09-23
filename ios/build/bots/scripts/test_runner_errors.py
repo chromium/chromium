@@ -9,19 +9,32 @@ class Error(Exception):
   pass
 
 
-class ExcessShardsError(Error):
-  """The test suite is misconfigured to have more shards than test cases"""
-  pass
-
-
 class IOSRuntimeHandlingError(Error):
   """Base class for iOS runtime package related errors."""
   pass
 
 
+class XcodeEnumerateTestsError(Error):
+  """Xcodebuild failed to enumerate test methods present in the EG test app"""
+
+  def __init__(self, error=''):
+    super(
+        XcodeEnumerateTestsError,
+        self).__init__(f'Xcodebuild failed to enumerate test methods.\n{error}')
+
+
 class XcodeInstallError(Error):
   """Base class for xcode install related errors."""
   pass
+
+
+class XcodeInstallFailedError(Error):
+  """The requested version of Xcode was not successfully installed."""
+
+  def __init__(self, xcode_version):
+    super(XcodeInstallFailedError, self).__init__(
+        'Xcode version %s failed to install. File a ticket to go/ios-ops-ticket'
+        % xcode_version)
 
 
 class XcodeUnsupportedFeatureError(Error):

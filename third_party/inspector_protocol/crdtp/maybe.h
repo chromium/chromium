@@ -87,7 +87,7 @@ class ValueMaybe {
   }
   T&& value() && {
     assert(is_just_);
-    return *std::move(value_);
+    return std::move(value_);
   }
   template <typename U>
   T value_or(U&& default_value) const& {

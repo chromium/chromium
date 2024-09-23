@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace gfx {
 struct VectorIcon;
@@ -55,17 +56,22 @@ class AuthenticatorRequestSheetModel {
 
   virtual bool IsManageDevicesButtonVisible() const;
   virtual bool IsOtherMechanismButtonVisible() const;
+  virtual bool IsForgotGPMPinButtonVisible() const;
+  virtual bool IsGPMPinOptionsButtonVisible() const;
   virtual std::u16string GetOtherMechanismButtonLabel() const;
 
   virtual std::u16string GetStepTitle() const = 0;
   virtual std::u16string GetStepDescription() const = 0;
-  virtual std::u16string GetAdditionalDescription() const;
+  virtual std::vector<std::u16string> GetAdditionalDescriptions() const;
   virtual std::u16string GetError() const;
+  virtual std::u16string GetHint() const;
 
   virtual void OnBack() = 0;
   virtual void OnAccept() = 0;
   virtual void OnCancel() = 0;
   virtual void OnManageDevices();
+  virtual void OnForgotGPMPin() const;
+  virtual void OnGPMPinOptionChosen(bool is_arbitrary) const;
 
   // Lottie illustrations are represented by their resource ID.
   std::optional<IllustrationPair<int>> lottie_illustrations() const {

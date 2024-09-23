@@ -7,13 +7,13 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='target'",
+      "name": "LayoutBlockFlow DIV id='target'",
       "bounds": [784, 300],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='target'",
+      "name": "LayoutBlockFlow DIV id='target'",
       "bounds": [784, 1027],
       "transform": 1
     }

@@ -19,7 +19,7 @@ mojom::RunLocation ConvertRunLocation(api::extension_types::RunAt run_at) {
       return mojom::RunLocation::kDocumentStart;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojom::RunLocation::kDocumentIdle;
 }
 
@@ -40,7 +40,7 @@ api::extension_types::RunAt ConvertRunLocationForAPI(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return api::extension_types::RunAt::kDocumentIdle;
 }
 
@@ -72,7 +72,7 @@ api::extension_types::ExecutionWorld ConvertExecutionWorldForAPI(
       return api::extension_types::ExecutionWorld::kUserScript;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return api::extension_types::ExecutionWorld::kIsolated;
 }
 

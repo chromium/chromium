@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Property background-clip value 'content-box, border-box, border-area'
+  assert_true: 'content-box, border-box, border-area' is a supported value for background-clip. expected true got false
+Harness: the test ran to completion.
+

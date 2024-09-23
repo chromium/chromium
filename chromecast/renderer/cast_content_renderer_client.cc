@@ -4,9 +4,9 @@
 
 #include "chromecast/renderer/cast_content_renderer_client.h"
 
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -35,13 +35,13 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/key_system_info.h"
 #include "media/base/media.h"
+#include "media/base/remoting_constants.h"
 #include "media/remoting/receiver_controller.h"
-#include "media/remoting/remoting_constants.h"
 #include "media/remoting/stream_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_security_policy.h"
@@ -155,7 +155,7 @@ void CastContentRendererClient::RenderFrameCreated(
 
   if (!app_media_capabilities_observer_receiver_.is_bound()) {
     mojo::Remote<mojom::ApplicationMediaCapabilities> app_media_capabilities;
-    render_frame->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame->GetBrowserInterfaceBroker().GetInterface(
         app_media_capabilities.BindNewPipeAndPassReceiver());
     app_media_capabilities->AddObserver(
         app_media_capabilities_observer_receiver_.BindNewPipeAndPassRemote());
@@ -170,17 +170,20 @@ void CastContentRendererClient::RunScriptsAtDocumentStart(
 void CastContentRendererClient::RunScriptsAtDocumentEnd(
     content::RenderFrame* render_frame) {}
 
-void CastContentRendererClient::GetSupportedKeySystems(
+std::unique_ptr<::media::KeySystemSupportRegistration>
+CastContentRendererClient::GetSupportedKeySystems(
+    content::RenderFrame* render_frame,
     ::media::GetSupportedKeySystemsCB cb) {
 #if BUILDFLAG(IS_ANDROID)
-  cdm::GetSupportedKeySystemsUpdates(
-      /*can_persist_data=*/true, std::move(cb));
+  return cdm::GetSupportedKeySystemsUpdates(render_frame,
+                                            /*can_persist_data=*/true,
+                                            std::move(cb));
 #else
   ::media::KeySystemInfos key_systems;
   media::AddChromecastKeySystems(&key_systems,
-                                 false /* enable_persistent_license_support */,
-                                 false /* enable_playready */);
+                                 false /* enable_persistent_license_support */);
   std::move(cb).Run(std::move(key_systems));
+  return nullptr;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -240,7 +243,8 @@ bool CastContentRendererClient::IsSupportedVideoType(
     const ::media::VideoType& type) {
   // TODO(servolk): make use of eotf.
 
-  // TODO(1066567): Check attached screen for support of type.hdr_metadata_type.
+  // TODO(crbug.com/40124585): Check attached screen for support of
+  // type.hdr_metadata_type.
   if (type.hdr_metadata_type != ::gfx::HdrMetadataType::kNone) {
     NOTIMPLEMENTED() << "HdrMetadataType support signaling not implemented.";
     return false;

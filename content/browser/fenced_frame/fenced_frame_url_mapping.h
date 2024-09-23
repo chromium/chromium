@@ -36,7 +36,7 @@ using SharedStorageReportingMap = base::flat_map<std::string, ::GURL>;
 // Keeps a mapping of fenced frames URN:UUID and URL. Also keeps a set of
 // pending mapped URN:UUIDs to support asynchronous mapping. See
 // https://github.com/WICG/fenced-frame/blob/master/explainer/opaque_src.md
-// TODO(crbug.com/1405477): Add methods for:
+// TODO(crbug.com/40252330): Add methods for:
 // 1. generating the pending config.
 // 2. finalizing the pending config.
 class CONTENT_EXPORT FencedFrameURLMapping {
@@ -155,6 +155,9 @@ class CONTENT_EXPORT FencedFrameURLMapping {
       const GURL& url,
       scoped_refptr<FencedFrameReporter> fenced_frame_reporter = nullptr);
 
+  // Erases the urn_uuid_to_url_map_ and the pending_urn_uuid_to_url_map_.
+  void ClearMapForTesting();
+
   // Return the `SharedStorageBudgetMetadata` associated with `urn_uuid`, or
   // nullptr if there's no metadata associated (i.e. `urn_uuid` was not
   // originated from shared storage). Precondition: `urn_uuid` exists in
@@ -173,7 +176,7 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   // replacements map. The true URLs for any component ads associated with this
   // URN will also have substrings substituted. This function will be removed
   // once all FLEDGE auctions switch to using fenced frames.
-  // TODO(crbug.com/1253118): Remove this function when we remove support for
+  // TODO(crbug.com/40199055): Remove this function when we remove support for
   // showing FLEDGE ads in iframes.
   void SubstituteMappedURL(
       const GURL& urn_uuid,

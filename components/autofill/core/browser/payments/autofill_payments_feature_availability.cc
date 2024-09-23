@@ -4,7 +4,9 @@
 
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill {
@@ -16,6 +18,38 @@ bool ShouldShowCardMetadata(const CreditCard& card) {
          base::FeatureList::IsEnabled(
              features::kAutofillEnableCardProductName) &&
          base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage);
+}
+
+bool DidDisplayBenefitForCard(
+    const CreditCard& card,
+    const AutofillClient& autofill_client,
+    const PaymentsDataManager& payments_data_manager) {
+  return payments_data_manager.IsCardEligibleForBenefits(card) &&
+         !payments_data_manager
+              .GetApplicableBenefitDescriptionForCardAndOrigin(
+                  card,
+                  autofill_client.GetLastCommittedPrimaryMainFrameOrigin(),
+                  autofill_client.GetAutofillOptimizationGuide())
+              .empty();
+}
+
+bool VirtualCardFeatureEnabled() {
+#if BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCards);
+#else
+  return true;
+#endif
+}
+
+bool IsVcn3dsEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableVcn3dsAuthentication) &&
+         !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
+}
+
+bool IsSaveCardLoadingAndConfirmationEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableSaveCardLoadingAndConfirmation);
 }
 
 }  // namespace autofill

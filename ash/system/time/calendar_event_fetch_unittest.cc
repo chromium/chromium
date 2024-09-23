@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -40,10 +41,11 @@ class TestCalendarClient : public CalendarClient {
   TestCalendarClient& operator=(const TestCalendarClient& other) = delete;
   ~TestCalendarClient() override = default;
 
+  bool IsDisabledByAdmin() const override { return false; }
+
   base::OnceClosure GetCalendarList(
       google_apis::calendar::CalendarListCallback callback) override {
-    // TODO(b/308692003): Implement TestCalendarClient changes to introduce
-    // CalendarListFetch.
+    // This method should not be used during the event fetch unit test.
     return base::DoNothing();
   }
 
@@ -69,9 +71,17 @@ class TestCalendarClient : public CalendarClient {
       const base::Time end_time,
       const std::string& calendar_id,
       const std::string& calendar_color_id) override {
-    // TODO(b/320738368): Implement TestCalendarClient changes to follow
-    // incoming CalendarEventFetch changes.
-    return base::DoNothing();
+    // Store these off.
+    start_time_ = start_time;
+    callback_ = std::move(callback);
+    calendar_id_ = calendar_id;
+
+    // By delaying the response, we make the unit tests behave a little more
+    // like a event fetch in production.  Use set_response_delay() to use a
+    // value that's different from the default.
+    StartResponseDelayTimeout();
+    return base::BindOnce(&TestCalendarClient::CancelCallback,
+                          weak_factory_.GetWeakPtr());
   }
 
   void CancelCallback() { set_api_error_code(google_apis::CANCELLED); }
@@ -129,6 +139,7 @@ class TestCalendarClient : public CalendarClient {
 
   google_apis::calendar::CalendarEventListCallback callback_;
   base::Time start_time_;
+  std::optional<std::string> calendar_id_;
   std::unique_ptr<google_apis::calendar::EventList> event_list_;
   google_apis::ApiErrorCode api_error_code_ = google_apis::HTTP_SUCCESS;
   base::RetainingOneShotTimer fetch_response_timeout_;
@@ -158,8 +169,10 @@ class CalendarEventFetchTest : public NoSessionAshTestBase {
 
   // Actual callback invoked when an event fetch is complete.
   void OnEventsFetched(base::Time start_of_month,
+                       std::string calendar_id,
                        google_apis::ApiErrorCode error,
                        const google_apis::calendar::EventList* events) {
+    calendar_id_ = calendar_id;
     api_error_code_ = error;
     events_fetched_count_ = 0;
     if (events)
@@ -169,7 +182,9 @@ class CalendarEventFetchTest : public NoSessionAshTestBase {
   // Callback invoked when an event fetch failed with an internal error.
   void OnEventFetchFailedInternalError(
       base::Time start_of_month,
+      std::string calendar_id,
       CalendarEventFetchInternalErrorCode error) {
+    calendar_id_ = calendar_id;
     internal_error_code_ = error;
   }
 
@@ -194,6 +209,24 @@ class CalendarEventFetchTest : public NoSessionAshTestBase {
     return fetch;
   }
 
+  std::unique_ptr<CalendarEventFetch> PerformFetchByCalendarId(
+      const base::Time start_of_month,
+      const std::string calendar_id,
+      const std::string calendar_color_id) {
+    std::unique_ptr<CalendarEventFetch> fetch =
+        std::make_unique<CalendarEventFetch>(
+            start_of_month,
+            base::BindRepeating(&CalendarEventFetchTest::OnEventsFetched,
+                                base::Unretained(this)),
+            base::BindRepeating(
+                &CalendarEventFetchTest::OnEventFetchFailedInternalError,
+                base::Unretained(this)),
+            task_environment()->GetMockTickClock(), calendar_id,
+            calendar_color_id);
+    return fetch;
+  }
+
+  std::optional<std::string> get_calendar_id() { return calendar_id_; }
   std::optional<int> events_fetched_count() { return events_fetched_count_; }
   std::optional<google_apis::ApiErrorCode> api_error_code() {
     return api_error_code_;
@@ -210,6 +243,7 @@ class CalendarEventFetchTest : public NoSessionAshTestBase {
     return AccountId::FromUserEmail("user0@tray");
   }
 
+  std::optional<std::string> calendar_id_;
   std::optional<int> events_fetched_count_;
   std::optional<google_apis::ApiErrorCode> api_error_code_;
   std::optional<CalendarEventFetchInternalErrorCode> internal_error_code_;
@@ -301,6 +335,52 @@ TEST_F(CalendarEventFetchTest, HaveEvents) {
   EXPECT_FALSE(internal_error_code().has_value());
 }
 
+TEST_F(CalendarEventFetchTest, FetchEventsForNonPrimaryCalendar) {
+  RegisterClient();
+
+  // The month for which we want to fetch events.
+  base::Time start_of_month = GetStartOfMonthFromString("01 Oct 2023 8:00 GMT");
+
+  // The ID and color ID of the calendar we want to fetch events for.
+  std::string calendar_id = "google.com_zu5cft6test@group.calendar.google.com";
+  std::string calendar_color_id = "14";
+
+  // Inject some events.
+  auto event_list = std::make_unique<google_apis::calendar::EventList>();
+  event_list->set_time_zone("Greenwich Mean Time");
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_0", "summary_0", "02 Oct 2023 17:00 GMT", "02 Oct 2023 18:00 GMT"));
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_1", "summary_1", "05 Oct 2023 19:00 GMT", "05 Oct 2023 20:00 GMT"));
+  client_.set_event_list(std::move(event_list));
+
+  std::unique_ptr<CalendarEventFetch> fetch =
+      PerformFetchByCalendarId(start_of_month, calendar_id, calendar_color_id);
+
+  // Advance time to when the fetch is complete. `fetch` can no longer be used
+  // after this.
+  task_environment()->FastForwardBy(client_.get_response_delay());
+
+  // There are two events for this month in the client, so fetch should return
+  // two events.
+  std::optional<int> count = events_fetched_count();
+  EXPECT_TRUE(count.has_value() && count.value() == 2);
+
+  // API error is HTTP_SUCCESS.
+  std::optional<google_apis::ApiErrorCode> return_error_code = api_error_code();
+  EXPECT_TRUE(return_error_code.has_value() &&
+              return_error_code == google_apis::HTTP_SUCCESS);
+
+  // No internal error.
+  EXPECT_FALSE(internal_error_code().has_value());
+
+  // The calendar ID assigned on fetch completion should equal the calendar ID
+  // passed during the creation of the fetch.
+  std::optional<std::string> fetch_calendar_id = get_calendar_id();
+  EXPECT_TRUE(fetch_calendar_id.has_value() &&
+              fetch_calendar_id == calendar_id);
+}
+
 TEST_F(CalendarEventFetchTest, ApiFailure) {
   // Specifically set up the fetch to fail with an API error.
   const google_apis::ApiErrorCode error_code = google_apis::HTTP_NOT_FOUND;
@@ -341,7 +421,7 @@ TEST_F(CalendarEventFetchTest, Timeout) {
 
   // Specifically delay the response until after CalendarEventFetch declares a
   // timeout.
-  client_.set_response_delay(calendar_utils::kEventFetchTimeout +
+  client_.set_response_delay(calendar_utils::kCalendarDataFetchTimeout +
                              base::Milliseconds(100));
 
   // Register our TestCalendarClient with the default user.
@@ -361,7 +441,7 @@ TEST_F(CalendarEventFetchTest, Timeout) {
 
   // Advance time to when the fetch times out. `fetch` can no longer be used
   // after this.
-  task_environment()->FastForwardBy(calendar_utils::kEventFetchTimeout);
+  task_environment()->FastForwardBy(calendar_utils::kCalendarDataFetchTimeout);
 
   // Events should be completely nonexistent.
   EXPECT_FALSE(events_fetched_count().has_value());

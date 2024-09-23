@@ -11,13 +11,15 @@ import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -32,23 +34,30 @@ public class PasswordCheckupLauncher {
 
     @CalledByNative
     static void launchCheckupOnDevice(
+            Profile profile,
             WindowAndroid windowAndroid,
             @PasswordCheckReferrer int passwordCheckReferrer,
             @Nullable String accountEmail) {
         assert accountEmail == null || !accountEmail.isEmpty();
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
 
-        if (PasswordManagerHelper.canUseUpm()) {
-            PasswordManagerHelper.showPasswordCheckup(
+        assert profile != null;
+        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
+        // Force instantiation of GMSCore password check if GMSCore update is required. Password
+        // check launch will fail and instead show the blocking dialog with the suggestion to
+        // update.
+        if (passwordManagerHelper.canUseUpm()
+                || PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
+                        UserPrefs.get(profile), SyncServiceFactory.getForProfile(profile))) {
+            passwordManagerHelper.showPasswordCheckup(
                     windowAndroid.getContext().get(),
                     passwordCheckReferrer,
-                    SyncServiceFactory.get(),
                     getModalDialogManagerSupplier(windowAndroid),
                     accountEmail);
             return;
         }
 
-        PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl())
+        PasswordCheckFactory.getOrCreate()
                 .showUi(windowAndroid.getContext().get(), passwordCheckReferrer);
     }
 
@@ -63,14 +72,14 @@ public class PasswordCheckupLauncher {
     @CalledByNative
     static void launchSafetyCheck(WindowAndroid windowAndroid) {
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
-        (new SettingsLauncherImpl())
+        SettingsLauncherFactory.createSettingsLauncher()
                 .launchSettingsActivity(
                         windowAndroid.getContext().get(), SettingsFragment.SAFETY_CHECK);
     }
 
     private static boolean tryLaunchingNativePasswordCheckup(Activity activity) {
         GooglePasswordManagerUIProvider googlePasswordManagerUIProvider =
-                AppHooks.get().createGooglePasswordManagerUIProvider();
+                ServiceLoaderUtil.maybeCreate(GooglePasswordManagerUIProvider.class);
         if (googlePasswordManagerUIProvider == null) return false;
         return googlePasswordManagerUIProvider.launchPasswordCheckup(activity);
     }

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
 import("//mojo/public/tools/bindings/mojom.gni")
 
 static_library("text_finder") {

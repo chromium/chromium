@@ -48,15 +48,18 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     widget_->Show();
 
     // Create parent Widget for AutoPiP setting view.
-    parent_widget_ = CreateTestWidget();
+    parent_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     parent_widget_->Show();
 
     // Create the anchor Widget for AutoPiP setting view.
-    anchor_view_widget_ = CreateTestWidget();
+    anchor_view_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     anchor_view_widget_->Show();
 
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
@@ -99,8 +102,7 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
     auto* anchor_view =
         anchor_view_widget_->SetContentsView(std::make_unique<views::View>());
     auto setting_overlay = setting_helper_->CreateOverlayViewIfNeeded(
-        close_cb_.Get(), gfx::Rect(), anchor_view,
-        views::BubbleBorder::TOP_CENTER);
+        close_cb_.Get(), anchor_view, views::BubbleBorder::TOP_CENTER);
     if (setting_overlay) {
       setting_overlay_ = static_cast<AutoPipSettingOverlayView*>(
           widget_->SetContentsView(std::move(setting_overlay)));

@@ -24,7 +24,7 @@
 #include "build/build_config.h"
 
 namespace autofill {
-class NextIdleTimeTicks;
+class NextIdleBarrier;
 }
 
 namespace content {
@@ -112,7 +112,7 @@ class BASE_EXPORT CurrentThread {
   // thread/sequence.
   class BASE_EXPORT DestructionObserver {
    public:
-    // TODO(https://crbug.com/891670): Rename to
+    // TODO(crbug.com/40596446): Rename to
     // WillDestroyCurrentTaskExecutionEnvironment
     virtual void WillDestroyCurrentMessageLoop() = 0;
 
@@ -149,9 +149,9 @@ class BASE_EXPORT CurrentThread {
   // to run.
   class RegisterOnNextIdleCallbackPasskey {
    private:
-    RegisterOnNextIdleCallbackPasskey() {}
+    RegisterOnNextIdleCallbackPasskey() = default;
 
-    friend autofill::NextIdleTimeTicks;
+    friend autofill::NextIdleBarrier;
     friend content::BrowserMainLoop;
     friend bool test::RunUntil(FunctionRef<bool(void)>);
     friend void test::TestPredicateOrRegisterOnNextIdleCallback(
@@ -209,7 +209,12 @@ class BASE_EXPORT CurrentThread {
 
   // Enables ThreadControllerWithMessagePumpImpl's TimeKeeper metrics.
   // `thread_name` will be used as a suffix.
-  void EnableMessagePumpTimeKeeperMetrics(const char* thread_name);
+  // Setting `wall_time_based_metrics_enabled_for_testing` adds wall-time
+  // based metrics for this thread. This is only for test environments as it
+  // disables subsampling.
+  void EnableMessagePumpTimeKeeperMetrics(
+      const char* thread_name,
+      bool wall_time_based_metrics_enabled_for_testing = false);
 
  protected:
   explicit CurrentThread(
@@ -219,7 +224,6 @@ class BASE_EXPORT CurrentThread {
   static sequence_manager::internal::SequenceManagerImpl*
   GetCurrentSequenceManagerImpl();
 
-  friend class MessagePumpLibeventTest;
   friend class ScheduleWorkTest;
   friend class Thread;
   friend class sequence_manager::internal::SequenceManagerImpl;
@@ -247,7 +251,7 @@ class BASE_EXPORT CurrentUIThread : public CurrentThread {
   static_assert(
       std::is_base_of_v<WatchableIOMessagePumpPosix, MessagePumpForUI>,
       "CurrentThreadForUI::WatchFileDescriptor is supported only"
-      "by MessagePumpLibevent and MessagePumpGlib implementations.");
+      "by MessagePumpEpoll and MessagePumpGlib implementations.");
   bool WatchFileDescriptor(int fd,
                            bool persistent,
                            MessagePumpForUI::Mode mode,
@@ -257,15 +261,15 @@ class BASE_EXPORT CurrentUIThread : public CurrentThread {
 
 #if BUILDFLAG(IS_IOS)
   // Forwards to SequenceManager::Attach().
-  // TODO(https://crbug.com/825327): Plumb the actual SequenceManager* to
+  // TODO(crbug.com/40568517): Plumb the actual SequenceManager* to
   // callers and remove ability to access this method from
   // CurrentUIThread.
   void Attach();
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  // Forwards to MessagePumpForUI::Abort().
-  // TODO(https://crbug.com/825327): Plumb the actual MessagePumpForUI* to
+  // Forwards to MessagePumpAndroid::Abort().
+  // TODO(crbug.com/40568517): Plumb the actual MessagePumpForUI* to
   // callers and remove ability to access this method from
   // CurrentUIThread.
   void Abort();

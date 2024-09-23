@@ -21,6 +21,7 @@ class PushNotificationClient;
 // the notification. The PushNotificationClientManager routes each notification
 // to its appropriate PushNotificationClient based on the incoming
 // notification's `push_notification_client_id` property.
+// TODO(crbug.com/325254943): Inject a browser state to pass in to clients.
 class PushNotificationClientManager {
  public:
   PushNotificationClientManager();

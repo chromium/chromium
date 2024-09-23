@@ -10,11 +10,18 @@
 #include <ostream>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace feature_engagement {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class ConfigurationProvider;
+#endif
 
 // Max number of days for storing client side event data, ~10 years.
 constexpr uint32_t kMaxStoragePeriod = 365 * 10;
@@ -263,6 +270,7 @@ class Configuration {
   // Convenience aliases for typical implementations of Configuration.
   using ConfigMap = std::map<std::string, FeatureConfig>;
   using GroupConfigMap = std::map<std::string, GroupConfig>;
+  using EventPrefixSet = std::unordered_set<std::string>;
 
   Configuration(const Configuration&) = delete;
   Configuration& operator=(const Configuration&) = delete;
@@ -300,6 +308,17 @@ class Configuration {
 
   // Returns the list of the names of all registered groups.
   virtual const std::vector<std::string> GetRegisteredGroups() const = 0;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Updates the config of a specific feature. The new config will replace the
+  // existing cofig.
+  virtual void UpdateConfig(const base::Feature& feature,
+                            const ConfigurationProvider* provider) = 0;
+
+  // Returns the allowed set of prefixes for the events which can be stored and
+  // kept, regardless of whether or not they are used in a config.
+  virtual const EventPrefixSet& GetRegisteredAllowedEventPrefixes() const = 0;
+#endif
 
  protected:
   Configuration() = default;

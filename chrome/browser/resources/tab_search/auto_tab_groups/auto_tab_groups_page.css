@@ -1,0 +1,70 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./auto_tab_groups_shared_style.css.js
+ * #scheme=relative
+ * #include=auto-tab-groups-shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  --standard-curve: cubic-bezier(0.2, 0.0, 0, 1.0);
+}
+
+auto-tab-groups-not-started,
+auto-tab-groups-in-progress,
+auto-tab-groups-results,
+auto-tab-groups-failure {
+  display: flex;
+}
+
+:host(.changed-state) auto-tab-groups-not-started[shown],
+:host(.changed-state) auto-tab-groups-in-progress[shown],
+:host(.changed-state) auto-tab-groups-results[shown],
+:host(.changed-state) auto-tab-groups-failure[shown] {
+  animation: fadeIn 100ms linear 100ms forwards,
+             displayIn 200ms linear forwards,
+             slideIn 250ms var(--standard-curve) forwards;
+}
+
+auto-tab-groups-not-started:not([shown]),
+auto-tab-groups-in-progress:not([shown]),
+auto-tab-groups-results:not([shown]),
+auto-tab-groups-failure:not([shown]) {
+  height: 0px;
+  position: absolute;
+  visibility: hidden;
+}
+
+:host(.changed-state.from-not-started) auto-tab-groups-not-started:not([shown]),
+:host(.changed-state.from-in-progress) auto-tab-groups-in-progress:not([shown]),
+:host(.changed-state.from-success) auto-tab-groups-results:not([shown]),
+:host(.changed-state.from-failure) auto-tab-groups-failure:not([shown]) {
+  animation: fadeOut 100ms linear forwards,
+             displayOut 200ms linear forwards,
+             slideOut 250ms var(--standard-curve) forwards;
+}
+
+.auto-tab-groups-header {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  padding-bottom: 16px;
+}
+
+.back-button {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-size: 20px;
+}
+
+#body {
+  margin: var(--mwb-list-item-horizontal-margin);
+}
+
+#contents {
+  overflow: hidden;
+}

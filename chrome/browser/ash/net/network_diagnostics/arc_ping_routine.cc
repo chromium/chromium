@@ -165,7 +165,10 @@ void ArcPingRoutine::OnManagedPropertiesReceived(
   if (managed_properties && managed_properties->ip_configs.has_value() &&
       managed_properties->ip_configs->size() != 0) {
     for (const auto& ip_config : managed_properties->ip_configs.value()) {
-      if (ip_config->gateway.has_value()) {
+      // Link-local addresses are not reachable from ARC, so skip them here.
+      // TODO(b/277696397): Find a better signal.
+      if (ip_config->gateway.has_value() &&
+          !ip_config->gateway->starts_with("fe80::")) {
         const std::string& gateway = ip_config->gateway.value();
         if (managed_properties->guid == default_network_guid_) {
           default_network_gateway_ = gateway;

@@ -4,30 +4,24 @@
 
 #include "components/translate/core/language_detection/language_detection_model.h"
 
-#include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/metrics/metrics_hashes.h"
+#include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/language/core/common/language_util.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/language_detection/core/language_detection_model.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_util.h"
-#include "components/translate/core/language_detection/language_detection_resolver.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
-#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h"
 
 namespace {
 
-struct sort_category {
-  inline bool operator()(const tflite::task::core::Category& c1,
-                         const tflite::task::core::Category& c2) {
-    return c1.score > c2.score;
-  }
-};
-
 // The number of characters to sample and provide as a buffer to the model
 // for determining its language.
-constexpr int kTextSampleLength = 256;
+constexpr size_t kTextSampleLength = 256;
 
 // The number of samples of |kTextSampleLength| to evaluate the model when
 // determining the language of the page content.
@@ -35,120 +29,54 @@ constexpr int kNumTextSamples = 3;
 
 }  // namespace
 
-namespace {
-
-constexpr char kTFLiteModelVersion[] = "TFLite_v1";
-
-// Util class for recording the result of loading the detection model. The
-// result is recorded when it goes out of scope and its destructor is called.
-class ScopedLanguageDetectionModelStateRecorder {
- public:
-  explicit ScopedLanguageDetectionModelStateRecorder(
-      translate::LanguageDetectionModelState state)
-      : state_(state) {}
-  ~ScopedLanguageDetectionModelStateRecorder() {
-    UMA_HISTOGRAM_ENUMERATION(
-        "LanguageDetection.TFLiteModel.LanguageDetectionModelState", state_);
-  }
-
-  void set_state(translate::LanguageDetectionModelState state) {
-    state_ = state;
-  }
-
- private:
-  translate::LanguageDetectionModelState state_;
-};
-
-}  // namespace
-
 namespace translate {
+// If enabled, the string passed to the language detection model for the whole
+// page is truncated to `kTextSampleLength`
+BASE_FEATURE(kTruncateLanguageDetectionSample,
+             "TruncateLanguageDetectionSample",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-LanguageDetectionModel::LanguageDetectionModel()
-    : num_threads_(
-          optimization_guide::features::OverrideNumThreadsForOptTarget(
-              optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION)
-              .value_or(-1)) {}
+LanguageDetectionModel::LanguageDetectionModel(
+    language_detection::LanguageDetectionModel& shared_tflite_model)
+    : tflite_model_(shared_tflite_model) {}
+
+LanguageDetectionModel::LanguageDetectionModel(
+    std::unique_ptr<language_detection::LanguageDetectionModel>
+        owned_tflite_model)
+    : owned_tflite_model_(std::move(owned_tflite_model)),
+      tflite_model_(*owned_tflite_model_.get()) {
+  owned_tflite_model_->DetachFromSequence();
+}
 
 LanguageDetectionModel::~LanguageDetectionModel() = default;
 
 void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
-  ScopedLanguageDetectionModelStateRecorder recorder(
-      LanguageDetectionModelState::kModelFileInvalid);
+  tflite_model_->UpdateWithFile(std::move(model_file));
+}
 
-  if (!model_file.IsValid())
-    return;
-
-  recorder.set_state(
-      LanguageDetectionModelState::kModelFileValidAndMemoryMapped);
-
-  tflite::task::text::NLClassifierOptions options;
-  options.set_input_tensor_index(0);
-  options.set_output_score_tensor_index(0);
-  options.set_output_label_tensor_index(2);
-
-  options.mutable_base_options()
-      ->mutable_compute_settings()
-      ->mutable_tflite_settings()
-      ->mutable_cpu_settings()
-      ->set_num_threads(num_threads_);
-
-// Windows doesn't support using mmap for the language detection model.
-#if !BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(kMmapLanguageDetectionModel)) {
-    options.mutable_base_options()
-        ->mutable_model_file()
-        ->mutable_file_descriptor_meta()
-        ->set_fd(model_file.GetPlatformFile());
-  } else
-#endif
-  {
-    std::string file_content(model_file.GetLength(), '\0');
-    int bytes_read =
-        model_file.Read(0, std::data(file_content), model_file.GetLength());
-    if (bytes_read != model_file.GetLength()) {
-      return;
-    }
-    *options.mutable_base_options()
-         ->mutable_model_file()
-         ->mutable_file_content() = std::move(file_content);
-  }
-
-  auto statusor_classifier =
-      tflite::task::text::nlclassifier::NLClassifier::CreateFromOptions(
-          options, CreateLangIdResolver());
-  if (!statusor_classifier.ok()) {
-    LOCAL_HISTOGRAM_BOOLEAN("LanguageDetection.TFLiteModel.InvalidModelFile",
-                            true);
-    return;
-  }
-
-  lang_detection_model_ = std::move(*statusor_classifier);
+void LanguageDetectionModel::UpdateWithFileAsync(base::File model_file,
+                                                 base::OnceClosure callback) {
+  tflite_model_->UpdateWithFileAsync(std::move(model_file),
+                                     std::move(callback));
 }
 
 bool LanguageDetectionModel::IsAvailable() const {
-  return lang_detection_model_ != nullptr;
+  return tflite_model_->IsAvailable();
 }
 
 std::pair<std::string, float> LanguageDetectionModel::DetectTopLanguage(
     const std::u16string& sampled_str) const {
-  DCHECK(IsAvailable());
-  std::string utf8_sample = base::UTF16ToUTF8(sampled_str);
+  TRACE_EVENT("browser", "LanguageDetectionModel::DetectTopLanguage");
 
-  // TFLite expects all strings to be aligned to 4 bytes.
-  constexpr size_t kAlignTo = sizeof(int32_t);
-  if (utf8_sample.size() % kAlignTo != 0) {
-    // Pad the input string to be aligned for TFLite
-    utf8_sample += std::string(kAlignTo - utf8_sample.size() % kAlignTo, ' ');
-  }
-
-  auto status_or_categories = lang_detection_model_->ClassifyText(utf8_sample);
-  if (!status_or_categories.ok() || status_or_categories.value().empty()) {
-    return std::make_pair(translate::kUnknownLanguageCode, 0.0);
-  }
-  auto& categories = status_or_categories.value();
-  auto top_category =
-      std::min_element(categories.begin(), categories.end(), sort_category());
-  return std::make_pair(top_category->class_name, top_category->score);
+  auto categories =
+      tflite_model_->Predict(sampled_str,
+                             /*truncate=*/base::FeatureList::IsEnabled(
+                                 kTruncateLanguageDetectionSample));
+  auto top_category = language_detection::TopPrediction((categories));
+  base::UmaHistogramSparse(
+      "LanguageDetection.TFLiteModel.ClassifyText.HighestConfidenceLanguage",
+      base::HashMetricName(top_category.language));
+  return std::make_pair(top_category.language, top_category.score);
 }
 
 std::string LanguageDetectionModel::DeterminePageLanguage(
@@ -168,14 +96,14 @@ std::string LanguageDetectionModel::DeterminePageLanguage(
   *predicted_language = translate::kUnknownLanguageCode;
   prediction_reliability_score = 0.0;
 
-  if (!lang_detection_model_) {
+  if (!tflite_model_->IsAvailable()) {
     return translate::kUnknownLanguageCode;
   }
 
-  const Prediction prediction = DetectLanguage(contents);
-  prediction_reliability_score = prediction.reliability;
+  const language_detection::Prediction prediction = DetectLanguage(contents);
+  prediction_reliability_score = prediction.score;
 
-  // TODO(crbug.com/1177992): Use the model threshold provided
+  // TODO(crbug.com/40748826): Use the model threshold provided
   // by the model itself. Not needed until threshold is finalized.
   bool is_reliable =
       prediction_reliability_score > GetTFLiteLanguageDetectionThreshold();
@@ -191,10 +119,12 @@ std::string LanguageDetectionModel::DeterminePageLanguage(
                                           is_reliable);
 }
 
-LanguageDetectionModel::Prediction LanguageDetectionModel::DetectLanguage(
+language_detection::Prediction LanguageDetectionModel::DetectLanguage(
     const std::u16string& contents) const {
-  if (!lang_detection_model_) {
-    return Prediction{translate::kUnknownLanguageCode, 0.0f};
+  base::ElapsedTimer timer;
+  if (!tflite_model_->IsAvailable()) {
+    return language_detection::Prediction{translate::kUnknownLanguageCode,
+                                          0.0f};
   }
 
   std::vector<std::pair<std::string, float>> model_predictions;
@@ -217,16 +147,20 @@ LanguageDetectionModel::Prediction LanguageDetectionModel::DetectLanguage(
     model_predictions.emplace_back(DetectTopLanguage(sampled_str));
   }
 
-  const auto top_language_result = std::max_element(
-      model_predictions.begin(), model_predictions.end(),
-      [](auto& left, auto& right) { return left.second < right.second; });
-  return Prediction{top_language_result->first, top_language_result->second};
+  const auto top_language_result =
+      std::max_element(model_predictions.begin(), model_predictions.end());
+  base::UmaHistogramTimes(
+      "LanguageDetection.TFLiteModel.DetectPageLanguage.Duration",
+      timer.Elapsed());
+  base::UmaHistogramCounts1M(
+      "LanguageDetection.TFLiteModel.DetectPageLanguage.Size", contents.size());
+
+  return language_detection::Prediction{top_language_result->first,
+                                        top_language_result->second};
 }
 
 std::string LanguageDetectionModel::GetModelVersion() const {
-  // TODO(crbug.com/1177992): Return the model version provided
-  // by the model itself.
-  return kTFLiteModelVersion;
+  return tflite_model_->GetModelVersion();
 }
 
 }  // namespace translate

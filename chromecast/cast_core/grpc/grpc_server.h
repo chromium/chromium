@@ -9,7 +9,6 @@
 
 #include <unordered_map>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chromecast/cast_core/grpc/grpc_handler.h"
@@ -73,11 +72,14 @@ class GrpcServer : public grpc::CallbackGenericService {
   ~GrpcServer() override;
 
   // Sets the request callback for an RPC defined by |Handler| type.
+  // NOTE: Every handler must check that the GrpcServer associated with it is up
+  // and running before accessing the |reactor| object.
   template <typename THandler>
   void SetHandler(typename THandler::OnRequestCallback on_request_callback) {
     // The full rpc name is /<fully-qualified-service-type>/method, ie
     // /cast.core.CastCoreService/RegisterRuntime.
-    DCHECK(!base::Contains(registered_handlers_, THandler::rpc_name()))
+    DCHECK(registered_handlers_.find(THandler::rpc_name()) ==
+           registered_handlers_.end())
         << "Duplicate handler: " << THandler::rpc_name();
     registered_handlers_.emplace(
         THandler::rpc_name(),
@@ -91,12 +93,20 @@ class GrpcServer : public grpc::CallbackGenericService {
 
   // Stops the gRPC server synchronously. May block indefinitely if there's a
   // non-finished pending reactor created by the gRPC framework.
+  // NOTE: This framework guarantees thread safety iff Stop and handler
+  // callbacks are called in the same sequence!
   void Stop();
 
   // Stops the gRPC server and calls the callback. The process will crash in
   // case the |timeout| is reached as such case clearly points to a bug in
   // reactor handling.
+  // NOTE: This framework guarantees thread safety iff Stop and handler
+  // callbacks are called in the same sequence!
   void Stop(int64_t timeout_ms, base::OnceClosure server_stopped_callback);
+
+  size_t active_reactor_count() const {
+    return server_reactor_tracker_->active_reactor_count();
+  }
 
  private:
   // Implements grpc::CallbackGenericService APIs.

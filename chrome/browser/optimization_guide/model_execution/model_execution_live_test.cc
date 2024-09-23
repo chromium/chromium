@@ -51,8 +51,7 @@ class ModelExecutionLiveTest : public signin::test::LiveTest {
         browser()->profile());
   }
 
-  bool IsSettingVisible(
-      optimization_guide::proto::ModelExecutionFeature feature) {
+  bool IsSettingVisible(optimization_guide::UserVisibleFeatureKey feature) {
     return GetOptGuideKeyedService()->IsSettingVisible(feature);
   }
 
@@ -83,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionLiveTest, PRE_SimpleSyncFlow) {
 
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_TRUE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      UserVisibleFeatureKey::kTabOrganization));
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelExecution.SettingsVisibilityResult."
       "TabOrganization",
@@ -98,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionLiveTest, SimpleSyncFlow) {
 
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_TRUE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      UserVisibleFeatureKey::kTabOrganization));
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelExecution.SettingsVisibilityResult."
       "TabOrganization",
@@ -115,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionLiveTest,
 
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      UserVisibleFeatureKey::kTabOrganization));
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelExecution.SettingsVisibilityResult."
       "TabOrganization",
@@ -131,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionLiveTest,
 
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(IsSettingVisible(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+      UserVisibleFeatureKey::kTabOrganization));
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelExecution.SettingsVisibilityResult."
       "TabOrganization",

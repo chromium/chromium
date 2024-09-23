@@ -43,7 +43,7 @@ class MODULES_EXPORT AbortPaymentEvent final : public ExtendableEvent {
 
   const AtomicString& InterfaceName() const override;
 
-  void respondWith(ScriptState*, ScriptPromise, ExceptionState&);
+  void respondWith(ScriptState*, ScriptPromiseUntyped, ExceptionState&);
 
   void Trace(Visitor*) const override;
 

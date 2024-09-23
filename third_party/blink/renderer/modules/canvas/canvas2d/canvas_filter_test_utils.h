@@ -6,13 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_FILTER_TEST_UTILS_H_
 
 #include <string>
+
+#include "base/functional/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/style/filter_operation.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"  // IWYU pragma: keep
 
 namespace blink {
-class V8UnionObjectOrObjectArrayOrString;
 class V8TestingScope;
+class V8UnionObjectOrObjectArrayOrString;
 }  // namespace blink
 
 namespace blink_testing {

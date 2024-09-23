@@ -520,6 +520,60 @@ public @interface ClassName {
             ('MAX_VALUE', 'New enum values must go above here.')
         ]), definition.comments)
 
+  def testParseEnumWithConditionallyDefinedValues(self):
+    test_data = """
+// GENERATED_JAVA_ENUM_PACKAGE: test.namespace
+// GENERATED_JAVA_PREFIX_TO_STRIP: TERMINATION_STATUS_
+enum TerminationStatus {
+  // Zero exit status.
+  TERMINATION_STATUS_NORMAL_TERMINATION = 0,
+  // Child hasn't exited yet.
+  TERMINATION_STATUS_STILL_RUNNING = 4,
+#if BUILDFLAG(IS_CHROMEOS)
+  // OOM-killer killed the process on ChromeOS.
+  TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM = 5,
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  // On Android processes are spawned from the system Zygote and we do not get
+  // the termination status.
+  TERMINATION_STATUS_OOM_PROTECTED = 6,
+#endif
+  // Out of memory.
+  TERMINATION_STATUS_OOM = 8,
+#if BUILDFLAG(IS_WIN)
+  // On Windows, the OS terminated process due to code integrity failure.
+  TERMINATION_STATUS_INTEGRITY_FAILURE = 9,
+#endif
+};
+    """.split('\n')
+    definitions = HeaderParser(test_data).ParseDefinitions()
+    self.assertEqual(1, len(definitions))
+    definition = definitions[0]
+    self.assertEqual('TerminationStatus', definition.class_name)
+    self.assertEqual('test.namespace', definition.enum_package)
+    self.assertEqual(
+        collections.OrderedDict([
+            ('NORMAL_TERMINATION', '0'),
+            ('STILL_RUNNING', '4'),
+            # PROCESS_WAS_KILLED_BY_OOM value should not appear here.
+            #
+            # OOM_PROTECTED should appear because the script supports the case
+            # where '#if BUILDFLAG(IS_ANDROID)' is used.
+            ('OOM_PROTECTED', '6'),
+            ('OOM', '8'),
+            # INTEGRITY_FAILURE value should not appear here.
+        ]),
+        definition.entries)
+    self.assertEqual(
+        collections.OrderedDict([
+            ('NORMAL_TERMINATION', 'Zero exit status.'),
+            ('STILL_RUNNING', 'Child hasn\'t exited yet.'),
+            ('OOM_PROTECTED',
+             'On Android processes are spawned from the system Zygote and we ' +
+             'do not get the termination status.'),
+            ('OOM', 'Out of memory.'),
+        ]), definition.comments)
+
   def testParseEnumStruct(self):
     test_data = """
       // GENERATED_JAVA_ENUM_PACKAGE: test.namespace

@@ -17,12 +17,12 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/url_and_title.h"
 #import "components/sessions/core/tab_restore_service.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -77,8 +77,8 @@ NSSet* ComputeReferencedExternalFiles(Browser* browser) {
           browser->GetBrowserState());
   DCHECK(restore_service);
   for (const auto& entry : restore_service->entries()) {
-    sessions::TabRestoreService::Tab* tab =
-        static_cast<sessions::TabRestoreService::Tab*>(entry.get());
+    sessions::tab_restore::Tab* tab =
+        static_cast<sessions::tab_restore::Tab*>(entry.get());
     int navigation_index = tab->current_navigation_index;
     sessions::SerializedNavigationEntry navigation =
         tab->navigations[navigation_index];
@@ -202,7 +202,8 @@ void ExternalFileRemoverImpl::TabRestoreServiceChanged(
 void ExternalFileRemoverImpl::TabRestoreServiceDestroyed(
     sessions::TabRestoreService* service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED() << "Should never happen as unregistration happen in Shutdown";
+  NOTREACHED_IN_MIGRATION()
+      << "Should never happen as unregistration happen in Shutdown";
 }
 
 void ExternalFileRemoverImpl::Remove(bool all_files,
@@ -241,9 +242,11 @@ NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {
   NSMutableSet* referenced_external_files = [NSMutableSet set];
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state_);
-  std::set<Browser*> browsers = browser_state_->IsOffTheRecord()
-                                    ? browser_list->AllIncognitoBrowsers()
-                                    : browser_list->AllRegularBrowsers();
+  const BrowserList::BrowserType browser_types =
+      browser_state_->IsOffTheRecord()
+          ? BrowserList::BrowserType::kIncognito
+          : BrowserList::BrowserType::kRegularAndInactive;
+  std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
   for (Browser* browser : browsers) {
     NSSet* files = ComputeReferencedExternalFiles(browser);
     if (files) {
@@ -252,8 +255,7 @@ NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {
   }
 
   bookmarks::BookmarkModel* bookmark_model =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          browser_state_);
+      ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
   // Check if the bookmark model is loaded.
   if (!bookmark_model || !bookmark_model->loaded())
     return referenced_external_files;

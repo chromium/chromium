@@ -19,6 +19,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "ui/ozone/public/input_controller.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace ash::curtain {
 
@@ -137,6 +139,11 @@ Session::Session(Shell* shell,
                        // Safe because `this` owns `audio_output_mute_timer_`.
                        base::Unretained(this)));
   }
+  if (init_params.disable_input_devices) {
+    scoped_input_devices_disabler_ =
+        CHECK_DEREF(ui::OzonePlatform::GetInstance()->GetInputController())
+            .DisableInputDevices();
+  }
 
   CurtainOffAllRootWindows();
   shell_->power_button_controller()->OnSecurityCurtainEnabled();
@@ -180,8 +187,7 @@ void Session::CurtainOffRootWindow(aura::Window* root_window) {
   controller->SetSecurityCurtainWidgetController(
       std::make_unique<SecurityCurtainWidgetController>(
           SecurityCurtainWidgetController::CreateForRootWindow(
-              root_window, init_params_.event_filter,
-              init_params_.curtain_factory.Run())));
+              root_window, init_params_.curtain_factory.Run())));
 }
 
 void Session::RemoveCurtainOfAllRootWindows() {

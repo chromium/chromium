@@ -25,6 +25,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /** Test for {@link SettingsLauncherHelper}. */
@@ -40,12 +41,11 @@ public class SettingsLauncherHelperTest {
     @Before
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        SettingsLauncherHelper.setLauncher(mMockLauncher);
+        SettingsLauncherFactory.setInstanceForTesting(mMockLauncher);
     }
 
     @After
     public void tearDown() {
-        SettingsLauncherHelper.setLauncher(null);
         mActionTester.tearDown();
     }
 

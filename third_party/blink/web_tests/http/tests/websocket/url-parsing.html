@@ -12,14 +12,16 @@ description("Test WebSocket URL parsing.");
 // Not enough arguments.
 shouldThrow('new WebSocket()');
 
-// Null URL
-shouldThrow('new WebSocket(null)');
-
 // Invalid url will fail to be parsed.
 shouldThrow('new WebSocket("ws://javascript:a")');
 
-// Can't use relative URLs - because spec says so, and because the scheme is different anyway.
-shouldThrow('new WebSocket("/applet")');
+// Relative URLs behave like HTTP(S) URLs
+
+let url = new URL("null", location);
+url.protocol = "ws";
+shouldBe('(new WebSocket(null)).url', 'url.href');
+url.pathname = "/applet"
+shouldBe('(new WebSocket("/applet")).url', 'url.href');
 
 // Non ws URL is not allowed.
 shouldThrow('new WebSocket("javascript:a")');
@@ -29,6 +31,8 @@ shouldThrow('new WebSocket("javascript:a")');
 shouldBe('(new WebSocket("ws://127.0.0.1:8880/a/../simple")).url', '"ws://127.0.0.1:8880/simple"');
 shouldBe('(new WebSocket("ws://127.0.0.1:8880/simple?")).url', '"ws://127.0.0.1:8880/simple?"');
 shouldBe('(new WebSocket("ws://127.0.0.1:8880/simple?k=v")).url', '"ws://127.0.0.1:8880/simple?k=v"');
+shouldBe('(new WebSocket("http://127.0.0.1:8880/simple?")).url', '"ws://127.0.0.1:8880/simple?"');
+shouldBe('(new WebSocket("https://127.0.0.1:8880/simple?")).url', '"wss://127.0.0.1:8880/simple?"');
 
 // The WebSocket API specification says If /url/ has a <fragment>
 // component, then fail the parsing WebSocket URLs, so throw a SYNTAX_ERR

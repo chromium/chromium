@@ -7,8 +7,6 @@
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
@@ -29,7 +27,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/browser/ui/views/select_file_dialog_extension.h"
+#include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -96,7 +94,7 @@ ui::SelectFileDialog::Type GetDialogType(
     case mojom::SelectFilesActionType::CREATE_DOCUMENT:
       return ui::SelectFileDialog::SELECT_SAVEAS_FILE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 base::FilePath GetInitialFilePath(const mojom::SelectFilesRequestPtr& request) {
@@ -243,8 +241,7 @@ void ArcSelectFilesHandler::SelectFiles(
 }
 
 void ArcSelectFilesHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                         int index,
-                                         void* params) {
+                                         int index) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback_);
 
@@ -257,17 +254,16 @@ void ArcSelectFilesHandler::FileSelected(const ui::SelectedFileInfo& file,
     return;
   }
 
-  FilesSelectedInternal({file}, params);
+  FilesSelectedInternal({file});
 }
 
 void ArcSelectFilesHandler::MultiFilesSelected(
-    const std::vector<ui::SelectedFileInfo>& files,
-    void* params) {
+    const std::vector<ui::SelectedFileInfo>& files) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  FilesSelectedInternal(files, params);
+  FilesSelectedInternal(files);
 }
 
-void ArcSelectFilesHandler::FileSelectionCanceled(void* params) {
+void ArcSelectFilesHandler::FileSelectionCanceled() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback_);
   // Returns an empty result if the user cancels file selection.
@@ -275,8 +271,7 @@ void ArcSelectFilesHandler::FileSelectionCanceled(void* params) {
 }
 
 void ArcSelectFilesHandler::FilesSelectedInternal(
-    const std::vector<ui::SelectedFileInfo>& files,
-    void* params) {
+    const std::vector<ui::SelectedFileInfo>& files) {
   DCHECK(callback_);
 
   storage::FileSystemContext* file_system_context =
@@ -301,8 +296,6 @@ void ArcSelectFilesHandler::OnFileSelectorEvent(
     mojom::FileSystemHost::OnFileSelectorEventCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  bool isFilesNewDirectoryTreeOn =
-      base::FeatureList::IsEnabled(ash::features::kFilesNewDirectoryTree);
   std::string quotedClickTargetName =
       base::GetQuotedJSONString(event->click_target->name.c_str());
   std::string script;
@@ -314,9 +307,7 @@ void ArcSelectFilesHandler::OnFileSelectorEvent(
       script = kScriptClickCancel;
       break;
     case mojom::FileSelectorEventType::CLICK_DIRECTORY:
-      script = base::StringPrintf(isFilesNewDirectoryTreeOn
-                                      ? kScriptClickDirectoryForNewTree
-                                      : kScriptClickDirectory,
+      script = base::StringPrintf(kScriptClickDirectory,
                                   quotedClickTargetName.c_str());
       break;
     case mojom::FileSelectorEventType::CLICK_FILE:
@@ -334,11 +325,8 @@ void ArcSelectFilesHandler::GetFileSelectorElements(
     mojom::FileSystemHost::GetFileSelectorElementsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  bool isFilesNewDirectoryTreeOn =
-      base::FeatureList::IsEnabled(ash::features::kFilesNewDirectoryTree);
   dialog_holder_->ExecuteJavaScript(
-      isFilesNewDirectoryTreeOn ? kScriptGetElementsForNewTree
-                                : kScriptGetElements,
+      kScriptGetElements,
       base::BindOnce(&OnGetElementsScriptResults, std::move(callback)));
 }
 
@@ -387,8 +375,7 @@ bool SelectFileDialogHolder::SelectFile(
   select_file_dialog_->SelectFileWithFileManagerParams(
       type,
       /*title=*/std::u16string(), default_path, file_types,
-      /*file_type_index=*/0,
-      /*params=*/nullptr, owner, search_query, show_android_picker_apps,
+      /*file_type_index=*/0, owner, search_query, show_android_picker_apps,
       use_media_store_filter);
   return true;
 }

@@ -231,6 +231,31 @@ public class StylusGestureConverterTest {
         histogram.assertExpected();
     }
 
+    @Test
+    @SmallTest
+    public void testNullFallbackText() {
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        GESTURE_TYPE_HISTOGRAM, StylusGestureConverter.UmaGestureType.SELECT);
+        SelectGesture gesture =
+                new SelectGesture.Builder()
+                        .setGranularity(GRANULARITY_CHARACTER)
+                        .setSelectionArea(new RectF(0, 0, 10, 10))
+                        .build();
+        StylusWritingGestureData gestureData = StylusGestureConverter.createGestureData(gesture);
+
+        assertNotNull(gestureData);
+        assertEquals(StylusWritingGestureAction.SELECT_TEXT, gestureData.action);
+        assertEquals(
+                org.chromium.blink.mojom.StylusWritingGestureGranularity.CHARACTER,
+                gestureData.granularity);
+        assertMojoRectsAreEqual(createMojoRect(0, 5, 0, 0), gestureData.startRect);
+        assertMojoRectsAreEqual(createMojoRect(10, 5, 0, 0), gestureData.endRect);
+        assertEquals("", toJavaString(gestureData.textAlternative));
+        assertNull(gestureData.textToInsert);
+        histogram.assertExpected();
+    }
+
     private static void assertMojoRectsAreEqual(
             org.chromium.gfx.mojom.Rect expected, org.chromium.gfx.mojom.Rect actual) {
         assertEquals(expected.x, actual.x);

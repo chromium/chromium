@@ -58,7 +58,8 @@ struct CC_EXPORT FrameInfo {
   enum class SmoothEffectDrivingThread { kMain, kCompositor, kUnknown };
   SmoothEffectDrivingThread scroll_thread = SmoothEffectDrivingThread::kUnknown;
 
-  bool has_missing_content = false;
+  bool checkerboarded_needs_raster = false;
+  bool checkerboarded_needs_record = false;
 
   // The time when the frame was terminated. If the frame had to be 'split'
   // (i.e. compositor-thread update and main-thread updates were presented in

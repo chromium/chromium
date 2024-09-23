@@ -42,7 +42,6 @@
 #include "media/video/video_decode_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gl/gl_bindings.h"
 
 // This has not been accepted upstream.
 #ifndef V4L2_PIX_FMT_AV1
@@ -101,6 +100,9 @@ class MEDIA_GPU_EXPORT V4L2Device
   // The device will be closed in the destructor.
   [[nodiscard]] bool Open(Type type, uint32_t v4l2_pixfmt);
 
+  // Returns whether Open() has been succeeded.
+  bool IsValid();
+
   // Returns the driver name.
   std::string GetDriverName();
 
@@ -141,25 +143,6 @@ class MEDIA_GPU_EXPORT V4L2Device
   // Return true if the given V4L2 pixfmt can be used in CreateEGLImage()
   // for the current platform.
   bool CanCreateEGLImageFrom(const Fourcc fourcc) const;
-
-  // Create an EGLImage from provided |handle|, taking full ownership of it.
-  // Some implementations may also require the V4L2 |buffer_index| of the buffer
-  // for which |handle| has been exported.
-  // Return EGL_NO_IMAGE_KHR on failure.
-  EGLImageKHR CreateEGLImage(EGLDisplay egl_display,
-                             EGLContext egl_context,
-                             GLuint texture_id,
-                             const gfx::Size& size,
-                             unsigned int buffer_index,
-                             const Fourcc fourcc,
-                             gfx::NativePixmapHandle handle) const;
-
-  // Destroys the EGLImageKHR.
-  EGLBoolean DestroyEGLImage(EGLDisplay egl_display,
-                             EGLImageKHR egl_image) const;
-
-  // Returns the supported texture target for the V4L2Device.
-  GLenum GetTextureTarget() const;
 
   // Returns the preferred V4L2 input formats for |type| or empty if none.
   std::vector<uint32_t> PreferredInputFormat(Type type) const;
@@ -252,8 +235,8 @@ class MEDIA_GPU_EXPORT V4L2Device
 
   VideoEncodeAccelerator::SupportedProfiles EnumerateSupportedEncodeProfiles();
 
-  // Open device node for |path| as a device of |type|.
-  bool OpenDevicePath(const std::string& path, Type type);
+  // Open device node for |path|.
+  bool OpenDevicePath(const std::string& path);
 
   // Close the currently open device.
   void CloseDevice();

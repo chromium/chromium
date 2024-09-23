@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
 
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -86,6 +91,9 @@ constexpr ReasonAndDescription kReasonDescriptionMap[] = {
     {CompositingReason::kViewTransitionPseudoElement,
      "This element is a part of a pseudo element tree representing the view "
      "transition."},
+    {CompositingReason::kViewTransitionElementDescendantWithClipPath,
+     "This element's ancestor is shared during view transition and it has a "
+     "clip-path"},
     {CompositingReason::kOverflowScrolling,
      "Is a scrollable overflow element using accelerated scrolling."},
     {CompositingReason::kElementCapture,

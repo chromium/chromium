@@ -27,6 +27,7 @@ RoundedLabel::RoundedLabel(int horizontal_padding,
       gfx::Insets::VH(vertical_padding, horizontal_padding)));
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   SetEnabledColorId(kColorAshTextColorPrimary);
+  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
   SetPaintToLayer();
@@ -43,10 +44,6 @@ gfx::Size RoundedLabel::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   return gfx::Size(views::Label::CalculatePreferredSize(available_size).width(),
                    preferred_height_);
-}
-
-int RoundedLabel::GetHeightForWidth(int width) const {
-  return preferred_height_;
 }
 
 void RoundedLabel::OnPaintBorder(gfx::Canvas* canvas) {

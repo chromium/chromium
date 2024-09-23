@@ -38,7 +38,7 @@ class OpenXRRuntimeMock(_OpenXRRuntimeBase):
     # environment variable pointing towards the mock implementation. When OpenXR
     # starts, it checks if this is set, and if so, uses the specified
     # implementation.
-    # TODO(https://crbug.com/944890): Switch to setting these only when the
+    # TODO(crbug.com/40619671): Switch to setting these only when the
     # browser is started once the functionality is added.
     os.environ[self.OPENXR_CONFIG_PATH] = os.path.join(
         self._mock_runtime_directory, self.OPENXR_CONFIG_PATH_VALUE)

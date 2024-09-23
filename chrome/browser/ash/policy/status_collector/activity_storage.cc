@@ -213,7 +213,7 @@ int64_t ActivityStorage::LocalTimeToUtcDayStart(base::Time timestamp) const {
 
   base::Time::Exploded exploded;
   base::Time day_start = GetBeginningOfDay(timestamp);
-  // TODO(crbug.com/827386): directly test this time change. Currently it is
+  // TODO(crbug.com/40569404): directly test this time change. Currently it is
   // tested through ScreenTimeControllerBrowsertest.
   if (timestamp < day_start)
     day_start -= base::Days(1);

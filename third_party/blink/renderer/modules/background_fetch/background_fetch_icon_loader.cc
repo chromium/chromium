@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_bridge.h"
 #include "third_party/blink/renderer/modules/manifest/image_resource_type_converters.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
@@ -83,6 +84,9 @@ void BackgroundFetchIconLoader::DidGetIconDisplaySizeIfSoLoadIcon(
   resource_request.SetSkipServiceWorker(true);
   resource_request.SetTimeoutInterval(kIconFetchTimeout);
 
+  FetchUtils::LogFetchKeepAliveRequestMetric(
+      resource_request.GetRequestContext(),
+      FetchUtils::FetchKeepAliveRequestState::kTotal);
   threaded_icon_loader_->Start(
       execution_context, resource_request, icon_display_size_pixels,
       WTF::BindOnce(&BackgroundFetchIconLoader::DidGetIcon,

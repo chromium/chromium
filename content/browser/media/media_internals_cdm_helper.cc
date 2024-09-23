@@ -5,15 +5,16 @@
 #include "content/browser/media/media_internals_cdm_helper.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/values.h"
 #include "content/browser/media/media_internals.h"
 #include "content/public/browser/web_ui.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/cdm_capability.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/video_codecs.h"
-#include "media/cdm/cdm_capability.h"
 
 namespace content {
 
@@ -58,8 +59,9 @@ base::Value::List VideoCodecInfoToList(
   auto& profiles = video_codec_info.supported_profiles;
 
   base::Value::List list;
-  for (const auto& profile : profiles)
+  for (const auto& profile : profiles) {
     list.Append(media::GetProfileName(profile));
+  }
 
   return list;
 }
@@ -69,8 +71,9 @@ base::Value::Dict CdmCapabilityToDict(
   base::Value::Dict dict;
 
   base::Value::List audio_codec_list;
-  for (const auto& audio_codec : cdm_capability.audio_codecs)
+  for (const auto& audio_codec : cdm_capability.audio_codecs) {
     audio_codec_list.Append(media::GetCodecName(audio_codec));
+  }
   dict.Set("Audio Codecs", std::move(audio_codec_list));
 
   auto* video_codec_dict = dict.EnsureDict("Video Codecs");
@@ -78,8 +81,9 @@ base::Value::Dict CdmCapabilityToDict(
        cdm_capability.video_codecs) {
     auto codec_name = media::GetCodecName(video_codec);
     // Codecs marked with "*" signals clear lead not supported.
-    if (!video_codec_info.supports_clear_lead)
+    if (!video_codec_info.supports_clear_lead) {
       codec_name += "*";
+    }
     video_codec_dict->Set(codec_name, VideoCodecInfoToList(video_codec_info));
   }
 
@@ -91,8 +95,9 @@ base::Value::Dict CdmCapabilityToDict(
   dict.Set("Encryption Schemes", std::move(encryption_scheme_list));
 
   base::Value::List session_type_list;
-  for (const auto& session_type : cdm_capability.session_types)
+  for (const auto& session_type : cdm_capability.session_types) {
     session_type_list.Append(GetCdmSessionTypeName(session_type));
+  }
   dict.Set("Session Types", std::move(session_type_list));
 
   return dict;
@@ -120,7 +125,7 @@ base::Value::Dict CdmInfoToDict(const CdmInfo& cdm_info) {
   return dict;
 }
 
-std::u16string SerializeUpdate(base::StringPiece function,
+std::u16string SerializeUpdate(std::string_view function,
                                const base::Value::List& value) {
   base::ValueView args[] = {value};
   return content::WebUI::GetJavascriptCall(function, args);
@@ -133,10 +138,14 @@ MediaInternalsCdmHelper::MediaInternalsCdmHelper() = default;
 MediaInternalsCdmHelper::~MediaInternalsCdmHelper() = default;
 
 void MediaInternalsCdmHelper::GetRegisteredCdms() {
-  CdmRegistryImpl::GetInstance()->ObserveKeySystemCapabilities(
-      base::BindRepeating(
-          &MediaInternalsCdmHelper::OnKeySystemCapabilitiesUpdated,
-          weak_factory_.GetWeakPtr()));
+  // Ok to trigger hw secure capability check since this page is for debugging
+  // only and not part of the normal user flow.
+  cb_subscription_ =
+      CdmRegistryImpl::GetInstance()->ObserveKeySystemCapabilities(
+          /*allow_hw_secure_capability_check=*/true,
+          base::BindRepeating(
+              &MediaInternalsCdmHelper::OnKeySystemCapabilitiesUpdated,
+              weak_factory_.GetWeakPtr()));
 }
 
 // Ignore results since we'll get them from CdmRegistryImpl directly.

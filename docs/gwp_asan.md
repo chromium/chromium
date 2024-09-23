@@ -8,7 +8,8 @@ the error.
 It is also known by its recursive backronym, GWP-ASan Will Provide Allocation
 Sanity.
 
-To read a more in-depth explanation of GWP-ASan see [this post](https://sites.google.com/a/chromium.org/dev/Home/chromium-security/articles/gwp-asan).
+To read a more in-depth explanation of GWP-ASan see [this
+post](https://www.chromium.org/Home/chromium-security/articles/gwp-asan).
 
 ## Allocator
 

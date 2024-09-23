@@ -15,9 +15,9 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Implemented internally.
  *
- * Interface for capturing the reliability for every change in the collection of items presented to
- * the user during the interaction. One instance exists per feed surface and lasts for the surface's
- * lifetime.
+ * <p>Interface for capturing the reliability for every change in the collection of items presented
+ * to the user during the interaction. One instance exists per feed surface and lasts for the
+ * surface's lifetime.
  */
 public interface FeedUserInteractionReliabilityLogger {
     /** Called when the stream has been opened. This should be called before reporting any event. */
@@ -112,4 +112,7 @@ public interface FeedUserInteractionReliabilityLogger {
 
     /** Called when the pagination process has ended. */
     default void onPaginationEnded(@PaginationResult int result) {}
+
+    /** Include experiment IDs sent from the server in the reliability log. */
+    default void reportExperiments(int[] experimentIds) {}
 }

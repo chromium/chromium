@@ -4,9 +4,17 @@
 
 #include "chrome/browser/ash/login/screens/osauth/local_password_setup_screen.h"
 
-#include "ash/constants/ash_features.h"
+#include <string>
+#include <utility>
+
+#include "base/check.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/logging.h"
+#include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
@@ -30,6 +38,7 @@ constexpr const char kUserActionBack[] = "back";
 
 // static
 std::string LocalPasswordSetupScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kDone:
       return "Done";
@@ -38,6 +47,7 @@ std::string LocalPasswordSetupScreen::GetResultString(Result result) {
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 LocalPasswordSetupScreen::LocalPasswordSetupScreen(
@@ -85,13 +95,13 @@ void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
                            weak_factory_.GetWeakPtr()));
         break;
       case WizardContext::AuthChangeFlow::kRecovery:
-        password_factor_editor.UpdateLocalPassword(
+        password_factor_editor.UpdateOrSetLocalPassword(
             GetToken(), password,
             base::BindOnce(&LocalPasswordSetupScreen::OnUpdateLocalPassword,
                            weak_factory_.GetWeakPtr()));
         break;
       case WizardContext::AuthChangeFlow::kReauthentication:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     return;
   } else if (action_id == kUserActionBack) {

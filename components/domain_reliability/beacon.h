@@ -11,8 +11,8 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/domain_reliability/domain_reliability_export.h"
+#include "net/base/isolation_info.h"
 #include "net/base/net_error_details.h"
-#include "net/base/network_anonymization_key.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -66,10 +66,9 @@ struct DOMAIN_RELIABILITY_EXPORT DomainReliabilityBeacon {
   // The URL that the beacon is reporting on, if included.
   // The scheme can be non-secure.
   GURL url;
-  // The NetworkAnonymizationKey associated with the request being reported on.
-  // Must also be used to upload any report. This field does not appear in the
-  // uploaded report.
-  net::NetworkAnonymizationKey network_anonymization_key;
+  // The IsolationInfo that must be used when uploading the report.
+  // This field does not appear in the uploaded report.
+  net::IsolationInfo isolation_info;
   // Status string (e.g. "ok", "dns.nxdomain", "http.403").
   std::string status;
   // Granular QUIC error string (e.g. "quic.peer_going_away").

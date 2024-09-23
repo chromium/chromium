@@ -5,9 +5,7 @@
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 
 #include "base/ranges/algorithm.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/renderer/core/clipboard/data_transfer.h"
-#include "third_party/blink/renderer/core/clipboard/data_transfer_access_policy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -439,6 +437,11 @@ void TextSuggestionController::ShowSpellCheckMenu(
     suggestion_ptrs.push_back(std::move(info_ptr));
   }
 
+  // |FrameSelection::AbsoluteCaretBounds()| requires clean layout.
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  See http://crbug.com/590369 for more details.
+  GetFrame().GetDocument()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kSpellCheck);
   const gfx::Rect& absolute_bounds =
       GetFrame().Selection().AbsoluteCaretBounds();
   const gfx::Rect& viewport_bounds =
@@ -617,40 +620,8 @@ void TextSuggestionController::ReplaceRangeWithText(const EphemeralRange& range,
   GetFrame().Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder().SetBaseAndExtent(range).Build());
 
-  // TODO(editing-dev): We should check whether |TextSuggestionController| is
-  // available or not.
-  // TODO(editing-dev): The use of UpdateStyleAndLayout
-  // needs to be audited.  See http://crbug.com/590369 for more details.
-  GetFrame().GetDocument()->UpdateStyleAndLayout(
-      DocumentUpdateReason::kSpellCheck);
-
-  // Dispatch 'beforeinput'.
-  Element* const target = FindEventTargetFrom(
-      GetFrame(), GetFrame().Selection().ComputeVisibleSelectionInDOMTree());
-
-  DataTransfer* const data_transfer = DataTransfer::Create(
-      DataTransfer::DataTransferType::kInsertReplacementText,
-      DataTransferAccessPolicy::kReadable,
-      DataObject::CreateFromString(replacement));
-
-  const bool is_canceled =
-      DispatchBeforeInputDataTransfer(
-          target, InputEvent::InputType::kInsertReplacementText,
-          data_transfer) != DispatchEventResult::kNotCanceled;
-
-  // 'beforeinput' event handler may destroy target frame.
-  if (!IsAvailable())
-    return;
-
-  // TODO(editing-dev): The use of UpdateStyleAndLayout
-  // needs to be audited.  See http://crbug.com/590369 for more details.
-  GetFrame().GetDocument()->UpdateStyleAndLayout(
-      DocumentUpdateReason::kSpellCheck);
-
-  if (is_canceled)
-    return;
-  GetFrame().GetEditor().ReplaceSelectionWithText(
-      replacement, false, false, InputEvent::InputType::kInsertReplacementText);
+  InsertTextAndSendInputEventsOfTypeInsertReplacementText(GetFrame(),
+                                                          replacement);
 }
 
 }  // namespace blink

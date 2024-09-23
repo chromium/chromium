@@ -360,7 +360,6 @@ bool WtsSessionProcessDelegate::Core::OnMessageReceived(
     const IPC::Message& message) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   NOTREACHED() << "Received unexpected IPC type: " << message.type();
-  return false;
 }
 
 void WtsSessionProcessDelegate::Core::OnChannelConnected(int32_t peer_pid) {

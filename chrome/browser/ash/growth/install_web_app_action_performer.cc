@@ -11,15 +11,17 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace {
 
-inline constexpr char kInstallWebAppParams[] = "installWebAppParams";
 inline constexpr char kLaunchInStandaloneWindow[] = "launchInStandaloneWindow";
 inline constexpr char kAppTitle[] = "appTitle";
 inline constexpr char kUrl[] = "url";
@@ -43,8 +45,12 @@ std::unique_ptr<web_app::WebAppInstallInfo> GetAppInstallInfo(
     return nullptr;
   }
 
-  auto info = std::make_unique<web_app::WebAppInstallInfo>(url_parsed);
-  info->start_url = url_parsed;
+  // Campaigns don't specify a `manifest_id`, so each unique `start_url` will be
+  // treated as a unique app.
+  webapps::ManifestId manifest_id =
+      web_app::GenerateManifestIdFromStartUrlOnly(url_parsed);
+  auto info =
+      std::make_unique<web_app::WebAppInstallInfo>(manifest_id, url_parsed);
   info->title = base::UTF8ToUTF16(*app_title);
   if (icon_url && GURL(*icon_url).is_valid()) {
     info->manifest_icons.push_back(apps::IconInfo(GURL(*icon_url), 32));
@@ -59,17 +65,11 @@ std::unique_ptr<web_app::WebAppInstallInfo> GetAppInstallInfo(
 std::unique_ptr<web_app::WebAppInstallInfo>
 ParseInstallWebAppActionPerformerParams(const base::Value::Dict* params) {
   if (!params) {
-    LOG(ERROR) << "Empty parameter to InstallWebAction.";
+    CAMPAIGNS_LOG(ERROR) << "Empty parameter to InstallWebAction.";
     return nullptr;
   }
 
-  auto* install_params = params->FindDict(kInstallWebAppParams);
-  if (!install_params) {
-    LOG(ERROR) << kInstallWebAppParams << " parameter not found.";
-    return nullptr;
-  }
-
-  return GetAppInstallInfo(*install_params);
+  return GetAppInstallInfo(*params);
 }
 
 void InstallWebAppResult(growth::ActionPerformer::Callback callback,
@@ -98,10 +98,11 @@ void InstallWebAppResult(growth::ActionPerformer::Callback callback,
 void InstallWebAppImpl(web_app::WebAppProvider& provider,
                        std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
                        growth::ActionPerformer::Callback callback) {
-  provider.scheduler().InstallFromInfo(
+  provider.scheduler().InstallFromInfoWithParams(
       std::move(web_app_info), /* overwrite_existing_manifest_fields= */ true,
       webapps::WebappInstallSource::EXTERNAL_DEFAULT,
-      base::BindOnce(&InstallWebAppResult, std::move(callback)));
+      base::BindOnce(&InstallWebAppResult, std::move(callback)),
+      web_app::WebAppInstallParams());
 }
 
 web_app::WebAppProvider* GetWebAppProvider() {
@@ -124,6 +125,8 @@ InstallWebAppActionPerformer::InstallWebAppActionPerformer() = default;
 InstallWebAppActionPerformer::~InstallWebAppActionPerformer() = default;
 
 void InstallWebAppActionPerformer::Run(
+    int campaign_id,
+    std::optional<int> group_id,
     const base::Value::Dict* params,
     growth::ActionPerformer::Callback callback) {
   if (!GetWebAppProvider()) {

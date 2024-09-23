@@ -19,7 +19,9 @@ class FakeAuthenticationServiceDelegate : public AuthenticationServiceDelegate {
 
   // AuthenticationServiceDelegate implementation.
   // Executes `completion` synchronously.
-  void ClearBrowsingData(ProceduralBlock completion) override;
+  void ClearBrowsingData(base::OnceClosure completion) override;
+  void ClearBrowsingDataForSignedinPeriod(
+      base::OnceClosure completion) override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_FAKE_AUTHENTICATION_SERVICE_DELEGATE_H_

@@ -31,6 +31,8 @@ class TemplateURLService;
 // (inclusive) as 99 and below are reserved for content-public and
 // content-internal definitions. Both the value and the name should be unique
 // across all the namespaces.
+//
+// LINT.IfChange
 namespace chrome_preloading_predictor {
 // When the preloading URL is predicted from the Omnibox Direct URL Input
 // (DUI). This is used to perform various preloading operations like prefetch
@@ -118,12 +120,23 @@ static constexpr content::PreloadingPredictor
     kMouseHoverOrMouseDownOnBookmarkBar(113,
                                         "MouseHoverOrMouseDownOnBookmarkBar");
 
-// TODO(crbug.com/1309934): Integrate more Preloading predictors with
-// Preloading logging APIs.
+// When a touch event happens on a new tab page link to an HTTPS origin,
+// we may attempt to preload the link.
+static constexpr content::PreloadingPredictor kTouchOnNewTabPage(
+    114,
+    "TouchOnNewTabPage");
+
+// When a certain CCT prefetch API is triggered.
+static constexpr content::PreloadingPredictor kChromeCustomTabs(
+    115,
+    "ChromeCustomTabs");
 }  // namespace chrome_preloading_predictor
+// LINT.ThenChange()
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange
 enum class ChromePreloadingEligibility {
   // Numbering starts from `kPreloadingEligibilityContentEnd` defined in
   // //content/public/preloading.h . Advance numbering by +1 when adding a new
@@ -174,6 +187,7 @@ enum class ChromePreloadingEligibility {
 
   kMaxValue = kPreloadingErrorBackOff,
 };
+// LINT.ThenChange()
 
 // Helper method to convert ChromePreloadingEligibility to
 // content::PreloadingEligibility to avoid casting.
@@ -193,7 +207,7 @@ std::u16string ExtractSearchTermsFromURL(
 // Returns true if a canonical URL representation of a |preloading_url| can be
 // generated. |canonical_url| is set to the canonical URL representation when
 // this method returns |true|.
-bool HasCanoncialPreloadingOmniboxSearchURL(
+bool HasCanonicalPreloadingOmniboxSearchURL(
     const GURL& preloading_url,
     content::BrowserContext* browser_context,
     GURL* canonical_url);
@@ -203,5 +217,14 @@ bool HasCanoncialPreloadingOmniboxSearchURL(
 bool IsSearchDestinationMatch(const GURL& canonical_preloading_search_url,
                               content::BrowserContext* browser_context,
                               const GURL& navigation_url);
+// Returns true when |navigation_url| is considered as navigating to the same
+// omnibox search results page as |canonical_preloading_search_url|. Includes
+// the result from the default web url match operation.
+bool IsSearchDestinationMatchWithWebUrlMatchResult(
+    const GURL& canonical_preloading_search_url,
+    content::BrowserContext* browser_context,
+    const GURL& navigation_url,
+    const std::optional<content::UrlMatchType>& default_web_url_match =
+        std::nullopt);
 
 #endif  // CHROME_BROWSER_PRELOADING_CHROME_PRELOADING_H_

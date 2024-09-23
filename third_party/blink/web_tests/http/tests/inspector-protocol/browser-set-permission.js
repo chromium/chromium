@@ -75,6 +75,16 @@
   await waitPermission({name: 'camera', panTiltZoom: true}, 'granted');
   await dp.Browser.resetPermissions();
 
+  // Test "fullscreen" permission allowWithoutGesture=true is supported.
+  await set({name: 'fullscreen', allowWithoutGesture: true}, 'granted');
+  await waitPermission({name: 'fullscreen', allowWithoutGesture: true}, 'granted');
+  await dp.Browser.resetPermissions();
+
+  // Test unsupported "fullscreen" permission descriptor options.
+  await set({name: 'fullscreen', allowWithoutGesture: false}, 'granted');
+  await set({name: 'fullscreen'}, 'granted');
+  await dp.Browser.resetPermissions();
+
   // Cross-origin test.
   await setWithName('geolocation', 'granted');
   await set({name: 'geolocation'}, 'denied', 'http://devtools.txt:8001');

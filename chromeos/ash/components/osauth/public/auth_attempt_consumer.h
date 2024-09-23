@@ -6,7 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_PUBLIC_AUTH_ATTEMPT_CONSUMER_H_
 
 #include "base/component_export.h"
-#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {

@@ -9,7 +9,6 @@
 #include "chrome/browser/apps/app_discovery_service/almanac_api/launcher_app.pb.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/app_fetcher_manager.h"
-#include "chrome/browser/apps/app_discovery_service/launcher_app_almanac_connector.h"
 
 class Profile;
 
@@ -58,9 +57,6 @@ class AlmanacFetcher : public AppFetcher {
   // caches, and notifies the class subscribers.
   void DownloadApps();
 
-  // Calls the Almanac server with the device information provided.
-  void OnGetDeviceInfo(DeviceInfo device_info);
-
   // Writes the response to disk if the call to the server succeeded or reads
   // the cached data otherwise.
   void OnServerResponse(std::optional<proto::LauncherAppResponse> response);
@@ -78,8 +74,6 @@ class AlmanacFetcher : public AppFetcher {
 
   ResultCallbackList subscribers_;
 
-  std::unique_ptr<LauncherAppAlmanacConnector> server_connector_;
-  std::unique_ptr<DeviceInfoManager> device_info_manager_;
   std::unique_ptr<ProtoFileManager<proto::LauncherAppResponse>>
       proto_file_manager_;
   std::unique_ptr<AlmanacIconCache> icon_cache_;

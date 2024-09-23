@@ -6,11 +6,11 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/files/safe_base_name.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/bad_message.h"
@@ -123,7 +123,7 @@ bool ShareServiceImpl::IsDangerousFilename(const base::FilePath& path) {
 }
 
 // static
-bool ShareServiceImpl::IsDangerousMimeType(base::StringPiece content_type) {
+bool ShareServiceImpl::IsDangerousMimeType(std::string_view content_type) {
   constexpr std::array<const char*, 28> kPermitted = {
       "application/pdf",
       "audio/flac",
@@ -291,7 +291,7 @@ void ShareServiceImpl::OnSafeBrowsingResultReceived(
          blink::mojom::ShareError result) { std::move(callback).Run(result); },
       std::move(share_operation), std::move(callback)));
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   std::move(callback).Run(blink::mojom::ShareError::INTERNAL_ERROR);
 #endif
 }

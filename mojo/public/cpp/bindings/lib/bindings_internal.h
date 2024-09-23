@@ -2,15 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_BINDINGS_INTERNAL_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_BINDINGS_INTERNAL_H_
 
 #include <stdint.h>
 
 #include <functional>
+#include <optional>
 #include <type_traits>
 #include <utility>
 
+#include "base/logging.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
@@ -207,7 +214,7 @@ inline constexpr MojomTypeCategory operator|(MojomTypeCategory x,
                                         static_cast<uint32_t>(y));
 }
 
-template <typename T, bool is_enum = std::is_enum<T>::value>
+template <typename T>
 struct MojomTypeTraits {
   using Data = T;
   using DataAsArrayElement = Data;
@@ -216,7 +223,15 @@ struct MojomTypeTraits {
 };
 
 template <typename T>
-struct MojomTypeTraits<ArrayDataView<T>, false> {
+struct MojomTypeTraits<std::optional<T>> {
+  using Data = std::optional<T>;
+  using DataAsArrayElement = Data;
+
+  static const MojomTypeCategory category = MojomTypeCategory::kPOD;
+};
+
+template <typename T>
+struct MojomTypeTraits<ArrayDataView<T>> {
   using Data = Array_Data<typename MojomTypeTraits<T>::DataAsArrayElement>;
   using DataAsArrayElement = Pointer<Data>;
 
@@ -224,7 +239,7 @@ struct MojomTypeTraits<ArrayDataView<T>, false> {
 };
 
 template <typename T>
-struct MojomTypeTraits<AssociatedInterfacePtrInfoDataView<T>, false> {
+struct MojomTypeTraits<AssociatedInterfacePtrInfoDataView<T>> {
   using Data = AssociatedInterface_Data;
   using DataAsArrayElement = Data;
 
@@ -233,7 +248,7 @@ struct MojomTypeTraits<AssociatedInterfacePtrInfoDataView<T>, false> {
 };
 
 template <typename T>
-struct MojomTypeTraits<AssociatedInterfaceRequestDataView<T>, false> {
+struct MojomTypeTraits<AssociatedInterfaceRequestDataView<T>> {
   using Data = AssociatedEndpointHandle_Data;
   using DataAsArrayElement = Data;
 
@@ -242,7 +257,7 @@ struct MojomTypeTraits<AssociatedInterfaceRequestDataView<T>, false> {
 };
 
 template <>
-struct MojomTypeTraits<bool, false> {
+struct MojomTypeTraits<bool> {
   using Data = bool;
   using DataAsArrayElement = Data;
 
@@ -250,7 +265,8 @@ struct MojomTypeTraits<bool, false> {
 };
 
 template <typename T>
-struct MojomTypeTraits<T, true> {
+  requires(std::is_enum_v<T>)
+struct MojomTypeTraits<T> {
   using Data = int32_t;
   using DataAsArrayElement = Data;
 
@@ -258,7 +274,16 @@ struct MojomTypeTraits<T, true> {
 };
 
 template <typename T>
-struct MojomTypeTraits<ScopedHandleBase<T>, false> {
+  requires(std::is_enum_v<T>)
+struct MojomTypeTraits<std::optional<T>> {
+  using Data = std::optional<int32_t>;
+  using DataAsArrayElement = Data;
+
+  static const MojomTypeCategory category = MojomTypeCategory::kEnum;
+};
+
+template <typename T>
+struct MojomTypeTraits<ScopedHandleBase<T>> {
   using Data = Handle_Data;
   using DataAsArrayElement = Data;
 
@@ -266,7 +291,7 @@ struct MojomTypeTraits<ScopedHandleBase<T>, false> {
 };
 
 template <>
-struct MojomTypeTraits<PlatformHandle, false> {
+struct MojomTypeTraits<PlatformHandle> {
   using Data = Handle_Data;
   using DataAsArrayElement = Data;
 
@@ -274,7 +299,7 @@ struct MojomTypeTraits<PlatformHandle, false> {
 };
 
 template <typename T>
-struct MojomTypeTraits<InterfacePtrDataView<T>, false> {
+struct MojomTypeTraits<InterfacePtrDataView<T>> {
   using Data = Interface_Data;
   using DataAsArrayElement = Data;
 
@@ -282,7 +307,7 @@ struct MojomTypeTraits<InterfacePtrDataView<T>, false> {
 };
 
 template <typename T>
-struct MojomTypeTraits<InterfaceRequestDataView<T>, false> {
+struct MojomTypeTraits<InterfaceRequestDataView<T>> {
   using Data = Handle_Data;
   using DataAsArrayElement = Data;
 
@@ -291,7 +316,7 @@ struct MojomTypeTraits<InterfaceRequestDataView<T>, false> {
 };
 
 template <typename K, typename V>
-struct MojomTypeTraits<MapDataView<K, V>, false> {
+struct MojomTypeTraits<MapDataView<K, V>> {
   using Data = Map_Data<typename MojomTypeTraits<K>::DataAsArrayElement,
                         typename MojomTypeTraits<V>::DataAsArrayElement>;
   using DataAsArrayElement = Pointer<Data>;
@@ -300,7 +325,7 @@ struct MojomTypeTraits<MapDataView<K, V>, false> {
 };
 
 template <>
-struct MojomTypeTraits<StringDataView, false> {
+struct MojomTypeTraits<StringDataView> {
   using Data = String_Data;
   using DataAsArrayElement = Pointer<Data>;
 

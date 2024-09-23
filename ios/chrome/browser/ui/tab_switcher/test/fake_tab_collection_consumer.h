@@ -12,6 +12,7 @@
 namespace web {
 class WebStateID;
 }  // namespace web
+class TabGroup;
 
 // Test object that conforms to TabCollectionConsumer and exposes inner state
 // for test verification.
@@ -19,7 +20,9 @@ class WebStateID;
 
 // The fake consumer only keeps the identifiers of items for simplicity.
 @property(nonatomic, readonly) const std::vector<web::WebStateID>& items;
-@property(nonatomic, assign) web::WebStateID selectedItemID;
+@property(nonatomic, readonly) const std::vector<const TabGroup*>& groups;
+@property(nonatomic, strong) GridItemIdentifier* selectedItem;
+@property(nonatomic, assign) TabGridMode mode;
 
 @end
 

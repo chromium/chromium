@@ -32,7 +32,7 @@ void AuthPolicyEnforcer::CheckAndEnforcePolicies(
 
   AuthFactorsSet policy_controlled_factors;
   DetermineAffectedFactors(context->GetAccountId(), policy_controlled_factors);
-  if (policy_controlled_factors.Empty()) {
+  if (policy_controlled_factors.empty()) {
     std::move(callback).Run(std::move(context), std::nullopt);
     return;
   }

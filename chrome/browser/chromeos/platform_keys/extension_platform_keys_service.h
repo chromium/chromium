@@ -203,16 +203,6 @@ class ExtensionPlatformKeysService : public KeyedService {
   // one.
   void TaskFinished(Task* task);
 
-  // Callback used by |GenerateRSAKey|.
-  // If the key generation was successful, registers the generated public key
-  // for the given extension. If any error occurs during key generation or
-  // registration, calls |callback| with an error status. Otherwise, on success,
-  // calls |callback| with the public key.
-  void GeneratedKey(const std::string& extension_id,
-                    const GenerateKeyCallback& callback,
-                    const std::string& public_key_spki_der,
-                    platform_keys::Status status);
-
   const raw_ptr<content::BrowserContext> browser_context_ = nullptr;
   const raw_ptr<crosapi::mojom::KeystoreService> keystore_service_ = nullptr;
   std::unique_ptr<SelectDelegate> select_delegate_;

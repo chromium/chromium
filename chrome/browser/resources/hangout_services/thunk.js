@@ -166,7 +166,7 @@ function onChooseDesktopMediaPort(port) {
         requestInfo['guestProcessId'] = port.sender.guestProcessId || 0;
         requestInfo['guestRenderFrameId'] =
             port.sender.guestRenderFrameRoutingId || 0;
-        // TODO(crbug.com/1329129): Plumb systemAudio, selfBrowserSurface and
+        // TODO(crbug.com/40226648): Plumb systemAudio, selfBrowserSurface and
         // other options here.
         cancelId = chrome.webrtcDesktopCapturePrivate.chooseDesktopMedia(
             sources, requestInfo, sendResponse);

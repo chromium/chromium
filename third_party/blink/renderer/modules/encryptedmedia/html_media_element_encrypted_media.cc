@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/encryptedmedia/html_media_element_encrypted_media.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "media/base/eme_constants.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -21,6 +23,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/content_decryption_module_result.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -29,18 +32,24 @@
 namespace blink {
 
 // This class allows MediaKeys to be set asynchronously.
-class SetMediaKeysHandler : public ScriptPromiseResolver {
+class SetMediaKeysHandler : public GarbageCollected<SetMediaKeysHandler> {
  public:
-  static ScriptPromise Create(ScriptState*, HTMLMediaElement&, MediaKeys*);
+  static ScriptPromise<IDLUndefined> Create(ScriptState*,
+                                            HTMLMediaElement&,
+                                            MediaKeys*,
+                                            const ExceptionContext&);
 
-  SetMediaKeysHandler(ScriptState*, HTMLMediaElement&, MediaKeys*);
+  SetMediaKeysHandler(ScriptState*,
+                      HTMLMediaElement&,
+                      MediaKeys*,
+                      const ExceptionContext&);
 
   SetMediaKeysHandler(const SetMediaKeysHandler&) = delete;
   SetMediaKeysHandler& operator=(const SetMediaKeysHandler&) = delete;
 
-  ~SetMediaKeysHandler() override;
+  ~SetMediaKeysHandler();
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
  private:
   void TimerFired(TimerBase*);
@@ -49,20 +58,28 @@ class SetMediaKeysHandler : public ScriptPromiseResolver {
   void SetNewMediaKeys();
 
   void Finish();
-  void Fail(ExceptionCode, const String& error_message);
+  void Fail(WebContentDecryptionModuleException, const String& error_message);
 
-  void ClearFailed(ExceptionCode, const String& error_message);
-  void SetFailed(ExceptionCode, const String& error_message);
+  void ClearFailed(WebContentDecryptionModuleException,
+                   const String& error_message);
+  void SetFailed(WebContentDecryptionModuleException,
+                 const String& error_message);
 
+  Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   // Keep media element alive until promise is fulfilled
   Member<HTMLMediaElement> element_;
   Member<MediaKeys> new_media_keys_;
   bool made_reservation_;
+  // Timer uses weak reference, so keep ourselves alive explicitly
+  // while timer is pending.
+  SelfKeepAlive<SetMediaKeysHandler> keep_alive_;
   HeapTaskRunnerTimer<SetMediaKeysHandler> timer_;
 };
 
 typedef base::OnceCallback<void()> SuccessCallback;
-typedef base::OnceCallback<void(ExceptionCode, const String&)> FailureCallback;
+typedef base::OnceCallback<void(WebContentDecryptionModuleException,
+                                const String&)>
+    FailureCallback;
 
 // Represents the result used when setContentDecryptionModule() is called.
 // Calls |success| if result is resolved, |failure| if result is rejected.
@@ -81,26 +98,26 @@ class SetContentDecryptionModuleResult final
   }
 
   void CompleteWithContentDecryptionModule(
-      WebContentDecryptionModule*) override {
-    NOTREACHED();
+      std::unique_ptr<WebContentDecryptionModule>) override {
+    NOTREACHED_IN_MIGRATION();
     std::move(failure_callback_)
-        .Run(ToExceptionCode(DOMExceptionCode::kInvalidStateError),
+        .Run(kWebContentDecryptionModuleExceptionInvalidStateError,
              "Unexpected completion.");
   }
 
   void CompleteWithSession(
       WebContentDecryptionModuleResult::SessionStatus status) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     std::move(failure_callback_)
-        .Run(ToExceptionCode(DOMExceptionCode::kInvalidStateError),
+        .Run(kWebContentDecryptionModuleExceptionInvalidStateError,
              "Unexpected completion.");
   }
 
   void CompleteWithKeyStatus(
       WebEncryptedMediaKeyInformation::KeyStatus key_status) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     std::move(failure_callback_)
-        .Run(ToExceptionCode(DOMExceptionCode::kInvalidStateError),
+        .Run(kWebContentDecryptionModuleExceptionInvalidStateError,
              "Unexpected completion.");
   }
 
@@ -122,8 +139,7 @@ class SetContentDecryptionModuleResult final
     DVLOG(EME_LOG_LEVEL) << __func__ << ": promise rejected with code " << code
                          << " and message: " << result.ToString();
 
-    std::move(failure_callback_)
-        .Run(WebCdmExceptionToExceptionCode(code), result.ToString());
+    std::move(failure_callback_).Run(code, result.ToString());
   }
 
  private:
@@ -131,22 +147,28 @@ class SetContentDecryptionModuleResult final
   FailureCallback failure_callback_;
 };
 
-ScriptPromise SetMediaKeysHandler::Create(ScriptState* script_state,
-                                          HTMLMediaElement& element,
-                                          MediaKeys* media_keys) {
+ScriptPromise<IDLUndefined> SetMediaKeysHandler::Create(
+    ScriptState* script_state,
+    HTMLMediaElement& element,
+    MediaKeys* media_keys,
+    const ExceptionContext& exception_context) {
   SetMediaKeysHandler* handler = MakeGarbageCollected<SetMediaKeysHandler>(
-      script_state, element, media_keys);
-  handler->KeepAliveWhilePending();
-  return handler->Promise();
+      script_state, element, media_keys, exception_context);
+  return handler->resolver_->Promise();
 }
 
-SetMediaKeysHandler::SetMediaKeysHandler(ScriptState* script_state,
-                                         HTMLMediaElement& element,
-                                         MediaKeys* media_keys)
-    : ScriptPromiseResolver(script_state),
+SetMediaKeysHandler::SetMediaKeysHandler(
+    ScriptState* script_state,
+    HTMLMediaElement& element,
+    MediaKeys* media_keys,
+    const ExceptionContext& exception_context)
+    : resolver_(MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+          script_state,
+          exception_context)),
       element_(element),
       new_media_keys_(media_keys),
       made_reservation_(false),
+      keep_alive_(this),
       timer_(ExecutionContext::From(script_state)
                  ->GetTaskRunner(TaskType::kMiscPlatformAPI),
              this,
@@ -160,6 +182,7 @@ SetMediaKeysHandler::SetMediaKeysHandler(ScriptState* script_state,
 SetMediaKeysHandler::~SetMediaKeysHandler() = default;
 
 void SetMediaKeysHandler::TimerFired(TimerBase*) {
+  keep_alive_.Clear();
   ClearExistingMediaKeys();
 }
 
@@ -176,7 +199,7 @@ void SetMediaKeysHandler::ClearExistingMediaKeys() {
   if (new_media_keys_) {
     if (!new_media_keys_->ReserveForMediaElement(element_.Get())) {
       this_element.is_attaching_media_keys_ = false;
-      Fail(ToExceptionCode(DOMExceptionCode::kQuotaExceededError),
+      Fail(kWebContentDecryptionModuleExceptionQuotaExceededError,
            "The MediaKeys object is already in use by another media element.");
       return;
     }
@@ -265,10 +288,10 @@ void SetMediaKeysHandler::Finish() {
   this_element.is_attaching_media_keys_ = false;
 
   // 5.6 Resolve promise with undefined.
-  Resolve();
+  resolver_->Resolve();
 }
 
-void SetMediaKeysHandler::Fail(ExceptionCode code,
+void SetMediaKeysHandler::Fail(WebContentDecryptionModuleException code,
                                const String& error_message) {
   // Reset ownership of |m_newMediaKeys|.
   if (made_reservation_)
@@ -279,15 +302,10 @@ void SetMediaKeysHandler::Fail(ExceptionCode code,
               .is_attaching_media_keys_);
 
   // Reject promise with an appropriate error.
-  ScriptState::Scope scope(GetScriptState());
-  ExceptionState exception_state(GetScriptState()->GetIsolate(),
-                                 ExceptionContextType::kOperationInvoke,
-                                 "HTMLMediaElement", "setMediaKeys");
-  exception_state.ThrowException(code, error_message);
-  Reject(exception_state);
+  WebCdmExceptionToPromiseRejection(resolver_, code, error_message);
 }
 
-void SetMediaKeysHandler::ClearFailed(ExceptionCode code,
+void SetMediaKeysHandler::ClearFailed(WebContentDecryptionModuleException code,
                                       const String& error_message) {
   DVLOG(EME_LOG_LEVEL) << __func__ << "(" << code << ", " << error_message
                        << ")";
@@ -301,7 +319,7 @@ void SetMediaKeysHandler::ClearFailed(ExceptionCode code,
   Fail(code, error_message);
 }
 
-void SetMediaKeysHandler::SetFailed(ExceptionCode code,
+void SetMediaKeysHandler::SetFailed(WebContentDecryptionModuleException code,
                                     const String& error_message) {
   DVLOG(EME_LOG_LEVEL) << __func__ << "(" << code << ", " << error_message
                        << ")";
@@ -322,10 +340,10 @@ void SetMediaKeysHandler::SetFailed(ExceptionCode code,
 }
 
 void SetMediaKeysHandler::Trace(Visitor* visitor) const {
+  visitor->Trace(resolver_);
   visitor->Trace(element_);
   visitor->Trace(new_media_keys_);
   visitor->Trace(timer_);
-  ScriptPromiseResolver::Trace(visitor);
 }
 
 // static
@@ -361,7 +379,7 @@ MediaKeys* HTMLMediaElementEncryptedMedia::mediaKeys(
   return this_element.media_keys_.Get();
 }
 
-ScriptPromise HTMLMediaElementEncryptedMedia::setMediaKeys(
+ScriptPromise<IDLUndefined> HTMLMediaElementEncryptedMedia::setMediaKeys(
     ScriptState* script_state,
     HTMLMediaElement& element,
     MediaKeys* media_keys,
@@ -379,19 +397,20 @@ ScriptPromise HTMLMediaElementEncryptedMedia::setMediaKeys(
   if (this_element.is_attaching_media_keys_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Another request is in progress.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   // 2. If mediaKeys and the mediaKeys attribute are the same object,
   //    return a resolved promise.
   if (this_element.media_keys_ == media_keys)
-    return ScriptPromise::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
 
   // 3. Let this object's attaching media keys value be true.
   this_element.is_attaching_media_keys_ = true;
 
   // 4. Let promise be a new promise. Remaining steps done in handler.
-  return SetMediaKeysHandler::Create(script_state, element, media_keys);
+  return SetMediaKeysHandler::Create(script_state, element, media_keys,
+                                     exception_state.GetContext());
 }
 
 // Create a MediaEncryptedEvent for WD EME.
@@ -401,7 +420,8 @@ static Event* CreateEncryptedEvent(media::EmeInitDataType init_data_type,
   MediaEncryptedEventInit* initializer = MediaEncryptedEventInit::Create();
   initializer->setInitDataType(
       EncryptedMediaUtils::ConvertFromInitDataType(init_data_type));
-  initializer->setInitData(DOMArrayBuffer::Create(init_data, init_data_length));
+  initializer->setInitData(DOMArrayBuffer::Create(
+      UNSAFE_TODO(base::span(init_data, init_data_length))));
   initializer->setBubbles(false);
   initializer->setCancelable(false);
 

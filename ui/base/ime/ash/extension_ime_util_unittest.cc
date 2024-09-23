@@ -28,23 +28,20 @@ TEST(ExtensionIMEUtilTest, GetArcInputMethodIDTest) {
 }
 
 TEST(ExtensionIMEUtilTest, GetExtensionIDFromInputMethodIDTest) {
-  EXPECT_EQ("",
-            extension_ime_util::GetExtensionIDFromInputMethodID("mozc"));
+  EXPECT_EQ("", extension_ime_util::GetExtensionIDFromInputMethodID("mozc"));
   EXPECT_EQ("12345678901234567890123456789012",
             extension_ime_util::GetExtensionIDFromInputMethodID(
-              extension_ime_util::GetInputMethodID(
-                  "12345678901234567890123456789012",
-                  "mozc")));
+                extension_ime_util::GetInputMethodID(
+                    "12345678901234567890123456789012", "mozc")));
   EXPECT_EQ("12345678901234567890123456789012",
             extension_ime_util::GetExtensionIDFromInputMethodID(
-              extension_ime_util::GetComponentInputMethodID(
-                  "12345678901234567890123456789012",
-                  "mozc")));
+                extension_ime_util::GetComponentInputMethodID(
+                    "12345678901234567890123456789012", "mozc")));
 }
 
 TEST(ExtensionIMEUtilTest, IsExtensionIMETest) {
-  EXPECT_TRUE(extension_ime_util::IsExtensionIME(
-      extension_ime_util::GetInputMethodID(
+  EXPECT_TRUE(
+      extension_ime_util::IsExtensionIME(extension_ime_util::GetInputMethodID(
           "abcde_xxxxxxxxxxxxxxxxxxxxxxxxxx", "12345")));
   EXPECT_FALSE(extension_ime_util::IsExtensionIME(
       extension_ime_util::GetComponentInputMethodID(
@@ -61,8 +58,8 @@ TEST(ExtensionIMEUtilTest, IsComponentExtensionIMETest) {
       extension_ime_util::GetComponentInputMethodID(
           "abcde_xxxxxxxxxxxxxxxxxxxxxxxxxx", "12345")));
   EXPECT_FALSE(extension_ime_util::IsComponentExtensionIME(
-      extension_ime_util::GetInputMethodID(
-          "abcde_xxxxxxxxxxxxxxxxxxxxxxxxxx", "12345")));
+      extension_ime_util::GetInputMethodID("abcde_xxxxxxxxxxxxxxxxxxxxxxxxxx",
+                                           "12345")));
   EXPECT_FALSE(extension_ime_util::IsComponentExtensionIME(
       extension_ime_util::GetArcInputMethodID(
           "abcde_xxxxxxxxxxxxxxxxxxxxxxxxxx", "12345")));

@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">ሮዝማ ቡኒ</translation>
 <translation id="249330843868392562">የጽሑፍ-ወደ-ንግግር ቅንብሮችን ክፈት</translation>
 <translation id="2497706219848005458">አረንጓዴ ቢጫ</translation>
+<translation id="2512979179176933762">መስኮቶችን ማሳያ</translation>
 <translation id="2523609930580546572">ChromeVox አጋዥ ሥልጠና</translation>
 <translation id="2525706221823668172">የChromebook ቁልፍ ሰሌዳ አቋራጮች</translation>
 <translation id="2553108862507765288">የስዋስው ስህተት</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">እንዲሁም ወደ ቀዳሚው ንጥል ለመሄድ አንድ ጣትን ከቀኝ ወደ ግራ ማንሸራተት ይችላሉ። አሁኑኑ ይሞክሩት።</translation>
 <translation id="280499067616661124">ChromeVox በገጽ ውስጥ ያግኙ</translation>
-<translation id="2811019999044652585">እንደ የመሣሪያ አሞሌዎች ወይም የሥርዓት ትሪ ወዳሉ ሌሎች የማያ ገፅ ክፍሎች ለመዝለል Control+Forward ይጫኑ። በChromebook ላይ የForward ቁልፍ ልክ ቁጥር 2 ቁልፍ በላይ ነው።</translation>
 <translation id="2811204574343810641">ረድፍ</translation>
 <translation id="2816868829355607410">የመለማመጃ ቦታ፦ የዝላይ ትዕዛዞች</translation>
 <translation id="2841013758207633010">ሰዓት</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">ብረት ሰማያዊ</translation>
 <translation id="4253168017788158739">ማስታወሻ</translation>
 <translation id="4254798249533888099">ዛፍ</translation>
+<translation id="4259220820964911921">የመልክ መቆጣጠሪያ ይንቃ?</translation>
 <translation id="4271220233568730077">ቀጣይ ሒሳብ</translation>
 <translation id="4275397969489577657">የክስተት ዥረት ምዝግብ ማስታወሻን ያንቁ</translation>
 <translation id="4278486392851938658">ምንም ቀዳሚ የተጎበኘ አገናኝ የለም</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">የህንድ ቀይ</translation>
 <translation id="4432896207833262240">ምልክት የተደረገበት ይዘት</translation>
 <translation id="4437615272777527928">ምናሌዎችን ለመፈለግ ይተይቡ። ውጤቶቹን ለማሰስ ወደ ላይ እና ወደታች ቀስቶችን ይጠቀሙ የጽሑፍ ክብደቱን ለማስተካከል እና በምናሌዎች መካከል ለማንቀሳቀስ የግራ እና ይቀኝ ቀስቶችን ይጠቀሙ።</translation>
+<translation id="4453530046591759283">እንደ የመሣሪያ አሞሌዎች ወይም ወደ ስርዓት ትሪ ወዳሉ ሌሎች የማያ ገጹ ክፍሎች ለመሄድ Control+F1ን ይጫኑ። F1 ከዝለል ቁልፉ በስተቀኝ ያለው የመጀመሪያው ቁልፍ ነው።</translation>
 <translation id="4457472090507035117">አሁን ያለውን ድምፅ ይመረጡ፦</translation>
 <translation id="4476183483923481720">አዲስ መስመር</translation>
 <translation id="4479068155583208887">የእሳት ጡብ</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">ቅጥያዎች</translation>
 <translation id="5761219715606611783">ጥሩ ሰርተዋል! ChromeVoxን የመንካት መሠረታዊ ነገሮችን ተምረዋል። ከታች ያለውን አዝራር በመጠቀም እንደገና አጋዥ ስልጠናውን መውሰድ ወይም ከዚህ አጋዥ ሥልጠና መውጣት ይችላሉ።</translation>
 <translation id="5776001898637896684">Google የተሻሻለ አውታረመረብ ከጽሑፍ ወደ ንግግር ቅጥያ</translation>
+<translation id="5783252477644995371">የመልክ መቆጣጠሪያ በመልክ መጠቆም እና እንደ ፈገግታ ባሉ የመልክ ምልክቶችን የግራ ጠቅታ ያሉ እርምጃዎችን ለመፈጸም ችሎታ የጠቋሚ መቆጣጠሪያ ይሰጥዎታል</translation>
 <translation id="5805940204952508776">በሁለት ጣቶች መታ ያድርጉ</translation>
 <translation id="5819072574982403430">የዛፍ ንጥል</translation>
 <translation id="5822819874379903994">ጠቆር ያለ ወይራ ቅጠል</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">ናቫጆ ነጭ</translation>
 <translation id="7095834689119144465">የጽሑፍ ቁጥር ብቻ ያርትዑ</translation>
 <translation id="7096001299300236431">ቀዳሚ ሚዲያ</translation>
+<translation id="7096668131290451939">ከመማር ሁነታ ለመውጣት ዝለል የሚለውን ደግመው ይጫኑ</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">የቃል ማስተጋባት</translation>
 <translation id="7137397390322864165">ፈዘዝ ያለ ሐምራዊ-ብርቱካናማ</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">ምንም ቀጣይ አመልካች ሳጥን የለም</translation>
 <translation id="8473540203671727883">ከመዳፊቱ ሥር ያለውን ጽሁፍ ይናገሩ</translation>
 <translation id="8476408756881832830">ChromeVox እየተናገረ ሳለ መልሶ ማጫወትን ባለበት አቁም</translation>
-<translation id="8476508772960940536">የመስኮት አጠቃላይ ዕይታ</translation>
 <translation id="8480873377842220259">አሁን አንዳንድ መሠረታዊ ዳሰሳን ይማራሉ። ማያ ገጹ ላይ ዘወር ዘወር ለማለት የፈልግ ቁልፉን ይዘው የቀስት ቁልፎቹን መጫን ይችላሉ። ለመቀጠል Search + ቀኝ ቀስትን ይጫኑ።</translation>
 <translation id="8503360654911991865">የአሰሳ ጥራት ደረጃ ይቀንሱ</translation>
 <translation id="8520472399088452386">ማሾሪያ አዝራር</translation>

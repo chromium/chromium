@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/power_metrics/resource_coalition_mac.h"
+
+#include <optional>
 
 #include "base/rand_util.h"
 #include "components/power_metrics/energy_impact_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace power_metrics {
 
@@ -82,8 +88,9 @@ void BurnCPU() {
 
 }  // namespace
 
-TEST(ResourceCoalitionMacTest, Busy) {
-  absl::optional<uint64_t> coalition_id =
+// TODO(crbug.com/328102500): Test failing on Mac builders, hence disabled.
+TEST(ResourceCoalitionMacTest, DISABLED_Busy) {
+  std::optional<uint64_t> coalition_id =
       GetProcessCoalitionId(base::GetCurrentProcId());
   ASSERT_TRUE(coalition_id.has_value());
 
@@ -213,7 +220,7 @@ TEST(ResourceCoalitionMacTest, GetDataRate_NoEnergyImpact_Intel) {
       GetCoalitionResourceUsageRateTestData(kIntelTimebase);
 
   auto rate = GetCoalitionResourceUsageRate(
-      *t0_data, *t1_data, kIntervalDuration, kIntelTimebase, absl::nullopt);
+      *t0_data, *t1_data, kIntervalDuration, kIntelTimebase, std::nullopt);
   ASSERT_TRUE(rate);
   EXPECT_EQ(kExpectedCPUUsagePerSecondPercent, rate->cpu_time_per_second);
   EXPECT_EQ(kExpectedInterruptWakeUpPerSecond,
@@ -240,7 +247,7 @@ TEST(ResourceCoalitionMacTest, GetDataRate_NoEnergyImpact_M1) {
       GetCoalitionResourceUsageRateTestData(kM1Timebase);
 
   auto rate = GetCoalitionResourceUsageRate(
-      *t0_data, *t1_data, kIntervalDuration, kM1Timebase, absl::nullopt);
+      *t0_data, *t1_data, kIntervalDuration, kM1Timebase, std::nullopt);
   ASSERT_TRUE(rate);
   EXPECT_DOUBLE_EQ(kExpectedCPUUsagePerSecondPercent,
                    rate->cpu_time_per_second);
@@ -330,7 +337,7 @@ bool DataOverflowInvalidatesDiffImpl(
   *field_to_overflow = 0;
   t1->cpu_time_eqos_len = COALITION_NUM_THREAD_QOS_TYPES;
   return !GetCoalitionResourceUsageRate(*t0, *t1, kIntervalDuration,
-                                        kIntelTimebase, absl::nullopt)
+                                        kIntelTimebase, std::nullopt)
               .has_value();
 }
 

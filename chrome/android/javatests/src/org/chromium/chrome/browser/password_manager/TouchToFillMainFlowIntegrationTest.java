@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
@@ -30,10 +31,8 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.url.GURL;
@@ -44,7 +43,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(
         reason =
-                "TODO(crbug.com/1346583): add resetting logic for"
+                "TODO(crbug.com/40232561): add resetting logic for"
                         + "FakePasswordStoreAndroidBackend to allow batching")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 public class TouchToFillMainFlowIntegrationTest {
@@ -66,21 +65,8 @@ public class TouchToFillMainFlowIntegrationTest {
 
     @Before
     public void setUp() {
-        PasswordStoreAndroidBackendFactory.setFactoryInstanceForTesting(
-                new FakePasswordStoreAndroidBackendFactoryImpl());
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ((FakePasswordStoreAndroidBackend)
-                                    PasswordStoreAndroidBackendFactory.getInstance()
-                                            .createBackend())
-                            .setSyncingAccount(
-                                    AccountUtils.createAccountFromName(
-                                            SigninTestRule.TEST_ACCOUNT_EMAIL));
-                });
-        PasswordSyncControllerDelegateFactory.setFactoryInstanceForTesting(
-                new FakePasswordSyncControllerDelegateFactoryImpl());
-
         mActivityTestRule.startMainActivityOnBlankPage();
+        PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
         PasswordManagerTestUtilsBridge.disableServerPredictions();
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
 
@@ -98,9 +84,10 @@ public class TouchToFillMainFlowIntegrationTest {
 
         mWebContents = mActivityTestRule.getWebContents();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPasswordStoreBridge = new PasswordStoreBridge();
+                    mPasswordStoreBridge =
+                            new PasswordStoreBridge(mActivityTestRule.getProfile(false));
                 });
     }
 
@@ -114,7 +101,7 @@ public class TouchToFillMainFlowIntegrationTest {
     public void testClickingSuggestionPopulatesForm()
             throws TimeoutException, InterruptedException {
         // Fill the password store.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPasswordStoreBridge.insertPasswordCredential(
                             new PasswordStoreCredential(

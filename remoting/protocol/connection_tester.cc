@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "remoting/protocol/connection_tester.h"
 #include "base/memory/raw_ptr.h"
 
@@ -46,9 +51,7 @@ void StreamConnectionTester::CheckResults() {
 
   output_buffer_->SetOffset(0);
   ASSERT_EQ(test_data_size_, output_buffer_->size());
-
-  EXPECT_EQ(0, memcmp(output_buffer_->data(), input_buffer_->StartOfBuffer(),
-                      test_data_size_));
+  EXPECT_EQ(output_buffer_->span(), input_buffer_->span_before_offset());
 }
 
 void StreamConnectionTester::Done() {

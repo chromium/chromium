@@ -80,7 +80,7 @@ bool IsValidContextNode(Node* node) {
     case Node::kDocumentTypeNode:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

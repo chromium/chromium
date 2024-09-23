@@ -33,7 +33,7 @@ namespace login {
     // guaranteed to be invoked as the extension will be disabled when the
     // session starts. Use this callback only to handle the failure case by
     // checking $(ref:runtime.lastError).
-    [supportsPromises] static void launchManagedGuestSession(
+    static void launchManagedGuestSession(
         optional DOMString password,
         optional VoidCallback callback);
 
@@ -41,7 +41,7 @@ namespace login {
     // |dataForNextLoginAttempt|: If set, stores data which can be read by
     // $(ref:fetchDataForNextLoginAttempt) from the login screen. If unset, any
     // currently stored data will be cleared.
-    [supportsPromises] static void exitCurrentSession(
+    static void exitCurrentSession(
         optional DOMString dataForNextLoginAttempt,
         optional VoidCallback callback);
 
@@ -50,21 +50,21 @@ namespace login {
     // reading so it can only be read once.
     // |callback|: Called with the stored data, or an empty string if there was
     // no previously stored data.
-    [supportsPromises] static void fetchDataForNextLoginAttempt(
+    static void fetchDataForNextLoginAttempt(
         StringCallback callback);
 
     // Deprecated. Please use $(ref:lockCurrentSession) instead.
-    [supportsPromises, deprecated="Use $(ref:lockCurrentSession) instead."]
+    [deprecated="Use $(ref:lockCurrentSession) instead."]
     static void lockManagedGuestSession(optional VoidCallback callback);
 
     // Locks the current session. The session has to be either a user session or
     // a Managed Guest Session launched by $(ref:launchManagedGuestSession) with
     // a password.
-    [supportsPromises] static void lockCurrentSession(
+    static void lockCurrentSession(
         optional VoidCallback callback);
 
     // Deprecated. Please use $(ref:unlockCurrentSession) instead.
-    [supportsPromises, deprecated="Use $(ref:unlockCurrentSession) instead."]
+    [deprecated="Use $(ref:unlockCurrentSession) instead."]
     static void unlockManagedGuestSession(
         DOMString password,
         optional VoidCallback callback);
@@ -78,7 +78,7 @@ namespace login {
     // guaranteed to be invoked as the extension will be disabled when the
     // session starts. Use this callback only to handle the failure case by
     // checking $(ref:runtime.lastError).
-    [supportsPromises] static void unlockCurrentSession(
+    static void unlockCurrentSession(
         DOMString password,
         optional VoidCallback callback);
 
@@ -88,7 +88,7 @@ namespace login {
     // guaranteed to be invoked as the extension will be disabled when the
     // session starts. Use this callback only to handle the failure case by
     // checking $(ref:runtime.lastError).
-    [supportsPromises] static void launchSamlUserSession(
+    static void launchSamlUserSession(
         SamlUserSessionProperties properties,
         optional VoidCallback callback);
 
@@ -104,7 +104,7 @@ namespace login {
     // guaranteed to be invoked as the extension will be disabled when the
     // session starts. Use this callback only to handle the failure case by
     // checking $(ref:runtime.lastError).
-    [supportsPromises] static void launchSharedManagedGuestSession(
+    static void launchSharedManagedGuestSession(
         DOMString password,
         optional VoidCallback callback);
 
@@ -119,7 +119,7 @@ namespace login {
     // guaranteed to be invoked as the extension will be disabled when the
     // session starts. Use this callback only to handle the failure case by
     // checking $(ref:runtime.lastError).
-    [supportsPromises] static void enterSharedSession(
+    static void enterSharedSession(
         DOMString password,
         optional VoidCallback callback);
 
@@ -134,7 +134,7 @@ namespace login {
     // guaranteed to be invoked as the extension will be disabled when the
     // session starts. Use this callback only to handle the failure case by
     // checking $(ref:runtime.lastError).
-    [supportsPromises] static void unlockSharedSession(
+    static void unlockSharedSession(
         DOMString password,
         optional VoidCallback callback);
 
@@ -146,25 +146,25 @@ namespace login {
     // Fails if there is no existing shared session.
     // |callback|: Invoked after cleanup operations have finished and the
     // session is locked.
-    [supportsPromises] static void endSharedSession(
+    static void endSharedSession(
         optional VoidCallback callback);
 
     // Sets data for the next login attempt. The data can be retrieved by
     // calling $(ref:fetchDataForNextLoginAttempt). The data is cleared when
     // it is fetched so it can only be read once.
     // |dataForNextLoginAttempt|: The data to be set.
-    [supportsPromises] static void setDataForNextLoginAttempt(
+    static void setDataForNextLoginAttempt(
         DOMString dataForNextLoginAttempt,
         optional VoidCallback callback);
 
     // Dispatches a $(ref:onRequestExternalLogout) event. Called from the login
     // screen extension on the lock screen.
-    [supportsPromises] static void requestExternalLogout(
+    static void requestExternalLogout(
         optional VoidCallback callback);
 
     // Dispatches a $(ref:onExternalLogoutDone) event. Called from the
     // in-session extension.
-    [supportsPromises] static void notifyExternalLogoutDone(
+    static void notifyExternalLogoutDone(
         optional VoidCallback callback);
   };
 

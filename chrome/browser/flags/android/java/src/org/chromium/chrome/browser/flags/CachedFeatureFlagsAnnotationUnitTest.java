@@ -5,15 +5,12 @@
 package org.chromium.chrome.browser.flags;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.cached_flags.CachedFlag;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 
@@ -22,7 +19,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 @EnableFeatures(ChromeFeatureList.TEST_DEFAULT_DISABLED)
 @Config(manifest = Config.NONE)
 public class CachedFeatureFlagsAnnotationUnitTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Test
     public void testDefaultFeatureValue() {

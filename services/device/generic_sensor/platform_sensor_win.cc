@@ -14,10 +14,10 @@ namespace device {
 PlatformSensorWin::PlatformSensorWin(
     mojom::SensorType type,
     SensorReadingSharedBuffer* reading_buffer,
-    PlatformSensorProvider* provider,
+    base::WeakPtr<PlatformSensorProvider> provider,
     scoped_refptr<base::SingleThreadTaskRunner> sensor_thread_runner,
     std::unique_ptr<PlatformSensorReaderWinBase> sensor_reader)
-    : PlatformSensor(type, reading_buffer, provider),
+    : PlatformSensor(type, reading_buffer, std::move(provider)),
       sensor_thread_runner_(sensor_thread_runner),
       sensor_reader_(sensor_reader.release()) {
   DCHECK(sensor_reader_);
@@ -43,6 +43,8 @@ double PlatformSensorWin::GetMaximumSupportedFrequency() {
 }
 
 void PlatformSensorWin::OnReadingUpdated(const SensorReading& reading) {
+  // This function is normally called from |sensor_thread_runner_|, except on
+  // PlatformSensorAndProviderTestWin.
   UpdateSharedBufferAndNotifyClients(reading);
 }
 
@@ -75,6 +77,7 @@ bool PlatformSensorWin::CheckSensorConfiguration(
 }
 
 PlatformSensorWin::~PlatformSensorWin() {
+  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
   sensor_reader_->SetClient(nullptr);
   sensor_thread_runner_->DeleteSoon(FROM_HERE, sensor_reader_.get());
 }

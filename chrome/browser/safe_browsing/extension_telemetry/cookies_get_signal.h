@@ -6,16 +6,19 @@
 #define CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_COOKIES_GET_SIGNAL_H_
 
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
+#include "extensions/common/stack_frame.h"
 
 namespace safe_browsing {
 
 // A signal that is created when an extension invokes cookies.get API.
 class CookiesGetSignal : public ExtensionSignal {
  public:
-  CookiesGetSignal(const extensions::ExtensionId& extension_id,
-                   const std::string& name,
-                   const std::string& store_id,
-                   const std::string& url);
+  CookiesGetSignal(
+      const extensions::ExtensionId& extension_id,
+      const std::string& name,
+      const std::string& store_id,
+      const std::string& url,
+      extensions::StackTrace js_callstack = extensions::StackTrace());
   ~CookiesGetSignal() override;
 
   // ExtensionSignal:
@@ -28,6 +31,7 @@ class CookiesGetSignal : public ExtensionSignal {
   const std::string& name() const { return name_; }
   const std::string& store_id() const { return store_id_; }
   const std::string& url() const { return url_; }
+  const extensions::StackTrace& js_callstack() const { return js_callstack_; }
 
  protected:
   // Filters the cookies by name.
@@ -37,6 +41,8 @@ class CookiesGetSignal : public ExtensionSignal {
   std::string store_id_;
   // Restricts the retrieved cookies to those that would match the given URL.
   std::string url_;
+  // JS callstack retrieved when the API was invoked.
+  extensions::StackTrace js_callstack_;
 };
 
 }  // namespace safe_browsing

@@ -2,25 +2,87 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//crypto/features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(use_nss_certs)
+assert(use_nss_certs || chrome_root_store_cert_management_ui)
+
+if (chrome_root_store_cert_management_ui) {
+  import("//mojo/public/tools/bindings/mojom.gni")
+
+  mojom("mojom") {
+    sources = [ "certificate_manager_v2.mojom" ]
+
+    public_deps = [ "//mojo/public/mojom/base" ]
+
+    webui_module_path = "chrome://resources/cr_components/certificate_manager/"
+
+    enabled_features = []
+    if (is_win || is_mac) {
+      enabled_features += [ "native_cert_management" ]
+    }
+    if (is_win || is_mac || is_linux) {
+      enabled_features += [ "enable_provisioned_client_certs" ]
+    }
+  }
+}
 
 build_webui("build") {
   grd_prefix = "cr_components_certificate_manager"
 
-  web_component_files = [
-    "ca_trust_edit_dialog.ts",
-    "certificate_delete_confirmation_dialog.ts",
-    "certificate_entry.ts",
-    "certificate_list.ts",
-    "certificate_manager.ts",
-    "certificate_password_decryption_dialog.ts",
-    "certificate_password_encryption_dialog.ts",
-    "certificate_subentry.ts",
-    "certificates_error_dialog.ts",
-  ]
+  web_component_files = []
+  non_web_component_files = []
+  static_files = []
+  css_files = []
+
+  if (use_nss_certs) {
+    web_component_files += [
+      "ca_trust_edit_dialog.ts",
+      "certificate_delete_confirmation_dialog.ts",
+      "certificate_entry.ts",
+      "certificate_list.ts",
+      "certificate_manager.ts",
+      "certificate_password_decryption_dialog.ts",
+      "certificate_password_encryption_dialog.ts",
+      "certificate_subentry.ts",
+      "certificates_error_dialog.ts",
+    ]
+    non_web_component_files += [
+      "certificate_manager_types.ts",
+      "certificates_browser_proxy.ts",
+    ]
+    css_files += [ "certificate_shared.css" ]
+  }
+
+  if (chrome_root_store_cert_management_ui) {
+    static_files += [ "favicon.svg" ]
+    web_component_files += [
+      "certificate_entry_v2.ts",
+      "certificate_list_v2.ts",
+      "certificate_manager_v2.ts",
+      "certificate_subpage_v2.ts",
+      "crs_section_v2.ts",
+      "local_certs_section_v2.ts",
+    ]
+    non_web_component_files += [
+      "certificates_v2_browser_proxy.ts",
+      "certificate_confirmation_dialog.html.ts",
+      "certificate_confirmation_dialog.ts",
+      "certificate_info_dialog.html.ts",
+      "certificate_info_dialog.ts",
+      "certificate_password_dialog.html.ts",
+      "certificate_password_dialog.ts",
+      "navigation_v2.ts",
+    ]
+
+    mojo_files_deps = [ ":mojom_ts__generator" ]
+    mojo_files = [ "$target_gen_dir/certificate_manager_v2.mojom-webui.ts" ]
+
+    icons_html_files = [ "certificate_manager_v2_icons.html" ]
+    html_to_wrapper_template = "detect"
+    css_files += [ "certificate_manager_style_v2.css" ]
+  }
 
   if (is_chromeos) {
     web_component_files += [
@@ -28,28 +90,24 @@ build_webui("build") {
       "certificate_provisioning_entry.ts",
       "certificate_provisioning_list.ts",
     ]
-  }
-
-  non_web_component_files = [
-    "certificate_manager_types.ts",
-    "certificates_browser_proxy.ts",
-  ]
-
-  if (is_chromeos) {
     non_web_component_files += [ "certificate_provisioning_browser_proxy.ts" ]
   }
-
-  css_files = [ "certificate_shared.css" ]
 
   ts_out_dir =
       "$root_gen_dir/ui/webui/resources/tsc/cr_components/certificate_manager"
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_composite = true
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+  if (chrome_root_store_cert_management_ui) {
+    ts_deps += [ "//ui/webui/resources/mojo:build_ts" ]
+  }
+
+  webui_context_type = "relative"
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
 }

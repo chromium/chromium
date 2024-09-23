@@ -139,6 +139,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                     uint32_t buffer_id,
                     gfx::FrameData data,
                     const gfx::Rect& bounds_rect,
+                    bool enable_blend,
                     const gfx::RoundedCornersF& corners,
                     float surface_scale_factor,
                     const gfx::Rect& damage_region);

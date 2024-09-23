@@ -69,7 +69,6 @@ bool VarTracker::AddRefVar(int32_t var_id) {
   VarMap::iterator found = live_vars_.find(var_id);
   if (found == live_vars_.end()) {
     NOTREACHED();  // Invalid var.
-    return false;
   }
 
   VarInfo& info = found->second;
@@ -107,7 +106,6 @@ bool VarTracker::ReleaseVar(int32_t var_id) {
   VarInfo& info = found->second;
   if (info.ref_count == 0) {
     NOTREACHED() << "Releasing an object with zero ref";
-    return false;
   }
   info.ref_count--;
 

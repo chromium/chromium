@@ -17,10 +17,7 @@
 
 namespace crypto {
 
-ECSignatureCreatorImpl::ECSignatureCreatorImpl(ECPrivateKey* key)
-    : key_(key) {
-  EnsureOpenSSLInit();
-}
+ECSignatureCreatorImpl::ECSignatureCreatorImpl(ECPrivateKey* key) : key_(key) {}
 
 ECSignatureCreatorImpl::~ECSignatureCreatorImpl() = default;
 

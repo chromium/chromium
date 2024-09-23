@@ -10,6 +10,7 @@ specific bindings, such as ECMAScript bindings.
 
 from .codegen_accumulator import CodeGenAccumulator
 from .codegen_format import format_template
+from .codegen_tracing import CodeGenTracing
 from .mako_renderer import MakoRenderer
 from .mako_renderer import MakoTemplate
 
@@ -191,6 +192,10 @@ class CodeNode(object):
         if template_vars:
             self.add_template_vars(template_vars)
 
+        # For ease of debugging, render which line of Python code created this
+        # CodeNode object when the code generation tracing is enabled.
+        self._cg_tracing_caller_callframe = None
+
     def __str__(self):
         """
         Renders this CodeNode object directly into the renderer's text buffer
@@ -220,6 +225,10 @@ class CodeNode(object):
         try:
             self._render(
                 renderer=renderer, last_render_state=last_render_state)
+            if CodeGenTracing.is_enabled():
+                if self._cg_tracing_caller_callframe:
+                    renderer.render_text(str(
+                        self._cg_tracing_caller_callframe))
         finally:
             self._is_rendering = False
 
@@ -423,6 +432,11 @@ class CodeNode(object):
         self.current_render_state.symbol_to_scope_chains.setdefault(
             symbol_node, set()).add(symbol_scope_chain)
 
+    def capture_caller_for_tracing(self):
+        """Captures the caller function information for a debugging purpose."""
+        assert not self._cg_tracing_caller_callframe
+        self._cg_tracing_caller_callframe = CodeGenTracing.capture_caller()
+
 
 class EmptyNode(CodeNode):
     """Represents the zero-length text and renders nothing."""
@@ -468,9 +482,15 @@ def TextNode(template_text):
     assert isinstance(template_text, str)
 
     if "$" in template_text or "%" in template_text:
-        return _TextNode(template_text)
+        node = _TextNode(template_text)
+        if CodeGenTracing.is_enabled():
+            node.capture_caller_for_tracing()
+        return node
     elif template_text:
-        return LiteralNode(template_text)
+        node = LiteralNode(template_text)
+        if CodeGenTracing.is_enabled():
+            node.capture_caller_for_tracing()
+        return node
     else:
         return EmptyNode()
 
@@ -900,15 +920,30 @@ class SymbolNode(CodeNode):
         CodeNode.__init__(self)
 
         self._name = name
+        self._cg_tracing_caller_callframe_of_symbol_node = None
 
         if template_text is not None:
             assert isinstance(template_text, str)
             assert definition_constructor is None
 
+            # A SymbolDefinitionNode will be automatically inserted on demand,
+            # and the caller of this `__init__` is the code that actually
+            # defines a SymbolDefinitionNode. So, save the caller and pass it
+            # to a SymbolDefinitionNode.
+            if CodeGenTracing.is_enabled():
+                self._cg_tracing_caller_callframe_of_symbol_node = (
+                    CodeGenTracing.capture_caller())
+
             def constructor(symbol_node):
-                return SymbolDefinitionNode(
-                    symbol_node=symbol_node,
-                    code_nodes=[TextNode(template_text)])
+                text_node = TextNode(template_text)
+                # Overwrite the caller's callframe with the one saved in the
+                # SymbolNode, which is the actual caller's callframe.
+                if CodeGenTracing.is_enabled():
+                    text_node._cg_tracing_caller_callframe = (
+                        symbol_node._cg_tracing_caller_callframe_of_symbol_node
+                    )
+                return SymbolDefinitionNode(symbol_node=symbol_node,
+                                            code_nodes=[text_node])
 
             self._definition_constructor = constructor
         else:

@@ -4,15 +4,19 @@
 
 #include "base/win/security_util.h"
 
+// clang-format off
+#include <windows.h>  // Must be in front of other Windows header files.
+// clang-format on
+
 #include <aclapi.h>
 #include <sddl.h>
-#include <windows.h>
 
 #include <utility>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions_win.h"
+#include "base/test/test_file_util.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/sid.h"
@@ -44,41 +48,6 @@ constexpr wchar_t kNoWriteDacDacl[] = L"D:(D;;WD;;;OW)(A;;FRSD;;;WD)";
 
 constexpr wchar_t kAuthenticatedUsersSid[] = L"AU";
 constexpr wchar_t kLocalGuestSid[] = L"LG";
-
-std::wstring GetFileDacl(const FilePath& path) {
-  PSECURITY_DESCRIPTOR sd;
-  if (::GetNamedSecurityInfo(path.value().c_str(), SE_FILE_OBJECT,
-                             DACL_SECURITY_INFORMATION, nullptr, nullptr,
-                             nullptr, nullptr, &sd) != ERROR_SUCCESS) {
-    return std::wstring();
-  }
-  auto sd_ptr = TakeLocalAlloc(sd);
-  LPWSTR sddl;
-  if (!::ConvertSecurityDescriptorToStringSecurityDescriptor(
-          sd_ptr.get(), SDDL_REVISION_1, DACL_SECURITY_INFORMATION, &sddl,
-          nullptr)) {
-    return std::wstring();
-  }
-  return TakeLocalAlloc(sddl).get();
-}
-
-bool CreateWithDacl(const FilePath& path, const wchar_t* sddl, bool directory) {
-  PSECURITY_DESCRIPTOR sd;
-  if (!::ConvertStringSecurityDescriptorToSecurityDescriptor(
-          sddl, SDDL_REVISION_1, &sd, nullptr)) {
-    return false;
-  }
-  auto sd_ptr = TakeLocalAlloc(sd);
-  SECURITY_ATTRIBUTES security_attr = {};
-  security_attr.nLength = sizeof(security_attr);
-  security_attr.lpSecurityDescriptor = sd_ptr.get();
-  if (directory)
-    return !!::CreateDirectory(path.value().c_str(), &security_attr);
-
-  return ScopedHandle(::CreateFile(path.value().c_str(), GENERIC_ALL, 0,
-                                   &security_attr, CREATE_ALWAYS, 0, nullptr))
-      .is_valid();
-}
 
 }  // namespace
 

@@ -70,7 +70,7 @@ void AlphaVideoEncoderWrapper::Initialize(VideoCodecProfile profile,
   auto done_callback = [](base::WeakPtr<AlphaVideoEncoderWrapper> self,
                           EncoderStatus status) {
     if (!self) {
-      NOTREACHED() << "Underlying encoder must be synchronous";
+      NOTREACHED_IN_MIGRATION() << "Underlying encoder must be synchronous";
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
@@ -111,7 +111,7 @@ void AlphaVideoEncoderWrapper::Encode(scoped_refptr<VideoFrame> frame,
 
   const gfx::Size frame_size = frame->coded_size();
   auto dummy_plane_size =
-      VideoFrame::PlaneSize(frame->format(), VideoFrame::kVPlane, frame_size)
+      VideoFrame::PlaneSize(frame->format(), VideoFrame::Plane::kV, frame_size)
           .Area64();
 
   if (dummy_plane_size != dummy_uv_planes_.size()) {
@@ -122,21 +122,21 @@ void AlphaVideoEncoderWrapper::Encode(scoped_refptr<VideoFrame> frame,
   yuv_output_.reset();
   alpha_output_.reset();
   encode_status_.reset();
-  auto uv_stride = VideoFrame::RowBytes(VideoFrame::kUPlane, frame->format(),
+  auto uv_stride = VideoFrame::RowBytes(VideoFrame::Plane::kU, frame->format(),
                                         frame_size.width());
 
   auto yuv_frame = WrapAsI420VideoFrame(frame);
   auto alpha_frame = VideoFrame::WrapExternalYuvData(
       PIXEL_FORMAT_I420, frame->visible_rect().size(), frame->visible_rect(),
-      frame->natural_size(), frame->stride(VideoFrame::kAPlane), uv_stride,
-      uv_stride, frame->visible_data(VideoFrame::kAPlane),
+      frame->natural_size(), frame->stride(VideoFrame::Plane::kA), uv_stride,
+      uv_stride, frame->visible_data(VideoFrame::Plane::kA),
       dummy_uv_planes_.data(), dummy_uv_planes_.data(), frame->timestamp());
   alpha_frame->metadata().MergeMetadataFrom(frame->metadata());
 
   auto done_callback = [](base::WeakPtr<AlphaVideoEncoderWrapper> self,
                           EncoderStatus status) {
     if (!self) {
-      NOTREACHED() << "Underlying encoder must be synchronous";
+      NOTREACHED_IN_MIGRATION() << "Underlying encoder must be synchronous";
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
@@ -152,26 +152,24 @@ void AlphaVideoEncoderWrapper::Encode(scoped_refptr<VideoFrame> frame,
       alpha_frame, encode_options,
       base::BindOnce(done_callback, weak_factory_.GetWeakPtr()));
 
-  if (!encode_status_.has_value() || !yuv_output_.has_value() ||
-      !alpha_output_.has_value()) {
+  if (!yuv_output_.has_value() || !alpha_output_.has_value()) {
     // This wrapper can only work with synchronous encoders that are completely
     // done encoding by the time Encode() completed.
     // So if we don't have the status and outputs it's time to give up.
     CHECK(encode_status_.has_value());
-    std::move(done_cb).Run(EncoderStatus::Codes::kEncoderFailedEncode);
+    std::move(done_cb).Run(*encode_status_);
     return;
   }
 
   if (encode_status_->is_ok()) {
     if (yuv_output_->key_frame && !alpha_output_->key_frame) {
       // Alpha keyframe must always go with YUV keyframe.
-      std::move(done_cb).Run(EncoderStatus::Codes::kEncoderFailedEncode);
+      std::move(done_cb).Run(EncoderStatus::Codes::kEncoderIllegalState);
       return;
     }
 
     VideoEncoderOutput output = std::move(yuv_output_).value();
     output.alpha_data = std::move(alpha_output_->data);
-    output.alpha_size = alpha_output_->size;
     output_cb_.Run(std::move(output), {});
   }
 
@@ -182,7 +180,7 @@ void AlphaVideoEncoderWrapper::ChangeOptions(const Options& options,
                                              OutputCB output_cb,
                                              EncoderStatusCB done_cb) {
   done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
-  NOTREACHED() << "Not implemented. Implement when needed.";
+  NOTREACHED_IN_MIGRATION() << "Not implemented. Implement when needed.";
   std::move(done_cb).Run(EncoderStatus::Codes::kEncoderUnsupportedConfig);
 }
 
@@ -200,7 +198,7 @@ void AlphaVideoEncoderWrapper::YuvOutputCallback(
     std::optional<CodecDescription> desc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (desc.has_value()) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "AlphaVideoEncoderWrapper doesn't support codecs with extra data";
     return;
   }
@@ -211,7 +209,7 @@ void AlphaVideoEncoderWrapper::AlphaOutputCallback(
     std::optional<CodecDescription> desc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (desc.has_value()) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "AlphaVideoEncoderWrapper doesn't support codecs with extra data";
     return;
   }

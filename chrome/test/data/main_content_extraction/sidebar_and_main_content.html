@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- This test just ensures main content extraction infra works and is not aimed
+  to verify the quality of the results. It should be clear enough, so that the
+  output won't change often due to model changes. -->
+
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Side bar and main content &mdash; Left Menu</title>
+  <style type="text/css">
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      max-height: 100%;
+    }
+
+    #sidebar {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 230px;
+      height: 100%;
+      overflow: hidden;
+      background: #eee;
+    }
+
+    main {
+      position: fixed;
+      top: 0;
+      left: 230px;
+      right: 0;
+      bottom: 0;
+      overflow: auto;
+      background: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div>
+      <h1>Calvin and Hobbs quote of the day</h1>
+      <p>Sometimes I think the surest sign that intelligent life exists
+        elsewhere in the universe is that none of it has tried
+        to contact us.</p>
+      <p>Bill Watterson, Nov 08, 1989</p>
+    </div>
+  </main>
+  <sidebar id="sidebar">
+    <h1>Nothing</h1>
+    <div>
+      <p>Look away</p>
+    </div>
+  </sidebar>
+</body>
+
+</html>

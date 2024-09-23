@@ -42,14 +42,15 @@ source_set("browser") {
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
-    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/browser/realtime:policy_engine",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
     "//components/safe_browsing/core/browser/utils",
     "//components/safe_browsing/core/common:common",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/security_interstitials/core:unsafe_resource",
+    "//components/sessions:session_id",
     "//components/unified_consent",
     "//components/version_info",
     "//net",
@@ -83,14 +84,17 @@ source_set("safe_browsing_url_checker_unittest") {
     ":browser",
     "//base/test:test_support",
     "//components/safe_browsing/core/browser:token_fetcher",
+    "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
-    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
+    "//components/safe_browsing/core/browser/realtime:test_support",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service",
     "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/security_interstitials/core:unsafe_resource",
+    "//components/sessions:session_id",
     "//net/traffic_annotation:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -101,7 +105,7 @@ source_set("safe_browsing_url_checker_unittest") {
 # NOTE: This target is separated from :browser as
 # //components/safe_browsing/core/browser/realtime:url_lookup_service_base,
 # which :browser depends on, depends on this.
-# TODO(crbug.com/1216341): Consider folding all of three these together into
+# TODO(crbug.com/40770425): Consider folding all of three these together into
 # :browser, along with the rest of //components/safe_browsing/core/browser.
 source_set("verdict_cache_manager") {
   sources = [
@@ -121,8 +125,8 @@ source_set("verdict_cache_manager") {
     "//components/safe_browsing/core/browser:sync_observer",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_cache",
-    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
@@ -141,9 +145,9 @@ source_set("verdict_cache_manager_unittest") {
     "//components/content_settings/core/browser",
     "//components/safe_browsing/core/browser:sync_observer",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
-    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
@@ -219,7 +223,10 @@ source_set("safe_browsing_hats_delegate_unittest") {
 }
 
 source_set("download_check_result") {
-  sources = [ "download_check_result.h" ]
+  sources = [
+    "download_check_result.cc",
+    "download_check_result.h",
+  ]
 }
 
 source_set("safe_browsing_metrics_collector") {
@@ -233,6 +240,7 @@ source_set("safe_browsing_metrics_collector") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/password_manager/core/common",
     "//components/prefs",
     "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
@@ -246,6 +254,7 @@ source_set("safe_browsing_metrics_collector_unittest") {
     ":safe_browsing_metrics_collector",
     "//base",
     "//base/test:test_support",
+    "//components/password_manager/core/common",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common",

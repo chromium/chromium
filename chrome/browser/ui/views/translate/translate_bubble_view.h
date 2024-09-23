@@ -58,7 +58,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
     NEVER_TRANSLATE_LANGUAGE,
     NEVER_TRANSLATE_SITE,
     CHANGE_TARGET_LANGUAGE,
-    CHANGE_SOURCE_LANGUAGE
+    CHANGE_SOURCE_LANGUAGE,
+    OPEN_LANGUAGE_SETTINGS
   };
 
   // Element IDs for ui::ElementTracker.
@@ -74,6 +75,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSourceLanguageCombobox);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSourceLanguageDoneButton);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kErrorMessage);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOpenLanguageSettings);
 
   TranslateBubbleView(views::View* anchor_view,
                       std::unique_ptr<TranslateBubbleModel> model,
@@ -97,7 +99,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   bool ShouldShowWindowTitle() const override;
   void WindowClosing() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnWidgetClosing(views::Widget* widget) override;
 
   // ui::SimpleMenuModel::Delegate:
@@ -311,6 +314,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   std::unique_ptr<TranslateBubbleModel> model_;
 
   translate::TranslateErrors error_type_;
+
+  raw_ptr<actions::ActionItem> translate_action_item_ = nullptr;
 
   // Whether the window is an incognito window.
   const bool is_in_incognito_window_;

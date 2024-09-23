@@ -19,6 +19,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -70,8 +71,6 @@ class ASH_EXPORT DragHandle : public views::Button,
   // Called when the window drag from shelf starts or ends. The drag handle
   // contextual nudge will remain visible while the gesture is in progress.
   void SetWindowDragFromShelfInProgress(bool gesture_in_progress);
-
-  void UpdateColor();
 
   // views::View:
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -154,6 +153,9 @@ class ASH_EXPORT DragHandle : public views::Button,
 
   // Stops the timer to show the drag handle nudge.
   void StopDragHandleNudgeShowTimer();
+
+  // Sets accessible states of the view.
+  void UpdateExpandedCollapsedAccessibleState() const;
 
   // Pointer to the shelf that owns the drag handle.
   const raw_ptr<Shelf> shelf_;

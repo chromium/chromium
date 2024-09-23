@@ -21,6 +21,7 @@ struct SearchWidget: Widget {
     .supportedFamilies([.systemSmall])
     .crDisfavoredLocations()
     .crContentMarginsDisabled()
+    .crContainerBackgroundRemovable(false)
   }
 }
 

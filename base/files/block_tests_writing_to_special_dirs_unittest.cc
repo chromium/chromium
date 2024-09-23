@@ -29,10 +29,10 @@ class BlockTestsWritingToSpecialDirsTest : public testing::Test {
   }
 
  protected:
-  absl::optional<BlockTestsWritingToSpecialDirs>& Get() {
+  std::optional<BlockTestsWritingToSpecialDirs>& Get() {
     return BlockTestsWritingToSpecialDirs::Get();
   }
-  absl::optional<BlockTestsWritingToSpecialDirs> save_block_tests_;
+  std::optional<BlockTestsWritingToSpecialDirs> save_block_tests_;
 };
 
 // Test that with no special dirs blocked,

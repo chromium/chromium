@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/events/ozone/evdev/event_converter_evdev_impl.h"
 
 #include <errno.h>
 #include <linux/input.h>
 #include <stddef.h>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
@@ -34,6 +40,10 @@ const int kKeyRepeatValue = 2;
 // Values for the EV_SW code.
 const int kSwitchStylusInserted = SW_PEN_INSERTED;
 
+constexpr unsigned int kModifierEvdevCodes[] = {
+    KEY_LEFTALT,  KEY_RIGHTALT,  KEY_LEFTMETA,  KEY_RIGHTMETA,
+    KEY_LEFTCTRL, KEY_RIGHTCTRL, KEY_LEFTSHIFT, KEY_RIGHTSHIFT};
+
 }  // namespace
 
 EventConverterEvdevImpl::EventConverterEvdevImpl(
@@ -58,6 +68,7 @@ EventConverterEvdevImpl::EventConverterEvdevImpl(
       has_numberpad_(devinfo.HasNumberpad()),
       has_stylus_switch_(devinfo.HasStylusSwitch()),
       has_assistant_key_(devinfo.HasKeyEvent(KEY_ASSISTANT)),
+      has_function_key_(devinfo.HasKeyEvent(KEY_FN)),
       has_caps_lock_led_(devinfo.HasLedEvent(LED_CAPSL)),
       controller_(FROM_HERE),
       cursor_(cursor),
@@ -129,6 +140,10 @@ bool EventConverterEvdevImpl::HasAssistantKey() const {
   return has_assistant_key_;
 }
 
+bool EventConverterEvdevImpl::HasFunctionKey() const {
+  return has_function_key_;
+}
+
 void EventConverterEvdevImpl::SetKeyFilter(bool enable_filter,
                                            std::vector<DomCode> allowed_keys) {
   if (!enable_filter) {
@@ -147,6 +162,25 @@ void EventConverterEvdevImpl::SetKeyFilter(bool enable_filter,
     if (blocked_keys_.test(key))
       OnKeyChange(key, false /* down */, timestamp);
   }
+}
+
+void EventConverterEvdevImpl::SetBlockModifiers(bool block_modifiers) {
+  // Release held modifiers if we are changing from not blocking modifiers ->
+  // blocking modifiers.
+  const bool should_release_held_modifiers =
+      block_modifiers && !block_modifiers_;
+  if (should_release_held_modifiers) {
+    base::TimeTicks timestamp = ui::EventTimeForNow();
+    for (const int key : kModifierEvdevCodes) {
+      if (key_state_.test(key)) {
+        OnKeyChange(key, false /* down */, timestamp);
+      }
+    }
+  }
+
+  // Update flag for blocking modifiers only after releasing the already pressed
+  // keys.
+  block_modifiers_ = block_modifiers;
 }
 
 void EventConverterEvdevImpl::OnDisabled() {
@@ -249,6 +283,12 @@ void EventConverterEvdevImpl::OnKeyChange(unsigned int key,
   // Apply key filter (releases for previously pressed keys are excepted).
   if (down && blocked_keys_.test(key))
     return;
+
+  // Block all modifiers from continuing down stream from this device if the
+  // flag is set.
+  if (block_modifiers_ && base::Contains(kModifierEvdevCodes, key)) {
+    return;
+  }
 
   // State transition: !(down) -> (down)
   key_state_.set(key, down);

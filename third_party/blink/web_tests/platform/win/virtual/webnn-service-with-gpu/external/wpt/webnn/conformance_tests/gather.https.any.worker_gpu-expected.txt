@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] gather float32 2D tensor and int32 0D out-of-bound positive indices default options
+  assert_true: assert_array_approx_equals_ulp: test gather float32 actual 73.60064697265625 should be close enough to expected 90.2870101928711 by the acceptable 0 ULP distance, but they have 2187115 ULP distance expected true got false
+[FAIL] gather float32 2D tensor and int32 0D out-of-bound negative indices default options
+  assert_true: assert_array_approx_equals_ulp: test gather float32 actual 73.60064697265625 should be close enough to expected -66.05901336669922 by the acceptable 0 ULP distance, but they have 2148472145 ULP distance expected true got false
+Harness: the test ran to completion.
+

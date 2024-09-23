@@ -49,8 +49,9 @@ void ExtensionMenuItemViewTest::SetUp() {
   ExtensionsToolbarUnitTest::SetUp();
 
   widget_ = std::make_unique<views::Widget>();
-  views::Widget::InitParams init_params(views::Widget::InitParams::TYPE_POPUP);
-  init_params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams init_params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
   // This was copied from BookmarkBarViewTest:
   // On Chrome OS, this always creates a NativeWidgetAura, but it should

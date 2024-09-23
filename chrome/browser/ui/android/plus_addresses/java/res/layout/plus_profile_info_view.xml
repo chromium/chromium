@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+
+  <LinearLayout
+      android:gravity="center_vertical|start"
+      android:fillViewport="true"
+      android:layout_height="wrap_content"
+      android:layout_width="match_parent"
+      android:orientation="horizontal">
+
+      <TextView
+          android:id="@+id/plus_profile_origin"
+          android:paddingTop="@dimen/all_plus_addresses_chip_margin"
+          android:paddingBottom="@dimen/all_plus_addresses_chip_margin"
+          android:gravity="center_vertical|start"
+          android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
+          android:layout_height="wrap_content"
+          android:layout_width="wrap_content"/>
+
+        <Space
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_width="0dp" />
+
+        <ImageView
+            android:id="@+id/profile_origin_favicon"
+            android:layout_width="@dimen/all_plus_addresses_favicon_side"
+            android:layout_height="@dimen/all_plus_addresses_favicon_side"
+            android:importantForAccessibility="no"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+  <org.chromium.components.browser_ui.widget.chips.ChipView
+            android:id="@+id/plus_address"
+            android:gravity="center_vertical|start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
+            style="@style/InputChip" />
+
+  <View style="@style/HorizontalDivider"
+        android:layout_marginTop="@dimen/all_plus_addresses_sheet_divider_margin"
+        android:layout_marginBottom="0dp" />
+
+</LinearLayout>

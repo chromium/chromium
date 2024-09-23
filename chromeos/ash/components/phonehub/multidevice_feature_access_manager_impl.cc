@@ -263,7 +263,7 @@ void MultideviceFeatureAccessManagerImpl::OnNotificationSetupRequested() {
           phonehub::DiscoveryEntryPoint::kMultiDeviceFeatureSetup);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -295,7 +295,7 @@ void MultideviceFeatureAccessManagerImpl::OnCombinedSetupRequested(
           DiscoveryEntryPoint::kMultiDeviceFeatureSetup);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -320,7 +320,7 @@ void MultideviceFeatureAccessManagerImpl::OnFeatureSetupConnectionRequested() {
           DiscoveryEntryPoint::kMultiDeviceFeatureSetup);
       break;
     default:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED();
       break;
   }
 }

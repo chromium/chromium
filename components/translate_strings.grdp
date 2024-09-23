@@ -1,101 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
 
-   <!-- Translate Info Bar -->
-  <message name="IDS_TRANSLATE_INFOBAR_OPTIONS_MORE_LANGUAGE" desc="Text for the menu item that lets the user open a dialog to choose another target language for translation, from a list of available languages.">
-    More languages...
-  </message>
+  <if expr="is_android">
+   <!-- Translate Message -->
   <message name="IDS_TRANSLATE_INFOBAR_OPTIONS_NOT_SOURCE_LANGUAGE" desc="Text for the menu item that lets the user open a dialog to choose another language as the source language for translation, from a list of available languages.">
     Page is not in <ph name="language">$1<ex>French</ex></ph>?
   </message>
-  <message name="IDS_TRANSLATE_INFOBAR_OPTIONS_NEVER_TRANSLATE_LANG" desc="Text for the menu item to never translate the specified language">
-    Never translate <ph name="language">$1<ex>French</ex></ph>
-  </message>
-  <message name="IDS_TRANSLATE_INFOBAR_OPTIONS_NEVER_TRANSLATE_SITE" desc="Text for the menu item to never translate the current site">
-    Never translate this site
-  </message>
-  <message name="IDS_TRANSLATE_INFOBAR_OPTIONS_ALWAYS" desc="Text for the menu item to always translate the specified language">
-    Always translate <ph name="original_language">$1<ex>French</ex></ph>
-  </message>
-  <message name="IDS_TRANSLATE_INFOBAR_OPTIONS_REPORT_ERROR" desc="Text for the menu item for reporting the page's language was not correctly detected">
-    Not in <ph name="original_language">$1<ex>French</ex></ph>? Report this error
-  </message>
-  <message name="IDS_TRANSLATE_INFOBAR_OPTIONS_ABOUT" desc="Text for the menu item for information about Google Translate">
-    About Google Translate
-  </message>
-  <if expr="is_ios">
-    <message name="IDS_TRANSLATE_INFOBAR_BEFORE_MESSAGE_IOS" desc="Text to display on the translate infobar to offer a translate. [Length: 200em] [iOS only]">
-      This page is in <ph name="SOURCE_LANGUAGE">$1<ex>English</ex></ph>. Translate it to <ph name="TARGET_LANGUAGE">$2<ex>French</ex></ph>?
-    </message>
-  </if>
-  <message name="IDS_TRANSLATE_INFOBAR_ACCEPT" desc="Text to show for the translate infobar button to accept translation.">
-    Translate
-  </message>
-  <message name="IDS_TRANSLATE_INFOBAR_DENY" desc="Text to show for the translate infobar button to deny translation.">
-    Nope
-  </message>
-  <message name="IDS_TRANSLATE_INFOBAR_NEVER_TRANSLATE" desc="Button label shown to never translate a specific language in the translate infobar">
-    Never translate <ph name="language">$1<ex>French</ex></ph>
-  </message>
-  <message name="IDS_TRANSLATE_INFOBAR_ALWAYS_TRANSLATE" desc="Button label shown to always translate a specific language in the translate infobar">
-    Always translate <ph name="language">$1<ex>English</ex></ph>
-  </message>
-  <message name="IDS_TRANSLATE_INFOBAR_AFTER_MESSAGE" desc="Message that page has been translated from one language to another">
-    This page has been translated from<ph name="original_language">$1<ex>French</ex></ph>to<ph name="language_language">$2<ex>German</ex></ph>
-  </message>
-  <message name="IDS_TRANSLATE_INFOBAR_AFTER_MESSAGE_AUTODETERMINED_SOURCE_LANGUAGE" desc="Message that page has been translated to another with server side auto language detection">
-    This page has been translated to <ph name="target_language">$1<ex>German</ex></ph>
-  </message>
-  <message name="IDS_TRANSLATE_INFOBAR_REVERT" desc="Text to show for translate infobar to revert translation of translated page">
-    Show original
-  </message>
-  <message name="IDS_TRANSLATE_INFOBAR_RETRY" desc="Text to show for translate infobar to retry translation of page">
-    Try again
-  </message>
 
-  <if expr="is_android">
       <message name="IDS_TRANSLATE_INFOBAR_ERROR" formatter_data="android_java">
         Oops. This page could not be translated.
       </message>
-      <message name="IDS_TRANSLATE_BUTTON" desc="Possible texts to display on the translate infobar buttons. [CHAR_LIMIT=24]" formatter_data="android_java">
+      <message name="IDS_TRANSLATE_BUTTON" desc="Possible texts to display on the translate infobar buttons. [CHAR_LIMIT=24]">
         Translate
       </message>
-      <message name="IDS_TRANSLATE_NEVER_TRANSLATE_SITE" desc="Text to display on the never translate site (like www.google.com) button. [CHAR_LIMIT=64]" formatter_data="android_java">
+      <message name="IDS_TRANSLATE_NEVER_TRANSLATE_SITE" desc="Text to display on the never translate site (like www.google.com) button. [CHAR_LIMIT=64]">
         Never translate this site
-      </message>
-      <message name="IDS_TRANSLATE_DONT_OFFER_SITE" desc="Text to display on overflow option stopping Chrome from offering translate for a site. (like www.google.com)" formatter_data="android_java">
-        Don‘t offer to translate this site
-      </message>
-
-      <message name="IDS_TRANSLATE_OPTION_ALWAYS_TRANSLATE" desc="Option in the overflow menu. User can click the 'Always Translate' option to indicate that they want the app to translate pages in this language automatically. Imperative." formatter_data="android_java">
-        Always translate pages in <ph name="SOURCE_LANGUAGE">%1$s<ex>French</ex></ph>
-      </message>
-      <message name="IDS_TRANSLATE_OPTION_NEVER_TRANSLATE" desc="Option in the overflow menu. User can click the 'Never Translate' option to indicate that they never want the app to translate pages in this language. The variable SOURCE_LANGUAGE could be any of 50+ languages supported by Google Translate, like French, Spanish, German, Italian, Japanese, Korean, etc. Imperative." formatter_data="android_java">
-        Never translate pages in <ph name="SOURCE_LANGUAGE">%1$s<ex>French</ex></ph>
-      </message>
-      <message name="IDS_TRANSLATE_DONT_OFFER_LANG" desc="Option in the overflow menu. User can click the 'Don't offer Translate' option to indicate that they don't want the app to offer translations for pages in this language. The variable SOURCE_LANGUAGE could be any of 50+ languages supported by Google Translate, like French, Spanish, German, Italian, Japanese, Korean, etc. Imperative." formatter_data="android_java">
-        Don‘t offer to translate pages in <ph name="SOURCE_LANGUAGE">%1$s<ex>French</ex></ph>
       </message>
       <message name="IDS_TRANSLATE_MENU_ITEM_ENABLED" desc="Spoken signal from screen reader that the current menu item is enabled and shows a check mark." formatter_data="android_java">
         Enabled
       </message>
-      <message name="IDS_TRANSLATE_OPTION_MORE_LANGUAGE" desc="Option in the overflow menu. Lets the user open a dialog to choose other target languages for translation, from a list of available languages. [CHAR_LIMIT=64]" formatter_data="android_java">
+      <message name="IDS_TRANSLATE_OPTION_MORE_LANGUAGE" desc="Option in the overflow menu. Lets the user open a dialog to choose other target languages for translation, from a list of available languages. [CHAR_LIMIT=64]">
         More languages
-      </message>
-      <message name="IDS_TRANSLATE_OPTION_NOT_SOURCE_LANGUAGE" desc="Option in the overflow menu. Sometimes a web page's source language is not correctly identified by Google Translate, and this menu option lets the user open a submenu to select another language as the source language to translate. Phrased as a question as if to query the user, 'Is this page not in [source language identified]? If so, click here.' [CHAR_LIMIT=64]" formatter_data="android_java">
-        Page is not in <ph name="LANGUAGE">%1$s<ex>French</ex></ph>?
-      </message>
-      <message name="IDS_TRANSLATE_SNACKBAR_ALWAYS_TRANSLATE" desc="After the user selects 'Always translate pages in [LANGUAGE]', this text confirms the user's choice and lets them know that pages in [LANGUAGE] will be translated to their chosen target language automatically. Imperative. [CHAR_LIMIT=64]" formatter_data="android_java">
-        Pages in <ph name="SOURCE_LANGUAGE">%1$s<ex>French</ex></ph> will be translated to <ph name="TARGET_LANGUAGE">%2$s<ex>English</ex></ph> from now on
-      </message>
-      <message name="IDS_TRANSLATE_SNACKBAR_LANGUAGE_NEVER" desc="After the user selects 'Never translate pages in [LANGUAGE]', this text confirms the user's choice and lets them know that pages in [LANGUAGE] will not be translated to their chosen target language automatically. Imperative[CHAR_LIMIT=64]" formatter_data="android_java">
-        Pages in <ph name="LANGUAGE">%1$s<ex>French</ex></ph> will not be translated
-      </message>
-      <message name="IDS_TRANSLATE_SNACKBAR_SITE_NEVER" desc="Text to be displayed in translate snackbar that lets the user know this site will not be translated. [CHAR_LIMIT=64]" formatter_data="android_java">
-        This site will not be translated
-      </message>
-      <message name="IDS_TRANSLATE_SNACKBAR_CANCEL" desc="A text label on the translate snackbar widget to cancel this selection. [CHAR_LIMIT=16]" formatter_data="android_java">
-        Cancel
       </message>
 
       <message name="IDS_TRANSLATE_MESSAGE_BEFORE_TRANSLATE_TITLE" desc="A text label on the translate message popup that prompts the user to translate the page.">
@@ -128,18 +53,6 @@
   </if>
 
   <!-- Translate Notifications -->
-  <message name="IDS_TRANSLATE_NOTIFICATION_ERROR" desc="This text lets the user know that the page could not be translated.">
-    Oops. This page could not be translated.
-  </message>
-  <message name="IDS_TRANSLATE_NOTIFICATION_ALWAYS_TRANSLATE" desc="After the user selects 'Always translate [source_language]', this text confirms the user's choice and lets them know that pages in [source_language] will be translated to the [target_language] automatically.">
-    Pages in <ph name="source_language">$1<ex>French</ex></ph> will be translated to <ph name="target_language">$2<ex>English</ex></ph> from now on.
-  </message>
-  <message name="IDS_TRANSLATE_NOTIFICATION_LANGUAGE_NEVER" desc="After the user selects 'Never translate [language]', this text confirms the user's choice and lets them know that pages in [language] will not be translated to their chosen target language automatically.">
-    Pages in <ph name="language">$1<ex>French</ex></ph> will not be translated.
-  </message>
-  <message name="IDS_TRANSLATE_NOTIFICATION_SITE_NEVER" desc="After the user selects 'Never translate this site', this text confirms the user's choice and lets them know that this site will not be translated.">
-    This site will not be translated.
-  </message>
   <message name="IDS_TRANSLATE_NOTIFICATION_UNDO" desc="A text label on the translate snackbar widget to undo the this selection.">
     Undo
   </message>
@@ -156,6 +69,5 @@
       Detected Language
     </message>
   </if>
-
 
 </grit-part>

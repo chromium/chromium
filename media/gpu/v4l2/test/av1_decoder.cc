@@ -11,9 +11,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "media/base/video_types.h"
-#include "media/filters/ivf_parser.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/test/upstream_pix_fmt.h"
+#include "media/parsers/ivf_parser.h"
 #include "third_party/libgav1/src/src/warp_prediction.h"
 
 namespace media {
@@ -350,7 +350,7 @@ void FillLoopRestorationParams(v4l2_av1_loop_restoration* v4l2_lr,
         v4l2_lr->frame_restoration_type[i] = V4L2_AV1_FRAME_RESTORE_SWITCHABLE;
         break;
       default:
-        NOTREACHED() << "Invalid loop restoration type";
+        NOTREACHED_IN_MIGRATION() << "Invalid loop restoration type";
     }
 
     if (v4l2_lr->frame_restoration_type[i] != V4L2_AV1_FRAME_RESTORE_NONE) {
@@ -474,8 +474,9 @@ void FillGlobalMotionParams(
                                 V4L2_AV1_WARP_MODEL_AFFINE);
         break;
       default:
-        NOTREACHED() << "Invalid global motion transformation type, "
-                     << v4l2_gm->type[i];
+        NOTREACHED_IN_MIGRATION()
+            << "Invalid global motion transformation type, "
+            << v4l2_gm->type[i];
     }
 
     conditionally_set_flags(
@@ -738,7 +739,8 @@ void Av1Decoder::SetupFrameParams(
       v4l2_frame_params->frame_type = V4L2_AV1_SWITCH_FRAME;
       break;
     default:
-      NOTREACHED() << "Invalid frame type, " << frm_header.frame_type;
+      NOTREACHED_IN_MIGRATION()
+          << "Invalid frame type, " << frm_header.frame_type;
   }
 
   v4l2_frame_params->order_hint = frm_header.order_hint;
@@ -767,8 +769,8 @@ void Av1Decoder::SetupFrameParams(
           V4L2_AV1_INTERPOLATION_FILTER_SWITCHABLE;
       break;
     default:
-      NOTREACHED() << "Invalid interpolation filter, "
-                   << frm_header.interpolation_filter;
+      NOTREACHED_IN_MIGRATION() << "Invalid interpolation filter, "
+                                << frm_header.interpolation_filter;
   }
 
   switch (frm_header.tx_mode) {
@@ -782,7 +784,7 @@ void Av1Decoder::SetupFrameParams(
       v4l2_frame_params->tx_mode = V4L2_AV1_TX_MODE_SELECT;
       break;
     default:
-      NOTREACHED() << "Invalid tx mode, " << frm_header.tx_mode;
+      NOTREACHED_IN_MIGRATION() << "Invalid tx mode, " << frm_header.tx_mode;
   }
 
   v4l2_frame_params->frame_width_minus_1 = frm_header.width - 1;
@@ -953,7 +955,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(const int frame_number,
                                                  std::vector<uint8_t>& y_plane,
                                                  std::vector<uint8_t>& u_plane,
                                                  std::vector<uint8_t>& v_plane,
-                                                 gfx::Size& size) {
+                                                 gfx::Size& size,
+                                                 BitDepth& bit_depth) {
   libgav1::RefCountedBufferPtr current_frame;
   const ParsingResult parser_res = ReadNextFrame(current_frame);
 
@@ -996,9 +999,10 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(const int frame_number,
     scoped_refptr<MmappedBuffer> repeated_frame_buffer =
         ref_frames_[current_frame_header.frame_to_show];
 
-    ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
-                 repeated_frame_buffer->mmapped_planes(),
-                 CAPTURE_queue_->resolution(), CAPTURE_queue_->fourcc());
+    bit_depth =
+        ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
+                     repeated_frame_buffer->mmapped_planes(),
+                     CAPTURE_queue_->resolution(), CAPTURE_queue_->fourcc());
 
     // Repeated frames normally don't need to update reference frames. But in
     // this special case when the repeated frame is pointing to a key frame, all
@@ -1077,13 +1081,16 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(const int frame_number,
     CreateCAPTUREQueue(kNumberOfBuffersInCaptureQueue);
   }
 
+  v4l2_ioctl_->WaitForRequestCompletion(OUTPUT_queue_);
+
   uint32_t buffer_id;
   v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id);
 
   scoped_refptr<MmappedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
-  ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
-               buffer->mmapped_planes(), CAPTURE_queue_->resolution(),
-               CAPTURE_queue_->fourcc());
+  bit_depth =
+      ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
+                   buffer->mmapped_planes(), CAPTURE_queue_->resolution(),
+                   CAPTURE_queue_->fourcc());
 
   const std::set<int> reusable_buffer_ids = RefreshReferenceSlots(
       current_frame_header, current_frame, CAPTURE_queue_->GetBuffer(buffer_id),

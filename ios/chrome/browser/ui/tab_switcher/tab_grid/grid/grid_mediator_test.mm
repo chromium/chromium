@@ -6,19 +6,21 @@
 
 #import "base/containers/contains.h"
 #import "base/test/ios/wait_util.h"
+#import "components/saved_tab_groups/mock_tab_group_sync_service.h"
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
-#import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
-#import "ios/chrome/browser/sessions/test_session_restoration_service.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/sessions/model/fake_tab_restore_service.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
+#import "ios/chrome/browser/sessions/model/test_session_restoration_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -58,6 +60,11 @@ constexpr web::ContentWorld kContentWorlds[] = {
     web::ContentWorld::kIsolatedWorld,
 };
 
+// Returns a `MockTabGroupSyncService`.
+std::unique_ptr<KeyedService> CreateMockTabGroupSyncService(
+    web::BrowserState* context) {
+  return std::make_unique<tab_groups::MockTabGroupSyncService>();
+}
 }  // namespace
 
 GridMediatorTestClass::GridMediatorTestClass() {
@@ -80,7 +87,10 @@ void GridMediatorTestClass::SetUp() {
                             ios::HistoryServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(SessionRestorationServiceFactory::GetInstance(),
                             TestSessionRestorationService::GetTestingFactory());
-  browser_state_ = builder.Build();
+  builder.AddTestingFactory(
+      tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+      base::BindRepeating(&CreateMockTabGroupSyncService));
+  browser_state_ = std::move(builder).Build();
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
       browser_state_.get(),
       std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -97,11 +107,13 @@ void GridMediatorTestClass::SetUp() {
           browser_state_.get()));
   auth_service_->SignIn(identity,
                         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-
   scene_state_ = OCMClassMock([SceneState class]);
   OCMStub([scene_state_ sceneSessionID]).andReturn(@(kIdentifier));
   browser_ = std::make_unique<TestBrowser>(
       browser_state_.get(), scene_state_,
+      std::make_unique<BrowserWebStateListDelegate>());
+  other_browser_ = std::make_unique<TestBrowser>(
+      browser_state_.get(), nil,
       std::make_unique<BrowserWebStateListDelegate>());
   WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
   ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser_.get());
@@ -111,6 +123,7 @@ void GridMediatorTestClass::SetUp() {
       ->SetSessionID(browser_.get(), kIdentifier);
   browser_list_ = BrowserListFactory::GetForBrowserState(browser_state_.get());
   browser_list_->AddBrowser(browser_.get());
+  browser_list_->AddBrowser(other_browser_.get());
 
   // Insert some web states.
   std::vector<std::string> urls{"https://foo/bar", "https://car/tar",

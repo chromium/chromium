@@ -51,6 +51,13 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   // VideoCaptureProvider implementation.
   void GetDeviceInfosAsync(GetDeviceInfosCallback result_callback) override;
   std::unique_ptr<VideoCaptureDeviceLauncher> CreateDeviceLauncher() override;
+  void OpenNativeScreenCapturePicker(
+      DesktopMediaID::Type type,
+      base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
+      base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+      base::OnceCallback<void()> cancel_callback,
+      base::OnceCallback<void()> error_callback) override;
+  void CloseNativeScreenCapturePicker(DesktopMediaID device_id) override;
 
   // content::GpuDataManagerObserver implementation.
   void OnGpuInfoUpdate() override;
@@ -74,6 +81,7 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   void GetDeviceInfosAsyncForRetry();
   void OnDeviceInfosReceived(
       scoped_refptr<RefCountedVideoSourceProvider> service_connection,
+      video_capture::mojom::VideoSourceProvider::GetSourceInfosResult result,
       const std::vector<media::VideoCaptureDeviceInfo>& infos);
   void OnDeviceInfosRequestDropped(
       scoped_refptr<RefCountedVideoSourceProvider> service_connection);

@@ -94,7 +94,8 @@ bool GetCalibratedTransform(
   // NOTE: If the determinant is zero then the inverse cannot be computed. The
   // only solution is to restart touch calibration and get new points from user.
   if (!product_matrix.GetInverse(&product_matrix_inverse)) {
-    NOTREACHED() << "Touch Calibration failed. Determinant is zero.";
+    NOTREACHED_IN_MIGRATION()
+        << "Touch Calibration failed. Determinant is zero.";
     return false;
   }
 

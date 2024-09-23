@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {IconLoader, MojomData, PageHandlerInterface, PageRemote} from 'chrome://downloads/downloads.js';
-import {DangerType, PageCallbackRouter, SafeBrowsingState, State} from 'chrome://downloads/downloads.js';
+import {DangerType, PageCallbackRouter, SafeBrowsingState, State, TailoredWarningType} from 'chrome://downloads/downloads.js';
 import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -23,13 +23,21 @@ export class TestDownloadsProxy {
 }
 
 class FakePageHandler implements PageHandlerInterface {
+  private eligibleForEsbPromo_: boolean = false;
   private callbackRouterRemote_: PageRemote;
   private callTracker_: TestBrowserProxy = new TestBrowserProxy([
-    'recordCancelBypassWarningPrompt',
-    'recordOpenBypassWarningPrompt',
+    'discardDangerous',
+    'isEligibleForEsbPromo',
+    'logEsbPromotionRowViewed',
+    'openEsbSettings',
+    'recordCancelBypassWarningDialog',
+    'recordCancelBypassWarningInterstitial',
+    'recordOpenBypassWarningDialog',
+    'recordOpenBypassWarningInterstitial',
+    'recordOpenSurveyOnDangerousInterstitial',
     'remove',
-    'saveDangerousFromPromptRequiringGesture',
-    'saveDangerousRequiringGesture',
+    'saveDangerousFromDialogRequiringGesture',
+    'saveDangerousFromInterstitialNeedGesture',
     'saveSuspiciousRequiringGesture',
   ]);
 
@@ -41,12 +49,25 @@ class FakePageHandler implements PageHandlerInterface {
     return this.callTracker_.whenCalled(methodName);
   }
 
-  recordCancelBypassWarningPrompt(id: string) {
-    this.callTracker_.methodCalled('recordCancelBypassWarningPrompt', id);
+  recordCancelBypassWarningDialog(id: string) {
+    this.callTracker_.methodCalled('recordCancelBypassWarningDialog', id);
   }
 
-  recordOpenBypassWarningPrompt(id: string) {
-    this.callTracker_.methodCalled('recordOpenBypassWarningPrompt', id);
+  recordCancelBypassWarningInterstitial(id: string) {
+    this.callTracker_.methodCalled('recordCancelBypassWarningInterstitial', id);
+  }
+
+  recordOpenBypassWarningDialog(id: string) {
+    this.callTracker_.methodCalled('recordOpenBypassWarningDialog', id);
+  }
+
+  recordOpenBypassWarningInterstitial(id: string) {
+    this.callTracker_.methodCalled('recordOpenBypassWarningInterstitial', id);
+  }
+
+  recordOpenSurveyOnDangerousInterstitial(id: string) {
+    this.callTracker_.methodCalled(
+        'recordOpenSurveyOnDangerousInterstitial', id);
   }
 
   async remove(id: string) {
@@ -55,24 +76,35 @@ class FakePageHandler implements PageHandlerInterface {
     this.callTracker_.methodCalled('remove', id);
   }
 
-  saveDangerousFromPromptRequiringGesture(id: string) {
-    this.callTracker_.methodCalled(
-        'saveDangerousFromPromptRequiringGesture', id);
+  discardDangerous(id: string) {
+    this.callTracker_.methodCalled('discardDangerous', id);
   }
 
-  saveDangerousRequiringGesture(id: string) {
-    this.callTracker_.methodCalled('saveDangerousRequiringGesture', id);
+  saveDangerousFromDialogRequiringGesture(id: string) {
+    this.callTracker_.methodCalled(
+        'saveDangerousFromDialogRequiringGesture', id);
+  }
+
+  saveDangerousFromInterstitialNeedGesture(id: string) {
+    this.callTracker_.methodCalled(
+        'saveDangerousFromInterstitialNeedGesture', id);
   }
 
   saveSuspiciousRequiringGesture(id: string) {
     this.callTracker_.methodCalled('saveSuspiciousRequiringGesture', id);
   }
 
+  openEsbSettings() {
+    this.callTracker_.methodCalled('openEsbSettings');
+  }
+
+  logEsbPromotionRowViewed() {
+    this.callTracker_.methodCalled('logEsbPromotionRowViewed');
+  }
+
   getDownloads(_searchTerms: string[]) {}
   openFileRequiringGesture(_id: string) {}
   drag(_id: string) {}
-  acceptIncognitoWarning(_id: string) {}
-  discardDangerous(_id: string) {}
   retryDownload(_id: string) {}
   show(_id: string) {}
   pause(_id: string) {}
@@ -85,6 +117,13 @@ class FakePageHandler implements PageHandlerInterface {
   reviewDangerousRequiringGesture(_id: string) {}
   deepScan(_id: string) {}
   bypassDeepScanRequiringGesture(_id: string) {}
+  async isEligibleForEsbPromo(): Promise<{result: boolean}> {
+    this.callTracker_.methodCalled('isEligibleForEsbPromo');
+    return {result: this.eligibleForEsbPromo_};
+  }
+  setEligbleForEsbPromo(eligible: boolean) {
+    this.eligibleForEsbPromo_ = eligible;
+  }
 }
 
 export class TestIconLoader extends TestBrowserProxy implements IconLoader {
@@ -107,6 +146,7 @@ export class TestIconLoader extends TestBrowserProxy implements IconLoader {
 export function createDownload(config?: Partial<MojomData>): MojomData {
   return Object.assign(
       {
+        accountEmail: '',
         byExtId: '',
         byExtName: '',
         dangerType: DangerType.kNoApplicableDangerType,
@@ -132,9 +172,13 @@ export function createDownload(config?: Partial<MojomData>): MojomData {
         sinceString: 'Today',
         started: Date.now() - 10000,
         state: State.kComplete,
+        tailoredWarningType:
+            TailoredWarningType.kNoApplicableTailoredWarningType,
         total: -1,
         url: stringToMojoUrl('http://permission.site'),
         displayUrl: stringToMojoString16('http://permission.site'),
+        referrerUrl: stringToMojoUrl('http://permission.site'),
+        displayReferrerUrl: stringToMojoString16('http://permission.site'),
         safeBrowsingState: SafeBrowsingState.kStandardProtection,
         hasSafeBrowsingVerdict: true,
       },

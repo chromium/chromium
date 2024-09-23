@@ -10,6 +10,7 @@
 #include <memory>
 #include <random>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -218,7 +219,8 @@ class MetricsStateMetricsProvider : public MetricsProvider {
 };
 
 bool ShouldEnableBenchmarking(bool force_benchmarking_mode) {
-  // TODO(crbug/1251680): See whether it's possible to consolidate the switches.
+  // TODO(crbug.com/40792683): See whether it's possible to consolidate the
+  // switches.
   return force_benchmarking_mode ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
              variations::switches::kEnableBenchmarking);
@@ -241,7 +243,7 @@ MetricsStateManager::MetricsStateManager(
     StartupVisibility startup_visibility,
     StoreClientInfoCallback store_client_info,
     LoadClientInfoCallback retrieve_client_info,
-    base::StringPiece external_client_id)
+    std::string_view external_client_id)
     : local_state_(local_state),
       enabled_state_provider_(enabled_state_provider),
       entropy_params_(entropy_params),
@@ -296,18 +298,30 @@ MetricsStateManager::MetricsStateManager(
                             base::Uuid::GenerateRandomV4().AsLowercaseString());
   }
 
-  // The |initial_client_id_| should only be set if UMA is enabled or there's a
-  // provisional client id.
-  initial_client_id_ =
-      (client_id_.empty()
-           ? local_state_->GetString(prefs::kMetricsProvisionalClientID)
-           : client_id_);
-  DCHECK(!instance_exists_);
+  // `initial_client_id_` will only be set in the following cases:
+  // 1. UMA is enabled
+  // 2. there is a provisional client id (due to this being a first run)
+  // 3. there is an externally provided client ID (e.g. in Lacros, from Ash)
+  if (!client_id_.empty()) {
+    initial_client_id_ = client_id_;
+  } else if (!external_client_id_.empty()) {
+    // Typically, `client_id_` should have been set to the external client ID in
+    // the call to ForceClientIdCreation() above. However, that call is gated,
+    // and may not always happen, for example if this is a first run and the
+    // consent state is not yet known (although we know it is soon going to be
+    // set to true, since an external client ID was provided).
+    initial_client_id_ = external_client_id_;
+  } else {
+    // Note that there is possibly no provisional client ID.
+    initial_client_id_ =
+        local_state_->GetString(prefs::kMetricsProvisionalClientID);
+  }
+  CHECK(!instance_exists_);
   instance_exists_ = true;
 }
 
 MetricsStateManager::~MetricsStateManager() {
-  DCHECK(instance_exists_);
+  CHECK(instance_exists_);
   instance_exists_ = false;
 }
 
@@ -361,9 +375,9 @@ void MetricsStateManager::InstantiateFieldTrialList() {
   // When benchmarking is enabled, field trials' default groups are chosen, so
   // see whether benchmarking needs to be enabled here, before any field trials
   // are created.
-  // TODO(crbug/1257204): Some FieldTrial-setup-related code is here and some is
-  // in VariationsFieldTrialCreator::SetUpFieldTrials(). It's not ideal that
-  // it's in two places.
+  // TODO(crbug.com/40796250): Some FieldTrial-setup-related code is here and
+  // some is in VariationsFieldTrialCreator::SetUpFieldTrials(). It's not ideal
+  // that it's in two places.
   if (ShouldEnableBenchmarking(entropy_params_.force_benchmarking_mode))
     base::FieldTrial::EnableBenchmarking();
 
@@ -524,7 +538,7 @@ MetricsStateManager::AddOnClonedInstallDetectedCallback(
 
 std::unique_ptr<const variations::EntropyProviders>
 MetricsStateManager::CreateEntropyProviders(bool enable_limited_entropy_mode) {
-  // TODO(crbug.com/1508150): remove `enable_limited_entropy_mode` when it's
+  // TODO(crbug.com/40948861): remove `enable_limited_entropy_mode` when it's
   // true for all callers.
   auto limited_entropy_randomization_source =
       enable_limited_entropy_mode ? GetLimitedEntropyRandomizationSource()
@@ -548,7 +562,7 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
     EntropyParams entropy_params,
     StoreClientInfoCallback store_client_info,
     LoadClientInfoCallback retrieve_client_info,
-    base::StringPiece external_client_id) {
+    std::string_view external_client_id) {
   std::unique_ptr<MetricsStateManager> result;
   // Note: |instance_exists_| is updated in the constructor and destructor.
   if (!instance_exists_) {

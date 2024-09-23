@@ -12,10 +12,11 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
+#include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/session_util.h"
+#include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -53,8 +54,10 @@ NearbyShareDelegateImpl::NearbyShareDelegateImpl(
 
 NearbyShareDelegateImpl::~NearbyShareDelegateImpl() {
   ash::SessionController::Get()->RemoveObserver(this);
-  if (nearby_share_service_)
+  if (nearby_share_service_) {
     RemoveNearbyShareServiceObservers();
+  }
+  nearby_share_settings_receiver_.reset();
 }
 
 bool NearbyShareDelegateImpl::IsEnabled() {
@@ -107,8 +110,10 @@ void NearbyShareDelegateImpl::OnFirstSessionStarted() {
   nearby_share_service_ = NearbySharingServiceFactory::GetForBrowserContext(
       ProfileManager::GetPrimaryUserProfile());
 
-  if (nearby_share_service_)
+  if (nearby_share_service_) {
+    nearby_share_settings_ = nearby_share_service_->GetSettings();
     AddNearbyShareServiceObservers();
+  }
 }
 
 void NearbyShareDelegateImpl::SetNearbyShareServiceForTest(
@@ -117,10 +122,46 @@ void NearbyShareDelegateImpl::SetNearbyShareServiceForTest(
   AddNearbyShareServiceObservers();
 }
 
+void NearbyShareDelegateImpl::SetNearbyShareSettingsForTest(
+    NearbyShareSettings* settings) {
+  nearby_share_settings_ = settings;
+}
+
+// In Quick Share v1, not used.
+// In Quick Share v2, Quick Share should always be 'enabled', though visibility
+// may be set to Hidden.
+void NearbyShareDelegateImpl::OnEnabledChanged(bool enabled) {}
+
+void NearbyShareDelegateImpl::OnFastInitiationNotificationStateChanged(
+    ::nearby_share::mojom::FastInitiationNotificationState state) {}
+
+void NearbyShareDelegateImpl::OnIsFastInitiationHardwareSupportedChanged(
+    bool is_supported) {}
+
+void NearbyShareDelegateImpl::OnDeviceNameChanged(
+    const std::string& device_name) {}
+
+void NearbyShareDelegateImpl::OnDataUsageChanged(
+    ::nearby_share::mojom::DataUsage data_usage) {}
+
+void NearbyShareDelegateImpl::OnVisibilityChanged(
+    ::nearby_share::mojom::Visibility visibility) {
+  nearby_share_controller_->VisibilityChanged(visibility);
+}
+
+void NearbyShareDelegateImpl::OnAllowedContactsChanged(
+    const std::vector<std::string>& visible_contact_ids) {}
+
+void NearbyShareDelegateImpl::OnIsOnboardingCompleteChanged(bool is_complete) {}
+
 void NearbyShareDelegateImpl::AddNearbyShareServiceObservers() {
   DCHECK(nearby_share_service_);
   DCHECK(!nearby_share_service_->HasObserver(this));
   nearby_share_service_->AddObserver(this);
+  if (nearby_share_settings_) {
+    nearby_share_settings_->AddSettingsObserver(
+        nearby_share_settings_receiver_.BindNewPipeAndPassRemote());
+  }
 }
 
 void NearbyShareDelegateImpl::RemoveNearbyShareServiceObservers() {
@@ -200,4 +241,19 @@ std::u16string NearbyShareDelegateImpl::GetPlaceholderFeatureName() const {
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return u"";
+}
+
+::nearby_share::mojom::Visibility NearbyShareDelegateImpl::GetVisibility()
+    const {
+  if (!nearby_share_settings_) {
+    return ::nearby_share::mojom::Visibility::kUnknown;
+  }
+
+  return nearby_share_settings_->GetVisibility();
+}
+
+void NearbyShareDelegateImpl::SetVisibility(
+    ::nearby_share::mojom::Visibility visibility) {
+  DCHECK(nearby_share_settings_);
+  return nearby_share_settings_->SetVisibility(visibility);
 }

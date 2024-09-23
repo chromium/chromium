@@ -8,13 +8,13 @@ import("//base/android/resource_exclusions.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/locales.gni")
+import("//build/toolchain/gcc_toolchain.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
 import("//chrome/android/modules/chrome_bundle_tmpl.gni")
 import("//chrome/android/trichrome.gni")
 import("//chrome/common/features.gni")
 import("//chrome/version.gni")
 import("//components/crash/android/silent_java_assert_reporting.gni")
-import("//components/optimization_guide/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("channel.gni")
 
@@ -42,6 +42,7 @@ default_chrome_public_jinja_variables = [
   "enable_vr=$enable_vr",
   "enable_openxr=$enable_openxr",
   "enable_arcore=$enable_arcore",
+  "is_desktop_android=$is_desktop_android",
   "zygote_preload_class=org.chromium.content_public.app.ZygotePreload",
 ]
 
@@ -279,9 +280,6 @@ template("chrome_common_apk_or_module_tmpl") {
 
     if (_is_bundle) {
       is_base_module = true
-
-      # Sets ISOLATED_SPLITS_ENABLED in BuildConfig.java.
-      isolated_splits_enabled = true
     }
 
     product_config_java_packages = [ "org.chromium.chrome.browser" ]
@@ -301,6 +299,9 @@ template("chrome_common_apk_or_module_tmpl") {
       shared_resources_allowlist_locales = platform_pak_locales
 
       product_config_java_packages += [ webview_product_config_java_package ]
+    } else {
+      # Chrome does not enable Strict Mode checks.
+      disable_strict_mode_context = true
     }
 
     if (enable_silent_java_assert_reporting) {
@@ -335,7 +336,7 @@ template("chrome_common_apk_or_module_tmpl") {
     resource_exclusion_regex += "|${_material_package}/xml.*badge_"
 
     if (!is_java_debug) {
-      # TODO(crbug.com/993340): Update test goldens with webp versions of images.
+      # TODO(crbug.com/41475795): Update test goldens with webp versions of images.
       if (!_is_test) {
         png_to_webp = true
       }
@@ -381,10 +382,24 @@ template("chrome_common_apk_or_module_tmpl") {
       }
     }
 
-    deps = [
-      "//chrome/android:chrome_base_module_resources",
-      "//chrome/android:chrome_public_non_pak_assets",
-    ]
+    # shared_resources_allowlist_target causes a native dep to appear via resources.
+    if (!_is_monochrome) {
+      # Java and native targets form two independent compile graphs. Deps from java targets
+      # onto native ones (or vice versa) are unnecessary and reduce parallelism.
+      # This prevents most deps from java->native.
+      # One common violation is generate_jni() targets, which generate
+      # .srcjars, but also .h files, and so export their native deps.
+      # Tip: If the dep is due to loadable_modules or android_assets, use "asset_deps" rather than
+      #      "deps".
+      assert_no_native_deps = [
+        "//base",
+        "//build/config/compiler:compiler_buildflags",
+        "//build/rust:cxx_cppdeps",
+        "//third_party/abseil-cpp:absl",
+      ]
+    }
+
+    deps = [ "//chrome/android:chrome_base_module_resources" ]
 
     # TODO(agrieve): Make unconditional when moving to trampoline.
     if (_is_monochrome || _is_trichrome) {
@@ -447,17 +462,30 @@ template("chrome_common_apk_or_module_tmpl") {
       }
     }
 
+    asset_deps = [ "//chrome/android:chrome_public_non_pak_assets" ]
+    if (defined(invoker.asset_deps)) {
+      asset_deps += invoker.asset_deps
+    }
+
     if (_is_bundle && _is_monochrome) {
-      deps += [ "//chrome/android:monochrome_bundle_module_pak_assets" ]
+      asset_deps += [ "//chrome/android:monochrome_bundle_module_pak_assets" ]
     } else if (_is_bundle && _is_trichrome) {
-      deps += [ "//chrome/android:trichrome_chrome_bundle_module_pak_assets" ]
+      asset_deps +=
+          [ "//chrome/android:trichrome_chrome_bundle_module_pak_assets" ]
     } else if (_is_bundle) {
-      deps += [ "//chrome/android:chrome_bundle_module_pak_assets" ]
+      asset_deps += [ "//chrome/android:chrome_bundle_module_pak_assets" ]
     } else if (_is_monochrome) {
-      deps += [ "//chrome/android:monochrome_apk_pak_assets" ]
+      asset_deps += [ "//chrome/android:monochrome_apk_pak_assets" ]
     } else {
       assert(!_is_trichrome)
-      deps += [ "//chrome/android:chrome_apk_pak_assets" ]
+      asset_deps += [ "//chrome/android:chrome_apk_pak_assets" ]
+    }
+
+    if (_is_trichrome) {
+      # Only the .build_config.json is used from this target, and it's fine if
+      # it contains more assets than we need (always use the 64_32 variant).
+      # https://crbug.com/357131361
+      suffix_apk_assets_used_by = system_webview_apk_target
     }
 
     if (defined(invoker.add_upstream_only_deps) &&
@@ -467,16 +495,11 @@ template("chrome_common_apk_or_module_tmpl") {
       } else if (!_is_trichrome) {
         deps += [
           "//chrome/android:chrome_public_apk_base_module_resources",
-          "//chrome/android:chrome_public_non_pak_assets",
           "//components/browser_ui/styles/android:chrome_public_apk_resources",
         ]
+        asset_deps += [ "//chrome/android:chrome_public_non_pak_assets" ]
       }
       if (_is_bundle) {
-        deps += [
-          # deps in delegate_public_impl_java are put into the Chrome module, but the language deps
-          # are needed by the base module.
-          "//components/language/android:ulp_delegate_public_java",
-        ]
         if (_is_monochrome) {
           # WebView needs these in the base module.
           deps += [
@@ -498,11 +521,8 @@ template("chrome_common_apk_or_module_tmpl") {
     # androidx middleware.
     # See //third_party/android_sdk/window_extensions/README.md
     assert_no_deps = [
-      "//third_party/androidx:androidx_window_extensions_core_core_java",
-      "//third_party/androidx:androidx_window_sidecar_sidecar_java",
-      "//third_party/androidx:androidx_window_window_java_java",
-      "//third_party/android_deps:org_jetbrains_kotlinx_atomicfu_jvm_java",
       "//third_party/android_deps:org_jetbrains_kotlin_kotlin_parcelize_runtime",
+      "//third_party/androidx:androidx_window_window_java_java",
     ]
     if (defined(invoker.assert_no_deps)) {
       assert_no_deps += invoker.assert_no_deps
@@ -517,11 +537,12 @@ template("chrome_common_apk_or_module_tmpl") {
         (target_cpu == "arm" ||
          (target_cpu == "arm64" && !_is_64_bit_browser))) {
       if (_is_test) {
-        deps += [ "//chrome/android:libchromefortest_unwind_table_assets" ]
+        asset_deps +=
+            [ "//chrome/android:libchromefortest_unwind_table_assets" ]
       } else if (_is_monochrome || _is_trichrome) {
-        deps += [ "//chrome/android:libmonochrome_unwind_table_assets" ]
+        asset_deps += [ "//chrome/android:libmonochrome_unwind_table_assets" ]
       } else {
-        deps += [ "//chrome/android:libchrome_unwind_table_assets" ]
+        asset_deps += [ "//chrome/android:libchrome_unwind_table_assets" ]
       }
     }
 
@@ -535,6 +556,12 @@ template("chrome_common_apk_or_module_tmpl") {
     # lint.
     if (!disable_android_lint) {
       data_deps += [ "//chrome/android:android_lint" ]
+    }
+
+    # Official builds need the dump_syms binary for symbolizing. This is a small
+    # binary necessary for debugging official builds. Ensure it is built.
+    if (is_official_build) {
+      data_deps += [ "//third_party/breakpad:dump_syms" ]
     }
 
     shared_libraries = []
@@ -683,19 +710,6 @@ template("chrome_common_apk_or_module_tmpl") {
       }
     }
 
-    if (build_with_internal_optimization_guide) {
-      if (android_64bit_target_cpu && !_is_64_bit_browser) {
-        _secondary_optimization_guide = "//components/optimization_guide/internal:optimization_guide_internal($android_secondary_abi_toolchain)"
-        deps += [ _secondary_optimization_guide ]
-        secondary_abi_loadable_modules +=
-            [ "$_secondary_out_dir/liboptimization_guide_internal.so" ]
-      } else {
-        deps += [ "//components/optimization_guide/internal:optimization_guide_internal" ]
-        loadable_modules +=
-            [ "$root_out_dir/liboptimization_guide_internal.so" ]
-      }
-    }
-
     if (_is_trichrome) {
       if (android_64bit_target_cpu && !_is_64_bit_browser) {
         static_library_provider_use_secondary_abi = true
@@ -712,19 +726,9 @@ template("chrome_common_apk_or_module_tmpl") {
       if (_include_secondary_abi && secondary_abi_loadable_modules == []) {
         secondary_native_lib_placeholders = [ "libplaceholder.so" ]
       }
-
-      # http://crbug.com/1042107.
-      if (is_component_build) {
-        if (_is_64_bit_browser) {
-          main_component_library = "libmonochrome_64.cr.so"
-        } else {
-          main_component_library = "libmonochrome.cr.so"
-        }
-      }
     }
 
     if (_is_test) {
-      bundles_supported = true
       deps += [ "//third_party/androidx:androidx_test_runner_java" ]
 
       # For EmbeddedTestServer.

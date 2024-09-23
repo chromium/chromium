@@ -1932,6 +1932,7 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
   }
 
   /** Calls invoke and throws a RuntimeException if it fails. */
+  @CanIgnoreReturnValue
   private static Object invokeOrDie(
       final Method method, final Object object, final Object... params) {
     try {
@@ -2212,7 +2213,8 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
       }
 
       public void clear(final Builder builder) {
-        invokeOrDie(clearMethod, builder);
+        // TODO(b/230609037): remove the unused variable
+        Object unused = invokeOrDie(clearMethod, builder);
       }
     }
 
@@ -2295,7 +2297,8 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
 
         @Override
         public void set(final GeneratedMessageV3.Builder<?> builder, final Object value) {
-          invokeOrDie(setMethod, builder, value);
+          // TODO(b/230609037): remove the unused variable
+          Object unused = invokeOrDie(setMethod, builder, value);
         }
 
         @Override
@@ -2310,7 +2313,8 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
 
         @Override
         public void clear(final GeneratedMessageV3.Builder<?> builder) {
-          invokeOrDie(clearMethod, builder);
+          // TODO(b/230609037): remove the unused variable
+          Object unused = invokeOrDie(clearMethod, builder);
         }
       }
 
@@ -2526,13 +2530,15 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
         @Override
         public void setRepeated(
             final GeneratedMessageV3.Builder<?> builder, final int index, final Object value) {
-          invokeOrDie(setRepeatedMethod, builder, index, value);
+          // TODO(b/230609037): remove the unused variable
+          Object unused = invokeOrDie(setRepeatedMethod, builder, index, value);
         }
 
         @Override
         public void addRepeated(
             final GeneratedMessageV3.Builder<?> builder, final Object value) {
-          invokeOrDie(addRepeatedMethod, builder, value);
+          // TODO(b/230609037): remove the unused variable
+          Object unused = invokeOrDie(addRepeatedMethod, builder, value);
         }
 
         @Override
@@ -2547,7 +2553,8 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
 
         @Override
         public void clear(final GeneratedMessageV3.Builder<?> builder) {
-          invokeOrDie(clearMethod, builder);
+          // TODO(b/230609037): remove the unused variable
+          Object unused = invokeOrDie(clearMethod, builder);
         }
       }
 
@@ -2870,8 +2877,9 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
       @Override
       public void set(final Builder builder, final Object value) {
         if (supportUnknownEnumValue) {
-          invokeOrDie(setValueMethod, builder,
-              ((EnumValueDescriptor) value).getNumber());
+          // TODO(b/230609037): remove the unused variable
+          Object unused =
+              invokeOrDie(setValueMethod, builder, ((EnumValueDescriptor) value).getNumber());
           return;
         }
         super.set(builder, invokeOrDie(valueOfMethod, null, value));
@@ -2957,8 +2965,13 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
       @Override
       public void setRepeated(final Builder builder, final int index, final Object value) {
         if (supportUnknownEnumValue) {
-          invokeOrDie(setRepeatedValueMethod, builder, index,
-              ((EnumValueDescriptor) value).getNumber());
+          // TODO(b/230609037): remove the unused variable
+          Object unused =
+              invokeOrDie(
+                  setRepeatedValueMethod,
+                  builder,
+                  index,
+                  ((EnumValueDescriptor) value).getNumber());
           return;
         }
         super.setRepeated(builder, index, invokeOrDie(valueOfMethod, null, value));
@@ -2966,8 +2979,10 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
       @Override
       public void addRepeated(final Builder builder, final Object value) {
         if (supportUnknownEnumValue) {
-          invokeOrDie(addRepeatedValueMethod, builder,
-              ((EnumValueDescriptor) value).getNumber());
+          // TODO(b/230609037): remove the unused variable
+          Object unused =
+              invokeOrDie(
+                  addRepeatedValueMethod, builder, ((EnumValueDescriptor) value).getNumber());
           return;
         }
         super.addRepeated(builder, invokeOrDie(valueOfMethod, null, value));
@@ -3021,7 +3036,8 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
       @Override
       public void set(GeneratedMessageV3.Builder builder, Object value) {
         if (value instanceof ByteString) {
-          invokeOrDie(setBytesMethodBuilder, builder, value);
+          // TODO(b/230609037): remove the unused variable
+          Object unused = invokeOrDie(setBytesMethodBuilder, builder, value);
         } else {
           super.set(builder, value);
         }

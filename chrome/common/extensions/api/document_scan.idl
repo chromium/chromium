@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Use the <code>chrome.documentScan</code> API to discover and retrieve
-// images from attached paper document scanners.
+// images from attached document scanners.
 [platforms=("chromeos", "lacros"),
 implemented_in="chrome/browser/extensions/api/document_scan/document_scan_api.h"]
 namespace documentScan {
@@ -11,28 +11,25 @@ namespace documentScan {
     // The MIME types that are accepted by the caller.
     DOMString[]? mimeTypes;
 
-    // The number of scanned images allowed (defaults to 1).
+    // The number of scanned images allowed. The default is 1.
     long? maxImages;
   };
 
   dictionary ScanResults {
-    // The data image URLs in a form that can be passed as the "src" value to
-    // an image tag.
+    // An array of data image URLs in a form that can be passed as the "src"
+    // value to an image tag.
     DOMString[] dataUrls;
 
-    // The MIME type of <code>dataUrls</code>.
+    // The MIME type of the <code>dataUrls</code>.
     DOMString mimeType;
   };
 
-  // OperationResult is an enum that indicates the result of each operation
-  // performed by the backend.  It contains the same causes as SANE_Status plus
-  // additional statuses that come from the IPC layers and image conversion
-  // stages.
-  [nodoc] enum OperationResult {
+  // An enum that indicates the result of each operation.
+  enum OperationResult {
     // An unknown or generic failure occurred.
     UNKNOWN,
 
-    // Operation succeeded.
+    // The operation succeeded.
     SUCCESS,
 
     // The operation is not supported.
@@ -44,10 +41,10 @@ namespace documentScan {
     // The device is busy.
     DEVICE_BUSY,
 
-    // Data or argument is invalid.
+    // Either the data or an argument passed to the method is not valid.
     INVALID,
 
-    // Value is the wrong type for the underlying option.
+    // The supplied value is the wrong data type for the underlying option.
     WRONG_TYPE,
 
     // No more data is available.
@@ -68,152 +65,163 @@ namespace documentScan {
     // The device requires authentication.
     ACCESS_DENIED,
 
-    // Not enough memory was available to complete the operation.
+    // Not enough memory is available on the Chromebook to complete the
+    // operation.
     NO_MEMORY,
 
-    // The device was not reachable.
+    // The device is not reachable.
     UNREACHABLE,
 
-    // The device was disconnected.
+    // The device is disconnected.
     MISSING,
 
-    // An internal error occurred.
+    // An error has occurred somewhere other than the calling application.
     INTERNAL_ERROR
   };
 
-  // How the scanner is connected to the computer.
-  [nodoc] enum ConnectionType {
+  // Indicates how the scanner is connected to the computer.
+  enum ConnectionType {
     UNSPECIFIED,
     USB,
     NETWORK
   };
 
-  // ScannerInfo contains general information about a scanner device.  It is
-  // intended for filtering and constructing user-facing information, not for
-  // configuring a scan.
-  [nodoc] dictionary ScannerInfo {
-    // For connecting with <code>openScanner</code>.
+  // Contains general information about a scanner. It is
+  // intended for filtering and constructing user-facing information. to
+  // configure a scan, use $(ref:StartScanOptions).
+  dictionary ScannerInfo {
+    // The ID of a specific scanner.
     DOMString scannerId;
 
-    // Printable name for displaying in the UI.
+    // A human-readable name for the scanner to display in the UI.
     DOMString name;
 
-    // Scanner manufacturer.
+    // The scanner manufacturer.
     DOMString manufacturer;
 
-    // Scanner model if available, or a generic description.
+    // The scanner model if it is available, or a generic description.
     DOMString model;
 
     // For matching against other <code>ScannerInfo</code> entries that point
     // to the same physical device.
     DOMString deviceUuid;
 
-    // How the scanner is connected to the computer.
+    // Indicates how the scanner is connected to the computer.
     ConnectionType connectionType;
 
     // If true, the scanner connection's transport cannot be intercepted by a
     // passive listener, such as TLS or USB.
     boolean secure;
 
-    // MIME types that can be requested for returned scans.
+    // An array of MIME types that can be requested for returned scans.
     DOMString[] imageFormats;
 
-    // A general human-readable description of the protocol/backend used to
-    // access the scanner, such as Mopria, WSD, or epsonds.  This is primarily
+    // A human-readable description of the protocol or driver used to
+    // access the scanner, such as Mopria, WSD, or epsonds. This is primarily
     // useful for allowing a user to choose between protocols if a device
     // supports multiple protocols.
     DOMString protocolType;
   };
 
-  // The type of an option.  This is the same set of types as SANE_Value_Type.
-  [nodoc] enum OptionType {
-    // Unknown option type.  <code>value</code> will be unset.
+  // The data type of an option.
+  enum OptionType {
+    // The option's data type is unknown. The <code>value</code> property
+    // will be unset.
     UNKNOWN,
 
-    // true/false only.  <code>value</code> will be a boolean.
+    // The <code>value</code> property will be one of <code>true</code or
+    // <code>false</code>.
     BOOL,
 
-    // Signed 32-bit integer.  <code>value</code> will be long or long[],
-    // depending on whether the option takes more than one value.
+    // A signed 32-bit integer. The <code>value</code> property will be long or
+    // long[], depending on whether the option takes more than one value.
     INT,
 
-    // Double in the range -32768-32767.9999 with a resolution of 1/65535.
-    // <code>value</code> will be double or double[] depending on whether the
-    // option takes more than one value.
+    // A double in the range -32768-32767.9999 with a resolution of 1/65535.
+    // The <code>value</code> property will be double or double[] depending
+    // on whether the option takes more than one value. Double values that
+    // can't be exactly represented will be rounded to the available range
+    // and precision.
     FIXED,
 
-    // A sequence of any bytes except NUL ('\0').  <code>value</code> will be a
-    // DOMString.
+    // A sequence of any bytes except NUL ('\0'). The <code>value</code>
+    // property will be a DOMString.
     STRING,
 
-    // Hardware button or toggle.  No value.
+    // An option of this type has no value. Instead, setting an option of
+    // this type causes an option-specific side effect in the scanner
+    // driver. For example, a button-typed option could be used by a
+    // scanner driver to provide a means to select default values or to
+    // tell an automatic document feeder to advance to the next sheet of
+    // paper.
     BUTTON,
 
-    // Grouping option.  No value.  This is included for compatibility, but
-    // will not normally be returned in <code>ScannerOption</code> values.  Use
+    // Grouping option. No value. This is included for compatibility, but
+    // will not normally be returned in <code>ScannerOption</code> values. Use
     // <code>getOptionGroups()</code> to retrieve the list of groups with their
     // member options.
     GROUP
   };
 
-  // The unit of measurement for an option.  This is the same set of units as
-  // SANE_Unit.
-  [nodoc] enum OptionUnit {
-    // Value is a unitless number, e.g. threshold.
+  // Indicates the data type for $(ref:ScannerOption.unit).
+  enum OptionUnit {
+    // The value is a unitless number. For example, it can be a threshold.
     UNITLESS,
 
-    // Value is a number of pixels, e.g., scan dimensions.
+    // The value is a number of pixels, for example, scan dimensions.
     PIXEL,
 
-    // Value is the number of bits, e.g., color depth.
+    // The value is the number of bits, for example, color depth.
     BIT,
 
-    // Value is measured in millimeters, e.g., scan dimensions.
+    // The value is measured in millimeters, for example, scan dimensions.
     MM,
 
-    // Value is measured in dots per inch, e.g., resolution.
+    // The value is measured in dots per inch, for example, resolution.
     DPI,
 
-    // Value is a percent, e.g., brightness.
+    // The value is a percent, for example, brightness.
     PERCENT,
 
-    // Value is measured in microseconds, e.g., exposure time.
+    // The value is measured in microseconds, for example, exposure time.
     MICROSECOND
   };
 
-  // The type of constraint represented by an OptionConstraint.
-  [nodoc] enum ConstraintType {
-    // Constraint represents a range of <code>OptionType.INT</code> values.
-    // <code>min</code>, <code>max</code>, and <code>quant</code> will be
-    // <code>long</code>, and <code>list</code> will be unset.
+  // The data type of constraint represented by an $(ref:OptionConstraint).
+  enum ConstraintType {
+    // The constraint on a range of <code>OptionType.INT</code> values.
+    // The <code>min</code>, <code>max</code>, and <code>quant</code> properties
+    // of <code>OptionConstraint</code> will be <code>long</code>, and its
+    // <code>list</code> propety will be unset.
     INT_RANGE,
 
-    // Constraint represents a range of <code>OptionType.FIXED</code> values.
-    // <code>min</code>, <code>max</code>, and <code>quant</code> will be
-    // <code>double</code>, and <code>list</code> will be unset.
+    // The constraint on a range of <code>OptionType.FIXED</code> values.
+    // The <code>min</code>, <code>max</code>, and <code>quant</code> properties
+    // of <code>OptionConstraint</code> will be <code>double</code>, and its
+    // <code>list</code> property will be unset.
     FIXED_RANGE,
 
-    // Constraint represents a specific list of <code>OptionType.INT</code>
-    // values.  <code>list</code> will contain <code>long</code> values, and
-    // the other fields will be unset.
+    // The constraint on a specific list of <code>OptionType.INT</code>
+    // values. The <code>OptionConstraint.list</code> property will contain
+    // <code>long</code> values, and the other properties will be unset.
     INT_LIST,
 
-    // Constraint represents a specific list of <code>OptionType.FIXED</code>
-    // values.  <code>list</code> will contain <code>double</code> values, and
-    // the other fields will be unset.
+    // The constraint on a specific list of <code>OptionType.FIXED</code>
+    // values. The <code>OptionConstraint.list</code> property will contain
+    // <code>double</code> values, and the other properties will be unset.
     FIXED_LIST,
 
-    // Constraint represents a specific list of <code>OptionType.STRING</code>
-    // values.  <code>list</code> will contain <code>DOMString</code> values,
-    // and the other fields will be unset.
+    // The constraint on a specific list of <code>OptionType.STRING</code>
+    // values. The <code>OptionConstraint.list</code> property will contain
+    // <code>DOMString</code> values, and the other properties will be unset.
     STRING_LIST
   };
 
-  // <code>OptionConstraint</code> represents the same set of value constraints
-  // as SANE_Constraint_Type, with the exception that an unconstrained value is
-  // represented by a lack of constraint rather than a special
-  // SANE_CONSTRAINT_NONE value.
-  [nodoc] dictionary OptionConstraint {
+  // The specific values for the $(ref:ConstraintType) structure.
+  // An unconstrained value is represented by a lack of constraints;
+  // there is no separate <code>ConstraintType</code> value to indicate an
+  // unconstrained value.
+  dictionary OptionConstraint {
       ConstraintType type;
       (long or double)? min;
       (long or double)? max;
@@ -222,70 +230,72 @@ namespace documentScan {
   };
 
   // How an option can be changed.
-  [nodoc] enum Configurability {
-      // Option is read-only and cannot be changed.
+  enum Configurability {
+      // The option is read-only.
       NOT_CONFIGURABLE,
 
-      // Option can be set in software.
+      // The option can be set in software.
       SOFTWARE_CONFIGURABLE,
 
-      // Option can be set by the user toggling/pushing a hardware button.
+      // The option can be set by the user toggling or pushing a button on
+      // the scanner.
       HARDWARE_CONFIGURABLE
   };
 
-  // A self-describing configurable scanner option and current value, in the
-  // same style as SANE's SANE_Option_Descriptor and sane_control_option().
-  [nodoc] dictionary ScannerOption {
-    // Option name using lowercase a-z, numbers, and dashes.
+  // A self-describing configurable scanner option and its current value.
+  dictionary ScannerOption {
+    // The option name using lowercase ASCII letters, numbers, and dashes.
+    // Diacritics are not allowed.
     DOMString name;
 
-    // Printable one-line title.
+    // A printable one-line title.
     DOMString title;
 
-    // Longer description of the option.
+    // A longer description of the option.
     DOMString description;
 
-    // The type that <code>value</code> will contain and that is needed for
-    // setting this option.
+    // The data type contained in the <code>value</code> property, which
+    // is needed for setting this option.
     OptionType type;
 
-    // Unit of measurement for this option.
+    // The unit of measurement for this option.
     OptionUnit unit;
 
-    // Current value of the option if relevant. Note the type passed here must
-    // match the type specified in <code>type</code>.
+    // The current value of the option, if relevant. Note that the data
+    // type of this property must match the data type specified in
+    // <code>type</code>.
     (boolean or double or double[] or long or long[] or DOMString)? value;
 
-    // Constraint on possible values.
+    // Defines $(ref:OptionConstraint) on the current scanner option.
     OptionConstraint? constraint;
 
-    // Can be detected from software.
+    // Indicates that this option can be detected from software.
     boolean isDetectable;
 
-    // Whether/how the option can be changed.
+    // Indicates whether and how the option can be changed.
     Configurability configurability;
 
-    // Can be automatically set by the backend.
+    // Can be automatically set by the scanner driver.
     boolean isAutoSettable;
 
-    // Emulated by the backend if true.
+    // Emulated by the scanner driver if true.
     boolean isEmulated;
 
-    // Option is active and can be set/retrieved.  If false, the
-    // <code>value</code> field will not be set.
+    // Indicates the option is active and can be set or retrieved. If false,
+    // the <code>value</code> property will not be set.
     boolean isActive;
 
-    // UI should not display this option by default.
+    // Indicates that the UI should not display this option by default.
     boolean isAdvanced;
 
-    // Option is used for internal configuration and should never be displayed
-    // in the UI.
+    // Indicates that the option is used for internal configuration and
+    // should never be displayed in the UI.
     boolean isInternal;
   };
 
-  // A set of criteria passed to <code>getScannerList()</code>.  Only devices
+  // A set of criteria passed to <code>getScannerList()</code>. Only devices
   // that match all of the criteria will be returned.
-  [nodoc] dictionary DeviceFilter {
+  dictionary DeviceFilter {
     // Only return scanners that are directly attached to the computer.
     boolean? local;
 
@@ -293,308 +303,352 @@ namespace documentScan {
     boolean? secure;
   };
 
-  // OptionGroup is a group containing a list of option names.  The groups and
-  // their contents are determined by the backend and do not have any defined
-  // semantics or consistent membership.  This structure is primarily intended
-  // for UI layout assistance; it does not affect the individual option
+  // Contains a list of option names. The groups and their contents are
+  // determined by the scanner driver and do not have any defined semantics
+  // or consistent membership. This structure is primarily intended
+  // for UI layout assistance; it does not affect individual option
   // behaviors.
-  [nodoc] dictionary OptionGroup {
-    // Printable title, e.g. "Geometry options".
+  dictionary OptionGroup {
+    // Provides a printable title, for example "Geometry options".
     DOMString title;
 
-    // Names of contained options, in backend-provided order.
+    // An array of option names in driver-provided order.
     DOMString[] members;
   };
 
-  // The response from <code>getScannerList()</code>.
-  [nodoc] dictionary GetScannerListResponse {
-    // The backend's enumeration result.  Note that partial results could be
+  // The response from $(ref:getScannerList).
+  dictionary GetScannerListResponse {
+    // The enumeration result. Note that partial results could be
     // returned even if this indicates an error.
     OperationResult result;
 
     // A possibly-empty list of scanners that match the provided
-    // <code>DeviceFilter</code>.
+    // $(ref:DeviceFilter).
     ScannerInfo[] scanners;
   };
 
-  // The response from <code>openScanner()</code>.
-  [nodoc] dictionary OpenScannerResponse {
-    // Same scanner ID passed to <code>openScanner()</code>.
+  // The response from $(ref:openScanner).
+  dictionary OpenScannerResponse {
+    // The scanner ID passed to <code>openScanner()</code>.
     DOMString scannerId;
 
-    // Backend result of opening the scanner.
+    // The result of opening the scanner. If the value of this is
+    // <code>SUCCESS</code>, the <code>scannerHandle</code> and
+    // <code>options</code> properties will be populated.
     OperationResult result;
 
-    // If <code>result</code> is <code>OperationResult.SUCCESS</code>, a handle
-    // to the scanner that can be used for further operations.
+    // If <code>result</code> is <code>SUCCESS</code>, a
+    // handle to the scanner that can be used for further operations.
     DOMString? scannerHandle;
 
-    // If <code>result</code> is <code>OperationResult.SUCCESS</code>, a
-    // key-value mapping from option names to <code>ScannerOption</code>.
+    // If <code>result</code> is <code>SUCCESS</code>,
+    // provides a key-value mapping where the key is a device-specific
+    // option and the value is an instance of $(ref:ScannerOption).
     object? options;
   };
 
-  // The response from <code>getOptionGroups()</code>.
-  [nodoc] dictionary GetOptionGroupsResponse {
-    // Same scanner handle passed to <code>getOptionGroups()</code>.
+  // The response from $(ref:getOptionGroups).
+  dictionary GetOptionGroupsResponse {
+    // The same scanner handle as was passed to $(ref:getOptionGroups).
     DOMString scannerHandle;
 
-    // The backend's result of getting the option groups.
+    // The result of getting the option groups. If the value of this is
+    // <code>SUCCESS</code>, the <code>groups</code> property will be
+    // populated.
     OperationResult result;
 
-    // If <code>result</code> is <code>OperationResult.SUCCESS</code>, a list of
-    // option groups in the order supplied by the backend.
+    // If <code>result</code> is <code>SUCCESS</code>, provides a
+    // list of option groups in the order supplied by the scanner driver.
     OptionGroup[]? groups;
   };
 
   // The response from <code>closeScanner()</code>.
-  [nodoc] dictionary CloseScannerResponse {
-    // Same scanner handle passed to <code>closeScanner()</code>.
+  dictionary CloseScannerResponse {
+    // The same scanner handle as was passed to $(ref:closeScanner).
     DOMString scannerHandle;
 
-    // Backend result of closing the scanner.  Even if this value is not
-    // <code>OperationResult.SUCCESS</code>, the handle will be invalid and
+    // The result of closing the scanner. Even if this value is not
+    // <code>SUCCESS</code>, the handle will be invalid and
     // should not be used for any further operations.
     OperationResult result;
   };
 
-  // A subset of <code>ScannerOption</code> that contains enough information to
-  // set an option to a new value.
-  [nodoc] dictionary OptionSetting {
-    // Name of the option to set.
+  // Passed to $(ref:setOptions) to set an option to $(ref:ScannerOption) to
+  // a new value.
+  dictionary OptionSetting {
+    // Indicates the name of the option to set.
     DOMString name;
 
-    // Type of the option.  The requested type must match the real type of the
-    // underlying option.
+    // Indicates the data type of the option. The requested data type must
+    // match the real data type of the underlying option.
     OptionType type;
 
-    // Value to set.  Leave unset to request automatic setting for options that
-    // have <code>autoSettable</code> enabled.  The type supplied for
-    // <code>value</code> must match <code>type</code>.
+    // Indicates the value to set. Leave unset to request automatic setting for
+    // options that have <code>autoSettable</code> enabled. The data type
+    // supplied for <code>value</code> must match <code>type</code>.
     (boolean or double or double[] or long or long[] or DOMString)? value;
   };
 
   // The result of setting an individual option.  Each individual option
-  // supplied to <code>setOptions()</code> produces a separate result on the
-  // backend due to things like rounding and constraints.
-  [nodoc] dictionary SetOptionResult {
-    // Name of the option that was set.
+  // supplied to <code>setOptions()</code> produces a separate result
+  // due to things like rounding and constraints.
+  dictionary SetOptionResult {
+    // Indicates the name of the option that was set.
     DOMString name;
 
-    // Backend result of setting the option.
+    // Indicates the result of setting the option.
     OperationResult result;
   };
 
-  // The response from a call to <code>setOptions()</code>.
-  [nodoc] dictionary SetOptionsResponse {
-    // The same scanner handle passed to <code>setOptions()</code>.
+  // The response from a call to $(ref:setOptions).
+  dictionary SetOptionsResponse {
+    // Provides the scanner handle passed to <code>setOptions()</code>.
     DOMString scannerHandle;
 
-    // One result per passed-in <code>OptionSetting</code>.
+    // An array of results, one each for every passed-in
+    // <code>OptionSetting</code>.
     SetOptionResult[] results;
 
-    // Updated key-value mapping from option names to
-    // <code>ScannerOption</code> containing the new configuration after
-    // attempting to set all supplied options.  This has the same structure as
-    // the <code>options</code> field in <code>OpenScannerResponse</code>.
+    // An updated key-value mapping from option names to
+    // $(ref:ScannerOption) values containing the new configuration after
+    // attempting to set all supplied options. This has the same structure as
+    // the <code>options</code> property in $(ref:OpenScannerResponse).
     //
-    // This field will be set even if some options were not set successfully,
-    // but will be unset if retrieving the updated configuration fails (e.g.,
-    // if the scanner is disconnected in the middle).
+    // This property will be set even if some options were not set successfully,
+    // but will be unset if retrieving the updated configuration fails (for
+    // example, if the scanner is disconnected in the middle of scanning).
     object? options;
   };
 
-  // Used to specify options for <code>startScan()</code>.
-  [nodoc] dictionary StartScanOptions {
-    // MIME type to return scanned data in.
+  // Specifies options for $(ref:startScan).
+  dictionary StartScanOptions {
+    // Specifies the MIME type to return scanned data in.
     DOMString format;
+
+    // If a non-zero value is specified, limits the maximum scanned bytes
+    // returned in a single $(ref:readScanData) response to that value.  The
+    // smallest allowed value is 32768 (32 KB).  If this property is not
+    // specified, the size of a returned chunk may be as large as the entire
+    // scanned image.
+    long? maxReadSize;
   };
 
   // The response from <code>startScan()</code>.
-  [nodoc] dictionary StartScanResponse {
-    // The same scanner handle that was passed to <code>startScan()</code>.
+  dictionary StartScanResponse {
+    // Provides the same scanner handle that was passed to
+    // <code>startScan()</code>.
     DOMString scannerHandle;
 
-    // The backend's start scan result.
+    // The result of starting a scan. If the value of this is
+    // <code>SUCCESS</code>, the <code>job</code> property will be populated.
     OperationResult result;
 
-    // If <code>result</code> is <code>OperationResult.SUCCESS</code>, a handle
-    // that can be used to read scan data or cancel the job.
+    // If <code>result</code> is <code>SUCCESS</code>, provides a
+    // handle that can be used to read scan data or cancel the job.
     DOMString? job;
   };
 
   // The response from <code>cancelScan()</code>.
-  [nodoc] dictionary CancelScanResponse {
-    // The same job handle that was passed to <code>cancelScan()</code>.
+  dictionary CancelScanResponse {
+    // Provides the same job handle that was passed to
+    // <code>cancelScan()</code>.
     DOMString job;
 
-    // The backend's cancel scan result.
+    // The backend's cancel scan result. If the result is
+    // <code>OperationResult.SUCCESS</code> or
+    // <code>OperationResult.CANCELLED</code>, the scan has been cancelled and
+    // the scanner is ready to start a new scan.  If the result is
+    // <code>OperationResult.DEVICE_BUSY </code>, the scanner is still
+    // processing the requested cancellation; the caller should wait a short
+    // time and try the request again. Other result values indicate a permanent
+    // error that should not be retried.
     OperationResult result;
   };
 
-  // The response from <code>readScanData()</code>.
-  [nodoc] dictionary ReadScanDataResponse {
-    // Same job handle passed to <code>readScanData()</code>.
+  // The response from $(ref:readScanData).
+  dictionary ReadScanDataResponse {
+    // Provides the job handle passed to <code>readScanData()</code>.
     DOMString job;
 
-    // The backend result of reading data.  If this is
-    // <code>OperationResult.SUCCESS</code>, <code>data</code> will contain the
-    // next (possibly zero-length) chunk of image data that was ready for
-    // reading.  If this is <code>OperationResult.EOF</code>, <code>data</code>
-    // will contain the final chunk of image data.
+    // The result of reading data. If its value is
+    // <code>SUCCESS</code>, then <code>data</code> contains the
+    // <em>next</em> (possibly zero-length) chunk of image data that is ready
+    // for reading. If its value is <code>EOF</code>, the <code>data</code>
+    // contains the <em>last</em> chunk of image data.
     OperationResult result;
 
-    // If result is <code>OperationResult.SUCCESS</code>, the next chunk of
+    // If <code>result</code> is <code>SUCCESS</code>, contains
+    // the <em>next</em> chunk of scanned image data. If <code>result</code> is
+    // <code>EOF</code>, contains the <em>last</em> chunk of
     // scanned image data.
     ArrayBuffer? data;
 
-    // If result is <code>OperationResult.SUCCESS</code>, an estimate of how
-    // much of the total scan data has been delivered so far, in the range
-    // 0-100.
+    // If <code>result</code> is <code>SUCCESS</code>, an estimate of
+    // how much of the total scan data has been delivered so far, in the range
+    // 0 to 100.
     long? estimatedCompletion;
   };
 
-  // Callback from the <code>scan</code> method.
-  // |result| The results from the scan, if successful.
-  // Otherwise will return null and set runtime.lastError.
+  // Callback from the $(ref:scan) method.
+  // |result| Provides the results from the scan, if successful.
+  // Otherwise, this value will be null and $(ref:runtime.lastError)
+  // will be set.
   callback ScanCallback = void (ScanResults result);
 
-  // Callback from the <code>getScannerList</code> method.
+  // Callback from the $(ref:getScannerList) method.
   // |response| The response from enumeration, if the call was valid.
-  // Otherwise will return null and set runtime.lastError.
-  [nodoc] callback GetScannerListCallback = void (GetScannerListResponse response);
+  // Otherwise, this value will be null and $(ref:runtime.lastError)
+  // will be set.
+  callback GetScannerListCallback = void (GetScannerListResponse response);
 
-  // Callback from the <code>openScanner</code> method.
+  // Callback from the $(ref:openScanner) method.
   // |response| The response from opening the scanner, if the call was valid.
-  // Otherwise will return null and set runtime.lastError.
-  [nodoc] callback OpenScannerCallback = void (OpenScannerResponse response);
+  // Otherwise, this value will be null and $(ref:runtime.lastError)
+  // will be set.
+  callback OpenScannerCallback = void (OpenScannerResponse response);
 
-  // Callback from the <code>getOptionGroups</code> method.
+  // Callback from the $(ref:getOptionGroups) method.
   // |response| The response from getting the option groups, if the call was
-  // valid.  Otherwise will return null and set runtime.lastError.
-  [nodoc] callback GetOptionGroupsCallback =
+  // valid. Otherwise, this value will be null and $(ref:runtime.lastError)
+  // will be set.
+  callback GetOptionGroupsCallback =
       void (GetOptionGroupsResponse response);
 
-  // Callback from the <code>closeScanner</code> method.
+  // Callback from the $(ref:closeScanner) method.
   // |response| The response from closing the scanner, if the call was valid.
-  // Otherwise will return null and set runtime.lastError.
-  [nodoc] callback CloseScannerCallback = void (CloseScannerResponse response);
+  // Otherwise, this value will be null and $(ref:runtime.lastError)
+  // will be set.
+  callback CloseScannerCallback = void (CloseScannerResponse response);
 
-  // Callback from the <code>setOptions</code> method.
+  // Callback from the $(ref:setOptions) method.
   // |response| The response from setting the options, if the call was valid.
-  // Otherwise will return null and set runtime.lastError.
-  [nodoc] callback SetOptionsCallback = void (SetOptionsResponse response);
+  // Otherwise, this value will be null and $(ref:runtime.lastError)
+  // will be set.
+  callback SetOptionsCallback = void (SetOptionsResponse response);
 
-  // Callback from the <code>startScan</code> method.
+  // Callback from the $(ref:startScan) method.
   // |response| The response from starting the scan, if the call was valid.
-  // Otherwise will return null and set runtime.lastError.
-  [nodoc] callback StartScanCallback = void (StartScanResponse response);
+  // Otherwise, this value will be null and $(ref:runtime.lastError)
+  // will be set.
+  callback StartScanCallback = void (StartScanResponse response);
 
-  // Callback from the <code>cancelScan</code> method.
+  // Callback from the $(ref:cancelScan) method.
   // |response| The response from canceling the scan, if the call was valid.
-  // Otherwise will return null and set runtime.lastError.
-  [nodoc] callback CancelScanCallback = void (CancelScanResponse response);
+  // Otherwise, this value will be null and $(ref:runtime.lastError)
+  // will be set.
+  callback CancelScanCallback = void (CancelScanResponse response);
 
-  // Callback from the <code>readScanData</code> method.
+  // Callback from the $(ref:readScanData) method.
   // |response| The response from reading the next chunk of scanned image data,
-  // if the call was valid.  Otherwise will return null and set
-  // runtime.lastError.
-  [nodoc] callback ReadScanDataCallback = void (ReadScanDataResponse response);
+  // if the call was valid. Otherwise, this value will be null and
+  // $(ref:runtime.lastError) will be set.
+  callback ReadScanDataCallback = void (ReadScanDataResponse response);
 
   interface Functions {
-    // Performs a document scan.  On success, the PNG data will be
-    // sent to the callback.
-    // |options| : Object containing scan parameters.
+    // Performs a document scan and returns a Promise that resolves
+    // with a $(ref:ScanResults) object. If a callback is passed to
+    // this function, the returned data is passed to it instead.
+    // |options| : An object containing scan parameters.
     // |callback| : Called with the result and data from the scan.
-    [supportsPromises] static void scan(ScanOptions options,
-                                        ScanCallback callback);
+    static void scan(
+        ScanOptions options,
+        ScanCallback callback);
 
-    // Gets the list of available scanners.  On success, the list will be
-    // sent to the callback.
-    // |filter| : <code>DeviceFilter</code> indicating which types of scanners
+    // Gets the list of available scanners and returns a Promise that
+    // resolves with a $(ref:GetScannerListResponse) object. If a callback
+    // is passed to this function, returned data is passed to it instead.
+    // |filter| : A $(ref:DeviceFilter) indicating which types of scanners
     // should be returned.
     // |callback| : Called with the result and list of scanners.
-    [nodoc, supportsPromises] static void getScannerList(
+    static void getScannerList(
         DeviceFilter filter, GetScannerListCallback callback);
 
-    // Opens a scanner for exclusive access.  On success, the response containing
-    // a scanner handle and configuration will be sent to the callback.
-    // |scannerId| : Scanner id previously returned from <code>getScannerList</code>
-    // indicating which scanner should be opened.
+    // Opens a scanner for exclusive access and returns a Promise that
+    // resolves with an $(ref:OpenScannerResponse) object. If a callback
+    // is passed to this function, returned data is passed to it instead.
+    // |scannerId| : The ID of a scanner to be opened. This value is one
+    // returned from a previous call to $(ref:getScannerList).
     // |callback| : Called with the result.
-    [nodoc, supportsPromises] static void openScanner(
+    static void openScanner(
         DOMString scannerId, OpenScannerCallback callback);
 
-    // Gets the group names and member options from a scanner handle previously
-    // opened by <code>openScanner</code>.
-    // |scannerHandle| : Open scanner handle previously returned from
-    // <code>openScanner</code>.
+    // Gets the group names and member options from a scanner previously
+    // opened by $(ref:openScanner). This method returns a Promise that
+    // resolves with a $(ref:GetOptionGroupsResponse) object. If a callback
+    // is passed to this function, returned data is passed to it instead.
+    // |scannerHandle| : The handle of an open scanner returned from a call
+    // to $(ref:openScanner).
     // |callback| : Called with the result.
-    [nodoc, supportsPromises] static void getOptionGroups(
+    static void getOptionGroups(
         DOMString scannerHandle, GetOptionGroupsCallback callback);
 
-    // Closes a previously opened scanner handle.  A response indicating the
-    // outcome will be sent to the callback.  Even if the response is not a
-    // success, the supplied handle will become invalid and should not be used
-    // for further operations.
-    // |scannerHandle| : Open scanner handle previously returned from
-    // <code>openScanner</code>.
+    // Closes the scanner with the passed in handle and returns a Promise
+    // that resolves with a $(ref:CloseScannerResponse) object. If a callback
+    // is used, the object is passed to it instead. Even if the response is
+    // not a success, the supplied handle becomes invalid and should not be
+    // used for further operations.
+    // |scannerHandle| : Specifies the handle of an open scanner that was
+    // previously returned from a call to $(ref:openScanner).
     // |callback| : Called with the result.
-    [nodoc, supportsPromises] static void closeScanner(
+    static void closeScanner(
         DOMString scannerHandle, CloseScannerCallback callback);
 
-    // Sends the list of new option values in <code>options</code> as a bundle
-    // to be set on <code>scannerHandle</code>.  Each option will be set by the
-    // backend the order specified.  Returns a backend response indicating the
-    // result of each option setting and a new set of final option values after
-    // all options have been updated.
-    // |scannerHandle| : Open scanner handle previously returned from
-    // <code>openScanner</code>.
-    // |options| : A list of <code>OptionSetting</code>s that will be applied to
-    // <code>scannerHandle</code>.
+    // Sets options on the specified scanner and returns a Promise that
+    // resolves with a $(ref:SetOptionsResponse) object containing the
+    // result of trying to set every value in the order of the passed-in
+    // $(ref:OptionSetting) object. If a callback is used, the object is
+    // passed to it instead.
+    // |scannerHandle| : The handle of the scanner to set options on. This
+    // should be a value previously returned from a call to $(ref:openScanner).
+    // |options| : A list of <code>OptionSetting</code> objects to be applied to
+    // the scanner.
     // |callback| : Called with the result.
-    [nodoc, supportsPromises] static void setOptions(
+    static void setOptions(
         DOMString scannerHandle, OptionSetting[] options,
         SetOptionsCallback callback);
 
-    // Starts a scan using a previously opened scanner handle.  A response
-    // indicating the outcome will be sent to the callback.  If successful, the
-    // response will include a job handle that can be used in subsequent calls
+    // Starts a scan on the specified scanner and returns a Promise that
+    // resolves with a $(ref:StartScanResponse). If a callback is used,
+    // the object is passed to it instead. If the call was successful, the
+    // response includes a job handle that can be used in subsequent calls
     // to read scan data or cancel a scan.
-    // |scannerHandle| : Open scanner handle previously returned from
-    // <code>openScanner</code>.
-    // |options| : <code>StartScanOptions</code> indicating what options are to
-    // be used for the scan.  <code>StartScanOptions.format</code> must match
-    // one of the entries returned in the scanner's <code>ScannerInfo</code>.
+    // |scannerHandle| : The handle of an open scanner. This should be a value
+    // previously returned from a call to $(ref:openScanner).
+    // |options| : A $(ref:StartScanOptions) object indicating the options to
+    // be used for the scan. The <code>StartScanOptions.format</code> property
+    // must match one of the entries returned in the scanner's
+    // <code>ScannerInfo</code>.
     // |callback| : Called with the result.
-    [nodoc, supportsPromises] static void startScan(
+    static void startScan(
         DOMString scannerHandle, StartScanOptions options,
         StartScanCallback callback);
 
-    // Cancels a scan that was previously started using <code>startScan</code>.
-    // The response is sent to the callback.
-    // |job| : An active scan job previously returned from
-    // <code>startScan</code>.
+    // Cancels a started scan and returns a Promise that resolves with a
+    // $(ref:CancelScanResponse) object. If a callback is used, the object
+    // is passed to it instead.
+    // |job| : The handle of an active scan job previously returned from a
+    // call to $(ref:startScan).
     // |callback| : Called with the result.
-    [nodoc, supportsPromises] static void cancelScan(
+    static void cancelScan(
         DOMString job, CancelScanCallback callback);
 
-    // Reads the next chunk of available image data from an active job handle.
-    // A response indicating the outcome will be sent to the callback.
+    // Reads the next chunk of available image data from an active job handle,
+    // and returns a Promise that resolves with a $(ref:ReadScanDataResponse)
+    // object. If a callback is used, the object is passed to it instead.
     //
-    // It is valid for a response to have result
-    // <code>OperationResult.SUCCESS</code> with a zero-length
-    // <code>data</code> member.  This means the scanner is still working but
-    // does not yet have additional data ready.  The caller should wait a short
-    // time and try again.
+    // <aside class="note"><b>Note:</b>It is valid for a response result to be
+    // <code>SUCCESS</code> with a zero-length <code>data</code>
+    // member. This means the scanner is still working but does not yet have
+    // additional data ready. The caller should wait a short time and try again.
     //
-    // When the scan job completes, the response will have the result
-    // <code>OperationResult.EOF</code>.  This response may contain a final
-    // non-zero <code>data</code> member.
+    // When the scan job completes, the response will have the result value of
+    // <code>EOF</code>. This response may contain a final
+    // non-zero <code>data</code> member.</aside>
+    //
     // |job| : Active job handle previously returned from
-    // <code>startScan</code>.
+    // $(ref:startScan).
     // |callback| : Called with the result.
-    [nodoc, supportsPromises] static void readScanData(
+    static void readScanData(
         DOMString job, ReadScanDataCallback callback);
   };
 };

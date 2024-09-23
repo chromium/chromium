@@ -160,8 +160,8 @@ class V8DetailedMemoryExecutionContextData {
     canvas_bytes_used_ = canvas_bytes_used;
   }
 
-  // TODO(906991): Remove this once PlzDedicatedWorker ships. Until then
-  // the browser does not know URLs of dedicated workers, so we pass them
+  // TODO(crbug.com/40093136): Remove this once PlzDedicatedWorker ships. Until
+  // then the browser does not know URLs of dedicated workers, so we pass them
   // together with the measurement result and store in ExecutionContext data.
   std::optional<std::string> url() const { return url_; }
 

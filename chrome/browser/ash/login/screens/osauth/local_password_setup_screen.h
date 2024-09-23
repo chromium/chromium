@@ -39,6 +39,14 @@ class LocalPasswordSetupScreen : public BaseOSAuthSetupScreen {
 
   ~LocalPasswordSetupScreen() override;
 
+  void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
+    exit_callback_ = exit_callback;
+  }
+
+  const ScreenExitCallback& get_exit_callback_for_testing() {
+    return exit_callback_;
+  }
+
  private:
   // BaseScreen:
   void ShowImpl() override;

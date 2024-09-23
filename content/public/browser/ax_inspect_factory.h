@@ -13,12 +13,11 @@
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 
-namespace content {
+namespace ui {
+class AXPlatformTreeManager;
+}
 
-// TODO: we shouldn't leak internal data types outside of the content module,
-// event recorders can use native platform APIs and avoid dealing
-// with BrowserAccessibilityManager, see crbug.com/1133330.
-class BrowserAccessibilityManager;
+namespace content {
 
 // Accessibility tree formatters and event recorders factory.
 class CONTENT_EXPORT AXInspectFactory {
@@ -29,12 +28,11 @@ class CONTENT_EXPORT AXInspectFactory {
   // on Linux or NSAccessibility tree on macOS.
   static std::unique_ptr<ui::AXTreeFormatter> CreatePlatformFormatter();
 
-  // Creates the appropriate event recorder for the platform we are currently
-  // running on.
-  static std::unique_ptr<ui::AXEventRecorder> CreatePlatformRecorder(
-      BrowserAccessibilityManager* manager = nullptr,
-      base::ProcessId pid = 0,
-      const ui::AXTreeSelector& selector = {});
+  // Returns the API type of the current platform's default platform formatter.
+  static ui::AXApiType::Type DefaultPlatformFormatterType();
+
+  // Returns the API type of the current platform's default platform recorder.
+  static ui::AXApiType::Type DefaultPlatformRecorderType();
 
   // Creates the internal accessibility tree formatter, AKA the Blink tree
   // formatter, which is used to dump the Blink accessibility tree to a string
@@ -47,7 +45,7 @@ class CONTENT_EXPORT AXInspectFactory {
   // Creates an event recorder of a given API type if supported by platform.
   static std::unique_ptr<ui::AXEventRecorder> CreateRecorder(
       ui::AXApiType::Type,
-      BrowserAccessibilityManager* manager = nullptr,
+      ui::AXPlatformTreeManager* manager = nullptr,
       base::ProcessId pid = 0,
       const ui::AXTreeSelector& selector = {});
 

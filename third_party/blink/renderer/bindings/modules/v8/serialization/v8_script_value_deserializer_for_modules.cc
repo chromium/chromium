@@ -5,11 +5,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_deserializer_for_modules.h"
 
 #include "base/feature_list.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_restriction_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
@@ -45,6 +46,8 @@
 #include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel_attachment.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame.h"
@@ -107,6 +110,8 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
         return nullptr;
       return MakeGarbageCollected<RTCCertificate>(std::move(certificate));
     }
+    case kRTCDataChannel:
+      return ReadRTCDataChannel();
     case kRTCEncodedAudioFrameTag:
       return ReadRTCEncodedAudioFrame();
     case kRTCEncodedVideoFrameTag:
@@ -446,10 +451,42 @@ FileSystemHandle* V8ScriptValueDeserializerForModules::ReadFileSystemHandle(
           execution_context, name, std::move(directory_handle));
     }
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     }
   }
+}
+
+RTCDataChannel* V8ScriptValueDeserializerForModules::ReadRTCDataChannel() {
+  if (!RuntimeEnabledFeatures::TransferableRTCDataChannelEnabled(
+          ExecutionContext::From(GetScriptState()))) {
+    return nullptr;
+  }
+
+  uint32_t index;
+  if (!ReadUint32(&index)) {
+    return nullptr;
+  }
+
+  const auto* attachment =
+      GetSerializedScriptValue()
+          ->GetAttachmentIfExists<RTCDataChannelAttachment>();
+  if (!attachment) {
+    return nullptr;
+  }
+
+  using NativeDataChannelVector =
+      Vector<rtc::scoped_refptr<webrtc::DataChannelInterface>>;
+
+  const NativeDataChannelVector& channels = attachment->DataChannels();
+  if (index >= attachment->size() || !channels[index]) {
+    return nullptr;
+  }
+
+  RTCDataChannel::EnsureThreadWrappersForWorkerThread();
+
+  return MakeGarbageCollected<RTCDataChannel>(
+      ExecutionContext::From(GetScriptState()), std::move(channels[index]));
 }
 
 RTCEncodedAudioFrame*
@@ -593,7 +630,7 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
       break;
     case SerializedTrackImplSubtype::kTrackImplSubtypeCanvasCapture:
     case SerializedTrackImplSubtype::kTrackImplSubtypeGenerator:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     case SerializedTrackImplSubtype::kTrackImplSubtypeBrowserCapture:
       uint32_t read_sub_capture_target_version;
@@ -685,9 +722,6 @@ bool V8ScriptValueDeserializerForModules::ExecutionContextExposesInterface(
           execution_context, interface_tag)) {
     return true;
   }
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kSSVTrailerEnforceExposureAssertion))
-      << "V8ScriptValueDeserializer should already have handled this";
   switch (interface_tag) {
     case kCryptoKeyTag:
       return V8CryptoKey::IsExposed(execution_context);
@@ -708,6 +742,8 @@ bool V8ScriptValueDeserializerForModules::ExecutionContextExposesInterface(
       return V8RTCEncodedAudioFrame::IsExposed(execution_context);
     case kRTCEncodedVideoFrameTag:
       return V8RTCEncodedVideoFrame::IsExposed(execution_context);
+    case kRTCDataChannel:
+      return V8RTCDataChannel::IsExposed(execution_context);
     case kAudioDataTag:
       return V8AudioData::IsExposed(execution_context);
     case kVideoFrameTag:

@@ -38,7 +38,7 @@ constexpr int kParametersAlignment = 16;
 // ****WARNING****: Do not change the field types or ordering of these fields
 // without checking that alignment is correct. The structs may be concurrently
 // accessed by both 32bit and 64bit process in shmem. http://crbug.com/781095.
-struct MEDIA_SHMEM_EXPORT ALIGNAS(kParametersAlignment)
+struct MEDIA_SHMEM_EXPORT alignas(kParametersAlignment)
     AudioInputBufferParameters {
   double volume;
   int64_t capture_time_us;     // base::TimeTicks in microseconds.
@@ -48,7 +48,7 @@ struct MEDIA_SHMEM_EXPORT ALIGNAS(kParametersAlignment)
   uint32_t id;
   bool key_pressed;
 };
-struct MEDIA_SHMEM_EXPORT ALIGNAS(kParametersAlignment)
+struct MEDIA_SHMEM_EXPORT alignas(kParametersAlignment)
     AudioOutputBufferParameters {
   int64_t delay_us;            // base::TimeDelta in microseconds.
   int64_t delay_timestamp_us;  // base::TimeTicks in microseconds.
@@ -90,7 +90,7 @@ class AudioParameters;
 
 // These convenience function safely computes the size required for
 // |shared_memory_count| AudioInputBuffers, with enough memory for AudioBus
-// data, using |paremeters| (or alternatively |channels| and |frames|). The
+// data, using |parameters| (or alternatively |channels| and |frames|). The
 // functions not returning a CheckedNumeric will CHECK on overflow.
 MEDIA_SHMEM_EXPORT base::CheckedNumeric<uint32_t>
 ComputeAudioInputBufferSizeChecked(const AudioParameters& parameters,
@@ -226,34 +226,41 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   };
 
   struct HardwareCapabilities {
-    HardwareCapabilities(int min_frames_per_buffer, int max_frames_per_buffer)
+    HardwareCapabilities(int min_frames_per_buffer,
+                         int max_frames_per_buffer,
+                         int default_frames_per_buffer,
+                         bool require_offload)
         : min_frames_per_buffer(min_frames_per_buffer),
           max_frames_per_buffer(max_frames_per_buffer),
-          bitstream_formats(0),
-          require_encapsulation(false) {}
+          default_frames_per_buffer(default_frames_per_buffer),
+          require_audio_offload(require_offload) {}
+    HardwareCapabilities(int min_frames_per_buffer, int max_frames_per_buffer)
+        : min_frames_per_buffer(min_frames_per_buffer),
+          max_frames_per_buffer(max_frames_per_buffer) {}
     HardwareCapabilities(int bitstream_formats, bool require_encapsulation)
-        : min_frames_per_buffer(0),
-          max_frames_per_buffer(0),
-          bitstream_formats(bitstream_formats),
+        : bitstream_formats(bitstream_formats),
           require_encapsulation(require_encapsulation) {}
-    HardwareCapabilities()
-        : min_frames_per_buffer(0),
-          max_frames_per_buffer(0),
-          bitstream_formats(0),
-          require_encapsulation(false) {}
+    HardwareCapabilities() = default;
 
     // Minimum and maximum buffer sizes supported by the audio hardware. Opening
     // a device with frames_per_buffer set to a value between min and max should
     // result in the audio hardware running close to this buffer size, values
     // above or below will be clamped to the min or max by the audio system.
     // Either value can be 0 and means that the min or max is not known.
-    int min_frames_per_buffer;
-    int max_frames_per_buffer;
+    int min_frames_per_buffer = 0;
+    int max_frames_per_buffer = 0;
+    // The default buffer size that the device will use when frames_per_buffer
+    // is not specified.  Can be `min_frames_per_buffer`,
+    // `max_frames_per_buffer`, or a value in between.  Can be 0 when the
+    // default is unknown.
+    int default_frames_per_buffer = 0;
     // Bitstream formats (OR'ed) supported by audio hardware.
-    int bitstream_formats;
+    int bitstream_formats = 0;
     // Bitstream will need to be encapsulated in IEC61937 to be
     // passed through to the audio hardware.
-    bool require_encapsulation;
+    bool require_encapsulation = false;
+    // Require audio processing offload.
+    bool require_audio_offload = false;
   };
 
   AudioParameters();
@@ -311,6 +318,9 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   bool IsFormatSupportedByHardware(Format format) const;
 
   bool RequireEncapsulation() const;
+
+  // Return true if offload is requested.
+  bool RequireOffload() const;
 
   void set_format(Format format) { format_ = format; }
   Format format() const { return format_; }

@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 #include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/callback_helpers.h"
 #include "sql/database.h"
-#include "sql/sqlite_result_code.h"
 #include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
@@ -270,55 +269,6 @@ TEST_P(DatabaseOptionsTest, EnableViewsDiscouraged_True) {
   EXPECT_EQ(1, select_from_view.ColumnInt64(0));
 
   EXPECT_TRUE(db.Execute("DROP VIEW IF EXISTS view"));
-}
-
-TEST_P(DatabaseOptionsTest, EnableVirtualTablesDiscouraged_FalseByDefault) {
-  DatabaseOptions options = {
-      .exclusive_locking = exclusive_locking(),
-      .wal_mode = wal_mode(),
-  };
-  EXPECT_FALSE(options.enable_virtual_tables_discouraged)
-      << "Invalid test assumption";
-
-  Database db(options);
-  OpenDatabase(db);
-
-  // sqlite3_prepare_v3() currently only disables accessing virtual tables.
-  // Schema operations on virtual tables are still allowed.
-  ASSERT_TRUE(db.Execute(
-      "CREATE VIRTUAL TABLE fts_table USING fts3(data_table, content TEXT)"));
-
-  {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_ERROR);
-    Statement select_from_vtable(db.GetUniqueStatement(
-        "SELECT content FROM fts_table WHERE content MATCH 'pattern'"));
-    EXPECT_FALSE(select_from_vtable.is_valid());
-    EXPECT_TRUE(expecter.SawExpectedErrors());
-  }
-
-  // sqlite3_prepare_v3() currently only disables accessing virtual tables.
-  // Schema operations on virtual tables are still allowed.
-  EXPECT_TRUE(db.Execute("DROP TABLE IF EXISTS fts_table"));
-}
-
-TEST_P(DatabaseOptionsTest, EnableVirtualTablesDiscouraged_True) {
-  Database db(DatabaseOptions{
-      .exclusive_locking = exclusive_locking(),
-      .wal_mode = wal_mode(),
-      .enable_virtual_tables_discouraged = true,
-  });
-  OpenDatabase(db);
-
-  ASSERT_TRUE(db.Execute(
-      "CREATE VIRTUAL TABLE fts_table USING fts3(data_table, content TEXT)"));
-
-  Statement select_from_vtable(db.GetUniqueStatement(
-      "SELECT content FROM fts_table WHERE content MATCH 'pattern'"));
-  ASSERT_TRUE(select_from_vtable.is_valid());
-  EXPECT_FALSE(select_from_vtable.Step());
-
-  EXPECT_TRUE(db.Execute("DROP TABLE IF EXISTS fts_table"));
 }
 
 INSTANTIATE_TEST_SUITE_P(

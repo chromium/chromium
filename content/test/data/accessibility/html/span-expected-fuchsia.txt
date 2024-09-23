@@ -26,7 +26,7 @@ UNKNOWN focusable has_input_focus
 ++++++++STATIC_TEXT label=' '
 ++++++++++UNKNOWN label=' '
 ++++++++LINK focusable label='space' actions='{DEFAULT}'
-++++++++++STATIC_TEXT label='space' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='space'
 ++++++++++++UNKNOWN label='space'
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='E2. Eat'
@@ -34,7 +34,7 @@ UNKNOWN focusable has_input_focus
 ++++++++STATIC_TEXT label=' '
 ++++++++++UNKNOWN label=' '
 ++++++++LINK focusable label='space' actions='{DEFAULT}'
-++++++++++STATIC_TEXT label='space' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='space'
 ++++++++++++UNKNOWN label='space'
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='E3. Eat'
@@ -42,11 +42,11 @@ UNKNOWN focusable has_input_focus
 ++++++++STATIC_TEXT label=' '
 ++++++++++UNKNOWN label=' '
 ++++++++LINK focusable label='space' actions='{DEFAULT}'
-++++++++++STATIC_TEXT label='space' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='space'
 ++++++++++++UNKNOWN label='space'
 ++++++PARAGRAPH
 ++++++++LINK focusable label='E4. Eat' actions='{DEFAULT}'
-++++++++++STATIC_TEXT label='E4. Eat' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='E4. Eat'
 ++++++++++++UNKNOWN label='E4. Eat'
 ++++++++STATIC_TEXT label=' '
 ++++++++++UNKNOWN label=' '
@@ -54,7 +54,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++UNKNOWN label='space'
 ++++++PARAGRAPH
 ++++++++LINK focusable label='E5. Eat' actions='{DEFAULT}'
-++++++++++STATIC_TEXT label='E5. Eat' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='E5. Eat'
 ++++++++++++UNKNOWN label='E5. Eat'
 ++++++++STATIC_TEXT label=' '
 ++++++++++UNKNOWN label=' '
@@ -62,7 +62,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++UNKNOWN label='space'
 ++++++PARAGRAPH
 ++++++++LINK focusable label='E6. Eat' actions='{DEFAULT}'
-++++++++++STATIC_TEXT label='E6. Eat' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='E6. Eat'
 ++++++++++++UNKNOWN label='E6. Eat'
 ++++++++STATIC_TEXT label=' '
 ++++++++++UNKNOWN label=' '

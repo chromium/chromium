@@ -35,11 +35,6 @@ class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
 
  private:
   // TraitsTestService:
-  void EchoDxDiagNode(const DxDiagNode& d,
-                      EchoDxDiagNodeCallback callback) override {
-    std::move(callback).Run(d);
-  }
-
   void EchoGpuDevice(const GPUInfo::GPUDevice& g,
                      EchoGpuDeviceCallback callback) override {
     std::move(callback).Run(g);
@@ -91,18 +86,6 @@ class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
 };
 
 }  // namespace
-
-TEST_F(StructTraitsTest, DxDiagNode) {
-  gpu::DxDiagNode input;
-  input.values["abc"] = "123";
-  mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
-  gpu::DxDiagNode output;
-  remote->EchoDxDiagNode(input, &output);
-
-  gpu::DxDiagNode test_dx_diag_node;
-  test_dx_diag_node.values["abc"] = "123";
-  EXPECT_EQ(test_dx_diag_node.values, output.values);
-}
 
 TEST_F(StructTraitsTest, GPUDevice) {
   gpu::GPUInfo::GPUDevice input;
@@ -173,7 +156,9 @@ TEST_F(StructTraitsTest, GpuInfo) {
   const bool supports_overlays = true;
   const OverlaySupport yuy2_overlay_support = OverlaySupport::kScaling;
   const OverlaySupport nv12_overlay_support = OverlaySupport::kNone;
-  const DxDiagNode dx_diagnostics;
+  const OverlaySupport bgra8_overlay_support = OverlaySupport::kDirect;
+  const OverlaySupport rgb10a2_overlay_support = OverlaySupport::kScaling;
+  const OverlaySupport p010_overlay_support = OverlaySupport::kScaling;
 #endif
   const VideoDecodeAcceleratorSupportedProfiles
       video_decode_accelerator_supported_profiles;
@@ -212,7 +197,9 @@ TEST_F(StructTraitsTest, GpuInfo) {
   input.overlay_info.supports_overlays = supports_overlays;
   input.overlay_info.yuy2_overlay_support = yuy2_overlay_support;
   input.overlay_info.nv12_overlay_support = nv12_overlay_support;
-  input.dx_diagnostics = dx_diagnostics;
+  input.overlay_info.bgra8_overlay_support = bgra8_overlay_support;
+  input.overlay_info.rgb10a2_overlay_support = rgb10a2_overlay_support;
+  input.overlay_info.p010_overlay_support = p010_overlay_support;
 #endif
   input.video_decode_accelerator_supported_profiles =
       video_decode_accelerator_supported_profiles;
@@ -275,7 +262,10 @@ TEST_F(StructTraitsTest, GpuInfo) {
   EXPECT_EQ(supports_overlays, output.overlay_info.supports_overlays);
   EXPECT_EQ(yuy2_overlay_support, output.overlay_info.yuy2_overlay_support);
   EXPECT_EQ(nv12_overlay_support, output.overlay_info.nv12_overlay_support);
-  EXPECT_EQ(dx_diagnostics.values, output.dx_diagnostics.values);
+  EXPECT_EQ(bgra8_overlay_support, output.overlay_info.bgra8_overlay_support);
+  EXPECT_EQ(rgb10a2_overlay_support,
+            output.overlay_info.rgb10a2_overlay_support);
+  EXPECT_EQ(p010_overlay_support, output.overlay_info.p010_overlay_support);
 #endif
   for (size_t i = 0; i < video_decode_accelerator_supported_profiles.size();
        i++) {
@@ -448,9 +438,7 @@ TEST_F(StructTraitsTest, GpuFeatureInfo) {
   GpuFeatureInfo output;
   ASSERT_TRUE(mojom::GpuFeatureInfo::Deserialize(
       mojom::GpuFeatureInfo::Serialize(&input), &output));
-  EXPECT_TRUE(std::equal(input.status_values,
-                         input.status_values + NUMBER_OF_GPU_FEATURE_TYPES,
-                         output.status_values));
+  EXPECT_EQ(input.status_values, output.status_values);
 }
 
 }  // namespace gpu

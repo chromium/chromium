@@ -364,11 +364,11 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
       focus_change_listeners_;
 
   // This is true if full keyboard accessibility is needed. This causes
-  // IsAccessibilityFocusable() to be checked rather than IsFocusable(). This
-  // can be set depending on platform constraints. FocusSearch uses this in
-  // addition to its own accessibility mode, which handles accessibility at the
-  // FocusTraversable level. Currently only used on Mac, when Full Keyboard
-  // access is enabled.
+  // GetViewAccessibility().IsAccessibilityFocusable() to be checked rather than
+  // IsFocusable(). This can be set depending on platform constraints.
+  // FocusSearch uses this in addition to its own accessibility mode, which
+  // handles accessibility at the FocusTraversable level. Currently only used on
+  // Mac, when Full Keyboard access is enabled.
   bool keyboard_accessible_ = false;
 
   // Whether FocusManager is currently trying to restore a focused view.

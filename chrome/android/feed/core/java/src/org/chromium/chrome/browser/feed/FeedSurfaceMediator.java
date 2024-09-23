@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator;
 import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator.OptionChangedListener;
 import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -49,6 +51,7 @@ import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
@@ -215,7 +218,7 @@ public class FeedSurfaceMediator
     private final FeedActionDelegate mActionDelegate;
     private final FeedOptionsCoordinator mOptionsCoordinator;
 
-    // It is non-null for NTP on tablets when SurfacePolish is enabled.
+    // It is non-null for NTP on tablets.
     private @Nullable final UiConfig mUiConfig;
     private final DisplayStyleObserver mDisplayStyleObserver = this::onDisplayStyleChanged;
 
@@ -767,10 +770,6 @@ public class FeedSurfaceMediator
         return mCurrentStream.getLastFetchTimeMs();
     }
 
-    boolean isPlaceholderShown() {
-        return mCurrentStream == null ? false : mCurrentStream.isPlaceholderShown();
-    }
-
     Stream getCurrentStreamForTesting() {
         return mCurrentStream;
     }
@@ -806,15 +805,22 @@ public class FeedSurfaceMediator
 
     /**
      * Determines whether a signin promo should be shown.
+     *
      * @return Whether the SignPromo should be visible.
      */
     private boolean shouldShowSigninPromo() {
         SyncPromoController.resetNtpSyncPromoLimitsIfHiddenForTooLong();
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder(
+                                R.string.signin_account_picker_bottom_sheet_title)
+                        .build();
         SyncPromoController promoController =
                 new SyncPromoController(
                         mProfile,
-                        SigninAccessPoint.NTP_CONTENT_SUGGESTIONS,
-                        SyncConsentActivityLauncherImpl.get());
+                        bottomSheetStrings,
+                        SigninAccessPoint.NTP_FEED_TOP_PROMO,
+                        SyncConsentActivityLauncherImpl.get(),
+                        SigninAndHistorySyncActivityLauncherImpl.get());
         if (!SignInPromo.shouldCreatePromo() || !promoController.canShowSyncPromo()) {
             return false;
         }
@@ -918,7 +924,7 @@ public class FeedSurfaceMediator
         // It is possible that updateSectionHeader() is called when the surface which contains the
         // Feeds isn't visible or headers of streams haven't been added, returns here.
         // See https://crbug.com/1485070 and https://crbug.com/1488210.
-        // TODO(https://crbug.com/1488630): Figure out the root cause of setting
+        // TODO(crbug.com/40934702): Figure out the root cause of setting
         // SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY to -1 and fix it.
         if (!mIsPropertiesInitializedForStream
                 || mSectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY) < 0) {
@@ -988,7 +994,7 @@ public class FeedSurfaceMediator
         // which is called by the prefService observer.
         getPrefService().setBoolean(Pref.ARTICLES_LIST_VISIBLE, isExpanded);
         FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_TOGGLED_FEED);
-        SuggestionsMetrics.recordArticlesListVisible();
+        SuggestionsMetrics.recordArticlesListVisible(mProfile);
 
         int streamType =
                 mTabToStreamMap
@@ -1024,9 +1030,7 @@ public class FeedSurfaceMediator
             }
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
-                && FeedServiceBridge.isSignedIn()
-                && isExpanded) {
+        if (WebFeedBridge.isWebFeedEnabled() && FeedServiceBridge.isSignedIn() && isExpanded) {
             return res.getString(R.string.ntp_discover_on);
         } else if (isDefaultSearchEngineGoogle) {
             return isExpanded
@@ -1044,7 +1048,7 @@ public class FeedSurfaceMediator
 
         // Do not display Manage menu items for the supervised-user feed.
         if (FeedServiceBridge.isSignedIn() && !mCoordinator.shouldDisplaySupervisedFeed()) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
+            if (WebFeedBridge.isWebFeedEnabled()) {
                 itemList.add(
                         buildMenuListItem(
                                 R.string.ntp_manage_feed,
@@ -1360,6 +1364,8 @@ public class FeedSurfaceMediator
                 return StreamType.FOR_YOU;
             case StreamKind.FOLLOWING:
                 return StreamType.WEB_FEED;
+            case StreamKind.SUPERVISED_USER:
+                return StreamType.SUPERVISED_USER_FEED;
             default:
                 return StreamType.UNSPECIFIED;
         }

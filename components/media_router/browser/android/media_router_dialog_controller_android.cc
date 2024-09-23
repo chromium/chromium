@@ -12,7 +12,6 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/media_router/browser/android/jni_headers/BrowserMediaRouterDialogController_jni.h"
 #include "components/media_router/browser/android/media_router_android.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
@@ -25,6 +24,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/media_router/browser/android/jni_headers/BrowserMediaRouterDialogController_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;

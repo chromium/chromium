@@ -189,7 +189,6 @@ class TestExceptionPorts : public MachMultiprocess,
       expect_behavior = EXCEPTION_STATE_IDENTITY;
     } else {
       NOTREACHED();
-      expect_behavior = 0;
     }
 
     EXPECT_EQ(behavior, expect_behavior);

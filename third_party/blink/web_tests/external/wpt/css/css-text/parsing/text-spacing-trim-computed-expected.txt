@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
 [FAIL] Property text-spacing-trim value 'auto'
   assert_true: 'auto' is a supported value for text-spacing-trim. expected true got false
-[FAIL] Property text-spacing-trim value 'trim-auto'
-  assert_true: 'trim-auto' is a supported value for text-spacing-trim. expected true got false
+[FAIL] Property text-spacing-trim value 'trim-both'
+  assert_true: 'trim-both' is a supported value for text-spacing-trim. expected true got false
 [FAIL] Property text-spacing-trim value 'trim-all'
   assert_true: 'trim-all' is a supported value for text-spacing-trim. expected true got false
 Harness: the test ran to completion.

@@ -227,8 +227,9 @@ TEST_F(LoginAuthFactorsViewUnittest, TapOrClickCalled) {
 
   EXPECT_FALSE(factor->do_handle_tap_or_click_called_);
   const gfx::Point point(0, 0);
-  factor->icon_->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, point, point, base::TimeTicks::Now(), 0, 0));
+  factor->icon_->OnMousePressed(ui::MouseEvent(ui::EventType::kMousePressed,
+                                               point, point,
+                                               base::TimeTicks::Now(), 0, 0));
   EXPECT_TRUE(factor->do_handle_tap_or_click_called_);
 }
 
@@ -356,8 +357,9 @@ TEST_F(LoginAuthFactorsViewUnittest, ClickingArrowButton) {
   // Simulate clicking arrow nudge animation, which sits on top of arrow button
   // and should relay arrow button click.
   const gfx::Point point(0, 0);
-  test_api.arrow_nudge_animation()->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, point, point, base::TimeTicks::Now(), 0, 0));
+  test_api.arrow_nudge_animation()->OnMousePressed(
+      ui::MouseEvent(ui::EventType::kMousePressed, point, point,
+                     base::TimeTicks::Now(), 0, 0));
 
   // Check that arrow button is still visible and that arrow nudge animation is
   // no longer shown.
@@ -516,8 +518,9 @@ TEST_F(LoginAuthFactorsViewUnittest, ErrorPermanent) {
   EXPECT_FALSE(factor->do_handle_tap_or_click_called_);
   factor->RefreshUI();
   const gfx::Point point(0, 0);
-  factor->icon_->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, point, point, base::TimeTicks::Now(), 0, 0));
+  factor->icon_->OnMousePressed(ui::MouseEvent(ui::EventType::kMousePressed,
+                                               point, point,
+                                               base::TimeTicks::Now(), 0, 0));
   EXPECT_TRUE(factor->do_handle_tap_or_click_called_);
 
   // Clicking causes only the error to be visible.

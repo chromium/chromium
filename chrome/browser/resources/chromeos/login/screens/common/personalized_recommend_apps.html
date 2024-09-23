@@ -1,0 +1,48 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<style include="oobe-dialog-host-styles">
+</style>
+<oobe-loading-dialog id="progressDialog" for-step="loading"
+        title-key="personalizedRecommendedLoading" role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'personalizedRecommendedLoading')]]">
+    <iron-icon slot="icon" icon="oobe-48:personalized-apps-icon"></iron-icon>
+</oobe-loading-dialog>
+<oobe-adaptive-dialog id="personalizedRecommendDialog" role="dialog"
+      aria-label$="[[i18nDynamic(locale,
+          'personalizedRecommendedAppsScreenTitle')]]"
+      aria-description$="[[i18nDynamic(locale,
+          'personalizedRecommendedAppsScreenDescription')]]"
+      for-step="overview">
+    <iron-icon slot="icon" icon="oobe-48:personalized-apps-icon"></iron-icon>
+    <h1 slot="title" id="recommend-title" aria-live="polite">
+      [[i18nDynamic(locale,
+            'personalizedRecommendedAppsScreenTitle')]]
+    </h1>
+    <div slot="subtitle" id="recommend-subtitle">
+      [[i18nDynamic(locale,
+            'personalizedRecommendedAppsScreenDescription')]]
+    </div>
+    <div slot="content" class="layout vertical">
+        <oobe-personalized-apps-list id="categoriesAppsList"
+            class="focus-on-show"
+            selected-apps-count="{{numberOfSelectedApps}}"
+            on-icons-loaded="onFullyLoaded">
+        </oobe-personalized-apps-list>
+    </div>
+    <div slot="back-navigation">
+        <oobe-back-button id="backButton" on-click="onBackClicked">
+        </oobe-back-button>
+      </div>
+    <div slot="bottom-buttons">
+      <oobe-text-button id="skipButton"
+            text-key="personalizedRecommendedAppsScreenSkip"
+            on-click="onSkip" border>
+      </oobe-text-button>
+      <oobe-next-button id="nextButton" on-click="onNextClicked"
+        disabled="[[!canProceed(numberOfSelectedApps)]]">
+      </oobe-next-button>
+    </div>
+</oobe-adaptive-dialog>

@@ -6,12 +6,15 @@
 
 #include <cstdint>
 #include <limits>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -21,7 +24,6 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions_win.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,7 +40,7 @@
 namespace winhttp {
 namespace {
 
-// TODO(crbug.com/1164512) - implement a way to express priority for
+// TODO(crbug.com/40163568) - implement a way to express priority for
 // foreground/background network fetches.
 constexpr base::TaskTraits kTaskTraits = {
     base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -66,7 +68,7 @@ void CrackUrl(const GURL& url,
 }  // namespace
 
 NetworkFetcher::NetworkFetcher(
-    const HINTERNET& session_handle,
+    scoped_refptr<SharedHInternet> session_handle,
     scoped_refptr<ProxyConfiguration> proxy_configuration)
     : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       session_handle_(session_handle),
@@ -201,7 +203,7 @@ base::OnceClosure NetworkFetcher::DownloadToFile(
 
 HRESULT NetworkFetcher::BeginFetch(
     const std::string& data,
-    base::flat_map<std::string, std::string> additional_headers) {
+    const base::flat_map<std::string, std::string>& additional_headers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!url_.SchemeIsHTTPOrHTTPS()) {
@@ -213,65 +215,86 @@ HRESULT NetworkFetcher::BeginFetch(
     return HRESULTFromLastError();
   }
 
-  std::optional<ScopedWinHttpProxyInfo> winhttp_proxy_info =
-      proxy_configuration_->GetProxyForUrl(*session_handle_, url_);
-
-  request_handle_ = OpenRequest();
-  if (!request_handle_.get()) {
-    return HRESULTFromLastError();
-  }
-
-  SetProxyForRequest(request_handle_.get(), winhttp_proxy_info);
-
-  const auto winhttp_callback = ::WinHttpSetStatusCallback(
-      request_handle_.get(), &NetworkFetcher::WinHttpStatusCallback,
-      WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS, 0);
-  if (winhttp_callback == WINHTTP_INVALID_STATUS_CALLBACK) {
-    return HRESULTFromLastError();
-  }
-
-  auto hr =
-      SetOption(request_handle_.get(), WINHTTP_OPTION_CONTEXT_VALUE, context());
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  // The reference is released when the request handle is closed.
-  self_ = this;
-
-  // Disables both saving and sending cookies.
-  hr = SetOption(request_handle_.get(), WINHTTP_OPTION_DISABLE_FEATURE,
-                 WINHTTP_DISABLE_COOKIES);
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  if (!content_type_.empty()) {
-    additional_headers.insert({"Content-Type", content_type_});
-  }
-
-  for (const auto& header : additional_headers) {
-    const auto raw_header = base::SysUTF8ToWide(
-        base::StrCat({header.first, ": ", header.second, "\r\n"}));
-    if (!::WinHttpAddRequestHeaders(
-            request_handle_.get(), raw_header.c_str(), raw_header.size(),
-            WINHTTP_ADDREQ_FLAG_ADD | WINHTTP_ADDREQ_FLAG_REPLACE)) {
-      PLOG(ERROR) << "Failed to set the request header: " << raw_header;
-    }
-  }
-
-  hr = SendRequest(data);
-  if (FAILED(hr)) {
-    return hr;
-  }
-
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, kTaskTraits,
+      base::BindOnce(&NetworkFetcher::GetProxyForUrl, this),
+      base::BindOnce(&NetworkFetcher::ContinueFetch, this, data,
+                     additional_headers));
   return S_OK;
+}
+
+std::optional<ScopedWinHttpProxyInfo> NetworkFetcher::GetProxyForUrl() {
+  return proxy_configuration_->GetProxyForUrl(session_handle_->handle(), url_);
+}
+
+void NetworkFetcher::ContinueFetch(
+    const std::string& data,
+    base::flat_map<std::string, std::string> additional_headers,
+    std::optional<ScopedWinHttpProxyInfo> winhttp_proxy_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  net_error_ = [&] {
+    request_handle_ = OpenRequest();
+    if (!request_handle_.get()) {
+      return HRESULTFromLastError();
+    }
+
+    SetProxyForRequest(request_handle_.get(), winhttp_proxy_info);
+
+    const auto winhttp_callback = ::WinHttpSetStatusCallback(
+        request_handle_.get(), &NetworkFetcher::WinHttpStatusCallback,
+        WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS, 0);
+    if (winhttp_callback == WINHTTP_INVALID_STATUS_CALLBACK) {
+      return HRESULTFromLastError();
+    }
+
+    auto hr = SetOption(request_handle_.get(), WINHTTP_OPTION_CONTEXT_VALUE,
+                        context());
+    if (FAILED(hr)) {
+      return hr;
+    }
+
+    // The reference is released when the request handle is closed.
+    self_ = this;
+
+    // Disables both saving and sending cookies.
+    hr = SetOption(request_handle_.get(), WINHTTP_OPTION_DISABLE_FEATURE,
+                   WINHTTP_DISABLE_COOKIES);
+    if (FAILED(hr)) {
+      return hr;
+    }
+
+    if (!content_type_.empty()) {
+      additional_headers.insert({"Content-Type", content_type_});
+    }
+
+    for (const auto& [name, value] : additional_headers) {
+      const std::wstring raw_header =
+          base::SysUTF8ToWide(base::StrCat({name, ": ", value, "\r\n"}));
+      if (!::WinHttpAddRequestHeaders(
+              request_handle_.get(), raw_header.c_str(), raw_header.size(),
+              WINHTTP_ADDREQ_FLAG_ADD | WINHTTP_ADDREQ_FLAG_REPLACE)) {
+        PLOG(ERROR) << "Failed to set the request header: " << raw_header;
+      }
+    }
+
+    hr = SendRequest(data);
+    if (FAILED(hr)) {
+      return hr;
+    }
+
+    return S_OK;
+  }();
+
+  if (FAILED(net_error_)) {
+    CompleteFetch();
+  }
 }
 
 ScopedHInternet NetworkFetcher::Connect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ScopedHInternet(::WinHttpConnect(
-      *session_handle_, base::SysUTF8ToWide(host_).c_str(), port_, 0));
+      session_handle_->handle(), base::SysUTF8ToWide(host_).c_str(), port_, 0));
 }
 
 ScopedHInternet NetworkFetcher::OpenRequest() {
@@ -391,7 +414,9 @@ HRESULT NetworkFetcher::ReadData() {
 void NetworkFetcher::ReadDataComplete(size_t num_bytes_read) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   read_buffer_.resize(num_bytes_read);
-  write_data_callback_.Run();
+  if (write_data_callback_) {
+    write_data_callback_.Run();
+  }
 }
 
 void NetworkFetcher::RequestError(DWORD error) {
@@ -430,9 +455,8 @@ bool NetworkFetcher::WriteDataToFileBlocking() {
     }
   }
 
-  DCHECK(file_.IsValid());
-  if (file_.WriteAtCurrentPos(&read_buffer_.front(), read_buffer_.size()) ==
-      -1) {
+  if (UNSAFE_TODO(file_.WriteAtCurrentPos(&read_buffer_.front(),
+                                          read_buffer_.size())) == -1) {
     net_error_ = HRESULTFromLastError();
     file_.Close();
     base::DeleteFile(file_path_);
@@ -485,10 +509,10 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
                                                      DWORD status,
                                                      void* info,
                                                      DWORD info_len) {
-  DCHECK(handle);
-  DCHECK(context);
+  CHECK(handle);
+  CHECK(context);
 
-  base::StringPiece status_string;
+  std::string_view status_string;
   std::wstring info_string;
   switch (status) {
     case WINHTTP_CALLBACK_STATUS_HANDLE_CREATED:
@@ -499,14 +523,18 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
       break;
     case WINHTTP_CALLBACK_STATUS_RESOLVING_NAME:
       status_string = "resolving";
-      info_string.assign(static_cast<wchar_t*>(info), info_len);  // host.
+      CHECK(info);
+      info_string = static_cast<const wchar_t*>(info);  // host.
+      VLOG(1) << "hostname: " << info_string;
       break;
     case WINHTTP_CALLBACK_STATUS_NAME_RESOLVED:
       status_string = "resolved";
       break;
     case WINHTTP_CALLBACK_STATUS_CONNECTING_TO_SERVER:
       status_string = "connecting";
-      info_string.assign(static_cast<wchar_t*>(info), info_len);  // IP.
+      CHECK(info);
+      info_string = static_cast<const wchar_t*>(info);  // IP.
+      VLOG(1) << "ip: " << info_string;
       break;
     case WINHTTP_CALLBACK_STATUS_CONNECTED_TO_SERVER:
       status_string = "connected";
@@ -535,7 +563,8 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
       break;
     case WINHTTP_CALLBACK_STATUS_DATA_AVAILABLE:
       status_string = "data available";
-      DCHECK_EQ(info_len, sizeof(uint32_t));
+      CHECK(info);
+      CHECK_EQ(info_len, sizeof(uint32_t));
       info_string = base::NumberToWString(*static_cast<uint32_t*>(info));
       break;
     case WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE:
@@ -556,8 +585,8 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
       break;
     case WINHTTP_CALLBACK_STATUS_SECURE_FAILURE:
       status_string = "https failure";
-      DCHECK(info);
-      DCHECK_EQ(info_len, sizeof(uint32_t));
+      CHECK(info);
+      CHECK_EQ(info_len, sizeof(uint32_t));
       info_string = base::ASCIIToWide(
           base::StringPrintf("%#x", *static_cast<uint32_t*>(info)));
       break;
@@ -594,12 +623,12 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
           base::BindOnce(&NetworkFetcher::HeadersAvailable, network_fetcher);
       break;
     case WINHTTP_CALLBACK_STATUS_READ_COMPLETE:
-      DCHECK_EQ(info, &network_fetcher->read_buffer_.front());
+      CHECK_EQ(info, &network_fetcher->read_buffer_.front());
       callback = base::BindOnce(&NetworkFetcher::ReadDataComplete,
                                 network_fetcher, size_t{info_len});
       break;
     case WINHTTP_CALLBACK_STATUS_REQUEST_ERROR:
-      DCHECK(info);
+      CHECK(info);
       callback = base::BindOnce(
           &NetworkFetcher::RequestError, network_fetcher,
           static_cast<const WINHTTP_ASYNC_RESULT*>(info)->dwError);

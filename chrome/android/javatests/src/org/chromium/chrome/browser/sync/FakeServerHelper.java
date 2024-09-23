@@ -14,7 +14,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -35,11 +34,11 @@ public class FakeServerHelper {
      * Creates the singleton FakeServerHelper and returns it. destroyInstance() must be called when
      * done to prevent the native object from leaking. If this is called before the previous
      * instance is destroyed, it will return null (just to avoid throwing ExecutionException).
-     * TODO(crbug.com/949504): When refactoring this method, throw an exception instead of returning
-     * null.
+     * TODO(crbug.com/41451146): When refactoring this method, throw an exception instead of
+     * returning null.
      */
     public static @Nullable FakeServerHelper createInstanceAndGet() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (sFakeServerHelper == null) {
                         sFakeServerHelper = new FakeServerHelper();
@@ -56,7 +55,7 @@ public class FakeServerHelper {
 
     /** Deletes the existing FakeServer if any. */
     public static void destroyInstance() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (sFakeServerHelper == null) return;
 
@@ -73,20 +72,20 @@ public class FakeServerHelper {
 
     /**
      * Returns whether {@code count} entities exist on the fake Sync server with the given {@code
-     * modelType} and {@code name}.
+     * dataType} and {@code name}.
      *
      * @param count the number of fake server entities to verify
-     * @param modelType the model type of entities to verify
+     * @param dataType the data type of entities to verify
      * @param name the name of entities to verify
      * @return whether the number of specified entities exist
      */
     public boolean verifyEntityCountByTypeAndName(
-            final int count, final int modelType, final String name) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+            final int count, final int dataType, final String name) {
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .verifyEntityCountByTypeAndName(
-                                        mNativeFakeServer, count, modelType, name));
+                                        mNativeFakeServer, count, dataType, name));
     }
 
     /**
@@ -96,23 +95,23 @@ public class FakeServerHelper {
      * @return whether the sessions on the server match the given urls.
      */
     public boolean verifySessions(final String[] urls) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> FakeServerHelperJni.get().verifySessions(mNativeFakeServer, urls));
     }
 
     /**
-     * Returns all the SyncEntities on the fake server with the given modelType.
+     * Returns all the SyncEntities on the fake server with the given dataType.
      *
-     * @param modelType the type of entities to return.
+     * @param dataType the type of entities to return.
      * @return a list of all the SyncEntity protos for that type.
      */
-    public List<SyncEntity> getSyncEntitiesByModelType(final int modelType)
+    public List<SyncEntity> getSyncEntitiesByDataType(final int dataType)
             throws InvalidProtocolBufferException {
         byte[][] serializedEntities =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 FakeServerHelperJni.get()
-                                        .getSyncEntitiesByModelType(mNativeFakeServer, modelType));
+                                        .getSyncEntitiesByDataType(mNativeFakeServer, dataType));
         List<SyncEntity> entities = new ArrayList<SyncEntity>(serializedEntities.length);
         for (byte[] serializedEntity : serializedEntities) {
             entities.add(SyncEntity.parseFrom(serializedEntity));
@@ -136,7 +135,7 @@ public class FakeServerHelper {
             final EntitySpecifics entitySpecifics) {
         // The protocol buffer is serialized as a byte array because it can be easily
         // deserialized from this format in native code.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .injectUniqueClientEntity(
@@ -156,7 +155,7 @@ public class FakeServerHelper {
     public void setWalletData(final SyncEntity entity) {
         // The protocol buffer is serialized as a byte array because it can be easily
         // deserialized from this format in native code.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .setWalletData(mNativeFakeServer, entity.toByteArray()));
@@ -171,7 +170,7 @@ public class FakeServerHelper {
     public void modifyEntitySpecifics(final String id, final EntitySpecifics entitySpecifics) {
         // The protocol buffer is serialized as a byte array because it can be easily
         // deserialized from this format in native code.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .modifyEntitySpecifics(
@@ -191,7 +190,7 @@ public class FakeServerHelper {
             String clientName,
             long creationTimestamp,
             long lastUpdatedTimestamp) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FakeServerHelperJni.get()
                             .injectDeviceInfoEntity(
@@ -214,7 +213,7 @@ public class FakeServerHelper {
      */
     public void injectBookmarkEntity(
             final String title, final GURL url, final String parentId, final String parentGuid) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .injectBookmarkEntity(
@@ -230,7 +229,7 @@ public class FakeServerHelper {
      */
     public void injectBookmarkFolderEntity(
             final String title, final String parentId, final String parentGuid) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .injectBookmarkFolderEntity(
@@ -255,7 +254,7 @@ public class FakeServerHelper {
             final GURL url,
             final String parentId,
             final String parentGuid) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .modifyBookmarkEntity(
@@ -283,7 +282,7 @@ public class FakeServerHelper {
             final String title,
             final String parentId,
             final String parentGuid) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .modifyBookmarkFolderEntity(
@@ -309,7 +308,7 @@ public class FakeServerHelper {
     }
 
     public void deleteEntity(final String id, final String clientTagHash) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> FakeServerHelperJni.get().deleteEntity(mNativeFakeServer, id, clientTagHash));
     }
 
@@ -320,7 +319,7 @@ public class FakeServerHelper {
      * @return the opaque ID of the bookmark bar entity stored in the server
      */
     public String getBookmarkBarFolderId() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> FakeServerHelperJni.get().getBookmarkBarFolderId(mNativeFakeServer));
     }
 
@@ -330,7 +329,7 @@ public class FakeServerHelper {
      * @param passphrase the plaintext custom passphrase to set.
      */
     public void setCustomPassphraseNigori(String passphrase) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     FakeServerHelperJni.get()
                             .setCustomPassphraseNigori(mNativeFakeServer, passphrase);
@@ -339,7 +338,7 @@ public class FakeServerHelper {
 
     /** Sets trusted vault nigori with keys derived from trustedVaultKey on the server. */
     public void setTrustedVaultNigori(byte[] trustedVaultKey) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .setTrustedVaultNigori(mNativeFakeServer, trustedVaultKey));
@@ -347,7 +346,7 @@ public class FakeServerHelper {
 
     /** Clear the server data (perform dashboard stop and clear). */
     public void clearServerData() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> FakeServerHelperJni.get().clearServerData(mNativeFakeServer));
     }
 
@@ -358,11 +357,11 @@ public class FakeServerHelper {
         void deleteFakeServer(long fakeServer);
 
         boolean verifyEntityCountByTypeAndName(
-                long fakeServer, int count, int modelType, String name);
+                long fakeServer, int count, int dataType, String name);
 
         boolean verifySessions(long fakeServer, String[] urlArray);
 
-        byte[][] getSyncEntitiesByModelType(long fakeServer, int modelType);
+        byte[][] getSyncEntitiesByDataType(long fakeServer, int dataType);
 
         void injectUniqueClientEntity(
                 long fakeServer,

@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 
@@ -25,19 +26,24 @@ PaintPropertyChangeType ClipPaintPropertyNode::State::ComputeChange(
   return PaintPropertyChangeType::kUnchanged;
 }
 
+void ClipPaintPropertyNode::State::Trace(Visitor* visitor) const {
+  visitor->Trace(local_transform_space);
+  visitor->Trace(pixel_moving_filter);
+}
+
+ClipPaintPropertyNode::ClipPaintPropertyNode(RootTag)
+    : ClipPaintPropertyNodeOrAlias(kRoot),
+      state_(TransformPaintPropertyNode::Root(),
+             gfx::RectF(InfiniteIntRect()),
+             FloatRoundedRect(InfiniteIntRect())) {}
+
 const ClipPaintPropertyNode& ClipPaintPropertyNode::Root() {
-  DEFINE_STATIC_REF(ClipPaintPropertyNode, root,
-                    base::AdoptRef(new ClipPaintPropertyNode(
-                        nullptr, State(&TransformPaintPropertyNode::Root(),
-                                       gfx::RectF(InfiniteIntRect()),
-                                       FloatRoundedRect(InfiniteIntRect())))));
+  DEFINE_STATIC_LOCAL(Persistent<ClipPaintPropertyNode>, root,
+                      (MakeGarbageCollected<ClipPaintPropertyNode>(kRoot)));
   return *root;
 }
 
-template <bool (TransformPaintPropertyNodeOrAlias::*ChangedMethod)(
-    PaintPropertyChangeType,
-    const TransformPaintPropertyNodeOrAlias&) const>
-bool ClipPaintPropertyNodeOrAlias::ChangedInternal(
+bool ClipPaintPropertyNodeOrAlias::Changed(
     PaintPropertyChangeType change,
     const PropertyTreeState& relative_to_state,
     const TransformPaintPropertyNodeOrAlias* transform_not_to_check) const {
@@ -51,21 +57,13 @@ bool ClipPaintPropertyNodeOrAlias::ChangedInternal(
     }
     const auto* unaliased = static_cast<const ClipPaintPropertyNode*>(node);
     if (&unaliased->LocalTransformSpace() != transform_not_to_check &&
-        (unaliased->LocalTransformSpace().*ChangedMethod)(
+        unaliased->LocalTransformSpace().Changed(
             change, relative_to_state.Transform())) {
       return true;
     }
   }
 
   return false;
-}
-
-bool ClipPaintPropertyNodeOrAlias::Changed(
-    PaintPropertyChangeType change,
-    const PropertyTreeState& relative_to_state,
-    const TransformPaintPropertyNodeOrAlias* transform_not_to_check) const {
-  return ChangedInternal<&TransformPaintPropertyNodeOrAlias::Changed>(
-      change, relative_to_state, transform_not_to_check);
 }
 
 void ClipPaintPropertyNodeOrAlias::ClearChangedToRoot(
@@ -82,13 +80,15 @@ void ClipPaintPropertyNodeOrAlias::ClearChangedToRoot(
 }
 
 std::unique_ptr<JSONObject> ClipPaintPropertyNode::ToJSON() const {
-  auto json = ToJSONBase();
+  auto json = ClipPaintPropertyNodeOrAlias::ToJSON();
   if (NodeChanged() != PaintPropertyChangeType::kUnchanged)
     json->SetString("changed", PaintPropertyChangeTypeToString(NodeChanged()));
   json->SetString("localTransformSpace",
-                  String::Format("%p", state_.local_transform_space.get()));
+                  String::Format("%p", state_.local_transform_space.Get()));
   json->SetString("rect", String(state_.paint_clip_rect_.Rect().ToString()));
-  if (state_.layout_clip_rect_excluding_overlay_scrollbars) {
+  if (state_.layout_clip_rect_excluding_overlay_scrollbars &&
+      *state_.layout_clip_rect_excluding_overlay_scrollbars !=
+          state_.layout_clip_rect_) {
     json->SetString(
         "rectExcludingOverlayScrollbars",
         String(state_.layout_clip_rect_excluding_overlay_scrollbars->Rect()
@@ -99,7 +99,7 @@ std::unique_ptr<JSONObject> ClipPaintPropertyNode::ToJSON() const {
   }
   if (state_.pixel_moving_filter) {
     json->SetString("pixelMovingFilter",
-                    String::Format("%p", state_.pixel_moving_filter.get()));
+                    String::Format("%p", state_.pixel_moving_filter.Get()));
   }
   return json;
 }

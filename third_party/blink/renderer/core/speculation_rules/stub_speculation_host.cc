@@ -33,10 +33,6 @@ void StubSpeculationHost::UpdateSpeculationCandidates(Candidates candidates) {
     std::move(done_closure_).Run();
 }
 
-void StubSpeculationHost::EnableNoVarySearchSupport() {
-  sent_no_vary_search_support_to_browser_ = true;
-}
-
 void StubSpeculationHost::InitiatePreview(const KURL& url) {}
 
 }  // namespace blink

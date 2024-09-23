@@ -27,8 +27,6 @@ namespace feature_engagement {
 class Tracker;
 }
 
-class PromosManagerEventExporter;
-
 // Centralized promos manager for coordinating and scheduling the display of
 // app-wide promos. Feature teams should not use this directly, use
 // promo_manager.h instead.
@@ -42,8 +40,7 @@ class PromosManagerImpl : public PromosManager {
 
   PromosManagerImpl(PrefService* local_state,
                     base::Clock* clock,
-                    feature_engagement::Tracker* tracker,
-                    PromosManagerEventExporter* event_exporter);
+                    feature_engagement::Tracker* tracker);
   ~PromosManagerImpl() override;
 
   // Sorts the active promos in the order that they will be displayed.
@@ -59,22 +56,30 @@ class PromosManagerImpl : public PromosManager {
   // Initializes the `single_display_pending_promos_`, constructs it from Pref.
   void InitializePendingPromos();
 
-  // Checks whether the given promo can be shown given any extant impression
-  // limits.
+  // Checks whether a promo can currently be shown using the feature engagement
+  // system to check any impression limits. If true, it will mark the promo for
+  // display.
   bool CanShowPromo(promos_manager::Promo promo) const;
 
-  // Checks whether a promo can currently be shown using the feature engagement
-  // system to check any impression limits.
-  bool CanShowPromoUsingFeatureEngagementTracker(
-      promos_manager::Promo promo) const;
+  // Similar to ```CanShowPromo``` without marking the promo for display.
+  bool CanShowPromoWithoutTrigger(promos_manager::Promo promo) const;
 
   // Returns the corresponding base::Feature for the given Promo.
   const base::Feature* FeatureForPromo(promos_manager::Promo promo) const;
 
+  // Returns the first eligible promo from the given promo queue. If any valid
+  // promo is found, it will mark the promo for display.
+  std::optional<promos_manager::Promo> GetFirstEligiblePromo(
+      const std::vector<promos_manager::Promo>& promo_queue);
+
+  // Returns number of eligible promos in the given promos queue.
+  int GetEligiblePromoCount(
+      const std::vector<promos_manager::Promo>& promo_queue);
+
   // PromosManager implementation.
   void Init() override;
   void InitializePromoConfigs(PromoConfigsSet promo_configs) override;
-  void RecordImpression(promos_manager::Promo promo) override;
+  void DeregisterAfterDisplay(promos_manager::Promo promo) override;
   std::optional<promos_manager::Promo> NextPromoForDisplay() override;
   void RegisterPromoForContinuousDisplay(promos_manager::Promo promo) override;
   void RegisterPromoForSingleDisplay(promos_manager::Promo promo) override;
@@ -104,9 +109,6 @@ class PromosManagerImpl : public PromosManager {
 
   // Promo-specific configuration.
   PromoConfigsSet promo_configs_;
-
-  // The class to handle migrating events to the Feature Engagement Tracker.
-  raw_ptr<PromosManagerEventExporter> event_exporter_;
 
   base::WeakPtrFactory<PromosManagerImpl> weak_ptr_factory_{this};
 };

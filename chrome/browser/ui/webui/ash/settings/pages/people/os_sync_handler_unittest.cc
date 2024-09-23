@@ -209,7 +209,8 @@ TEST_F(OsSyncHandlerTest, OsSyncPrefsSentOnNavigateToPage) {
 
 TEST_F(OsSyncHandlerTest, OpenConfigPageBeforeSyncEngineInitialized) {
   // Sync engine is stopped initially and will start up later.
-  sync_service_->SetTransportState(SyncService::TransportState::START_DEFERRED);
+  sync_service_->SetMaxTransportState(
+      SyncService::TransportState::START_DEFERRED);
 
   // Navigate to the page.
   handler_->HandleDidNavigateToOsSyncPage(base::Value::List());
@@ -218,7 +219,7 @@ TEST_F(OsSyncHandlerTest, OpenConfigPageBeforeSyncEngineInitialized) {
   EXPECT_EQ(0U, web_ui_->call_data().size());
 
   // Now, act as if the SyncService has started up.
-  sync_service_->SetTransportState(SyncService::TransportState::ACTIVE);
+  sync_service_->SetMaxTransportState(SyncService::TransportState::ACTIVE);
   handler_->OnStateChanged(sync_service_);
 
   // Update for sync prefs is sent.

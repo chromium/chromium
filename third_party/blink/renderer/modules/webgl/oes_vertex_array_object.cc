@@ -78,18 +78,18 @@ void OESVertexArrayObject::deleteVertexArrayOES(
   array_object->DeleteObject(scoped.Context()->ContextGL());
 }
 
-GLboolean OESVertexArrayObject::isVertexArrayOES(
+bool OESVertexArrayObject::isVertexArrayOES(
     WebGLVertexArrayObjectOES* array_object) {
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost() || !array_object ||
       !array_object->Validate(scoped.Context()->ContextGroup(),
                               scoped.Context()))
-    return 0;
+    return false;
 
   if (!array_object->HasEverBeenBound())
-    return 0;
+    return false;
   if (array_object->MarkedForDeletion())
-    return 0;
+    return false;
 
   return scoped.Context()->ContextGL()->IsVertexArrayOES(
       array_object->Object());

@@ -24,8 +24,7 @@ TEST(SharedMemoryRegionWrapperTest, SinglePlaneRGBA_8888) {
   auto handle = CreateGpuMemoryBuffer(size, buffer_format);
 
   SharedMemoryRegionWrapper wrapper;
-  EXPECT_TRUE(wrapper.Initialize(std::move(handle), size, buffer_format,
-                                 gfx::BufferPlane::DEFAULT));
+  EXPECT_TRUE(wrapper.Initialize(std::move(handle), size, buffer_format));
 }
 
 TEST(SharedMemoryRegionWrapperTest, MultiPlaneY_UV_420) {
@@ -36,8 +35,7 @@ TEST(SharedMemoryRegionWrapperTest, MultiPlaneY_UV_420) {
   auto handle = CreateGpuMemoryBuffer(size, buffer_format);
 
   SharedMemoryRegionWrapper wrapper;
-  EXPECT_TRUE(wrapper.Initialize(std::move(handle), size, buffer_format,
-                                 gfx::BufferPlane::DEFAULT));
+  EXPECT_TRUE(wrapper.Initialize(std::move(handle), size, buffer_format));
 
   uint8_t* memory_y_plane = wrapper.GetMemory(0);
   uint8_t* memory_uv_plane = wrapper.GetMemory(1);
@@ -54,8 +52,7 @@ TEST(SharedMemoryRegionWrapperTest, MultiPlaneY_V_U_420) {
   auto handle = CreateGpuMemoryBuffer(size, buffer_format);
 
   SharedMemoryRegionWrapper wrapper;
-  EXPECT_TRUE(wrapper.Initialize(std::move(handle), size, buffer_format,
-                                 gfx::BufferPlane::DEFAULT));
+  EXPECT_TRUE(wrapper.Initialize(std::move(handle), size, buffer_format));
 
   uint8_t* memory_y_plane = wrapper.GetMemory(0);
   uint8_t* memory_v_plane = wrapper.GetMemory(1);
@@ -78,8 +75,7 @@ TEST(SharedMemoryRegionWrapperTest, BufferTooSmallWrongFormat) {
   auto handle = CreateGpuMemoryBuffer(size, gfx::BufferFormat::R_8);
 
   SharedMemoryRegionWrapper wrapper;
-  EXPECT_FALSE(wrapper.Initialize(std::move(handle), size, buffer_format,
-                                  gfx::BufferPlane::DEFAULT));
+  EXPECT_FALSE(wrapper.Initialize(std::move(handle), size, buffer_format));
 }
 
 TEST(SharedMemoryRegionWrapperTest, BufferTooSmallWrongSize) {
@@ -91,7 +87,7 @@ TEST(SharedMemoryRegionWrapperTest, BufferTooSmallWrongSize) {
 
   SharedMemoryRegionWrapper wrapper;
   EXPECT_FALSE(wrapper.Initialize(std::move(handle), gfx::Size(200, 200),
-                                  buffer_format, gfx::BufferPlane::DEFAULT));
+                                  buffer_format));
 }
 
 }  // namespace

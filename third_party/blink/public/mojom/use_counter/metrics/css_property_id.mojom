@@ -10,6 +10,9 @@ module blink.mojom;
 //
 // DO NOT renumber or delete existing entries only comment them otherwise the
 // labels in enums.xml will be lost.
+//
+// LINT.IfChange(CSSSampleId)
+
 enum CSSSampleId {
     kInvalid = 0,
 
@@ -332,24 +335,24 @@ enum CSSSampleId {
     // kWebkitMarqueeRepetition = 277,
     // kWebkitMarqueeSpeed = 278,
     // kWebkitMarqueeStyle = 279,
-    kWebkitMask = 280,
+    kAliasWebkitMask = 280,
     kWebkitMaskBoxImage = 281,
     kWebkitMaskBoxImageOutset = 282,
     kWebkitMaskBoxImageRepeat = 283,
     kWebkitMaskBoxImageSlice = 284,
     kWebkitMaskBoxImageSource = 285,
     kWebkitMaskBoxImageWidth = 286,
-    kWebkitMaskClip = 287,
-    kWebkitMaskComposite = 288,
-    kWebkitMaskImage = 289,
-    kWebkitMaskOrigin = 290,
-    kWebkitMaskPosition = 291,
+    kAliasWebkitMaskClip = 287,
+    kAliasWebkitMaskComposite = 288,
+    kAliasWebkitMaskImage = 289,
+    kAliasWebkitMaskOrigin = 290,
+    kAliasWebkitMaskPosition = 291,
     kWebkitMaskPositionX = 292,
     kWebkitMaskPositionY = 293,
-    kWebkitMaskRepeat = 294,
+    kAliasWebkitMaskRepeat = 294,
     // kWebkitMaskRepeatX = 295,
     // kWebkitMaskRepeatY = 296,
-    kWebkitMaskSize = 297,
+    kAliasWebkitMaskSize = 297,
     kAliasWebkitMaxLogicalWidth = 298,
     kAliasWebkitMaxLogicalHeight = 299,
     kAliasWebkitMinLogicalWidth = 300,
@@ -563,9 +566,9 @@ enum CSSSampleId {
     kBackdropFilter = 508,
     kTextCombineUpright = 509,
     kTextOrientation = 510,
-    kGridColumnGap = 511,
-    kGridRowGap = 512,
-    kGridGap = 513,
+    kAliasGridColumnGap = 511,
+    kAliasGridRowGap = 512,
+    kAliasGridGap = 513,
     kFontFeatureSettings = 514,
     kVariable = 515,
     kFontDisplay = 516,
@@ -798,7 +801,7 @@ enum CSSSampleId {
     kAnimationRangeEnd = 742,
     kAnimationComposition = 743,
     kTopLayer = 744,
-    kAnchorDefault = 745,
+    // kAnchorDefault = 745,
     kTextWrap = 746,
     kTextBoxTrim = 747,
     kOverlay = 748,
@@ -838,9 +841,35 @@ enum CSSSampleId {
     kViewTransitionClass = 782,
     kPositionTryOrder = 783,
     kPositionTryOptions = 784,
+    kPositionTry = 785,
+    kTextBoxEdge = 786,
+    kReadingFlow = 787,
+    kPositionAnchor = 788,
+    kPositionVisibility = 789,
+    kTypes = 790,
+    kLineClamp = 791,
+    kFontVariantEmoji = 792,
+    kScrollMarkerGroup = 793,
+    kAnchorScope = 794,
+    kRubyAlign = 795,
+    kBoxDecorationBreak = 796,
+    kPositionTryFallbacks = 797,
+    kInterpolateSize = 798,
+    kViewTransitionGroup = 799,
+    kPositionArea = 800,
+    kTextBox = 801,
+    kMasonryTrackEnd = 802,
+    kMasonryTrackStart = 803,
+    kMasonryTemplateTracks = 804,
+    kTextWrapMode = 805,
+    kTextWrapStyle = 806,
+    kMasonryTrack = 807,
+    kMasonrySlack = 808,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
     // 2. Run the src/tools/metrics/histograms/update_use_counter_css.py script
     //    to update the UMA histogram names.
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:MappedCSSProperties)

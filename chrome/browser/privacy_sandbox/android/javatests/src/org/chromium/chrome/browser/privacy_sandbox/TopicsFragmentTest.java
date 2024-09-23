@@ -31,6 +31,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
@@ -40,6 +41,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -47,7 +49,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -55,7 +57,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
@@ -96,9 +97,10 @@ public final class TopicsFragmentTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.clearPref(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED);
                 });
 
@@ -123,11 +125,11 @@ public final class TopicsFragmentTest {
     }
 
     private View getTopicsRootView() {
-        return getRootViewSanitized(R.string.settings_topics_page_toggle_sub_label);
+        return getRootViewSanitized(R.string.settings_topics_page_toggle_sub_label_v2);
     }
 
     private View getBlockedTopicsRootView() {
-        return getRootViewSanitized(R.string.settings_topics_page_blocked_topics_sub_page_title);
+        return getRootViewSanitized(R.string.settings_topics_page_blocked_topics_heading_new);
     }
 
     private View getLearnMoreRootView() {
@@ -135,15 +137,17 @@ public final class TopicsFragmentTest {
     }
 
     private void setTopicsPrefEnabled(boolean isEnabled) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         TopicsFragment.setTopicsPrefEnabled(
-                                Profile.getLastUsedRegularProfile(), isEnabled));
+                                ProfileManager.getLastUsedRegularProfile(), isEnabled));
     }
 
     private boolean isTopicsPrefEnabled() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> TopicsFragment.isTopicsPrefEnabled(Profile.getLastUsedRegularProfile()));
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        TopicsFragment.isTopicsPrefEnabled(
+                                ProfileManager.getLastUsedRegularProfile()));
     }
 
     @Test
@@ -178,9 +182,9 @@ public final class TopicsFragmentTest {
     @SmallTest
     @Feature({"RenderTest"})
     public void testRenderBlockedTopicsEmpty() throws IOException {
-        setTopicsPrefEnabled(false);
+        setTopicsPrefEnabled(true);
         startTopicsSettings();
-        onView(withText(R.string.settings_topics_page_blocked_topics_heading)).perform(click());
+        onView(withText(R.string.settings_topics_page_blocked_topics_heading_new)).perform(click());
         mRenderTestRule.render(getBlockedTopicsRootView(), "blocked_topics_page_empty");
     }
 
@@ -188,22 +192,11 @@ public final class TopicsFragmentTest {
     @SmallTest
     @Feature({"RenderTest"})
     public void testRenderBlockedTopicsPopulated() throws IOException {
-        setTopicsPrefEnabled(false);
+        setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
-        onView(withText(R.string.settings_topics_page_blocked_topics_heading)).perform(click());
+        onView(withText(R.string.settings_topics_page_blocked_topics_heading_new)).perform(click());
         mRenderTestRule.render(getBlockedTopicsRootView(), "blocked_topics_page_populated");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    public void testRenderLearnMore() throws IOException {
-        setTopicsPrefEnabled(true);
-        mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
-        startTopicsSettings();
-        onView(withText(containsString("Learn more"))).perform(clickOnClickableSpan(0));
-        mRenderTestRule.render(getLearnMoreRootView(), "topics_learn_more");
     }
 
     @Test
@@ -224,14 +217,17 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testTurnTopicsOnWhenTopicListEmpty() {
+    public void testTurnTopicsOnWhenTopicListEmptyV2() {
         setTopicsPrefEnabled(false);
         startTopicsSettings();
         onView(getTopicsToggleMatcher()).perform(click());
 
         assertTrue(mFakePrivacySandboxBridge.getLastTopicsToggleValue());
         assertTrue(isTopicsPrefEnabled());
-        onViewWaiting(withText(R.string.settings_topics_page_current_topics_description_empty))
+        onViewWaiting(
+                        withText(
+                                R.string
+                                        .settings_topics_page_current_topics_description_empty_text_v2))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.settings_topics_page_current_topics_description_disabled))
                 .check(doesNotExist());
@@ -266,16 +262,14 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testTurnTopicsOff() {
+    public void testTurnTopicsOffV2() {
         setTopicsPrefEnabled(true);
         startTopicsSettings();
         onView(getTopicsToggleMatcher()).perform(click());
         assertFalse(mFakePrivacySandboxBridge.getLastTopicsToggleValue());
 
         assertFalse(isTopicsPrefEnabled());
-        onViewWaiting(withText(R.string.settings_topics_page_current_topics_description_disabled))
-                .check(matches(isDisplayed()));
-        onView(withText(R.string.settings_topics_page_current_topics_description_empty))
+        onView(withText(R.string.settings_topics_page_current_topics_description_empty_text_v2))
                 .check(doesNotExist());
 
         assertThat(
@@ -296,30 +290,13 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testBlockedTopicsAppearWhenTopicOff() {
-        setTopicsPrefEnabled(false);
-        mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
-        startTopicsSettings();
-        onView(withText(R.string.settings_topics_page_blocked_topics_heading)).perform(click());
-
-        onViewWaiting(withText(R.string.settings_topics_page_blocked_topics_description));
-        onView(withText(TOPIC_NAME_1)).check(matches(isDisplayed()));
-        onView(withText(TOPIC_NAME_2)).check(matches(isDisplayed()));
-
-        assertThat(
-                mUserActionTester.getActions(),
-                hasItems("Settings.PrivacySandbox.Topics.BlockedTopicsOpened"));
-    }
-
-    @Test
-    @SmallTest
-    public void testBlockedTopicsAppearWhenTopicOn() {
+    public void testBlockedTopicsAppearWhenTopicOnV2() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
-        onView(withText(R.string.settings_topics_page_blocked_topics_heading)).perform(click());
+        onView(withText(R.string.settings_topics_page_blocked_topics_heading_new)).perform(click());
 
-        onViewWaiting(withText(R.string.settings_topics_page_blocked_topics_description));
+        onViewWaiting(withText(R.string.settings_topics_page_blocked_topics_heading_new));
         onView(withText(TOPIC_NAME_1)).check(matches(isDisplayed()));
         onView(withText(TOPIC_NAME_2)).check(matches(isDisplayed()));
 
@@ -330,7 +307,7 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testBlockTopics() {
+    public void testBlockTopicsV2() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
@@ -348,12 +325,12 @@ public final class TopicsFragmentTest {
                 .check(matches(isDisplayed()));
 
         // Check that the empty state UI is displayed when the Topic list is empty.
-        onView(withText(R.string.settings_topics_page_current_topics_description_empty))
+        onView(withText(R.string.settings_topics_page_current_topics_description_empty_text_v2))
                 .check(matches(isDisplayed()));
 
         // Open the blocked topics sub-page
-        onView(withText(R.string.settings_topics_page_blocked_topics_heading)).perform(click());
-        onViewWaiting(withText(R.string.settings_topics_page_blocked_topics_sub_page_title));
+        onView(withText(R.string.settings_topics_page_blocked_topics_heading_new)).perform(click());
+        onViewWaiting(withText(R.string.settings_topics_page_blocked_topics_heading_new));
 
         // Verify that the topics are blocked
         onView(withText(TOPIC_NAME_1)).check(matches(isDisplayed()));
@@ -369,34 +346,30 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testUnblockTopics() {
+    public void testUnblockTopicsV2() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
 
         // Open the blocked Topics sub-page
-        onView(withText(R.string.settings_topics_page_blocked_topics_heading)).perform(click());
-        onViewWaiting(withText(R.string.settings_topics_page_blocked_topics_sub_page_title));
+        onView(withText(R.string.settings_topics_page_blocked_topics_heading_new)).perform(click());
+        onViewWaiting(withText(R.string.settings_topics_page_blocked_topics_heading_new));
 
         // Unblock the first Topic
         clickImageButtonNextToText(TOPIC_NAME_1);
         onView(withText(TOPIC_NAME_1)).check(doesNotExist());
-        onView(withText(R.string.settings_topics_page_add_topic_snackbar))
-                .check(matches(isDisplayed()));
 
         // Unblock the second Topic
         clickImageButtonNextToText(TOPIC_NAME_2);
         onView(withText(TOPIC_NAME_2)).check(doesNotExist());
-        onView(withText(R.string.settings_topics_page_add_topic_snackbar))
-                .check(matches(isDisplayed()));
 
         // Check that the empty state UI is displayed when the Topic list is empty.
-        onView(withText(R.string.settings_topics_page_blocked_topics_description_empty))
+        onView(withText(R.string.settings_topics_page_blocked_topics_description_empty_text_v2))
                 .check(matches(isDisplayed()));
 
         // Go back to the main Topics fragment
         pressBack();
-        onViewWaiting(withText(R.string.settings_topics_page_toggle_sub_label));
+        onViewWaiting(withText(R.string.settings_topics_page_toggle_sub_label_v2));
 
         // Verify that the Topics are unblocked
         onView(withText(TOPIC_NAME_1)).check(matches(isDisplayed()));
@@ -432,28 +405,18 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
-    public void testLearnMoreLink() {
-        startTopicsSettings();
-        // Open the Topics learn more activity
-        onView(withText(containsString("Learn more"))).perform(clickOnClickableSpan(0));
-        onViewWaiting(withText(R.string.settings_topics_page_learn_more_heading))
-                .check(matches(isDisplayed()));
-        // Close the additional activity by navigating back.
-        pressBack();
-        // Verify that metrics are sent
-        assertThat(
-                mUserActionTester.getActions(),
-                hasItems("Settings.PrivacySandbox.Topics.LearnMoreClicked"));
-    }
-
-    @Test
-    @SmallTest
     public void testFooterFledgeLink() throws IOException {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
+        TopicsFragment fragment = mSettingsActivityTestRule.getFragment();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+                });
         // Open a Fledge settings activity.
-        onView(withText(containsString("Site-suggested ads"))).perform(clickOnClickableSpan(0));
+        onView(withText(containsString("suggested ads"))).perform(clickOnClickableSpan(0));
         onViewWaiting(withText(R.string.settings_fledge_page_toggle_sub_label))
                 .check(matches(isDisplayed()));
         // Close the additional activity by navigating back.
@@ -466,6 +429,12 @@ public final class TopicsFragmentTest {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
         startTopicsSettings();
+        TopicsFragment fragment = mSettingsActivityTestRule.getFragment();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+                });
         // Open a CookieSettings activity.
         onView(withText(containsString("cookie settings"))).perform(clickOnClickableSpan(1));
         onViewWaiting(withText(R.string.third_party_cookies_page_title))
@@ -479,9 +448,11 @@ public final class TopicsFragmentTest {
     public void testTopicsIconsExist() {
         var activity = mSettingsActivityTestRule.startSettingsActivity();
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, new PrivacySandboxBridgeJni());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    for (var topic : PrivacySandboxBridge.getFirstLevelTopics()) {
+                    PrivacySandboxBridge privacySandboxBridge =
+                            new PrivacySandboxBridge(ProfileManager.getLastUsedRegularProfile());
+                    for (var topic : privacySandboxBridge.getFirstLevelTopics()) {
                         int iconId = TopicsUtils.getIconResourceIdForTopic(activity, topic);
                         assertTrue(
                                 "Topic drawable icon not found for: " + topic.getName(),

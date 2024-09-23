@@ -38,13 +38,17 @@ namespace cc {
 class CC_PAINT_EXPORT SkottieWrapper
     : public base::RefCountedThreadSafe<SkottieWrapper> {
  public:
+  // Factory methods are "Unsafe" because they assume the `data` comes from a
+  // trusted source. If this is not the case, use the
+  // `data_decoder::JsonSanitizer` to rinse the data first.
+  //
   // Creates an instance that can be serialized for IPC. This uses additional
   // memory to store the raw animation data.
-  static scoped_refptr<SkottieWrapper> CreateSerializable(
+  static scoped_refptr<SkottieWrapper> UnsafeCreateSerializable(
       std::vector<uint8_t> data);
 
   // Creates a non serializable instance of the class. This uses less memory.
-  static scoped_refptr<SkottieWrapper> CreateNonSerializable(
+  static scoped_refptr<SkottieWrapper> UnsafeCreateNonSerializable(
       base::span<const uint8_t> data);
 
   SkottieWrapper(const SkottieWrapper&) = delete;

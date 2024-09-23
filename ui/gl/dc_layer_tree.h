@@ -6,6 +6,7 @@
 #define UI_GL_DC_LAYER_TREE_H_
 
 #include <windows.h>
+
 #include <d3d11.h>
 #include <dcomp.h>
 #include <wrl/client.h>
@@ -16,7 +17,6 @@
 #include "base/containers/flat_map.h"
 #include "base/moving_window.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/delegated_ink_point_renderer_gpu.h"
@@ -32,21 +32,42 @@ class DelegatedInkMetadata;
 
 namespace gl {
 
-class DirectCompositionChildSurfaceWin;
 class SwapChainPresenter;
 
 // Cache video processor and its size.
 struct VideoProcessorWrapper {
   VideoProcessorWrapper();
   ~VideoProcessorWrapper();
-  VideoProcessorWrapper(VideoProcessorWrapper&& other);
-  VideoProcessorWrapper& operator=(VideoProcessorWrapper&& other);
+  VideoProcessorWrapper(VideoProcessorWrapper&& other) = delete;
+  VideoProcessorWrapper& operator=(VideoProcessorWrapper&& other) = delete;
   VideoProcessorWrapper(const VideoProcessorWrapper&) = delete;
   VideoProcessorWrapper& operator=(VideoProcessorWrapper& other) = delete;
 
-  // Input and output size of video processor .
+  class SizeSmoother {
+   public:
+    SizeSmoother();
+    ~SizeSmoother();
+    SizeSmoother(SizeSmoother&& other) = delete;
+    SizeSmoother& operator=(SizeSmoother&& other) = delete;
+    SizeSmoother(const SizeSmoother& other) = delete;
+    SizeSmoother& operator=(SizeSmoother& other) = delete;
+    void PutSize(gfx::Size size);
+    gfx::Size GetSize() const;
+
+   private:
+    base::MovingMax<int> width_;
+    base::MovingMax<int> height_;
+  };
+
+  // Input and output size of video processor.
   gfx::Size video_input_size;
   gfx::Size video_output_size;
+
+  // Max window filter for each dimension for input and output size.
+  // Used to calculate required size in case there are many different
+  // sizes in use.
+  SizeSmoother input_size_smoother;
+  SizeSmoother output_size_smoother;
 
   bool GetDriverSupportsVpAutoHdr() { return driver_supports_vp_auto_hdr; }
   void SetDriverSupportsVpAutoHdr(bool value) {
@@ -116,15 +137,10 @@ class SolidColorSurfacePool final {
 };
 
 // DCLayerTree manages a tree of direct composition visuals, and associated
-// swap chains for given overlay layers.  It maintains a list of pending layers
-// submitted using ScheduleDCLayer() that are presented and committed in
-// CommitAndClearPendingOverlays().
+// swap chains for given overlay layers.
 class GL_EXPORT DCLayerTree {
  public:
-  using DelegatedInkRenderer =
-      DelegatedInkPointRendererGpu<IDCompositionInkTrailDevice,
-                                   IDCompositionDelegatedInkTrail,
-                                   DCompositionInkTrailPoint>;
+  using DelegatedInkRenderer = DelegatedInkPointRendererGpu;
 
   DCLayerTree(bool disable_nv12_dynamic_textures,
               bool disable_vp_auto_hdr,
@@ -138,17 +154,13 @@ class GL_EXPORT DCLayerTree {
 
   ~DCLayerTree();
 
-  // Returns true on success.
-  bool Initialize(HWND window,
+  void Initialize(HWND window,
                   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
-  // Present pending overlay layers, and perform a direct composition commit if
-  // necessary.  Returns true if presentation and commit succeeded.
+  // Present overlay layers, and perform a direct composition commit if
+  // necessary. Returns true if presentation and commit succeeded.
   bool CommitAndClearPendingOverlays(
-      DirectCompositionChildSurfaceWin* root_surface);
-
-  // Schedule an overlay layer for the next CommitAndClearPendingOverlays call.
-  bool ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params);
+      std::vector<std::unique_ptr<DCLayerOverlayParams>> overlays);
 
   // Called by SwapChainPresenter to initialize video processor that can handle
   // at least given input and output size.  The video processor is shared across
@@ -157,6 +169,7 @@ class GL_EXPORT DCLayerTree {
   VideoProcessorWrapper* InitializeVideoProcessor(
       const gfx::Size& input_size,
       const gfx::Size& output_size,
+      bool is_hdr_output,
       bool& video_processor_recreated);
 
   bool disable_nv12_dynamic_textures() const {
@@ -235,11 +248,6 @@ class GL_EXPORT DCLayerTree {
     return ink_renderer_.get();
   }
 
-  bool HasPendingOverlaysForTesting() const {
-    CHECK_IS_TEST();
-    return pending_overlays_.size() > 0;
-  }
-
   // Owns a list of |VisualSubtree|s that represent visual layers.
   class VisualTree {
    public:
@@ -250,23 +258,10 @@ class GL_EXPORT DCLayerTree {
     VisualTree& operator=(const VisualTree&) = delete;
 
     ~VisualTree();
-    // Given pending overlays, builds or updates this visual tree.
-    // This method is called to build visual tree when
-    // kDCompVisualTreeOptimization is disabled.
-    // Parameters:
-    // overlays - overlay inputs to build dcomp tree.
-    // needs_rebuild_visual_tree - true if the tree needs to be rebuilt.
+    // Given overlays, builds or updates this visual tree.
     // Returns true if commit succeeded.
-    bool BuildTreeDefault(
-        const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
-        bool needs_rebuild_visual_tree);
-    // Given pending overlays, builds or updates this visual tree.
-    // This method is called to build visual tree when
-    // kDCompVisualTreeOptimization is enabled.
-    // Returns true if commit succeeded.
-    bool BuildTreeOptimized(
-        const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
-        bool needs_rebuild_visual_tree);
+    bool BuildTree(
+        const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays);
 
     void GetSwapChainVisualInfoForTesting(size_t index,
                                           gfx::Transform* transform,
@@ -325,7 +320,8 @@ class GL_EXPORT DCLayerTree {
           const gfx::Transform& quad_to_root_transform,
           const gfx::RRectF& rounded_corner_bounds,
           float opacity,
-          const std::optional<gfx::Rect>& clip_rect_in_root);
+          const std::optional<gfx::Rect>& clip_rect_in_root,
+          bool allow_antialiasing);
 
       IDCompositionVisual2* container_visual() const {
         return clip_visual_.Get();
@@ -427,6 +423,9 @@ class GL_EXPORT DCLayerTree {
       // pixels.
       gfx::Size image_size_;
 
+      // If false, force |transform_visual_| to use the hard border mode.
+      bool allow_antialiasing_ = true;
+
       // The order relative to the root surface. Positive values means the
       // visual appears in front of the root surface (i.e. overlay) and negative
       // values means the visual appears below the root surface (i.e. underlay).
@@ -503,25 +502,6 @@ class GL_EXPORT DCLayerTree {
   };
 
  private:
-  // Given pending overlays, builds or updates visual tree.
-  // Returns true if commit succeeded.
-  bool BuildVisualTreeHelper(
-      const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
-      // True if the caller determined that rebuilding the tree is required.
-      bool needs_rebuild_visual_tree);
-
-  // This will add an ink visual to the visual tree to enable delegated ink
-  // trails. This will initially always be called directly before an OS
-  // delegated ink API is used. After that, it can also be added anytime the
-  // visual tree is rebuilt.
-  // Returns true if the commit is needed.
-  bool AddDelegatedInkVisualToTreeIfNeeded(
-      IDCompositionVisual2* root_surface_visual);
-
-  // The ink renderer must be initialized before an OS API is used in order to
-  // set up the delegated ink visual and delegated ink trail object.
-  bool InitializeInkRenderer();
-
   const bool disable_nv12_dynamic_textures_;
   const bool disable_vp_auto_hdr_;
   const bool disable_vp_scaling_;
@@ -538,39 +518,18 @@ class GL_EXPORT DCLayerTree {
   // since there is no way to procedurally fill a DComp visual.
   std::unique_ptr<SolidColorSurfacePool> solid_color_surface_pool_;
 
-  // Store the largest video processor to avoid problems in
-  // (http://crbug.com/1121061) and (http://crbug.com/1472975).
-  VideoProcessorWrapper video_processor_wrapper_;
-
-  // To reduce resource usage, we keep track of the largest input/output
-  // dimensions for several last VideoProcessor usages. All 4 dimensions must be
-  // tracked separately.
-  base::MovingMax<int> max_video_processor_input_height_;
-  base::MovingMax<int> max_video_processor_input_width_;
-  base::MovingMax<int> max_video_processor_output_height_;
-  base::MovingMax<int> max_video_processor_output_width_;
+  // Store the largest video processor for SDR and HDR content
+  // to avoid problems in (http://crbug.com/1121061) and
+  // (http://crbug.com/1472975).
+  VideoProcessorWrapper video_processor_wrapper_sdr_;
+  VideoProcessorWrapper video_processor_wrapper_hdr_;
 
   // Current video processor input and output colorspace.
   gfx::ColorSpace video_input_color_space_;
   gfx::ColorSpace video_output_color_space_;
 
-  // Set to true if a direct composition root visual needs rebuild.
-  // Each overlay is represented by a VisualSubtree, which is placed in the root
-  // visual's child list in draw order. Whenever the number of overlays or their
-  // draw order changes, the root visual needs to be rebuilt.
-  bool needs_rebuild_visual_tree_ = false;
-
-  // Set if root surface is using a swap chain currently.
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> root_swap_chain_;
-
-  // Set if root surface is using a direct composition surface currently.
-  Microsoft::WRL::ComPtr<IDCompositionSurface> root_dcomp_surface_;
-
   // Root direct composition visual for window dcomp target.
   Microsoft::WRL::ComPtr<IDCompositionVisual2> dcomp_root_visual_;
-
-  // List of pending overlay layers from ScheduleDCLayer().
-  std::vector<std::unique_ptr<DCLayerOverlayParams>> pending_overlays_;
 
   // List of swap chain presenters for previous frame.
   std::vector<std::unique_ptr<SwapChainPresenter>> video_swap_chains_;
@@ -587,9 +546,15 @@ class GL_EXPORT DCLayerTree {
 
   // Renderer for drawing delegated ink trails using OS APIs. This is created
   // when the DCLayerTree is created, but can only be queried to check if the
-  // platform supports delegated ink trails. It must be initialized via the
-  // Initialize() method in order to be used for drawing delegated ink trails.
+  // platform supports delegated ink trails. It will be initialized via the
+  // call to MakeDelegatedInkOverlay when DCLayerTree has received a
+  // delegated_ink_metadata_ and CommitAndClearPendingOverlays is underway.
   std::unique_ptr<DelegatedInkRenderer> ink_renderer_;
+
+  // Cache the metadata received by the DCLayerTree until it is time to
+  // CommitAndClearPendingOverlays. At that point the metadata will be moved
+  // to DelegatedInkPointRendererGPU.
+  std::unique_ptr<gfx::DelegatedInkMetadata> pending_delegated_ink_metadata_;
 };
 
 }  // namespace gl

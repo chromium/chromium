@@ -119,12 +119,12 @@ gfx::Point TouchSelectionControllerClientChildFrame::ConvertFromRoot(
 }
 
 bool TouchSelectionControllerClientChildFrame::SupportsAnimation() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void TouchSelectionControllerClientChildFrame::SetNeedsAnimate() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TouchSelectionControllerClientChildFrame::MoveCaret(
@@ -152,18 +152,18 @@ void TouchSelectionControllerClientChildFrame::SelectBetweenCoordinates(
 
 void TouchSelectionControllerClientChildFrame::OnSelectionEvent(
     ui::SelectionEventType event) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TouchSelectionControllerClientChildFrame::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::unique_ptr<ui::TouchHandleDrawable>
 TouchSelectionControllerClientChildFrame::CreateDrawable() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -180,7 +180,7 @@ bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
     case ui::TouchEditable::kPaste: {
       std::u16string result;
       ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-          ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+          ui::EndpointType::kDefault, {.notify_if_restricted = false});
       ui::Clipboard::GetForCurrentThread()->ReadText(
           ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
       return editable && !result.empty();
@@ -236,7 +236,7 @@ void TouchSelectionControllerClientChildFrame::ExecuteCommand(int command_id,
           /*should_show_context_menu=*/false);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -249,8 +249,8 @@ void TouchSelectionControllerClientChildFrame::RunContextMenu() {
   gfx::PointF origin = rwhv_->TransformPointToRootCoordSpaceF(gfx::PointF());
   anchor_point.Offset(-origin.x(), -origin.y());
   RenderWidgetHostImpl* host = rwhv_->host();
-  host->GetAssociatedFrameWidget()->ShowContextMenu(
-      ui::MENU_SOURCE_TOUCH_EDIT_MENU, gfx::ToRoundedPoint(anchor_point));
+  host->GetRenderInputRouter()->ShowContextMenuAtPoint(
+      gfx::ToRoundedPoint(anchor_point), ui::MENU_SOURCE_TOUCH_EDIT_MENU);
 
   // Hide selection handles after getting rect-between-bounds from touch
   // selection controller; otherwise, rect would be empty and the above

@@ -195,13 +195,11 @@ void RunRevokeConsentTest(
   switch (action) {
     case RevokeConsentAction::kRevokeSyncConsent:
       primary_account_mutator->RevokeSyncConsent(
-          signin_metrics::ProfileSignout::kTest,
-          signin_metrics::SignoutDelete::kIgnoreMetric);
+          signin_metrics::ProfileSignout::kTest);
       break;
     case RevokeConsentAction::kClearPrimaryAccount:
       primary_account_mutator->ClearPrimaryAccount(
-          signin_metrics::ProfileSignout::kTest,
-          signin_metrics::SignoutDelete::kIgnoreMetric);
+          signin_metrics::ProfileSignout::kTest);
       break;
   }
   run_loop.Run();
@@ -296,8 +294,7 @@ void RunClearPrimaryAccountTestForSigninOnly() {
                             secondary_account_info.account_id));
 
   primary_account_mutator->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kTest,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+      signin_metrics::ProfileSignout::kTest);
   run_loop.Run();
 
   EXPECT_FALSE(
@@ -388,7 +385,7 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_Sync) {
 // Tests that various preconditions of SetPrimaryAccount() not being satisfied
 // should cause the setting of the primary account to fail. Not run on
 // ChromeOS, where those preconditions do not exist.
-// TODO(https://crbug.com/983124): Run these tests on ChromeOS if/once we
+// TODO(crbug.com/41470280): Run these tests on ChromeOS if/once we
 // enable those preconditions on that platform
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Checks that setting the primary account fails if the account is not known by
@@ -641,8 +638,7 @@ TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount_NotSignedIn) {
   EXPECT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   EXPECT_FALSE(primary_account_mutator->ClearPrimaryAccount(
-      signin_metrics::ProfileSignout::kTest,
-      signin_metrics::SignoutDelete::kIgnoreMetric));
+      signin_metrics::ProfileSignout::kTest));
 }
 
 // Test that ClearPrimaryAccount() clears the primary account, revokes the

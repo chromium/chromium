@@ -127,7 +127,7 @@ TEST_F(SandboxFileSystemBackendDelegateTest, OpenFileSystemAccessesStorage) {
   const blink::StorageKey& storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://example.com");
 
-  // TODO(https://crbug.com/1330608): ensure that this test suite properly
+  // TODO(crbug.com/40227222): ensure that this test suite properly
   // integrates non-default BucketLocators into OpenFileSystem.
   OpenFileSystem(BucketLocator::ForDefaultBucket(storage_key),
                  kFileSystemTypeTemporary,

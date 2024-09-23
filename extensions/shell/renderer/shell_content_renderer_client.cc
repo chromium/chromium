@@ -13,9 +13,11 @@
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extensions_client.h"
+#include "extensions/renderer/api/core_extensions_renderer_api_provider.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/shell/common/shell_extensions_client.h"
+#include "extensions/shell/renderer/api/shell_extensions_renderer_api_provider.h"
 #include "extensions/shell/renderer/shell_extensions_renderer_client.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -34,21 +36,22 @@ ShellContentRendererClient::ShellContentRendererClient() = default;
 ShellContentRendererClient::~ShellContentRendererClient() = default;
 
 void ShellContentRendererClient::RenderThreadStarted() {
-  RenderThread* thread = RenderThread::Get();
-
   extensions_client_.reset(CreateExtensionsClient());
   ExtensionsClient::Set(extensions_client_.get());
 
   extensions_renderer_client_ =
       std::make_unique<ShellExtensionsRendererClient>();
+  extensions_renderer_client_->AddAPIProvider(
+      std::make_unique<CoreExtensionsRendererAPIProvider>());
+  extensions_renderer_client_->AddAPIProvider(
+      std::make_unique<ShellExtensionsRendererAPIProvider>());
   ExtensionsRendererClient::Set(extensions_renderer_client_.get());
-
-  thread->AddObserver(extensions_renderer_client_->GetDispatcher());
+  extensions_renderer_client_->RenderThreadStarted();
 }
 
 void ShellContentRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame) {
-  Dispatcher* dispatcher = extensions_renderer_client_->GetDispatcher();
+  Dispatcher* dispatcher = extensions_renderer_client_->dispatcher();
   // ExtensionFrameHelper destroys itself when the RenderFrame is destroyed.
   new ExtensionFrameHelper(render_frame, dispatcher);
 
@@ -80,7 +83,8 @@ blink::WebPlugin* ShellContentRendererClient::CreatePluginReplacement(
 void ShellContentRendererClient::WillSendRequest(
     blink::WebLocalFrame* frame,
     ui::PageTransition transition_type,
-    const blink::WebURL& url,
+    const blink::WebURL& upstream_url,
+    const blink::WebURL& target_url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin* initiator_origin,
     GURL* new_url) {
@@ -101,13 +105,13 @@ bool ShellContentRendererClient::IsExternalPepperPlugin(
 
 void ShellContentRendererClient::RunScriptsAtDocumentStart(
     content::RenderFrame* render_frame) {
-  extensions_renderer_client_->GetDispatcher()->RunScriptsAtDocumentStart(
+  extensions_renderer_client_->dispatcher()->RunScriptsAtDocumentStart(
       render_frame);
 }
 
 void ShellContentRendererClient::RunScriptsAtDocumentEnd(
     content::RenderFrame* render_frame) {
-  extensions_renderer_client_->GetDispatcher()->RunScriptsAtDocumentEnd(
+  extensions_renderer_client_->dispatcher()->RunScriptsAtDocumentEnd(
       render_frame);
 }
 

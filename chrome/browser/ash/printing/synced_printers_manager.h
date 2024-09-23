@@ -63,7 +63,7 @@ class SyncedPrintersManager : public KeyedService {
   // completion of this method, the |observer| can be safely destroyed.
   virtual void RemoveObserver(SyncedPrintersManager::Observer* observer) = 0;
 
-  // Returns a ModelTypeSyncBridge for the sync client.
+  // Returns a DataTypeSyncBridge for the sync client.
   virtual PrintersSyncBridge* GetSyncBridge() = 0;
 
 };

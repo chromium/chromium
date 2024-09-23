@@ -32,11 +32,12 @@ TEST_F(ArchivableCredentialPasswordFormTest, Creation) {
   passwordForm.url = GURL(base::SysNSStringToUTF16(url));
   ArchivableCredential* credential =
       [[ArchivableCredential alloc] initWithPasswordForm:passwordForm
-                                                 favicon:favicon];
+                                                 favicon:favicon
+                                                    gaia:nil];
 
   EXPECT_TRUE(credential);
   EXPECT_EQ(passwordForm.times_used_in_html_form, credential.rank);
-  EXPECT_NSEQ(username, credential.user);
+  EXPECT_NSEQ(username, credential.username);
   EXPECT_NSEQ(favicon, credential.favicon);
   EXPECT_NSEQ(password, credential.password);
   EXPECT_NSEQ(@"alpha.example.com", credential.serviceName);
@@ -53,7 +54,9 @@ TEST_F(ArchivableCredentialPasswordFormTest, AndroidCredentialCreation) {
   form.password_value = u"example";
 
   ArchivableCredential* credentialOnlyRealm =
-      [[ArchivableCredential alloc] initWithPasswordForm:form favicon:nil];
+      [[ArchivableCredential alloc] initWithPasswordForm:form
+                                                 favicon:nil
+                                                    gaia:nil];
 
   EXPECT_TRUE(credentialOnlyRealm);
   EXPECT_NSEQ(@"android://hash@com.example.my.app",
@@ -64,7 +67,9 @@ TEST_F(ArchivableCredentialPasswordFormTest, AndroidCredentialCreation) {
   form.app_display_name = "my.app";
 
   ArchivableCredential* credentialRealmAndAppName =
-      [[ArchivableCredential alloc] initWithPasswordForm:form favicon:nil];
+      [[ArchivableCredential alloc] initWithPasswordForm:form
+                                                 favicon:nil
+                                                    gaia:nil];
 
   EXPECT_NSEQ(@"my.app", credentialRealmAndAppName.serviceName);
   EXPECT_NSEQ(@"android://hash@com.example.my.app",
@@ -73,7 +78,9 @@ TEST_F(ArchivableCredentialPasswordFormTest, AndroidCredentialCreation) {
   form.affiliated_web_realm = "https://m.app.example.com";
 
   ArchivableCredential* credentialAffiliatedRealm =
-      [[ArchivableCredential alloc] initWithPasswordForm:form favicon:nil];
+      [[ArchivableCredential alloc] initWithPasswordForm:form
+                                                 favicon:nil
+                                                    gaia:nil];
 
   EXPECT_NSEQ(@"app.example.com", credentialAffiliatedRealm.serviceName);
   EXPECT_NSEQ(@"https://m.app.example.com",
@@ -89,7 +96,9 @@ TEST_F(ArchivableCredentialPasswordFormTest, BlockedCreation) {
   form.blocked_by_user = true;
 
   ArchivableCredential* credential =
-      [[ArchivableCredential alloc] initWithPasswordForm:form favicon:nil];
+      [[ArchivableCredential alloc] initWithPasswordForm:form
+                                                 favicon:nil
+                                                    gaia:nil];
 
   EXPECT_FALSE(credential);
 }
@@ -103,12 +112,13 @@ TEST_F(ArchivableCredentialPasswordFormTest, PasswordFormFromCredential) {
 
   id<Credential> credential =
       [[ArchivableCredential alloc] initWithFavicon:nil
+                                               gaia:nil
                                            password:password
                                                rank:1
                                    recordIdentifier:recordIdentifier
                                   serviceIdentifier:url
                                         serviceName:nil
-                                               user:username
+                                           username:username
                                                note:nil];
   EXPECT_TRUE(credential);
 
@@ -137,11 +147,12 @@ TEST_F(ArchivableCredentialPasswordFormTest, CreationWithMobileURL) {
   passwordForm.url = GURL(base::SysNSStringToUTF16(url));
   ArchivableCredential* credential =
       [[ArchivableCredential alloc] initWithPasswordForm:passwordForm
-                                                 favicon:favicon];
+                                                 favicon:favicon
+                                                    gaia:nil];
 
   EXPECT_TRUE(credential);
   EXPECT_EQ(passwordForm.times_used_in_html_form, credential.rank);
-  EXPECT_NSEQ(username, credential.user);
+  EXPECT_NSEQ(username, credential.username);
   EXPECT_NSEQ(favicon, credential.favicon);
   EXPECT_NSEQ(password, credential.password);
   EXPECT_NSEQ(@"alpha.example.com", credential.serviceName);

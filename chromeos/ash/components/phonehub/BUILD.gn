@@ -141,6 +141,7 @@ static_library("phonehub") {
 
   deps = [
     "//ash/constants",
+    "//ash/public/cpp:cpp",
     "//ash/resources/vector_icons",
     "//ash/webui/eche_app_ui:eche_app_ui_pref",
     "//ash/webui/eche_app_ui:eche_connection_status",
@@ -159,6 +160,8 @@ static_library("phonehub") {
     "//chromeos/dbus/power",
     "//chromeos/services/network_config/public/cpp",
     "//components/keyed_service/core",
+    "//components/metrics/structured:structured_events",
+    "//components/metrics/structured:structured_metrics_features",
     "//components/prefs",
     "//components/session_manager/core",
     "//device/bluetooth",
@@ -283,6 +286,7 @@ source_set("unit_tests") {
     "notification_manager_impl_unittest.cc",
     "notification_processor_unittest.cc",
     "onboarding_ui_tracker_impl_unittest.cc",
+    "phone_hub_structured_metrics_logger_unittest.cc",
     "phone_hub_ui_readiness_recorder_unittest.cc",
     "phone_status_model_unittest.cc",
     "phone_status_processor_unittest.cc",
@@ -318,6 +322,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/secure_channel/public/cpp/client:test_support",
     "//chromeos/ash/services/secure_channel/public/mojom",
     "//chromeos/dbus/power",
+    "//components/metrics/structured:structured_metrics_features",
     "//components/prefs:test_support",
     "//components/session_manager/core",
     "//device/bluetooth:mocks",

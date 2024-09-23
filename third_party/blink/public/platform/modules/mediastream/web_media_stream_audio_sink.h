@@ -12,6 +12,7 @@
 namespace media {
 class AudioBus;
 class AudioParameters;
+struct AudioGlitchInfo;
 }  // namespace media
 
 namespace blink {
@@ -51,6 +52,16 @@ class BLINK_PLATFORM_EXPORT WebMediaStreamAudioSink
   // used for buffering playback and for A/V synchronization purposes.
   virtual void OnData(const media::AudioBus& audio_bus,
                       base::TimeTicks estimated_capture_time) = 0;
+
+  // MediaStreamAudioDeliverer<Consumer> expects the Consumers to have an
+  // OnData method with this signature. Since no WebMediaStreamAudioSinks use
+  // the glitch info, we discard it and call the virtual OnData method which
+  // does not take glitch info as an argument.
+  void OnData(const media::AudioBus& audio_bus,
+              base::TimeTicks estimated_capture_time,
+              const media::AudioGlitchInfo& glitch_info) {
+    OnData(audio_bus, estimated_capture_time);
+  }
 
   // Callback called when the format of the audio stream has changed.  This is
   // always called at least once before OnData(), and on the same thread.

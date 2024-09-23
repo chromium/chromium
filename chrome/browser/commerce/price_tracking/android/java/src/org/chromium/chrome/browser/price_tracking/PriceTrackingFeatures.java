@@ -70,7 +70,7 @@ public class PriceTrackingFeatures {
         }
         return IdentityServicesProvider.get()
                 .getIdentityManager(profile)
-                .hasPrimaryAccount(ConsentLevel.SYNC);
+                .hasPrimaryAccount(ConsentLevel.SIGNIN);
     }
 
     private static boolean isAnonymizedUrlDataCollectionEnabled(Profile profile) {

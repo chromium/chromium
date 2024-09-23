@@ -47,7 +47,8 @@ public class ImplicitPriceDropSubscriptionsManager {
                         unsubscribe(tab);
                     }
 
-                    // TODO(crbug.com/1289031): Unsubscribe when user navigates away instead of once
+                    // TODO(crbug.com/40211784): Unsubscribe when user navigates away instead of
+                    // once
                     // selecting the tab.
                     @Override
                     public void didSelectTab(Tab tab, int type, int lastId) {
@@ -141,7 +142,7 @@ public class ImplicitPriceDropSubscriptionsManager {
                 });
     }
 
-    // TODO(crbug.com/1186450): Extract this method to a utility class. Also, make the one-day time
+    // TODO(crbug.com/40172490): Extract this method to a utility class. Also, make the one-day time
     // limit a field parameter.
     private boolean isStaleTab(Tab tab) {
         long timeSinceLastOpened = System.currentTimeMillis() - tab.getTimestampMillis();

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -148,6 +149,25 @@ TEST_F(EditingUtilitiesTest, IsEditablePositionWithSpan) {
   Element& target = *GetDocument().getElementById(AtomicString("target"));
   EXPECT_FALSE(IsEditablePosition(Position::BeforeNode(target)));
   EXPECT_TRUE(IsEditablePosition(Position(target, 0)));
+}
+
+// https://issues.chromium.org/issues/41490809
+TEST_F(EditingUtilitiesTest, IsEditablePositionWithVisibleInertElement) {
+  SetBodyContent(
+      R"(<div contenteditable><span inert id="target">abc</span></div>)");
+  Element& target = *GetElementById("target");
+  EXPECT_TRUE(IsEditablePosition(Position::BeforeNode(target)));
+  EXPECT_FALSE(IsEditablePosition(Position(target.firstChild(), 0)));
+}
+
+// https://issues.chromium.org/issues/41490809
+TEST_F(EditingUtilitiesTest, IsEditablePositionWithInVisibleInertElement) {
+  SetBodyContent(
+      R"(<div contenteditable>
+        <span inert id="target" style="display: none;">abc</span></div>)");
+  Element& target = *GetElementById("target");
+  EXPECT_TRUE(IsEditablePosition(Position::BeforeNode(target)));
+  EXPECT_FALSE(IsEditablePosition(Position(target.firstChild(), 0)));
 }
 
 TEST_F(EditingUtilitiesTest, isEditablePositionWithTable) {

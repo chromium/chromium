@@ -1,0 +1,50 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "dlp_content_manager_test_helper.cc",
+    "dlp_content_manager_test_helper.h",
+    "dlp_files_test_base.cc",
+    "dlp_files_test_base.h",
+    "dlp_rules_manager_test_utils.cc",
+    "dlp_rules_manager_test_utils.h",
+    "mock_dlp_content_manager.cc",
+    "mock_dlp_content_manager.h",
+    "mock_dlp_content_observer.cc",
+    "mock_dlp_content_observer.h",
+    "mock_dlp_crosapi.cc",
+    "mock_dlp_crosapi.h",
+    "mock_dlp_rules_manager.cc",
+    "mock_dlp_rules_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp/dialogs",
+    "//chrome/browser/enterprise/data_controls",
+    "//chrome/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/ash/login/users:test_support",
+      "//chrome/browser/ash/policy/dlp",
+    ]
+  }
+}

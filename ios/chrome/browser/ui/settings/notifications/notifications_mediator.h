@@ -7,15 +7,20 @@
 
 #import <UIKit/UIKit.h>
 #import <string>
+#import <vector>
 
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_view_controller_delegate.h"
 
+namespace syncer {
+class DeviceInfoSyncService;
+}  // namespace syncer
+
 class PrefService;
+enum class PushNotificationClientId;
 @protocol NotificationsAlertPresenter;
 @protocol NotificationsConsumer;
 @protocol NotificationsNavigationCommands;
-@protocol TipsNotificationsAlertPresenter;
 
 // Mediator for Notifications UI.
 @interface NotificationsMediator
@@ -26,6 +31,8 @@ class PrefService;
 // manipulate their push notification permissions.
 - (instancetype)initWithPrefService:(PrefService*)prefs
                              gaiaID:(const std::string&)gaiaID
+              deviceInfoSyncService:
+                  (syncer::DeviceInfoSyncService*)deviceInfoSyncService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -37,9 +44,11 @@ class PrefService;
 @property(nonatomic, weak) id<NotificationsNavigationCommands> handler;
 
 // Handler for displaying notification related alerts.
-@property(nonatomic, weak)
-    id<NotificationsAlertPresenter, TipsNotificationsAlertPresenter>
-        presenter;
+@property(nonatomic, weak) id<NotificationsAlertPresenter> presenter;
+
+// Called after a user disallows notification permissions.
+- (void)deniedPermissionsForClientIds:
+    (std::vector<PushNotificationClientId>)clientIds;
 
 @end
 

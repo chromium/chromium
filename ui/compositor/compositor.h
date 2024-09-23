@@ -46,6 +46,7 @@
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/compositor_lock.h"
 #include "ui/compositor/compositor_observer.h"
+#include "ui/compositor/host_begin_frame_observer.h"
 #include "ui/compositor/layer_animator_collection.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/compositor/throughput_tracker_host.h"
@@ -89,7 +90,6 @@ namespace mojom {
 class DisplayPrivate;
 class ExternalBeginFrameController;
 }  // namespace mojom
-class ContextProvider;
 class HostFrameSinkManager;
 class LocalSurfaceId;
 class RasterContextProvider;
@@ -116,11 +116,6 @@ class COMPOSITOR_EXPORT ContextFactory {
   // by calling RemoveCompositor when the compositor gets destroyed.
   virtual void CreateLayerTreeFrameSink(
       base::WeakPtr<Compositor> compositor) = 0;
-
-  // Return a reference to a shared offscreen context provider usable from the
-  // main thread.
-  virtual scoped_refptr<viz::ContextProvider>
-  SharedMainThreadContextProvider() = 0;
 
   // Return a reference to a shared offscreen context provider usable from the
   // main thread.
@@ -307,11 +302,13 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void AddVSyncParameterObserver(
       mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer);
 
-  // Sets and caches the maximum vsync interval, to be applied to the
-  // |display_private_| when possible, for use with variable refresh rates. An
-  // absent value indicates that VRR is not enabled.
-  void SetMaxVrrInterval(
-      const std::optional<base::TimeDelta>& max_vrr_interval);
+  // Sets and caches the |max_vsync_interval| and |vrr_state|, to be applied to
+  // the |display_private_| when possible, for use with variable refresh rates
+  // and/or virtual modes. An absent |max_vsync_interval| value indicates that
+  // the display is not capable of utilizing such features.
+  void SetMaxVSyncAndVrr(
+      const std::optional<base::TimeDelta>& max_vsync_interval,
+      display::VariableRefreshRateState vrr_state);
 
   // Sets the widget for the compositor to render into.
   void SetAcceleratedWidget(gfx::AcceleratedWidget widget);
@@ -371,8 +368,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   // Registers a callback that is run when the next frame successfully makes it
   // to the screen (it's entirely possible some frames may be dropped between
   // the time this is called and the callback is run).
-  using SuccessfulPresentationTimeCallback =
-      base::OnceCallback<void(base::TimeTicks)>;
+  using SuccessfulPresentationTimeCallback = base::OnceCallback<void(
+      const viz::FrameTimingDetails& frame_timing_details)>;
   void RequestSuccessfulPresentationTimeForNextFrame(
       SuccessfulPresentationTimeCallback callback);
 
@@ -420,18 +417,17 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
                  base::TimeTicks,
                  base::TimeTicks) override;
   void DidCommitAndDrawFrame(int source_frame_number) override {}
-  void DidReceiveCompositorFrameAck() override;
+  void DidReceiveCompositorFrameAckDeprecatedForCompositor() override;
   void DidCompletePageScaleAnimation(int source_frame_number) override {}
   void DidPresentCompositorFrame(
       uint32_t frame_token,
-      const gfx::PresentationFeedback& feedback) override;
+      const viz::FrameTimingDetails& frame_timing_details) override;
   void RecordStartOfFrameMetrics() override {}
   void RecordEndOfFrameMetrics(
       base::TimeTicks frame_begin_time,
       cc::ActiveFrameSequenceTrackers trackers) override {}
   std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics()
       override;
-  std::unique_ptr<cc::WebVitalMetrics> GetWebVitalMetrics() override;
   void NotifyThroughputTrackerResults(
       cc::CustomTrackerResults results) override;
   void DidObserveFirstScrollDelay(
@@ -455,8 +451,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void StartThroughputTracker(
       TrackerId tracker_id,
       ThroughputTrackerHost::ReportCallback callback) override;
-  bool StopThroughtputTracker(TrackerId tracker_id) override;
-  void CancelThroughtputTracker(TrackerId tracker_id) override;
+  bool StopThroughputTracker(TrackerId tracker_id) override;
+  void CancelThroughputTracker(TrackerId tracker_id) override;
 
   // base::PowerSuspendObserver:
   void OnResume() override;
@@ -467,6 +463,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   bool IsLocked() { return lock_manager_.IsLocked(); }
 
+  bool output_is_secure() const { return output_is_secure_; }
   void SetOutputIsSecure(bool output_is_secure);
 
   const cc::LayerTreeDebugState& GetLayerTreeDebugState() const;
@@ -477,7 +474,6 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   }
 
   const viz::FrameSinkId& frame_sink_id() const { return frame_sink_id_; }
-  int activated_frame_count() const { return activated_frame_count_; }
   float refresh_rate() const { return refresh_rate_; }
 
   bool use_external_begin_frame_control() const {
@@ -511,6 +507,28 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   const cc::LayerTreeHost* host_for_testing() const { return host_.get(); }
 
+  void AddSimpleBeginFrameObserver(
+      ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs);
+  void RemoveSimpleBeginFrameObserver(
+      ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs);
+
+  const std::optional<base::TimeDelta>& max_vsync_interval_for_testing() const {
+    return max_vsync_interval_;
+  }
+
+  display::VariableRefreshRateState vrr_state_for_testing() const {
+    return vrr_state_;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Sets the list of refresh rates that the compositor may request to use.
+  void SetSeamlessRefreshRates(
+      const std::vector<float>& seamless_refresh_rates);
+
+  // Notifies observers of a new refresh rate preference.
+  void OnSetPreferredRefreshRate(float refresh_rate);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
  private:
   friend class base::RefCounted<Compositor>;
   friend class TotalAnimationThroughputReporter;
@@ -522,6 +540,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void ReportMetricsForTracker(
       int tracker_id,
       const cc::FrameSequenceMetrics::CustomReportData& data);
+
+  void MaybeUpdateObserveBeginFrame();
 
   gfx::Size size_;
 
@@ -539,6 +559,10 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   std::unique_ptr<PendingBeginFrameArgs> pending_begin_frame_args_;
 
+  ui::HostBeginFrameObserver::SimpleBeginFrameObserverList
+      simple_begin_frame_observers_;
+  std::unique_ptr<ui::HostBeginFrameObserver> host_begin_frame_observer_;
+
   // The root of the Layer tree drawn by this compositor.
   raw_ptr<Layer> root_layer_ = nullptr;
 
@@ -547,8 +571,6 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
       animation_observer_list_;
 
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
-  // A sequence number of a current compositor frame for use with metrics.
-  int activated_frame_count_ = 0;
 
 #if BUILDFLAG(IS_MAC)
   // Current CGDirectDisplayID for the screen.
@@ -574,7 +596,12 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   base::TimeTicks vsync_timebase_;
   base::TimeDelta vsync_interval_ = viz::BeginFrameArgs::DefaultInterval();
   bool has_vsync_params_ = false;
-  std::optional<base::TimeDelta> max_vrr_interval_ = std::nullopt;
+  std::optional<base::TimeDelta> max_vsync_interval_ = std::nullopt;
+  display::VariableRefreshRateState vrr_state_ =
+      display::VariableRefreshRateState::kVrrNotCapable;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::vector<float> seamless_refresh_rates_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const bool use_external_begin_frame_control_;
   const bool force_software_compositor_;
@@ -608,7 +635,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   bool animations_are_enabled_ = true;
 
-  // This together with the animatinos observer list carries the "last
+  // This together with the animations observer list carries the "last
   // animation finished" state to the next BeginMainFrame so that it could
   // notify observers if needed. It is set in AddAnimationObserver and
   // Cleared in BeginMainFrame when there are no animation observers.

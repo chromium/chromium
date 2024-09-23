@@ -1,0 +1,34 @@
+[
+  {
+    "namespace": "ignoreAdditionalProperties",
+    "description": "The ignoreAdditionalProperties API.",
+    "types": [
+      {
+        "id": "IgnoreAdditionalPropertiesType",
+        "type": "object",
+        "properties": {
+          "string": {
+            "type": "string",
+            "description": "Some string."
+          }
+        },
+        "ignoreAdditionalProperties": true
+      }
+    ],
+    "functions": [
+      {
+        "name": "ignoreAdditionalPropertiesParams",
+        "type": "function",
+        "description": "Takes an object which ignores additional properties",
+        "parameters": [
+          {
+            "name": "paramObject",
+            "type": "object",
+            "properties": {},
+            "ignoreAdditionalProperties": true
+          }
+        ]
+      }
+    ]
+  }
+]

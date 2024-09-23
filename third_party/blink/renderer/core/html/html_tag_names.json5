@@ -355,6 +355,7 @@
     {
       name: "object",
       constructorNeedsCreateElementFlags: true,
+      noTypeHelpers: true,
     },
     {
       name: "ol",
@@ -382,6 +383,8 @@
       name: "permission",
       interfaceName: "HTMLPermissionElement",
       runtimeEnabled: "PermissionElement",
+      runtimeFlagHasOriginTrial: true,
+      noTypeHelpers: true,
     },
     {
       name: "picture",
@@ -410,8 +413,7 @@
     },
     {
       name: "rt",
-      JSInterfaceName: "HTMLElement",
-      interfaceName: "HTMLRTElement",
+      interfaceName: "HTMLElement",
     },
     {
       name: "rtc",
@@ -419,8 +421,7 @@
     },
     {
       name: "ruby",
-      JSInterfaceName: "HTMLElement",
-      interfaceName: "HTMLRubyElement",
+      interfaceName: "HTMLElement",
     },
     {
       name: "s",
@@ -436,8 +437,7 @@
     },
     {
       name: "search",
-      interfaceName: "HTMLElement",
-      runtimeEnabled: "HTMLSearchElement",
+      interfaceName: "HTMLSearchElement",
     },
     {
       name: "section",
@@ -449,8 +449,9 @@
     },
     {
       name: "selectedoption",
-      interfaceName: "HTMLElement",
-      runtimeEnabled: "HTMLSelectListElement",
+      interfaceName: "HTMLSelectedOptionElement",
+      interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
+      runtimeEnabled: "CustomizableSelect",
     },
     {
       name: "selectlist",

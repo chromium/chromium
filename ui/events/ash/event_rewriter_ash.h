@@ -200,6 +200,18 @@ class EventRewriterAsh : public EventRewriter {
     // `device_id` weren't found) or if an invalid `key_code` was passed in.
     virtual std::optional<ui::mojom::ExtendedFkeysModifier>
     GetExtendedFkeySetting(int device_id, ui::KeyboardCode key_code) = 0;
+
+    // Used to send a notification when a income event is a shortcut with
+    // arrow key and search key but could not find a matched remapped event,
+    // and it's a split modifier keyboard.
+    virtual void NotifySixPackRewriteBlockedByFnKey(
+        ui::KeyboardCode key_code,
+        ui::mojom::SixPackShortcutModifier modifier) = 0;
+
+    // Used to send a notification when a income event is a shortcut with
+    // top row key and search key but could not find a matched remapped event,
+    // and it's a split modifier keyboard.
+    virtual void NotifyTopRowRewriteBlockedByFnKey() = 0;
   };
 
   // Does not take ownership of the |sticky_keys_controller|, which may also be
@@ -265,7 +277,7 @@ class EventRewriterAsh : public EventRewriter {
 
   // Returns true when the input |state| has key |DomKey::ALT_GRAPH_LATCH| and
   // is remapped.
-  // TODO(crbug.com/1440147): Remove this function.
+  // TODO(crbug.com/40265877): Remove this function.
   bool RewriteModifierKeys(const KeyEvent& event, MutableKeyState* state) {
     return RewriteModifierKeys(event, last_keyboard_device_id_, state);
   }
@@ -332,14 +344,25 @@ class EventRewriterAsh : public EventRewriter {
   // support supplying a custom layout via sysfs.
   bool RewriteTopRowKeysForCustomLayout(const ui::KeyEvent& key_event,
                                         int device_id,
-                                        bool search_is_pressed,
+                                        bool flip_remapping,
+                                        EventFlags flip_remapping_flag,
                                         MutableKeyState* state);
 
   // Handle Fn/Action key remapping for Wilco keyboard layout.
   bool RewriteTopRowKeysForLayoutWilco(
       const KeyEvent& key_event,
       int device_id,
-      bool search_is_pressed,
+      bool flip_remapping,
+      EventFlags flip_remapping_flag,
+      MutableKeyState* state,
+      KeyboardCapability::KeyboardTopRowLayout layout);
+
+  bool RewriteTopRowKeysForStandardLayouts(
+      const KeyEvent& key_event,
+      int device_id,
+      bool flip_remapping,
+      EventFlags flip_remapping_flag,
+      bool rewrite_modifier_is_pressed,
       MutableKeyState* state,
       KeyboardCapability::KeyboardTopRowLayout layout);
 

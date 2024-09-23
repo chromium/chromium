@@ -11,6 +11,8 @@ source_set("test_support_common") {
   sources = [
     "decorators_utils.h",
     "graph_impl.h",
+    "page_aggregator.cc",
+    "page_aggregator.h",
     "resource_attribution/gtest_util.h",
     "run_in_graph.cc",
     "run_in_graph.h",

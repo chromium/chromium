@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h"
 
 #include <memory>
@@ -14,6 +19,7 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/cookies/site_for_cookies.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,22 +38,30 @@ class FakeBoundSessionRequestThrottledHandler
       : receiver_(this, std::move(receiver)) {}
 
   void HandleRequestBlockedOnCookie(
+      const GURL& untrusted_request_url,
       HandleRequestBlockedOnCookieCallback callback) override {
-    // There shouldn't be more than one notification at a time of requests being
-    // blocked.
-    EXPECT_FALSE(callback_);
-    callback_ = std::move(callback);
+    request_urls_.emplace_back(untrusted_request_url);
+    callbacks_.push(std::move(callback));
   }
 
   void SimulateHandleRequestBlockedOnCookieCompleted() {
-    EXPECT_TRUE(callback_);
-    std::move(callback_).Run(ResumeBlockedRequestsTrigger::kCookieAlreadyFresh);
+    EXPECT_FALSE(callbacks_.empty());
+    std::move(callbacks_.front())
+        .Run(ResumeBlockedRequestsTrigger::kCookieAlreadyFresh);
+    callbacks_.pop();
   }
 
-  bool IsRequestBlocked() { return !callback_.is_null(); }
+  size_t NumberOfBlockedRequests() { return callbacks_.size(); }
+
+  std::vector<GURL> TakeRequestUrls() {
+    std::vector<GURL> args;
+    std::swap(args, request_urls_);
+    return args;
+  }
 
  private:
-  HandleRequestBlockedOnCookieCallback callback_;
+  std::queue<HandleRequestBlockedOnCookieCallback> callbacks_;
+  std::vector<GURL> request_urls_;
   mojo::Receiver<chrome::mojom::BoundSessionRequestThrottledHandler> receiver_;
 };
 }  // namespace
@@ -55,6 +69,10 @@ class FakeBoundSessionRequestThrottledHandler
 class BoundSessionRequestThrottledInRendererManagerTest
     : public ::testing::Test {
  public:
+  const GURL kRequestGURLs[5] = {
+      GURL("https://mail.google.com"), GURL("http://www.google.com"),
+      GURL("about:blank"), GURL("https://origin.test/"),
+      GURL("https://example.com")};
   BoundSessionRequestThrottledInRendererManagerTest() {
     mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledHandler>
         remote;
@@ -84,10 +102,13 @@ class BoundSessionRequestThrottledInRendererManagerTest
 
 TEST_F(BoundSessionRequestThrottledInRendererManagerTest, SingleRequest) {
   base::test::TestFuture<UnblockAction, ResumeBlockedRequestsTrigger> future;
-  manager()->HandleRequestBlockedOnCookie(future.GetCallback());
+  manager()->HandleRequestBlockedOnCookie(kRequestGURLs[0],
+                                          future.GetCallback());
 
   RunUntilIdle();
-  EXPECT_TRUE(handler()->IsRequestBlocked());
+  EXPECT_EQ(handler()->NumberOfBlockedRequests(), 1U);
+  EXPECT_THAT(handler()->TakeRequestUrls(),
+              testing::ElementsAre(kRequestGURLs[0]));
 
   handler()->SimulateHandleRequestBlockedOnCookieCompleted();
   EXPECT_THAT(future.Get(),
@@ -101,20 +122,25 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest, MultipleRequests) {
       base::test::TestFuture<UnblockAction, ResumeBlockedRequestsTrigger>,
       kBlockedRequests>
       futures;
-  for (auto& future : futures) {
-    manager()->HandleRequestBlockedOnCookie(future.GetCallback());
+
+  for (size_t i = 0; i < futures.size(); ++i) {
+    manager()->HandleRequestBlockedOnCookie(kRequestGURLs[i],
+                                            futures[i].GetCallback());
   }
 
   // Allow mojo message posting to complete.
   RunUntilIdle();
-  EXPECT_TRUE(handler()->IsRequestBlocked());
+  EXPECT_EQ(handler()->NumberOfBlockedRequests(), kBlockedRequests);
+  EXPECT_THAT(handler()->TakeRequestUrls(),
+              testing::ElementsAreArray(kRequestGURLs));
+
   for (auto& future : futures) {
     EXPECT_FALSE(future.IsReady());
   }
 
-  handler()->SimulateHandleRequestBlockedOnCookieCompleted();
-  for (auto& future : futures) {
-    EXPECT_THAT(future.Get(),
+  for (size_t i = 0; i < futures.size(); ++i) {
+    handler()->SimulateHandleRequestBlockedOnCookieCompleted();
+    EXPECT_THAT(futures[i].Get(),
                 FieldsAre(UnblockAction::kResume,
                           ResumeBlockedRequestsTrigger::kCookieAlreadyFresh));
   }
@@ -128,12 +154,12 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest,
       kBlockedRequests>
       futures;
   for (auto& future : futures) {
-    manager()->HandleRequestBlockedOnCookie(future.GetCallback());
+    manager()->HandleRequestBlockedOnCookie(GURL(), future.GetCallback());
   }
 
   // Allow mojo message posting to complete.
   RunUntilIdle();
-  EXPECT_TRUE(handler()->IsRequestBlocked());
+  EXPECT_EQ(handler()->NumberOfBlockedRequests(), kBlockedRequests);
 
   ResetHandler();
   for (auto& future : futures) {
@@ -148,7 +174,7 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest,
   ResetHandler();
 
   base::test::TestFuture<UnblockAction, ResumeBlockedRequestsTrigger> future;
-  manager()->HandleRequestBlockedOnCookie(future.GetCallback());
+  manager()->HandleRequestBlockedOnCookie(GURL(), future.GetCallback());
 
   EXPECT_THAT(future.Get(),
               FieldsAre(UnblockAction::kCancel,

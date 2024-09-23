@@ -107,10 +107,6 @@ TEST_F(NetworkPortalNotificationControllerTest,
   PortalStateChanged(&wifi, NetworkState::PortalState::kOnline);
   EXPECT_FALSE(HasNotification());
 
-  // Notification is displayed for proxy-auth state
-  PortalStateChanged(&wifi, NetworkState::PortalState::kProxyAuthRequired);
-  EXPECT_TRUE(HasNotification());
-
   // Notification is closed for online state.
   PortalStateChanged(&wifi, NetworkState::PortalState::kOnline);
   EXPECT_FALSE(HasNotification());

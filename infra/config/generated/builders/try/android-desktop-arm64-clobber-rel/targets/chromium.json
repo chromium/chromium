@@ -1,0 +1,7 @@
+{
+  "android-desktop-arm64-archive-rel": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  }
+}

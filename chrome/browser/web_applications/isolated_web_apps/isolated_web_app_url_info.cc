@@ -16,7 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/url_constants.h"
@@ -94,26 +94,22 @@ IsolatedWebAppUrlInfo IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
 }
 
 // static
-void IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
-    const IsolatedWebAppLocation& location,
+void IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
+    const IwaSource& source,
     base::OnceCallback<void(base::expected<IsolatedWebAppUrlInfo, std::string>)>
         callback) {
   absl::visit(base::Overloaded{
-                  [&](const InstalledBundle& installed_bundle) {
-                    GetSignedWebBundleIdByPath(installed_bundle.path,
+                  [&](const IwaSourceBundle& bundle) {
+                    GetSignedWebBundleIdByPath(bundle.path(),
                                                std::move(callback));
                   },
-                  [&](const DevModeBundle& dev_mode_bundle) {
-                    GetSignedWebBundleIdByPath(dev_mode_bundle.path,
-                                               std::move(callback));
-                  },
-                  [&](const DevModeProxy&) {
+                  [&](const IwaSourceProxy&) {
                     std::move(callback).Run(
                         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
                             web_package::SignedWebBundleId::
-                                CreateRandomForDevelopment()));
+                                CreateRandomForProxyMode()));
                   }},
-              location);
+              source.variant());
 }
 
 IsolatedWebAppUrlInfo::IsolatedWebAppUrlInfo(

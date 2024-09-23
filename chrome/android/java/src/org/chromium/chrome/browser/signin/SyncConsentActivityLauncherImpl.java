@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
@@ -93,7 +93,7 @@ public final class SyncConsentActivityLauncherImpl implements SyncConsentActivit
     public boolean launchActivityIfAllowed(Context context, @SigninAccessPoint int accessPoint) {
         SigninManager signinManager =
                 IdentityServicesProvider.get()
-                        .getSigninManager(Profile.getLastUsedRegularProfile());
+                        .getSigninManager(ProfileManager.getLastUsedRegularProfile());
         if (signinManager.isSyncOptInAllowed()) {
             launchInternal(context, SyncConsentFragmentBase.createArguments(accessPoint, null));
             return true;

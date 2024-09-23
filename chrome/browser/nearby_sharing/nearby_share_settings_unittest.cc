@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
@@ -204,7 +203,7 @@ TEST_F(NearbyShareSettingsTest,
 
   // Set explicitly disabled by user.
   settings()->SetFastInitiationNotificationState(
-      FastInitiationNotificationState::kDisabledByUser);
+      nearby_share::mojom::FastInitiationNotificationState::kDisabledByUser);
   FlushMojoMessages();
   EXPECT_EQ(
       nearby_share::mojom::FastInitiationNotificationState::kDisabledByUser,
@@ -294,8 +293,9 @@ TEST_F(NearbyShareSettingsTest, GetAndSetDeviceName) {
 
 TEST_F(NearbyShareSettingsTest, GetAndSetDataUsage) {
   EXPECT_EQ(nearby_share::mojom::DataUsage::kUnknown, observer_.data_usage_);
-  settings()->SetDataUsage(DataUsage::kOffline);
-  EXPECT_EQ(DataUsage::kOffline, settings()->GetDataUsage());
+  settings()->SetDataUsage(nearby_share::mojom::DataUsage::kOffline);
+  EXPECT_EQ(nearby_share::mojom::DataUsage::kOffline,
+            settings()->GetDataUsage());
   FlushMojoMessages();
   EXPECT_EQ(nearby_share::mojom::DataUsage::kOffline, observer_.data_usage_);
 
@@ -307,8 +307,9 @@ TEST_F(NearbyShareSettingsTest, GetAndSetDataUsage) {
 
 TEST_F(NearbyShareSettingsTest, GetAndSetVisibility) {
   EXPECT_EQ(nearby_share::mojom::Visibility::kUnknown, observer_.visibility_);
-  settings()->SetVisibility(Visibility::kNoOne);
-  EXPECT_EQ(Visibility::kNoOne, settings()->GetVisibility());
+  settings()->SetVisibility(nearby_share::mojom::Visibility::kNoOne);
+  EXPECT_EQ(nearby_share::mojom::Visibility::kNoOne,
+            settings()->GetVisibility());
   FlushMojoMessages();
   EXPECT_EQ(nearby_share::mojom::Visibility::kNoOne, observer_.visibility_);
 

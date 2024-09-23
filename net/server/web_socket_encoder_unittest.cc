@@ -188,23 +188,23 @@ TEST_F(WebSocketEncoderTest, ClientToServer) {
   std::string decoded;
 
   client_->EncodeTextFrame(frame, mask, &encoded);
-  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+  EXPECT_EQ(WebSocketParseResult::FRAME_OK_FINAL,
             server_->DecodeFrame(encoded, &bytes_consumed, &decoded));
   EXPECT_EQ("ClientToServer", decoded);
   EXPECT_EQ((int)encoded.length(), bytes_consumed);
 
   std::string partial = encoded.substr(0, encoded.length() - 2);
-  EXPECT_EQ(WebSocket::FRAME_INCOMPLETE,
+  EXPECT_EQ(WebSocketParseResult::FRAME_INCOMPLETE,
             server_->DecodeFrame(partial, &bytes_consumed, &decoded));
 
   std::string extra = encoded + "more stuff";
-  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+  EXPECT_EQ(WebSocketParseResult::FRAME_OK_FINAL,
             server_->DecodeFrame(extra, &bytes_consumed, &decoded));
   EXPECT_EQ("ClientToServer", decoded);
   EXPECT_EQ((int)encoded.length(), bytes_consumed);
 
   EXPECT_EQ(
-      WebSocket::FRAME_ERROR,
+      WebSocketParseResult::FRAME_ERROR,
       server_->DecodeFrame(std::string("abcde"), &bytes_consumed, &decoded));
 }
 
@@ -216,23 +216,23 @@ TEST_F(WebSocketEncoderTest, ServerToClient) {
   std::string decoded;
 
   server_->EncodeTextFrame(frame, mask, &encoded);
-  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+  EXPECT_EQ(WebSocketParseResult::FRAME_OK_FINAL,
             client_->DecodeFrame(encoded, &bytes_consumed, &decoded));
   EXPECT_EQ("ServerToClient", decoded);
   EXPECT_EQ((int)encoded.length(), bytes_consumed);
 
   std::string partial = encoded.substr(0, encoded.length() - 2);
-  EXPECT_EQ(WebSocket::FRAME_INCOMPLETE,
+  EXPECT_EQ(WebSocketParseResult::FRAME_INCOMPLETE,
             client_->DecodeFrame(partial, &bytes_consumed, &decoded));
 
   std::string extra = encoded + "more stuff";
-  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+  EXPECT_EQ(WebSocketParseResult::FRAME_OK_FINAL,
             client_->DecodeFrame(extra, &bytes_consumed, &decoded));
   EXPECT_EQ("ServerToClient", decoded);
   EXPECT_EQ((int)encoded.length(), bytes_consumed);
 
   EXPECT_EQ(
-      WebSocket::FRAME_ERROR,
+      WebSocketParseResult::FRAME_ERROR,
       client_->DecodeFrame(std::string("abcde"), &bytes_consumed, &decoded));
 }
 
@@ -254,11 +254,11 @@ TEST_F(WebSocketEncoderTest, DecodeFragmentedMessageClientToServerDivided2) {
 
   // kEncodedFirstFrame -> kEncodedLastFrame
   EXPECT_EQ(
-      WebSocket::FRAME_OK_MIDDLE,
+      WebSocketParseResult::FRAME_OK_MIDDLE,
       server_->DecodeFrame(kEncodedFirstFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedFirstFrame.length()), bytes_consumed);
-  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+  EXPECT_EQ(WebSocketParseResult::FRAME_OK_FINAL,
             server_->DecodeFrame(kEncodedLastFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("abcdefghijklmnop", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedLastFrame.length()), bytes_consumed);
@@ -283,16 +283,16 @@ TEST_F(WebSocketEncoderTest, DecodeFragmentedMessageClientToServerDivided3) {
 
   // kEncodedFirstFrame -> kEncodedSecondFrame -> kEncodedLastFrame
   EXPECT_EQ(
-      WebSocket::FRAME_OK_MIDDLE,
+      WebSocketParseResult::FRAME_OK_MIDDLE,
       server_->DecodeFrame(kEncodedFirstFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedFirstFrame.length()), bytes_consumed);
   EXPECT_EQ(
-      WebSocket::FRAME_OK_MIDDLE,
+      WebSocketParseResult::FRAME_OK_MIDDLE,
       server_->DecodeFrame(kEncodedSecondFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedSecondFrame.length()), bytes_consumed);
-  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+  EXPECT_EQ(WebSocketParseResult::FRAME_OK_FINAL,
             server_->DecodeFrame(kEncodedLastFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("abcdefghijklmnop", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedLastFrame.length()), bytes_consumed);
@@ -317,11 +317,11 @@ TEST_F(WebSocketEncoderTest, DecodeFragmentedMessageServerToClientDivided2) {
 
   // kEncodedFirstFrame -> kEncodedLastFrame
   EXPECT_EQ(
-      WebSocket::FRAME_OK_MIDDLE,
+      WebSocketParseResult::FRAME_OK_MIDDLE,
       client_->DecodeFrame(kEncodedFirstFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedFirstFrame.length()), bytes_consumed);
-  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+  EXPECT_EQ(WebSocketParseResult::FRAME_OK_FINAL,
             client_->DecodeFrame(kEncodedLastFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("abcdefghijklmnop", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedLastFrame.length()), bytes_consumed);
@@ -347,16 +347,16 @@ TEST_F(WebSocketEncoderTest, DecodeFragmentedMessageServerToClientDivided3) {
 
   // kEncodedFirstFrame -> kEncodedSecondFrame -> kEncodedLastFrame
   EXPECT_EQ(
-      WebSocket::FRAME_OK_MIDDLE,
+      WebSocketParseResult::FRAME_OK_MIDDLE,
       client_->DecodeFrame(kEncodedFirstFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedFirstFrame.length()), bytes_consumed);
   EXPECT_EQ(
-      WebSocket::FRAME_OK_MIDDLE,
+      WebSocketParseResult::FRAME_OK_MIDDLE,
       client_->DecodeFrame(kEncodedSecondFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedSecondFrame.length()), bytes_consumed);
-  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+  EXPECT_EQ(WebSocketParseResult::FRAME_OK_FINAL,
             client_->DecodeFrame(kEncodedLastFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("abcdefghijklmnop", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedLastFrame.length()), bytes_consumed);
@@ -371,7 +371,7 @@ TEST_F(WebSocketEncoderCompressionTest, ClientToServer) {
 
   client_->EncodeTextFrame(frame, mask, &encoded);
   EXPECT_LT(encoded.length(), frame.length());
-  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+  EXPECT_EQ(WebSocketParseResult::FRAME_OK_FINAL,
             server_->DecodeFrame(encoded, &bytes_consumed, &decoded));
   EXPECT_EQ(frame, decoded);
   EXPECT_EQ((int)encoded.length(), bytes_consumed);
@@ -386,7 +386,7 @@ TEST_F(WebSocketEncoderCompressionTest, ServerToClient) {
 
   server_->EncodeTextFrame(frame, mask, &encoded);
   EXPECT_LT(encoded.length(), frame.length());
-  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+  EXPECT_EQ(WebSocketParseResult::FRAME_OK_FINAL,
             client_->DecodeFrame(encoded, &bytes_consumed, &decoded));
   EXPECT_EQ(frame, decoded);
   EXPECT_EQ((int)encoded.length(), bytes_consumed);
@@ -413,7 +413,7 @@ TEST_F(WebSocketEncoderCompressionTest, LongFrame) {
 
   server_->EncodeTextFrame(frame, mask, &encoded);
   EXPECT_LT(encoded.length(), frame.length());
-  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+  EXPECT_EQ(WebSocketParseResult::FRAME_OK_FINAL,
             client_->DecodeFrame(encoded, &bytes_consumed, &decoded));
   EXPECT_EQ(frame, decoded);
   EXPECT_EQ((int)encoded.length(), bytes_consumed);
@@ -439,16 +439,16 @@ TEST_F(WebSocketEncoderCompressionTest, DecodeFragmentedMessageClientToServer) {
 
   // kEncodedFirstFrame -> kEncodedSecondFrame -> kEncodedLastFrame
   EXPECT_EQ(
-      WebSocket::FRAME_OK_MIDDLE,
+      WebSocketParseResult::FRAME_OK_MIDDLE,
       server_->DecodeFrame(kEncodedFirstFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedFirstFrame.length()), bytes_consumed);
   EXPECT_EQ(
-      WebSocket::FRAME_OK_MIDDLE,
+      WebSocketParseResult::FRAME_OK_MIDDLE,
       server_->DecodeFrame(kEncodedSecondFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedSecondFrame.length()), bytes_consumed);
-  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+  EXPECT_EQ(WebSocketParseResult::FRAME_OK_FINAL,
             server_->DecodeFrame(kEncodedLastFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("abcdefghijklmnop", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedLastFrame.length()), bytes_consumed);
@@ -475,16 +475,16 @@ TEST_F(WebSocketEncoderCompressionTest, DecodeFragmentedMessageServerToClient) {
   // kEncodedFirstFrame -> kEncodedSecondFrame -> kEncodedLastFrame
   decoded.clear();
   EXPECT_EQ(
-      WebSocket::FRAME_OK_MIDDLE,
+      WebSocketParseResult::FRAME_OK_MIDDLE,
       client_->DecodeFrame(kEncodedFirstFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedFirstFrame.length()), bytes_consumed);
   EXPECT_EQ(
-      WebSocket::FRAME_OK_MIDDLE,
+      WebSocketParseResult::FRAME_OK_MIDDLE,
       client_->DecodeFrame(kEncodedSecondFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedSecondFrame.length()), bytes_consumed);
-  EXPECT_EQ(WebSocket::FRAME_OK_FINAL,
+  EXPECT_EQ(WebSocketParseResult::FRAME_OK_FINAL,
             client_->DecodeFrame(kEncodedLastFrame, &bytes_consumed, &decoded));
   EXPECT_EQ("abcdefghijklmnop", decoded);
   EXPECT_EQ(static_cast<int>(kEncodedLastFrame.length()), bytes_consumed);

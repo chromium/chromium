@@ -2,25 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from '../assert.js';
+import {assert, assertInstanceof} from '../assert.js';
 import * as Comlink from '../lib/comlink.js';
+import {BARCODE_SCAN_INTERVAL} from '../photo_mode_auto_scanner.js';
 import * as state from '../state.js';
-import {OneShotTimer} from '../timer.js';
 import {getSanitizedScriptUrl} from '../trusted_script_url_policy_util.js';
 import {lazySingleton} from '../util.js';
 
 import {AsyncIntervalRunner} from './async_interval.js';
 import {BarcodeWorker} from './barcode_worker.js';
 
-// The delay interval between consecutive barcode detections in milliseconds.
-const SCAN_INTERVAL = 200;
+export interface ScanBarcodeResult {
+  barcode: DetectedBarcode;
+  imageWidth: number;
+  imageHeight: number;
+}
 
-// The delay interval after `SLOWDOWN_DELAY` of inactivity in milliseconds.
-const SCAN_INTERVAL_SLOW = 1000;
-
-// The delay time to keep `SCAN_INTERVAL` in milliseconds. After this delay, the
-// interval becomes `SCAN_INTERVAL_SLOW`.
-const SLOWDOWN_DELAY = 3 * 60 * 1000;
+type BoundingBox = DetectedBarcode['boundingBox'];
 
 // If any dimension of the video exceeds this size, the image would be cropped
 // and/or scaled before scanning to speed up the detection.
@@ -42,12 +40,6 @@ export class BarcodeScanner {
   private scanRunner: AsyncIntervalRunner|null = null;
 
   /**
-   * Timer to be used to slowdown the scan interval after `SLOWDOWN_DELAY` in
-   * preview of Photo mode.
-   */
-  private slowdownTimer: OneShotTimer|null = null;
-
-  /**
    * @param video The video to be scanned for barcode.
    * @param callback The callback for the detected barcodes.
    */
@@ -61,7 +53,7 @@ export class BarcodeScanner {
    *
    * @param scanIntervalMs Scan interval time. Unit is milliseconds.
    */
-  start(scanIntervalMs = SCAN_INTERVAL): void {
+  start(scanIntervalMs = BARCODE_SCAN_INTERVAL): void {
     if (this.scanRunner !== null) {
       return;
     }
@@ -71,34 +63,14 @@ export class BarcodeScanner {
         return;
       }
 
-      const code = await this.scan();
-      if (!stopped.isSignaled() && code !== null) {
-        this.callback(code);
+      const result = await this.scan();
+      if (!stopped.isSignaled() && result !== null) {
+        this.callback(result.barcode.rawValue);
       }
     }, scanIntervalMs);
   }
 
-  /**
-   * Starts a scanner and resets the timer to `SLOWDOWN_DELAY`. The scan
-   * interval changes from `SCAN_INTERVAL` to `SCAN_INTERVAL_SLOW` after
-   * `SLOWDOWN_DELAY`.
-   */
-  resetTimer(): void {
-    this.stop();
-    this.start(SCAN_INTERVAL);
-
-    if (this.slowdownTimer === null) {
-      this.slowdownTimer = new OneShotTimer(() => {
-        this.stop();
-        this.start(SCAN_INTERVAL_SLOW);
-      }, SLOWDOWN_DELAY);
-    }
-    this.slowdownTimer?.resetTimeout();
-  }
-
   stop(): void {
-    this.slowdownTimer?.stop();
-    this.slowdownTimer = null;
     if (this.scanRunner === null) {
       return;
     }
@@ -138,12 +110,55 @@ export class BarcodeScanner {
   /**
    * Scans barcodes from the current frame.
    *
-   * @return The detected barcode value, or null if no barcode is detected.
+   * @return `ScanBarcodeResult` which contains the dimensions of the scanned
+   * image and the barcode closest to the center. `null` if nothing is detected.
    */
-  private async scan(): Promise<string|null> {
+  async scan(): Promise<ScanBarcodeResult|null> {
     const frame = await this.grabFrameForScan();
-    const value =
+    const {width, height} = frame;
+    const codes =
         await getBarcodeWorker().detect(Comlink.transfer(frame, [frame]));
-    return value;
+    if (codes.length === 0) {
+      return null;
+    }
+    return {
+      barcode: getBestBarcode(codes, width, height),
+      imageWidth: width,
+      imageHeight: height,
+    };
   }
+}
+
+/**
+ * Returns the barcode that is closest to the center of the scanned image.
+ */
+function getBestBarcode(
+    barcodes: DetectedBarcode[], imageWidth: number,
+    imageHeight: number): DetectedBarcode {
+  assert(barcodes.length > 0);
+  let minDistance = Infinity;
+  let codeWithMinDistance = barcodes[0];
+  for (const code of barcodes) {
+    const distance =
+        getDistanceToCenter(code.boundingBox, imageWidth, imageHeight);
+    if (distance < minDistance) {
+      minDistance = distance;
+      codeWithMinDistance = code;
+    }
+  }
+  return codeWithMinDistance;
+}
+
+function getDistanceToCenter(
+    boundingBox: BoundingBox, imageWidth: number, imageHeight: number) {
+  const {top, right, bottom, left} = boundingBox;
+  const cx = imageWidth / 2;
+  const cy = imageHeight / 2;
+  const x = (left + right) / 2;
+  const y = (top + bottom) / 2;
+  const distance = Math.hypot(
+      x - cx,
+      y - cy,
+  );
+  return distance;
 }

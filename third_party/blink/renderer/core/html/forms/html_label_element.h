@@ -36,7 +36,8 @@ class CORE_EXPORT HTMLLabelElement final : public HTMLElement {
  public:
   explicit HTMLLabelElement(Document&);
 
-  HTMLElement* control() const;
+  HTMLElement* controlForBinding() const;
+  HTMLElement* Control() const;
   HTMLFormElement* form() const;
 
   bool WillRespondToMouseClickEvents() override;

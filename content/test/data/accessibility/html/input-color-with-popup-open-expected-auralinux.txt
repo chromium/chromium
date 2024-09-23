@@ -1,20 +1,16 @@
 [document web]
 ++[section]
-++++[push button] name='color picker' controller-for
-++++++[document web] controlled-by
+++++[push button] name='color picker' controller-for=[panel]
+++++++[panel] controlled-by=[push button] popup-for=[push button]
 ++++++++[section]
 ++++++++++[section]
 ++++++++++++[slider] name='Color well' horizontal current=227.000000 minimum=0.000000 maximum=32016.000000
 ++++++++++[section]
+++++++++++++[push button] name='Eyedropper'
 ++++++++++++[section]
 ++++++++++++++[slider] name='Hue slider' horizontal current=116.000000 minimum=0.000000 maximum=129.000000
 ++++++++++[entry] name='Red channel' selectable-text
 ++++++++++[entry] name='Green channel' selectable-text
 ++++++++++[entry] name='Blue channel' selectable-text
 ++++++++++[spin button] name='Format toggler' current=1.000000 minimum=1.000000 maximum=3.000000
-++++++++++++[static] name='R'
-++++++++++++[static] name='G'
-++++++++++++[static] name='B'
-++++++++++++[section]
-++++++++++++++[document frame]
 ++++++++++[section]

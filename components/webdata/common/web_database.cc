@@ -6,27 +6,22 @@
 
 #include <algorithm>
 
+#include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "sql/transaction.h"
 
-// Current version number.  Note: when changing the current version number,
-// corresponding changes must happen in the unit tests, and new migration test
-// added.  See `WebDatabaseMigrationTest::kCurrentTestedVersionNumber`.
-// static
-const int WebDatabase::kCurrentVersionNumber = 125;
-
-// TODO(crbug.com/324468207): Decide and document a process for updating this
-// number, i.e. what our deprecation strategy is for older versions of the
-// database.
-const int WebDatabase::kDeprecatedVersionNumber = 82;
-
 const base::FilePath::CharType WebDatabase::kInMemoryPath[] =
     FILE_PATH_LITERAL(":memory");
 
 namespace {
+
+BASE_FEATURE(kSqlWALModeOnWebDatabase,
+             "SqlWALModeOnWebDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // These values are logged as histogram buckets and most not be changed nor
 // reused.
@@ -48,9 +43,9 @@ void LogInitResult(WebDatabaseInitResult result) {
   base::UmaHistogramEnumeration("WebDatabase.InitResult", result);
 }
 
-// Version 125 deletes the 'unmasked_credit_cards' table, and thus is no longer
-// compatible with version 124.
-const int kCompatibleVersionNumber = 125;
+// Version 134 migrates address Autofill tables to a new format, changing table
+// names. It is thus is no longer compatible with version 133.
+constexpr int kCompatibleVersionNumber = 134;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.
@@ -78,7 +73,8 @@ sql::InitStatus FailedMigrationTo(int version_num) {
 }  // namespace
 
 WebDatabase::WebDatabase()
-    : db_({// We don't store that much data in the tables so use a small page
+    : db_({.wal_mode = base::FeatureList::IsEnabled(kSqlWALModeOnWebDatabase),
+           // We don't store that much data in the tables so use a small page
            // size. This provides a large benefit for empty tables (which is
            // very likely with the tables we create).
            .page_size = 2048,
@@ -86,7 +82,11 @@ WebDatabase::WebDatabase()
            // quite infrequent. So we go with a small cache size.
            .cache_size = 32}) {}
 
-WebDatabase::~WebDatabase() = default;
+WebDatabase::~WebDatabase() {
+  for (auto& [key, table] : tables_) {
+    table->Shutdown();
+  }
+}
 
 void WebDatabase::AddTable(WebDatabaseTable* table) {
   tables_[table->GetTypeKey()] = table;
@@ -97,11 +97,11 @@ WebDatabaseTable* WebDatabase::GetTable(WebDatabaseTable::TypeKey key) {
 }
 
 void WebDatabase::BeginTransaction() {
-  db_.BeginTransaction();
+  db_.BeginTransactionDeprecated();
 }
 
 void WebDatabase::CommitTransaction() {
-  db_.CommitTransaction();
+  db_.CommitTransactionDeprecated();
 }
 
 std::string WebDatabase::GetDiagnosticInfo(int extended_error,
@@ -113,7 +113,13 @@ sql::Database* WebDatabase::GetSQLConnection() {
   return &db_;
 }
 
-sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
+sql::InitStatus WebDatabase::Init(const base::FilePath& db_name,
+                                  const os_crypt_async::Encryptor* encryptor) {
+  // Only unit tests whose tables don't use any crypto for their tables pass in
+  // a null encryptor.
+  if (!encryptor) {
+    CHECK_IS_TEST();
+  }
   db_.set_histogram_tag("Web");
 
   if ((db_name.value() == kInMemoryPath) ? !db_.OpenInMemory()
@@ -132,9 +138,9 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
   // Clobber really old databases.
   static_assert(kDeprecatedVersionNumber < kCurrentVersionNumber,
                 "Deprecation version must be less than current");
-  if (!sql::MetaTable::RazeIfIncompatible(
+  if (sql::MetaTable::RazeIfIncompatible(
           &db_, /*lowest_supported_version=*/kDeprecatedVersionNumber + 1,
-          kCurrentVersionNumber)) {
+          kCurrentVersionNumber) == sql::RazeIfIncompatibleResult::kFailed) {
     LogInitResult(WebDatabaseInitResult::kCouldNotRazeIncompatibleVersion);
     return sql::INIT_FAILURE;
   }
@@ -161,7 +167,7 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
 
   // Initialize the tables.
   for (const auto& table : tables_) {
-    table.second->Init(&db_, &meta_table_);
+    table.second->Init(&db_, &meta_table_, encryptor);
   }
 
   // If the file on disk is an older database version, bring it up to date.

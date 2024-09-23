@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] e.style['border-block-end-radius'] = "1px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-block-end-radius'] = "10%" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-block-end-radius'] = "1px 5%" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-block-end-radius'] = "5% 1px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-block-end-radius'] = "1px / 2px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-block-end-radius'] = "1px / 1px 2%" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-block-end-radius'] = "1px 2% / 3%" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-block-end-radius'] = "1px 2% / 3px 4px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

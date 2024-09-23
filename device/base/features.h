@@ -11,10 +11,6 @@
 
 namespace device {
 
-#if BUILDFLAG(IS_MAC)
-DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kNewUsbBackend);
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_WIN)
 DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kNewBLEGattSessionHandling);
 #endif  // BUILDFLAG(IS_WIN)
@@ -22,9 +18,11 @@ DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kNewBLEGattSessionHandling);
 // New features should be added to the device::features namespace.
 
 namespace features {
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 DEVICE_BASE_EXPORT BASE_DECLARE_FEATURE(kWebBluetoothConfirmPairingSupport);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
 }  // namespace features
 }  // namespace device
 

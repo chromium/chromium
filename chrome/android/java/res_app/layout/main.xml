@@ -49,6 +49,14 @@ found in the LICENSE file.
             android:background="@drawable/capture_overlay_border"
             android:visibility="gone" />
 
+        <View
+            android:id="@+id/edge_to_edge_bottom_chin"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="start|bottom"
+            android:visibility="gone"
+            android:background="@android:color/transparent" />
+
         <org.chromium.chrome.browser.ui.BottomContainer
             android:id="@+id/bottom_container"
             android:layout_width="match_parent"
@@ -91,13 +99,13 @@ found in the LICENSE file.
             android:layout_width="0dp"
             android:layout_height="0dp" />
 
-        <ViewStub
+        <org.chromium.ui.AsyncViewStub
             android:id="@+id/omnibox_results_container_stub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_anchor="@id/control_container"
             android:inflatedId="@+id/omnibox_results_container"
-            android:layout="@layout/omnibox_results_container" />
+            app:layout="@layout/omnibox_results_container" />
 
         <!-- Toolbar size area painted black to avoid the action bar showing the window background -->
         <View
@@ -156,19 +164,6 @@ found in the LICENSE file.
             android:layout_gravity="start|bottom"
             android:inflatedId="@+id/readaloud_mini_player" />
 
-        <ViewStub
-            android:id="@+id/page_insights_hub_container_stub"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inflatedId="@+id/page_insights_hub_container"
-            android:layout="@layout/page_insights_hub_container" />
-
-        <FrameLayout
-            android:id="@+id/sheet_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipChildren="false" />
-
         <FrameLayout
             android:id="@+id/survey_container"
             android:layout_width="wrap_content"
@@ -187,6 +182,17 @@ found in the LICENSE file.
             android:layout_marginBottom="@dimen/page_zoom_view_margins"
             android:inflatedId="@+id/page_zoom_layout"
             android:layout="@layout/page_zoom_view" />
+
+        <ViewStub
+            android:id="@+id/tab_grid_dialog_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <FrameLayout
+            android:id="@+id/sheet_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipChildren="false" />
 
     </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 

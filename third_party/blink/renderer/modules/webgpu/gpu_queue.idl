@@ -5,37 +5,34 @@
 // https://gpuweb.github.io/gpuweb/
 
 [
-    Exposed(Window WebGPU, DedicatedWorker WebGPU, SharedWorker WebGPUExperimentalFeatures, ServiceWorker WebGPUExperimentalFeatures),
+    Exposed=(Window, Worker),
     SecureContext
 ] interface GPUQueue {
     [CallWith=ScriptState] void submit(sequence<GPUCommandBuffer> buffers);
 
-    [CallWith=ScriptState] Promise<void> onSubmittedWorkDone();
+    [CallWith=ScriptState] Promise<undefined> onSubmittedWorkDone();
 
-    // TODO(crbug.com/1088107): Merge these overloads into one with
-    // [AllowShared] BufferSource (or whatever the upstream spec has), which
-    // would expand this to allow SharedArrayBuffer (can't be implemented now).
     [CallWith=ScriptState, RaisesException] void writeBuffer(
         GPUBuffer buffer,
         GPUSize64 bufferOffset,
-        [AllowShared] ArrayBufferView data,
+        [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView data,
         optional GPUSize64 dataElementOffset = 0,
         optional GPUSize64 dataElementCount);
     [CallWith=ScriptState, RaisesException] void writeBuffer(
         GPUBuffer buffer,
         GPUSize64 bufferOffset,
-        ArrayBuffer data,
+        [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBuffer data,
         optional GPUSize64 dataByteOffset = 0,
         optional GPUSize64 byteSize);
 
     [CallWith=ScriptState, RaisesException] void writeTexture(
         GPUImageCopyTexture destination,
-        [AllowShared] ArrayBufferView data,
+        [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView data,
         GPUImageDataLayout dataLayout,
         GPUExtent3D size);
     [CallWith=ScriptState, RaisesException] void writeTexture(
         GPUImageCopyTexture destination,
-        ArrayBuffer data,
+        [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBuffer data,
         GPUImageDataLayout dataLayout,
         GPUExtent3D size);
 

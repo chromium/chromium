@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_navigate_history_replacestate_beforeunload
+  AssertionError: assert ['browsingContext.navigationStarted', 'browsingContext.navigationStarted', 'browsingContext.fragmentNavigated', 'browsingContext.navigationStarted', 'network.beforeRequestSent'] == ['browsingContext.navigationStarted', 'browsingContext.fragmentNavigated', 'network.beforeRequestSent']
+Harness: the test ran to completion.

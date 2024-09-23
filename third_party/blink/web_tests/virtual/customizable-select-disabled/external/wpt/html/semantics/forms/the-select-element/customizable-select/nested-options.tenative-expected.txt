@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] The HTML parser should disallow nested options in select datalist.
+  assert_equals: expected "\\n  <datalist>\\n    <option id=\\"o1\\">\\n      parent\\n      </option><option id=\\"o2\\">child</option>\\n\\n  </datalist>\\n" but got "\\n  \\n    <option id=\\"o1\\">\\n      parent\\n      </option><option id=\\"o2\\">child</option>\\n\\n  \\n"
+[FAIL] Nested <options> should be listed in <select> IDLs.
+  assert_equals: select.options.length expected 2 but got 1
+Harness: the test ran to completion.
+

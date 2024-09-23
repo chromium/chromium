@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #import "base/message_loop/message_pump_apple.h"
 
 #import <Foundation/Foundation.h>
@@ -9,6 +14,7 @@
 #include <atomic>
 #include <limits>
 #include <memory>
+#include <optional>
 
 #include "base/apple/call_with_eh_frame.h"
 #include "base/apple/scoped_cftyperef.h"
@@ -26,7 +32,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_IOS)
 #import <AppKit/AppKit.h>
@@ -78,7 +83,7 @@ class OptionalAutoreleasePool {
   OptionalAutoreleasePool& operator=(const OptionalAutoreleasePool&) = delete;
 
  private:
-  absl::optional<base::apple::ScopedNSAutoreleasePool> pool_;
+  std::optional<base::apple::ScopedNSAutoreleasePool> pool_;
 };
 
 class MessagePumpCFRunLoopBase::ScopedModeEnabler {
@@ -182,7 +187,8 @@ void MessagePumpCFRunLoopBase::ScheduleDelayedWork(
   DCHECK(!next_work_info.is_immediate());
 
   // The tolerance needs to be set before the fire date or it may be ignored.
-  if (g_timer_slack.load(std::memory_order_relaxed) &&
+  if (GetAlignWakeUpsEnabled() &&
+      g_timer_slack.load(std::memory_order_relaxed) &&
       !next_work_info.delayed_run_time.is_max() &&
       delayed_work_leeway_ != next_work_info.leeway) {
     if (!next_work_info.leeway.is_zero()) {
@@ -385,7 +391,7 @@ void MessagePumpCFRunLoopBase::PushWorkItemScope() {
   if (delegate_) {
     stack_.push(delegate_->BeginWorkItem());
   } else {
-    stack_.push(absl::nullopt);
+    stack_.push(std::nullopt);
   }
 }
 
@@ -472,10 +478,7 @@ void MessagePumpCFRunLoopBase::RunIdleWork() {
   // objects if the app is not currently handling a UI event to ensure they're
   // released promptly even in the absence of UI events.
   OptionalAutoreleasePool autorelease_pool(this);
-  bool did_work = delegate_->DoIdleWork();
-  if (did_work) {
-    CFRunLoopSourceSignal(work_source_.get());
-  }
+  delegate_->DoIdleWork();
 }
 
 // Called from the run loop.
@@ -734,7 +737,6 @@ void MessagePumpUIApplication::DoRun(Delegate* delegate) {
 
 bool MessagePumpUIApplication::DoQuit() {
   NOTREACHED();
-  return false;
 }
 
 void MessagePumpUIApplication::Attach(Delegate* delegate) {

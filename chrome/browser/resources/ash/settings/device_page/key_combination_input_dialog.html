@@ -33,10 +33,10 @@
       $i18n{buttonRemappingDialogDescription}
     </div>
     <div id="shortcut-input-container" class="flex-row" tabindex="-1">
-      <shortcut-input id="shortcutInput"
+      <shortcut-input id="shortcutInput" aria-describedby="dialogDescription"
           shortcut-input-provider="[[getShortcutProvider()]]"
           show-separator="true"
-          has-launcher-button="[[hasLauncherButton]]"
+          meta-key="[[metaKey]]"
           ignore-blur>
       </shortcut-input>
     </div>

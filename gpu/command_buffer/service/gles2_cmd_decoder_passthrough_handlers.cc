@@ -2255,12 +2255,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleDescheduleUntilFinishedCHROMIUM(
   return DoDescheduleUntilFinishedCHROMIUM();
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandleDiscardBackbufferCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  return DoDiscardBackbufferCHROMIUM();
-}
-
 error::Error
 GLES2DecoderPassthroughImpl::HandleBindFragDataLocationIndexedEXTBucket(
     uint32_t immediate_data_size,

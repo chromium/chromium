@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -49,21 +51,21 @@ class HTMLFencedFrameElementTest : private ScopedFencedFramesForTest,
   base::test::ScopedFeatureList enabled_feature_list_;
 };
 
-TEST_F(HTMLFencedFrameElementTest, FreezeSizePageZoomFactor) {
+TEST_F(HTMLFencedFrameElementTest, FreezeSizeLayoutZoomFactor) {
   Document& doc = GetDocument();
   auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
   doc.body()->AppendChild(fenced_frame);
   UpdateAllLifecyclePhasesForTest();
 
   LocalFrame& frame = GetFrame();
-  const float zoom_factor = frame.PageZoomFactor();
+  const float zoom_factor = frame.LayoutZoomFactor();
   const PhysicalSize size(200, 100);
   fenced_frame->FreezeFrameSize(size);
-  frame.SetPageZoomFactor(zoom_factor * 2);
+  frame.SetLayoutZoomFactor(zoom_factor * 2);
   EXPECT_EQ(*fenced_frame->FrozenFrameSize(),
             PhysicalSize(size.width * 2, size.height * 2));
 
-  frame.SetPageZoomFactor(zoom_factor);
+  frame.SetLayoutZoomFactor(zoom_factor);
 }
 
 TEST_F(HTMLFencedFrameElementTest, CoerceFrameSizeTest) {
@@ -286,6 +288,16 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestSandboxFlagsInIframe) {
   // outermost main frame.
   histogram_tester_.ExpectUniqueSample(
       kFencedFrameFailedSandboxLoadInTopLevelFrame, false, 1);
+}
+
+TEST_F(HTMLFencedFrameElementTest, HistogramTestCanLoadOpaqueURL) {
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kFencedFrameCanLoadOpaqueURL));
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetFrame());
+  HTMLFencedFrameElement::canLoadOpaqueURL(script_state);
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kFencedFrameCanLoadOpaqueURL));
 }
 
 }  // namespace blink

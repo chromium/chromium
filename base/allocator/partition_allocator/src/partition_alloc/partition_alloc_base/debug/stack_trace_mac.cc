@@ -4,14 +4,14 @@
 
 #include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
 
-#include "build/build_config.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 
 // Surprisingly, uClibc defines __GLIBC__ in some build configs, but
 // execinfo.h and backtrace(3) are really only present in glibc and in macOS
 // libc.
-#if BUILDFLAG(IS_APPLE) || \
+#if PA_BUILDFLAG(IS_APPLE) || \
     (defined(__GLIBC__) && !defined(__UCLIBC__) && !defined(__AIX))
 #define HAVE_BACKTRACE
 #include <execinfo.h>
@@ -23,7 +23,7 @@ size_t CollectStackTrace(const void** trace, size_t count) {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
-#if BUILDFLAG(IS_APPLE) && defined(HAVE_BACKTRACE)
+#if PA_BUILDFLAG(IS_APPLE) && defined(HAVE_BACKTRACE)
   // Regarding Apple, no /proc is available. Try backtrace API.
   // Though the backtrace API man page does not list any possible negative
   // return values, we take no chance.

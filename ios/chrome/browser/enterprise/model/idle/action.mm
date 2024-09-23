@@ -49,13 +49,10 @@ class CloseTabsAction : public Action {
            Continuation continuation) override {
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(browser_state);
-    for (Browser* browser : browser_list->AllIncognitoBrowsers()) {
-      browser->GetWebStateList()->CloseAllWebStates(
-          WebStateList::CLOSE_NO_FLAGS);
-    }
-    for (Browser* browser : browser_list->AllRegularBrowsers()) {
-      browser->GetWebStateList()->CloseAllWebStates(
-          WebStateList::CLOSE_NO_FLAGS);
+    for (Browser* browser :
+         browser_list->BrowsersOfType(BrowserList::BrowserType::kAll)) {
+      CloseAllWebStates(*browser->GetWebStateList(),
+                        WebStateList::CLOSE_NO_FLAGS);
     }
 
     metrics::RecordActionsSuccess(metrics::IdleTimeoutActionType::kCloseTabs,
@@ -119,20 +116,19 @@ class ClearBrowsingDataAction : public Action,
   ~ClearBrowsingDataAction() override = default;
 
   // Action:
-  void Run(ChromeBrowserState* browser_state,
-           Continuation continuation) override {
+  void Run(ProfileIOS* profile, Continuation continuation) override {
     continuation_ = std::move(continuation);
     mask_ = GetRemoveMask();
-    browser_list_ = BrowserListFactory::GetForBrowserState(browser_state);
+    browser_list_ = BrowserListFactory::GetForBrowserState(profile);
 
     if (IsRemoveDataMaskSet(mask_, BrowsingDataRemoveMask::REMOVE_HISTORY)) {
       // If browsing History will be cleared set the kLastClearBrowsingDataTime.
-      // TODO(crbug.com/1085419): This pref is used by the Feed to prevent the
+      // TODO(crbug.com/40693626): This pref is used by the Feed to prevent the
       // showing of customized content after history has been cleared.
-      browser_state->GetPrefs()->SetInt64(
+      profile->GetPrefs()->SetInt64(
           browsing_data::prefs::kLastClearBrowsingDataTime,
           base::Time::Now().ToTimeT());
-      DiscoverFeedServiceFactory::GetForBrowserState(browser_state)
+      DiscoverFeedServiceFactory::GetForProfile(profile)
           ->BrowsingHistoryCleared();
     }
 
@@ -207,11 +203,8 @@ class ClearBrowsingDataAction : public Action,
       return;
     }
 
-    for (Browser* browser : browser_list_->AllIncognitoBrowsers()) {
-      WebUsageEnablerBrowserAgent::FromBrowser(browser)->SetWebUsageEnabled(
-          enabled);
-    }
-    for (Browser* browser : browser_list_->AllIncognitoBrowsers()) {
+    for (Browser* browser :
+         browser_list_->BrowsersOfType(BrowserList::BrowserType::kAll)) {
       WebUsageEnablerBrowserAgent::FromBrowser(browser)->SetWebUsageEnabled(
           enabled);
     }
@@ -277,7 +270,7 @@ ActionFactory::ActionQueue ActionFactory::Build(
         break;
       default:
         // Perform validation in the `PolicyHandler` if a new type is added.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

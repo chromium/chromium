@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_source.h"
 
 namespace ui {
@@ -17,7 +18,8 @@ namespace ui {
 template <typename AXSourceNode>
 class AXTreeSourceChecker {
  public:
-  explicit AXTreeSourceChecker(AXTreeSource<AXSourceNode>* tree);
+  explicit AXTreeSourceChecker(
+      AXTreeSource<AXSourceNode, AXTreeData*, AXNodeData>* tree);
 
   AXTreeSourceChecker(const AXTreeSourceChecker&) = delete;
   AXTreeSourceChecker& operator=(const AXTreeSourceChecker&) = delete;
@@ -33,14 +35,14 @@ class AXTreeSourceChecker {
   bool Check(AXSourceNode node, std::string indent, std::string* output);
   std::string NodeToString(AXSourceNode node);
 
-  raw_ptr<AXTreeSource<AXSourceNode>> tree_;
+  raw_ptr<AXTreeSource<AXSourceNode, AXTreeData*, AXNodeData>> tree_;
 
   std::map<AXNodeID, AXNodeID> node_id_to_parent_id_map_;
 };
 
 template <typename AXSourceNode>
 AXTreeSourceChecker<AXSourceNode>::AXTreeSourceChecker(
-    AXTreeSource<AXSourceNode>* tree)
+    AXTreeSource<AXSourceNode, AXTreeData*, AXNodeData>* tree)
     : tree_(tree) {}
 
 template <typename AXSourceNode>
@@ -76,7 +78,8 @@ std::string AXTreeSourceChecker<AXSourceNode>::NodeToString(AXSourceNode node) {
   } else {
     for (size_t i = 0; i < num_children; i++) {
       auto* child = tree_->ChildAt(node, i);
-      AXNodeID child_id = child ? tree_->GetId(child) : kInvalidAXNodeID;
+      DCHECK(child);
+      AXNodeID child_id = tree_->GetId(child);
       if (i == 0)
         children_str += "child_ids=" + base::NumberToString(child_id);
       else

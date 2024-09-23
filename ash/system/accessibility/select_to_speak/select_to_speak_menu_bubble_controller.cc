@@ -13,6 +13,8 @@
 #include "ash/system/accessibility/select_to_speak/select_to_speak_constants.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/metrics/histogram_functions.h"
+#include "select_to_speak_menu_bubble_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/border.h"
@@ -21,8 +23,10 @@
 namespace ash {
 
 namespace {
+
 const int kAnchorRectVerticalSpacing = 12;
 const int kPreferredWidth = 368;
+
 }  // namespace
 
 SelectToSpeakMenuBubbleController::SelectToSpeakMenuBubbleController() {
@@ -33,6 +37,7 @@ SelectToSpeakMenuBubbleController::~SelectToSpeakMenuBubbleController() {
   Shell::Get()->activation_client()->RemoveObserver(this);
   if (bubble_widget_ && !bubble_widget_->IsClosed())
     bubble_widget_->CloseNow();
+  MaybeRecordDurationHistogram();
 }
 
 void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
@@ -82,6 +87,9 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
   if (!bubble_widget_->IsVisible()) {
     bubble_widget_->Show();
   }
+  if (last_show_time_ == base::Time()) {
+    last_show_time_ = base::Time::Now();
+  }
 }
 
 void SelectToSpeakMenuBubbleController::Hide() {
@@ -91,6 +99,17 @@ void SelectToSpeakMenuBubbleController::Hide() {
   if (speed_bubble_controller_) {
     speed_bubble_controller_.reset();
   }
+  MaybeRecordDurationHistogram();
+}
+
+void SelectToSpeakMenuBubbleController::MaybeRecordDurationHistogram() {
+  if (last_show_time_ == base::Time()) {
+    return;
+  }
+  base::UmaHistogramLongTimes100(
+      "Accessibility.CrosSelectToSpeak.MenuBubbleVisibleDuration",
+      base::Time::Now() - last_show_time_);
+  last_show_time_ = base::Time();
 }
 
 std::u16string SelectToSpeakMenuBubbleController::GetAccessibleNameForBubble() {

@@ -1,0 +1,6 @@
+{
+  "accounts_endpoint": "/fedcm/support/accounts_no_approved_clients.py",
+  "id_assertion_endpoint": "continue_on.py",
+  "login_url": "/fedcm/support/login.html"
+}
+

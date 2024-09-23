@@ -7,12 +7,14 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
 #include <chrono>
 #include <random>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/types/fixed_array.h"
 #include "chromeos/ash/components/memory/userspace_swap/region.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -76,19 +78,20 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(SwapStorageTest, SimpleWriteRead) {
   std::string buffer = "hello world";
+  constexpr size_t buffer_len = sizeof("hello world") - 1;
 
   // Swap address can be at index 0 so we use UINT64_MAX to differentiate.
   Region swap_region(std::numeric_limits<uint64_t>::max(), 0);
 
   // Write it to swap and validate we also got back sane values for swap pos and
   // length.
-  ASSERT_TRUE(swap_->WriteToSwap(Region(buffer.c_str(), buffer.length()),
-                                 &swap_region));
+  ASSERT_TRUE(
+      swap_->WriteToSwap(Region(buffer.c_str(), buffer_len), &swap_region));
   ASSERT_NE(swap_region.address, std::numeric_limits<uint64_t>::max());
   ASSERT_NE(swap_region.length, 0u);
 
   // Read the region from swap in [swap_pos, swap_pos + swap_len]
-  char read_buf[buffer.length()];
+  char read_buf[buffer_len];
   memset(read_buf, 0, sizeof(read_buf));
   ASSERT_EQ(
       swap_->ReadFromSwap(swap_region, Region(read_buf, sizeof(read_buf))),
@@ -131,14 +134,14 @@ TEST_P(SwapStorageTest, ManyWriteRead) {
 
   // Read back all the regions and verify.
   for (const auto& buf : buffers) {
-    char read_buf[buf.first.size()];
-    memset(read_buf, 0, sizeof(read_buf));
+    base::FixedArray<char> read_buf(buf.first.size());
     ASSERT_EQ(swap_->ReadFromSwap(/* Region */ buf.second,
-                                  Region(read_buf, sizeof(read_buf))),
-              static_cast<ssize_t>(sizeof(read_buf)));
+                                  Region(read_buf.data(), read_buf.memsize())),
+              static_cast<ssize_t>(read_buf.memsize()));
 
     // We should have correctly read back what we wrote.
-    ASSERT_EQ(memcmp(read_buf, buf.first.c_str(), sizeof(read_buf)), 0);
+    ASSERT_EQ(memcmp(read_buf.data(), buf.first.c_str(), read_buf.memsize()),
+              0);
 
     // Now drop it from the swap.
     ASSERT_TRUE(swap_->DropFromSwap(/* Region */ buf.second));
@@ -169,14 +172,13 @@ TEST_P(SwapStorageTest, DropFromSwap) {
   ASSERT_GT(block_size_kb, block_size_kb_before);
 
   // Read the region from swap in [swap_pos, swap_pos + swap_len]
-  char read_buf[buffer.length()];
-  memset(read_buf, 0, sizeof(read_buf));
-  ASSERT_EQ(
-      swap_->ReadFromSwap(swap_region, Region(read_buf, sizeof(read_buf))),
-      static_cast<ssize_t>(sizeof(read_buf)));
+  base::FixedArray<char> read_buf(buffer.length());
+  ASSERT_EQ(swap_->ReadFromSwap(swap_region,
+                                Region(read_buf.data(), read_buf.memsize())),
+            static_cast<ssize_t>(read_buf.memsize()));
 
   // We should have correctly read back what we wrote.
-  ASSERT_EQ(memcmp(read_buf, buffer.c_str(), sizeof(read_buf)), 0);
+  ASSERT_EQ(memcmp(read_buf.data(), buffer.c_str(), read_buf.memsize()), 0);
 
   // Now we will drop it.
   ASSERT_TRUE(swap_->DropFromSwap(swap_region));

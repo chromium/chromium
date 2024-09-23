@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -20,10 +21,11 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
@@ -36,12 +38,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
-
-#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 
 namespace {
 
@@ -49,6 +50,16 @@ constexpr base::TimeDelta kDefaultBrowserCheckTimeout = base::Seconds(2);
 
 const signin_metrics::AccessPoint kAccessPoint =
     signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE;
+
+enum class ShowDefaultBrowserStep {
+  // The default browser step should be shown as appropriate.
+  kYes,
+  // The default browser step should be skipped.
+  kNo,
+  // The default browser step should be shown even if we normally should skip
+  // it, example because of policies or the current default state.
+  kForce
+};
 
 bool IsDefaultBrowserDisabledByPolicy() {
   const PrefService::Preference* pref =
@@ -65,6 +76,23 @@ void MaybeLogSetAsDefaultSuccess(
     base::UmaHistogramEnumeration(
         "ProfilePicker.FirstRun.DefaultBrowser",
         DefaultBrowserChoice::kSuccessfullySetAsDefault);
+  }
+}
+
+bool IsPostIdentityStep(ProfileManagementFlowController::Step step) {
+  switch (step) {
+    case ProfileManagementFlowController::Step::kUnknown:
+    case ProfileManagementFlowController::Step::kFinishFlow:
+    case ProfileManagementFlowController::Step::kFinishSamlSignin:
+    case ProfileManagementFlowController::Step::kPostSignInFlow:
+    case ProfileManagementFlowController::Step::kProfilePicker:
+    case ProfileManagementFlowController::Step::kAccountSelection:
+    case ProfileManagementFlowController::Step::kIntro:
+    case ProfileManagementFlowController::Step::kReauth:
+      return false;
+    case ProfileManagementFlowController::Step::kDefaultBrowser:
+    case ProfileManagementFlowController::Step::kSearchEngineChoice:
+      return true;
   }
 }
 
@@ -141,7 +169,8 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
  public:
   explicit DefaultBrowserStepController(
       ProfilePickerWebContentsHost* host,
-      base::OnceClosure step_completed_callback)
+      base::OnceCallback<void(StepSwitchFinishedCallback)>
+          step_completed_callback)
       : ProfileManagementStepController(host),
         step_completed_callback_(std::move(step_completed_callback)) {}
 
@@ -155,24 +184,18 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
   void Show(base::OnceCallback<void(bool success)> step_shown_callback,
             bool reset_state) override {
     CHECK(reset_state);
-    WithDefaultBrowserStep show_screen = ShouldShowScreen();
+    const ShowDefaultBrowserStep show_screen = ShouldShowScreen();
 
-    if (show_screen == WithDefaultBrowserStep::kNo) {
-      if (step_shown_callback) {
-        std::move(step_shown_callback).Run(false);
-      }
-      std::move(step_completed_callback_).Run();
+    if (show_screen == ShowDefaultBrowserStep::kNo) {
+      // Forward the callback since the step is skipped.
+      std::move(step_completed_callback_).Run(std::move(step_shown_callback));
       return;
     }
 
+    switch_from_previous_step_finished_callback_ =
+        std::move(step_shown_callback);
     navigation_finished_closure_ = base::BindOnce(
         &DefaultBrowserStepController::OnLoadFinished, base::Unretained(this));
-    if (step_shown_callback) {
-      // Notify the caller first.
-      navigation_finished_closure_ =
-          base::BindOnce(std::move(step_shown_callback), true)
-              .Then(std::move(navigation_finished_closure_));
-    }
 
     show_default_browser_screen_callback_ =
         base::BindOnce(&DefaultBrowserStepController::ShowDefaultBrowserScreen,
@@ -180,12 +203,12 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
 
     // If the feature is set to forced, show the step even if it's already
     // the default browser.
-    if (show_screen == WithDefaultBrowserStep::kForced) {
+    if (show_screen == ShowDefaultBrowserStep::kForce) {
       std::move(show_default_browser_screen_callback_).Run();
       return;
     }
 
-    // Set up the timeout closure, in clase checking if the browser is already
+    // Set up the timeout closure, in case checking if the browser is already
     // set as default isn't completed before the timeout.
     default_browser_check_timeout_closure_.Reset(base::BindOnce(
         &DefaultBrowserStepController::OnDefaultBrowserCheckTimeout,
@@ -234,7 +257,7 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
     base::UmaHistogramEnumeration("ProfilePicker.FirstRun.DefaultBrowser",
                                   choice);
     CHECK(step_completed_callback_);
-    std::move(step_completed_callback_).Run();
+    std::move(step_completed_callback_).Run(StepSwitchFinishedCallback());
   }
 
   void OnDefaultBrowserCheckFinished(
@@ -253,7 +276,8 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
     if (should_show_default_browser_step) {
       std::move(show_default_browser_screen_callback_).Run();
     } else {
-      std::move(step_completed_callback_).Run();
+      std::move(step_completed_callback_)
+          .Run(std::move(switch_from_previous_step_finished_callback_));
     }
   }
 
@@ -264,18 +288,28 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
 
     base::UmaHistogramEnumeration("ProfilePicker.FirstRun.DefaultBrowser",
                                   DefaultBrowserChoice::kNotShownOnTimeout);
-    std::move(step_completed_callback_).Run();
+    std::move(step_completed_callback_)
+        .Run(std::move(switch_from_previous_step_finished_callback_));
   }
 
   void ShowDefaultBrowserScreen() {
     if (navigation_finished_closure_) {
+      if (switch_from_previous_step_finished_callback_) {
+        // Notify the previous step before executing this step's initialization
+        // callback.
+        navigation_finished_closure_ =
+            base::BindOnce(
+                std::move(switch_from_previous_step_finished_callback_), true)
+                .Then(std::move(navigation_finished_closure_));
+      }
+
       host()->ShowScreenInPickerContents(
           GURL(chrome::kChromeUIIntroDefaultBrowserURL),
           std::move(navigation_finished_closure_));
     }
   }
 
-  WithDefaultBrowserStep ShouldShowScreen() {
+  ShowDefaultBrowserStep ShouldShowScreen() const {
     bool should_show_default_browser_step =
         // Check for policies.
         !IsDefaultBrowserDisabledByPolicy() &&
@@ -283,26 +317,32 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
         shell_integration::CanSetAsDefaultBrowser();
 
     if (!should_show_default_browser_step) {
-      return WithDefaultBrowserStep::kNo;
+      return ShowDefaultBrowserStep::kNo;
     }
 
-    // If the feature is enabled, the default browser step should be shown only
-    // on Windows. If it's forced, it should be shown on the other platforms for
-    // testing.
+    // The default browser step should be shown only on Windows. We only show it
+    // on Windows because we display a dialog before the FRE on MacOS and Linux
+    // to ask the user about the default browser. If it's forced, it should be
+    // shown on the other platforms for testing.
 #if BUILDFLAG(IS_WIN)
-    return kForYouFreWithDefaultBrowserStep.Get();
+    return ShowDefaultBrowserStep::kYes;
 #else
     // Non-Windows platforms should not show this unless forced (e.g.
     // command line)
-    bool force_default_browser_step = kForYouFreWithDefaultBrowserStep.Get() ==
-                                      WithDefaultBrowserStep::kForced;
-    return force_default_browser_step ? WithDefaultBrowserStep::kForced
-                                      : WithDefaultBrowserStep::kNo;
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    return command_line->HasSwitch(switches::kForceFreDefaultBrowserStep)
+               ? ShowDefaultBrowserStep::kForce
+               : ShowDefaultBrowserStep::kNo;
 #endif  // BUILDFLAG(IS_WIN)
   }
 
   // Callback to be executed when the step is completed.
-  base::OnceClosure step_completed_callback_;
+  base::OnceCallback<void(StepSwitchFinishedCallback)> step_completed_callback_;
+
+  // Callback to be expected when switching from the previous step to this step
+  // is completed. If this step is skipped, we should forward it to
+  // `step_completed_callback_`.
+  StepSwitchFinishedCallback switch_from_previous_step_finished_callback_;
 
   base::OnceClosure navigation_finished_closure_;
   base::CancelableOnceClosure default_browser_check_timeout_closure_;
@@ -310,9 +350,10 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
   base::WeakPtrFactory<DefaultBrowserStepController> weak_ptr_factory_{this};
 };
 
-using IdentityStepsCompletedCallback =
-    base::OnceCallback<void(PostHostClearedCallback post_host_cleared_callback,
-                            bool is_continue_callback)>;
+using IdentityStepsCompletedCallback = base::OnceCallback<void(
+    PostHostClearedCallback post_host_cleared_callback,
+    bool is_continue_callback,
+    StepSwitchFinishedCallback step_switch_finished_callback)>;
 
 // Instance allowing `TurnSyncOnHelper` to drive the interface in the
 // `kPostSignIn` step.
@@ -348,21 +389,18 @@ class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
     ProfilePickerSignedInFlowController::Init();
   }
 
-  void FinishAndOpenBrowser(
-      PostHostClearedCallback post_host_cleared_callback) override {
+  void FinishAndOpenBrowserInternal(
+      PostHostClearedCallback post_host_cleared_callback,
+      bool is_continue_callback) override {
     // Do nothing if this has already been called. Note that this can get called
     // first time from a special case handling (such as the Settings link) and
     // than second time when the TurnSyncOnHelper finishes.
     if (!step_completed_callback_) {
       return;
     }
-
-    // The only callback we can receive in this flow is the one to
-    // finish configuring Sync. In this case we always want to
-    // immediately continue with that.
-    bool is_continue_callback = !post_host_cleared_callback->is_null();
     std::move(step_completed_callback_)
-        .Run(std::move(post_host_cleared_callback), is_continue_callback);
+        .Run(std::move(post_host_cleared_callback), is_continue_callback,
+             StepSwitchFinishedCallback());
   }
 
  private:
@@ -401,12 +439,12 @@ FirstRunFlowControllerDice::~FirstRunFlowControllerDice() {
   // The core of the flow stops at the sync opt in step. Considering the flow
   // completed means among other things that we would always proceed to the
   // browser when closing the host view.
-  bool is_core_flow_completed = current_step() == Step::kDefaultBrowser;
+  bool is_core_flow_completed = IsPostIdentityStep(current_step());
 
   if (is_core_flow_completed) {
-    FinishFlowAndRunInBrowser(profile_, std::move(post_host_cleared_callback_));
+    RunFinishFlowCallback();
   } else {
-    // TODO(crbug.com/1466803): Revisit the enum value name for kQuitAtEnd.
+    // TODO(crbug.com/40276516): Revisit the enum value name for kQuitAtEnd.
     std::move(first_run_exited_callback_)
         .Run(ProfilePicker::FirstRunExitStatus::kQuitAtEnd);
   }
@@ -433,12 +471,14 @@ void FirstRunFlowControllerDice::CancelPostSignInFlow() {
   // accepted before we show the prompt. So here we need to revert it.
   // Currently we remove the account to match the behaviour from the profile
   // creation flow.
-  // TODO(crbug.com/1465779): Refactor ProfilePickerSignedInFlowController
+  // TODO(crbug.com/40067597): Refactor ProfilePickerSignedInFlowController
   // to split the lacros and dice behaviours more and remove the need for such
   // hacky workarounds. Look into letting the user keep their account.
   signin::ClearProfileWithManagedAccounts(profile_);
 
-  HandleIdentityStepsCompleted(PostHostClearedCallback());
+  HandleIdentityStepsCompleted(profile_, PostHostClearedCallback(),
+                               /*is_continue_callback=*/false,
+                               StepSwitchFinishedCallback());
 }
 
 bool FirstRunFlowControllerDice::PreFinishWithBrowser() {
@@ -455,27 +495,15 @@ void FirstRunFlowControllerDice::HandleIntroSigninChoice(IntroChoice choice) {
   }
 
   if (choice == IntroChoice::kContinueWithoutAccount) {
-    HandleIdentityStepsCompleted(PostHostClearedCallback());
+    HandleIdentityStepsCompleted(profile_, PostHostClearedCallback(),
+                                 /*is_continue_callback=*/false,
+                                 StepSwitchFinishedCallback());
     return;
   }
 
   SwitchToIdentityStepsFromAccountSelection(
       /*step_switch_finished_callback=*/base::DoNothing(), kAccessPoint,
       profile_->GetPath());
-}
-
-void FirstRunFlowControllerDice::HandleIdentityStepsCompleted(
-    PostHostClearedCallback post_host_cleared_callback,
-    bool is_continue_callback) {
-  CHECK(post_host_cleared_callback_->is_null());
-  post_host_cleared_callback_ = std::move(post_host_cleared_callback);
-
-  if (is_continue_callback) {
-    FinishFlowAndRunInBrowser(profile_, std::move(post_host_cleared_callback_));
-    return;
-  }
-
-  SwitchToPostIdentitySteps();
 }
 
 std::unique_ptr<ProfilePickerSignedInFlowController>
@@ -489,12 +517,27 @@ FirstRunFlowControllerDice::CreateSignedInFlowController(
       base::BindOnce(&FirstRunFlowControllerDice::HandleIdentityStepsCompleted,
                      // Unretained ok: the callback is passed to a step that
                      // the `this` will own and outlive.
-                     base::Unretained(this)));
+                     base::Unretained(this), base::Unretained(profile_)));
+}
+
+void FirstRunFlowControllerDice::RunFinishFlowCallback() {
+  if (finish_flow_callback_) {
+    std::move(finish_flow_callback_).Run();
+  }
 }
 
 base::queue<ProfileManagementFlowController::Step>
-FirstRunFlowControllerDice::RegisterPostIdentitySteps() {
+FirstRunFlowControllerDice::RegisterPostIdentitySteps(
+    PostHostClearedCallback post_host_cleared_callback) {
   base::queue<ProfileManagementFlowController::Step> post_identity_steps;
+
+  finish_flow_callback_ = base::BindOnce(
+      &FirstRunFlowControllerDice::FinishFlowAndRunInBrowser,
+      base::Unretained(this),
+      // Unretained ok: the steps register a profile keep-alive and
+      // will be alive until this callback runs.
+      base::Unretained(profile_), std::move(post_host_cleared_callback));
+
   auto search_engine_choice_step_completed =
       base::BindOnce(&FirstRunFlowControllerDice::AdvanceToNextPostIdentityStep,
                      base::Unretained(this));
@@ -523,9 +566,8 @@ FirstRunFlowControllerDice::RegisterPostIdentitySteps() {
       Step::kFinishFlow,
       ProfileManagementStepController::CreateForFinishFlowAndRunInBrowser(
           host(),
-          base::BindOnce(&FirstRunFlowControllerDice::FinishFlowAndRunInBrowser,
-                         base::Unretained(this), base::Unretained(profile_),
-                         std::move(post_host_cleared_callback_))));
+          base::BindOnce(&FirstRunFlowControllerDice::RunFinishFlowCallback,
+                         base::Unretained(this))));
   post_identity_steps.emplace(
       ProfileManagementFlowController::Step::kFinishFlow);
   return post_identity_steps;

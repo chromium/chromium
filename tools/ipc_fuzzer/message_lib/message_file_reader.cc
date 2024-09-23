@@ -6,11 +6,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_piece.h"
 #include "ipc/ipc_message.h"
 #include "tools/ipc_fuzzer/message_lib/message_cracker.h"
 #include "tools/ipc_fuzzer/message_lib/message_file.h"
@@ -57,8 +58,8 @@ class Reader {
   // Raw data.
   base::FilePath path_;
   base::MemoryMappedFile mapped_file_;
-  base::StringPiece file_data_;
-  base::StringPiece string_table_;
+  std::string_view file_data_;
+  std::string_view string_table_;
 
   // Parsed data.
   const FileHeader* header_;
@@ -104,15 +105,14 @@ bool Reader::MapFile() {
     LOG(ERROR) << "Failed to map testcase: " << path_.value();
     return false;
   }
-  const char* data = reinterpret_cast<const char*>(mapped_file_.data());
-  file_data_ = base::StringPiece(data, mapped_file_.length());
+  file_data_ = base::as_string_view(mapped_file_.bytes());
   return true;
 }
 
 bool Reader::ReadMessages() {
   for (size_t i = 0; i < header_->message_count; ++i) {
-    const char* begin = file_data_.begin();
-    const char* end = file_data_.end();
+    const char* begin = file_data_.data();
+    const char* end = begin + file_data_.size();
     IPC::Message::NextMessageInfo info;
     IPC::Message::FindNext(begin, end, &info);
     if (!info.message_found) {

@@ -5,8 +5,10 @@
 #include "components/offline_items_collection/core/android/offline_item_share_info_bridge.h"
 
 #include "base/android/jni_string.h"
-#include "components/offline_items_collection/core/jni_headers/OfflineItemShareInfoBridge_jni.h"
 #include "components/offline_items_collection/core/offline_item.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/offline_items_collection/core/jni_headers/OfflineItemShareInfoBridge_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;

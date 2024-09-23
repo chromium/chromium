@@ -112,4 +112,4 @@ Multiple command line arguments can be given to the command:
     --help                display this help and exit.
 
 ## Source code
-See the video decoder performance tests [source code](https://cs.chromium.org/chromium/src/media/gpu/video_decode_accelerator_perf_tests.cc).
+See the video decoder performance tests [source code](https://cs.chromium.org/chromium/src/media/gpu/test/video_decode_accelerator_perf_tests.cc).

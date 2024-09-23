@@ -25,13 +25,7 @@ AutofillInternalsUI::AutofillInternalsUI(content::WebUI* web_ui)
 AutofillInternalsUI::~AutofillInternalsUI() = default;
 
 AutofillInternalsUIConfig::AutofillInternalsUIConfig()
-    : WebUIConfig(content::kChromeUIScheme,
-                  chrome::kChromeUIAutofillInternalsHost) {}
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIAutofillInternalsHost) {}
 
 AutofillInternalsUIConfig::~AutofillInternalsUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-AutofillInternalsUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                                 const GURL& url) {
-  return std::make_unique<AutofillInternalsUI>(web_ui);
-}

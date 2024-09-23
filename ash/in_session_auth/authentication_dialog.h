@@ -6,13 +6,16 @@
 #define ASH_IN_SESSION_AUTH_AUTHENTICATION_DIALOG_H_
 
 #include <memory>
+#include <optional>
 
-#include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/auth_panel/public/shared_types.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/account_id/account_id.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
@@ -46,7 +49,7 @@ class AuthenticationDialog : public views::DialogDelegateView {
   // |on_auth_complete| is called when the user has been authenticated
   // or when the dialog has been aborted
   explicit AuthenticationDialog(
-      InSessionAuthDialogController::OnAuthComplete on_auth_complete,
+      auth_panel::AuthCompletionCallback on_auth_complete,
       InSessionAuthTokenProvider* auth_token_provider,
       std::unique_ptr<AuthPerformer> auth_performer,
       const AccountId& account_id);
@@ -120,7 +123,7 @@ class AuthenticationDialog : public views::DialogDelegateView {
   // See implementation of `CancelAuthAttempt` for details.
   bool is_closing_ = false;
 
-  InSessionAuthDialogController::OnAuthComplete on_auth_complete_;
+  auth_panel::AuthCompletionCallback on_auth_complete_;
 
   // Called when user submits an auth factor to check its validity
   std::unique_ptr<AuthPerformer> auth_performer_;

@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
@@ -29,17 +28,14 @@ public class SuggestionViewViewBinder {
         if (propertyKey == SuggestionViewProperties.TEXT_LINE_1_TEXT) {
             TextView tv = view.findViewById(R.id.line_1);
             tv.setText(model.get(SuggestionViewProperties.TEXT_LINE_1_TEXT));
-            if (OmniboxFeatures.shouldShowModernizeVisualUpdate(view.getContext())) {
-                int minHeight =
-                        tv.getResources()
-                                .getDimensionPixelSize(
-                                        tv.getLineCount() > 1
-                                                ? R.dimen
-                                                        .omnibox_suggestion_minimum_content_height_multiline
-                                                : R.dimen
-                                                        .omnibox_suggestion_minimum_content_height);
-                view.setMinimumHeight(minHeight);
-            }
+            int minHeight =
+                    tv.getResources()
+                            .getDimensionPixelSize(
+                                    tv.getLineCount() > 1
+                                            ? R.dimen
+                                                    .omnibox_suggestion_minimum_content_height_multiline
+                                            : R.dimen.omnibox_suggestion_minimum_content_height);
+            view.setMinimumHeight(minHeight);
         } else if (propertyKey == SuggestionCommonProperties.COLOR_SCHEME) {
             updateSuggestionTextColor(view, model);
         } else if (propertyKey == SuggestionViewProperties.IS_SEARCH_SUGGESTION) {

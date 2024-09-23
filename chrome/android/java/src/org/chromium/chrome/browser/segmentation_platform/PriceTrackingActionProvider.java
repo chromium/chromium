@@ -6,11 +6,10 @@ package org.chromium.chrome.browser.segmentation_platform;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 
 /** Provides price tracking signal for showing contextual page action for a given tab. */
 public class PriceTrackingActionProvider implements ContextualPageActionController.ActionProvider {
@@ -30,6 +29,13 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
 
     @Override
     public void getAction(Tab tab, SignalAccumulator signalAccumulator) {
+
+        if (tab == null || tab.getUrl() == null || !UrlUtilities.isHttpOrHttps(tab.getUrl())) {
+            signalAccumulator.setHasPriceTracking(false);
+            signalAccumulator.notifySignalAvailable();
+            return;
+        }
+
         final BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
         bookmarkModel.finishLoadingBookmarkModel(
                 () -> {
@@ -46,25 +52,11 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
                     shoppingService.getProductInfoForUrl(
                             tab.getUrl(),
                             (url, info) -> {
-                                BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tab);
                                 boolean canTrackPrice =
                                         info != null && info.productClusterId.isPresent();
 
-                                if (bookmarkId == null) {
-                                    signalAccumulator.setHasPriceTracking(canTrackPrice);
-                                    signalAccumulator.notifySignalAvailable();
-                                } else {
-                                    PriceTrackingUtils.isBookmarkPriceTracked(
-                                            mProfileSupplier.get(),
-                                            bookmarkId.getId(),
-                                            (isTracked) -> {
-                                                // If the product is already tracked, don't make the
-                                                // icon available.
-                                                signalAccumulator.setHasPriceTracking(
-                                                        canTrackPrice && !isTracked);
-                                                signalAccumulator.notifySignalAvailable();
-                                            });
-                                }
+                                signalAccumulator.setHasPriceTracking(canTrackPrice);
+                                signalAccumulator.notifySignalAvailable();
                             });
                 });
     }

@@ -99,7 +99,7 @@ class ChromeConfigurator : public update_client::Configurator {
 
   SEQUENCE_CHECKER(sequence_checker_);
   ConfiguratorImpl configurator_impl_;
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService, LeakedDanglingUntriaged> pref_service_;
   std::unique_ptr<update_client::PersistedData> persisted_data_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
@@ -303,7 +303,6 @@ std::optional<base::FilePath> ChromeConfigurator::GetCrxCachePath() const {
                 : std::nullopt;
 }
 
-// TODO(crbug/1496582): Consolidate the cache path getters.
 std::optional<base::FilePath> ChromeConfigurator::GetBackgroundDownloaderCache()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

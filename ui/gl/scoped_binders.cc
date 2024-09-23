@@ -186,7 +186,7 @@ ScopedBufferBinder::~ScopedBufferBinder() {
 }
 
 ScopedViewport::ScopedViewport(int x, int y, int width, int height) {
-  glGetIntegerv(GL_VIEWPORT, data_);
+  glGetIntegerv(GL_VIEWPORT, data_.data());
   glViewport(x, y, width, height);
 }
 
@@ -195,7 +195,7 @@ ScopedViewport::~ScopedViewport() {
 }
 
 ScopedColorMask::ScopedColorMask(char red, char green, char blue, char alpha) {
-  glGetBooleanv(GL_COLOR_WRITEMASK, colors_);
+  glGetBooleanv(GL_COLOR_WRITEMASK, colors_.data());
   glColorMask(red, green, blue, alpha);
 }
 

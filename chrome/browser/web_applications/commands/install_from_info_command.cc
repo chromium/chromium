@@ -12,7 +12,6 @@
 #include "chrome/browser/web_applications/jobs/install_from_info_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -23,15 +22,9 @@
 
 namespace web_app {
 namespace {
-webapps::ManifestId GetManifestIdWithBackup(
-    const WebAppInstallInfo& install_info) {
-  return install_info.manifest_id.is_empty()
-             ? GenerateManifestIdFromStartUrlOnly(install_info.start_url)
-             : install_info.manifest_id;
-}
 
-webapps::AppId GetAppIdWithBackup(const WebAppInstallInfo& install_info) {
-  return GenerateAppIdFromManifestId(GetManifestIdWithBackup(install_info),
+webapps::AppId GetAppId(const WebAppInstallInfo& install_info) {
+  return GenerateAppIdFromManifestId(install_info.manifest_id(),
                                      install_info.parent_app_manifest_id);
 }
 }  // namespace
@@ -45,17 +38,16 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     std::optional<WebAppInstallParams> install_params)
     : WebAppCommand<AppLock, const webapps::AppId&, webapps::InstallResultCode>(
           "InstallFromInfoCommand",
-          AppLockDescription(GetAppIdWithBackup(*install_info)),
+          AppLockDescription(GetAppId(*install_info)),
           std::move(install_callback),
           /*args_for_shutdown=*/
           std::make_tuple(/*app_id=*/
-                          GetAppIdWithBackup(*install_info),
+                          GetAppId(*install_info),
                           webapps::InstallResultCode::
                               kCancelledOnWebAppProviderShuttingDown)),
       profile_(*profile),
-      manifest_id_(GetManifestIdWithBackup(*install_info)),
-      app_id_(GetAppIdWithBackup(*install_info)) {
-  GetMutableDebugValue().Set("manifest_id", manifest_id_.spec());
+      app_id_(GetAppId(*install_info)) {
+  GetMutableDebugValue().Set("manifest_id", install_info->manifest_id().spec());
   GetMutableDebugValue().Set("app_id", app_id_);
   install_from_info_job_ = std::make_unique<InstallFromInfoJob>(
       profile, *GetMutableDebugValue().EnsureDict("install_from_info_job"),
@@ -69,7 +61,8 @@ InstallFromInfoCommand::~InstallFromInfoCommand() = default;
 
 void InstallFromInfoCommand::OnShutdown(
     base::PassKey<WebAppCommandManager>) const {
-  webapps::InstallableMetrics::TrackInstallResult(false);
+  webapps::InstallableMetrics::TrackInstallResult(
+      false, install_from_info_job_->install_surface());
 }
 
 void InstallFromInfoCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
@@ -79,15 +72,15 @@ void InstallFromInfoCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
 
 void InstallFromInfoCommand::OnInstallFromInfoJobCompleted(
     webapps::AppId app_id,
-    webapps::InstallResultCode code,
-    OsHooksErrors os_hook_errors) {
+    webapps::InstallResultCode code) {
   bool was_install_success = webapps::IsSuccess(code);
   if (!was_install_success) {
     CompleteAndSelfDestruct(CommandResult::kFailure, app_id_, code);
     return;
   }
 
-  webapps::InstallableMetrics::TrackInstallResult(was_install_success);
+  webapps::InstallableMetrics::TrackInstallResult(
+      was_install_success, install_from_info_job_->install_surface());
   CompleteAndSelfDestruct(CommandResult::kSuccess, app_id_, code);
 }
 

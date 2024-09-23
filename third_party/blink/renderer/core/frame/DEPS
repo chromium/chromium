@@ -1,12 +1,14 @@
+include_rules = {
+  "+cc/input/browser_controls_offset_tags_info.h",
+}
+
 specific_include_rules = {
   "ad_tracker_test\.cc": [
     "+base/run_loop.h",
   ],
   "attribution_src_loader(\.cc|\.h|_test\.cc)": [
     "+components/attribution_reporting",
-    "+services/network/public/cpp/attribution_reporting_runtime_features.h",
     "+services/network/public/cpp/attribution_utils.h",
-    "+services/network/public/cpp/trigger_verification.h",
   ],
   "child_frame_compositing_helper\.h": [
     "+components/viz/common/surfaces/surface_id.h",
@@ -20,6 +22,9 @@ specific_include_rules = {
   ],
   "dom_timer_test\.cc": [
     "+base/test/scoped_command_line.h",
+  ],
+  "frame\.cc": [
+    "+base/metrics/histogram_functions.h",
   ],
   "frame_view\.cc": [
     "+ui/gfx/transform.h"
@@ -38,6 +43,7 @@ specific_include_rules = {
     "+ui/gfx/transform.h"
   ],
   "local_frame\.cc": [
+    "+base/metrics/histogram_functions.h",
     "+ui/gfx/transform.h"
   ],
   "local_frame_ukm_aggregator\.cc": [
@@ -74,7 +80,6 @@ specific_include_rules = {
   "web_frame_widget_impl\.cc": [
     "+cc/trees/swap_promise.h",
     "+cc/trees/compositor_commit_data.h",
-    "+ppapi/buildflags/buildflags.h", # TODO(crbug.com/1279429): Remove.
   ],
   "web_frame_widget_impl\.h": [
     "+services/viz/public/mojom/hit_test/input_target_client.mojom-blink.h",

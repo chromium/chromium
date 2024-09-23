@@ -11,6 +11,7 @@
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
@@ -38,10 +39,30 @@ class CheckedContiguousIterator {
 
   constexpr CheckedContiguousIterator() = default;
 
-  constexpr CheckedContiguousIterator(T* start, const T* end)
-      : CheckedContiguousIterator(start, start, end) {}
+  // Constructs an iterator from `start` to `end`, starting at `start`.
+  //
+  // # Safety
+  // `start` and `end` must point to a single allocation.
+  //
+  // # Checks
+  // This function CHECKs that `start <= end` and will terminate otherwise.
+  UNSAFE_BUFFER_USAGE constexpr CheckedContiguousIterator(T* start,
+                                                          const T* end)
+      : start_(start), current_(start), end_(end) {
+    CHECK_LE(start, end);
+  }
 
-  constexpr CheckedContiguousIterator(const T* start, T* current, const T* end)
+  // Constructs an iterator from `start` to `end`, starting at `current`.
+  //
+  // # Safety
+  // `start`, `current` and `end` must point to a single allocation.
+  //
+  // # Checks
+  // This function CHECKs that `start <= current <= end` and will terminate
+  // otherwise.
+  UNSAFE_BUFFER_USAGE constexpr CheckedContiguousIterator(const T* start,
+                                                          T* current,
+                                                          const T* end)
       : start_(start), current_(current), end_(end) {
     CHECK_LE(start, current);
     CHECK_LE(current, end);
@@ -85,7 +106,10 @@ class CheckedContiguousIterator {
 
   constexpr CheckedContiguousIterator& operator++() {
     CHECK_NE(current_, end_);
-    ++current_;
+    // SAFETY: `current_ <= end_` is an invariant maintained internally, and the
+    // CHECK above ensures that we are not at the end yet, so incrementing stays
+    // in bounds of the allocation.
+    UNSAFE_BUFFERS(++current_);
     return *this;
   }
 
@@ -97,7 +121,10 @@ class CheckedContiguousIterator {
 
   constexpr CheckedContiguousIterator& operator--() {
     CHECK_NE(current_, start_);
-    --current_;
+    // SAFETY: `current_ >= start_` is an invariant maintained internally, and
+    // the CHECK above ensures that we are not at the start yet, so decrementing
+    // stays in bounds of the allocation.
+    UNSAFE_BUFFERS(--current_);
     return *this;
   }
 
@@ -108,12 +135,17 @@ class CheckedContiguousIterator {
   }
 
   constexpr CheckedContiguousIterator& operator+=(difference_type rhs) {
-    if (rhs > 0) {
-      CHECK_LE(rhs, end_ - current_);
-    } else {
-      CHECK_LE(-rhs, current_ - start_);
-    }
-    current_ += rhs;
+    // NOTE: Since the max allocation size is PTRDIFF_MAX (in our compilers),
+    // subtracting two pointers from the same allocation can not underflow.
+    CHECK_LE(rhs, end_ - current_);
+    CHECK_GE(rhs, start_ - current_);
+    // SAFETY: `current_ <= end_` is an invariant maintained internally. The
+    // checks above ensure:
+    // `start_ - current_ <= rhs <= end_ - current_`.
+    // Which means:
+    // `start_ <= rhs + current <= end_`, so `current_` will remain in bounds of
+    // the allocation after adding `rhs`.
+    UNSAFE_BUFFERS(current_ += rhs);
     return *this;
   }
 
@@ -130,12 +162,17 @@ class CheckedContiguousIterator {
   }
 
   constexpr CheckedContiguousIterator& operator-=(difference_type rhs) {
-    if (rhs < 0) {
-      CHECK_LE(-rhs, end_ - current_);
-    } else {
-      CHECK_LE(rhs, current_ - start_);
-    }
-    current_ -= rhs;
+    // NOTE: Since the max allocation size is PTRDIFF_MAX (in our compilers),
+    // subtracting two pointers from the same allocation can not underflow.
+    CHECK_GE(rhs, current_ - end_);
+    CHECK_LE(rhs, current_ - start_);
+    // SAFETY: `start_ <= current_` is an invariant maintained internally. The
+    // checks above ensure:
+    // `current_ - end_ <= rhs <= current_ - start_`.
+    // Which means:
+    // `end_ >= current - rhs >= start_`, so `current_` will remain in bounds
+    // of the allocation after subtracting `rhs`.
+    UNSAFE_BUFFERS(current_ -= rhs);
     return *this;
   }
 
@@ -163,17 +200,27 @@ class CheckedContiguousIterator {
   }
 
   constexpr reference operator[](difference_type rhs) const {
-    CHECK_GE(rhs, 0);
+    // NOTE: Since the max allocation size is PTRDIFF_MAX (in our compilers),
+    // subtracting two pointers from the same allocation can not underflow.
+    CHECK_GE(rhs, start_ - current_);
     CHECK_LT(rhs, end_ - current_);
-    return current_[rhs];
+    // SAFETY: `start_ <= current_ <= end_` is an invariant maintained
+    // internally. The checks above ensure:
+    // `start_ - current_ <= rhs < end_ - current_`.
+    // Which means:
+    // `start_ <= current_ + rhs < end_`.
+    // So `current_[rhs]` will be a valid dereference of a pointer in the
+    // allocation (it is not the pointer toone-past-the-end).
+    return UNSAFE_BUFFERS(current_[rhs]);
   }
 
   [[nodiscard]] static bool IsRangeMoveSafe(
       const CheckedContiguousIterator& from_begin,
       const CheckedContiguousIterator& from_end,
       const CheckedContiguousIterator& to) {
-    if (from_end < from_begin)
+    if (from_end < from_begin) {
       return false;
+    }
     const auto from_begin_uintptr = get_uintptr(from_begin.current_);
     const auto from_end_uintptr = get_uintptr(from_end.current_);
     const auto to_begin_uintptr = get_uintptr(to.current_);
@@ -190,7 +237,7 @@ class CheckedContiguousIterator {
     CHECK_EQ(end_, other.end_);
   }
 
-  // RAW_PTR_EXCLUSION: T can be a STACK_ALLOCATED class.
+  // RAW_PTR_EXCLUSION: The embedding class is stack-scoped.
   RAW_PTR_EXCLUSION const T* start_ = nullptr;
   RAW_PTR_EXCLUSION T* current_ = nullptr;
   RAW_PTR_EXCLUSION const T* end_ = nullptr;

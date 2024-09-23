@@ -55,6 +55,10 @@ void FinalizeWebAppLaunch(std::optional<OpenMode> app_open_mode,
 // finishes executing.
 void SetStartupDoneCallbackForTesting(base::OnceClosure callback);
 
+// `callback` will be run after `StartupWebAppCreator::OnBrowserShutdown()`
+// finishes. This method is used ONLY for testing purpose.
+void SetBrowserShutdownCompleteCallbackForTesting(base::OnceClosure callback);
+
 }  // namespace startup
 }  // namespace web_app
 

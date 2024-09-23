@@ -37,6 +37,9 @@ namespace audio {
 
 namespace {
 
+constexpr char kDeviceId1[] = "device 1";
+constexpr char kDeviceId2[] = "device 2";
+
 // Aliases for use with MockCreatedCallback::Created().
 const bool successfully_ = true;
 const bool unsuccessfully_ = false;
@@ -114,6 +117,13 @@ class MockCreatedCallback {
   }
 };
 
+class MockStreamFactory {
+ public:
+  MOCK_METHOD(media::AudioOutputStream*,
+              CreateStream,
+              (const media::AudioParameters&, const std::string&));
+};
+
 }  // namespace
 
 // Instantiates various classes that we're going to want in most test cases.
@@ -172,6 +182,18 @@ class TestEnvironment {
     return remote_stream;
   }
 
+  mojo::PendingRemote<media::mojom::AudioOutputStream> CreateSwitchableStream(
+      const std::string& device_id) {
+    mojo::PendingRemote<media::mojom::AudioOutputStream> remote_stream;
+    remote_stream_factory_->CreateSwitchableOutputStream(
+        remote_stream.InitWithNewPipeAndPassReceiver(),
+        device_switch_interface_.BindNewPipeAndPassReceiver(),
+        observer_.MakeRemote(), log_.MakeRemote(), device_id,
+        media::AudioParameters::UnavailableDeviceParams(),
+        base::UnguessableToken::Create(), created_callback_.Get());
+    return remote_stream;
+  }
+
   media::MockAudioManager& audio_manager() { return audio_manager_; }
 
   MockObserver& observer() { return observer_; }
@@ -188,11 +210,16 @@ class TestEnvironment {
     return remote_stream_factory_.get();
   }
 
+  media::mojom::DeviceSwitchInterface* device_switch_interface() {
+    return device_switch_interface_.get();
+  }
+
  private:
   base::test::TaskEnvironment tasks_;
   media::MockAudioManager audio_manager_;
   StreamFactory stream_factory_;
   mojo::Remote<media::mojom::AudioStreamFactory> remote_stream_factory_;
+  mojo::Remote<media::mojom::DeviceSwitchInterface> device_switch_interface_;
   mojo::Receiver<media::mojom::AudioStreamFactory> stream_factory_receiver_;
   StrictMock<MockObserver> observer_;
   NiceMock<MockLog> log_;
@@ -351,6 +378,7 @@ TEST(AudioServiceOutputStreamTest, Play_Plays) {
   EXPECT_CALL(mock_stream, Start(NotNull()));
   EXPECT_CALL(env.log(), OnStarted());
   EXPECT_CALL(env.observer(), DidStartPlaying());
+
   // May or may not get an audibility notification depending on if power
   // monitoring is enabled.
   EXPECT_CALL(env.observer(), DidChangeAudibleState(true)).Times(AtMost(1));
@@ -388,6 +416,7 @@ TEST(AudioServiceOutputStreamTest, PlayAndPause_PlaysAndStops) {
 
   EXPECT_CALL(mock_stream, Start(NotNull()));
   EXPECT_CALL(env.observer(), DidStartPlaying());
+
   // May or may not get an audibility notification depending on if power
   // monitoring is enabled.
   EXPECT_CALL(env.observer(), DidChangeAudibleState(true)).Times(AtMost(1));
@@ -562,6 +591,207 @@ TEST(AudioServiceOutputStreamTest, BindMuters) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(env.log(), OnClosed());
+  EXPECT_CALL(mock_stream, Close());
+  EXPECT_CALL(env.observer(),
+              BindingConnectionError(kTerminatedByClientDisconnectReason, _));
+  stream.reset();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST(AudioServiceOutputStreamTest, CreateSwitchableStreamAndPlay) {
+  TestEnvironment env;
+  MockStream mock_stream;
+  EXPECT_CALL(env.created_callback(), Created(successfully_));
+
+  MockStreamFactory mock_stream_factory;
+
+  EXPECT_CALL(mock_stream_factory, CreateStream(_, kDeviceId1))
+      .Times(1)
+      .WillOnce(Return(&mock_stream));
+
+  env.audio_manager().SetMakeOutputStreamCB(base::BindRepeating(
+      base::BindRepeating(&MockStreamFactory::CreateStream,
+                          base::Unretained(&mock_stream_factory))));
+
+  // SwitchAudioOutputDeviceId will reopen and the setVolume as well.
+  EXPECT_CALL(mock_stream, Open()).WillOnce(Return(true));
+  EXPECT_CALL(mock_stream, SetVolume(1));
+
+  mojo::Remote<media::mojom::AudioOutputStream> stream(
+      env.CreateSwitchableStream(kDeviceId1));
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClear(&mock_stream);
+  Mock::VerifyAndClear(&env.created_callback());
+
+  EXPECT_CALL(mock_stream, Start(NotNull())).Times(1);
+  EXPECT_CALL(env.log(), OnStarted()).Times(1);
+  EXPECT_CALL(env.observer(), DidStartPlaying()).Times(1);
+
+  // May or may not get an audibility notification depending on if power
+  // monitoring is enabled.
+  EXPECT_CALL(env.observer(), DidChangeAudibleState(true)).Times(AtMost(1));
+  stream->Play();
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClear(&mock_stream);
+  Mock::VerifyAndClear(&env.observer());
+
+  EXPECT_CALL(mock_stream, Close());
+  EXPECT_CALL(env.observer(),
+              BindingConnectionError(kTerminatedByClientDisconnectReason, _));
+  stream.reset();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST(AudioServiceOutputStreamTest,
+     CreateSwitchableStreamPlayPauseSwitchDeviceId) {
+  TestEnvironment env;
+  MockStream mock_stream;
+  EXPECT_CALL(env.created_callback(), Created(successfully_));
+
+  MockStreamFactory mock_stream_factory;
+
+  EXPECT_CALL(mock_stream_factory, CreateStream(_, kDeviceId1))
+      .Times(1)
+      .WillOnce(Return(&mock_stream));
+
+  EXPECT_CALL(mock_stream_factory, CreateStream(_, kDeviceId2))
+      .Times(1)
+      .WillOnce(Return(&mock_stream));
+
+  env.audio_manager().SetMakeOutputStreamCB(base::BindRepeating(
+      base::BindRepeating(&MockStreamFactory::CreateStream,
+                          base::Unretained(&mock_stream_factory))));
+
+  EXPECT_CALL(mock_stream, Open()).WillOnce(Return(true));
+  EXPECT_CALL(mock_stream, SetVolume(1));
+
+  mojo::Remote<media::mojom::AudioOutputStream> stream(
+      env.CreateSwitchableStream(kDeviceId1));
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClear(&mock_stream);
+  Mock::VerifyAndClear(&env.created_callback());
+
+  // Play.
+  EXPECT_CALL(mock_stream, Start(NotNull()));
+  EXPECT_CALL(env.observer(), DidStartPlaying());
+  EXPECT_CALL(env.observer(), DidChangeAudibleState(true)).Times(AtMost(1));
+
+  // May or may not get an audibility notification depending on if power
+  // monitoring is enabled.
+  EXPECT_CALL(env.observer(), DidChangeAudibleState(true)).Times(AtMost(1));
+  stream->Play();
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClear(&mock_stream);
+  Mock::VerifyAndClear(&env.observer());
+
+  // Pause.
+  EXPECT_CALL(mock_stream, Stop());
+  EXPECT_CALL(env.log(), OnStopped());
+  EXPECT_CALL(env.observer(), DidChangeAudibleState(false)).Times(AtMost(1));
+  EXPECT_CALL(env.observer(), DidStopPlaying());
+  stream->Pause();
+
+  // SwitchDeviceId.
+  EXPECT_CALL(mock_stream, Open()).WillOnce(Return(true));
+  EXPECT_CALL(mock_stream, SetVolume(1));
+
+  // The current state is `stopped` so it does not trigger
+  // `DidStartPlaying` or `Start`.
+  EXPECT_CALL(env.observer(), DidStartPlaying()).Times(0);
+  EXPECT_CALL(mock_stream, Start(NotNull())).Times(0);
+
+  env.device_switch_interface()->SwitchAudioOutputDeviceId(kDeviceId2);
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClear(&mock_stream);
+
+  // Play.
+  EXPECT_CALL(mock_stream, Start(NotNull()));
+  EXPECT_CALL(env.observer(), DidStartPlaying());
+  EXPECT_CALL(env.observer(), DidChangeAudibleState(true)).Times(AtMost(1));
+
+  // May or may not get an audibility notification depending on if power
+  // monitoring is enabled.
+  EXPECT_CALL(env.observer(), DidChangeAudibleState(true)).Times(AtMost(1));
+  stream->Play();
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClear(&mock_stream);
+  Mock::VerifyAndClear(&env.observer());
+
+  // May or may not get an audibility notification depending on if power
+  // monitoring is enabled.
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClear(&mock_stream);
+  Mock::VerifyAndClear(&env.observer());
+
+  EXPECT_CALL(mock_stream, Close());
+  EXPECT_CALL(env.observer(),
+              BindingConnectionError(kTerminatedByClientDisconnectReason, _));
+  stream.reset();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST(AudioServiceOutputStreamTest, CreateSwitchableStreamPlaySwitchDeviceId) {
+  TestEnvironment env;
+  MockStream mock_stream;
+  EXPECT_CALL(env.created_callback(), Created(successfully_));
+
+  MockStreamFactory mock_stream_factory;
+
+  EXPECT_CALL(mock_stream_factory, CreateStream(_, kDeviceId1))
+      .Times(1)
+      .WillOnce(Return(&mock_stream));
+
+  EXPECT_CALL(mock_stream_factory, CreateStream(_, kDeviceId2))
+      .Times(1)
+      .WillOnce(Return(&mock_stream));
+
+  env.audio_manager().SetMakeOutputStreamCB(base::BindRepeating(
+      base::BindRepeating(&MockStreamFactory::CreateStream,
+                          base::Unretained(&mock_stream_factory))));
+
+  EXPECT_CALL(mock_stream, Open()).WillOnce(Return(true));
+  EXPECT_CALL(mock_stream, SetVolume(1));
+
+  mojo::Remote<media::mojom::AudioOutputStream> stream(
+      env.CreateSwitchableStream(kDeviceId1));
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClear(&mock_stream);
+  Mock::VerifyAndClear(&env.created_callback());
+
+  // Play.
+  EXPECT_CALL(mock_stream, Start(NotNull())).Times(1);
+  EXPECT_CALL(env.log(), OnStarted()).Times(1);
+  EXPECT_CALL(env.observer(), DidStartPlaying()).Times(1);
+
+  // May or may not get an audibility notification depending on if power
+  // monitoring is enabled.
+  EXPECT_CALL(env.observer(), DidChangeAudibleState(true)).Times(AtMost(1));
+  stream->Play();
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClear(&mock_stream);
+  Mock::VerifyAndClear(&env.observer());
+
+  // SwitchDeviceId.
+  // Switch the device id will trigger Open and SetVolume event like
+  // the first stream is created.
+  EXPECT_CALL(mock_stream, Open()).WillOnce(Return(true));
+  EXPECT_CALL(mock_stream, SetVolume(1));
+  EXPECT_CALL(mock_stream, Start(NotNull()));
+
+  // It already `play` state so it does not trigger `DidStartPlaying` event.
+  EXPECT_CALL(env.observer(), DidStartPlaying()).Times(0);
+  env.device_switch_interface()->SwitchAudioOutputDeviceId(kDeviceId2);
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClear(&mock_stream);
+
+  // The AudioOutputStream commands continue to work.
+  double new_volume = 0.712;
+  EXPECT_CALL(mock_stream, SetVolume(new_volume));
+  EXPECT_CALL(env.log(), OnSetVolume(new_volume));
+  stream->SetVolume(new_volume);
+  base::RunLoop().RunUntilIdle();
+  Mock::VerifyAndClear(&mock_stream);
+
   EXPECT_CALL(mock_stream, Close());
   EXPECT_CALL(env.observer(),
               BindingConnectionError(kTerminatedByClientDisconnectReason, _));

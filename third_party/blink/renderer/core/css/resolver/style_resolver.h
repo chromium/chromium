@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/color_scheme_flags.h"
-#include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
+#include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/css/resolver/matched_properties_cache.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
@@ -49,9 +49,9 @@ class CSSValue;
 class Document;
 class Element;
 class Font;
-class FontDescription;
 class Interpolation;
 class MatchResult;
+class PageMarginsStyle;
 class PropertyHandle;
 class StyleCascade;
 class StyleRecalcContext;
@@ -98,18 +98,36 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const CSSValue*,
       double offset);
 
+  // Calculate computed style for a given page index and name.
+  //
+  // An optional scale factor may be supplied, which means that the 'zoom'
+  // property will be set to this value. This is used to scale borders etc. when
+  // the page border box needs to be scaled to match the scale factor used by
+  // layout. This should only be used when computing style for the page border
+  // box. The resulting margins should be ignored in that case.
+  //
+  // If ignore_author_style is false, only the input print job settings will be
+  // honored (to get default size and margins, and nothing else).
   const ComputedStyle* StyleForPage(uint32_t page_index,
-                                    const AtomicString& page_name);
+                                    const AtomicString& page_name,
+                                    float page_fitting_scale = 1.0,
+                                    bool ignore_author_style = false);
+
+  // Calculate computed style for all 16 @page margin boxes for a given page
+  // index and name.
+  //
+  // Page margin contexts inherit from the page context (page_style).
+  void StyleForPageMargins(const ComputedStyle& page_style,
+                           uint32_t page_index,
+                           const AtomicString& page_name,
+                           PageMarginsStyle*);
+
+  // Trigger loading of resources only needed by printing (such as @page
+  // backgrounds, for instance).
+  void LoadPaginationResources();
+
   const ComputedStyle* StyleForText(Text*);
   const ComputedStyle* StyleForViewport();
-  const ComputedStyle* StyleForFormattedText(
-      bool is_text_run,
-      const ComputedStyle& parent_style,
-      const CSSPropertyValueSet* css_property_value_set);
-  const ComputedStyle* StyleForFormattedText(
-      bool is_text_run,
-      const FontDescription& default_font,
-      const CSSPropertyValueSet* css_property_value_set);
   // Returns `ComputedStyle` for rendering initial letter text.
   // `initial_letter_box_style` should have non-normal `initial-letter`
   // property.
@@ -222,10 +240,9 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       Element& element,
       const ComputedStyle& base_style,
       ActiveInterpolationsMap& transition_interpolations);
-  StyleRulePositionFallback* ResolvePositionFallbackRule(
-      const TreeScope* tree_scope,
-      AtomicString position_fallback_name);
-  const ComputedStyle* ResolvePositionFallbackStyle(Element&, unsigned index);
+
+  StyleRulePositionTry* ResolvePositionTryRule(const TreeScope* tree_scope,
+                                               AtomicString position_try_name);
 
   // Check if the BODY or HTML element's display or containment stops
   // propagation of BODY style to HTML and viewport.
@@ -289,9 +306,8 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                             ElementRuleCollector&,
                             bool for_shadow_pseudo = false);
   void MatchPseudoPartRulesForUAHost(const Element&, ElementRuleCollector&);
-  void MatchTryRules(const Element&, ElementRuleCollector&);
-  void MatchAuthorRules(const Element&,
-                        ElementRuleCollector&);
+  void MatchPositionTryRules(ElementRuleCollector&);
+  void MatchAuthorRules(const Element&, ElementRuleCollector&);
   void MatchAllRules(StyleResolverState&,
                      ElementRuleCollector&,
                      bool include_smil_properties);
@@ -336,14 +352,14 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                  const StyleRequest&,
                                  const MatchResult&);
   void MaybeAddToMatchedPropertiesCache(StyleResolverState&,
-                                        const CacheSuccess&,
-                                        const MatchResult&);
+                                        const CacheSuccess&);
 
   void ApplyPropertiesFromCascade(StyleResolverState&,
                                   StyleCascade& cascade,
                                   CacheSuccess cache_success);
 
   bool ApplyAnimatedStyle(StyleResolverState&, StyleCascade&);
+  void ApplyAnchorData(StyleResolverState&);
 
   void ApplyCallbackSelectors(StyleResolverState&);
   void ApplyDocumentRulesSelectors(StyleResolverState&, ContainerNode* scope);
@@ -371,10 +387,6 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   Member<Document> document_;
   Member<StyleRuleUsageTracker> tracker_;
 
-  // This is a dummy/disconnected element that we use for FormattedText
-  // style computations; see `EnsureElementForFormattedText`.
-  Member<Element> formatted_text_element_;
-
   // See SetCountComputedStyleBytes().
   bool count_computed_style_bytes_ = false;
   size_t computed_style_bytes_used_ = 0;
@@ -383,15 +395,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   bool was_viewport_resized_ = false;
 
   friend class StyleResolverTest;
-  FRIEND_TEST_ALL_PREFIXES(ParameterizedStyleResolverTest,
-                           TreeScopedReferences);
-
-  Element& EnsureElementForFormattedText();
-  const ComputedStyle* StyleForFormattedText(
-      bool is_text_run,
-      const FontDescription* default_font,
-      const ComputedStyle* parent_style,
-      const CSSPropertyValueSet* css_property_value_set);
+  FRIEND_TEST_ALL_PREFIXES(StyleResolverTest, TreeScopedReferences);
 };
 
 }  // namespace blink

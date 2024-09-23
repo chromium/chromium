@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_VIDEO_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_H_
 #define CONTENT_PUBLIC_BROWSER_VIDEO_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_H_
 
+#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "ui/gfx/geometry/rect.h"
@@ -51,6 +52,11 @@ class VideoPictureInPictureWindowController
   // Returns the source bounds of the video, in the WebContents top-level
   // coordinate space, of the video before it enters picture in picture.
   virtual const gfx::Rect& GetSourceBounds() const = 0;
+
+  // Called to set the callback to notify the observers that window has been
+  // created.
+  virtual void SetOnWindowCreatedNotifyObserversCallback(
+      base::OnceClosure on_window_created_notify_observers_callback) = 0;
 
  protected:
   // Use PictureInPictureWindowController::GetOrCreateForWebContents() to

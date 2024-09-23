@@ -5,8 +5,9 @@
 #ifndef CONTENT_PUBLIC_BROWSER_MOJO_BINDER_POLICY_MAP_H_
 #define CONTENT_PUBLIC_BROWSER_MOJO_BINDER_POLICY_MAP_H_
 
+#include <string_view>
+
 #include "base/check_op.h"
-#include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -45,7 +46,7 @@ enum class MojoBinderAssociatedPolicy {
 
 // Used by content/ layer to manage interfaces' binding policies. Embedders can
 // set their own policies via this interface.
-// TODO(https://crbug.com/1157334): Consider integrating it with
+// TODO(crbug.com/40160797): Consider integrating it with
 // mojo::BinderMap.
 class CONTENT_EXPORT MojoBinderPolicyMap {
  public:
@@ -67,10 +68,10 @@ class CONTENT_EXPORT MojoBinderPolicyMap {
   }
 
  private:
-  virtual void SetPolicyByName(const base::StringPiece& name,
+  virtual void SetPolicyByName(const std::string_view& name,
                                MojoBinderAssociatedPolicy policy) = 0;
 
-  virtual void SetPolicyByName(const base::StringPiece& name,
+  virtual void SetPolicyByName(const std::string_view& name,
                                MojoBinderNonAssociatedPolicy policy) = 0;
 };
 

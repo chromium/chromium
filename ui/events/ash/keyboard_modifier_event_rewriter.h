@@ -7,9 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/events/ash/event_rewriter_utils.h"
+#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
 #include "ui/events/event_rewriter.h"
 
@@ -20,6 +22,7 @@ class ImeKeyboard;
 namespace ui {
 
 class KeyboardCapability;
+class KeyboardLayoutEngine;
 
 // This rewriter remaps modifier key events based on settings/preferences.
 // Also, updates modifier flags along with the remapping not only
@@ -27,11 +30,17 @@ class KeyboardCapability;
 // events and touch events.
 class KeyboardModifierEventRewriter : public EventRewriter {
  public:
+  // UnmappedCode are keys which do not have a corresponding DomCode for their
+  // meaning which are used for modifier remapping.
+  enum class UnmappedCode {
+    kRightAlt,
+  };
+
+  using PhysicalCode = std::variant<DomCode, UnmappedCode>;
   struct RemappedKey {
-    std::optional<DomCode> code;
+    PhysicalCode code;
     DomKey key;
     KeyboardCode key_code;
-    int flags;
   };
 
   // Delegate interface to inject chrome dependencies.
@@ -58,6 +67,7 @@ class KeyboardModifierEventRewriter : public EventRewriter {
   };
 
   KeyboardModifierEventRewriter(std::unique_ptr<Delegate> delegate,
+                                KeyboardLayoutEngine* keyboard_layout_engine,
                                 KeyboardCapability* keyboard_capability,
                                 ash::input_method::ImeKeyboard* ime_keyboard);
   KeyboardModifierEventRewriter(const KeyboardModifierEventRewriter&) = delete;
@@ -71,20 +81,23 @@ class KeyboardModifierEventRewriter : public EventRewriter {
 
  private:
   std::unique_ptr<Event> RewritePressKeyEvent(const KeyEvent& event);
+  std::optional<RemappedKey> RemapPressKey(const KeyEvent& event);
   std::unique_ptr<Event> RewriteReleaseKeyEvent(const KeyEvent& event);
   std::unique_ptr<KeyEvent> BuildRewrittenEvent(const KeyEvent& event,
                                                 const RemappedKey& remapped);
   int RewriteModifierFlags(int flags) const;
 
-  const RemappedKey* GetRemappedKey(mojom::ModifierKey modifier_key,
-                                    int device_id) const;
+  std::optional<PhysicalCode> GetRemappedPhysicalCode(DomCode code,
+                                                      int device_id) const;
 
   std::unique_ptr<Delegate> delegate_;
+  const raw_ptr<KeyboardLayoutEngine> keyboard_layout_engine_;
   const raw_ptr<KeyboardCapability> keyboard_capability_;
   const raw_ptr<ash::input_method::ImeKeyboard> ime_keyboard_;
 
   // Map from physical keys to the affected modifiers on press.
-  std::map<internal::PhysicalKey, RemappedKey> pressed_modifier_keys_;
+  std::map<internal::PhysicalKey, RemappedKey> remapped_keys_;
+  std::map<internal::PhysicalKey, EventFlags> pressed_modifier_keys_;
   bool altgr_latch_ = false;
 };
 

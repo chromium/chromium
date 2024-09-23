@@ -322,7 +322,7 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   // Using a WeakPtr, so even if a new session has the same pointer as an old
   // invalidated session, it can be recognized as a different session.
   //
-  // TODO(crbug.com/1022059): Make const DnsSession once server stats have been
+  // TODO(crbug.com/40106440): Make const DnsSession once server stats have been
   // moved and no longer need to be read from DnsSession for availability logic.
   base::WeakPtr<const DnsSession> current_session_;
   // Current index into |config_.nameservers| to begin resolution with.

@@ -5,36 +5,29 @@
 #ifndef ASH_PICKER_PICKER_ASSET_FETCHER_IMPL_H_
 #define ASH_PICKER_PICKER_ASSET_FETCHER_IMPL_H_
 
-#include <string>
-
 #include "ash/ash_export.h"
 #include "ash/picker/picker_asset_fetcher.h"
-#include "base/functional/callback.h"
-
-class GURL;
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
+class PickerAssetFetcherImplDelegate;
+
+// Implementation of PickerAssetFetcher using a delegate.
 class ASH_EXPORT PickerAssetFetcherImpl : public PickerAssetFetcher {
  public:
-  using GifDataLoadedCallback =
-      base::OnceCallback<void(const std::string& gif_data)>;
-  using GifUrlLoader =
-      base::RepeatingCallback<void(const GURL& url,
-                                   GifDataLoadedCallback callback)>;
-
-  explicit PickerAssetFetcherImpl(GifUrlLoader gif_url_loader);
+  // `delegate` must remain valid while this class is alive.
+  explicit PickerAssetFetcherImpl(PickerAssetFetcherImplDelegate* delegate);
   PickerAssetFetcherImpl(const PickerAssetFetcherImpl&) = delete;
   PickerAssetFetcherImpl& operator=(const PickerAssetFetcherImpl&) = delete;
   ~PickerAssetFetcherImpl() override;
 
-  // PickerAssetFetcher:
-  void FetchGifFromUrl(const GURL& url,
-                       PickerGifFetchedCallback callback) override;
+  void FetchFileThumbnail(const base::FilePath& path,
+                          const gfx::Size& size,
+                          FetchFileThumbnailCallback callback) override;
 
  private:
-  // Helper for loading gifs as encoded strings from urls.
-  GifUrlLoader gif_url_loader_;
+  raw_ptr<PickerAssetFetcherImplDelegate> delegate_;
 };
 
 }  // namespace ash

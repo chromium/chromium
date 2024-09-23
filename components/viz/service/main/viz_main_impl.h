@@ -120,8 +120,11 @@ class VizMainImpl : public mojom::VizMain {
       mojo::PendingRemote<
           discardable_memory::mojom::DiscardableSharedMemoryManager>
           discardable_memory_manager,
-      base::UnsafeSharedMemoryRegion use_shader_cache_shm_region,
-      gfx::FontRenderParams::SubpixelRendering subpixel_rendering) override;
+      base::UnsafeSharedMemoryRegion use_shader_cache_shm_region) override;
+  void SetRenderParams(
+      gfx::FontRenderParams::SubpixelRendering subpixel_rendering,
+      float text_contrast,
+      float text_gamma) override;
 #if BUILDFLAG(IS_WIN)
   void CreateInfoCollectionGpuService(
       mojo::PendingReceiver<mojom::InfoCollectionGpuService> pending_receiver)
@@ -154,6 +157,7 @@ class VizMainImpl : public mojom::VizMain {
 
  private:
   void CreateFrameSinkManagerInternal(mojom::FrameSinkManagerParamsPtr params);
+  void RequestBeginFrameForGpuService(bool toggle);
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner() const {
     return io_thread_ ? io_thread_->task_runner()

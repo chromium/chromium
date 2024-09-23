@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Braonružičasta</translation>
 <translation id="249330843868392562">Otvori podešavanja pretvaranja teksta u govor</translation>
 <translation id="2497706219848005458">Zelenožuta</translation>
+<translation id="2512979179176933762">pregledajte prozore</translation>
 <translation id="2523609930580546572">Vodič za ChromeVox</translation>
 <translation id="2525706221823668172">Tasterske prečice za Chromebook</translation>
 <translation id="2553108862507765288">gramatička greška</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{i još #}one{i još #}few{i još #}other{i još #}}</translation>
 <translation id="2792200646155001340">Možete i da prevučete pomoću jednog prsta zdesna nalevo da biste prešli na prethodnu stavku. Isprobajte.</translation>
 <translation id="280499067616661124">Funkcija ChromeVox-a Pronađi na stranici</translation>
-<translation id="2811019999044652585">Da biste prelazili na druge delove ekrana, kao što su trake s alatkama ili sistemska paleta, pritisnite Control + taster za kretanje unapred. Taster za kretanje unapred na Chromebook-u se nalazi odmah iznad tastera sa brojem 2.</translation>
 <translation id="2811204574343810641">Red</translation>
 <translation id="2816868829355607410">Oblast za vežbanje: komande za prelazak</translation>
 <translation id="2841013758207633010">Vreme</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Čeličnoplava</translation>
 <translation id="4253168017788158739">Napomena</translation>
 <translation id="4254798249533888099">Stablo</translation>
+<translation id="4259220820964911921">Želite da omogućite kontrolu licem?</translation>
 <translation id="4271220233568730077">Sledeći matematički izraz</translation>
 <translation id="4275397969489577657">Omogući evidentiranje strima događaja</translation>
 <translation id="4278486392851938658">Nema prethodnog posećenog linka</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Braoncrvena</translation>
 <translation id="4432896207833262240">Označeni sadržaj</translation>
 <translation id="4437615272777527928">Unesite tekst da biste pretražili menije. Koristite tastere sa strelicama nagore i nadole za kretanje kroz rezultate. Koristite tastere sa strelicama ulevo i udesno da biste prilagodili kursor za tekst i prelazili iz jednog menija u drugi.</translation>
+<translation id="4453530046591759283">Da biste prelazili na druge delove ekrana, kao što su trake s alatkama ili sistemska paleta, pritisnite Control+F1. F1 je prvi taster desno od tastera Escape.</translation>
 <translation id="4457472090507035117">Izaberite aktuelni glas:</translation>
 <translation id="4476183483923481720">novi red</translation>
 <translation id="4479068155583208887">Zatvorenocrvena</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Dodatak</translation>
 <translation id="5761219715606611783">Odlično! Naučili ste osnove ChromeVox dodira. Možete da pokrenete vodič ispočetka ili da izađete iz njega pomoću dugmadi u nastavku.</translation>
 <translation id="5776001898637896684">Google dodatak za pretvaranje teksta u govor za poboljšanu mrežu</translation>
+<translation id="5783252477644995371">Kontrola licem vam pruža kontrolu nad kursorom pomoću usmeravanja lica i mogućnosti da obavljate radnje, na primer, klik levim tasterom pomoću pokreta licem poput osmeha</translation>
 <translation id="5805940204952508776">Dodirnite pomoću dva prsta</translation>
 <translation id="5819072574982403430">Stavka stabla</translation>
 <translation id="5822819874379903994">Tamnotirkizna</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Bleda kajsija</translation>
 <translation id="7095834689119144465">Izmena samo numeričkog teksta</translation>
 <translation id="7096001299300236431">Prethodna medijska datoteka</translation>
+<translation id="7096668131290451939">Ponovo pritisnite Escape da biste izašli iz režima za učenje</translation>
 <translation id="7116595520562830928">više redova</translation>
 <translation id="712735679809149106">odjek reči</translation>
 <translation id="7137397390322864165">Bledoroze</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">Nema sledećeg polja za potvrdu</translation>
 <translation id="8473540203671727883">Izgovaraj tekst pod mišem</translation>
 <translation id="8476408756881832830">Pauziraj reprodukciju dok ChromeVox govori</translation>
-<translation id="8476508772960940536">pregled prozora</translation>
 <translation id="8480873377842220259">Sada ćete naučiti osnove kretanja. Možete da zadržite taster za pretragu i pristiskate tastere sa strelicama da biste se kretali po ekranu. Da biste nastavili, pritisnite taster za pretragu + strelica nadesno.</translation>
 <translation id="8503360654911991865">Smanjivanje granularnosti navigacije</translation>
 <translation id="8520472399088452386">Dugme za promenu vrednosti</translation>

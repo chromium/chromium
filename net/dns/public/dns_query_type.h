@@ -5,9 +5,10 @@
 #ifndef NET_DNS_PUBLIC_DNS_QUERY_TYPE_H_
 #define NET_DNS_PUBLIC_DNS_QUERY_TYPE_H_
 
+#include <string_view>
+
 #include "base/containers/enum_set.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -36,7 +37,7 @@ using DnsQueryTypeSet =
     base::EnumSet<DnsQueryType, DnsQueryType::UNSPECIFIED, DnsQueryType::MAX>;
 
 inline constexpr auto kDnsQueryTypes =
-    base::MakeFixedFlatMap<DnsQueryType, base::StringPiece>(
+    base::MakeFixedFlatMap<DnsQueryType, std::string_view>(
         {{DnsQueryType::UNSPECIFIED, "UNSPECIFIED"},
          {DnsQueryType::A, "A"},
          {DnsQueryType::AAAA, "AAAA"},

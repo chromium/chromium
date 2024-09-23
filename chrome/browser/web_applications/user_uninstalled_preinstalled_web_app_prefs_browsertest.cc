@@ -10,7 +10,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -24,16 +24,14 @@
 namespace web_app {
 
 class UserUninstalledPreinstalledWebAppPrefsBrowserTest
-    : public WebAppControllerBrowserTest {
+    : public WebAppBrowserTestBase {
  public:
   UserUninstalledPreinstalledWebAppPrefsBrowserTest()
       : skip_preinstalled_web_app_startup_(
             PreinstalledWebAppManager::SkipStartupForTesting()) {}
   ~UserUninstalledPreinstalledWebAppPrefsBrowserTest() override = default;
 
-  void SetUp() override {
-    WebAppControllerBrowserTest::SetUp();
-  }
+  void SetUp() override { WebAppBrowserTestBase::SetUp(); }
 
  private:
   base::AutoReset<bool> skip_preinstalled_web_app_startup_;
@@ -118,12 +116,12 @@ IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,
                        PrefsPropagateProperlyOnDefaultUninstall) {
-  auto app_info1 = std::make_unique<WebAppInstallInfo>();
-  app_info1->start_url = GURL("https://example_url1.com/");
+  auto app_info1 = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example_url1.com/"));
   app_info1->title = u"Example App1";
   app_info1->install_url = GURL("https://example_url1.com/install");
-  auto app_info2 = std::make_unique<WebAppInstallInfo>();
-  app_info2->start_url = GURL("https://example_url2.com/");
+  auto app_info2 = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example_url2.com/"));
   app_info2->title = u"Example App2";
   app_info2->install_url = GURL("https://example_url2.com/install");
   webapps::AppId app_id1 =

@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "crypto/ec_private_key.h"
+#include "net/ssl/ssl_private_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace client_certificates {

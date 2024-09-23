@@ -428,7 +428,7 @@ bool FrameProcessor::ProcessFrames(
   for (const auto& frame : frames) {
     // Skip any 0-byte audio or video buffers, since they cannot produce any
     // valid decode output (and are rejected by FFmpeg A/V decode.)
-    if (!frame->data_size()) {
+    if (!frame->size()) {
       LIMITED_MEDIA_LOG(DEBUG, media_log_, num_skipped_empty_frame_warnings_,
                         kMaxSkippedEmptyFrameWarnings)
           << "Discarding empty audio or video coded frame, PTS="
@@ -564,7 +564,8 @@ void FrameProcessor::OnPossibleAudioConfigUpdate(
   sample_duration_ =
       base::Seconds(1.0 / current_audio_config_.samples_per_second());
   has_dependent_audio_frames_ =
-      current_audio_config_.profile() == AudioCodecProfile::kXHE_AAC;
+      current_audio_config_.profile() == AudioCodecProfile::kXHE_AAC ||
+      current_audio_config_.codec() == AudioCodec::kDTSXP2;
   last_audio_pts_for_nonkeyframe_monotonicity_check_ = kNoTimestamp;
 }
 
@@ -1186,8 +1187,6 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
 
     return true;
   }
-
-  NOTREACHED_NORETURN();
 }
 
 }  // namespace media

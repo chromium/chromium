@@ -15,9 +15,6 @@ NSString* const kOmniboxLeadingImageEmptyTextAccessibilityIdentifier =
 NSString* const kOmniboxLeadingImageSuggestionImageAccessibilityIdentifier =
     @"OmniboxLeadingImageSuggestionImageAccessibilityIdentifier";
 
-NSString* const kOmniboxAutocompleteLabelAccessibilityIdentifier =
-    @"OmniboxAutocompleteLabelAccessibilityIdentifier";
-
 constexpr CGFloat kOmniboxLeadingImageSize = 30;
 constexpr CGFloat kOmniboxLeadingImageViewEdgeOffset = 7;
 constexpr CGFloat kOmniboxTextFieldLeadingOffsetNoImage = 16;

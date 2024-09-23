@@ -67,7 +67,7 @@ TEST_F(MagnifierKeyScrollerTest, Basic) {
   EXPECT_EQ("200,150", controller->GetWindowPosition().ToString());
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(delegate.event());
-  EXPECT_EQ(ui::ET_KEY_PRESSED, delegate.event()->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, delegate.event()->type());
   delegate.reset();
 
   // Click and hold scrolls the magnifier screen.
@@ -88,27 +88,27 @@ TEST_F(MagnifierKeyScrollerTest, Basic) {
 
   generator->PressKey(ui::VKEY_DOWN, ui::EF_SHIFT_DOWN);
   ASSERT_TRUE(delegate.event());
-  EXPECT_EQ(ui::ET_KEY_PRESSED, delegate.event()->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, delegate.event()->type());
   delegate.reset();
 
   generator->ReleaseKey(ui::VKEY_DOWN, 0);
   ASSERT_TRUE(delegate.event());
-  EXPECT_EQ(ui::ET_KEY_RELEASED, delegate.event()->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, delegate.event()->type());
   delegate.reset();
 
   generator->PressKey(ui::VKEY_DOWN, ui::EF_SHIFT_DOWN);
   ASSERT_TRUE(delegate.event());
-  EXPECT_EQ(ui::ET_KEY_PRESSED, delegate.event()->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, delegate.event()->type());
   delegate.reset();
 
   generator->PressKey(ui::VKEY_DOWN, ui::EF_SHIFT_DOWN);
   ASSERT_TRUE(delegate.event());
-  EXPECT_EQ(ui::ET_KEY_PRESSED, delegate.event()->type());
+  EXPECT_EQ(ui::EventType::kKeyPressed, delegate.event()->type());
   delegate.reset();
 
   generator->ReleaseKey(ui::VKEY_DOWN, 0);
   ASSERT_TRUE(delegate.event());
-  EXPECT_EQ(ui::ET_KEY_RELEASED, delegate.event()->type());
+  EXPECT_EQ(ui::EventType::kKeyReleased, delegate.event()->type());
   delegate.reset();
 }
 

@@ -12,7 +12,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
 
 import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
@@ -203,6 +203,9 @@ export class BluetoothBrailleDisplayUiElement extends
             (display.connected ? 'chromeVoxBluetoothBrailleDisplayDisconnect' :
                                  'chromeVoxBluetoothBrailleDisplayConnect'));
     connectOrDisconnect.onclick = () => {
+      chrome.metricsPrivate.recordBoolean(
+          'ChromeOS.Settings.Accessibility.ConnectBrailleDisplay',
+          !display.connected);
       if (display.connected) {
         this.manager_.disconnect(display);
       } else {

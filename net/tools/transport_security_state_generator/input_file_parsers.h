@@ -5,7 +5,8 @@
 #ifndef NET_TOOLS_TRANSPORT_SECURITY_STATE_GENERATOR_INPUT_FILE_PARSERS_H_
 #define NET_TOOLS_TRANSPORT_SECURITY_STATE_GENERATOR_INPUT_FILE_PARSERS_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "net/tools/transport_security_state_generator/transport_security_state_entry.h"
 
 namespace base {
@@ -21,7 +22,7 @@ class Pinsets;
 //
 // More info on the format can be found in
 // net/http/transport_security_state_static.pins
-bool ParseCertificatesFile(base::StringPiece certs_input,
+bool ParseCertificatesFile(std::string_view certs_input,
                            Pinsets* pinsets,
                            base::Time* timestamp);
 
@@ -31,8 +32,8 @@ bool ParseCertificatesFile(base::StringPiece certs_input,
 //
 // More info on the format can be found in
 // net/http/transport_security_state_static.json
-bool ParseJSON(base::StringPiece hsts_json,
-               base::StringPiece pins_json,
+bool ParseJSON(std::string_view hsts_json,
+               std::string_view pins_json,
                TransportSecurityStateEntries* entries,
                Pinsets* pinsets);
 

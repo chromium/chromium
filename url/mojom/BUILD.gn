@@ -115,6 +115,8 @@ mojom("url_mojom_scheme_host_port") {
       traits_public_deps = [ "//url" ]
     },
   ]
+
+  blink_cpp_typemaps = cpp_typemaps
 }
 
 mojom("test_url_mojom_gurl") {

@@ -7,11 +7,14 @@
 
 #include <cstdint>
 #include <memory>
-#include <vector>
+#include <unordered_set>
 
 #include "base/dcheck_is_on.h"
-#include "base/functional/function_ref.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list_types.h"
+#include "base/sequence_checker.h"
+#include "components/performance_manager/public/graph/node_set_view.h"
 
 namespace ukm {
 class UkmRecorder;
@@ -19,7 +22,6 @@ class UkmRecorder;
 
 namespace performance_manager {
 
-class GraphObserver;
 class GraphOwned;
 class GraphRegistered;
 class FrameNode;
@@ -43,12 +45,9 @@ class GraphRegisteredImpl;
 // a list of observers that are notified of node addition and removal.
 class Graph {
  public:
-  using Observer = GraphObserver;
-
-  using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
-  using PageNodeVisitor = base::FunctionRef<bool(const PageNode*)>;
-  using ProcessNodeVisitor = base::FunctionRef<bool(const ProcessNode*)>;
-  using WorkerNodeVisitor = base::FunctionRef<bool(const WorkerNode*)>;
+  using NodeSet = std::unordered_set<const Node*>;
+  template <class NodeViewPtr>
+  using NodeSetView = NodeSetView<NodeSet, NodeViewPtr>;
 
   Graph();
 
@@ -59,7 +58,6 @@ class Graph {
 
   // Adds an |observer| on the graph. It is safe for observers to stay
   // registered on the graph at the time of its death.
-  virtual void AddGraphObserver(GraphObserver* observer) = 0;
   virtual void AddFrameNodeObserver(FrameNodeObserver* observer) = 0;
   virtual void AddPageNodeObserver(PageNodeObserver* observer) = 0;
   virtual void AddProcessNodeObserver(ProcessNodeObserver* observer) = 0;
@@ -67,7 +65,6 @@ class Graph {
   virtual void AddWorkerNodeObserver(WorkerNodeObserver* observer) = 0;
 
   // Removes an |observer| from the graph.
-  virtual void RemoveGraphObserver(GraphObserver* observer) = 0;
   virtual void RemoveFrameNodeObserver(FrameNodeObserver* observer) = 0;
   virtual void RemovePageNodeObserver(PageNodeObserver* observer) = 0;
   virtual void RemoveProcessNodeObserver(ProcessNodeObserver* observer) = 0;
@@ -122,22 +119,11 @@ class Graph {
   // Returns the single system node.
   virtual const SystemNode* GetSystemNode() const = 0;
 
-  // Returns a collection of all known nodes of the given type. Note that this
-  // incurs a full container copy of all returned nodes. Please use
-  // VisitAll*Nodes() when that makes sense.
-  virtual std::vector<const ProcessNode*> GetAllProcessNodes() const = 0;
-  virtual std::vector<const FrameNode*> GetAllFrameNodes() const = 0;
-  virtual std::vector<const PageNode*> GetAllPageNodes() const = 0;
-  virtual std::vector<const WorkerNode*> GetAllWorkerNodes() const = 0;
-
-  // Visits all nodes in the graph of the given type, invoking the provided
-  // `visitor` for each. If the visitor returns false then then the iteration is
-  // halted. The visitor must not modify the graph. Returns true if all calls to
-  // the visitor returned true, false otherwise.
-  virtual bool VisitAllProcessNodes(ProcessNodeVisitor visitor) const = 0;
-  virtual bool VisitAllFrameNodes(FrameNodeVisitor visitor) const = 0;
-  virtual bool VisitAllPageNodes(PageNodeVisitor visitor) const = 0;
-  virtual bool VisitAllWorkerNodes(WorkerNodeVisitor visitor) const = 0;
+  // Returns a collection of all known nodes of the given type.
+  virtual NodeSetView<const ProcessNode*> GetAllProcessNodes() const = 0;
+  virtual NodeSetView<const FrameNode*> GetAllFrameNodes() const = 0;
+  virtual NodeSetView<const PageNode*> GetAllPageNodes() const = 0;
+  virtual NodeSetView<const WorkerNode*> GetAllWorkerNodes() const = 0;
 
   // Returns true if the graph only contains the default nodes.
   virtual bool HasOnlySystemNode() const = 0;
@@ -182,25 +168,6 @@ class Graph {
 #define DCHECK_ON_GRAPH_SEQUENCE(graph) DCHECK(true)
 #endif
 
-// Observer interface for the graph.
-class GraphObserver {
- public:
-  GraphObserver();
-
-  GraphObserver(const GraphObserver&) = delete;
-  GraphObserver& operator=(const GraphObserver&) = delete;
-
-  virtual ~GraphObserver();
-
-  // Called before the |graph| associated with this observer disappears. This
-  // allows the observer to do any necessary cleanup work. Note that the
-  // observer should remove itself from observing the graph using this
-  // callback.
-  // TODO(chrisha): Make this run before the destructor!
-  // crbug.com/966840
-  virtual void OnBeforeGraphDestroyed(Graph* graph) = 0;
-};
-
 // Helper class for passing ownership of objects to a graph.
 class GraphOwned {
  public:
@@ -217,6 +184,32 @@ class GraphOwned {
   // Called when the object is removed from the graph, either via an explicit
   // call to Graph::TakeFromGraph, or prior to the Graph being destroyed.
   virtual void OnTakenFromGraph(Graph* graph) = 0;
+
+  // Returns a pointer to the owning Graph. The will return nullptr before
+  // OnPassedToGraph() and after OnTakenFromGraph(), and a valid pointer at all
+  // other times.
+  Graph* GetOwningGraph() const;
+
+ private:
+  // GraphImpl is allowed to call PassToGraphImpl and TakeFromGraphImpl.
+  friend class GraphImpl;
+
+  // GraphOwnedAndRegistered overrides PassToGraphImpl and TakeFromGraphImpl.
+  template <typename SelfType>
+  friend class GraphOwnedAndRegistered;
+
+  // Only friends can override these. The default implementations just call
+  // OnPassedToGraph() and OnTakenFromGraph(). Helper classes like
+  // GraphOwnedAndRegistered can override these to add actions, while their
+  // subclasses continue to override OnPassedToGraph and OnTakenFromGraph
+  // without having to remember to call the inherited methods.
+  virtual void PassToGraphImpl(Graph* graph);
+  virtual void TakeFromGraphImpl(Graph* graph);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Pointer back to the owning graph.
+  raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 };
 
 // A default implementation of GraphOwned.

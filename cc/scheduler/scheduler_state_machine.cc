@@ -10,6 +10,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
+#include "cc/base/features.h"
 
 namespace cc {
 
@@ -24,44 +25,44 @@ SchedulerStateMachine::SchedulerStateMachine(const SchedulerSettings& settings)
 
 SchedulerStateMachine::~SchedulerStateMachine() = default;
 
-perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState::
+perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2::
     LayerTreeFrameSinkState
     SchedulerStateMachine::LayerTreeFrameSinkStateToProtozeroEnum(
         LayerTreeFrameSinkState state) {
-  using pbzeroMajorState =
-      perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState;
+  using pbzeroMajorStateV2 =
+      perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2;
   switch (state) {
     case LayerTreeFrameSinkState::NONE:
-      return pbzeroMajorState::LAYER_TREE_FRAME_NONE;
+      return pbzeroMajorStateV2::LAYER_TREE_FRAME_NONE;
     case LayerTreeFrameSinkState::ACTIVE:
-      return pbzeroMajorState::LAYER_TREE_FRAME_ACTIVE;
+      return pbzeroMajorStateV2::LAYER_TREE_FRAME_ACTIVE;
     case LayerTreeFrameSinkState::CREATING:
-      return pbzeroMajorState::LAYER_TREE_FRAME_CREATING;
+      return pbzeroMajorStateV2::LAYER_TREE_FRAME_CREATING;
     case LayerTreeFrameSinkState::WAITING_FOR_FIRST_COMMIT:
-      return pbzeroMajorState::LAYER_TREE_FRAME_WAITING_FOR_FIRST_COMMIT;
+      return pbzeroMajorStateV2::LAYER_TREE_FRAME_WAITING_FOR_FIRST_COMMIT;
     case LayerTreeFrameSinkState::WAITING_FOR_FIRST_ACTIVATION:
-      return pbzeroMajorState::LAYER_TREE_FRAME_WAITING_FOR_FIRST_ACTIVATION;
+      return pbzeroMajorStateV2::LAYER_TREE_FRAME_WAITING_FOR_FIRST_ACTIVATION;
   }
-  NOTREACHED();
-  return pbzeroMajorState::LAYER_TREE_FRAME_UNSPECIFIED;
+  NOTREACHED_IN_MIGRATION();
+  return pbzeroMajorStateV2::LAYER_TREE_FRAME_UNSPECIFIED;
 }
 
-perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState::
+perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2::
     BeginImplFrameState
     SchedulerStateMachine::BeginImplFrameStateToProtozeroEnum(
         BeginImplFrameState state) {
-  using pbzeroMajorState =
-      perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState;
+  using pbzeroMajorStateV2 =
+      perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2;
   switch (state) {
     case BeginImplFrameState::IDLE:
-      return pbzeroMajorState::BEGIN_IMPL_FRAME_IDLE;
+      return pbzeroMajorStateV2::BEGIN_IMPL_FRAME_IDLE;
     case BeginImplFrameState::INSIDE_BEGIN_FRAME:
-      return pbzeroMajorState::BEGIN_IMPL_FRAME_INSIDE_BEGIN_FRAME;
+      return pbzeroMajorStateV2::BEGIN_IMPL_FRAME_INSIDE_BEGIN_FRAME;
     case BeginImplFrameState::INSIDE_DEADLINE:
-      return pbzeroMajorState::BEGIN_IMPL_FRAME_INSIDE_DEADLINE;
+      return pbzeroMajorStateV2::BEGIN_IMPL_FRAME_INSIDE_DEADLINE;
   }
-  NOTREACHED();
-  return pbzeroMajorState::BEGIN_IMPL_FRAME_UNSPECIFIED;
+  NOTREACHED_IN_MIGRATION();
+  return pbzeroMajorStateV2::BEGIN_IMPL_FRAME_UNSPECIFIED;
 }
 
 const char* SchedulerStateMachine::BeginImplFrameDeadlineModeToString(
@@ -71,6 +72,8 @@ const char* SchedulerStateMachine::BeginImplFrameDeadlineModeToString(
       return "BeginImplFrameDeadlineMode::NONE";
     case BeginImplFrameDeadlineMode::IMMEDIATE:
       return "BeginImplFrameDeadlineMode::IMMEDIATE";
+    case BeginImplFrameDeadlineMode::WAIT_FOR_SCROLL:
+      return "BeginImplFrameDeadlineMode::WAIT_FOR_SCROLL";
     case BeginImplFrameDeadlineMode::REGULAR:
       return "BeginImplFrameDeadlineMode::REGULAR";
     case BeginImplFrameDeadlineMode::LATE:
@@ -78,21 +81,23 @@ const char* SchedulerStateMachine::BeginImplFrameDeadlineModeToString(
     case BeginImplFrameDeadlineMode::BLOCKED:
       return "BeginImplFrameDeadlineMode::BLOCKED";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "???";
 }
 
-perfetto::protos::pbzero::ChromeCompositorSchedulerState::
+perfetto::protos::pbzero::ChromeCompositorSchedulerStateV2::
     BeginImplFrameDeadlineMode
     SchedulerStateMachine::BeginImplFrameDeadlineModeToProtozeroEnum(
         BeginImplFrameDeadlineMode mode) {
   using pbzeroSchedulerState =
-      perfetto::protos::pbzero::ChromeCompositorSchedulerState;
+      perfetto::protos::pbzero::ChromeCompositorSchedulerStateV2;
   switch (mode) {
     case BeginImplFrameDeadlineMode::NONE:
       return pbzeroSchedulerState::DEADLINE_MODE_NONE;
     case BeginImplFrameDeadlineMode::IMMEDIATE:
       return pbzeroSchedulerState::DEADLINE_MODE_IMMEDIATE;
+    case BeginImplFrameDeadlineMode::WAIT_FOR_SCROLL:
+      return pbzeroSchedulerState::DEADLINE_MODE_WAIT_FOR_SCROLL;
     case BeginImplFrameDeadlineMode::REGULAR:
       return pbzeroSchedulerState::DEADLINE_MODE_REGULAR;
     case BeginImplFrameDeadlineMode::LATE:
@@ -100,108 +105,111 @@ perfetto::protos::pbzero::ChromeCompositorSchedulerState::
     case BeginImplFrameDeadlineMode::BLOCKED:
       return pbzeroSchedulerState::DEADLINE_MODE_BLOCKED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return pbzeroSchedulerState::DEADLINE_MODE_UNSPECIFIED;
 }
 
-perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState::
+perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2::
     BeginMainFrameState
     SchedulerStateMachine::BeginMainFrameStateToProtozeroEnum(
         BeginMainFrameState state) {
-  using pbzeroMajorState =
-      perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState;
+  using pbzeroMajorStateV2 =
+      perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2;
   switch (state) {
     case BeginMainFrameState::IDLE:
-      return pbzeroMajorState::BEGIN_MAIN_FRAME_IDLE;
+      return pbzeroMajorStateV2::BEGIN_MAIN_FRAME_IDLE;
     case BeginMainFrameState::SENT:
-      return pbzeroMajorState::BEGIN_MAIN_FRAME_SENT;
+      return pbzeroMajorStateV2::BEGIN_MAIN_FRAME_SENT;
     case BeginMainFrameState::READY_TO_COMMIT:
-      return pbzeroMajorState::BEGIN_MAIN_FRAME_READY_TO_COMMIT;
+      return pbzeroMajorStateV2::BEGIN_MAIN_FRAME_READY_TO_COMMIT;
   }
-  NOTREACHED();
-  return pbzeroMajorState::BEGIN_MAIN_FRAME_UNSPECIFIED;
+  NOTREACHED_IN_MIGRATION();
+  return pbzeroMajorStateV2::BEGIN_MAIN_FRAME_UNSPECIFIED;
 }
 
-perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState::
+perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2::
     ForcedRedrawOnTimeoutState
     SchedulerStateMachine::ForcedRedrawOnTimeoutStateToProtozeroEnum(
         ForcedRedrawOnTimeoutState state) {
-  using pbzeroMajorState =
-      perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState;
+  using pbzeroMajorStateV2 =
+      perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2;
   switch (state) {
     case ForcedRedrawOnTimeoutState::IDLE:
-      return pbzeroMajorState::FORCED_REDRAW_IDLE;
+      return pbzeroMajorStateV2::FORCED_REDRAW_IDLE;
     case ForcedRedrawOnTimeoutState::WAITING_FOR_COMMIT:
-      return pbzeroMajorState::FORCED_REDRAW_WAITING_FOR_COMMIT;
+      return pbzeroMajorStateV2::FORCED_REDRAW_WAITING_FOR_COMMIT;
     case ForcedRedrawOnTimeoutState::WAITING_FOR_ACTIVATION:
-      return pbzeroMajorState::FORCED_REDRAW_WAITING_FOR_ACTIVATION;
+      return pbzeroMajorStateV2::FORCED_REDRAW_WAITING_FOR_ACTIVATION;
     case ForcedRedrawOnTimeoutState::WAITING_FOR_DRAW:
-      return pbzeroMajorState::FORCED_REDRAW_WAITING_FOR_DRAW;
+      return pbzeroMajorStateV2::FORCED_REDRAW_WAITING_FOR_DRAW;
   }
-  NOTREACHED();
-  return pbzeroMajorState::FORCED_REDRAW_UNSPECIFIED;
+  NOTREACHED_IN_MIGRATION();
+  return pbzeroMajorStateV2::FORCED_REDRAW_UNSPECIFIED;
 }
 
-perfetto::protos::pbzero::ChromeCompositorStateMachine::MinorState::
+perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MinorStateV2::
     ScrollHandlerState
     ScrollHandlerStateToProtozeroEnum(ScrollHandlerState state) {
-  using pbzeroMinorState =
-      perfetto::protos::pbzero::ChromeCompositorStateMachine::MinorState;
+  using pbzeroMinorStateV2 =
+      perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MinorStateV2;
   switch (state) {
     case ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER:
-      return pbzeroMinorState::SCROLL_AFFECTS_SCROLL_HANDLER;
+      return pbzeroMinorStateV2::SCROLL_AFFECTS_SCROLL_HANDLER;
     case ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER:
-      return pbzeroMinorState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER;
+      return pbzeroMinorStateV2::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER;
   }
-  NOTREACHED();
-  return pbzeroMinorState::SCROLL_HANDLER_UNSPECIFIED;
+  NOTREACHED_IN_MIGRATION();
+  return pbzeroMinorStateV2::SCROLL_HANDLER_UNSPECIFIED;
 }
 
-perfetto::protos::pbzero::ChromeCompositorSchedulerAction
+perfetto::protos::pbzero::ChromeCompositorSchedulerActionV2
 SchedulerStateMachine::ActionToProtozeroEnum(Action action) {
   using pbzeroSchedulerAction =
-      perfetto::protos::pbzero::ChromeCompositorSchedulerAction;
+      perfetto::protos::pbzero::ChromeCompositorSchedulerActionV2;
   switch (action) {
     case Action::NONE:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_NONE;
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_NONE;
     case Action::SEND_BEGIN_MAIN_FRAME:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_SEND_BEGIN_MAIN_FRAME;
+      return pbzeroSchedulerAction::
+          CC_SCHEDULER_ACTION_V2_SEND_BEGIN_MAIN_FRAME;
     case Action::COMMIT:
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_COMMIT;
     case Action::POST_COMMIT:
-      // TODO(szager): Add CC_SCHEDULER_ACTION_POST_COMMIT to perfetto
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_COMMIT;
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_POST_COMMIT;
     case Action::ACTIVATE_SYNC_TREE:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_ACTIVATE_SYNC_TREE;
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_ACTIVATE_SYNC_TREE;
     case Action::DRAW_IF_POSSIBLE:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_DRAW_IF_POSSIBLE;
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_DRAW_IF_POSSIBLE;
     case Action::DRAW_FORCED:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_DRAW_FORCED;
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_DRAW_FORCED;
     case Action::DRAW_ABORT:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_DRAW_ABORT;
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_DRAW_ABORT;
+    case Action::UPDATE_DISPLAY_TREE:
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_UPDATE_DISPLAY_TREE;
     case Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION:
       return pbzeroSchedulerAction::
-          CC_SCHEDULER_ACTION_BEGIN_LAYER_TREE_FRAME_SINK_CREATION;
+          CC_SCHEDULER_ACTION_V2_BEGIN_LAYER_TREE_FRAME_SINK_CREATION;
     case Action::PREPARE_TILES:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_PREPARE_TILES;
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_PREPARE_TILES;
     case Action::INVALIDATE_LAYER_TREE_FRAME_SINK:
       return pbzeroSchedulerAction::
-          CC_SCHEDULER_ACTION_INVALIDATE_LAYER_TREE_FRAME_SINK;
+          CC_SCHEDULER_ACTION_V2_INVALIDATE_LAYER_TREE_FRAME_SINK;
     case Action::PERFORM_IMPL_SIDE_INVALIDATION:
       return pbzeroSchedulerAction::
-          CC_SCHEDULER_ACTION_PERFORM_IMPL_SIDE_INVALIDATION;
+          CC_SCHEDULER_ACTION_V2_PERFORM_IMPL_SIDE_INVALIDATION;
     case Action::NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL:
       return pbzeroSchedulerAction::
-          CC_SCHEDULER_ACTION_NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL;
+          CC_SCHEDULER_ACTION_V2_NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL;
     case Action::NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON:
       return pbzeroSchedulerAction::
-          CC_SCHEDULER_ACTION_NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON;
+          CC_SCHEDULER_ACTION_V2_NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON;
   }
-  NOTREACHED();
-  return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_UNSPECIFIED;
+  NOTREACHED_IN_MIGRATION();
+  return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_UNSPECIFIED;
 }
 
 void SchedulerStateMachine::AsProtozeroInto(
-    perfetto::protos::pbzero::ChromeCompositorStateMachine* state) const {
+    perfetto::protos::pbzero::ChromeCompositorStateMachineV2* state) const {
   auto* major_state = state->set_major_state();
   major_state->set_next_action(ActionToProtozeroEnum(NextAction()));
   major_state->set_begin_impl_frame_state(
@@ -280,6 +288,7 @@ void SchedulerStateMachine::AsProtozeroInto(
       processing_animation_worklets_for_pending_tree_);
   minor_state->set_processing_paint_worklets_for_pending_tree(
       processing_paint_worklets_for_pending_tree_);
+  minor_state->set_processing_paint_worklets_for_pending_tree(should_warm_up_);
 }
 
 bool SchedulerStateMachine::PendingDrawsShouldBeAborted() const {
@@ -330,8 +339,9 @@ bool SchedulerStateMachine::ShouldAbortCurrentFrame() const {
 }
 
 bool SchedulerStateMachine::ShouldBeginLayerTreeFrameSinkCreation() const {
-  if (!visible_)
+  if (!should_warm_up_ && !visible_) {
     return false;
+  }
 
   // We only want to start output surface initialization after the
   // previous commit is complete.
@@ -358,6 +368,10 @@ bool SchedulerStateMachine::ShouldBeginLayerTreeFrameSinkCreation() const {
 }
 
 bool SchedulerStateMachine::ShouldDraw() const {
+  if (settings_.use_layer_context_for_display) {
+    return false;
+  }
+
   // If we need to abort draws, we should do so ASAP since the draw could
   // be blocking other important actions (like output surface initialization),
   // from occurring. If we are waiting for the first draw, then perform the
@@ -408,10 +422,30 @@ bool SchedulerStateMachine::ShouldDraw() const {
   return needs_redraw_;
 }
 
+bool SchedulerStateMachine::ShouldUpdateDisplayTree() const {
+  if (!settings_.use_layer_context_for_display) {
+    return false;
+  }
+
+  if (did_update_display_tree_) {
+    return false;
+  }
+
+  if (layer_tree_frame_sink_state_ != LayerTreeFrameSinkState::ACTIVE) {
+    return false;
+  }
+
+  return needs_update_display_tree_;
+}
+
 bool SchedulerStateMachine::ShouldActivateSyncTree() const {
   // There is nothing to activate.
-  if (!has_pending_tree_)
+  if (!has_pending_tree_) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                         "Not activating sync tree due to no pending tree",
+                         TRACE_EVENT_SCOPE_THREAD);
     return false;
+  }
 
   // We should not activate a second tree before drawing the first one.
   // Even if we need to force activation of the pending tree, we should abort
@@ -420,6 +454,9 @@ bool SchedulerStateMachine::ShouldActivateSyncTree() const {
   // may lead to bad scheduling.
   if (!settings_.using_synchronous_renderer_compositor &&
       active_tree_needs_first_draw_) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                         "Not activating before drawing active first",
+                         TRACE_EVENT_SCOPE_THREAD);
     return false;
   }
 
@@ -429,19 +466,33 @@ bool SchedulerStateMachine::ShouldActivateSyncTree() const {
   //
   // Note that paint worklets continue to paint when the page is not visible, so
   // any abort will eventually happen when they complete.
-  if (processing_paint_worklets_for_pending_tree_)
+  if (processing_paint_worklets_for_pending_tree_) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                         "Not activating due to processing paint worklets",
+                         TRACE_EVENT_SCOPE_THREAD);
     return false;
+  }
 
   if (ShouldAbortCurrentFrame())
     return true;
 
   // Delay pending tree activation until animation worklets have completed
   // their asynchronous updates to pick up initial values.
-  if (processing_animation_worklets_for_pending_tree_)
+  if (processing_animation_worklets_for_pending_tree_) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                         "Not activating due to processing animation worklets",
+                         TRACE_EVENT_SCOPE_THREAD);
     return false;
+  }
 
   // At this point, only activate if we are ready to activate.
-  return pending_tree_is_ready_for_activation_;
+  if (!pending_tree_is_ready_for_activation_) {
+    TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                         "Not activating because pending tree not ready",
+                         TRACE_EVENT_SCOPE_THREAD);
+    return false;
+  }
+  return true;
 }
 
 bool SchedulerStateMachine::ShouldNotifyBeginMainFrameNotExpectedUntil() const {
@@ -580,10 +631,12 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
     return false;
   }
 
-  // Don't send BeginMainFrame early if we are prioritizing the active tree
-  // because of ImplLatencyTakesPriority.
+  // Don't send BeginMainFrame early if we are prioritizing a committed
+  // active tree because of ImplLatencyTakesPriority.
   if (ImplLatencyTakesPriority() &&
-      (has_pending_tree_ || active_tree_needs_first_draw_)) {
+      ((has_pending_tree_ && !current_pending_tree_is_impl_side_) ||
+       (active_tree_needs_first_draw_ &&
+        !previous_pending_tree_was_impl_side_))) {
     return false;
   }
 
@@ -617,6 +670,13 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
       did_submit_in_last_frame_;
   if (IsDrawThrottled() && !just_submitted_in_deadline)
     return false;
+
+  // We should wait for scroll events to arrive before sending the
+  // BeginMainFrame. So that the most up to date scroll positions are available
+  // for main-thread effects.
+  if (ShouldWaitForScrollEvent()) {
+    return false;
+  }
 
   return true;
 }
@@ -714,6 +774,9 @@ SchedulerStateMachine::Action SchedulerStateMachine::NextAction() const {
       return Action::DRAW_FORCED;
     else
       return Action::DRAW_IF_POSSIBLE;
+  }
+  if (ShouldUpdateDisplayTree()) {
+    return Action::UPDATE_DISPLAY_TREE;
   }
   if (ShouldPerformImplSideInvalidation())
     return Action::PERFORM_IMPL_SIDE_INVALIDATION;
@@ -976,9 +1039,15 @@ void SchedulerStateMachine::WillActivate() {
 
   has_pending_tree_ = false;
   pending_tree_is_ready_for_activation_ = false;
-  active_tree_needs_first_draw_ = pending_tree_needs_first_draw_on_activation_;
-  pending_tree_needs_first_draw_on_activation_ = false;
-  needs_redraw_ = true;
+  if (settings_.use_layer_context_for_display) {
+    needs_update_display_tree_ = true;
+    did_update_display_tree_ = false;
+  } else {
+    needs_redraw_ = true;
+    active_tree_needs_first_draw_ =
+        pending_tree_needs_first_draw_on_activation_;
+    pending_tree_needs_first_draw_on_activation_ = false;
+  }
   waiting_for_activation_after_rendering_resumed_ = false;
 
   previous_pending_tree_was_impl_side_ = current_pending_tree_is_impl_side_;
@@ -1010,15 +1079,16 @@ void SchedulerStateMachine::WillDrawInternal() {
 void SchedulerStateMachine::DidDrawInternal(DrawResult draw_result) {
   switch (draw_result) {
     case DrawResult::kInvalidResult:
-      NOTREACHED() << "Invalid return DrawResult:"
-                   << static_cast<int>(DrawResult::kInvalidResult);
+      NOTREACHED_IN_MIGRATION() << "Invalid return DrawResult:"
+                                << static_cast<int>(DrawResult::kInvalidResult);
       break;
     case DrawResult::kAbortedCantDraw:
       if (consecutive_cant_draw_count_++ < 3u) {
         needs_redraw_ = true;
       } else {
-        NOTREACHED() << consecutive_cant_draw_count_ << " consecutve draws"
-                     << " with DrawResult::kAbortedCantDraw result";
+        DUMP_WILL_BE_NOTREACHED()
+            << consecutive_cant_draw_count_ << " consecutve draws"
+            << " with DrawResult::kAbortedCantDraw result";
       }
       break;
     case DrawResult::kAbortedDrainingPipeline:
@@ -1061,6 +1131,11 @@ void SchedulerStateMachine::WillDraw() {
   // in WillDrawInternal because AbortDraw calls WillDrawInternal but shouldn't
   // request another frame.
   did_attempt_draw_in_last_frame_ = true;
+}
+
+void SchedulerStateMachine::WillUpdateDisplayTree() {
+  needs_update_display_tree_ = false;
+  did_update_display_tree_ = true;
 }
 
 void SchedulerStateMachine::DidDraw(DrawResult draw_result) {
@@ -1106,6 +1181,8 @@ void SchedulerStateMachine::WillBeginLayerTreeFrameSinkCreation() {
   DCHECK(next_begin_main_frame_state_ == BeginMainFrameState::IDLE);
   DCHECK(!has_pending_tree_);
   DCHECK(!active_tree_needs_first_draw_);
+
+  should_warm_up_ = false;
 }
 
 void SchedulerStateMachine::WillInvalidateLayerTreeFrameSink() {
@@ -1283,6 +1360,7 @@ void SchedulerStateMachine::OnBeginImplFrame(const viz::BeginFrameId& frame_id,
   did_commit_during_frame_ = false;
   did_invalidate_layer_tree_frame_sink_ = false;
   did_perform_impl_side_invalidation_ = false;
+  waiting_for_scroll_event_ = false;
 }
 
 void SchedulerStateMachine::OnBeginImplFrameDeadline() {
@@ -1324,6 +1402,11 @@ SchedulerStateMachine::CurrentBeginImplFrameDeadlineMode() const {
     // pipeline to be flushed for headless.
     return BeginImplFrameDeadlineMode::BLOCKED;
   } else if (ShouldTriggerBeginImplFrameDeadlineImmediately()) {
+    if (ShouldWaitForScrollEvent()) {
+      // We are scrolling but have not received a scroll event for this begin
+      // frame. We want to wait before attempting to draw.
+      return BeginImplFrameDeadlineMode::WAIT_FOR_SCROLL;
+    }
     // We are ready to draw a new active tree immediately because there's no
     // commit expected or we're prioritizing active tree latency.
     return BeginImplFrameDeadlineMode::IMMEDIATE;
@@ -1336,6 +1419,23 @@ SchedulerStateMachine::CurrentBeginImplFrameDeadlineMode() const {
     // waiting for a new active tree.
     return BeginImplFrameDeadlineMode::LATE;
   }
+}
+
+bool SchedulerStateMachine::ShouldWaitForScrollEvent() const {
+  // We only apply this mode during frame production
+  if (begin_impl_frame_state_ != BeginImplFrameState::INSIDE_BEGIN_FRAME) {
+    return false;
+  }
+  // Once the deadline has been triggered, we should stop waiting.
+  if (begin_impl_frame_state_ == BeginImplFrameState::INSIDE_DEADLINE) {
+    return false;
+  }
+  // We are scrolling but have not received a scroll event for this begin frame.
+  if (settings_.scroll_deadline_mode_enabled && is_scrolling_ &&
+      waiting_for_scroll_event_) {
+    return true;
+  }
+  return false;
 }
 
 bool SchedulerStateMachine::ShouldTriggerBeginImplFrameDeadlineImmediately()
@@ -1437,10 +1537,17 @@ void SchedulerStateMachine::SetVisible(bool visible) {
 
   visible_ = visible;
 
-  if (visible)
+  if (visible) {
     main_thread_missed_last_deadline_ = false;
+    should_warm_up_ = false;
+  }
 
   did_prepare_tiles_ = false;
+}
+
+void SchedulerStateMachine::SetShouldWarmUp() {
+  CHECK(base::FeatureList::IsEnabled(features::kWarmUpCompositor));
+  should_warm_up_ = true;
 }
 
 void SchedulerStateMachine::SetBeginFrameSourcePaused(bool paused) {
@@ -1468,6 +1575,11 @@ void SchedulerStateMachine::SetNeedsRedraw() {
   needs_redraw_ = true;
 }
 
+void SchedulerStateMachine::SetNeedsUpdateDisplayTree() {
+  needs_update_display_tree_ = true;
+  did_update_display_tree_ = false;
+}
+
 void SchedulerStateMachine::SetNeedsPrepareTiles() {
   if (!needs_prepare_tiles_) {
     TRACE_EVENT0("cc", "SchedulerStateMachine::SetNeedsPrepareTiles");
@@ -1478,7 +1590,20 @@ void SchedulerStateMachine::DidSubmitCompositorFrame() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("cc", "Scheduler:pending_submit_frames",
                                     TRACE_ID_LOCAL(this), "pending_frames",
                                     pending_submit_frames_);
-  DCHECK_LT(pending_submit_frames_, kMaxPendingSubmitFrames);
+
+  // If we are running with no frame rate limits, the GPU process can submit
+  // a new BeginFrame request if the deadline for the pending BeginFrame
+  // request expires. It will basically cause this DCHECK to fire as we may
+  // not have received acks for previously submitted requests.
+  // Please see SchedulerStateMachine::IsDrawThrottled() where throttling
+  // is disabled when the disable_frame_rate_limit setting is enabled.
+  // TODO(ananta/jonross/sunnyps)
+  // http://crbug.com/346931323
+  // We should remove or change this once VRR support is implemented for
+  // Windows and other platforms potentially.
+  if (!settings_.disable_frame_rate_limit) {
+    DCHECK_LT(pending_submit_frames_, kMaxPendingSubmitFrames);
+  }
 
   pending_submit_frames_++;
   submit_frames_with_current_layer_tree_frame_sink_++;
@@ -1591,6 +1716,7 @@ void SchedulerStateMachine::DidLoseLayerTreeFrameSink() {
     return;
   layer_tree_frame_sink_state_ = LayerTreeFrameSinkState::NONE;
   needs_redraw_ = false;
+  needs_update_display_tree_ = false;
 }
 
 bool SchedulerStateMachine::NotifyReadyToActivate() {
@@ -1674,7 +1800,7 @@ bool SchedulerStateMachine::HasInitializedLayerTreeFrameSink() const {
     case LayerTreeFrameSinkState::WAITING_FOR_FIRST_ACTIVATION:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

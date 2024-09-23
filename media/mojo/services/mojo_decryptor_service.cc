@@ -309,7 +309,7 @@ MojoDecoderBufferReader* MojoDecryptorService::GetBufferReader(
       return video_buffer_reader_.get();
   }
 
-  NOTREACHED() << "Unexpected stream_type: " << stream_type;
+  NOTREACHED_IN_MIGRATION() << "Unexpected stream_type: " << stream_type;
   return nullptr;
 }
 

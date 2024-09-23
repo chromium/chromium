@@ -124,6 +124,28 @@ void PopulateUploadRecord(const ::reporting::UploadEncryptedRecordCall& source,
   }
   dest.status = StatusFromProto(source.status());
 }
+
+void PopulateBlockedRecord(const ::reporting::BlockedRecordCall& source,
+    enterprise_reporting::mojom::ErpHistoryEvent& dest){
+  dest.call = "BlockedRecord";
+  dest.parameters.emplace_back(
+      enterprise_reporting::mojom::ErpHistoryEventParameter::New(
+          "Priority", ::reporting::Priority_Name(source.priority())));
+  dest.parameters.emplace_back(
+      enterprise_reporting::mojom::ErpHistoryEventParameter::New(
+          "Destination", ::reporting::Destination_Name(source.destination())));
+}
+
+void PopulateBlockedDestinationsUpdated(
+    const ::reporting::BlockedDestinationsUpdatedCall& source,
+    enterprise_reporting::mojom::ErpHistoryEvent& dest) {
+  dest.call = "BlockedDestinations";
+  for (const auto& item : source.destinations()) {
+    dest.parameters.emplace_back(
+        enterprise_reporting::mojom::ErpHistoryEventParameter::New(
+            "Destination", ::reporting::Destination_Name(item)));
+  }
+}
 }  // namespace
 
 mojo::StructPtr<enterprise_reporting::mojom::ErpHistoryData> ConvertHistory(
@@ -155,6 +177,17 @@ mojo::StructPtr<enterprise_reporting::mojom::ErpHistoryData> ConvertHistory(
         PopulateStorageQueueAction(history.storage_queue_action(),
                                    *result->events.back());
         break;
+      case ::reporting::HealthDataHistory::RecordCase::kBlockedRecordCall:
+        PopulateBlockedRecord(history.blocked_record_call(),
+            *result->events.back());
+        break;
+      case ::reporting::HealthDataHistory::RecordCase::
+          kBlockedDestinationsUpdatedCall:
+        PopulateBlockedDestinationsUpdated(
+            history.blocked_destinations_updated_call(),
+            *result->events.back());
+        break;
+
       default:
         result->events.back()->call = "UNKNOWN";
         result->events.back()->status = "N/A";

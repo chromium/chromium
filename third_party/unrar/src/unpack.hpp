@@ -2,7 +2,7 @@
 #define _RAR_UNPACK_
 
 // Maximum allowed number of compressed bits processed in quick mode.
-#define MAX_QUICK_DECODE_BITS      10
+#define MAX_QUICK_DECODE_BITS       9
 
 // Maximum number of filters per entire data block. Must be at least
 // twice more than MAX_PACK_FILTERS to store filters from two data blocks.
@@ -23,8 +23,8 @@
 // allocation. Must be equal or larger than MAX_ANALYZE_SIZE.
 #define MAX_FILTER_BLOCK_SIZE 0x400000
 
-// Write data in 4 MB or smaller blocks. Must not exceed PACK_MAX_WRITE,
-// so we keep a number of buffered filters in unpacker reasonable.
+// Write data in 4 MB or smaller blocks. Must not exceed PACK_MAX_READ,
+// so we keep the number of buffered filters in unpacker reasonable.
 #define UNPACK_MAX_WRITE      0x400000
 
 // Decode compressed bit fields to alphabet numbers.
@@ -93,17 +93,17 @@ struct UnpackBlockTables
 
 #ifdef RAR_SMP
 enum UNP_DEC_TYPE {
-  UNPDT_LITERAL,UNPDT_MATCH,UNPDT_FULLREP,UNPDT_REP,UNPDT_FILTER
+  UNPDT_LITERAL=0,UNPDT_MATCH,UNPDT_FULLREP,UNPDT_REP,UNPDT_FILTER
 };
 
 struct UnpackDecodedItem
 {
-  UNP_DEC_TYPE Type;
+  byte Type; // 'byte' instead of enum type to reduce memory use.
   ushort Length;
   union
   {
-    uint Distance;
-    byte Literal[4];
+    size_t Distance;
+    byte Literal[8]; // Store up to 8 chars here to speed up extraction.
   };
 };
 
@@ -143,13 +143,13 @@ struct UnpackThreadData
 
 struct UnpackFilter
 {
+  // Groop 'byte' and 'bool' together to reduce the actual struct size.
   byte Type;
-  uint BlockStart;
-  uint BlockLength;
   byte Channels;
-//  uint Width;
-//  byte PosR;
   bool NextWindow;
+
+  size_t BlockStart;
+  uint BlockLength;
 };
 
 
@@ -188,14 +188,16 @@ class FragmentedWindow
     void Reset();
     byte *Mem[MAX_MEM_BLOCKS];
     size_t MemSize[MAX_MEM_BLOCKS];
+    size_t LastAllocated;
   public:
     FragmentedWindow();
     ~FragmentedWindow();
     void Init(size_t WinSize);
     byte& operator [](size_t Item);
-    void CopyString(uint Length,uint Distance,size_t &UnpPtr,size_t MaxWinMask);
+    void CopyString(uint Length,size_t Distance,size_t &UnpPtr,bool FirstWinDone,size_t MaxWinSize);
     void CopyData(byte *Dest,size_t WinPos,size_t Size);
     size_t GetBlockSize(size_t StartPos,size_t RequiredSize);
+    size_t GetWinSize() {return LastAllocated;}
 };
 
 
@@ -216,10 +218,9 @@ class Unpack:PackDef
     bool ReadTables(BitInput &Inp,UnpackBlockHeader &Header,UnpackBlockTables &Tables);
     void MakeDecodeTables(byte *LengthTable,DecodeTable *Dec,uint Size);
     _forceinline uint DecodeNumber(BitInput &Inp,DecodeTable *Dec);
-    void CopyString();
-    inline void InsertOldDist(unsigned int Distance);
+    inline void InsertOldDist(size_t Distance);
     void UnpInitData(bool Solid);
-    _forceinline void CopyString(uint Length,uint Distance);
+    _forceinline void CopyString(uint Length,size_t Distance);
     uint ReadFilterData(BitInput &Inp);
     bool ReadFilter(BitInput &Inp,UnpackFilter &Filter);
     bool AddFilter(UnpackFilter &Filter);
@@ -240,20 +241,25 @@ class Unpack:PackDef
     byte *ReadBufMT;
 #endif
 
-    Array<byte> FilterSrcMemory;
-    Array<byte> FilterDstMemory;
+    std::vector<byte> FilterSrcMemory;
+    std::vector<byte> FilterDstMemory;
 
     // Filters code, one entry per filter.
-    Array<UnpackFilter> Filters;
+    std::vector<UnpackFilter> Filters;
 
-    uint OldDist[4],OldDistPtr;
+    size_t OldDist[4],OldDistPtr;
     uint LastLength;
 
     // LastDist is necessary only for RAR2 and older with circular OldDist
     // array. In RAR3 last distance is always stored in OldDist[0].
     uint LastDist;
 
-    size_t UnpPtr,WrPtr;
+    size_t UnpPtr; // Current position in window.
+
+    size_t PrevPtr; // UnpPtr value for previous loop iteration.
+    bool FirstWinDone; // At least one dictionary was processed.
+
+    size_t WrPtr; // Last written unpacked data position.
     
     // Top border of read packed data.
     int ReadTop; 
@@ -266,7 +272,7 @@ class Unpack:PackDef
     UnpackBlockHeader BlockHeader;
     UnpackBlockTables BlockTables;
 
-    size_t WriteBorder;
+    size_t WriteBorder; // Perform write when reaching this border.
 
     byte *Window;
 
@@ -289,7 +295,7 @@ class Unpack:PackDef
     void LongLZ();
     void HuffDecode();
     void GetFlagsBuf();
-    void UnpInitData15(int Solid);
+    void UnpInitData15(bool Solid);
     void InitHuff();
     void CorrHuff(ushort *CharSet,byte *NumToPlace);
     void CopyString15(uint Distance,uint Length);
@@ -359,15 +365,15 @@ class Unpack:PackDef
     BitInput VMCodeInp;
 
     // Filters code, one entry per filter.
-    Array<UnpackFilter30 *> Filters30;
+    std::vector<UnpackFilter30 *> Filters30;
 
     // Filters stack, several entrances of same filter are possible.
-    Array<UnpackFilter30 *> PrgStack;
+    std::vector<UnpackFilter30 *> PrgStack;
 
     // Lengths of preceding data blocks, one length of one last block
     // for every filter. Used to reduce the size required to write
     // the data block length if lengths are repeating.
-    Array<int> OldFilterLengths;
+    std::vector<int> OldFilterLengths;
 
     int LastFilter;
 /***************************** Unpack v 3.0 *********************************/
@@ -375,9 +381,9 @@ class Unpack:PackDef
   public:
     Unpack(ComprDataIO *DataIO);
     ~Unpack();
-    void Init(size_t WinSize,bool Solid);
+    void Init(uint64 WinSize,bool Solid);
     void DoUnpack(uint Method,bool Solid);
-    bool IsFileExtracted() {return(FileExtracted);}
+    bool IsFileExtracted() {return FileExtracted;}
     void SetDestSize(int64 DestSize) {DestUnpSize=DestSize;FileExtracted=false;}
     void SetSuspended(bool Suspended) {Unpack::Suspended=Suspended;}
 
@@ -386,10 +392,13 @@ class Unpack:PackDef
     void UnpackDecode(UnpackThreadData &D);
 #endif
 
+    uint64 AllocWinSize;
     size_t MaxWinSize;
     size_t MaxWinMask;
 
-    uint GetChar()
+    bool ExtraDist; // Allow distances up to 1 TB.
+
+    byte GetChar()
     {
       if (Inp.InAddr>BitInput::MAX_SIZE-30)
       {
@@ -398,6 +407,30 @@ class Unpack:PackDef
           return 0;
       }
       return Inp.InBuf[Inp.InAddr++];
+    }
+
+
+    // If window position crosses the window beginning, wrap it to window end.
+    // Replaces &MaxWinMask for non-power 2 window sizes.
+    // We can't use %WinSize everywhere not only for performance reason,
+    // but also because C++ % is reminder instead of modulo.
+    // We need additional checks in the code if WinPos distance from 0
+    // can exceed MaxWinSize. Alternatively we could add such check here.
+    inline size_t WrapDown(size_t WinPos)
+    {
+      return WinPos >= MaxWinSize ? WinPos + MaxWinSize : WinPos;
+    }
+
+    // If window position crosses the window end, wrap it to window beginning.
+    // Replaces &MaxWinMask for non-power 2 window sizes.
+    // Unlike WrapDown, we can use %WinSize here if there was no size_t
+    // overflow when calculating WinPos.
+    // We need additional checks in the code if WinPos distance from MaxWinSize
+    // can be MaxWinSize or more. Alternatively we could add such check here
+    // or use %WinSize.
+    inline size_t WrapUp(size_t WinPos)
+    {
+      return WinPos >= MaxWinSize ? WinPos - MaxWinSize : WinPos;
     }
 };
 

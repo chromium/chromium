@@ -6,11 +6,17 @@
 #define CHROME_BROWSER_ASH_RELEASE_NOTES_RELEASE_NOTES_STORAGE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 
 class Profile;
 class PrefRegistrySimple;
 
 namespace ash {
+
+// This stores the latest milestone with new Release Notes content. If the last
+// milestone the user has seen the notification is before this, a new
+// notification will be shown.
+inline constexpr int kLastChromeVersionWithReleaseNotes = 130;
 
 // Class used to determine when/if to show user notification that release notes
 // are available for their recently updated device.
@@ -38,6 +44,9 @@ class ReleaseNotesStorage {
 
   // Decreases the amount of times left to show the suggestion chip.
   void DecreaseTimesLeftToShowSuggestionChip();
+
+  // Sets the number of times left to show the chip to the max number.
+  void StartShowingSuggestionChip();
 
   // Sets the number of times left to show the suggestion chip to 0.
   void StopShowingSuggestionChip();

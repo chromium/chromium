@@ -5,6 +5,8 @@
 
 var global = {argumentsReceived: false, params: null, picker: null};
 
+const DELAYED_LAYOUT_THRESHOLD = 1000;
+
 /**
  * @param {Event} event
  */
@@ -35,7 +37,11 @@ function handleArgumentsTimeout() {
  * @param {!Array} optionBounds
  */
 function buildOptionBoundsArray(parent, optionBounds) {
-  for (let i = 0; i < parent.children.length; i++) {
+  // The optionBounds.length check prevents us from doing so many
+  // getBoundingClientRect() calls that the picker hangs for 10+ seconds.
+  for (let i = 0; i < parent.children.length &&
+       optionBounds.length < DELAYED_LAYOUT_THRESHOLD;
+       i++) {
     const child = parent.children[i];
     if (child.tagName === 'OPTION') {
       optionBounds[child.index] = child.getBoundingClientRect();
@@ -353,8 +359,6 @@ class ListPicker extends Picker {
     this.dispatchEvent('didUpdate');
   }
 
-  static DELAYED_LAYOUT_THRESHOLD = 1000;
-
   /**
    * @param {!Element} parent Select element or optgroup element.
    * @param {!Object} config
@@ -420,7 +424,7 @@ class ListPicker extends Picker {
     this.selectElement_.appendChild(fragment);
     this.selectElement_.classList.add('wrap');
     this.delayedChildrenConfig_ = null;
-    this.setMenuListOptionsBoundsInAXTree_();
+    this.setMenuListOptionsBoundsInAXTree_(true);
   }
 
   findReusableItem_(parent, config, startIndex) {
@@ -515,10 +519,11 @@ class ListPicker extends Picker {
     this.applyItemStyle_(element, config.style);
   }
 
-  setMenuListOptionsBoundsInAXTree_() {
+  setMenuListOptionsBoundsInAXTree_(childrenUpdated = false) {
     var optionBounds = [];
     buildOptionBoundsArray(this.selectElement_, optionBounds);
-    window.pagePopupController.setMenuListOptionsBoundsInAXTree(optionBounds);
+    window.pagePopupController.setMenuListOptionsBoundsInAXTree(
+        optionBounds, childrenUpdated);
   }
 }
 

@@ -79,7 +79,7 @@ class StrongAlias {
  public:
   using underlying_type = UnderlyingType;
 
-  constexpr StrongAlias() = default;
+  StrongAlias() = default;
   constexpr explicit StrongAlias(const UnderlyingType& v) : value_(v) {}
   constexpr explicit StrongAlias(UnderlyingType&& v) noexcept
       : value_(std::move(v)) {}
@@ -108,10 +108,10 @@ class StrongAlias {
   // because it is from an external library), then a work-around is to create a
   // thin wrapper `W` around it, define `operator<=>` for the wrapper and create
   // a `StrongAlias<W>`.
-  friend constexpr auto operator<=>(const StrongAlias& lhs,
-                                    const StrongAlias& rhs) = default;
-  friend constexpr bool operator==(const StrongAlias& lhs,
-                                   const StrongAlias& rhs) = default;
+  friend auto operator<=>(const StrongAlias& lhs,
+                          const StrongAlias& rhs) = default;
+  friend bool operator==(const StrongAlias& lhs,
+                         const StrongAlias& rhs) = default;
 
   // Hasher to use in std::unordered_map, std::unordered_set, etc.
   //

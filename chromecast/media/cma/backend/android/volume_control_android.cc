@@ -23,6 +23,8 @@
 #include "base/no_destructor.h"
 #include "chromecast/base/init_command_line_shlib.h"
 #include "chromecast/chromecast_buildflags.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chromecast/media/cma/backend/android/audio_track_jni_headers/VolumeControl_jni.h"
 #include "chromecast/media/cma/backend/android/audio_track_jni_headers/VolumeMap_jni.h"
 
@@ -89,7 +91,6 @@ void VolumeControlAndroid::SetVolume(VolumeChangeSource source,
                                      float level) {
   if (type == AudioContentType::kOther) {
     NOTREACHED() << "Can't set volume for content type kOther";
-    return;
   }
 
   level = std::clamp(level, 0.0f, 1.0f);
@@ -112,7 +113,6 @@ void VolumeControlAndroid::SetMuted(VolumeChangeSource source,
                                     bool muted) {
   if (type == AudioContentType::kOther) {
     NOTREACHED() << "Can't set mute state for content type kOther";
-    return;
   }
 
   thread_.task_runner()->PostTask(
@@ -124,7 +124,6 @@ void VolumeControlAndroid::SetMuted(VolumeChangeSource source,
 void VolumeControlAndroid::SetOutputLimit(AudioContentType type, float limit) {
   if (type == AudioContentType::kOther) {
     NOTREACHED() << "Can't set output limit for content type kOther";
-    return;
   }
 
   // The input limit is in the kMedia (MUSIC) volume table domain.

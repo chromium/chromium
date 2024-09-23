@@ -71,12 +71,13 @@ class ImmersiveModeControllerMacInteractiveTest : public InProcessBrowserTest {
     NSUInteger starting_child_window_count =
         browser_window().childWindows.count;
 
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_POPUP);
     params.bounds = gfx::Rect(100, 100, 200, 200);
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     params.parent = browser_view->GetWidget()->GetNativeView();
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.z_order = ui::ZOrderLevel::kNormal;
 
     params.delegate = new views::WidgetDelegateView();
@@ -178,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 // "Always Show Toolbar in Full Screen" is off.
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        MinimumContentOffset) {
-  chrome::DisableFindBarAnimationsDuringTesting(true);
+  DisableFindBarAnimationsDuringTesting(true);
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ImmersiveModeController* controller =
@@ -190,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 
     {
       views::NamedWidgetShownWaiter shown_waiter(
-          views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
+          views::test::AnyWidgetTestPasskey{}, "FindBarHost");
       chrome::Find(browser());
       std::ignore = shown_waiter.WaitIfNeededAndGet();
       EXPECT_GT(controller->GetMinimumContentOffset(), 0);
@@ -204,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
     ScopedAlwaysShowToolbar scoped_always_show(browser(), true);
     {
       views::NamedWidgetShownWaiter shown_waiter(
-          views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
+          views::test::AnyWidgetTestPasskey{}, "FindBarHost");
       chrome::Find(browser());
       std::ignore = shown_waiter.WaitIfNeededAndGet();
       EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
@@ -212,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
     chrome::CloseFind(browser());
     EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
   }
-  chrome::DisableFindBarAnimationsDuringTesting(false);
+  DisableFindBarAnimationsDuringTesting(false);
 }
 
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
@@ -368,14 +369,14 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        ContentFullscreenChildren) {
-  chrome::DisableFindBarAnimationsDuringTesting(true);
+  DisableFindBarAnimationsDuringTesting(true);
 
   // Enter browser fullscreen.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
   // Open the find bar
   views::NamedWidgetShownWaiter shown_waiter(
-      views::test::AnyWidgetTestPasskey{}, "DropdownBarHost");
+      views::test::AnyWidgetTestPasskey{}, "FindBarHost");
   chrome::Find(browser());
   views::Widget* find_bar = shown_waiter.WaitIfNeededAndGet();
 
@@ -396,5 +397,5 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   EXPECT_EQ(browser_view->overlay_widget(), find_bar->parent());
 
   chrome::CloseFind(browser());
-  chrome::DisableFindBarAnimationsDuringTesting(false);
+  DisableFindBarAnimationsDuringTesting(false);
 }

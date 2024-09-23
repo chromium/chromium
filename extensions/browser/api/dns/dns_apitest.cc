@@ -37,10 +37,10 @@ constexpr char kAddress[] = "9.8.7.6";
 class DnsApiTest : public ShellApiTest {
  public:
   DnsApiTest() {
-    // Enable kSplitHostCacheByNetworkIsolationKey so the test can verify that
-    // the correct NetworkAnonymizationKey was used for the DNS lookup.
+    // Enable kPartitionConnectionsByNetworkIsolationKey so the test can verify
+    // that the correct NetworkAnonymizationKey was used for the DNS lookup.
     scoped_feature_list_.InitAndEnableFeature(
-        net::features::kSplitHostCacheByNetworkIsolationKey);
+        net::features::kPartitionConnectionsByNetworkIsolationKey);
   }
 
  private:

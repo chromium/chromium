@@ -28,7 +28,7 @@ struct EnumTraits<gfx::mojom::SubpixelRendering,
       case gfx::FontRenderParams::SUBPIXEL_RENDERING_VBGR:
         return gfx::mojom::SubpixelRendering::kVBGR;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::mojom::SubpixelRendering::kNone;
   }
 
@@ -69,7 +69,7 @@ struct EnumTraits<gfx::mojom::Hinting, gfx::FontRenderParams::Hinting> {
       case gfx::FontRenderParams::HINTING_FULL:
         return gfx::mojom::Hinting::kFull;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::mojom::Hinting::kNone;
   }
 
@@ -89,7 +89,7 @@ struct EnumTraits<gfx::mojom::Hinting, gfx::FontRenderParams::Hinting> {
         *out = gfx::FontRenderParams::HINTING_FULL;
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };

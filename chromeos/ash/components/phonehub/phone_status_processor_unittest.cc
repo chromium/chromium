@@ -33,6 +33,7 @@
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
 #include "chromeos/ash/components/phonehub/notification_manager.h"
 #include "chromeos/ash/components/phonehub/notification_processor.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h"
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
 #include "chromeos/ash/components/phonehub/phone_status_model.h"
@@ -139,6 +140,8 @@ class PhoneStatusProcessorTest : public testing::Test {
   ~PhoneStatusProcessorTest() override = default;
 
   void SetUp() override {
+    PhoneHubStructuredMetricsLogger::RegisterPrefs(pref_service_.registry());
+    multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kEcheSWA,
                               features::kPhoneHubCameraRoll},
@@ -175,8 +178,8 @@ class PhoneStatusProcessorTest : public testing::Test {
         std::make_unique<PhoneHubUiReadinessRecorder>(
             fake_feature_status_provider_.get(),
             fake_connection_manager_.get());
-
-    multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
+    phone_hub_structured_metrics_logger_ =
+        std::make_unique<PhoneHubStructuredMetricsLogger>(&pref_service_);
   }
 
   void CreatePhoneStatusProcessor() {
@@ -189,7 +192,8 @@ class PhoneStatusProcessorTest : public testing::Test {
         fake_multidevice_setup_client_.get(), mutable_phone_model_.get(),
         fake_recent_apps_interaction_handler_.get(), &pref_service_,
         &app_stream_manager_, app_stream_launcher_data_model_.get(),
-        icon_decoder_.get(), phone_hub_ui_readiness_recorder_.get());
+        icon_decoder_.get(), phone_hub_ui_readiness_recorder_.get(),
+        phone_hub_structured_metrics_logger_.get());
   }
 
   void InitializeNotificationProto(proto::Notification* notification,
@@ -246,6 +250,8 @@ class PhoneStatusProcessorTest : public testing::Test {
   std::unique_ptr<secure_channel::FakeConnectionManager>
       fake_connection_manager_;
   std::unique_ptr<PhoneHubUiReadinessRecorder> phone_hub_ui_readiness_recorder_;
+  std::unique_ptr<PhoneHubStructuredMetricsLogger>
+      phone_hub_structured_metrics_logger_;
   raw_ptr<TestDecoderDelegate> decoder_delegate_;
   TestingPrefServiceSimple pref_service_;
   AppStreamManager app_stream_manager_;

@@ -7,9 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "partition_alloc/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -49,7 +49,7 @@ class TRIVIAL_ABI SetOnDestroy {
   }
 
  private:
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
   // In instance tracer mode, raw_ptr is larger than a void*, but values stored
   // inline in a SequenceLocalStorageMap must be at most sizeof(void*).
   RAW_PTR_EXCLUSION bool* was_destroyed_ptr_;
@@ -168,64 +168,73 @@ TEST(SequenceLocalStorageMapTest, DestructorCalledOnSetOverwriteExternal) {
   EXPECT_TRUE(set_on_destruction2);
 }
 
-#if defined(__clang__) && HAS_ATTRIBUTE(trivial_abi)
-#if !BUILDFLAG(IS_WIN)
-// Test disabled on Windows due to
-// https://github.com/llvm/llvm-project/issues/69394
+template <typename T>
+void DestructorInline() {
+  if constexpr (!absl::is_trivially_relocatable<T>()) {
+    // Test disabled because there is no reliable way to detect SetOnDestroy
+    // is trivially relocatble.
+    // See https://github.com/llvm/llvm-project/issues/69394
+    GTEST_SKIP();
+  } else {
+    bool set_on_destruction = false;
 
-TEST(SequenceLocalStorageMapTest, DestructorInline) {
-  bool set_on_destruction = false;
+    {
+      SequenceLocalStorageMap sequence_local_storage_map;
+      ScopedSetSequenceLocalStorageMapForCurrentThread
+          scoped_sequence_local_storage_map(&sequence_local_storage_map);
 
-  {
-    SequenceLocalStorageMap sequence_local_storage_map;
-    ScopedSetSequenceLocalStorageMapForCurrentThread
-        scoped_sequence_local_storage_map(&sequence_local_storage_map);
+      SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair =
+          CreateInlineValueDestructorPair<T>(&set_on_destruction);
 
-    SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair =
-        CreateInlineValueDestructorPair<SetOnDestroy>(&set_on_destruction);
+      sequence_local_storage_map.Set(kSlotId, std::move(value_destructor_pair));
+    }
 
-    sequence_local_storage_map.Set(kSlotId, std::move(value_destructor_pair));
-  }
-
-  EXPECT_TRUE(set_on_destruction);
-}
-
-TEST(SequenceLocalStorageMapTest, DestructorCalledOnSetOverwriteInline) {
-  bool set_on_destruction = false;
-  bool set_on_destruction2 = false;
-  {
-    SequenceLocalStorageMap sequence_local_storage_map;
-    ScopedSetSequenceLocalStorageMapForCurrentThread
-        scoped_sequence_local_storage_map(&sequence_local_storage_map);
-
-    SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair =
-        CreateInlineValueDestructorPair<SetOnDestroy>(&set_on_destruction);
-    SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair2 =
-        CreateInlineValueDestructorPair<SetOnDestroy>(&set_on_destruction2);
-
-    sequence_local_storage_map.Set(kSlotId, std::move(value_destructor_pair));
-
-    ASSERT_FALSE(set_on_destruction);
-
-    // Overwrites the old value in the slot.
-    sequence_local_storage_map.Set(kSlotId, std::move(value_destructor_pair2));
-
-    // Destructor should've been called for the old value in the slot, and not
-    // yet called for the new value.
     EXPECT_TRUE(set_on_destruction);
-    EXPECT_FALSE(set_on_destruction2);
   }
-  EXPECT_TRUE(set_on_destruction2);
+}
+TEST(SequenceLocalStorageMapTest, DestructorInline) {
+  DestructorInline<SetOnDestroy>();
 }
 
-#else  // !BUILDFLAG(IS_WIN)
+template <typename T>
+void DestructorCalledOnSetOverwriteInline() {
+  if constexpr (!absl::is_trivially_relocatable<T>()) {
+    // Test disabled because there is no reliable way to detect SetOnDestroy
+    // is trivially relocatble.
+    // See https://github.com/llvm/llvm-project/issues/69394
+    GTEST_SKIP();
+  } else {
+    bool set_on_destruction = false;
+    bool set_on_destruction2 = false;
+    {
+      SequenceLocalStorageMap sequence_local_storage_map;
+      ScopedSetSequenceLocalStorageMapForCurrentThread
+          scoped_sequence_local_storage_map(&sequence_local_storage_map);
 
-static_assert(!absl::is_trivially_relocatable<SetOnDestroy>(),
-              "A compiler change on Windows indicates the preprocessor "
-              "guarding the test above needs to be updated.");
+      SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair =
+          CreateInlineValueDestructorPair<T>(&set_on_destruction);
+      SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair2 =
+          CreateInlineValueDestructorPair<T>(&set_on_destruction2);
 
-#endif  // !BUILDFLAG(IS_WIN)
-#endif  //  defined(__clang__) && HAS_ATTRIBUTE(trivial_abi)
+      sequence_local_storage_map.Set(kSlotId, std::move(value_destructor_pair));
+
+      ASSERT_FALSE(set_on_destruction);
+
+      // Overwrites the old value in the slot.
+      sequence_local_storage_map.Set(kSlotId,
+                                     std::move(value_destructor_pair2));
+
+      // Destructor should've been called for the old value in the slot, and not
+      // yet called for the new value.
+      EXPECT_TRUE(set_on_destruction);
+      EXPECT_FALSE(set_on_destruction2);
+    }
+    EXPECT_TRUE(set_on_destruction2);
+  }
+}
+TEST(SequenceLocalStorageMapTest, DestructorCalledOnSetOverwriteInline) {
+  DestructorCalledOnSetOverwriteInline<SetOnDestroy>();
+}
 
 }  // namespace internal
 }  // namespace base

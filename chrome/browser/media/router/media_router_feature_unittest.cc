@@ -53,29 +53,6 @@ TEST(MediaRouterFeatureTest, GetReceiverIdHashToken) {
   EXPECT_EQ(token, GetReceiverIdHashToken(pref_service.get()));
 }
 
-TEST(MediaRouterFeatureTest, GetCastMirroringPlayoutDelay) {
-  base::test::ScopedFeatureList feature_list;
-  base::FieldTrialParams feature_params;
-  feature_params[kCastMirroringPlayoutDelayMs.name] = "100";
-  feature_list.InitAndEnableFeatureWithParameters(kCastMirroringPlayoutDelay,
-                                                  feature_params);
-  EXPECT_TRUE(GetCastMirroringPlayoutDelay().has_value());
-  EXPECT_EQ(GetCastMirroringPlayoutDelay().value(), base::Milliseconds(100));
-
-  // Incorrect values are ignored.
-  feature_list.Reset();
-  feature_params[kCastMirroringPlayoutDelayMs.name] = "0";
-  feature_list.InitAndEnableFeatureWithParameters(kCastMirroringPlayoutDelay,
-                                                  feature_params);
-  EXPECT_FALSE(GetCastMirroringPlayoutDelay().has_value());
-
-  feature_list.Reset();
-  feature_params[kCastMirroringPlayoutDelayMs.name] = "2000";
-  feature_list.InitAndEnableFeatureWithParameters(kCastMirroringPlayoutDelay,
-                                                  feature_params);
-  EXPECT_FALSE(GetCastMirroringPlayoutDelay().has_value());
-}
-
 TEST(MediaRouterFeatureTest, GetCastMirroringPlayoutDelayCommandLine) {
   base::test::ScopedFeatureList feature_list;
   // Test that an invalid switch is not returned.
@@ -84,20 +61,12 @@ TEST(MediaRouterFeatureTest, GetCastMirroringPlayoutDelayCommandLine) {
                                   "foo");
   EXPECT_FALSE(GetCastMirroringPlayoutDelay().has_value());
 
-  base::TimeDelta expected_delay = base::Milliseconds(200);
+  base::TimeDelta expected_delay = base::Milliseconds(150);
+
   // Test that valid values are passed.
   command_line->AppendSwitchASCII(switches::kCastMirroringTargetPlayoutDelay,
-                                  "200");
+                                  "150");
   EXPECT_EQ(GetCastMirroringPlayoutDelay().value(), expected_delay);
-
-  // Test that command line takes precedence over feature.
-  base::FieldTrialParams feature_params;
-  feature_params[kCastMirroringPlayoutDelayMs.name] = "500";
-  feature_list.InitAndEnableFeatureWithParameters(kCastMirroringPlayoutDelay,
-                                                  feature_params);
-  ASSERT_NE(base::Milliseconds(kCastMirroringPlayoutDelayMs.Get()),
-            expected_delay);
-  EXPECT_EQ(GetCastMirroringPlayoutDelay().value(), base::Milliseconds(200));
 }
 
 class MediaRouterEnabledTest : public ::testing::Test {

@@ -1,0 +1,83 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("release_notes") {
+  sources = [
+    "release_notes_notification.cc",
+    "release_notes_notification.h",
+    "release_notes_storage.cc",
+    "release_notes_storage.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos/ash/components/network",
+    "//components/session_manager/core",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/resources/vector_icons",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:channel_info",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/strings",
+    "//chromeos/strings:strings_grit",
+    "//components/prefs",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/user_manager",
+    "//components/version_info",
+    "//components/version_info:channel",
+    "//content/public/common",
+    "//google_apis",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/message_center/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "release_notes_notification_unittest.cc",
+    "release_notes_storage_unittest.cc",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/release_notes",
+    "//chrome/browser/ash/release_notes",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/login/login_state",
+    "//components/account_id",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/user_manager",
+    "//components/version_info",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/chromeos",
+  ]
+}

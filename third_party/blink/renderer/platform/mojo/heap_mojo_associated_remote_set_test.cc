@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/heap_observer_set.h"
+#include "third_party/blink/renderer/platform/heap_observer_list.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
@@ -47,8 +47,7 @@ class GCOwner final : public GarbageCollected<GCOwner<Mode>> {
 
  private:
   HeapMojoAssociatedRemoteSet<sample::blink::Service, Mode> remote_set_;
-  raw_ptr<HeapMojoAssociatedRemoteSetGCBaseTest<Mode>, ExperimentalRenderer>
-      test_;
+  raw_ptr<HeapMojoAssociatedRemoteSetGCBaseTest<Mode>> test_;
 };
 
 template <HeapMojoWrapperMode Mode>

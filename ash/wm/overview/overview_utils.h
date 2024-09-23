@@ -9,9 +9,10 @@
 #include <optional>
 
 #include "ash/ash_export.h"
-#include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace aura {
 class Window;
@@ -26,6 +27,7 @@ class Widget;
 }  // namespace views
 
 namespace ash {
+class OverviewItemBase;
 
 // Returns true if an overview session is active.
 ASH_EXPORT bool IsInOverviewSession();
@@ -37,6 +39,14 @@ ASH_EXPORT OverviewSession* GetOverviewSession();
 // Returns true if `window` can cover available workspace.
 bool CanCoverAvailableWorkspace(aura::Window* window);
 
+// Fades `widget` to opacity one and sets the transform to target with the enter
+// overview settings. Have OverviewController observe this animation as a enter
+// animation if `observe` is true.
+void FadeInAndTransformWidgetToOverview(views::Widget* widget,
+                                        const gfx::Transform& target_transform,
+                                        OverviewAnimationType animation_type,
+                                        bool observe);
+
 // Fades `widget` to opacity one with the enter overview settings.
 // Have OverviewController observe this animation as a enter animation if
 // `observe` is true.
@@ -45,9 +55,9 @@ void FadeInWidgetToOverview(views::Widget* widget,
                             bool observe);
 
 // Makes `widget` not be able to process events. This should only be used if
-// `widget`'s lifetime extends beyond an overview session's lifetime for
-// animation purposes, as `widget` will no longer be interactable.
-void PrepareWidgetForOverviewShutdown(views::Widget* widget);
+// `widget` is shutting down with animation, as `widget` will no longer be
+// interactable during the process.
+void PrepareWidgetForShutdownAnimation(views::Widget* widget);
 
 // Fades `widget` to opacity zero with animation settings depending on
 // `animation_type`. Used by several classes which need to be destroyed on
@@ -62,16 +72,25 @@ void ImmediatelyCloseWidgetOnExit(std::unique_ptr<views::Widget> widget);
 // Returns the original bounds for the given `window` outside of overview. The
 // bounds are a union of all regular (normal and transient) windows in the
 // window's transient hierarchy.
-gfx::RectF GetUnionScreenBoundsForWindow(aura::Window* window);
+ASH_EXPORT gfx::RectF GetUnionScreenBoundsForWindow(aura::Window* window);
+
+// Returns the corresponding `OverviewItemFillMode` with given `size`.
+OverviewItemFillMode GetOverviewItemFillMode(const gfx::Size& size);
+
+// Returns the corresponding `OverviewItemFillMode` for the given `window`:
+//  - For independent `OverviewItem`s, any `OverviewItemFillMode` are allowed.
+//  - For `OverviewItem`s within an `OverviewGroupItem`, only the default
+//  `kNormal` mode is allowed. (This restriction is in place to avoid visual
+//  glitches and header misalignment problems on the header view).
+OverviewItemFillMode GetOverviewItemFillModeForWindow(aura::Window* window);
 
 // Maximize the window if it is snapped without animation.
 void MaximizeIfSnapped(aura::Window* window);
 
 // Get the grid bounds if a window is snapped in splitview, or what they will be
 // when snapped based on `target_root` and `indicator_state`. If
-// `divider_changed` is true, maybe clamp the bounds to a minimum size and shift
-// the bounds offscreen. If `account_for_hotseat` is true and we are in tablet
-// mode, inset the bounds by the hotseat size.
+// `account_for_hotseat` is true and we are in tablet mode, inset the bounds by
+// the hotseat size.
 ASH_EXPORT gfx::Rect GetGridBoundsInScreen(aura::Window* target_root);
 gfx::Rect GetGridBoundsInScreen(
     aura::Window* target_root,
@@ -91,13 +110,18 @@ bool ShouldUseTabletModeGridLayout();
 // returns the same size for SizeF regardless of its origin.
 ASH_EXPORT gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect);
 
-void MoveFocusToView(OverviewFocusableView* target_view);
+// Determines if an `item` is eligible for snapping in Overview. Snapping is
+// disallowed for `OverviewGroupItem`s holding two `OverviewItem`s.
+bool IsEligibleForDraggingToSnapInOverview(OverviewItemBase* item);
 
 // For all `windows`, change their visibility by changing the window opacity,
 // animating where necessary.
 void SetWindowsVisibleDuringItemDragging(const aura::Window::Windows& windows,
                                          bool visible,
                                          bool animate);
+
+// Generates and stylizes the icon for menu item.
+ui::ImageModel CreateIconForMenuItem(const gfx::VectorIcon& icon);
 
 }  // namespace ash
 

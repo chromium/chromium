@@ -40,3 +40,4 @@ UserAndDeviceReporting:
   - LogUploadEnabled
   - DeviceMetricsReportingEnabled
   - DeviceReportXDREvents
+  - DeviceExtensionsSystemLogEnabled

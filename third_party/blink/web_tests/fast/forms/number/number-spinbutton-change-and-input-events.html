@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 <script src="../resources/common.js"></script>
 <script src="../resources/common-spinbutton-change-and-input-events.js"></script>
 </head>
 <body>
 <script>
-testSpinButtonChangeAndInputEvents('number', 'horizontal-tb', '0', '1', '1');
+for (let mode of ['horizontal-tb', 'vertical-rl', 'vertical-lr',
+                  'sideways-rl', 'sideways-lr']) {
+  testSpinButtonChangeAndInputEvents('number', mode, '0', '1', '1');
+}
 </script>
 </body>
 </html>

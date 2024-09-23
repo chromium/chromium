@@ -15,50 +15,81 @@
 namespace apps {
 
 namespace {
+constexpr char kUnknownName[] = "unknown";
 constexpr char kArcPlatformName[] = "android";
+constexpr char kBorealisPlatformName[] = "steam";
+constexpr char kChromeAppPlatformName[] = "chromeapp";
+constexpr char kGeForceNowPlatformName[] = "gfn";
+constexpr char kSystemPlatformName[] = "system";
 constexpr char kWebPlatformName[] = "web";
+constexpr char kWebShortcutPlatformName[] = "website";
 
-AppType PlatformNameToAppType(std::string_view platform_name) {
+PackageType PlatformNameToPackageType(std::string_view platform_name) {
   if (platform_name == kArcPlatformName) {
-    return AppType::kArc;
+    return PackageType::kArc;
+  }
+  if (platform_name == kBorealisPlatformName) {
+    return PackageType::kBorealis;
+  }
+  if (platform_name == kChromeAppPlatformName) {
+    return PackageType::kChromeApp;
+  }
+  if (platform_name == kGeForceNowPlatformName) {
+    return PackageType::kGeForceNow;
+  }
+  if (platform_name == kSystemPlatformName) {
+    return PackageType::kSystem;
   }
   if (platform_name == kWebPlatformName) {
-    return AppType::kWeb;
+    return PackageType::kWeb;
+  }
+  if (platform_name == kWebShortcutPlatformName) {
+    return PackageType::kWebsite;
   }
 
-  return AppType::kUnknown;
+  return PackageType::kUnknown;
 }
 
-std::string_view AppTypeToPlatformName(AppType app_type) {
-  switch (app_type) {
-    case AppType::kArc:
+std::string_view PackageTypeToPlatformName(PackageType package_type) {
+  switch (package_type) {
+    case PackageType::kUnknown:
+      return kUnknownName;
+    case PackageType::kArc:
       return kArcPlatformName;
-    case AppType::kWeb:
+    case PackageType::kBorealis:
+      return kBorealisPlatformName;
+    case PackageType::kChromeApp:
+      return kChromeAppPlatformName;
+    case PackageType::kGeForceNow:
+      return kGeForceNowPlatformName;
+    case PackageType::kSystem:
+      return kSystemPlatformName;
+    case PackageType::kWeb:
       return kWebPlatformName;
-    default:
-      NOTREACHED();
-      return "";
+    case PackageType::kWebsite:
+      return kWebShortcutPlatformName;
   }
 }
 
 }  // namespace
 
-PackageId::PackageId(AppType app_type, std::string_view identifier)
-    : app_type_(app_type), identifier_(identifier) {
-  DCHECK(app_type_ == AppType::kArc || app_type_ == AppType::kWeb);
+PackageId::PackageId(PackageType package_type, std::string_view identifier)
+    : package_type_(package_type), identifier_(identifier) {
   DCHECK(!identifier_.empty());
 }
+
+PackageId::PackageId() : PackageId(PackageType::kUnknown, kUnknownName) {}
 
 PackageId::PackageId(const PackageId&) = default;
 PackageId& PackageId::operator=(const PackageId&) = default;
 
 bool PackageId::operator<(const PackageId& rhs) const {
-  if (this->app_type_ < rhs.app_type_) {
+  if (this->package_type_ < rhs.package_type_) {
     return true;
-  } else if (this->app_type_ > rhs.app_type_) {
+  } else if (this->package_type_ > rhs.package_type_) {
     return false;
   }
-  // If we're here, it's because app_type_ == rhs.app_type_.
+  // If we're here, it's because package_type_ == rhs.package_type_.
   if (this->identifier_ < rhs.identifier_) {
     return true;
   } else {
@@ -67,12 +98,12 @@ bool PackageId::operator<(const PackageId& rhs) const {
 }
 
 bool PackageId::operator==(const PackageId& rhs) const {
-  return this->app_type_ == rhs.app_type_ &&
+  return this->package_type_ == rhs.package_type_ &&
          this->identifier_ == rhs.identifier_;
 }
 
 bool PackageId::operator!=(const PackageId& rhs) const {
-  return this->app_type_ != rhs.app_type_ ||
+  return this->package_type_ != rhs.package_type_ ||
          this->identifier_ != rhs.identifier_;
 }
 
@@ -85,8 +116,9 @@ std::optional<PackageId> PackageId::FromString(
     return std::nullopt;
   }
 
-  AppType type = PlatformNameToAppType(package_id_string.substr(0, separator));
-  if (type == AppType::kUnknown) {
+  PackageType type =
+      PlatformNameToPackageType(package_id_string.substr(0, separator));
+  if (type == PackageType::kUnknown) {
     return std::nullopt;
   }
 
@@ -94,7 +126,8 @@ std::optional<PackageId> PackageId::FromString(
 }
 
 std::string PackageId::ToString() const {
-  return base::StrCat({AppTypeToPlatformName(app_type_), ":", identifier_});
+  return base::StrCat(
+      {PackageTypeToPlatformName(package_type_), ":", identifier_});
 }
 
 std::ostream& operator<<(std::ostream& out, const PackageId& package_id) {

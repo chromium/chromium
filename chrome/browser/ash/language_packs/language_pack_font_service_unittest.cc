@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -14,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/language_packs/language_pack_font_service_factory.h"
@@ -35,30 +37,40 @@
 namespace ash::language_packs {
 namespace {
 
-using testing::ElementsAre;
-using testing::FieldsAre;
-using testing::HasSubstr;
-using testing::IsEmpty;
-using testing::Property;
-using testing::Return;
-using testing::StartsWith;
+using ::testing::Bool;
+using ::testing::Combine;
+using ::testing::ElementsAre;
+using ::testing::FieldsAre;
+using ::testing::HasSubstr;
+using ::testing::IsEmpty;
+using ::testing::Property;
+using ::testing::Return;
+using ::testing::StartsWith;
+using ::testing::ValuesIn;
 
 // `FakeDlcserviceClient::Install` adds DLCs to the return value of
 // `GetExistingDlcs`, so we use that to observe whether any DLCs have been
 // installed.
 using GetExistingDlcsTestFuture =
-    base::test::TestFuture<const std::string&,
+    base::test::TestFuture<std::string_view,
                            const dlcservice::DlcsWithContent&>;
 using MockAddFontDir =
     testing::MockFunction<LanguagePackFontService::AddFontDir>;
 
+// Tests using this fixture should explicitly call `InitFeatureList`.
 class LanguagePackFontServiceTest : public testing::Test {
  public:
   LanguagePackFontServiceTest()
-      : scoped_feature_list_(features::kLanguagePacksFonts),
-        testing_prefs_(
+      : testing_prefs_(
             std::make_unique<sync_preferences::TestingPrefServiceSyncable>()) {
     ::RegisterUserProfilePrefs(testing_prefs_->registry());
+  }
+
+  void InitFeatureList(bool load_after_download_during_login) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kLanguagePacksFonts,
+        {{features::kLanguagePacksFontsLoadAfterDownloadDuringLogin.name,
+          load_after_download_during_login ? "true" : "false"}});
   }
 
   void InitProfileWithServices() {
@@ -104,7 +116,86 @@ class LanguagePackFontServiceTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 };
 
-TEST_F(LanguagePackFontServiceTest, InstallNothingOnUnrelatedLocaleChange) {
+// For understandability, "load after download during login" will be abbreviated
+// to "LADDL" here and below.
+//
+// Tests using this fixture should NOT call `InitFeatureList`, as it is done
+// automatically in `SetUp()`.
+class LanguagePackFontServiceLaddlTest
+    : public LanguagePackFontServiceTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    LanguagePackFontServiceTest::SetUp();
+    InitFeatureList(/*load_after_download_during_login=*/GetParam());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LanguagePackFontServiceLaddlTest,
+    Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return base::StrCat({"Laddl", info.param ? "Enabled" : "Disabled"});
+    });
+
+struct ValidFontLanguageTestCase {
+  std::string test_name;
+  std::string_view preferred_languages_one_locale;
+  std::string_view preferred_languages_two_locales;
+  std::string dlc_prefix;
+  std::string dlc_path;
+};
+
+static const ValidFontLanguageTestCase kValidFontLanguageTestCases[] = {
+    {"Japanese", "zz,ja", "zz,ja,ja-JP", "extrafonts-ja", "/path/for/ja"},
+    {"Korean", "zz,ko", "zz,ko,ko-KR", "extrafonts-ko", "/path/for/ko"}};
+
+// Tests using this fixture should explicitly call `InitFeatureList`.
+class LanguagePackFontServiceValidFontLanguageTest
+    : public LanguagePackFontServiceTest,
+      public testing::WithParamInterface<ValidFontLanguageTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LanguagePackFontServiceValidFontLanguageTest,
+    ValuesIn(kValidFontLanguageTestCases),
+    [](const testing::TestParamInfo<ValidFontLanguageTestCase>& info) {
+      return info.param.test_name;
+    });
+
+using LaddlValidFontLanguageTestCase =
+    std::tuple<bool, ValidFontLanguageTestCase>;
+
+// Tests using this fixture should NOT call `InitFeatureList`, as it is done
+// automatically in `SetUp()`.
+class LanguagePackFontServiceLaddlValidFontLanguageTest
+    : public LanguagePackFontServiceTest,
+      public testing::WithParamInterface<LaddlValidFontLanguageTestCase> {
+ public:
+  void SetUp() override {
+    LanguagePackFontServiceTest::SetUp();
+    InitFeatureList(
+        /*load_after_download_during_login=*/std::get<0>(GetParam()));
+  }
+
+  const ValidFontLanguageTestCase& GetValidFontLanguageParam() {
+    return std::get<1>(GetParam());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LanguagePackFontServiceLaddlValidFontLanguageTest,
+    Combine(Bool(), ValuesIn(kValidFontLanguageTestCases)),
+    [](const testing::TestParamInfo<LaddlValidFontLanguageTestCase>& info) {
+      return base::StrCat({"Laddl",
+                           std::get<0>(info.param) ? "Enabled" : "Disabled",
+                           std::get<1>(info.param).test_name});
+    });
+
+TEST_P(LanguagePackFontServiceLaddlTest,
+       InstallNothingOnUnrelatedLocaleChange) {
   // Ensure that we don't install any DLCs / add any fonts to begin with.
   // Both zz and xx (used below) are not valid ISO 639 locales as of 2024.
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
@@ -119,30 +210,9 @@ TEST_F(LanguagePackFontServiceTest, InstallNothingOnUnrelatedLocaleChange) {
   EXPECT_THAT(dlcs.dlc_infos(), IsEmpty());
 }
 
-struct ValidFontLanguageTestCase {
-  std::string test_name;
-  std::string_view preferred_languages_one_locale;
-  std::string_view preferred_languages_two_locales;
-  std::string dlc_prefix;
-  std::string dlc_path;
-};
-
-class ValidFontLanguageTest
-    : public LanguagePackFontServiceTest,
-      public testing::WithParamInterface<ValidFontLanguageTestCase> {};
-
-INSTANTIATE_TEST_SUITE_P(
-    LanguagePackFontServiceTest,
-    ValidFontLanguageTest,
-    testing::ValuesIn<ValidFontLanguageTestCase>(
-        {{"Japanese", "zz,ja", "zz,ja,ja-JP", "extrafonts-ja", "/path/for/ja"},
-         {"Korean", "zz,ko", "zz,ko,ko-KR", "extrafonts-ko", "/path/for/ko"}}),
-    [](const testing::TestParamInfo<ValidFontLanguageTest::ParamType>& info) {
-      return info.param.test_name;
-    });
-
-TEST_P(ValidFontLanguageTest, InstallValidLanguageOnValidLanguageLocaleChange) {
-  const ValidFontLanguageTestCase& test_case = GetParam();
+TEST_P(LanguagePackFontServiceLaddlValidFontLanguageTest,
+       InstallValidLanguageOnValidLanguageLocaleChange) {
+  const ValidFontLanguageTestCase& test_case = GetValidFontLanguageParam();
 
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
 
@@ -159,9 +229,9 @@ TEST_P(ValidFontLanguageTest, InstallValidLanguageOnValidLanguageLocaleChange) {
                                    StartsWith(test_case.dlc_prefix))));
 }
 
-TEST_P(ValidFontLanguageTest,
+TEST_P(LanguagePackFontServiceLaddlValidFontLanguageTest,
        InstallValidLanguageOnlyOnceOnMultipleValidLanguageLocalesChange) {
-  const ValidFontLanguageTestCase& test_case = GetParam();
+  const ValidFontLanguageTestCase& test_case = GetValidFontLanguageParam();
 
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
 
@@ -178,11 +248,12 @@ TEST_P(ValidFontLanguageTest,
                                    StartsWith(test_case.dlc_prefix))));
 }
 
-TEST_F(LanguagePackFontServiceTest, InstallNothingOnInitWithUnrelatedLocales) {
+TEST_P(LanguagePackFontServiceLaddlTest,
+       InstallNothingOnInitWithUnrelatedLocales) {
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state("extrafonts-ja", std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz,xx");
 
@@ -195,14 +266,14 @@ TEST_F(LanguagePackFontServiceTest, InstallNothingOnInitWithUnrelatedLocales) {
   EXPECT_THAT(dlcs.dlc_infos(), IsEmpty());
 }
 
-TEST_P(ValidFontLanguageTest,
+TEST_P(LanguagePackFontServiceLaddlValidFontLanguageTest,
        InstallValidLanguageOnInitWithValidLanguageLocale) {
-  const ValidFontLanguageTestCase& test_case = GetParam();
+  const ValidFontLanguageTestCase& test_case = GetValidFontLanguageParam();
 
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(test_case.dlc_prefix, std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_one_locale);
@@ -218,14 +289,14 @@ TEST_P(ValidFontLanguageTest,
                                    StartsWith(test_case.dlc_prefix))));
 }
 
-TEST_P(ValidFontLanguageTest,
+TEST_P(LanguagePackFontServiceLaddlValidFontLanguageTest,
        InstallValidLanguageOnlyOnceOnInitWithMultipleValidLanguageLocales) {
-  const ValidFontLanguageTestCase& test_case = GetParam();
+  const ValidFontLanguageTestCase& test_case = GetValidFontLanguageParam();
 
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(test_case.dlc_prefix, std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_two_locales);
@@ -243,14 +314,14 @@ TEST_P(ValidFontLanguageTest,
 
 constexpr std::string kUnusedDlcPath = "/path/to/unused/dlc";
 
-TEST_F(LanguagePackFontServiceTest, AddNothingOnUnrelatedLocaleChange) {
+TEST_P(LanguagePackFontServiceLaddlTest, AddNothingOnUnrelatedLocaleChange) {
   ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
   EXPECT_CALL(*add_font_dir(), Call).Times(0);
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
     state.set_root_path(kUnusedDlcPath);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state("extrafonts-ja", std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
   InitProfileWithServices();
@@ -258,8 +329,9 @@ TEST_F(LanguagePackFontServiceTest, AddNothingOnUnrelatedLocaleChange) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_P(ValidFontLanguageTest, AddNothingOnValidLanguageLocaleChange) {
-  const ValidFontLanguageTestCase& test_case = GetParam();
+TEST_P(LanguagePackFontServiceLaddlValidFontLanguageTest,
+       AddNothingOnValidLanguageLocaleChange) {
+  const ValidFontLanguageTestCase& test_case = GetValidFontLanguageParam();
 
   ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
   EXPECT_CALL(*add_font_dir(), Call).Times(0);
@@ -267,7 +339,7 @@ TEST_P(ValidFontLanguageTest, AddNothingOnValidLanguageLocaleChange) {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
     state.set_root_path(test_case.dlc_path);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(test_case.dlc_prefix, std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
   InitProfileWithServices();
@@ -276,14 +348,14 @@ TEST_P(ValidFontLanguageTest, AddNothingOnValidLanguageLocaleChange) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(LanguagePackFontServiceTest, AddNothingOnInitWithUnrelatedLocale) {
+TEST_P(LanguagePackFontServiceLaddlTest, AddNothingOnInitWithUnrelatedLocale) {
   ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
   EXPECT_CALL(*add_font_dir(), Call).Times(0);
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
     state.set_root_path(kUnusedDlcPath);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state("extrafonts-ja", std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz,xx");
 
@@ -291,8 +363,55 @@ TEST_F(LanguagePackFontServiceTest, AddNothingOnInitWithUnrelatedLocale) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_P(ValidFontLanguageTest, AddValidLanguageOnInitWithValidLanguageLocale) {
+TEST_P(
+    LanguagePackFontServiceValidFontLanguageTest,
+    AddNothingOnInitWithValidLanguageLocaleWhenNotDownloadedWithLaddlDisabled) {
   const ValidFontLanguageTestCase& test_case = GetParam();
+
+  InitFeatureList(/*load_after_download_during_login=*/false);
+  ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
+  EXPECT_CALL(*add_font_dir(), Call).Times(0);
+  dlcservice::DlcState state;
+  state.set_id(test_case.dlc_prefix);
+  state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
+  state.set_is_verified(false);
+  dlcservice_client()->set_install_root_path(test_case.dlc_path);
+  dlcservice_client()->set_dlc_state(test_case.dlc_prefix, state);
+  prefs()->SetString(language::prefs::kPreferredLanguages,
+                     test_case.preferred_languages_one_locale);
+
+  InitProfileWithServices();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_P(
+    LanguagePackFontServiceValidFontLanguageTest,
+    AddValidLanguageOnInitWithValidLanguageLocaleWhenNotDownloadedWithLaddlEnabled) {
+  const ValidFontLanguageTestCase& test_case = GetParam();
+
+  InitFeatureList(/*load_after_download_during_login=*/true);
+  ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
+  EXPECT_CALL(*add_font_dir(), Call)
+      .With(FieldsAre(Property(&base::FilePath::value, test_case.dlc_path)))
+      .Times(1);
+  {
+    dlcservice::DlcState state;
+    state.set_id(test_case.dlc_prefix);
+    state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
+    state.set_is_verified(false);
+    dlcservice_client()->set_install_root_path(test_case.dlc_path);
+    dlcservice_client()->set_dlc_state(test_case.dlc_prefix, std::move(state));
+  }
+  prefs()->SetString(language::prefs::kPreferredLanguages,
+                     test_case.preferred_languages_one_locale);
+
+  InitProfileWithServices();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_P(LanguagePackFontServiceLaddlValidFontLanguageTest,
+       AddValidLanguageOnInitWithValidLanguageLocale) {
+  const ValidFontLanguageTestCase& test_case = GetValidFontLanguageParam();
 
   ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
   EXPECT_CALL(*add_font_dir(), Call)
@@ -302,7 +421,8 @@ TEST_P(ValidFontLanguageTest, AddValidLanguageOnInitWithValidLanguageLocale) {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
     state.set_root_path(test_case.dlc_path);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_install_root_path(test_case.dlc_path);
+    dlcservice_client()->set_dlc_state(test_case.dlc_prefix, std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_one_locale);
@@ -311,9 +431,33 @@ TEST_P(ValidFontLanguageTest, AddValidLanguageOnInitWithValidLanguageLocale) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_P(ValidFontLanguageTest,
+TEST_P(
+    LanguagePackFontServiceLaddlValidFontLanguageTest,
+    AddValidLanguageOnInitWithValidLanguageLocaleWhenDownloadedButNotMounted) {
+  const ValidFontLanguageTestCase& test_case = GetValidFontLanguageParam();
+
+  ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
+  EXPECT_CALL(*add_font_dir(), Call)
+      .With(FieldsAre(Property(&base::FilePath::value, test_case.dlc_path)))
+      .Times(1);
+  {
+    dlcservice::DlcState state;
+    state.set_id(test_case.dlc_prefix);
+    state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
+    state.set_is_verified(true);
+    dlcservice_client()->set_install_root_path(test_case.dlc_path);
+    dlcservice_client()->set_dlc_state(test_case.dlc_prefix, std::move(state));
+  }
+  prefs()->SetString(language::prefs::kPreferredLanguages,
+                     test_case.preferred_languages_one_locale);
+
+  InitProfileWithServices();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_P(LanguagePackFontServiceLaddlValidFontLanguageTest,
        AddValidLanguageOnlyOnceOnInitWithMultipleValidLanguageLocales) {
-  const ValidFontLanguageTestCase& test_case = GetParam();
+  const ValidFontLanguageTestCase& test_case = GetValidFontLanguageParam();
 
   ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
   EXPECT_CALL(*add_font_dir(), Call)
@@ -323,7 +467,8 @@ TEST_P(ValidFontLanguageTest,
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
     state.set_root_path(test_case.dlc_path);
-    dlcservice_client()->set_dlc_state(std::move(state));
+    dlcservice_client()->set_install_root_path(test_case.dlc_path);
+    dlcservice_client()->set_dlc_state(test_case.dlc_prefix, std::move(state));
   }
   prefs()->SetString(language::prefs::kPreferredLanguages,
                      test_case.preferred_languages_two_locales);

@@ -25,30 +25,18 @@ void FakeBlobURLStore::Revoke(const KURL& url) {
   revocations.push_back(url);
 }
 
-void FakeBlobURLStore::Resolve(const KURL& url, ResolveCallback callback) {
-  auto blob_it = registrations.find(url);
-  auto agent_it = agent_registrations.find(url);
-  if (blob_it == registrations.end() || agent_it == agent_registrations.end()) {
-    std::move(callback).Run(mojo::NullRemote(), std::nullopt);
-    return;
-  }
-  mojo::PendingRemote<mojom::blink::Blob> blob;
-  blob_it->value->Clone(blob.InitWithNewPipeAndPassReceiver());
-  std::move(callback).Run(std::move(blob), agent_it->value);
-}
-
 void FakeBlobURLStore::ResolveAsURLLoaderFactory(
     const KURL&,
     mojo::PendingReceiver<network::mojom::blink::URLLoaderFactory>,
     ResolveAsURLLoaderFactoryCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeBlobURLStore::ResolveForNavigation(
     const KURL&,
     mojo::PendingReceiver<mojom::blink::BlobURLToken>,
     ResolveForNavigationCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace blink

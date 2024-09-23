@@ -7,11 +7,13 @@
 #include <string.h>
 
 #include <limits>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/hash/sha1.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -42,7 +44,7 @@ std::string GetEntryHashKeyAsHexString(const std::string& key) {
   return hash_key_str;
 }
 
-bool GetEntryHashKeyFromHexString(base::StringPiece hash_key,
+bool GetEntryHashKeyFromHexString(std::string_view hash_key,
                                   uint64_t* hash_key_out) {
   if (hash_key.size() != kEntryHashKeyAsHexStringSize) {
     return false;
@@ -51,13 +53,8 @@ bool GetEntryHashKeyFromHexString(base::StringPiece hash_key,
 }
 
 uint64_t GetEntryHashKey(const std::string& key) {
-  unsigned char sha_hash[base::kSHA1Length];
-
-  base::SHA1HashBytes(reinterpret_cast<const unsigned char*>(key.data()),
-                      key.size(), sha_hash);
-  uint64_t as_uint64;
-  memcpy(&as_uint64, sha_hash, sizeof(as_uint64));
-  return as_uint64;
+  base::SHA1Digest sha_hash = base::SHA1Hash(base::as_byte_span(key));
+  return base::U64FromLittleEndian(base::span(sha_hash).first<8u>());
 }
 
 std::string GetFilenameFromEntryFileKeyAndFileIndex(
@@ -102,6 +99,11 @@ int64_t GetFileSizeFromDataSize(size_t key_length, int32_t data_size) {
 
 int GetFileIndexFromStreamIndex(int stream_index) {
   return (stream_index == 2) ? 1 : 0;
+}
+
+uint32_t Crc32(base::span<const uint8_t> data) {
+  auto chars = base::as_chars(data);
+  return Crc32(chars.data(), base::checked_cast<int>(data.size()));
 }
 
 uint32_t Crc32(const char* data, int length) {

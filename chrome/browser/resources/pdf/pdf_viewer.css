@@ -1,0 +1,150 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./elements/shared_vars.css.js
+ * #import=./pdf_viewer_shared_style.css.js
+ * #include=pdf-viewer-shared-style cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --viewer-pdf-sidenav-width: 300px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+viewer-pdf-sidenav,
+viewer-toolbar {
+  --pdf-toolbar-text-color: rgb(241, 241, 241);
+}
+
+<if expr="enable_pdf_ink2">
+  viewer-side-panel {
+    border-inline-start: 1px solid var(--viewer-border-color);
+  }
+</if>
+
+viewer-toolbar {
+  --active-button-bg: rgba(255, 255, 255, 0.24);
+  z-index: 1;
+}
+
+@media(max-width: 200px),
+(max-height: 250px) {
+  viewer-toolbar {
+    display: none;
+  }
+}
+
+#sidenav-container {
+  overflow: hidden;
+  transition: transform 250ms cubic-bezier(.6, 0, 0, 1), visibility 250ms;
+  visibility: visible;
+  width: var(--viewer-pdf-sidenav-width);
+}
+
+:host-context([pdfcr23enabled]) #sidenav-container {
+  border-inline-end: 1px solid var(--viewer-border-color);
+}
+
+#sidenav-container.floating {
+  bottom: 0;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+}
+
+#sidenav-container[closed] {
+  transform: translateX(-100%);
+  transition: transform 200ms cubic-bezier(.6, 0, 0, 1),
+      visibility 200ms, width 0ms 200ms;
+  visibility: hidden;
+  width: 0;
+}
+
+:host-context([dir='rtl']) #sidenav-container[closed] {
+  transform: translateX(100%);
+}
+
+@media(max-width: 500px),
+(max-height: 250px) {
+  #sidenav-container {
+    display: none;
+  }
+}
+
+#content-focus-rectangle {
+  border: 2px solid var(--google-grey-500);
+  border-radius: 2px;
+  box-sizing: border-box;
+  height: 100%;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+viewer-ink-host {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+#container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+#plugin {
+  position: initial;
+}
+
+#content {
+  height: 100%;
+  left: 0;
+  position: sticky;
+  top: 0;
+  z-index: initial;
+}
+
+#sizer {
+  top: 0;
+  width: 100%;
+  z-index: initial;
+}
+
+/* #main and #scroller are intentionally different elements so that a
+ * ResizeObserver can be used on #main without triggering
+ * "ResizeObserver loop limit exceeded".
+ */
+#main {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+#scroller {
+  /* TODO(crbug.com/40737077): Fix the plugin to properly support RTL painting
+   * of PDF contents, such that content is aligned to the top-right corner.
+   * Until then force LTR even in RTL languages, so scrolling of the content
+   * can originate in the top-left corner, consistent with the expectations of
+   * the plugin.
+   */
+  direction: ltr;
+  height: 100%;
+  overflow: auto;
+  position: relative;
+}
+
+/* Hide scrollbars when in Presentation mode. */
+#scroller:fullscreen {
+  overflow: hidden;
+}

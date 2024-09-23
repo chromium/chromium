@@ -9,9 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/async/common/encryptor.mojom.h"
+#include "mojo/public/cpp/base/shared_memory_mojom_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
@@ -36,7 +38,7 @@ struct StructTraits<os_crypt_async::mojom::KeyDataView,
 
   static const os_crypt_async::mojom::Algorithm& algorithm(
       const os_crypt_async::Encryptor::Key& in);
-  static const std::vector<uint8_t>& key(
+  static base::UnsafeSharedMemoryRegion key(
       const os_crypt_async::Encryptor::Key& in);
 };
 

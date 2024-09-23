@@ -17,8 +17,6 @@ source_set("form_util") {
     "form_activity_params.mm",
     "form_activity_tab_helper.h",
     "form_activity_tab_helper.mm",
-    "unique_id_data_tab_helper.h",
-    "unique_id_data_tab_helper.mm",
   ]
   deps = [
     ":form_util_feature",
@@ -38,6 +36,7 @@ source_set("form_util_feature") {
   ]
   deps = [
     ":autofill_form_features",
+    ":cross_content_world_util_feature",
     ":fill_js",
     ":form_js",
     "//base",
@@ -57,10 +56,10 @@ source_set("form_handler_feature") {
     ":form_handlers_js",
     ":form_util",
     ":form_util_feature",
+    ":register_remote_frame_token_js",
     "//base",
     "//components/autofill/core/common:features",
     "//components/autofill/ios/common",
-    "//components/password_manager/ios:password_manager_feature_header",
     "//ios/web/public/js_messaging",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -98,18 +97,13 @@ compile_ts("child_frame_registration_ts_lib") {
 optimize_ts("child_frame_registration_test_ts") {
   sources = [ "resources/child_frame_registration_test.ts" ]
   deps = [
-    ":autofill_form_features_ts",
     ":child_frame_registration_ts_lib",
-    "//ios/web/public/js_messaging:frame_id",
     "//ios/web/public/js_messaging:gcrweb",
-    "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
 compile_ts("fill_js_dependencies") {
   sources = [
-    "resources/create_fill_namespace.ts",
-    "resources/fill_constants.ts",
     "resources/fill_element_inference.ts",
     "resources/fill_element_inference_util.ts",
     "resources/fill_util.ts",
@@ -117,9 +111,19 @@ compile_ts("fill_js_dependencies") {
 
   deps = [
     ":autofill_form_features_ts",
+    ":fill_js_namespace",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
+}
+
+compile_ts("fill_js_namespace") {
+  sources = [
+    "resources/create_fill_namespace.ts",
+    "resources/fill_constants.ts",
+  ]
+
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
 optimize_ts("fill_js") {
@@ -128,9 +132,9 @@ optimize_ts("fill_js") {
   deps = [
     ":child_frame_registration_ts_lib",
     ":fill_js_dependencies",
+    ":fill_js_namespace",
     "//ios/web/public/js_messaging:frame_id",
     "//ios/web/public/js_messaging:gcrweb",
-    "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
@@ -138,7 +142,7 @@ optimize_ts("form_js") {
   sources = [ "resources/form.ts" ]
 
   deps = [
-    "//components/autofill/ios/form_util:fill_js_dependencies",
+    "//components/autofill/ios/form_util:fill_js_namespace",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -147,11 +151,42 @@ optimize_ts("form_js") {
 optimize_ts("form_handlers_js") {
   sources = [ "resources/form_handlers.ts" ]
   deps = [
-    ":autofill_form_features_ts",
     ":child_frame_registration_ts_lib",
-    "//ios/web/public/js_messaging:frame_id",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
+
+optimize_ts("register_remote_frame_token_js") {
+  sources = [ "resources/register_remote_frame_token.ts" ]
+
+  deps = [
+    ":child_frame_registration_ts_lib",
+    "//ios/web/public/js_messaging:frame_id",
+  ]
+}
+
+source_set("cross_content_world_util_feature") {
+  sources = [
+    "cross_content_world_util_java_script_feature.h",
+    "cross_content_world_util_java_script_feature.mm",
+  ]
+
+  deps = [
+    ":cross_content_world_js",
+    "//base",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/js_messaging:content_world_header",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+optimize_ts("cross_content_world_js") {
+  sources = [ "resources/cross_content_world_fill_util.ts" ]
+
+  deps = [
+    ":fill_js_namespace",
+    "//ios/web/public/js_messaging:gcrweb",
   ]
 }
 
@@ -188,6 +223,7 @@ source_set("child_frame_registrar") {
     "//base",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser:util",
+    "//components/autofill/ios/common",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
@@ -200,24 +236,26 @@ source_set("unit_tests") {
     "fill_js_unittest.mm",
     "form_activity_observer_bridge_unittest.mm",
     "form_activity_tab_helper_unittest.mm",
-    "form_handlers_unittest.mm",
     "form_unittest.mm",
-    "unique_id_data_tab_helper_unittest.mm",
+    "remote_frame_token_registration_unittest.mm",
   ]
   deps = [
     ":child_frame_registrar",
+    ":cross_content_world_util_feature",
     ":fill_js",
-    ":form_handlers_js",
+    ":form_handler_feature",
     ":form_js",
     ":form_util",
     ":form_util_feature",
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/browser:util",
-    "//components/autofill/ios/form_util:form_handler_feature",
+    "//components/autofill/ios/common",
     "//ios/web/public/js_messaging",
-    "//ios/web/public/test",
     "//ios/web/public/test:javascript_test",
     "//ios/web/public/test:test_fixture",
     "//ios/web/public/test:util",

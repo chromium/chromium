@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -66,7 +67,7 @@ apps::AppType PolicyStringToAppType(const std::string& app_type) {
   if (app_type == "UNKNOWN")
     return apps::AppType::kUnknown;
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return apps::AppType::kUnknown;
 }
 
@@ -103,7 +104,7 @@ std::string AppTypeToPolicyString(apps::AppType app_type) {
     case apps::AppType::kUnknown:
       return "UNKNOWN";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 AppRestriction PolicyStringToAppRestriction(const std::string& restriction) {
@@ -112,7 +113,7 @@ AppRestriction PolicyStringToAppRestriction(const std::string& restriction) {
   if (restriction == "TIME_LIMIT")
     return AppRestriction::kTimeLimit;
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return AppRestriction::kUnknown;
 }
 
@@ -123,7 +124,7 @@ std::string AppRestrictionToPolicyString(const AppRestriction& restriction) {
     case AppRestriction::kTimeLimit:
       return "TIME_LIMIT";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

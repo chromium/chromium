@@ -282,7 +282,7 @@ public class CronetHttpURLConnectionTest {
         // callback when message loop is running, thus only knows
         // about the error when it starts to read response.
         IOException e = assertThrows(IOException.class, secondConnection::getResponseCode);
-        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        // TODO(crbug.com/40286644): Consider whether we should be checking this in the first place.
         if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
             assertThat(e).isInstanceOf(CronetException.class);
         }
@@ -309,7 +309,7 @@ public class CronetHttpURLConnectionTest {
         // callback when message loop is running, thus only knows
         // about the error when it starts to read response.
         IOException e = assertThrows(IOException.class, mUrlConnection::getResponseCode);
-        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        // TODO(crbug.com/40286644): Consider whether we should be checking this in the first place.
         if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
             assertThat(e).isInstanceOf(CronetException.class);
         }
@@ -331,7 +331,7 @@ public class CronetHttpURLConnectionTest {
         // callback when message loop is running, thus only knows
         // about the error when it starts to read response.
         IOException e = assertThrows(IOException.class, mUrlConnection::getResponseCode);
-        // TODO(crbug.com/1495774): Consider whether we should be checking this in the first place.
+        // TODO(crbug.com/40286644): Consider whether we should be checking this in the first place.
         if (mTestRule.implementationUnderTest().equals(CronetImplementation.STATICALLY_LINKED)) {
             assertThat(e).isInstanceOf(CronetException.class);
         }
@@ -708,7 +708,7 @@ public class CronetHttpURLConnectionTest {
         // Read one byte and disconnect.
         assertThat(in.read()).isNotEqualTo(1);
         mUrlConnection.disconnect();
-        // TODO(crbug/1453579): This might be racy
+        // TODO(crbug.com/40916513): This might be racy
         // Continue reading, and make sure the message loop will not block and the connection is
         // disconnected before EOF, since the response body is big.
         IOException e =

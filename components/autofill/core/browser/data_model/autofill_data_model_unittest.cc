@@ -6,15 +6,12 @@
 
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/test_autofill_data_model.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,42 +19,36 @@ namespace autofill {
 
 namespace {
 
-const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
+// Tests that when recording a use, the last, second to last, etc. use dates are
+// updated correctly.
+TEST(AutofillDataModelTest, RecordUseDate) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList feature{
+      features::kAutofillTrackMultipleUseDates};
 
-}  // namespace
+  // Data model creation counts as a use.
+  TestAutofillDataModel model(/*usage_history_size=*/3);
+  EXPECT_EQ(model.use_date(1), base::Time::Now());
+  EXPECT_FALSE(model.use_date(2).has_value());
+  EXPECT_FALSE(model.use_date(3).has_value());
 
-TEST(AutofillDataModelTest, GetMetadata) {
-  TestAutofillDataModel model;
-  model.set_use_count(10);
-  model.set_use_date(kArbitraryTime);
+  // Recording a use should propagate the change.
+  task_environment.FastForwardBy(base::Seconds(123));
+  base::Time old_last_use_date = model.use_date();
+  model.RecordUseDate(base::Time::Now());
+  EXPECT_EQ(model.use_date(1), base::Time::Now());
+  EXPECT_EQ(model.use_date(2), old_last_use_date);
+  EXPECT_FALSE(model.use_date(3).has_value());
 
-  AutofillMetadata metadata = model.GetMetadata();
-  EXPECT_EQ(model.use_count(), metadata.use_count);
-  EXPECT_EQ(model.use_date(), metadata.use_date);
-}
-
-TEST(AutofillDataModelTest, SetMetadata) {
-  AutofillMetadata metadata;
-  metadata.use_count = 10;
-  metadata.use_date = kArbitraryTime;
-
-  TestAutofillDataModel model;
-  EXPECT_TRUE(model.SetMetadata(metadata));
-  EXPECT_EQ(metadata.use_count, model.use_count());
-  EXPECT_EQ(metadata.use_date, model.use_date());
-}
-
-TEST(AutofillDataModelTest, IsDeletable) {
-  TestAutofillDataModel model;
-  model.set_use_date(kArbitraryTime);
-
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
-  EXPECT_FALSE(model.IsDeletable());
-
-  test_clock.SetNow(kArbitraryTime + kDisusedDataModelDeletionTimeDelta +
-                    base::Days(1));
-  EXPECT_TRUE(model.IsDeletable());
+  // Record a second use.
+  task_environment.FastForwardBy(base::Seconds(234));
+  old_last_use_date = model.use_date();
+  base::Time old_second_last_use_date = *model.use_date(2);
+  model.RecordUseDate(base::Time::Now());
+  EXPECT_EQ(model.use_date(1), base::Time::Now());
+  EXPECT_EQ(model.use_date(2), old_last_use_date);
+  EXPECT_EQ(model.use_date(3), old_second_last_use_date);
 }
 
 enum Expectation { GREATER, LESS };
@@ -109,5 +100,68 @@ INSTANTIATE_TEST_SUITE_P(
         // a while (model_a).
         AutofillDataModelRankingTestCase{300, now - base::Days(15), 10,
                                          now - base::Days(1), LESS}));
+
+// Tests that when merging two models, the use dates are merged correctly.
+struct UseDateMergeTestCase {
+  // Describes how long ago the last, second last and third last uses occurred,
+  // respectively. Nullopt indicate that the model hasn't been used this often.
+  using UsageHistory = std::array<std::optional<base::TimeDelta>, 3>;
+  const UsageHistory usage_history_a;
+  const UsageHistory usage_history_b;
+  const UsageHistory expected_merged_use_history;
+};
+class UseDateMergeTest : public testing::TestWithParam<UseDateMergeTestCase> {
+ public:
+  TestAutofillDataModel ModelFromUsageHistory(
+      const UseDateMergeTestCase::UsageHistory& usage_history) {
+    TestAutofillDataModel model(/*usage_history_size=*/3);
+    for (int i = 0; i < 3; i++) {
+      if (usage_history[i]) {
+        model.set_use_date(base::Time::Now() - *usage_history[i], i + 1);
+      }
+    }
+    return model;
+  }
+
+ private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList feature_{
+      features::kAutofillTrackMultipleUseDates};
+};
+
+TEST_P(UseDateMergeTest, MergeUseDates) {
+  const UseDateMergeTestCase& test = GetParam();
+  TestAutofillDataModel a = ModelFromUsageHistory(test.usage_history_a);
+  const TestAutofillDataModel b = ModelFromUsageHistory(test.usage_history_b);
+  const TestAutofillDataModel expected_merged_profile =
+      ModelFromUsageHistory(test.expected_merged_use_history);
+
+  ASSERT_EQ(a.usage_history_size(), 3u);
+  a.MergeUseDates(b);
+  EXPECT_EQ(a.use_date(1), expected_merged_profile.use_date(1));
+  EXPECT_EQ(a.use_date(2), expected_merged_profile.use_date(2));
+  EXPECT_EQ(a.use_date(3), expected_merged_profile.use_date(3));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillDataModelTest,
+    UseDateMergeTest,
+    testing::Values(
+        // No second/third use date set: Expect that the more recent use date
+        // becomes the use date and the other use date the second use date.
+        UseDateMergeTestCase{{base::Days(1)},
+                             {base::Days(2)},
+                             {base::Days(1), base::Days(2)}},
+        UseDateMergeTestCase{{base::Days(2)},
+                             {base::Days(1)},
+                             {base::Days(1), base::Days(2)}},
+        // At least three use dates are set: Expect that the second and third
+        // use date of the merged profile are populated.
+        UseDateMergeTestCase{{base::Days(1), base::Days(3), base::Days(5)},
+                             {base::Days(2), base::Days(4), base::Days(6)},
+                             {base::Days(1), base::Days(2), base::Days(3)}}));
+
+}  // namespace
 
 }  // namespace autofill

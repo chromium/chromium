@@ -15,7 +15,7 @@ MockMirroringActivity::MockMirroringActivity(
                         app_id,
                         nullptr,
                         nullptr,
-                        0,
+                        content::FrameTreeNodeId(),
                         CastSinkExtraData(),
                         std::move(on_stop),
                         std::move(on_source_changed)) {}

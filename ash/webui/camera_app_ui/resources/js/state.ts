@@ -14,10 +14,16 @@ import {AssertNever, CheckEnumValuesOverlap} from './type_utils.js';
 
 export enum State {
   CAMERA_CONFIGURING = 'camera-configuring',
+  // Disables resolution filter for video steams for tests that relies on all
+  // resolutions being available.
+  DISABLE_VIDEO_RESOLUTION_FILTER_FOR_TESTING =
+      'disable-video-resolution-filter-for-testing',
   DOC_MODE_REVIEWING = 'doc-mode-reviewing',
   ENABLE_GIF_RECORDING = 'enable-gif-recording',
+  ENABLE_PREVIEW_OCR = 'enable-preview-ocr',
   ENABLE_PTZ = 'enable-ptz',
   ENABLE_SCAN_BARCODE = 'enable-scan-barcode',
+  ENABLE_SCAN_DOCUMENT = 'enable-scan-document',
   FPS_30 = 'fps-30',
   FPS_60 = 'fps-60',
   GRID = 'grid',
@@ -26,8 +32,6 @@ export enum State {
   GRID_4x4 = 'grid-4x4',
   /* eslint-enable @typescript-eslint/naming-convention */
   GRID_GOLDEN = 'grid-golden',
-  HAS_BACK_CAMERA = 'has-back-camera',
-  HAS_FRONT_CAMERA = 'has-front-camera',
   HAS_PAN_SUPPORT = 'has-pan-support',
   HAS_TILT_SUPPORT = 'has-tilt-support',
   HAS_ZOOM_SUPPORT = 'has-zoom-support',
@@ -36,11 +40,11 @@ export enum State {
   HIDE_FLOATING_UI_FOR_TESTING = 'hide-floating-ui-for-testing',
   INTENT = 'intent',
   KEYBOARD_NAVIGATION = 'keyboard-navigation',
+  LID_CLOSED = 'lid_closed',
   MAX_WND = 'max-wnd',
   MIC = 'mic',
   MIRROR = 'mirror',
   MULTI_CAMERA = 'multi-camera',
-  PLAYING_RESULT_VIDEO = 'playing-result-video',
   RECORD_TYPE_GIF = 'record-type-gif',
   RECORD_TYPE_NORMAL = 'record-type-normal',
   RECORD_TYPE_TIME_LAPSE = 'record-type-time-lapse',
@@ -51,11 +55,11 @@ export enum State {
   // Controls appearance of paused/resumed UI.
   RECORDING_UI_PAUSED = 'recording-ui-paused',
   SHOULD_HANDLE_INTENT_RESULT = 'should-handle-intent-result',
-  SHOW_GIF_RECORDING_OPTION = 'show-gif-recording-option',
-  SHUTTER_PROGRESSING = 'shutter-progressing',
   SNAPSHOTTING = 'snapshotting',
   STREAMING = 'streaming',
+  SUPER_RES_ZOOM = 'super-res-zoom',
   SUSPEND = 'suspend',
+  SW_PRIVACY_SWITCH_ON = 'sw-privacy-switch-on',
   TABLET = 'tablet',
   TABLET_LANDSCAPE = 'tablet-landscape',
   TAKING = 'taking',
@@ -63,6 +67,7 @@ export enum State {
   TIMER = 'timer',
   TIMER_10SEC = 'timer-10s',
   TIMER_3SEC = 'timer-3s',
+  TIMER_TICK = 'timer-tick',
   USE_FAKE_CAMERA = 'use-fake-camera',
 }
 

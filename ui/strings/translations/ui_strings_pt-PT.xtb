@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Inquérito</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">A verificar a sua ligação à Internet...</translation>
+<translation id="2359808026110333948">Continuar</translation>
 <translation id="2388990488038464401">Quer ligar para este número a partir do seu telemóvel?</translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
 <translation id="24452542372838207">Expandir notificação</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">NOVO</translation>
 <translation id="2666092431469916601">Parte superior</translation>
 <translation id="2701330563083355633">Partilhado a partir do <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Novo</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Há 1 ano}other{Há # anos}}</translation>
 <translation id="2878511608894704031">Eliminar tudo</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{em 1 d.}other{em # d.}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">Sistema <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Retrocesso</translation>
 <translation id="5613020302032141669">Seta para a esquerda</translation>
+<translation id="5633029987065897167">Vazio</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Ativo hoje}=1{Ativo há 1 dia}other{Ativo há # dias}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dia e  }other{# dias e  }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">Conteúdo RTF</translation>
 <translation id="6539092367496845964">Ocorreu um erro. Tente mais tarde.</translation>
 <translation id="654149438358937226">Bloquear todas as notificações</translation>
-<translation id="6612467943526193239">Para sair da calibração, prima Esc.</translation>
 <translation id="6620110761915583480">Guardar ficheiro</translation>
 <translation id="6699343763173986273">Faixa seguinte de multimédia</translation>
 <translation id="6808150112686056157">Parar multimédia</translation>

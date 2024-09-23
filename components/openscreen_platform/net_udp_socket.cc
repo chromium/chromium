@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/openscreen_platform/net_udp_socket.h"
 
 #include <algorithm>
@@ -163,8 +168,7 @@ void NetUdpSocket::JoinMulticastGroup(
   }
 }
 
-void NetUdpSocket::SendMessage(const void* data,
-                               size_t length,
+void NetUdpSocket::SendMessage(openscreen::ByteView data,
                                const openscreen::IPEndpoint& dest) {
   DVLOG(3) << __func__;
 
@@ -174,11 +178,11 @@ void NetUdpSocket::SendMessage(const void* data,
     return;
   }
 
-  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(length);
-  memcpy(buffer->data(), data, length);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(data.size());
+  memcpy(buffer->data(), data.data(), data.size());
 
   const int result = udp_socket_.SendTo(
-      buffer.get(), length, openscreen_platform::ToNetEndPoint(dest),
+      buffer.get(), data.size(), openscreen_platform::ToNetEndPoint(dest),
       base::BindOnce(&NetUdpSocket::OnSendToCompleted, base::Unretained(this)));
   send_pending_ = true;
 

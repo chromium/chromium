@@ -1,0 +1,85 @@
+This is a testharness.js-based test.
+[FAIL] conv2d default + relu
+  assert_true: assert_array_approx_equals_ulp: test conv2d relu float32 actual 1.53125 should be close enough to expected 1.5323282480239868 by the acceptable 18 ULP distance, but they have 9045 ULP distance expected true got false
+[FAIL] reshape + conv2d default/ float16
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] conv2d default + sigmoid
+  assert_true: assert_array_approx_equals_ulp: test conv2d sigmoid float32 actual 0.82177734375 should be close enough to expected 0.8223466873168945 by the acceptable 52 ULP distance, but they have 9552 ULP distance expected true got false
+[FAIL] conv2d default + clamp
+  assert_true: assert_array_approx_equals_ulp: test conv2d clamp float32 actual 1.53125 should be close enough to expected 1.5323282480239868 by the acceptable 18 ULP distance, but they have 9045 ULP distance expected true got false
+[FAIL] conv2d default + leakyRelu
+  assert_true: assert_array_approx_equals_ulp: test conv2d leakyRelu float32 actual 1.53125 should be close enough to expected 1.5323282480239868 by the acceptable 19 ULP distance, but they have 9045 ULP distance expected true got false
+[FAIL] conv2d default + elu
+  assert_true: assert_array_approx_equals_ulp: test conv2d elu float32 actual 1.53125 should be close enough to expected 1.5323282480239868 by the acceptable 36 ULP distance, but they have 9045 ULP distance expected true got false
+[FAIL] conv2d default + prelu
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] conv2d default + hardSwish
+  assert_true: assert_array_approx_equals_ulp: test conv2d hardSwish float32 actual 1.1552734375 should be close enough to expected 1.157502485501543 by the acceptable 22 ULP distance, but they have 18699 ULP distance expected true got false
+[FAIL] conv2d default + gelu
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] conv2d default + hardSigmoid
+  assert_true: assert_array_approx_equals_ulp: test conv2d hardSigmoid float32 actual 0.80615234375 should be close enough to expected 0.8064656598030677 by the acceptable 20 ULP distance, but they have 5257 ULP distance expected true got false
+[FAIL] conv2d default + linear
+  assert_true: assert_array_approx_equals_ulp: test conv2d linear float32 actual 1.53125 should be close enough to expected 1.5323282480239868 by the acceptable 20 ULP distance, but they have 9045 ULP distance expected true got false
+[FAIL] conv2d default + softplus
+  assert_true: assert_array_approx_equals_ulp: test conv2d softplus float32 actual 1.7265625 should be close enough to expected 1.727921485900879 by the acceptable 36 ULP distance, but they have 11400 ULP distance expected true got false
+[FAIL] conv2d default + softsign
+  assert_true: assert_array_approx_equals_ulp: test conv2d softsign float32 actual 0.6044921875 should be close enough to expected 0.6051064941347312 by the acceptable 21 ULP distance, but they have 10306 ULP distance expected true got false
+[FAIL] convTranspose2d default + relu
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] convTranspose2d default + leakyRelu
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] convTranspose2d default + sigmoid
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] convTranspose2d default + softplus
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] convTranspose2d default + clamp
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] convTranspose2d default + elu
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] convTranspose2d default + gelu
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
+[FAIL] convTranspose2d default + hardSigmoid
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] convTranspose2d default + hardSwish
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] convTranspose2d default + linear
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] convTranspose2d default + prelu
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] convTranspose2d default + softsign
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] batchNormalization default + relu
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization default + leakyRelu
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization default + sigmoid
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization default + clamp
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization default + prelu
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] batchNormalization default + elu
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization options.axis=0 + gelu
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
+[FAIL] batchNormalization default + hardSigmoid
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization default + hardSwish
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization default + linear
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] batchNormalization options.axis=0 + softplus
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
+[FAIL] batchNormalization default + softsign
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
+[FAIL] conv2d with options.inputLayout='nchw' + softmax
+  assert_true: assert_array_approx_equals_ulp: test conv2d softmax float32 actual 0.33315548300743103 should be close enough to expected 0.3331032991409302 by the acceptable 20 ULP distance, but they have 1751 ULP distance expected true got false
+[FAIL] convTranspose2d default + softmax
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] convTranspose2d with options.inputLayout=nchw + softmax
+  assert_true: assert_array_approx_equals_ulp: test convTranspose2d softmax float32 actual 0.4983367919921875 should be close enough to expected 0.49833576343872565 by the acceptable 27 ULP distance, but they have 35 ULP distance expected true got false
+[FAIL] batchNormalization options.axis=0  + softmax
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
+Harness: the test ran to completion.
+

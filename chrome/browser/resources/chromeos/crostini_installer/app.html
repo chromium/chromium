@@ -109,6 +109,7 @@
       <div id="configure-message-title">$i18n{configureMessage}</div>
       <cr-input label="$i18n{usernameLabel}" id="username" type="text"
           value="{{username_}}" maxlength="[[MAX_USERNAME_LENGTH]]"
+          spellcheck="false"
           invalid="[[!eq_(usernameError_, '')]]"
           error-message="[[usernameError_]]">
       </cr-input>
@@ -163,7 +164,7 @@
       <paper-progress class="progress-bar" indeterminate></paper-progress>
     </div>
   </div>
-  <!-- TODO(crbug.com/1043067): Should show an error image for state "error".
+  <!-- TODO(crbug.com/40668830): Should show an error image for state "error".
       -->
   <img id="img-linux-illustration" src="images/linux_illustration.png" alt=""
       hidden="[[eq_(state_, State.CONFIGURE)]]">

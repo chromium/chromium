@@ -75,13 +75,11 @@ class TestMediaSource {
   void SetSequenceMode(bool sequence_mode);
   void AppendData(size_t size);
   bool AppendAtTime(base::TimeDelta timestamp_offset,
-                    const uint8_t* pData,
-                    int size);
+                    base::span<const uint8_t> data);
   void AppendAtTimeWithWindow(base::TimeDelta timestamp_offset,
                               base::TimeDelta append_window_start,
                               base::TimeDelta append_window_end,
-                              const uint8_t* pData,
-                              int size);
+                              base::span<const uint8_t> data);
   void SetMemoryLimits(size_t limit_bytes);
   bool EvictCodedFrames(base::TimeDelta currentMediaTime, size_t newDataSize);
   void RemoveRange(base::TimeDelta start, base::TimeDelta end);

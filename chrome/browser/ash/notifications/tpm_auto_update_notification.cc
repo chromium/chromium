@@ -32,7 +32,7 @@ void ShowAutoUpdateNotification(
 
   switch (notification_type) {
     case TpmAutoUpdateUserNotification::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case TpmAutoUpdateUserNotification::kPlanned:
       title = l10n_util::GetStringUTF16(

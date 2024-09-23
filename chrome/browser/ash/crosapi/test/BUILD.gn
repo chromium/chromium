@@ -1,0 +1,54 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("test") {
+  testonly = true
+
+  sources = [
+    "crosapi_test_base.cc",
+    "crosapi_test_base.h",
+    "file_manager_ash_crosapitest.cc",
+    "network_change_ash_crosapitest.cc",
+  ]
+
+  deps = [
+    ":ash_crosapi_tests_runner",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/crosapi/cpp:crosapi_constants",
+    "//chromeos/crosapi/mojom",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+    "//testing/gtest",
+  ]
+}
+
+static_library("ash_crosapi_tests_runner") {
+  testonly = true
+
+  sources = [
+    "ash_crosapi_tests_env.cc",
+    "ash_crosapi_tests_env.h",
+    "ash_crosapi_tests_main.cc",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/common",
+    "//chromeos/crosapi/mojom",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//ui/gl",
+  ]
+}

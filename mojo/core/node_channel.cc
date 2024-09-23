@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "mojo/core/node_channel.h"
 
 #include <cstring>
@@ -52,6 +57,8 @@ enum class MessageType : uint32_t {
 struct alignas(8) Header {
   MessageType type;
 };
+
+static_assert(sizeof(Header) == kNodeChannelHeaderSize);
 
 static_assert(IsAlignedForChannelMessage(sizeof(Header)),
               "Invalid header size.");
@@ -507,7 +514,7 @@ void NodeChannel::RelayEventMessage(const ports::NodeName& destination,
   // will leak, but that means something else has probably broken and the
   // sending process won't likely be around much longer.
   //
-  // TODO(https://crbug.com/813112): We would like to be able to violate the
+  // TODO(crbug.com/40563346): We would like to be able to violate the
   // above stated assumption. We should not leak handles in cases where we
   // outlive the broker, as we may continue existing and eventually accept a new
   // broker invitation.

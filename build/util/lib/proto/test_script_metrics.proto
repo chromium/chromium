@@ -1,0 +1,42 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package build.util.lib.proto;
+
+import "google/protobuf/timestamp.proto";
+
+// Stored under the field "extended_properties" with key "test_script_metrics"
+// in luci.resultdb.v1.Invocation message
+// Usually clients do not need to use this protobuf directly, instead, the
+// helpers in the build/util/lib/proto can help.
+
+// As a repeated message cannot fit directly into a google.protobuf.Struct,
+// Use "TestScriptMetrics" message as a wrap.
+message TestScriptMetrics {
+  repeated TestScriptMetric metrics = 1;
+}
+
+message TestScriptMetric {
+  string name = 1;
+
+  message DataPoint {
+    double value = 1;
+    google.protobuf.Timestamp timestamp = 2;
+  }
+
+  message DataPoints {
+    repeated DataPoint points = 1;
+  }
+
+  oneof OneOf {
+    // Usually it's preferred to aggregate the data before sending it out. Try
+    // various types of data aggregators in build/util/lib/proto.
+    double value = 2;
+    // A way to record all the data points in raw format. It's very expensive,
+    // and should be used with cautions.
+    DataPoints points = 3;
+  }
+}

@@ -20,7 +20,7 @@ extern const base::FilePath::CharType kDesktopBinaryName[];
 
 // Message pipe ID used for ChromotingHostServices. Currently only used on
 // Linux.
-// TODO(crbug.com/1378803): Make Windows hosts work with non-isolated
+// TODO(crbug.com/40244097): Make Windows hosts work with non-isolated
 // connections.
 extern const uint64_t kChromotingHostServicesMessagePipeId;
 

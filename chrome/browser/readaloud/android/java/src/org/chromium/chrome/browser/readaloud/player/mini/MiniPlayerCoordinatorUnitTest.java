@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewStub;
 
 import org.junit.Before;
@@ -27,13 +29,17 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayerJni;
+import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
+import org.chromium.chrome.browser.user_education.IPHCommand;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -51,11 +57,15 @@ public class MiniPlayerCoordinatorUnitTest {
     @Mock private Context mContextForInflation;
     @Mock private LayoutInflater mLayoutInflater;
     @Mock private ViewStub mViewStub;
-    @Mock private BrowserControlsSizer mBrowserControlsSizer;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private LayoutManager mLayoutManager;
     @Mock private MiniPlayerLayout mLayout;
     @Mock private MiniPlayerMediator mMediator;
     @Mock private ReadAloudMiniPlayerSceneLayer mSceneLayer;
+    @Mock private PlayerCoordinator mPlayerCoordinator;
+    @Mock private UserEducationHelper mUserEducationHelper;
+    @Mock private View mView;
     private PropertyModel mSharedModel;
     private PropertyModel mModel;
 
@@ -74,9 +84,17 @@ public class MiniPlayerCoordinatorUnitTest {
         mJniMocker.mock(ReadAloudMiniPlayerSceneLayerJni.TEST_HOOKS, mSceneLayerNativeMock);
         doReturn(123456789L).when(mSceneLayerNativeMock).init(any());
         doReturn(mModel).when(mMediator).getModel();
+        doReturn(mBrowserControlsStateProvider).when(mBottomControlsStacker).getBrowserControls();
         mCoordinator =
                 new MiniPlayerCoordinator(
-                        mSharedModel, mMediator, mLayout, mSceneLayer, mLayoutManager);
+                        mContextForInflation,
+                        mSharedModel,
+                        mMediator,
+                        mLayout,
+                        mSceneLayer,
+                        mLayoutManager,
+                        mPlayerCoordinator,
+                        mUserEducationHelper);
     }
 
     @Test
@@ -89,8 +107,10 @@ public class MiniPlayerCoordinatorUnitTest {
                         mActivity,
                         mContextForInflation,
                         mSharedModel,
-                        mBrowserControlsSizer,
-                        mLayoutManager);
+                        mBottomControlsStacker,
+                        mLayoutManager,
+                        mPlayerCoordinator,
+                        mUserEducationHelper);
         verify(mViewStub).inflate();
         verify(mLayoutManager).addSceneOverlay(eq(mSceneLayer));
     }
@@ -104,6 +124,16 @@ public class MiniPlayerCoordinatorUnitTest {
         reset(mViewStub);
         mCoordinator.show(/* animate= */ false);
         verify(mMediator, times(2)).show(eq(false));
+    }
+
+    @Test
+    public void testOnShown_requestingIPH() {
+        // if there's no container to anchor IPH against, don't request it.
+        mCoordinator.onShown(/*container*/ null);
+        verify(mUserEducationHelper, never()).requestShowIPH(any(IPHCommand.class));
+
+        mCoordinator.onShown(mView);
+        verify(mUserEducationHelper).requestShowIPH(any(IPHCommand.class));
     }
 
     @Test
@@ -145,5 +175,12 @@ public class MiniPlayerCoordinatorUnitTest {
         mCoordinator.show(/* animate= */ true);
         mSharedModel.set(PlayerProperties.PROGRESS, 0.5f);
         verify(mLayout).setProgress(eq(0.5f));
+    }
+
+    @Test
+    public void testBindYOffset() {
+        mCoordinator.show(/* animate= */ true);
+        mModel.set(Properties.Y_OFFSET, -100);
+        verify(mLayout).setYOffset(eq(-100));
     }
 }

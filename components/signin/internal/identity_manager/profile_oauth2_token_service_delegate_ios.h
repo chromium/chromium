@@ -43,18 +43,7 @@ class ProfileOAuth2TokenServiceIOSDelegate
 
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
 
-  void LoadCredentials(const CoreAccountId& primary_account_id,
-                       bool is_syncing) override;
   std::vector<CoreAccountId> GetAccounts() const override;
-
-  // This method should not be called when using shared authentication.
-  void UpdateCredentials(const CoreAccountId& account_id,
-                         const std::string& refresh_token) override;
-
-  // Removes all credentials from this instance of |ProfileOAuth2TokenService|,
-  // however, it does not revoke the identities from the device.
-  // Subsequent calls to |RefreshTokenIsAvailable| will return |false|.
-  void RevokeAllCredentials() override;
 
   void ReloadAllAccountsFromSystemWithPrimaryAccount(
       const std::optional<CoreAccountId>& primary_account_id) override;
@@ -72,6 +61,18 @@ class ProfileOAuth2TokenServiceIOSDelegate
 
  private:
   friend class ProfileOAuth2TokenServiceIOSDelegateTest;
+
+  // ProfileOAuth2TokenServiceDelegate implementation:
+  void LoadCredentialsInternal(const CoreAccountId& primary_account_id,
+                               bool is_syncing) override;
+  // This method should not be called when using shared authentication.
+  void UpdateCredentialsInternal(const CoreAccountId& account_id,
+                                 const std::string& refresh_token) override;
+  // Removes all credentials from this instance of |ProfileOAuth2TokenService|,
+  // however, it does not revoke the identities from the device.
+  // Subsequent calls to |RefreshTokenIsAvailable| will return |false|.
+  void RevokeAllCredentialsInternal(
+      signin_metrics::SourceForRefreshTokenOperation source) override;
 
   // Reloads accounts from the provider. Fires |OnRefreshTokenAvailable| for
   // each new account. Fires |OnRefreshTokenRevoked| for each account that was

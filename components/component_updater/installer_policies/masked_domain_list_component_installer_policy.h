@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 
 namespace base {
 class FilePath;
@@ -32,7 +34,7 @@ class MaskedDomainListComponentInstallerPolicy
  public:
   using ListReadyRepeatingCallback =
       base::RepeatingCallback<void(base::Version,
-                                   const std::optional<std::string>&)>;
+                                   std::optional<mojo_base::ProtoWrapper>)>;
 
   // |on_list_ready| will be called on the UI thread when the list is ready. It
   // is exposed here for testing.

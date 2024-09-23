@@ -83,9 +83,16 @@ class ViewsTestBase : public PlatformTest {
   // CreateParamsForTestWidget() and thus by CreateTestWidget(), and may also be
   // used directly.  The default implementation sets the context to
   // GetContext().
-  virtual Widget::InitParams CreateParams(Widget::InitParams::Type type);
+  virtual Widget::InitParams CreateParams(
+      Widget::InitParams::Ownership ownership,
+      Widget::InitParams::Type type);
+
+  // TODO(crbug.com/339619005): Remove once all uses are explicitly specifying
+  // Widget ownership.
+  Widget::InitParams CreateParams(Widget::InitParams::Type type);
 
   virtual std::unique_ptr<Widget> CreateTestWidget(
+      Widget::InitParams::Ownership ownership,
       Widget::InitParams::Type type =
           Widget::InitParams::TYPE_WINDOW_FRAMELESS);
 
@@ -154,8 +161,15 @@ class ViewsTestBase : public PlatformTest {
 
   // Constructs the params for CreateTestWidget().
   Widget::InitParams CreateParamsForTestWidget(
-      Widget::InitParams::Type type =
-          Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      views::Widget::InitParams::Ownership ownership,
+      views::Widget::InitParams::Type type =
+          views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+
+  // TODO(crbug.com/339619005): Remove once all uses are explicitly specifying
+  // Widget ownership.
+  Widget::InitParams CreateParamsForTestWidget(
+      views::Widget::InitParams::Type type =
+          views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
 
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;

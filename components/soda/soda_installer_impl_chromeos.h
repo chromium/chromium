@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SODA_SODA_INSTALLER_IMPL_CHROMEOS_H_
 #define COMPONENTS_SODA_SODA_INSTALLER_IMPL_CHROMEOS_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -40,6 +42,9 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
   void UninstallLanguage(const std::string& language,
                          PrefService* global_prefs) override;
   std::vector<std::string> GetAvailableLanguages() const override;
+  std::vector<std::string> GetLiveCaptionEnabledLanguages() const override;
+  std::string GetLanguageDlcNameForLocale(
+      const std::string& locale) const override;
 
  private:
   // SodaInstaller:
@@ -55,12 +60,17 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
   void SetSodaBinaryPath(base::FilePath new_path);
   void SetLanguagePath(const LanguageCode language, base::FilePath new_path);
 
+  // Initializes language and installs the per-language components.
+  void InitLanguages(PrefService* profile_prefs,
+                     PrefService* global_prefs) override;
+
   // These functions are the InstallCallbacks for DlcserviceClient::Install().
   void OnSodaInstalled(
       const base::Time start_time,
       const ash::DlcserviceClient::InstallResult& install_result);
   void OnLanguageInstalled(
       const LanguageCode language_code,
+      const std::string language_name,
       const base::Time start_time,
       const ash::DlcserviceClient::InstallResult& install_result);
 
@@ -71,7 +81,7 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
   void OnSodaCombinedProgress();
 
   // This is the UninstallCallback for DlcserviceClient::Uninstall().
-  void OnDlcUninstalled(const std::string& dlc_id, const std::string& err);
+  void OnDlcUninstalled(std::string_view dlc_id, std::string_view err);
 
   double soda_progress_ = 0.0;
 

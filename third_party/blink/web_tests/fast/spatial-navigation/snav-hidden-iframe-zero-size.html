@@ -1,51 +1,25 @@
-<html>
-  <head>
-    <script src="../../resources/js-test.js"></script>
-    <script src="resources/spatial-navigation-utils.js"></script>
-    <script type="application/javascript">
-
-    var resultMap = [
-      ["Down", "end"],
-      ["DONE", "DONE"]
-    ];
-
-    if (window.testRunner) {
-      testRunner.dumpAsText();
-      testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
-      testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
-      testRunner.waitUntilDone();
-    }
-
-    function runTest()
-    {
-      // starting the test itself: get to a known place.
-      document.getElementById("start").focus();
-
-      initTest(resultMap, testCompleted);
-    }
-
-    function testCompleted()
-    {
-      if (window.testRunner)
-        testRunner.notifyDone();
-    }
-
-    window.onload = runTest;
-
-    </script>
-  </head>
-
-  <body id="some-content" xmlns="http://www.w3.org/1999/xhtml">
-      <p>This is <a id="start" href="a">link_1</a>.</p>
-       <br>This is <iframe id="1" width=0 height=0  srcdoc="
-        <body>
-          <a id='11' href='http://a'>b</a>
-          <a id='12' href='http://a'>c</a>
-          <a id='13' href='http://a'>d</a>
-        </body>
-        "></iframe><br> an iframe with size 0.<br>
-     <p>This is <a id="end" href="a">link_2</a>.</p>
-    <div id="console"></div>
-    <p>This test is to test that an iframe with size 0 does not get focus, and neither do its descendants.
+<!DOCTYPE html>
+<p>This is <a id="start" href="a">link_1</a>.</p>
+  <br>This is <iframe id="1" width=0 height=0 srcdoc="
+  <body>
+    <a id='11' href='http://a'>b</a>
+    <a id='12' href='http://a'>c</a>
+    <a id='13' href='http://a'>d</a>
   </body>
-</html>
+  "></iframe><br> an iframe with size 0.<br>
+<p>This is <a id="end" href="a">link_2</a>.</p>
+<br>
+<p>This test is to test that an iframe with size 0 does not get focus, and neither do its descendants.</p>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Down", "end"]
+  ];
+
+  // Start at a known place.
+  document.getElementById("start").focus();
+  snav.assertFocusMoves(resultMap);
+</script>

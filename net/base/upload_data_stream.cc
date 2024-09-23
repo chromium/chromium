@@ -83,6 +83,9 @@ int UploadDataStream::Read(IOBuffer* buf,
     DCHECK(!IsInMemory());
     callback_ = std::move(callback);
   } else {
+    if (result < ERR_IO_PENDING) {
+      LOG(ERROR) << "ReadInternal failed with Error: " << result;
+    }
     OnReadCompleted(result);
   }
 

@@ -55,16 +55,25 @@ struct WebPrintParams {
   // Specifies the scale factor.
   float scale_factor = 1.0f;
 
+  // This will be set when the margins provided should be preserved, and not be
+  // overridden by @page margin declarations.
+  bool ignore_css_margins = false;
+
+  // This will be set when the page size provided should be preserved, and not
+  // be overridden by @page size declarations. Regardless of this setting,
+  // though, landscape / portrait will still be honored.
+  bool ignore_page_size = false;
+
   // Specifies whether to print PDFs as image.
   bool rasterize_pdf = false;
 
   // Specifies whether to reduce/enlarge/retain the print contents to fit the
-  // printable area. (This is used only by plugin printing).
+  // printable area.
   printing::mojom::PrintScalingOption print_scaling_option =
       printing::mojom::PrintScalingOption::kFitToPrintableArea;
 
-  // Specifies whether printing layout needs to be applied.
-  bool use_printing_layout = true;
+  // Specifies whether paginated layout needs to be applied.
+  bool use_paginated_layout = true;
 
   // Specifies how many pages per sheet. This parameter is for N-up mode.
   size_t pages_per_sheet = 1;
@@ -74,11 +83,11 @@ struct WebPrintParams {
   explicit WebPrintParams(const gfx::SizeF& paper_size)
       : WebPrintParams(paper_size, true) {}
 
-  WebPrintParams(const gfx::SizeF& paper_size, bool use_printing_layout)
+  WebPrintParams(const gfx::SizeF& paper_size, bool use_paginated_layout)
       : printable_area_in_css_pixels(paper_size),
         default_page_description(paper_size),
         print_scaling_option(printing::mojom::PrintScalingOption::kSourceSize),
-        use_printing_layout(use_printing_layout) {}
+        use_paginated_layout(use_paginated_layout) {}
 };
 
 }  // namespace blink

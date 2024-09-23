@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
@@ -18,25 +18,30 @@ import logging
 import multiprocessing
 import os
 import shutil
+import socketserver
 import sys
 
-# Python 3 moved these.
-try:
-  import SimpleHTTPServer as server
-  import SocketServer as socketserver
-except ModuleNotFoundError:
-  from http import server
-  import socketserver
+from http import server
 
 _SRC_PATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 
 sys.path.append(os.path.join(_SRC_PATH, 'tools', 'cygprofile'))
-import cyglog_to_orderfile
 import symbol_extractor
 
 _PAGE_SIZE = 1 << 12
 _PAGE_MASK = ~(_PAGE_SIZE - 1)
+
+
+def _GetObjectFilenames(obj_dir):
+  """Returns all a list of .o files in a given directory tree."""
+  obj_files = []
+  # Scan _obj_dir recursively for .o files.
+  for (dirpath, _, filenames) in os.walk(obj_dir):
+    for file_name in filenames:
+      if file_name.endswith('.o'):
+        obj_files.append(os.path.join(dirpath, file_name))
+  return obj_files
 
 
 def _GetSymbolNameToFilename(build_directory):
@@ -54,7 +59,7 @@ def _GetSymbolNameToFilename(build_directory):
   """
   symbol_extractor.CheckLlvmNmExists()
   path = os.path.join(build_directory, 'obj')
-  object_filenames = cyglog_to_orderfile.GetObjectFilenames(path)
+  object_filenames = _GetObjectFilenames(path)
   pool = multiprocessing.Pool()
   symbol_names_filename = zip(
       pool.map(symbol_extractor.SymbolNamesFromLlvmBitcodeFile,

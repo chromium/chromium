@@ -32,20 +32,28 @@
 <translation id="2175927920773552910">ລະຫັດ QR</translation>
 <translation id="2244252133441425811">ເປີດການນຳໃຊ້ຕົວເລືອກ FPS ວິດີໂອ</translation>
 <translation id="2271433936731426666">ເປີດການນຳໃຊ້ສະແນັບຊັອດວິດີໂອຂະໜາດເຕັມ</translation>
+<translation id="2281736597583450397">ຮັບລາຍລະອຽດທີ່ຄົມຊັດຂຶ້ນດ້ວຍການຊູມທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ</translation>
 <translation id="2320741269052147773">ເລືອນໄປຊ້າຍ</translation>
+<translation id="2360840973209616515">ແອັບກ້ອງຖ່າຍຮູບຖືກຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.
+        ສຳລັບລາຍລະອຽດ, ໃຫ້ຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບ.</translation>
+<translation id="2442754296994859145">ສຳເນົາເພື່ອຢັ້ງຢືນເນື້ອຫາ ຫຼື ຂະຫຍາຍເພື່ອຢຸດສະແກນ.</translation>
+<translation id="2486151619109781620">ຫຍໍ້ກ່ອງໂຕ້ຕອບລົງ ແລະ ເລີ່ມສະແກນ</translation>
 <translation id="2501278716633472235">ກັບ​ຄືນ​ໄປ</translation>
 <translation id="2501853267655415902">ຢຸດການບັນທຶກແລ້ວ</translation>
 <translation id="2517472476991765520">ສະແກນ</translation>
 <translation id="2549985041256363841">ເລີ່ມການບັນທຶກ</translation>
 <translation id="2577915835281444458">ຈະຢຸດການບັນທຶກໃນໄວໆນີ້. ເຂົ້າໄປບ່ອນຈັດເກັບຂໍ້ມູນຂອງອຸປະກອນເພື່ອສ້າງພື້ນທີ່ຫວ່າງ.</translation>
 <translation id="2599796128805996109">ກ້ອງຫຼັງ</translation>
+<translation id="2654491636277477479">ສຳເນົາຂໍ້ຄວາມທີ່ກວດພົບ</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />ວິ</translation>
 <translation id="2761536921376153655">ປະເພດການສະແກນ</translation>
 <translation id="28682968802727151">ຕົວຢ່າງການສະທ້ອນ</translation>
 <translation id="2879583609344924966">ສຽບສາຍ <ph name="CAMERA" /> ແລ້ວ.</translation>
 <translation id="3067436040345934772">ເລື່ອນໄປຂວາ</translation>
 <translation id="3081586908890909590">ປ່ຽນເປັນບັນທຶກວິດີໂອ</translation>
+<translation id="3091480460059548935">ການກວດຫາຂໍ້ຄວາມໃນຕົວຢ່າງ</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3157038259444425153">ຕອນນີ້ທ່ານສາມາດສຳເນົາຂໍ້ຄວາມໃນຮູບພາບຂອງທ່ານໄດ້ໂດຍກົງ</translation>
 <translation id="3158534262962737808">ເຂົ້າຮ່ວມ "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">ໄມໂຄຣໂຟນ</translation>
 <translation id="3240426699337459095">ອັດ​ສຳ​ເນົາ​ລິ້ງ​ແລ້ວ</translation>
@@ -65,9 +73,7 @@
 <translation id="4118525110028899586">ຢຸດການບັນທຶກໄວ້ຊົ່ວຄາວ</translation>
 <translation id="4121305183798804752">ກວດພົບເອກະສານ</translation>
 <translation id="414641094616694804">ກ້ອງຖ່າຍຮູບນີ້ບໍ່ສາມາດປ່ຽນຄວາມລະອຽດໄດ້</translation>
-<translation id="4176463684765177261">ປິດໃຊ້ງານແລ້ວ</translation>
 <translation id="428234092390943511">ຮູບຕົວຢ່າງໜ້າ</translation>
-<translation id="4349714250734879769">ປັບຂະໜາດເຟຣມຕາມ Chrome</translation>
 <translation id="4383571725254449280">ພິມບັນທຶກປະສິດທິພາບ</translation>
 <translation id="4445542136948522167">ຢຸດການຖ່າຍຮູບ</translation>
 <translation id="4570032796877367747">ກ້ອງຫນ້າ</translation>
@@ -80,7 +86,6 @@
 <translation id="4864143361253542638">ລາຍຊື່ໜ້າທີ່ສະແກນແລ້ວ</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">ສຳເນົາທີ່ຢູ່ລິ້ງ <ph name="URL" /></translation>
-<translation id="491895758387112773">ການບັນທຶກວິດີໂອແບບຫຼາຍສະຕຣີມ</translation>
 <translation id="495170559598752135">ການກະທໍາ</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">ອັດຕາສ່ວນຮູບພາບ</translation>
@@ -93,6 +98,7 @@
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5320594929574852403">ກຳລັງຍ້າຍໄປທາງຊ້າຍ</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5634947914995388399">ຂະຫຍາຍກ່ອງໂຕ້ຕອບ ແລະ ຢຸດສະແກນ</translation>
 <translation id="5662366948659129155">ກຳລັງສະແກນໜ້າ <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">ສີ່ຫຼ່ຽມ</translation>
 <translation id="574392208103952083">ສື່ກາງ</translation>
@@ -106,6 +112,7 @@
 <translation id="5975083100439434680">ຊູມອອກ</translation>
 <translation id="5976160379964388480">ອື່ນໆ</translation>
 <translation id="6073451960410192870">ຢຸດການບັນທຶກ</translation>
+<translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="6197807149213783179">ບັນທຶກເມຕາເດຕາໄວ້</translation>
 <translation id="6233780560267770709">3 ຄູນ 3</translation>
 <translation id="6243827288366940320">ອັດຕາສ່ວນຄຳ</translation>
@@ -115,11 +122,14 @@
 ຖ້າຄຳຕິຊົມຂອງທ່ານກ່ຽວກັບຄຸນນະພາບຮູບ ຫຼື ວິດີໂອ, ກະລຸນາແນບຮູບ ຫຼື ວິດີໂອຕົວຢ່າງມານຳ ແລະ ໃຫ້ລາຍລະອຽດວ່າມີຫຍັງຜິດພາດ. (ຕົວຢ່າງ: ຮູບມືດເກີນໄປ ຫຼື ຮູບເປົ້າໝາຍບໍ່ຢູ່ໃນໂຟກັສ.)</translation>
 <translation id="6519884562954018934">ເຂົ້າຮ່ວມ <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">ແຊຣ໌</translation>
+<translation id="6586509689874700895">ທຳອິດ, ໃຫ້ກົດ <ph name="BUTTON_NAME" /> ເພື່ອຊູມເຂົ້າ. ຈາກນັ້ນ, ຫຼັງຈາກທີ່ທ່ານຖ່າຍຮູບ, ທ່ານຈະເຫັນລາຍລະອຽດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ.</translation>
+<translation id="659539649712855529">ສຳເນົາ <ph name="CONTENT" /> ແລ້ວ</translation>
 <translation id="6617916774429601017">ສະແດງຄວາມລະອຽດທັງໝົດ</translation>
 <translation id="6631515515009660915">ປິດການສະທ້ອນແລ້ວ</translation>
 <translation id="6652737148136672975">ຍ້າຍຕຳແໜ່ງມຸມດ້ວຍປຸ່ມລູກສອນ</translation>
 <translation id="667999046851023355">ເອ​ກະ​ສານ</translation>
 <translation id="6681668084120808868">ຖ່າຍຮູບ</translation>
+<translation id="6692092766759105707">ສຳເນົາເພື່ອຢັ້ງຢືນເນື້ອຫາ.</translation>
 <translation id="6778482348691154169">ບໍ່ສາມາດຖ່າຍຮູບໄດ້</translation>
 <translation id="6888362557094394345">ກຳລັງຍ້າຍໄປທາງລຸ່ມ</translation>
 <translation id="695140971690006676">ຣິເຊັດທັງໝົດ</translation>
@@ -132,8 +142,8 @@
 <translation id="7337660886763914220">ຂໍ້ຜິດພາດຂອງໄຟລ໌ລະບົບ.</translation>
 <translation id="7450541714075000668">ສຳເນົາຂໍ້ຄວາມແລ້ວ</translation>
 <translation id="7488619942230388918">ບັນທຶກວິດີໂອ GIF</translation>
+<translation id="7527714402753141485">ສະແດງຂໍ້ຄວາມ ແລະ ປຸ່ມທີ່ຈະສຳເນົາ</translation>
 <translation id="7557677699350329807">ປ່ຽນເປັນກ້ອງຖັດໄປ</translation>
-<translation id="7562584071994185503">ສຳເນົາຂໍ້ຄວາມ <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">ຢຸດແລ້ວ</translation>
 <translation id="7608223098072244877">4 ຄູນ 4</translation>
 <translation id="761421184377987513">ກຳລັງຍ້າຍໄປທາງຊ້າຍລຸ່ມ</translation>
@@ -153,12 +163,12 @@
 <translation id="8145038249676204903">ປ່ຽນເປັນຖ່າຍຮູບ</translation>
 <translation id="8167081290930651932">ບັນທຶກເປັນຮູບພາບ</translation>
 <translation id="8239780215768881278">ຖ່າຍພາບວິດີໂອໄວ</translation>
-<translation id="8346544573713510785">ປັບຂະໜາດເຟຣມຕາມ HAL ຂອງກ້ອງຖ່າຍຮູບ</translation>
 <translation id="8425673304802773841">ອຽງລົງ</translation>
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>
 <translation id="8609951387004618906">ເປີດ <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">ສະຫຼັບການປິດສຽງໄມໂຄຣໂຟນ. ກຳລັງປິດສຽງຢູ່</translation>
+<translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
 <translation id="8732462232047530626">ສະແດງຕົວຢ່າງເມຕາເດຕາ</translation>
 <translation id="874854738381978209">ກວດພົບເຄືອຂ່າຍ Wi-Fi.</translation>

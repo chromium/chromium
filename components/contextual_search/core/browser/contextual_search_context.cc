@@ -20,7 +20,7 @@ void ContextualSearchContext::SetResolveProperties(
 
 void ContextualSearchContext::AdjustSelection(int start_adjust,
                                               int end_adjust) {
-  // TODO(crbug.com/1343955): These values should be sanitized and should be
+  // TODO(crbug.com/40060256): These values should be sanitized and should be
   // sanitized closer to where they are received from the renderer process.
   DCHECK(start_offset_ + start_adjust >= 0);
   DCHECK(start_offset_ + start_adjust <=

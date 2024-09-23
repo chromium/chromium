@@ -4,8 +4,9 @@
 
 #include "chrome/browser/web_applications/test/prevent_close_test_base.h"
 
+#include <string_view>
+
 #include "base/json/json_reader.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -27,12 +27,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-PreventCloseTestBase::PreventCloseTestBase() {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kDesktopPWAsEnforceWebAppSettingsPolicy,
-                            features::kDesktopPWAsPreventClose},
-      /*disabled_features=*/{});
-}
+PreventCloseTestBase::PreventCloseTestBase() = default;
 
 PreventCloseTestBase::~PreventCloseTestBase() = default;
 
@@ -49,8 +44,8 @@ void PreventCloseTestBase::TearDownInProcessBrowserTestFixture() {
 }
 
 void PreventCloseTestBase::SetPolicies(
-    base::StringPiece web_app_settings,
-    base::StringPiece web_app_install_force_list) {
+    std::string_view web_app_settings,
+    std::string_view web_app_install_force_list) {
   policy::PolicyMap policies;
   SetPolicy(&policies, policy::key::kWebAppSettings,
             ReturnPolicyValueFromJson(web_app_settings));
@@ -61,8 +56,8 @@ void PreventCloseTestBase::SetPolicies(
 
 void PreventCloseTestBase::SetPoliciesAndWaitUntilInstalled(
     const webapps::AppId& app_id,
-    base::StringPiece web_app_settings,
-    base::StringPiece web_app_install_force_list) {
+    std::string_view web_app_settings,
+    std::string_view web_app_install_force_list) {
   web_app::WebAppTestInstallObserver observer(browser()->profile());
   observer.BeginListening({app_id});
 
@@ -78,8 +73,8 @@ void PreventCloseTestBase::ClearWebAppSettings() {
 
 void PreventCloseTestBase::InstallPWA(const GURL& app_url,
                                       const webapps::AppId& app_id) {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = app_url;
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
   web_app_info->scope = app_url.GetWithoutFilename();
   webapps::AppId installed_app_id = web_app::test::InstallWebApp(
       browser()->profile(), std::move(web_app_info));
@@ -95,7 +90,7 @@ Browser* PreventCloseTestBase::LaunchPWA(const webapps::AppId& app_id,
 }
 
 base::Value PreventCloseTestBase::ReturnPolicyValueFromJson(
-    base::StringPiece policy) {
+    std::string_view policy) {
   auto result = base::JSONReader::ReadAndReturnValueWithError(
       policy, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   DCHECK(result.has_value()) << result.error().message;

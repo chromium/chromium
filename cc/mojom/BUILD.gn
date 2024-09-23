@@ -22,6 +22,7 @@ component("shared_mojom_traits") {
 mojom("mojom") {
   generate_java = true
   sources = [
+    "browser_controls_offset_tags_info.mojom",
     "browser_controls_params.mojom",
     "browser_controls_state.mojom",
     "overscroll_behavior.mojom",
@@ -89,6 +90,17 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "cc.mojom.BrowserControlsOffsetTagsInfo"
+          cpp = "::cc::BrowserControlsOffsetTagsInfo"
+        },
+      ]
+      traits_headers =
+          [ "//cc/mojom/browser_controls_offset_tags_info_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
           mojom = "cc.mojom.RenderFrameMetadata"
           cpp = "::cc::RenderFrameMetadata"
         },
@@ -100,4 +112,28 @@ mojom("mojom") {
 
   cpp_typemaps = shared_typemap
   blink_cpp_typemaps = shared_typemap
+}
+
+mojom("layer_type") {
+  generate_java = true
+  sources = [ "layer_type.mojom" ]
+}
+
+mojom("element_id") {
+  generate_java = true
+  sources = [ "element_id.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "cc.mojom.ElementId"
+          cpp = "::cc::ElementId"
+          nullable_is_same_type = true
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "element_id_mojom_traits.h" ]
+      traits_public_deps = [ "//cc/paint" ]
+    },
+  ]
 }

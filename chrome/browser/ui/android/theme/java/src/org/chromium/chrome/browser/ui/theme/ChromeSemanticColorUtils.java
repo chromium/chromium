@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.ui.theme;
 import android.content.Context;
 
 import androidx.annotation.ColorInt;
+import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.chrome.browser.theme.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.util.ColorUtils;
 
 /** Chrome specific version of {@link SemanticColorUtils}. */
 public class ChromeSemanticColorUtils {
@@ -38,5 +41,12 @@ public class ChromeSemanticColorUtils {
     /** Returns the semantic color value that corresponds to tab_inactive_hover_color. */
     public static @ColorInt int getTabInactiveHoverColor(Context context) {
         return SemanticColorUtils.getDefaultControlColorActive(context);
+    }
+
+    /** Returns the semantic color value that corresponds to an IPH highlight. */
+    public static @ColorInt int getIphHighlightColor(Context context) {
+        return ColorUtils.setAlphaComponentWithFloat(
+                SemanticColorUtils.getDefaultControlColorActive(context),
+                ResourcesCompat.getFloat(context.getResources(), R.dimen.iph_highlight_alpha));
     }
 }

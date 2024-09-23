@@ -238,6 +238,7 @@ TEST(PaymentManifestParserTest,
 
 // Web app manifest parsing:
 
+// Expect that input is valid JSON but not a valid web app manifest.
 void ExpectUnableToParseWebAppManifest(const std::string& input) {
   base::Value value = base::test::ParseJson(input);
   std::vector<WebAppManifestSection> sections;
@@ -391,22 +392,6 @@ TEST(PaymentManifestParserTest, NoFingerprintValueIsMalformed) {
       "    \"min_version\": \"1\", "
       "    \"fingerprints\": [{"
       "      \"type\": \"sha256_cert\""
-      "    }]"
-      "  }]"
-      "}");
-}
-
-TEST(PaymentManifestParserTest, VersionShouldNotHaveNullCharacters) {
-  ExpectUnableToParseWebAppManifest(
-      "{"
-      "  \"related_applications\": [{"
-      "    \"platform\": \"play\", "
-      "    \"id\": \"com.bobpay.app\", "
-      "    \"min_version\": \"1\01\", "
-      "    \"fingerprints\": [{"
-      "      \"type\": \"sha256_cert\", "
-      "      \"value\": \"00:01:02:03:04:05:06:07:08:09:A0:A1:A2:A3:A4:A5:A6:A7"
-      ":A8:A9:B0:B1:B2:B3:B4:B5:B6:B7:B8:B9:C0:C1\""
       "    }]"
       "  }]"
       "}");

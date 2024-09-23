@@ -4,25 +4,21 @@
 
 #include "content/browser/reduce_accept_language/reduce_accept_language_utils.h"
 
+#include <optional>
+
 #include "base/strings/string_util.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "net/http/http_util.h"
 #include "services/network/public/cpp/features.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_result.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "url/origin.h"
 
 namespace content {
 
 namespace {
-
-using ::network::mojom::VariantsHeaderPtr;
-
-const char kAcceptLanguageLowerCase[] = "accept-language";
-const char kReduceAcceptLanguageOriginTrial[] = "ReduceAcceptLanguage";
 
 std::string GetFirstUserAcceptLanguage(
     const std::vector<std::string>& user_accept_language) {
@@ -52,10 +48,9 @@ ReduceAcceptLanguageUtils::~ReduceAcceptLanguageUtils() = default;
 std::optional<ReduceAcceptLanguageUtils> ReduceAcceptLanguageUtils::Create(
     BrowserContext* browser_context) {
   DCHECK(browser_context);
-  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) &&
-      !base::FeatureList::IsEnabled(
-          network::features::kReduceAcceptLanguageOriginTrial))
+  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
     return std::nullopt;
+  }
   ReduceAcceptLanguageControllerDelegate* reduce_accept_lang_delegate =
       browser_context->GetReduceAcceptLanguageControllerDelegate();
   if (!reduce_accept_lang_delegate)
@@ -85,20 +80,27 @@ bool ReduceAcceptLanguageUtils::OriginCanReduceAcceptLanguage(
 }
 
 // static
-bool ReduceAcceptLanguageUtils::IsReduceAcceptLanguageEnabledForOrigin(
-    const url::Origin& request_origin,
-    const net::HttpResponseHeaders* response_headers) {
-  if (!base::FeatureList::IsEnabled(
-          network::features::kReduceAcceptLanguageOriginTrial)) {
+bool ReduceAcceptLanguageUtils::CheckDisableReduceAcceptLanguageOriginTrial(
+    const GURL& request_url,
+    FrameTreeNode* frame_tree_node,
+    OriginTrialsControllerDelegate* origin_trials_delegate) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!origin_trials_delegate || !frame_tree_node) {
     return false;
   }
 
-  if (!OriginCanReduceAcceptLanguage(request_origin))
+  url::Origin request_origin = url::Origin::Create(request_url);
+  std::optional<url::Origin> partition_origin =
+      GetOriginForLanguageLookup(request_origin, frame_tree_node);
+  if (request_origin.opaque() || !partition_origin.has_value() ||
+      partition_origin.value().opaque()) {
     return false;
+  }
 
-  return blink::TrialTokenValidator().RequestEnablesFeature(
-      request_origin.GetURL(), response_headers,
-      kReduceAcceptLanguageOriginTrial, base::Time::Now());
+  return origin_trials_delegate->IsFeaturePersistedForOrigin(
+      request_origin, partition_origin.value(),
+      blink::mojom::OriginTrialFeature::kDisableReduceAcceptLanguage,
+      base::Time::Now());
 }
 
 std::optional<std::string>
@@ -130,8 +132,11 @@ ReduceAcceptLanguageUtils::AddNavigationRequestAcceptLanguageHeaders(
   std::optional<std::string> reduced_accept_language =
       LookupReducedAcceptLanguage(request_origin, frame_tree_node);
   if (reduced_accept_language) {
-    headers->SetHeader(net::HttpRequestHeaders::kAcceptLanguage,
-                       reduced_accept_language.value());
+    std::string expanded_language_list =
+        net::HttpUtil::ExpandLanguageList(reduced_accept_language.value());
+    headers->SetHeader(
+        net::HttpRequestHeaders::kAcceptLanguage,
+        net::HttpUtil::GenerateAcceptLanguageHeader(expanded_language_list));
   }
   return reduced_accept_language;
 }
@@ -139,47 +144,36 @@ ReduceAcceptLanguageUtils::AddNavigationRequestAcceptLanguageHeaders(
 bool ReduceAcceptLanguageUtils::ReadAndPersistAcceptLanguageForNavigation(
     const url::Origin& request_origin,
     const net::HttpRequestHeaders& request_headers,
-    const network::mojom::ParsedHeadersPtr& parsed_headers,
-    bool is_origin_trial_enabled) {
+    const network::mojom::ParsedHeadersPtr& parsed_headers) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(parsed_headers);
 
-  if (!parsed_headers->content_language || !parsed_headers->variants_headers)
+  if (!parsed_headers->content_language || !parsed_headers->avail_language) {
     return false;
+  }
 
   if (!OriginCanReduceAcceptLanguage(request_origin))
     return false;
 
-  // Only parse and persist if the Variants headers include Accept-Language.
-  auto variants_accept_lang_iter = base::ranges::find(
-      parsed_headers->variants_headers.value(), kAcceptLanguageLowerCase,
-      &::network::mojom::VariantsHeader::name);
-  if (variants_accept_lang_iter ==
-      parsed_headers->variants_headers.value().end()) {
+  // Skip when reading user's accept-language is empty since it's required when
+  // doing language negotiation.
+  if (delegate_->GetUserAcceptLanguages().empty()) {
     return false;
   }
 
-  std::string initial_accept_language;
-  if (!request_headers.GetHeader(net::HttpRequestHeaders::kAcceptLanguage,
-                                 &initial_accept_language)) {
-    // If we can't find Accept-Language in the request header:
-    // 1. normal case: we directly return false since we expect we added the
-    // reduced Accept-Language when initializing the navigation request.
-    // 2. origin trial enabled: we consider it add the first user's
-    // accept-language once we know the given origin has opted-in the origin
-    // trial, because we can't validate origin trial when initializing
-    // navigation requests.
-    if (!is_origin_trial_enabled)
-      return false;
-
-    initial_accept_language =
-        GetFirstUserAcceptLanguage(delegate_->GetUserAcceptLanguages());
+  std::optional<std::string> initial_accept_language =
+      request_headers.GetHeader(net::HttpRequestHeaders::kAcceptLanguage);
+  if (!initial_accept_language) {
+    // If we can't find Accept-Language in the request header, we directly
+    // return false since we expect we added the reduced Accept-Language when
+    // initializing the navigation request.
+    return false;
   }
 
   PersistLanguageResult persist_params = GetLanguageToPersist(
-      initial_accept_language, parsed_headers->content_language.value(),
+      *initial_accept_language, parsed_headers->content_language.value(),
       delegate_->GetUserAcceptLanguages(),
-      (*variants_accept_lang_iter)->available_values, is_origin_trial_enabled);
+      parsed_headers->avail_language.value());
 
   if (persist_params.language_to_persist) {
     delegate_->PersistReducedLanguage(
@@ -195,11 +189,15 @@ ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
     FrameTreeNode* frame_tree_node) {
   DCHECK(frame_tree_node);
 
-  if ((!base::FeatureList::IsEnabled(
-           network::features::kReduceAcceptLanguage) &&
-       !base::FeatureList::IsEnabled(
-           network::features::kReduceAcceptLanguageOriginTrial)) ||
+  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
       !OriginCanReduceAcceptLanguage(request_origin)) {
+    return std::nullopt;
+  }
+
+  const std::vector<std::string>& user_accept_languages =
+      delegate_->GetUserAcceptLanguages();
+  // Early return when user's accept-language preference is empty.
+  if (user_accept_languages.empty()) {
     return std::nullopt;
   }
 
@@ -211,21 +209,10 @@ ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
           ? delegate_->GetReducedLanguage(origin_for_lookup.value())
           : std::nullopt;
 
-  const std::vector<std::string>& user_accept_languages =
-      delegate_->GetUserAcceptLanguages();
-
-  // We should not return user's first accept-language if the feature not enable
-  // and no persist language was found in prefs service. The request headers
-  // won't add any reduced accept-language, this would help us to add the
-  // reduced accept-language to the request header once sites have opt-in the
-  // origin trial because we persist the language after validating the origin
-  // trial token.
+  // We should return user's first accept-language if the feature is enabled
+  // and no persist language was found in prefs service.
   if (!persisted_language) {
-    return base::FeatureList::IsEnabled(
-               network::features::kReduceAcceptLanguage)
-               ? std::make_optional(
-                     GetFirstUserAcceptLanguage(user_accept_languages))
-               : std::nullopt;
+    return GetFirstUserAcceptLanguage(user_accept_languages);
   }
 
   // Use the preferred language stored by the delegate if it matches any of the
@@ -262,40 +249,22 @@ ReduceAcceptLanguageUtils::GetOriginForLanguageLookup(
   return std::nullopt;
 }
 
-void ReduceAcceptLanguageUtils::RemoveOriginTrialReducedAcceptLanguage(
-    const std::string& persisted_language,
+void ReduceAcceptLanguageUtils::RemoveReducedAcceptLanguage(
     const url::Origin& origin,
-    const network::mojom::URLResponseHead* response,
     FrameTreeNode* frame_tree_node) {
-  // Skip if kReduceAcceptLanguage feature is enabled because we reduce
-  // accept-language header for all sites no matter whether they send valid
-  // origin trial token or not.
-  // Skip if kReduceAcceptLanguageOriginTrial is disabled since this feature
-  // gate access to origin trial code.
-  if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
-      !base::FeatureList::IsEnabled(
-          network::features::kReduceAcceptLanguageOriginTrial)) {
+  // Skip if kReduceAcceptLanguage feature isn't enabled because deprecation
+  // origin trial is used to disable reduce accept-language.
+  if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
     return;
   }
 
-  // Skip if persisted language is already empty.
-  if (persisted_language.empty())
+  // Skip for opaque origins or the current frame isn't the outermost main
+  // frame.
+  if (origin.opaque() || !frame_tree_node->IsOutermostMainFrame()) {
     return;
-
-  // Skip for opaque origins or empty response headers.
-  if (origin.opaque() || !response || !response->headers)
-    return;
-
-  // Skip if the current frame isn't the outermost main frame.
-  if (!frame_tree_node->IsOutermostMainFrame())
-    return;
-
-  // If request origin opt-out the origin trial or send invalid origin token, we
-  // need to clear the persisted storage.
-  if (!ReduceAcceptLanguageUtils::IsReduceAcceptLanguageEnabledForOrigin(
-          origin, response->headers.get())) {
-    delegate_->ClearReducedLanguage(origin);
   }
+
+  delegate_->ClearReducedLanguage(origin);
 }
 
 ReduceAcceptLanguageUtils::PersistLanguageResult
@@ -303,8 +272,7 @@ ReduceAcceptLanguageUtils::GetLanguageToPersist(
     const std::string& initial_accept_language,
     const std::vector<std::string>& content_languages,
     const std::vector<std::string>& preferred_languages,
-    const std::vector<std::string>& available_languages,
-    bool is_origin_trial_enabled) {
+    const std::vector<std::string>& available_languages) {
   DCHECK(preferred_languages.size() > 0);
 
   PersistLanguageResult result;
@@ -342,18 +310,8 @@ ReduceAcceptLanguageUtils::GetLanguageToPersist(
   // Only persist the language of choice for an origin if it differs from
   // the user’s first preferred language because we can directly access the
   // user’s first preferred language from language prefs.
-  //
-  // For origin trial is enabled, we need to persist the selected language no
-  // matter whether it differs from the user's first preferred language, because
-  // we don't know whether the given origin has opted-in the origin trial when
-  // initially adding the accept-language header. Persisting the selected
-  // language here will help us to add the reduced accept-language to subsequent
-  // requests once the given origin has opted-in the origin trial.
-  if (is_origin_trial_enabled) {
-    result.language_to_persist =
-        selected_language.empty() ? initial_accept_language : selected_language;
-  } else if (!selected_language.empty() &&
-             selected_language != preferred_languages[0]) {
+  if (!selected_language.empty() &&
+      selected_language != preferred_languages[0]) {
     result.language_to_persist = selected_language;
   }
   return result;

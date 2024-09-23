@@ -1,9 +1,9 @@
 <!--
-Copyright 2023 The Chromium Authors
+Copyright 2024 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<style include="oobe-dialog-host-styles">
+<style include="oobe-dialog-host-styles cros-color-overrides">
 
 /* Add styles here */
 
@@ -21,10 +21,12 @@ found in the LICENSE file.
   </div>
   <div slot="back-navigation">
     <oobe-back-button id="backButton"
-        on-click="onBackClicked_"></oobe-back-button>
+        on-click="onBackClicked">
+    </oobe-back-button>
   </div>
   <div slot="bottom-buttons">
     <oobe-next-button id="nextButton"
-        on-click="onNextClicked_"></oobe-next-button>
+        on-click="onNextClicked">
+    </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>

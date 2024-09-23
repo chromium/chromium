@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
 
 #include <string>
@@ -12,7 +17,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -151,7 +155,7 @@ const VariableResolver BuildVariableResolver(
 // Return the value associated to the first item in |variables| that is not
 // empty.
 std::string ResolveVariableChain(const VariableResolver& resolver,
-                                 std::vector<base::StringPiece> variables) {
+                                 std::vector<std::string_view> variables) {
   for (const auto& variable : variables) {
     // Variables should always be valid and have a mapping in |resolver|.
     DCHECK(resolver.find(variable) != resolver.end());
@@ -164,7 +168,7 @@ std::string ResolveVariableChain(const VariableResolver& resolver,
   return "";
 }
 
-std::vector<base::StringPiece> SplitByColon(base::StringPiece input) {
+std::vector<std::string_view> SplitByColon(std::string_view input) {
   return base::SplitStringPiece(input, ":", base::TRIM_WHITESPACE,
                                 base::SPLIT_WANT_NONEMPTY);
 }
@@ -173,8 +177,7 @@ std::vector<base::StringPiece> SplitByColon(base::StringPiece input) {
 // replaced with the output of |replacement_getter.Run(capture)|.
 std::string SearchAndReplace(
     const re2::RE2& regex,
-    base::RepeatingCallback<std::string(const std::string_view&)>
-        replacement_getter,
+    base::RepeatingCallback<std::string(std::string_view)> replacement_getter,
     std::string_view search_input) {
   std::vector<std::string> output;
   std::string_view capture;
@@ -185,7 +188,7 @@ std::string SearchAndReplace(
     // Output the prefix skipped by PartialMatch until |capture| is found.
     DCHECK(capture.begin() >= search_input.begin());
     size_t prefix_size = capture.begin() - search_input.begin();
-    output.emplace_back(search_input.begin(), prefix_size);
+    output.emplace_back(search_input.data(), prefix_size);
     // Output the replacement for |capture|.
     output.emplace_back(replacement_getter.Run(capture));
 
@@ -193,7 +196,8 @@ std::string SearchAndReplace(
     DCHECK(search_input.length() >= prefix_size + capture.length());
     size_t remaining_size =
         search_input.length() - (prefix_size + capture.length());
-    search_input = std::string_view(capture.end(), remaining_size);
+    search_input =
+        std::string_view(capture.data() + capture.size(), remaining_size);
   }
   // Output the remaining |search_input|.
   output.emplace_back(search_input);
@@ -202,7 +206,7 @@ std::string SearchAndReplace(
 
 // Returns a regular expression that matches any one variable in |resolver|.
 std::string ResolverKeyMatcher(const VariableResolver& resolver) {
-  std::vector<base::StringPiece> keys;
+  std::vector<std::string_view> keys;
   for (const auto& item : resolver) {
     keys.emplace_back(item.first);
   }
@@ -231,11 +235,11 @@ void ReplaceVariables(const VariableResolver& resolver,
 
   // Callback to compute values of variable chains matched with |regex|.
   auto chain_resolver = base::BindRepeating(
-      [](const VariableResolver& resolver, const std::string_view& variable) {
+      [](const VariableResolver& resolver, std::string_view variable) {
         // Remove the "${" prefix and the "}" suffix from |variable|.
         DCHECK(variable.starts_with("${") && variable.ends_with("}"));
         const std::string_view chain = variable.substr(2, variable.size() - 3);
-        const std::vector<base::StringPiece> variables = SplitByColon(chain);
+        const std::vector<std::string_view> variables = SplitByColon(chain);
 
         const std::string chain_value =
             ResolveVariableChain(resolver, variables);

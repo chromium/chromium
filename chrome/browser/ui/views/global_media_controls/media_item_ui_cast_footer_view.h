@@ -15,8 +15,7 @@ class StopCastingButton;
 }
 
 // A footer view attached to MediaItemUIView containing a stop casting button
-// for a cast media item. Currently only used on Chrome OS Ash when
-// media::kGlobalMediaControlsCrOSUpdatedUI is enabled.
+// for a cast media item. Currently only used on Chrome OS Ash.
 class MediaItemUICastFooterView
     : public global_media_controls::MediaItemUIFooter {
   METADATA_HEADER(MediaItemUICastFooterView,

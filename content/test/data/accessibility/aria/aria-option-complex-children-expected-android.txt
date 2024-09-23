@@ -1,0 +1,10 @@
+android.webkit.WebView focusable focused
+++android.widget.ListView role_description='list box' clickable collection item_count=2 row_count=2 column_count=1
+++++android.view.View collection_item focusable selected name='label-WAI-ARIA 1.1' row_span=1 column_span=1
+++++++android.view.View role_description='link' clickable focusable link name='href-WAI-ARIA 1.1' hint='title-WAI-ARIA 1.1'
+++++++++android.widget.TextView name='href-WAI-ARIA 1.1'
+++++++android.widget.TextView name='link-https://www.w3.org/TR/wai-aria-practices-1.1/' hint='title-https://www.w3.org/TR/wai-aria-practices-1.1/'
+++++++android.widget.Button role_description='button' clickable focusable name='Close'
+++++android.view.View collection_item focusable name='1234567' item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.widget.TextView name='href-WAI-ARIA 1.1 '
+++++++android.widget.Button role_description='button' clickable focusable name='Close'

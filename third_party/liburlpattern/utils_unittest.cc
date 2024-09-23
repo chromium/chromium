@@ -3,12 +3,15 @@
 // found in the LICENSE file or at https://opensource.org/licenses/MIT.
 
 #include "third_party/liburlpattern/utils.h"
+
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace liburlpattern {
 
-void RunEscapeRegexpStringTest(absl::string_view input,
-                               absl::string_view expected) {
+void RunEscapeRegexpStringTest(std::string_view input,
+                               std::string_view expected) {
   std::string result = EscapeRegexpString(input);
   EXPECT_EQ(result, expected);
   EXPECT_EQ(EscapedRegexpStringLength(input), result.size());
@@ -74,8 +77,8 @@ TEST(UtilsTest, EscapeRegexpStringBackslash) {
   RunEscapeRegexpStringTest("\\d", "\\\\d");
 }
 
-void RunEscapePatternStringTest(absl::string_view input,
-                                absl::string_view expected) {
+void RunEscapePatternStringTest(std::string_view input,
+                                std::string_view expected) {
   std::string result;
   EscapePatternStringAndAppend(input, result);
   EXPECT_EQ(result, expected);

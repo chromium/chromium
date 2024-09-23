@@ -9,9 +9,11 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
@@ -22,7 +24,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** {@link ModuleProviderBuilder} that builds the price change module. */
-public class PriceChangeModuleBuilder implements ModuleProviderBuilder {
+public class PriceChangeModuleBuilder implements ModuleProviderBuilder, ModuleConfigChecker {
     private final Context mContext;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final TabModelSelector mTabModelSelector;
@@ -42,12 +44,13 @@ public class PriceChangeModuleBuilder implements ModuleProviderBuilder {
     public boolean build(
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull Callback<ModuleProvider> onModuleBuiltCallback) {
-        if (!PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfileSupplier.get())) {
+        Profile profile = getRegularProfile();
+        if (!PriceTrackingUtilities.isTrackPricesOnTabsEnabled(profile)) {
             return false;
         }
         PriceChangeModuleCoordinator coordinator =
                 new PriceChangeModuleCoordinator(
-                        mContext, mProfileSupplier.get(), mTabModelSelector, moduleDelegate);
+                        mContext, profile, mTabModelSelector, moduleDelegate);
         onModuleBuiltCallback.onResult(coordinator);
         return true;
     }
@@ -69,10 +72,24 @@ public class PriceChangeModuleBuilder implements ModuleProviderBuilder {
         PriceChangeModuleViewBinder.bind(model, view, propertyKey);
     }
 
+    // ModuleEligibilityChecker implementation:
+
     @Override
     public boolean isEligible() {
+        // This function may be called by MainSettings when a profile hasn't been initialized yet.
+        // See b/324138242.
+        if (!mProfileSupplier.hasValue()) return false;
+
+        return PriceTrackingUtilities.isTrackPricesOnTabsEnabled(getRegularProfile());
+    }
+
+    /** Gets the regular profile if exists. */
+    @VisibleForTesting
+    Profile getRegularProfile() {
         assert mProfileSupplier.hasValue();
 
-        return PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfileSupplier.get());
+        Profile profile = mProfileSupplier.get();
+        // It is possible that an incognito profile is provided by the supplier. See b/326619334.
+        return profile.isOffTheRecord() ? profile.getOriginalProfile() : profile;
     }
 }

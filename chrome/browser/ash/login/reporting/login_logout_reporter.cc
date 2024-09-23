@@ -4,15 +4,20 @@
 
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 
+#include "base/hash/md5.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
-#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/messaging_layer/proto/synced/login_logout_event.pb.h"
+#include "chrome/browser/profiles/reporting_util.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "components/account_id/account_id.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -42,23 +47,22 @@ LoginLogoutSessionType GetSessionType(const AccountId& account_id) {
     return LoginLogoutSessionType::GUEST_SESSION;
   }
 
-  policy::DeviceLocalAccount::Type type;
-  if (!IsDeviceLocalAccountUser(account_id.GetUserEmail(), &type)) {
+  auto type = policy::GetDeviceLocalAccountType(account_id.GetUserEmail());
+  if (!type.has_value()) {
     return LoginLogoutSessionType::REGULAR_USER_SESSION;
   }
 
-  switch (type) {
-    case policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION:
-    case policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION:
+  switch (type.value()) {
+    case policy::DeviceLocalAccountType::kPublicSession:
+    case policy::DeviceLocalAccountType::kSamlPublicSession:
       return LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION;
-    case policy::DeviceLocalAccount::TYPE_KIOSK_APP:
-    case policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP:
-    case policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP:
+    case policy::DeviceLocalAccountType::kKioskApp:
+    case policy::DeviceLocalAccountType::kWebKioskApp:
+    case policy::DeviceLocalAccountType::kKioskIsolatedWebApp:
       return LoginLogoutSessionType::KIOSK_SESSION;
-    default:
-      NOTREACHED();
-      return LoginLogoutSessionType::UNSPECIFIED_LOGIN_LOGOUT_SESSION_TYPE;
   }
+  NOTREACHED_IN_MIGRATION();
+  return LoginLogoutSessionType::UNSPECIFIED_LOGIN_LOGOUT_SESSION_TYPE;
 }
 
 LoginFailureReason GetLoginFailureReasonForReport(
@@ -164,12 +168,17 @@ void LoginLogoutReporter::MaybeReportEvent(LoginLogoutRecord record,
   record.set_event_timestamp_sec(clock_->Now().ToTimeT());
   record.set_session_type(session_type);
   const std::string& user_email = account_id.GetUserEmail();
-  if (session_type == LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION ||
-      session_type == LoginLogoutSessionType::GUEST_SESSION) {
+  if (session_type == PUBLIC_ACCOUNT_SESSION || session_type == GUEST_SESSION) {
     record.set_is_guest_session(true);
-  } else if (session_type == LoginLogoutSessionType::REGULAR_USER_SESSION &&
-             reporter_helper_->ShouldReportUser(user_email)) {
-    record.mutable_affiliated_user()->set_user_email(user_email);
+  } else if (session_type == REGULAR_USER_SESSION) {
+    if (reporter_helper_->ShouldReportUser(user_email)) {
+      record.mutable_affiliated_user()->set_user_email(user_email);
+    } else {
+      // This is an unaffiliated user. We can't report any personal information
+      // about them, so we report a device-unique user id instead.
+      record.mutable_unaffiliated_user()->set_user_id(
+          reporter_helper_->GetUniqueUserIdForThisDevice(user_email));
+    }
   }
   reporter_helper_->ReportEvent(
       std::make_unique<LoginLogoutRecord>(std::move(record)),
@@ -227,7 +236,7 @@ void LoginLogoutReporter::MaybeReportKioskLoginFailure() {
   const auto* pref =
       GetLocalState()->FindPreference(kLoginLogoutReporterDictionary);
   if (!pref) {
-    NOTREACHED() << "Cannot find pref.";
+    NOTREACHED_IN_MIGRATION() << "Cannot find pref.";
     return;
   }
 

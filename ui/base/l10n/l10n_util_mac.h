@@ -95,6 +95,11 @@ NSString* GetNSStringFWithFixup(int message_id,
 COMPONENT_EXPORT(UI_BASE)
 NSString* GetPluralNSStringF(int message_id, int number);
 
+// Same as GetPluralNSStringF, but runs the result through
+// FixUpWindowsStyleLabel before returning it.
+COMPONENT_EXPORT(UI_BASE)
+NSString* GetPluralNSStringFWithFixup(int message_id, int number);
+
 #endif  // __OBJC__
 
 // Support the override of the locale with the value from Cocoa.

@@ -118,7 +118,7 @@ class CrashRecoveryManagerImplTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
+  NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/true};
   const multidevice::RemoteDeviceRef test_device_;
 
   std::unique_ptr<FakeActiveHost> fake_active_host_;

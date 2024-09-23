@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
+#include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -56,6 +57,28 @@ VideoConferenceAshFeatureClient::VideoConferenceAshFeatureClient()
 
   CHECK(!g_client_instance);
   g_client_instance = this;
+
+  // `VmCameraMicManager` may have updated camera/mic capturing states even
+  // before `VmCameraMicManager` is initialized. Manually check the states at
+  // initialization to ensure the states are up-to-date.
+  VmCameraMicManager* vm_camera_mic_manager = VmCameraMicManager::Get();
+  if (vm_camera_mic_manager) {
+    const std::array<VmCameraMicManager::VmType, 3> vm_types{
+        VmCameraMicManager::VmType::kCrostiniVm,
+        VmCameraMicManager::VmType::kPluginVm,
+        VmCameraMicManager::VmType::kBorealis};
+    const std::array<VmCameraMicManager::DeviceType, 2> device_types{
+        VmCameraMicManager::DeviceType::kMic,
+        VmCameraMicManager::DeviceType::kCamera};
+
+    for (VmCameraMicManager::VmType vm_type : vm_types) {
+      for (VmCameraMicManager::DeviceType device_type : device_types) {
+        if (vm_camera_mic_manager->IsDeviceActive(vm_type, device_type)) {
+          OnVmDeviceUpdated(vm_type, device_type, true);
+        }
+      }
+    }
+  }
 }
 
 VideoConferenceAshFeatureClient::~VideoConferenceAshFeatureClient() {

@@ -1,0 +1,9 @@
+Name: fdeflate
+URL: https://crates.io/crates/fdeflate
+Description: Fast specialized deflate implementation
+Version: 0.3.4
+Security Critical: yes
+Shipped: yes
+License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/fdeflate-0.3.4/LICENSE-APACHE
+Revision: 11d05bdaec5f2ff9e5d1a8aed555958789f4cef8

@@ -1,0 +1,54 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("metrics") {
+  sources = [
+    "low_disk_metrics_service.cc",
+    "low_disk_metrics_service.h",
+    "network_connectivity_metrics_service.cc",
+    "network_connectivity_metrics_service.h",
+    "periodic_metrics_service.cc",
+    "periodic_metrics_service.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/network",
+    "//components/prefs",
+  ]
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/common:constants",
+    "//services/preferences/public/cpp",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "low_disk_metrics_service_unittest.cc",
+    "network_connectivity_metrics_service_unittest.cc",
+    "periodic_metrics_service_unittest.cc",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_mode/metrics",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/sync_wifi:test_support",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

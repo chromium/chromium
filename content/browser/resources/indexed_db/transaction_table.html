@@ -1,0 +1,140 @@
+<style>
+  .transaction.started,
+  .transaction.running,
+  .transaction.committing {
+    font-weight: bold;
+  }
+
+  .transaction-list {
+    margin-inline-start: 10px;
+    border-collapse: collapse;
+  }
+
+  .transaction-list th,
+  .transaction-list td {
+    padding: 2px 10px;
+    min-width: 50px;
+    max-width: 100px;
+  }
+
+  td.transaction-scope {
+    min-width: 200px;
+    max-width: 500px;
+  }
+
+  .transaction-list th {
+    background-color: rgb(249, 249, 249);
+    border: 1px solid rgb(156, 194, 239);
+    font-weight: normal;
+    text-align: start;
+  }
+
+  .transaction {
+    background-color: rgb(235, 239, 249);
+    border-bottom: 2px solid white;
+  }
+
+  .transaction.created {
+    font-weight: italic;
+  }
+
+  .transaction.started .state {
+    background-color: rgb(249, 249, 235);
+  }
+
+  .transaction.running .state {
+    background-color: rgb(235, 249, 235);
+  }
+
+  .transaction.committing .state {
+    background-color: rgb(235, 235, 249);
+  }
+
+  .transaction.blocked .state {
+    background-color: rgb(249, 235, 235);
+  }
+  .state {
+    text-align: end;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .state:hover {
+    position: relative
+  }
+  .state a {
+    margin-left: 10px;
+  }
+  .timing-popover {
+    visibility: hidden;
+    position: absolute;
+    top: 0px;
+    left: 100%;
+    border: 1px solid black;
+    padding: 10px;
+    font-weight: normal;
+    background: white;
+  }
+  .state:hover .timing-popover {
+    visibility: visible;
+    text-align: start;
+  }
+  .state:hover .timing-popover ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+</style>
+<div id="transactions">
+  <span>Transactions:</span>
+  <table class="transaction-list">
+    <thead>
+      <tr>
+        <th title="Transaction ID (unique within Process)">
+          ID
+        </th>
+        <th title="Type of transaction">
+          Mode
+        </th>
+        <th title="Names of object stores used by the transaction">
+          Scope
+        </th>
+        <th title="Number of requests that have been executed">
+          Completed Requests
+        </th>
+        <th title="Number of requests that have not yet been executed">
+          Pending Requests
+        </th>
+        <th title="Time since transaction creation">
+          Age (ms)
+        </th>
+        <th title="Time since transaction started">
+          Runtime (ms)
+        </th>
+        <th title="State in the transaction queue">
+          State
+        </th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <template id="transaction-row">
+    <tr class="transaction">
+      <td class="tid"></td>
+      <td class="mode"></td>
+      <td class="scope"></td>
+      <td class="requests-complete"></td>
+      <td class="requests-pending"></td>
+      <td class="age"></td>
+      <td class="runtime"></td>
+      <td class="state">
+        <span class="text"></span>
+        <a title="View previous states">⏱</a>
+        <div class="timing-popover">
+          <strong>Previous States:</strong>
+          <ul></ul>
+        </div>
+      </td>
+    </tr>
+  </template>
+</div>

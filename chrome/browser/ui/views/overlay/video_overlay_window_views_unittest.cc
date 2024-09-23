@@ -16,7 +16,9 @@
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/ui/views/overlay/back_to_tab_button.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
+#include "chrome/browser/ui/views/overlay/minimize_button.h"
 #include "chrome/browser/ui/views/overlay/simple_overlay_window_image_button.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -61,7 +63,6 @@ class MockOverlayView : public AutoPipSettingOverlayView {
   explicit MockOverlayView(views::View* anchor_view)
       : AutoPipSettingOverlayView(base::DoNothing(),
                                   GURL{"https://example.com"},
-                                  gfx::Rect(),
                                   anchor_view,
                                   views::BubbleBorder::Arrow::FLOAT) {}
   MOCK_METHOD(void, ShowBubble, (gfx::NativeView parent), (override));
@@ -92,7 +93,7 @@ class TestVideoPictureInPictureWindowController
   void Show() override {}
   void FocusInitiator() override {}
   MOCK_METHOD(void, Close, (bool));
-  void CloseAndFocusInitiator() override {}
+  MOCK_METHOD(void, CloseAndFocusInitiator, ());
   MOCK_METHOD(void, OnWindowDestroyed, (bool));
   content::VideoOverlayWindow* GetWindowForTesting() override {
     return nullptr;
@@ -116,6 +117,7 @@ class TestVideoPictureInPictureWindowController
   const gfx::Rect& GetSourceBounds() const override { return source_bounds_; }
   std::optional<gfx::Rect> GetWindowBounds() override { return std::nullopt; }
   std::optional<url::Origin> GetOrigin() override { return std::nullopt; }
+  void SetOnWindowCreatedNotifyObserversCallback(base::OnceClosure) override {}
 
  private:
   raw_ptr<content::WebContents> web_contents_;
@@ -127,8 +129,8 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
   VideoOverlayWindowViewsTest() = default;
   // ChromeViewsTestBase:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        media::kPictureInPictureOcclusionTracking);
+    enabled_features_.push_back(media::kPictureInPictureOcclusionTracking);
+    feature_list_.InitWithFeatures(enabled_features_, {});
     display::Screen::SetScreenInstance(&test_screen_);
 
     // Purposely skip ChromeViewsTestBase::SetUp() as that creates ash::Shell
@@ -201,6 +203,10 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
 
   void DestroyOverlayWindow() { overlay_window_.reset(); }
 
+  void AddEnabledFeature(base::test::FeatureRef feature) {
+    enabled_features_.push_back(feature);
+  }
+
  private:
   std::unique_ptr<AutoPipSettingOverlayView> GetOverlayViewImpl() {
     return std::move(overlay_view_);
@@ -219,6 +225,8 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
   std::unique_ptr<VideoOverlayWindowViews> overlay_window_;
+
+  std::vector<base::test::FeatureRef> enabled_features_;
 
   base::test::ScopedFeatureList feature_list_;
 };
@@ -475,13 +483,14 @@ TEST_F(VideoOverlayWindowViewsTest, DISABLED_NoMouseExitWithinWindowBounds) {
   ASSERT_FALSE(video_bounds.Contains(close_button_bounds));
 
   const gfx::Point moved_location(video_bounds.origin() + gfx::Vector2d(5, 5));
-  ui::MouseEvent moved_event(ui::ET_MOUSE_MOVED, moved_location, moved_location,
-                             ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  ui::MouseEvent moved_event(ui::EventType::kMouseMoved, moved_location,
+                             moved_location, ui::EventTimeForNow(), ui::EF_NONE,
+                             ui::EF_NONE);
   overlay_window().OnMouseEvent(&moved_event);
   ASSERT_TRUE(overlay_window().AreControlsVisible());
 
   const gfx::Point exited_location(close_button_bounds.CenterPoint());
-  ui::MouseEvent exited_event(ui::ET_MOUSE_EXITED, exited_location,
+  ui::MouseEvent exited_event(ui::EventType::kMouseExited, exited_location,
                               exited_location, ui::EventTimeForNow(),
                               ui::EF_NONE, ui::EF_NONE);
   overlay_window().OnMouseEvent(&exited_event);
@@ -499,7 +508,7 @@ TEST_F(VideoOverlayWindowViewsTest, ShowControlsOnFocus) {
 TEST_F(VideoOverlayWindowViewsTest, OnlyPauseOnCloseWhenPauseIsAvailable) {
   views::test::ButtonTestApi close_button_clicker(
       overlay_window().close_button_for_testing());
-  ui::MouseEvent dummy_event(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
+  ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
                              gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
 
   // When the play/pause controls are visible, closing via the close button
@@ -511,12 +520,31 @@ TEST_F(VideoOverlayWindowViewsTest, OnlyPauseOnCloseWhenPauseIsAvailable) {
   close_button_clicker.NotifyClick(dummy_event);
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
 
+  // Same for tapping the close button. Note that the controls must be visible
+  // for the tap to work, otherwise the tap will just show the controls.
+  overlay_window().ForceControlsVisibleForTesting(true);
+  gfx::Point close_button_center =
+      overlay_window().GetCloseControlsBounds().CenterPoint();
+  ui::GestureEvent tap_event(
+      close_button_center.x(), close_button_center.y(), 0,
+      base::TimeTicks::Now(),
+      ui::GestureEventDetails(ui::EventType::kGestureTap));
+  EXPECT_CALL(pip_window_controller(), Close(true));
+  overlay_window().OnGestureEvent(&tap_event);
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+
   // When the play/pause controls are not visible, closing via the close button
   // should not pause the video.
   overlay_window().SetPlayPauseButtonVisibility(false);
   EXPECT_CALL(pip_window_controller(), Close(false));
   close_button_clicker.NotifyClick(dummy_event);
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+
+  // Same for tapping the close button.
+  EXPECT_CALL(pip_window_controller(), Close(false));
+  overlay_window().OnGestureEvent(&tap_event);
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+
   PictureInPictureWindowManager::GetInstance()
       ->set_window_controller_for_testing(nullptr);
 }
@@ -702,4 +730,47 @@ TEST_F(VideoOverlayWindowViewsTest, IsTrackedByTheOcclusionObserver) {
   // Check that it's no longer observed when the widget is destroyed.
   DestroyOverlayWindow();
   EXPECT_EQ(0u, tracker->GetPictureInPictureWidgetsForTesting().size());
+}
+
+class VideoOverlayWindowViewsWith2024UITest
+    : public VideoOverlayWindowViewsTest {
+ public:
+  void SetUp() override {
+    AddEnabledFeature(media::kVideoPictureInPictureControlsUpdate2024);
+    VideoOverlayWindowViewsTest::SetUp();
+  }
+};
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest,
+       MinimizeButtonClosesWithoutPausing) {
+  views::test::ButtonTestApi minimize_button_clicker(
+      overlay_window().minimize_button_for_testing());
+  ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
+                             gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
+
+  // Even when play/pause is available, the minimize button should not pause the
+  // video.
+  overlay_window().SetPlayPauseButtonVisibility(true);
+  PictureInPictureWindowManager::GetInstance()
+      ->set_window_controller_for_testing(&pip_window_controller());
+  EXPECT_CALL(pip_window_controller(), Close(false));
+  minimize_button_clicker.NotifyClick(dummy_event);
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest, ShowsBackToTabImageButton) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  OverlayWindowBackToTabButton* back_to_tab_image_button =
+      overlay_window().back_to_tab_button_for_testing();
+  ASSERT_NE(nullptr, back_to_tab_image_button);
+  EXPECT_TRUE(back_to_tab_image_button->IsDrawn());
+  views::test::ButtonTestApi button_clicker(back_to_tab_image_button);
+  ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
+                             gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
+
+  PictureInPictureWindowManager::GetInstance()
+      ->set_window_controller_for_testing(&pip_window_controller());
+  EXPECT_CALL(pip_window_controller(), CloseAndFocusInitiator());
+  button_clicker.NotifyClick(dummy_event);
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
 }

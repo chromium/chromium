@@ -31,16 +31,4 @@ public interface FeedBubbleDelegate {
 
     /** Returns true if the user can scroll up the page. */
     boolean canScrollUp();
-
-    /** Returns the number of header items. */
-    int getHeaderCount();
-
-    /** Returns the number of items, including both headers and feed items. */
-    int getItemCount();
-
-    /** Returns the position of the first visible position. */
-    int getFirstVisiblePosition();
-
-    /** Returns the position of the last visible position. */
-    int getLastVisiblePosition();
 }

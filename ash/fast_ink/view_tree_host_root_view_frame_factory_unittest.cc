@@ -44,8 +44,9 @@ class ViewTreeHostRootViewFrameFactoryTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    widget_ = CreateTestWidget(nullptr, kShellWindowId_OverlayContainer,
-                               gfx::Rect(0, 0, 200, 100));
+    widget_ = CreateTestWidget(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+        kShellWindowId_OverlayContainer, gfx::Rect(0, 0, 200, 100));
     factory_ =
         std::make_unique<ViewTreeHostRootViewFrameFactory>(widget_.get());
   }

@@ -26,7 +26,7 @@
         CallWith=ScriptState,
         RaisesException,
         Measure
-    ] Promise<void> removeEntry(USVString name,
+    ] Promise<undefined> removeEntry(USVString name,
         optional FileSystemRemoveOptions options = {});
 
     [

@@ -58,7 +58,7 @@ TEST(DestinationSetTest, Parse) {
       {
           "destination_list_empty",
           R"json([])json",
-          ErrorIs(SourceRegistrationError::kDestinationMissing),
+          ErrorIs(SourceRegistrationError::kDestinationWrongType),
       },
       {
           "destination_in_list_wrong_type",
@@ -68,7 +68,7 @@ TEST(DestinationSetTest, Parse) {
       {
           "destination_in_list_untrustworthy",
           R"json(["http://d.example"])json",
-          ErrorIs(SourceRegistrationError::kDestinationUntrustworthy),
+          ErrorIs(SourceRegistrationError::kDestinationListUntrustworthy),
       },
       {
           "multiple_destinations",
@@ -92,7 +92,22 @@ TEST(DestinationSetTest, Parse) {
             "https://f.example",
             "https://g.example"
           ])json",
-          ErrorIs(SourceRegistrationError::kDestinationListTooLong),
+          ErrorIs(SourceRegistrationError::kDestinationWrongType),
+      },
+      {
+          "size_check_after_transformation_and_deduplication",
+          R"json([
+            "https://d1.example",
+            "https://d2.example",
+            "https://d3.example/a",
+            "https://d3.example/b"
+          ])json",
+          ValueIs(Property(
+              &DestinationSet::destinations,
+              ElementsAre(
+                  net::SchemefulSite::Deserialize("https://d1.example"),
+                  net::SchemefulSite::Deserialize("https://d2.example"),
+                  net::SchemefulSite::Deserialize("https://d3.example")))),
       },
   };
 

@@ -1,0 +1,102 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mahi.mojom;
+
+import "services/screen_ai/public/mojom/screen_ai_service.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+import "ui/accessibility/mojom/ax_tree_update.mojom";
+
+// Bitfield of the extraction methods in use.
+struct ExtractionMethods {
+  // Boolean if algrithm is used for content extraction.
+  bool use_algorithm;
+
+  // Boolean if screen2x is used for content extraction.
+  bool use_screen2x;
+};
+
+// The struct of the content extraction request.
+struct ExtractionRequest {
+  // `ukm::SourceID` is required by Screen2X to tie the UKM event to the main
+  // frame URL for metrics collection.
+  int64? ukm_source_id@0;
+
+  // The accessibility tree snapshot that requires content extraction.
+  // This is obtained by taking a snapshot of a accessibility tree.
+  // When `snapshot` is set, `updates` will be disregared.
+  ax.mojom.AXTreeUpdate? snapshot@1;
+
+  // The methods that will be used for extraction.
+  ExtractionMethods extraction_methods@2;
+
+  // A series of accessibility tree updates that requires content extraction.
+  // This is obtained by observing accessibility changes.
+  // Only used if `snapshot` is not set.
+  array<ax.mojom.AXTreeUpdate>? updates@3;
+};
+
+enum ResponseStatus {
+  kSuccess, // Operation succeeded.
+  kUnknownError, // Operation failed with unknown error.
+  kScreen2xNotAvailable, // Screen2x was requested when it was not available.
+};
+
+// The struct of the content extraction response.
+struct ExtractionResponse {
+  // The extracted content of the page.
+  mojo_base.mojom.String16 contents@0;
+
+  // The operation status of this response.
+  ResponseStatus status@1;
+};
+
+// The struct of the content size response.
+struct ContentSizeResponse {
+  // The word count of the contents of the page.
+  int32 word_count@0;
+
+  // The operation status of this response.
+  ResponseStatus status@1;
+};
+
+// Provides a way to extract contents from in a sandboxed utility process, since
+// the inputs is the accessibility tree from web contents which is treated as
+// untrustworthy.
+// `ExtractRequest` contains `AXTreeUpdate` that can be quite large, hence the
+// [UnlimitedSize] tag. It may be possible to remove this if AXTreeUpdate can be
+// reworked to avoid very large serialized values.
+// TODO(b:355293229): figure out how to remove the `[UnlimitedSize]` tags.
+[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+interface ContentExtractionService {
+  // Receives a content extraction request, and returns the main content of the
+  // given tree.
+  [UnlimitedSize]
+  ExtractContent@0(ExtractionRequest extraction_request)
+    => (ExtractionResponse extraction_response);
+
+  // Receives a content extraction request, and returns the word count of the
+  // given tree.
+  [UnlimitedSize]
+  GetContentSize@1(ExtractionRequest extraction_request)
+    => (ContentSizeResponse contents_size_response);
+};
+
+// The factory interface to bind interfaces to the actual services.
+[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
+interface ContentExtractionServiceFactory {
+  // Binds an interface that can be used to do content extraction.
+  BindContentExtractionService@0(
+    pending_receiver<ContentExtractionService> content_extraction_service);
+
+  // Used by the client to notify service that screen2x model is ready for
+  // binding.
+  // It binds screen2x model to content extraction service, which allows the
+  // screen2x content extraction to be used. Screen2x is also held in a utility
+  // process.
+  OnScreen2xReady@1(
+    pending_remote<screen_ai.mojom.Screen2xMainContentExtractor> extractor);
+};

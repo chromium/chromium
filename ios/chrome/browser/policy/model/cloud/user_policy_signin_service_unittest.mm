@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
+
 #import <memory>
 #import <utility>
 
@@ -29,11 +31,10 @@
 #import "google_apis/gaia/google_service_auth_error.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
-#import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/policy/model/device_management_service_configuration_ios.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -128,7 +129,7 @@ class UserPolicySigninServiceTest : public PlatformTest {
 
     TestChromeBrowserState::Builder builder;
     builder.SetUserCloudPolicyManager(BuildCloudPolicyManager());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_state_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
@@ -275,9 +276,8 @@ class UserPolicySigninServiceTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  IOSChromeScopedTestingLocalState scoped_local_state_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   raw_ptr<PrefService> pref_service_;
 
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;

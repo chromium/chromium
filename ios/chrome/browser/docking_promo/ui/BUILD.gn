@@ -7,6 +7,8 @@ source_set("ui") {
     "docking_promo_consumer.h",
     "docking_promo_display_handler.h",
     "docking_promo_display_handler.mm",
+    "docking_promo_metrics.h",
+    "docking_promo_metrics.mm",
     "docking_promo_view_controller.h",
     "docking_promo_view_controller.mm",
   ]

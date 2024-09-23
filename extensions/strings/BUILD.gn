@@ -6,7 +6,7 @@ import("//build/config/locales.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 
-assert(enable_extensions)
+assert(enable_extensions_core)
 
 grit("strings") {
   source = "extensions_strings.grd"

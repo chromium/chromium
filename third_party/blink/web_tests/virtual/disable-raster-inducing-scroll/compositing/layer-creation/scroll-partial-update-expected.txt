@@ -1,0 +1,35 @@
+scroll me
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='composited'",
+      "bounds": [20, 20],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='overlay'",
+      "position": [10, 8],
+      "bounds": [400, 204],
+      "backgroundColor": "#FFFF0080"
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    }
+  ]
+}
+

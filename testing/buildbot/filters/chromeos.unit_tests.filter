@@ -1,2 +1,2 @@
-# TODO(crbug.com/970806): Enable this.
+# TODO(crbug.com/40630672): Enable this.
 -KeyboardShortcutViewerMetadataTest.ModifyAcceleratorShouldUpdateMetadata

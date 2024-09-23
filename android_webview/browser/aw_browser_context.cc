@@ -20,10 +20,10 @@
 #include "android_webview/browser/aw_quota_manager_bridge.h"
 #include "android_webview/browser/aw_web_ui_controller_factory.h"
 #include "android_webview/browser/cookie_manager.h"
+#include "android_webview/browser/ip_protection/aw_ip_protection_core_host.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/network_service/net_helpers.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
-#include "android_webview/browser_jni_headers/AwBrowserContext_jni.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
@@ -42,7 +42,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/download/public/common/in_progress_download_manager.h"
@@ -80,7 +79,11 @@
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwBrowserContext_jni.h"
 
 using base::FilePath;
 using content::BrowserThread;
@@ -261,7 +264,7 @@ void AwBrowserContext::RegisterPrefs(PrefRegistrySimple* registry) {
   // We only use the autocomplete feature of Autofill, which is controlled via
   // the manager_delegate. We don't use the rest of Autofill, which is why it is
   // hardcoded as disabled here.
-  // TODO(crbug.com/873740): The following also disables autocomplete.
+  // TODO(crbug.com/40589187): The following also disables autocomplete.
   // Investigate what the intended behavior is.
   registry->RegisterBooleanPref(autofill::prefs::kAutofillProfileEnabled,
                                 false);
@@ -307,7 +310,7 @@ void AwBrowserContext::CreateUserPrefService() {
           browser_policy_connector->GetHandlerList(),
           policy::POLICY_LEVEL_MANDATORY));
   {
-    // TODO(crbug.com/1446913): We can potentially use
+    // TODO(crbug.com/40268809): We can potentially use
     // pref_service_factory.set_async(true) instead of ScopedAllowBlocking in
     // order to avoid blocking here or to at least parallelize work in the
     // background, but it might require additional cross-thread synchronization.
@@ -433,7 +436,7 @@ content::SSLHostStateDelegate* AwBrowserContext::GetSSLHostStateDelegate() {
 
 AwPermissionManager* AwBrowserContext::GetPermissionControllerDelegate() {
   if (!permission_manager_.get())
-    permission_manager_ = std::make_unique<AwPermissionManager>();
+    permission_manager_ = std::make_unique<AwPermissionManager>(*this);
   return permission_manager_.get();
 }
 
@@ -505,6 +508,13 @@ void AwBrowserContext::RebuildTable(
   enumerator->OnComplete(true);
 }
 
+void AwBrowserContext::BuildVisitedLinkTable(
+    const scoped_refptr<VisitedLinkEnumerator>& enumerator) {
+  // Partitioned visited link hashtables are not supported in Android WebView,
+  // so this initialization path is not used.
+  enumerator->OnVisitedLinkComplete(true);
+}
+
 void AwBrowserContext::SetExtendedReportingAllowed(bool allowed) {
   user_pref_service_->SetBoolean(
       ::prefs::kSafeBrowsingExtendedReportingOptInAllowed, allowed);
@@ -564,13 +574,22 @@ void AwBrowserContext::ConfigureNetworkContextParams(
   // (http://crbug.com/921750).
   context_params->enforce_chrome_ct_policy = false;
 
-  context_params->enable_brotli = base::FeatureList::IsEnabled(
-      android_webview::features::kWebViewBrotliSupport);
+  context_params->enable_brotli = true;
   context_params->enable_zstd =
       base::FeatureList::IsEnabled(net::features::kZstdContentEncoding);
 
   context_params->check_clear_text_permitted =
       AwContentBrowserClient::get_check_cleartext_permitted();
+
+  AwIpProtectionCoreHost* aw_ipp_core_host = AwIpProtectionCoreHost::Get(this);
+  if (aw_ipp_core_host) {
+    aw_ipp_core_host->AddNetworkService(
+        context_params->ip_protection_config_getter
+            .InitWithNewPipeAndPassReceiver(),
+        context_params->ip_protection_control.InitWithNewPipeAndPassRemote());
+    context_params->enable_ip_protection =
+        aw_ipp_core_host->IsIpProtectionEnabled();
+  }
 
   // Add proxy settings
   AwProxyConfigMonitor::GetInstance()->AddProxyToNetworkContextParams(
@@ -698,7 +717,7 @@ void AwBrowserContext::DeleteContext(const base::FilePath& relative_path) {
   // and (as of writing) should never be deleted.
   CHECK_NE(relative_path.value(), AwBrowserContextStore::kDefaultContextPath);
 
-  // TODO(crbug.com/1446913): This could be partially backgrounded by deleting
+  // TODO(crbug.com/40268809): This could be partially backgrounded by deleting
   // on the thread pool. Ideally, any interrupted profile directory deletion
   // would be resumed in the background on startup. For now, this just deletes
   // synchronously.
@@ -716,6 +735,34 @@ void AwBrowserContext::DeleteContext(const base::FilePath& relative_path) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_AwBrowserContext_deleteSharedPreferences(
       env, base::android::ConvertUTF8ToJavaString(env, relative_path.value()));
+}
+blink::mojom::PermissionStatus AwBrowserContext::GetGeolocationPermission(
+    const GURL& origin) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (!obj_) {
+    return blink::mojom::PermissionStatus::ASK;
+  }
+
+  base::android::ScopedJavaLocalRef<jstring> j_origin(
+      base::android::ConvertUTF8ToJavaString(env, origin.spec()));
+  return static_cast<blink::mojom::PermissionStatus>(
+      Java_AwBrowserContext_getGeolocationPermission(env, obj_, j_origin));
+}
+
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+AwBrowserContext::CreateURLLoaderFactory() {
+  auto url_loader_factory_params =
+      network::mojom::URLLoaderFactoryParams::New();
+  url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
+  url_loader_factory_params->is_orb_enabled = false;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory;
+
+  GetDefaultStoragePartition()->GetNetworkContext()->CreateURLLoaderFactory(
+      factory.InitWithNewPipeAndPassReceiver(),
+      std::move(url_loader_factory_params));
+
+  return factory;
 }
 
 }  // namespace android_webview

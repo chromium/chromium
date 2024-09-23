@@ -6,15 +6,15 @@
 </style>
 <template is="dom-if" if="[[!shouldShowCompletionInfo_]]">
   <div class="header-with-icon">
-    <iron-icon role="img" icon="cr:info-outline" class="header-icon">
-    </iron-icon>
+    <cr-icon role="img" icon="cr:info-outline" class="header-icon">
+    </cr-icon>
     <cr-expand-button class="header-group-wrapper" no-hover
         expanded="{{unusedSitePermissionsReviewListExpanded_}}">
       <h2>[[headerString_]]</h2>
       <div class="secondary">[[subtitleString_]]</div>
     </cr-expand-button>
   </div>
-  <iron-collapse class="site-list"
+  <cr-collapse class="site-list"
       opened="[[unusedSitePermissionsReviewListExpanded_]]">
     <template is="dom-repeat" items="[[sites_]]">
       <div class$="list-item site-entry [[getRowClass_(item.visible)]]">
@@ -36,14 +36,14 @@
         $i18n{safetyCheckUnusedSitePermissionsGotItLabel}
       </cr-button>
     </div>
-  </iron-collapse>
-  <paper-tooltip fit-to-visible-bounds manual-mode position="top" offset="3">
+  </cr-collapse>
+  <cr-tooltip fit-to-visible-bounds manual-mode position="top" offset="3">
     $i18n{safetyCheckUnusedSitePermissionsAllowAgainLabel}
-  </paper-tooltip>
+  </cr-tooltip>
 </template>
 <template is="dom-if" if="[[shouldShowCompletionInfo_]]">
   <div class="header-with-icon">
-    <iron-icon role="img" icon="cr:check"></iron-icon>
+    <cr-icon role="img" icon="cr:check"></cr-icon>
     <div class="header-group-wrapper">
       $i18n{safetyCheckUnusedSitePermissionsDoneLabel}
     </div>

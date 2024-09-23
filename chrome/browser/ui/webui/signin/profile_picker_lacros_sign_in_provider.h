@@ -9,9 +9,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+
+class ScopedProfileKeepAlive;
 
 // Class responsible for showing the lacros sign-in dialog and returning a
 // profile with a kSignin primary account.

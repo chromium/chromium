@@ -89,7 +89,7 @@ class OneTimePermissionProvider
       ContentSettingsType type,
       std::optional<ContentSetting> setting_to_match,
       const content_settings::PartitionKey& partition_key) override;
-  void SetClockForTesting(base::Clock* clock) override;
+  void SetClockForTesting(const base::Clock* clock) override;
 
   void ExpireWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,

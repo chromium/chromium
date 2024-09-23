@@ -5,6 +5,9 @@
 syntax = "proto2";
 option optimize_for = LITE_RUNTIME;
 
+import "components/manta/proto/common.proto";
+import "components/manta/proto/sparky.proto";
+
 package manta.proto;
 
 enum FeatureName {
@@ -13,6 +16,41 @@ enum FeatureName {
   CHROMEOS_VC_BACKGROUNDS = 300;
   CHROMEOS_WALLPAPER = 301;
   TEXT_TEST = 302;
+  CHROMEOS_READER_SUMMARY = 303;
+  CHROMEOS_READER_TOC = 312;
+  CHROMEOS_READER_Q_AND_A = 313;
+  CHROMEOS_SPARKY = 314;
+  CHROMEOS_LOBSTER = 315;
+  reserved 304 to 311;
+
+  ACCESSIBILITY_IMAGE_DESCRIPTION = 700;
+}
+
+message ClientInfo {
+  enum ClientType {
+    reserved 0, 1;
+    CHROME = 2;
+  }
+
+  optional ClientType client_type = 1;
+  optional ChromeClientInfo chrome_client_info = 4;
+  reserved 2, 3;
+}
+
+message ChromeClientInfo {
+  optional string chrome_version = 1;
+  optional string locale = 4;
+
+  // The channel of the Chrome client.
+  enum Channel {
+    UNKNOWN = 0;
+    CANARY = 1;
+    DEV = 2;
+    BETA = 3;
+    STABLE = 4;
+  }
+  optional Channel chrome_channel = 5;
+  reserved 2, 3;
 }
 
 enum ImageResolution {
@@ -52,6 +90,7 @@ message RequestConfig {
     EMOJIFY = 5;
     FREEFORM_REWRITE = 6;
     FREEFORM_WRITE = 7;
+    PROOFREAD = 8;
   }
 
   optional Tone tone = 5;
@@ -59,39 +98,61 @@ message RequestConfig {
   optional ImageDimensions image_dimensions = 7;
 
   optional AspectRatio aspect_ratio = 8;
+
+  optional Proto3Any specific_options = 9;
 }
 
 message InputData {
-  reserved 2, 3;
 
-  optional string text = 1;
+  oneof input_data {
+    string text = 1;
+    Image image = 2;
+    Proto3Any custom = 3;
+    SparkyContextData sparky_context_data = 5;
+  }
   optional string tag = 4;
 }
 
 message Request {
-  reserved 2;
-
   optional FeatureName feature_name = 1;
+  optional ClientInfo client_info = 2;
   optional RequestConfig request_config = 3;
   repeated InputData input_data = 4;
 }
 
-message Image {
-  optional bytes serialized_bytes = 1;
-}
-
 message OutputData {
-  reserved 3, 4, 5;
+  reserved 4;
   oneof output_data {
     string text = 1;
     Image image = 2;
+    Proto3Any custom = 3;
+    SparkyResponse sparky_response = 7;
   }
+
+  optional float score = 5;
 
   optional uint32 generation_seed = 6;
 }
 
+enum FilteredReason {
+  UNSPECIFIED = 0;
+  IMAGE_SAFETY = 1;
+  TEXT_SAFETY = 2;
+  TEXT_LOW_QUALITY = 3;
+  TEXT_BLOCKLIST = 4;
+
+  reserved 5, 6, 7;
+}
+
+message FilteredData {
+  reserved 1;
+  optional bool is_output_data = 2;
+  optional FilteredReason reason = 3;
+}
+
 message Response {
-  reserved 2, 3;
+  reserved 3;
 
   repeated OutputData output_data = 1;
+  repeated FilteredData filtered_data = 2;
 }

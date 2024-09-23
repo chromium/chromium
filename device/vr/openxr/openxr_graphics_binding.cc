@@ -46,10 +46,6 @@ gpu::MailboxHolder SwapChainInfo::GetMailboxHolder() const {
   return gpu::MailboxHolder(shared_image->mailbox(), sync_token, GL_TEXTURE_2D);
 }
 
-bool OpenXrGraphicsBinding::Render() {
-  return true;
-}
-
 void OpenXrGraphicsBinding::PrepareViewConfigForRender(
     const XrSwapchain& color_swapchain,
     OpenXrViewConfiguration& view_config) {

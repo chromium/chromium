@@ -6,10 +6,14 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <memory>
+
 #include "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
+#include "base/base_paths.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -22,12 +26,13 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/buildflags.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_policy_observer.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/mac/install_from_dmg.h"
+#include "chrome/browser/mac/metrics.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
 #include "chrome/browser/ui/cocoa/renderer_context_menu/chrome_swizzle_services_menu_updater.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
-#include "chrome/browser/updater/scheduler.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -47,9 +52,30 @@
 
 // ChromeBrowserMainPartsMac ---------------------------------------------------
 
+namespace {
+
+base::FilePath GetBundlePath() {
+  if (!base::apple::AmIBundled()) {
+    return base::FilePath();
+  }
+  return base::apple::OuterBundlePath();
+}
+
+base::FilePath GetMainExecutableName() {
+  if (!base::apple::AmIBundled()) {
+    return base::FilePath();
+  }
+  base::FilePath path;
+  base::PathService::Get(base::FILE_EXE, &path);
+  return path.BaseName();
+}
+
+}  // namespace
+
 ChromeBrowserMainPartsMac::ChromeBrowserMainPartsMac(bool is_integration_test,
                                                      StartupData* startup_data)
-    : ChromeBrowserMainPartsPosix(is_integration_test, startup_data) {}
+    : ChromeBrowserMainPartsPosix(is_integration_test, startup_data),
+      code_sign_clone_manager_(GetBundlePath(), GetMainExecutableName()) {}
 
 ChromeBrowserMainPartsMac::~ChromeBrowserMainPartsMac() = default;
 
@@ -75,11 +101,6 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
   // ChromeBrowserMainParts should have loaded the resource bundle by this
   // point (needed to load the nib).
   CHECK(ui::ResourceBundle::HasSharedInstance());
-
-#if BUILDFLAG(ENABLE_UPDATER)
-  EnsureUpdater(base::DoNothing(), base::DoNothing());
-  updater::SchedulePeriodicTasks();
-#endif  // BUILDFLAG(ENABLE_UPDATER)
 
 #if !BUILDFLAG(CHROME_FOR_TESTING)
   // Disk image installation is sort of a first-run task, so it shares the
@@ -115,6 +136,9 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
 
   ui::WarmScreenCapture();
 
+  metrics_ = std::make_unique<mac_metrics::Metrics>();
+  metrics_->RecordAppFileSystemType();
+
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
 
@@ -141,11 +165,25 @@ void ChromeBrowserMainPartsMac::PreProfileInit() {
   // This is called here so that the app shim socket is only created after
   // taking the singleton lock.
   g_browser_process->platform_part()->app_shim_listener()->Init();
+
+  // Start up the platform auth SSO policy observer.
+  if (auto* local_state = g_browser_process->local_state(); local_state) {
+    platform_auth_policy_observer_ =
+        std::make_unique<PlatformAuthPolicyObserver>(local_state);
+  }
 }
 
 void ChromeBrowserMainPartsMac::PostProfileInit(Profile* profile,
                                                 bool is_initial_profile) {
   ChromeBrowserMainPartsPosix::PostProfileInit(profile, is_initial_profile);
+}
+
+void ChromeBrowserMainPartsMac::PostMainMessageLoopRun() {
+  // The `ProfileManager` has been destroyed, so no new platform authentication
+  // requests will be created.
+  platform_auth_policy_observer_.reset();
+
+  ChromeBrowserMainParts::PostMainMessageLoopRun();
 }
 
 void ChromeBrowserMainPartsMac::DidEndMainMessageLoop() {

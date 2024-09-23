@@ -1,17 +1,27 @@
 'use strict';
 
-function navigateFocusForward() {
-  // TAB = '\ue004'
-  return test_driver.send_keys(document.body, "\ue004");
+function waitForRender() {
+  return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+async function navigateFocusForward() {
+  await waitForRender();
+  const kTab = '\uE004';
+  await new test_driver.send_keys(document.body, kTab);
+  await waitForRender();
 }
 
 async function navigateFocusBackward() {
-  return new test_driver.Actions()
-    .keyDown('\uE050')
-    .keyDown('\uE004')
-    .keyUp('\uE004')
-    .keyUp('\uE050')
+  await waitForRender();
+  const kShift = '\uE008';
+  const kTab = '\uE004';
+  await new test_driver.Actions()
+    .keyDown(kShift)
+    .keyDown(kTab)
+    .keyUp(kTab)
+    .keyUp(kShift)
     .send();
+  await waitForRender();
 }
 
 // If shadow root is open, can find element using element path
@@ -162,3 +172,18 @@ async function assert_focus_navigation_bidirectional_with_shadow_root(elements) 
   await assert_focus_navigation_backward_with_shadow_root(elements);
 }
 
+// This Promise will run each test case that is:
+// 1. Wrapped in an element with class name "test-case".
+// 2. Has data-expect attribute be an ordered list of elements to focus.
+// 3. Has data-description attribute be a string explaining the test.
+// e.g <div class="test-case" data-expect="b,a,c"
+//          data-description="Focus navigation">
+async function runFocusTestCases() {
+  const testCases = Array.from(document.querySelectorAll('.test-case'));
+  for (let testCase of testCases) {
+    promise_test(async () => {
+      const expected = testCase.dataset.expect.split(',');
+      await assert_focus_navigation_bidirectional(expected);
+    }, testCase.dataset.description);
+  }
+}

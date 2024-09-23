@@ -53,6 +53,21 @@ shopping_service::mojom::ProductInfoPtr ProductInfoToMojoProduct(
             kToMicroCurrency)));
   }
 
+  for (const auto& product_category :
+       info->category_data.product_categories()) {
+    std::string category_labels;
+    bool is_first = true;
+    for (const auto& category_label : product_category.category_labels()) {
+      if (!is_first) {
+        category_labels.append(">");
+      }
+      is_first = false;
+      category_labels.append(category_label.category_short_label().empty()
+                                 ? category_label.category_default_label()
+                                 : category_label.category_short_label());
+    }
+    product_info->category_labels.push_back(std::move(category_labels));
+  }
   return product_info;
 }
 

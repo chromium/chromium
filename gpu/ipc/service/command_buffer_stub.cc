@@ -20,12 +20,10 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/gpu_command_buffer_memory_tracker.h"
 #include "gpu/command_buffer/service/logger.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/query_manager.h"
 #include "gpu/command_buffer/service/scheduler.h"
@@ -322,13 +320,10 @@ void CommandBufferStub::Destroy() {
     sync_point_client_state_ = nullptr;
   }
 
-  bool have_context = false;
-  if (decoder_context_ && decoder_context_->GetGLContext()) {
-    // Try to make the context current regardless of whether it was lost, so we
-    // don't leak resources.
-    have_context =
-        decoder_context_->GetGLContext()->MakeCurrent(surface_.get());
-  }
+  // Try to make the context current regardless of whether it was lost, so we
+  // don't leak resources. Don't use GetGLContext()->MakeCurrent() since that
+  // will make |have_context| false when RasterDecoder doesn't use GL.
+  const bool have_context = decoder_context_ && decoder_context_->MakeCurrent();
 
   std::optional<gles2::ProgramCache::ScopedCacheUse> cache_use;
   if (have_context)
@@ -414,10 +409,8 @@ void CommandBufferStub::WaitForTokenInRange(int32_t start,
   CheckContextLost();
   if (wait_for_token_)
     LOG(ERROR) << "Got WaitForToken command while currently waiting for token.";
-  // TODO(elgarawany): Replace with SetSequencePriority when Scheduler is
-  // replaced with SchedulerDfs.
-  channel_->scheduler()->RaisePriorityForClientWait(sequence_id_,
-                                                    command_buffer_id_);
+  channel_->scheduler()->SetSequencePriority(sequence_id_,
+                                             SchedulingPriority::kHigh);
   wait_for_token_ =
       std::make_unique<WaitForCommandState>(start, end, std::move(callback));
   CheckCompleteWaits();
@@ -437,10 +430,8 @@ void CommandBufferStub::WaitForGetOffsetInRange(uint32_t set_get_buffer_count,
     LOG(ERROR)
         << "Got WaitForGetOffset command while currently waiting for offset.";
   }
-  // TODO(elgarawany): Replace with SetSequencePriority when Scheduler is
-  // replaced with SchedulerDfs.
-  channel_->scheduler()->RaisePriorityForClientWait(sequence_id_,
-                                                    command_buffer_id_);
+  channel_->scheduler()->SetSequencePriority(sequence_id_,
+                                             SchedulingPriority::kHigh);
   wait_for_get_offset_ =
       std::make_unique<WaitForCommandState>(start, end, std::move(callback));
   wait_set_get_buffer_count_ = set_get_buffer_count;
@@ -471,10 +462,9 @@ void CommandBufferStub::CheckCompleteWaits() {
     }
   }
   if (has_wait && !(wait_for_token_ || wait_for_get_offset_)) {
-    // TODO(elgarawany): Replace with reset the sequence back to its default
-    // priority when Scheduler is replaced with SchedulerDfs.
-    channel_->scheduler()->ResetPriorityForClientWait(sequence_id_,
-                                                      command_buffer_id_);
+    channel_->scheduler()->SetSequencePriority(
+        sequence_id_,
+        channel_->scheduler()->GetSequenceDefaultPriority(sequence_id_));
   }
 }
 
@@ -624,6 +614,10 @@ void CommandBufferStub::HandleReturnData(base::span<const uint8_t> data) {
   client_->OnReturnData(std::vector<uint8_t>(data.begin(), data.end()));
 }
 
+bool CommandBufferStub::ShouldYield() {
+  return channel_->scheduler()->ShouldYield(sequence_id_);
+}
+
 void CommandBufferStub::OnConsoleMessage(int32_t id,
                                          const std::string& message) {
   client_->OnConsoleMessage(message);
@@ -747,19 +741,20 @@ CommandBufferStub::SetOrGetMemoryTrackerFactory(MemoryTrackerFactory factory) {
 CommandBufferStub::ScopedContextOperation::ScopedContextOperation(
     CommandBufferStub& stub)
     : stub_(stub) {
-  stub_->UpdateActiveUrl();
-  if (stub_->decoder_context_ && stub_->MakeCurrent()) {
+  stub_.UpdateActiveUrl();
+  if (stub_.decoder_context_ && stub_.MakeCurrent()) {
     have_context_ = true;
-    stub_->CreateCacheUse(cache_use_);
+    stub_.CreateCacheUse(cache_use_);
   }
 }
 
 CommandBufferStub::ScopedContextOperation::~ScopedContextOperation() {
-  stub_->CheckCompleteWaits();
+  stub_.CheckCompleteWaits();
   if (have_context_) {
-    if (stub_->decoder_context_)
-      stub_->decoder_context_->ProcessPendingQueries(/*did_finish=*/false);
-    stub_->ScheduleDelayedWork(base::Milliseconds(kHandleMoreWorkPeriodMs));
+    if (stub_.decoder_context_) {
+      stub_.decoder_context_->ProcessPendingQueries(/*did_finish=*/false);
+    }
+    stub_.ScheduleDelayedWork(base::Milliseconds(kHandleMoreWorkPeriodMs));
   }
 }
 

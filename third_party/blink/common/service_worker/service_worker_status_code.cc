@@ -56,7 +56,7 @@ const char* ServiceWorkerStatusToString(ServiceWorkerStatusCode status) {
     case ServiceWorkerStatusCode::kErrorStorageDataCorrupted:
       return "Storage data corrupted";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

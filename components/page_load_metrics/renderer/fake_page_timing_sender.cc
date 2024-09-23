@@ -36,6 +36,9 @@ void FakePageTimingSender::SendTiming(
 void FakePageTimingSender::SetUpSmoothnessReporting(
     base::ReadOnlySharedMemoryRegion shared_memory) {}
 
+void FakePageTimingSender::SendCustomUserTiming(
+    mojom::CustomUserTimingMarkPtr timing) {}
+
 FakePageTimingSender::PageTimingValidator::PageTimingValidator() {
   expected_input_timing.max_event_durations =
       mojom::UserInteractionLatencies::NewUserInteractionLatencies({});

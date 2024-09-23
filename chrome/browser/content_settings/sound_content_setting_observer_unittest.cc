@@ -104,7 +104,7 @@ class SoundContentSettingObserverTest : public ChromeRenderViewHostTestHarness {
 // TabMutedReason does not exist on Android.
 #if !BUILDFLAG(IS_ANDROID)
   void SetMuteStateForReason(bool state, TabMutedReason reason) {
-    chrome::SetTabAudioMuted(web_contents(), state, reason, kExtensionId);
+    SetTabAudioMuted(web_contents(), state, reason, kExtensionId);
   }
 #endif
 

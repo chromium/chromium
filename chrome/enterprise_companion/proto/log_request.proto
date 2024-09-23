@@ -1,0 +1,46 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package enterprise_companion.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+enum LogSource {
+  UNKNOWN = 0;
+  CHROME_ENTERPRISE_COMPANION_APP = 2454;
+}
+
+message LogEvent {
+  int64 event_time_ms = 1;
+
+  // Serialized application event data.
+  bytes source_extension = 6;
+}
+
+message ClientInfo {
+  enum ClientType {
+    UNKNOWN = 0;
+    CHROME_ENTERPRISE_COMPANION = 39;
+  }
+
+  ClientType client_type = 1;
+}
+
+message LogRequest {
+  int64 request_time_ms = 4;
+
+  ClientInfo client_info = 1;
+
+  int32 log_source = 2;
+
+  repeated LogEvent log_event = 3;
+}
+
+message LogResponse {
+  // Client should wait for next_request_wait_millis before sending the next
+  // log request.
+  int64 next_request_wait_millis = 1;
+}

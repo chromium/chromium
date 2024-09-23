@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/debug/stack_trace.h"
 
 #include <elf.h>
@@ -18,6 +23,7 @@
 #include <array>
 #include <iomanip>
 #include <iostream>
+#include <string_view>
 #include <type_traits>
 
 #include "base/atomic_sequence_num.h"
@@ -170,19 +176,19 @@ void SymbolMap::Populate() {
 
     // Get the human-readable library name from the ELF header, falling back on
     // using names from the link map for binaries that aren't shared libraries.
-    absl::optional<StringPiece> elf_library_name =
+    std::optional<std::string_view> elf_library_name =
         ReadElfLibraryName(next_entry.addr);
     if (elf_library_name) {
       strlcpy(next_entry.name, elf_library_name->data(),
               elf_library_name->size() + 1);
     } else {
-      StringPiece link_map_name(lmap->l_name[0] ? lmap->l_name
-                                                : "<executable>");
+      std::string_view link_map_name(lmap->l_name[0] ? lmap->l_name
+                                                     : "<executable>");
 
       // The "module" stack trace annotation doesn't allow for strings which
       // resemble paths, so extract the filename portion from |link_map_name|.
       size_t directory_prefix_idx = link_map_name.find_last_of("/");
-      if (directory_prefix_idx != StringPiece::npos) {
+      if (directory_prefix_idx != std::string_view::npos) {
         link_map_name = link_map_name.substr(
             directory_prefix_idx + 1,
             link_map_name.size() - directory_prefix_idx - 1);
@@ -229,21 +235,28 @@ bool EnableInProcessStackDumping() {
   return true;
 }
 
-size_t CollectStackTrace(const void** trace, size_t count) {
+size_t CollectStackTrace(span<const void*> trace) {
   size_t frame_count = 0;
-  BacktraceData data = {trace, &frame_count, count};
+  BacktraceData data = {trace.data(), &frame_count, trace.size()};
   _Unwind_Backtrace(&UnwindStore, &data);
   return frame_count;
 }
 
-void StackTrace::PrintWithPrefix(const char* prefix_string) const {
-  OutputToStreamWithPrefix(&std::cerr, prefix_string);
+// static
+void StackTrace::PrintMessageWithPrefix(cstring_view prefix_string,
+                                        cstring_view message) {
+  std::cerr << prefix_string << message;
+}
+
+void StackTrace::PrintWithPrefixImpl(cstring_view prefix_string) const {
+  OutputToStreamWithPrefixImpl(&std::cerr, prefix_string);
 }
 
 // Emits stack trace data using the symbolizer markup format specified at:
 // https://fuchsia.googlesource.com/zircon/+/master/docs/symbolizer_markup.md
-void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
-                                          const char* prefix_string) const {
+void StackTrace::OutputToStreamWithPrefixImpl(
+    std::ostream* os,
+    cstring_view prefix_string) const {
   SymbolMap map;
 
   int module_id = 0;

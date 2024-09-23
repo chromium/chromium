@@ -16,7 +16,7 @@
         opacity: var(--cr-disabled-opacity);
       }
 
-      iron-collapse {
+      cr-collapse {
         margin-inline-end: 0;
         margin-inline-start: calc(var(--cr-radio-button-label-spacing, 20px)
             + var(--cr-radio-button-size));
@@ -60,6 +60,7 @@
       <div aria-checked$="[[getAriaChecked_(checked)]]"
           aria-disabled$="[[getAriaDisabled_(disabled)]]"
           aria-labelledby="label"
+          aria-describedby="sub-label"
           class="disc-wrapper"
           id="button"
           role="radio"
@@ -70,14 +71,13 @@
         <div class="disc"></div>
       </div>
       <div id="borderWrapper">
-        <iron-icon id="buttonIcon"
-            icon="[[icon]]" hidden$="[[!icon]]"></iron-icon>
+        <cr-icon id="buttonIcon" icon="[[icon]]" hidden$="[[!icon]]"></cr-icon>
         <div id="labelWrapper" class="cr-padded-text">
           <div id="label" aria-hidden="true">
             [[label]]
             <slot name="label"></slot>
           </div>
-          <div hidden$="[[!subLabel]]" class="secondary">
+          <div hidden$="[[!subLabel]]" id="sub-label" class="secondary">
             [[subLabel]]
             <slot name="sub-label"></slot>
           </div>
@@ -98,7 +98,7 @@
       </div>
     </div>
 
-    <iron-collapse opened="[[expanded]]">
+    <cr-collapse opened="[[expanded]]">
       <slot name="collapse"></slot>
       <slot name="noSelectionCollapse"></slot>
-    </iron-collapse>
+    </cr-collapse>

@@ -18,7 +18,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
-#include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
+#include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/compose/buildflags.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/lens/buildflags.h"
@@ -27,8 +27,8 @@
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "components/search_engines/template_url.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -52,33 +52,25 @@
 #include "chrome/browser/extensions/menu_manager.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#include "components/supervised_user/core/browser/supervised_user_utils.h"
-#endif
-
 class AccessibilityLabelsMenuObserver;
 class Browser;
 class ClickToCallContextMenuObserver;
 class LinkToTextMenuObserver;
 class PrintPreviewContextMenuObserver;
 class Profile;
-class QuickAnswersMenuObserver;
+class ReadWriteCardObserver;
 class SpellingMenuObserver;
 class SpellingOptionsSubMenuObserver;
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-class PdfOcrMenuObserver;
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace content {
 class RenderFrameHost;
 class WebContents;
-}
+}  // namespace content
 
 namespace extensions {
 class Extension;
 class MenuItem;
-}
+}  // namespace extensions
 
 namespace gfx {
 class Point;
@@ -88,7 +80,7 @@ namespace blink {
 namespace mojom {
 class MediaPlayerAction;
 }
-}
+}  // namespace blink
 
 namespace ui {
 class DataTransferEndpoint;
@@ -116,6 +108,9 @@ class RenderViewContextMenu
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExitFullscreenMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kComposeMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRegionSearchItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchForImageItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchForVideoFrameItem);
 
   using ExecutePluginActionCallback =
       base::OnceCallback<void(content::RenderFrameHost*,
@@ -140,7 +135,6 @@ class RenderViewContextMenu
   void ExecuteCommand(int command_id, int event_flags) override;
   void AddSpellCheckServiceItem(bool is_checked) override;
   void AddAccessibilityLabelsServiceItem(bool is_checked) override;
-  void AddPdfOcrMenuItem() override;
 
   // Registers a one-time callback that will be called the next time a context
   // menu is shown.
@@ -283,7 +277,7 @@ class RenderViewContextMenu
   void AppendOpenWithLinkItems();
   void AppendSmartSelectionActionItems();
   void AppendOpenInWebAppLinkItems();
-  void AppendQuickAnswersItems();
+  void AppendReadWriteCardItems();
   void AppendImageItems();
   void AppendAudioItems();
   void AppendCanvasItems();
@@ -307,10 +301,6 @@ class RenderViewContextMenu
   // Returns true if the items were appended. This might not happen in all
   // cases, e.g. these are only appended if a screen reader is enabled.
   bool AppendAccessibilityLabelsItems();
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  void AppendPdfOcrItems();
-  void AppendLayoutExtractionItem();
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void AppendSearchProvider();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void AppendAllExtensionItems();
@@ -320,14 +310,13 @@ class RenderViewContextMenu
   void AppendSearchLensForImageItems();
   void AppendSearchWebForImageItems();
   void AppendProtocolHandlerSubMenu();
+  // TODO(b/316143236): Remove this method (along with the methods called by it)
+  // once `kPasswordManualFallbackAvailable` is rolled out.
   void AppendPasswordItems();
   void AppendSharingItems();
-#if !BUILDFLAG(IS_FUCHSIA)
   void AppendClickToCallItem();
-#endif
   void AppendRegionSearchItem();
   void AppendLiveCaptionItem();
-  bool AppendFollowUnfollowItem();
   void AppendSendTabToSelfItem(bool add_separator);
   void AppendUserNotesItems();
   bool AppendQRCodeGeneratorItem(bool for_image,
@@ -338,7 +327,12 @@ class RenderViewContextMenu
       bool notify_if_restricted) const;
 
   // Helper function for checking policies.
-  bool IsSaveAsItemAllowedByPolicy() const;
+  bool IsSaveAsItemAllowedByPolicy(const GURL& item_url) const;
+
+  // Helper function for checking fenced frame tree untrusted network access
+  // status. For context menu commands that make network requests, this check
+  // should be applied.
+  bool IsAllowedByUntrustedNetworkStatus() const;
 
   // Command enabled query functions.
   bool IsReloadEnabled() const;
@@ -358,6 +352,7 @@ class RenderViewContextMenu
   bool IsOpenLinkAllowedByDlp(const GURL& link_url) const;
   bool IsRegionSearchEnabled() const;
   bool IsAddANoteEnabled() const;
+  bool IsVideoFrameItemEnabled(int id) const;
 
   // Command execution functions.
   void ExecSearchWebInCompanionSidePanel(const GURL& url);
@@ -373,7 +368,7 @@ class RenderViewContextMenu
   void ExecExitFullscreen();
   void ExecCopyLinkText();
   void ExecCopyImageAt();
-  void ExecSearchLensForImage(bool is_image_translate);
+  void ExecSearchLensForImage(int event_flags, bool is_image_translate);
   void ExecAddANote();
   void ExecRegionSearch(int event_flags,
                         bool is_google_default_search_provider);
@@ -383,7 +378,7 @@ class RenderViewContextMenu
   void ExecControls();
   void ExecSaveVideoFrameAs();
   void ExecCopyVideoFrame();
-  void ExecSearchForVideoFrame();
+  void ExecSearchForVideoFrame(int event_flags, bool is_lens_query);
   void ExecLiveCaption();
   void ExecRotateCW();
   void ExecRotateCCW();
@@ -400,12 +395,12 @@ class RenderViewContextMenu
   void ExecOpenCompose();
 #endif
   void ExecOpenInReadAnything();
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  void ExecRunLayoutExtraction();
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   void MediaPlayerAction(const blink::mojom::MediaPlayerAction& action);
-  void SearchForVideoFrame(const gfx::ImageSkia& image);
+  void SearchForVideoFrame(int event_flags,
+                           bool is_lens_query,
+                           const SkBitmap& bitmap,
+                           const gfx::Rect& region_bounds);
   void PluginActionAt(const gfx::Point& location,
                       blink::mojom::PluginActionType plugin_action);
 
@@ -430,14 +425,26 @@ class RenderViewContextMenu
   // warms up a renderer process.
   void MaybePrepareForLensQuery();
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // Does not execute "Save link as" if the URL is blocked by the URL filter.
   void CheckSupervisedUserURLFilterAndSaveLinkAs();
   void OnSupervisedUserURLFilterChecked(
       supervised_user::FilteringBehavior filtering_behavior,
       supervised_user::FilteringBehaviorReason reason,
       bool uncertain);
-#endif
+
+  // Opens the Lens overlay to search a region defined by the given bounds of
+  // the view and the image to be searched. Tab bounds and view bounds are
+  // relative to the screen and in DP, while image bounds are relative to the
+  // view and in physical pixels. The device scale factor is supplied to scale
+  // the image bounds properly.
+  void OpenLensOverlayWithPreselectedRegion(
+      mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+          chrome_render_frame,
+      const gfx::Rect& tab_bounds,
+      const gfx::Rect& view_bounds,
+      float device_scale_factor,
+      const SkBitmap& region_bytes,
+      const gfx::Rect& region_bitmap);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Shows the standalone clipboard history menu. `event_flags` describes the
@@ -480,12 +487,6 @@ class RenderViewContextMenu
       accessibility_labels_menu_observer_;
   ui::SimpleMenuModel accessibility_labels_submenu_model_;
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // An observer that handles PDF OCR items.
-  std::unique_ptr<PdfOcrMenuObserver> pdf_ocr_submenu_model_observer_;
-  std::unique_ptr<ui::SimpleMenuModel> pdf_ocr_submenu_model_;
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
 #if !BUILDFLAG(IS_MAC)
   // An observer that handles the submenu for showing spelling options. This
   // submenu lets users select the spelling language, for example.
@@ -499,8 +500,8 @@ class RenderViewContextMenu
   // An observer that handles smart text selection action items.
   std::unique_ptr<RenderViewContextMenuObserver>
       start_smart_selection_action_menu_observer_;
-  // An observer that generate Quick answers queries.
-  std::unique_ptr<QuickAnswersMenuObserver> quick_answers_menu_observer_;
+  // An observer that populates events to read write cards.
+  std::unique_ptr<ReadWriteCardObserver> read_write_card_observer_;
 
   // A submenu model to contain clipboard history item descriptors. Used only if
   // the clipboard history refresh feature is enabled.
@@ -546,8 +547,6 @@ class RenderViewContextMenu
 
   // Responsible for handling autofill related context menu items.
   autofill::AutofillContextMenuManager autofill_context_menu_manager_;
-
-  ScopedNewBadgeTracker new_badge_tracker_;
 
   base::WeakPtrFactory<RenderViewContextMenu> weak_pointer_factory_{this};
 };

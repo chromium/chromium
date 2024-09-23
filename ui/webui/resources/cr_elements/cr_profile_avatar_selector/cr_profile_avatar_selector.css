@@ -1,0 +1,101 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_shared_vars.css.js
+ * #import=../cr_shared_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --avatar-size: 96px;
+  --avatar-spacing: 24px;
+  /* Size of the outline for the selected avatar. This variable can be
+   * modified when using the component with different sizes.
+   */
+  --selected-border: 4px;
+  display: inline-flex;
+}
+
+#avatar-grid {
+  --cr-column-width: var(--avatar-size);
+  --cr-grid-gap: var(--avatar-spacing);
+}
+
+#avatar-grid .avatar-container {
+  position: relative;
+}
+
+#avatar-grid .avatar {
+  --avatar-focus-color: var(--google-grey-700);
+  --avatar-gap-color: white;
+  --avatar-gap-width: 2px;
+  --avatar-selected-color: rgba(var(--google-blue-600-rgb), 0.4);
+
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 1px solid var(--google-grey-300);
+  border-radius: 100%;
+  display: flex;
+  height: var(--avatar-size);
+  min-width: 0;
+  padding: 0;
+  transition: none !important;  /* Polymer's :host([animated]) rule. */
+  width: var(--avatar-size);
+}
+
+#avatar-grid .iron-selected .avatar {
+  --avatar-outline-color: var(--avatar-selected-color);
+  --avatar-outline-width: var(--selected-border);
+  outline: var(--avatar-outline-width) solid var(--avatar-outline-color);
+}
+
+.checkmark {
+  --checkmark-size: 21px;
+  --iron-icon-fill-color: white;
+  background-color: var(--google-blue-600);
+  border-radius: 100%;
+  height: var(--checkmark-size);
+  inset-inline-end: 0;
+  padding: 1px;
+  position: absolute;
+  top: 0;
+  visibility: hidden;
+  width: var(--checkmark-size);
+}
+
+.iron-selected .checkmark {
+  visibility: visible;
+}
+
+@media (prefers-color-scheme: dark) {
+  #avatar-grid .avatar {
+    --avatar-focus-color: var(--google-grey-500);
+    --avatar-gap-color: var(--google-grey-800);
+  }
+
+  .checkmark {
+    --iron-icon-fill-color: var(--google-grey-900);
+    background-color: var(--google-blue-300);
+  }
+}
+
+:host-context(.focus-outline-visible) #avatar-grid
+    .avatar-container:not(.iron-selected) .avatar:focus {
+  --avatar-outline-color: var(--avatar-focus-color);
+  --avatar-outline-width: 1px;
+}
+
+cr-button {
+  background-size: var(--avatar-size);
+}
+
+cr-tooltip {
+  --paper-tooltip-delay-in: 100ms;
+  --paper-tooltip-duration-in: 100ms;
+  --paper-tooltip-duration-out: 100ms;
+  --paper-tooltip-min-width: none;
+}

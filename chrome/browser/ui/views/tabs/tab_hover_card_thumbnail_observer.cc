@@ -11,11 +11,6 @@ TabHoverCardThumbnailObserver::~TabHoverCardThumbnailObserver() = default;
 
 void TabHoverCardThumbnailObserver::Observe(
     scoped_refptr<ThumbnailImage> thumbnail_image) {
-  // Dump callstack without crashing to identify the re-entrant path
-  // that invalidates the current image (crbug.com/1353340).
-  DUMP_WILL_BE_CHECK(!reentrancy_guard_);
-  base::AutoReset reentrancy_guard(&reentrancy_guard_, true);
-
   if (current_image_ == thumbnail_image)
     return;
 

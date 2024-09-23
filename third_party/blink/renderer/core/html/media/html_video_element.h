@@ -33,12 +33,14 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
 
 class ImageBitmapOptions;
 class IntersectionObserverEntry;
 class MediaCustomControlsFullscreenDetector;
+class MediaVideoVisibilityTracker;
 class MediaRemotingInterstitial;
 class PictureInPictureInterstitial;
 class StaticBitmapImage;
@@ -67,10 +69,6 @@ class CORE_EXPORT HTMLVideoElement final
   unsigned videoHeight() const;
 
   gfx::Size videoVisibleSize() const;
-
-  bool IsDefaultIntrinsicSize() const {
-    return is_default_overridden_intrinsic_size_;
-  }
 
   // Fullscreen
   void webkitEnterFullscreen();
@@ -118,7 +116,7 @@ class CORE_EXPORT HTMLVideoElement final
       FlushReason,
       SourceImageStatus*,
       const gfx::SizeF&,
-      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
+      const AlphaDisposition alpha_disposition) override;
   bool IsVideoElement() const override { return true; }
   bool WouldTaintOrigin() const override;
   gfx::SizeF ElementSize(const gfx::SizeF&,
@@ -131,10 +129,11 @@ class CORE_EXPORT HTMLVideoElement final
 
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const override;
-  ScriptPromise CreateImageBitmap(ScriptState*,
-                                  std::optional<gfx::Rect> crop_rect,
-                                  const ImageBitmapOptions*,
-                                  ExceptionState&) override;
+  ScriptPromise<ImageBitmap> CreateImageBitmap(
+      ScriptState*,
+      std::optional<gfx::Rect> crop_rect,
+      const ImageBitmapOptions*,
+      ExceptionState&) override;
 
   // WebMediaPlayerClient implementation.
   void OnRequestVideoFrameCallback() final;
@@ -161,7 +160,13 @@ class CORE_EXPORT HTMLVideoElement final
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
 
+  void RecordVideoOcclusionState(std::string_view occlusion_state) const final;
+
   VideoWakeLock* wake_lock_for_tests() const { return wake_lock_.Get(); }
+
+  MediaVideoVisibilityTracker* visibility_tracker_for_tests() const {
+    return visibility_tracker_.Get();
+  }
 
  protected:
   // EventTarget overrides.
@@ -178,6 +183,7 @@ class CORE_EXPORT HTMLVideoElement final
   friend class HTMLMediaElementEventListenersTest;
   friend class HTMLVideoElementPersistentTest;
   friend class VideoFillingViewportTest;
+  friend class HTMLVideoElementTest;
 
   // ExecutionContextLifecycleStateObserver functions.
   void ContextDestroyed() final;
@@ -199,10 +205,17 @@ class CORE_EXPORT HTMLVideoElement final
   void OnLoadStarted() final;
   void OnLoadFinished() final;
 
+  // Wrapper for the |MediaVideoVisibilityTracker|
+  // |UpdateVisibilityTrackerState| method. |UpdateVisibilityTrackerState| is
+  // called only if the |visibility_tracker_| exists.
+  void UpdateVideoVisibilityTracker() final;
+
   // Video-specific overrides for part of the media::mojom::MediaPlayer
   // interface, fully implemented in the parent class HTMLMediaElement.
   void RequestEnterPictureInPicture() final;
   void RequestMediaRemoting() final;
+  void RequestVisibility(
+      HTMLMediaElement::RequestVisibilityCallback request_visibility_cb) final;
 
   void DidMoveToNewDocument(Document& old_document) override;
 
@@ -213,6 +226,13 @@ class CORE_EXPORT HTMLVideoElement final
 
   void SetPersistentStateInternal(bool persistent);
 
+  // Creates a |MediaVideoVisibilityTracker| if one does not already exist.
+  void CreateVisibilityTrackerIfNeeded();
+
+  void ReportVisibility(bool meets_visibility_threshold);
+
+  void ResetCache(TimerBase*);
+
   Member<HTMLImageLoader> image_loader_;
   Member<MediaCustomControlsFullscreenDetector>
       custom_controls_fullscreen_detector_;
@@ -222,6 +242,10 @@ class CORE_EXPORT HTMLVideoElement final
   Member<PictureInPictureInterstitial> picture_in_picture_interstitial_;
 
   AtomicString default_poster_url_;
+
+  // Tracks visibility of playing videos, taking into account both: viewport
+  // intersection and occluding elements.
+  Member<MediaVideoVisibilityTracker> visibility_tracker_;
 
   // Represents whether the video is 'persistent'. It is used for videos with
   // custom controls that are in auto-pip (Android). This boolean is used by a
@@ -240,8 +264,6 @@ class CORE_EXPORT HTMLVideoElement final
   // is fullscreen.
   bool is_effectively_fullscreen_ : 1;
 
-  bool is_default_overridden_intrinsic_size_ : 1;
-
   bool video_has_played_ : 1;
 
   // True, if the video element occupies most of the viewport.
@@ -250,6 +272,9 @@ class CORE_EXPORT HTMLVideoElement final
   // Used to fulfill blink::Image requests (CreateImage(),
   // GetSourceImageForCanvas(), etc). Created on demand.
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
+  SkImageInfo resource_provider_info_;
+  bool allow_accelerated_images_ = true;
+  HeapTaskRunnerTimer<HTMLVideoElement> cache_deleting_timer_;
 };
 
 }  // namespace blink

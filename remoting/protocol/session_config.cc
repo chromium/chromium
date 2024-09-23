@@ -213,7 +213,6 @@ bool CandidateSessionConfig::IsSupported(const SessionConfig& config) const {
   }
 
   NOTREACHED();
-  return false;
 }
 
 std::unique_ptr<CandidateSessionConfig> CandidateSessionConfig::Clone() const {

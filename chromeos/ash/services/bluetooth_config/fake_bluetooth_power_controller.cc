@@ -17,7 +17,7 @@ void FakeBluetoothPowerController::SetBluetoothEnabledState(bool enabled) {
   adapter_state_controller_->SetBluetoothEnabledState(enabled);
 }
 
-void FakeBluetoothPowerController::SetBluetoothHidDetectionActive() {
+void FakeBluetoothPowerController::SetBluetoothEnabledWithoutPersistence() {
   adapter_state_controller_->SetBluetoothEnabledState(true);
 }
 

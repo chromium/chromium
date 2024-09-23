@@ -29,8 +29,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ProtoFetcherRequestType">
+  <variant name="FamilyLinkUser.ClassifyUrlRequest"
+      summary="Kids Management API::ClassifyUrl"/>
+  <variant name="FamilyLinkUser.CreatePermissionRequest"
+      summary="Kids Management API::CreatePermissionRequest"/>
+  <variant name="Signin.ListFamilyMembersRequest"
+      summary="Kids Management API::ListMembers"/>
+</variants>
+
 <histogram name="AddSupervisionDialog.Enrollment"
-    enum="AddSupervisionEnrollment" expires_after="2024-06-30">
+    enum="AddSupervisionEnrollment" expires_after="2025-03-09">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -47,7 +56,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AddSupervisionDialog.EnrollmentCompletedUserTime" units="ms"
-    expires_after="2024-12-12">
+    expires_after="2025-02-10">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -58,7 +67,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AddSupervisionDialog.EnrollmentNotCompletedUserTime"
-    units="ms" expires_after="2024-12-12">
+    units="ms" expires_after="2025-02-10">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -70,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AddSupervisionDialog.SignoutCompletedUserTime" units="ms"
-    expires_after="2024-12-12">
+    expires_after="2025-02-10">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -81,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChildAccountReconcilor.ForcedUserExitOnReconcileError"
-    enum="BooleanHit" expires_after="2024-12-12">
+    enum="BooleanHit" expires_after="2025-02-10">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -115,7 +124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.FamilyLinkUser.FaviconAvailability"
-    enum="SupervisedUserFaviconAvailability" expires_after="2024-04-28">
+    enum="SupervisedUserFaviconAvailability" expires_after="2024-12-12">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -142,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.FamilyLinkUser.ParentAccess.FlowResult.{FlowType}"
-    enum="ParentAccessFlowResult" expires_after="2024-06-30">
+    enum="ParentAccessFlowResult" expires_after="2025-03-09">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -160,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.FamilyLinkUser.ParentAccessWidgetError.{FlowType}"
-    enum="FamilyLinkUserParentAccessWidgetError" expires_after="2024-06-30">
+    enum="FamilyLinkUserParentAccessWidgetError" expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -178,7 +187,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="ChromeOS.FamilyLinkUser.ParentAccessWidgetShowDialogError.{FlowType}"
     enum="FamilyLinkUserParentAccessWidgetShowDialogError"
-    expires_after="2024-02-20">
+    expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -216,7 +225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeOS.FamilyUser.NumSecondaryAccounts" units="accounts"
-    expires_after="2024-12-12">
+    expires_after="2025-02-10">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <owner>chrome-metrics-team@google.com</owner>
@@ -239,148 +248,146 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FamilyLinkUser.ClassifyUrlRequest.HttpStatusOrNetError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-06-30">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
+<histogram name="ChromeOS.OnDeviceControls.AppRemoval"
+    enum="OnDeviceControlsAppRemoval" expires_after="2024-12-12">
+  <owner>lkupo@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
   <summary>
-    The status of the net or http communication in calls to Kids Management
-    API::ClassifyURL. This is recorded for each request to the Kids Management
-    API.
+    Records the success or failure of removing the oldest uninstalled app that
+    has been blocked by on-device parental controls. This occurs when the max
+    number of uninstalled blocked apps are stored in the blocked app registry.
   </summary>
 </histogram>
 
-<histogram name="FamilyLinkUser.ClassifyUrlRequest.Latency" units="ms"
-    expires_after="2024-07-28">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
+<histogram name="ChromeOS.OnDeviceControls.BlockAppAction"
+    enum="OnDeviceControlsBlockAppAction" expires_after="2024-12-12">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
   <summary>
-    Tracks the latency in calls to Kids Management API::ClassifyURL. It includes
-    both the actual RPC call and the time spent in requesting access token.
-
-    Googlers only: See go/chrome-kids-backend-monitoring for backend-related
-    metrics.
+    Recorded when the user interacts with apps with respect to on-device
+    parental controls. It records actions such as blocking apps, unblocking
+    apps, and uninstalling blocked apps. This histogram also records errors,
+    such as if an already-blocked app is being blocked again.
   </summary>
 </histogram>
 
-<histogram name="FamilyLinkUser.ClassifyUrlRequest.Status"
-    enum="SupervisedUserProtoFetcherStatus" expires_after="2024-07-28">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
+<histogram name="ChromeOS.OnDeviceControls.BlockedAppDialogShown"
+    enum="OnDeviceControlsBlockedAppDialog" expires_after="2024-12-12">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
   <summary>
-    The status of the fetch in calls to Kids Management API::ClassifyURL.
+    Recorded when the user attempts to open an app blocked by on-device controls
+    and is shown the blocked app system dialog.
   </summary>
 </histogram>
 
-<histogram
-    name="FamilyLinkUser.ClassifyUrlRequest.{AuthErrorState}.AccessTokenLatency"
-    units="ms" expires_after="2023-11-01">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
+<histogram name="ChromeOS.OnDeviceControls.BlockedAppsCount" units="Apps"
+    expires_after="2024-12-12">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
   <summary>
-    Latency of the access token fetching before making calls to Kids Management
-    API::ClassifyURL. Currenlty only successful authentication is counted.
+    Records the number of apps blocked by on-device parental controls that a
+    user has. Recorded every time an app is blocked or unblocked.
   </summary>
-  <token key="AuthErrorState">
-    <variant name="NONE"/>
+</histogram>
+
+<histogram name="ChromeOS.OnDeviceControls.BlockedAppsEngagement" units="Apps"
+    expires_after="2024-12-12">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the number of apps blocked with on-device parental controls that a
+    user has at the beginning of each user session.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.OnDeviceControls.DialogAction.{DialogType}"
+    enum="OnDeviceControlsDialogAction" expires_after="2024-12-12">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records user interactions with the dialogs in OS settings related to the
+    on-device parental controls feature. Records actions such as the user
+    opening the dialog and the user completing the dialog flow.
+  </summary>
+  <token key="DialogType">
+    <variant name="SetUpControls"/>
+    <variant name="VerifyToDisableControls"/>
+    <variant name="VerifyToEnterControlsPage"/>
   </token>
 </histogram>
 
-<histogram
-    name="FamilyLinkUser.ClassifyUrlRequest.{HttpStatusOrNetError}.ApiLatency"
-    units="ms" expires_after="2023-11-01">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
+<histogram name="ChromeOS.OnDeviceControls.PinDialogError"
+    enum="OnDeviceControlsPinDialogError" expires_after="2024-12-12">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
   <summary>
-    Latency of the calls in calls to Kids Management API::ClassifyURL that
-    resulted with &quot;{HttpStatusOrNetError}&quot; status. Currently only
-    succesful communication with API is recorded.
+    Records if the user encounters an error when verifying or setting up a PIN
+    for on-device parental controls.
   </summary>
-  <token key="HttpStatusOrNetError">
-    <variant name="HTTP_OK"/>
-  </token>
 </histogram>
 
-<histogram name="FamilyLinkUser.ClassifyUrlRequest.{Status}.Latency" units="ms"
-    expires_after="2024-08-04">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
+<histogram name="ChromeOS.OnDeviceControls.PinSetupCompleted" enum="Boolean"
+    expires_after="2024-12-12">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
   <summary>
-    Latency of the calls in calls to Kids Management API::ClassifyURL that
-    resulted with &quot;{Status}&quot; status. It includes both the actual RPC
-    call and the time spent in requesting access token.
+    Records whether the user has set up a PIN for on-device app parental
+    controls. Recorded at the beginning of each user session.
   </summary>
-  <token key="Status">
-    <variant name="AuthError"/>
-    <variant name="DataError"
-        summary="contract error (data in the response missing despite
-                 succesful parsing)"/>
-    <variant name="HttpStatusOrNetError"/>
-    <variant name="NoError"/>
-    <variant name="ParseError"/>
-  </token>
 </histogram>
 
-<histogram name="FamilyLinkUser.CreatePermissionRequest.HttpStatusOrNetError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-11-01">
-  <owner>tju@google.com</owner>
+<histogram name="FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState"
+    enum="FamilyLinkUserReauthenticationInterstitialState"
+    expires_after="2024-12-12">
   <owner>anthie@google.com</owner>
+  <owner>ljjlee@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
-    The status of the net or http communication in calls to Kids Management
-    API::CreatePermissionRequest. This is recorded for each request to the Kids
-    Management API.
+    Recorded when an unauthenticated Family Link user tries to navigate to a
+    blocked website in the main frame, prompting a re-authentication
+    interstitial. It records the different sign-in states of the user provided
+    by the interestitial.
   </summary>
 </histogram>
 
-<histogram name="FamilyLinkUser.CreatePermissionRequest.Latency" units="ms"
-    expires_after="2023-11-01">
-  <owner>tju@google.com</owner>
-  <owner>anthie@google.com</owner>
+<histogram name="FamilyLinkUser.FamilyInfoLogSource.FetchLatency" units="ms"
+    expires_after="2025-02-10">
+  <owner>ljjlee@google.com</owner>
+  <owner>fernandex@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
-    Tracks the latency in calls to Kids Management API::CreatePermissionRequest.
-    It includes both the actual RPC call and the time spent in requesting access
-    token. Googlers only: See go/chrome-kids-backend-monitoring for
-    backend-related metrics.
+    The time spent waiting for the Kids Management API::ListMembers fetch done
+    as part of populating the FamilyInfoLogSource in feedback reports. This is
+    recorded for every fetch on either getting a response from the fetcher or
+    timing out (whichever happens first).
   </summary>
 </histogram>
 
-<histogram name="FamilyLinkUser.CreatePermissionRequest.Status"
-    enum="SupervisedUserProtoFetcherStatus" expires_after="2024-06-30">
-  <owner>tju@google.com</owner>
-  <owner>anthie@google.com</owner>
+<histogram name="FamilyLinkUser.FamilyInfoLogSource.FetchStatus"
+    enum="FamilyInfoLogSourceFetchStatus" expires_after="2025-02-10">
+  <owner>ljjlee@google.com</owner>
+  <owner>fernandex@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
-    The status of the fetch in calls to Kids Management
-    API::CreatePermissionRequest.
+    The result of the Kids Management API::ListMembers fetch done as part of
+    populating the FamilyInfoLogSource in feedback reports. This is output for
+    every fetch on either getting a response from the fetcher or timing out.
   </summary>
 </histogram>
 
-<histogram name="FamilyLinkUser.CreatePermissionRequest.{Status}.Latency"
-    units="ms" expires_after="2023-11-01">
-  <owner>tju@google.com</owner>
-  <owner>anthie@google.com</owner>
+<histogram name="FamilyLinkUser.FamilyInfoLogSource.ImmediatelyAvailable"
+    enum="Boolean" expires_after="2025-02-10">
+  <owner>fernandex@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
-    Latency of the calls in calls to Kids Management
-    API::CreatePermissionRequest that resulted with &quot;{Status}&quot; status.
-    It includes both the actual RPC call and the time spent in requesting access
-    token.
+    Whether a fetch to the Kids Management API::ListMembers was necessary as a
+    part of populating the FamilyInfoLogSource in feedback reports.
   </summary>
-  <token key="Status">
-    <variant name="AuthError"/>
-    <variant name="DataError"
-        summary="contract error (data in the response missing despite
-                 succesful parsing)"/>
-    <variant name="HttpStatusOrNetError"/>
-    <variant name="NoError"/>
-    <variant name="ParseError"/>
-  </token>
 </histogram>
 
 <histogram name="FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration"
-    units="ms" expires_after="2024-06-30">
+    units="ms" expires_after="2025-03-09">
   <owner>anthie@google.com</owner>
   <owner>ljjlee@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -394,7 +401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.LocalWebApprovalOutcome"
-    enum="FamilyLinkUserLocalWebApprovalOutcome" expires_after="2024-06-30">
+    enum="FamilyLinkUserLocalWebApprovalOutcome" expires_after="2025-03-09">
   <owner>anthie@google.com</owner>
   <owner>ljjlee@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -406,7 +413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.LocalWebApprovalResult"
-    enum="FamilyLinkUserLocalWebApprovalResult" expires_after="2024-06-30">
+    enum="FamilyLinkUserLocalWebApprovalResult" expires_after="2025-03-09">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -422,13 +429,11 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: used internally for filtering -->
 
   <owner>fernandex@chromium.org</owner>
-  <owner>courtneywong@chromium.org</owner>
-  <owner>agawronska@chromium.org</owner>
   <owner>chrome-kids-eng@google.com</owner>
-  <owner>cros-families-eng@google.com</owner>
   <summary>
     Categorizes the current user based on Family Link user type. Recorded for
-    all supervised platforms.
+    all supervised platforms except ChromeOS which uses
+    ChromeOS.FamilyLinkUser.LogSegment.
   </summary>
 </histogram>
 
@@ -448,7 +453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.DeviceOwner" enum="Boolean"
-    expires_after="2024-06-30">
+    expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -458,7 +463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.FamilyLinkUsersCount" units="Number of Users"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -468,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.GaiaUsersCount" units="Number of Users"
-    expires_after="2024-06-30">
+    expires_after="2025-02-10">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -479,7 +484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.ManagedSiteList" enum="FamilyLinkManagedSiteList"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -492,7 +497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.ManagedSiteList.Conflict" enum="BooleanHasConflict"
-    expires_after="2024-06-30">
+    expires_after="2025-01-05">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -504,7 +509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.ManagedSiteList.SubdomainConflictType"
-    enum="FamilyLinkFilteringSubdomainConflictType" expires_after="2024-07-14">
+    enum="FamilyLinkFilteringSubdomainConflictType" expires_after="2025-01-26">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -515,7 +520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.ManagedSiteListCount.Approved"
-    units="Number of approved sites" expires_after="2024-06-30">
+    units="Number of approved sites" expires_after="2025-03-09">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -527,7 +532,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.ManagedSiteListCount.Blocked"
-    units="Number of blocked sites" expires_after="2024-06-30">
+    units="Number of blocked sites" expires_after="2025-03-09">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -573,7 +578,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.SessionEngagement.Weekday" units="Hour of day"
-    expires_after="2024-06-30">
+    expires_after="2025-01-26">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -584,7 +589,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.SessionEngagement.Weekend" units="Hour of day"
-    expires_after="2024-06-30">
+    expires_after="2025-01-26">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -609,7 +614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.WebFilterType" enum="FamilyLinkWebFilterType"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -623,7 +628,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.WebFilterType.PerRecord"
-    enum="FamilyLinkWebFilterType" expires_after="2024-06-30">
+    enum="FamilyLinkWebFilterType" expires_after="2025-01-26">
   <owner>fernandex@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -641,7 +646,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.{AppType}AppsCount2" units="Number of Apps"
-    expires_after="2024-06-30">
+    expires_after="2025-01-05">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -664,29 +669,33 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.{ExtensionStatus}ExtensionsCount2"
-    units="Number of Extensions" expires_after="2024-06-30">
+    units="Number of Extensions" expires_after="2025-03-02">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
   <summary>
     Records the number of non-component {ExtensionStatus} regular browser
     extensions and themes around once per day, regardless of when they were last
     used.
   </summary>
   <token key="ExtensionStatus">
+<!-- Note: the Disable variant is not used on ChromeOS. -->
+
+    <variant name="Disabled" summary="disabled"/>
     <variant name="Enabled" summary="enabled"/>
     <variant name="Installed" summary="installed"/>
   </token>
 </histogram>
 
 <histogram name="ManagedMode.BlockingInterstitialCommand"
-    enum="ManagedModeBlockingCommand" expires_after="2024-06-30">
+    enum="ManagedModeBlockingCommand" expires_after="2025-03-09">
   <owner>agawronska@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>Which command was selected from the blocking interstitial.</summary>
 </histogram>
 
 <histogram name="ManagedUsers.BlockedIframeCount" units="iframes"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -696,7 +705,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManagedUsers.FilteringResult"
-    enum="SupervisedUserSafetyFilterResult" expires_after="2024-06-30">
+    enum="SupervisedUserSafetyFilterResult" expires_after="2025-03-09">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -708,7 +717,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManagedUsers.RequestPermissionSource"
-    enum="ManagedUserURLRequestPermissionSource" expires_after="2024-06-30">
+    enum="ManagedUserURLRequestPermissionSource" expires_after="2025-02-10">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -717,7 +726,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManagedUsers.TopLevelFilteringResult"
-    enum="SupervisedUserFilterTopLevelResult" expires_after="2024-09-25">
+    enum="SupervisedUserFilterTopLevelResult" expires_after="2025-01-26">
   <owner>fernandex@chromium.org</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -728,8 +737,85 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SupervisedUsers.ClassifyUrlThrottle.EarlierThanContentResponse"
+    units="ms" expires_after="2025-03-02">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the time difference between completing the url classification for
+    the navigation (including request and possible redirects), and the moment
+    where the classification was needed to decide whether or not to proceed with
+    navigation.
+
+    Recorded only in the mainline case when the navigation was not blocked.
+
+    Together with the complementary
+    SupervisedUsers.ClassifyUrlThrottle.LaterThanContentResponse metric it forms
+    a continuum of time, with 0 recorded in either (but only one) metric meaning
+    that the classification was ready exactly when it was needed.
+  </summary>
+</histogram>
+
+<histogram name="SupervisedUsers.ClassifyUrlThrottle.LaterThanContentResponse"
+    units="ms" expires_after="2025-03-02">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the time difference between when the navigation needs a url
+    classification to proceed, and the time when that classification was
+    completed. In other words, it tracks the user-visible delay introduced to
+    the navigation by the url classification.
+
+    Recorded only in the mainline case when the navigation was not blocked.
+
+    Together with the complementary
+    SupervisedUsers.ClassifyUrlThrottle.EarlierThanContentResponse metric it
+    forms a continuum of time, with 0 recorded in either (but only one) metric
+    meaning that the classification was ready exactly when it was needed.
+  </summary>
+</histogram>
+
+<histogram name="SupervisedUsers.ClassifyUrlThrottle.Status"
+    enum="ClassifyUrlThrottleStatus" expires_after="2025-03-09">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Tracks the throttle interaction with the navigation flow.
+
+    Typically, unblocked navigation with a single request records one Continue
+    status, followed by either Proceed or Defer and then Resume. If there are
+    redirects, then more Continue statuses are recorded.
+
+    Blocked navigation records at least one Continue followed by Defer and
+    CancelDeferredNavigation when the check was asynchronous, or an immediate
+    DeferAndScheduleInterstitial status if the check is synchronouns. When the
+    user navigates to a redirect chain, there might be more continue events
+    recorded.
+
+    The scenarios above mean that the number of Defer statuses should match the
+    number of Resume and CancelDeferredNavigation statuses.
+
+    Cancel is a definitive termination of the navigation without classification,
+    due to eg. unsupported type of request.
+  </summary>
+</histogram>
+
+<histogram name="SupervisedUsers.ExtensionApprovalsCountOnExtensionToggle"
+    units="Extensions" expires_after="2025-02-10">
+  <owner>anthie@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the number of extensions that will be granted parental approval at
+    the time of flipping the Family Link &quot;Extensions&quot; toggle to
+    Enabled. When this action happens, all the extensions missing parental
+    approval are granted it.
+  </summary>
+</histogram>
+
 <histogram name="SupervisedUsers.ExtensionEnablement"
-    enum="SupervisedUserExtensionEnablement" expires_after="2024-06-30">
+    enum="SupervisedUserExtensionEnablement" expires_after="2025-03-09">
   <owner>courtneywong@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -745,7 +831,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SupervisedUsers.ExtensionInstallDialog"
-    enum="SupervisedUserExtensionInstallDialog" expires_after="2024-12-12">
+    enum="SupervisedUserExtensionInstallDialog" expires_after="2025-02-10">
   <owner>courtneywong@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -759,44 +845,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SupervisedUsers.ExtensionParentApprovalEntryPoint"
+    enum="SupervisedUserExtensionParentApprovalEntryPoint"
+    expires_after="2025-02-10">
+  <owner>anthie@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the different flows that lead to displaying the Extensions parent
+    approval dialog on Windows/Linux/Mac platrforms.
+  </summary>
+</histogram>
+
 <histogram name="SupervisedUsers.Extensions2" enum="SupervisedUserExtension2"
     expires_after="2024-12-12">
   <owner>courtneywong@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
   <summary>
     Records the progress of supervised users as they try to install Chrome
-    extensions. Extension Approval Granted count increments when the custodian
-    initially grants approval to install the extension. Permissions Increase
-    Granted count increments when the supervised user approves a newer version
-    of an existing extension with increased permissions. Extension Approval
-    Removed count increments when the supervised user removes an extension.
+    extensions. See the descriptions in the individual enum buckets.
   </summary>
 </histogram>
 
-<histogram name="SupervisedUsers.ExtensionsMayRequestPermissions"
-    enum="BooleanEnabled" expires_after="2024-06-30">
-  <owner>courtneywong@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
+<histogram name="SupervisedUsers.ImplicitParentApprovalGrantEntryPoint"
+    enum="SupervisedUserImplicitParentApprovalGrantEntryPoint"
+    expires_after="2025-02-10">
+  <owner>anthie@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
   <summary>
-    Records the state of the &quot;Permissions for sites, apps and
-    extensions&quot; toggle. When parents/custodians have the toggle enabled,
-    supervised users may install extensions with parent/custodian approval, and
-    can approve permission updates by themselves. Otherwise, supervised users
-    cannot install extensions and cannot approve permission updates. If the
-    toggle is disabled and an extension has permissions updates, the extension
-    would remain force-disabled. The Disabled count increments when the parent
-    flips the toggle off, and increments twice if the supervised user logs in
-    while the toggle is in the off state. The Enabled count increments when the
-    parent flips the toggle on, and increments twice if the supervised user logs
-    in while the toggle is in the on state. While the double counting upon
-    logging in is less than ideal, at least the counts are balanced relative to
-    each other.
+    Records the different flows that lead to granting an automatic parent
+    approval on an extension (without having to explicitely request the
+    approval).
+  </summary>
+</histogram>
+
+<histogram
+    name="SupervisedUsers.InitialLocallyApprovedExtensionsCountOnWinLinuxMac"
+    units="Extensions" expires_after="2025-02-10">
+  <owner>anthie@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the number of extensions that will be granted local parental
+    approval at the release time the feature that introduces the Skip Parent
+    Approval mode for extension installations. Applies to Win/Linux/Mac only, so
+    on ChromeOS it is always zero.
   </summary>
 </histogram>
 
 <histogram name="SupervisedUsers.ParentPermissionDialog"
-    enum="SupervisedUserParentPermissionDialog" expires_after="2024-12-12">
+    enum="SupervisedUserParentPermissionDialog" expires_after="2025-02-10">
   <owner>courtneywong@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -854,8 +952,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SupervisedUsers.SitesMayRequestCameraMicLocation.PerRecord"
+    enum="SupervisedUserToggleState" expires_after="2025-03-09">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the state of the &quot;Permissions for sites&quot; toggle. When
+    parents/custodians have the toggle enabled websites may ask for camera,
+    microphone and location permission (and the supervised user can grant
+    these). When the toggle is disabled, requests for these permissions are
+    blocked. The value is recorded with every UMA record upload from the current
+    session. It should therefore be used as a filter, or looking at unique
+    client counts (raw counts are not meaningful).
+  </summary>
+</histogram>
+
+<histogram
+    name="SupervisedUsers.SkipParentApprovalToInstallExtensions.PerRecord"
+    enum="SupervisedUserToggleState" expires_after="2025-03-02">
+  <owner>anthie@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the state of the &quot;Extensions&quot; toggle. When
+    parents/custodians have the toggle enabled, supervised users may install
+    extensions without explicit parent/custodian approval. Any extensions
+    installed under this mode receive automatic parent approval. Otherwise,
+    supervised users may install extensions upon receiving explicit
+    parent/custodian approval on each installation. Unsupervised users are
+    ignored in the process of deciding what to record. The value is recorded
+    with every UMA record upload from the current session. It should therefore
+    be used as a filter, or looking at unique client counts (raw counts are not
+    meaningful).
+  </summary>
+</histogram>
+
 <histogram name="Supervision.ParentAccessCode.Action"
-    enum="ParentAccessCodeAction" expires_after="2024-12-12">
+    enum="ParentAccessCodeAction" expires_after="2025-02-10">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -901,6 +1034,71 @@ chromium-metrics-reviews@google.com.
   <summary>
     The event that triggered status report for supervised account.
   </summary>
+</histogram>
+
+<histogram name="{RequestType}.AuthError" enum="GoogleServiceAuthError"
+    expires_after="2025-03-09">
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    The detailed reason for AuthError failures. Recorded for each request to the
+    API where Chrome was unable to get a valid access token (whether or not this
+    error was fatal).
+  </summary>
+  <token key="RequestType" variants="ProtoFetcherRequestType"/>
+</histogram>
+
+<histogram name="{RequestType}.HttpStatusOrNetError"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-03-09">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    The status of the net or HTTP communication in calls to {RequestType}. This
+    is recorded for each request to the {RequestType}.
+  </summary>
+  <token key="RequestType" variants="ProtoFetcherRequestType"/>
+</histogram>
+
+<histogram name="{RequestType}.Latency" units="ms" expires_after="2025-02-02">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Tracks the latency in calls to {RequestType}. It includes both the actual
+    RPC call and the time spent in requesting access token.
+
+    Googlers only: See go/chrome-kids-backend-monitoring for backend-related
+    metrics.
+  </summary>
+  <token key="RequestType" variants="ProtoFetcherRequestType"/>
+</histogram>
+
+<histogram name="{RequestType}.Status" enum="SupervisedUserProtoFetcherStatus"
+    expires_after="2025-02-02">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>The status of the fetch in calls to {RequestType}.</summary>
+  <token key="RequestType" variants="ProtoFetcherRequestType"/>
+</histogram>
+
+<histogram name="{RequestType}.{Status}.Latency" units="ms"
+    expires_after="2025-02-09">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Latency of the calls to {RequestType} that resulted in &quot;{Status}&quot;
+    status. It includes both the actual RPC call and the time spent in
+    requesting access token.
+  </summary>
+  <token key="RequestType" variants="ProtoFetcherRequestType"/>
+  <token key="Status">
+    <variant name="AuthError"/>
+    <variant name="DataError"
+        summary="contract error (data in the response missing despite
+                 succesful parsing)"/>
+    <variant name="HttpStatusOrNetError"/>
+    <variant name="NoError"/>
+    <variant name="ParseError"/>
+  </token>
 </histogram>
 
 </histograms>

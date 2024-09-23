@@ -4,7 +4,8 @@
 
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -76,7 +77,7 @@ void DialAppDiscoveryService::SetParserForTest(
 
 void DialAppDiscoveryService::RemovePendingRequest(
     DialAppDiscoveryService::PendingRequest* request) {
-  base::EraseIf(pending_requests_, [&request](const auto& entry) {
+  std::erase_if(pending_requests_, [&request](const auto& entry) {
     return entry.get() == request;
   });
 }

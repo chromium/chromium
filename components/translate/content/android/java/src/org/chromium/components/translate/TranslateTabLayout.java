@@ -42,7 +42,7 @@ public class TranslateTabLayout extends TabLayout {
     private int mTabPaddingEnd;
 
     /** Constructor for inflating from XML. */
-    @SuppressLint("CustomViewStyleable") // TODO(crbug.com/807725): Remove and fix.
+    @SuppressLint("CustomViewStyleable") // TODO(crbug.com/40560764): Remove and fix.
     public TranslateTabLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -204,7 +204,7 @@ public class TranslateTabLayout extends TabLayout {
     }
 
     /** Perform the scrolling animation if this tablayout has any scrollable distance. */
-    // TODO(crbug.com/900912): Figure out whether setScrollX is actually available.
+    // TODO(crbug.com/40600572): Figure out whether setScrollX is actually available.
     @SuppressLint("ObjectAnimatorBinding")
     public void startScrollingAnimationIfNeeded() {
         int maxScrollDistance = maxScrollDistance();

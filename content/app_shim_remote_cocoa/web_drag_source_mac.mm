@@ -57,9 +57,8 @@
   // The URL to download from for a drag-out download.
   GURL _downloadURL;
 
-  // The file type associated with the file drag, if any. TODO(macOS 11): Change
-  // to a UTType object.
-  NSString* __strong _fileUTType;
+  // The file type associated with the file drag, if any.
+  UTType* __strong _fileType;
 }
 
 - (instancetype)initWithHost:(remote_cocoa::mojom::WebContentsNSViewHost*)host
@@ -108,7 +107,7 @@
       !_dropData.download_metadata.empty()) {
     std::string mimeType;
 
-    // TODO(https://crbug.com/898608): The |downloadFileName_| and
+    // TODO(crbug.com/40599578): The |downloadFileName_| and
     // |downloadURL_| values should be computed by the caller.
     if (_dropData.download_metadata.empty()) {
       std::optional<base::FilePath> suggestedFilename =
@@ -138,21 +137,11 @@
     }
 
     if (!mimeType.empty()) {
-      if (@available(macOS 11, *)) {
-        UTType* type =
-            [UTType typeWithMIMEType:base::SysUTF8ToNSString(mimeType)];
-        _fileUTType = type.identifier;
-      } else {
-        base::apple::ScopedCFTypeRef<CFStringRef> mimeTypeCF(
-            base::SysUTF8ToCFStringRef(mimeType));
-        _fileUTType = base::apple::CFToNSOwnershipCast(
-            UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType,
-                                                  mimeTypeCF.get(), nullptr));
-      }
+      _fileType = [UTType typeWithMIMEType:base::SysUTF8ToNSString(mimeType)];
 
       // Promise both the file's contents...
       if (!_dropData.file_contents.empty()) {
-        [writableTypes addObject:_fileUTType];
+        [writableTypes addObject:_fileType.identifier];
       }
 
       // ... and materialization of the file if requested.
@@ -182,16 +171,8 @@
   //
   // (The only time that Blink fills in the DropData::file_contents is with
   // an image drop, but the MIME time is tested anyway for paranoia's sake.)
-  bool hasImageData;
-  if (@available(macOS 11, *)) {
-    hasImageData =
-        !_dropData.file_contents.empty() && _fileUTType &&
-        [[UTType typeWithIdentifier:_fileUTType] conformsToType:UTTypeImage];
-  } else {
-    hasImageData =
-        !_dropData.file_contents.empty() && _fileUTType &&
-        UTTypeConformsTo(base::apple::NSToCFPtrCast(_fileUTType), kUTTypeImage);
-  }
+  bool hasImageData = !_dropData.file_contents.empty() && _fileType &&
+                      [_fileType conformsToType:UTTypeImage];
   if (hasHTMLData) {
     if (hasImageData) {
       [writableTypes addObject:ui::kUTTypeChromiumImageAndHTML];
@@ -206,7 +187,7 @@
   }
 
   if (!_dropData.custom_data.empty()) {
-    [writableTypes addObject:ui::kUTTypeChromiumWebCustomData];
+    [writableTypes addObject:ui::kUTTypeChromiumDataTransferCustomData];
   }
 
   return writableTypes;
@@ -248,7 +229,7 @@
   }
 
   // File contents.
-  if ([type isEqualToString:_fileUTType]) {
+  if ([type isEqualToString:_fileType.identifier]) {
     return [NSData dataWithBytes:_dropData.file_contents.data()
                           length:_dropData.file_contents.length()];
   }
@@ -256,7 +237,7 @@
   // File instantiation promise.
   if ([type isEqualToString:base::apple::CFToNSPtrCast(
                                 kPasteboardTypeFilePromiseContent)]) {
-    return _fileUTType;
+    return _fileType.identifier;
   }
   if ([type isEqualToString:base::apple::CFToNSPtrCast(
                                 kPasteboardTypeFileURLPromise)]) {
@@ -280,7 +261,8 @@
     base::FilePath filePath =
         base::apple::NSURLToFilePath([NSURL URLWithString:dropDestination]);
     filePath = filePath.Append(_downloadFileName);
-    _host->DragPromisedFileTo(filePath, _dropData, _downloadURL, &filePath);
+    _host->DragPromisedFileTo(filePath, _dropData, _downloadURL, _sourceOrigin,
+                              &filePath);
 
     // The process of writing the file may have altered the value of
     // `filePath` if, say, an existing file at the drop site already had that
@@ -295,7 +277,7 @@
   }
 
   // Custom MIME data.
-  if ([type isEqualToString:ui::kUTTypeChromiumWebCustomData]) {
+  if ([type isEqualToString:ui::kUTTypeChromiumDataTransferCustomData]) {
     base::Pickle pickle;
     ui::WriteCustomDataToPickle(_dropData.custom_data, &pickle);
     return [NSData dataWithBytes:pickle.data() length:pickle.size()];
@@ -316,7 +298,7 @@
   }
 
   // Oops! Unknown drag pasteboard type.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return [NSData data];
 }
 

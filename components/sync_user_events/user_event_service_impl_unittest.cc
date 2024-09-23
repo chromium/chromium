@@ -7,11 +7,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_user_events/user_event_sync_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,18 +70,26 @@ class UserEventServiceImplTest : public testing::Test {
   }
 
   std::unique_ptr<UserEventSyncBridge> MakeBridge() {
-    return std::make_unique<UserEventSyncBridge>(
-        ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_processor_, ModelReadyToSync).WillOnce([&run_loop]() {
+      run_loop.Quit();
+    });
+    auto bridge = std::make_unique<UserEventSyncBridge>(
+        DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         mock_processor_.CreateForwardingProcessor(), &mapper_);
+    run_loop.Run();
+    return bridge;
   }
 
   syncer::TestSyncService* sync_service() { return &sync_service_; }
-  MockModelTypeChangeProcessor* mock_processor() { return &mock_processor_; }
+  MockDataTypeLocalChangeProcessor* mock_processor() {
+    return &mock_processor_;
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;
   syncer::TestSyncService sync_service_;
-  testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
   TestGlobalIdMapper mapper_;
 };
 

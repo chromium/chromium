@@ -50,6 +50,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/vector_icons.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -128,7 +129,8 @@ class NotifierButtonWrapperView : public views::View {
 
   // views::View:
   void Layout(PassKey) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnFocus() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
@@ -166,13 +168,14 @@ void NotifierButtonWrapperView::Layout(PassKey) {
                                            : FocusBehavior::NEVER);
 }
 
-gfx::Size NotifierButtonWrapperView::CalculatePreferredSize() const {
+gfx::Size NotifierButtonWrapperView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kWidth, kNotifierButtonWrapperHeight);
 }
 
 void NotifierButtonWrapperView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  contents_->GetAccessibleNodeData(node_data);
+  contents_->GetViewAccessibility().GetAccessibleNodeData(node_data);
 }
 
 void NotifierButtonWrapperView::OnFocus() {
@@ -435,7 +438,7 @@ NotifierSettingsView::NotifierButton::NotifierButton(
 
   checkbox->SetChecked(notifier.enabled);
   checkbox->SetFocusBehavior(FocusBehavior::NEVER);
-  checkbox->SetAccessibleName(notifier.name);
+  checkbox->GetViewAccessibility().SetName(notifier.name);
 
   if (notifier.enforced) {
     Button::SetEnabled(false);
@@ -484,7 +487,9 @@ bool NotifierSettingsView::NotifierButton::GetChecked() const {
 
 void NotifierSettingsView::NotifierButton::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  static_cast<views::View*>(checkbox_)->GetAccessibleNodeData(node_data);
+  static_cast<views::View*>(checkbox_)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(node_data);
 }
 
 void NotifierSettingsView::NotifierButton::GridChanged() {
@@ -543,7 +548,7 @@ void NotifierSettingsView::NotifierButton::GridChanged() {
   DeprecatedLayoutImmediately();
 }
 
-BEGIN_METADATA(NotifierSettingsView, NotifierButton, views::Button)
+BEGIN_METADATA(NotifierSettingsView, NotifierButton)
 END_METADATA
 
 // NotifierSettingsView -------------------------------------------------------
@@ -672,6 +677,10 @@ NotifierSettingsView::NotifierSettingsView() {
     NotifierSettingsController::Get()->AddNotifierSettingsObserver(this);
     NotifierSettingsController::Get()->GetNotifiers();
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kList);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_ASH_MESSAGE_CENTER_SETTINGS_DIALOG_DESCRIPTION));
 }
 
 NotifierSettingsView::~NotifierSettingsView() {
@@ -693,12 +702,6 @@ void NotifierSettingsView::SetQuietModeState(bool is_quiet_mode) {
     quiet_mode_icon_->SetImage(gfx::CreateVectorIcon(
         kDoNotDisturbDisabledIcon, kMenuIconSize, icon_color));
   }
-}
-
-void NotifierSettingsView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kList;
-  node_data->SetName(l10n_util::GetStringUTF16(
-      IDS_ASH_MESSAGE_CENTER_SETTINGS_DIALOG_DESCRIPTION));
 }
 
 void NotifierSettingsView::OnNotifiersUpdated(
@@ -801,7 +804,8 @@ gfx::Size NotifierSettingsView::GetMinimumSize() const {
   return size;
 }
 
-gfx::Size NotifierSettingsView::CalculatePreferredSize() const {
+gfx::Size NotifierSettingsView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   gfx::Size header_size = header_view_->GetPreferredSize();
   // |scroller_| and |no_notifiers_view_| do not exist when notifications
   // settings are split out of the notifier_settings_view.

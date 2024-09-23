@@ -102,4 +102,12 @@ void LCPScriptObserver::Trace(Visitor* visitor) const {
   visitor->Trace(local_root_);
 }
 
+void LCPScriptObserver::Shutdown() {
+  if (!local_root_) {
+    return;
+  }
+  local_root_->GetProbeSink()->RemoveLCPScriptObserver(this);
+  local_root_ = nullptr;
+}
+
 }  // namespace blink

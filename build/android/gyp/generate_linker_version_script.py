@@ -58,7 +58,7 @@ def main():
   symbol_list = ['CrashpadHandlerMain', 'JNI_OnLoad']
 
   if options.jni_multiplexing:
-    symbol_list.append('Java_*_resolve_1for_*')
+    symbol_list.append('Java_J_*N__*')
   elif options.export_fortesting_java_symbols:
     symbol_list.append('Java_*')
   else:

@@ -30,6 +30,10 @@ declare_args() {
   # consumed during the build process. That includes proc macros and Cargo build
   # scripts.
   toolchain_for_rust_host_build_tools = false
+
+  # If false, the toolchain overrides `use_partition_alloc_as_malloc` in
+  # PartitionAlloc, to allow use of the system allocator.
+  toolchain_allows_use_partition_alloc_as_malloc = true
 }
 
 if (generate_linker_map) {
@@ -46,21 +50,14 @@ if (generate_linker_map) {
 declare_args() {
   if (llvm_android_mainline) {  # https://crbug.com/1481060
     clang_version = "17"
-  } else if (llvm_force_head_revision) {
-    clang_version = "19"
   } else {
-    # TODO(crbug.com/1517549): Remove in the next Clang roll.
-    clang_version = "18"
+    clang_version = "20"
   }
 }
 
 # Extension for shared library files (including leading dot).
 if (is_apple) {
   shlib_extension = ".dylib"
-} else if (is_android && is_component_build) {
-  # By appending .cr, we prevent name collisions with libraries already
-  # loaded by the Android zygote.
-  shlib_extension = ".cr.so"
 } else if (is_posix || is_fuchsia) {
   shlib_extension = ".so"
 } else if (is_win) {
@@ -75,7 +72,7 @@ if (host_os == "mac") {
   host_shlib_extension = ".dylib"
 } else if (host_os == "win") {
   host_shlib_extension = ".dll"
-} else if (host_os == "linux" || host_os == "aix") {
+} else if (host_os == "linux" || host_os == "aix" || host_os == "zos") {
   host_shlib_extension = ".so"
 } else {
   assert(false, "Host platform not supported")
@@ -123,3 +120,15 @@ if (host_os == "win") {
 is_a_target_toolchain =
     (current_toolchain != host_toolchain ||
      default_toolchain == host_toolchain) && current_os == target_os
+
+# A toolchain for building tools that run on the host machine and need to use
+# the system allocator. This toolchain does not use PartitionAlloc-Everywhere by
+# design. We use a name with `_host` injected into it to avoid colliding with
+# toolchains of the same name (but different path) between different OSes.
+host_system_allocator_toolchain = "${host_toolchain}_host_with_system_allocator"
+
+# A toolchain for building tools that run on the default target machine and need
+# to use the system allocator. This toolchain does not use
+# PartitionAlloc-Everywhere by design.
+default_system_allocator_toolchain =
+    "${default_toolchain}_with_system_allocator"

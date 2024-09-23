@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_document_documentfragment.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -13,6 +12,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -23,11 +23,12 @@ void DocumentPartRoot::Trace(Visitor* visitor) const {
   PartRoot::Trace(visitor);
 }
 
-PartRootUnion* DocumentPartRoot::clone(PartRootCloneOptions* options,
-                                       ExceptionState&) {
+PartRootUnion* DocumentPartRoot::clone(ExceptionState&) {
   NodeCloningData data{CloneOption::kIncludeDescendants,
-                       CloneOption::kPreserveDOMParts};
-  data.SetPartRootCloneOptions(options);
+                       RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()
+                           ? CloneOption::kPreserveDOMPartsMinimalAPI
+                           : CloneOption::kPreserveDOMParts};
+
   Node* clone = rootContainer()->Clone(rootContainer()->GetDocument(), data,
                                        /*append_to*/ nullptr);
   // http://crbug.com/1467847: clone may be null and can be hit by clusterfuzz.

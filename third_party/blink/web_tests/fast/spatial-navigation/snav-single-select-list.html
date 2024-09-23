@@ -1,133 +1,102 @@
-<html>
-  <!--
-    This test ensures the correctness of Spatial Navigation (SNav) algorithm over single select list element.
+<!DOCTYPE html>
+<table style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;" border="1" cellpadding="2" cellspacing="1">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"></td>
+      <td style="vertical-align: top; text-align: center;"><a id="2" href="a">2</a></td>
+      <td style="vertical-align: top; text-align: center;"></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"><a id="4" href="a">4</a></td>
+      <td style="vertical-align: top; text-align: center;"><select id="start" size=4><option>1</option><option>2</option><option disabled>3</option><option>4</option></select></td>
+      <td style="vertical-align: top; text-align: center;"><a id="6" href="a">6</a></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: center;"></td>
+      <td style="vertical-align: top; text-align: center;"><a id="8" href="a">8</a></td>
+      <td style="vertical-align: top; text-align: center;"></td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  This test ensures the correctness of Spatial Navigation (SNav) algorithm over single select list element.<br>
+  * Navigation steps:<br>
+  1) Loads this page, focus goes to "start" automatically.<br>
+  2) Focus moves away from select in 4 different directions to neighbor nodes and back.<br>
+</p>
 
-    * Pre-conditions:
-    1) DRT support for SNav enable/disable.
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Down", "start"],
+    ["Down", "start"],
+    ["Down", "start"],
+    ["Down", "8"],
+    ["Up", "start"],
+    ["Up", "start"],
+    ["Up", "start"],
+    ["Up", "2"],
+    ["Down", "start"],
+    ["Right", "6"],
+    ["Left", "start"],
+    ["Left", "4"],
+    ["Right", "start"]
+  ];
 
-    * Navigation steps:
-    1) Loads this page, focus goes to "start" automatically.
-    2) Focus moves away from select in 4 different directions to neighbor nodes and back.
-  -->
-  <head>
-    <script src="../../resources/js-test.js"></script>
-    <script src="resources/spatial-navigation-utils.js"></script>
-    <script type="application/javascript">
+  // Start at a known place.
+  document.getElementById("start").focus();
+  snav.assertFocusMoves(resultMap, true, postFocusMoveCheck);
 
-    var resultMap = [
-      ["Down", "start"],
-      ["Down", "start"],
-      ["Down", "start"],
-      ["Down", "8"],
-      ["Up", "start"],
-      ["Up", "start"],
-      ["Up", "start"],
-      ["Up", "2"],
-      ["Down", "start"],
-      ["Right", "6"],
-      ["Left", "start"],
-      ["Left", "4"],
-      ["Right", "start"],
-      ["DONE", "DONE"]
-    ];
+  function postFocusMoveCheck() {
+    const start = document.getElementById("start");
+    const options = start.options;
 
-    if (window.testRunner) {
-      testRunner.dumpAsText();
-      testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
-      testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
-      testRunner.waitUntilDone();
-    }
-
-    function runTest()
-    {
-      // starting the test itself: get to a known place.
-      document.getElementById("start").focus();
-
-      initTest(resultMap, additionalTest);
-    }
-
-    function additionalTest()
-    {
-      document.getElementById("start").focus();         //move to 1st item
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[0].selected", "true");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[1].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[2].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[3].selected", "false");
-      eventSender.keyDown("ArrowDown");                 //move to 2nd item
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[0].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[1].selected", "true");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[2].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[3].selected", "false");
-      eventSender.keyDown(" ");                         //nothing should change
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[0].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[1].selected", "true");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[2].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[3].selected", "false");
-      eventSender.keyDown("ArrowDown");                 //move to 4th item (3rd item is disabled) 
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[0].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[1].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[2].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[3].selected", "true");
-      eventSender.keyDown(" ");                         //nothing should change
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[0].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[1].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[2].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[3].selected", "true");
-      eventSender.keyDown("ArrowUp");                   //move back to 2nd item
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[0].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[1].selected", "true");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[2].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[3].selected", "false");
-      eventSender.keyDown(" ");                         //noting should change
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[0].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[1].selected", "true");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[2].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[3].selected", "false");
-      eventSender.keyDown("ArrowUp");                   //move back to 1st item
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[0].selected", "true");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[1].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[2].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[3].selected", "false");
-      eventSender.keyDown("ArrowDown", ["shiftKey"]);   //shift-down to 2nd item
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[0].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[1].selected", "true");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[2].selected", "false");
-      shouldBe("gFocusedDocument.getElementById(\"start\").options[3].selected", "false");
-
-      testCompleted();
-    }
-
-    function testCompleted()
-    {
-      if (window.testRunner)
-        testRunner.notifyDone();
-    }
-
-    window.onload = runTest;
-
-    </script>
-  </head>
-  <body id="some-content" xmlns="http://www.w3.org/1999/xhtml">
-    <table style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;" border="1" cellpadding="2" cellspacing="1">
-      <tbody>
-        <tr>
-          <td style="vertical-align: top; text-align: center;"></td>
-          <td style="vertical-align: top; text-align: center;"><a id="2" href="a">2</a></td>
-          <td style="vertical-align: top; text-align: center;"></td>
-        </tr>
-        <tr>
-          <td style="vertical-align: top; text-align: center;"><a id="4" href="a">4</a></td>
-          <td style="vertical-align: top; text-align: center;"><select id="start" size=4><option>1</option><option>2</option><option disabled>3</option><option>4</option></select></td>
-          <td style="vertical-align: top; text-align: center;"><a id="6" href="a">6</a></td>
-        </tr>
-        <tr>
-          <td style="vertical-align: top; text-align: center;"></td>
-          <td style="vertical-align: top; text-align: center;"><a id="8" href="a">8</a></td>
-          <td style="vertical-align: top; text-align: center;"></td>
-        </tr>
-      </tbody>
-    </table>
-    <div id="console"></div>
-  </body>
-</html>
-
+    start.focus();                                    //move to 1st item
+    assert_equals(options[0].selected, true);
+    assert_equals(options[1].selected, false);
+    assert_equals(options[2].selected, false);
+    assert_equals(options[3].selected, false);
+    eventSender.keyDown("ArrowDown");                 //move to 2nd item
+    assert_equals(options[0].selected, false);
+    assert_equals(options[1].selected, true);
+    assert_equals(options[2].selected, false);
+    assert_equals(options[3].selected, false);
+    eventSender.keyDown(" ");                         //nothing should change
+    assert_equals(options[0].selected, false);
+    assert_equals(options[1].selected, true);
+    assert_equals(options[2].selected, false);
+    assert_equals(options[3].selected, false);
+    eventSender.keyDown("ArrowDown");                 //move to 4th item (3rd item is disabled)
+    assert_equals(options[0].selected, false);
+    assert_equals(options[1].selected, false);
+    assert_equals(options[2].selected, false);
+    assert_equals(options[3].selected, true);
+    eventSender.keyDown(" ");                         //nothing should change
+    assert_equals(options[0].selected, false);
+    assert_equals(options[1].selected, false);
+    assert_equals(options[2].selected, false);
+    assert_equals(options[3].selected, true);
+    eventSender.keyDown("ArrowUp");                   //move back to 2nd item
+    assert_equals(options[0].selected, false);
+    assert_equals(options[1].selected, true);
+    assert_equals(options[2].selected, false);
+    assert_equals(options[3].selected, false);
+    eventSender.keyDown(" ");                         //noting should change
+    assert_equals(options[0].selected, false);
+    assert_equals(options[1].selected, true);
+    assert_equals(options[2].selected, false);
+    assert_equals(options[3].selected, false);
+    eventSender.keyDown("ArrowUp");                   //move back to 1st item
+    assert_equals(options[0].selected, true);
+    assert_equals(options[1].selected, false);
+    assert_equals(options[2].selected, false);
+    assert_equals(options[3].selected, false);
+    eventSender.keyDown("ArrowDown", ["shiftKey"]);   //shift-down to 2nd item
+    assert_equals(options[0].selected, false);
+    assert_equals(options[1].selected, true);
+    assert_equals(options[2].selected, false);
+    assert_equals(options[3].selected, false);
+  }
+</script>

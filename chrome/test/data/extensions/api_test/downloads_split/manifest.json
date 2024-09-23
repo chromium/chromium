@@ -1,16 +1,25 @@
 {
   "name": "downloads incognito split apitest",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "downloads incognito split apitest",
   "incognito": "split",
-  "web_accessible_resources": ["empty.html"],
-  "browser_action": {"default_popup": "accept_danger.html"},
+  "web_accessible_resources": [
+    {
+      "resources": ["empty.html"],
+      "matches": ["*://*/*"]
+    }
+  ],
+  "action": {
+    "default_popup": "accept_danger.html"
+  },
   "permissions": [
     "downloads",
     "downloads.open",
     "downloads.shelf",
-    "downloads.ui",
+    "downloads.ui"
+  ],
+  "host_permissions": [
     "http://*/*",
     "file://*"
   ]

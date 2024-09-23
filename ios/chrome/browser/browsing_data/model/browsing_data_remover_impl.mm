@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_impl.h"
 
-#import <WebKit/WebKit.h>
-
 #import <set>
 #import <string>
 
@@ -14,11 +12,14 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
+#import "base/location.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "components/autofill/core/browser/address_data_manager.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -37,7 +38,6 @@
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_remover_helper.h"
-#import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/system_snapshots_cleaner.h"
@@ -48,17 +48,28 @@
 #import "ios/chrome/browser/history/model/web_history_service_factory.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/language/model/url_language_histogram_factory.h"
+#import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_remover_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
+#import "ios/chrome/browser/sessions/model/session_restoration_service_tmpl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
@@ -134,16 +145,70 @@ void ClearCookies(
       base::BindOnce(&DeleteCallbackAdapter, std::move(callback)));
 }
 
+std::set<Browser*> GetAllBrowsersForBrowserState(
+    ChromeBrowserState* browser_state) {
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state);
+  return browser_list->BrowsersOfType(BrowserList::BrowserType::kAll);
+}
+
+bool IsActivityIndicatorNeededAutomatic(bool is_off_the_record,
+                                        BrowsingDataRemoveMask mask) {
+  return !is_off_the_record &&
+         IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_SITE_DATA);
+}
+
+bool IsActivityIndicatorNeeded(bool is_off_the_record,
+                               BrowsingDataRemoveMask mask,
+                               BrowsingDataRemover::RemovalParams params) {
+  switch (params.show_activity_indicator) {
+    case BrowsingDataRemover::ActivityIndicatorPolicy::kAutomatic:
+      return IsActivityIndicatorNeededAutomatic(is_off_the_record, mask);
+    case BrowsingDataRemover::ActivityIndicatorPolicy::kNoIndicator:
+      return false;
+    case BrowsingDataRemover::ActivityIndicatorPolicy::kForceIndicator:
+      return true;
+  }
+  NOTREACHED();
+}
+
+bool IsWebStatesReloadNeeded(bool is_off_the_record,
+                             BrowsingDataRemoveMask mask,
+                             BrowsingDataRemover::RemovalParams params) {
+  switch (params.reload_web_states) {
+    case BrowsingDataRemover::WebStatesReloadPolicy::kAutomatic:
+      return IsActivityIndicatorNeededAutomatic(is_off_the_record, mask);
+    case BrowsingDataRemover::WebStatesReloadPolicy::kNoReload:
+      return false;
+    case BrowsingDataRemover::WebStatesReloadPolicy::kForceReload:
+      return true;
+  }
+  NOTREACHED();
+}
+
+void CloseTabsHelper(base::WeakPtr<Browser> browser,
+                     base::Time delete_begin,
+                     base::Time delete_end,
+                     const tabs_closure_util::WebStateIDToTime& tabs_info) {
+  if (!browser) {
+    return;
+  }
+  tabs_closure_util::CloseTabs(browser->GetWebStateList(), delete_begin,
+                               delete_end, tabs_info);
+}
+
 }  // namespace
 
 BrowsingDataRemoverImpl::RemovalTask::RemovalTask(base::Time delete_begin,
                                                   base::Time delete_end,
                                                   BrowsingDataRemoveMask mask,
-                                                  base::OnceClosure callback)
+                                                  base::OnceClosure callback,
+                                                  RemovalParams params)
     : delete_begin(delete_begin),
       delete_end(delete_end),
       mask(mask),
-      callback(std::move(callback)) {}
+      callback(std::move(callback)),
+      params(params) {}
 
 BrowsingDataRemoverImpl::RemovalTask::RemovalTask(
     RemovalTask&& other) noexcept = default;
@@ -210,7 +275,8 @@ void BrowsingDataRemoverImpl::SetRemoving(bool is_removing) {
 
 void BrowsingDataRemoverImpl::Remove(browsing_data::TimePeriod time_period,
                                      BrowsingDataRemoveMask mask,
-                                     base::OnceClosure callback) {
+                                     base::OnceClosure callback,
+                                     RemovalParams params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(browser_state_);
 
@@ -234,10 +300,16 @@ void BrowsingDataRemoverImpl::Remove(browsing_data::TimePeriod time_period,
       IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_COOKIES) ||
       !IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_VISITED_LINKS));
 
+  // Closing tabs should only be available through user action which is only
+  // possible in non off the record.
+  DCHECK(!IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS) ||
+         (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS) &&
+          !browser_state_->IsOffTheRecord()));
+
   browsing_data::RecordDeletionForPeriod(time_period);
   removal_queue_.emplace(browsing_data::CalculateBeginDeleteTime(time_period),
                          browsing_data::CalculateEndDeleteTime(time_period),
-                         mask, std::move(callback));
+                         mask, std::move(callback), params);
 
   // If this is the only scheduled task, execute it immediately. Otherwise,
   // it will be automatically executed when all tasks scheduled before it
@@ -251,7 +323,8 @@ void BrowsingDataRemoverImpl::Remove(browsing_data::TimePeriod time_period,
 void BrowsingDataRemoverImpl::RemoveInRange(base::Time start_time,
                                             base::Time end_time,
                                             BrowsingDataRemoveMask mask,
-                                            base::OnceClosure callback) {
+                                            base::OnceClosure callback,
+                                            RemovalParams params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(browser_state_);
 
@@ -272,8 +345,15 @@ void BrowsingDataRemoverImpl::RemoveInRange(base::Time start_time,
       IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_COOKIES) ||
       !IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_VISITED_LINKS));
 
+  // Closing tabs should only be available through user action which is only
+  // possible in non off the record.
+  DCHECK(!IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS) ||
+         (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS) &&
+          !browser_state_->IsOffTheRecord()));
+
   // browsing_data::RecordDeletionForPeriod(time_period);
-  removal_queue_.emplace(start_time, end_time, mask, std::move(callback));
+  removal_queue_.emplace(start_time, end_time, mask, std::move(callback),
+                         params);
 
   // If this is the only scheduled task, execute it immediately. Otherwise,
   // it will be automatically executed when all tasks scheduled before it
@@ -284,13 +364,91 @@ void BrowsingDataRemoverImpl::RemoveInRange(base::Time start_time,
   }
 }
 
+void BrowsingDataRemoverImpl::SetCachedTabsInfo(
+    tabs_closure_util::WebStateIDToTime cached_tabs_info) {
+  cached_tabs_info_ = cached_tabs_info;
+  cached_tabs_info_initialized_ = true;
+}
+
 void BrowsingDataRemoverImpl::RunNextTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!removal_queue_.empty());
   RemovalTask& removal_task = removal_queue_.front();
   removal_task.task_started = base::Time::Now();
+
+  PrepareForRemoval(removal_task.mask, removal_task.params);
   RemoveImpl(removal_task.delete_begin, removal_task.delete_end,
              removal_task.mask);
+}
+
+void BrowsingDataRemoverImpl::PrepareForRemoval(BrowsingDataRemoveMask mask,
+                                                RemovalParams params) {
+  if (!IsActivityIndicatorNeeded(browser_state_->IsOffTheRecord(), mask,
+                                 params)) {
+    return;
+  }
+
+  std::set<Browser*> all_browsers =
+      GetAllBrowsersForBrowserState(browser_state_);
+
+  for (Browser* browser : all_browsers) {
+    CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+    // Not all browsers have a handler for the protocol
+    // BrowserCoordinatorCommands.
+    if ([dispatcher
+            dispatchingForProtocol:@protocol(BrowserCoordinatorCommands)]) {
+      id<BrowserCoordinatorCommands> handler =
+          HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+      [handler showActivityOverlay];
+    }
+  }
+}
+
+void BrowsingDataRemoverImpl::CleanupAfterRemoval(BrowsingDataRemoveMask mask,
+                                                  RemovalParams params) {
+  // Activates browsing and enables web views.
+  // Must be called only on the main thread.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::set<Browser*> all_browsers =
+      GetAllBrowsersForBrowserState(browser_state_);
+
+  const bool is_off_the_record = browser_state_->IsOffTheRecord();
+  const bool activity_indicator_needed =
+      IsActivityIndicatorNeeded(is_off_the_record, mask, params);
+  const bool is_webstate_reload_needed =
+      IsWebStatesReloadNeeded(is_off_the_record, mask, params);
+
+  for (Browser* browser : all_browsers) {
+    if (is_webstate_reload_needed) {
+      // User interaction needs to be disabled as a way to force reload all the
+      // web states and to reset NTPs.
+      WebUsageEnablerBrowserAgent::FromBrowser(browser)->SetWebUsageEnabled(
+          false);
+    }
+
+    if (activity_indicator_needed) {
+      CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+      // Not all browsers have a handler for the protocol
+      // BrowserCoordinatorCommands.
+      if ([dispatcher
+              dispatchingForProtocol:@protocol(BrowserCoordinatorCommands)]) {
+        id<BrowserCoordinatorCommands> handler =
+            HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+        [handler hideActivityOverlay];
+      }
+    }
+
+    if (is_webstate_reload_needed) {
+      WebUsageEnablerBrowserAgent::FromBrowser(browser)->SetWebUsageEnabled(
+          true);
+    }
+
+    if (TabUsageRecorderBrowserAgent* tab_usage_recorder =
+            TabUsageRecorderBrowserAgent::FromBrowser(browser)) {
+      tab_usage_recorder->RecordPrimaryBrowserChange(true);
+    }
+  }
 }
 
 void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
@@ -413,28 +571,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
       tab_service->ClearEntries();
     }
 
-    // The saved Autofill profiles and credit cards can include the origin from
-    // which these profiles and credit cards were learned.  These are a form of
-    // history, so clear them as well.
-    scoped_refptr<autofill::AutofillWebDataService> web_data_service =
-        ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
-            browser_state_, ServiceAccessType::EXPLICIT_ACCESS);
-    if (web_data_service.get()) {
-      web_data_service->RemoveOriginURLsModifiedBetween(delete_begin,
-                                                        delete_end);
-      // Ask for a call back when the above call is finished.
-      web_data_service->GetDBTaskRunner()->PostTaskAndReply(
-          FROM_HERE, base::DoNothing(), CreatePendingTaskCompletionClosure());
-
-      autofill::PersonalDataManager* data_manager =
-          autofill::PersonalDataManagerFactory::GetForBrowserState(
-              browser_state_);
-
-      if (data_manager) {
-        data_manager->Refresh();
-      }
-    }
-
     // Remove language histogram history.
     language::UrlLanguageHistogram* language_histogram =
         UrlLanguageHistogramFactory::GetForBrowserState(browser_state_);
@@ -456,7 +592,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
       // It doesn't matter whether any logins were removed so bool argument can
       // be omitted.
       profile_password_store->RemoveLoginsCreatedBetween(
-          delete_begin, delete_end,
+          FROM_HERE, delete_begin, delete_end,
           IgnoreArgument<bool>(CreatePendingTaskCompletionClosure()));
     }
 
@@ -467,7 +603,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 
     if (account_password_store) {
       account_password_store->RemoveLoginsCreatedBetween(
-          delete_begin, delete_end,
+          FROM_HERE, delete_begin, delete_end,
           IgnoreArgument<bool>(CreatePendingTaskCompletionClosure()));
     }
   }
@@ -475,14 +611,12 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_FORM_DATA)) {
     base::RecordAction(base::UserMetricsAction("ClearBrowsingData_Autofill"));
     scoped_refptr<autofill::AutofillWebDataService> web_data_service =
-        ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
+        ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
             browser_state_, ServiceAccessType::EXPLICIT_ACCESS);
 
     if (web_data_service.get()) {
       web_data_service->RemoveFormElementsAddedBetween(delete_begin,
                                                        delete_end);
-      web_data_service->RemoveAutofillDataModifiedBetween(delete_begin,
-                                                          delete_end);
 
       // Clear out the Autofill StrikeDatabase in its entirety.
       autofill::StrikeDatabase* strike_database =
@@ -491,17 +625,17 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
         strike_database->ClearAllStrikes();
       }
 
-      // Ask for a call back when the above calls are finished.
-      web_data_service->GetDBTaskRunner()->PostTaskAndReply(
-          FROM_HERE, base::DoNothing(), CreatePendingTaskCompletionClosure());
-
       autofill::PersonalDataManager* data_manager =
           autofill::PersonalDataManagerFactory::GetForBrowserState(
               browser_state_);
+      data_manager->address_data_manager().RemoveLocalProfilesModifiedBetween(
+          delete_begin, delete_end);
+      data_manager->payments_data_manager().RemoveLocalDataModifiedBetween(
+          delete_begin, delete_end);
 
-      if (data_manager) {
-        data_manager->Refresh();
-      }
+      // Ask for a call back when the above calls are finished.
+      web_data_service->GetDBTaskRunner()->PostTaskAndReply(
+          FROM_HERE, base::DoNothing(), CreatePendingTaskCompletionClosure());
     }
   }
 
@@ -540,9 +674,10 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     // safe as the callback is always invoked, even if ChromeBrowserState is
     // destroyed, and BookmarkRemoverHelper supports being deleted while the
     // callback is run.
-    bookmarks_remover_helper_ptr->RemoveAllUserBookmarksIOS(base::BindOnce(
-        &BookmarkClearedAdapter, std::move(bookmarks_remover_helper),
-        CreatePendingTaskCompletionClosure()));
+    bookmarks_remover_helper_ptr->RemoveAllUserBookmarksIOS(
+        FROM_HERE, base::BindOnce(&BookmarkClearedAdapter,
+                                  std::move(bookmarks_remover_helper),
+                                  CreatePendingTaskCompletionClosure()));
   }
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_READING_LIST)) {
@@ -556,9 +691,9 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     // ChromeBrowserState is destroyed, and ReadingListRemoverHelper supports
     // being deleted while the callback is run..
     reading_list_remover_helper_ptr->RemoveAllUserReadingListItemsIOS(
-        base::BindOnce(&ReadingListClearedAdapter,
-                       std::move(reading_list_remover_helper),
-                       CreatePendingTaskCompletionClosure()));
+        FROM_HERE, base::BindOnce(&ReadingListClearedAdapter,
+                                  std::move(reading_list_remover_helper),
+                                  CreatePendingTaskCompletionClosure()));
   }
 
   if (IsRemoveDataMaskSet(mask,
@@ -569,12 +704,19 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     browser_state_->GetPrefs()->ClearPref(
         prefs::kGoogleServicesLastSyncingGaiaId);
     browser_state_->GetPrefs()->ClearPref(
+        prefs::kGoogleServicesLastSignedInUsername);
+    browser_state_->GetPrefs()->ClearPref(
         prefs::kGoogleServicesLastSyncingUsername);
   }
 
   // Remove stored zoom levels.
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_SITE_DATA)) {
     FontSizeTabHelper::ClearUserZoomPrefs(browser_state_->GetPrefs());
+  }
+
+  // Close tabs.
+  if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS)) {
+    MaybeFetchTabsInfoThenCloseTabs(delete_begin, delete_end);
   }
 
   // Always wipe accumulated network related data (TransportSecurityState and
@@ -645,6 +787,52 @@ void BrowsingDataRemoverImpl::OnKeywordsLoaded(base::Time delete_begin,
   std::move(callback).Run();
 }
 
+void BrowsingDataRemoverImpl::MaybeFetchTabsInfoThenCloseTabs(
+    base::Time delete_begin,
+    base::Time delete_end) {
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state_);
+  scoped_refptr<base::SequencedTaskRunner> current_task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  SessionRestorationService* service =
+      SessionRestorationServiceFactory::GetForBrowserState(browser_state_);
+  for (Browser* browser : browser_list->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndInactive)) {
+    if (cached_tabs_info_initialized_) {
+      current_task_runner->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&CloseTabsHelper, browser->AsWeakPtr(), delete_begin,
+                         delete_end, cached_tabs_info_),
+          CreatePendingTaskCompletionClosure());
+    } else {
+      service->LoadDataFromStorage(
+          browser,
+          base::BindRepeating(
+              &tabs_closure_util::GetLastCommittedTimestampFromStorage),
+          base::BindOnce(&BrowsingDataRemoverImpl::OnTabsInformationLoaded,
+                         GetWeakPtr(), browser->AsWeakPtr(), delete_begin,
+                         delete_end, CreatePendingTaskCompletionClosure()));
+    }
+  }
+}
+
+void BrowsingDataRemoverImpl::OnTabsInformationLoaded(
+    base::WeakPtr<Browser> weak_browser,
+    base::Time delete_begin,
+    base::Time delete_end,
+    base::OnceClosure callback,
+    tabs_closure_util::WebStateIDToTime result) {
+  Browser* browser = weak_browser.get();
+  if (browser) {
+    tabs_closure_util::WebStateIDToTime tabs_info =
+        tabs_closure_util::GetTabsInfoForCache(result, delete_begin,
+                                               delete_end);
+    tabs_closure_util::CloseTabs(browser->GetWebStateList(), delete_begin,
+                                 delete_end, tabs_info);
+  }
+  std::move(callback).Run();
+}
+
 void BrowsingDataRemoverImpl::NotifyRemovalComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!removal_queue_.empty());
@@ -653,12 +841,12 @@ void BrowsingDataRemoverImpl::NotifyRemovalComplete() {
       base::SequencedTaskRunner::GetCurrentDefault();
 
   if (AccountConsistencyService* account_consistency_service =
-          ios::AccountConsistencyServiceFactory::GetForBrowserState(
+          ios::AccountConsistencyServiceFactory::GetForProfile(
               browser_state_)) {
     account_consistency_service->OnBrowsingDataRemoved();
   }
   if (OptimizationGuideService* optimization_guide_service =
-          OptimizationGuideServiceFactory::GetForBrowserState(browser_state_)) {
+          OptimizationGuideServiceFactory::GetForProfile(browser_state_)) {
     optimization_guide_service->OnBrowsingDataRemoved();
   }
 
@@ -682,6 +870,8 @@ void BrowsingDataRemoverImpl::NotifyRemovalComplete() {
     }
     removal_queue_.pop();
 
+    CleanupAfterRemoval(task.mask, task.params);
+
     // Schedule the task to be executed soon. This ensure that the IsRemoving()
     // value is correct when the callback is invoked.
     if (!task.callback.is_null()) {
@@ -697,6 +887,7 @@ void BrowsingDataRemoverImpl::NotifyRemovalComplete() {
 
   if (removal_queue_.empty()) {
     SetRemoving(false);
+    cached_tabs_info_initialized_ = false;
     return;
   }
 
@@ -709,7 +900,7 @@ void BrowsingDataRemoverImpl::NotifyRemovalComplete() {
 void BrowsingDataRemoverImpl::OnTaskComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/305259): This should also observe session clearing (what
+  // TODO(crbug.com/40336135): This should also observe session clearing (what
   // about other things such as passwords, etc.?) and wait for them to complete
   // before continuing.
 

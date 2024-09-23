@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Property d value 'path("M 0 0 L 100 100 m 0 100 l 100 0 Z l 160 20 Z")'
-  assert_equals: expected "path(\\"M 0 0 L 100 100 m 0 100 l 100 0 Z l 160 20 Z\\")" but got "path(\\"M 0 0 L 100 100 M 100 200 L 200 200 Z L 260 220 Z\\")"
-Harness: the test ran to completion.
-

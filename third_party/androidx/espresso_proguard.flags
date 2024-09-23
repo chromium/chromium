@@ -1,0 +1,12 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+-dontwarn com.google.android.apps.common.testing.testrunner.web.JavaScriptBridge
+-dontwarn com.google.android.material.navigation.NavigationView
+-dontwarn com.google.android.apps.common.testing.testrunner.web.Conduit
+
+-keep class androidx.test.espresso.** {
+  *;
+}
+

@@ -15,19 +15,11 @@
 #include "components/download/public/common/url_loader_factory_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/http/http_content_disposition.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace download {
-
-namespace {
-#if BUILDFLAG(IS_ANDROID)
-// PDF MIME type.
-constexpr char kPdfMimeType[] = "application/pdf";
-#endif  // BUILDFLAG(IS_ANDROID)
-}  // namespace
 
 // This object monitors the URLLoaderCompletionStatus change when
 // ResourceDownloader is asking |delegate_| whether download can proceed.
@@ -114,7 +106,8 @@ void ResourceDownloader::InterceptNavigationResponse(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const URLSecurityPolicy& url_security_policy,
     mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider,
-    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner) {
+    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+    bool is_transient) {
   auto downloader = std::make_unique<ResourceDownloader>(
       delegate, std::move(resource_request), render_process_id, render_frame_id,
       serialized_embedder_download_data, tab_url, tab_referrer_url, true,
@@ -131,7 +124,8 @@ void ResourceDownloader::InterceptNavigationResponse(
                   base::SingleThreadTaskRunner::GetCurrentDefault()))));
   raw_downloader->InterceptResponse(
       std::move(url_chain), cert_status, std::move(response_head),
-      std::move(response_body), std::move(url_loader_client_endpoints));
+      std::move(response_body), std::move(url_loader_client_endpoints),
+      is_transient);
 }
 
 ResourceDownloader::ResourceDownloader(
@@ -215,26 +209,13 @@ void ResourceDownloader::InterceptResponse(
     net::CertStatus cert_status,
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle response_body,
-    network::mojom::URLLoaderClientEndpointsPtr endpoints) {
+    network::mojom::URLLoaderClientEndpointsPtr endpoints,
+    bool is_transient) {
   // Set the URLLoader.
   url_loader_.Bind(std::move(endpoints->url_loader));
 
-  bool is_transient = false;
 #if BUILDFLAG(IS_ANDROID)
-  std::string disposition;
-  response_head->headers->GetNormalizedHeader("content-disposition",
-                                              &disposition);
-  if (disposition.empty() ||
-      !net::HttpContentDisposition(disposition, std::string())
-           .is_attachment()) {
-    is_must_download_ = false;
-  }
-  if (!is_must_download_ &&
-      base::FeatureList::IsEnabled(features::kTransientPdfLinkDownload) &&
-      base::EqualsCaseInsensitiveASCII(response_head->mime_type,
-                                       kPdfMimeType)) {
-    is_transient = true;
-  }
+  is_must_download_ = IsContentDispositionAttachmentInHead(*response_head);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Create the new URLLoaderClient that will intercept the navigation.
@@ -320,7 +301,7 @@ void ResourceDownloader::OnUploadProgress(uint64_t bytes_uploaded) {
 void ResourceDownloader::Destroy() {
   if (wake_lock_)
     wake_lock_->CancelWakeLock();
-  // TODO(crbug.com/1394491): Use Weak Pointers instead.
+  // TODO(crbug.com/40248618): Use Weak Pointers instead.
   delegate_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UrlDownloadHandler::Delegate::OnUrlDownloadStopped,

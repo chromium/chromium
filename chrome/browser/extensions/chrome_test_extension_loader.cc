@@ -22,6 +22,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/browser/user_script_manager.h"
@@ -143,7 +144,7 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
 
   // Permissions and the install param are handled by the unpacked installer
   // before the extension is installed.
-  // TODO(https://crbug.com/1157606): Fix CrxInstaller to enable this for
+  // TODO(crbug.com/40160904): Fix CrxInstaller to enable this for
   // packed extensions.
   if (!is_unpacked) {
     // Trying to reload a shared module (as we do when adjusting extension
@@ -159,8 +160,8 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
 
     if (install_param_.has_value()) {
       DCHECK(!install_param_->empty());
-      ExtensionPrefs::Get(browser_context_)
-          ->SetInstallParam(extension_id_, *install_param_);
+      SetInstallParam(ExtensionPrefs::Get(browser_context_), extension_id_,
+                      *install_param_);
       // Reload the extension so listeners of the loaded notification have
       // access to the install param.
       TestExtensionRegistryObserver registry_observer(extension_registry_,
@@ -411,7 +412,7 @@ bool ChromeTestExtensionLoader::CheckInstallWarnings(
   std::string install_warnings_string;
   for (const InstallWarning& warning : install_warnings) {
     // Don't fail on the manifest v2 deprecation warning in tests for now.
-    // TODO(https://crbug.com/1269161): Stop skipping this warning when all
+    // TODO(crbug.com/40804030): Stop skipping this warning when all
     // tests are updated to MV3.
     if (warning.message == manifest_errors::kManifestV2IsDeprecatedWarning)
       continue;

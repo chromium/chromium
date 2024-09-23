@@ -56,7 +56,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
     // be hidden if the available space does not allow for them. Compact mode is
     // used in smaller windows (e.g. web apps) where
     // there may not be enough space to display the buttons.
-    // TODO(crbug.com/1155421): Remove kCompact in favour of kAutoHide once the
+    // TODO(crbug.com/40159931): Remove kCompact in favour of kAutoHide once the
     // |kDesktopPWAsElidedExtensionsMenu| flag is removed.
     kCompact,
     // In auto hide mode the menu icon is hidden until
@@ -120,7 +120,6 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // Updates the controls visibility.
   void UpdateControlsVisibility();
 
-  const ToolbarIcons& icons_for_testing() const { return icons_; }
   ToolbarActionViewController* popup_owner_for_testing() {
     return popup_owner_;
   }
@@ -143,6 +142,12 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // action will be posted immediately (not run synchronously).
   void ShowWidgetForExtension(views::Widget* widget,
                               const std::string& extension_id);
+
+  // Check if the extensions menu is showing.
+  // TODO(crbug.com/40811196): This method will be removed once extensions menu
+  // under kExtensionsMenuAccessControl feature is fully rolled out and we can
+  // call directly into the menu coordinator.
+  bool IsExtensionsMenuShowing() const;
 
   // Event handler for when the extensions menu is opened.
   void OnMenuOpening();
@@ -234,14 +239,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
     std::string extension_id;
   };
 
-  // Check if the extensions menu is showing.
-  // TODO(crbug.com/1279986): This method will be removed once extensions menu
-  // under kExtensionsMenuAccessControl feature is fully rolled out and we can
-  // call directly into the menu coordinator.
-  bool IsExtensionsMenuShowing() const;
-
   // Hides the currently-showing extensions menu, if it exists.
-  // TODO(crbug.com/1279986): This method will be removed once extensions menu
+  // TODO(crbug.com/40811196): This method will be removed once extensions menu
   // under kExtensionsMenuAccessControl feature is fully rolled out and we can
   // call directly into the menu coordinator.
   void HideExtensionsMenu();
@@ -265,8 +264,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void CreateActionForId(const ToolbarActionsModel::ActionId& action_id);
 
   // Sorts child views to display them in the correct order (pinned actions,
-  // popped out actions, extensions button).
-  void ReorderViews();
+  // popped out actions, other buttons).
+  void ReorderAllChildViews();
 
   // Utility function for going from width to icon counts.
   size_t WidthToIconCount(int x_offset);
@@ -318,7 +317,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
 
   const raw_ptr<ExtensionsToolbarButton, AcrossTasksDanglingUntriaged>
       extensions_button_;
-  raw_ptr<ExtensionsRequestAccessButton> request_access_button_ = nullptr;
+  raw_ptr<ExtensionsRequestAccessButton, DanglingUntriaged>
+      request_access_button_ = nullptr;
 
   DisplayMode display_mode_;
 
@@ -343,7 +343,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   raw_ptr<ToolbarButton> close_side_panel_button_ = nullptr;
   // Used to ensure the button remains highlighted while active.
   std::optional<views::Button::ScopedAnchorHighlight>
-      close_side_panel_button_anchor_higlight_;
+      close_side_panel_button_anchor_highlight_;
 
   // The widgets currently popped out and, for each, the extension it is
   // associated with. See AnchoredWidget.

@@ -78,6 +78,7 @@ HistoryServiceFactory* HistoryServiceFactory::GetInstance() {
 // static
 void HistoryServiceFactory::ShutdownForProfile(Profile* profile) {
   HistoryServiceFactory* factory = GetInstance();
+  factory->BrowserContextShutdown(profile);
   factory->BrowserContextDestroyed(profile);
 }
 
@@ -92,9 +93,12 @@ HistoryServiceFactory::HistoryServiceFactory()
           "HistoryService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(BookmarkModelFactory::GetInstance());
 }

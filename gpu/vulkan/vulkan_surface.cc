@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/vulkan/vulkan_surface.h"
 
 #include <vulkan/vulkan.h>
@@ -43,10 +48,13 @@ VkSurfaceTransformFlagBitsKHR ToVkSurfaceTransformFlag(
       return VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR;
     case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR;
-    default:
-      NOTREACHED() << "transform:" << transform;
-      return VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
+    case gfx::OVERLAY_TRANSFORM_INVALID:
+      break;
   };
+  NOTREACHED_IN_MIGRATION() << "transform:" << transform;
+  return VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 }
 
 gfx::OverlayTransform FromVkSurfaceTransformFlag(
@@ -65,7 +73,7 @@ gfx::OverlayTransform FromVkSurfaceTransformFlag(
     case VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR:
       return gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270;
     default:
-      NOTREACHED() << "transform:" << transform;
+      NOTREACHED_IN_MIGRATION() << "transform:" << transform;
       return gfx::OVERLAY_TRANSFORM_INVALID;
   }
 }

@@ -12,7 +12,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
 
 import java.util.List;
@@ -63,17 +62,13 @@ public class IdentityMutator {
      * Clears the primary account, revokes all consent, removes all accounts and returns whether the
      * operation succeeded .
      */
-    public boolean clearPrimaryAccount(
-            @SignoutReason int sourceMetric, @SignoutDelete int deleteMetric) {
-        return IdentityMutatorJni.get()
-                .clearPrimaryAccount(mNativeIdentityMutator, sourceMetric, deleteMetric);
+    public boolean clearPrimaryAccount(@SignoutReason int sourceMetric) {
+        return IdentityMutatorJni.get().clearPrimaryAccount(mNativeIdentityMutator, sourceMetric);
     }
 
     /** Revokes sync consent for the primary account. */
-    public void revokeSyncConsent(
-            @SignoutReason int sourceMetric, @SignoutDelete int deleteMetric) {
-        IdentityMutatorJni.get()
-                .revokeSyncConsent(mNativeIdentityMutator, sourceMetric, deleteMetric);
+    public void revokeSyncConsent(@SignoutReason int sourceMetric) {
+        IdentityMutatorJni.get().revokeSyncConsent(mNativeIdentityMutator, sourceMetric);
     }
 
     /**
@@ -104,14 +99,10 @@ public class IdentityMutator {
                 Runnable prefsSavedCallback);
 
         public boolean clearPrimaryAccount(
-                long nativeJniIdentityMutator,
-                @SignoutReason int sourceMetric,
-                @SignoutDelete int deleteMetric);
+                long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
 
         public void revokeSyncConsent(
-                long nativeJniIdentityMutator,
-                @SignoutReason int sourceMetric,
-                @SignoutDelete int deleteMetric);
+                long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
 
         public void reloadAllAccountsFromSystemWithPrimaryAccount(
                 long nativeJniIdentityMutator, @Nullable CoreAccountId accountId);

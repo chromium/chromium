@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/version_info/channel.h"
 
 class Profile;
@@ -21,6 +22,11 @@ class Profile;
 namespace apps {
 
 struct VersionInfo {
+  VersionInfo();
+  VersionInfo(const VersionInfo& other);
+  VersionInfo& operator=(const VersionInfo& other);
+  ~VersionInfo();
+
   // The ash Chrome browser version of the device. e.g. "107.0.5296.0"
   std::string ash_chrome;
   // The ChromeOS platform version of the device. e.g. "15088.0.0"
@@ -28,6 +34,10 @@ struct VersionInfo {
   std::string platform;
   // The channel of the build.
   version_info::Channel channel = version_info::Channel::UNKNOWN;
+  // ARC SDK version set to non-zero if ARC is enabled.
+  int arc_sdk = 0;
+  // 'TRUE' if steam is enabled.
+  std::string steam_client;
 };
 
 struct DeviceInfo {
@@ -77,28 +87,32 @@ struct DeviceInfo {
 
 // Fetches information about the device the code is currently running on, used
 // to populate the device context for requests to the Almanac API server.
-class DeviceInfoManager {
+class DeviceInfoManager : public KeyedService {
  public:
-  explicit DeviceInfoManager(Profile* profile);
   DeviceInfoManager(const DeviceInfoManager&) = delete;
   DeviceInfoManager& operator=(const DeviceInfoManager&) = delete;
-  ~DeviceInfoManager();
+  ~DeviceInfoManager() override;
 
   // Asynchronously fetches device information. Must be called from the UI
-  // thread. DeviceInfo is not expected to change over the lifetime of a
-  // Profile, so it is okay (and more efficient) to store the DeviceInfo instead
-  // of repeatedly querying this method.
+  // thread. The fetched DeviceInfo is cached inside this DeviceInfoManager, so
+  // the `callback` may be called immediately if the DeviceInfo is already
+  // available.
   void GetDeviceInfo(base::OnceCallback<void(DeviceInfo)> callback);
 
  private:
-  void OnLoadedVersionAndCustomLabel(
-      base::OnceCallback<void(DeviceInfo)> callback,
-      DeviceInfo device_info);
-  void OnModelInfo(base::OnceCallback<void(DeviceInfo)> callback,
-                   DeviceInfo device_info,
+  friend class DeviceInfoManagerFactory;
+  friend class DeviceInfoManagerTest;
+
+  explicit DeviceInfoManager(Profile* profile);
+
+  void OnLoadedVersionAndCustomLabel(DeviceInfo device_info);
+  void OnModelInfo(DeviceInfo device_info,
                    base::SysInfo::HardwareInfo hardware_info);
 
   raw_ptr<Profile, DanglingUntriaged> profile_;
+
+  std::optional<DeviceInfo> cached_info_;
+  std::vector<base::OnceCallback<void(DeviceInfo)>> pending_callbacks_;
 
   // |weak_ptr_factory_| must be the last member of this class.
   base::WeakPtrFactory<DeviceInfoManager> weak_ptr_factory_{this};

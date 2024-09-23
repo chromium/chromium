@@ -14,7 +14,7 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutBlockFlow DIV",
       "position": [-2, -2],
       "bounds": [788, 22],
       "transform": 2

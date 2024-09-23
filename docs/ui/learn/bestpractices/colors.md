@@ -476,7 +476,7 @@ SkColor GetAuraColor(
           NativeTheme::kColorId_ButtonColor,
           color_scheme);
       return color_utils::BlendForMinContrast(
-          bg, bg, absl::nullopt, 1.2f).color;
+          bg, bg, std::nullopt, 1.2f).color;
     }
     ...
   }
@@ -640,7 +640,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   // Adds an item for the group entry with a submenu containing its tabs.
   // Returns whether the item was successfully added.
-  bool AddGroupEntryToMenu(sessions::TabRestoreService::Group* group,
+  bool AddGroupEntryToMenu(sessions::tab_restore::Group* group,
                            NSMenu* menu,
                            NSInteger tag,
                            NSInteger index);
@@ -648,7 +648,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 ...
 
 bool HistoryMenuBridge::AddGroupEntryToMenu(
-    sessions::TabRestoreService::Group* group,
+    sessions::tab_restore::Group* group,
     NSMenu* menu,
     NSInteger tag,
     NSInteger index) {
@@ -689,13 +689,13 @@ const ui::ThemeProvider* GetThemeProvider(content::WebContents* web_contents);
 void NTPResourceCache::CreateNewTabIncognitoCSS(
     const content::WebContents::Getter& wc_getter) {
   auto* web_contents = wc_getter.Run();
-  const ui::NativeTheme* native_theme = webui::GetNativeTheme(web_contents);
+  const ui::NativeTheme* native_theme = webui::GetNativeThemeDeprecated(web_contents);
   DCHECK(native_theme);
 
   // Requesting the incognito CSS is only done from within incognito browser
   // windows. The ThemeProvider associated with the requesting WebContents will
   // wrap the relevant incognito bits.
-  const ui::ThemeProvider* tp = webui::GetThemeProvider(web_contents);
+  const ui::ThemeProvider* tp = webui::GetThemeProviderDeprecated(web_contents);
   DCHECK(tp);
 
   ...

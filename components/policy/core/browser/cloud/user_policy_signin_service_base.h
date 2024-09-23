@@ -94,6 +94,7 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   // CloudPolicyService::Observer implementation:
   void OnCloudPolicyServiceInitializationCompleted() override;
   void OnPolicyRefreshed(bool success) override;
+  std::string_view name() const override;
 
   // CloudPolicyClient::Observer implementation:
   void OnPolicyFetched(CloudPolicyClient* client) override;

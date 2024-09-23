@@ -154,9 +154,9 @@ class InteractionTracker : public ui::EventHandler,
  private:
   // ui::EventHandler:
   void OnEvent(ui::Event* event) override {
-    if (event->type() == ui::ET_MOUSE_PRESSED ||
-        event->type() == ui::ET_MOUSE_RELEASED ||
-        event->type() == ui::ET_TOUCH_PRESSED) {
+    if (event->type() == ui::EventType::kMousePressed ||
+        event->type() == ui::EventType::kMouseReleased ||
+        event->type() == ui::EventType::kTouchPressed) {
       const ui::LocatedEvent* const located = event->AsLocatedEvent();
       last_interaction_location_ =
           located->target()->GetScreenLocation(*located);
@@ -355,7 +355,7 @@ void TabCounterAnimator::LayoutIfAnimating() {
           border_animation_.GetCurrentValue(), GetBorderOvershootYDelta(), 0);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   border_view_->SetY(GetBorderStartingY() + border_y_delta);
 
@@ -389,7 +389,7 @@ int TabCounterAnimator::GetBorderTargetYDelta() const {
     case TabCounterAnimationType::kDecreasing:
       return -kBorderBounceDistance;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -401,7 +401,7 @@ int TabCounterAnimator::GetBorderOvershootYDelta() const {
     case TabCounterAnimationType::kDecreasing:
       return kBorderBounceOvershoot;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -412,7 +412,7 @@ int TabCounterAnimator::GetAppearingLabelStartPosition() const {
     case TabCounterAnimationType::kDecreasing:
       return kOffscreenLabelDistance;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -690,7 +690,7 @@ void WebUITabCounterButton::ExecuteCommand(int command_id, int event_flags) {
       tab_strip_model_->delegate()->AddTabAt(GURL(), -1, true);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

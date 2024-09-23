@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <string>
 #include <vector>
 
@@ -35,7 +40,6 @@
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -213,7 +217,6 @@ class SignedExchangePrefetchBrowserTest : public PrefetchBrowserTestBase {
   ~SignedExchangePrefetchBrowserTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kSignedHTTPExchange);
     // Need to run the network service in process for testing cache expirity
     // (PrefetchMainResourceSXG_ExceedPrefetchReuseMins) using MockClock.
     ForceInProcessNetworkService();
@@ -730,6 +733,9 @@ class SignedExchangeSubresourcePrefetchBrowserTest
     // Call MockClock::Get() here to initialize ScopedMockClockOverride which
     // should be created while single-threaded.
     MockClock::Get();
+
+    feature_list_.InitAndEnableFeature(
+        net::features::kPartitionConnectionsByNetworkIsolationKey);
   }
 
   SignedExchangeSubresourcePrefetchBrowserTest(
@@ -747,19 +753,6 @@ class SignedExchangeSubresourcePrefetchBrowserTest
   }
 
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enable_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    enable_features.push_back(features::kSignedHTTPExchange);
-    // Needed for reporting test. Doesn't significantly impact other tests.
-    enable_features.push_back(
-        net::features::kPartitionNelAndReportingByNetworkIsolationKey);
-    enable_features.push_back(
-        net::features::kPartitionConnectionsByNetworkIsolationKey);
-    enable_features.push_back(
-        net::features::kPartitionSSLSessionsByNetworkIsolationKey);
-
-    feature_list_.InitWithFeatures(enable_features, disabled_features);
-
     // Need to run the network service in process for testing cache expirity
     // (PrefetchMainResourceSXG_ExceedPrefetchReuseMins) using MockClock.
     ForceInProcessNetworkService();
@@ -912,7 +905,7 @@ class SignedExchangeSubresourcePrefetchBrowserTest
     }
   }
 
-  // Test that CORB logic works well with prefetched signed exchange
+  // Test that ORB logic works well with prefetched signed exchange
   // subresources. This test loads a main SXG which signed by
   // "publisher.example.com", and loads a SXG subresource using a <script> tag.
   //
@@ -922,23 +915,23 @@ class SignedExchangeSubresourcePrefetchBrowserTest
   // |mime_type| is the MIME tyepe of the inner response of the SXG subresource.
   // When |has_nosniff| is set, the inner response header of the SXG subresource
   // has "x-content-type-options: nosniff" header.
-  // |corb_allowed| is whether we expect CORB/ORB to allow this resource. We
+  // |orb_allowed| is whether we expect ORB to allow this resource. We
   // will check this based on the document title.
-  void RunCrossOriginReadBlockingTest(bool cross_origin,
-                                      const std::string& content,
-                                      const std::string& mime_type,
-                                      bool has_nosniff,
-                                      bool corb_allowed) {
+  void RunOpaqueResponseBlockingTest(bool cross_origin,
+                                     const std::string& content,
+                                     const std::string& mime_type,
+                                     bool has_nosniff,
+                                     bool orb_allowed) {
     const char* prefetch_path = "/prefetch.html";
     const char* target_sxg_path = "/target.sxg";
     const char* target_path = "/target.html";
     const char* script_sxg_path = "/script_js.sxg";
     const char* script_path = "/script.js";
 
-    // If CORB/ORB blocks the resource, it will retain its original title,
+    // If ORB blocks the resource, it will retain its original title,
     // "original title". If the resource is allowed, it will modify the title
     // to "done".
-    const char* expected_title = corb_allowed ? "done" : "original title";
+    const char* expected_title = orb_allowed ? "done" : "original title";
 
     auto script_sxg_request_counter = RequestCounter::CreateAndMonitor(
         embedded_test_server(), script_sxg_path);
@@ -1813,7 +1806,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
   EXPECT_EQ(1, script2_request_counter->GetRequestCount());
 }
 
-// TODO(crbug.com/1350046): Flaky.
+// TODO(crbug.com/40856259): Flaky.
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
                        DISABLED_CORS) {
   std::unique_ptr<net::EmbeddedTestServer> data_server =
@@ -2048,31 +2041,31 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
-                       CrossOriginReadBlocking_AllowedAfterSniffing) {
-  RunCrossOriginReadBlockingTest(
+                       OpaqueResponseBlocking_AllowedAfterSniffing) {
+  RunOpaqueResponseBlockingTest(
       true /* cross_origin */, "document.title=\"done\"", "text/javascript",
-      false /* has_nosniff */, true /* corb_allowed */);
+      false /* has_nosniff */, true /* orb_allowed */);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
-                       CrossOriginReadBlocking_BlockedAfterSniffing) {
-  RunCrossOriginReadBlockingTest(
+                       OpaqueResponseBlocking_BlockedAfterSniffing) {
+  RunOpaqueResponseBlockingTest(
       true /* cross_origin */, "<!DOCTYPE html>hello;", "text/html",
-      false /* has_nosniff */, false /* corb_allowed */);
+      false /* has_nosniff */, false /* orb_allowed */);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
-                       CrossOriginReadBlocking_AllowedWithoutSniffing) {
-  RunCrossOriginReadBlockingTest(
-      false /* cross_origin */, "document.title=\"done\"", "text/javascript",
-      true /* has_nosniff */, true /* corb_allowed */);
+                       OpaqueResponseBlocking_AllowedWithoutSniffing) {
+  RunOpaqueResponseBlockingTest(false /* cross_origin */,
+                                "document.title=\"done\"", "text/javascript",
+                                true /* has_nosniff */, true /* orb_allowed */);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
-                       CrossOriginReadBlocking_BlockedWithoutSniffing) {
-  RunCrossOriginReadBlockingTest(
+                       OpaqueResponseBlocking_BlockedWithoutSniffing) {
+  RunOpaqueResponseBlockingTest(
       true /* cross_origin */, "<!DOCTYPE html>hello;", "text/html",
-      true /* has_nosniff */, false /* corb_allowed */);
+      true /* has_nosniff */, false /* orb_allowed */);
 }
 
 IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,

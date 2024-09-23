@@ -104,12 +104,13 @@ class BucketManagerHostTest : public testing::Test {
     void BindCacheStorageForBucket(
         const storage::BucketInfo& bucket,
         mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override {}
-    GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override {
-      return GlobalRenderFrameHostId();
+    storage::BucketClientInfo GetBucketClientInfo() const override {
+      return storage::BucketClientInfo{};
     }
 
     void GetSandboxedFileSystemForBucket(
         const storage::BucketInfo& bucket,
+        const std::vector<std::string>& directory_path_components,
         blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
             callback) override {
       std::move(callback).Run(file_system_access_error::Ok(), {});

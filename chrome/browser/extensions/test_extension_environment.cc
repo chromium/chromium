@@ -122,8 +122,9 @@ TestExtensionSystem* TestExtensionEnvironment::GetExtensionSystem() {
 }
 
 ExtensionService* TestExtensionEnvironment::GetExtensionService() {
-  if (!extension_service_)
+  if (!extension_service_) {
     extension_service_ = CreateExtensionServiceForProfile(profile());
+  }
   return extension_service_;
 }
 
@@ -159,8 +160,9 @@ scoped_refptr<const Extension> TestExtensionEnvironment::MakePackagedApp(
           .AddFlags(Extension::FROM_WEBSTORE)
           .SetID(id)
           .Build();
-  if (install)
+  if (install) {
     GetExtensionService()->AddExtension(result.get());
+  }
   return result;
 }
 

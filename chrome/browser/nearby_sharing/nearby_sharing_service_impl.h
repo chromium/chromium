@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARING_SERVICE_IMPL_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -26,7 +27,6 @@
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/attachment_info.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_http_notifier.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_scanner_feature_usage_metrics.h"
 #include "chrome/browser/nearby_sharing/incoming_frames_reader.h"
 #include "chrome/browser/nearby_sharing/incoming_share_target_info.h"
@@ -35,7 +35,6 @@
 #include "chrome/browser/nearby_sharing/metrics/discovery_metric_logger.h"
 #include "chrome/browser/nearby_sharing/metrics/nearby_share_metric_logger.h"
 #include "chrome/browser/nearby_sharing/metrics/throughput_metric_logger.h"
-#include "chrome/browser/nearby_sharing/nearby_file_handler.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_usage_metrics.h"
 #include "chrome/browser/nearby_sharing/nearby_share_logger.h"
@@ -45,11 +44,13 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/outgoing_share_target_info.h"
 #include "chrome/browser/nearby_sharing/power_client.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/nearby_sharing/wifi_network_configuration/wifi_network_configuration_handler.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_file_handler.h"
+#include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-shared.h"
@@ -195,8 +196,12 @@ class NearbySharingServiceImpl
   void OnEndpointLost(const std::string& endpoint_id) override;
 
   // NearbyConnectionsManager::BandwidthUpgradeListener:
+  void OnInitialMedium(const std::string& endpoint_id,
+                       const Medium medium) override;
   void OnBandwidthUpgrade(const std::string& endpoint_id,
                           const Medium medium) override;
+  void OnBandwidthUpgradeV3(nearby::presence::PresenceDevice remote_device,
+                            const Medium medium) override;
 
   // ash::SessionObserver:
   void OnLockStateChanged(bool locked) override;
@@ -216,7 +221,7 @@ class NearbySharingServiceImpl
 
   base::ObserverList<TransferUpdateCallback>& GetReceiveCallbacksFromState(
       ReceiveSurfaceState state);
-  bool IsVisibleInBackground(Visibility visibility);
+  bool IsVisibleInBackground(nearby_share::mojom::Visibility visibility);
   const std::optional<std::vector<uint8_t>> CreateEndpointInfo(
       const std::optional<std::string>& device_name);
   void GetBluetoothAdapter();
@@ -252,7 +257,8 @@ class NearbySharingServiceImpl
 
   bool IsBluetoothPresent() const;
   bool IsBluetoothPowered() const;
-  bool HasAvailableConnectionMediums();
+  bool HasAvailableAdvertisingMediums();
+  bool HasAvailableDiscoveryMediums();
   void InvalidateSurfaceState();
   bool ShouldStopNearbyProcess();
   void OnProcessShutdownTimerFired();
@@ -421,7 +427,7 @@ class NearbySharingServiceImpl
       NearbyConnectionsManager::ConnectionsStatus status);
   void OnStartDiscoveryResult(
       NearbyConnectionsManager::ConnectionsStatus status);
-  void SetInHighVisibility(bool in_high_visibility);
+  void SetInHighVisibility(bool new_in_high_visibility);
 
   // Note: |share_target| is intentionally passed by value. A share target
   // reference could likely be invalidated by the owner during the multi-step
@@ -516,7 +522,7 @@ class NearbySharingServiceImpl
   base::flat_map<std::string, ShareTarget> outgoing_share_target_map_;
   // A map of ShareTarget id to OutgoingShareTargetInfo. This lets us know which
   // endpoint and public certificate are related to the outgoing share target.
-  // TODO(crbug/1085068) update this map when handling payloads
+  // TODO(crbug.com/40132032) update this map when handling payloads
   base::flat_map<base::UnguessableToken, OutgoingShareTargetInfo>
       outgoing_share_target_info_map_;
   // For metrics. The IDs of ShareTargets that are cancelled while trying to
@@ -551,7 +557,8 @@ class NearbySharingServiceImpl
 
   // The current advertising power level. PowerLevel::kUnknown while not
   // advertising.
-  PowerLevel advertising_power_level_ = PowerLevel::kUnknown;
+  NearbyConnectionsManager::PowerLevel advertising_power_level_ =
+      NearbyConnectionsManager::PowerLevel::kUnknown;
   // True if we are currently scanning for remote devices.
   bool is_scanning_ = false;
   // True if we're currently sending or receiving a file.
@@ -565,7 +572,7 @@ class NearbySharingServiceImpl
   // The time scanning began.
   base::Time scanning_start_timestamp_;
   // True when we are advertising with a device name visible to everyone.
-  bool in_high_visibility = false;
+  bool in_high_visibility_ = false;
   // The time attachments are sent after a share target is selected. This is
   // used to time the process from selecting a share target to writing the
   // introduction frame (last frame before receiver gets notified).

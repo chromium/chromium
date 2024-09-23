@@ -12,7 +12,6 @@ features:
   per_profile: false
 owners:
 - jimmyxgong@chromium.org
-- zentaro@chromium.org
 - cros-peripheral@google.com
 items:
 - caption: Allow the user to customize system shortcuts

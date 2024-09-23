@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "components/nacl/renderer/ppb_nacl_private.h"
 #include "ipc/ipc_sync_channel.h"
@@ -64,7 +65,7 @@ class ServiceRuntime {
   }
 
  private:
-  Plugin* plugin_;
+  raw_ptr<Plugin> plugin_;
   PP_Instance pp_instance_;
   bool main_service_runtime_;
 

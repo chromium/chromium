@@ -18,10 +18,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/public/input_context.h"
-#include "components/segmentation_platform/public/jni_headers/InputContext_jni.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/segmentation_platform/public/jni_headers/InputContext_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -57,6 +59,13 @@ void ConvertAndAddToInputContext(
   for (size_t i = 0; i < native_keys.size(); i++) {
     input_context->metadata_args.emplace(native_keys[i], native_values[i]);
   }
+}
+
+void JavaGURLArrayToGURLVector(
+    JNIEnv* env,
+    const base::android::JavaRef<jobjectArray>& j_gurls,
+    std::vector<GURL>* ret) {
+  *ret = jni_zero::FromJniArray<std::vector<GURL>>(env, j_gurls);
 }
 
 static void JavaLongArrayToBaseTimeVector(
@@ -127,7 +136,7 @@ void InputContextAndroid::FromJavaParams(
   ConvertAndAddToInputContext(env, input_context, jint64_keys, jint64_values,
                               base::android::JavaLongArrayToInt64Vector);
   ConvertAndAddToInputContext(env, input_context, jurl_keys, jurl_values,
-                              url::GURLAndroid::JavaGURLArrayToGURLVector);
+                              JavaGURLArrayToGURLVector);
 }
 
 static void JNI_InputContext_FillNative(

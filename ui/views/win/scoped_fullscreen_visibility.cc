@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/not_fatal_until.h"
 
 namespace views {
 
@@ -34,7 +35,7 @@ ScopedFullscreenVisibility::ScopedFullscreenVisibility(HWND hwnd)
 
 ScopedFullscreenVisibility::~ScopedFullscreenVisibility() {
   FullscreenHWNDs::iterator it = full_screen_windows_->find(hwnd_);
-  DCHECK(it != full_screen_windows_->end());
+  CHECK(it != full_screen_windows_->end(), base::NotFatalUntil::M130);
   if (--it->second == 0) {
     full_screen_windows_->erase(it);
     ShowWindow(hwnd_, SW_SHOW);

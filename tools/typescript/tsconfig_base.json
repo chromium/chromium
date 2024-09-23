@@ -15,6 +15,7 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "preserveSymlinks": true,
     "strict": true,
 
     "typeRoots": [

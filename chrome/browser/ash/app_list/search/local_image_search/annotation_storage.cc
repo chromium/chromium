@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/inverted_index_table.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/sql_database.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "sql/statement.h"
 
@@ -50,6 +52,12 @@ enum class ErrorStatus {
   kFailedToPrefixSearch = 9,
   kMaxValue = kFailedToPrefixSearch,
 };
+
+double GetRelevanceThreshold() {
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      search_features::kLauncherLocalImageSearchRelevance,
+      "relevance_threshold", kRelevanceThreshold);
+}
 
 void LogErrorUma(ErrorStatus status) {
   base::UmaHistogramEnumeration("Apps.AppList.AnnotationStorage.Status",
@@ -299,6 +307,38 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
   return matched_paths;
 }
 
+const base::Time AnnotationStorage::GetLastModifiedTime(
+    const base::FilePath& image_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (image_path.empty()) {
+    return base::Time();
+  }
+
+  static constexpr char kQuery[] =
+      // clang-format off
+      "SELECT last_modified_time FROM documents "
+          "WHERE directory_path=? AND file_name=?";
+  // clang-format on
+
+  std::unique_ptr<sql::Statement> statement =
+      sql_database_->GetStatementForQuery(SQL_FROM_HERE, kQuery);
+  if (!statement) {
+    LOG(ERROR) << "Couldn't create the statement";
+    LogErrorUma(ErrorStatus::kFailedToFindImagePath);
+    return base::Time();
+  }
+  // Safe on ChromeOS.
+  statement->BindString(0, image_path.DirName().AsUTF8Unsafe());
+  statement->BindString(1, image_path.BaseName().AsUTF8Unsafe());
+
+  // We only need the first row because (directory_path, file_name) is the
+  // primary key of the image, which ensures the found result is unique.
+  if (statement->Step()) {
+    return statement->ColumnTime(0);
+  }
+  return base::Time();
+}
+
 std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
     const std::u16string& query_term) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -331,7 +371,7 @@ std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
         TokenizedString(base::UTF8ToUTF16(statement->ColumnString(0)),
                         Mode::kWords),
         /*partial=*/false);
-    if (relevance < kRelevanceThreshold) {
+    if (relevance < GetRelevanceThreshold()) {
       continue;
     }
 

@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "ui/aura/client/transient_window_client.h"
@@ -26,11 +27,31 @@ using aura::Window;
 DEFINE_UI_CLASS_PROPERTY_TYPE(::wm::TransientWindowManager*)
 
 namespace wm {
+
 namespace {
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TransientWindowManager,
                                    kPropertyKey,
                                    nullptr)
+
+// Returns true if the given `window` has a cycle in its transient window
+// hierarchy.
+bool HasTransientCycles(const aura::Window* window) {
+  std::set<const aura::Window*> visited;
+  while (window) {
+    if (!visited.emplace(window).second) {
+      // We found a cycle.
+      return true;
+    }
+
+    auto* transient_window_manager =
+        TransientWindowManager::GetIfExists(window);
+    window = transient_window_manager
+                 ? transient_window_manager->transient_parent()
+                 : nullptr;
+  }
+  return false;
+}
 
 }  // namespace
 
@@ -74,6 +95,10 @@ void TransientWindowManager::AddTransientChild(Window* child) {
   transient_children_.push_back(child);
   child_manager->transient_parent_ = window_;
 
+  // Allowing cycles in the transient hierarchy should never happen and can
+  // cause infinite loops/recursion.
+  CHECK(!HasTransientCycles(window_));
+
   for (aura::client::TransientWindowClientObserver& observer :
        TransientWindowController::Get()->observers_) {
     observer.OnTransientChildWindowAdded(window_, child);
@@ -92,7 +117,7 @@ void TransientWindowManager::AddTransientChild(Window* child) {
 
 void TransientWindowManager::RemoveTransientChild(Window* child) {
   auto i = base::ranges::find(transient_children_, child);
-  DCHECK(i != transient_children_.end());
+  CHECK(i != transient_children_.end(), base::NotFatalUntil::M130);
   transient_children_.erase(i);
   TransientWindowManager* child_manager = GetOrCreate(child);
   DCHECK_EQ(window_, child_manager->transient_parent_);
@@ -149,9 +174,8 @@ void TransientWindowManager::RestackTransientDescendants() {
     if (child_window != window_ &&
         HasTransientAncestor(child_window, window_)) {
       TransientWindowManager* descendant_manager = GetOrCreate(child_window);
-      base::AutoReset<Window*> resetter(
-          &descendant_manager->stacking_target_,
-          window_);
+      base::AutoReset<raw_ptr<Window>> resetter(
+          &descendant_manager->stacking_target_, window_);
       parent->StackChildAbove(child_window, window_);
     }
   }

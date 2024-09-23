@@ -20,15 +20,13 @@ class BASE_EXPORT ScopedHardwareBufferFenceSync {
   ScopedHardwareBufferFenceSync(
       base::android::ScopedHardwareBufferHandle handle,
       base::ScopedFD fence_fd,
-      base::ScopedFD available_fence_fd,
-      bool is_video);
+      base::ScopedFD available_fence_fd);
   virtual ~ScopedHardwareBufferFenceSync();
 
   AHardwareBuffer* buffer() const { return handle_.get(); }
   ScopedHardwareBufferHandle TakeBuffer();
   ScopedFD TakeFence();
   ScopedFD TakeAvailableFence();
-  bool is_video() const { return is_video_; }
 
   // Provides fence which is signaled when the reads for this buffer are done
   // and it can be reused. Must only be called once.
@@ -38,7 +36,6 @@ class BASE_EXPORT ScopedHardwareBufferFenceSync {
   ScopedHardwareBufferHandle handle_;
   ScopedFD fence_fd_;
   ScopedFD available_fence_fd_;
-  const bool is_video_;
 };
 
 }  // namespace android

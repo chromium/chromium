@@ -22,7 +22,7 @@ namespace content {
 
 // Intakes media events (such as media key presses) and controls the active
 // media session.
-// TODO(crbug.com/1502989) Consider renaming this class in the world of
+// TODO(crbug.com/40943396) Consider renaming this class in the world of
 // instanced system media controls.
 class CONTENT_EXPORT ActiveMediaSessionController
     : public media_session::mojom::MediaControllerObserver,
@@ -33,18 +33,6 @@ class CONTENT_EXPORT ActiveMediaSessionController
   ActiveMediaSessionController& operator=(const ActiveMediaSessionController&) =
       delete;
   ~ActiveMediaSessionController() override;
-
-  // This mechanism allows this AMSC to be rebound to track a different
-  // request_id. This is used by the browser singleton active media session
-  // controller which is created to track a specific request_id but conceptually
-  // needs to follow around whatever the most recent active playing media is.
-  // This has the added benefit that things like |actions_| will persist across
-  // multiple tabs. If we simply recreate for each browser-associated media,
-  // |actions_| may not get switched off causing a previously available button
-  // to stay available when it is not available in the current media context.
-  // Currently used only by browser system media controls when
-  // kWebAppSystemMediaControlsWin is enabled.
-  void RebindMojoForNewID(base::UnguessableToken request_id);
 
   // media_session::mojom::MediaControllerObserver:
   void MediaSessionInfoChanged(

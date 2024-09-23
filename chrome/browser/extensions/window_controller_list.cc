@@ -66,7 +66,7 @@ WindowController* WindowControllerList::FindWindowForFunctionByIdWithFilter(
     const ExtensionFunction* function,
     int id,
     WindowController::TypeFilter filter) const {
-  for (auto iter = windows().begin(); iter != windows().end(); ++iter) {
+  for (auto iter = windows_.begin(); iter != windows_.end(); ++iter) {
     if ((*iter)->GetWindowId() == id) {
       if (windows_util::CanOperateOnWindow(function, *iter, filter))
         return *iter;
@@ -77,24 +77,41 @@ WindowController* WindowControllerList::FindWindowForFunctionByIdWithFilter(
 }
 
 WindowController* WindowControllerList::CurrentWindowForFunction(
-    const ExtensionFunction* function) const {
+    ExtensionFunction* function) const {
   return CurrentWindowForFunctionWithFilter(function,
                                             WindowController::kNoWindowFilter);
 }
 
 WindowController* WindowControllerList::CurrentWindowForFunctionWithFilter(
-    const ExtensionFunction* function,
+    ExtensionFunction* function,
     WindowController::TypeFilter filter) const {
-  WindowController* result = nullptr;
-  // Returns either the focused window (if any), or the last window in the list.
-  for (auto iter = windows().begin(); iter != windows().end(); ++iter) {
-    if (windows_util::CanOperateOnWindow(function, *iter, filter)) {
-      result = *iter;
-      if (result->window()->IsActive())
-        break;  // use focused window
+  // Always prefer the focused window if available. If there is no focused
+  // window, prefer the window to which the sender window is logically parented.
+  // Since the browser window is not "focused" when an extension popup is open
+  // (because popup is hosted in a separate window, which is focused instead),
+  // we need to check for the logical parent window here. If neither of these
+  // are available, return the last window.
+  WindowController* last_window = nullptr;
+  WindowController* parent_window = nullptr;
+
+  for (const auto& controller : windows_) {
+    if (!windows_util::CanOperateOnWindow(function, controller, filter)) {
+      continue;
     }
+
+    if (controller->window()->IsActive()) {
+      // If the window is focused, return it immediately.
+      return controller;
+    }
+
+    if (windows_util::CalledFromChildWindow(function, controller)) {
+      parent_window = controller;
+    }
+
+    last_window = controller;
   }
-  return result;
+
+  return parent_window ? parent_window : last_window;
 }
 
 }  // namespace extensions

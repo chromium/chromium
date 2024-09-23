@@ -7,12 +7,13 @@
 
 #include <va/va.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
 #include "media/gpu/h265_decoder.h"
 #include "media/gpu/h265_dpb.h"
 #include "media/gpu/vaapi/vaapi_video_decoder_delegate.h"
-#include "media/video/h265_parser.h"
+#include "media/parsers/h265_parser.h"
 
 // Verbatim from va/va.h, where typedef is used.
 typedef struct _VAPictureHEVC VAPictureHEVC;
@@ -26,7 +27,7 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
                                       public VaapiVideoDecoderDelegate {
  public:
   H265VaapiVideoDecoderDelegate(
-      DecodeSurfaceHandler<VASurface>* vaapi_dec,
+      VaapiDecodeSurfaceHandler* vaapi_dec,
       scoped_refptr<VaapiWrapper> vaapi_wrapper,
       ProtectedSessionUpdateCB on_protected_session_update_cb,
       CdmContext* cdm_context,
@@ -94,7 +95,7 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
   // one DecoderBuffer, so the memory will still be accessible until the frame
   // is done. |last_slice_data_| being non-null indicates we have a valid
   // |slice_param_| filled.
-  const uint8_t* last_slice_data_{nullptr};
+  raw_ptr<const uint8_t> last_slice_data_{nullptr};
   size_t last_slice_size_{0};
   std::string last_transcrypt_params_;
 

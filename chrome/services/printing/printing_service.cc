@@ -6,8 +6,14 @@
 
 #include <utility>
 
+#include "base/memory/discardable_memory_allocator.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
+#include "content/public/child/child_thread.h"
+#include "content/public/utility/utility_thread.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "printing/buildflags/buildflags.h"
 
@@ -15,20 +21,9 @@
 #include "chrome/services/printing/pdf_flattener.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
-#include "base/memory/discardable_memory_allocator.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/task/single_thread_task_runner.h"
-#include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"  // nogncheck
-#include "content/public/child/child_thread.h"      // nogncheck
-#include "content/public/utility/utility_thread.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/services/printing/pdf_thumbnailer.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
+#include <memory>
+
 #include "chrome/services/printing/pdf_to_emf_converter.h"
 #include "chrome/services/printing/pdf_to_emf_converter_factory.h"
 #endif
@@ -43,8 +38,15 @@ namespace printing {
 PrintingService::PrintingService(
     mojo::PendingReceiver<mojom::PrintingService> receiver)
     : receiver_(this, std::move(receiver)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
-  // Set up discardable memory for printing and thumbnailer.
+  // Set up discardable memory for services that call into PDFium.
+  //
+  // When the PdfUseSkiaRenderer feature is on, PDFium requires Skia to render,
+  // and Skia requires discardable memory. TODO(crbug.com/40061942): Clarify
+  // this comment when PdfUseSkiaRenderer is on by default.
+  //
+  // Strictly speaking, some services only manipulate PDFs and do not render
+  // them, but the effort to keep track of their implementation details, and to
+  // apply the correct build flags, is not worth it.
   mojo::PendingRemote<discardable_memory::mojom::DiscardableSharedMemoryManager>
       manager_remote;
   content::ChildThread::Get()->BindHostReceiver(
@@ -55,7 +57,6 @@ PrintingService::PrintingService(
       content::UtilityThread::Get()->GetIOTaskRunner());
   base::DiscardableMemoryAllocator::SetInstance(
       discardable_shared_memory_manager_.get());
-#endif
 }
 
 PrintingService::~PrintingService() = default;
@@ -82,14 +83,6 @@ void PrintingService::BindPdfFlattener(
                               std::move(receiver));
 }
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void PrintingService::BindPdfThumbnailer(
-    mojo::PendingReceiver<mojom::PdfThumbnailer> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<printing::PdfThumbnailer>(),
-                              std::move(receiver));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
 void PrintingService::BindPdfToEmfConverterFactory(

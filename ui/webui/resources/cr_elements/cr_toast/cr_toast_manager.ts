@@ -4,14 +4,14 @@
 
 /** @fileoverview Element which shows toasts with optional undo button. */
 
-import '../cr_hidden_style.css.js';
 import './cr_toast.js';
 
 import {assert} from '//resources/js/assert.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {CrToastElement} from './cr_toast.js';
-import {getTemplate} from './cr_toast_manager.html.js';
+import {getCss} from './cr_toast_manager.css.js';
+import {getHtml} from './cr_toast_manager.html.js';
 
 let toastManagerInstance: CrToastManagerElement|null = null;
 
@@ -33,25 +33,28 @@ export interface CrToastManagerElement {
   };
 }
 
-export class CrToastManagerElement extends PolymerElement {
+export class CrToastManagerElement extends CrLitElement {
   static get is() {
     return 'cr-toast-manager';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       duration: {
         type: Number,
-        value: 0,
       },
     };
   }
 
-  duration: number;
+  duration: number = 0;
 
   get isToastOpen(): boolean {
     return this.$.toast.open;

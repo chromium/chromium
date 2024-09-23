@@ -177,7 +177,7 @@ void UpdateNotificationTitle(message_center::Notification* notification,
       notification->set_title(GetNotificationTitleForError(job));
       break;
     case CupsPrintJob::State::STATE_CANCELLED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     default:
       break;
@@ -205,7 +205,7 @@ void UpdateNotificationIcon(message_center::Notification* notification,
       notification->set_vector_small_image(kNotificationPrintingWarningIcon);
       break;
     case CupsPrintJob::State::STATE_CANCELLED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case CupsPrintJob::State::STATE_NONE:
       break;
@@ -240,7 +240,7 @@ void UpdateNotificationBodyMessage(message_center::Notification* notification,
           GetNotificationBodyMessageForInterruptedJob(job, profile));
       return;
     case CupsPrintJob::State::STATE_CANCELLED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case CupsPrintJob::State::STATE_NONE:
       return;

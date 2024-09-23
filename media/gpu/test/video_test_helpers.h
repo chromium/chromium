@@ -24,10 +24,15 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
-#include "media/filters/ivf_parser.h"
 #include "media/gpu/test/raw_video.h"
+#include "media/media_buildflags.h"
+#include "media/parsers/ivf_parser.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+#include "media/parsers/h265_parser.h"
+#endif
 
 namespace media {
 namespace test {
@@ -83,8 +88,8 @@ struct IvfFrame {
 
 // Read functions to fill IVF file header and IVF frame header from |data|.
 // |data| must have sufficient length.
-IvfFileHeader GetIvfFileHeader(const base::span<const uint8_t>& data);
-IvfFrameHeader GetIvfFrameHeader(const base::span<const uint8_t>& data);
+IvfFileHeader GetIvfFileHeader(base::span<const uint8_t> data);
+IvfFrameHeader GetIvfFrameHeader(base::span<const uint8_t> data);
 
 // The helper class to save data as ivf format.
 class IvfWriter {
@@ -100,43 +105,101 @@ class IvfWriter {
   base::File output_file_;
 };
 
-// Helper to extract fragments from encoded video stream.
+// Helper to extract (full) frames from a video |stream|.
 class EncodedDataHelper {
  public:
+  static std::unique_ptr<EncodedDataHelper> Create(
+      base::span<const uint8_t> stream,
+      VideoCodec codec);
+
+  static bool HasConfigInfo(const uint8_t* data, size_t size, VideoCodec codec);
+
+  virtual ~EncodedDataHelper();
+  virtual scoped_refptr<DecoderBuffer> GetNextBuffer() = 0;
+
+  virtual void Rewind();
+  virtual bool ReachEndOfStream() const;
+
+ protected:
   EncodedDataHelper(base::span<const uint8_t> stream, VideoCodec codec);
-  ~EncodedDataHelper();
-
-  // Compute and return the next fragment to be sent to the decoder, starting
-  // from the current position in the stream, and advance the current position
-  // to after the returned fragment.
-  scoped_refptr<DecoderBuffer> GetNextBuffer();
-  static bool HasConfigInfo(const uint8_t* data,
-                            size_t size,
-                            VideoCodecProfile profile);
-
-  void Rewind() { next_pos_to_decode_ = 0; }
-  bool AtHeadOfStream() const { return next_pos_to_decode_ == 0; }
-  bool ReachEndOfStream() const { return next_pos_to_decode_ == data_.size(); }
-
-  size_t num_skipped_fragments() { return num_skipped_fragments_; }
-
- private:
-  // For h.264/HEVC.
-  scoped_refptr<DecoderBuffer> GetNextFragment();
-  // For VP8/9.
-  scoped_refptr<DecoderBuffer> GetNextFrame();
-  std::optional<IvfFrameHeader> GetNextIvfFrameHeader() const;
-  std::optional<IvfFrame> ReadNextIvfFrame();
-
-  // Helpers for GetBytesForNextFragment above.
-  size_t GetBytesForNextNALU(size_t pos);
-  bool IsNALHeader(const std::string& data, size_t pos);
-  bool LookForSPS(size_t* skipped_fragments_count);
 
   std::string data_;
   const VideoCodec codec_;
-  size_t next_pos_to_decode_ = 0;
-  size_t num_skipped_fragments_ = 0;
+  size_t next_pos_to_parse_ = 0;
+};
+
+// This class returns one by one the NALUs in |stream| via GetNextBuffer().
+// |stream| must be in H.264 Annex B or H.265 Annex B formats.
+class EncodedDataHelperH26x : public EncodedDataHelper {
+ public:
+  EncodedDataHelperH26x(base::span<const uint8_t> stream, VideoCodec codec);
+  ~EncodedDataHelperH26x() override = default;
+
+  static bool HasConfigInfo(const uint8_t* data, size_t size, VideoCodec codec);
+
+  scoped_refptr<DecoderBuffer> GetNextBuffer() override;
+
+ private:
+  size_t GetBytesForNextNALU(size_t pos);
+  bool IsNALHeader(const std::string& data, size_t pos);
+  bool LookForSPS();
+};
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+// This class returns one by one the full frames (which can be composed of one
+// or multiple NALUs) in |stream| via GetNextBuffer(). |stream| must be in H.265
+// Annex B format (see www.itu.int/rec/T-REC-H.265).
+// Note that this is an issue specific to testing (which this class serves),
+// since in production there's always a container to give information about
+// frame boundaries, hence the logic here.
+class EncodedDataHelperH265 : public EncodedDataHelper {
+ public:
+  EncodedDataHelperH265(base::span<const uint8_t> stream, VideoCodec codec);
+  ~EncodedDataHelperH265() override;
+
+  scoped_refptr<DecoderBuffer> GetNextBuffer() override;
+  bool ReachEndOfStream() const override;
+  void Rewind() override;
+
+ private:
+  // This struct is needed because:
+  // a) We need to keep both a pointer and an index to where a NALU starts (the
+  //    pointer is for |data_| arithmetic, the index is for base::span ops.
+  // b) H265NALUs don't provide NALU header size (it can be 3 or 4 bytes long),
+  //    so a few pointer ops are needed to calculate the |size_with_header|.
+  struct NALUMetadata {
+    const uint8_t* start_pointer;
+    size_t start_index;
+    size_t header_size;
+    size_t size_with_header;
+
+    friend std::ostream& operator<<(std::ostream& os, const NALUMetadata& m) {
+      return os << "start_index=" << m.start_index
+                << ", header_size=" << m.header_size
+                << ", size_with_header=" << m.size_with_header;
+    }
+  };
+
+  scoped_refptr<DecoderBuffer> ReassembleNALUs(
+      const std::vector<struct NALUMetadata>& nalus);
+
+  std::unique_ptr<H265Parser> h265_parser_;
+  std::vector<struct NALUMetadata> previous_nalus_;
+  std::unique_ptr<H265SliceHeader> previous_slice_header_;
+};
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+
+// This class returns one by one the IVF frames in |stream| via GetNextBuffer().
+class EncodedDataHelperIVF : public EncodedDataHelper {
+ public:
+  EncodedDataHelperIVF(base::span<const uint8_t> stream, VideoCodec codec);
+  ~EncodedDataHelperIVF() override = default;
+
+  scoped_refptr<DecoderBuffer> GetNextBuffer() override;
+
+ private:
+  std::optional<IvfFrameHeader> GetNextIvfFrameHeader() const;
+  std::optional<IvfFrame> ReadNextIvfFrame();
 };
 
 #if defined(ARCH_CPU_ARM_FAMILY)

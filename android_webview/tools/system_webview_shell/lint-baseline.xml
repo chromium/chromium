@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.3.0-alpha12" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha12">
+<issues format="6" by="lint 8.7.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.7.0-alpha03">
 
     <issue
-        id="MissingClass"
-        message="Class referenced in the manifest, `org.chromium.test.broker.OnDeviceInstrumentationBroker`, was not found in the project or the libraries"
-        errorLine1="    &lt;activity android:name=&quot;org.chromium.test.broker.OnDeviceInstrumentationBroker&quot; android:exported=&quot;true&quot;/>"
-        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="NewApi"
+        message="Call requires API level 23 (current min is 21): `canGrant`"
+        errorLine1="            if (!canGrant(webkitPermission)) {"
+        errorLine2="                 ~~~~~~~~">
         <location
-            file="gen/android_webview/tools/system_webview_shell/system_webview_shell_apk__lint/AndroidManifest.xml"
-            line="189"
-            column="29"/>
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserFragment.java"
+            line="512"
+            column="18"/>
     </issue>
 
     <issue
         id="RequiresFeature"
         message="`getInstance` should only be called if the feature `TRACING_CONTROLLER_BASIC_USAGE` is present; to check call `androidx.webkit.WebViewFeature#isFeatureSupported`"
-        errorLine1="            TracingController tracingController = TracingController.getInstance();"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="                TracingController tracingController = TracingController.getInstance();"
+        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="192"
-            column="51"/>
+            line="226"
+            column="55"/>
     </issue>
 
     <issue
@@ -30,7 +30,7 @@
         errorLine2="            ^">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="213"
+            line="249"
             column="13"/>
     </issue>
 
@@ -41,7 +41,7 @@
         errorLine2="            ^">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="218"
+            line="254"
             column="13"/>
     </issue>
 
@@ -52,7 +52,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="223"
+            line="259"
             column="13"/>
     </issue>
 
@@ -63,52 +63,41 @@
         errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewTracingActivity.java"
-            line="100"
+            line="102"
             column="53"/>
     </issue>
 
     <issue
-        id="AppBundleLocaleChanges"
-        message="Found dynamic locale changes, but did not find corresponding Play Core library calls for downloading languages and splitting by language is not disabled in the `bundle` configuration"
-        errorLine1="            config.setLocale(Locale.forLanguageTag(languageTag));"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="UnclosedTrace"
+        message="The `beginSection()` call is not always closed with a matching `endSection()` because the code in between may return early"
+        errorLine1="        Trace.beginSection(startUpAndLoadUrlTraceTag);"
+        errorLine2="              ~~~~~~~~~~~~">
         <location
-            file="../../base/android/java/src/org/chromium/base/LocaleUtils.java"
-            line="242"
-            column="13"/>
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/TelemetryActivity.java"
+            line="56"
+            column="15"/>
     </issue>
 
     <issue
-        id="QueryPermissionsNeeded"
-        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details"
-        errorLine1="            return pm.queryIntentActivities(intent, flags);"
-        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~">
+        id="UnclosedTrace"
+        message="The `beginSection()` call is not always closed with a matching `endSection()` because the code in between may return early"
+        errorLine1="        Trace.beginSection(loadUrlTraceTag);"
+        errorLine2="              ~~~~~~~~~~~~">
         <location
-            file="../../base/android/java/src/org/chromium/base/PackageManagerUtils.java"
-            line="63"
-            column="23"/>
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/TelemetryActivity.java"
+            line="104"
+            column="15"/>
     </issue>
 
     <issue
-        id="UnspecifiedRegisterReceiverFlag"
-        message="`receiver` \&#xA;is missing `RECEIVER_EXPORTED` or `RECEIVER_NOT_EXPORTED` flag for unprotected \&#xA;broadcasts registered for an IntentFilter that cannot be inspected by lint"
-        errorLine1="            return context.registerReceiver(receiver, filter, permission, scheduler);"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="UnclosedTrace"
+        message="The `beginSection()` call is not always closed with a matching `endSection()` because the code in between may return early"
+        errorLine1="        Trace.beginSection(placeholderTraceTag);"
+        errorLine2="              ~~~~~~~~~~~~">
         <location
-            file="../../base/android/java/src/org/chromium/base/ContextUtils.java"
-            line="305"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `ResourcesCompat.getDrawable()`"
-        errorLine1="                return res.getDrawable(id, null);"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
-            line="189"
-            column="24"/>
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/TelemetryActivity.java"
+            line="112"
+            column="15"/>
     </issue>
 
     <issue
@@ -120,50 +109,6 @@
             file="gen/android_webview/tools/system_webview_shell/system_webview_shell_apk__lint/AndroidManifest.xml"
             line="67"
             column="224"/>
-    </issue>
-
-    <issue
-        id="AssertionSideEffect"
-        message="Assertion condition has a side effect: f.setAccessible(true)"
-        errorLine1="                    assert reachesWindowCallback(activity.getWindow().getCallback());"
-        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/ApplicationStatus.java"
-            line="385"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="AssertionSideEffect"
-        message="Assertion condition has a side effect: sHaveAccessNetworkState =&#xA;                    ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),&#xA;                            Manifest.permission.ACCESS_NETWORK_STATE, Process.myPid(),&#xA;                            Process.myUid())&#xA;                    == PackageManager.PERMISSION_GRANTED"
-        errorLine1="        assert isSupported();"
-        errorLine2="               ~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/RadioUtils.java"
-            line="81"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="AssertionSideEffect"
-        message="Assertion condition has a side effect: sHaveAccessNetworkState =&#xA;                    ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),&#xA;                            Manifest.permission.ACCESS_NETWORK_STATE, Process.myPid(),&#xA;                            Process.myUid())&#xA;                    == PackageManager.PERMISSION_GRANTED"
-        errorLine1="        assert isSupported();"
-        errorLine2="               ~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/RadioUtils.java"
-            line="106"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="AssertionSideEffect"
-        message="Assertion condition has a side effect: sHaveAccessNetworkState =&#xA;                    ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),&#xA;                            Manifest.permission.ACCESS_NETWORK_STATE, Process.myPid(),&#xA;                            Process.myUid())&#xA;                    == PackageManager.PERMISSION_GRANTED"
-        errorLine1="        assert isSupported();"
-        errorLine2="               ~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/RadioUtils.java"
-            line="132"
-            column="16"/>
     </issue>
 
     <issue

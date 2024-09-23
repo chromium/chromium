@@ -197,7 +197,7 @@ class AboutSigninInternals : public KeyedService,
   void OnAccessTokenRequestCompleted(const CoreAccountId& account_id,
                                      const std::string& consumer_id,
                                      const signin::ScopeSet& scopes,
-                                     GoogleServiceAuthError error,
+                                     const GoogleServiceAuthError& error,
                                      base::Time expiration_time) override;
   void OnAccessTokenRemovedFromCache(const CoreAccountId& account_id,
                                      const signin::ScopeSet& scopes) override;
@@ -215,6 +215,11 @@ class AboutSigninInternals : public KeyedService,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
 
+  // Notifies that the value of `field` is changed. This function will update
+  // the corresponding field in `signin_status_` and the underlying prefs.
+  //
+  // If `value` is empty, then this function will clear the prefs and reset
+  // the corresponding entry in `signin_status_`.
   void NotifyTimedSigninFieldValueChanged(
       const signin_internals_util::TimedSigninStatusField& field,
       const std::string& value);

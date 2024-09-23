@@ -1,0 +1,30 @@
+<style include="healthd-internals-shared">
+  #chartRoot {
+    background-color: var(--cros-ref-neutral90);
+    display: flex;
+    flex-direction: row;
+    height: 90%;
+    overflow: hidden;
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  #canvasContainer {
+    flex-grow: 1;
+    touch-action: none;
+  }
+
+  #mainCanvas {
+    background-color: var(--cros-ref-neutral90);
+    touch-action: none;
+  }
+</style>
+<div id="chartRoot">
+  <healthd-internals-line-chart-menu id="chartMenu">
+  </healthd-internals-line-chart-menu>
+  <div id="canvasContainer">
+    <canvas id="mainCanvas"></canvas>
+    <healthd-internals-line-chart-scrollbar id="chartScrollbar">
+    </healthd-internals-line-chart-scrollbar>
+  </div>
+</div>

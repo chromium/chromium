@@ -142,12 +142,12 @@ public class EditorProperties {
                 VALIDATOR = new WritableObjectPropertyKey<>("validator");
         public static final WritableObjectPropertyKey<String> ERROR_MESSAGE =
                 new WritableObjectPropertyKey<>("error_message");
-        // TODO(crbug.com/1435314): make this field read-only.
+        // TODO(crbug.com/40265078): make this field read-only.
         public static final WritableBooleanPropertyKey IS_REQUIRED =
                 new WritableBooleanPropertyKey("is_required");
         public static final WritableBooleanPropertyKey FOCUSED =
                 new WritableBooleanPropertyKey("focused");
-        // TODO(crbug.com/1435314): make this field read-only.
+        // TODO(crbug.com/40265078): make this field read-only.
         public static final WritableObjectPropertyKey<String> VALUE =
                 new WritableObjectPropertyKey<>("value");
 

@@ -4,6 +4,8 @@
 
 #include "components/history_clusters/core/filter_cluster_processor.h"
 
+#include <vector>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/history_clusters/core/config.h"
@@ -159,7 +161,7 @@ TEST_F(FilterClusterProcessorTest,
 
   // Some clusters are content visible - make sure there's at least one bit set
   // properly after culling non-prominent.
-  base::EraseIf(clusters, [](const history::Cluster& cluster) {
+  std::erase_if(clusters, [](const history::Cluster& cluster) {
     return !cluster.should_show_on_prominent_ui_surfaces;
   });
   EXPECT_FALSE(clusters.empty());

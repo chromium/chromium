@@ -12,7 +12,7 @@ import bisect
 
 from blinkbuild.name_style_converter import NameStyleConverter
 from core.css import css_properties
-from core.style.computed_style_fields import DiffGroup, Enum, Group, Field
+from core.style.computed_style_fields import Enum, Group, Field
 
 from itertools import chain
 
@@ -36,6 +36,7 @@ ALIGNMENT_ORDER = [
     'ComputedGridTrackList',
     'std::optional<gfx::Size>',
     'double',
+    'StyleViewTransitionGroup',
     # Aligns like a pointer (can be 32 or 64 bits)
     'NamedGridLinesMap',
     'NamedGridAreaMap',
@@ -56,11 +57,14 @@ ALIGNMENT_ORDER = [
     'NinePieceImage',
     'SVGPaint',
     'IntrinsicLength',
+    'TextBoxEdge',
     'TextDecorationThickness',
+    'StyleAnchorScope',
     'StyleAspectRatio',
     'StyleIntrinsicLength',
-    'std::optional<StyleScrollbarColor>',
     'std::optional<StyleOverflowClipMargin>',
+    'std::optional<blink::PositionAreaOffsets>',
+    'std::optional<PhysicalOffset>',
     # Compressed builds a Member can be 32 bits, vs. a pointer will be 64.
     'Member',
     # Aligns like float
@@ -94,7 +98,7 @@ ALIGNMENT_ORDER = [
     'size_t',
     'wtf_size_t',
     'int',
-    'InsetArea',
+    'PositionArea',
     # Aligns like short
     'unsigned short',
     'short',
@@ -193,64 +197,6 @@ def _create_builder_groups(properties):
     return groups
 
 
-def _create_diff_groups_map(diff_function_inputs, root_group):
-    diff_functions_map = {}
-
-    for entry in diff_function_inputs:
-        # error handling
-        field_names = entry['fields_to_diff'] + _list_field_dependencies(
-            entry['methods_to_diff'] + entry['predicates_to_test'])
-        for name in field_names:
-            assert name in [
-                field.property_name for field in root_group.all_fields], \
-                "The field '{}' isn't a defined field on ComputedStyle. " \
-                "Please check that there's an entry for '{}' in " \
-                "css_properties.json5 or " \
-                "computed_style_extra_fields.json5".format(name, name)
-        diff_functions_map[entry['name'].original] = _create_diff_groups(
-            entry['fields_to_diff'], entry['methods_to_diff'],
-            entry['predicates_to_test'], root_group)
-    return diff_functions_map
-
-
-def _list_field_dependencies(entries_with_field_dependencies):
-    field_dependencies = []
-    for entry in entries_with_field_dependencies:
-        field_dependencies += entry['field_dependencies']
-    return field_dependencies
-
-
-def _create_diff_groups(fields_to_diff, methods_to_diff, predicates_to_test,
-                        root_group):
-    diff_group = DiffGroup(root_group)
-    field_dependencies = _list_field_dependencies(methods_to_diff +
-                                                  predicates_to_test)
-    for subgroup in root_group.subgroups:
-        if any(
-                field.property_name in (fields_to_diff + field_dependencies)
-                for field in subgroup.all_fields):
-            diff_group.subgroups.append(
-                _create_diff_groups(fields_to_diff, methods_to_diff,
-                                    predicates_to_test, subgroup))
-    for entry in fields_to_diff:
-        for field in root_group.fields:
-            if not field.is_inherited_flag and entry == field.property_name:
-                diff_group.fields.append(field)
-    for entry in methods_to_diff:
-        for field in root_group.fields:
-            if (not field.is_inherited_flag
-                    and field.property_name in entry['field_dependencies']
-                    and entry['method'] not in diff_group.expressions):
-                diff_group.expressions.append(entry['method'])
-    for entry in predicates_to_test:
-        for field in root_group.fields:
-            if (not field.is_inherited_flag
-                    and field.property_name in entry['field_dependencies']
-                    and entry['predicate'] not in diff_group.predicates):
-                diff_group.predicates.append(entry['predicate'])
-    return diff_group
-
-
 def _create_enums(properties):
     """Returns a list of Enums to be generated"""
     enums = {}
@@ -336,6 +282,7 @@ def _create_property_field(property_):
         field_template=property_.field_template,
         size=size,
         default_value=property_.default_value,
+        invalidate=property_.invalidate,
         derived_from=property_.derived_from,
         reset_on_new_style=property_.reset_on_new_style,
         custom_compare=property_.custom_compare,
@@ -369,6 +316,7 @@ def _create_inherited_flag_field(property_):
         size=1,
         default_value='true',
         derived_from=None,
+        invalidate=[],
         reset_on_new_style=False,
         custom_compare=False,
         mutable=False,
@@ -606,23 +554,30 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
         # css_properties.json5 and we can get the longest continuous segment.
         # Thereby reduce the switch case statement to the minimum.
         properties = keyword_utils.sort_keyword_properties_by_canonical_order(
-            self._css_properties.longhands, json5_file_paths[5],
+            self._css_properties.longhands, json5_file_paths[4],
             self.default_parameters)
         self._properties = properties + self._css_properties.extra_fields
         self._longhands = [p for p in properties if p.is_longhand]
 
         self._generated_enums = _create_enums(self._properties)
+        self._diff_enum = [
+            NameStyleConverter(value).to_enum_value()
+            for value in self._css_properties.default_parameters["invalidate"]
+            ["valid_values"]
+        ]
 
         # Organise fields into a tree structure where the root group
         # is ComputedStyleBase.
-        group_parameters = dict(
-            [(conf["name"], conf["cumulative_distribution"])
-             for conf in json5_generator.Json5File.load_from_files(
-                 [json5_file_paths[7]]).name_dictionaries])
+        group_parameters = dict([
+            (conf["name"], conf["cumulative_distribution"])
+            for conf in json5_generator.Json5File.load_from_files(
+                [json5_file_paths[6]]).name_dictionaries
+        ])
 
         properties_ranking = [
-            x["name"].original for x in json5_generator.Json5File.
-            load_from_files([json5_file_paths[6]]).name_dictionaries
+            x["name"].original
+            for x in json5_generator.Json5File.load_from_files(
+                [json5_file_paths[5]]).name_dictionaries
         ]
         _evaluate_rare_non_inherited_group(
             self._properties, properties_ranking,
@@ -641,9 +596,6 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
         # TODO(crbug.com/1377295): When the builder is fully deployed, we no
         #                          longer need two groups.
         self._root_builder_group = _create_builder_groups(self._properties)
-        self._diff_functions_map = _create_diff_groups_map(
-            json5_generator.Json5File.load_from_files(
-                [json5_file_paths[4]]).name_dictionaries, self._root_group)
 
         self._include_paths = _get_include_paths(self._properties)
         self._outputs = {
@@ -671,7 +623,7 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
             'include_paths': self._include_paths,
             'computed_style': self._root_group,
             'computed_style_builder': self._root_builder_group,
-            'diff_functions_map': self._diff_functions_map,
+            'diff_enum': self._diff_enum,
         }
 
     @template_expander.use_jinja(
@@ -686,7 +638,6 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
             'enums': self._generated_enums,
             'include_paths': self._include_paths,
             'computed_style': self._root_group,
-            'diff_functions_map': self._diff_functions_map,
         }
 
     @template_expander.use_jinja(

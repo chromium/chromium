@@ -1,0 +1,20 @@
+ci/Mac Builder
+ci/Mac Builder (dbg)
+ci/Mac11 Tests
+ci/Mac12 Tests
+ci/ios-m1-simulator
+ci/mac-archive-rel
+ci/mac-arm64-archive-rel
+ci/mac-arm64-dbg
+ci/mac-arm64-on-arm64-rel
+ci/mac-arm64-rel
+ci/mac-official
+ci/mac11-arm64-rel-tests
+ci/mac12-arm64-rel-tests
+ci/mac13-arm64-rel-tests
+ci/mac14-arm64-rel-tests
+ci/mac14-tests
+ci/mac14-tests-dbg
+try/mac14-arm64-rel
+try/mac14-arm64-rel-compilator
+try/mac14-tests

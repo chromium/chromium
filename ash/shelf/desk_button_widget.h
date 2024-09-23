@@ -59,16 +59,12 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
   DeskButtonWidget& operator=(const DeskButtonWidget&) = delete;
   ~DeskButtonWidget() override;
 
-  // Returns the max length for the widget assuming provided `horizontal_shelf`
-  // and `zero_state` values.
-  static int GetMaxLength(bool horizontal_shelf, bool zero_state);
+  // Returns the max length for the widget for the horizontal or vertical shelf.
+  static int GetMaxLength(bool horizontal_shelf);
 
   DelegateView* delegate_view() const { return delegate_view_; }
 
   Shelf* shelf() const { return shelf_; }
-
-  bool zero_state() const { return zero_state_; }
-  void set_zero_state(bool zero_state) { zero_state_ = zero_state; }
 
   // Indicates if the shelf should reserve some space for this widget.
   bool ShouldReserveSpaceFromShelf() const;
@@ -93,9 +89,8 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
 
   DeskButtonContainer* GetDeskButtonContainer() const;
 
+  // Returns true if this widget belongs to a horizontal shelf.
   bool IsHorizontalShelf() const;
-
-  bool IsForcedZeroState() const;
 
   void SetDefaultChildToFocus(views::View* default_child_to_focus);
 
@@ -120,13 +115,6 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
   gfx::Rect target_bounds_;
 
   raw_ptr<Shelf> const shelf_;
-
-  // Indicates if the widget is in zero state. It means the desk button UI takes
-  // less space from shelf. It can happen for any of the following conditions:
-  //   1) The display width is under a certain threshold, i.e.
-  //   `kDeskButtonLargeDisplayThreshold`.
-  //   2) The current shelf is overflown.
-  bool zero_state_ = false;
 
   // Default child view to focus when `OnNativeWidgetActivationChanged()`
   // occurs. When it's not null, it should point to the desk button, the

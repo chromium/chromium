@@ -30,8 +30,14 @@ constexpr base::TimeDelta kCloseScale = base::Milliseconds(100);
 constexpr base::TimeDelta kFadeInDelay = base::Milliseconds(83);
 constexpr base::TimeDelta kFadeIn = base::Milliseconds(167);
 
+// The time duration for informed restore dialog to fade in.
+constexpr base::TimeDelta kShowInformedRestoreDialog = base::Milliseconds(800);
+
 // The time duration for widgets to fade out.
 constexpr base::TimeDelta kFadeOut = base::Milliseconds(100);
+
+// The time duration for birch bar to fade out.
+constexpr base::TimeDelta kBirchBarFadeOut = base::Milliseconds(50);
 
 constexpr base::TimeDelta kFromHomeLauncherDelay = base::Milliseconds(250);
 constexpr base::TimeDelta kHomeLauncherTransition = base::Milliseconds(350);
@@ -53,6 +59,8 @@ base::TimeDelta GetAnimationDuration(OverviewAnimationType animation_type) {
       return kFadeIn;
     case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_FADE_OUT:
       return kFadeOut;
+    case OVERVIEW_ANIMATION_SHOW_INFORMED_RESTORE_DIALOG_ON_ENTER:
+      return kShowInformedRestoreDialog;
     case OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_ON_EXIT:
       return kWindowRestoreDuration;
     case OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_ON_ENTER:
@@ -76,6 +84,8 @@ base::TimeDelta GetAnimationDuration(OverviewAnimationType animation_type) {
       return kFadeInOnWindowDrag;
     case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_SAVED_DESK_GRID_FADE_OUT:
       return kFadeOut;
+    case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_BIRCH_BAR_FADE_OUT:
+      return kBirchBarFadeOut;
   }
 }
 
@@ -113,6 +123,11 @@ ScopedOverviewAnimationSettings::ScopedOverviewAnimationSettings(
       break;
     case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_FADE_OUT:
       animation_settings_->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
+      animation_settings_->SetPreemptionStrategy(
+          ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS);
+      break;
+    case OVERVIEW_ANIMATION_SHOW_INFORMED_RESTORE_DIALOG_ON_ENTER:
+      animation_settings_->SetTweenType(gfx::Tween::EASE_IN_OUT_EMPHASIZED);
       animation_settings_->SetPreemptionStrategy(
           ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS);
       break;
@@ -169,6 +184,11 @@ ScopedOverviewAnimationSettings::ScopedOverviewAnimationSettings(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
       break;
     case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_SAVED_DESK_GRID_FADE_OUT:
+      animation_settings_->SetTweenType(gfx::Tween::LINEAR);
+      animation_settings_->SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+      break;
+    case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_BIRCH_BAR_FADE_OUT:
       animation_settings_->SetTweenType(gfx::Tween::LINEAR);
       animation_settings_->SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);

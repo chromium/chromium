@@ -92,7 +92,7 @@ ParseStatus::Or<absl::monostate> AudioRenditionGroup::AddRendition(
     if (!default_rendition_) {
       default_rendition_ = &rendition;
     } else {
-      // TODO(https://crbug.com/1266991): According to the spec there "MUST" be
+      // TODO(crbug.com/40057824): According to the spec there "MUST" be
       // no more than a single rendition per-group with DEFAULT=YES, but some of
       // Apple's own presentations break this rule. Ex:
       // https://events-delivery.apple.com/0205eyyhwbbqexozkwmgccegwnjyrktg/m3u8/vod_index-dpyfrsVksFWjneFiptbXnAMYBtGYbXeZ.m3u8
@@ -106,7 +106,7 @@ ParseStatus::Or<absl::monostate> AudioRenditionGroup::AddRendition(
 }
 
 const AudioRendition* AudioRenditionGroup::GetRendition(
-    base::StringPiece name) const {
+    std::string_view name) const {
   auto iter = renditions_map_.find(name);
   if (iter == renditions_map_.end()) {
     return nullptr;

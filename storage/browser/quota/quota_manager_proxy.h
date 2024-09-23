@@ -8,10 +8,10 @@
 #include <stdint.h>
 
 #include <memory>
-#include <vector>
-
 #include <optional>
+
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   virtual void RegisterClient(
       mojo::PendingRemote<mojom::QuotaClient> client,
       QuotaClientType client_type,
-      const std::vector<blink::mojom::StorageType>& storage_types);
+      const base::flat_set<blink::mojom::StorageType>& storage_types);
 
   virtual void BindInternalsHandler(
       mojo::PendingReceiver<mojom::QuotaInternalsHandler> receiver);
@@ -118,7 +118,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   // BucketInfo to the callback. Returns a QuotaError to the callback
   // on operation failure.
   //
-  // TODO(crbug.com/1208141): Remove `storage_type` when the only supported
+  // TODO(crbug.com/40181609): Remove `storage_type` when the only supported
   // StorageType is kTemporary.
   virtual void CreateBucketForTesting(
       const blink::StorageKey& storage_key,

@@ -39,7 +39,6 @@ import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.List;
@@ -386,12 +385,12 @@ public class PopupWindowTest extends AwParameterizedTest {
         // Now long press on some texts and see if the text handles show up.
         DOMUtils.longPressNode(popupContents.getWebContents(), "plain_text");
         SelectionPopupController controller =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 SelectionPopupController.fromWebContents(
                                         popupContents.getWebContents()));
         assertWaitForSelectActionBarStatus(true, controller);
-        Assert.assertTrue(TestThreadUtils.runOnUiThreadBlocking(() -> controller.hasSelection()));
+        Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(() -> controller.hasSelection()));
 
         // Now hide the select action bar. This should hide the text handles and
         // clear the selection.
@@ -421,7 +420,7 @@ public class PopupWindowTest extends AwParameterizedTest {
     }
 
     private void runPopupUserGestureTest(boolean hasOpener) throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mParentContents.getSettings().setJavaScriptEnabled(true);
                     mParentContents.getSettings().setSupportMultipleWindows(true);
@@ -583,7 +582,7 @@ public class PopupWindowTest extends AwParameterizedTest {
         final String mainHtmlPath = mWebServer.setResponse("/main.html", mainHtml, null);
 
         TestWebMessageListener webMessageListener = new TestWebMessageListener();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mParentContents.getSettings().setJavaScriptEnabled(true);
                     // |false| is the default setting for setSupportMultipleWindows(), we explicitly
@@ -630,7 +629,7 @@ public class PopupWindowTest extends AwParameterizedTest {
         // attempting to click the iframe_link We need this because we're using the DOMUtils Long
         // term we plan to switch to JSUtils to avoid this
         // https://crbug.com/1334843
-        mParentContentsClient.getOnPageCommitVisibleHelper().waitForFirst();
+        mParentContentsClient.getOnPageCommitVisibleHelper().waitForOnly();
 
         // Step 4. Click iframe_link to give user gesture.
         DOMUtils.clickRect(mParentContents.getWebContents(), rect);

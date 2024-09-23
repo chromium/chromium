@@ -11,21 +11,12 @@
   }
 
   #qrCodeCanvas {
+    background-color: white;
     display: block;
     margin: 20px auto 20px auto;
     max-width: calc(var(--cr-dialog-width) -
         var(--cr-dialog-title-slot-padding-start) -
         var(--cr-dialog-title-slot-padding-end));
-  }
-
-  @media(prefers-color-scheme: dark) {
-    /* NOTE: In dark mode a light background is applied to the QR code
-      * canvas as some QR code scanners cannot read an inverted QR code in
-      * which the background is darker than the foreground. */
-    #qrCodeCanvas {
-      background-color: var(--cros-icon-color-primary);
-      padding: 1px;
-    }
   }
 
   .info-container {

@@ -9,7 +9,9 @@
           "StartupBrowserWindowLaunchSuppressed": false
         },
         "prefs": {
-          "startup_browser_window_launch_suppressed": {}
+          "startup_browser_window_launch_suppressed": {
+            "value": false
+          }
         }
       }
     ]

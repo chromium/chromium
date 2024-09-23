@@ -27,7 +27,7 @@ class TabIterator {
  public:
   using iterator_category = std::forward_iterator_tag;
   using difference_type = size_t;
-  using value_type = sessions::TabRestoreService::Tab;
+  using value_type = sessions::tab_restore::Tab;
   using pointer = value_type*;
   using reference = value_type&;
 
@@ -40,7 +40,7 @@ class TabIterator {
 
   static TabIterator end(const sessions::TabRestoreService::Entries& entries);
 
-  // Whether the current entry is a sessions::TabRestoreService::Tab.
+  // Whether the current entry is a sessions::tab_restore::Tab.
   bool IsCurrentEntryTab() const;
 
   // Gets an iterator to the current entry being traversed.
@@ -50,18 +50,18 @@ class TabIterator {
   TabIterator operator++(int);
   bool operator==(TabIterator other) const;
   bool operator!=(TabIterator other) const;
-  const sessions::TabRestoreService::Tab& operator*() const;
-  const sessions::TabRestoreService::Tab* operator->() const;
+  const sessions::tab_restore::Tab& operator*() const;
+  const sessions::tab_restore::Tab* operator->() const;
 
  private:
   void SetupInnerTabList();
 
   const raw_ref<const sessions::TabRestoreService::Entries> entries_;
   sessions::TabRestoreService::Entries::const_iterator current_entry_;
-  raw_ptr<const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>>
+  raw_ptr<const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>>
       tabs_ = nullptr;
-  std::optional<std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>::
-                    const_reverse_iterator>
+  std::optional<std::vector<
+      std::unique_ptr<sessions::tab_restore::Tab>>::const_reverse_iterator>
       current_tab_ = std::nullopt;
 };
 

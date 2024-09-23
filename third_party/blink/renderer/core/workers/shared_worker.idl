@@ -32,7 +32,7 @@
 // SharedWorkers also support the `sameSiteCookies` option outlined in:
 // https://privacycg.github.io/saa-non-cookie-storage/shared-workers.html
 dictionary SharedWorkerOptions : WorkerOptions {
-    [RuntimeEnabled=StorageAccessAPIBeyondCookies] SharedWorkerSameSiteCookies sameSiteCookies;
+    SharedWorkerSameSiteCookies sameSiteCookies;
 };
 
 enum SharedWorkerSameSiteCookies { "all", "none" };

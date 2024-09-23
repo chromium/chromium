@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -113,13 +114,36 @@ struct MyStruct {
   char* char_ptr;
   char16_t* char16_ptr;
   wchar_t* wide_char_ptr;
+  uint8_t* unsigned_char_ptr;
+  int8_t* signed_char_ptr;
 
-  // TODO(crbug.com/1381955) |const char| pointer fields are not supported yet.
+  // TODO(crbug.com/40245402) |const char| pointer fields are not supported yet.
   //
   // No rewrite expected (for now).
   const char* const_char_ptr;
   const char16_t* const_char16_ptr;
   const wchar_t* const_wide_char_ptr;
+
+  // Expected rewrite: raw_ptr<const uint8_t> const_unsigned_char_ptr;
+  const uint8_t* const_unsigned_char_ptr;
+  // Expected rewrite: raw_ptr<const int8_t> const_signed_char_ptr;
+  const int8_t* const_signed_char_ptr;
+
+  // Expected rewrite: raw_ptr<const unsigned char> const_unsigned_char_ptr2;
+  const unsigned char* const_unsigned_char_ptr2;
+  // Expected rewrite: raw_ptr<const signed char> const_signed_char_ptr2;
+  const signed char* const_signed_char_ptr2;
+
+  // Expected rewrite: raw_ptr<const char*> double_char_ptr1;
+  const char** double_char_ptr1;
+  // Expected rewrite: raw_ptr<const char16_t*> double_char_ptr2;
+  const char16_t** double_char_ptr2;
+  // Expected rewrite: raw_ptr<const wchar_t*> double_char_ptr3;
+  const wchar_t** double_char_ptr3;
+  // Expected rewrite: raw_ptr<const unsigned char*> double_char_ptr4;
+  const unsigned char** double_char_ptr4;
+  // Expected rewrite: raw_ptr<const signed char*> double_char_ptr5;
+  const signed char** double_char_ptr5;
 
   // |array_of_ptrs| is an array 123 of pointer to SomeClass.
   // No rewrite expected (this is not a pointer - this is an array).

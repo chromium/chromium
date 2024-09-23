@@ -129,9 +129,8 @@ export class FileManagerDialogBase extends BaseDialog {
   }
 
   override hide(onHide?: VoidCallback) {
-    this.parentNode.close();
-
     FileManagerDialogBase.shown = false;
     super.hide(onHide);
+    this.parentNode.close();
   }
 }

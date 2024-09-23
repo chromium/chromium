@@ -17,6 +17,7 @@
 #include "android_webview/browser/aw_metrics_service_client_delegate.h"
 #include "android_webview/browser/metrics/android_metrics_provider.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "android_webview/browser/supervised_user/aw_supervised_user_url_classifier.h"
 #include "android_webview/browser/tracing/aw_tracing_delegate.h"
 #include "android_webview/browser/variations/variations_seed_loader.h"
 #include "android_webview/common/aw_switches.h"
@@ -52,6 +53,7 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
@@ -67,6 +69,9 @@ bool g_signature_verification_enabled = true;
 // These prefs go in the JsonPrefStore, and will persist across runs. Other
 // prefs go in the InMemoryPrefStore, and will be lost when the process ends.
 const char* const kPersistentPrefsAllowlist[] = {
+    // Restricted content blocking.
+    android_webview::prefs::kShouldBlockRestrictedContent,
+
     // Origin Trial config overrides.
     embedder_support::prefs::kOriginTrialPublicKey,
     embedder_support::prefs::kOriginTrialDisabledFeatures,
@@ -172,6 +177,7 @@ std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
       pref_registry.get());
   AwTracingDelegate::RegisterPrefs(pref_registry.get());
   AwBrowserContextStore::RegisterPrefs(pref_registry.get());
+  AwSupervisedUserUrlClassifier::RegisterPrefs(pref_registry.get());
 
   PrefServiceFactory pref_service_factory;
 
@@ -282,7 +288,8 @@ void AwFeatureListCreator::SetUpFieldTrials() {
           variations::switches::kForceVariationIds),
       GetSwitchDependentFeatureOverrides(*command_line),
       std::move(feature_list), metrics_client->metrics_state_manager(),
-      aw_field_trials_.get(), &ignored_safe_seed_manager,
+      metrics_client->GetSyntheticTrialRegistry(), aw_field_trials_.get(),
+      &ignored_safe_seed_manager,
       /*add_entropy_source_to_variations_ids=*/false);
 }
 

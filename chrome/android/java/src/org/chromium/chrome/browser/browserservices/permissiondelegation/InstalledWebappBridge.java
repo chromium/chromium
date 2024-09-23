@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.browserservices.permissiondelegation;
 import android.net.Uri;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -69,7 +70,7 @@ public class InstalledWebappBridge {
     }
 
     @CalledByNative
-    private static String getOriginFromPermission(Permission permission) {
+    private static @JniType("std::string") String getOriginFromPermission(Permission permission) {
         return permission.origin.toString();
     }
 
@@ -81,8 +82,8 @@ public class InstalledWebappBridge {
     @CalledByNative
     private static void decidePermission(
             @ContentSettingsType.EnumType int type,
-            String originUrl,
-            String lastCommittedUrl,
+            @JniType("std::string") String originUrl,
+            @JniType("std::string") String lastCommittedUrl,
             long callback) {
         Origin origin = Origin.create(Uri.parse(originUrl));
         if (origin == null) {

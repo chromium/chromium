@@ -57,7 +57,7 @@ interface SnapshotCapturer {
 // introduce another protocol would require careful synchronization between the
 // two, which we'd like to avoid.
 //
-// TODO(https://crbug.com/1094460): This is a very simple interface. We will
+// TODO(crbug.com/40135428): This is a very simple interface. We will
 // likely want to replace it with a more feature-complete and performant
 // interface in the future.
 [Stable, Uuid="95c3035c-5c63-45e3-8ec8-dd2a344c7dc2"]

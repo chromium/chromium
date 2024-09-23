@@ -9,12 +9,12 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "base/base64url.h"
-#include "base/big_endian.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -27,9 +27,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -288,7 +288,7 @@ class DnsUDPAttempt : public DnsAttempt {
           rv = DoReadResponseComplete(rv);
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
@@ -413,8 +413,8 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
       std::string url_string;
       std::unordered_map<string, string> parameters;
       std::string encoded_query;
-      base::Base64UrlEncode(base::StringPiece(query_->io_buffer()->data(),
-                                              query_->io_buffer()->size()),
+      base::Base64UrlEncode(std::string_view(query_->io_buffer()->data(),
+                                             query_->io_buffer()->size()),
                             base::Base64UrlEncodePolicy::OMIT_PADDING,
                             &encoded_query);
       parameters.emplace("dns", encoded_query);
@@ -472,9 +472,9 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
       request_->SetIdempotency(IDEMPOTENT);
       std::unique_ptr<UploadElementReader> reader =
           std::make_unique<UploadBytesElementReader>(
-              query_->io_buffer()->data(), query_->io_buffer()->size());
+              query_->io_buffer()->span());
       request_->set_upload(
-          ElementsUploadDataStream::CreateWithReader(std::move(reader), 0));
+          ElementsUploadDataStream::CreateWithReader(std::move(reader)));
       extra_request_headers.SetHeader(HttpRequestHeaders::kContentType,
                                       kDnsOverHttpResponseContentType);
     }
@@ -794,7 +794,7 @@ class DnsTCPAttempt : public DnsAttempt {
           rv = DoReadResponseComplete(rv);
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
@@ -813,7 +813,7 @@ class DnsTCPAttempt : public DnsAttempt {
     uint16_t query_size = static_cast<uint16_t>(query_->io_buffer()->size());
     if (static_cast<int>(query_size) != query_->io_buffer()->size())
       return ERR_FAILED;
-    base::WriteBigEndian<uint16_t>(length_buffer_->data(), query_size);
+    length_buffer_->span().copy_from(base::U16ToBigEndian(query_size));
     buffer_ = base::MakeRefCounted<DrainableIOBuffer>(length_buffer_,
                                                       length_buffer_->size());
     next_state_ = STATE_SEND_LENGTH;
@@ -878,9 +878,8 @@ class DnsTCPAttempt : public DnsAttempt {
       return OK;
     }
 
-    base::ReadBigEndian(
-        reinterpret_cast<const uint8_t*>(length_buffer_->data()),
-        &response_length_);
+    response_length_ =
+        base::U16FromBigEndian(length_buffer_->span().first<2u>());
     // Check if advertised response is too short. (Optimization only.)
     if (response_length_ < query_->io_buffer()->size())
       return ERR_DNS_MALFORMED_RESPONSE;
@@ -1097,7 +1096,14 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
                      base::TimeTicks query_start_time,
                      int rv) {
     bool success = false;
-    if (rv == OK && probe_stats && session_ && context_) {
+    while (probe_stats && session_ && context_) {
+      if (rv != OK) {
+        // The DoH probe queries don't go through the standard DnsAttempt path,
+        // so the ServerStats have not been updated yet.
+        context_->RecordServerFailure(doh_server_index, /*is_doh_server=*/true,
+                                      rv, session_.get());
+        break;
+      }
       // Check that the response parses properly before considering it a
       // success.
       DCHECK_LT(attempt_number, probe_stats->probe_attempts.size());
@@ -1116,8 +1122,6 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
           for (const auto& result : results.value()) {
             if (result->type() == HostResolverInternalResult::Type::kData &&
                 !result->AsData().endpoints().empty()) {
-              // The DoH probe queries don't go through the standard DnsAttempt
-              // path, so the ServerStats have not been updated yet.
               context_->RecordServerSuccess(
                   doh_server_index, /*is_doh_server=*/true, session_.get());
               context_->RecordRtt(doh_server_index, /*is_doh_server=*/true,
@@ -1135,6 +1139,12 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
           }
         }
       }
+      if (!success) {
+        context_->RecordServerFailure(
+            doh_server_index, /*is_doh_server=*/true,
+            /*rv=*/ERR_DNS_SECURE_PROBE_RECORD_INVALID, session_.get());
+      }
+      break;
     }
 
     base::UmaHistogramLongTimes(
@@ -1164,8 +1174,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
 // ResolveContext::NextClassicFallbackPeriod(). The first server to attempt on
 // each query is given by ResolveContext::NextFirstServerIndex, and the order is
 // round-robin afterwards. Each server is attempted DnsConfig::attempts times.
-class DnsTransactionImpl : public DnsTransaction,
-                           public base::SupportsWeakPtr<DnsTransactionImpl> {
+class DnsTransactionImpl final : public DnsTransaction {
  public:
   DnsTransactionImpl(DnsSession* session,
                      std::string hostname,
@@ -1236,8 +1245,8 @@ class DnsTransactionImpl : public DnsTransaction,
       // they may interfere with this posted result.
       ClearAttempts(result.attempt);
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&DnsTransactionImpl::DoCallback, AsWeakPtr(), result));
+          FROM_HERE, base::BindOnce(&DnsTransactionImpl::DoCallback,
+                                    weak_ptr_factory_.GetWeakPtr(), result));
     }
   }
 
@@ -1492,7 +1501,7 @@ class DnsTransactionImpl : public DnsTransaction,
     const DnsConfig& config = session_->config();
     DCHECK_LT(server_index, config.nameservers.size());
 
-    // TODO(https://crbug.com/1123197): Pass a non-null NetworkQualityEstimator.
+    // TODO(crbug.com/40146880): Pass a non-null NetworkQualityEstimator.
     NetworkQualityEstimator* network_quality_estimator = nullptr;
 
     std::unique_ptr<StreamSocket> socket =
@@ -1773,6 +1782,8 @@ class DnsTransactionImpl : public DnsTransaction,
   RequestPriority request_priority_ = DEFAULT_PRIORITY;
 
   THREAD_CHECKER(thread_checker_);
+
+  base::WeakPtrFactory<DnsTransactionImpl> weak_ptr_factory_{this};
 };
 
 // ----------------------------------------------------------------------------

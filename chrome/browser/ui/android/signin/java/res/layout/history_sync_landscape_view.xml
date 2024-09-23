@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="14dp"
+    android:paddingEnd="32dp"
+    android:gravity="fill"
+    android:orientation="horizontal">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:importantForAccessibility="no">
+        <ImageView
+            android:id="@+id/history_sync_illustration"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/history_sync_illustration"
+            android:importantForAccessibility="no" />
+        <ImageView
+            android:id="@+id/history_sync_account_image"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerInParent="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:importantForAccessibility="no" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="24dp"
+        android:gravity="center_vertical">
+
+        <ScrollView
+            android:id="@+id/sync_consent_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/history_sync_footer"
+            android:fadeScrollbars="false"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/history_sync_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="@string/history_sync_title"
+                    android:textAppearance="@style/TextAppearance.Headline.Primary"/>
+
+                <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/history_sync_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="105dp"
+                    android:paddingVertical="8dp"
+                    android:gravity="start"
+                    android:text="@string/history_sync_subtitle"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                    app:leading="@dimen/text_size_medium_leading"/>
+
+                <org.chromium.components.browser_ui.widget.DualControlLayout
+                    android:id="@+id/dual_control_button_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
+            </LinearLayout>
+        </ScrollView>
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/history_sync_footer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_alignParentBottom="true"
+            android:gravity="start"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            app:leading="@dimen/text_size_small_leading" />
+    </RelativeLayout>
+</org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView>

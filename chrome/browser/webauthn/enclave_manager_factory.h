@@ -5,16 +5,29 @@
 #ifndef CHROME_BROWSER_WEBAUTHN_ENCLAVE_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_WEBAUTHN_ENCLAVE_MANAGER_FACTORY_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/webauthn/enclave_manager.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}
 
 class EnclaveManager;
+class EnclaveManagerInterface;
 class Profile;
 
 class EnclaveManagerFactory : public ProfileKeyedServiceFactory {
  public:
-  static EnclaveManager* GetForProfile(Profile* profile);
+  static EnclaveManagerInterface* GetForProfile(Profile* profile);
+  static EnclaveManager* GetAsEnclaveManagerForProfile(Profile* profile);
+
   static EnclaveManagerFactory* GetInstance();
+
+  static void SetUrlLoaderFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> factory);
+  static scoped_refptr<network::SharedURLLoaderFactory> url_loader_override();
 
  private:
   friend base::NoDestructor<EnclaveManagerFactory>;

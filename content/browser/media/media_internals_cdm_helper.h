@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_CDM_HELPER_H_
 #define CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_CDM_HELPER_H_
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/media/cdm_registry_impl.h"
 #include "content/public/common/cdm_info.h"
@@ -25,6 +26,9 @@ class MediaInternalsCdmHelper {
 
  private:
   void OnKeySystemCapabilitiesUpdated(KeySystemCapabilities capabilities);
+
+  // Callback subscription to keep the callback alive in the CdmRegistry.
+  base::CallbackListSubscription cb_subscription_;
 
   base::WeakPtrFactory<MediaInternalsCdmHelper> weak_factory_{this};
 };

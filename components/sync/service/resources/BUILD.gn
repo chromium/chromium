@@ -42,5 +42,6 @@ build_webui("build") {
     "jstemplate.d.ts",
   ]
 
+  webui_context_type = "trusted"
   grit_output_dir = "$root_gen_dir/components"
 }

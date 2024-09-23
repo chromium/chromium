@@ -380,6 +380,8 @@ struct HashTableValuesIterator<HashTableType, KeyType, MappedType>
   using pointer = MappedType*;
   using reference = MappedType&;
 
+  constexpr HashTableValuesIterator() = default;
+
   HashTableValuesIterator(const Iterator& impl) : impl_(impl) {}
 
   MappedType* Get() const { return &(impl_.Get()->value); }

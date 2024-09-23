@@ -5,6 +5,7 @@
 /**
  * @fileoverview Constants used in Switch Access.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 /** When an action is performed, how the menu should respond. */
 export enum ActionResponse {
@@ -58,3 +59,5 @@ export enum Mode {
   ITEM_SCAN,
   POINT_SCAN,
 }
+
+TestImportManager.exportForTesting(['Mode', Mode]);

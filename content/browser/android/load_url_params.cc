@@ -5,10 +5,12 @@
 #include <jni.h>
 
 #include "base/android/jni_string.h"
-#include "content/public/android/content_jni_headers/LoadUrlParams_jni.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/LoadUrlParams_jni.h"
 
 using base::android::JavaParamRef;
 

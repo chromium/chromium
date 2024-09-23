@@ -17,7 +17,6 @@ namespace {
 // Tests that when there are no mixers, GetColor() returns a placeholder value.
 TEST(ColorProviderTest, GetColorNoMixers) {
   ColorProvider provider;
-  provider.GenerateColorMap();
   EXPECT_EQ(gfx::kPlaceholderColor, provider.GetColor(kColorTest0));
 }
 
@@ -26,7 +25,6 @@ TEST(ColorProviderTest, GetColorNoMixers) {
 TEST(ColorProviderTest, SingleMixer) {
   ColorProvider provider;
   provider.AddMixer()[kColorTest0] = {SK_ColorGREEN};
-  provider.GenerateColorMap();
   EXPECT_EQ(SK_ColorGREEN, provider.GetColor(kColorTest0));
   EXPECT_EQ(gfx::kPlaceholderColor, provider.GetColor(kColorTest1));
 }
@@ -37,7 +35,6 @@ TEST(ColorProviderTest, NonOverlappingMixers) {
   ColorProvider provider;
   provider.AddMixer()[kColorTest0] = {SK_ColorGREEN};
   provider.AddMixer()[kColorTest1] = {SK_ColorRED};
-  provider.GenerateColorMap();
   EXPECT_EQ(SK_ColorGREEN, provider.GetColor(kColorTest0));
   EXPECT_EQ(SK_ColorRED, provider.GetColor(kColorTest1));
 }
@@ -48,7 +45,6 @@ TEST(ColorProviderTest, OverlappingMixers) {
   ColorProvider provider;
   provider.AddMixer()[kColorTest0] = {SK_ColorGREEN};
   provider.AddMixer()[kColorTest0] = {SK_ColorRED};
-  provider.GenerateColorMap();
   EXPECT_EQ(SK_ColorRED, provider.GetColor(kColorTest0));
 }
 
@@ -59,7 +55,6 @@ TEST(ColorProviderTest, WithProcessing) {
   provider.AddMixer()[kColorTest0] = {SK_ColorBLACK};
   provider.AddPostprocessingMixer()[kColorTest0] =
       GetColorWithMaxContrast(FromTransformInput());
-  provider.GenerateColorMap();
   EXPECT_EQ(SK_ColorWHITE, provider.GetColor(kColorTest0));
 }
 
@@ -70,7 +65,6 @@ TEST(ColorProviderTest, WithProcessingAddedBeforeRegular) {
   provider.AddPostprocessingMixer()[kColorTest0] =
       GetColorWithMaxContrast(FromTransformInput());
   provider.AddMixer()[kColorTest0] = {SK_ColorBLACK};
-  provider.GenerateColorMap();
   EXPECT_EQ(SK_ColorWHITE, provider.GetColor(kColorTest0));
 }
 
@@ -82,7 +76,6 @@ TEST(ColorProviderTest, Redefinition) {
   mixer0[kColorTest0] = {SK_ColorBLACK};
   mixer0[kColorTest1] = AlphaBlend(SK_ColorRED, kColorTest0, 0x01);
   provider.AddMixer()[kColorTest0] = {SK_ColorWHITE};
-  provider.GenerateColorMap();
   EXPECT_EQ(SK_ColorWHITE, provider.GetColor(kColorTest0));
   EXPECT_FALSE(color_utils::IsDark(provider.GetColor(kColorTest1)));
 }
@@ -97,7 +90,6 @@ TEST(ColorProviderTest, RedefinitionWithProcessing) {
   provider.AddMixer()[kColorTest0] = {SK_ColorWHITE};
   provider.AddPostprocessingMixer()[kColorTest0] =
       GetColorWithMaxContrast(FromTransformInput());
-  provider.GenerateColorMap();
   EXPECT_NE(SK_ColorWHITE, provider.GetColor(kColorTest0));
   EXPECT_FALSE(color_utils::IsDark(provider.GetColor(kColorTest1)));
 }
@@ -105,7 +97,6 @@ TEST(ColorProviderTest, RedefinitionWithProcessing) {
 TEST(ColorProviderTest, SetColorForTesting) {
   ColorProvider provider;
   provider.SetColorForTesting(kColorTest0, SK_ColorGREEN);
-  provider.GenerateColorMap();
   EXPECT_EQ(SK_ColorGREEN, provider.GetColor(kColorTest0));
   EXPECT_EQ(gfx::kPlaceholderColor, provider.GetColor(kColorTest1));
   provider.SetColorForTesting(kColorTest1, SK_ColorBLUE);

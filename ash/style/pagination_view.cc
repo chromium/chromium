@@ -20,6 +20,7 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/scroll_view.h"
@@ -78,7 +79,7 @@ class IndicatorButton : public views::Button {
                   const std::u16string& accessible_name)
       : views::Button(std::move(callback)) {
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-    SetAccessibleName(accessible_name);
+    GetViewAccessibility().SetName(accessible_name);
   }
 
   IndicatorButton(const IndicatorButton&) = delete;
@@ -94,7 +95,8 @@ class IndicatorButton : public views::Button {
   }
 
   // views::Button:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(kIndicatorButtonSize, kIndicatorButtonSize);
   }
 
@@ -189,7 +191,7 @@ class PaginationView::SelectorDotView : public views::View {
   std::vector<DeformInterval> deform_intervals_;
 };
 
-BEGIN_METADATA(PaginationView, SelectorDotView, views::View)
+BEGIN_METADATA(PaginationView, SelectorDotView)
 END_METADATA
 
 //------------------------------------------------------------------------------
@@ -302,7 +304,7 @@ class PaginationView::IndicatorContainer : public views::BoxLayoutView {
   std::optional<InterpolationInterval<int>> scroll_interval_;
 };
 
-BEGIN_METADATA(PaginationView, IndicatorContainer, views::BoxLayoutView)
+BEGIN_METADATA(PaginationView, IndicatorContainer)
 END_METADATA
 
 //------------------------------------------------------------------------------
@@ -340,7 +342,8 @@ PaginationView::PaginationView(PaginationModel* model, Orientation orientation)
 
 PaginationView::~PaginationView() = default;
 
-gfx::Size PaginationView::CalculatePreferredSize() const {
+gfx::Size PaginationView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int total_pages = model_->total_pages();
   if (total_pages < kMinNumPages) {
     return gfx::Size();

@@ -76,6 +76,8 @@
     [self setupLayout];
   }
 
+  __weak ColorfulBackgroundSymbolView* weakColorfulView = _colorfulView;
+
   switch (omniboxIcon.iconType) {
     case OmniboxIconTypeImage: {
       __weak UIImageView* weakImageView = _imageView;
@@ -101,7 +103,6 @@
 
       // Load favicon.
       GURL pageURL = omniboxIcon.imageURL.gurl;
-      __weak ColorfulBackgroundSymbolView* weakColorfulView = _colorfulView;
       __weak id<OmniboxIcon> weakOmniboxIcon = _omniboxIcon;
       [self.faviconRetriever fetchFavicon:pageURL
                                completion:^(UIImage* image) {
@@ -117,9 +118,11 @@
       [_colorfulView setSymbol:omniboxIcon.iconImage];
       break;
   }
-  _colorfulView.symbolTintColor = omniboxIcon.iconImageTintColor;
-  _colorfulView.backgroundColor = omniboxIcon.backgroundImageTintColor;
-  _colorfulView.borderColor = omniboxIcon.borderColor;
+  [UIView performWithoutAnimation:^{
+    weakColorfulView.symbolTintColor = omniboxIcon.iconImageTintColor;
+    weakColorfulView.backgroundColor = omniboxIcon.backgroundImageTintColor;
+    weakColorfulView.borderColor = omniboxIcon.borderColor;
+  }];
 }
 
 - (void)setHighlighted:(BOOL)highlighted {

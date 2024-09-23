@@ -37,6 +37,13 @@ VideoAspectRatio::VideoAspectRatio(const gfx::Rect& visible_rect,
   aspect_ratio_ = h != 0.0 ? w / h : 0.0;
 }
 
+bool VideoAspectRatio::operator==(const VideoAspectRatio& other) const {
+  if (!IsValid() || !other.IsValid()) {
+    return IsValid() == other.IsValid();
+  }
+  return type_ == other.type_ && aspect_ratio_ == other.aspect_ratio_;
+}
+
 bool VideoAspectRatio::IsValid() const {
   return std::isfinite(aspect_ratio_) && aspect_ratio_ > 0.0;
 }

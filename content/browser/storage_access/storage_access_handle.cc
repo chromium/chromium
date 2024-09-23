@@ -4,16 +4,22 @@
 
 #include "content/browser/storage_access/storage_access_handle.h"
 
+#include "base/types/pass_key.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/worker_host/shared_worker_connector_impl.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace content {
+
+using PassKey = base::PassKey<StorageAccessHandle>;
 
 namespace {
 
@@ -36,24 +42,33 @@ void StorageAccessHandle::Create(
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::StorageAccessHandle> receiver) {
   CHECK(host);
-  // If the Storage Access permission has not been granted then we should refuse
-  // to bind this interface. For more see:
+  // We need to check if either permission was granted *or* if full cookie
+  // access was granted as pre-3PCD the permission isn't possible to set and
+  // post-3PCD full cookie access remains sufficient, but is not necessary
+  // as permission access is possible without enabling full cookie access.
+  //
+  // For more see:
   // third_party/blink/renderer/modules/storage_access/README.md
   //
   // NOTE: This handles the general permissions check for the entire interface.
   // Specific binding sights (e.g., IndexedDB) should not need their own
   // additional checks once the StorageAccessHandle interface has been bound.
-  blink::mojom::PermissionStatus status =
+  bool has_full_cookie_access =
+      GetContentClient()->browser()->IsFullCookieAccessAllowed(
+          host->GetBrowserContext(), WebContents::FromRenderFrameHost(host),
+          host->GetLastCommittedURL(), host->GetStorageKey());
+  bool has_permission_access =
       host->GetProcess()
           ->GetBrowserContext()
           ->GetPermissionController()
           ->GetPermissionStatusForCurrentDocument(
-              blink::PermissionType::STORAGE_ACCESS_GRANT, host);
-  if (status != blink::mojom::PermissionStatus::GRANTED) {
+              blink::PermissionType::STORAGE_ACCESS_GRANT, host) ==
+      blink::mojom::PermissionStatus::GRANTED;
+  if (!has_full_cookie_access && !has_permission_access) {
 #if DCHECK_IS_ON()
     mojo::ReportBadMessage(
-        "Binding a StorageAccessHandle requires the STORAGE_ACCESS_GRANT "
-        "permission.");
+        "Binding a StorageAccessHandle requires third-party cookie access or "
+        "permission access.");
 #endif
     return;
   }
@@ -65,7 +80,8 @@ void StorageAccessHandle::BindIndexedDB(
   render_frame_host().GetProcess()->BindIndexedDB(
       blink::StorageKey::CreateFirstParty(
           render_frame_host().GetStorageKey().origin()),
-      render_frame_host().GetGlobalId(), std::move(receiver));
+      static_cast<RenderFrameHostImpl&>(render_frame_host()),
+      std::move(receiver));
 }
 
 void StorageAccessHandle::BindLocks(
@@ -88,6 +104,7 @@ void StorageAccessHandle::BindCaches(
   }
   host.GetProcess()->BindCacheStorage(
       host.cross_origin_embedder_policy(), std::move(coep_reporter_remote),
+      host.policy_container_host()->policies().document_isolation_policy,
       storage::BucketLocator::ForDefaultBucket(
           blink::StorageKey::CreateFirstParty(host.GetStorageKey().origin())),
       std::move(receiver));
@@ -103,7 +120,8 @@ void StorageAccessHandle::GetDirectory(GetDirectoryCallback callback) {
                   render_frame_host().GetStorageKey().origin()),
               render_frame_host().GetLastCommittedURL(),
               render_frame_host().GetGlobalId()),
-          /*bucket=*/std::nullopt, std::move(callback));
+          /*bucket=*/std::nullopt,
+          /*directory_path_components=*/{}, std::move(callback));
 }
 
 void StorageAccessHandle::Estimate(EstimateCallback callback) {
@@ -155,6 +173,8 @@ void StorageAccessHandle::BindBlobStorage(
       ->GetBlobUrlRegistry()
       ->AddReceiver(blink::StorageKey::CreateFirstParty(
                         render_frame_host().GetStorageKey().origin()),
+                    render_frame_host().GetLastCommittedOrigin(),
+                    render_frame_host().GetProcess()->GetID(),
                     std::move(receiver));
 }
 
@@ -169,6 +189,15 @@ void StorageAccessHandle::BindBroadcastChannel(
       std::make_unique<BroadcastChannelProvider>(
           service, blink::StorageKey::CreateFirstParty(
                        render_frame_host().GetStorageKey().origin())),
+      std::move(receiver));
+}
+
+void StorageAccessHandle::BindSharedWorker(
+    mojo::PendingReceiver<blink::mojom::SharedWorkerConnector> receiver) {
+  SharedWorkerConnectorImpl::Create(
+      PassKey(), render_frame_host().GetGlobalId(),
+      blink::StorageKey::CreateFirstParty(
+          render_frame_host().GetStorageKey().origin()),
       std::move(receiver));
 }
 

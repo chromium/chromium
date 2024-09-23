@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "services/accessibility/public/mojom/assistive_technology_type.mojom.h"
 #include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 
@@ -69,7 +70,8 @@ class SpeechRecognitionImplTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     sr_test_helper_ = std::make_unique<SpeechRecognitionTestHelper>(
-        speech::SpeechRecognitionType::kNetwork);
+        speech::SpeechRecognitionType::kNetwork,
+        media::mojom::RecognizerClientType::kDictation);
     sr_test_helper_->SetUp(browser()->profile());
     sr_impl_ = std::make_unique<SpeechRecognitionImpl>(browser()->profile());
   }

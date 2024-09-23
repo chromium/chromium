@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">စစ်တမ်း</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">သင်၏ အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးခြင်း</translation>
+<translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2388990488038464401">သင့်ဖုန်းမှနေ၍ ဤနံပါတ်ကို ခေါ်လိုပါသလား။</translation>
 <translation id="2435457462613246316">စကားဝှက်ကို ပြပါ</translation>
 <translation id="24452542372838207">အကြောင်းကြားချက်ကို ချဲ့ရန်</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">အသစ်</translation>
 <translation id="2666092431469916601">ထိပ်</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> ထံမှ မျှဝေထားပါသည်</translation>
-<translation id="271033894570825754">အသစသ်</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{ပြီးခဲ့သည့် ၁ နှစ်}other{ပြီးခဲ့သည့် # နှစ်}}</translation>
 <translation id="2878511608894704031">အားလုံး ဖျက်ရန်</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{၁ရက် အတွင်း}other{#ရက် အတွင်း}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> စနစ်</translation>
 <translation id="5583640892426849032">နောက်ပြန်</translation>
 <translation id="5613020302032141669">ဘယ်မြှား</translation>
+<translation id="5633029987065897167">မရှိပါ</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{၁ မိနစ်}other{# မိနစ်}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ယနေ့ အသုံးပြုထားသည်}=1{ပြီးခဲ့သော ၁ ရက်က အသုံးပြုထားသည်}other{ပြီးခဲ့သော # ရက်က အသုံးပြုထားသည်}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{၁ ရက်နှင့် }other{# ရက်နှင့် }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF အကြောင်းအရာ</translation>
 <translation id="6539092367496845964">တစ်ခုခု မှားသွားသည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="654149438358937226">သတိပေးချက်များအားလုံးကို ပိတ်ရန်</translation>
-<translation id="6612467943526193239">တိုင်းတာချိန်ညှိမှုမှ ထွက်ရန် Esc ကို နှိပ်ပါ။</translation>
 <translation id="6620110761915583480">ဖိုင် သိမ်းရန်</translation>
 <translation id="6699343763173986273">နောက်ထပ်သီချင်းပုဒ် မီဒီယာ</translation>
 <translation id="6808150112686056157">Media Stop</translation>
@@ -205,7 +205,7 @@
 <translation id="8328145009876646418">ဘယ် အစွန်း</translation>
 <translation id="8331626408530291785">အပေါ်ကို လှိမ့်သွား</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{၁ နှစ်}other{# နှစ်}}</translation>
-<translation id="8393700583063109961">စာပို့ရန်</translation>
+<translation id="8393700583063109961">မက်ဆေ့ဂျ်ပို့ရန်</translation>
 <translation id="8394908167088220973">မီဒီယာ ဖွင့်ရန်/ဆိုင်းငံ့ထားရန်</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{၁ နှစ်}other{# နှစ်}}</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>

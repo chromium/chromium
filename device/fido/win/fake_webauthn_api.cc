@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/fido/win/fake_webauthn_api.h"
 
 #include <stdint.h>
@@ -15,7 +20,6 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/cbor/values.h"
@@ -290,7 +294,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
   attestation->win_attestation.bResidentKey = resident_key;
   attestation->win_attestation.bLargeBlobSupported =
       options->dwLargeBlobSupport != WEBAUTHN_LARGE_BLOB_SUPPORT_NONE &&
-      version_ >= WEBAUTHN_API_VERSION_3;
+      version_ >= WEBAUTHN_API_VERSION_3 && large_blob_supported_;
   attestation->win_attestation.dwUsedTransport =
       attachment == WEBAUTHN_AUTHENTICATOR_ATTACHMENT_PLATFORM
           ? WEBAUTHN_CTAP_TRANSPORT_INTERNAL
@@ -396,7 +400,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
       result->assertion.dwVersion = WEBAUTHN_ASSERTION_VERSION_3;
       break;
     default:
-      NOTREACHED() << "Unknown webauthn version " << version_;
+      NOTREACHED_IN_MIGRATION() << "Unknown webauthn version " << version_;
   }
   result->assertion.cbAuthenticatorData = result->authenticator_data.size();
   result->assertion.pbAuthenticatorData = reinterpret_cast<PBYTE>(
@@ -451,8 +455,8 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
         break;
       }
       default:
-        NOTREACHED() << "Unknown operation "
-                     << options->dwCredLargeBlobOperation;
+        NOTREACHED_IN_MIGRATION()
+            << "Unknown operation " << options->dwCredLargeBlobOperation;
     }
   }
 
@@ -467,7 +471,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
 
 HRESULT FakeWinWebAuthnApi::CancelCurrentOperation(GUID* cancellation_id) {
   DCHECK(is_available_);
-  NOTREACHED() << "not implemented";
+  NOTREACHED_IN_MIGRATION() << "not implemented";
   return E_NOTIMPL;
 }
 
@@ -582,7 +586,7 @@ void FakeWinWebAuthnApi::FreeCredentialAttestation(
     returned_attestations_.erase(it);
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeWinWebAuthnApi::FreeAssertion(PWEBAUTHN_ASSERTION assertion) {
@@ -594,7 +598,7 @@ void FakeWinWebAuthnApi::FreeAssertion(PWEBAUTHN_ASSERTION assertion) {
     returned_assertions_.erase(it);
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeWinWebAuthnApi::FreePlatformCredentialList(
@@ -607,7 +611,7 @@ void FakeWinWebAuthnApi::FreePlatformCredentialList(
     returned_credential_lists_.erase(it);
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 int FakeWinWebAuthnApi::Version() {

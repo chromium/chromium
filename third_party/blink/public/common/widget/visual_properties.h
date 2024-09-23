@@ -11,7 +11,7 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-shared.h"
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -110,18 +110,23 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   // The display mode.
   mojom::DisplayMode display_mode = mojom::DisplayMode::kUndefined;
 
-  // The window show state. Defaults to `SHOW_STATE_DEFAULT`.
-  ui::WindowShowState window_show_state =
-      ui::WindowShowState::SHOW_STATE_DEFAULT;
+  // The window show state. Defaults to `WindowShowState::kDefault`.
+  ui::mojom::WindowShowState window_show_state =
+      ui::mojom::WindowShowState::kDefault;
 
   // This represents the latest capture sequence number requested. When this is
   // incremented, that means the caller wants to synchronize surfaces which
   // should cause a new LocalSurfaceId to be generated.
   uint32_t capture_sequence_number = 0u;
 
-  // This represents the page zoom level for a WebContents.
+  // This represents the browser zoom level for a WebContents.
   // (0 is the default value which results in 1.0 zoom factor).
   double zoom_level = 0;
+
+  // For an embedded widget this is the cumulative effect of the CSS "zoom"
+  // property on the embedding element (e.g. <iframe>) and its ancestors. For a
+  // top-level widget this is 1.0.
+  double css_zoom_factor = 1.f;
 
   // This represents the page's scale factor, which changes during pinch zoom.
   // It needs to be shared with subframes.
@@ -138,7 +143,7 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   // property is set by the root RenderWidget in the renderer process, then
   // propagated to child local frame roots via RenderFrameProxy/
   // CrossProcessFrameConnector.
-  std::vector<gfx::Rect> root_widget_window_segments;
+  std::vector<gfx::Rect> root_widget_viewport_segments;
 
   // Indicates whether a pinch gesture is currently active. Originates in the
   // main frame's renderer, and needs to be shared with subframes.

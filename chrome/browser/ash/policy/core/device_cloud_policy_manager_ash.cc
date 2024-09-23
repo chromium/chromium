@@ -63,20 +63,11 @@ namespace policy {
 
 namespace {
 
-// Zero-touch enrollment flag values.
-
-const char kZeroTouchEnrollmentForced[] = "forced";
-
 // Default frequency for uploading enterprise status reports. Can be overriden
 // by Device Policy.
 // Keep the default value in sync with device_status_frequency in
 // DeviceReportingProto in components/policy/proto/chrome_device_policy.proto.
 constexpr base::TimeDelta kDeviceStatusUploadFrequency = base::Hours(3);
-
-// Checks whether forced re-enrollment is enabled.
-bool IsForcedReEnrollmentEnabled() {
-  return AutoEnrollmentTypeChecker::IsFREEnabled();
-}
 
 }  // namespace
 
@@ -121,9 +112,13 @@ void DeviceCloudPolicyManagerAsh::Initialize(PrefService* local_state) {
 
   local_state_ = local_state;
 
-  state_keys_update_subscription_ = state_keys_broker_->RegisterUpdateCallback(
-      base::BindRepeating(&DeviceCloudPolicyManagerAsh::OnStateKeysUpdated,
-                          base::Unretained(this)));
+  // If FRE is enabled, we'll want to know about re-enrollment state keys.
+  if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
+    state_keys_update_subscription_ =
+        state_keys_broker_->RegisterUpdateCallback(base::BindRepeating(
+            &DeviceCloudPolicyManagerAsh::OnStateKeysUpdated,
+            base::Unretained(this)));
+  }
 }
 
 void DeviceCloudPolicyManagerAsh::AddDeviceCloudPolicyManagerObserver(
@@ -169,36 +164,13 @@ void DeviceCloudPolicyManagerAsh::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kStoreLogStatesAcrossReboots);
 }
 
-// static
-ZeroTouchEnrollmentMode
-DeviceCloudPolicyManagerAsh::GetZeroTouchEnrollmentMode() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(
-          ash::switches::kEnterpriseEnableZeroTouchEnrollment)) {
-    return ZeroTouchEnrollmentMode::DISABLED;
-  }
-
-  std::string value = command_line->GetSwitchValueASCII(
-      ash::switches::kEnterpriseEnableZeroTouchEnrollment);
-  if (value == kZeroTouchEnrollmentForced) {
-    return ZeroTouchEnrollmentMode::FORCED;
-  }
-  if (value.empty()) {
-    return ZeroTouchEnrollmentMode::ENABLED;
-  }
-  LOG(WARNING) << "Malformed value \"" << value << "\" for switch --"
-               << ash::switches::kEnterpriseEnableZeroTouchEnrollment
-               << ". Ignoring switch.";
-  return ZeroTouchEnrollmentMode::DISABLED;
-}
-
 void DeviceCloudPolicyManagerAsh::StartConnection(
     std::unique_ptr<CloudPolicyClient> client_to_connect,
     ash::InstallAttributes* install_attributes) {
   CHECK(!service());
 
   // Set state keys here so the first policy fetch submits them to the server.
-  if (IsForcedReEnrollmentEnabled()) {
+  if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
     client_to_connect->SetStateKeysToUpload(state_keys_broker_->state_keys());
   }
 
@@ -301,8 +273,7 @@ void DeviceCloudPolicyManagerAsh::OnUserManagerCreated(
       std::make_unique<ReportingUserTracker>(user_manager);
 }
 
-void DeviceCloudPolicyManagerAsh::OnUserManagerWillBeDestroyed(
-    user_manager::UserManager* user_manager) {
+void DeviceCloudPolicyManagerAsh::OnUserManagerWillBeDestroyed() {
   // DeviceStatusCollector internally holds the reference to the
   // ReportingUserTracker instance, so should be released via Shutdown()
   // before this is reached.
@@ -357,7 +328,7 @@ void DeviceCloudPolicyManagerAsh::OnUserRemoved(
 void DeviceCloudPolicyManagerAsh::OnStateKeysUpdated() {
   // TODO(b/181140445): If we had a separate state keys upload request to DM
   // Server we should call it here.
-  if (client() && IsForcedReEnrollmentEnabled()) {
+  if (client()) {
     client()->SetStateKeysToUpload(state_keys_broker_->state_keys());
   }
 }
@@ -413,5 +384,15 @@ void DeviceCloudPolicyManagerAsh::CreateManagedSessionServiceAndReporters() {
 HeartbeatScheduler*
 DeviceCloudPolicyManagerAsh::GetHeartbeatSchedulerForTesting() const {
   return heartbeat_scheduler_.get();
+}
+
+reporting::OsUpdatesReporter*
+DeviceCloudPolicyManagerAsh::GetOsUpdatesReporter() const {
+  return os_updates_reporter_.get();
+}
+
+reporting::MetricReportingManager*
+DeviceCloudPolicyManagerAsh::GetMetricReportingManager() {
+  return metric_reporting_manager_.get();
 }
 }  // namespace policy

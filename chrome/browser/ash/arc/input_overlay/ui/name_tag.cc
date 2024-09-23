@@ -24,7 +24,7 @@ namespace arc::input_overlay {
 
 namespace {
 
-constexpr int kErrorIconSize = 12;
+constexpr int kErrorIconSize = 16;
 constexpr int kErrorIconSpacing = 12;
 constexpr int kHeaderSpacing = 4;
 
@@ -87,9 +87,7 @@ void NameTag::Init() {
                             : views::BoxLayout::Orientation::kVertical,
           gfx::Insets(),
           /*between_child_spacing=*/for_editing_list_ ? 0 : kHeaderSpacing))
-      ->set_cross_axis_alignment(
-          for_editing_list_ ? views::BoxLayout::CrossAxisAlignment::kCenter
-                            : views::BoxLayout::CrossAxisAlignment::kStart);
+      ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kStart);
 
   auto title_label = ash::bubble_utils::CreateLabel(
       ash::TypographyToken::kCrosButton2, u"", cros_tokens::kCrosSysOnSurface);
@@ -109,9 +107,7 @@ void NameTag::Init() {
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
           for_editing_list_ ? views::BoxLayout::Orientation::kVertical
                             : views::BoxLayout::Orientation::kHorizontal))
-      ->set_main_axis_alignment(
-          for_editing_list_ ? views::BoxLayout::MainAxisAlignment::kCenter
-                            : views::BoxLayout::MainAxisAlignment::kStart);
+      ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kStart);
 
   if (for_editing_list_) {
     title_label_ = sub_container->AddChildView(std::move(title_label));
@@ -124,6 +120,9 @@ void NameTag::Init() {
 
   error_icon_->SetProperty(views::kMarginsKey,
                            gfx::Insets::TLBR(0, 0, 0, kErrorIconSpacing));
+  // Set height to 20 to add extra internal padding for `error_icon_`.
+  error_icon_->SetPreferredSize(gfx::Size(kErrorIconSize, 20));
+  error_icon_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   error_icon_->SetVisible(false);
 
   subtitle_label_ = sub_container->AddChildView(

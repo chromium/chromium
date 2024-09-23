@@ -10,14 +10,14 @@ Case 1, original layer tree:
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='composited box behind'",
+      "name": "LayoutBlockFlow (positioned) DIV class='composited box behind'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle'",
       "position": [180, 180],
       "bounds": [140, 140],
       "backgroundColor": "#00FFFF"
@@ -46,21 +46,21 @@ Case 2: hovering over the "middle" element (causes that div to become its own co
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='composited box behind'",
+      "name": "LayoutBlockFlow (positioned) DIV class='composited box behind'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle2'",
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle2'",
       "position": [200, 200],
       "bounds": [120, 120],
       "backgroundColor": "#00FFFF"
@@ -98,28 +98,28 @@ Case 3: hovering over the "middle2" element (causes that div to become its own c
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='composited box behind'",
+      "name": "LayoutBlockFlow (positioned) DIV class='composited box behind'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle'",
       "position": [180, 180],
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#00FF00"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle2'",
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle2'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='box top'",
+      "name": "LayoutBlockFlow (positioned) DIV class='box top'",
       "position": [220, 220],
       "bounds": [100, 100],
       "contentsOpaque": true,
@@ -158,20 +158,20 @@ Case 4: hovering over the "top" element (causes that div to become its own compo
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='composited box behind'",
+      "name": "LayoutBlockFlow (positioned) DIV class='composited box behind'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle'",
       "position": [180, 180],
       "bounds": [120, 120],
       "backgroundColor": "#FF00FF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='box top'",
+      "name": "LayoutBlockFlow (positioned) DIV class='box top'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
@@ -210,14 +210,14 @@ Case 5: back to situation in case 1
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='composited box behind'",
+      "name": "LayoutBlockFlow (positioned) DIV class='composited box behind'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle'",
       "position": [180, 180],
       "bounds": [140, 140],
       "backgroundColor": "#00FFFF"

@@ -17,23 +17,18 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "components/attribution_reporting/summary_window_operator.mojom.h"
+#include "components/attribution_reporting/summary_operator.mojom.h"
 
 namespace attribution_reporting {
 
 namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
-using ::attribution_reporting::mojom::SummaryWindowOperator;
-
-constexpr char kSummaryBuckets[] = "summary_buckets";
-constexpr char kSummaryWindowOperator[] = "summary_window_operator";
-
-constexpr char kSummaryWindowOperatorCount[] = "count";
-constexpr char kSummaryWindowOperatorValueSum[] = "value_sum";
+using ::attribution_reporting::mojom::SummaryOperator;
 
 bool AreSummaryBucketsValid(const base::flat_set<uint32_t>& starts) {
   return !starts.empty() &&
@@ -44,24 +39,35 @@ bool AreSummaryBucketsValid(const base::flat_set<uint32_t>& starts) {
 
 }  // namespace
 
-base::expected<SummaryWindowOperator, SourceRegistrationError>
-ParseSummaryWindowOperator(const base::Value::Dict& dict) {
-  const base::Value* value = dict.Find(kSummaryWindowOperator);
+base::expected<SummaryOperator, SourceRegistrationError> ParseSummaryOperator(
+    const base::Value::Dict& dict) {
+  const base::Value* value = dict.Find(kSummaryOperator);
   if (!value) {
-    return SummaryWindowOperator::kCount;
+    return SummaryOperator::kCount;
   }
 
   const std::string* str = value->GetIfString();
   if (!str) {
     return base::unexpected(
-        SourceRegistrationError::kSummaryWindowOperatorWrongType);
-  } else if (*str == kSummaryWindowOperatorCount) {
-    return SummaryWindowOperator::kCount;
-  } else if (*str == kSummaryWindowOperatorValueSum) {
-    return SummaryWindowOperator::kValueSum;
+        SourceRegistrationError::kSummaryOperatorValueInvalid);
+  } else if (*str == kSummaryOperatorCount) {
+    return SummaryOperator::kCount;
+  } else if (*str == kSummaryOperatorValueSum) {
+    return SummaryOperator::kValueSum;
   } else {
     return base::unexpected(
-        SourceRegistrationError::kSummaryWindowOperatorUnknownValue);
+        SourceRegistrationError::kSummaryOperatorValueInvalid);
+  }
+}
+
+void Serialize(SummaryOperator op, base::Value::Dict& dict) {
+  switch (op) {
+    case SummaryOperator::kCount:
+      dict.Set(kSummaryOperator, kSummaryOperatorCount);
+      break;
+    case SummaryOperator::kValueSum:
+      dict.Set(kSummaryOperator, kSummaryOperatorValueSum);
+      break;
   }
 }
 
@@ -75,17 +81,11 @@ base::expected<SummaryBuckets, SourceRegistrationError> SummaryBuckets::Parse(
   }
 
   const base::Value::List* list = value->GetIfList();
-  if (!list) {
-    return base::unexpected(SourceRegistrationError::kSummaryBucketsWrongType);
-  }
-
-  if (list->empty()) {
-    return base::unexpected(SourceRegistrationError::kSummaryBucketsEmpty);
-  }
-
-  if (base::MakeStrictNum(list->size()) >
-      static_cast<int>(max_event_level_reports)) {
-    return base::unexpected(SourceRegistrationError::kSummaryBucketsTooLong);
+  if (!list || list->empty() ||
+      base::MakeStrictNum(list->size()) >
+          static_cast<int>(max_event_level_reports)) {
+    return base::unexpected(
+        SourceRegistrationError::kSummaryBucketsListInvalid);
   }
 
   std::vector<uint32_t> starts;
@@ -94,15 +94,13 @@ base::expected<SummaryBuckets, SourceRegistrationError> SummaryBuckets::Parse(
   uint32_t prev = 0;
 
   for (const base::Value& item : *list) {
-    ASSIGN_OR_RETURN(
-        uint32_t start,
-        ParseUint32(item,
-                    SourceRegistrationError::kSummaryBucketsValueWrongType,
-                    SourceRegistrationError::kSummaryBucketsValueOutOfRange));
+    ASSIGN_OR_RETURN(uint32_t start, ParseUint32(item), [](ParseError) {
+      return SourceRegistrationError::kSummaryBucketsValueInvalid;
+    });
 
     if (start <= prev) {
       return base::unexpected(
-          SourceRegistrationError::kSummaryBucketsNonIncreasing);
+          SourceRegistrationError::kSummaryBucketsValueInvalid);
     }
 
     starts.push_back(start);
@@ -140,8 +138,7 @@ SummaryBuckets::SummaryBuckets(SummaryBuckets&&) = default;
 SummaryBuckets& SummaryBuckets::operator=(SummaryBuckets&&) = default;
 
 void SummaryBuckets::Serialize(base::Value::Dict& dict) const {
-  base::Value::List list;
-  list.reserve(starts_.size());
+  auto list = base::Value::List::with_capacity(starts_.size());
   for (uint32_t start : starts_) {
     list.Append(Uint32ToJson(start));
   }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/exo/wm_helper.h"
 
 #include "ash/frame_throttler/frame_throttling_controller.h"
@@ -392,13 +397,13 @@ void WMHelper::RemoveTabletModeObserver(ash::TabletModeObserver* observer) {
 }
 
 void WMHelper::AddDisplayConfigurationObserver(
-    ash::WindowTreeHostManager::Observer* observer) {
-  ash::Shell::Get()->window_tree_host_manager()->AddObserver(observer);
+    display::DisplayManagerObserver* observer) {
+  ash::Shell::Get()->display_manager()->AddDisplayManagerObserver(observer);
 }
 
 void WMHelper::RemoveDisplayConfigurationObserver(
-    ash::WindowTreeHostManager::Observer* observer) {
-  ash::Shell::Get()->window_tree_host_manager()->RemoveObserver(observer);
+    display::DisplayManagerObserver* observer) {
+  ash::Shell::Get()->display_manager()->RemoveDisplayManagerObserver(observer);
 }
 
 void WMHelper::AddFrameThrottlingObserver() {

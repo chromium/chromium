@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer name='whitespace no spans'
+++++++genericContainer description='whitespace no spans' descriptionFrom=title
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='['
@@ -38,7 +38,7 @@ rootWebArea
 ++++++++++genericContainer ignored
 ++++++++++++staticText name=']'
 ++++++++++++++inlineTextBox name=']'
-++++++genericContainer name='whitespace with spans'
+++++++genericContainer description='whitespace with spans' descriptionFrom=title
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='['
@@ -75,7 +75,7 @@ rootWebArea
 ++++++++++genericContainer ignored
 ++++++++++++staticText name=']'
 ++++++++++++++inlineTextBox name=']'
-++++++genericContainer name='whitespace with spans and text'
+++++++genericContainer description='whitespace with spans and text' descriptionFrom=title
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='['

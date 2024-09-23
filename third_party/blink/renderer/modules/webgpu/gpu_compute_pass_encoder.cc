@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/webgpu/gpu_compute_pass_encoder.h"
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group.h"
@@ -15,22 +20,25 @@ namespace blink {
 
 GPUComputePassEncoder::GPUComputePassEncoder(
     GPUDevice* device,
-    WGPUComputePassEncoder compute_pass_encoder)
-    : DawnObject<WGPUComputePassEncoder>(device, compute_pass_encoder) {}
+    wgpu::ComputePassEncoder compute_pass_encoder,
+    const String& label)
+    : DawnObject<wgpu::ComputePassEncoder>(device,
+                                           compute_pass_encoder,
+                                           label) {}
 
 void GPUComputePassEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bindGroup,
     const Vector<uint32_t>& dynamicOffsets) {
-  WGPUBindGroupImpl* bgImpl = bindGroup ? bindGroup->GetHandle() : nullptr;
-  GetProcs().computePassEncoderSetBindGroup(
-      GetHandle(), index, bgImpl, dynamicOffsets.size(), dynamicOffsets.data());
+  GetHandle().SetBindGroup(
+      index, bindGroup ? bindGroup->GetHandle() : wgpu::BindGroup(nullptr),
+      dynamicOffsets.size(), dynamicOffsets.data());
 }
 
 void GPUComputePassEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bind_group,
-    const FlexibleUint32Array& dynamic_offsets_data,
+    base::span<const uint32_t> dynamic_offsets_data,
     uint64_t dynamic_offsets_data_start,
     uint32_t dynamic_offsets_data_length,
     ExceptionState& exception_state) {
@@ -41,15 +49,15 @@ void GPUComputePassEncoder::setBindGroup(
   }
 
   const uint32_t* data =
-      dynamic_offsets_data.DataMaybeOnStack() + dynamic_offsets_data_start;
+      dynamic_offsets_data.data() + dynamic_offsets_data_start;
 
-  WGPUBindGroupImpl* bgImpl = bind_group ? bind_group->GetHandle() : nullptr;
-  GetProcs().computePassEncoderSetBindGroup(GetHandle(), index, bgImpl,
-                                            dynamic_offsets_data_length, data);
+  GetHandle().SetBindGroup(
+      index, bind_group ? bind_group->GetHandle() : wgpu::BindGroup(nullptr),
+      dynamic_offsets_data_length, data);
 }
 
 void GPUComputePassEncoder::writeTimestamp(
-    const DawnObject<WGPUQuerySet>* querySet,
+    const DawnObject<wgpu::QuerySet>* querySet,
     uint32_t queryIndex,
     ExceptionState& exception_state) {
   V8GPUFeatureName::Enum requiredFeatureEnum =
@@ -62,8 +70,7 @@ void GPUComputePassEncoder::writeTimestamp(
         device_->formattedLabel().c_str()));
     return;
   }
-  GetProcs().computePassEncoderWriteTimestamp(
-      GetHandle(), querySet->GetHandle(), queryIndex);
+  GetHandle().WriteTimestamp(querySet->GetHandle(), queryIndex);
 }
 
 }  // namespace blink

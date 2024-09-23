@@ -346,17 +346,6 @@ class OsDiagnosticsRunNvmeSelfTestRoutineFunction
   void RunIfAllowed() override;
 };
 
-class OsDiagnosticsRunNvmeWearLevelRoutineFunction
-    : public DiagnosticsApiRunRoutineFunctionBase {
-  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runNvmeWearLevelRoutine",
-                             OS_DIAGNOSTICS_RUNNVMEWEARLEVELROUTINE)
- private:
-  ~OsDiagnosticsRunNvmeWearLevelRoutineFunction() override = default;
-
-  // BaseTelemetryExtensionApiGuardFunction:
-  void RunIfAllowed() override;
-};
-
 class OsDiagnosticsRunSensitiveSensorRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runSensitiveSensorRoutine",
@@ -436,6 +425,16 @@ class OsDiagnosticsRunFanRoutineFunction
 
 /****************** DIAGNOSTICS API V2 ******************/
 
+class OsDiagnosticsCreateRoutineFunction : public DiagnosticsApiFunctionBaseV2 {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.createRoutine",
+                             OS_DIAGNOSTICS_CREATEROUTINE)
+ private:
+  ~OsDiagnosticsCreateRoutineFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsCreateMemoryRoutineFunction
     : public DiagnosticsApiFunctionBaseV2 {
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.createMemoryRoutine",
@@ -487,6 +486,30 @@ class OsDiagnosticsCancelRoutineFunction : public DiagnosticsApiFunctionBaseV2 {
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
+};
+
+class OsDiagnosticsReplyToRoutineInquiryFunction
+    : public DiagnosticsApiFunctionBaseV2 {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.replyToRoutineInquiry",
+                             OS_DIAGNOSTICS_REPLYTOROUTINEINQUIRY)
+ private:
+  ~OsDiagnosticsReplyToRoutineInquiryFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
+class OsDiagnosticsIsRoutineArgumentSupportedFunction
+    : public DiagnosticsApiFunctionBaseV2 {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.isRoutineArgumentSupported",
+                             OS_DIAGNOSTICS_ISROUTINEARGUMENTSUPPORTED)
+ private:
+  ~OsDiagnosticsIsRoutineArgumentSupportedFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(crosapi::mojom::TelemetryExtensionSupportStatusPtr result);
 };
 
 class OsDiagnosticsIsMemoryRoutineArgumentSupportedFunction

@@ -5,8 +5,8 @@
 #include "remoting/client/notification/notification_client.h"
 
 #include <memory>
-
 #include <optional>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"

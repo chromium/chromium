@@ -105,7 +105,8 @@ IdentifiabilityStudySettings::IdentifiabilityStudySettings(
     std::unique_ptr<IdentifiabilityStudySettingsProvider> provider)
     : provider_(std::move(provider)),
       is_enabled_(provider_->IsActive()),
-      is_any_surface_or_type_blocked_(provider_->IsAnyTypeOrSurfaceBlocked()) {}
+      is_any_surface_or_type_blocked_(provider_->IsAnyTypeOrSurfaceBlocked()),
+      is_meta_experiment_active_(provider_->IsMetaExperimentActive()) {}
 
 IdentifiabilityStudySettings::~IdentifiabilityStudySettings() = default;
 
@@ -125,7 +126,7 @@ void IdentifiabilityStudySettings::ResetStateForTesting() {
 }
 
 bool IdentifiabilityStudySettings::IsActive() const {
-  return is_enabled_;
+  return is_enabled_ || is_meta_experiment_active_;
 }
 
 bool IdentifiabilityStudySettings::ShouldSampleWebFeature(
@@ -136,33 +137,51 @@ bool IdentifiabilityStudySettings::ShouldSampleWebFeature(
 
 bool IdentifiabilityStudySettings::ShouldSampleSurface(
     IdentifiableSurface surface) const {
-  if (LIKELY(!ShouldSampleAnything()))
+  if (!ShouldSampleAnything()) [[likely]] {
     return false;
+  }
 
-  if (LIKELY(!is_any_surface_or_type_blocked_))
+  if (!is_any_surface_or_type_blocked_) [[likely]] {
     return true;
+  }
+
+  if (is_meta_experiment_active_) {
+    return true;
+  }
 
   return provider_->IsSurfaceAllowed(surface);
 }
 
 bool IdentifiabilityStudySettings::ShouldSampleType(
     IdentifiableSurface::Type type) const {
-  if (LIKELY(!ShouldSampleAnything()))
+  if (!ShouldSampleAnything()) [[likely]] {
     return false;
+  }
 
-  if (LIKELY(!is_any_surface_or_type_blocked_))
+  if (!is_any_surface_or_type_blocked_) [[likely]] {
     return true;
+  }
+
+  if (is_meta_experiment_active_) {
+    return true;
+  }
 
   return provider_->IsTypeAllowed(type);
 }
 
 bool IdentifiabilityStudySettings::ShouldSampleAnyType(
     std::initializer_list<IdentifiableSurface::Type> types) const {
-  if (LIKELY(!ShouldSampleAnything()))
+  if (!ShouldSampleAnything()) [[likely]] {
     return false;
+  }
 
-  if (LIKELY(!is_any_surface_or_type_blocked_))
+  if (!is_any_surface_or_type_blocked_) [[likely]] {
     return true;
+  }
+
+  if (is_meta_experiment_active_) {
+    return true;
+  }
 
   for (IdentifiableSurface::Type type : types) {
     if (provider_->IsTypeAllowed(type))

@@ -10,13 +10,13 @@
 #include "base/memory/raw_ref.h"
 #include "components/sync/engine/cycle/nudge_tracker.h"
 #include "components/sync/engine/cycle/status_controller.h"
+#include "components/sync/engine/data_type_registry.h"
 #include "components/sync/engine/events/protocol_event.h"
-#include "components/sync/engine/model_type_registry.h"
-#include "components/sync/protocol/sync_enums.pb.h"
 
 namespace sync_pb {
 class GetUpdatesMessage;
 class ClientToServerMessage;
+enum SyncEnums_GetUpdatesOrigin : int;
 }  // namespace sync_pb
 
 namespace syncer {
@@ -73,7 +73,7 @@ class NormalGetUpdatesDelegate : public GetUpdatesDelegate {
 class ConfigureGetUpdatesDelegate : public GetUpdatesDelegate {
  public:
   explicit ConfigureGetUpdatesDelegate(
-      sync_pb::SyncEnums::GetUpdatesOrigin origin);
+      sync_pb::SyncEnums_GetUpdatesOrigin origin);
 
   ConfigureGetUpdatesDelegate(const ConfigureGetUpdatesDelegate&) = delete;
   ConfigureGetUpdatesDelegate& operator=(const ConfigureGetUpdatesDelegate&) =
@@ -92,7 +92,7 @@ class ConfigureGetUpdatesDelegate : public GetUpdatesDelegate {
   bool IsNotificationInfoRequired() const override;
 
  private:
-  const sync_pb::SyncEnums::GetUpdatesOrigin origin_;
+  const sync_pb::SyncEnums_GetUpdatesOrigin origin_;
 };
 
 // Functionality specific to the poll GetUpdate request.

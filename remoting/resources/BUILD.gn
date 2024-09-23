@@ -38,14 +38,6 @@ action("verify_resources") {
          ] + rebase_path(sources_to_verify, root_build_dir)
 }
 
-if (is_android) {
-  android_string_outputs =
-      [ "remoting/android/res/values/remoting_strings.xml" ]
-  android_string_outputs += process_file_template(
-          remoting_android_locales,
-          [ "remoting/android/res/values-{{source_name_part}}/remoting_strings.xml" ])
-}
-
 grit("strings") {
   source = "remoting_strings.grd"
   output_name = "remoting_strings"
@@ -64,21 +56,8 @@ grit("strings") {
 
   outputs += remoting_resources_locale_files
 
-  if (is_android) {
-    outputs += android_string_outputs
-  }
-
   if (is_official_build) {
     defines = [ "_official_build" ]
-  }
-}
-
-if (is_android) {
-  java_strings_grd_prebuilt("strings_java") {
-    grit_output_dir = "$root_gen_dir/remoting/android/res"
-    generated_files =
-        rebase_path(android_string_outputs, "remoting/android/res", ".")
-    deps = [ ":strings" ]
   }
 }
 

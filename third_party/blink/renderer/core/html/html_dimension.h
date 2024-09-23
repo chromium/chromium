@@ -33,8 +33,11 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -71,8 +74,8 @@ class HTMLDimension {
   double value_;
 };
 
-CORE_EXPORT Vector<HTMLDimension> ParseListOfDimensions(const String&);
-CORE_EXPORT bool ParseDimensionValue(const String&, HTMLDimension&);
+CORE_EXPORT Vector<HTMLDimension> ParseListOfDimensions(const WTF::String&);
+CORE_EXPORT bool ParseDimensionValue(const WTF::String&, HTMLDimension&);
 
 }  // namespace blink
 

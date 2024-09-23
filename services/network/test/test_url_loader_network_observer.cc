@@ -39,7 +39,7 @@ void TestURLLoaderNetworkObserver::OnCertificateRequested(
 
 void TestURLLoaderNetworkObserver::OnAuthRequired(
     const std::optional<base::UnguessableToken>& window_id,
-    uint32_t request_id,
+    int32_t request_id,
     const GURL& url,
     bool first_auth_attempt,
     const net::AuthChallengeInfo& auth_info,
@@ -88,5 +88,8 @@ void TestURLLoaderNetworkObserver::Clone(
     mojo::PendingReceiver<URLLoaderNetworkServiceObserver> observer) {
   receivers_.Add(this, std::move(observer));
 }
+
+void TestURLLoaderNetworkObserver::OnWebSocketConnectedToPrivateNetwork(
+    network::mojom::IPAddressSpace ip_address_space) {}
 
 }  // namespace network

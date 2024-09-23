@@ -9,7 +9,9 @@
           "FullscreenAlertEnabled": false
         },
         "prefs": {
-          "ash.fullscreen_alert_enabled": {}
+          "ash.fullscreen_alert_enabled": {
+            "value": false
+          }
         }
       }
     ]

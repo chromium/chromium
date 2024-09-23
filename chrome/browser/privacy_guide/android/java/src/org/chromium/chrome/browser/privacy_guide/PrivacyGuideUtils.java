@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.privacy_guide;
 import android.content.Context;
 import android.content.Intent;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
@@ -34,7 +35,18 @@ class PrivacyGuideUtils {
 
     static boolean isHistorySyncEnabled(Profile profile) {
         Set<Integer> syncTypes = SyncServiceFactory.getForProfile(profile).getSelectedTypes();
-        return syncTypes.contains(UserSelectableType.HISTORY);
+
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            return syncTypes.contains(UserSelectableType.HISTORY);
+        }
+        // The toggle represents both History and Tabs.
+        // History and Tabs should usually have the same value, but in some
+        // cases they may not, e.g. if one of them is disabled by policy. In that
+        // case, show the toggle as on if at least one of them is enabled. The
+        // toggle should reflect the value of the non-disabled type.
+        return syncTypes.contains(UserSelectableType.HISTORY)
+                || syncTypes.contains(UserSelectableType.TABS);
     }
 
     static boolean isUserSignedIn(Profile profile) {
@@ -47,8 +59,12 @@ class PrivacyGuideUtils {
         return UserPrefs.get(profile).getBoolean(Pref.SEARCH_SUGGEST_ENABLED);
     }
 
-    static @SafeBrowsingState int getSafeBrowsingState() {
-        return SafeBrowsingBridge.getSafeBrowsingState();
+    static boolean isAdTopicsEnabled(Profile profile) {
+        return UserPrefs.get(profile).getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED);
+    }
+
+    static @SafeBrowsingState int getSafeBrowsingState(Profile profile) {
+        return new SafeBrowsingBridge(profile).getSafeBrowsingState();
     }
 
     static @CookieControlsMode int getCookieControlsMode(Profile profile) {
@@ -56,9 +72,9 @@ class PrivacyGuideUtils {
     }
 
     /**
-     * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using
-     * {@link org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
-     * TODO(crbug.com/1181700): Update when LaunchIntentDispatcher is (partially-)modularized.
+     * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using {@link
+     * org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
+     * TODO(crbug.com/40751023): Update when LaunchIntentDispatcher is (partially-)modularized.
      */
     public interface CustomTabIntentHelper {
         /**

@@ -5,20 +5,22 @@
 #ifndef IOS_CHROME_BROWSER_PRERENDER_MODEL_PRERENDER_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_PRERENDER_MODEL_PRERENDER_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class PrerenderService;
 
 // Singleton that creates the PrerenderService and associates that service with
-// ChromeBrowserState.
+// profile.
 class PrerenderServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static PrerenderService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static PrerenderService* GetForBrowserState(ProfileIOS* profile);
+
+  static PrerenderService* GetForProfile(ProfileIOS* profile);
   static PrerenderServiceFactory* GetInstance();
 
   // Returns the default factory, useful in tests where it's null by default.

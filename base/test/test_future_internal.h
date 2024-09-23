@@ -10,20 +10,17 @@
 
 namespace base::test::internal {
 
-// Helper to only implement a method if the future holds one or more values
+// Helper to only implement a method if the future holds one or more values.
 template <typename Tuple>
-using EnableIfOneOrMoreValues =
-    std::enable_if_t<(std::tuple_size<Tuple>::value > 0), bool>;
+concept IsNonEmptyTuple = std::tuple_size<Tuple>::value > 0;
 
-// Helper to only implement a method if the future holds a single value
+// Helper to only implement a method if the future holds a single value.
 template <typename Tuple>
-using EnableIfSingleValue =
-    std::enable_if_t<(std::tuple_size<Tuple>::value == 1), bool>;
+concept IsSingleValuedTuple = std::tuple_size<Tuple>::value == 1;
 
-// Helper to only implement a method if the future holds multiple values
+// Helper to only implement a method if the future holds multiple values.
 template <typename Tuple>
-using EnableIfMultiValue =
-    std::enable_if_t<(std::tuple_size<Tuple>::value > 1), bool>;
+concept IsMultiValuedTuple = std::tuple_size<Tuple>::value > 1;
 
 }  // namespace base::test::internal
 

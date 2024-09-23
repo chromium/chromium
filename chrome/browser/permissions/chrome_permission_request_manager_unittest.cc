@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include <optional>
@@ -56,7 +61,8 @@
 const double kTestEngagementScore = 29;
 
 class ChromePermissionRequestManagerTest
-    : public ChromeRenderViewHostTestHarness {
+    : public ChromeRenderViewHostTestHarness,
+      public testing::WithParamInterface<std::pair<std::string, bool>> {
  public:
   ChromePermissionRequestManagerTest()
       : ChromeRenderViewHostTestHarness(
@@ -125,6 +131,12 @@ class ChromePermissionRequestManagerTest
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetKioskBrowserPermissionsAllowedForOrigins(const std::string& origin) {
+    profile()->GetPrefs()->SetList(
+        prefs::kKioskBrowserPermissionsAllowedForOrigins,
+        base::Value::List().Append(std::move(origin)));
+  }
+
   std::unique_ptr<permissions::MockPermissionRequest> MakeRequestInWebKioskMode(
       const GURL& url,
       const GURL& app_url) {
@@ -248,7 +260,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForMergedAcceptedBubble) {
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptShown,
       static_cast<base::HistogramBase::Sample>(
-          permissions::RequestTypeForUma::MULTIPLE),
+          permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE),
       1);
   histograms.ExpectTotalCount(
       permissions::PermissionUmaUtil::kPermissionsPromptShownGesture, 0);
@@ -262,7 +274,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForMergedAcceptedBubble) {
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptAccepted,
       static_cast<base::HistogramBase::Sample>(
-          permissions::RequestTypeForUma::MULTIPLE),
+          permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE),
       1);
   histograms.ExpectUniqueSample(
       "Permissions.Engagement.Accepted.AudioAndVideoCapture",
@@ -285,7 +297,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForMergedDeniedBubble) {
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptDenied,
       static_cast<base::HistogramBase::Sample>(
-          permissions::RequestTypeForUma::MULTIPLE),
+          permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE),
       1);
   histograms.ExpectUniqueSample(
       "Permissions.Engagement.Denied.AudioAndVideoCapture",
@@ -694,6 +706,80 @@ TEST_F(ChromePermissionRequestManagerTest, TestWebKioskModeDifferentOrigin) {
   EXPECT_FALSE(request->granted());
   EXPECT_TRUE(request->finished());
 }
+
+TEST_F(ChromePermissionRequestManagerTest,
+       TestWebKioskModeDifferentOriginWhenFeatureIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      permissions::features::kAllowMultipleOriginsForWebKioskPermissions);
+  SetKioskBrowserPermissionsAllowedForOrigins("https://example.com/page");
+
+  auto request =
+      MakeRequestInWebKioskMode(/*url*/ GURL("https://example.com/page"),
+                                /*app_url*/ GURL("https://google.com/launch"));
+
+  WaitForBubbleToBeShown();
+
+  // It should not be granted as the origin is allowlisted.
+  EXPECT_EQ(request->granted(), false);
+  EXPECT_TRUE(request->finished());
+}
+
+TEST_P(ChromePermissionRequestManagerTest,
+       TestWebKioskModeDifferentOriginWhenAllowedByFeature) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams feature_params;
+  feature_params
+      [permissions::feature_params::kWebKioskBrowserPermissionsAllowlist.name] =
+          GetParam().first;
+  feature_list.InitAndEnableFeatureWithParameters(
+      permissions::features::kAllowMultipleOriginsForWebKioskPermissions,
+      feature_params);
+
+  auto request =
+      MakeRequestInWebKioskMode(/*url*/ GURL("https://example.com/page"),
+                                /*app_url*/ GURL("https://google.com/launch"));
+
+  WaitForBubbleToBeShown();
+
+  // It should be granted as the origin is allowlisted.
+  EXPECT_EQ(request->granted(), GetParam().second);
+  EXPECT_TRUE(request->finished());
+}
+
+TEST_P(ChromePermissionRequestManagerTest,
+       TestWebKioskModeDifferentOriginAllowedByKioskBrowserPref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      permissions::features::kAllowMultipleOriginsForWebKioskPermissions);
+  SetKioskBrowserPermissionsAllowedForOrigins(GetParam().first);
+
+  auto request =
+      MakeRequestInWebKioskMode(/*url*/ GURL("https://example.com/page"),
+                                /*app_url*/ GURL("https://google.com/launch"));
+
+  WaitForBubbleToBeShown();
+
+  // It should be granted as the origin is allowlisted.
+  EXPECT_EQ(request->granted(), GetParam().second);
+  EXPECT_TRUE(request->finished());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TestWebKioskModeDifferentOriginWhenAllowedByFeature,
+    ChromePermissionRequestManagerTest,
+    testing::ValuesIn(
+        {std::pair<std::string, bool>("*", false),
+         std::pair<std::string, bool>(".example.com", false),
+         std::pair<std::string, bool>("example.", false),
+         std::pair<std::string, bool>("file://example*", false),
+         std::pair<std::string, bool>("invalid-example.com", false),
+         std::pair<std::string, bool>("https://example.com", true),
+         std::pair<std::string, bool>("https://example.com/sample", true),
+         std::pair<std::string, bool>("example.com", true),
+         std::pair<std::string, bool>("*://example.com:*/", true),
+         std::pair<std::string, bool>("[*.]example.com", true)}));
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class ChromePermissionRequestManagerAdaptiveQuietUiActivationTest

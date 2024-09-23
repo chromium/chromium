@@ -6,9 +6,9 @@
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_OMAHA_OMAHA_API_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "url/gurl.h"
 
 namespace ios {
@@ -28,7 +28,7 @@ std::string GetOmahaApplicationId();
 // Allows setting extra attributes in the omaha request. This function can be
 // called multiple time per request. Only the attributes relevant for `element`
 // should be set.
-void SetOmahaExtraAttributes(base::StringPiece element, AttributeSetter setter);
+void SetOmahaExtraAttributes(std::string_view element, AttributeSetter setter);
 
 }  // namespace provider
 }  // namespace ios

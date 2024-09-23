@@ -10,10 +10,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece.h"
 #include "base/test/test_future.h"
 #include "base/token.h"
 #include "content/public/browser/web_contents.h"
@@ -92,7 +92,7 @@ class MockRestrictedUDPSocket : public network::TestRestrictedUDPSocket {
 class MockNetworkContext : public network::TestNetworkContextWithHostResolver {
  public:
   MockNetworkContext();
-  explicit MockNetworkContext(base::StringPiece host_mapping_rules);
+  explicit MockNetworkContext(std::string_view host_mapping_rules);
 
   MockNetworkContext(const MockNetworkContext&) = delete;
   MockNetworkContext& operator=(const MockNetworkContext&) = delete;
@@ -182,9 +182,8 @@ class IsolatedWebAppContentBrowserClient
                                              const GURL& url) override;
 
   std::optional<blink::ParsedPermissionsPolicy>
-  GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
-      const url::Origin& app_origin) override;
+  GetPermissionsPolicyForIsolatedWebApp(WebContents* web_contents,
+                                        const url::Origin& app_origin) override;
 
  private:
   url::Origin isolated_app_origin_;

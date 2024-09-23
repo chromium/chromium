@@ -124,7 +124,6 @@ kern_return_t UniversalExceptionRaise(exception_behavior_t behavior,
 
     default:
       NOTREACHED();
-      return KERN_INVALID_ARGUMENT;
   }
 }
 

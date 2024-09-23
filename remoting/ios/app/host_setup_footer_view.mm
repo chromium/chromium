@@ -17,7 +17,7 @@ static const CGFloat kTopPadding = 6.f;
 @implementation HostSetupFooterView
 
 - (instancetype)initWithFrame:(CGRect)frame {
-  if (self = [super initWithFrame:frame]) {
+  if ((self = [super initWithFrame:frame])) {
     [self commonInit];
   }
   return self;

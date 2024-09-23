@@ -14,9 +14,12 @@
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,8 +28,18 @@ namespace optimization_guide {
 
 namespace {
 
-TEST(OptimizationGuideFeaturesTest,
-     TestGetOptimizationGuideServiceGetHintsURLHTTPSOnly) {
+class OptimizationGuideFeaturesTest : public testing::Test {
+ public:
+  void SetUp() override {
+    model_execution::prefs::RegisterProfilePrefs(prefs_.registry());
+  }
+
+ private:
+  TestingPrefServiceSimple prefs_;
+};
+
+TEST_F(OptimizationGuideFeaturesTest,
+       TestGetOptimizationGuideServiceGetHintsURLHTTPSOnly) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -39,8 +52,8 @@ TEST(OptimizationGuideFeaturesTest,
       url::kHttpsScheme));
 }
 
-TEST(OptimizationGuideFeaturesTest,
-     TestGetOptimizationGuideServiceGetHintsURLViaFinch) {
+TEST_F(OptimizationGuideFeaturesTest,
+       TestGetOptimizationGuideServiceGetHintsURLViaFinch) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   std::string optimization_guide_service_url = "https://finchserver.com/";
@@ -52,49 +65,7 @@ TEST(OptimizationGuideFeaturesTest,
             optimization_guide_service_url);
 }
 
-TEST(OptimizationGuideFeaturesTest, InvalidPageContentRAPPORMetrics) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPageContentAnnotations,
-      {{"num_bits_for_rappor_metrics", "-1"},
-       {"noise_prob_for_rappor_metrics", "-.5"}});
-  EXPECT_EQ(1, features::NumBitsForRAPPORMetrics());
-  EXPECT_EQ(0.0, features::NoiseProbabilityForRAPPORMetrics());
-}
-
-TEST(OptimizationGuideFeaturesTest, ValidPageContentRAPPORMetrics) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPageContentAnnotations,
-      {{"num_bits_for_rappor_metrics", "2"},
-       {"noise_prob_for_rappor_metrics", ".2"}});
-  EXPECT_EQ(2, features::NumBitsForRAPPORMetrics());
-  EXPECT_EQ(.2, features::NoiseProbabilityForRAPPORMetrics());
-}
-
-TEST(OptimizationGuideFeaturesTest,
-     ShouldExecutePageEntitiesModelOnPageContentDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndDisableFeature(
-      features::kPageEntitiesPageContentAnnotations);
-
-  EXPECT_FALSE(features::ShouldExecutePageEntitiesModelOnPageContent("en-US"));
-}
-
-TEST(OptimizationGuideFeaturesTest,
-     ShouldExecutePageEntitiesModelOnPageContentEmptyAllowlist) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndEnableFeature(
-      features::kPageEntitiesPageContentAnnotations);
-
-  EXPECT_TRUE(features::ShouldExecutePageEntitiesModelOnPageContent("en-US"));
-}
-
-TEST(OptimizationGuideFeaturesTest, ModelQualityLoggingDefault) {
+TEST_F(OptimizationGuideFeaturesTest, ModelQualityLoggingDefault) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeature(features::kModelQualityLogging);
@@ -102,145 +73,70 @@ TEST(OptimizationGuideFeaturesTest, ModelQualityLoggingDefault) {
   EXPECT_TRUE(features::IsModelQualityLoggingEnabled());
 
   // Compose, wallpaper search and tab organization should be enabled by
-  // default whereas test feature should be disabled.
+  // default whereas product specifications should be disabled by default.
+  MqlsFeatureRegistry& registry = MqlsFeatureRegistry::GetInstance();
   EXPECT_TRUE(features::IsModelQualityLoggingEnabledForFeature(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE));
-  EXPECT_TRUE(features::IsModelQualityLoggingEnabledForFeature(
-      proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
-  EXPECT_TRUE(features::IsModelQualityLoggingEnabledForFeature(
-      proto::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
-  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      proto::MODEL_EXECUTION_FEATURE_TEST));
+      registry.GetFeature(proto::LogAiDataRequest::FeatureCase::kCompose)));
+  EXPECT_TRUE(
+      features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kTabOrganization)));
+  EXPECT_TRUE(
+      features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kWallpaperSearch)));
+  EXPECT_FALSE(
+      features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kProductSpecifications)));
 }
 
-TEST(OptimizationGuideFeaturesTest, ComposeModelQualityLoggingDisabled) {
+TEST_F(OptimizationGuideFeaturesTest,
+       ModelQualityLoggingAlwaysDisabledForTestAndUnspecifiedFeatures) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kModelQualityLogging,
-      {{"model_execution_feature_compose", "false"},
-       {"model_execution_feature_wallpaper_search", "false"},
-       {"model_execution_feature_tab_organization", "false"}});
+      {{"model_execution_feature_test", "true"},
+       {"model_execution_feature_unspecified", "true"}});
 
   EXPECT_TRUE(features::IsModelQualityLoggingEnabled());
-
-  // All features should be disabled for logging.
-  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE));
-  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
-  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      proto::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
-  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      proto::MODEL_EXECUTION_FEATURE_TEST));
 }
 
-TEST(OptimizationGuideFeaturesTest, ModelQualityLoggingDisabled) {
+TEST_F(OptimizationGuideFeaturesTest, ComposeModelQualityLoggingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  MqlsFeatureRegistry& registry = MqlsFeatureRegistry::GetInstance();
+  const MqlsFeatureMetadata* metadata =
+      registry.GetFeature(proto::LogAiDataRequest::FeatureCase::kCompose);
+
+  scoped_feature_list.InitAndDisableFeature(*metadata->field_trial_feature());
+
+  EXPECT_TRUE(features::IsModelQualityLoggingEnabled());
+  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(metadata));
+  // TabOrganization should still be enabled.
+  EXPECT_TRUE(
+      features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kTabOrganization)));
+}
+
+TEST_F(OptimizationGuideFeaturesTest, ModelQualityLoggingDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndDisableFeature(features::kModelQualityLogging);
 
   // All features logging should be disabled if ModelQualityLogging is disabled.
   EXPECT_FALSE(features::IsModelQualityLoggingEnabled());
+  MqlsFeatureRegistry& registry = MqlsFeatureRegistry::GetInstance();
   EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      proto::MODEL_EXECUTION_FEATURE_COMPOSE));
-  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      proto::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
-  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      proto::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
-  EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
-      proto::MODEL_EXECUTION_FEATURE_TEST));
-}
-
-TEST(OptimizationGuideFeaturesTest,
-     ShouldExecutePageEntitiesModelOnPageContentWithAllowlist) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPageEntitiesPageContentAnnotations,
-      {{"supported_locales", "en,zh-TW"}});
-
-  EXPECT_TRUE(features::ShouldExecutePageEntitiesModelOnPageContent("en-US"));
-  EXPECT_FALSE(features::ShouldExecutePageEntitiesModelOnPageContent(""));
-  EXPECT_FALSE(features::ShouldExecutePageEntitiesModelOnPageContent("zh-CN"));
-}
-
-TEST(OptimizationGuideFeaturesTest,
-     ShouldExecutePageVisibilityModelOnPageContentDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndDisableFeature(
-      features::kPageVisibilityPageContentAnnotations);
-
+      registry.GetFeature(proto::LogAiDataRequest::FeatureCase::kCompose)));
   EXPECT_FALSE(
-      features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
-}
-
-TEST(OptimizationGuideFeaturesTest,
-     ShouldExecutePageVisibilityModelOnPageContentEmptyAllowlist) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndEnableFeature(
-      features::kPageVisibilityPageContentAnnotations);
-
-  // These are the default enabled values.
-  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en"));
-  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-AU"));
-  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-CA"));
-  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-GB"));
-  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
-
+      features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kTabOrganization)));
   EXPECT_FALSE(
-      features::ShouldExecutePageVisibilityModelOnPageContent("zh-CN"));
-  EXPECT_FALSE(features::ShouldExecutePageVisibilityModelOnPageContent("fr"));
-  EXPECT_FALSE(features::ShouldExecutePageVisibilityModelOnPageContent(""));
+      features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
+          proto::LogAiDataRequest::FeatureCase::kWallpaperSearch)));
 }
 
-TEST(OptimizationGuideFeaturesTest,
-     ShouldExecutePageVisibilityModelOnPageContentWithAllowlist) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPageVisibilityPageContentAnnotations,
-      {{"supported_locales", "en,zh-TW"}});
-
-  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
-  EXPECT_FALSE(features::ShouldExecutePageVisibilityModelOnPageContent(""));
-  EXPECT_FALSE(
-      features::ShouldExecutePageVisibilityModelOnPageContent("zh-CN"));
-}
-
-TEST(OptimizationGuideFeaturesTest, RemotePageMetadataEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kRemotePageMetadata,
-      {{"supported_locales", "en-US,en-CA"}, {"supported_countries", "US,CA"}});
-
-  EXPECT_TRUE(features::RemotePageMetadataEnabled("en-US", "CA"));
-  EXPECT_FALSE(features::RemotePageMetadataEnabled("", ""));
-  EXPECT_FALSE(features::RemotePageMetadataEnabled("en-US", "badcountry"));
-  EXPECT_FALSE(features::RemotePageMetadataEnabled("badlocale", "US"));
-}
-
-TEST(OptimizationGuideFeaturesTest, ShouldPersistSalientImageMetadata) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPageContentAnnotationsPersistSalientImageMetadata,
-      {{"supported_locales", "en-US,en-CA"}, {"supported_countries", "US,CA"}});
-
-  EXPECT_TRUE(features::ShouldPersistSalientImageMetadata("en-US", "CA"));
-  // Tests case-insensitivity.
-  EXPECT_TRUE(features::ShouldPersistSalientImageMetadata("en-US", "cA"));
-  EXPECT_FALSE(features::ShouldPersistSalientImageMetadata("", ""));
-  EXPECT_FALSE(
-      features::ShouldPersistSalientImageMetadata("en-US", "badcountry"));
-  EXPECT_FALSE(features::ShouldPersistSalientImageMetadata("badlocale", "US"));
-}
-
-TEST(OptimizationGuideFeaturesTest,
-     OptimizationGuidePersonalizedFetchingDefaultBehaviour) {
+TEST_F(OptimizationGuideFeaturesTest,
+       OptimizationGuidePersonalizedFetchingDefaultBehaviour) {
   features::RequestContextSet allowedContexts =
       features::GetAllowedContextsForPersonalizedMetadata();
 
@@ -251,8 +147,8 @@ TEST(OptimizationGuideFeaturesTest,
       optimization_guide::proto::CONTEXT_PAGE_INSIGHTS_HUB));
 }
 
-TEST(OptimizationGuideFeaturesTest,
-     OptimizationGuidePersonalizedFetchingPopulatedParam) {
+TEST_F(OptimizationGuideFeaturesTest,
+       OptimizationGuidePersonalizedFetchingPopulatedParam) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuidePersonalizedFetching,
@@ -274,8 +170,8 @@ TEST(OptimizationGuideFeaturesTest,
       allowedContexts.Has(optimization_guide::proto::CONTEXT_BOOKMARKS));
 }
 
-TEST(OptimizationGuideFeaturesTest,
-     OptimizationGuidePersonalizedFetchingEmptyParam) {
+TEST_F(OptimizationGuideFeaturesTest,
+       OptimizationGuidePersonalizedFetchingEmptyParam) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuidePersonalizedFetching,
@@ -295,7 +191,7 @@ TEST(OptimizationGuideFeaturesTest,
       optimization_guide::proto::CONTEXT_PAGE_INSIGHTS_HUB));
 }
 
-TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
+TEST_F(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
   struct TestCase {
     std::string label;
     bool enabled;
@@ -429,7 +325,7 @@ TEST(OptimizationGuideFeaturesTest, TestOverrideNumThreadsForOptTarget) {
   }
 }
 
-TEST(OptimizationGuideFeaturesTest, PredictionModelVersionInKillSwitch) {
+TEST_F(OptimizationGuideFeaturesTest, PredictionModelVersionInKillSwitch) {
   EXPECT_TRUE(features::GetPredictionModelVersionsInKillSwitch().empty());
   {
     base::test::ScopedFeatureList scoped_feature_list;
@@ -447,8 +343,8 @@ TEST(OptimizationGuideFeaturesTest, PredictionModelVersionInKillSwitch) {
   }
 }
 
-TEST(OptimizationGuideFeaturesTest,
-     IsPerformanceClassCompatibleWithOnDeviceModel) {
+TEST_F(OptimizationGuideFeaturesTest,
+       IsPerformanceClassCompatibleWithOnDeviceModel) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuideOnDeviceModel,
@@ -462,6 +358,28 @@ TEST(OptimizationGuideFeaturesTest,
       OnDeviceModelPerformanceClass::kHigh));
   EXPECT_TRUE(features::IsPerformanceClassCompatibleWithOnDeviceModel(
       OnDeviceModelPerformanceClass::kVeryHigh));
+}
+
+TEST_F(OptimizationGuideFeaturesTest, AllowedAdaptationRanks) {
+  // Default value
+  EXPECT_THAT(features::GetOnDeviceModelAllowedAdaptationRanks(),
+              testing::ElementsAre(32));
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kOptimizationGuideOnDeviceModel,
+        {{"allowed_adaptation_ranks", "16,32"}});
+    EXPECT_THAT(features::GetOnDeviceModelAllowedAdaptationRanks(),
+                testing::ElementsAre(16, 32));
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kOptimizationGuideOnDeviceModel,
+        {{"allowed_adaptation_ranks", "16,invalid,64"}});
+    EXPECT_THAT(features::GetOnDeviceModelAllowedAdaptationRanks(),
+                testing::ElementsAre(16, 64));
+  }
 }
 
 }  // namespace

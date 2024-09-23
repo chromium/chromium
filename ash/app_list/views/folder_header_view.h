@@ -42,7 +42,8 @@ class ASH_EXPORT FolderHeaderView : public views::View,
   bool is_tablet_mode() const { return is_tablet_mode_; }
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   views::Textfield* GetFolderNameViewForTest() const;

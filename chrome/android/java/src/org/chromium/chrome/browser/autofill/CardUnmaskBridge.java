@@ -9,9 +9,11 @@ import android.os.Handler;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.autofill.CardUnmaskPrompt.CardUnmaskPromptDelegate;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.url.GURL;
@@ -24,6 +26,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
 
     private CardUnmaskBridge(
             long nativeCardUnmaskPromptViewAndroid,
+            PersonalDataManager personalDataManager,
             String title,
             String instructions,
             int cardIconId,
@@ -53,6 +56,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
                     new CardUnmaskPrompt(
                             activity,
                             this,
+                            personalDataManager,
                             title,
                             instructions,
                             cardIconId,
@@ -77,6 +81,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
     @CalledByNative
     private static CardUnmaskBridge create(
             long nativeUnmaskPrompt,
+            Profile profile,
             String title,
             String instructions,
             int cardIconId,
@@ -96,6 +101,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
             WindowAndroid windowAndroid) {
         return new CardUnmaskBridge(
                 nativeUnmaskPrompt,
+                PersonalDataManagerFactory.getForProfile(profile),
                 title,
                 instructions,
                 cardIconId,
@@ -214,14 +220,14 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
         boolean checkUserInputValidity(
                 long nativeCardUnmaskPromptViewAndroid,
                 CardUnmaskBridge caller,
-                String userResponse);
+                @JniType("std::u16string") String userResponse);
 
         void onUserInput(
                 long nativeCardUnmaskPromptViewAndroid,
                 CardUnmaskBridge caller,
-                String cvc,
-                String month,
-                String year,
+                @JniType("std::u16string") String cvc,
+                @JniType("std::u16string") String month,
+                @JniType("std::u16string") String year,
                 boolean enableFidoAuth,
                 boolean wasCheckboxVisible);
 

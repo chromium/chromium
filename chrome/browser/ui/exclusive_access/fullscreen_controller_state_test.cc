@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller_state_test.h"
 
 #include <memory.h>
@@ -62,50 +67,53 @@ FullscreenControllerStateTest::FullscreenControllerStateTest() {
       {
           // STATE_TO_NORMAL:
           STATE_TO_BROWSER_FULLSCREEN,  // Event TOGGLE_FULLSCREEN
-          // TODO(crbug.com/154196) Should be a route back to TAB
-          STATE_TO_NORMAL,              // Event ENTER_TAB_FULLSCREEN
-          STATE_TO_NORMAL,              // Event EXIT_TAB_FULLSCREEN
-          STATE_TO_NORMAL,              // Event BUBBLE_EXIT_LINK
-          STATE_NORMAL,                 // Event WINDOW_CHANGE
+                                        // TODO(crbug.com/40951066) Should be a
+                                        // route back to TAB
+          STATE_TO_NORMAL,  // Event ENTER_TAB_FULLSCREEN
+          STATE_TO_NORMAL,  // Event EXIT_TAB_FULLSCREEN
+          STATE_TO_NORMAL,  // Event BUBBLE_EXIT_LINK
+          STATE_NORMAL,     // Event WINDOW_CHANGE
       },
       {
           // STATE_TO_BROWSER_FULLSCREEN:
-          STATE_TO_NORMAL,              // Event TOGGLE_FULLSCREEN
-          // TODO(crbug.com/154196): Should be a route to TAB_BROWSER
+          STATE_TO_NORMAL,  // Event TOGGLE_FULLSCREEN
+                            // TODO(crbug.com/40951066): Should be a route to
+                            // TAB_BROWSER
           STATE_TO_BROWSER_FULLSCREEN,  // Event ENTER_TAB_FULLSCREEN
           STATE_TO_BROWSER_FULLSCREEN,  // Event EXIT_TAB_FULLSCREEN
 #if BUILDFLAG(IS_MAC)
                                         // Mac window reports fullscreen
                                         // immediately and an exit triggers
                                         // exit.
-          STATE_TO_NORMAL,              // Event BUBBLE_EXIT_LINK
+          STATE_TO_NORMAL,  // Event BUBBLE_EXIT_LINK
 #else
           STATE_TO_BROWSER_FULLSCREEN,  // Event BUBBLE_EXIT_LINK
 #endif
-          STATE_BROWSER_FULLSCREEN,     // Event WINDOW_CHANGE
+          STATE_BROWSER_FULLSCREEN,  // Event WINDOW_CHANGE
       },
       {
           // STATE_TO_TAB_FULLSCREEN:
-          // TODO(crbug.com/154196): Should be a route to TAB_BROWSER
-          STATE_TO_TAB_FULLSCREEN,      // Event TOGGLE_FULLSCREEN
-          STATE_TO_TAB_FULLSCREEN,      // Event ENTER_TAB_FULLSCREEN
+          // TODO(crbug.com/40951066): Should be a route to TAB_BROWSER
+          STATE_TO_TAB_FULLSCREEN,  // Event TOGGLE_FULLSCREEN
+          STATE_TO_TAB_FULLSCREEN,  // Event ENTER_TAB_FULLSCREEN
 #if BUILDFLAG(IS_MAC)
-                                        // Mac runs as expected due to a forced
-                                        // NotifyTabOfExitIfNecessary();
-          STATE_TO_NORMAL,              // Event EXIT_TAB_FULLSCREEN
+                                    // Mac runs as expected due to a forced
+                                    // NotifyTabOfExitIfNecessary();
+          STATE_TO_NORMAL,  // Event EXIT_TAB_FULLSCREEN
 #else
-          // TODO(crbug.com/154196): Should be a route back to NORMAL
+                                    // TODO(crbug.com/40951066): Should be a
+                                    // route back to NORMAL
           STATE_TO_BROWSER_FULLSCREEN,  // Event EXIT_TAB_FULLSCREEN
 #endif
 #if BUILDFLAG(IS_MAC)
-                                        // Mac window reports fullscreen
-                                        // immediately and an exit triggers
-                                        // exit.
-          STATE_TO_NORMAL,              // Event BUBBLE_EXIT_LINK
+                            // Mac window reports fullscreen
+                            // immediately and an exit triggers
+                            // exit.
+          STATE_TO_NORMAL,  // Event BUBBLE_EXIT_LINK
 #else
-          STATE_TO_TAB_FULLSCREEN,      // Event BUBBLE_EXIT_LINK
+          STATE_TO_TAB_FULLSCREEN,  // Event BUBBLE_EXIT_LINK
 #endif
-          STATE_TAB_FULLSCREEN,         // Event WINDOW_CHANGE
+          STATE_TAB_FULLSCREEN,  // Event WINDOW_CHANGE
       },
   };
   static_assert(sizeof(transition_table_data) == sizeof(transition_table_),
@@ -150,7 +158,7 @@ const char* FullscreenControllerStateTest::GetStateString(State state) {
     ENUM_TO_STRING(STATE_TO_TAB_FULLSCREEN);
     ENUM_TO_STRING(STATE_INVALID);
     default:
-      NOTREACHED() << "No string for state " << state;
+      NOTREACHED_IN_MIGRATION() << "No string for state " << state;
       return "State-Unknown";
   }
 }
@@ -165,7 +173,7 @@ const char* FullscreenControllerStateTest::GetEventString(Event event) {
     ENUM_TO_STRING(WINDOW_CHANGE);
     ENUM_TO_STRING(EVENT_INVALID);
     default:
-      NOTREACHED() << "No string for event " << event;
+      NOTREACHED_IN_MIGRATION() << "No string for event " << event;
       return "Event-Unknown";
   }
 }
@@ -201,11 +209,11 @@ bool FullscreenControllerStateTest::TransitionAStepTowardState(
                                                           destination_state,
                                                           NUM_STATES);
   if (next.state == STATE_INVALID) {
-    NOTREACHED() << "TransitionAStepTowardState unable to transition. "
-        << "NextTransitionInShortestPath("
-        << GetStateString(source_state) << ", "
-        << GetStateString(destination_state) << ") returned STATE_INVALID."
-        << GetAndClearDebugLog();
+    NOTREACHED_IN_MIGRATION()
+        << "TransitionAStepTowardState unable to transition. "
+        << "NextTransitionInShortestPath(" << GetStateString(source_state)
+        << ", " << GetStateString(destination_state)
+        << ") returned STATE_INVALID." << GetAndClearDebugLog();
     return false;
   }
 
@@ -299,8 +307,9 @@ bool FullscreenControllerStateTest::InvokeEvent(Event event) {
       break;
 
     default:
-      NOTREACHED() << "InvokeEvent needs a handler for event "
-          << GetEventString(event) << GetAndClearDebugLog();
+      NOTREACHED_IN_MIGRATION()
+          << "InvokeEvent needs a handler for event " << GetEventString(event)
+          << GetAndClearDebugLog();
       return false;
   }
 
@@ -353,7 +362,7 @@ void FullscreenControllerStateTest::VerifyWindowState() {
       break;
 
     default:
-      NOTREACHED() << GetAndClearDebugLog();
+      NOTREACHED_IN_MIGRATION() << GetAndClearDebugLog();
   }
 }
 

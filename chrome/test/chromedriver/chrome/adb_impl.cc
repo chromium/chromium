@@ -7,6 +7,8 @@
 
 #include "chrome/test/chromedriver/chrome/adb_impl.h"
 
+#include <string_view>
+
 #include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -14,7 +16,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -288,11 +289,11 @@ Status AdbImpl::GetPidByName(const std::string& device_serial,
   if (!status.IsOk())
     return status;
 
-  for (const base::StringPiece& line : base::SplitStringPiece(
+  for (std::string_view line : base::SplitStringPiece(
            response, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    std::vector<base::StringPiece> tokens = base::SplitStringPiece(
-        line, base::kWhitespaceASCII,
-        base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::vector<std::string_view> tokens = base::SplitStringPiece(
+        line, base::kWhitespaceASCII, base::KEEP_WHITESPACE,
+        base::SPLIT_WANT_NONEMPTY);
     if (tokens.size() < 8 || tokens.size() > 10)
       continue;
     // The ps command on Android M+ does not always output a value for WCHAN,
@@ -322,9 +323,9 @@ Status AdbImpl::GetSocketByPattern(const std::string& device_serial,
   if (!status.IsOk())
     return status;
 
-  for (const base::StringPiece& line : base::SplitStringPiece(
+  for (std::string_view line : base::SplitStringPiece(
            response, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    std::vector<base::StringPiece> tokens = base::SplitStringPiece(
+    std::vector<std::string_view> tokens = base::SplitStringPiece(
         line, base::kWhitespaceASCII, base::TRIM_WHITESPACE,
         base::SPLIT_WANT_NONEMPTY);
     if (tokens.size() != 8)

@@ -24,8 +24,6 @@
 
 namespace autofill {
 
-struct SuggestionsContext;
-
 // Per-profile Autocomplete history manager. Handles receiving form data
 // from the renderers and the storing and retrieving of form data
 // through WebDataServiceBase.
@@ -43,18 +41,18 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
 
   // SingleFieldFormFiller overrides:
   [[nodiscard]] bool OnGetSingleFieldSuggestions(
+      const FormStructure* form_structure,
       const FormFieldData& field,
+      const AutofillField* autofill_field,
       const AutofillClient& client,
-      OnSuggestionsReturnedCallback on_suggestions_returned,
-      const SuggestionsContext& context) override;
+      OnSuggestionsReturnedCallback on_suggestions_returned) override;
   void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
                                   bool is_autocomplete_enabled) override;
   void CancelPendingQueries() override;
   void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
                                             const std::u16string& value,
-                                            PopupItemId popup_item_id) override;
-  void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       PopupItemId popup_item_id) override;
+                                            SuggestionType type) override;
+  void OnSingleFieldSuggestionSelected(const Suggestion& suggestion) override;
 
   // Initializes the instance with the given parameters.
   // |profile_database_| is a profile-scope DB used to access autocomplete data.

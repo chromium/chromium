@@ -35,8 +35,8 @@ from util import build_utils
 sys.path = prev_sys_path
 
 
-_R8_PATH = os.path.join(build_utils.DIR_SOURCE_ROOT, 'third_party', 'r8', 'lib',
-                        'r8.jar')
+_R8_PATH = os.path.join(build_utils.DIR_SOURCE_ROOT, 'third_party', 'r8',
+                        'cipd', 'lib', 'r8.jar')
 _SHARD_JSON_FILENAME = 'shards.json'
 
 

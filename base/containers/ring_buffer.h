@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "base/check.h"
 #include "base/memory/raw_ref.h"
 
@@ -124,7 +126,7 @@ class RingBuffer {
     return buffer_index < current_index_;
   }
 
-  T buffer_[kSize];
+  std::array<T, kSize> buffer_;
   size_t current_index_;
 };
 

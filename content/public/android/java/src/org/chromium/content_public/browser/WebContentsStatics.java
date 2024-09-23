@@ -10,7 +10,7 @@ import org.chromium.content.browser.framehost.RenderFrameHostImpl;
 /** Static public methods for WebContents. */
 public class WebContentsStatics {
     /**
-     * @return The WebContens associated witht the RenderFrameHost. This can be null.
+     * @return The WebContents associated with the RenderFrameHost. This can be null.
      */
     public static WebContents fromRenderFrameHost(RenderFrameHost rfh) {
         RenderFrameHostDelegate delegate = ((RenderFrameHostImpl) rfh).getRenderFrameHostDelegate();

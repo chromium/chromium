@@ -76,8 +76,7 @@ void RenderFrameHostDelegate::GetNFC(
 #endif
 
 bool RenderFrameHostDelegate::CanEnterFullscreenMode(
-    RenderFrameHostImpl* requesting_frame,
-    const blink::mojom::FullscreenOptions& options) {
+    RenderFrameHostImpl* requesting_frame) {
   return true;
 }
 
@@ -162,12 +161,6 @@ RenderWidgetHostImpl* RenderFrameHostDelegate::CreateNewPopupWidget(
   return nullptr;
 }
 
-bool RenderFrameHostDelegate::ShowPopupMenu(
-    RenderFrameHostImpl* render_frame_host,
-    const gfx::Rect& bounds) {
-  return false;
-}
-
 std::vector<RenderFrameHostImpl*>
 RenderFrameHostDelegate::GetActiveTopLevelDocumentsInBrowsingContextGroup(
     RenderFrameHostImpl* render_frame_host) {
@@ -194,6 +187,28 @@ bool RenderFrameHostDelegate::IsJavaScriptDialogShowing() const {
 
 bool RenderFrameHostDelegate::ShouldIgnoreUnresponsiveRenderer() {
   return false;
+}
+
+std::optional<blink::ParsedPermissionsPolicy>
+RenderFrameHostDelegate::GetPermissionsPolicyForIsolatedWebApp(
+    RenderFrameHostImpl* source) {
+  return blink::ParsedPermissionsPolicy();
+}
+
+bool RenderFrameHostDelegate::IsPopup() const {
+  return false;
+}
+
+bool RenderFrameHostDelegate::IsPartitionedPopin() const {
+  return false;
+}
+
+RenderFrameHostImpl* RenderFrameHostDelegate::PartitionedPopinOpener() const {
+  return nullptr;
+}
+
+WebContents* RenderFrameHostDelegate::OpenedPartitionedPopin() const {
+  return nullptr;
 }
 
 }  // namespace content

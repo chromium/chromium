@@ -249,7 +249,6 @@ component("proxy") {
 
   if (!is_nacl && !is_minimal_toolchain) {
     deps += [
-      "//base/third_party/dynamic_annotations",
       "//gin",
       "//skia",
       "//ui/events:events_base",

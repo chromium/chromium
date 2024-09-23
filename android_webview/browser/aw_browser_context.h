@@ -13,6 +13,7 @@
 
 #include "android_webview/browser/aw_contents_io_thread_client.h"
 #include "android_webview/browser/aw_contents_origin_matcher.h"
+#include "android_webview/browser/aw_context_permissions_delegate.h"
 #include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/browser/aw_ssl_host_state_delegate.h"
 #include "android_webview/browser/network_service/aw_proxy_config_monitor.h"
@@ -28,13 +29,11 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/zoom_level_delegate.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 
 class GURL;
 class PrefService;
-
-namespace autofill {
-class AutocompleteHistoryManager;
-}
 
 namespace content {
 class ClientHintsControllerDelegate;
@@ -60,7 +59,8 @@ class CookieManager;
 
 // Lifetime: Profile
 class AwBrowserContext : public content::BrowserContext,
-                         public visitedlink::VisitedLinkDelegate {
+                         public visitedlink::VisitedLinkDelegate,
+                         public AwContextPermissionsDelegate {
  public:
   explicit AwBrowserContext(std::string name,
                             base::FilePath relative_path,
@@ -141,6 +141,15 @@ class AwBrowserContext : public content::BrowserContext,
 
   // visitedlink::VisitedLinkDelegate implementation.
   void RebuildTable(const scoped_refptr<URLEnumerator>& enumerator) override;
+  void BuildVisitedLinkTable(
+      const scoped_refptr<VisitedLinkEnumerator>& enumerator) override;
+
+  // android_webview::AwContextPermissionsDelegate implementation.
+  blink::mojom::PermissionStatus GetGeolocationPermission(
+      const GURL& origin) const override;
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  CreateURLLoaderFactory();
 
   PrefService* GetPrefService() const { return user_pref_service_.get(); }
 
@@ -186,8 +195,6 @@ class AwBrowserContext : public content::BrowserContext,
 
   scoped_refptr<AwQuotaManagerBridge> quota_manager_bridge_;
   std::unique_ptr<AwFormDatabaseService> form_database_service_;
-  std::unique_ptr<autofill::AutocompleteHistoryManager>
-      autocomplete_history_manager_;
 
   std::unique_ptr<visitedlink::VisitedLinkWriter> visitedlink_writer_;
 

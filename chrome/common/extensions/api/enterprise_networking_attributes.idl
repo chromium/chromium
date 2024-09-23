@@ -28,7 +28,7 @@ namespace enterprise.networkingAttributes {
     // network, $(ref:runtime.lastError) will be set with a failure reason.
     // |callback| : Called with the device's default network's
     // $(ref:NetworkDetails).
-    [supportsPromises] void getNetworkDetails(
+    void getNetworkDetails(
         GetNetworkDetailsCallback callback);
   };
 };

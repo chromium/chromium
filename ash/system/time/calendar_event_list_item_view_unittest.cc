@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -134,7 +135,7 @@ TEST_F(CalendarViewEventListItemViewTest,
       u"Event 1 of 1\n        summary_0,\n        9:00\x202F"
       u"AM to\n        10:00\x202F"
       u"AM,\n        GMT+02:00. Select for more details in Google Calendar.",
-      event_list_item_view()->GetAccessibleName());
+      event_list_item_view()->GetViewAccessibility().GetCachedName());
 }
 
 TEST_F(CalendarViewEventListItemViewTest, EventListViewItemTopRoundedCorners) {

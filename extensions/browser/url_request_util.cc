@@ -9,19 +9,28 @@
 #include "base/types/optional_util.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/manifest_handlers/webview_info.h"
+#include "pdf/buildflags.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
+#include "url/gurl.h"
 
-namespace extensions {
-namespace url_request_util {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+namespace extensions::url_request_util {
 
 bool AllowCrossRendererResourceLoad(
     const network::ResourceRequest& request,
@@ -32,6 +41,7 @@ bool AllowCrossRendererResourceLoad(
     const Extension* extension,
     const ExtensionSet& extensions,
     const ProcessMap& process_map,
+    const GURL& upstream_url,
     bool* allowed) {
   const GURL& url = request.url;
   std::string_view resource_path = url.path_piece();
@@ -43,14 +53,19 @@ bool AllowCrossRendererResourceLoad(
     // Extensions with webview: allow loading certain resources by guest
     // renderers with privileged partition IDs as specified in owner's extension
     // the manifest file.
-    std::string owner_extension_id;
+    bool is_guest = false;
+    std::string partition_id;
+    const Extension* owner_extension = nullptr;
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
     int owner_process_id;
+    std::string owner_extension_id;
     WebViewRendererState::GetInstance()->GetOwnerInfo(
         child_id, &owner_process_id, &owner_extension_id);
-    const Extension* owner_extension = extensions.GetByID(owner_extension_id);
-    std::string partition_id;
-    bool is_guest = WebViewRendererState::GetInstance()->GetPartitionID(
+    owner_extension = extensions.GetByID(owner_extension_id);
+    is_guest = WebViewRendererState::GetInstance()->GetPartitionID(
         child_id, &partition_id);
+#endif
 
     if (AllowCrossRendererResourceLoadHelper(
             is_guest, extension, owner_extension, partition_id, resource_path,
@@ -91,20 +106,33 @@ bool AllowCrossRendererResourceLoad(
     return true;
   }
 
-  // When navigating in subframe, allow if it is the same origin
-  // as the top-level frame. This can only be the case if the subframe
-  // request is coming from the extension process.
+  // When navigating in subframe, verify that the extension the resource is
+  // loaded from matches the process loading it.
   if (network::IsRequestDestinationEmbeddedFrame(destination) &&
-      process_map.Contains(child_id)) {
+      process_map.Contains(extension->id(), child_id)) {
     *allowed = true;
     return true;
   }
 
+  // If the request is initiated by an opaque origin, allow it if the origin's
+  // precursor matches the extension. This allows sandboxed data URLs and srcdoc
+  // documents from an extension to access its resources (necessary for
+  // backwards compatibility), even if they rendered in a non-extension process.
+  if (request.request_initiator && request.request_initiator.value().opaque()) {
+    const GURL precursor_url = request.request_initiator.value()
+                                   .GetTupleOrPrecursorTupleIfOpaque()
+                                   .GetURL();
+    if (extension->origin() == url::Origin::Create(precursor_url)) {
+      *allowed = true;
+      return true;
+    }
+  }
+
   // Allow web accessible extension resources to be loaded as
   // subresources/sub-frames.
-  if (WebAccessibleResourcesInfo::IsResourceWebAccessible(
-          extension, std::string(resource_path),
-          base::OptionalToPtr(request.request_initiator))) {
+  if (url.SchemeIs(extensions::kExtensionScheme) &&
+      WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
+          extension, url, request.request_initiator, upstream_url)) {
     *allowed = true;
     return true;
   }
@@ -126,6 +154,15 @@ bool AllowCrossRendererResourceLoadHelper(bool is_guest,
                                           ui::PageTransition page_transition,
                                           bool* allowed) {
   if (is_guest) {
+#if BUILDFLAG(ENABLE_PDF)
+    // Allow the PDF Viewer extension to load in guests.
+    if (chrome_pdf::features::IsOopifPdfEnabled() &&
+        extension->id() == extension_misc::kPdfExtensionId) {
+      *allowed = true;
+      return true;
+    }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
     // An extension's resources should only be accessible to WebViews owned by
     // that extension.
     if (owner_extension != extension) {
@@ -141,5 +178,4 @@ bool AllowCrossRendererResourceLoadHelper(bool is_guest,
   return false;
 }
 
-}  // namespace url_request_util
-}  // namespace extensions
+}  // namespace extensions::url_request_util

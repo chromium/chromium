@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("content_extraction") {
+  sources = [
+    "inner_html.cc",
+    "inner_html.h",
+    "inner_text.cc",
+    "inner_text.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/service_manager/public/cpp",
+    "//third_party/blink/public/common",
+  ]
+}

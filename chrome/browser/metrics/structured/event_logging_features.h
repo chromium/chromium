@@ -9,9 +9,6 @@
 
 namespace metrics::structured {
 
-// Controls whether app discovery logging is enabled or not.
-BASE_DECLARE_FEATURE(kAppDiscoveryLogging);
-
 // The number of events that need to be recorded before an upload can occur.
 int GetOobeEventUploadCount();
 

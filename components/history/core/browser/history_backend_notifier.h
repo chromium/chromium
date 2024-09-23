@@ -46,14 +46,15 @@ class HistoryBackendNotifier {
   // Sends notification that some or the totality of the URLs have been
   // deleted.
   // `deletion_info` describes the urls that have been removed from history.
-  virtual void NotifyURLsDeleted(DeletionInfo deletion_info) = 0;
+  virtual void NotifyDeletions(DeletionInfo deletion_info) = 0;
 
   // Called after a visit has been updated.
   virtual void NotifyVisitUpdated(const VisitRow& visit,
                                   VisitUpdateReason reason) = 0;
 
-  // Called after a visit has been deleted.
-  virtual void NotifyVisitDeleted(const VisitRow& visit) = 0;
+  // Called after visits have been deleted. May also notify of any deleted
+  // VisitedLinkRows as a result of the VisitRow deletion.
+  virtual void NotifyVisitsDeleted(const std::vector<DeletedVisit>& visits) = 0;
 };
 
 }  // namespace history

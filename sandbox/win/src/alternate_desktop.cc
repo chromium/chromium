@@ -4,11 +4,11 @@
 
 #include "sandbox/win/src/alternate_desktop.h"
 
+#include <windows.h>
+
 #include "base/win/win_util.h"
 #include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/window.h"
-
-#include <windows.h>
 
 namespace sandbox {
 

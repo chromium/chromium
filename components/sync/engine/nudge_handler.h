@@ -6,7 +6,7 @@
 #define COMPONENTS_SYNC_ENGINE_NUDGE_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace syncer {
 
@@ -16,12 +16,12 @@ class NudgeHandler {
   virtual ~NudgeHandler() = default;
 
   // Schedules initial sync for |type| and returns.
-  virtual void NudgeForInitialDownload(ModelType type) = 0;
+  virtual void NudgeForInitialDownload(DataType type) = 0;
   // Schedules a commit for |type| and returns.
-  virtual void NudgeForCommit(ModelType type) = 0;
+  virtual void NudgeForCommit(DataType type) = 0;
   // This method is called whenever pending invalidations have been updated
   // (added or removed).
-  virtual void SetHasPendingInvalidations(ModelType type,
+  virtual void SetHasPendingInvalidations(DataType type,
                                           bool has_pending_invalidations) = 0;
 };
 

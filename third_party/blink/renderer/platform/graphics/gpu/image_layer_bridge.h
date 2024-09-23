@@ -25,6 +25,7 @@ class Size;
 }
 
 namespace blink {
+class WebGraphicsSharedImageInterfaceProvider;
 
 class PLATFORM_EXPORT ImageLayerBridge
     : public GarbageCollected<ImageLayerBridge>,
@@ -65,6 +66,9 @@ class PLATFORM_EXPORT ImageLayerBridge
 
     scoped_refptr<cc::CrossThreadSharedBitmap> bitmap;
     cc::SharedBitmapIdRegistration registration;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
+    gpu::SyncToken sync_token;
+    base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider> sii_provider;
   };
 
   // Returns a SharedMemory bitmap of |size|. Tries to recycle returned bitmaps

@@ -17,6 +17,13 @@ void {{class_name}}::ApplyInitial(StyleResolverState& state) const {
   {% if property.style_builder_declare %}
     {% if property.style_builder_generate_inherit %}
 void {{class_name}}::ApplyInherit(StyleResolverState& state) const {
+      {% if property.affected_by_zoom %}
+  if (state.GetDocument().StandardizedBrowserZoomEnabled()) {
+    if (ApplyParentValueIfZoomChanged(state)) {
+      return;
+    }
+  }
+      {% endif %}
 {{(caller(property) ~ '}')}}
     {% endif %}
   {% endif %}
@@ -27,6 +34,11 @@ void {{class_name}}::ApplyInherit(StyleResolverState& state) const {
   {% if property.style_builder_declare %}
     {% if property.style_builder_generate_value %}
 void {{class_name}}::ApplyValue(StyleResolverState& state, const CSSValue& value, ValueMode) const {
+{% if property.anchor_mode %}
+  blink::AnchorScope anchor_scope(
+      blink::AnchorScope::Mode::{{property.anchor_mode.to_enum_value()}},
+      state.CssToLengthConversionData().GetAnchorEvaluator());
+{% endif %}
 {{(caller(property) ~ '}')}}
     {% endif %}
   {% endif %}
@@ -34,7 +46,7 @@ void {{class_name}}::ApplyValue(StyleResolverState& state, const CSSValue& value
 
 {% macro style_access(property) %}
 state.StyleBuilder().
-{% endmacro %}
+{%- endmacro %}
 
 {% macro set_value(property) %}
   {%- if property.font %}
@@ -214,9 +226,11 @@ state.GetFontBuilder().{{property.setter}}
     {% endcall %}
 
     {% call(property) apply_value(property) %}
+  const CSSValueList& list = To<CSSValueList>(value);
   CSS{{animation}}Data& data = state.StyleBuilder().Access{{animation}}s();
   data.{{vector}}.clear();
-  for (const CSSValue* list_value : To<CSSValueList>(value)) {
+  data.{{vector}}.reserve(list.length());
+  for (const CSSValue* list_value : list) {
     const auto& item = *list_value;
     data.{{vector}}.push_back(CSSToStyleMap::MapAnimation{{attribute}}(state, item));
   }
@@ -336,7 +350,7 @@ state.GetFontBuilder().{{property.setter}}
   for (const CSSValue* item : *list) {
     const auto& pair = To<CSSValuePair>(*item);
     AtomicString identifier(To<CSSCustomIdentValue>(pair.First()).Value());
-    int counter_value = To<CSSPrimitiveValue>(pair.Second()).GetIntValue();
+    int counter_value = To<CSSPrimitiveValue>(pair.Second()).ComputeInteger(state.CssToLengthConversionData());
     CounterDirectives& directives =
     map.insert(identifier, CounterDirectives()).stored_value->value;
         {% if action == 'Reset' %}
@@ -352,17 +366,17 @@ state.GetFontBuilder().{{property.setter}}
   {% elif property.style_builder_template == 'grid' %}
     {% set type = property.style_builder_template_args['type'] %}
     {% call(property) apply_initial(property) %}
-  {{style_access(property)}}SetGridTemplate{{type}}s(ComputedStyleInitialValues::InitialGridTemplate{{type}}s());
+  {{style_access(property)}}Set{{type}}(ComputedStyleInitialValues::Initial{{type}}());
     {% endcall %}
 
     {% call(property) apply_inherit(property) %}
-  {{style_access(property)}}SetGridTemplate{{type}}s(state.ParentStyle()->GridTemplate{{type}}s());
+  {{style_access(property)}}Set{{type}}(state.ParentStyle()->{{type}}());
     {% endcall %}
 
     {% call(property) apply_value(property) %}
   ComputedGridTrackList computed_grid_track_list;
   StyleBuilderConverter::ConvertGridTrackList(value, computed_grid_track_list, state);
-  {{style_access(property)}}SetGridTemplate{{type}}s(computed_grid_track_list);
+  {{style_access(property)}}Set{{type}}(computed_grid_track_list);
     {% endcall %}
   {% endif %}
 {%- endmacro %}

@@ -4,8 +4,9 @@
 
 #include "components/encrypted_messages/message_encrypter.h"
 
+#include <string_view>
+
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "crypto/aead.h"
 #include "crypto/hkdf.h"
@@ -19,14 +20,14 @@ namespace {
 bool GetHkdfSubkeySecret(size_t subkey_length,
                          const uint8_t* private_key,
                          const uint8_t* public_key,
-                         base::StringPiece hkdf_label,
+                         std::string_view hkdf_label,
                          std::string* secret) {
   uint8_t shared_secret[X25519_SHARED_KEY_LEN];
   if (!X25519(shared_secret, private_key, public_key))
     return false;
 
-  base::StringPiece hkdf_input(reinterpret_cast<char*>(shared_secret),
-                               sizeof(shared_secret));
+  std::string_view hkdf_input(reinterpret_cast<char*>(shared_secret),
+                              sizeof(shared_secret));
   *secret = crypto::HkdfSha256(hkdf_input, "", hkdf_label, subkey_length);
   return true;
 }
@@ -35,7 +36,7 @@ bool GetHkdfSubkeySecret(size_t subkey_length,
 
 bool EncryptSerializedMessage(const uint8_t* server_public_key,
                               uint32_t server_public_key_version,
-                              base::StringPiece hkdf_label,
+                              std::string_view hkdf_label,
                               const std::string& message,
                               EncryptedMessage* encrypted_message) {
   // Generate an ephemeral key pair to generate a shared secret.
@@ -75,7 +76,7 @@ bool EncryptSerializedMessage(const uint8_t* server_public_key,
 
 // Used only by tests.
 bool DecryptMessageForTesting(const uint8_t server_private_key[32],
-                              base::StringPiece hkdf_label,
+                              std::string_view hkdf_label,
                               const EncryptedMessage& encrypted_message,
                               std::string* decrypted_serialized_message) {
   crypto::Aead aead(crypto::Aead::AES_128_CTR_HMAC_SHA256);

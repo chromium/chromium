@@ -13,6 +13,8 @@ import SwiftUI
   /// The integer value matches overflow_menu::Destination, setting it to -1 will not highlight any.
   @Published public var highlightDestination: Int = -1
 
+  @Published public var scrollToAction: OverflowMenuAction? = nil
+
   /// The highlighted destination's frame, in the coordinate system of the menu view.
   public var highlightedDestinationFrame: CGRect = .zero
 

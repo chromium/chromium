@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.pm.ResolveInfo;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -46,7 +47,7 @@ public class OpenDownloadDialogBridge {
      * @param guid GUID of the download.
      */
     @CalledByNative
-    public void showDialog(Profile profile, String guid) {
+    public void showDialog(Profile profile, @JniType("std::string") String guid) {
         List<ResolveInfo> result = MimeUtils.getPdfIntentHandlers();
         if (result.size() == 0) {
             onCancel(guid);
@@ -131,6 +132,9 @@ public class OpenDownloadDialogBridge {
 
     @NativeMethods
     interface Natives {
-        void onConfirmed(long nativeOpenDownloadDialogBridge, String guid, boolean accepted);
+        void onConfirmed(
+                long nativeOpenDownloadDialogBridge,
+                @JniType("std::string") String guid,
+                boolean accepted);
     }
 }

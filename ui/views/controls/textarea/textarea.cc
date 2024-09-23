@@ -97,8 +97,9 @@ bool Textarea::PreHandleKeyPressed(const ui::KeyEvent& event) {
 }
 
 ui::TextEditCommand Textarea::GetCommandForKeyEvent(const ui::KeyEvent& event) {
-  if (event.type() != ui::ET_KEY_PRESSED || event.IsUnicodeKeyCode())
+  if (event.type() != ui::EventType::kKeyPressed || event.IsUnicodeKeyCode()) {
     return Textfield::GetCommandForKeyEvent(event);
+  }
 
   const bool shift = event.IsShiftDown();
   switch (event.key_code()) {

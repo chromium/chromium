@@ -12,8 +12,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/preloading_test_util.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 #include "url/gurl.h"
@@ -38,9 +41,16 @@ class PrerenderHostRegistryObserver {
   // on a RunLoop until a prerender of |gurl| is triggered.
   void WaitForTrigger(const GURL& gurl);
 
+  // Blocks on a RunLoop until a next prerender is triggered. Returns a URL of
+  // the prerender.
+  GURL WaitForNextTrigger();
+
   // Invokes |callback| immediately if |gurl| was ever triggered before.
   // Otherwise invokes |callback| when a prerender for |gurl| is triggered.
   void NotifyOnTrigger(const GURL& gurl, base::OnceClosure callback);
+
+  // Returns a set of URLs that have been triggered so far.
+  base::flat_set<GURL> GetTriggeredUrls() const;
 
  private:
   std::unique_ptr<PrerenderHostRegistryObserverImpl> impl_;
@@ -54,7 +64,7 @@ class PrerenderHostObserver {
  public:
   // Begins observing the given PrerenderHost immediately. DCHECKs if |host_id|
   // does not identify a live PrerenderHost.
-  PrerenderHostObserver(WebContents& web_contents, int host_id);
+  PrerenderHostObserver(WebContents& web_contents, FrameTreeNodeId host_id);
 
   // Will start observing a PrerenderHost for |gurl| as soon as it is
   // triggered.
@@ -67,6 +77,10 @@ class PrerenderHostObserver {
   // Returns immediately if the PrerenderHost was already activated, otherwise
   // spins a RunLoop until the observed host is activated.
   void WaitForActivation();
+
+  // Returns immediately if the PrerenderHost has already received headers,
+  // otherwise spins a RunLoop until the observed host receives headers.
+  void WaitForHeaders();
 
   // Returns immediately if the PrerenderHost was already destroyed, otherwise
   // spins a RunLoop until the observed host is destroyed.
@@ -85,11 +99,11 @@ class PrerenderHostCreationWaiter {
   PrerenderHostCreationWaiter();
   ~PrerenderHostCreationWaiter() = default;
 
-  int Wait();
+  FrameTreeNodeId Wait();
 
  private:
   base::RunLoop run_loop_;
-  int created_host_id_ = content::RenderFrameHost::kNoFrameTreeNodeId;
+  FrameTreeNodeId created_host_id_;
 };
 
 // Enables appropriate features for Prerender2.
@@ -125,13 +139,14 @@ class PrerenderTestHelper {
   void RegisterServerRequestMonitor(
       net::test_server::EmbeddedTestServer& test_server);
 
-  // Attempts to lookup the host for the given |gurl|. Returns
-  // RenderFrameHost::kNoFrameTreeNodeId upon failure.
-  static int GetHostForUrl(WebContents& web_contents, const GURL& gurl);
-  int GetHostForUrl(const GURL& gurl);
+  // Attempts to lookup the host for the given |gurl|. Returns an invalid frame
+  // id upon failure.
+  static FrameTreeNodeId GetHostForUrl(WebContents& web_contents,
+                                       const GURL& gurl);
+  FrameTreeNodeId GetHostForUrl(const GURL& gurl);
 
   // Returns whether the registry holds the handler for prerender-into-new-tab.
-  bool HasNewTabHandle(int host_id);
+  bool HasNewTabHandle(FrameTreeNodeId host_id);
 
   // Waits until a prerender has finished loading. Note: this may not be called
   // when the load fails (e.g. because it was blocked by a NavigationThrottle,
@@ -140,17 +155,24 @@ class PrerenderTestHelper {
   static void WaitForPrerenderLoadCompletion(WebContents& web_contents,
                                              const GURL& gurl);
   void WaitForPrerenderLoadCompletion(const GURL& gurl);
-  void WaitForPrerenderLoadCompletion(int host_id);
+  void WaitForPrerenderLoadCompletion(FrameTreeNodeId host_id);
 
   // Adds <script type="speculationrules"> in the current main frame and waits
   // until the completion of prerendering. Returns the id of the resulting
   // prerendering host.
-  int AddPrerender(const GURL& prerendering_url,
-                   int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
-  int AddPrerender(const GURL& prerendering_url,
-                   std::optional<blink::mojom::SpeculationEagerness> eagerness,
-                   const std::string& target_hint,
-                   int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
+  FrameTreeNodeId AddPrerender(const GURL& prerendering_url,
+                               int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
+  FrameTreeNodeId AddPrerender(
+      const GURL& prerendering_url,
+      std::optional<blink::mojom::SpeculationEagerness> eagerness,
+      const std::string& target_hint,
+      int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
+  FrameTreeNodeId AddPrerender(
+      const GURL& prerendering_url,
+      std::optional<blink::mojom::SpeculationEagerness> eagerness,
+      std::optional<std::string> no_vary_search_hint,
+      const std::string& target_hint,
+      int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
   // AddPrerenderAsync() is the same as AddPrerender(), but does not wait until
   // the completion of prerendering.
   void AddPrerenderAsync(const GURL& prerendering_url,
@@ -158,6 +180,12 @@ class PrerenderTestHelper {
   void AddPrerendersAsync(
       const std::vector<GURL>& prerendering_urls,
       std::optional<blink::mojom::SpeculationEagerness> eagerness,
+      const std::string& target_hint,
+      int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
+  void AddPrerendersAsync(
+      const std::vector<GURL>& prerendering_urls,
+      std::optional<blink::mojom::SpeculationEagerness> eagerness,
+      std::optional<std::string> no_vary_search_hint,
       const std::string& target_hint,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
 
@@ -173,10 +201,10 @@ class PrerenderTestHelper {
       ui::PageTransition page_transition);
 
   // This navigates, but does not activate, the prerendered page.
-  void NavigatePrerenderedPage(int host_id, const GURL& gurl);
+  void NavigatePrerenderedPage(FrameTreeNodeId host_id, const GURL& gurl);
 
   // This cancels the prerendered page.
-  void CancelPrerenderedPage(int host_id);
+  void CancelPrerenderedPage(FrameTreeNodeId host_id);
 
   // Navigates the primary page to the URL and waits until the completion of
   // the navigation.
@@ -186,6 +214,14 @@ class PrerenderTestHelper {
   // could access a navigating frame being destroyed during activation and fail.
   static void NavigatePrimaryPage(WebContents& web_contents, const GURL& gurl);
   void NavigatePrimaryPage(const GURL& gurl);
+
+  // Navigates the primary page to the URL but does not wait until the
+  // completion of the navigation. Instead it returns a
+  // content::TestNavigationObserver.
+  static std::unique_ptr<content::TestNavigationObserver>
+  NavigatePrimaryPageAsync(WebContents& web_contents, const GURL& gurl);
+  std::unique_ptr<content::TestNavigationObserver> NavigatePrimaryPageAsync(
+      const GURL& gurl);
 
   // Opens a new window without an opener on the primary page of `web_contents`.
   // This is intended for activating a prerendered page initiated for a new
@@ -198,10 +234,13 @@ class PrerenderTestHelper {
   [[nodiscard]] ::testing::AssertionResult VerifyPrerenderingState(
       const GURL& gurl);
 
-  // Returns RenderFrameHost corresponding to `host_id`.
+  // Returns RenderFrameHost corresponding to `host_id` or `url`.
   static RenderFrameHost* GetPrerenderedMainFrameHost(WebContents& web_contents,
-                                                      int host_id);
-  RenderFrameHost* GetPrerenderedMainFrameHost(int host_id);
+                                                      FrameTreeNodeId host_id);
+  static RenderFrameHost* GetPrerenderedMainFrameHost(WebContents& web_contents,
+                                                      const GURL& url);
+  RenderFrameHost* GetPrerenderedMainFrameHost(FrameTreeNodeId host_id);
+  RenderFrameHost* GetPrerenderedMainFrameHost(const GURL& url);
 
   int GetRequestCount(const GURL& url);
   net::test_server::HttpRequest::HeaderMap GetRequestHeaders(const GURL& url);
@@ -214,6 +253,14 @@ class PrerenderTestHelper {
   std::string GenerateHistogramName(const std::string& histogram_base_name,
                                     content::PreloadingTriggerType trigger_type,
                                     const std::string& embedder_suffix);
+
+  // Updates the settings in PreloadingConfigOverride.
+  void SetHoldback(PreloadingType preloading_type,
+                   PreloadingPredictor predictor,
+                   bool holdback);
+  void SetHoldback(std::string_view preloading_type,
+                   std::string_view predictor,
+                   bool holdback);
 
  private:
   void MonitorResourceRequest(const net::test_server::HttpRequest& request);
@@ -230,6 +277,7 @@ class PrerenderTestHelper {
   ScopedPrerenderFeatureList feature_list_;
   base::OnceClosure monitor_callback_ GUARDED_BY(lock_);
   base::Lock lock_;
+  PreloadingConfigOverride preloading_config_override_;
   WebContents::Getter get_web_contents_fn_;
 };
 
@@ -247,6 +295,25 @@ class ScopedPrerenderWebContentsDelegate : public WebContentsDelegate {
 
  private:
   base::WeakPtr<WebContents> web_contents_;
+};
+
+// This test delegate is used for link preview tests, in order to check
+// whether the delegate receives `InitiatePreview` function call.
+class MockLinkPreviewWebContentsDelegate : public WebContentsDelegate {
+ public:
+  MockLinkPreviewWebContentsDelegate();
+
+  MockLinkPreviewWebContentsDelegate(
+      const MockLinkPreviewWebContentsDelegate&) = delete;
+  MockLinkPreviewWebContentsDelegate& operator=(
+      const MockLinkPreviewWebContentsDelegate&) = delete;
+
+  ~MockLinkPreviewWebContentsDelegate() override;
+
+  MOCK_METHOD(void,
+              InitiatePreview,
+              (WebContents & web_contents, const GURL& url),
+              (override));
 };
 
 }  // namespace test

@@ -2,21 +2,6 @@
   "name": "software rendering list",
   "entries": [
     {
-      "id": 1,
-      "description": "ATI Radeon X1900 is not compatible with WebGL on the Mac",
-      "webkit_bugs": [47028],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x1002",
-      "device_id": ["0x7249"],
-      "multi_gpu_category": "any",
-      "features": [
-        "accelerated_webgl",
-        "gpu_tile_rasterization"
-      ]
-    },
-    {
       "id": 3,
       "description": "GL driver is software rendered. GPU acceleration is disabled",
       "cr_bugs": [59302, 315217, 1155974],
@@ -47,21 +32,6 @@
       "device_id": ["0x0324"],
       "features": [
         "all"
-      ]
-    },
-    {
-      "id": 10,
-      "description": "NVIDIA GeForce 7300 GT on Mac does not support WebGL",
-      "cr_bugs": [73794],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x10de",
-      "device_id": ["0x0393"],
-      "multi_gpu_category": "any",
-      "features": [
-        "accelerated_webgl",
-        "gpu_tile_rasterization"
       ]
     },
     {
@@ -352,16 +322,12 @@
     },
     {
       "id": 68,
-      "description": "VMware Fusion 4 has corrupt rendering on Windows",
-      "cr_bugs": [169470],
+      "description": "Do not use GPU accelerated rendering with VMware on Windows",
+      "cr_bugs": [169470, 879098, 325159675],
       "os": {
         "type": "win"
       },
       "vendor_id": "0x15ad",
-      "driver_version": {
-        "op": "<=",
-        "value": "7.14.1.1134"
-      },
       "features": [
         "all"
       ]
@@ -948,21 +914,6 @@
       ]
     },
     {
-      "id": 126,
-      "description": "Disallow use of OpenGL on Mac with core profile < 4.1",
-      "cr_bugs": [295792, 875891],
-      "os": {
-        "type": "macosx"
-      },
-      "gl_version": {
-        "op": "<",
-        "value": "4.1"
-      },
-      "features": [
-        "all"
-      ]
-    },
-    {
       "id":129,
       "description": "Intel drivers are buggy on Linux 2.x",
       "cr_bugs": [662909],
@@ -974,20 +925,6 @@
         }
       },
       "vendor_id": "0x8086",
-      "features": [
-        "all"
-      ]
-    },
-    {
-      "id": 130,
-      "description": "Older NVIDIA GPUs on macOS render incorrectly",
-      "cr_bugs": [676829, 676975],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x10de",
-      "device_id": ["0x0407", "0x0647", "0x0863"],
-      "multi_gpu_category": "any",
       "features": [
         "all"
       ]
@@ -1196,7 +1133,8 @@
         "all",
         {"exceptions": [
           "accelerated_gl",
-          "accelerated_webgl"
+          "accelerated_webgl",
+          "skia_graphite"
         ]}
       ]
     },
@@ -1206,50 +1144,6 @@
       "test_group": 2,
       "features": [
         "accelerated_webgl"
-      ]
-    },
-    {
-      "id": 157,
-      "description": "VMware can crash with older drivers and WebGL content",
-      "cr_bugs": [879098],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x15ad",
-      "driver_version": {
-        "op": "<=",
-        "value": "7.14.1.1210"
-      },
-      "features": [
-        "accelerated_webgl",
-        "accelerated_webgl2"
-      ]
-    },
-    {
-      "id": 159,
-      "cr_bugs": [902247],
-      "description": "Disallow OpenGL use on Mac with old NVIDIA GPUs",
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x10de",
-      "device_id": ["0x0861", "0x0866", "0x0867", "0x0869", "0x08a0", "0x08a2",
-                    "0x08a4", "0x0a29"],
-      "features": [
-        "all"
-      ]
-    },
-    {
-      "id": 160,
-      "cr_bugs": [902247],
-      "description": "Disallow OpenGL use on Mac with old AMD GPUs",
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x1002",
-      "device_id": ["0x944a", "0x9488", "0x94c8", "0x9583"],
-      "features": [
-        "all"
       ]
     },
     {
@@ -1521,6 +1415,55 @@
       "gl_renderer": ".*Adreno \\(TM\\) 4.*",
       "features": [
         "accelerated_2d_canvas"
+      ]
+    },
+    {
+      "id": 181,
+      "cr_bugs": [329702368],
+      "description": "Corrupted browser/webpage rendering on Win10/Intel HD Graphics 4400",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "device_id": ["0x0a16"],
+      "features": [
+        "skia_graphite"
+      ]
+    },
+    {
+      "id": 182,
+      "cr_bugs": [332731568],
+      "description": "Accelerated video decoding fails with SkiaGraphite on win10+nvidia",
+      "os": {
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "10.0.22621"
+        }
+      },
+      "vendor_id": "0x10de",
+      "driver_version": {
+        "op": "<",
+        "value": "31.0.15.3623"
+      },
+      "features": [
+        "skia_graphite"
+      ]
+    },
+    {
+      "id": 183,
+      "cr_bugs": [335564846, 335640712],
+      "description": "Analytic clipping is not implemented in Graphite",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_generation": {
+        "op": "<",
+        "value": "11"
+      },
+      "features": [
+        "skia_graphite"
       ]
     }
   ]

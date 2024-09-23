@@ -45,9 +45,7 @@ class MockFetchContext : public FetchContext {
     tagged_urls_ = std::move(tagged_urls);
   }
 
-  bool AllowImage(bool images_enabled, const KURL&) const override {
-    return true;
-  }
+  bool AllowImage() const override { return true; }
   std::optional<ResourceRequestBlockedReason> CanRequest(
       ResourceType,
       const ResourceRequest&,
@@ -74,6 +72,16 @@ class MockFetchContext : public FetchContext {
     return std::nullopt;
   }
   std::optional<ResourceRequestBlockedReason> CheckCSPForRequest(
+      mojom::blink::RequestContextType,
+      network::mojom::RequestDestination request_destination,
+      const KURL& url,
+      const ResourceLoaderOptions& options,
+      ReportingDisposition reporting_disposition,
+      const KURL& url_before_redirects,
+      ResourceRequest::RedirectStatus redirect_status) const override {
+    return std::nullopt;
+  }
+  std::optional<ResourceRequestBlockedReason> CheckAndEnforceCSPForRequest(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
       const KURL& url,
@@ -115,13 +123,22 @@ class MockFetchContext : public FetchContext {
     resource_load_info_notifier_ = resource_load_info_notifier;
   }
 
+  void SetPotentiallyUnusedPreload(const Vector<KURL>& urls) {
+    potentially_unused_preloads_ = urls;
+  }
+
+  const Vector<KURL>& GetPotentiallyUnusedPreloads() const override {
+    return potentially_unused_preloads_;
+  }
+
  private:
-  raw_ptr<mojom::ResourceLoadInfoNotifier, ExperimentalRenderer>
-      resource_load_info_notifier_ = nullptr;
+  raw_ptr<mojom::ResourceLoadInfoNotifier> resource_load_info_notifier_ =
+      nullptr;
   std::unique_ptr<WeakWrapperResourceLoadInfoNotifier>
       weak_wrapper_resource_load_info_notifier_;
   Vector<String> blocked_urls_;
   Vector<String> tagged_urls_;
+  Vector<KURL> potentially_unused_preloads_;
 };
 
 }  // namespace blink

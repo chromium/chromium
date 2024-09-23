@@ -19,12 +19,16 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/network_connect.h"
+#include "chromeos/ash/components/tether/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -59,8 +63,9 @@ class TetherNotificationDelegate
 
   // NotificationDelegate:
   void Close(bool by_user) override {
-    if (!close_callback_.is_null())
+    if (!close_callback_.is_null()) {
       close_callback_.Run();
+    }
   }
 
  private:
@@ -127,15 +132,21 @@ TetherNotificationPresenter::TetherNotificationPresenter(
 
 TetherNotificationPresenter::~TetherNotificationPresenter() = default;
 
+// static
+void TetherNotificationPresenter::RegisterProfilePrefs(
+    PrefRegistrySimple* pref_registry) {
+  pref_registry->RegisterBooleanPref(prefs::kNotificationsEnabled, true);
+}
+
 void TetherNotificationPresenter::NotifyPotentialHotspotNearby(
-    multidevice::RemoteDeviceRef remote_device,
+    const std::string& device_id,
+    const std::string& device_name,
     int signal_strength) {
   PA_LOG(VERBOSE) << "Displaying \"potential hotspot nearby\" notification for "
-                  << "device with name \"" << remote_device.name() << "\". "
+                  << "device with name \"" << device_name << "\". "
                   << "Notification ID = " << kPotentialHotspotNotificationId;
 
-  hotspot_nearby_device_id_ =
-      std::make_unique<std::string>(remote_device.GetDeviceId());
+  hotspot_nearby_device_id_ = std::make_unique<std::string>(device_id);
 
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons.push_back(
@@ -149,7 +160,7 @@ void TetherNotificationPresenter::NotifyPotentialHotspotNearby(
           IDS_TETHER_NOTIFICATION_WIFI_AVAILABLE_ONE_DEVICE_TITLE),
       l10n_util::GetStringFUTF16(
           IDS_TETHER_NOTIFICATION_WIFI_AVAILABLE_ONE_DEVICE_MESSAGE,
-          base::ASCIIToUTF16(remote_device.name())),
+          base::ASCIIToUTF16(device_name)),
       GetImageForSignalStrength(signal_strength), rich_notification_data));
 }
 
@@ -221,8 +232,11 @@ void TetherNotificationPresenter::NotifyConnectionToHostFailed() {
 
   ShowNotification(CreateSystemNotificationPtr(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id,
-      l10n_util::GetStringUTF16(
-          IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE),
+      features::IsInstantHotspotRebrandEnabled()
+          ? l10n_util::GetStringUTF16(
+                IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE)
+          : l10n_util::GetStringUTF16(
+                IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE_LEGACY),
       l10n_util::GetStringUTF16(
           IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_MESSAGE),
       std::u16string() /* display_source */, GURL() /* origin_url */,
@@ -289,14 +303,15 @@ TetherNotificationPresenter::GetMetricValueForClickOnNotificationBody(
     return TetherNotificationPresenter::
         NOTIFICATION_BODY_TAPPED_CONNECTION_FAILED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return TetherNotificationPresenter::NOTIFICATION_INTERACTION_TYPE_MAX;
 }
 
 void TetherNotificationPresenter::OnNotificationClosed(
     const std::string& notification_id) {
-  if (showing_notification_id_ == notification_id)
+  if (showing_notification_id_ == notification_id) {
     showing_notification_id_.clear();
+  }
 }
 
 std::unique_ptr<message_center::Notification>
@@ -321,7 +336,7 @@ TetherNotificationPresenter::CreateNotification(
           base::BindRepeating(
               &TetherNotificationPresenter::OnNotificationClosed,
               weak_ptr_factory_.GetWeakPtr(), id)));
-  notification->set_small_image(gfx::Image(small_image));
+  notification->SetSmallImage(gfx::Image(small_image));
   if (base::FeatureList::IsEnabled(ash::features::kInstantHotspotRebrand)) {
     notification->set_never_timeout(true);
   }
@@ -335,6 +350,12 @@ void TetherNotificationPresenter::SetSettingsUiDelegateForTesting(
 
 void TetherNotificationPresenter::ShowNotification(
     std::unique_ptr<message_center::Notification> notification) {
+  if (!AreNotificationsEnabled()) {
+    PA_LOG(INFO) << "Not showing notification with ID [" << notification->id()
+                 << "] since user has notifications disabled.";
+    return;
+  }
+
   showing_notification_id_ = notification->id();
   NotificationDisplayService::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
@@ -355,11 +376,16 @@ void TetherNotificationPresenter::OpenSettingsAndRemoveNotification(
 
 void TetherNotificationPresenter::RemoveNotificationIfVisible(
     const std::string& notification_id) {
-  if (notification_id == kPotentialHotspotNotificationId)
+  if (notification_id == kPotentialHotspotNotificationId) {
     hotspot_nearby_device_id_.reset();
+  }
 
   NotificationDisplayService::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, notification_id);
+}
+
+bool TetherNotificationPresenter::AreNotificationsEnabled() {
+  return profile_->GetPrefs()->GetBoolean(prefs::kNotificationsEnabled);
 }
 
 }  // namespace ash::tether

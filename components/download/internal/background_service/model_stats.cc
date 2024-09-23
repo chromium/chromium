@@ -28,7 +28,7 @@ std::string EntryStateToHistogramSuffix(Entry::State state) {
     case Entry::State::COUNT:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

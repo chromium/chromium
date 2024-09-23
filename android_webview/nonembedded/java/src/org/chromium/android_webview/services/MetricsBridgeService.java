@@ -28,7 +28,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -130,7 +129,7 @@ public final class MetricsBridgeService extends Service {
     @Override
     public void onCreate() {
         // Restore saved histograms from disk.
-        sSequencedTaskRunner.postTask(
+        sSequencedTaskRunner.execute(
                 () -> {
                     File file = getMetricsLogFile();
                     if (!file.exists()) return;
@@ -169,21 +168,23 @@ public final class MetricsBridgeService extends Service {
                 public void recordMetrics(byte[] data) {
                     if (Binder.getCallingUid() != Process.myUid()) {
                         throw new SecurityException(
-                                "recordMetrics() may only be called by non-embedded WebView processes");
+                                "recordMetrics() may only be called by non-embedded WebView"
+                                        + " processes");
                     }
                     // If this is called within the same process, it will run on the caller thread,
                     // so we will always punt this to thread pool.
-                    sSequencedTaskRunner.postTask(
+                    sSequencedTaskRunner.execute(
                             () -> {
                                 // Make sure that we don't add records indefinitely in case of no
                                 // embedded WebView connects to the service to retrieve and clear
                                 // the records.
                                 if (mRecordsList.size() >= MAX_HISTOGRAM_COUNT) {
-                                    // TODO(https://crbug.com/1088467) add a histogram to log the
+                                    // TODO(crbug.com/40695441) add a histogram to log the
                                     // number of dropped histograms.
                                     Log.w(
                                             TAG,
-                                            "retained records has reached the max capacity, dropping record");
+                                            "retained records has reached the max capacity,"
+                                                    + " dropping record");
                                     return;
                                 }
                                 try {
@@ -212,25 +213,17 @@ public final class MetricsBridgeService extends Service {
                                         List<byte[]> list = mRecordsList;
                                         mRecordsList = new ArrayList<>();
                                         deleteMetricsLogFile();
-                                        list.add(
-                                                logRetrieveMetricsTaskStatus(
-                                                        RetrieveMetricsTaskStatus.SUCCESS));
                                         return list;
                                     });
-                    sSequencedTaskRunner.postTask(retrieveFutureTask);
+                    sSequencedTaskRunner.execute(retrieveFutureTask);
                     try {
                         return retrieveFutureTask.get();
                     } catch (ExecutionException e) {
                         Log.e(TAG, "error executing retrieveNonembeddedMetrics future task", e);
-                        return Collections.singletonList(
-                                logRetrieveMetricsTaskStatus(
-                                        RetrieveMetricsTaskStatus.EXECUTION_EXCEPTION));
                     } catch (InterruptedException e) {
                         Log.e(TAG, "retrieveNonembeddedMetrics future task interrupted", e);
-                        return Collections.singletonList(
-                                logRetrieveMetricsTaskStatus(
-                                        RetrieveMetricsTaskStatus.INTERRUPTED_EXCEPTION));
                     }
+                    return new ArrayList<>();
                 }
             };
 
@@ -273,13 +266,13 @@ public final class MetricsBridgeService extends Service {
     }
 
     /**
-     * Add a FutureTask that can be used to block until all the tasks in the local
-     * {@code sSequencedTaskRunner} are finished for testing.
+     * Add a FutureTask that can be used to block until all the tasks in the local {@code
+     * sSequencedTaskRunner} are finished for testing.
      */
     @VisibleForTesting
     public FutureTask addTaskToBlock() {
         FutureTask<Object> blockTask = new FutureTask<Object>(() -> {}, new Object());
-        sSequencedTaskRunner.postTask(blockTask);
+        sSequencedTaskRunner.execute(blockTask);
         return blockTask;
     }
 }

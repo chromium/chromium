@@ -13,7 +13,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/multidevice/beacon_seed.h"
 #include "chromeos/ash/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/ash/components/multidevice/remote_device.h"
@@ -109,25 +108,6 @@ const multidevice::RemoteDeviceList& GetV2RemoteDevices() {
       CreateRemoteDeviceForTest("v2-only_no-public-key",
                                 true /* has_instance_id */,
                                 false /* has_public_key */),
-  };
-  return devices;
-}
-
-// The expected device list after the RemoteDeviceProvider merges
-// GetV1RemoteDevices() and GetV2RemoteDevices():
-//   0.(v2) "instanceId-0", "publicKey-0"
-//   1.(v1) "" /* instance_id */ , "publicKey-1"
-//   2.(v2) "instanceId-2", "publicKey-2"
-//   3.(v1) "" /* instance_id */ , "publicKey-3"
-//   5.(v2) "instanceId-unique-to-v2", "publicKey-unique-to-v2"
-// The reason behind this merge is:
-//   * v2 devices are preferred over v1 devices with the same public key.
-//   * v2 devices without a public key are rejected to prevent potential
-//     duplication with a v1 device.
-const multidevice::RemoteDeviceList& GetExpectedMergedV1andV2RemoteDevices() {
-  static const multidevice::RemoteDeviceList devices{
-      GetV2RemoteDevices()[0], GetV1RemoteDevices()[1], GetV2RemoteDevices()[2],
-      GetV1RemoteDevices()[3], GetV2RemoteDevices()[3],
   };
   return devices;
 }
@@ -265,31 +245,6 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
         nullptr);
     RemoteDeviceLoader::Factory::SetFactoryForTesting(nullptr);
     RemoteDeviceV2LoaderImpl::Factory::SetFactoryForTesting(nullptr);
-  }
-
-  void SetFeatureFlags(bool use_v1, bool use_v2) {
-    ASSERT_TRUE(use_v1 || use_v2);
-
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    // This flag has no direct effect of on the RemoteDeviceProvider; however,
-    // v2 Enrollment is a prerequisite for v2 DeviceSync.
-    enabled_features.push_back(features::kCryptAuthV2Enrollment);
-
-    if (use_v1) {
-      disabled_features.push_back(features::kDisableCryptAuthV1DeviceSync);
-    } else {
-      enabled_features.push_back(features::kDisableCryptAuthV1DeviceSync);
-    }
-
-    if (use_v2) {
-      enabled_features.push_back(features::kCryptAuthV2DeviceSync);
-    } else {
-      disabled_features.push_back(features::kCryptAuthV2DeviceSync);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   // Set the v1 device manager's synced devices to correspond to the first
@@ -467,109 +422,12 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
   std::unique_ptr<FakeCryptAuthV2DeviceManager> fake_v2_device_manager_;
   std::unique_ptr<FakeRemoteDeviceV2LoaderFactory>
       fake_remote_device_v2_loader_factory_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<RemoteDeviceProviderImpl> remote_device_provider_;
 };
-
-// ---------------------------------- V1 Only ----------------------------------
-
-TEST_F(DeviceSyncRemoteDeviceProviderImplTest, TestMultipleSyncs_V1Only) {
-  SetFeatureFlags(true /* use_v1 */, false /* use_v2 */);
-
-  // Initialize with devices 0 and 1.
-  SetV1ManagerDevices(2u /* num_devices */);
-  CreateRemoteDeviceProvider();
-  RunV1RemoteDeviceLoader();
-  VerifyV1SyncedDevices(2u /* expected_num_devices */);
-  EXPECT_EQ(1, test_observer_->num_times_device_list_changed());
-
-  // Now add device 2 and trigger another sync.
-  SetV1ManagerDevices(3u /* num_devices */);
-  NotifyV1SyncFinished(true /* success */, true /* did_devices_change */);
-  RunV1RemoteDeviceLoader();
-  VerifyV1SyncedDevices(3u /* expected_num_devices */);
-  EXPECT_EQ(2, test_observer_->num_times_device_list_changed());
-
-  // Now, simulate a sync which shows that device 2 was removed.
-  SetV1ManagerDevices(2u /* num_devices */);
-  NotifyV1SyncFinished(true /* success */, true /* did_devices_change */);
-  RunV1RemoteDeviceLoader();
-  VerifyV1SyncedDevices(2u /* expected_num_devices */);
-  EXPECT_EQ(3, test_observer_->num_times_device_list_changed());
-}
-
-TEST_F(DeviceSyncRemoteDeviceProviderImplTest,
-       TestNotifySyncFinishedParameterCombinations_V1Only) {
-  SetFeatureFlags(true /* use_v1 */, false /* use_v2 */);
-
-  SetV1ManagerDevices(1u /* num_devices */);
-  CreateRemoteDeviceProvider();
-  RunV1RemoteDeviceLoader();
-  VerifyV1SyncedDevices(1u /* expected_num_devices */);
-
-  NotifyV1SyncFinished(false /* success */, true /* did_devices_change */);
-  EXPECT_FALSE(test_device_loader_factory_->HasQueuedCallback());
-  VerifyV1SyncedDevices(1u /* expected_num_devices */);
-  EXPECT_EQ(1, test_observer_->num_times_device_list_changed());
-
-  NotifyV1SyncFinished(true /* success */, false /* did_devices_change */);
-  EXPECT_FALSE(test_device_loader_factory_->HasQueuedCallback());
-  VerifyV1SyncedDevices(1u /* expected_num_devices */);
-  EXPECT_EQ(1, test_observer_->num_times_device_list_changed());
-
-  NotifyV1SyncFinished(false /* success */, false /* did_devices_change */);
-  EXPECT_FALSE(test_device_loader_factory_->HasQueuedCallback());
-  VerifyV1SyncedDevices(1u /* expected_num_devices */);
-  EXPECT_EQ(1, test_observer_->num_times_device_list_changed());
-
-  SetV1ManagerDevices(2u /* num_devices */);
-  NotifyV1SyncFinished(true /* success */, true /* did_devices_change */);
-  RunV1RemoteDeviceLoader();
-  VerifyV1SyncedDevices(2u /* expected_num_devices */);
-  EXPECT_EQ(2, test_observer_->num_times_device_list_changed());
-}
-
-TEST_F(DeviceSyncRemoteDeviceProviderImplTest,
-       TestNewSyncDuringDeviceRegeneration_V1Only) {
-  SetFeatureFlags(true /* use_v1 */, false /* use_v2 */);
-
-  SetV1ManagerDevices(1u /* num_devices */);
-  CreateRemoteDeviceProvider();
-  RunV1RemoteDeviceLoader();
-  VerifyV1SyncedDevices(1u /* expected_num_devices */);
-
-  // Add device 1 and trigger a sync.
-  SetV1ManagerDevices(2u /* num_devices */);
-  NotifyV1SyncFinished(true /* success */, true /* did_devices_change */);
-  EXPECT_EQ(1, test_observer_->num_times_device_list_changed());
-
-  // Do not wait for the new devices to be generated (i.e., don't call
-  // RunV1RemoteDeviceLoader() yet). Trigger a new sync with device 2 included.
-  SetV1ManagerDevices(3u /* num_devices */);
-  NotifyV1SyncFinished(true /* success */, true /* did_devices_change */);
-  RunV1RemoteDeviceLoader();
-  VerifyV1SyncedDevices(3u /* expected_num_devices */);
-  EXPECT_EQ(2, test_observer_->num_times_device_list_changed());
-}
-
-TEST_F(DeviceSyncRemoteDeviceProviderImplTest, TestZeroSyncedDevices_V1Only) {
-  SetFeatureFlags(true /* use_v1 */, false /* use_v2 */);
-
-  CreateRemoteDeviceProvider();
-  RunV1RemoteDeviceLoader();
-  VerifyV1SyncedDevices(0u /* expected_num_devices */);
-  EXPECT_EQ(1, test_observer_->num_times_device_list_changed());
-  NotifyV1SyncFinished(true /* success */, false /* did_devices_change */);
-  EXPECT_FALSE(test_device_loader_factory_->HasQueuedCallback());
-  VerifyV1SyncedDevices(0u /* expected_num_devices */);
-  EXPECT_EQ(1, test_observer_->num_times_device_list_changed());
-}
 
 // ---------------------------------- V2 Only ----------------------------------
 
 TEST_F(DeviceSyncRemoteDeviceProviderImplTest, TestMultipleSyncs_V2Only) {
-  SetFeatureFlags(false /* use_v1 */, true /* use_v2 */);
-
   // Initialize with devices 0 and 1.
   SetV2ManagerDevices(2u /* num_devices */);
   CreateRemoteDeviceProvider();
@@ -594,8 +452,6 @@ TEST_F(DeviceSyncRemoteDeviceProviderImplTest, TestMultipleSyncs_V2Only) {
 
 TEST_F(DeviceSyncRemoteDeviceProviderImplTest,
        TestNotifySyncFinishedParameterCombinations_V2Only) {
-  SetFeatureFlags(false /* use_v1 */, true /* use_v2 */);
-
   SetV2ManagerDevices(1u /* num_devices */);
   CreateRemoteDeviceProvider();
   RunV2RemoteDeviceLoader();
@@ -622,8 +478,6 @@ TEST_F(DeviceSyncRemoteDeviceProviderImplTest,
 
 TEST_F(DeviceSyncRemoteDeviceProviderImplTest,
        TestNewSyncDuringDeviceRegeneration_V2Only) {
-  SetFeatureFlags(false /* use_v1 */, true /* use_v2 */);
-
   SetV2ManagerDevices(1u /* num_devices */);
   CreateRemoteDeviceProvider();
   RunV2RemoteDeviceLoader();
@@ -644,8 +498,6 @@ TEST_F(DeviceSyncRemoteDeviceProviderImplTest,
 }
 
 TEST_F(DeviceSyncRemoteDeviceProviderImplTest, TestZeroSyncedDevices_V2Only) {
-  SetFeatureFlags(false /* use_v1 */, true /* use_v2 */);
-
   CreateRemoteDeviceProvider();
   RunV2RemoteDeviceLoader();
   VerifyV2SyncedDevices(0u /* expected_num_devices */);
@@ -653,72 +505,6 @@ TEST_F(DeviceSyncRemoteDeviceProviderImplTest, TestZeroSyncedDevices_V2Only) {
   NotifyV2SyncFinished(true /* success */, false /* did_devices_change */);
   VerifyV2SyncedDevices(0u /* expected_num_devices */);
   EXPECT_EQ(1, test_observer_->num_times_device_list_changed());
-}
-
-// --------------------------------- V1 and V2 ---------------------------------
-
-TEST_F(DeviceSyncRemoteDeviceProviderImplTest, TestMultipleSyncs_V1andV2) {
-  SetFeatureFlags(true /* use_v1 */, true /* use_v2 */);
-
-  // Create the RemoteDeviceProvider with no initial devices.
-  CreateRemoteDeviceProvider();
-  RunV1RemoteDeviceLoader();
-  RunV2RemoteDeviceLoader();
-  VerifySyncedDevices({});
-  EXPECT_EQ(0, test_observer_->num_times_device_list_changed());
-
-  // Add all v1 devices and trigger a v1 DeviceSync
-  SetV1ManagerDevices(GetV1RemoteDevices().size() /* num_devices */);
-  NotifyV1SyncFinished(true /* success */, true /* did_devices_change */);
-  RunV1RemoteDeviceLoader();
-  VerifySyncedDevices(GetV1RemoteDevices());
-  EXPECT_EQ(1, test_observer_->num_times_device_list_changed());
-
-  // Add all v2 devices and trigger a v2 DeviceSync.
-  SetV2ManagerDevices(GetV2RemoteDevices().size() /* num_devices */);
-  NotifyV2SyncFinished(true /* success */, true /* did_devices_change */);
-  RunV2RemoteDeviceLoader();
-  VerifySyncedDevices(GetExpectedMergedV1andV2RemoteDevices());
-  EXPECT_EQ(2, test_observer_->num_times_device_list_changed());
-
-  // Clear all devices, running the v2 loader first and the v1 loader second.
-  SetV1ManagerDevices(0 /* num_devices */);
-  SetV2ManagerDevices(0 /* num_devices */);
-  NotifyV1SyncFinished(true /* success */, true /* did_devices_change */);
-  NotifyV2SyncFinished(true /* success */, true /* did_devices_change */);
-  RunV2RemoteDeviceLoader();
-  EXPECT_EQ(3, test_observer_->num_times_device_list_changed());
-  VerifySyncedDevices(GetV1RemoteDevices());
-  RunV1RemoteDeviceLoader();
-  EXPECT_EQ(4, test_observer_->num_times_device_list_changed());
-  VerifySyncedDevices({});
-
-  // Note: When v1 and v2 are running in parallel, v2 devices without public
-  // keys are rejected.
-  multidevice::RemoteDeviceList v2_devices_with_public_key = {
-      GetV2RemoteDevices()[0], GetV2RemoteDevices()[2],
-      GetV2RemoteDevices()[3]};
-
-  // Now, add all v2 devices and trigger a v2 DeviceSync.
-  SetV2ManagerDevices(GetV2RemoteDevices().size() /* num_devices */);
-  NotifyV2SyncFinished(true /* success */, true /* did_devices_change */);
-  RunV2RemoteDeviceLoader();
-  VerifySyncedDevices(v2_devices_with_public_key);
-  EXPECT_EQ(5, test_observer_->num_times_device_list_changed());
-
-  // Then, add all v1 devices and trigger a v1 DeviceSync.
-  SetV1ManagerDevices(GetV1RemoteDevices().size() /* num_devices */);
-  NotifyV1SyncFinished(true /* success */, true /* did_devices_change */);
-  RunV1RemoteDeviceLoader();
-  VerifySyncedDevices(GetExpectedMergedV1andV2RemoteDevices());
-  EXPECT_EQ(6, test_observer_->num_times_device_list_changed());
-
-  // Remove v1 devices.
-  SetV1ManagerDevices(0 /* num_devices */);
-  NotifyV1SyncFinished(true /* success */, true /* did_devices_change */);
-  RunV1RemoteDeviceLoader();
-  EXPECT_EQ(7, test_observer_->num_times_device_list_changed());
-  VerifySyncedDevices(v2_devices_with_public_key);
 }
 
 }  // namespace device_sync

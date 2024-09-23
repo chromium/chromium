@@ -11,7 +11,6 @@
 
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
-#include "cc/metrics/web_vital_metrics.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/geometry/rect.h"
@@ -27,12 +26,11 @@ class CC_EXPORT HeadsUpDisplayLayer : public Layer {
 
   void UpdateLocationAndSize(const gfx::Size& device_viewport,
                              float device_scale_factor);
-  void UpdateWebVitalMetrics(
-      std::unique_ptr<WebVitalMetrics> web_vital_metrics);
 
   const std::vector<gfx::Rect>& LayoutShiftRects() const;
   void SetLayoutShiftRects(const std::vector<gfx::Rect>& rects);
 
+  void SetLayerTreeHost(LayerTreeHost* host) override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
 
@@ -51,8 +49,7 @@ class CC_EXPORT HeadsUpDisplayLayer : public Layer {
   ProtectedSequenceWritable<sk_sp<SkTypeface>> typeface_;
   ProtectedSequenceWritable<std::vector<gfx::Rect>> layout_shift_rects_;
 
-  ProtectedSequenceWritable<std::unique_ptr<WebVitalMetrics>>
-      web_vital_metrics_;
+  std::string paused_debugger_message_;
 };
 
 }  // namespace cc

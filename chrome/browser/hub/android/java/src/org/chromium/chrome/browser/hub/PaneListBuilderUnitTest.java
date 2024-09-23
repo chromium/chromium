@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import androidx.test.filters.SmallTest;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import org.junit.Rule;
@@ -43,15 +44,11 @@ public class PaneListBuilderUnitTest {
     @SmallTest
     public void testRegisterAllWithDefaultOrder() {
         PaneOrderController orderController = new DefaultPaneOrderController();
+        PaneListBuilder builder = new PaneListBuilder(orderController);
+        registerAllPanes(builder);
+        ImmutableMap<Integer, LazyOneshotSupplier<Pane>> panes = builder.build();
 
-        var panes =
-                new PaneListBuilder(orderController)
-                        .registerPane(PaneId.BOOKMARKS, mMockSupplier)
-                        .registerPane(PaneId.INCOGNITO_TAB_SWITCHER, mMockSupplier)
-                        .registerPane(PaneId.TAB_SWITCHER, mMockSupplier)
-                        .build();
-
-        assertEquals(3, panes.size());
+        assertEquals(PaneId.COUNT, panes.size());
         assertEquals(orderController.getPaneOrder(), panes.keySet());
         verifyNoInteractions(mMockSupplier);
     }
@@ -60,15 +57,11 @@ public class PaneListBuilderUnitTest {
     @SmallTest
     public void testRegisterAllWithReverseDefaultOrder() {
         PaneOrderController orderController = createReverseDefaultOrderController();
+        PaneListBuilder builder = new PaneListBuilder(orderController);
+        registerAllPanes(builder);
+        ImmutableMap<Integer, LazyOneshotSupplier<Pane>> panes = builder.build();
 
-        var panes =
-                new PaneListBuilder(orderController)
-                        .registerPane(PaneId.TAB_SWITCHER, mMockSupplier)
-                        .registerPane(PaneId.INCOGNITO_TAB_SWITCHER, mMockSupplier)
-                        .registerPane(PaneId.BOOKMARKS, mMockSupplier)
-                        .build();
-
-        assertEquals(3, panes.size());
+        assertEquals(PaneId.COUNT, panes.size());
         assertEquals(orderController.getPaneOrder().asList(), panes.keySet().asList());
         verifyNoInteractions(mMockSupplier);
     }
@@ -122,5 +115,12 @@ public class PaneListBuilderUnitTest {
         return () ->
                 ImmutableSet.copyOf(
                         new DefaultPaneOrderController().getPaneOrder().asList().reverse());
+    }
+
+    private void registerAllPanes(PaneListBuilder builder) {
+        // Assumes there are no missing numbers. Relatively fragile.
+        for (@PaneId int i = 0; i < PaneId.COUNT; i++) {
+            builder.registerPane(i, mMockSupplier);
+        }
     }
 }

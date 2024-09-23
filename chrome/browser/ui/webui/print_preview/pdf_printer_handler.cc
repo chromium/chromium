@@ -268,7 +268,7 @@ void PdfPrinterHandler::Reset() {
 void PdfPrinterHandler::StartGetPrinters(
     AddedPrintersCallback added_printers_callback,
     GetPrintersDoneCallback done_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PdfPrinterHandler::StartGetCapability(const std::string& destination_id,
@@ -336,8 +336,7 @@ void PdfPrinterHandler::StartPrint(
 }
 
 void PdfPrinterHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                     int /* index */,
-                                     void* /* params */) {
+                                     int /* index */) {
   // Update downloads location and save sticky settings.
   DownloadPrefs* download_prefs = DownloadPrefs::FromBrowserContext(profile_);
   download_prefs->SetSaveFilePath(file.path().DirName());
@@ -347,7 +346,7 @@ void PdfPrinterHandler::FileSelected(const ui::SelectedFileInfo& file,
   PostPrintToPdfTask();
 }
 
-void PdfPrinterHandler::FileSelectionCanceled(void* params) {
+void PdfPrinterHandler::FileSelectionCanceled() {
   std::move(print_callback_).Run(base::Value("PDFPrintCanceled"));
   select_file_dialog_.reset();
 }
@@ -368,7 +367,7 @@ base::FilePath PdfPrinterHandler::GetFileNameForPrintJobTitle(
   DCHECK(!job_title.empty());
 #if BUILDFLAG(IS_WIN)
   base::FilePath::StringType print_job_title(base::AsWString(job_title));
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
   base::FilePath::StringType print_job_title = base::UTF16ToUTF8(job_title);
 #endif
 
@@ -441,19 +440,7 @@ void PdfPrinterHandler::SelectFile(const base::FilePath& default_filename,
 
   sticky_settings_->SaveInPrefs(profile_->GetPrefs());
 
-#if BUILDFLAG(IS_FUCHSIA)
-  // Fuchsia does not support system dialog yet. So skip the dialog
-  // and store the default download directory. See crbug.com/1226242 for the
-  // details.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&CreateDirectoryIfNotExists, GetSaveLocation()),
-      base::BindOnce(&PdfPrinterHandler::OnSaveLocationReady,
-                     weak_ptr_factory_.GetWeakPtr(), default_filename,
-                     /*prompt_user=*/false));
-#else
   OnSaveLocationReady(default_filename, prompt_user, GetSaveLocation());
-#endif
 }
 
 void PdfPrinterHandler::OnSaveLocationReady(
@@ -504,7 +491,7 @@ void PdfPrinterHandler::PostPrintToPdfTask() {
 }
 
 void PdfPrinterHandler::OnGotUniqueFileName(const base::FilePath& path) {
-  FileSelected(ui::SelectedFileInfo(path), 0, nullptr);
+  FileSelected(ui::SelectedFileInfo(path), 0);
 }
 
 void PdfPrinterHandler::OnDirectorySelected(const base::FilePath& filename,

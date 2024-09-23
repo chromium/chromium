@@ -6,6 +6,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -21,15 +22,18 @@ namespace {
 
 // Identifer for cell at given `index` in the tab grid.
 NSString* IdentifierForRegularCellAtIndex(unsigned int index) {
-  return [NSString
-      stringWithFormat:@"%@%u", @"tabStripCellPrefixIdentifier", index];
+  return [NSString stringWithFormat:@"%@%u",
+                                    TabStripCollectionViewConstants
+                                        .tabStripTabCellPrefixIdentifier,
+                                    index];
 }
 
 // Matcher for the reguar cell at the given `index`.
 id<GREYMatcher> RegularCellAtIndex(unsigned int index) {
   return grey_allOf(
       grey_accessibilityID(IdentifierForRegularCellAtIndex(index)),
-      grey_kindOfClassName(@"TabStripCell"), grey_sufficientlyVisible(), nil);
+      grey_kindOfClassName(@"TabStripTabCell"), grey_sufficientlyVisible(),
+      nil);
 }
 
 // Finds the element with the given `identifier` of given `type`.
@@ -43,8 +47,8 @@ XCUIElement* GetElementMatchingIdentifier(XCUIApplication* app,
 
 // Drags and drops the cell with the given `src_cell_identifier` to the
 // `dst_cell_identifier` position.
-void DragDropTabStripCellInTabStripView(NSString* src_cell_identifier,
-                                        NSString* dst_cell_identifier) {
+void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
+                                           NSString* dst_cell_identifier) {
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* src_element = GetElementMatchingIdentifier(
       app, src_cell_identifier, XCUIElementTypeCell);
@@ -96,15 +100,15 @@ void AssertRegularCellMovedToNewPosition(unsigned int tab_index,
 
 // Checks that dragging a regular cell to a new position correctly moves the
 // cell.
-// TODO(crbug.com/1493679): Test is flaky on simluator.
+// TODO(crbug.com/40285917): Test is flaky on simluator.
 #if TARGET_OS_SIMULATOR
-#define MAYBE_testDragTabStripCellInTabStripView \
-  FLAKY_testDragTabStripCellInTabStripView
+#define MAYBE_testDragTabStripTabCellInTabStripView \
+  FLAKY_testDragTabStripTabCellInTabStripView
 #else
-#define MAYBE_testDragTabStripCellInTabStripView \
-  testDragTabStripCellInTabStripView
+#define MAYBE_testDragTabStripTabCellInTabStripView \
+  testDragTabStripTabCellInTabStripView
 #endif
-- (void)MAYBE_testDragTabStripCellInTabStripView {
+- (void)MAYBE_testDragTabStripTabCellInTabStripView {
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
@@ -120,8 +124,8 @@ void AssertRegularCellMovedToNewPosition(unsigned int tab_index,
   // Tab2: About Version
 
   // Move Tab0 to Tab2.
-  DragDropTabStripCellInTabStripView(IdentifierForRegularCellAtIndex(0),
-                                     IdentifierForRegularCellAtIndex(2));
+  DragDropTabStripTabCellInTabStripView(IdentifierForRegularCellAtIndex(0),
+                                        IdentifierForRegularCellAtIndex(2));
   AssertRegularCellMovedToNewPosition(/*tab_index*/ 2,
                                       /*tab_title*/ @"New Tab");
 
@@ -130,8 +134,8 @@ void AssertRegularCellMovedToNewPosition(unsigned int tab_index,
   // Tab2: New Tab
 
   // Move Tab1 to Tab0.
-  DragDropTabStripCellInTabStripView(IdentifierForRegularCellAtIndex(1),
-                                     IdentifierForRegularCellAtIndex(0));
+  DragDropTabStripTabCellInTabStripView(IdentifierForRegularCellAtIndex(1),
+                                        IdentifierForRegularCellAtIndex(0));
   AssertRegularCellMovedToNewPosition(/*tab_index*/ 0,
                                       /*tab_title*/ @"About Version");
 }

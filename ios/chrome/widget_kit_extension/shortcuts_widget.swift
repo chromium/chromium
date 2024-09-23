@@ -162,6 +162,7 @@ struct ShortcutsWidget: Widget {
     .supportedFamilies([.systemMedium])
     .crDisfavoredLocations()
     .crContentMarginsDisabled()
+    .crContainerBackgroundRemovable(false)
   }
 }
 

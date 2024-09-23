@@ -42,7 +42,6 @@ DataPipeProducer::DataSource::ReadResult StringDataSource::Read(
     result.bytes_read = copyable_size;
   } else {
     NOTREACHED();
-    result.result = MOJO_RESULT_OUT_OF_RANGE;
   }
   return result;
 }

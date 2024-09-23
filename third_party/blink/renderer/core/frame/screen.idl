@@ -44,10 +44,10 @@
     [HighEntropy=Direct, Measure] readonly attribute long availTop;
 
     // Fired when the window’s screen or that screen's attributes change.
-    // https://w3c.github.io/window-placement/
+    // https://w3c.github.io/window-management/
     [SecureContext, HighEntropy, MeasureAs=WindowScreenChange] attribute EventHandler onchange;
 
     // Whether the device’s visual output extends over multiple screens.
-    // https://w3c.github.io/window-placement/
+    // https://w3c.github.io/window-management/
     [SecureContext, HighEntropy=Direct, MeasureAs=WindowScreenIsExtended] readonly attribute boolean isExtended;
 };

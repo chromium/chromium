@@ -1,0 +1,16 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.printing.print_preview.mojom;
+
+import "ash/webui/print_preview_cros/mojom/printer_capabilities.mojom";
+import "printing/mojom/print.mojom";
+
+// This interface is a conduit for the UI to get all printer related information
+// from the Ash backend.
+interface DestinationProvider {
+  // Fetch the printing capabilities for a specific destination.
+  FetchCapabilities(string destination_id,
+      printing.mojom.PrinterType printer_type) => (Capabilities capabilities);
+};

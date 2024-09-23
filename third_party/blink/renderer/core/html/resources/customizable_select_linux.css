@@ -1,0 +1,21 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * The default style sheet used to render <select> when the CustomizableSelect
+ * feature is enabled and the platform is Linux. It can be merged into
+ * linux.css when CustomizableSelect is enabled and the flag is removed.
+ */
+
+/* This sheet is appended to LayoutTheme::ExtraDefaultStyleSheet() before
+   parsing which means the selectors below are in the default html namespace:
+
+   @namespace "http://www.w3.org/1999/xhtml"
+*/
+
+select:not(:-internal-list-box) {
+    /* Selects with popup menus look like buttons with a drop down triangle on
+     * Linux. Don't apply this platform-specific rule on an
+     * appearance:base-select <select>. */
+    background-color: -internal-appearance-auto-base-select(ButtonFace, Field);
+}

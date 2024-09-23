@@ -1,6 +1,7 @@
 Name: libusbx
 URL: https://libusb.info/
 Version: 1.0.17
+Revision: 0c3d17c9b1c96afe6889ae4595abb22072fc1c0d
 CPEPrefix: cpe:/a:libusb:libusb:1.0.17:rc1
 License: LGPL 2.1
 License File: src/COPYING
@@ -30,3 +31,7 @@ Local Modifications:
   https://android.googlesource.com/platform/external/libusb/+/1e05092aa98d60c717929629ac16590595e08431
   as the 10.12 branch works fine on all previous OSes.
 - cherry-picked upstream 8d7616886e062
+- os-priv-alignment.patch has been applied, which is a backport of upstream's
+  ef8776ddea18ad5d2bf0a9d994c4cbfb6cc6f94d
+- unsigned-shifts.patch has been applied, which is a partial backport of
+  upstream's 8a05a3f4e7424eb2071e4dbe1796cff3b660a141

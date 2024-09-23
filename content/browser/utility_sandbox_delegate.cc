@@ -7,12 +7,17 @@
 #include "base/check.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
+#include "services/screen_ai/buildflags/buildflags.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE)
 #include "content/common/zygote/zygote_handle_impl_linux.h"
@@ -35,6 +40,10 @@ UtilitySandboxedProcessLauncherDelegate::
       env_(env),
 #endif
       sandbox_type_(sandbox_type),
+#if BUILDFLAG(IS_WIN)
+      app_container_disabled_(
+          GetContentClient()->browser()->IsAppContainerDisabled(sandbox_type)),
+#endif
       cmd_line_(cmd_line) {
 #if DCHECK_IS_ON()
   bool supported_sandbox_type =
@@ -76,12 +85,16 @@ UtilitySandboxedProcessLauncherDelegate::
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type_ == sandbox::mojom::Sandbox::kIme ||
       sandbox_type_ == sandbox::mojom::Sandbox::kTts ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kNearby ||
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
       sandbox_type_ == sandbox::mojom::Sandbox::kLibassistant ||
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       sandbox_type_ == sandbox::mojom::Sandbox::kScreenAI ||
+#endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+      sandbox_type_ == sandbox::mojom::Sandbox::kVideoEffects ||
 #endif
       sandbox_type_ == sandbox::mojom::Sandbox::kAudio ||
       sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition;
@@ -113,9 +126,9 @@ ZygoteCommunication* UtilitySandboxedProcessLauncherDelegate::GetZygote() {
   if (sandbox::policy::IsUnsandboxedSandboxType(sandbox_type_))
     return nullptr;
 
-  // TODO(crbug.com/1427280): remove this special case and fork from the zygote.
-  // For now, browser tests fail when forking the network service from the
-  // unsandboxed zygote, as the forked process only creates the
+  // TODO(crbug.com/40261714): remove this special case and fork from the
+  // zygote. For now, browser tests fail when forking the network service from
+  // the unsandboxed zygote, as the forked process only creates the
   // NetworkServiceTestHelper if the process is exec'd.
   if (sandbox_type_ == sandbox::mojom::Sandbox::kNetwork) {
     return nullptr;
@@ -135,6 +148,7 @@ ZygoteCommunication* UtilitySandboxedProcessLauncherDelegate::GetZygote() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type_ == sandbox::mojom::Sandbox::kIme ||
       sandbox_type_ == sandbox::mojom::Sandbox::kTts ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kNearby ||
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
       sandbox_type_ == sandbox::mojom::Sandbox::kLibassistant ||
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)

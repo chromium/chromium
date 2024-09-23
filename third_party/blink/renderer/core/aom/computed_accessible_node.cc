@@ -53,7 +53,9 @@ ComputedAccessibleNodePromiseResolver::ComputedAccessibleNodePromiseResolver(
     Document& document,
     AXID ax_id)
     : ax_id_(ax_id),
-      resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
+      resolver_(
+          MakeGarbageCollected<ScriptPromiseResolver<ComputedAccessibleNode>>(
+              script_state)),
       ax_context_(std::make_unique<AXContext>(document, ui::kAXModeComplete)) {
   DCHECK(ax_id);
 }
@@ -62,11 +64,14 @@ ComputedAccessibleNodePromiseResolver::ComputedAccessibleNodePromiseResolver(
     ScriptState* script_state,
     Element& element)
     : element_(element),
-      resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
+      resolver_(
+          MakeGarbageCollected<ScriptPromiseResolver<ComputedAccessibleNode>>(
+              script_state)),
       ax_context_(std::make_unique<AXContext>(element.GetDocument(),
                                               ui::kAXModeComplete)) {}
 
-ScriptPromise ComputedAccessibleNodePromiseResolver::Promise() {
+ScriptPromise<ComputedAccessibleNode>
+ComputedAccessibleNodePromiseResolver::Promise() {
   return resolver_->Promise();
 }
 
@@ -114,7 +119,7 @@ void ComputedAccessibleNodePromiseResolver::UpdateTreeAndResolve() {
   ax_context_->GetDocument()->View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kAccessibility);
   AXObjectCache& cache = ax_context_->GetAXObjectCache();
-  AXID ax_id = ax_id_ ? ax_id_ : cache.GetAXID(element_);
+  AXID ax_id = ax_id_ ? ax_id_ : element_->GetDomNodeId();
   if (!ax_id || !cache.ObjectFromAXID(ax_id)) {
     resolver_->Resolve();  // No AXObject exists for this element.
     return;
@@ -223,13 +228,13 @@ std::optional<float> ComputedAccessibleNode::valueNow() const {
   return GetFloatAttribute(WebAOMFloatAttribute::AOM_ATTR_VALUE_NOW);
 }
 
-ScriptPromise ComputedAccessibleNode::ensureUpToDate(
+ScriptPromise<ComputedAccessibleNode> ComputedAccessibleNode::ensureUpToDate(
     ScriptState* script_state) {
   if (!GetDocument())
-    return ScriptPromise();  // Empty promise.
+    return EmptyPromise();  // Empty promise.
   auto* resolver = MakeGarbageCollected<ComputedAccessibleNodePromiseResolver>(
       script_state, *GetDocument(), ax_id_);
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   resolver->EnsureUpToDate();
   return promise;
 }

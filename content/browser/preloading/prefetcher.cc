@@ -86,14 +86,14 @@ void Prefetcher::ProcessCandidatesForPrefetch(
     delegate_->ProcessCandidates(candidates);
 }
 
-bool Prefetcher::MaybePrefetch(
-    blink::mojom::SpeculationCandidatePtr candidate) {
+bool Prefetcher::MaybePrefetch(blink::mojom::SpeculationCandidatePtr candidate,
+                               const PreloadingPredictor& enacting_predictor) {
   PrefetchDocumentManager* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(
           &render_frame_host());
 
   return prefetch_document_manager->MaybePrefetch(
-      candidate.Clone(), weak_ptr_factory_.GetWeakPtr());
+      std::move(candidate), enacting_predictor, weak_ptr_factory_.GetWeakPtr());
 }
 
 }  // namespace content

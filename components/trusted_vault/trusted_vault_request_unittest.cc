@@ -50,9 +50,9 @@ const char kResponseBody[] = "response_body";
 
 MATCHER(HasValidAccessToken, "") {
   const network::TestURLLoaderFactory::PendingRequest& pending_request = arg;
-  std::string access_token_header;
-  pending_request.request.headers.GetHeader("Authorization",
-                                            &access_token_header);
+  std::string access_token_header =
+      pending_request.request.headers.GetHeader("Authorization")
+          .value_or(std::string());
   return access_token_header == base::StringPrintf("Bearer %s", kAccessToken);
 }
 

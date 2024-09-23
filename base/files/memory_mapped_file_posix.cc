@@ -28,8 +28,9 @@ bool MemoryMappedFile::MapFileRegionToMemory(
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
   off_t map_start = 0;
-  size_t map_size = 0;
+  size_t map_size = 0u;
   int32_t data_offset = 0;
+  size_t byte_size = 0u;
 
   if (region == MemoryMappedFile::Region::kWholeFile) {
     int64_t file_len = file_.GetLength();
@@ -39,15 +40,15 @@ bool MemoryMappedFile::MapFileRegionToMemory(
     }
     if (!IsValueInRangeForNumericType<size_t>(file_len))
       return false;
-    map_size = static_cast<size_t>(file_len);
-    length_ = map_size;
+    map_size = base::checked_cast<size_t>(file_len);
+    byte_size = map_size;
   } else {
     // The region can be arbitrarily aligned. mmap, instead, requires both the
     // start and size to be page-aligned. Hence, we map here the page-aligned
     // outer region [|aligned_start|, |aligned_start| + |size|] which contains
     // |region| and then add up the |data_offset| displacement.
     int64_t aligned_start = 0;
-    size_t aligned_size = 0;
+    size_t aligned_size = 0u;
     CalculateVMAlignedBoundaries(region.offset,
                                  region.size,
                                  &aligned_start,
@@ -61,9 +62,15 @@ bool MemoryMappedFile::MapFileRegionToMemory(
       return false;
     }
 
-    map_start = static_cast<off_t>(aligned_start);
+    map_start = base::checked_cast<off_t>(aligned_start);
     map_size = aligned_size;
-    length_ = region.size;
+    byte_size = region.size;
+  }
+
+  if (map_size == 0u) {
+    // mmap() requires `map_size > 0`, and this ensures an empty span indicates
+    // invalid.
+    return false;
   }
 
   int prot = 0;
@@ -91,14 +98,36 @@ bool MemoryMappedFile::MapFileRegionToMemory(
       break;
   }
 
-  data_ = static_cast<uint8_t*>(
+  auto* ptr = static_cast<uint8_t*>(
       mmap(nullptr, map_size, prot, flags, file_.GetPlatformFile(), map_start));
-  if (data_ == MAP_FAILED) {
+  if (ptr == MAP_FAILED) {
     DPLOG(ERROR) << "mmap " << file_.GetPlatformFile();
     return false;
   }
 
-  data_ += data_offset;
+  // SAFETY: For the span construction to be valid, `ptr` needs to point to at
+  // least `map_size` many bytes, which is the guarantee of mmap() when it
+  // returns a valid pointer, and that `data_offset + byte_size <= map_size`.
+  //
+  // If the mapping is of the whole file, `map_size == byte_size`
+  // and `data_offset == 0`, so `data_offset + byte_size <= map_size` is
+  // trivially satisfied.
+  //
+  // If the mapping is a sub-range of the file:
+  // - `aligned_start` is page aligned and <= `start`.
+  // - `map_size` is a multiple of the VM granularity and >=
+  //   `byte_size`.
+  // - `data_offset` is the displacement of `start` w.r.t `aligned_start`.
+  // |..................|xxxxxxxxxxxxxxxxxx|.................|
+  // ^ aligned start    ^ start            |                 |
+  // ^------------------^ data_offset      |                 |
+  //                    ^------------------^ byte_size       |
+  // ^-------------------------------------------------------^ map_size
+  //
+  // The `data_offset` undoes the alignment of start. The `map_size` contains
+  // the padding before and after the mapped region to satisfy alignment. So
+  // the `data_offset + byte_size <= map_size`.
+  bytes_ = UNSAFE_BUFFERS(base::span(ptr + data_offset, byte_size));
   return true;
 }
 #endif
@@ -106,11 +135,11 @@ bool MemoryMappedFile::MapFileRegionToMemory(
 void MemoryMappedFile::CloseHandles() {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
-  if (data_ != nullptr) {
-    munmap(data_, length_);
+  if (!bytes_.empty()) {
+    munmap(bytes_.data(), bytes_.size());
   }
   file_.Close();
-  length_ = 0;
+  bytes_ = base::span<uint8_t>();
 }
 
 }  // namespace base

@@ -38,6 +38,8 @@ class MockCloudPolicyServiceObserver : public CloudPolicyService::Observer {
   ~MockCloudPolicyServiceObserver() override;
 
   MOCK_METHOD0(OnCloudPolicyServiceInitializationCompleted, void());
+
+  std::string_view name() const override;
 };
 
 }  // namespace policy

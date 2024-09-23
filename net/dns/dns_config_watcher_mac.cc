@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/dns/dns_config_watcher_mac.h"
 
 #include <dlfcn.h>
 
+#include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/apple_apsl/dnsinfo.h"
@@ -75,7 +81,14 @@ bool DnsConfigWatcher::Watch(
                         callback);
 }
 
-// static
+// `dns_config->resolver` contains an array of pointers but is not correctly
+// aligned. Pointers, on 64-bit, have 8-byte alignment but everything in
+// dnsinfo.h is modified to have 4-byte alignment with pragma pack. Those
+// pragmas are not sufficient to realign the `dns_resolver_t*` elements of
+// `dns_config->resolver`. The header would need to be patched to replace
+// `dns_resolver_t**` with, say, a `dns_resolver_ptr*` where `dns_resolver_ptr`
+// is a less aligned `dns_resolver_t*` type.
+NO_SANITIZE("alignment")
 bool DnsConfigWatcher::CheckDnsConfig(bool& out_unhandled_options) {
   if (!GetDnsInfoApi().dns_configuration_copy)
     return false;

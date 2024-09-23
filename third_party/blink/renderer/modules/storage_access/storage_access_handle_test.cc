@@ -5,12 +5,15 @@
 #include "third_party/blink/renderer/modules/storage_access/storage_access_handle.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_access_types.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/modules/broadcastchannel/broadcast_channel.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -21,6 +24,7 @@ namespace blink {
 namespace {
 
 using TestParams = std::tuple<bool,
+                              bool,
                               bool,
                               bool,
                               bool,
@@ -56,6 +60,7 @@ class StorageAccessHandleTest : public testing::TestWithParam<TestParams> {
   bool createObjectURL() { return std::get<9>(GetParam()); }
   bool revokeObjectURL() { return std::get<10>(GetParam()); }
   bool BroadcastChannel() { return std::get<11>(GetParam()); }
+  bool SharedWorker() { return std::get<12>(GetParam()); }
 
   LocalDOMWindow* getLocalDOMWindow() {
     test::ScopedMockedURLLoad scoped_mocked_url_load_root(
@@ -88,6 +93,7 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   storage_access_types->setCreateObjectURL(createObjectURL());
   storage_access_types->setRevokeObjectURL(revokeObjectURL());
   storage_access_types->setBroadcastChannel(BroadcastChannel());
+  storage_access_types->setSharedWorker(SharedWorker());
   StorageAccessHandle* storage_access_handle =
       MakeGarbageCollected<StorageAccessHandle>(*window, storage_access_types);
   EXPECT_TRUE(window->document()->IsUseCounted(
@@ -150,6 +156,11 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel),
       BroadcastChannel());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker),
+      SharedWorker());
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use));
@@ -180,6 +191,9 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker_Use));
   {
     V8TestingScope scope;
     storage_access_handle->sessionStorage(scope.GetExceptionState());
@@ -235,7 +249,7 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   }
   {
     V8TestingScope scope;
-    ScriptPromise promise = storage_access_handle->getDirectory(
+    ScriptPromiseUntyped promise = storage_access_handle->getDirectory(
         scope.GetScriptState(), scope.GetExceptionState());
     ScriptPromiseTester tester(scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
@@ -251,7 +265,7 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   }
   {
     V8TestingScope scope;
-    ScriptPromise promise = storage_access_handle->estimate(
+    ScriptPromiseUntyped promise = storage_access_handle->estimate(
         scope.GetScriptState(), scope.GetExceptionState());
     ScriptPromiseTester tester(scope.GetScriptState(), promise);
     if (all() || estimate()) {
@@ -303,6 +317,17 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
                   ? nullptr
                   : StorageAccessHandle::kBroadcastChannelNotRequested);
   }
+  {
+    V8TestingScope scope;
+    storage_access_handle->SharedWorker(scope.GetExecutionContext(), "",
+                                        nullptr, scope.GetExceptionState());
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kSecurityError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              (all() || SharedWorker())
+                  ? "Access to shared workers is denied to origin 'null'."
+                  : StorageAccessHandle::kSharedWorkerNotRequested);
+  }
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
@@ -353,6 +378,11 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use),
       all() || BroadcastChannel());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker_Use),
+      all() || SharedWorker());
 }
 
 // Test all handles.
@@ -386,6 +416,28 @@ INSTANTIATE_TEST_SUITE_P(
         MakeParamsWithSetBit<10>(),
         // BroadcastChannel:
         MakeParamsWithSetBit<11>(),
+        // SharedWorker:
+        MakeParamsWithSetBit<12>(),
     }));
+
+TEST(StorageAccessHandleRetentionTest, Lifespan) {
+  test::TaskEnvironment task_environment;
+  std::unique_ptr<DummyPageHolder> holder =
+      DummyPageHolder::CreateAndCommitNavigation(
+          KURL("https://www.example.com"));
+  LocalDOMWindow* window = holder->GetFrame().DomWindow();
+  StorageAccessTypes* storage_access_types =
+      MakeGarbageCollected<StorageAccessTypes>();
+  storage_access_types->setBroadcastChannel(true);
+  StorageAccessHandle* storage_access_handle =
+      MakeGarbageCollected<StorageAccessHandle>(*window, storage_access_types);
+  V8TestingScope scope;
+  class BroadcastChannel* channel = storage_access_handle->BroadcastChannel(
+      scope.GetExecutionContext(), "foo", scope.GetExceptionState());
+  EXPECT_TRUE(channel->IsRemoteClientConnectedForTesting());
+  storage_access_handle = nullptr;
+  WebHeap::CollectGarbageForTesting();
+  EXPECT_TRUE(channel->IsRemoteClientConnectedForTesting());
+}
 
 }  // namespace blink

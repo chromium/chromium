@@ -26,9 +26,6 @@ WebStateUpdateBrowserAgent::~WebStateUpdateBrowserAgent() {}
 
 void WebStateUpdateBrowserAgent::UpdateWebStateScrollViewOffset(
     CGFloat toolbar_height) {
-  if (!web_state_list_) {
-    return;
-  }
   for (int index = 0; index < web_state_list_->count(); ++index) {
     web::WebState* web_state = web_state_list_->GetWebStateAt(index);
     CRWWebViewScrollViewProxy* scroll_proxy =
@@ -58,13 +55,14 @@ void WebStateUpdateBrowserAgent::WebStateListDidChange(
 
   if (status.active_web_state_change()) {
     // Inform the old web state that it is no longer visible.
-    if (status.old_active_web_state) {
-      status.old_active_web_state->WasHidden();
-      status.old_active_web_state->SetKeepRenderProcessAlive(false);
+    if (web::WebState* old_active = status.old_active_web_state;
+        old_active && old_active->IsRealized()) {
+      old_active->WasHidden();
+      old_active->SetKeepRenderProcessAlive(false);
     }
-    if (status.new_active_web_state) {
-      status.new_active_web_state->GetWebViewProxy()
-          .scrollViewProxy.clipsToBounds = NO;
+    if (web::WebState* new_active = status.new_active_web_state;
+        new_active && new_active->IsRealized()) {
+      new_active->GetWebViewProxy().scrollViewProxy.clipsToBounds = NO;
     }
   }
 }

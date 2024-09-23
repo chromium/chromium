@@ -179,6 +179,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
 
     std::map<std::string, std::string> params;
     params["random_anchor_sampling_period"] = "1";
+    params["traffic_client_enabled_percent"] = "100";
     param_feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kNavigationPredictor, params);
 
@@ -343,8 +344,9 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
             prerender::FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
     std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle =
-        no_state_prefetch_manager->StartPrefetchingFromOmnibox(
-            url, storage_namespace, gfx::Size(640, 480), nullptr);
+        no_state_prefetch_manager->AddSameOriginSpeculation(
+            url, storage_namespace, gfx::Size(640, 480),
+            url::Origin::Create(url));
     ASSERT_EQ(no_state_prefetch_handle->contents(), test_prerender->contents());
 
     // The final status may be either  FINAL_STATUS_NOSTATE_PREFETCH_FINISHED or
@@ -433,7 +435,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
                optimization_guide::HintsFetcherRemoteResponseType::kHung) {
       return std::make_unique<net::test_server::HungResponse>();
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     return std::move(response);
@@ -452,7 +454,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
       hosts_and_urls_requested.insert(host.host());
     }
     for (const auto& url : hints_request.urls()) {
-      // TODO(crbug/1051365):  Remove normalization step once nav predictor
+      // TODO(crbug.com/40118423):  Remove normalization step once nav predictor
       // provides predictable URLs.
       hosts_and_urls_requested.insert(GURL(url.url()).GetAsReferrer().spec());
     }
@@ -1323,7 +1325,7 @@ class HintsFetcherSearchPageBrowserTest : public HintsFetcherBrowserTest {
   }
 };
 
-// TODO(crbug.com/1459340): De-leakify and re-enable.
+// TODO(crbug.com/40919396): De-leakify and re-enable.
 #if BUILDFLAG(IS_LINUX) && defined(LEAK_SANITIZER)
 #define MAYBE_HintsFetcher_SRP_Slow_Connection \
   DISABLED_HintsFetcher_SRP_Slow_Connection
@@ -1473,7 +1475,8 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPagePrerenderingBrowserTest,
   // Load a page in the prerender.
   GURL prerender_url = search_results_page_url();
   ResetCountHintsRequestsReceived();
-  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper()->AddPrerender(prerender_url);
   EXPECT_EQ(0u, count_hints_requests_received());
   histogram_tester->ExpectBucketCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0, 0);
@@ -1504,7 +1507,8 @@ class HintsFetcherSearchPageDisabledBrowserTest
         // Enabled.
         {{optimization_guide::features::kOptimizationHints, {}},
          {blink::features::kNavigationPredictor,
-          {{"random_anchor_sampling_period", "1"}}},
+          {{"random_anchor_sampling_period", "1"},
+           {"traffic_client_enabled_percent", "100"}}},
          {
              optimization_guide::features::kRemoteOptimizationGuideFetching,
              {{"max_concurrent_page_navigation_fetches", "2"},
@@ -1649,7 +1653,7 @@ class HintsFetcherSearchPageLimitedURLsBrowserTest
   }
 };
 
-// TODO(crbug/1463073): Disable limited SRP test on Windows/CrOS for now.
+// TODO(crbug.com/40067071): Disable limited SRP test on Windows/CrOS for now.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_HintsFetcherLimitedResults DISABLED_HintsFetcherLimitedResults
 #else

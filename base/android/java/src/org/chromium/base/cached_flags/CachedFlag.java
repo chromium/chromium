@@ -4,12 +4,15 @@
 
 package org.chromium.base.cached_flags;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureMap;
 import org.chromium.base.Flag;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.BuildConfig;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +48,19 @@ public class CachedFlag extends Flag {
     public CachedFlag(FeatureMap featureMap, String featureName, boolean defaultValue) {
         super(featureMap, featureName);
         mDefaultValue = defaultValue;
+    }
+
+    /**
+     * Constructor to use when a |defaultValueInTests| is specified to mimic reading from
+     * field_trial_config.json.
+     */
+    public CachedFlag(
+            FeatureMap featureMap,
+            String featureName,
+            boolean defaultValue,
+            boolean defaultValueInTests) {
+        super(featureMap, featureName);
+        mDefaultValue = BuildConfig.IS_FOR_TEST ? defaultValueInTests : defaultValue;
     }
 
     /**
@@ -117,12 +133,13 @@ public class CachedFlag extends Flag {
         }
     }
 
-    /** Caches the value of the feature from {@link FeatureMap} to SharedPrefs. */
-    void cacheFeature() {
-        boolean isEnabledInNative = mFeatureMap.isEnabledInNative(mFeatureName);
-
-        CachedFlagsSharedPreferences.getInstance()
-                .writeBoolean(getSharedPreferenceKey(), isEnabledInNative);
+    /**
+     * Writes the value of the feature from {@link FeatureMap} to the provided SharedPrefs Editor
+     * for caching. Does not apply or commit the change - that is left up to the caller to perform.
+     */
+    void writeCacheValueToEditor(final SharedPreferences.Editor editor) {
+        final boolean isEnabledInNative = mFeatureMap.isEnabledInNative(mFeatureName);
+        editor.putBoolean(getSharedPreferenceKey(), isEnabledInNative);
     }
 
     String getSharedPreferenceKey() {
@@ -137,24 +154,19 @@ public class CachedFlag extends Flag {
      * Sets the feature flags to use in JUnit and instrumentation tests.
      *
      * @deprecated Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations
-     * instead.
+     *     instead.
      */
     @Deprecated
     public static void setFeaturesForTesting(Map<String, Boolean> features) {
-        for (Map.Entry<String, Boolean> entry : features.entrySet()) {
-            String featureName = entry.getKey();
-            Boolean flagValue = entry.getValue();
-            String sharedPreferencesKey =
-                    CachedFlagsSharedPreferences.FLAGS_CACHED.createKey(featureName);
-            synchronized (ValuesReturned.sBoolValues) {
+        synchronized (ValuesReturned.sBoolValues) {
+            for (Map.Entry<String, Boolean> entry : features.entrySet()) {
+                String featureName = entry.getKey();
+                Boolean flagValue = entry.getValue();
+                String sharedPreferencesKey =
+                        CachedFlagsSharedPreferences.FLAGS_CACHED.createKey(featureName);
                 ValuesReturned.sBoolValues.put(sharedPreferencesKey, flagValue);
             }
         }
-    }
-
-    public static void resetDiskForTesting() {
-        CachedFlagsSharedPreferences.getInstance()
-                .removeKeysWithPrefix(CachedFlagsSharedPreferences.FLAGS_CACHED);
     }
 
     /** Create a Map of feature names -> {@link CachedFlag} from multiple lists of CachedFlags. */

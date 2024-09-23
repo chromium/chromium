@@ -19,17 +19,15 @@
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{privacyPageTitle}">
-      <template is="dom-if" if="[[showPrivacyHubPage_]]" restamp>
-        <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-          <cr-link-row id="privacyHubSubpageTrigger"
-              start-icon="[[rowIcons_.privacyHub]]"
-              on-click="onPrivacyHubClick_"
-              label="$i18n{privacyHubTitle}"
-              sub-label="$i18n{privacyHubSubtext}"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-          <div class="hr"></div>
-        </template>
+      <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+        <cr-link-row id="privacyHubSubpageTrigger"
+            start-icon="[[rowIcons_.privacyHub]]"
+            on-click="onPrivacyHubClick_"
+            label="$i18n{privacyHubTitle}"
+            sub-label="$i18n{privacyHubSubtext}"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+        <div class="hr"></div>
       </template>
       <template is="dom-if" if="[[!isGuestMode_]]" restamp>
         <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
@@ -69,14 +67,6 @@
       </template>
 
 <if expr="_google_chrome">
-      <template is="dom-if" if="[[!showPrivacyHubPage_]]" restamp>
-        <settings-metrics-consent-toggle-button
-            id="metricsConsentToggle"
-            deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
-            prefs="{{prefs}}">
-        </settings-metrics-consent-toggle-button>
-        <div class="hr"></div>
-      </template>
       <template is="dom-if" if="[[isRevenBranding_]]">
         <settings-toggle-button
             id="enable-hw-data-usage"
@@ -87,17 +77,6 @@
         <div class="hr"></div>
       </template>
 </if>
-      <template is="dom-if" if="[[!showPrivacyHubPage_]]" restamp>
-        <settings-toggle-button
-            id="contentRecommendationsToggle"
-            icon="[[rowIcons_.suggestedContent]]"
-            pref="{{prefs.settings.suggested_content_enabled}}"
-            label="$i18n{enableSuggestedContent}"
-            sub-label="$i18n{enableSuggestedContentDesc}"
-            learn-more-url="$i18n{suggestedContentLearnMoreURL}">
-        </settings-toggle-button>
-        <div class="hr"></div>
-      </template>
       <settings-toggle-button
           id="verifiedAccessToggle"
           icon="[[rowIcons_.verifiedAccess]]"
@@ -107,16 +86,14 @@
           on-settings-boolean-control-change="onVerifiedAccessChange_"
           deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
       </settings-toggle-button>
-      <template is="dom-if" if="[[showPrivacyHubPage_]]" restamp>
-        <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
-          <cr-link-row id="privacyHubSubpageTrigger"
-              class="hr"
-              on-click="onPrivacyHubClick_"
-              label="$i18n{privacyHubTitle}"
-              sub-label="$i18n{privacyHubSubtext}"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
+      <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+        <cr-link-row id="privacyHubSubpageTrigger"
+            class="hr"
+            on-click="onPrivacyHubClick_"
+            label="$i18n{privacyHubTitle}"
+            sub-label="$i18n{privacyHubSubtext}"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
       </template>
       <template is="dom-if" if="[[isThunderboltSupported_]]">
         <div class="hr"></div>
@@ -169,6 +146,38 @@
     </settings-card>
   </div>
 
+  <!-- Privacy Hub pages -->
+  <template is="dom-if" route-path="/osPrivacy/privacyHub">
+    <os-settings-subpage page-title="$i18n{privacyHubTitle}">
+      <settings-privacy-hub-subpage prefs="{{prefs}}">
+      </settings-privacy-hub-subpage>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/osPrivacy/privacyHub/microphone">
+    <os-settings-subpage page-title="$i18n{microphoneToggleTitle}">
+      <settings-privacy-hub-microphone-subpage prefs="{{prefs}}">
+      </settings-privacy-hub-microphone-subpage>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/osPrivacy/privacyHub/camera">
+    <os-settings-subpage page-title="$i18n{cameraToggleTitle}">
+      <settings-privacy-hub-camera-subpage prefs="{{prefs}}">
+      </settings-privacy-hub-camera-subpage>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/osPrivacy/privacyHub/geolocation">
+    <os-settings-subpage page-title="$i18n{geolocationAreaTitle}">
+      <settings-privacy-hub-geolocation-subpage prefs="{{prefs}}">
+      </settings-privacy-hub-geolocation-subpage>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/osPrivacy/privacyHub/geolocation/advanced">
+    <os-settings-subpage page-title="$i18n{geolocationAdvancedAreaTitle}">
+      <settings-privacy-hub-geolocation-advanced-subpage prefs="{{prefs}}">
+      </settings-privacy-hub-geolocation-advanced-subpage>
+    </os-settings-subpage>
+  </template>
+
   <template is="dom-if" if="[[!isGuestMode_]]" restamp>
     <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
       <template is="dom-if" route-path="/osSyncSetup">
@@ -191,7 +200,8 @@
     <template is="dom-if" route-path="/osPrivacy/lockScreen">
       <os-settings-subpage page-title="[[selectLockScreenTitleString_(hasPinLogin)]]">
         <settings-lock-screen-subpage id="lockScreen"
-            prefs="{{prefs}}" auth-token="[[authTokenInfo_.token]]"
+            prefs="{{prefs}}"
+            auth-token="[[getAuthToken_(authTokenInfo_, authTokenReply_)]]"
             on-invalidate-auth-token-requested="onInvalidateTokenRequested_"
             on-password-requested="onPasswordRequested_">
         </settings-lock-screen-subpage>
@@ -200,7 +210,7 @@
     <template is="dom-if" route-path="/osPrivacy/lockScreen/fingerprint">
       <os-settings-subpage page-title="$i18n{lockScreenFingerprintTitle}">
         <settings-fingerprint-list-subpage id="fingerprint-list"
-            auth-token="[[authTokenInfo_.token]]"
+            auth-token="[[getAuthToken_(authTokenInfo_, authTokenReply_)]]"
             on-password-requested="onPasswordRequested_">
         </settings-fingerprint-list-subpage>
       </os-settings-subpage>
@@ -215,30 +225,6 @@
       <os-settings-subpage page-title="$i18n{smartPrivacyTitle}">
         <settings-smart-privacy-subpage prefs="{{prefs}}">
         </settings-smart-privacy-subpage>
-      </os-settings-subpage>
-    </template>
-    <template is="dom-if" route-path="/osPrivacy/privacyHub">
-      <os-settings-subpage page-title="$i18n{privacyHubTitle}">
-        <settings-privacy-hub-subpage prefs="{{prefs}}">
-        </settings-privacy-hub-subpage>
-      </os-settings-subpage>
-    </template>
-    <template is="dom-if" route-path="/osPrivacy/privacyHub/microphone">
-      <os-settings-subpage page-title="$i18n{microphoneToggleTitle}">
-        <settings-privacy-hub-microphone-subpage prefs="{{prefs}}">
-        </settings-privacy-hub-microphone-subpage>
-      </os-settings-subpage>
-    </template>
-    <template is="dom-if" route-path="/osPrivacy/privacyHub/camera">
-      <os-settings-subpage page-title="$i18n{cameraToggleTitle}">
-        <settings-privacy-hub-camera-subpage prefs="{{prefs}}">
-        </settings-privacy-hub-camera-subpage>
-      </os-settings-subpage>
-    </template>
-    <template is="dom-if" route-path="/osPrivacy/privacyHub/geolocation">
-      <os-settings-subpage page-title="$i18n{geolocationAreaTitle}">
-        <settings-privacy-hub-geolocation-subpage prefs="{{prefs}}">
-        </settings-privacy-hub-geolocation-subpage>
       </os-settings-subpage>
     </template>
   </template>

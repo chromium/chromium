@@ -8,12 +8,12 @@
 ::-webkit-scrollbar {
     width: 16px;
     height: 16px;
-    -webkit-appearance: searchfield-cancel-button;
+    -webkit-appearance: button;
 }
 
 ::-webkit-scrollbar-track {
     background-color: #E3E3E3;
-    -webkit-appearance: searchfield-cancel-button;
+    -webkit-appearance: button;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -38,7 +38,7 @@ PASS if not crashed.
 <script>
 async_test(t => {
   runAfterLayoutAndPaint(t.step_func_done(() => {}));
-}, 'Do not crash if -webkit-scrollbar* has -webkit-appearance:searchfield-cancel-button');
+}, 'Do not crash if -webkit-scrollbar* has -webkit-appearance:button');
 </script>
 </body>
 </html>

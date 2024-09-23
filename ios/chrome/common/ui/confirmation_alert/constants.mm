@@ -20,3 +20,5 @@ NSString* const kConfirmationAlertTertiaryActionAccessibilityIdentifier =
     @"kConfirmationAlertTertiaryActionAccessibilityIdentifier";
 NSString* const kConfirmationAlertUnderTitleViewAccessibilityIdentifier =
     @"kConfirmationAlertUnderTitleViewAccessibilityIdentifier";
+NSString* const kConfirmationAlertCheckmarkSymbolIdentifier =
+    @"kConfirmationAlertCheckmarkSymbolIdentifier";

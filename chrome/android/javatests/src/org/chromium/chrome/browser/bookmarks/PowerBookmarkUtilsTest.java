@@ -50,6 +50,7 @@ public class PowerBookmarkUtilsTest {
                         .setProductClusterId(123)
                         .setOfferId(456)
                         .setCountryCode("us")
+                        .setLocale("en-US")
                         .setCurrentPrice(ProductPrice.newBuilder().setAmountMicros(100).build())
                         .build();
         PowerBookmarkMeta meta =
@@ -63,6 +64,7 @@ public class PowerBookmarkUtilsTest {
         Assert.assertEquals("456", subscription.userSeenOffer.offerId);
         Assert.assertEquals(100L, subscription.userSeenOffer.userSeenPrice);
         Assert.assertEquals("us", subscription.userSeenOffer.countryCode);
+        Assert.assertEquals("en-US", subscription.userSeenOffer.locale);
     }
 
     @Test
@@ -73,6 +75,7 @@ public class PowerBookmarkUtilsTest {
                         .setProductClusterId(123)
                         .setOfferId(456)
                         .setCountryCode("us")
+                        .setLocale("en-US")
                         .setCurrentPrice(ProductPrice.newBuilder().setAmountMicros(100).build())
                         .build();
         CommerceSubscription subscription =
@@ -84,6 +87,7 @@ public class PowerBookmarkUtilsTest {
         Assert.assertEquals("456", subscription.userSeenOffer.offerId);
         Assert.assertEquals(100L, subscription.userSeenOffer.userSeenPrice);
         Assert.assertEquals("us", subscription.userSeenOffer.countryCode);
+        Assert.assertEquals("en-US", subscription.userSeenOffer.locale);
     }
 
     /**

@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -48,8 +49,8 @@ constexpr int64_t kMaxTimeoutInMilliseconds = 1000 * 60 * 60;
 // Determine whether an RP ID is a 'valid domain' as per the URL spec:
 // https://url.spec.whatwg.org/#valid-domain
 //
-// TODO(crbug.com/1354209): This is a workaround to a lack of support for 'valid
-// domain's in the //url code.
+// TODO(crbug.com/40858925): This is a workaround to a lack of support for
+// 'valid domain's in the //url code.
 bool IsValidDomain(const std::string& rp_id) {
   // A valid domain, such as 'site.example', should be a URL host (and nothing
   // more of the URL!) that is not an IP address.
@@ -123,6 +124,28 @@ bool IsValid(const mojom::SecurePaymentConfirmationRequestPtr& request,
     return false;
   }
 
+  if (request->network_info) {
+    if (request->network_info->name.empty()) {
+      *error_message = errors::kNetworkNameRequired;
+      return false;
+    }
+    if (!request->network_info->icon.is_valid()) {
+      *error_message = errors::kValidNetworkIconRequired;
+      return false;
+    }
+  }
+
+  if (request->issuer_info) {
+    if (request->issuer_info->name.empty()) {
+      *error_message = errors::kIssuerNameRequired;
+      return false;
+    }
+    if (!request->issuer_info->icon.is_valid()) {
+      *error_message = errors::kValidIssuerIconRequired;
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -135,8 +158,35 @@ bool RequiresThirdPartyPaymentBit(const url::Origin& caller_origin,
                                                         caller_origin);
 }
 
+enum class IconType { PAYMENT_INSTRUMENT, NETWORK, ISSUER };
+
+struct IconInfo {
+  GURL url;
+  std::optional<int> request_id;
+  SkBitmap icon;
+};
+
+// Handles the download of a given IconInfo; copying the downloaded bitmap into
+// the IconInfo and notifying the BarrierClosure.
+void DidDownloadIcon(IconInfo* icon_info,
+                     base::OnceClosure done_closure,
+                     int request_id,
+                     int unused_http_status_code,
+                     const GURL& unused_image_url,
+                     const std::vector<SkBitmap>& bitmaps,
+                     const std::vector<gfx::Size>& unused_sizes) {
+  CHECK(icon_info);
+  bool has_icon = icon_info->request_id.has_value() &&
+                  icon_info->request_id.value() == request_id &&
+                  !bitmaps.empty();
+  icon_info->icon = has_icon ? bitmaps.front() : SkBitmap();
+  std::move(done_closure).Run();
+}
+
 }  // namespace
 
+// Holds information pertaining to a specific request to create an SPC payment
+// app, i.e. for a single PaymentRequest object construction.
 struct SecurePaymentConfirmationAppFactory::Request
     : public content::WebContentsObserver {
   Request(
@@ -168,7 +218,7 @@ struct SecurePaymentConfirmationAppFactory::Request
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service;
   mojom::SecurePaymentConfirmationRequestPtr mojo_request;
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator;
-  std::optional<int> pending_icon_download_request_id;
+  std::map<IconType, IconInfo> icon_infos;
 };
 
 void SecurePaymentConfirmationAppFactory::
@@ -347,48 +397,67 @@ void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
   std::unique_ptr<SecurePaymentConfirmationCredential> credential;
 
   // For the pilot phase, arbitrarily use the first matching credential.
-  // TODO(https://crbug.com/1110320): Handle multiple credentials.
+  // TODO(crbug.com/40142088): Handle multiple credentials.
   if (!credentials.empty())
     credential = std::move(credentials.front());
 
-  // Download the icon for the payment instrument. The download URL was passed
-  // into the PaymentRequest API.
+  // Download the icons for the payment instrument, network icon, and issuer
+  // icon. These download URLs were passed into the PaymentRequest API. If given
+  // icon URL wasn't specified, then DownloadImageInFrame will simply return an
+  // empty set of bitmaps.
   //
-  // Perform this download regardless of whether there is a matching
-  // credential, so that the server that hosts the image cannot detect presence
-  // of the credential on file.
+  // Perform these downloads regardless of whether there is a matching
+  // credential, so that the hosting server(s) cannot detect presence of the
+  // credential on file.
   auto* request_ptr = request.get();
-  gfx::Size preferred_size(
-      kSecurePaymentConfirmationInstrumentIconMaximumWidthPx,
-      kSecurePaymentConfirmationInstrumentIconHeightPx);
-  request_ptr->pending_icon_download_request_id =
-      request_ptr->web_contents()->DownloadImageInFrame(
-          request_ptr->delegate->GetInitiatorRenderFrameHostId(),
-          request_ptr->mojo_request->instrument->icon,  // source URL
-          false,                                        // is_favicon
-          preferred_size,
-          0,      // no max size
-          false,  // normal cache policy (a.k.a. do not bypass cache)
-          base::BindOnce(&SecurePaymentConfirmationAppFactory::DidDownloadIcon,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(credential),
-                         std::move(request)));
+  request_ptr->icon_infos[IconType::PAYMENT_INSTRUMENT] = {
+      .url = request_ptr->mojo_request->instrument->icon};
+  if (request_ptr->mojo_request->network_info) {
+    request_ptr->icon_infos[IconType::NETWORK] = {
+        .url = request_ptr->mojo_request->network_info->icon};
+  }
+  if (request_ptr->mojo_request->issuer_info) {
+    request_ptr->icon_infos[IconType::ISSUER] = {
+        .url = request_ptr->mojo_request->issuer_info->icon};
+  }
+
+  auto barrier_closure = base::BarrierClosure(
+      request_ptr->icon_infos.size(),
+      base::BindOnce(&SecurePaymentConfirmationAppFactory::DidDownloadAllIcons,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(credential),
+                     std::move(request)));
+
+  gfx::Size preferred_size(kSecurePaymentConfirmationIconMaximumWidthPx,
+                           kSecurePaymentConfirmationIconHeightPx);
+
+  for (auto& [type, info] : request_ptr->icon_infos) {
+    info.request_id = request_ptr->web_contents()->DownloadImageInFrame(
+        request_ptr->delegate->GetInitiatorRenderFrameHostId(),
+        info.url,  // source URL
+        false,     // is_favicon
+        preferred_size,
+        0,      // no max size
+        false,  // normal cache policy (a.k.a. do not bypass cache)
+        base::BindOnce(&DidDownloadIcon, &info, barrier_closure));
+  }
 }
 
-void SecurePaymentConfirmationAppFactory::OnAppIcon(
+void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
     std::unique_ptr<SecurePaymentConfirmationCredential> credential,
-    std::unique_ptr<Request> request,
-    const SkBitmap& icon) {
+    std::unique_ptr<Request> request) {
   DCHECK(request);
   if (!request->delegate || !request->web_contents())
     return;
 
-  if (icon.drawsNothing()) {
+  SkBitmap payment_instrument_icon =
+      request->icon_infos[IconType::PAYMENT_INSTRUMENT].icon;
+  if (payment_instrument_icon.drawsNothing()) {
     // If the option iconMustBeShown is true, which it is by default, in the
-    // case of a failed icon download/decode, we reject the show() promise
-    // without showing any user UX. To avoid a privacy leak here, we MUST do
-    // this check ahead of checking whether any credential matched, as otherwise
-    // an attacker could deliberately pass an invalid icon and do a timing
-    // attack to see if a credential matches.
+    // case of a failed instrument icon download/decode, we reject the show()
+    // promise without showing any user UX. To avoid a privacy leak here, we
+    // MUST do this check ahead of checking whether any credential matched, as
+    // otherwise an attacker could deliberately pass an invalid icon and do a
+    // timing attack to see if a credential matches.
     if (request->mojo_request->instrument->iconMustBeShown) {
       request->delegate->OnPaymentAppCreationError(
           errors::kInvalidIcon, AppCreationFailureReason::ICON_DOWNLOAD_FAILED);
@@ -406,36 +475,36 @@ void SecurePaymentConfirmationAppFactory::OnAppIcon(
     return;
   }
 
-  std::u16string label =
+  std::u16string payment_instrument_label =
       base::UTF8ToUTF16(request->mojo_request->instrument->display_name);
+
+  std::u16string network_label = u"";
+  SkBitmap network_icon;
+  if (request->mojo_request->network_info) {
+    network_label =
+        base::UTF8ToUTF16(request->mojo_request->network_info->name);
+    network_icon = request->icon_infos[IconType::NETWORK].icon;
+  }
+
+  std::u16string issuer_label = u"";
+  SkBitmap issuer_icon;
+  if (request->mojo_request->issuer_info) {
+    issuer_label = base::UTF8ToUTF16(request->mojo_request->issuer_info->name);
+    issuer_icon = request->icon_infos[IconType::ISSUER].icon;
+  }
 
   request->delegate->OnPaymentAppCreated(
       std::make_unique<SecurePaymentConfirmationApp>(
           request->web_contents(), credential->relying_party_id,
-          std::make_unique<SkBitmap>(icon), label,
+          payment_instrument_label,
+          std::make_unique<SkBitmap>(payment_instrument_icon),
           std::move(credential->credential_id),
           url::Origin::Create(request->delegate->GetTopOrigin()),
           request->delegate->GetSpec()->AsWeakPtr(),
-          std::move(request->mojo_request), std::move(request->authenticator)));
+          std::move(request->mojo_request), std::move(request->authenticator),
+          network_label, network_icon, issuer_label, issuer_icon));
 
   request->delegate->OnDoneCreatingPaymentApps();
-}
-
-void SecurePaymentConfirmationAppFactory::DidDownloadIcon(
-    std::unique_ptr<SecurePaymentConfirmationCredential> credential,
-    std::unique_ptr<Request> request,
-    int request_id,
-    int unused_http_status_code,
-    const GURL& unused_image_url,
-    const std::vector<SkBitmap>& bitmaps,
-    const std::vector<gfx::Size>& unused_sizes) {
-  DCHECK(request);
-  bool has_icon =
-      request->pending_icon_download_request_id.has_value() &&
-      request->pending_icon_download_request_id.value() == request_id &&
-      !bitmaps.empty();
-  OnAppIcon(std::move(credential), std::move(request),
-            has_icon ? bitmaps.front() : SkBitmap());
 }
 
 }  // namespace payments

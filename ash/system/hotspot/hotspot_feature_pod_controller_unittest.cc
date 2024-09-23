@@ -4,7 +4,6 @@
 
 #include "ash/system/hotspot/hotspot_feature_pod_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/hotspot/hotspot_detailed_view.h"
@@ -17,7 +16,6 @@
 #include "ash/test/ash_test_helper.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
@@ -48,7 +46,6 @@ class HotspotFeaturePodControllerTest : public AshTestBase {
   ~HotspotFeaturePodControllerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kHotspot}, {});
     AshTestBase::SetUp();
 
     // Spin the runloop to have HotspotInfoCache finish querying the hotspot
@@ -125,7 +122,6 @@ class HotspotFeaturePodControllerTest : public AshTestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<HotspotFeaturePodController> hotspot_feature_pod_controller_;
   std::unique_ptr<FeatureTile> hotspot_feature_tile_;
 };

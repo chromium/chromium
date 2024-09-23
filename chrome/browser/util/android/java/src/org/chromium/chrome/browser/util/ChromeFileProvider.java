@@ -38,12 +38,13 @@ public class ChromeFileProvider extends FileProvider {
     private static boolean sIsFileReady;
     private static Uri sCurrentBlockingUri;
     private static Uri sFileUri;
+    private static Uri sGeneratedUriForTesting;
 
     /**
      * Returns an unique uri to identify the file to be shared and block access to it till
      * notifyFileReady is called.
      *
-     * This function clobbers any uri that was previously created and the client application
+     * <p>This function clobbers any uri that was previously created and the client application
      * accessing those uri will get a null file descriptor.
      */
     public static Uri generateUriAndBlockAccess() {
@@ -67,10 +68,18 @@ public class ChromeFileProvider extends FileProvider {
 
     /**
      * Returns an unique uri to identify the file to be shared.
+     *
      * @param file File for which the Uri is generated.
      */
     public static Uri generateUri(File file) throws IllegalArgumentException {
+        if (sGeneratedUriForTesting != null) {
+            return sGeneratedUriForTesting;
+        }
         return getUriForFile(ContextUtils.getApplicationContext(), getAuthority(), file);
+    }
+
+    public static void setGeneratedUriForTesting(Uri uri) {
+        sGeneratedUriForTesting = uri;
     }
 
     /**

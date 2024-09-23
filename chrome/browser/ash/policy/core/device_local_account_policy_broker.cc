@@ -3,26 +3,56 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
+
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_paths.h"
+#include "base/check_is_test.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/default_clock.h"
 #include "base/values.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/device_local_account_extension_service_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_external_cache.h"
 #include "chrome/browser/ash/policy/core/file_util.h"
+#include "chrome/browser/ash/policy/external_data/device_local_account_external_data_manager.h"
+#include "chrome/browser/ash/policy/invalidation/affiliated_cloud_policy_invalidator.h"
+#include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/chromeos/extensions/external_loader/device_local_account_external_policy_loader.h"
+#include "chrome/browser/extensions/external_loader.h"
 #include "chrome/browser/extensions/policy_handlers.h"
+#include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
+#include "components/invalidation/invalidation_factory.h"
+#include "components/invalidation/invalidation_listener.h"
 #include "components/policy/core/common/chrome_schema.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/policy/core/common/cloud/component_cloud_policy_service.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
+#include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
-#include "components/prefs/pref_value_map.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/browser/network_service_instance.h"
-#include "extensions/browser/pref_names.h"
+#include "device_local_account_extension_tracker.h"
+#include "device_local_account_policy_store.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
@@ -63,9 +93,50 @@ std::unique_ptr<CloudPolicyClient> CreateClient(
   return client;
 }
 
-base::Value::Dict GetPrefsFromPolicy(const policy::PolicyMap& policy_map) {
+base::Value::Dict GetAshPrefsFromPolicy(const policy::PolicyMap& policy_map) {
   extensions::ExtensionInstallForceListPolicyHandler policy_handler;
-  return policy_handler.GetPolicyDict(policy_map);
+  return policy_handler.GetAshPolicyDict(policy_map)
+      .value_or(base::Value::Dict());
+}
+
+base::Value::Dict GetLacrosPrefsFromPolicy(
+    const policy::PolicyMap& policy_map) {
+  extensions::ExtensionInstallForceListPolicyHandler policy_handler;
+  return policy_handler.GetLacrosPolicyDict(policy_map)
+      .value_or(base::Value::Dict());
+}
+
+void SendExtensionsToAsh(
+    scoped_refptr<chromeos::DeviceLocalAccountExternalPolicyLoader> loader,
+    const std::string& user_id,
+    base::Value::Dict cached_extensions) {
+  loader->OnExtensionListsUpdated(cached_extensions);
+}
+
+void SendExtensionsToLacros(const std::string& user_id,
+                            base::Value::Dict cached_extensions) {
+  if (crosapi::CrosapiManager::IsInitialized()) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->device_local_account_extension_service()
+        ->SetForceInstallExtensionsFromCache(user_id,
+                                             std::move(cached_extensions));
+  } else {
+    CHECK_IS_TEST();
+  }
+}
+
+bool IsExtensionTracked(DeviceLocalAccountType account_type) {
+  switch (account_type) {
+    case DeviceLocalAccountType::kKioskApp:
+    case DeviceLocalAccountType::kPublicSession:
+    case DeviceLocalAccountType::kSamlPublicSession:
+      return true;
+    case DeviceLocalAccountType::kWebKioskApp:
+    case DeviceLocalAccountType::kKioskIsolatedWebApp:
+      return false;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -78,13 +149,19 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
     const base::RepeatingClosure& policy_update_callback,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& resource_cache_task_runner,
-    AffiliatedInvalidationServiceProvider* invalidation_service_provider)
-    : invalidation_service_provider_(invalidation_service_provider),
+    std::variant<AffiliatedInvalidationServiceProvider*,
+                 invalidation::InvalidationListener*>
+        invalidation_service_provider_or_listener)
+    : invalidation_service_provider_or_listener_(
+          invalidation::PointerVariantToRawPointer(
+              invalidation_service_provider_or_listener)),
       account_id_(account.account_id),
       user_id_(account.user_id),
       component_policy_cache_path_(component_policy_cache_path),
       store_(std::move(store)),
       external_data_manager_(external_data_manager),
+      extension_loader_(base::MakeRefCounted<
+                        chromeos::DeviceLocalAccountExternalPolicyLoader>()),
       core_(dm_protocol::kChromePublicAccountPolicyType,
             store_->account_id(),
             store_.get(),
@@ -92,13 +169,14 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
             base::BindRepeating(&content::GetNetworkConnectionTracker)),
       policy_update_callback_(policy_update_callback),
       resource_cache_task_runner_(resource_cache_task_runner) {
-  if (account.type != DeviceLocalAccount::TYPE_ARC_KIOSK_APP &&
-      account.type != DeviceLocalAccount::TYPE_WEB_KIOSK_APP) {
+  if (IsExtensionTracked(account.type)) {
     extension_tracker_ = std::make_unique<DeviceLocalAccountExtensionTracker>(
         account, store_.get(), &schema_registry_);
   }
   external_cache_ = std::make_unique<chromeos::DeviceLocalAccountExternalCache>(
-      user_id_,
+      /*ash_loader=*/base::BindRepeating(SendExtensionsToAsh,
+                                         extension_loader_),
+      /*lacros_loader=*/base::BindRepeating(SendExtensionsToLacros), user_id_,
       base::PathService::CheckedGet(ash::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS)
           .Append(GetUniqueSubDirectoryForAccountID(account.account_id)));
   store_->AddObserver(this);
@@ -114,6 +192,14 @@ DeviceLocalAccountPolicyBroker::~DeviceLocalAccountPolicyBroker() {
   store_->RemoveObserver(this);
   external_data_manager_->SetPolicyStore(nullptr);
   external_data_manager_->Disconnect();
+
+  std::visit(base::Overloaded{[](AffiliatedCloudPolicyInvalidator*) {
+                                // Do nothing.
+                              },
+                              [](CloudPolicyInvalidator* invalidator) {
+                                invalidator->Shutdown();
+                              }},
+             invalidation::UniquePointerVariantToPointer(invalidator_));
 }
 
 void DeviceLocalAccountPolicyBroker::Initialize() {
@@ -124,8 +210,13 @@ void DeviceLocalAccountPolicyBroker::LoadImmediately() {
   store_->LoadImmediately();
 }
 
+scoped_refptr<extensions::ExternalLoader>
+DeviceLocalAccountPolicyBroker::extension_loader() const {
+  return extension_loader_;
+}
+
 bool DeviceLocalAccountPolicyBroker::HasInvalidatorForTest() const {
-  return invalidator_ != nullptr;
+  return std::visit([](const auto& i) { return !!i; }, invalidator_);
 }
 
 void DeviceLocalAccountPolicyBroker::ConnectIfPossible(
@@ -147,9 +238,23 @@ void DeviceLocalAccountPolicyBroker::ConnectIfPossible(
   external_data_manager_->Connect(url_loader_factory);
   core_.StartRefreshScheduler();
   UpdateRefreshDelay();
-  invalidator_ = std::make_unique<AffiliatedCloudPolicyInvalidator>(
-      PolicyInvalidationScope::kDeviceLocalAccount, &core_,
-      invalidation_service_provider_, account_id_);
+  std::visit(
+      base::Overloaded{
+          [this](AffiliatedInvalidationServiceProvider* service_provider) {
+            invalidator_ = std::make_unique<AffiliatedCloudPolicyInvalidator>(
+                PolicyInvalidationScope::kDeviceLocalAccount, &core_,
+                service_provider, account_id_);
+          },
+          [this](invalidation::InvalidationListener* listener) {
+            auto policy_invalidator = std::make_unique<CloudPolicyInvalidator>(
+                PolicyInvalidationScope::kDeviceLocalAccount, &core_,
+                base::SingleThreadTaskRunner::GetCurrentDefault(),
+                base::DefaultClock::GetInstance(),
+                /*highest_handled_invalidation_version=*/0, account_id_);
+            policy_invalidator->Initialize(listener);
+            invalidator_ = std::move(policy_invalidator);
+          }},
+      invalidation_service_provider_or_listener_);
 }
 
 void DeviceLocalAccountPolicyBroker::UpdateRefreshDelay() {
@@ -172,6 +277,7 @@ std::string DeviceLocalAccountPolicyBroker::GetDisplayName() const {
 }
 
 void DeviceLocalAccountPolicyBroker::OnStoreLoaded(CloudPolicyStore* store) {
+  SYSLOG(INFO) << "Loaded device local account policy for " << account_id_;
   UpdateRefreshDelay();
   UpdateExtensionListFromStore();
   policy_update_callback_.Run();
@@ -214,11 +320,13 @@ bool DeviceLocalAccountPolicyBroker::IsCacheRunning() const {
 
 void DeviceLocalAccountPolicyBroker::UpdateExtensionListFromStore() {
   external_cache_->UpdateExtensionsList(
-      GetPrefsFromPolicy(store_->policy_map()));
+      /*ash_extensions=*/GetAshPrefsFromPolicy(store_->policy_map()),
+      /*lacros_extensions=*/GetLacrosPrefsFromPolicy(store_->policy_map()));
 }
 
-base::Value::Dict DeviceLocalAccountPolicyBroker::GetCachedExtensions() const {
-  return external_cache_->GetCachedExtensions();
+base::Value::Dict
+DeviceLocalAccountPolicyBroker::GetCachedExtensionsForTesting() const {
+  return external_cache_->GetCachedExtensionsForTesting();  // IN-TEST
 }
 
 }  // namespace policy

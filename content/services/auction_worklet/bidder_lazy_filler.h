@@ -17,6 +17,7 @@
 #include "content/services/auction_worklet/context_recycler.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "v8/include/v8-forward.h"
 
 class GURL;
@@ -51,7 +52,14 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
       v8::Local<v8::Object> object,
       base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
       base::RepeatingCallback<bool(const std::string&)>
-          is_ad_component_excluded);
+          is_ad_component_excluded,
+      base::RepeatingCallback<bool(
+          const std::string& ad_render_url,
+          base::optional_ref<const std::string> buyer_reporting_id,
+          base::optional_ref<const std::string> buyer_and_seller_reporting_id,
+          base::optional_ref<const std::string>
+              selected_buyer_and_seller_reporting_id)>
+          is_reporting_id_set_excluded);
 
   void Reset() override;
 
@@ -64,6 +72,11 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
       v8::Local<v8::Object>& object,
       std::string_view name,
       base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
+      base::RepeatingCallback<bool(const std::string&,
+                                   base::optional_ref<const std::string>,
+                                   base::optional_ref<const std::string>,
+                                   base::optional_ref<const std::string>)>
+          is_reporting_id_set_excluded,
       const std::vector<blink::InterestGroup::Ad>& ads,
       v8::Local<v8::ObjectTemplate>& lazy_filler_template);
 
@@ -75,7 +88,7 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
       v8::Local<v8::Name> name,
       const v8::PropertyCallbackInfo<v8::Value>& info);
   // Handles "biddingLogicUrl", which is deprecated.
-  // TODO(https://crbug.com/1441988): Remove this method.
+  // TODO(crbug.com/40266734): Remove this method.
   static void HandleDeprecatedBiddingLogicUrl(
       v8::Local<v8::Name> name,
       const v8::PropertyCallbackInfo<v8::Value>& info);
@@ -84,7 +97,7 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
       v8::Local<v8::Name> name,
       const v8::PropertyCallbackInfo<v8::Value>& info);
   // Handles "BiddingWasmHelperUrl", which is deprecated.
-  // TODO(https://crbug.com/1441988): Remove this method.
+  // TODO(crbug.com/40266734): Remove this method.
   static void HandleDeprecatedBiddingWasmHelperUrl(
       v8::Local<v8::Name> name,
       const v8::PropertyCallbackInfo<v8::Value>& info);
@@ -92,12 +105,12 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
   static void HandleUpdateUrl(v8::Local<v8::Name> name,
                               const v8::PropertyCallbackInfo<v8::Value>& info);
   // Handles "updateUrl", which is deprecated.
-  // TODO(https://crbug.com/1441988): Remove this method.
+  // TODO(crbug.com/40266734): Remove this method.
   static void HandleDeprecatedUpdateUrl(
       v8::Local<v8::Name> name,
       const v8::PropertyCallbackInfo<v8::Value>& info);
   // Handles "dailyUpdateUrl", which is deprecated.
-  // TODO(https://crbug.com/1420080): Remove this method.
+  // TODO(crbug.com/40258629): Remove this method.
   static void HandleDeprecatedDailyUpdateUrl(
       v8::Local<v8::Name> name,
       const v8::PropertyCallbackInfo<v8::Value>& info);
@@ -106,7 +119,7 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
       v8::Local<v8::Name> name,
       const v8::PropertyCallbackInfo<v8::Value>& info);
   // Handles "trustedBiddingSignalsUrl", which is deprecated.
-  // TODO(https://crbug.com/1441988): Remove this method.
+  // TODO(crbug.com/40266734): Remove this method.
   static void HandleDeprecatedTrustedBiddingSignalsUrl(
       v8::Local<v8::Name> name,
       const v8::PropertyCallbackInfo<v8::Value>& info);
@@ -117,7 +130,7 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
   static void HandlePriorityVector(
       v8::Local<v8::Name> name,
       const v8::PropertyCallbackInfo<v8::Value>& info);
-  // TODO(https://crbug.com/1517121): This field is deprecated in favor of
+  // TODO(crbug.com/41490104): This field is deprecated in favor of
   // "enableBiddingSignalsPrioritization". Remove this function when it's
   // safe to remove the field.
   static void HandleUseBiddingSignalsPrioritization(
@@ -126,7 +139,7 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
 
   // Handles "renderUrl" for the ads and ad components arrays, which is
   // deprecated.
-  // TODO(https://crbug.com/1441988): Remove this method.
+  // TODO(crbug.com/40266734): Remove this method.
   static void HandleDeprecatedAdsRenderUrl(
       v8::Local<v8::Name> name,
       const v8::PropertyCallbackInfo<v8::Value>& info);
@@ -139,7 +152,7 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
   const raw_ptr<AuctionV8Logger> v8_logger_;
 };
 
-// TODO(crbug.com/1451034): Clean up support for deprecated seconds-based
+// TODO(crbug.com/40270420): Clean up support for deprecated seconds-based
 // version after API users migrate.
 enum class PrevWinsType { kSeconds, kMilliseconds };
 
@@ -148,7 +161,7 @@ class CONTENT_EXPORT BiddingBrowserSignalsLazyFiller
  public:
   explicit BiddingBrowserSignalsLazyFiller(AuctionV8Helper* v8_helper);
 
-  void ReInitialize(mojom::BiddingBrowserSignals* bidder_browser_signals,
+  void ReInitialize(blink::mojom::BiddingBrowserSignals* bidder_browser_signals,
                     base::Time auction_start_time);
 
   // Returns success/failure.
@@ -166,7 +179,8 @@ class CONTENT_EXPORT BiddingBrowserSignalsLazyFiller
       const v8::PropertyCallbackInfo<v8::Value>& info,
       PrevWinsType prev_wins_type);
 
-  raw_ptr<mojom::BiddingBrowserSignals> bidder_browser_signals_ = nullptr;
+  raw_ptr<blink::mojom::BiddingBrowserSignals> bidder_browser_signals_ =
+      nullptr;
   base::Time auction_start_time_;
 };
 

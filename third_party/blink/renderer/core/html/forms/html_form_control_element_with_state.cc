@@ -387,6 +387,12 @@ void HTMLFormControlElementWithState::SetUserHasEditedTheFieldAndBlurred() {
   PseudoStateChanged(CSSSelector::kPseudoUserValid);
 }
 
+void HTMLFormControlElementWithState::ForceUserValid() {
+  force_user_valid_ = true;
+  PseudoStateChanged(CSSSelector::kPseudoUserInvalid);
+  PseudoStateChanged(CSSSelector::kPseudoUserValid);
+}
+
 bool HTMLFormControlElementWithState::MatchesUserInvalidPseudo() {
   return (UserHasEditedTheFieldAndBlurred() || force_user_valid_) &&
          MatchesValidityPseudoClasses() && !ListedElement::IsValidElement();

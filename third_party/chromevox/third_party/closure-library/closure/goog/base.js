@@ -1,32 +1,26 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Bootstrap for the Google JS Library (Closure).
  *
- * In uncompiled mode base.js will write out Closure's deps file, unless the
- * global <code>CLOSURE_NO_DEPS</code> is set to true.  This allows projects to
- * include their own deps file(s) from different locations.
+ * In uncompiled mode base.js will attempt to load Closure's deps file, unless
+ * the global <code>CLOSURE_NO_DEPS</code> is set to true.  This allows projects
+ * to include their own deps file(s) from different locations.
  *
+ * Avoid including base.js more than once. This is strictly discouraged and not
+ * supported. goog.require(...) won't work properly in that case.
  *
+ * @suppress {deprecated} Users cannot remove deprecated uses here.
  * @provideGoog
  */
 
 
 /**
- * @define {boolean} Overridden to true by the compiler when --closure_pass
- *     or --mark_as_compiled is specified.
+ * @define {boolean} Overridden to true by the compiler.
  */
 var COMPILED = false;
 
@@ -40,19 +34,35 @@ var COMPILED = false;
  */
 var goog = goog || {};
 
-
 /**
- * Reference to the global context.  In most cases this will be 'window'.
+ * Reference to the global object.
+ * https://www.ecma-international.org/ecma-262/9.0/index.html#sec-global-object
+ *
+ * More info on this implementation here:
+ * https://docs.google.com/document/d/1NAeW4Wk7I7FV0Y2tcUFvQdGMc89k2vdgSXInw8_nvCI/edit
+ *
+ * @const
+ * @suppress {undefinedVars} self won't be referenced unless `this` is falsy.
+ * @type {!Global}
  */
-goog.global = this;
+goog.global =
+    // Check `this` first for backwards compatibility.
+    // Valid unless running as an ES module or in a function wrapper called
+    //   without setting `this` properly.
+    // Note that base.js can't usefully be imported as an ES module, but it may
+    // be compiled into bundles that are loadable as ES modules.
+    this ||
+    // https://developer.mozilla.org/en-US/docs/Web/API/Window/self
+    // For in-page browser environments and workers.
+    self;
 
 
 /**
  * A hook for overriding the define values in uncompiled mode.
  *
- * In uncompiled mode, {@code CLOSURE_UNCOMPILED_DEFINES} may be defined before
- * loading base.js.  If a key is defined in {@code CLOSURE_UNCOMPILED_DEFINES},
- * {@code goog.define} will use the value instead of the default value.  This
+ * In uncompiled mode, `CLOSURE_UNCOMPILED_DEFINES` may be defined before
+ * loading base.js.  If a key is defined in `CLOSURE_UNCOMPILED_DEFINES`,
+ * `goog.define` will use the value instead of the default value.  This
  * allows flags to be overwritten without compilation (this is normally
  * accomplished with the compiler's "define" flag).
  *
@@ -79,27 +89,19 @@ goog.global.CLOSURE_UNCOMPILED_DEFINES;
  *
  * Example:
  * <pre>
- *   var CLOSURE_DEFINES = {'goog.DEBUG': false};
+ *   var CLOSURE_DEFINES = {'goog.DEBUG': false} ;
  * </pre>
  *
- * @type {Object<string, (string|number|boolean)>|undefined}
+ * Currently the Closure Compiler will only recognize very simple definitions of
+ * this value when looking for values to apply to compiled code and ignore all
+ * other references.  Specifically, it looks the value defined at the variable
+ * declaration, as with the example above.
+ *
+ * TODO(user): Improve the recognized definitions.
+ *
+ * @type {!Object<string, (string|number|boolean)>|null|undefined}
  */
 goog.global.CLOSURE_DEFINES;
-
-
-/**
- * Returns true if the specified value is not undefined.
- * WARNING: Do not use this to test if an object has a property. Use the in
- * operator instead.
- *
- * @param {?} val Variable to test.
- * @return {boolean} Whether variable is defined.
- */
-goog.isDef = function(val) {
-  // void 0 always evaluates to undefined and hence we do not need to depend on
-  // the definition of the global variable named 'undefined'.
-  return val !== void 0;
-};
 
 
 /**
@@ -107,34 +109,46 @@ goog.isDef = function(val) {
  * names that already exist are not overwritten. For example:
  * "a.b.c" -> a = {};a.b={};a.b.c={};
  * Used by goog.provide and goog.exportSymbol.
- * @param {string} name name of the object that this file defines.
- * @param {*=} opt_object the object to expose at the end of the path.
- * @param {Object=} opt_objectToExportTo The object to add the path to; default
- *     is |goog.global|.
+ * @param {string} name The name of the object that this file defines.
+ * @param {*=} object The object to expose at the end of the path.
+ * @param {boolean=} overwriteImplicit If object is set and a previous call
+ *     implicitly constructed the namespace given by name, this parameter
+ *     controls whether object should overwrite the implicitly constructed
+ *     namespace or be merged into it. Defaults to false.
+ * @param {?Object=} objectToExportTo The object to add the path to; if this
+ *     field is not specified, its value defaults to `goog.global`.
  * @private
  */
-goog.exportPath_ = function(name, opt_object, opt_objectToExportTo) {
+goog.exportPath_ = function(name, object, overwriteImplicit, objectToExportTo) {
   var parts = name.split('.');
-  var cur = opt_objectToExportTo || goog.global;
+  var cur = objectToExportTo || goog.global;
 
   // Internet Explorer exhibits strange behavior when throwing errors from
   // methods externed in this manner.  See the testExportSymbolExceptions in
   // base_test.html for an example.
-  if (!(parts[0] in cur) && cur.execScript) {
+  if (!(parts[0] in cur) && typeof cur.execScript != 'undefined') {
     cur.execScript('var ' + parts[0]);
   }
 
-  // Certain browsers cannot parse code in the form for((a in b); c;);
-  // This pattern is produced by the JSCompiler when it collapses the
-  // statement above into the conditional loop below. To prevent this from
-  // happening, use a for-loop and reserve the init logic as below.
-
-  // Parentheses added to eliminate strict JS warning in Firefox.
   for (var part; parts.length && (part = parts.shift());) {
-    if (!parts.length && goog.isDef(opt_object)) {
-      // last part and we have an object; use it
-      cur[part] = opt_object;
-    } else if (cur[part]) {
+    if (!parts.length && object !== undefined) {
+      if (!overwriteImplicit && goog.isObject(object) &&
+          goog.isObject(cur[part])) {
+        // Merge properties on object (the input parameter) with the existing
+        // implicitly defined namespace, so as to not clobber previously
+        // defined child namespaces.
+        for (var prop in object) {
+          if (object.hasOwnProperty(prop)) {
+            cur[part][prop] = object[prop];
+          }
+        }
+      } else {
+        // Either there is no existing implicit namespace, or overwriteImplicit
+        // is set to true, so directly assign object (the input parameter) to
+        // the namespace.
+        cur[part] = object;
+      }
+    } else if (cur[part] && cur[part] !== Object.prototype[part]) {
       cur = cur[part];
     } else {
       cur = cur[part] = {};
@@ -180,20 +194,49 @@ goog.define = function(name, defaultValue) {
 
 
 /**
- * @define {boolean} DEBUG is provided as a convenience so that debugging code
- * that should not be included in a production js_binary can be easily stripped
- * by specifying --define goog.DEBUG=false to the JSCompiler. For example, most
- * toString() methods should be declared inside an "if (goog.DEBUG)" conditional
- * because they are generally used for debugging purposes and it is difficult
- * for the JSCompiler to statically determine whether they are used.
+ * @define {number} Integer year indicating the set of browser features that are
+ * guaranteed to be present.  This is defined to include exactly features that
+ * work correctly on all "modern" browsers that are stable on January 1 of the
+ * specified year.  For example,
+ * ```js
+ * if (goog.FEATURESET_YEAR >= 2019) {
+ *   // use APIs known to be available on all major stable browsers Jan 1, 2019
+ * } else {
+ *   // polyfill for older browsers
+ * }
+ * ```
+ * This is intended to be the primary define for removing
+ * unnecessary browser compatibility code (such as ponyfills and workarounds),
+ * and should inform the default value for most other defines:
+ * ```js
+ * const ASSUME_NATIVE_PROMISE =
+ *     goog.define('ASSUME_NATIVE_PROMISE', goog.FEATURESET_YEAR >= 2016);
+ * ```
+ *
+ * The default assumption is that IE9 is the lowest supported browser, which was
+ * first available Jan 1, 2012.
+ *
+ * TODO(user): Reference more thorough documentation when it's available.
  */
-goog.DEBUG = true;
+goog.FEATURESET_YEAR = goog.define('goog.FEATURESET_YEAR', 2012);
+
+
+/**
+ * @define {boolean} DEBUG is provided as a convenience so that debugging code
+ * that should not be included in a production. It can be easily stripped
+ * by specifying --define goog.DEBUG=false to the Closure Compiler aka
+ * JSCompiler. For example, most toString() methods should be declared inside an
+ * "if (goog.DEBUG)" conditional because they are generally used for debugging
+ * purposes and it is difficult for the JSCompiler to statically determine
+ * whether they are used.
+ */
+goog.DEBUG = goog.define('goog.DEBUG', true);
 
 
 /**
  * @define {string} LOCALE defines the locale being used for compilation. It is
  * used to select locale specific data to be compiled in js binary. BUILD rule
- * can specify this value by "--define goog.LOCALE=<locale_name>" as JSCompiler
+ * can specify this value by "--define goog.LOCALE=<locale_name>" as a compiler
  * option.
  *
  * Take into account that the locale code format is important. You should use
@@ -207,7 +250,8 @@ goog.DEBUG = true;
  * For language codes you should use values defined by ISO 693-1. See it here
  * http://www.w3.org/WAI/ER/IG/ert/iso639.htm. There is only one exception from
  * this rule: the Hebrew language. For legacy reasons the old code (iw) should
- * be used instead of the new code (he), see http://wiki/Main/IIISynonyms.
+ * be used instead of the new code (he).
+ *
  */
 goog.LOCALE = goog.define('goog.LOCALE', 'en');  // default to en
 
@@ -221,41 +265,78 @@ goog.LOCALE = goog.define('goog.LOCALE', 'en');  // default to en
  *
  * If your JavaScript can be loaded by a third party site and you are wary about
  * relying on non-standard implementations, specify
- * "--define goog.TRUSTED_SITE=false" to the JSCompiler.
+ * "--define goog.TRUSTED_SITE=false" to the compiler.
  */
 goog.TRUSTED_SITE = goog.define('goog.TRUSTED_SITE', true);
 
 
 /**
- * @define {boolean} Whether a project is expected to be running in strict mode.
- *
- * This define can be used to trigger alternate implementations compatible with
- * running in EcmaScript Strict mode or warn about unavailable functionality.
- * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions_and_function_scope/Strict_mode
+ * @define {boolean} Whether code that calls {@link goog.setTestOnly} should
+ *     be disallowed in the compilation unit.
  */
-goog.STRICT_MODE_COMPATIBLE = goog.define('goog.STRICT_MODE_COMPATIBLE', false);
+goog.DISALLOW_TEST_ONLY_CODE =
+    goog.define('goog.DISALLOW_TEST_ONLY_CODE', COMPILED && !goog.DEBUG);
 
 
 /**
- * Creates object stubs for a namespace.  The presence of one or more
- * goog.provide() calls indicate that the file defines the given
- * objects/namespaces.  Provided objects must not be null or undefined.
- * Build tools also scan for provide/require statements
+ * @define {boolean} Whether to use a Chrome app CSP-compliant method for
+ *     loading scripts via goog.require. @see appendScriptSrcNode_.
+ */
+goog.ENABLE_CHROME_APP_SAFE_SCRIPT_LOADING =
+    goog.define('goog.ENABLE_CHROME_APP_SAFE_SCRIPT_LOADING', false);
+
+
+/**
+ * Defines a namespace in Closure.
+ *
+ * A namespace may only be defined once in a codebase. It may be defined using
+ * goog.provide() or goog.module().
+ *
+ * The presence of one or more goog.provide() calls in a file indicates
+ * that the file defines the given objects/namespaces.
+ * Provided symbols must not be null or undefined.
+ *
+ * In addition, goog.provide() creates the object stubs for a namespace
+ * (for example, goog.provide("goog.foo.bar") will create the object
+ * goog.foo.bar if it does not already exist).
+ *
+ * Build tools also scan for provide/require/module statements
  * to discern dependencies, build dependency files (see deps.js), etc.
+ *
  * @see goog.require
+ * @see goog.module
  * @param {string} name Namespace provided by this file in the form
  *     "goog.package.part".
+ * deprecated Use goog.module (see b/159289405)
  */
 goog.provide = function(name) {
+  if (goog.isInModuleLoader_()) {
+    throw new Error('goog.provide cannot be used within a module.');
+  }
   if (!COMPILED) {
-    // Ensure that the same namespace isn't provided twice. This is intended
-    // to teach new developers that 'goog.provide' is effectively a variable
-    // declaration. And when JSCompiler transforms goog.provide into a real
-    // variable declaration, the compiled JS should work the same as the raw
-    // JS--even when the raw JS uses goog.provide incorrectly.
+    // Ensure that the same namespace isn't provided twice.
+    // A goog.module/goog.provide maps a goog.require to a specific file
     if (goog.isProvided_(name)) {
-      throw Error('Namespace "' + name + '" already declared.');
+      throw new Error('Namespace "' + name + '" already declared.');
     }
+  }
+
+  goog.constructNamespace_(name);
+};
+
+
+/**
+ * @param {string} name Namespace provided by this file in the form
+ *     "goog.package.part".
+ * @param {?Object=} object The object to embed in the namespace.
+ * @param {boolean=} overwriteImplicit If object is set and a previous call
+ *     implicitly constructed the namespace given by name, this parameter
+ *     controls whether opt_obj should overwrite the implicitly constructed
+ *     namespace or be merged into it. Defaults to false.
+ * @private
+ */
+goog.constructNamespace_ = function(name, object, overwriteImplicit) {
+  if (!COMPILED) {
     delete goog.implicitNamespaces_[name];
 
     var namespace = name;
@@ -267,7 +348,285 @@ goog.provide = function(name) {
     }
   }
 
-  goog.exportPath_(name);
+  goog.exportPath_(name, object, overwriteImplicit);
+};
+
+
+/**
+ * According to the CSP3 spec a nonce must be a valid base64 string.
+ * @see https://www.w3.org/TR/CSP3/#grammardef-base64-value
+ * @private @const
+ */
+goog.NONCE_PATTERN_ = /^[\w+/_-]+[=]{0,2}$/;
+
+
+/**
+ * Returns CSP nonce, if set for any script tag.
+ * @param {?Window=} opt_window The window context used to retrieve the nonce.
+ *     Defaults to global context.
+ * @return {string} CSP nonce or empty string if no nonce is present.
+ * @private
+ */
+goog.getScriptNonce_ = function(opt_window) {
+  var doc = (opt_window || goog.global).document;
+  var script = doc.querySelector && doc.querySelector('script[nonce]');
+  if (script) {
+    // Try to get the nonce from the IDL property first, because browsers that
+    // implement additional nonce protection features (currently only Chrome) to
+    // prevent nonce stealing via CSS do not expose the nonce via attributes.
+    // See https://github.com/whatwg/html/issues/2369
+    var nonce = script['nonce'] || script.getAttribute('nonce');
+    if (nonce && goog.NONCE_PATTERN_.test(nonce)) {
+      return nonce;
+    }
+  }
+  return '';
+};
+
+
+/**
+ * Module identifier validation regexp.
+ * Note: This is a conservative check, it is very possible to be more lenient,
+ *   the primary exclusion here is "/" and "\" and a leading ".", these
+ *   restrictions are intended to leave the door open for using goog.require
+ *   with relative file paths rather than module identifiers.
+ * @private
+ */
+goog.VALID_MODULE_RE_ = /^[a-zA-Z_$][a-zA-Z0-9._$]*$/;
+
+
+/**
+ * Defines a module in Closure.
+ *
+ * Marks that this file must be loaded as a module and claims the namespace.
+ *
+ * A namespace may only be defined once in a codebase. It may be defined using
+ * goog.provide() or goog.module().
+ *
+ * goog.module() has three requirements:
+ * - goog.module may not be used in the same file as goog.provide.
+ * - goog.module must be the first statement in the file.
+ * - only one goog.module is allowed per file.
+ *
+ * When a goog.module annotated file is loaded, it is enclosed in
+ * a strict function closure. This means that:
+ * - any variables declared in a goog.module file are private to the file
+ * (not global), though the compiler is expected to inline the module.
+ * - The code must obey all the rules of "strict" JavaScript.
+ * - the file will be marked as "use strict"
+ *
+ * NOTE: unlike goog.provide, goog.module does not declare any symbols by
+ * itself. If declared symbols are desired, use
+ * goog.module.declareLegacyNamespace().
+ *
+ *
+ * See the public goog.module proposal: http://goo.gl/Va1hin
+ *
+ * @param {string} name Namespace provided by this file in the form
+ *     "goog.package.part", is expected but not required.
+ * @return {void}
+ */
+goog.module = function(name) {
+  if (typeof name !== 'string' || !name ||
+      name.search(goog.VALID_MODULE_RE_) == -1) {
+    throw new Error('Invalid module identifier');
+  }
+  if (!goog.isInGoogModuleLoader_()) {
+    throw new Error(
+        'Module ' + name + ' has been loaded incorrectly. Note, ' +
+        'modules cannot be loaded as normal scripts. They require some kind of ' +
+        'pre-processing step. You\'re likely trying to load a module via a ' +
+        'script tag or as a part of a concatenated bundle without rewriting the ' +
+        'module. For more info see: ' +
+        'https://github.com/google/closure-library/wiki/goog.module:-an-ES6-module-like-alternative-to-goog.provide.');
+  }
+  if (goog.moduleLoaderState_.moduleName) {
+    throw new Error('goog.module may only be called once per module.');
+  }
+
+  // Store the module name for the loader.
+  goog.moduleLoaderState_.moduleName = name;
+  if (!COMPILED) {
+    // Ensure that the same namespace isn't provided twice.
+    // A goog.module/goog.provide maps a goog.require to a specific file
+    if (goog.isProvided_(name)) {
+      throw new Error('Namespace "' + name + '" already declared.');
+    }
+    delete goog.implicitNamespaces_[name];
+  }
+};
+
+
+/**
+ * @param {string} name The module identifier.
+ * @return {?} The module exports for an already loaded module or null.
+ *
+ * Note: This is not an alternative to goog.require, it does not
+ * indicate a hard dependency, instead it is used to indicate
+ * an optional dependency or to access the exports of a module
+ * that has already been loaded.
+ * @suppress {missingProvide}
+ */
+goog.module.get = function(name) {
+  return goog.module.getInternal_(name);
+};
+
+
+/**
+ * @param {string} name The module identifier.
+ * @return {?} The module exports for an already loaded module or null.
+ * @private
+ */
+goog.module.getInternal_ = function(name) {
+  if (!COMPILED) {
+    if (name in goog.loadedModules_) {
+      return goog.loadedModules_[name].exports;
+    } else if (!goog.implicitNamespaces_[name]) {
+      var ns = goog.getObjectByName(name);
+      return ns != null ? ns : null;
+    }
+  }
+  return null;
+};
+
+/**
+ * Types of modules the debug loader can load.
+ * @enum {string}
+ */
+goog.ModuleType = {
+  ES6: 'es6',
+  GOOG: 'goog'
+};
+
+
+/**
+ * @private {?{
+ *   moduleName: (string|undefined),
+ *   declareLegacyNamespace:boolean,
+ *   type: ?goog.ModuleType
+ * }}
+ */
+goog.moduleLoaderState_ = null;
+
+
+/**
+ * @private
+ * @return {boolean} Whether a goog.module or an es6 module is currently being
+ *     initialized.
+ */
+goog.isInModuleLoader_ = function() {
+  return goog.isInGoogModuleLoader_() || goog.isInEs6ModuleLoader_();
+};
+
+
+/**
+ * @private
+ * @return {boolean} Whether a goog.module is currently being initialized.
+ */
+goog.isInGoogModuleLoader_ = function() {
+  return !!goog.moduleLoaderState_ &&
+      goog.moduleLoaderState_.type == goog.ModuleType.GOOG;
+};
+
+
+/**
+ * @private
+ * @return {boolean} Whether an es6 module is currently being initialized.
+ */
+goog.isInEs6ModuleLoader_ = function() {
+  var inLoader = !!goog.moduleLoaderState_ &&
+      goog.moduleLoaderState_.type == goog.ModuleType.ES6;
+
+  if (inLoader) {
+    return true;
+  }
+
+  var jscomp = goog.global['$jscomp'];
+
+  if (jscomp) {
+    // jscomp may not have getCurrentModulePath if this is a compiled bundle
+    // that has some of the runtime, but not all of it. This can happen if
+    // optimizations are turned on so the unused runtime is removed but renaming
+    // and Closure pass are off (so $jscomp is still named $jscomp and the
+    // goog.provide/require calls still exist).
+    if (typeof jscomp.getCurrentModulePath != 'function') {
+      return false;
+    }
+
+    // Bundled ES6 module.
+    return !!jscomp.getCurrentModulePath();
+  }
+
+  return false;
+};
+
+
+/**
+ * Provide the module's exports as a globally accessible object under the
+ * module's declared name.  This is intended to ease migration to goog.module
+ * for files that have existing usages.
+ * @suppress {missingProvide}
+ */
+goog.module.declareLegacyNamespace = function() {
+  if (!COMPILED && !goog.isInGoogModuleLoader_()) {
+    throw new Error(
+        'goog.module.declareLegacyNamespace must be called from ' +
+        'within a goog.module');
+  }
+  if (!COMPILED && !goog.moduleLoaderState_.moduleName) {
+    throw new Error(
+        'goog.module must be called prior to ' +
+        'goog.module.declareLegacyNamespace.');
+  }
+  goog.moduleLoaderState_.declareLegacyNamespace = true;
+};
+
+
+/**
+ * Associates an ES6 module with a Closure module ID so that is available via
+ * goog.require. The associated ID  acts like a goog.module ID - it does not
+ * create any global names, it is merely available via goog.require /
+ * goog.module.get / goog.forwardDeclare / goog.requireType. goog.require and
+ * goog.module.get will return the entire module as if it was import *'d. This
+ * allows Closure files to reference ES6 modules for the sake of migration.
+ *
+ * @param {string} namespace
+ * @suppress {missingProvide}
+ */
+goog.declareModuleId = function(namespace) {
+  if (!COMPILED) {
+    if (!goog.isInEs6ModuleLoader_()) {
+      throw new Error(
+          'goog.declareModuleId may only be called from ' +
+          'within an ES6 module');
+    }
+    if (goog.moduleLoaderState_ && goog.moduleLoaderState_.moduleName) {
+      throw new Error(
+          'goog.declareModuleId may only be called once per module.');
+    }
+    if (namespace in goog.loadedModules_) {
+      throw new Error(
+          'Module with namespace "' + namespace + '" already exists.');
+    }
+  }
+  if (goog.moduleLoaderState_) {
+    // Not bundled - debug loading.
+    goog.moduleLoaderState_.moduleName = namespace;
+  } else {
+    // Bundled - not debug loading, no module loader state.
+    var jscomp = goog.global['$jscomp'];
+    if (!jscomp || typeof jscomp.getCurrentModulePath != 'function') {
+      throw new Error(
+          'Module with namespace "' + namespace +
+          '" has been loaded incorrectly.');
+    }
+    var exports = jscomp.require(jscomp.getCurrentModulePath());
+    goog.loadedModules_[namespace] = {
+      exports: exports,
+      type: goog.ModuleType.ES6,
+      moduleId: namespace
+    };
+  }
 };
 
 
@@ -283,10 +642,11 @@ goog.provide = function(name) {
  *     raised when used in production code.
  */
 goog.setTestOnly = function(opt_message) {
-  if (COMPILED && !goog.DEBUG) {
+  if (goog.DISALLOW_TEST_ONLY_CODE) {
     opt_message = opt_message || '';
-    throw Error('Importing test-only code into non-debug environment' +
-                opt_message ? ': ' + opt_message : '.');
+    throw new Error(
+        'Importing test-only code into non-debug environment' +
+        (opt_message ? ': ' + opt_message : '.'));
   }
 };
 
@@ -303,15 +663,28 @@ goog.setTestOnly = function(opt_message) {
  * into the JavaScript binary. If it is required elsewhere, it will be type
  * checked as normal.
  *
+ * Before using goog.forwardDeclare, please read the documentation at
+ * https://github.com/google/closure-compiler/wiki/Bad-Type-Annotation to
+ * understand the options and tradeoffs when working with forward declarations.
  *
  * @param {string} name The namespace to forward declare in the form of
  *     "goog.package.part".
+ * @deprecated See go/noforwarddeclaration, Use `goog.requireType` instead.
  */
 goog.forwardDeclare = function(name) {};
 
 
-if (!COMPILED) {
+/**
+ * Forward declare type information. Used to assign types to goog.global
+ * referenced object that would otherwise result in unknown type references
+ * and thus block property disambiguation.
+ */
+goog.forwardDeclare('Document');
+goog.forwardDeclare('HTMLScriptElement');
+goog.forwardDeclare('XMLHttpRequest');
 
+
+if (!COMPILED) {
   /**
    * Check if the given name has been goog.provided. This will return false for
    * names that are available only as implicit namespaces.
@@ -320,8 +693,8 @@ if (!COMPILED) {
    * @private
    */
   goog.isProvided_ = function(name) {
-    return !goog.implicitNamespaces_[name] &&
-        goog.isDefAndNotNull(goog.getObjectByName(name));
+    return (name in goog.loadedModules_) ||
+        (!goog.implicitNamespaces_[name] && goog.getObjectByName(name) != null);
   };
 
   /**
@@ -329,10 +702,15 @@ if (!COMPILED) {
    * goog.provide('goog.events.Event') implicitly declares that 'goog' and
    * 'goog.events' must be namespaces.
    *
-   * @type {Object}
+   * @type {!Object<string, (boolean|undefined)>}
    * @private
    */
-  goog.implicitNamespaces_ = {};
+  goog.implicitNamespaces_ = {'goog.module': true};
+
+  // NOTE: We add goog.module as an implicit namespace as goog.module is defined
+  // here and because the existing module package has not been moved yet out of
+  // the goog.module namespace. This satisifies both the debug loader and
+  // ahead-of-time dependency management.
 }
 
 
@@ -350,10 +728,9 @@ if (!COMPILED) {
 goog.getObjectByName = function(name, opt_obj) {
   var parts = name.split('.');
   var cur = opt_obj || goog.global;
-  for (var part; part = parts.shift(); ) {
-    if (goog.isDefAndNotNull(cur[part])) {
-      cur = cur[part];
-    } else {
+  for (var i = 0; i < parts.length; i++) {
+    cur = cur[parts[i]];
+    if (cur == null) {
       return null;
     }
   }
@@ -362,51 +739,22 @@ goog.getObjectByName = function(name, opt_obj) {
 
 
 /**
- * Globalizes a whole namespace, such as goog or goog.lang.
- *
- * @param {Object} obj The namespace to globalize.
- * @param {Object=} opt_global The object to add the properties to.
- * @deprecated Properties may be explicitly exported to the global scope, but
- *     this should no longer be done in bulk.
- */
-goog.globalize = function(obj, opt_global) {
-  var global = opt_global || goog.global;
-  for (var x in obj) {
-    global[x] = obj[x];
-  }
-};
-
-
-/**
  * Adds a dependency from a file to the files it requires.
  * @param {string} relPath The path to the js file.
- * @param {Array} provides An array of strings with the names of the objects
- *                         this file provides.
- * @param {Array} requires An array of strings with the names of the objects
- *                         this file requires.
+ * @param {!Array<string>} provides An array of strings with
+ *     the names of the objects this file provides.
+ * @param {!Array<string>} requires An array of strings with
+ *     the names of the objects this file requires.
+ * @param {boolean|!Object<string>=} opt_loadFlags Parameters indicating
+ *     how the file must be loaded.  The boolean 'true' is equivalent
+ *     to {'module': 'goog'} for backwards-compatibility.  Valid properties
+ *     and values include {'module': 'goog'} and {'lang': 'es6'}.
  */
-goog.addDependency = function(relPath, provides, requires) {
-  if (goog.DEPENDENCIES_ENABLED) {
-    var provide, require;
-    var path = relPath.replace(/\\/g, '/');
-    var deps = goog.dependencies_;
-    for (var i = 0; provide = provides[i]; i++) {
-      deps.nameToPath[provide] = path;
-      if (!(path in deps.pathToNames)) {
-        deps.pathToNames[path] = {};
-      }
-      deps.pathToNames[path][provide] = true;
-    }
-    for (var j = 0; require = requires[j]; j++) {
-      if (!(path in deps.requires)) {
-        deps.requires[path] = {};
-      }
-      deps.requires[path][require] = true;
-    }
+goog.addDependency = function(relPath, provides, requires, opt_loadFlags) {
+  if (!COMPILED && goog.DEPENDENCIES_ENABLED) {
+    goog.debugLoader_.addDependency(relPath, provides, requires, opt_loadFlags);
   }
 };
-
-
 
 
 // NOTE(nnaze): The debug DOM loader was included in base.js as an original way
@@ -417,12 +765,13 @@ goog.addDependency = function(relPath, provides, requires) {
 // will not load until some point after the current script.  If a namespace is
 // needed at runtime, it needs to be defined in a previous script, or loaded via
 // require() with its registered dependencies.
-// User-defined namespaces may need their own deps file.  See http://go/js_deps,
-// http://go/genjsdeps, or, externally, DepsWriter.
-// http://code.google.com/closure/library/docs/depswriter.html
+//
+// User-defined namespaces may need their own deps file. For a reference on
+// creating a deps file, see:
+// Externally: https://developers.google.com/closure/library/docs/depswriter
 //
 // Because of legacy clients, the DOM loader can't be easily removed from
-// base.js.  Work is being done to make it disableable or replaceable for
+// base.js.  Work was done to make it disableable or replaceable for
 // different environments (DOM-less JavaScript interpreters like Rhino or V8,
 // for example). See bootstrap/ for more information.
 
@@ -437,48 +786,81 @@ goog.addDependency = function(relPath, provides, requires) {
  * provided (and depend on the fact that some outside tool correctly ordered
  * the script).
  */
-goog.ENABLE_DEBUG_LOADER = goog.define('goog.ENABLE_DEBUG_LOADER', true);
+goog.ENABLE_DEBUG_LOADER = goog.define('goog.ENABLE_DEBUG_LOADER', false);
+
+
+/**
+ * @param {string} msg
+ * @private
+ */
+goog.logToConsole_ = function(msg) {
+  if (goog.global.console) {
+    goog.global.console['error'](msg);
+  }
+};
 
 
 /**
  * Implements a system for the dynamic resolution of dependencies that works in
- * parallel with the BUILD system. Note that all calls to goog.require will be
- * stripped by the JSCompiler when the --closure_pass option is used.
+ * parallel with the BUILD system.
+ *
+ * Note that all calls to goog.require will be stripped by the compiler.
+ *
  * @see goog.provide
- * @param {string} name Namespace to include (as was given in goog.provide()) in
- *     the form "goog.package.part".
+ * @param {string} namespace Namespace (as was given in goog.provide,
+ *     goog.module, or goog.declareModuleId) in the form
+ *     "goog.package.part".
+ * @return {?} If called within a goog.module or ES6 module file, the associated
+ *     namespace or module otherwise null.
  */
-goog.require = function(name) {
-
-  // If the object already exists we do not need do do anything.
-  // TODO(arv): If we start to support require based on file name this has to
-  //            change.
-  // TODO(arv): If we allow goog.foo.* this has to change.
-  // TODO(arv): If we implement dynamic load after page load we should probably
-  //            not remove this code for the compiled output.
+goog.require = function(namespace) {
   if (!COMPILED) {
-    if (goog.isProvided_(name)) {
-      return;
+    // Might need to lazy load on old IE.
+    if (goog.ENABLE_DEBUG_LOADER) {
+      goog.debugLoader_.requested(namespace);
     }
 
-    if (goog.ENABLE_DEBUG_LOADER) {
-      var path = goog.getPathFromDeps_(name);
-      if (path) {
-        goog.included_[path] = true;
-        goog.writeScripts_();
-        return;
+    // If the object already exists we do not need to do anything.
+    if (goog.isProvided_(namespace)) {
+      if (goog.isInModuleLoader_()) {
+        return goog.module.getInternal_(namespace);
+      }
+    } else if (goog.ENABLE_DEBUG_LOADER) {
+      var moduleLoaderState = goog.moduleLoaderState_;
+      goog.moduleLoaderState_ = null;
+      try {
+        goog.debugLoader_.load_(namespace);
+      } finally {
+        goog.moduleLoaderState_ = moduleLoaderState;
       }
     }
 
-    var errorMessage = 'goog.require could not find: ' + name;
-    if (goog.global.console) {
-      goog.global.console['error'](errorMessage);
-    }
-
-
-      throw Error(errorMessage);
-
+    return null;
   }
+};
+
+
+/**
+ * Requires a symbol for its type information. This is an indication to the
+ * compiler that the symbol may appear in type annotations, yet it is not
+ * referenced at runtime.
+ *
+ * When called within a goog.module or ES6 module file, the return value may be
+ * assigned to or destructured into a variable, but it may not be otherwise used
+ * in code outside of a type annotation.
+ *
+ * Note that all calls to goog.requireType will be stripped by the compiler.
+ *
+ * @param {string} namespace Namespace (as was given in goog.provide,
+ *     goog.module, or goog.declareModuleId) in the form
+ *     "goog.package.part".
+ * @return {?}
+ */
+goog.requireType = function(namespace) {
+  // Return an empty object so that single-level destructuring of the return
+  // value doesn't crash at runtime when using the debug loader. Multi-level
+  // destructuring isn't supported.
+  return {};
 };
 
 
@@ -497,10 +879,11 @@ goog.global.CLOSURE_BASE_PATH;
 
 
 /**
- * Whether to write out Closure's deps file. By default, the deps are written.
+ * Whether to attempt to load Closure's deps file. By default, when uncompiled,
+ * deps files will attempt to be loaded.
  * @type {boolean|undefined}
  */
-goog.global.CLOSURE_NO_DEPS = true;
+goog.global.CLOSURE_NO_DEPS;
 
 
 /**
@@ -509,32 +892,13 @@ goog.global.CLOSURE_NO_DEPS = true;
  * in the global scope so that it can be set before base.js is loaded, which
  * allows deps.js to be imported properly.
  *
- * The function is passed the script source, which is a relative URI. It should
- * return true if the script was imported, false otherwise.
- * @type {(function(string): boolean)|undefined}
+ * The first parameter the script source, which is a relative URI. The second,
+ * optional parameter is the script contents, in the event the script needed
+ * transformation. It should return true if the script was imported, false
+ * otherwise.
+ * @type {(function(string, string=): boolean)|undefined}
  */
 goog.global.CLOSURE_IMPORT_SCRIPT;
-
-
-/**
- * Null function used for default values of callbacks, etc.
- * @return {void} Nothing.
- */
-goog.nullFunction = function() {};
-
-
-/**
- * The identity function. Returns its first argument.
- *
- * @param {*=} opt_returnValue The single value that will be returned.
- * @param {...*} var_args Optional trailing arguments. These are ignored.
- * @return {?} The first argument. We can't know the type -- just pass it along
- *      without type.
- * @deprecated Use goog.functions.identity instead.
- */
-goog.identityFunction = function(opt_returnValue, var_args) {
-  return opt_returnValue;
-};
 
 
 /**
@@ -544,24 +908,32 @@ goog.identityFunction = function(opt_returnValue, var_args) {
  * Now if a subclass of Foo fails to override bar(), an error will be thrown
  * when bar() is invoked.
  *
- * Note: This does not take the name of the function to override as an argument
- * because that would make it more difficult to obfuscate our JavaScript code.
- *
  * @type {!Function}
  * @throws {Error} when invoked to indicate the method should be overridden.
+ * @deprecated Use "@abstract" annotation instead of goog.abstractMethod in new
+ *     code. See
+ *     https://github.com/google/closure-compiler/wiki/@abstract-classes-and-methods
  */
 goog.abstractMethod = function() {
-  throw Error('unimplemented abstract method');
+  throw new Error('unimplemented abstract method');
 };
 
 
 /**
- * Adds a {@code getInstance} static method that always returns the same
+ * Adds a `getInstance` static method that always returns the same
  * instance object.
  * @param {!Function} ctor The constructor for the class to add the static
  *     method to.
+ * @suppress {missingProperties} 'instance_' isn't a property on 'Function'
+ *     but we don't have a better type to use here.
  */
 goog.addSingletonGetter = function(ctor) {
+  // instance_ is immediately set to prevent issues with sealed constructors
+  // such as are encountered when a constructor is returned as the export object
+  // of a goog.module in unoptimized code.
+  // Delcare type to avoid conformance violations that ctor.instance_ is unknown
+  /** @type {undefined|!Object} @suppress {underscore} */
+  ctor.instance_ = undefined;
   ctor.getInstance = function() {
     if (ctor.instance_) {
       return ctor.instance_;
@@ -570,14 +942,15 @@ goog.addSingletonGetter = function(ctor) {
       // NOTE: JSCompiler can't optimize away Array#push.
       goog.instantiatedSingletons_[goog.instantiatedSingletons_.length] = ctor;
     }
-    return ctor.instance_ = new ctor;
+    // Cast to avoid conformance violations that ctor.instance_ is unknown
+    return /** @type {!Object|undefined} */ (ctor.instance_) = new ctor;
   };
 };
 
 
 /**
  * All singleton classes that have been instantiated, for testing. Don't read
- * it directly, use the {@code goog.testing.singleton} module. The compiler
+ * it directly, use the `goog.testing.singleton` module. The compiler
  * removes this variable if unused.
  * @type {!Array<!Function>}
  * @private
@@ -586,217 +959,205 @@ goog.instantiatedSingletons_ = [];
 
 
 /**
- * True if goog.dependencies_ is available.
+ * @define {boolean} Whether to load goog.modules using `eval` when using
+ * the debug loader.  This provides a better debugging experience as the
+ * source is unmodified and can be edited using Chrome Workspaces or similar.
+ * However in some environments the use of `eval` is banned
+ * so we provide an alternative.
+ */
+goog.LOAD_MODULE_USING_EVAL = goog.define('goog.LOAD_MODULE_USING_EVAL', true);
+
+
+/**
+ * @define {boolean} Whether the exports of goog.modules should be sealed when
+ * possible.
+ */
+goog.SEAL_MODULE_EXPORTS = goog.define('goog.SEAL_MODULE_EXPORTS', goog.DEBUG);
+
+
+/**
+ * The registry of initialized modules:
+ * The module identifier or path to module exports map.
+ * @private @const {!Object<string, {exports:?,type:string,moduleId:string}>}
+ */
+goog.loadedModules_ = {};
+
+
+/**
+ * True if the debug loader enabled and used.
  * @const {boolean}
  */
 goog.DEPENDENCIES_ENABLED = !COMPILED && goog.ENABLE_DEBUG_LOADER;
 
 
-if (goog.DEPENDENCIES_ENABLED) {
-  /**
-   * Object used to keep track of urls that have already been added. This record
-   * allows the prevention of circular dependencies.
-   * @type {Object}
-   * @private
-   */
-  goog.included_ = {};
+/**
+ * @define {string} How to decide whether to transpile.  Valid values
+ * are 'always', 'never', and 'detect'.  The default ('detect') is to
+ * use feature detection to determine which language levels need
+ * transpilation.
+ */
+// NOTE(sdh): we could expand this to accept a language level to bypass
+// detection: e.g. goog.TRANSPILE == 'es5' would transpile ES6 files but
+// would leave ES3 and ES5 files alone.
+goog.TRANSPILE = goog.define('goog.TRANSPILE', 'detect');
+
+/**
+ * @define {boolean} If true assume that ES modules have already been
+ * transpiled by the jscompiler (in the same way that transpile.js would
+ * transpile them - to jscomp modules). Useful only for servers that wish to use
+ * the debug loader and transpile server side. Thus this is only respected if
+ * goog.TRANSPILE is "never".
+ */
+goog.ASSUME_ES_MODULES_TRANSPILED =
+    goog.define('goog.ASSUME_ES_MODULES_TRANSPILED', false);
 
 
-  /**
-   * This object is used to keep track of dependencies and other data that is
-   * used for loading scripts.
-   * @private
-   * @type {Object}
-   */
-  goog.dependencies_ = {
-    pathToNames: {}, // 1 to many
-    nameToPath: {}, // 1 to 1
-    requires: {}, // 1 to many
-    // Used when resolving dependencies to prevent us from visiting file twice.
-    visited: {},
-    written: {} // Used to keep track of script files we have written.
-  };
+/**
+ * @define {string} Trusted Types policy name. If non-empty then Closure will
+ * use Trusted Types.
+ */
+goog.TRUSTED_TYPES_POLICY_NAME =
+    goog.define('goog.TRUSTED_TYPES_POLICY_NAME', 'goog');
 
 
-  /**
-   * Tries to detect whether is in the context of an HTML document.
-   * @return {boolean} True if it looks like HTML document.
-   * @private
-   */
-  goog.inHtmlDocument_ = function() {
-    var doc = goog.global.document;
-    return typeof doc != 'undefined' &&
-           'write' in doc;  // XULDocument misses write.
-  };
+/**
+ * @package {?boolean}
+ * Visible for testing.
+ */
+goog.hasBadLetScoping = null;
 
 
-  /**
-   * Tries to detect the base path of base.js script that bootstraps Closure.
-   * @private
-   */
-  goog.findBasePath_ = function() {
-    if (goog.global.CLOSURE_BASE_PATH) {
-      goog.basePath = goog.global.CLOSURE_BASE_PATH;
-      return;
-    } else if (!goog.inHtmlDocument_()) {
-      return;
-    }
-    var doc = goog.global.document;
-    var scripts = doc.getElementsByTagName('script');
-    // Search backwards since the current script is in almost all cases the one
-    // that has base.js.
-    for (var i = scripts.length - 1; i >= 0; --i) {
-      var src = scripts[i].src;
-      var qmark = src.lastIndexOf('?');
-      var l = qmark == -1 ? src.length : qmark;
-      if (src.substr(l - 7, 7) == 'base.js') {
-        goog.basePath = src.substr(0, l - 7);
-        return;
-      }
-    }
-  };
-
-
-  /**
-   * Imports a script if, and only if, that script hasn't already been imported.
-   * (Must be called at execution time)
-   * @param {string} src Script source.
-   * @private
-   */
-  goog.importScript_ = function(src) {
-    var importScript = goog.global.CLOSURE_IMPORT_SCRIPT ||
-        goog.writeScriptTag_;
-    if (!goog.dependencies_.written[src] && importScript(src)) {
-      goog.dependencies_.written[src] = true;
-    }
-  };
-
-
-  /**
-   * The default implementation of the import function. Writes a script tag to
-   * import the script.
-   *
-   * @param {string} src The script source.
-   * @return {boolean} True if the script was imported, false otherwise.
-   * @private
-   */
-  goog.writeScriptTag_ = function(src) {
-    if (goog.inHtmlDocument_()) {
-      var doc = goog.global.document;
-
-      // If the user tries to require a new symbol after document load,
-      // something has gone terribly wrong. Doing a document.write would
-      // wipe out the page.
-      if (doc.readyState == 'complete') {
-        // Certain test frameworks load base.js multiple times, which tries
-        // to write deps.js each time. If that happens, just fail silently.
-        // These frameworks wipe the page between each load of base.js, so this
-        // is OK.
-        var isDeps = /\bdeps.js$/.test(src);
-        if (isDeps) {
-          return false;
-        } else {
-          throw Error('Cannot write "' + src + '" after document load');
-        }
-      }
-
-      doc.write(
-          '<script type="text/javascript" src="' + src + '"></' + 'script>');
-      return true;
+/**
+ * @param {function(?):?|string} moduleDef The module definition.
+ */
+goog.loadModule = function(moduleDef) {
+  // NOTE: we allow function definitions to be either in the from
+  // of a string to eval (which keeps the original source intact) or
+  // in a eval forbidden environment (CSP) we allow a function definition
+  // which in its body must call `goog.module`, and return the exports
+  // of the module.
+  var previousState = goog.moduleLoaderState_;
+  try {
+    goog.moduleLoaderState_ = {
+      moduleName: '',
+      declareLegacyNamespace: false,
+      type: goog.ModuleType.GOOG
+    };
+    var origExports = {};
+    var exports = origExports;
+    if (typeof moduleDef === 'function') {
+      exports = moduleDef.call(undefined, exports);
+    } else if (typeof moduleDef === 'string') {
+      exports = goog.loadModuleFromSource_.call(undefined, exports, moduleDef);
     } else {
-      return false;
-    }
-  };
-
-
-  /**
-   * Resolves dependencies based on the dependencies added using addDependency
-   * and calls importScript_ in the correct order.
-   * @private
-   */
-  goog.writeScripts_ = function() {
-    // The scripts we need to write this time.
-    var scripts = [];
-    var seenScript = {};
-    var deps = goog.dependencies_;
-
-    function visitNode(path) {
-      if (path in deps.written) {
-        return;
-      }
-
-      // We have already visited this one. We can get here if we have cyclic
-      // dependencies.
-      if (path in deps.visited) {
-        if (!(path in seenScript)) {
-          seenScript[path] = true;
-          scripts.push(path);
-        }
-        return;
-      }
-
-      deps.visited[path] = true;
-
-      if (path in deps.requires) {
-        for (var requireName in deps.requires[path]) {
-          // If the required name is defined, we assume that it was already
-          // bootstrapped by other means.
-          if (!goog.isProvided_(requireName)) {
-            if (requireName in deps.nameToPath) {
-              visitNode(deps.nameToPath[requireName]);
-            } else {
-              throw Error('Undefined nameToPath for ' + requireName);
-            }
-          }
-        }
-      }
-
-      if (!(path in seenScript)) {
-        seenScript[path] = true;
-        scripts.push(path);
-      }
+      throw new Error('Invalid module definition');
     }
 
-    for (var path in goog.included_) {
-      if (!deps.written[path]) {
-        visitNode(path);
+    var moduleName = goog.moduleLoaderState_.moduleName;
+    if (typeof moduleName === 'string' && moduleName) {
+      // Don't seal legacy namespaces as they may be used as a parent of
+      // another namespace
+      if (goog.moduleLoaderState_.declareLegacyNamespace) {
+        // Whether exports was overwritten via default export assignment.
+        // This is important for legacy namespaces as it dictates whether
+        // previously a previously loaded implicit namespace should be clobbered
+        // or not.
+        var isDefaultExport = origExports !== exports;
+        goog.constructNamespace_(moduleName, exports, isDefaultExport);
+      } else if (
+          goog.SEAL_MODULE_EXPORTS && Object.seal &&
+          typeof exports == 'object' && exports != null) {
+        Object.seal(exports);
       }
-    }
 
-    for (var i = 0; i < scripts.length; i++) {
-      if (scripts[i]) {
-        goog.importScript_(goog.basePath + scripts[i]);
-      } else {
-        throw Error('Undefined script input');
-      }
-    }
-  };
-
-
-  /**
-   * Looks at the dependency rules and tries to determine the script file that
-   * fulfills a particular rule.
-   * @param {string} rule In the form goog.namespace.Class or project.script.
-   * @return {?string} Url corresponding to the rule, or null.
-   * @private
-   */
-  goog.getPathFromDeps_ = function(rule) {
-    if (rule in goog.dependencies_.nameToPath) {
-      return goog.dependencies_.nameToPath[rule];
+      var data = {
+        exports: exports,
+        type: goog.ModuleType.GOOG,
+        moduleId: goog.moduleLoaderState_.moduleName
+      };
+      goog.loadedModules_[moduleName] = data;
     } else {
+      throw new Error('Invalid module name \"' + moduleName + '\"');
+    }
+  } finally {
+    goog.moduleLoaderState_ = previousState;
+  }
+};
+
+
+/**
+ * @private @const
+ */
+goog.loadModuleFromSource_ =
+    /** @type {function(!Object, string):?} */ (function(exports) {
+      // NOTE: we avoid declaring parameters or local variables here to avoid
+      // masking globals or leaking values into the module definition.
+      'use strict';
+      eval(goog.CLOSURE_EVAL_PREFILTER_.createScript(arguments[1]));
+      return exports;
+    });
+
+
+/**
+ * Normalize a file path by removing redundant ".." and extraneous "." file
+ * path components.
+ * @param {string} path
+ * @return {string}
+ * @private
+ */
+goog.normalizePath_ = function(path) {
+  var components = path.split('/');
+  var i = 0;
+  while (i < components.length) {
+    if (components[i] == '.') {
+      components.splice(i, 1);
+    } else if (
+        i && components[i] == '..' && components[i - 1] &&
+        components[i - 1] != '..') {
+      components.splice(--i, 2);
+    } else {
+      i++;
+    }
+  }
+  return components.join('/');
+};
+
+
+/**
+ * Provides a hook for loading a file when using Closure's goog.require() API
+ * with goog.modules.  In particular this hook is provided to support Node.js.
+ *
+ * @type {(function(string):string)|undefined}
+ */
+goog.global.CLOSURE_LOAD_FILE_SYNC;
+
+
+/**
+ * Loads file by synchronous XHR. Should not be used in production environments.
+ * @param {string} src Source URL.
+ * @return {?string} File contents, or null if load failed.
+ * @private
+ */
+goog.loadFileSync_ = function(src) {
+  if (goog.global.CLOSURE_LOAD_FILE_SYNC) {
+    return goog.global.CLOSURE_LOAD_FILE_SYNC(src);
+  } else {
+    try {
+      /** @type {XMLHttpRequest} */
+      var xhr = new goog.global['XMLHttpRequest']();
+      xhr.open('get', src, false);
+      xhr.send();
+      // NOTE: Successful http: requests have a status of 200, but successful
+      // file: requests may have a status of zero.  Any other status, or a
+      // thrown exception (particularly in case of file: requests) indicates
+      // some sort of error, which we treat as a missing or unavailable file.
+      return xhr.status == 0 || xhr.status == 200 ? xhr.responseText : null;
+    } catch (err) {
+      // No need to rethrow or log, since errors should show up on their own.
       return null;
     }
-  };
-
-  goog.findBasePath_();
-
-  // Allow projects to manage the deps files themselves.
-  if (!goog.global.CLOSURE_NO_DEPS) {
-    goog.importScript_(goog.basePath + 'deps.js');
   }
-}
-
-
+};
 
 //==============================================================================
 // Language Enhancements
@@ -806,142 +1167,39 @@ if (goog.DEPENDENCIES_ENABLED) {
 /**
  * This is a "fixed" version of the typeof operator.  It differs from the typeof
  * operator in such a way that null returns 'null' and arrays return 'array'.
- * @param {*} value The value to get the type of.
+ * @param {?} value The value to get the type of.
  * @return {string} The name of the type.
  */
 goog.typeOf = function(value) {
   var s = typeof value;
-  if (s == 'object') {
-    if (value) {
-      // Check these first, so we can avoid calling Object.prototype.toString if
-      // possible.
-      //
-      // IE improperly marshals tyepof across execution contexts, but a
-      // cross-context object will still return false for "instanceof Object".
-      if (value instanceof Array) {
-        return 'array';
-      } else if (value instanceof Object) {
-        return s;
-      }
 
-      // HACK: In order to use an Object prototype method on the arbitrary
-      //   value, the compiler requires the value be cast to type Object,
-      //   even though the ECMA spec explicitly allows it.
-      var className = Object.prototype.toString.call(
-          /** @type {Object} */ (value));
-      // In Firefox 3.6, attempting to access iframe window objects' length
-      // property throws an NS_ERROR_FAILURE, so we need to special-case it
-      // here.
-      if (className == '[object Window]') {
-        return 'object';
-      }
+  if (s != 'object') {
+    return s;
+  }
 
-      // We cannot always use constructor == Array or instanceof Array because
-      // different frames have different Array objects. In IE6, if the iframe
-      // where the array was created is destroyed, the array loses its
-      // prototype. Then dereferencing val.splice here throws an exception, so
-      // we can't use goog.isFunction. Calling typeof directly returns 'unknown'
-      // so that will work. In this case, this function will return false and
-      // most array functions will still work because the array is still
-      // array-like (supports length and []) even though it has lost its
-      // prototype.
-      // Mark Miller noticed that Object.prototype.toString
-      // allows access to the unforgeable [[Class]] property.
-      //  15.2.4.2 Object.prototype.toString ( )
-      //  When the toString method is called, the following steps are taken:
-      //      1. Get the [[Class]] property of this object.
-      //      2. Compute a string value by concatenating the three strings
-      //         "[object ", Result(1), and "]".
-      //      3. Return Result(2).
-      // and this behavior survives the destruction of the execution context.
-      if ((className == '[object Array]' ||
-           // In IE all non value types are wrapped as objects across window
-           // boundaries (not iframe though) so we have to do object detection
-           // for this edge case.
-           typeof value.length == 'number' &&
-           typeof value.splice != 'undefined' &&
-           typeof value.propertyIsEnumerable != 'undefined' &&
-           !value.propertyIsEnumerable('splice')
+  if (!value) {
+    return 'null';
+  }
 
-          )) {
-        return 'array';
-      }
-      // HACK: There is still an array case that fails.
-      //     function ArrayImpostor() {}
-      //     ArrayImpostor.prototype = [];
-      //     var impostor = new ArrayImpostor;
-      // this can be fixed by getting rid of the fast path
-      // (value instanceof Array) and solely relying on
-      // (value && Object.prototype.toString.vall(value) === '[object Array]')
-      // but that would require many more function calls and is not warranted
-      // unless closure code is receiving objects from untrusted sources.
-
-      // IE in cross-window calls does not correctly marshal the function type
-      // (it appears just as an object) so we cannot use just typeof val ==
-      // 'function'. However, if the object has a call property, it is a
-      // function.
-      if ((className == '[object Function]' ||
-          typeof value.call != 'undefined' &&
-          typeof value.propertyIsEnumerable != 'undefined' &&
-          !value.propertyIsEnumerable('call'))) {
-        return 'function';
-      }
-
-    } else {
-      return 'null';
-    }
-
-  } else if (s == 'function' && typeof value.call == 'undefined') {
-    // In Safari typeof nodeList returns 'function', and on Firefox typeof
-    // behaves similarly for HTML{Applet,Embed,Object}, Elements and RegExps. We
-    // would like to return object for those and we can detect an invalid
-    // function by making sure that the function object has a call method.
-    return 'object';
+  if (Array.isArray(value)) {
+    return 'array';
   }
   return s;
 };
 
 
 /**
- * Returns true if the specified value is null.
- * @param {?} val Variable to test.
- * @return {boolean} Whether variable is null.
- */
-goog.isNull = function(val) {
-  return val === null;
-};
-
-
-/**
- * Returns true if the specified value is defined and not null.
- * @param {?} val Variable to test.
- * @return {boolean} Whether variable is defined and not null.
- */
-goog.isDefAndNotNull = function(val) {
-  // Note that undefined == null.
-  return val != null;
-};
-
-
-/**
- * Returns true if the specified value is an array.
- * @param {?} val Variable to test.
- * @return {boolean} Whether variable is an array.
- */
-goog.isArray = function(val) {
-  return goog.typeOf(val) == 'array';
-};
-
-
-/**
  * Returns true if the object looks like an array. To qualify as array like
  * the value needs to be either a NodeList or an object with a Number length
- * property.
+ * property. Note that for this function neither strings nor functions are
+ * considered "array-like".
+ *
  * @param {?} val Variable to test.
  * @return {boolean} Whether variable is an array.
  */
 goog.isArrayLike = function(val) {
   var type = goog.typeOf(val);
+  // We do not use goog.isObject here in order to exclude function values.
   return type == 'array' || type == 'object' && typeof val.length == 'number';
 };
 
@@ -954,46 +1212,6 @@ goog.isArrayLike = function(val) {
  */
 goog.isDateLike = function(val) {
   return goog.isObject(val) && typeof val.getFullYear == 'function';
-};
-
-
-/**
- * Returns true if the specified value is a string.
- * @param {?} val Variable to test.
- * @return {boolean} Whether variable is a string.
- */
-goog.isString = function(val) {
-  return typeof val == 'string';
-};
-
-
-/**
- * Returns true if the specified value is a boolean.
- * @param {?} val Variable to test.
- * @return {boolean} Whether variable is boolean.
- */
-goog.isBoolean = function(val) {
-  return typeof val == 'boolean';
-};
-
-
-/**
- * Returns true if the specified value is a number.
- * @param {?} val Variable to test.
- * @return {boolean} Whether variable is a number.
- */
-goog.isNumber = function(val) {
-  return typeof val == 'number';
-};
-
-
-/**
- * Returns true if the specified value is a function.
- * @param {?} val Variable to test.
- * @return {boolean} Whether variable is a function.
- */
-goog.isFunction = function(val) {
-  return goog.typeOf(val) == 'function';
 };
 
 
@@ -1015,7 +1233,7 @@ goog.isObject = function(val) {
  * Gets a unique ID for an object. This mutates the object so that further calls
  * with the same object as a parameter returns the same value. The unique ID is
  * guaranteed to be unique across the current session amongst objects that are
- * passed into {@code getUid}. There is no guarantee that the ID is unique or
+ * passed into `getUid`. There is no guarantee that the ID is unique or
  * consistent across sessions. It is unsafe to generate unique ID for function
  * prototypes.
  *
@@ -1024,22 +1242,19 @@ goog.isObject = function(val) {
  */
 goog.getUid = function(obj) {
   // TODO(arv): Make the type stricter, do not accept null.
-
-  // In Opera window.hasOwnProperty exists but always returns false so we avoid
-  // using it. As a consequence the unique ID generated for BaseClass.prototype
-  // and SubClass.prototype will be the same.
-  return obj[goog.UID_PROPERTY_] ||
+  return Object.prototype.hasOwnProperty.call(obj, goog.UID_PROPERTY_) &&
+      obj[goog.UID_PROPERTY_] ||
       (obj[goog.UID_PROPERTY_] = ++goog.uidCounter_);
 };
 
 
 /**
- * Whether the given object is alreay assigned a unique ID.
+ * Whether the given object is already assigned a unique ID.
  *
  * This does not modify the object.
  *
- * @param {Object} obj The object to check.
- * @return {boolean} Whether there an assigned unique id for the object.
+ * @param {!Object} obj The object to check.
+ * @return {boolean} Whether there is an assigned unique id for the object.
  */
 goog.hasUid = function(obj) {
   return !!obj[goog.UID_PROPERTY_];
@@ -1048,7 +1263,7 @@ goog.hasUid = function(obj) {
 
 /**
  * Removes the unique ID from an object. This is useful if the object was
- * previously mutated using {@code goog.getUid} in which case the mutation is
+ * previously mutated using `goog.getUid` in which case the mutation is
  * undone.
  * @param {Object} obj The object to remove the unique ID field from.
  */
@@ -1057,10 +1272,10 @@ goog.removeUid = function(obj) {
 
   // In IE, DOM nodes are not instances of Object and throw an exception if we
   // try to delete.  Instead we try to use removeAttribute.
-  if ('removeAttribute' in obj) {
+  if (obj !== null && 'removeAttribute' in obj) {
     obj.removeAttribute(goog.UID_PROPERTY_);
   }
-  /** @preserveTry */
+
   try {
     delete obj[goog.UID_PROPERTY_];
   } catch (ex) {
@@ -1086,24 +1301,6 @@ goog.uidCounter_ = 0;
 
 
 /**
- * Adds a hash code field to an object. The hash code is unique for the
- * given object.
- * @param {Object} obj The object to get the hash code for.
- * @return {number} The hash code for the object.
- * @deprecated Use goog.getUid instead.
- */
-goog.getHashCode = goog.getUid;
-
-
-/**
- * Removes the hash code field from an object.
- * @param {Object} obj The object to remove the field from.
- * @deprecated Use goog.removeUid instead.
- */
-goog.removeHashCode = goog.removeUid;
-
-
-/**
  * Clones a value. The input may be an Object, Array, or basic type. Objects and
  * arrays will be cloned recursively.
  *
@@ -1121,8 +1318,13 @@ goog.removeHashCode = goog.removeUid;
 goog.cloneObject = function(obj) {
   var type = goog.typeOf(obj);
   if (type == 'object' || type == 'array') {
-    if (obj.clone) {
+    if (typeof obj.clone === 'function') {
       return obj.clone();
+    }
+    if (typeof Map !== 'undefined' && obj instanceof Map) {
+      return new Map(obj);
+    } else if (typeof Set !== 'undefined' && obj instanceof Set) {
+      return new Set(obj);
     }
     var clone = type == 'array' ? [] : {};
     for (var key in obj) {
@@ -1137,17 +1339,15 @@ goog.cloneObject = function(obj) {
 
 /**
  * A native implementation of goog.bind.
- * @param {Function} fn A function to partially apply.
- * @param {Object|undefined} selfObj Specifies the object which this should
- *     point to when the function is run.
+ * @param {?function(this:T, ...)} fn A function to partially apply.
+ * @param {T} selfObj Specifies the object which this should point to when the
+ *     function is run.
  * @param {...*} var_args Additional arguments that are partially applied to the
  *     function.
- * @return {!Function} A partially-applied form of the function bind() was
+ * @return {!Function} A partially-applied form of the function goog.bind() was
  *     invoked as a method of.
+ * @template T
  * @private
- * @suppress {deprecated} The compiler thinks that Function.prototype.bind is
- *     deprecated because some people have declared a pure-JS version.
- *     Only the pure-JS version is truly deprecated.
  */
 goog.bindNative_ = function(fn, selfObj, var_args) {
   return /** @type {!Function} */ (fn.call.apply(fn.bind, arguments));
@@ -1156,13 +1356,14 @@ goog.bindNative_ = function(fn, selfObj, var_args) {
 
 /**
  * A pure-JS implementation of goog.bind.
- * @param {Function} fn A function to partially apply.
- * @param {Object|undefined} selfObj Specifies the object which this should
- *     point to when the function is run.
+ * @param {?function(this:T, ...)} fn A function to partially apply.
+ * @param {T} selfObj Specifies the object which this should point to when the
+ *     function is run.
  * @param {...*} var_args Additional arguments that are partially applied to the
  *     function.
- * @return {!Function} A partially-applied form of the function bind() was
+ * @return {!Function} A partially-applied form of the function goog.bind() was
  *     invoked as a method of.
+ * @template T
  * @private
  */
 goog.bindJs_ = function(fn, selfObj, var_args) {
@@ -1198,7 +1399,7 @@ goog.bindJs_ = function(fn, selfObj, var_args) {
  * Also see: {@link #partial}.
  *
  * Usage:
- * <pre>var barMethBound = bind(myFunction, myObj, 'arg1', 'arg2');
+ * <pre>var barMethBound = goog.bind(myFunction, myObj, 'arg1', 'arg2');
  * barMethBound('arg3', 'arg4');</pre>
  *
  * @param {?function(this:T, ...)} fn A function to partially apply.
@@ -1206,10 +1407,11 @@ goog.bindJs_ = function(fn, selfObj, var_args) {
  *     function is run.
  * @param {...*} var_args Additional arguments that are partially applied to the
  *     function.
- * @return {!Function} A partially-applied form of the function bind() was
+ * @return {!Function} A partially-applied form of the function goog.bind() was
  *     invoked as a method of.
  * @template T
  * @suppress {deprecated} See above.
+ * @deprecated use `=> {}` or Function.prototype.bind instead.
  */
 goog.bind = function(fn, selfObj, var_args) {
   // TODO(nicksantos): narrow the type signature.
@@ -1230,17 +1432,17 @@ goog.bind = function(fn, selfObj, var_args) {
 
 
 /**
- * Like bind(), except that a 'this object' is not required. Useful when the
- * target function is already bound.
+ * Like goog.bind(), except that a 'this object' is not required. Useful when
+ * the target function is already bound.
  *
  * Usage:
- * var g = partial(f, arg1, arg2);
+ * var g = goog.partial(f, arg1, arg2);
  * g(arg3, arg4);
  *
  * @param {Function} fn A function to partially apply.
  * @param {...*} var_args Additional arguments that are partially applied to fn.
- * @return {!Function} A partially-applied form of the function bind() was
- *     invoked as a method of.
+ * @return {!Function} A partially-applied form of the function goog.partial()
+ *     was invoked as a method of.
  */
 goog.partial = function(fn, var_args) {
   var args = Array.prototype.slice.call(arguments, 1);
@@ -1249,98 +1451,36 @@ goog.partial = function(fn, var_args) {
     // to the existing arguments.
     var newArgs = args.slice();
     newArgs.push.apply(newArgs, arguments);
-    return fn.apply(this, newArgs);
+    return fn.apply(/** @type {?} */ (this), newArgs);
   };
-};
-
-
-/**
- * Copies all the members of a source object to a target object. This method
- * does not work on all browsers for all objects that contain keys such as
- * toString or hasOwnProperty. Use goog.object.extend for this purpose.
- * @param {Object} target Target.
- * @param {Object} source Source.
- */
-goog.mixin = function(target, source) {
-  for (var x in source) {
-    target[x] = source[x];
-  }
-
-  // For IE7 or lower, the for-in-loop does not contain any properties that are
-  // not enumerable on the prototype object (for example, isPrototypeOf from
-  // Object.prototype) but also it will not include 'replace' on objects that
-  // extend String and change 'replace' (not that it is common for anyone to
-  // extend anything except Object).
 };
 
 
 /**
  * @return {number} An integer value representing the number of milliseconds
  *     between midnight, January 1, 1970 and the current time.
+ * @deprecated Use Date.now
  */
-goog.now = (goog.TRUSTED_SITE && Date.now) || (function() {
-  // Unary plus operator converts its operand to a number which in the case of
-  // a date is done by calling getTime().
-  return +new Date();
-});
-
-
-/**
- * Evals JavaScript in the global scope.  In IE this uses execScript, other
- * browsers use goog.global.eval. If goog.global.eval does not evaluate in the
- * global scope (for example, in Safari), appends a script tag instead.
- * Throws an exception if neither execScript or eval is defined.
- * @param {string} script JavaScript string.
- */
-goog.globalEval = function(script) {
-  if (goog.global.execScript) {
-    goog.global.execScript(script, 'JavaScript');
-  } else if (goog.global.eval) {
-    // Test to see if eval works
-    if (goog.evalWorksForGlobals_ == null) {
-      goog.global.eval('var _et_ = 1;');
-      if (typeof goog.global['_et_'] != 'undefined') {
-        delete goog.global['_et_'];
-        goog.evalWorksForGlobals_ = true;
-      } else {
-        goog.evalWorksForGlobals_ = false;
-      }
-    }
-
-    if (goog.evalWorksForGlobals_) {
-      goog.global.eval(script);
-    } else {
-      var doc = goog.global.document;
-      var scriptElt = doc.createElement('script');
-      scriptElt.type = 'text/javascript';
-      scriptElt.defer = false;
-      // Note(user): can't use .innerHTML since "t('<test>')" will fail and
-      // .text doesn't work in Safari 2.  Therefore we append a text node.
-      scriptElt.appendChild(doc.createTextNode(script));
-      doc.body.appendChild(scriptElt);
-      doc.body.removeChild(scriptElt);
-    }
-  } else {
-    throw Error('goog.globalEval not available');
-  }
+goog.now = function() {
+  return Date.now();
 };
 
 
 /**
- * Indicates whether or not we can call 'eval' directly to eval code in the
- * global scope. Set to a Boolean by the first call to goog.globalEval (which
- * empirically tests whether eval works for globals). @see goog.globalEval
- * @type {?boolean}
- * @private
+ * Evals JavaScript in the global scope.
+ *
+ * Throws an exception if neither execScript or eval is defined.
+ * @param {string|!TrustedScript} script JavaScript string.
  */
-goog.evalWorksForGlobals_ = null;
+goog.globalEval = function(script) {
+  (0, eval)(script);
+};
 
 
 /**
  * Optional map of CSS class names to obfuscated names used with
  * goog.getCssName().
- * @type {Object|undefined}
- * @private
+ * @private {!Object<string, string>|undefined}
  * @see goog.setCssNameMapping
  */
 goog.cssNameMapping_;
@@ -1354,6 +1494,17 @@ goog.cssNameMapping_;
  * @see goog.setCssNameMapping
  */
 goog.cssNameMappingStyle_;
+
+
+
+/**
+ * A hook for modifying the default behavior goog.getCssName. The function
+ * if present, will receive the standard output of the goog.getCssName as
+ * its input.
+ *
+ * @type {(function(string):string)|undefined}
+ */
+goog.global.CLOSURE_CSS_NAME_MAP_FN;
 
 
 /**
@@ -1375,7 +1526,7 @@ goog.cssNameMappingStyle_;
  *     var x = goog.getCssName('foo');
  *     var y = goog.getCssName(this.baseClass, 'active');
  *  becomes:
- *     var x= 'foo';
+ *     var x = 'foo';
  *     var y = this.baseClass + '-active';
  *
  * If one argument is passed it will be processed, if two are passed only the
@@ -1388,6 +1539,14 @@ goog.cssNameMappingStyle_;
  *     the modifier.
  */
 goog.getCssName = function(className, opt_modifier) {
+  // String() is used for compatibility with compiled soy where the passed
+  // className can be non-string objects.
+  if (String(className).charAt(0) == '.') {
+    throw new Error(
+        'className passed in goog.getCssName must not start with ".".' +
+        ' You passed: ' + className);
+  }
+
   var getMapping = function(cssName) {
     return goog.cssNameMapping_[cssName] || cssName;
   };
@@ -1404,19 +1563,24 @@ goog.getCssName = function(className, opt_modifier) {
 
   var rename;
   if (goog.cssNameMapping_) {
-    rename = goog.cssNameMappingStyle_ == 'BY_WHOLE' ?
-        getMapping : renameByParts;
+    rename =
+        goog.cssNameMappingStyle_ == 'BY_WHOLE' ? getMapping : renameByParts;
   } else {
     rename = function(a) {
       return a;
     };
   }
 
-  if (opt_modifier) {
-    return className + '-' + rename(opt_modifier);
-  } else {
-    return rename(className);
+  var result =
+      opt_modifier ? className + '-' + rename(opt_modifier) : rename(className);
+
+  // The special CLOSURE_CSS_NAME_MAP_FN allows users to specify further
+  // processing of the class name.
+  if (goog.global.CLOSURE_CSS_NAME_MAP_FN) {
+    return goog.global.CLOSURE_CSS_NAME_MAP_FN(result);
   }
+
+  return result;
 };
 
 
@@ -1434,7 +1598,7 @@ goog.getCssName = function(className, opt_modifier) {
  * </pre>
  * When declared as a map of string literals to string literals, the JSCompiler
  * will replace all calls to goog.getCssName() using the supplied map if the
- * --closure_pass flag is set.
+ * --process_closure_primitives flag is set.
  *
  * @param {!Object} mapping A map of strings to strings where keys are possible
  *     arguments to goog.getCssName() and values are the corresponding values
@@ -1459,7 +1623,7 @@ goog.setCssNameMapping = function(mapping, opt_style) {
  * are made in uncompiled mode.
  *
  * A hook for overriding the CSS name mapping.
- * @type {Object|undefined}
+ * @type {!Object<string, string>|undefined}
  */
 goog.global.CLOSURE_CSS_NAME_MAPPING;
 
@@ -1470,6 +1634,71 @@ if (!COMPILED && goog.global.CLOSURE_CSS_NAME_MAPPING) {
   goog.cssNameMapping_ = goog.global.CLOSURE_CSS_NAME_MAPPING;
 }
 
+/**
+ * Options bag type for `goog.getMsg()` third argument.
+ *
+ * It is important to note that these options need to be known at compile time,
+ * so they must always be provided to `goog.getMsg()` as an actual object
+ * literal in the function call. Otherwise, closure-compiler will report an
+ * error.
+ * @record
+ */
+goog.GetMsgOptions = function() {};
+
+/**
+ * If `true`, escape '<' in the message string to '&lt;'.
+ *
+ * Used by Closure Templates where the generated code size and performance is
+ * critical which is why {@link goog.html.SafeHtmlFormatter} is not used.
+ * The value must be literal `true` or `false`.
+ * @type {boolean|undefined}
+ */
+goog.GetMsgOptions.prototype.html;
+
+/**
+ * If `true`, unescape common html entities: &gt;, &lt;, &apos;, &quot; and
+ * &amp;.
+ *
+ * Used for messages not in HTML context, such as with the `textContent`
+ * property.
+ * The value must be literal `true` or `false`.
+ * @type {boolean|undefined}
+ */
+goog.GetMsgOptions.prototype.unescapeHtmlEntities;
+
+/**
+ * Associates placeholder names with strings showing how their values are
+ * obtained.
+ *
+ * This field is intended for use in automatically generated JS code.
+ * Human-written code should use meaningful placeholder names instead.
+ *
+ * closure-compiler uses this as the contents of the `<ph>` tag in the
+ * XMB file it generates or defaults to `-` for historical reasons.
+ *
+ * Must be an object literal.
+ * Ignored at runtime.
+ * Keys are placeholder names.
+ * Values are string literals indicating how the value is obtained.
+ * Typically this is a snippet of source code.
+ * @type {!Object<string, string>|undefined}
+ */
+goog.GetMsgOptions.prototype.original_code;
+
+/**
+ * Associates placeholder names with example values.
+ *
+ * closure-compiler uses this as the contents of the `<ex>` tag in the
+ * XMB file it generates or defaults to `-` for historical reasons.
+ *
+ * Must be an object literal.
+ * Ignored at runtime.
+ * Keys are placeholder names.
+ * Values are string literals containing example placeholder values.
+ * (e.g. "George McFly" for a name placeholder)
+ * @type {!Object<string, string>|undefined}
+ */
+goog.GetMsgOptions.prototype.example;
 
 /**
  * Gets a localized message.
@@ -1483,15 +1712,34 @@ if (!COMPILED && goog.global.CLOSURE_CSS_NAME_MAPPING) {
  * var MSG_NAME = goog.getMsg('Hello {$placeholder}', {'placeholder': 'world'});
  * </code>
  *
+ * This function produces a string which should be treated as plain text. Use
+ * {@link goog.html.SafeHtmlFormatter} in conjunction with goog.getMsg to
+ * produce SafeHtml.
+ *
  * @param {string} str Translatable string, places holders in the form {$foo}.
- * @param {Object=} opt_values Map of place holder name to value.
+ * @param {!Object<string, string>=} opt_values Maps place holder name to value.
+ * @param {!goog.GetMsgOptions=} opt_options see `goog.GetMsgOptions`
  * @return {string} message with placeholders filled.
  */
-goog.getMsg = function(str, opt_values) {
-  var values = opt_values || {};
-  for (var key in values) {
-    var value = ('' + values[key]).replace(/\$/g, '$$$$');
-    str = str.replace(new RegExp('\\{\\$' + key + '\\}', 'gi'), value);
+goog.getMsg = function(str, opt_values, opt_options) {
+  if (opt_options && opt_options.html) {
+    // Note that '&' is not replaced because the translation can contain HTML
+    // entities.
+    str = str.replace(/</g, '&lt;');
+  }
+  if (opt_options && opt_options.unescapeHtmlEntities) {
+    // Note that "&amp;" must be the last to avoid "creating" new entities.
+    str = str.replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&apos;/g, '\'')
+              .replace(/&quot;/g, '"')
+              .replace(/&amp;/g, '&');
+  }
+  if (opt_values) {
+    str = str.replace(/\{\$([^}]+)}/g, function(match, key) {
+      return (opt_values != null && key in opt_values) ? opt_values[key] :
+                                                         match;
+    });
   }
   return str;
 };
@@ -1535,11 +1783,12 @@ goog.getMsgWithFallback = function(a, b) {
  *
  * @param {string} publicPath Unobfuscated name to export.
  * @param {*} object Object the name should point to.
- * @param {Object=} opt_objectToExportTo The object to add the path to; default
+ * @param {?Object=} objectToExportTo The object to add the path to; default
  *     is goog.global.
  */
-goog.exportSymbol = function(publicPath, object, opt_objectToExportTo) {
-  goog.exportPath_(publicPath, object, opt_objectToExportTo);
+goog.exportSymbol = function(publicPath, object, objectToExportTo) {
+  goog.exportPath_(
+      publicPath, object, /* overwriteImplicit= */ true, objectToExportTo);
 };
 
 
@@ -1562,10 +1811,10 @@ goog.exportProperty = function(object, publicName, symbol) {
  * Usage:
  * <pre>
  * function ParentClass(a, b) { }
- * ParentClass.prototype.foo = function(a) { }
+ * ParentClass.prototype.foo = function(a) { };
  *
  * function ChildClass(a, b, c) {
- *   goog.base(this, a, b);
+ *   ChildClass.base(this, 'constructor', a, b);
  * }
  * goog.inherits(ChildClass, ParentClass);
  *
@@ -1573,22 +1822,15 @@ goog.exportProperty = function(object, publicName, symbol) {
  * child.foo(); // This works.
  * </pre>
  *
- * In addition, a superclass' implementation of a method can be invoked as
- * follows:
- *
- * <pre>
- * ChildClass.prototype.foo = function(a) {
- *   ChildClass.superClass_.foo.call(this, a);
- *   // Other code here.
- * };
- * </pre>
- *
- * @param {Function} childCtor Child class.
- * @param {Function} parentCtor Parent class.
+ * @param {!Function} childCtor Child class.
+ * @param {!Function} parentCtor Parent class.
+ * @suppress {strictMissingProperties} superClass_ and base is not defined on
+ *    Function.
+ * @deprecated Use ECMAScript class syntax instead.
  */
 goog.inherits = function(childCtor, parentCtor) {
   /** @constructor */
-  function tempCtor() {};
+  function tempCtor() {}
   tempCtor.prototype = parentCtor.prototype;
   childCtor.superClass_ = parentCtor.prototype;
   childCtor.prototype = new tempCtor();
@@ -1613,74 +1855,14 @@ goog.inherits = function(childCtor, parentCtor) {
    * @return {*} The return value of the superclass method/constructor.
    */
   childCtor.base = function(me, methodName, var_args) {
-    var args = Array.prototype.slice.call(arguments, 2);
+    // Copying using loop to avoid deop due to passing arguments object to
+    // function. This is faster in many JS engines as of late 2014.
+    var args = new Array(arguments.length - 2);
+    for (var i = 2; i < arguments.length; i++) {
+      args[i - 2] = arguments[i];
+    }
     return parentCtor.prototype[methodName].apply(me, args);
   };
-};
-
-
-/**
- * Call up to the superclass.
- *
- * If this is called from a constructor, then this calls the superclass
- * constructor with arguments 1-N.
- *
- * If this is called from a prototype method, then you must pass the name of the
- * method as the second argument to this function. If you do not, you will get a
- * runtime error. This calls the superclass' method with arguments 2-N.
- *
- * This function only works if you use goog.inherits to express inheritance
- * relationships between your classes.
- *
- * This function is a compiler primitive. At compile-time, the compiler will do
- * macro expansion to remove a lot of the extra overhead that this function
- * introduces. The compiler will also enforce a lot of the assumptions that this
- * function makes, and treat it as a compiler error if you break them.
- *
- * @param {!Object} me Should always be "this".
- * @param {*=} opt_methodName The method name if calling a super method.
- * @param {...*} var_args The rest of the arguments.
- * @return {*} The return value of the superclass method.
- * @suppress {es5Strict} This method can not be used in strict mode, but
- *     all Closure Library consumers must depend on this file.
- */
-goog.base = function(me, opt_methodName, var_args) {
-  var caller = arguments.callee.caller;
-
-  if (goog.STRICT_MODE_COMPATIBLE || (goog.DEBUG && !caller)) {
-    throw Error('arguments.caller not defined.  goog.base() cannot be used ' +
-                'with strict mode code. See ' +
-                'http://www.ecma-international.org/ecma-262/5.1/#sec-C');
-  }
-
-  if (caller.superClass_) {
-    // This is a constructor. Call the superclass constructor.
-    return caller.superClass_.constructor.apply(
-        me, Array.prototype.slice.call(arguments, 1));
-  }
-
-  var args = Array.prototype.slice.call(arguments, 2);
-  var foundCaller = false;
-  for (var ctor = me.constructor;
-       ctor; ctor = ctor.superClass_ && ctor.superClass_.constructor) {
-    if (ctor.prototype[opt_methodName] === caller) {
-      foundCaller = true;
-    } else if (foundCaller) {
-      return ctor.prototype[opt_methodName].apply(me, args);
-    }
-  }
-
-  // If we did not find the caller in the prototype chain, then one of two
-  // things happened:
-  // 1) The caller is an instance method.
-  // 2) This method was not called by the right caller.
-  if (me[opt_methodName] === caller) {
-    return me.constructor.prototype[opt_methodName].apply(me, args);
-  } else {
-    throw Error(
-        'goog.base called from a method of one name ' +
-        'to a method of a different name');
-  }
 };
 
 
@@ -1689,11 +1871,17 @@ goog.base = function(me, opt_methodName, var_args) {
  * uncompiled code - in compiled code the calls will be inlined and the aliases
  * applied.  In uncompiled code the function is simply run since the aliases as
  * written are valid JavaScript.
+ *
+ *
  * @param {function()} fn Function to call.  This function can contain aliases
  *     to namespaces (e.g. "var dom = goog.dom") or classes
  *     (e.g. "var Timer = goog.Timer").
+ * @deprecated Use goog.module instead.
  */
 goog.scope = function(fn) {
+  if (goog.isInModuleLoader_()) {
+    throw new Error('goog.scope is not supported within a module.');
+  }
   fn.call(goog.global);
 };
 
@@ -1713,3 +1901,1650 @@ if (!COMPILED) {
 }
 
 
+//==============================================================================
+// goog.defineClass implementation
+//==============================================================================
+
+
+/**
+ * Creates a restricted form of a Closure "class":
+ *   - from the compiler's perspective, the instance returned from the
+ *     constructor is sealed (no new properties may be added).  This enables
+ *     better checks.
+ *   - the compiler will rewrite this definition to a form that is optimal
+ *     for type checking and optimization (initially this will be a more
+ *     traditional form).
+ *
+ * @param {Function} superClass The superclass, Object or null.
+ * @param {goog.defineClass.ClassDescriptor} def
+ *     An object literal describing
+ *     the class.  It may have the following properties:
+ *     "constructor": the constructor function
+ *     "statics": an object literal containing methods to add to the constructor
+ *        as "static" methods or a function that will receive the constructor
+ *        function as its only parameter to which static properties can
+ *        be added.
+ *     all other properties are added to the prototype.
+ * @return {!Function} The class constructor.
+ * @deprecated Use ECMAScript class syntax instead.
+ */
+goog.defineClass = function(superClass, def) {
+  // TODO(johnlenz): consider making the superClass an optional parameter.
+  var constructor = def.constructor;
+  var statics = def.statics;
+  // Wrap the constructor prior to setting up the prototype and static methods.
+  if (!constructor || constructor == Object.prototype.constructor) {
+    constructor = function() {
+      throw new Error(
+          'cannot instantiate an interface (no constructor defined).');
+    };
+  }
+
+  var cls = goog.defineClass.createSealingConstructor_(constructor, superClass);
+  if (superClass) {
+    goog.inherits(cls, superClass);
+  }
+
+  // Remove all the properties that should not be copied to the prototype.
+  delete def.constructor;
+  delete def.statics;
+
+  goog.defineClass.applyProperties_(cls.prototype, def);
+  if (statics != null) {
+    if (statics instanceof Function) {
+      statics(cls);
+    } else {
+      goog.defineClass.applyProperties_(cls, statics);
+    }
+  }
+
+  return cls;
+};
+
+
+/**
+ * @typedef {{
+ *   constructor: (!Function|undefined),
+ *   statics: (Object|undefined|function(Function):void)
+ * }}
+ */
+goog.defineClass.ClassDescriptor;
+
+
+/**
+ * @define {boolean} Whether the instances returned by goog.defineClass should
+ *     be sealed when possible.
+ *
+ * When sealing is disabled the constructor function will not be wrapped by
+ * goog.defineClass, making it incompatible with ES6 class methods.
+ */
+goog.defineClass.SEAL_CLASS_INSTANCES =
+    goog.define('goog.defineClass.SEAL_CLASS_INSTANCES', goog.DEBUG);
+
+
+/**
+ * If goog.defineClass.SEAL_CLASS_INSTANCES is enabled and Object.seal is
+ * defined, this function will wrap the constructor in a function that seals the
+ * results of the provided constructor function.
+ *
+ * @param {!Function} ctr The constructor whose results maybe be sealed.
+ * @param {Function} superClass The superclass constructor.
+ * @return {!Function} The replacement constructor.
+ * @private
+ */
+goog.defineClass.createSealingConstructor_ = function(ctr, superClass) {
+  if (!goog.defineClass.SEAL_CLASS_INSTANCES) {
+    // Do now wrap the constructor when sealing is disabled. Angular code
+    // depends on this for injection to work properly.
+    return ctr;
+  }
+
+  // NOTE: The sealing behavior has been removed
+
+  /**
+   * @this {Object}
+   * @return {?}
+   */
+  var wrappedCtr = function() {
+    // Don't seal an instance of a subclass when it calls the constructor of
+    // its super class as there is most likely still setup to do.
+    var instance = ctr.apply(this, arguments) || this;
+    instance[goog.UID_PROPERTY_] = instance[goog.UID_PROPERTY_];
+
+    return instance;
+  };
+
+  return wrappedCtr;
+};
+
+
+
+// TODO(johnlenz): share these values with the goog.object
+/**
+ * The names of the fields that are defined on Object.prototype.
+ * @type {!Array<string>}
+ * @private
+ * @const
+ */
+goog.defineClass.OBJECT_PROTOTYPE_FIELDS_ = [
+  'constructor', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable',
+  'toLocaleString', 'toString', 'valueOf'
+];
+
+
+// TODO(johnlenz): share this function with the goog.object
+/**
+ * @param {!Object} target The object to add properties to.
+ * @param {!Object} source The object to copy properties from.
+ * @private
+ */
+goog.defineClass.applyProperties_ = function(target, source) {
+  // TODO(johnlenz): update this to support ES5 getters/setters
+
+  var key;
+  for (key in source) {
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
+      target[key] = source[key];
+    }
+  }
+
+  // For IE the for-in-loop does not contain any properties that are not
+  // enumerable on the prototype object (for example isPrototypeOf from
+  // Object.prototype) and it will also not include 'replace' on objects that
+  // extend String and change 'replace' (not that it is common for anyone to
+  // extend anything except Object).
+  for (var i = 0; i < goog.defineClass.OBJECT_PROTOTYPE_FIELDS_.length; i++) {
+    key = goog.defineClass.OBJECT_PROTOTYPE_FIELDS_[i];
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
+      target[key] = source[key];
+    }
+  }
+};
+
+/**
+ * Returns the parameter.
+ * @param {string} s
+ * @return {string}
+ * @private
+ */
+goog.identity_ = function(s) {
+  return s;
+};
+
+
+/**
+ * Creates Trusted Types policy if Trusted Types are supported by the browser.
+ * The policy just blesses any string as a Trusted Type. It is not visibility
+ * restricted because anyone can also call trustedTypes.createPolicy directly.
+ * However, the allowed names should be restricted by a HTTP header and the
+ * reference to the created policy should be visibility restricted.
+ * @param {string} name
+ * @return {?TrustedTypePolicy}
+ */
+goog.createTrustedTypesPolicy = function(name) {
+  var policy = null;
+  var policyFactory = goog.global.trustedTypes;
+  if (!policyFactory || !policyFactory.createPolicy) {
+    return policy;
+  }
+  // trustedTypes.createPolicy throws if called with a name that is already
+  // registered, even in report-only mode. Until the API changes, catch the
+  // error not to break the applications functionally. In such case, the code
+  // will fall back to using regular Safe Types.
+  // TODO(koto): Remove catching once createPolicy API stops throwing.
+  try {
+    policy = policyFactory.createPolicy(name, {
+      createHTML: goog.identity_,
+      createScript: goog.identity_,
+      createScriptURL: goog.identity_
+    });
+  } catch (e) {
+    goog.logToConsole_(e.message);
+  }
+  return policy;
+};
+
+// There's a bug in the compiler where without collapse properties the
+// Closure namespace defines do not guard code correctly. To help reduce code
+// size also check for !COMPILED even though it redundant until this is fixed.
+if (!COMPILED && goog.DEPENDENCIES_ENABLED) {
+
+
+  /**
+   * Tries to detect whether the current browser is Edge, based on the user
+   * agent. This matches only pre-Chromium Edge.
+   * @see https://docs.microsoft.com/en-us/microsoft-edge/web-platform/user-agent-string
+   * @return {boolean} True if the current browser is Edge.
+   * @private
+   */
+  goog.isEdge_ = function() {
+    var userAgent = goog.global.navigator && goog.global.navigator.userAgent ?
+        goog.global.navigator.userAgent :
+        '';
+    var edgeRe = /Edge\/(\d+)(\.\d)*/i;
+    return !!userAgent.match(edgeRe);
+  };
+
+
+  /**
+   * Tries to detect whether is in the context of an HTML document.
+   * @return {boolean} True if it looks like HTML document.
+   * @private
+   */
+  goog.inHtmlDocument_ = function() {
+    /** @type {!Document} */
+    var doc = goog.global.document;
+    return doc != null && 'write' in doc;  // XULDocument misses write.
+  };
+
+
+  /**
+   * We'd like to check for if the document readyState is 'loading'; however
+   * there are bugs on IE 10 and below where the readyState being anything other
+   * than 'complete' is not reliable.
+   * @return {boolean}
+   * @private
+   */
+  goog.isDocumentLoading_ = function() {
+    // attachEvent is available on IE 6 thru 10 only, and thus can be used to
+    // detect those browsers.
+    /** @type {!HTMLDocument} */
+    var doc = goog.global.document;
+    return doc.attachEvent ? doc.readyState != 'complete' :
+                             doc.readyState == 'loading';
+  };
+
+
+  /**
+   * Tries to detect the base path of base.js script that bootstraps Closure.
+   * @private
+   */
+  goog.findBasePath_ = function() {
+    if (goog.global.CLOSURE_BASE_PATH != undefined &&
+        // Anti DOM-clobbering runtime check (b/37736576).
+        typeof goog.global.CLOSURE_BASE_PATH === 'string') {
+      goog.basePath = goog.global.CLOSURE_BASE_PATH;
+      return;
+    } else if (!goog.inHtmlDocument_()) {
+      return;
+    }
+    /** @type {!Document} */
+    var doc = goog.global.document;
+    // If we have a currentScript available, use it exclusively.
+    var currentScript = doc.currentScript;
+    if (currentScript) {
+      var scripts = [currentScript];
+    } else {
+      var scripts = doc.getElementsByTagName('SCRIPT');
+    }
+    // Search backwards since the current script is in almost all cases the one
+    // that has base.js.
+    for (var i = scripts.length - 1; i >= 0; --i) {
+      var script = /** @type {!HTMLScriptElement} */ (scripts[i]);
+      var src = script.src;
+      var qmark = src.lastIndexOf('?');
+      var l = qmark == -1 ? src.length : qmark;
+      if (src.slice(l - 7, l) == 'base.js') {
+        goog.basePath = src.slice(0, l - 7);
+        return;
+      }
+    }
+  };
+
+  goog.findBasePath_();
+
+  /**
+   * Rewrites closing script tags in input to avoid ending an enclosing script
+   * tag.
+   *
+   * @param {string} str
+   * @return {string}
+   * @private
+   */
+  goog.protectScriptTag_ = function(str) {
+    return str.replace(/<\/(SCRIPT)/ig, '\\x3c/$1');
+  };
+
+
+  /**
+   * A debug loader is responsible for downloading and executing javascript
+   * files in an unbundled, uncompiled environment.
+   *
+   * This can be custimized via the setDependencyFactory method, or by
+   * CLOSURE_IMPORT_SCRIPT/CLOSURE_LOAD_FILE_SYNC.
+   *
+   * @struct @constructor @final @private
+   */
+  goog.DebugLoader_ = function() {
+    /** @private @const {!Object<string, !goog.Dependency>} */
+    this.dependencies_ = {};
+    /** @private @const {!Object<string, string>} */
+    this.idToPath_ = {};
+    /** @private @const {!Object<string, boolean>} */
+    this.written_ = {};
+    /** @private @const {!Array<!goog.Dependency>} */
+    this.loadingDeps_ = [];
+    /** @private {!Array<!goog.Dependency>} */
+    this.depsToLoad_ = [];
+    /** @private {boolean} */
+    this.paused_ = false;
+    /** @private {!goog.DependencyFactory} */
+    this.factory_ = new goog.DependencyFactory();
+    /** @private @const {!Object<string, !Function>} */
+    this.deferredCallbacks_ = {};
+    /** @private @const {!Array<string>} */
+    this.deferredQueue_ = [];
+  };
+
+  /**
+   * @param {!Array<string>} namespaces
+   * @param {function(): undefined} callback Function to call once all the
+   *     namespaces have loaded.
+   */
+  goog.DebugLoader_.prototype.bootstrap = function(namespaces, callback) {
+    var cb = callback;
+    function resolve() {
+      if (cb) {
+        goog.global.setTimeout(cb, 0);
+        cb = null;
+      }
+    }
+
+    if (!namespaces.length) {
+      resolve();
+      return;
+    }
+
+    var deps = [];
+    for (var i = 0; i < namespaces.length; i++) {
+      var path = this.getPathFromDeps_(namespaces[i]);
+      if (!path) {
+        throw new Error('Unregonized namespace: ' + namespaces[i]);
+      }
+      deps.push(this.dependencies_[path]);
+    }
+
+    var require = goog.require;
+    var loaded = 0;
+    for (var i = 0; i < namespaces.length; i++) {
+      require(namespaces[i]);
+      deps[i].onLoad(function() {
+        if (++loaded == namespaces.length) {
+          resolve();
+        }
+      });
+    }
+  };
+
+
+  /**
+   * Loads the Closure Dependency file.
+   *
+   * Exposed a public function so CLOSURE_NO_DEPS can be set to false, base
+   * loaded, setDependencyFactory called, and then this called. i.e. allows
+   * custom loading of the deps file.
+   */
+  goog.DebugLoader_.prototype.loadClosureDeps = function() {
+    // Circumvent addDependency, which would try to transpile deps.js if
+    // transpile is set to always.
+    var relPath = 'deps.js';
+    this.depsToLoad_.push(this.factory_.createDependency(
+        goog.normalizePath_(goog.basePath + relPath), relPath, [], [], {}));
+    this.loadDeps_();
+  };
+
+
+  /**
+   * Notifies the debug loader when a dependency has been requested.
+   *
+   * @param {string} absPathOrId Path of the dependency or goog id.
+   * @param {boolean=} opt_force
+   */
+  goog.DebugLoader_.prototype.requested = function(absPathOrId, opt_force) {
+    var path = this.getPathFromDeps_(absPathOrId);
+    if (path &&
+        (opt_force || this.areDepsLoaded_(this.dependencies_[path].requires))) {
+      var callback = this.deferredCallbacks_[path];
+      if (callback) {
+        delete this.deferredCallbacks_[path];
+        callback();
+      }
+    }
+  };
+
+
+  /**
+   * Sets the dependency factory, which can be used to create custom
+   * goog.Dependency implementations to control how dependencies are loaded.
+   *
+   * @param {!goog.DependencyFactory} factory
+   */
+  goog.DebugLoader_.prototype.setDependencyFactory = function(factory) {
+    this.factory_ = factory;
+  };
+
+
+  /**
+   * Travserses the dependency graph and queues the given dependency, and all of
+   * its transitive dependencies, for loading and then starts loading if not
+   * paused.
+   *
+   * @param {string} namespace
+   * @private
+   */
+  goog.DebugLoader_.prototype.load_ = function(namespace) {
+    if (!this.getPathFromDeps_(namespace)) {
+      var errorMessage = 'goog.require could not find: ' + namespace;
+      goog.logToConsole_(errorMessage);
+    } else {
+      var loader = this;
+
+      var deps = [];
+
+      /** @param {string} namespace */
+      var visit = function(namespace) {
+        var path = loader.getPathFromDeps_(namespace);
+
+        if (!path) {
+          throw new Error('Bad dependency path or symbol: ' + namespace);
+        }
+
+        if (loader.written_[path]) {
+          return;
+        }
+
+        loader.written_[path] = true;
+
+        var dep = loader.dependencies_[path];
+        for (var i = 0; i < dep.requires.length; i++) {
+          if (!goog.isProvided_(dep.requires[i])) {
+            visit(dep.requires[i]);
+          }
+        }
+
+        deps.push(dep);
+      };
+
+      visit(namespace);
+
+      var wasLoading = !!this.depsToLoad_.length;
+      this.depsToLoad_ = this.depsToLoad_.concat(deps);
+
+      if (!this.paused_ && !wasLoading) {
+        this.loadDeps_();
+      }
+    }
+  };
+
+
+  /**
+   * Loads any queued dependencies until they are all loaded or paused.
+   *
+   * @private
+   */
+  goog.DebugLoader_.prototype.loadDeps_ = function() {
+    var loader = this;
+    var paused = this.paused_;
+
+    while (this.depsToLoad_.length && !paused) {
+      (function() {
+        var loadCallDone = false;
+        var dep = loader.depsToLoad_.shift();
+
+        var loaded = false;
+        loader.loading_(dep);
+
+        var controller = {
+          pause: function() {
+            if (loadCallDone) {
+              throw new Error('Cannot call pause after the call to load.');
+            } else {
+              paused = true;
+            }
+          },
+          resume: function() {
+            if (loadCallDone) {
+              loader.resume_();
+            } else {
+              // Some dep called pause and then resume in the same load call.
+              // Just keep running this same loop.
+              paused = false;
+            }
+          },
+          loaded: function() {
+            if (loaded) {
+              throw new Error('Double call to loaded.');
+            }
+
+            loaded = true;
+            loader.loaded_(dep);
+          },
+          pending: function() {
+            // Defensive copy.
+            var pending = [];
+            for (var i = 0; i < loader.loadingDeps_.length; i++) {
+              pending.push(loader.loadingDeps_[i]);
+            }
+            return pending;
+          },
+          /**
+           * @param {goog.ModuleType} type
+           */
+          setModuleState: function(type) {
+            goog.moduleLoaderState_ = {
+              type: type,
+              moduleName: '',
+              declareLegacyNamespace: false
+            };
+          },
+          /** @type {function(string, string, string=)} */
+          registerEs6ModuleExports: function(
+              path, exports, opt_closureNamespace) {
+            if (opt_closureNamespace) {
+              goog.loadedModules_[opt_closureNamespace] = {
+                exports: exports,
+                type: goog.ModuleType.ES6,
+                moduleId: opt_closureNamespace || ''
+              };
+            }
+          },
+          /** @type {function(string, ?)} */
+          registerGoogModuleExports: function(moduleId, exports) {
+            goog.loadedModules_[moduleId] = {
+              exports: exports,
+              type: goog.ModuleType.GOOG,
+              moduleId: moduleId
+            };
+          },
+          clearModuleState: function() {
+            goog.moduleLoaderState_ = null;
+          },
+          defer: function(callback) {
+            if (loadCallDone) {
+              throw new Error(
+                  'Cannot register with defer after the call to load.');
+            }
+            loader.defer_(dep, callback);
+          },
+          areDepsLoaded: function() {
+            return loader.areDepsLoaded_(dep.requires);
+          }
+        };
+
+        try {
+          dep.load(controller);
+        } finally {
+          loadCallDone = true;
+        }
+      })();
+    }
+
+    if (paused) {
+      this.pause_();
+    }
+  };
+
+
+  /** @private */
+  goog.DebugLoader_.prototype.pause_ = function() {
+    this.paused_ = true;
+  };
+
+
+  /** @private */
+  goog.DebugLoader_.prototype.resume_ = function() {
+    if (this.paused_) {
+      this.paused_ = false;
+      this.loadDeps_();
+    }
+  };
+
+
+  /**
+   * Marks the given dependency as loading (load has been called but it has not
+   * yet marked itself as finished). Useful for dependencies that want to know
+   * what else is loading. Example: goog.modules cannot eval if there are
+   * loading dependencies.
+   *
+   * @param {!goog.Dependency} dep
+   * @private
+   */
+  goog.DebugLoader_.prototype.loading_ = function(dep) {
+    this.loadingDeps_.push(dep);
+  };
+
+
+  /**
+   * Marks the given dependency as having finished loading and being available
+   * for require.
+   *
+   * @param {!goog.Dependency} dep
+   * @private
+   */
+  goog.DebugLoader_.prototype.loaded_ = function(dep) {
+    for (var i = 0; i < this.loadingDeps_.length; i++) {
+      if (this.loadingDeps_[i] == dep) {
+        this.loadingDeps_.splice(i, 1);
+        break;
+      }
+    }
+
+    for (var i = 0; i < this.deferredQueue_.length; i++) {
+      if (this.deferredQueue_[i] == dep.path) {
+        this.deferredQueue_.splice(i, 1);
+        break;
+      }
+    }
+
+    if (this.loadingDeps_.length == this.deferredQueue_.length &&
+        !this.depsToLoad_.length) {
+      // Something has asked to load these, but they may not be directly
+      // required again later, so load them now that we know we're done loading
+      // everything else. e.g. a goog module entry point.
+      while (this.deferredQueue_.length) {
+        this.requested(this.deferredQueue_.shift(), true);
+      }
+    }
+
+    dep.loaded();
+  };
+
+
+  /**
+   * @param {!Array<string>} pathsOrIds
+   * @return {boolean}
+   * @private
+   */
+  goog.DebugLoader_.prototype.areDepsLoaded_ = function(pathsOrIds) {
+    for (var i = 0; i < pathsOrIds.length; i++) {
+      var path = this.getPathFromDeps_(pathsOrIds[i]);
+      if (!path ||
+          (!(path in this.deferredCallbacks_) &&
+           !goog.isProvided_(pathsOrIds[i]))) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+
+  /**
+   * @param {string} absPathOrId
+   * @return {?string}
+   * @private
+   */
+  goog.DebugLoader_.prototype.getPathFromDeps_ = function(absPathOrId) {
+    if (absPathOrId in this.idToPath_) {
+      return this.idToPath_[absPathOrId];
+    } else if (absPathOrId in this.dependencies_) {
+      return absPathOrId;
+    } else {
+      return null;
+    }
+  };
+
+
+  /**
+   * @param {!goog.Dependency} dependency
+   * @param {!Function} callback
+   * @private
+   */
+  goog.DebugLoader_.prototype.defer_ = function(dependency, callback) {
+    this.deferredCallbacks_[dependency.path] = callback;
+    this.deferredQueue_.push(dependency.path);
+  };
+
+
+  /**
+   * Interface for goog.Dependency implementations to have some control over
+   * loading of dependencies.
+   *
+   * @record
+   */
+  goog.LoadController = function() {};
+
+
+  /**
+   * Tells the controller to halt loading of more dependencies.
+   */
+  goog.LoadController.prototype.pause = function() {};
+
+
+  /**
+   * Tells the controller to resume loading of more dependencies if paused.
+   */
+  goog.LoadController.prototype.resume = function() {};
+
+
+  /**
+   * Tells the controller that this dependency has finished loading.
+   *
+   * This causes this to be removed from pending() and any load callbacks to
+   * fire.
+   */
+  goog.LoadController.prototype.loaded = function() {};
+
+
+  /**
+   * List of dependencies on which load has been called but which have not
+   * called loaded on their controller. This includes the current dependency.
+   *
+   * @return {!Array<!goog.Dependency>}
+   */
+  goog.LoadController.prototype.pending = function() {};
+
+
+  /**
+   * Registers an object as an ES6 module's exports so that goog.modules may
+   * require it by path.
+   *
+   * @param {string} path Full path of the module.
+   * @param {?} exports
+   * @param {string=} opt_closureNamespace Closure namespace to associate with
+   *     this module.
+   */
+  goog.LoadController.prototype.registerEs6ModuleExports = function(
+      path, exports, opt_closureNamespace) {};
+
+
+  /**
+   * Sets the current module state.
+   *
+   * @param {goog.ModuleType} type Type of module.
+   */
+  goog.LoadController.prototype.setModuleState = function(type) {};
+
+
+  /**
+   * Clears the current module state.
+   */
+  goog.LoadController.prototype.clearModuleState = function() {};
+
+
+  /**
+   * Registers a callback to call once the dependency is actually requested
+   * via goog.require + all of the immediate dependencies have been loaded or
+   * all other files have been loaded. Allows for lazy loading until
+   * require'd without pausing dependency loading, which is needed on old IE.
+   *
+   * @param {!Function} callback
+   */
+  goog.LoadController.prototype.defer = function(callback) {};
+
+
+  /**
+   * @return {boolean}
+   */
+  goog.LoadController.prototype.areDepsLoaded = function() {};
+
+
+  /**
+   * Basic super class for all dependencies Closure Library can load.
+   *
+   * This default implementation is designed to load untranspiled, non-module
+   * scripts in a web broswer.
+   *
+   * For goog.modules see {@see goog.GoogModuleDependency}.
+   * For untranspiled ES6 modules {@see goog.Es6ModuleDependency}.
+   *
+   * @param {string} path Absolute path of this script.
+   * @param {string} relativePath Path of this script relative to goog.basePath.
+   * @param {!Array<string>} provides goog.provided or goog.module symbols
+   *     in this file.
+   * @param {!Array<string>} requires goog symbols or relative paths to Closure
+   *     this depends on.
+   * @param {!Object<string, string>} loadFlags
+   * @struct @constructor
+   */
+  goog.Dependency = function(
+      path, relativePath, provides, requires, loadFlags) {
+    /** @const */
+    this.path = path;
+    /** @const */
+    this.relativePath = relativePath;
+    /** @const */
+    this.provides = provides;
+    /** @const */
+    this.requires = requires;
+    /** @const */
+    this.loadFlags = loadFlags;
+    /** @private {boolean} */
+    this.loaded_ = false;
+    /** @private {!Array<function()>} */
+    this.loadCallbacks_ = [];
+  };
+
+
+  /**
+   * @return {string} The pathname part of this dependency's path if it is a
+   *     URI.
+   */
+  goog.Dependency.prototype.getPathName = function() {
+    var pathName = this.path;
+    var protocolIndex = pathName.indexOf('://');
+    if (protocolIndex >= 0) {
+      pathName = pathName.substring(protocolIndex + 3);
+      var slashIndex = pathName.indexOf('/');
+      if (slashIndex >= 0) {
+        pathName = pathName.substring(slashIndex + 1);
+      }
+    }
+    return pathName;
+  };
+
+
+  /**
+   * @param {function()} callback Callback to fire as soon as this has loaded.
+   * @final
+   */
+  goog.Dependency.prototype.onLoad = function(callback) {
+    if (this.loaded_) {
+      callback();
+    } else {
+      this.loadCallbacks_.push(callback);
+    }
+  };
+
+
+  /**
+   * Marks this dependency as loaded and fires any callbacks registered with
+   * onLoad.
+   * @final
+   */
+  goog.Dependency.prototype.loaded = function() {
+    this.loaded_ = true;
+    var callbacks = this.loadCallbacks_;
+    this.loadCallbacks_ = [];
+    for (var i = 0; i < callbacks.length; i++) {
+      callbacks[i]();
+    }
+  };
+
+
+  /**
+   * Whether or not document.written / appended script tags should be deferred.
+   *
+   * @private {boolean}
+   */
+  goog.Dependency.defer_ = false;
+
+
+  /**
+   * Map of script ready / state change callbacks. Old IE cannot handle putting
+   * these properties on goog.global.
+   *
+   * @private @const {!Object<string, function(?):undefined>}
+   */
+  goog.Dependency.callbackMap_ = {};
+
+
+  /**
+   * @param {function(...?):?} callback
+   * @return {string}
+   * @private
+   */
+  goog.Dependency.registerCallback_ = function(callback) {
+    var key = Math.random().toString(32);
+    goog.Dependency.callbackMap_[key] = callback;
+    return key;
+  };
+
+
+  /**
+   * @param {string} key
+   * @private
+   */
+  goog.Dependency.unregisterCallback_ = function(key) {
+    delete goog.Dependency.callbackMap_[key];
+  };
+
+
+  /**
+   * @param {string} key
+   * @param {...?} var_args
+   * @private
+   * @suppress {unusedPrivateMembers}
+   */
+  goog.Dependency.callback_ = function(key, var_args) {
+    if (key in goog.Dependency.callbackMap_) {
+      var callback = goog.Dependency.callbackMap_[key];
+      var args = [];
+      for (var i = 1; i < arguments.length; i++) {
+        args.push(arguments[i]);
+      }
+      callback.apply(undefined, args);
+    } else {
+      var errorMessage = 'Callback key ' + key +
+          ' does not exist (was base.js loaded more than once?).';
+      throw Error(errorMessage);
+    }
+  };
+
+
+  /**
+   * Starts loading this dependency. This dependency can pause loading if it
+   * needs to and resume it later via the controller interface.
+   *
+   * When this is loaded it should call controller.loaded(). Note that this will
+   * end up calling the loaded method of this dependency; there is no need to
+   * call it explicitly.
+   *
+   * @param {!goog.LoadController} controller
+   */
+  goog.Dependency.prototype.load = function(controller) {
+    if (goog.global.CLOSURE_IMPORT_SCRIPT) {
+      if (goog.global.CLOSURE_IMPORT_SCRIPT(this.path)) {
+        controller.loaded();
+      } else {
+        controller.pause();
+      }
+      return;
+    }
+
+    if (!goog.inHtmlDocument_()) {
+      goog.logToConsole_(
+          'Cannot use default debug loader outside of HTML documents.');
+      if (this.relativePath == 'deps.js') {
+        // Some old code is relying on base.js auto loading deps.js failing with
+        // no error before later setting CLOSURE_IMPORT_SCRIPT.
+        // CLOSURE_IMPORT_SCRIPT should be set *before* base.js is loaded, or
+        // CLOSURE_NO_DEPS set to true.
+        goog.logToConsole_(
+            'Consider setting CLOSURE_IMPORT_SCRIPT before loading base.js, ' +
+            'or setting CLOSURE_NO_DEPS to true.');
+        controller.loaded();
+      } else {
+        controller.pause();
+      }
+      return;
+    }
+
+    /** @type {!HTMLDocument} */
+    var doc = goog.global.document;
+
+    // If the user tries to require a new symbol after document load,
+    // something has gone terribly wrong. Doing a document.write would
+    // wipe out the page. This does not apply to the CSP-compliant method
+    // of writing script tags.
+    if (doc.readyState == 'complete' &&
+        !goog.ENABLE_CHROME_APP_SAFE_SCRIPT_LOADING) {
+      // Certain test frameworks load base.js multiple times, which tries
+      // to write deps.js each time. If that happens, just fail silently.
+      // These frameworks wipe the page between each load of base.js, so this
+      // is OK.
+      var isDeps = /\bdeps.js$/.test(this.path);
+      if (isDeps) {
+        controller.loaded();
+        return;
+      } else {
+        throw Error('Cannot write "' + this.path + '" after document load');
+      }
+    }
+
+    var nonce = goog.getScriptNonce_();
+    if (!goog.ENABLE_CHROME_APP_SAFE_SCRIPT_LOADING &&
+        goog.isDocumentLoading_()) {
+      var key;
+      var callback = function(script) {
+        if (script.readyState && script.readyState != 'complete') {
+          script.onload = callback;
+          return;
+        }
+        goog.Dependency.unregisterCallback_(key);
+        controller.loaded();
+      };
+      key = goog.Dependency.registerCallback_(callback);
+
+      var defer = goog.Dependency.defer_ ? ' defer' : '';
+      var nonceAttr = nonce ? ' nonce="' + nonce + '"' : '';
+      var script = '<script src="' + this.path + '"' + nonceAttr + defer +
+          ' id="script-' + key + '"><\/script>';
+
+      script += '<script' + nonceAttr + '>';
+
+      if (goog.Dependency.defer_) {
+        script += 'document.getElementById(\'script-' + key +
+            '\').onload = function() {\n' +
+            '  goog.Dependency.callback_(\'' + key + '\', this);\n' +
+            '};\n';
+      } else {
+        script += 'goog.Dependency.callback_(\'' + key +
+            '\', document.getElementById(\'script-' + key + '\'));';
+      }
+
+      script += '<\/script>';
+
+      doc.write(
+          goog.TRUSTED_TYPES_POLICY_ ?
+              goog.TRUSTED_TYPES_POLICY_.createHTML(script) :
+              script);
+    } else {
+      var scriptEl =
+          /** @type {!HTMLScriptElement} */ (doc.createElement('script'));
+      scriptEl.defer = goog.Dependency.defer_;
+      scriptEl.async = false;
+
+      // If CSP nonces are used, propagate them to dynamically created scripts.
+      // This is necessary to allow nonce-based CSPs without 'strict-dynamic'.
+      if (nonce) {
+        scriptEl.nonce = nonce;
+      }
+
+      scriptEl.onload = function() {
+        scriptEl.onload = null;
+        controller.loaded();
+      };
+
+      scriptEl.src = goog.TRUSTED_TYPES_POLICY_ ?
+          goog.TRUSTED_TYPES_POLICY_.createScriptURL(this.path) :
+          this.path;
+      doc.head.appendChild(scriptEl);
+    }
+  };
+
+
+  /**
+   * @param {string} path Absolute path of this script.
+   * @param {string} relativePath Path of this script relative to goog.basePath.
+   * @param {!Array<string>} provides Should be an empty array.
+   *     TODO(johnplaisted) add support for adding closure namespaces to ES6
+   *     modules for interop purposes.
+   * @param {!Array<string>} requires goog symbols or relative paths to Closure
+   *     this depends on.
+   * @param {!Object<string, string>} loadFlags
+   * @struct @constructor
+   * @extends {goog.Dependency}
+   */
+  goog.Es6ModuleDependency = function(
+      path, relativePath, provides, requires, loadFlags) {
+    goog.Es6ModuleDependency.base(
+        this, 'constructor', path, relativePath, provides, requires, loadFlags);
+  };
+  goog.inherits(goog.Es6ModuleDependency, goog.Dependency);
+
+
+  /**
+   * @override
+   * @param {!goog.LoadController} controller
+   */
+  goog.Es6ModuleDependency.prototype.load = function(controller) {
+    if (goog.global.CLOSURE_IMPORT_SCRIPT) {
+      if (goog.global.CLOSURE_IMPORT_SCRIPT(this.path)) {
+        controller.loaded();
+      } else {
+        controller.pause();
+      }
+      return;
+    }
+
+    if (!goog.inHtmlDocument_()) {
+      goog.logToConsole_(
+          'Cannot use default debug loader outside of HTML documents.');
+      controller.pause();
+      return;
+    }
+
+    /** @type {!HTMLDocument} */
+    var doc = goog.global.document;
+
+    var dep = this;
+
+    // TODO(johnplaisted): Does document.writing really speed up anything? Any
+    // difference between this and just waiting for interactive mode and then
+    // appending?
+    function write(src, contents) {
+      var nonceAttr = '';
+      var nonce = goog.getScriptNonce_();
+      if (nonce) {
+        nonceAttr = ' nonce="' + nonce + '"';
+      }
+
+      if (contents) {
+        var script = '<script type="module" crossorigin' + nonceAttr + '>' +
+            contents + '</' +
+            'script>';
+        doc.write(
+            goog.TRUSTED_TYPES_POLICY_ ?
+                goog.TRUSTED_TYPES_POLICY_.createHTML(script) :
+                script);
+      } else {
+        var script = '<script type="module" crossorigin src="' + src + '"' +
+            nonceAttr + '></' +
+            'script>';
+        doc.write(
+            goog.TRUSTED_TYPES_POLICY_ ?
+                goog.TRUSTED_TYPES_POLICY_.createHTML(script) :
+                script);
+      }
+    }
+
+    function append(src, contents) {
+      var scriptEl =
+          /** @type {!HTMLScriptElement} */ (doc.createElement('script'));
+      scriptEl.defer = true;
+      scriptEl.async = false;
+      scriptEl.type = 'module';
+      scriptEl.setAttribute('crossorigin', true);
+
+      // If CSP nonces are used, propagate them to dynamically created scripts.
+      // This is necessary to allow nonce-based CSPs without 'strict-dynamic'.
+      var nonce = goog.getScriptNonce_();
+      if (nonce) {
+        scriptEl.nonce = nonce;
+      }
+
+      if (contents) {
+        scriptEl.text = goog.TRUSTED_TYPES_POLICY_ ?
+            goog.TRUSTED_TYPES_POLICY_.createScript(contents) :
+            contents;
+      } else {
+        scriptEl.src = goog.TRUSTED_TYPES_POLICY_ ?
+            goog.TRUSTED_TYPES_POLICY_.createScriptURL(src) :
+            src;
+      }
+
+      doc.head.appendChild(scriptEl);
+    }
+
+    var create;
+
+    if (goog.isDocumentLoading_()) {
+      create = write;
+      // We can ONLY call document.write if we are guaranteed that any
+      // non-module script tags document.written after this are deferred.
+      // Small optimization, in theory document.writing is faster.
+      goog.Dependency.defer_ = true;
+    } else {
+      create = append;
+    }
+
+    // Write 4 separate tags here:
+    // 1) Sets the module state at the correct time (just before execution).
+    // 2) A src node for this, which just hopefully lets the browser load it a
+    //    little early (no need to parse #3).
+    // 3) Import the module and register it.
+    // 4) Clear the module state at the correct time. Guaranteed to run even
+    //    if there is an error in the module (#3 will not run if there is an
+    //    error in the module).
+    var beforeKey = goog.Dependency.registerCallback_(function() {
+      goog.Dependency.unregisterCallback_(beforeKey);
+      controller.setModuleState(goog.ModuleType.ES6);
+    });
+    create(undefined, 'goog.Dependency.callback_("' + beforeKey + '")');
+
+    // TODO(johnplaisted): Does this really speed up anything?
+    create(this.path, undefined);
+
+    var registerKey = goog.Dependency.registerCallback_(function(exports) {
+      goog.Dependency.unregisterCallback_(registerKey);
+      controller.registerEs6ModuleExports(
+          dep.path, exports, goog.moduleLoaderState_.moduleName);
+    });
+    create(
+        undefined,
+        'import * as m from "' + this.path + '"; goog.Dependency.callback_("' +
+            registerKey + '", m)');
+
+    var afterKey = goog.Dependency.registerCallback_(function() {
+      goog.Dependency.unregisterCallback_(afterKey);
+      controller.clearModuleState();
+      controller.loaded();
+    });
+    create(undefined, 'goog.Dependency.callback_("' + afterKey + '")');
+  };
+
+
+  /**
+   * Superclass of any dependency that needs to be loaded into memory,
+   * transformed, and then eval'd (goog.modules and transpiled files).
+   *
+   * @param {string} path Absolute path of this script.
+   * @param {string} relativePath Path of this script relative to goog.basePath.
+   * @param {!Array<string>} provides goog.provided or goog.module symbols
+   *     in this file.
+   * @param {!Array<string>} requires goog symbols or relative paths to Closure
+   *     this depends on.
+   * @param {!Object<string, string>} loadFlags
+   * @struct @constructor @abstract
+   * @extends {goog.Dependency}
+   */
+  goog.TransformedDependency = function(
+      path, relativePath, provides, requires, loadFlags) {
+    goog.TransformedDependency.base(
+        this, 'constructor', path, relativePath, provides, requires, loadFlags);
+    /** @private {?string} */
+    this.contents_ = null;
+
+    /**
+     * Whether to lazily make the synchronous XHR (when goog.require'd) or make
+     * the synchronous XHR when initially loading. On FireFox 61 there is a bug
+     * where an ES6 module cannot make a synchronous XHR (rather, it can, but if
+     * it does then no other ES6 modules will load after).
+     *
+     * tl;dr we lazy load due to bugs on older browsers and eager load due to
+     * bugs on newer ones.
+     *
+     * https://bugzilla.mozilla.org/show_bug.cgi?id=1477090
+     *
+     * @private @const {boolean}
+     */
+    this.lazyFetch_ = !goog.inHtmlDocument_() ||
+        !('noModule' in goog.global.document.createElement('script'));
+  };
+  goog.inherits(goog.TransformedDependency, goog.Dependency);
+
+
+  /**
+   * @override
+   * @param {!goog.LoadController} controller
+   */
+  goog.TransformedDependency.prototype.load = function(controller) {
+    var dep = this;
+
+    function fetch() {
+      dep.contents_ = goog.loadFileSync_(dep.path);
+
+      if (dep.contents_) {
+        dep.contents_ = dep.transform(dep.contents_);
+        if (dep.contents_) {
+          dep.contents_ += '\n//# sourceURL=' + dep.path;
+        }
+      }
+    }
+
+    if (goog.global.CLOSURE_IMPORT_SCRIPT) {
+      fetch();
+      if (this.contents_ &&
+          goog.global.CLOSURE_IMPORT_SCRIPT('', this.contents_)) {
+        this.contents_ = null;
+        controller.loaded();
+      } else {
+        controller.pause();
+      }
+      return;
+    }
+
+
+    var isEs6 = this.loadFlags['module'] == goog.ModuleType.ES6;
+
+    if (!this.lazyFetch_) {
+      fetch();
+    }
+
+    function load() {
+      if (dep.lazyFetch_) {
+        fetch();
+      }
+
+      if (!dep.contents_) {
+        // loadFileSync_ or transform are responsible. Assume they logged an
+        // error.
+        return;
+      }
+
+      if (isEs6) {
+        controller.setModuleState(goog.ModuleType.ES6);
+      }
+
+      var namespace;
+
+      try {
+        var contents = dep.contents_;
+        dep.contents_ = null;
+        goog.globalEval(goog.CLOSURE_EVAL_PREFILTER_.createScript(contents));
+        if (isEs6) {
+          namespace = goog.moduleLoaderState_.moduleName;
+        }
+      } finally {
+        if (isEs6) {
+          controller.clearModuleState();
+        }
+      }
+
+      if (isEs6) {
+        // Due to circular dependencies this may not be available for require
+        // right now.
+        goog.global['$jscomp']['require']['ensure'](
+            [dep.getPathName()], function() {
+              controller.registerEs6ModuleExports(
+                  dep.path,
+                  goog.global['$jscomp']['require'](dep.getPathName()),
+                  namespace);
+            });
+      }
+
+      controller.loaded();
+    }
+
+    // Do not fetch now; in FireFox 47 the synchronous XHR doesn't block all
+    // events. If we fetched now and then document.write'd the contents the
+    // document.write would be an eval and would execute too soon! Instead write
+    // a script tag to fetch and eval synchronously at the correct time.
+    function fetchInOwnScriptThenLoad() {
+      /** @type {!HTMLDocument} */
+      var doc = goog.global.document;
+
+      var key = goog.Dependency.registerCallback_(function() {
+        goog.Dependency.unregisterCallback_(key);
+        load();
+      });
+
+      var nonce = goog.getScriptNonce_();
+      var nonceAttr = nonce ? ' nonce="' + nonce + '"' : '';
+      var script = '<script' + nonceAttr + '>' +
+          goog.protectScriptTag_('goog.Dependency.callback_("' + key + '");') +
+          '</' +
+          'script>';
+      doc.write(
+          goog.TRUSTED_TYPES_POLICY_ ?
+              goog.TRUSTED_TYPES_POLICY_.createHTML(script) :
+              script);
+    }
+
+    // If one thing is pending it is this.
+    var anythingElsePending = controller.pending().length > 1;
+
+    // Additionally if we are meant to defer scripts but the page is still
+    // loading (e.g. an ES6 module is loading) then also defer. Or if we are
+    // meant to defer and anything else is pending then defer (those may be
+    // scripts that did not need transformation and are just script tags with
+    // defer set to true, and we need to evaluate after that deferred script).
+    var needsAsyncLoading = goog.Dependency.defer_ &&
+        (anythingElsePending || goog.isDocumentLoading_());
+
+    if (needsAsyncLoading) {
+      // Note that we only defer when we have to rather than 100% of the time.
+      // Always defering would work, but then in theory the order of
+      // goog.require calls would then matter. We want to enforce that most of
+      // the time the order of the require calls does not matter.
+      controller.defer(function() {
+        load();
+      });
+      return;
+    }
+    // TODO(johnplaisted): Externs are missing onreadystatechange for
+    // HTMLDocument.
+    /** @type {?} */
+    var doc = goog.global.document;
+
+    var isInternetExplorerOrEdge = goog.inHtmlDocument_() &&
+        ('ActiveXObject' in goog.global || goog.isEdge_());
+
+    // Don't delay in any version of IE or pre-Chromium Edge. There's a bug
+    // around this that will cause out of order script execution. This means
+    // that on older IE ES6 modules will load too early (while the document is
+    // still loading + the dom is not available). The other option is to load
+    // too late (when the document is complete and the onload even will never
+    // fire). This seems to be the lesser of two evils as scripts already act
+    // like the former.
+    if (isEs6 && goog.inHtmlDocument_() && goog.isDocumentLoading_() &&
+        !isInternetExplorerOrEdge) {
+      goog.Dependency.defer_ = true;
+      // Transpiled ES6 modules still need to load like regular ES6 modules,
+      // aka only after the document is interactive.
+      controller.pause();
+      var oldCallback = doc.onreadystatechange;
+      doc.onreadystatechange = function() {
+        if (doc.readyState == 'interactive') {
+          doc.onreadystatechange = oldCallback;
+          load();
+          controller.resume();
+        }
+        if (typeof oldCallback === 'function') {
+          oldCallback.apply(undefined, arguments);
+        }
+      };
+    } else {
+      // Always eval on old IE.
+      if (!goog.inHtmlDocument_() || !goog.isDocumentLoading_()) {
+        load();
+      } else {
+        fetchInOwnScriptThenLoad();
+      }
+    }
+  };
+
+
+  /**
+   * @param {string} contents
+   * @return {string}
+   * @abstract
+   */
+  goog.TransformedDependency.prototype.transform = function(contents) {};
+
+
+  /**
+   * An ES6 module dependency that was transpiled to a jscomp module outside
+   * of the debug loader, e.g. server side.
+   *
+   * @param {string} path Absolute path of this script.
+   * @param {string} relativePath Path of this script relative to goog.basePath.
+   * @param {!Array<string>} provides goog.provided or goog.module symbols
+   *     in this file.
+   * @param {!Array<string>} requires goog symbols or relative paths to Closure
+   *     this depends on.
+   * @param {!Object<string, string>} loadFlags
+   * @struct @constructor
+   * @extends {goog.TransformedDependency}
+   */
+  goog.PreTranspiledEs6ModuleDependency = function(
+      path, relativePath, provides, requires, loadFlags) {
+    goog.PreTranspiledEs6ModuleDependency.base(
+        this, 'constructor', path, relativePath, provides, requires, loadFlags);
+  };
+  goog.inherits(
+      goog.PreTranspiledEs6ModuleDependency, goog.TransformedDependency);
+
+
+  /**
+   * @override
+   * @param {string} contents
+   * @return {string}
+   */
+  goog.PreTranspiledEs6ModuleDependency.prototype.transform = function(
+      contents) {
+    return contents;
+  };
+
+
+  /**
+   * A goog.module, transpiled or not. Will always perform some minimal
+   * transformation even when not transpiled to wrap in a goog.loadModule
+   * statement.
+   *
+   * @param {string} path Absolute path of this script.
+   * @param {string} relativePath Path of this script relative to goog.basePath.
+   * @param {!Array<string>} provides goog.provided or goog.module symbols
+   *     in this file.
+   * @param {!Array<string>} requires goog symbols or relative paths to Closure
+   *     this depends on.
+   * @param {!Object<string, string>} loadFlags
+   * @struct @constructor
+   * @extends {goog.TransformedDependency}
+   */
+  goog.GoogModuleDependency = function(
+      path, relativePath, provides, requires, loadFlags) {
+    goog.GoogModuleDependency.base(
+        this, 'constructor', path, relativePath, provides, requires, loadFlags);
+  };
+  goog.inherits(goog.GoogModuleDependency, goog.TransformedDependency);
+
+
+  /**
+   * @override
+   * @param {string} contents
+   * @return {string}
+   */
+  goog.GoogModuleDependency.prototype.transform = function(contents) {
+    if (!goog.LOAD_MODULE_USING_EVAL || goog.global.JSON === undefined) {
+      return '' +
+          'goog.loadModule(function(exports) {' +
+          '"use strict";' + contents +
+          '\n' +  // terminate any trailing single line comment.
+          ';return exports' +
+          '});' +
+          '\n//# sourceURL=' + this.path + '\n';
+    } else {
+      return '' +
+          'goog.loadModule(' +
+          goog.global.JSON.stringify(
+              contents + '\n//# sourceURL=' + this.path + '\n') +
+          ');';
+    }
+  };
+
+
+  /**
+   * @param {string} relPath
+   * @param {!Array<string>|undefined} provides
+   * @param {!Array<string>} requires
+   * @param {boolean|!Object<string>=} opt_loadFlags
+   * @see goog.addDependency
+   */
+  goog.DebugLoader_.prototype.addDependency = function(
+      relPath, provides, requires, opt_loadFlags) {
+    provides = provides || [];
+    relPath = relPath.replace(/\\/g, '/');
+    var path = goog.normalizePath_(goog.basePath + relPath);
+    if (!opt_loadFlags || typeof opt_loadFlags === 'boolean') {
+      opt_loadFlags = opt_loadFlags ? {'module': goog.ModuleType.GOOG} : {};
+    }
+    var dep = this.factory_.createDependency(
+        path, relPath, provides, requires, opt_loadFlags);
+    this.dependencies_[path] = dep;
+    for (var i = 0; i < provides.length; i++) {
+      this.idToPath_[provides[i]] = path;
+    }
+    this.idToPath_[relPath] = path;
+  };
+
+
+  /**
+   * Creates goog.Dependency instances for the debug loader to load.
+   *
+   * Should be overridden to have the debug loader use custom subclasses of
+   * goog.Dependency.
+   *
+   * @struct @constructor
+   */
+  goog.DependencyFactory = function() {};
+
+
+  /**
+   * @param {string} path Absolute path of the file.
+   * @param {string} relativePath Path relative to closure’s base.js.
+   * @param {!Array<string>} provides Array of provided goog.provide/module ids.
+   * @param {!Array<string>} requires Array of required goog.provide/module /
+   *     relative ES6 module paths.
+   * @param {!Object<string, string>} loadFlags
+   * @return {!goog.Dependency}
+   */
+  goog.DependencyFactory.prototype.createDependency = function(
+      path, relativePath, provides, requires, loadFlags) {
+
+    if (loadFlags['module'] == goog.ModuleType.GOOG) {
+      return new goog.GoogModuleDependency(
+          path, relativePath, provides, requires, loadFlags);
+    } else {
+      if (loadFlags['module'] == goog.ModuleType.ES6) {
+        if (goog.ASSUME_ES_MODULES_TRANSPILED) {
+          return new goog.PreTranspiledEs6ModuleDependency(
+              path, relativePath, provides, requires, loadFlags);
+        } else {
+          return new goog.Es6ModuleDependency(
+              path, relativePath, provides, requires, loadFlags);
+        }
+      } else {
+        return new goog.Dependency(
+            path, relativePath, provides, requires, loadFlags);
+      }
+    }
+  };
+
+
+  /** @private @const */
+  goog.debugLoader_ = new goog.DebugLoader_();
+
+
+  /**
+   * Loads the Closure Dependency file.
+   *
+   * Exposed a public function so CLOSURE_NO_DEPS can be set to false, base
+   * loaded, setDependencyFactory called, and then this called. i.e. allows
+   * custom loading of the deps file.
+   */
+  goog.loadClosureDeps = function() {
+    goog.debugLoader_.loadClosureDeps();
+  };
+
+
+  /**
+   * Sets the dependency factory, which can be used to create custom
+   * goog.Dependency implementations to control how dependencies are loaded.
+   *
+   * Note: if you wish to call this function and provide your own implemnetation
+   * it is a wise idea to set CLOSURE_NO_DEPS to true, otherwise the dependency
+   * file and all of its goog.addDependency calls will use the default factory.
+   * You can call goog.loadClosureDeps to load the Closure dependency file
+   * later, after your factory is injected.
+   *
+   * @param {!goog.DependencyFactory} factory
+   */
+  goog.setDependencyFactory = function(factory) {
+    goog.debugLoader_.setDependencyFactory(factory);
+  };
+
+
+  /**
+   * Trusted Types policy for the debug loader.
+   * @private @const {?TrustedTypePolicy}
+   */
+  goog.TRUSTED_TYPES_POLICY_ = goog.TRUSTED_TYPES_POLICY_NAME ?
+      goog.createTrustedTypesPolicy(goog.TRUSTED_TYPES_POLICY_NAME + '#base') :
+      null;
+
+  if (!goog.global.CLOSURE_NO_DEPS) {
+    goog.debugLoader_.loadClosureDeps();
+  }
+
+
+  /**
+   * Bootstraps the given namespaces and calls the callback once they are
+   * available either via goog.require. This is a replacement for using
+   * `goog.require` to bootstrap Closure JavaScript. Previously a `goog.require`
+   * in an HTML file would guarantee that the require'd namespace was available
+   * in the next immediate script tag. With ES6 modules this no longer a
+   * guarantee.
+   *
+   * @param {!Array<string>} namespaces
+   * @param {function(): ?} callback Function to call once all the namespaces
+   *     have loaded. Always called asynchronously.
+   */
+  goog.bootstrap = function(namespaces, callback) {
+    goog.debugLoader_.bootstrap(namespaces, callback);
+  };
+}
+
+
+if (!COMPILED) {
+  var isChrome87 = false;
+  // Cannot run check for Chrome <87 bug in case of strict CSP environments.
+  // TODO(user): Remove once Chrome <87 bug is no longer a problem.
+  try {
+    isChrome87 = eval(goog.global.trustedTypes.emptyScript) !==
+        goog.global.trustedTypes.emptyScript;
+  } catch (err) {
+  }
+
+  /**
+   * Trusted Types for running dev servers.
+   *
+   * @private @const
+   */
+  goog.CLOSURE_EVAL_PREFILTER_ =
+      // Detect Chrome <87 bug with TT and eval.
+      goog.global.trustedTypes && isChrome87 &&
+          goog.createTrustedTypesPolicy('goog#base#devonly#eval') ||
+      {createScript: goog.identity_};
+}

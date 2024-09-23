@@ -5,20 +5,21 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_contents_factory.h"
 
 #import "base/notreached.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_stack_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/multi_row_container_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_config.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
-#import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
-#import "ios/chrome/browser/ui/content_suggestions/magic_stack/shortcuts_config.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_config.h"
@@ -28,23 +29,21 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view.h"
-#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
-#import "ios/chrome/common/ui/favicon/favicon_view.h"
-#import "url/gurl.h"
 
 @implementation MagicStackModuleContentsFactory
 
 - (UIView*)contentViewForConfig:(MagicStackModule*)config
-                traitCollection:(UITraitCollection*)traitCollection {
+                traitCollection:(UITraitCollection*)traitCollection
+            contentViewDelegate:
+                (id<MagicStackModuleContentViewDelegate>)contentViewDelegate {
   switch (config.type) {
     case ContentSuggestionsModuleType::kMostVisited: {
       MostVisitedTilesConfig* mvtConfig =
           static_cast<MostVisitedTilesConfig*>(config);
-      return [self
-          mostVisitedTilesStackViewForConfig:mvtConfig
-                                 tileSpacing:
-                                     ContentSuggestionsTilesHorizontalSpacing(
-                                         traitCollection)];
+      return [[MostVisitedTilesStackView alloc]
+          initWithConfig:mvtConfig
+                 spacing:ContentSuggestionsTilesHorizontalSpacing(
+                             traitCollection)];
     }
     case ContentSuggestionsModuleType::kShortcuts: {
       ShortcutsConfig* shortcutsConfig = static_cast<ShortcutsConfig*>(config);
@@ -66,7 +65,13 @@
     case ContentSuggestionsModuleType::kSafetyCheck: {
       SafetyCheckState* safetyCheckConfig =
           static_cast<SafetyCheckState*>(config);
-      return [self safetyCheckViewForConfigState:safetyCheckConfig];
+      return [self safetyCheckViewForConfigState:safetyCheckConfig
+                             contentViewDelegate:contentViewDelegate];
+    }
+    case ContentSuggestionsModuleType::kPriceTrackingPromo: {
+      PriceTrackingPromoItem* item =
+          static_cast<PriceTrackingPromoItem*>(config);
+      return [self priceTrackingPromoViewForConfig:item];
     }
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
@@ -78,58 +83,11 @@
       return [self setUpListViewForConfig:setUpListConfig];
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
 #pragma mark - Private
-
-// Returns the Most Visited Tile content view configured with `config` and
-// `spacing` between the tiles.
-- (UIView*)mostVisitedTilesStackViewForConfig:(MostVisitedTilesConfig*)config
-                                  tileSpacing:(CGFloat)spacing {
-  UIStackView* mostVisitedStackView = [[UIStackView alloc] init];
-  mostVisitedStackView.axis = UILayoutConstraintAxisHorizontal;
-  mostVisitedStackView.distribution = UIStackViewDistributionFillEqually;
-  mostVisitedStackView.spacing = spacing;
-  mostVisitedStackView.alignment = UIStackViewAlignmentTop;
-
-  NSInteger index = 0;
-  for (ContentSuggestionsMostVisitedItem* item in config.mostVisitedItems) {
-    ContentSuggestionsMostVisitedTileView* view =
-        [[ContentSuggestionsMostVisitedTileView alloc]
-            initWithConfiguration:item];
-    view.menuProvider = item.menuProvider;
-    view.accessibilityIdentifier = [NSString
-        stringWithFormat:
-            @"%@%li",
-            kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix, index];
-
-    __weak ContentSuggestionsMostVisitedItem* weakItem = item;
-    __weak ContentSuggestionsMostVisitedTileView* weakView = view;
-    void (^completion)(FaviconAttributes*) = ^(FaviconAttributes* attributes) {
-      ContentSuggestionsMostVisitedTileView* strongView = weakView;
-      ContentSuggestionsMostVisitedItem* strongItem = weakItem;
-      if (!strongView || !strongItem) {
-        return;
-      }
-
-      strongItem.attributes = attributes;
-      [strongView.faviconView configureWithAttributes:attributes];
-    };
-    [config.imageDataSource fetchFaviconForURL:item.URL completion:completion];
-    UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-        initWithTarget:config.commandHandler
-                action:@selector(mostVisitedTileTapped:)];
-    view.tapRecognizer = tapRecognizer;
-    [view addGestureRecognizer:tapRecognizer];
-    tapRecognizer.enabled = YES;
-    [mostVisitedStackView addArrangedSubview:view];
-    index++;
-  }
-
-  return mostVisitedStackView;
-}
 
 - (UIView*)shortcutsStackViewForConfig:(ShortcutsConfig*)shortcutsConfig
                            tileSpacing:(CGFloat)spacing {
@@ -138,6 +96,7 @@
            .shortcutItems) {
     ContentSuggestionsShortcutTileView* view =
         [[ContentSuggestionsShortcutTileView alloc] initWithConfiguration:item];
+    [shortcutsConfig.consumerSource addConsumer:view];
     [shortcutsViews addObject:view];
   }
   UIStackView* shortcutsStackView = [[UIStackView alloc] init];
@@ -177,10 +136,24 @@
   return parcelTrackingModuleView;
 }
 
-- (UIView*)safetyCheckViewForConfigState:(SafetyCheckState*)state {
+- (UIView*)priceTrackingPromoViewForConfig:
+    (PriceTrackingPromoItem*)priceTrackingPromoItem {
+  PriceTrackingPromoModuleView* view =
+      [[PriceTrackingPromoModuleView alloc] initWithFrame:CGRectZero];
+  view.commandHandler = priceTrackingPromoItem.commandHandler;
+  [view configureView:priceTrackingPromoItem];
+  return view;
+}
+
+- (UIView*)safetyCheckViewForConfigState:(SafetyCheckState*)state
+                     contentViewDelegate:
+                         (id<MagicStackModuleContentViewDelegate>)
+                             contentViewDelegate {
   SafetyCheckView* safetyCheckView =
-      [[SafetyCheckView alloc] initWithState:state];
-  safetyCheckView.commandhandler = state.commandhandler;
+      [[SafetyCheckView alloc] initWithState:state
+                         contentViewDelegate:contentViewDelegate];
+  safetyCheckView.audience = state.audience;
+  [state.safetyCheckConsumerSource addConsumer:safetyCheckView];
   return safetyCheckView;
 }
 

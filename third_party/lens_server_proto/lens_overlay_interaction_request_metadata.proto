@@ -1,0 +1,77 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_geometry.proto";
+import "lens_overlay_text_query.proto";
+
+// Metadata associated with an interaction request.
+message LensOverlayInteractionRequestMetadata {
+  // Type of interaction request.
+  enum Type {
+    UNKNOWN = 0;
+
+    // User's tap on the screen.
+    TAP = 1;
+
+    // User's region selection on the screenshot.
+    REGION = 2;
+
+    // User's text selection on the screenshot.
+    TEXT_SELECTION = 3;
+
+    // User selected a bounding box to region search.
+    REGION_SEARCH = 4;
+
+    // Requests selection and fulfillment of a specific object.
+    OBJECT_FULFILLMENT = 5;
+
+    // User sent a query in the contextual search box.
+    CONTEXTUAL_SEARCH_QUERY = 9;
+  }
+
+  Type type = 1;
+
+  // Metadata related to the selection associated with this interaction request.
+  message SelectionMetadata {
+    message Point {
+      float x = 1;
+      float y = 2;
+    }
+
+    message Region {
+      CenterRotatedBox region = 1;
+    }
+
+    message Object {
+      string object_id = 1;
+      Geometry geometry = 2;
+    }
+
+    oneof selection {
+      Point point = 1;
+      Region region = 2;
+      Object object = 3;
+    }
+  }
+
+  SelectionMetadata selection_metadata = 2;
+
+  // Metadata related to query.
+  message QueryMetadata {
+    // The text query information.
+    TextQuery text_query = 2;
+
+    reserved 1;
+  }
+
+  QueryMetadata query_metadata = 4;
+
+  reserved 3;
+}

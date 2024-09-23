@@ -81,7 +81,7 @@
         aria-expanded$="[[boolToString_(advancedOpened)]]">
       <div>[[i18n('certificateProvisioningAdvancedSectionTitle')]]</div>
     </cr-expand-button>
-    <iron-collapse id="advancedInfo" opened="[[advancedExpanded_]]">
+    <cr-collapse id="advancedInfo" opened="[[advancedExpanded_]]">
       <div class="two-line">
         <div class="label" aria-describedby="stateId">
           [[i18n('certificateProvisioningStatusId')]]
@@ -98,6 +98,6 @@
           [[model.publicKey]]
         </div>
       </div>
-    </iron-collapse>
+    </cr-collapse>
   </div>
 </cr-dialog>

@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("system_web_apps") {
+static_library("system_web_apps") {
   sources = [
     "chrome_system_web_app_ui_config.cc",
     "color_helpers.cc",
@@ -22,65 +22,60 @@ source_set("system_web_apps") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//ash/public/cpp",
-    "//ash/webui/camera_app_ui",
-    "//ash/webui/connectivity_diagnostics",
-    "//ash/webui/eche_app_ui",
-    "//ash/webui/file_manager:file_manager_ui",
-    "//ash/webui/firmware_update_ui",
-    "//ash/webui/help_app_ui",
-    "//ash/webui/media_app_ui",
-    "//ash/webui/os_feedback_ui",
-    "//ash/webui/personalization_app",
-    "//ash/webui/shimless_rma",
-    "//ash/webui/shortcut_customization_ui",
-    "//ash/webui/system_apps/public:system_web_app_config",
+  public_deps = [
     "//ash/webui/system_apps/public:system_web_app_type",
-    "//ash/webui/vc_background_ui",
     "//base",
-    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
-    "//chrome/common",
-    "//chromeos/components/kiosk",
     "//components/keyed_service/content",
-    "//components/pref_registry:pref_registry",
+    "//components/keyed_service/core",
+    "//components/prefs",
     "//components/webapps/browser",
     "//components/webapps/common",
     "//content/public/browser",
-    "//ui/base/idle",
-    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
+    "//skia",
+    "//url",
   ]
 
-  if (!is_official_build) {
-    deps += [ "//ash/webui/sample_system_web_app_ui" ]
-  }
-}
-
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [ "system_web_app_manager_unittest.cc" ]
-
   deps = [
-    ":system_web_apps",
-    "//base",
-    "//base/test:test_support",
+    "//ash/constants",
+    "//ash/webui/camera_app_ui",
+    "//ash/webui/system_apps/public:system_web_app_config",
     "//build:chromeos_buildflags",
-    "//chrome/browser/ash/system_web_apps/test_support",
-    "//chrome/browser/ash/system_web_apps/types",
-    "//chrome/browser/web_applications",
-    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/ash/system_web_apps/apps/camera_app",
+    "//chrome/browser/ash/system_web_apps/apps/help_app",
+    "//chrome/browser/ash/system_web_apps/apps/media_app",
+    "//chrome/browser/ash/system_web_apps/apps/personalization_app",
+    "//chrome/browser/ash/system_web_apps/apps/recorder_app",
+    "//chrome/browser/ash/system_web_apps/apps/vc_background_ui",
+    "//chrome/browser/ui/ash/multi_user",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common:chrome_features",
-    "//chrome/test:test_support",
-    "//chromeos/components/kiosk:test_support",
+    "//chromeos/ash/components/boca",
+    "//chromeos/components/kiosk",
+    "//components/pref_registry",
+    "//components/version_info",
     "//components/webapps/browser:constants",
-    "//content/test:test_support",
+    "//content/public/common",
+    "//third_party/blink/public/common:headers",
+    "//ui/base",
     "//ui/base/idle",
-    "//ui/base/idle:test_support",
-    "//url",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
+    "//ui/color:color_headers",
+    "//ui/color:mixers",
+    "//ui/native_theme",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/system_web_apps/apps/camera_app",
   ]
 }
 
@@ -93,21 +88,82 @@ source_set("browser_tests") {
 
   deps = [
     ":system_web_apps",
-    "//base",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base/test:test_support",
     "//chrome/app:command_ids",
+    "//chrome/browser",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash:test_support",
-    "//chrome/browser/ash/system_web_apps/apps:browser_tests",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/accessibility:test_support",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/test:test_support",
+    "//chrome/browser/ash/extensions",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/file_manager:test_support",
     "//chrome/browser/ash/system_web_apps/test_support",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
-    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/file_system_access",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
     "//chrome/test:test_support",
-    "//components/services/app_service",
+    "//chrome/test:test_support_ui",
+    "//components/policy/core/common:common_constants",
+    "//content/test:test_support",
     "//extensions/browser:test_support",
+    "//extensions/common",
+    "//ui/base/idle",
     "//ui/base/idle:test_support",
     "//ui/events:test_support",
-    "//url",
+
+    # Tests from subdirectories:
+    "//chrome/browser/ash/system_web_apps/apps:browser_tests",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "system_web_app_manager_unittest.cc" ]
+
+  deps = [
+    ":system_web_apps",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/system_web_apps/test_support",
+    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chromeos/components/kiosk:test_support",
+    "//components/prefs",
+    "//components/webapps/browser",
+    "//components/webapps/browser:constants",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//ui/base/idle",
+    "//ui/base/idle:test_support",
+    "//url",
+
+    # Tests from subdirectories:
+    "//chrome/browser/ash/system_web_apps/apps:unit_tests",
+  ]
+}
+
+if (is_chromeos_device) {
+  group("integration_tests") {
+    testonly = true
+
+    deps = [ "//chrome/browser/ash/system_web_apps/apps:integration_tests" ]
+  }
 }

@@ -11,7 +11,7 @@
 #include "components/grit/dev_ui_components_resources.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
 #include "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -37,10 +37,9 @@ web::WebUIIOSDataSource* CreateSignInInternalsHTMLSource() {
 SignInInternalsUIIOS::SignInInternalsUIIOS(web::WebUIIOS* web_ui,
                                            const std::string& host)
     : WebUIIOSController(web_ui, host) {
-  ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
-  DCHECK(browser_state);
-  web::WebUIIOSDataSource::Add(browser_state,
-                               CreateSignInInternalsHTMLSource());
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
+  DCHECK(profile);
+  web::WebUIIOSDataSource::Add(profile, CreateSignInInternalsHTMLSource());
   web_ui->AddMessageHandler(std::make_unique<SignInInternalsHandlerIOS>());
 }
 
@@ -49,9 +48,8 @@ SignInInternalsUIIOS::~SignInInternalsUIIOS() = default;
 SignInInternalsHandlerIOS::SignInInternalsHandlerIOS() {}
 
 SignInInternalsHandlerIOS::~SignInInternalsHandlerIOS() {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromWebUIIOS(web_ui());
-  DCHECK(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
+  DCHECK(profile);
 }
 
 void SignInInternalsHandlerIOS::RegisterMessages() {
@@ -68,11 +66,10 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
   base::Value callback(callback_id);
   base::Value success(true);
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromWebUIIOS(web_ui());
-  DCHECK(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
+  DCHECK(profile);
   AboutSigninInternals* about_signin_internals =
-      ios::AboutSigninInternalsFactory::GetForBrowserState(browser_state);
+      ios::AboutSigninInternalsFactory::GetForProfile(profile);
 
   if (!about_signin_internals) {
     base::Value empty;
@@ -90,7 +87,7 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
   base::ValueView return_args[] = {callback, success, status};
   web_ui()->CallJavascriptFunction("cr.webUIResponse", return_args);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(profile);
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar =
       identity_manager->GetAccountsInCookieJar();
   if (accounts_in_cookie_jar.accounts_are_fresh) {

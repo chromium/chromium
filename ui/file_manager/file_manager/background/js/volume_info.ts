@@ -4,10 +4,14 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
-import {FakeEntry, FakeEntryImpl, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import type {FakeEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {str} from '../../common/js/translations.js';
-import {COMPUTERS_DIRECTORY_NAME, FileSystemType, RootType, SHARED_DRIVES_DIRECTORY_NAME, Source, VolumeType} from '../../common/js/volume_manager_types.js';
+import type {FileSystemType, Source} from '../../common/js/volume_manager_types.js';
+import {COMPUTERS_DIRECTORY_NAME, RootType, SHARED_DRIVES_DIRECTORY_NAME, VolumeType} from '../../common/js/volume_manager_types.js';
+import {DialogType} from '../../state/state.js';
+import {getStore} from '../../state/store.js';
 
 /**
  * Represents each volume, such as "drive", "download directory", each "USB
@@ -57,7 +61,7 @@ export class VolumeInfo {
    */
   constructor(
       private volumeType_: VolumeType, private volumeId_: string,
-      private fileSystem_: FileSystem|null, private error_: (string|undefined),
+      private fileSystem_: FileSystem, private error_: (string|undefined),
       private deviceType_: (string|undefined),
       private devicePath_: (string|undefined), private isReadOnly_: boolean,
       private isReadOnlyRemovableDevice_: boolean,
@@ -72,23 +76,34 @@ export class VolumeInfo {
     this.displayRoot_ = null;
     this.sharedDriveDisplayRoot_ = null;
     this.computersDisplayRoot_ = null;
-
     this.prefixEntry_ = null;
-
     this.fakeEntries_ = {};
+    this.displayRootPromise_ = this.resolveDisplayRootImpl_();
+    this.initializeFakeEntries_();
+  }
 
-    if (volumeType_ === VolumeType.DRIVE) {
-      if (!isDriveFsBulkPinningEnabled()) {
-        this.fakeEntries_[RootType.DRIVE_OFFLINE] = new FakeEntryImpl(
-            str('DRIVE_OFFLINE_COLLECTION_LABEL'), RootType.DRIVE_OFFLINE);
-      }
-
-      this.fakeEntries_[RootType.DRIVE_SHARED_WITH_ME] = new FakeEntryImpl(
-          str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL'),
-          RootType.DRIVE_SHARED_WITH_ME);
+  private initializeFakeEntries_() {
+    if (this.volumeType_ !== VolumeType.DRIVE) {
+      return;
     }
 
-    this.displayRootPromise_ = this.resolveDisplayRootImpl_();
+    const dialogType = getStore().getState().launchParams.dialogType;
+    const isSaveAs = dialogType === DialogType.SELECT_SAVEAS_FILE;
+
+    if (isSaveAs) {
+      // Users can't create new files directinly in Offline or Shared With Me
+      // roots.
+      return;
+    }
+
+    if (!isDriveFsBulkPinningEnabled()) {
+      this.fakeEntries_[RootType.DRIVE_OFFLINE] = new FakeEntryImpl(
+          str('DRIVE_OFFLINE_COLLECTION_LABEL'), RootType.DRIVE_OFFLINE);
+    }
+
+    this.fakeEntries_[RootType.DRIVE_SHARED_WITH_ME] = new FakeEntryImpl(
+        str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL'),
+        RootType.DRIVE_SHARED_WITH_ME);
   }
 
   get volumeType(): VolumeType {
@@ -100,8 +115,7 @@ export class VolumeInfo {
   }
 
   get fileSystem(): FileSystem {
-    // TODO(b/309054429): fileSystem could be null, handle it gracefully.
-    return this.fileSystem_!;
+    return this.fileSystem_;
   }
 
   /** Display root path. It is null before finishing to resolve the entry. */

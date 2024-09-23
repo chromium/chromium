@@ -27,8 +27,6 @@ ExternalProcessImporterHost::ExternalProcessImporterHost()
       parent_window_(nullptr),
       observer_(nullptr),
       profile_(nullptr),
-      waiting_for_bookmarkbar_model_(false),
-      installed_bookmark_observer_(false),
       is_source_readable_(true),
       client_(nullptr),
       items_(0),
@@ -91,17 +89,13 @@ void ExternalProcessImporterHost::NotifyImportEnded() {
   delete this;
 }
 
-ExternalProcessImporterHost::~ExternalProcessImporterHost() {
-  if (installed_bookmark_observer_) {
-    DCHECK(profile_);
-    BookmarkModelFactory::GetForBrowserContext(profile_)->RemoveObserver(this);
-  }
-}
+ExternalProcessImporterHost::~ExternalProcessImporterHost() = default;
 
 void ExternalProcessImporterHost::LaunchImportIfReady() {
-  if (waiting_for_bookmarkbar_model_ || template_service_subscription_ ||
-      !is_source_readable_ || cancelled_)
+  if (bookmark_model_observation_for_loading_.IsObserving() ||
+      template_service_subscription_ || !is_source_readable_ || cancelled_) {
     return;
+  }
 
   // This is the in-process half of the bridge, which catches data from the IPC
   // pipe and feeds it to the ProfileWriter. The external process half of the
@@ -116,19 +110,14 @@ void ExternalProcessImporterHost::LaunchImportIfReady() {
   client_->Start();
 }
 
-void ExternalProcessImporterHost::BookmarkModelLoaded(BookmarkModel* model,
-                                                      bool ids_reassigned) {
-  DCHECK(model->loaded());
-  model->RemoveObserver(this);
-  waiting_for_bookmarkbar_model_ = false;
-  installed_bookmark_observer_ = false;
+void ExternalProcessImporterHost::BookmarkModelLoaded(bool ids_reassigned) {
+  bookmark_model_observation_for_loading_.Reset();
 
   LaunchImportIfReady();
 }
 
-void ExternalProcessImporterHost::BookmarkModelBeingDeleted(
-    BookmarkModel* model) {
-  installed_bookmark_observer_ = false;
+void ExternalProcessImporterHost::BookmarkModelBeingDeleted() {
+  bookmark_model_observation_for_loading_.Reset();
 }
 
 void ExternalProcessImporterHost::BookmarkModelChanged() {
@@ -193,9 +182,8 @@ void ExternalProcessImporterHost::CheckForLoadedModels(uint16_t items) {
   // BookmarkModel should be loaded before adding IE favorites. So we observe
   // the BookmarkModel if needed, and start the task after it has been loaded.
   if ((items & importer::FAVORITES) && !writer_->BookmarkModelIsLoaded()) {
-    BookmarkModelFactory::GetForBrowserContext(profile_)->AddObserver(this);
-    waiting_for_bookmarkbar_model_ = true;
-    installed_bookmark_observer_ = true;
+    bookmark_model_observation_for_loading_.Observe(
+        BookmarkModelFactory::GetForBrowserContext(profile_));
   }
 
   // Observes the TemplateURLService if needed to import search engines from the

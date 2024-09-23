@@ -155,7 +155,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
       const base::flat_set<proto::OptimizationType>& optimization_types,
       proto::RequestContext request_context,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback,
-      proto::RequestContextMetadata* request_context_metadata);
+      std::optional<proto::RequestContextMetadata> request_context_metadata);
 
   // Clears all fetched hints from |hint_cache_|.
   void ClearFetchedHints();
@@ -305,8 +305,8 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // Called when information is ready such that we can invoke any callbacks that
   // require returning decisions to consumer features.
   //
-  // TODO(crbug/1279536): Clean this up when we clean up some of the existing
-  // interfaces.
+  // TODO(crbug.com/40208585): Clean this up when we clean up some of the
+  // existing interfaces.
   void OnBatchUpdateHintsStored(
       const base::flat_set<GURL>& urls_fetched,
       const base::flat_set<proto::OptimizationType>& optimization_types,
@@ -332,7 +332,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
           optimization_types,
       optimization_guide::proto::RequestContext request_context,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback,
-      proto::RequestContextMetadata* request_context_metadata,
+      std::optional<proto::RequestContextMetadata> request_context_metadata,
       const std::string& access_token);
 
   // Returns decisions for |url| and |optimization_types| based on what's cached

@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "ui/base/ime/grammar_fragment.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_mode.h"
@@ -30,9 +30,21 @@ class WaylandWindow;
 class ZWPTextInputWrapperClient {
  public:
   struct SpanStyle {
-    uint32_t index;   // Byte offset.
-    uint32_t length;  // Length in bytes.
-    uint32_t style;   // One of preedit_style.
+    struct Style {
+      bool operator==(const Style& other) const = default;
+
+      ImeTextSpan::Type type;
+      ImeTextSpan::Thickness thickness;
+    };
+
+    bool operator==(const SpanStyle& other) const = default;
+
+    // Byte offset.
+    uint32_t index;
+    // Length in bytes.
+    uint32_t length;
+    // One of preedit_style.
+    std::optional<Style> style;
   };
 
   virtual ~ZWPTextInputWrapperClient() = default;
@@ -40,15 +52,16 @@ class ZWPTextInputWrapperClient {
   // Called when a new composing text (pre-edit) should be set around the
   // current cursor position. Any previously set composing text should
   // be removed.
-  // Note that the preedit_cursor is byte-offset.
-  virtual void OnPreeditString(base::StringPiece text,
+  // Note that the preedit_cursor is byte-offset. It is the pre-edit cursor
+  // position if the range is empty and selection otherwise.
+  virtual void OnPreeditString(std::string_view text,
                                const std::vector<SpanStyle>& spans,
-                               int32_t preedit_cursor) = 0;
+                               const gfx::Range& preedit_cursor) = 0;
 
   // Called when a complete input sequence has been entered.  The text to
   // commit could be either just a single character after a key press or the
   // result of some composing (pre-edit).
-  virtual void OnCommitString(base::StringPiece text) = 0;
+  virtual void OnCommitString(std::string_view text) = 0;
 
   // Called when the cursor position or selection should be modified. The new
   // cursor position is applied on the next OnCommitString. |index| and |anchor|
@@ -137,6 +150,7 @@ class ZWPTextInputWrapper {
 
   virtual void SetCursorRect(const gfx::Rect& rect) = 0;
   virtual void SetSurroundingText(const std::string& text,
+                                  const gfx::Range& preedit_range,
                                   const gfx::Range& selection_range) = 0;
   virtual bool HasAdvancedSurroundingTextSupport() const = 0;
   virtual void SetSurroundingTextOffsetUtf16(uint32_t offset_utf16) = 0;

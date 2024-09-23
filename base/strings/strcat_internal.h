@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef BASE_STRINGS_STRCAT_INTERNAL_H_
 #define BASE_STRINGS_STRCAT_INTERNAL_H_
 
+#include <concepts>
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/template_util.h"
 
 namespace base {
 
@@ -20,15 +25,17 @@ namespace internal {
 // initialized afterwards. Currently proposed for standardization as
 // std::basic_string::resize_and_overwrite: https://wg21.link/P1072R6
 template <typename CharT>
-auto Resize(std::basic_string<CharT>& str, size_t total_size, priority_tag<1>)
-    -> decltype(str.__resize_default_init(total_size)) {
+  requires requires(std::basic_string<CharT>& str, size_t total_size) {
+    { str.__resize_default_init(total_size) } -> std::same_as<void>;
+  }
+auto Resize(std::basic_string<CharT>& str, size_t total_size) {
   str.__resize_default_init(total_size);
 }
 
 // Fallback to regular std::basic_string::resize() if invoking
 // __resize_default_init is ill-formed.
 template <typename CharT>
-void Resize(std::basic_string<CharT>& str, size_t total_size, priority_tag<0>) {
+void Resize(std::basic_string<CharT>& str, size_t total_size) {
   str.resize(total_size);
 }
 
@@ -54,7 +61,7 @@ void StrAppendT(std::basic_string<CharT>& dest, span<const StringT> pieces) {
   // added characters. Since this codepath is also triggered by `resize()`, we
   // don't have to manage the std::string's capacity ourselves here to avoid
   // performance hits in case `StrAppend()` gets called in a loop.
-  Resize(dest, total_size, priority_tag<1>());
+  Resize(dest, total_size);
   CharT* dest_char = &dest[initial_size];
   for (const auto& cur : pieces) {
     std::char_traits<CharT>::copy(dest_char, cur.data(), cur.size());

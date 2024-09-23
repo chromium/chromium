@@ -8,20 +8,9 @@ import("//chrome/browser/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/contextmenu/ChipDelegate.java",
-    "java/src/org/chromium/chrome/browser/contextmenu/ChipRenderParams.java",
-    "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuItemDelegate.java",
-    "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuNativeDelegate.java",
-    "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuNativeDelegateImpl.java",
-    "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuPopulator.java",
-    "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuPopulatorFactory.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuNativeDelegateImpl.java" ]
 
-  srcjar_deps = [
-    ":jni_headers",
-    "//chrome:context_menu_image_format_enum_javagen",
-  ]
+  srcjar_deps = [ ":jni_headers" ]
 
   deps = [
     "//base:base_java",

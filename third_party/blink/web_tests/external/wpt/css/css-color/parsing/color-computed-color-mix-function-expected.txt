@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'color-mix(in lch, white, blue)'
+  Colors do not match.\nActual:   lch(64.7821 65.6161 328.997)\nExpected: lch(64.78 65.6 301.37).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 301.37 +/- 0.1, expected 301.37 but got 328.997
+[FAIL] Property color value 'color-mix(in lch, white 10%, blue)'
+  Colors do not match.\nActual:   lch(36.6087 118.094 306.894)\nExpected: lch(36.61 118.09 301.37).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 301.37 +/- 0.1, expected 301.37 but got 306.894
+[FAIL] Property color value 'color-mix(in oklch, white, blue)'
+  Colors do not match.\nActual:   oklch(0.725987 0.15663 323.92)\nExpected: oklch(0.726 0.156 264.052).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 264.052 +/- 0.01, expected 264.052 but got 323.92
+[FAIL] Property color value 'color-mix(in oklch, white 10%, blue)'
+  Colors do not match.\nActual:   oklch(0.506782 0.281894 276.025)\nExpected: oklch(0.506 0.281 264.052).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 264.052 +/- 0.01, expected 264.052 but got 276.025
+Harness: the test ran to completion.
+

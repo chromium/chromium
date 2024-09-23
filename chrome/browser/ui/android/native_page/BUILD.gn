@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/native_page/BasicNativePage.java",
+    "java/src/org/chromium/chrome/browser/ui/native_page/BasicSmoothTransitionDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/native_page/FrozenNativePage.java",
     "java/src/org/chromium/chrome/browser/ui/native_page/NativePage.java",
     "java/src/org/chromium/chrome/browser/ui/native_page/NativePageHost.java",
@@ -17,6 +18,7 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_interpolator_interpolator_java",
     "//url:gurl_java",
   ]
 }
@@ -29,6 +31,8 @@ robolectric_library("junit") {
   deps = [
     ":java",
     "//base:base_junit_test_support",
+    "//third_party/android_deps:org_mockito_mockito_core_java",
     "//third_party/junit",
+    "//url:url_java",
   ]
 }

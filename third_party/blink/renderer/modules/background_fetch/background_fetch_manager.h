@@ -39,16 +39,17 @@ class MODULES_EXPORT BackgroundFetchManager final
   ~BackgroundFetchManager() override = default;
 
   // Web Exposed methods defined in the IDL file.
-  ScriptPromise fetch(
+  ScriptPromise<BackgroundFetchRegistration> fetch(
       ScriptState* script_state,
       const String& id,
       const V8UnionRequestInfoOrRequestOrUSVStringSequence* requests,
       const BackgroundFetchOptions* options,
       ExceptionState& exception_state);
-  ScriptPromise get(ScriptState* script_state,
-                    const String& id,
-                    ExceptionState& exception_state);
-  ScriptPromiseTyped<IDLArray<IDLString>> getIds(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLNullable<BackgroundFetchRegistration>> get(
+      ScriptState* script_state,
+      const String& id,
+      ExceptionState& exception_state);
+  ScriptPromise<IDLArray<IDLString>> getIds(ScriptState*, ExceptionState&);
 
   void Trace(Visitor* visitor) const override;
 
@@ -65,23 +66,24 @@ class MODULES_EXPORT BackgroundFetchManager final
       const V8UnionRequestInfoOrRequestOrUSVStringSequence* requests,
       ExceptionState& exception_state);
 
-  void DidLoadIcons(const String& id,
-                    Vector<mojom::blink::FetchAPIRequestPtr> requests,
-                    mojom::blink::BackgroundFetchOptionsPtr options,
-                    BackgroundFetchIconLoader* loader,
-                    ScriptPromiseResolver* resolver,
-                    const SkBitmap& icon,
-                    int64_t ideal_to_chosen_icon_size);
-  void DidFetch(ScriptPromiseResolver* resolver,
+  void DidLoadIcons(
+      const String& id,
+      Vector<mojom::blink::FetchAPIRequestPtr> requests,
+      mojom::blink::BackgroundFetchOptionsPtr options,
+      BackgroundFetchIconLoader* loader,
+      ScriptPromiseResolver<BackgroundFetchRegistration>* resolver,
+      const SkBitmap& icon,
+      int64_t ideal_to_chosen_icon_size);
+  void DidFetch(ScriptPromiseResolver<BackgroundFetchRegistration>* resolver,
                 mojom::blink::BackgroundFetchError error,
                 BackgroundFetchRegistration* registration);
-  void DidGetRegistration(ScriptPromiseResolver* resolver,
-                          mojom::blink::BackgroundFetchError error,
-                          BackgroundFetchRegistration* registration);
-  void DidGetDeveloperIds(
-      ScriptPromiseResolverTyped<IDLArray<IDLString>>* resolver,
+  void DidGetRegistration(
+      ScriptPromiseResolver<IDLNullable<BackgroundFetchRegistration>>* resolver,
       mojom::blink::BackgroundFetchError error,
-      const Vector<String>& developer_ids);
+      BackgroundFetchRegistration* registration);
+  void DidGetDeveloperIds(ScriptPromiseResolver<IDLArray<IDLString>>* resolver,
+                          mojom::blink::BackgroundFetchError error,
+                          const Vector<String>& developer_ids);
 
   Member<ServiceWorkerRegistration> registration_;
   Member<BackgroundFetchBridge> bridge_;

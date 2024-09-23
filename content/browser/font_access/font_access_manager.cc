@@ -51,7 +51,7 @@ FontAccessManager::FontAccessManager(
     base::SequenceBound<FontEnumerationCache> font_enumeration_cache,
     base::PassKey<FontAccessManager>)
     : font_enumeration_cache_(std::move(font_enumeration_cache)),
-      results_task_runner_(content::GetUIThreadTaskRunner({})) {}
+      results_task_runner_(GetUIThreadTaskRunner({})) {}
 
 FontAccessManager::~FontAccessManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

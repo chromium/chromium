@@ -17,8 +17,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
 #import "ios/chrome/browser/ui/main/wrangled_browser.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -85,7 +85,7 @@ class TabOpenerTest : public PlatformTest {
 
       TestChromeBrowserState::Builder builder;
       builder.SetPrefService(factory.CreateSyncable(registry.get()));
-      browser_state_ = builder.Build();
+      browser_state_ = std::move(builder).Build();
 
       OCMStub([mock_wrangled_browser browserState])
           .andReturn(browser_state_.get());

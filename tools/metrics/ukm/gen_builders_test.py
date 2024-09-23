@@ -50,6 +50,8 @@ class {name} final : public ::ukm::internal::UkmEntryBuilderBase {{
  public:
   explicit {name}(ukm::SourceId source_id);
   explicit {name}(ukm::SourceIdObj source_id);
+  {name}({name}&&);
+  {name}& operator=({name}&&);
   ~{name}() override;
 
   static const char kEntryName[];

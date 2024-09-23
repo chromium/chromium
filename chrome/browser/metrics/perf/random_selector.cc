@@ -56,7 +56,7 @@ const std::string& RandomSelector::GetValueFor(double random) {
     if (random < current)
       return odd.value;
   }
-  NOTREACHED() << "Invalid value for key: " << random;
+  NOTREACHED_IN_MIGRATION() << "Invalid value for key: " << random;
   return base::EmptyString();
 }
 

@@ -1,0 +1,8 @@
+{
+  "name": "Scripting API Test",
+  "manifest_version": 3,
+  "version": "0.1",
+  "permissions": ["scripting", "tabs", "webNavigation"],
+  "background": {"service_worker": "worker.js"},
+  "host_permissions": ["http://a.com/*"]
+}

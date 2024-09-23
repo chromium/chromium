@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ByteReader, SeekOrigin} from './byte_reader.js';
+import type {ByteReader} from './byte_reader.js';
+import {SeekOrigin} from './byte_reader.js';
 import type {Id3v2Frame, ParserMetadata} from './metadata_item.js';
 import {MetadataParser, type MetadataParserLogger} from './metadata_parser.js';
 

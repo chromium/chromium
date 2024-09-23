@@ -1,0 +1,16 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/explainers-by-googlers/prompt-api
+
+[
+    Exposed=(Window,Worker),
+    ImplementedAs=DOMAI,
+    RuntimeEnabled=BuiltInAIAPI
+] partial interface mixin WindowOrWorkerGlobalScope {
+    [
+      Replaceable
+    ]
+    readonly attribute AI ai;
+};

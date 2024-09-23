@@ -25,7 +25,9 @@ static_library("quick_start") {
   ]
   deps = [
     "//base",
+    "//chromeos/constants",
     "//components/cbor",
+    "//components/metrics/structured:structured_events",
     "//crypto",
     "//google_apis:google_apis",
     "//sandbox/policy",
@@ -37,7 +39,7 @@ source_set("test_support") {
   public_deps = [ ":quick_start" ]
   deps = [
     "//base",
-    "//chrome/browser/nearby_sharing/public/cpp",
+    "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/ash/services/nearby/public/mojom:mojom",
     "//components/cbor",
     "//crypto",

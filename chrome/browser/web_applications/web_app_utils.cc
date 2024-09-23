@@ -8,7 +8,6 @@
 #include <map>
 #include <optional>
 #include <set>
-#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -22,7 +21,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -32,6 +30,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -39,7 +38,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/grit/components_resources.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
@@ -209,7 +207,7 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
       return DisplayMode::kMinimalUi;
     case DisplayMode::kUndefined:
     case DisplayMode::kPictureInPicture:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case DisplayMode::kStandalone:
     case DisplayMode::kFullscreen:
@@ -260,33 +258,12 @@ std::optional<DisplayMode> TryResolveOverridesDisplayMode(
   return std::nullopt;
 }
 
-bool ShouldResolveShortstandDisplayMode(bool ignore_shortstand) {
-#if BUILDFLAG(IS_CHROMEOS)
-  return !ignore_shortstand && chromeos::features::IsCrosShortstandEnabled();
-#else
-  return false;
-#endif
-}
-
-std::optional<DisplayMode> TryResolveShortstandUserDisplayMode(
-    bool is_shortcut_app) {
-  if (is_shortcut_app) {
-    return DisplayMode::kBrowser;
-  } else {
-    return std::nullopt;
-  }
-}
-
 DisplayMode ResolveNonIsolatedEffectiveDisplayMode(
     DisplayMode app_display_mode,
     const std::vector<DisplayMode>& display_mode_overrides,
-    mojom::UserDisplayMode user_display_mode,
-    bool is_shortcut_app,
-    bool ignore_shortstand) {
-  const absl::optional<DisplayMode> resolved_display_mode =
-      ShouldResolveShortstandDisplayMode(ignore_shortstand)
-          ? TryResolveShortstandUserDisplayMode(is_shortcut_app)
-          : TryResolveUserDisplayMode(user_display_mode);
+    mojom::UserDisplayMode user_display_mode) {
+  const std::optional<DisplayMode> resolved_display_mode =
+      TryResolveUserDisplayMode(user_display_mode);
 
   if (resolved_display_mode.has_value()) {
     return *resolved_display_mode;
@@ -325,10 +302,6 @@ bool AreWebAppsEnabled(Profile* profile) {
     return false;
   }
   auto* user_manager = user_manager::UserManager::Get();
-  // Never enable for ARC Kiosk sessions.
-  if (user_manager && user_manager->IsLoggedInAsArcKioskApp()) {
-    return false;
-  }
   // Don't enable if SWAs in Kiosk session are disabled for the next session
   // types.
   if (!base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps)) {
@@ -566,12 +539,14 @@ bool HasAnySpecifiedSourcesAndNoOtherSources(
     WebAppManagementTypes specified_sources) {
   bool has_any_specified_sources = sources.HasAny(specified_sources);
   bool has_no_other_sources =
-      base::Difference(sources, specified_sources).Empty();
+      base::Difference(sources, specified_sources).empty();
   return has_any_specified_sources && has_no_other_sources;
 }
 
-bool CanUserUninstallWebApp(WebAppManagementTypes sources) {
-  return HasAnySpecifiedSourcesAndNoOtherSources(sources,
+bool CanUserUninstallWebApp(const webapps::AppId& app_id,
+                            WebAppManagementTypes sources) {
+  return !WillBeSystemWebApp(app_id, sources) &&
+         HasAnySpecifiedSourcesAndNoOtherSources(sources,
                                                  kUserUninstallableSources);
 }
 
@@ -598,13 +573,10 @@ DisplayMode ResolveEffectiveDisplayMode(
     DisplayMode app_display_mode,
     const std::vector<DisplayMode>& app_display_mode_overrides,
     mojom::UserDisplayMode user_display_mode,
-    bool is_isolated,
-    bool is_shortcut_app,
-    bool ignore_shortstand) {
+    bool is_isolated) {
   const DisplayMode resolved_display_mode =
       ResolveNonIsolatedEffectiveDisplayMode(
-          app_display_mode, app_display_mode_overrides, user_display_mode,
-          is_shortcut_app, ignore_shortstand);
+          app_display_mode, app_display_mode_overrides, user_display_mode);
   if (is_isolated && resolved_display_mode == DisplayMode::kBrowser) {
     return DisplayMode::kStandalone;
   }
@@ -702,6 +674,16 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
 
 bool IsValidScopeForLinkCapturing(const GURL& scope) {
   return scope.is_valid() && scope.has_scheme() && scope.SchemeIsHTTPOrHTTPS();
+}
+
+// TODO(http://b/331208955): Remove after migration.
+bool WillBeSystemWebApp(const webapps::AppId& app_id,
+                        WebAppManagementTypes sources) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+  return app_id == kContainerAppId && sources.Has(WebAppManagement::kDefault);
+#else  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+  return false;
+#endif
 }
 
 }  // namespace web_app

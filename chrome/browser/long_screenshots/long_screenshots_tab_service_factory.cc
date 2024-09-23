@@ -9,12 +9,14 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "build/build_config.h"
-#include "chrome/android/chrome_jni_headers/LongScreenshotsTabServiceFactory_jni.h"
 #include "chrome/browser/long_screenshots/long_screenshots_tab_service.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/keyed_service/core/simple_factory_key.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/LongScreenshotsTabServiceFactory_jni.h"
 
 namespace long_screenshots {
 

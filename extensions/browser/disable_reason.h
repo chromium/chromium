@@ -53,8 +53,10 @@ enum DisableReason {
   DISABLE_NOT_ASH_KEEPLISTED = 1 << 21,
   // Disabled by policy when the extension is unpublished from the web store.
   DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY = 1 << 22,
+  // Disabled because the extension uses an unsupported manifest version.
+  DISABLE_UNSUPPORTED_MANIFEST_VERSION = 1 << 23,
   // This should always be the last value.
-  DISABLE_REASON_LAST = 1LL << 23,
+  DISABLE_REASON_LAST = 1LL << 24,
 };
 
 static_assert(DISABLE_REASON_LAST - 1 <= std::numeric_limits<int>::max(),

@@ -64,9 +64,9 @@ class MODULES_EXPORT FetchEvent final
   String resultingClientId() const;
   bool isReload() const;
 
-  void respondWith(ScriptState*, ScriptPromise, ExceptionState&);
-  ScriptPromiseTyped<IDLAny> preloadResponse(ScriptState*);
-  ScriptPromiseTyped<IDLUndefined> handled(ScriptState*);
+  void respondWith(ScriptState*, ScriptPromiseUntyped, ExceptionState&);
+  ScriptPromise<IDLAny> preloadResponse(ScriptState*);
+  ScriptPromise<IDLUndefined> handled(ScriptState*);
 
   void ResolveHandledPromise();
   void RejectHandledPromise(const String& error_message);

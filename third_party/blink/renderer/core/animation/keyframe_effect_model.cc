@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -63,6 +64,40 @@ PropertyHandleSet KeyframeEffectModelBase::Properties() const {
     }
   }
   return result;
+}
+
+const PropertyHandleSet& KeyframeEffectModelBase::EnsureDynamicProperties() const {
+  if (dynamic_properties_) {
+    return *dynamic_properties_;
+  }
+
+  dynamic_properties_ = std::make_unique<PropertyHandleSet>();
+  EnsureKeyframeGroups();
+  if (!RuntimeEnabledFeatures::StaticAnimationOptimizationEnabled()) {
+    // Unless the static optimization is enabled, all properties are considered
+    // dynamic.
+    for (const auto& entry : *keyframe_groups_) {
+      dynamic_properties_->insert(entry.key);
+    }
+  } else {
+    for (const auto& entry : *keyframe_groups_) {
+      if (!entry.value->IsStatic()) {
+        dynamic_properties_->insert(entry.key);
+      }
+    }
+  }
+
+  return *dynamic_properties_;
+}
+
+bool KeyframeEffectModelBase::HasStaticProperty() const {
+  EnsureKeyframeGroups();
+  for (const auto& entry : *keyframe_groups_) {
+    if (entry.value->IsStatic()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 template <class K>
@@ -87,6 +122,7 @@ void KeyframeEffectModelBase::SetComposite(CompositeOperation composite) {
 bool KeyframeEffectModelBase::Sample(
     int iteration,
     double fraction,
+    TimingFunction::LimitDirection limit_direction,
     AnimationTimeDelta iteration_duration,
     HeapVector<Member<Interpolation>>& result) const {
   DCHECK_GE(iteration, 0);
@@ -98,22 +134,22 @@ bool KeyframeEffectModelBase::Sample(
   last_iteration_ = iteration;
   last_fraction_ = fraction;
   last_iteration_duration_ = iteration_duration;
-  interpolation_effect_->GetActiveInterpolations(fraction, result);
+  interpolation_effect_->GetActiveInterpolations(fraction, limit_direction,
+                                                 result);
   return changed;
 }
 
 namespace {
 
-static const size_t num_compositable_properties = 9;
+using CompositablePropertiesArray = std::array<const CSSProperty*, 9>;
 
-const CSSProperty** CompositableProperties() {
-  static const CSSProperty*
-      kCompositableProperties[num_compositable_properties] = {
-          &GetCSSPropertyOpacity(),        &GetCSSPropertyRotate(),
-          &GetCSSPropertyScale(),          &GetCSSPropertyTransform(),
-          &GetCSSPropertyTranslate(),      &GetCSSPropertyFilter(),
-          &GetCSSPropertyBackdropFilter(), &GetCSSPropertyBackgroundColor(),
-          &GetCSSPropertyClipPath()};
+const CompositablePropertiesArray& CompositableProperties() {
+  static const CompositablePropertiesArray kCompositableProperties{
+      &GetCSSPropertyOpacity(),        &GetCSSPropertyRotate(),
+      &GetCSSPropertyScale(),          &GetCSSPropertyTransform(),
+      &GetCSSPropertyTranslate(),      &GetCSSPropertyFilter(),
+      &GetCSSPropertyBackdropFilter(), &GetCSSPropertyBackgroundColor(),
+      &GetCSSPropertyClipPath()};
   return kCompositableProperties;
 }
 
@@ -138,11 +174,12 @@ bool KeyframeEffectModelBase::SnapshotNeutralCompositorKeyframes(
     const ComputedStyle& old_style,
     const ComputedStyle& new_style,
     const ComputedStyle* parent_style) const {
-  auto should_snapshot_property =
-      [&old_style, &new_style](const PropertyHandle& property) {
-        return !CSSPropertyEquality::PropertiesEqual(property, old_style,
-                                                     new_style);
-      };
+  auto should_snapshot_property = [&old_style,
+                                   &new_style](const PropertyHandle& property) {
+    return !CSSPropertyEquality::PropertiesEqual(property, old_style,
+                                                 new_style) &&
+           CompositorAnimations::CompositedPropertyRequiresSnapshot(property);
+  };
   auto should_snapshot_keyframe = [](const PropertySpecificKeyframe& keyframe) {
     return keyframe.IsNeutral();
   };
@@ -190,10 +227,9 @@ bool KeyframeEffectModelBase::SnapshotCompositableProperties(
     ShouldSnapshotKeyframeFunction should_snapshot_keyframe) const {
   EnsureKeyframeGroups();
   bool updated = false;
-  static const CSSProperty** compositable_properties = CompositableProperties();
-  for (size_t i = 0; i < num_compositable_properties; i++) {
+  for (const auto* compositable_property : CompositableProperties()) {
     updated |= SnapshotCompositorKeyFrames(
-        PropertyHandle(*compositable_properties[i]), element, computed_style,
+        PropertyHandle(*compositable_property), element, computed_style,
         parent_style, should_snapshot_property, should_snapshot_keyframe);
   }
 
@@ -361,14 +397,12 @@ bool KeyframeEffectModelBase::IsTransformRelatedEffect() const {
 }
 
 bool KeyframeEffectModelBase::SetLogicalPropertyResolutionContext(
-    TextDirection text_direction,
-    WritingMode writing_mode) {
+    WritingDirectionMode writing_direction) {
   bool changed = false;
   for (wtf_size_t i = 0; i < keyframes_.size(); i++) {
     if (auto* string_keyframe = DynamicTo<StringKeyframe>(*keyframes_[i])) {
       if (string_keyframe->HasLogicalProperty()) {
-        string_keyframe->SetLogicalPropertyResolutionContext(text_direction,
-                                                             writing_mode);
+        string_keyframe->SetLogicalPropertyResolutionContext(writing_direction);
         changed = true;
       }
     }
@@ -419,26 +453,25 @@ void KeyframeEffectModelBase::EnsureKeyframeGroups() const {
     }
   }
 
-  // Add synthetic keyframes.
+  // Add synthetic keyframes and determine if the keyframe values are static.
   has_synthetic_keyframes_ = false;
   for (const auto& entry : *keyframe_groups_) {
     if (entry.value->AddSyntheticKeyframeIfRequired(zero_offset_easing))
       has_synthetic_keyframes_ = true;
 
     entry.value->RemoveRedundantKeyframes();
+    entry.value->CheckIfStatic();
   }
 }
 
 bool KeyframeEffectModelBase::RequiresPropertyNode() const {
-  for (const auto& keyframe : keyframes_) {
-    for (const auto& property : keyframe->Properties()) {
-      if (!property.IsCSSProperty() ||
-          (property.GetCSSProperty().PropertyID() != CSSPropertyID::kVariable &&
-           property.GetCSSProperty().PropertyID() !=
-               CSSPropertyID::kBackgroundColor &&
-           property.GetCSSProperty().PropertyID() != CSSPropertyID::kClipPath))
-        return true;
-    }
+  for (const auto& property : EnsureDynamicProperties()) {
+    if (!property.IsCSSProperty() ||
+        (property.GetCSSProperty().PropertyID() != CSSPropertyID::kVariable &&
+         property.GetCSSProperty().PropertyID() !=
+             CSSPropertyID::kBackgroundColor &&
+         property.GetCSSProperty().PropertyID() != CSSPropertyID::kClipPath))
+      return true;
   }
   return false;
 }
@@ -449,6 +482,26 @@ void KeyframeEffectModelBase::EnsureInterpolationEffectPopulated() const {
 
   for (const auto& entry : *keyframe_groups_) {
     const PropertySpecificKeyframeVector& keyframes = entry.value->Keyframes();
+    if (RuntimeEnabledFeatures::StaticAnimationOptimizationEnabled()) {
+      // Skip cross-fade interpolations in the static property optimization to
+      // avoid introducing a side-effect in serialization of the computed value.
+      // cross-fade(A 50%, A 50%) is visually equivalent to rendering A, but at
+      // present, we expect the computed style to reflect an explicit
+      // cross-fade.
+      PropertyHandle handle = entry.key;
+      if (entry.value->IsStatic() && handle.IsCSSProperty() &&
+          handle.GetCSSProperty().PropertyID() !=
+              CSSPropertyID::kListStyleImage) {
+        // All keyframes have the same property value.
+        // Create an interpolation from starting keyframe to starting keyframe.
+        // The resulting interpolation record will be marked as static and can
+        // short-circuit the local fraction calculation.
+        CHECK(keyframes.size());
+        interpolation_effect_->AddStaticValuedInterpolation(entry.key,
+                                                            *keyframes[0]);
+        continue;
+      }
+    }
     for (wtf_size_t i = 0; i < keyframes.size() - 1; i++) {
       wtf_size_t start_index = i;
       wtf_size_t end_index = i + 1;
@@ -521,6 +574,7 @@ bool KeyframeEffectModelBase::ResolveTimelineOffsets(
 
 void KeyframeEffectModelBase::ClearCachedData() {
   keyframe_groups_ = nullptr;
+  dynamic_properties_.reset();
   interpolation_effect_->Clear();
   last_fraction_ = std::numeric_limits<double>::quiet_NaN();
   needs_compositor_keyframes_snapshot_ = true;
@@ -566,6 +620,49 @@ void KeyframeEffectModelBase::PropertySpecificKeyframeGroup::
       keyframes_.EraseAt(i);
   }
   DCHECK_GE(keyframes_.size(), 2U);
+}
+
+void KeyframeEffectModelBase::PropertySpecificKeyframeGroup::CheckIfStatic() {
+  has_static_value_ = false;
+
+  DCHECK_GE(keyframes_.size(), 2U);
+  const PropertySpecificKeyframe* first = keyframes_[0];
+  const CSSPropertySpecificKeyframe* css_keyframe =
+      DynamicTo<CSSPropertySpecificKeyframe>(first);
+
+  // Transitions are only started if the end-points mismatch with caveat for
+  // visited/unvisited properties. For now, limit to detected static properties
+  // in a CSS animations since a common source of static properties is expansion
+  // of shorthand properties to their longhand counterparts.
+  if (!css_keyframe) {
+    return;
+  }
+
+  const CSSValue* target_value = css_keyframe->Value();
+  CompositeOperation target_composite_operation = css_keyframe->Composite();
+
+  for (wtf_size_t i = 1; i < keyframes_.size(); i++) {
+    const CSSPropertySpecificKeyframe* keyframe =
+        To<CSSPropertySpecificKeyframe>(keyframes_[i].Get());
+    if (keyframe->Composite() != target_composite_operation) {
+      return;
+    }
+    // A neutral keyframe has a null value. Either all keyframes must be
+    // neutral or none to be static. If any of the values are non-null their
+    // CSS values must precisely match. It is not enough to resolve to the same
+    // value.
+    if (target_value) {
+      if (!keyframe->Value() || *keyframe->Value() != *target_value) {
+        return;
+      }
+    } else {
+      if (keyframe->Value()) {
+        return;
+      }
+    }
+  }
+
+  has_static_value_ = true;
 }
 
 bool KeyframeEffectModelBase::PropertySpecificKeyframeGroup::

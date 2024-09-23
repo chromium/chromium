@@ -46,7 +46,7 @@ class DisplayErrorObserverTest : public AshTestBase {
 
 TEST_F(DisplayErrorObserverTest, Normal) {
   UpdateDisplay("300x200,400x300");
-  observer()->OnDisplayModeChangeFailed(
+  observer()->OnDisplayConfigurationChangeFailed(
       display::DisplayConfigurator::DisplayStateList(),
       display::MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_DISPLAY_FAILURE_ON_MIRRORING),
@@ -55,13 +55,13 @@ TEST_F(DisplayErrorObserverTest, Normal) {
 
 TEST_F(DisplayErrorObserverTest, CallTwice) {
   UpdateDisplay("300x200,400x300");
-  observer()->OnDisplayModeChangeFailed(
+  observer()->OnDisplayConfigurationChangeFailed(
       display::DisplayConfigurator::DisplayStateList(),
       display::MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
   std::u16string message = GetMessageContents();
   EXPECT_FALSE(message.empty());
 
-  observer()->OnDisplayModeChangeFailed(
+  observer()->OnDisplayConfigurationChangeFailed(
       display::DisplayConfigurator::DisplayStateList(),
       display::MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
   std::u16string message2 = GetMessageContents();
@@ -71,13 +71,13 @@ TEST_F(DisplayErrorObserverTest, CallTwice) {
 
 TEST_F(DisplayErrorObserverTest, CallWithDifferentState) {
   UpdateDisplay("300x200,400x300");
-  observer()->OnDisplayModeChangeFailed(
+  observer()->OnDisplayConfigurationChangeFailed(
       display::DisplayConfigurator::DisplayStateList(),
       display::MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_DISPLAY_FAILURE_ON_MIRRORING),
             GetMessageContents());
 
-  observer()->OnDisplayModeChangeFailed(
+  observer()->OnDisplayConfigurationChangeFailed(
       display::DisplayConfigurator::DisplayStateList(),
       display::MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
   EXPECT_EQ(ui::SubstituteChromeOSDeviceType(
@@ -97,7 +97,7 @@ TEST_F(DisplayErrorObserverTest, FailureWithInternalDisplay) {
                        .SetNativeMode({200, 200})
                        .SetType(display::DISPLAY_CONNECTION_TYPE_INTERNAL)
                        .Build();
-  observer()->OnDisplayModeChangeFailed(
+  observer()->OnDisplayConfigurationChangeFailed(
       {snapshot1.get()}, display::MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
   EXPECT_TRUE(GetMessageContents().empty());
 
@@ -108,7 +108,7 @@ TEST_F(DisplayErrorObserverTest, FailureWithInternalDisplay) {
                        .SetNativeMode({300, 300})
                        .SetType(display::DISPLAY_CONNECTION_TYPE_UNKNOWN)
                        .Build();
-  observer()->OnDisplayModeChangeFailed(
+  observer()->OnDisplayConfigurationChangeFailed(
       {snapshot1.get(), snapshot2.get()},
       display::MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED);
   EXPECT_EQ(ui::SubstituteChromeOSDeviceType(

@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
@@ -21,11 +22,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.offlinepages.background.UpdateRequestResult;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class RequestCoordinatorBridgeTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Ensure we start in an offline state.
                     NetworkChangeNotifier.forceConnectivityState(false);
@@ -75,9 +76,9 @@ public class RequestCoordinatorBridgeTest {
                     }
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mProfile = Profile.getLastUsedRegularProfile();
+                    mProfile = ProfileManager.getLastUsedRegularProfile();
                 });
 
         initializeBridgeForProfile();
@@ -125,10 +126,10 @@ public class RequestCoordinatorBridgeTest {
     @Test
     @MediumTest
     public void testRequestCoordinatorBridgeDisabledInIncognitoTabbedActivity() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getPrimaryOTRProfile(/* createIfNeeded= */ true);
                 });
         initializeBridgeForProfile();
@@ -139,10 +140,10 @@ public class RequestCoordinatorBridgeTest {
     @MediumTest
     public void testRequestCoordinatorBridgeDisabledInIncognitoCCT() throws Exception {
         OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile =
-                            Profile.getLastUsedRegularProfile()
+                            ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
                                             otrProfileID, /* createIfNeeded= */ true);
                 });

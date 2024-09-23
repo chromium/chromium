@@ -14,8 +14,7 @@
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_ukm.h"
-#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
@@ -32,6 +31,7 @@
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -127,7 +127,7 @@ class InputMenuView::FeedbackButton : public views::LabelButton {
   explicit FeedbackButton(PressedCallback callback = PressedCallback(),
                           const std::u16string& text = std::u16string())
       : LabelButton(std::move(callback), text) {
-    SetAccessibleName(
+    GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SEND_FEEDBACK));
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, kSideInset, 0, kSideInset)));
@@ -160,7 +160,7 @@ class InputMenuView::FeedbackButton : public views::LabelButton {
   ~FeedbackButton() override = default;
 };
 
-BEGIN_METADATA(InputMenuView, FeedbackButton, views::LabelButton)
+BEGIN_METADATA(InputMenuView, FeedbackButton)
 END_METADATA
 
 // static
@@ -245,7 +245,7 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
         header_view->AddChildView(std::make_unique<views::ToggleButton>(
             base::BindRepeating(&InputMenuView::OnToggleGameControlPressed,
                                 base::Unretained(this))));
-    game_control_toggle_->SetAccessibleName(
+    game_control_toggle_->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA));
     game_control_toggle_->SetIsOn(
         display_overlay_controller_->GetTouchInjectorEnable());
@@ -264,7 +264,7 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
     close_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     const auto button_name =
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_ACCESSIBILITY_ALPHA);
-    close_button->SetAccessibleName(button_name);
+    close_button->GetViewAccessibility().SetName(button_name);
     close_button->SetTooltipText(button_name);
     close_button_ = header_view->AddChildView(std::move(close_button));
     menu_title->SetBorder(
@@ -329,7 +329,7 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
     show_mapping_toggle_ = hint_view->AddChildView(
         std::make_unique<views::ToggleButton>(base::BindRepeating(
             &InputMenuView::OnToggleShowHintPressed, base::Unretained(this))));
-    show_mapping_toggle_->SetAccessibleName(
+    show_mapping_toggle_->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SHOW_KEY_MAPPING));
     show_mapping_toggle_->SetEnabled(game_control_toggle_->GetIsOn());
     show_mapping_toggle_->SetIsOn(
@@ -404,7 +404,8 @@ void InputMenuView::OnToggleGameControlPressed() {
   display_overlay_controller_->SetTouchInjectorEnable(enabled);
   // Adjust `enabled_` and `visible_` properties to match `Game controls`.
   show_mapping_toggle_->SetIsOn(enabled);
-  display_overlay_controller_->SetInputMappingVisible(enabled);
+  display_overlay_controller_->SetInputMappingVisible(
+      /*visible=*/enabled, /*store_visible_state=*/true);
   show_mapping_toggle_->SetEnabled(enabled);
   edit_button_->SetEnabled(enabled);
 }
@@ -412,7 +413,8 @@ void InputMenuView::OnToggleGameControlPressed() {
 void InputMenuView::OnToggleShowHintPressed() {
   DCHECK(display_overlay_controller_);
   display_overlay_controller_->SetInputMappingVisible(
-      show_mapping_toggle_->GetIsOn());
+      /*visible=*/show_mapping_toggle_->GetIsOn(),
+      /*store_visible_state=*/true);
 }
 
 void InputMenuView::OnEditButtonPressed() {
@@ -423,10 +425,9 @@ void InputMenuView::OnEditButtonPressed() {
   // Force key-binding labels ON before entering edit mode.
   if (!show_mapping_toggle_->GetIsOn()) {
     show_mapping_toggle_->SetIsOn(true);
-    display_overlay_controller_->SetInputMappingVisibleTemporary();
+    display_overlay_controller_->SetInputMappingVisible(/*visible=*/true);
   }
-  RecordInputOverlayCustomizedUsage();
-  InputOverlayUkm::RecordInputOverlayCustomizedUsageUkm(
+  RecordInputOverlayCustomizedUsage(
       display_overlay_controller_->GetPackageName());
   // Change display mode, load edit UI per action and overall edit buttons; make
   // sure the following line is at the bottom because edit mode will kill this

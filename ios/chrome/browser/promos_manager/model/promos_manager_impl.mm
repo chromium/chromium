@@ -15,6 +15,7 @@
 #import <vector>
 
 #import "base/containers/contains.h"
+#import "base/feature_list.h"
 #import "base/json/values_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
@@ -25,18 +26,11 @@
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/impression_limit.h"
-#import "ios/chrome/browser/promos_manager/model/promos_manager_event_exporter.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 using promos_manager::Promo;
 
 namespace {
-
-// The number of days since the Unix epoch; one day, in this context, runs
-// from UTC midnight to UTC midnight.
-int TodaysDay() {
-  return (base::Time::Now() - base::Time::UnixEpoch()).InDays();
-}
 
 // Conditionally appends `promo` to the list pref `pref_path`. If `promo`
 // already exists in the list pref `pref_path`, does nothing. If `promo` doesn't
@@ -65,12 +59,8 @@ void ConditionallyAppendPromoToPrefList(promos_manager::Promo promo,
 
 PromosManagerImpl::PromosManagerImpl(PrefService* local_state,
                                      base::Clock* clock,
-                                     feature_engagement::Tracker* tracker,
-                                     PromosManagerEventExporter* event_exporter)
-    : local_state_(local_state),
-      clock_(clock),
-      tracker_(tracker),
-      event_exporter_(event_exporter) {
+                                     feature_engagement::Tracker* tracker)
+    : local_state_(local_state), clock_(clock), tracker_(tracker) {
   DCHECK(local_state_);
   DCHECK(clock_);
 }
@@ -90,25 +80,8 @@ void PromosManagerImpl::Init() {
   InitializePendingPromos();
 }
 
-// Impression history should grow in sorted order. Given this happens on the
-// main thread, appending to the end of the impression history list is
-// sufficient.
-void PromosManagerImpl::RecordImpression(promos_manager::Promo promo) {
-  DCHECK(local_state_);
-
-  base::Value::Dict impression;
-  impression.Set(promos_manager::kImpressionPromoKey,
-                 promos_manager::NameForPromo(promo));
-  impression.Set(promos_manager::kImpressionDayKey, TodaysDay());
-  impression.Set(
-      promos_manager::kImpressionFeatureEngagementMigrationCompletedKey, true);
-
-  ScopedListPrefUpdate update(local_state_,
-                              prefs::kIosPromosManagerImpressions);
-
-  update->Append(std::move(impression));
-
-  // Auto-deregister `promo`.
+void PromosManagerImpl::DeregisterAfterDisplay(promos_manager::Promo promo) {
+  // Auto-deregister single display promos.
   // Edge case: Possible to remove two instances of promo in
   // `single_display_active_promos_` and `single_display_pending_promos_` that
   // match the same type.
@@ -181,9 +154,6 @@ void PromosManagerImpl::DeregisterPromo(promos_manager::Promo promo) {
 
 void PromosManagerImpl::InitializePromoConfigs(PromoConfigsSet promo_configs) {
   promo_configs_ = std::move(promo_configs);
-  if (event_exporter_) {
-    event_exporter_->InitializePromoConfigs(promo_configs);
-  }
 }
 
 // Determines which promo to display next.
@@ -229,13 +199,27 @@ std::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
     return std::nullopt;
   }
 
-  for (promos_manager::Promo promo : sorted_promos) {
-    if (CanShowPromo(promo)) {
-      return promo;
-    }
+  // Get eligible promo count before ```GetFirstEligiblePromo``` otherwise the
+  // count might not be accurate.
+  int valid_promo_count = GetEligiblePromoCount(sorted_promos);
+  if (valid_promo_count == 0) {
+    return std::nullopt;
   }
 
-  return std::nullopt;
+  std::optional<promos_manager::Promo> first_promo_opt =
+      GetFirstEligiblePromo(sorted_promos);
+  if (!first_promo_opt) {
+    return std::nullopt;
+  }
+
+  // If there is a promo eligible for display then record number of valid promos
+  // in the queue. This is to understand how often eligible promos don't get
+  // picked because of other promos.
+  base::UmaHistogramExactLinear("IOS.PromosManager.EligiblePromosInQueueCount",
+                                valid_promo_count,
+                                static_cast<int>(Promo::kMaxValue) + 1);
+
+  return first_promo_opt;
 }
 
 std::set<promos_manager::Promo> PromosManagerImpl::ActivePromos(
@@ -281,12 +265,16 @@ void PromosManagerImpl::InitializePendingPromos() {
   }
 }
 
-bool PromosManagerImpl::CanShowPromo(promos_manager::Promo promo) const {
-  return CanShowPromoUsingFeatureEngagementTracker(promo);
+bool PromosManagerImpl::CanShowPromoWithoutTrigger(
+    promos_manager::Promo promo) const {
+  const base::Feature* feature = FeatureForPromo(promo);
+  if (!feature) {
+    return false;
+  }
+  return tracker_->WouldTriggerHelpUI(*feature);
 }
 
-bool PromosManagerImpl::CanShowPromoUsingFeatureEngagementTracker(
-    promos_manager::Promo promo) const {
+bool PromosManagerImpl::CanShowPromo(promos_manager::Promo promo) const {
   const base::Feature* feature = FeatureForPromo(promo);
   if (!feature) {
     return false;
@@ -389,4 +377,25 @@ std::vector<promos_manager::Promo> PromosManagerImpl::SortPromos(
   }
 
   return sorted_promos;
+}
+
+std::optional<promos_manager::Promo> PromosManagerImpl::GetFirstEligiblePromo(
+    const std::vector<promos_manager::Promo>& promo_queue) {
+  for (promos_manager::Promo promo : promo_queue) {
+    if (CanShowPromo(promo)) {
+      return promo;
+    }
+  }
+  return std::nullopt;
+}
+
+int PromosManagerImpl::GetEligiblePromoCount(
+    const std::vector<promos_manager::Promo>& promo_queue) {
+  int count = 0;
+  for (promos_manager::Promo promo : promo_queue) {
+    if (CanShowPromoWithoutTrigger(promo)) {
+      count++;
+    }
+  }
+  return count;
 }

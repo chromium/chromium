@@ -62,6 +62,14 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
  private:
   friend class DisplayMediaAccessHandlerTest;
 
+  void ShowMediaSelectionDialog(content::WebContents* web_contents,
+                                const content::MediaStreamRequest& request,
+                                content::MediaResponseCallback callback);
+
+  void BypassMediaSelectionDialog(content::WebContents* web_contents,
+                                  const content::MediaStreamRequest& request,
+                                  content::MediaResponseCallback callback);
+
   void ProcessChangeSourceRequest(content::WebContents* web_contents,
                                   const content::MediaStreamRequest& request,
                                   content::MediaResponseCallback callback);

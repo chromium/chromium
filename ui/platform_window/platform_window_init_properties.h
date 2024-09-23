@@ -69,6 +69,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   explicit PlatformWindowInitProperties(const gfx::Rect& bounds);
 
   PlatformWindowInitProperties(PlatformWindowInitProperties&& props);
+  PlatformWindowInitProperties& operator=(PlatformWindowInitProperties&&);
 
   ~PlatformWindowInitProperties();
 
@@ -76,9 +77,6 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   PlatformWindowType type = PlatformWindowType::kWindow;
   // Sets the desired initial bounds. Can be empty.
   gfx::Rect bounds;
-  // Sets the frame insets. Can be empty.
-  // TODO(crbug.com/1306688): Use DIP for frame insets.
-  gfx::Insets frame_insets_px;
   // Tells PlatformWindow which native widget its parent holds. It is usually
   // used to find a parent from internal list of PlatformWindows.
   gfx::AcceleratedWidget parent_widget = gfx::kNullAcceleratedWidget;
@@ -108,6 +106,8 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   ScenicWindowDelegate* scenic_window_delegate = nullptr;
 #endif
 
+  // See Widget::InitParams for details.
+  bool accept_events = true;
   bool activatable = true;
   bool force_show_in_taskbar;
   bool keep_on_top = false;

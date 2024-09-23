@@ -14,8 +14,8 @@
 // Consumer protocol for Safe Browsing Privacy setting.
 @protocol PrivacySafeBrowsingConsumer <LegacyChromeTableViewConsumer>
 
-// Reload cells for items. Does nothing if the model is not loaded yet.
-- (void)reloadCellsForItems;
+// Reconfigre cells for items. Does nothing if the model is not loaded yet.
+- (void)reconfigureCellsForItems;
 
 // Initializes item array for `safeBrowsingItems`.
 - (void)setSafeBrowsingItems:(NSArray<TableViewItem*>*)safeBrowsingItems;

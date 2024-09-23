@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/memory/raw_ptr_asan_service.h"
 
-#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 #include <sanitizer/allocator_interface.h>
 #include <sanitizer/asan_interface.h>
@@ -22,7 +27,6 @@
 #include "base/process/process.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool/thread_group.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
@@ -43,7 +47,7 @@ constexpr uint8_t kAsanUserPoisonedMemoryMagic = 0xf7;
 // doesn't prevent sharing of PendingReport contents between unrelated tasks, so
 // we keep this at a lower-level and avoid introducing additional assumptions
 // about Chrome's sequence model.
-ABSL_CONST_INIT thread_local RawPtrAsanService::PendingReport pending_report;
+constinit thread_local RawPtrAsanService::PendingReport pending_report;
 
 }  // namespace
 
@@ -363,4 +367,4 @@ void RawPtrAsanService::CrashOnDanglingInstantiation(
 
 }  // namespace base
 
-#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)

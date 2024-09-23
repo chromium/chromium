@@ -7,7 +7,9 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/blurred_background_shield.h"
 #include "ash/style/style_util.h"
+#include "ash/style/text_image.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "chromeos/utils/haptics_util.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -22,6 +24,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -33,6 +36,7 @@ constexpr int kXSmallButtonSize = 20;
 constexpr int kSmallButtonSize = 24;
 constexpr int kMediumButtonSize = 32;
 constexpr int kLargeButtonSize = 36;
+constexpr int kXLargeButtonSize = 48;
 
 // Icon size of the small, medium and large size buttons.
 constexpr int kIconSize = 20;
@@ -70,6 +74,11 @@ int GetButtonSizeOnType(IconButton::Type type) {
     case IconButton::Type::kLargeFloating:
     case IconButton::Type::kLargeProminentFloating:
       return kLargeButtonSize;
+    case IconButton::Type::kXLarge:
+    case IconButton::Type::kXLargeProminent:
+    case IconButton::Type::kXLargeFloating:
+    case IconButton::Type::kXLargeProminentFloating:
+      return kXLargeButtonSize;
   }
 }
 
@@ -79,15 +88,16 @@ std::optional<ui::ColorId> GetDefaultBackgroundColorId(IconButton::Type type) {
     case IconButton::Type::kSmall:
     case IconButton::Type::kMedium:
     case IconButton::Type::kLarge:
+    case IconButton::Type::kXLarge:
       return cros_tokens::kCrosSysSystemOnBase;
     case IconButton::Type::kXSmallProminent:
     case IconButton::Type::kSmallProminent:
     case IconButton::Type::kMediumProminent:
     case IconButton::Type::kLargeProminent:
+    case IconButton::Type::kXLargeProminent:
       return cros_tokens::kCrosSysSystemPrimaryContainer;
     default:
       NOTREACHED() << "Floating type button does not have a background";
-      return std::nullopt;
   }
 }
 
@@ -101,16 +111,20 @@ ui::ColorId GetDefaultIconColorId(IconButton::Type type, bool focused) {
     case IconButton::Type::kMediumFloating:
     case IconButton::Type::kLarge:
     case IconButton::Type::kLargeFloating:
+    case IconButton::Type::kXLarge:
+    case IconButton::Type::kXLargeFloating:
       return cros_tokens::kCrosSysOnSurface;
     case IconButton::Type::kXSmallProminent:
     case IconButton::Type::kSmallProminent:
     case IconButton::Type::kMediumProminent:
     case IconButton::Type::kLargeProminent:
+    case IconButton::Type::kXLargeProminent:
       return cros_tokens::kCrosSysSystemOnPrimaryContainer;
     case IconButton::Type::kXSmallProminentFloating:
     case IconButton::Type::kSmallProminentFloating:
     case IconButton::Type::kMediumProminentFloating:
     case IconButton::Type::kLargeProminentFloating:
+    case IconButton::Type::kXLargeProminentFloating:
       return focused ? cros_tokens::kCrosSysPrimary
                      : cros_tokens::kCrosSysSecondary;
   }
@@ -136,6 +150,8 @@ bool IsFloatingIconButton(IconButton::Type type) {
     case IconButton::Type::kMediumProminentFloating:
     case IconButton::Type::kLargeFloating:
     case IconButton::Type::kLargeProminentFloating:
+    case IconButton::Type::kXLargeFloating:
+    case IconButton::Type::kXLargeProminentFloating:
       return true;
     default:
       break;
@@ -150,6 +166,7 @@ bool IsProminentFloatingType(IconButton::Type type) {
     case IconButton::Type::kSmallProminentFloating:
     case IconButton::Type::kMediumProminentFloating:
     case IconButton::Type::kLargeProminentFloating:
+    case IconButton::Type::kXLargeProminentFloating:
       return true;
     default:
       break;
@@ -174,6 +191,22 @@ std::unique_ptr<views::Background> CreateSolidBackground(
                                             GetButtonSizeOnType(type) / 2);
 }
 
+// Returns a normal and disabled image model for `symbol`. `is_toggled` and
+// `color_id` control styling. The returned model dimensions wil be `icon_size`
+// x `icon_size` in pixels.
+std::pair<ui::ImageModel, ui::ImageModel> SymbolImages(
+    const bool is_toggled,
+    ui::ColorId color_id,
+    const int icon_size,
+    base_icu::UChar32 symbol) {
+  const gfx::Size size(icon_size, icon_size);
+  ui::ImageModel normal_model = TextImage::AsImageModel(size, symbol, color_id);
+  ui::ImageModel disabled_model =
+      TextImage::AsImageModel(size, symbol, cros_tokens::kCrosSysDisabled);
+
+  return {normal_model, disabled_model};
+}
+
 }  // namespace
 
 IconButton::Builder::Builder()
@@ -187,8 +220,10 @@ IconButton::Builder::Builder()
 IconButton::Builder::~Builder() = default;
 
 std::unique_ptr<IconButton> IconButton::Builder::Build() {
-  // `icon_` must be non-null.
-  CHECK(icon_);
+  if (!character_) {
+    // `icon_` must be non-null if there is no character.
+    CHECK(icon_);
+  }
 
   std::u16string accessible_name;
   if (absl::holds_alternative<int>(accessible_name_)) {
@@ -207,11 +242,17 @@ std::unique_ptr<IconButton> IconButton::Builder::Build() {
   if (enabled_.has_value()) {
     button->SetEnabled(*enabled_);
   }
+  if (visible_.has_value()) {
+    button->SetVisible(*visible_);
+  }
   if (background_image_.has_value()) {
     button->SetBackgroundImage(*background_image_);
   }
   if (background_color_.has_value()) {
     button->SetBackgroundColor(*background_color_);
+  }
+  if (character_.has_value()) {
+    button->SetSymbol(*character_);
   }
 
   return button;
@@ -230,6 +271,11 @@ IconButton::Builder& IconButton::Builder::SetVectorIcon(
     const gfx::VectorIcon* icon) {
   CHECK(icon);
   icon_ = icon;
+  return *this;
+}
+IconButton::Builder& IconButton::Builder::SetSymbol(
+    base_icu::UChar32 character) {
+  character_ = character;
   return *this;
 }
 IconButton::Builder& IconButton::Builder::SetAccessibleNameId(
@@ -256,6 +302,10 @@ IconButton::Builder& IconButton::Builder::SetViewId(int view_id) {
 }
 IconButton::Builder& IconButton::Builder::SetEnabled(bool enabled) {
   enabled_ = enabled;
+  return *this;
+}
+IconButton::Builder& IconButton::Builder::SetVisible(bool visible) {
+  visible_ = visible;
   return *this;
 }
 IconButton::Builder& IconButton::Builder::SetBackgroundImage(
@@ -306,7 +356,10 @@ IconButton::IconButton(PressedCallback callback,
   }
 
   UpdateBackground();
-  UpdateVectorIcon();
+  if (icon_) {
+    UpdateVectorIcon();
+  }
+  UpdateAccessibilityProperties();
 
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
@@ -367,6 +420,12 @@ void IconButton::SetVectorIcon(const gfx::VectorIcon& icon) {
   if (!IsToggledOn()) {
     UpdateVectorIcon();
   }
+}
+
+void IconButton::SetSymbol(base_icu::UChar32 character) {
+  CHECK(base::IsValidCodepoint(character));
+  character_ = character;
+  UpdateVectorIcon();
 }
 
 void IconButton::SetToggledVectorIcon(const gfx::VectorIcon& icon) {
@@ -443,6 +502,8 @@ void IconButton::SetToggled(bool toggled) {
 
   toggled_ = toggled;
 
+  UpdateAccessibilityProperties();
+
   if (GetEnabled()) {
     UpdateBackground();
   }
@@ -512,17 +573,6 @@ void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
   }
 
   views::ImageButton::PaintButtonContents(canvas);
-}
-
-void IconButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::ImageButton::GetAccessibleNodeData(node_data);
-  if (is_togglable_) {
-    node_data->role = ax::mojom::Role::kToggleButton;
-    node_data->SetCheckedState(toggled_ ? ax::mojom::CheckedState::kTrue
-                                        : ax::mojom::CheckedState::kFalse);
-  } else {
-    node_data->role = ax::mojom::Role::kButton;
-  }
 }
 
 void IconButton::NotifyClick(const ui::Event& event) {
@@ -595,25 +645,24 @@ void IconButton::UpdateBlurredBackgroundShield() {
 }
 
 void IconButton::UpdateVectorIcon(bool color_changes_only) {
-  const bool is_toggled = IsToggledOn();
-  const gfx::VectorIcon* icon =
-      is_toggled && toggled_icon_ ? toggled_icon_.get() : icon_.get();
+  std::pair<ui::ImageModel, ui::ImageModel> images;
 
-  if (!icon) {
+  const int icon_size = icon_size_.value_or(GetIconSizeOnType(type_));
+  const bool is_toggled = IsToggledOn();
+  ColorVariant color_variant = is_toggled ? icon_toggled_color_ : icon_color_;
+
+  if (character_.has_value()) {
+    images = SymbolImages(is_toggled, absl::get<ui::ColorId>(color_variant),
+                          icon_size, *character_);
+  } else {
+    images = VectorImages(is_toggled, color_variant, icon_size);
+  }
+
+  if (images.first.IsEmpty()) {
     return;
   }
 
-  const int icon_size = icon_size_.value_or(GetIconSizeOnType(type_));
-
-  ui::ImageModel new_normal_image_model;
-  ColorVariant color_variant = is_toggled ? icon_toggled_color_ : icon_color_;
-  if (absl::holds_alternative<SkColor>(color_variant)) {
-    new_normal_image_model = ui::ImageModel::FromVectorIcon(
-        *icon, absl::get<SkColor>(color_variant), icon_size);
-  } else {
-    new_normal_image_model = ui::ImageModel::FromVectorIcon(
-        *icon, absl::get<ui::ColorId>(color_variant), icon_size);
-  }
+  ui::ImageModel new_normal_image_model = images.first;
 
   if (GetWidget()) {
     // Skip repainting if the incoming icon is the same as the current icon. If
@@ -633,9 +682,7 @@ void IconButton::UpdateVectorIcon(bool color_changes_only) {
 
   SetImageModel(views::Button::STATE_NORMAL, new_normal_image_model);
   if (!color_changes_only) {
-    SetImageModel(views::Button::STATE_DISABLED,
-                  ui::ImageModel::FromVectorIcon(
-                      *icon, cros_tokens::kCrosSysDisabled, icon_size));
+    SetImageModel(views::Button::STATE_DISABLED, images.second);
   }
 }
 
@@ -658,6 +705,44 @@ bool IconButton::IsToggledOn() const {
          (GetEnabled() ||
           button_behavior_ ==
               DisabledButtonBehavior::kCanDisplayDisabledToggleValue);
+}
+
+void IconButton::UpdateAccessibilityProperties() {
+  if (is_togglable_) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
+    GetViewAccessibility().SetCheckedState(
+        toggled_ ? ax::mojom::CheckedState::kTrue
+                 : ax::mojom::CheckedState::kFalse);
+  } else {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+    GetViewAccessibility().RemoveCheckedState();
+  }
+}
+
+std::pair<ui::ImageModel, ui::ImageModel> IconButton::VectorImages(
+    const bool is_toggled,
+    const ColorVariant color_variant,
+    const int icon_size) {
+  const gfx::VectorIcon* icon =
+      is_toggled && toggled_icon_ ? toggled_icon_.get() : icon_.get();
+
+  if (!icon) {
+    return {ui::ImageModel(), ui::ImageModel()};
+  }
+
+  ui::ImageModel new_normal_image_model;
+  if (absl::holds_alternative<SkColor>(color_variant)) {
+    new_normal_image_model = ui::ImageModel::FromVectorIcon(
+        *icon, absl::get<SkColor>(color_variant), icon_size);
+  } else {
+    new_normal_image_model = ui::ImageModel::FromVectorIcon(
+        *icon, absl::get<ui::ColorId>(color_variant), icon_size);
+  }
+
+  ui::ImageModel disabled_image_model = ui::ImageModel::FromVectorIcon(
+      *icon, cros_tokens::kCrosSysDisabled, icon_size);
+
+  return {std::move(new_normal_image_model), std::move(disabled_image_model)};
 }
 
 BEGIN_METADATA(IconButton)

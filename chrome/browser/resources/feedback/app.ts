@@ -12,9 +12,10 @@ import './js/jelly_colors.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './app.html.js';
+import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
 import {FeedbackBrowserProxyImpl} from './js/feedback_browser_proxy.js';
 import {BT_DEVICE_REGEX, BT_REGEX, CANNOT_CONNECT_REGEX, CELLULAR_REGEX, DISPLAY_REGEX, FAST_PAIR_REGEX, NEARBY_SHARE_REGEX, SMART_LOCK_REGEX, TETHER_REGEX, THUNDERBOLT_REGEX, USB_REGEX, WIFI_REGEX} from './js/feedback_regexes.js';
 import {FEEDBACK_LANDING_PAGE, FEEDBACK_LANDING_PAGE_TECHSTOP, FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERM_OF_SERVICE_URL, openUrlInAppWindow} from './js/feedback_util.js';
@@ -24,13 +25,17 @@ import {takeScreenshot} from './js/take_screenshot.js';
 const MAX_ATTACH_FILE_SIZE: number = 3 * 1024 * 1024;
 const MAX_SCREENSHOT_WIDTH: number = 100;
 
-export class FeedbackAppElement extends PolymerElement {
+export class AppElement extends CrLitElement {
   static get is() {
     return 'feedback-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   private formOpenTime: number = new Date().getTime();
@@ -45,7 +50,6 @@ export class FeedbackAppElement extends PolymerElement {
    * The object will be manipulated by sendReport().
    */
   private feedbackInfo: chrome.feedbackPrivate.FeedbackInfo = {
-    assistantDebugInfoAllowed: false,
     attachedFile: undefined,
     attachedFileBlobUuid: undefined,
     autofillMetadata: '',
@@ -54,7 +58,6 @@ export class FeedbackAppElement extends PolymerElement {
     descriptionPlaceholder: undefined,
     email: undefined,
     flow: chrome.feedbackPrivate.FeedbackFlow.REGULAR,
-    fromAssistant: false,
     fromAutofill: false,
     includeBluetoothLogs: false,
     pageUrl: undefined,
@@ -102,10 +105,6 @@ export class FeedbackAppElement extends PolymerElement {
         this.cancel(e);
     this.getRequiredElement('#remove-attached-file').onclick =
         this.clearAttachedFile.bind(this);
-    // <if expr="chromeos_ash">
-    this.getRequiredElement('#performance-info-checkbox')
-        .addEventListener('change', this.performanceFeedbackChanged.bind(this));
-    // </if>
 
     // Dispatch event used by tests.
     this.dispatchEvent(new CustomEvent('ready-for-testing'));
@@ -135,16 +134,6 @@ export class FeedbackAppElement extends PolymerElement {
               'input', (e: Event) => this.checkForShowQuestionnaire(e));
     }
 
-    // <if expr="chromeos_ash">
-    if (this.shadowRoot!.querySelector<HTMLElement>(
-            '#assistant-checkbox-container') != null &&
-        feedbackInfo.flow ===
-            chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL &&
-        feedbackInfo.fromAssistant) {
-      this.getRequiredElement('#assistant-checkbox-container').hidden = false;
-    }
-    // </if>
-
     if (this.shadowRoot!.querySelector<HTMLElement>(
             '#autofill-checkbox-container') != null &&
         feedbackInfo.flow ===
@@ -172,6 +161,15 @@ export class FeedbackAppElement extends PolymerElement {
           loadTimeData.getString('freeFormTextAi');
       this.getRequiredElement('#offensive-container').hidden = false;
       this.getRequiredElement('#log-id-container').hidden = false;
+    }
+
+    const isSeaPenFlow: boolean|undefined =
+        isAiFlow && feedbackInfo.aiMetadata?.includes('from_sea_pen');
+
+    if (isSeaPenFlow) {
+      this.getRequiredElement('#log-id-container').hidden = true;
+      this.getRequiredElement('#screenshot-container').hidden = true;
+      this.getRequiredElement('#sys-info-container').hidden = true;
     }
 
     const whenScreenshotUpdated = takeScreenshot().then((screenshotCanvas) => {
@@ -245,19 +243,6 @@ export class FeedbackAppElement extends PolymerElement {
       this.getRequiredElement('#attach-file-note').hidden = true;
     }
 
-    // <if expr="chromeos_ash">
-    if (feedbackInfo.traceId &&
-        (this.shadowRoot!.querySelector<HTMLElement>(
-            '#performance-info-area'))) {
-      this.getRequiredElement('#performance-info-area').hidden = false;
-      this.getRequiredElement<HTMLInputElement>('#performance-info-checkbox')
-          .checked = true;
-      this.performanceFeedbackChanged();
-      this.getRequiredElement<HTMLAnchorElement>('#performance-info-link')
-          .onclick = this.openSlowTraceWindow;
-    }
-    // </if>
-
     const autofillMetadataUrlElement =
         this.shadowRoot!.querySelector<HTMLElement>('#autofill-metadata-url');
 
@@ -306,7 +291,7 @@ export class FeedbackAppElement extends PolymerElement {
     }
 
     // The following URLs don't open on login screen, so hide them.
-    // TODO(crbug.com/1116383): Find a solution to display them properly.
+    // TODO(crbug.com/40144717): Find a solution to display them properly.
     // Update: the bluetooth and assistant logs links will work on login
     // screen now. But to limit the scope of this CL, they are still hidden.
     if (feedbackInfo.flow !== chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
@@ -333,38 +318,6 @@ export class FeedbackAppElement extends PolymerElement {
             termsOfServiceUrlElement, FEEDBACK_TERM_OF_SERVICE_URL,
             false /* useAppWindow */);
       }
-
-      // <if expr="chromeos_ash">
-      const bluetoothLogsInfoLinkElement =
-          this.shadowRoot!.querySelector<HTMLElement>(
-              '#bluetooth-logs-info-link');
-      if (bluetoothLogsInfoLinkElement) {
-        bluetoothLogsInfoLinkElement.onclick = (e: Event) => {
-          e.preventDefault();
-
-          FeedbackBrowserProxyImpl.getInstance().showBluetoothLogsInfo();
-
-          bluetoothLogsInfoLinkElement.onauxclick = (e: Event) => {
-            e.preventDefault();
-          };
-        };
-      }
-
-      const assistantLogsInfoLinkElement =
-          this.shadowRoot!.querySelector<HTMLElement>(
-              '#assistant-logs-info-link');
-      if (assistantLogsInfoLinkElement) {
-        assistantLogsInfoLinkElement.onclick = (e: Event) => {
-          e.preventDefault();
-
-          FeedbackBrowserProxyImpl.getInstance().showAssistantLogsInfo();
-
-          assistantLogsInfoLinkElement.onauxclick = (e: Event) => {
-            e.preventDefault();
-          };
-        };
-      }
-      // </if>
     }
 
     // Make sure our focus starts on the description field.
@@ -471,15 +424,6 @@ export class FeedbackAppElement extends PolymerElement {
       e.preventDefault();
     };
   }
-
-  // <if expr="chromeos_ash">
-  /**
-   * Opens a new window with chrome://slow_trace, downloading performance data.
-   */
-  private openSlowTraceWindow() {
-    window.open('chrome://slow_trace/tracing.zip#' + this.feedbackInfo.traceId);
-  }
-  // </if>
 
   /**
    * Checks if any keywords related to bluetooth have been typed. If they are,
@@ -631,11 +575,16 @@ export class FeedbackAppElement extends PolymerElement {
       },
     ];
 
-    if (this.feedbackInfo.flow === chrome.feedbackPrivate.FeedbackFlow.AI) {
+    const isAiFlow: boolean =
+        this.feedbackInfo.flow === chrome.feedbackPrivate.FeedbackFlow.AI;
+    const isSeaPenFlow: boolean|undefined =
+        isAiFlow && this.feedbackInfo.aiMetadata?.includes('from_sea_pen');
+    if (isAiFlow) {
       this.feedbackInfo.isOffensiveOrUnsafe =
           this.getRequiredElement<HTMLInputElement>('#offensive-checkbox')
               .checked;
-      if (!this.getRequiredElement<HTMLInputElement>('#log-id-checkbox')
+      if (isSeaPenFlow ||
+          !this.getRequiredElement<HTMLInputElement>('#log-id-checkbox')
                .checked) {
         this.feedbackInfo.aiMetadata = undefined;
       }
@@ -652,7 +601,8 @@ export class FeedbackAppElement extends PolymerElement {
     let useHistograms = false;
     const checkbox =
         this.shadowRoot!.querySelector<HTMLInputElement>('#sys-info-checkbox');
-    if (checkbox != null && checkbox.checked) {
+    // SeaPen flow doesn't collect system info data.
+    if (checkbox != null && checkbox.checked && !isSeaPenFlow) {
       // Send histograms along with system info.
       useHistograms = true;
       useSystemInfo = true;
@@ -664,31 +614,6 @@ export class FeedbackAppElement extends PolymerElement {
         !this.getRequiredElement('#autofill-checkbox-container').hidden) {
       this.feedbackInfo.sendAutofillMetadata = true;
     }
-
-    // <if expr="chromeos_ash">
-    const assistantCheckbox = this.shadowRoot!.querySelector<HTMLInputElement>(
-        '#assistant-info-checkbox');
-    if (assistantCheckbox != null && assistantCheckbox.checked &&
-        !this.getRequiredElement('#assistant-checkbox-container').hidden) {
-      // User consent to link Assistant debug info on Assistant server.
-      this.feedbackInfo.assistantDebugInfoAllowed = true;
-    }
-
-    const bluetoothCheckbox = this.shadowRoot!.querySelector<HTMLInputElement>(
-        '#bluetooth-logs-checkbox');
-    if (bluetoothCheckbox != null && bluetoothCheckbox.checked &&
-        !this.getRequiredElement('#bluetooth-checkbox-container').hidden) {
-      this.feedbackInfo.sendBluetoothLogs = true;
-      this.feedbackInfo.categoryTag = 'BluetoothReportWithLogs';
-    }
-
-    const performanceCheckbox =
-        this.shadowRoot!.querySelector<HTMLInputElement>(
-            '#performance-info-checkbox');
-    if (performanceCheckbox == null || !performanceCheckbox.checked) {
-      this.feedbackInfo.traceId = undefined;
-    }
-    // </if>
 
     this.feedbackInfo.sendHistograms = useHistograms;
 
@@ -725,29 +650,6 @@ export class FeedbackAppElement extends PolymerElement {
     this.scheduleWindowClose();
   }
 
-  // <if expr="chromeos_ash">
-  /**
-   * Update the page when performance feedback state is changed.
-   */
-  private performanceFeedbackChanged() {
-    const screenshotCheckbox =
-        this.getRequiredElement<HTMLInputElement>('#screenshot-checkbox');
-    const fileInput = this.getRequiredElement<HTMLInputElement>('#attach-file');
-
-    if (this.getRequiredElement<HTMLInputElement>('#performance-info-checkbox')
-            .checked) {
-      fileInput.disabled = true;
-      fileInput.checked = false;
-
-      screenshotCheckbox.disabled = true;
-      screenshotCheckbox.checked = false;
-    } else {
-      fileInput.disabled = false;
-      screenshotCheckbox.disabled = false;
-    }
-  }
-  // </if>
-
   private resizeAppWindow() {
     // TODO(crbug.com/1167223): The UI is now controlled by a WebDialog delegate
     // which is set to not resizable for now. If needed, a message handler can
@@ -762,7 +664,7 @@ export class FeedbackAppElement extends PolymerElement {
   }
 
   /**
-   * TODO(crbug.com/1509032): A helper function in favor of converting feedback
+   * TODO(crbug.com/41481648): A helper function in favor of converting feedback
    * UI from non-web component HTML to PolymerElement. It's better to be
    * replaced by polymer's $ helper dictionary.
    */
@@ -776,8 +678,8 @@ export class FeedbackAppElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'feedback-app': FeedbackAppElement;
+    'feedback-app': AppElement;
   }
 }
 
-customElements.define(FeedbackAppElement.is, FeedbackAppElement);
+customElements.define(AppElement.is, AppElement);

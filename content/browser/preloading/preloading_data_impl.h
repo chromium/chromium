@@ -6,11 +6,13 @@
 #define CONTENT_BROWSER_PRELOADING_PRELOADING_DATA_IMPL_H_
 
 #include <memory>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/preloading_confidence.h"
+#include "content/browser/preloading/preloading_prediction.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -19,8 +21,6 @@
 namespace content {
 
 class PreloadingAttemptImpl;
-class PreloadingPrediction;
-class ExperimentalPreloadingPrediction;
 
 // Defines predictors confusion matrix enums used by UMA records. Entries should
 // not be renumbered and numeric values should never be reused. Please update
@@ -42,7 +42,7 @@ enum class PredictorConfusionMatrix {
 // The scope of current preloading logging is only limited to the same
 // WebContents navigations. If the predicted URL is opened in a new tab we lose
 // the data corresponding to the navigation in different WebContents.
-// TODO(crbug.com/1332123): Expand PreloadingData scope to consider multiple
+// TODO(crbug.com/40227626): Expand PreloadingData scope to consider multiple
 // WebContent navigations.
 class CONTENT_EXPORT PreloadingDataImpl
     : public PreloadingData,
@@ -60,7 +60,7 @@ class CONTENT_EXPORT PreloadingDataImpl
   // any NoVarySearch query using `PrefetchService` if No-Vary-Search feature is
   // enabled.
   static PreloadingURLMatchCallback GetPrefetchServiceMatcher(
-      PrefetchService* prefetch_service,
+      PrefetchService& prefetch_service,
       const PrefetchContainer::Key& predicted);
 
   // Disallow copy and assign.
@@ -72,18 +72,41 @@ class CONTENT_EXPORT PreloadingDataImpl
       PreloadingPredictor predictor,
       PreloadingType preloading_type,
       PreloadingURLMatchCallback url_match_predicate,
+      std::optional<PreloadingType> planned_max_preloading_type,
       ukm::SourceId triggering_primary_page_source_id) override;
   void AddPreloadingPrediction(
       PreloadingPredictor predictor,
-      int64_t confidence,
-      PreloadingURLMatchCallback url_match_predicate) override;
+      int confidence,
+      PreloadingURLMatchCallback url_match_predicate,
+      ukm::SourceId triggering_primary_page_source_id) override;
   void SetIsNavigationInDomainCallback(
       PreloadingPredictor predictor,
       PredictorDomainCallback is_navigation_in_domain_callback) override;
-  bool CheckNavigationInDomainCallbackForTesting(
-      PreloadingPredictor predictor) {
-    return is_navigation_in_predictor_domain_callbacks_.count(predictor);
-  }
+  void SetHasSpeculationRulesPrerender();
+  bool HasSpeculationRulesPrerender() override;
+  void OnPreloadingHeuristicsModelInput(
+      const GURL& url,
+      ModelPredictionTrainingData::OutcomeCallback on_record_outcome) override;
+
+  void AddPreloadingPrediction(const PreloadingPredictor& predictor,
+                               PreloadingConfidence confidence,
+                               PreloadingURLMatchCallback url_match_predicate,
+                               ukm::SourceId triggering_primary_page_source_id);
+
+  // A version of `AddPreloadingAttempt` which takes two PreloadingPredictors in
+  // the case where one predictor creates a preloading candidate which is
+  // enacted by another predictor (e.g. a non-eager speculation rule creates a
+  // candidate which is enacted by a pointer down heuristic).
+  PreloadingAttemptImpl* AddPreloadingAttempt(
+      const PreloadingPredictor& creating_predictor,
+      const PreloadingPredictor& enacting_predictor,
+      PreloadingType preloading_type,
+      PreloadingURLMatchCallback url_match_predicate,
+      std::optional<PreloadingType> planned_max_preloading_type,
+      ukm::SourceId triggering_primary_page_source_id);
+
+  void CopyPredictorDomains(const PreloadingDataImpl& other,
+                            const std::vector<PreloadingPredictor>& predictors);
 
   // The output of many predictors is a score (usually probability or logit),
   // where a higher score indicates a higher confidence in the prediction. To
@@ -104,7 +127,7 @@ class CONTENT_EXPORT PreloadingDataImpl
   // number of buckets that will be used for UMA aggregation and should be less
   // than 101.
   void AddExperimentalPreloadingPrediction(
-      base::StringPiece name,
+      std::string_view name,
       PreloadingURLMatchCallback url_match_predicate,
       float score,
       float min_score,
@@ -115,6 +138,9 @@ class CONTENT_EXPORT PreloadingDataImpl
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
+
+  size_t GetPredictionsSizeForTesting() const;
+  void SetMaxPredictionsToTenForTesting();
 
  private:
   explicit PreloadingDataImpl(WebContents* web_contents);
@@ -139,36 +165,20 @@ class CONTENT_EXPORT PreloadingDataImpl
 
   // Stores recall statistics for preloading predictions/attempts to later
   // record them to UMA.
-  struct PreloadingPredictorLess {
-    bool operator()(const PreloadingPredictor& lhs,
-                    const PreloadingPredictor& rhs) const {
-      return lhs.ukm_value() < rhs.ukm_value();
-    }
-  };
-  struct PreloadingAttemptLess {
-    bool operator()(
-        const std::pair<PreloadingPredictor, PreloadingType>& lhs,
-        const std::pair<PreloadingPredictor, PreloadingType>& rhs) const {
-      return std::forward_as_tuple(lhs.first.ukm_value(), lhs.second) <
-             std::forward_as_tuple(rhs.first.ukm_value(), rhs.second);
-    }
-  };
-
-  base::flat_map<PreloadingPredictor,
-                 PredictorDomainCallback,
-                 PreloadingPredictorLess>
+  base::flat_map<PreloadingPredictor, PredictorDomainCallback>
       is_navigation_in_predictor_domain_callbacks_;
-  base::flat_set<PreloadingPredictor, PreloadingPredictorLess>
-      predictions_recall_stats_;
-  base::flat_set<std::pair<PreloadingPredictor, PreloadingType>,
-                 PreloadingAttemptLess>
+  base::flat_set<PreloadingPredictor> predictions_recall_stats_;
+  base::flat_set<std::pair<PreloadingPredictor, PreloadingType>>
       preloading_attempt_recall_stats_;
 
   // Stores all the experimental preloading predictions that are happening for
   // the next navigation until the navigation takes place or the WebContents is
   // destroyed.
-  std::vector<std::unique_ptr<ExperimentalPreloadingPrediction>>
-      experimental_predictions_;
+  std::vector<ExperimentalPreloadingPrediction> experimental_predictions_;
+  size_t total_seen_experimental_predictions_ = 0;
+
+  std::vector<ModelPredictionTrainingData> ml_predictions_;
+  size_t total_seen_ml_predictions_ = 0;
 
   // Stores all the preloading attempts that are happening for the next
   // navigation until the navigation takes place.
@@ -176,13 +186,22 @@ class CONTENT_EXPORT PreloadingDataImpl
 
   // Stores all the preloading predictions that are happening for the next
   // navigation until the navigation takes place.
-  std::vector<std::unique_ptr<PreloadingPrediction>> preloading_predictions_;
+  std::vector<PreloadingPrediction> preloading_predictions_;
+  size_t total_seen_preloading_predictions_ = 0;
+
+  // This flag will be true if there's been at least 1 attempt to do a
+  // speculation-rules based prerender.
+  bool has_speculation_rules_prerender_ = false;
 
   // The random seed used to determine if a preloading attempt should be sampled
   // in UKM logs. We use a different random seed for each session and then hash
   // that seed with the UKM source ID so that all attempts for a given source ID
   // are sampled in or out together.
   uint32_t sampling_seed_;
+
+  // In production, a large number of predictions are allowed before we start
+  // sampling. For tests, we may set the limit to something small.
+  bool max_predictions_is_ten_for_testing_ = false;
 };
 
 }  // namespace content

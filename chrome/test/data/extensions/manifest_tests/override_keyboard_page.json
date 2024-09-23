@@ -1,6 +1,6 @@
 {
   "name": "test",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "1",
   "chrome_url_overrides": {
     "keyboard": "a_page.html"

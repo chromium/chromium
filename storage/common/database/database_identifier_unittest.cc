@@ -2,15 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "storage/common/database/database_identifier.h"
 
 #include <stddef.h>
 
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_features.h"
 
 namespace storage {
 
@@ -61,7 +68,7 @@ TEST(DatabaseIdentifierTest, CreateIdentifierAllHostChars) {
     bool shouldRoundTrip;
   } cases[] = {
     {"x\x1Fx", "__0", false},
-    // TODO(https://crbug.com/1416013) SPACE (0x20) should not be escaped.
+    // TODO(crbug.com/40256677) SPACE (0x20) should not be escaped.
     {"x\x20x", "http_x%20x_0", false},
     {"x\x21x", "http_x!x_0", false},
     {"x\x22x", "http_x\"x_0", false},
@@ -72,7 +79,7 @@ TEST(DatabaseIdentifierTest, CreateIdentifierAllHostChars) {
     {"x\x27x", "http_x'x_0", false},
     {"x\x28x", "http_x(x_0", false},
     {"x\x29x", "http_x)x_0", false},
-    // TODO(https://crbug.com/1416013) ASTERISK (0x2A) should not be escaped.
+    // TODO(crbug.com/40256677) ASTERISK (0x2A) should not be escaped.
     {"x\x2ax", "http_x%2ax_0", false},
     {"x\x2bx", "http_x+x_0", false},
     {"x\x2cx", "http_x,x_0", false},
@@ -183,7 +190,28 @@ TEST(DatabaseIdentifierTest, CreateIdentifierAllHostChars) {
   }
 }
 
-TEST(DatabaseIdentifierTest, ExtractOriginDataFromIdentifier) {
+// Non-special URLs behavior is affected by the
+// StandardCompliantNonSpecialSchemeURLParsing feature.
+// See https://crbug.com/40063064 for details.
+class DatabaseIdentifierParamTest : public testing::TestWithParam<bool> {
+ public:
+  DatabaseIdentifierParamTest()
+      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
+    scoped_feature_list_.InitWithFeatureState(
+        url::kStandardCompliantNonSpecialSchemeURLParsing,
+        use_standard_compliant_non_special_scheme_url_parsing_);
+  }
+
+  bool use_standard_compliant_non_special_scheme_url_parsing_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Use a parameterized test here to ensure that
+// StandardCompliantNonSpecialSchemeURLParsing feature doesn't change the
+// behavior of DatabaseIdentifier.
+TEST_P(DatabaseIdentifierParamTest, ExtractOriginDataFromIdentifier) {
   struct IdentifierTestCase {
     std::string str;
     std::string expected_scheme;
@@ -258,6 +286,8 @@ TEST(DatabaseIdentifierTest, ExtractOriginDataFromIdentifier) {
     EXPECT_EQ(GURL("null"), actual_origin) << "test case " << bogus_component;
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All, DatabaseIdentifierParamTest, ::testing::Bool());
 
 static GURL GURLToAndFromOriginIdentifier(const GURL& origin_url) {
   std::string id = storage::GetIdentifierFromOrigin(origin_url);

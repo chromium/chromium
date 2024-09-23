@@ -58,13 +58,15 @@ interface DrmDevice {
   ShouldDisplayEventTriggerConfiguration(map<string, string> event_props) =>
       (bool should_trigger);
 
-  // Configures (Enables/Disables) DRM displays, returns whether or not the
-  // configuration was successful. Adjusts the behavior of the commit according
-  // to |modeset_flag| (see display::ModesetFlag).
+  // Configures (Enables/Disables) DRM displays, returning the final requests
+  // which were used (they may differ from the input requests) and whether or
+  // not the configuration was successful. Adjusts the behavior of the commit
+  // according to |modeset_flag| (see display::ModesetFlag).
   ConfigureNativeDisplays(
       array<display.mojom.DisplayConfigurationParams> config_requests,
-      uint32 modeset_flag) =>
-    (bool config_success);
+      display.mojom.ModesetFlags modeset_flags) =>
+      (array<display.mojom.DisplayConfigurationParams> request_results,
+       bool config_success);
 
   // Sets the HDCP Key Property in the connector attached to the |display_id|.
   SetHdcpKeyProp(int64 display_id, string key) =>
@@ -87,6 +89,10 @@ interface DrmDevice {
   SetColorTemperatureAdjustment(int64 display_id,
                                 display.mojom.ColorTemperatureAdjustment cta);
 
+  // Set the color calibration for the specified display.
+  SetColorCalibration(int64 display_id,
+                      display.mojom.ColorCalibration calibration);
+
   // Set the display profile space gamma adjustment for the specified display.
   SetGammaAdjustment(int64 display_id,
                      display.mojom.GammaAdjustment adjustment);
@@ -94,6 +100,11 @@ interface DrmDevice {
   // Sets the state of the privacy screen feature, returns whether or not the
   // configuration was successful.
   SetPrivacyScreen(int64 display_id, bool enabled) => (bool success);
+
+  // Gets the refresh rate ranges that this display can be configured to
+  // seamlessly. Null if the set of refresh rates cannot be queried for
+  // any reason.
+  GetSeamlessRefreshRates(int64 display_id) => (array<float>? ranges);
 
   // Provides a DeviceCursor interface. The provided interface needs to be
   // associated because the AcceleratedWidgets referenced by its methods are

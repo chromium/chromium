@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VARIABLE_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VARIABLE_DATA_H_
 
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
-#include "third_party/blink/renderer/core/css/parser/css_tokenized_value.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -19,52 +22,59 @@ namespace blink {
 class CSSSyntaxDefinition;
 enum class SecureContextMode;
 
-class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
-  USING_FAST_MALLOC(CSSVariableData);
-
+class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
  public:
-  static scoped_refptr<CSSVariableData> Create() {
-    return base::AdoptRef(new CSSVariableData());
-  }
+  CSSVariableData()
+      : length_(0),
+        is_animation_tainted_(false),
+        needs_variable_resolution_(false),
+        is_8bit_(true),
+        has_font_units_(false),
+        has_root_font_units_(false),
+        has_line_height_units_(false),
+        unused_(0) {}
+
+  using PassKey = base::PassKey<CSSVariableData>;
+  CSSVariableData(PassKey,
+                  StringView,
+                  bool is_animation_tainted,
+                  bool needs_variable_resolution,
+                  bool has_font_units,
+                  bool has_root_font_units,
+                  bool has_line_height_units);
 
   // This is the fastest (non-trivial) constructor if you've got the has_* data
   // already, e.g. because you extracted them while tokenizing (see
   // ExtractFeatures()) or got them from another CSSVariableData instance during
   // substitution.
-  static scoped_refptr<CSSVariableData> Create(StringView original_text,
-                                               bool is_animation_tainted,
-                                               bool needs_variable_resolution,
-                                               bool has_font_units,
-                                               bool has_root_font_units,
-                                               bool has_line_height_units) {
+  static CSSVariableData* Create(StringView original_text,
+                                 bool is_animation_tainted,
+                                 bool needs_variable_resolution,
+                                 bool has_font_units,
+                                 bool has_root_font_units,
+                                 bool has_line_height_units) {
     if (original_text.length() > kMaxVariableBytes) {
       // This should have been blocked off during variable substitution.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     }
 
-    wtf_size_t bytes_needed =
-        sizeof(CSSVariableData) + (original_text.Is8Bit()
-                                       ? original_text.length()
-                                       : 2 * original_text.length());
-    void* buf = WTF::Partitions::FastMalloc(
-        bytes_needed, WTF::GetStringWithTypeName<CSSVariableData>());
-    return base::AdoptRef(new (buf) CSSVariableData(
-        original_text, is_animation_tainted, needs_variable_resolution,
-        has_font_units, has_root_font_units, has_line_height_units));
+    return MakeGarbageCollected<CSSVariableData>(
+        AdditionalBytes(original_text.Is8Bit() ? original_text.length()
+                                               : 2 * original_text.length()),
+        PassKey(), original_text, is_animation_tainted,
+        needs_variable_resolution, has_font_units, has_root_font_units,
+        has_line_height_units);
   }
 
-  // Second-fastest; scans through all the tokens to determine the has_* data.
+  // This tokenizes the string to determine the has_* data.
   // (The tokens are not used apart from that; only the original string is
-  // stored.) The tokens must correspond to the given string.
-  static scoped_refptr<CSSVariableData> Create(CSSTokenizedValue value,
-                                               bool is_animation_tainted,
-                                               bool needs_variable_resolution);
+  // stored.)
+  static CSSVariableData* Create(const String& original_text,
+                                 bool is_animation_tainted,
+                                 bool needs_variable_resolution);
 
-  // Like the previous, but also needs to tokenize the string.
-  static scoped_refptr<CSSVariableData> Create(const String& original_text,
-                                               bool is_animation_tainted,
-                                               bool needs_variable_resolution);
+  void Trace(Visitor*) const {}
 
   StringView OriginalText() const {
     if (is_8bit_) {
@@ -77,6 +87,7 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   String Serialize() const;
 
   bool operator==(const CSSVariableData& other) const;
+  bool EqualsIgnoringTaint(const CSSVariableData& other) const;
 
   bool IsAnimationTainted() const { return is_animation_tainted_; }
 
@@ -117,25 +128,6 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   static const size_t kMaxVariableBytes = 2097152;
 
  private:
-  CSSVariableData()
-      : length_(0),
-        is_animation_tainted_(false),
-        needs_variable_resolution_(false),
-        is_8bit_(true),
-        has_font_units_(false),
-        has_root_font_units_(false),
-        has_line_height_units_(false),
-        unused_(0) {}
-
-  CSSVariableData(StringView,
-                  bool is_animation_tainted,
-                  bool needs_variable_resolution,
-                  bool has_font_units,
-                  bool has_root_font_units,
-                  bool has_line_height_units);
-
-  // 32 bits refcount before this.
-
   // We'd like to use bool for the booleans, but this causes the struct to
   // balloon in size on Windows:
   // https://randomascii.wordpress.com/2010/06/06/bit-field-packing-with-visual-c/
@@ -155,7 +147,7 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
 };
 
 #if !DCHECK_IS_ON()
-static_assert(sizeof(CSSVariableData) <= 8,
+static_assert(sizeof(CSSVariableData) <= 4,
               "CSSVariableData must not grow without thinking");
 #endif
 

@@ -199,6 +199,10 @@ INSTANTIATE_TEST_SUITE_P(
                   &kToplevelConfigurationSignature,
                   true,
                   ::onc::ONC_SOURCE_DEVICE_POLICY),
+        OncParams("valid_cellular_with_admin_apns.onc",
+                  &kToplevelConfigurationSignature,
+                  true,
+                  ::onc::ONC_SOURCE_DEVICE_POLICY),
         // UserCreatedNetworkConfigurationsAreEphemeral is only allowed for
         // device policies.
         OncParams("managed_toplevel_with_user_created_configs_ephemeral.onc",
@@ -297,8 +301,10 @@ INSTANTIATE_TEST_SUITE_P(
         OncParams("cert_with_valid_scope.onc", &kCertificateSignature, false),
         OncParams("cert_with_explicit_default_scope.onc",
                   &kCertificateSignature,
-                  false)));
-
+                  false),
+        OncParams("wifi_with_check_captive_portal.onc",
+                  &kNetworkConfigurationSignature,
+                  true)));
 namespace {
 
 struct RepairParams {
@@ -678,6 +684,10 @@ INSTANTIATE_TEST_SUITE_P(
             OncParams("invalid-cellular-due-to-having-both-smdp-and-smds",
                       &kCellularSignature,
                       true),
-            ExpectBothNotValid("", ""))));
+            ExpectBothNotValid("", "")),
+        std::make_pair(OncParams("managed-network-invalid-check-captive-portal",
+                                 &kNetworkConfigurationSignature,
+                                 true),
+                       ExpectBothNotValid("", ""))));
 
 }  // namespace chromeos::onc

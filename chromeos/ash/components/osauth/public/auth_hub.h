@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 namespace ash {
 
 class AuthAttemptConsumer;
+class AuthHubConnector;
 
 // Main entry point for ChromeOS local Authentication.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHub {
@@ -40,6 +41,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHub {
   virtual void StartAuthentication(AccountId accountId,
                                    AuthPurpose purpose,
                                    AuthAttemptConsumer* consumer) = 0;
+
+  // Cancel the current attempt, eventually leads to
+  // `AuthAttemptConsumer::OnUserAuthAttemptCancelled` being called, and the
+  // destruction of the UI.
+  virtual void CancelCurrentAttempt(AuthHubConnector* connector) = 0;
 
   virtual void Shutdown() = 0;
 

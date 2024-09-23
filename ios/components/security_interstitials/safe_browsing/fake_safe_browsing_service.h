@@ -16,8 +16,11 @@
 // safe.
 class FakeSafeBrowsingService : public SafeBrowsingService {
  public:
-  // URLs with this host are treated as unsafe.
+  // URLs with this host are treated as unsafe by all fake checkers.
   static const std::string kUnsafeHost;
+
+  // URLs with this host are treated as unsafe only by async fake checkers.
+  static const std::string kAsyncUnsafeHost;
 
   FakeSafeBrowsingService();
 
@@ -34,6 +37,16 @@ class FakeSafeBrowsingService : public SafeBrowsingService {
       network::mojom::RequestDestination request_destination,
       web::WebState* web_state,
       SafeBrowsingClient* client) override;
+  std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> CreateSyncChecker(
+      network::mojom::RequestDestination request_destination,
+      web::WebState* web_state,
+      SafeBrowsingClient* client) override;
+  std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> CreateAsyncChecker(
+      network::mojom::RequestDestination request_destination,
+      web::WebState* web_state,
+      SafeBrowsingClient* client) override;
+  bool ShouldCreateAsyncChecker(web::WebState* web_state,
+                                SafeBrowsingClient* client) override;
   bool CanCheckUrl(const GURL& url) const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> GetDatabaseManager()

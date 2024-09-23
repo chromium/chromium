@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SEGMENTATION_PLATFORM_SEGMENTATION_PLATFORM_CONFIG_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "components/segmentation_platform/public/field_trial_register.h"
@@ -16,11 +17,16 @@ class BrowserContext;
 }
 
 namespace segmentation_platform {
+namespace home_modules {
+class HomeModulesCardRegistry;
+}
+
 struct Config;
 
 // Returns a Config created from the finch feature params.
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
-    content::BrowserContext* context);
+    content::BrowserContext* context,
+    home_modules::HomeModulesCardRegistry* home_modules_card_registry);
 
 // Finds a list of configs from experiments and appends to `out_configs`.
 // Public for testing.
@@ -37,10 +43,10 @@ class FieldTrialRegisterImpl : public FieldTrialRegister {
   FieldTrialRegisterImpl& operator=(const FieldTrialRegisterImpl&) = delete;
 
   // FieldTrialRegister:
-  void RegisterFieldTrial(base::StringPiece trial_name,
-                          base::StringPiece group_name) override;
+  void RegisterFieldTrial(std::string_view trial_name,
+                          std::string_view group_name) override;
 
-  void RegisterSubsegmentFieldTrialIfNeeded(base::StringPiece trial_name,
+  void RegisterSubsegmentFieldTrialIfNeeded(std::string_view trial_name,
                                             proto::SegmentId segment_id,
                                             int subsegment_rank) override;
 };

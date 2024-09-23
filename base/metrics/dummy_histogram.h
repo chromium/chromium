@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/metrics/histogram_base.h"
@@ -27,7 +28,7 @@ class BASE_EXPORT DummyHistogram : public HistogramBase {
   DummyHistogram& operator=(const DummyHistogram&) = delete;
 
   // HistogramBase:
-  void CheckName(const StringPiece& name) const override {}
+  void CheckName(std::string_view name) const override {}
   uint64_t name_hash() const override;
   HistogramType GetHistogramType() const override;
   bool HasConstructionArguments(Sample expected_minimum,

@@ -12,6 +12,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extensions_client.h"
@@ -112,7 +113,7 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
 
   scoped_refptr<const Extension> app =
       ExtensionBuilder("test app", ExtensionBuilder::Type::PLATFORM_APP)
-          .AddPermission("power")
+          .AddAPIPermission("power")
           .Build();
   ASSERT_TRUE(app->is_platform_app());
 
@@ -127,9 +128,10 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
 
   // A permission only available to allowlisted extensions returns availability
   // NOT_FOUND_IN_ALLOWLIST.
-  // TODO(https://crbug.com/1251347): Port //device/bluetooth to Fuchsia to
+  // TODO(crbug.com/40198321): Port //device/bluetooth to Fuchsia to
   // enable bluetooth extensions.
-#if !BUILDFLAG(IS_FUCHSIA)
+  // bluetoothPrivate is unsupported in desktop-android build.
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_DESKTOP_ANDROID)
   feature = provider->GetFeature("bluetoothPrivate");
   ASSERT_TRUE(feature);
   EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,

@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_string_patterns_not_matching[https://{wpt_host}/??-https://{wpt_host}/?]
+  AssertionError
+Harness: the test ran to completion.

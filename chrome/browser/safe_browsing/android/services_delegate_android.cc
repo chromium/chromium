@@ -30,7 +30,7 @@ std::unique_ptr<ServicesDelegate> ServicesDelegate::Create(
 std::unique_ptr<ServicesDelegate> ServicesDelegate::CreateForTest(
     SafeBrowsingService* safe_browsing_service,
     ServicesDelegate::ServicesCreator* services_creator) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::WrapUnique(new ServicesDelegateAndroid(safe_browsing_service));
 }
 
@@ -80,14 +80,14 @@ void ServicesDelegateAndroid::RegisterDelayedAnalysisCallback(
 void ServicesDelegateAndroid::AddDownloadManager(
     content::DownloadManager* download_manager) {}
 
-void ServicesDelegateAndroid::StartOnSBThread(
+void ServicesDelegateAndroid::StartOnUIThread(
     scoped_refptr<network::SharedURLLoaderFactory> browser_url_loader_factory,
     const V4ProtocolConfig& v4_config) {
-  database_manager_->StartOnSBThread(browser_url_loader_factory, v4_config);
+  database_manager_->StartOnUIThread(browser_url_loader_factory, v4_config);
 }
 
-void ServicesDelegateAndroid::StopOnSBThread(bool shutdown) {
-  database_manager_->StopOnSBThread(shutdown);
+void ServicesDelegateAndroid::StopOnUIThread(bool shutdown) {
+  database_manager_->StopOnUIThread(shutdown);
 }
 
 void ServicesDelegateAndroid::CreateTelemetryService(Profile* profile) {

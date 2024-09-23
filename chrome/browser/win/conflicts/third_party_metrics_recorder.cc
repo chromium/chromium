@@ -5,13 +5,14 @@
 #include "chrome/browser/win/conflicts/third_party_metrics_recorder.h"
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -26,9 +27,9 @@
 namespace {
 
 // Returns true if the module is signed by Google.
-bool IsGoogleModule(base::StringPiece16 subject) {
-  static constexpr base::StringPiece16 kGoogleLlc(u"Google LLC");
-  static constexpr base::StringPiece16 kGoogleInc(u"Google Inc");
+bool IsGoogleModule(std::u16string_view subject) {
+  static constexpr std::u16string_view kGoogleLlc(u"Google LLC");
+  static constexpr std::u16string_view kGoogleInc(u"Google Inc");
   return subject == kGoogleLlc || subject == kGoogleInc;
 }
 
@@ -64,7 +65,7 @@ void ThirdPartyMetricsRecorder::OnNewModuleFound(
     if (certificate_info.type == CertificateInfo::Type::CERTIFICATE_IN_CATALOG)
       ++catalog_module_count_;
 
-    base::StringPiece16 certificate_subject = certificate_info.subject;
+    std::u16string_view certificate_subject = certificate_info.subject;
     if (IsMicrosoftModule(certificate_subject)) {
       ++microsoft_module_count_;
     } else if (IsGoogleModule(certificate_subject)) {
@@ -122,13 +123,13 @@ void ThirdPartyMetricsRecorder::OnModuleDatabaseIdle() {
 void ThirdPartyMetricsRecorder::AddUnsignedModuleToCrashkeys(
     const std::wstring& module_basename) {
   using UnsignedModulesKey = crash_reporter::CrashKeyString<kCrashKeySize>;
-  static UnsignedModulesKey unsigned_modules_keys[] = {
+  static std::array<UnsignedModulesKey, 5> unsigned_modules_keys{{
       {"unsigned-modules-1", UnsignedModulesKey::Tag::kArray},
       {"unsigned-modules-2", UnsignedModulesKey::Tag::kArray},
       {"unsigned-modules-3", UnsignedModulesKey::Tag::kArray},
       {"unsigned-modules-4", UnsignedModulesKey::Tag::kArray},
       {"unsigned-modules-5", UnsignedModulesKey::Tag::kArray},
-  };
+  }};
 
   if (current_key_index_ >= std::size(unsigned_modules_keys))
     return;

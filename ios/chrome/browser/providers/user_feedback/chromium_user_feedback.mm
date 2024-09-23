@@ -17,21 +17,21 @@ bool IsUserFeedbackSupported() {
 
 UIViewController* CreateUserFeedbackViewController(
     UserFeedbackConfiguration* configuration) {
-  NOTREACHED_NORETURN() << "User feedback reporting not supported.";
+  NOTREACHED() << "User feedback reporting not supported.";
 }
 
 void UploadAllPendingUserFeedback() {
-  NOTREACHED_NORETURN() << "User feedback reporting not supported.";
+  NOTREACHED() << "User feedback reporting not supported.";
 }
 
 bool CanUseStartUserFeedbackFlow() {
-  NOTREACHED_NORETURN() << "User feedback reporting not supported.";
+  NOTREACHED() << "User feedback reporting not supported.";
 }
 
 bool StartUserFeedbackFlow(UserFeedbackConfiguration* configuration,
                            UIViewController* presenting_view_controller,
                            NSError** error) {
-  NOTREACHED_NORETURN() << "User feedback reporting not supported.";
+  NOTREACHED() << "User feedback reporting not supported.";
 }
 
 }  // namespace provider

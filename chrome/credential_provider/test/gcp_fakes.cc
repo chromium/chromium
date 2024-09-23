@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/credential_provider/test/gcp_fakes.h"
 
 #include <windows.h>
 
+#include <atlcomcli.h>
+#include <atlconv.h>
 #include <lm.h>
 #include <ntsecapi.h>
 #include <ntstatus.h>
 #include <process.h>
 #include <sddl.h>
-
-#include <atlcomcli.h>
-#include <atlconv.h>
 
 #include <string>
 

@@ -6,11 +6,13 @@
 
 #include "ash/shell.h"
 #include "ash/style/color_util.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider_source.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -71,6 +73,13 @@ SkColor GetDefaultBackgroundColor(const bool use_dark_mode) {
       use_dark_mode ? cros_tokens::kBgColorDark : cros_tokens::kBgColorLight;
 
   return color_provider->GetColor(color_id);
+}
+
+std::unique_ptr<WebAppInstallInfo>
+CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(const GURL& start_url) {
+  auto info = std::make_unique<WebAppInstallInfo>(
+      GenerateManifestIdFromStartUrlOnly(start_url), start_url);
+  return info;
 }
 
 }  // namespace web_app

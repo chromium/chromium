@@ -18,6 +18,11 @@
  *
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 
 #include "base/feature_list.h"
@@ -31,6 +36,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_data.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -158,6 +164,10 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
 
 FontPlatformData::~FontPlatformData() = default;
 
+void FontPlatformData::Trace(Visitor* visitor) const {
+  visitor->Trace(harfbuzz_face_);
+}
+
 #if BUILDFLAG(IS_MAC)
 CTFontRef FontPlatformData::CtFont() const {
   return SkTypeface_GetCTFontRef(typeface_.get());
@@ -203,17 +213,20 @@ String FontPlatformData::FontFamilyName() const {
                           localized_string.fString.size());
 }
 
+bool FontPlatformData::IsAhem() const {
+  return EqualIgnoringASCIICase(FontFamilyName(), "ahem");
+}
+
 SkTypeface* FontPlatformData::Typeface() const {
   return typeface_.get();
 }
 
 HarfBuzzFace* FontPlatformData::GetHarfBuzzFace() const {
   if (!harfbuzz_face_) {
-    harfbuzz_face_ =
-        HarfBuzzFace::Create(const_cast<FontPlatformData*>(this), UniqueID());
+    harfbuzz_face_ = MakeGarbageCollected<HarfBuzzFace>(this, UniqueID());
   }
 
-  return harfbuzz_face_.get();
+  return harfbuzz_face_.Get();
 }
 
 bool FontPlatformData::HasSpaceInLigaturesOrKerning(
@@ -243,7 +256,7 @@ unsigned FontPlatformData::GetHash() const {
 }
 
 #if !BUILDFLAG(IS_MAC)
-bool FontPlatformData::FontContainsCharacter(UChar32 character) {
+bool FontPlatformData::FontContainsCharacter(UChar32 character) const {
   return CreateSkFont().unicharToGlyph(character);
 }
 #endif
@@ -290,25 +303,23 @@ WebFontRenderStyle FontPlatformData::QuerySystemRenderStyle(
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_IOS)
 SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
-  SkFont font;
+  SkFont font(typeface_);
   style_.ApplyToSkFont(&font);
 
   const float ts = text_size_ >= 0 ? text_size_ : 12;
   font.setSize(SkFloatToScalar(ts));
-  font.setTypeface(typeface_);
   font.setEmbolden(synthetic_bold_);
   font.setSkewX(synthetic_italic_ ? -SK_Scalar1 / 4 : 0);
 
   font.setEmbeddedBitmaps(!avoid_embedded_bitmaps_);
 
+  if (RuntimeEnabledFeatures::DisableAhemAntialiasEnabled() && IsAhem()) {
+    font.setEdging(SkFont::Edging::kAlias);
+  }
+
   return font;
 }
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_IOS)
-
-scoped_refptr<OpenTypeVerticalData> FontPlatformData::CreateVerticalData()
-    const {
-  return OpenTypeVerticalData::CreateUnscaled(typeface_);
-}
 
 IdentifiableToken FontPlatformData::ComputeTypefaceDigest() const {
   DCHECK(typeface_);

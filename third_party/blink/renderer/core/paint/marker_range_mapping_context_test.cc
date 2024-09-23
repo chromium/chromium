@@ -43,34 +43,39 @@ TEST_F(MarkerRangeMappingContextTest, FullNodeOffsetsCorrect) {
   const TextOffsetRange fragment_range = {9, 26};
   MarkerRangeMappingContext mapping_context(*text_node, fragment_range);
 
-  TextFragmentMarker marker_pre(1, 5);  // Before text
-  auto offsets = mapping_context.GetTextContentOffsets(marker_pre);
+  TextFragmentMarker* marker_pre =
+      MakeGarbageCollected<TextFragmentMarker>(1, 5);  // Before text
+  auto offsets = mapping_context.GetTextContentOffsets(*marker_pre);
   ASSERT_FALSE(offsets.has_value());
   offsets.reset();
 
-  TextFragmentMarker marker_a(7, 10);  // Partially before
-  offsets = mapping_context.GetTextContentOffsets(marker_a);
+  TextFragmentMarker* marker_a =
+      MakeGarbageCollected<TextFragmentMarker>(7, 10);  // Partially before
+  offsets = mapping_context.GetTextContentOffsets(*marker_a);
   ASSERT_TRUE(offsets.has_value());
   ASSERT_EQ(0u, offsets->start);
   ASSERT_EQ(1u, offsets->end);
   offsets.reset();
 
-  TextFragmentMarker marker_b(11, 12);  // 'b'
-  offsets = mapping_context.GetTextContentOffsets(marker_b);
+  TextFragmentMarker* marker_b =
+      MakeGarbageCollected<TextFragmentMarker>(11, 12);  // 'b'
+  offsets = mapping_context.GetTextContentOffsets(*marker_b);
   ASSERT_TRUE(offsets.has_value());
   ASSERT_EQ(2u, offsets->start);
   ASSERT_EQ(3u, offsets->end);
   offsets.reset();
 
-  TextFragmentMarker marker_ij(25, 28);  // Overlaps 1st and 2nd line
-  offsets = mapping_context.GetTextContentOffsets(marker_ij);
+  TextFragmentMarker* marker_ij = MakeGarbageCollected<TextFragmentMarker>(
+      25, 28);  // Overlaps 1st and 2nd line
+  offsets = mapping_context.GetTextContentOffsets(*marker_ij);
   ASSERT_TRUE(offsets.has_value());
   ASSERT_EQ(16u, offsets->start);
   ASSERT_EQ(17u, offsets->end);
   offsets.reset();
 
-  TextFragmentMarker marker_post(30, 35);  // After text
-  offsets = mapping_context.GetTextContentOffsets(marker_post);
+  TextFragmentMarker* marker_post =
+      MakeGarbageCollected<TextFragmentMarker>(30, 35);  // After text
+  offsets = mapping_context.GetTextContentOffsets(*marker_post);
   ASSERT_FALSE(offsets.has_value());
   offsets.reset();
 }

@@ -8,6 +8,10 @@ found in the LICENSE file.
 <resources>
   <dimen name="location_bar_status_icon_area_size">48dp</dimen>
   <dimen name="omnibox_carousel_suggestion_minimum_item_spacing">16dp</dimen>
+
+  <!-- URL bar -->
+  <dimen name="url_bar_vertical_padding">@dimen/modern_toolbar_background_vertical_offset</dimen>
+
   <!-- Additional space on the left and right side of the suggestions dropdown. -->
   <dimen name="omnibox_suggestion_dropdown_side_spacing">4dp</dimen>
   <dimen name="omnibox_suggestion_dropdown_round_corner_radius">28dp</dimen>
@@ -24,12 +28,15 @@ found in the LICENSE file.
 
   <dimen name="omnibox_suggestion_icon_area_size">40dp</dimen>
   <dimen name="omnibox_suggestion_icon_area_size_modern">56dp</dimen>
-  <dimen name="omnibox_suggestion_start_padding">4dp</dimen>
-  <dimen name="omnibox_suggestion_end_padding">8dp</dimen>
   <!-- Spacing on the left and right of the suggestion content -->
   <dimen name="omnibox_suggestion_side_spacing_smallest">12dp</dimen>
   <dimen name="omnibox_suggestion_list_padding_top">12dp</dimen>
   <dimen name="omnibox_suggestion_list_padding_bottom">12dp</dimen>
   <dimen name="omnibox_suggestion_list_toolbar_overlap">2dp</dimen>
   <dimen name="omnibox_min_space_above_window_bottom">84dp</dimen>
+
+  <!-- Button highlight dimensions. -->
+  <dimen name="status_view_verbose_highlight_width">102dp</dimen>
+  <dimen name="status_view_verbose_highlight_height">32dp</dimen>
+
 </resources>

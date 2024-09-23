@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 
 import base64
+from email.message import EmailMessage
 import os
 from typing import Any
 import unittest
@@ -25,7 +26,7 @@ class GetExpectationFileForSuiteUnittest(unittest.TestCase):
         gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
         'pixel_expectations.txt')
     actual_filepath = self.expectations.GetExpectationFileForSuite(
-        'pixel_integration_test', tuple(['webgl-version-2']))
+        'pixel_integration_test', tuple())
     self.assertEqual(actual_filepath, expected_filepath)
 
   def testOverrideExpectationFile(self) -> None:
@@ -34,25 +35,7 @@ class GetExpectationFileForSuiteUnittest(unittest.TestCase):
         gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
         'info_collection_expectations.txt')
     actual_filepath = self.expectations.GetExpectationFileForSuite(
-        'info_collection_test', tuple(['webgl-version-2']))
-    self.assertEqual(actual_filepath, expected_filepath)
-
-  def testWebGl1Conformance(self) -> None:
-    """Tests that a WebGL 1 expectation file is found properly."""
-    expected_filepath = os.path.join(
-        gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-        'webgl_conformance_expectations.txt')
-    actual_filepath = self.expectations.GetExpectationFileForSuite(
-        'webgl_conformance_integration_test', tuple([]))
-    self.assertEqual(actual_filepath, expected_filepath)
-
-  def testWebGl2Conformance(self) -> None:
-    """Tests that a WebGL 2 expectation file is found properly."""
-    expected_filepath = os.path.join(
-        gpu_expectations.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
-        'webgl2_conformance_expectations.txt')
-    actual_filepath = self.expectations.GetExpectationFileForSuite(
-        'webgl_conformance_integration_test', tuple(['webgl-version-2']))
+        'info_collection_test', tuple())
     self.assertEqual(actual_filepath, expected_filepath)
 
 
@@ -110,7 +93,8 @@ mode type hash bar_tests.txt"""
     """Tests that getting a non-200 status code back results in a failure."""
 
     def SideEffect(_: Any) -> None:
-      raise urllib.error.HTTPError('url', 404, 'No exist :(', {}, None)
+      raise urllib.error.HTTPError('url', 404, 'No exist :(', EmailMessage(),
+                                   None)
 
     self._get_mock.side_effect = SideEffect
     with self.assertRaises(urllib.error.HTTPError):

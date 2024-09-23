@@ -20,7 +20,7 @@ class ShoppingService;
 }  // namespace commerce
 
 namespace page_image_service {
-class ImageService;
+class ImageServiceImpl;
 }  // namespace page_image_service
 
 namespace optimization_guide {
@@ -30,6 +30,9 @@ class OptimizationGuideDecider {
   // Registers the optimization types that intend to be queried during the
   // session. It is expected for this to be called after the browser has been
   // initialized.
+  //
+  // Registering an OptimizationType will cause data for the type to be fetched
+  // and cached on each page load.
   virtual void RegisterOptimizationTypes(
       const std::vector<proto::OptimizationType>& optimization_types) = 0;
 
@@ -55,7 +58,7 @@ class OptimizationGuideDecider {
  private:
   // These friend are consumers of the CanApplyOptimizationOnDemand API.
   friend class commerce::ShoppingService;
-  friend class page_image_service::ImageService;
+  friend class page_image_service::ImageServiceImpl;
 
   // Invokes |callback| with the decision for all types contained in
   // |optimization_types| for each URL contained in |urls|, when sufficient
@@ -72,7 +75,8 @@ class OptimizationGuideDecider {
       const base::flat_set<proto::OptimizationType>& optimization_types,
       proto::RequestContext request_context,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback,
-      proto::RequestContextMetadata* request_context_metadata = nullptr) = 0;
+      std::optional<proto::RequestContextMetadata> request_context_metadata =
+          std::nullopt) = 0;
 };
 
 }  // namespace optimization_guide

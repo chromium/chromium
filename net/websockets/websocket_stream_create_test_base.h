@@ -19,6 +19,7 @@
 #include "net/base/net_errors.h"
 #include "net/socket/socket_test_util.h"
 #include "net/ssl/ssl_info.h"
+#include "net/storage_access_api/status.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_test_util.h"
@@ -63,7 +64,7 @@ class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
                               const std::vector<std::string>& sub_protocols,
                               const url::Origin& origin,
                               const SiteForCookies& site_for_cookies,
-                              bool has_storage_access,
+                              StorageAccessApiStatus storage_access_api_status,
                               const IsolationInfo& isolation_info,
                               const HttpRequestHeaders& additional_headers,
                               std::unique_ptr<base::OneShotTimer> timer);

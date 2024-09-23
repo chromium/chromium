@@ -21,6 +21,7 @@ source_set("test") {
     "//components/autofill/core/browser:test_support",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/autofill/model/credit_card:infobar_delegate",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/model/overlays",
     "//ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers",

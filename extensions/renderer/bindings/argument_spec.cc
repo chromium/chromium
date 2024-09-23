@@ -124,7 +124,7 @@ void ArgumentSpec::InitializeType(const base::Value::Dict& dict) {
   else if (*type_string == "function")
     type_ = ArgumentType::FUNCTION;
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   if (std::optional<int> minimum = dict.FindInt("minimum")) {
     minimum_ = *minimum;
@@ -164,6 +164,10 @@ void ArgumentSpec::InitializeType(const base::Value::Dict& dict) {
           std::make_unique<ArgumentSpec>(*additional_properties_value);
       // Additional properties are always optional.
       additional_properties_->optional_ = true;
+    }
+
+    if (dict.FindBool("ignoreAdditionalProperties").value_or(false)) {
+      ignore_additional_properties_ = true;
     }
   } else if (type_ == ArgumentType::LIST) {
     const base::Value::Dict* item_value = dict.FindDict("items");
@@ -319,7 +323,7 @@ bool ArgumentSpec::ParseArgument(v8::Local<v8::Context> context,
       return ParseArgumentToAny(context, value, out_value, v8_out_value, error);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -458,7 +462,7 @@ bool ArgumentSpec::ParseArgumentToFundamental(
       return true;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }
@@ -526,6 +530,9 @@ bool ArgumentSpec::ParseArgumentToObject(
       // functions, or even NaN. If the additional properties are of
       // ArgumentType::ANY, allow anything, even if it doesn't serialize.
       allow_unserializable = property_spec->type_ == ArgumentType::ANY;
+    } else if (ignore_additional_properties_) {
+      // If we're ignoring additional properties, we just skip to the next one.
+      continue;
     } else {
       *error = api_errors::UnexpectedProperty(*utf8_key);
       return false;

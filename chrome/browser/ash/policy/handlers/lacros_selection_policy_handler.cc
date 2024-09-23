@@ -34,7 +34,7 @@ void LacrosSelectionPolicyHandler::ApplyPolicySettings(
     prefs->SetInteger(prefs::kLacrosSelection, static_cast<int>(*enum_value));
 }
 
-std::optional<crosapi::browser_util::LacrosSelectionPolicy>
+std::optional<ash::standalone_browser::LacrosSelectionPolicy>
 LacrosSelectionPolicyHandler::GetValue(const PolicyMap& policies,
                                        PolicyErrorMap* errors) {
   const base::Value* value;
@@ -43,7 +43,7 @@ LacrosSelectionPolicyHandler::GetValue(const PolicyMap& policies,
     return std::nullopt;
 
   auto parsed =
-      crosapi::browser_util::ParseLacrosSelectionPolicy(value->GetString());
+      ash::standalone_browser::ParseLacrosSelectionPolicy(value->GetString());
   if (!parsed.has_value() && errors) {
     errors->AddError(policy_name(), IDS_POLICY_INVALID_SELECTION_ERROR,
                      "LacrosSelection value");

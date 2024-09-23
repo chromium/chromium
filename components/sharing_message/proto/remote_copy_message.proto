@@ -1,0 +1,25 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sharing_message.proto";
+
+package components_sharing_message;
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+// Message to pass content for the remote copy feature.
+message RemoteCopyMessage {
+  // The content to write to the clipboard. Required.
+  oneof content {
+    // Plain text.
+    string text = 1;
+
+    // The URL of an image to download and write to the clipboard.
+    string image_url = 2;
+  }
+}

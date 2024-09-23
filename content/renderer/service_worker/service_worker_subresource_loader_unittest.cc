@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -18,6 +19,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
@@ -60,14 +62,14 @@ class FakeBlob final : public blink::mojom::Blob {
   }
   void AsDataPipeGetter(
       mojo::PendingReceiver<network::mojom::DataPipeGetter>) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void ReadRange(
       uint64_t offset,
       uint64_t length,
       mojo::ScopedDataPipeProducerHandle handle,
       mojo::PendingRemote<blink::mojom::BlobReaderClient> client) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void ReadAll(
       mojo::ScopedDataPipeProducerHandle handle,
@@ -84,7 +86,7 @@ class FakeBlob final : public blink::mojom::Blob {
             const std::string& method,
             const net::HttpRequestHeaders&,
             mojo::PendingRemote<network::mojom::URLLoaderClient>) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void ReadSideData(ReadSideDataCallback callback) override {
     std::move(callback).Run(side_data_);
@@ -93,7 +95,7 @@ class FakeBlob final : public blink::mojom::Blob {
     std::move(callback).Run(body_.size(), std::nullopt);
   }
   void GetInternalUUID(GetInternalUUIDCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   mojo::ReceiverSet<blink::mojom::Blob> receivers_;
@@ -243,7 +245,7 @@ class FakeControllerServiceWorker
       // Copy the content to |out_string|.
       mojo::BlockingCopyToString(std::move(consumer_handle), out_string);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -499,7 +501,7 @@ class FakeServiceWorkerContainerHost
 
  private:
   int get_controller_service_worker_count_ = 0;
-  raw_ptr<FakeControllerServiceWorker, ExperimentalRenderer> fake_controller_;
+  raw_ptr<FakeControllerServiceWorker> fake_controller_;
   mojo::ReceiverSet<blink::mojom::ServiceWorkerContainerHost> receivers_;
 };
 
@@ -978,9 +980,7 @@ TEST_F(ServiceWorkerSubresourceLoaderTest,
        DropController_RestartFetchEvent_RaceNetworkRequest) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kServiceWorkerBypassFetchHandler,
-      {{"strategy", "opt-in"},
-       {"bypass_for", "all_with_race_network_request"}});
+      features::kServiceWorkerAutoPreload, {{"strategy", "opt-in"}});
 
   mojo::Remote<network::mojom::URLLoaderFactory> factory =
       CreateSubresourceLoaderFactory();
@@ -1043,7 +1043,7 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, StreamResponse) {
   base::HistogramTester histogram_tester;
 
   // Construct the Stream to respond with.
-  const char kResponseBody[] = "Here is sample text for the Stream.";
+  const std::string_view kResponseBody = "Here is sample text for the Stream.";
   mojo::Remote<blink::mojom::ServiceWorkerStreamCallback> stream_callback;
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
@@ -1072,11 +1072,12 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, StreamResponse) {
   ExpectResponseInfo(*info, *expected_info);
 
   // Write the body stream.
-  uint32_t written_bytes = sizeof(kResponseBody) - 1;
-  MojoResult mojo_result = producer_handle->WriteData(
-      kResponseBody, &written_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+  size_t bytes_written = 0;
+  MojoResult mojo_result =
+      producer_handle->WriteData(base::as_byte_span(kResponseBody),
+                                 MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
   ASSERT_EQ(MOJO_RESULT_OK, mojo_result);
-  EXPECT_EQ(sizeof(kResponseBody) - 1, written_bytes);
+  EXPECT_EQ(kResponseBody.size(), bytes_written);
   stream_callback->OnCompleted();
   producer_handle.reset();
 
@@ -1112,7 +1113,7 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, StreamResponse_Abort) {
   base::HistogramTester histogram_tester;
 
   // Construct the Stream to respond with.
-  const char kResponseBody[] = "Here is sample text for the Stream.";
+  const std::string_view kResponseBody = "Here is sample text for the Stream.";
   mojo::Remote<blink::mojom::ServiceWorkerStreamCallback> stream_callback;
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
@@ -1136,11 +1137,12 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, StreamResponse_Abort) {
   ExpectResponseInfo(*info, *CreateResponseInfoFromServiceWorker());
 
   // Start writing the body stream, then abort before finishing.
-  uint32_t written_bytes = sizeof(kResponseBody) - 1;
-  MojoResult mojo_result = producer_handle->WriteData(
-      kResponseBody, &written_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+  size_t bytes_written = 0;
+  MojoResult mojo_result =
+      producer_handle->WriteData(base::as_byte_span(kResponseBody),
+                                 MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
   ASSERT_EQ(MOJO_RESULT_OK, mojo_result);
-  EXPECT_EQ(sizeof(kResponseBody) - 1, written_bytes);
+  EXPECT_EQ(kResponseBody.size(), bytes_written);
   stream_callback->OnAborted();
   producer_handle.reset();
 
@@ -1436,7 +1438,7 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, RedirectResponse) {
   client->ClearHasReceivedRedirect();
 
   // Give the final response.
-  const char kResponseBody[] = "Here is sample text for the Stream.";
+  const std::string_view kResponseBody = "Here is sample text for the Stream.";
   mojo::Remote<blink::mojom::ServiceWorkerStreamCallback> stream_callback;
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
@@ -1452,11 +1454,12 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, RedirectResponse) {
   EXPECT_EQ(network::mojom::FetchResponseType::kDefault, info->response_type);
 
   // Write the body stream.
-  uint32_t written_bytes = sizeof(kResponseBody) - 1;
-  MojoResult mojo_result = producer_handle->WriteData(
-      kResponseBody, &written_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+  size_t bytes_written = 0;
+  MojoResult mojo_result =
+      producer_handle->WriteData(base::as_byte_span(kResponseBody),
+                                 MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
   ASSERT_EQ(MOJO_RESULT_OK, mojo_result);
-  EXPECT_EQ(sizeof(kResponseBody) - 1, written_bytes);
+  EXPECT_EQ(kResponseBody.size(), bytes_written);
   stream_callback->OnCompleted();
   producer_handle.reset();
 

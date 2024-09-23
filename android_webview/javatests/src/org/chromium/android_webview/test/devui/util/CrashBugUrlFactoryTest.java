@@ -13,7 +13,7 @@ import static androidx.test.espresso.intent.matcher.UriMatchers.hasScheme;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import android.content.Intent;
 import android.os.Build;
@@ -23,6 +23,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.android_webview.common.BugTrackerConstants;
 import org.chromium.android_webview.devui.util.CrashBugUrlFactory;
 import org.chromium.android_webview.nonembedded.crash.CrashInfo;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
@@ -31,11 +32,12 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /** Unit tests for CrashBugUrlFactory class */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS) // These are unit tests
+@OnlyRunIn(EITHER_PROCESS) // These are unit tests
 @Batch(Batch.UNIT_TESTS)
 public class CrashBugUrlFactoryTest {
     @Test
@@ -51,50 +53,44 @@ public class CrashBugUrlFactoryTest {
         crashInfo.uploadId = "a1b2c3d4";
 
         final String expectedDescription =
-                ""
-                        + "Build fingerprint: "
-                        + Build.FINGERPRINT
-                        + "\n"
-                        + "Android API level: 100\n"
-                        + "Crashed WebView version: 10.0.1234.5\n"
-                        + "DevTools version: "
-                        + CrashBugUrlFactory.getCurrentDevToolsVersion()
-                        + "\n"
-                        + "Application: org.test.package (1.0.2.3)\n"
-                        + "If this app is available on Google Play, please include a URL:\n"
-                        + "\n"
-                        + "\n"
-                        + "Steps to reproduce:\n"
-                        + "(1)\n"
-                        + "(2)\n"
-                        + "(3)\n"
-                        + "\n"
-                        + "\n"
-                        + "Expected result:\n"
-                        + "(What should have happened?)\n"
-                        + "\n"
-                        + "\n"
-                        + "<Any additional comments, you want to share>"
-                        + "\n"
-                        + "\n"
-                        + "****DO NOT CHANGE BELOW THIS LINE****\n"
-                        + "Crash ID: http://crash/a1b2c3d4\n"
-                        + "Instructions for triaging this report (Chromium members only): "
-                        + "https://bit.ly/2SM1Y9t\n";
+                String.format(
+                        Locale.US,
+                        CrashBugUrlFactory.CRASH_REPORT_TEMPLATE,
+                        Build.FINGERPRINT,
+                        /* CrashInfo.ANDROID_SDK_INT_KEY */ "100",
+                        /* CrashInfo.WEBVIEW_VERSION_KEY */ "10.0.1234.5",
+                        CrashBugUrlFactory.getCurrentDevToolsVersion(),
+                        /* CrashAppPackageInfo */ "org.test.package (1.0.2.3)",
+                        crashInfo.uploadId);
 
         Intent intent = new CrashBugUrlFactory(crashInfo).getReportIntent();
         assertThat(intent, hasAction(Intent.ACTION_VIEW));
         assertThat(intent, hasData(hasScheme("https")));
-        assertThat(intent, hasData(hasHost("bugs.chromium.org")));
-        assertThat(intent, hasData(hasPath("/p/chromium/issues/entry")));
-        assertThat(intent, hasData(hasParamWithValue("template", "Webview+Bugs")));
+        assertThat(intent, hasData(hasHost("issues.chromium.org")));
+        assertThat(intent, hasData(hasPath("/issues/new")));
         assertThat(
                 intent,
                 hasData(
                         hasParamWithValue(
-                                "labels",
-                                "User-Submitted,Via-WebView-DevTools,Pri-3,Type-Bug,OS-Android"
-                                        + ",FoundIn-10")));
+                                "component", BugTrackerConstants.COMPONENT_MOBILE_WEBVIEW)));
+        assertThat(
+                intent,
+                hasData(
+                        hasParamWithValue(
+                                "template", BugTrackerConstants.DEFAULT_WEBVIEW_TEMPLATE)));
+        assertThat(intent, hasData(hasParamWithValue("priority", "P3")));
+        assertThat(intent, hasData(hasParamWithValue("type", "BUG")));
+        assertThat(
+                intent,
+                hasData(
+                        hasParamWithValue(
+                                "customFields", BugTrackerConstants.OS_FIELD + ":Android")));
+        assertThat(
+                intent,
+                hasData(
+                        hasParamWithValue(
+                                "hotlistIds", BugTrackerConstants.USER_SUBMITTED_HOTLIST)));
+        assertThat(intent, hasData(hasParamWithValue("foundIn", "10")));
         assertThat(intent, hasData(hasParamWithValue("description", expectedDescription)));
     }
 }

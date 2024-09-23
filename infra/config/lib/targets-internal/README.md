@@ -19,6 +19,9 @@ Parents
 * [targets|legacy-test](#targets_legacy_test) (>=0)
   * created by `targets.test.gtest_test` and `targets.tests.isolated_script_test`
   * traversed when generating details in test_suites.pyl for a test in a basic suite that references a binary
+* [targets|test](#targets_test) (<=0)
+  * created by targets.tests.gtest_test
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
 
 ### targets|label-mapping
 
@@ -49,11 +52,12 @@ Variable reference: `_targets_nodes.MIXIN`
 Created by
 
 * `targets.mixin`
+  * unnamed instances can be created inline to apply changes to a bundle or to be used for per-test modifications
 
 Parents
 
 * [project](#project) (1)
-  * created for all mixins
+  * created for all named mixins
   * traversed to generate entries in mixins.pyl
 * [targets|legacy-test](#targets_legacy_test) (>=0)
   * created when a test specifies a mixin in `mixins`
@@ -67,6 +71,12 @@ Parents
 * [targets|legacy-remove-mixin](#targets_legacy_remove_mixin) (>=0)
   * created when a test specifies a mixin in `remove_mixins`
   * traversed to generate the `remove_mixins` field for a test when generating a basic suite in test_suites.pyl
+* [targets|bundle](#targets_bundle) (>=0)
+  * created when a bundle references a mixin
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+* [targets|per-test-modification](#targets_per_test_modification) (>=0)
+  * created when a per test modification references a mixin
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
 
 ### targets|variant
 
@@ -102,7 +112,7 @@ Children
 * [targets|binary](#targets_binary) (0 or 1)
   * created by `targets.test.gtest_test` and `targets.tests.isolated_script_test`
   * traversed when generating details in test_suites.pyl for a test in a basic suite that references a binary
-* [targets|mixin](#targets_mixin) (>=0)
+* [targets|mixin](#Node-type-information-targets_mixin) (>=0)
   * created when a test specifies a mixin in `mixins`
   * traversed to generate the `mixins` field for a test when generating a basic suite in test_suites.pyl
 
@@ -134,11 +144,11 @@ Parents
 * [project](#project) (1)
   * created for all basic suites
   * traversed to generate the `basic_suites` entries in test_suites.pyl
-* [targets|legacy-compound-suite](#targets_legacy_compound_suite) (>=0)
+* [targets|legacy-compound-suite](#Node-type-information-targets_legacy_compound_suite) (>=0)
   * created when a compound suite includes a basic suite
   * traversed to generate the basic suite reference when generating a compound
     suite in test_suites.pyl
-* [targets|legacy-matrix-compound-suite](#targets_legacy_matrix_compound_suite) (>=0)
+* [targets|legacy-matrix-compound-suite](#Node-type-information-targets_legacy_matrix_compound_suite) (>=0)
   * created when a matrix compound suite includes a basic suite
   * not traversed, created only to ensure the basic suite exists
 
@@ -157,7 +167,7 @@ Children
 * [targets|legacy-test](#targets_legacy_test) (1)
   * created when a basic suite references a test
   * traversed to generate the details for a test when generating a basic suite in test_suites.pyl
-* [targets|mixin](#targets_mixin) (>=0)
+* [targets|mixin](#Node-type-information-targets_mixin) (>=0)
   * created when the config for a test in a basic suite references a mixin
   * traversed to generate the `mixins` field for a test when generating a basic suite in test_suites.pyl
 * [targets|legacy-remove-mixin](#targets_legacy_remove_mixin) (>=0)
@@ -166,7 +176,7 @@ Children
 
 Parents
 
-* [targets|legacy-basic-suite](#targets_legacy_basic_suite) (0)
+* [targets|legacy-basic-suite](#Node-type-information-targets_legacy_basic_suite) (0)
   * created when a basic suite references a test
   * traversed to generate the details for a test when generating a basic suite in test_suites.pyl
 
@@ -183,7 +193,7 @@ Created by
 
 Children
 
-* [targets|mixin](#targets_mixin) (1)
+* [targets|mixin](#Node-type-information-targets_mixin) (1)
   * created when a test specifies a mixin in `remove_mixins`
   * traversed to generate the `remove_mixins` field for a test when generating a basic suite in test_suites.pyl
 
@@ -205,7 +215,7 @@ Created by
 
 Children
 
-* [targets|legacy-basic-suite](#targets_legacy_basic_suite) (>0)
+* [targets|legacy-basic-suite](#Node-type-information-targets_legacy_basic_suite) (>0)
   * created when a compound suite includes a basic suite
   * traversed to generate the basic suite reference when generating a compound suite in test_suites.pyl
 
@@ -227,7 +237,7 @@ Created by
 
 Children
 
-* [targets|legacy-basic-suite](#targets_legacy_basic_suite) (>0)
+* [targets|legacy-basic-suite](#Node-type-information-targets_legacy_basic_suite) (>0)
   * created when a matrix compound suite includes a basic suite
   * not traversed, created only to ensure the basic suite exists
 * [targets|legacy-matrix-config](#targets_legacy_matrix_config) (>0)
@@ -252,16 +262,16 @@ Created by
 
 Children
 
-* [targets|mixin](#targets_mixin) (>=0)
+* [targets|mixin](#Node-type-information-targets_mixin) (>=0)
   * created when the matrix config for a basic suite in a matrix compound suite references a mixin
   * traversed to generate the `mixins` field in test_suites.pyl for the config for a basic suite in a matrix compound suite
-* [targets|variant](#targets_variant) (>=0)
+* [targets|variant](#Node-type-information-targets_variant) (>=0)
   * created when the matrix config for a basic suite in a matrix compound suite references a variant
   * traversed to generate the `variants` field in test_suites.pyl for the config for a basic suite in a matrix compound suite
 
 Parents
 
-* [targets|legacy-matrix-compound-suite](#targets_legacy_matrix_compound_suite) (1)
+* [targets|legacy-matrix-compound-suite](#Node-type-information-targets_legacy_matrix_compound_suite) (1)
   * created for each basic suite in the matrix compound suite
   * traversed to generate the details for a basic suite when generating a
     matrix compound suite in test_suites.pyl
@@ -282,9 +292,30 @@ Created by
 
 Parents
 
-* [targets|bundle](#targets_bundle) (>=0)
+* [targets|bundle](#Node-type-information-targets_bundle) (>=0)
   * created when a bundle references a compile target in `additional_compile_targets`
-  * traversed when generating targets spec files for builders that have their tests defined in starlark
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+
+### targets|test
+
+A test target that can be included in a bundle used by builders that have their targets defined in starlark
+
+Created by
+
+* functions in `targets.tests`
+  * support is only actually implemented for `script_test` and `gtest_test` (not including skylab); attempting to generate targets specs for a builder that includes other types will fail with a message indicating so
+
+Children
+
+* [targets|binary](#targets_binary) (>=0)
+  * created by `targets.tests.gtest_test`
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+
+Parents:
+
+* [targets|bundle](#targets_bundle) (>=0)
+  * created by functions in `targets.tests` (every test target declares a bundle containing that test)
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
 
 ### targets|bundle
 
@@ -303,22 +334,76 @@ Created by
 
 Children
 
-* [targets|bundle](#targets_bundle) (>=0)
+* [targets|bundle](#Node-type-information-targets_bundle) (>=0)
   * created when a bundle references another bundle in `targets`
-  * traversed when generating targets spec files for builders that have their tests defined in starlark
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
 * [targets|compile-target](#targets_compile_target) (>=0)
   * created when a bundle references a compile target in `additional_compile_targets`
-  * traversed when generating targets spec files for builders that have their tests defined in starlark
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+* [targets|test](#targets_test) (>=0)
+  * created by functions in `targets.tests` (every test target declares a bundle containing that test)
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+* [targets|mixin](#targets_mixin) (>=0)
+  * created when a bundle references a mixin
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+* [targets|per-test-modification](#targets_per_test_modification) (>=0)
+  * created when a bundle specifies `per_test_modifications`
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
 
 Parents
 
 * [builder-config](#builder_config) (0 or 1)
   * created when a builder sets `targets`
   * traversed when generating targets spec files for builders that have their targets defined in starlark
-* [targets|bundle](#targets_bundle) (>=0)
+* [targets|bundle](#Node-type-information-targets_bundle) (>=0)
   * created when a bundle references another bundle in targets
   * traversed when generating targets spec files for builders that have their
     targets defined in starlark
+
+### targets|per-test-modification
+
+Modifications to make to a single test contained in a bundle
+
+Created by
+* `targets.bundle`
+  * created when a bundle specifies `per_test_modifications`
+
+Children:
+* [targets|mixin](#targets_mixin) (>=1)
+  * created when a per test modification references a mixin
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+
+Parents:
+* [targets|bundle](#targets_bundle) (1)
+  * created when a bundle specifies `per_test_modifications`
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+
+### targets|remove-mixin
+
+A mixin to remove from a test included in a bundle.
+
+Variable reference: `_targets_nodes.REMOVE_MIXIN`
+
+Created by
+
+* `targets.legacy_basic_suite`
+  * created when the config for a test specifies `remove_mixins`
+* `targets.bundle`
+  * created when `per_test_modifications` contains values that are `targets.per_test_modification` instances that specify `remove_mixins`
+
+Children
+
+* [targets|mixin](#Node-type-information-targets_mixin) (1)
+  * created when a test specifies a mixin in `remove_mixins`
+  * created when `per_test_modifications` contains values that are `targets.per_test_modification` instances that specify `remove_mixins`
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
+
+Parents
+
+* [targets|per-test-modification](#targets_per_test_modification) (1)
+  * created when a test specifies a mixin in `remove_mixins`
+  * created when `per_test_modifications` contains values that are `targets.per_test_modification` instances that specify `remove_mixins`
+  * traversed when generating targets spec files for builders that have their targets defined in starlark
 
 ### project
 
@@ -356,9 +441,13 @@ nodes created elsewhere.
 
 ![targets.tests.gpu_telemetry_test graph](img/creation/targets-tests-gpu-telemetry-test.png)
 
-#### targets.tests.gtest_test & targets.tests.isolated_script_test
+#### targets.tests.gtest_test
 
-![targets.tests.gtest_test & targets.tests.isolated_script_test graph](img/creation/targets-tests-gtest-test-targets-tests-isolated-script-test.png)
+![targets.tests.gtest_test graph](img/creation/targets-tests-gtest-test.png)
+
+#### targets.tests.isolated_script_test
+
+![targets.tests.isolated_script_test graph](img/creation/targets-tests-isolated-script-test.png)
 
 #### targets.tests.junit_test
 

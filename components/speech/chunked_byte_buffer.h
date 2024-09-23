@@ -9,9 +9,8 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
-
-#include "base/strings/string_piece.h"
 
 namespace speech {
 
@@ -38,7 +37,7 @@ class ChunkedByteBuffer {
   void Append(const uint8_t* start, size_t length);
 
   // Appends bytes contained in the |string| to the buffer.
-  void Append(base::StringPiece string);
+  void Append(std::string_view string);
 
   // Checks whether one or more complete chunks are available in the buffer.
   bool HasChunks() const;

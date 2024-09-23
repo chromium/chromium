@@ -7,16 +7,12 @@
 
 #include <optional>
 
-#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 
 class GURL;
-
-namespace net {
-class NetworkAnonymizationKey;
-}  // namespace net
 
 namespace network::mojom {
 class NetworkContext;
@@ -34,11 +30,9 @@ class CONTENT_EXPORT ProxyLookupClientImpl
 
   // Starts the proxy lookup for |url| in |network_context|. Once the lookup is
   // completed, |callback| will be invoked.
-  ProxyLookupClientImpl(
-      const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      ProxyLookupCallback callback,
-      network::mojom::NetworkContext* network_context);
+  ProxyLookupClientImpl(const GURL& url,
+                        ProxyLookupCallback callback,
+                        network::mojom::NetworkContext* network_context);
   ~ProxyLookupClientImpl() override;
 
   ProxyLookupClientImpl(const ProxyLookupClientImpl&) = delete;

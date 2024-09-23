@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/vaapi/vaapi_jpeg_decoder.h"
 
 #include <string.h>
@@ -12,6 +17,7 @@
 
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
@@ -211,6 +217,7 @@ VaapiJpegDecoder::~VaapiJpegDecoder() = default;
 
 VaapiImageDecodeStatus VaapiJpegDecoder::AllocateVASurfaceAndSubmitVABuffers(
     base::span<const uint8_t> encoded_image) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(vaapi_wrapper_);
 
   // Parse the JPEG encoded data.
@@ -258,12 +265,46 @@ gpu::ImageDecodeAcceleratorType VaapiJpegDecoder::GetType() const {
 }
 
 SkYUVColorSpace VaapiJpegDecoder::GetYUVColorSpace() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   return SkYUVColorSpace::kJPEG_SkYUVColorSpace;
+}
+
+// static
+std::optional<gpu::ImageDecodeAcceleratorSupportedProfile>
+VaapiJpegDecoder::GetSupportedProfile() {
+  if (!base::FeatureList::IsEnabled(
+          features::kVaapiJpegImageDecodeAcceleration)) {
+    return std::nullopt;
+  }
+  if (VaapiWrapper::GetImplementationType() == VAImplementation::kMesaGallium) {
+    // TODO(crbug.com/40632250): we can't advertise accelerated image decoding
+    // in AMD until we support VAAPI surfaces with multiple buffer objects.
+    return std::nullopt;
+  }
+
+  gpu::ImageDecodeAcceleratorSupportedProfile profile;
+  profile.image_type = gpu::ImageDecodeAcceleratorType::kJpeg;
+
+  const bool got_supported_resolutions = VaapiWrapper::GetSupportedResolutions(
+      VAProfileJPEGBaseline, VaapiWrapper::CodecMode::kDecode,
+      profile.min_encoded_dimensions, profile.max_encoded_dimensions);
+  if (!got_supported_resolutions) {
+    return std::nullopt;
+  }
+
+  // TODO(andrescj): Ideally, we would advertise support for all the formats
+  // supported by the driver. However, for now, we will only support exposing
+  // YUV 4:2:0 surfaces as DmaBufs.
+  CHECK(VaapiWrapper::GetDecodeSupportedInternalFormats(VAProfileJPEGBaseline)
+            .yuv420);
+  profile.subsamplings.push_back(gpu::ImageDecodeAcceleratorSubsampling::k420);
+  return profile;
 }
 
 std::unique_ptr<ScopedVAImage> VaapiJpegDecoder::GetImage(
     uint32_t preferred_image_fourcc,
     VaapiImageDecodeStatus* status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   if (!scoped_va_context_and_surface_) {
     VLOGF(1) << "No decoded JPEG available";
     *status = VaapiImageDecodeStatus::kInvalidState;
@@ -280,7 +321,7 @@ std::unique_ptr<ScopedVAImage> VaapiJpegDecoder::GetImage(
     *status = VaapiImageDecodeStatus::kCannotGetImage;
     return nullptr;
   }
-  VAImageFormat image_format{.fourcc = image_fourcc};
+  const VAImageFormat image_format{.fourcc = image_fourcc};
   // In at least one driver, the VPP seems to have problems if we request a
   // VAImage with odd dimensions. Rather than debugging the issue in depth, we
   // disable support for odd dimensions since the VAImage path is only expected
@@ -290,7 +331,7 @@ std::unique_ptr<ScopedVAImage> VaapiJpegDecoder::GetImage(
         (scoped_va_context_and_surface_->size().height() & 1) == 0)
       << "Getting images with odd dimensions is not supported";
   auto scoped_image = vaapi_wrapper_->CreateVaImage(
-      scoped_va_context_and_surface_->id(), &image_format,
+      scoped_va_context_and_surface_->id(), image_format,
       scoped_va_context_and_surface_->size());
   if (!scoped_image) {
     VLOGF(1) << "Cannot get VAImage, FOURCC = "
@@ -306,6 +347,7 @@ std::unique_ptr<ScopedVAImage> VaapiJpegDecoder::GetImage(
 bool VaapiJpegDecoder::MaybeCreateSurface(unsigned int picture_va_rt_format,
                                           const gfx::Size& new_coded_size,
                                           const gfx::Size& new_visible_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(!scoped_va_context_and_surface_ ||
          scoped_va_context_and_surface_->IsValid());
   if (scoped_va_context_and_surface_ &&
@@ -335,6 +377,7 @@ bool VaapiJpegDecoder::MaybeCreateSurface(unsigned int picture_va_rt_format,
 }
 
 bool VaapiJpegDecoder::SubmitBuffers(const JpegParseResult& parse_result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   // Set picture parameters.
   VAPictureParameterBufferJPEGBaseline pic_param{};
   FillPictureParameters(parse_result.frame_header, &pic_param);

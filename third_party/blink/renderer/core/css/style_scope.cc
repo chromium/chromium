@@ -44,7 +44,7 @@ const CSSSelector* StyleScope::To() const {
   return nullptr;
 }
 
-StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
+StyleScope* StyleScope::Parse(CSSParserTokenStream& stream,
                               const CSSParserContext* context,
                               CSSNestingType nesting_type,
                               StyleRule* parent_rule_for_nesting,
@@ -55,18 +55,20 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
   std::optional<base::span<CSSSelector>> from;
   std::optional<base::span<CSSSelector>> to;
 
-  prelude.ConsumeWhitespace();
+  stream.ConsumeWhitespace();
 
   // <scope-start>
-  if (prelude.Peek().GetType() == kLeftParenthesisToken) {
-    auto block = prelude.ConsumeBlock();
+  if (stream.Peek().GetType() == kLeftParenthesisToken) {
+    CSSParserTokenStream::BlockGuard guard(stream);
+    stream.ConsumeWhitespace();
     from = CSSSelectorParser::ParseScopeBoundary(
-        block, context, nesting_type, parent_rule_for_nesting, is_within_scope,
+        stream, context, nesting_type, parent_rule_for_nesting, is_within_scope,
         style_sheet, arena);
     if (!from.has_value()) {
       return nullptr;
     }
   }
+  stream.ConsumeWhitespace();
 
   StyleRule* from_rule = nullptr;
   if (from.has_value() && !from.value().empty()) {
@@ -76,11 +78,9 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
     from_rule = StyleRule::Create(from.value(), properties);
   }
 
-  prelude.ConsumeWhitespace();
-
   // to (<scope-end>)
-  if (css_parsing_utils::ConsumeIfIdent(prelude, "to")) {
-    if (prelude.Peek().GetType() != kLeftParenthesisToken) {
+  if (css_parsing_utils::ConsumeIfIdent(stream, "to")) {
+    if (stream.Peek().GetType() != kLeftParenthesisToken) {
       return nullptr;
     }
 
@@ -90,21 +90,17 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
     // or `is_within_scope` to `ParseScopeBoundary` here.
     //
     // https://drafts.csswg.org/css-nesting-1/#nesting-at-scope
-    auto block = prelude.ConsumeBlock();
+    CSSParserTokenStream::BlockGuard guard(stream);
+    stream.ConsumeWhitespace();
     to = CSSSelectorParser::ParseScopeBoundary(
-        block, context, CSSNestingType::kScope,
+        stream, context, CSSNestingType::kScope,
         /* parent_rule_for_nesting */ from_rule,
         /* is_within_scope */ true, style_sheet, arena);
     if (!to.has_value()) {
       return nullptr;
     }
   }
-
-  prelude.ConsumeWhitespace();
-
-  if (!prelude.AtEnd()) {
-    return nullptr;
-  }
+  stream.ConsumeWhitespace();
 
   CSSSelectorList* to_list =
       to.has_value() ? CSSSelectorList::AdoptSelectorVector(to.value())

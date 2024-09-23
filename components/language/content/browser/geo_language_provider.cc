@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
+#include "services/device/public/mojom/geolocation_client_id.mojom.h"
 
 namespace language {
 namespace {
@@ -167,7 +168,8 @@ void GeoLanguageProvider::BindIpGeolocationService() {
   ip_geolocation_provider->CreateGeolocation(
       static_cast<net::MutablePartialNetworkTrafficAnnotationTag>(
           partial_traffic_annotation),
-      geolocation_provider_.BindNewPipeAndPassReceiver());
+      geolocation_provider_.BindNewPipeAndPassReceiver(),
+      device::mojom::GeolocationClientId::kGeoLanguageProvider);
   // No error handler required: If the connection is broken, QueryNextPosition
   // will bind it again.
 }

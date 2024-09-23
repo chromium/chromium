@@ -1,6 +1,7 @@
 Name: devscripts
-URL: http://anonscm.debian.org/gitweb/?p=devscripts/devscripts.git
+URL: https://salsa.debian.org/debian/devscripts
 Version: 2.12.4
+Revision: 297122b2376fc7a118185ee68ef13168b1cf9ea6
 CPEPrefix: cpe:/a:debian:devscripts:2.12.4
 Security Critical: no
 Shipped: no

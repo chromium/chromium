@@ -5,21 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_MANAGER_FACTORY_H_
 #define IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_MANAGER_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class DeviceSharingManager;
-class ChromeBrowserState;
 
 // Keyed service factory for BrowserList.
-// This factory returns the same instance for regular and OTR browser states.
+// This factory returns the same instance for regular and OTR profiles.
 class DeviceSharingManagerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // Convenience getter that typecasts the value returned to a
-  // BrowserList.
-  static DeviceSharingManager* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  // Getter for singleton instance.
+  // TODO(crbug.com/358301380): remove this method.
+  static DeviceSharingManager* GetForBrowserState(ProfileIOS* profile);
+
+  static DeviceSharingManager* GetForProfile(ProfileIOS* profile);
   static DeviceSharingManagerFactory* GetInstance();
 
   // Returns the default factory used to build DeviceSharingManagers. Can be

@@ -41,8 +41,12 @@ class ChromeEvent {
    * @param  {...any} args Args to pass to listeners.
    */
   callListeners(...args) {
-    this.listeners_.forEach(listener => {
-      listener(...args);
-    });
+    try {
+      this.listeners_.forEach(listener => {
+        listener(...args);
+      });
+    } catch (err) {
+      console.error(err);
+    }
   }
 }

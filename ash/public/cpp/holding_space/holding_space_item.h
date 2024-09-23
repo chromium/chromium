@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/holding_space/holding_space_colors.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
@@ -91,11 +92,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     kDriveSuggestion = 11,
     kLocalSuggestion = 12,
     kScreenRecordingGif = 13,
-    kCameraAppPhoto = 14,
-    kCameraAppScanJpg = 15,
-    kCameraAppScanPdf = 16,
-    kCameraAppVideoGif = 17,
-    kCameraAppVideoMp4 = 18,
+    // kCameraAppPhoto = 14, Deprecated.
+    // kCameraAppScanJpg = 15, Deprecated.
+    // kCameraAppScanPdf = 16, Deprecated.
+    // kCameraAppVideoGif = 17, Deprecated.
+    // kCameraAppVideoMp4 = 18, Deprecated.
     kPhotoshopWeb = 19,
     kMaxValue = kPhotoshopWeb,
   };
@@ -124,9 +125,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
       const HoldingSpaceFile& file,
       const HoldingSpaceProgress& progress,
       ImageResolver image_resolver);
-
-  // Returns `true` if `type` is a Camera app type, `false` otherwise.
-  static bool IsCameraAppType(HoldingSpaceItem::Type type);
 
   // Returns `true` if `type` is a download type, `false` otherwise.
   static bool IsDownloadType(HoldingSpaceItem::Type type);
@@ -190,12 +188,13 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   std::optional<std::optional<std::u16string>> SetSecondaryText(
       const std::optional<std::u16string>& secondary_text);
 
-  // Sets the color id for the secondary text that should be shown for the item,
-  // returning the previous value if a change occurred or `std::nullopt` to
-  // indicate no-op. If `std::nullopt` is provided, secondary text color will
+  // Sets the color variant for the secondary text that should be shown for the
+  // item, returning the previous value if a change occurred or `std::nullopt`
+  // to indicate no-op. If `std::nullopt` is provided, secondary text color will
   // fall back to default.
-  std::optional<std::optional<ui::ColorId>> SetSecondaryTextColorId(
-      const std::optional<ui::ColorId>& secondary_text_color_id);
+  std::optional<std::optional<HoldingSpaceColorVariant>>
+  SetSecondaryTextColorVariant(const std::optional<HoldingSpaceColorVariant>&
+                                   secondary_text_color_variant);
 
   // Returns `accessible_name_`, falling back to a concatenation of primary
   // and secondary text if absent.
@@ -233,8 +232,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     return secondary_text_;
   }
 
-  const std::optional<ui::ColorId>& secondary_text_color_id() const {
-    return secondary_text_color_id_;
+  const std::optional<HoldingSpaceColorVariant>& secondary_text_color_variant()
+      const {
+    return secondary_text_color_variant_;
   }
 
   const HoldingSpaceImage& image() const { return *image_; }
@@ -248,6 +248,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   }
 
   HoldingSpaceImage& image_for_testing() { return *image_; }
+  const HoldingSpaceImage& image_for_testing() const { return *image_; }
 
  private:
   // Constructor for file backed items.
@@ -271,9 +272,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // If set, the secondary text that should be shown for the item.
   std::optional<std::u16string> secondary_text_;
 
-  // If set, the color resolved from the color id for the secondary text that
-  // should be shown for the item.
-  std::optional<ui::ColorId> secondary_text_color_id_;
+  // If set, the color resolved from the color variant for the secondary text
+  // that should be shown for the item.
+  std::optional<HoldingSpaceColorVariant> secondary_text_color_variant_;
 
   // If set, the accessible name that should be used for the item.
   std::optional<std::u16string> accessible_name_;

@@ -156,11 +156,15 @@ struct LogicalLineItem {
     return layout_result && layout_result->GetPhysicalFragment().IsInlineBox();
   }
   bool HasInFlowFragment() const {
-    return inline_item || (layout_result &&
-                           !layout_result->GetPhysicalFragment().IsFloating());
+    return (inline_item &&
+            inline_item->Type() != InlineItem::kRubyLinePlaceholder) ||
+           (layout_result &&
+            !layout_result->GetPhysicalFragment().IsFloating());
   }
   bool HasInFlowOrFloatingFragment() const {
-    return inline_item || layout_result || layout_object;
+    return (inline_item &&
+            inline_item->Type() != InlineItem::kRubyLinePlaceholder) ||
+           layout_result || layout_object;
   }
   bool HasOutOfFlowFragment() const {
     return out_of_flow_positioned_box != nullptr;
@@ -188,6 +192,10 @@ struct LogicalLineItem {
       }
     }
     return false;
+  }
+  bool IsRubyLinePlaceholder() const {
+    return inline_item &&
+           inline_item->Type() == InlineItem::kRubyLinePlaceholder;
   }
 
   const LogicalOffset& Offset() const { return rect.offset; }
@@ -264,6 +272,9 @@ struct LogicalLineItem {
   bool has_only_bidi_trailing_spaces = false;
 
   bool is_hidden_for_paint = false;
+
+  bool has_over_annotation = false;
+  bool has_under_annotation = false;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
@@ -292,13 +303,16 @@ class CORE_EXPORT LogicalLineItems : public GarbageCollected<LogicalLineItems> {
   void Shrink(wtf_size_t size) { children_.Shrink(size); }
   void swap(LogicalLineItems& other) { children_.swap(other.children_); }
 
-  using iterator = Vector<LogicalLineItem, 16>::iterator;
+  explicit operator base::span<LogicalLineItem>() {
+    return base::span(children_);
+  }
+  using iterator = HeapVector<LogicalLineItem, 16>::iterator;
   iterator begin() { return children_.begin(); }
   iterator end() { return children_.end(); }
-  using const_iterator = Vector<LogicalLineItem, 16>::const_iterator;
+  using const_iterator = HeapVector<LogicalLineItem, 16>::const_iterator;
   const_iterator begin() const { return children_.begin(); }
   const_iterator end() const { return children_.end(); }
-  using reverse_iterator = Vector<LogicalLineItem, 16>::reverse_iterator;
+  using reverse_iterator = HeapVector<LogicalLineItem, 16>::reverse_iterator;
   reverse_iterator rbegin() { return children_.rbegin(); }
   reverse_iterator rend() { return children_.rend(); }
   using const_reverse_iterator =
@@ -335,12 +349,18 @@ class CORE_EXPORT LogicalLineItems : public GarbageCollected<LogicalLineItems> {
   void MoveInBlockDirection(LayoutUnit);
   void MoveInBlockDirection(LayoutUnit, unsigned start, unsigned end);
 
+  void SetPropagated() { was_propagated_ = true; }
+  // Returns true if box fragments were created and were propagated to the
+  // parent.
+  bool WasPropagated() const { return was_propagated_; }
+
   void Trace(Visitor*) const;
 
  private:
   void WillInsertChild(unsigned index);
 
   HeapVector<LogicalLineItem, 16> children_;
+  bool was_propagated_ = false;
 };
 
 }  // namespace blink

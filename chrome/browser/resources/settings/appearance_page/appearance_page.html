@@ -11,27 +11,47 @@
       /* The theme mixes a link and a cr-button divided by a separator with
        * grit expressions and dom-if templates. That leads to a tricky thing
        * to style correctly, these are a workaround. */
-      #themeRow cr-button {
+      #themeRow cr-button,
+      #toolbarRow cr-button {
         margin-inline-end: 20px;
       }
 
-      #themeRow .separator {
+      #themeRow .separator,
+      #toolbarRow .separator  {
          margin-inline-start: 0;
       }
+
+      #toolbarRow {
+        border-top: var(--cr-separator-line);
+      }
+
+      .hover-card-toggles {
+        padding-inline-end: 0;
+      }
+
+      .hover-card-toggles settings-toggle-button {
+        padding-inline-start: 0;
+      }
+
+      #tabSearchPositionRestart {
+        margin-inline-end: 20px;
+      }
+
     </style>
     <settings-animated-pages id="pages" section="appearance"
         focus-config="[[focusConfig_]]">
       <div route-path="default">
         <div class="settings-row first" id="themeRow"
             hidden="[[!pageVisibility.setTheme]]">
-          <cr-link-row class="first" hidden="[[!pageVisibility.setTheme]]"
+          <cr-link-row id="openTheme" class="first"
+              hidden="[[!pageVisibility.setTheme]]"
               label="$i18n{themes}" sub-label="[[themeSublabel_]]"
-              on-click="openThemeUrl_" external></cr-link-row>
+              on-click="onThemeClick_" external></cr-link-row>
 <if expr="not is_linux">
           <template is="dom-if" if="[[prefs.extensions.theme.id.value]]">
             <div class="separator"></div>
             <cr-button id="useDefault" on-click="onUseDefaultClick_">
-              $i18n{resetToDefaultTheme}
+              $i18n{resetToDefault}
             </cr-button>
           </template>
 </if>
@@ -62,8 +82,27 @@
           </div>
 </if>
         </div>
+        <template is="dom-if" if="[[toolbarPinningEnabled_]]">
+          <div id="toolbarRow" class="settings-row">
+            <cr-link-row id="customizeToolbar"
+                label="$i18n{customizeToolbar}"
+                on-click="onCustomizeToolbarClick_" external>
+            </cr-link-row>
+            <template is="dom-if" if="[[showResetPinnedActionsButton_]]">
+              <div class="separator"></div>
+              <cr-button id="resetPinnedToolbarActions"
+                  on-click="onResetPinnedToolbarActionsClick_">
+                $i18n{resetToDefault}
+              </cr-button>
+            </template>
+          </div>
+        </template>
         <div id="colorSchemeModeRow" class="cr-row"
-            hidden$="[[!showColorSchemeMode_]]">
+<if expr="is_linux">
+            hidden="[[!showColorSchemeMode_(prefs.extensions.theme.id.value,
+              systemTheme_)]]"
+</if>
+        >
           <div id="colorSchemeModeLabel" class="flex cr-padded-text"
               aria-hidden="true">
             $i18n{colorSchemeMode}
@@ -135,40 +174,70 @@
             label="$i18n{showBookmarksBar}">
         </settings-toggle-button>
 
-        <template is="dom-if" if="[[showHoverCardImagesOption_]]">
-          <div id="hoverCardImagesHr" class="hr"
-              hidden="[[!pageVisibility.hoverCardImages]]">
+        <settings-toggle-button class="hr" id="showSavedTabGroups"
+            hidden="[[!showSavedTabGroupsInBookmarksBar_]]"
+            pref="{{prefs.bookmark_bar.show_tab_groups}}"
+            label="$i18n{showTabGroupsInBookmarksBar}">
+        </settings-toggle-button>
+
+        <settings-toggle-button class="hr" id="autoPinNewTabGroups"
+            hidden="[[!showAutoPinNewTabGroups_]]"
+            pref="{{prefs.auto_pin_new_tab_groups}}"
+            label="$i18n{autoPinNewTabGroups}">
+        </settings-toggle-button>
+        <template is="dom-if" if="[[showTabSearchPositionSettings_]]" restamp>
+          <div class="cr-row" id="tabSearchPositionRow">
+            <div class="flex cr-padded-text" aria-hidden="true">
+              $i18n{tabSearchPosition}
+            </div>
+            <template is="dom-if" if="[[showTabSearchPositionRestartButton_]]"
+                restamp>
+              <cr-button id="tabSearchPositionRestart" role="alert"
+                  on-click="onTabSearchPositionRestartClick_">
+                $i18n{restart}
+              </cr-button>
+            </template>
+            <settings-dropdown-menu id="tabSearchPositionDropdown"
+                label="$i18n{tabSearchPosition}"
+                pref="{{prefs.tab_search.is_right_aligned}}"
+                menu-options="[[tabSearchOptions_]]">
+            </settings-dropdown-menu>
           </div>
-          <settings-toggle-button id="hoverCardImagesToggle"
-              on-settings-boolean-control-change="onHoverCardImagesEnabledChange_"
-              hidden="[[!pageVisibility.hoverCardImages]]"
-              pref="{{prefs.browser.hovercard.image_previews_enabled}}"
-              label="$i18n{showHoverCardImages}">
+        </template>
+        <div class="cr-row">
+          <div class="flex cr-padded-text" aria-hidden="true">
+            $i18n{sidePanelPosition}
+          </div>
+          <settings-dropdown-menu id="sidePanelPosition"
+              label="$i18n{sidePanelPosition}"
+              pref="{{prefs.side_panel.is_right_aligned}}"
+              menu-options="[[sidePanelOptions_]]">
+          </settings-dropdown-menu>
+        </div>
+        <template is="dom-if" if="[[!showHoverCardImagesOption_]]">
+          <div class="hr" hidden="[[!pageVisibility.hoverCard]]"></div>
+          <settings-toggle-button id="hoverCardMemoryUsageToggle"
+              hidden="[[!pageVisibility.hoverCard]]"
+              pref="{{prefs.browser.hovercard.memory_usage_enabled}}"
+              label="$i18n{showHoverCardMemoryUsageStandalone}">
           </settings-toggle-button>
         </template>
-
-        <template is="dom-if" if="[[showSidePanelOptions_]]">
-          <div class="cr-row">$i18n{sidePanel}</div>
-          <div class="list-frame">
-            <settings-radio-group
-                id="side-panel"
-                pref="{{prefs.side_panel.is_right_aligned}}"
-                group-aria-label="$i18n{sidePanel}">
-              <controlled-radio-button
-                  class="list-item"
-                  pref="[[prefs.side_panel.is_right_aligned]]"
-                  label="$i18n{sidePanelAlignRight}"
-                  name="true"
-                  no-extension-indicator>
-              </controlled-radio-button>
-              <controlled-radio-button
-                  class="list-item"
-                  pref="[[prefs.side_panel.is_right_aligned]]"
-                  label="$i18n{sidePanelAlignLeft}"
-                  name="false"
-                  no-extension-indicator>
-              </controlled-radio-button>
-            </settings-radio-group>
+        <template is="dom-if" if="[[showHoverCardImagesOption_]]">
+          <div class="cr-row" hidden="[[!pageVisibility.hoverCard]]">
+            $i18n{hoverCardTitle}
+          </div>
+          <div class="list-frame hover-card-toggles">
+            <settings-toggle-button id="hoverCardImagesToggle"
+                hidden="[[!pageVisibility.hoverCard]]"
+                on-settings-boolean-control-change="onHoverCardImagesToggleChange_"
+                pref="{{prefs.browser.hovercard.image_previews_enabled}}"
+                label="$i18n{showHoverCardImages}">
+            </settings-toggle-button>
+            <settings-toggle-button id="hoverCardMemoryUsageToggle" class="hr"
+                hidden="[[!pageVisibility.hoverCard]]"
+                pref="{{prefs.browser.hovercard.memory_usage_enabled}}"
+                label="$i18n{showHoverCardMemoryUsage}">
+            </settings-toggle-button>
           </div>
         </template>
 
@@ -208,14 +277,6 @@
             </template>
           </select>
         </div>
-        <template is="dom-if" if="[[showReaderModeOption_]]">
-          <settings-toggle-button
-              class="hr"
-              pref="{{prefs.dom_distiller.offer_reader_mode}}"
-              label="$i18n{readerMode}"
-              sub-label="$i18n{readerModeDescription}">
-          </settings-toggle-button>
-        </template>
 <if expr="is_macosx">
         <settings-toggle-button class="hr"
             pref="{{prefs.webkit.webprefs.tabs_to_links}}"

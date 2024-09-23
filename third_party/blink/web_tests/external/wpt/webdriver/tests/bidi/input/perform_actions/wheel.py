@@ -4,6 +4,8 @@ from webdriver.bidi.error import NoSuchFrameException
 from webdriver.bidi.modules.input import Actions, get_element_origin
 from webdriver.bidi.modules.script import ContextTarget
 
+from tests.support.sync import AsyncPoll
+from tests.support.keys import Keys
 from .. import get_events, get_object_from_context
 from . import get_shadow_root_from_test_page
 
@@ -72,7 +74,7 @@ async def test_scroll_scrollable_overflow(
 
 @pytest.mark.parametrize("delta_x, delta_y", [(0, 10), (5, 0), (5, 10)])
 async def test_scroll_iframe(
-    bidi_session, setup_wheel_test, top_context, get_element, delta_x, delta_y
+    bidi_session, setup_wheel_test, top_context, get_element, delta_x, delta_y, wait_for_future_safe
 ):
     actions = Actions()
 
@@ -84,7 +86,14 @@ async def test_scroll_iframe(
     await bidi_session.input.perform_actions(
         actions=actions, context=top_context["context"]
     )
+
+    # Chrome requires some time (~10-20ms) to process the event from the iframe, so we wait for it.
+    async def wait_for_events(_):
+        return len(await get_events(bidi_session, top_context["context"])) > 0
+
+    await AsyncPoll(bidi_session, timeout=0.5, interval=0.01, message='No wheel events emitted').until(wait_for_events)
     events = await get_events(bidi_session, top_context["context"])
+
     assert len(events) == 1
     assert events[0]["type"] == "wheel"
     assert events[0]["deltaX"] == delta_x
@@ -159,3 +168,28 @@ async def test_scroll_shadow_tree(
     assert events[0]["deltaX"] >= 5
     assert events[0]["deltaY"] >= 10
     assert events[0]["target"] == "scrollableShadowTreeContent"
+
+
+async def test_scroll_with_key_pressed(
+    bidi_session, setup_wheel_test, top_context, get_element
+):
+    scrollable = await get_element("#scrollable")
+
+    actions = Actions()
+    actions.add_key().key_down(Keys.R_SHIFT)
+    actions.add_wheel().scroll(
+        x=0,
+        y=0,
+        delta_x=5,
+        delta_y=10,
+        origin=get_element_origin(scrollable),
+    )
+    actions.add_key().key_up(Keys.R_SHIFT)
+
+    await bidi_session.input.perform_actions(
+        actions=actions, context=top_context["context"]
+    )
+    events = await get_events(bidi_session, top_context["context"])
+    assert len(events) == 1
+    assert events[0]["type"] == "wheel"
+    assert events[0]["shiftKey"] == True

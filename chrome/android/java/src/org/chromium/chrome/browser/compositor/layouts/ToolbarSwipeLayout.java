@@ -14,7 +14,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.BlackHoleEventFilter;
 import org.chromium.chrome.browser.compositor.scene_layer.ToolbarSwipeSceneLayer;
 import org.chromium.chrome.browser.layouts.EventFilter;
@@ -24,6 +23,8 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
@@ -174,8 +175,7 @@ public class ToolbarSwipeLayout extends Layout {
 
     @Override
     public void doneHiding() {
-        TabModelUtils.selectTabById(
-                mTabModelSelector, mNextTabId, TabSelectionType.FROM_USER, false);
+        TabModelUtils.selectTabById(mTabModelSelector, mNextTabId, TabSelectionType.FROM_USER);
         super.doneHiding();
     }
 
@@ -200,7 +200,7 @@ public class ToolbarSwipeLayout extends Layout {
             switchToTab(mToTabId, mFromTabId);
 
             // Close the previous tab if the previous tab is a NTP.
-            // TODO(crbug.com/1348624): Move this piece logic to use a LayoutStateObserver instead
+            // TODO(crbug.com/40233431): Move this piece logic to use a LayoutStateObserver instead
             // - let the caller of the LayoutManager#switchToTab observe the LayoutState and close
             // the ntp tab in the #doneShowing event.
             Tab lastTab = mTabModelSelector.getTabById(mFromTabId);
@@ -209,7 +209,11 @@ public class ToolbarSwipeLayout extends Layout {
                     && !lastTab.canGoForward()) {
                 mTabModelSelector
                         .getModel(lastTab.isIncognito())
-                        .closeTab(lastTab, tab, false, false, false);
+                        .closeTabs(
+                                TabClosureParams.closeTab(lastTab)
+                                        .recommendedNextTab(tab)
+                                        .allowUndo(false)
+                                        .build());
             }
 
             mIsSwitchToStaticTab = false;

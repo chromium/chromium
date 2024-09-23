@@ -10,13 +10,14 @@ import {RateLimiter} from '../../../common/js/async_util.js';
 import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs, isTeamDriveRoot} from '../../../common/js/entry_utils.js';
-import {getType, isAudio, isEncrypted, isImage, isRaw, isVideo} from '../../../common/js/file_type.js';
+import {getType, isAudio, isEncrypted, isImage, isPDF, isRaw, isVideo} from '../../../common/js/file_type.js';
 import type {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 import {isDlpEnabled} from '../../../common/js/flags.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
 import {FileListModel, GROUP_BY_FIELD_MODIFICATION_TIME} from '../file_list_model.js';
-import {ListThumbnailLoader, type ThumbnailLoadedEvent} from '../list_thumbnail_loader.js';
-import {MetadataModel} from '../metadata/metadata_model.js';
+import type {ListThumbnailLoader} from '../list_thumbnail_loader.js';
+import {type ThumbnailLoadedEvent} from '../list_thumbnail_loader.js';
+import type {MetadataModel} from '../metadata/metadata_model.js';
 
 import type {A11yAnnounce} from './a11y_announce.js';
 import {DragSelector} from './drag_selector.js';
@@ -279,6 +280,7 @@ function renderHeader(this: TableColumn, table: FileTable): Element {
   const icon = document.createElement('cr-icon-button');
   const iconName = sortOrder === 'desc' ? 'up' : 'down';
   icon.setAttribute('iron-icon', `files16:arrow_${iconName}_small`);
+  icon.role = 'button';
   // If we're the sorting column make the icon a tab target.
   if (isSorted) {
     icon.id = 'sort-direction-button';
@@ -766,8 +768,9 @@ export class FileTable extends Table {
     const locationInfo = this.volumeManager_!.getLocationInfo(entry);
     const icon =
         renderFileTypeIcon(this.ownerDocument, entry, locationInfo, mimeType);
-    if (isImage(entry, mimeType) || isVideo(entry, mimeType) ||
-        isAudio(entry, mimeType) || isRaw(entry, mimeType)) {
+    if (isImage(entry, mimeType) || isPDF(entry, mimeType) ||
+        isVideo(entry, mimeType) || isAudio(entry, mimeType) ||
+        isRaw(entry, mimeType)) {
       icon.appendChild(this.renderThumbnail_(entry, icon));
     }
     icon.appendChild(this.renderCheckmark_());
@@ -1102,6 +1105,7 @@ export class FileTable extends Table {
     icon.dataset['tooltipLinkHref'] = str('DLP_HELP_URL');
     icon.dataset['tooltipLinkAriaLabel'] = str('DLP_MANAGED_ICON_TOOLTIP_DESC');
     icon.dataset['tooltipLinkText'] = str('DLP_MANAGED_ICON_TOOLTIP_LINK');
+    icon.role = 'link';
     icon.setAttribute('aria-label', str('DLP_MANAGED_ICON_TOOLTIP'));
     icon.toggleAttribute('show-card-tooltip');
     icon.classList.toggle('is-dlp-restricted', isDlpRestricted);
@@ -1117,6 +1121,7 @@ export class FileTable extends Table {
   private renderEncryptedIcon_(): HTMLDivElement {
     const icon = this.ownerDocument.createElement('div');
     icon.className = 'encrypted-icon';
+    icon.role = 'image';
     icon.setAttribute('aria-label', str('ENCRYPTED_ICON_TOOLTIP'));
     document.querySelector('files-tooltip')?.addTarget(icon);
     return icon;

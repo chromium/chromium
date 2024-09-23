@@ -13,7 +13,7 @@ namespace ash {
 
 // Controller class to manage caps lock notification.
 class ASH_EXPORT CapsLockNotificationController
-    : public ImeControllerImpl::Observer {
+    : public ImeController::Observer {
  public:
   CapsLockNotificationController();
 
@@ -26,7 +26,7 @@ class ASH_EXPORT CapsLockNotificationController
 
   static bool IsSearchKeyMappedToCapsLock();
 
-  // ImeControllerImpl::Observer:
+  // ImeController::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string&) override {}
 };

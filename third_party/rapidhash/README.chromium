@@ -1,0 +1,21 @@
+Name: rapidhash
+URL: https://github.com/Nicoshev/rapidhash/blob/master/rapidhash.h
+Version: N/A
+Date: 2024-07-08
+Revision: 588978411df8683777429f729be5213eb1bfd5f3
+License: BSD 2-clause
+License File: LICENSE
+Shipped: Yes
+Security Critical: yes
+
+Description:
+A fast hash function. Used in StringHasher.
+
+This is a fork of upstream, with the parts that we don't need or want removed.
+We do not intend to sync regularly with upstream git.
+
+Local Modifications:
+Removed some files we don't use that are under other licenses.
+Changed to Google C++ formatting, see patches/0001-clang-format.patch.
+Some modifications to #includes and other compiler-specific things, see patches/0002-tweaks.patch.
+Templatized on HashReader, for StringHasher use, see patches/0003-templatize.patch.

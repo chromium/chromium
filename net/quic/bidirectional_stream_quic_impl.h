@@ -17,7 +17,7 @@
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_chromium_client_stream.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 
 namespace base {
 class OneShotTimer;
@@ -99,8 +99,8 @@ class NET_EXPORT_PRIVATE BidirectionalStreamQuicImpl
   // received.
   LoadTimingInfo::ConnectTiming connect_timing_;
 
-  spdy::Http2HeaderBlock initial_headers_;
-  spdy::Http2HeaderBlock trailing_headers_;
+  quiche::HttpHeaderBlock initial_headers_;
+  quiche::HttpHeaderBlock trailing_headers_;
 
   // User provided read buffer for ReadData() response.
   scoped_refptr<IOBuffer> read_buffer_;

@@ -10,6 +10,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -33,10 +34,16 @@ OptionButtonBase::OptionButtonBase(int button_width,
   StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                    /*highlight_on_hover=*/false,
                                    /*highlight_on_focus=*/false);
+  SetImageLabelSpacing(image_label_spacing_);
   views::InstallRectHighlightPathGenerator(this);
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
+
+  SetAndUpdateAccessibleDefaultActionVerb();
+  GetViewAccessibility().SetCheckedState(selected_
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
 }
 
 OptionButtonBase::~OptionButtonBase() = default;
@@ -47,24 +54,30 @@ void OptionButtonBase::SetSelected(bool selected) {
   }
 
   selected_ = selected;
+  GetViewAccessibility().SetCheckedState(selected_
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
   UpdateImage();
 
   if (delegate_) {
     delegate_->OnButtonSelected(this);
   }
-
-  NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
-                           /*send_native_event=*/true);
+  SetAndUpdateAccessibleDefaultActionVerb();
+  OnSelectedChanged();
 }
 
 void OptionButtonBase::SetLabelStyle(TypographyToken token) {
   TypographyProvider::Get()->StyleLabel(token, *label());
 }
 
-gfx::Size OptionButtonBase::CalculatePreferredSize() const {
-  int preferred_width = kIconSize + image_label_spacing_ +
-                        label()->GetPreferredSize().width() +
-                        GetInsets().width();
+gfx::Size OptionButtonBase::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  int preferred_width =
+      kIconSize + image_label_spacing_ +
+      label()
+          ->GetPreferredSize(views::SizeBounds(label()->width(), {}))
+          .width() +
+      GetInsets().width();
   return gfx::Size(std::max(preferred_width, min_width_), kButtonHeight);
 }
 
@@ -86,7 +99,7 @@ void OptionButtonBase::Layout(PassKey) {
   views::Label* label = this->label();
   gfx::Size label_size(
       local_content_bounds.width() - image_label_spacing_ - kIconSize,
-      label->GetPreferredSize().height());
+      label->GetPreferredSize(views::SizeBounds(label->width(), {})).height());
 
   gfx::Point image_origin = local_content_bounds.origin();
   image_origin.Offset(0, (local_content_bounds.height() - kIconSize) / 2);
@@ -95,7 +108,7 @@ void OptionButtonBase::Layout(PassKey) {
       0, (local_content_bounds.height() - label_size.height()) / 2);
 
   if (IsIconOnTheLeftSide()) {
-    label_origin.Offset(kIconSize + kImageLabelSpacingDP, 0);
+    label_origin.Offset(kIconSize + image_label_spacing_, 0);
   } else {
     image_origin.Offset(local_content_bounds.width() - kIconSize, 0);
   }
@@ -119,19 +132,6 @@ void OptionButtonBase::NotifyClick(const ui::Event& event) {
   views::LabelButton::NotifyClick(event);
 }
 
-void OptionButtonBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  LabelButton::GetAccessibleNodeData(node_data);
-  const ax::mojom::CheckedState checked_state =
-      selected_ ? ax::mojom::CheckedState::kTrue
-                : ax::mojom::CheckedState::kFalse;
-  node_data->SetCheckedState(checked_state);
-  if (GetEnabled()) {
-    node_data->SetDefaultActionVerb(selected_
-                                        ? ax::mojom::DefaultActionVerb::kUncheck
-                                        : ax::mojom::DefaultActionVerb::kCheck);
-  }
-}
-
 SkColor OptionButtonBase::GetIconImageColor() const {
   SkColor active_color =
       GetColorProvider()->GetColor(selected_ ? cros_tokens::kCrosSysPrimary
@@ -143,12 +143,18 @@ SkColor OptionButtonBase::GetIconImageColor() const {
 }
 
 void OptionButtonBase::UpdateTextColor() {
-  const auto* color_provider = GetColorProvider();
-  const SkColor text_color =
-      color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
-  SetEnabledTextColors(text_color);
-  SetTextColor(ButtonState::STATE_DISABLED,
-               color_provider->GetColor(KColorAshTextDisabledColor));
+  SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface);
+  SetTextColorId(ButtonState::STATE_DISABLED, KColorAshTextDisabledColor);
+}
+
+void OptionButtonBase::SetAndUpdateAccessibleDefaultActionVerb() {
+  SetDefaultActionVerb(selected_ ? ax::mojom::DefaultActionVerb::kUncheck
+                                 : ax::mojom::DefaultActionVerb::kCheck);
+  UpdateAccessibleDefaultActionVerb();
+}
+
+void OptionButtonBase::SetLabelFontList(const gfx::FontList& font_list) {
+  label()->SetFontList(font_list);
 }
 
 BEGIN_METADATA(OptionButtonBase)

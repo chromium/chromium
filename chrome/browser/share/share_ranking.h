@@ -48,8 +48,8 @@ class ShareRanking : public base::SupportsUserData::Data {
   void Rank(ShareHistory* history,
             const std::string& type,
             const std::vector<std::string>& available_on_system,
-            unsigned int fold,
-            unsigned int length,
+            size_t fold,
+            size_t length,
             bool persist_update,
             GetRankingCallback callback);
 
@@ -68,8 +68,8 @@ class ShareRanking : public base::SupportsUserData::Data {
       const std::map<std::string, int>& recent_share_history,
       const Ranking& old_ranking,
       const std::vector<std::string>& available_on_system,
-      unsigned int fold,
-      unsigned int length,
+      size_t fold,
+      size_t length,
       Ranking* display_ranking,
       Ranking* persisted_ranking);
 
@@ -90,8 +90,8 @@ class ShareRanking : public base::SupportsUserData::Data {
     // These members mirror the parameters passed in to Rank().
     std::string type;
     std::vector<std::string> available_on_system;
-    unsigned int fold;
-    unsigned int length;
+    size_t fold;
+    size_t length;
     bool persist_update;
     GetRankingCallback callback;
 

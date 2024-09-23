@@ -16,7 +16,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
@@ -26,18 +27,21 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.DeviceFormFactor;
 
-// TODO(crbug/1319351): Extend the comment below to explain under which circumstances this class is
+// TODO(crbug.com/40223169): Extend the comment below to explain under which circumstances this
+// class is
 // still used
 /**
  * A View that shows the user the next step they must complete to start syncing their data (eg.
- * Recent Tabs or Bookmarks).
- * If inflated manually, {@link LegacySyncPromoView#init(int)} must be called before
- * attaching this View to a ViewGroup.
+ * Recent Tabs or Bookmarks). If inflated manually, either {@link LegacySyncPromoView#init(int)} or
+ * {@link LegacySyncPromoView#setInitializeNotRequired()} must be called before attaching this View
+ * to a ViewGroup.
  */
 public class LegacySyncPromoView extends FrameLayout
         implements SyncService.SyncStateChangedListener {
+    private SyncService mSyncService;
     private @AccessPoint int mAccessPoint;
     private boolean mInitialized;
+    private boolean mInitializeNotRequired;
 
     private TextView mTitle;
     private TextView mDescription;
@@ -50,26 +54,27 @@ public class LegacySyncPromoView extends FrameLayout
 
     /**
      * A convenience method to inflate and initialize a LegacySyncPromoView.
+     *
      * @param parent A parent used to provide LayoutParams (the LegacySyncPromoView will not be
-     *         attached).
+     *     attached).
+     * @param profile The {@link Profile} associated with the sync promotion.
      * @param accessPoint Where the LegacySyncPromoView is used.
      */
-    public static LegacySyncPromoView create(ViewGroup parent, @AccessPoint int accessPoint) {
+    public static LegacySyncPromoView create(
+            ViewGroup parent, Profile profile, @AccessPoint int accessPoint) {
         // TODO(injae): crbug.com/829548
         LegacySyncPromoView result =
                 (LegacySyncPromoView)
                         LayoutInflater.from(parent.getContext())
                                 .inflate(R.layout.legacy_sync_promo_view, parent, false);
-        result.init(accessPoint);
+        result.init(profile, accessPoint);
         return result;
     }
 
     /** Constructor for inflating from xml. */
     public LegacySyncPromoView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // This promo is about enabling sync, so no sense in showing it if
-        // syncing isn't possible.
-        assert SyncServiceFactory.get() != null;
+
     }
 
     @Override
@@ -91,11 +96,38 @@ public class LegacySyncPromoView extends FrameLayout
         mPositiveButton = findViewById(R.id.sign_in);
     }
 
+    public TextView getEmptyStateTitle() {
+        return mEmptyStateTitle;
+    }
+
+    public TextView getEmptyStateDescription() {
+        return mEmptyStateDescription;
+    }
+
+    public ImageView getEmptyStateImage() {
+        return mEmptyStateImage;
+    }
+
+    public MaterialCardViewNoShadow getOldEmptyCardView() {
+        return mOldEmptyCardView;
+    }
+
+    public View getEmptyStateView() {
+        return mEmptyView;
+    }
+
     /**
      * Provide the information necessary for this class to function.
+     *
+     * @param profile The {@link Profile} associated with the sync promotion.
      * @param accessPoint Where this UI component is used.
      */
-    public void init(@AccessPoint int accessPoint) {
+    public void init(Profile profile, @AccessPoint int accessPoint) {
+        mSyncService = SyncServiceFactory.getForProfile(profile);
+        // This promo is about enabling sync, so no sense in showing it if
+        // syncing isn't possible.
+        assert mSyncService != null;
+
         mAccessPoint = accessPoint;
         mInitialized = true;
 
@@ -113,10 +145,13 @@ public class LegacySyncPromoView extends FrameLayout
         // We don't call update() here as it will be called in onAttachedToWindow().
     }
 
+    public void setInitializeNotRequired() {
+        mInitializeNotRequired = true;
+    }
+
     private void update() {
         ViewState viewState;
-        if (!SyncServiceFactory.get().hasSyncConsent()
-                || SyncServiceFactory.get().getSelectedTypes().isEmpty()) {
+        if (!mSyncService.hasSyncConsent() || mSyncService.getSelectedTypes().isEmpty()) {
             viewState = getStateForEnableChromeSync();
             viewState.apply(mDescription, mPositiveButton, mEmptyView, mOldEmptyCardView);
         } else {
@@ -208,7 +243,7 @@ public class LegacySyncPromoView extends FrameLayout
         private final int mTextResource;
         private final OnClickListener mOnClickListener;
 
-        // TODO(crbug.com/1107904): Once Chrome is decoupled from auto-sync,
+        // TODO(crbug.com/40141050): Once Chrome is decoupled from auto-sync,
         // |onClickListener| can be inlined.
         public ButtonPresent(int textResource, OnClickListener onClickListener) {
             mTextResource = textResource;
@@ -233,7 +268,8 @@ public class LegacySyncPromoView extends FrameLayout
                 new ButtonPresent(
                         R.string.enable_sync_button,
                         view -> {
-                            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+                            SettingsLauncher settingsLauncher =
+                                    SettingsLauncherFactory.createSettingsLauncher();
                             settingsLauncher.launchSettingsActivity(
                                     getContext(),
                                     ManageSyncSettings.class,
@@ -265,17 +301,31 @@ public class LegacySyncPromoView extends FrameLayout
 
     @Override
     protected void onAttachedToWindow() {
-        assert mInitialized : "init(...) must be called on LegacySyncPromoView before use.";
+        if (!mInitializeNotRequired) {
+            assert mInitialized : "init(...) must be called on LegacySyncPromoView before use.";
+        } else {
+            assert !mInitialized : "init is not required.";
+        }
 
         super.onAttachedToWindow();
-        SyncServiceFactory.get().addSyncStateChangedListener(this);
-        update();
+        if (mInitialized) {
+            mSyncService.addSyncStateChangedListener(this);
+            update();
+        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
+        if (!mInitializeNotRequired) {
+            assert mInitialized : "init(...) must be called on LegacySyncPromoView before use.";
+        } else {
+            assert !mInitialized : "init is not required.";
+        }
+
         super.onDetachedFromWindow();
-        SyncServiceFactory.get().removeSyncStateChangedListener(this);
+        if (mInitialized) {
+            mSyncService.removeSyncStateChangedListener(this);
+        }
     }
 
     // SyncService.SyncStateChangedListener

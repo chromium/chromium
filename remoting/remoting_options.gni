@@ -28,4 +28,12 @@ if (is_chrome_branded) {
   branding_path = "//remoting/branding_Chromium"
 }
 
+if (is_official_build) {
+  remoting_enable_h264 = false
+} else {
+  # Enable h.264 for un-official builds and testing but do not include it in
+  # release builds until we've decided to tune and productize it.
+  remoting_enable_h264 = true
+}
+
 rdp_desktop_session_guid = "6a7699f0-ee43-43e7-aa30-a6738f9bd470"

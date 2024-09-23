@@ -258,6 +258,10 @@ void EventRouter::DispatchEventToSender(
   }
 
   if (!extension) {
+    for (TestObserver& observer : test_observers_) {
+      observer.OnNonExtensionEventDispatched(event_name);
+    }
+
     ObserveProcess(rph);
     DispatchExtensionMessage(rph, worker_thread_id, browser_context, host_id,
                              event_id, event_name, std::move(event_args),
@@ -271,12 +275,14 @@ void EventRouter::DispatchEventToSender(
 
   IncrementInFlightEvents(
       browser_context, rph, extension, event_id, event_name,
-      // Currently this arg is not used for metrics recording since we do not
-      // include events from EventDispatchSource::kDispatchEventToSender.
+      // Currently `dispatch_start_time`, `lazy_background_active_on_dispatch`,
+      // and `histogram_value` args are not used for metrics recording since we
+      // do not include events from EventDispatchSource::kDispatchEventToSender.
       /*dispatch_start_time=*/base::TimeTicks::Now(), service_worker_version_id,
       EventDispatchSource::kDispatchEventToSender,
       // Background script is active/started at this point.
-      /*lazy_background_active_on_dispatch=*/true);
+      /*lazy_background_active_on_dispatch=*/true,
+      events::HistogramValue::UNKNOWN);
   ReportEvent(histogram_value, extension,
               /*did_enqueue=*/false);
   mojom::EventDispatcher::DispatchEventCallback callback;
@@ -288,7 +294,7 @@ void EventRouter::DispatchEventToSender(
                  service_worker_version_id, worker_thread_id},
         event_id);
   } else if (BackgroundInfo::HasBackgroundPage(extension)) {
-    // TODO(crbug.com/1441221): When creating dispatch time metrics for the
+    // TODO(crbug.com/40909770): When creating dispatch time metrics for the
     // DispatchEventToSender event flow, ensure this also handles persistent
     // background pages.
     // Although it's unnecessary to decrement in-flight events for non-lazy
@@ -718,6 +724,7 @@ void EventRouter::RenderProcessExited(
     RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
   listeners_.RemoveListenersForProcess(host);
+  event_ack_data_.ClearUnackedEventsForRenderProcess(host->GetID());
   observed_process_set_.erase(host);
   rph_dispatcher_map_.erase(host);
   host->RemoveObserver(this);
@@ -725,6 +732,7 @@ void EventRouter::RenderProcessExited(
 
 void EventRouter::RenderProcessHostDestroyed(RenderProcessHost* host) {
   listeners_.RemoveListenersForProcess(host);
+  event_ack_data_.ClearUnackedEventsForRenderProcess(host->GetID());
   observed_process_set_.erase(host);
   rph_dispatcher_map_.erase(host);
   host->RemoveObserver(this);
@@ -1159,7 +1167,7 @@ void EventRouter::DispatchEventToProcess(
         << " but this shouldn't be possible";
   }
   if (!feature_available_to_context) {
-    // TODO(crbug.com/1412151): Ideally it shouldn't be possible to reach here,
+    // TODO(crbug.com/40255138): Ideally it shouldn't be possible to reach here,
     // because access is checked on registration. However, we don't always
     // refresh the list of events an extension has registered when other factors
     // which affect availability change (e.g. API allowlists changing). Those
@@ -1228,11 +1236,11 @@ void EventRouter::DispatchEventToProcess(
   if (extension) {
     ReportEvent(event.histogram_value, extension, did_enqueue);
 
-    IncrementInFlightEvents(listener_context, process, extension, event_id,
-                            event.event_name, event.dispatch_start_time,
-                            service_worker_version_id,
-                            EventDispatchSource::kDispatchEventToProcess,
-                            event.lazy_background_active_on_dispatch);
+    IncrementInFlightEvents(
+        listener_context, process, extension, event_id, event.event_name,
+        event.dispatch_start_time, service_worker_version_id,
+        EventDispatchSource::kDispatchEventToProcess,
+        event.lazy_background_active_on_dispatch, event.histogram_value);
   }
 }
 
@@ -1296,7 +1304,8 @@ void EventRouter::IncrementInFlightEvents(
     base::TimeTicks dispatch_start_time,
     int64_t service_worker_version_id,
     EventDispatchSource dispatch_source,
-    bool lazy_background_active_on_dispatch) {
+    bool lazy_background_active_on_dispatch,
+    events::HistogramValue histogram_value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (BackgroundInfo::HasBackgroundPage(extension)) {
@@ -1324,7 +1333,7 @@ void EventRouter::IncrementInFlightEvents(
       event_ack_data_.IncrementInflightEvent(
           service_worker_context, process->GetID(), service_worker_version_id,
           event_id, dispatch_start_time, dispatch_source,
-          lazy_background_active_on_dispatch);
+          lazy_background_active_on_dispatch, histogram_value);
     }
   }
 }
@@ -1410,7 +1419,7 @@ void EventRouter::DispatchPendingEvent(
     return;
   DCHECK(event);
 
-  // TODO(https://crbug.com/1442744): We shouldn't dispatch events to processes
+  // TODO(crbug.com/40267088): We shouldn't dispatch events to processes
   // that don't have a listener for that event. Currently, we enforce this for
   // the webRequest API (since a bug there can result in a request hanging
   // indefinitely). We don't do this in all cases yet because extensions may be
@@ -1437,7 +1446,7 @@ void EventRouter::DispatchPendingEvent(
     // event. This can happen if the extension asynchronously registers event
     // listeners. In this case, notify the caller (if they subscribed via a
     // callback) and drop the event.
-    // TODO(https://crbug.com/161155): We should provide feedback to
+    // TODO(crbug.com/40954888): We should provide feedback to
     // developers (e.g. emit a warning) when an event has no listeners.
     event->cannot_dispatch_callback.Run();
   }
@@ -1580,7 +1589,7 @@ Event::Event(events::HistogramValue histogram_value,
              std::string_view event_name,
              base::Value::List event_args,
              content::BrowserContext* restrict_to_browser_context,
-             absl::optional<mojom::ContextType> restrict_to_context_type)
+             std::optional<mojom::ContextType> restrict_to_context_type)
     : Event(histogram_value,
             event_name,
             std::move(event_args),
@@ -1594,7 +1603,7 @@ Event::Event(events::HistogramValue histogram_value,
              std::string_view event_name,
              base::Value::List event_args,
              content::BrowserContext* restrict_to_browser_context,
-             absl::optional<mojom::ContextType> restrict_to_context_type,
+             std::optional<mojom::ContextType> restrict_to_context_type,
              const GURL& event_url,
              EventRouter::UserGestureState user_gesture,
              mojom::EventFilteringInfoPtr info,

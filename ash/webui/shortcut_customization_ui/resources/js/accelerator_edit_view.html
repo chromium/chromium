@@ -45,6 +45,10 @@
     margin-block: 10px;
   }
 
+  .lock-icon-container {
+    margin: 10px;
+  }
+
   #editButtonsContainer[hidden] {
     display: none;
   }
@@ -109,7 +113,8 @@
         action="[[action]]" source="[[source]]">
     </accelerator-view>
   </div>
-  <template id="buttonContainer" is="dom-if" if="[[!acceleratorInfo.locked]]">
+  <template id="buttonContainer" is="dom-if"
+      if="[[!acceleratorInfo.acceleratorLocked]]">
     <div id="editButtonsContainer" hidden="[[showEditView(viewState)]]">
       <cr-icon-button id="editButton"
           aria-label="[[getEditAriaLabel(acceleratorInfo)]]"
@@ -131,6 +136,11 @@
           iron-icon="shortcut-customization:cancel" aria-hidden="true"
           on-click="onCancelButtonClicked">
       </cr-icon-button>
+    </div>
+  </template>
+  <template is="dom-if" if="[[acceleratorInfo.acceleratorLocked]]">
+    <div class="lock-icon-container" hidden="[[showEditView(viewState)]]">
+      <iron-icon icon="shortcut-customization:lock"></iron-icon>
     </div>
   </template>
 </div>

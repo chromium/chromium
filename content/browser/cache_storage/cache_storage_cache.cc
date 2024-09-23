@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/cache_storage/cache_storage_cache.h"
 
 #include <stddef.h>
@@ -107,7 +112,7 @@ network::mojom::FetchResponseType ProtoResponseTypeToFetchResponseType(
     case proto::CacheResponse::OPAQUE_REDIRECT_TYPE:
       return network::mojom::FetchResponseType::kOpaqueRedirect;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return network::mojom::FetchResponseType::kOpaque;
 }
 
@@ -127,7 +132,7 @@ proto::CacheResponse::ResponseType FetchResponseTypeToProtoResponseType(
     case network::mojom::FetchResponseType::kOpaqueRedirect:
       return proto::CacheResponse::OPAQUE_REDIRECT_TYPE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return proto::CacheResponse::OPAQUE_TYPE;
 }
 
@@ -909,7 +914,7 @@ void CacheStorageCache::BatchDidGetBucketSpaceRemaining(
         Delete(std::move(operation), completion_callback);
         break;
       case blink::mojom::OperationType::kUndefined:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         // TODO(nhiroki): This should return "TypeError".
         // http://crbug.com/425505
         completion_callback.Run(MakeErrorStorage(
@@ -2030,7 +2035,7 @@ void CacheStorageCache::PutWriteBlobToCache(
       break;
     }
     case INDEX_HEADERS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   ScopedWritableEntry entry(put_context->cache_entry.release());

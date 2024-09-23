@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("config.gni")
 if (is_clang) {
@@ -20,11 +21,6 @@ declare_args() {
   # Set to true to have the clang Blink GC plugin emit class graph (in JSON)
   # with typed pointer edges; for debugging or other (internal) uses.
   blink_gc_plugin_option_do_dump_graph = false
-
-  # Set to true to have the clang Blink GC plugin additionally check if
-  # a class has an empty destructor which would be unnecessarily invoked
-  # when finalized.
-  blink_gc_plugin_option_warn_unneeded_finalizer = false
 }
 
 # features ---------------------------------------------------------------------

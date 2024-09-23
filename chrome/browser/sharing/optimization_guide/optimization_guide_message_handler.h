@@ -9,7 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/sharing/sharing_message_handler.h"
+#include "components/sharing_message/sharing_message_handler.h"
 
 class OptimizationGuideLogger;
 class Profile;
@@ -35,7 +35,7 @@ class OptimizationGuideMessageHandler : public SharingMessageHandler {
   ~OptimizationGuideMessageHandler() override;
 
   // SharingMessageHandler implementation.
-  void OnMessage(chrome_browser_sharing::SharingMessage message,
+  void OnMessage(components_sharing_message::SharingMessage message,
                  SharingMessageHandler::DoneCallback done_callback) override;
 
  private:

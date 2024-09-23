@@ -35,7 +35,7 @@ class AddUsernameDialogBridge {
 
   AddUsernameDialogBridge();
   AddUsernameDialogBridge(
-      base::PassKey<class GeneratedPasswordSavedMessageDelegateTestBase>,
+      base::PassKey<class GeneratedPasswordSavedMessageDelegateTest>,
       std::unique_ptr<JniDelegate> jni_delegate);
   ~AddUsernameDialogBridge();
   // Disallow copy and assign.

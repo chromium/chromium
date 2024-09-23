@@ -51,6 +51,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.android_webview.common.BugTrackerConstants;
 import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
 import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
@@ -143,6 +144,8 @@ public class DeveloperUiTest {
                 .check(matches(hasTextColor(R.color.navigation_unselected)));
         onView(withId(R.id.navigation_flags_ui))
                 .check(matches(hasTextColor(R.color.navigation_unselected)));
+        onView(withId(R.id.navigation_net_logs_ui))
+                .check(matches(hasTextColor(R.color.navigation_unselected)));
     }
 
     @Test
@@ -164,6 +167,8 @@ public class DeveloperUiTest {
                 .check(matches(hasTextColor(R.color.navigation_selected)));
         onView(withId(R.id.navigation_flags_ui))
                 .check(matches(hasTextColor(R.color.navigation_unselected)));
+        onView(withId(R.id.navigation_net_logs_ui))
+                .check(matches(hasTextColor(R.color.navigation_unselected)));
 
         // CrashesListFragment -> FlagsFragment
         onView(withId(R.id.navigation_flags_ui)).perform(click());
@@ -175,16 +180,33 @@ public class DeveloperUiTest {
                 .check(matches(hasTextColor(R.color.navigation_unselected)));
         onView(withId(R.id.navigation_flags_ui))
                 .check(matches(hasTextColor(R.color.navigation_selected)));
+        onView(withId(R.id.navigation_net_logs_ui))
+                .check(matches(hasTextColor(R.color.navigation_unselected)));
 
-        // FlagsFragment -> HomeFragment
+        // FlagsFragment -> NetLogsFragment
+        onView(withId(R.id.navigation_net_logs_ui)).perform(click());
+        onView(withId(R.id.fragment_net_logs)).check(matches(isDisplayed()));
+        onView(withId(R.id.fragment_flags)).check(doesNotExist());
+        onView(withId(R.id.navigation_home))
+                .check(matches(hasTextColor(R.color.navigation_unselected)));
+        onView(withId(R.id.navigation_crash_ui))
+                .check(matches(hasTextColor(R.color.navigation_unselected)));
+        onView(withId(R.id.navigation_flags_ui))
+                .check(matches(hasTextColor(R.color.navigation_unselected)));
+        onView(withId(R.id.navigation_net_logs_ui))
+                .check(matches(hasTextColor(R.color.navigation_selected)));
+
+        // NetLogsFragment -> HomeFragment
         onView(withId(R.id.navigation_home)).perform(click());
         onView(withId(R.id.fragment_home)).check(matches(isDisplayed()));
-        onView(withId(R.id.fragment_flags)).check(doesNotExist());
+        onView(withId(R.id.fragment_net_logs)).check(doesNotExist());
         onView(withId(R.id.navigation_home))
                 .check(matches(hasTextColor(R.color.navigation_selected)));
         onView(withId(R.id.navigation_crash_ui))
                 .check(matches(hasTextColor(R.color.navigation_unselected)));
         onView(withId(R.id.navigation_flags_ui))
+                .check(matches(hasTextColor(R.color.navigation_unselected)));
+        onView(withId(R.id.navigation_net_logs_ui))
                 .check(matches(hasTextColor(R.color.navigation_unselected)));
     }
 
@@ -212,13 +234,20 @@ public class DeveloperUiTest {
                 allOf(
                         IntentMatchers.hasAction(Intent.ACTION_VIEW),
                         IntentMatchers.hasData(hasScheme("https")),
-                        IntentMatchers.hasData(hasHost("bugs.chromium.org")),
-                        IntentMatchers.hasData(hasPath("/p/chromium/issues/entry")),
-                        IntentMatchers.hasData(hasParamWithValue("template", "Webview+Bugs")),
+                        IntentMatchers.hasData(hasHost("issues.chromium.org")),
+                        IntentMatchers.hasData(hasPath("/issues/new")),
                         IntentMatchers.hasData(
                                 hasParamWithValue(
-                                        "labels",
-                                        "Via-WebView-DevTools,Pri-3,Type-Bug,OS-Android"))));
+                                        "component", BugTrackerConstants.COMPONENT_MOBILE_WEBVIEW)),
+                        IntentMatchers.hasData(
+                                hasParamWithValue(
+                                        "template", BugTrackerConstants.DEFAULT_WEBVIEW_TEMPLATE)),
+                        IntentMatchers.hasData(hasParamWithValue("priority", "P3")),
+                        IntentMatchers.hasData(hasParamWithValue("type", "BUG")),
+                        IntentMatchers.hasData(
+                                hasParamWithValue(
+                                        "customFields",
+                                        BugTrackerConstants.OS_FIELD + ":Android"))));
     }
 
     @Test

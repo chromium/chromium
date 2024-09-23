@@ -8,7 +8,7 @@ import("//components/safe_browsing/buildflags.gni")
 # NOTE: This target is separated from :browser as
 # //components/safe_browsing/content/browser/web_ui, which :browser depends on, depends
 # on this.
-# TODO(crbug.com/1216341): Consider folding all of three these together into
+# TODO(crbug.com/40770425): Consider folding all of three these together into
 # :browser, along with the other browser process code in
 # //components/safe_browsing/content.
 source_set("safe_browsing_service") {
@@ -24,12 +24,16 @@ source_set("safe_browsing_service") {
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//content/public/browser",
   ]
+
+  if (is_android) {
+    deps += [ "//components/safe_browsing/android:referring_app_info" ]
+  }
 }
 
 # NOTE: This target is separated from :browser as
 # //components/safe_browsing/content/browser/triggers, which this depends on, depends
 # on :browser.
-# TODO(crbug.com/1216341): Consider folding all of three these together into
+# TODO(crbug.com/40770425): Consider folding all of three these together into
 # :browser, along with the other browser process code in
 # //components/safe_browsing/content.
 if (safe_browsing_mode > 0) {
@@ -62,6 +66,7 @@ if (safe_browsing_mode > 0) {
       "//components/security_interstitials/core",
       "//components/security_interstitials/core:unsafe_resource",
       "//content/public/browser",
+      "//services/metrics/public/cpp:ukm_builders",
     ]
   }
 }
@@ -92,10 +97,8 @@ source_set("browser") {
     "threat_details_history.h",
     "unsafe_resource_util.cc",
     "unsafe_resource_util.h",
-    "url_checker_on_sb.cc",
-    "url_checker_on_sb.h",
-    "web_api_handshake_checker.cc",
-    "web_api_handshake_checker.h",
+    "url_checker_holder.cc",
+    "url_checker_holder.h",
     "web_contents_key.cc",
     "web_contents_key.h",
   ]
@@ -116,17 +119,18 @@ source_set("browser") {
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
-    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/browser/realtime:policy_engine",
     "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
     "//components/safe_browsing/core/browser/utils",
     "//components/safe_browsing/core/common:common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_interstitials/core",
     "//components/security_interstitials/core:unsafe_resource",
+    "//components/sessions",
     "//components/signin/public/identity_manager",
     "//components/unified_consent",
     "//components/version_info",
@@ -162,7 +166,6 @@ source_set("unit_tests") {
     "client_report_util_unittest.cc",
     "client_side_detection_feature_cache_unittest.cc",
     "client_side_phishing_model_unittest.cc",
-    "web_api_handshake_checker_unittest.cc",
   ]
 
   deps = [
@@ -202,7 +205,8 @@ source_set("unit_tests") {
       "//components/prefs",
       "//components/prefs:test_support",
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
-      "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
+      "//components/safe_browsing/core/browser/realtime:test_support",
+      "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
       "//components/security_interstitials/content:security_interstitial_page",
       "//components/security_interstitials/core",
       "//net/traffic_annotation:test_support",
@@ -280,6 +284,7 @@ source_set("client_side_detection") {
     ":client_side_detection_images_cache",
     ":client_side_detection_service",
     "//base:base",
+    "//components/permissions:permissions",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser",
@@ -293,10 +298,12 @@ source_set("client_side_detection") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/fbs:client_model",
+    "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/variations",
     "//components/zoom:zoom",
     "//content/public/browser",
+    "//mojo/public/mojom/base:protobuf_support",
   ]
 
   if (safe_browsing_mode != 0) {

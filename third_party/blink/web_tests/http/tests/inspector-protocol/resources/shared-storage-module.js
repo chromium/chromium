@@ -1,8 +1,10 @@
 class TestOperation {
   async run(data) {
     await sharedStorage.set('key0-set-from-worklet', 'value0');
-    await sharedStorage.set('key1-set-from-worklet', 'value1');
-    await sharedStorage.set('key2-set-from-worklet', 'value2');
+    await sharedStorage.set(
+        'key1-set-from-worklet', 'value1', {ignoreIfPresent: false});
+    await sharedStorage.set(
+        'key2-set-from-worklet', 'value2', {ignoreIfPresent: true});
     await sharedStorage.append('key1-set-from-worklet', 'value1');
     await sharedStorage.delete('key2-set-from-worklet', 'value2');
     console.log(await sharedStorage.length());

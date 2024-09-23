@@ -18,15 +18,26 @@
 <template is="dom-repeat" items="[[graphicsTablets]]"
     as="graphicsTablet" index-as="index" restamp>
     <div class="device" data-evdev-id$="[[graphicsTablet.id]]">
-      <h2 class="subsection-header" id="graphicsTabletName">
-        [[graphicsTablet.name]]
-      </h2>
+      <per-device-subsection-header
+          device-key="[[graphicsTablet.deviceKey]]"
+          name="[[graphicsTablet.name]]"
+          battery-info="[[graphicsTablet.batteryInfo]]"
+          icon="os-settings:device-tablet">
+      </per-device-subsection-header>
       <div class="subsection">
-        <cr-link-row id="customizeTabletButtons"
-            class="bottom-divider" on-click="onCustomizeTabletButtonsClick"
-            aria-describedby="graphicsTabletName"
-            label="$i18n{customizeTabletButtonsLabel}">
-        </cr-link-row>
+        <template is="dom-if"
+            if="[[showInstallAppRow(graphicsTablet.appInfo)]]">
+          <per-device-install-row app-info="[[graphicsTablet.appInfo]]">
+          </per-device-install-row>
+        </template>
+        <template is="dom-if"
+            if="[[showCustomizeTabletButtonsRow(graphicsTablet)]]">
+          <cr-link-row id="customizeTabletButtons"
+              class="bottom-divider" on-click="onCustomizeTabletButtonsClick"
+              aria-describedby="graphicsTabletName"
+              label="$i18n{customizeTabletButtonsLabel}">
+          </cr-link-row>
+        </template>
         <cr-link-row id="customizePenButtons"
             class="hr bottom-divider" on-click="onCustomizePenButtonsClick"
             aria-describedby="graphicsTabletName"
@@ -34,4 +45,9 @@
         </cr-link-row>
       </div>
     </div>
+    <template is="dom-if"
+        if="[[isCompanionAppInstalled(graphicsTablet.appInfo)]]">
+      <per-device-app-installed-row app-info="[[graphicsTablet.appInfo]]">
+      </per-device-app-installed-row>
+    </template>
 </template>

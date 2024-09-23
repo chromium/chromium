@@ -8,7 +8,7 @@
  */
 
 import '../icons.html.js';
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 // <if expr="not chromeos_ash">
 import '../relaunch_confirmation_dialog.js';
 // </if>
@@ -17,11 +17,11 @@ import '../settings_page_styles.css.js';
 import '../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -34,11 +34,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {loadTimeData} from '../i18n_setup.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
-// <if expr="_google_chrome">
-import {routes} from '../route.js';
-import {Router} from '../router.js';
-
-// </if>
 
 import {getTemplate} from './about_page.html.js';
 import type {AboutPageBrowserProxy, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
@@ -100,19 +95,6 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
         },
       },
 
-      // <if expr="_google_chrome">
-      /**
-       * Whether to show the "Get the most out of Chrome" section.
-       */
-      showGetTheMostOutOfChromeSection_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showGetTheMostOutOfChromeSection') &&
-              !loadTimeData.getBoolean('isGuest');
-        },
-      },
-      // </if>
-
       // <if expr="_google_chrome and is_macosx">
       promoteUpdaterStatus_: Object,
       // </if>
@@ -156,10 +138,6 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
 
   private currentUpdateStatusEvent_: UpdateStatusChangedEvent|null;
   private isManaged_: boolean;
-
-  // <if expr="_google_chrome">
-  private showGetTheMostOutOfChromeSection_: boolean;
-  // </if>
 
   // <if expr="_google_chrome and is_macosx">
   private promoteUpdaterStatus_: PromoteUpdaterStatus;
@@ -309,7 +287,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     }
   }
 
-  private getUpdateStatusIcon_(): string|null {
+  private getUpdateStatusIcon_(): string {
     // If this platform has reached the end of the line, display an error icon
     // and ignore UpdateStatus.
     if (this.obsoleteSystemInfo_.endOfLine) {
@@ -325,21 +303,21 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
       case UpdateStatus.NEARLY_UPDATED:
         return 'settings:check-circle';
       default:
-        return null;
+        return '';
     }
   }
 
-  private getThrobberSrcIfUpdating_(): string|null {
+  private shouldShowThrobber_(): boolean {
     if (this.obsoleteSystemInfo_.endOfLine) {
-      return null;
+      return false;
     }
 
     switch (this.currentUpdateStatusEvent_!.status) {
       case UpdateStatus.CHECKING:
       case UpdateStatus.UPDATING:
-        return 'chrome://resources/images/throbber_small.svg';
+        return true;
       default:
-        return null;
+        return false;
     }
   }
   // </if>
@@ -370,11 +348,6 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
 
   private onPrivacyPolicyClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(ABOUT_PAGE_PRIVACY_POLICY_URL);
-  }
-
-
-  private onGetTheMostOutOfChromeClick_() {
-    Router.getInstance().navigateTo(routes.GET_MOST_CHROME);
   }
   // </if>
 

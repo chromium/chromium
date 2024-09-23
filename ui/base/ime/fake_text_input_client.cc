@@ -16,12 +16,18 @@ namespace ui {
 FakeTextInputClient::FakeTextInputClient(TextInputType text_input_type)
     : text_input_type_(text_input_type) {}
 
+FakeTextInputClient::FakeTextInputClient(Options options)
+    : FakeTextInputClient(/*input_method=*/nullptr, std::move(options)) {}
+
 FakeTextInputClient::FakeTextInputClient(InputMethod* input_method,
                                          Options options)
     : input_method_(input_method),
       text_input_type_(options.type),
       mode_(options.mode),
-      flags_(options.flags) {}
+      flags_(options.flags),
+      can_insert_image_(options.can_insert_image),
+      caret_bounds_(options.caret_bounds),
+      should_do_learning_(options.should_do_learning) {}
 
 FakeTextInputClient::~FakeTextInputClient() {
   Blur();
@@ -52,6 +58,10 @@ void FakeTextInputClient::Blur() {
   if (input_method_ != nullptr) {
     input_method_->SetFocusedTextInputClient(nullptr);
   }
+}
+
+base::WeakPtr<ui::TextInputClient> FakeTextInputClient::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void FakeTextInputClient::SetCompositionText(
@@ -87,6 +97,10 @@ void FakeTextInputClient::InsertText(
 
 void FakeTextInputClient::InsertChar(const KeyEvent& event) {}
 
+bool FakeTextInputClient::CanInsertImage() {
+  return can_insert_image_;
+}
+
 void FakeTextInputClient::InsertImage(const GURL& src) {
   last_inserted_image_url_ = src;
 }
@@ -120,7 +134,7 @@ bool FakeTextInputClient::CanComposeInline() const {
 }
 
 gfx::Rect FakeTextInputClient::GetCaretBounds() const {
-  return {};
+  return caret_bounds_;
 }
 
 gfx::Rect FakeTextInputClient::GetSelectionBoundingBox() const {
@@ -166,6 +180,10 @@ bool FakeTextInputClient::DeleteRange(const gfx::Range& range) {
 
 bool FakeTextInputClient::GetTextFromRange(const gfx::Range& range,
                                            std::u16string* text) const {
+  if (range.GetMax() <= text_.length()) {
+    *text = text_.substr(range.GetMin(), range.length());
+    return true;
+  }
   return false;
 }
 
@@ -194,7 +212,7 @@ ukm::SourceId FakeTextInputClient::GetClientSourceForMetrics() const {
 }
 
 bool FakeTextInputClient::ShouldDoLearning() {
-  return false;
+  return should_do_learning_;
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

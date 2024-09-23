@@ -8,12 +8,15 @@
 #include "base/functional/callback_helpers.h"
 #include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
+#include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/devtools/worklet_devtools_agent_host.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -70,7 +73,7 @@ void DevToolsRendererChannel::CleanupConnection() {
 }
 
 void DevToolsRendererChannel::ForceDetachWorkerSessions() {
-  for (auto* host : child_targets_) {
+  for (WorkerOrWorkletDevToolsAgentHost* host : child_targets_) {
     host->ForceDetachAllSessions();
   }
 }
@@ -241,6 +244,13 @@ void DevToolsRendererChannel::MainThreadDebuggerPaused() {
 
 void DevToolsRendererChannel::MainThreadDebuggerResumed() {
   owner_->MainThreadDebuggerResumed();
+}
+
+void DevToolsRendererChannel::BringToForeground() {
+  DevToolsManager* manager = DevToolsManager::GetInstance();
+  if (manager->delegate()) {
+    manager->delegate()->Activate(owner_);
+  }
 }
 
 }  // namespace content

@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_SUPPLEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_SUPPLEMENT_H_
 
-#include "third_party/blink/public/mojom/frame/frame.mojom-blink-forward.h"
+#include "components/viz/common/view_transition_element_resource_id.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -51,6 +53,8 @@ class CORE_EXPORT ViewTransitionSupplement
   // |ViewTransitionStateCallback|.
   static void SnapshotDocumentForNavigation(
       Document&,
+      const blink::ViewTransitionToken& transition_token,
+      mojom::blink::PageSwapEventParamsPtr,
       ViewTransition::ViewTransitionStateCallback);
 
   // Creates a ViewTransition using cached state from the previous Document
@@ -76,23 +80,34 @@ class CORE_EXPORT ViewTransitionSupplement
   VectorOf<std::unique_ptr<ViewTransitionRequest>> TakePendingRequests();
   void OnTransitionFinished(ViewTransition* transition) override;
 
-  // Notifies when the "view-transition" meta tag associated with this Document
-  // has changed.
-  void OnMetaTagChanged(const AtomicString& content_value);
-
   // TODO(https://crbug.com/1422251): Expand this to receive a the full set of
   // @view-transition options.
-  void OnViewTransitionsStyleUpdated(bool cross_document_enabled);
+  void OnViewTransitionsStyleUpdated(bool cross_document_enabled,
+                                     const Vector<String>& types);
 
   // Notifies that the `body` element has been parsed and will be added to the
   // Document.
   void WillInsertBody();
+
+  // Since outbound transitions are only enabled once the document has been
+  // revealed, we recompute the opt-in status here.
+  void DidChangeRevealState() { SendOptInStatusToHost(); }
+  void DidChangeVisibilityState();
 
   // In the new page of a cross-document transition, this resolves the
   // @view-transition rule to use, sets types, and returns the ViewTransition.
   // It is the 'resolve cross-document view-transition` steps in the spec:
   // https://drafts.csswg.org/css-view-transitions-2/#document-resolve-cross-document-view-transition
   DOMViewTransition* ResolveCrossDocumentViewTransition();
+
+  // Generates a new ID usable from viz to refer to a snapshot resource.
+  viz::ViewTransitionElementResourceId GenerateResourceId(
+      const blink::ViewTransitionToken& transition_token);
+
+  // Initializes the sequence such that the next call to GenerateResourceId()
+  // will return `next_local_id`. Used to ensure a unique and continuous
+  // sequence of ids across documents in a cross-document transition.
+  void InitializeResourceIdSequence(uint32_t next_local_id);
 
  private:
   static DOMViewTransition* StartViewTransitionInternal(
@@ -107,17 +122,27 @@ class CORE_EXPORT ViewTransitionSupplement
                                      const std::optional<Vector<String>>& types,
                                      ExceptionState& exception_state);
   void StartTransition(Document& document,
+                       const blink::ViewTransitionToken& transition_token,
+                       mojom::blink::PageSwapEventParamsPtr,
                        ViewTransition::ViewTransitionStateCallback callback);
   void StartTransition(Document& document,
                        ViewTransitionState transition_state);
 
   void SetCrossDocumentOptIn(mojom::blink::ViewTransitionSameOriginOptIn);
 
+  void SendOptInStatusToHost();
+
   Member<ViewTransition> transition_;
 
   VectorOf<std::unique_ptr<ViewTransitionRequest>> pending_requests_;
 
-  mojom::blink::ViewTransitionSameOriginOptIn cross_document_opt_in_;
+  mojom::blink::ViewTransitionSameOriginOptIn cross_document_opt_in_ =
+      mojom::blink::ViewTransitionSameOriginOptIn::kDisabled;
+
+  uint32_t resource_local_id_sequence_ =
+      viz::ViewTransitionElementResourceId::kInvalidLocalId;
+
+  Vector<String> cross_document_types_;
 };
 
 }  // namespace blink

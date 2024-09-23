@@ -1,0 +1,36 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+source_set("public_sources") {
+  sources = [
+    "CRURegistration-Private.h",
+    "CRURegistration.h",
+    "CRURegistration.m",
+  ]
+  deps = [ "//chrome/updater:branding_header" ]
+  assert_no_deps = [
+    "//base:*",
+    "//base/*",
+    "//net:*",
+    "//net/*",
+    "//third_party/*",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("test_sources") {
+  testonly = true
+  sources = [ "CRURegistration_unittests.mm" ]
+  deps = [
+    ":public_sources",
+    "//base",
+    "//net/",
+    "//testing/gtest",
+    "//url/",
+  ]
+  data_deps = [ "//chrome/updater/mac/client_lib/test_helpers" ]
+  frameworks = [ "Foundation.framework" ]
+}

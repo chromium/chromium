@@ -43,6 +43,14 @@ VideoDecoderConfig::VideoDecoderConfig(VideoCodec codec,
 VideoDecoderConfig::VideoDecoderConfig(const VideoDecoderConfig& other) =
     default;
 
+VideoDecoderConfig::VideoDecoderConfig(VideoDecoderConfig&& other) = default;
+
+VideoDecoderConfig& VideoDecoderConfig::operator=(
+    const VideoDecoderConfig& other) = default;
+
+VideoDecoderConfig& VideoDecoderConfig::operator=(VideoDecoderConfig&& other) =
+    default;
+
 VideoDecoderConfig::~VideoDecoderConfig() = default;
 
 void VideoDecoderConfig::Initialize(VideoCodec codec,
@@ -81,6 +89,7 @@ bool VideoDecoderConfig::Matches(const VideoDecoderConfig& config) const {
          coded_size() == config.coded_size() &&
          visible_rect() == config.visible_rect() &&
          natural_size() == config.natural_size() &&
+         aspect_ratio() == config.aspect_ratio() &&
          extra_data() == config.extra_data() &&
          encryption_scheme() == config.encryption_scheme() &&
          color_space_info() == config.color_space_info() &&

@@ -1,0 +1,299 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=/tangible_sync_style_shared_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit tangible-sync-style-shared-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --background-color: white;
+  --search-engine-icon-size: 24px;
+  --action-button-margins: 24px;
+  --content-container-width: 500px;
+  --radio-button-horizontal-padding: 16px;
+  --choice-gap: 16px;
+  --search-engine-name-line-height: 20px;
+  --marketing-snippet-line-height: 16px;
+  --choice-height: calc(var(--search-engine-name-line-height) +
+      var(--marketing-snippet-line-height));
+  color: var(--cr-primary-text-color);
+}
+
+.tangible-sync-style-left-banner {
+  content: url(images/left_illustration.svg);
+}
+
+.tangible-sync-style-right-banner {
+  content: url(images/right_illustration.svg);
+}
+
+.tangible-sync-style-left-banner,
+.tangible-sync-style-right-banner {
+  position: fixed;
+}
+
+#actionButton {
+  height: unset;
+  margin: var(--action-button-margins);
+  margin-inline-start: auto;
+  padding: 6px 16px 6px 12px;
+  pointer-events: all;
+  text-align: center;
+}
+
+cr-checkbox {
+  --cr-checkbox-label-color: var(--google-grey-700);
+  --cr-checkbox-label-padding-start: 8px;
+  font-size: 0.75rem;
+  margin: var(--action-button-margins);
+  pointer-events: all;
+}
+
+.content-container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin: auto;
+  text-align: center;
+  width: var(--content-container-width);
+}
+
+#choiceList {
+  display: flex;
+  flex-direction: column;
+  text-align: start;
+  width: 100%;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 32px;
+  margin: 0;
+}
+
+.subtitle {
+  color: var(--cr-secondary-text-color);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 24px;
+  margin: 0 0 24px;
+}
+
+.choice {
+  display: flex;
+  flex-direction: row;
+  gap: var(--choice-gap);
+}
+
+.choice-text {
+  --choice-text-width: calc(var(--content-container-width) -
+      2 * var(--radio-button-horizontal-padding) -
+      var(--search-engine-icon-size) - var(--choice-gap) -
+      var(--cr-radio-button-label-spacing) - var(--cr-radio-button-size));
+  display: flex;
+  flex-direction: column;
+  width: var(--choice-text-width);
+}
+
+.choice-icon {
+  background-size: var(--search-engine-icon-size);
+  border-radius: 4px;
+  flex: none;
+  height: var(--search-engine-icon-size);
+  /* So that the icon doesn't change position when the snippet is expanded. */
+  margin-top: calc((var(--choice-height) - var(--search-engine-icon-size))/2);
+  width: var(--search-engine-icon-size);
+}
+
+.choice-title {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  font-family: Roboto, Arial;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: start;
+}
+
+cr-radio-button {
+  /* So that the radio button doesn't change position when the snippet is
+  expanded. */
+  --cr-radio-button-disc-margin-block-start: calc((var(--choice-height) -
+      var(--cr-radio-button-size))/2);
+  --cr-radio-button-label-spacing: 16px;
+  --cr-radio-button-size: 20px;
+  align-items: start;
+  background-color: var(--cr-fallback-color-surface2);
+  border-bottom: 1px solid var(--background-color);
+  border-radius: 2px;
+  padding: 8px var(--radio-button-horizontal-padding);
+}
+
+cr-radio-button:first-of-type {
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+cr-radio-button:last-of-type {
+  border-bottom: unset;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+cr-radio-button[checked] {
+  background-color: var(--cr-fallback-color-tonal-container);
+}
+
+/* Using a class instead of relying only on the pseudo-class allows
+disabling this style in screenshot tests, where the inability to
+control the pointer location causes some flakiness. */
+.hoverable:hover:not([checked]) {
+  background-color: var(--cr-hover-on-subtle-background-color);
+}
+
+.product-logo {
+  height: 48px;
+  margin: 64px 0 16px;
+  width: 48px;
+}
+
+#infoLink {
+  color: var(--google-blue-600);
+  white-space: nowrap;
+}
+
+cr-dialog {
+  --cr-dialog-body-padding-horizontal: 24px;
+  --cr-dialog-button-container-padding-horizontal: 24px;
+  --cr-dialog-button-container-padding-bottom: 24px;
+  --cr-dialog-button-container-padding-top: 20px;
+  --cr-dialog-title-font-size: 1.375rem;
+  --cr-dialog-title-slot-padding-bottom: 24px;
+  --cr-dialog-title-slot-padding-end: 24px;
+  --cr-dialog-title-slot-padding-start: 24px;
+  --cr-dialog-title-slot-padding-top: 24px;
+}
+
+cr-dialog div[slot="title"] {
+  font-size: 1.375rem;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+cr-dialog p {
+  font-family: Roboto, Arial;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 20px;
+  margin: 0 0 24px;
+}
+
+#buttonContainer {
+  bottom: 0;
+  display: flex;
+  pointer-events: none;
+  position: fixed;
+  width: 100vw;
+}
+
+.cr-icon {
+  --cr-icon-color: currentColor;
+  --cr-icon-image: url(images/arrow_downward.svg);
+  --cr-icon-ripple-size: 18px;
+  --cr-icon-size: 18px;
+  margin: 0;
+}
+
+#choiceList.overlap-mitigation {
+    --button-container-height: calc(var(--cr-button-height) + 2 *
+        var(--action-button-margins));
+    padding-bottom: var(--button-container-height);
+}
+
+#buttonContainer.overlap-mitigation {
+    background-color: var(--background-color);
+    border-top: var(--cr-separator-line);
+    pointer-events: unset;
+  }
+
+.marketing-snippet {
+  color: var(--cr-secondary-text-color);
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: var(--marketing-snippet-line-height);
+}
+
+.truncate-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-engine-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: var(--search-engine-name-line-height);
+}
+
+.info-dialog-illustration {
+  content: url(images/info_dialog_illustration.svg);
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+/* 'hidden' will not work for '<cr-checkbox>'. This change makes the
+  'hidden' attribute selector is more specific than the class selector. */
+[hidden]{
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --background-color: var(--md-background-color);
+  }
+
+  .info-dialog-illustration {
+    content: url(images/info_dialog_illustration_dark.svg);
+  }
+
+  .tangible-sync-style-left-banner {
+    content: url(images/left_illustration_dark.svg);
+  }
+
+  .tangible-sync-style-right-banner {
+    content: url(images/right_illustration_dark.svg);
+  }
+
+  #infoLink {
+    color: var(--google-blue-300);
+  }
+
+  cr-radio-button {
+    --cr-radio-button-unchecked-color: var(--google-grey-100);
+  }
+
+  cr-checkbox {
+    --cr-checkbox-label-color: var(--google-grey-500);
+  }
+}
+
+@media screen and (max-width: 780px) {
+  .tangible-sync-style-left-banner,
+  .tangible-sync-style-right-banner {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 548px) {
+  :host {
+    --content-container-width: 452px;
+  }
+}

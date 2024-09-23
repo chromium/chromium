@@ -4,6 +4,7 @@
 
 #include "ash/wm/gestures/wm_gesture_handler.h"
 
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -14,9 +15,12 @@
 #include "ash/wm/window_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
+#include "ui/aura/client/window_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
+#include "ui/wm/core/capture_controller.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
@@ -39,8 +43,8 @@ std::optional<OverviewEnterExitType> HandleContinuousScrollIntoOverview(
                : OverviewEnterExitType::kNormal;
   }
 
-  // If `scroll_in_progress`, the last gesture event was a `ET_SCROLL`, and we
-  // need to update the continuous animation.
+  // If `scroll_in_progress`, the last gesture event was a `EventType::kScroll`,
+  // and we need to update the continuous animation.
   if (scroll_in_progress) {
     return OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate;
   }
@@ -160,19 +164,19 @@ bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
     return false;
   }
 
-  // ET_SCROLL_FLING_CANCEL means a touchpad swipe has started.
-  if (event.type() == ui::ET_SCROLL_FLING_CANCEL) {
+  // EventType::kScrollFlingCancel means a touchpad swipe has started.
+  if (event.type() == ui::EventType::kScrollFlingCancel) {
     scroll_data_ = ScrollData();
     return false;
   }
 
-  // ET_SCROLL_FLING_START means a touchpad swipe has ended.
-  if (event.type() == ui::ET_SCROLL_FLING_START) {
+  // EventType::kScrollFlingStart means a touchpad swipe has ended.
+  if (event.type() == ui::EventType::kScrollFlingStart) {
     bool success = EndScroll();
     DCHECK(!scroll_data_);
     return success;
   }
-  DCHECK_EQ(ui::ET_SCROLL, event.type());
+  DCHECK_EQ(ui::EventType::kScroll, event.type());
 
   const int direction = window_util::IsNaturalScrollOn(event) ? -1 : 1;
 
@@ -269,6 +273,16 @@ bool WmGestureHandler::EndScroll() {
                        std::clamp(scroll_y, 0.f, kVerticalThresholdDp),
                        /*scroll_in_progress=*/false)
                  : false;
+    }
+
+    // If the event should be captured by other normal window, do not handle
+    // this event as overview handling gesture. If it is captured by non-normal
+    // window (e.g. menu/popup), we can force enter overview mode.
+    aura::Window* capture_window =
+        ::wm::CaptureController::Get()->GetCaptureWindow();
+    if (capture_window &&
+        capture_window->GetType() == aura::client::WINDOW_TYPE_NORMAL) {
+      return false;
     }
 
     if (std::fabs(scroll_x) < std::fabs(scroll_y)) {

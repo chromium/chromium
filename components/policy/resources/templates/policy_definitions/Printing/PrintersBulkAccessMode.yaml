@@ -26,8 +26,9 @@ items:
   value: 2
 owners:
 - file://chromeos/printing/OWNERS
-- zentaro@chromium.org
+- jimmyxgong@chromium.org
 - thestig@chromium.org
+- cros-peripheral@google.com
 schema:
   enum:
   - 0

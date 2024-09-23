@@ -6,11 +6,17 @@
   <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SEEK_BACKWARD" desc="The button to trigger media playback to seek backwards a few seconds.">
     Seek Backward
   </message>
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_REPLAY_10" desc="The button to trigger media playback to replay 10 seconds.">
+    Replay 10 seconds
+  </message>
   <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY" desc="The button to trigger media playback to start.">
     Play
   </message>
   <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE" desc="The button to trigger media playback to pause.">
     Pause
+  </message>
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_FORWARD_10" desc="The button to trigger media playback to forward 10 seconds.">
+    Forward 10 seconds
   </message>
   <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SEEK_FORWARD" desc="The button to trigger media playback to seek forwards a few seconds.">
     Seek Forward

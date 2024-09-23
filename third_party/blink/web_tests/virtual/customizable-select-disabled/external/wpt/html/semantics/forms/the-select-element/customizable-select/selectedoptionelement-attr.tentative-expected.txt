@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] The selectedoptionelement attribute should set up an association between a select and a selectedoption.
+  assert_equals: Setting the selectedoptionelement attribute via setAttribute should synchronously assign the contents of <selectedoption>. expected "onespan" but got ""
+Harness: the test ran to completion.
+

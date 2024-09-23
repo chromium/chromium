@@ -6,9 +6,11 @@ group("providers") {
   testonly = true
   deps = [
     # The individual API implementations.
+    "//ios/chrome/test/providers/additional_features",
     "//ios/chrome/test/providers/app_distribution",
     "//ios/chrome/test/providers/app_utils",
     "//ios/chrome/test/providers/branded_images",
+    "//ios/chrome/test/providers/content_notification",
     "//ios/chrome/test/providers/context_menu",
     "//ios/chrome/test/providers/discover_feed",
     "//ios/chrome/test/providers/drive",
@@ -20,6 +22,7 @@ group("providers") {
     "//ios/chrome/test/providers/lottie",
     "//ios/chrome/test/providers/mailto_handler",
     "//ios/chrome/test/providers/material",
+    "//ios/chrome/test/providers/memory_experimenter",
     "//ios/chrome/test/providers/mini_map",
     "//ios/chrome/test/providers/modals",
     "//ios/chrome/test/providers/omaha",

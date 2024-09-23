@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.CardPreference
+        android:key="browser_state_indicator"
+        app:allowDividerBelow="false"
+        app:isPreferenceVisible="false"/>
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="safety_hub_description"
+        android:summary="@string/safety_hub_description"
+        app:allowDividerAbove="false" />
+
+    <PreferenceCategory
+        android:key="safety_modules"
+        android:title="@string/safety_hub_safety_modules_section_header">
+
+    <!-- Update check -->
+    <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
+        android:key="update_check"
+        android:title="@string/safety_check_updates_title" />
+    <!-- Account-level passwords -->
+    <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
+        android:key="passwords_account"
+        android:title="@string/safety_check_passwords_safe" />
+    <!-- Safe Browsing -->
+    <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
+        android:key="safe_browsing"
+        android:title="@string/safety_hub_safe_browsing_on_title" />
+    <!-- Unused permissions -->
+    <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
+        android:key="permissions"
+        android:title="@string/safety_hub_permissions_ok_title" />
+    <!-- Notification review -->
+    <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
+        android:key="notifications_review"
+        android:title="@string/safety_hub_notifications_review_ok_title" />
+    </PreferenceCategory>
+
+    <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreferenceCategory
+        android:key="safety_tips"
+        android:title="@string/safety_hub_safety_tips_section_header"
+        app:allowDividerBelow="false">
+
+        <Preference
+            android:key="safety_tips_safety_tools"
+            android:title="@string/safety_hub_safety_tips_safety_tools_title"
+            android:summary="@string/safety_hub_safety_tips_safety_tools_summary"
+            android:icon="@drawable/safety_hub_safety_tips_icon"
+            app:allowDividerBelow="false"/>
+
+        <Preference
+            android:key="safety_tips_incognito"
+            android:title="@string/safety_hub_safety_tips_incognito_title"
+            android:summary="@string/safety_hub_safety_tips_incognito_summary"
+            android:icon="@drawable/safety_hub_safety_tips_icon"
+            app:allowDividerBelow="false"/>
+
+        <Preference
+            android:key="safety_tips_safe_browsing"
+            android:title="@string/safety_hub_safety_tips_safe_browsing_title"
+            android:summary="@string/safety_hub_safety_tips_safe_browsing_summary"
+            android:icon="@drawable/safety_hub_safety_tips_icon"
+            app:allowDividerBelow="false"/>
+    </org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreferenceCategory>
+
+</PreferenceScreen>

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 
@@ -15,10 +14,12 @@ namespace viz {
 
 BufferQueue::BufferQueue(SkiaOutputSurface* skia_output_surface,
                          gpu::SurfaceHandle surface_handle,
-                         size_t number_of_buffers)
+                         size_t number_of_buffers,
+                         bool is_protected)
     : skia_output_surface_(skia_output_surface),
       surface_handle_(surface_handle),
-      number_of_buffers_(number_of_buffers) {}
+      number_of_buffers_(number_of_buffers),
+      is_protected_(is_protected) {}
 
 BufferQueue::~BufferQueue() {
   FreeAllBuffers();
@@ -99,13 +100,16 @@ void BufferQueue::SwapBuffersSkipped(const gfx::Rect& damage) {
 
 bool BufferQueue::Reshape(const gfx::Size& size,
                           const gfx::ColorSpace& color_space,
-                          gfx::BufferFormat format) {
-  if (size == size_ && color_space == color_space_ && format == format_) {
+                          RenderPassAlphaType alpha_type,
+                          SharedImageFormat format) {
+  if (size == size_ && color_space == color_space_ &&
+      alpha_type == alpha_type_ && format == format_) {
     return false;
   }
 
   size_ = size;
   color_space_ = color_space;
+  alpha_type_ = alpha_type;
   format_ = format;
 
   if (buffers_destroyed_) {
@@ -175,17 +179,17 @@ bool BufferQueue::SetBufferPurgeable(AllocatedBuffer& buffer, bool purgeable) {
 
 void BufferQueue::AllocateBuffers(size_t n) {
   DCHECK(format_);
-  const SharedImageFormat format =
-      GetSinglePlaneSharedImageFormat(format_.value());
 
-  constexpr uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                             gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-                             gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  const gpu::SharedImageUsageSet usage =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE | gpu::SHARED_IMAGE_USAGE_SCANOUT |
+      (is_protected_ ? gpu::SHARED_IMAGE_USAGE_PROTECTED_VIDEO
+                     : gpu::SharedImageUsageSet());
 
   available_buffers_.reserve(available_buffers_.size() + n);
   for (size_t i = 0; i < n; ++i) {
     const gpu::Mailbox mailbox = skia_output_surface_->CreateSharedImage(
-        format, size_, color_space_, RenderPassAlphaType::kPremul, usage,
+        format_.value(), size_, color_space_, alpha_type_, usage,
         "VizBufferQueue", surface_handle_);
     DCHECK(!mailbox.IsZero());
 

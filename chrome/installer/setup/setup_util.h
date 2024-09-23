@@ -45,28 +45,6 @@ enum UnPackConsumer {
   UNCOMPRESSED_CHROME_ARCHIVE,
 };
 
-// Applies a patch file to source file using Courgette. Returns 0 in case of
-// success. In case of errors, it returns kCourgetteErrorOffset + a Courgette
-// status code, as defined in courgette/courgette.h
-int CourgettePatchFiles(const base::FilePath& src,
-                        const base::FilePath& patch,
-                        const base::FilePath& dest);
-
-// Applies a patch file to source file using bsdiff. This function uses
-// Courgette's flavor of bsdiff. Returns 0 in case of success, or
-// kBsdiffErrorOffset + a bsdiff status code in case of errors.
-// See courgette/third_party/bsdiff/bsdiff.h for details.
-int BsdiffPatchFiles(const base::FilePath& src,
-                     const base::FilePath& patch,
-                     const base::FilePath& dest);
-
-// Applies a patch file to source file using Zucchini. Returns 0 in case of
-// success. In case of errors, it returns kZucchiniErrorOffset + a Zucchini
-// status code, as defined in components/zucchini/zucchini.h
-int ZucchiniPatchFiles(const base::FilePath& src,
-                       const base::FilePath& patch,
-                       const base::FilePath& dest);
-
 // Find the version of Chrome from an install source directory.
 // Chrome_path should contain at least one version folder.
 // Returns the maximum version found or nullptr if no version is found.

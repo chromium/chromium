@@ -47,14 +47,15 @@ function assertRedirectFails(url, callback) {
 }
 
 const nonServiceWorkerTests = [
-  // TODO(crbug.com/1376106): These two tests hang.
+  // TODO(crbug.com/40243056): These two tests hang.
   'subresourceRedirectHasSameRequestIdOnHeadersReceived',
   'subresourceRedirectHasSameRequestIdOnBeforeRequest'
 ];
 
 function getFilteredTests(tests) {
-  if (!isServiceWorker)
+  if (!isServiceWorker) {
     return tests;
+  }
   return tests.filter(function(op) {
     return !nonServiceWorkerTests.includes(op.name);
   });
@@ -68,8 +69,9 @@ loadScript.then(async function() {
   var onHeadersReceivedExtraInfoSpec = ['blocking'];
   if (config.customArg) {
     let args = JSON.parse(config.customArg);
-    if (args.useExtraHeaders)
+    if (args.useExtraHeaders) {
       onHeadersReceivedExtraInfoSpec.push('extraHeaders');
+    }
   }
 
   runTests(getFilteredTests([

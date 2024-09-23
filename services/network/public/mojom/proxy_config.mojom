@@ -59,4 +59,7 @@ enum IpProtectionProxyBypassPolicy {
   // Request to domains that are first party to the top level frame are
   // bypassed.
   kFirstPartyToTopLevelFrame = 1,
+  // Request to domains that are on a given exclusion list are bypassed. This
+  // exclusion list is set through NetworkService::UpdateMaskedDomainList.
+  kExclusionList = 2,
 };

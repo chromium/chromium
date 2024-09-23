@@ -11,8 +11,11 @@ import android.net.http.HttpException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import androidx.annotation.RequiresExtension;
+
+import org.chromium.net.CronetException;
+import org.chromium.net.RequestFinishedInfo;
+
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
@@ -20,10 +23,10 @@ import java.util.Objects;
 @SuppressWarnings("Override")
 class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Callback {
     private final org.chromium.net.UrlRequest.Callback mBackend;
+    private AndroidUrlRequestWrapper mWrappedRequest;
 
     public AndroidUrlRequestCallbackWrapper(org.chromium.net.UrlRequest.Callback backend) {
-        Objects.requireNonNull(backend, "Callback is required.");
-        this.mBackend = backend;
+        this.mBackend = Objects.requireNonNull(backend, "Callback is required.");
     }
 
     /**
@@ -41,10 +44,8 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
                 () -> {
                     AndroidUrlResponseInfoWrapper specializedResponseInfo =
                             AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
-                    AndroidUrlRequestWrapper specializedRequest =
-                            new AndroidUrlRequestWrapper(request);
                     mBackend.onRedirectReceived(
-                            specializedRequest, specializedResponseInfo, newLocationUrl);
+                            mWrappedRequest, specializedResponseInfo, newLocationUrl);
                     return null;
                 },
                 Exception.class);
@@ -58,9 +59,7 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
                 () -> {
                     AndroidUrlResponseInfoWrapper specializedResponseInfo =
                             AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
-                    AndroidUrlRequestWrapper specializedRequest =
-                            new AndroidUrlRequestWrapper(request);
-                    mBackend.onResponseStarted(specializedRequest, specializedResponseInfo);
+                    mBackend.onResponseStarted(mWrappedRequest, specializedResponseInfo);
                     return null;
                 },
                 Exception.class);
@@ -76,10 +75,7 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
                 () -> {
                     AndroidUrlResponseInfoWrapper specializedResponseInfo =
                             AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
-                    AndroidUrlRequestWrapper specializedRequest =
-                            new AndroidUrlRequestWrapper(request);
-                    mBackend.onReadCompleted(
-                            specializedRequest, specializedResponseInfo, byteBuffer);
+                    mBackend.onReadCompleted(mWrappedRequest, specializedResponseInfo, byteBuffer);
                     return null;
                 },
                 Exception.class);
@@ -90,8 +86,17 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
             android.net.http.UrlRequest request, android.net.http.UrlResponseInfo info) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
-        AndroidUrlRequestWrapper specializedRequest = new AndroidUrlRequestWrapper(request);
-        mBackend.onSucceeded(specializedRequest, specializedResponseInfo);
+        try {
+            mBackend.onSucceeded(mWrappedRequest, specializedResponseInfo);
+        } finally {
+            // In a scenario where this throws, the side effect is that it will be propagated to
+            // CronetUrlRequest as an error in the callback and mess with the FinalUserCallbackThrew
+            // metrics. Because we catch most the exceptions, this side effect is negligible enough
+            // to
+            // not try to figure out a workaround.
+            mWrappedRequest.maybeReportMetrics(
+                    RequestFinishedInfo.SUCCEEDED, specializedResponseInfo, null);
+        }
     }
 
     @Override
@@ -101,11 +106,15 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
             HttpException error) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
-        AndroidUrlRequestWrapper specializedRequest = new AndroidUrlRequestWrapper(request);
-        mBackend.onFailed(
-                specializedRequest,
-                specializedResponseInfo,
-                CronetExceptionTranslationUtils.translateCheckedAndroidCronetException(error));
+        CronetException translatedException =
+                CronetExceptionTranslationUtils.translateCheckedAndroidCronetException(error);
+        try {
+            mBackend.onFailed(mWrappedRequest, specializedResponseInfo, translatedException);
+        } finally {
+            // See comment in onSucceeded.
+            mWrappedRequest.maybeReportMetrics(
+                    RequestFinishedInfo.FAILED, specializedResponseInfo, translatedException);
+        }
     }
 
     @Override
@@ -114,7 +123,16 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
             @Nullable android.net.http.UrlResponseInfo info) {
         AndroidUrlResponseInfoWrapper specializedResponseInfo =
                 AndroidUrlResponseInfoWrapper.createForUrlRequest(info);
-        AndroidUrlRequestWrapper specializedRequest = new AndroidUrlRequestWrapper(request);
-        mBackend.onCanceled(specializedRequest, specializedResponseInfo);
+        try {
+            mBackend.onCanceled(mWrappedRequest, specializedResponseInfo);
+        } finally {
+            // See comment in onSucceeded.
+            mWrappedRequest.maybeReportMetrics(
+                    RequestFinishedInfo.CANCELED, specializedResponseInfo, null);
+        }
+    }
+
+    void setRequest(AndroidUrlRequestWrapper request) {
+        mWrappedRequest = request;
     }
 }

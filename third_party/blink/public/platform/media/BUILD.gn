@@ -9,12 +9,8 @@
 # //third_party/blink/renderer/platform.
 source_set("media") {
   sources = [
-    "interval_map.h",
     "key_system_config_selector.h",
-    "multi_buffer.h",
     "remote_playback_client_wrapper_impl.h",
-    "resource_fetch_context.h",
-    "url_index.h",
     "video_frame_compositor.h",
     "web_encrypted_media_client_impl.h",
     "web_media_player_builder.h",
@@ -28,7 +24,6 @@ source_set("media") {
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public:blink",
     "//third_party/blink/public:blink_headers",
-    "//url",
   ]
 
   allow_circular_includes_from =

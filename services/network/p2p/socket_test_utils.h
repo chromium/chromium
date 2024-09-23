@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef SERVICES_NETWORK_P2P_SOCKET_TEST_UTILS_H_
 #define SERVICES_NETWORK_P2P_SOCKET_TEST_UTILS_H_
 
@@ -58,7 +63,7 @@ class FakeP2PSocketDelegate : public P2PSocket::Delegate {
 
 class FakeSocket : public net::StreamSocket {
  public:
-  FakeSocket(std::string* written_data);
+  explicit FakeSocket(std::string* written_data);
   ~FakeSocket() override;
 
   void set_async_write(bool async_write) { async_write_ = async_write; }

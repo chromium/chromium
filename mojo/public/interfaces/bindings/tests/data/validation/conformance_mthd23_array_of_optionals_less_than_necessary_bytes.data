@@ -1,0 +1,26 @@
+[dist4]message_header  // num_bytes
+[u4]0                  // version
+[u4]0                  // interface ID
+[u4]23                 // name
+[u4]0                  // flags
+[u4]0                  // padding
+[anchr]message_header
+
+[dist4]method23_params
+[u4]0                  // version
+[dist8]param0_ptr      // param0: array<bool?>
+[dist8]param1_ptr      // param1: array<uint32?>
+[anchr]method23_params
+
+[anchr]param0_ptr
+[dist4]param0_member   // num_bytes
+[u4]0                  // num_elements
+[anchr]param0_member
+
+[anchr]param1_ptr
+[dist4]param1_member   // num_bytes
+[u4]2                  // num_elements
+[u4]0                  // bitfield
+[u4]0                  // element 0
+                       // truncated and missing element here
+[anchr]param1_member

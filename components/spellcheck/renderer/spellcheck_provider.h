@@ -165,8 +165,7 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   raw_ptr<SpellCheck, DanglingUntriaged> spellcheck_;
 
   // Not owned. |embedder_provider_| should outlive SpellCheckProvider.
-  raw_ptr<service_manager::LocalInterfaceProvider, ExperimentalRenderer>
-      embedder_provider_;
+  raw_ptr<service_manager::LocalInterfaceProvider> embedder_provider_;
 
   // Interface to the SpellCheckHost.
   mojo::Remote<spellcheck::mojom::SpellCheckHost> spell_check_host_;

@@ -110,8 +110,7 @@ enum HtmlFieldType {
   kCreditCardExp2DigitYear = 44,
   kCreditCardExp4DigitYear = 45,
 
-  // Universal Payment Interface - Virtual Payment Address.
-  kUpiVpa = 46,
+  // kUpiVpa = 46 is deprecated.
 
   // Phone number verification one-time-codes.
   kOneTimeCode = 47,
@@ -167,7 +166,10 @@ enum SubmissionSource {
   // Normal form submission (i.e. user presses the submit button and no
   // JavaScript is involved). Observed via RenderFrameObserver::WillSubmitForm.
   FORM_SUBMISSION = 5,
-  // The form or field was hidden or removed after autofilling it.
+  // The form or field was hidden or removed after autofilling it. Autofill
+  // ignores such submissions on non-WebView because mutations of the form can
+  // happen for other reasons than submission. PWM however considers this a
+  // valid source since mutations of password forms are more rare.
   DOM_MUTATION_AFTER_AUTOFILL = 6,
 };
 
@@ -199,7 +201,7 @@ enum ButtonTitleType {
 // Describes various criteria (e.g. there are empty fields in the form) that
 // affect whether a form is ready for submission. Don't change IDs as they are
 // used for metrics.
-// TODO(crbug.com/1283004): Basically, the browser needs just a boolean: submit
+// TODO(crbug.com/40209736): Basically, the browser needs just a boolean: submit
 // or not. Once related projects (crbug.com/1393043, crbug.com/1319364) are
 // done or archived, this enum can be removed.
 enum SubmissionReadinessState {
@@ -212,7 +214,7 @@ enum SubmissionReadinessState {
 
   // Various blockers of forms submission.
   // There is only a sole password field.
-  // TODO(crbug.com/1319364): For now this entry doesn't trigger submission,
+  // TODO(crbug.com/40223173): For now this entry doesn't trigger submission,
   // but ideally Touch-To-Fill should be able to log a user in with just one
   // tap, i.e. TTF should submit both single username and single password
   // forms.
@@ -233,11 +235,15 @@ enum SubmissionReadinessState {
   kTwoFields = 7,
 
   // There is only a sole username field.
-  // TODO(crbug.com/1319364): For now this entry doesn't trigger submission,
+  // TODO(crbug.com/40223173): For now this entry doesn't trigger submission,
   // but ideally Touch-To-Fill should be able to log a user in with just one
   // tap, i.e. TTF should submit both single username and single password
   // forms.
   kNoPasswordField = 8,
+
+  // A child frame which is likely to be CAPTCHA was detected within the
+  // password form. Do not trigger submission in this case.
+  kLikelyHasCaptcha = 9,
 };
 
 // autofill::FrameToken (components/autofill/core/common/unique_ids.h)
@@ -268,7 +274,7 @@ struct FieldRendererId {
 // autofill::SelectOption (components/autofill/core/common/form_field_data.h)
 struct SelectOption {
   mojo_base.mojom.String16 value;
-  mojo_base.mojom.String16 content;
+  mojo_base.mojom.String16 text;
 };
 
 // autofill::Section::Autocomplete
@@ -305,6 +311,7 @@ struct AutocompleteParsingResult {
   string section;
   HtmlFieldMode mode;
   HtmlFieldType field_type;
+  bool webauthn;
 };
 
 // autofill::FormFieldData (components/autofill/core/common/form_field_data.h)
@@ -378,6 +385,7 @@ struct FormFieldData {
   bool is_enabled;
   bool is_readonly;
   mojo_base.mojom.String16 user_input;
+  bool allows_writing_suggestions;
 
   array<SelectOption> options;
 
@@ -395,8 +403,8 @@ struct FormFieldData {
 struct FormFieldData_FillData {
   mojo_base.mojom.String16 value;
   FieldRendererId renderer_id;
+  FormRendererId host_form_id;
   bool is_autofilled;
-  Section section;
   bool force_override;
 };
 
@@ -420,13 +428,7 @@ struct FormData {
   array<FormFieldData> fields;
   array<FieldRendererId> username_predictions;
   bool is_gaia_with_skip_save_password_form;
-};
-
-// autofill::FormData::FillData
-// (components/autofill/core/common/form_filling_data.h)
-struct FormData_FillData {
-  FormRendererId renderer_id;
-  array<FormFieldData_FillData> fields;
+  bool likely_contains_captcha;
 };
 
 // autofill::FormFieldDataPredictions
@@ -477,6 +479,7 @@ struct PasswordFormFillData {
   PasswordAndMetadata preferred_login;
   array<PasswordAndMetadata> additional_logins;
   bool wait_for_username;
+  array<FieldRendererId> suggestion_banned_fields;
 };
 
 // autofill::PasswordFormGenerationData
@@ -543,15 +546,16 @@ enum ActionPersistence {
 };
 
 // The possible actions that Autofill can perform on forms.
-enum ActionType {
+enum FormActionType {
   kFill,  // Autofill should fill the form.
   kUndo,  // Autofill should undo some previous fill operation on the form.
 };
 
-// Indicates which part of a text field's value Autofill replaces.
-enum TextReplacement {
+// The possible actions that Autofill can perform on fields.
+enum FieldActionType {
   kReplaceAll,        // Replace the field's current value.
   kReplaceSelection,  // Replace only the currently selected text.
+  kSelectAll,         // Selects all the text within this field.
 };
 
 // Describes which action triggered Autofill suggestions. This has implications
@@ -562,6 +566,8 @@ enum TextReplacement {
 // This then invokes `AutofillManager::OnAskForValuesToFill()` in the browser
 // process. In some cases, suggestions get updated. This happens solely in the
 // browser process.
+// Must stay in sync with AutofillSuggestionTriggerSource in
+// histograms/enums.xml. Do not reorder or remove items.
 enum AutofillSuggestionTriggerSource {
   // Used as a default value and cannot be used to trigger suggestions.
   kUnspecified,
@@ -571,7 +577,8 @@ enum AutofillSuggestionTriggerSource {
   // Suggestion of this type can trigger FastCheckout or TouchToFill.
   kFormControlElementClicked,
   // Suggestions triggered by focusing a textarea without click or tab
-  // interaction. Currently, this only generates suggestions from Compose.
+  // interaction. Currently, this is only triggered on Desktop platforms and
+  // only generates Compose suggestions.
   kTextareaFocusedWithoutClick,
   // Suggestions triggered as above except that the target is a
   // contenteditable element rather than a form control element.
@@ -586,7 +593,7 @@ enum AutofillSuggestionTriggerSource {
   // as a kFormControlElementClicked event, it is triggered slightly later.
   // As of crrev.com/c/107353005, prefix matching for such suggestions is
   // skipped, to make them behave more like a <select>.
-  // TODO(crbug.com/1007974): It's unclear if this is still necessary.
+  // TODO(crbug.com/40100455): It's unclear if this is still necessary.
   kOpenTextDataListChooser,
   // Credit card suggestions offer users with Sync transport eligiblity an
   // option to display cards from their account. This causes the suggestions to
@@ -614,9 +621,29 @@ enum AutofillSuggestionTriggerSource {
   // Suggestions triggered by selecting the Autofill password manager manual
   // fallback entry from the Chrome context menu.
   kManualFallbackPasswords,
+  // Suggestions triggered by selecting the Plus Address manual fallback entry
+  // from the Chrome context menu.
+  kManualFallbackPlusAddresses,
   // Suggestions are triggered after the user the user closed a dialog. For
   // example, this can be profile edit or delete dialog. This trigger source
   // is used only if the suggestions were triggered manually via the Chrome
   // context menu.
   kShowPromptAfterDialogClosedNonManualFallback,
+  // The compose saved state notification is triggered when the compose dialog
+  // loses focus and is closed.
+  kComposeDialogLostFocus,
+  // The compose proactive nudge is triggered after a delay by the compose
+  // manager.
+  kComposeDelayedProactiveNudge,
+  // Password manager renderer received password suggestions from the browser
+  // after the field was focused (likely due to autofocus on the page load).
+  kPasswordManagerProcessedFocusedField,
+  // Prediction improvements was invoked.
+  kPredictionImprovements,
+  // An update to the suggestions is triggered, e.g. because a user decided
+  // to refresh a plus address suggestion or because a network request for a
+  // plus address suggestion terminated and its result needs to be shown.
+  // This value is not allowed to be sent from the renderer to the browser since
+  // it disables some of the click-jacking protections in the browser.
+  kPlusAddressUpdatedInBrowserProcess
 };

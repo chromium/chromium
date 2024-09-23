@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -18,7 +20,9 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_running_on_chromeos.h"
+#include "base/values.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
@@ -26,7 +30,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator_test_api.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -34,10 +37,15 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -48,7 +56,31 @@
 
 namespace ash::settings {
 
+using testing::_;
+
 namespace {
+
+constexpr char kEmail[] = "fake-email@example.com";
+constexpr char kEncryptionInfoCallbackId[] = "storage-encryption-fetched";
+
+// Matcher for `ListAuthFactors` that checks its account_id.
+MATCHER(WithAccountId, "") {
+  return arg.username() == kEmail;
+}
+
+user_data_auth::GetVaultPropertiesReply BuildGetVaultPropertiesReply(
+    user_data_auth::VaultEncryptionType type) {
+  user_data_auth::GetVaultPropertiesReply reply;
+  reply.set_encryption_type(type);
+  return reply;
+}
+
+// GMock action that runs the callback (which is expected to be the second
+// argument in the mocked function) with the given reply.
+template <typename ReplyType>
+auto ReplyWith(const ReplyType& reply) {
+  return base::test::RunOnceCallback<1>(reply);
+}
 
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
@@ -72,6 +104,7 @@ class StorageHandlerTest : public testing::Test {
     // Initialize fake DBus clients.
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     SpacedClient::InitializeFake();
+    UserDataAuthClient::OverrideGlobalInstanceForTesting(&userdataauth_);
 
     // The storage handler requires an instance of DiskMountManager,
     // ArcServiceManager and ArcSessionManager.
@@ -86,7 +119,7 @@ class StorageHandlerTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    profile_ = profile_manager_->CreateTestingProfile("p1");
+    profile_ = profile_manager_->CreateTestingProfile(kEmail);
 
     // Initialize storage handler.
     content::WebUIDataSource* html_source =
@@ -115,7 +148,7 @@ class StorageHandlerTest : public testing::Test {
     other_users_size_test_api_ =
         std::make_unique<OtherUsersSizeTestAPI>(handler_);
 
-    // Create and register My files directory.
+    // Create and register MyFiles directory.
     // By emulating chromeos running, GetMyFilesFolderForProfile will return the
     // profile's temporary location instead of $HOME/Downloads.
     base::test::ScopedRunningOnChromeOS running_on_chromeos;
@@ -171,8 +204,8 @@ class StorageHandlerTest : public testing::Test {
   // space state determined by the UpdateOverallStatistics function, provided
   // that the spaced client is not available.
   int GetSpaceStateNoSpacedClient(int64_t total_size, int64_t available_size) {
-    total_disk_space_test_api_->SimulateOnGetTotalDiskSpace(&total_size);
-    free_disk_space_test_api_->SimulateOnGetFreeDiskSpace(&available_size);
+    total_disk_space_test_api_->SimulateOnGetTotalDiskSpace(total_size);
+    free_disk_space_test_api_->SimulateOnGetFreeDiskSpace(available_size);
     task_environment_.RunUntilIdle();
     const base::Value* dictionary =
         GetWebUICallbackMessage("storage-size-stat-changed");
@@ -193,6 +226,25 @@ class StorageHandlerTest : public testing::Test {
       }
       if (*name == event_name) {
         return data->arg2();
+      }
+    }
+    return nullptr;
+  }
+
+  const base::Value* GetWebUIResponseMessage(const std::string& event_name) {
+    for (const std::unique_ptr<content::TestWebUI::CallData>& data :
+         base::Reversed(web_ui_->call_data())) {
+      const std::string* name = data->arg1()->GetIfString();
+      if (data->function_name() != "cr.webUIResponse" || !name ||
+          *name != event_name) {
+        continue;
+      }
+
+      // Assume that the data is stored in the last valid arg.
+      for (const auto& arg : base::Reversed(data->args())) {
+        if (&arg != data->arg1()) {
+          return &arg;
+        }
       }
     }
     return nullptr;
@@ -225,7 +277,7 @@ class StorageHandlerTest : public testing::Test {
         << " failed.";
     // Verify file size.
     base::stat_wrapper_t stat;
-    const int res = base::File::Lstat(target_path.value().c_str(), &stat);
+    const int res = base::File::Lstat(target_path, &stat);
     ASSERT_FALSE(res < 0) << "Couldn't stat" << target_path.value();
     ASSERT_EQ(expected_size, stat.st_size);
   }
@@ -246,6 +298,7 @@ class StorageHandlerTest : public testing::Test {
   std::unique_ptr<OtherUsersSizeTestAPI> other_users_size_test_api_;
   raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
       new_window_delegate_primary_;
+  MockUserDataAuthClient userdataauth_;
 
  private:
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
@@ -395,7 +448,7 @@ TEST_F(StorageHandlerTest, MyFilesSize) {
       storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
       android_files_path));
 
-  // Add files in My files and android files.
+  // Add files in MyFiles and Android files.
   AddFile("random.bin", 8092, my_files_path);      // ~7.9 KB
   AddFile("tall.pdf", 15271, android_files_path);  // ~14.9 KB
   // Add file in Downloads and simulate bind mount with
@@ -403,7 +456,7 @@ TEST_F(StorageHandlerTest, MyFilesSize) {
   AddFile("video.ogv", 56758, downloads_path);  // ~55.4 KB
   AddFile("video.ogv", 56758, android_files_download_path);
 
-  // Calculate My files size.
+  // Calculate MyFiles size.
   my_files_size_test_api_->StartCalculation();
   task_environment_.RunUntilIdle();
 
@@ -517,7 +570,7 @@ TEST_F(StorageHandlerTest, CrostiniSize) {
 TEST_F(StorageHandlerTest, SystemSize) {
   // The "System" row on the storage page displays the difference between the
   // total amount of used space and the sum of the sizes of the different
-  // storage items of the storage page (My files, Browsing data, apps etc...)
+  // storage items of the storage page (MyFiles, Browsing data, apps etc...)
   // This test simulates callbacks from each one of these storage items; the
   // calculation of the "System" size should only happen when all of the other
   // storage items have been calculated.
@@ -537,7 +590,7 @@ TEST_F(StorageHandlerTest, SystemSize) {
   int64_t total_size = TB;
   int64_t available_size = 100 * GB;
   total_disk_space_test_api_->SimulateOnGetRootDeviceSize(total_size);
-  free_disk_space_test_api_->SimulateOnGetFreeDiskSpace(&available_size);
+  free_disk_space_test_api_->SimulateOnGetFreeDiskSpace(available_size);
   drive_offline_size_test_api_->SimulateOnGetOfflineItemsSize(50 * GB);
   const base::Value* callback =
       GetWebUICallbackMessage("storage-size-stat-changed");
@@ -547,7 +600,7 @@ TEST_F(StorageHandlerTest, SystemSize) {
   // Expect no system size callback until every other item has been updated.
   ASSERT_FALSE(GetWebUICallbackMessage("storage-system-size-changed"));
 
-  // Simulate my files size callback.
+  // Simulate MyFiles size callback.
   my_files_size_test_api_->SimulateOnGetTotalBytes(400 * GB);
   callback = GetWebUICallbackMessage("storage-my-files-size-changed");
   ASSERT_TRUE(callback) << "No 'storage-my-files-size-changed' callback";
@@ -664,6 +717,74 @@ TEST_F(StorageHandlerTest, OpenBrowsingDataSettings) {
                       ash::NewWindowDelegate::Disposition::kSwitchToTab));
   base::Value::List empty_args;
   web_ui_->HandleReceivedMessage("openBrowsingDataSettings", empty_args);
+}
+
+TEST_F(StorageHandlerTest, StorageEncryptionInfo_Unknown) {
+  // Setup.
+  EXPECT_CALL(userdataauth_, GetVaultProperties(WithAccountId(), _))
+      .WillOnce(ReplyWith(BuildGetVaultPropertiesReply(
+          user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_ANY)));
+  base::Value::List args;
+  args.Append(kEncryptionInfoCallbackId);
+  web_ui_->HandleReceivedMessage("getStorageEncryptionInfo", args);
+  task_environment_.RunUntilIdle();
+
+  // Test.
+  const base::Value* callback =
+      GetWebUIResponseMessage(kEncryptionInfoCallbackId);
+  ASSERT_TRUE(callback) << "No 'storage-encryption-fetched' callback";
+  EXPECT_EQ("Unknown", callback->GetString());
+}
+
+TEST_F(StorageHandlerTest, StorageEncryptionInfo_Ecryptfs) {
+  // Setup.
+  EXPECT_CALL(userdataauth_, GetVaultProperties(WithAccountId(), _))
+      .WillOnce(ReplyWith(BuildGetVaultPropertiesReply(
+          user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_ECRYPTFS)));
+  base::Value::List args;
+  args.Append(kEncryptionInfoCallbackId);
+  web_ui_->HandleReceivedMessage("getStorageEncryptionInfo", args);
+  task_environment_.RunUntilIdle();
+
+  // Test.
+  const base::Value* callback =
+      GetWebUIResponseMessage(kEncryptionInfoCallbackId);
+  ASSERT_TRUE(callback) << "No 'storage-encryption-fetched' callback";
+  EXPECT_EQ("AES-128", callback->GetString());
+}
+
+TEST_F(StorageHandlerTest, StorageEncryptionInfo_Dmcrypt) {
+  // Setup.
+  EXPECT_CALL(userdataauth_, GetVaultProperties(WithAccountId(), _))
+      .WillOnce(ReplyWith(BuildGetVaultPropertiesReply(
+          user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_DMCRYPT)));
+  base::Value::List args;
+  args.Append(kEncryptionInfoCallbackId);
+  web_ui_->HandleReceivedMessage("getStorageEncryptionInfo", args);
+  task_environment_.RunUntilIdle();
+
+  // Test.
+  const base::Value* callback =
+      GetWebUIResponseMessage(kEncryptionInfoCallbackId);
+  ASSERT_TRUE(callback) << "No 'storage-encryption-fetched' callback";
+  EXPECT_EQ("AES-256", callback->GetString());
+}
+
+TEST_F(StorageHandlerTest, StorageEncryptionInfo_Fscrypt) {
+  // Setup.
+  EXPECT_CALL(userdataauth_, GetVaultProperties(WithAccountId(), _))
+      .WillOnce(ReplyWith(BuildGetVaultPropertiesReply(
+          user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_FSCRYPT)));
+  base::Value::List args;
+  args.Append(kEncryptionInfoCallbackId);
+  web_ui_->HandleReceivedMessage("getStorageEncryptionInfo", args);
+  task_environment_.RunUntilIdle();
+
+  // Test.
+  const base::Value* callback =
+      GetWebUIResponseMessage(kEncryptionInfoCallbackId);
+  ASSERT_TRUE(callback) << "No 'storage-encryption-fetched' callback";
+  EXPECT_EQ("AES-256", callback->GetString());
 }
 
 }  // namespace

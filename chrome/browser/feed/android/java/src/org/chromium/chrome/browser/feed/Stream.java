@@ -72,14 +72,6 @@ public interface Stream {
      */
     void triggerRefresh(Callback<Boolean> callback);
 
-    /**
-     * @return Whether the placeholder is shown.
-     */
-    boolean isPlaceholderShown();
-
-    /** Called when the placeholder is shown and the first batch of articles are about to show. */
-    void hidePlaceholder();
-
     /** Whether activity logging is enabled for this feed. */
     default boolean isActivityLoggingEnabled() {
         return false;

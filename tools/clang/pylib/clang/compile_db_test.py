@@ -14,13 +14,13 @@ import compile_db
 
 # Input compile DB.
 _TEST_COMPILE_DB = [
-    # Verifies that gomacc.exe is removed.
+    # Verifies that rewrapper.exe is removed.
     {
-        'command': r'C:\gomacc.exe C:\clang-cl.exe /blah',
+        'command': r'C:\rewrapper.exe C:\clang-cl.exe /blah',
     },
-    # Verifies a goma path containing a space.
+    # Verifies a rewrapper path containing a space.
     {
-        'command': r'"C:\Program Files\gomacc.exe" C:\clang-cl.exe /blah',
+        'command': r'"C:\Program Files\rewrapper.exe" C:\clang-cl.exe /blah',
     },
     # Includes a string define.
     {
@@ -92,17 +92,6 @@ class CompileDbTest(unittest.TestCase):
     input_db = [{
         'command':
         r'clang -g -Xclang -fuse-ctor-homing -funroll-loops test.cc'
-    }]
-    self.assertEquals(compile_db.ProcessCompileDatabase(input_db, []),
-                      [{
-                          'command': r'clang -g -funroll-loops test.cc'
-                      }])
-
-  def testGomaccPathFiltered(self):
-    sys.platform = 'linux2'
-    input_db = [{
-        'command':
-        r'clang -g --gomacc-path /path/to/gomacc -funroll-loops test.cc'
     }]
     self.assertEquals(compile_db.ProcessCompileDatabase(input_db, []),
                       [{

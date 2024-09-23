@@ -30,12 +30,15 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SearchUtils;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -56,26 +59,30 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Shows a list of all sites. When the user selects a site, SingleWebsiteSettings
- * is launched to allow the user to see or modify the settings for that particular website.
+ * Shows a list of all sites. When the user selects a site, SingleWebsiteSettings is launched to
+ * allow the user to see or modify the settings for that particular website.
  */
 @UsedByReflection("all_site_preferences.xml")
 public class AllSiteSettings extends BaseSiteSettingsFragment
-        implements PreferenceManager.OnPreferenceTreeClickListener,
+        implements SettingsPage,
+                PreferenceManager.OnPreferenceTreeClickListener,
                 View.OnClickListener,
                 CustomDividerFragment {
     // The key to use to pass which category this preference should display,
     // should only be All Sites or Storage.
     public static final String EXTRA_CATEGORY = "category";
     public static final String EXTRA_TITLE = "title";
+    public static final String EXTRA_SEARCH = "search";
 
     /**
-     * If present, the list of websites will be filtered by domain using
-     * {@link UrlUtilities#getDomainAndRegistry}.
+     * If present, the list of websites will be filtered by domain using {@link
+     * UrlUtilities#getDomainAndRegistry}.
      */
     public static final String EXTRA_SELECTED_DOMAINS = "selected_domains";
 
     public static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data_link";
+    // Prefix for Related Website Sets search filter (mobile-desktop feature parity)
+    public static final String RWS_SEARCH_PREFIX = "related:";
 
     // The clear button displayed in the Storage view.
     private Button mClearButton;
@@ -95,6 +102,8 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     private ModalDialogManager mDialogManager;
 
     @Nullable private Set<String> mSelectedDomains;
+
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     private class ResultsPopulator implements WebsitePermissionsFetcher.WebsitePermissionsCallback {
         @Override
@@ -116,10 +125,8 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
 
     private void getInfoForOrigins() {
         WebsitePermissionsFetcher fetcher =
-                new WebsitePermissionsFetcher(
-                        getSiteSettingsDelegate().getBrowserContextHandle(), false);
-        fetcher.fetchPreferencesForCategoryAndPopulateFpsInfo(
-                getSiteSettingsDelegate(), mCategory, new ResultsPopulator());
+                new WebsitePermissionsFetcher(getSiteSettingsDelegate(), false);
+        fetcher.fetchPreferencesForCategoryAndPopulateRwsInfo(mCategory, new ResultsPopulator());
     }
 
     @Override
@@ -198,7 +205,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             preference
                     .site()
                     .clearAllStoredData(
-                            getSiteSettingsDelegate().getBrowserContextHandle(),
+                            getSiteSettingsDelegate(),
                             () -> {
                                 if (--numLeft[0] <= 0) getInfoForOrigins();
                             });
@@ -335,16 +342,26 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         addPreferencesFromXml();
 
         String title = getArguments().getString(EXTRA_TITLE);
-        if (title != null) getActivity().setTitle(title);
+        if (title != null) mPageTitle.set(title);
 
         mSelectedDomains =
                 getArguments().containsKey(EXTRA_SELECTED_DOMAINS)
                         ? new HashSet<>(getArguments().getStringArrayList(EXTRA_SELECTED_DOMAINS))
                         : null;
 
+        mSearch =
+                getArguments().containsKey(EXTRA_SEARCH)
+                        ? RWS_SEARCH_PREFIX + getArguments().getString(EXTRA_SEARCH)
+                        : mSearch;
+
         setHasOptionsMenu(true);
 
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override
@@ -469,7 +486,7 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             List<WebsiteRowPreference> preferences = new ArrayList<>();
             // Find entries matching the current search.
             for (WebsiteEntry entry : entries) {
-                if (mSearch == null || mSearch.isEmpty() || entry.matches(mSearch)) {
+                if (filterSearchResult(entry)) {
                     WebsiteRowPreference preference =
                             new WebsiteRowPreference(
                                     getStyledContext(),
@@ -506,6 +523,21 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
             }
             mWebsites = websites;
             return !websites.isEmpty();
+        }
+    }
+
+    private boolean filterSearchResult(WebsiteEntry entry) {
+        if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()
+                && mSearch != null
+                && mSearch.startsWith(RWS_SEARCH_PREFIX)) {
+            return entry.isPartOfRws()
+                    && entry.getRwsOwner()
+                            .contains(
+                                    mSearch.replace(
+                                            RWS_SEARCH_PREFIX,
+                                            "")); // no need to check empty and null
+        } else {
+            return mSearch == null || mSearch.isEmpty() || entry.matches(mSearch);
         }
     }
 

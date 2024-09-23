@@ -5,7 +5,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <dimen name="tab_grid_favicon_size">18dp</dimen>
     <dimen name="tab_list_selected_inset">7dp</dimen>
     <dimen name="tab_list_selected_inset_low_end">6dp</dimen>
     <dimen name="tab_list_selected_margin">7dp</dimen>
@@ -13,36 +12,29 @@ found in the LICENSE file.
     <dimen name="tab_grid_price_card_radius">4dp</dimen>
     <dimen name="tab_list_mini_card_radius">4dp</dimen>
     <dimen name="tab_list_mini_card_frame_size">1dp</dimen>
-    <dimen name="tab_grid_bottom_padding">16dp</dimen>
     <dimen name="tab_grid_close_button_size">18dp</dimen>
-    <dimen name="tab_grid_dialog_side_margin">16dp</dimen>
-    <dimen name="tab_grid_dialog_top_margin">85dp</dimen>
+    <dimen name="tab_grid_dialog_min_margin">16dp</dimen>
+    <dimen name="tab_grid_dialog_max_margin">85dp</dimen>
     <dimen name="tab_grid_iph_item_description_margin">16dp</dimen>
-    <dimen name="tab_grid_iph_dialog_height">400dp</dimen>
-    <dimen name="tab_grid_iph_dialog_top_margin">24dp</dimen>
-    <dimen name="tab_grid_iph_dialog_text_top_margin_landscape">8dp</dimen>
-    <dimen name="tab_grid_iph_dialog_text_top_margin_portrait">16dp</dimen>
-    <dimen name="tab_grid_iph_dialog_text_side_margin">32dp</dimen>
     <dimen name="tab_grid_large_message_side_padding_landscape">114dp</dimen>
-    <dimen name="tab_grid_merge_threshold">45dp</dimen>
     <dimen name="tab_grid_thumbnail_card_default_size">152dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_frame_corner_radius">7dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_frame_size">24dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_padding_from_frame">4dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_background_radius">3dp</dimen>
     <dimen name="tab_grid_thumbnail_favicon_background_down_shift">2dp</dimen>
-    <dimen name="tab_group_toolbar_height">56dp</dimen>
-    <dimen name="tab_group_toolbar_topic_margin">8dp</dimen>
+    <dimen name="share_button_padding_top_bottom">6dp</dimen>
+    <dimen name="share_button_padding_start_end">12dp</dimen>
+    <dimen name="share_button_height">32dp</dimen>
+    <dimen name="share_button_corner_radius">16dp</dimen>
+    <dimen name="tab_group_toolbar_title_margin_start">8dp</dimen>
     <dimen name="tab_strip_fading_edge_width">8dp</dimen>
+    <dimen name="tab_strip_fading_edge_width_negative">-8dp</dimen>
     <dimen name="tab_strip_button_width">48dp</dimen>
-    <dimen name="tab_strip_favicon_inset">3dp</dimen>
-    <dimen name="tab_strip_favicon_size">14dp</dimen>
     <dimen name="swipe_to_dismiss_threshold">144dp</dimen>
     <dimen name="selection_tab_grid_toggle_button_inset">14dp</dimen>
     <dimen name="selection_tab_list_toggle_button_lateral_inset">18dp</dimen>
     <dimen name="selection_tab_list_toggle_button_vertical_inset">22dp</dimen>
-    <dimen name="tasks_view_items_vertical_spacing">8dp</dimen>
-    <dimen name="tab_thumbnail_placeholder_vertical_offset">2dp</dimen>
 
     <!-- Dimens for incognito reauth promo message icon -->
     <dimen name="incognito_reauth_promo_message_icon_width">52dp</dimen>
@@ -65,19 +57,8 @@ found in the LICENSE file.
     <dimen name="tab_grid_dialog_bg_radius">24dp</dimen>
     <dimen name="tab_grid_dialog_app_bar_padding">8dp</dimen>
 
-    <!-- Elevation -->
-    <dimen name="tab_bg_elevation">@dimen/default_elevation_5</dimen>
-
-    <integer name="tab_thumbnail_placeholder_color_alpha">255</integer>
-    <integer name="tab_thumbnail_placeholder_selected_color_alpha">38</integer>
     <integer name="tab_grid_hovered_card_background_color_alpha">128</integer>
     <integer name="tab_grid_hovered_card_background_selected_color_alpha">26</integer>
-
-    <!-- Dimens for tasks view layout -->
-    <dimen name="search_box_start_padding">16dp</dimen>
-    <dimen name="search_box_end_padding">10dp</dimen>
-    <dimen name="tasks_surface_location_bar_url_button_size"> 20dp</dimen>
-    <dimen name="tasks_surface_location_bar_url_button_start_margin"> 16dp</dimen>
 
     <!-- Dimens for TabListEditor -->
     <dimen name="tab_list_editor_action_view_padding">14dp</dimen>
@@ -95,20 +76,44 @@ found in the LICENSE file.
     <dimen name="tab_hover_card_elevation">6dp</dimen>
     <dimen name="inactive_tab_hover_card_x_offset">16dp</dimen>
 
-    <!-- Dimens for tab cleanup promo message icon -->
-    <dimen name="tab_cleanup_promo_card_favicon_inset">8dp</dimen>
-    <dimen name="tab_cleanup_promo_card_icon_height">32dp</dimen>
-    <dimen name="tab_cleanup_promo_card_icon_width">92dp</dimen>
-    <dimen name="tab_cleanup_promo_card_icon_end_1">32dp</dimen>
-    <dimen name="tab_cleanup_promo_card_icon_start_2">30dp</dimen>
-    <dimen name="tab_cleanup_promo_card_icon_end_2">62dp</dimen>
-    <dimen name="tab_cleanup_promo_card_icon_start_3">60dp</dimen>
-
     <!-- Dimens for TabGroupParity features -->
     <dimen name="color_picker_color_item_size">24dp</dimen>
     <dimen name="color_picker_color_item_horizontal_padding">8dp</dimen>
     <dimen name="color_picker_color_item_vertical_padding">12dp</dimen>
     <dimen name="color_picker_inner_layer_inset">5dp</dimen>
     <dimen name="color_picker_selection_layer_inset">2dp</dimen>
-    <dimen name="tab_group_creation_dialog_horizontal_margin">24dp</dimen>
+    <dimen name="tab_group_color_icon_inset">2dp</dimen>
+    <dimen name="tab_group_color_icon_item_size">16dp</dimen>
+    <dimen name="tab_group_color_picker_popup_padding">10dp</dimen>
+    <dimen name="tab_group_visual_data_dialog_margin_padding">3dp</dimen>
+
+    <!-- Dimens for tab card label -->
+    <dimen name="tab_card_label_icon_size">16dp</dimen>
+    <dimen name="tab_card_label_icon_inset">3dp</dimen>
+    <dimen name="tab_card_label_icon_radius">8dp</dimen>
+    <dimen name="tab_card_label_height">24dp</dimen>
+
+    <!-- Dimens for TabGroupSync features -->
+    <dimen name="tab_group_start_icon_size">34dp</dimen>
+    <dimen name="tab_group_favicon_image_size">16dp</dimen>
+    <dimen name="tab_group_quarter_inner_radius">4dp</dimen>
+    <dimen name="tab_group_quarter_outer_radius">12dp</dimen>
+
+    <!-- Dimens for TabGroupShare features-->
+    <dimen name="tab_group_color_share_icon_inset">4dp</dimen>
+    <dimen name="tab_group_color_share_icon_item_size">12dp</dimen>
+    <dimen name="tab_group_share_icon_item_size">16dp</dimen>
+    <dimen name="tab_group_share_tiles_padding">14dp</dimen>
+
+    <!-- Dimens for Hub integration. -->
+    <dimen name="floating_action_button_space">88dp</dimen>
+
+    <!-- Dimens for DataSharing within TabGridDialog -->
+    <!-- TODO(b/325082444): This dimension should be removed and set by PeopleKit UI. -->
+    <dimen name="share_share_sheet_height">300dp</dimen>
+
+    <!-- Dimens for archived tabs. -->
+    <dimen name="archived_tabs_dialog_bottom_button_container_height">92dp</dimen>
+
+    <dimen name="message_card_close_button_size">24dp</dimen>
 </resources>

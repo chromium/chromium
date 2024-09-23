@@ -5,7 +5,6 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/system/toast_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/system/toast/system_toast_view.h"
 #include "ash/test/ash_test_base.h"
@@ -22,19 +21,13 @@ namespace ash {
 
 namespace {
 
-// Creates a `ToastData` object with only the required elements.
-ToastData CreateBaseToastData() {
-  const std::string id = "id";
-  const std::u16string text = u"text";
-  auto catalog_name = ToastCatalogName::kTestCatalogName;
-  return ToastData(id, catalog_name, text);
-}
-
-// Body text constants
-const std::u16string button_text = u"Button";
-const std::u16string long_body_text =
+// Test constants
+const std::u16string kTestText = u"text";
+const std::u16string kTestLongText =
     u"Nudge body text should be clear, short and succint (80 characters "
     u"recommended)";
+const std::u16string kTestButtonText = u"Button";
+const gfx::VectorIcon* kTestIcon = &kSystemMenuBusinessIcon;
 
 }  // namespace
 
@@ -73,100 +66,67 @@ class SystemToastViewPixelTest : public AshTestBase {
 };
 
 TEST_F(SystemToastViewPixelTest, TextOnly) {
-  // Set up base toast data, which has an id, a catalog name and a body text.
-  auto toast_data = CreateBaseToastData();
-
-  GetContentsView()->AddChildView(
-      std::make_unique<SystemToastView>(toast_data));
+  GetContentsView()->AddChildView(std::make_unique<SystemToastView>(kTestText));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "screenshot", /*revision_number=*/4, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, WithLeadingIcon) {
-  // Set up base toast data and add a leading icon.
-  auto toast_data = CreateBaseToastData();
-  toast_data.leading_icon = &kSystemMenuBusinessIcon;
-
-  GetContentsView()->AddChildView(
-      std::make_unique<SystemToastView>(toast_data));
+  GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
+      /*text=*/kTestText, /*dismiss_text=*/std::u16string(),
+      /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/5, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, WithButton) {
-  // Set up base toast data and add a button.
-  auto toast_data = CreateBaseToastData();
-  toast_data.dismiss_text = button_text;
-
-  GetContentsView()->AddChildView(
-      std::make_unique<SystemToastView>(toast_data));
+  GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
+      /*text=*/kTestText, /*dismiss_text=*/kTestButtonText));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/6, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, WithLeadingIconAndButton) {
-  // Set up base toast data and add a leading icon and a button.
-  auto toast_data = CreateBaseToastData();
-  toast_data.leading_icon = &kSystemMenuBusinessIcon;
-  toast_data.dismiss_text = button_text;
-
-  GetContentsView()->AddChildView(
-      std::make_unique<SystemToastView>(toast_data));
+  GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
+      /*text=*/kTestText, /*dismiss_text=*/kTestButtonText,
+      /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/5, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, Multiline_TextOnly) {
-  // Set up a multiline text toast.
-  auto toast_data = CreateBaseToastData();
-  toast_data.text = long_body_text;
-
   GetContentsView()->AddChildView(
-      std::make_unique<SystemToastView>(toast_data));
+      std::make_unique<SystemToastView>(kTestLongText));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "screenshot", /*revision_number=*/4, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, Multiline_WithLeadingIcon) {
-  // Set up a multiline text toast.
-  auto toast_data = CreateBaseToastData();
-  toast_data.text = long_body_text;
-  toast_data.leading_icon = &kSystemMenuBusinessIcon;
-
-  GetContentsView()->AddChildView(
-      std::make_unique<SystemToastView>(toast_data));
+  GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
+      /*text=*/kTestLongText, /*dismiss_text=*/std::u16string(),
+      /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "screenshot", /*revision_number=*/4, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, Multiline_WithButton) {
-  // Set up a multiline text toast and add a button.
-  auto toast_data = CreateBaseToastData();
-  toast_data.text = long_body_text;
-  toast_data.dismiss_text = button_text;
-
-  GetContentsView()->AddChildView(
-      std::make_unique<SystemToastView>(toast_data));
+  GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
+      /*text=*/kTestLongText, /*dismiss_text=*/kTestButtonText));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "screenshot", /*revision_number=*/4, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, Multiline_WithLeadingIconAndButton) {
-  // Set up a multiline text toast and add a leading icon and a button.
-  auto toast_data = CreateBaseToastData();
-  toast_data.text = long_body_text;
-  toast_data.leading_icon = &kSystemMenuBusinessIcon;
-  toast_data.dismiss_text = button_text;
-
-  GetContentsView()->AddChildView(
-      std::make_unique<SystemToastView>(toast_data));
+  GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
+      /*text=*/kTestLongText, /*dismiss_text=*/kTestButtonText,
+      /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "screenshot", /*revision_number=*/4, GetContentsView()));

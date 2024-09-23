@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // A class to Manage a growing transfer buffer.
 
 #include "gpu/command_buffer/client/transfer_buffer.h"
@@ -329,11 +334,11 @@ void ScopedTransferBufferPtr::Shrink(unsigned int new_size) {
   size_ = new_size;
 }
 
-bool ScopedTransferBufferPtr::BelongsToBuffer(char* memory) const {
+bool ScopedTransferBufferPtr::BelongsToBuffer(uint8_t* memory) const {
   if (!buffer_)
     return false;
-  char* start = static_cast<char*>(buffer_.get());
-  char* end = start + size_;
+  uint8_t* start = static_cast<uint8_t*>(buffer_.get());
+  uint8_t* end = start + size_;
   return memory >= start && memory <= end;
 }
 

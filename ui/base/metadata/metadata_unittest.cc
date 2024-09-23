@@ -77,11 +77,11 @@ END_METADATA
 // Descendent class in the simple hierarchy. The inherited properties are
 // visible within the metadata.
 class MetadataTestClass : public MetadataTestBaseClass {
+  METADATA_HEADER(MetadataTestClass, MetadataTestBaseClass)
+
  public:
   MetadataTestClass() = default;
   ~MetadataTestClass() override = default;
-
-  METADATA_HEADER(MetadataTestClass);
 
   void SetFloatProperty(float new_value) {
     if (float_property_ == new_value)
@@ -99,17 +99,17 @@ class MetadataTestClass : public MetadataTestBaseClass {
   float float_property_ = 0.f;
 };
 
-BEGIN_METADATA(MetadataTestClass, MetadataTestBaseClass)
+BEGIN_METADATA(MetadataTestClass)
 ADD_PROPERTY_METADATA(float, FloatProperty)
 END_METADATA
 
 // Test view to which class properties are attached.
 class ClassPropertyMetaDataTestClass : public MetadataTestBaseClass {
+  METADATA_HEADER(ClassPropertyMetaDataTestClass, MetadataTestBaseClass)
+
  public:
   ClassPropertyMetaDataTestClass() = default;
   ~ClassPropertyMetaDataTestClass() override = default;
-
-  METADATA_HEADER(ClassPropertyMetaDataTestClass);
 };
 
 // Test view which doesn't have metadata attached.
@@ -122,7 +122,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(gfx::Insets*, kInsetsKey1, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(gfx::Insets*, kInsetsKey2, nullptr)
 DEFINE_UI_CLASS_PROPERTY_TYPE(gfx::Insets*)
 
-BEGIN_METADATA(ClassPropertyMetaDataTestClass, MetadataTestBaseClass)
+BEGIN_METADATA(ClassPropertyMetaDataTestClass)
 ADD_CLASS_PROPERTY_METADATA(int, kIntKey)
 ADD_CLASS_PROPERTY_METADATA(gfx::Insets, kOwnedInsetsKey1)
 ADD_CLASS_PROPERTY_METADATA(gfx::Insets*, kOwnedInsetsKey2)

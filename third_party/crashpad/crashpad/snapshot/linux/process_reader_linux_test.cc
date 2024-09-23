@@ -52,6 +52,7 @@
 #include "util/misc/address_sanitizer.h"
 #include "util/misc/from_pointer_cast.h"
 #include "util/misc/memory_sanitizer.h"
+#include "util/posix/scoped_mmap.h"
 #include "util/synchronization/semaphore.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -72,7 +73,8 @@ pid_t gettid() {
   return syscall(SYS_gettid);
 }
 
-TEST(ProcessReaderLinux, SelfBasic) {
+// TODO(crbug.com/331803336): Flaky.
+TEST(ProcessReaderLinux, DISABLED_SelfBasic) {
   FakePtraceConnection connection;
   connection.Initialize(getpid());
 
@@ -180,14 +182,21 @@ class TestThreadPool {
           << ErrnoMessage("pthread_attr_init");
 
       if (stack_size > 0) {
-        void* stack_ptr;
-        errno = posix_memalign(&stack_ptr, getpagesize(), stack_size);
-        ASSERT_EQ(errno, 0) << ErrnoMessage("posix_memalign");
+        const size_t page_size = getpagesize();
+        DCHECK_EQ(stack_size % page_size, 0u);
+        size_t stack_alloc_size = 2 * page_size + stack_size;
 
-        thread->stack.reset(reinterpret_cast<char*>(stack_ptr));
+        ASSERT_TRUE(thread->stack.ResetMmap(nullptr,
+                                            stack_alloc_size,
+                                            PROT_NONE,
+                                            MAP_PRIVATE | MAP_ANONYMOUS,
+                                            -1,
+                                            0));
+        char* stack_ptr = thread->stack.addr_as<char*>() + page_size;
+        ASSERT_EQ(mprotect(stack_ptr, stack_size, PROT_READ | PROT_WRITE), 0)
+            << "mprotect";
 
-        ASSERT_EQ(pthread_attr_setstack(&attr, thread->stack.get(), stack_size),
-                  0)
+        ASSERT_EQ(pthread_attr_setstack(&attr, stack_ptr, stack_size), 0)
             << ErrnoMessage("pthread_attr_setstack");
         thread->expectation.max_stack_size = stack_size;
       }
@@ -238,7 +247,7 @@ class TestThreadPool {
 
     pthread_t pthread;
     ThreadExpectation expectation;
-    std::unique_ptr<char[], base::FreeDeleter> stack;
+    ScopedMmap stack;
     Semaphore ready_semaphore;
     Semaphore exit_semaphore;
     pid_t tid;

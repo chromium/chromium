@@ -48,10 +48,10 @@ if (host_os == "win") {
   scriptsuffix = ""
 }
 
-# When the compilers are run via goma, rbe or ccache rather than directly by
-# GN/Ninja, the rbe/goma/ccache wrapper handles .bat files but gets confused
+# When the compilers are run via reclient or ccache rather than directly by
+# GN/Ninja, the reclient/ccache wrapper handles .bat files but gets confused
 # by being given the scriptprefix.
-if (host_os == "win" && !use_goma && !use_remoteexec && cc_wrapper == "") {
+if (host_os == "win" && !use_reclient && cc_wrapper == "") {
   compiler_scriptprefix = scriptprefix
 } else {
   compiler_scriptprefix = ""
@@ -90,7 +90,7 @@ template("pnacl_toolchain") {
                            ])
 
     # Note this is not the usual "ld = cxx" because "ld" uses are
-    # never run via goma, so this needs scriptprefix.
+    # never run via rbe, so this needs scriptprefix.
     ld = scriptprefix + toolprefix + "clang++" + scriptsuffix
 
     toolchain_args = {
@@ -161,10 +161,7 @@ nacl_glibc_toolchain("x86") {
   toolchain_revision = nacl_x86_glibc_rev
 
   # Rely on the :compiler_cpu_abi config adding the -m32 flag here rather
-  # than using the i686-nacl binary directly.  This is a because i686-nacl-gcc
-  # is a shell script wrapper around x86_64-nacl-gcc and goma has trouble with
-  # compiler executables that are shell scripts (so the i686 'compiler' is not
-  # currently in goma).
+  # than using the i686-nacl binary directly.
   toolchain_tuple = "x86_64-nacl"
 }
 
@@ -259,7 +256,7 @@ template("nacl_irt_toolchain") {
       }
 
       libdir = rebase_path("${nacl_toolchain_dir}/${toolchain_package}/lib",
-                      root_build_dir)
+                           root_build_dir)
       extra_cppflags += " -B${libdir}"
     }
 

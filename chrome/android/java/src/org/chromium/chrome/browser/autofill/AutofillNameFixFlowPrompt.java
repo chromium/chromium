@@ -92,9 +92,9 @@ public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase
         mDelegate = delegate;
         // Dialog of infobar doesn't show any details of the cc.
         mDialogView.findViewById(R.id.cc_details).setVisibility(View.GONE);
-        mUserNameInput = (EditText) mDialogView.findViewById(R.id.cc_name_edit);
+        mUserNameInput = mDialogView.findViewById(R.id.cc_name_edit);
         mUserNameInput.setText(inferredName, BufferType.EDITABLE);
-        mNameFixFlowTooltipIcon = (ImageView) mDialogView.findViewById(R.id.cc_name_tooltip_icon);
+        mNameFixFlowTooltipIcon = mDialogView.findViewById(R.id.cc_name_tooltip_icon);
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, inferredName.isEmpty());
 
         // Do not show tooltip if inferred name is empty.

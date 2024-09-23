@@ -41,7 +41,7 @@ enum ContentRestriction {
 };
 
 // Represents the enforcement level of DLP restrictions.
-// See components/enterprise/data_controls/rule.h for Level enum.
+// See components/enterprise/data_controls/core/rule.h for Level enum.
 enum Level {
   kNotSet = 0,
   kReport = 1,
@@ -170,6 +170,6 @@ interface PageHandler {
   GetFilesDatabaseEntries() => (array<FileDatabaseEntry> db_entries);
 
   // Returns the inode number of the requested file only if the file is in
-  // "My Files/Downloads" directory.
+  // MyFiles/Downloads directory.
   GetFileInode(string file_name) => (uint64 inode);
 };

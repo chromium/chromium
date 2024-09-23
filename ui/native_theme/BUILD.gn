@@ -91,7 +91,6 @@ component("native_theme") {
 
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc/paint",
     "//ui/base",
@@ -176,6 +175,7 @@ test("native_theme_unittests") {
     "//skia",
     "//testing/gtest",
     "//ui/base",
+    "//ui/color",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry:geometry",
   ]
@@ -185,9 +185,6 @@ test("native_theme_unittests") {
       "native_theme_mac_unittest.mm",
       "scrollbar_animator_mac_unittest.cc",
     ]
-    deps += [
-      "//ui/color",
-      "//ui/gfx:test_support",
-    ]
+    deps += [ "//ui/gfx:test_support" ]
   }
 }

@@ -55,7 +55,6 @@ void StabilityMetricsManager::RecordMetricsToUMA() {
   if (const auto* pref = local_state_->FindPreference(prefs::kStabilityMetrics);
       !pref || pref->GetType() != base::Value::Type::DICT) {
     NOTREACHED() << "Local state unavailable, not recording stability metrics.";
-    return;
   }
 
   const std::optional<bool> enabled_state = GetArcEnabledState();

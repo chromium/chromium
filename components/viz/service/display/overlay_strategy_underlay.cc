@@ -28,7 +28,7 @@ void OverlayStrategyUnderlay::Propose(
     const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
-    DisplayResourceProvider* resource_provider,
+    const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
     const PrimaryPlane* primary_plane,
@@ -37,8 +37,10 @@ void OverlayStrategyUnderlay::Propose(
   auto* render_pass = render_pass_list->back().get();
   QuadList& quad_list = render_pass->quad_list;
 
-  const OverlayCandidateFactory::OverlayContext context = {
-      .supports_mask_filter = true};
+  OverlayCandidateFactory::OverlayContext context;
+  context.supports_mask_filter = true;
+  context.supports_flip_rotate_transform =
+      capability_checker_->SupportsFlipRotateTransform();
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
@@ -47,6 +49,7 @@ void OverlayStrategyUnderlay::Propose(
 
   for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
     OverlayCandidate candidate;
+    candidate.overlay_type = gfx::OverlayType::kUnderlay;
     if (candidate_factory.FromDrawQuad(*it, candidate) !=
             OverlayCandidate::CandidateStatus::kSuccess ||
         (opaque_mode_ == OpaqueMode::RequireOpaqueCandidates &&
@@ -77,7 +80,7 @@ bool OverlayStrategyUnderlay::Attempt(
     const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
-    DisplayResourceProvider* resource_provider,
+    const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
     const PrimaryPlane* primary_plane,

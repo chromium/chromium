@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/capture/capture_export.h"
 
 namespace media {
@@ -51,13 +51,13 @@ class CAPTURE_EXPORT VideoCaptureGpuChannelHost final
   // failed.
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager();
 
-  // Set gpu::ClientSharedImageInterface by
+  // Set `gpu::SharedImageInterface` by
   // `VideoCaptureServiceImpl::VizGpuContextProvider` from the main thead of
   // utility process. It will be set with
   // `gpu::GpuChannelHost::CreateClientSharedImageInterface()` when calling
   // `VideoCaptureServiceImpl::VizGpuContextProvider::StartContextProviderIfNeeded()`
   // success or set to nullptr if failed.
-  void SetSharedImageInterface(scoped_refptr<gpu::ClientSharedImageInterface>);
+  void SetSharedImageInterface(scoped_refptr<gpu::SharedImageInterface>);
 
   // It will return nullptr when
   // `VideoCaptureServiceImpl::VizGpuContextProvider::StartContextProviderIfNeeded()`
@@ -91,7 +91,7 @@ class CAPTURE_EXPORT VideoCaptureGpuChannelHost final
   // The |shared_image_interface_| is nullptr before set by the
   // `VideoCaptureServiceImpl::VizGpuContextProvider::StartContextProviderIfNeeded()`
   // It is created by Gpu Channel Host that viz::Gpu owns.
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_
       GUARDED_BY(lock_);
 };
 

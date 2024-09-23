@@ -51,7 +51,7 @@ bool ShouldResizeImageRepresentation(
     case ImageLoader::ImageRepresentation::NEVER_RESIZE:
       return false;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -184,24 +184,26 @@ std::vector<ImageLoader::LoadResult> LoadImagesBlocking(
     const ImageLoader::ImageRepresentation& image = info_list[i];
 
     // If we don't have a path there isn't anything we can do, just skip it.
-    if (image.resource.relative_path().empty())
+    if (image.resource.relative_path().empty()) {
       continue;
+    }
 
     SkBitmap bitmap;
-    if (bitmaps[i].isNull())
+    if (bitmaps[i].isNull()) {
       LoadImageBlocking(image, &bitmap);
-    else
+    } else {
       bitmap = bitmaps[i];
+    }
 
     // If the image failed to load, skip it.
-    if (bitmap.isNull() || bitmap.empty())
+    if (bitmap.isNull() || bitmap.empty()) {
       continue;
+    }
 
     gfx::Size original_size(bitmap.width(), bitmap.height());
     bitmap = ResizeIfNeeded(bitmap, image);
 
-    load_result.push_back(
-        ImageLoader::LoadResult(bitmap, original_size, image));
+    load_result.emplace_back(bitmap, original_size, image);
   }
 
   return load_result;
@@ -253,9 +255,9 @@ void ImageLoader::LoadImageAtEveryScaleFactorAsync(
   for (const auto scale : scales) {
     const gfx::Size px_size = gfx::ScaleToFlooredSize(dip_size, scale);
     ExtensionResource image = IconsInfo::GetIconResource(
-        extension, px_size.width(), ExtensionIconSet::MATCH_BIGGER);
-    info_list.push_back(ImageRepresentation(
-        image, ImageRepresentation::ALWAYS_RESIZE, px_size, scale));
+        extension, px_size.width(), ExtensionIconSet::Match::kBigger);
+    info_list.emplace_back(image, ImageRepresentation::ALWAYS_RESIZE, px_size,
+                           scale);
   }
   LoadImagesAsync(extension, info_list, std::move(callback));
 }

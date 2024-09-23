@@ -85,8 +85,10 @@ desc: |-
 # 3. will be available (overriding 2.) if this policy's name is listed in the
 #    EnableExperimentalPolicies policy
 # Currently supported platforms:
-#   `chrome.win`, `chrome.win7`, `chrome.mac`, `chrome.linux`, `chrome.*`
-#   `chrome_os`, `android`, `webview_android`, `ios`, `fuchsia`, `chrome_frame`
+#   `chrome.win`, `chrome.win7`, `chrome.mac`, `chrome.linux`, `chrome_os`
+#   `android`, `webview_android`, `ios`, `fuchsia`, `chrome_frame`.
+#   Additionally, `chrome.*` can be used as an alias for `chrome.win`,
+#   `chrome.win7`, `chrome.mac`, `chrome.linux`.
 #   Note that `chrome_frame` has been deprecated.
 future_on:
 - ios
@@ -97,8 +99,10 @@ future_on:
 # |since_version| and is removed after |until_version|. |until_version|
 # is optional.
 # Currently supported platforms:
-#   `chrome.win`, `chrome.win7`, `chrome.mac`, `chrome.linux`, `chrome.*`
-#   `chrome_os`, `android`, `webview_android`, `ios`, `fuchsia`, `chrome_frame`
+#   `chrome.win`, `chrome.win7`, `chrome.mac`, `chrome.linux`, `chrome_os`
+#   `android`, `webview_android`, `ios`, `fuchsia`, `chrome_frame`.
+#   Additionally, `chrome.*` can be used as an alias for `chrome.win`,
+#   `chrome.win7`, `chrome.mac`, `chrome.linux`.
 #   Note that `chrome_frame` has been deprecated.
 supported_on:
 - android:106-
@@ -142,14 +146,26 @@ features:
   per_profile: true
 
   # Optional field that is `false` by default.
-  # Set to True if the policy can only be set from platform policy but do not
+  # Set to True if the policy can only be set from platform policy but does not
   # support Admin console.
   platform_only: false
 
+  # Optional field that is false by default.
+  # Set to True if the policy can only be set from Admin Console but does not
+  # support any platform management tools.
+  cloud_only: false
+
+  # Optional field that is false by default.
+  # Set to True if the policy can only be set with a signed in managed account
+  # but does not support any other management tools.
+  # It can only be used when 'cloud_only' tag is set to true.
+  # It can only be used when 'per_profile' tag is set to true.
+  user_only: false
+
   # Set to True if the policy is controlled by Admin Console without any user
-  # interface for administrator. It can only be used for policies with the
-  # 'cloud_only' tag. Policy that are 'unlisted' will be hidden from all
-  # documentations, policy templates and Admin Console UI.
+  # interface for administrator. Policy that are 'unlisted' will be hidden from
+  # all documentations, policy templates and Admin Console UI.
+  # It can only be used when 'cloud_only' tag is set to true.
   unlisted: false
 
   # Optional field.
@@ -375,3 +391,10 @@ max_size: 123456
 #   - user-description: A text that helps users understand what a policy with
 #       this tag means for their privacy and/or security.
 tags: []
+
+# Automatically generate proto definitions for the policy.
+# Only applies to device policies, for user policies this is always true.
+# Currently only generates an entry in device_policy_proto_map. More code
+# generation is planned in the future.
+# Default setting is true.
+generate_device_proto: true

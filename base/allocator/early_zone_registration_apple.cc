@@ -7,8 +7,8 @@
 #include <mach/mach.h>
 #include <malloc/malloc.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/early_zone_registration_constants.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/shim/early_zone_registration_constants.h"
 
 // BASE_EXPORT tends to be defined as soon as anything from //base is included.
 #if defined(BASE_EXPORT)
@@ -17,7 +17,7 @@
 
 namespace partition_alloc {
 
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 void EarlyMallocZoneRegistration() {}
 void AllowDoublePartitionAllocZoneRegistration() {}
@@ -262,5 +262,5 @@ void AllowDoublePartitionAllocZoneRegistration() {
   }
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }  // namespace partition_alloc

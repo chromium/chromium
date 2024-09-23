@@ -14,15 +14,11 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-
-namespace heap_profiling {
-class HeapProfilerControllerTest;
-}
 
 namespace base {
 
@@ -84,6 +80,36 @@ class BASE_EXPORT PoissonAllocationSampler {
     static bool IsSuppressed();
   };
 
+  // An instance of this class makes the sampler only report samples with
+  // AllocatorType kManualForTesting, not those from hooked allocators. This
+  // allows unit tests to set test expectations based on only explicit calls to
+  // RecordAlloc and RecordFree.
+  //
+  // The accumulated bytes on the thread that creates a
+  // ScopedMuteHookedSamplesForTesting will also be reset to 0, and restored
+  // when the object leaves scope. This gives tests a known state to start
+  // recording samples on one thread: a full interval must pass to record a
+  // sample. Other threads will still have a random number of accumulated bytes.
+  //
+  // Only one instance may exist at a time.
+  class BASE_EXPORT ScopedMuteHookedSamplesForTesting {
+   public:
+    ScopedMuteHookedSamplesForTesting();
+    ~ScopedMuteHookedSamplesForTesting();
+
+    // Move-only.
+    ScopedMuteHookedSamplesForTesting(
+        const ScopedMuteHookedSamplesForTesting&) = delete;
+    ScopedMuteHookedSamplesForTesting& operator=(
+        const ScopedMuteHookedSamplesForTesting&) = delete;
+    ScopedMuteHookedSamplesForTesting(ScopedMuteHookedSamplesForTesting&&);
+    ScopedMuteHookedSamplesForTesting& operator=(
+        ScopedMuteHookedSamplesForTesting&&);
+
+   private:
+    intptr_t accumulated_bytes_snapshot_;
+  };
+
   // Must be called early during the process initialization. It creates and
   // reserves a TLS slot.
   static void Init();
@@ -116,9 +142,8 @@ class BASE_EXPORT PoissonAllocationSampler {
   PoissonAllocationSampler(const PoissonAllocationSampler&) = delete;
   PoissonAllocationSampler& operator=(const PoissonAllocationSampler&) = delete;
 
-  // Returns true if a ScopedMuteHookedSamplesForTesting exists. Only friends
-  // can create a ScopedMuteHookedSamplesForTesting but anyone can check the
-  // status of this. This can be read from any thread.
+  // Returns true if a ScopedMuteHookedSamplesForTesting exists. This can be
+  // read from any thread.
   static bool AreHookedSamplesMuted() {
     return profiling_state_.load(std::memory_order_relaxed) &
            ProfilingStateFlag::kHookedSamplesMutedForTesting;
@@ -139,32 +164,6 @@ class BASE_EXPORT PoissonAllocationSampler {
     kHookedSamplesMutedForTesting = 1 << 2,
   };
   using ProfilingStateFlagMask = int;
-
-  // An instance of this class makes the sampler only report samples with
-  // AllocatorType kManualForTesting, not those from hooked allocators. This
-  // allows unit tests to set test expectations based on only explicit calls to
-  // RecordAlloc and RecordFree.
-  //
-  // The accumulated bytes on the thread that creates a
-  // ScopedMuteHookedSamplesForTesting will also be reset to 0, and restored
-  // when the object leaves scope. This gives tests a known state to start
-  // recording samples on one thread: a full interval must pass to record a
-  // sample. Other threads will still have a random number of accumulated bytes.
-  //
-  // Only one instance may exist at a time.
-  class BASE_EXPORT ScopedMuteHookedSamplesForTesting {
-   public:
-    ScopedMuteHookedSamplesForTesting();
-    ~ScopedMuteHookedSamplesForTesting();
-
-    ScopedMuteHookedSamplesForTesting(
-        const ScopedMuteHookedSamplesForTesting&) = delete;
-    ScopedMuteHookedSamplesForTesting& operator=(
-        const ScopedMuteHookedSamplesForTesting&) = delete;
-
-   private:
-    intptr_t accumulated_bytes_snapshot_;
-  };
 
   PoissonAllocationSampler();
   ~PoissonAllocationSampler() = delete;
@@ -204,13 +203,17 @@ class BASE_EXPORT PoissonAllocationSampler {
   // operations under the lock) as such the SamplesObservers themselves need
   // to be thread-safe and support being invoked racily after
   // RemoveSamplesObserver().
-  std::vector<raw_ptr<SamplesObserver, VectorExperimental>> observers_
-      GUARDED_BY(mutex_);
+  //
+  // This class handles allocation, so it must never use raw_ptr<T>. In
+  // particular, raw_ptr<T> with `enable_backup_ref_ptr_instance_tracer`
+  // developer option allocates memory, which would cause reentrancy issues:
+  // allocating memory while allocating memory.
+  // More details in https://crbug.com/340815319
+  RAW_PTR_EXCLUSION std::vector<SamplesObserver*> observers_ GUARDED_BY(mutex_);
 
   // Fast, thread-safe access to the current profiling state.
   static std::atomic<ProfilingStateFlagMask> profiling_state_;
 
-  friend class heap_profiling::HeapProfilerControllerTest;
   friend class NoDestructor<PoissonAllocationSampler>;
   friend class PoissonAllocationSamplerStateTest;
   friend class SamplingHeapProfilerTest;
@@ -226,7 +229,7 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnAllocation(
   // because it's the most common case.
   const ProfilingStateFlagMask state =
       profiling_state_.load(std::memory_order_relaxed);
-  if (LIKELY(!(state & ProfilingStateFlag::kWasStarted))) {
+  if (!(state & ProfilingStateFlag::kWasStarted)) [[likely]] {
     return;
   }
 
@@ -236,9 +239,10 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnAllocation(
   // RecordAlloc. (This doesn't need to be checked in RecordFree because muted
   // allocations won't be added to sampled_addresses_set(), so RecordFree
   // already skips them.)
-  if (UNLIKELY((state & ProfilingStateFlag::kHookedSamplesMutedForTesting) &&
-               type != base::allocator::dispatcher::AllocationSubsystem::
-                           kManualForTesting)) {
+  if ((state & ProfilingStateFlag::kHookedSamplesMutedForTesting) &&
+      type !=
+          base::allocator::dispatcher::AllocationSubsystem::kManualForTesting)
+      [[unlikely]] {
     return;
   }
 
@@ -247,7 +251,7 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnAllocation(
   // only (please see docs of ReentryGuard for full details).
   allocator::dispatcher::ReentryGuard reentry_guard;
 
-  if (UNLIKELY(!reentry_guard)) {
+  if (!reentry_guard) [[unlikely]] {
     return;
   }
 
@@ -306,19 +310,19 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnFree(
   //        outcome as the existing race.
   const ProfilingStateFlagMask state =
       profiling_state_.load(std::memory_order_relaxed);
-  if (LIKELY(!(state & ProfilingStateFlag::kWasStarted))) {
+  if (!(state & ProfilingStateFlag::kWasStarted)) [[likely]] {
     return;
   }
 
   void* const address = free_data.address();
 
-  if (UNLIKELY(address == nullptr)) {
+  if (address == nullptr) [[unlikely]] {
     return;
   }
-  if (LIKELY(!sampled_addresses_set().Contains(address))) {
+  if (!sampled_addresses_set().Contains(address)) [[likely]] {
     return;
   }
-  if (UNLIKELY(ScopedMuteThreadSamples::IsMuted())) {
+  if (ScopedMuteThreadSamples::IsMuted()) [[unlikely]] {
     return;
   }
 

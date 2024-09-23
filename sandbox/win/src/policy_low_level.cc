@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "sandbox/win/src/policy_low_level.h"
 
 #include <stddef.h>
@@ -21,7 +26,6 @@ const size_t kRuleBufferSize = 1024 * 4;
 enum {
   PENDING_NONE,
   PENDING_ASTERISK,  // Have seen an '*' but have not generated an opcode.
-  PENDING_QMARK,     // Have seen an '?' but have not generated an opcode.
 };
 
 // The category of the last character seen by the string matching opcode
@@ -30,7 +34,6 @@ const uint32_t kLastCharIsNone = 0;
 const uint32_t kLastCharIsAlpha = 1;
 const uint32_t kLastCharIsWild = 2;
 const uint32_t kLastCharIsAsterisk = kLastCharIsWild + 4;
-const uint32_t kLastCharIsQuestionM = kLastCharIsWild + 8;
 
 }  // namespace
 
@@ -85,7 +88,7 @@ bool LowLevelPolicy::Done() {
 
   for (Mmap::iterator it = mmap.begin(); it != mmap.end(); ++it) {
     IpcTag service = (*it).first;
-    if (static_cast<size_t>(service) >= kMaxServiceCount) {
+    if (service > IpcTag::kMaxValue) {
       return false;
     }
     policy_store_->entry[static_cast<size_t>(service)] = current_buffer;
@@ -200,11 +203,6 @@ bool PolicyRule::GenStringOpcode(RuleType rule_type,
       op = opcode_factory_->MakeOpWStringMatch(parameter, fragment->c_str(),
                                                kSeekForward, options, false);
     }
-
-  } else if (PENDING_QMARK == state) {
-    op = opcode_factory_->MakeOpWStringMatch(parameter, fragment->c_str(),
-                                             *skip_count, options, false);
-    *skip_count = 0;
   } else {
     op = opcode_factory_->MakeOpWStringMatch(parameter, fragment->c_str(), 0,
                                              options, last_call);
@@ -244,24 +242,9 @@ bool PolicyRule::AddStringMatch(RuleType rule_type,
         last_char = kLastCharIsAsterisk;
         state = PENDING_ASTERISK;
         break;
-      case L'?':
-        if (kLastCharIsAsterisk == last_char) {
-          // '*?' is an error.
-          return false;
-        }
-        if (!GenStringOpcode(rule_type, parameter, state, false, &skip_count,
-                             &fragment)) {
-          return false;
-        }
-        ++skip_count;
-        last_char = kLastCharIsQuestionM;
-        state = PENDING_QMARK;
-        break;
       case L'/':
-        // Note: "/?" is an escaped '?'. Eat the slash and fall through.
-        if (L'?' == current_char[1]) {
-          ++current_char;
-        }
+        // Check that someone isn't using the old syntax.
+        CHECK(L'?' != current_char[1]);
         [[fallthrough]];
       default:
         fragment += *current_char;
@@ -270,11 +253,8 @@ bool PolicyRule::AddStringMatch(RuleType rule_type,
     ++current_char;
   }
 
-  if (!GenStringOpcode(rule_type, parameter, state, true, &skip_count,
-                       &fragment)) {
-    return false;
-  }
-  return true;
+  return GenStringOpcode(rule_type, parameter, state, true, &skip_count,
+                         &fragment);
 }
 
 bool PolicyRule::AddNumberMatch(RuleType rule_type,

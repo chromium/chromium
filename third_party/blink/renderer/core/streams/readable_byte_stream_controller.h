@@ -154,8 +154,7 @@ class CORE_EXPORT ReadableByteStreamController
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-process-pull-into-descriptors-using-queue
   static void ProcessPullIntoDescriptorsUsingQueue(
       ScriptState*,
-      ReadableByteStreamController*,
-      ExceptionState&);
+      ReadableByteStreamController*);
 
   // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerprocessreadrequestsusingqueue
   static void ProcessReadRequestsUsingQueue(ScriptState*,
@@ -219,7 +218,8 @@ class CORE_EXPORT ReadableByteStreamController
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-fill-pull-into-descriptor-from-queue
   static bool FillPullIntoDescriptorFromQueue(ReadableByteStreamController*,
-                                              PullIntoDescriptor*);
+                                              PullIntoDescriptor*,
+                                              ExceptionState&);
 
   // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerfillreadrequestfromqueue
   static void FillReadRequestFromQueue(ScriptState*,

@@ -134,6 +134,16 @@ export class MetricsUtils {
         return MetricsUtils.TtsEngineUsed.UNKNOWN;
     }
   }
+
+  /**
+   * Record the number of OCRed pages in the PDF file opened with STS in Chrome
+   * PDF Viewer.
+   * @param numOcredPages Number of OCRed pages in the PDF file
+   */
+  static recordNumPdfPagesOcred(numOcredPages: number): void {
+    chrome.metricsPrivate.recordMediumCount(
+        MetricsUtils.PDF_OCR_PAGES_OCRED_METRIC, numOcredPages);
+  }
 }
 
 export namespace MetricsUtils {
@@ -255,4 +265,6 @@ export namespace MetricsUtils {
   export const OVERRIDE_SPEECH_RATE_MULTIPLIER_METRIC =
       'Accessibility.CrosSelectToSpeak.OverrideSpeechRateMultiplier';
 
+  export const PDF_OCR_PAGES_OCRED_METRIC =
+      'Accessibility.PdfOcr.CrosSelectToSpeak.PagesOcred';
 }

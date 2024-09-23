@@ -9,7 +9,9 @@
           "PrintRasterizationMode": 1
         },
         "prefs": {
-          "printing.rasterization_mode": {}
+          "printing.rasterization_mode": {
+            "value": 1
+          }
         }
       }
     ]

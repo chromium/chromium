@@ -8,6 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
 
 namespace password_manager {
@@ -31,6 +32,21 @@ class PasswordSettingsUpdaterAndroidReceiverBridge {
     // Asynchronous response called if there is no explicit value set for
     // `setting`.
     virtual void OnSettingValueAbsent(PasswordManagerSetting setting) = 0;
+
+    // Asynchronous response called if there was an error while fetching setting
+    // value.
+    virtual void OnSettingFetchingError(
+        PasswordManagerSetting setting,
+        AndroidBackendAPIErrorCode api_error_code) = 0;
+
+    // Asynchronous response called after setting value was set successfully.
+    virtual void OnSuccessfulSettingChange(PasswordManagerSetting setting) = 0;
+
+    // Asynchronous response called if there call to change setting value
+    // failed.
+    virtual void OnFailedSettingChange(
+        PasswordManagerSetting setting,
+        AndroidBackendAPIErrorCode api_error_code) = 0;
   };
 
   virtual ~PasswordSettingsUpdaterAndroidReceiverBridge() = default;

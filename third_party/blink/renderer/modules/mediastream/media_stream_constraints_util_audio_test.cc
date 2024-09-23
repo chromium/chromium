@@ -192,6 +192,14 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     }
   }
 
+  base::expected<Vector<blink::AudioCaptureSettings>, std::string>
+  SelectEligibleSettings(bool is_reconfigurable = false) {
+    MediaConstraints constraints = constraint_factory_.CreateMediaConstraints();
+    return SelectEligibleSettingsAudioCapture(
+        capabilities_, constraints, GetMediaStreamType(),
+        /*should_disable_hardware_noise_suppression=*/false, is_reconfigurable);
+  }
+
   // When googExperimentalEchoCancellation is not explicitly set, its default
   // value is always false on Android. On other platforms it behaves like other
   // audio-processing properties.
@@ -450,14 +458,12 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
 
   blink::MockConstraintFactory constraint_factory_;
   AudioDeviceCaptureCapabilities capabilities_;
-  raw_ptr<const AudioDeviceCaptureCapability, ExperimentalRenderer>
-      default_device_ = nullptr;
-  raw_ptr<const AudioDeviceCaptureCapability, ExperimentalRenderer>
-      system_echo_canceller_device_ = nullptr;
-  raw_ptr<const AudioDeviceCaptureCapability, ExperimentalRenderer>
-      four_channels_device_ = nullptr;
-  raw_ptr<const AudioDeviceCaptureCapability, ExperimentalRenderer>
-      variable_latency_device_ = nullptr;
+  raw_ptr<const AudioDeviceCaptureCapability> default_device_ = nullptr;
+  raw_ptr<const AudioDeviceCaptureCapability> system_echo_canceller_device_ =
+      nullptr;
+  raw_ptr<const AudioDeviceCaptureCapability> four_channels_device_ = nullptr;
+  raw_ptr<const AudioDeviceCaptureCapability> variable_latency_device_ =
+      nullptr;
   std::unique_ptr<ProcessedLocalAudioSource> system_echo_canceller_source_;
   const WTF::Vector<media::Point> kMicPositions = {{8, 8, 8}, {4, 4, 4}};
 
@@ -593,7 +599,7 @@ class MediaStreamConstraintsRemoteAPMTest
       case ChromeWideAecExperiment::kEnabledWithResamplingMitigation:
         return ApmLocation::kAudioServiceAvoidResampling;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:
@@ -958,13 +964,13 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SampleRate) {
   // difference on Android.
   int max_sample_rate =
       std::max(static_cast<int>(media::AudioParameters::kAudioCDSampleRate),
-               media::kAudioProcessingSampleRateHz);
+               media::WebRtcAudioProcessingSampleRateHz());
   int ideal_sample_rate = webrtc::AudioProcessing::kSampleRate8kHz;
   if (!IsDeviceCapture()) {
     exact_sample_rate = media::AudioParameters::kAudioCDSampleRate;
     min_sample_rate =
         std::min(static_cast<int>(media::AudioParameters::kAudioCDSampleRate),
-                 media::kAudioProcessingSampleRateHz);
+                 media::WebRtcAudioProcessingSampleRateHz());
     ideal_sample_rate = media::AudioParameters::kAudioCDSampleRate;
   }
 
@@ -2053,6 +2059,37 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, ExperimentalEcWithSource) {
             EchoCancellationType::kEchoCancellationDisabled);
 }
 
+TEST_P(MediaStreamConstraintsUtilAudioTest,
+       SelectEligibleSettingsAudioDeviceCapture_NoEligibleDevices) {
+  if (!IsDeviceCapture()) {
+    // This test is irrelevant for non-device captures.
+    return;
+  }
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact("NONEXISTING");
+  auto result = SelectEligibleSettings();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(constraint_factory_.basic().device_id.GetName(), result.error());
+}
+
+TEST_P(MediaStreamConstraintsUtilAudioTest,
+       SelectEligibleSettingsAudioDeviceCapture_IncludesEligibleDevices) {
+  if (!IsDeviceCapture()) {
+    // This test is irrelevant for non-device captures.
+    return;
+  }
+  constraint_factory_.Reset();
+  constraint_factory_.basic().sample_rate.SetExact(
+      media::AudioParameters::kAudioCDSampleRate);
+  auto result = SelectEligibleSettings();
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(4u, result.value().size());
+  EXPECT_EQ("default_device", result.value()[0].device_id());
+  EXPECT_EQ("system_echo_canceller_device", result.value()[1].device_id());
+  EXPECT_EQ("4_channels_device", result.value()[2].device_id());
+  EXPECT_EQ("variable_latency_device", result.value()[3].device_id());
+}
+
 TEST_P(MediaStreamConstraintsRemoteAPMTest, DeviceSampleRate) {
   SCOPED_TRACE(GetMessageForScopedTrace());
 
@@ -2078,7 +2115,7 @@ TEST_P(MediaStreamConstraintsRemoteAPMTest,
   AudioCaptureSettings result;
   ResetFactory();
   constraint_factory_.basic().sample_rate.SetExact(
-      media::kAudioProcessingSampleRateHz);
+      media::WebRtcAudioProcessingSampleRateHz());
   constraint_factory_.basic().echo_cancellation.SetExact(true);
   result = SelectSettings();
 

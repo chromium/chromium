@@ -7,20 +7,21 @@
  * APNs
  */
 
-import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
+import '//resources/ash/common/cr_elements/localized_link/localized_link.js';
 import './network_shared.css.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import 'chrome://resources/ash/common/network/apn_list_item.js';
-import 'chrome://resources/ash/common/network/apn_detail_dialog.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import '//resources/ash/common/network/apn_list_item.js';
+import '//resources/ash/common/network/apn_detail_dialog.js';
+import '//resources/ash/common/network/apn_selection_dialog.js';
 import '//resources/ash/common/cr_elements/icons.html.js';
 
 import {assert} from '//resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {ApnDetailDialog} from '//resources/ash/common/network/apn_detail_dialog.js';
+import {ApnDetailDialogMode, ApnEventData, isAttachApn, isDefaultApn} from '//resources/ash/common/network/cellular_utils.js';
+import {ApnProperties, ApnSource, ApnState, ApnType, ManagedCellularProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ApnDetailDialogMode, ApnEventData} from 'chrome://resources/ash/common/network/cellular_utils.js';
-import {ApnProperties, ApnState, ApnType, ManagedCellularProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {getTemplate} from './apn_list.html.js';
 
@@ -66,11 +67,23 @@ export class ApnList extends ApnListBase {
         value: false,
       },
 
+      shouldDisallowApnModification: {
+        type: Boolean,
+        value: false,
+      },
+
       /** @private */
       apns_: {
         type: Object,
         value: [],
         computed: 'computeApns_(managedCellularProperties)',
+      },
+
+      /** @private */
+      hasEnabledDefaultCustomApn_: {
+        type: Boolean,
+        computed:
+            'computeHasEnabledDefaultCustomApn_(managedCellularProperties)',
       },
 
       /** @private */
@@ -88,18 +101,40 @@ export class ApnList extends ApnListBase {
         type: Object,
         value: ApnDetailDialogMode.CREATE,
       },
+
+      /** @private */
+      shouldShowApnSelectionDialog_: {
+        type: Boolean,
+        value: false,
+      },
     };
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onZeroStateCreateApnLinkClicked_(e) {
+    // A place holder href with the value "#" is used to have a compliant link.
+    // This prevents the browser from navigating the window to "#"
+    e.detail.event.preventDefault();
+    e.stopPropagation();
+    this.openApnDetailDialogInCreateMode();
   }
 
   openApnDetailDialogInCreateMode() {
     this.showApnDetailDialog_(ApnDetailDialogMode.CREATE, /* apn= */ undefined);
   }
 
+  openApnSelectionDialog() {
+    this.shouldShowApnSelectionDialog_ = true;
+  }
+
   /**
    * @return {boolean}
    * @private
    */
-  shouldShowZeroStateText_() {
+  shouldShowZeroStateContent_() {
     if (!this.managedCellularProperties) {
       return true;
     }
@@ -113,8 +148,7 @@ export class ApnList extends ApnListBase {
       return false;
     }
 
-    const customApnList = this.managedCellularProperties.customApnList;
-    return !customApnList || customApnList.length === 0;
+    return !this.getCustomApnList_().length;
   }
 
   /**
@@ -141,9 +175,7 @@ export class ApnList extends ApnListBase {
       return '';
     }
 
-    const customApnList = this.managedCellularProperties.customApnList;
-    if (customApnList &&
-        customApnList.some(apn => apn.state === ApnState.kEnabled)) {
+    if (this.getCustomApnList_().some(apn => apn.state === ApnState.kEnabled)) {
       return this.i18n('apnSettingsCustomApnsErrorMessage');
     }
 
@@ -162,29 +194,16 @@ export class ApnList extends ApnListBase {
       return [];
     }
 
-    const connectedApn = this.managedCellularProperties.connectedApn;
-    const customApnList = this.managedCellularProperties.customApnList;
+    const {connectedApn} = this.managedCellularProperties;
+    const customApnList = this.getCustomApnList_();
 
-    if (!connectedApn) {
-      return customApnList || [];
+    // Move the connected APN to the front if it exists
+    if (connectedApn) {
+      const customApnsWithoutConnectedApn =
+          customApnList.filter(apn => apn.id !== connectedApn.id);
+      return [connectedApn, ...customApnsWithoutConnectedApn];
     }
-
-    if (!customApnList || customApnList.length === 0) {
-      return [connectedApn];
-    }
-
-    const connectedApnIndex =
-        customApnList.findIndex((apn) => apn.id === connectedApn.id);
-
-    // Create a copy of customApnList, moving the connectedApn, if it exists, to
-    // the front of the list.
-    const apns = [connectedApn];
-    for (let i = 0; i < customApnList.length; i++) {
-      if (i !== connectedApnIndex) {
-        apns.push(customApnList[i]);
-      }
-    }
-    return apns;
+    return customApnList;
   }
 
   /**
@@ -211,21 +230,15 @@ export class ApnList extends ApnListBase {
       return true;
     }
 
-    const customApnList = this.managedCellularProperties.customApnList;
-    if (!customApnList) {
-      return false;
-    }
-
+    const customApnList = this.getCustomApnList_();
     if (!customApnList.some(
-            apn => !!apn.apnTypes && apn.apnTypes.includes(ApnType.kAttach) &&
-                !apn.apnTypes.includes(ApnType.kDefault) &&
+            apn => isAttachApn(apn) && !isDefaultApn(apn) &&
                 apn.state === ApnState.kEnabled)) {
       return false;
     }
 
     const defaultEnabledApnList = customApnList.filter(
-        apn => !!apn.apnTypes && apn.apnTypes.includes(ApnType.kDefault) &&
-            apn.state === ApnState.kEnabled);
+        apn => isDefaultApn(apn) && apn.state === ApnState.kEnabled);
 
     return defaultEnabledApnList.length === 1 &&
         currentApn.id === defaultEnabledApnList[0].id;
@@ -244,20 +257,11 @@ export class ApnList extends ApnListBase {
       return true;
     }
 
-    const customApnList = this.managedCellularProperties.customApnList;
-    if (!customApnList) {
+    if (this.hasEnabledDefaultCustomApn_) {
       return false;
     }
 
-    if (customApnList.some(
-            apn => !!apn.apnTypes && apn.apnTypes.includes(ApnType.kDefault) &&
-                apn.state === ApnState.kEnabled)) {
-      return false;
-    }
-
-    return !!currentApn.apnTypes &&
-        currentApn.apnTypes.includes(ApnType.kAttach) &&
-        !currentApn.apnTypes.includes(ApnType.kDefault);
+    return isAttachApn(currentApn) && !isDefaultApn(currentApn);
   }
 
   /**
@@ -300,11 +304,49 @@ export class ApnList extends ApnListBase {
   }
 
   /**
+   *
+   * @param event {!Event}
+   * @private
+   */
+  onApnSelectionDialogClose_(event) {
+    this.shouldShowApnSelectionDialog_ = false;
+  }
+
+  /**
    * @returns {Array<ApnProperties>}
    * @private
    */
-  getCustomApns_() {
-    return this.managedCellularProperties.customApnList ?? [];
+  getCustomApnList_() {
+    return this.managedCellularProperties?.customApnList ?? [];
+  }
+
+  /**
+   * @returns {boolean}
+   * @private
+   */
+  computeHasEnabledDefaultCustomApn_() {
+    return this.getCustomApnList_().some(
+        (apn) => apn.state === ApnState.kEnabled && isDefaultApn(apn));
+  }
+
+  /**
+   * @returns {Array<ApnProperties>}
+   * @private
+   */
+  getValidDatabaseApnList_() {
+    const databaseApnList =
+        this.managedCellularProperties?.apnList?.activeValue ?? [];
+    return databaseApnList.filter((apn) => {
+      if (apn.source !== ApnSource.kModb) {
+        return false;
+      }
+
+      // Only APNs that have type default are allowed unless an enabled custom
+      // APN of type default already exists. In that case, APNs that are of type
+      // attach are also permitted.
+      return isDefaultApn(apn) ||
+          (this.hasEnabledDefaultCustomApn_ && isAttachApn(apn));
+    });
   }
 }
 

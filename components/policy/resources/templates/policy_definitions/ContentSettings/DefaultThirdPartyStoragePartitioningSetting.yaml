@@ -27,7 +27,7 @@ schema:
   - 2
   type: integer
 supported_on:
-# TODO(crbug.com/1422357): Deprecate this when origin trial ends (likely M123)
+# TODO(crbug.com/40896849): Deprecate this when origin trial ends (likely M123)
 - android:113-
 - chrome.*:113-
 - chrome_os:113-

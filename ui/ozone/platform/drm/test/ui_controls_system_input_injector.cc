@@ -175,7 +175,7 @@ bool UIControlsSystemInputInjector::SendMouseEventsNotifyWhenDone(
       changed_button_flag = ui::EF_RIGHT_MOUSE_BUTTON;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

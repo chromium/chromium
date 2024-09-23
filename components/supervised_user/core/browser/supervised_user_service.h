@@ -26,10 +26,6 @@ class PrefService;
 class SupervisedUserServiceObserver;
 class SupervisedUserServiceFactory;
 
-namespace base {
-class Version;
-}  // namespace base
-
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -44,20 +40,20 @@ class SupervisedUserSettingsService;
 // This class handles all the information related to a given supervised profile
 // (e.g. the default URL filtering behavior, or manual allowlist/denylist
 // overrides).
-class SupervisedUserService : public KeyedService,
-                              public SupervisedUserURLFilter::Observer {
+class SupervisedUserService : public KeyedService {
  public:
-  class Delegate {
-   public:
-    virtual ~Delegate() {}
-    // Allows the delegate to handle the (de)activation in a custom way.
-    virtual void SetActive(bool active) = 0;
-  };
-
   // Delegate encapsulating platform-specific logic that is invoked from SUS.
   class PlatformDelegate {
    public:
     virtual ~PlatformDelegate() {}
+
+    // Returns the country code stored for this client.
+    // Country code is in the format of lowercase ISO 3166-1 alpha-2. Example:
+    // us, br, in.
+    virtual std::string GetCountryCode() const = 0;
+
+    // Returns the channel for the installation.
+    virtual version_info::Channel GetChannel() const = 0;
 
     // Close all incognito tabs for this service. Called the profile becomes
     // supervised.
@@ -76,17 +72,10 @@ class SupervisedUserService : public KeyedService,
   // Initializes this object.
   void Init();
 
-  void SetDelegate(Delegate* delegate);
-
   // Returns the URL filter for filtering navigations and classifying sites in
   // the history view. Both this method and the returned filter may only be used
   // on the UI thread.
-  supervised_user::SupervisedUserURLFilter* GetURLFilter();
-
-  // Get the string used to identify an extension install or update request.
-  // Public for testing.
-  static std::string GetExtensionRequestId(const std::string& extension_id,
-                                           const base::Version& version);
+  supervised_user::SupervisedUserURLFilter* GetURLFilter() const;
 
   // Returns the email address of the custodian.
   std::string GetCustodianEmailAddress() const;
@@ -114,14 +103,15 @@ class SupervisedUserService : public KeyedService,
   // up to 2 custodians, and this returns true if they have at least 1.
   bool HasACustodian() const;
 
+  // Returns true if the url is blocked due to supervision restrictions on the
+  // primary account user.
+  bool IsBlockedURL(const GURL& url) const;
+
   void AddObserver(SupervisedUserServiceObserver* observer);
   void RemoveObserver(SupervisedUserServiceObserver* observer);
 
   // ProfileKeyedService override:
   void Shutdown() override;
-
-  // SupervisedUserURLFilter::Observer implementation:
-  void OnSiteListUpdated() override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool signout_required_after_supervision_enabled() {
@@ -149,7 +139,6 @@ class SupervisedUserService : public KeyedService,
       PrefService& user_prefs,
       supervised_user::SupervisedUserSettingsService& settings_service,
       syncer::SyncService* sync_service,
-      ValidateURLSupportCallback check_webstore_url_callback,
       std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
           url_filter_delegate,
       std::unique_ptr<supervised_user::SupervisedUserService::PlatformDelegate>
@@ -168,6 +157,24 @@ class SupervisedUserService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(SupervisedUserServiceTest, InterstitialBannerState);
   FRIEND_TEST_ALL_PREFIXES(SupervisedUserNavigationThrottleTest,
                            BlockedMatureSitesRecordedInBlockSafeSitesBucket);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
+                           BlockedMatureSitesRecordedInBlockSafeSitesBucket);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
+                           ClassificationIsFasterThanHttp);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
+                           ClassificationIsSlowerThanHttp);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
+                           ReverseOrderOfResponsesAfterContentIsReady);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
+                           ClassificationIsFasterThanHttp);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
+                           ClassificationIsSlowerThanHttp);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
+                           ShortCircuitsSynchronousBlock);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
+                           HandlesLateAsynchronousBlock);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleParallelizationTest,
+                           OutOfOrderClassification);
 
   // Method used in testing to set the given test_filter as the url_filter_
   void SetURLFilterForTesting(
@@ -206,8 +213,6 @@ class SupervisedUserService : public KeyedService,
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   bool active_ = false;
-
-  raw_ptr<Delegate> delegate_;
 
   std::unique_ptr<PlatformDelegate> platform_delegate_;
 

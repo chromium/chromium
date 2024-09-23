@@ -37,6 +37,11 @@ message SystemWebAppDataProto {
     FACE_ML = 24;
     VC_BACKGROUND = 25;
     PRINT_PREVIEW_CROS = 26;
+    BOCA = 27;
+    MALL = 28;
+    OS_SANITIZE = 29;
+    RECORDER = 30;
+    GRADUATION = 31;
   };
 
   optional SystemWebAppType system_app_type = 1;

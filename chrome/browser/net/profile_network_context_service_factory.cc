@@ -6,9 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/net/profile_network_context_service.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "crypto/crypto_buildflags.h"
 
@@ -39,9 +37,12 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
           // Create separate service for incognito profiles.
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
 #if BUILDFLAG(USE_NSS_CERTS)
   // On platforms that use NSS, NSS should be initialized when a
@@ -53,9 +54,6 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DependsOn(chromeos::CertificateProviderServiceFactory::GetInstance());
 #endif
-  DependsOn(PrivacySandboxSettingsFactory::GetInstance());
-  DependsOn(
-      first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance());
 }
 
 ProfileNetworkContextServiceFactory::~ProfileNetworkContextServiceFactory() =

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capture/video/chromeos/request_manager.h"
 
 #include <map>
@@ -46,6 +51,20 @@ class MockStreamCaptureInterface : public StreamCaptureInterface {
   MOCK_METHOD2(DoProcessCaptureRequest,
                void(cros::mojom::Camera3CaptureRequestPtr& request,
                     base::OnceCallback<void(int32_t)>& callback));
+
+  void OnNewBuffer(ClientType client_type,
+                   cros::mojom::CameraBufferHandlePtr buffer) override {
+    DoOnNewBuffer(client_type, std::move(buffer));
+  }
+  MOCK_METHOD2(DoOnNewBuffer,
+               void(ClientType client_type,
+                    cros::mojom::CameraBufferHandlePtr buffer));
+
+  void OnBufferRetired(ClientType client_type, uint64_t buffer_id) override {
+    DoOnBufferRetired(client_type, buffer_id);
+  }
+  MOCK_METHOD2(DoOnBufferRetired,
+               void(ClientType client_type, uint64_t buffer_id));
 
   void Flush(base::OnceCallback<void(int32_t)> callback) override {
     DoFlush(callback);
@@ -602,6 +621,6 @@ TEST_P(RequestManagerTest, BufferErrorTest) {
 INSTANTIATE_TEST_SUITE_P(, RequestManagerTest, ::testing::Bool());
 
 // Test that preview and still capture buffers can be correctly submitted.
-// TODO(crbug.com/917574): Add take photo test.
+// TODO(crbug.com/40607619): Add take photo test.
 
 }  // namespace media

@@ -57,4 +57,4 @@ bool NV12xToI420x(const VideoFrame& src_frame, VideoFrame& dst_frame);
 
 }  // namespace media::internals
 
-#endif  // MEDIA_BASE_VIDEO_FRAME_CONVERTER_H_
+#endif  // MEDIA_BASE_VIDEO_FRAME_CONVERTER_INTERNALS_H_

@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 
+#import <UIKit/UIKit.h>
+
+#import <string_view>
+
 #import "base/apple/bundle_locations.h"
 #import "base/command_line.h"
 #import "base/feature_list.h"
@@ -23,7 +27,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/supervised_user/core/common/buildflags.h"
+#import "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
@@ -34,6 +38,9 @@
 #import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
 #import "ios/chrome/browser/ntp/model/browser_policy_new_tab_page_rewriter.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/permissions/model/features.h"
+#import "ios/chrome/browser/permissions/model/geolocation_api_usage_java_script_feature.h"
+#import "ios/chrome/browser/permissions/model/media_api_usage_java_script_feature.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/offline_page_tab_helper.h"
@@ -43,13 +50,18 @@
 #import "ios/chrome/browser/search_engines/model/search_engine_java_script_feature.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_tab_helper_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/windowed_container_view.h"
 #import "ios/chrome/browser/ssl/model/ios_ssl_error_handler.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_error.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_interstitial_java_script_feature.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_url_filter_tab_helper.h"
 #import "ios/chrome/browser/web/model/browser_about_rewriter.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_java_script_feature.h"
 #import "ios/chrome/browser/web/model/chrome_main_parts.h"
@@ -60,7 +72,6 @@
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature.h"
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature_factory.h"
 #import "ios/chrome/browser/web/model/print/print_java_script_feature.h"
-#import "ios/chrome/browser/web/model/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_java_script_feature.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_java_script_feature.h"
 #import "ios/chrome/common/channel_info.h"
@@ -95,17 +106,6 @@
 #import "ui/base/resource/resource_bundle.h"
 #import "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#import "components/supervised_user/core/browser/supervised_user_interstitial.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_error.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_interstitial_java_script_feature.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_url_filter_tab_helper.h"
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
-#import <UIKit/UIKit.h>
-
 namespace {
 // The tag describing the product name with a placeholder for the version.
 const char kProductTagWithPlaceholder[] = "CriOS/%s";
@@ -118,9 +118,7 @@ NSString* GetSafeBrowsingErrorPageHTML(web::WebState* web_state,
   SafeBrowsingUnsafeResourceContainer* container =
       SafeBrowsingUnsafeResourceContainer::FromWebState(web_state);
   const security_interstitials::UnsafeResource* resource =
-      container->GetMainFrameUnsafeResource()
-          ?: container->GetSubFrameUnsafeResource(
-                 web_state->GetNavigationManager()->GetLastCommittedItem());
+      container->GetMainFrameUnsafeResource();
 
   // Construct the blocking page and associate it with the WebState.
   std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage> page =
@@ -164,8 +162,10 @@ NSString* GetHttpsOnlyModeErrorPageHtml(web::WebState* web_state,
   // Fetch the HTTP URL from the container.
   HttpsOnlyModeContainer* container =
       HttpsOnlyModeContainer::FromWebState(web_state);
-  HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
-      web_state->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+  HttpsUpgradeService* service =
+      HttpsUpgradeServiceFactory::GetForProfile(profile);
 
   // Construct the blocking page and associate it with the WebState.
   std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage> page =
@@ -181,7 +181,6 @@ NSString* GetHttpsOnlyModeErrorPageHtml(web::WebState* web_state,
   return base::SysUTF8ToNSString(error_page_content);
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 // Returns the Supervised User Error Page Interstitial HTML.
 NSString* GetSupervisedUserErrorPageHTML(web::WebState* web_state,
                                          int64_t navigation_id,
@@ -201,12 +200,12 @@ NSString* GetSupervisedUserErrorPageHTML(web::WebState* web_state,
           std::move(interstitial), /*controller_client=*/nullptr, container,
           web_state);
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   std::string error_page_content =
       supervised_user::SupervisedUserInterstitial::GetHTMLContents(
-          SupervisedUserServiceFactory::GetForBrowserState(browser_state),
-          browser_state->GetPrefs(), error_info->filtering_behavior_reason(),
+          SupervisedUserServiceFactory::GetForProfile(profile),
+          profile->GetPrefs(), error_info->filtering_behavior_reason(),
           container->IsRemoteApprovalPendingForUrl(url),
           error_info->is_main_frame(),
           GetApplicationContext()->GetApplicationLocale());
@@ -215,7 +214,6 @@ NSString* GetSupervisedUserErrorPageHTML(web::WebState* web_state,
       ->AssociateBlockingPage(navigation_id, std::move(page));
   return base::SysUTF8ToNSString(error_page_content);
 }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 // Returns a string describing the product name and version, of the
 // form "productname/version". Used as part of the user agent string.
@@ -298,7 +296,7 @@ std::u16string ChromeWebClient::GetLocalizedString(int message_id) const {
   return l10n_util::GetStringUTF16(message_id);
 }
 
-base::StringPiece ChromeWebClient::GetDataResource(
+std::string_view ChromeWebClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) const {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
@@ -332,9 +330,9 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
     features.push_back(PasswordProtectionJavaScriptFeature::GetInstance());
   }
 
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   JavaScriptConsoleFeature* java_script_console_feature =
-      JavaScriptConsoleFeatureFactory::GetInstance()->GetForBrowserState(
-          browser_state);
+      JavaScriptConsoleFeatureFactory::GetForProfile(profile);
   features.push_back(java_script_console_feature);
 
   features.push_back(print_feature.get());
@@ -366,10 +364,19 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(FollowJavaScriptFeature::GetInstance());
   features.push_back(ChooseFileJavaScriptFeature::GetInstance());
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   features.push_back(
       SupervisedUserInterstitialJavaScriptFeature::GetInstance());
-#endif
+
+  if (base::FeatureList::IsEnabled(
+          kJavaScriptPermissionBasedAPIMetricsEnabled)) {
+    if (GeolocationAPIUsageJavaScriptFeature::ShouldOverrideAPI()) {
+      features.push_back(GeolocationAPIUsageJavaScriptFeature::GetInstance());
+    }
+    if (MediaAPIUsageJavaScriptFeature::ShouldOverrideAPI()) {
+      features.push_back(MediaAPIUsageJavaScriptFeature::GetInstance());
+    }
+  }
+
   return features;
 }
 
@@ -414,13 +421,11 @@ void ChromeWebClient::PrepareErrorPage(
     DCHECK_EQ(kLookalikeUrlErrorCode, final_underlying_error.code);
     std::move(callback).Run(
         GetLookalikeUrlErrorPageHtml(web_state, navigation_id));
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   } else if ([final_underlying_error.domain
                  isEqualToString:kSupervisedUserInterstitialErrorDomain]) {
     CHECK_EQ(kSupervisedUserInterstitialErrorCode, final_underlying_error.code);
     std::move(callback).Run(
         GetSupervisedUserErrorPageHTML(web_state, navigation_id, url));
-#endif
   } else if ([final_underlying_error.domain
                  isEqualToString:kHttpsOnlyModeErrorDomain]) {
     // Only kHttpsOnlyModeErrorCode is supported.
@@ -463,19 +468,17 @@ bool ChromeWebClient::EnableWebInspector(
     return false;
   }
 
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
-  return chrome_browser_state->GetPrefs()->GetBoolean(
-      prefs::kWebInspectorEnabled);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+  return profile->GetPrefs()->GetBoolean(prefs::kWebInspectorEnabled);
 }
 
 web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
     web::WebState* web_state,
     const GURL& url) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   HostContentSettingsMap* settings_map =
-      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
+      ios::HostContentSettingsMapFactory::GetForProfile(profile);
 
   bool use_desktop_agent = ShouldLoadUrlInDesktopMode(url, settings_map);
   return use_desktop_agent ? web::UserAgentType::DESKTOP
@@ -484,19 +487,13 @@ web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
 
 void ChromeWebClient::LogDefaultUserAgent(web::WebState* web_state,
                                           const GURL& url) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   HostContentSettingsMap* settings_map =
-      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
+      ios::HostContentSettingsMapFactory::GetForProfile(profile);
   bool use_desktop_agent = ShouldLoadUrlInDesktopMode(url, settings_map);
   base::UmaHistogramBoolean("IOS.PageLoad.DefaultModeMobile",
                             !use_desktop_agent);
-}
-
-NSData* ChromeWebClient::FetchSessionFromCache(web::WebState* web_state) const {
-  WebSessionStateTabHelper* tab_helper =
-      WebSessionStateTabHelper::FromWebState(web_state);
-  return tab_helper ? tab_helper->FetchSessionFromCache() : nil;
 }
 
 void ChromeWebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {
@@ -520,9 +517,8 @@ void ChromeWebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {
 void ChromeWebClient::WillDisplayMediaCapturePermissionPrompt(
     web::WebState* web_state) const {
   // When a prendered page displays a prompt, cancel the prerender.
-  PrerenderService* prerender_service =
-      PrerenderServiceFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
+  PrerenderService* prerender_service = PrerenderServiceFactory::GetForProfile(
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
   if (prerender_service &&
       prerender_service->IsWebStatePrerendered(web_state)) {
     prerender_service->CancelPrerender();
@@ -536,43 +532,21 @@ bool ChromeWebClient::IsPointingToSameDocument(const GURL& url1,
   return url_to_compare1 == url_to_compare2;
 }
 
-bool ChromeWebClient::IsMixedContentAutoupgradeEnabled(
-    web::BrowserState* browser_state) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
-  if (!chrome_browser_state->GetPrefs()->GetBoolean(
-          prefs::kMixedContentAutoupgradeEnabled) &&
-      chrome_browser_state->GetPrefs()->IsManagedPreference(
-          prefs::kMixedContentAutoupgradeEnabled)) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(
-      security_interstitials::features::kMixedContentAutoupgrade);
+bool ChromeWebClient::IsBrowserLockdownModeEnabled() {
+  return GetApplicationContext()->GetLocalState()->GetBoolean(
+      prefs::kBrowserLockdownModeEnabled);
 }
 
-bool ChromeWebClient::IsBrowserLockdownModeEnabled(
-    web::BrowserState* browser_state) {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
-  PrefService* prefs = chrome_browser_state->GetPrefs();
-  return prefs->GetBoolean(prefs::kBrowserLockdownModeEnabled);
-}
-
-void ChromeWebClient::SetOSLockdownModeEnabled(web::BrowserState* browser_state,
-                                               bool enabled) {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
-  PrefService* prefs = chrome_browser_state->GetPrefs();
-  prefs->SetBoolean(prefs::kOSLockdownModeEnabled, enabled);
+void ChromeWebClient::SetOSLockdownModeEnabled(bool enabled) {
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kOSLockdownModeEnabled, enabled);
 }
 
 bool ChromeWebClient::IsInsecureFormWarningEnabled(
     web::BrowserState* browser_state) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
-  if (!chrome_browser_state->GetPrefs()->GetBoolean(
-          prefs::kInsecureFormWarningsEnabled) &&
-      chrome_browser_state->GetPrefs()->IsManagedPreference(
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+  if (!profile->GetPrefs()->GetBoolean(prefs::kInsecureFormWarningsEnabled) &&
+      profile->GetPrefs()->IsManagedPreference(
           prefs::kInsecureFormWarningsEnabled)) {
     return false;
   }

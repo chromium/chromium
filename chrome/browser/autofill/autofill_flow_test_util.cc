@@ -16,6 +16,8 @@
 #include "chrome/browser/autofill/autofill_uitest.h"
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller_impl_test_api.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
 #include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
@@ -116,7 +118,7 @@ bool IsFocusedField(const ElementExpr& e,
   return content::ExecJs(execution_target, script);
 }
 
-struct ShowAutofillPopupParams {
+struct ShowAutofillSuggestionsParams {
   ShowMethod show_method = ShowMethod::ByArrow();
   int num_profile_suggestions = 1;
   size_t max_tries = 5;
@@ -126,9 +128,10 @@ struct ShowAutofillPopupParams {
 
 // A helper function for showing the popup in AutofillFlow().
 // Consider using AutofillFlow() instead.
-[[nodiscard]] AssertionResult ShowAutofillPopup(const ElementExpr& e,
-                                                AutofillUiTest* test,
-                                                ShowAutofillPopupParams p) {
+[[nodiscard]] AssertionResult ShowAutofillSuggestions(
+    const ElementExpr& e,
+    AutofillUiTest* test,
+    ShowAutofillSuggestionsParams p) {
   constexpr auto kSuggest = ObservedUiEvents::kSuggestionsShown;
   constexpr auto kPreview = ObservedUiEvents::kPreviewFormData;
 
@@ -136,16 +139,10 @@ struct ShowAutofillPopupParams {
       p.execution_target.value_or(test->GetWebContents());
   content::RenderFrameHost* rfh = execution_target.render_frame_host();
   content::RenderWidgetHostView* view = rfh->GetView();
-  content::RenderWidgetHost* widget = view->GetRenderWidgetHost();
 
   auto ArrowDown = [&](std::list<ObservedUiEvents> exp) {
-    constexpr auto kDown = ui::DomKey::ARROW_DOWN;
-    if (base::Contains(exp, ObservedUiEvents::kSuggestionsShown)) {
-      return test->SendKeyToPageAndWait(kDown, std::move(exp), p.timeout);
-    } else {
-      return test->SendKeyToPopupAndWait(kDown, std::move(exp), widget,
-                                         p.timeout);
-    }
+    return test->SendKeyToPageAndWait(ui::DomKey::ARROW_DOWN, std::move(exp),
+                                      p.timeout);
   };
   auto Backspace = [&]() {
     return test->SendKeyToPageAndWait(ui::DomKey::BACKSPACE, {}, p.timeout);
@@ -161,8 +158,7 @@ struct ShowAutofillPopupParams {
   };
   auto Click = [&](std::list<ObservedUiEvents> exp) {
     gfx::Point point = view->TransformPointToRootCoordSpace(GetCenter(e, rfh));
-    test->test_delegate()->SetExpectations(
-        {ObservedUiEvents::kSuggestionsShown}, p.timeout);
+    test->test_delegate()->SetExpectations(std::move(exp), p.timeout);
     content::SimulateMouseClickAt(test->GetWebContents(), 0,
                                   blink::WebMouseEvent::Button::kLeft, point);
     return test->test_delegate()->Wait();
@@ -173,12 +169,12 @@ struct ShowAutofillPopupParams {
   // Autofill closes the popup right away because it is outside of the content
   // area. To work around this, we attempt to bring up the Autofill popup
   // multiple times, with some delay.
-  AssertionResult a = AssertionFailure()
-                      << __func__ << "(): with " << p.num_profile_suggestions
-                      << " profile suggestions";
+  testing::Message m;
+  m << __func__ << "(): with " << p.num_profile_suggestions
+    << " profile suggestions.";
   bool field_was_focused_initially = IsFocusedField(e, rfh);
   for (size_t i = 1; i <= p.max_tries; ++i) {
-    a = a << "Iteration " << i << "/" << p.max_tries << ". ";
+    m << "\nIteration " << i << "/" << p.max_tries << ". ";
     // A Translate bubble may overlap with the Autofill popup, which causes
     // flakiness. See crbug.com/1175735#c10.
     // Also, the address-save prompts and others may overlap with the Autofill
@@ -191,12 +187,12 @@ struct ShowAutofillPopupParams {
       if (field_was_focused_initially) {
         // The Autofill popup may have opened due to a severely delayed event on
         // a slow bot. To reset the popup, we re-focus the field.
-        a << "Trying to re-focus the field. ";
+        m << "Trying to re-focus the field. ";
         if (AssertionResult b = BlurFocusedField(rfh); !b) {
-          a = a << b;
+          m << b.message();
         }
         if (AssertionResult b = FocusField(e, rfh); !b) {
-          a = a << b;
+          m << b.message();
         }
       }
     }
@@ -206,58 +202,53 @@ struct ShowAutofillPopupParams {
       // Press arrow down to open the popup and select first suggestion.
       // Depending on the platform, this requires one or two arrow-downs.
       if (!IsFocusedField(e, rfh)) {
-        return a << "Field " << *e << " must be focused. ";
+        return AssertionFailure()
+               << m << "Field " << *e << " must be focused. ";
       }
-      if (!ShouldAutoselectFirstSuggestionOnArrowDown()) {
-        if (AssertionResult b = ArrowDown({kSuggest}); !b) {
-          a << "Cannot trigger suggestions by first arrow: " << b;
-          continue;
-        }
-        if (AssertionResult b =
-                has_preview ? ArrowDown({kPreview}) : ArrowDown({});
-            !b) {
-          a << "Cannot select first suggestion by second arrow: " << b;
-          continue;
-        }
-      } else if (AssertionResult b = has_preview
-                                         ? ArrowDown({kPreview, kSuggest})
-                                         : ArrowDown({kSuggest});
-                 !b) {
-        a << "Cannot trigger and select first suggestion by arrow: " << b;
+      if (AssertionResult b = has_preview ? ArrowDown({kPreview, kSuggest})
+                                          : ArrowDown({kSuggest});
+          !b) {
+        m << "Cannot trigger and select first suggestion by arrow: "
+          << b.message();
         continue;
       }
     } else if (p.show_method.character) {
       // Enter character to open the popup, but do not select an option.
       // If necessary, delete past iterations character first.
       if (!IsFocusedField(e, rfh)) {
-        return a << "Field " << *e << " must be focused. ";
+        return AssertionFailure()
+               << m << "Field " << *e << " must be focused. ";
       }
       if (i > 1) {
         if (AssertionResult b = Backspace(); !b) {
-          a << "Cannot undo past iteration's key: " << b;
+          m << "Cannot undo past iteration's key: " << b.message();
         }
       }
       std::string code = std::string("Key") + p.show_method.character;
       if (AssertionResult b = Char(code, {kSuggest}); !b) {
-        a << "Cannot trigger suggestions by key: " << b;
+        m << "Cannot trigger suggestions by key: " << b.message();
         continue;
       }
     } else if (p.show_method.click) {
       // Click item to open the popup, but do not select an option.
       if (AssertionResult b = Click({kSuggest}); !b) {
-        a << "Cannot trigger and select first suggestion by click: " << b;
+        m << "Cannot trigger and select first suggestion by click: "
+          << b.message();
         continue;
       }
     }
+    LOG(WARNING) << (m << "Succeeded.");
     return AssertionSuccess();
   }
-  return a << "Couldn't show Autofill suggestions on " << *e << ". ";
+  return AssertionFailure()
+         << m << "Couldn't show Autofill suggestions on " << *e << ". ";
 }
 
 struct AutofillSuggestionParams {
   int num_profile_suggestions = 1;
   int current_index = 0;
   int target_index = 0;
+  bool expect_previews = true;
   base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
   std::optional<content::ToRenderFrameHost> execution_target = {};
 };
@@ -282,7 +273,7 @@ struct AutofillSuggestionParams {
   };
 
   for (int i = p.current_index + 1; i <= p.target_index; ++i) {
-    bool has_preview = i < p.num_profile_suggestions;
+    bool has_preview = i < p.num_profile_suggestions && p.expect_previews;
     if (!(has_preview ? ArrowDown({kPreview}) : ArrowDown({}))) {
       return AssertionFailure()
              << __func__ << "(): Couldn't go to " << i << "th suggestion with"
@@ -304,15 +295,15 @@ struct AutofillSuggestionParams {
           ->GetView()
           ->GetRenderWidgetHost();
 
-  // If `kAutofillPopupUseThresholdForKeyboardAndMobileAccept` is enabled,
-  // then all attempts to accept Autofill suggestions using keyboard "ENTER"
+  // All attempts to accept Autofill suggestions using keyboard "ENTER"
   // keystrokes will be ignored for the first 500ms after the popup is first
   // shown. This overrides this threshold.
-  if (base::WeakPtr<AutofillPopupControllerImpl> controller =
+  if (base::WeakPtr<AutofillSuggestionController> controller =
           ChromeAutofillClient::FromWebContentsForTesting(
               test->GetWebContents())
-              ->popup_controller_for_testing()) {
-    controller->DisableThresholdForTesting(true);
+              ->suggestion_controller_for_testing()) {
+    test_api(static_cast<AutofillPopupControllerImpl&>(*controller))
+        .DisableThreshold(true);
   }
 
   constexpr auto kSuggestionsHidden = ObservedUiEvents::kSuggestionsHidden;
@@ -369,13 +360,13 @@ struct AutofillSuggestionParams {
   }
 
   if (p.do_show) {
-    AssertionResult a =
-        ShowAutofillPopup(e, test,
-                          {.show_method = p.show_method,
-                           .num_profile_suggestions = p.num_profile_suggestions,
-                           .max_tries = p.max_show_tries,
-                           .timeout = p.timeout,
-                           .execution_target = execution_target});
+    AssertionResult a = ShowAutofillSuggestions(
+        e, test,
+        {.show_method = p.show_method,
+         .num_profile_suggestions = p.num_profile_suggestions,
+         .max_tries = p.max_show_tries,
+         .timeout = p.timeout,
+         .execution_target = execution_target});
     if (!a) {
       return a;
     }
@@ -390,6 +381,7 @@ struct AutofillSuggestionParams {
         {.num_profile_suggestions = p.num_profile_suggestions,
          .current_index = p.show_method.selects_first_suggestion() ? 0 : -1,
          .target_index = p.target_index,
+         .expect_previews = p.expect_previews,
          .timeout = p.timeout,
          .execution_target = execution_target});
     if (!a) {
@@ -406,6 +398,7 @@ struct AutofillSuggestionParams {
         {.num_profile_suggestions = p.num_profile_suggestions,
          .current_index = p.target_index,
          .target_index = p.target_index,
+         .expect_previews = p.expect_previews,
          .timeout = p.timeout,
          .execution_target = execution_target});
     if (!a) {

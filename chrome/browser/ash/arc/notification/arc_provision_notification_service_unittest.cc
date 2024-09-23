@@ -22,8 +22,8 @@
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/login/ui/fake_login_display_host.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/ui/ash/login/fake_login_display_host.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -171,7 +171,8 @@ TEST_F(ArcProvisionNotificationServiceTest,
   // shown when session starts.
   session_manager_->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
-  arc_session_manager_->AllowActivation();
+  arc_session_manager_->AllowActivation(
+      ArcSessionManager::AllowActivationReason::kImmediateActivation);
   arc_session_manager_->RequestEnable();
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));

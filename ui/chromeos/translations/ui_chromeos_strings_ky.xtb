@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit түзмөктөрү</translation>
 <translation id="3085752524577180175">SOCKS хосту</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз бөгөттөп койгон, Чоо-жайы</translation>
-<translation id="3113153474486991170">Бул жерден "<ph name="PATH" />" ачылган жок. Ачуу үчүн "Менин файлдарыма" көчүрүңүз.</translation>
 <translation id="3113592018909187986">1 жолу аракет кыла аласыз. Жаңы PIN код коймоюнча бул тармакты колдоно албайсыз.</translation>
 <translation id="3124404833828281817">Кыялданып жаткан адам</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,9 +337,10 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> аракети жокко чыгарылат.</translation>
 <translation id="3690128548376345212">Тармак (<ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />), <ph name="NETWORK_NAME" />, жандырылган эмес, <ph name="CONNECTION_STATUS" />, сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, чоо-жайы</translation>
 <translation id="3691184985318546178">Сингалча</translation>
+<translation id="3702842351052426940">SIM картаңыз же eSIM профилиңиз өчүрүлгөн болушу мүмкүн. SIM картаңызды алмаштырып же eSIM профилдерин которуштуруп көрүңүз.</translation>
 <translation id="3722341589402358578">Ката кетти. Айрым нерселер өчүрүлбөй калган болушу мүмкүн.</translation>
 <translation id="3726463242007121105">Бул түзмөктүн файл тутуму колдоого алынбагандыктан, ал ачылбайт.</translation>
-<translation id="3727148787322499904">Бул жөндөө өзгөтүлсө, бөлүшүлгөн тармактардын баарына таасирин тийгизет</translation>
+<translation id="3727148787322499904">Бул параметр өзгөтүлсө, бөлүшүлгөн тармактардын баарына таасирин тийгизет</translation>
 <translation id="3737576078404241332">Капталдагы тактадан өчүрүү</translation>
 <translation id="3749289110408117711">Файлдын аталышы</translation>
 <translation id="3786301125658655746">Офлайндасыз</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Бул проксини администраторуңуз күчүнө киргизген</translation>
 <translation id="3830674330436234648">Ойното турган нерсе жок</translation>
 <translation id="383652340667548381">Сербче</translation>
+<translation id="3839045880592694915">Байланыш оператору модемге тууташууга уруксат бербейт. Көбүрөөк маалымат алуу үчүн байланыш операторуңузга кайрылыңыз.</translation>
 <translation id="385051799172605136">Артка</translation>
-<translation id="3851491607336266896">Туташып турат, байланыш чектелген</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Аталышы</translation>
 <translation id="3866249974567520381">Сүрөттөлүшү</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Жакында ачылган Microsoft файлдары OneDrive'га жылдырылды</translation>
 <translation id="4002066346123236978">Аталышы</translation>
 <translation id="4017788180641807848">Англисче (АКШ) жана Workman баскычтобу</translation>
-<translation id="4019998208269143058">Ыкчам ачылуучу файлдарга кадап коюу</translation>
 <translation id="4040753847560036377">PUK туура эмес</translation>
 <translation id="4057991113334098539">Жандырылууда...</translation>
 <translation id="4092890906744441904">Ирландча</translation>
+<translation id="4101601646343868113">Мобилдик тармакка кирип, тарифтик план активдүү экенин ырастаңыз</translation>
 <translation id="4124731372776320263">1 Drive файлы шайкештирилүүдө</translation>
 <translation id="4124935795427217608">Жалгыз мүйүздүү ат</translation>
 <translation id="4131235941541910880">Керексиз нерселерди таштандыга салыңыз</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Тамилче (Tamil99 баскычтобу)</translation>
 <translation id="5633226425545095130">Эгер бул нерсени жылдырсаңыз, ал "<ph name="DESTINATION_NAME" />" бөлүшүлгөн папкасын көрө алган адамдардын баары менен бөлүшүлөт.</translation>
 <translation id="5649768706273821470">Угуу</translation>
+<translation id="5650895901941743674">APN конфигурациясын текшериңиз</translation>
 <translation id="5669691691057771421">Жаңы PIN киргизиңиз</translation>
 <translation id="5678784840044122290">Linux колдонмосу Терминалыңызда жеткиликтүү болуп, Жүргүзгүчтө анын сүрөтчөсү көрүнүшү мүмкүн.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Архивден же виртуалдуу дисктен ажыратуу мүмкүн эмес<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="PHONE_NAME" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Телефондун батареясы <ph name="BATTERY_STATUS" />%, Туташуу</translation>
 <translation id="6269630227984243955">Малайча</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />" бөлүмүндө орун жетишсиз болгондуктан, файлдарды жүктөөгө болбойт.</translation>
+<translation id="6279140785485544797">Мобилдик трафигиңиздин мөөнөтү бүтүп калган болушу мүмкүн. Жардам алуу үчүн байланыш операторуңузга кайрылыңыз.</translation>
 <translation id="6287852322318138013">Бул файлды ачуу үчүн колдонмо тандаңыз</translation>
 <translation id="6295542640242147836">SIM картаны кулпулоо</translation>
 <translation id="6296410173147755564">PUK туура эмес</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> форматындагы архив</translation>
 <translation id="6321303798550928047">Кол булгалоо</translation>
 <translation id="6327785803543103246">Веб проксини автоматтык түрдө табуу</translation>
-<translation id="6337014272874260727">Ыкчам ачылуучу файлдардан алып коюу</translation>
 <translation id="6339145975392024142">Эл аралык АКШ баскычтобу (жеке компьютер үчүн)</translation>
 <translation id="6356685157277930264">Files колдонмосу тууралуу пикирлер көрсөтүлгөн терезе</translation>
 <translation id="6358884629796491903">Ажыдаар</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Учурдагы каталог</translation>
 <translation id="6751256176799620176">1 куржун тандалды</translation>
 <translation id="6755827872271341378">ChromeOS Flex түзмөгү</translation>
+<translation id="6777029074498310250">Толук маалымат алуу үчүн <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> сайтына өтүңүз</translation>
 <translation id="6790428901817661496">Ойнотуу</translation>
 <translation id="6794539005637808366">Бул нерсени калыбына келтирип же таштандыда болбогон жаңы папкага сүйрөңүз</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Тамилче (InScript баскычтобу)</translation>
 <translation id="7088615885725309056">Эскирээк</translation>
 <translation id="7103992300314999525">Македончо</translation>
+<translation id="7104338189998813914">OneDrive аккаунтуңузга кирүүдө маселе келип чыкты</translation>
 <translation id="7106346894903675391">Көбүрөөк сактоо мейкиндигин сатып алыңыз…</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;Drive'ды издөө&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Каннада (фонетикалык)</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Бир секунд күтө туруңуз</translation>
 <translation id="7600126690270271294">Сербче</translation>
 <translation id="7603724359189955920">Торчолор</translation>
+<translation id="7624010287655004652">Башка мобилдик байланыш оператору тарабынан кулпуланган</translation>
 <translation id="7627790789328695202">Ой, <ph name="FILE_NAME" /> мурунтан эле бар экен. Аталышын өзгөртүп, дагы бир жолу аракет кылып көрүңүз.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% бүттү.</translation>
 <translation id="7649070708921625228">Жардам</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Файлдардын тизмеси эскиз көрүнүшүнө которулду.</translation>
 <translation id="8601932370724196034">Crostini сүрөт файлы</translation>
 <translation id="8609695766746872526">Исландча</translation>
+<translation id="8630384863424041081">SIM картанын PIN кодун же байланыш оператору берген демейки PIN кодду териңиз. Колдоо көрүү үчүн байланыш операторуңузга кайрылыңыз.</translation>
 <translation id="863903787380594467">PIN код туура эмес. Сизде <ph name="RETRIES" /> аракет калды.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Оюкча</translation>
 <translation id="8656407365183407932">Офлайн файлдарды өчүрүүгө туура келди</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Бул файл купуя жана ага администратордун чектөөлөрү коюлган.</translation>
 <translation id="8712637175834984815">Түшүндүм</translation>
 <translation id="8713112442029511308">Малтизче</translation>
-<translation id="8714138378966541668">Провайдер кулпулап койгон</translation>
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> тандалды.</translation>
 <translation id="872537912056138402">Хорватча</translation>

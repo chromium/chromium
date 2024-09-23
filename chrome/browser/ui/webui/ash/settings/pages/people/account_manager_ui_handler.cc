@@ -173,7 +173,8 @@ class AccountBuilder {
     DCHECK(account_.FindBool("isSignedIn"));
     DCHECK(account_.FindBool("unmigrated"));
     DCHECK(account_.FindString("pic"));
-    if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+    if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled() ||
+        AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled()) {
       DCHECK(account_.FindBool("isAvailableInArc"));
     }
     // "organization" is an optional field.
@@ -198,7 +199,7 @@ AccountManagerUIHandler::AccountManagerUIHandler(
   DCHECK(account_manager_);
   DCHECK(account_manager_facade_);
   DCHECK(identity_manager_);
-  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (AreArcAccountsRestricted()) {
     account_apps_availability_ = account_apps_availability;
     DCHECK(account_apps_availability_);
   }
@@ -258,7 +259,7 @@ void AccountManagerUIHandler::OnCheckDummyGaiaTokenForAllAccounts(
     base::Value callback_id,
     const std::vector<std::pair<::account_manager::Account, bool>>&
         account_dummy_token_list) {
-  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (AreArcAccountsRestricted()) {
     account_apps_availability_->GetAccountsAvailableInArc(
         base::BindOnce(&AccountManagerUIHandler::FinishHandleGetAccounts,
                        weak_factory_.GetWeakPtr(), std::move(callback_id),
@@ -290,25 +291,7 @@ void AccountManagerUIHandler::FinishHandleGetAccounts(
       profile_->IsChild(), &gaia_device_account);
 
   AccountBuilder device_account;
-  if (user->IsActiveDirectoryUser()) {
-    device_account.SetId(user->GetAccountId().GetObjGuid())
-        .SetAccountType(
-            static_cast<int>(account_manager::AccountType::kActiveDirectory))
-        .SetEmail(user->GetDisplayEmail())
-        .SetFullName(base::UTF16ToUTF8(user->GetDisplayName()))
-        .SetIsSignedIn(true)
-        .SetUnmigrated(false);
-    if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
-      device_account.SetIsAvailableInArc(true);
-    }
-    gfx::ImageSkia default_icon =
-        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDR_LOGIN_DEFAULT_USER);
-    device_account.SetPic(webui::GetBitmapDataUrl(
-        default_icon.GetRepresentation(1.0f).GetBitmap()));
-  } else {
-    device_account.PopulateFrom(std::move(gaia_device_account));
-  }
+  device_account.PopulateFrom(std::move(gaia_device_account));
 
   if (!device_account.IsEmpty()) {
     device_account.SetIsDeviceAccount(true);
@@ -319,14 +302,9 @@ void AccountManagerUIHandler::FinishHandleGetAccounts(
       // Replace space with the non-breaking space.
       base::ReplaceSubstringsAfterOffset(&organization, 0, " ", "&nbsp;");
       device_account.SetOrganization(organization).SetIsManaged(true);
-    } else if (user->IsActiveDirectoryUser()) {
-      device_account
-          .SetOrganization(chrome::enterprise_util::GetDomainFromEmail(
-              user->GetDisplayEmail()))
-          .SetIsManaged(true);
     } else if (profile_->GetProfilePolicyConnector()->IsManaged()) {
       device_account
-          .SetOrganization(chrome::enterprise_util::GetDomainFromEmail(
+          .SetOrganization(enterprise_util::GetDomainFromEmail(
               identity_manager_
                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                   .email))
@@ -376,7 +354,7 @@ base::Value::List AccountManagerUIHandler::GetSecondaryGaiaAccounts(
         .SetIsSignedIn(!identity_manager_
                             ->HasAccountWithRefreshTokenInPersistentErrorState(
                                 maybe_account_info.account_id));
-    if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+    if (AreArcAccountsRestricted()) {
       account.SetIsAvailableInArc(arc_accounts.contains(stored_account));
     }
 
@@ -465,6 +443,8 @@ void AccountManagerUIHandler::HandleRemoveAccount(
 void AccountManagerUIHandler::HandleChangeArcAvailability(
     const base::Value::List& args) {
   DCHECK(AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  // We do not expect this to be called when policy based ARC access is enabled.
+  CHECK(!AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled());
 
   // 2 args: account, is_available.
   CHECK_GT(args.size(), 1u);
@@ -538,7 +518,8 @@ void AccountManagerUIHandler::OnExtendedAccountInfoUpdated(
 
 void AccountManagerUIHandler::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error) {
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   if (error.state() != GoogleServiceAuthError::NONE) {
     RefreshUI();
   }
@@ -556,6 +537,11 @@ void AccountManagerUIHandler::OnAccountUnavailableInArc(
 
 void AccountManagerUIHandler::RefreshUI() {
   FireWebUIListener("accounts-changed");
+}
+
+bool AccountManagerUIHandler::AreArcAccountsRestricted() {
+  return AccountAppsAvailability::IsArcAccountRestrictionsEnabled() ||
+         AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled();
 }
 
 }  // namespace ash::settings

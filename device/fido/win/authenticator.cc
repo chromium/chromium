@@ -47,7 +47,7 @@ AuthenticatorSupportedOptions WinWebAuthnApiOptions(int api_version) {
   options.supports_cred_protect = api_version >= WEBAUTHN_API_VERSION_2;
   options.enterprise_attestation = api_version >= WEBAUTHN_API_VERSION_3;
   if (api_version >= WEBAUTHN_API_VERSION_3) {
-    options.large_blob_type = LargeBlobSupportType::kKey;
+    options.large_blob_type = LargeBlobSupportType::kBespoke;
   }
   options.supports_min_pin_length_extension =
       api_version >= WEBAUTHN_API_VERSION_3;
@@ -90,7 +90,6 @@ void FilterFoundCredentials(
 
 // static
 void WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
-    bool is_off_the_record,
     WinWebAuthnApi* api,
     base::OnceCallback<void(bool is_available)> callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -98,19 +97,16 @@ void WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
       {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(
-          [](bool is_off_the_record, WinWebAuthnApi* api) {
+          [](WinWebAuthnApi* api) {
             BOOL result;
             if (!api || !api->IsAvailable()) {
-              return false;
-            }
-            if (is_off_the_record && api->Version() < WEBAUTHN_API_VERSION_4) {
               return false;
             }
             return api->IsUserVerifyingPlatformAuthenticatorAvailable(
                        &result) == S_OK &&
                    result == TRUE;
           },
-          is_off_the_record, api),
+          api),
       std::move(callback));
 }
 
@@ -196,7 +192,7 @@ void WinWebAuthnApiAuthenticator::MakeCredential(
     MakeCredentialCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_pending_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   is_pending_ = true;
@@ -212,7 +208,7 @@ void WinWebAuthnApiAuthenticator::MakeCredential(
 
 void WinWebAuthnApiAuthenticator::MakeCredentialDone(
     MakeCredentialCallback callback,
-    std::pair<CtapDeviceResponseCode,
+    std::pair<MakeCredentialStatus,
               std::optional<AuthenticatorMakeCredentialResponse>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_pending_);
@@ -223,15 +219,11 @@ void WinWebAuthnApiAuthenticator::MakeCredentialDone(
     waiting_for_cancellation_ = false;
     return;
   }
-  if (result.first != CtapDeviceResponseCode::kSuccess) {
+  if (result.first != MakeCredentialStatus::kSuccess) {
     std::move(callback).Run(result.first, std::nullopt);
     return;
   }
-  if (!result.second) {
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR,
-                            std::nullopt);
-    return;
-  }
+  CHECK(result.second);
   std::move(callback).Run(result.first, std::move(result.second));
 }
 
@@ -257,7 +249,7 @@ void WinWebAuthnApiAuthenticator::GetAssertion(CtapGetAssertionRequest request,
 
 void WinWebAuthnApiAuthenticator::GetAssertionDone(
     GetAssertionCallback callback,
-    std::pair<CtapDeviceResponseCode,
+    std::pair<GetAssertionStatus,
               std::optional<AuthenticatorGetAssertionResponse>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_pending_);
@@ -266,14 +258,11 @@ void WinWebAuthnApiAuthenticator::GetAssertionDone(
     waiting_for_cancellation_ = false;
     return;
   }
-  if (result.first != CtapDeviceResponseCode::kSuccess) {
+  if (result.first != GetAssertionStatus::kSuccess) {
     std::move(callback).Run(result.first, {});
     return;
   }
-  if (!result.second) {
-    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, {});
-    return;
-  }
+  CHECK(result.second);
   std::vector<AuthenticatorGetAssertionResponse> responses;
   responses.emplace_back(std::move(*result.second));
   std::move(callback).Run(result.first, std::move(responses));
@@ -314,7 +303,7 @@ void WinWebAuthnApiAuthenticator::GetPlatformCredentialInfoForRequest(
 }
 
 void WinWebAuthnApiAuthenticator::GetTouch(base::OnceClosure callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WinWebAuthnApiAuthenticator::Cancel() {
@@ -351,7 +340,7 @@ base::WeakPtr<FidoAuthenticator> WinWebAuthnApiAuthenticator::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-bool WinWebAuthnApiAuthenticator::ShowsPrivacyNotice() const {
+bool WinWebAuthnApiAuthenticator::ShowsResidentCredentialNotice() const {
   return win_api_->Version() >= WEBAUTHN_API_VERSION_2;
 }
 

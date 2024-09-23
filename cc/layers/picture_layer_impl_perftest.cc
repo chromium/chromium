@@ -69,14 +69,16 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
                                              int num_tiles,
                                              const gfx::Rect& viewport_rect) {
     host_impl()->active_tree()->SetDeviceViewportRect(viewport_rect);
-    host_impl()->pending_tree()->UpdateDrawProperties();
+    host_impl()->pending_tree()->UpdateDrawProperties(
+        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
 
     timer_.Reset();
     do {
       int count = num_tiles;
-      std::unique_ptr<TilingSetRasterQueueAll> queue(
-          new TilingSetRasterQueueAll(
-              pending_layer_->picture_layer_tiling_set(), false, true));
+      std::unique_ptr<TilingSetRasterQueueAll> queue =
+          TilingSetRasterQueueAll::Create(
+              pending_layer_->picture_layer_tiling_set(), false, true);
+      ASSERT_TRUE(queue);
       while (count--) {
         ASSERT_TRUE(!queue->IsEmpty()) << "count: " << count;
         ASSERT_TRUE(queue->Top().tile()) << "count: " << count;
@@ -99,13 +101,14 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
         ->scroll_tree_mutable()
         .UpdateScrollOffsetBaseForTesting(pending_layer_->element_id(),
                                           gfx::PointF(viewport.origin()));
-    host_impl()->pending_tree()->UpdateDrawProperties();
+    host_impl()->pending_tree()->UpdateDrawProperties(
+        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
 
     timer_.Reset();
     do {
-      std::unique_ptr<TilingSetRasterQueueAll> queue(
-          new TilingSetRasterQueueAll(
-              pending_layer_->picture_layer_tiling_set(), false, true));
+      std::unique_ptr<TilingSetRasterQueueAll> queue =
+          TilingSetRasterQueueAll::Create(
+              pending_layer_->picture_layer_tiling_set(), false, true);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -117,7 +120,8 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
                                                int num_tiles,
                                                const gfx::Rect& viewport_rect) {
     host_impl()->active_tree()->SetDeviceViewportRect(viewport_rect);
-    host_impl()->pending_tree()->UpdateDrawProperties();
+    host_impl()->pending_tree()->UpdateDrawProperties(
+        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
 
     timer_.Reset();
     do {
@@ -147,7 +151,8 @@ class PictureLayerImplPerfTest : public LayerTreeImplTestBase,
         ->scroll_tree_mutable()
         .UpdateScrollOffsetBaseForTesting(pending_layer_->element_id(),
                                           gfx::PointF(viewport.origin()));
-    host_impl()->pending_tree()->UpdateDrawProperties();
+    host_impl()->pending_tree()->UpdateDrawProperties(
+        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
 
     timer_.Reset();
     do {

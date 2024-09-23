@@ -27,7 +27,8 @@ import type {NamingController} from './naming_controller.js';
 import type {ProvidersModel} from './providers_model.js';
 import type {SpinnerController} from './spinner_controller.js';
 import type {TaskController} from './task_controller.js';
-import {CanExecuteEvent, Command, type CommandEvent} from './ui/command.js';
+import type {CanExecuteEvent} from './ui/command.js';
+import {Command, type CommandEvent} from './ui/command.js';
 import {contextMenuHandler, type HideEvent, type ShowEvent} from './ui/context_menu_handler.js';
 import type {FileManagerUI} from './ui/file_manager_ui.js';
 

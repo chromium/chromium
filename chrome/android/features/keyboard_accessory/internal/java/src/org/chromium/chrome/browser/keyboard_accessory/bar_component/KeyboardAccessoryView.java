@@ -10,6 +10,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
@@ -21,13 +22,14 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
@@ -41,13 +43,16 @@ class KeyboardAccessoryView extends LinearLayout {
     private static final int FADE_ANIMATION_DURATION_MS = 150; // Total duration of show/hide.
     private static final int HIDING_ANIMATION_DELAY_MS = 50; // Shortens animation duration.
 
+    private Tracker mFeatureEngagementTracker;
     private Callback<Integer> mObfuscatedLastChildAt;
+    private Callback<Boolean> mOnTouchEvent;
     private ObjectAnimator mAnimator;
     private AnimationListener mAnimationListener;
     private ViewPropertyAnimator mRunningAnimation;
     private float mLastBarItemsViewPosition;
     private boolean mShouldSkipClosingAnimation;
     private boolean mDisableAnimations;
+    private boolean mAllowClicksWhileObscured;
 
     protected RecyclerView mBarItemsView;
 
@@ -67,7 +72,7 @@ class KeyboardAccessoryView extends LinearLayout {
                 public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                     if (newState != RecyclerView.SCROLL_STATE_IDLE) {
                         mBarItemsView.removeOnScrollListener(mScrollingIphCallback);
-                        KeyboardAccessoryIPHUtils.emitScrollingEvent();
+                        KeyboardAccessoryIPHUtils.emitScrollingEvent(mFeatureEngagementTracker);
                     }
                 }
             };
@@ -158,6 +163,37 @@ class KeyboardAccessoryView extends LinearLayout {
     }
 
     @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        final boolean isViewObscured =
+                (event.getFlags()
+                                & (MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED
+                                        | MotionEvent.FLAG_WINDOW_IS_OBSCURED))
+                        != 0;
+        // The event is filtered out when the keyboard accessory view is fully or partially obscured
+        // given that no user education bubbles are shown to the user.
+        final boolean shouldFilterEvent = isViewObscured && !mAllowClicksWhileObscured;
+        mOnTouchEvent.onResult(shouldFilterEvent);
+
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID)) {
+            return super.onInterceptTouchEvent(event);
+        }
+        if (shouldFilterEvent) {
+            return true;
+        }
+        // When keyboard accessory view is fully or partially obsured, clicks are allowed only if
+        // the user education bubble is being displayed. After the first click
+        // (MotionEvent.ACTION_UP), such motion events start to get filtered again. Please note that
+        // a user click produces 2 motion events: MotionEvent.ACTION_DOWN and then
+        // MotionEvent.ACTION_UP.
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            mAllowClicksWhileObscured = false;
+        }
+
+        return super.onInterceptTouchEvent(event);
+    }
+
+    @Override
     protected void onFinishInflate() {
         TraceEvent.begin("KeyboardAccessoryView#onFinishInflate");
         super.onFinishInflate();
@@ -188,7 +224,7 @@ class KeyboardAccessoryView extends LinearLayout {
         mBarItemsView.addOnScrollListener(mScrollingIphCallback);
 
         // Remove any paddings that might be inherited since this messes up the fading edge.
-        ViewCompat.setPaddingRelative(mBarItemsView, 0, 0, 0, 0);
+        mBarItemsView.setPaddingRelative(0, 0, 0, 0);
         TraceEvent.end("KeyboardAccessoryView#onFinishInflate");
     }
 
@@ -197,6 +233,16 @@ class KeyboardAccessoryView extends LinearLayout {
         super.onSizeChanged(w, h, oldw, oldh);
         // Request update for the offset of the icons at the end of the accessory bar:
         mBarItemsView.post(mBarItemsView::invalidateItemDecorations);
+    }
+
+    void setFeatureEngagementTracker(Tracker tracker) {
+        assert tracker != null : "Tracker must not be null";
+        mFeatureEngagementTracker = tracker;
+    }
+
+    Tracker getFeatureEngagementTracker() {
+        assert mFeatureEngagementTracker != null : "Attempting to access null Tracker";
+        return mFeatureEngagementTracker;
     }
 
     void setVisible(boolean visible) {
@@ -239,12 +285,24 @@ class KeyboardAccessoryView extends LinearLayout {
         mObfuscatedLastChildAt = obfuscatedLastChildAt;
     }
 
+    void setOnTouchEventCallback(Callback<Boolean> onTouchEvent) {
+        mOnTouchEvent = onTouchEvent;
+    }
+
     void disableAnimationsForTesting() {
         mDisableAnimations = true;
     }
 
     boolean areAnimationsDisabled() {
         return mDisableAnimations;
+    }
+
+    void setAllowClicksWhileObscured(boolean allowClicksWhileObscured) {
+        mAllowClicksWhileObscured = allowClicksWhileObscured;
+    }
+
+    boolean areClicksAllowedWhenObscured() {
+        return mAllowClicksWhileObscured;
     }
 
     void setAccessibilityMessage(boolean hasSuggestions) {
@@ -385,7 +443,7 @@ class KeyboardAccessoryView extends LinearLayout {
         // Remove all animations - the accessory shouldn't be visibly built anyway.
         recyclerView.setItemAnimator(null);
 
-        ViewCompat.setPaddingRelative(recyclerView, pad, 0, 0, 0);
+        recyclerView.setPaddingRelative(pad, 0, 0, 0);
     }
 
     @VisibleForTesting

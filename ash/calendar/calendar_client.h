@@ -20,6 +20,12 @@ namespace ash {
 // this client.
 class ASH_EXPORT CalendarClient {
  public:
+  // Verifies if the Calendar integration is disabled by admin by checking:
+  // 1) its own pref `prefs::kCalendarIntegrationEnabled`,
+  // 2) that the Calendar web app is disabled by policy,
+  // 3) that access to the Calendar web UI is blocked by policy.
+  virtual bool IsDisabledByAdmin() const = 0;
+
   // Fetches a list of calendars based on the current client's account.
   //
   // `callback` will be called when response or google_apis's ERROR (if the call

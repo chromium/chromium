@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -322,14 +323,6 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     session_manager_client_.set_device_policy(device_policy_->GetBlob());
     ReloadDeviceSettings();
     Mock::VerifyAndClearExpectations(this);
-  }
-
-  // Helper routine that sets the device DeviceWilcoDtcAllowed policy.
-  void SetDeviceWilcoDtcAllowedSetting(bool device_wilco_dtc_allowed) {
-    em::DeviceWilcoDtcAllowedProto* proto =
-        device_policy_->payload().mutable_device_wilco_dtc_allowed();
-    proto->set_device_wilco_dtc_allowed(device_wilco_dtc_allowed);
-    BuildAndInstallDevicePolicy();
   }
 
   void SetDeviceDockMacAddressSourceSetting(
@@ -740,8 +733,9 @@ TEST_F(DeviceSettingsProviderTest, LegacyDeviceLocalAccounts) {
   base::Value::Dict entry_dict;
   entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyId,
                  policy::PolicyBuilder::kFakeUsername);
-  entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyType,
-                 policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
+  entry_dict.Set(
+      kAccountsPrefDeviceLocalAccountsKeyType,
+      static_cast<int>(policy::DeviceLocalAccountType::kPublicSession));
   expected_accounts.Append(std::move(entry_dict));
   const base::Value* actual_accounts =
       provider_->Get(kAccountsPrefDeviceLocalAccounts);
@@ -762,7 +756,7 @@ TEST_F(DeviceSettingsProviderTest,
           .Set(kAccountsPrefDeviceLocalAccountsKeyId,
                kDeviceLocalAccountKioskAccountId)
           .Set(kAccountsPrefDeviceLocalAccountsKeyType,
-               static_cast<int>(policy::DeviceLocalAccount::TYPE_KIOSK_APP))
+               static_cast<int>(policy::DeviceLocalAccountType::kKioskApp))
           .Set(kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
                static_cast<int>(
                    policy::DeviceLocalAccount::EphemeralMode::kUnset)));
@@ -788,7 +782,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceLocalAccountsWithEphemeralModeField) {
           .Set(kAccountsPrefDeviceLocalAccountsKeyId,
                kDeviceLocalAccountKioskAccountId)
           .Set(kAccountsPrefDeviceLocalAccountsKeyType,
-               static_cast<int>(policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP))
+               static_cast<int>(policy::DeviceLocalAccountType::kWebKioskApp))
           .Set(kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
                static_cast<int>(
                    policy::DeviceLocalAccount::EphemeralMode::kEnable)));
@@ -1019,17 +1013,6 @@ TEST_F(DeviceSettingsProviderTest, DeviceRebootAfterUserSignout) {
     base::Value expected_value(PolicyProto::VM_STARTED_OR_ARC_SESSION);
     VerifyPolicyValue(kDeviceRebootOnUserSignout, &expected_value);
   }
-}
-
-TEST_F(DeviceSettingsProviderTest, DeviceWilcoDtcAllowedSetting) {
-  // Policy should not be set by default
-  VerifyPolicyValue(kDeviceWilcoDtcAllowed, nullptr);
-
-  SetDeviceWilcoDtcAllowedSetting(true);
-  EXPECT_EQ(base::Value(true), *provider_->Get(kDeviceWilcoDtcAllowed));
-
-  SetDeviceWilcoDtcAllowedSetting(false);
-  EXPECT_EQ(base::Value(false), *provider_->Get(kDeviceWilcoDtcAllowed));
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceDockMacAddressSourceSetting) {
@@ -1407,7 +1390,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListNonempty) {
   BuildAndInstallDevicePolicy();
 
   VerifyPolicyList(kDeviceDlcPredownloadList,
-                   base::Value::List().Append("sane-backends-extras-dlc"));
+                   base::Value::List().Append("sane-backends-pfu"));
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListInvalidDlc) {
@@ -1424,7 +1407,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListInvalidDlc) {
 
   // Device setting must contain only the valid DLCs that can be pre downloaded.
   VerifyPolicyList(kDeviceDlcPredownloadList,
-                   base::Value::List().Append("sane-backends-extras-dlc"));
+                   base::Value::List().Append("sane-backends-pfu"));
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListDuplicateDlc) {
@@ -1441,7 +1424,41 @@ TEST_F(DeviceSettingsProviderTest, DeviceDlcPredownloadListDuplicateDlc) {
 
   // Device setting must not contain any duplicate values.
   VerifyPolicyList(kDeviceDlcPredownloadList,
-                   base::Value::List().Append("sane-backends-extras-dlc"));
+                   base::Value::List().Append("sane-backends-pfu"));
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceExtendedAutoUpdateEnabledValueSet) {
+  device_policy_->payload()
+      .mutable_deviceextendedautoupdateenabled()
+      ->set_value(true);
+  BuildAndInstallDevicePolicy();
+
+  const base::Value* actual_value =
+      provider_->Get(kDeviceExtendedAutoUpdateEnabled);
+
+  EXPECT_TRUE(actual_value->GetBool());
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceExtendedAutoUpdateEnabledValueUnset) {
+  device_policy_->payload().clear_deviceextendedautoupdateenabled();
+  BuildAndInstallDevicePolicy();
+
+  const base::Value* actual_value =
+      provider_->Get(kDeviceExtendedAutoUpdateEnabled);
+
+  EXPECT_FALSE(actual_value);
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceExtensionsSystemLogEnabled) {
+  device_policy_->payload()
+      .mutable_deviceextensionssystemlogenabled()
+      ->set_value(true);
+  BuildAndInstallDevicePolicy();
+
+  const base::Value* actual_value =
+      provider_->Get(kDeviceExtensionsSystemLogEnabled);
+
+  EXPECT_TRUE(actual_value->GetBool());
 }
 
 }  // namespace ash

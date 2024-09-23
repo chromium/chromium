@@ -27,13 +27,10 @@
             // The video has been fullscreened.
             consoleWrite(messageEvent.data);
             fullscreened = true;
+            endTest();
             return;
         }
-
-        // A third message is received when the video has painted a frame.
-        endTest();
     }
 </script>
 Video inside an iframe is allowed to enter fullscreen</p>
 <iframe id="frame" src="resources/video.html" width="320" height="240" allowfullscreen></iframe>
-

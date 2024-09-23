@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/ssl/client_cert_store_nss.h"
 
 #include <nss.h>
@@ -16,7 +21,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "crypto/nss_crypto_module_delegate.h"
@@ -74,20 +78,26 @@ ClientCertStoreNSS::ClientCertStoreNSS(
 
 ClientCertStoreNSS::~ClientCertStoreNSS() = default;
 
-void ClientCertStoreNSS::GetClientCerts(const SSLCertRequestInfo& request,
-                                        ClientCertListCallback callback) {
+void ClientCertStoreNSS::GetClientCerts(
+    scoped_refptr<const SSLCertRequestInfo> request,
+    ClientCertListCallback callback) {
   scoped_refptr<crypto::CryptoModuleBlockingPasswordDelegate> password_delegate;
-  if (!password_delegate_factory_.is_null())
-    password_delegate = password_delegate_factory_.Run(request.host_and_port);
+  if (!password_delegate_factory_.is_null()) {
+    password_delegate = password_delegate_factory_.Run(request->host_and_port);
+  }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ClientCertStoreNSS::GetAndFilterCertsOnWorkerThread,
-                     // Caller is responsible for keeping the ClientCertStore
-                     // alive until the callback is run.
-                     base::Unretained(this), std::move(password_delegate),
-                     base::Unretained(&request)),
-      std::move(callback));
+                     std::move(password_delegate), std::move(request)),
+      base::BindOnce(&ClientCertStoreNSS::OnClientCertsResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ClientCertStoreNSS::OnClientCertsResponse(
+    ClientCertListCallback callback,
+    ClientCertIdentityList identities) {
+  std::move(callback).Run(std::move(identities));
 }
 
 // static
@@ -120,8 +130,8 @@ void ClientCertStoreNSS::FilterCertsOnWorkerThread(
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
     intermediates.reserve(nss_intermediates.size());
     for (const ScopedCERTCertificate& nss_intermediate : nss_intermediates) {
-      intermediates.push_back(x509_util::CreateCryptoBuffer(base::make_span(
-          nss_intermediate->derCert.data, nss_intermediate->derCert.len)));
+      intermediates.push_back(x509_util::CreateCryptoBuffer(
+          x509_util::CERTCertificateAsSpan(nss_intermediate.get())));
     }
 
     // Retain a copy of the intermediates. Some deployments expect the client to
@@ -141,10 +151,11 @@ void ClientCertStoreNSS::FilterCertsOnWorkerThread(
   std::sort(identities->begin(), identities->end(), ClientCertIdentitySorter());
 }
 
+// static
 ClientCertIdentityList ClientCertStoreNSS::GetAndFilterCertsOnWorkerThread(
     scoped_refptr<crypto::CryptoModuleBlockingPasswordDelegate>
         password_delegate,
-    const SSLCertRequestInfo* request) {
+    scoped_refptr<const SSLCertRequestInfo> request) {
   // This method may acquire the NSS lock or reenter this code via extension
   // hooks (such as smart card UI). To ensure threads are not starved or
   // deadlocked, the base::ScopedBlockingCall below increments the thread pool

@@ -11,30 +11,64 @@
 // Implementations must provide hash and equality methods.
 @protocol Credential <NSObject>
 
-// Associated favicon name.
+// Associated favicon name. Used by passwords and passkeys.
 @property(nonatomic, readonly) NSString* favicon;
 
-// Plain text password.
-@property(nonatomic, readonly) NSString* password;
-
-// Importance ranking of this credential.
-@property(nonatomic, readonly) int64_t rank;
-
-// Identifier to use with ASCredentialIdentityStore.
+// Identifier to use with ASCredentialIdentityStore. Used by passwords and
+// passkeys.
 @property(nonatomic, readonly) NSString* recordIdentifier;
 
+// User's account identifier. Used by passwords and passkeys.
+@property(nonatomic, readonly) NSString* gaia;
+
+// Username of the service. Used by passwords and passkeys.
+@property(nonatomic, readonly) NSString* username;
+
+// Plain text password. Used by passwords only.
+@property(nonatomic, readonly) NSString* password;
+
+// Importance ranking of this credential. Used by passwords only.
+@property(nonatomic, readonly) int64_t rank;
+
 // Service identifier of this credential. Should match
-// ASCredentialServiceIdentifier.
+// ASCredentialServiceIdentifier. Used by passwords only.
 @property(nonatomic, readonly) NSString* serviceIdentifier;
 
-// Human readable name of the associated service.
+// Human readable name of the associated service. Used by passwords only.
 @property(nonatomic, readonly) NSString* serviceName;
 
-// Username of the service.
-@property(nonatomic, readonly) NSString* user;
-
-// Attached note to the credential.
+// Attached note to the credential. Used by passwords only.
 @property(nonatomic, readonly) NSString* note;
+
+// Passkey sync id. Used by passkeys only.
+@property(nonatomic, readonly) NSData* syncId;
+
+// Passkey user display name. Used by passkeys only.
+@property(nonatomic, readonly) NSString* userDisplayName;
+
+// Passkey user id. Used by passkeys only.
+@property(nonatomic, readonly) NSData* userId;
+
+// Passkey credential id. Used by passkeys only.
+@property(nonatomic, readonly) NSData* credentialId;
+
+// Passkey rp id. Used by passkeys only.
+@property(nonatomic, readonly) NSString* rpId;
+
+// Passkey private key. Used by passkeys only.
+@property(nonatomic, readonly) NSData* privateKey;
+
+// Passkey encrypted. Used by passkeys only.
+@property(nonatomic, readonly) NSData* encrypted;
+
+// Passkey creation time. Used by passkeys only.
+@property(nonatomic, readonly) int64_t creationTime;
+
+// Passkey last used time. Used by passkeys only.
+@property(nonatomic, assign) int64_t lastUsedTime;
+
+// Whether the credential is a passkey.
+- (BOOL)isPasskey;
 
 @end
 

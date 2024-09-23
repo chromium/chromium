@@ -5,7 +5,7 @@
 // https://gpuweb.github.io/gpuweb/
 
 [
-    Exposed(Window WebGPU, DedicatedWorker WebGPU, SharedWorker WebGPUExperimentalFeatures, ServiceWorker WebGPUExperimentalFeatures),
+    Exposed=(Window, Worker),
     SecureContext
 ] interface GPUDevice : EventTarget {
     [SameObject] readonly attribute GPUSupportedFeatures features;
@@ -26,11 +26,11 @@
     [RaisesException] GPUBindGroupLayout createBindGroupLayout(GPUBindGroupLayoutDescriptor descriptor);
     GPUPipelineLayout createPipelineLayout(GPUPipelineLayoutDescriptor descriptor);
 
-    [RaisesException] GPUShaderModule createShaderModule(GPUShaderModuleDescriptor descriptor);
+    GPUShaderModule createShaderModule(GPUShaderModuleDescriptor descriptor);
     [CallWith=ScriptState] GPURenderPipeline createRenderPipeline(GPURenderPipelineDescriptor descriptor);
     [RaisesException] GPUComputePipeline createComputePipeline(GPUComputePipelineDescriptor descriptor);
 
-    [CallWith=ScriptState] Promise<GPURenderPipeline> createRenderPipelineAsync(GPURenderPipelineDescriptor descriptor);
+    [CallWith=ScriptState, RaisesException] Promise<GPURenderPipeline> createRenderPipelineAsync(GPURenderPipelineDescriptor descriptor);
     [CallWith=ScriptState] Promise<GPUComputePipeline> createComputePipelineAsync(GPUComputePipelineDescriptor descriptor);
 
     GPUCommandEncoder createCommandEncoder(optional GPUCommandEncoderDescriptor descriptor = {});

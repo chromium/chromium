@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/android/chrome_jni_headers/PageInfoAboutThisSiteController_jni.h"
 
 #include <jni.h>
 #include "base/android/jni_array.h"
@@ -19,6 +18,9 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/PageInfoAboutThisSiteController_jni.h"
 
 static jboolean JNI_PageInfoAboutThisSiteController_IsFeatureEnabled(
     JNIEnv* env) {
@@ -43,11 +45,11 @@ JNI_PageInfoAboutThisSiteController_GetSiteInfo(
   auto* service = AboutThisSiteServiceFactory::GetForProfile(profile);
   if (!service)
     return nullptr;
-  auto url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   auto* web_contents = content::WebContents::FromJavaWebContents(j_webContents);
   auto source_id = web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
   auto* tab_helper = AboutThisSiteTabHelper::FromWebContents(web_contents);
-  auto info = service->GetAboutThisSiteInfo(*url, source_id, tab_helper);
+  auto info = service->GetAboutThisSiteInfo(url, source_id, tab_helper);
   if (!info)
     return nullptr;
 

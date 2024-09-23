@@ -160,7 +160,7 @@ DiscoveryNetworkListWinTest::AddConnectionProfile(
 std::vector<uint8_t> DiscoveryNetworkListWinTest::GenerateRandomMacAddress()
     const {
   std::vector<uint8_t> mac_address(6);
-  base::RandBytes(mac_address.data(), mac_address.size());
+  base::RandBytes(mac_address);
   return mac_address;
 }
 

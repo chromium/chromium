@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/ime/ime_sandbox_hook.h"
 
 #include <dlfcn.h>
+
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -46,10 +47,11 @@ void AddUserDataFolder(std::vector<BrokerFilePermission>* permissions) {
 }
 
 std::vector<BrokerFilePermission> GetImeFilePermissions() {
-  // These 2 paths are needed before creating IME service.
+  // These paths are needed before creating IME service.
   std::vector<BrokerFilePermission> permissions{
       BrokerFilePermission::ReadOnly("/dev/urandom"),
-      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu")};
+      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu"),
+      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/possible")};
 
   AddBundleFolder(&permissions);
   AddUserDataFolder(&permissions);
@@ -69,12 +71,10 @@ bool ImePreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
                                    sandbox::syscall_broker::COMMAND_RENAME,
                                    sandbox::syscall_broker::COMMAND_UNLINK,
                                }),
-                               GetImeFilePermissions(),
-                               sandbox::policy::SandboxLinux::PreSandboxHook(),
-                               options);
+                               GetImeFilePermissions(), options);
 
   // Try to load IME decoder shared library.
-  // TODO(crbug.com/1217513): This is not ideal, as it means rule-based
+  // TODO(crbug.com/40185212): This is not ideal, as it means rule-based
   // input methods will unnecessarily load the IME decoder shared library.
   // Either remove this line, or use a separate sandbox for rule-based.
   ImeSharedLibraryWrapperImpl::GetInstance()->MaybeLoadThenReturnEntryPoints();

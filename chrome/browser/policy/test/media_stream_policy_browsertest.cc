@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
 
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -71,11 +76,12 @@ class MediaStreamDevicesControllerBrowserTest
     int render_frame_id = web_contents->GetPrimaryMainFrame()->GetRoutingID();
     return content::MediaStreamRequest(
         render_process_id, render_frame_id, 0,
-        url::Origin::Create(request_url_), false, blink::MEDIA_DEVICE_ACCESS,
+        url::Origin::Create(request_url_), false, blink::MEDIA_GENERATE_STREAM,
         /*requested_audio_device_ids=*/{}, /*requested_video_device_ids=*/{},
         audio_request_type, video_request_type,
         /*disable_local_echo=*/false,
-        /*request_pan_tilt_zoom_permission=*/false);
+        /*request_pan_tilt_zoom_permission=*/false,
+        /*captured_surface_control_active=*/false);
   }
 
   // Configure a given policy map. The |policy_name| is the name of either the

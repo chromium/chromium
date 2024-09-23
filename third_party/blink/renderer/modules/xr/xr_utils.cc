@@ -19,7 +19,7 @@ DOMFloat32Array* transformationMatrixToDOMFloat32Array(
     const gfx::Transform& matrix) {
   float array[16];
   matrix.GetColMajorF(array);
-  return DOMFloat32Array::Create(array, 16);
+  return DOMFloat32Array::Create(array);
 }
 
 gfx::Transform DOMFloat32ArrayToTransform(DOMFloat32Array* m) {
@@ -55,7 +55,7 @@ WebGLRenderingContextBase* webglRenderingContextBaseFromUnion(
     case V8XRWebGLRenderingContext::ContentType::kWebGLRenderingContext:
       return context->GetAsWebGLRenderingContext();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -117,7 +117,7 @@ device::mojom::blink::XRHandJoint StringToMojomHandJoint(
     return device::mojom::blink::XRHandJoint::kPinkyFingerTip;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return device::mojom::blink::XRHandJoint::kMaxValue;
 }
 
@@ -174,7 +174,7 @@ String MojomHandJointToString(device::mojom::blink::XRHandJoint hand_joint) {
     case device::mojom::blink::XRHandJoint::kPinkyFingerTip:
       return "pinky-finger-tip";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

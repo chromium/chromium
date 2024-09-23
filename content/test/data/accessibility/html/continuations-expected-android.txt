@@ -1,0 +1,26 @@
+android.webkit.WebView focusable focused
+++android.view.View name='Group 1'
+++++android.view.View
+++++++android.widget.Button role_description='button' clickable focusable name='Before'
+++++android.widget.TextView name='After'
+++android.view.View name='Group 2'
+++++android.widget.TextView name='Before'
+++++android.widget.TextView name='After'
+++android.view.View name='Group 3'
+++++android.view.View
+++++++android.widget.TextView name='Before'
+++++android.view.View
+++++++android.widget.TextView name='Ever '
+++++++android.view.View role_description='link' clickable focusable link name='After'
+++++++++android.widget.TextView name='After'
+++android.view.View name='Group 4'
+++++android.widget.TextView name='Before'
+++++android.view.View
+++++++android.widget.TextView name='After'
+++android.view.View name='Group 5'
+++++android.widget.TextView name='Italic only '
+++++android.widget.TextView name='italic and bold'
+++++android.widget.TextView name='Wow, a block!'
+++++android.widget.TextView name='Wow, another block!'
+++++android.widget.TextView name='More italic and bold text'
+++++android.widget.TextView name=' More italic text'

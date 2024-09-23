@@ -13,7 +13,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
@@ -319,15 +319,17 @@ void CheckCurrentURLContainsString(std::string string) {
 }
 
 void FocusOmnibox() {
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
-        performAction:grey_tap()];
-    [ChromeEarlGrey
-        waitForUIElementToAppearWithMatcher:grey_allOf(
-                                                chrome_test_util::Omnibox(),
-                                                grey_interactable(), nil)];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-        assertWithMatcher:firstResponder()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_allOf(chrome_test_util::DefocusedLocationView(),
+                                 grey_interactable(), nil)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_allOf(
+                                              chrome_test_util::Omnibox(),
+                                              grey_interactable(), nil)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:firstResponder()];
 }
 
 UIViewController* TopPresentedViewControllerFrom(
@@ -386,7 +388,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
 }
 
 // Tests that tapping a button cancels the focus on the omnibox.
@@ -409,7 +411,15 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Check the button visibility of the toolbar when the omnibox is focused from a
 // different orientation than the default one.
-- (void)testFocusOmniboxFromOtherOrientation {
+// TODO(crbug.com/365474269): The test is flaky on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testFocusOmniboxFromOtherOrientation \
+  FLAKY_testFocusOmniboxFromOtherOrientation
+#else
+#define MAYBE_testFocusOmniboxFromOtherOrientation \
+  testFocusOmniboxFromOtherOrientation
+#endif
+- (void)MAYBE_testFocusOmniboxFromOtherOrientation {
   // Load a page to have the toolbar visible (hidden on NTP).
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
 
@@ -445,7 +455,13 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Check the button visibility of the toolbar when the omnibox is focused from
 // the default orientation.
-- (void)testFocusOmniboxFromPortrait {
+// TODO(crbug.com/364160530): The test is flaky on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testFocusOmniboxFromPortrait FLAKY_testFocusOmniboxFromPortrait
+#else
+#define MAYBE_testFocusOmniboxFromPortrait testFocusOmniboxFromPortrait
+#endif
+- (void)FLAKY_testFocusOmniboxFromPortrait {
   // Load a page to have the toolbar visible (hidden on NTP).
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
 
@@ -484,8 +500,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Verifies that the back/forward buttons are working and are correctly enabled
 // during navigations.
-// TODO(crbug.com/1488801): Test is failing on downstream bots.
-- (void)DISABLED_testNavigationButtons {
+- (void)testNavigationButtons {
   // Setup the server.
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
@@ -539,6 +554,9 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
       assertWithMatcher:grey_not(grey_enabled())];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
       assertWithMatcher:grey_not(grey_enabled())];
+
+  // Close incognito tab.
+  [ChromeEarlGrey closeAllTabs];
 }
 
 // Tests that tapping the NewTab button opens a new tab.
@@ -699,7 +717,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
 }
 
 // Verifies that the address bar can be moved from the location bar context
@@ -775,7 +793,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Verifies that the location bar is above the keyboard when tapping a text
 // field on web. Tapping it should dismiss the keyboard.
-- (void)testTapLocationBarAboveTheKeyboard {
+// TODO(crbug.com/363988044): Flaky on iphone-simulator.
+- (void)FLAKY_testTapLocationBarAboveTheKeyboard {
   [self verifyTapLocationBarAboveTheKeyboardWithMatcher:
             FormInputAccessoryOmniboxTypingShield()];
 }

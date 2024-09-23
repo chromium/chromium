@@ -28,55 +28,63 @@ source_set("renderer") {
 }
 
 source_set("throttles") {
-  sources = [
-    "renderer_url_loader_throttle.cc",
-    "renderer_url_loader_throttle.h",
-    "websocket_sb_handshake_throttle.cc",
-    "websocket_sb_handshake_throttle.h",
-  ]
+  if (safe_browsing_mode != 0) {
+    sources = [
+      "renderer_url_loader_throttle.cc",
+      "renderer_url_loader_throttle.h",
+    ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+    if (enable_extensions) {
+      sources += [
+        "websocket_sb_extensions_handshake_throttle.cc",
+        "websocket_sb_extensions_handshake_throttle.h",
+      ]
+    }
 
-  deps = [
-    "//base:base",
-    "//components/safe_browsing/content/common:interfaces",
-    "//components/safe_browsing/core/common:common",
-    "//components/safe_browsing/core/common:interfaces",
-    "//content/public/common:common",
-    "//content/public/renderer:renderer",
-    "//extensions/buildflags",
-    "//ipc",
-    "//net",
-    "//services/network/public/mojom",
-    "//services/service_manager/public/cpp:cpp",
-    "//third_party/blink/public:blink",
-    "//url:url",
-  ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  if (enable_extensions) {
-    deps += [ "//extensions/common:common_constants" ]
+    deps = [
+      "//base:base",
+      "//components/safe_browsing/content/common:interfaces",
+      "//components/safe_browsing/core/common:common",
+      "//components/safe_browsing/core/common:interfaces",
+      "//content/public/common:common",
+      "//extensions/buildflags",
+      "//net",
+      "//services/network/public/mojom",
+      "//third_party/blink/public:blink",
+      "//url:url",
+    ]
+
+    if (enable_extensions) {
+      deps += [ "//extensions/common:common_constants" ]
+    }
   }
 }
 
 source_set("throttles_unittest") {
-  testonly = true
-  sources = [
-    "renderer_url_loader_throttle_unittest.cc",
-    "websocket_sb_handshake_throttle_unittest.cc",
-  ]
+  if (safe_browsing_mode != 0) {
+    testonly = true
+    sources = [ "renderer_url_loader_throttle_unittest.cc" ]
+    if (enable_extensions) {
+      sources += [ "websocket_sb_extensions_handshake_throttle_unittest.cc" ]
+    }
 
-  deps = [
-    ":throttles",
-    "//base:base",
-    "//base/test:test_support",
-    "//components/safe_browsing/content/common:interfaces",
-    "//components/safe_browsing/core/common",
-    "//components/safe_browsing/core/common:interfaces",
-    "//content/public/common",
-    "//ipc",
-    "//services/network/public/mojom",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/blink/public:blink",
-  ]
+    deps = [
+      ":throttles",
+      "//base:base",
+      "//base/test:test_support",
+      "//components/safe_browsing/content/common:interfaces",
+      "//components/safe_browsing/core/common",
+      "//components/safe_browsing/core/common:interfaces",
+      "//ipc",
+      "//services/network/public/mojom",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+
+    if (enable_extensions) {
+      deps += [ "//third_party/blink/public:blink" ]
+    }
+  }
 }

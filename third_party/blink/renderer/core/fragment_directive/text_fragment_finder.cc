@@ -40,8 +40,8 @@ bool IsWordBounded(EphemeralRangeInFlatTree range, bool start, bool end) {
   if (start_position != 0 && start) {
     String start_text = range.StartPosition().AnchorNode()->textContent();
     start_text.Ensure16Bit();
-    wtf_size_t word_start = FindWordStartBoundary(
-        start_text.Characters16(), start_text.length(), start_position);
+    wtf_size_t word_start =
+        FindWordStartBoundary(start_text.Span16(), start_position);
     if (word_start != start_position)
       return false;
   }
@@ -53,8 +53,8 @@ bool IsWordBounded(EphemeralRangeInFlatTree range, bool start, bool end) {
     end_text.Ensure16Bit();
     // We expect end_position to be a word boundary, and FindWordEndBoundary
     // finds the next word boundary, so start from end_position - 1.
-    wtf_size_t word_end = FindWordEndBoundary(
-        end_text.Characters16(), end_text.length(), end_position - 1);
+    wtf_size_t word_end =
+        FindWordEndBoundary(end_text.Span16(), end_position - 1);
     if (word_end != end_position)
       return false;
   }
@@ -76,8 +76,7 @@ PositionInFlatTree FirstWordBoundaryAfter(PositionInFlatTree position) {
   }
 
   text.Ensure16Bit();
-  wtf_size_t word_end =
-      FindWordEndBoundary(text.Characters16(), text.length(), offset);
+  wtf_size_t word_end = FindWordEndBoundary(text.Span16(), offset);
 
   PositionInFlatTree end_pos(position.AnchorNode(), word_end);
   PositionIteratorInFlatTree itr(end_pos);
@@ -163,7 +162,7 @@ void TextFragmentFinder::FindMatchInRange(String search_text,
                                           bool word_start_bounded,
                                           bool word_end_bounded) {
   find_buffer_runner_->FindMatchInRange(
-      search_range, search_text, kCaseInsensitive,
+      search_range, search_text, FindOptions().SetCaseInsensitive(true),
       WTF::BindOnce(&TextFragmentFinder::OnFindMatchInRangeComplete,
                     WrapWeakPersistent(this), search_text,
                     WrapWeakPersistent(search_range), word_start_bounded,

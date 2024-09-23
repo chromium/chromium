@@ -13,9 +13,8 @@
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
-#include "chrome/browser/ui/ash/ash_util.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/branded_strings.h"
@@ -80,7 +79,6 @@ void CoreOobeHandler::DeclareJSCallbacks() {
 }
 
 void CoreOobeHandler::GetAdditionalParameters(base::Value::Dict* dict) {
-  dict->Set("isInTabletMode", display::Screen::GetScreen()->InTabletMode());
   dict->Set("isDemoModeEnabled", DemoSetupController::IsDemoModeAllowed());
   if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     // The value is used to show a different UI for this type of the devices.
@@ -171,6 +169,10 @@ void CoreOobeHandler::SetBluetoothDeviceInfo(
   CallJS("cr.ui.Oobe.setBluetoothDeviceInfo", bluetooth_name);
 }
 
+base::WeakPtr<CoreOobeView> CoreOobeHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void CoreOobeHandler::HandleInitializeCoreHandler() {
   VLOG(3) << "CoreOobeHandler::HandleInitializeCoreHandler";
   CHECK(ui_init_state_ == UiState::kUninitialized);
@@ -224,7 +226,7 @@ void CoreOobeHandler::HandleUpdateOobeUIState(int state) {
 }
 
 void CoreOobeHandler::HandleRaiseTabKeyEvent(bool reverse) {
-  ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_TAB, ui::EF_NONE);
+  ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_TAB, ui::EF_NONE);
   if (reverse) {
     event.SetFlags(ui::EF_SHIFT_DOWN);
   }

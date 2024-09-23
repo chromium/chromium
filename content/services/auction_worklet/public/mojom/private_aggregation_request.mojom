@@ -5,7 +5,7 @@
 module auction_worklet.mojom;
 
 import "mojo/public/mojom/base/int128.mojom";
-import "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom";
+import "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom";
 import "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom";
 
 // Indicates which value the browser should use to calculate the resulting
@@ -16,6 +16,12 @@ enum BaseValue {
   kScriptRunTime = 2,
   kSignalsFetchTime = 3,
   kBidRejectReason = 4,
+  // Values after this point require the feature
+  // kPrivateAggregationApiProtectedAudienceAdditionalExtensions to be on.
+  kParticipatingInterestGroupCount = 5,
+  kAverageCodeFetchTime = 6,
+  kPercentScriptsTimeout = 7,
+  kPercentInterestGroupsCumulativeTimeout = 8,
 };
 
 // Bucket's offset to add/subtract to the auction result value. Offset's `value`
@@ -50,6 +56,14 @@ struct SignalValue {
   int32 offset = 0;
 };
 
+// Designations of events that are automatically triggered by the browser.
+enum ReservedEventType {
+  kReservedAlways,
+  kReservedWin,
+  kReservedLoss,
+  kReservedOnce,
+};
+
 // A bucket which is a 128bit ID or a SignalBucket which tells the browser how
 // to calculate the bucket.
 union ForEventSignalBucket {
@@ -65,14 +79,26 @@ union ForEventSignalValue {
   SignalValue signal_value;
 };
 
-// A for-event contribution contains a bucket, a value, and an event_type.
+// Type of event after which to trigger a histogram contribution, either a
+// reserved one automatically triggered by the browser, or a custom user-
+// defined one.
+union EventType {
+  ReservedEventType reserved;
+  string non_reserved;
+};
+
+// A for-event contribution contains a bucket, a value, a filtering ID, and an
+// event_type.
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md#reporting-api-informal-specification
 struct AggregatableReportForEventContribution {
   ForEventSignalBucket bucket;
   ForEventSignalValue value;
 
+  // Null if not explicitly specified.
+  uint64? filtering_id;
+
   // Identifies the event type that triggers sending this report.
-  string event_type;
+  EventType event_type;
 };
 
 // `histogram_contribution` for contributeToHistogram(), and

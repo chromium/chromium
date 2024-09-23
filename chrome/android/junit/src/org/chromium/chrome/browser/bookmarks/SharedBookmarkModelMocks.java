@@ -81,7 +81,6 @@ public class SharedBookmarkModelMocks {
         doReturn(DESKTOP_BOOKMARK_ID).when(bookmarkModel).getDesktopFolderId();
         doReturn(OTHER_BOOKMARK_ID).when(bookmarkModel).getOtherFolderId();
         doReturn(MOBILE_BOOKMARK_ID).when(bookmarkModel).getMobileFolderId();
-        // TODO(crbug.com/1501998): Add account reading list folder support here.
         doReturn(READING_LIST_BOOKMARK_ID)
                 .when(bookmarkModel)
                 .getLocalOrSyncableReadingListFolder();
@@ -124,9 +123,6 @@ public class SharedBookmarkModelMocks {
                                 URL_BOOKMARK_ID_H))
                 .when(bookmarkModel)
                 .getChildIds(MOBILE_BOOKMARK_ID);
-        doReturn(Arrays.asList(URL_BOOKMARK_ID_B, URL_BOOKMARK_ID_C))
-                .when(bookmarkModel)
-                .getChildIds(BookmarkId.SHOPPING_FOLDER);
         ShoppingSpecifics shoppingSpecifics =
                 ShoppingSpecifics.newBuilder().setIsPriceTracked(true).build();
         PowerBookmarkMeta powerBookmarkMeta =

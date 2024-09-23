@@ -4,6 +4,8 @@
 
 #import "ios/chrome/app/spotlight/open_tabs_spotlight_manager.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/containers/span.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
@@ -15,7 +17,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -43,8 +45,8 @@ favicon_base::FaviconRawBitmapResult CreateTestBitmap(int w, int h) {
   CGSize size = CGSizeMake(w, h);
   UIImage* favicon = UIImageWithSizeAndSolidColor(size, [UIColor redColor]);
   NSData* png = UIImagePNGRepresentation(favicon);
-  scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes(
-      static_cast<const unsigned char*>([png bytes]), [png length]));
+  scoped_refptr<base::RefCountedBytes> data(
+      new base::RefCountedBytes(base::apple::NSDataToSpan(png)));
 
   result.bitmap_data = data;
   result.pixel_size = gfx::Size(w, h);
@@ -79,7 +81,7 @@ class OpenTabsSpotlightManagerTest : public PlatformTest {
   OpenTabsSpotlightManagerTest() {
     CreateMockLargeIconService();
     TestChromeBrowserState::Builder test_cbs_builder;
-    test_chrome_browser_state_ = test_cbs_builder.Build();
+    test_chrome_browser_state_ = std::move(test_cbs_builder).Build();
     searchableItemFactory_ = [[FakeSearchableItemFactory alloc]
         initWithDomain:spotlight::DOMAIN_OPEN_TABS];
   }
@@ -301,4 +303,54 @@ TEST_F(OpenTabsSpotlightManagerTest, TestCloseTab) {
   EXPECT_EQ(
       fakeSpotlightInterface_.deleteSearchableItemsWithIdentifiersCallsCount,
       1u);
+}
+
+// Tests that when the app is in background, any model updates don't cause an
+// immediate effect.
+TEST_F(OpenTabsSpotlightManagerTest, TestBackgroundUpdatesPostponed) {
+  browserList_->AddBrowser(browser_.get());
+
+  FakeWebState* tab1 = CreateWebState(browser_.get()->GetWebStateList());
+  tab1->LoadURL(GURL(kDummyHttpURL1));
+  FakeWebState* tab2 = CreateWebState(browser_.get()->GetWebStateList());
+  tab2->LoadURL(GURL(kDummyHttpURL2));
+
+  // We expect that we will index the added tabs.
+  EXPECT_EQ(fakeSpotlightInterface_.indexSearchableItemsCallsCount, 2u);
+
+  // Enter background
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidEnterBackgroundNotification
+                    object:nil
+                  userInfo:nil];
+
+  // Close a tab.
+  browser_.get()->GetWebStateList()->CloseWebStateAt(
+      0, WebStateList::CLOSE_USER_ACTION);
+
+  // We expect to NOT delete the closed tab (since it was the unique tab that
+  // has the loaded url).
+  EXPECT_EQ(
+      fakeSpotlightInterface_.deleteSearchableItemsWithIdentifiersCallsCount,
+      0u);
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationWillEnterForegroundNotification
+                    object:nil
+                  userInfo:nil];
+
+  // Since we're expecting the manager to treat any model updates in background
+  // as impossible to process immediately, the individual item should not be
+  // deleted by ID.
+  EXPECT_EQ(
+      fakeSpotlightInterface_.deleteSearchableItemsWithIdentifiersCallsCount,
+      0u);
+  // The manager instead removes everything in its domain.
+  EXPECT_EQ(fakeSpotlightInterface_
+                .deleteSearchableItemsWithDomainIdentifiersCallsCount,
+            1u);
+  // Now the manager schedules a reindexing of the only remaining open tab.
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+    return fakeSpotlightInterface_.indexSearchableItemsCallsCount == 3;
+  }));
 }

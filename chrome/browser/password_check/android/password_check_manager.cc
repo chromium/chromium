@@ -4,14 +4,15 @@
 
 #include "chrome/browser/password_check/android/password_check_manager.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_check/android/password_check_bridge.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -115,7 +116,7 @@ PasswordCheckManager::GetCompromisedCredentials() const {
 
 void PasswordCheckManager::UpdateCredential(
     const password_manager::CredentialUIEntry& credential,
-    base::StringPiece new_password) {
+    std::string_view new_password) {
   CredentialUIEntry updated_credential = credential;
   updated_credential.password = base::UTF8ToUTF16(new_password);
   saved_passwords_presenter_.EditSavedCredentials(credential,
@@ -124,8 +125,7 @@ void PasswordCheckManager::UpdateCredential(
 
 void PasswordCheckManager::OnEditCredential(
     const password_manager::CredentialUIEntry& credential,
-    const base::android::JavaParamRef<jobject>& context,
-    const base::android::JavaParamRef<jobject>& settings_launcher) {
+    const base::android::JavaParamRef<jobject>& context) {
   std::vector<password_manager::PasswordForm> forms =
       saved_passwords_presenter_.GetCorrespondingPasswordForms(credential);
   if (forms.empty() || credential_edit_bridge_)
@@ -142,7 +142,7 @@ void PasswordCheckManager::OnEditCredential(
       &saved_passwords_presenter_,
       base::BindOnce(&PasswordCheckManager::OnEditUIDismissed,
                      weak_ptr_factory_.GetWeakPtr()),
-      context, settings_launcher);
+      context);
 }
 
 void PasswordCheckManager::RemoveCredential(
@@ -224,7 +224,7 @@ void PasswordCheckManager::OnCredentialDone(
                                               progress_->remaining_in_queue());
   }
   if (is_leaked) {
-    // TODO(crbug.com/1092444): Trigger single-credential update.
+    // TODO(crbug.com/40134591): Trigger single-credential update.
     insecure_credentials_manager_.SaveInsecureCredential(
         credential, password_manager::TriggerBackendNotification(false));
   }
@@ -241,7 +241,7 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
   credential_facet.signon_realm = credential.GetFirstSignonRealm();
   credential_facet.affiliated_web_realm = credential.GetAffiliatedWebRealm();
 
-  auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
+  auto facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
       credential.GetFirstSignonRealm());
 
   if (facet.IsValidAndroidFacetURI()) {
@@ -310,7 +310,7 @@ PasswordCheckUIStatus PasswordCheckManager::GetUIStatus(State state) const {
     case State::kServiceError:
       return PasswordCheckUIStatus::kErrorUnknown;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PasswordCheckUIStatus::kIdle;
 }
 

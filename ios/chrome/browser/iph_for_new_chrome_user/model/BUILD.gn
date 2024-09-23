@@ -23,6 +23,9 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/public/navigation",
+    "//ios/web/public/ui",
   ]
 }
 

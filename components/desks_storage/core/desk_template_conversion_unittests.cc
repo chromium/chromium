@@ -30,6 +30,7 @@
 #include "components/tab_groups/tab_group_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace desks_storage {
 
@@ -344,7 +345,7 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplateMinimized) {
   EXPECT_THAT(wi->window_state_type,
               testing::Optional(chromeos::WindowStateType::kMinimized));
   EXPECT_THAT(wi->pre_minimized_show_state_type,
-              testing::Optional(ui::WindowShowState::SHOW_STATE_NORMAL));
+              testing::Optional(ui::mojom::WindowShowState::kNormal));
   EXPECT_THAT(wi->current_bounds, testing::Optional(gfx::Rect(0, 1, 120, 121)));
 }
 

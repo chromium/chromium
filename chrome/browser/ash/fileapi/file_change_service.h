@@ -31,10 +31,6 @@ class FileChangeService : public KeyedService {
   // Notifies the service that a file identified by `url` has been modified.
   void NotifyFileModified(const storage::FileSystemURL& url);
 
-  // Notifies the service that a file has been copied from `src` to `dst`.
-  void NotifyFileCopied(const storage::FileSystemURL& src,
-                        const storage::FileSystemURL& dst);
-
   // Notifies the service that a file has been moved from `src` to `dst`.
   void NotifyFileMoved(const storage::FileSystemURL& src,
                        const storage::FileSystemURL& dst);

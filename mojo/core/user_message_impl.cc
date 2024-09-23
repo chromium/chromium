@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "mojo/core/user_message_impl.h"
 
 #include <atomic>
@@ -30,11 +35,6 @@ namespace mojo {
 namespace core {
 
 namespace {
-
-// The minimum amount of memory to allocate for a new serialized message buffer.
-// This should be sufficiently large such that most seiralized messages do not
-// incur any reallocations as they're expanded to full size.
-const uint32_t kMinimumPayloadBufferSize = 128;
 
 // The maximum number of Mojo handles which can be attached to a serialized
 // user message. Much larger than should ever be necessary, but small enough
@@ -462,6 +462,38 @@ MojoResult UserMessageImpl::SetContext(
   context_ = context;
   context_serializer_ = serializer;
   context_destructor_ = destructor;
+  return MOJO_RESULT_OK;
+}
+
+MojoResult UserMessageImpl::ReserveCapacity(uint32_t payload_buffer_size) {
+  if (HasContext() || IsSerialized()) {
+    // TODO(andreaorru): support reserving additional capacity
+    // in the middle of the serialization.
+    return MOJO_RESULT_FAILED_PRECONDITION;
+  }
+  if (payload_buffer_size >
+      std::numeric_limits<uint32_t>::max() - kNodeChannelHeaderSize) {
+    return MOJO_RESULT_FAILED_PRECONDITION;
+  }
+
+  Channel::MessagePtr channel_message;
+  MojoResult rv = CreateOrExtendSerializedEventMessage(
+      message_event_, /*payload_size=*/0,
+      /*payload_buffer_size=*/
+      std::max(payload_buffer_size + kNodeChannelHeaderSize,
+               kMinimumPayloadBufferSize),
+      /*new_dispatchers=*/nullptr, /*num_new_dispatchers=*/0, &channel_message,
+      &header_, &header_size_, &user_payload_);
+  if (rv != MOJO_RESULT_OK) {
+    return MOJO_RESULT_ABORTED;
+  }
+
+  user_payload_size_ = 0;
+  channel_message_ = std::move(channel_message);
+  // Set to `true` to mirror the case of "first data for message case"
+  // with no handles in `AppendData`.
+  has_serialized_handles_ = true;
+
   return MOJO_RESULT_OK;
 }
 

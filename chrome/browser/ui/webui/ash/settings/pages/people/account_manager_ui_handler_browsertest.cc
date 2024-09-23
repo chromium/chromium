@@ -9,8 +9,10 @@
 #include <ostream>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
@@ -137,7 +139,10 @@ class AccountManagerUIHandlerTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<DeviceAccountInfo> {
  public:
-  AccountManagerUIHandlerTest() = default;
+  AccountManagerUIHandlerTest() {
+    feature_list_.InitWithFeatures(
+        {}, {ash::features::kSecondaryAccountAllowedInArcPolicy});
+  }
   AccountManagerUIHandlerTest(const AccountManagerUIHandlerTest&) = delete;
   AccountManagerUIHandlerTest& operator=(const AccountManagerUIHandlerTest&) =
       delete;
@@ -148,10 +153,12 @@ class AccountManagerUIHandlerTest
 
     auto* account_manager_facade =
         ::GetAccountManagerFacade(profile_->GetPath().value());
+    account_apps_availability_ =
+        AccountAppsAvailabilityFactory::GetForProfile(profile());
 
     handler_ = std::make_unique<TestingAccountManagerUIHandler>(
-        account_manager_, account_manager_facade, identity_manager_, nullptr,
-        &web_ui_);
+        account_manager_, account_manager_facade, identity_manager_,
+        account_apps_availability_, &web_ui_);
     handler_->SetProfileForTesting(profile_.get());
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();
@@ -159,6 +166,7 @@ class AccountManagerUIHandlerTest
   }
 
   void TearDownOnMainThread() override {
+    account_apps_availability_ = nullptr;
     handler_.reset();
     GetFakeUserManager()->RemoveUserFromList(primary_account_id_);
     profile_.reset();
@@ -251,6 +259,8 @@ class AccountManagerUIHandlerTest
   content::TestWebUI web_ui_;
   AccountId primary_account_id_;
   std::unique_ptr<TestingAccountManagerUIHandler> handler_;
+  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<AccountAppsAvailability> account_apps_availability_;
 };
 
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
@@ -394,7 +404,10 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
       lacros.push_back(
           ash::standalone_browser::features::kLacrosForSupervisedUsers);
     }
-    feature_list_.InitWithFeatures(lacros, {});
+    feature_list_.InitWithFeatures(
+        lacros, {ash::features::kSecondaryAccountAllowedInArcPolicy});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   void SetUpOnMainThread() override {
@@ -458,6 +471,7 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
   raw_ptr<AccountAppsAvailability, DanglingUntriaged>
       account_apps_availability_;
   std::unique_ptr<TestingAccountManagerUIHandler> handler_;
@@ -599,6 +613,152 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
 INSTANTIATE_TEST_SUITE_P(
     AccountManagerUIHandlerTestWithArcAccountRestrictionsSuite,
     AccountManagerUIHandlerTestWithArcAccountRestrictions,
+    ::testing::Values(GetGaiaDeviceAccountInfo(), GetChildDeviceAccountInfo()));
+
+class AccountManagerUIHandlerTestWithManagedArcAccountRestriction
+    : public AccountManagerUIHandlerTest {
+ public:
+  AccountManagerUIHandlerTestWithManagedArcAccountRestriction() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    enabled_features.push_back(
+        ash::features::kSecondaryAccountAllowedInArcPolicy);
+    feature_list_.InitWithFeatures(enabled_features, {});
+  }
+
+  void SetUpOnMainThread() override {
+    SetUpEnvironment();
+
+    auto* account_manager_facade =
+        ::GetAccountManagerFacade(profile()->GetPath().value());
+
+    account_apps_availability_ =
+        AccountAppsAvailabilityFactory::GetForProfile(profile());
+
+    handler_ = std::make_unique<TestingAccountManagerUIHandler>(
+        account_manager(), account_manager_facade, identity_manager(),
+        account_apps_availability_, web_ui());
+    handler_->SetProfileForTesting(profile());
+    handler_->RegisterMessages();
+    handler_->AllowJavascriptForTesting();
+    base::RunLoop().RunUntilIdle();
+
+    ASSERT_TRUE(
+        ash::AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled());
+  }
+
+  void TearDownOnMainThread() override {
+    account_apps_availability_ = nullptr;
+    handler_.reset();
+    AccountManagerUIHandlerTest::TearDownOnMainThread();
+  }
+
+  base::flat_set<::account_manager::Account> GetAccountsAvailableInArc() const {
+    base::test::TestFuture<const base::flat_set<::account_manager::Account>&>
+        future;
+    account_apps_availability_->GetAccountsAvailableInArc(future.GetCallback());
+    return future.Get();
+  }
+
+  std::optional<::account_manager::Account> FindAccountByEmail(
+      const std::vector<::account_manager::Account>& accounts,
+      const std::string& email) {
+    for (const auto& account : accounts) {
+      if (account.raw_email == email) {
+        return account;
+      }
+    }
+    return std::nullopt;
+  }
+
+  std::optional<const base::Value> FindAccountDictByEmail(
+      const base::Value::List& accounts,
+      const std::string& email) {
+    for (const base::Value& account : accounts) {
+      if (ValueOrEmpty(account.GetDict().FindString("email")) == email) {
+        return account.Clone();
+      }
+    }
+    return std::nullopt;
+  }
+
+  AccountAppsAvailability* account_apps_availability() {
+    return account_apps_availability_;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<AccountAppsAvailability> account_apps_availability_;
+  std::unique_ptr<TestingAccountManagerUIHandler> handler_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    AccountManagerUIHandlerTestWithManagedArcAccountRestriction,
+    CheckIsAvailableInArcValue) {
+  UpsertAccount(kSecondaryAccount1Email);
+  UpsertAccount(kSecondaryAccount2Email);
+  const std::vector<::account_manager::Account> account_manager_accounts =
+      GetAccountsFromAccountManager();
+  ASSERT_EQ(3UL, account_manager_accounts.size());
+
+  // Wait for accounts to propagate to IdentityManager.
+  base::RunLoop().RunUntilIdle();
+
+  std::optional<::account_manager::Account> account_1 =
+      FindAccountByEmail(account_manager_accounts, kSecondaryAccount1Email);
+  ASSERT_TRUE(account_1.has_value());
+  std::optional<::account_manager::Account> account_2 =
+      FindAccountByEmail(account_manager_accounts, kSecondaryAccount2Email);
+  ASSERT_TRUE(account_2.has_value());
+
+  account_apps_availability()->SetIsAccountAvailableInArc(account_1.value(),
+                                                          true);
+  account_apps_availability()->SetIsAccountAvailableInArc(account_2.value(),
+                                                          false);
+
+  // Call "getAccounts".
+  base::Value::List args;
+  args.Append(kHandleFunctionName);
+  web_ui()->HandleReceivedMessage(kGetAccountsMessage, args);
+
+  // Wait for the async calls to finish.
+  base::RunLoop().RunUntilIdle();
+
+  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", call_data.function_name());
+  EXPECT_EQ(kHandleFunctionName, call_data.arg1()->GetString());
+  ASSERT_TRUE(call_data.arg2()->GetBool());
+
+  // Get results from JS callback.
+  const base::Value::List& result = call_data.arg3()->GetList();
+  ASSERT_EQ(account_manager_accounts.size(), result.size());
+
+  // The value for the device account should be always `true`.
+  const base::Value::Dict& device_account = result[0].GetDict();
+  EXPECT_TRUE(device_account.FindBool("isAvailableInArc").value());
+
+  // Check secondary accounts.
+  std::optional<const base::Value> secondary_1_dict =
+      FindAccountDictByEmail(result, kSecondaryAccount1Email);
+  ASSERT_TRUE(secondary_1_dict.has_value());
+  std::optional<const base::Value> secondary_2_dict =
+      FindAccountDictByEmail(result, kSecondaryAccount2Email);
+  ASSERT_TRUE(secondary_2_dict.has_value());
+
+  std::optional<bool> is_available_1 =
+      secondary_1_dict.value().GetDict().FindBool("isAvailableInArc");
+  ASSERT_TRUE(is_available_1.has_value());
+  std::optional<bool> is_available_2 =
+      secondary_2_dict.value().GetDict().FindBool("isAvailableInArc");
+  ASSERT_TRUE(is_available_2.has_value());
+
+  // The values should match `SetIsAccountAvailableInArc` calls.
+  EXPECT_TRUE(is_available_1.value());
+  EXPECT_FALSE(is_available_2.value());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AccountManagerUIHandlerTestWithManagedArcAccountRestrictionSuite,
+    AccountManagerUIHandlerTestWithManagedArcAccountRestriction,
     ::testing::Values(GetGaiaDeviceAccountInfo(), GetChildDeviceAccountInfo()));
 
 }  // namespace ash::settings

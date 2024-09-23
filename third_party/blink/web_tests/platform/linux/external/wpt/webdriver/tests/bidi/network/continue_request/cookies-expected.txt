@@ -1,0 +1,14 @@
+This is a wdspec test.
+[FAIL] test_modify_cookies[document_cookies0-modified_cookies0]
+  AssertionError: assert 1 == 0
+[FAIL] test_modify_cookies[document_cookies1-modified_cookies1]
+  AssertionError
+[FAIL] test_modify_cookies[document_cookies2-modified_cookies2]
+  AssertionError
+[FAIL] test_modify_cookies[document_cookies3-modified_cookies3]
+  AssertionError: assert 2 == 1
+[FAIL] test_override_header_cookie
+  AssertionError
+[FAIL] test_override_modified_header_cookies
+  AssertionError
+Harness: the test ran to completion.

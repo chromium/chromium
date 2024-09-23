@@ -5,9 +5,9 @@
 #ifndef IPC_MESSAGE_MOJOM_TRAITS_H_
 #define IPC_MESSAGE_MOJOM_TRAITS_H_
 
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/containers/span.h"
 #include "ipc/ipc.mojom-shared.h"
 #include "ipc/message_view.h"

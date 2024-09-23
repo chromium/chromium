@@ -1,0 +1,33 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/display",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/ash/display",
+  "+chrome/common/chrome_paths.h",
+  "+chrome/test/base",
+
+  # Dependencies outside of //chrome:
+  "-content",
+]
+
+specific_include_rules = {
+  ".*quirks_manager_delegate_impl\.cc": [
+    "+chrome/browser/ash/settings/cros_settings.h",
+  ],
+  ".*_browsertest\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+content/public/test",
+  ],
+}

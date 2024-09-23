@@ -78,15 +78,18 @@ bool MockExternalProvider::GetExtensionDetails(
   auto it2 = url_extension_map_.find(id);
 
   // |id| can't be on both |file_extension_map_| and |url_extension_map_|.
-  if (it1 == file_extension_map_.end() && it2 == url_extension_map_.end())
+  if (it1 == file_extension_map_.end() && it2 == url_extension_map_.end()) {
     return false;
+  }
 
   // Only ExternalInstallInfoFile has version.
-  if (version && it1 != file_extension_map_.end())
+  if (version && it1 != file_extension_map_.end()) {
     *version = std::make_unique<base::Version>(it1->second->version);
+  }
 
-  if (location)
+  if (location) {
     *location = location_;
+  }
 
   return true;
 }

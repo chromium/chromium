@@ -1,0 +1,14 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_CSTDINT_
+#define TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_CSTDINT_
+
+using uintptr_t = __UINTPTR_TYPE__;
+
+using uint8_t = unsigned char;
+
+using int8_t = signed char;
+
+#endif  // TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_CSTDINT_

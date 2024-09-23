@@ -2,15 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/metrics/persistent_memory_allocator.h"
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -76,14 +83,14 @@ class PersistentMemoryAllocatorTest : public testing::Test {
 
   PersistentMemoryAllocatorTest() {
     kAllocAlignment = GetAllocAlignment();
-    mem_segment_.reset(new char[TEST_MEMORY_SIZE]);
+    mem_segment_ = base::HeapArray<char>::Uninit(TEST_MEMORY_SIZE);
   }
 
   void SetUp() override {
     allocator_.reset();
-    ::memset(mem_segment_.get(), 0, TEST_MEMORY_SIZE);
+    ::memset(mem_segment_.data(), 0, TEST_MEMORY_SIZE);
     allocator_ = std::make_unique<PersistentMemoryAllocator>(
-        mem_segment_.get(), TEST_MEMORY_SIZE, TEST_MEMORY_PAGE, TEST_ID,
+        mem_segment_.data(), TEST_MEMORY_SIZE, TEST_MEMORY_PAGE, TEST_ID,
         TEST_NAME, PersistentMemoryAllocator::kReadWrite);
   }
 
@@ -106,7 +113,7 @@ class PersistentMemoryAllocatorTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<char[]> mem_segment_;
+  base::HeapArray<char> mem_segment_;
   std::unique_ptr<PersistentMemoryAllocator> allocator_;
 };
 
@@ -232,7 +239,7 @@ TEST_F(PersistentMemoryAllocatorTest, AllocateAndIterate) {
 
   // Create second allocator (read/write) using the same memory segment.
   std::unique_ptr<PersistentMemoryAllocator> allocator2(
-      new PersistentMemoryAllocator(mem_segment_.get(), TEST_MEMORY_SIZE,
+      new PersistentMemoryAllocator(mem_segment_.data(), TEST_MEMORY_SIZE,
                                     TEST_MEMORY_PAGE, 0, "",
                                     PersistentMemoryAllocator::kReadWrite));
   EXPECT_EQ(TEST_ID, allocator2->Id());
@@ -248,7 +255,7 @@ TEST_F(PersistentMemoryAllocatorTest, AllocateAndIterate) {
 
   // Create a third allocator (read-only) using the same memory segment.
   std::unique_ptr<const PersistentMemoryAllocator> allocator3(
-      new PersistentMemoryAllocator(mem_segment_.get(), TEST_MEMORY_SIZE,
+      new PersistentMemoryAllocator(mem_segment_.data(), TEST_MEMORY_SIZE,
                                     TEST_MEMORY_PAGE, 0, "",
                                     PersistentMemoryAllocator::kReadOnly));
   EXPECT_EQ(TEST_ID, allocator3->Id());
@@ -345,7 +352,7 @@ class AllocatorThread : public SimpleThread {
 // Test parallel allocation/iteration and ensure consistency across all
 // instances.
 TEST_F(PersistentMemoryAllocatorTest, ParallelismTest) {
-  void* memory = mem_segment_.get();
+  void* memory = mem_segment_.data();
   AllocatorThread t1("t1", memory, TEST_MEMORY_SIZE, TEST_MEMORY_PAGE);
   AllocatorThread t2("t2", memory, TEST_MEMORY_SIZE, TEST_MEMORY_PAGE);
   AllocatorThread t3("t3", memory, TEST_MEMORY_SIZE, TEST_MEMORY_PAGE);
@@ -393,7 +400,7 @@ class MakeIterableThread : public SimpleThread {
 
  private:
   raw_ptr<PersistentMemoryAllocator> allocator_;
-  span<Reference> refs_;
+  raw_span<Reference> refs_;
 };
 
 // Verifies that multiple threads making the same objects iterable doesn't cause
@@ -612,7 +619,7 @@ TEST_F(PersistentMemoryAllocatorTest, DelayedAllocationTest) {
 #define MAYBE_CorruptionTest CorruptionTest
 #endif
 TEST_F(PersistentMemoryAllocatorTest, MAYBE_CorruptionTest) {
-  char* memory = mem_segment_.get();
+  char* memory = mem_segment_.data();
   AllocatorThread t1("t1", memory, TEST_MEMORY_SIZE, TEST_MEMORY_PAGE);
   AllocatorThread t2("t2", memory, TEST_MEMORY_SIZE, TEST_MEMORY_PAGE);
   AllocatorThread t3("t3", memory, TEST_MEMORY_SIZE, TEST_MEMORY_PAGE);
@@ -658,7 +665,7 @@ TEST_F(PersistentMemoryAllocatorTest, MaliciousTest) {
   // Create loop in iterable list and ensure it doesn't hang. The return value
   // from CountIterables() in these cases is unpredictable. If there is a
   // failure, the call will hang and the test killed for taking too long.
-  uint32_t* header4 = (uint32_t*)(mem_segment_.get() + block4);
+  uint32_t* header4 = (uint32_t*)(mem_segment_.data() + block4);
   EXPECT_EQ(block5, header4[3]);
   header4[3] = block4;
   CountIterables();  // loop: 1-2-3-4-4
@@ -918,8 +925,8 @@ TEST(FilePersistentMemoryAllocatorTest, AcceptableTest) {
   local.MakeIterable(local.Allocate(1, 1));
   local.MakeIterable(local.Allocate(11, 11));
   const size_t minsize = local.used();
-  std::unique_ptr<char[]> garbage(new char[minsize]);
-  RandBytes(garbage.get(), minsize);
+  auto garbage = HeapArray<uint8_t>::Uninit(minsize);
+  RandBytes(garbage);
 
   std::unique_ptr<MemoryMappedFile> mmfile;
   char filename[100];
@@ -983,7 +990,7 @@ TEST(FilePersistentMemoryAllocatorTest, AcceptableTest) {
     {
       File writer(file_path, File::FLAG_CREATE | File::FLAG_WRITE);
       ASSERT_TRUE(writer.IsValid());
-      writer.Write(0, (const char*)garbage.get(), filesize);
+      writer.Write(0, garbage.first(filesize));
     }
     ASSERT_TRUE(PathExists(file_path));
 

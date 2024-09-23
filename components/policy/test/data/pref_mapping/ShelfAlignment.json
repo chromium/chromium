@@ -9,7 +9,9 @@
           "ShelfAlignment": "Left"
         },
         "prefs": {
-          "shelf_alignment_local": {}
+          "shelf_alignment_local": {
+            "value": "Left"
+          }
         }
       }
     ]

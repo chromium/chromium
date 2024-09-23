@@ -91,7 +91,7 @@ std::string ManifestFetchData::GetSimpleLocationString(ManifestLocation loc) {
       result = kPolicyLocation;
       break;
     case ManifestLocation::kInvalidLocation:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -147,7 +147,7 @@ bool ManifestFetchData::AddExtension(const std::string& id,
   DCHECK(!is_all_external_policy_download_ ||
          extension_location == ManifestLocation::kExternalPolicyDownload);
   if (base::Contains(extensions_data_, id)) {
-    NOTREACHED() << "Duplicate extension id " << id;
+    NOTREACHED_IN_MIGRATION() << "Duplicate extension id " << id;
     return false;
   }
 
@@ -280,7 +280,7 @@ bool ManifestFetchData::DidPing(const ExtensionId& extension_id,
   else if (type == ACTIVE)
     value = i->second.active_days;
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   return value == kNeverPinged || value > 0;
 }
 

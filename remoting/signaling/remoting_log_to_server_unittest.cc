@@ -54,7 +54,8 @@ class RemotingLogToServerTest : public testing::Test {
       ServerLogEntry::ME2ME,
       std::make_unique<FakeOAuthTokenGetter>(OAuthTokenGetter::SUCCESS,
                                              "fake_email",
-                                             "fake_access_token"),
+                                             "fake_access_token",
+                                             "fake_scope"),
       nullptr};
 };
 

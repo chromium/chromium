@@ -7,12 +7,8 @@ package org.chromium.content.browser;
 import android.webkit.JavascriptInterface;
 
 import org.junit.Assert;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import org.chromium.base.Log;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.JavascriptInjector;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -22,40 +18,13 @@ import org.chromium.content_shell_apk.ContentShellActivity;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.List;
 
 /** ActivityTestRule with common functionality for testing the Java Bridge. */
 public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
     /** Shared name for batched JavaBridge tests. */
     public static final String BATCH = "JavaBridgeActivityTestRule";
 
-    /** {@link ParameterProvider} used for parameterized test that provides the Mojo usage state. */
-    public static class MojoTestParams implements ParameterProvider {
-        private static List<ParameterSet> sMojoTestParams =
-                Arrays.asList(
-                        new ParameterSet().value(false).name("MojoUnused"),
-                        new ParameterSet().value(true).name("MojoUsed"));
-
-        @Override
-        public List<ParameterSet> getParameters() {
-            return sMojoTestParams;
-        }
-    }
-
-    /** {@link ParameterProvider} used for parameterized test that keeps the legacy tests. */
-    public static class LegacyTestParams implements ParameterProvider {
-        private static List<ParameterSet> sLegacyTestParams =
-                Arrays.asList(new ParameterSet().value(false));
-
-        @Override
-        public List<ParameterSet> getParameters() {
-            return sLegacyTestParams;
-        }
-    }
-
     private TestCallbackHelperContainer mTestCallbackHelperContainer;
-    private boolean mUseMojo;
 
     public static class Controller {
         private static final int RESULT_WAIT_TIME = 5000;
@@ -155,7 +124,7 @@ public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
                         public void run() {
                             WebContents webContents = getWebContents();
                             JavascriptInjector injector =
-                                    JavascriptInjector.fromWebContents(webContents, mUseMojo);
+                                    JavascriptInjector.fromWebContents(webContents);
                             injector.addPossiblyUnsafeInterface(object1, name1, requiredAnnotation);
                             if (object2 != null && name2 != null) {
                                 injector.addPossiblyUnsafeInterface(
@@ -169,10 +138,6 @@ public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
             throw new RuntimeException(
                     "Failed to injectObjectsAndReload: " + Log.getStackTraceString(e));
         }
-    }
-
-    public void setupMojoTest(boolean useMojo) {
-        mUseMojo = useMojo;
     }
 
     public void synchronousPageReload() throws Throwable {
@@ -190,15 +155,8 @@ public class JavaBridgeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     @Override
-    public Statement apply(Statement base, Description desc) {
-        return super.apply(
-                new Statement() {
-                    @Override
-                    public void evaluate() throws Throwable {
-                        setUpContentView();
-                        base.evaluate();
-                    }
-                },
-                desc);
+    protected void before() throws Throwable {
+        super.before();
+        setUpContentView();
     }
 }

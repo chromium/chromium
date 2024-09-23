@@ -81,7 +81,7 @@ AtomicString CreateVisionDeficiencyFilterUrl(
           " 0.000  0.000  0.000  1.000  0.000 "
           "\"/>");
     case VisionDeficiency::kNoVisionDeficiency:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return g_empty_atom;
   }
 }

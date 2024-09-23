@@ -21,13 +21,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_test_util.h"
-#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
-#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_manager_delegate.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_unit_test_utils.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/common/chrome_features.h"
@@ -42,8 +41,8 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_utils.h"
-#include "components/no_state_prefetch/common/prerender_origin.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_switches.h"
@@ -69,7 +68,7 @@ namespace {
 class TestNetworkBytesChangedObserver
     : public prerender::NoStatePrefetchHandle::Observer {
  public:
-  TestNetworkBytesChangedObserver() : network_bytes_changed_(false) {}
+  TestNetworkBytesChangedObserver() = default;
 
   TestNetworkBytesChangedObserver(const TestNetworkBytesChangedObserver&) =
       delete;
@@ -79,15 +78,6 @@ class TestNetworkBytesChangedObserver
   // prerender::NoStatePrefetchHandle::Observer
   void OnPrefetchStop(
       NoStatePrefetchHandle* no_state_prefetch_handle) override {}
-  void OnPrefetchNetworkBytesChanged(
-      NoStatePrefetchHandle* no_state_prefetch_handle) override {
-    network_bytes_changed_ = true;
-  }
-
-  bool network_bytes_changed() const { return network_bytes_changed_; }
-
- private:
-  bool network_bytes_changed_;
 };
 
 const gfx::Size kDefaultViewSize(640, 480);
@@ -611,6 +601,7 @@ TEST_F(NoStatePrefetchTest, LinkManagerNavigateAwayLaunchAnother) {
 // and is aborted.
 TEST_F(NoStatePrefetchTest, NoStatePrefetchDuplicate) {
   const GURL kUrl("http://www.google.com/");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
   predictors::LoadingPredictorConfig config;
   PopulateTestConfig(&config);
 
@@ -623,26 +614,27 @@ TEST_F(NoStatePrefetchTest, NoStatePrefetchDuplicate) {
 
   // Prefetch the url once.
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      kUrl, std::nullopt, ORIGIN_OMNIBOX, FINAL_STATUS_CANCELLED);
-  EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      kUrl, nullptr, gfx::Size(), nullptr));
+      kUrl, kOrigin, ORIGIN_SAME_ORIGIN_SPECULATION, FINAL_STATUS_CANCELLED);
+  EXPECT_TRUE(no_state_prefetch_manager()->AddSameOriginSpeculation(
+      kUrl, nullptr, gfx::Size(), kOrigin));
   // Cancel the prefetch so that it is not reused.
   no_state_prefetch_manager()->CancelAllPrerenders();
 
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      kUrl, std::nullopt, ORIGIN_OMNIBOX, FINAL_STATUS_PROFILE_DESTROYED);
+      kUrl, kOrigin, ORIGIN_SAME_ORIGIN_SPECULATION,
+      FINAL_STATUS_PROFILE_DESTROYED);
 
   // Prefetch again before time_to_live aborts, because it is a duplicate.
   tick_clock()->Advance(base::Seconds(1));
-  EXPECT_FALSE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      kUrl, nullptr, gfx::Size(), nullptr));
+  EXPECT_FALSE(no_state_prefetch_manager()->AddSameOriginSpeculation(
+      kUrl, nullptr, gfx::Size(), kOrigin));
   histogram_tester().ExpectBucketCount("Prerender.FinalStatus",
                                        FINAL_STATUS_DUPLICATE, 1);
 
   // Prefetch after time_to_live succeeds.
   tick_clock()->Advance(base::Minutes(net::HttpCache::kPrefetchReuseMins));
-  EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      kUrl, nullptr, gfx::Size(), nullptr));
+  EXPECT_TRUE(no_state_prefetch_manager()->AddSameOriginSpeculation(
+      kUrl, nullptr, gfx::Size(), kOrigin));
 }
 
 // Make sure that if we prerender more requests than we support, that we launch
@@ -889,32 +881,24 @@ TEST_F(NoStatePrefetchTest, CancelAllTest) {
   EXPECT_FALSE(no_state_prefetch_manager()->FindEntry(url));
 }
 
-// Test that when prefetch is enabled, a prefetch initiated by omnibox is
-// successful.
-TEST_F(NoStatePrefetchTest, OmniboxAllowedWhenNotDisabled) {
-  FakeNoStatePrefetchContents* no_state_prefetch_contents =
-      no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          GURL("http://www.example.com"), std::nullopt, ORIGIN_OMNIBOX,
-          FINAL_STATUS_PROFILE_DESTROYED);
-
-  EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      GURL("http://www.example.com"), nullptr, gfx::Size(), nullptr));
-  EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
-}
-
-class PrerenderFallbackToPreconnectDisabledTest : public NoStatePrefetchTest {
+class NoStatePrefetchFallbackToPreconnectTest
+    : public base::test::WithFeatureOverride,
+      public NoStatePrefetchTest {
  public:
-  PrerenderFallbackToPreconnectDisabledTest() {
-    feature_list_.InitAndDisableFeature(
-        features::kPrerenderFallbackToPreconnect);
-  }
+  NoStatePrefetchFallbackToPreconnectTest()
+      : base::test::WithFeatureOverride(
+            features::kPrerenderFallbackToPreconnect) {}
 };
 
-// Test that when prefetch fails and the kPrerenderFallbackToPreconnect
-// experiment is not enabled, a prefetch initiated by omnibox does not result in
-// a preconnect.
-TEST_F(PrerenderFallbackToPreconnectDisabledTest,
-       OmniboxAllowedWhenNotDisabled_LowMemory_FeatureDisabled) {
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    NoStatePrefetchFallbackToPreconnectTest);
+
+// Test that when prefetch fails and ...
+// - the kPrerenderFallbackToPreconnect experiment is not enabled, a prefetch
+//   initiated by <link rel=prerender> does not result in a preconnect.
+// - the kPrerenderFallbackToPreconnect experiment is enabled, a prefetch
+//   initiated by <link rel=prerender> actually results in preconnect.
+TEST_P(NoStatePrefetchFallbackToPreconnectTest, LinkRelPrerender) {
   const GURL kURL(GURL("http://www.example.com"));
   predictors::LoadingPredictorConfig config;
   PopulateTestConfig(&config);
@@ -926,98 +910,17 @@ TEST_F(PrerenderFallbackToPreconnectDisabledTest,
 
   // Prefetch should be disabled on low memory devices.
   no_state_prefetch_manager()->SetIsLowEndDevice(true);
-  EXPECT_FALSE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      kURL, nullptr, gfx::Size(), nullptr));
+  EXPECT_FALSE(AddSimpleLinkTrigger(kURL));
 
-  EXPECT_EQ(0u, loading_predictor->GetActiveHintsSizeForTesting());
-}
-
-class PrerenderFallbackToPreconnectEnabledTest : public NoStatePrefetchTest {
- public:
-  PrerenderFallbackToPreconnectEnabledTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kPrerenderFallbackToPreconnect);
+  if (base::FeatureList::IsEnabled(features::kPrerenderFallbackToPreconnect)) {
+    // Verify that the prefetch request falls back to a preconnect request.
+    EXPECT_EQ(1u, loading_predictor->GetActiveHintsSizeForTesting());
+    auto& active_hints = loading_predictor->active_hints_for_testing();
+    auto it = active_hints.find(kURL);
+    EXPECT_NE(it, active_hints.end());
+  } else {
+    EXPECT_EQ(0u, loading_predictor->GetActiveHintsSizeForTesting());
   }
-};
-
-// Test that when prefetch fails and the kPrerenderFallbackToPreconnect
-// experiment is enabled, a prefetch initiated by omnibox actually results in
-// preconnect.
-TEST_F(PrerenderFallbackToPreconnectEnabledTest,
-       Omnibox_AllowedWhenNotDisabled_LowMemory_FeatureEnabled) {
-  const GURL kURL(GURL("http://www.example.com"));
-
-  predictors::LoadingPredictorConfig config;
-  PopulateTestConfig(&config);
-
-  auto* loading_predictor =
-      predictors::LoadingPredictorFactory::GetForProfile(profile());
-  loading_predictor->StartInitialization();
-  content::RunAllTasksUntilIdle();
-
-  // Prefetch should be disabled on low memory devices.
-  no_state_prefetch_manager()->SetIsLowEndDevice(true);
-  EXPECT_FALSE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      kURL, nullptr, gfx::Size(), nullptr));
-
-  // Verify that the prefetch request falls back to a preconnect request.
-  EXPECT_EQ(1u, loading_predictor->GetActiveHintsSizeForTesting());
-
-  auto& active_hints = loading_predictor->active_hints_for_testing();
-  auto it = active_hints.find(kURL);
-  EXPECT_NE(it, active_hints.end());
-}
-
-// Test that when prefetch fails and the kPrerenderFallbackToPreconnect
-// experiment is enabled, a prefetch initiated by an external request actually
-// results in preconnect.
-TEST_F(PrerenderFallbackToPreconnectEnabledTest,
-       ExternalRequest_AllowedWhenNotDisabled_LowMemory_FeatureEnabled) {
-  const GURL kURL(GURL("http://www.example.com"));
-
-  predictors::LoadingPredictorConfig config;
-  PopulateTestConfig(&config);
-
-  auto* loading_predictor =
-      predictors::LoadingPredictorFactory::GetForProfile(profile());
-  loading_predictor->StartInitialization();
-  content::RunAllTasksUntilIdle();
-
-  // Prefetch should be disabled on low memory devices.
-  no_state_prefetch_manager()->SetIsLowEndDevice(true);
-  EXPECT_FALSE(no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
-      kURL, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
-
-  // Verify that the prefetch request falls back to a preconnect request.
-  EXPECT_EQ(1u, loading_predictor->GetActiveHintsSizeForTesting());
-
-  auto& active_hints = loading_predictor->active_hints_for_testing();
-  auto it = active_hints.find(kURL);
-  EXPECT_NE(it, active_hints.end());
-}
-
-// Test that when prerender fails and the
-// kPrerenderFallbackToPreconnect experiment is enabled, a
-// prerender initiated by isolated prerender does not trigger a preconnect.
-TEST_F(PrerenderFallbackToPreconnectEnabledTest,
-       IsolatedPrerenderDoesNotPreconnect) {
-  const GURL kURL(GURL("http://www.example.com"));
-
-  predictors::LoadingPredictorConfig config;
-  PopulateTestConfig(&config);
-
-  auto* loading_predictor =
-      predictors::LoadingPredictorFactory::GetForProfile(profile());
-  loading_predictor->StartInitialization();
-  content::RunAllTasksUntilIdle();
-
-  // Prerender should be disabled on low memory devices.
-  no_state_prefetch_manager()->SetIsLowEndDevice(true);
-  EXPECT_FALSE(no_state_prefetch_manager()->AddIsolatedPrerender(
-      kURL, nullptr, kDefaultViewSize));
-
-  // Verify that the prerender request does not fall back to a preconnect.
-  EXPECT_EQ(0u, loading_predictor->GetActiveHintsSizeForTesting());
 }
 
 TEST_F(NoStatePrefetchTest, LinkRelStillAllowedWhenDisabled) {
@@ -1049,131 +952,6 @@ TEST_F(NoStatePrefetchTest, LinkRelAllowedOnCellular) {
           ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN, FINAL_STATUS_USED);
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
-  std::unique_ptr<NoStatePrefetchContents> entry =
-      no_state_prefetch_manager()->FindAndUseEntry(url);
-  ASSERT_EQ(no_state_prefetch_contents, entry.get());
-}
-
-// Verify that the external prefetch requests are not allowed on cellular
-// connection when kPredictivePrefetchingAllowedOnAllConnectionTypes feature is
-// not enabled.
-TEST_F(NoStatePrefetchTest, PrerenderNotAllowedOnCellularWithExternalOrigin) {
-  EnablePrerender();
-  std::unique_ptr<net::NetworkChangeNotifier> mock(
-      new MockNetworkChangeNotifier4GMetered);
-  EXPECT_TRUE(net::NetworkChangeNotifier::IsConnectionCellular(
-      net::NetworkChangeNotifier::GetConnectionType()));
-  EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_COST_METERED,
-            net::NetworkChangeNotifier::GetConnectionCost());
-  GURL url("http://www.google.com/");
-  FakeNoStatePrefetchContents* no_state_prefetch_contents =
-      no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST,
-          FINAL_STATUS_PROFILE_DESTROYED);
-  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
-      no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
-          url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
-  EXPECT_TRUE(no_state_prefetch_handle);
-  EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
-  histogram_tester().ExpectTotalCount("Prerender.FinalStatus", 0);
-}
-
-// Verify that the external prefetch requests are allowed on unmetered cellular
-// connection when kPredictivePrefetchingAllowedOnAllConnectionTypes feature is
-// not enabled.
-TEST_F(NoStatePrefetchTest,
-       PrerenderAllowedOnUnmeteredCellularWithExternalOrigin) {
-  EnablePrerender();
-  std::unique_ptr<net::NetworkChangeNotifier> mock(
-      new MockNetworkChangeNotifier4GUnmetered);
-  EXPECT_TRUE(net::NetworkChangeNotifier::IsConnectionCellular(
-      net::NetworkChangeNotifier::GetConnectionType()));
-  EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_COST_UNMETERED,
-            net::NetworkChangeNotifier::GetConnectionCost());
-  GURL url("http://www.google.com/");
-  FakeNoStatePrefetchContents* no_state_prefetch_contents =
-      no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST,
-          FINAL_STATUS_PROFILE_DESTROYED);
-  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
-      no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
-          url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
-  EXPECT_TRUE(no_state_prefetch_handle);
-  EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
-  histogram_tester().ExpectTotalCount("Prerender.FinalStatus", 0);
-}
-
-// Verify that the external prefetch requests are not allowed on metered wifi
-// connection when kPredictivePrefetchingAllowedOnAllConnectionTypes feature is
-// not enabled.
-TEST_F(NoStatePrefetchTest,
-       PrerenderNotAllowedOnMeteredWifiWithExternalOrigin) {
-  EnablePrerender();
-  std::unique_ptr<net::NetworkChangeNotifier> mock(
-      new MockNetworkChangeNotifierWifiMetered);
-  EXPECT_FALSE(net::NetworkChangeNotifier::IsConnectionCellular(
-      net::NetworkChangeNotifier::GetConnectionType()));
-  EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_COST_METERED,
-            net::NetworkChangeNotifier::GetConnectionCost());
-  GURL url("http://www.google.com/");
-  FakeNoStatePrefetchContents* no_state_prefetch_contents =
-      no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST,
-          FINAL_STATUS_PROFILE_DESTROYED);
-  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
-      no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
-          url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
-  EXPECT_TRUE(no_state_prefetch_handle);
-  EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
-  histogram_tester().ExpectTotalCount("Prerender.FinalStatus", 0);
-}
-
-// Verify that the external prerender requests are allowed on cellular.
-TEST_F(
-    NoStatePrefetchTest,
-    PrerenderAllowedOnCellularWithExternalOrigin_PredictivePrefetchingAllowedOnAllConnectionTypes) {
-  EnablePrerender();
-  std::unique_ptr<net::NetworkChangeNotifier> mock(
-      new MockNetworkChangeNotifier4GMetered);
-  EXPECT_TRUE(net::NetworkChangeNotifier::IsConnectionCellular(
-      net::NetworkChangeNotifier::GetConnectionType()));
-  GURL url("http://www.google.com/");
-  FakeNoStatePrefetchContents* no_state_prefetch_contents =
-      no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST, FINAL_STATUS_USED);
-  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
-      no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
-          url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
-  EXPECT_TRUE(no_state_prefetch_handle);
-  EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
-  EXPECT_EQ(no_state_prefetch_contents, no_state_prefetch_handle->contents());
-  std::unique_ptr<NoStatePrefetchContents> entry =
-      no_state_prefetch_manager()->FindAndUseEntry(url);
-  ASSERT_EQ(no_state_prefetch_contents, entry.get());
-}
-
-TEST_F(NoStatePrefetchTest, PrerenderAllowedForForcedCellular) {
-  EnablePrerender();
-  std::unique_ptr<net::NetworkChangeNotifier> mock(
-      new MockNetworkChangeNotifier4GMetered);
-  EXPECT_TRUE(net::NetworkChangeNotifier::IsConnectionCellular(
-      net::NetworkChangeNotifier::GetConnectionType()));
-  GURL url("http://www.google.com/");
-  FakeNoStatePrefetchContents* no_state_prefetch_contents = nullptr;
-  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle;
-  no_state_prefetch_contents =
-      no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER,
-          FINAL_STATUS_USED);
-  no_state_prefetch_handle =
-      no_state_prefetch_manager()->AddForcedPrerenderFromExternalRequest(
-          url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize));
-  EXPECT_TRUE(no_state_prefetch_handle);
-  EXPECT_TRUE(no_state_prefetch_handle->IsPrefetching());
-  EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
-  EXPECT_EQ(no_state_prefetch_contents, no_state_prefetch_handle->contents());
-  EXPECT_EQ(ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER,
-            no_state_prefetch_handle->contents()->origin());
   std::unique_ptr<NoStatePrefetchContents> entry =
       no_state_prefetch_manager()->FindAndUseEntry(url);
   ASSERT_EQ(no_state_prefetch_contents, entry.get());
@@ -1541,24 +1319,6 @@ TEST_F(NoStatePrefetchTest, NoStatePrefetchContentsIsValidHttpMethod) {
   EXPECT_FALSE(IsValidHttpMethod("POST"));
   EXPECT_FALSE(IsValidHttpMethod("TRACE"));
   EXPECT_FALSE(IsValidHttpMethod("WHATEVER"));
-}
-
-TEST_F(NoStatePrefetchTest, NoStatePrefetchContentsIncrementsByteCount) {
-  GURL url("http://www.google.com/");
-  FakeNoStatePrefetchContents* no_state_prefetch_contents =
-      no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER,
-          FINAL_STATUS_PROFILE_DESTROYED);
-  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle =
-      no_state_prefetch_manager()->AddForcedPrerenderFromExternalRequest(
-          url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize));
-
-  TestNetworkBytesChangedObserver observer;
-  no_state_prefetch_handle->SetObserver(&observer);
-
-  no_state_prefetch_contents->AddNetworkBytes(12);
-  EXPECT_TRUE(observer.network_bytes_changed());
-  EXPECT_EQ(12, no_state_prefetch_contents->network_bytes());
 }
 
 TEST_F(NoStatePrefetchTest, NoPrerenderInSingleProcess) {

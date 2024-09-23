@@ -15,4 +15,12 @@ ContentPasswordManagerDriverFactoryTestApi::Create(
       web_contents, password_manager_client));
 }
 
+// static
+ContentPasswordManagerDriver*
+ContentPasswordManagerDriverFactoryTestApi::GetDriverForFrame(
+    ContentPasswordManagerDriverFactory* factory,
+    content::RenderFrameHost* render_frame_host) {
+  return factory->GetDriverForFrame(render_frame_host);
+}
+
 }  // namespace password_manager

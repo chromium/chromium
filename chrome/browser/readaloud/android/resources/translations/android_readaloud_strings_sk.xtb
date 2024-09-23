@@ -9,7 +9,7 @@
 <translation id="1921351128855867012">Pretočiť dopredu o <ph name="NUMBER_OF_SECONDS" /> s</translation>
 <translation id="1984328900355667246">Prehrávanie nie je k dispozícii</translation>
 <translation id="2224347680315897176">Vyrovnaný</translation>
-<translation id="2611765907167846862">Pokojný</translation>
+<translation id="2611765907167846862">Pokojná</translation>
 <translation id="3023502830214299618">Ľutujeme, ale prehrávanie nie je momentálne k dispozícii pre túto stránku. Skúste to znova neskôr.</translation>
 <translation id="3807208219231826020">Prehľadávanie prehrávania</translation>
 <translation id="385051799172605136">Späť</translation>
@@ -31,6 +31,7 @@
 <translation id="6831043979455480757">Preložiť</translation>
 <translation id="6846298663435243399">Načítava sa…</translation>
 <translation id="6889157801232138307">Prehrávač „Vypočuť obsah tejto stránky“</translation>
+<translation id="7112750136794557642">Ak chcete zobraziť ďalšie možnosti, klepnutím rozbaľte prehrávač.</translation>
 <translation id="7221920857098237570">Jemný</translation>
 <translation id="7237590978482584900">Uvoľnený</translation>
 <translation id="7282547042039404307">Plynulá</translation>

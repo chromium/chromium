@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/url_matcher/url_util.h"
+
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/url_features.h"
 
 namespace url_matcher {
 namespace util {
@@ -341,13 +344,38 @@ TEST_P(OnlyWildcardTest, OnlyWildcard) {
   EXPECT_TRUE(MatchFilters({"*"}, url));
 }
 
-TEST(URLUtilTest, SingleFilter) {
+// Non-special URLs behavior is affected by the
+// StandardCompliantNonSpecialSchemeURLParsing feature.
+// See https://crbug.com/40063064 for details.
+class URLUtilParamTest : public ::testing::TestWithParam<bool> {
+ public:
+  URLUtilParamTest()
+  : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
+    scoped_feature_list_.InitWithFeatureState(
+        url::kStandardCompliantNonSpecialSchemeURLParsing,
+        use_standard_compliant_non_special_scheme_url_parsing_);
+  }
+
+   protected:
+    bool use_standard_compliant_non_special_scheme_url_parsing_;
+
+   private:
+    base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(URLUtilParamTest, SingleFilter) {
   // Match domain and all subdomains, for any filtered scheme.
   EXPECT_TRUE(MatchFilters({"google.com"}, "http://google.com"));
   EXPECT_TRUE(MatchFilters({"google.com"}, "http://google.com/"));
   EXPECT_TRUE(MatchFilters({"google.com"}, "http://google.com/whatever"));
   EXPECT_TRUE(MatchFilters({"google.com"}, "https://google.com/"));
-  EXPECT_FALSE(MatchFilters({"google.com"}, "bogus://google.com/"));
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    // When the feature is enabled, the host part in non-special URLs can be
+    // recognized.
+    EXPECT_TRUE(MatchFilters({"google.com"}, "bogus://google.com/"));
+  } else {
+    EXPECT_FALSE(MatchFilters({"google.com"}, "bogus://google.com/"));
+  }
   EXPECT_FALSE(MatchFilters({"google.com"}, "http://notgoogle.com/"));
   EXPECT_TRUE(MatchFilters({"google.com"}, "http://mail.google.com"));
   EXPECT_TRUE(MatchFilters({"google.com"}, "http://x.mail.google.com"));
@@ -454,7 +482,7 @@ TEST(URLUtilTest, MultipleFilters) {
   EXPECT_FALSE(MatchFilters(queries, "http://youtube.com?foo=ba"));
 }
 
-TEST(URLUtilTest, BasicCoverage) {
+TEST_P(URLUtilParamTest, BasicCoverage) {
   // Tests to cover the documentation from
   // http://www.chromium.org/administrators/url-blocklist-filter-format
 
@@ -493,11 +521,19 @@ TEST(URLUtilTest, BasicCoverage) {
   EXPECT_TRUE(MatchFilters({"example.com"}, "wss://example.com"));
 
   // Some schemes are not matched when the scheme is omitted.
-  EXPECT_FALSE(MatchFilters({"example.com"}, "about://example.com"));
   EXPECT_FALSE(MatchFilters({"example.com"}, "about:example.com"));
   EXPECT_FALSE(MatchFilters({"example.com/*"}, "filesystem:///something"));
-  EXPECT_FALSE(MatchFilters({"example.com"}, "custom://example.com"));
-  EXPECT_FALSE(MatchFilters({"example"}, "custom://example"));
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    // When the feature is enabled, the host part in non-special URLs can be
+    // recognized.
+    EXPECT_TRUE(MatchFilters({"example.com"}, "about://example.com"));
+    EXPECT_TRUE(MatchFilters({"example.com"}, "custom://example.com"));
+    EXPECT_TRUE(MatchFilters({"example"}, "custom://example"));
+  } else {
+    EXPECT_FALSE(MatchFilters({"example.com"}, "about://example.com"));
+    EXPECT_FALSE(MatchFilters({"example.com"}, "custom://example.com"));
+    EXPECT_FALSE(MatchFilters({"example"}, "custom://example"));
+  }
 
   // An optional '.' (dot) can prefix the host field to disable subdomain
   // matching, see below for details.
@@ -574,6 +610,8 @@ TEST(URLUtilTest, BasicCoverage) {
   // Query is case sensitive.
   EXPECT_FALSE(MatchFilters({"host/path?Query=1"}, "http://host/path?query=1"));
 }
+
+INSTANTIATE_TEST_SUITE_P(All, URLUtilParamTest, ::testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(
     URLUtilTest,

@@ -30,7 +30,7 @@ class FakeMojoPasswordManagerDriver
   void Flush();
 
   // mojom::PasswordManagerDriver:
-  // TODO(crbug.com/948062): Migrate the other methods to GMock as well.
+  // TODO(crbug.com/41450377): Migrate the other methods to GMock as well.
   MOCK_METHOD(void,
               PasswordFormCleared,
               (const autofill::FormData&),

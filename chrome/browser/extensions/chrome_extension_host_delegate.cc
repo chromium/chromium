@@ -8,7 +8,6 @@
 #include <string>
 
 #include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -17,6 +16,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -53,8 +53,9 @@ void ChromeExtensionHostDelegate::CreateTab(
   // Verify that the browser is not shutting down. It can be the case if the
   // call is propagated through a posted task that was already in the queue when
   // shutdown started. See crbug.com/625646
-  if (g_browser_process->IsShuttingDown())
+  if (ExtensionsBrowserClient::Get()->IsShuttingDown()) {
     return;
+  }
 
   ExtensionTabUtil::CreateTab(std::move(web_contents), extension_id,
                               disposition, window_features, user_gesture);

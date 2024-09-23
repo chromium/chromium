@@ -5,6 +5,7 @@
 #include "media/capture/video/fake_video_capture_device_factory.h"
 
 #include <array>
+#include <string_view>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -293,7 +294,7 @@ void FakeVideoCaptureDeviceFactory::ParseFakeDevicesConfigFromOptionsString(
       FakeVideoCaptureDevice::DisplayMediaType::ANY;
 
   while (option_tokenizer.GetNext()) {
-    std::vector<base::StringPiece> param = base::SplitStringPiece(
+    std::vector<std::string_view> param = base::SplitStringPiece(
         option_tokenizer.token_piece(), "=", base::TRIM_WHITESPACE,
         base::SPLIT_WANT_NONEMPTY);
 

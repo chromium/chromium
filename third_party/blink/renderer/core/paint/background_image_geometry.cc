@@ -210,7 +210,7 @@ SnappedAndUnsnappedOutsets BackgroundImageGeometry::ComputeDestRectAdjustments(
     const PhysicalRect& unsnapped_positioning_area,
     bool disallow_border_derived_adjustment) const {
   SnappedAndUnsnappedOutsets dest_adjust;
-  switch (fill_layer.Clip()) {
+  switch (paint_context.EffectiveClip(fill_layer)) {
     case EFillBox::kNoClip:
       dest_adjust.unsnapped = paint_context.VisualOverflowOutsets();
       dest_adjust.snapped = dest_adjust.unsnapped;
@@ -324,7 +324,7 @@ BackgroundImageGeometry::ComputePositioningAreaAdjustments(
     case EFillBox::kNoClip:
     case EFillBox::kText:
       // These are not supported mask-origin values.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return box_outset;
 }
@@ -424,14 +424,14 @@ void BackgroundImageGeometry::CalculateFillTileSize(
 
       if (layer_width.IsFixed()) {
         tile_size_.width = LayoutUnit(layer_width.Value());
-      } else if (layer_width.IsPercentOrCalc()) {
+      } else if (layer_width.IsPercent() || layer_width.IsCalculated()) {
         tile_size_.width =
             ValueForLength(layer_width, positioning_area_size.width);
       }
 
       if (layer_height.IsFixed()) {
         tile_size_.height = LayoutUnit(layer_height.Value());
-      } else if (layer_height.IsPercentOrCalc()) {
+      } else if (layer_height.IsPercent() || layer_height.IsCalculated()) {
         tile_size_.height =
             ValueForLength(layer_height, positioning_area_size.height);
       }
@@ -509,10 +509,10 @@ void BackgroundImageGeometry::CalculateFillTileSize(
     }
     case EFillSizeType::kSizeNone:
       // This value should only be used while resolving style.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return;
 }
 
@@ -707,7 +707,7 @@ gfx::RectF BackgroundImageGeometry::ComputePositioningArea(
   switch (layer.Origin()) {
     case EFillBox::kNoClip:
     case EFillBox::kText:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case EFillBox::kBorder:
     case EFillBox::kContent:

@@ -203,10 +203,8 @@ class TracingSamplerProfilerDataSource
   static uint32_t GetIncrementalStateResetID() {
     return incremental_state_reset_id_.load(std::memory_order_relaxed);
   }
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   using DataSourceProxy =
       PerfettoTracedProcess::DataSourceProxy<TracingSamplerProfilerDataSource>;
-#endif
 
   static void ResetForTesting() {
     if (!g_sampler_profiler_ds_for_test)
@@ -216,11 +214,9 @@ class TracingSamplerProfilerDataSource
   }
 
   void RegisterDataSource() {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     perfetto::DataSourceDescriptor dsd;
     dsd.set_name(mojom::kSamplerProfilerSourceName);
     DataSourceProxy::Register(dsd, this);
-#endif
   }
 
  private:
@@ -255,9 +251,7 @@ class TracingSamplerProfilerDataSource
   static std::atomic<uint32_t> incremental_state_reset_id_;
 };
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 using DataSourceProxy = TracingSamplerProfilerDataSource::DataSourceProxy;
-#endif
 
 // static
 std::atomic<uint32_t>
@@ -308,7 +302,7 @@ struct FrameDetails {
     if (module_base_address == 0) {
       module_base_address = 1;
     }
-    // TODO(crbug/1393372): Investigate and maybe cleanup this logic.
+    // TODO(crbug.com/40248195): Investigate and maybe cleanup this logic.
     if (module_name.empty()) {
       module_name = "missing";
     }
@@ -770,6 +764,8 @@ void TracingSamplerProfiler::SetAuxUnwinderFactoryOnMainThread(
   g_main_thread_instance->SetAuxUnwinderFactory(factory);
 }
 
+// TODO(b/336718643): Remove unused code after removing use_perfetto_client_library build
+// flag.
 // static
 void TracingSamplerProfiler::StartTracingForTesting(
     PerfettoProducer* producer) {
@@ -913,17 +909,14 @@ void TracingSamplerProfiler::StopTracing() {
 
 }  // namespace tracing
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS_WITH_ATTRS(
     COMPONENT_EXPORT(TRACING_CPP),
     tracing::TracingSamplerProfilerDataSource::DataSourceProxy);
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 // This should go after PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS_WITH_ATTRS
 // to avoid instantiation of type() template method before specialization.
 std::unique_ptr<perfetto::TraceWriterBase>
 tracing::TracingSamplerProfilerDataSource::CreateTraceWriter() {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   perfetto::internal::DataSourceStaticState* static_state =
       perfetto::DataSourceHelper<DataSourceProxy>::type().static_state();
   // DataSourceProxy disallows multiple instances, so our instance will always
@@ -933,8 +926,4 @@ tracing::TracingSamplerProfilerDataSource::CreateTraceWriter() {
   return perfetto::internal::TracingMuxer::Get()->CreateTraceWriter(
       static_state, data_source_config_.target_buffer(), instance_state,
       perfetto::BufferExhaustedPolicy::kDrop);
-#else
-  lock_.AssertAcquired();
-  return producer_->CreateTraceWriter(data_source_config_.target_buffer());
-#endif
 }

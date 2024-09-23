@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/network_service_proxy_delegate.h"
+
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -16,6 +17,7 @@
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/proxy_resolution/proxy_retry_info.h"
 #include "services/network/url_loader.h"
 #include "url/url_constants.h"
 
@@ -41,8 +43,7 @@ bool CheckProxyList(const net::ProxyList& proxy_list,
                     const net::ProxyServer& target_proxy) {
   for (const auto& proxy_chain : proxy_list.AllChains()) {
     if (proxy_chain.is_single_proxy() &&
-        proxy_chain.GetProxyServer(/*chain_index=*/0).host_port_pair() ==
-            target_proxy.host_port_pair()) {
+        proxy_chain.First().host_port_pair() == target_proxy.host_port_pair()) {
       return true;
     }
   }
@@ -66,7 +67,7 @@ bool RulesContainsProxy(const net::ProxyConfig::ProxyRules& proxy_rules,
              CheckProxyList(proxy_rules.proxies_for_https, target_proxy);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -83,7 +84,7 @@ bool IsValidCustomProxyConfig(const mojom::CustomProxyConfig& config) {
              !config.rules.proxies_for_https.IsEmpty();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -92,9 +93,9 @@ bool IsValidCustomProxyConfig(const mojom::CustomProxyConfig& config) {
 void MergeRequestHeaders(net::HttpRequestHeaders* out,
                          const net::HttpRequestHeaders& in) {
   for (net::HttpRequestHeaders::Iterator it(in); it.GetNext();) {
-    std::string old_value;
-    if (out->GetHeader(it.name(), &old_value)) {
-      out->SetHeader(it.name(), old_value + ", " + it.value());
+    std::optional<std::string> old_value = out->GetHeader(it.name());
+    if (old_value) {
+      out->SetHeader(it.name(), *old_value + ", " + it.value());
     } else {
       out->SetHeader(it.name(), it.value());
     }
@@ -134,8 +135,6 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
     const std::string& method,
     const net::ProxyRetryInfoMap& proxy_retry_info,
     net::ProxyInfo* result) {
-  // At this point, this delegate is not supporting IP protection, so apply the
-  // `proxy_config_` as usual.
   if (!EligibleForProxy(*result, method)) {
     return;
   }
@@ -148,6 +147,9 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
   }
 }
 
+void NetworkServiceProxyDelegate::OnSuccessfulRequestAfterFailures(
+    const net::ProxyRetryInfoMap& proxy_retry_info) {}
+
 void NetworkServiceProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
                                              int net_error) {
   if (observer_) {
@@ -155,13 +157,14 @@ void NetworkServiceProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
   }
 }
 
-void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
+net::Error NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
     const net::ProxyChain& proxy_chain,
     size_t chain_index,
     net::HttpRequestHeaders* extra_headers) {
   if (IsInProxyConfig(proxy_chain)) {
     MergeRequestHeaders(extra_headers, proxy_config_->connect_tunnel_headers);
   }
+  return net::OK;
 }
 
 net::Error NetworkServiceProxyDelegate::OnTunnelHeadersReceived(
@@ -197,10 +200,9 @@ bool NetworkServiceProxyDelegate::IsInProxyConfig(
     return false;
   }
 
-  // TODO(https://crbug.com/1491092): Support nested proxies.
+  // TODO(crbug.com/40284947): Support nested proxies.
   if (proxy_chain.is_single_proxy() &&
-      RulesContainsProxy(proxy_config_->rules,
-                         proxy_chain.GetProxyServer(/*chain_index=*/0))) {
+      RulesContainsProxy(proxy_config_->rules, proxy_chain.First())) {
     return true;
   }
 
@@ -223,24 +225,6 @@ bool NetworkServiceProxyDelegate::EligibleForProxy(
   }
 
   return true;
-}
-
-net::ProxyList NetworkServiceProxyDelegate::MergeProxyRules(
-    const net::ProxyList& existing_proxy_list,
-    const net::ProxyList& custom_proxy_list) const {
-  net::ProxyList merged_proxy_list;
-  for (const auto& existing_chain : existing_proxy_list.AllChains()) {
-    if (existing_chain.is_direct()) {
-      // Replace direct option with all proxies in the custom proxy list
-      for (const auto& custom_chain : custom_proxy_list.AllChains()) {
-        merged_proxy_list.AddProxyChain(custom_chain);
-      }
-    } else {
-      merged_proxy_list.AddProxyChain(existing_chain);
-    }
-  }
-
-  return merged_proxy_list;
 }
 
 void NetworkServiceProxyDelegate::OnObserverDisconnect() {

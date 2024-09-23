@@ -49,8 +49,9 @@ class TouchSelectionControllerClientAura::EnvEventObserver
       : selection_controller_(selection_controller), window_(window) {
     // Observe certain event types sent to any event target, to hide this ui.
     aura::Env* env = aura::Env::GetInstance();
-    std::set<ui::EventType> types = {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_MOVED,
-                                     ui::ET_KEY_PRESSED, ui::ET_MOUSEWHEEL};
+    std::set<ui::EventType> types = {
+        ui::EventType::kMousePressed, ui::EventType::kMouseMoved,
+        ui::EventType::kKeyPressed, ui::EventType::kMousewheel};
     env->AddEventObserver(this, env, types);
   }
 
@@ -366,16 +367,16 @@ bool TouchSelectionControllerClientAura::SupportsAnimation() const {
 
 bool TouchSelectionControllerClientAura::InternalClient::SupportsAnimation()
     const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void TouchSelectionControllerClientAura::SetNeedsAnimate() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TouchSelectionControllerClientAura::InternalClient::SetNeedsAnimate() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TouchSelectionControllerClientAura::MoveCaret(
@@ -464,7 +465,7 @@ void TouchSelectionControllerClientAura::OnSelectionEvent(
 
 void TouchSelectionControllerClientAura::InternalClient::OnSelectionEvent(
     ui::SelectionEventType event) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TouchSelectionControllerClientAura::OnDragUpdate(
@@ -474,7 +475,7 @@ void TouchSelectionControllerClientAura::OnDragUpdate(
 void TouchSelectionControllerClientAura::InternalClient::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::unique_ptr<ui::TouchHandleDrawable>
@@ -490,7 +491,7 @@ void TouchSelectionControllerClientAura::DidScroll() {}
 
 std::unique_ptr<ui::TouchHandleDrawable>
 TouchSelectionControllerClientAura::InternalClient::CreateDrawable() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -513,7 +514,7 @@ bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
     case ui::TouchEditable::kPaste: {
       std::u16string result;
       ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-          ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+          ui::EndpointType::kDefault, {.notify_if_restricted = false});
       ui::Clipboard::GetForCurrentThread()->ReadText(
           ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
       return editable && !result.empty();
@@ -568,7 +569,7 @@ void TouchSelectionControllerClientAura::ExecuteCommand(int command_id,
           /*should_show_context_menu=*/false);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

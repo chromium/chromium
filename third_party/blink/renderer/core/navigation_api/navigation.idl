@@ -9,19 +9,19 @@
 ] interface Navigation : EventTarget {
   readonly attribute NavigationHistoryEntry? currentEntry;
   sequence<NavigationHistoryEntry> entries();
-  [RaisesException, MeasureAs=AppHistory] void updateCurrentEntry(NavigationUpdateCurrentEntryOptions options);
+  [RaisesException, MeasureAs=NavigationAPI] void updateCurrentEntry(NavigationUpdateCurrentEntryOptions options);
   readonly attribute NavigationTransition? transition;
   [RuntimeEnabled=NavigationActivation] readonly attribute NavigationActivation? activation;
 
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;
 
-  [CallWith=ScriptState, MeasureAs=AppHistory] NavigationResult navigate(USVString url, optional NavigationNavigateOptions options = {});
-  [CallWith=ScriptState, MeasureAs=AppHistory] NavigationResult reload(optional NavigationReloadOptions options = {});
+  [CallWith=ScriptState, MeasureAs=NavigationAPI] NavigationResult navigate(USVString url, optional NavigationNavigateOptions options = {});
+  [CallWith=ScriptState, MeasureAs=NavigationAPI] NavigationResult reload(optional NavigationReloadOptions options = {});
 
-  [CallWith=ScriptState, MeasureAs=AppHistory] NavigationResult traverseTo(DOMString key, optional NavigationOptions options = {});
-  [CallWith=ScriptState, MeasureAs=AppHistory] NavigationResult back(optional NavigationOptions options = {});
-  [CallWith=ScriptState, MeasureAs=AppHistory] NavigationResult forward(optional NavigationOptions options = {});
+  [CallWith=ScriptState, MeasureAs=NavigationAPI] NavigationResult traverseTo(DOMString key, optional NavigationOptions options = {});
+  [CallWith=ScriptState, MeasureAs=NavigationAPI] NavigationResult back(optional NavigationOptions options = {});
+  [CallWith=ScriptState, MeasureAs=NavigationAPI] NavigationResult forward(optional NavigationOptions options = {});
 
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;

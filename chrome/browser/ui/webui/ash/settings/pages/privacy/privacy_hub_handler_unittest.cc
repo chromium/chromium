@@ -57,8 +57,7 @@ class PrivacyHubHandlerTest : public testing::Test {
     privacy_hub_handler_.set_web_ui(&web_ui_);
     privacy_hub_handler_.AllowJavascriptForTesting();
 
-    feature_list_.InitWithFeatures(
-        {features::kCrosPrivacyHubV0, features::kCrosPrivacyHub}, {});
+    feature_list_.InitWithFeatures({features::kCrosPrivacyHub}, {});
   }
 
   [[nodiscard]] base::Value GetLastWebUIListenerData(
@@ -267,6 +266,20 @@ TEST_F(PrivacyHubHandlerHatsTest, DontTriggerHatsIfUserLeftEarly) {
   // And leaves it again immediately, now the survey shouldn't be triggered.
   privacy_hub_handler_.HandlePrivacyPageClosed(args);
   EXPECT_FALSE(IsTimerStarted());
+}
+
+TEST_F(PrivacyHubHandlerTest, MicrophoneMutedBySecurityCurtainChanged) {
+  privacy_hub_handler_.OnInputMutedBySecurityCurtainChanged(true);
+
+  ExpectValueMatchesBoolParam(
+      true,
+      GetLastWebUIListenerData("microphone-muted-by-security-curtain-changed"));
+
+  privacy_hub_handler_.OnInputMutedBySecurityCurtainChanged(false);
+
+  ExpectValueMatchesBoolParam(
+      false,
+      GetLastWebUIListenerData("microphone-muted-by-security-curtain-changed"));
 }
 
 #if DCHECK_IS_ON()

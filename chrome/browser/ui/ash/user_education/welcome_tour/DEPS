@@ -1,0 +1,22 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ui/ash/user_education/welcome_tour",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor ash codes in //chrome to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/ash/app_list",
+  "+chrome/browser/ash/app_restore",
+  "+chrome/browser/ash/system_web_apps",
+  "+chrome/browser/profiles/profile_manager.h",
+  "+chrome/browser/ui/browser_element_identifiers.h",
+  "+chrome/browser/ui/views/frame",
+  "+chrome/browser/ui/web_applications",
+  "+chrome/browser/web_applications",
+  "+chrome/test",
+]

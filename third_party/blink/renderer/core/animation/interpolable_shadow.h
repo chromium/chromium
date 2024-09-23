@@ -34,10 +34,16 @@ class InterpolableShadow : public InterpolableValue {
                      InterpolableColor* color,
                      ShadowStyle);
 
-  static InterpolableShadow* Create(const ShadowData&, double zoom);
+  static InterpolableShadow* Create(const ShadowData&,
+                                    double zoom,
+                                    mojom::blink::ColorScheme color_scheme,
+                                    const ui::ColorProvider* color_provider);
   static InterpolableShadow* CreateNeutral();
 
-  static InterpolableShadow* MaybeConvertCSSValue(const CSSValue&);
+  static InterpolableShadow* MaybeConvertCSSValue(
+      const CSSValue&,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
 
   // Helpers for CSSListInterpolationFunctions.
   static PairwiseInterpolationValue MaybeMergeSingles(InterpolableValue* start,
@@ -59,7 +65,7 @@ class InterpolableShadow : public InterpolableValue {
                    InterpolableValue& result) const final;
   bool IsShadow() const final { return true; }
   bool Equals(const InterpolableValue& other) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   void Scale(double scale) final;

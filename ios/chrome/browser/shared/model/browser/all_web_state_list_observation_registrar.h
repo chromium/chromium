@@ -22,10 +22,10 @@ class BrowserList;
 class AllWebStateListObservationRegistrar : public BrowserListObserver {
  public:
   // Observation mode optionally used for constructors.
-  enum Mode {
-    REGULAR = 1 << 0,          // Only register regular web states.
-    INCOGNITO = 1 << 1,        // Only register incognito web states.
-    ALL = REGULAR | INCOGNITO  // Register all web states.
+  enum class Mode {
+    REGULAR,    // Only register regular web states.
+    INCOGNITO,  // Only register incognito web states.
+    ALL,        // Register all web states.
   };
   // Constructs an object that register the given `web_state_list_observer` as
   // WebStateListObserver for any regular or OTR Browsers associated with
@@ -54,12 +54,8 @@ class AllWebStateListObservationRegistrar : public BrowserListObserver {
   // BrowserListObserver
   void OnBrowserAdded(const BrowserList* browser_list,
                       Browser* browser) override;
-  void OnIncognitoBrowserAdded(const BrowserList* browser_list,
-                               Browser* browser) override;
   void OnBrowserRemoved(const BrowserList* browser_list,
                         Browser* browser) override;
-  void OnIncognitoBrowserRemoved(const BrowserList* browser_list,
-                                 Browser* browser) override;
   void OnBrowserListShutdown(BrowserList* browser_list) override;
 
  private:

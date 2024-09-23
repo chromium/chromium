@@ -1,0 +1,47 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
+
+// The enumerations and struct follows the explainer in
+// https://github.com/explainers-by-googlers/writing-assistance-apis/blob/main/README.md
+
+// The output type of the summarzier.
+enum AISummarizerType {
+  kTLDR,
+  kKeyPoints,
+  kTeaser,
+  kHeadline,
+};
+
+// The output format of the summarzier.
+enum AISummarizerFormat {
+  kPlainText,
+  kMarkDown,
+};
+
+// The output length of the summarzier.
+enum AISummarizerLength {
+  kShort,
+  kMedium,
+  kLong,
+};
+
+// This is used when creating a new AISummarizer.
+struct AISummarizerCreateOptions {
+  string? shared_context;
+  AISummarizerType type;
+  AISummarizerFormat format;
+  AISummarizerLength length;
+};
+
+// A summarizer to summarize a given article
+interface AISummarizer {
+  // Summarizes the given input.
+  Summarize(string input,
+            string context,
+            pending_remote<ModelStreamingResponder> pending_responder);
+};

@@ -4,8 +4,9 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
@@ -61,7 +62,7 @@ class FakeTaskProvider : public TaskProvider {
 
   void TaskRemoved(Task* task) {
     NotifyObserverTaskRemoved(task);
-    base::Erase(task_provider_tasks_, task);
+    std::erase(task_provider_tasks_, task);
   }
 
  private:
@@ -104,7 +105,7 @@ class FallbackTaskProviderTest : public testing::Test,
 
   void TaskRemoved(Task* task) override {
     EXPECT_TRUE(base::Contains(seen_tasks_, task));
-    base::Erase(seen_tasks_, task);
+    std::erase(seen_tasks_, task);
   }
 
   // This adds tasks to the first primary subprovider.

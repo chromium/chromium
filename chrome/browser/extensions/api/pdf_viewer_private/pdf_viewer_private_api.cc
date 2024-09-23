@@ -8,12 +8,14 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/common/pref_names.h"
+#include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "url/url_constants.h"
@@ -25,10 +27,10 @@ namespace {
 namespace IsAllowedLocalFileAccess =
     api::pdf_viewer_private::IsAllowedLocalFileAccess;
 
-namespace SetPdfOcrPref = api::pdf_viewer_private::SetPdfOcrPref;
-
 namespace SetPdfPluginAttributes =
     api::pdf_viewer_private::SetPdfPluginAttributes;
+
+namespace SetPdfDocumentTitle = api::pdf_viewer_private::SetPdfDocumentTitle;
 
 // Check if the current URL is allowed based on a list of allowlisted domains.
 bool IsUrlAllowedToEmbedLocalFiles(
@@ -111,55 +113,35 @@ PdfViewerPrivateIsAllowedLocalFileAccessFunction::Run() {
       prefs->GetList(prefs::kPdfLocalFileAccessAllowedForDomains))));
 }
 
-PdfViewerPrivateIsPdfOcrAlwaysActiveFunction::
-    PdfViewerPrivateIsPdfOcrAlwaysActiveFunction() = default;
+PdfViewerPrivateSetPdfDocumentTitleFunction::
+    PdfViewerPrivateSetPdfDocumentTitleFunction() = default;
 
-PdfViewerPrivateIsPdfOcrAlwaysActiveFunction::
-    ~PdfViewerPrivateIsPdfOcrAlwaysActiveFunction() = default;
+PdfViewerPrivateSetPdfDocumentTitleFunction::
+    ~PdfViewerPrivateSetPdfDocumentTitleFunction() = default;
 
+// This function is only called for full-page PDFs.
 ExtensionFunction::ResponseAction
-PdfViewerPrivateIsPdfOcrAlwaysActiveFunction::Run() {
-  PrefService* prefs =
-      Profile::FromBrowserContext(browser_context())->GetPrefs();
-  DCHECK(prefs);
-
-  const PrefService::Preference* pref =
-      prefs->FindPreference(prefs::kAccessibilityPdfOcrAlwaysActive);
-  if (!pref) {
-    return RespondNow(
-        Error("Pref not found: *", prefs::kAccessibilityPdfOcrAlwaysActive));
+PdfViewerPrivateSetPdfDocumentTitleFunction::Run() {
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (!web_contents) {
+    return RespondNow(Error("Could not find a valid web contents."));
   }
 
-  DCHECK(pref->GetValue()->is_bool());
-  bool value = pref->GetValue()->GetBool();
-  return RespondNow(WithArguments(value));
-}
+  // Title should only be set for full-page PDFs.
+  // MIME type associated with sender `WebContents` must be `application/pdf`
+  // for a full-page PDF.
+  EXTENSION_FUNCTION_VALIDATE(web_contents->GetContentsMimeType() ==
+                              pdf::kPDFMimeType);
 
-PdfViewerPrivateSetPdfOcrPrefFunction::PdfViewerPrivateSetPdfOcrPrefFunction() =
-    default;
-
-PdfViewerPrivateSetPdfOcrPrefFunction::
-    ~PdfViewerPrivateSetPdfOcrPrefFunction() = default;
-
-ExtensionFunction::ResponseAction PdfViewerPrivateSetPdfOcrPrefFunction::Run() {
-  std::optional<SetPdfOcrPref::Params> params =
-      SetPdfOcrPref::Params::Create(args());
+  std::optional<SetPdfDocumentTitle::Params> params =
+      SetPdfDocumentTitle::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  PrefService* prefs =
-      Profile::FromBrowserContext(browser_context())->GetPrefs();
-  DCHECK(prefs);
+  web_contents->UpdateTitleForEntry(
+      web_contents->GetController().GetLastCommittedEntry(),
+      base::UTF8ToUTF16(params->title));
 
-  const PrefService::Preference* pref =
-      prefs->FindPreference(prefs::kAccessibilityPdfOcrAlwaysActive);
-  if (!pref) {
-    return RespondNow(
-        Error("Pref not found: *", prefs::kAccessibilityPdfOcrAlwaysActive));
-  }
-
-  DCHECK(pref->GetValue()->is_bool());
-  prefs->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive, params->value);
-  return RespondNow(WithArguments(true));
+  return RespondNow(NoArguments());
 }
 
 PdfViewerPrivateSetPdfPluginAttributesFunction::

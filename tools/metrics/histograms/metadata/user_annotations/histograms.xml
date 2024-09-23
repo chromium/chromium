@@ -1,0 +1,57 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="UserAnnotations.AddFormSubmissionResult"
+    enum="UserAnnotationsExecutionResult" expires_after="M135">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the result of a form submission to user annotations service.
+    Recorded for each form submission that is allowed to be stored in the user
+    annotations database.
+  </summary>
+</histogram>
+
+<histogram name="UserAnnotations.CountEntries.Result"
+    enum="UserAnnotationsExecutionResult" expires_after="M135">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the result of counting entries within a certain time frame from user
+    annotations service. Recorded for each call to count entries from the
+    browsing data removal UI.
+  </summary>
+</histogram>
+
+<histogram name="UserAnnotations.RemoveAllEntries.Result"
+    enum="UserAnnotationsExecutionResult" expires_after="M135">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the result of removing all entries from user annotations service.
+    Recorded for each remove all entries call from the database via the
+    management UI.
+  </summary>
+</histogram>
+
+<histogram name="UserAnnotations.RemoveEntry.Result"
+    enum="UserAnnotationsExecutionResult" expires_after="M135">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the result of removing a single entry from user annotations service.
+    Recorded for each user annotation entry removal from the database via the
+    management UI.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

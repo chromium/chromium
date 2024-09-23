@@ -235,8 +235,8 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
     ValueHolder(double value);  // NOLINT(google-explicit-constructor)
     ValueHolder(bool value);    // NOLINT(google-explicit-constructor)
     ValueHolder(void* value);   // NOLINT(google-explicit-constructor)
-    // StringPiece's backing storage / const char* pointer needs to remain valid
-    // until TracedValue::Build is called.
+    // std::string_view's backing storage / const char* pointer needs to remain
+    // valid until TracedValue::Build is called.
     // NOLINTNEXTLINE(google-explicit-constructor)
     ValueHolder(std::string_view value);
     // Create a copy to avoid holding a reference to a non-existing string:

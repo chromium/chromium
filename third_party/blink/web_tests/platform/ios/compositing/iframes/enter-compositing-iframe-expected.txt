@@ -14,7 +14,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='test' class='composited box'",
+      "name": "LayoutBlockFlow DIV id='test' class='composited box'",
       "bounds": [210, 210],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
@@ -27,7 +27,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='overlay'",
+      "name": "LayoutBlockFlow (positioned) DIV class='overlay'",
       "position": [5, 5],
       "bounds": [50, 50],
       "backgroundColor": "#00000033"

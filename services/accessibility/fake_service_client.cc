@@ -34,11 +34,17 @@ void FakeServiceClient::Enable(EnableCallback callback) {
   std::move(callback).Run(desktop_tree_id_);
 }
 
-void FakeServiceClient::Disable() {}
+void FakeServiceClient::Disable() {
+  num_disable_called_++;
+}
 
-void FakeServiceClient::EnableTree(const ui::AXTreeID& tree_id) {}
+void FakeServiceClient::EnableChildTree(const ui::AXTreeID& tree_id) {}
 
-void FakeServiceClient::PerformAction(const ui::AXActionData& data) {}
+void FakeServiceClient::PerformAction(const ui::AXActionData& data) {
+  if (perform_action_called_callback_) {
+    std::move(perform_action_called_callback_).Run(data);
+  }
+}
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 void FakeServiceClient::BindAutoclickClient(
@@ -109,7 +115,7 @@ void FakeServiceClient::BindAccessibilityFileLoader(
 
 void FakeServiceClient::Load(const base::FilePath& path,
                              LoadCallback callback) {
-  // TODO(crbug.com/1493546): Implement file loading for
+  // TODO(crbug.com/40936729): Implement file loading for
   // FakeAccessibilityServiceClient.
 }
 
@@ -259,6 +265,11 @@ bool FakeServiceClient::AutomationIsBound() const {
   return automation_client_receivers_.size() && automation_remotes_.size();
 }
 
+void FakeServiceClient::SetPerformActionCalledCallback(
+    base::OnceCallback<void(const ui::AXActionData&)> callback) {
+  perform_action_called_callback_ = std::move(callback);
+}
+
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 void FakeServiceClient::RequestScrollableBoundsForPoint(
     const gfx::Point& point) {
@@ -377,6 +388,19 @@ void FakeServiceClient::SendAccessibilityEvents(
   for (auto& remote : automation_remotes_) {
     remote->DispatchAccessibilityEvents(tree_id, updates, mouse_location,
                                         events);
+  }
+}
+
+void FakeServiceClient::SendTreeDestroyedEvent(const ui::AXTreeID& tree_id) {
+  for (auto& remote : automation_remotes_) {
+    remote->DispatchTreeDestroyedEvent(tree_id);
+  }
+}
+
+void FakeServiceClient::SendActionResult(const ui::AXActionData& data,
+                                         bool result) {
+  for (auto& remote : automation_remotes_) {
+    remote->DispatchActionResult(data, result);
   }
 }
 

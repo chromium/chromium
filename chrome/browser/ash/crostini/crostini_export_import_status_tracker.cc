@@ -17,7 +17,8 @@ CrostiniExportImportStatusTracker::CrostiniExportImportStatusTracker(
     ExportImportType type,
     base::FilePath path)
     : type_(type), path_(path) {
-  DCHECK(type == ExportImportType::EXPORT || type == ExportImportType::IMPORT);
+  DCHECK(type == ExportImportType::EXPORT || type == ExportImportType::IMPORT ||
+         type == ExportImportType::EXPORT_DISK_IMAGE);
 }
 
 CrostiniExportImportStatusTracker::~CrostiniExportImportStatusTracker() =
@@ -63,7 +64,8 @@ void CrostiniExportImportStatusTracker::SetStatusFailed() {
   SetStatusFailedWithMessage(
       Status::FAILED_UNKNOWN_REASON,
       l10n_util::GetStringUTF16(
-          type() == ExportImportType::EXPORT
+          (type() == ExportImportType::EXPORT ||
+           type() == ExportImportType::EXPORT_DISK_IMAGE)
               ? IDS_CROSTINI_EXPORT_NOTIFICATION_MESSAGE_FAILED
               : IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED));
 }
@@ -88,6 +90,16 @@ void CrostiniExportImportStatusTracker::SetStatusFailedInsufficientSpace(
       l10n_util::GetStringFUTF16(
           IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_SPACE,
           ui::FormatBytes(additional_required_space)));
+}
+
+void CrostiniExportImportStatusTracker::
+    SetStatusFailedInsufficientSpaceUnknownAmount() {
+  DCHECK(type() == ExportImportType::IMPORT ||
+         type() == ExportImportType::IMPORT_DISK_IMAGE);
+  SetStatusFailedWithMessage(
+      Status::FAILED_INSUFFICIENT_SPACE,
+      l10n_util::GetStringUTF16(
+          IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_SPACE_UNKNOWN_AMOUNT));
 }
 
 void CrostiniExportImportStatusTracker::SetStatusFailedConcurrentOperation(

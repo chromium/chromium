@@ -8,13 +8,13 @@
 
 module ash.language.mojom;
 
-// Next MinVersion: 4
-
 // ID of the Feature using LanguagePacks.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. When adding new enumerations to this
 // enum, you must add those to the LanguagePackMojoFeatureId definition in
 // tools/metrics/histograms/enums.xml to keep them in sync.
+// Next MinVersion: 2
+// TODO(b/335692393): Add a default value for FeatureId.
 [Extensible]
 enum FeatureId {
   // Unknown feature, not supported.
@@ -31,6 +31,7 @@ enum FeatureId {
 // numeric values should never be reused.  When adding new enumerations to this
 // enum, you must add those to the LanguagePackMojoPackState definition in
 // tools/metrics/histograms/enums.xml to keep them in sync.
+// Next MinVersion: 4
 [Extensible]
 enum PackState {
   // TODO: b/294162606 - Deprecate this value and use UNKNOWN instead.
@@ -42,6 +43,7 @@ enum PackState {
 };
 
 // The error that is encountered when performing an IPC operation.
+// Next MinVersion: 1
 [Extensible]
 enum ErrorCode {
   [Default] kUnknown = 0,
@@ -53,17 +55,31 @@ enum ErrorCode {
 };
 
 // This struct holds information that allows clients to use a Language Pack.
+// Next MinVersion: 4
 struct LanguagePackInfo {
+  PackState pack_state;
+  string path;
+  [MinVersion=2] ErrorCode error;
+  [MinVersion=3] FeatureId feature_id;
+  [MinVersion=3] string? locale;
+};
+
+// This struct holds information that allows clients to use a Base Pack.
+// Next MinVersion: 3
+struct BasePackInfo {
   PackState pack_state;
   string path;
   [MinVersion=2] ErrorCode error;
 };
 
-// This struct holds information that allows clients to use a Base Pack.
-struct BasePackInfo {
-  PackState pack_state;
-  string path;
-  [MinVersion=2] ErrorCode error;
+// Interface for observing Language Packs.
+// It allows clients to get notifications when the state of a Language Pack
+// changes.
+// Next ordinal: 1
+// Next MinVersion: 1
+interface LanguagePacksObserver {
+  // Called whenever the state of a Language Pack is changed.
+  OnPackStateChanged@0(LanguagePackInfo info);
 };
 
 // Interface for managing Language Packs.
@@ -71,7 +87,8 @@ struct BasePackInfo {
 // installation of one.
 // Language Packs are mounted to the user partition once they are installed and
 // this interface allows to get the path to the files.
-// Next ordinal: 4
+// Next ordinal: 5
+// Next MinVersion: 2
 interface LanguagePacks {
   // Gets information about the current state of a Language Pack.
   // Takes the id of the feature (for example handwriting) and the language.
@@ -99,4 +116,9 @@ interface LanguagePacks {
   // Requests to uninstall a Language Pack.
   // Takes the id of the feature (for example handwriting) and the language.
   UninstallPack@3(FeatureId feature_id, string language) => ();
+
+  // Adds an observer to observe Language Packs. Observers can live in the
+  // browser, renderer, or extension process.
+  [MinVersion=1] AddObserver@4(
+      pending_associated_remote<LanguagePacksObserver> observer);
 };

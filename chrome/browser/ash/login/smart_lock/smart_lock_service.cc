@@ -525,7 +525,7 @@ SmartLockAuthEvent SmartLockService::GetPasswordAuthEvent() const {
       return PASSWORD_ENTRY_PRIMARY_USER_ABSENT;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SMART_LOCK_AUTH_EVENT_COUNT;
 }
 
@@ -576,12 +576,12 @@ SmartLockService::GetSmartUnlockPasswordAuthEvent() const {
       return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
           kPrimaryUserAbsent;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
           kUnknownState;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
       kUnknownState;
 }
@@ -828,7 +828,7 @@ void SmartLockService::UseLoadedRemoteDevices(
                   << remote_devices.size();
     SetProximityAuthDevices(GetAccountId(), multidevice::RemoteDeviceRefList(),
                             std::nullopt);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

@@ -53,6 +53,7 @@ TetherService* TetherService::Get(Profile* profile) {
 void TetherService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   TetherComponentImpl::RegisterProfilePrefs(registry);
+  TetherNotificationPresenter::RegisterProfilePrefs(registry);
 }
 
 // static.
@@ -86,7 +87,7 @@ std::string TetherService::TetherFeatureStateToString(
       // and this value is never actually used in practice.
       return "[TetherService initializing]";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "[Invalid state]";
   }
 }
@@ -264,7 +265,7 @@ void TetherService::SuspendDone(base::TimeDelta sleep_duration) {
   UpdateTetherTechnologyState();
 }
 
-void TetherService::OnTetherHostsUpdated() {
+void TetherService::OnTetherHostUpdated() {
   UpdateTetherTechnologyState();
 }
 
@@ -363,7 +364,7 @@ void TetherService::OnFeatureStatesChanged(
 }
 
 bool TetherService::HasSyncedTetherHosts() const {
-  return tether_host_fetcher_->HasSyncedTetherHosts();
+  return tether_host_fetcher_->GetTetherHost().has_value();
 }
 
 void TetherService::UpdateTetherTechnologyState() {
@@ -578,7 +579,7 @@ TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
       //   *kUnavailableInsufficientSecurity: Should never occur.
       PA_LOG(ERROR) << "Invalid MultiDevice FeatureState: "
                     << tether_multidevice_state;
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return NO_AVAILABLE_HOSTS;
   }
 }

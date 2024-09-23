@@ -2,17 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 #include <optional>
 #include <random>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"
@@ -43,7 +48,7 @@ struct Env {
 };
 Env* env = new Env();
 
-void OnWriteCallback(base::StringPiece data) {}
+void OnWriteCallback(std::string_view data) {}
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
@@ -66,7 +71,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                                base::BindRepeating(&OnWriteCallback)),
                            std::nullopt);
     base::RunLoop().RunUntilIdle();
-
+    bool is_first_frame = true;
     int num_iterations = kMinNumIterations + rng() % kMaxNumIterations;
     int index = 0;
     do {
@@ -83,8 +88,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         muxer.PutFrame(
             media::Muxer::EncodedFrame{parameters, std::nullopt, str,
                                        has_alpha_frame ? str : std::string(),
-                                       is_key_frame != 0},
+                                       is_key_frame != 0 || is_first_frame},
             base::TimeDelta() + base::Milliseconds(index));
+        is_first_frame = false;
         base::RunLoop().RunUntilIdle();
       }
 

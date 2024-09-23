@@ -6,6 +6,7 @@
 #define MEDIA_FILTERS_MANIFEST_DEMUXER_H_
 
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/cancelable_callback.h"
@@ -24,6 +25,7 @@
 #include "media/base/pipeline_status.h"
 #include "media/filters/chunk_demuxer.h"
 #include "media/filters/hls_data_source_provider.h"
+#include "media/filters/stream_parser_factory.h"
 
 namespace media {
 
@@ -38,55 +40,57 @@ class MEDIA_EXPORT ManifestDemuxerEngineHost {
   virtual ~ManifestDemuxerEngineHost() {}
 
   // Adds a new role to the chunk demuxer, and returns true if it succeeded.
-  virtual bool AddRole(base::StringPiece role,
-                       std::string container,
-                       std::string codec) = 0;
+  virtual bool AddRole(std::string_view role,
+                       RelaxedParserSupportedType mime) = 0;
 
   // Removes a role (on the media thread) to ensure that there are no
   // media-thread-bound weak references.
-  virtual void RemoveRole(base::StringPiece role) = 0;
+  virtual void RemoveRole(std::string_view role) = 0;
 
   // Sets the sequence mode flag for a |role| which has been created with
   // `AddRole`
-  virtual void SetSequenceMode(base::StringPiece role, bool sequence_mode) = 0;
+  virtual void SetSequenceMode(std::string_view role, bool sequence_mode) = 0;
 
   // Sets the chunk demuxer duration.
   virtual void SetDuration(double duration) = 0;
 
   // Get the ranges that chunk demuxer has loaded, which allow seeking to avoid
   // fetching new data, if the seek is into a loaded range already.
-  virtual Ranges<base::TimeDelta> GetBufferedRanges(base::StringPiece role) = 0;
+  virtual Ranges<base::TimeDelta> GetBufferedRanges(std::string_view role) = 0;
 
   // Removes all data from the chunk demuxer between `start` and `end`.
-  virtual void Remove(base::StringPiece role,
+  virtual void Remove(std::string_view role,
                       base::TimeDelta start,
                       base::TimeDelta end) = 0;
 
   // Removes all data from the chunk demuxer between |start| and |end| for a
   // given role, and resets the parser state while updating the parse offset.
-  virtual void RemoveAndReset(base::StringPiece role,
+  virtual void RemoveAndReset(std::string_view role,
                               base::TimeDelta start,
                               base::TimeDelta end,
                               base::TimeDelta* offset) = 0;
 
   // Checks to see if we're parsing a media segment and if it is the case, then
   // resets the group start timestamp.
-  virtual void SetGroupStartIfParsingAndSequenceMode(base::StringPiece role,
+  virtual void SetGroupStartIfParsingAndSequenceMode(std::string_view role,
                                                      base::TimeDelta start) = 0;
 
   // Evicts frames from chunk demuxer.
-  virtual void EvictCodedFrames(base::StringPiece role,
+  virtual void EvictCodedFrames(std::string_view role,
                                 base::TimeDelta time,
                                 size_t data_size) = 0;
 
   // Appends data to the chunk demuxer, parses it, and returns true if the new
   // data was parsed successfully.
-  virtual bool AppendAndParseData(base::StringPiece role,
-                                  base::TimeDelta start,
+  virtual bool AppendAndParseData(std::string_view role,
                                   base::TimeDelta end,
                                   base::TimeDelta* offset,
-                                  const uint8_t* data,
-                                  size_t data_size) = 0;
+                                  base::span<const uint8_t> data) = 0;
+
+  // Reset the parser state in chunk demuxer.
+  virtual void ResetParserState(std::string_view role,
+                                base::TimeDelta end,
+                                base::TimeDelta* offset);
 
   // Allow seeking from within an implementation.
   virtual void RequestSeek(base::TimeDelta time) = 0;
@@ -94,7 +98,7 @@ class MEDIA_EXPORT ManifestDemuxerEngineHost {
   // Handle errors.
   virtual void OnError(PipelineStatus error) = 0;
 
-  virtual void SetGroupStartTimestamp(base::StringPiece role,
+  virtual void SetGroupStartTimestamp(std::string_view role,
                                       base::TimeDelta time) = 0;
 
   virtual void SetEndOfStream() = 0;
@@ -150,8 +154,9 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
     // and network fetches.
     virtual void StartWaitingForSeek() = 0;
 
-    // Abort any pending reads, parses, or network requests.
-    virtual void AbortPendingReads() = 0;
+    // Abort any pending reads, parses, or network requests. calls CB when
+    // finished.
+    virtual void AbortPendingReads(base::OnceClosure cb) = 0;
 
     // Returns whether this engine supports seeking. Some live stream content
     // can't be seeked.
@@ -174,8 +179,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   ~ManifestDemuxer() override;
 
   // `media::Demuxer` implementation
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> GetAllStreams()
-      override;
+  std::vector<DemuxerStream*> GetAllStreams() override;
   std::string GetDisplayName() const override;
   DemuxerType GetDemuxerType() const override;
   void Initialize(DemuxerHost* host, PipelineStatusCallback status_cb) override;
@@ -200,34 +204,33 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
                                    TrackChangeCB change_completed_cb) override;
 
   // `ManifestDemuxerEngineHost` implementation
-  bool AddRole(base::StringPiece role,
-               std::string container,
-               std::string codec) override;
-  void RemoveRole(base::StringPiece role) override;
-  void SetSequenceMode(base::StringPiece role, bool sequence_mode) override;
+  bool AddRole(std::string_view role, RelaxedParserSupportedType mime) override;
+  void RemoveRole(std::string_view role) override;
+  void SetSequenceMode(std::string_view role, bool sequence_mode) override;
   void SetDuration(double duration) override;
-  Ranges<base::TimeDelta> GetBufferedRanges(base::StringPiece role) override;
-  void Remove(base::StringPiece role,
+  Ranges<base::TimeDelta> GetBufferedRanges(std::string_view role) override;
+  void Remove(std::string_view role,
               base::TimeDelta start,
               base::TimeDelta end) override;
-  void RemoveAndReset(base::StringPiece role,
+  void RemoveAndReset(std::string_view role,
                       base::TimeDelta start,
                       base::TimeDelta end,
                       base::TimeDelta* offset) override;
-  void SetGroupStartIfParsingAndSequenceMode(base::StringPiece role,
+  void SetGroupStartIfParsingAndSequenceMode(std::string_view role,
                                              base::TimeDelta start) override;
-  void EvictCodedFrames(base::StringPiece role,
+  void EvictCodedFrames(std::string_view role,
                         base::TimeDelta time,
                         size_t data_size) override;
-  bool AppendAndParseData(base::StringPiece role,
-                          base::TimeDelta start,
+  bool AppendAndParseData(std::string_view role,
                           base::TimeDelta end,
                           base::TimeDelta* offset,
-                          const uint8_t* data,
-                          size_t data_size) override;
+                          base::span<const uint8_t> data) override;
+  void ResetParserState(std::string_view role,
+                        base::TimeDelta end,
+                        base::TimeDelta* offset) override;
   void OnError(PipelineStatus status) override;
   void RequestSeek(base::TimeDelta time) override;
-  void SetGroupStartTimestamp(base::StringPiece role,
+  void SetGroupStartTimestamp(std::string_view role,
                               base::TimeDelta time) override;
   void SetEndOfStream() override;
   void UnsetEndOfStream() override;
@@ -279,6 +282,13 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   void OnDemuxerStreamRead(DemuxerStream::ReadCB wrapped_read_cb,
                            DemuxerStream::Status status,
                            DemuxerStream::DecoderBufferVector buffers);
+
+  // Maps ChunkDemuxerStream instances to our internal ones for track changes.
+  void MapDemuxerStreams(TrackChangeCB cb,
+                         const std::vector<DemuxerStream*>&);
+
+  std::vector<MediaTrack::Id> MapTrackIds(
+      const std::vector<MediaTrack::Id>& track_ids);
 
   // Helper for the `Seek` call, so that returning from an event when a seek
   // is pending can continue the seek process.
@@ -337,6 +347,9 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   // Pending an event. Don't trigger a new event chain while one is in
   // progress.
   bool has_pending_event_ = false;
+
+  std::optional<MediaTrack::Id> internal_video_track_id_;
+  std::optional<MediaTrack::Id> internal_audio_track_id_;
 
   // A pending "next event" callback, which can be canceled in the case of a
   // seek or a playback rate change.

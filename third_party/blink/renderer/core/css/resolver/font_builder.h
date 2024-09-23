@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_alternates.h"
+#include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_numeric.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -52,6 +53,7 @@ class CORE_EXPORT FontBuilder {
   void DidChangeEffectiveZoom();
   void DidChangeTextOrientation();
   void DidChangeWritingMode();
+  void DidChangeTextSizeAdjust();
 
   FontFamily StandardFontFamily() const;
   AtomicString StandardFontFamilyName() const;
@@ -69,7 +71,7 @@ class CORE_EXPORT FontBuilder {
   void SetFamilyDescription(const FontDescription::FamilyDescription&);
   // font-family is a tree-scoped reference.
   void SetFamilyTreeScope(const TreeScope*);
-  void SetFeatureSettings(scoped_refptr<FontFeatureSettings>);
+  void SetFeatureSettings(scoped_refptr<const FontFeatureSettings>);
   void SetLocale(scoped_refptr<const LayoutLocale>);
   void SetVariantCaps(FontDescription::FontVariantCaps);
   void SetVariantEastAsian(const FontVariantEastAsian);
@@ -81,12 +83,13 @@ class CORE_EXPORT FontBuilder {
   void SetTextRendering(TextRenderingMode);
   void SetKerning(FontDescription::Kerning);
   void SetTextSpacingTrim(TextSpacingTrim);
-  void SetFontPalette(scoped_refptr<FontPalette>);
-  void SetFontVariantAlternates(scoped_refptr<FontVariantAlternates>);
+  void SetFontPalette(scoped_refptr<const FontPalette>);
+  void SetFontVariantAlternates(scoped_refptr<const FontVariantAlternates>);
   void SetFontOpticalSizing(OpticalSizing);
   void SetFontSmoothing(FontSmoothingMode);
-  void SetVariationSettings(scoped_refptr<FontVariationSettings>);
+  void SetVariationSettings(scoped_refptr<const FontVariationSettings>);
   void SetVariantPosition(FontDescription::FontVariantPosition);
+  void SetVariantEmoji(FontVariantEmoji);
 
   // FIXME: These need to just vend a Font object eventually.
   // UpdateFontDescription() returns true if any properties were actually
@@ -160,6 +163,7 @@ class CORE_EXPORT FontBuilder {
   static FontDescription::FontVariantPosition InitialVariantPosition() {
     return FontDescription::kNormalVariantPosition;
   }
+  static FontVariantEmoji InitialVariantEmoji() { return kNormalVariantEmoji; }
 
  private:
   void SetFamilyDescription(FontDescription&,
@@ -173,8 +177,8 @@ class CORE_EXPORT FontBuilder {
   void UpdateComputedSize(FontDescription&, const ComputedStyleBuilder&);
   void UpdateAdjustedSize(FontDescription&, FontSelector*);
 
-  float GetComputedSizeFromSpecifiedSize(FontDescription&,
-                                         float effective_zoom,
+  float GetComputedSizeFromSpecifiedSize(const FontDescription&,
+                                         const ComputedStyleBuilder&,
                                          float specified_size);
 
   FontSelector* FontSelectorFromTreeScope(const TreeScope* tree_scope);
@@ -197,6 +201,7 @@ class CORE_EXPORT FontBuilder {
     kVariantEastAsian,
     kVariantLigatures,
     kVariantNumeric,
+    kVariantEmoji,
     kVariantPosition,
     kVariationSettings,
     kTextRendering,
@@ -213,6 +218,8 @@ class CORE_EXPORT FontBuilder {
     kEffectiveZoom,
     kTextOrientation,
     kWritingMode,
+
+    kTextSizeAdjust,
 
     kNumFlags,
   };

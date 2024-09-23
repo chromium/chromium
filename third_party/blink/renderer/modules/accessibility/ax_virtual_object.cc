@@ -41,9 +41,9 @@ void AXVirtualObject::AddChildren() {
   DCHECK(!is_adding_children_) << " Reentering method on " << GetNode();
   base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
   DCHECK_EQ(children_.size(), 0U)
-      << "Parent still has " << children_.size() << " children before adding:"
-      << "\nParent is " << ToString(true, true) << "\nFirst child is "
-      << children_[0]->ToString(true, true);
+      << "Parent still has " << children_.size()
+      << " children before adding:" << "\nParent is " << this
+      << "\nFirst child is " << children_[0];
 #endif
   if (!accessible_node_)
     return;
@@ -64,7 +64,7 @@ void AXVirtualObject::AddChildren() {
     ax_child->UpdateCachedAttributeValuesIfNeeded(
         /*notify_parent_of_ignored_changes*/ false);
     DCHECK(!ax_child->IsDetached());
-    DCHECK(ax_child->AccessibilityIsIncludedInTree());
+    DCHECK(ax_child->IsIncludedInTree());
 
     children_.push_back(ax_child);
   }
@@ -110,8 +110,8 @@ String AXVirtualObject::TextAlternative(
                              &found_text_alternative);
 }
 
-ax::mojom::blink::Role AXVirtualObject::DetermineAccessibilityRole() {
-  aria_role_ = DetermineAriaRoleAttribute();
+ax::mojom::blink::Role AXVirtualObject::DetermineRoleValue() {
+  aria_role_ = DetermineAriaRole();
 
   if (aria_role_ != ax::mojom::blink::Role::kUnknown)
     return aria_role_;
@@ -119,7 +119,7 @@ ax::mojom::blink::Role AXVirtualObject::DetermineAccessibilityRole() {
   return NativeRoleIgnoringAria();
 }
 
-ax::mojom::blink::Role AXVirtualObject::AriaRoleAttribute() const {
+ax::mojom::blink::Role AXVirtualObject::RawAriaRole() const {
   return aria_role_;
 }
 

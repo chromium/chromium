@@ -61,7 +61,7 @@ TEST(InkDropMaskTest, PathInkDropMaskPaintsTriangle) {
       ui::PaintContext(list.get(), 1.f, gfx::Rect(layer_size), false));
   EXPECT_EQ(1u, list->num_paint_ops()) << list->ToString();
 
-  cc::PaintRecord record = list->FinalizeAndReleaseAsRecord();
+  cc::PaintRecord record = list->FinalizeAndReleaseAsRecordForTesting();
   EXPECT_THAT(
       record,
       ElementsAre(AllOf(

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] VisualViewport page and offset values in iframe
+  assert_equals: After zooming, pageTop must reflect location in document. expected 1200 but got 1221
+Harness: the test ran to completion.

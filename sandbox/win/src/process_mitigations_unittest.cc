@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "sandbox/win/src/process_mitigations.h"
+
+#include <windows.h>
 
 #include <excpt.h>
 #include <ktmw32.h>
 #include <ntstatus.h>
-#include <windows.h>
 
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -19,6 +25,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/nt_internals.h"
+#include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/target_services.h"
 #include "sandbox/win/tests/common/controller.h"
@@ -78,6 +85,8 @@ void TestWin10NonSystemFont(bool is_success_test) {
   std::wstring test_command = L"CheckWin10FontLoad \"";
   test_command += font_path.value().c_str();
   test_command += L"\"";
+
+  runner.SetTestState(sandbox::EVERY_STATE);
 
   EXPECT_EQ((is_success_test ? sandbox::SBOX_TEST_SUCCEEDED
                              : sandbox::SBOX_TEST_FAILED),
@@ -159,6 +168,19 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     // MITIGATION_WIN32K_DISABLE
     //--------------------------------------------------
     case (TESTPOLICY_WIN32K): {
+      // When the test is run with SetTestState(EVERY_STATE), the return value
+      // is ignored for the first two states (before InitCalled and before
+      // RevertedToSelf).
+      if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled()) {
+        return 0;
+      } else if (!SandboxFactory::GetTargetServices()
+                      ->GetState()
+                      ->RevertedToSelf()) {
+        // Need to warm up user32.dll for the test.
+        CHECK(::LoadLibrary(L"user32.dll"));
+        return 0;
+      }
+
       PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY policy = {};
       if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
                                         ProcessSystemCallDisablePolicy, &policy,
@@ -171,6 +193,27 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
       // Check if we can call a Win32k API. Fail if it succeeds.
       if (::GetDC(nullptr))
         return SBOX_TEST_SECOND_ERROR;
+
+      break;
+    }
+    //--------------------------------------------------
+    // MITIGATION_WIN32K_DISABLE
+    //--------------------------------------------------
+    case (TESTPOLICY_WIN32K_NOFAKEGDI): {
+      PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY policy = {};
+      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+                                        ProcessSystemCallDisablePolicy, &policy,
+                                        sizeof(policy))) {
+        return SBOX_TEST_NOT_FOUND;
+      }
+      if (!policy.DisallowWin32kSystemCalls) {
+        return SBOX_TEST_FIRST_ERROR;
+      }
+
+      // Check if we can load gdi32.dll. Fail if it succeeds.
+      if (::LoadLibrary(L"gdi32.dll")) {
+        return SBOX_TEST_SECOND_ERROR;
+      }
 
       break;
     }
@@ -420,6 +463,36 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
       break;
     }
 
+    //--------------------------------------------------
+    // MITIGATION_RESTRICT_CORE_SHARING
+    //--------------------------------------------------
+    case (TESTPOLICY_RESTRICTCORESHARING): {
+      PROCESS_MITIGATION_SIDE_CHANNEL_ISOLATION_POLICY policy = {};
+      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+                                        ProcessSideChannelIsolationPolicy,
+                                        &policy, sizeof(policy))) {
+        return SBOX_TEST_NOT_FOUND;
+      }
+
+      if (!(policy.RestrictCoreSharing)) {
+        // ERROR_NOT_SUPPORTED is returned if the OS doesn't support this
+        // mitigation policy.
+        // If SetProcessMitigationPolicy was able to set the policy then the
+        // test is marked failure since this test sets
+        // |MITIGATION_RESTRICT_CORE_SHARING| which should have enabled the
+        // policy.
+        policy.RestrictCoreSharing = true;
+        bool is_core_sharing_set_successful = ::SetProcessMitigationPolicy(
+            ProcessSideChannelIsolationPolicy, &policy, sizeof(policy));
+        if (is_core_sharing_set_successful ||
+            ::GetLastError() != ERROR_NOT_SUPPORTED) {
+          return SBOX_TEST_FAILED;
+        }
+      }
+
+      break;
+    }
+
     default:
       return SBOX_TEST_INVALID_PARAMETER;
   }
@@ -433,6 +506,19 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
 SBOX_TESTS_COMMAND int CheckWin10FontLoad(int argc, wchar_t** argv) {
   if (argc < 1)
     return SBOX_TEST_INVALID_PARAMETER;
+
+  // When the test is run with SetTestState(EVERY_STATE), the return value
+  // is ignored for the first two states (before InitCalled and before
+  // RevertedToSelf).
+  if (!SandboxFactory::GetTargetServices()->GetState()->InitCalled()) {
+    return 0;
+  } else if (!SandboxFactory::GetTargetServices()
+                  ->GetState()
+                  ->RevertedToSelf()) {
+    // Need to warm up gdi32.dll for the test.
+    CHECK(::LoadLibrary(L"gdi32.dll"));
+    return 0;
+  }
 
   // Open font file passed in as an argument.
   base::File file(base::FilePath(argv[0]),
@@ -1294,6 +1380,33 @@ TEST(ProcessMitigationsTest, FsctlDisabled) {
   sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
   EXPECT_EQ(config->SetProcessMitigations(MITIGATION_FSCTL_DISABLED),
+            SBOX_ALL_OK);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
+}
+
+// This test validates setting restrict_core_sharing policy which will
+// make sure process threads never share a core with threads outside it's
+// security domain.
+// The policy setting can fail on device which doesn't have the right scheduler
+// as described in
+// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_
+// mitigation_side_channel_isolation_policy
+// This test passes if we are able to set the policy or the policy set fails
+// with ERROR_NOT_SUPPORTED due to incorrect scheduler type.
+TEST(ProcessMitigationsTest, RestrictCoreSharing) {
+  // This feature is enabled starting with build number 25922.
+  const auto& version = base::win::OSInfo::GetInstance()->version_number();
+  if (version.build < 25922) {
+    return;
+  }
+
+  std::wstring test_command = L"CheckPolicy ";
+  test_command += std::to_wstring(TESTPOLICY_RESTRICTCORESHARING);
+
+  TestRunner runner;
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_RESTRICT_CORE_SHARING),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 }

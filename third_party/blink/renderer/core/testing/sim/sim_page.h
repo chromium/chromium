@@ -11,6 +11,7 @@
 namespace blink {
 
 class Page;
+class VisualViewport;
 
 class SimPage final {
  public:
@@ -24,6 +25,8 @@ class SimPage final {
 
   void SetActive(bool);
   bool IsActive() const;
+
+  const VisualViewport& GetVisualViewport() const;
 
  private:
   Persistent<Page> page_;
